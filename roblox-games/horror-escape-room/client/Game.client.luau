@@ -781,6 +781,31 @@ chaseTint.BorderSizePixel=0
 chaseTint.ZIndex=7
 chaseTint.Parent=gui
 
+local threatEffectLayer=Instance.new("Frame")
+threatEffectLayer.Name="ThreatEffectLayer"
+threatEffectLayer.Size=UDim2.fromScale(1,1)
+threatEffectLayer.BackgroundColor3=Color3.new(0,0,0)
+threatEffectLayer.BackgroundTransparency=1
+threatEffectLayer.BorderSizePixel=0
+threatEffectLayer.Visible=false
+threatEffectLayer.ZIndex=8
+threatEffectLayer.Parent=gui
+
+local threatEffectText=Instance.new("TextLabel")
+threatEffectText.AnchorPoint=Vector2.new(.5,0)
+threatEffectText.Position=UDim2.new(.5,0,0,78)
+threatEffectText.Size=UDim2.fromOffset(270,32)
+threatEffectText.BackgroundColor3=Color3.fromRGB(14,12,13)
+threatEffectText.BackgroundTransparency=.18
+threatEffectText.TextColor3=Color3.fromRGB(238,220,190)
+threatEffectText.TextSize=12
+threatEffectText.TextWrapped=true
+threatEffectText.Font=Enum.Font.GothamBold
+threatEffectText.Visible=false
+threatEffectText.ZIndex=9
+threatEffectText.Parent=gui
+roundify(threatEffectText,7)
+
 -- 상단 HUD: 추격 중에도 최소 정보만 표시
 local hud=Instance.new("Frame")
 hud.Name="MidnightTopHUD"
@@ -2161,6 +2186,26 @@ shopOpenButton.Activated:Connect(function()
 end)
 shopClose.Activated:Connect(function()shopPanel.Visible=false end)
 
+local function currentHumanFormInfo()
+ local id=tostring(p:GetAttribute("HumanForm")or"BROADCAST")
+ for _,row in ipairs(C.HumanForms or{})do if row.Id==id then return row end end
+ return(C.HumanForms and C.HumanForms[1])or{Id="BROADCAST",Name="방송부",Tool="신호 송신기",InfectedAbility="FALSE_ALARM"}
+end
+local function currentMonsterFormInfo()
+ local id=tostring(p:GetAttribute("MonsterForm")or"DRACULA")
+ for _,row in ipairs(C.MonsterForms or{})do if row.Id==id then return row end end
+ return(C.MonsterForms and C.MonsterForms[1])or{Id="DRACULA",Name="드라큘라",Ability="BAT_DASH"}
+end
+local function currentAbilityName()
+ if p:GetAttribute("Infected")==true then
+  local hf=currentHumanFormInfo()
+  local profile=C.InfectedAbilities and C.InfectedAbilities[hf.InfectedAbility]
+  return profile and profile.Name or tostring(hf.InfectedAbility or"감염 스킬")
+ end
+ local mf=currentMonsterFormInfo()
+ return(C.MonsterAbilityLabels and C.MonsterAbilityLabels[mf.Ability])or mf.Name or"괴물 스킬"
+end
+
 -- 라운드 행동 버튼: 역할에 따라 딱 필요한 버튼만 노출
 local actionDock=Instance.new("Frame")
 actionDock.Name="RoundActions"
@@ -2218,7 +2263,26 @@ RunService.RenderStepped:Connect(function(dt)
  updateCooldownButton(rescueButton,p:GetAttribute("PurifyReadyAt"),"정화 공격","정화",C.Energy and C.Energy.PurifyCost or 35)
  updateCooldownButton(dashButton,p:GetAttribute("DashReadyAt"),"대시","대시",C.Energy and C.Energy.DashCost or 25)
  updateCooldownButton(infectButton,p:GetAttribute("InfectReadyAt"),"감염 공격","감염",C.Energy and C.Energy.InfectAttackCost or 30)
- updateCooldownButton(abilityButton,p:GetAttribute("AbilityReadyAt"),"괴물 스킬","스킬",C.Energy and C.Energy.AbilityCost or 45)
+ updateCooldownButton(abilityButton,p:GetAttribute("AbilityReadyAt"),currentAbilityName(),"스킬",C.Energy and C.Energy.AbilityCost or 45)
+
+ local now=workspace:GetServerTimeNow()
+ local blackout=(tonumber(p:GetAttribute("BlackoutUntil"))or 0)>now
+ local flash=(tonumber(p:GetAttribute("HuntFlashUntil"))or 0)>now
+ local alarm=(tonumber(p:GetAttribute("FalseAlarmUntil"))or 0)>now
+ threatEffectLayer.Visible=blackout or flash or alarm
+ threatEffectText.Visible=threatEffectLayer.Visible
+ if blackout then
+  threatEffectLayer.BackgroundColor3=Color3.fromRGB(2,2,4);threatEffectLayer.BackgroundTransparency=.28
+  threatEffectText.Text="정전 · 시야가 차단됐어"
+ elseif flash then
+  threatEffectLayer.BackgroundColor3=Color3.fromRGB(236,228,211);threatEffectLayer.BackgroundTransparency=.56
+  threatEffectText.Text="사냥 플래시 · 움직임 둔화"
+ elseif alarm then
+  threatEffectLayer.BackgroundColor3=Color3.fromRGB(92,12,18);threatEffectLayer.BackgroundTransparency=.84
+  threatEffectText.Text="경보 · 가까운 곳에 몬스터가 감지됐어"
+ else
+  threatEffectLayer.BackgroundTransparency=1;threatEffectText.Text=""
+ end
 end)
 
 -- 라운드 결과 화면
@@ -2465,9 +2529,10 @@ local function render()
  local mc=p:GetAttribute("MonsterCount")or workspace:GetAttribute("MonsterCount")or 0
  roleLine.Text=string.format("%s · 인간 %d : 몬스터 %d",roleText,hc,mc)
  if role=="MONSTER"then
-  objectiveLine.Text=p:GetAttribute("Infected")==true and"감염 완료 · 에너지를 써서 인간을 감염시켜"or"몬스터 목표 · 감염 공격으로 인간을 0명으로 만들어"
+  objectiveLine.Text=p:GetAttribute("Infected")==true and("감염 전환 · "..currentAbilityName().." 사용 가능")or("몬스터 목표 · 감염 공격 + "..currentAbilityName())
  elseif role=="SURVIVOR"then
-  objectiveLine.Text="인간 목표 · 에너지로 정화/대시하며 몬스터를 0명으로 만들어"
+  local hf=currentHumanFormInfo()
+  objectiveLine.Text=string.format("%s · %s · 정화/대시로 몬스터 0명",hf.Name or"인간",hf.Tool or"도구")
  elseif role=="ELIMINATED"then
   objectiveLine.Text="정화되어 이번 라운드에서 탈락"
  else
@@ -2487,7 +2552,8 @@ local function render()
  local pref=p:GetAttribute("MonsterPreference")or"ANY"
  local prefText=pref=="MONSTER"and"몬스터 선호"or pref=="SURVIVOR"and"인간 선호"or"자동 배정"
  local equippedItem=cosmeticItem(tostring(p:GetAttribute("EquippedCosmetic")or"DEFAULT"))
- selectionStatus.Text=string.format("%s · 인간 %s · 몬스터 %s · %s",prefText,humanName(),monsterName(),equippedItem.Title or"신입 참가자")
+ local selectedHuman=currentHumanFormInfo()
+ selectionStatus.Text=string.format("%s · 인간 %s/%s · 몬스터 %s",prefText,selectedHuman.Name or humanName(),selectedHuman.Tool or"도구",monsterName())
  loreStatus.Text=string.format("세계 괴담 %d/%d 완성 · 조각 %d · 계약서 %d · %s",tonumber(p:GetAttribute("GhostCompleted"))or 0,tonumber(p:GetAttribute("GhostTotal"))or #(C.GhostCatalog or{}),tonumber(p:GetAttribute("GhostFragments"))or 0,tonumber(p:GetAttribute("GhostContracts"))or 0,tostring(p:GetAttribute("GhostTitle")or"괴담 견습생"))
 
  local selectionConfirmed=p:GetAttribute("LobbySelectionConfirmed")==true
@@ -2585,7 +2651,7 @@ local function render()
  lastRoundState=round
 end
 
-for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","LastRoundBaseReward","LastRoundWinBonus","LastRoundContribution","PurifyReadyAt","DashReadyAt","InfectReadyAt","AbilityReadyAt","Energy","EnergyMax","PressurePassive","Spectating","OwnedCosmetics","EquippedCosmetic","CelebrationName","CelebrationCaption","CelebrationWinner","CelebrationComic","LoreCount","LoreTotal","LoreTitle","GhostProgress","GhostSeenCount","GhostCompleted","GhostTotal","GhostTitle","GhostFragments","GhostContracts","RoomServer","RoomCode","RoomHostUserId","RoomHostName","RoomVisibility","RoomState","RoomMemberCount","RoomMaxPlayers","RoomIsHost"})do
+for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","LastRoundBaseReward","LastRoundWinBonus","LastRoundContribution","PurifyReadyAt","DashReadyAt","InfectReadyAt","AbilityReadyAt","FalseAlarmUntil","BlackoutUntil","HuntFlashUntil","AbilityFeedback","Energy","EnergyMax","PressurePassive","Spectating","OwnedCosmetics","EquippedCosmetic","CelebrationName","CelebrationCaption","CelebrationWinner","CelebrationComic","LoreCount","LoreTotal","LoreTitle","GhostProgress","GhostSeenCount","GhostCompleted","GhostTotal","GhostTitle","GhostFragments","GhostContracts","RoomServer","RoomCode","RoomHostUserId","RoomHostName","RoomVisibility","RoomState","RoomMemberCount","RoomMaxPlayers","RoomIsHost"})do
  p:GetAttributeChangedSignal(k):Connect(function()render();updateCosmeticUI();updateGhostBookUI()end)
 end
 p:GetAttributeChangedSignal("GhostFeedback"):Connect(function()
@@ -2737,6 +2803,10 @@ p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
  local value=tostring(p:GetAttribute("FeedbackEvent")or"")
  if value:find("^INFECT:")then setMotionImpulse("INFECT",.72);warningSfx.TimePosition=0;warningSfx:Play();chaseTint.BackgroundTransparency=.72
  elseif value:find("^PURIFY")then setMotionImpulse("PURIFY",.3);rescueSfx.TimePosition=0;rescueSfx:Play();chaseTint.BackgroundTransparency=.9
+ elseif value:find("^ABILITY:")then
+  setMotionImpulse("ABILITY",.48);warningSfx.TimePosition=0;warningSfx:Play()
+  local label=tostring(p:GetAttribute("AbilityFeedback")or"스킬 사용");label=string.match(label,"^([^:]+)")or label
+  showMapContentToast(label.." 발동",Color3.fromRGB(217,190,235),1.7)
  elseif value:find("^RESULT:")then resultSfx.TimePosition=0;resultSfx:Play()end
 end)
 
