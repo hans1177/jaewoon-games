@@ -4,7 +4,7 @@ import fs from 'node:fs';
 
 const read=p=>fs.readFileSync(p,'utf8');
 
-test('cozy island expands home village and spawns five native animated bears',()=>{
+test('cozy island expands home village and spawns one native animated bear',()=>{
   const server=read('roblox-games/cozy-island/server/Game.server.luau');
   const client=read('roblox-games/cozy-island/client/Game.client.luau');
   const style=read('roblox-games/cozy-island/shared/VisualStyle.luau');
@@ -12,7 +12,7 @@ test('cozy island expands home village and spawns five native animated bears',()
   const animator=read('roblox-games/cozy-island/shared/WildlifeAnimator.luau');
 
   assert.match(style,/Size=Vector3\.new\(220,10,220\)/);
-  assert.match(server,/VILLAGE_BEAR_COUNT=5/);
+  assert.match(server,/VILLAGE_BEAR_COUNT=1/);
   assert.match(server,/spawnVillageBears\(world,topY\)/);
   assert.match(server,/VillagePlaza",Vector3\.new\(104,1,92\)/);
   assert.match(server,/VillageGreen/);
