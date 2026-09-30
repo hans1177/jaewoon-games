@@ -347,7 +347,7 @@ end
 task.spawn(function()
  setLoadingProgress(.18,"호텔 조명을 켜는 중")
  pcall(function()
-  ContentProvider:PreloadAsync({bgm,chase,actionSfx,warningSfx,resultSfx,footstepSfx,freezeSfx,rescueSfx})
+  ContentProvider:PreloadAsync({lobbyBgm,bgm,chase,actionSfx,warningSfx,resultSfx,footstepSfx,freezeSfx,rescueSfx})
  end)
  setLoadingProgress(.55,"승강기 로비를 준비하는 중")
  local deadline=os.clock()+(C.LobbyLoadTimeoutSeconds or 12)
