@@ -57,10 +57,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
-      "canonicalState": "F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-30T04:50:41.322Z",
+      "updatedAt": "2026-09-30T05:54:02.086Z",
       "robloxSourceCommit": "15d9ebb42466049456bb2e215e5bfa08ae5f8f57",
       "robloxSourceBootstrapPassedAt": "2026-09-30T04:50:41.322Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -447,6 +447,12 @@
             "ok": true
           },
           {
+            "id": "ui-class-selection",
+            "type": "mcp-mouse-input",
+            "dispatched": true,
+            "ok": true
+          },
+          {
             "id": "keyboard-w",
             "type": "mcp-keyboard-input",
             "dispatched": true,
@@ -555,13 +561,13 @@
             "ok": true
           },
           {
-            "id": "ui-discovered-TextButton",
+            "id": "ui-discovered-MessageMode",
             "type": "mcp-ui-exploration",
             "dispatched": true,
             "ok": true
           },
           {
-            "id": "ui-discovered-MessageMode",
+            "id": "ui-discovered-TextButton",
             "type": "mcp-ui-exploration",
             "dispatched": true,
             "ok": true
@@ -579,7 +585,7 @@
             "ok": true
           },
           {
-            "id": "ui-discovered-TextButton",
+            "id": "ui-discovered-MultiplayerCode",
             "type": "mcp-ui-exploration",
             "dispatched": true,
             "ok": true
@@ -697,6 +703,12 @@
           {
             "id": "adaptive-start-gate-input-dispatched",
             "name": "adaptive-start-gate-input-dispatched",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "class-selection-confirmed",
+            "name": "class-selection-confirmed",
             "required": true,
             "pass": true
           },
@@ -1112,12 +1124,12 @@
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
           "scenarioFailureCount": 21,
-          "primaryActionDisplacement": 18.624452879528107,
-          "primaryActionVelocity": 0.000012945616570029147,
+          "primaryActionDisplacement": 19.444720494507674,
+          "primaryActionVelocity": 0.000012988142210968474,
           "primaryActionFeedbackChanged": false,
           "commercialAudit": {
             "auditProfile": "F9_SOAK",
-            "timelineProbeCount": 106,
+            "timelineProbeCount": 112,
             "progressChanged": false,
             "inventoryChanged": false,
             "timelineProgressChanged": false,
@@ -1169,7 +1181,6 @@
           "initial-character-playable",
           "floating-character-map-readiness",
           "adaptive-start-gate-input-dispatched",
-          "actual-play-pre-action-client-probe",
           "ROBLOX_DATASTORE_SAVE_LOAD"
         ],
         "rawSourceIncluded": false,
@@ -1470,7 +1481,7 @@
                   "semantic": "UPGRADE",
                   "effectObserved": false,
                   "effect": {
-                    "moved": 129.66417682775383,
+                    "moved": 129.72123239923928,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -1497,7 +1508,7 @@
                   "id": "prompt-ProximityPrompt",
                   "effectObserved": true,
                   "effect": {
-                    "moved": 48.020728249425325,
+                    "moved": 48.69879569638331,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -1512,7 +1523,7 @@
                   "id": "prompt-ProximityPrompt",
                   "effectObserved": false,
                   "effect": {
-                    "moved": 0.3758294977537623,
+                    "moved": 0.060693496296796566,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -1527,7 +1538,7 @@
                   "id": "prompt-ProximityPrompt",
                   "effectObserved": false,
                   "effect": {
-                    "moved": 0.06229529760703474,
+                    "moved": 0.35191227447079865,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -1560,7 +1571,7 @@
                 "dynamic": false
               },
               "timelineMobDynamic": false,
-              "combatActionCount": 2,
+              "combatActionCount": 1,
               "combatEffectCount": 0
             }
           },
@@ -1698,7 +1709,7 @@
             "priority": "HIGH",
             "hint": "Reduce runaway instance count/memory pressure and keep long-session runtime stable.",
             "observed": {
-              "memoryMb": 2597.25390625,
+              "memoryMb": 2379.80078125,
               "descendantCount": 4511
             }
           },
@@ -1852,7 +1863,7 @@
               "targetIdentity": "RPGHUD.CombatDock.TextButton",
               "actionType": "mcp-ui-exploration",
               "effectRequired": true,
-              "attempts": 2
+              "attempts": 1
             }
           }
         ],
@@ -1863,8 +1874,8 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-09-30T03:42:02.840Z",
-        "workflowRunId": 36664916515,
+        "testedAt": "2026-09-30T05:54:02.086Z",
+        "workflowRunId": 36675059772,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -2252,7 +2263,7 @@
                   "semantic": "UPGRADE",
                   "effectObserved": false,
                   "effect": {
-                    "moved": 129.66417682775383,
+                    "moved": 129.72123239923928,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -2279,7 +2290,7 @@
                   "id": "prompt-ProximityPrompt",
                   "effectObserved": true,
                   "effect": {
-                    "moved": 48.020728249425325,
+                    "moved": 48.69879569638331,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -2294,7 +2305,7 @@
                   "id": "prompt-ProximityPrompt",
                   "effectObserved": false,
                   "effect": {
-                    "moved": 0.3758294977537623,
+                    "moved": 0.060693496296796566,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -2309,7 +2320,7 @@
                   "id": "prompt-ProximityPrompt",
                   "effectObserved": false,
                   "effect": {
-                    "moved": 0.06229529760703474,
+                    "moved": 0.35191227447079865,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -2342,7 +2353,7 @@
                 "dynamic": false
               },
               "timelineMobDynamic": false,
-              "combatActionCount": 2,
+              "combatActionCount": 1,
               "combatEffectCount": 0
             }
           },
@@ -2480,7 +2491,7 @@
             "priority": "HIGH",
             "hint": "Reduce runaway instance count/memory pressure and keep long-session runtime stable.",
             "observed": {
-              "memoryMb": 2597.25390625,
+              "memoryMb": 2379.80078125,
               "descendantCount": 4511
             }
           },
@@ -2634,7 +2645,7 @@
               "targetIdentity": "RPGHUD.CombatDock.TextButton",
               "actionType": "mcp-ui-exploration",
               "effectRequired": true,
-              "attempts": 2
+              "attempts": 1
             }
           }
         ],
@@ -2654,8 +2665,8 @@
           "ROBLOX_OBSERVED_INTERACTION"
         ],
         "robloxFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
-        "testedAt": "2026-09-30T03:42:02.840Z",
-        "workflowRunId": 36664916515,
+        "testedAt": "2026-09-30T05:54:02.086Z",
+        "workflowRunId": 36675059772,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxQualityBuildUpLastPassedAt": "2026-09-28T19:49:57.015Z",
@@ -29490,7 +29501,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-30T05:50:30.901Z",
+  "updatedAt": "2026-09-30T05:54:02.086Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
