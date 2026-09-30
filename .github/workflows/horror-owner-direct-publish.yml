@@ -4,58 +4,108 @@ on:
     branches: [main]
     paths: ['.github/workflows/horror-owner-direct-publish.yml']
 permissions:
-  contents: read
+  contents: write
 concurrency:
   group: horror-owner-direct-publish
   cancel-in-progress: false
 jobs:
-  diagnose:
+  repair:
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: c7500e771da2662b474de96761d454013c3bf045
+          ref: ${{ github.sha }}
           fetch-depth: 1
-      - name: Compile actual server and client without publishing
+      - name: Repair only existing game scope and initialization order
         shell: pwsh
         run: |
           $ErrorActionPreference='Stop'
-          $out=Join-Path $env:RUNNER_TEMP 'horror-diagnose'
+          $out=Join-Path $env:RUNNER_TEMP 'horror-fix'
           New-Item -ItemType Directory -Force $out | Out-Null
           "OWNER_OUT=$out" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
-          Invoke-WebRequest 'https://github.com/luau-lang/luau/releases/download/0.740/luau-windows.zip' -OutFile "$out/luau-windows.zip"
-          if((Get-FileHash "$out/luau-windows.zip" -Algorithm SHA256).Hash.ToLowerInvariant() -ne 'be676d9a1092b3d5ee36be5f5f11e2af1976911c32f5644a052548dc7c66bb9c'){throw 'LUAU_CHECKSUM'}
-          Expand-Archive "$out/luau-windows.zip" "$out/luau" -Force
-          $env:OWNER_LUAU=$out
+          $env:OWNER_OUT=$out
           @'
-          const fs=require('fs'),path=require('path'),cp=require('child_process');
-          const out=process.env.OWNER_LUAU;
-          const dir=path.join(out,'luau');
-          const files=['server/Game.server.luau','client/Game.client.luau','shared/GameConfig.luau','shared/VisualStyle.luau'];
-          for(const relative of files){
-            const file='roblox-games/horror-escape-room/'+relative;
-            const r=cp.spawnSync(path.join(dir,'luau-compile.exe'),['--null',file],{encoding:'utf8',timeout:45000});
-            console.log('LUAU_COMPILE='+JSON.stringify({file,status:r.status,error:String(r.error||''),stdout:r.stdout,stderr:r.stderr}));
-            const a=cp.spawnSync(path.join(dir,'luau-analyze.exe'),[file],{encoding:'utf8',timeout:45000,maxBuffer:10*1024*1024});
-            const log=String(a.stdout||'')+String(a.stderr||'');
-            fs.writeFileSync(path.join(out,path.basename(relative)+'.analyze.txt'),log);
-            for(const line of log.split(/\r?\n/).filter(x=>/Unknown global.*(lobbySurfaceText|teleport|showLobbyDialogue)|register|local variables|SyntaxError/.test(x)))console.log('LUAU_ANALYZE='+line);
+          const fs=require('fs'),path=require('path'),cp=require('child_process'),assert=require('assert/strict');
+          const base='roblox-games/horror-escape-room/';
+          const sf=base+'server/Game.server.luau',cf=base+'client/Game.client.luau';
+          function git(...a){return cp.execFileSync('git',a,{encoding:'utf8'}).trim();}
+          assert.equal(git('rev-parse','HEAD:'+sf),'38589995389ecd13ea84d4d4111f67b20e67b2f8','SERVER_CHANGED_REVIEW_REQUIRED');
+          assert.equal(git('rev-parse','HEAD:'+cf),'35dfe25ac6b65ef26ae32d76102decce3f1c9f01','CLIENT_CHANGED_REVIEW_REQUIRED');
+          let s=fs.readFileSync(sf,'utf8').replace(/\r\n/g,'\n');
+          const original=s;
+          function replaceOne(a,b){assert(s.includes(a),'MISSING:'+a.slice(0,90));s=s.replace(a,b);}
+          function moveBefore(a,b,target){const i=s.indexOf(a),j=s.indexOf(b,i);assert(i>=0&&j>i);const block=s.slice(i,j);s=s.slice(0,i)+s.slice(j);const k=s.indexOf(target);assert(k>=0);s=s.slice(0,k)+block+s.slice(k);}
+          moveBefore('local function lobbySurfaceText(','local function lobbyLampPost(','local function lobbyTerminal(');
+          moveBefore('local function groundedRootTarget(','local function setRole(','local function arenaPart(');
+          let a=s.indexOf('local function arenaPart('),b=s.indexOf('local function clearBots()',a);
+          assert(a>=0&&b>a);let block=s.slice(a,b);
+          for(const n of ['makePhysicalLobby','makeFallbackArena','ensureArena']){assert(block.includes('local function '+n+'('));block=block.replace('local function '+n+'(',n+'=function(');}
+          s=s.slice(0,a)+'-- 월드 생성 전용 지역 범위: 세 진입점만 외부 라운드 흐름에서 사용한다.\nlocal makePhysicalLobby,makeFallbackArena,ensureArena\ndo\n'+block+'end -- 월드 생성 지역 범위\n\n'+s.slice(b);
+          replaceOne('local function teleport(p,pos,lookAtPos)\n local r=root(p);if r then','local function teleport(p,pos,lookAtPos)\n local c=p.Character\n local r=root(p);if r then');
+          replaceOne('  r.CFrame=targetCFrame\n','  r.Anchored=false\n  r.CFrame=targetCFrame\n');
+          replaceOne('   if not rr or not hh or not rr.Parent then return end\n   local corrected=groundedRootTarget(p,pos)','   if p.Character~=c or rr~=r or not rr or not hh or not rr.Parent or lastValidPosition[p]~=target then return end\n   local corrected=groundedRootTarget(p,pos)');
+          replaceOne('    rr.CFrame=correctedCFrame\n','    rr.Anchored=false\n    rr.CFrame=correctedCFrame\n');
+          a=s.indexOf('     local h=hum(player)\n     if rr.Position.Y>20 then');b=s.indexOf('     player:SetAttribute("LobbySafetyRecoveredAt"',a);assert(a>=0&&b>a);
+          s=s.slice(0,a)+'     teleport(player,lobbySpawns[slot],Vector3.new(0,3,210))\n'+s.slice(b);
+          replaceOne('    if rr and(rr.Position.Y<-2','    if rr and player:GetAttribute("RoundState")~="RUNNING"and player:GetAttribute("RoundState")~="SPECTATING"and(rr.Position.Y<-2');
+          replaceOne('NOCTURNE_BOOTSTRAP_SPAWN_20260930','NOCTURNE_BOOT_COMPILE_FIXED_20260930');
+          fs.writeFileSync(sf,s);
+          let client=fs.readFileSync(cf,'utf8').replace(/\r\n/g,'\n');
+          for(const [start,end,n,label] of [
+            ['local loadingLayer=','local function roundify(','loadingFill','로딩 화면 생성'],
+            ['local motionHumanoid=','local chaseTint=','setMotionImpulse','캐릭터 동작'],
+            ['local surpriseArena=','-- 실제 플레이 좌표를 보여주는 소형 미니맵','ghostCatalogItem','로컬 놀람 연출']
+          ]){
+            const i=client.indexOf(start),j=client.indexOf(end,i);assert(i>=0&&j>i);
+            let section=client.slice(i,j);
+            if(section.includes('local function '+n+'('))section=section.replace('local function '+n+'(',n+'=function(');
+            else {assert(section.includes('local '+n+'='));section=section.replace('local '+n+'=',n+'=');}
+            client=client.slice(0,i)+'-- '+label+' 전용 지역 범위: 생성용 변수가 파일 전체에 누적되지 않는다.\nlocal '+n+'\ndo\n'+section+'end -- '+label+' 지역 범위\n\n'+client.slice(j);
           }
-          console.log('STUDIO_TOOLS='+JSON.stringify(fs.readdirSync('tools').filter(x=>/roblox/.test(x)&&/studio|actual|runtime|preflight/.test(x))));
+          fs.writeFileSync(cf,client);
+          const exe=path.join(process.env.RUNNER_TEMP,'horror-diagnose','luau','luau-compile.exe');
+          for(const f of [sf,cf,...fs.readdirSync(base+'shared').filter(x=>/\.luau?$/.test(x)).map(x=>base+'shared/'+x)]){
+            const r=cp.spawnSync(exe,['--null',f],{encoding:'utf8',timeout:45000});
+            console.log('COMPILE='+JSON.stringify({file:f,status:r.status,stdout:r.stdout,stderr:r.stderr}));assert.equal(r.status,0,'COMPILE_FAILED:'+f);
+          }
+          const allowed=new Set(['game','workspace','Instance','Enum','Vector3','Vector2','Color3','CFrame','RaycastParams','TweenInfo','UDim','UDim2','NumberRange','NumberSequence','NumberSequenceKeypoint','task','warn']);
+          for(const f of [sf,cf]){
+            const r=cp.spawnSync(exe.replace('luau-compile.exe','luau-analyze.exe'),[f],{encoding:'utf8',timeout:45000,maxBuffer:20*1024*1024});
+            const log=String(r.stdout||'')+String(r.stderr||'');
+            assert(!r.error,'ANALYZER_FAILED');
+            const unknown=[...log.matchAll(/Unknown global '([^']+)'/g)].map(x=>x[1]).filter(x=>!allowed.has(x));
+            console.log('UNRESOLVED_GAME_GLOBALS='+JSON.stringify({file:f,names:[...new Set(unknown)]}));assert.equal(unknown.length,0);
+          }
+          for(const name of ['startRound','endRound','save','load','infectAttack','purify']){
+            function blockOf(text){const start=text.indexOf('local function '+name+'(');assert(start>=0);const end=text.indexOf('\nlocal ',start+1);return text.slice(start,end<0?text.length:end);}
+            assert.equal(blockOf(s),blockOf(original),'GAMEPLAY_CHANGED:'+name);
+          }
+          console.log('CORE_GAMEPLAY_SAVE_UNCHANGED=PASS');
+          const t=fs.readFileSync('tools/company-development-roblox-studio-local-play.mjs','utf8');
+          console.log('STUDIO_EXPORTS='+JSON.stringify([...t.matchAll(/^export (?:async )?(?:function|class) ([\w]+)/gm)].map(m=>m[1]).filter(x=>/Mcp|Studio|Transport|Client|run/i.test(x))));
+          fs.writeFileSync(path.join(process.env.OWNER_OUT,'repair.diff'),cp.execFileSync('git',['diff','--',sf,cf],{encoding:'utf8'}));
           '@ | node
-          if($LASTEXITCODE -ne 0){throw 'DIAGNOSE_NODE_FAILED'}
-          Get-Process -Name 'RobloxStudioBeta' -ErrorAction SilentlyContinue | Select-Object Id,ProcessName,StartTime | Format-Table
-          Invoke-WebRequest 'https://github.com/luau-lang/luau/releases/download/0.740/luau-ubuntu.zip' -OutFile "$out/luau-ubuntu.zip"
-          if((Get-FileHash "$out/luau-ubuntu.zip" -Algorithm SHA256).Hash.ToLowerInvariant() -ne '7d4035db01816f977f6e4c42e3d5e8ef4235d95e9afe63a3c38905b42dde60f2'){throw 'LUAU_LINUX_CHECKSUM'}
-          Write-Host 'DIAGNOSIS_ONLY_NO_PUBLISH'
+          if($LASTEXITCODE -ne 0){throw 'REPAIR_VALIDATION_FAILED'}
+          git diff --check
+          if($LASTEXITCODE -ne 0){throw 'DIFF_CHECK_FAILED'}
+          git config user.name 'hans1177'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -- roblox-games/horror-escape-room/server/Game.server.luau roblox-games/horror-escape-room/client/Game.client.luau
+          git commit -m 'fix(horror): 서버·화면 컴파일 한도와 로비 초기화 순서 복구'
+          if($LASTEXITCODE -ne 0){throw 'COMMIT_FAILED'}
+          git push origin HEAD:main
+          if($LASTEXITCODE -ne 0){throw 'MAIN_ADVANCED_REVIEW_REQUIRED'}
+          Write-Host "REPAIR_COMMIT=$(git rev-parse HEAD)"
+          Write-Host 'COMPILE_VERIFIED_RUNTIME_NOT_YET_OBSERVED'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: horror-diagnose
+          name: horror-fix
           path: |
-            roblox-games/horror-escape-room
-            qa/horror-escape-room-release.test.mjs
-            ${{ env.OWNER_OUT }}/luau-ubuntu.zip
-            ${{ env.OWNER_OUT }}/*.analyze.txt
+            roblox-games/horror-escape-room/server/Game.server.luau
+            roblox-games/horror-escape-room/client/Game.client.luau
+            tools/company-development-roblox-studio-local-play.mjs
+            tools/company-development-roblox-runtime-smoke.luau
+            ${{ env.OWNER_OUT }}/repair.diff
           retention-days: 1
