@@ -70,12 +70,13 @@ permissions:
   contents: write
   actions: write
 
-# Coalesce duplicate refill control events only within the same execution lane.
+# Coalesce only stateless fan-in refill events by execution lane.
+# Result-bearing neuron completions stay run-unique so no completion artifact can be dropped.
 # GAME_PRIMARY must never wait behind recovery-fast, learning-idle or control-fast refill work.
 concurrency:
   # Only a direct main push without an explicit lane uses the disposable main-wake singleton.
   # Learning uses one shared execution group; other explicit lanes remain run-scoped.
-  group: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && 'vibe2-learning-single-worker' || github.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake' || github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && 'vibe2-main-push-game-primary-wake' || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
+  group: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && 'vibe2-learning-single-worker' || github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-refill-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || github.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake' || github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && 'vibe2-main-push-game-primary-wake' || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
   cancel-in-progress: false
 
 env:
@@ -99,9 +100,9 @@ env:
 
 jobs:
   reserve:
-    # Lightweight reserve stays on slim for every lane; pressure-driven fan-in refill keeps the ARM bypass.
-    # Heavy game workers remain on their existing execution pools.
-    runs-on: ${{ (github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && 'ubuntu-24.04-arm' || 'ubuntu-slim') }}
+    # Result callbacks and stateless refills use the ARM control pool so ubuntu-slim reserve pressure cannot delay fan-in.
+    # Push/manual reserve stays on slim; heavy game workers remain on their existing execution pools.
+    runs-on: ${{ (github.event_name == 'repository_dispatch' && (github.event.action == 'vibe2-fanin-refill' || github.event.action == 'vibe2-neuron-complete') && 'ubuntu-24.04-arm' || 'ubuntu-slim') }}
     timeout-minutes: 7
     # 같은 레인의 상태 없는 보충 요청만 예약 단계에서 합친다.
     # 완료 결과 전달과 게임 작업은 실행별로 독립 진행한다.
