@@ -401,8 +401,9 @@ jobs:
               verifiedAt:stamp,
             };
             const releaseReadiness=evaluateInternalRelease(item,'ROBLOX',releasePolicy);
-            const serverPublishEligible=releaseReadiness.ready;
-            item.robloxInternalReleaseReady=serverPublishEligible;
+            const ownerExcludedGameIds=new Set(releasePolicy.developmentSpeedExecution?.perGameFailureIsolation?.ownerExcludedGameIds||[]);
+            const serverPublishRequired=!ownerExcludedGameIds.has(item.gameId);
+            item.robloxInternalReleaseReady=releaseReadiness.ready;
             item.robloxInternalReleasePublished=false;
             item.robloxInternalReleaseAt=null;
             item.robloxF9VerifiedPrepublishEvidence={
@@ -420,7 +421,7 @@ jobs:
               internalStudioValidationOnly:internalStudioValidationAccepted,
               runtimeAcceptancePassed:internalRuntimeAcceptance,
               studioAssetRuntimeBindingPassed:studioAssetRuntimeBindingExact,
-              canonicalPublishRequired:serverPublishEligible,
+              canonicalPublishRequired:serverPublishRequired,
               canonicalPublishCompleted:false,
               authority:'roblox-f9-verified-prepublish-gate',
               verifiedAt:stamp,
@@ -428,7 +429,7 @@ jobs:
             const publishCycleId=sourceRevision+':'+artifactIdentity;
             const publishQueue=Array.isArray(item.robloxCanonicalPublishQueue)?item.robloxCanonicalPublishQueue:[];
             const f0Snapshot=JSON.parse(JSON.stringify(item.robloxFoundationF0Evidence||{}));
-            if(serverPublishEligible&&!publishQueue.some(row=>row?.cycleId===publishCycleId)){
+            if(serverPublishRequired&&!publishQueue.some(row=>row?.cycleId===publishCycleId)){
               publishQueue.push({
                 version:1,
                 cycleId:publishCycleId,
@@ -453,7 +454,7 @@ jobs:
               });
             }
             item.robloxCanonicalPublishQueue=publishQueue;
-            item.robloxCanonicalPublishPending=serverPublishEligible;
+            item.robloxCanonicalPublishPending=serverPublishRequired;
             item.robloxInternalReleaseEvidence=null;
             item.robloxReleaseEvidence=null;
             item.robloxReleaseVersionNumber=null;
@@ -464,8 +465,8 @@ jobs:
             item.robloxPublicReleaseEvidence=null;
             item.robloxPromotionBlockers=[];
             item.currentStep='POST_F9_CONTINUOUS_EVOLUTION';
-            item.canonicalState=serverPublishEligible?'F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION':'F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION';
-            console.log('ROBLOX_F9_SERVER_PUBLICATION='+item.gameId+':'+(serverPublishEligible?'ELIGIBLE':'SKIPPED_DEVELOPMENT'));
+            item.canonicalState=serverPublishRequired?'F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION':'F9_VERIFIED_OWNER_EXCLUDED_CONTINUOUS_EVOLUTION';
+            console.log('ROBLOX_F9_SERVER_PUBLICATION='+item.gameId+':'+(serverPublishRequired?'EXACT_F9_REQUIRED':'SKIPPED_OWNER_EXCLUDED'));
             item.robloxLastSuccessfulStage='F9_RELEASE_REGRESSION';
             item.robloxFailureStage=null;
             item.robloxFailureSignature=null;
@@ -674,13 +675,13 @@ jobs:
           git -C runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
           mapfile -t rows < <(REQUESTED_GAME_ID="$REQUESTED_GAME_ID" node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import {evaluateInternalRelease} from './main/tools/company-platform-exposure-control.mjs';
           const releasePolicy=JSON.parse(fs.readFileSync('main/company-learning/platform-release-roadmap.json','utf8'));
+          const ownerExcludedGameIds=new Set(releasePolicy.developmentSpeedExecution?.perGameFailureIsolation?.ownerExcludedGameIds||[]);
           const q=JSON.parse(fs.readFileSync('runtime/development-queue.json','utf8'));
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           for(const item of q.items||[]){
             if(requested&&item.gameId!==requested)continue;
-            if(!evaluateInternalRelease(item,'ROBLOX',releasePolicy).ready)continue;
+            if(ownerExcludedGameIds.has(item.gameId))continue;
             for(const row of item.robloxCanonicalPublishQueue||[]){
               if(!['PENDING','RETRY_REQUIRED'].includes(String(row?.status||'')))continue;
               if(row.finalReviewPassed!==true||row.f9ReleaseRegressionPassed!==true)continue;

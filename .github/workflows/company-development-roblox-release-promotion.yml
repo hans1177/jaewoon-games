@@ -312,10 +312,10 @@ jobs:
           const artifact=String(publishStage==='final'?finalEntry.artifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
           const sourceRoot=String(item.robloxProjectPath||item.targetSourcePath||'').replace(/^\/+|\/+$/g,'');
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-          const {evaluateInternalRelease}=await import('./tools/company-platform-exposure-control.mjs');
-          if(publishStage==='final'&&!evaluateInternalRelease(item,'ROBLOX',roadmap).ready){
-            put('skip','true');put('skip_reason','development-game-server-publication-forbidden');
-            console.log('ROBLOX_SERVER_PUBLICATION=SKIPPED_DEVELOPMENT');process.exit(0);
+          const ownerExcludedGameIds=new Set(roadmap.developmentSpeedExecution?.perGameFailureIsolation?.ownerExcludedGameIds||[]);
+          if(publishStage==='final'&&ownerExcludedGameIds.has(gameId)){
+            put('skip','true');put('skip_reason','owner-excluded-game');
+            console.log('ROBLOX_SERVER_PUBLICATION=SKIPPED_OWNER_EXCLUDED');process.exit(0);
           }
           const canonicalRobloxValidationMode=String(roadmap?.roblox?.validationMode||'').trim().toUpperCase();
           const f0Evidence=publishStage==='final'?(finalEntry.f0Evidence||{}):(item.robloxFoundationF0Evidence||{});
@@ -913,9 +913,7 @@ jobs:
             const currentIdentityStillSame=
               String(item.robloxSourceCommit||'')===String(process.env.SOURCE_REVISION||'')
               &&String(item.robloxBuildArtifactIdentity||'')===String(process.env.ARTIFACT_IDENTITY||'');
-            if(currentIdentityStillSame){
-              item.robloxInternalReleaseReady=true;
-            }
+            console.log('ROBLOX_CANONICAL_SERVER_PUBLISH_CURRENT_IDENTITY='+(currentIdentityStillSame?'YES':'NO'));
             item.updatedAt=stamp;q.updatedAt=stamp;
             fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
             console.log('ROBLOX_CANONICAL_FINAL_PUBLISH=PASS');
