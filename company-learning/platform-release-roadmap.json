@@ -1,5 +1,5 @@
 {
-  "version": 500,
+  "version": 501,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -9408,7 +9408,7 @@
     },
     "ownerExclusiveDirectDevelopment20260930": {
       "authority": "OWNER_DIRECTIVE_2026-09-30",
-      "status": "ACTIVE",
+      "status": "SUPERSEDED_BY_OWNER_SCOPE_RELEASE_2026-10-01",
       "reason": "OWNER_REQUESTED_EXCLUSIVE_DIRECT_DEVELOPMENT_FOR_HORROR_ESCAPE_ROOM_AND_EXPLICITLY_FORBADE_VIBE_GAME_SOURCE_MUTATION",
       "gameId": "horror-escape-room",
       "gameSource": "roblox-games/horror-escape-room",
@@ -9433,7 +9433,10 @@
         "releasedCycle": "F0_TO_F9_THEN_CANONICAL_SERVER_PUBLISH_THEN_REPEAT",
         "developmentCycle": "F0_TO_F9_THEN_REPEAT_WITHOUT_CANONICAL_SERVER_PUBLISH",
         "externalPublicExposureGateUnchanged": true
-      }
+      },
+      "releasedAt": "2026-10-01",
+      "releaseAuthority": "OWNER_DIRECTIVE_2026-10-01",
+      "resumeMode": "RETURN_HORROR_ESCAPE_ROOM_TO_SHARED_PERPETUAL_F0_F9"
     }
   },
   "vibeExecutionLaneContract": {
@@ -21050,14 +21053,12 @@
     "ownerExclusiveDevelopment": {
       "version": 1,
       "authority": "OWNER_DIRECTIVE_2026-09-30",
-      "status": "ACTIVE",
+      "status": "INACTIVE_OWNER_RELEASED",
       "mode": "OWNER_EXCLUSIVE_DIRECT_DEVELOPMENT",
       "scope": "EXPLICIT_GAME_IDS_ONLY",
-      "gameIds": [
-        "horror-escape-room"
-      ],
+      "gameIds": [],
       "sourceOfTruth": "company-learning/platform-release-roadmap.json#ownerCanonicalRules.ownerExclusiveDevelopment",
-      "objective": "OWNER_DIRECTED_GAME_SOURCE_IS_IMPLEMENTED_DIRECTLY_BY_THE_ASSISTANT_WITHOUT_VIBE_GAME_SOURCE_MUTATION_OR_VIBE_QUEUE_OWNERSHIP_FOR_THE_EXPLICITLY_SCOPED_GAME",
+      "objective": "NO_ACTIVE_OWNER_EXCLUSIVE_GAME_SCOPE; RELEASED_GAMES_RETURN_TO_SHARED_CONTINUOUS_F0_F9_DEVELOPMENT_WITH_EXISTING_GAMEPLAY_SAVE_AND_RELEASE_GATES_PRESERVED",
       "rules": {
         "ownerExplicitInstructionRequired": true,
         "ownerInstructionIsScopeAuthority": true,
@@ -21101,7 +21102,7 @@
       ],
       "handoff": {
         "authority": "OWNER_DIRECTIVE_2026-09-30",
-        "scope": "PER_GAME",
+        "scope": "NONE_ACTIVE",
         "otherGamesContinue": true,
         "resumeTrigger": "EXPLICIT_OWNER_SCOPE_RELEASE",
         "idleTimeoutNeverTransfersOwnership": true,
@@ -21112,8 +21113,17 @@
           "SINGLE_AND_BATCH_RESERVATION",
           "PRE_SOURCE_GENERATION",
           "PRE_CANDIDATE_WRITE"
-        ]
-      }
+        ],
+        "ownerScopeReleased": true,
+        "ownerScopeReleasedAt": "2026-10-01",
+        "ownerScopeReleaseAuthority": "OWNER_DIRECTIVE_2026-10-01"
+      },
+      "releasedGameIds": [
+        "horror-escape-room"
+      ],
+      "releasedAt": "2026-10-01",
+      "releaseAuthority": "OWNER_DIRECTIVE_2026-10-01",
+      "resumeMode": "RETURN_TO_SHARED_PERPETUAL_F0_F9"
     }
   },
   "planningGrowthMarketingDepartment": {
