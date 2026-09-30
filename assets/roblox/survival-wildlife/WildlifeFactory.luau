@@ -255,6 +255,39 @@ local function addHump(model, chest, skin)
 	weld(chest, hump, CFrame.new(0, chest.Size.Y * 0.38, chest.Size.Z * 0.04))
 end
 
+local function addBearCharacterDetails(model, body, chest, head, muzzle, skin)
+	local belly = smoothPart("Belly", Vector3.new(body.Size.X * 0.82, body.Size.Y * 0.70, body.Size.Z * 0.64), skin.chest, "BALL")
+	belly.Parent = model
+	motor(body, belly, "BellyJoint", CFrame.new(0, -body.Size.Y * 0.18, body.Size.Z * 0.12))
+
+	local rump = smoothPart("Rump", Vector3.new(body.Size.X * 0.84, body.Size.Y * 0.76, body.Size.Z * 0.56), skin.body, "BALL")
+	rump.Parent = model
+	motor(body, rump, "RumpJoint", CFrame.new(0, 0, body.Size.Z * 0.34))
+
+	local ruff = smoothPart("ChestRuff", Vector3.new(chest.Size.X * 0.78, chest.Size.Y * 0.46, chest.Size.Z * 0.42), skin.light, "BALL")
+	ruff.Parent = model
+	motor(chest, ruff, "ChestRuffJoint", CFrame.new(0, -chest.Size.Y * 0.18, -chest.Size.Z * 0.34))
+
+	for _, side in ipairs({ -1, 1 }) do
+		local suffix = side < 0 and "L" or "R"
+		local eyeWhite = smoothPart("EyeWhite" .. suffix, Vector3.new(0.30, 0.25, 0.12), Color3.fromRGB(214, 196, 166), "BALL")
+		eyeWhite.Parent = model
+		weld(head, eyeWhite, CFrame.new(side * head.Size.X * 0.32, head.Size.Y * 0.15, -head.Size.Z * 0.44))
+
+		local cheek = smoothPart("Cheek" .. suffix, Vector3.new(head.Size.X * 0.34, head.Size.Y * 0.30, head.Size.Z * 0.26), skin.chest, "BALL")
+		cheek.Parent = model
+		motor(head, cheek, "Cheek" .. suffix .. "Joint", CFrame.new(side * head.Size.X * 0.30, -head.Size.Y * 0.10, -head.Size.Z * 0.35))
+
+		local brow = smoothPart("Brow" .. suffix, Vector3.new(head.Size.X * 0.24, head.Size.Y * 0.08, head.Size.Z * 0.10), skin.dark, "BALL")
+		brow.Parent = model
+		motor(head, brow, "Brow" .. suffix .. "Joint", CFrame.new(side * head.Size.X * 0.30, head.Size.Y * 0.34, -head.Size.Z * 0.43) * CFrame.Angles(0, 0, math.rad(side * 8)))
+	end
+
+	local muzzleTop = smoothPart("MuzzleTop", Vector3.new(muzzle.Size.X * 0.88, muzzle.Size.Y * 0.62, muzzle.Size.Z * 0.72), skin.light, "BALL")
+	muzzleTop.Parent = model
+	weld(muzzle, muzzleTop, CFrame.new(0, muzzle.Size.Y * 0.08, -muzzle.Size.Z * 0.06))
+end
+
 function Factory.create(speciesName, skinName)
 	local key = string.upper(tostring(speciesName or "BEAR"))
 	local cfg = Catalog.getSpecies(key) or Catalog.getSpecies("BEAR")
@@ -326,6 +359,9 @@ function Factory.create(speciesName, skinName)
 	addEye(model, head, -1, skinData, cfg.head)
 	addEye(model, head, 1, skinData, cfg.head)
 	addNose(model, muzzle, skinData, cfg.muzzle)
+	if key == "BEAR" then
+		addBearCharacterDetails(model, body, chest, head, muzzle, skinData)
+	end
 	addEar(model, head, "EarL", -1, cfg.ear, skinData, cfg.head)
 	addEar(model, head, "EarR", 1, cfg.ear, skinData, cfg.head)
 	addTail(model, body, cfg, skinData)
