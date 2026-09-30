@@ -9,6 +9,7 @@ local AssetService=game:GetService("AssetService")
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
 local Style=require(Shared:WaitForChild("VisualStyle"))
+local Wildlife=require(Shared:WaitForChild("SurvivalWildlife"))
 local BattleVisual=require(script.Parent:WaitForChild("BattleVisual"))
 
 local store
@@ -28,6 +29,7 @@ local world
 local foundationSpawn
 local lastRequest,battling,gatherCooldown,qaCaptureLast,movementProbeStart={},{},{},{},{}
 local mobs={}
+local villageBears={}
 local assetCache={}
 local dataLoaded={}
 local ASSETS={Nature=6933438443,City=6933556508,Forest=6432306802}
@@ -182,6 +184,17 @@ end
 
 local function gather(p,key,amount,text)
  local now=os.clock();gatherCooldown[p]=gatherCooldown[p]or{};local last=gatherCooldown[p][key]or 0
+ for index=#villageBears,1,-1 do
+  local entry=villageBears[index]
+  local bear=entry.model
+  if not bear or not bear.Parent or not bear.PrimaryPart then table.remove(villageBears,index)
+  else
+   local angle=now*entry.angular+entry.phase
+   local pos=entry.center+Vector3.new(math.cos(angle)*entry.radiusX,0,math.sin(angle)*entry.radiusZ)
+   local tangent=Vector3.new(-math.sin(angle)*entry.radiusX,0,math.cos(angle)*entry.radiusZ)
+   if tangent.Magnitude>.001 then bear:PivotTo(CFrame.lookAt(pos,pos+tangent.Unit))else bear:PivotTo(CFrame.new(pos))end
+  end
+ end
  if now-last<C.GatherCooldownSeconds then return end;gatherCooldown[p][key]=now
  s(p,key,n(p,key,0)+amount);msg(p,text.." +"..amount);feedback(p,"RESOURCE")
 end
@@ -284,6 +297,34 @@ local function spawnMob(kind,pos)
  return e
 end
 
+local VILLAGE_BEAR_COUNT=5
+local VILLAGE_BEAR_SKINS={"DARK_BROWN","BLACK","CINNAMON","DARK_BROWN","BLACK"}
+
+local function spawnVillageBear(parent,index,topY)
+ local angle=(index-1)/VILLAGE_BEAR_COUNT*math.pi*2
+ local center=Vector3.new(63,topY+3.25,35)
+ local radiusX=20+(index%2)*4
+ local radiusZ=15+((index+1)%2)*3
+ local pos=center+Vector3.new(math.cos(angle)*radiusX,0,math.sin(angle)*radiusZ)
+ local bear=Wildlife.Spawn("BEAR",VILLAGE_BEAR_SKINS[index],CFrame.new(pos),parent)
+ bear.Name="VillageBear"..index
+ bear:SetAttribute("CozyVillageBear",true)
+ bear:SetAttribute("NonHostile",true)
+ bear:SetAttribute("VillageBearIndex",index)
+ Wildlife.SetDesiredSpeed(bear,4.8+(index-1)*.45)
+ Wildlife.SetMotionState(bear,"LOCOMOTION")
+ table.insert(villageBears,{model=bear,center=center,radiusX=radiusX,radiusZ=radiusZ,phase=angle,angular=.14+index*.012})
+ return bear
+end
+
+local function spawnVillageBears(parent,topY)
+ table.clear(villageBears)
+ local folder=Instance.new("Folder");folder.Name="VillageWildlife";folder.Parent=parent
+ for index=1,VILLAGE_BEAR_COUNT do spawnVillageBear(folder,index,topY)end
+ workspace:SetAttribute("VillageBearCount",VILLAGE_BEAR_COUNT)
+ workspace:SetAttribute("VillageWildlifeAnimated",true)
+end
+
 local function buildWorld()
 
 task.spawn(function()
@@ -316,26 +357,27 @@ end)
   if index~=1 then decorateRemoteIsland(world,r,topY,index)end
   if index==1 then
    foundationSpawn=Instance.new("SpawnLocation");foundationSpawn.Name="FoundationSpawn";foundationSpawn.Size=Vector3.new(12,1,12);foundationSpawn.Anchored=true;foundationSpawn.Neutral=true;foundationSpawn.CanCollide=true;foundationSpawn.Transparency=1;foundationSpawn.Position=Vector3.new(0,topY+1.5,18);foundationSpawn.Parent=world
-   part(world,"BeachShelf",Vector3.new(196,1.6,196),Vector3.new(0,seaLevel-12,0),Color3.fromRGB(220,203,151),Enum.Material.Sand)
-   part(world,"VillagePlaza",Vector3.new(60,1,60),Vector3.new(0,topY+.55,4),Color3.fromRGB(166,154,128),Enum.Material.Cobblestone)
-   part(world,"FarmPlot",Vector3.new(38,1,28),Vector3.new(-36,topY+.7,-31),Color3.fromRGB(116,91,56),Enum.Material.Ground)
-   part(world,"BarracksYard",Vector3.new(40,1,30),Vector3.new(39,topY+.65,-29),Color3.fromRGB(132,121,103),Enum.Material.Cobblestone)
+   part(world,"BeachShelf",Vector3.new(216,1.6,216),Vector3.new(0,seaLevel-12,0),Color3.fromRGB(220,203,151),Enum.Material.Sand)
+   part(world,"VillagePlaza",Vector3.new(104,1,92),Vector3.new(0,topY+.55,4),Color3.fromRGB(166,154,128),Enum.Material.Cobblestone)
+    part(world,"VillageGreen",Vector3.new(76,1,58),Vector3.new(62,topY+.58,36),Color3.fromRGB(132,181,108),Enum.Material.Grass)
+   part(world,"FarmPlot",Vector3.new(46,1,34),Vector3.new(-56,topY+.7,-42),Color3.fromRGB(116,91,56),Enum.Material.Ground)
+   part(world,"BarracksYard",Vector3.new(48,1,36),Vector3.new(57,topY+.65,-40),Color3.fromRGB(132,121,103),Enum.Material.Cobblestone)
    part(world,"Dock",Vector3.new(18,2,38),Vector3.new(0,topY-1,78),Color3.fromRGB(125,89,56),Enum.Material.WoodPlanks)
    for _,x in ipairs({-7,7})do for _,z in ipairs({62,78,94})do part(world,"DockPost",Vector3.new(1.2,7,1.2),Vector3.new(x,topY-4,z),Color3.fromRGB(91,63,42),Enum.Material.Wood)end end
    local boat=part(world,"VillageBoat",Vector3.new(9,1.4,15),Vector3.new(23,topY-4.2,82),Color3.fromRGB(116,78,49),Enum.Material.WoodPlanks);boat.Orientation=Vector3.new(0,18,4);boat.CanCollide=false
-   for _,x in ipairs({-72,-54,-36,-18,0,18,36,54,72})do part(world,"Path",Vector3.new(12,.5,6),Vector3.new(x,topY+.5,0),Color3.fromRGB(174,165,139),Enum.Material.Cobblestone)end
-   for _,z in ipairs({-66,-44,-22,22,44,66})do part(world,"Path",Vector3.new(6,.5,12),Vector3.new(0,topY+.5,z),Color3.fromRGB(174,165,139),Enum.Material.Cobblestone)end
+   for _,x in ipairs({-90,-72,-54,-36,-18,0,18,36,54,72,90})do part(world,"Path",Vector3.new(12,.5,6),Vector3.new(x,topY+.5,0),Color3.fromRGB(174,165,139),Enum.Material.Cobblestone)end
+   for _,z in ipairs({-84,-66,-44,-22,22,44,66,84})do part(world,"Path",Vector3.new(6,.5,12),Vector3.new(0,topY+.5,z),Color3.fromRGB(174,165,139),Enum.Material.Cobblestone)end
 
    local forest=Instance.new("Folder");forest.Name="ManualGatherForest";forest.Parent=world
    for i=1,14 do
-    local x=-72+((i-1)%4)*18;local z=18+math.floor((i-1)/4)*17
+    local x=-90+((i-1)%4)*19;local z=24+math.floor((i-1)/4)*18
     local trunk=tree(forest,Vector3.new(x,topY,z),.72+(i%3)*.08);trunk.Name="WoodNode"..i;label(trunk,"나무",Color3.fromRGB(200,238,188),18)
     prompt(trunk,"나무","벌목").Triggered:Connect(function(p)gather(p,"Wood",C.ManualGatherAmount,"벌목")end)
    end
    local farm=Instance.new("Folder");farm.Name="ManualGatherFarm";farm.Parent=world
    for i=1,10 do
     local row=math.floor((i-1)/5);local col=(i-1)%5
-    local crop=part(farm,"FoodNode"..i,Vector3.new(5,2.4,5),Vector3.new(-52+col*8,topY+1.9,-38+row*12),Color3.fromRGB(127,182,72),Enum.Material.Grass)
+    local crop=part(farm,"FoodNode"..i,Vector3.new(5,2.4,5),Vector3.new(-70+col*9,topY+1.9,-48+row*14),Color3.fromRGB(127,182,72),Enum.Material.Grass)
     crop.Shape=Enum.PartType.Ball;label(crop,"작물",Color3.fromRGB(231,242,163),17)
     prompt(crop,"작물","수확").Triggered:Connect(function(p)gather(p,"Food",C.ManualGatherAmount,"수확")end)
    end
@@ -346,9 +388,10 @@ end)
    local lumber=figure(npcs,"LumberMaster",Vector3.new(-32,topY+6,14),Color3.fromRGB(86,126,78),Color3.fromRGB(67,76,58),.9);label(lumber,"벌목반장",Color3.fromRGB(202,239,189),26);prompt(lumber,"벌목반장","주민 배치").Triggered:Connect(function(p)job(p,"WoodWorkers")end)
    local farmer=figure(npcs,"Farmer",Vector3.new(-30,topY+6,-12),Color3.fromRGB(168,139,73),Color3.fromRGB(83,76,55),.9);label(farmer,"농장주",Color3.fromRGB(242,226,151),26);prompt(farmer,"농장주","주민 배치").Triggered:Connect(function(p)job(p,"Farmers")end)
    local captain=figure(npcs,"Captain",Vector3.new(36,topY+6,-12),Color3.fromRGB(111,87,75),Color3.fromRGB(68,66,70),.95);label(captain,"병영대장",Color3.fromRGB(235,194,153),26);prompt(captain,"병영대장","병영 강화").Triggered:Connect(barracks)
-   for i=1,5 do local a=i/5*math.pi*2;local vill=figure(npcs,"Villager"..i,Vector3.new(math.cos(a)*24,topY+6,28+math.sin(a)*17),Color3.fromRGB(100+i*9,120+i*5,93+i*4),Color3.fromRGB(65,70,61),.78);label(vill,"주민",Color3.fromRGB(235,238,225),18)end
+   for i=1,5 do local a=i/5*math.pi*2;local vill=figure(npcs,"Villager"..i,Vector3.new(math.cos(a)*31,topY+6,27+math.sin(a)*22),Color3.fromRGB(100+i*9,120+i*5,93+i*4),Color3.fromRGB(65,70,61),.78);label(vill,"주민",Color3.fromRGB(235,238,225),18)end
 
-   for i=1,5 do spawnMob("BOAR",Vector3.new(-58+i*18,topY+4,62+(i%2)*8))end
+    spawnVillageBears(world,topY)
+   for i=1,5 do spawnMob("BOAR",Vector3.new(-72+i*20,topY+4,78+(i%2)*8))end
    for i=1,3 do spawnMob("RAIDER",Vector3.new(42+i*11,topY+5,46+(i%2)*14))end
   elseif index==2 then
    for i=1,18 do local a=i/18*math.pi*2;rock(world,r.Pos+Vector3.new(math.cos(a)*40,topY-r.Pos.Y,math.sin(a)*40),.7+(i%3)*.14,Color3.fromRGB(86,91,101))end
@@ -366,7 +409,7 @@ end)
    for i=1,8 do part(world,"SulfurVent",Vector3.new(4,8,4),Vector3.new(r.Pos.X-40+i*10,topY+4,r.Pos.Z+28),Color3.fromRGB(239,163,53),Enum.Material.Neon)end
   end
  end
- workspace:SetAttribute("WorldArtPass","COZY_CHIBI_KINGDOM_WORLD_V8")
+ workspace:SetAttribute("WorldArtPass","COZY_CHIBI_KINGDOM_WORLD_V9_WILDLIFE")
  foundationCheckpoint("WORLD_READY",nil,{worldReady=true})
  if foundationSpawn and foundationSpawn.Parent then foundationCheckpoint("SPAWN_READY",nil,{spawnY=foundationSpawn.Position.Y})end
 end
