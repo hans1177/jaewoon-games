@@ -505,3 +505,23 @@ test('대기 로비 캐릭터도 인원수와 관계없이 실제 바닥 스냅�
  assert.match(block,/table\.sort\(players/);
  assert.match(block,/teleport\(p,survivorSpawns\[slot\]\)/);
 });
+
+
+test('홈페이지와 방 시스템은 하나의 Roblox Place만 사용한다',()=>{
+ const homepage=fs.readFileSync('homepage-platform-exposure.json','utf8');
+ const place='98222620265768';
+ assert.match(homepage,new RegExp('"gameId":\\s*"horror-escape-room"[\\s\\S]{0,1800}"placeId":\\s*"'+place+'"'));
+ assert.match(homepage,new RegExp('"internalUrl":\\s*"https://www\\.roblox\\.com/games/'+place+'"'));
+ assert.match(server,/ReserveServerAsync\(game\.PlaceId\)/);
+ assert.match(server,/TeleportService:TeleportAsync\(game\.PlaceId/);
+ assert.doesNotMatch(server,/ReserveServerAsync\((?!game\.PlaceId)/);
+});
+
+test('안전 스폰은 상호작용 오브젝트와 분리되고 바닥만 착지 대상으로 사용한다',()=>{
+ const spawnBlock=server.slice(server.indexOf('local survivorSpawns={'),server.indexOf('local assetCache={}'));
+ assert.match(spawnBlock,/Vector3\.new\(-5,3,54\)/);
+ assert.doesNotMatch(spawnBlock,/-118,3,-70|118,3,-70|-108,3,104|108,3,104/);
+ assert.match(server,/SetAttribute\("WalkableGround",true\)/);
+ assert.match(server,/FilterType=Enum\.RaycastFilterType\.Include/);
+ assert.match(server,/d:GetAttribute\("WalkableGround"\)==true/);
+});
