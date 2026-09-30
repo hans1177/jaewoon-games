@@ -448,6 +448,28 @@ test('planner exposes automatic motion gap audits for bootstrap sets',async()=>{
 });
 
 
+test('asset planner auto-detects requested duel weapon and martial style',async()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
+  const unarmed=buildVibeAssetProductionPlan({
+    task:{gameId:'motion-auto-test',goal:'맨손 무에타이 결투 전투 모션 추가'},
+    target:'roblox',
+    repoRoot:path.resolve(here,'..')
+  });
+  assert.equal(unarmed.companyGraphicsLibrary.duelCombatMotion.requested,true);
+  assert.equal(unarmed.companyGraphicsLibrary.duelCombatMotion.requestedWeaponFamily,'UNARMED');
+  assert.equal(unarmed.companyGraphicsLibrary.duelCombatMotion.requestedMartialStyle,'MUAY_THAI');
+
+  const katana=buildVibeAssetProductionPlan({
+    task:{gameId:'motion-auto-test',goal:'카타나 대전 모션 적용'},
+    target:'roblox',
+    repoRoot:path.resolve(here,'..')
+  });
+  assert.equal(katana.companyGraphicsLibrary.duelCombatMotion.requested,true);
+  assert.equal(katana.companyGraphicsLibrary.duelCombatMotion.requestedWeaponFamily,'KATANA');
+  assert.equal(katana.companyGraphicsLibrary.duelCombatMotion.requestedMartialStyle,null);
+});
+
 test('transition director scores smooth transitions and hard-fails event desync',()=>{
   const good=evaluateMotionTransition({
     from:{id:'walk'},to:{id:'run'},
