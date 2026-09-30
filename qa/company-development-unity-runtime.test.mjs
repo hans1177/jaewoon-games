@@ -332,7 +332,9 @@ test('runtime smoke launches the exact APK activity and fails fast on missing or
 });
 
 test('exact artifact regression binds upstream APK SHA and source revision',()=>{
-  assert.match(regressionSource,/Download exact upstream build artifact/);
+  assert.match(regressionSource,/Download exact upstream prerelease assets/);
+  assert.match(regressionSource,/unity-release-artifact-transport\.mjs/);
+  assert.doesNotMatch(regressionSource,/actions\/download-artifact@v4[\s\S]*run-id:/);
   assert.match(regressionSource,/actual.*expected/s);
   assert.match(regressionSource,/SOURCE_REVISION/);
   assert.match(regressionSource,/unity-apk-runtime-smoke\.sh/);
