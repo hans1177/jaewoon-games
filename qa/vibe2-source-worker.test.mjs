@@ -4730,6 +4730,63 @@ test('Luau compiler rejects non-header syntax errors before source application',
   assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
 });
 
+test('Luau compiler rejects formatting and comment-only candidates before accepting a real source change',{skip:!process.env.VIBE2_TEST_LUAU_COMPILER},async()=>{
+  for(const replacement of ['local character = player.Character or player.CharacterAdded:Wait()','  -- cosmetic comment\n\n  local character = player.Character or player.CharacterAdded:Wait()']){
+    const cwd=tempRoot(),root='roblox-games/demo',relative='client/Game.client.luau';
+    const find='  local character = player.Character or player.CharacterAdded:Wait()';
+    const source='local function reportNativeFoundationReady()\n'+find+'\n  return character\nend\nreturn reportNativeFoundationReady()\n';
+    write(path.join(cwd,root,relative),source);
+    const workOrder=order({target:'roblox',root,responsibleFiles:[root+'/'+relative],taskId:'luau-format-retry'});
+    write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder));
+    const bad=path.join(cwd,'bad.json'),good=path.join(cwd,'good.json');
+    write(bad,JSON.stringify({edits:[{path:relative,find,replace:replacement}]}));
+    write(good,JSON.stringify({edits:[{path:relative,find,replace:find+'\n  character:SetAttribute("NativeReady", true)'}]}));
+    const result=await runVibe2SourceWorker({cwd,responseFiles:[bad,good],luauCompiler:process.env.VIBE2_TEST_LUAU_COMPILER});
+    assert.equal(result.generation.attempts,2);
+    const manifest=JSON.parse(fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'manifest.json'),'utf8'));
+    assert.deepEqual(manifest.codingMethod.semanticDiffEnforcement.sourceSyntax.structuralChangedFiles,[relative]);
+    assert.equal(manifest.codingMethod.semanticDiffEnforcement.sourceSyntax.runtimeVerified,false);
+    assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
+  }
+});
+
+test('Luau compiler rejects cancelling edits and preserves significant string and interpolation changes',{skip:!process.env.VIBE2_TEST_LUAU_COMPILER},async()=>{
+  const cases=[
+    {before:'local score = 0\nreturn score\n',edits:[{find:'local score = 0',replace:'local score = 1'},{find:'local score = 1',replace:' local score = 0'}],reject:true},
+    {before:'return "hello world"\n',edits:[{find:'"hello world"',replace:'"hello  world"'}]},
+    {before:'return "'+ 'a'.repeat(1500)+'A"\n',edits:[{find:'aA"',replace:'aB"'}]},
+    {before:'return [[hello world]]\n',edits:[{find:'[[hello world]]',replace:'[[hello\nworld]]'}]},
+    {before:'local count = 1\nreturn `count {count}`\n',edits:[{find:'`count {count}`',replace:'`count {count + 1}`'}]},
+    {before:'local count = )\nreturn count\n',edits:[{find:'local count = )',replace:'local count = 0'}]}
+  ];
+  for(const [index,row] of cases.entries()){
+    const cwd=tempRoot(),root='roblox-games/demo',relative='client/Game.client.luau';
+    write(path.join(cwd,root,relative),row.before);
+    write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(order({target:'roblox',root,responsibleFiles:[root+'/'+relative],taskId:'luau-ast-'+index})));
+    const responseFile=path.join(cwd,'answer.json');
+    write(responseFile,JSON.stringify({edits:row.edits.map(edit=>({path:relative,...edit}))}));
+    const result=runVibe2SourceWorker({cwd,responseFile,luauCompiler:process.env.VIBE2_TEST_LUAU_COMPILER});
+    if(row.reject)await assert.rejects(result,/변경 없는 edit: LUAU_AST_UNCHANGED/);
+    else assert.equal((await result).generation.attempts,1);
+    assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),row.before);
+  }
+});
+
+test('Luau compiler missing AST tool fails closed as infrastructure failure',{skip:!process.env.VIBE2_TEST_LUAU_COMPILER},async()=>{
+  const cwd=tempRoot(),root='roblox-games/demo',relative='client/Game.client.luau';
+  const source='local score = 0\nreturn score\n';
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(order({target:'roblox',root,responsibleFiles:[root+'/'+relative],taskId:'luau-ast-missing'})));
+  const compiler=path.join(cwd,path.basename(process.env.VIBE2_TEST_LUAU_COMPILER));
+  fs.copyFileSync(process.env.VIBE2_TEST_LUAU_COMPILER,compiler);
+  fs.chmodSync(compiler,0o755);
+  const responseFile=path.join(cwd,'answer.json');
+  write(responseFile,JSON.stringify({edits:[{path:relative,find:'local score = 0',replace:'local score = 1'}]}));
+  await assert.rejects(runVibe2SourceWorker({cwd,responseFile,applySource:true,luauCompiler:compiler}),/ROBLOX_LUAU_COMPILER_UNAVAILABLE:AST:ENOENT/);
+  assert.equal(shouldRetryGenerationError(new Error('ROBLOX_LUAU_COMPILER_UNAVAILABLE:AST:ENOENT')),false);
+  assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
+});
+
 test('Luau compiler unavailable fails closed without pretending the model produced a syntax error',async()=>{
   const cwd=tempRoot(),root='roblox-games/demo',relative='client/Game.client.luau';
   const source='local score = 0\nreturn score\n';

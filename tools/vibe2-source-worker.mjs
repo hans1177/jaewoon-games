@@ -3052,7 +3052,36 @@ function validateCandidateSyntax({candidate,sourceRoot,target='system',luauCompi
         throw new Error(failurePrefix+':'+relative+':'+detail);
       }
     }
-    return{pass:true,files:touched,compiler:roblox?'LUAU':'NODE',scope:'SYNTAX_ONLY',runtimeVerified:false};
+    const structuralChangedFiles=[];
+    if(roblox){
+      const astCompiler=path.join(path.dirname(luauCompiler),process.platform==='win32'?'luau-ast.exe':'luau-ast');
+      for(const relative of touched){
+        const signatures=[];
+        for(const root of [tempRoot,sourceRoot]){
+          const file=path.join(root,relative);
+          if(root===sourceRoot&&!fs.existsSync(file)){signatures.push(null);continue;}
+          let output;
+          try{
+            output=execFileSync(astCompiler,[file],{encoding:'utf8',timeout:15000,maxBuffer:32*1024*1024,stdio:['ignore','pipe','pipe']});
+          }catch(error){
+            // A valid candidate may repair an already invalid baseline. Tool failures still fail closed.
+            if(root===sourceRoot&&error.status===1&&String(error.stderr).startsWith('Parse errors were encountered:')){signatures.push(null);continue;}
+            throw new Error('ROBLOX_LUAU_COMPILER_UNAVAILABLE:AST:'+clean(error.code||error.signal||error.status));
+          }
+          try{
+            const ast=JSON.parse(output);
+            if(ast?.root?.type!=='AstStatBlock')throw new Error('MISSING_ROOT');
+            // Keep literal values, bindings and types; ignore only parser source positions and comments.
+            signatures.push(JSON.stringify(ast.root,(key,value)=>key==='location'||/Locations?$/.test(key)?undefined:value));
+          }catch(error){
+            throw new Error('ROBLOX_LUAU_COMPILER_UNAVAILABLE:AST_OUTPUT:'+clean(error.message).slice(0,120));
+          }
+        }
+        if(signatures[0]!==signatures[1])structuralChangedFiles.push(relative);
+      }
+      if(!structuralChangedFiles.length)throw new Error('변경 없는 edit: LUAU_AST_UNCHANGED:'+touched.join(','));
+    }
+    return{pass:true,files:touched,compiler:roblox?'LUAU':'NODE',scope:'SYNTAX_ONLY',runtimeVerified:false,...(roblox?{structuralChangedFiles,sourceChangeScope:'LUAU_AST'}:{})};
   }finally{
     fs.rmSync(tempRoot,{recursive:true,force:true});
   }
