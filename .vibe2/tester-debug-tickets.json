@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-09-30T07:38:10.444Z",
+  "updatedAt": "2026-09-30T07:56:20.632Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -398,15 +398,16 @@
         "roblox-f0-source-preflight-failed",
         "{\"sourceRevision\":\"5976a851850e662dc7734303c432a6af5b13c8aa\",\"buildSourceRevision\":\"5976a851850e662dc7734303c432a6af5b13c8aa\",\"artifactIdentity\":\"sha256:0b87408b5644df5594d14910e934b08b41b5a482ef82815e500ed989843949c0\",\"buildPreflightPassed\":true,\"foundationF0Passed\":false}",
         "{\"sourceRevision\":\"2610ece38c316b6f6d0676a5a8dc42d3b8e93743\",\"buildSourceRevision\":\"2610ece38c316b6f6d0676a5a8dc42d3b8e93743\",\"artifactIdentity\":\"sha256:34f14cc2efe05bc8fa6365e3afbfa08961c32670257544aa380e5cf28b476766\",\"buildPreflightPassed\":true,\"foundationF0Passed\":false}",
-        "{\"sourceRevision\":\"51bab1482ef8f19d5f9a9aa5b45f191a585db46b\",\"buildSourceRevision\":\"51bab1482ef8f19d5f9a9aa5b45f191a585db46b\",\"artifactIdentity\":\"sha256:6024d74885344b57057f9168c1ae2f18beb2716b6fe20f493486399c463912d4\",\"buildPreflightPassed\":true,\"foundationF0Passed\":false}"
+        "{\"sourceRevision\":\"51bab1482ef8f19d5f9a9aa5b45f191a585db46b\",\"buildSourceRevision\":\"51bab1482ef8f19d5f9a9aa5b45f191a585db46b\",\"artifactIdentity\":\"sha256:6024d74885344b57057f9168c1ae2f18beb2716b6fe20f493486399c463912d4\",\"buildPreflightPassed\":true,\"foundationF0Passed\":false}",
+        "{\"sourceRevision\":\"7820c1aade5384677481a3d8a37f2d9acd69c9ab\",\"buildSourceRevision\":\"7820c1aade5384677481a3d8a37f2d9acd69c9ab\",\"artifactIdentity\":\"sha256:1bd82ede6447181a69fcdb74aa544c9ba87b408164859375a03948371b3472e4\",\"buildPreflightPassed\":true,\"foundationF0Passed\":false}"
       ],
       "exactFailedStage": "F0_SOURCE_INTEGRITY",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-24T08:08:46.525Z",
-      "updatedAt": "2026-09-30T04:20:46.188Z",
-      "occurrenceCount": 7,
+      "updatedAt": "2026-09-30T07:56:20.629Z",
+      "occurrenceCount": 8,
       "internalFlowBlocking": true,
       "externalReleaseBlockingOnly": false
     },
@@ -1972,8 +1973,8 @@
       "externalReleaseBlockingOnly": true,
       "status": "OPEN",
       "createdAt": "2026-09-27T02:05:11.299Z",
-      "updatedAt": "2026-09-30T07:38:10.441Z",
-      "occurrenceCount": 268
+      "updatedAt": "2026-09-30T07:56:20.629Z",
+      "occurrenceCount": 269
     },
     {
       "id": "bug-b3e14193de493e2916b5",
@@ -2552,8 +2553,8 @@
       "externalReleaseBlockingOnly": true,
       "status": "OPEN",
       "createdAt": "2026-09-27T12:01:41.645Z",
-      "updatedAt": "2026-09-30T07:38:10.441Z",
-      "occurrenceCount": 155
+      "updatedAt": "2026-09-30T07:56:20.629Z",
+      "occurrenceCount": 156
     },
     {
       "id": "bug-0dc7e54671e4c6f10d9d",
@@ -2630,8 +2631,8 @@
       "externalReleaseBlockingOnly": true,
       "status": "OPEN",
       "createdAt": "2026-09-27T22:12:11.993Z",
-      "updatedAt": "2026-09-30T07:38:10.441Z",
-      "occurrenceCount": 164
+      "updatedAt": "2026-09-30T07:56:20.629Z",
+      "occurrenceCount": 165
     },
     {
       "id": "bug-01db4d43370f3d6ba193",
@@ -2653,8 +2654,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T12:19:58.672Z",
-      "updatedAt": "2026-09-30T07:38:10.441Z",
-      "occurrenceCount": 121
+      "updatedAt": "2026-09-30T07:56:20.629Z",
+      "occurrenceCount": 122
     },
     {
       "id": "bug-77a622bc131aaa44ec65",
@@ -2676,8 +2677,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T12:54:28.283Z",
-      "updatedAt": "2026-09-30T07:38:10.441Z",
-      "occurrenceCount": 120
+      "updatedAt": "2026-09-30T07:56:20.629Z",
+      "occurrenceCount": 121
     },
     {
       "id": "bug-35b4ad98cdc42c363569",
@@ -2699,8 +2700,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T12:54:28.283Z",
-      "updatedAt": "2026-09-30T07:38:10.441Z",
-      "occurrenceCount": 120
+      "updatedAt": "2026-09-30T07:56:20.629Z",
+      "occurrenceCount": 121
     },
     {
       "id": "bug-9547499e816faf019b38",
@@ -2768,8 +2769,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T12:54:28.283Z",
-      "updatedAt": "2026-09-30T07:38:10.441Z",
-      "occurrenceCount": 120
+      "updatedAt": "2026-09-30T07:56:20.629Z",
+      "occurrenceCount": 121
     },
     {
       "id": "bug-b4f0a3ef2a2690b66964",
@@ -2791,8 +2792,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T12:54:28.283Z",
-      "updatedAt": "2026-09-30T07:38:10.441Z",
-      "occurrenceCount": 120
+      "updatedAt": "2026-09-30T07:56:20.629Z",
+      "occurrenceCount": 121
     },
     {
       "id": "bug-46d41aa4fc4f5afdde9b",
@@ -3389,8 +3390,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T15:19:01.326Z",
-      "updatedAt": "2026-09-30T07:38:10.441Z",
-      "occurrenceCount": 113
+      "updatedAt": "2026-09-30T07:56:20.629Z",
+      "occurrenceCount": 114
     },
     {
       "id": "bug-fd4b40cd2c63f4d52c40",
@@ -3412,8 +3413,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T15:19:01.326Z",
-      "updatedAt": "2026-09-30T07:38:10.441Z",
-      "occurrenceCount": 113
+      "updatedAt": "2026-09-30T07:56:20.629Z",
+      "occurrenceCount": 114
     },
     {
       "id": "bug-28742303370de6603f9c",
@@ -3435,8 +3436,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T15:19:01.326Z",
-      "updatedAt": "2026-09-30T07:38:10.441Z",
-      "occurrenceCount": 113
+      "updatedAt": "2026-09-30T07:56:20.629Z",
+      "occurrenceCount": 114
     },
     {
       "id": "bug-c9626959dec21fcc6f7b",
@@ -3458,8 +3459,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T15:19:01.326Z",
-      "updatedAt": "2026-09-30T07:38:10.441Z",
-      "occurrenceCount": 113
+      "updatedAt": "2026-09-30T07:56:20.629Z",
+      "occurrenceCount": 114
     },
     {
       "id": "bug-aa87cf98c12c15604b1c",
@@ -3481,8 +3482,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T15:19:01.326Z",
-      "updatedAt": "2026-09-30T07:38:10.441Z",
-      "occurrenceCount": 113
+      "updatedAt": "2026-09-30T07:56:20.629Z",
+      "occurrenceCount": 114
     },
     {
       "id": "bug-a4480658d1d23782707c",
@@ -3504,8 +3505,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T15:19:01.326Z",
-      "updatedAt": "2026-09-30T07:38:10.441Z",
-      "occurrenceCount": 113
+      "updatedAt": "2026-09-30T07:56:20.629Z",
+      "occurrenceCount": 114
     },
     {
       "id": "bug-98da274bb31b29d745d8",
@@ -3527,8 +3528,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T15:19:01.326Z",
-      "updatedAt": "2026-09-30T07:38:10.441Z",
-      "occurrenceCount": 113
+      "updatedAt": "2026-09-30T07:56:20.629Z",
+      "occurrenceCount": 114
     }
   ]
 }
