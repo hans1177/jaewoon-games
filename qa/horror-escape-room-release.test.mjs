@@ -154,6 +154,18 @@ test('로비 상용화 계약은 launch gate에도 고정된다',()=>{
 });
 
 
+test('월드 로비는 밝은 가시성, 전용 BGM, 기괴한 직원과 공포코믹 소품을 유지한다',()=>{
+ assert.match(config,/LobbyBackground="rbxassetid:\/\/1843529635"/);
+ assert.match(client,/MidnightLobbyBackground/);
+ assert.match(client,/Lighting\.Brightness=math\.max\(Lighting\.Brightness,2\.85\)/);
+ assert.match(client,/Lighting\.ExposureCompensation=math\.max\(Lighting\.ExposureCompensation,\.22\)/);
+ for(const visual of ['ExtraFingerL','BellboyHump','MaidHairCurtain','MaidFingerL'])assert.ok(server.includes(visual),visual);
+ for(const prop of ['FrontDeskPhone','LobbyOldRadio','BrokenVendingMachine','UmbrellaStand','CleaningCart','LostAndFoundDoll','WetFloorSign'])assert.ok(server.includes(prop),prop);
+ for(const haunt of ['PHONE_GLITCH','VENDING_SHAKE','DOLL_TURN','CART_ROLL','UMBRELLA_TWITCH'])assert.ok(server.includes(haunt)&&client.includes(haunt),haunt);
+ assert.match(server,/LobbyArtPass","NOCTURNE_CURSED_HOTEL_V7"/);
+ assert.match(server,/LobbyBuildRevision","NOCTURNE_GROTESQUE_COMIC_LOBBY_20260930"/);
+});
+
 test('세 맵 실내 천장은 직접 상향된 공간감을 유지한다',()=>{
  assert.match(server,/local schoolCeilingY=24\.4/);
  assert.match(server,/local schoolWallHeight=24/);
@@ -473,7 +485,7 @@ test('1인 방 생성과 방장 시작은 8인 AI 충원 계약을 유지한다'
  assert.match(server,/local function createReservedRoom\(p,visibility\)/);
  assert.match(server,/local function startRoomMatch\(p\)/);
  assert.match(server,/#Players:GetPlayers\(\)<math\.max\(1,tonumber\(C\.MinimumParticipants\)or 1\)/);
- assert.match(server,/configure\(h\)/);
+ assert.match(server,/configure\(h,survivorOrder,monsterOrder,si,mi\)/);
  assert.match(client,/Name="RoomBrowser"/);
  assert.match(client,/1명부터 시작 가능 · 최대 8명 · 빈자리는 AI/);
 });
