@@ -2580,7 +2580,7 @@ local function bot(role,pos)
   monsterId=monsterId,humanFormId=humanFormId,visuals=visuals,
   infectReadyAt=0,purifyReadyAt=0,infectAttackReadyAt=0,abilityReadyAt=0,dashReadyAt=0,
   energy=energyMax(),motionClock=math.random()*6.28,tacticSlot=botSequence,
-  decisionAt=0,speedResetAt=0,
+  decisionAt=0,speedResetAt=0,currentTargetKey=nil,targetLockUntil=0,patrolTarget=nil,patrolRefreshAt=0,patrolCycle=0,
  }
  table.insert(bots,b);return b
 end
@@ -3804,39 +3804,111 @@ local function botTargetPosition(entry)
  return nil
 end
 
+local botPatrolPoints={
+ Vector3.new(-105,3,-54),Vector3.new(0,3,-68),Vector3.new(105,3,-54),
+ Vector3.new(-118,3,36),Vector3.new(0,3,12),Vector3.new(118,3,36),
+ Vector3.new(-86,3,108),Vector3.new(0,3,92),Vector3.new(86,3,108),
+}
+local function botEntryKey(entry)
+ if entry and entry.p then return"P:"..tostring(entry.p.UserId)end
+ if entry and entry.b then return"B:"..tostring(entry.b.tacticSlot or 0)end
+ return""
+end
+local function botFindEntryByKey(role,key)
+ if key==""then return nil,nil end
+ if string.sub(key,1,2)=="P:"then
+  local id=tonumber(string.sub(key,3))
+  for _,player in ipairs(Players:GetPlayers())do
+   if player.UserId==id and player:GetAttribute("Role")==role then
+    local rr=root(player);if rr then return{p=player},rr.Position end
+   end
+  end
+ else
+  local slot=tonumber(string.sub(key,3))
+  for _,other in ipairs(bots)do
+   if other.tacticSlot==slot and other.role==role and other.part and other.part.Parent then return{b=other},other.part.Position end
+  end
+ end
+ return nil,nil
+end
+local function botTargetLoad(role,key,exclude)
+ local count=0
+ for _,other in ipairs(bots)do
+  if other~=exclude and other.role==role and other.currentTargetKey==key and(os.clock()<(other.targetLockUntil or 0))then count+=1 end
+ end
+ return count
+end
+local function botPatrolTarget(b)
+ local reach=math.max(4,tonumber(C.AICombat and C.AICombat.PatrolReachDistance)or 8)
+ local refresh=math.max(3,tonumber(C.AICombat and C.AICombat.PatrolRefreshSeconds)or 7)
+ local now=os.clock()
+ if not b.patrolTarget or not b.patrolRefreshAt or now>=b.patrolRefreshAt or(b.part.Position-b.patrolTarget).Magnitude<=reach then
+  b.patrolCycle=(b.patrolCycle or 0)+1
+  local index=((math.max(1,b.tacticSlot or 1)+(b.patrolCycle*3)-2)%#botPatrolPoints)+1
+  local base=botPatrolPoints[index]
+  local jitter=Vector3.new(((b.tacticSlot or 1)%3-1)*6,0,((b.patrolCycle%3)-1)*5)
+  b.patrolTarget=base+jitter
+  b.patrolRefreshAt=now+refresh+((b.tacticSlot or 1)%4)*.55
+ end
+ return Vector3.new(b.patrolTarget.X,b.part.Position.Y,b.patrolTarget.Z)
+end
+
 local function distributedSurvivorTarget(b)
+ local now=os.clock()
+ if b.currentTargetKey and now<(b.targetLockUntil or 0)then
+  local locked,pos=botFindEntryByKey("SURVIVOR",b.currentTargetKey)
+  if locked and pos then return locked,pos,(pos-b.part.Position).Magnitude end
+ end
  local entries={}
  for _,entry in ipairs(active())do
   local pos=botTargetPosition(entry)
-  if pos then table.insert(entries,{entry=entry,pos=pos,distance=(pos-b.part.Position).Magnitude})end
+  if pos then
+   local key=botEntryKey(entry)
+   local distance=(pos-b.part.Position).Magnitude
+   local load=botTargetLoad("MONSTER",key,b)
+   local lane=math.abs(pos.X-(botPatrolTarget(b).X))*.035
+   table.insert(entries,{entry=entry,pos=pos,distance=distance,key=key,score=distance+load*(tonumber(C.AICombat and C.AICombat.TargetCrowdPenalty)or 38)+lane})
+  end
  end
- table.sort(entries,function(a,c)return a.distance<c.distance end)
- if #entries==0 then return nil,nil,math.huge end
- local spreadCount=math.min(#entries,4)
- local index=((math.max(1,b.tacticSlot or 1)-1)%spreadCount)+1
- local chosen=entries[index]
+ table.sort(entries,function(a,c)return a.score<c.score end)
+ local chosen=entries[1]
+ if not chosen then b.currentTargetKey=nil;return nil,nil,math.huge end
+ b.currentTargetKey=chosen.key
+ b.targetLockUntil=now+(tonumber(C.AICombat and C.AICombat.TargetLockSeconds)or 3.2)+((b.tacticSlot or 1)%3)*.45
  return chosen.entry,chosen.pos,chosen.distance
 end
 
 local function distributedMonsterTarget(b)
+ local now=os.clock()
+ if b.currentTargetKey and now<(b.targetLockUntil or 0)then
+  local locked,pos=botFindEntryByKey("MONSTER",b.currentTargetKey)
+  if locked and pos then
+   return locked.p and{player=locked.p,pos=pos}or{bot=locked.b,pos=pos},pos,(pos-b.part.Position).Magnitude
+  end
+ end
  local entries={}
  for _,player in ipairs(Players:GetPlayers())do
   if player:GetAttribute("Role")=="MONSTER"then
    local rr=root(player)
-   if rr then table.insert(entries,{player=player,pos=rr.Position,distance=(rr.Position-b.part.Position).Magnitude})end
+   if rr then
+    local key="P:"..tostring(player.UserId);local distance=(rr.Position-b.part.Position).Magnitude
+    local load=botTargetLoad("SURVIVOR",key,b)
+    table.insert(entries,{player=player,pos=rr.Position,distance=distance,key=key,score=distance+load*(tonumber(C.AICombat and C.AICombat.TargetCrowdPenalty)or 38)})
+   end
   end
  end
  for _,other in ipairs(bots)do
   if other~=b and other.role=="MONSTER"and other.part and other.part.Parent then
-   local pos=other.part.Position
-   table.insert(entries,{bot=other,pos=pos,distance=(pos-b.part.Position).Magnitude})
+   local pos=other.part.Position;local key="B:"..tostring(other.tacticSlot or 0);local distance=(pos-b.part.Position).Magnitude
+   local load=botTargetLoad("SURVIVOR",key,b)
+   table.insert(entries,{bot=other,pos=pos,distance=distance,key=key,score=distance+load*(tonumber(C.AICombat and C.AICombat.TargetCrowdPenalty)or 38)})
   end
  end
- table.sort(entries,function(a,c)return a.distance<c.distance end)
- if #entries==0 then return nil,nil,math.huge end
- local spreadCount=math.min(#entries,4)
- local index=((math.max(1,b.tacticSlot or 1)-1)%spreadCount)+1
- local chosen=entries[index]
+ table.sort(entries,function(a,c)return a.score<c.score end)
+ local chosen=entries[1]
+ if not chosen then b.currentTargetKey=nil;return nil,nil,math.huge end
+ b.currentTargetKey=chosen.key
+ b.targetLockUntil=now+(tonumber(C.AICombat and C.AICombat.TargetLockSeconds)or 3.2)+((b.tacticSlot or 1)%3)*.45
  return chosen,chosen.pos,chosen.distance
 end
 
@@ -4108,12 +4180,12 @@ RunService.Heartbeat:Connect(function(dt)
 
    elseif b.role=="SURVIVOR"then
     local target,targetPos,best=distributedMonsterTarget(b)
-    if targetPos then
+    local engageRange=math.max(20,tonumber(C.AICombat and C.AICombat.HumanEngageRange)or 46)
+    if targetPos and best<=engageRange then
      local usedAbility=tryBotHumanAbility(b,target,best)
      local attacked,purifyRange=false,math.max(4,(C.PurifyDistance or 8)+(tonumber(botHumanForm(b).PurifyRangeBonus)or 0))
      if not usedAbility then attacked,purifyRange=tryBotHumanPurify(b,target,best)end
      if not usedAbility and not attacked then
-      local profile=botHumanForm(b)
       local preferred=math.max(5,math.min(purifyRange-1,tonumber(C.AICombat and C.AICombat.HumanPreferredRange)or 10))
       local delta=targetPos-b.part.Position
       local flat=Vector3.new(delta.X,0,delta.Z)
@@ -4122,16 +4194,17 @@ RunService.Heartbeat:Connect(function(dt)
        local side=b.strafeSign or((b.tacticSlot or 1)%2==0 and 1 or-1)
        local right=Vector3.new(-dir.Z,0,dir.X)
        local moveDir
-       if best>purifyRange+4 then
-        moveDir=dir+right*(.18*side)
-       elseif best<preferred-2 then
-        moveDir=-dir+right*(.38*side)
-       else
-        moveDir=right*side-dir*.08
-       end
+       if best>purifyRange+4 then moveDir=dir+right*(.25*side)
+       elseif best<preferred-2 then moveDir=-dir+right*(.48*side)
+       else moveDir=right*side-dir*.08 end
        if not tryBotHumanDash(b,moveDir,best)then moveBotDirection(b,moveDir,dt,b.speed)end
       end
      end
+    else
+     b.currentTargetKey=nil
+     local patrol=botPatrolTarget(b)
+     local delta=patrol-b.part.Position
+     if delta.Magnitude>.5 then moveBotDirection(b,delta,dt,b.speed*.88)end
     end
    end
   end
