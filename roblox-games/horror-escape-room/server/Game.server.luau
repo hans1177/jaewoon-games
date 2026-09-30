@@ -644,64 +644,150 @@ local function lobbyTerminal(parent,name,pos,labelText,actionText,color,onTrigge
  return base,prompt
 end
 
+local function lobbySurfaceText(part,text,color,size)
+ local gui=Instance.new("SurfaceGui");gui.Name="LobbySurfaceText";gui.Face=Enum.NormalId.Front;gui.AlwaysOnTop=false;gui.LightInfluence=.35;gui.SizingMode=Enum.SurfaceGuiSizingMode.PixelsPerStud;gui.PixelsPerStud=36;gui.Parent=part
+ local label=Instance.new("TextLabel");label.Size=UDim2.fromScale(1,1);label.BackgroundTransparency=1;label.Text=text;label.TextColor3=color or Color3.fromRGB(235,240,248);label.TextSize=size or 22;label.TextScaled=true;label.TextStrokeTransparency=.76;label.Font=Enum.Font.GothamBold;label.Parent=gui
+ return label
+end
+
+local function lobbyLampPost(parent,pos)
+ local pole=arenaPart(parent,"LobbyLampPost",Vector3.new(.65,9,.65),pos+Vector3.new(0,4.5,0),Color3.fromRGB(45,49,57),Enum.Material.Metal)
+ local arm=arenaPart(parent,"LobbyLampArm",Vector3.new(3,.4,.4),pos+Vector3.new(1.2,8.65,0),Color3.fromRGB(45,49,57),Enum.Material.Metal)
+ local lamp=arenaPart(parent,"LobbyStreetLight",Vector3.new(1.8,.35,1.2),pos+Vector3.new(2.4,8.3,0),Color3.fromRGB(232,209,145),Enum.Material.Neon);lamp.CanCollide=false
+ glow(lamp,lamp.Color,22,1.15)
+ pole.CastShadow=true;arm.CastShadow=true
+end
+
+local function lobbyBuilding(parent,name,pos,size,baseColor,windowColor)
+ local body=arenaPart(parent,name,size,pos,baseColor,Enum.Material.Concrete)
+ local floors=math.max(2,math.floor(size.Y/7))
+ local cols=math.max(2,math.floor(size.X/10))
+ local frontZ=pos.Z-(size.Z*.5)-.08
+ for row=1,floors do
+  for col=1,cols do
+   if (row+col)%3~=0 then
+    local wx=pos.X-size.X*.5+5+(col-1)*(size.X-10)/math.max(1,cols-1)
+    local wy=pos.Y-size.Y*.5+4+(row-1)*(size.Y-8)/math.max(1,floors-1)
+    local win=arenaPart(parent,name.."Window",Vector3.new(3.8,2.1,.18),Vector3.new(wx,wy,frontZ),windowColor,Enum.Material.Glass)
+    win.Transparency=.22;win.CanCollide=false
+   end
+  end
+ end
+ local trim=arenaPart(parent,name.."RoofTrim",Vector3.new(size.X+1,.7,size.Z+1),pos+Vector3.new(0,size.Y*.5+.35,0),Color3.fromRGB(32,36,44),Enum.Material.Metal)
+ trim.CastShadow=true
+ return body
+end
+
+-- 월드 로비: 밤의 폐역 광장 + 지하철 승강장형 매칭 게이트.
 local function makePhysicalLobby()
  local old=workspace:FindFirstChild("MidnightLobby");if old then old:Destroy()end
  local f=Instance.new("Folder");f.Name="MidnightLobby";f.Parent=workspace
- local floor=zoneFloor(f,"LobbyFloor",Vector3.new(150,1,106),Vector3.new(0,0,235),Color3.fromRGB(40,45,54),Enum.Material.Slate)
- floor:SetAttribute("PhysicalLobbyGround",true)
- arenaPart(f,"LobbyBackWall",Vector3.new(150,18,2),Vector3.new(0,9,286),Color3.fromRGB(27,31,40),Enum.Material.Concrete)
- arenaPart(f,"LobbyLeftWall",Vector3.new(2,18,106),Vector3.new(-74,9,235),Color3.fromRGB(27,31,40),Enum.Material.Concrete)
- arenaPart(f,"LobbyRightWall",Vector3.new(2,18,106),Vector3.new(74,9,235),Color3.fromRGB(27,31,40),Enum.Material.Concrete)
- local title=arenaPart(f,"LobbyTitle",Vector3.new(38,6,1),Vector3.new(0,8.5,284.5),Color3.fromRGB(52,61,75),Enum.Material.Metal);lobbyLabel(title,"심야 감염전 로비",Color3.fromRGB(149,224,255))
- for _,x in ipairs({-54,-36,-18,0,18,36,54})do
-  local lamp=arenaPart(f,"LobbyLamp",Vector3.new(7,.4,2),Vector3.new(x,14,250),Color3.fromRGB(120,207,230),Enum.Material.Neon);lamp.CanCollide=false;glow(lamp,lamp.Color,20,.85)
- end
- -- 중앙 통로
- for _,z in ipairs({205,217,229,241,253,265})do
-  local strip=arenaPart(f,"LobbyGuide",Vector3.new(24,.14,1.2),Vector3.new(0,.58,z),Color3.fromRGB(83,190,213),Enum.Material.Neon);strip.CanCollide=false
+
+ -- 넓은 외부 광장. 테스트맵처럼 보이는 단색 벽/형광 바닥은 쓰지 않는다.
+ local road=zoneFloor(f,"LobbyRoad",Vector3.new(230,1,154),Vector3.new(0,0,242),Color3.fromRGB(35,38,44),Enum.Material.Asphalt)
+ road:SetAttribute("PhysicalLobbyGround",true)
+ zoneFloor(f,"LobbyPlaza",Vector3.new(128,.6,86),Vector3.new(0,.72,244),Color3.fromRGB(76,78,82),Enum.Material.Slate)
+ zoneFloor(f,"LobbyMedian",Vector3.new(18,.72,88),Vector3.new(0,1.05,244),Color3.fromRGB(92,94,97),Enum.Material.Concrete)
+ for _,x in ipairs({-72,72})do
+  zoneFloor(f,"LobbySidewalk",Vector3.new(34,.7,138),Vector3.new(x,.85,242),Color3.fromRGB(88,90,93),Enum.Material.Concrete)
  end
 
- -- 여러 개의 매칭 칸. 각 칸은 실제 유저만 모아서 독립적으로 10초 카운트한다.
+ -- 로비를 둘러싼 도시 배경. 가까운 건물/먼 실루엣을 층으로 나눠 깊이를 만든다.
+ lobbyBuilding(f,"LobbyHotel",Vector3.new(-91,18,264),Vector3.new(34,36,28),Color3.fromRGB(48,52,61),Color3.fromRGB(201,181,116))
+ lobbyBuilding(f,"LobbyOffice",Vector3.new(91,22,258),Vector3.new(36,44,34),Color3.fromRGB(45,50,59),Color3.fromRGB(111,177,194))
+ lobbyBuilding(f,"LobbyApartments",Vector3.new(-92,14,207),Vector3.new(32,28,30),Color3.fromRGB(56,53,58),Color3.fromRGB(191,150,105))
+ lobbyBuilding(f,"LobbyCinema",Vector3.new(92,12,207),Vector3.new(38,24,30),Color3.fromRGB(54,49,58),Color3.fromRGB(190,92,122))
+ for i,spec in ipairs({
+  {-108,28,303,26,56,24},{-74,23,311,24,46,22},{-38,31,314,30,62,20},
+  {38,27,314,28,54,20},{76,34,309,26,68,22},{110,24,301,24,48,24}
+ })do
+  lobbyBuilding(f,"LobbySkyline"..i,Vector3.new(spec[1],spec[2],spec[3]),Vector3.new(spec[4],spec[5],spec[6]),Color3.fromRGB(37,40,48),Color3.fromRGB(111,126,139))
+ end
+
+ -- 역 입구/중앙 랜드마크.
+ local station=arenaPart(f,"LobbyStationFacade",Vector3.new(74,19,8),Vector3.new(0,10,289),Color3.fromRGB(45,49,58),Enum.Material.Concrete)
+ arenaPart(f,"LobbyStationRoof",Vector3.new(82,2,12),Vector3.new(0,20,289),Color3.fromRGB(29,33,40),Enum.Material.Metal)
+ for _,x in ipairs({-29,-19,-9,9,19,29})do
+  arenaPart(f,"LobbyStationColumn",Vector3.new(1.5,16,1.5),Vector3.new(x,8,284.5),Color3.fromRGB(78,82,88),Enum.Material.Concrete)
+ end
+ local stationSign=arenaPart(f,"LobbyStationSign",Vector3.new(34,5,.8),Vector3.new(0,14.5,284.6),Color3.fromRGB(22,28,36),Enum.Material.Metal)
+ lobbySurfaceText(stationSign,"MIDNIGHT TERMINAL",Color3.fromRGB(185,224,235),24)
+ local clock=arenaPart(f,"LobbyClock",Vector3.new(6,6,.65),Vector3.new(0,8,284.5),Color3.fromRGB(213,217,214),Enum.Material.SmoothPlastic)
+ clock.Shape=Enum.PartType.Cylinder;clock.Orientation=Vector3.new(0,0,90)
+
+ -- 광장 가로등, 벤치, 화단, 펜스.
+ for _,x in ipairs({-54,-27,27,54})do
+  lobbyLampPost(f,Vector3.new(x,1.1,264))
+  lobbyLampPost(f,Vector3.new(x,1.1,224))
+ end
+ for _,z in ipairs({231,251})do
+  for _,x in ipairs({-34,34})do
+   arenaPart(f,"LobbyBench",Vector3.new(10,1.1,3),Vector3.new(x,1.55,z),Color3.fromRGB(86,69,57),Enum.Material.WoodPlanks)
+   arenaPart(f,"LobbyBenchBack",Vector3.new(10,2.6,.55),Vector3.new(x,3,z+1.1),Color3.fromRGB(74,60,51),Enum.Material.WoodPlanks)
+  end
+ end
+ for _,x in ipairs({-12,12})do
+  local planter=arenaPart(f,"LobbyPlanter",Vector3.new(8,2.2,8),Vector3.new(x,1.8,253),Color3.fromRGB(61,62,62),Enum.Material.Concrete)
+  local trunk=arenaPart(f,"LobbyTreeTrunk",Vector3.new(1.2,7,1.2),Vector3.new(x,5.2,253),Color3.fromRGB(83,62,48),Enum.Material.Wood);trunk.Shape=Enum.PartType.Cylinder
+  local crown=arenaPart(f,"LobbyTreeCrown",Vector3.new(6,6,6),Vector3.new(x,9,253),Color3.fromRGB(49,69,58),Enum.Material.Grass);crown.Shape=Enum.PartType.Ball;crown.CanCollide=false
+  planter.CastShadow=true
+ end
+ for _,x in ipairs({-112,112})do
+  arenaPart(f,"LobbyFence",Vector3.new(1.2,5,142),Vector3.new(x,2.5,242),Color3.fromRGB(50,54,61),Enum.Material.Metal)
+ end
+
+ -- 실제 방 입장은 승강장 게이트처럼 보이게 한다. 바닥 형광 사각형은 숨긴다.
  lobbyQueueBays={}
- for i,x in ipairs({-48,-16,16,48})do
-  local part=arenaPart(f,"MatchBay"..i,Vector3.new(24,.5,20),Vector3.new(x,.55,207),Color3.fromRGB(48,112,96),Enum.Material.Neon)
-  part.CanCollide=true;part:SetAttribute("MatchBayIndex",i)
-  local label=lobbyLabel(part,"매칭 "..i.." · 들어와",Color3.fromRGB(188,255,224))
-  local frame=arenaPart(f,"MatchBayFrame"..i,Vector3.new(27,.18,23),Vector3.new(x,.68,207),Color3.fromRGB(115,227,190),Enum.Material.Neon)
-  frame.CanCollide=false;frame.Transparency=.55
-  lobbyQueueBays[i]={part=part,label=label,players={},countdown=nil,token=0,index=i}
+ for i,x in ipairs({-51,-17,17,51})do
+  local bay=Instance.new("Folder");bay.Name="MatchGate"..i;bay.Parent=f
+  local floor=arenaPart(bay,"MatchBay"..i,Vector3.new(22,.22,18),Vector3.new(x,1.14,199),Color3.fromRGB(58,64,70),Enum.Material.Metal)
+  floor.CanCollide=true;floor.Transparency=.08;floor:SetAttribute("MatchBayIndex",i);floor:SetAttribute("WalkableGround",true)
+  arenaPart(bay,"GateBack",Vector3.new(24,11,1),Vector3.new(x,6.4,208),Color3.fromRGB(43,47,55),Enum.Material.Concrete)
+  arenaPart(bay,"GateLeft",Vector3.new(1.2,10,18),Vector3.new(x-11.4,5.8,199),Color3.fromRGB(48,52,60),Enum.Material.Concrete)
+  arenaPart(bay,"GateRight",Vector3.new(1.2,10,18),Vector3.new(x+11.4,5.8,199),Color3.fromRGB(48,52,60),Enum.Material.Concrete)
+  arenaPart(bay,"GateRoof",Vector3.new(24,1.2,19),Vector3.new(x,11.1,199),Color3.fromRGB(30,34,41),Enum.Material.Metal)
+  local arch=arenaPart(bay,"GateArch",Vector3.new(20,3,.7),Vector3.new(x,8.8,190.4),Color3.fromRGB(25,31,39),Enum.Material.Metal)
+  local label=lobbySurfaceText(arch,"MATCH "..i,Color3.fromRGB(164,220,231),22)
+  local light=arenaPart(bay,"GateLight",Vector3.new(12,.28,1.4),Vector3.new(x,9.9,191),Color3.fromRGB(111,201,218),Enum.Material.Neon);light.CanCollide=false;glow(light,light.Color,15,.8)
+  for _,doorX in ipairs({-3.5,3.5})do
+   local door=arenaPart(bay,"GateDoor",Vector3.new(5.8,7,.35),Vector3.new(x+doorX,4.5,190.7),Color3.fromRGB(81,104,112),Enum.Material.Glass)
+   door.Transparency=.42;door.CanCollide=false
+  end
+  lobbyQueueBays[i]={part=floor,label=label,players={},countdown=nil,token=0,index=i}
  end
 
- -- 코드/친구 참가 같은 보조 기능만 벽쪽 작은 단말로 남긴다.
- local _,friendJoinPrompt=lobbyTerminal(f,"QuickFriendRoom",Vector3.new(50,3,260),"친구 방 찾기","참가",Color3.fromRGB(70,68,116),function(p)
+ -- 보조 기능은 중앙 시야를 가리지 않게 역 건물 양쪽 키오스크에 배치.
+ local _,friendJoinPrompt=lobbyTerminal(f,"QuickFriendRoom",Vector3.new(63,3.8,277),"친구 참가","참가",Color3.fromRGB(63,78,104),function(p)
   if roomServer or state=="RUNNING"then return end
   quickJoinRoom(p,true)
  end)
- local _,codePrompt=lobbyTerminal(f,"CodeRoomTerminal",Vector3.new(50,3,240),"방 코드 참가","코드 입력",Color3.fromRGB(78,72,96),function(p)
+ local _,codePrompt=lobbyTerminal(f,"CodeRoomTerminal",Vector3.new(76,3.8,277),"코드 참가","코드 입력",Color3.fromRGB(79,71,95),function(p)
   if roomServer or state=="RUNNING"then return end
   p:SetAttribute("WorldLobbyCodeInputRequest",tostring(math.floor(os.clock()*1000)))
  end)
- local _,leavePrompt=lobbyTerminal(f,"RoomLeaveTerminal",Vector3.new(-50,3,240),"방 나가기","나가기",Color3.fromRGB(106,58,66),function(p)
+ local _,leavePrompt=lobbyTerminal(f,"RoomLeaveTerminal",Vector3.new(-74,3.8,277),"로비로","나가기",Color3.fromRGB(95,63,69),function(p)
   leaveReservedRoom(p)
  end)
 
- local board=arenaPart(f,"RoomStatusBoard",Vector3.new(26,6,1),Vector3.new(0,6.7,282.8),Color3.fromRGB(30,35,45),Enum.Material.Metal)
- lobbyLabel(board,"매칭 칸에 들어가면 자동 시작",Color3.fromRGB(169,223,242))
+ -- 분위기 디테일: 택시, 버스정류장, 배수구, 노면 표시.
+ arenaPart(f,"LobbyTaxi",Vector3.new(12,4,6),Vector3.new(-82,2.7,236),Color3.fromRGB(156,122,48),Enum.Material.Metal)
+ arenaPart(f,"LobbyTaxiTop",Vector3.new(6,2,5),Vector3.new(-82,5.2,236),Color3.fromRGB(54,58,64),Enum.Material.Glass).Transparency=.25
+ local busStop=arenaPart(f,"LobbyBusStop",Vector3.new(12,8,.7),Vector3.new(82,4.7,241),Color3.fromRGB(56,65,75),Enum.Material.Metal)
+ lobbySurfaceText(busStop,"NIGHT BUS",Color3.fromRGB(194,220,228),18)
+ for _,z in ipairs({218,236,254,272})do
+  arenaPart(f,"LobbyRoadMark",Vector3.new(12,.08,.8),Vector3.new(0,.55,z),Color3.fromRGB(191,185,149),Enum.Material.Neon).CanCollide=false
+ end
 
  refreshPhysicalLobby=function()
   local browser=not roomServer
   friendJoinPrompt.Enabled=browser;codePrompt.Enabled=browser
   leavePrompt.Enabled=roomServer and state=="WAITING"
   for _,bay in ipairs(lobbyQueueBays)do if bay.part then bay.part.CanTouch=browser end end
-  local bg=board:FindFirstChild("LobbyLabel");local label=bg and bg:FindFirstChildOfClass("TextLabel")
-  if label then
-   if roomServer then label.Text=string.format("매치 대기 · %d명",#Players:GetPlayers())
-   else label.Text="매칭 칸에 들어가면 자동으로 시작"end
-  end
  end
  refreshPhysicalLobby()
  workspace:SetAttribute("PhysicalLobbyReady",true)
  workspace:SetAttribute("WorldLobbyMode",true)
+ workspace:SetAttribute("LobbyArtPass","MIDNIGHT_TERMINAL_CITY_V1")
  return f
 end
 
