@@ -1598,7 +1598,7 @@ end
 local function clearBots()
  for _,b in ipairs(bots)do
   if b.visuals then for _,v in ipairs(b.visuals)do if v.part then v.part:Destroy()end end end
-  if b.part then b.part:Destroy()end
+  if b.model and b.model.Parent then b.model:Destroy()elseif b.part then b.part:Destroy()end
  end
  bots={};monsterBot=nil
 end
@@ -1643,25 +1643,63 @@ local function decorateClassicMonster(anchor,id)
  end
  return visuals
 end
-local function bot(role,pos)
- local p=Instance.new("Part");p.Name=role=="MONSTER"and"AI_MONSTER"or"AI_SURVIVOR";p.Anchored=true;p.CanCollide=false;p.CanTouch=false;p.Size=Vector3.new(2.8,3.6,1.9);p.Position=pos
- p.Color=role=="MONSTER"and Color3.fromRGB(65,34,44)or Color3.fromRGB(66,94,108);p.Material=role=="MONSTER"and Enum.Material.Fabric or Enum.Material.SmoothPlastic;p.Parent=arena
- local visuals={}
- if role=="MONSTER"then
-  visuals=decorateClassicMonster(p,"DRACULA")
- else
-  local function add(name,size,offset,color,material,shape)
-   local x=botVisualPart(p,name,size,offset,color,material,shape);table.insert(visuals,{part=x,offset=offset,rotation=CFrame.identity});return x
-  end
-  add("AIHumanHead",Vector3.new(2.05,2.05,1.9),Vector3.new(0,2.8,0),Color3.fromRGB(211,181,153),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
-  add("AIHumanHair",Vector3.new(2.12,.55,1.95),Vector3.new(0,3.65,.05),Color3.fromRGB(47,38,36),Enum.Material.Fabric)
-  add("AIHumanArmL",Vector3.new(.62,2.7,.72),Vector3.new(-1.7,-.1,0),Color3.fromRGB(66,94,108),Enum.Material.Fabric)
-  add("AIHumanArmR",Vector3.new(.62,2.7,.72),Vector3.new(1.7,-.1,0),Color3.fromRGB(66,94,108),Enum.Material.Fabric)
-  add("AIHumanLegL",Vector3.new(.78,2.85,.9),Vector3.new(-.64,-3.1,0),Color3.fromRGB(42,47,54),Enum.Material.Fabric)
-  add("AIHumanLegR",Vector3.new(.78,2.85,.9),Vector3.new(.64,-3.1,0),Color3.fromRGB(42,47,54),Enum.Material.Fabric)
-  add("AIHumanTool",Vector3.new(.42,1.9,.42),Vector3.new(1.9,-.1,-.65),Color3.fromRGB(91,205,220),Enum.Material.Neon)
+local function createBotAvatar(role,pos)
+ local description=Instance.new("HumanoidDescription")
+ description.HeightScale=role=="MONSTER"and 1.08 or 1
+ description.WidthScale=role=="MONSTER"and 1.06 or 1
+ description.DepthScale=role=="MONSTER"and 1.06 or 1
+ description.HeadScale=1
+ local ok,model=pcall(function()return Players:CreateHumanoidModelFromDescription(description,Enum.HumanoidRigType.R15)end)
+ if not ok or not model then return nil,nil end
+ model.Name=role=="MONSTER"and"AI_MONSTER_R15"or"AI_SURVIVOR_R15"
+ model.Parent=arena
+ local rootPart=model:FindFirstChild("HumanoidRootPart")
+ local humanoid=model:FindFirstChildOfClass("Humanoid")
+ if humanoid then
+  humanoid.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.None
+  humanoid.NameDisplayDistance=0
+  humanoid.HealthDisplayDistance=0
  end
- local b={part=p,role=role,speed=role=="MONSTER"and 18 or 14,monsterId="DRACULA",visuals=visuals,infectReadyAt=0,purifyReadyAt=0,infectAttackReadyAt=0,energy=energyMax(),motionClock=math.random()*6.28}
+ for _,d in ipairs(model:GetDescendants())do
+  if d:IsA("BasePart")then
+   d.Anchored=true;d.CanCollide=false;d.CanTouch=false;d.CanQuery=false
+   if d~=rootPart then
+    if role=="MONSTER"then
+     d.Color=Color3.fromRGB(92,63,72)
+     d.Material=Enum.Material.Fabric
+    elseif d.Name:find("Torso")then
+     d.Color=Color3.fromRGB(58,85,105)
+     d.Material=Enum.Material.Fabric
+    elseif d.Name:find("Leg")then
+     d.Color=Color3.fromRGB(45,49,57)
+     d.Material=Enum.Material.Fabric
+    end
+   end
+  elseif d:IsA("Script")or d:IsA("LocalScript")then d:Destroy()end
+ end
+ if rootPart then rootPart.Transparency=1 end
+ local hi=Instance.new("Highlight");hi.Name="AIRoleHighlight";hi.FillTransparency=role=="MONSTER"and .72 or .9;hi.OutlineTransparency=.35
+ hi.FillColor=role=="MONSTER"and Color3.fromRGB(120,42,58)or Color3.fromRGB(75,143,169)
+ hi.OutlineColor=role=="MONSTER"and Color3.fromRGB(225,86,103)or Color3.fromRGB(142,213,235)
+ hi.Parent=model
+ model:PivotTo(CFrame.new(pos))
+ return model,rootPart
+end
+
+local function setBotCFrame(b,cf)
+ if b.model and b.model.Parent then b.model:PivotTo(cf)
+ elseif b.part then b.part.CFrame=cf end
+end
+
+local function bot(role,pos)
+ local model,p=createBotAvatar(role,pos)
+ local visuals={}
+ if not p then
+  p=Instance.new("Part");p.Name=role=="MONSTER"and"AI_MONSTER"or"AI_SURVIVOR";p.Anchored=true;p.CanCollide=false;p.CanTouch=false;p.Size=Vector3.new(2.8,3.6,1.9);p.Position=pos;p.Transparency=.18
+  p.Color=role=="MONSTER"and Color3.fromRGB(65,34,44)or Color3.fromRGB(66,94,108);p.Material=Enum.Material.Fabric;p.Parent=arena
+  if role=="MONSTER"then visuals=decorateClassicMonster(p,"DRACULA")end
+ end
+ local b={part=p,model=model,role=role,speed=role=="MONSTER"and 18 or 14,monsterId="DRACULA",visuals=visuals,infectReadyAt=0,purifyReadyAt=0,infectAttackReadyAt=0,energy=energyMax(),motionClock=math.random()*6.28}
  table.insert(bots,b);return b
 end
 local function weightPick(list)
@@ -1892,8 +1930,15 @@ end
 local function infectBot(b,sourcePlayer)
  if not b or b.role~="SURVIVOR"then return false end
  if b.visuals then for _,v in ipairs(b.visuals)do if v.part then v.part:Destroy()end end end
- b.role="MONSTER";b.part.Name="AI_MONSTER";b.part.Color=Color3.fromRGB(65,34,44);b.part.Material=Enum.Material.Fabric;b.speed=18;b.infectReadyAt=os.clock()+2.5
- b.visuals=decorateClassicMonster(b.part,"DRACULA")
+ b.role="MONSTER";b.part.Name="AI_MONSTER";b.speed=18;b.infectReadyAt=os.clock()+2.5
+ if b.model and b.model.Parent then
+  b.model.Name="AI_MONSTER_R15"
+  for _,d in ipairs(b.model:GetDescendants())do if d:IsA("BasePart")and d~=b.part then d.Color=Color3.fromRGB(92,63,72);d.Material=Enum.Material.Fabric end end
+  local hi=b.model:FindFirstChild("AIRoleHighlight");if hi and hi:IsA("Highlight")then hi.FillTransparency=.72;hi.FillColor=Color3.fromRGB(120,42,58);hi.OutlineColor=Color3.fromRGB(225,86,103)end
+ else
+  b.part.Color=Color3.fromRGB(65,34,44);b.part.Material=Enum.Material.Fabric
+  b.visuals=decorateClassicMonster(b.part,"DRACULA")
+ end
  if sourcePlayer then awardContribution(sourcePlayer,(C.Reward and C.Reward.InfectAICoins)or 1)end
  return true
 end
@@ -1965,7 +2010,7 @@ local function animateCelebratingBots(winner,duration)
     if b.part and b.part.Parent then
      local hop=math.abs(math.sin(t*5+row.phase))*.45
      local yaw=math.rad(math.sin(t*4+row.phase)*12)
-     b.part.CFrame=row.cf*CFrame.new(0,hop,0)*CFrame.Angles(0,yaw,0)
+     setBotCFrame(b,row.cf*CFrame.new(0,hop,0)*CFrame.Angles(0,yaw,0))
     end
    end
    task.wait(.06)
@@ -2031,7 +2076,7 @@ local function removeBot(target)
  for i=#bots,1,-1 do
   if bots[i]==target then
    local b=bots[i];if b.visuals then for _,v in ipairs(b.visuals)do if v.part then v.part:Destroy()end end end
-   if b.part then b.part:Destroy()end;table.remove(bots,i);return true
+   if b.model and b.model.Parent then b.model:Destroy()elseif b.part then b.part:Destroy()end;table.remove(bots,i);return true
   end
  end
  return false
@@ -2504,7 +2549,7 @@ RunService.Heartbeat:Connect(function(dt)
       local d=Vector3.new(bestPos.X-b.part.Position.X,0,bestPos.Z-b.part.Position.Z)
       if d.Magnitude>.1 then
        local dir=d.Unit;local nextPos=b.part.Position+dir*math.min(d.Magnitude,b.speed*dt)
-       b.part.CFrame=CFrame.lookAt(nextPos,nextPos+dir)
+       setBotCFrame(b,CFrame.lookAt(nextPos,nextPos+dir))
       end
      end
     end
@@ -2524,7 +2569,7 @@ RunService.Heartbeat:Connect(function(dt)
      local away=b.part.Position-nearest;local d=Vector3.new(away.X,0,away.Z)
      if d.Magnitude>.1 then
       local dir=d.Unit;local nextPos=b.part.Position+dir*b.speed*dt
-      b.part.CFrame=CFrame.lookAt(nextPos,nextPos+dir)
+      setBotCFrame(b,CFrame.lookAt(nextPos,nextPos+dir))
      end
     end
    end
