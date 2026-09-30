@@ -146,10 +146,23 @@ test('single changed Roblox game redispatches exact runtime game id',()=>{
   assert.match(workflow,/ROBLOX_CANONICAL_RUNTIME_REDISPATCH=EXACT:/);
 });
 
-
-test('source drift sync has a dedicated non-starving concurrency lane',()=>{
+test('multiple changed Roblox games fan out as exact runtimes instead of one batch barrier',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
-  assert.match(workflow,/concurrency:\s*\n\s*group: roblox-source-drift-runtime-writer-v2\s*\n\s*cancel-in-progress: false/);
+  const dispatch=workflow.slice(workflow.indexOf('- name: Dispatch canonical Roblox runtime for fresh build'));
+  assert.match(dispatch,/for id in "\$\{passed_ids\[@\]\}"/);
+  assert.match(dispatch,/gh workflow run company-development-roblox-runtime\.yml[^\n]*-f game_id="\$id"/);
+  assert.match(dispatch,/ROBLOX_CANONICAL_RUNTIME_REDISPATCH=DEDUPED_ACTIVE:/);
+  assert.match(dispatch,/ROBLOX_CANONICAL_RUNTIME_EXACT_DISPATCH_COUNT=/);
+  assert.doesNotMatch(dispatch,/ROBLOX_CANONICAL_RUNTIME_REDISPATCH=BATCH/);
+});
+
+
+test('source drift sync uses per-source optimistic writers without consuming heavy game runners',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  assert.match(workflow,/group: roblox-source-drift-runtime-writer-v3-\$\{\{ inputs\.game_id \|\| github\.event\.pull_request\.number \|\| github\.sha \|\| github\.run_id \}\}/);
+  assert.match(workflow,/cancel-in-progress: false/);
+  assert.match(workflow,/runs-on: ubuntu-slim/);
+  assert.doesNotMatch(workflow,/group: roblox-source-drift-runtime-writer-v2\s*$/m);
   assert.doesNotMatch(workflow,/group: company-runtime-writer/);
   assert.match(workflow,/for i in 1 2 3 4 5; do[\s\S]*git push origin HEAD:"\$COMPANY_RUNTIME_BRANCH"/);
   assert.match(workflow,/regenerate_runtime_state/);
@@ -269,10 +282,10 @@ test('unknown Roblox build-source diff is non-mutating',()=>{
 test('source drift writer generation invalidates stale queued writers before runtime mutation',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
   const source=fs.readFileSync('tools/company-roblox-source-drift-sync.mjs','utf8');
-  assert.match(workflow,/group: roblox-source-drift-runtime-writer-v2/);
-  assert.match(workflow,/ROBLOX_SOURCE_DRIFT_SYNC_GENERATION: v2/);
+  assert.match(workflow,/group: roblox-source-drift-runtime-writer-v3-/);
+  assert.match(workflow,/ROBLOX_SOURCE_DRIFT_SYNC_GENERATION: v3/);
   assert.match(source,/ROBLOX_SOURCE_DRIFT_SYNC_GENERATION_STALE/);
-  assert.match(source,/generation!==['"]v2['"]/);
+  assert.match(source,/generation!==['"]v3['"]/);
 });
 
 
