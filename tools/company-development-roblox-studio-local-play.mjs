@@ -2255,7 +2255,7 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
 
 export async function runOfficialStudioMcpPlay({
   mcpCommand='',output='',expectedStudioName='',timeoutMs=45000,toolAttempts=5,toolDelayMs=1000,
-  settingState='',settingCandidatePathCount=-1,actualPlayContractPath='',auditProfile='FAST_DEEP'
+  settingState='',settingCandidatePathCount=-1,actualPlayContractPath='',auditProfile='FAST_DEEP',singleWindow=true
 }={}){
   const actualPlayLaunch=actualPlayContractPath&&fs.existsSync(actualPlayContractPath)?readJson(actualPlayContractPath):{};
   const actualPlayContract=deriveStudioActualPlayContract(actualPlayLaunch);
@@ -2744,7 +2744,13 @@ export async function runOfficialStudioMcpPlay({
         }
       }
       const multiplayerDeclared=actualPlayContract?.adaptiveCoverage?.signals?.multiplayer===true;
-      if(auditMode==='F9_SOAK'&&multiplayerDeclared){
+      // 한 창 검사는 추가 클라이언트를 만들지 않으며 멀티 실증을 주장하지 않는다.
+      if(auditMode==='F9_SOAK'&&multiplayerDeclared&&singleWindow){
+        multiplayerAuditSummary={pass:false,skipped:true,reason:'OWNER_SINGLE_WINDOW_ONLY'};
+        checkpoint('multiplayer-runtime-not-executed',false);
+        console.log('ROBLOX_STUDIO_MULTIPLAYER_RUNTIME=SKIPPED_OWNER_SINGLE_WINDOW_ONLY');
+      }
+      if(auditMode==='F9_SOAK'&&multiplayerDeclared&&!singleWindow){
         if(started){
           try{
             const stopTool=client.tool('start_stop_play');
