@@ -6878,7 +6878,9 @@
       "coding_negative_31k3ri",
       "coding_negative_18ncnqg",
       "coding_negative_53mo6y",
-      "coding_negative_lz7xoj"
+      "coding_negative_lz7xoj",
+      "coding_negative_1pxc0hc",
+      "coding_negative_9qhqbb"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -18262,7 +18264,7 @@
         "verifiedApplications": 13,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 53,
-        "verifiedFailures": 1332,
+        "verifiedFailures": 1334,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1,
@@ -18286,13 +18288,13 @@
           },
           "UNITY_WEB_BOOTSTRAP_SHELL": {
             "verifiedApplications": 0,
-            "verifiedFailures": 38,
+            "verifiedFailures": 39,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
             "totalContextBytes": 0,
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_uqdyfp",
-            "lastUpdatedAt": "2026-09-30T12:28:39.721Z"
+            "lastFailureEvidence": "coding_negative_1pxc0hc",
+            "lastUpdatedAt": "2026-09-30T13:04:51.163Z"
           }
         },
         "failureFingerprints": {
@@ -18488,23 +18490,23 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 52,
+            "verifiedFailures": 53,
             "games": {},
             "targets": {},
             "failureGames": {
-              "cozy-island": 52
+              "cozy-island": 53
             },
             "failureTargets": {
-              "unity": 52
+              "unity": 53
             },
             "failureClasses": {
-              "EDIT_MATCH": 50,
+              "EDIT_MATCH": 51,
               "TIMEOUT": 1,
               "PERFORMANCE_SANITY": 1
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_uqdyfp",
-            "lastUpdatedAt": "2026-09-30T12:28:39.721Z"
+            "lastFailureEvidence": "coding_negative_1pxc0hc",
+            "lastUpdatedAt": "2026-09-30T13:04:51.163Z"
           },
           "unity|INVALID_PATH|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 1,
@@ -18592,21 +18594,21 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 48,
+            "verifiedFailures": 49,
             "games": {},
             "targets": {},
             "failureGames": {
-              "line-defense": 48
+              "line-defense": 49
             },
             "failureTargets": {
-              "unity": 48
+              "unity": 49
             },
             "failureClasses": {
-              "STUDIO_QUALITY_DELTA": 48
+              "STUDIO_QUALITY_DELTA": 49
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_2j9fhi",
-            "lastUpdatedAt": "2026-09-30T12:30:05.618Z"
+            "lastFailureEvidence": "coding_negative_9qhqbb",
+            "lastUpdatedAt": "2026-09-30T13:04:51.169Z"
           },
           "roblox|INVALID_PATH|NO_OP|OTHER|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -18966,8 +18968,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_gu6x9n",
-        "lastFailureEvidence": "coding_negative_lz7xoj",
-        "lastUpdatedAt": "2026-09-30T13:03:53.425Z"
+        "lastFailureEvidence": "coding_negative_9qhqbb",
+        "lastUpdatedAt": "2026-09-30T13:04:51.169Z"
       }
     }
   },
@@ -21720,7 +21722,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-30T13:03:53.498Z",
+    "lastBuiltAt": "2026-09-30T13:04:51.245Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -29980,5 +29982,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-30T13:03:53.498Z"
+  "updatedAt": "2026-09-30T13:04:51.245Z"
 }
