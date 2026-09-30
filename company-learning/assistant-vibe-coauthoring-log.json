@@ -506,7 +506,7 @@
       "problem": "Company Growth Marketing Runtime failed before creating any job on merged main ce52c5b6. The same startup_failure was present on the reusable-worker introduction commit 580833739, so retrying the run could not repair it. PR verification then exposed two independent Owner All Games Design Reset failures: the workflow first omitted the staged entry module's relative company-game-seed-contract.mjs dependency, and the repaired run then spent its full 10-minute job budget fetching every branch and tag before reaching validation. After the permission repair reached main, Growth Marketing created its plan job for the first time but inherited the same unbounded all-ref checkout pattern already proven to exhaust the sibling reset job budget. The bounded checkout then exposed a concurrent-writer failure: another job advanced vibe2-unreal-core between fetch and push, while all three retries pushed the same stale detached commit without refreshing or regenerating from the new queue head. The successful concurrency-safe plan also revealed that an old queued horror-escape-room marketing task was still selected even though the current owner-exclusive policy forbids Vibe queue ownership for that game.",
       "rootCause": "REUSABLE_WORKFLOW_PERMISSION_ESCALATION_REJECTED_AT_WORKFLOW_START_PLUS_INCOMPLETE_STAGED_ESM_DEPENDENCY_SET_PLUS_REPEATED_UNBOUNDED_FULL_REPOSITORY_CHECKOUT_PLUS_STALE_PUSH_RETRY_WITHOUT_QUEUE_REGENERATION_PLUS_OWNER_EXCLUSIVE_GAME_NOT_FILTERED_AT_SYSTEM_AI_RESERVATION",
       "decision": "Keep the existing reusable System-AI worker, grant the caller exactly the write scopes already required by the called workflow, bound each control-plane checkout to only the refs consumed by that job, and enforce the central owner-exclusive game list at both planning and reservation boundaries.",
-      "change": "Added pull-requests: write to the existing growth-marketing caller permissions and added a regression that compares all three requested reusable-worker scopes with the caller before Actions dispatch. Added the existing game-seed contract module to the reset workflow trigger and staged /tmp module set, with an import-order regression. Replaced the reset job's all-ref checkout with a depth-one main checkout and explicit depth-one main/company-runtime refspec refresh inside its retry loop. Applied the same bounded pattern to Growth Marketing: depth-one main checkout plus explicit depth-one company-runtime/vibe2-unreal-core refspec fetch. Reworked each marketing persist retry to force-refresh the latest control ref, reload the latest shared queue, regenerate the plan, create a fresh commit, and only then push. Added central ownerExclusiveDevelopment.gameIds exclusion to marketing planning and both targeted and normal System-AI reservation without modifying the protected game's task or files. No queue shape, marketing rules, game source, release state, or horror-escape-room artifact changed.",
+      "change": "Added pull-requests: write to the existing growth-marketing caller permissions and added a regression that compares all three requested reusable-worker scopes with the caller before Actions dispatch. Added the existing game-seed contract module to the reset workflow trigger and staged /tmp module set, with an import-order regression. Replaced the reset job's all-ref checkout with a depth-one main checkout and explicit depth-one main/company-runtime refspec refresh inside its retry loop. Applied the same bounded pattern to Growth Marketing: depth-one main checkout plus explicit depth-one company-runtime/vibe2-unreal-core refspec fetch. Reworked each marketing persist retry to force-refresh the latest control ref, reload the latest shared queue, regenerate the plan, create a fresh commit, and only then push. Added central ownerExclusiveDevelopment.gameIds exclusion to marketing planning, target selection, and both targeted and normal System-AI reservation without modifying the protected game's task or files. No queue shape, marketing rules, game source, release state, or horror-escape-room artifact changed.",
       "evidence": [
         "merged-main:ce52c5b611b1e1fe7281e56275b322aeff99a535",
         "failure-run:36752422424:startup_failure:no-jobs",
@@ -528,7 +528,8 @@
         "bounded-growth-marketing-failure:remote-control-head-advanced-and-three-identical-stale-pushes-rejected",
         "concurrency-safe-marketing-run:36759259828",
         "concurrency-safe-marketing-plan-job:110037311619:PASS",
-        "owner-exclusive-selection-leak:marketing-horror-escape-room-pre-release-v1"
+        "owner-exclusive-selection-leak:marketing-horror-escape-room-pre-release-v1",
+        "owner-exclusive-filter-main-run:36760019152:planner-and-reservation-boundary-pass-target-list-still-unfiltered"
       ],
       "reusablePatterns": [
         "REUSABLE_CALLER_MUST_GRANT_EVERY_PERMISSION_REQUESTED_BY_CALLEE",
@@ -547,16 +548,17 @@
         "SELECTING_PREEXISTING_OWNER_EXCLUSIVE_TASKS_FROM_A_SHARED_QUEUE"
       ],
       "qa": [
-        "local focused System-AI and design reset regression: 28/28 PASS",
+        "local focused System-AI and design reset regression: 28/28 PASS including selector assertions",
         "local staged reset ESM import: PASS",
         "merged main Owner All Games Design Reset run 36757045661: PASS",
         "bounded checkout reached generation and persist in run 36757725022: PASS until concurrent push rejection",
         "concurrency-safe Growth Marketing run 36759259828 plan/persist/select: PASS",
-        "owner-exclusive planning and reservation post-change GitHub Actions: PENDING",
+        "owner-exclusive planning and reservation post-change main execution: PASS",
+        "owner-exclusive target selection post-change GitHub Actions: PENDING",
         "Studio actual execution: NOT_APPLICABLE_AND_NOT_RUN"
       ],
       "learningState": "TRACE_ONLY",
-      "liveState": "PERMISSION_AND_DESIGN_RESET_REPAIRS_MERGED_AT_43A9A74B; BOUNDED_MARKETING_CHECKOUT_MERGED_AT_48CB4CC4; CONCURRENCY_SAFE_MARKETING_PERSIST_MERGED_AT_6BB7DA97; DESIGN_RESET_AND_MARKETING_PLAN_ACTUAL_ACTION_PASS; OWNER_EXCLUSIVE_SYSTEM_AI_FILTER_POST_CHANGE_ACTION_PENDING"
+      "liveState": "PERMISSION_AND_DESIGN_RESET_REPAIRS_MERGED_AT_43A9A74B; BOUNDED_MARKETING_CHECKOUT_MERGED_AT_48CB4CC4; CONCURRENCY_SAFE_MARKETING_PERSIST_MERGED_AT_6BB7DA97; OWNER_EXCLUSIVE_PLANNER_AND_RESERVATION_FILTER_MERGED_AT_560CF306; DESIGN_RESET_AND_MARKETING_PLAN_ACTUAL_ACTION_PASS; OWNER_EXCLUSIVE_TARGET_SELECTOR_POST_CHANGE_ACTION_PENDING"
     }
   ]
 }
