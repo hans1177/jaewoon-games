@@ -1,0 +1,15 @@
+{
+  "summary": "Implement game-specific directive for player state and region handling",
+  "expectedEffect": "The directive ensures the player state is correctly updated when moving to a new region",
+  "edits": [
+    {
+      "path": "Assets/Scripts/GameCore.cs",
+      "find": "            if (Player.level < 1)",
+      "replace": "            if (Player.level < 1)\n                Player.level = 1;"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
