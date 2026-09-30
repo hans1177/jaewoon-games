@@ -638,7 +638,7 @@ end
 local function lobbyTerminal(parent,name,pos,labelText,actionText,color,onTriggered)
  local base=arenaPart(parent,name,Vector3.new(8,6,5),pos,color or Color3.fromRGB(48,58,72),Enum.Material.Metal)
  base:SetAttribute("LobbyTerminal",true)
- local screen=arenaPart(parent,name.."Screen",Vector3.new(6.4,2.7,.35),pos+Vector3.new(0,.65,-2.68),Color3.fromRGB(86,186,225),Enum.Material.Neon);screen.CanCollide=false
+ local screen=arenaPart(parent,name.."Screen",Vector3.new(6.4,2.7,.35),pos+Vector3.new(0,.65,-2.68),Color3.fromRGB(152,111,69),Enum.Material.Neon);screen.CanCollide=false
  lobbyLabel(base,labelText,Color3.fromRGB(232,239,248))
  local prompt=Instance.new("ProximityPrompt");prompt.Name=name.."Prompt";prompt.ObjectText=labelText;prompt.ActionText=actionText;prompt.HoldDuration=.25;prompt.MaxActivationDistance=10;prompt.RequiresLineOfSight=false;prompt.Parent=base
  prompt.Triggered:Connect(onTriggered)
@@ -759,7 +759,7 @@ local function makePhysicalLobby()
  end
  for _,spec in ipairs({{-75,286},{-69,289},{72,287},{77,291}})do
   arenaPart(f,"OldLuggage",Vector3.new(4.4,4.8,3),Vector3.new(spec[1],2.8,spec[2]),Color3.fromRGB(71,47,36),Enum.Material.WoodPlanks)
-  local strap=arenaPart(f,"LuggageStrap",Vector3.new(.45,4.9,3.1),Vector3.new(spec[1],2.8,spec[2]),Color3.fromRGB(35,29,27),Enum.Material.Leather)
+  local strap=arenaPart(f,"LuggageStrap",Vector3.new(.45,4.9,3.1),Vector3.new(spec[1],2.8,spec[2]),Color3.fromRGB(35,29,27),Enum.Material.Fabric)
   strap.CanCollide=false
  end
 
