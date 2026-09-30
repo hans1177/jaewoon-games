@@ -2,7 +2,7 @@
   "version": 28,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
-  "updatedAt": "2026-09-30",
+  "updatedAt": "2026-09-30T12:48:00Z",
   "publicInspectionSurface": true,
   "productionPassAuthority": false,
   "rules": {
@@ -3911,6 +3911,33 @@
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
       "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+    },
+    {
+      "id": "roblox-midnight-personal-manor-v1",
+      "title": "심야대탈출 개인 폐저택 · 집사와 공포 코미디 소품",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/midnight-manor/generated/manor-lobby.glb",
+      "previewUrl": "/assets/roblox/midnight-manor/preview.html",
+      "license": "project-original + Kenney CC0",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [
+        "horror-escape-room"
+      ],
+      "sourceFiles": [
+        "assets/roblox/midnight-manor/build.py",
+        "assets/roblox/midnight-manor/asset-manifest.json"
+      ],
+      "downloadedFreeModels": 231,
+      "originalNpcModels": [
+        "butler",
+        "undertaker",
+        "archivist"
+      ]
     }
   ],
   "research": [
