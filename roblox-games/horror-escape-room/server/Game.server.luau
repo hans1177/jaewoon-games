@@ -43,7 +43,9 @@ local function bootstrapLobbyCharacter(player,character)
  end)
 end
 local function bindBootstrapLobbySpawn(player)
- player.RespawnLocation=lobbyBootstrapSpawn
+ if workspace:GetAttribute("LobbyPhase")~="RUNNING"and workspace:GetAttribute("RoomState")~="RUNNING"then
+  player.RespawnLocation=lobbyBootstrapSpawn
+ end
  player.CharacterAdded:Connect(function(character)bootstrapLobbyCharacter(player,character)end)
  if player.Character then bootstrapLobbyCharacter(player,player.Character)end
 end
@@ -2901,6 +2903,7 @@ local function applyRoleVisual(p,r)
 end
 local function setRole(p,r)
  p:SetAttribute("Role",r);p:SetAttribute("Frozen",false)
+ if state=="RUNNING"and foundationSpawn and foundationSpawn.Parent then p.RespawnLocation=foundationSpawn end
  if r=="MONSTER"or r=="SURVIVOR"then p:SetAttribute("RoundTeam",r)end
  restoreMovement(p,r=="MONSTER"and 19 or 16);applyRoleVisual(p,r)
  tagGraceUntil[p]=os.clock()+6
@@ -3028,6 +3031,7 @@ local function startRound()
   setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
   p:SetAttribute("RoundContributionCoins",0);p:SetAttribute("LastRoundBaseReward",0);p:SetAttribute("LastRoundWinBonus",0);p:SetAttribute("LastRoundContribution",0)
   p:SetAttribute("RoundParticipant",true)
+  if foundationSpawn and foundationSpawn.Parent then p.RespawnLocation=foundationSpawn end
   ghostSeenThisRound[p]={_count=0}
   p:SetAttribute("CelebrationName","");p:SetAttribute("CelebrationCaption","");p:SetAttribute("CelebrationWinner",false);p:SetAttribute("CelebrationComic",false)
   local role=startingMonsters[p]and"MONSTER"or"SURVIVOR";setRole(p,role);p:SetAttribute("RoundState","RUNNING")
@@ -3665,10 +3669,31 @@ local function onCharacter(p)
  local readyDeadline=os.clock()+10
  while workspace:GetAttribute("MapReady")~=true and os.clock()<readyDeadline do task.wait(.1)end
  c=p.Character
- if c then validateCharacterFoundation(p,c)end
+ if not c or not c.Parent then return end
+ local h=c:WaitForChild("Humanoid",5);local r=c:WaitForChild("HumanoidRootPart",5)
+ if not h or not r then return end
+ if foundationSpawn and foundationSpawn.Parent then p.RespawnLocation=foundationSpawn end
  local role=p:GetAttribute("Role")
- if role=="MONSTER"or role=="SURVIVOR"then setRole(p,role);restoreMovement(p,role=="MONSTER"and 19 or 16)
- elseif role=="ELIMINATED"then local rr=root(p);if rr then rr.Anchored=true end end
+ if role=="MONSTER"or role=="SURVIVOR"then
+  setRole(p,role)
+  restoreMovement(p,role=="MONSTER"and 19 or 16)
+  local pool=role=="MONSTER"and monsterSpawns or survivorSpawns
+  local index=(math.abs(p.UserId)%#pool)+1
+  local spawnPos=pool[index]
+  local faceTarget=role=="MONSTER"and Vector3.new(0,3,0)or Vector3.new(0,3,0)
+  teleport(p,spawnPos,faceTarget)
+  p:SetAttribute("RoundRespawnGroundedAt",workspace:GetServerTimeNow())
+  task.delay(.15,function()
+   if p.Parent==Players and p.Character==c and state=="RUNNING"then validateCharacterFoundation(p,c)end
+  end)
+ elseif role=="ELIMINATED"then
+  r.Anchored=true
+ else
+  -- RUNNING 중 역할 미지정 캐릭터가 생기면 허공에 두지 않고 안전 지점에 고정한다.
+  teleport(p,survivorSpawns[1],Vector3.new(0,3,0))
+  p:SetAttribute("Role","WAITING")
+  p:SetAttribute("RoundState","ROOM_CONNECTING")
+ end
 end
 Players.PlayerAdded:Connect(function(p)
  load(p)
@@ -4394,15 +4419,21 @@ RunService.Heartbeat:Connect(function(dt)
    local horizontal=Vector3.new(r.AssemblyLinearVelocity.X,0,r.AssemblyLinearVelocity.Z).Magnitude
    local previous=lastValidPosition[p]
    local inBounds=math.abs(pos.X)<=C.ArenaLimit and math.abs(pos.Z)<=C.ArenaLimit and pos.Y>=-8 and pos.Y<=42
+   local previousInBounds=previous and math.abs(previous.X)<=C.ArenaLimit and math.abs(previous.Z)<=C.ArenaLimit and previous.Y>=-8 and previous.Y<=42
    local grace=now<(movementGraceUntil[p]or 0)
    local stepOkay=not previous or(pos-previous).Magnitude<=C.MaxTeleportStep
    local velocityOkay=horizontal<=C.MaxHorizontalVelocity
    if grace or(inBounds and stepOkay and velocityOkay)then
     lastValidPosition[p]=pos
-   elseif previous then
+   elseif previous and previousInBounds then
     movementGraceUntil[p]=now+.35
     r.AssemblyLinearVelocity=Vector3.zero
     r.CFrame=CFrame.new(previous)
+   else
+    local role=p:GetAttribute("Role")
+    local pool=role=="MONSTER"and monsterSpawns or survivorSpawns
+    local safe=pool[(math.abs(p.UserId)%#pool)+1]
+    teleport(p,safe,Vector3.new(0,3,0))
    end
   elseif r then
    lastValidPosition[p]=r.Position
