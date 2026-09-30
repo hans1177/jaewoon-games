@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-09-30T20:44:49.114Z",
+  "updatedAt": "2026-09-30T21:54:48.106Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -1980,8 +1980,8 @@
       "externalReleaseBlockingOnly": true,
       "status": "OPEN",
       "createdAt": "2026-09-27T02:05:11.299Z",
-      "updatedAt": "2026-09-30T20:44:49.111Z",
-      "occurrenceCount": 301
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 302
     },
     {
       "id": "bug-b3e14193de493e2916b5",
@@ -2560,8 +2560,8 @@
       "externalReleaseBlockingOnly": true,
       "status": "OPEN",
       "createdAt": "2026-09-27T12:01:41.645Z",
-      "updatedAt": "2026-09-30T20:44:49.111Z",
-      "occurrenceCount": 188
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 189
     },
     {
       "id": "bug-0dc7e54671e4c6f10d9d",
@@ -2638,8 +2638,8 @@
       "externalReleaseBlockingOnly": true,
       "status": "OPEN",
       "createdAt": "2026-09-27T22:12:11.993Z",
-      "updatedAt": "2026-09-30T20:44:49.111Z",
-      "occurrenceCount": 197
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 198
     },
     {
       "id": "bug-01db4d43370f3d6ba193",
@@ -2661,8 +2661,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T12:19:58.672Z",
-      "updatedAt": "2026-09-30T20:44:49.111Z",
-      "occurrenceCount": 154
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 155
     },
     {
       "id": "bug-77a622bc131aaa44ec65",
@@ -2707,8 +2707,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T12:54:28.283Z",
-      "updatedAt": "2026-09-30T20:44:49.111Z",
-      "occurrenceCount": 153
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 154
     },
     {
       "id": "bug-9547499e816faf019b38",
@@ -3561,8 +3561,445 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-30T10:38:43.210Z",
-      "updatedAt": "2026-09-30T20:44:49.111Z",
-      "occurrenceCount": 22
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 23
+    },
+    {
+      "id": "bug-e2cc3ec7845deaeffcb4",
+      "gameId": "amusement-tycoon",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "dcd7804bd670bd536180e710e4d0cab46a0370597d386cccca37744248f709c0",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":3,\"platform\":\"UNITY\",\"sourceRevision\":\"e521068400ed4ffa48301811a35e57ad93f44397\",\"sourceRootTreeSha\":\"3246743ecf8d5ecc708c13c4a9871bd9b6039605\",\"sourceFingerprint\":\"995ef442957247e972c942132911dc0fb3be162ef018ad479f436dc6716063ce\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:9826f0d7fd3c0eed7bdee9aaa19391aef3ab304995aa9a7d1f581ce062539077\",\"runtimePassed\":true,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F4_PHYSICS_AND_MOVEMENT\",\"failureStage\":\"F5_INPUT_CAMERA_UI\",\"failureSignature\":\"dcd7804bd670bd536180e710e4d0cab46a0370597d386cccca37744248f709c0\"}"
+      ],
+      "exactFailedStage": "F5_INPUT_CAMERA_UI",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-30T21:54:48.103Z",
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-058af2a3e5abe3741394",
+      "gameId": "bug-defense",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "90fbb26b7e141cea4c0256d6e0e273c1785df05e3a4184349eb32f8af6525e2d",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":3,\"platform\":\"UNITY\",\"sourceRevision\":\"ce1112ea78581b5a2ea212fd55b0141e7b3e1eda\",\"sourceRootTreeSha\":\"e607a1edde76eac8dff375f2e21ddf58306d6154\",\"sourceFingerprint\":\"d444e3efe6e0744d6d2a10060de50425d09cf4ec508b6b3d13bb82723885c4b3\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"90fbb26b7e141cea4c0256d6e0e273c1785df05e3a4184349eb32f8af6525e2d\"}"
+      ],
+      "exactFailedStage": "F0_SOURCE_INTEGRITY",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-30T21:54:48.103Z",
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-29772d843604115f7995",
+      "gameId": "bug-defense",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "90fbb26b7e141cea4c0256d6e0e273c1785df05e3a4184349eb32f8af6525e2d",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":3,\"platform\":\"UNITY\",\"sourceRevision\":\"ce1112ea78581b5a2ea212fd55b0141e7b3e1eda\",\"sourceRootTreeSha\":\"e607a1edde76eac8dff375f2e21ddf58306d6154\",\"sourceFingerprint\":\"d444e3efe6e0744d6d2a10060de50425d09cf4ec508b6b3d13bb82723885c4b3\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"90fbb26b7e141cea4c0256d6e0e273c1785df05e3a4184349eb32f8af6525e2d\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-30T21:54:48.103Z",
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-85b34344bb876e00ae59",
+      "gameId": "fantasy-survival",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "dc2402408797a1a47dc928b14bbc51a2fab3760b1a39d4dbd519b2fcdd24d9f3",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":3,\"platform\":\"UNITY\",\"sourceRevision\":\"a68e86025e2a8f309b29e4ed3645064ca8a633f9\",\"sourceRootTreeSha\":\"40210a8726c08081bd409028e2f629a4783f6415\",\"sourceFingerprint\":\"9d4f69d3d44ea7a44933901f0e4128eb1b1c15dd36e1aa8ee069d44ad6a00414\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:a0f1e9384cc5e536fa18e4a91e6255142d5d6dd287001e401852892bccdbe29f\",\"runtimePassed\":true,\"independentQaPassed\":true,\"multiplayerPassed\":false,\"regressionPassed\":true,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F6_CORE_SERVICES\",\"failureStage\":\"F7_MULTIPLAYER_FOUNDATION\",\"failureSignature\":\"dc2402408797a1a47dc928b14bbc51a2fab3760b1a39d4dbd519b2fcdd24d9f3\"}"
+      ],
+      "exactFailedStage": "F7_MULTIPLAYER_FOUNDATION",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-30T21:54:48.103Z",
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-c7db2be1bdc6c06c3fa4",
+      "gameId": "monster-adventure",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "dcd7804bd670bd536180e710e4d0cab46a0370597d386cccca37744248f709c0",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":3,\"platform\":\"UNITY\",\"sourceRevision\":\"92c76090d928b7724e18a0fd980f1f173a4581ba\",\"sourceRootTreeSha\":\"0279cea278bbe3490d79f3cd682aba5fde9bd5db\",\"sourceFingerprint\":\"c9f9f4d0f48fa1dd7322d2981b9c534d1fe056eb8ed7a92ec8dbb6a2c154e182\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:dd5eb00fd41cfac2127da4486308deb34c995f85f641b3c31646addfaa6aacc7\",\"runtimePassed\":true,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F4_PHYSICS_AND_MOVEMENT\",\"failureStage\":\"F5_INPUT_CAMERA_UI\",\"failureSignature\":\"dcd7804bd670bd536180e710e4d0cab46a0370597d386cccca37744248f709c0\"}"
+      ],
+      "exactFailedStage": "F5_INPUT_CAMERA_UI",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-30T21:54:48.103Z",
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-535f4027d4687f168c8d",
+      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "90fbb26b7e141cea4c0256d6e0e273c1785df05e3a4184349eb32f8af6525e2d",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":3,\"platform\":\"UNITY\",\"sourceRevision\":\"3d6828a8d5630f47b94a720cf8489224af780c4f\",\"sourceRootTreeSha\":\"ea381518a699ad3d1a3e2a2da167a43c2b6679a9\",\"sourceFingerprint\":\"a51164baee140368e2cde27919c2660f16e2a3852471854e5f870e049ce4d3d5\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"90fbb26b7e141cea4c0256d6e0e273c1785df05e3a4184349eb32f8af6525e2d\"}"
+      ],
+      "exactFailedStage": "F0_SOURCE_INTEGRITY",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-30T21:54:48.103Z",
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-a10ad616e88194068c48",
+      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "90fbb26b7e141cea4c0256d6e0e273c1785df05e3a4184349eb32f8af6525e2d",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":3,\"platform\":\"UNITY\",\"sourceRevision\":\"3d6828a8d5630f47b94a720cf8489224af780c4f\",\"sourceRootTreeSha\":\"ea381518a699ad3d1a3e2a2da167a43c2b6679a9\",\"sourceFingerprint\":\"a51164baee140368e2cde27919c2660f16e2a3852471854e5f870e049ce4d3d5\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"90fbb26b7e141cea4c0256d6e0e273c1785df05e3a4184349eb32f8af6525e2d\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-30T21:54:48.103Z",
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-3e5255db86ec9cd6680b",
+      "gameId": "seed-casual-realm-weaver",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":3,\"platform\":\"UNITY\",\"sourceRevision\":\"de506fdbc81793b769e3bbbb5095eb023b83e4d2\",\"sourceRootTreeSha\":\"041b4d2842d3ad836c7388337fa4f22a61bb80f1\",\"sourceFingerprint\":\"010c23095b91c9e3cc42c3e57c815f24b7232a62c2ad945f552998c6b8325677\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:21eb715b96950237ba245dba3911318cffbb22da5130189bfec6a54ce2d805fd\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee\"}"
+      ],
+      "exactFailedStage": "F1_SERVER_BOOT",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-30T21:54:48.103Z",
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-c272efe039f41c969631",
+      "gameId": "seed-casual-realm-weaver",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":3,\"platform\":\"UNITY\",\"sourceRevision\":\"de506fdbc81793b769e3bbbb5095eb023b83e4d2\",\"sourceRootTreeSha\":\"041b4d2842d3ad836c7388337fa4f22a61bb80f1\",\"sourceFingerprint\":\"010c23095b91c9e3cc42c3e57c815f24b7232a62c2ad945f552998c6b8325677\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:21eb715b96950237ba245dba3911318cffbb22da5130189bfec6a54ce2d805fd\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-30T21:54:48.103Z",
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-cbc65679e5670c6722d3",
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "90fbb26b7e141cea4c0256d6e0e273c1785df05e3a4184349eb32f8af6525e2d",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":3,\"platform\":\"UNITY\",\"sourceRevision\":\"3aebc33f093c8668ed6d3b55dc7c469bc7ce687a\",\"sourceRootTreeSha\":\"d18e2b11621eca1afadd94cdd25573f3ee7e045f\",\"sourceFingerprint\":\"179a0797cbe2783a4db133fd59dcd87521c33fac1e1f81027a7496deb4c9bc6e\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"90fbb26b7e141cea4c0256d6e0e273c1785df05e3a4184349eb32f8af6525e2d\"}"
+      ],
+      "exactFailedStage": "F0_SOURCE_INTEGRITY",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-30T21:54:48.103Z",
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-e08b5b4df5fbcdd570e0",
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "90fbb26b7e141cea4c0256d6e0e273c1785df05e3a4184349eb32f8af6525e2d",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":3,\"platform\":\"UNITY\",\"sourceRevision\":\"3aebc33f093c8668ed6d3b55dc7c469bc7ce687a\",\"sourceRootTreeSha\":\"d18e2b11621eca1afadd94cdd25573f3ee7e045f\",\"sourceFingerprint\":\"179a0797cbe2783a4db133fd59dcd87521c33fac1e1f81027a7496deb4c9bc6e\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"90fbb26b7e141cea4c0256d6e0e273c1785df05e3a4184349eb32f8af6525e2d\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-30T21:54:48.103Z",
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-c7eae13400a359586fe0",
+      "gameId": "seed-puzzle-chromatic-cascade",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":3,\"platform\":\"UNITY\",\"sourceRevision\":\"7ff69c6e50d3937841819d892247ed0ec3b7f435\",\"sourceRootTreeSha\":\"fc8e532a76a4d3e37f738ede4a2edbc4bf04620c\",\"sourceFingerprint\":\"b1809cce4a33c7bf5547803946a2b9a867df909e564157c7dbe99acf880e8221\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:b24665bcc343228648ec04f98248243597233976664e520d7f61f332f17140e1\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee\"}"
+      ],
+      "exactFailedStage": "F1_SERVER_BOOT",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-30T21:54:48.103Z",
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-09b2e76882801cb901ad",
+      "gameId": "seed-puzzle-chromatic-cascade",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":3,\"platform\":\"UNITY\",\"sourceRevision\":\"7ff69c6e50d3937841819d892247ed0ec3b7f435\",\"sourceRootTreeSha\":\"fc8e532a76a4d3e37f738ede4a2edbc4bf04620c\",\"sourceFingerprint\":\"b1809cce4a33c7bf5547803946a2b9a867df909e564157c7dbe99acf880e8221\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:b24665bcc343228648ec04f98248243597233976664e520d7f61f332f17140e1\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-30T21:54:48.103Z",
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-724fa8054f1a9e766dc0",
+      "gameId": "seed-single-defense-strat-celestial-bastion",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":3,\"platform\":\"UNITY\",\"sourceRevision\":\"06bc967c543e1825930a53c3716c7e3a80711078\",\"sourceRootTreeSha\":\"74243b3582ca35ba9069dc2d81d3eed7a171a40d\",\"sourceFingerprint\":\"f30ac3f15e330ca23bc36587aacc77700d7d90b23c939afc9be02635ae40de40\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:336353817793b587d2013307ea4a5e8213c20f5f8b1a0e07431726a329bff85d\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee\"}"
+      ],
+      "exactFailedStage": "F1_SERVER_BOOT",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-30T21:54:48.103Z",
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-2248ab5802d4785b1e67",
+      "gameId": "seed-single-defense-strat-celestial-bastion",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":3,\"platform\":\"UNITY\",\"sourceRevision\":\"06bc967c543e1825930a53c3716c7e3a80711078\",\"sourceRootTreeSha\":\"74243b3582ca35ba9069dc2d81d3eed7a171a40d\",\"sourceFingerprint\":\"f30ac3f15e330ca23bc36587aacc77700d7d90b23c939afc9be02635ae40de40\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:336353817793b587d2013307ea4a5e8213c20f5f8b1a0e07431726a329bff85d\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-30T21:54:48.103Z",
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-d9462c23509f16474d87",
+      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "90fbb26b7e141cea4c0256d6e0e273c1785df05e3a4184349eb32f8af6525e2d",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":3,\"platform\":\"UNITY\",\"sourceRevision\":\"348df0432e88cc64bb59755a5d24bfc3e202e9ad\",\"sourceRootTreeSha\":\"6684c0278102e15d93a7765b9ce5dfefcf304bd0\",\"sourceFingerprint\":\"50cea2c23d8e1535b37d53199961e578d7ee5078843a74702244db3613030993\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"90fbb26b7e141cea4c0256d6e0e273c1785df05e3a4184349eb32f8af6525e2d\"}"
+      ],
+      "exactFailedStage": "F0_SOURCE_INTEGRITY",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-30T21:54:48.103Z",
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-76b8f30aed3e1741de96",
+      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "90fbb26b7e141cea4c0256d6e0e273c1785df05e3a4184349eb32f8af6525e2d",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":3,\"platform\":\"UNITY\",\"sourceRevision\":\"348df0432e88cc64bb59755a5d24bfc3e202e9ad\",\"sourceRootTreeSha\":\"6684c0278102e15d93a7765b9ce5dfefcf304bd0\",\"sourceFingerprint\":\"50cea2c23d8e1535b37d53199961e578d7ee5078843a74702244db3613030993\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"90fbb26b7e141cea4c0256d6e0e273c1785df05e3a4184349eb32f8af6525e2d\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-30T21:54:48.103Z",
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-7a81749c2409357f6c07",
+      "gameId": "survival",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":3,\"platform\":\"UNITY\",\"sourceRevision\":\"561f3077d84db2273fc3d5bbb6fe971d3df444ca\",\"sourceRootTreeSha\":\"740fbf2b59da1a8bf0047d4f59b8a1c38f142703\",\"sourceFingerprint\":\"16f96eb253d20869018800171a21dbeac127b6ad20e4549d4de86293551f1edb\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:cac116de876ef7e4f319dfaee78567df2fd68f35305cbf04eec078b4e4389417\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee\"}"
+      ],
+      "exactFailedStage": "F1_SERVER_BOOT",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-30T21:54:48.103Z",
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-f4193ce83f42734e658e",
+      "gameId": "survival",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":3,\"platform\":\"UNITY\",\"sourceRevision\":\"561f3077d84db2273fc3d5bbb6fe971d3df444ca\",\"sourceRootTreeSha\":\"740fbf2b59da1a8bf0047d4f59b8a1c38f142703\",\"sourceFingerprint\":\"16f96eb253d20869018800171a21dbeac127b6ad20e4549d4de86293551f1edb\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:cac116de876ef7e4f319dfaee78567df2fd68f35305cbf04eec078b4e4389417\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-30T21:54:48.103Z",
+      "updatedAt": "2026-09-30T21:54:48.103Z",
+      "occurrenceCount": 1
     }
   ]
 }
