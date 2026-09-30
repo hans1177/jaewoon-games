@@ -329,7 +329,20 @@ export function diagnosticFocusedReplaceOnlySpec({exploration={},sourceRoot='',r
     };
   }catch{return null;}
 }
-export function deterministicDiagnosticCandidate({exploration={},sourceRoot='',responsibleFiles=[]}={}){
+function worldLobbySourceWorkRequired(order={}){
+  const evidence=[...(order.evidence||[]),...(order.selectedTask?.evidence||[])];
+  return evidence.includes('world-lobby-first:v1')||[order.goal,order.originalGoal,order.selectedTask?.goal].some(value=>clean(value).includes('[WORLD_LOBBY_FIRST]'));
+}
+
+export function robloxDeterministicPresentationEligible(order={}){
+  return clean(order.target).toLowerCase()==='roblox'
+    &&order.presentationQuality?.required===true
+    &&clean(order.presentationQuality?.pass).toUpperCase()==='ASSET_ADAPTATION'
+    &&!worldLobbySourceWorkRequired(order);
+}
+
+export function deterministicDiagnosticCandidate({exploration={},sourceRoot='',responsibleFiles=[],order={}}={}){
+  if(worldLobbySourceWorkRequired(order))return null;
   const spec=diagnosticFocusedReplaceOnlySpec({exploration,sourceRoot,responsibleFiles});
   if(!spec)return null;
   let replace='';
@@ -360,6 +373,7 @@ export function deterministicDiagnosticCandidate({exploration={},sourceRoot='',r
 }
 
 export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sourceRootRelative='',responsibleFiles=[],candidateValidator=null,verifiedExternalLearningContract=null}={}){
+  if(!robloxDeterministicPresentationEligible(order))return null;
   if(clean(order?.target).toLowerCase()!=='roblox'||!clean(sourceRoot))return null;
   const presentationPass=clean(order?.presentationQuality?.pass).toUpperCase();
   if(order?.presentationQuality?.required!==true||presentationPass!=='ASSET_ADAPTATION')return null;
@@ -3255,7 +3269,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     return{...result,sourceSyntax,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta};
   };
   const candidateVariant=clean(order?.candidateStrategyRole?.variant)||clean(process.env.VIBE2_SPECULATIVE_VARIANT)||'primary';
-  const deterministicDiagnostic=!allowFullRewrite&&verifiedExternalLearningContract.required!==true?deterministicDiagnosticCandidate({exploration,sourceRoot,responsibleFiles}):null;
+  const deterministicDiagnostic=!allowFullRewrite&&verifiedExternalLearningContract.required!==true?deterministicDiagnosticCandidate({exploration,sourceRoot,responsibleFiles,order}):null;
   let generated=null;
   if(deterministicDiagnostic){
     try{
@@ -3268,7 +3282,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       console.log('VIBE2_DETERMINISTIC_DIAGNOSTIC_REPAIR=FALLBACK:'+generationFailureClass(error)+':'+clean(error?.message||error).replace(/\s+/g,' ').slice(0,240));
     }
   }
-  const deterministicRobloxMode=target==='roblox'
+  const deterministicRobloxMode=robloxDeterministicPresentationEligible(order)
     &&clean(process.env.DETERMINISTIC_SOURCE).toLowerCase()==='true'
     &&clean(process.env.VIBE2_ROBLOX_DETERMINISTIC_SOURCE).toLowerCase()==='true'
     &&clean(order?.presentationQuality?.pass).toUpperCase()==='ASSET_ADAPTATION'

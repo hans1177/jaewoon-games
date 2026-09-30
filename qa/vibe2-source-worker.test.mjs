@@ -10,6 +10,7 @@ import http from 'node:http';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
 import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, normalizeCandidate } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
+import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 
 // 테스트 실행 환경: 호출한 작업 흐름의 작업군이 개별 검증 조건을 바꾸지 않게 격리한다.
@@ -4389,7 +4390,7 @@ test('deterministic Roblox build-up supports compact custom HUDs without the roo
 
 test('Roblox deterministic workflow activates only for an explicit deterministic work order and never falls back to Ollama',()=>{
   const worker=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
-  assert.match(worker,/const deterministicRobloxMode=target==='roblox'/);
+  assert.match(worker,/const deterministicRobloxMode=robloxDeterministicPresentationEligible\(order\)/);
   assert.match(worker,/process\.env\.DETERMINISTIC_SOURCE/);
   assert.match(worker,/const deterministicRobloxRequired=deterministicRobloxMode/);
   assert.match(worker,/DETERMINISTIC_ROBLOX_BUILDUP_REQUIRED:NO_VALID_LOCAL_CANDIDATE/);
@@ -5037,4 +5038,28 @@ test('owner direct source is protected even when a stale work order claims anoth
     await assert.rejects(runVibe2SourceWorker({cwd:root,workOrderFile:'order.json'}),/OWNER_DIRECT_DEVELOPMENT_HELD:owner-game/);
     assert.equal(fs.existsSync(path.join(root,'.vibe2/candidates')),false);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('world lobby tasks require source generation instead of cosmetic or diagnostic shortcuts',()=>{
+  const base={target:'roblox',presentationQuality:{required:true,pass:'ASSET_ADAPTATION'}};
+  assert.equal(robloxDeterministicPresentationEligible(base),true);
+  for(const binding of [
+    {selectedTask:{evidence:['world-lobby-first:v1']}},
+    {evidence:['world-lobby-first:v1']},
+    {goal:'[WORLD_LOBBY_FIRST]\ncreate a real village lobby'},
+    {originalGoal:'[WORLD_LOBBY_FIRST]'},
+    {selectedTask:{goal:'[WORLD_LOBBY_FIRST]'}}
+  ]){
+    const order={...base,...binding};
+    assert.equal(robloxDeterministicPresentationEligible(order),false);
+    assert.equal(deterministicRobloxBuildUpCandidate({order,sourceRoot:'/unused',responsibleFiles:['client/Game.client.luau']}),null);
+    assert.equal(deterministicDiagnosticCandidate({order,sourceRoot:'/unused'}),null);
+  }
+});
+
+test('workflow order, model provisioning and budget share source-worker eligibility',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  assert.match(workflow,/const deterministicRoblox=robloxDeterministicPresentationEligible\(order\)/);
+  assert.match(workflow,/deterministic_source="\$\{\{ steps\.order\.outputs\.deterministic_source \}\}"/);
+  assert.doesNotMatch(workflow,/deterministic_source="\$\(node -e/);
 });

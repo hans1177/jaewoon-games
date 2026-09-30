@@ -963,8 +963,10 @@ jobs:
             --task-id="$TASK_ID" \
             --variant="$VARIANT" \
             --output=/tmp/vibe2-work-order.json | tee /tmp/vibe2-order.log
-          node <<'NODE'
-          const fs=require('fs');
+          node --input-type=module - "$contract_root/tools/vibe2-source-worker.mjs" <<'NODE'
+          import fs from 'node:fs';
+          import {pathToFileURL} from 'node:url';
+          const {robloxDeterministicPresentationEligible}=await import(pathToFileURL(process.argv[2]).href);
           const order=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));
           const out=process.env.GITHUB_OUTPUT;
           const put=(k,v)=>fs.appendFileSync(out,`${k}=${String(v??'').replaceAll('\n',' ')}\n`);
@@ -975,10 +977,7 @@ jobs:
           put('game_id',order.gameId||'');
           put('target',order.target||'');
           put('route',order.executionRoute||'');
-          const presentationPass=String(order?.presentationQuality?.pass||'').toUpperCase();
-          const deterministicRoblox=String(order.target||'').toLowerCase()==='roblox'
-            && order?.presentationQuality?.required===true
-            && presentationPass==='ASSET_ADAPTATION';
+          const deterministicRoblox=robloxDeterministicPresentationEligible(order);
           put('deterministic_source',deterministicRoblox?'true':'false');
           put('source_root',order.source?.root||'');
           put('work_lock_required',order.compiledWorkContract?.workLock?.requiredBeforeSourceWrite===true?'true':'false');
@@ -1171,7 +1170,7 @@ jobs:
           contract_root="$GITHUB_WORKSPACE/vibe2-contract"
           target="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));process.stdout.write(String(o.target||''))")"
           model_calls=1
-          deterministic_source="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));const p=String(o?.presentationQuality?.pass||'').toUpperCase();process.stdout.write(String(String(o.target||'').toLowerCase()==='roblox'&&o?.presentationQuality?.required===true&&p==='ASSET_ADAPTATION'))")"
+          deterministic_source="${{ steps.order.outputs.deterministic_source }}"
           if [ "$deterministic_source" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then model_calls=0; fi
           node "$contract_root/tools/free-budget-telemetry.mjs" \
             --verify-public-repo=true \
