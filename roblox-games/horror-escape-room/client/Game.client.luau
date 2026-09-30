@@ -48,8 +48,10 @@ end)
 local function makeSound(name,id,volume,looped)
  local s=Instance.new("Sound");s.Name=name;s.SoundId=id;s.Volume=volume;s.Looped=looped;s.Parent=SoundService;return s
 end
+local lobbyBgm=makeSound("MidnightLobbyBackground",C.Audio.LobbyBackground or C.Audio.Background,.12,true)
 local bgm=makeSound("MidnightBackground",C.Audio.Background,.11,true)
 local chase=makeSound("MidnightChase",C.Audio.Chase,.14,true)
+lobbyBgm.PlaybackSpeed=.97
 bgm.PlaybackSpeed=1.035
 chase.PlaybackSpeed=1.04
 local actionSfx=makeSound("MidnightAction",C.Audio.Action,.32,false)
@@ -61,7 +63,7 @@ local rescueSfx=makeSound("MidnightRescue",C.Audio.Rescue,.34,false)
 local wasFrozen=false
 local lastRoundState="WAITING"
 local stepClock=0
-bgm:Play()
+lobbyBgm:Play()
 
 -- UI 공통
 local gui=Instance.new("ScreenGui")
@@ -74,10 +76,10 @@ gui.Parent=p:WaitForChild("PlayerGui")
 -- 로비 전용 화면 톤. 전투가 시작되면 전부 꺼져 게임플레이 가독성에는 영향을 주지 않는다.
 local lobbyColor=Instance.new("ColorCorrectionEffect")
 lobbyColor.Name="MidnightLobbyColor"
-lobbyColor.TintColor=Color3.fromRGB(228,216,199)
-lobbyColor.Brightness=.11
-lobbyColor.Contrast=.08
-lobbyColor.Saturation=-.08
+lobbyColor.TintColor=Color3.fromRGB(240,230,214)
+lobbyColor.Brightness=.19
+lobbyColor.Contrast=.04
+lobbyColor.Saturation=-.04
 lobbyColor.Enabled=false
 lobbyColor.Parent=Lighting
 
@@ -91,8 +93,8 @@ lobbyBloom.Parent=Lighting
 
 local lobbyDepth=Instance.new("DepthOfFieldEffect")
 lobbyDepth.Name="MidnightLobbyDepth"
-lobbyDepth.FarIntensity=.035
-lobbyDepth.NearIntensity=.01
+lobbyDepth.FarIntensity=.018
+lobbyDepth.NearIntensity=.004
 lobbyDepth.FocusDistance=34
 lobbyDepth.InFocusRadius=42
 lobbyDepth.Enabled=false
@@ -153,12 +155,12 @@ local function setLobbyClarity(enabled)
    Brightness=Lighting.Brightness,Ambient=Lighting.Ambient,
    OutdoorAmbient=Lighting.OutdoorAmbient,ExposureCompensation=Lighting.ExposureCompensation,
   }
-  Lighting.FogStart=170
-  Lighting.FogEnd=1100
-  Lighting.Brightness=math.max(Lighting.Brightness,2.3)
-  Lighting.Ambient=Color3.fromRGB(105,96,88)
-  Lighting.OutdoorAmbient=Color3.fromRGB(86,82,80)
-  Lighting.ExposureCompensation=math.max(Lighting.ExposureCompensation,.12)
+  Lighting.FogStart=210
+  Lighting.FogEnd=1450
+  Lighting.Brightness=math.max(Lighting.Brightness,2.85)
+  Lighting.Ambient=Color3.fromRGB(132,123,114)
+  Lighting.OutdoorAmbient=Color3.fromRGB(108,104,101)
+  Lighting.ExposureCompensation=math.max(Lighting.ExposureCompensation,.22)
   lobbyAtmosphereRestore={}
   for _,effect in ipairs(Lighting:GetChildren())do
    if effect:IsA("Atmosphere")then
@@ -1062,6 +1064,32 @@ local function playLobbyHaunt(trigger)
   TweenService:Create(face,TweenInfo.new(.65),{Transparency=1}):Play()
   TweenService:Create(smile,TweenInfo.new(.65),{Transparency=1,Size=Vector3.new(1.9,.18,.12)}):Play()
   Debris:AddItem(face,.75);Debris:AddItem(smile,.75)
+ elseif kind=="PHONE_GLITCH"then
+  local receiver=localPart("LobbyGhostReceiver",Vector3.new(3.5,.45,.7),CFrame.new(pos+Vector3.new(0,2.6,0)),Color3.fromRGB(32,28,29),Enum.Material.SmoothPlastic)
+  TweenService:Create(receiver,TweenInfo.new(.18,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{CFrame=receiver.CFrame*CFrame.new(0,2.3,0)*CFrame.Angles(0,math.rad(18),math.rad(22))}):Play()
+  task.delay(.5,function()if receiver.Parent then TweenService:Create(receiver,TweenInfo.new(.24),{Transparency=1}):Play()end end)
+  Debris:AddItem(receiver,.85)
+ elseif kind=="VENDING_SHAKE"then
+  local can=localPart("LobbyWrongVendingDrop",Vector3.new(.7,1.3,.7),CFrame.new(pos+Vector3.new(0,1.2,-1.8)),Color3.fromRGB(177,137,65),Enum.Material.Metal)
+  TweenService:Create(can,TweenInfo.new(.42,Enum.EasingStyle.Bounce),{CFrame=can.CFrame*CFrame.new(0,-.5,-2.5)*CFrame.Angles(math.rad(80),0,math.rad(22))}):Play()
+  localText(pos+Vector3.new(0,5.5,0),"캔 대신 1313호 열쇠",Color3.fromRGB(225,195,130),1.5)
+  Debris:AddItem(can,1.1)
+ elseif kind=="DOLL_TURN"then
+  local doll=localPart("LobbyGhostDoll",Vector3.new(1.5,2.6,1.2),CFrame.new(pos+Vector3.new(0,1.3,0)),Color3.fromRGB(184,155,142),Enum.Material.Fabric)
+  local eye=localPart("LobbyGhostDollEye",Vector3.new(.18,.18,.12),doll.CFrame*CFrame.new(.25,.45,-.65),Color3.fromRGB(191,26,38),Enum.Material.Neon)
+  TweenService:Create(doll,TweenInfo.new(.35,Enum.EasingStyle.Sine),{CFrame=doll.CFrame*CFrame.Angles(0,math.rad(165),0)}):Play()
+  TweenService:Create(eye,TweenInfo.new(.35,Enum.EasingStyle.Sine),{CFrame=eye.CFrame*CFrame.Angles(0,math.rad(165),0)}):Play()
+  task.delay(.65,function()if doll.Parent then doll.Transparency=1 end;if eye.Parent then eye.Transparency=1 end end)
+  Debris:AddItem(doll,.8);Debris:AddItem(eye,.8)
+ elseif kind=="CART_ROLL"then
+  local cart=localPart("LobbyGhostCleaningCart",Vector3.new(6.5,3.2,4),CFrame.new(pos+Vector3.new(-4,1.6,0)),Color3.fromRGB(92,84,72),Enum.Material.Metal)
+  TweenService:Create(cart,TweenInfo.new(.85,Enum.EasingStyle.Sine),{CFrame=cart.CFrame*CFrame.new(8,0,0)}):Play()
+  Debris:AddItem(cart,1)
+ elseif kind=="UMBRELLA_TWITCH"then
+  local umbrella=localPart("LobbyGhostUmbrella",Vector3.new(.34,6,.34),CFrame.new(pos+Vector3.new(0,3,0)),Color3.fromRGB(48,41,45),Enum.Material.Metal)
+  TweenService:Create(umbrella,TweenInfo.new(.18,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{CFrame=umbrella.CFrame*CFrame.Angles(0,0,math.rad(32))}):Play()
+  task.delay(.25,function()if umbrella.Parent then TweenService:Create(umbrella,TweenInfo.new(.22),{CFrame=umbrella.CFrame*CFrame.Angles(0,0,math.rad(-50)),Transparency=1}):Play()end end)
+  Debris:AddItem(umbrella,.65)
  end
 
  if text~=""then
@@ -2676,16 +2704,21 @@ local function render()
  abilityButton.Visible=running and role=="MONSTER"
 
  if running then
-  -- 라운드 시작 자체는 추격이 아니다. 평상시엔 가벼운 서스펜스만 유지한다.
+  -- 라운드에서는 전투용 배경음만 사용한다.
+  if lobbyBgm.IsPlaying then lobbyBgm:Stop()end
   if not bgm.IsPlaying then bgm:Play()end
   chaseTint.BackgroundTransparency=1
  else
   chaseTint.BackgroundTransparency=1
   if chase.IsPlaying then chase:Stop()end
   if round:find("^RESULT_")then
+   if lobbyBgm.IsPlaying then lobbyBgm:Stop()end
    if bgm.IsPlaying then bgm:Stop()end
    if round~=lastRoundState then resultSfx.TimePosition=0;resultSfx:Play()end
-  elseif not bgm.IsPlaying then bgm:Play()end
+  else
+   if bgm.IsPlaying then bgm:Stop()end
+   if not lobbyBgm.IsPlaying then lobbyBgm:Play()end
+  end
  end
 
  if p:GetAttribute("Infected")==true and role=="MONSTER"then chaseTint.BackgroundTransparency=.88 end
