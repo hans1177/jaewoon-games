@@ -374,6 +374,8 @@ if p.Character then task.defer(bindCharacterMotion,p.Character)end
 p.CharacterAdded:Connect(bindCharacterMotion)
 
 local chaseTint=Instance.new("Frame")
+-- 학습 효과 초기화 변수는 이 범위와 연결된 콜백에서만 유지한다.
+do
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN
 local verifiedLearningPlayers = game:GetService("Players")
 local verifiedLearningTweenService = game:GetService("TweenService")
@@ -616,6 +618,7 @@ verifiedLearningPlayer:GetAttributeChangedSignal("LastApprovedScope"):Connect(fu
   verifiedLearningLastControl = nil
 end)
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END
+end
 
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_BEGIN
 chaseTint:SetAttribute("VerifiedExternalLearningCoveragePct", verifiedExternalLearningContext.CoveragePct or 0)
