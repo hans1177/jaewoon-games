@@ -1,6 +1,8 @@
 name: Company DEVELOPMENT_CONFIRMED Runtime
 
 on:
+  repository_dispatch:
+    types: [company-development-cycle-refill]
   push:
     branches: [main]
     paths:
@@ -326,7 +328,7 @@ jobs:
     timeout-minutes: 5
     permissions:
       actions: write
-      contents: read
+      contents: write
     steps:
       - name: Re-open the next development wave regardless of individual game failure
         env:
@@ -334,8 +336,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main \
-            -f trigger_source=CONTINUOUS_PER_GAME_ISOLATED_CYCLE
+          refill_payload="$(jq -nc --arg source_run "$GITHUB_RUN_ID" --arg source_attempt "$GITHUB_RUN_ATTEMPT" '{event_type:"company-development-cycle-refill",client_payload:{source_run:$source_run,source_attempt:$source_attempt,trigger_source:"CONTINUOUS_PER_GAME_ISOLATED_CYCLE"}}')"
+          printf '%s' "$refill_payload" | gh api --method POST "repos/$GITHUB_REPOSITORY/dispatches" --input -
+          echo 'DEVELOPMENT_CONTINUOUS_CYCLE_WAKE=REPOSITORY_DISPATCH'
           echo 'DEVELOPMENT_CONTINUOUS_CYCLE_REOPENED=YES'
           echo 'SINGLE_GAME_FAILURE_BLOCKS_GLOBAL_CYCLE=NO'
 
