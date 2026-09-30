@@ -2484,12 +2484,14 @@ jobs:
               $ownedStudio = Get-Process -Id ([int]$record.ProcessId) -ErrorAction SilentlyContinue
               if (-not $ownedStudio -or $ownedStudio.ProcessName -ne 'RobloxStudioBeta') { continue }
               if ([math]::Abs(($ownedStudio.StartTime.ToUniversalTime() - $record.CreationDate.ToUniversalTime()).TotalSeconds) -gt 1) { continue }
-              Stop-Process -Id $ownedStudio.Id -Force -ErrorAction Stop
-              Wait-Process -Id $ownedStudio.Id -Timeout 60 -ErrorAction SilentlyContinue
-              if (Get-Process -Id $ownedStudio.Id -ErrorAction SilentlyContinue) {
-                throw "Owned Studio has not exited; next launch must remain blocked:process=$($ownedStudio.Id)"
-              }
-              Write-Host "ROBLOX_STUDIO_AUTOMATED_CLOSE_AFTER_EVIDENCE=YES:process=$($ownedStudio.Id)"
+              try {
+                Stop-Process -InputObject $ownedStudio -Force -ErrorAction Stop
+                # A retained process object may remain queryable after exit; wait on its verified handle.
+                if (-not $ownedStudio.WaitForExit(60000)) {
+                  throw "Owned Studio has not exited; next launch must remain blocked:process=$($ownedStudio.Id)"
+                }
+                Write-Host "ROBLOX_STUDIO_AUTOMATED_CLOSE_AFTER_EVIDENCE=YES:process=$($ownedStudio.Id):exitedAt=$($ownedStudio.ExitTime.ToUniversalTime().ToString('o'))"
+              } finally { $ownedStudio.Dispose() }
             }
             Start-Sleep -Seconds 1
           }

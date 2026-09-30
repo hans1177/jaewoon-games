@@ -938,7 +938,7 @@ test('Studio MCP opens the exact local Place as the single Studio before MCP and
   assert.doesNotMatch(reconnect,/Start-Process|Stop-Process/);
   assert.match(helper,/ROBLOX_STUDIO_PLACE_LOADING_WAIT=/);
   assert.match(helper,/const studioAttachAttempts=60/);
-  assert.match(studioMcpBlock,/Wait-Process -Id.*-Timeout 60/);
+  assert.match(studioMcpBlock,/\$ownedStudio\.WaitForExit\(60000\)/);
   assert.match(studioMcpBlock,/foreach \(\$record in \$ownedRecords\)/);
   assert.doesNotMatch(studioMcpBlock,/AutoHotkey|pyautogui|SendKeys|mouse_event|keybd_event/i);
 });
@@ -2488,6 +2488,10 @@ test('Studio launcher handoff remains bound to one isolated Place and cleanup re
     assert.doesNotMatch(restore,/foreach \(\$proof in @\(/);
   }
   assert.match(close,/ROBLOX_STUDIO_OWNERSHIP_RESTORED_COUNT=/);
+  assert.match(close,/Stop-Process -InputObject \$ownedStudio -Force/);
+  assert.match(close,/if \(-not \$ownedStudio\.WaitForExit\(60000\)\)/);
+  assert.match(close,/finally \{ \$ownedStudio\.Dispose\(\) \}/);
+  assert.doesNotMatch(close,/if \(Get-Process -Id \$ownedStudio.Id/);
   assert.match(close,/\$launchFamily\.ContainsKey\(\[string\]\$_.ProcessId\)/);
   assert.match(close,/\.TotalMilliseconds\) -le 10/);
   assert.doesNotMatch(close,/VIBE2_STUDIO_PROCESS_IDS|Stop-Process -Name/);
