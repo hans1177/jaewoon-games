@@ -79,7 +79,7 @@
     },
     {
       "gameId": "horror-escape-room",
-      "PROJECT_PHASE": "RELEASE_PROMOTION",
+      "PROJECT_PHASE": "TARGET_PLATFORM_REGRESSION",
       "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
@@ -128,7 +128,7 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "PROMOTE_EXACT_VERIFIED_RELEASE"
+      "NEXT_MACHINE_ACTION": "RUN_TARGET_PLATFORM_REGRESSION"
     },
     {
       "gameId": "village-dungeons",
@@ -138,7 +138,7 @@
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "roblox-games/village-dungeons",
+        "sourcePath": "unity-games/village-dungeons",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
