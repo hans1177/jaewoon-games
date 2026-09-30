@@ -10752,10 +10752,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "VIBE_INTERNAL_PLAY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-30T12:56:18.233Z",
+      "updatedAt": "2026-09-30T13:04:14.808Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -10983,9 +10983,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
       "robloxFailureStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_STUDIO_INTERNAL_VALIDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
       "routingBlockers": [
-        "roblox-studio-internal-validation-pending"
+        "roblox-studio-mcp-play-repair-required"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -11040,12 +11040,12 @@
         "externalGuiAutomation": false,
         "undocumentedStudioCliAutomation": false,
         "studioLaunchTarget": "LOCAL_EXACT_BUILD_ARTIFACT",
-        "sourceRevision": "84540de91959087198a8e541f6f56658917bd8f3",
+        "sourceRevision": "4e1241b6414dbd2d89cbdd5fd04ecc37b50a4242",
         "artifactIdentity": "sha256:808a81787999ed8015172ac566f6d0a8d408904b7438aabc207817097da1fb12",
-        "artifactRunId": 36708526505,
+        "artifactRunId": 36711693417,
         "universeId": "",
         "placeId": "",
-        "versionNumber": 36708526505,
+        "versionNumber": 36711693417,
         "historicalSharedTargetExactArtifact": true,
         "historicalExactBuildReplay": false,
         "currentSourceArtifactBinding": true,
@@ -11130,13 +11130,13 @@
             "id": "prompt-ProximityPrompt",
             "type": "mcp-world-interaction",
             "dispatched": true,
-            "ok": true
+            "ok": false
           },
           {
             "id": "prompt-ProximityPrompt",
             "type": "mcp-world-interaction",
             "dispatched": true,
-            "ok": false
+            "ok": true
           },
           {
             "id": "prompt-ProximityPrompt",
@@ -11615,16 +11615,16 @@
             "pass": false
           },
           {
-            "id": "scenario-observed-action-ba70933adab1e2e60a5f",
-            "name": "scenario-observed-action-ba70933adab1e2e60a5f",
-            "required": true,
-            "pass": true
-          },
-          {
             "id": "scenario-observed-action-b44707afa0efc7f8fa15",
             "name": "scenario-observed-action-b44707afa0efc7f8fa15",
             "required": true,
             "pass": false
+          },
+          {
+            "id": "scenario-observed-action-ba70933adab1e2e60a5f",
+            "name": "scenario-observed-action-ba70933adab1e2e60a5f",
+            "required": true,
+            "pass": true
           },
           {
             "id": "scenario-observed-action-bffcb6fc96faff9b4d69",
@@ -11684,8 +11684,8 @@
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
           "scenarioFailureCount": 15,
-          "primaryActionDisplacement": 44.66768104356165,
-          "primaryActionVelocity": 0.0000259472480284946,
+          "primaryActionDisplacement": 44.08187122353809,
+          "primaryActionVelocity": 0.000026034587229510825,
           "primaryActionFeedbackChanged": false,
           "commercialAudit": {
             "auditProfile": "F9_SOAK",
@@ -11725,7 +11725,7 @@
               "multiplayerActualSessionPass": false
             },
             "performance": {
-              "memoryMb": 2869.3515625,
+              "memoryMb": 2915.765625,
               "descendantCount": 1863
             },
             "multiplayer": {
@@ -11738,7 +11738,7 @@
               "verificationScope": "STATIC_CODE_CONTRACT",
               "skipped": true,
               "codeContractPassed": false,
-              "sourceRevision": "84540de91959087198a8e541f6f56658917bd8f3",
+              "sourceRevision": "4e1241b6414dbd2d89cbdd5fd04ecc37b50a4242",
               "artifactIdentity": "sha256:808a81787999ed8015172ac566f6d0a8d408904b7438aabc207817097da1fb12",
               "sameUserRejoinVerified": false
             },
@@ -11972,12 +11972,12 @@
             "pass": false
           },
           {
-            "id": "observed-action-ba70933adab1e2e60a5f",
-            "pass": true
-          },
-          {
             "id": "observed-action-b44707afa0efc7f8fa15",
             "pass": false
+          },
+          {
+            "id": "observed-action-ba70933adab1e2e60a5f",
+            "pass": true
           },
           {
             "id": "observed-action-bffcb6fc96faff9b4d69",
@@ -12042,7 +12042,7 @@
               "routeSamples": 16,
               "routeSuccess": 2,
               "routeCoveragePass": false,
-              "spawnThreatDistance": 63.41423532244157,
+              "spawnThreatDistance": 63.38007190876447,
               "spawnOverlapSafe": true
             }
           },
@@ -12080,7 +12080,7 @@
                   "semantic": "UPGRADE",
                   "effectObserved": false,
                   "effect": {
-                    "moved": 68.14443998183546,
+                    "moved": 71.0678058856815,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -12303,8 +12303,8 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-09-30T12:18:13.062Z",
-        "workflowRunId": 36713062333,
+        "testedAt": "2026-09-30T13:04:14.808Z",
+        "workflowRunId": 36717577102,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -12595,12 +12595,12 @@
       "robloxPromotionBlockers": [],
       "robloxQualityBuildUpRequired": true,
       "robloxQualityFailureClass": "PRODUCT",
-      "robloxQualityBuildUpSourceRevision": "84540de91959087198a8e541f6f56658917bd8f3",
+      "robloxQualityBuildUpSourceRevision": "4e1241b6414dbd2d89cbdd5fd04ecc37b50a4242",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
-        "sourceRevision": "84540de91959087198a8e541f6f56658917bd8f3",
+        "sourceRevision": "4e1241b6414dbd2d89cbdd5fd04ecc37b50a4242",
         "artifactIdentity": "sha256:808a81787999ed8015172ac566f6d0a8d408904b7438aabc207817097da1fb12",
-        "versionNumber": 36708526505,
+        "versionNumber": 36711693417,
         "failureStage": "VIBE_INTERNAL_PLAY",
         "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
         "qualityFailureKinds": [
@@ -12652,7 +12652,7 @@
               "routeSamples": 16,
               "routeSuccess": 2,
               "routeCoveragePass": false,
-              "spawnThreatDistance": 63.41423532244157,
+              "spawnThreatDistance": 63.38007190876447,
               "spawnOverlapSafe": true
             }
           },
@@ -12690,7 +12690,7 @@
                   "semantic": "UPGRADE",
                   "effectObserved": false,
                   "effect": {
-                    "moved": 68.14443998183546,
+                    "moved": 71.0678058856815,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -12918,8 +12918,8 @@
           "ROBLOX_OBSERVED_INTERACTION"
         ],
         "robloxFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
-        "testedAt": "2026-09-30T12:18:13.062Z",
-        "workflowRunId": 36713062333,
+        "testedAt": "2026-09-30T13:04:14.808Z",
+        "workflowRunId": 36717577102,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxQualityBuildUpLastPassedAt": "2026-09-28T19:43:44.738Z",
@@ -29093,7 +29093,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-30T13:02:54.949Z",
+  "updatedAt": "2026-09-30T13:04:14.808Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
