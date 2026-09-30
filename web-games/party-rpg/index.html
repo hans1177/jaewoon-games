@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#172719">
+<title>파티 RPG</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#142017;color:#fff;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;touch-action:none}
+button{font:inherit}
+#game{position:fixed;inset:0;width:100%;height:100%;display:block;background:#27472c}
+#hud{position:fixed;left:8px;right:8px;top:max(7px,env(safe-area-inset-top));z-index:20;display:flex;gap:7px;pointer-events:none}
+.panel{background:#07120cdd;border:1px solid #ffffff30;border-radius:13px;box-shadow:0 7px 20px #0006;backdrop-filter:blur(5px)}
+#stats{flex:1;min-width:0;padding:8px 9px}
+#statsTop{display:flex;gap:5px;flex-wrap:wrap;font-size:10px;font-weight:900}
+.pill{padding:3px 6px;border-radius:999px;background:#ffffff13;border:1px solid #ffffff1f}
+.bar{height:7px;margin-top:5px;border-radius:99px;background:#ffffff20;overflow:hidden}
+.fill{height:100%;border-radius:99px}
+#hpFill{background:#ef5e63}#xpFill{background:#55aaff}
+#zone{min-width:104px;padding:8px 9px;text-align:right}
+#zone b{display:block;font-size:12px;color:#ffe48c}#zone span{display:block;font-size:9px;color:#cbd8ce;margin-top:2px}
+#objective{position:fixed;z-index:19;left:8px;top:88px;max-width:min(72vw,330px);padding:7px 9px;font-size:9px;line-height:1.45;pointer-events:none}
+#prompt{position:fixed;z-index:24;left:50%;bottom:166px;transform:translateX(-50%);max-width:82vw;padding:7px 10px;border-radius:999px;background:#07120cef;border:1px solid #ffffff44;font-size:10px;font-weight:900;text-align:center;opacity:0;transition:.15s;pointer-events:none}
+#prompt.on{opacity:1}
+#joystick{position:fixed;z-index:30;left:max(14px,env(safe-area-inset-left));bottom:max(16px,calc(env(safe-area-inset-bottom) + 8px));width:120px;height:120px;border-radius:50%;border:2px solid #ffffff5d;background:#07110a78;box-shadow:0 7px 20px #0007;touch-action:none}
+#knob{position:absolute;left:33px;top:33px;width:52px;height:52px;border-radius:50%;background:#ffffffbf;border:2px solid #fff;pointer-events:none}
+#actions{position:fixed;z-index:30;right:max(10px,env(safe-area-inset-right));bottom:max(14px,calc(env(safe-area-inset-bottom) + 7px));display:grid;grid-template-columns:72px 72px;gap:7px}
+.act{min-height:52px;border:1px solid #ffffff50;border-radius:15px;background:#1b3d25e8;color:#fff;font-size:10px;font-weight:1000;box-shadow:0 6px 16px #0006}
+.act.primary{background:#9d4036}.act.gold{background:#80661f}.act.blue{background:#285f8d}.act:disabled{opacity:.4}
+#toast{position:fixed;z-index:90;left:50%;top:22%;transform:translate(-50%,-8px);max-width:86vw;padding:9px 12px;border-radius:12px;background:#050a07f0;border:1px solid #ffffff43;font-size:11px;font-weight:900;opacity:0;pointer-events:none;transition:.2s;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+.overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:14px;background:#030704d9}
+.overlay[hidden]{display:none}
+.card{width:min(94vw,560px);max-height:88dvh;overflow:auto;border:1px solid #ffffff2c;border-radius:20px;background:#112018;box-shadow:0 20px 60px #000a}
+.head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;background:#112018f2;border-bottom:1px solid #ffffff1e}
+.head h2{margin:0;font-size:18px;color:#ffe48c}.close{width:36px;height:36px;border:0;border-radius:50%;background:#ffffff16;color:#fff;font-size:22px}
+.body{padding:12px 14px 15px;font-size:12px;line-height:1.5}
+.row{display:flex;align-items:center;justify-content:space-between;gap:9px;margin:7px 0;padding:9px;border-radius:12px;background:#ffffff0b;border:1px solid #ffffff16}
+.row b{display:block}.row small{display:block;margin-top:2px;color:#b9c8bc}
+.row button,.menuBtn{min-height:38px;padding:0 10px;border:0;border-radius:10px;background:#287ec0;color:#fff;font-weight:900}
+.row button.buy{background:#9b7420}.menuBtn{width:100%;margin-top:8px}
+.tag{display:inline-block;padding:2px 5px;margin-left:4px;border-radius:999px;background:#ffffff16;font-size:9px;font-weight:900}
+.good{color:#78e6a5}.gold{color:#ffe48c}
+#startCard{text-align:center;padding:22px 18px}#startCard h1{margin:0 0 8px;font-size:30px;color:#ffe48c}#startCard p{margin:7px 0;color:#cad7cd;font-size:12px;line-height:1.55}#startBtn{width:100%;min-height:50px;margin-top:14px;border:0;border-radius:14px;background:#2c8d50;color:#fff;font-size:15px;font-weight:1000}.note{margin-top:9px;padding:8px 9px;border-radius:10px;background:#ffffff0c;color:#aebcaf;font-size:10px}
+@media(max-width:390px){#joystick{width:108px;height:108px}#knob{left:29px;top:29px;width:48px;height:48px}#actions{grid-template-columns:66px 66px}.act{min-height:49px;font-size:9px}#prompt{bottom:146px}#objective{top:84px}}
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<div id="hud">
+  <div id="stats" class="panel">
+    <div id="statsTop">
+      <span class="pill" id="lvText">Lv.1</span>
+      <span class="pill" id="hpText">HP 110/110</span>
+      <span class="pill" id="atkText">공격 12</span>
+      <span class="pill" id="defText">방어 0</span>
+      <span class="pill" id="goldText">80G</span>
+      <span class="pill" id="partyText">파티 1+0/4</span>
+    </div>
+    <div class="bar"><div class="fill" id="hpFill"></div></div>
+    <div class="bar"><div class="fill" id="xpFill"></div></div>
+  </div>
+  <div id="zone" class="panel"><b id="zoneName">마을</b><span id="zoneSub">휴식과 준비</span></div>
+</div>
+<div id="objective" class="panel">AI 유저를 3번 클릭하면 파티에 초대할 수 있어.</div>
+<div id="prompt"></div>
+<div id="joystick"><div id="knob"></div></div>
+<div id="actions">
+  <button class="act primary" id="attackBtn">공격</button>
+  <button class="act gold" id="interactBtn">상호작용</button>
+  <button class="act blue" id="mapBtn">지역/던전</button>
+  <button class="act" id="bagBtn">장비</button>
+</div>
+<div id="toast"></div>
+<div id="modal" class="overlay" hidden>
+  <div class="card">
+    <div class="head"><h2 id="modalTitle">메뉴</h2><button class="close" id="modalClose">×</button></div>
+    <div class="body" id="modalBody"></div>
+  </div>
+</div>
+<div id="start" class="overlay">
+  <div class="card" id="startCard">
+    <h1>파티 RPG</h1>
+    <p>AI 유저 10명이 너와 함께 사냥하고 장비를 사며 성장해.</p>
+    <p>사냥터 6개 · 무기 5개 · 방어구 4개 · 파티 던전 3개</p>
+    <p>AI는 네가 게임을 켜 둔 동안에만 성장해.</p>
+    <button id="startBtn">게임 시작</button>
+    <div class="note">모바일: 왼쪽 조이스틱 이동 · 오른쪽 버튼 전투/상호작용<br>PC: WASD 이동 · J 공격 · E 상호작용 · M 지역</div>
+  </div>
+</div>
+<script>
+(function(){
+"use strict";
+var SAVE_KEY="party-rpg-v1";
+var ZONES=[
+ {name:"마을",sub:"휴식과 준비",color:"#5f8f58",lv:1,mons:[]},
+ {name:"초원",sub:"Lv.1+",color:"#73a95d",lv:1,mons:[["초원 슬라임",55,8,18,16],["뿔토끼",70,10,22,18]]},
+ {name:"숲",sub:"Lv.3+",color:"#3f7a46",lv:3,mons:[["숲 늑대",100,15,31,24],["독거미",90,18,35,27]]},
+ {name:"동굴",sub:"Lv.6+",color:"#555862",lv:6,mons:[["동굴 박쥐",145,22,46,35],["암석 골렘",190,20,52,42]]},
+ {name:"사막",sub:"Lv.10+",color:"#b18a4e",lv:10,mons:[["사막 전갈",230,30,70,55],["모래 망령",210,34,75,60]]},
+ {name:"설원",sub:"Lv.15+",color:"#9ec7d6",lv:15,mons:[["설원 늑대",310,40,96,72],["얼음 골렘",390,38,110,82]]},
+ {name:"마계",sub:"Lv.21+",color:"#6b466f",lv:21,mons:[["마계 기사",470,52,145,105],["심연 마수",540,58,160,118]]}
+];
+var WEAPONS=[
+ {id:"wood",name:"목검",price:40,power:5},
+ {id:"iron",name:"철검",price:150,power:13},
+ {id:"steel",name:"강철검",price:420,power:25},
+ {id:"knight",name:"기사검",price:900,power:42},
+ {id:"dragon",name:"용검",price:1800,power:68}
+];
+var ARMORS=[
+ {id:"cloth",name:"천 갑옷",price:35,def:2},
+ {id:"leather",name:"가죽 갑옷",price:160,def:6},
+ {id:"steel",name:"강철 갑옷",price:520,def:12},
+ {id:"dragon",name:"용비늘 갑옷",price:1500,def:22}
+];
+var DROPS={
+ goblin_blade:{id:"goblin_blade",name:"요새 이빨검",kind:"weapon",power:31,from:"고블린 요새"},
+ goblin_mail:{id:"goblin_mail",name:"대장 갑옷",kind:"armor",def:14,from:"고블린 요새"},
+ temple_staff:{id:"temple_staff",name:"고대 룬검",kind:"weapon",power:54,from:"고대 신전"},
+ temple_robe:{id:"temple_robe",name:"수호자 갑주",kind:"armor",def:23,from:"고대 신전"},
+ demon_sword:{id:"demon_sword",name:"마왕의 대검",kind:"weapon",power:88,from:"마왕 성"},
+ demon_plate:{id:"demon_plate",name:"심연 갑주",kind:"armor",def:35,from:"마왕 성"}
+};
+var DUNGEONS=[
+ {name:"고블린 요새",lv:4,rooms:[3,3,4],baseGold:320,baseXp:420,mob:"요새 고블린",boss:"고블린 대장",mobHp:145,mobAtk:19,bossHp:720,bossAtk:36,drops:["goblin_blade","goblin_mail"]},
+ {name:"고대 신전",lv:11,rooms:[2,3,2,3],baseGold:760,baseXp:920,mob:"유적 수호병",boss:"고대 수호자",mobHp:300,mobAtk:36,bossHp:1500,bossAtk:65,drops:["temple_staff","temple_robe"]},
+ {name:"마왕 성",lv:20,rooms:[2,2,2,2,2],baseGold:1500,baseXp:1900,mob:"마계 근위병",boss:"마왕",mobHp:520,mobAtk:58,bossHp:2900,bossAtk:96,drops:["demon_sword","demon_plate"]}
+];
+var AI_NAMES=["루카","미나","제이드","토르","리안","세라","보린","유나","카일","네오"];
+var defaultState={
+ player:{level:1,xp:0,gold:80,maxHp:110,hp:110,baseAtk:12,weapon:null,armor:null,specialWeapon:null,specialArmor:null,ownedWeapons:[],ownedArmors:[],drops:[]},
+ ai:[],zone:0,x:700,y:520
+};
+function makeAI(i){
+ return {id:"ai"+i,name:AI_NAMES[i],level:1,xp:0,gold:30+i*7,weapon:null,armor:null,specialWeapon:null,specialArmor:null,zone:i<5?0:1,x:520+(i%5)*85,y:380+Math.floor(i/5)*100,hp:90,maxHp:90,baseAtk:10,party:false,sim:Math.random()*2};
+}
+function load(){
+ var v=null;try{v=JSON.parse(localStorage.getItem(SAVE_KEY)||"null");}catch(e){}
+ var s=JSON.parse(JSON.stringify(defaultState));
+ if(v&&typeof v==="object"){s=Object.assign(s,v);s.player=Object.assign(defaultState.player,v.player||{});}
+ if(!Array.isArray(s.ai)||s.ai.length!==10)s.ai=AI_NAMES.map(function(_,i){return makeAI(i);});
+ s.ai=s.ai.map(function(a,i){return Object.assign(makeAI(i),a||{});});
+ s.player.ownedWeapons=Array.isArray(s.player.ownedWeapons)?s.player.ownedWeapons:[];
+ s.player.ownedArmors=Array.isArray(s.player.ownedArmors)?s.player.ownedArmors:[];
+ s.player.drops=Array.isArray(s.player.drops)?s.player.drops:[];
+ s.zone=0;s.x=700;s.y=520;return s;
+}
+var state=load();
+function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(state));}catch(e){}}
+function xpNeed(lv){return 90+lv*70;}
+function playerWeaponPower(){if(state.player.specialWeapon&&DROPS[state.player.specialWeapon])return DROPS[state.player.specialWeapon].power||0;var w=WEAPONS.find(function(x){return x.id===state.player.weapon;});return w?w.power:0;}
+function playerArmorDef(){if(state.player.specialArmor&&DROPS[state.player.specialArmor])return DROPS[state.player.specialArmor].def||0;var a=ARMORS.find(function(x){return x.id===state.player.armor;});return a?a.def:0;}
+function playerAtk(){return state.player.baseAtk+playerWeaponPower();}
+function aiWeaponPower(a){if(a.specialWeapon&&DROPS[a.specialWeapon])return DROPS[a.specialWeapon].power||0;var w=WEAPONS.find(function(x){return x.id===a.weapon;});return w?w.power:0;}
+function aiArmorDef(a){if(a.specialArmor&&DROPS[a.specialArmor])return DROPS[a.specialArmor].def||0;var x=ARMORS.find(function(z){return z.id===a.armor;});return x?x.def:0;}
+function aiAtk(a){return a.baseAtk+aiWeaponPower(a);}
+function gainXpUnit(u,amount,isPlayer){u.xp+=Math.max(0,amount);var up=0;while(u.xp>=xpNeed(u.level)){u.xp-=xpNeed(u.level);u.level++;u.baseAtk+=isPlayer?3:2;u.maxHp+=isPlayer?12:10;u.hp=u.maxHp;up++;}return up;}
+function partyMembers(){return state.ai.filter(function(a){return a.party;});}
+function partyCount(){return partyMembers().length;}
+
+var canvas=document.getElementById("game"),ctx=canvas.getContext("2d");
+var W=innerWidth,H=innerHeight,DPR=Math.min(devicePixelRatio||1,1.5);
+var camera={x:0,y:0},worldW=1400,worldH=900;
+var p={x:state.x,y:state.y,r:18,speed:180,attackCd:0,hitFlash:0};
+var enemies=[],nextEnemyId=1,keys={},joy={x:0,y:0},last=performance.now();
+var toastTimer=0,modalOpen=false,currentInteract=null,fieldSpawnTimer=0,dungeon=null,gameStarted=false,saveTick=0;
+var clickMemory={id:null,count:0,t:0};
+var lvText=document.getElementById("lvText"),hpText=document.getElementById("hpText"),atkText=document.getElementById("atkText"),defText=document.getElementById("defText"),goldText=document.getElementById("goldText"),partyText=document.getElementById("partyText"),hpFill=document.getElementById("hpFill"),xpFill=document.getElementById("xpFill"),zoneName=document.getElementById("zoneName"),zoneSub=document.getElementById("zoneSub"),objective=document.getElementById("objective"),prompt=document.getElementById("prompt");
+var modal=document.getElementById("modal"),modalTitle=document.getElementById("modalTitle"),modalBody=document.getElementById("modalBody");
+
+function resize(){W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,1.5);canvas.width=Math.floor(W*DPR);canvas.height=Math.floor(H*DPR);canvas.style.width=W+"px";canvas.style.height=H+"px";ctx.setTransform(DPR,0,0,DPR,0,0);}
+addEventListener("resize",resize);resize();
+function toast(msg){var el=document.getElementById("toast");el.textContent=msg;el.classList.add("on");clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove("on");},1900);}
+function updateHud(){
+ lvText.textContent="Lv."+state.player.level;hpText.textContent="HP "+Math.ceil(state.player.hp)+"/"+state.player.maxHp;atkText.textContent="공격 "+playerAtk();defText.textContent="방어 "+playerArmorDef();goldText.textContent=Math.floor(state.player.gold)+"G";partyText.textContent="파티 1+"+partyCount()+"/4";
+ hpFill.style.width=Math.max(0,state.player.hp/state.player.maxHp*100)+"%";xpFill.style.width=Math.max(0,state.player.xp/xpNeed(state.player.level)*100)+"%";
+ if(dungeon){zoneName.textContent=dungeon.def.name;zoneSub.textContent="방 "+(dungeon.room+1)+"/"+(dungeon.def.rooms.length+1);if(dungeon.complete)objective.textContent="던전 클리어! 빛에 닿으면 마을로 귀환해.";else if(dungeon.room<dungeon.def.rooms.length)objective.textContent="방의 몬스터를 모두 처치해야 다음 방이 열려. 남은 적 "+aliveEnemies();else objective.textContent="보스 처치가 클리어 조건. 보스 체력을 많이 깎을수록 기여도가 올라.";}
+ else{var z=ZONES[state.zone];zoneName.textContent=z.name;zoneSub.textContent=z.sub;objective.textContent=state.zone===0?"AI 유저를 3번 클릭하면 파티 초대/해체. 던전은 최소 2명이 필요해.":"엘리트 몬스터는 더 강하지만 경험치와 골드를 더 많이 줘.";}
+}
+function openModal(title,html){modalTitle.textContent=title;modalBody.innerHTML=html;modal.hidden=false;modalOpen=true;}
+function closeModal(){modal.hidden=true;modalOpen=false;}
+document.getElementById("modalClose").onclick=closeModal;
+
+function travelMenu(){
+ var html="<b>사냥터 6개</b>";
+ html+=ZONES.map(function(z,i){return '<div class="row"><div><b>'+z.name+'</b><small>'+z.sub+(i===0?" · 회복/상점/던전":" · 엘리트 출현")+'</small></div><button data-zone="'+i+'">이동</button></div>';}).join("");
+ html+="<hr style='border-color:#ffffff20;margin:13px 0'><b>파티 던전 3개</b><small style='display:block;color:#b9c8bc;margin-top:3px'>플레이어 포함 2명 이상이어야 입장 가능</small>";
+ html+=DUNGEONS.map(function(d,i){return '<div class="row"><div><b>'+d.name+'</b><small>권장 Lv.'+d.lv+' · '+(d.rooms.length+1)+'개 방 · 몬스터 10 + 보스 1</small></div><button data-dungeon="'+i+'">입장</button></div>';}).join("");
+ openModal("지역 / 파티 던전",html);
+ modalBody.querySelectorAll("[data-zone]").forEach(function(b){b.onclick=function(){goZone(Number(b.dataset.zone));closeModal();};});
+ modalBody.querySelectorAll("[data-dungeon]").forEach(function(b){b.onclick=function(){startDungeon(Number(b.dataset.dungeon));};});
+}
+function shopMenu(kind){
+ var items=kind==="weapon"?WEAPONS:ARMORS,owned=kind==="weapon"?state.player.ownedWeapons:state.player.ownedArmors;
+ var html=items.map(function(it){var has=owned.indexOf(it.id)>=0,equipped=kind==="weapon"?state.player.weapon===it.id&&!state.player.specialWeapon:state.player.armor===it.id&&!state.player.specialArmor,stat=kind==="weapon"?"공격 +"+it.power:"방어 +"+it.def;return '<div class="row"><div><b>'+it.name+(equipped?' <span class="tag good">장착</span>':'')+'</b><small>'+stat+' · '+it.price+'G</small></div><button class="buy" data-buy="'+it.id+'">'+(has?"장착":"구매")+'</button></div>';}).join("");
+ openModal(kind==="weapon"?"무기 상점":"방어구 상점",html);
+ modalBody.querySelectorAll("[data-buy]").forEach(function(b){b.onclick=function(){buyOrEquip(kind,b.dataset.buy);shopMenu(kind);};});
+}
+function buyOrEquip(kind,id){
+ var arr=kind==="weapon"?WEAPONS:ARMORS,owned=kind==="weapon"?state.player.ownedWeapons:state.player.ownedArmors,it=arr.find(function(x){return x.id===id;});if(!it)return;
+ if(owned.indexOf(id)<0){if(state.player.gold<it.price){toast("골드가 부족해.");return;}state.player.gold-=it.price;owned.push(id);}
+ if(kind==="weapon"){state.player.weapon=id;state.player.specialWeapon=null;}else{state.player.armor=id;state.player.specialArmor=null;}save();toast(it.name+" 장착");
+}
+function bagMenu(){
+ var normalWeapon=(WEAPONS.find(function(x){return x.id===state.player.weapon;})||{name:"맨손"}).name;
+ var normalArmor=(ARMORS.find(function(x){return x.id===state.player.armor;})||{name:"없음"}).name;
+ var html="<b>상점 장비</b>";
+ html+='<div class="row"><div><b>무기</b><small>'+(state.player.specialWeapon?DROPS[state.player.specialWeapon].name:normalWeapon)+'</small></div><button data-shop="weapon">무기상점</button></div>';
+ html+='<div class="row"><div><b>방어구</b><small>'+(state.player.specialArmor?DROPS[state.player.specialArmor].name:normalArmor)+'</small></div><button data-shop="armor">방어구상점</button></div>';
+ html+="<hr style='border-color:#ffffff20;margin:13px 0'><b>던전 전용 전리품</b>";
+ if(!state.player.drops.length)html+="<div class='note'>아직 없음. 던전 몬스터/보스가 낮은 확률로 드롭해.</div>";
+ state.player.drops.forEach(function(id){var d=DROPS[id],eq=d.kind==="weapon"?state.player.specialWeapon===id:state.player.specialArmor===id;html+='<div class="row"><div><b>'+d.name+(eq?' <span class="tag good">장착</span>':'')+'</b><small>'+d.from+' · '+(d.kind==="weapon"?"공격 +"+d.power:"방어 +"+d.def)+'</small></div><button data-drop="'+id+'">장착</button></div>';});
+ openModal("장비",html);
+ modalBody.querySelectorAll("[data-shop]").forEach(function(b){b.onclick=function(){shopMenu(b.dataset.shop);};});
+ modalBody.querySelectorAll("[data-drop]").forEach(function(b){b.onclick=function(){equipDrop(b.dataset.drop);bagMenu();};});
+}
+function equipDrop(id){var d=DROPS[id];if(!d||state.player.drops.indexOf(id)<0)return;if(d.kind==="weapon"){state.player.specialWeapon=id;state.player.weapon=null;}else{state.player.specialArmor=id;state.player.armor=null;}save();toast(d.name+" 장착");}
+
+function goZone(i){
+ if(dungeon)return;state.zone=Math.max(0,Math.min(ZONES.length-1,i));p.x=700;p.y=520;state.x=p.x;state.y=p.y;enemies=[];partyMembers().forEach(function(a,k){a.zone=state.zone;a.x=p.x-45-k*32;a.y=p.y+55;});if(state.zone>0)spawnFieldBatch();save();
+}
+function spawnFieldBatch(){
+ if(state.zone===0||dungeon)return;var z=ZONES[state.zone];
+ while(enemies.length<9){var m=z.mons[Math.floor(Math.random()*z.mons.length)],lv=Math.max(1,z.lv+Math.floor(Math.random()*3)-1),elite=Math.random()<0.16;spawnEnemy(m[0],m[1]+lv*8,m[2]+lv*2,m[3]+lv*3,m[4]+lv*2,elite,false,randomPos(100,worldW-100),randomPos(120,worldH-120));}
+}
+function spawnEnemy(name,hp,atk,xp,gold,elite,boss,x,y){var mul=elite?2.4:1;enemies.push({id:nextEnemyId++,name:name,hp:Math.round(hp*mul),maxHp:Math.round(hp*mul),atk:Math.round(atk*(elite?1.65:1)),xp:Math.round(xp*(elite?2.15:1)),gold:Math.round(gold*(elite?2.15:1)),elite:elite,boss:boss,x:x,y:y,r:boss?30:(elite?24:19),attackCd:Math.random(),dead:false,lastHit:null});}
+function randomPos(a,b){return a+Math.random()*(b-a);}
+function aliveEnemies(){return enemies.filter(function(e){return !e.dead&&e.hp>0;}).length;}
+
+function startDungeon(i){
+ if(partyCount()<1){toast("AI 유저를 최소 1명 파티에 초대해야 해.");return;}var d=DUNGEONS[i];if(!d)return;closeModal();
+ dungeon={index:i,def:d,room:0,complete:false,door:false,portal:false,contrib:{player:0},pendingDrops:[],rewarded:false};
+ partyMembers().forEach(function(a){dungeon.contrib[a.id]=0;a.zone=100+i;a.hp=a.maxHp;});
+ state.zone=0;p.x=150;p.y=310;enemies=[];worldW=980;worldH=620;spawnDungeonRoom();
+}
+function spawnDungeonRoom(){
+ enemies=[];dungeon.door=false;dungeon.portal=false;p.x=145;p.y=310;partyMembers().forEach(function(a,k){a.x=p.x-36-k*24;a.y=p.y+40+(k%2)*26;});var d=dungeon.def;
+ if(dungeon.room<d.rooms.length){var count=d.rooms[dungeon.room];for(var i=0;i<count;i++){var elite=Math.random()<0.18;spawnEnemy(d.mob,d.mobHp+dungeon.room*22,d.mobAtk+dungeon.room*3,0,0,elite,false,420+(i%3)*120,205+Math.floor(i/3)*150);}}
+ else spawnEnemy(d.boss,d.bossHp,d.bossAtk,0,0,false,true,720,310);
+}
+function advanceDungeon(){if(!dungeon||dungeon.complete||!dungeon.door)return;dungeon.room++;spawnDungeonRoom();toast("다음 방");}
+function completeDungeon(){
+ if(!dungeon||dungeon.rewarded)return;dungeon.complete=true;dungeon.portal=true;dungeon.rewarded=true;
+ var keysC=Object.keys(dungeon.contrib),maxC=Math.max.apply(null,keysC.map(function(k){return dungeon.contrib[k];}).concat([1])),rewardLines=[];
+ keysC.forEach(function(k){var c=dungeon.contrib[k],factor=.25+.95*(c/maxC),g=Math.round(dungeon.def.baseGold*factor),x=Math.round(dungeon.def.baseXp*factor);if(k==="player"){state.player.gold+=g;gainXpUnit(state.player,x,true);rewardLines.push("내 보상: "+g+"G · 경험치 "+x+" · 기여도 "+Math.round(c));}else{var a=state.ai.find(function(v){return v.id===k;});if(a){a.gold+=g;gainXpUnit(a,x,false);}}});
+ var got=[];
+ dungeon.pendingDrops.forEach(function(r){if(r.owner==="player"&&state.player.drops.indexOf(r.item)<0){state.player.drops.push(r.item);got.push(DROPS[r.item].name);}else if(r.owner!=="player"){var a=state.ai.find(function(v){return v.id===r.owner;}),it=DROPS[r.item];if(a&&it){if(it.kind==="weapon")a.specialWeapon=it.id;else a.specialArmor=it.id;}}});
+ save();
+ openModal("던전 클리어",'<p><b>'+dungeon.def.name+' 클리어!</b></p><p>'+rewardLines.join("<br>")+'</p>'+(got.length?'<p class="gold">획득 전리품: '+got.join(", ")+'</p>':'<p>이번에는 전용 장비 드롭 없음.</p>')+'<p class="note">보스 처치 시점에 보상이 지급됐어. 빛에 닿으면 마을로 귀환해.</p>');
+}
+function returnFromDungeon(){closeModal();dungeon=null;worldW=1400;worldH=900;state.zone=0;p.x=700;p.y=520;enemies=[];state.player.hp=state.player.maxHp;partyMembers().forEach(function(a,k){a.zone=0;a.x=p.x-60-k*36;a.y=p.y+65;a.hp=a.maxHp;});save();toast("마을로 귀환");}
+function rollDungeonDrop(enemy,killer){
+ if(!dungeon)return;var chance=enemy.boss ? .28 : .045;if(Math.random()>chance)return;var item=dungeon.def.drops[Math.floor(Math.random()*dungeon.def.drops.length)],owner=killer||"player";
+ if(enemy.boss){var entries=Object.keys(dungeon.contrib),sum=entries.reduce(function(s,k){return s+Math.max(1,dungeon.contrib[k]);},0),r=Math.random()*sum,acc=0;for(var i=0;i<entries.length;i++){acc+=Math.max(1,dungeon.contrib[entries[i]]);if(r<=acc){owner=entries[i];break;}}}
+ dungeon.pendingDrops.push({item:item,owner:owner});
+}
+function damageEnemy(e,amount,source){if(!e||e.dead)return;var dealt=Math.min(e.hp,Math.max(1,Math.round(amount)));e.hp-=dealt;e.lastHit=source;if(dungeon&&e.boss)dungeon.contrib[source]=(dungeon.contrib[source]||0)+dealt;if(e.hp<=0)killEnemy(e,source);}
+function killEnemy(e,killer){
+ e.dead=true;
+ if(dungeon){dungeon.contrib[killer]=(dungeon.contrib[killer]||0)+(e.boss?25:10);rollDungeonDrop(e,killer);if(e.boss)completeDungeon();else if(aliveEnemies()===0){dungeon.door=true;toast("방 클리어! 다음 문이 열렸어.");}}
+ else{var receiver=killer==="player"?state.player:state.ai.find(function(a){return a.id===killer;});if(receiver){receiver.gold+=e.gold;gainXpUnit(receiver,e.xp,killer==="player");if(killer!=="player")aiShop(receiver);}save();}
+}
+function aiShop(a){
+ for(var wi=WEAPONS.length-1;wi>=0;wi--){if(a.gold>=WEAPONS[wi].price&&aiWeaponPower(a)<WEAPONS[wi].power){a.gold-=WEAPONS[wi].price;a.weapon=WEAPONS[wi].id;a.specialWeapon=null;break;}}
+ for(var ai=ARMORS.length-1;ai>=0;ai--){if(a.gold>=ARMORS[ai].price&&aiArmorDef(a)<ARMORS[ai].def){a.gold-=ARMORS[ai].price;a.armor=ARMORS[ai].id;a.specialArmor=null;break;}}
+}
+function attackPlayer(){if(p.attackCd>0||modalOpen)return;p.attackCd=.58;var target=nearestEnemy(p.x,p.y,92);if(!target){toast("공격 범위에 적이 없어.");return;}damageEnemy(target,playerAtk()+Math.floor(Math.random()*7),"player");}
+function nearestEnemy(x,y,range){var best=null,bd=range*range;enemies.forEach(function(e){if(e.dead)return;var dx=e.x-x,dy=e.y-y,dd=dx*dx+dy*dy;if(dd<bd){bd=dd;best=e;}});return best;}
+function updateEnemies(dt){
+ enemies.forEach(function(e){if(e.dead)return;e.attackCd-=dt;var targets=[{id:"player",x:p.x,y:p.y,hp:state.player.hp}];partyMembers().forEach(function(a){targets.push({id:a.id,x:a.x,y:a.y,hp:a.hp});});var t=targets[0],bd=Infinity;targets.forEach(function(q){if(q.hp<=0)return;var dx=q.x-e.x,dy=q.y-e.y,d=dx*dx+dy*dy;if(d<bd){bd=d;t=q;}});var dist=Math.sqrt(bd);
+  if(dist>e.r+24){var vx=(t.x-e.x)/(dist||1),vy=(t.y-e.y)/(dist||1),spd=e.boss?72:(e.elite?78:86);e.x+=vx*spd*dt;e.y+=vy*spd*dt;}
+  else if(e.attackCd<=0){e.attackCd=e.boss ? .8 : 1.05;var dmg=e.atk;if(t.id==="player"){state.player.hp-=Math.max(1,dmg-playerArmorDef());p.hitFlash=.16;}else{var a=state.ai.find(function(v){return v.id===t.id;});if(a)a.hp-=Math.max(1,dmg-aiArmorDef(a));}}
+ });
+ if(state.player.hp<=0){state.player.hp=state.player.maxHp;if(dungeon){toast("쓰러져서 던전에서 이탈했어.");returnFromDungeon();}else{goZone(0);toast("마을에서 부활했어.");}}
+ partyMembers().forEach(function(a){if(a.hp<=0){a.hp=a.maxHp*.45;a.x=p.x-50;a.y=p.y+65;}});
+}
+function updatePartyAI(dt){
+ partyMembers().forEach(function(a,k){a.zone=dungeon?100+dungeon.index:state.zone;var t=nearestEnemy(a.x,a.y,105);if(t){var dx=t.x-a.x,dy=t.y-a.y,d=Math.hypot(dx,dy);if(d>72){a.x+=dx/(d||1)*145*dt;a.y+=dy/(d||1)*145*dt;}a.sim-=dt;if(d<=78&&a.sim<=0){a.sim=.85;damageEnemy(t,aiAtk(a)+Math.floor(Math.random()*5),a.id);}}else{var ox=-48-(k%2)*32,oy=50+(k*28),dx=p.x+ox-a.x,dy=p.y+oy-a.y,d=Math.hypot(dx,dy);if(d>20){a.x+=dx/(d||1)*165*dt;a.y+=dy/(d||1)*165*dt;}}});
+}
+function bestZoneForAI(a){var idx=1;for(var i=1;i<ZONES.length;i++)if(a.level>=ZONES[i].lv)idx=i;return idx;}function updateFreeAIVisible(dt){
+ if(dungeon||state.zone===0)return;
+ state.ai.forEach(function(a){
+  if(a.party||a.zone!==state.zone)return;
+  var t=nearestEnemy(a.x,a.y,145);
+  if(!t)return;
+  var dx=t.x-a.x,dy=t.y-a.y,d=Math.hypot(dx,dy);
+  if(d>74){a.x+=dx/(d||1)*120*dt;a.y+=dy/(d||1)*120*dt;}
+  a.sim-=dt;
+  if(d<=80&&a.sim<=0){a.sim=.95+Math.random()*.25;damageEnemy(t,aiAtk(a)+Math.floor(Math.random()*5),a.id);}
+ });
+}
+
+function simulateFreeAI(dt){
+ state.ai.forEach(function(a){if(a.party)return;if(!dungeon&&state.zone>0&&a.zone===state.zone)return;a.sim-=dt;if(a.sim>0)return;a.sim=2.2+Math.random()*1.8;if(a.zone===0){aiShop(a);if(Math.random()<.42){a.zone=bestZoneForAI(a);a.x=randomPos(220,1180);a.y=randomPos(180,760);}else{a.sim=3+Math.random()*3;}return;}var z=ZONES[a.zone]||ZONES[1],m=z.mons[Math.floor(Math.random()*z.mons.length)],winScore=aiAtk(a)+a.level*3+Math.random()*24,need=m[2]*2;
+  if(winScore>=need*.55){a.gold+=m[4]+Math.floor(Math.random()*8);gainXpUnit(a,m[3],false);if(a.gold>WEAPONS[Math.min(WEAPONS.length-1,Math.floor(a.level/5))].price*.8||Math.random()<.12)a.zone=0;}
+  else{a.hp=Math.max(15,a.hp-m[2]);if(a.hp<30){a.zone=0;a.hp=a.maxHp;}}
+ });
+}
+function updatePlayer(dt){
+ var x=(keys.KeyD?1:0)-(keys.KeyA?1:0)+joy.x,y=(keys.KeyS?1:0)-(keys.KeyW?1:0)+joy.y,len=Math.hypot(x,y);if(len>1){x/=len;y/=len;}if(!modalOpen){p.x+=x*p.speed*dt;p.y+=y*p.speed*dt;}
+ p.x=Math.max(38,Math.min(worldW-38,p.x));p.y=Math.max(70,Math.min(worldH-38,p.y));p.attackCd=Math.max(0,p.attackCd-dt);p.hitFlash=Math.max(0,p.hitFlash-dt);state.x=p.x;state.y=p.y;
+ if(dungeon){if(dungeon.door&&p.x>worldW-72&&Math.abs(p.y-worldH/2)<90)advanceDungeon();if(dungeon.portal&&Math.hypot(p.x-(worldW-135),p.y-worldH/2)<58)returnFromDungeon();}
+}
+function updateInteractions(){
+ currentInteract=null;if(dungeon){prompt.classList.remove("on");return;}
+ if(state.zone===0){var objs=[{x:390,y:300,name:"무기상점",kind:"weapon"},{x:1010,y:300,name:"방어구상점",kind:"armor"},{x:700,y:300,name:"회복의 샘",kind:"heal"}],best=null,bd=75*75;objs.forEach(function(o){var dx=o.x-p.x,dy=o.y-p.y,d=dx*dx+dy*dy;if(d<bd){bd=d;best=o;}});if(best){currentInteract=best;prompt.textContent=best.name+" · 상호작용";prompt.classList.add("on");return;}}
+ prompt.classList.remove("on");
+}
+function interact(){if(modalOpen)return;if(currentInteract){if(currentInteract.kind==="heal"){state.player.hp=state.player.maxHp;partyMembers().forEach(function(a){a.hp=a.maxHp;});toast("모두 회복했어.");save();}else shopMenu(currentInteract.kind);return;}toast("상호작용할 대상이 없어.");}
+function toggleParty(ai){if(!ai)return;if(ai.party){ai.party=false;ai.zone=0;toast(ai.name+" 파티 해체");}else{if(partyCount()>=4){toast("AI 파티원은 최대 4명까지 초대 가능해.");return;}ai.party=true;ai.zone=state.zone;ai.x=p.x-55;ai.y=p.y+55;ai.hp=ai.maxHp;toast(ai.name+" 파티 합류");}save();}
+function onCanvasTap(clientX,clientY){
+ if(modalOpen)return;var wx=clientX+camera.x,wy=clientY+camera.y,best=null,bd=42*42;
+ state.ai.forEach(function(a){if(dungeon&&!a.party)return;if(!dungeon&&a.zone!==state.zone&&!a.party)return;var dx=a.x-wx,dy=a.y-wy,d=dx*dx+dy*dy;if(d<bd){bd=d;best=a;}});
+ if(!best)return;var now=performance.now();if(clickMemory.id===best.id&&now-clickMemory.t<1200)clickMemory.count++;else clickMemory.count=1;clickMemory.id=best.id;clickMemory.t=now;if(clickMemory.count>=3){clickMemory.count=0;toggleParty(best);}else toast(best.name+" Lv."+best.level+" · "+clickMemory.count+"/3 클릭");
+}
+
+function draw(){ctx.clearRect(0,0,W,H);camera.x=Math.max(0,Math.min(worldW-W,p.x-W/2));camera.y=Math.max(0,Math.min(worldH-H,p.y-H/2));ctx.save();ctx.translate(-camera.x,-camera.y);drawGround();if(!dungeon&&state.zone===0)drawVillage();else if(dungeon)drawDungeon();else drawField();drawEnemies();drawAI();drawPlayer();ctx.restore();}
+function drawGround(){ctx.fillStyle=dungeon?"#30343b":ZONES[state.zone].color;ctx.fillRect(0,0,worldW,worldH);ctx.globalAlpha=.13;ctx.strokeStyle="#ffffff";ctx.lineWidth=1;for(var x=0;x<worldW;x+=80){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,worldH);ctx.stroke();}for(var y=0;y<worldH;y+=80){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(worldW,y);ctx.stroke();}ctx.globalAlpha=1;}
+function label(x,y,text,color){ctx.font="900 12px system-ui";ctx.textAlign="center";ctx.fillStyle="#07120ce8";ctx.fillRect(x-55,y-31,110,20);ctx.fillStyle=color||"#fff";ctx.fillText(text,x,y-16);}
+function box(x,y,w,h,c,t){ctx.fillStyle=c;ctx.fillRect(x-w/2,y-h/2,w,h);ctx.strokeStyle="#ffffff45";ctx.lineWidth=2;ctx.strokeRect(x-w/2,y-h/2,w,h);label(x,y-h/2,t,"#ffe48c");}
+function drawVillage(){ctx.fillStyle="#c3ae79";ctx.fillRect(610,0,180,900);ctx.fillRect(0,430,1400,130);box(390,300,170,130,"#6c4c2f","무기상점");box(1010,300,170,130,"#46596e","방어구상점");ctx.beginPath();ctx.arc(700,300,58,0,Math.PI*2);ctx.fillStyle="#5fc7df";ctx.fill();ctx.strokeStyle="#d7f8ff";ctx.lineWidth=6;ctx.stroke();label(700,380,"회복의 샘","#d8fbff");box(700,690,230,120,"#58415f","파티 던전 광장");ctx.fillStyle="#ffffff12";ctx.fillRect(180,650,250,120);ctx.fillRect(970,650,250,120);label(305,710,"AI 모험가 휴식처","#fff");label(1095,710,"장비 준비 구역","#fff");}
+function drawField(){ctx.fillStyle="#ffffff18";for(var i=0;i<22;i++){var x=(i*97+state.zone*53)%worldW,y=(i*151+70)%worldH;ctx.beginPath();ctx.arc(x,y,10+(i%4)*4,0,Math.PI*2);ctx.fill();}ctx.fillStyle="#1b1b1b44";ctx.fillRect(30,70,230,55);ctx.fillStyle="#fff";ctx.font="900 18px system-ui";ctx.textAlign="left";ctx.fillText(ZONES[state.zone].name+" 사냥터",48,103);}
+function drawDungeon(){ctx.fillStyle="#171a20";ctx.fillRect(40,90,worldW-80,worldH-150);ctx.strokeStyle="#8e8e9a";ctx.lineWidth=8;ctx.strokeRect(40,90,worldW-80,worldH-150);ctx.fillStyle="#5f4b39";for(var x=70;x<worldW-70;x+=90)for(var y=120;y<worldH-90;y+=85)ctx.fillRect(x,y,65,50);if(dungeon.door){ctx.fillStyle="#68dcff";ctx.fillRect(worldW-55,worldH/2-70,30,140);label(worldW-90,worldH/2,"다음 방","#9ae8ff");}if(dungeon.portal){var g=ctx.createRadialGradient(worldW-135,worldH/2,5,worldW-135,worldH/2,62);g.addColorStop(0,"#ffffff");g.addColorStop(.35,"#d7f8ff");g.addColorStop(1,"#6bdcff00");ctx.fillStyle=g;ctx.beginPath();ctx.arc(worldW-135,worldH/2,65,0,Math.PI*2);ctx.fill();label(worldW-135,worldH/2+85,"마을 귀환의 빛","#d7f8ff");}}
+function drawUnitCircle(x,y,r,color,outline){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();ctx.strokeStyle=outline||"#fff";ctx.lineWidth=3;ctx.stroke();}
+function drawPlayer(){drawUnitCircle(p.x,p.y,p.r,p.hitFlash>0?"#ffb1b1":"#3d8fe0","#e7f3ff");label(p.x,p.y-24,"나 Lv."+state.player.level,"#d9efff");}
+function drawAI(){state.ai.forEach(function(a){if(dungeon&&!a.party)return;if(!dungeon&&a.zone!==state.zone&&!a.party)return;drawUnitCircle(a.x,a.y,16,a.party?"#f1c84e":"#6fbf7d",a.party?"#fff1a6":"#d9ffe1");label(a.x,a.y-20,a.name+" Lv."+a.level+(a.party?" ★":""),a.party?"#ffe48c":"#d7ffdd");});}
+function drawEnemies(){enemies.forEach(function(e){if(e.dead)return;var col=e.boss?"#9a2f43":(e.elite?"#8f57bd":"#d65a4b");drawUnitCircle(e.x,e.y,e.r,col,e.elite||e.boss?"#ffd66b":"#ffd4cf");label(e.x,e.y-e.r-4,(e.boss?"보스 ":e.elite?"엘리트 ":"")+e.name,e.boss?"#ffadba":e.elite?"#e5bdff":"#fff");var bw=e.boss?90:62,bh=6;ctx.fillStyle="#2b1515";ctx.fillRect(e.x-bw/2,e.y+e.r+7,bw,bh);ctx.fillStyle="#e95d63";ctx.fillRect(e.x-bw/2,e.y+e.r+7,bw*Math.max(0,e.hp/e.maxHp),bh);});}
+function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen){updatePlayer(dt);updatePartyAI(dt);updateFreeAIVisible(dt);updateEnemies(dt);simulateFreeAI(dt);updateInteractions();if(!dungeon&&state.zone>0){fieldSpawnTimer-=dt;if(fieldSpawnTimer<=0){fieldSpawnTimer=2;enemies=enemies.filter(function(e){return !e.dead;});spawnFieldBatch();}}saveTick+=dt;if(saveTick>=5){saveTick=0;save();}}updateHud();draw();requestAnimationFrame(loop);}
+
+document.getElementById("attackBtn").onclick=attackPlayer;
+document.getElementById("interactBtn").onclick=interact;
+document.getElementById("mapBtn").onclick=travelMenu;
+document.getElementById("bagBtn").onclick=bagMenu;
+document.getElementById("startBtn").onclick=function(){gameStarted=true;document.getElementById("start").hidden=true;state.player.hp=Math.min(state.player.maxHp,state.player.hp);save();};
+addEventListener("keydown",function(e){keys[e.code]=true;if(e.code==="KeyJ")attackPlayer();if(e.code==="KeyE")interact();if(e.code==="KeyM")travelMenu();});
+addEventListener("keyup",function(e){keys[e.code]=false;});addEventListener("beforeunload",save);
+canvas.addEventListener("pointerup",function(e){onCanvasTap(e.clientX,e.clientY);});
+var joyBase=document.getElementById("joystick"),knob=document.getElementById("knob"),joyId=null;
+function joyMove(e){var r=joyBase.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,max=r.width*.34,d=Math.hypot(dx,dy)||1,k=Math.min(1,max/d);dx*=k;dy*=k;joy.x=dx/max;joy.y=dy/max;knob.style.transform="translate("+dx+"px,"+dy+"px)";}
+joyBase.addEventListener("pointerdown",function(e){joyId=e.pointerId;joyBase.setPointerCapture(e.pointerId);joyMove(e);});
+joyBase.addEventListener("pointermove",function(e){if(e.pointerId===joyId)joyMove(e);});
+function joyEnd(e){if(e.pointerId!==joyId)return;joyId=null;joy.x=0;joy.y=0;knob.style.transform="translate(0,0)";}
+joyBase.addEventListener("pointerup",joyEnd);joyBase.addEventListener("pointercancel",joyEnd);
+goZone(0);updateHud();requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
