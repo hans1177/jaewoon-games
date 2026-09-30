@@ -165,7 +165,7 @@ var W=innerWidth,H=innerHeight,DPR=Math.min(devicePixelRatio||1,1.5);
 var camera={x:0,y:0},worldW=1400,worldH=900;
 var p={x:state.x,y:state.y,r:18,speed:180,attackCd:0,hitFlash:0};
 var enemies=[],nextEnemyId=1,keys={},joy={x:0,y:0},last=performance.now();
-var toastTimer=0,modalOpen=false,currentInteract=null,fieldSpawnTimer=0,dungeon=null;
+var toastTimer=0,modalOpen=false,currentInteract=null,fieldSpawnTimer=0,dungeon=null,gameStarted=false,saveTick=0;
 var clickMemory={id:null,count:0,t:0};
 var lvText=document.getElementById("lvText"),hpText=document.getElementById("hpText"),atkText=document.getElementById("atkText"),defText=document.getElementById("defText"),goldText=document.getElementById("goldText"),partyText=document.getElementById("partyText"),hpFill=document.getElementById("hpFill"),xpFill=document.getElementById("xpFill"),zoneName=document.getElementById("zoneName"),zoneSub=document.getElementById("zoneSub"),objective=document.getElementById("objective"),prompt=document.getElementById("prompt");
 var modal=document.getElementById("modal"),modalTitle=document.getElementById("modalTitle"),modalBody=document.getElementById("modalBody");
@@ -279,9 +279,21 @@ function updateEnemies(dt){
 function updatePartyAI(dt){
  partyMembers().forEach(function(a,k){a.zone=dungeon?100+dungeon.index:state.zone;var t=nearestEnemy(a.x,a.y,105);if(t){var dx=t.x-a.x,dy=t.y-a.y,d=Math.hypot(dx,dy);if(d>72){a.x+=dx/(d||1)*145*dt;a.y+=dy/(d||1)*145*dt;}a.sim-=dt;if(d<=78&&a.sim<=0){a.sim=.85;damageEnemy(t,aiAtk(a)+Math.floor(Math.random()*5),a.id);}}else{var ox=-48-(k%2)*32,oy=50+(k*28),dx=p.x+ox-a.x,dy=p.y+oy-a.y,d=Math.hypot(dx,dy);if(d>20){a.x+=dx/(d||1)*165*dt;a.y+=dy/(d||1)*165*dt;}}});
 }
-function bestZoneForAI(a){var idx=1;for(var i=1;i<ZONES.length;i++)if(a.level>=ZONES[i].lv)idx=i;return idx;}
+function bestZoneForAI(a){var idx=1;for(var i=1;i<ZONES.length;i++)if(a.level>=ZONES[i].lv)idx=i;return idx;}function updateFreeAIVisible(dt){
+ if(dungeon||state.zone===0)return;
+ state.ai.forEach(function(a){
+  if(a.party||a.zone!==state.zone)return;
+  var t=nearestEnemy(a.x,a.y,145);
+  if(!t)return;
+  var dx=t.x-a.x,dy=t.y-a.y,d=Math.hypot(dx,dy);
+  if(d>74){a.x+=dx/(d||1)*120*dt;a.y+=dy/(d||1)*120*dt;}
+  a.sim-=dt;
+  if(d<=80&&a.sim<=0){a.sim=.95+Math.random()*.25;damageEnemy(t,aiAtk(a)+Math.floor(Math.random()*5),a.id);}
+ });
+}
+
 function simulateFreeAI(dt){
- state.ai.forEach(function(a){if(a.party)return;a.sim-=dt;if(a.sim>0)return;a.sim=2.2+Math.random()*1.8;if(a.zone===0){aiShop(a);a.zone=bestZoneForAI(a);a.x=randomPos(220,1180);a.y=randomPos(180,760);return;}var z=ZONES[a.zone]||ZONES[1],m=z.mons[Math.floor(Math.random()*z.mons.length)],winScore=aiAtk(a)+a.level*3+Math.random()*24,need=m[2]*2;
+ state.ai.forEach(function(a){if(a.party)return;if(!dungeon&&state.zone>0&&a.zone===state.zone)return;a.sim-=dt;if(a.sim>0)return;a.sim=2.2+Math.random()*1.8;if(a.zone===0){aiShop(a);if(Math.random()<.42){a.zone=bestZoneForAI(a);a.x=randomPos(220,1180);a.y=randomPos(180,760);}else{a.sim=3+Math.random()*3;}return;}var z=ZONES[a.zone]||ZONES[1],m=z.mons[Math.floor(Math.random()*z.mons.length)],winScore=aiAtk(a)+a.level*3+Math.random()*24,need=m[2]*2;
   if(winScore>=need*.55){a.gold+=m[4]+Math.floor(Math.random()*8);gainXpUnit(a,m[3],false);if(a.gold>WEAPONS[Math.min(WEAPONS.length-1,Math.floor(a.level/5))].price*.8||Math.random()<.12)a.zone=0;}
   else{a.hp=Math.max(15,a.hp-m[2]);if(a.hp<30){a.zone=0;a.hp=a.maxHp;}}
  });
@@ -315,15 +327,15 @@ function drawUnitCircle(x,y,r,color,outline){ctx.beginPath();ctx.arc(x,y,r,0,Mat
 function drawPlayer(){drawUnitCircle(p.x,p.y,p.r,p.hitFlash>0?"#ffb1b1":"#3d8fe0","#e7f3ff");label(p.x,p.y-24,"나 Lv."+state.player.level,"#d9efff");}
 function drawAI(){state.ai.forEach(function(a){if(dungeon&&!a.party)return;if(!dungeon&&a.zone!==state.zone&&!a.party)return;drawUnitCircle(a.x,a.y,16,a.party?"#f1c84e":"#6fbf7d",a.party?"#fff1a6":"#d9ffe1");label(a.x,a.y-20,a.name+" Lv."+a.level+(a.party?" ★":""),a.party?"#ffe48c":"#d7ffdd");});}
 function drawEnemies(){enemies.forEach(function(e){if(e.dead)return;var col=e.boss?"#9a2f43":(e.elite?"#8f57bd":"#d65a4b");drawUnitCircle(e.x,e.y,e.r,col,e.elite||e.boss?"#ffd66b":"#ffd4cf");label(e.x,e.y-e.r-4,(e.boss?"보스 ":e.elite?"엘리트 ":"")+e.name,e.boss?"#ffadba":e.elite?"#e5bdff":"#fff");var bw=e.boss?90:62,bh=6;ctx.fillStyle="#2b1515";ctx.fillRect(e.x-bw/2,e.y+e.r+7,bw,bh);ctx.fillStyle="#e95d63";ctx.fillRect(e.x-bw/2,e.y+e.r+7,bw*Math.max(0,e.hp/e.maxHp),bh);});}
-function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(!modalOpen){updatePlayer(dt);updatePartyAI(dt);updateEnemies(dt);simulateFreeAI(dt);updateInteractions();if(!dungeon&&state.zone>0){fieldSpawnTimer-=dt;if(fieldSpawnTimer<=0){fieldSpawnTimer=2;enemies=enemies.filter(function(e){return !e.dead;});spawnFieldBatch();}}}updateHud();draw();requestAnimationFrame(loop);}
+function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen){updatePlayer(dt);updatePartyAI(dt);updateFreeAIVisible(dt);updateEnemies(dt);simulateFreeAI(dt);updateInteractions();if(!dungeon&&state.zone>0){fieldSpawnTimer-=dt;if(fieldSpawnTimer<=0){fieldSpawnTimer=2;enemies=enemies.filter(function(e){return !e.dead;});spawnFieldBatch();}}saveTick+=dt;if(saveTick>=5){saveTick=0;save();}}updateHud();draw();requestAnimationFrame(loop);}
 
 document.getElementById("attackBtn").onclick=attackPlayer;
 document.getElementById("interactBtn").onclick=interact;
 document.getElementById("mapBtn").onclick=travelMenu;
 document.getElementById("bagBtn").onclick=bagMenu;
-document.getElementById("startBtn").onclick=function(){document.getElementById("start").hidden=true;state.player.hp=Math.min(state.player.maxHp,state.player.hp);save();};
+document.getElementById("startBtn").onclick=function(){gameStarted=true;document.getElementById("start").hidden=true;state.player.hp=Math.min(state.player.maxHp,state.player.hp);save();};
 addEventListener("keydown",function(e){keys[e.code]=true;if(e.code==="KeyJ")attackPlayer();if(e.code==="KeyE")interact();if(e.code==="KeyM")travelMenu();});
-addEventListener("keyup",function(e){keys[e.code]=false;});
+addEventListener("keyup",function(e){keys[e.code]=false;});addEventListener("beforeunload",save);
 canvas.addEventListener("pointerup",function(e){onCanvasTap(e.clientX,e.clientY);});
 var joyBase=document.getElementById("joystick"),knob=document.getElementById("knob"),joyId=null;
 function joyMove(e){var r=joyBase.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,max=r.width*.34,d=Math.hypot(dx,dy)||1,k=Math.min(1,max/d);dx*=k;dy*=k;joy.x=dx/max;joy.y=dy/max;knob.style.transform="translate("+dx+"px,"+dy+"px)";}
