@@ -178,10 +178,10 @@ local function setLoadingProgress(progress,status)
  loadingFill:TweenSize(UDim2.fromScale(math.clamp(progress,0,1),1),Enum.EasingDirection.Out,Enum.EasingStyle.Quad,.18,true)
  if status then loadingStatus.Text=status end
 end
-local function finishLoading()
+local function finishLoading(status)
  if not loadingVisible then return end
  loadingVisible=false
- setLoadingProgress(1,"집사가 문을 열었어")
+ setLoadingProgress(1,status or"집사가 문을 열었어")
  p:SetAttribute("LobbyClientReady",true)
  local tween=TweenService:Create(loadingLayer,TweenInfo.new(.2),{BackgroundTransparency=1});tween:Play()
  task.delay(.2,function()loadingLayer:Destroy()end)
@@ -193,18 +193,26 @@ task.spawn(function()
  local started=os.clock()
  while p.Parent and loadingVisible do
   local character=p.Character;local root=character and character:FindFirstChild("HumanoidRootPart")
+  local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+  local round=tostring(p:GetAttribute("RoundState")or"")
+  local inMatch=round=="RUNNING"or round=="SPECTATING"or round:match("^RESULT_")~=nil
   local lobby=workspace:FindFirstChild("MidnightLobby")
   local room=lobby and lobby:FindFirstChild("PersonalManor_"..p.UserId)
   local ground=room and room:FindFirstChild("PersonalGround")
   local ready=workspace:GetAttribute("PhysicalLobbyReady")==true and p:GetAttribute("PersonalLobbyOwner")==p.UserId
-  if ready and ground and root and p:GetAttribute("LobbySpawnGroundedAt")then
+  -- 느린 접속 중 경기가 먼저 시작되면 실제 경기장 준비 상태로 로딩을 마친다.
+  if inMatch and root and humanoid and workspace:GetAttribute("MapReady")==true and workspace:FindFirstChild("MidnightArena")then
+   finishLoading("경기장 준비 완료");break
+  end
+  if not inMatch and ready and ground and root and humanoid and humanoid.FloorMaterial~=Enum.Material.Air and p:GetAttribute("LobbySpawnGroundedAt")then
    local position=root.Position-ground.Position
    if math.abs(position.X)<ground.Size.X*.5 and math.abs(position.Z)<ground.Size.Z*.5 and position.Y>0 and position.Y<14 then
     finishLoading();break
    end
   end
   local errorMessage=workspace:GetAttribute("LobbyLoadError")
-  if errorMessage then setLoadingProgress(.3,"저택 연결이 끊겼어 · 다시 연결해줘")
+  if inMatch then setLoadingProgress(.8,"경기장을 불러오는 중")
+  elseif errorMessage then setLoadingProgress(.3,"저택 연결이 끊겼어 · 다시 연결해줘")
   elseif not ready then setLoadingProgress(.3,"집사가 현관문을 여는 중")
   elseif not ground then setLoadingProgress(.6,"저택을 불러오는 중")
   else setLoadingProgress(.8,"가족 명부와 입장 위치 확인 중")end

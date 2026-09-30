@@ -4,18 +4,20 @@ local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
 local RunService=game:GetService("RunService")
 local Lighting=game:GetService("Lighting")
-local TweenService=game:GetService("TweenService")
 local p=Players.LocalPlayer
 local C=require(RS.Shared.GameConfig)
 local Assets=require(RS.Shared.ManorAssets)
 local Stories=require(RS.Shared.MonsterStories)
 local remote=RS:WaitForChild(C.RemoteName)
-local gui=Instance.new("ScreenGui");gui.Name="PersonalManorUI";gui.ResetOnSpawn=false;gui.DisplayOrder=15
+local gui=Instance.new("ScreenGui");gui.Name="PersonalManorUI";gui.ResetOnSpawn=false;gui.DisplayOrder=15;gui.Enabled=false
+gui.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
 gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets;gui.Parent=p:WaitForChild("PlayerGui")
 local ink=Color3.fromRGB(27,30,29)
 local parchment=Color3.fromRGB(235,218,182)
-local accent=Color3.fromRGB(150,104,71)
 local activeMenu=nil
+local activeStory=nil
+local invitationCode=""
+local rankingRows={}
 local notebookOpen=false
 local function corner(parent,n)
  local x=Instance.new("UICorner");x.CornerRadius=UDim.new(0,n or 4);x.Parent=parent
@@ -23,12 +25,12 @@ local function corner(parent,n)
 end
 local function label(parent,text,height,size)
  local x=Instance.new("TextLabel");x.BackgroundTransparency=1;x.Size=UDim2.new(1,-12,0,height or 32)
- x.Text=text;x.TextColor3=parchment;x.TextSize=size or 14;x.TextWrapped=true;x.Font=Enum.Font.Gotham
+ x.Text=text;x.TextColor3=parchment;x.TextSize=size or 14;x.TextWrapped=true;x.Font=Enum.Font.Gotham;x.AutomaticSize=Enum.AutomaticSize.Y
  x.TextXAlignment=Enum.TextXAlignment.Left;x.Parent=parent;return x
 end
 local function button(parent,text,fn,color)
  local x=Instance.new("TextButton");x.Size=UDim2.new(1,-12,0,44);x.BackgroundColor3=color or Color3.fromRGB(56,51,62)
- x.Text=text;x.TextColor3=parchment;x.TextSize=14;x.Font=Enum.Font.GothamBold;x.AutoButtonColor=true
+ x.Text=text;x.TextColor3=parchment;x.TextSize=14;x.TextWrapped=true;x.Font=Enum.Font.GothamBold;x.AutoButtonColor=true;x.AutomaticSize=Enum.AutomaticSize.Y
  x.Parent=parent;corner(x,5);x.Activated:Connect(fn);return x
 end
 -- 화면 구성 · 작은 명패와 접히는 가족 수첩. 이동 중 중앙 시야는 비운다.
@@ -43,11 +45,14 @@ local nav=Instance.new("Frame");nav.Name="FamilyNotebook";nav.AnchorPoint=Vector
 nav.Size=UDim2.new(1,-20,0,60);nav.BackgroundColor3=ink;nav.BackgroundTransparency=.04;nav.Visible=false;nav.Parent=gui;corner(nav,5)
 local max=Instance.new("UISizeConstraint");max.MaxSize=Vector2.new(360,60);max.Parent=nav
 local grid=Instance.new("UIGridLayout");grid.CellSize=UDim2.new(1/5,-4,1,0);grid.CellPadding=UDim2.fromOffset(5,0);grid.Parent=nav
-local panel=Instance.new("Frame");panel.AnchorPoint=Vector2.new(.5,.5);panel.Position=UDim2.fromScale(.5,.52)
-panel.Size=UDim2.new(1,-28,1,-74);panel.BackgroundColor3=Color3.fromRGB(29,24,25);panel.Visible=false;panel.Parent=gui;corner(panel,10)
+local shade=Instance.new("Frame");shade.Name="NotebookShade";shade.Size=UDim2.fromScale(1,1)
+shade.BackgroundColor3=ink;shade.BackgroundTransparency=.4;shade.Active=true;shade.Visible=false;shade.ZIndex=10;shade.Parent=gui
+local panel=Instance.new("Frame");panel.Name="NotebookPage";panel.AnchorPoint=Vector2.new(.5,0);panel.Position=UDim2.new(.5,0,0,60)
+panel.Size=UDim2.new(1,-28,1,-72);panel.BackgroundColor3=Color3.fromRGB(29,24,25);panel.Visible=false;panel.ZIndex=11;panel.Parent=gui;corner(panel,10)
+panel:GetPropertyChangedSignal("Visible"):Connect(function()shade.Visible=panel.Visible end)
 local limit=Instance.new("UISizeConstraint");limit.MaxSize=Vector2.new(460,550);limit.Parent=panel
 local panelTitle=label(panel,"",38,20);panelTitle.Position=UDim2.fromOffset(14,8);panelTitle.Size=UDim2.new(1,-85,0,38)
-local close=button(panel,"×",function()activeMenu=nil;panel.Visible=false end);close.Size=UDim2.fromOffset(42,38);close.Position=UDim2.new(1,-52,0,8)
+local close=button(panel,"×",function()activeMenu=nil;activeStory=nil;panel.Visible=false end);close.Size=UDim2.fromOffset(44,44);close.Position=UDim2.new(1,-52,0,6)
 local body=Instance.new("ScrollingFrame");body.Position=UDim2.fromOffset(12,56);body.Size=UDim2.new(1,-20,1,-68)
 body.BackgroundTransparency=1;body.BorderSizePixel=0;body.ScrollBarThickness=3;body.AutomaticCanvasSize=Enum.AutomaticSize.Y;body.CanvasSize=UDim2.new();body.Parent=panel
 local layout=Instance.new("UIListLayout");layout.Padding=UDim.new(0,8);layout.SortOrder=Enum.SortOrder.LayoutOrder;layout.Parent=body
@@ -61,6 +66,7 @@ end
 local open
 local function send(action,value)remote:FireServer(action,value)end
 local function openStory(item,stage)
+ activeStory={item=item,stage=stage};body.CanvasPosition=Vector2.zero
  clear();panelTitle.Text=item.Name
  label(body,(item.Origin or"저택의 손님").." · "..(stage==3 and"기록 완성"or("기록 "..stage.."/3")),34,13)
  local stories=Stories[item.Id]or{"아직 수집된 기록이 없다."}
@@ -70,7 +76,8 @@ local function openStory(item,stage)
  button(body,"도감으로",function()open("BOOK")end)
 end
 open=function(key)
- activeMenu=key;notebookOpen=false;nav.Visible=false;panel.Visible=true;clear();body.CanvasPosition=Vector2.zero
+ if not gui.Enabled then return end
+ activeMenu=key;activeStory=nil;rankingRows={};notebookOpen=false;nav.Visible=false;panel.Visible=true;clear();body.CanvasPosition=Vector2.zero
  if key=="PLAY"then
   panelTitle.Text="오늘 밤의 출정"
   local inRoom=p:GetAttribute("RoomServer")==true
@@ -80,13 +87,15 @@ open=function(key)
    label(body,string.format("초대 코드 %s\n%s · 참가 %d/%d명",p:GetAttribute("RoomCode")or"------",p:GetAttribute("RoomSelectedMapName")or"학교",p:GetAttribute("RoomMemberCount")or 1,p:GetAttribute("RoomMaxPlayers")or 8),64,15)
    if waiting and p:GetAttribute("RoomIsHost")==true and p:GetAttribute("RoomAutoStart")~=true then
     button(body,"친구 준비 완료 · 출정 시작",function()send(C.Actions.START_ROOM)end,Color3.fromRGB(107,56,64))
+   elseif not waiting then
+    label(body,string.format("출정까지 %d초",p:GetAttribute("TimeLeft")or 0),48,15)
    else
     label(body,p:GetAttribute("RoomAutoStart")==true and"참가자 연결 후 곧 출정해."or"방장이 출정을 시작할 때까지 기다려줘.",48,13)
    end
    if waiting then button(body,"방 나가기 · 저택으로",function()send(C.Actions.LEAVE_ROOM)end)end
   end
-  local preference=p:GetAttribute("MonsterPreference")=="MONSTER"and"몬스터"or"인간"
-  label(body,"현재 모습 · "..preference.."   |   혼자서도 AI와 플레이",36,13)
+  local preference=p:GetAttribute("MonsterPreference")=="MONSTER"and"몬스터"or p:GetAttribute("MonsterPreference")=="SURVIVOR"and"인간"or"자동 배정"
+  label(body,"희망 진영 · "..preference.."   |   혼자서도 AI와 플레이",36,13)
   button(body,"인간으로 준비",function()send(C.Actions.PREFER_SURVIVOR)end)
   button(body,"몬스터로 준비",function()send(C.Actions.PREFER_MONSTER)end)
   if not inRoom then
@@ -101,9 +110,11 @@ open=function(key)
   end
  elseif key=="CODE"then
   panelTitle.Text="초대장 번호"
-  local input=Instance.new("TextBox");input.Size=UDim2.new(1,-12,0,50);input.PlaceholderText="6자리 방 코드";input.Text="";input.ClearTextOnFocus=false
+  local input=Instance.new("TextBox");input.Name="InvitationCode";input.Size=UDim2.new(1,-12,0,50);input.PlaceholderText="6자리 방 코드";input.Text=invitationCode;input.ClearTextOnFocus=false
   input.TextSize=22;input.TextColor3=ink;input.BackgroundColor3=parchment;input.Parent=body;corner(input)
+  input:GetPropertyChangedSignal("Text"):Connect(function()invitationCode=input.Text end)
   button(body,"참가",function()send(C.Actions.JOIN_ROOM_CODE,input.Text)end)
+  button(body,"출정 메뉴로",function()open("PLAY")end)
  elseif key=="BOOK"then
   panelTitle.Text="기록관의 괴담 도감"
   local stages=progress()
@@ -157,6 +168,7 @@ open=function(key)
   label(body,p.DisplayName.."의 저택",38,18)
   label(body,tostring(p:GetAttribute("GhostTitle")or"괴담 견습생"),40,17)
   label(body,string.format("괴담 발견  %d\n괴담 완성  %d\n현장 문서  %d\n몬스터 경험  %d",p:GetAttribute("GhostSeenCount")or 0,p:GetAttribute("GhostCompleted")or 0,p:GetAttribute("LoreCount")or 0,p:GetAttribute("MonsterXP")or 0),140,16)
+  table.insert(rankingRows,label(body,"수집가들의 기록을 가져오는 중",48,13))
  end
 end
 local depart=button(commands,"출정",function()open("PLAY")end,Color3.fromRGB(81,42,47))
@@ -173,7 +185,7 @@ for index,entry in ipairs({{"PLAY","현관"},{"BOOK","도감"},{"DRESS","옷장"
  icon.ImageRectOffset=Vector2.new((index-1)*64,0);icon.ImageRectSize=Vector2.new(64,64);icon.Size=UDim2.fromOffset(24,24);icon.AnchorPoint=Vector2.new(.5,0);icon.Position=UDim2.new(.5,0,0,6);icon.Parent=item
  local text=label(item,entry[2],24,12);text.Size=UDim2.new(1,0,0,24);text.Position=UDim2.fromOffset(0,32);text.TextXAlignment=Enum.TextXAlignment.Center
 end
-local toast=label(gui,"",70,14);toast.AnchorPoint=Vector2.new(.5,1);toast.Position=UDim2.new(.5,0,1,-92)
+local toast=label(gui,"",70,14);toast.ZIndex=12;toast.AnchorPoint=Vector2.new(.5,1);toast.Position=UDim2.new(.5,0,1,-92)
 toast.Size=UDim2.new(.66,0,0,62);toast.BackgroundColor3=ink;toast.BackgroundTransparency=.08;toast.Visible=false;corner(toast)
 local toastLimit=Instance.new("UISizeConstraint");toastLimit.MaxSize=Vector2.new(520,70);toastLimit.Parent=toast
 local serial=0
@@ -183,34 +195,52 @@ local function notify(text)
 end
 remote.OnClientEvent:Connect(function(kind,value)
  if kind=="MANOR_MENU"then open(value)
- elseif kind=="MANOR_RANKING"and activeMenu=="RECORD"then
-  if value==false then label(body,"랭킹을 가져오지 못했어. 잠시 후 다시 확인해줘.",48,12);return end
-  if #value==0 then label(body,"첫 기록을 남겨봐. 아직 등록된 수집 기록이 없어.",48,13)end
-  for i,row in ipairs(value)do label(body,string.format("%d. %s  ·  완성 %d / 발견 %d",i,row.Name,row.Complete,row.Seen),42,13)end
+ elseif kind=="MANOR_RANKING"and activeMenu=="RECORD"and panel.Visible and gui.Enabled then
+  for _,row in ipairs(rankingRows)do row:Destroy()end;rankingRows={}
+  if value==false then table.insert(rankingRows,label(body,"랭킹을 가져오지 못했어. 잠시 후 다시 확인해줘.",48,12));return end
+  if #value==0 then table.insert(rankingRows,label(body,"첫 기록을 남겨봐. 아직 등록된 수집 기록이 없어.",48,13))end
+  for i,row in ipairs(value)do table.insert(rankingRows,label(body,string.format("%d. %s  ·  완성 %d / 발견 %d",i,row.Name,row.Complete,row.Seen),42,13))end
  end
 end)
 p:GetAttributeChangedSignal("LobbyStoryEvent"):Connect(function()
  local speaker,text=string.match(tostring(p:GetAttribute("LobbyStoryEvent")or""),"^([^|]+)|([^|]+)|")
  if speaker then notify(speaker.."\n"..text)end
 end)
-p:GetAttributeChangedSignal("RoomFeedback"):Connect(function()local text=tostring(p:GetAttribute("RoomFeedback")or"");if text~=""then notify(text:gsub("^[^:]+:",""))end end)
+p:GetAttributeChangedSignal("RoomFeedback"):Connect(function()
+ local kind,text=tostring(p:GetAttribute("RoomFeedback")or""):match("^([^:]+):?(.*)$")
+ if not kind then return end
+ if(kind=="CONNECTING"or kind=="TELEPORTING")and text~="로비로 이동"then text="출정할 방으로 이동 중"
+ elseif kind=="CREATED"then text="초대 코드 · "..text end
+ if text~=""then notify(text)end
+ if kind=="ERROR"and not panel.Visible and gui.Enabled then open("PLAY")end
+end)
 p:GetAttributeChangedSignal("CosmeticFeedback"):Connect(function()
  local code=tostring(p:GetAttribute("CosmeticFeedback")or""):match("^[^:]+")
  notify(code=="NEED_COINS"and"코인이 부족해"or code=="PURCHASED"and"구매 완료 · 의상실에서 착용할 수 있어"or code=="EQUIPPED"and"장식 착용 완료"or"소지품을 확인했어")
 end)
 local refreshQueued=false
-for _,key in ipairs({"MonsterPreference","MonsterForm","HumanForm","LobbyAppearance","SelectedLobbyMap","OwnedCosmetics","EquippedCosmetic","Coins","MonsterXP","RoomServer","RoomState","RoomIsHost","RoomAutoStart","RoomCode","RoomMemberCount","RoomSelectedMapName"})do
+for _,key in ipairs({"MonsterPreference","MonsterForm","HumanForm","LobbyAppearance","SelectedLobbyMap","OwnedCosmetics","EquippedCosmetic","Coins","MonsterXP","GhostProgress","GhostSeenCount","GhostCompleted","RoomServer","RoomState","RoomIsHost","RoomAutoStart","RoomCode","RoomMemberCount","RoomSelectedMapName","TimeLeft"})do
  p:GetAttributeChangedSignal(key):Connect(function()
+  -- 입력칸·읽던 사연·랭킹은 다른 속성 변경으로 다시 만들지 않는다.
+  if activeMenu=="CODE"or activeMenu=="RECORD"or(key=="TimeLeft"and activeMenu~="PLAY")then return end
   if refreshQueued then return end;refreshQueued=true
   task.defer(function()
    refreshQueued=false
-   if activeMenu and panel.Visible then local position=body.CanvasPosition;open(activeMenu);body.CanvasPosition=position end
+   if activeMenu and panel.Visible and activeMenu~="CODE"and activeMenu~="RECORD"then
+    local position=body.CanvasPosition
+    if activeStory then
+     local item=activeStory.item;local stage=progress()[item.Id]
+     if stage==nil then stage=item.UnlockXP~=nil and((p:GetAttribute("MonsterXP")or 0)>=item.UnlockXP and 3 or 0)or 0 end
+     openStory(item,stage)
+    else open(activeMenu)end
+    body.CanvasPosition=position
+   end
   end)
  end)
 end
 -- 접속 메인: 입장 버튼을 누르면 기본 카메라/조작으로 정확히 복귀한다.
 local entered=false
-local welcome=Instance.new("Frame");welcome.Size=UDim2.fromScale(1,1);welcome.BackgroundColor3=ink;welcome.BackgroundTransparency=.58;welcome.Parent=gui
+local welcome=Instance.new("Frame");welcome.Name="ManorWelcome";welcome.ZIndex=13;welcome.Active=true;welcome.Size=UDim2.fromScale(1,1);welcome.BackgroundColor3=ink;welcome.BackgroundTransparency=.58;welcome.Parent=gui
 local card=Instance.new("Frame");card.AnchorPoint=Vector2.new(.5,.5);card.Position=UDim2.fromScale(.5,.46);card.Size=UDim2.new(1,-48,0,224);card.BackgroundColor3=ink;card.BackgroundTransparency=.06;card.Parent=welcome;corner(card,5)
 local cardLimit=Instance.new("UISizeConstraint");cardLimit.MaxSize=Vector2.new(430,224);cardLimit.Parent=card
 local mainTitle=label(card,"MIDNIGHT ESCAPE",54,26);mainTitle.Size=UDim2.new(1,-24,0,54);mainTitle.Position=UDim2.fromOffset(12,14);mainTitle.TextXAlignment=Enum.TextXAlignment.Center;mainTitle.AutoLocalize=false
@@ -251,7 +281,7 @@ visibility=function()
  if p:GetAttribute("RoomServer")==true then entered=true;releaseMainCamera()end
  welcome.Visible=visible and not entered;nav.Visible=visible and entered and notebookOpen;header.Visible=visible and entered;commands.Visible=visible and entered
  grade.Enabled=visible;bloom.Enabled=visible
- if not visible then panel.Visible=false;activeMenu=nil;notebookOpen=false;releaseMainCamera()end
+ if not visible then panel.Visible=false;activeMenu=nil;activeStory=nil;notebookOpen=false;releaseMainCamera()end
  status.Text=string.format("괴담 %d/%d  ·  %d 코인",p:GetAttribute("GhostCompleted")or 0,#C.GhostCatalog,p:GetAttribute("Coins")or 0)
  if p:GetAttribute("RoomServer")==true then
   status.Text=round=="INTERMISSION"and string.format("출정까지 %d초",p:GetAttribute("TimeLeft")or 0)or string.format("초대 %s · 참가 %d명",p:GetAttribute("RoomCode")or"------",p:GetAttribute("RoomMemberCount")or 1)

@@ -1,6 +1,15 @@
 -- 파일명: roblox-games/horror-escape-room/shared/Translations.luau
 -- 번역표: 한국어 원문을 기준으로 Values에 언어를 추가한다. 비어 있는 번역은 원문 유지.
 return {
+ -- 저택 마무리 · 출정/복귀/로딩 안내
+ {Key="text_3085617626a3",Source="출정 메뉴로",Values={["en-us"]="Back to departure"}},
+ {Key="text_6467f9e7c60a",Source="희망 진영 · ",Values={["en-us"]="Preferred side · "}},
+ {Key="text_00f218182178",Source="수집가들의 기록을 가져오는 중",Values={["en-us"]="Fetching collector records"}},
+ {Key="text_7607d48d1e55",Source="출정할 방으로 이동 중",Values={["en-us"]="Connecting to the match"}},
+ {Key="text_7e0ebb7d65d2",Source="초대 코드 · ",Values={["en-us"]="Invitation code · "}},
+ {Key="text_f7e6abd78ae7",Source="저택 복귀 실패 · 다시 시도해줘",Values={["en-us"]="Could not return to the manor · Please try again"}},
+ {Key="text_ee0036d62904",Source="경기장 준비 완료",Values={["en-us"]="Arena ready"}},
+ {Key="text_c6fa313ad3c7",Source="경기장을 불러오는 중",Values={["en-us"]="Loading the arena"}},
  {Key="text_a93fc2f28801",Source="   |   혼자서도 AI와 플레이",Values={}},
  {Key="text_3eefccb12bbf",Source=" · 나",Values={}},
  {Key="text_b3b4dfd01d5a",Source=" · 봉인",Values={}},

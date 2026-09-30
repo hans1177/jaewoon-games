@@ -472,7 +472,7 @@ local function startRoomMatch(p)
  syncRoomState()
 end
 local function leaveReservedRoom(p)
- if not roomServer or state~="WAITING"then return end
+ if not roomServer or state~="WAITING"or not roomActionReady(p)then return end
  if studioRoomFallback then
   roomServer=false;roomCode="";roomHostUserId=0;roomHostName="";roomVisibility="PUBLIC";roomStartRequested=false
   workspace:SetAttribute("StudioRoomFallback",false)
@@ -481,7 +481,11 @@ local function leaveReservedRoom(p)
   return
  end
  roomFeedback(p,"TELEPORTING","로비로 이동")
- pcall(function()TeleportService:TeleportAsync(game.PlaceId,{p})end)
+ local ok,err=pcall(function()TeleportService:TeleportAsync(game.PlaceId,{p})end)
+ if not ok then
+  roomFeedback(p,"ERROR","저택 복귀 실패 · 다시 시도해줘")
+  warn("Room return teleport failed",err)
+ end
 end
 
 -- 모든 맵 공통 중앙 통로의 전용 안전 스폰. 상호작용 단말/소품 중심점과 겹치지 않는다.
@@ -2972,10 +2976,13 @@ local function onCharacter(p)
  local c=p.Character
  if state~="RUNNING"then
   local lobbyDeadline=os.clock()+60
-  while workspace:GetAttribute("PhysicalLobbyReady")~=true and os.clock()<lobbyDeadline do task.wait(.05)end
-  if not c or not c.Parent then return end
-  local h=c:WaitForChild("Humanoid",5);local r=c:WaitForChild("HumanoidRootPart",5)
-  if not h or not r then return end
+  while state~="RUNNING"and workspace:GetAttribute("PhysicalLobbyReady")~=true and os.clock()<lobbyDeadline do task.wait(.05)end
+ end
+ -- 로비를 기다리는 동안 시작된 경기와 교체된 캐릭터를 다시 확인한다.
+ if not c or not c.Parent or p.Character~=c then return end
+ local h=c:WaitForChild("Humanoid",5);local r=c:WaitForChild("HumanoidRootPart",5)
+ if not h or not r or p.Character~=c then return end
+ if state~="RUNNING"then
   if lobbySpawnLocation and lobbySpawnLocation.Parent then p.RespawnLocation=lobbySpawnLocation end
   h.PlatformStand=false;h.Sit=false;h.AutoRotate=true;r.Anchored=false
   setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
@@ -2993,10 +3000,7 @@ local function onCharacter(p)
 
  local readyDeadline=os.clock()+10
  while workspace:GetAttribute("MapReady")~=true and os.clock()<readyDeadline do task.wait(.1)end
- c=p.Character
- if not c or not c.Parent then return end
- local h=c:WaitForChild("Humanoid",5);local r=c:WaitForChild("HumanoidRootPart",5)
- if not h or not r then return end
+ if not c.Parent or p.Character~=c then return end
  if foundationSpawn and foundationSpawn.Parent then p.RespawnLocation=foundationSpawn end
  local role=p:GetAttribute("Role")
  if role=="MONSTER"or role=="SURVIVOR"then
