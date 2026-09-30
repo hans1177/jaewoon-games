@@ -642,7 +642,7 @@ local function load(p)
  p:SetAttribute("LastRoundReward",0);p:SetAttribute("LastRoundWinner","");p:SetAttribute("LastRoundRole","")
  p:SetAttribute("LastRoundBaseReward",0);p:SetAttribute("LastRoundWinBonus",0);p:SetAttribute("LastRoundContribution",0);p:SetAttribute("RoundContributionCoins",0)
  p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("HumanAbilityReadyAt",0);p:SetAttribute("InfectReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
- p:SetAttribute("FalseAlarmUntil",0);p:SetAttribute("BlackoutUntil",0);p:SetAttribute("HuntFlashUntil",0);p:SetAttribute("AbilityFeedback","");p:SetAttribute("HumanAbilityFeedback","")
+ p:SetAttribute("FalseAlarmUntil",0);p:SetAttribute("BlackoutUntil",0);p:SetAttribute("HuntFlashUntil",0);p:SetAttribute("AbilityFeedback","");p:SetAttribute("HumanAbilityFeedback","");p:SetAttribute("RageUntil",0)
  p:SetAttribute("Energy",energyMax());p:SetAttribute("EnergyMax",energyMax());p:SetAttribute("EnergyFeedback","");p:SetAttribute("PressurePassive","")
  p:SetAttribute("MapContentFeedback","")
  p:SetAttribute("CelebrationName","");p:SetAttribute("CelebrationCaption","");p:SetAttribute("CelebrationWinner",false);p:SetAttribute("CelebrationComic",false)
@@ -2837,7 +2837,7 @@ local function startRound()
   p:SetAttribute("CurrentMap",map.Name);p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
   p:SetAttribute("ObjectivesDone",0);p:SetAttribute("ObjectivesTotal",C.ObjectiveCount);p:SetAttribute("Escaped",false);p:SetAttribute("Infected",false);p:SetAttribute("InfectionReadyAt",0);p:SetAttribute("RoundScore",0)
   p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("HumanAbilityReadyAt",0);p:SetAttribute("InfectReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
-  p:SetAttribute("FalseAlarmUntil",0);p:SetAttribute("BlackoutUntil",0);p:SetAttribute("HuntFlashUntil",0);p:SetAttribute("AbilityFeedback","");p:SetAttribute("HumanAbilityFeedback","")
+  p:SetAttribute("FalseAlarmUntil",0);p:SetAttribute("BlackoutUntil",0);p:SetAttribute("HuntFlashUntil",0);p:SetAttribute("AbilityFeedback","");p:SetAttribute("HumanAbilityFeedback","");p:SetAttribute("RageUntil",0)
   setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
   p:SetAttribute("RoundContributionCoins",0);p:SetAttribute("LastRoundBaseReward",0);p:SetAttribute("LastRoundWinBonus",0);p:SetAttribute("LastRoundContribution",0)
   p:SetAttribute("RoundParticipant",true)
@@ -2953,7 +2953,7 @@ local function endRound(winner)
   p:SetAttribute("LastRoundReward",reward);p:SetAttribute("LastRoundWinner",winner);p:SetAttribute("LastRoundRole",team)
   p:SetAttribute("LastRoundBaseReward",baseReward);p:SetAttribute("LastRoundWinBonus",winBonus);p:SetAttribute("LastRoundContribution",contribution)
   p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("HumanAbilityReadyAt",0);p:SetAttribute("InfectReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
-  p:SetAttribute("FalseAlarmUntil",0);p:SetAttribute("BlackoutUntil",0);p:SetAttribute("HuntFlashUntil",0);p:SetAttribute("AbilityFeedback","");p:SetAttribute("HumanAbilityFeedback","")
+  p:SetAttribute("FalseAlarmUntil",0);p:SetAttribute("BlackoutUntil",0);p:SetAttribute("HuntFlashUntil",0);p:SetAttribute("AbilityFeedback","");p:SetAttribute("HumanAbilityFeedback","");p:SetAttribute("RageUntil",0)
   setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
   p:SetAttribute("CelebrationName",celebration.Name or"팀 세레머니");p:SetAttribute("CelebrationCaption",celebration.Caption or"")
   local celebrate=participated and(winner=="DRAW"or win)
@@ -3201,16 +3201,47 @@ local function ability(p)
  local effectTarget=nil
  if f.Ability=="BAT_DASH"then
   local velocity=tonumber(abilityProfile.Velocity)or 70
+  local drainRadius=tonumber(abilityProfile.DrainRadius)or 10
+  local drain=tonumber(abilityProfile.EnergyDrain)or 12
   r.AssemblyLinearVelocity=look*velocity+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)
+  for _,o in ipairs(Players:GetPlayers())do
+   if o:GetAttribute("Role")=="SURVIVOR"then
+    local q=root(o)
+    if q and(q.Position-origin).Magnitude<=drainRadius then setEnergy(o,energyOf(o)-drain)end
+   end
+  end
+  for _,b in ipairs(bots)do
+   if b.role=="SURVIVOR"and b.part and(b.part.Position-origin).Magnitude<=drainRadius then b.energy=math.max(0,(b.energy or 0)-drain)end
+  end
  elseif f.Ability=="POWER_CHARGE"then
   local velocity=tonumber(abilityProfile.Velocity)or 85
   local lift=tonumber(abilityProfile.Lift)or 4
+  local shockRadius=tonumber(abilityProfile.ShockRadius)or 8
+  local shockDuration=tonumber(abilityProfile.ShockDuration)or 1
+  local shockSlow=tonumber(abilityProfile.ShockSlowSpeed)or 8
   r.AssemblyLinearVelocity=look*velocity+Vector3.new(0,lift,0)
+  task.delay(.2,function()
+   local rr=root(p);if not rr or p:GetAttribute("Role")~="MONSTER"then return end
+   local center=rr.Position
+   for _,o in ipairs(Players:GetPlayers())do
+    if o:GetAttribute("Role")=="SURVIVOR"then
+     local q=root(o)
+     if q and(q.Position-center).Magnitude<=shockRadius then
+      speed(o,shockSlow);task.delay(shockDuration,function()if o.Parent and o:GetAttribute("Role")=="SURVIVOR"then speed(o,16)end end)
+     end
+    end
+   end
+   for _,b in ipairs(bots)do
+    if b.role=="SURVIVOR"and b.part and(b.part.Position-center).Magnitude<=shockRadius then
+     b.speed=math.min(b.speed or b.baseSpeed or 14,shockSlow);b.speedResetAt=math.max(b.speedResetAt or 0,os.clock()+shockDuration)
+    end
+   end
+  end)
  elseif f.Ability=="RAGE_RUN"then
   local runSpeed=tonumber(abilityProfile.Speed)or 28
   local duration=tonumber(abilityProfile.Duration)or 3
-  speed(p,runSpeed)
-  task.delay(duration,function()if p.Parent and p:GetAttribute("Role")=="MONSTER"then speed(p,19)end end)
+  speed(p,runSpeed);p:SetAttribute("RageUntil",workspace:GetServerTimeNow()+duration)
+  task.delay(duration,function()if p.Parent and p:GetAttribute("Role")=="MONSTER"then speed(p,19);p:SetAttribute("RageUntil",0)end end)
  elseif f.Ability=="CURSE_SLOW"then
   local radius=tonumber(abilityProfile.Radius)or 22
   local slowSpeed=tonumber(abilityProfile.SlowSpeed)or 9
@@ -3244,6 +3275,11 @@ local function infectAttack(p)
  if now<(p:GetAttribute("InfectionReadyAt")or 0)then return end
  local r=root(p);if not r then return end
  local range=math.max(2,tonumber(C.Energy and C.Energy.InfectRange)or 8)
+ local currentForm=form(p)
+ local currentAbility=(C.MonsterAbilities and C.MonsterAbilities[currentForm.Ability])or{}
+ if currentForm.Ability=="RAGE_RUN"and(tonumber(p:GetAttribute("RageUntil"))or 0)>workspace:GetServerTimeNow()then
+  range+=math.max(0,tonumber(currentAbility.InfectRangeBonus)or 0)
+ end
  local targetPlayer,targetBot,best=nil,nil,range
  for _,other in ipairs(Players:GetPlayers())do
   if other:GetAttribute("Role")=="SURVIVOR"and os.clock()>=(tagGraceUntil[other]or 0)then
@@ -3658,6 +3694,35 @@ local function botSeparationVector(b)
  return force
 end
 
+local function steerBotAroundObstacle(b,desired)
+ local flat=Vector3.new(desired.X,0,desired.Z)
+ if flat.Magnitude<.01 then return desired end
+ flat=flat.Unit
+ local ignore={}
+ if b.model and b.model.Parent then table.insert(ignore,b.model)elseif b.part then table.insert(ignore,b.part)end
+ for _,player in ipairs(Players:GetPlayers())do if player.Character then table.insert(ignore,player.Character)end end
+ for _,other in ipairs(bots)do
+  if other~=b then
+   if other.model and other.model.Parent then table.insert(ignore,other.model)elseif other.part then table.insert(ignore,other.part)end
+  end
+ end
+ local params=RaycastParams.new()
+ params.FilterType=Enum.RaycastFilterType.Exclude
+ params.FilterDescendantsInstances=ignore
+ params.IgnoreWater=true
+ params.RespectCanCollide=true
+ local origin=b.part.Position+Vector3.new(0,1.6,0)
+ local probe=4.8
+ if not workspace:Raycast(origin,flat*probe,params)then return flat end
+ local right=Vector3.new(-flat.Z,0,flat.X)
+ local sign=b.strafeSign or(((b.tacticSlot or 1)%2==0)and 1 or-1)
+ local first=(flat*.35+right*.94*sign).Unit
+ local second=(flat*.35-right*.94*sign).Unit
+ if not workspace:Raycast(origin,first*probe,params)then return first end
+ if not workspace:Raycast(origin,second*probe,params)then return second end
+ return right*sign
+end
+
 local function moveBotDirection(b,direction,dt,speedValue)
  local flat=Vector3.new(direction.X,0,direction.Z)
  if flat.Magnitude<.01 then return end
@@ -3665,6 +3730,7 @@ local function moveBotDirection(b,direction,dt,speedValue)
  local separationWeight=math.max(0,tonumber(C.AICombat and C.AICombat.SeparationWeight)or 7)
  local desired=flat.Unit+separation*(separationWeight/10)
  if desired.Magnitude<.01 then desired=flat.Unit else desired=desired.Unit end
+ desired=steerBotAroundObstacle(b,desired)
  local speedNow=math.max(0,tonumber(speedValue)or b.speed or 14)
  local current=b.part.Position
  local nextPos=current+desired*speedNow*dt
@@ -3859,13 +3925,41 @@ local function tryBotMonsterAbility(b,targetPos,distance)
   local step=math.min(14,math.max(5,distance-4))
   effectTarget=origin+look*step
   setBotCFrame(b,CFrame.lookAt(effectTarget,effectTarget+look))
+  local drainRadius=tonumber(profile.DrainRadius)or 10
+  local drain=tonumber(profile.EnergyDrain)or 12
+  for _,player in ipairs(Players:GetPlayers())do
+   if player:GetAttribute("Role")=="SURVIVOR"then
+    local rr=root(player)
+    if rr and(rr.Position-effectTarget).Magnitude<=drainRadius then setEnergy(player,energyOf(player)-drain)end
+   end
+  end
+  for _,other in ipairs(bots)do
+   if other.role=="SURVIVOR"and other.part and(other.part.Position-effectTarget).Magnitude<=drainRadius then other.energy=math.max(0,(other.energy or 0)-drain)end
+  end
  elseif ability=="POWER_CHARGE"then
   local step=math.min(16,math.max(6,distance-4))
   effectTarget=origin+look*step
   setBotCFrame(b,CFrame.lookAt(effectTarget,effectTarget+look))
+  local shockRadius=tonumber(profile.ShockRadius)or 8
+  local shockDuration=tonumber(profile.ShockDuration)or 1
+  local shockSlow=tonumber(profile.ShockSlowSpeed)or 8
+  for _,player in ipairs(Players:GetPlayers())do
+   if player:GetAttribute("Role")=="SURVIVOR"then
+    local rr=root(player)
+    if rr and(rr.Position-effectTarget).Magnitude<=shockRadius then
+     speed(player,shockSlow);task.delay(shockDuration,function()if player.Parent and player:GetAttribute("Role")=="SURVIVOR"then speed(player,16)end end)
+    end
+   end
+  end
+  for _,other in ipairs(bots)do
+   if other.role=="SURVIVOR"and other.part and(other.part.Position-effectTarget).Magnitude<=shockRadius then
+    other.speed=math.min(other.speed or other.baseSpeed or 14,shockSlow);other.speedResetAt=math.max(other.speedResetAt or 0,now+shockDuration)
+   end
+  end
  elseif ability=="RAGE_RUN"then
+  local duration=tonumber(profile.Duration)or 3
   b.speed=tonumber(profile.Speed)or 28
-  b.speedResetAt=now+(tonumber(profile.Duration)or 3)
+  b.speedResetAt=now+duration;b.rageUntil=now+duration
  elseif ability=="CURSE_SLOW"then
   local radius=tonumber(profile.Radius)or 22
   if distance>radius then b.energy=math.min(energyMax(),(b.energy or 0)+cost);b.abilityReadyAt=0;return false end
@@ -3902,7 +3996,12 @@ RunService.Heartbeat:Connect(function(dt)
  if state=="RUNNING"then
   for _,b in ipairs(bots)do
    b.motionClock=(b.motionClock or 0)+dt*(b.role=="MONSTER"and 7.5 or 9)
-   if(b.speedResetAt or 0)>0 and os.clock()>=(b.speedResetAt or 0)then
+   local nowClock=os.clock()
+   if not b.strafeFlipAt or nowClock>=b.strafeFlipAt then
+    b.strafeSign=math.random()<.5 and-1 or 1
+    b.strafeFlipAt=nowClock+1.8+math.random()*2.2
+   end
+   if(b.speedResetAt or 0)>0 and nowClock>=(b.speedResetAt or 0)then
     b.speed=b.baseSpeed or(b.role=="MONSTER"and 18 or 14);b.speedResetAt=0
    end
    if b.visuals then
@@ -3926,6 +4025,11 @@ RunService.Heartbeat:Connect(function(dt)
     local bestEntry,bestPos,bd=distributedSurvivorTarget(b)
     if bestPos then
      local infectRange=math.max(2,tonumber(C.Energy and C.Energy.InfectRange)or 8)
+     local botForm=botMonsterForm(b)
+     if botForm.Ability=="RAGE_RUN"and(b.rageUntil or 0)>os.clock()then
+      local rageProfile=(C.MonsterAbilities and C.MonsterAbilities.RAGE_RUN)or{}
+      infectRange+=math.max(0,tonumber(rageProfile.InfectRangeBonus)or 0)
+     end
      local infectCost=math.max(0,tonumber(C.Energy and C.Energy.InfectAttackCost)or 30)
      local attackCd=math.max(.4,tonumber(C.Energy and C.Energy.InfectAttackCooldown)or 1.2)
      if bd<=infectRange and os.clock()>=(b.infectAttackReadyAt or 0)and(b.energy or 0)>=infectCost then
@@ -3935,7 +4039,7 @@ RunService.Heartbeat:Connect(function(dt)
       local toTarget=bestPos-b.part.Position
       local flat=Vector3.new(toTarget.X,0,toTarget.Z)
       if flat.Magnitude>.1 then
-       local side=(b.tacticSlot or 1)%2==0 and 1 or-1
+       local side=b.strafeSign or((b.tacticSlot or 1)%2==0 and 1 or-1)
        local right=Vector3.new(-flat.Unit.Z,0,flat.Unit.X)
        local approach=flat.Unit+right*(bd<20 and .28*side or .12*side)
        moveBotDirection(b,approach,dt,b.speed)
@@ -3956,7 +4060,7 @@ RunService.Heartbeat:Connect(function(dt)
       local flat=Vector3.new(delta.X,0,delta.Z)
       if flat.Magnitude>.1 then
        local dir=flat.Unit
-       local side=(b.tacticSlot or 1)%2==0 and 1 or-1
+       local side=b.strafeSign or((b.tacticSlot or 1)%2==0 and 1 or-1)
        local right=Vector3.new(-dir.Z,0,dir.X)
        local moveDir
        if best>purifyRange+4 then
