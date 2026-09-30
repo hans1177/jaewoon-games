@@ -115,6 +115,7 @@ local Config={
   {Id="VOID_PURPLE",Name="공허 보라",Price=360,Accent=Color3.fromRGB(174,112,235),Title="공허 사냥꾼"},
  },
  Audio={
+  LobbyBackground="rbxassetid://1843529635",
   Background="rbxassetid://9043557976",
   Chase="rbxassetid://9042664292",
   Result="rbxassetid://1839321582",
