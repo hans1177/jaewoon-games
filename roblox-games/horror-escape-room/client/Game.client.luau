@@ -11,6 +11,7 @@ local RunService=game:GetService("RunService")
 local ContentProvider=game:GetService("ContentProvider")
 local TweenService=game:GetService("TweenService")
 local Debris=game:GetService("Debris")
+local Lighting=game:GetService("Lighting")
 
 -- 참조
 local touchEnabled=UserInputService.TouchEnabled
@@ -69,6 +70,59 @@ gui.ResetOnSpawn=false
 gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
 gui.IgnoreGuiInset=false
 gui.Parent=p:WaitForChild("PlayerGui")
+
+-- 로비 전용 화면 톤. 전투가 시작되면 전부 꺼져 게임플레이 가독성에는 영향을 주지 않는다.
+local lobbyColor=Instance.new("ColorCorrectionEffect")
+lobbyColor.Name="MidnightLobbyColor"
+lobbyColor.TintColor=Color3.fromRGB(210,195,177)
+lobbyColor.Brightness=-.045
+lobbyColor.Contrast=.15
+lobbyColor.Saturation=-.22
+lobbyColor.Enabled=false
+lobbyColor.Parent=Lighting
+
+local lobbyBloom=Instance.new("BloomEffect")
+lobbyBloom.Name="MidnightLobbyBloom"
+lobbyBloom.Intensity=.24
+lobbyBloom.Size=18
+lobbyBloom.Threshold=1.25
+lobbyBloom.Enabled=false
+lobbyBloom.Parent=Lighting
+
+local lobbyDepth=Instance.new("DepthOfFieldEffect")
+lobbyDepth.Name="MidnightLobbyDepth"
+lobbyDepth.FarIntensity=.1
+lobbyDepth.NearIntensity=.025
+lobbyDepth.FocusDistance=30
+lobbyDepth.InFocusRadius=24
+lobbyDepth.Enabled=false
+lobbyDepth.Parent=Lighting
+
+local lobbyVignetteTop=Instance.new("Frame")
+lobbyVignetteTop.Name="LobbyVignetteTop"
+lobbyVignetteTop.Size=UDim2.new(1,0,.28,0)
+lobbyVignetteTop.Position=UDim2.fromScale(0,0)
+lobbyVignetteTop.BackgroundColor3=Color3.new(0,0,0)
+lobbyVignetteTop.BackgroundTransparency=0
+lobbyVignetteTop.BorderSizePixel=0
+lobbyVignetteTop.Visible=false
+lobbyVignetteTop.ZIndex=8
+lobbyVignetteTop.Parent=gui
+local lobbyVignetteTopGradient=Instance.new("UIGradient")
+lobbyVignetteTopGradient.Transparency=NumberSequence.new({
+ NumberSequenceKeypoint.new(0,.28),
+ NumberSequenceKeypoint.new(1,1),
+})
+lobbyVignetteTopGradient.Rotation=90
+lobbyVignetteTopGradient.Parent=lobbyVignetteTop
+
+local lobbyVignetteBottom=lobbyVignetteTop:Clone()
+lobbyVignetteBottom.Name="LobbyVignetteBottom"
+lobbyVignetteBottom.AnchorPoint=Vector2.new(0,1)
+lobbyVignetteBottom.Position=UDim2.fromScale(0,1)
+lobbyVignetteBottom.Parent=gui
+local bottomGradient=lobbyVignetteBottom:FindFirstChildOfClass("UIGradient")
+if bottomGradient then bottomGradient.Rotation=270 end
 
 -- 로딩: 클라이언트 핵심 리소스와 서버 맵 준비가 끝날 때까지 로비 진입을 가린다.
 local loadingLayer=Instance.new("Frame")
@@ -1393,9 +1447,9 @@ roomBrowserFeedback.Parent=roomBrowserPanel
 local lobbyHeader=Instance.new("Frame")
 lobbyHeader.Name="LobbyHeader"
 lobbyHeader.Position=UDim2.fromOffset(12,12)
-lobbyHeader.Size=UDim2.fromOffset(224,58)
-lobbyHeader.BackgroundColor3=Color3.fromRGB(12,12,13)
-lobbyHeader.BackgroundTransparency=.2
+lobbyHeader.Size=UDim2.fromOffset(292,62)
+lobbyHeader.BackgroundColor3=Color3.fromRGB(10,10,11)
+lobbyHeader.BackgroundTransparency=.12
 lobbyHeader.BorderSizePixel=0
 lobbyHeader.Visible=false
 lobbyHeader.ZIndex=37
@@ -1403,24 +1457,24 @@ lobbyHeader.Parent=gui
 roundify(lobbyHeader,8);outline(lobbyHeader,.62)
 
 local lobbyHeaderTitle=Instance.new("TextLabel")
-lobbyHeaderTitle.Size=UDim2.new(1,-18,0,29)
+lobbyHeaderTitle.Size=UDim2.new(1,-18,0,31)
 lobbyHeaderTitle.Position=UDim2.fromOffset(9,5)
 lobbyHeaderTitle.BackgroundTransparency=1
 lobbyHeaderTitle.Text="심야 대탈출"
 lobbyHeaderTitle.TextColor3=Color3.fromRGB(239,232,218)
-lobbyHeaderTitle.TextSize=20
+lobbyHeaderTitle.TextSize=21
 lobbyHeaderTitle.Font=Enum.Font.GothamBold
 lobbyHeaderTitle.TextXAlignment=Enum.TextXAlignment.Left
 lobbyHeaderTitle.ZIndex=38
 lobbyHeaderTitle.Parent=lobbyHeader
 
 local lobbyHeaderSub=Instance.new("TextLabel")
-lobbyHeaderSub.Size=UDim2.new(1,-18,0,18)
-lobbyHeaderSub.Position=UDim2.fromOffset(9,34)
+lobbyHeaderSub.Size=UDim2.new(1,-18,0,20)
+lobbyHeaderSub.Position=UDim2.fromOffset(9,36)
 lobbyHeaderSub.BackgroundTransparency=1
-lobbyHeaderSub.Text="오래된 호텔 · 승강기 로비"
+lobbyHeaderSub.Text="호텔 1층 · 승강기 1~4 중 하나로 입장"
 lobbyHeaderSub.TextColor3=Color3.fromRGB(163,154,143)
-lobbyHeaderSub.TextSize=10
+lobbyHeaderSub.TextSize=11
 lobbyHeaderSub.Font=Enum.Font.GothamMedium
 lobbyHeaderSub.TextXAlignment=Enum.TextXAlignment.Left
 lobbyHeaderSub.ZIndex=38
@@ -1430,13 +1484,13 @@ local lobbyHint=Instance.new("TextLabel")
 lobbyHint.Name="LobbyHint"
 lobbyHint.AnchorPoint=Vector2.new(.5,1)
 lobbyHint.Position=UDim2.new(.5,0,1,-18)
-lobbyHint.Size=UDim2.fromOffset(304,34)
+lobbyHint.Size=UDim2.fromOffset(342,38)
 lobbyHint.BackgroundColor3=Color3.fromRGB(12,12,13)
-lobbyHint.BackgroundTransparency=.28
+lobbyHint.BackgroundTransparency=.16
 lobbyHint.BorderSizePixel=0
-lobbyHint.Text="승강기에 들어가면 5초 후 출발 · 최대 8명"
+lobbyHint.Text="① 승강기 선택  →  ② 안으로 들어가기  →  ③ 5초 후 자동 출발"
 lobbyHint.TextColor3=Color3.fromRGB(216,208,192)
-lobbyHint.TextSize=11
+lobbyHint.TextSize=12
 lobbyHint.Font=Enum.Font.GothamMedium
 lobbyHint.Visible=false
 lobbyHint.ZIndex=37
@@ -1446,8 +1500,8 @@ roundify(lobbyHint,8)
 local roomCreateNotice=Instance.new("Frame")
 roomCreateNotice.Name="RoomCreateNotice"
 roomCreateNotice.AnchorPoint=Vector2.new(.5,1)
-roomCreateNotice.Position=UDim2.new(.5,0,1,-60)
-roomCreateNotice.Size=UDim2.fromOffset(284,54)
+roomCreateNotice.Position=UDim2.new(.5,0,1,-66)
+roomCreateNotice.Size=UDim2.fromOffset(310,58)
 roomCreateNotice.BackgroundColor3=Color3.fromRGB(18,17,17)
 roomCreateNotice.BackgroundTransparency=.1
 roomCreateNotice.BorderSizePixel=0
@@ -1457,7 +1511,7 @@ roomCreateNotice.Parent=gui
 roundify(roomCreateNotice,8);outline(roomCreateNotice,.48)
 
 local roomCreateAccent=Instance.new("Frame")
-roomCreateAccent.Size=UDim2.fromOffset(4,38)
+roomCreateAccent.Size=UDim2.fromOffset(4,42)
 roomCreateAccent.Position=UDim2.fromOffset(8,8)
 roomCreateAccent.BackgroundColor3=Color3.fromRGB(188,146,77)
 roomCreateAccent.BorderSizePixel=0
@@ -1471,7 +1525,7 @@ roomCreateNoticeText.Position=UDim2.fromOffset(20,4)
 roomCreateNoticeText.BackgroundTransparency=1
 roomCreateNoticeText.Text="승강기 입장 · 방 개설"
 roomCreateNoticeText.TextColor3=Color3.fromRGB(235,226,207)
-roomCreateNoticeText.TextSize=13
+roomCreateNoticeText.TextSize=14
 roomCreateNoticeText.TextWrapped=true
 roomCreateNoticeText.Font=Enum.Font.GothamBold
 roomCreateNoticeText.TextXAlignment=Enum.TextXAlignment.Left
@@ -2250,8 +2304,17 @@ local function render()
  local isRoomServer=p:GetAttribute("RoomServer")==true
  local roomState=tostring(p:GetAttribute("RoomState")or"BROWSER")
  local browser=not isRoomServer
- lobbyHeader.Visible=browser and not running and not resultCode
- lobbyHint.Visible=browser and not running and not resultCode
+ local lobbyWaiting=not running and not resultCode and not spectating
+ lobbyHeader.Visible=lobbyWaiting
+ lobbyHint.Visible=lobbyWaiting
+ lobbyHeaderSub.Text=isRoomServer and "매칭 완료 · 게임 준비 중"or"호텔 1층 · 승강기 1~4 중 하나로 입장"
+ lobbyHint.Text=isRoomServer and"방 연결 완료 · 잠시 후 게임이 시작돼"or"① 승강기 선택  →  ② 안으로 들어가기  →  ③ 5초 후 자동 출발"
+ lobbyColor.Enabled=lobbyWaiting
+ lobbyBloom.Enabled=lobbyWaiting
+ lobbyDepth.Enabled=lobbyWaiting
+ lobbyVignetteTop.Visible=lobbyWaiting
+ lobbyVignetteBottom.Visible=lobbyWaiting
+ hud.Visible=running
  local lobbyFolder=workspace:FindFirstChild("MidnightLobby")
  local rootNow=p.Character and p.Character:FindFirstChild("HumanoidRootPart")
  local nearestBay=nil
@@ -2264,7 +2327,7 @@ local function render()
    end
   end
  end
- roomCreateNotice.Visible=browser and nearestBay~=nil and nearestDist<18
+ roomCreateNotice.Visible=browser and nearestBay~=nil and nearestDist<26
  if roomCreateNotice.Visible then
   local folder=nearestBay.Parent
   local board=folder and folder:FindFirstChild("GateBoard")
