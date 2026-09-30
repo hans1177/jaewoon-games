@@ -2146,9 +2146,10 @@ jobs:
           set -euo pipefail
 
           # Live runner pressure is read-only. When GitHub Actions already has queued/pending/requested
-          # work, keep this immutable worker result artifact and let the existing cohort fan-in consume
-          # it instead of creating another repository_dispatch workflow. Observation failure is fail-open
-          # to the pre-existing immediate callback behavior so result delivery never depends on telemetry.
+          # work, every non-asset completion keeps its immutable worker result artifact and lets the
+          # existing cohort fan-in consume it instead of creating another repository_dispatch workflow.
+          # Single-task GAME_PRIMARY is not exempt under pressure. Observation failure is fail-open to
+          # immediate callback behavior so result delivery never depends on telemetry.
           queue_pressure=0
           if curl --fail-with-body --silent --show-error \
             --header 'Accept: application/vnd.github+json' \
@@ -2179,7 +2180,7 @@ jobs:
           if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "${VIBE2_NEURON_EXPECTED_VARIANTS:-1}" = '1' ]; then
             game_micro_fanin=true
           fi
-          if [ "${queue_pressure:-0}" -gt 0 ] && [ "$VIBE2_EXECUTION_LANE" != 'asset-development' ] && [ "$game_micro_fanin" != 'true' ]; then
+          if [ "${queue_pressure:-0}" -gt 0 ] && [ "$VIBE2_EXECUTION_LANE" != 'asset-development' ]; then
             echo 'VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT'
             if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "${VIBE2_PRESSURE_REFILL_LEADER:-false}" = 'true' ]; then
               refill_payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',source_attempt:process.env.GITHUB_RUN_ATTEMPT||'',execution_lane:'game-primary',reason:'runner-pressure-wave-leader-free-slot-refill'}}))")"
@@ -2198,7 +2199,7 @@ jobs:
             exit 0
           fi
           if [ "$game_micro_fanin" = 'true' ]; then
-            echo 'VIBE2_GAME_PRESSURE_MICRO_FANIN=EVERY_COMPLETE_SINGLE_TASK'
+            echo 'VIBE2_GAME_MICRO_FANIN=IMMEDIATE_ONLY_WITHOUT_QUEUE_PRESSURE'
           fi
           if [ "${queue_pressure:-0}" -gt 0 ] && [ "$VIBE2_EXECUTION_LANE" = 'asset-development' ]; then
             echo 'VIBE2_ASSET_NEURON_PRESSURE_BYPASS=IMMEDIATE_MICRO_FANIN'
