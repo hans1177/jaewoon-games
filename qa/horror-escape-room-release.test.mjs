@@ -22,12 +22,16 @@ test('인간 감염과 양 진영 0명 승리조건',()=>{
  assert.match(server,/endRound\("DRAW"\)/);
 });
 
-test('HumanForms는 도구 패시브 감염능력으로 확장된다',()=>{
+test('HumanForms는 도구 패시브와 서로 다른 감염능력으로 확장된다',()=>{
  assert.match(config,/HumanForms=/);
  for(const id of ['BROADCAST','ELECTRICIAN','COURIER','PHOTOGRAPHER','SECURITY'])assert.ok(config.includes('Id="'+id+'"'));
  for(const key of ['Tool=','Passive=','InfectedAbility='])assert.ok(config.includes(key));
+ for(const id of ['FALSE_ALARM','BLACKOUT','RUSH','HUNT_FLASH','BREACH'])assert.ok(config.includes(id+'={'),id);
  assert.match(server,/local function humanForm\(p\)/);assert.match(server,/local function nextHuman\(p\)/);
- assert.ok(client.includes('인간 변경'));assert.ok(launch.releaseGates.includes('expandable human-form roster'));
+ assert.match(client,/local function currentHumanFormInfo\(\)/);
+ assert.match(client,/local function currentAbilityName\(\)/);
+ assert.ok(launch.releaseGates.includes('expandable human-form roster'));
+ assert.ok(launch.releaseGates.includes('five infected-human abilities have distinct server-authoritative behavior and client feedback'));
 });
 
 test('인간 정화공격은 몬스터를 제거한다',()=>{
@@ -50,10 +54,11 @@ test('세 맵 이벤트 오디오 보안은 유지된다',()=>{
  for(const gate of ['3-map round rotation','remote action allowlist and spam rejection','teleport/speed/out-of-bounds abuse rejection','save/rejoin'])assert.ok(launch.releaseGates.includes(gate),gate);
 });
 
-test('한글 영문 유입 메타데이터',()=>{
- assert.equal(launch.gameTitleKo,'심야 감염전 [4대4]');
- assert.equal(launch.gameTitleEn,'Midnight Infection [4v4]');
- assert.ok(launch.gameDescriptionKo.includes('감염전'));assert.ok(launch.gameDescriptionEn.includes('infection'));
+test('한글 영문 유입 메타데이터는 현재 심야 대탈출 정본을 사용한다',()=>{
+ assert.equal(launch.gameTitleKo,'심야 대탈출');
+ assert.equal(launch.gameTitleEn,'Midnight Escape');
+ assert.ok(launch.gameDescriptionKo.includes('감염 추격전'));assert.ok(launch.gameDescriptionEn.includes('infection'));
+ assert.equal(launch.designContract.coreInfectionRule,'EXPLICIT_SERVER_AUTHORITATIVE_INFECT_ATTACK_ONLY');
 });
 
 
@@ -264,6 +269,42 @@ test('감염은 자동 접촉이 아니라 서버 에너지 공격으로만 발�
  assert.match(client,/remote:FireServer\(C\.Actions\.INFECT_ATTACK\)/);
 });
 
+test('인간 감염 후 5개 스킬은 서버에서 서로 다른 효과로 실행된다',()=>{
+ assert.match(config,/InfectedAbilities=\{/);
+ for(const profile of [
+  'FALSE_ALARM={Name="가짜 경보",Effect="FAKE_ALERT"',
+  'BLACKOUT={Name="정전",Effect="BLACKOUT"',
+  'RUSH={Name="돌진",Effect="SPEED_SURGE"',
+  'HUNT_FLASH={Name="사냥 플래시",Effect="FLASH_SLOW"',
+  'BREACH={Name="돌파",Effect="FORWARD_BREACH"',
+ ])assert.ok(config.includes(profile),profile);
+ const block=server.slice(server.indexOf('local function ability(p)'),server.indexOf('local function infectAttack(p)'));
+ for(const id of ['RUSH','BREACH','FALSE_ALARM','BLACKOUT','HUNT_FLASH'])assert.ok(block.includes('infectedAbility=="'+id+'"'),id);
+ assert.match(block,/FalseAlarmUntil/);
+ assert.match(block,/BlackoutUntil/);
+ assert.match(block,/HuntFlashUntil/);
+ assert.match(block,/b\.speed=math\.min/);
+ assert.match(block,/AbilityFeedback/);
+ assert.match(block,/FeedbackEvent","ABILITY:/);
+ assert.match(client,/Name="ThreatEffectLayer"/);
+ assert.match(client,/currentAbilityName\(\)/);
+ assert.match(client,/정전 · 시야가 차단됐어/);
+ assert.match(client,/사냥 플래시 · 움직임 둔화/);
+ assert.match(client,/경보 · 가까운 곳에 몬스터가 감지됐어/);
+});
+
+test('머신 시스템 로드맵은 P1 P2를 진행 중으로 고정한다',()=>{
+ const road=launch.systemImplementationRoadmap;
+ assert.ok(road);
+ assert.equal(road.machineDocumentsOnly,true);
+ assert.equal(road.currentPhase,'P1_CORE_MATCH_AND_ROLE_COMBAT');
+ const byId=Object.fromEntries((road.phases||[]).map(row=>[row.id,row]));
+ assert.equal(byId.P1_CORE_MATCH_AND_ROLE_COMBAT.status,'IN_PROGRESS');
+ assert.equal(byId.P2_HUMAN_FORM_IDENTITY.status,'IN_PROGRESS');
+ assert.ok(road.invariants.includes('infection occurs only through explicit server-authoritative INFECT_ATTACK'));
+ assert.ok(road.invariants.includes('converted human remains active as monster'));
+});
+
 test('인간과 몬스터 주요 행동은 같은 에너지 규칙을 사용한다',()=>{
  for(const marker of ['Max=100','RegenPerSecond=10','PurifyCost=35','DashCost=25','AbilityCost=45'])assert.ok(config.includes(marker),marker);
  assert.match(server,/spendEnergy\(p,C\.Energy and C\.Energy\.PurifyCost or 35,"PURIFY"\)/);
@@ -470,13 +511,15 @@ test('세계 괴담 도감 UI는 12종 3단계 진행과 조각 계약서를 보
 });
 
 
-test('투명 스폰은 공중 발판이 되지 않고 플레이어를 실제 바닥 높이에 둔다',()=>{
+test('투명 스폰은 공중 발판이 되지 않고 로비와 경기장 스폰을 분리한다',()=>{
  assert.match(server,/foundationSpawn\.CanCollide=false/);
  assert.match(server,/foundationSpawn\.CanTouch=false/);
  assert.match(server,/foundationSpawn\.CanQuery=false/);
  assert.doesNotMatch(server,/foundationSpawn\.CanCollide=true/);
- assert.match(server,/foundationSpawn\.Position=Vector3\.new\(survivorSpawns\[1\]\.X,\.55,survivorSpawns\[1\]\.Z\)/);
- assert.match(server,/local target=Vector3\.new\(pos\.X,3\.6,pos\.Z\)/);
+ assert.match(server,/lobbySpawnLocation\.Name="LobbySpawn"/);
+ assert.match(server,/lobbySpawnLocation\.CanCollide=false/);
+ assert.match(server,/local lobbyDestination=pos\.Z>=180/);
+ assert.match(server,/rootFolders=lobbyDestination and\{workspace:FindFirstChild\("MidnightLobby"\)\}or\{arena\}/);
  assert.match(server,/r\.AssemblyLinearVelocity=Vector3\.zero/);
  assert.match(server,/r\.AssemblyAngularVelocity=Vector3\.zero/);
 });
@@ -490,20 +533,25 @@ test('에너지 HUD는 로비와 게임에서 현재값과 최대값을 항상 �
 });
 
 
-test('실제 캐릭터 스폰은 고정 Y가 아니라 바닥 Raycast와 아바타 높이로 계산한다',()=>{
+test('실제 캐릭터 스폰은 목적 월드 바닥 Raycast와 아바타 높이로 계산한다',()=>{
  assert.match(server,/local function groundedRootTarget\(p,pos\)/);
- assert.match(server,/workspace:Raycast\(origin,Vector3\.new\(0,-18,0\),params\)/);
+ assert.match(server,/local lobbyDestination=pos\.Z>=180/);
+ assert.match(server,/workspace:Raycast\(Vector3\.new\(pos\.X,rayTop,pos\.Z\),Vector3\.new\(0,-rayLength,0\),params\)/);
  assert.match(server,/local standingOffset=math\.max\(1,tonumber\(h\.HipHeight\)or 0\)\+\(r\.Size\.Y\*\.5\)/);
- assert.match(server,/groundY\+standingOffset\+\.03/);
- assert.doesNotMatch(server,/local target=Vector3\.new\(pos\.X,3\.6,pos\.Z\)/);
+ assert.match(server,/local targetY=groundY\+standingOffset\+\.03/);
+ assert.match(server,/if lobbyDestination then targetY=math\.clamp\(targetY,2\.8,5\.2\)end/);
  assert.match(server,/h:ChangeState\(Enum\.HumanoidStateType\.GettingUp\)/);
 });
 
-test('대기 로비 캐릭터도 인원수와 관계없이 실제 바닥 스냅을 사용한다',()=>{
+test('대기 로비 캐릭터는 경기장 MapReady를 기다리지 않고 로비 바닥에 즉시 스폰한다',()=>{
  const block=server.slice(server.indexOf('local function onCharacter'),server.indexOf('Players.PlayerAdded:Connect'));
  assert.doesNotMatch(block,/#Players:GetPlayers\(\)==1/);
+ assert.match(block,/workspace:GetAttribute\("PhysicalLobbyReady"\)/);
  assert.match(block,/table\.sort\(players/);
- assert.match(block,/teleport\(p,survivorSpawns\[slot\]\)/);
+ assert.match(block,/teleport\(p,lobbySpawns\[slot\],Vector3\.new\(0,3,210\)\)/);
+ assert.match(block,/LobbySpawnGroundedAt/);
+ const waitingBranch=block.slice(block.indexOf('if state~="RUNNING"then'),block.indexOf('local readyDeadline'));
+ assert.doesNotMatch(waitingBranch,/MapReady/);
 });
 
 
