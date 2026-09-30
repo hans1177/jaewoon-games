@@ -3,6 +3,7 @@
 // 기존 게임 루트만 사용하며, 소유자 지시가 명시된 Web 프로토타입은 같은 index 파일 전체 교체를 허용한다.
 
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import { ownerDevelopmentHeld } from './vibe2-queue-control.mjs';
 import http from 'node:http';
 import os from 'node:os';
@@ -1791,6 +1792,7 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
   const rows=[];
   const presentationTask=/^Goal:[^\n]*(?:presentation|graphics|visual)|^\[PRESENTATION(?:_PASS:| IMPLEMENTATION)|^(?:\[STUDIO_QUALITY_EVOLUTION\]|directiveId=)[^\n]*(?:focus|primaryFocus)=PRESENTATION/im.test(raw.split(/\n=== FILE /)[0]);
   const preferred=unique(preferredTargets).filter(name=>/^[A-Za-z_$][\w$]{1,80}$/.test(name));
+  const directiveAnchors=[...buildUpDirectiveBlockFromPrompt(raw).matchAll(/(?:^sourceAnchors=| \| )([^|\r\n]+?):(?:\d+|\?) \S+ ([A-Za-z_][\w.:]*)/gm)];
   if(fullSource&&preferred.length){
     for(const symbol of preferred.slice(0,12)){
       const escaped=regexEscape(symbol);
@@ -1819,9 +1821,24 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
     if(!header.includes('[EDITABLE]'))continue;
     const sectionPath=header.match(/^=== FILE (.*?) \[/)?.[1];
     if(responsibleFiles.length&&!responsibleFiles.includes(sectionPath))continue;
-    const body=parts.join('\n');
-    for(const original of parts){
+    const luau=/\.(?:lua|luau)\s+\[EDITABLE\]/i.test(header);
+    const ownedSymbols=unique([...preferred,...directiveAnchors.filter(row=>posix(row[1])===posix(sectionPath)||posix(row[1]).endsWith('/'+posix(sectionPath))).map(row=>row[2])])
+      .filter(symbol=>!presentationTask||/(?:render|visual|presentation|camera|vfx|effect|ui|hud|style|Color|Material|Lighting|Tween|Animation|Particle|Trail|Beam|CFrame|FieldOfView|World|Lobby)/i.test(symbol));
+    // 책임 함수가 소스 발췌 밖에 있어도 디스크의 원본 본문에서 편집 구간을 찾는다.
+    const sourceLines=luau&&fullSource&&ownedSymbols.length?fullSource.split('\n'):parts;
+    const body=sourceLines.join('\n');
+    let ownedFunctionIndent=null,ownedFunctionLine=-1;
+    for(const [lineIndex,original] of sourceLines.entries()){
       const trimmed=original.trim();
+      if(luau){
+        const declaration=original.match(/^(\s*)(?:local\s+)?function\s+([A-Za-z_][\w.:]*)\s*\(/);
+        if(declaration){
+          ownedFunctionIndent=ownedSymbols.includes(declaration[2])?declaration[1].length:null;
+          ownedFunctionLine=lineIndex;
+        }else if(ownedFunctionIndent!==null&&/^\s*end\s*(?:--.*)?$/.test(original)&&original.search(/\S/)<=ownedFunctionIndent){
+          ownedFunctionIndent=null;
+        }
+      }
       if(trimmed.length<10||trimmed.length>420)continue;
       // 이름 있는 함수와 익명 콜백의 선언 한 줄은 본문 교체 범위가 아니다.
       if(/\.(?:lua|luau)\s+\[EDITABLE\]/i.test(header)
@@ -1838,6 +1855,8 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
       const occurrences=occurrenceCorpus.split(original).length-1;
       if(occurrences!==1)continue;
       let score=0;
+      if(luau&&(ownedSymbols.some(symbol=>new RegExp('\\b'+regexEscape(symbol)+'\\b').test(trimmed))
+        ||(ownedFunctionIndent!==null&&original.search(/\S/)>ownedFunctionIndent)))score+=1000-Math.min(400,lineIndex-ownedFunctionLine);
       if(/\b(?:function|const|let|var|if|for|while|return|addEventListener|querySelector|getElementById|classList|dataset|localStorage)\b|<(?:button|canvas|div|section|main)\b|\bid=|\bdata-/i.test(trimmed))score+=4;
       if(/\b(?:assert(?:\.|\()|test\s*\(|describe\s*\(|it\s*\()/i.test(trimmed))score+=8;
       if(presentationTask&&/(?:Color3|BackgroundColor3|Material|Texture|Mesh|Instance\.new|Camera|FieldOfView|Particle|Trail|Beam|Tween|Animation|Animator|Motor6D|CFrame|\.Size\b|\.Position\b|Lighting|render|visual|motion|vfx|effect|Frame|ImageLabel|ImageButton)/i.test(trimmed))score+=160;
@@ -2528,6 +2547,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     if(focusedReplaceOnly){
       console.log(`VIBE2_FOCUSED_RETRY_PROMPT_BYTES=${attempt}:${attemptPromptBytes}`);
       console.log('VIBE2_FOCUSED_REPLACE_SCHEMA=ONE_KEY_REPLACE');
+      console.log('VIBE2_FOCUSED_SOURCE_ANCHOR='+JSON.stringify({attempt,path:focusedReplaceOnly.spec.path,find:focusedReplaceOnly.spec.find}));
     }
     const studioExactAnchorRecovery=studioExpansion&&priorFailureClass==='EDIT_MATCH';
     // 같은 제어 문자 실패에 동일한 저온 요청을 반복하지 않는다. 다른 오류의 생성 조건은 유지한다.
@@ -2542,6 +2562,8 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
         verifiedExternalLearningPromptChecks+=1;
         console.log(`VIBE2_VERIFIED_EXTERNAL_LEARNING_RUNTIME_PROMPT=PASS:${attempt}:${promptCoverage.count}`);
       }
+      // 이번 요청의 무출력 시간 초과를 이전 응답의 출력으로 잘못 기록하지 않는다.
+      lastRaw='';
       const raw=await requestLocalModel(attemptPrompt,{model,responseFile:fake,maxPredict,timeoutMs,contextWindow,temperature,completionMode,rejectSourceControlTokens:target==='roblox'&&completionMode==='JSON_REPLACE_ONLY'});
       lastRaw=raw;
       const fullWebClosedHtmlEarlyStop=completionMode==='FULL_WEB'
@@ -2784,6 +2806,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       const attemptOutputBytes=lastRaw?Buffer.byteLength(String(lastRaw),'utf8'):0;
       console.log(`VIBE2_GENERATION_ATTEMPT_FAILURE=${attempt}:${failureClass}:${clean(error?.message||error).replace(/\s+/g,' ').slice(0,360)}`);
       console.log(`VIBE2_GENERATION_ATTEMPT_OUTPUT_BYTES=${attempt}:${attemptOutputBytes}`);
+      if(attemptOutputBytes)console.log(`VIBE2_GENERATION_ATTEMPT_OUTPUT_SHA256=${attempt}:${crypto.createHash('sha256').update(lastRaw).digest('hex')}`);
       if(accumulatedFullWeb)console.log(`VIBE2_FULL_WEB_ACCUMULATED_BYTES=${attempt}:${Buffer.byteLength(accumulatedFullWeb.content,'utf8')}`);
       if(intermediateGrowthBytes.length)console.log(`VIBE2_FULL_WEB_INTERMEDIATE_GROWTH=${attempt}:${intermediateGrowthBytes.join(',')}`);
       if(repeatedIntermediateOutputs)console.log(`VIBE2_FULL_WEB_REPEATED_INTERMEDIATE=${attempt}:${repeatedIntermediateOutputs}`);
