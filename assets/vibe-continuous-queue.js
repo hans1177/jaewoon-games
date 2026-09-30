@@ -286,7 +286,11 @@ function normalizeTask(input = {}, index = 0) {
     &&/^[0-9a-f]{40}$/.test(clean(runtimeCandidate.candidateSha))
     ?freeze({taskId:clean(input.id),gameId:clean(input.gameId),target:'roblox',
       candidateBranch:clean(runtimeCandidate.candidateBranch),candidateSha:clean(runtimeCandidate.candidateSha),evidenceOnly:true,
-      ...(runtimeCandidate.runId?{runId:clean(runtimeCandidate.runId),verified:runtimeCandidate.verified===true,reviewStillRequired:true,blockedReasons:freezeList(runtimeCandidate.blockedReasons||[])}:{})})
+      ...(runtimeCandidate.runId?{runId:clean(runtimeCandidate.runId),
+        // 정적 검수 결과를 보존하되 실제 실행 성공으로 승격하지 않는다.
+        verified:runtimeCandidate.validationMode!=='STATIC'&&runtimeCandidate.verified===true,
+        ...(runtimeCandidate.validationMode==='STATIC'?{validationMode:'STATIC',staticVerified:runtimeCandidate.staticVerified===true}:{}),
+        reviewStillRequired:true,blockedReasons:freezeList(runtimeCandidate.blockedReasons||[])}:{})})
     :null;
   const task = {
     id: clean(input.id) || `task-${index + 1}`,

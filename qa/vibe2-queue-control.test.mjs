@@ -2026,4 +2026,14 @@ test('runtime evidence candidate survives queue normalization and worker lease r
   legacy.evidence=['candidate-sha:'+pending.candidateSha,pending.candidateBranch];
   assert.equal(createVibeContinuousQueue({tasks:[legacy]}).tasks[0].runtimeEvidenceCandidate,null);
   assert.equal(createVibeContinuousQueue({tasks:[{...raw,runtimeEvidenceCandidate:{...pending,gameId:'wrong'}}]}).tasks[0].runtimeEvidenceCandidate,null);
+  for(const passed of [true,false]){
+    const result={...pending,runId:'42',validationMode:'STATIC',staticVerified:passed,verified:true,blockedReasons:passed?[]:['compile-failed']};
+    const normalized=createVibeContinuousQueue({tasks:[{...raw,runtimeEvidenceCandidate:result}]}).tasks[0].runtimeEvidenceCandidate;
+    assert.equal(normalized.staticVerified,passed);
+    assert.equal(normalized.validationMode,'STATIC');
+    assert.equal(normalized.verified,false);
+    assert.deepEqual(normalized.blockedReasons,result.blockedReasons);
+    const roundTrip=createVibeContinuousQueue(JSON.parse(JSON.stringify({tasks:[{...raw,runtimeEvidenceCandidate:normalized}]})));
+    assert.deepEqual(roundTrip.tasks[0].runtimeEvidenceCandidate,normalized);
+  }
 });
