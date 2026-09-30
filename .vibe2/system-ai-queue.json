@@ -144831,7 +144831,55 @@
       "jointDecisionRequired": true,
       "createdAt": "2026-09-30T04:50:41.834Z",
       "updatedAt": "2026-09-30T04:50:41.834Z"
+    },
+    {
+      "id": "marketing-card-grid-duel-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "card-grid-duel",
+      "goal": "Create the current non-financial growth/marketing execution package for card-grid-duel (card-grid-duel). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/card-grid-duel/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/card-grid-duel/latest.json --game-id=card-grid-duel"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-09-30T14:21:40.195Z",
+      "updatedAt": "2026-09-30T14:21:40.195Z"
     }
   ],
-  "updatedAt": "2026-09-30T13:17:44.836Z"
+  "updatedAt": "2026-09-30T14:21:40.195Z"
 }
