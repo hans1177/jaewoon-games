@@ -1,5 +1,5 @@
 {
-  "version": 493,
+  "version": 494,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -7339,7 +7339,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-30T03:50:00.000Z",
+  "updatedAt": "2026-09-30T04:08:00.000Z",
   "priorityTiers": [
     {
       "tier": 1,
@@ -8131,19 +8131,6 @@
       "noQualityGateWeakening": true,
       "platformSpecificEvidenceStillRequired": true,
       "internalPlaytestIsActiveCoDevelopment": true
-    },
-    "legacyWebFirstCleanup20260923": {
-      "removedInactiveFields": [
-        "developmentLifecycleMachine.webToPlatformHandoff",
-        "developmentLifecycleMachine.webFirstImplementation",
-        "developmentLifecycleMachine.missingWebBaselinePlanning",
-        "developmentLifecycleMachine.webIterationPolicy",
-        "developmentLifecycleMachine.machineWorkInstruction.webWorker",
-        "developmentLifecycleMachine.machineOnlyProjectContinuation.webBaseImplementation",
-        "phases.ROBLOX_FAST_RELEASE_STABILIZATION"
-      ],
-      "activeUnityWebRole": "UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR",
-      "nativeDevelopmentAuthority": "directNativeDualPlatformDevelopment"
     },
     "unityWebUpperPlatformDevelopmentGate20260925": {
       "id": "UNITY_WEB_UPPER_PLATFORM_DEVELOPMENT_GATE_2026-09-25",
