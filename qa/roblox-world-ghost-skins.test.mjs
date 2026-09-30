@@ -12,6 +12,50 @@ const factory=fs.readFileSync(root+'GhostSkinFactory.luau','utf8');
 const luau=process.env.VIBE2_LUAU_BINARY;
 const native={skip:luau?false:'Official Luau binary not configured; Studio verification remains pending'};
 
+test('authored bride mesh has bounded weighted geometry and six closed-loop/one-shot clips',()=>{
+ const dir=root+'native/mesh/';
+ const evidence=JSON.parse(fs.readFileSync(dir+'evidence.json','utf8'));
+ assert.equal(evidence.assetId,'gwisin-bride');
+ assert.equal(evidence.nativeStudioVerified,false);assert.equal(evidence.productionVerified,false);
+ assert.equal(evidence.sourceSha256,crypto.createHash('sha256').update(fs.readFileSync(root+'build-mesh.py')).digest('hex'));
+ for(const artifact of evidence.artifacts)assert.equal(crypto.createHash('sha256').update(fs.readFileSync(dir+artifact.file)).digest('hex'),artifact.sha256);
+ const bytes=fs.readFileSync(dir+'bride.glb');assert.equal(bytes.readUInt32LE(0),0x46546c67);assert.equal(bytes.readUInt32LE(4),2);assert.equal(bytes.readUInt32LE(8),bytes.length);
+ const size=bytes.readUInt32LE(12);const model=JSON.parse(bytes.subarray(20,20+size).toString());
+ const binary=bytes.subarray(28+size);
+ const components={SCALAR:1,VEC2:2,VEC3:3,VEC4:4,MAT4:16};
+ const read=index=>{
+  const a=model.accessors[index],view=model.bufferViews[a.bufferView];
+  const width=components[a.type],length=a.componentType===5126||a.componentType===5125?4:a.componentType===5123?2:1;
+  const reader=a.componentType===5126?'readFloatLE':a.componentType===5125?'readUInt32LE':a.componentType===5123?'readUInt16LE':'readUInt8';
+  return Array.from({length:a.count},(_,row)=>Array.from({length:width},(_,col)=>binary[reader]((view.byteOffset||0)+(a.byteOffset||0)+row*(view.byteStride||width*length)+col*length)));
+ };
+ assert.equal(model.skins.length,1);assert.ok(model.skins[0].joints.length>=80);
+ assert.ok(model.meshes.length<=16);
+ let triangles=0;
+ for(const mesh of model.meshes)for(const primitive of mesh.primitives){
+  const positions=read(primitive.attributes.POSITION),weights=read(primitive.attributes.WEIGHTS_0),joints=read(primitive.attributes.JOINTS_0),indices=read(primitive.indices);
+  assert.equal(positions.length,weights.length);triangles+=indices.length/3;
+  for(const xyz of positions)for(const n of xyz)assert.ok(Number.isFinite(n)&&Math.abs(n)<10);
+  for(const w of weights){assert.ok(Math.abs(w.reduce((a,b)=>a+b,0)-1)<1e-4);assert.ok(w.every(n=>n>=0&&n<=1));}
+  for(const j of joints)assert.ok(j.every(n=>Number.isInteger(n)&&n<model.skins[0].joints.length));
+  for(const [i] of indices)assert.ok(i<positions.length);
+ }
+ assert.ok(triangles>10000&&triangles<32000);assert.equal(triangles,evidence.triangles);
+ assert.deepEqual(model.animations.map(a=>a.name).sort(),Object.keys(evidence.clips).sort());
+ for(const clip of model.animations){
+  let duration=0;
+  for(const channel of clip.channels){
+   const sampler=clip.samplers[channel.sampler],times=read(sampler.input).flat(),values=read(sampler.output);
+   for(let i=0;i<times.length;i++){assert.ok(Number.isFinite(times[i]));if(i)assert.ok(times[i]>times[i-1]);}
+   for(const row of values)assert.ok(row.every(Number.isFinite));
+   duration=Math.max(duration,times.at(-1));
+   if(['idle','walk','chase'].includes(clip.name))for(let i=0;i<values[0].length;i++)assert.ok(Math.abs(values[0][i]-values.at(-1)[i])<1e-4,clip.name+': loop discontinuity');
+   if(model.nodes[channel.target.node].name==='Root')for(const value of values)for(let i=0;i<value.length;i++)assert.ok(Math.abs(value[i]-values[0][i])<1e-6,'asset must not translate the gameplay root');
+  }
+  assert.ok(Math.abs(duration-evidence.clips[clip.name])<1e-4,clip.name+': wrong duration');
+ }
+});
+
 test('native place and model contain the tested sources; package build never claims Studio success',()=>{
  const evidence=JSON.parse(fs.readFileSync(root+'native/build-evidence.json','utf8'));
  const hash=data=>crypto.createHash('sha256').update(data).digest('hex');

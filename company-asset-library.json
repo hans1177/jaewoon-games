@@ -367,7 +367,8 @@
         "assets/roblox/world-ghosts/GhostSkinMotion.luau",
         "assets/roblox/world-ghosts/GhostSkinAudit.luau",
         "assets/roblox/world-ghosts/model.project.json",
-        "assets/roblox/world-ghosts/build-native.mjs"
+        "assets/roblox/world-ghosts/build-native.mjs",
+        "assets/roblox/world-ghosts/build-mesh.py"
       ],
       "skinCount": 100,
       "bodyFormCount": 27,
@@ -386,7 +387,18 @@
         "hit",
         "death"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "meshUpgrade": {
+        "completedMeshCount": 1,
+        "catalogCount": 100,
+        "assetIds": [
+          "gwisin-bride"
+        ],
+        "state": "ART_REVIEW_REQUIRED",
+        "model": "assets/roblox/world-ghosts/native/mesh/bride.glb",
+        "evidence": "assets/roblox/world-ghosts/native/mesh/evidence.json",
+        "nativeStudioVerified": false
+      }
     },
     {
       "id": "roblox-world-ghost-gwisin-bride",
@@ -420,7 +432,10 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "meshArtifact": "assets/roblox/world-ghosts/native/mesh/bride.glb",
+      "meshRigVersion": "MESH_BRIDE_1",
+      "meshReviewState": "ART_REVIEW_REQUIRED"
     },
     {
       "id": "roblox-world-ghost-mongdal",

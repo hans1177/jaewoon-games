@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<!-- view.html · 처녀귀신 실제 메시 미리보기 -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d1821">
+<title>처녀귀신 · 모델 보기</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0d1821;color:#edf3f5;font-family:system-ui,sans-serif}canvas{display:block;touch-action:none;width:100%;height:100%}header{position:absolute;top:max(20px,env(safe-area-inset-top));left:22px;pointer-events:none}h1{font-size:23px;margin:0 0 7px;letter-spacing:-1px}header p{font-size:12px;color:#a3b8c4;line-height:1.6;margin:0}.panel{position:absolute;bottom:max(15px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(94%,430px);background:#12232ded;border:1px solid #34434b;border-radius:17px;padding:12px;backdrop-filter:blur(14px)}.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}button{min-height:43px;border:1px solid #44535b;border-radius:9px;background:#233740;color:#edf3f5;font-size:13px;font-weight:650;cursor:pointer}button[aria-pressed=true]{background:#76323b;border-color:#bd6571}.tools{display:flex;gap:8px;margin-top:9px}.tools button,.tools a{flex:1}.tools a{display:flex;align-items:center;justify-content:center;min-height:41px;text-decoration:none;color:#c2d9e2;font-size:12px;border:1px solid #34434b;border-radius:9px}.note{margin:10px 0 0;text-align:center;font-size:11px;color:#9bb1bc;line-height:1.5}#status{position:absolute;top:47%;width:100%;text-align:center;font-size:14px;pointer-events:none}#status.error{background:#381f25;padding:20px;pointer-events:auto}button:disabled{opacity:.45}@media(max-height:550px){header{top:10px;left:12px}h1{font-size:17px}.panel{left:auto;right:10px;transform:none;width:230px;bottom:10px}.note{display:none}button{min-height:34px}}
+</style>
+<script type="importmap">{"imports":{"three":"./three/three.module.js","three/addons/":"./three/examples/jsm/"}}</script>
+</head>
+<body>
+<header><h1>처녀귀신</h1><p>직접 제작한 입체 모델 시안<br>한 손가락으로 회전 · 두 손가락으로 확대</p></header>
+<div id="status" role="status">모델을 불러오는 중이야…</div>
+<div class="panel">
+ <div class="actions" aria-label="동작 선택">
+  <button data-clip="idle" aria-pressed="true" disabled>대기</button><button data-clip="walk" aria-pressed="false" disabled>걷기</button><button data-clip="chase" aria-pressed="false" disabled>추격</button>
+  <button data-clip="attack" aria-pressed="false" disabled>공격</button><button data-clip="hit" aria-pressed="false" disabled>피격</button><button data-clip="death" aria-pressed="false" disabled>쓰러짐</button>
+ </div>
+ <div class="tools"><button id="pause" disabled>멈춤</button><button id="reset" disabled>처음 시점</button><a href="bride.glb" download>모델 받기</a></div>
+ <p class="note">100종 중 메시 시안 1종 · 로블록스 실행 검증 전</p>
+</div>
+<script type="module">
+// 임포트 / 모델 로딩
+const status=document.getElementById('status');
+try{
+ const THREE=await import('three');
+ const [{GLTFLoader},{OrbitControls},{RoomEnvironment}]=await Promise.all([import('three/addons/loaders/GLTFLoader.js'),import('three/addons/controls/OrbitControls.js'),import('three/addons/environments/RoomEnvironment.js')]);
+ const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'low-power'});
+ renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+ renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.2;document.body.prepend(renderer.domElement);
+ const scene=new THREE.Scene();scene.background=new THREE.Color(0x0d1821);scene.fog=new THREE.Fog(0x0d1821,9,24);
+ const pmrem=new THREE.PMREMGenerator(renderer),room=new RoomEnvironment();const env=pmrem.fromScene(room,.04);scene.environment=env.texture;scene.environmentIntensity=.65;room.dispose();pmrem.dispose();
+ const camera=new THREE.PerspectiveCamera(31,1,.1,60);
+ const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.08;controls.minDistance=3.1;controls.maxDistance=14;controls.maxPolarAngle=Math.PI*.7;controls.enablePan=false;
+ function resetView(){camera.position.set(2.9,2.8,8.6);controls.target.set(0,1.75,0);controls.update();}
+ resetView();
+ scene.add(new THREE.HemisphereLight(0xbce5ff,0x25282c,.6));
+ function light(color,intensity,x,y,z){const value=new THREE.DirectionalLight(color,intensity);value.position.set(x,y,z);scene.add(value);return value;}
+ const key=light(0xffddbb,2.5,-3,6,4);key.castShadow=true;key.shadow.mapSize.set(1024,1024);Object.assign(key.shadow.camera,{left:-4,right:4,top:6,bottom:-3});key.shadow.normalBias=.015;
+ light(0x75bfff,2.2,3,4,-2);light(0xd6deff,.8,2,2,4);
+ const ground=new THREE.Mesh(new THREE.PlaneGeometry(100,100),new THREE.MeshStandardMaterial({color:0x16222b,roughness:.88}));ground.rotation.x=-Math.PI/2;ground.position.y=-.015;ground.receiveShadow=true;scene.add(ground);
+ const gltf=await new GLTFLoader().loadAsync('./bride.glb');scene.add(gltf.scene);gltf.scene.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=false;}});
+ const mixer=new THREE.AnimationMixer(gltf.scene),actions=new Map(gltf.animations.map(c=>[c.name,mixer.clipAction(c)]));
+ const buttons=[...document.querySelectorAll('[data-clip]')];let active=null,paused=false;
+ // 메인 / 내장 클립 재생. 전투·이동·저장 로직 없음.
+ function select(name){
+  const next=actions.get(name);if(!next)throw Error('동작을 찾지 못했어.');
+  if(active&&active!==next)active.fadeOut(.18);
+  next.reset().setEffectiveWeight(1).fadeIn(.18);next.clampWhenFinished=true;
+  next.setLoop(['attack','hit','death'].includes(name)?THREE.LoopOnce:THREE.LoopRepeat,Infinity);next.play();active=next;
+  for(const b of buttons)b.setAttribute('aria-pressed',String(b.dataset.clip===name));
+ }
+ for(const b of buttons)b.addEventListener('click',()=>select(b.dataset.clip));
+ document.getElementById('pause').addEventListener('click',e=>{paused=!paused;e.currentTarget.textContent=paused?'재생':'멈춤';});
+ document.getElementById('reset').addEventListener('click',resetView);
+ for(const b of document.querySelectorAll('button'))b.disabled=false;
+ select('idle');status.hidden=true;document.body.dataset.loaded='true';
+ function resize(){const side=innerHeight<=550;const w=side?Math.max(240,innerWidth-250):innerWidth,h=side?innerHeight:Math.max(240,innerHeight-210);renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
+ addEventListener('resize',resize);resize();
+ renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();status.hidden=false;status.textContent='화면이 잠시 끊겼어. 새로고침하면 다시 볼 수 있어.';});
+ let last=performance.now();renderer.setAnimationLoop(now=>{const dt=Math.min((now-last)/1000,.05);last=now;if(document.hidden)return;if(!paused)mixer.update(dt);controls.update();renderer.render(scene,camera);});
+ document.addEventListener('visibilitychange',()=>{last=performance.now();});
+}catch(error){status.hidden=false;status.className='error';status.textContent='모델을 불러오지 못했어. 연결을 확인하고 새로고침해 줘.';console.error(error);}
+</script>
+</body>
+</html>

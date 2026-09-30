@@ -273,3 +273,10 @@
 다운로드/라이선스 확인 날짜: 2026-09-09
 사용 위치 또는 게임: 공용 모바일 Web + Unity 스킬 UI 후보
 비고: 특수 능력과 액티브 스킬용 아이콘 세트. 모바일 큰 스킬 버튼과 스킬 선택창 후보로 사용.
+
+## World ghost mesh preview
+
+- Three.js 0.186.1: MIT, Copyright © 2010–2026 three.js authors.
+- Source: https://github.com/mrdoob/three
+- Included modules and license: `assets/roblox/world-ghosts/native/mesh/three/`.
+- The bride mesh, skin weights, animations and silk texture are original project artwork; no external character models are included.

@@ -13,6 +13,26 @@
 - 네이티브 외형, 실제 Studio 애니메이션 재생, 실제 Windows 성능, 게임 내 플레이는 **미검증**이다. 원형 조립 형상이므로 최종 제작 퀄리티 판정을 받지 않았다.
 - `productionVerified=false`, `verifiedCompanyReusable=false`, 실제 적용 게임은 비어 있다. 심야대탈출 소스·세이브·AI·출시 설정을 수정하지 않는다.
 
+## 직접 제작한 메시 시안: 처녀귀신
+
+`native/mesh/bride.glb`는 기존 기본 부품 조립과 별도로 직접 모델링한 **실제 스킨 메시 1종**이다. `build-mesh.py`가 원본 제작 코드이며, 외부 모델이나 이미지 생성 결과를 쓰지 않는다. 100종 전체를 메시로 교체했다는 뜻은 아니다. 기존 100종 원형과 게임 로직은 보존한다.
+
+- 연속 곡면 얼굴·한복, 직조 무늬, 손가락, 눈꺼풀, 시선, 머리카락·옷자락 관절.
+- 80개 뼈, 14개 재질별 메시, 6개 내장 동작. 삼각형 수와 해시는 `native/mesh/evidence.json`에 기록한다.
+- 대기·걷기·추격은 반복 클립, 공격·피격·쓰러짐은 단발 클립이다. 몸 위치 이동과 전투 판정은 포함하지 않는다.
+- GLB에는 뼈대·스킨 가중치·재질·텍스처·동작이 들어 있다. Studio의 3D 가져오기로 별도 확인해야 한다. 기존 `Factory.Create`는 계속 기본 부품 원형을 만든다. 가져온 새 모델을 자동으로 게임에 삽입하거나 애니메이션 자산을 게시하지 않는다.
+- **실제 Roblox Studio 가져오기·모바일 성능·게임 적용은 미검증이다.** 로컬 모델 렌더와 파일 검사만으로 최종 아트 또는 로블록스 검증을 통과했다고 표시하지 않는다.
+
+재생성 환경: Python 3.11, `bpy==4.5.3`, Pillow. 명령:
+
+```sh
+python assets/roblox/world-ghosts/build-mesh.py
+# 선택: 내려받기용 FBX와 실제 모델 렌더
+python assets/roblox/world-ghosts/build-mesh.py --fbx --render /tmp/bride
+```
+
+Blender 원본 제작 설정으로 계산한 이미지와 동작 확인 영상은 메시 폴더의 `bride.png`, `bride.webm`이다. 그림을 움직이는 영상이 아닌, 내보낸 모델의 뼈와 스킨을 재생한 결과다.
+
 ## 사용
 
 `native/world-ghost-skins.rbxmx`를 Studio에서 불러오고 생성된 `WorldGhostSkins` 폴더를 `ReplicatedStorage`로 옮긴다. 4개 ModuleScript(Factory/Catalog/Motion/Audit)가 들어 있다. 소스에서 사용할 때도 같은 폴더에 둔다.

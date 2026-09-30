@@ -1,0 +1,80 @@
+{
+  "assetId": "gwisin-bride",
+  "rigVersion": "MESH_BRIDE_1",
+  "kind": "AUTHORED_SKINNED_MESH",
+  "meshObjects": 14,
+  "vertices": 15284,
+  "triangles": 29882,
+  "bones": 80,
+  "clips": {
+    "idle": 3.2,
+    "walk": 3.2,
+    "chase": 3.2,
+    "attack": 1.6,
+    "hit": 0.8,
+    "death": 1.8
+  },
+  "sourceSha256": "a7b7f357bcecc3e5b54937840ac927a73e6eddd48f244ca92429fdc8aeb70ce2",
+  "nativeStudioVerified": false,
+  "productionVerified": false,
+  "artVerified": false,
+  "artifacts": [
+    {
+      "file": "bride.glb",
+      "bytes": 1764684,
+      "sha256": "3bf90c01cf86745251c8b6465a9515b92c652235c93f5fd6143b796d2ef76e8a"
+    },
+    {
+      "file": "silk.png",
+      "bytes": 28938,
+      "sha256": "f4a7197db0e1bbaeb6074bf3ba5e82ca1a9e611f83b988821087c63ee083fcff"
+    }
+  ],
+  "fileValidation": {
+    "validator": "Khronos glTF Validator",
+    "errors": 0,
+    "warnings": 0
+  },
+  "playbackValidation": {
+    "info": {
+      "meshes": 14,
+      "bones": 80,
+      "clips": [
+        {
+          "name": "attack",
+          "duration": 1.600000023841858
+        },
+        {
+          "name": "chase",
+          "duration": 3.200000047683716
+        },
+        {
+          "name": "death",
+          "duration": 1.7999999523162842
+        },
+        {
+          "name": "hit",
+          "duration": 0.800000011920929
+        },
+        {
+          "name": "idle",
+          "duration": 3.200000047683716
+        },
+        {
+          "name": "walk",
+          "duration": 3.200000047683716
+        }
+      ],
+      "box": [
+        1.6978688174056225,
+        3.605877032707278,
+        1.1665159909166523
+      ],
+      "drawCalls": 29,
+      "triangles": 59766
+    },
+    "errors": [],
+    "frames": 192,
+    "fps": 30
+  }
+}
