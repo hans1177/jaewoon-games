@@ -570,7 +570,7 @@ if ARGS.render:
     SCENE.render.engine='CYCLES'
     SCENE.cycles.device='CPU'
     SCENE.cycles.samples=24
-    SCENE.cycles.use_denoising=True
+    SCENE.cycles.use_denoising=False
     SCENE.view_settings.view_transform='Filmic'
     SCENE.frame_set(18)
     SCENE.render.filepath=str(ARGS.output/'spider.png')
