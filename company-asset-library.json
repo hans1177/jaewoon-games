@@ -1,8 +1,8 @@
 {
-  "version": 19,
+  "version": 21,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
-  "updatedAt": "2026-09-27",
+  "updatedAt": "2026-09-30",
   "publicInspectionSurface": true,
   "productionPassAuthority": false,
   "rules": {
@@ -54,7 +54,9 @@
     "applicableAssetFamiliesRequireActualSourceBinding": true,
     "assetConfigMarkerOnlyCannotPass": true,
     "primitiveOnlyVisualUpgradeForbidden": true,
-    "mapEnvironmentBuildingPropAssetCoverageRequired": true
+    "mapEnvironmentBuildingPropAssetCoverageRequired": true,
+    "duelCombatMotionPackAvailable": true,
+    "referenceGameClipCopyForbidden": true
   },
   "platformPacks": [
     {
@@ -143,7 +145,11 @@
     "HAMMER",
     "BOW",
     "FIREARM",
-    "STAFF_OR_WAND"
+    "STAFF_OR_WAND",
+    "KATANA",
+    "DUAL_BLADE",
+    "DAGGER",
+    "SHIELD_SWORD"
   ],
   "assets": [
     {
@@ -1111,7 +1117,10 @@
       "ROBLOX"
     ],
     "rawExternalMotionRequiresRetargetCleanup": true,
-    "nativeRuntimeVerificationRequired": true
+    "nativeRuntimeVerificationRequired": true,
+    "status": "PREPARED_SEMANTIC_LIBRARY",
+    "implementation": "assets/vibe-motion-director.js#createDuelCombatMotionLoadout",
+    "productionVerified": false
   },
   "bipedCreatureMotion": {
     "target": "BODY_PLAN_SPECIFIC_BIPED_CREATURE_MOTION",
@@ -3976,5 +3985,95 @@
     "markerOnlyPassForbidden": true,
     "primitiveOnlyPassForbidden": true,
     "runtimeVerificationRequired": true
+  },
+  "duelCombatMotion": {
+    "status": "PREPARED_SEMANTIC_LIBRARY",
+    "target": "RESPONSIVE_DUEL_ARENA_COMBAT",
+    "implementation": "assets/vibe-motion-director.js#createDuelCombatMotionLoadout",
+    "productionVerified": false,
+    "platforms": [
+      "ROBLOX",
+      "UNITY"
+    ],
+    "referencePolicy": "REFERENCE_RESPONSIVENESS_AND_MOTION_ROLE_COVERAGE_ONLY; DO_NOT_COPY_PROPRIETARY_ANIMATION_CLIPS_FRAME_FOR_FRAME",
+    "weaponFamilies": [
+      "UNARMED",
+      "KATANA",
+      "ONE_HAND_SWORD",
+      "DUAL_BLADE",
+      "TWO_HAND_SWORD",
+      "DAGGER",
+      "SPEAR",
+      "AXE",
+      "HAMMER",
+      "STAFF_OR_WAND",
+      "SHIELD_SWORD",
+      "BOW",
+      "FIREARM"
+    ],
+    "requiredRoles": [
+      "READY_STANCE",
+      "COMBAT_LOCOMOTION",
+      "LIGHT_COMBO",
+      "HEAVY_ATTACK",
+      "GAP_CLOSER",
+      "AERIAL_ATTACK",
+      "GUARD",
+      "PARRY_OR_COUNTER",
+      "DODGE",
+      "HIT_REACTION",
+      "KNOCKDOWN",
+      "GET_UP",
+      "FINISHER"
+    ],
+    "unarmedStyles": [
+      "BOXING",
+      "KICKBOXING",
+      "MUAY_THAI",
+      "KARATE",
+      "TAEKWONDO",
+      "SANDA",
+      "WUSHU_KUNG_FU",
+      "WRESTLING",
+      "JUDO_THROWING",
+      "JIU_JITSU_GRAPPLING",
+      "MMA_HYBRID",
+      "STREET_BRAWLER",
+      "WUXIA_UNARMED_FANTASY"
+    ],
+    "commonCombatCoverage": [
+      "FIGHT_IDLE",
+      "FORWARD_BACK_CIRCLE_FOOTWORK",
+      "THREE_STEP_LIGHT_COMBO",
+      "HEAVY_ATTACK",
+      "DASH_OR_GAP_CLOSER",
+      "AERIAL_ATTACK",
+      "GUARD",
+      "PARRY",
+      "COUNTER",
+      "DODGE",
+      "DIRECTIONAL_LIGHT_HIT",
+      "HEAVY_HIT",
+      "GUARD_BREAK",
+      "LAUNCH",
+      "WALL_HIT",
+      "KNOCKDOWN",
+      "TECH_ROLL",
+      "GET_UP",
+      "FINISHER"
+    ],
+    "qualityRequirements": [
+      "JOINT_AND_WEIGHT_SHIFT_MOTION",
+      "FOOT_PLANT",
+      "NO_VISIBLE_FOOT_SLIDE",
+      "WEAPON_HAND_CONTACT",
+      "ANTICIPATION_STARTUP_ACTIVE_RECOVERY_READABILITY",
+      "CROSS_FADE_TRANSITIONS",
+      "ATTACK_EVENT_SYNC",
+      "DIRECTIONAL_REACTION_MATCH",
+      "MOBILE_READABILITY",
+      "ROBLOX_STUDIO_RUNTIME_CAPTURE"
+    ],
+    "verificationRule": "SEMANTIC_PACK_IS_NOT_A_VERIFIED_NATIVE_CLIP; EACH CONSUMED PLATFORM VARIANT REQUIRES TARGET GAME RUNTIME QA"
   }
 }
