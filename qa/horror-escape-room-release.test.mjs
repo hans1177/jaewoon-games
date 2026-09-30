@@ -476,7 +476,8 @@ test('투명 스폰은 공중 발판이 되지 않고 플레이어를 실제 바
  assert.match(server,/foundationSpawn\.CanQuery=false/);
  assert.doesNotMatch(server,/foundationSpawn\.CanCollide=true/);
  assert.match(server,/foundationSpawn\.Position=Vector3\.new\(survivorSpawns\[1\]\.X,\.55,survivorSpawns\[1\]\.Z\)/);
- assert.match(server,/local target=Vector3\.new\(pos\.X,3\.6,pos\.Z\)/);
+ assert.match(server,/local function groundedRootTarget\(p,pos\)/);
+ assert.match(server,/groundY\+standingOffset\+\.03/);
  assert.match(server,/r\.AssemblyLinearVelocity=Vector3\.zero/);
  assert.match(server,/r\.AssemblyAngularVelocity=Vector3\.zero/);
 });
@@ -492,11 +493,27 @@ test('에너지 HUD는 로비와 게임에서 현재값과 최대값을 항상 �
 
 test('실제 캐릭터 스폰은 고정 Y가 아니라 바닥 Raycast와 아바타 높이로 계산한다',()=>{
  assert.match(server,/local function groundedRootTarget\(p,pos\)/);
- assert.match(server,/workspace:Raycast\(origin,Vector3\.new\(0,-18,0\),params\)/);
+ assert.match(server,/workspace:Raycast\(Vector3\.new\(pos\.X,pos\.Y\+10,pos\.Z\),Vector3\.new\(0,-24,0\),params\)/);
  assert.match(server,/local standingOffset=math\.max\(1,tonumber\(h\.HipHeight\)or 0\)\+\(r\.Size\.Y\*\.5\)/);
  assert.match(server,/groundY\+standingOffset\+\.03/);
  assert.doesNotMatch(server,/local target=Vector3\.new\(pos\.X,3\.6,pos\.Z\)/);
  assert.match(server,/h:ChangeState\(Enum\.HumanoidStateType\.GettingUp\)/);
+});
+
+test('로비는 전체화면 방 UI가 아니라 실제 3D 공간과 근접 단말을 사용한다',()=>{
+ assert.match(server,/local function makePhysicalLobby\(\)/);
+ assert.match(server,/f\.Name="MidnightLobby"/);
+ assert.match(server,/CreatePublicRoom/);
+ assert.match(server,/QuickPublicRoom/);
+ assert.match(server,/CodeRoomTerminal/);
+ assert.match(server,/RoomStartTerminal/);
+ assert.match(server,/for i=1,8 do/);
+ assert.match(server,/WorldLobbyCodeInputRequest/);
+ assert.match(server,/teleport\(p,lobbySpawns\[slot\]\)/);
+ assert.match(client,/roomBrowserPanel\.Visible=false/);
+ assert.match(client,/roomInfoPanel\.Visible=false/);
+ assert.match(client,/roomSlotsPanel\.Visible=false/);
+ assert.match(client,/Name="WorldLobbyCodePanel"/);
 });
 
 test('대기 로비 캐릭터도 인원수와 관계없이 실제 바닥 스냅을 사용한다',()=>{
