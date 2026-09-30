@@ -22,6 +22,7 @@ on:
       - 'tools/company-upper-platform-admission.mjs'
       - 'company-asset-library.json'
       - 'company-learning/platform-release-roadmap.json'
+      - 'roblox-games/**'
       - 'tools/company-development-roblox-build-preflight.mjs'
       - 'tools/company-development-roblox-runtime-smoke.luau'
   workflow_call:
