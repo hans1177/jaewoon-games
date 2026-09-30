@@ -24,11 +24,6 @@ jobs:
       - name: Validate manor release contract
         shell: pwsh
         run: node --test qa/horror-manor.test.mjs
-      - name: Restore uploaded asset evidence
-        uses: actions/cache/restore@v4
-        with:
-          path: assets/roblox/midnight-manor/generated/roblox-asset.json
-          key: manor-assets-${{ hashFiles('assets/roblox/midnight-manor/generated/manor-lobby.glb', 'assets/roblox/midnight-manor/generated/manor-waltz.mp3', 'assets/roblox/midnight-manor/generated/menu.png') }}
       - name: Import verified original GLB
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
@@ -51,22 +46,12 @@ jobs:
           & $rojo build roblox-games/horror-escape-room/default.project.json -o $place
           if($LASTEXITCODE -ne 0){throw 'MANOR_BUILD_FAILED'}
           "MANOR_PLACE=$place" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
-      - name: Verify native mesh and private instances in Studio
+      - name: Verify Roblox-converted native model
+        env:
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         shell: pwsh
-        run: |
-          $ErrorActionPreference='Stop'
-          $studio=Get-ChildItem "$env:LOCALAPPDATA\Roblox\Versions" -Filter RobloxStudioBeta.exe -Recurse | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-          if(-not $studio){throw 'STUDIO_MISSING'}
-          $script=(Resolve-Path qa/horror-manor-studio.luau).Path
-          $out=Join-Path $env:RUNNER_TEMP 'manor-native-qa.log'
-          Remove-Item $out -Force -ErrorAction SilentlyContinue
-          $args="--task RunScript --localPlaceFile `"$env:MANOR_PLACE`" --runScriptFile `"$script`" --outputFile `"$out`" --quitAfterExecution"
-          $process=Start-Process $studio.FullName -ArgumentList $args -PassThru
-          $handle=$process.Handle
-          if(-not $process.WaitForExit(180000)){Stop-Process -Id $process.Id -Force;throw 'MANOR_STUDIO_QA_TIMEOUT'}
-          $log=Get-Content $out -Raw
-          Write-Host $log
-          if(-not $log.Contains('MANOR_NATIVE_QA=PASS')){throw 'MANOR_NATIVE_QA_FAILED'}
+        run: node tools/horror-manor-native-check.mjs
       - name: Publish verified manor
         if: github.ref == 'refs/heads/main'
         env:
@@ -78,12 +63,6 @@ jobs:
           $r=Invoke-RestMethod -Method Post -Uri $uri -Headers @{'x-api-key'=$env:ROBLOX_OPEN_CLOUD_API_KEY} -ContentType application/xml -InFile $env:MANOR_PLACE
           if([int]$r.versionNumber -le 0){throw 'MANOR_PUBLISH_VERSION_MISSING'}
           Write-Host "MANOR_PUBLISHED_VERSION=$($r.versionNumber)"
-      - name: Preserve uploaded asset evidence
-        if: always()
-        uses: actions/cache/save@v4
-        with:
-          path: assets/roblox/midnight-manor/generated/roblox-asset.json
-          key: manor-assets-${{ hashFiles('assets/roblox/midnight-manor/generated/manor-lobby.glb', 'assets/roblox/midnight-manor/generated/manor-waltz.mp3', 'assets/roblox/midnight-manor/generated/menu.png') }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -91,4 +70,4 @@ jobs:
           path: |
             assets/roblox/midnight-manor/generated/roblox-asset.json
             roblox-games/horror-escape-room/shared/ManorAssets.luau
-            ${{ runner.temp }}/manor-native-qa.log
+            assets/roblox/midnight-manor/generated/native-import-check.json
