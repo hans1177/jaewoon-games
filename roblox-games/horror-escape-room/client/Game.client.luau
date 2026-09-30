@@ -440,11 +440,16 @@ local function bindCharacterMotion(character)
  motionPhase=0
  motionJoints={}
  local specs={
-  Body={"Waist","Root","RootJoint"},
+  Body={"Waist"},
   Neck={"Neck"},
   LeftShoulder={"LeftShoulder","Left Shoulder"},
   RightShoulder={"RightShoulder","Right Shoulder"},
  }
+ for _,d in ipairs(character:GetDescendants())do
+  if d:IsA("Motor6D")and(d.Name=="Root"or d.Name=="RootJoint")then
+   d:SetAttribute("MidnightRootMotionDisabled",true)
+  end
+ end
  for key,names in pairs(specs)do
   local joint=findMotionJoint(character,names)
   if joint then motionJoints[key]={joint=joint,baseC0=joint.C0}end
@@ -476,7 +481,7 @@ RunService:BindToRenderStep("MidnightCharacterMotion",Enum.RenderPriority.Charac
  local baseLean=monster and math.rad(-4.5)or 0
  local forwardLean=math.rad((monster and 10 or 6)*math.clamp(localMove.Z,-1,1))*moveAmount
  local sideLean=math.rad(-4.5*math.clamp(localMove.X,-1,1))*moveAmount
- local bob=math.abs(math.sin(motionPhase*2))*moveAmount*.025
+ local bob=0 -- Root/몸통 수직 이동은 금지: 공중부양처럼 보이는 시각 오프셋 제거
 
  local actionPitch=0
  local actionRoll=0
@@ -504,7 +509,7 @@ RunService:BindToRenderStep("MidnightCharacterMotion",Enum.RenderPriority.Charac
   motionImpulseKind=""
  end
 
- local body=CFrame.new(0,bob,0)*CFrame.Angles(baseLean+forwardLean+actionPitch,0,sideLean+actionRoll)
+ local body=CFrame.Angles(baseLean+forwardLean+actionPitch,0,sideLean+actionRoll)
  local neck=CFrame.Angles(math.rad(breath*.7),0,math.rad(-sideLean*20/math.pi))
  local armSwing=math.rad(stride*10*moveAmount)
  if monster then armSwing=math.rad(stride*15*moveAmount-4)end
