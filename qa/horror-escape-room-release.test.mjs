@@ -112,11 +112,11 @@ test('상용 로딩과 로비 상태는 서버 정본에 바인딩된다',()=>{
  assert.match(client,/workspace:GetAttribute\("MapReady"\)/);
  assert.match(server,/local function syncLobbyState\(phase\)/);
  for(const key of ['LobbyReady','LobbyPhase','LobbyRealPlayers','LobbyAIFill'])assert.ok(server.includes('"'+key+'"'),key);
- assert.match(client,/실제 %d명 · AI %d명 충원 예정/);
  assert.match(client,/roomBrowserPanel\.Visible=false/);
  assert.match(server,/workspace:SetAttribute\("PhysicalLobbyReady",true\)/);
- assert.match(client,/setupPanel\.Visible=isRoomServer and not running and not resultCode and not spectating/);
- assert.match(client,/ruleCard\.Visible=setupPanel\.Visible and not selectionConfirmed/);
+ assert.match(server,/workspace:SetAttribute\("WorldLobbyMode",true\)/);
+ assert.match(client,/setupPanel\.Visible=false/);
+ assert.match(client,/ruleCard\.Visible=false/);
 });
 
 
@@ -422,7 +422,9 @@ test('1인 방 생성과 방장 시작은 8인 AI 충원 계약을 유지한다'
  assert.match(server,/#Players:GetPlayers\(\)<math\.max\(1,tonumber\(C\.MinimumParticipants\)or 1\)/);
  assert.match(server,/configure\(h\)/);
  assert.match(client,/Name="RoomBrowser"/);
- assert.match(client,/1명부터 시작 가능 · 최대 8명 · 빈자리는 AI/);
+ assert.match(client,/매칭 구역에 들어가면 자동으로 시작/);
+ assert.match(server,/roomStartRequested=true/);
+ assert.match(server,/local fastStartSeconds=3/);
 });
 
 test('예약 방은 공개 친구만 비공개를 서버가 검증하고 예약 코드를 클라이언트에 노출하지 않는다',()=>{
@@ -453,7 +455,8 @@ test('월드 로비는 AI 슬롯을 만들지 않고 실제 유저 매칭만 표
  assert.doesNotMatch(server,/LobbySlot/);
  assert.doesNotMatch(server,/AI 대기/);
  assert.match(server,/WorldLobbyMode/);
- assert.match(client,/월드 로비 · 접속 %d명/);
+ assert.doesNotMatch(client,/월드 로비 · 접속 %d명/);
+ assert.match(client,/lobbyStatus\.Text=""/);
 });
 
 test('세계 괴담 도감 UI는 12종 3단계 진행과 조각 계약서를 보여준다',()=>{
@@ -482,12 +485,12 @@ test('투명 스폰은 공중 발판이 되지 않고 플레이어를 실제 바
  assert.match(server,/r\.AssemblyAngularVelocity=Vector3\.zero/);
 });
 
-test('에너지 HUD는 로비와 게임에서 현재값과 최대값을 항상 표시한다',()=>{
+test('에너지 HUD는 게임 중에만 현재값과 최대값을 표시한다',()=>{
  assert.match(client,/energyLabel\.Text="에너지 100\/100"/);
  assert.match(client,/energyLabel\.Text=string\.format\("에너지 %d\/%d"/);
- assert.match(client,/energyTrack\.Visible=true/);
- assert.match(client,/energyFill\.Visible=true/);
- assert.match(client,/energyLabel\.Visible=true/);
+ assert.match(client,/energyTrack\.Visible=running/);
+ assert.match(client,/energyFill\.Visible=running/);
+ assert.match(client,/energyLabel\.Visible=running/);
 });
 
 
@@ -500,16 +503,16 @@ test('실제 캐릭터 스폰은 고정 Y가 아니라 바닥 Raycast와 아바�
  assert.match(server,/h:ChangeState\(Enum\.HumanoidStateType\.GettingUp\)/);
 });
 
-test('로비는 방 입장 칸에 들어가면 자동 대기열과 카운트다운으로 방을 만든다',()=>{
+test('로비는 동양식 객실 게이트에서 자동 대기열과 카운트다운으로 방을 만든다',()=>{
  assert.match(server,/local function makePhysicalLobby\(\)/);
  assert.match(server,/f\.Name="MidnightLobby"/);
- assert.match(server,/AutoRoomQueue/);
- assert.match(server,/LOBBY_QUEUE_SECONDS=10/);
- assert.match(server,/local function playerInsideLobbyQueue\(p\)/);
- assert.match(server,/local function beginLobbyQueueCountdown\(\)/);
+ assert.match(server,/GuestGate/);
+ assert.match(server,/LOBBY_QUEUE_SECONDS=5/);
+ assert.match(server,/local function playerInsideMatchBay\(p,bay\)/);
+ assert.match(server,/local function beginMatchBayCountdown\(bay\)/);
  assert.match(server,/createQueuedReservedRoom\(group\)/);
  assert.match(server,/TeleportService:TeleportAsync\(game\.PlaceId,valid,options\)/);
- assert.match(server,/매칭 %d명 · %d초/);
+ assert.match(server,/객실 %02d/);
  assert.match(server,/CodeRoomTerminal/);
  assert.match(server,/WorldLobbyCodeInputRequest/);
  assert.match(server,/teleport\(p,lobbySpawns\[slot\]\)/);
