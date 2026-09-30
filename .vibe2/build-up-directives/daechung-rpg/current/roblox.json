@@ -493,8 +493,8 @@
       "sourceRevision": "15d9ebb42466049456bb2e215e5bfa08ae5f8f57",
       "artifactIdentity": "sha256:5da5b0060f238775c6cff0da1967faf3c236a61d3fd75dadf8dd5b302e9c3548",
       "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 36664916515,
-      "testedAt": "2026-09-30T03:42:02.840Z",
+      "workflowRunId": 36675059772,
+      "testedAt": "2026-09-30T05:54:02.086Z",
       "repairSurfaces": [
         "MOBILE_UI",
         "WORLD_GEOMETRY",
@@ -530,21 +530,21 @@
           "repairSurface": "SYSTEM_TRANSACTION",
           "priority": "CRITICAL",
           "hint": "One or more discovered shop/craft/equip/upgrade actions accepted input without changing inventory, currency/progression, feedback, or relevant UI state. Repair each transaction chain independently.",
-          "observed": "{\"systemActionCount\":1,\"systemEffectCount\":0,\"actions\":[{\"id\":\"prompt-ProximityPrompt\",\"semantic\":\"UPGRADE\",\"effectObserved\":false,\"effect\":{\"moved\":129.66417682775383,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":true}}]}"
+          "observed": "{\"systemActionCount\":1,\"systemEffectCount\":0,\"actions\":[{\"id\":\"prompt-ProximityPrompt\",\"semantic\":\"UPGRADE\",\"effectObserved\":false,\"effect\":{\"moved\":129.72123239923928,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":true}}]}"
         },
         {
           "id": "adaptive-travel-effect",
           "repairSurface": "WORLD_TRAVEL",
           "priority": "CRITICAL",
           "hint": "A discovered portal/door/travel action accepted input but did not move the player, change map/round state, or provide authoritative feedback.",
-          "observed": "{\"travelActionCount\":3,\"travelEffectCount\":1,\"actions\":[{\"id\":\"prompt-ProximityPrompt\",\"effectObserved\":true,\"effect\":{\"moved\":48.020728249425325,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":true}},{\"id\":\"prompt-ProximityPrompt\",\"effectObserved\":false,\"effect\":{\"moved\":0.3758294977537623,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":false}},{\"id\":\"prompt-ProximityPrompt\",\"effectObserved\":false,\"effect\":{\"moved\":0.06229529760703474,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":false}}]}"
+          "observed": "{\"travelActionCount\":3,\"travelEffectCount\":1,\"actions\":[{\"id\":\"prompt-ProximityPrompt\",\"effectObserved\":true,\"effect\":{\"moved\":48.69879569638331,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":true}},{\"id\":\"prompt-ProximityPrompt\",\"effectObserved\":false,\"effect\":{\"moved\":0.060693496296796566,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":false}},{\"id\":\"prompt-ProximityPrompt\",\"effectObserved\":false,\"effect\":{\"moved\":0.35191227447079865,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":false}}]}"
         },
         {
           "id": "adaptive-combat-surface",
           "repairSurface": "COMBAT_AI",
           "priority": "CRITICAL",
           "hint": "Repair combat targets, damage/state transitions, enemy liveness, attack feedback, and F9 AI movement.",
-          "observed": "{\"combatSurfaceCount\":201,\"mobCount\":80,\"humanoidMobCount\":0,\"mobRigAnimationPass\":true,\"mobMotion\":{\"matched\":80,\"moved\":0,\"stateChanged\":0,\"healthChanged\":0,\"targetChanged\":0,\"dynamic\":false},\"timelineMobDynamic\":false,\"combatActionCount\":2,\"combatEffectCount\":0}"
+          "observed": "{\"combatSurfaceCount\":201,\"mobCount\":80,\"humanoidMobCount\":0,\"mobRigAnimationPass\":true,\"mobMotion\":{\"matched\":80,\"moved\":0,\"stateChanged\":0,\"healthChanged\":0,\"targetChanged\":0,\"dynamic\":false},\"timelineMobDynamic\":false,\"combatActionCount\":1,\"combatEffectCount\":0}"
         },
         {
           "id": "adaptive-motion-surface",
@@ -593,7 +593,7 @@
           "repairSurface": "PERFORMANCE",
           "priority": "HIGH",
           "hint": "Reduce runaway instance count/memory pressure and keep long-session runtime stable.",
-          "observed": "{\"memoryMb\":2597.25390625,\"descendantCount\":4511}"
+          "observed": "{\"memoryMb\":2379.80078125,\"descendantCount\":4511}"
         },
         {
           "id": "observed-action-749f1a8df420364c0ab0",
@@ -656,7 +656,7 @@
           "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
           "priority": "HIGH",
           "hint": "Replay the exact observed action and verify its real state change after repair.",
-          "observed": "{\"id\":\"observed-action-00f7121873e36beeaa1c\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"ui-discovered-TextButton\",\"targetIdentity\":\"RPGHUD.CombatDock.TextButton\",\"actionType\":\"mcp-ui-exploration\",\"effectRequired\":true,\"attempts\":2}"
+          "observed": "{\"id\":\"observed-action-00f7121873e36beeaa1c\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"ui-discovered-TextButton\",\"targetIdentity\":\"RPGHUD.CombatDock.TextButton\",\"actionType\":\"mcp-ui-exploration\",\"effectRequired\":true,\"attempts\":1}"
         }
       ]
     }
