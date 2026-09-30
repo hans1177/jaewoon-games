@@ -393,7 +393,7 @@ test('F9 final review requires exact Studio asset runtime proof when a binding w
  assert.match(workflow,/&&studioAssetRuntimeBindingExact===true/);
 });
 
-test('F9 dispatches the exact canonical publish then immediately reopens the Vibe loop without waiting for outcome',()=>{
+test('F9 limits canonical publish to released games and immediately reopens the Vibe loop for every verified game',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
  const dispatchAt=workflow.indexOf('Dispatch exact F9-verified artifact to canonical Roblox game target');
  const fanInAt=workflow.indexOf('Fan verified F9 runtime proof into waiting Vibe Roblox tasks');
@@ -401,7 +401,9 @@ test('F9 dispatches the exact canonical publish then immediately reopens the Vib
  assert.match(workflow,/robloxF9VerifiedPrepublishEvidence/);
  assert.match(workflow,/robloxCanonicalPublishQueue/);
  assert.match(workflow,/status:'PENDING'/);
- assert.match(workflow,/item\.robloxInternalReleaseReady=false/);
+ assert.match(workflow,/item\.robloxInternalReleaseReady=serverPublishEligible/);
+ assert.match(workflow,/if\(serverPublishEligible&&!publishQueue/);
+ assert.match(workflow,/evaluateInternalRelease/);
  assert.match(workflow,/item\.currentStep='POST_F9_CONTINUOUS_EVOLUTION'/);
  assert.match(workflow,/ROBLOX_F9_CANONICAL_PUBLISH_DISPATCHED=/);
  assert.match(workflow,/\['PENDING','RETRY_REQUIRED'\]/);
