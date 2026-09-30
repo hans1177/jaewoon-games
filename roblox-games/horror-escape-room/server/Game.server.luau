@@ -1564,14 +1564,33 @@ local function applyRoleVisual(p,r)
   end
  else hi.FillColor=Style.Survivor;hi.OutlineColor=Color3.fromRGB(166,205,219)end
 end
+local function groundedRootTarget(p,pos)
+ local c=p.Character;local r=root(p);local h=hum(p)
+ if not c or not r or not h then return Vector3.new(pos.X,pos.Y,pos.Z)end
+ local params=RaycastParams.new()
+ params.FilterType=Enum.RaycastFilterType.Exclude
+ params.FilterDescendantsInstances={c}
+ params.IgnoreWater=true
+ -- 지정 좌표 바로 위에서 아래로만 검사해 천장/지붕을 바닥으로 오인하지 않는다.
+ local origin=Vector3.new(pos.X,pos.Y+5,pos.Z)
+ local hit=workspace:Raycast(origin,Vector3.new(0,-18,0),params)
+ local groundY=hit and hit.Position.Y or .5
+ local standingOffset=math.max(1,tonumber(h.HipHeight)or 0)+(r.Size.Y*.5)
+ return Vector3.new(pos.X,groundY+standingOffset+.03,pos.Z)
+end
 local function teleport(p,pos)
  local r=root(p);if r then
-  local target=Vector3.new(pos.X,3.6,pos.Z)
+  local target=groundedRootTarget(p,pos)
   movementGraceUntil[p]=os.clock()+1
   lastValidPosition[p]=target
   r.CFrame=CFrame.new(target)
   r.AssemblyLinearVelocity=Vector3.zero
   r.AssemblyAngularVelocity=Vector3.zero
+  local h=hum(p)
+  if h then
+   h.PlatformStand=false;h.Sit=false;h.AutoRotate=true
+   pcall(function()h:ChangeState(Enum.HumanoidStateType.GettingUp)end)
+  end
  end
 end
 local function setRole(p,r)
@@ -2009,12 +2028,14 @@ local function onCharacter(p)
   if role=="MONSTER"or role=="SURVIVOR"then setRole(p,role);restoreMovement(p,role=="MONSTER"and 19 or 16)
   elseif role=="ELIMINATED"then local rr=root(p);if rr then rr.Anchored=true end end
  else
-  -- 1인 플레이는 맵 복제가 끝난 뒤 실제 맵 안에서 시작한다.
-  if #Players:GetPlayers()==1 then
-   p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
-   p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
-   teleport(p,survivorSpawns[1])
-  end
+  -- 대기/방 브라우저에서도 모든 실제 캐릭터를 보이지 않는 SpawnLocation이 아니라 실제 바닥에 둔다.
+  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
+  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
+  local players=Players:GetPlayers()
+  table.sort(players,function(a,b)return a.UserId<b.UserId end)
+  local slot=1
+  for i,player in ipairs(players)do if player==p then slot=((i-1)%#survivorSpawns)+1;break end end
+  teleport(p,survivorSpawns[slot])
  end
 end
 Players.PlayerAdded:Connect(function(p)
