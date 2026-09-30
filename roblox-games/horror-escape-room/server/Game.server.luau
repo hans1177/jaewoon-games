@@ -2374,9 +2374,6 @@ local function createBotAvatar(role,pos)
  if role=="SURVIVOR"then
   accessory("AIHair",head,Vector3.new(2.05,.52,1.9),Vector3.new(0,.82,.08),Color3.fromRGB(45,35,32),Enum.Material.Fabric)
   accessory("AIJacketStripe",torso,Vector3.new(.24,1.8,1.12),Vector3.new(0,.1,-.58),Color3.fromRGB(91,205,220),Enum.Material.Neon)
- else
-  accessory("AIHood",head,Vector3.new(2.45,2.25,2.25),Vector3.new(0,.05,.12),Color3.fromRGB(35,25,34),Enum.Material.Fabric)
-  accessory("AIChestMark",torso,Vector3.new(.28,1.9,1.18),Vector3.new(0,.05,-.61),Color3.fromRGB(190,64,80),Enum.Material.Neon)
  end
 
  local hi=Instance.new("Highlight");hi.Name="AIRoleHighlight";hi.FillTransparency=role=="MONSTER"and .82 or .94;hi.OutlineTransparency=.48
@@ -2409,14 +2406,21 @@ local function setBotCFrame(b,cf)
 end
 
 local function bot(role,pos)
+ local monsterId="DRACULA"
+ if role=="MONSTER"and C.MonsterForms and #C.MonsterForms>0 then
+  monsterId=C.MonsterForms[math.random(1,#C.MonsterForms)].Id or"DRACULA"
+ end
  local model,p,walkTrack=createBotAvatar(role,pos)
  local visuals={}
  if not p then
   p=Instance.new("Part");p.Name=role=="MONSTER"and"AI_MONSTER"or"AI_SURVIVOR";p.Anchored=true;p.CanCollide=false;p.CanTouch=false;p.Size=Vector3.new(2.8,3.6,1.9);p.Position=pos;p.Transparency=.18
   p.Color=role=="MONSTER"and Color3.fromRGB(65,34,44)or Color3.fromRGB(66,94,108);p.Material=Enum.Material.Fabric;p.Parent=arena
-  if role=="MONSTER"then visuals=decorateClassicMonster(p,"DRACULA")end
  end
- local b={part=p,model=model,animationTrack=walkTrack,role=role,speed=role=="MONSTER"and 18 or 14,monsterId="DRACULA",visuals=visuals,infectReadyAt=0,purifyReadyAt=0,infectAttackReadyAt=0,energy=energyMax(),motionClock=math.random()*6.28}
+ if role=="MONSTER"then
+  visuals=decorateClassicMonster(p,monsterId)
+  if model then model.Name="AI_MONSTER_"..monsterId end
+ end
+ local b={part=p,model=model,animationTrack=walkTrack,role=role,speed=role=="MONSTER"and 18 or 14,monsterId=monsterId,visuals=visuals,infectReadyAt=0,purifyReadyAt=0,infectAttackReadyAt=0,energy=energyMax(),motionClock=math.random()*6.28}
  table.insert(bots,b);return b
 end
 local function weightPick(list)
@@ -2628,14 +2632,19 @@ local function infectBot(b,sourcePlayer)
  if not b or b.role~="SURVIVOR"then return false end
  if b.visuals then for _,v in ipairs(b.visuals)do if v.part then v.part:Destroy()end end end
  b.role="MONSTER";b.part.Name="AI_MONSTER";b.speed=18;b.infectReadyAt=os.clock()+2.5;if b.animationTrack then b.animationTrack:AdjustSpeed(1.15)end
+ local monsterId="DRACULA"
+ if C.MonsterForms and #C.MonsterForms>0 then monsterId=C.MonsterForms[math.random(1,#C.MonsterForms)].Id or"DRACULA"end
+ b.monsterId=monsterId
+ local monsterStyle=Style.Monsters[monsterId]or Style.Monsters.DRACULA
  if b.model and b.model.Parent then
-  b.model.Name="AI_MONSTER_R15"
-  for _,d in ipairs(b.model:GetDescendants())do if d:IsA("BasePart")and d~=b.part then d.Color=Color3.fromRGB(92,63,72);d.Material=Enum.Material.Fabric end end
-  local hi=b.model:FindFirstChild("AIRoleHighlight");if hi and hi:IsA("Highlight")then hi.FillTransparency=.72;hi.FillColor=Color3.fromRGB(120,42,58);hi.OutlineColor=Color3.fromRGB(225,86,103)end
+  b.model.Name="AI_MONSTER_"..monsterId
+  for _,d in ipairs(b.model:GetDescendants())do if d:IsA("BasePart")and d~=b.part and d:GetAttribute("MonsterCostume")~=true then d.Color=monsterStyle.Color;d.Material=Enum.Material.Fabric end end
+  local hi=b.model:FindFirstChild("AIRoleHighlight");if hi and hi:IsA("Highlight")then hi.FillTransparency=.72;hi.FillColor=monsterStyle.Color;hi.OutlineColor=monsterStyle.Accent end
  else
-  b.part.Color=Color3.fromRGB(65,34,44);b.part.Material=Enum.Material.Fabric
-  b.visuals=decorateClassicMonster(b.part,"DRACULA")
+  b.part.Color=monsterStyle.Color;b.part.Material=Enum.Material.Fabric
  end
+ if b.visuals then for _,v in ipairs(b.visuals)do if v.part and v.part.Parent then v.part:Destroy()end end end
+ b.visuals=decorateClassicMonster(b.part,monsterId)
  if sourcePlayer then awardContribution(sourcePlayer,(C.Reward and C.Reward.InfectAICoins)or 1)end
  return true
 end
