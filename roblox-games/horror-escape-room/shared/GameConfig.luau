@@ -146,11 +146,11 @@ local Config={
   RobotSpider=285590061,
  },
  MonsterForms={
-  {Id="DRACULA",Name="드라큘라",UnlockXP=0,Ability="BAT_DASH",Theme="VAMPIRE"},
-  {Id="FRANKENSTEIN",Name="프랑켄슈타인",UnlockXP=250,Ability="POWER_CHARGE",Theme="FRANKEN"},
-  {Id="WEREWOLF",Name="늑대인간",UnlockXP=500,Ability="RAGE_RUN",Theme="WEREWOLF",ExternalAssetId=155389113},
-  {Id="MUMMY",Name="미라",UnlockXP=800,Ability="CURSE_SLOW",Theme="MUMMY",ExternalAssetId=4012084718},
-  {Id="GRIM_REAPER",Name="사신",UnlockXP=1200,Ability="SHADOW_STEP",Theme="REAPER",ExternalAssetId=49353603},
+  {Id="DRACULA",Name="드라큘라",UnlockXP=0,Ability="BAT_DASH",Theme="VAMPIRE",SkinConcept="ARISTOCRATIC_VAMPIRE",EffectColor=Color3.fromRGB(196,32,52),AccentColor=Color3.fromRGB(36,8,18)},
+  {Id="FRANKENSTEIN",Name="프랑켄슈타인",UnlockXP=250,Ability="POWER_CHARGE",Theme="FRANKEN",SkinConcept="ELECTRIC_EXPERIMENT",EffectColor=Color3.fromRGB(126,235,108),AccentColor=Color3.fromRGB(58,86,56)},
+  {Id="WEREWOLF",Name="늑대인간",UnlockXP=500,Ability="RAGE_RUN",Theme="WEREWOLF",SkinConcept="FERAL_HUNTER",EffectColor=Color3.fromRGB(235,165,72),AccentColor=Color3.fromRGB(92,62,44),ExternalAssetId=155389113},
+  {Id="MUMMY",Name="미라",UnlockXP=800,Ability="CURSE_SLOW",Theme="MUMMY",SkinConcept="ANCIENT_CURSE",EffectColor=Color3.fromRGB(226,196,112),AccentColor=Color3.fromRGB(116,92,58),ExternalAssetId=4012084718},
+  {Id="GRIM_REAPER",Name="사신",UnlockXP=1200,Ability="SHADOW_STEP",Theme="REAPER",SkinConcept="VOID_HARVESTER",EffectColor=Color3.fromRGB(151,82,235),AccentColor=Color3.fromRGB(31,23,45),ExternalAssetId=49353603},
  },
  HumanForms={
   {Id="BROADCAST",Name="방송부",Tool="신호 송신기",Passive="WIDE_PURIFY",PurifyRangeBonus=3,InfectedAbility="FALSE_ALARM"},
@@ -166,11 +166,18 @@ local Config={
   HUNT_FLASH={Name="사냥 플래시",Effect="FLASH_SLOW",Radius=20,Duration=1.4,SlowSpeed=11},
   BREACH={Name="돌파",Effect="FORWARD_BREACH",Velocity=96,Lift=3},
  },
+ MonsterAbilities={
+  BAT_DASH={Name="박쥐 돌진",Velocity=70,Effect="BLOOD_BATS"},
+  POWER_CHARGE={Name="괴력 돌진",Velocity=85,Lift=4,Effect="ELECTRIC_CHARGE"},
+  RAGE_RUN={Name="야성 질주",Speed=28,Duration=3,Effect="CLAW_RUSH"},
+  CURSE_SLOW={Name="저주의 모래",Radius=22,SlowSpeed=9,Duration=3,Effect="CURSE_RING"},
+  SHADOW_STEP={Name="그림자 이동",Distance=18,Effect="SHADOW_GATE"},
+ },
  MonsterAbilityLabels={
   BAT_DASH="박쥐 돌진",
   POWER_CHARGE="괴력 돌진",
   RAGE_RUN="야성 질주",
-  CURSE_SLOW="저주",
+  CURSE_SLOW="저주의 모래",
   SHADOW_STEP="그림자 이동",
  },
  Actions={
