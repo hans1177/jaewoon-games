@@ -2464,6 +2464,12 @@ test('Studio launcher handoff remains bound to one isolated Place and cleanup re
   assert.ok(block.indexOf('VIBE2_STUDIO_OWNED_PROCESS_RECORDS=')<block.indexOf('.WaitForInputIdle('));
   assert.match(block,/\$parent\.CreationDate\.ToUniversalTime\(\) - \$parentCreated\)\.TotalMilliseconds\) -gt 10/);
   assert.match(block,/\$record\.CreationDate\.ToUniversalTime\(\) -lt \$parentCreated/);
+  assert.match(block,/\$null = \$placeLaunchProcess\.Handle/);
+  assert.match(block,/\$parentHandle = \$launchHandles\[\$parentKey\]/);
+  assert.match(block,/if \(-not \$parentHandle\.HasExited\) \{ continue \}/);
+  assert.match(block,/\$record\.CreationDate\.ToUniversalTime\(\) -gt \$parentHandle\.ExitTime\.ToUniversalTime\(\)/);
+  assert.match(block,/\$childHandle\.StartTime\.ToUniversalTime\(\) - \$record\.CreationDate\.ToUniversalTime\(\)\)\.TotalMilliseconds\) -le 10/);
+  assert.match(block,/foreach \(\$ownedHandle in \$launchHandles.Values\) \{ \$ownedHandle.Dispose\(\) \}/);
   assert.match(block,/\$candidate\.MainWindowHandle -ne 0/);
   const retry=block.slice(block.indexOf('# The official launcher may hand'),block.indexOf('if (-not $sessionCompleted)'));
   assert.match(retry,/CreationDate\.ToUniversalTime\(\) -ge \$launchStarted\.AddSeconds\(-2\)/);
