@@ -1,13 +1,12 @@
 -- 파일명: assets/roblox/survival-wildlife/BearWalkSample.server.luau
--- 역할: 곰 1마리의 실제 3D 저폴리 보행/달리기/경계/공격 모션 샘플
--- 사용: Roblox Studio 서버 스크립트에서 이 폴더를 ReplicatedStorage 또는 ServerScriptService 하위에 둔다.
+-- 역할: Roblox Studio에서 바로 실행하는 곰 1마리 네이티브 3D 애니메이션 샘플
+-- 서버는 위치/상태를 소유하고 관절 애니메이션은 WildlifeClient가 각 클라이언트에서 부드럽게 재생한다.
 
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local wildlifeFolder = ReplicatedStorage:WaitForChild("SurvivalWildlife")
-local Factory = require(wildlifeFolder:WaitForChild("WildlifeFactory"))
-local Animator = require(wildlifeFolder:WaitForChild("WildlifeAnimator"))
+local Wildlife = require(wildlifeFolder:WaitForChild("SurvivalWildlife"))
 
 local old = workspace:FindFirstChild("WildlifeMotionSample")
 if old then
@@ -28,21 +27,18 @@ ground.Material = Enum.Material.Grass
 ground.Color = Color3.fromRGB(83, 105, 63)
 ground.Parent = sampleRoot
 
-local bear = Factory.create("BEAR", "DARK_BROWN")
+local bear = Wildlife.Spawn(
+	"BEAR",
+	"DARK_BROWN",
+	CFrame.new(-13, 0, 0) * CFrame.Angles(0, math.rad(-90), 0),
+	sampleRoot
+)
 bear.Name = "BearSample"
-bear.Parent = sampleRoot
-bear:PivotTo(CFrame.new(-13, 0, 0) * CFrame.Angles(0, math.rad(-90), 0))
-
-local controller = Animator.bind(bear, {
-	nominalRunSpeed = 15,
-	speed = 5.5,
-})
-
-bear:SetAttribute("SampleMotion", "BEAR_WALK_RUN_V2")
-bear:SetAttribute("SampleQuality", "SMOOTH_3D_ARTICULATED")
+bear:SetAttribute("SampleMotion", "BEAR_CHARACTER_ANIMATION_V3")
+bear:SetAttribute("SampleQuality", "ROBLOX_NATIVE_ARTICULATED_CHARACTER_ANIMATION")
 bear:SetAttribute("Sample2DForbidden", true)
+bear:SetAttribute("SampleClientAnimation", true)
 
-local phase = 0
 local elapsed = 0
 local segment = "WALK"
 local currentSpeed = 5.5
@@ -52,7 +48,10 @@ local distance = 0
 local function setSegment(name, speed, state)
 	segment = name
 	targetSpeed = speed
-	controller:SetState(state or "LOCOMOTION")
+	Wildlife.SetDesiredSpeed(bear, speed)
+	Wildlife.SetMotionState(bear, state or "LOCOMOTION", {
+		attackDuration = 0.92,
+	})
 	bear:SetAttribute("SampleSegment", name)
 end
 
@@ -64,11 +63,11 @@ RunService.Heartbeat:Connect(function(dt)
 	end
 
 	elapsed += dt
-	phase += dt
 	currentSpeed += (targetSpeed - currentSpeed) * (1 - math.exp(-4.5 * dt))
-	controller:SetSpeed(currentSpeed)
+	Wildlife.SetDesiredSpeed(bear, currentSpeed)
 
-	-- 샘플 루트 이동은 데모 전용. 관절 보행은 WildlifeAnimator가 별도로 담당한다.
+	-- 이 이동은 샘플용 서버 authoritative root 경로다.
+	-- 다리/척추/머리/귀/꼬리 관절은 클라이언트 WildlifeAnimator가 별도로 재생한다.
 	if segment == "WALK" or segment == "RUN" then
 		distance += currentSpeed * dt
 		local radiusX = 14
@@ -95,7 +94,7 @@ RunService.Heartbeat:Connect(function(dt)
 			setSegment("ATTACK", 0, "ATTACK")
 		end
 	elseif segment == "ATTACK" then
-		if elapsed > 1.2 then
+		if elapsed > 1.3 then
 			elapsed = 0
 			setSegment("WALK", 5.5, "LOCOMOTION")
 		end
