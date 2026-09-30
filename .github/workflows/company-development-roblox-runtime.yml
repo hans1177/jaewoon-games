@@ -1591,13 +1591,14 @@ jobs:
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-next-technical-queue.json
           remaining="$(node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import {ownerFocusedSecondaryPlatformEligible,platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
+          import {ownerExclusiveDevelopmentGameIds,ownerFocusedSecondaryPlatformEligible,platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/roblox-next-technical-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const ownerExclusiveIds=new Set(ownerExclusiveDevelopmentGameIds(roadmap));
           const current=new Set(JSON.parse(process.env.CURRENT_TARGETS_JSON||'[]').map(x=>x.gameId));
           let count=0;
           for(const item of q.items||[]){
+            if(ownerExclusiveIds.has(String(item.gameId||'').trim()))continue;
             if(current.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
@@ -1749,7 +1750,7 @@ jobs:
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-continuation-dispatch-queue.json
           state="$(node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import {ownerFocusedSecondaryPlatformEligible,platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
+          import {ownerExclusiveDevelopmentGameIds,ownerFocusedSecondaryPlatformEligible,platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/roblox-continuation-dispatch-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const ownerExclusiveIds=new Set(ownerExclusiveDevelopmentGameIds(roadmap));
@@ -1757,6 +1758,7 @@ jobs:
           let packagePending=0,preflightReady=0,f0Ready=0,externalBlocked=0;
           const readyIds=new Set();
           for(const item of q.items||[]){
+            if(ownerExclusiveIds.has(String(item.gameId||'').trim()))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
             const secondaryOwnerFocus=!concurrentDefault&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
