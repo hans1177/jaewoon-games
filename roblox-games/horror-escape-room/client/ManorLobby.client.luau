@@ -11,7 +11,7 @@ local Stories=require(RS.Shared.MonsterStories)
 local remote=RS:WaitForChild(C.RemoteName)
 local gui=Instance.new("ScreenGui");gui.Name="PersonalManorUI";gui.ResetOnSpawn=false;gui.DisplayOrder=15
 gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets;gui.Parent=p:WaitForChild("PlayerGui")
-local ink=Color3.fromRGB(29,31,39)
+local ink=Color3.fromRGB(27,30,29)
 local parchment=Color3.fromRGB(235,218,182)
 local accent=Color3.fromRGB(150,104,71)
 local activeMenu=nil
@@ -33,7 +33,8 @@ local header=Instance.new("Frame");header.Size=UDim2.fromOffset(276,68);header.P
 header.BackgroundColor3=ink;header.BackgroundTransparency=.12;header.Parent=gui;corner(header)
 local title=label(header,"MIDNIGHT ESCAPE",30,19);title.Position=UDim2.fromOffset(12,5);title.AutoLocalize=false
 local status=label(header,"나만의 저택",24,11);status.Position=UDim2.fromOffset(12,38)
-local nav=Instance.new("Frame");nav.AnchorPoint=Vector2.new(.5,1);nav.Position=UDim2.new(.5,0,1,-14)
+-- 메뉴는 상단에 두어 휴대폰 기본 조이스틱·점프 버튼 공간을 비워 둔다.
+local nav=Instance.new("Frame");nav.AnchorPoint=Vector2.new(.5,0);nav.Position=UDim2.new(.5,0,0,90)
 nav.Size=UDim2.new(1,-24,0,96);nav.BackgroundTransparency=1;nav.Parent=gui
 local max=Instance.new("UISizeConstraint");max.MaxSize=Vector2.new(600,96);max.Parent=nav
 nav.Size=UDim2.new(1,-24,0,72)
@@ -99,7 +100,7 @@ open=function(key)
    button(body,item.Name..(unlocked and" · 이야기"or" · 봉인"),function()openStory(item,unlocked and 3 or 0)end)
   end
  elseif key=="DRESS"or key=="SHOP"then
-  panelTitle.Text=key=="DRESS"and"장의사의 의상실"or"장의사의 상점"
+  panelTitle.Text=key=="DRESS"and"벨라의 의상실"or"벨라의 상점"
   label(body,string.format("보유 %d 코인 · 인간과 몬스터 공용 장식",p:GetAttribute("Coins")or 0),36,13)
   if key=="DRESS"then
    label(body,"선택한 귀신으로 저택을 돌아다녀. 경기에서 변신하면 같은 귀신을 사용해.",60,13)
@@ -113,7 +114,7 @@ open=function(key)
     choose.Active=unlocked;choose.AutoButtonColor=unlocked
    end
    button(body,"다음 인간 직업",function()send(C.Actions.NEXT_HUMAN)end)
-   button(body,"장의사의 상점",function()open("SHOP")end)
+   button(body,"벨라의 상점",function()open("SHOP")end)
   end
   for _,item in ipairs(C.Cosmetics)do
    if key=="SHOP"or owned(item.Id)then
@@ -200,6 +201,8 @@ local enter=button(card,"저택 들어가기",function()
  if visibility then visibility()end
 end,Color3.fromRGB(99,77,53));enter.Position=UDim2.fromOffset(18,212);enter.Size=UDim2.new(1,-36,0,46)
 local oldLighting=nil
+local atmosphere=nil
+local oldAtmosphere=nil
 visibility=function()
  local round=tostring(p:GetAttribute("RoundState")or"")
  local visible=p:GetAttribute("LobbyClientReady")==true and workspace:GetAttribute("PhysicalLobbyReady")==true and p:GetAttribute("PersonalLobbyOwner")==p.UserId and round~="RUNNING"and round~="SPECTATING"and not round:match("^RESULT_")
@@ -209,19 +212,25 @@ visibility=function()
  status.Text=string.format("나만의 저택 · 괴담 %d/%d · %d 코인",p:GetAttribute("GhostCompleted")or 0,#C.GhostCatalog,p:GetAttribute("Coins")or 0)
  if visible and not oldLighting then
   oldLighting={ClockTime=Lighting.ClockTime,Brightness=Lighting.Brightness,Ambient=Lighting.Ambient,OutdoorAmbient=Lighting.OutdoorAmbient,FogStart=Lighting.FogStart,FogEnd=Lighting.FogEnd}
-  Lighting.ClockTime=19.6;Lighting.Brightness=2.6;Lighting.Ambient=Color3.fromRGB(91,95,109);Lighting.OutdoorAmbient=Color3.fromRGB(82,106,116)
-  Lighting.FogStart=105;Lighting.FogEnd=190
- elseif not visible and oldLighting then for k,v in pairs(oldLighting)do Lighting[k]=v end;oldLighting=nil end
+  Lighting.ClockTime=0.35;Lighting.Brightness=2.3;Lighting.Ambient=Color3.fromRGB(91,90,101);Lighting.OutdoorAmbient=Color3.fromRGB(69,86,111)
+  Lighting.FogStart=150;Lighting.FogEnd=300
+  atmosphere=Lighting:FindFirstChildOfClass("Atmosphere")
+  if atmosphere then oldAtmosphere={Density=atmosphere.Density,Haze=atmosphere.Haze};atmosphere.Density=.12;atmosphere.Haze=.4 end
+ elseif not visible and oldLighting then
+  for k,v in pairs(oldLighting)do Lighting[k]=v end;oldLighting=nil
+  if atmosphere and atmosphere.Parent and oldAtmosphere then for k,v in pairs(oldAtmosphere)do atmosphere[k]=v end end
+  atmosphere=nil;oldAtmosphere=nil
+ end
 end
 p.AttributeChanged:Connect(visibility);workspace:GetAttributeChangedSignal("PhysicalLobbyReady"):Connect(visibility);visibility()
--- 입체 소품 뒤의 평면 배경은 카메라 이동으로 시차가 생긴다. 화면을 덮는 안개는 쓰지 않는다.
+-- 실제 입장 위치가 보이는 실내 메인 카메라. 입장 후에는 기본 카메라/터치 조작을 쓴다.
 RunService.RenderStepped:Connect(function()
  if not gui.Enabled or entered then return end
  local x=p:GetAttribute("ManorOriginX");local camera=workspace.CurrentCamera
  if x and camera then
   mainCameraActive=true
   camera.CameraType=Enum.CameraType.Scriptable
-  camera.CFrame=CFrame.lookAt(Vector3.new(x+44,26,343),Vector3.new(x,13,257))
+  camera.CFrame=CFrame.lookAt(Vector3.new(x,10,268),Vector3.new(x,7,242))
   if controls then controls:Disable()end
  end
 end)

@@ -30,7 +30,7 @@ for _,owner in ipairs({a,b})do
  local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Include;params.FilterDescendantsInstances={lobby:Get(owner).folder.PersonalGround}
  local hit=workspace:Raycast(pos+Vector3.new(0,10,0),Vector3.new(0,-30,0),params)
  assert(hit and math.abs(hit.Position.Y-.35)<.03,"Spawn has no ground")
- assert(spawn and not spawn.CanCollide and spawn.Position.Z==293,"Unsafe spawn")
+ assert(spawn and not spawn.CanCollide and spawn.Position.Z==lobby:Get(owner).origin.Z-9,"Unsafe spawn")
  assert(look.Z<pos.Z,"Spawn faces away from manor")
 end
 assert(roomA.folder:FindFirstChild("ButlerPrompt"),"Butler interaction missing")

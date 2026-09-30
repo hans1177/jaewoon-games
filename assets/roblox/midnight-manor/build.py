@@ -1,5 +1,5 @@
 # 파일명: assets/roblox/midnight-manor/build.py
-"""괴물 가족의 저택: 무료 CC0 GLB 변형 + 입체 가구 + 2.5D 배경.
+"""괴물 가족의 저택: 블렌더 기본 메시 + 내부 CC0 GLB + 처녀귀신 원본 재구성.
 
 Downloaded CC0 meshes remain in sources/ with exact licenses and hashes.
 The manor, NPC silhouettes and articulated gag props are original geometry.
@@ -26,243 +26,242 @@ def read_glb(path):
     offset = 20 + size
     return doc, raw[offset+8:] if offset < len(raw) else b''
 
+# 블렌더 장면 · 좌표 정규화: 로블록스 Y 위, +Z 정면 → 블렌더 Z 위, -Y 정면.
+import bpy
+from mathutils import Vector, Matrix
+bpy.ops.wm.read_factory_settings(use_empty=True)
+
+def xyz(p):
+    return (p[0], -p[2], p[1])
+
 class Scene:
     def __init__(self):
-        self.doc = {'asset': {'version':'2.0','generator':'Jaewoon Midnight Manor'}, 'scene':0,
-                    'scenes':[{'nodes':[]}], 'nodes':[], 'meshes':[], 'materials':[],
-                    'accessors':[], 'bufferViews':[], 'buffers':[], 'images':[], 'textures':[], 'samplers':[]}
-        self.data = bytearray()
+        self.collection = bpy.data.collections.new('Manor')
+        bpy.context.scene.collection.children.link(self.collection)
         self.palette = {}
         self.cache = {}
+        self.tinted_images = {}
 
     def material(self, name, color):
-        if name not in self.palette:
-            self.palette[name] = len(self.doc['materials'])
-            self.doc['materials'].append({'name':name,'pbrMetallicRoughness':{
-                'baseColorFactor':[*color,1], 'metallicFactor': .25 if name == 'brass' else 0,
-                'roughnessFactor':.85}, 'doubleSided':True})
-        return self.palette[name]
+        if name in self.palette:
+            return self.palette[name]
+        m = bpy.data.materials.new(name)
+        m.diffuse_color = (*color, 1)
+        m.use_nodes = True
+        bs = m.node_tree.nodes.get('Principled BSDF')
+        bs.inputs['Base Color'].default_value = (*color, 1)
+        bs.inputs['Roughness'].default_value = .48 if name in ['brass','glass'] else .76
+        bs.inputs['Metallic'].default_value = .65 if name == 'brass' else 0
+        if name in ['wood','plum','stone','teal','brass']:
+            # 작고 반복 가능한 질감. GLB 안에 내장하므로 외부 텍스처 요청이 없다.
+            n = 256
+            yy,xx = np.mgrid[0:n,0:n]
+            grain = np.random.default_rng(17).uniform(-.05,.05,(n,n))
+            if name == 'wood':
+                pattern = .87 + .13*np.sin(xx*.55 + np.sin(yy*.038)*3)+grain
+            elif name in ['plum','teal']:
+                petal=np.cos(xx*math.pi/32)*np.cos(yy*math.pi/32)
+                pattern=.82+.25*(np.abs(petal)>.73)+.08*np.cos(xx*math.pi/8)+grain*.35
+            else:
+                pattern = .90 + grain + .07*np.sin(xx*.071+yy*.09)
+            pixels=np.ones((n,n,4),dtype=np.float32)
+            for i,c in enumerate(color): pixels[:,:,i]=np.clip(c*pattern,0,1)
+            img=bpy.data.images.new(name+'_256',width=n,height=n)
+            img.pixels.foreach_set(pixels.ravel());img.pack()
+            tex=m.node_tree.nodes.new('ShaderNodeTexImage');tex.image=img
+            m.node_tree.links.new(tex.outputs['Color'],bs.inputs['Base Color'])
+        self.palette[name]=m
+        return m
 
-    def array(self, arr, component, kind, target):
-        arr=np.asarray(arr,dtype=np.float32 if component==5126 else np.uint32)
-        while len(self.data)%4: self.data.append(0)
-        view=len(self.doc['bufferViews'])
-        self.doc['bufferViews'].append({'buffer':0,'byteOffset':len(self.data),'byteLength':arr.nbytes,'target':target})
-        self.data.extend(arr.tobytes())
-        acc={'bufferView':view,'componentType':component,'count':len(arr),'type':kind}
-        if kind=='VEC3': acc.update(min=arr.min(axis=0).tolist(),max=arr.max(axis=0).tolist())
-        self.doc['accessors'].append(acc)
-        return len(self.doc['accessors'])-1
-
-    def mesh(self, name, verts, faces, material):
-        # Flat normals are deliberate; faces are duplicated to keep graphic planes crisp.
-        v=[]; n=[]
-        for face in faces:
-            triangles=[]
-            # 오목한 가지/배경 윤곽도 겹치지 않도록 귀 자르기 삼각분할.
-            points=np.array([verts[i]for i in face],dtype=float)
-            normal=sum((np.cross(points[i],points[(i+1)%len(points)])for i in range(len(points))),np.zeros(3))
-            plane=np.delete(points,int(np.argmax(abs(normal))),axis=1)
-            area=sum(plane[i,0]*plane[(i+1)%len(plane),1]-plane[(i+1)%len(plane),0]*plane[i,1]for i in range(len(plane)))
-            sign=1 if area>=0 else -1;remaining=list(range(len(face)))
-            def cross(a,b,c):return (b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0])
-            while len(remaining)>3:
-                found=False
-                for k,b in enumerate(remaining):
-                    a=remaining[k-1];cc=remaining[(k+1)%len(remaining)]
-                    if sign*cross(plane[a],plane[b],plane[cc])<=1e-9:continue
-                    inside=any(all(sign*cross(plane[x],plane[y],plane[j])>=-1e-9 for x,y in [(a,b),(b,cc),(cc,a)])for j in remaining if j not in [a,b,cc])
-                    if inside:continue
-                    triangles.append([face[a],face[b],face[cc]]);remaining.pop(k);found=True;break
-                if not found:
-                    triangles.extend([[face[remaining[0]],face[remaining[k]],face[remaining[k+1]]]for k in range(1,len(remaining)-1)])
-                    remaining=[];break
-            if len(remaining)==3:triangles.append([face[i]for i in remaining])
-            for indices in triangles:
-                tri=np.array([verts[i]for i in indices],dtype=float)
-                normal=np.cross(tri[1]-tri[0],tri[2]-tri[0]); normal/=max(np.linalg.norm(normal),1e-8)
-                v.extend(tri);n.extend([normal]*3)
-        p=self.array(v,5126,'VEC3',34962);normal=self.array(n,5126,'VEC3',34962)
-        self.doc['meshes'].append({'name':name,'primitives':[{'attributes':{'POSITION':p,'NORMAL':normal},'material':material}]})
-        return len(self.doc['meshes'])-1
+    def mesh(self,name,verts,faces,material):
+        data=bpy.data.meshes.new(name)
+        data.from_pydata([xyz(v)for v in verts],[],faces)
+        data.materials.append(material);data.update()
+        uv=data.uv_layers.new(name='UVMap')
+        for face in data.polygons:
+            normal=face.normal
+            axes=(0,1) if abs(normal.z)>.6 else (0,2) if abs(normal.y)>.6 else (1,2)
+            coords=[data.vertices[data.loops[i].vertex_index].co for i in face.loop_indices]
+            lo=[min(v[a]for v in coords)for a in axes];hi=[max(v[a]for v in coords)for a in axes]
+            for i,v in zip(face.loop_indices,coords):
+                uv.data[i].uv=tuple(v[a]*.22 for a in axes)
+        return data
 
     def node(self,name,mesh=None,pos=(0,0,0),rot=0,scale=None,parent=None):
-        n={'name':name,'translation':list(pos)}
-        if mesh is not None:n['mesh']=mesh
-        if rot:n['rotation']=[0,math.sin(rot/2),0,math.cos(rot/2)]
-        if scale:n['scale']=list(scale)
-        self.doc['nodes'].append(n);i=len(self.doc['nodes'])-1
-        if parent is None:self.doc['scenes'][0]['nodes'].append(i)
-        else:self.doc['nodes'][parent].setdefault('children',[]).append(i)
-        return i
+        o=bpy.data.objects.new(name,mesh);self.collection.objects.link(o)
+        o.parent=parent;o.location=xyz(pos);o.rotation_euler.z=rot
+        if scale:o.scale=(scale[0],scale[2],scale[1])
+        return o
 
     def box(self,name,pos,size,mat,rot=0,parent=None,lean=0):
-        x,y,z=[a/2 for a in size]
+        x,y,z=[v/2 for v in size]
         v=[[-x,-y,-z],[x,-y,-z],[x,y,-z],[-x,y,-z],[-x,-y,z],[x,-y,z],[x,y,z],[-x,y,z]]
         for p in v:
             if p[1]>0:p[0]+=lean
         f=[[0,3,2,1],[4,5,6,7],[0,4,7,3],[1,2,6,5],[0,1,5,4],[3,7,6,2]]
-        return self.node(name,self.mesh(name,v,f,mat),pos,rot,parent=parent)
+        o=self.node(name,self.mesh(name,v,f,mat),pos,rot,parent=parent)
+        bevel=o.modifiers.new('Carved_edges','BEVEL');bevel.width=min(.085,min(size)*.18);bevel.segments=2
+        return o
 
-    def lathe(self,name,pos,r0,r1,height,mat,sides=10,parent=None):
-        v=[]
+    def lathe(self,name,pos,r0,r1,height,mat,sides=24,parent=None):
+        sides=max(20,sides);v=[]
         for r,y in [(r0,-height/2),(r1,height/2)]:
             for i in range(sides):
-                a=2*math.pi*i/sides;v.append([math.cos(a)*r,y,math.sin(a)*r])
+                a=math.tau*i/sides;v.append((math.cos(a)*r,y,math.sin(a)*r))
         f=[list(reversed(range(sides))),list(range(sides,sides*2))]
-        f += [[i,(i+1)%sides,(i+1)%sides+sides,i+sides] for i in range(sides)]
-        return self.node(name,self.mesh(name,v,f,mat),pos,parent=parent)
+        f += [[i,(i+1)%sides,(i+1)%sides+sides,i+sides]for i in range(sides)]
+        data=self.mesh(name,v,f,mat)
+        for face in data.polygons:face.use_smooth=len(face.vertices)==4
+        return self.node(name,data,pos,parent=parent)
 
     def ellipsoid(self,name,pos,size,mat,parent=None):
-        sides=10;rings=6;v=[]
+        sides=16;rings=10;v=[]
         for j in range(rings+1):
             b=math.pi*j/rings
             for i in range(sides):
-                a=2*math.pi*i/sides
-                v.append([math.sin(b)*math.cos(a)*size[0]/2,math.cos(b)*size[1]/2,math.sin(b)*math.sin(a)*size[2]/2])
+                a=math.tau*i/sides
+                v.append((math.sin(b)*math.cos(a)*size[0]/2,math.cos(b)*size[1]/2,math.sin(b)*math.sin(a)*size[2]/2))
         f=[]
         for j in range(rings):
             for i in range(sides):
-                a=j*sides+i;b=j*sides+(i+1)%sides
-                f.append([a,b,b+sides,a+sides])
-        return self.node(name,self.mesh(name,v,f,mat),pos,parent=parent)
+                a=j*sides+i;b=j*sides+(i+1)%sides;f.append((a,b,b+sides,a+sides))
+        data=self.mesh(name,v,f,mat)
+        for face in data.polygons:face.use_smooth=True
+        return self.node(name,data,pos,parent=parent)
 
     def prop(self,pack,key,name,pos,height,rot=0,stretch=(1,1,1),tilt=0):
-        path=SOURCE/pack/(key+'.glb')
+        path=(ROOT.parent/'world-ghosts'/'native'/'mesh'/'bride.glb') if pack in ['bride','bridehead'] else SOURCE/pack/(key+'.glb')
         if path not in self.cache:
-            d,b=read_glb(path)
-            offsets={k:len(self.doc[k]) for k in ['bufferViews','accessors','materials','meshes','images','textures','samplers']}
-            while len(self.data)%4:self.data.append(0)
-            start=len(self.data);self.data.extend(b)
-            for x in d.get('bufferViews',[]):
-                x=copy.deepcopy(x);x['buffer']=0;x['byteOffset']=start+x.get('byteOffset',0);self.doc['bufferViews'].append(x)
-            for x in d.get('accessors',[]):
-                x=copy.deepcopy(x)
-                if 'bufferView' in x:x['bufferView']+=offsets['bufferViews']
-                self.doc['accessors'].append(x)
-            for x in d.get('images',[]):
-                x=copy.deepcopy(x)
-                if 'bufferView' in x:x['bufferView']+=offsets['bufferViews']
-                if 'uri' in x:
-                    raw=(path.parent/x.pop('uri')).read_bytes()
-                    while len(self.data)%4:self.data.append(0)
-                    x['bufferView']=len(self.doc['bufferViews']);x['mimeType']='image/png'
-                    self.doc['bufferViews'].append({'buffer':0,'byteOffset':len(self.data),'byteLength':len(raw)})
-                    self.data.extend(raw)
-                self.doc['images'].append(x)
-            self.doc['samplers'].extend(copy.deepcopy(d.get('samplers',[])))
-            for x in d.get('textures',[]):
-                x=copy.deepcopy(x)
-                if 'source' in x:x['source']+=offsets['images']
-                if 'sampler' in x:x['sampler']+=offsets['samplers']
-                self.doc['textures'].append(x)
-            def remap_tex(o):
-                if isinstance(o,dict):
-                    for k,v in o.items():
-                        if k.endswith('Texture') and isinstance(v,dict):v['index']+=offsets['textures']
-                        else:remap_tex(v)
-            for x in d.get('materials',[]):
-                x=copy.deepcopy(x);remap_tex(x)
-                pbr=x.setdefault('pbrMetallicRoughness',{})
-                factor=pbr.get('baseColorFactor',[1,1,1,1])
-                tint=[.56,.39,.34] if pack=='furniture' else [.66,.73,.71]
-                pbr['baseColorFactor']=[factor[i]*tint[i] for i in range(3)]+[factor[3]]
-                self.doc['materials'].append(x)
-            for x in d.get('meshes',[]):
-                x=copy.deepcopy(x)
-                for p in x['primitives']:
-                    p['attributes']={k:v+offsets['accessors'] for k,v in p['attributes'].items()}
-                    if 'indices' in p:p['indices']+=offsets['accessors']
-                    if 'material' in p:p['material']+=offsets['materials']
-                self.doc['meshes'].append(x)
-            def matrix(n):
-                if 'matrix' in n:return np.array(n['matrix']).reshape(4,4).T
-                m=np.eye(4);x,y,z,w=n.get('rotation',[0,0,0,1])
-                m[:3,:3]=np.array([[1-2*(y*y+z*z),2*(x*y-z*w),2*(x*z+y*w)],[2*(x*y+z*w),1-2*(x*x+z*z),2*(y*z-x*w)],[2*(x*z-y*w),2*(y*z+x*w),1-2*(x*x+y*y)]])@np.diag(n.get('scale',[1,1,1]))
-                m[:3,3]=n.get('translation',[0,0,0]);return m
-            bounds=[]
-            def visit(i,m):
-                n=d['nodes'][i];m=m@matrix(n)
-                if 'mesh' in n:
-                    for p in d['meshes'][n['mesh']]['primitives']:
-                        a=d['accessors'][p['attributes']['POSITION']]
-                        for x in [a['min'][0],a['max'][0]]:
-                            for y in [a['min'][1],a['max'][1]]:
-                                for z in [a['min'][2],a['max'][2]]:bounds.append((m@np.array([x,y,z,1]))[:3])
-                for child in n.get('children',[]):visit(child,m)
-            roots=d['scenes'][d.get('scene',0)]['nodes']
-            for i in roots:visit(i,np.eye(4))
-            bounds=np.array(bounds);lo=bounds.min(axis=0);hi=bounds.max(axis=0)
-            self.cache[path]=(d,offsets,roots,lo,hi)
-        d,o,roots,lo,hi=self.cache[path]
-        s=height/max(hi[1]-lo[1],.001)
-        parent=self.node(name,pos=pos,rot=rot,scale=[s*v for v in stretch])
-        pivot=self.node(name+'_Lean',parent=parent)
-        if tilt:self.doc['nodes'][pivot]['rotation']=[0,0,math.sin(tilt/2),math.cos(tilt/2)]
-        center=self.node(name+'_Origin',pos=[-(lo[0]+hi[0])/2,-lo[1],-(lo[2]+hi[2])/2],parent=pivot)
-        def clone(i,p):
-            n=copy.deepcopy(d['nodes'][i]);children=n.pop('children',[]);n.pop('skin',None)
-            n['name']=name+'_'+n.get('name',str(i))
-            if 'mesh' in n:n['mesh']+=o['meshes']
-            index=len(self.doc['nodes']);self.doc['nodes'].append(n);self.doc['nodes'][p].setdefault('children',[]).append(index)
-            for c in children:clone(c,index)
-        for i in roots:clone(i,center)
-        return parent
+            before=set(bpy.data.objects)
+            bpy.ops.import_scene.gltf(filepath=str(path))
+            imported=set(bpy.data.objects)-before
+            deps=bpy.context.evaluated_depsgraph_get();templates=[]
+            bone_shapes={bone.custom_shape for obj in imported if obj.type=='ARMATURE' for bone in obj.pose.bones if bone.custom_shape}
+            for o in imported:
+                if o.type!='MESH' or o.hide_render or o in bone_shapes:continue
+                data=bpy.data.meshes.new_from_object(o.evaluated_get(deps),depsgraph=deps)
+                data.transform(o.matrix_world)
+                templates.append((o.name,data))
+            for o in imported:bpy.data.objects.remove(o,do_unlink=True)
+            assert templates, 'EMPTY_GLB:'+str(path)
+            coords=[v.co for _,m in templates for v in m.vertices]
+            lo=Vector([min(v[i]for v in coords)for i in range(3)])
+            hi=Vector([max(v[i]for v in coords)for i in range(3)])
+            self.cache[path]=(templates,lo,hi)
+        templates,lo,hi=self.cache[path]
+        if pack=='bridehead':
+            import bmesh
+            selected=[]
+            for label,data in templates:
+                if label not in ['Porcelain_skin','Plum_eye_shadow','Orbital_shadow','Warm_sclera','Crimson_iris','Pupil_and_lashes','Wine_lips']:continue
+                cut=data.copy();bm=bmesh.new();bm.from_mesh(cut)
+                bmesh.ops.delete(bm,geom=[v for v in bm.verts if v.co.z<2.79],context='VERTS')
+                bm.to_mesh(cut);bm.free()
+                if len(cut.polygons):selected.append((label,cut))
+            templates=selected
+            points=[v.co for _,m in templates for v in m.vertices]
+            lo=Vector([min(v[i]for v in points)for i in range(3)]);hi=Vector([max(v[i]for v in points)for i in range(3)])
+        factor=height/max(hi.z-lo.z,.001)
+        group=self.node(name,pos=pos,rot=rot)
+        group.rotation_euler.y=tilt
+        for label,data in templates:
+            o=bpy.data.objects.new(name+'_'+label,data.copy());self.collection.objects.link(o);o.parent=group
+            o.data.transform(Matrix.Translation(Vector((-(lo.x+hi.x)/2,-(lo.y+hi.y)/2,-lo.z))))
+            o.scale=(factor*stretch[0],factor*stretch[2],factor*stretch[1])
+            if pack in ['bride','bridehead']:
+                for face in o.data.polygons:face.use_smooth=True
+                if label=='Cinnabar_silk':o.data.materials.clear();o.data.materials.append(self.material('Bella_burgundy',(.22,.018,.06)))
+            else:
+                # 원본은 그대로 두고 장면 재질만 어두운 목재·석재로 통일한다.
+                for slot in o.material_slots:
+                    if not slot.material:continue
+                    original=slot.material
+                    tint=(.32,.19,.15) if pack=='furniture' else (.43,.43,.39)
+                    material=original.copy();slot.material=material
+                    if material.use_nodes:
+                        bs=material.node_tree.nodes.get('Principled BSDF')
+                        if bs:
+                            color=bs.inputs['Base Color'].default_value
+                            bs.inputs['Base Color'].default_value=tuple(color[i]*tint[i]for i in range(3))+(1,)
+                            bs.inputs['Roughness'].default_value=.78
+                            for tex in material.node_tree.nodes:
+                                if tex.type!='TEX_IMAGE' or not tex.image:continue
+                                key=(tex.image.name,pack)
+                                if key not in self.tinted_images:
+                                    img=tex.image.copy();values=np.array(img.pixels[:],dtype=np.float32).reshape(-1,4)
+                                    values[:,:3]*=np.array(tint,dtype=np.float32)
+                                    img.pixels.foreach_set(values.ravel());img.pack();self.tinted_images[key]=img
+                                tex.image=self.tinted_images[key]
+            if pack not in ['bride','bridehead'] and len(o.data.polygons)<300:
+
+                bevel=o.modifiers.new('Restored_edges','BEVEL');bevel.width=.015;bevel.segments=2
+        return group
 
     def write(self,path):
-        while len(self.data)%4:self.data.append(0)
-        self.doc['buffers']=[{'byteLength':len(self.data)}]
-        data=json.dumps(self.doc,separators=(',',':')).encode();data+=b' '*((-len(data))%4)
-        total=12+8+len(data)+8+len(self.data)
-        path.write_bytes(struct.pack('<4sII',b'glTF',2,total)+struct.pack('<I4s',len(data),b'JSON')+data+struct.pack('<I4s',len(self.data),b'BIN\0')+self.data)
-        return {'file':path.name,'bytes':total,'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'nodes':len(self.doc['nodes']),'meshes':len(self.doc['meshes'])}
+        bpy.ops.object.select_all(action='DESELECT')
+        for o in self.collection.objects:o.select_set(True)
+        bpy.context.view_layer.objects.active=next((o for o in self.collection.objects if o.type=='MESH'),None)
+        bpy.ops.export_scene.gltf(filepath=str(path),export_format='GLB',use_selection=True,export_apply=True,export_animations=False,export_cameras=False,export_lights=False,export_yup=True)
+        raw=path.read_bytes();n=struct.unpack_from('<I',raw,12)[0];d=json.loads(raw[20:20+n])
+        return {'file':path.name,'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest(),'nodes':len(d['nodes']),'meshes':len(d['meshes'])}
 
 def palette(s):
     return {k:s.material(k,v) for k,v in {
-      'plum':(.32,.17,.26),'wood':(.23,.12,.11),'stone':(.34,.39,.42),'teal':(.12,.25,.26),
-      'roof':(.09,.12,.17),'brass':(.52,.36,.12),'bone':(.68,.72,.57),'ivory':(.77,.70,.49),
-      'black':(.028,.025,.035),'amber':(.95,.47,.08),'red':(.40,.065,.08),'glass':(.19,.35,.31)}.items()}
+      'plum':(.18,.075,.115),'wood':(.12,.047,.025),'stone':(.28,.30,.29),'teal':(.055,.14,.12),
+      'roof':(.045,.07,.095),'brass':(.34,.25,.14),'bone':(.69,.67,.51),'ivory':(.79,.72,.54),
+      'black':(.022,.026,.031),'amber':(1,.52,.13),'red':(.12,.012,.027),'glass':(.13,.26,.28)}.items()}
 
+# NPC: 기존 글비를 정규화해 재사용하고, 역할별 얼굴·복장·소품을 직접 구성한다.
 def npc(s,kind,pos):
+    if kind=='Undertaker':
+        p=s.prop('bride','bride','Undertaker',pos,8.3,rot=-.20)
+        c=palette(s)
+        # 기존 장식 선택에서 사용하는 모자는 의상실 진열대에도 유지한다.
+        s.lathe('UndertakerHatBrim',(3.2,5,0),1.1,1.1,.15,c['black'],parent=p)
+        s.lathe('UndertakerHat',(3.2,5.8,0),.7,.6,1.5,c['black'],parent=p)
+        s.lathe('UndertakerHatRibbon',(3.2,5.35,0),.72,.72,.22,c['red'],parent=p)
+        return p
     c=palette(s);p=s.node(kind,pos=pos)
-    wide=kind=='Undertaker';h=10.5 if kind=='Butler' else 6.4 if wide else 8.2
-    w=3.7 if wide else 1.65
-    # 검증된 CC0 캐릭터를 비율 변형한 뒤 고유 의상/얼굴을 입힌다.
-    source={'Butler':'character-vampire','Undertaker':'character-zombie','Archivist':'character-skeleton'}[kind]
-    base=s.prop('graveyard',source,kind+'_Source',(0,0,0),h*.88,
-                stretch=(.68 if kind=='Butler' else 1.35 if wide else .78,1,.8),tilt=-.025 if kind=='Archivist' else 0)
-    s.doc['scenes'][0]['nodes'].remove(base);s.doc['nodes'][p].setdefault('children',[]).append(base)
-    # 큰 기본 머리는 교체하고 몸/팔다리 GLB를 의상 안의 골격으로 재사용한다.
-    for node in s.doc['nodes']:
-        if not node.get('name','').startswith(kind+'_Source_'):continue
-        if node['name'].endswith('_head'):node.pop('mesh',None)
-        elif '_arm-' in node['name']:node['scale']=[.45,1.45,.5]
-        elif '_leg-' in node['name']:node['scale']=[.55,1,.6]
-        elif node['name'].endswith('_torso'):node['scale']=[.55,1,.6]
+    h=10.7 if kind=='Butler' else 7.5
+    w=1.9 if kind=='Butler' else 2.9
     for side in [-1,1]:
-        s.box(kind+'_Leg'+str(side),(side*w*.25,h*.23,0),(.48,h*.42,.6),c['black'],parent=p)
-        s.ellipsoid(kind+'_Shoe'+str(side),(side*w*.25,.45,.65),(.85,.7,2.0),c['black'],parent=p)
-    s.lathe(kind+'_Coat',(0,h*.56,0),w*.65,w*.46,h*.34,c['plum'] if wide else c['black'],parent=p)
-    s.box(kind+'_Shirt',(0,h*.65,.70),(w*.38,h*.18,.13),c['ivory'],parent=p)
+        s.lathe(kind+'_Leg'+str(side),(side*w*.24,h*.23,0),.23,.20,h*.4,c['black'],parent=p)
+        s.ellipsoid(kind+'_Shoe'+str(side),(side*w*.24,.4,.4),(.75,.7,1.7),c['black'],parent=p)
+    rings=[(h*.36,w*.57,.66),(h*.44,w*.56,.66),(h*.55,w*.39,.52),(h*.64,w*.48,.61),(h*.71,w*.63,.64),(h*.735,w*.35,.47)]
+    verts=[];faces=[]
+    for y,rx,rz in rings:
+        for i in range(32):
+            a=i*math.tau/32;verts.append((math.cos(a)*rx,y,math.sin(a)*rz))
+    for j in range(len(rings)-1):
+        for i in range(32):faces.append((j*32+i,j*32+(i+1)%32,(j+1)*32+(i+1)%32,(j+1)*32+i))
+    data=s.mesh(kind+'_Tailcoat',verts,faces,c['black'] if kind=='Butler' else c['teal'])
+    for poly in data.polygons:poly.use_smooth=True
+    s.node(kind+'_Coat',data,parent=p)
+    s.ellipsoid(kind+'_Shoulders',(0,h*.69,0),(w*1.3,.8,1.1),c['black'],parent=p)
+    s.box(kind+'_Shirt',(0,h*.64,.63),(.62,1.85,.12),c['ivory'],parent=p)
     for side in [-1,1]:
-        s.box(kind+'_Arm'+str(side),(side*w*.63,h*.48,0),(.37,h*.38,.42),c['black'],parent=p,lean=side*.5)
-        s.ellipsoid(kind+'_Glove'+str(side),(side*w*.66,h*.27,.10),(.65,.85,.5),c['bone'],parent=p)
-        for finger in range(4):
-            s.lathe(kind+'_Finger'+str(side)+str(finger),(side*w*.66-.23+finger*.15,h*.21,.18),.06,.04,.70,c['bone'],sides=6,parent=p)
-    headpos=(0,h*.90,0) if kind!='Archivist' else (3.3,3.3,.25)
-    head=s.node(kind+'Head',pos=headpos,parent=p)
-    s.ellipsoid(kind+'_Skull',(0,0,0),(w*.67,h*.20,w*.62),c['bone'],parent=head)
-    s.ellipsoid(kind+'_Nose',(0,-.02,w*.40),(.36,.65,1.0),c['bone'],parent=head)
+        lapel=s.box(kind+'_Lapel'+str(side),(side*.45,h*.65,.65),(.38,1.7,.13),c['teal'],parent=p,lean=-side*.23)
+        s.ellipsoid(kind+'_Sleeve'+str(side),(side*w*.62,h*.57,0),(.55,h*.26,.65),c['black'],parent=p)
+        s.lathe(kind+'_Cuff'+str(side),(side*w*.65,h*.37,0),.29,.29,.32,c['ivory'],parent=p)
+        s.ellipsoid(kind+'_Glove'+str(side),(side*w*.65,h*.32,.08),(.52,.84,.45),c['bone'],parent=p)
+        for finger in range(4):s.lathe(kind+'_Finger'+str(side)+str(finger),(side*w*.65-.18+finger*.12,h*.265,.14),.055,.038,.62,c['bone'],parent=p)
+    for i in range(4):s.ellipsoid(kind+'_Button'+str(i),(0,h*.68-i*.43,.66),(.12,.12,.07),c['brass'],parent=p)
+    s.box(kind+'_BowTie',(0,h*.735,.83),(.9,.22,.17),c['red'],parent=p)
+    s.lathe(kind+'_Neck',(0,h*.78,0),.23,.20,h*.1,c['bone'],parent=p)
+    hp=(0,h*.80,0) if kind=='Butler' else (2.2,3.75,.5)
+    head=s.prop('bridehead','head',kind+'Head',hp,2.5,stretch=(.86,1.10,.90))
+    head.parent=p
+    for o in head.children:o.name=kind+'_Skull'+o.name.split('_')[-1]
+    # 잘 정돈된 옆머리·수염이 기존 얼굴 원형에 집사/기록관의 성격을 만든다.
     for side in [-1,1]:
-        s.ellipsoid(kind+'_Eye'+str(side),(side*.28,.22,w*.29),(.26,.15,.08),c['black'],parent=head)
-        s.box(kind+'_Brow'+str(side),(side*.30,.40,w*.30),(.42,.13,.12),c['black'],parent=head,lean=-side*.1)
-    s.box(kind+'_Mouth',(0,-h*.047,w*.29),(.7,.065,.1),c['black'],parent=head)
-    if wide:
-        s.lathe('UndertakerHatBrim',(0,h*.115,0),1.6,1.6,.16,c['black'],parent=head)
-        s.lathe('UndertakerHat',(0,h*.23,0),.90,.75,1.4,c['black'],parent=head)
+        s.ellipsoid(kind+'_SkullHair'+str(side),(side*.61,2.27,-.06),(.47,.75,1.0),c['black'],parent=head)
+        s.ellipsoid(kind+'_MouthWhisker'+str(side),(side*.20,.80,.65),(.43,.10,.14),c['black'],parent=head)
+    if kind=='Butler':
+        s.lathe('Butler_Tray',(w*.65,h*.32+.40,.62),.9,.9,.10,c['brass'],parent=p)
+        s.lathe('Butler_Candle',(w*.65,h*.32+.95,.62),.14,.14,1,c['ivory'],parent=p)
     else:
-        s.lathe(kind+'_Neck',(0,h*.77,0),.24,.2,h*.10,c['bone'],parent=p)
-        s.box(kind+'_BowTie',(0,h*.72,.76),(.9,.22,.12),c['red'],parent=p)
+        s.box('Archivist_Ledger',(0,3.5,.90),(2.1,2.4,.3),c['red'],parent=p)
+        s.box('Archivist_LedgerLabel',(0,3.5,1.07),(1.4,1.4,.07),c['ivory'],parent=p)
     return p
 
 def build():
@@ -351,10 +350,10 @@ def build():
         a=i*math.pi/4;s.lathe('ChandelierCandle'+str(i),(math.cos(a)*3,17.4,-24+math.sin(a)*3),.15,.12,1.3,c['ivory'])
     # Portraits and stage reward relics; the owner-specific module controls their visibility.
     for i in range(12):
-        x=-25+(i%6)*10;z=-41.7;y=9 if i<6 else 16
+        x=([-24,-17,-10,10,17,24])[i%6];z=-41.7;y=9 if i<6 else 16
         s.box('PortraitFrame'+str(i+1),(x,y,z),(5.2,5.8,.5),c['brass'])
         s.box('PortraitCanvas'+str(i+1),(x,y,z+.3),(4.4,5,.1),c['black'])
-    npc(s,'Butler',(5,.5,2));npc(s,'Undertaker',(21,.5,-20));npc(s,'Archivist',(-21,.5,-30))
+    npc(s,'Butler',(5,.5,-9));npc(s,'Undertaker',(20,.5,-22));npc(s,'Archivist',(-21,.5,-30))
     # 가족이 사는 집의 흔적. 동일 무료 GLB를 비율/각도만 바꿔 재사용한다.
     s.prop('furniture','tableRound','FamilyTeaTable',(-15,.4,-18),3.2,stretch=(1.45,1,1.2))
     s.prop('furniture','chairCushion','GrandfatherChair',(-22,.4,-17),5,math.pi/2,stretch=(1.05,1.35,1))
@@ -381,16 +380,166 @@ def build():
     for side in [-1,1]:
         curtain=[[-2,0,0],[2,0,0],[2,22,0],[7,25,0],[10,26,0],[7,28,0],[1,26,0],[-1,31,0],[-3,30,0]]
         s.node('ForegroundBranch'+str(side),s.mesh('ForegroundBranch',curtain,[list(range(len(curtain)))],foreground),(side*43,0,35),scale=[side*.65,.85,1])
-    # 액자 안의 납작한 초상은 벽보다 앞에 배치해 실물 프레임의 그림자를 받는다.
+    # 가족 초상화: 반복되는 빈 얼굴 대신 종별 특징을 그린 내부 제작 질감.
+    from PIL import Image, ImageDraw
+    from io import BytesIO
     for i in range(12):
-        x=-25+(i%6)*10;y=9 if i<6 else 16
-        s.ellipsoid('PortraitHead'+str(i+1),(x,y+.6,-41.3),(1.6,2.2,.08),c['bone'])
-        s.box('PortraitCoat'+str(i+1),(x,y-1,-41.3),(2.6,1.7,.08),c['plum'])
-        for side in [-1,1]:s.ellipsoid('PortraitEye'+str(i+1)+'_'+str(side),(x+side*.35,y+.8,-41.23),(.14,.2,.06),c['black'])
+        x=([-24,-17,-10,10,17,24])[i%6];y=9 if i<6 else 16
+        im=Image.new('RGBA',(256,320),(23,29,32,255));d=ImageDraw.Draw(im)
+        coat=[(41,54,54),(67,34,47),(31,50,69),(74,60,41)][i%4]
+        skin=[(171,166,143),(147,165,154),(168,147,142),(126,148,145)][i%4]
+        d.ellipse((24,17,232,312),fill=(43,48,46),outline=(82,74,56),width=3)
+        d.polygon([(42,305),(60,238),(93,215),(159,215),(196,244),(218,305)],fill=coat)
+        d.polygon([(91,221),(128,269),(165,221),(147,207),(108,207)],fill=(167,155,124))
+        width=38+(i%3)*9
+        d.ellipse((128-width,75,128+width,229),fill=skin)
+        d.polygon([(128-width,129),(121,158),(128-width+8,203),(105,180)],fill=tuple(int(v*.72)for v in skin))
+        d.ellipse((97,134,122,150),fill=(216,202,167));d.ellipse((138,134,163,150),fill=(216,202,167))
+        for ex in [111,149]:d.ellipse((ex-4,135,ex+4,149),fill=(35,25,26))
+        d.line([(126,146),(119,177),(132,180)],fill=(75,81,70),width=3)
+        d.line([(110,199),(146,199)],fill=(94,39,42),width=4)
+        if i%4==0:
+            d.polygon([(85,112),(102,62),(128,92),(157,64),(174,115),(151,100),(127,112),(103,99)],fill=(17,24,25))
+            d.polygon([(107,200),(115,200),(111,211)],fill=(218,208,176))
+            d.polygon([(141,200),(149,200),(145,211)],fill=(218,208,176))
+        elif i%4==1:
+            d.ellipse((76,57,181,125),fill=(16,25,30));d.rectangle((76,104,90,247),fill=(16,25,30));d.rectangle((170,104,185,257),fill=(16,25,30))
+            d.line([(129,70),(154,105)],fill=(57,73,77),width=3)
+        elif i%4==2:
+            d.polygon([(76,114),(63,65),(103,95),(154,95),(192,66),(181,128)],fill=(103,104,88))
+            d.polygon([(122,165),(153,187),(119,191)],fill=(73,76,64))
+            d.line([(83,111),(104,123)],fill=(17,27,26),width=7)
+        else:
+            d.rectangle((89,57,171,104),fill=(25,30,32));d.ellipse((72,93,187,113),fill=(17,23,25))
+            d.rectangle((91,87,170,94),fill=(109,67,53))
+            d.arc((92,128,128,159),0,360,fill=(170,148,85),width=3);d.arc((133,128,169,159),0,360,fill=(170,148,85),width=3)
+        d.line([(30,286),(224,286)],fill=(126,106,66),width=2)
+        for k in range(10):d.line([(83+k*9,297),(87+k*9,297)],fill=(177,154,105),width=2)
+        image=bpy.data.images.new('FamilyPortrait'+str(i+1),width=256,height=320)
+        array=np.array(im,dtype=np.float32)[::-1]/255
+        image.pixels.foreach_set(array.ravel());image.pack()
+        mat=bpy.data.materials.new('FamilyPortraitPaint'+str(i+1));mat.use_nodes=True
+        tex=mat.node_tree.nodes.new('ShaderNodeTexImage');tex.image=image
+        bs=mat.node_tree.nodes.get('Principled BSDF');bs.inputs['Roughness'].default_value=.91
+        mat.node_tree.links.new(tex.outputs['Color'],bs.inputs['Base Color'])
+        data=s.mesh('FamilyPortrait'+str(i+1),[(-2.2,-2.5,0),(2.2,-2.5,0),(2.2,2.5,0),(-2.2,2.5,0)],[(0,1,2,3)],mat)
+        for uv,value in zip(data.uv_layers.active.data,[(0,0),(1,0),(1,1),(0,1)]):uv.uv=value
+        s.node('FamilyPortrait'+str(i+1),data,(x,y,-41.26))
+
+    # 저택 배경도 내부 GLB를 재구성한다. 문·기둥·담장 원형의 출처는 기존 CC0 manifest다.
+    for side in [-1,1]:
+        s.prop('graveyard','column-large','EntryCarvedColumn'+str(side),(side*8,.35,-2),14,stretch=(.85,1,.85))
+        s.prop('graveyard','crypt-large-roof','ManorPediment'+str(side),(side*20,21,-4),5.8,stretch=(1.8,1,.6))
+        for z in [8,23,38]:
+            s.prop('graveyard','stone-wall','GardenWall'+str(side)+str(z),(side*39,0,z),2.2,math.pi/2,stretch=(1.5,1,1))
+        s.prop('graveyard','crypt-door','AncestorsDoor'+str(side),(side*24,.4,-41),9,stretch=(1.05,1,.5))
+        for z in [-11,-25,-38]:
+            s.box('PanelPillar'+str(side)+str(z),(side*27,10,z),(.8,20,.8),c['wood'])
+            s.box('PanelCapital'+str(side)+str(z),(side*26.7,19,z),(1.2,.65,1.4),c['brass'])
+            s.prop('graveyard','lantern-candle','WallLantern'+str(side)+str(z),(side*26.4,6,z),2.4)
+        # 입체 커튼과 황동 타이는 따로 정규화된 메시다.
+        for x in [side*13,side*25]:
+            for edge in [-1,1]:
+                for pleat in range(4):
+                    s.ellipsoid('Curtain'+str(x)+str(edge)+str(pleat),(x+edge*(2.0+pleat*.30),6.8,-4.25),(.62,10.5,.60),c['red'])
+                s.lathe('CurtainTie'+str(x)+str(edge),(x+edge*2.4,5.5,-4.25),.62,.62,.2,c['brass'])
+    book_colors=[s.material('BookWine',(.16,.025,.045)),s.material('BookPine',(.035,.12,.075)),s.material('BookOchre',(.22,.13,.042)),s.material('BookInk',(.035,.06,.095))]
+    for row,x in enumerate([-22,-15,15,22]):
+        for shelf,y in enumerate([1.1,3.2,5.3,7.4]):
+            for k in range(5):
+                bx=x-1.3+k*.51;bh=1.1+((k+row+shelf)%3)*.17
+                s.box('ArchiveVolume'+str(row)+str(shelf)+str(k),(bx,y+bh/2,-37.9),(.43,bh,.95),book_colors[(k+row+shelf)%4],lean=.035*(k%2))
+                s.box('BookSpineGold'+str(row)+str(shelf)+str(k),(bx,y+bh*.7,-37.40),(.27,.07,.015),c['brass'])
+    # 굽은 벽난로와 중앙 가족 거울. 기존 방의 통로 폭을 유지한다.
+    for x in [-5.8,5.8]:s.box('FireplacePillar'+str(x),(x,4,-40),(1.7,8,3),c['stone'])
+    s.box('FireplaceMantel',(0,8.1,-40),(14,1.1,3.6),c['stone'])
+    s.box('FireplaceBlack',(0,3.8,-42),(10,6.5,.1),c['black'])
+    for i in range(5):
+        s.lathe('FireplaceLog'+str(i),(-3+i*1.5,.9,-40),.36,.36,1.4,c['wood'])
+        s.ellipsoid('HearthFlame'+str(i),(-3+i*1.5,1.8+(i%2)*.6,-39.8),(.75,2.2+(i%2)*1.1,.55),c['amber'])
+    s.ellipsoid('FamilyMirrorFrame',(0,14,-41.5),(11,10,.55),c['brass'])
+    s.ellipsoid('FamilyMirror',(0,14,-41.13),(9.7,8.7,.15),c['glass'])
+    for side in [-1,1]:
+        s.ellipsoid('MirrorEye'+str(side),(side*1.9,14.5,-40.98),(1.4,1.1,.1),c['ivory'])
+        s.ellipsoid('MirrorPupil'+str(side),(side*1.9,14.5,-40.87),(.42,.8,.08),c['black'])
+    # 얇은 러그와 금색 테두리는 바닥 높이를 거의 바꾸지 않는다.
+    for x in [-5.25,5.25]:s.box('RunnerGold'+str(x),(x,.53,-21),(.16,.03,34),c['brass'])
+    for z in range(-37,-7,4):
+        diamond=s.box('RunnerDiamond'+str(z),(0,.535,z),(1.1,.02,1.1),c['brass'],rot=math.pi/4)
+    # 책·재봉 도구·티세트로 각 NPC 주변의 역할을 읽을 수 있게 한다.
+    for i in range(9):
+        s.prop('furniture','books','ArchiveBookStack'+str(i),(-24+(i%3)*2,.4+(i//3)*.75,-23-(i%2)),.7,rot=i*.22)
+    s.prop('furniture','bookcaseClosedDoors','Wardrobe',(24,.4,-31),10,stretch=(1.1,1,1))
+    s.prop('furniture','loungeSofa','FamilySofa',(-21,.4,-12),3.6,math.pi/2,stretch=(1.2,1,1))
+    s.prop('graveyard','candle-multiple','RecordCandles',(-21,3.9,-26),2)
+    s.prop('graveyard','candle-multiple','WardrobeCandles',(23,3.7,-25),2)
+    for i in range(4):
+        s.lathe('ThreadSpool'+str(i),(20+i*.48,3.75,-25),.16,.16,.65,c['red'] if i%2 else c['teal'])
+        s.lathe('ThreadCap'+str(i),(20+i*.48,4.08,-25),.21,.21,.10,c['ivory'])
+    # 샹들리에의 실제 곡선 팔과 촛농.
+    for i in range(8):
+        a=i*math.pi/4
+        for step in range(7):
+            t=step/6;r=.8+2.4*t
+            s.ellipsoid('ChandelierArm'+str(i)+'_'+str(step),(math.cos(a)*r,15.7-math.sin(t*math.pi)*.7,-24+math.sin(a)*r),(.3,.3,.3),c['brass'])
+        s.ellipsoid('ChandelierFlame'+str(i),(math.cos(a)*3,18.2,-24+math.sin(a)*3),(.22,.65,.22),c['amber'])
+    # 줄·그물은 배경 장식이며 이동과 충돌 판정에는 사용하지 않는다.
+    for side in [-1,1]:
+        for ring in [2,4,6]:
+            points=[]
+            for j in range(8):
+                a=j*math.pi/14
+                points.append((side*(27-math.cos(a)*ring),20-math.sin(a)*ring,-41))
+            for j in range(len(points)-1):
+                a=Vector(xyz(points[j]));b=Vector(xyz(points[j+1]));delta=b-a
+                o=s.lathe('Cobweb'+str(side)+str(ring)+str(j),(0,0,0),.018,.018,delta.length,c['ivory'])
+                o.location=(a+b)/2;o.rotation_euler=delta.to_track_quat('Z','Y').to_euler()
+
     results=[s.write(OUT/'manor-lobby.glb')]
+    bpy.context.view_layer.update()
+    coords=[o.matrix_world@Vector(v) for o in s.collection.objects if o.type=='MESH' for v in o.bound_box]
+    lo=Vector([min(v[i] for v in coords)for i in range(3)]);hi=Vector([max(v[i] for v in coords)for i in range(3)])
+    center=(lo+hi)/2
+    (OUT/'import-bounds.json').write_text(json.dumps({'width':hi.x-lo.x,'center':[center.x,center.z,-center.y]},indent=2)+'\n')
+    bpy.ops.wm.save_as_mainfile(filepath=str(OUT/'manor.blend'),compress=True)
     for kind in ['Butler','Undertaker','Archivist']:
         p=Scene();npc(p,kind,(0,0,0));results.append(p.write(OUT/(kind.lower()+'.glb')))
-    (OUT/'build-evidence.json').write_text(json.dumps({'generator':'build.py','originalHotelAssetsUsed':False,'style':'괴물 가족의 살아 있는 저택','layers':['foreground','walkable_3d','portrait_relief','midground','background'],'modifiedCC0Props':['bookcaseClosed','chairCushion','coffin','character-ghost','tableRound'],'bounds':{'width':84,'depth':90},'models':results},ensure_ascii=False,indent=2)+'\n')
+    (OUT/'build-evidence.json').write_text(json.dumps({'generator':'Blender '+bpy.app.version_string+' / build.py','normalization':{'up':'Y','forward':'+Z','origin':'GROUND_CENTER','units':'STUD','textures':'EMBEDDED','interactionPrefixesPreserved':True},'reusedOriginals':['Kenney CC0 furniture','Kenney CC0 graveyard architecture','world-ghosts/native/mesh/bride.glb'],'actualRobloxPlayTest':False,'originalHotelAssetsUsed':False,'style':'괴물 가족의 살아 있는 저택','layers':['foreground','walkable_3d','portrait_relief','midground','background'],'modifiedCC0Props':['bookcaseClosed','chairCushion','coffin','character-ghost','tableRound'],'bounds':{'width':hi.x-lo.x,'height':hi.z-lo.z,'depth':hi.y-lo.y},'models':results},ensure_ascii=False,indent=2)+'\n')
     print(json.dumps(results,indent=2))
+    import sys
+    if '--render' in sys.argv:render_export()
+
+# 검수 렌더 · 게임에 포함되지 않는 카메라와 조명.
+def render_export():
+    # 제작 장면 대신 실제 배포 GLB를 빈 장면에 재임포트해 재질 누락·축·배치를 검수한다.
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    bpy.ops.import_scene.gltf(filepath=str(OUT/'manor-lobby.glb'))
+    collection=bpy.data.collections.new('ExportReview');bpy.context.scene.collection.children.link(collection)
+    for o in list(bpy.context.scene.objects):
+        for old in list(o.users_collection):old.objects.unlink(o)
+        collection.objects.link(o)
+    review=OUT/'review';review.mkdir(exist_ok=True)
+    world=bpy.context.scene.world or bpy.data.worlds.new('ManorNight')
+    bpy.context.scene.world=world;world.use_nodes=True
+    world.node_tree.nodes['Background'].inputs[0].default_value=(.035,.055,.075,1)
+    world.node_tree.nodes['Background'].inputs[1].default_value=.35
+    def light(name,pos,energy,color,size):
+        d=bpy.data.lights.new(name,'AREA');d.energy=energy;d.color=color;d.shape='DISK';d.size=size
+        o=bpy.data.objects.new(name,d);collection.objects.link(o);o.location=xyz(pos)
+        o.rotation_euler=(Vector(xyz((0,3,-23)))-o.location).to_track_quat('-Z','Y').to_euler()
+    light('Moon',(0,20,1),5500,(.40,.64,1),18)
+    light('WarmHall',(0,18,-21),7000,(1,.61,.28),16)
+    light('BellaKey',(17,10,-12),1700,(.8,.72,1),6)
+    light('ArchiveKey',(-19,11,-20),1700,(1,.65,.29),6)
+    light('Hearth',(0,4,-38),1000,(1,.32,.08),5)
+    d=bpy.data.cameras.new('ReviewCamera');o=bpy.data.objects.new('ReviewCamera',d);collection.objects.link(o)
+    bpy.context.scene.camera=o;d.lens=23
+    sc=bpy.context.scene;sc.render.engine='CYCLES';sc.cycles.samples=16;sc.cycles.use_denoising=True
+    sc.render.resolution_x=1200;sc.render.resolution_y=780;sc.render.resolution_percentage=100
+    sc.view_settings.view_transform='AgX';sc.view_settings.look='AgX - Medium High Contrast';sc.view_settings.exposure=.8
+    for name,pos,target in [('interior',(-2,10,0),(0,8,-27)),('butler',(0,8,1),(5,6,-9))]:
+        o.location=xyz(pos);o.rotation_euler=(Vector(xyz(target))-o.location).to_track_quat('-Z','Y').to_euler()
+        sc.render.filepath=str(review/(name+'.png'));bpy.ops.render.render(write_still=True)
+    (review/'evidence.json').write_text(json.dumps({'renderer':'Blender '+bpy.app.version_string+' Cycles','input':'generated/manor-lobby.glb','sha256':hashlib.sha256((OUT/'manor-lobby.glb').read_bytes()).hexdigest(),'method':'Import exported GLB into empty scene, then render','actualRobloxPlayTest':False},indent=2)+'\n')
 
 if __name__=='__main__':build()

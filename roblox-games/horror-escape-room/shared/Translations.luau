@@ -493,4 +493,10 @@ return {
  {Key="text_dd5cbcab5087",Source="흡수",Values={}},
  {Key="text_4157f1400542",Source="희미한 흔적",Values={}},
  {Key="text_fd15d1a4bfde",Source="흰 옷자락",Values={}},
+ {Key="text_8d4ec7d5f821",Source="의상실 주인 벨라",Values={["en-us"]="Bella, Keeper of the Wardrobe"}},
+ {Key="text_d401c3db5051",Source="옷은 오래 입으셔도 됩니다. 저희 가족은 시간이 많거든요.",Values={["en-us"]="Take your time with the clothes. Our family has all eternity."}},
+ {Key="text_4df7028df721",Source="처녀귀신 벨라 · 의상실",Values={["en-us"]="Bella the Ghost · Wardrobe"}},
+ {Key="text_24b1b5a8900d",Source="막내 유령 · 가족 초대장",Values={["en-us"]="Little Ghost · Family Invitation"}},
+ {Key="text_e52dd0ed583b",Source="벨라의 의상실",Values={["en-us"]="Bella’s Wardrobe"}},
+ {Key="text_cece85be7f4f",Source="벨라의 상점",Values={["en-us"]="Bella’s Shop"}},
 }

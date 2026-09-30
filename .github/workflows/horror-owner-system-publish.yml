@@ -5,6 +5,10 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/horror-owner-system-publish.yml'
+      - 'assets/roblox/midnight-manor/generated/manor-lobby.glb'
+      - 'assets/roblox/midnight-manor/generated/import-bounds.json'
+      - 'roblox-games/horror-escape-room/server/ManorLobby.luau'
+      - 'roblox-games/horror-escape-room/client/ManorLobby.client.luau'
 permissions:
   contents: read
 concurrency:
@@ -63,6 +67,7 @@ jobs:
           $r=Invoke-RestMethod -Method Post -Uri $uri -Headers @{'x-api-key'=$env:ROBLOX_OPEN_CLOUD_API_KEY} -ContentType application/xml -InFile $env:MANOR_PLACE
           if([int]$r.versionNumber -le 0){throw 'MANOR_PUBLISH_VERSION_MISSING'}
           Write-Host "MANOR_PUBLISHED_VERSION=$($r.versionNumber)"
+          @{sourceRevision=$env:GITHUB_SHA;placeId='98222620265768';universeId='10767445796';publishedVersion=$r.versionNumber;publishedAt=(Get-Date).ToUniversalTime().ToString('o');actualRobloxPlayTest=$false} | ConvertTo-Json | Set-Content assets/roblox/midnight-manor/generated/publication.json -Encoding utf8
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -71,3 +76,4 @@ jobs:
             assets/roblox/midnight-manor/generated/roblox-asset.json
             roblox-games/horror-escape-room/shared/ManorAssets.luau
             assets/roblox/midnight-manor/generated/native-import-check.json
+            assets/roblox/midnight-manor/generated/publication.json

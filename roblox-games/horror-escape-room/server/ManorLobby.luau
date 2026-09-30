@@ -1,4 +1,6 @@
--- Personal manor instances. No hotel geometry, staff or elevator queues.
+-- 파일명: roblox-games/horror-escape-room/server/ManorLobby.luau
+-- 블렌더 저택 · 개인 공간, 서버 권한 상호작용, 기존 세이브 및 전투 흐름 유지.
+-- 임포트
 local Players=game:GetService("Players")
 local AssetService=game:GetService("AssetService")
 local TweenService=game:GetService("TweenService")
@@ -55,8 +57,8 @@ function Manor.new(remote)
  Players.PlayerRemoving:Connect(function(p)self:Remove(p)end)
  self.ready=true
  workspace:SetAttribute("PersonalLobby",true)
- workspace:SetAttribute("LobbyArtPass","CROOKED_MANOR_GLB_V1")
- workspace:SetAttribute("LobbyBuildRevision","PERSONAL_MANOR_20260930")
+ workspace:SetAttribute("LobbyArtPass","BLENDER_MONSTER_FAMILY_V2")
+ workspace:SetAttribute("LobbyBuildRevision","BLENDER_MANOR_20260930")
  return self
 end
 
@@ -71,7 +73,7 @@ function Manor:Get(p)
   {-29,10,-23,1.5,20,40},{29,10,-23,1.5,20,40},{0,10,-43,58,20,1},{-20,10,-3,24,20,2},{20,10,-3,24,20,2}})do
   part(folder,"ManorBoundary",origin+Vector3.new(spec[1],spec[2],spec[3]),Vector3.new(spec[4],spec[5],spec[6]),false)
  end
- local spawn=Instance.new("SpawnLocation");spawn.Name="PersonalSpawn";spawn.Position=origin+Vector3.new(0,.4,23)
+ local spawn=Instance.new("SpawnLocation");spawn.Name="PersonalSpawn";spawn.Position=origin+Vector3.new(0,.4,-9)
  spawn.Size=Vector3.new(8,.1,8);spawn.Anchored=true;spawn.Transparency=1;spawn.CanCollide=false;spawn.CanTouch=false;spawn.Neutral=true;spawn.Duration=0;spawn.Parent=folder
  local room={folder=folder,scene=scene,origin=origin,spawn=spawn,index=index,busy=false,gag=0,lastPrompt=0}
  self.rooms[p]=room
@@ -88,22 +90,31 @@ function Manor:Get(p)
    if name=="ButlerPrompt"then
     stamp(p,"집사 모티머",p:GetAttribute("MonsterPreference")=="MONSTER"and"오늘은 사냥하러 나가시는군요. 현관 매트에는 발톱을 닦아주십시오."or"무사히 돌아오십시오. 관은 아직 주문하지 않았습니다.")
    elseif name=="ArchivistPrompt"then stamp(p,"기록관 에드윈","목격담은 세 번 확인합니다. 제 머리 위치만 빼고요.")
-   elseif name=="MerchantPrompt"then stamp(p,"장의사 벨라","옷 치수부터 재겠습니다. 관 치수는 서비스입니다.")end
+   elseif name=="MerchantPrompt"then stamp(p,"의상실 주인 벨라","옷은 오래 입으셔도 됩니다. 저희 가족은 시간이 많거든요.")end
   end)
  end
- prompt("ButlerPrompt",Vector3.new(5,4,3),"집사 모티머 · 출정","PLAY")
+ prompt("ButlerPrompt",Vector3.new(5,4,-9),"집사 모티머 · 출정","PLAY")
  prompt("ArchivistPrompt",Vector3.new(-18,4,-27),"목 없는 기록관 · 도감","BOOK")
- prompt("MerchantPrompt",Vector3.new(20,4,-20),"장의사 벨라 · 꾸미기","DRESS")
- prompt("InvitationPrompt",Vector3.new(-8,4,3),"봉인된 초대장","EVENT")
- for _,pos in ipairs({Vector3.new(0,15,-22),Vector3.new(-21,6,15),Vector3.new(23,6,19)})do
+ prompt("MerchantPrompt",Vector3.new(20,4,-20),"처녀귀신 벨라 · 의상실","DRESS")
+ prompt("InvitationPrompt",Vector3.new(-12,4,-18),"막내 유령 · 가족 초대장","EVENT")
+ for _,pos in ipairs({Vector3.new(0,15,-22),Vector3.new(-21,6,15),Vector3.new(23,6,19),Vector3.new(-18,8,-25),Vector3.new(20,8,-19),Vector3.new(0,5,-38)})do
   local anchor=part(folder,"WarmLight",origin+pos,Vector3.one,false);anchor.CanCollide=false
   local light=Instance.new("PointLight");light.Color=Color3.fromRGB(244,171,95);light.Brightness=1.6;light.Range=30;light.Shadows=true;light.Parent=anchor
+ end
+ -- 움직이는 장식은 비충돌, 가구의 몸체만 기존 바닥 위에서 이동을 막는다.
+ for _,spec in ipairs({{-21,2,-39,13,4,3},{20,2,-38,13,4,3},{24,4,-31,5,8,3},{0,3,-41,13,6,4}})do
+  part(folder,"FurnitureBoundary",origin+Vector3.new(spec[1],spec[2],spec[3]),Vector3.new(spec[4],spec[5],spec[6]),false)
+ end
+ for _,mesh in ipairs(scene:GetDescendants())do
+  if mesh:IsA("BasePart")and (mesh.Name:match("^HearthFlame")or mesh.Name:match("^ChandelierFlame"))then
+   mesh.Material=Enum.Material.Neon;mesh.Color=Color3.fromRGB(255,185,99)
+  end
  end
  -- Owner records turn the back wall into a personal collection display.
  local function collection()
   local count=math.clamp(tonumber(p:GetAttribute("GhostSeenCount"))or 0,0,12)
   for i=1,12 do for _,mesh in ipairs(namedParts(scene,"PortraitCanvas"..i))do
-   if mesh.Name=="PortraitCanvas"..i then mesh.Color=i<=count and Color3.fromRGB(104,122,103)or Color3.fromRGB(18,20,25)end
+   if mesh.Name=="PortraitCanvas"..i then mesh.Color=i<=count and Color3.fromRGB(255,239,206)or Color3.fromRGB(130,122,119)end
   end end
  end
  room.collection=p:GetAttributeChangedSignal("GhostSeenCount"):Connect(collection);collection()
@@ -118,7 +129,7 @@ end
 
 function Manor:GetSpawn(p)
  local room=self:Get(p)
- return room.origin+Vector3.new(0,3,23),room.origin+Vector3.new(0,4,-8),room.spawn
+ return room.origin+Vector3.new(0,3,-9),room.origin+Vector3.new(0,4,-27),room.spawn
 end
 function Manor:Dress(p)
  local char=p.Character;if not char then return end
@@ -181,7 +192,7 @@ function Manor:Gag(p)
   rootPart:SetNetworkOwner(nil)
   rootPart.AssemblyLinearVelocity=room.gag==3 and Vector3.new(0,12,2)or Vector3.new(-3,3,5)
   rootPart.AssemblyAngularVelocity=Vector3.new(1,0,room.gag==3 and 1 or 4)
-  stamp(p,room.gag==1 and"집사 모티머"or room.gag==2 and"갑옷 경비"or"장의사 벨라",
+  stamp(p,room.gag==1 and"집사 모티머"or room.gag==2 and"갑옷 경비"or"의상실 주인 벨라",
    room.gag==1 and"고개를 너무 깊이 숙였군요. 잠시만 실례하겠습니다."or room.gag==2 and"위협적인 자세는 관절 보증에 포함되지 않습니다."or"아직 영업시간입니다. 안에서 기다리세요.")
   task.wait(2.2)
   for mesh in pairs(saved)do if mesh.Parent then mesh.Anchored=true;mesh.CanCollide=false;mesh.AssemblyLinearVelocity=Vector3.zero;mesh.AssemblyAngularVelocity=Vector3.zero end end
