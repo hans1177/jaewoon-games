@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": true,
-  "generatedAt": "2026-09-30T14:08:50.323Z",
+  "generatedAt": "2026-09-30T17:39:22.969Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -48,39 +48,36 @@
           },
           "developmentState": "NATIVE_DEVELOPMENT",
           "runtimePassed": false,
-          "independentQaPassed": true,
-          "regressionPassed": true,
+          "independentQaPassed": false,
+          "regressionPassed": false,
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
-            "designReady": false,
+            "technicalReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": true,
               "exactRuntime": false,
               "lobby": false,
-              "movement": false,
-              "noRuntimeErrors": false
+              "movement": true,
+              "noRuntimeErrors": true
             },
             "blockers": [
-              "design",
               "exactRuntime",
-              "lobby",
-              "movement",
-              "noRuntimeErrors"
+              "lobby"
             ],
             "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
             "artifactIdentity": "sha256:ae8a90f2df02fc1cea9bc06fe1bf6d01957b6be439c14f0b73970803c0e4aac8",
             "verifiedAt": null
           },
-          "historicalInternalRelease": true,
+          "historicalInternalRelease": false,
           "internalReleaseState": "NOT_READY",
           "publicReleaseReady": false,
           "publicRelease": false,
@@ -110,13 +107,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -124,7 +121,6 @@
               "noRuntimeErrors": false
             },
             "blockers": [
-              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -143,7 +139,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-09-30T13:59:15.132Z"
+      "updatedAt": "2026-09-30T17:35:44.717Z"
     },
     {
       "gameId": "bug-defense",
@@ -172,39 +168,36 @@
           },
           "developmentState": "NATIVE_DEVELOPMENT",
           "runtimePassed": false,
-          "independentQaPassed": true,
-          "regressionPassed": true,
+          "independentQaPassed": false,
+          "regressionPassed": false,
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
-            "designReady": false,
+            "technicalReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": true,
               "exactRuntime": false,
               "lobby": false,
-              "movement": false,
-              "noRuntimeErrors": false
+              "movement": true,
+              "noRuntimeErrors": true
             },
             "blockers": [
-              "design",
               "exactRuntime",
-              "lobby",
-              "movement",
-              "noRuntimeErrors"
+              "lobby"
             ],
             "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
             "artifactIdentity": "sha256:ef3b9fd4105437aa70929582c887654c9e204f201005186d573172538e99dd8a",
             "verifiedAt": null
           },
-          "historicalInternalRelease": true,
+          "historicalInternalRelease": false,
           "internalReleaseState": "NOT_READY",
           "publicReleaseReady": false,
           "publicRelease": false,
@@ -234,13 +227,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -248,7 +241,6 @@
               "noRuntimeErrors": false
             },
             "blockers": [
-              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -267,7 +259,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-09-30T13:59:15.132Z"
+      "updatedAt": "2026-09-30T17:35:44.717Z"
     },
     {
       "gameId": "cozy-island",
@@ -312,13 +304,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": true,
               "exactRuntime": false,
               "lobby": false,
@@ -326,7 +318,6 @@
               "noRuntimeErrors": true
             },
             "blockers": [
-              "design",
               "exactRuntime",
               "lobby"
             ],
@@ -364,13 +355,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -378,7 +369,6 @@
               "noRuntimeErrors": false
             },
             "blockers": [
-              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -397,7 +387,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-09-30T14:07:10.951Z"
+      "updatedAt": "2026-09-30T17:35:44.717Z"
     },
     {
       "gameId": "daechung-rpg",
@@ -442,13 +432,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": true,
               "exactRuntime": false,
               "lobby": false,
@@ -456,7 +446,6 @@
               "noRuntimeErrors": true
             },
             "blockers": [
-              "design",
               "exactRuntime",
               "lobby"
             ],
@@ -494,13 +483,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -508,7 +497,6 @@
               "noRuntimeErrors": false
             },
             "blockers": [
-              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -527,7 +515,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-09-30T14:07:10.951Z"
+      "updatedAt": "2026-09-30T17:35:44.717Z"
     },
     {
       "gameId": "fantasy-survival",
@@ -564,13 +552,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": true,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": true,
               "exactRuntime": true,
               "lobby": false,
@@ -578,7 +566,6 @@
               "noRuntimeErrors": true
             },
             "blockers": [
-              "design",
               "lobby",
               "movement"
             ],
@@ -616,13 +603,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -630,7 +617,6 @@
               "noRuntimeErrors": false
             },
             "blockers": [
-              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -649,7 +635,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-09-30T13:59:15.132Z"
+      "updatedAt": "2026-09-30T17:35:44.717Z"
     },
     {
       "gameId": "horror-escape-room",
@@ -686,13 +672,13 @@
             "ready": true,
             "homepageReady": true,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": true,
             "basis": "OWNER_CONFIRMED",
             "experience": "LOBBY",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": true,
               "exactRuntime": false,
               "lobby": false,
@@ -734,13 +720,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -748,7 +734,6 @@
               "noRuntimeErrors": false
             },
             "blockers": [
-              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -767,7 +752,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-09-30T14:00:42.334Z"
+      "updatedAt": "2026-09-30T17:35:44.717Z"
     },
     {
       "gameId": "line-defense",
@@ -812,13 +797,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": true,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": true,
               "exactRuntime": true,
               "lobby": false,
@@ -826,7 +811,6 @@
               "noRuntimeErrors": true
             },
             "blockers": [
-              "design",
               "lobby",
               "movement"
             ],
@@ -864,13 +848,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -878,7 +862,6 @@
               "noRuntimeErrors": false
             },
             "blockers": [
-              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -897,7 +880,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-09-30T13:59:15.132Z"
+      "updatedAt": "2026-09-30T17:35:44.717Z"
     },
     {
       "gameId": "monster-adventure",
@@ -934,13 +917,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": true,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": true,
               "exactRuntime": true,
               "lobby": false,
@@ -948,7 +931,6 @@
               "noRuntimeErrors": true
             },
             "blockers": [
-              "design",
               "lobby",
               "movement"
             ],
@@ -986,13 +968,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -1000,7 +982,6 @@
               "noRuntimeErrors": false
             },
             "blockers": [
-              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -1019,7 +1000,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-09-30T13:59:15.132Z"
+      "updatedAt": "2026-09-30T17:35:44.717Z"
     },
     {
       "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -1056,13 +1037,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": true,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": true,
               "exactRuntime": true,
               "lobby": false,
@@ -1070,7 +1051,6 @@
               "noRuntimeErrors": true
             },
             "blockers": [
-              "design",
               "lobby",
               "movement"
             ],
@@ -1108,13 +1088,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -1122,7 +1102,6 @@
               "noRuntimeErrors": false
             },
             "blockers": [
-              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -1141,7 +1120,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-09-30T13:59:15.132Z"
+      "updatedAt": "2026-09-30T17:35:44.717Z"
     },
     {
       "gameId": "seed-casual-realm-weaver",
@@ -1178,13 +1157,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": true,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": true,
               "exactRuntime": true,
               "lobby": false,
@@ -1192,7 +1171,6 @@
               "noRuntimeErrors": true
             },
             "blockers": [
-              "design",
               "lobby",
               "movement"
             ],
@@ -1230,13 +1208,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -1244,7 +1222,6 @@
               "noRuntimeErrors": false
             },
             "blockers": [
-              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -1263,7 +1240,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-09-30T13:59:15.132Z"
+      "updatedAt": "2026-09-30T17:35:44.717Z"
     },
     {
       "gameId": "seed-idle-growth-rpg-crystal-bloom",
@@ -1308,13 +1285,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": true,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": true,
               "exactRuntime": true,
               "lobby": false,
@@ -1322,7 +1299,6 @@
               "noRuntimeErrors": true
             },
             "blockers": [
-              "design",
               "lobby",
               "movement"
             ],
@@ -1360,13 +1336,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -1374,7 +1350,6 @@
               "noRuntimeErrors": false
             },
             "blockers": [
-              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -1393,7 +1368,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-09-30T13:59:15.132Z"
+      "updatedAt": "2026-09-30T17:35:44.717Z"
     },
     {
       "gameId": "seed-puzzle-chromatic-cascade",
@@ -1438,13 +1413,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": true,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": true,
               "exactRuntime": true,
               "lobby": false,
@@ -1452,7 +1427,6 @@
               "noRuntimeErrors": true
             },
             "blockers": [
-              "design",
               "lobby",
               "movement"
             ],
@@ -1490,13 +1464,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -1504,7 +1478,6 @@
               "noRuntimeErrors": false
             },
             "blockers": [
-              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -1523,7 +1496,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-09-30T13:59:15.132Z"
+      "updatedAt": "2026-09-30T17:35:44.717Z"
     },
     {
       "gameId": "seed-single-defense-strat-celestial-bastion",
@@ -1560,13 +1533,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": true,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": true,
               "exactRuntime": true,
               "lobby": false,
@@ -1574,7 +1547,6 @@
               "noRuntimeErrors": true
             },
             "blockers": [
-              "design",
               "lobby",
               "movement"
             ],
@@ -1612,13 +1584,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -1626,7 +1598,6 @@
               "noRuntimeErrors": false
             },
             "blockers": [
-              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -1645,7 +1616,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-09-30T13:59:15.132Z"
+      "updatedAt": "2026-09-30T17:35:44.717Z"
     },
     {
       "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -1682,13 +1653,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": true,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": true,
               "exactRuntime": true,
               "lobby": false,
@@ -1696,7 +1667,6 @@
               "noRuntimeErrors": true
             },
             "blockers": [
-              "design",
               "lobby",
               "movement"
             ],
@@ -1734,13 +1704,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -1748,7 +1718,6 @@
               "noRuntimeErrors": false
             },
             "blockers": [
-              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -1767,7 +1736,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-09-30T13:59:15.132Z"
+      "updatedAt": "2026-09-30T17:35:44.717Z"
     },
     {
       "gameId": "survival",
@@ -1804,13 +1773,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": true,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": true,
               "exactRuntime": true,
               "lobby": false,
@@ -1818,7 +1787,6 @@
               "noRuntimeErrors": true
             },
             "blockers": [
-              "design",
               "lobby",
               "movement"
             ],
@@ -1856,13 +1824,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -1870,7 +1838,6 @@
               "noRuntimeErrors": false
             },
             "blockers": [
-              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -1889,7 +1856,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-09-30T13:59:15.132Z"
+      "updatedAt": "2026-09-30T17:35:44.717Z"
     },
     {
       "gameId": "village-dungeons",
@@ -1934,13 +1901,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": true,
               "exactRuntime": false,
               "lobby": false,
@@ -1948,7 +1915,6 @@
               "noRuntimeErrors": true
             },
             "blockers": [
-              "design",
               "exactRuntime",
               "lobby"
             ],
@@ -1986,13 +1952,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -2000,7 +1966,6 @@
               "noRuntimeErrors": false
             },
             "blockers": [
-              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -2019,7 +1984,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-09-30T14:07:10.951Z"
+      "updatedAt": "2026-09-30T17:35:44.717Z"
     }
   ]
 }
