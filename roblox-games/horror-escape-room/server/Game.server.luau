@@ -574,8 +574,8 @@ end
 
 -- 실제 3D 로비: 메뉴 화면 대신 캐릭터가 걸어 다니며 단말을 직접 사용한다.
 local function lobbyLabel(part,text,color)
- local gui=Instance.new("BillboardGui");gui.Name="LobbyLabel";gui.Size=UDim2.fromOffset(230,54);gui.StudsOffset=Vector3.new(0,4.4,0);gui.AlwaysOnTop=true;gui.Parent=part
- local label=Instance.new("TextLabel");label.Size=UDim2.fromScale(1,1);label.BackgroundTransparency=.22;label.BackgroundColor3=Color3.fromRGB(15,18,25);label.Text=text;label.TextColor3=color or Color3.fromRGB(235,240,248);label.TextScaled=true;label.TextWrapped=true;label.Font=Enum.Font.GothamBold;label.Parent=gui
+ local gui=Instance.new("BillboardGui");gui.Name="LobbyLabel";gui.Size=UDim2.fromOffset(132,28);gui.StudsOffset=Vector3.new(0,3.6,0);gui.AlwaysOnTop=false;gui.MaxDistance=34;gui.Parent=part
+ local label=Instance.new("TextLabel");label.Size=UDim2.fromScale(1,1);label.BackgroundTransparency=.38;label.BackgroundColor3=Color3.fromRGB(15,18,25);label.Text=text;label.TextColor3=color or Color3.fromRGB(235,240,248);label.TextScaled=false;label.TextSize=14;label.TextWrapped=false;label.Font=Enum.Font.GothamBold;label.Parent=gui
  return label
 end
 
@@ -597,7 +597,7 @@ local function makePhysicalLobby()
  arenaPart(f,"LobbyBackWall",Vector3.new(150,18,2),Vector3.new(0,9,286),Color3.fromRGB(27,31,40),Enum.Material.Concrete)
  arenaPart(f,"LobbyLeftWall",Vector3.new(2,18,106),Vector3.new(-74,9,235),Color3.fromRGB(27,31,40),Enum.Material.Concrete)
  arenaPart(f,"LobbyRightWall",Vector3.new(2,18,106),Vector3.new(74,9,235),Color3.fromRGB(27,31,40),Enum.Material.Concrete)
- local title=arenaPart(f,"LobbyTitle",Vector3.new(46,8,1),Vector3.new(0,10,284.5),Color3.fromRGB(52,61,75),Enum.Material.Metal);lobbyLabel(title,"심야 감염전 · 로비",Color3.fromRGB(149,224,255))
+ local title=arenaPart(f,"LobbyTitle",Vector3.new(38,6,1),Vector3.new(0,8.5,284.5),Color3.fromRGB(52,61,75),Enum.Material.Metal);lobbyLabel(title,"심야 감염전 로비",Color3.fromRGB(149,224,255))
  for _,x in ipairs({-54,-36,-18,0,18,36,54})do
   local lamp=arenaPart(f,"LobbyLamp",Vector3.new(7,.4,2),Vector3.new(x,14,250),Color3.fromRGB(120,207,230),Enum.Material.Neon);lamp.CanCollide=false;glow(lamp,lamp.Color,20,.85)
  end
@@ -640,11 +640,10 @@ local function makePhysicalLobby()
  -- 예약방 대기 인원을 실제 공간의 8개 자리로 보여준다.
  for i=1,8 do
   local col=(i-1)%4;local row=math.floor((i-1)/4)
-  local pad=arenaPart(f,"LobbySlot"..i,Vector3.new(12,.45,8),Vector3.new(-24+col*16,.48,226+row*12),Color3.fromRGB(59,68,82),Enum.Material.Metal)
+  local pad=arenaPart(f,"LobbySlot"..i,Vector3.new(12,.32,8),Vector3.new(-24+col*16,.41,226+row*12),Color3.fromRGB(48,55,66),Enum.Material.Metal)
   pad.CanCollide=true;pad:SetAttribute("LobbySlotIndex",i)
-  lobbyLabel(pad,"자리 "..i,Color3.fromRGB(198,211,226))
  end
- local board=arenaPart(f,"RoomStatusBoard",Vector3.new(25,9,1),Vector3.new(0,8,285),Color3.fromRGB(30,35,45),Enum.Material.Metal)
+ local board=arenaPart(f,"RoomStatusBoard",Vector3.new(22,6,1),Vector3.new(0,6.7,282.8),Color3.fromRGB(30,35,45),Enum.Material.Metal)
  lobbyLabel(board,"로비 준비 중",Color3.fromRGB(169,223,242))
 
  refreshPhysicalLobby=function()
@@ -658,21 +657,18 @@ local function makePhysicalLobby()
   end)
   for i=1,8 do
    local pad=f:FindFirstChild("LobbySlot"..i)
-   local gui=pad and pad:FindFirstChild("LobbyLabel")
-   local label=gui and gui:FindFirstChildOfClass("TextLabel")
    local player=players[i]
-   if label then
-    if player then label.Text=(player.UserId==roomHostUserId and "방장 · " or "")..player.DisplayName
-    else label.Text="AI 대기" end
+   if pad then
+    pad.Color=player and Color3.fromRGB(67,96,111)or Color3.fromRGB(48,55,66)
+    pad.Material=player and Enum.Material.Neon or Enum.Material.Metal
    end
-   if pad then pad.Color=player and Color3.fromRGB(67,96,111)or Color3.fromRGB(59,68,82)end
   end
   local bg=board:FindFirstChild("LobbyLabel");local label=bg and bg:FindFirstChildOfClass("TextLabel")
   if label then
    if roomServer then
-    label.Text=string.format("방 %s · 실제 %d/8명 · 빈자리 AI %d명",roomCode~=""and roomCode or"연결중",#players,math.max(0,8-#players))
+    label.Text=string.format("방 %s · %d/8명",roomCode~=""and roomCode or"연결중",#players)
    else
-    label.Text="단말에 가까이 가서 방을 만들거나 참가해"
+    label.Text="단말에서 방 만들기 · 참가"
    end
   end
  end
