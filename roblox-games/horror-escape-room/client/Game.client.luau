@@ -2058,9 +2058,8 @@ local function render()
  roundLine.Text=running and(string.format("%d초",seconds))or round=="SPECTATING"and"관전"or resultCode and"결과"or round
 
  local realPlayers=tonumber(p:GetAttribute("LobbyRealPlayers"))or #Players:GetPlayers()
- local aiFill=tonumber(p:GetAttribute("LobbyAIFill"))or math.max(0,(C.TargetPopulation or 8)-realPlayers)
  local lobbyPhase=tostring(p:GetAttribute("LobbyPhase")or round)
- local phaseText=lobbyPhase=="INTERMISSION"and("매치 준비 · "..seconds.."초 후 시작")or lobbyPhase=="RUNNING"and"라운드 진행"or lobbyPhase=="RESULT"and"결과 정산"or lobbyPhase=="LOADING"and"로비 준비"or"플레이어 대기"
+ local phaseText=lobbyPhase=="INTERMISSION"and("곧 시작 · "..seconds.."초")or lobbyPhase=="RUNNING"and"게임 중"or lobbyPhase=="RESULT"and"결과"or lobbyPhase=="LOADING"and"준비 중"or"대기"
  if p:GetAttribute("RoomServer")==true then
   lobbyStatus.Text=string.format("매치 대기 %d명 · %s",realPlayers,phaseText)
  else
@@ -2080,9 +2079,9 @@ local function render()
  roomBrowserPanel.Visible=false
  roomInfoPanel.Visible=false
  roomSlotsPanel.Visible=false
- setupPanel.Visible=isRoomServer and not running and not resultCode and not spectating
+ setupPanel.Visible=false
  if browser then worldCodePanel.Visible=worldCodePanel.Visible and not running and not resultCode end
- ruleCard.Visible=setupPanel.Visible and not selectionConfirmed
+ ruleCard.Visible=false
  actionDock.Visible=running
  energyTrack.Visible=true
  energyFill.Visible=true
