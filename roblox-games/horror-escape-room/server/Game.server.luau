@@ -322,7 +322,7 @@ local function teleportPlayersToReservedRoom(players,record)
 end
 
 local function createQueuedReservedRoom(players,selectedMapId)
- if state=="RUNNING"or typeof(players)~="table"or #players==0 then return false end
+ if typeof(players)~="table"or #players==0 then return false end
  local selectedMap=mapById(selectedMapId)
  if studioRoomFallback then
   local host=players[1]
@@ -2723,10 +2723,31 @@ local function selectStartingMonsters(h)
  for player in pairs(selected)do lastMonsterIds[player.UserId]=true end
  return selected
 end
+local function setCharacterBodyScale(character,height,width,depth,headScale)
+ local h=character and character:FindFirstChildOfClass("Humanoid")
+ if not h then return end
+ local values={BodyHeightScale=height or 1,BodyWidthScale=width or 1,BodyDepthScale=depth or 1,HeadScale=headScale or 1}
+ for name,value in pairs(values)do
+  local scale=h:FindFirstChild(name)
+  if scale and scale:IsA("NumberValue")then scale.Value=value end
+ end
+end
+local function resetCharacterBodyScale(character)
+ setCharacterBodyScale(character,1,1,1,1)
+end
+local function applyMonsterBodyScale(character,id)
+ if id=="DRACULA"then setCharacterBodyScale(character,1.12,.88,.9,.94)
+ elseif id=="FRANKENSTEIN"then setCharacterBodyScale(character,1.1,1.18,1.14,1.08)
+ elseif id=="WEREWOLF"then setCharacterBodyScale(character,1.14,1.1,1.1,1.04)
+ elseif id=="MUMMY"then setCharacterBodyScale(character,1.08,.94,.94,.98)
+ elseif id=="GRIM_REAPER"then setCharacterBodyScale(character,1.2,.9,.92,1.03)
+ else resetCharacterBodyScale(character)end
+end
 local function clearRoleVisual(p)
  local c=p.Character;if not c then return end
  for _,d in ipairs(c:GetDescendants())do if d.Name=="RoleVisual"or d:GetAttribute("MonsterCostume")==true then d:Destroy()end end
  local old=c:FindFirstChild("RoleHighlight");if old then old:Destroy()end
+ resetCharacterBodyScale(c)
 end
 local function costumePart(character,base,name,size,offset,color,material,shape)
  local x=Instance.new("Part");x.Name=name;x:SetAttribute("MonsterCostume",true);x.Size=size;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic;x.CanCollide=false;x.CanTouch=false;x.CanQuery=false;x.Massless=true
@@ -2829,6 +2850,7 @@ local function applyRoleVisual(p,r)
  local hi=Instance.new("Highlight");hi.Name="RoleHighlight";hi.FillTransparency=.86;hi.OutlineTransparency=.42;hi.Parent=c
  if r=="MONSTER"then
   local currentForm=form(p);local mf=Style.Monsters[currentForm.Id]or Style.Monsters.DRACULA;hi.FillColor=mf.Color;hi.OutlineColor=mf.Accent
+  applyMonsterBodyScale(c,currentForm.Id)
   applyClassicCostume(c,currentForm.Id)
   local head=c:FindFirstChild("Head")or root(p)
   if head then
@@ -3601,15 +3623,22 @@ Players.PlayerAdded:Connect(function(p)
  if state~="RUNNING"and lobbySpawnLocation and lobbySpawnLocation.Parent then p.RespawnLocation=lobbySpawnLocation end
  p:SetAttribute("RoomFeedback","")
  adoptReservedRoomFromPlayer(p)
- if roomServer and #Players:GetPlayers()>roomMaxPlayers()then
-  roomFeedback(p,"FULL","방 정원 초과 · 다음 판까지 관전")
-  p:SetAttribute("Role","SPECTATING");p:SetAttribute("RoundState","SPECTATING");p:SetAttribute("Spectating",true)
+ local shouldReshard=roomServer and(#Players:GetPlayers()>roomMaxPlayers()or state=="RUNNING")
+ if shouldReshard then
+  p:SetAttribute("Role","WAITING");p:SetAttribute("RoundState","ROOM_CONNECTING");p:SetAttribute("Spectating",false)
+  roomFeedback(p,"MATCHING","새 경기방으로 이동 중")
+  local selectedMap=roomSelectedMapId
+  task.defer(function()
+   local moved=createQueuedReservedRoom({p},selectedMap)
+   if not moved and p.Parent==Players then
+    task.wait(math.max(.5,tonumber(C.Room and C.Room.TeleportRetrySeconds)or 1.25))
+    if p.Parent==Players then createQueuedReservedRoom({p},selectedMap)end
+   end
+  end)
+  return
  end
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
- if state=="RUNNING"then
-  p:SetAttribute("Role","SPECTATING");p:SetAttribute("RoundState","SPECTATING");p:SetAttribute("Spectating",true);p:SetAttribute("TimeLeft",math.max(0,math.ceil(timeLeft)))
- end
  p.CharacterAdded:Connect(function()onCharacter(p)end)
  if p.Character then task.defer(function()onCharacter(p)end)end
  syncLobbyState()
