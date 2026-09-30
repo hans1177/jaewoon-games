@@ -8,7 +8,7 @@ local Config={
  MultiplayerRequired = true,
  SoloPlayable=true,CoopRequired=false,CompetitiveRequired=true,MinimumParticipants=1,
  TargetPopulation=8,SurvivorSlots=4,MonsterSlots=4,RoundSeconds=240,IntermissionSeconds=8,ResultSeconds=6,LobbyLoadTimeoutSeconds=12,TagDistance=5.5,PurifyDistance=8,PurifyCooldown=5,RemoteName="GameAction",
- Matchmaking={MatchSize=8,AutoShard=true,OverflowPolicy="NEW_RESERVED_ROOM",MapVoteEnabled=true,MapVoteCarryThroughElevator=true},
+ Matchmaking={MatchSize=8,AutoShard=true,OverflowPolicy="NEW_RESERVED_ROOM",ElevatorCount=4,MapSelectionMode="ELEVATOR_HOST_CHOICE",MapVoteEnabled=false,MapSelectionCarryThroughElevator=true},
  Room={MaxPlayers=8,CodeLength=6,DirectoryExpirationSeconds=7200,ActionCooldownSeconds=1.5,ArrivalGraceSeconds=6,TeleportRetrySeconds=1.25,Visibility={"PUBLIC","FRIENDS","PRIVATE"}},
  SurvivorDashCooldown=7,MonsterAbilityCooldown=7,
  RemoteMinInterval=.08,MaxHorizontalVelocity=92,MaxTeleportStep=48,ArenaLimit=176,
@@ -209,7 +209,7 @@ local Config={
   SOLO_MONSTER="SOLO_MONSTER",SOLO_SURVIVOR="SOLO_SURVIVOR",
   PURIFY="PURIFY",RESCUE="RESCUE",DASH="DASH",HUMAN_ABILITY="HUMAN_ABILITY",INFECT_ATTACK="INFECT_ATTACK",ABILITY="ABILITY",NEXT_MONSTER="NEXT_MONSTER",NEXT_HUMAN="NEXT_HUMAN",
   BUY_COSMETIC="BUY_COSMETIC",EQUIP_COSMETIC="EQUIP_COSMETIC",GHOST_SIGHTING_FOUND="GHOST_SIGHTING_FOUND",
-  CREATE_ROOM="CREATE_ROOM",JOIN_ROOM_CODE="JOIN_ROOM_CODE",QUICK_JOIN_PUBLIC="QUICK_JOIN_PUBLIC",QUICK_JOIN_FRIEND="QUICK_JOIN_FRIEND",START_ROOM="START_ROOM",LEAVE_ROOM="LEAVE_ROOM",VOTE_MAP="VOTE_MAP"
+  CREATE_ROOM="CREATE_ROOM",JOIN_ROOM_CODE="JOIN_ROOM_CODE",QUICK_JOIN_PUBLIC="QUICK_JOIN_PUBLIC",QUICK_JOIN_FRIEND="QUICK_JOIN_FRIEND",START_ROOM="START_ROOM",LEAVE_ROOM="LEAVE_ROOM",SELECT_MAP="SELECT_MAP"
  },
  QACameraEnabled=true,QACaptureRemoteName="QACaptureReport",
  OwnerDirectDevelopment=true,
