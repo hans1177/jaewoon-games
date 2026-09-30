@@ -2385,6 +2385,32 @@ resultPanel.Visible=false
 resultPanel.Parent=gui
 roundify(resultPanel,9);outline(resultPanel,.52)
 
+local resultCinemaTop=Instance.new("Frame")
+resultCinemaTop.Name="ResultCinemaTop"
+resultCinemaTop.Size=UDim2.new(1,0,0,0)
+resultCinemaTop.Position=UDim2.fromScale(0,0)
+resultCinemaTop.BackgroundColor3=Color3.fromRGB(4,4,5)
+resultCinemaTop.BorderSizePixel=0
+resultCinemaTop.ZIndex=60
+resultCinemaTop.Visible=false
+resultCinemaTop.Parent=gui
+
+local resultCinemaBottom=resultCinemaTop:Clone()
+resultCinemaBottom.Name="ResultCinemaBottom"
+resultCinemaBottom.AnchorPoint=Vector2.new(0,1)
+resultCinemaBottom.Position=UDim2.fromScale(0,1)
+resultCinemaBottom.Parent=gui
+
+local resultCinemaShade=Instance.new("Frame")
+resultCinemaShade.Name="ResultCinemaShade"
+resultCinemaShade.Size=UDim2.fromScale(1,1)
+resultCinemaShade.BackgroundColor3=Color3.fromRGB(5,5,7)
+resultCinemaShade.BackgroundTransparency=1
+resultCinemaShade.BorderSizePixel=0
+resultCinemaShade.ZIndex=18
+resultCinemaShade.Visible=false
+resultCinemaShade.Parent=gui
+
 resultTitle=Instance.new("TextLabel")
 resultTitle.Size=UDim2.new(1,-18,0,38)
 resultTitle.Position=UDim2.fromOffset(9,10)
@@ -2521,8 +2547,14 @@ local ceremonyCameraRestoreType=nil
 local ceremonyCameraRestoreSubject=nil
 
 local function stopResultCeremonyCamera()
- if not ceremonyCameraActive then return end
+ if not ceremonyCameraActive then
+  resultCinemaTop.Visible=false;resultCinemaBottom.Visible=false;resultCinemaShade.Visible=false
+  return
+ end
  ceremonyCameraActive=false
+ resultCinemaTop.Visible=false;resultCinemaBottom.Visible=false;resultCinemaShade.Visible=false
+ resultCinemaTop.Size=UDim2.new(1,0,0,0);resultCinemaBottom.Size=UDim2.new(1,0,0,0)
+ resultCinemaShade.BackgroundTransparency=1
  local camera=workspace.CurrentCamera
  if not camera then return end
  camera.CameraType=ceremonyCameraRestoreType or Enum.CameraType.Custom
@@ -2546,10 +2578,22 @@ local function startResultCeremonyCamera(stage)
  if typeof(cameraPos)~="Vector3"then cameraPos=Vector3.new(0,7.2,32)end
  if typeof(focusPos)~="Vector3"then focusPos=Vector3.new(0,3.8,12)end
  camera.CameraType=Enum.CameraType.Scriptable
+ resultCinemaTop.Visible=true;resultCinemaBottom.Visible=true;resultCinemaShade.Visible=true
+ resultCinemaTop.Size=UDim2.new(1,0,0,0);resultCinemaBottom.Size=UDim2.new(1,0,0,0)
+ resultCinemaShade.BackgroundTransparency=1
+ TweenService:Create(resultCinemaTop,TweenInfo.new(.36,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Size=UDim2.new(1,0,0,58)}):Play()
+ TweenService:Create(resultCinemaBottom,TweenInfo.new(.36,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Size=UDim2.new(1,0,0,58)}):Play()
+ TweenService:Create(resultCinemaShade,TweenInfo.new(.3),{BackgroundTransparency=.78}):Play()
  local target=CFrame.lookAt(cameraPos,focusPos)
  local intro=CFrame.lookAt(cameraPos+Vector3.new(0,2.2,7),focusPos)
  camera.CFrame=intro
  TweenService:Create(camera,TweenInfo.new(.85,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{CFrame=target}):Play()
+ task.delay(1.05,function()
+  if ceremonyCameraActive and camera==workspace.CurrentCamera then
+   local drift=CFrame.lookAt(cameraPos+Vector3.new(2.2,.35,-1.6),focusPos+Vector3.new(0,.2,0))
+   TweenService:Create(camera,TweenInfo.new(3.7,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{CFrame=drift}):Play()
+  end
+ end)
 end
 
 local function playResultCeremony(resultCode)
@@ -3008,6 +3052,7 @@ local function playHumanAbilityEffect(snapshot)
  local color=palette[formId]or Color3.fromRGB(116,201,220)
  if ability=="SIGNAL_JAM"then
   abilityPulse("SignalJam",origin+Vector3.new(0,1.2,0),color,Vector3.new(1,1,1),Vector3.new(22,3,22),.52)
+  task.delay(.12,function()abilityPulse("SignalJamEcho",origin+Vector3.new(0,1.2,0),color,Vector3.new(2,1,2),Vector3.new(27,2,27),.5)end)
  elseif ability=="OVERLOAD"then
   abilityPulse("HumanOverload",origin+Vector3.new(0,.8,0),color,Vector3.new(1,1,1),Vector3.new(14,2,14),.38)
   for i=1,8 do
@@ -3020,6 +3065,17 @@ local function playHumanAbilityEffect(snapshot)
   if dir.Magnitude>.1 then abilityStreak("ImpactBagTrail",origin,dir.Unit,color,0,math.min(14,dir.Magnitude),.35,.34)end
  elseif ability=="CAMERA_FLASH"then
   abilityPulse("CameraFlash",origin+Vector3.new(0,1.5,0),color,Vector3.new(2,2,2),Vector3.new(19,10,19),.22)
+  local character=p.Character
+  local localRoot=character and character:FindFirstChild("HumanoidRootPart")
+  local profile=C.HumanAbilities and C.HumanAbilities.CAMERA_FLASH
+  local radius=tonumber(profile and profile.Radius)or 19
+  if localRoot and(localRoot.Position-origin).Magnitude<=radius+3 then
+   local flashFrame=Instance.new("Frame")
+   flashFrame.Name="CameraFlashOverlay";flashFrame.Size=UDim2.fromScale(1,1);flashFrame.BackgroundColor3=Color3.fromRGB(246,247,243)
+   flashFrame.BackgroundTransparency=.08;flashFrame.BorderSizePixel=0;flashFrame.ZIndex=70;flashFrame.Parent=gui
+   TweenService:Create(flashFrame,TweenInfo.new(.34,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency=1}):Play()
+   Debris:AddItem(flashFrame,.4)
+  end
  elseif ability=="SHOCK_BATON"then
   local dir=target-origin
   if dir.Magnitude>.1 then
