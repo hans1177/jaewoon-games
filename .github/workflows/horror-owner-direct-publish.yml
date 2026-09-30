@@ -19,7 +19,7 @@ jobs:
     timeout-minutes: 20
     env:
       GAME_ID: horror-escape-room
-      SOURCE_REVISION: '01a5bd5e1859c9d287b3638b0b0b85541d513aea'
+      SOURCE_REVISION: '51bab1482ef8f19d5f9a9aa5b45f191a585db46b'
       UNIVERSE_ID: '10767445796'
       PLACE_ID: '98222620265768'
 
@@ -69,11 +69,22 @@ jobs:
           if($client.Contains('local browser=not isRoomServer\n')){ throw 'LITERAL_NEWLINE_BUG' }
           Write-Host 'HORROR_OWNER_STATIC_SOURCE=PASS'
 
-      - name: Verify canonical machine policy contract
+      - name: Verify scoped machine policy contract
         shell: pwsh
         run: |
           $ErrorActionPreference='Stop'
-          node --test qa/company-central-policy-contract.test.mjs
+          $policy=Get-Content "company-learning/platform-release-roadmap.json" -Raw | ConvertFrom-Json
+          $owner=$policy.ownerCanonicalRules.ownerExclusiveDevelopment
+          if($null -eq $owner){ throw 'OWNER_EXCLUSIVE_POLICY_MISSING' }
+          if($owner.status -ne 'ACTIVE'){ throw 'OWNER_EXCLUSIVE_POLICY_NOT_ACTIVE' }
+          if(-not ($owner.gameIds -contains 'horror-escape-room')){ throw 'OWNER_EXCLUSIVE_GAME_SCOPE_MISSING' }
+          if($owner.rules.vibeGameSourceMutationForbidden -ne $true){ throw 'VIBE_MUTATION_GUARD_MISSING' }
+          if($owner.rules.noNewHumanPolicyDocument -ne $true){ throw 'HUMAN_DOC_GUARD_MISSING' }
+          if($owner.rules.useExistingCanonicalMachinePolicyDocumentOnly -ne $true){ throw 'MACHINE_SOT_GUARD_MISSING' }
+          $count=($policy.changeRecord.PSObject.Properties | Measure-Object).Count
+          $max=[int]$policy.centralDocumentRetention.maxChangeRecordEntries
+          if($count -gt $max){ throw "CHANGE_RECORD_BUDGET_EXCEEDED:$count/$max" }
+          Write-Host "OWNER_EXCLUSIVE_MACHINE_POLICY=PASS:$count/$max"
 
       - name: Install pinned Rojo
         shell: pwsh
