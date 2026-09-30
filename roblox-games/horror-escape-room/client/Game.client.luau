@@ -1303,6 +1303,59 @@ roomBrowserFeedback.TextXAlignment=Enum.TextXAlignment.Left
 roomBrowserFeedback.ZIndex=21
 roomBrowserFeedback.Parent=roomBrowserPanel
 
+-- 실제 3D 로비의 코드 단말에서만 잠깐 열리는 작은 입력창.
+local worldCodePanel=Instance.new("Frame")
+worldCodePanel.Name="WorldLobbyCodePanel"
+worldCodePanel.AnchorPoint=Vector2.new(.5,.5)
+worldCodePanel.Position=UDim2.fromScale(.5,.68)
+worldCodePanel.Size=UDim2.fromOffset(300,104)
+worldCodePanel.BackgroundColor3=Color3.fromRGB(21,24,31)
+worldCodePanel.BackgroundTransparency=.03
+worldCodePanel.ZIndex=40
+worldCodePanel.Visible=false
+worldCodePanel.Parent=gui
+roundify(worldCodePanel,13);outline(worldCodePanel,.35)
+
+local worldCodeTitle=Instance.new("TextLabel")
+worldCodeTitle.Size=UDim2.new(1,-20,0,28)
+worldCodeTitle.Position=UDim2.fromOffset(10,7)
+worldCodeTitle.BackgroundTransparency=1
+worldCodeTitle.Text="방 코드 입력"
+worldCodeTitle.TextColor3=Color3.fromRGB(239,243,248)
+worldCodeTitle.TextSize=17
+worldCodeTitle.Font=Enum.Font.GothamBold
+worldCodeTitle.ZIndex=41
+worldCodeTitle.Parent=worldCodePanel
+
+local worldCodeBox=Instance.new("TextBox")
+worldCodeBox.Size=UDim2.fromOffset(178,42)
+worldCodeBox.Position=UDim2.fromOffset(10,47)
+worldCodeBox.BackgroundColor3=Color3.fromRGB(35,39,48)
+worldCodeBox.TextColor3=Color3.fromRGB(239,242,247)
+worldCodeBox.PlaceholderText="6자리 코드"
+worldCodeBox.Text=""
+worldCodeBox.TextSize=18
+worldCodeBox.Font=Enum.Font.GothamBold
+worldCodeBox.ClearTextOnFocus=false
+worldCodeBox.ZIndex=41
+worldCodeBox.Parent=worldCodePanel
+roundify(worldCodeBox,9)
+
+local worldCodeJoin=makeButton(worldCodePanel,"참가",Color3.fromRGB(70,93,125))
+worldCodeJoin.Size=UDim2.fromOffset(92,42)
+worldCodeJoin.Position=UDim2.fromOffset(198,47)
+worldCodeJoin.ZIndex=41
+
+local function submitWorldCode()
+ local code=tostring(worldCodeBox.Text or""):gsub("%s+","")
+ if code==""then return end
+ remote:FireServer(C.Actions.JOIN_ROOM_CODE,code)
+ worldCodePanel.Visible=false
+ worldCodeBox:ReleaseFocus()
+end
+worldCodeJoin.Activated:Connect(submitWorldCode)
+worldCodeBox.FocusLost:Connect(function(enterPressed)if enterPressed then submitWorldCode()end end)
+
 local roomInfoPanel=Instance.new("Frame")
 roomInfoPanel.Name="RoomInfo"
 roomInfoPanel.AnchorPoint=Vector2.new(.5,0)
@@ -2020,11 +2073,11 @@ local function render()
  local isRoomServer=p:GetAttribute("RoomServer")==true
  local roomState=tostring(p:GetAttribute("RoomState")or"BROWSER")
  local browser=not isRoomServer
- roomBrowserPanel.Visible=browser and not running and not resultCode
- roomInfoPanel.Visible=isRoomServer and not running and not resultCode and not spectating
- roomSlotsPanel.Visible=roomInfoPanel.Visible
+ roomBrowserPanel.Visible=false
+ roomInfoPanel.Visible=false
+ roomSlotsPanel.Visible=false
  setupPanel.Visible=isRoomServer and not running and not resultCode and not spectating
- if roomSlotsPanel.Visible then refreshRoomSlots()end
+ if browser then worldCodePanel.Visible=worldCodePanel.Visible and not running and not resultCode end
  ruleCard.Visible=setupPanel.Visible and not selectionConfirmed
  actionDock.Visible=running
  energyTrack.Visible=true
@@ -2033,8 +2086,8 @@ local function render()
  mapPanel.Visible=running
  spectatorPanel.Visible=spectating
  resultPanel.Visible=resultCode~=nil
- roomStartButton.Visible=roomInfoPanel.Visible and p:GetAttribute("RoomIsHost")==true and roomState=="ROOM_WAITING"
- roomLeaveButton.Visible=roomInfoPanel.Visible and roomState=="ROOM_WAITING"
+ roomStartButton.Visible=false
+ roomLeaveButton.Visible=false
  local roomVis=tostring(p:GetAttribute("RoomVisibility")or"PRIVATE")
  local visText=roomVis=="PUBLIC"and"공개"or roomVis=="FRIENDS"and"친구만"or"비공개"
  local roomMembers=tonumber(p:GetAttribute("RoomMemberCount"))or 0
@@ -2109,12 +2162,22 @@ p:GetAttributeChangedSignal("LoreFeedback"):Connect(function()
  end
 end)
 
+p:GetAttributeChangedSignal("WorldLobbyCodeInputRequest"):Connect(function()
+ if p:GetAttribute("RoomServer")==true or p:GetAttribute("RoundState")=="RUNNING"then return end
+ worldCodeBox.Text=""
+ worldCodePanel.Visible=true
+ task.defer(function()
+  task.wait()
+  worldCodeBox:CaptureFocus()
+ end)
+end)
+
 p:GetAttributeChangedSignal("RoomFeedback"):Connect(function()
  local raw=tostring(p:GetAttribute("RoomFeedback")or"")
  local kind,message=string.match(raw,"^([^:]+):?(.*)$")
- if kind=="ERROR"then roomBrowserFeedback.Text="오류 · "..tostring(message)
- elseif kind=="EMPTY"then roomBrowserFeedback.Text=tostring(message)
- elseif kind=="TELEPORTING"then roomBrowserFeedback.Text="방으로 이동 중..."
+ if kind=="ERROR"then roomBrowserFeedback.Text="오류 · "..tostring(message);showMapContentToast("오류 · "..tostring(message),Color3.fromRGB(255,166,166),1.8)
+ elseif kind=="EMPTY"then roomBrowserFeedback.Text=tostring(message);showMapContentToast(tostring(message),Color3.fromRGB(190,202,218),1.8)
+ elseif kind=="TELEPORTING"then roomBrowserFeedback.Text="방으로 이동 중...";showMapContentToast("방으로 이동 중...",Color3.fromRGB(155,224,192),1.5)
  elseif kind=="HOST"then showMapContentToast("방장이 되었어",Color3.fromRGB(155,224,192),2)
  elseif kind=="START"then showMapContentToast("게임 시작 준비",Color3.fromRGB(155,224,192),1.5)
  else roomBrowserFeedback.Text=tostring(message or"")end
