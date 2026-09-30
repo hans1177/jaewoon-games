@@ -2700,7 +2700,8 @@
       "coding_1dcghta",
       "coding_1lm42n3",
       "coding_zenntq",
-      "coding_18wqjng"
+      "coding_18wqjng",
+      "coding_5b65st"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -17117,30 +17118,30 @@
         "lastUpdatedAt": "2026-09-29T18:24:06.079Z"
       },
       "CAUSAL_EVIDENCE_REFRESH_REQUIRED": {
-        "verifiedApplications": 9,
+        "verifiedApplications": 10,
         "firstCandidatePasses": 0,
-        "totalGenerationAttempts": 37,
+        "totalGenerationAttempts": 41,
         "verifiedFailures": 1041,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1,
           "seed-idle-growth-rpg-crystal-bloom": 1,
-          "monster-adventure": 3,
+          "monster-adventure": 4,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 3
         },
         "targets": {
-          "unity": 9
+          "unity": 10
         },
         "contextModes": {
           "STANDARD_CONTEXT": {
-            "verifiedApplications": 9,
+            "verifiedApplications": 10,
             "verifiedFailures": 146,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 37,
-            "totalContextBytes": 151232,
-            "lastEvidence": "coding_18wqjng",
+            "totalGenerationAttempts": 41,
+            "totalContextBytes": 167987,
+            "lastEvidence": "coding_5b65st",
             "lastFailureEvidence": "coding_negative_oe2b33",
-            "lastUpdatedAt": "2026-09-30T07:10:22.141Z"
+            "lastUpdatedAt": "2026-09-30T07:23:05.910Z"
           },
           "UNITY_WEB_BOOTSTRAP_SHELL": {
             "verifiedApplications": 0,
@@ -17620,15 +17621,15 @@
             "lastUpdatedAt": "2026-09-30T03:21:15.898Z"
           },
           "unity|AUTHORITATIVE_TARGET_ENGINE_QA_MISSING|FOCUSED_MARKER_NOT_PASS|FOCUSED_QA_NOT_PASS|NO_OP|OTHER|PRESENTATION_PATCH_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
-            "verifiedApplications": 2,
+            "verifiedApplications": 3,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 8,
+            "totalGenerationAttempts": 12,
             "verifiedFailures": 11,
             "games": {
-              "monster-adventure": 2
+              "monster-adventure": 3
             },
             "targets": {
-              "unity": 2
+              "unity": 3
             },
             "failureGames": {
               "monster-adventure": 11
@@ -17640,15 +17641,15 @@
               "TIMEOUT": 9,
               "NO_OP": 2
             },
-            "lastEvidence": "coding_zenntq",
+            "lastEvidence": "coding_5b65st",
             "lastFailureEvidence": "coding_negative_1p4hm2i",
-            "lastUpdatedAt": "2026-09-30T06:53:40.428Z"
+            "lastUpdatedAt": "2026-09-30T07:23:05.910Z"
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_18wqjng",
+        "lastEvidence": "coding_5b65st",
         "lastFailureEvidence": "coding_negative_qp846n",
-        "lastUpdatedAt": "2026-09-30T07:21:32.359Z"
+        "lastUpdatedAt": "2026-09-30T07:23:05.910Z"
       }
     }
   },
@@ -20401,7 +20402,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-30T07:22:44.858Z",
+    "lastBuiltAt": "2026-09-30T07:23:05.984Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -28661,5 +28662,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-30T07:22:44.858Z"
+  "updatedAt": "2026-09-30T07:23:05.984Z"
 }
