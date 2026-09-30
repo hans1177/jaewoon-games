@@ -174,19 +174,23 @@ pid="$(adb shell pidof "$package" 2>/dev/null | tr -d '\r' | head -n 1 || true)"
 adb shell dumpsys activity activities > "$out_dir/activity.txt" 2>&1 || true
 adb shell dumpsys package "$package" > "$out_dir/package.txt" 2>&1 || true
 adb shell dumpsys gfxinfo "$package" > "$out_dir/gfxinfo.txt" 2>&1 || true
+adb shell dumpsys SurfaceFlinger --latency > "$out_dir/surfaceflinger-latency.txt" 2>&1 || true
 adb shell dumpsys meminfo "$package" > "$out_dir/meminfo.txt" 2>&1 || true
 adb logcat -d > "$out_dir/logcat.txt" 2>&1 || true
 adb exec-out screencap -p > "$out_dir/screenshot.png" 2>/dev/null || true
 
-read -r rendered_frames janky_frames total_pss_kb < <(python3 - "$out_dir/gfxinfo.txt" "$out_dir/meminfo.txt" <<'PY'
+read -r rendered_frames janky_frames total_pss_kb < <(python3 - "$out_dir/gfxinfo.txt" "$out_dir/surfaceflinger-latency.txt" "$out_dir/meminfo.txt" <<'PY'
 import pathlib,re,sys
 gfx=pathlib.Path(sys.argv[1]).read_text(encoding='utf-8',errors='replace')
-mem=pathlib.Path(sys.argv[2]).read_text(encoding='utf-8',errors='replace')
+surface=pathlib.Path(sys.argv[2]).read_text(encoding='utf-8',errors='replace')
+mem=pathlib.Path(sys.argv[3]).read_text(encoding='utf-8',errors='replace')
 def number(pattern,text,flags=0):
     match=re.search(pattern,text,flags)
     return int(match.group(1).replace(',','')) if match else 0
 frames=number(r'Total frames rendered:\s*([0-9,]+)',gfx,re.I)
 janky=number(r'Janky frames:\s*([0-9,]+)',gfx,re.I)
+surface_frames=sum(1 for line in surface.splitlines() if re.fullmatch(r'\s*\d+\s+\d+\s+\d+\s*',line) and any(int(x)>0 for x in line.split()))
+frames=max(frames,surface_frames)
 pss=number(r'TOTAL PSS:\s*([0-9,]+)',mem,re.I) or number(r'^\s*TOTAL\s+([0-9,]+)',mem,re.M)
 print(frames,janky,pss)
 PY
@@ -275,7 +279,7 @@ data={
     'pass':seed_ok,
   },
   'androidPerformance':{
-    'provider':'ANDROID_DUMPSYS_GFXINFO_MEMINFO',
+    'provider':'ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO',
     'graphicsFrameStatsObserved':frames>0,
     'totalFramesRendered':frames,
     'jankyFrames':janky,
@@ -304,7 +308,7 @@ data={
     'activity/package/logcat/screenshot evidence captured even on runtime failure'
   ],
   'artifacts':{
-    'installLog':'install.log','updateInstallLog':'update-install.log','launchLog':'launch.log','launchComponent':'launch-component.txt','logcat':'logcat.txt','packageFatalScan':'package-fatal-scan.txt','screenshot':'screenshot.png','activity':'activity.txt','packageDump':'package.txt','gfxInfo':'gfxinfo.txt','memInfo':'meminfo.txt','apkBadging':'apk-badging.txt','deviceApi':'device-api.txt','deviceAbis':'device-abis.txt'
+    'installLog':'install.log','updateInstallLog':'update-install.log','launchLog':'launch.log','launchComponent':'launch-component.txt','logcat':'logcat.txt','packageFatalScan':'package-fatal-scan.txt','screenshot':'screenshot.png','activity':'activity.txt','packageDump':'package.txt','gfxInfo':'gfxinfo.txt','surfaceFlingerLatency':'surfaceflinger-latency.txt','memInfo':'meminfo.txt','apkBadging':'apk-badging.txt','deviceApi':'device-api.txt','deviceAbis':'device-abis.txt'
   }
 }
 pathlib.Path(out).write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
