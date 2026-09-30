@@ -2476,7 +2476,12 @@ test('Studio launcher handoff remains bound to one isolated Place and cleanup re
   assert.match(close,/\$unattributed\.Count\) \{ throw/);
   assert.match(close,/ROBLOX_STUDIO_UNATTRIBUTED_PROCESS=/);
   assert.match(close,/parentProcessId = \[int\]\$record\.ParentProcessId/);
-  assert.match(close,/VIBE2_STUDIO_OWNED_PROCESS_RECORDS \| ConvertFrom-Json/);
+  for(const restore of [retry,close]){
+    assert.match(restore,/\$ownershipProofs = ConvertFrom-Json -InputObject \$env:VIBE2_STUDIO_OWNED_PROCESS_RECORDS/);
+    assert.match(restore,/foreach \(\$proof in \$ownershipProofs\)/);
+    assert.doesNotMatch(restore,/foreach \(\$proof in @\(/);
+  }
+  assert.match(close,/ROBLOX_STUDIO_OWNERSHIP_RESTORED_COUNT=/);
   assert.match(close,/\$launchFamily\.ContainsKey\(\[string\]\$_.ProcessId\)/);
   assert.match(close,/\.TotalMilliseconds\) -le 10/);
   assert.doesNotMatch(close,/VIBE2_STUDIO_PROCESS_IDS|Stop-Process -Name/);

@@ -2231,7 +2231,8 @@ jobs:
             $exactPlacePattern = '(?i)(?:^|[\s"])' + [regex]::Escape($env:VIBE2_LOCAL_PLACE_FILE) + '(?=[\s"]|$)'
             $launchStarted = [DateTime]::Parse($env:VIBE2_STUDIO_LAUNCH_STARTED).ToUniversalTime()
             $launchFamily = @{}
-            foreach ($proof in @($env:VIBE2_STUDIO_OWNED_PROCESS_RECORDS | ConvertFrom-Json)) { $launchFamily[[string]$proof.processId] = $proof }
+            $ownershipProofs = ConvertFrom-Json -InputObject $env:VIBE2_STUDIO_OWNED_PROCESS_RECORDS
+            foreach ($proof in $ownershipProofs) { $launchFamily[[string]$proof.processId] = $proof }
             $ownedStudio = $null
             for ($handoffWait = 0; $handoffWait -lt 180; $handoffWait++) {
               $ownedRecords = @(Get-CimInstance Win32_Process -Filter "Name = 'RobloxStudioBeta.exe'" -ErrorAction Stop | Where-Object { $_.CreationDate.ToUniversalTime() -ge $launchStarted.AddSeconds(-2) -and (([string]$_.CommandLine -match $exactPlacePattern) -or ($launchFamily.ContainsKey([string]$_.ProcessId) -and [math]::Abs(($_.CreationDate.ToUniversalTime() - [DateTime]::Parse($launchFamily[[string]$_.ProcessId].createdAt).ToUniversalTime()).TotalMilliseconds) -le 10)) })
@@ -2442,8 +2443,12 @@ jobs:
           $launchStarted = [DateTime]::Parse($env:VIBE2_STUDIO_LAUNCH_STARTED).ToUniversalTime()
           $launchFamily = @{}
           if ($env:VIBE2_STUDIO_OWNED_PROCESS_RECORDS) {
-            foreach ($proof in @($env:VIBE2_STUDIO_OWNED_PROCESS_RECORDS | ConvertFrom-Json)) { $launchFamily[[string]$proof.processId] = $proof }
+            # Windows PowerShell 5.1 emits a JSON array as one pipeline object.
+            # Assign first, then enumerate its records rather than wrapping that object in @().
+            $ownershipProofs = ConvertFrom-Json -InputObject $env:VIBE2_STUDIO_OWNED_PROCESS_RECORDS
+            foreach ($proof in $ownershipProofs) { $launchFamily[[string]$proof.processId] = $proof }
           }
+          Write-Host "ROBLOX_STUDIO_OWNERSHIP_RESTORED_COUNT=$($launchFamily.Count)"
           # Rediscover the exact writable Place instead of trusting a launcher PID that may have exited.
           for ($closeProbe = 0; $closeProbe -lt 15; $closeProbe++) {
             $ownedRecords = @(Get-CimInstance Win32_Process -Filter "Name = 'RobloxStudioBeta.exe'" -ErrorAction Stop | Where-Object { $_.CreationDate.ToUniversalTime() -ge $launchStarted.AddSeconds(-2) -and (([string]$_.CommandLine -match $exactPlacePattern) -or ($launchFamily.ContainsKey([string]$_.ProcessId) -and [math]::Abs(($_.CreationDate.ToUniversalTime() - [DateTime]::Parse($launchFamily[[string]$_.ProcessId].createdAt).ToUniversalTime()).TotalMilliseconds) -le 10)) })
