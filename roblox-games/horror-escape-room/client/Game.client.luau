@@ -1701,6 +1701,59 @@ lobbyHeaderSub.TextXAlignment=Enum.TextXAlignment.Left
 lobbyHeaderSub.ZIndex=38
 lobbyHeaderSub.Parent=lobbyHeader
 
+local elevatorStatusPanel=Instance.new("Frame")
+elevatorStatusPanel.Name="ElevatorStatusPanel"
+elevatorStatusPanel.Position=UDim2.fromOffset(12,82)
+elevatorStatusPanel.Size=UDim2.fromOffset(292,118)
+elevatorStatusPanel.BackgroundColor3=Color3.fromRGB(10,10,11)
+elevatorStatusPanel.BackgroundTransparency=.12
+elevatorStatusPanel.BorderSizePixel=0
+elevatorStatusPanel.Visible=false
+elevatorStatusPanel.ZIndex=37
+elevatorStatusPanel.Parent=gui
+roundify(elevatorStatusPanel,8);outline(elevatorStatusPanel,.62)
+
+local elevatorStatusTitle=Instance.new("TextLabel")
+elevatorStatusTitle.Size=UDim2.new(1,-16,0,20)
+elevatorStatusTitle.Position=UDim2.fromOffset(8,5)
+elevatorStatusTitle.BackgroundTransparency=1
+elevatorStatusTitle.Text="승강기 매칭"
+elevatorStatusTitle.TextColor3=Color3.fromRGB(232,220,197)
+elevatorStatusTitle.TextSize=13
+elevatorStatusTitle.Font=Enum.Font.GothamBold
+elevatorStatusTitle.TextXAlignment=Enum.TextXAlignment.Left
+elevatorStatusTitle.ZIndex=38
+elevatorStatusTitle.Parent=elevatorStatusPanel
+
+local elevatorStatusLabels={}
+for i=1,4 do
+ local row=Instance.new("TextLabel")
+ row.Name="ElevatorStatus"..i
+ row.Size=UDim2.new(1,-16,0,20)
+ row.Position=UDim2.fromOffset(8,24+(i-1)*22)
+ row.BackgroundTransparency=1
+ row.TextColor3=Color3.fromRGB(204,199,188)
+ row.TextSize=11
+ row.Font=Enum.Font.GothamMedium
+ row.TextXAlignment=Enum.TextXAlignment.Left
+ row.ZIndex=38
+ row.Parent=elevatorStatusPanel
+ elevatorStatusLabels[i]=row
+end
+
+local function refreshElevatorStatus()
+ for i=1,4 do
+  local mode=tostring(workspace:GetAttribute("Elevator"..i.."Mode")or({"1인 전용","2인 전용","3~4인","5~8인"})[i])
+  local map=tostring(workspace:GetAttribute("Elevator"..i.."Map")or"학교")
+  local count=tonumber(workspace:GetAttribute("Elevator"..i.."Count"))or 0
+  local maxPlayers=tonumber(workspace:GetAttribute("Elevator"..i.."Max"))or({1,2,4,8})[i]
+  local countdown=tonumber(workspace:GetAttribute("Elevator"..i.."Countdown"))or 0
+  local suffix=countdown>0 and(" · "..math.floor(countdown).."초")or""
+  elevatorStatusLabels[i].Text=string.format("%d번 · %s · %s · %d/%d%s",i,mode,map,count,maxPlayers,suffix)
+ end
+end
+refreshElevatorStatus()
+
 local lobbyHint=Instance.new("TextLabel")
 lobbyHint.Name="LobbyHint"
 lobbyHint.AnchorPoint=Vector2.new(.5,1)
@@ -1709,7 +1762,7 @@ lobbyHint.Size=UDim2.fromOffset(342,38)
 lobbyHint.BackgroundColor3=Color3.fromRGB(12,12,13)
 lobbyHint.BackgroundTransparency=.16
 lobbyHint.BorderSizePixel=0
-lobbyHint.Text="① 승강기 선택  →  ② 안으로 들어가기  →  ③ 5초 후 자동 출발"
+lobbyHint.Text="1번 1인 · 2번 2인 · 3번 3~4인 · 4번 5~8인 · 방장이 안에서 맵 선택"
 lobbyHint.TextColor3=Color3.fromRGB(216,208,192)
 lobbyHint.TextSize=12
 lobbyHint.Font=Enum.Font.GothamMedium
@@ -2706,6 +2759,7 @@ local function render()
  local browser=not isRoomServer
  local lobbyWaiting=not running and not resultCode and not spectating
  lobbyHeader.Visible=lobbyWaiting
+ elevatorStatusPanel.Visible=lobbyWaiting and not isRoomServer
  lobbyHint.Visible=lobbyWaiting
  lobbyHeaderSub.Text=isRoomServer and "체크인 완료 · 객실 배정 중"or"심야 대탈출 · 서양식 저주 호텔"
  lobbyHint.Text=isRoomServer and"직원이 문을 잠그는 중 · 잠시 후 시작"or"① 승강기 선택  →  ② 안으로 들어가기  →  ③ 5초 후 자동 체크인"
@@ -3151,5 +3205,14 @@ QACamera.install(C,gui,function()
 end)
 
 
+for i=1,4 do
+ for _,suffix in ipairs({"Mode","Map","Count","Max","Countdown","Ready"})do
+  workspace:GetAttributeChangedSignal("Elevator"..i..suffix):Connect(function()
+   refreshElevatorStatus()
+  end)
+ end
+end
+
 updateCosmeticUI()
+refreshElevatorStatus()
 render()
