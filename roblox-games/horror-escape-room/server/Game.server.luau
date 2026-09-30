@@ -21,10 +21,11 @@ if not lobbyBootstrapSpawn or not lobbyBootstrapSpawn:IsA("SpawnLocation")then
  lobbyBootstrapSpawn.Anchored=true
  lobbyBootstrapSpawn.Neutral=true
  lobbyBootstrapSpawn.Transparency=1
- lobbyBootstrapSpawn.CanCollide=true
+ lobbyBootstrapSpawn.CanCollide=false
  lobbyBootstrapSpawn.CanTouch=false
  lobbyBootstrapSpawn.CanQuery=true
  lobbyBootstrapSpawn.Duration=0
+ lobbyBootstrapSpawn:SetAttribute("WalkableGround",false)
  lobbyBootstrapSpawn.Parent=workspace
 end
 local function bootstrapLobbyCharacter(player,character)
@@ -744,41 +745,6 @@ local function save(p)
   GhostProgress=ghostProgressSave(ghostProgressFrom(p:GetAttribute("GhostProgress"))),GhostFragments=p:GetAttribute("GhostFragments")or 0,GhostContracts=p:GetAttribute("GhostContracts")or 0,GhostCatalogBonusClaimed=p:GetAttribute("GhostCatalogBonusClaimed")==true
  })end)
 end
-local function partWorldMinY(part)
- local half=part.Size*.5
- local minY=math.huge
- for _,sx in ipairs({-1,1})do
-  for _,sy in ipairs({-1,1})do
-   for _,sz in ipairs({-1,1})do
-    local world=part.CFrame:PointToWorldSpace(Vector3.new(half.X*sx,half.Y*sy,half.Z*sz))
-    if world.Y<minY then minY=world.Y end
-   end
-  end
- end
- return minY
-end
-
-local function characterStandingBottom(character,rootPart,humanoid)
- if not character or not rootPart then return nil end
- local feet={}
- for _,name in ipairs({"LeftFoot","RightFoot"})do
-  local part=character:FindFirstChild(name)
-  if part and part:IsA("BasePart")then table.insert(feet,part)end
- end
- if #feet==0 then
-  for _,name in ipairs({"LeftLowerLeg","RightLowerLeg","Left Leg","Right Leg"})do
-   local part=character:FindFirstChild(name)
-   if part and part:IsA("BasePart")then table.insert(feet,part)end
-  end
- end
- if #feet>0 then
-  local bottom=math.huge
-  for _,part in ipairs(feet)do bottom=math.min(bottom,partWorldMinY(part))end
-  if bottom<math.huge then return bottom end
- end
- local fallbackOffset=math.max(1,tonumber(humanoid and humanoid.HipHeight)or 0)+(rootPart.Size.Y*.5)
- return rootPart.Position.Y-fallbackOffset
-end
 local function groundedRootTarget(p,pos)
  local c=p.Character;local r=root(p);local h=hum(p)
  if not c or not r or not h then return Vector3.new(pos.X,pos.Y,pos.Z)end
@@ -806,9 +772,8 @@ local function groundedRootTarget(p,pos)
   hit=workspace:Raycast(Vector3.new(pos.X,pos.Y+20,pos.Z),Vector3.new(0,-44,0),params)
  end
  local groundY=hit and hit.Position.Y or(lobbyDestination and .65 or .5)
- local standingBottom=characterStandingBottom(c,r,h)
- local standingOffset=standingBottom and(r.Position.Y-standingBottom)or(math.max(1,tonumber(h.HipHeight)or 0)+(r.Size.Y*.5))
- local targetY=groundY+standingOffset-.025
+ local standingOffset=math.max(1,tonumber(h.HipHeight)or 0)+(r.Size.Y*.5)
+ local targetY=groundY+standingOffset
  return Vector3.new(pos.X,targetY,pos.Z)
 end
 local function teleport(p,pos,lookAtPos)
@@ -831,27 +796,24 @@ local function teleport(p,pos,lookAtPos)
    h.PlatformStand=false;h.Sit=false;h.AutoRotate=true
    pcall(function()h:ChangeState(Enum.HumanoidStateType.GettingUp)end)
   end
-  task.spawn(function()
-   for _,delaySeconds in ipairs({.03,.08,.16,.32,.65,1.1})do
-    task.wait(delaySeconds)
-    local rr=root(p);local hh=hum(p)
-    if p.Character~=c or rr~=r or not rr or not hh or not rr.Parent then return end
-    local corrected=groundedRootTarget(p,pos)
-    if math.abs(rr.Position.Y-corrected.Y)>.025 or hh.FloorMaterial==Enum.Material.Air then
-     movementGraceUntil[p]=os.clock()+1
-     lastValidPosition[p]=corrected
-     local correctedCFrame=CFrame.new(corrected)
-     if typeof(lookAtPos)=="Vector3"then
-      local flatLook=Vector3.new(lookAtPos.X,corrected.Y,lookAtPos.Z)
-      if(flatLook-corrected).Magnitude>.1 then correctedCFrame=CFrame.lookAt(corrected,flatLook)end
-     end
-     rr.Anchored=false
-     rr.CFrame=correctedCFrame
-     rr.AssemblyLinearVelocity=Vector3.zero
-     rr.AssemblyAngularVelocity=Vector3.zero
-     hh.PlatformStand=false;hh.Sit=false;hh.AutoRotate=true
-     pcall(function()hh:ChangeState(Enum.HumanoidStateType.GettingUp)end)
+  task.defer(function()
+   task.wait(.08)
+   local rr=root(p);local hh=hum(p)
+   if p.Character~=c or rr~=r or not rr or not hh or not rr.Parent then return end
+   local corrected=groundedRootTarget(p,pos)
+   if math.abs(rr.Position.Y-corrected.Y)>.08 then
+    movementGraceUntil[p]=os.clock()+.5
+    lastValidPosition[p]=corrected
+    local correctedCFrame=CFrame.new(corrected)
+    if typeof(lookAtPos)=="Vector3"then
+     local flatLook=Vector3.new(lookAtPos.X,corrected.Y,lookAtPos.Z)
+     if(flatLook-corrected).Magnitude>.1 then correctedCFrame=CFrame.lookAt(corrected,flatLook)end
     end
+    rr.Anchored=false
+    rr.CFrame=correctedCFrame
+    rr.AssemblyLinearVelocity=Vector3.zero
+    rr.AssemblyAngularVelocity=Vector3.zero
+    hh.PlatformStand=false;hh.Sit=false;hh.AutoRotate=true
    end
   end)
  end
@@ -1104,6 +1066,9 @@ makePhysicalLobby=function()
  lobbySpawnLocation.Anchored=true
  lobbySpawnLocation.Neutral=true
  lobbySpawnLocation.Transparency=1
+ lobbySpawnLocation.CanCollide=false
+ lobbySpawnLocation.CanTouch=false
+ lobbySpawnLocation.CanQuery=false
  lobbySpawnLocation.CanCollide=true
  lobbySpawnLocation.CanTouch=false
  lobbySpawnLocation.CanQuery=true
@@ -2687,11 +2652,7 @@ local function bot(role,pos)
  end
  if role=="MONSTER"then
   visuals=decorateClassicMonster(p,monsterId)
-  if model then
-   model.Name="AI_MONSTER_"..monsterId
-   local scale=monsterId=="FRANKENSTEIN"and 1.16 or monsterId=="WEREWOLF"and 1.12 or monsterId=="GRIM_REAPER"and 1.13 or monsterId=="DRACULA"and 1.06 or 1.04
-   pcall(function()model:ScaleTo(scale)end)
-  end
+  if model then model.Name="AI_MONSTER_"..monsterId end
  else
   visuals=decorateHumanBot(p,humanFormId)
   if model then model.Name="AI_SURVIVOR_"..humanFormId end
@@ -2765,31 +2726,10 @@ local function selectStartingMonsters(h)
  for player in pairs(selected)do lastMonsterIds[player.UserId]=true end
  return selected
 end
-local function setCharacterBodyScale(character,height,width,depth,headScale)
- local h=character and character:FindFirstChildOfClass("Humanoid")
- if not h then return end
- local values={BodyHeightScale=height or 1,BodyWidthScale=width or 1,BodyDepthScale=depth or 1,HeadScale=headScale or 1}
- for name,value in pairs(values)do
-  local scale=h:FindFirstChild(name)
-  if scale and scale:IsA("NumberValue")then scale.Value=value end
- end
-end
-local function resetCharacterBodyScale(character)
- setCharacterBodyScale(character,1,1,1,1)
-end
-local function applyMonsterBodyScale(character,id)
- if id=="DRACULA"then setCharacterBodyScale(character,1.12,.88,.9,.94)
- elseif id=="FRANKENSTEIN"then setCharacterBodyScale(character,1.1,1.18,1.14,1.08)
- elseif id=="WEREWOLF"then setCharacterBodyScale(character,1.14,1.1,1.1,1.04)
- elseif id=="MUMMY"then setCharacterBodyScale(character,1.08,.94,.94,.98)
- elseif id=="GRIM_REAPER"then setCharacterBodyScale(character,1.2,.9,.92,1.03)
- else resetCharacterBodyScale(character)end
-end
 local function clearRoleVisual(p)
  local c=p.Character;if not c then return end
  for _,d in ipairs(c:GetDescendants())do if d.Name=="RoleVisual"or d:GetAttribute("MonsterCostume")==true then d:Destroy()end end
  local old=c:FindFirstChild("RoleHighlight");if old then old:Destroy()end
- resetCharacterBodyScale(c)
  restoreMonsterPalette(c)
 end
 local function costumePart(character,base,name,size,offset,color,material,shape)
@@ -2952,16 +2892,8 @@ local function applyRoleVisual(p,r)
  local hi=Instance.new("Highlight");hi.Name="RoleHighlight";hi.FillTransparency=.86;hi.OutlineTransparency=.42;hi.Parent=c
  if r=="MONSTER"then
   local currentForm=form(p);local mf=Style.Monsters[currentForm.Id]or Style.Monsters.DRACULA;hi.FillColor=mf.Color;hi.OutlineColor=mf.Accent
-  applyMonsterBodyScale(c,currentForm.Id)
   applyMonsterPalette(c,currentForm.Id)
   applyClassicCostume(c,currentForm.Id)
-  task.defer(function()
-   task.wait(.12)
-   if p.Parent==Players and p.Character==c and p:GetAttribute("Role")=="MONSTER"then
-    local rr=root(p)
-    if rr then teleport(p,rr.Position,rr.Position+rr.CFrame.LookVector*8)end
-   end
-  end)
   local head=c:FindFirstChild("Head")or root(p)
   if head then
    local g=Instance.new("BillboardGui");g.Name="RoleVisual";g.Size=UDim2.fromOffset(150,34);g.StudsOffset=Vector3.new(0,3.8,0);g.AlwaysOnTop=true;g.Parent=head
@@ -3040,8 +2972,6 @@ local function infectBot(b,sourcePlayer)
  if b.model and b.model.Parent then
   b.model.Name="AI_MONSTER_"..monsterId
   for _,d in ipairs(b.model:GetDescendants())do if d:IsA("BasePart")and d~=b.part and d:GetAttribute("MonsterCostume")~=true then d.Color=monsterStyle.Color;d.Material=Enum.Material.Fabric end end
-  local scale=monsterId=="FRANKENSTEIN"and 1.16 or monsterId=="WEREWOLF"and 1.12 or monsterId=="GRIM_REAPER"and 1.13 or monsterId=="DRACULA"and 1.06 or 1.04
-  pcall(function()b.model:ScaleTo(scale)end)
   local hi=b.model:FindFirstChild("AIRoleHighlight");if hi and hi:IsA("Highlight")then hi.FillTransparency=.72;hi.FillColor=monsterStyle.Color;hi.OutlineColor=monsterStyle.Accent end
  else
   b.part.Color=monsterStyle.Color;b.part.Material=Enum.Material.Fabric
@@ -3730,12 +3660,6 @@ local function onCharacter(p)
   local slot=1
   for i,player in ipairs(players)do if player==p then slot=((i-1)%#lobbySpawns)+1;break end end
   teleport(p,lobbySpawns[slot],Vector3.new(0,3,210))
-  task.delay(.7,function()
-   if p.Parent==Players and p.Character==c and state~="RUNNING"then
-    local rr=root(p)
-    if rr then teleport(p,rr.Position,Vector3.new(0,rr.Position.Y,210))end
-   end
-  end)
   p:SetAttribute("LobbySpawnGroundedAt",workspace:GetServerTimeNow())
   return
  end
