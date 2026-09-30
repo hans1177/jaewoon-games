@@ -864,12 +864,16 @@ local function lobbyStaff(parent,staffId,pos,lookAt,labelText,promptText,lines)
   part("GloveR",Vector3.new(.58,.78,.58),Vector3.new(1.6,2.65,-.02),ivory,Enum.Material.Fabric,Enum.PartType.Ball)
   part("ShoeL",Vector3.new(.76,.42,1.35),Vector3.new(-.42,-2.8,-.28),Color3.fromRGB(7,7,8),Enum.Material.SmoothPlastic)
   part("ShoeR",Vector3.new(.76,.42,1.35),Vector3.new(.42,-2.8,-.28),Color3.fromRGB(7,7,8),Enum.Material.SmoothPlastic)
-  part("LongNeck",Vector3.new(.52,1.45,.52),Vector3.new(0,8.1,0),skin,Enum.Material.SmoothPlastic)
-  head=part("Head",Vector3.new(1.55,2.35,1.48),Vector3.new(0,9.65,-.02),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  part("LongNeck",Vector3.new(.46,2.35,.46),Vector3.new(0,8.55,0),skin,Enum.Material.SmoothPlastic)
+  head=part("Head",Vector3.new(1.42,2.85,1.38),Vector3.new(0,10.35,-.02),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
   part("SlickHair",Vector3.new(1.6,.6,1.45),Vector3.new(0,10.62,.12),Color3.fromRGB(19,16,16),Enum.Material.Fabric)
-  eyeL=part("EyeL",Vector3.new(.18,.17,.1),Vector3.new(-.29,9.9,-.79),Color3.fromRGB(10,9,10),Enum.Material.SmoothPlastic)
-  eyeR=part("EyeR",Vector3.new(.18,.17,.1),Vector3.new(.29,9.9,-.79),Color3.fromRGB(10,9,10),Enum.Material.SmoothPlastic)
-  smile=part("Smile",Vector3.new(1.18,.12,.09),Vector3.new(0,9.22,-.8),Color3.fromRGB(103,12,20),Enum.Material.Neon)
+  eyeL=part("EyeL",Vector3.new(.12,.28,.1),Vector3.new(-.31,10.62,-.74),Color3.fromRGB(7,7,8),Enum.Material.SmoothPlastic)
+  eyeR=part("EyeR",Vector3.new(.28,.11,.1),Vector3.new(.34,10.48,-.74),Color3.fromRGB(153,18,27),Enum.Material.Neon)
+  smile=part("Smile",Vector3.new(1.55,.11,.09),Vector3.new(.08,9.72,-.77),Color3.fromRGB(132,8,18),Enum.Material.Neon)
+  part("JawShadow",Vector3.new(1.22,.42,.1),Vector3.new(.08,9.48,-.75),Color3.fromRGB(36,10,14),Enum.Material.SmoothPlastic)
+  for finger=1,3 do
+   part("ExtraFingerL"..finger,Vector3.new(.11,.7,.11),Vector3.new(-1.78+(finger*.16),2.25,-.28),skin,Enum.Material.SmoothPlastic)
+  end
   part("NamePlate",Vector3.new(.75,.24,.1),Vector3.new(.43,6.15,-.73),brass,Enum.Material.Metal)
  elseif staffId=="BELLBOY"then
   -- 토비: 작고 넓은 몸통, 큰 머리와 과장된 모자, 황동 장식이 많은 붉은 제복.
@@ -884,10 +888,13 @@ local function lobbyStaff(parent,staffId,pos,lookAt,labelText,promptText,lines)
   part("WhiteGloveR",Vector3.new(.76,.9,.76),Vector3.new(2.08,1.1,-.04),ivory,Enum.Material.Fabric,Enum.PartType.Ball)
   part("ShoeL",Vector3.new(1,.45,1.35),Vector3.new(-.72,-1.15,-.22),Color3.fromRGB(10,10,11),Enum.Material.SmoothPlastic)
   part("ShoeR",Vector3.new(1,.45,1.35),Vector3.new(.72,-1.15,-.22),Color3.fromRGB(10,10,11),Enum.Material.SmoothPlastic)
-  head=part("Head",Vector3.new(2.45,2.3,2.25),Vector3.new(0,5.25,-.02),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
-  eyeL=part("EyeL",Vector3.new(.34,.28,.12),Vector3.new(-.48,5.45,-1.18),Color3.fromRGB(27,22,23),Enum.Material.SmoothPlastic)
-  eyeR=part("EyeR",Vector3.new(.24,.38,.12),Vector3.new(.52,5.38,-1.18),Color3.fromRGB(27,22,23),Enum.Material.SmoothPlastic)
-  smile=part("Smile",Vector3.new(.82,.16,.1),Vector3.new(.05,4.78,-1.2),Color3.fromRGB(79,22,25),Enum.Material.SmoothPlastic)
+  part("BellboyHump",Vector3.new(3.5,2.15,1.5),Vector3.new(0,3.25,1.15),Color3.fromRGB(87,19,27),Enum.Material.Fabric)
+  head=part("Head",Vector3.new(3.05,2.75,2.65),Vector3.new(0,5.55,-.02),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  eyeL=part("EyeL",Vector3.new(.52,.48,.12),Vector3.new(-.58,5.78,-1.37),Color3.fromRGB(18,15,16),Enum.Material.SmoothPlastic)
+  eyeR=part("EyeR",Vector3.new(.12,.17,.12),Vector3.new(.64,5.58,-1.38),Color3.fromRGB(194,35,44),Enum.Material.Neon)
+  smile=part("Smile",Vector3.new(1.72,.2,.1),Vector3.new(.08,4.92,-1.42),Color3.fromRGB(111,16,24),Enum.Material.Neon)
+  part("BellboyCheekL",Vector3.new(.62,.48,.12),Vector3.new(-.8,5.05,-1.36),Color3.fromRGB(159,111,98),Enum.Material.SmoothPlastic)
+  part("BellboyCheekR",Vector3.new(.62,.48,.12),Vector3.new(.8,5.05,-1.36),Color3.fromRGB(159,111,98),Enum.Material.SmoothPlastic)
   part("HatBrim",Vector3.new(3.15,.3,2.65),Vector3.new(0,6.4,-.02),brass,Enum.Material.Metal)
   part("Hat",Vector3.new(2.55,1.15,2.25),Vector3.new(0,7.05,-.02),Color3.fromRGB(102,17,25),Enum.Material.Fabric)
   part("HatBand",Vector3.new(2.62,.22,2.32),Vector3.new(0,6.75,-.02),brass,Enum.Material.Metal)
@@ -901,12 +908,15 @@ local function lobbyStaff(parent,staffId,pos,lookAt,labelText,promptText,lines)
   cylinder("ArmR",4.5,.4,Vector3.new(1.18,4.25,.05),black,Enum.Material.Fabric,3)
   part("HandL",Vector3.new(.48,.8,.48),Vector3.new(-1.35,1.98,-.02),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
   part("HandR",Vector3.new(.48,.8,.48),Vector3.new(1.35,1.98,-.02),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
-  part("LongNeck",Vector3.new(.44,1.65,.44),Vector3.new(0,7.35,0),skin,Enum.Material.SmoothPlastic)
-  head=part("Head",Vector3.new(1.72,2.05,1.6),Vector3.new(0,8.85,-.03),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
-  part("FaceShadow",Vector3.new(1.42,.92,.12),Vector3.new(0,8.9,-.86),Color3.fromRGB(30,27,29),Enum.Material.SmoothPlastic)
-  eyeL=part("EyeL",Vector3.new(.18,.14,.09),Vector3.new(-.31,8.95,-.94),Color3.fromRGB(171,29,35),Enum.Material.Neon)
-  eyeR=part("EyeR",Vector3.new(.18,.14,.09),Vector3.new(.31,8.95,-.94),Color3.fromRGB(171,29,35),Enum.Material.Neon)
-  smile=part("Smile",Vector3.new(.48,.08,.08),Vector3.new(0,8.55,-.95),Color3.fromRGB(74,18,22),Enum.Material.SmoothPlastic)
+  part("LongNeck",Vector3.new(.38,2.5,.38),Vector3.new(0,7.8,0),skin,Enum.Material.SmoothPlastic)
+  head=part("Head",Vector3.new(1.5,2.55,1.5),Vector3.new(0,9.65,-.03),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  part("MaidHairCurtain",Vector3.new(1.7,3.15,.36),Vector3.new(0,9.2,-.62),Color3.fromRGB(25,22,24),Enum.Material.Fabric)
+  part("FaceShadow",Vector3.new(1.22,1.05,.12),Vector3.new(0,9.68,-.83),Color3.fromRGB(22,19,21),Enum.Material.SmoothPlastic)
+  eyeL=part("EyeL",Vector3.new(.12,.22,.09),Vector3.new(-.26,9.86,-.94),Color3.fromRGB(189,30,39),Enum.Material.Neon)
+  eyeR=part("EyeR",Vector3.new(.05,.05,.07),Vector3.new(.31,9.72,-.94),Color3.fromRGB(5,5,6),Enum.Material.SmoothPlastic)
+  smile=part("Smile",Vector3.new(.78,.07,.08),Vector3.new(-.08,9.25,-.95),Color3.fromRGB(92,14,20),Enum.Material.SmoothPlastic)
+  part("MaidFingerL",Vector3.new(.1,1.25,.1),Vector3.new(-1.38,1.52,-.22),skin,Enum.Material.SmoothPlastic)
+  part("MaidFingerR",Vector3.new(.1,1.25,.1),Vector3.new(1.38,1.52,-.22),skin,Enum.Material.SmoothPlastic)
   part("MaidCap",Vector3.new(2.05,.5,1.55),Vector3.new(0,9.9,.04),Color3.fromRGB(207,202,193),Enum.Material.Fabric)
   part("Collar",Vector3.new(1.6,.38,.15),Vector3.new(0,6.35,-.74),Color3.fromRGB(207,202,193),Enum.Material.Fabric)
   part("Ribbon",Vector3.new(.66,.66,.12),Vector3.new(0,5.95,-.82),wine,Enum.Material.Fabric,nil,CFrame.Angles(0,0,math.rad(45)))
@@ -1019,8 +1029,8 @@ makePhysicalLobby=function()
   end
  end
  for _,z in ipairs({233,258,283})do
-  local pool=arenaPart(f,"WallSconceGlow",Vector3.new(1,.75,.42),Vector3.new(-86.3,11.7,z),Color3.fromRGB(238,191,105),Enum.Material.Neon);pool.CanCollide=false;glow(pool,pool.Color,19,.9)
-  local pool2=arenaPart(f,"WallSconceGlow",Vector3.new(1,.75,.42),Vector3.new(86.3,11.7,z),Color3.fromRGB(238,191,105),Enum.Material.Neon);pool2.CanCollide=false;glow(pool2,pool2.Color,19,.9)
+  local pool=arenaPart(f,"WallSconceGlow",Vector3.new(1,.75,.42),Vector3.new(-86.3,11.7,z),Color3.fromRGB(238,191,105),Enum.Material.Neon);pool.CanCollide=false;glow(pool,pool.Color,23,1.15)
+  local pool2=arenaPart(f,"WallSconceGlow",Vector3.new(1,.75,.42),Vector3.new(86.3,11.7,z),Color3.fromRGB(238,191,105),Enum.Material.Neon);pool2.CanCollide=false;glow(pool2,pool2.Color,23,1.15)
  end
  local staffDoor=arenaPart(f,"StaffOnlyDoor",Vector3.new(11,14,.9),Vector3.new(72,7.2,306),Color3.fromRGB(49,34,30),Enum.Material.WoodPlanks)
  local staffPlaque=arenaPart(f,"StaffOnlyPlaque",Vector3.new(6.5,1.7,.18),Vector3.new(72,11.7,305.45),Color3.fromRGB(127,91,48),Enum.Material.Metal);staffPlaque.CanCollide=false
@@ -1051,9 +1061,34 @@ makePhysicalLobby=function()
  lobbySurfaceText(sign,"NOCTURNE HOTEL · 1927\n심야 대탈출",Color3.fromRGB(223,194,137),23)
  local bell=arenaPart(f,"DeskBell",Vector3.new(1.4,.7,1.4),Vector3.new(-9,6.85,290.6),Color3.fromRGB(184,143,72),Enum.Material.Metal);bell.Shape=Enum.PartType.Ball;bell.CanCollide=false
  arenaPart(f,"GuestBook",Vector3.new(5.8,.35,3.9),Vector3.new(7,6.82,290.5),Color3.fromRGB(188,176,148),Enum.Material.Fabric).CanCollide=false
+ -- 프런트와 대기실 소품: 오래된 호텔이 실제로 운영 중인 듯한 밀도를 만든다.
+ local phoneBase=arenaPart(f,"FrontDeskPhone",Vector3.new(3.2,.8,2.5),Vector3.new(15,6.85,291),Color3.fromRGB(37,32,31),Enum.Material.SmoothPlastic);phoneBase.CanCollide=false
+ local receiver=arenaPart(f,"FrontDeskReceiver",Vector3.new(3.5,.45,.7),Vector3.new(15,7.55,291),Color3.fromRGB(21,20,21),Enum.Material.SmoothPlastic);receiver.CanCollide=false
+ receiver.Orientation=Vector3.new(0,8,-4)
+ local radio=arenaPart(f,"LobbyOldRadio",Vector3.new(5.8,3.8,2.6),Vector3.new(-28,2.6,301),Color3.fromRGB(74,51,37),Enum.Material.WoodPlanks)
+ radio.CanCollide=false
+ local radioDial=arenaPart(f,"LobbyRadioDial",Vector3.new(1.25,1.25,.2),Vector3.new(-26.3,2.6,299.62),Color3.fromRGB(190,145,71),Enum.Material.Metal);radioDial.CanCollide=false
+ local vending=arenaPart(f,"BrokenVendingMachine",Vector3.new(7.2,12,4.5),Vector3.new(-77,6.5,242),Color3.fromRGB(52,59,61),Enum.Material.Metal)
+ local vendingGlow=arenaPart(f,"VendingGhostDisplay",Vector3.new(5.3,4.2,.25),Vector3.new(-77,8.6,239.68),Color3.fromRGB(82,155,142),Enum.Material.Neon);vendingGlow.CanCollide=false;vendingGlow.Transparency=.22
+ local umbrellaStand=arenaPart(f,"UmbrellaStand",Vector3.new(3.3,4.2,3.3),Vector3.new(-72,2.55,231),Color3.fromRGB(66,59,54),Enum.Material.Metal);umbrellaStand.Shape=Enum.PartType.Cylinder
+ for i=-1,1 do
+  local umbrella=arenaPart(f,"LobbyUmbrella",Vector3.new(.34,6,.34),Vector3.new(-72+i*.75,5.6,231),Color3.fromRGB(51+i*5,43,47),Enum.Material.Metal)
+  umbrella.Orientation=Vector3.new(i*5,0,i*4);umbrella.CanCollide=false
+ end
+ local cleaningCart=arenaPart(f,"CleaningCart",Vector3.new(6.5,3.2,4),Vector3.new(70,2.2,246),Color3.fromRGB(92,84,72),Enum.Material.Metal)
+ local bucket=arenaPart(f,"MopBucket",Vector3.new(2.4,2,2.4),Vector3.new(72.2,2,244.8),Color3.fromRGB(132,111,61),Enum.Material.Metal);bucket.Shape=Enum.PartType.Cylinder
+ local mop=arenaPart(f,"MopHandle",Vector3.new(.34,8,.34),Vector3.new(68.4,5.1,245),Color3.fromRGB(101,71,44),Enum.Material.Wood)
+ mop.Orientation=Vector3.new(0,0,14);mop.CanCollide=false
+ local doll=arenaPart(f,"LostAndFoundDoll",Vector3.new(1.5,2.6,1.2),Vector3.new(64,2.1,269),Color3.fromRGB(184,155,142),Enum.Material.Fabric)
+ doll.CanCollide=false
+ local dollEye=arenaPart(f,"LostDollEye",Vector3.new(.16,.16,.1),Vector3.new(64.25,2.55,268.35),Color3.fromRGB(141,23,31),Enum.Material.Neon);dollEye.CanCollide=false
+ local wetSign=arenaPart(f,"WetFloorSign",Vector3.new(2.8,4,.6),Vector3.new(58,2.6,239),Color3.fromRGB(201,164,51),Enum.Material.SmoothPlastic)
+ wetSign.Orientation=Vector3.new(0,-18,0)
+ local shoeL=arenaPart(f,"LostShoeL",Vector3.new(1.3,.55,2.2),Vector3.new(-52,1.05,272),Color3.fromRGB(39,31,29),Enum.Material.Fabric);shoeL.Orientation=Vector3.new(0,28,4)
+ local shoeR=arenaPart(f,"LostShoeR",Vector3.new(1.3,.55,2.2),Vector3.new(-49.8,1.05,270.7),Color3.fromRGB(39,31,29),Enum.Material.Fabric);shoeR.Orientation=Vector3.new(0,-12,-7)
  for _,x in ipairs({-14,0,14})do
   local deskLamp=arenaPart(f,"ReceptionDownlight",Vector3.new(3.8,.3,1.2),Vector3.new(x,18.2,295),Color3.fromRGB(236,190,108),Enum.Material.Neon)
-  deskLamp.CanCollide=false;glow(deskLamp,deskLamp.Color,22,1.08)
+  deskLamp.CanCollide=false;glow(deskLamp,deskLamp.Color,26,1.35)
  end
 
  -- 로비 자체가 게임 튜토리얼 역할을 한다. 안내판도 호텔의 미친 투숙 규정으로 보인다.
@@ -1195,6 +1230,11 @@ makePhysicalLobby=function()
  lobbyHauntTrigger(f,"HallShadow",Vector3.new(0,3,252),"MAID_CORRIDOR",10,"방금 네 뒤로 누가 지나갔다.")
  lobbyHauntTrigger(f,"Elevator13",Vector3.new(0,3,225),"ELEVATOR_13",12,"띵— 13층은 존재하지 않습니다.")
  lobbyHauntTrigger(f,"Clerk",Vector3.new(2,3,286),"CLERK_SMILE",11,"프런트 직원의 미소가 너무 길다.")
+ lobbyHauntTrigger(f,"Phone",Vector3.new(15,3,291),"PHONE_GLITCH",10,"전화선은 끊겼는데 예약 전화가 왔다.")
+ lobbyHauntTrigger(f,"Vending",Vector3.new(-77,4,242),"VENDING_SHAKE",11,"자판기가 캔 대신 객실 열쇠를 내놓으려 한다.")
+ lobbyHauntTrigger(f,"Doll",Vector3.new(64,3,269),"DOLL_TURN",9,"분실물 인형이 프런트 쪽을 보고 있었다.")
+ lobbyHauntTrigger(f,"CleaningCart",Vector3.new(70,3,246),"CART_ROLL",10,"청소 카트가 스스로 야간 순찰을 시작했다.")
+ lobbyHauntTrigger(f,"Umbrella",Vector3.new(-72,3,231),"UMBRELLA_TWITCH",9,"비도 안 오는데 우산들이 출근 준비를 한다.")
 
  -- 천장 보와 샹들리에. 밝은 점이 승강기 방향으로 점점 이어진다.
  for _,z in ipairs({226,246,266,286})do
@@ -1207,7 +1247,7 @@ makePhysicalLobby=function()
   for _,dx in ipairs({-2.1,0,2.1})do
    local bulb=arenaPart(f,"ChandelierBulb",Vector3.new(.85,1.2,.85),Vector3.new(dx,14.1,z),Color3.fromRGB(221,179,105),Enum.Material.Neon)
    bulb.CanCollide=false
-   local light=glow(bulb,Color3.fromRGB(255,211,145),z==236 and 24 or 20,z==236 and 1.45 or 1.08)
+   local light=glow(bulb,Color3.fromRGB(255,211,145),z==236 and 24 or 20,z==236 and 1.7 or 1.3)
    table.insert(flickerLights,light)
   end
  end
@@ -1335,8 +1375,8 @@ makePhysicalLobby=function()
  refreshPhysicalLobby()
  workspace:SetAttribute("PhysicalLobbyReady",true)
  workspace:SetAttribute("WorldLobbyMode",true)
- workspace:SetAttribute("LobbyArtPass","NOCTURNE_CURSED_HOTEL_V6")
- workspace:SetAttribute("LobbyBuildRevision","NOCTURNE_BOOT_COMPILE_FIXED_20260930")
+ workspace:SetAttribute("LobbyArtPass","NOCTURNE_CURSED_HOTEL_V7")
+ workspace:SetAttribute("LobbyBuildRevision","NOCTURNE_GROTESQUE_COMIC_LOBBY_20260930")
  return f
 end
 
