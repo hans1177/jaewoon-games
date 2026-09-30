@@ -364,7 +364,7 @@ test('source-sync implementation edits do not wake a batch runtime',()=>{
 
 test('latest exact Roblox run supersedes stale exact work while batch remains non-cancelling',()=>{
   const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
-  assert.match(runtime,/group: roblox-native-exact-${{ inputs.game_id ||/);
-  assert.match(runtime,/cancel-in-progress: ${{ inputs.game_id != '' }}/);
+  assert.match(runtime,/^\s*group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}$/m);
+  assert.match(runtime,/^\s*cancel-in-progress: \$\{\{ inputs\.game_id != '' \}\}$/m);
   assert.match(runtime,/batch-push/);
 });
