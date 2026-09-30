@@ -7060,7 +7060,8 @@
       "coding_negative_gdyj16",
       "coding_negative_4yobfd",
       "coding_negative_1cwhyaj",
-      "coding_negative_13awgmd"
+      "coding_negative_13awgmd",
+      "coding_negative_kqu6nn"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -18528,7 +18529,7 @@
         "verifiedApplications": 14,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 57,
-        "verifiedFailures": 1505,
+        "verifiedFailures": 1506,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1,
@@ -18542,13 +18543,13 @@
         "contextModes": {
           "STANDARD_CONTEXT": {
             "verifiedApplications": 14,
-            "verifiedFailures": 317,
+            "verifiedFailures": 318,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 57,
             "totalContextBytes": 235130,
             "lastEvidence": "coding_a3kls0",
-            "lastFailureEvidence": "coding_negative_13awgmd",
-            "lastUpdatedAt": "2026-09-30T17:31:47.957Z"
+            "lastFailureEvidence": "coding_negative_kqu6nn",
+            "lastUpdatedAt": "2026-09-30T18:10:25.538Z"
           },
           "UNITY_WEB_BOOTSTRAP_SHELL": {
             "verifiedApplications": 0,
@@ -19274,21 +19275,21 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 3,
+            "verifiedFailures": 4,
             "games": {},
             "targets": {},
             "failureGames": {
-              "line-defense": 3
+              "line-defense": 4
             },
             "failureTargets": {
-              "roblox": 3
+              "roblox": 4
             },
             "failureClasses": {
-              "TIMEOUT": 3
+              "TIMEOUT": 4
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_13awgmd",
-            "lastUpdatedAt": "2026-09-30T17:31:47.957Z"
+            "lastFailureEvidence": "coding_negative_kqu6nn",
+            "lastUpdatedAt": "2026-09-30T18:10:25.538Z"
           },
           "roblox|EDIT_MATCH|INVALID_PATH|OTHER|PRESENTATION_DELTA|PRESENTATION_PATCH_DELTA|ROBLOX_STRUCTURAL_CONTINUITY|ROBLOX_VISUAL_DOMAINS|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -19313,8 +19314,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_a3kls0",
-        "lastFailureEvidence": "coding_negative_13awgmd",
-        "lastUpdatedAt": "2026-09-30T17:31:47.957Z"
+        "lastFailureEvidence": "coding_negative_kqu6nn",
+        "lastUpdatedAt": "2026-09-30T18:10:25.538Z"
       }
     }
   },
@@ -22067,7 +22068,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-30T18:05:43.334Z",
+    "lastBuiltAt": "2026-09-30T18:10:25.638Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -22076,7 +22077,7 @@
     "domains": {
       "CORE_LOOP": {
         "verifiedApplications": 184,
-        "verifiedFailures": 150,
+        "verifiedFailures": 152,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22090,10 +22091,10 @@
           "monster-adventure": 21,
           "bug-defense": 32,
           "daechung-rpg": 14,
-          "line-defense": 23,
+          "line-defense": 24,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 8,
           "seed-casual-realm-weaver": 20,
-          "seed-idle-growth-rpg-crystal-bloom": 26,
+          "seed-idle-growth-rpg-crystal-bloom": 27,
           "seed-story-complete-rpg-chronicles-of-eldoria": 13,
           "survival": 12,
           "ant-simulator": 23,
@@ -22101,12 +22102,12 @@
         },
         "holdoutPasses": 0,
         "level": 2,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.331Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "STATE_MACHINE": {
         "verifiedApplications": 235,
-        "verifiedFailures": 189,
+        "verifiedFailures": 191,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22121,10 +22122,10 @@
           "bug-defense": 32,
           "fantasy-survival": 32,
           "daechung-rpg": 22,
-          "line-defense": 23,
+          "line-defense": 24,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 8,
           "seed-casual-realm-weaver": 20,
-          "seed-idle-growth-rpg-crystal-bloom": 26,
+          "seed-idle-growth-rpg-crystal-bloom": 27,
           "seed-story-complete-rpg-chronicles-of-eldoria": 13,
           "survival": 12,
           "cozy-island": 47,
@@ -22133,12 +22134,12 @@
         },
         "holdoutPasses": 0,
         "level": 2,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.331Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "COMBAT": {
         "verifiedApplications": 170,
-        "verifiedFailures": 114,
+        "verifiedFailures": 116,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22151,10 +22152,10 @@
           "village-dungeons": 22,
           "monster-adventure": 20,
           "daechung-rpg": 16,
-          "line-defense": 23,
+          "line-defense": 24,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 8,
           "seed-casual-realm-weaver": 12,
-          "seed-idle-growth-rpg-crystal-bloom": 18,
+          "seed-idle-growth-rpg-crystal-bloom": 19,
           "seed-story-complete-rpg-chronicles-of-eldoria": 6,
           "survival": 3,
           "cozy-island": 31,
@@ -22164,12 +22165,12 @@
         },
         "holdoutPasses": 0,
         "level": 2,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.331Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "AI": {
         "verifiedApplications": 97,
-        "verifiedFailures": 91,
+        "verifiedFailures": 93,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22179,8 +22180,8 @@
           "amusement-tycoon": 19,
           "monster-adventure": 20,
           "daechung-rpg": 14,
-          "line-defense": 13,
-          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 14,
+          "seed-idle-growth-rpg-crystal-bloom": 14,
           "seed-single-defense-strat-celestial-bastion": 13,
           "seed-puzzle-chromatic-cascade": 19,
           "village-dungeons": 12,
@@ -22192,12 +22193,12 @@
         },
         "holdoutPasses": 0,
         "level": 2,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.331Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "PROGRESSION": {
         "verifiedApplications": 208,
-        "verifiedFailures": 125,
+        "verifiedFailures": 127,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22210,10 +22211,10 @@
           "village-dungeons": 23,
           "monster-adventure": 21,
           "daechung-rpg": 24,
-          "line-defense": 23,
+          "line-defense": 24,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 8,
           "seed-casual-realm-weaver": 12,
-          "seed-idle-growth-rpg-crystal-bloom": 18,
+          "seed-idle-growth-rpg-crystal-bloom": 19,
           "seed-story-complete-rpg-chronicles-of-eldoria": 6,
           "survival": 3,
           "cozy-island": 47,
@@ -22224,12 +22225,12 @@
         },
         "holdoutPasses": 0,
         "level": 2,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.331Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "ECONOMY": {
         "verifiedApplications": 59,
-        "verifiedFailures": 125,
+        "verifiedFailures": 127,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22245,20 +22246,20 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.331Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "SAVE": {
         "verifiedApplications": 70,
-        "verifiedFailures": 125,
+        "verifiedFailures": 127,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22274,20 +22275,20 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.331Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "MOBILE_INPUT": {
         "verifiedApplications": 198,
-        "verifiedFailures": 102,
+        "verifiedFailures": 104,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22301,10 +22302,10 @@
           "monster-adventure": 21,
           "bug-defense": 24,
           "daechung-rpg": 24,
-          "line-defense": 23,
+          "line-defense": 24,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 8,
           "survival": 3,
-          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "seed-idle-growth-rpg-crystal-bloom": 14,
           "cozy-island": 47,
           "horror-escape-room": 17,
           "fantasy-survival": 14,
@@ -22312,12 +22313,12 @@
         },
         "holdoutPasses": 0,
         "level": 3,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.331Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "UI_STATE": {
         "verifiedApplications": 93,
-        "verifiedFailures": 165,
+        "verifiedFailures": 167,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22333,22 +22334,22 @@
           "horror-escape-room": 17,
           "amusement-tycoon": 16,
           "seed-casual-realm-weaver": 18,
-          "seed-idle-growth-rpg-crystal-bloom": 20,
+          "seed-idle-growth-rpg-crystal-bloom": 21,
           "seed-puzzle-chromatic-cascade": 13,
           "seed-single-defense-strat-celestial-bastion": 5,
           "seed-story-complete-rpg-chronicles-of-eldoria": 7,
-          "line-defense": 8,
+          "line-defense": 9,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.331Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "DEBUGGING": {
         "verifiedApplications": 257,
-        "verifiedFailures": 197,
+        "verifiedFailures": 199,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22364,10 +22365,10 @@
           "ant-simulator": 40,
           "fantasy-survival": 32,
           "daechung-rpg": 24,
-          "line-defense": 23,
+          "line-defense": 24,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 8,
           "seed-casual-realm-weaver": 20,
-          "seed-idle-growth-rpg-crystal-bloom": 26,
+          "seed-idle-growth-rpg-crystal-bloom": 27,
           "seed-story-complete-rpg-chronicles-of-eldoria": 13,
           "survival": 12,
           "cozy-island": 56,
@@ -22375,12 +22376,12 @@
         },
         "holdoutPasses": 0,
         "level": 2,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.331Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "RECOVERY": {
         "verifiedApplications": 24,
-        "verifiedFailures": 90,
+        "verifiedFailures": 92,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22393,20 +22394,20 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.331Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "SECURITY": {
         "verifiedApplications": 73,
-        "verifiedFailures": 126,
+        "verifiedFailures": 128,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22422,20 +22423,20 @@
           "bug-defense": 13,
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.331Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "PERFORMANCE": {
         "verifiedApplications": 59,
-        "verifiedFailures": 102,
+        "verifiedFailures": 104,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22450,20 +22451,20 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.331Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "ASSET_PRODUCTION": {
         "verifiedApplications": 32,
-        "verifiedFailures": 120,
+        "verifiedFailures": 122,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22477,20 +22478,20 @@
           "ant-simulator": 23,
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.331Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "ASSET_ADAPTATION": {
         "verifiedApplications": 53,
-        "verifiedFailures": 116,
+        "verifiedFailures": 118,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22504,20 +22505,20 @@
           "ant-simulator": 23,
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.331Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "LIVING_MOTION": {
         "verifiedApplications": 42,
-        "verifiedFailures": 90,
+        "verifiedFailures": 92,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22530,20 +22531,20 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.331Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "ANIMATION_FEEL": {
         "verifiedApplications": 24,
-        "verifiedFailures": 90,
+        "verifiedFailures": 92,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22556,20 +22557,20 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.331Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "VFX": {
         "verifiedApplications": 24,
-        "verifiedFailures": 97,
+        "verifiedFailures": 99,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22582,20 +22583,20 @@
           "fantasy-survival": 14,
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.331Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "AUDIO_FEEL": {
         "verifiedApplications": 111,
-        "verifiedFailures": 65,
+        "verifiedFailures": 67,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22607,21 +22608,21 @@
           "monster-adventure": 20,
           "fantasy-survival": 18,
           "daechung-rpg": 14,
-          "line-defense": 23,
+          "line-defense": 24,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 7,
           "bug-defense": 9,
           "seed-casual-realm-weaver": 10,
-          "seed-idle-growth-rpg-crystal-bloom": 9,
+          "seed-idle-growth-rpg-crystal-bloom": 10,
           "seed-puzzle-chromatic-cascade": 8
         },
         "holdoutPasses": 0,
         "level": 2,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "CAMERA_LANGUAGE": {
         "verifiedApplications": 24,
-        "verifiedFailures": 159,
+        "verifiedFailures": 161,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22632,25 +22633,25 @@
           "amusement-tycoon": 16,
           "bug-defense": 21,
           "seed-casual-realm-weaver": 18,
-          "seed-idle-growth-rpg-crystal-bloom": 20,
+          "seed-idle-growth-rpg-crystal-bloom": 21,
           "seed-puzzle-chromatic-cascade": 13,
           "seed-single-defense-strat-celestial-bastion": 5,
           "seed-story-complete-rpg-chronicles-of-eldoria": 7,
           "survival": 9,
           "village-dungeons": 18,
           "fantasy-survival": 14,
-          "line-defense": 8,
+          "line-defense": 9,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "STORYTELLING": {
         "verifiedApplications": 24,
-        "verifiedFailures": 97,
+        "verifiedFailures": 99,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22664,20 +22665,20 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "NARRATIVE_STRUCTURE": {
         "verifiedApplications": 20,
-        "verifiedFailures": 63,
+        "verifiedFailures": 65,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22689,20 +22690,20 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "QUEST_DESIGN": {
         "verifiedApplications": 191,
-        "verifiedFailures": 65,
+        "verifiedFailures": 67,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22716,22 +22717,22 @@
           "monster-adventure": 21,
           "fantasy-survival": 32,
           "daechung-rpg": 14,
-          "line-defense": 23,
+          "line-defense": 24,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 8,
           "seed-casual-realm-weaver": 12,
-          "seed-idle-growth-rpg-crystal-bloom": 18,
+          "seed-idle-growth-rpg-crystal-bloom": 19,
           "seed-story-complete-rpg-chronicles-of-eldoria": 6,
           "survival": 3,
           "bug-defense": 14
         },
         "holdoutPasses": 0,
         "level": 3,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "CHARACTER_ARC": {
         "verifiedApplications": 59,
-        "verifiedFailures": 166,
+        "verifiedFailures": 168,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22744,25 +22745,25 @@
           "amusement-tycoon": 16,
           "bug-defense": 21,
           "seed-casual-realm-weaver": 18,
-          "seed-idle-growth-rpg-crystal-bloom": 20,
+          "seed-idle-growth-rpg-crystal-bloom": 21,
           "seed-puzzle-chromatic-cascade": 13,
           "seed-single-defense-strat-celestial-bastion": 5,
           "seed-story-complete-rpg-chronicles-of-eldoria": 7,
           "survival": 9,
           "village-dungeons": 18,
           "fantasy-survival": 14,
-          "line-defense": 8,
+          "line-defense": 9,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "DIALOGUE": {
         "verifiedApplications": 23,
-        "verifiedFailures": 26,
+        "verifiedFailures": 27,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22772,14 +22773,14 @@
           "fantasy-survival": 14,
           "bug-defense": 5,
           "amusement-tycoon": 9,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
           "seed-puzzle-chromatic-cascade": 8,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_62fili",
-        "lastUpdatedAt": "2026-09-30T17:31:48.183Z"
+        "lastEvidence": "knowledge_hglmgm",
+        "lastUpdatedAt": "2026-09-30T18:10:25.611Z"
       },
       "CHARACTER_PERSONA": {
         "verifiedApplications": 0,
@@ -22797,7 +22798,7 @@
       },
       "RELATIONSHIP_MEMORY": {
         "verifiedApplications": 24,
-        "verifiedFailures": 90,
+        "verifiedFailures": 92,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -22810,16 +22811,16 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "WORLD_NARRATIVE": {
         "verifiedApplications": 24,
@@ -22989,7 +22990,7 @@
       },
       "WORLD_NARRATIVE_BINDING": {
         "verifiedApplications": 24,
-        "verifiedFailures": 90,
+        "verifiedFailures": 92,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -23002,20 +23003,20 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "VISUAL_IDENTITY": {
         "verifiedApplications": 24,
-        "verifiedFailures": 90,
+        "verifiedFailures": 92,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -23028,20 +23029,20 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "CONCEPT_DIRECTION": {
         "verifiedApplications": 0,
-        "verifiedFailures": 113,
+        "verifiedFailures": 115,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -23053,15 +23054,15 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "line-defense": 8,
+          "line-defense": 9,
           "bug-defense": 8,
-          "seed-idle-growth-rpg-crystal-bloom": 9,
+          "seed-idle-growth-rpg-crystal-bloom": 10,
           "seed-puzzle-chromatic-cascade": 8
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "ENVIRONMENT_COMPOSITION": {
         "verifiedApplications": 0,
@@ -23093,7 +23094,7 @@
       },
       "LEVEL_DESIGN": {
         "verifiedApplications": 24,
-        "verifiedFailures": 90,
+        "verifiedFailures": 92,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -23106,20 +23107,20 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "NAVIGATION": {
         "verifiedApplications": 24,
-        "verifiedFailures": 63,
+        "verifiedFailures": 65,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -23131,20 +23132,20 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "ROUTE_DESIGN": {
         "verifiedApplications": 24,
-        "verifiedFailures": 90,
+        "verifiedFailures": 92,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -23157,20 +23158,20 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "STREAMING": {
         "verifiedApplications": 24,
-        "verifiedFailures": 63,
+        "verifiedFailures": 65,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -23182,16 +23183,16 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "STREAMING_OPTIMIZATION": {
         "verifiedApplications": 0,
@@ -23209,7 +23210,7 @@
       },
       "WEB_RUNTIME": {
         "verifiedApplications": 243,
-        "verifiedFailures": 121,
+        "verifiedFailures": 123,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -23225,22 +23226,22 @@
           "bug-defense": 25,
           "ant-simulator": 40,
           "fantasy-survival": 40,
-          "line-defense": 23,
+          "line-defense": 24,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 11,
           "seed-casual-realm-weaver": 12,
-          "seed-idle-growth-rpg-crystal-bloom": 18,
+          "seed-idle-growth-rpg-crystal-bloom": 19,
           "seed-story-complete-rpg-chronicles-of-eldoria": 6,
           "survival": 3,
           "cozy-island": 36
         },
         "holdoutPasses": 0,
         "level": 3,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "ROBLOX_STUDIO": {
         "verifiedApplications": 62,
-        "verifiedFailures": 190,
+        "verifiedFailures": 192,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -23253,7 +23254,7 @@
           "amusement-tycoon": 16,
           "bug-defense": 21,
           "seed-casual-realm-weaver": 18,
-          "seed-idle-growth-rpg-crystal-bloom": 20,
+          "seed-idle-growth-rpg-crystal-bloom": 21,
           "seed-puzzle-chromatic-cascade": 13,
           "seed-single-defense-strat-celestial-bastion": 5,
           "seed-story-complete-rpg-chronicles-of-eldoria": 7,
@@ -23261,18 +23262,18 @@
           "village-dungeons": 18,
           "ant-simulator": 23,
           "fantasy-survival": 14,
-          "line-defense": 8,
+          "line-defense": 9,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "ROBLOX_DATASTORE": {
         "verifiedApplications": 24,
-        "verifiedFailures": 63,
+        "verifiedFailures": 65,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -23284,20 +23285,20 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "ROBLOX_REMOTE_SECURITY": {
         "verifiedApplications": 24,
-        "verifiedFailures": 63,
+        "verifiedFailures": 65,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -23309,20 +23310,20 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "ROBLOX_REPLICATION": {
         "verifiedApplications": 24,
-        "verifiedFailures": 63,
+        "verifiedFailures": 65,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -23334,20 +23335,20 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "ROBLOX_MULTIPLAYER": {
         "verifiedApplications": 28,
-        "verifiedFailures": 63,
+        "verifiedFailures": 65,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -23360,19 +23361,19 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "ROBLOX_TOUCH_INPUT": {
         "verifiedApplications": 24,
-        "verifiedFailures": 63,
+        "verifiedFailures": 65,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -23384,20 +23385,20 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "ROBLOX_CHARACTER_STATE": {
         "verifiedApplications": 24,
-        "verifiedFailures": 63,
+        "verifiedFailures": 65,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -23409,20 +23410,20 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "ROBLOX_UI_STATE": {
         "verifiedApplications": 24,
-        "verifiedFailures": 63,
+        "verifiedFailures": 65,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -23434,20 +23435,20 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "UNITY_RUNTIME": {
         "verifiedApplications": 40,
-        "verifiedFailures": 178,
+        "verifiedFailures": 180,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -23459,7 +23460,7 @@
           "amusement-tycoon": 16,
           "bug-defense": 21,
           "seed-casual-realm-weaver": 18,
-          "seed-idle-growth-rpg-crystal-bloom": 20,
+          "seed-idle-growth-rpg-crystal-bloom": 21,
           "seed-puzzle-chromatic-cascade": 13,
           "seed-single-defense-strat-celestial-bastion": 5,
           "seed-story-complete-rpg-chronicles-of-eldoria": 7,
@@ -23467,14 +23468,14 @@
           "village-dungeons": 18,
           "ant-simulator": 23,
           "fantasy-survival": 14,
-          "line-defense": 8,
+          "line-defense": 9,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "UNITY_PHYSICS": {
         "verifiedApplications": 0,
@@ -23506,7 +23507,7 @@
       },
       "UEFN_RUNTIME": {
         "verifiedApplications": 23,
-        "verifiedFailures": 114,
+        "verifiedFailures": 116,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -23520,16 +23521,16 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.332Z"
+        "lastEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.618Z"
       },
       "UEFN_VERSE": {
         "verifiedApplications": 0,
@@ -23568,10 +23569,10 @@
       "EXPERIENCE:exp_1oonbi8": {
         "source": "EXPERIENCE",
         "verifiedApplications": 293,
-        "verifiedFailures": 197,
+        "verifiedFailures": 199,
         "firstPasses": 10,
         "failureSignatureClears": 120,
-        "regressionFailures": 197,
+        "regressionFailures": 199,
         "primaryDomainMatches": 48,
         "primaryDomainMismatches": 0,
         "games": {
@@ -23584,10 +23585,10 @@
           "bug-defense": 33,
           "ant-simulator": 40,
           "fantasy-survival": 40,
-          "line-defense": 23,
+          "line-defense": 24,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 11,
           "seed-casual-realm-weaver": 20,
-          "seed-idle-growth-rpg-crystal-bloom": 26,
+          "seed-idle-growth-rpg-crystal-bloom": 27,
           "seed-story-complete-rpg-chronicles-of-eldoria": 13,
           "survival": 12,
           "cozy-island": 56,
@@ -23596,20 +23597,20 @@
         "targets": {
           "web": 277,
           "unity": 39,
-          "roblox": 174
+          "roblox": 176
         },
         "state": "DEMOTED",
         "lastEvidence": "knowledge_5ii45v",
-        "lastFailureEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.306Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.614Z"
       },
       "EXPERIENCE:exp_4odofx": {
         "source": "EXPERIENCE",
         "verifiedApplications": 293,
-        "verifiedFailures": 197,
+        "verifiedFailures": 199,
         "firstPasses": 10,
         "failureSignatureClears": 120,
-        "regressionFailures": 197,
+        "regressionFailures": 199,
         "primaryDomainMatches": 48,
         "primaryDomainMismatches": 0,
         "games": {
@@ -23622,10 +23623,10 @@
           "bug-defense": 33,
           "ant-simulator": 40,
           "fantasy-survival": 40,
-          "line-defense": 23,
+          "line-defense": 24,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 11,
           "seed-casual-realm-weaver": 20,
-          "seed-idle-growth-rpg-crystal-bloom": 26,
+          "seed-idle-growth-rpg-crystal-bloom": 27,
           "seed-story-complete-rpg-chronicles-of-eldoria": 13,
           "survival": 12,
           "cozy-island": 56,
@@ -23634,20 +23635,20 @@
         "targets": {
           "web": 277,
           "unity": 39,
-          "roblox": 174
+          "roblox": 176
         },
         "state": "DEMOTED",
         "lastEvidence": "knowledge_5ii45v",
-        "lastFailureEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.307Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.614Z"
       },
       "EXPERIENCE:exp_pg739o": {
         "source": "EXPERIENCE",
         "verifiedApplications": 293,
-        "verifiedFailures": 196,
+        "verifiedFailures": 198,
         "firstPasses": 10,
         "failureSignatureClears": 120,
-        "regressionFailures": 196,
+        "regressionFailures": 198,
         "primaryDomainMatches": 48,
         "primaryDomainMismatches": 0,
         "games": {
@@ -23660,10 +23661,10 @@
           "bug-defense": 32,
           "ant-simulator": 40,
           "fantasy-survival": 40,
-          "line-defense": 23,
+          "line-defense": 24,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 11,
           "seed-casual-realm-weaver": 20,
-          "seed-idle-growth-rpg-crystal-bloom": 26,
+          "seed-idle-growth-rpg-crystal-bloom": 27,
           "seed-story-complete-rpg-chronicles-of-eldoria": 13,
           "survival": 12,
           "cozy-island": 56,
@@ -23672,20 +23673,20 @@
         "targets": {
           "web": 277,
           "unity": 39,
-          "roblox": 173
+          "roblox": 175
         },
         "state": "DEMOTED",
         "lastEvidence": "knowledge_5ii45v",
-        "lastFailureEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.307Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.614Z"
       },
       "EXPERIENCE:supervised_bug-defense_35476177742_revise": {
         "source": "EXPERIENCE",
         "verifiedApplications": 293,
-        "verifiedFailures": 191,
+        "verifiedFailures": 193,
         "firstPasses": 10,
         "failureSignatureClears": 120,
-        "regressionFailures": 191,
+        "regressionFailures": 193,
         "primaryDomainMatches": 48,
         "primaryDomainMismatches": 0,
         "games": {
@@ -23698,10 +23699,10 @@
           "bug-defense": 33,
           "ant-simulator": 40,
           "fantasy-survival": 40,
-          "line-defense": 23,
+          "line-defense": 24,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 11,
           "seed-casual-realm-weaver": 19,
-          "seed-idle-growth-rpg-crystal-bloom": 25,
+          "seed-idle-growth-rpg-crystal-bloom": 26,
           "seed-story-complete-rpg-chronicles-of-eldoria": 12,
           "survival": 11,
           "cozy-island": 56,
@@ -23710,20 +23711,20 @@
         "targets": {
           "web": 277,
           "unity": 39,
-          "roblox": 168
+          "roblox": 170
         },
         "state": "DEMOTED",
         "lastEvidence": "knowledge_5ii45v",
-        "lastFailureEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.307Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.614Z"
       },
       "EXPERIENCE:exp_rg6lvy": {
         "source": "EXPERIENCE",
         "verifiedApplications": 292,
-        "verifiedFailures": 188,
+        "verifiedFailures": 190,
         "firstPasses": 10,
         "failureSignatureClears": 119,
-        "regressionFailures": 188,
+        "regressionFailures": 190,
         "primaryDomainMatches": 47,
         "primaryDomainMismatches": 0,
         "games": {
@@ -23736,10 +23737,10 @@
           "bug-defense": 32,
           "ant-simulator": 39,
           "fantasy-survival": 39,
-          "line-defense": 23,
+          "line-defense": 24,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 11,
           "seed-casual-realm-weaver": 19,
-          "seed-idle-growth-rpg-crystal-bloom": 25,
+          "seed-idle-growth-rpg-crystal-bloom": 26,
           "seed-story-complete-rpg-chronicles-of-eldoria": 12,
           "survival": 11,
           "cozy-island": 55,
@@ -23748,20 +23749,20 @@
         "targets": {
           "web": 274,
           "unity": 39,
-          "roblox": 167
+          "roblox": 169
         },
         "state": "DEMOTED",
         "lastEvidence": "knowledge_5ii45v",
-        "lastFailureEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.307Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.614Z"
       },
       "EXPERIENCE:exp_i00mwv": {
         "source": "EXPERIENCE",
         "verifiedApplications": 291,
-        "verifiedFailures": 196,
+        "verifiedFailures": 198,
         "firstPasses": 10,
         "failureSignatureClears": 118,
-        "regressionFailures": 196,
+        "regressionFailures": 198,
         "primaryDomainMatches": 48,
         "primaryDomainMismatches": 0,
         "games": {
@@ -23774,10 +23775,10 @@
           "bug-defense": 33,
           "ant-simulator": 40,
           "fantasy-survival": 39,
-          "line-defense": 23,
+          "line-defense": 24,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 11,
           "seed-casual-realm-weaver": 20,
-          "seed-idle-growth-rpg-crystal-bloom": 26,
+          "seed-idle-growth-rpg-crystal-bloom": 27,
           "seed-story-complete-rpg-chronicles-of-eldoria": 13,
           "survival": 12,
           "cozy-island": 55,
@@ -23786,12 +23787,12 @@
         "targets": {
           "web": 275,
           "unity": 38,
-          "roblox": 174
+          "roblox": 176
         },
         "state": "DEMOTED",
         "lastEvidence": "knowledge_5ii45v",
-        "lastFailureEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.306Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.614Z"
       },
       "EXPERIENCE:exp_recovery_0283345dd9580a246abbf745": {
         "source": "EXPERIENCE",
@@ -24044,10 +24045,10 @@
       "CODE_PATTERN:pat_m3ipio": {
         "source": "CODE_PATTERN",
         "verifiedApplications": 130,
-        "verifiedFailures": 46,
+        "verifiedFailures": 48,
         "firstPasses": 0,
         "failureSignatureClears": 0,
-        "regressionFailures": 46,
+        "regressionFailures": 48,
         "primaryDomainMatches": 5,
         "primaryDomainMismatches": 0,
         "games": {
@@ -24057,10 +24058,10 @@
           "seed-single-defense-strat-celestial-bastion": 18,
           "village-dungeons": 18,
           "bug-defense": 20,
-          "line-defense": 16,
+          "line-defense": 17,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 7,
           "seed-casual-realm-weaver": 6,
-          "seed-idle-growth-rpg-crystal-bloom": 10,
+          "seed-idle-growth-rpg-crystal-bloom": 11,
           "seed-story-complete-rpg-chronicles-of-eldoria": 6,
           "survival": 3,
           "ant-simulator": 5,
@@ -24068,20 +24069,20 @@
         },
         "targets": {
           "web": 143,
-          "roblox": 33
+          "roblox": 35
         },
         "state": "VERIFIED",
         "lastEvidence": "knowledge_18wz855",
-        "lastFailureEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.307Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.615Z"
       },
       "PRACTICE_DISTILLED:practice-distilled:73a2ceb29bb96077cecf": {
         "source": "PRACTICE_DISTILLED",
         "verifiedApplications": 198,
-        "verifiedFailures": 102,
+        "verifiedFailures": 104,
         "firstPasses": 10,
         "failureSignatureClears": 89,
-        "regressionFailures": 102,
+        "regressionFailures": 104,
         "primaryDomainMatches": 21,
         "primaryDomainMismatches": 0,
         "games": {
@@ -24092,10 +24093,10 @@
           "monster-adventure": 21,
           "bug-defense": 24,
           "daechung-rpg": 24,
-          "line-defense": 23,
+          "line-defense": 24,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 8,
           "survival": 3,
-          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "seed-idle-growth-rpg-crystal-bloom": 14,
           "cozy-island": 47,
           "horror-escape-room": 17,
           "fantasy-survival": 14,
@@ -24103,21 +24104,21 @@
         },
         "targets": {
           "web": 166,
-          "roblox": 110,
+          "roblox": 112,
           "unity": 24
         },
         "state": "VERIFIED",
         "lastEvidence": "knowledge_5ii45v",
-        "lastFailureEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.308Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.615Z"
       },
       "PRACTICE_DISTILLED:practice-distilled:9c328ab0d2941e9c1b3c": {
         "source": "PRACTICE_DISTILLED",
         "verifiedApplications": 208,
-        "verifiedFailures": 125,
+        "verifiedFailures": 127,
         "firstPasses": 10,
         "failureSignatureClears": 89,
-        "regressionFailures": 125,
+        "regressionFailures": 127,
         "primaryDomainMatches": 44,
         "primaryDomainMismatches": 0,
         "games": {
@@ -24127,10 +24128,10 @@
           "village-dungeons": 23,
           "monster-adventure": 21,
           "daechung-rpg": 24,
-          "line-defense": 23,
+          "line-defense": 24,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 8,
           "seed-casual-realm-weaver": 12,
-          "seed-idle-growth-rpg-crystal-bloom": 18,
+          "seed-idle-growth-rpg-crystal-bloom": 19,
           "seed-story-complete-rpg-chronicles-of-eldoria": 6,
           "survival": 3,
           "cozy-island": 47,
@@ -24141,13 +24142,13 @@
         },
         "targets": {
           "web": 199,
-          "roblox": 110,
+          "roblox": 112,
           "unity": 24
         },
         "state": "DEMOTED",
         "lastEvidence": "knowledge_5ii45v",
-        "lastFailureEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.308Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.616Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_0ce73fa4ec23024bd474ad30": {
         "source": "VERIFIED_CAPABILITY",
@@ -26229,26 +26230,26 @@
       "VERIFIED_CAPABILITY:capability_ctrace_8d74f51489e0fcd3b8c02e18": {
         "source": "VERIFIED_CAPABILITY",
         "verifiedApplications": 24,
-        "verifiedFailures": 41,
+        "verifiedFailures": 42,
         "firstPasses": 0,
         "failureSignatureClears": 17,
-        "regressionFailures": 41,
+        "regressionFailures": 42,
         "primaryDomainMatches": 29,
         "primaryDomainMismatches": 0,
         "games": {
-          "line-defense": 17,
+          "line-defense": 18,
           "ant-simulator": 29,
           "cozy-island": 13,
           "horror-escape-room": 6
         },
         "targets": {
           "web": 47,
-          "roblox": 18
+          "roblox": 19
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_1x8ikop",
-        "lastFailureEvidence": "knowledge_kq5g71",
-        "lastUpdatedAt": "2026-09-30T17:31:48.198Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.616Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_768f8bbfda545b8cb89751b2": {
         "source": "VERIFIED_CAPABILITY",
@@ -26366,23 +26367,23 @@
       "VERIFIED_CAPABILITY:capability_ctrace_3b6ad5256a4470ed7070280a": {
         "source": "VERIFIED_CAPABILITY",
         "verifiedApplications": 7,
-        "verifiedFailures": 8,
+        "verifiedFailures": 9,
         "firstPasses": 0,
         "failureSignatureClears": 3,
-        "regressionFailures": 8,
+        "regressionFailures": 9,
         "primaryDomainMatches": 2,
         "primaryDomainMismatches": 0,
         "games": {
-          "line-defense": 15
+          "line-defense": 16
         },
         "targets": {
           "web": 7,
-          "roblox": 8
+          "roblox": 9
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_7na3q5",
-        "lastFailureEvidence": "knowledge_kq5g71",
-        "lastUpdatedAt": "2026-09-30T17:31:48.198Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.616Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_577a356116637ad2923c0bf8": {
         "source": "VERIFIED_CAPABILITY",
@@ -26884,10 +26885,10 @@
       "EXPERIENCE:exp_system_ai_34373d2f1f6135962e2e0a5d": {
         "source": "EXPERIENCE",
         "verifiedApplications": 23,
-        "verifiedFailures": 95,
+        "verifiedFailures": 97,
         "firstPasses": 0,
         "failureSignatureClears": 23,
-        "regressionFailures": 95,
+        "regressionFailures": 97,
         "primaryDomainMatches": 10,
         "primaryDomainMismatches": 0,
         "games": {
@@ -26897,14 +26898,14 @@
           "horror-escape-room": 1,
           "bug-defense": 14,
           "seed-casual-realm-weaver": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "seed-idle-growth-rpg-crystal-bloom": 14,
           "seed-single-defense-strat-celestial-bastion": 1,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 1,
           "village-dungeons": 12,
           "ant-simulator": 10,
           "amusement-tycoon": 9,
-          "line-defense": 8,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
@@ -26912,12 +26913,12 @@
         "targets": {
           "web": 26,
           "unity": 20,
-          "roblox": 72
+          "roblox": 74
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_5ii45v",
-        "lastFailureEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.307Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.615Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_9fe65cb8b0b9d335e6647eb3": {
         "source": "VERIFIED_CAPABILITY",
@@ -26942,10 +26943,10 @@
       "EXPERIENCE:exp_system_ai_0b0a34e7dbf177b41b7207d9": {
         "source": "EXPERIENCE",
         "verifiedApplications": 61,
-        "verifiedFailures": 97,
+        "verifiedFailures": 99,
         "firstPasses": 1,
         "failureSignatureClears": 61,
-        "regressionFailures": 97,
+        "regressionFailures": 99,
         "primaryDomainMatches": 15,
         "primaryDomainMismatches": 0,
         "games": {
@@ -26956,26 +26957,26 @@
           "amusement-tycoon": 11,
           "bug-defense": 14,
           "seed-casual-realm-weaver": 3,
-          "seed-idle-growth-rpg-crystal-bloom": 14,
+          "seed-idle-growth-rpg-crystal-bloom": 15,
           "seed-puzzle-chromatic-cascade": 3,
           "seed-single-defense-strat-celestial-bastion": 3,
           "seed-story-complete-rpg-chronicles-of-eldoria": 3,
           "survival": 3,
           "village-dungeons": 14,
-          "line-defense": 9,
+          "line-defense": 10,
           "monster-adventure": 2,
           "ant-simulator": 10,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
         },
         "targets": {
-          "roblox": 103,
+          "roblox": 105,
           "web": 36,
           "unity": 19
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_5ii45v",
-        "lastFailureEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.307Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.615Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_694d98ebd713acfd3b0a9289": {
         "source": "VERIFIED_CAPABILITY",
@@ -28194,117 +28195,127 @@
       "CODE_PATTERN:pat_lvof6j": {
         "source": "CODE_PATTERN",
         "verifiedApplications": 0,
-        "verifiedFailures": 3,
+        "verifiedFailures": 5,
         "firstPasses": 0,
         "failureSignatureClears": 0,
-        "regressionFailures": 3,
+        "regressionFailures": 5,
         "primaryDomainMatches": 1,
         "primaryDomainMismatches": 0,
         "games": {
           "ant-simulator": 1,
           "cozy-island": 1,
-          "village-dungeons": 1
+          "village-dungeons": 1,
+          "seed-idle-growth-rpg-crystal-bloom": 1,
+          "line-defense": 1
         },
         "targets": {
           "web": 2,
-          "roblox": 1
+          "roblox": 3
         },
-        "state": "DEMOTED",
+        "state": "RETIRED",
         "lastEvidence": null,
-        "lastFailureEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.308Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.615Z"
       },
       "CODE_PATTERN:pat_ov53ju": {
         "source": "CODE_PATTERN",
         "verifiedApplications": 0,
-        "verifiedFailures": 3,
+        "verifiedFailures": 5,
         "firstPasses": 0,
         "failureSignatureClears": 0,
-        "regressionFailures": 3,
+        "regressionFailures": 5,
         "primaryDomainMatches": 1,
         "primaryDomainMismatches": 0,
         "games": {
           "ant-simulator": 1,
           "cozy-island": 1,
-          "village-dungeons": 1
+          "village-dungeons": 1,
+          "seed-idle-growth-rpg-crystal-bloom": 1,
+          "line-defense": 1
         },
         "targets": {
           "web": 2,
-          "roblox": 1
+          "roblox": 3
         },
-        "state": "DEMOTED",
+        "state": "RETIRED",
         "lastEvidence": null,
-        "lastFailureEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.308Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.615Z"
       },
       "CODE_PATTERN:pat_pd8ywl": {
         "source": "CODE_PATTERN",
         "verifiedApplications": 0,
-        "verifiedFailures": 3,
+        "verifiedFailures": 5,
         "firstPasses": 0,
         "failureSignatureClears": 0,
-        "regressionFailures": 3,
+        "regressionFailures": 5,
         "primaryDomainMatches": 1,
         "primaryDomainMismatches": 0,
         "games": {
           "ant-simulator": 1,
           "cozy-island": 1,
-          "village-dungeons": 1
+          "village-dungeons": 1,
+          "seed-idle-growth-rpg-crystal-bloom": 1,
+          "line-defense": 1
         },
         "targets": {
           "web": 2,
-          "roblox": 1
+          "roblox": 3
         },
-        "state": "DEMOTED",
+        "state": "RETIRED",
         "lastEvidence": null,
-        "lastFailureEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.308Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.615Z"
       },
       "CODE_PATTERN:pat_sfqwdh": {
         "source": "CODE_PATTERN",
         "verifiedApplications": 0,
-        "verifiedFailures": 3,
+        "verifiedFailures": 5,
         "firstPasses": 0,
         "failureSignatureClears": 0,
-        "regressionFailures": 3,
+        "regressionFailures": 5,
         "primaryDomainMatches": 1,
         "primaryDomainMismatches": 0,
         "games": {
           "ant-simulator": 1,
           "cozy-island": 1,
-          "village-dungeons": 1
+          "village-dungeons": 1,
+          "seed-idle-growth-rpg-crystal-bloom": 1,
+          "line-defense": 1
         },
         "targets": {
           "web": 2,
-          "roblox": 1
+          "roblox": 3
         },
-        "state": "DEMOTED",
+        "state": "RETIRED",
         "lastEvidence": null,
-        "lastFailureEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.308Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.615Z"
       },
       "CODE_PATTERN:pat_u4i70c": {
         "source": "CODE_PATTERN",
         "verifiedApplications": 0,
-        "verifiedFailures": 3,
+        "verifiedFailures": 5,
         "firstPasses": 0,
         "failureSignatureClears": 0,
-        "regressionFailures": 3,
+        "regressionFailures": 5,
         "primaryDomainMatches": 1,
         "primaryDomainMismatches": 0,
         "games": {
           "ant-simulator": 1,
           "cozy-island": 1,
-          "village-dungeons": 1
+          "village-dungeons": 1,
+          "seed-idle-growth-rpg-crystal-bloom": 1,
+          "line-defense": 1
         },
         "targets": {
           "web": 2,
-          "roblox": 1
+          "roblox": 3
         },
-        "state": "DEMOTED",
+        "state": "RETIRED",
         "lastEvidence": null,
-        "lastFailureEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.308Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.615Z"
       },
       "CODE_PATTERN:pat_v8mvvl": {
         "source": "CODE_PATTERN",
@@ -28635,10 +28646,10 @@
       "PLAYBOOK_REUSE:external-black-box-block-blast-run-30": {
         "source": "PLAYBOOK_REUSE",
         "verifiedApplications": 19,
-        "verifiedFailures": 87,
+        "verifiedFailures": 89,
         "firstPasses": 0,
         "failureSignatureClears": 19,
-        "regressionFailures": 87,
+        "regressionFailures": 89,
         "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
         "games": {
@@ -28649,8 +28660,8 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
@@ -28658,20 +28669,20 @@
         "targets": {
           "web": 24,
           "unity": 19,
-          "roblox": 63
+          "roblox": 65
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_5ii45v",
-        "lastFailureEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.308Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.616Z"
       },
       "PLAYBOOK_REUSE:external-black-box-cavern-cravers-run-47": {
         "source": "PLAYBOOK_REUSE",
         "verifiedApplications": 19,
-        "verifiedFailures": 87,
+        "verifiedFailures": 89,
         "firstPasses": 0,
         "failureSignatureClears": 19,
-        "regressionFailures": 87,
+        "regressionFailures": 89,
         "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
         "games": {
@@ -28682,8 +28693,8 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
@@ -28691,20 +28702,20 @@
         "targets": {
           "web": 24,
           "unity": 19,
-          "roblox": 63
+          "roblox": 65
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_5ii45v",
-        "lastFailureEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.309Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.616Z"
       },
       "PLAYBOOK_REUSE:external-black-box-idle-fantasy-run-42": {
         "source": "PLAYBOOK_REUSE",
         "verifiedApplications": 19,
-        "verifiedFailures": 87,
+        "verifiedFailures": 89,
         "firstPasses": 0,
         "failureSignatureClears": 19,
-        "regressionFailures": 87,
+        "regressionFailures": 89,
         "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
         "games": {
@@ -28715,8 +28726,8 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
@@ -28724,20 +28735,20 @@
         "targets": {
           "web": 24,
           "unity": 19,
-          "roblox": 63
+          "roblox": 65
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_5ii45v",
-        "lastFailureEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.309Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.616Z"
       },
       "PLAYBOOK_REUSE:external-black-box-luanti-run-10": {
         "source": "PLAYBOOK_REUSE",
         "verifiedApplications": 19,
-        "verifiedFailures": 87,
+        "verifiedFailures": 89,
         "firstPasses": 0,
         "failureSignatureClears": 19,
-        "regressionFailures": 87,
+        "regressionFailures": 89,
         "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
         "games": {
@@ -28748,8 +28759,8 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
@@ -28757,20 +28768,20 @@
         "targets": {
           "web": 24,
           "unity": 19,
-          "roblox": 63
+          "roblox": 65
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_5ii45v",
-        "lastFailureEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.309Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.616Z"
       },
       "PLAYBOOK_REUSE:external-black-box-revengate-run-59": {
         "source": "PLAYBOOK_REUSE",
         "verifiedApplications": 19,
-        "verifiedFailures": 87,
+        "verifiedFailures": 89,
         "firstPasses": 0,
         "failureSignatureClears": 19,
-        "regressionFailures": 87,
+        "regressionFailures": 89,
         "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
         "games": {
@@ -28781,8 +28792,8 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
@@ -28790,20 +28801,20 @@
         "targets": {
           "web": 24,
           "unity": 19,
-          "roblox": 63
+          "roblox": 65
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_5ii45v",
-        "lastFailureEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.309Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.616Z"
       },
       "PLAYBOOK_REUSE:external-black-box-sgtpuzzles-run-29": {
         "source": "PLAYBOOK_REUSE",
         "verifiedApplications": 19,
-        "verifiedFailures": 87,
+        "verifiedFailures": 89,
         "firstPasses": 0,
         "failureSignatureClears": 19,
-        "regressionFailures": 87,
+        "regressionFailures": 89,
         "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
         "games": {
@@ -28814,8 +28825,8 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
@@ -28823,20 +28834,20 @@
         "targets": {
           "web": 24,
           "unity": 19,
-          "roblox": 63
+          "roblox": 65
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_5ii45v",
-        "lastFailureEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.309Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.616Z"
       },
       "PLAYBOOK_REUSE:external-black-box-shattered-pixel-dungeon-run-4": {
         "source": "PLAYBOOK_REUSE",
         "verifiedApplications": 19,
-        "verifiedFailures": 87,
+        "verifiedFailures": 89,
         "firstPasses": 0,
         "failureSignatureClears": 19,
-        "regressionFailures": 87,
+        "regressionFailures": 89,
         "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
         "games": {
@@ -28847,8 +28858,8 @@
           "seed-casual-realm-weaver": 10,
           "amusement-tycoon": 9,
           "village-dungeons": 11,
-          "seed-idle-growth-rpg-crystal-bloom": 12,
-          "line-defense": 8,
+          "seed-idle-growth-rpg-crystal-bloom": 13,
+          "line-defense": 9,
           "seed-puzzle-chromatic-cascade": 8,
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1
@@ -28856,12 +28867,12 @@
         "targets": {
           "web": 24,
           "unity": 19,
-          "roblox": 63
+          "roblox": 65
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_5ii45v",
-        "lastFailureEvidence": "knowledge_11cecpv",
-        "lastUpdatedAt": "2026-09-30T18:05:02.309Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.616Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_8305b4f8ffdcc3aaf9882d39": {
         "source": "VERIFIED_CAPABILITY",
@@ -29371,44 +29382,44 @@
       "VERIFIED_CAPABILITY:capability_ctrace_6302273f93b5aeb91e76cce4": {
         "source": "VERIFIED_CAPABILITY",
         "verifiedApplications": 3,
-        "verifiedFailures": 9,
+        "verifiedFailures": 10,
         "firstPasses": 0,
         "failureSignatureClears": 3,
-        "regressionFailures": 9,
+        "regressionFailures": 10,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
-          "seed-idle-growth-rpg-crystal-bloom": 12
+          "seed-idle-growth-rpg-crystal-bloom": 13
         },
         "targets": {
           "unity": 3,
-          "roblox": 9
+          "roblox": 10
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_duzei4",
-        "lastFailureEvidence": "knowledge_kjo2lx",
-        "lastUpdatedAt": "2026-09-30T17:31:48.165Z"
+        "lastFailureEvidence": "knowledge_hglmgm",
+        "lastUpdatedAt": "2026-09-30T18:10:25.606Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_e829220708a8cd005d123a42": {
         "source": "VERIFIED_CAPABILITY",
         "verifiedApplications": 3,
-        "verifiedFailures": 9,
+        "verifiedFailures": 10,
         "firstPasses": 0,
         "failureSignatureClears": 3,
-        "regressionFailures": 9,
+        "regressionFailures": 10,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
-          "seed-idle-growth-rpg-crystal-bloom": 12
+          "seed-idle-growth-rpg-crystal-bloom": 13
         },
         "targets": {
           "unity": 3,
-          "roblox": 9
+          "roblox": 10
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_duzei4",
-        "lastFailureEvidence": "knowledge_kjo2lx",
-        "lastUpdatedAt": "2026-09-30T17:31:48.165Z"
+        "lastFailureEvidence": "knowledge_hglmgm",
+        "lastUpdatedAt": "2026-09-30T18:10:25.606Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_99f0149f2fc979788ac89cb8": {
         "source": "VERIFIED_CAPABILITY",
@@ -29496,62 +29507,62 @@
       "VERIFIED_CAPABILITY:capability_ctrace_7e8205ce09f2f476e5aedafa": {
         "source": "VERIFIED_CAPABILITY",
         "verifiedApplications": 0,
-        "verifiedFailures": 8,
+        "verifiedFailures": 9,
         "firstPasses": 0,
         "failureSignatureClears": 0,
-        "regressionFailures": 8,
+        "regressionFailures": 9,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
-          "line-defense": 8
+          "line-defense": 9
         },
         "targets": {
-          "roblox": 8
+          "roblox": 9
         },
         "state": "RETIRED",
         "lastEvidence": null,
-        "lastFailureEvidence": "knowledge_kq5g71",
-        "lastUpdatedAt": "2026-09-30T17:31:48.198Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.616Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_d6cd06eb09f0b689d894ce60": {
         "source": "VERIFIED_CAPABILITY",
         "verifiedApplications": 0,
-        "verifiedFailures": 8,
+        "verifiedFailures": 9,
         "firstPasses": 0,
         "failureSignatureClears": 0,
-        "regressionFailures": 8,
+        "regressionFailures": 9,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
-          "line-defense": 8
+          "line-defense": 9
         },
         "targets": {
-          "roblox": 8
+          "roblox": 9
         },
         "state": "RETIRED",
         "lastEvidence": null,
-        "lastFailureEvidence": "knowledge_kq5g71",
-        "lastUpdatedAt": "2026-09-30T17:31:48.198Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.617Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_0be1b657978bacf1ebbc24ea": {
         "source": "VERIFIED_CAPABILITY",
         "verifiedApplications": 0,
-        "verifiedFailures": 8,
+        "verifiedFailures": 9,
         "firstPasses": 0,
         "failureSignatureClears": 0,
-        "regressionFailures": 8,
+        "regressionFailures": 9,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
-          "line-defense": 8
+          "line-defense": 9
         },
         "targets": {
-          "roblox": 8
+          "roblox": 9
         },
         "state": "RETIRED",
         "lastEvidence": null,
-        "lastFailureEvidence": "knowledge_kq5g71",
-        "lastUpdatedAt": "2026-09-30T17:31:48.198Z"
+        "lastFailureEvidence": "knowledge_ve09ci",
+        "lastUpdatedAt": "2026-09-30T18:10:25.617Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_f42d2937c4ca20faa336af84": {
         "source": "VERIFIED_CAPABILITY",
@@ -29616,62 +29627,62 @@
       "VERIFIED_CAPABILITY:capability_ctrace_de59cee9b3cdd18adc8646a3": {
         "source": "VERIFIED_CAPABILITY",
         "verifiedApplications": 0,
-        "verifiedFailures": 9,
+        "verifiedFailures": 10,
         "firstPasses": 0,
         "failureSignatureClears": 0,
-        "regressionFailures": 9,
+        "regressionFailures": 10,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
-          "seed-idle-growth-rpg-crystal-bloom": 9
+          "seed-idle-growth-rpg-crystal-bloom": 10
         },
         "targets": {
-          "roblox": 9
+          "roblox": 10
         },
         "state": "RETIRED",
         "lastEvidence": null,
-        "lastFailureEvidence": "knowledge_kjo2lx",
-        "lastUpdatedAt": "2026-09-30T17:31:48.165Z"
+        "lastFailureEvidence": "knowledge_hglmgm",
+        "lastUpdatedAt": "2026-09-30T18:10:25.605Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_42bfc771b1c2ba433155d74f": {
         "source": "VERIFIED_CAPABILITY",
         "verifiedApplications": 0,
-        "verifiedFailures": 9,
+        "verifiedFailures": 10,
         "firstPasses": 0,
         "failureSignatureClears": 0,
-        "regressionFailures": 9,
+        "regressionFailures": 10,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
-          "seed-idle-growth-rpg-crystal-bloom": 9
+          "seed-idle-growth-rpg-crystal-bloom": 10
         },
         "targets": {
-          "roblox": 9
+          "roblox": 10
         },
         "state": "RETIRED",
         "lastEvidence": null,
-        "lastFailureEvidence": "knowledge_kjo2lx",
-        "lastUpdatedAt": "2026-09-30T17:31:48.165Z"
+        "lastFailureEvidence": "knowledge_hglmgm",
+        "lastUpdatedAt": "2026-09-30T18:10:25.605Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_225e903acb5e432626e8c175": {
         "source": "VERIFIED_CAPABILITY",
         "verifiedApplications": 0,
-        "verifiedFailures": 9,
+        "verifiedFailures": 10,
         "firstPasses": 0,
         "failureSignatureClears": 0,
-        "regressionFailures": 9,
+        "regressionFailures": 10,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
-          "seed-idle-growth-rpg-crystal-bloom": 9
+          "seed-idle-growth-rpg-crystal-bloom": 10
         },
         "targets": {
-          "roblox": 9
+          "roblox": 10
         },
         "state": "RETIRED",
         "lastEvidence": null,
-        "lastFailureEvidence": "knowledge_kjo2lx",
-        "lastUpdatedAt": "2026-09-30T17:31:48.165Z"
+        "lastFailureEvidence": "knowledge_hglmgm",
+        "lastUpdatedAt": "2026-09-30T18:10:25.606Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_4e906f223c2a12a7007033ab": {
         "source": "VERIFIED_CAPABILITY",
@@ -30424,7 +30435,9 @@
       "knowledge_62fili",
       "knowledge_g5faqi",
       "knowledge_kq5g71",
-      "knowledge_11cecpv"
+      "knowledge_11cecpv",
+      "knowledge_hglmgm",
+      "knowledge_ve09ci"
     ]
   },
   "graphicsEvolutionMemory": {
@@ -30432,5 +30445,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-30T18:05:43.334Z"
+  "updatedAt": "2026-09-30T18:10:25.638Z"
 }
