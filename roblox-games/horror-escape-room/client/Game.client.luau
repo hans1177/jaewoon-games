@@ -681,18 +681,18 @@ local hud=Instance.new("Frame")
 hud.Name="MidnightTopHUD"
 hud.AnchorPoint=Vector2.new(.5,0)
 hud.Position=UDim2.new(.5,0,0,8)
-hud.Size=UDim2.fromOffset(330,82)
-hud.BackgroundColor3=Color3.fromRGB(34,37,45)
-hud.BackgroundTransparency=.03
+hud.Size=UDim2.fromOffset(326,78)
+hud.BackgroundColor3=Color3.fromRGB(12,12,13)
+hud.BackgroundTransparency=.18
 hud.ZIndex=10
 hud.Parent=gui
-roundify(hud,14);outline(hud,.5)
+roundify(hud,9);outline(hud,.62)
 
 local mapLine=Instance.new("TextLabel")
 mapLine.Size=UDim2.new(.6,-8,0,18)
 mapLine.Position=UDim2.fromOffset(8,3)
 mapLine.BackgroundTransparency=1
-mapLine.TextColor3=Color3.fromRGB(235,237,244)
+mapLine.TextColor3=Color3.fromRGB(239,232,218)
 mapLine.TextScaled=true
 mapLine.Font=Enum.Font.GothamBold
 mapLine.Parent=hud
@@ -701,7 +701,7 @@ local roleLine=Instance.new("TextLabel")
 roleLine.Size=UDim2.new(1,-16,0,16)
 roleLine.Position=UDim2.fromOffset(8,24)
 roleLine.BackgroundTransparency=1
-roleLine.TextColor3=Color3.fromRGB(236,240,248)
+roleLine.TextColor3=Color3.fromRGB(174,169,160)
 roleLine.TextScaled=false
 roleLine.TextSize=11
 roleLine.Font=Enum.Font.Gotham
@@ -710,21 +710,21 @@ roleLine.Parent=hud
 local roundLine=Instance.new("TextLabel")
 roundLine.Size=UDim2.new(.38,-8,0,38)
 roundLine.Position=UDim2.new(.62,0,0,4)
-roundLine.BackgroundColor3=Color3.fromRGB(46,49,61)
+roundLine.BackgroundColor3=Color3.fromRGB(24,22,21)
 roundLine.BackgroundTransparency=.12
-roundLine.TextColor3=Color3.fromRGB(255,203,121)
+roundLine.TextColor3=Color3.fromRGB(218,184,119)
 roundLine.TextScaled=false
 roundLine.TextSize=13
 roundLine.Font=Enum.Font.GothamBold
 roundLine.Parent=hud
-roundify(roundLine,9)
+roundify(roundLine,6)
 
 local objectiveLine=Instance.new("TextLabel")
 objectiveLine.Name="ObjectiveProgress"
 objectiveLine.Size=UDim2.new(1,-16,0,15)
 objectiveLine.Position=UDim2.fromOffset(8,44)
 objectiveLine.BackgroundTransparency=1
-objectiveLine.TextColor3=Color3.fromRGB(177,238,203)
+objectiveLine.TextColor3=Color3.fromRGB(211,204,191)
 objectiveLine.TextSize=10
 objectiveLine.Font=Enum.Font.GothamBold
 objectiveLine.TextXAlignment=Enum.TextXAlignment.Left
@@ -734,7 +734,7 @@ local energyTrack=Instance.new("Frame")
 energyTrack.Name="EnergyTrack"
 energyTrack.Size=UDim2.new(1,-86,0,8)
 energyTrack.Position=UDim2.fromOffset(8,65)
-energyTrack.BackgroundColor3=Color3.fromRGB(50,56,68)
+energyTrack.BackgroundColor3=Color3.fromRGB(48,43,40)
 energyTrack.BorderSizePixel=0
 energyTrack.ZIndex=11
 energyTrack.Parent=hud
@@ -743,7 +743,7 @@ roundify(energyTrack,5)
 local energyFill=Instance.new("Frame")
 energyFill.Name="EnergyFill"
 energyFill.Size=UDim2.fromScale(1,1)
-energyFill.BackgroundColor3=Color3.fromRGB(82,183,236)
+energyFill.BackgroundColor3=Color3.fromRGB(188,146,77)
 energyFill.BorderSizePixel=0
 energyFill.ZIndex=12
 energyFill.Parent=energyTrack
@@ -754,7 +754,7 @@ energyLabel.Name="EnergyLabel"
 energyLabel.Size=UDim2.fromOffset(72,14)
 energyLabel.Position=UDim2.new(1,-78,0,60)
 energyLabel.BackgroundTransparency=1
-energyLabel.TextColor3=Color3.fromRGB(192,224,244)
+energyLabel.TextColor3=Color3.fromRGB(204,190,163)
 energyLabel.TextSize=10
 energyLabel.Font=Enum.Font.GothamBold
 energyLabel.TextXAlignment=Enum.TextXAlignment.Right
@@ -767,31 +767,31 @@ pressureLabel.Name="PressurePassive"
 pressureLabel.AnchorPoint=Vector2.new(.5,0)
 pressureLabel.Position=UDim2.new(.5,0,0,88)
 pressureLabel.Size=UDim2.fromOffset(240,26)
-pressureLabel.BackgroundColor3=Color3.fromRGB(35,39,49)
-pressureLabel.BackgroundTransparency=.08
-pressureLabel.TextColor3=Color3.fromRGB(255,218,137)
+pressureLabel.BackgroundColor3=Color3.fromRGB(17,16,16)
+pressureLabel.BackgroundTransparency=.16
+pressureLabel.TextColor3=Color3.fromRGB(221,190,128)
 pressureLabel.TextSize=12
 pressureLabel.Font=Enum.Font.GothamBold
 pressureLabel.ZIndex=13
 pressureLabel.Visible=false
 pressureLabel.Parent=gui
-roundify(pressureLabel,10)
+roundify(pressureLabel,7)
 
 local mapContentToast=Instance.new("TextLabel")
 mapContentToast.Name="MapContentToast"
 mapContentToast.AnchorPoint=Vector2.new(.5,0)
 mapContentToast.Position=UDim2.new(.5,0,0,118)
 mapContentToast.Size=UDim2.fromOffset(286,34)
-mapContentToast.BackgroundColor3=Color3.fromRGB(23,27,35)
-mapContentToast.BackgroundTransparency=.08
-mapContentToast.TextColor3=Color3.fromRGB(216,228,239)
+mapContentToast.BackgroundColor3=Color3.fromRGB(16,15,15)
+mapContentToast.BackgroundTransparency=.14
+mapContentToast.TextColor3=Color3.fromRGB(216,209,197)
 mapContentToast.TextSize=12
 mapContentToast.TextWrapped=true
 mapContentToast.Font=Enum.Font.GothamBold
 mapContentToast.ZIndex=14
 mapContentToast.Visible=false
 mapContentToast.Parent=gui
-roundify(mapContentToast,10)
+roundify(mapContentToast,7)
 
 local toastSerial=0
 local function showMapContentToast(text,color,duration)
@@ -1895,7 +1895,7 @@ local function updateCosmeticUI()
  setupTitle.TextColor3=accent
  if resultTitle then resultTitle.TextColor3=accent end
  selectionStatus.TextColor3=accent
- loadingFill.BackgroundColor3=accent
+ loadingFill.BackgroundColor3=Color3.fromRGB(188,146,77)
  for _,item in ipairs(C.Cosmetics or{})do
   local button=cosmeticButtons[item.Id]
   if button then
@@ -1926,19 +1926,19 @@ actionDock.BackgroundTransparency=1
 actionDock.ZIndex=10
 actionDock.Parent=gui
 
-local rescueButton=makeButton(actionDock,"정화 공격",Color3.fromRGB(42,126,151))
+local rescueButton=makeButton(actionDock,"정화 공격",Color3.fromRGB(75,91,94))
 rescueButton.Size=UDim2.fromOffset(110,50);rescueButton.Position=UDim2.fromOffset(5,4);rescueButton.ZIndex=11
 rescueButton.Activated:Connect(function()setMotionImpulse("PURIFY",.34);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.PURIFY)end)
 
-local dashButton=makeButton(actionDock,"대시",Color3.fromRGB(58,94,146))
+local dashButton=makeButton(actionDock,"대시",Color3.fromRGB(87,78,66))
 dashButton.Size=UDim2.fromOffset(110,50);dashButton.Position=UDim2.fromOffset(121,4);dashButton.ZIndex=11
 dashButton.Activated:Connect(function()setMotionImpulse("DASH",.38);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.DASH)end)
 
-local infectButton=makeButton(actionDock,"감염 공격",Color3.fromRGB(150,52,66))
+local infectButton=makeButton(actionDock,"감염 공격",Color3.fromRGB(111,45,49))
 infectButton.Size=UDim2.fromOffset(110,50);infectButton.Position=UDim2.fromOffset(5,4);infectButton.ZIndex=11
 infectButton.Activated:Connect(function()setMotionImpulse("INFECT_ATTACK",.34);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.INFECT_ATTACK)end)
 
-local abilityButton=makeButton(actionDock,"괴물 스킬",Color3.fromRGB(112,58,145))
+local abilityButton=makeButton(actionDock,"괴물 스킬",Color3.fromRGB(72,55,77))
 abilityButton.Size=UDim2.fromOffset(110,50);abilityButton.Position=UDim2.fromOffset(121,4);abilityButton.ZIndex=11
 abilityButton.Activated:Connect(function()setMotionImpulse("ABILITY",.44);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.ABILITY)end)
 
@@ -1982,18 +1982,18 @@ resultPanel.Name="RoundResult"
 resultPanel.AnchorPoint=Vector2.new(.5,.5)
 resultPanel.Position=UDim2.fromScale(.5,.42)
 resultPanel.Size=UDim2.fromOffset(330,292)
-resultPanel.BackgroundColor3=Color3.fromRGB(18,21,27)
-resultPanel.BackgroundTransparency=.03
+resultPanel.BackgroundColor3=Color3.fromRGB(13,12,12)
+resultPanel.BackgroundTransparency=.08
 resultPanel.ZIndex=20
 resultPanel.Visible=false
 resultPanel.Parent=gui
-roundify(resultPanel,16);outline(resultPanel,.3)
+roundify(resultPanel,9);outline(resultPanel,.52)
 
 resultTitle=Instance.new("TextLabel")
 resultTitle.Size=UDim2.new(1,-18,0,38)
 resultTitle.Position=UDim2.fromOffset(9,10)
 resultTitle.BackgroundTransparency=1
-resultTitle.TextColor3=Color3.fromRGB(255,229,164)
+resultTitle.TextColor3=Color3.fromRGB(225,197,139)
 resultTitle.TextSize=24
 resultTitle.Font=Enum.Font.GothamBold
 resultTitle.ZIndex=21
@@ -2003,7 +2003,7 @@ local resultDetail=Instance.new("TextLabel")
 resultDetail.Size=UDim2.new(1,-20,0,54)
 resultDetail.Position=UDim2.fromOffset(10,50)
 resultDetail.BackgroundTransparency=1
-resultDetail.TextColor3=Color3.fromRGB(219,225,235)
+resultDetail.TextColor3=Color3.fromRGB(205,199,188)
 resultDetail.TextSize=13
 resultDetail.TextWrapped=true
 resultDetail.Font=Enum.Font.GothamMedium
@@ -2014,7 +2014,7 @@ local ceremonyJoke=Instance.new("TextLabel")
 ceremonyJoke.Name="CeremonyJoke"
 ceremonyJoke.Size=UDim2.new(1,-20,0,34)
 ceremonyJoke.Position=UDim2.fromOffset(10,108)
-ceremonyJoke.BackgroundColor3=Color3.fromRGB(30,33,42)
+ceremonyJoke.BackgroundColor3=Color3.fromRGB(25,22,21)
 ceremonyJoke.BackgroundTransparency=.12
 ceremonyJoke.TextColor3=Color3.fromRGB(240,230,199)
 ceremonyJoke.TextSize=12
@@ -2028,7 +2028,7 @@ local ceremonyStage=Instance.new("Frame")
 ceremonyStage.Name="TeamCeremony"
 ceremonyStage.Size=UDim2.new(1,-20,0,122)
 ceremonyStage.Position=UDim2.fromOffset(10,150)
-ceremonyStage.BackgroundColor3=Color3.fromRGB(24,27,34)
+ceremonyStage.BackgroundColor3=Color3.fromRGB(20,18,18)
 ceremonyStage.BackgroundTransparency=.04
 ceremonyStage.ClipsDescendants=true
 ceremonyStage.ZIndex=21
