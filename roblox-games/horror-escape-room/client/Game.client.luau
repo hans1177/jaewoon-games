@@ -74,7 +74,7 @@ gui.Parent=p:WaitForChild("PlayerGui")
 local loadingLayer=Instance.new("Frame")
 loadingLayer.Name="LoadingScreen"
 loadingLayer.Size=UDim2.fromScale(1,1)
-loadingLayer.BackgroundColor3=Color3.fromRGB(8,10,15)
+loadingLayer.BackgroundColor3=Color3.fromRGB(20,16,14)
 loadingLayer.BorderSizePixel=0
 loadingLayer.ZIndex=100
 loadingLayer.Parent=gui
@@ -86,10 +86,10 @@ loadingTitle.Position=UDim2.fromScale(.5,.43)
 loadingTitle.Size=UDim2.new(.86,0,0,42)
 loadingTitle.BackgroundTransparency=1
 loadingTitle.Text="심야 감염전"
-loadingTitle.TextColor3=Color3.fromRGB(242,244,248)
+loadingTitle.TextColor3=Color3.fromRGB(235,215,171)
 loadingTitle.TextSize=30
 loadingTitle.Font=Enum.Font.GothamBold
-loadingTitle.ZIndex=101
+loadingTitle.ZIndex=103
 loadingTitle.Parent=loadingLayer
 
 local loadingStatus=Instance.new("TextLabel")
@@ -98,11 +98,11 @@ loadingStatus.AnchorPoint=Vector2.new(.5,.5)
 loadingStatus.Position=UDim2.fromScale(.5,.51)
 loadingStatus.Size=UDim2.new(.82,0,0,28)
 loadingStatus.BackgroundTransparency=1
-loadingStatus.Text="게임 리소스 준비 중"
-loadingStatus.TextColor3=Color3.fromRGB(165,176,193)
+loadingStatus.Text="심야 객잔으로 들어가는 중"
+loadingStatus.TextColor3=Color3.fromRGB(185,169,145)
 loadingStatus.TextSize=14
 loadingStatus.Font=Enum.Font.GothamMedium
-loadingStatus.ZIndex=101
+loadingStatus.ZIndex=103
 loadingStatus.Parent=loadingLayer
 
 local loadingTrack=Instance.new("Frame")
@@ -112,18 +112,69 @@ loadingTrack.Position=UDim2.fromScale(.5,.57)
 loadingTrack.Size=UDim2.new(.58,0,0,6)
 loadingTrack.BackgroundColor3=Color3.fromRGB(34,39,49)
 loadingTrack.BorderSizePixel=0
-loadingTrack.ZIndex=101
+loadingTrack.ZIndex=103
 loadingTrack.Parent=loadingLayer
 local loadingTrackCorner=Instance.new("UICorner");loadingTrackCorner.CornerRadius=UDim.new(0,6);loadingTrackCorner.Parent=loadingTrack
 
 local loadingFill=Instance.new("Frame")
 loadingFill.Name="LoadingFill"
 loadingFill.Size=UDim2.fromScale(.08,1)
-loadingFill.BackgroundColor3=Color3.fromRGB(150,55,70)
+loadingFill.BackgroundColor3=Color3.fromRGB(175,67,52)
 loadingFill.BorderSizePixel=0
-loadingFill.ZIndex=102
+loadingFill.ZIndex=104
 loadingFill.Parent=loadingTrack
 local loadingFillCorner=Instance.new("UICorner");loadingFillCorner.CornerRadius=UDim.new(0,6);loadingFillCorner.Parent=loadingFill
+
+-- 동양식 시작 연출: 창호 미닫이문 + 등불 + 먹색 타이틀.
+local loadingLeftDoor=Instance.new("Frame")
+loadingLeftDoor.Name="LoadingShojiLeft"
+loadingLeftDoor.Size=UDim2.fromScale(.5,1)
+loadingLeftDoor.Position=UDim2.fromScale(0,0)
+loadingLeftDoor.BackgroundColor3=Color3.fromRGB(221,211,191)
+loadingLeftDoor.BorderSizePixel=0
+loadingLeftDoor.ZIndex=99
+loadingLeftDoor.Parent=loadingLayer
+
+local loadingRightDoor=loadingLeftDoor:Clone()
+loadingRightDoor.Name="LoadingShojiRight"
+loadingRightDoor.Position=UDim2.fromScale(.5,0)
+loadingRightDoor.Parent=loadingLayer
+
+local function addShojiGrid(panel)
+ for i=1,5 do
+  local v=Instance.new("Frame");v.Size=UDim2.new(0,3,1,0);v.Position=UDim2.new(i/6,0,0,0);v.BackgroundColor3=Color3.fromRGB(83,56,39);v.BorderSizePixel=0;v.ZIndex=100;v.Parent=panel
+ end
+ for i=1,7 do
+  local h=Instance.new("Frame");h.Size=UDim2.new(1,0,0,3);h.Position=UDim2.new(0,0,i/8,0);h.BackgroundColor3=Color3.fromRGB(83,56,39);h.BorderSizePixel=0;h.ZIndex=100;h.Parent=panel
+ end
+ local edge=Instance.new("Frame");edge.Size=UDim2.new(0,9,1,0);edge.Position=UDim2.new(panel==loadingLeftDoor and 1 or 0,panel==loadingLeftDoor and -9 or 0,0,0);edge.BackgroundColor3=Color3.fromRGB(56,38,28);edge.BorderSizePixel=0;edge.ZIndex=101;edge.Parent=panel
+end
+addShojiGrid(loadingLeftDoor);addShojiGrid(loadingRightDoor)
+
+local loadingInk=Instance.new("TextLabel")
+loadingInk.AnchorPoint=Vector2.new(.5,.5)
+loadingInk.Position=UDim2.fromScale(.5,.31)
+loadingInk.Size=UDim2.new(.72,0,0,28)
+loadingInk.BackgroundTransparency=1
+loadingInk.Text="밤의 객잔 · 들어오는 자는 돌아갈 길을 잃는다"
+loadingInk.TextColor3=Color3.fromRGB(104,75,55)
+loadingInk.TextSize=13
+loadingInk.Font=Enum.Font.GothamMedium
+loadingInk.ZIndex=102
+loadingInk.Parent=loadingLayer
+
+for _,x in ipairs({.16,.84})do
+ local lamp=Instance.new("Frame")
+ lamp.AnchorPoint=Vector2.new(.5,.5)
+ lamp.Position=UDim2.fromScale(x,.22)
+ lamp.Size=UDim2.fromOffset(34,48)
+ lamp.BackgroundColor3=Color3.fromRGB(168,49,39)
+ lamp.BorderSizePixel=0
+ lamp.ZIndex=102
+ lamp.Parent=loadingLayer
+ local corner=Instance.new("UICorner");corner.CornerRadius=UDim.new(.35,0);corner.Parent=lamp
+ local glow=Instance.new("UIStroke");glow.Thickness=5;glow.Transparency=.55;glow.Color=Color3.fromRGB(241,153,79);glow.Parent=lamp
+end
 
 local loadingVisible=true
 local function setLoadingProgress(progress,status)
@@ -133,29 +184,36 @@ end
 local function finishLoading()
  if not loadingVisible then return end
  loadingVisible=false
- setLoadingProgress(1,"로비 준비 완료")
+ setLoadingProgress(1,"문이 열린다")
  task.wait(.12)
- local tween=TweenService:Create(loadingLayer,TweenInfo.new(.28,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency=1})
+ local leftTween=TweenService:Create(loadingLeftDoor,TweenInfo.new(.5,Enum.EasingStyle.Quart,Enum.EasingDirection.InOut),{Position=UDim2.fromScale(-.5,0)})
+ local rightTween=TweenService:Create(loadingRightDoor,TweenInfo.new(.5,Enum.EasingStyle.Quart,Enum.EasingDirection.InOut),{Position=UDim2.fromScale(1,0)})
+ leftTween:Play();rightTween:Play()
+ TweenService:Create(loadingTitle,TweenInfo.new(.35),{TextTransparency=1}):Play()
+ TweenService:Create(loadingStatus,TweenInfo.new(.35),{TextTransparency=1}):Play()
+ TweenService:Create(loadingInk,TweenInfo.new(.35),{TextTransparency=1}):Play()
+ task.wait(.52)
+ local tween=TweenService:Create(loadingLayer,TweenInfo.new(.24,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency=1})
  tween:Play()
- task.delay(.3,function()if loadingLayer then loadingLayer.Visible=false end end)
+ task.delay(.26,function()if loadingLayer then loadingLayer.Visible=false end end)
 end
 
 task.spawn(function()
- setLoadingProgress(.18,"사운드와 UI 준비 중")
+ setLoadingProgress(.18,"객잔의 불을 밝히는 중")
  pcall(function()
   ContentProvider:PreloadAsync({bgm,chase,actionSfx,warningSfx,resultSfx,footstepSfx,freezeSfx,rescueSfx})
  end)
- setLoadingProgress(.55,"서버 로비 연결 중")
+ setLoadingProgress(.55,"심야 객잔 문을 여는 중")
  local deadline=os.clock()+(C.LobbyLoadTimeoutSeconds or 12)
  while workspace:GetAttribute("MapReady")~=true and os.clock()<deadline do
-  if workspace:GetAttribute("MapBuilding")==true then setLoadingProgress(.7,"맵 구성 중") end
+  if workspace:GetAttribute("MapBuilding")==true then setLoadingProgress(.7,"안쪽 공간을 준비하는 중") end
   task.wait(.1)
  end
  if workspace:GetAttribute("MapReady")~=true then
-  setLoadingProgress(.78,"로비 연결 지연 · 계속 준비 중")
+  setLoadingProgress(.78,"객잔 연결 중")
   while workspace:GetAttribute("MapReady")~=true do task.wait(.25) end
  end
- setLoadingProgress(.92,"플레이어 상태 동기화 중")
+ setLoadingProgress(.92,"입장 준비 중")
  local syncDeadline=os.clock()+3
  while p:GetAttribute("LobbyReady")~=true and os.clock()<syncDeadline do task.wait(.1) end
  finishLoading()
