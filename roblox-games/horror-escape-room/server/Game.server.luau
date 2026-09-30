@@ -1899,17 +1899,17 @@ local function makeArena(map)
 
  if map.Id=="SCHOOL"then
   -- 초보용 학교: 중앙 복도 + 교실 + 급식실 + 체육관. 시야가 길고 우회로가 단순하다.
-  -- 학교는 답답한 저천장을 피하고, 교실/복도는 약 18스터드 높이로 통일한다.
-  local schoolWallHeight=18
-  local schoolWallY=9
-  local schoolCeilingY=18.4
-  local schoolLightY=16.4
+  -- 학교는 추격 시 카메라와 몬스터 실루엣이 잘 보이도록 높은 천장으로 통일한다.
+  local schoolWallHeight=24
+  local schoolWallY=12
+  local schoolCeilingY=24.4
+  local schoolLightY=22.2
   -- 실제 실내 구역 천장만 사용하고 전체 맵을 덮는 단일 지붕판은 두지 않는다.
    for i,spec in ipairs({
-    {Vector3.new(0,19.4,-163),Vector3.new(336,1,10)},
-    {Vector3.new(0,19.4,163),Vector3.new(336,1,10)},
-    {Vector3.new(-163,19.4,0),Vector3.new(10,1,336)},
-    {Vector3.new(163,19.4,0),Vector3.new(10,1,336)}
+    {Vector3.new(0,25.4,-163),Vector3.new(336,1,10)},
+    {Vector3.new(0,25.4,163),Vector3.new(336,1,10)},
+    {Vector3.new(-163,25.4,0),Vector3.new(10,1,336)},
+    {Vector3.new(163,25.4,0),Vector3.new(10,1,336)}
    })do
     arenaPart(f,"SchoolRoofRim"..i,spec[2],spec[1],Color3.fromRGB(72,76,84),Enum.Material.Concrete)
    end
@@ -1979,11 +1979,11 @@ local function makeArena(map)
    for _,x in ipairs({-16.1,16.1})do
     arenaPart(f,"SchoolHallColumn",Vector3.new(1.3,schoolWallHeight,1.3),Vector3.new(x,schoolWallY,z),Color3.fromRGB(104,109,117),Enum.Material.Concrete)
    end
-   arenaPart(f,"SchoolCeilingBeam",Vector3.new(37,.65,1.1),Vector3.new(0,17.65,z),Color3.fromRGB(82,87,95),Enum.Material.Metal)
+   arenaPart(f,"SchoolCeilingBeam",Vector3.new(37,.65,1.1),Vector3.new(0,schoolCeilingY-.75,z),Color3.fromRGB(82,87,95),Enum.Material.Metal)
   end
   for _,x in ipairs({-16.25,16.25})do
    arenaPart(f,"SchoolWallBaseTrim",Vector3.new(.38,1.1,112),Vector3.new(x,1.25,0),Color3.fromRGB(68,76,84),Enum.Material.Metal)
-   arenaPart(f,"SchoolWallTopTrim",Vector3.new(.42,.55,112),Vector3.new(x,16.7,0),Color3.fromRGB(78,84,92),Enum.Material.Metal)
+   arenaPart(f,"SchoolWallTopTrim",Vector3.new(.42,.55,112),Vector3.new(x,schoolCeilingY-1.7,0),Color3.fromRGB(78,84,92),Enum.Material.Metal)
   end
   for _,z in ipairs({-40,-12,16})do
    for _,side in ipairs({-1,1})do
@@ -2056,31 +2056,41 @@ local function makeArena(map)
   addLoreCollectible(f,"SCHOOL_03",Vector3.new(63,1.1,65));addLoreCollectible(f,"SCHOOL_04",Vector3.new(-64,1.1,54))
   addEscapeGate(f,map.Id,Vector3.new(0,6,158))
  elseif map.Id=="HOSPITAL"then
-  -- 폐병원: 좁은 중앙 복도와 병실, 수술실, 지하실 느낌의 저천장 구역.
+  -- 폐병원: 중앙 병동과 수술실은 높은 천장, 지하실은 상대적으로 낮게 유지한다.
+  local hospitalWallHeight=18
+  local hospitalWallY=9
+  local hospitalCeilingY=18.5
+  local hospitalLightY=16.2
+  local basementCeilingY=12.5
+  local basementWallHeight=13
+  local basementWallY=6.5
   Lighting.FogEnd=132
   zoneFloor(f,"HospitalHallFloor",Vector3.new(20,.35,136),Vector3.new(0,.68,0),Color3.fromRGB(112,128,123),Enum.Material.Concrete)
   zoneFloor(f,"HospitalSurgeryFloor",Vector3.new(56,.35,40),Vector3.new(-48,.68,51),Color3.fromRGB(102,120,119),Enum.Material.Concrete)
   zoneFloor(f,"HospitalBasementFloor",Vector3.new(56,.35,34),Vector3.new(47,.68,57),Color3.fromRGB(64,70,70),Enum.Material.Concrete)
   local emergency=arenaPart(f,"HospitalEmergencySign",Vector3.new(10,2,.8),Vector3.new(0,7,-62),Color3.fromRGB(224,73,73),Enum.Material.Neon);glow(emergency,emergency.Color,18,1.6)
-  arenaPart(f,"HospitalHallL",Vector3.new(3,12,132),Vector3.new(-11,6,0),Style.Wall,Enum.Material.Concrete)
-  arenaPart(f,"HospitalHallR",Vector3.new(3,12,132),Vector3.new(11,6,0),Style.Wall,Enum.Material.Concrete)
+  arenaPart(f,"HospitalHallL",Vector3.new(3,hospitalWallHeight,132),Vector3.new(-11,hospitalWallY,0),Style.Wall,Enum.Material.Concrete)
+  arenaPart(f,"HospitalHallR",Vector3.new(3,hospitalWallHeight,132),Vector3.new(11,hospitalWallY,0),Style.Wall,Enum.Material.Concrete)
+  arenaPart(f,"HospitalHallCeiling",Vector3.new(25,1,138),Vector3.new(0,hospitalCeilingY,0),Color3.fromRGB(101,110,109),Enum.Material.Concrete)
   for _,z in ipairs({-48,-22,4,30})do
    for _,side in ipairs({-1,1})do
     local x=side*42
-    arenaPart(f,"WardOuter",Vector3.new(52,12,3),Vector3.new(x,6,z),Style.Wall,Enum.Material.Concrete)
+    arenaPart(f,"WardOuter",Vector3.new(52,hospitalWallHeight,3),Vector3.new(x,hospitalWallY,z),Style.Wall,Enum.Material.Concrete)
+    arenaPart(f,"WardCeiling",Vector3.new(52,1,24),Vector3.new(x,hospitalCeilingY,z+9),Color3.fromRGB(103,112,111),Enum.Material.Concrete)
     local door=arenaPart(f,"WardDoor",Vector3.new(5,9,2),Vector3.new(side*13,4.5,z+8),Color3.fromRGB(91,111,108),Enum.Material.Metal);door.CanCollide=false;door.Transparency=.7
     for bed=1,3 do arenaPart(f,"HospitalBed",Vector3.new(10,2,5),Vector3.new(side*(29+bed*10),1.5,z+9),Color3.fromRGB(174,187,188),Enum.Material.Metal)end
    end
-   local lamp=arenaPart(f,"CeilingLight",Vector3.new(8,.5,2),Vector3.new(0,10,z+10),Color3.fromRGB(183,217,207),Enum.Material.Neon);lamp.Transparency=.06;glow(lamp,lamp.Color,20,1.15)
+   local lamp=arenaPart(f,"CeilingLight",Vector3.new(8,.5,2),Vector3.new(0,hospitalLightY,z+10),Color3.fromRGB(183,217,207),Enum.Material.Neon);lamp.Transparency=.06;glow(lamp,lamp.Color,24,1.15)
   end
   -- 수술실
-  arenaPart(f,"SurgeryWall",Vector3.new(55,12,3),Vector3.new(-45,6,61),Style.Wall,Enum.Material.Concrete)
+  arenaPart(f,"SurgeryWall",Vector3.new(55,hospitalWallHeight,3),Vector3.new(-45,hospitalWallY,61),Style.Wall,Enum.Material.Concrete)
+  arenaPart(f,"SurgeryCeiling",Vector3.new(58,1,43),Vector3.new(-48,hospitalCeilingY,51),Color3.fromRGB(99,111,110),Enum.Material.Concrete)
   arenaPart(f,"SurgeryTable",Vector3.new(12,3,5),Vector3.new(-48,2,52),Color3.fromRGB(132,151,151),Enum.Material.Metal)
-  arenaPart(f,"SurgeryLamp",Vector3.new(6,.7,6),Vector3.new(-48,10,52),Color3.fromRGB(190,240,220),Enum.Material.Neon)
-  -- 지하실: 낮은 천장과 좁은 통로로 시야를 압축
-  arenaPart(f,"BasementCeiling",Vector3.new(56,1,34),Vector3.new(47,7,57),Color3.fromRGB(60,64,66),Enum.Material.Concrete)
-  arenaPart(f,"BasementWallA",Vector3.new(3,8,34),Vector3.new(20,4,57),Color3.fromRGB(69,73,75),Enum.Material.Concrete)
-  arenaPart(f,"BasementWallB",Vector3.new(3,8,34),Vector3.new(75,4,57),Color3.fromRGB(69,73,75),Enum.Material.Concrete)
+  arenaPart(f,"SurgeryLamp",Vector3.new(6,.7,6),Vector3.new(-48,hospitalLightY,52),Color3.fromRGB(190,240,220),Enum.Material.Neon)
+  -- 지하실은 병동보다 낮지만 기존보다 여유를 줘 카메라 충돌을 줄인다.
+  arenaPart(f,"BasementCeiling",Vector3.new(56,1,34),Vector3.new(47,basementCeilingY,57),Color3.fromRGB(60,64,66),Enum.Material.Concrete)
+  arenaPart(f,"BasementWallA",Vector3.new(3,basementWallHeight,34),Vector3.new(20,basementWallY,57),Color3.fromRGB(69,73,75),Enum.Material.Concrete)
+  arenaPart(f,"BasementWallB",Vector3.new(3,basementWallHeight,34),Vector3.new(75,basementWallY,57),Color3.fromRGB(69,73,75),Enum.Material.Concrete)
   for i=1,5 do arenaPart(f,"BasementCrate",Vector3.new(6,5,6),Vector3.new(28+i*8,2.5,50+(i%2)*12),Color3.fromRGB(83,74,65),Enum.Material.WoodPlanks)end
   for _,z in ipairs({-56,-28,0,28,56})do
    local strip=arenaPart(f,"HospitalGuideStrip",Vector3.new(8,.18,1),Vector3.new(0,.78,z),Color3.fromRGB(111,215,190),Enum.Material.Neon);strip.CanCollide=false
@@ -2115,7 +2125,13 @@ local function makeArena(map)
   addLoreCollectible(f,"HOSPITAL_01",Vector3.new(-96,1.1,-94));addLoreCollectible(f,"HOSPITAL_02",Vector3.new(-54,1.1,58));addLoreCollectible(f,"HOSPITAL_03",Vector3.new(-132,1.1,122))
   addEscapeGate(f,map.Id,Vector3.new(0,6,158))
  elseif map.Id=="THEME_PARK"then
-  -- 폐놀이공원: 넓은 야외, 내부 공간, 매표소, 숨는 부스와 복잡한 우회 동선.
+  -- 폐놀이공원: 야외는 개방감을 유지하고 귀신의 집/지하통로 실내 높이만 올린다.
+  local hauntedWallHeight=18
+  local hauntedWallY=9
+  local hauntedCeilingY=18.5
+  local underpassWallHeight=12
+  local underpassWallY=6
+  local underpassCeilingY=12.5
   zoneFloor(f,"ParkMainPath",Vector3.new(20,.3,142),Vector3.new(0,.66,0),Color3.fromRGB(92,82,103),Enum.Material.Concrete)
   zoneFloor(f,"ParkCrossPath",Vector3.new(142,.3,18),Vector3.new(0,.66,-30),Color3.fromRGB(92,82,103),Enum.Material.Concrete)
   zoneFloor(f,"HauntedZoneFloor",Vector3.new(58,.3,42),Vector3.new(34,.66,38),Color3.fromRGB(60,50,68),Enum.Material.Slate)
@@ -2126,16 +2142,17 @@ local function makeArena(map)
   -- 회전목마
   arenaPart(f,"CarouselBase",Vector3.new(34,2,34),Vector3.new(-32,1.5,8),Color3.fromRGB(102,68,108),Enum.Material.WoodPlanks)
   local rotor=arenaPart(f,"CarouselRotor",Vector3.new(28,1,28),Vector3.new(-32,3,8),Color3.fromRGB(180,100,142),Enum.Material.Neon);rotor.CanCollide=false;glow(rotor,rotor.Color,26,1.3)
-  local canopy=arenaPart(f,"CarouselCanopy",Vector3.new(38,2,38),Vector3.new(-32,10,8),Color3.fromRGB(112,68,111),Enum.Material.Fabric);canopy.Transparency=.08
+  local canopy=arenaPart(f,"CarouselCanopy",Vector3.new(38,2,38),Vector3.new(-32,13,8),Color3.fromRGB(112,68,111),Enum.Material.Fabric);canopy.Transparency=.08
   for i=1,8 do
    local a=i/8*math.pi*2
    arenaPart(f,"CarouselHorse",Vector3.new(3,5,2),Vector3.new(-32+math.cos(a)*11,5,8+math.sin(a)*11),Color3.fromRGB(212,190,153),Enum.Material.SmoothPlastic)
   end
   -- 귀신의 집 내부
-  arenaPart(f,"HauntedShell",Vector3.new(58,12,3),Vector3.new(34,6,54),Color3.fromRGB(54,45,62),Enum.Material.Slate)
-  arenaPart(f,"HauntedSideL",Vector3.new(3,12,42),Vector3.new(6,6,37),Color3.fromRGB(54,45,62),Enum.Material.Slate)
-  arenaPart(f,"HauntedSideR",Vector3.new(3,12,42),Vector3.new(62,6,37),Color3.fromRGB(54,45,62),Enum.Material.Slate)
-  for i=1,4 do arenaPart(f,"HauntedDivider",Vector3.new(24,9,2),Vector3.new(18+(i%2)*28,4.5,25+i*7),Color3.fromRGB(67,55,72),Enum.Material.Slate)end
+  arenaPart(f,"HauntedShell",Vector3.new(58,hauntedWallHeight,3),Vector3.new(34,hauntedWallY,54),Color3.fromRGB(54,45,62),Enum.Material.Slate)
+  arenaPart(f,"HauntedSideL",Vector3.new(3,hauntedWallHeight,42),Vector3.new(6,hauntedWallY,37),Color3.fromRGB(54,45,62),Enum.Material.Slate)
+  arenaPart(f,"HauntedSideR",Vector3.new(3,hauntedWallHeight,42),Vector3.new(62,hauntedWallY,37),Color3.fromRGB(54,45,62),Enum.Material.Slate)
+  arenaPart(f,"HauntedCeiling",Vector3.new(58,1,42),Vector3.new(34,hauntedCeilingY,37),Color3.fromRGB(45,38,52),Enum.Material.Slate)
+  for i=1,4 do arenaPart(f,"HauntedDivider",Vector3.new(24,13,2),Vector3.new(18+(i%2)*28,6.5,25+i*7),Color3.fromRGB(67,55,72),Enum.Material.Slate)end
   -- 매표소와 숨는 부스
   for i=1,5 do
    arenaPart(f,"TicketBooth",Vector3.new(10,8,10),Vector3.new(-60+i*18,4,-38),Color3.fromRGB(83,72+(i*7),94),Enum.Material.Metal)
@@ -2144,10 +2161,10 @@ local function makeArena(map)
    local a=i/7*math.pi*2
    arenaPart(f,"HideBooth",Vector3.new(8,7,8),Vector3.new(math.cos(a)*59,3.5,math.sin(a)*54),Color3.fromRGB(75,66,82),Enum.Material.Metal)
   end
-  -- 지하 통로 느낌의 저천장 복도
-  arenaPart(f,"UnderpassCeiling",Vector3.new(72,1,18),Vector3.new(0,7,-66),Color3.fromRGB(53,54,61),Enum.Material.Concrete)
-  arenaPart(f,"UnderpassWallL",Vector3.new(72,8,2),Vector3.new(0,4,-74),Color3.fromRGB(62,63,70),Enum.Material.Concrete)
-  arenaPart(f,"UnderpassWallR",Vector3.new(72,8,2),Vector3.new(0,4,-58),Color3.fromRGB(62,63,70),Enum.Material.Concrete)
+  -- 지하 통로는 긴장감은 유지하되 카메라가 눌리지 않을 정도로 천장을 높인다.
+  arenaPart(f,"UnderpassCeiling",Vector3.new(72,1,18),Vector3.new(0,underpassCeilingY,-66),Color3.fromRGB(53,54,61),Enum.Material.Concrete)
+  arenaPart(f,"UnderpassWallL",Vector3.new(72,underpassWallHeight,2),Vector3.new(0,underpassWallY,-74),Color3.fromRGB(62,63,70),Enum.Material.Concrete)
+  arenaPart(f,"UnderpassWallR",Vector3.new(72,underpassWallHeight,2),Vector3.new(0,underpassWallY,-58),Color3.fromRGB(62,63,70),Enum.Material.Concrete)
   local sign=arenaPart(f,"ParkLandmarkSign",Vector3.new(18,5,1),Vector3.new(0,9,-30),Color3.fromRGB(222,105,178),Enum.Material.Neon);glow(sign,sign.Color,26,1.4)
   for _,x in ipairs({-45,45})do local guide=arenaPart(f,"ParkRouteGuide",Vector3.new(12,.18,1.2),Vector3.new(x,.8,-30),Color3.fromRGB(111,201,225),Enum.Material.Neon);guide.CanCollide=false end
   -- 확장 구역: 아케이드 / 범퍼카 / 푸드코트 / 정비구역
@@ -2193,7 +2210,7 @@ local function makeArena(map)
  end
  workspace:SetAttribute("CurrentMapId",map.Id)
  workspace:SetAttribute("CurrentMapName",map.Name)
- workspace:SetAttribute("WorldArtPass","MIDNIGHT_"..map.Id.."_INFECTION_HORROR_V9")
+ workspace:SetAttribute("WorldArtPass","MIDNIGHT_"..map.Id.."_INFECTION_HORROR_V10")
  workspace:SetAttribute("CharacterArtDirection","REALISTIC_HUMANS_ABERRANT_MONSTERS")
  workspace:SetAttribute("DesignCodeSync","PRIMARY_THREE_FINAL_4V4_INFECTION_V1")
  workspace:SetAttribute("EscapeUnlocked",false)
@@ -2471,31 +2488,67 @@ local function costumePart(character,base,name,size,offset,color,material,shape)
  if shape then x.Shape=shape end;x.CFrame=base.CFrame*CFrame.new(offset);x.Parent=character
  local w=Instance.new("WeldConstraint");w.Part0=base;w.Part1=x;w.Parent=x;return x
 end
+local function costumeGlow(part,color,range,brightness)
+ local light=Instance.new("PointLight");light.Color=color;light.Range=range or 8;light.Brightness=brightness or 1;light.Shadows=false;light.Parent=part
+end
 local function applyClassicCostume(character,id)
- local torso=character:FindFirstChild("HumanoidRootPart")or character:FindFirstChild("UpperTorso")or character:FindFirstChild("Torso")
- local head=character:FindFirstChild("Head")or torso;if not torso or not head then return end
+ local torso=character:FindFirstChild("UpperTorso")or character:FindFirstChild("Torso")or character:FindFirstChild("HumanoidRootPart")
+ local rootPart=character:FindFirstChild("HumanoidRootPart")or torso
+ local head=character:FindFirstChild("Head")or torso
+ local leftHand=character:FindFirstChild("LeftHand")or character:FindFirstChild("LeftLowerArm")or character:FindFirstChild("Left Arm")or torso
+ local rightHand=character:FindFirstChild("RightHand")or character:FindFirstChild("RightLowerArm")or character:FindFirstChild("Right Arm")or torso
+ if not torso or not head or not rootPart then return end
  if id=="DRACULA"then
-  costumePart(character,torso,"Cape",Vector3.new(5.2,6,.35),Vector3.new(0,0,1.8),Color3.fromRGB(25,14,21),Enum.Material.Fabric)
-  costumePart(character,torso,"Collar",Vector3.new(5.6,1,1),Vector3.new(0,2.2,.5),Color3.fromRGB(112,18,38),Enum.Material.Fabric)
-  costumePart(character,head,"FangL",Vector3.new(.22,.7,.22),Vector3.new(-.38,-.45,-.72),Color3.fromRGB(248,248,238))
-  costumePart(character,head,"FangR",Vector3.new(.22,.7,.22),Vector3.new(.38,-.45,-.72),Color3.fromRGB(248,248,238))
+  costumePart(character,torso,"Cape",Vector3.new(5.6,6.4,.38),Vector3.new(0,-.1,1.45),Color3.fromRGB(22,10,18),Enum.Material.Fabric)
+  costumePart(character,torso,"CapeShoulderL",Vector3.new(2.2,1.2,1.7),Vector3.new(-2,1.55,.45),Color3.fromRGB(64,12,26),Enum.Material.Fabric)
+  costumePart(character,torso,"CapeShoulderR",Vector3.new(2.2,1.2,1.7),Vector3.new(2,1.55,.45),Color3.fromRGB(64,12,26),Enum.Material.Fabric)
+  costumePart(character,torso,"Collar",Vector3.new(5.8,1.25,1),Vector3.new(0,2.25,.35),Color3.fromRGB(116,16,36),Enum.Material.Fabric)
+  costumePart(character,head,"VampireHair",Vector3.new(2.35,.65,2.1),Vector3.new(0,.95,.12),Color3.fromRGB(18,15,18),Enum.Material.Fabric)
+  costumePart(character,head,"FangL",Vector3.new(.22,.78,.22),Vector3.new(-.38,-.48,-.72),Color3.fromRGB(248,248,238))
+  costumePart(character,head,"FangR",Vector3.new(.22,.78,.22),Vector3.new(.38,-.48,-.72),Color3.fromRGB(248,248,238))
+  local eyeL=costumePart(character,head,"BloodEyeL",Vector3.new(.18,.16,.12),Vector3.new(-.36,.2,-.72),Color3.fromRGB(238,36,55),Enum.Material.Neon)
+  local eyeR=costumePart(character,head,"BloodEyeR",Vector3.new(.18,.16,.12),Vector3.new(.36,.2,-.72),Color3.fromRGB(238,36,55),Enum.Material.Neon)
+  costumeGlow(eyeL,eyeL.Color,7,.9);costumeGlow(eyeR,eyeR.Color,7,.9)
+  local gem=costumePart(character,torso,"BloodMedallion",Vector3.new(.55,.72,.22),Vector3.new(0,.55,-1.02),Color3.fromRGB(207,36,54),Enum.Material.Neon)
+  costumeGlow(gem,gem.Color,6,.65)
  elseif id=="FRANKENSTEIN"then
-  costumePart(character,head,"FrankenBrow",Vector3.new(2.5,.45,.45),Vector3.new(0,.55,-.65),Color3.fromRGB(54,60,52),Enum.Material.SmoothPlastic)
-  costumePart(character,head,"BoltL",Vector3.new(.4,.4,1.2),Vector3.new(-1.35,-.15,0),Color3.fromRGB(158,164,164),Enum.Material.Metal)
-  costumePart(character,head,"BoltR",Vector3.new(.4,.4,1.2),Vector3.new(1.35,-.15,0),Color3.fromRGB(158,164,164),Enum.Material.Metal)
-  costumePart(character,torso,"Shoulders",Vector3.new(6,1.1,2.2),Vector3.new(0,1.2,0),Color3.fromRGB(70,82,67),Enum.Material.Metal)
+  costumePart(character,head,"FrankenBrow",Vector3.new(2.7,.48,.48),Vector3.new(0,.58,-.66),Color3.fromRGB(48,57,48),Enum.Material.SmoothPlastic)
+  costumePart(character,head,"BoltL",Vector3.new(.45,.45,1.4),Vector3.new(-1.35,-.15,0),Color3.fromRGB(164,171,173),Enum.Material.Metal)
+  costumePart(character,head,"BoltR",Vector3.new(.45,.45,1.4),Vector3.new(1.35,-.15,0),Color3.fromRGB(164,171,173),Enum.Material.Metal)
+  costumePart(character,torso,"Shoulders",Vector3.new(6.2,1.25,2.3),Vector3.new(0,1.35,0),Color3.fromRGB(62,74,62),Enum.Material.Metal)
+  costumePart(character,torso,"ChestPlate",Vector3.new(3.4,3.3,.42),Vector3.new(0,.05,-1.1),Color3.fromRGB(56,67,58),Enum.Material.Metal)
+  local core=costumePart(character,torso,"ElectricCore",Vector3.new(.85,1.25,.28),Vector3.new(0,.15,-1.38),Color3.fromRGB(133,244,113),Enum.Material.Neon)
+  costumeGlow(core,core.Color,9,1.2)
+  for i=-1,1 do costumePart(character,head,"Stitch"..i,Vector3.new(.55,.08,.08),Vector3.new(i*.48,.12,-.76),Color3.fromRGB(38,42,39),Enum.Material.Metal)end
  elseif id=="WEREWOLF"then
-  local earL=costumePart(character,head,"WolfEarL",Vector3.new(.9,1.8,.8),Vector3.new(-.8,1.5,0),Color3.fromRGB(96,69,53));earL.Shape=Enum.PartType.Wedge
-  local earR=costumePart(character,head,"WolfEarR",Vector3.new(.9,1.8,.8),Vector3.new(.8,1.5,0),Color3.fromRGB(96,69,53));earR.Shape=Enum.PartType.Wedge
-  costumePart(character,head,"WolfMuzzle",Vector3.new(1.8,1,1.8),Vector3.new(0,-.1,-1),Color3.fromRGB(122,90,67),Enum.Material.SmoothPlastic)
+  costumePart(character,head,"WolfEarL",Vector3.new(.95,1.9,.82),Vector3.new(-.82,1.5,0),Color3.fromRGB(89,61,45),Enum.Material.SmoothPlastic,Enum.PartType.Wedge)
+  costumePart(character,head,"WolfEarR",Vector3.new(.95,1.9,.82),Vector3.new(.82,1.5,0),Color3.fromRGB(89,61,45),Enum.Material.SmoothPlastic,Enum.PartType.Wedge)
+  costumePart(character,head,"WolfMuzzle",Vector3.new(1.9,1.05,1.95),Vector3.new(0,-.08,-1),Color3.fromRGB(126,89,62),Enum.Material.SmoothPlastic)
+  costumePart(character,torso,"WolfBackFur",Vector3.new(3.7,4.6,.75),Vector3.new(0,.3,1.25),Color3.fromRGB(73,54,44),Enum.Material.Fabric)
+  costumePart(character,rootPart,"WolfTail",Vector3.new(.8,4.2,.8),Vector3.new(0,-1.1,1.9),Color3.fromRGB(86,61,47),Enum.Material.Fabric)
+  for i=-1,1 do
+   costumePart(character,leftHand,"LeftClaw"..i,Vector3.new(.15,.15,.8),Vector3.new(i*.2,-.15,-.55),Color3.fromRGB(224,211,185),Enum.Material.SmoothPlastic)
+   costumePart(character,rightHand,"RightClaw"..i,Vector3.new(.15,.15,.8),Vector3.new(i*.2,-.15,-.55),Color3.fromRGB(224,211,185),Enum.Material.SmoothPlastic)
+  end
  elseif id=="MUMMY"then
-  for i=-2,2 do costumePart(character,torso,"Bandage"..i,Vector3.new(4.2,.52,2.15),Vector3.new(0,i*.62,0),i%2==0 and Color3.fromRGB(218,207,172)or Color3.fromRGB(190,180,149),Enum.Material.Fabric)end
-  costumePart(character,head,"MummyWrap",Vector3.new(2.3,.55,2.3),Vector3.new(0,.25,0),Color3.fromRGB(209,197,161),Enum.Material.Fabric)
+  for i=-3,3 do costumePart(character,torso,"Bandage"..i,Vector3.new(4.3,.48,2.2),Vector3.new(0,i*.5,0),i%2==0 and Color3.fromRGB(218,207,172)or Color3.fromRGB(190,180,149),Enum.Material.Fabric)end
+  costumePart(character,head,"MummyWrapA",Vector3.new(2.4,.58,2.35),Vector3.new(0,.35,0),Color3.fromRGB(209,197,161),Enum.Material.Fabric)
+  costumePart(character,head,"MummyWrapB",Vector3.new(2.45,.52,2.3),Vector3.new(0,-.38,0),Color3.fromRGB(190,178,145),Enum.Material.Fabric)
+  costumePart(character,torso,"LooseBandageL",Vector3.new(.48,4,.32),Vector3.new(-2.05,-1,.2),Color3.fromRGB(205,193,158),Enum.Material.Fabric)
+  costumePart(character,torso,"LooseBandageR",Vector3.new(.48,3.2,.32),Vector3.new(2.05,-.7,.3),Color3.fromRGB(185,174,142),Enum.Material.Fabric)
+  local scarab=costumePart(character,torso,"CurseScarab",Vector3.new(.9,.8,.22),Vector3.new(0,.5,-1.15),Color3.fromRGB(224,188,92),Enum.Material.Neon)
+  costumeGlow(scarab,scarab.Color,7,.8)
  elseif id=="GRIM_REAPER"then
-  costumePart(character,torso,"ReaperCloak",Vector3.new(5.3,6,2.6),Vector3.new(0,0,.3),Color3.fromRGB(24,21,31),Enum.Material.Fabric)
-  costumePart(character,head,"ReaperHood",Vector3.new(3.3,3.3,3.3),Vector3.new(0,.35,0),Color3.fromRGB(21,18,28),Enum.Material.Fabric,Enum.PartType.Ball)
-  costumePart(character,torso,"ScytheStaff",Vector3.new(.4,7,.4),Vector3.new(3,0,0),Color3.fromRGB(74,63,54),Enum.Material.Wood)
-  costumePart(character,torso,"ScytheBlade",Vector3.new(.5,3.2,2.3),Vector3.new(3,3,-1),Color3.fromRGB(189,195,202),Enum.Material.Metal)
+  costumePart(character,torso,"ReaperCloak",Vector3.new(5.5,6.4,2.7),Vector3.new(0,-.1,.35),Color3.fromRGB(21,17,28),Enum.Material.Fabric)
+  costumePart(character,torso,"ReaperShoulderL",Vector3.new(2.5,1.25,2.1),Vector3.new(-2.1,1.35,.1),Color3.fromRGB(31,24,42),Enum.Material.Fabric)
+  costumePart(character,torso,"ReaperShoulderR",Vector3.new(2.5,1.25,2.1),Vector3.new(2.1,1.35,.1),Color3.fromRGB(31,24,42),Enum.Material.Fabric)
+  costumePart(character,head,"ReaperHood",Vector3.new(3.4,3.4,3.4),Vector3.new(0,.35,0),Color3.fromRGB(18,14,25),Enum.Material.Fabric,Enum.PartType.Ball)
+  costumePart(character,head,"ReaperFaceVoid",Vector3.new(2.15,2.1,.35),Vector3.new(0,-.05,-1.25),Color3.fromRGB(3,3,6),Enum.Material.Neon)
+  local eyeL=costumePart(character,head,"VoidEyeL",Vector3.new(.16,.13,.12),Vector3.new(-.34,.15,-1.48),Color3.fromRGB(166,84,255),Enum.Material.Neon)
+  local eyeR=costumePart(character,head,"VoidEyeR",Vector3.new(.16,.13,.12),Vector3.new(.34,.15,-1.48),Color3.fromRGB(166,84,255),Enum.Material.Neon)
+  costumeGlow(eyeL,eyeL.Color,8,1);costumeGlow(eyeR,eyeR.Color,8,1)
+  costumePart(character,torso,"ScytheStaff",Vector3.new(.42,7.4,.42),Vector3.new(3,0,0),Color3.fromRGB(68,57,52),Enum.Material.Wood)
+  costumePart(character,torso,"ScytheBlade",Vector3.new(.5,3.4,2.5),Vector3.new(3,3.1,-1),Color3.fromRGB(193,199,207),Enum.Material.Metal)
  end
 end
 local function applyRoleVisual(p,r)
@@ -2848,25 +2901,47 @@ local function ability(p)
  end
 
  local f=form(p)
- if f.Ability=="BAT_DASH"then r.AssemblyLinearVelocity=r.CFrame.LookVector*70+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)
- elseif f.Ability=="POWER_CHARGE"then r.AssemblyLinearVelocity=r.CFrame.LookVector*85+Vector3.new(0,4,0)
- elseif f.Ability=="RAGE_RUN"then speed(p,28);task.delay(3,function()if p.Parent and p:GetAttribute("Role")=="MONSTER"then speed(p,19)end end)
+ local abilityProfile=(C.MonsterAbilities and C.MonsterAbilities[f.Ability])or{}
+ local origin=r.Position
+ local look=r.CFrame.LookVector
+ local effectTarget=nil
+ if f.Ability=="BAT_DASH"then
+  local velocity=tonumber(abilityProfile.Velocity)or 70
+  r.AssemblyLinearVelocity=look*velocity+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)
+ elseif f.Ability=="POWER_CHARGE"then
+  local velocity=tonumber(abilityProfile.Velocity)or 85
+  local lift=tonumber(abilityProfile.Lift)or 4
+  r.AssemblyLinearVelocity=look*velocity+Vector3.new(0,lift,0)
+ elseif f.Ability=="RAGE_RUN"then
+  local runSpeed=tonumber(abilityProfile.Speed)or 28
+  local duration=tonumber(abilityProfile.Duration)or 3
+  speed(p,runSpeed)
+  task.delay(duration,function()if p.Parent and p:GetAttribute("Role")=="MONSTER"then speed(p,19)end end)
  elseif f.Ability=="CURSE_SLOW"then
+  local radius=tonumber(abilityProfile.Radius)or 22
+  local slowSpeed=tonumber(abilityProfile.SlowSpeed)or 9
+  local duration=tonumber(abilityProfile.Duration)or 3
   for _,o in ipairs(Players:GetPlayers())do
    if o:GetAttribute("Role")=="SURVIVOR"then
     local q=root(o)
-    if q and(q.Position-r.Position).Magnitude<=22 then
-     speed(o,9);task.delay(3,function()if o.Parent and o:GetAttribute("Role")=="SURVIVOR"then speed(o,16)end end)
+    if q and(q.Position-r.Position).Magnitude<=radius then
+     speed(o,slowSpeed);task.delay(duration,function()if o.Parent and o:GetAttribute("Role")=="SURVIVOR"then speed(o,16)end end)
     end
    end
   end
  elseif f.Ability=="SHADOW_STEP"then
-  local target=r.Position+r.CFrame.LookVector*18
-  teleport(p,target,target+r.CFrame.LookVector)
+  local distance=tonumber(abilityProfile.Distance)or 18
+  local target=r.Position+look*distance
+  effectTarget=target
+  teleport(p,target,target+look)
  end
- local label=(C.MonsterAbilityLabels and C.MonsterAbilityLabels[f.Ability])or f.Name or"괴물 스킬"
+ local label=abilityProfile.Name or(C.MonsterAbilityLabels and C.MonsterAbilityLabels[f.Ability])or f.Name or"괴물 스킬"
  p:SetAttribute("AbilityFeedback",label..":"..stamp)
  p:SetAttribute("FeedbackEvent","ABILITY:"..tostring(f.Ability or"MONSTER")..":"..stamp)
+ remote:FireAllClients("MONSTER_ABILITY_EFFECT",{
+  Ability=f.Ability,Effect=abilityProfile.Effect or f.Ability,
+  Origin=origin,Target=effectTarget,Look=look,UserId=p.UserId,Stamp=stamp,
+ })
 end
 local function infectAttack(p)
  if state~="RUNNING"or p:GetAttribute("Role")~="MONSTER"then return end
