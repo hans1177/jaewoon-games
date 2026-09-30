@@ -2630,7 +2630,7 @@ local function render()
   objectiveLine.Text=p:GetAttribute("Infected")==true and("감염 전환 · "..currentAbilityName().." 사용 가능")or("몬스터 목표 · 감염 공격 + "..currentAbilityName())
  elseif role=="SURVIVOR"then
   local hf=currentHumanFormInfo()
-  objectiveLine.Text=string.format("%s · %s · 정화/대시로 몬스터 0명",hf.Name or"인간",hf.Tool or"도구")
+  objectiveLine.Text=string.format("%s · %s · 정화/대시/%s로 교전",hf.Name or"인간",hf.Tool or"도구",currentHumanAbilityName())
  elseif role=="ELIMINATED"then
   objectiveLine.Text="정화되어 이번 라운드에서 탈락"
  else
