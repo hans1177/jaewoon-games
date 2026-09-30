@@ -744,6 +744,28 @@ local function save(p)
   GhostProgress=ghostProgressSave(ghostProgressFrom(p:GetAttribute("GhostProgress"))),GhostFragments=p:GetAttribute("GhostFragments")or 0,GhostContracts=p:GetAttribute("GhostContracts")or 0,GhostCatalogBonusClaimed=p:GetAttribute("GhostCatalogBonusClaimed")==true
  })end)
 end
+local function characterStandingBottom(character,rootPart,humanoid)
+ if not character or not rootPart then return nil end
+ local feet={}
+ for _,name in ipairs({"LeftFoot","RightFoot"})do
+  local part=character:FindFirstChild(name)
+  if part and part:IsA("BasePart")then table.insert(feet,part)end
+ end
+ if #feet==0 then
+  for _,name in ipairs({"LeftLowerLeg","RightLowerLeg","Left Leg","Right Leg"})do
+   local part=character:FindFirstChild(name)
+   if part and part:IsA("BasePart")then table.insert(feet,part)end
+  end
+ end
+ if #feet>0 then
+  local bottom=math.huge
+  for _,part in ipairs(feet)do bottom=math.min(bottom,part.Position.Y-(part.Size.Y*.5))end
+  if bottom<math.huge then return bottom end
+ end
+ local fallbackOffset=math.max(1,tonumber(humanoid and humanoid.HipHeight)or 0)+(rootPart.Size.Y*.5)
+ return rootPart.Position.Y-fallbackOffset
+end
+
 local function groundedRootTarget(p,pos)
  local c=p.Character;local r=root(p);local h=hum(p)
  if not c or not r or not h then return Vector3.new(pos.X,pos.Y,pos.Z)end
@@ -762,18 +784,18 @@ local function groundedRootTarget(p,pos)
  if #grounds>0 then
   params.FilterType=Enum.RaycastFilterType.Include
   params.FilterDescendantsInstances=grounds
-  local rayTop=lobbyDestination and 24 or(pos.Y+16)
-  local rayLength=lobbyDestination and 48 or 36
+  local rayTop=lobbyDestination and 30 or(pos.Y+24)
+  local rayLength=lobbyDestination and 60 or 52
   hit=workspace:Raycast(Vector3.new(pos.X,rayTop,pos.Z),Vector3.new(0,-rayLength,0),params)
  else
   params.FilterType=Enum.RaycastFilterType.Exclude
   params.FilterDescendantsInstances={c}
-  hit=workspace:Raycast(Vector3.new(pos.X,pos.Y+12,pos.Z),Vector3.new(0,-28,0),params)
+  hit=workspace:Raycast(Vector3.new(pos.X,pos.Y+20,pos.Z),Vector3.new(0,-44,0),params)
  end
  local groundY=hit and hit.Position.Y or(lobbyDestination and .65 or .5)
- local standingOffset=math.max(1,tonumber(h.HipHeight)or 0)+(r.Size.Y*.5)
- local targetY=groundY+standingOffset+.03
- if lobbyDestination then targetY=math.clamp(targetY,3.1,4.4)end
+ local standingBottom=characterStandingBottom(c,r,h)
+ local standingOffset=standingBottom and(r.Position.Y-standingBottom)or(math.max(1,tonumber(h.HipHeight)or 0)+(r.Size.Y*.5))
+ local targetY=groundY+standingOffset+.035
  return Vector3.new(pos.X,targetY,pos.Z)
 end
 local function teleport(p,pos,lookAtPos)
@@ -796,24 +818,27 @@ local function teleport(p,pos,lookAtPos)
    h.PlatformStand=false;h.Sit=false;h.AutoRotate=true
    pcall(function()h:ChangeState(Enum.HumanoidStateType.GettingUp)end)
   end
-  task.defer(function()
-   task.wait()
-   local rr=root(p);local hh=hum(p)
-   if p.Character~=c or rr~=r or not rr or not hh or not rr.Parent or lastValidPosition[p]~=target then return end
-   local corrected=groundedRootTarget(p,pos)
-   if math.abs(rr.Position.Y-corrected.Y)>.12 or hh.FloorMaterial==Enum.Material.Air then
-    movementGraceUntil[p]=os.clock()+1
-    lastValidPosition[p]=corrected
-    local correctedCFrame=CFrame.new(corrected)
-    if typeof(lookAtPos)=="Vector3"then
-     local flatLook=Vector3.new(lookAtPos.X,corrected.Y,lookAtPos.Z)
-     if(flatLook-corrected).Magnitude>.1 then correctedCFrame=CFrame.lookAt(corrected,flatLook)end
+  task.spawn(function()
+   for _,delaySeconds in ipairs({.05,.18,.42})do
+    task.wait(delaySeconds)
+    local rr=root(p);local hh=hum(p)
+    if p.Character~=c or rr~=r or not rr or not hh or not rr.Parent then return end
+    local corrected=groundedRootTarget(p,pos)
+    if math.abs(rr.Position.Y-corrected.Y)>.055 or hh.FloorMaterial==Enum.Material.Air then
+     movementGraceUntil[p]=os.clock()+1
+     lastValidPosition[p]=corrected
+     local correctedCFrame=CFrame.new(corrected)
+     if typeof(lookAtPos)=="Vector3"then
+      local flatLook=Vector3.new(lookAtPos.X,corrected.Y,lookAtPos.Z)
+      if(flatLook-corrected).Magnitude>.1 then correctedCFrame=CFrame.lookAt(corrected,flatLook)end
+     end
+     rr.Anchored=false
+     rr.CFrame=correctedCFrame
+     rr.AssemblyLinearVelocity=Vector3.zero
+     rr.AssemblyAngularVelocity=Vector3.zero
+     hh.PlatformStand=false;hh.Sit=false;hh.AutoRotate=true
+     pcall(function()hh:ChangeState(Enum.HumanoidStateType.GettingUp)end)
     end
-    rr.Anchored=false
-    rr.CFrame=correctedCFrame
-    rr.AssemblyLinearVelocity=Vector3.zero
-    rr.AssemblyAngularVelocity=Vector3.zero
-    hh.PlatformStand=false;hh.Sit=false;hh.AutoRotate=true
    end
   end)
  end
@@ -2917,6 +2942,13 @@ local function applyRoleVisual(p,r)
   applyMonsterBodyScale(c,currentForm.Id)
   applyMonsterPalette(c,currentForm.Id)
   applyClassicCostume(c,currentForm.Id)
+  task.defer(function()
+   task.wait(.12)
+   if p.Parent==Players and p.Character==c and p:GetAttribute("Role")=="MONSTER"then
+    local rr=root(p)
+    if rr then teleport(p,rr.Position,rr.Position+rr.CFrame.LookVector*8)end
+   end
+  end)
   local head=c:FindFirstChild("Head")or root(p)
   if head then
    local g=Instance.new("BillboardGui");g.Name="RoleVisual";g.Size=UDim2.fromOffset(150,34);g.StudsOffset=Vector3.new(0,3.8,0);g.AlwaysOnTop=true;g.Parent=head
