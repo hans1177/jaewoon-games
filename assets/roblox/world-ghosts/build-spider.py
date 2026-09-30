@@ -79,6 +79,8 @@ def smooth(obj):
 def bind_rigid(obj, bone_name):
     vg = obj.vertex_groups.new(name=bone_name)
     vg.add(list(range(len(obj.data.vertices))), 1.0, 'REPLACE')
+    obj.parent = RIG
+    obj.matrix_parent_inverse = RIG.matrix_world.inverted()
     mod = obj.modifiers.new('Armature', 'ARMATURE')
     mod.object = RIG
     PARTS.append(obj)
@@ -295,6 +297,34 @@ for side,pair,names,pts in LEG_CHAINS:
             perp=Vector((-d.y,d.x,.35)).normalized()
             if (j+pair)%2: perp.x*=-1; perp.y*=-1
             add_hair(f'{n}_hair_{j}',base,perp,.075+(k*.008),n,.0045)
+
+# =============================================================================
+# 메시 병합 / 웹·모바일 드로우콜 절감
+# =============================================================================
+def merge_by_material():
+    global PARTS
+    grouped = {}
+    for obj in PARTS:
+        if not obj.data.materials:
+            continue
+        grouped.setdefault(obj.data.materials[0].name, []).append(obj)
+    merged = []
+    for mat_name, objects in grouped.items():
+        bpy.ops.object.select_all(action='DESELECT')
+        for obj in objects:
+            obj.select_set(True)
+        active_obj = objects[0]
+        bpy.context.view_layer.objects.active = active_obj
+        bpy.ops.object.join()
+        active_obj = bpy.context.object
+        active_obj.name = mat_name
+        active_obj.parent = RIG
+        active_obj.matrix_parent_inverse = RIG.matrix_world.inverted()
+        # join은 활성 오브젝트의 Armature modifier를 유지하고 vertex group은 모두 병합한다.
+        merged.append(active_obj)
+    PARTS = merged
+
+merge_by_material()
 
 # =============================================================================
 # 애니메이션
