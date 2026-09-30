@@ -503,10 +503,10 @@
       "date": "2026-10-01",
       "gameId": "MULTI_GAME_GROWTH_MARKETING",
       "actionType": "CONTROL_PLANE_STARTUP_REPAIR",
-      "problem": "Company Growth Marketing Runtime failed before creating any job on merged main ce52c5b6. The same startup_failure was present on the reusable-worker introduction commit 580833739, so retrying the run could not repair it. PR verification then exposed an independent Owner All Games Design Reset failure: the workflow copied its executable module to /tmp before switching branches but omitted the module's relative company-game-seed-contract.mjs dependency.",
-      "rootCause": "REUSABLE_WORKFLOW_PERMISSION_ESCALATION_REJECTED_AT_WORKFLOW_START_PLUS_INCOMPLETE_STAGED_ESM_DEPENDENCY_SET",
+      "problem": "Company Growth Marketing Runtime failed before creating any job on merged main ce52c5b6. The same startup_failure was present on the reusable-worker introduction commit 580833739, so retrying the run could not repair it. PR verification then exposed two independent Owner All Games Design Reset failures: the workflow first omitted the staged entry module's relative company-game-seed-contract.mjs dependency, and the repaired run then spent its full 10-minute job budget fetching every branch and tag before reaching validation.",
+      "rootCause": "REUSABLE_WORKFLOW_PERMISSION_ESCALATION_REJECTED_AT_WORKFLOW_START_PLUS_INCOMPLETE_STAGED_ESM_DEPENDENCY_SET_PLUS_UNBOUNDED_FULL_REPOSITORY_CHECKOUT",
       "decision": "Keep the existing reusable System-AI worker and grant the caller exactly the write scopes already required by the called workflow.",
-      "change": "Added pull-requests: write to the existing growth-marketing caller permissions and added a regression that compares all three requested reusable-worker scopes with the caller before Actions dispatch. Added the existing game-seed contract module to the reset workflow trigger and staged /tmp module set, with an import-order regression. No queue shape, marketing rules, game source, release state, or horror-escape-room scope changed.",
+      "change": "Added pull-requests: write to the existing growth-marketing caller permissions and added a regression that compares all three requested reusable-worker scopes with the caller before Actions dispatch. Added the existing game-seed contract module to the reset workflow trigger and staged /tmp module set, with an import-order regression. Replaced the reset job's all-ref checkout with a depth-one main checkout and explicit depth-one main/company-runtime refspec refresh inside its retry loop. No queue shape, marketing rules, game source, release state, or horror-escape-room scope changed.",
       "evidence": [
         "merged-main:ce52c5b611b1e1fe7281e56275b322aeff99a535",
         "failure-run:36752422424:startup_failure:no-jobs",
@@ -516,20 +516,25 @@
         "callee:.github/workflows/company-system-ai-workers.yml",
         "design-reset-failure-run:36753514738",
         "design-reset-failure-job:110017834879",
-        "design-reset-failure:ERR_MODULE_NOT_FOUND:file:///tmp/company-game-seed-contract.mjs"
+        "design-reset-failure:ERR_MODULE_NOT_FOUND:file:///tmp/company-game-seed-contract.mjs",
+        "design-reset-timeout-run:36754979774",
+        "design-reset-timeout-job:110022802421",
+        "design-reset-timeout:actions/checkout@v4-full-ref-fetch-cancelled-at-10m"
       ],
       "reusablePatterns": [
         "REUSABLE_CALLER_MUST_GRANT_EVERY_PERMISSION_REQUESTED_BY_CALLEE",
         "STARTUP_FAILURE_WITH_ZERO_JOBS_IS_A_WORKFLOW_GRAPH_OR_PERMISSION_FAILURE_NOT_A_RUNNER_RETRY",
-        "STAGED_ESM_EXECUTABLE_MUST_COPY_EVERY_RELATIVE_IMPORT_BEFORE_SWITCHING_BRANCHES"
+        "STAGED_ESM_EXECUTABLE_MUST_COPY_EVERY_RELATIVE_IMPORT_BEFORE_SWITCHING_BRANCHES",
+        "CONTROL_PLANE_CHECKOUT_MUST_FETCH_ONLY_REFS_USED_BY_THE_JOB"
       ],
       "avoidPatterns": [
         "RERUNNING_ZERO_JOB_STARTUP_FAILURE_WITHOUT_CHANGING_THE_WORKFLOW_GRAPH",
         "ADDING_A_DUPLICATE_DIRECT_DISPATCH_AROUND_THE_EXISTING_REUSABLE_WORKER",
-        "COPYING_ONLY_THE_ENTRY_MODULE_TO_TMP_WHILE_LEAVING_RELATIVE_IMPORTS_BEHIND"
+        "COPYING_ONLY_THE_ENTRY_MODULE_TO_TMP_WHILE_LEAVING_RELATIVE_IMPORTS_BEHIND",
+        "FETCHING_ALL_BRANCHES_AND_TAGS_INSIDE_A_TEN_MINUTE_CONTROL_PLANE_JOB"
       ],
       "qa": [
-        "local focused System-AI and design reset regression: 24/24 PASS",
+        "local focused System-AI and design reset regression: 25/25 PASS",
         "local staged reset ESM import: PASS",
         "post-change GitHub Actions: PENDING",
         "Studio actual execution: NOT_APPLICABLE_AND_NOT_RUN"

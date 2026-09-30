@@ -33,6 +33,15 @@ test('owner design reset stages every relative module before switching to the ru
   assert.match(workflow,/- 'tools\/company-game-seed-contract\.mjs'/);
 });
 
+test('owner design reset fetches only the two refs required by the runtime handoff',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/owner-all-games-design-reset.yml',import.meta.url),'utf8');
+  assert.match(workflow,/fetch-depth: 1/);
+  assert.doesNotMatch(workflow,/fetch-depth: 0/);
+  assert.match(workflow,/git fetch --depth=1 origin/);
+  assert.match(workflow,/"main:refs\/remotes\/origin\/main"/);
+  assert.match(workflow,/"\$COMPANY_RUNTIME_BRANCH:refs\/remotes\/origin\/\$COMPANY_RUNTIME_BRANCH"/);
+});
+
 test('active game without design receives one canonical GAME_SEED intake and is idempotent',()=>{
   const root=tempRepo();
   try{
