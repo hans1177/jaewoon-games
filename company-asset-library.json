@@ -1,5 +1,5 @@
 {
-  "version": 24,
+  "version": 25,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-09-30",
@@ -7472,6 +7472,28 @@
       "TAIL_EAR_WING_SECONDARY_MOTION_WHEN_APPLICABLE",
       "RUNTIME_CAPTURE"
     ],
-    "promotionRule": "SEMANTIC_PACK_IS_NOT_VERIFIED_ASSET; NATIVE MODEL_SKIN_AND_MOTION_REQUIRE_TARGET_GAME_RUNTIME_QA"
+    "promotionRule": "SEMANTIC_PACK_IS_NOT_VERIFIED_ASSET; NATIVE MODEL_SKIN_AND_MOTION_REQUIRE_TARGET_GAME_RUNTIME_QA",
+    "roblox3dImplementation": {
+      "catalog": "assets/roblox/survival-wildlife/WildlifeCatalog.luau",
+      "factory": "assets/roblox/survival-wildlife/WildlifeFactory.luau",
+      "animator": "assets/roblox/survival-wildlife/WildlifeAnimator.luau",
+      "sample": "assets/roblox/survival-wildlife/BearWalkSample.server.luau",
+      "project": "assets/roblox/survival-wildlife/default.project.json",
+      "dimensionality": "FULL_3D",
+      "articulatedMotor6D": true,
+      "billboardOrSpriteAnimalForbidden": true,
+      "rootOnlyLocomotionForbidden": true
+    },
+    "preview": {
+      "type": "INTERACTIVE_WEB_3D",
+      "path": "/web-games/wildlife-motion-sample/",
+      "subject": "BEAR_DARK_BROWN",
+      "motions": [
+        "WALK",
+        "RUN",
+        "ALERT",
+        "ATTACK"
+      ]
+    }
   }
 }
