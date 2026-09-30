@@ -52,6 +52,8 @@ function Factory.Describe(id,quality)
  if row.outfit=="FUR" then palette.skin={91,83,74};palette.cloth={70,66,61}end
  if row.outfit=="WOOD" then palette.skin={102,78,55};palette.cloth={62,75,49}end
  if row.outfit=="OIL" then palette.skin={31,35,39};palette.cloth={22,25,30}end
+ if row.outfit=="PAPER" then palette.skin={211,204,178};palette.cloth={193,178,140};palette.trim={76,56,43}end
+ if row.outfit=="ARMOR" then palette.cloth={62,69,76};palette.trim={129,108,70}end
  if features.FROST_SHARDS then palette.skin={170,204,209};palette.eye={160,234,255}end
  if features.FLAME_CROWN or features.FLAME_HAIR then palette.eye={235,130,57}end
  if features.WHITE_MASK then palette.skin={214,209,194}end
@@ -75,8 +77,8 @@ function Factory.Describe(id,quality)
   add(name.."Pupil",{scale*.4,scale*.7,.08},{x,y,z-.08},"Ball","eye",boneName)
   add(name.."Glint",{scale*.16,scale*.16,.05},{x-scale*.08,y+scale*.15,z-.13},"Ball","bone",boneName,nil,3)
  end
- local function limb(name,x,y,z,length,rotation)
-  add(name,{.45,length,.55},{x,y,z},"Ball","skin",name:find("Leg") and (x<0 and "LeftLeg" or "RightLeg") or (x<0 and "LeftArm" or "RightArm"),rotation)
+ local function limb(name,x,y,z,length,rotation,boneName)
+  add(name,{.45,length,.55},{x,y,z},"Ball","skin",boneName or (name:find("Leg") and (x<0 and "LeftLeg" or "RightLeg") or (x<0 and "LeftArm" or "RightArm")),rotation)
  end
  local noBody=row.form=="FLOATING_HEAD" or row.form=="RIBBON" or row.form=="UMBRELLA" or row.form=="LANTERN" or row.form=="WALL" or row.form=="WHEEL" or row.form=="OBJECT_SWARM"
  local noLegs=row.form=="SHROUD" or row.form=="SERPENT" or row.form=="ARACHNID" or row.form=="BOUND" or row.form=="BEAST" or row.form=="CENTAUR" or noBody
@@ -92,7 +94,7 @@ function Factory.Describe(id,quality)
     end
    end
   end
-  if row.form~="BEAST" and row.form~="SERPENT" and row.form~="ARACHNID" then
+  if row.form~="BEAST" and row.form~="SERPENT" and row.form~="ARACHNID" and row.form~="BOUND" then
    for _,side in ipairs({-1,1})do
     if not(features.ONE_ARM and side==1)then
      local length=(features.LONG_ARMS or row.form=="LONG_ARM")and 3.5 or features.SHORT_ARMS and 1.1 or 2.3
@@ -104,10 +106,18 @@ function Factory.Describe(id,quality)
  end
  if row.form=="BEAST" or row.form=="CENTAUR" then
   if row.form=="CENTAUR" then add("HorseBody",{2.2,1.6,3.8},{0,2.8,1.3},"Ball","skin")end
-  for _,x in ipairs({-1,1})do for _,z in ipairs({-.9,1.2})do limb("HindLeg"..x..z,x*.8,1.6,z,2.2,{12,0,x*6})end end
+  for _,x in ipairs({-1,1})do for _,z in ipairs({-.9,1.2})do
+   local name=(z<0 and "Front" or "Back")..(x<0 and "Left" or "Right").."Leg"
+   bone(name,"Torso",x*.8,2.7,z)
+   limb(name,x*.8,1.6,z,2.2,{12,0,x*6},name)
+   add(name.."Paw",{.72,.38,.92},{x*.8,.48,z-.24},"Ball","dark",name)
+  end end
  end
  if row.form=="SERPENT" or row.form=="RIBBON" then
-  for i=0,6 do local size=1.5-i*.16;add("Coil"..i,{size,row.form=="RIBBON" and .13 or size,1.2},{math.sin(i*.72)*1.25,1+i*.56,math.cos(i*.72)*1.2},"Ball","skin","Tail",{0,i*34,i*8})end
+  for i=0,6 do local size=1.5-i*.16;local x,y,z=math.sin(i*.72)*1.25,1+i*.56,math.cos(i*.72)*1.2
+   bone("Coil"..i,"Tail",x,y,z)
+   add("Coil"..i,{size,row.form=="RIBBON" and .13 or size,1.2},{x,y,z},"Ball","skin","Coil"..i,{0,i*34,i*8})
+  end
  end
  if row.form=="SHROUD" or row.form=="BOUND" then
   for i=0,4 do add("FloatingHem"..i,{.55,2.6-i*.12,.35},{(i-2)*.43,1.4,.2},"Wedge","cloth","Torso",{8,0,(i-2)*9})end
@@ -115,8 +125,11 @@ function Factory.Describe(id,quality)
  if row.form=="ARACHNID" then
   add("Abdomen",{2.8,1.8,3.2},{0,2,1.2},"Ball","cloth")
   for _,side in ipairs({-1,1})do for i=1,4 do
-   add("SpiderUpper"..side..i,{2,.22,.22},{side*1.8,2.1,(i-2.5)*.7},"Cylinder","dark","Torso",{0,(i-2.5)*22,side*20})
-   add("SpiderLower"..side..i,{.2,2.1,.2},{side*2.65,1.15,(i-2.5)*1.1},"Cylinder","dark","Torso",{0,0,-side*24})
+   local name="Spider"..(side<0 and "Left" or "Right")..i
+   bone(name,"Torso",side*.85,2.1,(i-2.5)*.7)
+   bone(name.."Knee",name,side*2.6,2.1,(i-2.5)*1.1)
+   add("SpiderUpper"..side..i,{2,.22,.22},{side*1.8,2.1,(i-2.5)*.7},"Cylinder","dark",name,{0,(i-2.5)*22,side*20})
+   add("SpiderLower"..side..i,{.2,2.1,.2},{side*2.65,1.15,(i-2.5)*1.1},"Cylinder","dark",name.."Knee",{0,0,-side*24})
   end end
  end
  if row.form=="UMBRELLA" then
@@ -161,6 +174,21 @@ function Factory.Describe(id,quality)
    for _,side in ipairs({-1,1})do add("Sleeve"..side,{.86,1.1,.94},{side*1.35,3.8,.07},"Block","cloth",side<0 and "LeftArm" or "RightArm",{0,0,side*9})end
    add("WaistBand",{2.03,.27,1.13},{0,2.75,.05},"Block","trim")
   end
+  if row.outfit=="COAT" or row.outfit=="SUIT" then
+   for _,side in ipairs({-1,1})do
+    add("CoatTail"..side,{.88,1.7,.2},{side*.51,1.55,.5},"Wedge","cloth","Torso",{9,0,side*5})
+    add("Lapel"..side,{.47,.84,.14},{side*.39,4.06,-.61},"Wedge","trim","Torso",{0,0,side*15})
+   end
+   for i=0,2 do add("CoatButton"..i,{.12,.12,.08},{0,3.9-i*.42,-.65},"Ball","trim","Torso",nil,2)end
+  elseif row.outfit=="ARMOR" then
+   for _,side in ipairs({-1,1})do
+    add("Pauldron"..side,{1.03,.62,1.06},{side*1.3,4.2,0},"Wedge","trim",side<0 and "LeftArm" or "RightArm",{0,0,side*12})
+    add("Greave"..side,{.55,1.1,.18},{side*.57,1.45,-.3},"Block","trim",side<0 and "LeftLeg" or "RightLeg",nil,2)
+   end
+  elseif row.form=="BOUND" then
+   add("ShroudWrap",{2.1,3.6,1.15},{0,2.8,0},"Ball","cloth")
+   for i=0,4 do add("WrapSeam"..i,{1.9,.08,.1},{0,1.5+i*.55,-.57},"Block","trim","Torso",{0,0,i%2==0 and 12 or -12},2)end
+  end
  end
 
  for featureIndex,feature in ipairs(row.features)do
@@ -177,6 +205,10 @@ function Factory.Describe(id,quality)
    end
   elseif group=="ears" then
    for _,side in ipairs({-1,1})do deco("Ear"..side,{feature=="BIG_EARS" and .8 or .45,feature=="ANTENNAE" and 1.5 or .85,.3},{side*.66,headY+.66,headZ},"Wedge","skin","Head",{0,0,-side*18})end
+  elseif group=="horns" and (feature=="SHOULDER_SPIKES" or feature=="SHADOW_SPIKES" or feature=="LIGHTNING_SPIKES") then
+   for _,side in ipairs({-1,1})do for i=1,(level==1 and 2 or 3)do
+    deco("Shoulder"..side..i,{.26,.8+i*.2,.3},{side*(1.15+i*.15),4.05-i*.15,.12},"Wedge",feature=="LIGHTNING_SPIKES" and "eye" or "bone","Torso",{0,0,-side*(32+i*12)})
+   end end
   elseif group=="horns" or group=="crown" then
    local count=feature=="ONE_HORN" and 1 or feature=="TWO_HORNS" and 2 or (level==1 and 3 or 5)
    for i=1,count do local x=(i-(count+1)/2)*.36;local y=feature=="DORSAL_SPINES" and 2+i*.4 or headY+.95
@@ -184,19 +216,29 @@ function Factory.Describe(id,quality)
     if feature=="ANTLERS" or feature=="WOOD_CROWN" then deco("Fork"..i,{.14,.6,.18},{x+.2,y+.2,headZ},"Cylinder","trim","Head",{0,0,-45},2)end
    end
   elseif group=="hat" then
+   if feature=="HEAD_KNOT" or feature=="TOPKNOT" then
+    deco("Knot",{.55,.65,.5},{0,headY+1,headZ},"Ball","cloth","Head")
+    if feature=="HEAD_KNOT" then for _,side in ipairs({-1,1})do deco("Tie"..side,{.25,.85,.15},{side*.26,headY+1.4,headZ},"Wedge","cloth","Head",{0,0,side*32})end end
+   elseif feature=="TRIANGLE_HEADBAND" or feature=="HEADBAND" then
+    deco("Band",{1.3,.18,1.12},{0,headY+.49,headZ},"Block","cloth","Head")
+    if feature=="TRIANGLE_HEADBAND" then deco("Triangle",{.54,.56,.08},{0,headY+.43,headZ-.62},"Wedge","bone","Head",{0,0,180})end
+   else
    local tall=feature=="TALL_HAT" and 1.5 or feature=="GAT" and .75 or .4
    -- Roblox cylinders run along local X; store the axial thickness before rotating upright.
    deco("Top",feature=="POINTED_HAT" and {1.35,1.5,1.35} or {tall,1.35,1.35},{0,headY+.8+tall/2,headZ},feature=="POINTED_HAT" and "Wedge" or "Cylinder","cloth","Head",{0,0,feature=="POINTED_HAT" and 0 or 90})
    if feature=="GAT" or feature=="STRAW_HAT" or feature=="RED_CAP" then deco("Brim",{.12,2.3,2},{0,headY+.8,headZ},"Cylinder","trim","Head",{0,0,90})end
    if feature=="HEAD_DISH" then deco("DishWater",{.08,.8,.8},{0,headY+1.1,headZ},"Cylinder","eye","Head",{0,0,90})end
+   end
   elseif group=="wings" then
+   bone("LeftWing","Torso",-.9,3.8,.4);bone("RightWing","Torso",.9,3.8,.4)
    for _,side in ipairs({-1,1})do for i=0,(level==1 and 1 or 3)do
-    deco("Wing"..side..i,{.7,3.7-i*.46,.16},{side*(1.7+i*.5),3.7-i*.28,.4},feature=="INSECT_WINGS" and "Ball" or "Wedge",feature=="BASKET_WINGS" and "trim" or "dark","Torso",{8,side*18,-side*(48+i*12)})
+    deco("Wing"..side..i,{.7,3.7-i*.46,.16},{side*(1.7+i*.5),3.7-i*.28,.4},feature=="INSECT_WINGS" and "Ball" or "Wedge",feature=="BASKET_WINGS" and "trim" or "dark",side<0 and "LeftWing" or "RightWing",{8,side*18,-side*(48+i*12)})
    end end
   elseif group=="tails" then
    local count=feature=="NINE_TAILS" and 9 or feature=="THREE_TAILS" and 3 or feature=="TWO_TAILS" and 2 or 1
    for i=1,count do local angle=(i-(count+1)/2)*16
-    deco("Tail"..i,{.42,2.8,.54},{math.sin(math.rad(angle))*2,1.3,.9+math.cos(math.rad(angle))},feature=="WISP_TAIL" and "Wedge" or "Ball",feature=="WISP_TAIL" and "eye" or "skin","Tail",{55,angle,angle})
+    local tailName="TailFan"..i;bone(tailName,"Tail",0,2,.8)
+    deco("Tail"..i,{.42,2.8,.54},{math.sin(math.rad(angle))*2,1.3,.9+math.cos(math.rad(angle))},feature=="WISP_TAIL" and "Wedge" or "Ball",feature=="WISP_TAIL" and "eye" or "skin",tailName,{55,angle,angle})
    end
   elseif group=="cloth" then
    local head=feature=="VEIL" or feature=="FACE_CLOTH"
@@ -209,7 +251,13 @@ function Factory.Describe(id,quality)
    elseif feature=="FANGS" or feature=="TUSKS" or feature=="IRON_TEETH" then for _,side in ipairs({-1,1})do deco("Fang"..side,{.18,feature=="TUSKS" and .9 or .35,.2},{side*.37,faceY-.4,faceZ-.2},"Wedge","bone","Head",{0,0,side*14})end
    elseif feature=="LONG_NOSE" then deco("Nose",{.24,.28,1.1},{0,faceY,faceZ-.35},"Wedge","skin","Head")
    elseif feature=="TINY_MOUTH" then -- Mouth dimensions are applied above, without an opaque mask.
-   else deco("Mask",{feature=="HALF_MASK" and .58 or 1.15,feature=="FACE_CLOTH" and .4 or 1.1,.13},{feature=="HALF_MASK" and -.3 or 0,faceY,faceZ-.17},"Ball","bone","Head",{0,feature=="PEEL_MASK" and 35 or 0,feature=="UPSIDE_MASK" and 180 or 0})end
+   else
+    deco("Mask",{feature=="HALF_MASK" and .58 or 1.15,1.1,.13},{feature=="HALF_MASK" and -.3 or 0,faceY,faceZ-.17},"Ball","bone","Head",{0,feature=="PEEL_MASK" and 35 or 0,feature=="UPSIDE_MASK" and 180 or 0})
+    if feature~="SMOOTH_MASK" and row.face~="FACELESS" then
+     for _,side in ipairs({-1,1})do if feature~="HALF_MASK" or side<0 then eye(prefix.."MaskEye"..side,side*.28,faceY+.12,faceZ-.27,.18,"Head")end end
+     deco("MouthSeam",{.48,.06,.06},{0,faceY-.33,faceZ-.27},"Block","dark","Head",nil,2)
+    end
+   end
   elseif group=="hands" then
    for _,side in ipairs({-1,1})do local foot=feature=="HOOVES" or feature=="IRON_BOOTS" or feature=="HOOK_FEET" or feature=="REVERSED_FEET"
     local count=(feature=="LONG_FINGERS" or feature=="LONG_CLAWS") and 3 or 1

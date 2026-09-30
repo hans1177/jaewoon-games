@@ -1,0 +1,60 @@
+name: Roblox World Ghost Assets
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'assets/roblox/world-ghosts/**'
+      - 'qa/roblox-world-ghost-skins.test.mjs'
+      - '.github/workflows/roblox-world-ghost-assets.yml'
+  pull_request:
+    paths:
+      - 'assets/roblox/world-ghosts/**'
+      - 'qa/roblox-world-ghost-skins.test.mjs'
+      - '.github/workflows/roblox-world-ghost-assets.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ghost-assets-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build-assets:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install checksum-pinned official asset tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ghost-tools/rojo /tmp/ghost-tools/luau
+          curl -fsSL --retry 3 -o /tmp/ghost-tools/rojo.zip https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-linux-x86_64.zip
+          curl -fsSL --retry 3 -o /tmp/ghost-tools/luau.zip https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
+          echo '22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073  /tmp/ghost-tools/rojo.zip' | sha256sum -c -
+          echo '8a9b4b381021722c82d6e6cda0964b5c9e7f354ec1035fcd8b657acc22e49247  /tmp/ghost-tools/luau.zip' | sha256sum -c -
+          unzip -q /tmp/ghost-tools/rojo.zip -d /tmp/ghost-tools/rojo
+          unzip -q /tmp/ghost-tools/luau.zip -d /tmp/ghost-tools/luau
+          chmod +x /tmp/ghost-tools/rojo/rojo /tmp/ghost-tools/luau/luau /tmp/ghost-tools/luau/luau-compile
+      - name: Validate committed source and native-package parity
+        env:
+          VIBE2_LUAU_BINARY: /tmp/ghost-tools/luau/luau
+        run: node --test qa/roblox-world-ghost-skins.test.mjs
+      - name: Rebuild gallery and reusable native module pack
+        env:
+          VIBE2_LUAU_COMPILER: /tmp/ghost-tools/luau/luau-compile
+          VIBE2_ROJO_BINARY: /tmp/ghost-tools/rojo/rojo
+        run: node assets/roblox/world-ghosts/build-native.mjs
+      - name: Verify regenerated packages
+        env:
+          VIBE2_LUAU_BINARY: /tmp/ghost-tools/luau/luau
+        run: node --test qa/roblox-world-ghost-skins.test.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: world-ghosts-native-${{ github.sha }}
+          path: assets/roblox/world-ghosts/native/
+          if-no-files-found: error
+          retention-days: 14
+
