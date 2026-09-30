@@ -448,12 +448,12 @@ test('Studio 방 검증은 TeleportService 대신 로컬 fallback을 사용한�
 });
 
 
-test('예약방 로비는 8칸 실제 자리만 유지하고 빈자리에 AI 대기 문구를 표시하지 않는다',()=>{
- assert.match(client,/Name="RoomSlots"/);
+test('월드 로비는 AI 슬롯을 만들지 않고 실제 유저 매칭만 표시한다',()=>{
  assert.match(client,/roomSlotsPanel\.Visible=false/);
- assert.match(server,/local pad=arenaPart\(f,"LobbySlot"\.\.i/);
- assert.match(server,/pad\.Material=player and Enum\.Material\.Neon or Enum\.Material\.Metal/);
+ assert.doesNotMatch(server,/LobbySlot/);
  assert.doesNotMatch(server,/AI 대기/);
+ assert.match(server,/WorldLobbyMode/);
+ assert.match(client,/월드 로비 · 접속 %d명/);
 });
 
 test('세계 괴담 도감 UI는 12종 3단계 진행과 조각 계약서를 보여준다',()=>{
@@ -509,7 +509,7 @@ test('로비는 방 입장 칸에 들어가면 자동 대기열과 카운트다�
  assert.match(server,/local function beginLobbyQueueCountdown\(\)/);
  assert.match(server,/createQueuedReservedRoom\(group\)/);
  assert.match(server,/TeleportService:TeleportAsync\(game\.PlaceId,valid,options\)/);
- assert.match(server,/방 대기 %d\/8 · %d초/);
+ assert.match(server,/매칭 %d명 · %d초/);
  assert.match(server,/CodeRoomTerminal/);
  assert.match(server,/WorldLobbyCodeInputRequest/);
  assert.match(server,/teleport\(p,lobbySpawns\[slot\]\)/);
