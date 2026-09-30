@@ -500,6 +500,33 @@ export function buildVibeAssetProductionPlan({
   const manifestInput=mergeManifestWithCompanyLibrary(manifestWithSameGameAssets,companyRegistry);
   const presetInput=presetCatalog||readJson(path.join(repoRoot,'assets','prototype-asset-presets.json'),{version:0,presets:[]});
   const request=clean(task.goal||task.request||task.gameId||'game asset production');
+  const duelCombatRequested=/(?:duel|dueling|결투|대전|격투|맨손|무기.?전투|combat|fight|fighter|카타나|katana|검술|쌍검|대검|창술|boxing|복싱|kickboxing|킥복싱|muay|무에타이|karate|가라테|taekwondo|태권도|mma|레슬링|wrestling|judo|유도|jiu.?jitsu|주짓수)/i.test(request);
+  const requestedWeaponFamily=/카타나|katana/i.test(request)?'KATANA'
+    :/쌍검|dual.?blade/i.test(request)?'DUAL_BLADE'
+    :/대검|great.?sword|two.?hand/i.test(request)?'TWO_HAND_SWORD'
+    :/단검|dagger/i.test(request)?'DAGGER'
+    :/창|spear/i.test(request)?'SPEAR'
+    :/도끼|axe/i.test(request)?'AXE'
+    :/망치|hammer/i.test(request)?'HAMMER'
+    :/활|bow/i.test(request)?'BOW'
+    :/총|firearm|gun/i.test(request)?'FIREARM'
+    :/방패|shield/i.test(request)?'SHIELD_SWORD'
+    :/지팡이|staff|wand/i.test(request)?'STAFF_OR_WAND'
+    :/맨손|격투|boxing|복싱|kickboxing|킥복싱|muay|무에타이|karate|가라테|taekwondo|태권도|mma|레슬링|wrestling|judo|유도|jiu.?jitsu|주짓수/i.test(request)?'UNARMED'
+    :/검|sword/i.test(request)?'ONE_HAND_SWORD'
+    :null;
+  const requestedMartialStyle=/복싱|boxing/i.test(request)?'BOXING'
+    :/킥복싱|kickboxing/i.test(request)?'KICKBOXING'
+    :/무에타이|muay/i.test(request)?'MUAY_THAI'
+    :/가라테|karate/i.test(request)?'KARATE'
+    :/태권도|taekwondo/i.test(request)?'TAEKWONDO'
+    :/산타|sanda/i.test(request)?'SANDA'
+    :/쿵푸|우슈|wushu|kung.?fu/i.test(request)?'WUSHU_KUNG_FU'
+    :/레슬링|wrestling/i.test(request)?'WRESTLING'
+    :/유도|judo/i.test(request)?'JUDO_THROWING'
+    :/주짓수|jiu.?jitsu/i.test(request)?'JIU_JITSU_GRAPPLING'
+    :/mma/i.test(request)?'MMA_HYBRID'
+    :requestedWeaponFamily==='UNARMED'?'MMA_HYBRID':null;
   const requestedConcept=inferRequestedConcept(task,request);
   const assetLearningRequired=clean(executionLane).toLowerCase()==='asset-development'||['roblox','unity','web'].includes(resolvedTarget);
   const verifiedCommercialReuse=freezeList((verifiedLearning?.playbookReuse||[])
@@ -740,6 +767,9 @@ export function buildVibeAssetProductionPlan({
       weaponPacks:freezeList(unique([...(companyLibrary?.actionMotionLibrary?.weaponPacks||[]),...(companyRegistry?.duelCombatMotion?.weaponFamilies||[])])),
       duelCombatMotion:freeze({
         enabled:companyRegistry?.duelCombatMotion?.status==='PREPARED_SEMANTIC_LIBRARY',
+        requested:duelCombatRequested,
+        requestedWeaponFamily,
+        requestedMartialStyle,
         target:clean(companyRegistry?.duelCombatMotion?.target)||null,
         implementation:clean(companyRegistry?.duelCombatMotion?.implementation)||null,
         productionVerified:companyRegistry?.duelCombatMotion?.productionVerified===true,
@@ -1130,6 +1160,7 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.enabled?`캐릭터 플랫폼 프로필=${plan.companyGraphicsLibrary.platformProfile}; Unity/Roblox 바이너리·리그는 직접 공유하지 않고 공통 실루엣/체형/장비 의미만 공유한 뒤 네이티브 재authoring한다.`:'',
     plan.companyGraphicsLibrary?.enabled?`액션 모션 최소 커버리지=${JSON.stringify(plan.companyGraphicsLibrary.motionMinimums)}; weaponPacks=${plan.companyGraphicsLibrary.weaponPacks.join('|')}`:'',
     plan.companyGraphicsLibrary?.duelCombatMotion?.enabled?`결투형 전투 모션=${plan.companyGraphicsLibrary.duelCombatMotion.target}; 무기=${plan.companyGraphicsLibrary.duelCombatMotion.weaponFamilies.join('|')}; 맨손 격투=${plan.companyGraphicsLibrary.duelCombatMotion.unarmedStyles.join('|')}; 역할=${plan.companyGraphicsLibrary.duelCombatMotion.requiredRoles.join('|')}`:'',
+    plan.companyGraphicsLibrary?.duelCombatMotion?.requested?`이번 작업은 결투형 전투 모션을 실제 게임에 적용한다. 우선 무기=${plan.companyGraphicsLibrary.duelCombatMotion.requestedWeaponFamily||'AUTO'}; 맨손 스타일=${plan.companyGraphicsLibrary.duelCombatMotion.requestedMartialStyle||'AUTO'}. 기존 전투 책임 함수와 리그/Animator를 직접 사용하고, 대기→보법→약공 콤보→강공→대시/공중 공격→가드/패링/카운터→피격/넉다운/기상→피니셔 흐름을 연결한다. 원본 제3자 클립을 추출·재배포하지 말고 동일 역할의 독자 키포즈/타이밍으로 네이티브 구현하며 실제 런타임 검증 전 VERIFIED로 표시하지 않는다.`:'',
     plan.companyGraphicsLibrary?.reusableProductionTarget?.motion?.verifiedReusableClipTarget?`공용 모션 runtime-verified 목표=${plan.companyGraphicsLibrary.reusableProductionTarget.motion.verifiedReusableClipTarget}; base author/acquire=${plan.companyGraphicsLibrary.reusableProductionTarget.motion.baseAuthoringOrAcquisitionTarget}; safe derived=${plan.companyGraphicsLibrary.reusableProductionTarget.motion.safeDerivedVariationTarget}; reuse=${(plan.companyGraphicsLibrary.reusableProductionTarget.motion.crossGenreReuse||[]).join('|')}. PREPARED_SEMANTIC은 목표 달성으로 세지 않는다.`:'',
     plan.companyGraphicsLibrary?.reusableProductionTarget?.fullPresentationFamilies?.length?`공용 자산 전체 범위=${plan.companyGraphicsLibrary.reusableProductionTarget.fullPresentationFamilies.join('|')}; 새 시스템을 만들지 않고 기존 Studio Asset Universe gap-fill/GRAPHICS_PRODUCTION에서 채운다.`:'',
 
