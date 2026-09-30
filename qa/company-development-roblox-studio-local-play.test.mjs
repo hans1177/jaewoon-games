@@ -2739,6 +2739,10 @@ test('Studio serializes play without replacing pending games or blocking paralle
  assert.match(play,/strategy:\n      fail-fast: false\n      max-parallel: 1\n      matrix:/);
  assert.match(play,/needs: studio-local-plan/);
  assert.doesNotMatch(play.split('    steps:')[0],/needs:.*runtime-foundation/);
+ const preserve=workflow.indexOf('ROBLOX_PENDING_STUDIO_RUN_PRESERVED=');
+ assert.ok(preserve>0&&preserve<workflow.indexOf('actions/runs/$run_id/cancel'));
+ assert.match(workflow,/startswith\("Official Studio MCP actual play "\)/);
+ assert.match(workflow,/select\(\.status == "queued" or \.status == "pending" or \.status == "requested" or \.status == "waiting" or \.status == "in_progress"\)/);
 });
 
 test('manual single-game diagnosis preserves product failures and still rejects mismatched artifacts',()=>{

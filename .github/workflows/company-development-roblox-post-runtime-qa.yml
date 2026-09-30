@@ -109,6 +109,11 @@ jobs:
             [ -n "$run_id" ] || continue
             run_status="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id" --jq '.status' 2>/dev/null || true)"
             if [ "$run_status" = 'in_progress' ]; then
+              studio_jobs="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" --jq '[.jobs[] | select(.name | startswith("Official Studio MCP actual play ")) | select(.status == "queued" or .status == "pending" or .status == "requested" or .status == "waiting" or .status == "in_progress")] | length' 2>/dev/null || echo 1)"
+              if [ "$studio_jobs" != '0' ]; then
+                echo "ROBLOX_PENDING_STUDIO_RUN_PRESERVED=$run_id"
+                continue
+              fi
               active_jobs="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" --jq '[.jobs[] | select(.status == "in_progress")] | length' 2>/dev/null || echo 1)"
               if [ "$active_jobs" != '0' ]; then
                 echo "ROBLOX_ACTIVE_STUDIO_RUN_PRESERVED=$run_id"
