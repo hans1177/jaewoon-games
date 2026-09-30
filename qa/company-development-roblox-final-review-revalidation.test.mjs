@@ -141,6 +141,10 @@ test('F9 fan-in repeats development without requiring publication',()=>{
   assert.match(fanin,/prepublish\.validationVersionNumber/);
   assert.match(workflow,/const exactInternalF9Proof=/);
   assert.match(workflow,/prepublish\.f9RuntimeReplay===false/);
-  assert.match(workflow,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=/);
+  assert.match(fanin,/verified_count="\$\(grep -c \. "\$proof_tsv" \|\| true\)"/);
+  assert.match(fanin,/reason:"roblox-f9-verified-next-cycle"/);
+  assert.match(fanin,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=1:verified=/);
+  assert.match(fanin,/ROBLOX_NEXT_EVOLUTION_CYCLE_TRIGGER=F9_VERIFIED/);
+  assert.doesNotMatch(fanin,/if \[ "\$settled_count" -gt 0 \]; then/);
   assert.match(workflow,/vibe2-fanin-refill/);
 });
