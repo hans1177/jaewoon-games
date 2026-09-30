@@ -46,7 +46,7 @@ test('포근섬은 주민 자동생산과 5거점 정복 루프를 유지한다'
 
 test('포근섬 모바일 UI는 채집 버튼 없이 마을 운영과 정복만 배치한다',()=>{
  for(const marker of ['TopHUD','ActionDock','ActionPopup','ManualGatherHint','마을','정복','기지 공격','병영 강화','CoreUISafeInsets'])assert.match(cozyClient,new RegExp(marker));
- assert.match(cozyClient,/controls\.Size=UDim2\.fromOffset\(196,42\)/);
+ assert.match(cozyClient,/controls\.Size=UDim2\.fromOffset\(196,56\)/);
  assert.match(cozyClient,/나무\/작물에 가까이 가서 직접 채집/);
  assert.doesNotMatch(cozyClient,/AutoGatherStatus/);
 });

@@ -169,11 +169,43 @@ if not nativeFoundationRemote then
   nativeFoundationRemote.Parent = ReplicatedStorage
 end
 local nativeFoundationSpawn = workspace:FindFirstChild("NativeFoundationSpawn")
+-- A packaged place has no Studio baseplate. Build solid ground before exposing its spawn.
+local villageGround = workspace:FindFirstChild("VillageGround")
+if not villageGround then
+  villageGround = Instance.new("Part")
+  villageGround.Name = "VillageGround"
+  villageGround.Size = Vector3.new(160, 2, 160)
+  villageGround.Position = Vector3.new(0, 1, 0)
+  villageGround.Anchored = true
+  villageGround.CanCollide = true
+  villageGround.Material = Enum.Material.Cobblestone
+  villageGround.Color = Color3.fromRGB(119, 126, 109)
+  villageGround.TopSurface = Enum.SurfaceType.Smooth
+  villageGround.Parent = workspace
+  for index, edge in ipairs({
+    {Vector3.new(160, 10, 2), Vector3.new(0, 7, -79)},
+    {Vector3.new(160, 10, 2), Vector3.new(0, 7, 79)},
+    {Vector3.new(2, 10, 156), Vector3.new(-79, 7, 0)},
+    {Vector3.new(2, 10, 156), Vector3.new(79, 7, 0)},
+  }) do
+    local wall = Instance.new("Part")
+    wall.Name = "VillageBoundary" .. index
+    wall.Size = edge[1]
+    wall.Position = edge[2]
+    wall.Anchored = true
+    wall.CanCollide = true
+    wall.Material = Enum.Material.Brick
+    wall.Color = Color3.fromRGB(105, 112, 97)
+    wall.Parent = villageGround
+  end
+end
 if not nativeFoundationSpawn then
   nativeFoundationSpawn = Instance.new("SpawnLocation")
   nativeFoundationSpawn.Name = "NativeFoundationSpawn"
   nativeFoundationSpawn.Size = Vector3.new(8, 1, 8)
   nativeFoundationSpawn.Position = Vector3.new(0, 3, 0)
+  nativeFoundationSpawn.Anchored = true
+  nativeFoundationSpawn.CanCollide = true
   nativeFoundationSpawn.Neutral = true
   nativeFoundationSpawn.Parent = workspace
 end
@@ -182,9 +214,23 @@ local function bindNativeFoundationCharacter(character)
   local rootPart = character:WaitForChild("HumanoidRootPart")
   rootPart.Anchored = false
   humanoid.PlatformStand = false
-  local groundHit = workspace:Raycast(rootPart.Position, Vector3.new(0, -10, 0))
+  local params = RaycastParams.new()
+  params.FilterType = Enum.RaycastFilterType.Exclude
+  params.FilterDescendantsInstances = {character}
+  local groundHit = workspace:Raycast(rootPart.Position, Vector3.new(0, -10, 0), params)
   character:SetAttribute("GROUND_CONTACT", groundHit ~= nil)
-  character:SetAttribute("MOVEMENT_CONFIRMED", true)
+  character:SetAttribute("MOVEMENT_CONFIRMED", false)
+  local origin = rootPart.Position
+  task.spawn(function()
+    while character.Parent and humanoid.Health > 0 do
+      local delta = rootPart.Position - origin
+      if Vector3.new(delta.X, 0, delta.Z).Magnitude > 1 and humanoid.FloorMaterial ~= Enum.Material.Air then
+        character:SetAttribute("MOVEMENT_CONFIRMED", true)
+        break
+      end
+      task.wait(0.25)
+    end
+  end)
 end
 local function bindNativeFoundationPlayer(player)
   if player.Character then task.defer(bindNativeFoundationCharacter, player.Character) end

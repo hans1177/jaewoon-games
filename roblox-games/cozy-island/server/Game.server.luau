@@ -29,6 +29,7 @@ local foundationSpawn
 local lastRequest,battling,gatherCooldown,qaCaptureLast,movementProbeStart={},{},{},{},{}
 local mobs={}
 local assetCache={}
+local dataLoaded={}
 local ASSETS={Nature=6933438443,City=6933556508,Forest=6432306802}
 
 local function n(p,k,d)local v=p:GetAttribute(k);return typeof(v)=="number"and v or d end
@@ -378,10 +379,32 @@ local function init(p)
  local h=hum(p);if h then h.MaxHealth=100;h.Health=100 end
 end
 local function load(p)
- init(p);local ok,d=pcall(function()return store:GetAsync("p:"..p.UserId)end)
- if ok and typeof(d)=="table"then for k,v in pairs(C.InitialState)do if typeof(d[k])=="number"then p:SetAttribute(k,d[k])end end;if typeof(d.SupportReady)=="boolean"then p:SetAttribute("SupportReady",d.SupportReady)end end
+ init(p);dataLoaded[p]=nil;p:SetAttribute("SaveStatus","LOADING")
+ local ok,d=pcall(function()return store:GetAsync("p:"..p.UserId)end)
+ if not ok or(d~=nil and typeof(d)~="table")then
+  p:SetAttribute("SaveStatus","LOAD_FAILED")
+  msg(p,"저장 데이터 연결 실패 · 기존 진행 보호를 위해 저장을 보류했어")
+  return false
+ end
+ if typeof(d)=="table"then for k,v in pairs(C.InitialState)do if typeof(d[k])=="number"then p:SetAttribute(k,d[k])end end;if typeof(d.SupportReady)=="boolean"then p:SetAttribute("SupportReady",d.SupportReady)end end
+ if not p.Parent then return false end
+ dataLoaded[p]=true;p:SetAttribute("SaveStatus","READY")
+ return true
 end
-local function save(p)local d={SupportReady=p:GetAttribute("SupportReady")==true};for k in pairs(C.InitialState)do d[k]=p:GetAttribute(k)end;pcall(function()store:SetAsync("p:"..p.UserId,d)end)end
+local function save(p)
+ if dataLoaded[p]~=true then return false end
+ local d={SupportReady=p:GetAttribute("SupportReady")==true}
+ for k in pairs(C.InitialState)do d[k]=p:GetAttribute(k)end
+ local ok=pcall(function()
+  store:UpdateAsync("p:"..p.UserId,function(previous)
+   local updated=typeof(previous)=="table"and table.clone(previous)or{}
+   for k,v in pairs(d)do updated[k]=v end
+   return updated
+  end)
+ end)
+ p:SetAttribute("SaveStatus",ok and"SAVED"or"SAVE_FAILED")
+ return ok
+end
 
 local H={
  [C.Actions.HIRE]=hire,[C.Actions.WOOD_JOB]=function(p)job(p,"WoodWorkers")end,[C.Actions.FOOD_JOB]=function(p)job(p,"Farmers")end,
@@ -432,7 +455,7 @@ local function bindPlayer(p)
 end
 Players.PlayerAdded:Connect(bindPlayer)
 for _,p in ipairs(Players:GetPlayers())do bindPlayer(p)end
-Players.PlayerRemoving:Connect(function(p)save(p);lastRequest[p]=nil;battling[p]=nil;gatherCooldown[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;BattleVisual.cleanup(p)end)
+Players.PlayerRemoving:Connect(function(p)save(p);dataLoaded[p]=nil;lastRequest[p]=nil;battling[p]=nil;gatherCooldown[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;BattleVisual.cleanup(p)end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
 task.spawn(function()
