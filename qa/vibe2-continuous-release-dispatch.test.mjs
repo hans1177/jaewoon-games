@@ -9,6 +9,30 @@ import { execFileSync } from 'node:child_process';
 const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 const releaseWorkflow=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
 
+test('fast recovery CLI and workflow do not wake again for historical queued recovery evidence',()=>{
+  const fast=fs.readFileSync('.github/workflows/vibe2-recovery-fast.yml','utf8');
+  const assignment=fast.match(/^            (vibe_requeued=.*)$/m)?.[1];
+  assert.ok(assignment);
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'recovery-wake-'));
+  try{
+    const queue=path.join(temp,'queue.json'),recovery=path.join(temp,'recovery.json'),system=path.join(temp,'system.json'),log=path.join(temp,'dispatch.log');
+    fs.writeFileSync(queue,JSON.stringify({tasks:Array.from({length:298},(_,i)=>({id:'old-'+i,status:'queued',evidence:['recovery-queue:historical']}))}));
+    fs.writeFileSync(recovery,JSON.stringify({tasks:[]}));fs.writeFileSync(system,JSON.stringify({tasks:[]}));
+    const run=()=>{
+      fs.writeFileSync(log,execFileSync(process.execPath,['tools/company-recovery-dispatch.mjs','--route=all','--queue='+queue,'--recovery='+recovery,'--system-ai='+system],{encoding:'utf8'}));
+      const shell=assignment.replace('/tmp/vibe2-recovery-fast/dispatch.log','"$RECOVERY_TEST_LOG"')+'\n[[ "$vibe_requeued" =~ ^[0-9]+$ ]]\nprintf "%s" "$vibe_requeued"';
+      return execFileSync('bash',['-euo','pipefail','-c',shell],{encoding:'utf8',env:{...process.env,RECOVERY_TEST_LOG:log}});
+    };
+    assert.equal(run(),'0');
+    fs.writeFileSync(recovery,JSON.stringify({tasks:[{id:'fresh',status:'queued',recoveryOwner:'VIBE2_VIBE3',sourceTaskId:'old-0'}]}));
+    assert.equal(run(),'1');
+    assert.equal(run(),'0');
+    assert.equal(JSON.parse(fs.readFileSync(queue,'utf8')).tasks.length,298);
+    assert.ok(fast.includes("if: steps.recovery.outputs.vibe_requeued != '0'"));
+    assert.ok(fast.includes('SKIPPED_NO_NEW_GAME_RECOVERY'));
+  }finally{fs.rmSync(temp,{recursive:true,force:true});}
+});
+
 function count(needle){
   return workflow.split(needle).length-1;
 }
