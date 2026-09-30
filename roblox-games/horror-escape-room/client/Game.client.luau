@@ -2249,7 +2249,9 @@ local function render()
  local spectating=round=="SPECTATING"
  local isRoomServer=p:GetAttribute("RoomServer")==true
  local roomState=tostring(p:GetAttribute("RoomState")or"BROWSER")
- local browser=not isRoomServer\n lobbyHeader.Visible=browser and not running and not resultCode\n lobbyHint.Visible=browser and not running and not resultCode
+ local browser=not isRoomServer
+ lobbyHeader.Visible=browser and not running and not resultCode
+ lobbyHint.Visible=browser and not running and not resultCode
  local lobbyFolder=workspace:FindFirstChild("MidnightLobby")
  local rootNow=p.Character and p.Character:FindFirstChild("HumanoidRootPart")
  local nearestBay=nil
