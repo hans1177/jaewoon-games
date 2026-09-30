@@ -299,11 +299,12 @@ local function leaveReservedRoom(p)
  pcall(function()TeleportService:TeleportAsync(game.PlaceId,{p})end)
 end
 
+-- 모든 맵 공통 중앙 통로의 전용 안전 스폰. 상호작용 단말/소품 중심점과 겹치지 않는다.
 local survivorSpawns={
- Vector3.new(-118,3,-70),Vector3.new(118,3,-70),Vector3.new(-108,3,104),
- Vector3.new(108,3,104),Vector3.new(0,3,40),Vector3.new(0,3,-40)
+ Vector3.new(-5,3,54),Vector3.new(5,3,54),Vector3.new(-5,3,42),
+ Vector3.new(5,3,42),Vector3.new(-5,3,30),Vector3.new(5,3,30)
 }
-local monsterSpawn=Vector3.new(0,3,-52)
+local monsterSpawn=Vector3.new(0,3,-54)
 local assetCache={}
 local objectiveState={round=0,done=0,total=0}
 local escapedPlayers={}
@@ -561,7 +562,7 @@ local function glow(part,color,range,brightness)
  local l=Instance.new("PointLight");l.Color=color;l.Range=range or 22;l.Brightness=brightness or 1.4;l.Shadows=true;l.Parent=part;return l
 end
 local function zoneFloor(f,name,size,pos,color,material)
- local x=arenaPart(f,name,size,pos,color,material);x.CanCollide=true;return x
+ local x=arenaPart(f,name,size,pos,color,material);x.CanCollide=true;x:SetAttribute("WalkableGround",true);return x
 end
 
 local function stripLoadedAsset(root)
@@ -1015,7 +1016,7 @@ local function makeArena(map)
  grade.Name="MidnightColorGrade";grade.Brightness=.035;grade.Contrast=.08;grade.Saturation=-.04;grade.TintColor=Color3.fromRGB(230,235,242);grade.Parent=Lighting
  local floorColor=map.Id=="SCHOOL"and Color3.fromRGB(36,41,48)or map.Id=="HOSPITAL"and Color3.fromRGB(61,72,72)or Color3.fromRGB(56,55,67)
  local floorMaterial=map.Id=="THEME_PARK"and Enum.Material.Asphalt or Enum.Material.Concrete
- arenaPart(f,"Floor",Vector3.new(340,1,340),Vector3.new(0,0,0),floorColor,floorMaterial)
+ local mainFloor=arenaPart(f,"Floor",Vector3.new(340,1,340),Vector3.new(0,0,0),floorColor,floorMaterial);mainFloor:SetAttribute("WalkableGround",true)
  for _,x in ipairs({-169,169})do arenaPart(f,"OuterWall",Vector3.new(2,22,340),Vector3.new(x,11,0),Style.Wall,Enum.Material.Concrete)end
  for _,z in ipairs({-169,169})do arenaPart(f,"OuterWall",Vector3.new(340,22,2),Vector3.new(0,11,z),Style.Wall,Enum.Material.Concrete)end
  -- 대형 맵의 가장자리와 주요 동선을 읽을 수 있는 낮은 유도등
@@ -1354,7 +1355,7 @@ local function makeFallbackArena(map,reason)
  foundationSpawn=Instance.new("SpawnLocation");foundationSpawn.Name="FoundationSpawn";foundationSpawn.Size=Vector3.new(10,1,10);foundationSpawn.Position=Vector3.new(survivorSpawns[1].X,.55,survivorSpawns[1].Z);foundationSpawn.Anchored=true;foundationSpawn.Neutral=true;foundationSpawn.Transparency=1;foundationSpawn.CanCollide=false;foundationSpawn.CanTouch=false;foundationSpawn.CanQuery=false;foundationSpawn.Parent=f
  Lighting.Brightness=2.05;Lighting.ClockTime=.35;Lighting.FogEnd=270
  Lighting.Ambient=Color3.fromRGB(72,78,90);Lighting.OutdoorAmbient=Color3.fromRGB(58,64,76)
- arenaPart(f,"Floor",Vector3.new(160,1,160),Vector3.new(0,0,0),Style.Floor,Enum.Material.Concrete)
+ local mainFloor=arenaPart(f,"Floor",Vector3.new(160,1,160),Vector3.new(0,0,0),Style.Floor,Enum.Material.Concrete);mainFloor:SetAttribute("WalkableGround",true)
  for _,x in ipairs({-79,79})do arenaPart(f,"OuterWall",Vector3.new(2,18,160),Vector3.new(x,9,0),Style.Wall,Enum.Material.Concrete)end
  for _,z in ipairs({-79,79})do arenaPart(f,"OuterWall",Vector3.new(160,18,2),Vector3.new(0,9,z),Style.Wall,Enum.Material.Concrete)end
  zoneFloor(f,"SafeHall",Vector3.new(28,.35,126),Vector3.new(0,.68,0),Color3.fromRGB(125,130,139),Enum.Material.Concrete)
@@ -1567,13 +1568,24 @@ end
 local function groundedRootTarget(p,pos)
  local c=p.Character;local r=root(p);local h=hum(p)
  if not c or not r or not h then return Vector3.new(pos.X,pos.Y,pos.Z)end
+ local grounds={}
+ if arena and arena.Parent then
+  for _,d in ipairs(arena:GetDescendants())do
+   if d:IsA("BasePart")and d:GetAttribute("WalkableGround")==true then table.insert(grounds,d)end
+  end
+ end
  local params=RaycastParams.new()
- params.FilterType=Enum.RaycastFilterType.Exclude
- params.FilterDescendantsInstances={c}
  params.IgnoreWater=true
- -- 지정 좌표 바로 위에서 아래로만 검사해 천장/지붕을 바닥으로 오인하지 않는다.
- local origin=Vector3.new(pos.X,pos.Y+5,pos.Z)
- local hit=workspace:Raycast(origin,Vector3.new(0,-18,0),params)
+ local hit=nil
+ if #grounds>0 then
+  params.FilterType=Enum.RaycastFilterType.Include
+  params.FilterDescendantsInstances=grounds
+  hit=workspace:Raycast(Vector3.new(pos.X,pos.Y+10,pos.Z),Vector3.new(0,-24,0),params)
+ else
+  params.FilterType=Enum.RaycastFilterType.Exclude
+  params.FilterDescendantsInstances={c}
+  hit=workspace:Raycast(Vector3.new(pos.X,pos.Y+10,pos.Z),Vector3.new(0,-24,0),params)
+ end
  local groundY=hit and hit.Position.Y or .5
  local standingOffset=math.max(1,tonumber(h.HipHeight)or 0)+(r.Size.Y*.5)
  return Vector3.new(pos.X,groundY+standingOffset+.03,pos.Z)
