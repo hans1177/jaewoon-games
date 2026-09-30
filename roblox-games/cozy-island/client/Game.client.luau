@@ -81,7 +81,7 @@ end
 local function makeButton(parent,text,color)
  local b=Instance.new("TextButton")
  b.AutoButtonColor=true
- b.BackgroundColor3=color
+b.BackgroundColor3=Color3.fromRGB(255,255,255)
  b.TextColor3=Color3.fromRGB(255,255,255)
  b.Text=text
  b.TextScaled=true
