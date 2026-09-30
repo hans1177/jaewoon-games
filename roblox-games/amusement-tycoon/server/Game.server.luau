@@ -1,7 +1,13 @@
+-- 파일명: roblox-games/amusement-tycoon/server/Game.server.luau
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
-local store = DataStoreService:GetDataStore("amusement-tycoon-development-v1")
+-- 로컬 Studio에서 저장소를 사용할 수 없어도 시작 월드가 생성되어야 한다.
+local store
+local storeReady, storeResult = pcall(function()
+  return DataStoreService:GetDataStore("amusement-tycoon-development-v1")
+end)
+if storeReady then store = storeResult end
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
 
@@ -172,22 +178,63 @@ if not nativeFoundationRemote then
   nativeFoundationRemote.Parent = ReplicatedStorage
 end
 local nativeFoundationSpawn = workspace:FindFirstChild("NativeFoundationSpawn")
+-- SpawnLocation 자체와 주변 이동 영역을 물리 월드에 고정한 뒤 공개한다.
+local lobbyCenter = nativeFoundationSpawn and nativeFoundationSpawn.Position or Vector3.new(0, 3, 0)
+local lobbyGround = workspace:FindFirstChild("NativeLobbyGround")
+if not lobbyGround then
+  lobbyGround = Instance.new("Part")
+  lobbyGround.Name = "NativeLobbyGround"
+  lobbyGround.Size = Vector3.new(96, 2, 96)
+  lobbyGround.Position = lobbyCenter - Vector3.new(0, 1.5, 0)
+  lobbyGround.Anchored = true
+  lobbyGround.CanCollide = true
+  lobbyGround.Material = Enum.Material.Concrete
+  lobbyGround.Color = Color3.fromRGB(86, 114, 98)
+  lobbyGround.Parent = workspace
+end
+for index, side in ipairs({
+  {Vector3.new(96, 8, 2), Vector3.new(0, 3, -48)},
+  {Vector3.new(96, 8, 2), Vector3.new(0, 3, 48)},
+  {Vector3.new(2, 8, 96), Vector3.new(-48, 3, 0)},
+  {Vector3.new(2, 8, 96), Vector3.new(48, 3, 0)},
+}) do
+  local name = "NativeLobbyBoundary" .. index
+  if not workspace:FindFirstChild(name) then
+    local boundary = Instance.new("Part")
+    boundary.Name = name
+    boundary.Size = side[1]
+    boundary.Position = lobbyCenter + side[2]
+    boundary.Anchored = true
+    boundary.CanCollide = true
+    boundary.Transparency = 0.65
+    boundary.Color = Color3.fromRGB(110, 144, 124)
+    boundary.Parent = workspace
+  end
+end
 if not nativeFoundationSpawn then
   nativeFoundationSpawn = Instance.new("SpawnLocation")
   nativeFoundationSpawn.Name = "NativeFoundationSpawn"
   nativeFoundationSpawn.Size = Vector3.new(8, 1, 8)
-  nativeFoundationSpawn.Position = Vector3.new(0, 3, 0)
+  nativeFoundationSpawn.Position = lobbyCenter
   nativeFoundationSpawn.Neutral = true
-  nativeFoundationSpawn.Parent = workspace
 end
+nativeFoundationSpawn.Anchored = true
+nativeFoundationSpawn.CanCollide = true
+nativeFoundationSpawn.Parent = workspace
 local function bindNativeFoundationCharacter(character)
   local humanoid = character:WaitForChild("Humanoid")
   local rootPart = character:WaitForChild("HumanoidRootPart")
   rootPart.Anchored = false
   humanoid.PlatformStand = false
-  local groundHit = workspace:Raycast(rootPart.Position, Vector3.new(0, -10, 0))
+  local raycastParams = RaycastParams.new()
+  raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+  raycastParams.FilterDescendantsInstances = {character}
+  local groundHit = workspace:Raycast(rootPart.Position, Vector3.new(0, -10, 0), raycastParams)
   character:SetAttribute("GROUND_CONTACT", groundHit ~= nil)
-  character:SetAttribute("MOVEMENT_CONFIRMED", true)
+  character:SetAttribute("MOVEMENT_CONFIRMED", false)
+  humanoid.Running:Connect(function(speed)
+    character:SetAttribute("MOVEMENT_CONFIRMED", speed > 0.1 and humanoid.FloorMaterial ~= Enum.Material.Air)
+  end)
 end
 local function bindNativeFoundationPlayer(player)
   if player.Character then task.defer(bindNativeFoundationCharacter, player.Character) end
