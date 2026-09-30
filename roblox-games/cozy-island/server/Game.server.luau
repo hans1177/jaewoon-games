@@ -297,8 +297,8 @@ local function spawnMob(kind,pos)
  return e
 end
 
-local VILLAGE_BEAR_COUNT=5
-local VILLAGE_BEAR_SKINS={"DARK_BROWN","BLACK","CINNAMON","DARK_BROWN","BLACK"}
+local VILLAGE_BEAR_COUNT=1
+local VILLAGE_BEAR_SKINS={"DARK_BROWN"}
 
 local function spawnVillageBear(parent,index,topY)
  local angle=(index-1)/VILLAGE_BEAR_COUNT*math.pi*2
