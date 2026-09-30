@@ -499,4 +499,10 @@ return {
  {Key="text_24b1b5a8900d",Source="막내 유령 · 가족 초대장",Values={["en-us"]="Little Ghost · Family Invitation"}},
  {Key="text_e52dd0ed583b",Source="벨라의 의상실",Values={["en-us"]="Bella’s Wardrobe"}},
  {Key="text_cece85be7f4f",Source="벨라의 상점",Values={["en-us"]="Bella’s Shop"}},
+ {Key="text_7c2622921c1a",Source="출정 대기실",Values={["en-us"]="Departure Lounge"}},
+ {Key="text_aef58bee4db7",Source="친구 준비 완료 · 출정 시작",Values={["en-us"]="Friends Ready · Depart"}},
+ {Key="text_8df03452b0fa",Source="참가자 연결 후 곧 출정해.",Values={["en-us"]="Departure begins once everyone connects."}},
+ {Key="text_bb53fb6c740e",Source="방장이 출정을 시작할 때까지 기다려줘.",Values={["en-us"]="Wait for the host to begin departure."}},
+ {Key="text_48bb692c8842",Source="방 나가기 · 저택으로",Values={["en-us"]="Leave Room · Return to Manor"}},
+ {Key="text_4c4296f13085",Source="친구를 초대한 뒤 방장이 출정을 시작해.",Values={["en-us"]="Invite your friends, then the host can begin departure."}},
 }

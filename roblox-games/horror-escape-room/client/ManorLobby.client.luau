@@ -69,10 +69,23 @@ open=function(key)
  activeMenu=key;panel.Visible=true;clear();body.CanvasPosition=Vector2.zero
  if key=="PLAY"then
   panelTitle.Text="오늘 밤의 출정"
+  local inRoom=p:GetAttribute("RoomServer")==true
+  local waiting=p:GetAttribute("RoomState")=="ROOM_WAITING"
+  if inRoom then
+   panelTitle.Text="출정 대기실"
+   label(body,string.format("초대 코드 %s\n%s · 참가 %d/%d명",p:GetAttribute("RoomCode")or"------",p:GetAttribute("RoomSelectedMapName")or"학교",p:GetAttribute("RoomMemberCount")or 1,p:GetAttribute("RoomMaxPlayers")or 8),64,15)
+   if waiting and p:GetAttribute("RoomIsHost")==true and p:GetAttribute("RoomAutoStart")~=true then
+    button(body,"친구 준비 완료 · 출정 시작",function()send(C.Actions.START_ROOM)end,Color3.fromRGB(107,56,64))
+   else
+    label(body,p:GetAttribute("RoomAutoStart")==true and"참가자 연결 후 곧 출정해."or"방장이 출정을 시작할 때까지 기다려줘.",48,13)
+   end
+   if waiting then button(body,"방 나가기 · 저택으로",function()send(C.Actions.LEAVE_ROOM)end)end
+  end
   local preference=p:GetAttribute("MonsterPreference")=="MONSTER"and"몬스터"or"인간"
   label(body,"현재 모습 · "..preference.."   |   혼자서도 AI와 플레이",36,13)
   button(body,"인간으로 준비",function()send(C.Actions.PREFER_SURVIVOR)end)
   button(body,"몬스터로 준비",function()send(C.Actions.PREFER_MONSTER)end)
+  if not inRoom then
   for _,map in ipairs(C.Maps)do
    local chosen=(p:GetAttribute("SelectedLobbyMap")or"SCHOOL")==map.Id
    button(body,(chosen and"✓  "or"    ")..map.Name,function()send(C.Actions.SELECT_MAP,map.Id)end,chosen and Color3.fromRGB(63,88,81)or nil)
@@ -81,6 +94,7 @@ open=function(key)
   button(body,"대전 참가 · 공개 경기",function()send(C.Actions.QUICK_JOIN_PUBLIC);panel.Visible=false end,Color3.fromRGB(70,81,105))
   button(body,"친구 경기 만들기",function()send(C.Actions.CREATE_ROOM,"FRIENDS");panel.Visible=false end)
   button(body,"초대 코드로 참가",function()open("CODE")end)
+  end
  elseif key=="CODE"then
   panelTitle.Text="초대장 번호"
   local input=Instance.new("TextBox");input.Size=UDim2.new(1,-12,0,50);input.PlaceholderText="6자리 방 코드";input.Text="";input.ClearTextOnFocus=false
@@ -104,14 +118,17 @@ open=function(key)
   label(body,string.format("보유 %d 코인 · 인간과 몬스터 공용 장식",p:GetAttribute("Coins")or 0),36,13)
   if key=="DRESS"then
    label(body,"선택한 귀신으로 저택을 돌아다녀. 경기에서 변신하면 같은 귀신을 사용해.",60,13)
-   button(body,"인간 모습",function()send(C.Actions.SELECT_LOBBY_FORM,"SURVIVOR")end)
+   button(body,"인간 모습"..(p:GetAttribute("LobbyAppearance")~="MONSTER"and" · 선택 중"or""),function()send(C.Actions.SELECT_LOBBY_FORM,"SURVIVOR")end)
    for _,form in ipairs(C.MonsterForms)do
     local unlocked=(p:GetAttribute("MonsterXP")or 0)>=(form.UnlockXP or 0)
-    local selected=p:GetAttribute("MonsterForm")==form.Id
+    local selected=p:GetAttribute("LobbyAppearance")=="MONSTER"and p:GetAttribute("MonsterForm")==form.Id
     local choose=button(body,form.Name..(selected and" · 선택 중"or unlocked and" · 선택"or" · 잠김"),function()
      if unlocked then send(C.Actions.SELECT_LOBBY_FORM,form.Id)end
     end)
     choose.Active=unlocked;choose.AutoButtonColor=unlocked
+   end
+   for _,form in ipairs(C.HumanForms or{})do
+    if form.Id==p:GetAttribute("HumanForm")then label(body,"인간 직업 · "..form.Name,32,13);break end
    end
    button(body,"다음 인간 직업",function()send(C.Actions.NEXT_HUMAN)end)
    button(body,"벨라의 상점",function()open("SHOP")end)
@@ -170,8 +187,15 @@ p:GetAttributeChangedSignal("CosmeticFeedback"):Connect(function()
  local code=tostring(p:GetAttribute("CosmeticFeedback")or""):match("^[^:]+")
  notify(code=="NEED_COINS"and"코인이 부족해"or code=="PURCHASED"and"구매 완료 · 의상실에서 착용할 수 있어"or code=="EQUIPPED"and"장식 착용 완료"or"소지품을 확인했어")
 end)
-for _,key in ipairs({"MonsterPreference","MonsterForm","LobbyAppearance","SelectedLobbyMap","OwnedCosmetics","EquippedCosmetic"})do
- p:GetAttributeChangedSignal(key):Connect(function()if activeMenu and panel.Visible then open(activeMenu)end end)
+local refreshQueued=false
+for _,key in ipairs({"MonsterPreference","MonsterForm","HumanForm","LobbyAppearance","SelectedLobbyMap","OwnedCosmetics","EquippedCosmetic","Coins","MonsterXP","RoomServer","RoomState","RoomIsHost","RoomAutoStart","RoomCode","RoomMemberCount","RoomSelectedMapName"})do
+ p:GetAttributeChangedSignal(key):Connect(function()
+  if refreshQueued then return end;refreshQueued=true
+  task.defer(function()
+   refreshQueued=false
+   if activeMenu and panel.Visible then local position=body.CanvasPosition;open(activeMenu);body.CanvasPosition=position end
+  end)
+ end)
 end
 -- 접속 메인: 입장 버튼을 누르면 기본 카메라/조작으로 정확히 복귀한다.
 local entered=false
@@ -207,9 +231,13 @@ visibility=function()
  local round=tostring(p:GetAttribute("RoundState")or"")
  local visible=p:GetAttribute("LobbyClientReady")==true and workspace:GetAttribute("PhysicalLobbyReady")==true and p:GetAttribute("PersonalLobbyOwner")==p.UserId and round~="RUNNING"and round~="SPECTATING"and not round:match("^RESULT_")
  gui.Enabled=visible
+ if p:GetAttribute("RoomServer")==true then entered=true;releaseMainCamera()end
  welcome.Visible=visible and not entered;nav.Visible=visible and entered;header.Visible=visible and entered
  if not visible then panel.Visible=false;activeMenu=nil;releaseMainCamera()end
  status.Text=string.format("나만의 저택 · 괴담 %d/%d · %d 코인",p:GetAttribute("GhostCompleted")or 0,#C.GhostCatalog,p:GetAttribute("Coins")or 0)
+ if p:GetAttribute("RoomServer")==true then
+  status.Text=round=="INTERMISSION"and string.format("출정까지 %d초",p:GetAttribute("TimeLeft")or 0)or string.format("초대 %s · 참가 %d명",p:GetAttribute("RoomCode")or"------",p:GetAttribute("RoomMemberCount")or 1)
+ end
  if visible and not oldLighting then
   oldLighting={ClockTime=Lighting.ClockTime,Brightness=Lighting.Brightness,Ambient=Lighting.Ambient,OutdoorAmbient=Lighting.OutdoorAmbient,FogStart=Lighting.FogStart,FogEnd=Lighting.FogEnd}
   Lighting.ClockTime=0.35;Lighting.Brightness=2.3;Lighting.Ambient=Color3.fromRGB(91,90,101);Lighting.OutdoorAmbient=Color3.fromRGB(69,86,111)
