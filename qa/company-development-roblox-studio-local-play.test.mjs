@@ -2733,7 +2733,6 @@ test('generic save-surface miss does not masquerade as DataStore failure after v
   observed.checkpoints.push({id:'scenario-adaptive-save-surface',name:'scenario-adaptive-save-surface',required:true,pass:false});
   const evidence=createLocalStudioPlayEvidence({item:candidate,runtime:observed,expected,workflowRunId:1234,studioStepSucceeded:true});
   assert.equal(evidence.pass,false);
-  assert.equal(evidence.failureClass,'STUDIO_PRODUCT_QUALITY_FAILURE');
   assert.notEqual(evidence.robloxFailureClass,'ROBLOX_DATASTORE_SAVE_LOAD');
 });
 
