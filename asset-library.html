@@ -81,7 +81,7 @@ function render(){
   document.getElementById('externalCount').textContent=(data.externalSources||[]).length;
   document.getElementById('filters').innerHTML=Object.keys(labels).map(k=>'<button class="chip '+(filter===k?'active':'')+'" data-filter="'+k+'">'+labels[k]+'</button>').join('');
   document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;render()});
-  const assets=data.assets.filter(x=>filter==='ALL'||x.category===filter);
+  const assets=data.assets.filter(x=>filter==='ALL'||x.category===filter||(filter==='CHARACTER'&&x.category==='CREATURE'));
   document.getElementById('assetSummary').textContent=assets.length+'개 표시';
   document.getElementById('assetGrid').innerHTML=assets.length?assets.map(x=>'<article class="card"><div class="thumb"><img src="'+esc(x.path)+'" alt="'+esc(x.title)+'" loading="lazy"></div><div class="body"><div class="tagrow"><span class="tag real">실제 repo 자산</span><span class="tag">'+esc(x.category)+'</span><span class="tag">'+esc(x.platform)+'</span></div><h3>'+esc(x.title)+'</h3><p>'+esc(x.note)+' · '+esc(x.license)+'</p></div></article>').join(''):'<div class="empty">이 분류의 실제 자산 프리뷰가 아직 없어.</div>';
   const external=(data.externalSources||[]).filter(x=>filter==='ALL'||x.category===filter||(filter==='CHARACTER'&&x.category==='CREATURE'));
