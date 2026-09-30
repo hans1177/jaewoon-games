@@ -679,7 +679,7 @@ local function lobbyBuilding(parent,name,pos,size,baseColor,windowColor)
  return body
 end
 
--- 월드 로비: 밤의 폐역 광장 + 지하철 승강장형 매칭 게이트.
+-- 월드 로비: 오래된 심야 호텔 + 승강기형 자동 매칭.
 local function makePhysicalLobby()
  local old=workspace:FindFirstChild("MidnightLobby");if old then old:Destroy()end
  local f=Instance.new("Folder");f.Name="MidnightLobby";f.Parent=workspace
@@ -772,10 +772,6 @@ local function makePhysicalLobby()
   local left=arenaPart(bay,"SlidingDoorL",Vector3.new(10.7,10,.65),Vector3.new(x-5.45,6.3,187.75),Color3.fromRGB(89,84,80),Enum.Material.Metal)
   local right=arenaPart(bay,"SlidingDoorR",Vector3.new(10.7,10,.65),Vector3.new(x+5.45,6.3,187.75),Color3.fromRGB(89,84,80),Enum.Material.Metal)
   left.CanCollide=false;right.CanCollide=false
-  for _,door in ipairs({left,right})do
-   arenaPart(bay,"DoorInset",Vector3.new(4.1,6.8,.12),door.Position+Vector3.new(0,.1,-.39),Color3.fromRGB(54,51,50),Enum.Material.Metal).CanCollide=false
-  end
-
   -- 앞쪽 대기 표시판과 황동 번호.
   local numberPlate=arenaPart(bay,"ElevatorNumber",Vector3.new(4.2,2.2,.35),Vector3.new(x,14.8,186.6),Color3.fromRGB(171,132,70),Enum.Material.Metal)
   lobbySurfaceText(numberPlate,string.format("%02d",i),Color3.fromRGB(35,29,24),18)
@@ -812,7 +808,7 @@ local function makePhysicalLobby()
  workspace:SetAttribute("PhysicalLobbyReady",true)
  workspace:SetAttribute("WorldLobbyMode",true)
  workspace:SetAttribute("LobbyArtPass","MIDNIGHT_HOTEL_LOBBY_V2")
- workspace:SetAttribute("LobbyBuildRevision","MIDNIGHT_HOTEL_20260930A")
+ workspace:SetAttribute("LobbyBuildRevision","MIDNIGHT_HOTEL_20260930B")
  return f
 end
 
