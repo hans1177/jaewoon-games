@@ -35,7 +35,7 @@ local function bootstrapLobbyCharacter(player,character)
   local humanoid=character and character:WaitForChild("Humanoid",5)
   if not rootPart or not humanoid or not character.Parent then return end
   if workspace:GetAttribute("LobbyPhase")=="RUNNING"or workspace:GetAttribute("RoomState")=="RUNNING"then return end
-  character:PivotTo(CFrame.lookAt(Vector3.new(0,3.7,270),Vector3.new(0,3.7,210)))
+  rootPart.Anchored=false
   rootPart.AssemblyLinearVelocity=Vector3.zero
   rootPart.AssemblyAngularVelocity=Vector3.zero
   humanoid.PlatformStand=false;humanoid.Sit=false;humanoid.AutoRotate=true
@@ -744,6 +744,20 @@ local function save(p)
   GhostProgress=ghostProgressSave(ghostProgressFrom(p:GetAttribute("GhostProgress"))),GhostFragments=p:GetAttribute("GhostFragments")or 0,GhostContracts=p:GetAttribute("GhostContracts")or 0,GhostCatalogBonusClaimed=p:GetAttribute("GhostCatalogBonusClaimed")==true
  })end)
 end
+local function partWorldMinY(part)
+ local half=part.Size*.5
+ local minY=math.huge
+ for _,sx in ipairs({-1,1})do
+  for _,sy in ipairs({-1,1})do
+   for _,sz in ipairs({-1,1})do
+    local world=part.CFrame:PointToWorldSpace(Vector3.new(half.X*sx,half.Y*sy,half.Z*sz))
+    if world.Y<minY then minY=world.Y end
+   end
+  end
+ end
+ return minY
+end
+
 local function characterStandingBottom(character,rootPart,humanoid)
  if not character or not rootPart then return nil end
  local feet={}
@@ -759,13 +773,12 @@ local function characterStandingBottom(character,rootPart,humanoid)
  end
  if #feet>0 then
   local bottom=math.huge
-  for _,part in ipairs(feet)do bottom=math.min(bottom,part.Position.Y-(part.Size.Y*.5))end
+  for _,part in ipairs(feet)do bottom=math.min(bottom,partWorldMinY(part))end
   if bottom<math.huge then return bottom end
  end
  local fallbackOffset=math.max(1,tonumber(humanoid and humanoid.HipHeight)or 0)+(rootPart.Size.Y*.5)
  return rootPart.Position.Y-fallbackOffset
 end
-
 local function groundedRootTarget(p,pos)
  local c=p.Character;local r=root(p);local h=hum(p)
  if not c or not r or not h then return Vector3.new(pos.X,pos.Y,pos.Z)end
@@ -795,7 +808,7 @@ local function groundedRootTarget(p,pos)
  local groundY=hit and hit.Position.Y or(lobbyDestination and .65 or .5)
  local standingBottom=characterStandingBottom(c,r,h)
  local standingOffset=standingBottom and(r.Position.Y-standingBottom)or(math.max(1,tonumber(h.HipHeight)or 0)+(r.Size.Y*.5))
- local targetY=groundY+standingOffset+.035
+ local targetY=groundY+standingOffset-.025
  return Vector3.new(pos.X,targetY,pos.Z)
 end
 local function teleport(p,pos,lookAtPos)
@@ -819,12 +832,12 @@ local function teleport(p,pos,lookAtPos)
    pcall(function()h:ChangeState(Enum.HumanoidStateType.GettingUp)end)
   end
   task.spawn(function()
-   for _,delaySeconds in ipairs({.05,.18,.42})do
+   for _,delaySeconds in ipairs({.03,.08,.16,.32,.65,1.1})do
     task.wait(delaySeconds)
     local rr=root(p);local hh=hum(p)
     if p.Character~=c or rr~=r or not rr or not hh or not rr.Parent then return end
     local corrected=groundedRootTarget(p,pos)
-    if math.abs(rr.Position.Y-corrected.Y)>.055 or hh.FloorMaterial==Enum.Material.Air then
+    if math.abs(rr.Position.Y-corrected.Y)>.025 or hh.FloorMaterial==Enum.Material.Air then
      movementGraceUntil[p]=os.clock()+1
      lastValidPosition[p]=corrected
      local correctedCFrame=CFrame.new(corrected)
@@ -3683,6 +3696,18 @@ local function validateCharacterFoundation(p,c)
    if hit and h.FloorMaterial~=Enum.Material.Air then foundationCheckpoint("GROUND_CONTACT",p,{groundY=hit.Position.Y,rootY=r.Position.Y});return end
    task.wait(.1)
   until os.clock()>=deadline
+  local current=root(p)
+  if current then
+   teleport(p,current.Position,current.Position+current.CFrame.LookVector*8)
+   task.wait(.2)
+   local repaired=root(p)
+   local repairedHum=hum(p)
+   if repaired and repairedHum and repairedHum.FloorMaterial~=Enum.Material.Air then
+    foundationCheckpoint("GROUND_CONTACT",p,{groundY=repaired.Position.Y,rootY=repaired.Position.Y,repaired=true})
+    p:SetAttribute("FoundationFailure","")
+    return
+   end
+  end
   p:SetAttribute("FoundationFailure","GROUND_CONTACT_FAILURE")
  end)
 end
@@ -3705,6 +3730,12 @@ local function onCharacter(p)
   local slot=1
   for i,player in ipairs(players)do if player==p then slot=((i-1)%#lobbySpawns)+1;break end end
   teleport(p,lobbySpawns[slot],Vector3.new(0,3,210))
+  task.delay(.7,function()
+   if p.Parent==Players and p.Character==c and state~="RUNNING"then
+    local rr=root(p)
+    if rr then teleport(p,rr.Position,Vector3.new(0,rr.Position.Y,210))end
+   end
+  end)
   p:SetAttribute("LobbySpawnGroundedAt",workspace:GetServerTimeNow())
   return
  end
