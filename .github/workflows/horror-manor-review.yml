@@ -1,0 +1,60 @@
+name: Horror Manor Native Review
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/horror-manor-review.yml'
+      - 'tools/horror-manor-studio-review.mjs'
+permissions:
+  contents: read
+concurrency:
+  group: horror-manor-native-review
+  cancel-in-progress: false
+jobs:
+  review:
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Download the registered native model for transform inspection
+        env:
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $out=Join-Path $env:RUNNER_TEMP 'midnight-manor-native-review'
+          New-Item -ItemType Directory -Force -Path $out | Out-Null
+          "MANOR_REVIEW_OUT=$out" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          @'
+          const fs=require('fs'),path=require('path');
+          (async()=>{const c=process.env.ROBLOX_ROBLOSECURITY.trim();const r=await fetch('https://assetdelivery.roblox.com/v1/asset/?id=81599595871905',{headers:{cookie:c.includes('.ROBLOSECURITY=')?c:'.ROBLOSECURITY='+c+';'}});if(!r.ok)throw Error('NATIVE_HTTP_'+r.status);fs.writeFileSync(path.join(process.env.RUNNER_TEMP,'midnight-manor-native-review','registered-manor.rbxm'),Buffer.from(await r.arrayBuffer()));})().catch(e=>{console.error(e.message);process.exit(1)});
+          '@ | node
+          if($LASTEXITCODE -ne 0){throw 'NATIVE_DOWNLOAD_FAILED'}
+      - name: Open this review place and discover official Studio tools
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $rojo=Join-Path $env:RUNNER_TEMP 'horror-personal-manor/bin/rojo.exe'
+          if(-not(Test-Path $rojo)){throw 'PREVIOUS_VERIFIED_ROJO_NOT_FOUND'}
+          $place=Join-Path $env:MANOR_REVIEW_OUT 'midnight-manor-review.rbxlx'
+          & $rojo build roblox-games/horror-escape-room/default.project.json -o $place
+          if($LASTEXITCODE -ne 0){throw 'REVIEW_BUILD_FAILED'}
+          $studio=Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Roblox/Versions') -Directory | Sort-Object LastWriteTime -Descending | ForEach-Object {Join-Path $_.FullName 'RobloxStudioBeta.exe'} | Where-Object {Test-Path $_} | Select-Object -First 1
+          if(-not $studio){throw 'STUDIO_NOT_FOUND'}
+          $mcp=Join-Path (Split-Path $studio) 'StudioMCP.exe'
+          if(-not(Test-Path $mcp)){throw 'STUDIO_MCP_NOT_FOUND'}
+          $env:MANOR_MCP_EXE=$mcp
+          $review=Start-Process $studio -ArgumentList "`"$place`"" -PassThru
+          Start-Sleep -Seconds 15
+          node tools/horror-manor-studio-review.mjs
+          if($LASTEXITCODE -ne 0){throw 'REVIEW_MCP_DISCOVERY_FAILED'}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: midnight-manor-native-review
+          path: ${{ runner.temp }}/midnight-manor-native-review/
