@@ -1,5 +1,5 @@
 {
-  "version": 495,
+  "version": 496,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -1270,7 +1270,26 @@
     "sameGameIndependentNonOverlappingWorkMustRemainParallel": true,
     "sharedStateSerializationScope": "ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY",
     "sharedStateWriteMayNotHoldHeavyExecutionCapacity": true,
-    "externalProviderCapacityIsOnlyHeavyExecutionSerializationBoundary": true
+    "externalProviderCapacityIsOnlyHeavyExecutionSerializationBoundary": true,
+    "perGameFailureIsolation": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-30",
+      "enabled": true,
+      "scope": "DEVELOPMENT_CONFIRMED_CONTINUOUS_CYCLE",
+      "failureScope": "GAME_AND_PLATFORM_LANE_ONLY",
+      "matrixFailFastForbidden": true,
+      "failedGameMayNotCancelSiblingGames": true,
+      "failedPlatformLaneMayNotCancelOtherGameOrPlatformLanes": true,
+      "parentCycleMustReopenAfterAllPerGameOutcomes": true,
+      "parentCycleReopenCondition": "ANY_ELIGIBLE_DEVELOPMENT_WORK_WAS_PRESENT",
+      "failedGameRetry": "RETRY_FROM_EXACT_FAILED_STAGE_WITH_VALID_PRIOR_EVIDENCE_REUSED",
+      "successfulGamesContinueWithoutWaitingForFailedGameRepair": true,
+      "globalCycleStopOnSingleGameFailureForbidden": true,
+      "cronRoleRemainsWatchdogOnly": true,
+      "ownerExcludedGameIds": [
+        "horror-escape-room"
+      ]
+    }
   },
   "phases": [
     {
@@ -9380,6 +9399,15 @@
         "developmentCycle": "F0_TO_F9_THEN_REPEAT_WITHOUT_CANONICAL_SERVER_PUBLISH",
         "externalPublicExposureGateUnchanged": true
       }
+    },
+    "perGameFailureIsolation20260930": {
+      "version": 496,
+      "summary": "A single game or platform-lane failure is isolated; sibling games continue and the DEVELOPMENT_CONFIRMED parent cycle reopens for the next wave.",
+      "workflow": ".github/workflows/company-development-confirmed-runtime.yml",
+      "excludedGameIds": [
+        "horror-escape-room"
+      ],
+      "qualityOrEvidenceGateWeakening": false
     }
   },
   "vibeExecutionLaneContract": {
