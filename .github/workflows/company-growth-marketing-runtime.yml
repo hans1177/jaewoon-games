@@ -103,7 +103,17 @@ jobs:
         id: targets
         run: |
           set -euo pipefail
-          ids="$(node -e "const q=require('/tmp/marketing-system-ai-queue.json');console.log((q.tasks||[]).filter(t=>String(t.id||'').startsWith('marketing-')&&String(t.status||'')==='queued').slice(0,32).map(t=>t.id).join(','))")"
+          ids="$(node - <<'NODE'
+          const q=require('/tmp/marketing-system-ai-queue.json');
+          const roadmap=require('./company-learning/platform-release-roadmap.json');
+          const excluded=new Set((roadmap?.ownerCanonicalRules?.ownerExclusiveDevelopment?.gameIds||[]).map(String));
+          console.log((q.tasks||[])
+            .filter(t=>String(t.id||'').startsWith('marketing-')&&String(t.status||'')==='queued'&&!excluded.has(String(t.gameId||'')))
+            .slice(0,32)
+            .map(t=>t.id)
+            .join(','));
+          NODE
+          )"
           echo "marketing_task_ids=$ids" >> "$GITHUB_OUTPUT"
           echo "MARKETING_TARGET_IDS=${ids:-NONE}"
 

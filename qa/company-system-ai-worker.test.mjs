@@ -70,6 +70,10 @@ test('owner-exclusive games are neither planned nor reserved by System AI',()=>{
   assert.deepEqual(targeted.reserved.map(task=>task.id),['marketing-line']);
   const batch=reserveSystemAiBatch({tasks},{max:2,excludedGameIds:['horror-escape-room'],reservationId:'owner-scope-batch-test'});
   assert.deepEqual(batch.reserved.map(task=>task.id),['marketing-line']);
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-growth-marketing-runtime.yml',import.meta.url),'utf8');
+  const select=workflow.slice(workflow.indexOf('- name: Select exact queued marketing tasks'));
+  assert.match(select,/ownerCanonicalRules\?\.ownerExclusiveDevelopment\?\.gameIds/);
+  assert.match(select,/!excluded\.has\(String\(t\.gameId\|\|''\)\)/);
 });
 
 test('system AI edits only assigned system file and leaves completion for supervisor',async()=>{
