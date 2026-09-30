@@ -66,6 +66,20 @@ export function normalizeSelectedPlatform(value=''){
   return PLATFORM_ALIASES[upper(value)]||null;
 }
 
+export function ownerExclusiveDevelopmentGameIds(roadmap={}){
+  const policy=roadmap?.ownerCanonicalRules?.ownerExclusiveDevelopment||{};
+  if(upper(policy.status)!=='ACTIVE')return Object.freeze([]);
+  const ids=(Array.isArray(policy.gameIds)?policy.gameIds:[])
+    .map(clean)
+    .filter(gameId=>/^[a-z0-9][a-z0-9-]{1,48}$/.test(gameId));
+  return Object.freeze([...new Set(ids)]);
+}
+
+export function ownerExclusiveDevelopmentExcluded(gameId='',roadmap={}){
+  const id=clean(gameId);
+  return Boolean(id&&ownerExclusiveDevelopmentGameIds(roadmap).includes(id));
+}
+
 export function resolveSelectedPlatform(...sources){
   for(const source of sources){
     if(source==null)continue;
