@@ -623,6 +623,7 @@ local function load(p)
  p:SetAttribute("LastRoundReward",0);p:SetAttribute("LastRoundWinner","");p:SetAttribute("LastRoundRole","")
  p:SetAttribute("LastRoundBaseReward",0);p:SetAttribute("LastRoundWinBonus",0);p:SetAttribute("LastRoundContribution",0);p:SetAttribute("RoundContributionCoins",0)
  p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("InfectReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
+ p:SetAttribute("FalseAlarmUntil",0);p:SetAttribute("BlackoutUntil",0);p:SetAttribute("HuntFlashUntil",0);p:SetAttribute("AbilityFeedback","")
  p:SetAttribute("Energy",energyMax());p:SetAttribute("EnergyMax",energyMax());p:SetAttribute("EnergyFeedback","");p:SetAttribute("PressurePassive","")
  p:SetAttribute("MapContentFeedback","")
  p:SetAttribute("CelebrationName","");p:SetAttribute("CelebrationCaption","");p:SetAttribute("CelebrationWinner",false);p:SetAttribute("CelebrationComic",false)
@@ -2598,6 +2599,7 @@ local function startRound()
   p:SetAttribute("CurrentMap",map.Name);p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
   p:SetAttribute("ObjectivesDone",0);p:SetAttribute("ObjectivesTotal",C.ObjectiveCount);p:SetAttribute("Escaped",false);p:SetAttribute("Infected",false);p:SetAttribute("InfectionReadyAt",0);p:SetAttribute("RoundScore",0)
   p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("InfectReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
+  p:SetAttribute("FalseAlarmUntil",0);p:SetAttribute("BlackoutUntil",0);p:SetAttribute("HuntFlashUntil",0);p:SetAttribute("AbilityFeedback","")
   setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
   p:SetAttribute("RoundContributionCoins",0);p:SetAttribute("LastRoundBaseReward",0);p:SetAttribute("LastRoundWinBonus",0);p:SetAttribute("LastRoundContribution",0)
   p:SetAttribute("RoundParticipant",true)
@@ -2673,6 +2675,7 @@ local function endRound(winner)
   p:SetAttribute("LastRoundReward",reward);p:SetAttribute("LastRoundWinner",winner);p:SetAttribute("LastRoundRole",team)
   p:SetAttribute("LastRoundBaseReward",baseReward);p:SetAttribute("LastRoundWinBonus",winBonus);p:SetAttribute("LastRoundContribution",contribution)
   p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("InfectReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
+  p:SetAttribute("FalseAlarmUntil",0);p:SetAttribute("BlackoutUntil",0);p:SetAttribute("HuntFlashUntil",0);p:SetAttribute("AbilityFeedback","")
   setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
   p:SetAttribute("CelebrationName",celebration.Name or"팀 세레머니");p:SetAttribute("CelebrationCaption",celebration.Caption or"")
   local celebrate=participated and(winner=="DRAW"or win)
@@ -2751,17 +2754,90 @@ local function ability(p)
  local r=root(p);if not r then return end
  if not spendEnergy(p,C.Energy and C.Energy.AbilityCost or 45,"ABILITY")then return end
  cooldown[p]=now;p:SetAttribute("AbilityReadyAt",workspace:GetServerTimeNow()+C.MonsterAbilityCooldown)
- local f=form(p);movementGraceUntil[p]=now+.8
+ movementGraceUntil[p]=now+.9
+ local stamp=tostring(math.floor(now*1000))
  local infectedAbility=p:GetAttribute("Infected")==true and humanForm(p).InfectedAbility or nil
- if infectedAbility=="RUSH"or infectedAbility=="BREACH"then r.AssemblyLinearVelocity=r.CFrame.LookVector*82+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)
- elseif infectedAbility=="BLACKOUT"or infectedAbility=="HUNT_FLASH"or infectedAbility=="FALSE_ALARM"then
-  for _,o in ipairs(Players:GetPlayers())do if o:GetAttribute("Role")=="SURVIVOR"then local q=root(o);if q and(q.Position-r.Position).Magnitude<=24 then speed(o,10);task.delay(2.5,function()if o.Parent and o:GetAttribute("Role")=="SURVIVOR"then speed(o,16)end end)end end end
- elseif f.Ability=="BAT_DASH"then r.AssemblyLinearVelocity=r.CFrame.LookVector*70+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)
+ local profile=infectedAbility and C.InfectedAbilities and C.InfectedAbilities[infectedAbility]or nil
+
+ if infectedAbility and profile then
+  local radius=math.max(4,tonumber(profile.Radius)or 24)
+  local duration=math.max(.5,tonumber(profile.Duration)or 2.5)
+  if infectedAbility=="RUSH"then
+   local boosted=math.max(20,tonumber(profile.Speed)or 27)
+   speed(p,boosted)
+   task.delay(duration,function()if p.Parent and p:GetAttribute("Role")=="MONSTER"then speed(p,19)end end)
+  elseif infectedAbility=="BREACH"then
+   local velocity=math.max(60,tonumber(profile.Velocity)or 96)
+   local lift=tonumber(profile.Lift)or 3
+   r.AssemblyLinearVelocity=r.CFrame.LookVector*velocity+Vector3.new(0,lift,0)
+  elseif infectedAbility=="FALSE_ALARM"then
+   for _,o in ipairs(Players:GetPlayers())do
+    if o~=p and o:GetAttribute("Role")=="SURVIVOR"then
+     local q=root(o)
+     if q and(q.Position-r.Position).Magnitude<=radius then o:SetAttribute("FalseAlarmUntil",workspace:GetServerTimeNow()+duration)end
+    end
+   end
+  elseif infectedAbility=="BLACKOUT"then
+   for _,o in ipairs(Players:GetPlayers())do
+    if o:GetAttribute("Role")=="SURVIVOR"then
+     local q=root(o)
+     if q and(q.Position-r.Position).Magnitude<=radius then
+      o:SetAttribute("BlackoutUntil",workspace:GetServerTimeNow()+duration)
+      speed(o,13)
+      task.delay(duration,function()if o.Parent and o:GetAttribute("Role")=="SURVIVOR"then speed(o,16)end end)
+     end
+    end
+   end
+   for _,b in ipairs(bots)do
+    if b.role=="SURVIVOR"and(b.part.Position-r.Position).Magnitude<=radius then
+     local previous=b.speed;b.speed=math.min(previous,11)
+     task.delay(duration,function()if b and b.role=="SURVIVOR"then b.speed=previous end end)
+    end
+   end
+  elseif infectedAbility=="HUNT_FLASH"then
+   local slow=math.clamp(tonumber(profile.SlowSpeed)or 11,6,15)
+   for _,o in ipairs(Players:GetPlayers())do
+    if o:GetAttribute("Role")=="SURVIVOR"then
+     local q=root(o)
+     if q and(q.Position-r.Position).Magnitude<=radius then
+      o:SetAttribute("HuntFlashUntil",workspace:GetServerTimeNow()+duration)
+      speed(o,slow)
+      task.delay(duration,function()if o.Parent and o:GetAttribute("Role")=="SURVIVOR"then speed(o,16)end end)
+     end
+    end
+   end
+   for _,b in ipairs(bots)do
+    if b.role=="SURVIVOR"and(b.part.Position-r.Position).Magnitude<=radius then
+     local previous=b.speed;b.speed=math.min(previous,slow)
+     task.delay(duration,function()if b and b.role=="SURVIVOR"then b.speed=previous end end)
+    end
+   end
+  end
+  p:SetAttribute("AbilityFeedback",(profile.Name or infectedAbility)..":"..stamp)
+  p:SetAttribute("FeedbackEvent","ABILITY:"..infectedAbility..":"..stamp)
+  return
+ end
+
+ local f=form(p)
+ if f.Ability=="BAT_DASH"then r.AssemblyLinearVelocity=r.CFrame.LookVector*70+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)
  elseif f.Ability=="POWER_CHARGE"then r.AssemblyLinearVelocity=r.CFrame.LookVector*85+Vector3.new(0,4,0)
  elseif f.Ability=="RAGE_RUN"then speed(p,28);task.delay(3,function()if p.Parent and p:GetAttribute("Role")=="MONSTER"then speed(p,19)end end)
  elseif f.Ability=="CURSE_SLOW"then
-  for _,o in ipairs(Players:GetPlayers())do if o:GetAttribute("Role")=="SURVIVOR"and o:GetAttribute("Frozen")~=true then local q=root(o);if q and(q.Position-r.Position).Magnitude<=22 then speed(o,9);task.delay(3,function()if o.Parent and o:GetAttribute("Frozen")~=true then speed(o,16)end end)end end end
- elseif f.Ability=="SHADOW_STEP"then r.CFrame=r.CFrame+r.CFrame.LookVector*18 end
+  for _,o in ipairs(Players:GetPlayers())do
+   if o:GetAttribute("Role")=="SURVIVOR"then
+    local q=root(o)
+    if q and(q.Position-r.Position).Magnitude<=22 then
+     speed(o,9);task.delay(3,function()if o.Parent and o:GetAttribute("Role")=="SURVIVOR"then speed(o,16)end end)
+    end
+   end
+  end
+ elseif f.Ability=="SHADOW_STEP"then
+  local target=r.Position+r.CFrame.LookVector*18
+  teleport(p,target,target+r.CFrame.LookVector)
+ end
+ local label=(C.MonsterAbilityLabels and C.MonsterAbilityLabels[f.Ability])or f.Name or"괴물 스킬"
+ p:SetAttribute("AbilityFeedback",label..":"..stamp)
+ p:SetAttribute("FeedbackEvent","ABILITY:"..tostring(f.Ability or"MONSTER")..":"..stamp)
 end
 local function infectAttack(p)
  if state~="RUNNING"or p:GetAttribute("Role")~="MONSTER"then return end
