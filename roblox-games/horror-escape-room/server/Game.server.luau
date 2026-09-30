@@ -89,6 +89,7 @@ local monster=nil
 local monsterBot=nil
 local lastMonsterIds={}
 local bots={}
+local botSequence=0
 local cooldown={}
 local dashCooldown={}
 local infectAttackCooldown={}
@@ -2336,38 +2337,101 @@ local function decorateClassicMonster(anchor,id)
  if anchor.Name=="HumanoidRootPart"then
   anchor.Transparency=1
  else
-  anchor.Color=style.Color;anchor.Transparency=.15
+  anchor.Color=style.Color;anchor.Transparency=.12
  end
  local visuals={}
- local function add(name,size,offset,color,material,shape)local x=botVisualPart(anchor,name,size,offset,color,material,shape);table.insert(visuals,{part=x,offset=offset,rotation=CFrame.identity});return x end
+ local function add(name,size,offset,color,material,shape,rotation)
+  local x=botVisualPart(anchor,name,size,offset,color,material,shape)
+  local row={part=x,offset=offset,rotation=rotation or CFrame.identity}
+  table.insert(visuals,row)
+  x.CFrame=anchor.CFrame*CFrame.new(offset)*row.rotation
+  return x
+ end
  if id=="DRACULA"then
-  add("Cape",Vector3.new(5.5,6,.45),Vector3.new(0,0,1.7),Color3.fromRGB(28,16,23),Enum.Material.Fabric)
-  add("Collar",Vector3.new(5.8,1.2,1),Vector3.new(0,2.2,.4),Color3.fromRGB(102,18,35),Enum.Material.Fabric)
-  add("Head",Vector3.new(2.6,2.6,2.6),Vector3.new(0,3.4,0),Color3.fromRGB(224,209,196),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
-  add("FangL",Vector3.new(.25,.8,.25),Vector3.new(-.45,2.9,-1.25),Color3.fromRGB(245,245,235),Enum.Material.SmoothPlastic)
-  add("FangR",Vector3.new(.25,.8,.25),Vector3.new(.45,2.9,-1.25),Color3.fromRGB(245,245,235),Enum.Material.SmoothPlastic)
+  add("Cape",Vector3.new(5.8,6.6,.42),Vector3.new(0,-.15,1.65),Color3.fromRGB(20,8,17),Enum.Material.Fabric)
+  add("CapeWingL",Vector3.new(2.5,5.2,.28),Vector3.new(-2.05,-.15,1.55),Color3.fromRGB(47,9,21),Enum.Material.Fabric,nil,CFrame.Angles(0,0,math.rad(10)))
+  add("CapeWingR",Vector3.new(2.5,5.2,.28),Vector3.new(2.05,-.15,1.55),Color3.fromRGB(47,9,21),Enum.Material.Fabric,nil,CFrame.Angles(0,0,math.rad(-10)))
+  add("Collar",Vector3.new(6,1.4,1.1),Vector3.new(0,2.35,.42),Color3.fromRGB(118,16,38),Enum.Material.Fabric)
+  add("Head",Vector3.new(2.5,2.85,2.45),Vector3.new(0,3.75,0),Color3.fromRGB(224,207,194),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  add("Hair",Vector3.new(2.55,.72,2.2),Vector3.new(0,4.75,.12),Color3.fromRGB(14,12,15),Enum.Material.Fabric)
+  add("BloodEyeL",Vector3.new(.2,.17,.12),Vector3.new(-.42,3.96,-1.23),Color3.fromRGB(239,35,55),Enum.Material.Neon)
+  add("BloodEyeR",Vector3.new(.2,.17,.12),Vector3.new(.42,3.96,-1.23),Color3.fromRGB(239,35,55),Enum.Material.Neon)
+  add("FangL",Vector3.new(.22,.82,.22),Vector3.new(-.38,3.17,-1.22),Color3.fromRGB(246,246,235),Enum.Material.SmoothPlastic)
+  add("FangR",Vector3.new(.22,.82,.22),Vector3.new(.38,3.17,-1.22),Color3.fromRGB(246,246,235),Enum.Material.SmoothPlastic)
+  add("BloodMedallion",Vector3.new(.72,.9,.26),Vector3.new(0,.8,-1.12),Color3.fromRGB(212,35,54),Enum.Material.Neon)
  elseif id=="FRANKENSTEIN"then
-  add("Head",Vector3.new(3.2,3,2.8),Vector3.new(0,3.4,0),Color3.fromRGB(117,146,103),Enum.Material.SmoothPlastic)
-  add("ShoulderL",Vector3.new(2.2,1.4,2.5),Vector3.new(-2.4,1,0),Color3.fromRGB(62,70,62),Enum.Material.Metal)
-  add("ShoulderR",Vector3.new(2.2,1.4,2.5),Vector3.new(2.4,1,0),Color3.fromRGB(62,70,62),Enum.Material.Metal)
-  add("BoltL",Vector3.new(.5,.5,1.3),Vector3.new(-1.8,3.3,0),Color3.fromRGB(155,160,160),Enum.Material.Metal)
-  add("BoltR",Vector3.new(.5,.5,1.3),Vector3.new(1.8,3.3,0),Color3.fromRGB(155,160,160),Enum.Material.Metal)
+  add("Head",Vector3.new(3.5,3.25,2.95),Vector3.new(0,3.75,0),Color3.fromRGB(112,144,99),Enum.Material.SmoothPlastic)
+  add("HeavyBrow",Vector3.new(2.9,.5,.48),Vector3.new(0,4.15,-1.36),Color3.fromRGB(45,58,47),Enum.Material.SmoothPlastic)
+  add("ShoulderL",Vector3.new(2.5,1.6,2.7),Vector3.new(-2.55,1.15,0),Color3.fromRGB(58,72,59),Enum.Material.Metal)
+  add("ShoulderR",Vector3.new(2.5,1.6,2.7),Vector3.new(2.55,1.15,0),Color3.fromRGB(58,72,59),Enum.Material.Metal)
+  add("ChestPlate",Vector3.new(3.8,3.5,.5),Vector3.new(0,.15,-1.2),Color3.fromRGB(53,67,56),Enum.Material.Metal)
+  add("ElectricCore",Vector3.new(1,1.45,.3),Vector3.new(0,.3,-1.5),Color3.fromRGB(134,246,112),Enum.Material.Neon)
+  add("BoltL",Vector3.new(.52,.52,1.55),Vector3.new(-1.95,3.55,0),Color3.fromRGB(164,171,173),Enum.Material.Metal)
+  add("BoltR",Vector3.new(.52,.52,1.55),Vector3.new(1.95,3.55,0),Color3.fromRGB(164,171,173),Enum.Material.Metal)
+  for i=-1,1 do add("FaceStitch"..i,Vector3.new(.58,.09,.09),Vector3.new(i*.52,3.55,-1.5),Color3.fromRGB(32,39,33),Enum.Material.Metal,nil,CFrame.Angles(0,0,math.rad(i*18)))end
+  add("CableL",Vector3.new(.18,3.1,.18),Vector3.new(-1.55,-.5,.9),Color3.fromRGB(77,126,70),Enum.Material.Neon,nil,CFrame.Angles(math.rad(8),0,math.rad(12)))
+  add("CableR",Vector3.new(.18,3.1,.18),Vector3.new(1.55,-.5,.9),Color3.fromRGB(77,126,70),Enum.Material.Neon,nil,CFrame.Angles(math.rad(8),0,math.rad(-12)))
  elseif id=="WEREWOLF"then
-  add("Head",Vector3.new(3,2.8,3.2),Vector3.new(0,3.3,-.2),Color3.fromRGB(105,78,60),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
-  add("Muzzle",Vector3.new(2.1,1.4,2.4),Vector3.new(0,3,-2),Color3.fromRGB(122,91,69),Enum.Material.SmoothPlastic)
-  local earL=add("EarL",Vector3.new(1.1,2,1),Vector3.new(-1,5,0),Color3.fromRGB(91,65,50),Enum.Material.SmoothPlastic);earL.Shape=Enum.PartType.Wedge
-  local earR=add("EarR",Vector3.new(1.1,2,1),Vector3.new(1,5,0),Color3.fromRGB(91,65,50),Enum.Material.SmoothPlastic);earR.Shape=Enum.PartType.Wedge
-  add("ClawL",Vector3.new(.7,2.8,.7),Vector3.new(-2.3,-.6,-.3),Color3.fromRGB(55,48,43),Enum.Material.SmoothPlastic)
-  add("ClawR",Vector3.new(.7,2.8,.7),Vector3.new(2.3,-.6,-.3),Color3.fromRGB(55,48,43),Enum.Material.SmoothPlastic)
+  add("Head",Vector3.new(3.15,3,3.35),Vector3.new(0,3.55,-.25),Color3.fromRGB(102,74,57),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  add("Muzzle",Vector3.new(2.15,1.45,2.65),Vector3.new(0,3.18,-2.05),Color3.fromRGB(126,89,64),Enum.Material.SmoothPlastic)
+  add("Nose",Vector3.new(.72,.52,.55),Vector3.new(0,3.35,-3.2),Color3.fromRGB(25,22,21),Enum.Material.SmoothPlastic)
+  add("EyeL",Vector3.new(.22,.18,.12),Vector3.new(-.5,3.85,-1.62),Color3.fromRGB(243,178,67),Enum.Material.Neon)
+  add("EyeR",Vector3.new(.22,.18,.12),Vector3.new(.5,3.85,-1.62),Color3.fromRGB(243,178,67),Enum.Material.Neon)
+  add("EarL",Vector3.new(1.15,2.2,1),Vector3.new(-1.05,5.25,0),Color3.fromRGB(87,60,46),Enum.Material.SmoothPlastic,Enum.PartType.Wedge,CFrame.Angles(0,0,math.rad(-8)))
+  add("EarR",Vector3.new(1.15,2.2,1),Vector3.new(1.05,5.25,0),Color3.fromRGB(87,60,46),Enum.Material.SmoothPlastic,Enum.PartType.Wedge,CFrame.Angles(0,0,math.rad(8)))
+  add("BackFur",Vector3.new(4,4.8,.9),Vector3.new(0,.45,1.35),Color3.fromRGB(70,51,42),Enum.Material.Fabric)
+  add("Tail",Vector3.new(.9,4.5,.9),Vector3.new(0,-1.3,2.1),Color3.fromRGB(83,58,45),Enum.Material.Fabric,nil,CFrame.Angles(math.rad(32),0,0))
+  for i=-1,1 do
+   add("ClawL"..i,Vector3.new(.17,.17,1),Vector3.new(-2.35+i*.18,-.65,-.75),Color3.fromRGB(229,214,184),Enum.Material.SmoothPlastic,nil,CFrame.Angles(math.rad(-15),0,0))
+   add("ClawR"..i,Vector3.new(.17,.17,1),Vector3.new(2.35+i*.18,-.65,-.75),Color3.fromRGB(229,214,184),Enum.Material.SmoothPlastic,nil,CFrame.Angles(math.rad(-15),0,0))
+  end
  elseif id=="MUMMY"then
-  add("Head",Vector3.new(2.7,2.9,2.7),Vector3.new(0,3.4,0),Color3.fromRGB(203,190,148),Enum.Material.Fabric,Enum.PartType.Ball)
-  for i=-2,2 do add("Bandage"..i,Vector3.new(4.6,.65,2.6),Vector3.new(0,i*.75,0),i%2==0 and Color3.fromRGB(213,202,164)or Color3.fromRGB(187,176,141),Enum.Material.Fabric)end
+  add("Head",Vector3.new(2.75,3,2.7),Vector3.new(0,3.55,0),Color3.fromRGB(202,190,151),Enum.Material.Fabric,Enum.PartType.Ball)
+  add("EyeSlit",Vector3.new(1.8,.42,.18),Vector3.new(0,3.72,-1.38),Color3.fromRGB(52,42,29),Enum.Material.SmoothPlastic)
+  add("CurseEyeL",Vector3.new(.18,.12,.1),Vector3.new(-.35,3.72,-1.5),Color3.fromRGB(232,193,86),Enum.Material.Neon)
+  add("CurseEyeR",Vector3.new(.18,.12,.1),Vector3.new(.35,3.72,-1.5),Color3.fromRGB(232,193,86),Enum.Material.Neon)
+  for i=-3,3 do add("Bandage"..i,Vector3.new(4.7,.52,2.65),Vector3.new(0,i*.53,0),i%2==0 and Color3.fromRGB(215,203,165)or Color3.fromRGB(184,173,140),Enum.Material.Fabric,nil,CFrame.Angles(0,0,math.rad(i*3)))end
+  add("LooseBandageL",Vector3.new(.5,4.3,.34),Vector3.new(-2.15,-1.1,.35),Color3.fromRGB(204,192,156),Enum.Material.Fabric,nil,CFrame.Angles(math.rad(8),0,math.rad(9)))
+  add("LooseBandageR",Vector3.new(.5,3.5,.34),Vector3.new(2.15,-.8,.45),Color3.fromRGB(183,172,139),Enum.Material.Fabric,nil,CFrame.Angles(math.rad(-5),0,math.rad(-12)))
+  add("CurseScarab",Vector3.new(1,1,.25),Vector3.new(0,.65,-1.35),Color3.fromRGB(226,188,92),Enum.Material.Neon)
  elseif id=="GRIM_REAPER"then
-  add("Cloak",Vector3.new(5.4,6,2.8),Vector3.new(0,0,.4),Color3.fromRGB(28,24,35),Enum.Material.Fabric)
-  add("Hood",Vector3.new(3.7,3.7,3.7),Vector3.new(0,3.6,0),Color3.fromRGB(24,20,30),Enum.Material.Fabric,Enum.PartType.Ball)
-  add("FaceVoid",Vector3.new(2.2,2.1,.5),Vector3.new(0,3.45,-1.75),Color3.fromRGB(6,6,8),Enum.Material.Neon)
-  add("ScytheStaff",Vector3.new(.45,7,.45),Vector3.new(3,0,0),Color3.fromRGB(72,64,59),Enum.Material.Wood)
-  local blade=add("ScytheBlade",Vector3.new(.5,3.8,2.5),Vector3.new(3,3.3,-1.2),Color3.fromRGB(184,190,198),Enum.Material.Metal);visuals[#visuals].rotation=CFrame.Angles(0,0,math.rad(60));blade.CFrame=anchor.CFrame*CFrame.new(visuals[#visuals].offset)*visuals[#visuals].rotation
+  add("Cloak",Vector3.new(5.7,6.6,3),Vector3.new(0,-.2,.45),Color3.fromRGB(20,16,27),Enum.Material.Fabric)
+  add("ShoulderL",Vector3.new(2.6,1.4,2.2),Vector3.new(-2.15,1.45,.1),Color3.fromRGB(31,24,42),Enum.Material.Fabric)
+  add("ShoulderR",Vector3.new(2.6,1.4,2.2),Vector3.new(2.15,1.45,.1),Color3.fromRGB(31,24,42),Enum.Material.Fabric)
+  add("Hood",Vector3.new(3.8,3.9,3.8),Vector3.new(0,3.75,0),Color3.fromRGB(16,12,23),Enum.Material.Fabric,Enum.PartType.Ball)
+  add("FaceVoid",Vector3.new(2.3,2.25,.55),Vector3.new(0,3.6,-1.92),Color3.fromRGB(3,3,6),Enum.Material.Neon)
+  add("VoidEyeL",Vector3.new(.2,.15,.12),Vector3.new(-.38,3.85,-2.22),Color3.fromRGB(169,84,255),Enum.Material.Neon)
+  add("VoidEyeR",Vector3.new(.2,.15,.12),Vector3.new(.38,3.85,-2.22),Color3.fromRGB(169,84,255),Enum.Material.Neon)
+  add("ScytheStaff",Vector3.new(.45,7.5,.45),Vector3.new(3.1,0,0),Color3.fromRGB(69,58,52),Enum.Material.Wood)
+  add("ScytheBlade",Vector3.new(.5,3.9,2.7),Vector3.new(3.1,3.35,-1.25),Color3.fromRGB(190,197,205),Enum.Material.Metal,nil,CFrame.Angles(0,0,math.rad(60)))
+  add("ShadowChainL",Vector3.new(.16,3.8,.16),Vector3.new(-1.65,-.65,.8),Color3.fromRGB(91,51,138),Enum.Material.Neon,nil,CFrame.Angles(math.rad(8),0,math.rad(13)))
+  add("ShadowChainR",Vector3.new(.16,3.8,.16),Vector3.new(1.65,-.65,.8),Color3.fromRGB(91,51,138),Enum.Material.Neon,nil,CFrame.Angles(math.rad(8),0,math.rad(-13)))
+ end
+ return visuals
+end
+
+local function decorateHumanBot(anchor,id)
+ local visuals={}
+ local function add(name,size,offset,color,material,shape,rotation)
+  local x=botVisualPart(anchor,name,size,offset,color,material,shape)
+  local row={part=x,offset=offset,rotation=rotation or CFrame.identity}
+  table.insert(visuals,row);x.CFrame=anchor.CFrame*CFrame.new(offset)*row.rotation;return x
+ end
+ if id=="BROADCAST"then
+  add("BroadcastPack",Vector3.new(2.7,3.2,.8),Vector3.new(0,.4,1.25),Color3.fromRGB(48,72,88),Enum.Material.Metal)
+  add("SignalAntenna",Vector3.new(.18,4,.18),Vector3.new(.7,2.4,1.35),Color3.fromRGB(91,213,229),Enum.Material.Neon,nil,CFrame.Angles(math.rad(-8),0,0))
+ elseif id=="ELECTRICIAN"then
+  add("ElectricVest",Vector3.new(4.1,3.8,.38),Vector3.new(0,.3,-1.15),Color3.fromRGB(205,168,54),Enum.Material.Fabric)
+  add("CoilTool",Vector3.new(1.2,2.2,.8),Vector3.new(1.65,.2,-.55),Color3.fromRGB(109,214,225),Enum.Material.Neon)
+ elseif id=="COURIER"then
+  add("CourierBag",Vector3.new(3.4,3.5,1.1),Vector3.new(0,.1,1.4),Color3.fromRGB(112,76,51),Enum.Material.Fabric)
+  add("CourierStripe",Vector3.new(4,.35,.25),Vector3.new(0,.65,-1.18),Color3.fromRGB(236,157,72),Enum.Material.Neon)
+ elseif id=="PHOTOGRAPHER"then
+  add("CameraBody",Vector3.new(2.1,1.4,1.2),Vector3.new(0,.55,-1.55),Color3.fromRGB(36,38,43),Enum.Material.Metal)
+  add("CameraLens",Vector3.new(.85,.85,.85),Vector3.new(0,.55,-2.15),Color3.fromRGB(108,195,231),Enum.Material.Neon,Enum.PartType.Ball)
+ elseif id=="SECURITY"then
+  add("SecurityPlate",Vector3.new(4.3,3.9,.42),Vector3.new(0,.2,-1.18),Color3.fromRGB(52,66,82),Enum.Material.Metal)
+  add("Baton",Vector3.new(.35,4.4,.35),Vector3.new(1.85,-.3,-.4),Color3.fromRGB(114,197,225),Enum.Material.Neon,nil,CFrame.Angles(0,0,math.rad(-12)))
  end
  return visuals
 end
@@ -2450,9 +2514,13 @@ local function setBotCFrame(b,cf)
 end
 
 local function bot(role,pos)
+ botSequence+=1
  local monsterId="DRACULA"
+ local humanFormId="BROADCAST"
  if role=="MONSTER"and C.MonsterForms and #C.MonsterForms>0 then
-  monsterId=C.MonsterForms[math.random(1,#C.MonsterForms)].Id or"DRACULA"
+  monsterId=C.MonsterForms[((botSequence-1)%#C.MonsterForms)+1].Id or"DRACULA"
+ elseif role=="SURVIVOR"and C.HumanForms and #C.HumanForms>0 then
+  humanFormId=C.HumanForms[((botSequence-1)%#C.HumanForms)+1].Id or"BROADCAST"
  end
  local model,p,walkTrack=createBotAvatar(role,pos)
  local visuals={}
@@ -2463,8 +2531,18 @@ local function bot(role,pos)
  if role=="MONSTER"then
   visuals=decorateClassicMonster(p,monsterId)
   if model then model.Name="AI_MONSTER_"..monsterId end
+ else
+  visuals=decorateHumanBot(p,humanFormId)
+  if model then model.Name="AI_SURVIVOR_"..humanFormId end
  end
- local b={part=p,model=model,animationTrack=walkTrack,role=role,speed=role=="MONSTER"and 18 or 14,monsterId=monsterId,visuals=visuals,infectReadyAt=0,purifyReadyAt=0,infectAttackReadyAt=0,energy=energyMax(),motionClock=math.random()*6.28}
+ local b={
+  part=p,model=model,animationTrack=walkTrack,role=role,
+  speed=role=="MONSTER"and 18 or 14,baseSpeed=role=="MONSTER"and 18 or 14,
+  monsterId=monsterId,humanFormId=humanFormId,visuals=visuals,
+  infectReadyAt=0,purifyReadyAt=0,infectAttackReadyAt=0,abilityReadyAt=0,dashReadyAt=0,
+  energy=energyMax(),motionClock=math.random()*6.28,tacticSlot=botSequence,
+  decisionAt=0,speedResetAt=0,
+ }
  table.insert(bots,b);return b
 end
 local function weightPick(list)
