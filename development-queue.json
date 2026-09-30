@@ -18185,7 +18185,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-30T21:38:15.192Z",
+      "updatedAt": "2026-09-30T21:50:54.289Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -19482,8 +19482,8 @@
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-seed-action-survival-rogu-echoes-of-the-lost-star-36773180555",
       "unitySourceCommit": "3d6828a8d5630f47b94a720cf8489224af780c4f",
-      "unityBuildRunId": 36776355668,
-      "unityRuntimeSmokeRunId": 36778669093,
+      "unityBuildRunId": 36779808205,
+      "unityRuntimeSmokeRunId": null,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityInternalReleaseReady": false,
@@ -19497,19 +19497,19 @@
         "sourceRevision": "3d6828a8d5630f47b94a720cf8489224af780c4f",
         "sourceRootTreeSha": "ea381518a699ad3d1a3e2a2da167a43c2b6679a9",
         "sourceFingerprint": "a51164baee140368e2cde27919c2660f16e2a3852471854e5f870e049ce4d3d5",
-        "buildOrPackagePassed": true,
-        "artifactIdentity": "sha256:729276abfb840ccd90312c66271f8ab3505c35f5682f1a48e5232e39f5c4dc6c",
+        "buildOrPackagePassed": false,
+        "artifactIdentity": null,
         "runtimePassed": false,
         "independentQaPassed": false,
         "multiplayerPassed": true,
         "regressionPassed": false,
         "f0ToF9Passed": false,
-        "exactRevision": true,
-        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
-        "failureStage": "F1_SERVER_BOOT",
-        "failureSignature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee"
+        "exactRevision": false,
+        "lastSuccessfulStage": "CHEAP_PRECHECK",
+        "failureStage": "F0_SOURCE_INTEGRITY",
+        "failureSignature": "90fbb26b7e141cea4c0256d6e0e273c1785df05e3a4184349eb32f8af6525e2d"
       },
-      "resumeStage": "F1_SERVER_BOOT",
+      "resumeStage": "F0_SOURCE_INTEGRITY",
       "failureCount": 1,
       "contractCanaryPassed": false,
       "robloxValidationTarget": {
@@ -19782,12 +19782,12 @@
         "version": 1,
         "platform": "UNITY",
         "sourceRevision": "3d6828a8d5630f47b94a720cf8489224af780c4f",
-        "artifactIdentity": "sha256:729276abfb840ccd90312c66271f8ab3505c35f5682f1a48e5232e39f5c4dc6c",
+        "artifactIdentity": null,
         "sourceRootTreeSha": "ea381518a699ad3d1a3e2a2da167a43c2b6679a9",
         "evidenceMode": "EXISTING_EXACT_APK_RUNTIME_QA_REGRESSION_WITH_PLATFORM_APPLICABILITY",
         "floors": {
           "F0": {
-            "state": "PASS",
+            "state": "FAIL",
             "authority": "IMMUTABLE_APK_BUILD_AND_SOURCE_BINDING"
           },
           "F1": {
@@ -19830,7 +19830,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-09-30T21:38:15.192Z"
+        "verifiedAt": "2026-09-30T21:50:54.289Z"
       },
       "unityF9ReleaseRegressionPassed": false,
       "unityF9ReleaseRegressionPassedAt": null,
@@ -19841,17 +19841,17 @@
         "sourceRevision": "3d6828a8d5630f47b94a720cf8489224af780c4f",
         "sourceRootTreeSha": "ea381518a699ad3d1a3e2a2da167a43c2b6679a9",
         "sourceFingerprint": "a51164baee140368e2cde27919c2660f16e2a3852471854e5f870e049ce4d3d5",
-        "buildOrPackagePassed": true,
-        "artifactIdentity": "sha256:729276abfb840ccd90312c66271f8ab3505c35f5682f1a48e5232e39f5c4dc6c",
+        "buildOrPackagePassed": false,
+        "artifactIdentity": null,
         "runtimePassed": false,
         "independentQaPassed": false,
         "multiplayerPassed": true,
         "regressionPassed": false,
         "f0ToF9Passed": false,
-        "exactRevision": true,
-        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
-        "failureStage": "F1_SERVER_BOOT",
-        "failureSignature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee"
+        "exactRevision": false,
+        "lastSuccessfulStage": "CHEAP_PRECHECK",
+        "failureStage": "F0_SOURCE_INTEGRITY",
+        "failureSignature": "90fbb26b7e141cea4c0256d6e0e273c1785df05e3a4184349eb32f8af6525e2d"
       }
     },
     {
@@ -30902,7 +30902,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-30T21:51:20.241Z",
+  "updatedAt": "2026-09-30T21:51:26.656Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
