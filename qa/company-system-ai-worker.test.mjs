@@ -13,6 +13,18 @@ import { analyzeSystemAiBottlenecks } from '../tools/company-system-ai-bottlenec
 function root(){return fs.mkdtempSync(path.join(os.tmpdir(),'company-system-ai-'));}
 function write(file,text){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,text,'utf8');}
 
+test('growth marketing caller grants every permission requested by its reusable System AI worker',()=>{
+  const caller=fs.readFileSync(new URL('../.github/workflows/company-growth-marketing-runtime.yml',import.meta.url),'utf8');
+  const reusable=fs.readFileSync(new URL('../.github/workflows/company-system-ai-workers.yml',import.meta.url),'utf8');
+  const callerPermissions=caller.slice(caller.indexOf('permissions:'),caller.indexOf('concurrency:'));
+  const reusablePermissions=reusable.slice(reusable.indexOf('permissions:'),reusable.indexOf('env:'));
+  for(const scope of ['contents: write','pull-requests: write','actions: write']){
+    assert.match(reusablePermissions,new RegExp(scope.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
+    assert.match(callerPermissions,new RegExp(scope.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
+  }
+  assert.match(caller,/uses: \.\/\.github\/workflows\/company-system-ai-workers\.yml/);
+});
+
 test('system AI edits only assigned system file and leaves completion for supervisor',async()=>{
   const cwd=root(),prev=process.cwd();process.chdir(cwd);
   try{
@@ -382,4 +394,3 @@ test('hard bottleneck repair critic may revise the proposal before any file edit
     assert.ok(result.criticDecisionSha256);
   }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
 });
-

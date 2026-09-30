@@ -6,6 +6,7 @@ on:
     paths:
       - 'game-catalog.json'
       - 'tools/company-all-games-design-reset.mjs'
+      - 'tools/company-game-seed-contract.mjs'
       - '.github/workflows/owner-all-games-design-reset.yml'
 
 permissions:
@@ -27,7 +28,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
-          fetch-depth: 0
+          fetch-depth: 1
       - name: Validate reset synchronizer
         run: node --check tools/company-all-games-design-reset.mjs
       - name: Persist canonical DESIGN_ONLY seed state
@@ -35,11 +36,14 @@ jobs:
         run: |
           set -euo pipefail
           cp tools/company-all-games-design-reset.mjs /tmp/company-all-games-design-reset.mjs
+          cp tools/company-game-seed-contract.mjs /tmp/company-game-seed-contract.mjs
           git config user.name 'jaewoon-owner-design-reset'
           git config user.email 'owner-design-reset@users.noreply.github.com'
           pushed=0
           for attempt in 1 2 3 4; do
-            git fetch origin main "$COMPANY_RUNTIME_BRANCH"
+            git fetch --depth=1 origin \
+              "main:refs/remotes/origin/main" \
+              "$COMPANY_RUNTIME_BRANCH:refs/remotes/origin/$COMPANY_RUNTIME_BRANCH"
             git checkout -B owner-all-games-design-reset-runtime "origin/$COMPANY_RUNTIME_BRANCH"
             git show origin/main:game-catalog.json > game-catalog.json
             node /tmp/company-all-games-design-reset.mjs | tee /tmp/design-reset-state.txt
