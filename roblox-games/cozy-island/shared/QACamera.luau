@@ -16,7 +16,7 @@ function QACamera.install(config,screenGui,pointProvider)
  button.Name="InternalQACameraButton"
  button.AnchorPoint=Vector2.new(0,.5)
  button.Position=UDim2.new(0,6,.5,0)
- button.Size=UDim2.fromOffset(58,30)
+ button.Size=UDim2.fromOffset(58,44)
  button.BackgroundColor3=Color3.fromRGB(35,38,46)
  button.BackgroundTransparency=.18
  button.Text="QA촬영"
