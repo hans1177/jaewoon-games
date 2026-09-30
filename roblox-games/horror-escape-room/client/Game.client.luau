@@ -2244,7 +2244,8 @@ local function currentAbilityName()
   return profile and profile.Name or tostring(hf.InfectedAbility or"감염 스킬")
  end
  local mf=currentMonsterFormInfo()
- return(C.MonsterAbilityLabels and C.MonsterAbilityLabels[mf.Ability])or mf.Name or"괴물 스킬"
+ local profile=C.MonsterAbilities and C.MonsterAbilities[mf.Ability]
+ return profile and profile.Name or(C.MonsterAbilityLabels and C.MonsterAbilityLabels[mf.Ability])or mf.Name or"괴물 스킬"
 end
 
 -- 라운드 행동 버튼: 역할에 따라 딱 필요한 버튼만 노출
@@ -2840,6 +2841,93 @@ end
 if p.Character then task.defer(bindFootsteps,p.Character)end
 p.CharacterAdded:Connect(bindFootsteps)
 
+local function monsterEffectProfile(ability)
+ local formInfo=nil
+ for _,row in ipairs(C.MonsterForms or{})do
+  if row.Ability==ability then formInfo=row;break end
+ end
+ local profile=C.MonsterAbilities and C.MonsterAbilities[ability]or{}
+ return formInfo or{},profile
+end
+
+local function abilityVfxPart(name,size,cframe,color,shape)
+ local part=Instance.new("Part")
+ part.Name=name
+ part.Size=size
+ part.CFrame=cframe
+ part.Color=color
+ part.Material=Enum.Material.Neon
+ part.Anchored=true
+ part.CanCollide=false
+ part.CanTouch=false
+ part.CanQuery=false
+ part.CastShadow=false
+ part.Transparency=.12
+ if shape then part.Shape=shape end
+ part.Parent=workspace
+ return part
+end
+
+local function abilityPulse(name,pos,color,startSize,endSize,duration)
+ local part=abilityVfxPart(name,startSize,CFrame.new(pos),color,Enum.PartType.Ball)
+ TweenService:Create(part,TweenInfo.new(duration,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Size=endSize,Transparency=1}):Play()
+ Debris:AddItem(part,duration+.1)
+ return part
+end
+
+local function abilityStreak(name,origin,look,color,offset,length,width,duration)
+ local flat=Vector3.new(look.X,0,look.Z)
+ if flat.Magnitude<.01 then flat=Vector3.new(0,0,-1)else flat=flat.Unit end
+ local right=flat:Cross(Vector3.yAxis)
+ local pos=origin+right*(offset or 0)+Vector3.new(0,1.7,0)+flat*((length or 9)*.5)
+ local part=abilityVfxPart(name,Vector3.new(width or .22,width or .22,length or 9),CFrame.lookAt(pos,pos+flat),color)
+ TweenService:Create(part,TweenInfo.new(duration or .34,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Transparency=1,Size=Vector3.new((width or .22)*.35,(width or .22)*.35,(length or 9)*1.25)}):Play()
+ Debris:AddItem(part,(duration or .34)+.1)
+ return part
+end
+
+local function playMonsterAbilityEffect(snapshot)
+ if typeof(snapshot)~="table"then return end
+ local ability=tostring(snapshot.Ability or"")
+ local origin=typeof(snapshot.Origin)=="Vector3"and snapshot.Origin or Vector3.zero
+ local look=typeof(snapshot.Look)=="Vector3"and snapshot.Look or Vector3.new(0,0,-1)
+ local formInfo,profile=monsterEffectProfile(ability)
+ local color=formInfo.EffectColor or Color3.fromRGB(190,100,220)
+ local accent=formInfo.AccentColor or color
+ if ability=="BAT_DASH"then
+  abilityPulse("BatDashBurst",origin+Vector3.new(0,1.8,0),color,Vector3.new(1.5,1.5,1.5),Vector3.new(7,4,7),.32)
+  for i=-3,3 do
+   local streak=abilityStreak("BatShadow",origin,look,i%2==0 and color or accent,i*1.05,8+math.abs(i)*1.2,.28,.42)
+   streak.CFrame=streak.CFrame*CFrame.Angles(0,0,math.rad(i*9))
+  end
+ elseif ability=="POWER_CHARGE"then
+  abilityPulse("ElectricChargeCore",origin+Vector3.new(0,1.6,0),color,Vector3.new(1,1,1),Vector3.new(8,8,8),.38)
+  for i=1,8 do
+   local angle=(i/8)*math.pi*2
+   local dir=Vector3.new(math.cos(angle),0,math.sin(angle))
+   abilityStreak("ElectricArc",origin,dir,color,0,5,.16,.3)
+  end
+ elseif ability=="RAGE_RUN"then
+  abilityPulse("RageDust",origin+Vector3.new(0,.8,0),accent,Vector3.new(1,1,1),Vector3.new(6,2.5,6),.35)
+  for _,offset in ipairs({-1.2,0,1.2})do abilityStreak("WolfClaw",origin,look,color,offset,10,.2,.45)end
+ elseif ability=="CURSE_SLOW"then
+  local radius=tonumber(profile.Radius)or 22
+  abilityPulse("CurseSandCore",origin+Vector3.new(0,.5,0),color,Vector3.new(1,1,1),Vector3.new(radius*1.65,1.2,radius*1.65),.65)
+  for i=1,12 do
+   local a=(i/12)*math.pi*2
+   local pos=origin+Vector3.new(math.cos(a)*4,.5,math.sin(a)*4)
+   local grain=abilityVfxPart("CurseSand",Vector3.new(.45,.45,.45),CFrame.new(pos),i%2==0 and color or accent,Enum.PartType.Ball)
+   TweenService:Create(grain,TweenInfo.new(.7,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{CFrame=CFrame.new(origin+Vector3.new(math.cos(a)*radius,2+((i%3)*.4),math.sin(a)*radius)),Transparency=1}):Play()
+   Debris:AddItem(grain,.8)
+  end
+ elseif ability=="SHADOW_STEP"then
+  local target=typeof(snapshot.Target)=="Vector3"and snapshot.Target or(origin+look*(tonumber(profile.Distance)or 18))
+  abilityPulse("ShadowGateOrigin",origin+Vector3.new(0,1.8,0),color,Vector3.new(2,4,2),Vector3.new(7,8,7),.5)
+  abilityPulse("ShadowGateTarget",target+Vector3.new(0,1.8,0),color,Vector3.new(2,4,2),Vector3.new(7,8,7),.5)
+  for i=-2,2 do abilityStreak("ShadowThread",origin,look,accent,i*.65,tonumber(profile.Distance)or 18,.16,.5)end
+ end
+end
+
 p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
  local value=tostring(p:GetAttribute("FeedbackEvent")or"")
  if value:find("^INFECT:")then setMotionImpulse("INFECT",.72);warningSfx.TimePosition=0;warningSfx:Play();chaseTint.BackgroundTransparency=.72
@@ -2852,6 +2940,10 @@ p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
 end)
 
 remote.OnClientEvent:Connect(function(kind,snapshot)
+ if kind=="MONSTER_ABILITY_EFFECT"then
+  playMonsterAbilityEffect(snapshot)
+  return
+ end
  if kind~="MULTIPLAYER_SYNC"or typeof(snapshot)~="table"then return end
  p:SetAttribute("SyncedHumanParticipants",tonumber(snapshot.ParticipantCount)or 1)
  p:SetAttribute("SyncedParticipants",tonumber(snapshot.ActivePopulation)or tonumber(snapshot.ParticipantCount)or 1)
