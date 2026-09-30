@@ -246,7 +246,7 @@ function runCli(){
     return;
   }
   const generation=clean(process.env.ROBLOX_SOURCE_DRIFT_SYNC_GENERATION);
-  if(generation!=='v3')throw new Error('ROBLOX_SOURCE_DRIFT_SYNC_GENERATION_STALE:'+(generation||'MISSING'));
+  if(generation!=='v2')throw new Error('ROBLOX_SOURCE_DRIFT_SYNC_GENERATION_STALE:'+(generation||'MISSING'));
   const queueFile=arg('queue');
   const repoRoot=arg('repo-root','.');
   const runtimeRef=arg('runtime-ref');

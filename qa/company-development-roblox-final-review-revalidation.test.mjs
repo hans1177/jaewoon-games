@@ -76,14 +76,14 @@ test('exact Roblox F9 review is isolated per game after multiplayer acceptance',
   assert.doesNotMatch(workflow,/group: company-development-roblox-f9-final-review\s*\n/);
 });
 
-test('F9 queues canonical server publication for every verified non-excluded game',()=>{
+test('F9 records exact verified evidence and queues publication only for released games',()=>{
   assert.match(workflow,/item\.robloxFinalReviewPassed=true/);
   assert.match(workflow,/item\.robloxF9ReleaseRegressionPassed=true/);
   assert.match(workflow,/item\.robloxF9VerifiedPrepublishEvidence=\{/);
-  assert.match(workflow,/canonicalPublishRequired:serverPublishRequired/);
+  assert.match(workflow,/canonicalPublishRequired:serverPublishEligible/);
   assert.match(workflow,/canonicalPublishCompleted:false/);
-  assert.match(workflow,/item\.robloxInternalReleaseReady=releaseReadiness\.ready/);
-  assert.match(workflow,/item\.robloxCanonicalPublishPending=serverPublishRequired/);
+  assert.match(workflow,/item\.robloxInternalReleaseReady=serverPublishEligible/);
+  assert.match(workflow,/item\.robloxCanonicalPublishPending=serverPublishEligible/);
   assert.match(workflow,/item\.currentStep='POST_F9_CONTINUOUS_EVOLUTION'/);
   assert.match(workflow,/ROBLOX_F9_VERIFIED_CANONICAL_PUBLISH_PENDING/);
 });
@@ -94,7 +94,7 @@ test('F9 keeps exact runtime continuation evidence but cannot publish canonical 
   assert.match(workflow,/post\.runtimeFailureExternalReleaseOnly===true/);
   assert.match(workflow,/const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance\|\|internalRuntimeObservationDeferred\|\|internalRuntimeFindingDeferred/);
   assert.match(workflow,/item\.robloxF9VerifiedPrepublishEvidence=\{/);
-  assert.match(workflow,/item\.robloxCanonicalPublishPending=serverPublishRequired/);
+  assert.match(workflow,/item\.robloxCanonicalPublishPending=serverPublishEligible/);
 });
 
 test('F9 runs in parallel and cannot pause internal playtest under an external-only runtime blocker',()=>{
@@ -110,8 +110,8 @@ test('F9 runs in parallel and cannot pause internal playtest under an external-o
 });
 
 test('F9 is nonterminal and dispatches final canonical publish instead of ending evolution',()=>{
-  assert.match(workflow,/item\.robloxInternalReleaseReady=releaseReadiness\.ready/);
-  assert.match(workflow,/item\.robloxCanonicalPublishPending=serverPublishRequired/);
+  assert.match(workflow,/item\.robloxInternalReleaseReady=serverPublishEligible/);
+  assert.match(workflow,/item\.robloxCanonicalPublishPending=serverPublishEligible/);
   assert.match(workflow,/ROBLOX_F9_VERIFIED_CANONICAL_PUBLISH_PENDING=/);
   assert.match(workflow,/Dispatch exact F9-verified artifact to canonical Roblox game target/);
   assert.match(workflow,/publish_stage=final/);
@@ -141,19 +141,6 @@ test('F9 fan-in repeats development without requiring publication',()=>{
   assert.match(fanin,/prepublish\.validationVersionNumber/);
   assert.match(workflow,/const exactInternalF9Proof=/);
   assert.match(workflow,/prepublish\.f9RuntimeReplay===false/);
-  assert.match(fanin,/verified_count="\$\(grep -c \. "\$proof_tsv" \|\| true\)"/);
-  assert.match(fanin,/reason:"roblox-f9-verified-next-cycle"/);
-  assert.match(fanin,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=1:verified=/);
-  assert.match(fanin,/ROBLOX_NEXT_EVOLUTION_CYCLE_TRIGGER=F9_VERIFIED/);
-  assert.doesNotMatch(fanin,/if \[ "\$settled_count" -gt 0 \]; then/);
-  assert.match(workflow,/vibe2-fanin-refill/);
-});
-
-
-test('F9 canonical server loop uses existing workflow and preserves owner exclusion',()=>{
-  assert.match(workflow,/ownerExcludedGameIds/);
-  assert.match(workflow,/serverPublishRequired/);
-  assert.match(workflow,/ROBLOX_F9_SERVER_PUBLICATION=.*EXACT_F9_REQUIRED/);
-  assert.match(workflow,/company-development-roblox-release-promotion\.yml/);
+  assert.match(workflow,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=/);
   assert.match(workflow,/vibe2-fanin-refill/);
 });

@@ -401,9 +401,8 @@ jobs:
               verifiedAt:stamp,
             };
             const releaseReadiness=evaluateInternalRelease(item,'ROBLOX',releasePolicy);
-            const ownerExcludedGameIds=new Set(releasePolicy.developmentSpeedExecution?.perGameFailureIsolation?.ownerExcludedGameIds||[]);
-            const serverPublishRequired=!ownerExcludedGameIds.has(item.gameId);
-            item.robloxInternalReleaseReady=releaseReadiness.ready;
+            const serverPublishEligible=releaseReadiness.ready;
+            item.robloxInternalReleaseReady=serverPublishEligible;
             item.robloxInternalReleasePublished=false;
             item.robloxInternalReleaseAt=null;
             item.robloxF9VerifiedPrepublishEvidence={
@@ -421,7 +420,7 @@ jobs:
               internalStudioValidationOnly:internalStudioValidationAccepted,
               runtimeAcceptancePassed:internalRuntimeAcceptance,
               studioAssetRuntimeBindingPassed:studioAssetRuntimeBindingExact,
-              canonicalPublishRequired:serverPublishRequired,
+              canonicalPublishRequired:serverPublishEligible,
               canonicalPublishCompleted:false,
               authority:'roblox-f9-verified-prepublish-gate',
               verifiedAt:stamp,
@@ -429,7 +428,7 @@ jobs:
             const publishCycleId=sourceRevision+':'+artifactIdentity;
             const publishQueue=Array.isArray(item.robloxCanonicalPublishQueue)?item.robloxCanonicalPublishQueue:[];
             const f0Snapshot=JSON.parse(JSON.stringify(item.robloxFoundationF0Evidence||{}));
-            if(serverPublishRequired&&!publishQueue.some(row=>row?.cycleId===publishCycleId)){
+            if(serverPublishEligible&&!publishQueue.some(row=>row?.cycleId===publishCycleId)){
               publishQueue.push({
                 version:1,
                 cycleId:publishCycleId,
@@ -454,7 +453,7 @@ jobs:
               });
             }
             item.robloxCanonicalPublishQueue=publishQueue;
-            item.robloxCanonicalPublishPending=serverPublishRequired;
+            item.robloxCanonicalPublishPending=serverPublishEligible;
             item.robloxInternalReleaseEvidence=null;
             item.robloxReleaseEvidence=null;
             item.robloxReleaseVersionNumber=null;
@@ -465,8 +464,8 @@ jobs:
             item.robloxPublicReleaseEvidence=null;
             item.robloxPromotionBlockers=[];
             item.currentStep='POST_F9_CONTINUOUS_EVOLUTION';
-            item.canonicalState=serverPublishRequired?'F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION':'F9_VERIFIED_OWNER_EXCLUDED_CONTINUOUS_EVOLUTION';
-            console.log('ROBLOX_F9_SERVER_PUBLICATION='+item.gameId+':'+(serverPublishRequired?'EXACT_F9_REQUIRED':'SKIPPED_OWNER_EXCLUDED'));
+            item.canonicalState=serverPublishEligible?'F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION':'F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION';
+            console.log('ROBLOX_F9_SERVER_PUBLICATION='+item.gameId+':'+(serverPublishEligible?'ELIGIBLE':'SKIPPED_DEVELOPMENT'));
             item.robloxLastSuccessfulStage='F9_RELEASE_REGRESSION';
             item.robloxFailureStage=null;
             item.robloxFailureSignature=null;
@@ -675,13 +674,13 @@ jobs:
           git -C runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
           mapfile -t rows < <(REQUESTED_GAME_ID="$REQUESTED_GAME_ID" node --input-type=module <<'NODE'
           import fs from 'node:fs';
+          import {evaluateInternalRelease} from './main/tools/company-platform-exposure-control.mjs';
           const releasePolicy=JSON.parse(fs.readFileSync('main/company-learning/platform-release-roadmap.json','utf8'));
-          const ownerExcludedGameIds=new Set(releasePolicy.developmentSpeedExecution?.perGameFailureIsolation?.ownerExcludedGameIds||[]);
           const q=JSON.parse(fs.readFileSync('runtime/development-queue.json','utf8'));
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           for(const item of q.items||[]){
             if(requested&&item.gameId!==requested)continue;
-            if(ownerExcludedGameIds.has(item.gameId))continue;
+            if(!evaluateInternalRelease(item,'ROBLOX',releasePolicy).ready)continue;
             for(const row of item.robloxCanonicalPublishQueue||[]){
               if(!['PENDING','RETRY_REQUIRED'].includes(String(row?.status||'')))continue;
               if(row.finalReviewPassed!==true||row.f9ReleaseRegressionPassed!==true)continue;
@@ -819,20 +818,22 @@ jobs:
           done
           test "$pushed" = '1'
           echo "ROBLOX_F9_VIBE_SETTLED_COUNT=$settled_count"
-          verified_count="$(grep -c . "$proof_tsv" || true)"
-          payload="$(jq -nc \
-            --arg run "${GITHUB_RUN_ID:-}" \
-            --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
-            --arg game "${REQUESTED_GAME_ID:-}" \
-            '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$game,source_outcome:"VERIFIED",reason:"roblox-f9-verified-next-cycle"}}')"
-          curl --fail-with-body --silent --show-error \
-            --request POST \
-            --header 'Accept: application/vnd.github+json' \
-            --header "Authorization: Bearer $GH_TOKEN" \
-            --header 'X-GitHub-Api-Version: 2022-11-28' \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
-            --data "$payload"
-          echo "ROBLOX_F9_VIBE_REFILL_DISPATCHED=1:verified=$verified_count:settled=$settled_count"
-          echo 'ROBLOX_NEXT_EVOLUTION_CYCLE_TRIGGER=F9_VERIFIED'
+          if [ "$settled_count" -gt 0 ]; then
+            payload="$(jq -nc \
+              --arg run "${GITHUB_RUN_ID:-}" \
+              --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
+              --arg game "${REQUESTED_GAME_ID:-}" \
+              '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$game,source_outcome:"VERIFIED",reason:"roblox-f9-verified"}}')"
+            curl --fail-with-body --silent --show-error \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+              --data "$payload"
+            echo "ROBLOX_F9_VIBE_REFILL_DISPATCHED=$settled_count"
+          else
+            echo 'ROBLOX_F9_VIBE_REFILL_DISPATCHED=0'
+          fi
           echo 'ROBLOX_F9_VIBE_FANIN=PASS'
           echo 'ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO'

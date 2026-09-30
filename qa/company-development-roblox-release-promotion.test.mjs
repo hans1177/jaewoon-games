@@ -112,16 +112,16 @@ test('existing post-runtime QA requires actual F1-F8 sentinel evidence on the ex
   assert.doesNotMatch(runtime,/Studio QA \(Disabled\)/);
 });
 
-test('F9 is nonterminal and dispatches the exact canonical server artifact every verified non-excluded cycle',()=>{
+test('F9 is nonterminal and dispatches exact artifacts only for released games',()=>{
   const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
   assert.match(finalReview,/Roblox F9 Final Review/);
   assert.match(finalReview,/item\.robloxFinalReviewPassed=true/);
   assert.match(finalReview,/item\.robloxF9ReleaseRegressionPassed=true/);
-  assert.match(finalReview,/item\.robloxInternalReleaseReady=releaseReadiness\.ready/);
-  assert.match(finalReview,/item\.robloxCanonicalPublishPending=serverPublishRequired/);
+  assert.match(finalReview,/item\.robloxInternalReleaseReady=serverPublishEligible/);
+  assert.match(finalReview,/item\.robloxCanonicalPublishPending=serverPublishEligible/);
   assert.match(finalReview,/item\.currentStep='POST_F9_CONTINUOUS_EVOLUTION'/);
-  assert.match(finalReview,/item\.canonicalState=serverPublishRequired\?'F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION':'F9_VERIFIED_OWNER_EXCLUDED_CONTINUOUS_EVOLUTION'/);
-  assert.match(finalReview,/if\(serverPublishRequired&&!publishQueue/);
+  assert.match(finalReview,/item\.canonicalState=serverPublishEligible\?'F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION':'F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION'/);
+  assert.match(finalReview,/if\(serverPublishEligible&&!publishQueue/);
   assert.match(finalReview,/robloxCanonicalPublishQueue/);
   assert.match(finalReview,/publish_stage=final/);
   assert.match(finalReview,/ROBLOX_F9_CANONICAL_PUBLISH_DISPATCHED=/);
@@ -468,18 +468,4 @@ test('F9 dispatch does not launch obsolete or currently failed publication candi
   const dispatch=finalReview.slice(finalReview.indexOf('      - name: Dispatch exact F9-verified artifact'));
   assert.match(dispatch,/row\.sourceRevision!==item\.robloxSourceCommit\|\|row\.artifactIdentity!==item\.robloxBuildArtifactIdentity/);
   assert.match(dispatch,/item\.robloxQualityBuildUpRequired===true\|\|item\.robloxStudioLocalPlayRepairRequired===true/);
-});
-
-
-test('central Roblox F0-F9 server republish loop reuses existing pipelines only',()=>{
-  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  const loop=roadmap.roblox.deploymentControl.verifiedCyclePublication;
-  assert.equal(loop.perpetualRepeat,true);
-  assert.equal(loop.developmentGameCanonicalPublicationAllowed,true);
-  assert.equal(loop.developmentGameNextCycleRequiresPublicationDispatch,true);
-  assert.equal(loop.publicationDispatchRequirementScope,'ALL_ELIGIBLE_ROBLOX_F9_VERIFIED_GAMES');
-  assert.ok(loop.sequence.includes('DISPATCH_EXACT_F9_ARTIFACT_TO_CANONICAL_PRIVATE_SERVER_TARGET'));
-  assert.ok(loop.sequence.includes('START_NEXT_EVOLUTION_CYCLE_IMMEDIATELY'));
-  assert.ok(roadmap.developmentSpeedExecution.perGameFailureIsolation.ownerExcludedGameIds.includes('horror-escape-room'));
-  assert.equal(roadmap.developmentSpeedExecution.developmentBatchPlannerCoalescing,undefined);
 });

@@ -1,5 +1,5 @@
 {
-  "version": 502,
+  "version": 500,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -1442,13 +1442,13 @@
       "verifiedCyclePublication": {
         "version": 2,
         "authority": "OWNER_DIRECTIVE_2026-09-30",
-        "objective": "EVERY_ELIGIBLE_ROBLOX_F9_VERIFIED_CYCLE_DISPATCHES_THE_EXACT_F9_ARTIFACT_TO_THE_CANONICAL_PRIVATE_SERVER_TARGET_AND_REPEATS_F0_TO_F9_UNBOUNDED",
+        "objective": "RELEASED_GAMES_DISPATCH_EXACT_F9_CANONICAL_PUBLISH; DEVELOPMENT_GAMES_SKIP_PUBLICATION; ALL_GAMES_IMMEDIATELY_CONTINUE_F0_TO_F9",
         "sequence": [
           "EVOLUTION_SOURCE_MUTATION",
           "F0_SOURCE_INTEGRITY",
           "F1_TO_F8_EXACT_PRIVATE_VALIDATION_TARGET_AND_STUDIO_QA",
           "F9_EXACT_FINAL_REVIEW",
-          "DISPATCH_EXACT_F9_ARTIFACT_TO_CANONICAL_PRIVATE_SERVER_TARGET",
+          "DISPATCH_EXACT_F9_ARTIFACT_ONLY_IF_RELEASED_ELSE_SKIP_CANONICAL_PUBLISH",
           "START_NEXT_EVOLUTION_CYCLE_IMMEDIATELY",
           "RECONCILE_CANONICAL_PUBLISH_RESULT_ASYNC"
         ],
@@ -1476,10 +1476,10 @@
         "publicationRetryMustPreserveExactFailedCycleIdentity": true,
         "nextCycleStartsAfterPublishDispatch": true,
         "publicationOutcomeBlocksEvolution": false,
-        "canonicalServerPublicationEligibility": "EXACT_F9_VERIFIED_ACTIVE_ROBLOX_GAME_EXCEPT_OWNER_EXCLUDED_GAME_IDS",
-        "developmentGameCanonicalPublicationAllowed": true,
-        "developmentGameNextCycleRequiresPublicationDispatch": true,
-        "publicationDispatchRequirementScope": "ALL_ELIGIBLE_ROBLOX_F9_VERIFIED_GAMES"
+        "canonicalServerPublicationEligibility": "VERIFIED_LOBBY_INTERNAL_RELEASE_OR_EXPLICIT_OWNER_CONFIRMED_RELEASE",
+        "developmentGameCanonicalPublicationAllowed": false,
+        "developmentGameNextCycleRequiresPublicationDispatch": false,
+        "publicationDispatchRequirementScope": "RELEASED_GAMES_ONLY"
       }
     },
     "validationMode": "HEADLESS_FAST_MVP",
@@ -7152,7 +7152,7 @@
         "ROBLOX",
         "UNITY"
       ],
-      "objective": "EVERY_ELIGIBLE_ROBLOX_EXACT_F9_VERIFIED_CYCLE_PUBLISHES_THE_EXACT_ARTIFACT_TO_ITS_CANONICAL_PRIVATE_SERVER_TARGET_THEN_IMMEDIATELY_STARTS_THE_NEXT_F0_TO_F9_EVOLUTION_CYCLE",
+      "objective": "RELEASED_GAMES_PUBLISH_EXACT_F9_VERIFIED_VERSION; DEVELOPMENT_GAMES_REPEAT_F0_TO_F9_WITHOUT_CANONICAL_SERVER_PUBLICATION",
       "sequence": [
         "GAME_SOURCE_MUTATION",
         "F0",
@@ -7165,7 +7165,8 @@
         "F7",
         "F8",
         "F9",
-        "ROBLOX_CANONICAL_SERVER_PUBLISH_EXACT_F9_ARTIFACT",
+        "RELEASE_CLASSIFICATION",
+        "PUBLISH_ONLY_IF_RELEASED",
         "IMMEDIATE_NEXT_EVOLUTION_CYCLE"
       ],
       "f9Terminal": false,
@@ -7174,7 +7175,7 @@
       "publicationOutcomeBlocksNextEvolution": false,
       "publicationVisibilityBlocksNextEvolution": false,
       "internalOrExternalVisibilityIrrelevantToEvolutionLoop": true,
-      "nextCycleTrigger": "ROBLOX_F9_VERIFIED_AND_CANONICAL_SERVER_PUBLISH_DISPATCHED",
+      "nextCycleTrigger": "F9_VERIFIED_AND_RELEASED_PUBLISH_DISPATCHED_OR_DEVELOPMENT_PUBLICATION_SKIPPED",
       "publishFailureAction": "KEEP_EVOLUTION_RUNNING_AND_ROUTE_PUBLICATION_FAILURE_TO_EXISTING_CAUSAL_REPAIR_RETRY",
       "publicationFailureMustRemainRetryTracked": true,
       "publicationRetryMode": "AUTOMATIC_UNBOUNDED_CAUSAL_REDISPATCH",
@@ -7203,9 +7204,9 @@
           "nextCycleRoute": "vibe2-fanin-refill"
         }
       },
-      "canonicalServerPublicationEligibility": "EXACT_F9_VERIFIED_ACTIVE_ROBLOX_GAME_EXCEPT_OWNER_EXCLUDED_GAME_IDS",
-      "developmentGamePublicationAllowed": true,
-      "developmentGameNextCycleRequiresPublicationDispatch": true,
+      "canonicalServerPublicationEligibility": "VERIFIED_LOBBY_INTERNAL_RELEASE_OR_EXPLICIT_OWNER_CONFIRMED_RELEASE",
+      "developmentGamePublicationAllowed": false,
+      "developmentGameNextCycleRequiresPublicationDispatch": false,
       "privateValidationArtifactForF0ToF9Allowed": true,
       "validationArtifactMayReplaceCanonicalServer": false,
       "homepageClassificationAndPublicationMustUseSameGate": true

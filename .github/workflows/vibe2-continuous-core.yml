@@ -1023,6 +1023,121 @@ jobs:
           fi
           echo "VIBE2_WORKER_MODEL_CACHE_REASON=$reason"
 
+      - name: Restore shared Ollama runtime cache
+        id: worker_ollama_cache
+        if: steps.model_need.outputs.required == 'true'
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.ollama/models
+            ~/.cache/vibe2-ollama/bin/ollama
+            ~/.cache/vibe2-ollama/lib/ollama
+          key: vibe2-ollama-v5-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
+
+      - name: Mark worker Ollama preparation start
+        id: worker_ollama_prepare_start
+        if: steps.model_need.outputs.required == 'true'
+        shell: bash
+        run: echo "ms=$(date +%s%3N)" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare cached Ollama runtime
+        id: worker_ollama_runtime
+        if: steps.model_need.outputs.required == 'true'
+        uses: ./vibe2-contract/.github/actions/prepare-ollama
+        with:
+          model: ${{ env.VIBE2_LOCAL_MODEL }}
+          pull-model: 'true'
+
+      - name: Measure worker Ollama preparation
+        id: worker_ollama_metrics
+        if: steps.model_need.outputs.required == 'true'
+        env:
+          START_MS: ${{ steps.worker_ollama_prepare_start.outputs.ms }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          finished="$(date +%s%3N)"
+          start="${START_MS:-$finished}"
+          echo "duration_ms=$((finished-start))" >> "$GITHUB_OUTPUT"
+          echo 'VIBE2_OLLAMA_RUNTIME_SOURCE=SHARED_PREPARE_OLLAMA'
+
+      - name: Run isolated learning practice
+        id: practice
+        if: steps.order.outputs.run == 'true' && (steps.order.outputs.route == 'analysis-only' || steps.order.outputs.route == 'learning-web-artifact')
+        continue-on-error: true
+        env:
+          SAFE_TASK: ${{ matrix.safeTask }}
+          VARIANT: ${{ matrix.variant }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          command -v ollama >/dev/null
+          nohup ollama serve > "/tmp/ollama-practice-${SAFE_TASK}-${VARIANT}.log" 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
+            if [ "$i" = 30 ]; then cat "/tmp/ollama-practice-${SAFE_TASK}-${VARIANT}.log" || true; exit 1; fi
+            sleep 2
+          done
+          if ! ollama list | awk 'NR>1 {print $1}' | grep -Fqx "$VIBE2_LOCAL_MODEL"; then
+            ollama pull "$VIBE2_LOCAL_MODEL"
+          fi
+          practice_route="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));process.stdout.write(String(o.executionRoute||''))")"
+          if node -e "const o=require('/tmp/vibe2-work-order.json');process.exit(o.selectedTask?.robloxPracticeDrill?0:1)"; then
+            luau_dir="$RUNNER_TEMP/vibe2-luau-practice"
+            mkdir -p "$luau_dir"
+            curl -fsSL --retry 3 --retry-delay 2 -o "$luau_dir/luau.zip" https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
+            unzip -oq "$luau_dir/luau.zip" -d "$luau_dir"
+            chmod +x "$luau_dir/luau"
+            export VIBE2_LUAU_BINARY="$luau_dir/luau"
+            node --test "$contract_root/qa/vibe2-learning-practice-worker.test.mjs"
+          fi
+          if [ "$practice_route" = 'learning-web-artifact' ]; then
+            practice_deps="$RUNNER_TEMP/vibe2-practice-browser"
+            npm install --prefix "$practice_deps" --no-audit --no-fund playwright@1.58.2
+            node "$practice_deps/node_modules/playwright/cli.js" install --with-deps chromium
+            export VIBE2_PLAYWRIGHT_MODULE="$practice_deps/node_modules/playwright/index.mjs"
+          fi
+          if node -e "const o=require('/tmp/vibe2-work-order.json');process.exit(o.selectedTask?.codingPracticeDrill==='unity-lifecycle'?0:1)"; then
+            docker pull mcr.microsoft.com/dotnet/sdk:8.0
+          fi
+          artifact_dir="/tmp/vibe2-practice-web-${SAFE_TASK}-${VARIANT}"
+          node "$contract_root/tools/vibe2-learning-practice-worker.mjs" \
+            --order=/tmp/vibe2-work-order.json \
+            --output=/tmp/vibe2-learning-practice-result.json \
+            --artifact-dir="$artifact_dir"
+          test -f /tmp/vibe2-learning-practice-result.json
+          if [ "$practice_route" = 'learning-web-artifact' ]; then
+            test -s "$artifact_dir/index.html"
+          fi
+          node "$contract_root/tools/vibe2-practice-distillation.mjs" \
+            --result=/tmp/vibe2-learning-practice-result.json \
+            --order=/tmp/vibe2-work-order.json \
+            --experience=.vibe2/experience.json \
+            --patterns=.vibe2/code-pattern-library.json \
+            --knowledge=.vibe2/game-study-knowledge.json \
+            --output=/tmp/vibe2-practice-distillation.json
+          test -f /tmp/vibe2-practice-distillation.json
+          echo 'VIBE2_ANALYSIS_WORKER=PRACTICE_ONLY'
+          echo 'VIBE2_PRACTICE_PRODUCTION_PASS=NO'
+          echo 'VIBE2_PRACTICE_CANONICAL_CANDIDATE_PERSISTED=NO'
+          if [ "$practice_route" = 'learning-web-artifact' ]; then
+            echo 'VIBE2_PRACTICE_EPHEMERAL_WEB_ARTIFACT=YES'
+          else
+            echo 'VIBE2_PRACTICE_EPHEMERAL_WEB_ARTIFACT=NO'
+          fi
+
+      - name: Upload ephemeral Web practice artifact
+        if: always() && steps.order.outputs.route == 'learning-web-artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-practice-web-${{ matrix.safeTask }}-${{ matrix.variant }}
+          path: |
+            /tmp/vibe2-practice-web-${{ matrix.safeTask }}-${{ matrix.variant }}/index.html
+            /tmp/vibe2-learning-practice-result.json
+          if-no-files-found: warn
+          retention-days: 1
+
       - name: Build task-local exploration handoff
         id: local_exploration
         if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker'
@@ -1129,122 +1244,7 @@ jobs:
           echo "reason=$reason" >> "$GITHUB_OUTPUT"
           echo "VIBE2_SHARED_WORK_LOCK_ACQUIRED=${acquired:-NO}"
           echo "VIBE2_SHARED_WORK_LOCK_REASON=${reason:-UNKNOWN}"
-          echo 'VIBE2_WORK_LOCK_ACQUIRE_TIMING=POST_READ_ONLY_EXPLORATION_PRE_MODEL_RESTORE_PRE_SOURCE_WRITE'
-
-      - name: Restore shared Ollama runtime cache
-        id: worker_ollama_cache
-        if: steps.model_need.outputs.required == 'true' && (steps.order.outputs.route != 'text-source-worker' || steps.work_lock.outputs.acquired == 'true')
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            ~/.ollama/models
-            ~/.cache/vibe2-ollama/bin/ollama
-            ~/.cache/vibe2-ollama/lib/ollama
-          key: vibe2-ollama-v5-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
-
-      - name: Mark worker Ollama preparation start
-        id: worker_ollama_prepare_start
-        if: steps.model_need.outputs.required == 'true' && (steps.order.outputs.route != 'text-source-worker' || steps.work_lock.outputs.acquired == 'true')
-        shell: bash
-        run: echo "ms=$(date +%s%3N)" >> "$GITHUB_OUTPUT"
-
-      - name: Prepare cached Ollama runtime
-        id: worker_ollama_runtime
-        if: steps.model_need.outputs.required == 'true' && (steps.order.outputs.route != 'text-source-worker' || steps.work_lock.outputs.acquired == 'true')
-        uses: ./vibe2-contract/.github/actions/prepare-ollama
-        with:
-          model: ${{ env.VIBE2_LOCAL_MODEL }}
-          pull-model: 'true'
-
-      - name: Measure worker Ollama preparation
-        id: worker_ollama_metrics
-        if: steps.model_need.outputs.required == 'true' && (steps.order.outputs.route != 'text-source-worker' || steps.work_lock.outputs.acquired == 'true')
-        env:
-          START_MS: ${{ steps.worker_ollama_prepare_start.outputs.ms }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          finished="$(date +%s%3N)"
-          start="${START_MS:-$finished}"
-          echo "duration_ms=$((finished-start))" >> "$GITHUB_OUTPUT"
-          echo 'VIBE2_OLLAMA_RUNTIME_SOURCE=SHARED_PREPARE_OLLAMA'
-
-      - name: Run isolated learning practice
-        id: practice
-        if: steps.order.outputs.run == 'true' && (steps.order.outputs.route == 'analysis-only' || steps.order.outputs.route == 'learning-web-artifact')
-        continue-on-error: true
-        env:
-          SAFE_TASK: ${{ matrix.safeTask }}
-          VARIANT: ${{ matrix.variant }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
-          command -v ollama >/dev/null
-          nohup ollama serve > "/tmp/ollama-practice-${SAFE_TASK}-${VARIANT}.log" 2>&1 &
-          for i in $(seq 1 30); do
-            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
-            if [ "$i" = 30 ]; then cat "/tmp/ollama-practice-${SAFE_TASK}-${VARIANT}.log" || true; exit 1; fi
-            sleep 2
-          done
-          if ! ollama list | awk 'NR>1 {print $1}' | grep -Fqx "$VIBE2_LOCAL_MODEL"; then
-            ollama pull "$VIBE2_LOCAL_MODEL"
-          fi
-          practice_route="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));process.stdout.write(String(o.executionRoute||''))")"
-          if node -e "const o=require('/tmp/vibe2-work-order.json');process.exit(o.selectedTask?.robloxPracticeDrill?0:1)"; then
-            luau_dir="$RUNNER_TEMP/vibe2-luau-practice"
-            mkdir -p "$luau_dir"
-            curl -fsSL --retry 3 --retry-delay 2 -o "$luau_dir/luau.zip" https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
-            unzip -oq "$luau_dir/luau.zip" -d "$luau_dir"
-            chmod +x "$luau_dir/luau"
-            export VIBE2_LUAU_BINARY="$luau_dir/luau"
-            node --test "$contract_root/qa/vibe2-learning-practice-worker.test.mjs"
-          fi
-          if [ "$practice_route" = 'learning-web-artifact' ]; then
-            practice_deps="$RUNNER_TEMP/vibe2-practice-browser"
-            npm install --prefix "$practice_deps" --no-audit --no-fund playwright@1.58.2
-            node "$practice_deps/node_modules/playwright/cli.js" install --with-deps chromium
-            export VIBE2_PLAYWRIGHT_MODULE="$practice_deps/node_modules/playwright/index.mjs"
-          fi
-          if node -e "const o=require('/tmp/vibe2-work-order.json');process.exit(o.selectedTask?.codingPracticeDrill==='unity-lifecycle'?0:1)"; then
-            docker pull mcr.microsoft.com/dotnet/sdk:8.0
-          fi
-          artifact_dir="/tmp/vibe2-practice-web-${SAFE_TASK}-${VARIANT}"
-          node "$contract_root/tools/vibe2-learning-practice-worker.mjs" \
-            --order=/tmp/vibe2-work-order.json \
-            --output=/tmp/vibe2-learning-practice-result.json \
-            --artifact-dir="$artifact_dir"
-          test -f /tmp/vibe2-learning-practice-result.json
-          if [ "$practice_route" = 'learning-web-artifact' ]; then
-            test -s "$artifact_dir/index.html"
-          fi
-          node "$contract_root/tools/vibe2-practice-distillation.mjs" \
-            --result=/tmp/vibe2-learning-practice-result.json \
-            --order=/tmp/vibe2-work-order.json \
-            --experience=.vibe2/experience.json \
-            --patterns=.vibe2/code-pattern-library.json \
-            --knowledge=.vibe2/game-study-knowledge.json \
-            --output=/tmp/vibe2-practice-distillation.json
-          test -f /tmp/vibe2-practice-distillation.json
-          echo 'VIBE2_ANALYSIS_WORKER=PRACTICE_ONLY'
-          echo 'VIBE2_PRACTICE_PRODUCTION_PASS=NO'
-          echo 'VIBE2_PRACTICE_CANONICAL_CANDIDATE_PERSISTED=NO'
-          if [ "$practice_route" = 'learning-web-artifact' ]; then
-            echo 'VIBE2_PRACTICE_EPHEMERAL_WEB_ARTIFACT=YES'
-          else
-            echo 'VIBE2_PRACTICE_EPHEMERAL_WEB_ARTIFACT=NO'
-          fi
-
-      - name: Upload ephemeral Web practice artifact
-        if: always() && steps.order.outputs.route == 'learning-web-artifact'
-        uses: actions/upload-artifact@v4
-        with:
-          name: vibe2-practice-web-${{ matrix.safeTask }}-${{ matrix.variant }}
-          path: |
-            /tmp/vibe2-practice-web-${{ matrix.safeTask }}-${{ matrix.variant }}/index.html
-            /tmp/vibe2-learning-practice-result.json
-          if-no-files-found: warn
-          retention-days: 1
+          echo 'VIBE2_WORK_LOCK_ACQUIRE_TIMING=POST_MODEL_PREP_READ_ONLY_EXPLORATION_PRE_SOURCE_WRITE'
 
       - name: Generate isolated candidate from pinned main contract
         id: candidate
