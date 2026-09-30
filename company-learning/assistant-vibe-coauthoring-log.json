@@ -684,7 +684,10 @@
         "example-failure-job:110082490817:amusement-tycoon",
         "failure:UNITY_GAME_DEVELOPMENT_PRINCIPLE_UNMAPPED:touch-look-produces-immediate-spatial-feedback",
         "secondary-failure:path-unity-games/amusement-tycoon-exists-on-disk-but-not-in-index",
-        "real-current-playbook:7-external-black-box-records:13-portable-game-development-principles"
+        "real-current-playbook:7-external-black-box-records:13-portable-game-development-principles",
+        "pull-request:4212",
+        "pr-required-actions:4-of-4-pass",
+        "merged-main:5445b8440d6eb01b4375cd4c3b53798ddd7177e0"
       ],
       "reusablePatterns": [
         "EVERY_ADMITTED_GAME_DEVELOPMENT_PRINCIPLE_NEEDS_A_CONCRETE_TARGET_BEHAVIOR_MAPPING",
@@ -701,12 +704,12 @@
         "local Unity plus central coordinator responsibility regression: 74/74 PASS",
         "exact failing touch-look principle executable regression: PASS",
         "current verified playbook with 7 records and 13 portable principles generator reproduction: PASS",
-        "post-change GitHub Actions: PENDING",
-        "Unity APK/runtime actual execution on repaired source: NOT_RUN",
+        "PR #4212 required GitHub Actions: 4/4 PASS",
+        "post-merge main source generation and Unity APK/runtime actual execution: NOT_YET_OBSERVED",
         "Roblox Studio actual execution: NOT_RUN; no F9 or release completion claim"
       ],
       "learningState": "TRACE_ONLY",
-      "liveState": "LOCAL_COMMON_12_GAME_SOURCE_GENERATOR_REPAIR_VERIFIED; PR_AND_POST_CHANGE_ACTIONS_PENDING; NEXT_ROTATION_POST_CHANGE_UNITY_SOURCE_GENERATION_THEN_LINE_DEFENSE_ROBLOX_STUDIO_SCENARIO"
+      "liveState": "MERGED_AT_5445B844; PR_REQUIRED_ACTIONS_PASS; POST_MERGE_UNITY_SOURCE_GENERATION_NOT_YET_OBSERVED; NEXT_ROTATION_POST_CHANGE_UNITY_SOURCE_GENERATION_THEN_LINE_DEFENSE_ROBLOX_STUDIO_SCENARIO"
     }
   ]
 }
