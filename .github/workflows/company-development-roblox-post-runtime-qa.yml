@@ -1610,6 +1610,7 @@ jobs:
   studio-local-plan:
     # Slow owner PC: actual Studio tests require an explicit opt-in.
     # A skipped job is never runtime or multiplayer PASS.
+    # 계획과 실행은 요청 시점의 동일한 제어 리비전을 사용한다.
     if: ${{ inputs.run_studio == true && inputs.retry_open_cloud_only != true }}
     # Resolve work on the available Studio host instead of waiting for hosted control capacity.
     name: plan exact local Studio MCP playtests for earliest eligible artifacts
@@ -1625,7 +1626,7 @@ jobs:
       - name: Checkout current canonical implementation
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.control_revision || 'main' }}
+          ref: ${{ inputs.control_revision || github.sha }}
           path: main
           fetch-depth: 1
           fetch-tags: false
@@ -1726,7 +1727,7 @@ jobs:
       - name: Checkout central policy and helper
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.control_revision || 'main' }}
+          ref: ${{ inputs.control_revision || github.sha }}
           path: main
           fetch-depth: 1
           fetch-tags: false
