@@ -2040,39 +2040,67 @@ jobs:
           $launchFamily = @{}
           $launchFamily[[string]$placeLaunchProcess.Id] = @{ processId = $placeLaunchProcess.Id; createdAt = $placeLaunchProcess.StartTime.ToUniversalTime().ToString('o'); parentProcessId = $PID }
           "VIBE2_STUDIO_OWNED_PROCESS_RECORDS=$(@($launchFamily.Values) | ConvertTo-Json -Compress)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          $launchHandles = @{}
+          $null = $placeLaunchProcess.Handle
+          $launchHandles[[string]$placeLaunchProcess.Id] = $placeLaunchProcess
           $familyChangedAt = [DateTime]::UtcNow
           $studioProcess = $null
           $ownedStudioProcesses = @()
-          for ($processProbe = 1; $processProbe -le 180; $processProbe++) {
-            $observed = @(Get-CimInstance Win32_Process -Filter "Name LIKE 'Roblox%'" -ErrorAction Stop)
-            $familyChanged = $false
-            for ($generation = 0; $generation -lt 8; $generation++) {
-              foreach ($record in $observed) {
-                $key = [string]$record.ProcessId
-                if ($launchFamily.ContainsKey($key)) { continue }
-                $parentKey = [string]$record.ParentProcessId
-                if (-not $launchFamily.ContainsKey($parentKey)) { continue }
-                $parent = $observed | Where-Object { [string]$_.ProcessId -eq $parentKey } | Select-Object -First 1
-                if (-not $parent) { continue }
-                $parentCreated = [DateTime]::Parse($launchFamily[$parentKey].createdAt).ToUniversalTime()
-                if ([math]::Abs(($parent.CreationDate.ToUniversalTime() - $parentCreated).TotalMilliseconds) -gt 10) { continue }
-                if ($record.CreationDate.ToUniversalTime() -lt $parentCreated) { continue }
-                $launchFamily[$key] = @{ processId = [int]$record.ProcessId; createdAt = $record.CreationDate.ToUniversalTime().ToString('o'); parentProcessId = [int]$record.ParentProcessId }
-                $familyChanged = $true
+          try {
+            for ($processProbe = 1; $processProbe -le 180; $processProbe++) {
+              $observed = @(Get-CimInstance Win32_Process -Filter "Name LIKE 'Roblox%'" -ErrorAction Stop)
+              $familyChanged = $false
+              for ($generation = 0; $generation -lt 8; $generation++) {
+                foreach ($record in $observed) {
+                  $key = [string]$record.ProcessId
+                  if ($launchFamily.ContainsKey($key)) { continue }
+                  $parentKey = [string]$record.ParentProcessId
+                  if (-not $launchFamily.ContainsKey($parentKey)) { continue }
+                  $parent = $observed | Where-Object { [string]$_.ProcessId -eq $parentKey } | Select-Object -First 1
+                  $parentCreated = [DateTime]::Parse($launchFamily[$parentKey].createdAt).ToUniversalTime()
+                  if ($record.CreationDate.ToUniversalTime() -lt $parentCreated) { continue }
+                  if ($parent) {
+                    if ([math]::Abs(($parent.CreationDate.ToUniversalTime() - $parentCreated).TotalMilliseconds) -gt 10) { continue }
+                  } else {
+                    # Retain a verified process handle across exit; never infer ownership from a dead PID alone.
+                    $parentHandle = $launchHandles[$parentKey]
+                    if (-not $parentHandle) { continue }
+                    try {
+                      if ([math]::Abs(($parentHandle.StartTime.ToUniversalTime() - $parentCreated).TotalMilliseconds) -gt 10) { continue }
+                      if (-not $parentHandle.HasExited) { continue }
+                      if ($record.CreationDate.ToUniversalTime() -gt $parentHandle.ExitTime.ToUniversalTime()) { continue }
+                    } catch { continue }
+                    Write-Host "ROBLOX_STUDIO_PARENT_EXIT_HANDOFF=$parentKey`:$key"
+                  }
+                  $launchFamily[$key] = @{ processId = [int]$record.ProcessId; createdAt = $record.CreationDate.ToUniversalTime().ToString('o'); parentProcessId = [int]$record.ParentProcessId }
+                  $childHandle = $null
+                  try {
+                    $childHandle = Get-Process -Id ([int]$record.ProcessId) -ErrorAction Stop
+                    $null = $childHandle.Handle
+                    if ([math]::Abs(($childHandle.StartTime.ToUniversalTime() - $record.CreationDate.ToUniversalTime()).TotalMilliseconds) -le 10) {
+                      $launchHandles[$key] = $childHandle
+                      $childHandle = $null
+                    }
+                  } catch { Write-Host "ROBLOX_STUDIO_PROCESS_HANDLE_UNAVAILABLE=$key" }
+                  finally { if ($childHandle) { $childHandle.Dispose() } }
+                  $familyChanged = $true
+                }
               }
+              if ($familyChanged) {
+                $familyChangedAt = [DateTime]::UtcNow
+                $familyJson = @($launchFamily.Values) | ConvertTo-Json -Compress
+                "VIBE2_STUDIO_OWNED_PROCESS_RECORDS=$familyJson" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+                Write-Host "ROBLOX_STUDIO_OWNED_PROCESS_CHAIN=$familyJson"
+              }
+              $ownedStudioProcesses = @($observed | Where-Object { $_.Name -eq 'RobloxStudioBeta.exe' -and $launchFamily.ContainsKey([string]$_.ProcessId) -and [math]::Abs(($_.CreationDate.ToUniversalTime() - [DateTime]::Parse($launchFamily[[string]$_.ProcessId].createdAt).ToUniversalTime()).TotalMilliseconds) -le 10 })
+              if ($ownedStudioProcesses.Count -eq 1 -and ([DateTime]::UtcNow - $familyChangedAt).TotalSeconds -ge 15) {
+                $candidate = Get-Process -Id ([int]$ownedStudioProcesses[0].ProcessId) -ErrorAction SilentlyContinue
+                if ($candidate -and $candidate.MainWindowHandle -ne 0) { $studioProcess = $candidate; break }
+              }
+              Start-Sleep -Seconds 1
             }
-            if ($familyChanged) {
-              $familyChangedAt = [DateTime]::UtcNow
-              $familyJson = @($launchFamily.Values) | ConvertTo-Json -Compress
-              "VIBE2_STUDIO_OWNED_PROCESS_RECORDS=$familyJson" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-              Write-Host "ROBLOX_STUDIO_OWNED_PROCESS_CHAIN=$familyJson"
-            }
-            $ownedStudioProcesses = @($observed | Where-Object { $_.Name -eq 'RobloxStudioBeta.exe' -and $launchFamily.ContainsKey([string]$_.ProcessId) -and [math]::Abs(($_.CreationDate.ToUniversalTime() - [DateTime]::Parse($launchFamily[[string]$_.ProcessId].createdAt).ToUniversalTime()).TotalMilliseconds) -le 10 })
-            if ($ownedStudioProcesses.Count -eq 1 -and ([DateTime]::UtcNow - $familyChangedAt).TotalSeconds -ge 15) {
-              $candidate = Get-Process -Id ([int]$ownedStudioProcesses[0].ProcessId) -ErrorAction SilentlyContinue
-              if ($candidate -and $candidate.MainWindowHandle -ne 0) { $studioProcess = $candidate; break }
-            }
-            Start-Sleep -Seconds 1
+          } finally {
+            foreach ($ownedHandle in $launchHandles.Values) { $ownedHandle.Dispose() }
           }
           if ($ownedStudioProcesses.Count -ne 1 -or -not $studioProcess) { throw 'Expected one provably owned exact Place process after launch; no duplicate launch allowed' }
           Write-Host "ROBLOX_STUDIO_MCP_PRE_MCP_PROCESS_READY_COUNT=$($ownedStudioProcesses.Count)"
