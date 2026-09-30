@@ -33,12 +33,9 @@ local roomVisibility="PUBLIC"
 local roomStartRequested=false
 local roomActionLast={}
 local roomJoinedAt={}
-local lobbyQueuePlayers={}
-local lobbyQueueCountdown=nil
-local lobbyQueueToken=0
-local lobbyQueuePart=nil
-local lobbyQueueLabel=nil
+local lobbyQueueBays={}
 local LOBBY_QUEUE_SECONDS=10
+local LOBBY_QUEUE_MAX=8
 
 local state="WAITING"
 local timeLeft=0
@@ -660,12 +657,16 @@ local function makePhysicalLobby()
   local strip=arenaPart(f,"LobbyGuide",Vector3.new(24,.14,1.2),Vector3.new(0,.58,z),Color3.fromRGB(83,190,213),Enum.Material.Neon);strip.CanCollide=false
  end
 
- -- 기본 방 입장: 칸 안에 서 있으면 자동으로 대기열에 들어가고 10초 뒤 같은 방으로 이동한다.
- lobbyQueuePart=arenaPart(f,"AutoRoomQueue",Vector3.new(34,.5,22),Vector3.new(0,.55,207),Color3.fromRGB(48,112,96),Enum.Material.Neon)
- lobbyQueuePart.CanCollide=true
- lobbyQueuePart:SetAttribute("AutoRoomQueue",true)
- lobbyQueueLabel=lobbyLabel(lobbyQueuePart,"방 입장 · 안으로 들어와",Color3.fromRGB(188,255,224))
- local queueEdge=arenaPart(f,"AutoRoomQueueFrame",Vector3.new(38,.18,26),Vector3.new(0,.68,207),Color3.fromRGB(115,227,190),Enum.Material.Neon);queueEdge.CanCollide=false;queueEdge.Transparency=.5
+ -- 여러 개의 매칭 칸. 각 칸은 실제 유저만 모아서 독립적으로 10초 카운트한다.
+ lobbyQueueBays={}
+ for i,x in ipairs({-48,-16,16,48})do
+  local part=arenaPart(f,"MatchBay"..i,Vector3.new(24,.5,20),Vector3.new(x,.55,207),Color3.fromRGB(48,112,96),Enum.Material.Neon)
+  part.CanCollide=true;part:SetAttribute("MatchBayIndex",i)
+  local label=lobbyLabel(part,"매칭 "..i.." · 들어와",Color3.fromRGB(188,255,224))
+  local frame=arenaPart(f,"MatchBayFrame"..i,Vector3.new(27,.18,23),Vector3.new(x,.68,207),Color3.fromRGB(115,227,190),Enum.Material.Neon)
+  frame.CanCollide=false;frame.Transparency=.55
+  lobbyQueueBays[i]={part=part,label=label,players={},countdown=nil,token=0,index=i}
+ end
 
  -- 코드/친구 참가 같은 보조 기능만 벽쪽 작은 단말로 남긴다.
  local _,friendJoinPrompt=lobbyTerminal(f,"QuickFriendRoom",Vector3.new(50,3,260),"친구 방 찾기","참가",Color3.fromRGB(70,68,116),function(p)
@@ -681,21 +682,17 @@ local function makePhysicalLobby()
  end)
 
  local board=arenaPart(f,"RoomStatusBoard",Vector3.new(26,6,1),Vector3.new(0,6.7,282.8),Color3.fromRGB(30,35,45),Enum.Material.Metal)
- lobbyLabel(board,"방 입장 칸에서 매칭",Color3.fromRGB(169,223,242))
+ lobbyLabel(board,"매칭 칸에 들어가면 자동 시작",Color3.fromRGB(169,223,242))
 
  refreshPhysicalLobby=function()
   local browser=not roomServer
   friendJoinPrompt.Enabled=browser;codePrompt.Enabled=browser
   leavePrompt.Enabled=roomServer and state=="WAITING"
-  if lobbyQueuePart then lobbyQueuePart.CanTouch=browser end
-  local players=Players:GetPlayers()
+  for _,bay in ipairs(lobbyQueueBays)do if bay.part then bay.part.CanTouch=browser end end
   local bg=board:FindFirstChild("LobbyLabel");local label=bg and bg:FindFirstChildOfClass("TextLabel")
   if label then
-   if roomServer then
-    label.Text=string.format("매치 대기 · %d명",#players)
-   else
-    label.Text="초록색 방 입장 칸으로 들어가"
-   end
+   if roomServer then label.Text=string.format("매치 대기 · %d명",#Players:GetPlayers())
+   else label.Text="매칭 칸에 들어가면 자동으로 시작"end
   end
  end
  refreshPhysicalLobby()
@@ -704,66 +701,73 @@ local function makePhysicalLobby()
  return f
 end
 
-local function playerInsideLobbyQueue(p)
- if not lobbyQueuePart or not lobbyQueuePart.Parent then return false end
+local function playerInsideMatchBay(p,bay)
+ if not bay or not bay.part or not bay.part.Parent then return false end
  local r=root(p);if not r then return false end
- local localPos=lobbyQueuePart.CFrame:PointToObjectSpace(r.Position)
- local half=lobbyQueuePart.Size*.5
+ local localPos=bay.part.CFrame:PointToObjectSpace(r.Position)
+ local half=bay.part.Size*.5
  return math.abs(localPos.X)<=half.X and math.abs(localPos.Z)<=half.Z and localPos.Y>=-5 and localPos.Y<=8
 end
 
-local function updateLobbyQueueLabel()
- if not lobbyQueueLabel then return end
+local function updateMatchBayLabel(bay)
+ if not bay or not bay.label then return end
  local count=0
- for p in pairs(lobbyQueuePlayers)do if p.Parent==Players then count+=1 end end
+ for p in pairs(bay.players)do if p.Parent==Players then count+=1 end end
  if count==0 then
-  lobbyQueueLabel.Text="방 입장 · 안으로 들어와"
- elseif lobbyQueueCountdown then
-  lobbyQueueLabel.Text=string.format("매칭 %d명 · %d초",count,math.max(0,math.ceil(lobbyQueueCountdown)))
+  bay.label.Text="매칭 "..bay.index.." · 들어와"
+ elseif bay.countdown then
+  bay.label.Text=string.format("%d명 · %d초",count,math.max(0,math.ceil(bay.countdown)))
  else
-  lobbyQueueLabel.Text=string.format("매칭 대기 %d명",count)
+  bay.label.Text=string.format("%d명 대기",count)
  end
 end
 
-local function beginLobbyQueueCountdown()
- if lobbyQueueCountdown or roomServer then return end
- lobbyQueueToken+=1
- local token=lobbyQueueToken
- lobbyQueueCountdown=LOBBY_QUEUE_SECONDS
+local function beginMatchBayCountdown(bay)
+ if not bay or bay.countdown or roomServer then return end
+ bay.token+=1
+ local token=bay.token
+ bay.countdown=LOBBY_QUEUE_SECONDS
  task.spawn(function()
-  while token==lobbyQueueToken and lobbyQueueCountdown and lobbyQueueCountdown>0 do
-   updateLobbyQueueLabel()
+  while token==bay.token and bay.countdown and bay.countdown>0 do
+   updateMatchBayLabel(bay)
    task.wait(1)
-   if token~=lobbyQueueToken then return end
-   lobbyQueueCountdown-=1
+   if token~=bay.token then return end
+   bay.countdown-=1
   end
-  if token~=lobbyQueueToken then return end
+  if token~=bay.token then return end
   local group={}
-  for p in pairs(lobbyQueuePlayers)do if p.Parent==Players and playerInsideLobbyQueue(p)then table.insert(group,p)end end
+  for p in pairs(bay.players)do
+   if p.Parent==Players and playerInsideMatchBay(p,bay)then table.insert(group,p)end
+  end
   table.sort(group,function(a,b)return a.UserId<b.UserId end)
-  if #group==0 then lobbyQueueCountdown=nil;lobbyQueuePlayers={};updateLobbyQueueLabel();return end
-  while #group>roomMaxPlayers()do table.remove(group)end
-  lobbyQueueCountdown=nil
-  lobbyQueuePlayers={}
-  updateLobbyQueueLabel()
+  if #group==0 then bay.countdown=nil;bay.players={};updateMatchBayLabel(bay);return end
+  while #group>LOBBY_QUEUE_MAX do table.remove(group)end
+  bay.countdown=nil;bay.players={};updateMatchBayLabel(bay)
   createQueuedReservedRoom(group)
  end)
 end
 
 task.spawn(function()
  while true do
-  if not roomServer and state~="RUNNING"and lobbyQueuePart and lobbyQueuePart.Parent then
-   local changed=false
-   for _,p in ipairs(Players:GetPlayers())do
-    local inside=playerInsideLobbyQueue(p)
-    if inside and not lobbyQueuePlayers[p]then lobbyQueuePlayers[p]=true;changed=true
-    elseif not inside and lobbyQueuePlayers[p]then lobbyQueuePlayers[p]=nil;changed=true end
+  if not roomServer and state~="RUNNING"and #lobbyQueueBays>0 then
+   local assigned={}
+   for _,bay in ipairs(lobbyQueueBays)do
+    local changed=false
+    for _,p in ipairs(Players:GetPlayers())do
+     local inside=not assigned[p] and playerInsideMatchBay(p,bay)
+     if inside then
+      assigned[p]=true
+      if not bay.players[p]then bay.players[p]=true;changed=true end
+     elseif bay.players[p]then
+      bay.players[p]=nil;changed=true
+     end
+    end
+    for p in pairs(bay.players)do if not p.Parent then bay.players[p]=nil;changed=true end end
+    local count=0;for _ in pairs(bay.players)do count+=1 end
+    if count>0 and not bay.countdown then beginMatchBayCountdown(bay)
+    elseif count==0 and bay.countdown then bay.token+=1;bay.countdown=nil;changed=true end
+    if changed then updateMatchBayLabel(bay)end
    end
-   for p in pairs(lobbyQueuePlayers)do if not p.Parent then lobbyQueuePlayers[p]=nil;changed=true end end
-   local count=0;for _ in pairs(lobbyQueuePlayers)do count+=1 end
-   if count>0 and not lobbyQueueCountdown then beginLobbyQueueCountdown()
-   elseif count==0 and lobbyQueueCountdown then lobbyQueueToken+=1;lobbyQueueCountdown=nil;changed=true end
-   if changed then updateLobbyQueueLabel()end
   end
   task.wait(.2)
  end
@@ -2342,7 +2346,7 @@ Players.PlayerRemoving:Connect(function(p)
  local leavingWasHost=roomServer and p.UserId==roomHostUserId
  local rr=root(p)
  local leavingPos=rr and rr.Position or(leavingRole=="MONSTER"and monsterSpawn or survivorSpawns[1])
- save(p);lobbyQueuePlayers[p]=nil;cooldown[p]=nil;dashCooldown[p]=nil;infectAttackCooldown[p]=nil;energyStationReady[p]=nil;ghostSeenThisRound[p]=nil;roomActionLast[p]=nil;roomJoinedAt[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil;purifyCooldown[p]=nil
+ save(p);for _,bay in ipairs(lobbyQueueBays)do bay.players[p]=nil end;cooldown[p]=nil;dashCooldown[p]=nil;infectAttackCooldown[p]=nil;energyStationReady[p]=nil;ghostSeenThisRound[p]=nil;roomActionLast[p]=nil;roomJoinedAt[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil;purifyCooldown[p]=nil
  task.defer(function()
   if state=="RUNNING"and arena and arena.Parent and(leavingRole=="MONSTER"or leavingRole=="SURVIVOR")then
    bot(leavingRole,leavingPos)
