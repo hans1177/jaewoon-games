@@ -8,6 +8,10 @@ on:
       ROBLOX_OPEN_CLOUD_API_KEY:
         required: false
     inputs:
+      run_studio:
+        description: Explicit opt-in to resource-intensive actual Studio playtests.
+        type: boolean
+        default: false
       retry_open_cloud_only:
         type: boolean
         default: false
@@ -40,6 +44,10 @@ on:
       - 'roblox-games/.company-runtime-trigger'
   workflow_dispatch:
     inputs:
+      run_studio:
+        description: Run actual Studio playtests (opens Studio; default is static checks only).
+        type: boolean
+        default: false
       game_id:
         description: Optional exact gameId. Empty means all pending Roblox runtime candidates.
         required: false
@@ -1598,7 +1606,9 @@ jobs:
           echo 'ROBLOX_OPEN_CLOUD_BLOCKING_PROBE_FAILURE=NO'
 
   studio-local-plan:
-    if: ${{ inputs.retry_open_cloud_only != true }}
+    # Slow owner PC: actual Studio tests require an explicit opt-in.
+    # A skipped job is never runtime or multiplayer PASS.
+    if: ${{ inputs.run_studio == true && inputs.retry_open_cloud_only != true }}
     # Resolve work on the available Studio host instead of waiting for hosted control capacity.
     name: plan exact local Studio MCP playtests for earliest eligible artifacts
     concurrency:

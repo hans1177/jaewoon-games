@@ -241,7 +241,7 @@ test('exact transient Open Cloud retry does not consume the Studio MCP lane',()=
   const studioAutoPlayAt=workflow.indexOf('\n  studio-mcp-auto-play:',studioPlanAt);
   assert.ok(studioPlanAt>0&&studioAutoPlayAt>studioPlanAt);
   const studioPlan=workflow.slice(studioPlanAt,studioAutoPlayAt);
-  assert.match(studioPlan,/if: \$\{\{ inputs\.retry_open_cloud_only != true \}\}/);
+  assert.match(studioPlan,/if: \$\{\{ inputs\.run_studio == true && inputs\.retry_open_cloud_only != true \}\}/);
 });
 
 
