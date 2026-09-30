@@ -6,8 +6,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { planAssetApplication } from '../assets/asset-selector.js';
-import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe} from '../assets/vibe-motion-director.js';
-import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES} from '../assets/vibe-studio-asset-universe.js';
+import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile} from '../assets/vibe-motion-director.js';
+import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation} from '../assets/vibe-environment-director.js';
 
 const clean=value=>String(value??'').trim();
@@ -501,6 +501,30 @@ export function buildVibeAssetProductionPlan({
   const presetInput=presetCatalog||readJson(path.join(repoRoot,'assets','prototype-asset-presets.json'),{version:0,presets:[]});
   const request=clean(task.goal||task.request||task.gameId||'game asset production');
   const duelCombatRequested=/(?:duel|dueling|결투|대전|격투|맨손|무기.?전투|combat|fight|fighter|카타나|katana|검술|쌍검|대검|창술|boxing|복싱|kickboxing|킥복싱|muay|무에타이|karate|가라테|taekwondo|태권도|mma|레슬링|wrestling|judo|유도|jiu.?jitsu|주짓수)/i.test(request);
+  const survivalWildlifeRequested=/(?:gravewood|그레이브우드|생존|survival|야생동물|동물|wildlife|animal|곰|bear|멧돼지|boar|사슴|deer|elk|엘크|moose|무스|bison|들소|wolf|늑대|fox|여우|rabbit|토끼|raccoon|너구리|squirrel|다람쥐|beaver|비버|badger|오소리|goat|염소|turkey|칠면조|crow|까마귀)/i.test(request);
+  const requestedWildlifeSpecies=/멧돼지|boar/i.test(request)?'BOAR'
+    :/사슴|deer/i.test(request)?'DEER'
+    :/엘크|elk/i.test(request)?'ELK'
+    :/무스|moose/i.test(request)?'MOOSE'
+    :/들소|bison/i.test(request)?'BISON'
+    :/늑대|wolf/i.test(request)?'WOLF'
+    :/코요테|coyote/i.test(request)?'COYOTE'
+    :/여우|fox/i.test(request)?'FOX'
+    :/토끼|rabbit/i.test(request)?'RABBIT'
+    :/너구리|raccoon/i.test(request)?'RACCOON'
+    :/다람쥐|squirrel/i.test(request)?'SQUIRREL'
+    :/비버|beaver/i.test(request)?'BEAVER'
+    :/오소리|badger/i.test(request)?'BADGER'
+    :/산양|mountain.?goat|염소|goat/i.test(request)?'MOUNTAIN_GOAT'
+    :/칠면조|turkey/i.test(request)?'TURKEY'
+    :/까마귀|crow/i.test(request)?'CROW'
+    :/곰|bear/i.test(request)?'BEAR'
+    :null;
+  const requestedSurvivalTool=/도끼|axe/i.test(request)?'AXE'
+    :/곡괭이|pickaxe/i.test(request)?'PICKAXE'
+    :/망치|hammer/i.test(request)?'HAMMER'
+    :/창|spear/i.test(request)?'SPEAR'
+    :'NONE';
   const requestedWeaponFamily=/카타나|katana/i.test(request)?'KATANA'
     :/쌍검|dual.?blade/i.test(request)?'DUAL_BLADE'
     :/대검|great.?sword|two.?hand/i.test(request)?'TWO_HAND_SWORD'
@@ -773,6 +797,29 @@ export function buildVibeAssetProductionPlan({
       baseArchetypes:freezeList(companyLibrary?.characterPreparation?.baseArchetypes||[]),
       modularParts:freezeList(companyLibrary?.characterPreparation?.modularParts||[]),
       weaponPacks:freezeList(unique([...(companyLibrary?.actionMotionLibrary?.weaponPacks||[]),...(companyRegistry?.duelCombatMotion?.weaponFamilies||[])])),
+      survivalWildlife:freeze({
+        enabled:companyRegistry?.survivalWildlifePack?.status==='PREPARED_SEMANTIC_LIBRARY',
+        requested:survivalWildlifeRequested,
+        requestedSpecies:requestedWildlifeSpecies,
+        species:freezeList(companyRegistry?.survivalWildlifePack?.species||[]),
+        playerSkins:freezeList(companyRegistry?.survivalWildlifePack?.playerSkins||[]),
+        visualQuality:freeze(companyRegistry?.survivalWildlifePack?.visualQuality||{}),
+        motionQuality:freezeList(companyRegistry?.survivalWildlifePack?.motionQuality||[]),
+        reference:freeze(companyRegistry?.survivalWildlifePack?.reference||{}),
+        playerMotionPreview:survivalWildlifeRequested?freeze(createSurvivalPlayerMotionProfile({
+          platform:resolvedTarget==='roblox'?'ROBLOX':'UNITY',
+          tool:requestedSurvivalTool
+        })):null,
+        wildlifeVisualPreview:survivalWildlifeRequested?freeze(createSurvivalWildlifeAssetProfile({
+          species:requestedWildlifeSpecies||'BEAR',
+          platform:resolvedTarget==='roblox'?'ROBLOX':'UNITY'
+        })):null,
+        wildlifeMotionPreview:survivalWildlifeRequested?freeze(createSurvivalWildlifeMotionProfile({
+          species:requestedWildlifeSpecies||'BEAR',
+          platform:resolvedTarget==='roblox'?'ROBLOX':'UNITY'
+        })):null,
+        runtimeVerificationRequired:companyRegistry?.survivalWildlifePack?.productionVerified!==true
+      }),
       duelCombatMotion:freeze({
         enabled:companyRegistry?.duelCombatMotion?.status==='PREPARED_SEMANTIC_LIBRARY',
         requested:duelCombatRequested,
@@ -1174,6 +1221,8 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.enabled?'회사 공용 그래픽 라이브러리는 24시간 idle 준비를 계속하지만 연습 산출물은 바로 production asset이 아니다. 실제 게임의 Unity/Roblox 네이티브 적용과 runtime 시각·모션·모바일 QA를 통과한 것만 검증 공용 자산으로 승격한다.':'',
     plan.companyGraphicsLibrary?.enabled?`캐릭터 플랫폼 프로필=${plan.companyGraphicsLibrary.platformProfile}; Unity/Roblox 바이너리·리그는 직접 공유하지 않고 공통 실루엣/체형/장비 의미만 공유한 뒤 네이티브 재authoring한다.`:'',
     plan.companyGraphicsLibrary?.enabled?`액션 모션 최소 커버리지=${JSON.stringify(plan.companyGraphicsLibrary.motionMinimums)}; weaponPacks=${plan.companyGraphicsLibrary.weaponPacks.join('|')}`:'',
+    plan.companyGraphicsLibrary?.survivalWildlife?.enabled?`생존 야생동물 자산팩: species=${plan.companyGraphicsLibrary.survivalWildlife.species.join('|')}; skins=${plan.companyGraphicsLibrary.survivalWildlife.playerSkins.join('|')}; 목표=${plan.companyGraphicsLibrary.survivalWildlife.visualQuality.style||'POLISHED_STYLIZED_LOW_POLY'}`:'',
+    plan.companyGraphicsLibrary?.survivalWildlife?.requested?`이번 작업은 생존형 캐릭터/야생동물 그래픽·스킨·모션 자산을 실제 게임에 적용한다. 대상 동물=${plan.companyGraphicsLibrary.survivalWildlife.requestedSpecies||'ALL_FOREST_WILDLIFE'}. 플레이어는 가속/제동/회전/점프착지/도구그립까지 관절 모션을 사용하고, 동물은 종별 보행·달리기·먹이행동·경계·공격·피격·사망을 별도 리그 모션으로 만든다. 최종 동물은 primitive-only 금지, 종 실루엣/해부학/스킨 재질 차이를 확보하고 Roblox에서는 Animator/AnimationController+Motor6D/Bone, 가능하면 IKControl로 발 접촉을 보정한다. 레퍼런스의 품질·가독성은 맞추되 제3자 원본 메시/텍스처/스킨/애니메이션을 추출하거나 복제하지 않는다.`:'',
     plan.companyGraphicsLibrary?.duelCombatMotion?.enabled?`결투형 전투 모션=${plan.companyGraphicsLibrary.duelCombatMotion.target}; 무기=${plan.companyGraphicsLibrary.duelCombatMotion.weaponFamilies.join('|')}; 맨손 격투=${plan.companyGraphicsLibrary.duelCombatMotion.unarmedStyles.join('|')}; 역할=${plan.companyGraphicsLibrary.duelCombatMotion.requiredRoles.join('|')}`:'',
     plan.companyGraphicsLibrary?.duelCombatMotion?.requested?`이번 작업은 결투형 전투 모션을 실제 게임에 적용한다. 우선 무기=${plan.companyGraphicsLibrary.duelCombatMotion.requestedWeaponFamily||'AUTO'}; 맨손 스타일=${plan.companyGraphicsLibrary.duelCombatMotion.requestedMartialStyle||'AUTO'}; 역할=${plan.companyGraphicsLibrary.duelCombatMotion.requestedCombatRole||'LIGHT_COMBO'}. 기존 전투 책임 함수와 리그/Animator를 직접 사용하고, 대기→보법→약공 콤보→강공→대시/공중 공격→가드/패링/카운터→피격/넉다운/기상→피니셔 흐름을 연결한다. authoringPreview의 normalized phases·weaponMechanics·martialMechanics를 실제 관절 키포즈/블렌드/접촉 정렬에 사용한다. 원본 제3자 클립을 추출·재배포하지 말고 동일 역할의 독자 키포즈/타이밍으로 네이티브 구현하며 실제 런타임 검증 전 VERIFIED로 표시하지 않는다.`:'',
     plan.companyGraphicsLibrary?.reusableProductionTarget?.motion?.verifiedReusableClipTarget?`공용 모션 runtime-verified 목표=${plan.companyGraphicsLibrary.reusableProductionTarget.motion.verifiedReusableClipTarget}; base author/acquire=${plan.companyGraphicsLibrary.reusableProductionTarget.motion.baseAuthoringOrAcquisitionTarget}; safe derived=${plan.companyGraphicsLibrary.reusableProductionTarget.motion.safeDerivedVariationTarget}; reuse=${(plan.companyGraphicsLibrary.reusableProductionTarget.motion.crossGenreReuse||[]).join('|')}. PREPARED_SEMANTIC은 목표 달성으로 세지 않는다.`:'',
