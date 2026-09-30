@@ -240,25 +240,7 @@
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false,
-    "studioQualityFailure": {
-      "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
-      "artifactIdentity": "sha256:ef3b9fd4105437aa70929582c887654c9e204f201005186d573172538e99dd8a",
-      "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 36637382560,
-      "testedAt": "2026-09-29T22:17:12.844Z",
-      "repairSurfaces": [
-        "GAME_START"
-      ],
-      "qualityFailureDetails": [
-        {
-          "id": "adaptive-start-playability",
-          "repairSurface": "GAME_START",
-          "priority": "CRITICAL",
-          "hint": "Studio started with a dead/unplayable character. Restore healthy spawn/respawn/start state before normal gameplay QA.",
-          "observed": "{\"characterPresent\":true,\"humanoidPresent\":true,\"health\":1.005523920059204,\"maxHealth\":100,\"humanoidState\":\"Enum.HumanoidStateType.Dead\"}"
-        }
-      ]
-    }
+    "studioQualityFailure": null
   },
   "qualityGapMap": [
     {
