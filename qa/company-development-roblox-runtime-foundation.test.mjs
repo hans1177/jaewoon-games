@@ -414,7 +414,10 @@ test('F9 limits canonical publish to released games and immediately reopens the 
  assert.match(workflow,/target-engine-qa-ref:roblox-f9-/);
  assert.match(workflow,/vibe2-queue-control\.mjs" pass/);
  assert.match(workflow,/event_type:"vibe2-fanin-refill"/);
- assert.match(workflow,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=\$settled_count/);
+ assert.match(workflow,/reason:"roblox-f9-verified-next-cycle"/);
+ assert.match(workflow,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=1:verified=/);
+ assert.match(workflow,/ROBLOX_NEXT_EVOLUTION_CYCLE_TRIGGER=F9_VERIFIED/);
+ assert.doesNotMatch(workflow.slice(fanInAt),/if \[ "\$settled_count" -gt 0 \]; then/);
  assert.doesNotMatch(workflow.slice(fanInAt),/robloxInternalReleaseReady!==true/);
 });
 
