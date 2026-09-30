@@ -2329,7 +2329,7 @@ local function clearBots()
  bots={};monsterBot=nil
 end
 local function botVisualPart(rootPart,name,size,offset,color,material,shape)
- local x=Instance.new("Part");x.Name=name;x.Anchored=true;x.CanCollide=false;x.CanTouch=false;x.Size=size;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic
+ local x=Instance.new("Part");x.Name=name;x.Anchored=true;x.CanCollide=false;x.CanTouch=false;x.CanQuery=false;x.Size=size;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic
  if shape then x.Shape=shape end;x.CFrame=rootPart.CFrame*CFrame.new(offset);x.Parent=rootPart.Parent
  return x
 end
@@ -2611,7 +2611,7 @@ local function clearRoleVisual(p)
  local old=c:FindFirstChild("RoleHighlight");if old then old:Destroy()end
 end
 local function costumePart(character,base,name,size,offset,color,material,shape)
- local x=Instance.new("Part");x.Name=name;x:SetAttribute("MonsterCostume",true);x.Size=size;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic;x.CanCollide=false;x.CanTouch=false;x.Massless=true
+ local x=Instance.new("Part");x.Name=name;x:SetAttribute("MonsterCostume",true);x.Size=size;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic;x.CanCollide=false;x.CanTouch=false;x.CanQuery=false;x.Massless=true
  if shape then x.Shape=shape end;x.CFrame=base.CFrame*CFrame.new(offset);x.Parent=character
  local w=Instance.new("WeldConstraint");w.Part0=base;w.Part1=x;w.Parent=x;return x
 end
