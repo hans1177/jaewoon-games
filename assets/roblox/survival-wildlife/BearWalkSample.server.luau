@@ -3,9 +3,11 @@
 -- 사용: Roblox Studio 서버 스크립트에서 이 폴더를 ReplicatedStorage 또는 ServerScriptService 하위에 둔다.
 
 local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Factory = require(script.Parent.WildlifeFactory)
-local Animator = require(script.Parent.WildlifeAnimator)
+local wildlifeFolder = ReplicatedStorage:WaitForChild("SurvivalWildlife")
+local Factory = require(wildlifeFolder:WaitForChild("WildlifeFactory"))
+local Animator = require(wildlifeFolder:WaitForChild("WildlifeAnimator"))
 
 local old = workspace:FindFirstChild("WildlifeMotionSample")
 if old then
