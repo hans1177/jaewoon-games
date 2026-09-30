@@ -2859,17 +2859,46 @@ local function chooseCelebration(winner)
  if #pool==0 then return{Id="DEFAULT",Name="팀 세레머니",Emote="cheer",ComicEmote="laugh",Caption="다음 판 준비"}end
  return pool[math.random(1,#pool)]
 end
-local function playCelebrationEmote(player,celebration,comic)
+local function playCelebrationEmote(player,celebration)
  local h=hum(player);if not h then return end
- local emote=comic and celebration.ComicEmote or celebration.Emote
+ local emote=celebration.Emote
  if typeof(emote)~="string"or emote==""then return end
  pcall(function()h:PlayEmote(emote)end)
 end
-local function animateCelebratingBots(winner,duration)
- local bases={}
+
+local function stageResultCeremony(winner,celebrationPlayers)
+ local cameraPos=Vector3.new(0,7.2,32)
+ local focusPos=Vector3.new(0,3.8,12)
+ local slots={-7.5,-2.5,2.5,7.5}
+ local entries={}
+ for _,player in ipairs(celebrationPlayers)do table.insert(entries,{player=player})end
  for _,b in ipairs(bots)do
-  local wins=winner=="DRAW"or b.role==winner
-  if wins and b.part and b.part.Parent then bases[b]={cf=b.part.CFrame,phase=math.random()*math.pi*2}end
+  if winner=="DRAW"or b.role==winner then table.insert(entries,{bot=b})end
+ end
+ while #entries>4 do table.remove(entries)end
+ workspace:SetAttribute("CelebrationCameraPosition",cameraPos)
+ workspace:SetAttribute("CelebrationFocusPosition",focusPos)
+ workspace:SetAttribute("CelebrationStagedCount",#entries)
+
+ for i,row in ipairs(entries)do
+  local x=slots[i]or 0
+  local pos=Vector3.new(x,3,12)
+  if row.player then
+   teleport(row.player,pos,cameraPos)
+   speed(row.player,0)
+  elseif row.bot and row.bot.part and row.bot.part.Parent then
+   local grounded=Vector3.new(pos.X,row.bot.part.Position.Y,pos.Z)
+   setBotCFrame(row.bot,CFrame.lookAt(grounded,Vector3.new(cameraPos.X,grounded.Y,cameraPos.Z)))
+  end
+ end
+ return entries
+end
+
+local function animateCelebratingBots(winner,duration,entries)
+ local bases={}
+ for _,row in ipairs(entries or{})do
+  local b=row.bot
+  if b and b.part and b.part.Parent then bases[b]={cf=b.part.CFrame,phase=math.random()*math.pi*2}end
  end
  if next(bases)==nil then return end
  task.spawn(function()
@@ -2878,12 +2907,13 @@ local function animateCelebratingBots(winner,duration)
    local t=os.clock()-started
    for b,row in pairs(bases)do
     if b.part and b.part.Parent then
-     local hop=math.abs(math.sin(t*5+row.phase))*.45
-     local yaw=math.rad(math.sin(t*4+row.phase)*12)
-     setBotCFrame(b,row.cf*CFrame.new(0,hop,0)*CFrame.Angles(0,yaw,0))
+     local sway=math.rad(math.sin(t*2.2+row.phase)*(winner=="MONSTER"and 5 or 2))
+     local lean=winner=="MONSTER"and math.rad(-7)or math.rad(-2)
+     local lift=winner=="SURVIVOR"and math.max(0,math.sin(t*2+row.phase))*.08 or 0
+     setBotCFrame(b,row.cf*CFrame.new(0,lift,0)*CFrame.Angles(lean,0,sway))
     end
    end
-   task.wait(.06)
+   task.wait(.08)
   end
  end)
 end
@@ -2896,14 +2926,20 @@ local function endRound(winner)
   local participated=player:GetAttribute("RoundParticipant")==true
   if participated and(winner=="DRAW"or team==winner)then table.insert(celebrationPlayers,player)end
  end
- local comicPlayer=#celebrationPlayers>0 and celebrationPlayers[math.random(1,#celebrationPlayers)]or nil
  workspace:SetAttribute("CelebrationWinnerTeam",winner)
  workspace:SetAttribute("CelebrationName",celebration.Name or"팀 세레머니")
  workspace:SetAttribute("CelebrationCaption",celebration.Caption or"")
  local aiWinners=0
  for _,b in ipairs(bots)do if winner=="DRAW"or b.role==winner then aiWinners+=1 end end
  workspace:SetAttribute("CelebrationAIWinners",aiWinners)
- animateCelebratingBots(winner,math.max(1,(C.ResultSeconds or 6)-1))
+ local stagedEntries=stageResultCeremony(winner,celebrationPlayers)
+ animateCelebratingBots(winner,math.max(1,(C.ResultSeconds or 6)-1),stagedEntries)
+ remote:FireAllClients("RESULT_CEREMONY_STAGE",{
+  Winner=winner,Name=celebration.Name or"결과",Caption=celebration.Caption or"",
+  CameraPosition=workspace:GetAttribute("CelebrationCameraPosition"),
+  FocusPosition=workspace:GetAttribute("CelebrationFocusPosition"),
+  StagedCount=#stagedEntries,
+ })
  for _,p in ipairs(Players:GetPlayers())do
   local role=p:GetAttribute("Role");local team=p:GetAttribute("RoundTeam")or role
   local participated=p:GetAttribute("RoundParticipant")==true
@@ -2921,8 +2957,8 @@ local function endRound(winner)
   setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
   p:SetAttribute("CelebrationName",celebration.Name or"팀 세레머니");p:SetAttribute("CelebrationCaption",celebration.Caption or"")
   local celebrate=participated and(winner=="DRAW"or win)
-  p:SetAttribute("CelebrationWinner",winner~="DRAW"and win);p:SetAttribute("CelebrationComic",celebrate and comicPlayer==p)
-  if celebrate then playCelebrationEmote(p,celebration,comicPlayer==p)end
+  p:SetAttribute("CelebrationWinner",winner~="DRAW"and win);p:SetAttribute("CelebrationComic",false)
+  if celebrate then playCelebrationEmote(p,celebration)end
   p:SetAttribute("RoundParticipant",false)
   if m then p:SetAttribute("MonsterXP",(p:GetAttribute("MonsterXP")or 0)+(win and 40 or 18));p:SetAttribute("RoundsSinceMonster",0)
   elseif role=="SURVIVOR"then p:SetAttribute("RoundsSinceMonster",(p:GetAttribute("RoundsSinceMonster")or 0)+1)end
@@ -2934,7 +2970,7 @@ local function endRound(winner)
   p:SetAttribute("CelebrationWinner",false);p:SetAttribute("CelebrationComic",false);speed(p,16)
  end
  clearBots();monster=nil;monsterBot=nil;workspace:SetAttribute("HumanCount",0);workspace:SetAttribute("MonsterCount",0)
- workspace:SetAttribute("CelebrationWinnerTeam","");workspace:SetAttribute("CelebrationName","");workspace:SetAttribute("CelebrationCaption","");workspace:SetAttribute("CelebrationAIWinners",0)
+ workspace:SetAttribute("CelebrationWinnerTeam","");workspace:SetAttribute("CelebrationName","");workspace:SetAttribute("CelebrationCaption","");workspace:SetAttribute("CelebrationAIWinners",0);workspace:SetAttribute("CelebrationStagedCount",0)
  local players=Players:GetPlayers();table.sort(players,function(a,b)return a.UserId<b.UserId end)
  for i,p in ipairs(players)do
   p:SetAttribute("RoundState",roomServer and "ROOM_WAITING"or"ROOM_BROWSER")
