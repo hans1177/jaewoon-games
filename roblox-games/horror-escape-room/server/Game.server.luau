@@ -679,6 +679,94 @@ local function lobbyBuilding(parent,name,pos,size,baseColor,windowColor)
  return body
 end
 
+-- 로비 직원은 전투와 무관한 R15 연출 전용 NPC다.
+local function lobbyStaff(parent,staffId,pos,lookAt,labelText,promptText,onTriggered)
+ local description=Instance.new("HumanoidDescription")
+ description.HeightScale=staffId=="BELLBOY"and .94 or 1
+ description.WidthScale=staffId=="MAID"and .92 or .96
+ description.DepthScale=.96
+ description.HeadScale=1
+ local ok,model=pcall(function()return Players:CreateHumanoidModelFromDescription(description,Enum.HumanoidRigType.R15)end)
+ if not ok or not model then return nil end
+ model.Name="LobbyStaff_"..staffId
+ model.Parent=parent
+ local rootPart=model:FindFirstChild("HumanoidRootPart")
+ local humanoid=model:FindFirstChildOfClass("Humanoid")
+ if not rootPart or not humanoid then model:Destroy();return nil end
+ humanoid.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.None
+ humanoid.NameDisplayDistance=0
+ humanoid.HealthDisplayDistance=0
+ humanoid.AutoRotate=false
+
+ local skin=staffId=="MAID"and Color3.fromRGB(213,202,192)or Color3.fromRGB(207,192,176)
+ local top=staffId=="BELLBOY"and Color3.fromRGB(92,26,31)or Color3.fromRGB(31,29,31)
+ local bottom=Color3.fromRGB(25,24,26)
+ for _,d in ipairs(model:GetDescendants())do
+  if d:IsA("BasePart")then
+   d.Anchored=d==rootPart
+   d.CanCollide=false;d.CanTouch=false;d.CanQuery=false;d.Massless=d~=rootPart
+   if d~=rootPart then
+    if d.Name=="Head"or d.Name:find("Hand")or d.Name:find("LowerArm")then d.Color=skin
+    elseif d.Name:find("UpperTorso")or d.Name:find("LowerTorso")or d.Name:find("UpperArm")then d.Color=top
+    elseif d.Name:find("Leg")or d.Name:find("Foot")then d.Color=bottom end
+    d.Material=Enum.Material.SmoothPlastic
+   end
+  elseif d:IsA("Script")or d:IsA("LocalScript")then d:Destroy()end
+ end
+ rootPart.Transparency=1
+
+ local function attach(name,body,size,offset,color,material)
+  if not body then return nil end
+  local part=Instance.new("Part");part.Name=name;part.Size=size;part.Color=color;part.Material=material or Enum.Material.SmoothPlastic
+  part.CanCollide=false;part.CanTouch=false;part.CanQuery=false;part.Massless=true
+  part.CFrame=body.CFrame*CFrame.new(offset);part.Parent=model
+  local weld=Instance.new("WeldConstraint");weld.Part0=body;weld.Part1=part;weld.Parent=part
+  return part
+ end
+ local head=model:FindFirstChild("Head")
+ local torso=model:FindFirstChild("UpperTorso")
+ if staffId=="CLERK"then
+  attach("ClerkHair",head,Vector3.new(2.05,.55,1.9),Vector3.new(0,.82,.06),Color3.fromRGB(29,25,24),Enum.Material.Fabric)
+  attach("ClerkVest",torso,Vector3.new(1.5,1.9,.16),Vector3.new(0,.05,-.59),Color3.fromRGB(75,24,30),Enum.Material.Fabric)
+  attach("ClerkNamePlate",torso,Vector3.new(.72,.28,.09),Vector3.new(.35,.3,-.7),Color3.fromRGB(182,143,73),Enum.Material.Metal)
+  attach("ClerkSmile",head,Vector3.new(.9,.09,.08),Vector3.new(0,-.3,-1.02),Color3.fromRGB(39,24,25),Enum.Material.SmoothPlastic)
+ elseif staffId=="BELLBOY"then
+  attach("BellboyHat",head,Vector3.new(2.15,.65,2),Vector3.new(0,.95,.04),Color3.fromRGB(83,20,26),Enum.Material.Fabric)
+  attach("BellboyBand",head,Vector3.new(2.18,.18,2.03),Vector3.new(0,.72,.04),Color3.fromRGB(173,132,62),Enum.Material.Metal)
+  attach("BellboyButtons",torso,Vector3.new(.18,1.8,.1),Vector3.new(0,.05,-.7),Color3.fromRGB(188,148,73),Enum.Material.Metal)
+ else
+  attach("MaidCap",head,Vector3.new(1.9,.42,1.55),Vector3.new(0,.9,.12),Color3.fromRGB(205,199,188),Enum.Material.Fabric)
+  attach("MaidApron",torso,Vector3.new(1.45,1.85,.12),Vector3.new(0,-.05,-.66),Color3.fromRGB(205,199,188),Enum.Material.Fabric)
+  attach("MaidFaceShade",head,Vector3.new(1.45,.65,.08),Vector3.new(0,.15,-1.04),Color3.fromRGB(53,48,48),Enum.Material.SmoothPlastic)
+ end
+
+ local labelPart=attach("StaffLabelAnchor",head,Vector3.new(.1,.1,.1),Vector3.new(0,1.65,0),Color3.new(1,1,1),Enum.Material.SmoothPlastic)
+ if labelPart then
+  labelPart.Transparency=1
+  local gui=Instance.new("BillboardGui");gui.Name="StaffLabel";gui.Size=UDim2.fromOffset(170,34);gui.AlwaysOnTop=false;gui.MaxDistance=28;gui.Parent=labelPart
+  local label=Instance.new("TextLabel");label.Size=UDim2.fromScale(1,1);label.BackgroundColor3=Color3.fromRGB(13,12,13);label.BackgroundTransparency=.22;label.TextColor3=Color3.fromRGB(224,207,173);label.TextSize=12;label.Text=labelText;label.Font=Enum.Font.GothamBold;label.Parent=gui
+ end
+
+ local prompt=Instance.new("ProximityPrompt")
+ prompt.Name="LobbyStaffPrompt";prompt.ObjectText=labelText;prompt.ActionText=promptText;prompt.HoldDuration=.2;prompt.MaxActivationDistance=9;prompt.RequiresLineOfSight=false;prompt.Parent=rootPart
+ prompt.Triggered:Connect(onTriggered)
+
+ local animator=humanoid:FindFirstChildOfClass("Animator")or Instance.new("Animator");animator.Parent=humanoid
+ local anim=Instance.new("Animation");anim.AnimationId="rbxassetid://507766666"
+ local loaded,track=pcall(function()return animator:LoadAnimation(anim)end);anim:Destroy()
+ if loaded and track then track.Looped=true;track.Priority=Enum.AnimationPriority.Idle;track:Play(.2,1,staffId=="MAID"and .82 or .94)end
+
+ model:PivotTo(CFrame.lookAt(pos,Vector3.new(lookAt.X,pos.Y,lookAt.Z)))
+ return model
+end
+
+local function lobbyHauntTrigger(parent,name,pos,kind,radius,text)
+ local trigger=arenaPart(parent,"LobbyHaunt_"..name,Vector3.new(1,1,1),pos,Color3.new(1,1,1),Enum.Material.SmoothPlastic)
+ trigger.Transparency=1;trigger.CanCollide=false;trigger.CanTouch=false;trigger.CanQuery=false
+ trigger:SetAttribute("LobbyHauntKind",kind);trigger:SetAttribute("LobbyHauntRadius",radius or 12);trigger:SetAttribute("LobbyHauntText",text or"")
+ return trigger
+end
+
 -- 월드 로비: 오래된 심야 호텔 + 승강기형 자동 매칭.
 local function makePhysicalLobby()
  local old=workspace:FindFirstChild("MidnightLobby");if old then old:Destroy()end
@@ -719,9 +807,55 @@ local function makePhysicalLobby()
   arenaPart(f,"ReceptionPanel",Vector3.new(6.4,3.3,.35),Vector3.new(x,3.1,289.6),Color3.fromRGB(49,35,31),Enum.Material.WoodPlanks).CanCollide=false
  end
  local sign=arenaPart(f,"HotelSign",Vector3.new(37,5.4,.6),Vector3.new(0,14.5,306.15),Color3.fromRGB(30,26,25),Enum.Material.WoodPlanks)
- lobbySurfaceText(sign,"심야 대탈출",Color3.fromRGB(223,194,137),27)
+ lobbySurfaceText(sign,"NOCTURNE HOTEL · 1927\n심야 대탈출",Color3.fromRGB(223,194,137),23)
  local bell=arenaPart(f,"DeskBell",Vector3.new(1.4,.7,1.4),Vector3.new(-9,6.85,290.6),Color3.fromRGB(184,143,72),Enum.Material.Metal);bell.Shape=Enum.PartType.Ball;bell.CanCollide=false
  arenaPart(f,"GuestBook",Vector3.new(5.8,.35,3.9),Vector3.new(7,6.82,290.5),Color3.fromRGB(188,176,148),Enum.Material.Fabric).CanCollide=false
+
+ -- 로비 자체가 게임 튜토리얼 역할을 한다. 안내판도 호텔의 미친 투숙 규정으로 보인다.
+ local rules=arenaPart(f,"MadHotelRules",Vector3.new(31,13,.7),Vector3.new(-49,9.3,306.05),Color3.fromRGB(28,24,23),Enum.Material.WoodPlanks)
+ lobbySurfaceText(rules,"심야 투숙 규정\n1. 승강기 안에 서면 5초 뒤 체크인\n2. 인간은 정화 · 괴물은 감염\n3. 상대 진영이 0명이면 승리\n4. 같은 직원이 두 번 보이면 뛰지 마시오",Color3.fromRGB(219,202,169),15)
+ local warningBoard=arenaPart(f,"MadWarning",Vector3.new(31,7,.65),Vector3.new(49,12.2,306.05),Color3.fromRGB(35,28,28),Enum.Material.WoodPlanks)
+ lobbySurfaceText(warningBoard,"직원을 믿지 마십시오\n웃고 있는 직원은 더더욱.",Color3.fromRGB(167,48,53),19)
+ for i=1,5 do
+  local scratch=arenaPart(f,"WallScratch",Vector3.new(.16,3.4,.12),Vector3.new(38+i*2.3,5.7+(i%2)*.5,305.65),Color3.fromRGB(91,25,29),Enum.Material.Neon)
+  scratch.Orientation=Vector3.new(0,0,-18+(i*7));scratch.CanCollide=false
+ end
+
+ local clerkLines={
+  "어서 오세요. 체크아웃은… 살아 계실 때만 가능합니다.",
+  "승강기 안에 서 계시면 객실이 알아서 손님을 골라 드립니다.",
+  "직원이 두 명으로 보이면 눈을 감지 마세요. 하나는 제가 아닙니다.",
+ }
+ local clerkIndex=0
+ lobbyStaff(f,"CLERK",Vector3.new(0,3.25,299),Vector3.new(0,3.25,270),"야간 프런트 · 미스터 블랙","문의",function(player)
+  clerkIndex=clerkIndex%#clerkLines+1
+  player:SetAttribute("LobbyStoryEvent","프런트 직원|"..clerkLines[clerkIndex].."|"..tostring(math.floor(os.clock()*1000)))
+ end)
+ local bellboyLines={
+  "짐은 제가 들겠습니다. 손님까지 들 필요는 없겠죠?",
+  "13층 버튼은 누르지 마세요. 없는 층이라서 더 빨리 옵니다.",
+  "승강기가 웃으면 다른 칸을 타십시오. 네, 승강기가요.",
+ }
+ local bellboyIndex=0
+ lobbyStaff(f,"BELLBOY",Vector3.new(-69,3.15,284),Vector3.new(-45,3.15,260),"벨보이 · 토비","말 걸기",function(player)
+  bellboyIndex=bellboyIndex%#bellboyLines+1
+  player:SetAttribute("LobbyStoryEvent","벨보이 토비|"..bellboyLines[bellboyIndex].."|"..tostring(math.floor(os.clock()*1000)))
+ end)
+ local maidLines={
+  "방금 복도에 떨어진 손님은 청소했습니다. 아주 깨끗하게요.",
+  "피 얼룩은 지워지는데 비명 얼룩은 잘 안 지워져요.",
+  "저를 세 번째 보셨다면 프런트에는 비밀로 해 주세요.",
+ }
+ local maidIndex=0
+ lobbyStaff(f,"MAID",Vector3.new(76,3.15,231),Vector3.new(48,3.15,250),"야간 메이드 · 메리","질문",function(player)
+  maidIndex=maidIndex%#maidLines+1
+  player:SetAttribute("LobbyStoryEvent","메이드 메리|"..maidLines[maidIndex].."|"..tostring(math.floor(os.clock()*1000)))
+ end)
+
+ local bellPrompt=Instance.new("ProximityPrompt");bellPrompt.Name="DeskBellPrompt";bellPrompt.ObjectText="프런트 벨";bellPrompt.ActionText="누르기";bellPrompt.HoldDuration=.1;bellPrompt.MaxActivationDistance=7;bellPrompt.RequiresLineOfSight=false;bellPrompt.Parent=bell
+ bellPrompt.Triggered:Connect(function(player)
+  player:SetAttribute("LobbyStoryEvent","호텔 벨|딩— 예약 확인 완료. 손님 수: 살아 있는 만큼.|"..tostring(math.floor(os.clock()*1000)))
+ end)
 
  -- 열쇠함과 오래된 객실 번호. 단순 벽이 아니라 호텔처럼 보이게 한다.
  for row=0,2 do
@@ -757,11 +891,38 @@ local function makePhysicalLobby()
    face.CanCollide=false
   end
  end
+ -- 벽지 얼룩과 누수 흔적. 깨끗한 호텔 인상을 의도적으로 깨뜨린다.
+ for _,spec in ipairs({
+  {-84,7,238,8,5},{-84,12,265,7,9},{84,6,250,6,7},{84,13,286,8,5},
+  {-31,18,306,9,3},{26,17,306,7,4}
+ })do
+  local stain=arenaPart(f,"WallStain",Vector3.new(spec[4],spec[5],.12),Vector3.new(spec[1],spec[2],spec[3]),Color3.fromRGB(40,32,29),Enum.Material.SmoothPlastic)
+  stain.Transparency=.38;stain.CanCollide=false
+ end
+ for _,spec in ipairs({{-82,4,225},{82,4,225},{-55,2,234},{56,2,278}})do
+  local debris=arenaPart(f,"BrokenTrim",Vector3.new(7,.45,.7),Vector3.new(spec[1],spec[2],spec[3]),Color3.fromRGB(65,47,36),Enum.Material.WoodPlanks)
+  debris.Orientation=Vector3.new((spec[1]%9)-4,(spec[3]%13)-6,12);debris.CanCollide=false
+ end
+
  for _,spec in ipairs({{-75,286},{-69,289},{72,287},{77,291}})do
   arenaPart(f,"OldLuggage",Vector3.new(4.4,4.8,3),Vector3.new(spec[1],2.8,spec[2]),Color3.fromRGB(71,47,36),Enum.Material.WoodPlanks)
   local strap=arenaPart(f,"LuggageStrap",Vector3.new(.45,4.9,3.1),Vector3.new(spec[1],2.8,spec[2]),Color3.fromRGB(35,29,27),Enum.Material.Fabric)
   strap.CanCollide=false
  end
+
+ -- 천장 보와 샹들리에. 밝은 점이 승강기 방향으로 점점 이어진다.
+ -- 코믹한 공포 포인트: 짐가방 손, 액자 시선, 13층, 복도 메이드 잔상.
+ local hand=arenaPart(f,"LuggageHand",Vector3.new(1.2,.45,2.4),Vector3.new(-72.5,5.15,285.5),Color3.fromRGB(171,155,145),Enum.Material.SmoothPlastic)
+ hand.Orientation=Vector3.new(0,0,-18);hand.CanCollide=false
+ for finger=1,4 do
+  local fp=arenaPart(f,"LuggageFinger",Vector3.new(.26,.26,1.4),Vector3.new(-73.35+finger*.42,5.55,285.2),Color3.fromRGB(171,155,145),Enum.Material.SmoothPlastic)
+  fp.Orientation=Vector3.new(-15,0,-8+finger*4);fp.CanCollide=false
+ end
+ lobbyHauntTrigger(f,"Portrait",Vector3.new(-70,9,255),"PORTRAIT_EYES",13,"초상화 속 손님이 눈을 돌렸다.")
+ lobbyHauntTrigger(f,"Bellboy",Vector3.new(-66,3,278),"LUGGAGE_HAND",12,"벨보이: 짐은 제가 들겠습니다. 손님도요.")
+ lobbyHauntTrigger(f,"Maid",Vector3.new(74,3,235),"MAID_CORRIDOR",13,"메이드: 청소할 손님이 한 명 늘었네요.")
+ lobbyHauntTrigger(f,"Elevator13",Vector3.new(0,3,225),"ELEVATOR_13",12,"띵— 13층은 존재하지 않습니다.")
+ lobbyHauntTrigger(f,"Clerk",Vector3.new(2,3,286),"CLERK_SMILE",11,"프런트 직원의 미소가 너무 길다.")
 
  -- 천장 보와 샹들리에. 밝은 점이 승강기 방향으로 점점 이어진다.
  for _,z in ipairs({226,246,266,286})do
@@ -884,8 +1045,8 @@ local function makePhysicalLobby()
  refreshPhysicalLobby()
  workspace:SetAttribute("PhysicalLobbyReady",true)
  workspace:SetAttribute("WorldLobbyMode",true)
- workspace:SetAttribute("LobbyArtPass","MIDNIGHT_HOTEL_LOBBY_V3")
- workspace:SetAttribute("LobbyBuildRevision","MIDNIGHT_HOTEL_DETAIL_20260930")
+ workspace:SetAttribute("LobbyArtPass","NOCTURNE_CURSED_HOTEL_V4")
+ workspace:SetAttribute("LobbyBuildRevision","NOCTURNE_STAFF_HAUNT_20260930")
  return f
 end
 
