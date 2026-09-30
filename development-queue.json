@@ -57,12 +57,12 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
+      "canonicalState": "F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-30T04:50:19.706Z",
+      "updatedAt": "2026-09-30T04:50:41.322Z",
       "robloxSourceCommit": "15d9ebb42466049456bb2e215e5bfa08ae5f8f57",
-      "robloxSourceBootstrapPassedAt": "2026-09-30T04:15:04.170Z",
+      "robloxSourceBootstrapPassedAt": "2026-09-30T04:50:41.322Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -3017,12 +3017,12 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-30T04:50:19.706Z",
+      "updatedAt": "2026-09-30T04:50:41.322Z",
       "robloxSourceCommit": "4c86208e06a27f3f04fb4826b2923306f358fb0f",
-      "robloxSourceBootstrapPassedAt": "2026-09-30T04:48:06.389Z",
+      "robloxSourceBootstrapPassedAt": "2026-09-30T04:50:41.322Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -3034,55 +3034,7 @@
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": {
-        "version": 2,
-        "gameId": "horror-escape-room",
-        "pass": true,
-        "state": "PASS",
-        "checkedAt": "2026-09-30T04:16:19.206Z",
-        "sourceRevision": "51bab1482ef8f19d5f9a9aa5b45f191a585db46b",
-        "artifactIdentity": "sha256:6024d74885344b57057f9168c1ae2f18beb2716b6fe20f493486399c463912d4",
-        "secondaryOwnerFocus": false,
-        "facts": {
-          "pass": true,
-          "blockers": [],
-          "leads": {
-            "planning": "llama3.2:1b",
-            "graphics": "llama3.2:1b",
-            "development": "llama3.2:1b",
-            "qa": "llama3.2:1b",
-            "balance": "llama3.2:1b"
-          },
-          "sharedModel": "llama3.2:1b",
-          "distinctLeadCount": 1,
-          "secondaryOwnerFocus": false,
-          "robloxLaneEligible": true,
-          "directRoblox": true,
-          "concurrentRoblox": true,
-          "build": {
-            "sourceRevision": "51bab1482ef8f19d5f9a9aa5b45f191a585db46b",
-            "artifactIdentity": "sha256:6024d74885344b57057f9168c1ae2f18beb2716b6fe20f493486399c463912d4",
-            "webValidationPassed": false,
-            "musicValidationPassed": false,
-            "nativeWebValidationPassed": false,
-            "nativeMusicValidationPassed": false,
-            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
-            "sourceValidationPassed": true,
-            "buildOrPackagePassed": true
-          }
-        },
-        "leadReviews": [
-          {
-            "role": "shared-review",
-            "model": "llama3.2:1b",
-            "decision": "PASS",
-            "blockers": [],
-            "note": "No concrete build-stage blockers found in BUILD_EVIDENCE."
-          }
-        ],
-        "blockers": [],
-        "authority": "roblox-vibe-shared-model-build-preflight"
-      },
+      "robloxBuildPreflightEvidence": null,
       "robloxFoundationF0Passed": false,
       "robloxFoundationF0PassedAt": null,
       "robloxFoundationF0Evidence": null,
@@ -3121,9 +3073,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
       "routingBlockers": [
-        "roblox-build-package-revalidation-pending"
+        "roblox-build-package-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -10948,17 +10900,17 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
+      "canonicalState": "F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-30T04:50:19.706Z",
+      "updatedAt": "2026-09-30T04:50:41.322Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
       "robloxSourceCommit": "f1edcf85599d6e73120ae474dc867f222b9318d4",
-      "robloxSourceBootstrapPassedAt": "2026-09-30T04:15:04.170Z",
+      "robloxSourceBootstrapPassedAt": "2026-09-30T04:50:41.322Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -29368,7 +29320,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-30T04:50:19.706Z",
+  "updatedAt": "2026-09-30T04:50:41.322Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -29434,5 +29386,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxSourceParallelism": null
 }
