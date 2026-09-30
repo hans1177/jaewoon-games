@@ -75,6 +75,7 @@ workspace:SetAttribute("RoomState",roomServer and"INITIALIZING"or"BROWSER")
 workspace:SetAttribute("RoomMemberCount",0)
 workspace:SetAttribute("RoomMaxPlayers",(C.Room and C.Room.MaxPlayers)or 8)
 workspace:SetAttribute("RoomStartRequested",false)
+local refreshPhysicalLobby=nil
 
 local function syncRoomState()
  local count=#Players:GetPlayers()
@@ -98,6 +99,7 @@ local function syncRoomState()
   player:SetAttribute("RoomMaxPlayers",(C.Room and C.Room.MaxPlayers)or 8)
   player:SetAttribute("RoomIsHost",roomServer and player.UserId==roomHostUserId)
  end
+ if refreshPhysicalLobby then refreshPhysicalLobby()end
 end
 
 local function syncLobbyState(phase)
@@ -305,6 +307,10 @@ local survivorSpawns={
  Vector3.new(5,3,42),Vector3.new(-5,3,30),Vector3.new(5,3,30)
 }
 local monsterSpawn=Vector3.new(0,3,-54)
+local lobbySpawns={
+ Vector3.new(-18,3,232),Vector3.new(-6,3,232),Vector3.new(6,3,232),Vector3.new(18,3,232),
+ Vector3.new(-18,3,244),Vector3.new(-6,3,244),Vector3.new(6,3,244),Vector3.new(18,3,244)
+}
 local assetCache={}
 local objectiveState={round=0,done=0,total=0}
 local escapedPlayers={}
@@ -563,6 +569,116 @@ local function glow(part,color,range,brightness)
 end
 local function zoneFloor(f,name,size,pos,color,material)
  local x=arenaPart(f,name,size,pos,color,material);x.CanCollide=true;x:SetAttribute("WalkableGround",true);return x
+end
+
+
+-- 실제 3D 로비: 메뉴 화면 대신 캐릭터가 걸어 다니며 단말을 직접 사용한다.
+local function lobbyLabel(part,text,color)
+ local gui=Instance.new("BillboardGui");gui.Name="LobbyLabel";gui.Size=UDim2.fromOffset(230,54);gui.StudsOffset=Vector3.new(0,4.4,0);gui.AlwaysOnTop=true;gui.Parent=part
+ local label=Instance.new("TextLabel");label.Size=UDim2.fromScale(1,1);label.BackgroundTransparency=.22;label.BackgroundColor3=Color3.fromRGB(15,18,25);label.Text=text;label.TextColor3=color or Color3.fromRGB(235,240,248);label.TextScaled=true;label.TextWrapped=true;label.Font=Enum.Font.GothamBold;label.Parent=gui
+ return label
+end
+
+local function lobbyTerminal(parent,name,pos,labelText,actionText,color,onTriggered)
+ local base=arenaPart(parent,name,Vector3.new(8,6,5),pos,color or Color3.fromRGB(48,58,72),Enum.Material.Metal)
+ base:SetAttribute("LobbyTerminal",true)
+ local screen=arenaPart(parent,name.."Screen",Vector3.new(6.4,2.7,.35),pos+Vector3.new(0,.65,-2.68),Color3.fromRGB(86,186,225),Enum.Material.Neon);screen.CanCollide=false
+ lobbyLabel(base,labelText,Color3.fromRGB(232,239,248))
+ local prompt=Instance.new("ProximityPrompt");prompt.Name=name.."Prompt";prompt.ObjectText=labelText;prompt.ActionText=actionText;prompt.HoldDuration=.25;prompt.MaxActivationDistance=10;prompt.RequiresLineOfSight=false;prompt.Parent=base
+ prompt.Triggered:Connect(onTriggered)
+ return base,prompt
+end
+
+local function makePhysicalLobby()
+ local old=workspace:FindFirstChild("MidnightLobby");if old then old:Destroy()end
+ local f=Instance.new("Folder");f.Name="MidnightLobby";f.Parent=workspace
+ local floor=zoneFloor(f,"LobbyFloor",Vector3.new(150,1,106),Vector3.new(0,0,235),Color3.fromRGB(40,45,54),Enum.Material.Slate)
+ floor:SetAttribute("PhysicalLobbyGround",true)
+ arenaPart(f,"LobbyBackWall",Vector3.new(150,18,2),Vector3.new(0,9,286),Color3.fromRGB(27,31,40),Enum.Material.Concrete)
+ arenaPart(f,"LobbyLeftWall",Vector3.new(2,18,106),Vector3.new(-74,9,235),Color3.fromRGB(27,31,40),Enum.Material.Concrete)
+ arenaPart(f,"LobbyRightWall",Vector3.new(2,18,106),Vector3.new(74,9,235),Color3.fromRGB(27,31,40),Enum.Material.Concrete)
+ local title=arenaPart(f,"LobbyTitle",Vector3.new(46,8,1),Vector3.new(0,10,284.5),Color3.fromRGB(52,61,75),Enum.Material.Metal);lobbyLabel(title,"심야 감염전 · 로비",Color3.fromRGB(149,224,255))
+ for _,x in ipairs({-54,-36,-18,0,18,36,54})do
+  local lamp=arenaPart(f,"LobbyLamp",Vector3.new(7,.4,2),Vector3.new(x,14,250),Color3.fromRGB(120,207,230),Enum.Material.Neon);lamp.CanCollide=false;glow(lamp,lamp.Color,20,.85)
+ end
+ -- 중앙 통로
+ for _,z in ipairs({205,217,229,241,253,265})do
+  local strip=arenaPart(f,"LobbyGuide",Vector3.new(24,.14,1.2),Vector3.new(0,.58,z),Color3.fromRGB(83,190,213),Enum.Material.Neon);strip.CanCollide=false
+ end
+
+ local _,publicPrompt=lobbyTerminal(f,"CreatePublicRoom",Vector3.new(-48,3,260),"공개 방 만들기","방 만들기",Color3.fromRGB(43,111,92),function(p)
+  if roomServer or state=="RUNNING"then return end
+  createReservedRoom(p,"PUBLIC")
+ end)
+ local _,friendPrompt=lobbyTerminal(f,"CreateFriendRoom",Vector3.new(-24,3,260),"친구 방 만들기","방 만들기",Color3.fromRGB(69,79,122),function(p)
+  if roomServer or state=="RUNNING"then return end
+  createReservedRoom(p,"FRIENDS")
+ end)
+ local _,privatePrompt=lobbyTerminal(f,"CreatePrivateRoom",Vector3.new(0,3,260),"비공개 방 만들기","방 만들기",Color3.fromRGB(90,67,101),function(p)
+  if roomServer or state=="RUNNING"then return end
+  createReservedRoom(p,"PRIVATE")
+ end)
+ local _,quickPrompt=lobbyTerminal(f,"QuickPublicRoom",Vector3.new(28,3,260),"공개 방 빠른 참가","참가",Color3.fromRGB(49,83,120),function(p)
+  if roomServer or state=="RUNNING"then return end
+  quickJoinRoom(p,false)
+ end)
+ local _,friendJoinPrompt=lobbyTerminal(f,"QuickFriendRoom",Vector3.new(52,3,260),"친구 방 찾기","참가",Color3.fromRGB(70,68,116),function(p)
+  if roomServer or state=="RUNNING"then return end
+  quickJoinRoom(p,true)
+ end)
+ local _,codePrompt=lobbyTerminal(f,"CodeRoomTerminal",Vector3.new(52,3,218),"방 코드 참가","코드 입력",Color3.fromRGB(78,72,96),function(p)
+  if roomServer or state=="RUNNING"then return end
+  p:SetAttribute("WorldLobbyCodeInputRequest",tostring(math.floor(os.clock()*1000)))
+ end)
+ local _,startPrompt=lobbyTerminal(f,"RoomStartTerminal",Vector3.new(-52,3,218),"방장 게임 시작","시작",Color3.fromRGB(42,116,85),function(p)
+  startRoomMatch(p)
+ end)
+ local _,leavePrompt=lobbyTerminal(f,"RoomLeaveTerminal",Vector3.new(-28,3,218),"방 나가기","나가기",Color3.fromRGB(106,58,66),function(p)
+  leaveReservedRoom(p)
+ end)
+
+ -- 예약방 대기 인원을 실제 공간의 8개 자리로 보여준다.
+ for i=1,8 do
+  local col=(i-1)%4;local row=math.floor((i-1)/4)
+  local pad=arenaPart(f,"LobbySlot"..i,Vector3.new(12,.45,8),Vector3.new(-24+col*16,.48,226+row*12),Color3.fromRGB(59,68,82),Enum.Material.Metal)
+  pad.CanCollide=true;pad:SetAttribute("LobbySlotIndex",i)
+  lobbyLabel(pad,"자리 "..i,Color3.fromRGB(198,211,226))
+ end
+ local board=arenaPart(f,"RoomStatusBoard",Vector3.new(25,9,1),Vector3.new(0,8,285),Color3.fromRGB(30,35,45),Enum.Material.Metal)
+ lobbyLabel(board,"로비 준비 중",Color3.fromRGB(169,223,242))
+
+ refreshPhysicalLobby=function()
+  local browser=not roomServer
+  publicPrompt.Enabled=browser;friendPrompt.Enabled=browser;privatePrompt.Enabled=browser;quickPrompt.Enabled=browser;friendJoinPrompt.Enabled=browser;codePrompt.Enabled=browser
+  startPrompt.Enabled=roomServer and state=="WAITING";leavePrompt.Enabled=roomServer and state=="WAITING"
+  local players=Players:GetPlayers();table.sort(players,function(a,b)
+   if a.UserId==roomHostUserId then return true end
+   if b.UserId==roomHostUserId then return false end
+   return a.UserId<b.UserId
+  end)
+  for i=1,8 do
+   local pad=f:FindFirstChild("LobbySlot"..i)
+   local gui=pad and pad:FindFirstChild("LobbyLabel")
+   local label=gui and gui:FindFirstChildOfClass("TextLabel")
+   local player=players[i]
+   if label then
+    if player then label.Text=(player.UserId==roomHostUserId and "방장 · " or "")..player.DisplayName
+    else label.Text="AI 대기" end
+   end
+   if pad then pad.Color=player and Color3.fromRGB(67,96,111)or Color3.fromRGB(59,68,82)end
+  end
+  local bg=board:FindFirstChild("LobbyLabel");local label=bg and bg:FindFirstChildOfClass("TextLabel")
+  if label then
+   if roomServer then
+    label.Text=string.format("방 %s · 실제 %d/8명 · 빈자리 AI %d명",roomCode~=""and roomCode or"연결중",#players,math.max(0,8-#players))
+   else
+    label.Text="단말에 가까이 가서 방을 만들거나 참가해"
+   end
+  end
+ end
+ refreshPhysicalLobby()
+ workspace:SetAttribute("PhysicalLobbyReady",true)
+ return f
 end
 
 local function stripLoadedAsset(root)
@@ -1569,9 +1685,11 @@ local function groundedRootTarget(p,pos)
  local c=p.Character;local r=root(p);local h=hum(p)
  if not c or not r or not h then return Vector3.new(pos.X,pos.Y,pos.Z)end
  local grounds={}
- if arena and arena.Parent then
-  for _,d in ipairs(arena:GetDescendants())do
-   if d:IsA("BasePart")and d:GetAttribute("WalkableGround")==true then table.insert(grounds,d)end
+ for _,rootFolder in ipairs({arena,workspace:FindFirstChild("MidnightLobby")})do
+  if rootFolder and rootFolder.Parent then
+   for _,d in ipairs(rootFolder:GetDescendants())do
+    if d:IsA("BasePart")and d:GetAttribute("WalkableGround")==true then table.insert(grounds,d)end
+   end
   end
  end
  local params=RaycastParams.new()
@@ -1809,6 +1927,12 @@ local function endRound(winner)
  end
  clearBots();monster=nil;monsterBot=nil;workspace:SetAttribute("HumanCount",0);workspace:SetAttribute("MonsterCount",0)
  workspace:SetAttribute("CelebrationWinnerTeam","");workspace:SetAttribute("CelebrationName","");workspace:SetAttribute("CelebrationCaption","");workspace:SetAttribute("CelebrationAIWinners",0)
+ local players=Players:GetPlayers();table.sort(players,function(a,b)return a.UserId<b.UserId end)
+ for i,p in ipairs(players)do
+  p:SetAttribute("RoundState",roomServer and "ROOM_WAITING"or"ROOM_BROWSER")
+  teleport(p,lobbySpawns[((i-1)%#lobbySpawns)+1])
+ end
+ if refreshPhysicalLobby then refreshPhysicalLobby()end
 end
 local purifyCooldown={}
 local function removeBot(target)
@@ -2061,8 +2185,8 @@ local function onCharacter(p)
   local players=Players:GetPlayers()
   table.sort(players,function(a,b)return a.UserId<b.UserId end)
   local slot=1
-  for i,player in ipairs(players)do if player==p then slot=((i-1)%#survivorSpawns)+1;break end end
-  teleport(p,survivorSpawns[slot])
+  for i,player in ipairs(players)do if player==p then slot=((i-1)%#lobbySpawns)+1;break end end
+  teleport(p,lobbySpawns[slot])
  end
 end
 Players.PlayerAdded:Connect(function(p)
@@ -2154,7 +2278,10 @@ Players.PlayerRemoving:Connect(function(p)
 end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
--- 로비에서도 맵이 즉시 보여야 한다. 첫 라운드 전 학교 맵을 프리로드한다.
+-- 로비는 실제 3D 공간으로 항상 유지한다.
+if not workspace:FindFirstChild("MidnightLobby")then makePhysicalLobby()end
+
+-- 첫 라운드 전 학교 맵도 백그라운드에서 준비한다.
 if not workspace:FindFirstChild("MidnightArena")then
  arena=ensureArena(C.Maps[1])
 end
