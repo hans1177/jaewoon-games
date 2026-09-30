@@ -399,9 +399,6 @@ function buildGameCenter(catalog,status){
   buildShelf(hub,'homeDevelopmentGameCenter','개발 중','설계·로비 구현과 검증이 진행 중인 게임',development);
   document.documentElement.dataset.homePlatformAvailableCount=String(available.length);
   document.documentElement.dataset.homeDevelopmentCount=String(development.length);
-  const releasedCount=document.getElementById('releasedCount'),developmentCount=document.getElementById('developmentCount');
-  if(releasedCount)releasedCount.textContent=String(available.length);
-  if(developmentCount)developmentCount.textContent=String(development.length);
   document.documentElement.dataset.homeServerAuthority=String(catalog?.runtimeInfoAuthority||catalog?.runtimeAuthority||'none');
   document.documentElement.dataset.homeSupportedPlatforms=(catalog?.runtimeSupportedPlatforms||[]).join(',');
   markDirectPlayCards();
