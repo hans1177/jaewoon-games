@@ -1,6 +1,6 @@
 -- 파일명: assets/roblox/survival-wildlife/WildlifeFactory.luau
 -- 역할: WildlifeCatalog을 실제 3D 저폴리 관절 모델로 생성한다.
--- 금지: BillboardGui/ImageLabel/SurfaceGui 기반 동물, 한 덩어리 root 이동만으로 걷는 동물.
+-- 금지: 2D 화면 자산 기반 동물, 한 덩어리 root 이동만으로 걷는 동물.
 
 local CollectionService = game:GetService("CollectionService")
 local Catalog = require(script.Parent.WildlifeCatalog)
