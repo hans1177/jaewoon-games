@@ -10968,7 +10968,7 @@
       "currentStep": "REPAIR_REQUIRED",
       "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-30T10:39:59.102Z",
+      "updatedAt": "2026-09-30T10:44:38.116Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -11343,13 +11343,13 @@
             "id": "prompt-ProximityPrompt",
             "type": "mcp-world-interaction",
             "dispatched": true,
-            "ok": false
+            "ok": true
           },
           {
             "id": "prompt-ProximityPrompt",
             "type": "mcp-world-interaction",
             "dispatched": true,
-            "ok": true
+            "ok": false
           },
           {
             "id": "prompt-ProximityPrompt",
@@ -11828,16 +11828,16 @@
             "pass": false
           },
           {
-            "id": "scenario-observed-action-b44707afa0efc7f8fa15",
-            "name": "scenario-observed-action-b44707afa0efc7f8fa15",
-            "required": true,
-            "pass": false
-          },
-          {
             "id": "scenario-observed-action-ba70933adab1e2e60a5f",
             "name": "scenario-observed-action-ba70933adab1e2e60a5f",
             "required": true,
             "pass": true
+          },
+          {
+            "id": "scenario-observed-action-b44707afa0efc7f8fa15",
+            "name": "scenario-observed-action-b44707afa0efc7f8fa15",
+            "required": true,
+            "pass": false
           },
           {
             "id": "scenario-observed-action-bffcb6fc96faff9b4d69",
@@ -11897,8 +11897,8 @@
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
           "scenarioFailureCount": 15,
-          "primaryActionDisplacement": 47.4979337063323,
-          "primaryActionVelocity": 0.000026024014579454916,
+          "primaryActionDisplacement": 45.30218671992651,
+          "primaryActionVelocity": 0.000026069289822850202,
           "primaryActionFeedbackChanged": false,
           "commercialAudit": {
             "auditProfile": "F9_SOAK",
@@ -11938,7 +11938,7 @@
               "multiplayerActualSessionPass": false
             },
             "performance": {
-              "memoryMb": 2766.40625,
+              "memoryMb": 2720.65234375,
               "descendantCount": 1863
             },
             "multiplayer": {
@@ -12185,12 +12185,12 @@
             "pass": false
           },
           {
-            "id": "observed-action-b44707afa0efc7f8fa15",
-            "pass": false
-          },
-          {
             "id": "observed-action-ba70933adab1e2e60a5f",
             "pass": true
+          },
+          {
+            "id": "observed-action-b44707afa0efc7f8fa15",
+            "pass": false
           },
           {
             "id": "observed-action-bffcb6fc96faff9b4d69",
@@ -12255,7 +12255,7 @@
               "routeSamples": 16,
               "routeSuccess": 2,
               "routeCoveragePass": false,
-              "spawnThreatDistance": 63.42930294182023,
+              "spawnThreatDistance": 63.360575902932666,
               "spawnOverlapSafe": true
             }
           },
@@ -12293,7 +12293,7 @@
                   "semantic": "UPGRADE",
                   "effectObserved": false,
                   "effect": {
-                    "moved": 71.11473509977608,
+                    "moved": 70.47915214020048,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -12516,8 +12516,8 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-09-30T10:39:59.102Z",
-        "workflowRunId": 36702875532,
+        "testedAt": "2026-09-30T10:44:38.116Z",
+        "workflowRunId": 36702962879,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -12865,7 +12865,7 @@
               "routeSamples": 16,
               "routeSuccess": 2,
               "routeCoveragePass": false,
-              "spawnThreatDistance": 63.42930294182023,
+              "spawnThreatDistance": 63.360575902932666,
               "spawnOverlapSafe": true
             }
           },
@@ -12903,7 +12903,7 @@
                   "semantic": "UPGRADE",
                   "effectObserved": false,
                   "effect": {
-                    "moved": 71.11473509977608,
+                    "moved": 70.47915214020048,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -13131,8 +13131,8 @@
           "ROBLOX_OBSERVED_INTERACTION"
         ],
         "robloxFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
-        "testedAt": "2026-09-30T10:39:59.102Z",
-        "workflowRunId": 36702875532,
+        "testedAt": "2026-09-30T10:44:38.116Z",
+        "workflowRunId": 36702962879,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxQualityBuildUpLastPassedAt": "2026-09-28T19:43:44.738Z",
@@ -29306,7 +29306,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-30T10:39:59.102Z",
+  "updatedAt": "2026-09-30T10:44:38.116Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
