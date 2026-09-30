@@ -64,25 +64,40 @@ jobs:
       - name: Persist marketing work to shared execution queue
         run: |
           set -euo pipefail
-          git worktree remove --force /tmp/marketing-control 2>/dev/null || true
-          rm -rf /tmp/marketing-control
-          git worktree add --detach /tmp/marketing-control origin/"$CONTROL_BRANCH" >/dev/null
-          cp /tmp/marketing-system-ai-queue.json /tmp/marketing-control/.vibe2/system-ai-queue.json
-          mkdir -p /tmp/marketing-control/.vibe2/marketing
-          cp /tmp/marketing-plan.json /tmp/marketing-control/.vibe2/marketing/latest-plan.json
-          cd /tmp/marketing-control
-          git config user.name 'jaewoon-growth-marketing'
-          git config user.email 'growth-marketing@users.noreply.github.com'
-          git add .vibe2/system-ai-queue.json .vibe2/marketing/latest-plan.json
-          git diff --cached --check
-          if ! git diff --cached --quiet; then
+          pushed=0
+          for attempt in 1 2 3; do
+            cd "$GITHUB_WORKSPACE"
+            git fetch --no-tags --depth=1 origin \
+              "+$CONTROL_BRANCH:refs/remotes/origin/$CONTROL_BRANCH"
+            git worktree remove --force /tmp/marketing-control 2>/dev/null || true
+            rm -rf /tmp/marketing-control
+            git worktree add --detach /tmp/marketing-control origin/"$CONTROL_BRANCH" >/dev/null
+            git show origin/"$CONTROL_BRANCH":.vibe2/system-ai-queue.json > /tmp/marketing-system-ai-queue.json
+            node tools/company-growth-marketing-planner.mjs \
+              --catalog=/tmp/marketing-game-catalog.json \
+              --queue=/tmp/marketing-system-ai-queue.json \
+              --roadmap=company-learning/platform-release-roadmap.json \
+              --output=/tmp/marketing-plan.json
+            cp /tmp/marketing-system-ai-queue.json /tmp/marketing-control/.vibe2/system-ai-queue.json
+            mkdir -p /tmp/marketing-control/.vibe2/marketing
+            cp /tmp/marketing-plan.json /tmp/marketing-control/.vibe2/marketing/latest-plan.json
+            cd /tmp/marketing-control
+            git config user.name 'jaewoon-growth-marketing'
+            git config user.email 'growth-marketing@users.noreply.github.com'
+            git add .vibe2/system-ai-queue.json .vibe2/marketing/latest-plan.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              pushed=1
+              break
+            fi
             git commit -m 'marketing: queue autonomous growth work [skip ci]'
-            for attempt in 1 2 3; do
-              if git push origin HEAD:"$CONTROL_BRANCH"; then exit 0; fi
-              sleep $((attempt*2))
-            done
-            exit 1
-          fi
+            if git push origin HEAD:"$CONTROL_BRANCH"; then
+              pushed=1
+              break
+            fi
+            sleep $((attempt*2))
+          done
+          test "$pushed" = 1
 
       - name: Select exact queued marketing tasks
         id: targets

@@ -34,6 +34,21 @@ test('growth marketing fetches only the canonical runtime refs it consumes',()=>
   assert.match(workflow,/"\$CONTROL_BRANCH:refs\/remotes\/origin\/\$CONTROL_BRANCH"/);
 });
 
+test('growth marketing refreshes and regenerates from the latest queue on every push retry',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-growth-marketing-runtime.yml',import.meta.url),'utf8');
+  const persist=workflow.slice(workflow.indexOf('- name: Persist marketing work'),workflow.indexOf('- name: Select exact queued marketing tasks'));
+  const retryIndex=persist.indexOf('for attempt in 1 2 3');
+  const refreshIndex=persist.indexOf('"+$CONTROL_BRANCH:refs/remotes/origin/$CONTROL_BRANCH"');
+  const queueIndex=persist.indexOf('git show origin/"$CONTROL_BRANCH":.vibe2/system-ai-queue.json');
+  const regenerateIndex=persist.indexOf('node tools/company-growth-marketing-planner.mjs');
+  const commitIndex=persist.indexOf("git commit -m 'marketing: queue autonomous growth work [skip ci]'");
+  const pushIndex=persist.indexOf('git push origin HEAD:"$CONTROL_BRANCH"');
+  assert.ok(retryIndex>=0&&retryIndex<refreshIndex);
+  assert.ok(refreshIndex<queueIndex&&queueIndex<regenerateIndex);
+  assert.ok(regenerateIndex<commitIndex&&commitIndex<pushIndex);
+  assert.match(persist,/test "\$pushed" = 1/);
+});
+
 test('system AI edits only assigned system file and leaves completion for supervisor',async()=>{
   const cwd=root(),prev=process.cwd();process.chdir(cwd);
   try{
