@@ -708,12 +708,12 @@ local function lobbyStaff(parent,staffId,pos,lookAt,labelText,promptText,lines)
  local waist=part("Waist",Vector3.new(2.05,1.15,1.25),Vector3.new(0,1.55,0),Color3.fromRGB(26,24,25),Enum.Material.Fabric)
  local head=part("Head",Vector3.new(staffId=="CLERK"and 1.75 or 1.9,2.05,1.75),Vector3.new(0,6.55,-.02),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
  local neck=part("Neck",Vector3.new(.72,.65,.72),Vector3.new(0,5.45,0),skin,Enum.Material.SmoothPlastic)
- local legL=part("LegL",Vector3.new(.72,2.55,.86),Vector3.new(-.58,.05,0),Color3.fromRGB(25,24,26),Enum.Material.Fabric)
- local legR=part("LegR",Vector3.new(.72,2.55,.86),Vector3.new(.58,.05,0),Color3.fromRGB(25,24,26),Enum.Material.Fabric)
+ local legL=part("LegL",Vector3.new(2.55,.72,.72),Vector3.new(-.58,.05,0),Color3.fromRGB(25,24,26),Enum.Material.Fabric,Enum.PartType.Cylinder,CFrame.Angles(0,0,math.rad(90)))
+ local legR=part("LegR",Vector3.new(2.55,.72,.72),Vector3.new(.58,.05,0),Color3.fromRGB(25,24,26),Enum.Material.Fabric,Enum.PartType.Cylinder,CFrame.Angles(0,0,math.rad(90)))
  local shoeL=part("ShoeL",Vector3.new(.9,.45,1.45),Vector3.new(-.58,-1.35,-.25),Color3.fromRGB(13,13,14),Enum.Material.SmoothPlastic)
  local shoeR=part("ShoeR",Vector3.new(.9,.45,1.45),Vector3.new(.58,-1.35,-.25),Color3.fromRGB(13,13,14),Enum.Material.SmoothPlastic)
- local armL=part("ArmL",Vector3.new(.58,3.15,.65),Vector3.new(-1.45,3.65,0),cloth,Enum.Material.Fabric,nil,CFrame.Angles(0,0,math.rad(staffId=="CLERK"and 6 or -8)))
- local armR=part("ArmR",Vector3.new(.58,3.15,.65),Vector3.new(1.45,3.65,0),cloth,Enum.Material.Fabric,nil,CFrame.Angles(0,0,math.rad(staffId=="CLERK"and -6 or 8)))
+ local armL=part("ArmL",Vector3.new(3.15,.58,.58),Vector3.new(-1.45,3.65,0),cloth,Enum.Material.Fabric,Enum.PartType.Cylinder,CFrame.Angles(0,0,math.rad(90+(staffId=="CLERK"and 6 or -8))))
+ local armR=part("ArmR",Vector3.new(3.15,.58,.58),Vector3.new(1.45,3.65,0),cloth,Enum.Material.Fabric,Enum.PartType.Cylinder,CFrame.Angles(0,0,math.rad(90+(staffId=="CLERK"and -6 or 8))))
  part("HandL",Vector3.new(.62,.8,.62),Vector3.new(-1.58,2.05,-.04),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
  part("HandR",Vector3.new(.62,.8,.62),Vector3.new(1.58,2.05,-.04),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
 
@@ -731,17 +731,23 @@ local function lobbyStaff(parent,staffId,pos,lookAt,labelText,promptText,lines)
   part("NamePlate",Vector3.new(.82,.28,.12),Vector3.new(.48,4.55,-.93),brass,Enum.Material.Metal)
   part("HairTop",Vector3.new(1.78,.55,1.6),Vector3.new(0,7.45,.08),Color3.fromRGB(27,23,22),Enum.Material.Fabric)
   part("HairBack",Vector3.new(1.72,1.45,.45),Vector3.new(0,6.95,.72),Color3.fromRGB(27,23,22),Enum.Material.Fabric)
+  part("ShoulderL",Vector3.new(.75,.35,1.4),Vector3.new(-1.12,4.95,0),Color3.fromRGB(61,18,24),Enum.Material.Fabric)
+  part("ShoulderR",Vector3.new(.75,.35,1.4),Vector3.new(1.12,4.95,0),Color3.fromRGB(61,18,24),Enum.Material.Fabric)
  elseif staffId=="BELLBOY"then
   part("JacketFront",Vector3.new(1.8,2.45,.15),Vector3.new(0,3.75,-.76),Color3.fromRGB(109,24,31),Enum.Material.Fabric)
   for y=3.1,4.5,.7 do part("Button",Vector3.new(.18,.18,.12),Vector3.new(0,y,-.9),brass,Enum.Material.Metal,Enum.PartType.Ball)end
   local hat=part("BellboyHat",Vector3.new(2.05,.95,1.9),Vector3.new(0,7.7,.02),Color3.fromRGB(100,20,28),Enum.Material.Fabric)
   part("HatBand",Vector3.new(2.12,.22,1.96),Vector3.new(0,7.45,.02),brass,Enum.Material.Metal)
   part("HatTop",Vector3.new(1.75,.7,1.65),Vector3.new(0,8.35,.02),Color3.fromRGB(82,18,24),Enum.Material.Fabric)
+  part("BellboyCollarL",Vector3.new(.72,.48,.14),Vector3.new(-.45,4.85,-.79),Color3.fromRGB(187,151,83),Enum.Material.Metal,nil,CFrame.Angles(0,0,math.rad(-18)))
+  part("BellboyCollarR",Vector3.new(.72,.48,.14),Vector3.new(.45,4.85,-.79),Color3.fromRGB(187,151,83),Enum.Material.Metal,nil,CFrame.Angles(0,0,math.rad(18)))
  elseif staffId=="MAID"then
   part("DressSkirt",Vector3.new(3.1,2.75,1.65),Vector3.new(0,1.65,.05),Color3.fromRGB(23,22,24),Enum.Material.Fabric)
   part("Apron",Vector3.new(1.85,3.05,.14),Vector3.new(0,2.7,-.84),Color3.fromRGB(194,188,177),Enum.Material.Fabric)
   part("MaidCap",Vector3.new(1.85,.45,1.45),Vector3.new(0,7.55,.06),Color3.fromRGB(203,198,189),Enum.Material.Fabric)
   part("FaceVeil",Vector3.new(1.45,.82,.1),Vector3.new(0,6.55,-.95),Color3.fromRGB(46,42,43),Enum.Material.SmoothPlastic)
+  part("MaidCollar",Vector3.new(1.65,.42,.14),Vector3.new(0,4.95,-.78),Color3.fromRGB(201,195,185),Enum.Material.Fabric)
+  part("MaidRibbon",Vector3.new(.72,.72,.13),Vector3.new(0,4.58,-.84),Color3.fromRGB(112,24,30),Enum.Material.Fabric,nil,CFrame.Angles(0,0,math.rad(45)))
  end
 
  local labelAnchor=part("StaffLabelAnchor",Vector3.new(.1,.1,.1),Vector3.new(0,9.15,0),Color3.new(1,1,1),Enum.Material.SmoothPlastic)
@@ -838,6 +844,11 @@ local function makePhysicalLobby()
  -- 로비 자체가 게임 튜토리얼 역할을 한다. 안내판도 호텔의 미친 투숙 규정으로 보인다.
  local rules=arenaPart(f,"MadHotelRules",Vector3.new(24,10,.7),Vector3.new(-50,10.6,306.05),Color3.fromRGB(28,24,23),Enum.Material.WoodPlanks)
  lobbySurfaceText(rules,"심야 투숙 규정\n1. 승강기 안에 서면 5초 뒤 체크인\n2. 인간은 정화 · 괴물은 감염\n3. 상대 진영이 0명이면 승리\n4. 같은 직원이 두 번 보이면 뛰지 마시오",Color3.fromRGB(219,202,169),15)
+ local rulesPrompt=Instance.new("ProximityPrompt");rulesPrompt.Name="HotelRulesPrompt";rulesPrompt.ObjectText="심야 투숙 규정";rulesPrompt.ActionText="읽기";rulesPrompt.HoldDuration=.12;rulesPrompt.MaxActivationDistance=10;rulesPrompt.RequiresLineOfSight=false;rulesPrompt.Parent=rules
+ rulesPrompt.Triggered:Connect(function(player)
+  player:SetAttribute("LobbyStoryEvent","투숙 규정|승강기에 들어가면 5초 뒤 체크인. 인간은 정화, 괴물은 감염. 상대 진영을 0명으로 만들면 승리.|"..tostring(math.floor(workspace:GetServerTimeNow()*1000)))
+  local before=rules.Color;rules.Color=Color3.fromRGB(65,44,37);task.delay(.25,function()if rules.Parent then rules.Color=before end end)
+ end)
  local warningBoard=arenaPart(f,"MadWarning",Vector3.new(24,5.6,.65),Vector3.new(50,13.1,306.05),Color3.fromRGB(35,28,28),Enum.Material.WoodPlanks)
  lobbySurfaceText(warningBoard,"직원을 믿지 마십시오\n웃고 있는 직원은 더더욱.",Color3.fromRGB(167,48,53),19)
  for i=1,5 do
@@ -907,6 +918,10 @@ local function makePhysicalLobby()
  end
  local floorNotice=arenaPart(f,"Floor13Notice",Vector3.new(16,3.8,.5),Vector3.new(66,8,306),Color3.fromRGB(44,34,31),Enum.Material.WoodPlanks)
  lobbySurfaceText(floorNotice,"13층 폐쇄\n직원도 출입 금지",Color3.fromRGB(178,54,57),18)
+ local floorPrompt=Instance.new("ProximityPrompt");floorPrompt.Name="Floor13Prompt";floorPrompt.ObjectText="폐쇄 안내";floorPrompt.ActionText="읽기";floorPrompt.HoldDuration=.12;floorPrompt.MaxActivationDistance=9;floorPrompt.RequiresLineOfSight=false;floorPrompt.Parent=floorNotice
+ floorPrompt.Triggered:Connect(function(player)
+  player:SetAttribute("LobbyStoryEvent","13층 안내|13층은 존재하지 않습니다. 따라서 폐쇄할 수도 없습니다.|"..tostring(math.floor(workspace:GetServerTimeNow()*1000)))
+ end)
 
  -- 좌우 대기실: 소파/탁자/짐/낡은 액자로 빈 공간을 끊는다.
  for _,side in ipairs({-1,1})do
@@ -1011,14 +1026,14 @@ local function makePhysicalLobby()
 
   local numberPlate=arenaPart(bay,"ElevatorNumber",Vector3.new(4.4,2.2,.35),Vector3.new(x,15.4,211.25),Color3.fromRGB(171,128,65),Enum.Material.Metal)
   numberPlate.Orientation=Vector3.new(0,180,0)
-  lobbySurfaceText(numberPlate,string.format("%02d",i),Color3.fromRGB(29,25,22),18)
+  local numberLabel=lobbySurfaceText(numberPlate,string.format("%02d",i),Color3.fromRGB(29,25,22),18)
 
   local left=arenaPart(bay,"SlidingDoorL",Vector3.new(11.6,10.8,.7),Vector3.new(x-5.9,6.7,210.05),Color3.fromRGB(79,75,72),Enum.Material.Metal)
   local right=arenaPart(bay,"SlidingDoorR",Vector3.new(11.6,10.8,.7),Vector3.new(x+5.9,6.7,210.05),Color3.fromRGB(79,75,72),Enum.Material.Metal)
   left.CanCollide=false;right.CanCollide=false
 
   lobbyQueueBays[i]={
-   part=bayFloor,label=label,players={},countdown=nil,token=0,index=i,
+   part=bayFloor,label=label,numberLabel=numberLabel,players={},countdown=nil,token=0,index=i,
    doorLeft=left,doorRight=right,
    doorLeftOpen=left.CFrame*CFrame.new(-7,0,0),doorRightOpen=right.CFrame*CFrame.new(7,0,0),
    doorLeftClosed=left.CFrame,doorRightClosed=right.CFrame,
@@ -1034,6 +1049,24 @@ local function makePhysicalLobby()
  local routeSign=arenaPart(f,"ElevatorRouteSign",Vector3.new(56,4,.55),Vector3.new(0,18.1,212.55),Color3.fromRGB(29,25,24),Enum.Material.WoodPlanks)
  routeSign.Orientation=Vector3.new(0,180,0)
  lobbySurfaceText(routeSign,"승강기 안으로 들어가면 자동 매칭",Color3.fromRGB(218,199,163),21)
+
+ -- 승강기 번호가 가끔 존재하지 않는 13층으로 바뀐다. 로비 어디서든 보이는 반복 연출이다.
+ task.spawn(function()
+  local cursor=0
+  while f.Parent do
+   task.wait(9.5)
+   if #lobbyQueueBays>0 then
+    cursor=cursor%#lobbyQueueBays+1
+    local bay=lobbyQueueBays[cursor]
+    local numberLabel=bay and bay.numberLabel
+    if numberLabel and numberLabel.Parent then
+     numberLabel.Text="13";numberLabel.TextColor3=Color3.fromRGB(205,48,52)
+     task.wait(.72)
+     if numberLabel.Parent then numberLabel.Text=string.format("%02d",bay.index);numberLabel.TextColor3=Color3.fromRGB(29,25,22)end
+    end
+   end
+  end
+ end)
 
  -- 좌우의 어두운 막힌 복도는 깊이감만 만들고 실제 진행로는 아니다.
  for _,side in ipairs({-1,1})do
@@ -1087,7 +1120,7 @@ local function makePhysicalLobby()
  workspace:SetAttribute("PhysicalLobbyReady",true)
  workspace:SetAttribute("WorldLobbyMode",true)
  workspace:SetAttribute("LobbyArtPass","NOCTURNE_CURSED_HOTEL_V5")
- workspace:SetAttribute("LobbyBuildRevision","NOCTURNE_SCULPTED_STAFF_20260930")
+ workspace:SetAttribute("LobbyBuildRevision","NOCTURNE_SCULPTED_STAFF_INTERACTIVE_20260930")
  return f
 end
 
