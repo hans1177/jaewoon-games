@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function begin(multiplayer){state.started=true;resetPlayer();$('start').classList.add('hide');updateHud();if(multiplayer){const room=$('startRoom').value;$('roomInput').value=room;await connectRoom(room)}showNotice(factionName(state.faction)+' · '+className(state.classId)+' 시작')",
+      "replace": "function begin(multiplayer){state.started=true;resetPlayer();$('start').classList.add('hide');updateHud();if(multiplayer){const room=$('startRoom').value;$('roomInput').value=room;await connectRoom(room)}showNotice(factionName(state.faction)+' · '+className(state.classId)+' 시작')}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
