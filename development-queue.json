@@ -20649,10 +20649,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-30T23:43:41.380Z",
+      "updatedAt": "2026-09-30T23:46:25.025Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -21653,8 +21653,8 @@
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-seed-idle-growth-rpg-crystal-bloom-36773180555",
       "unitySourceCommit": "3aebc33f093c8668ed6d3b55dc7c469bc7ce687a",
-      "unityBuildRunId": 36780826566,
-      "unityRuntimeSmokeRunId": null,
+      "unityBuildRunId": 36791156188,
+      "unityRuntimeSmokeRunId": 36792560852,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityInternalReleaseReady": false,
@@ -21668,19 +21668,19 @@
         "sourceRevision": "3aebc33f093c8668ed6d3b55dc7c469bc7ce687a",
         "sourceRootTreeSha": "d18e2b11621eca1afadd94cdd25573f3ee7e045f",
         "sourceFingerprint": "179a0797cbe2783a4db133fd59dcd87521c33fac1e1f81027a7496deb4c9bc6e",
-        "buildOrPackagePassed": false,
-        "artifactIdentity": null,
+        "buildOrPackagePassed": true,
+        "artifactIdentity": "sha256:5fd78f57816a7d0a7e0e842e5d2080e7bc35f9fc868e1c94b8e55c9bdbd63efb",
         "runtimePassed": false,
         "independentQaPassed": false,
         "multiplayerPassed": true,
         "regressionPassed": false,
         "f0ToF9Passed": false,
-        "exactRevision": false,
-        "lastSuccessfulStage": "CHEAP_PRECHECK",
-        "failureStage": "F0_SOURCE_INTEGRITY",
-        "failureSignature": "90fbb26b7e141cea4c0256d6e0e273c1785df05e3a4184349eb32f8af6525e2d"
+        "exactRevision": true,
+        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
+        "failureStage": "F1_SERVER_BOOT",
+        "failureSignature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee"
       },
-      "resumeStage": "F0_SOURCE_INTEGRITY",
+      "resumeStage": "F1_SERVER_BOOT",
       "failureCount": 1,
       "contractCanaryPassed": false,
       "robloxInternalPlaytestPassed": false,
@@ -22041,12 +22041,12 @@
         "version": 1,
         "platform": "UNITY",
         "sourceRevision": "3aebc33f093c8668ed6d3b55dc7c469bc7ce687a",
-        "artifactIdentity": null,
+        "artifactIdentity": "sha256:5fd78f57816a7d0a7e0e842e5d2080e7bc35f9fc868e1c94b8e55c9bdbd63efb",
         "sourceRootTreeSha": "d18e2b11621eca1afadd94cdd25573f3ee7e045f",
         "evidenceMode": "EXISTING_EXACT_APK_RUNTIME_QA_REGRESSION_WITH_PLATFORM_APPLICABILITY",
         "floors": {
           "F0": {
-            "state": "FAIL",
+            "state": "PASS",
             "authority": "IMMUTABLE_APK_BUILD_AND_SOURCE_BINDING"
           },
           "F1": {
@@ -22089,7 +22089,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-09-30T21:50:55.330Z"
+        "verifiedAt": "2026-09-30T23:46:25.025Z"
       },
       "unityF9ReleaseRegressionPassed": false,
       "unityF9ReleaseRegressionPassedAt": null,
@@ -22100,17 +22100,17 @@
         "sourceRevision": "3aebc33f093c8668ed6d3b55dc7c469bc7ce687a",
         "sourceRootTreeSha": "d18e2b11621eca1afadd94cdd25573f3ee7e045f",
         "sourceFingerprint": "179a0797cbe2783a4db133fd59dcd87521c33fac1e1f81027a7496deb4c9bc6e",
-        "buildOrPackagePassed": false,
-        "artifactIdentity": null,
+        "buildOrPackagePassed": true,
+        "artifactIdentity": "sha256:5fd78f57816a7d0a7e0e842e5d2080e7bc35f9fc868e1c94b8e55c9bdbd63efb",
         "runtimePassed": false,
         "independentQaPassed": false,
         "multiplayerPassed": true,
         "regressionPassed": false,
         "f0ToF9Passed": false,
-        "exactRevision": false,
-        "lastSuccessfulStage": "CHEAP_PRECHECK",
-        "failureStage": "F0_SOURCE_INTEGRITY",
-        "failureSignature": "90fbb26b7e141cea4c0256d6e0e273c1785df05e3a4184349eb32f8af6525e2d"
+        "exactRevision": true,
+        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
+        "failureStage": "F1_SERVER_BOOT",
+        "failureSignature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee"
       }
     },
     {
@@ -28330,7 +28330,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-30T23:46:13.412Z",
+  "updatedAt": "2026-09-30T23:46:26.615Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
