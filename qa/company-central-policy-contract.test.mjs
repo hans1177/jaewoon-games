@@ -1969,6 +1969,17 @@ test('commercial Studio deep audit execution rules stay locked',()=>{
   ])assert.ok(contract.requiredAxes.includes(axis),axis);
 });
 
+test('owner-released horror returns to shared perpetual F0-F9 development',()=>{
+  const policy=roadmap.ownerCanonicalRules?.ownerExclusiveDevelopment||{};
+  assert.equal(policy.status,'INACTIVE_OWNER_RELEASED');
+  assert.deepEqual(policy.gameIds,[]);
+  assert.ok((policy.releasedGameIds||[]).includes('horror-escape-room'));
+  assert.equal(policy.resumeMode,'RETURN_TO_SHARED_PERPETUAL_F0_F9');
+  assert.equal(policy.handoff?.ownerScopeReleased,true);
+  assert.equal(policy.handoff?.resumeExistingSourceAndQueue,true);
+  assert.equal(roadmap.changeRecord?.ownerExclusiveDirectDevelopment20260930?.status,'SUPERSEDED_BY_OWNER_SCOPE_RELEASE_2026-10-01');
+});
+
 test('central document has a bounded current-policy budget and archives historical records in git',()=>{
   const file='company-learning/platform-release-roadmap.json';
   const current=JSON.parse(fs.readFileSync(file,'utf8'));
