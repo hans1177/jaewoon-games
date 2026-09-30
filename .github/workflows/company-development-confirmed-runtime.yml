@@ -30,7 +30,7 @@ on:
         type: string
 
 concurrency:
-  group: company-development-confirmed-${{ inputs.game_id || 'batch' }}
+  group: company-development-confirmed-${{ inputs.game_id || (github.event_name == 'push' && 'main-push') || github.run_id }}
   cancel-in-progress: false
 
 permissions:
