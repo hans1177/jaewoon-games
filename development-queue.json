@@ -2775,13 +2775,13 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-30T09:40:54.415Z",
-      "robloxSourceCommit": "4a9e1125507d5fa6d6bdcfb31f030fcf66453397",
-      "robloxSourceBootstrapPassedAt": "2026-09-30T08:04:07.784Z",
-      "robloxSourceBootstrapFailedAt": "2026-09-30T09:40:54.415Z",
+      "updatedAt": "2026-09-30T09:50:42.342Z",
+      "robloxSourceCommit": "06e5ffed4caa534b9ddcaa82088eca0c8ca85839",
+      "robloxSourceBootstrapPassedAt": "2026-09-30T09:50:42.342Z",
+      "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -2833,7 +2833,7 @@
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureSignature": "existing-source-studio-asset-binding-required",
       "routingBlockers": [
-        "roblox-source-bootstrap:existing-source-studio-asset-binding-required:ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED"
+        "roblox-runtime-evidence-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -4107,7 +4107,7 @@
         "bindingVersion": 2,
         "applied": true,
         "source": "company-asset-library.json#baseMaterialLibrary",
-        "libraryVersion": 19,
+        "libraryVersion": 25,
         "atomState": "PREPARED_SEMANTIC_ATOM_LIBRARY",
         "selectedAtomCount": 46,
         "families": {
@@ -29144,7 +29144,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-30T09:50:20.874Z",
+  "updatedAt": "2026-09-30T09:50:42.342Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
