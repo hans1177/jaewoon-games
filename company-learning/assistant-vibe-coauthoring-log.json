@@ -503,10 +503,10 @@
       "date": "2026-10-01",
       "gameId": "MULTI_GAME_GROWTH_MARKETING",
       "actionType": "CONTROL_PLANE_STARTUP_REPAIR",
-      "problem": "Company Growth Marketing Runtime failed before creating any job on merged main ce52c5b6. The same startup_failure was present on the reusable-worker introduction commit 580833739, so retrying the run could not repair it. PR verification then exposed two independent Owner All Games Design Reset failures: the workflow first omitted the staged entry module's relative company-game-seed-contract.mjs dependency, and the repaired run then spent its full 10-minute job budget fetching every branch and tag before reaching validation.",
-      "rootCause": "REUSABLE_WORKFLOW_PERMISSION_ESCALATION_REJECTED_AT_WORKFLOW_START_PLUS_INCOMPLETE_STAGED_ESM_DEPENDENCY_SET_PLUS_UNBOUNDED_FULL_REPOSITORY_CHECKOUT",
-      "decision": "Keep the existing reusable System-AI worker and grant the caller exactly the write scopes already required by the called workflow.",
-      "change": "Added pull-requests: write to the existing growth-marketing caller permissions and added a regression that compares all three requested reusable-worker scopes with the caller before Actions dispatch. Added the existing game-seed contract module to the reset workflow trigger and staged /tmp module set, with an import-order regression. Replaced the reset job's all-ref checkout with a depth-one main checkout and explicit depth-one main/company-runtime refspec refresh inside its retry loop. No queue shape, marketing rules, game source, release state, or horror-escape-room scope changed.",
+      "problem": "Company Growth Marketing Runtime failed before creating any job on merged main ce52c5b6. The same startup_failure was present on the reusable-worker introduction commit 580833739, so retrying the run could not repair it. PR verification then exposed two independent Owner All Games Design Reset failures: the workflow first omitted the staged entry module's relative company-game-seed-contract.mjs dependency, and the repaired run then spent its full 10-minute job budget fetching every branch and tag before reaching validation. After the permission repair reached main, Growth Marketing created its plan job for the first time but inherited the same unbounded all-ref checkout pattern already proven to exhaust the sibling reset job budget.",
+      "rootCause": "REUSABLE_WORKFLOW_PERMISSION_ESCALATION_REJECTED_AT_WORKFLOW_START_PLUS_INCOMPLETE_STAGED_ESM_DEPENDENCY_SET_PLUS_REPEATED_UNBOUNDED_FULL_REPOSITORY_CHECKOUT",
+      "decision": "Keep the existing reusable System-AI worker, grant the caller exactly the write scopes already required by the called workflow, and bound each control-plane checkout to only the refs consumed by that job.",
+      "change": "Added pull-requests: write to the existing growth-marketing caller permissions and added a regression that compares all three requested reusable-worker scopes with the caller before Actions dispatch. Added the existing game-seed contract module to the reset workflow trigger and staged /tmp module set, with an import-order regression. Replaced the reset job's all-ref checkout with a depth-one main checkout and explicit depth-one main/company-runtime refspec refresh inside its retry loop. Applied the same bounded pattern to Growth Marketing: depth-one main checkout plus explicit depth-one company-runtime/vibe2-unreal-core refspec fetch. No queue shape, marketing rules, game source, release state, or horror-escape-room scope changed.",
       "evidence": [
         "merged-main:ce52c5b611b1e1fe7281e56275b322aeff99a535",
         "failure-run:36752422424:startup_failure:no-jobs",
@@ -519,7 +519,10 @@
         "design-reset-failure:ERR_MODULE_NOT_FOUND:file:///tmp/company-game-seed-contract.mjs",
         "design-reset-timeout-run:36754979774",
         "design-reset-timeout-job:110022802421",
-        "design-reset-timeout:actions/checkout@v4-full-ref-fetch-cancelled-at-10m"
+        "design-reset-timeout:actions/checkout@v4-full-ref-fetch-cancelled-at-10m",
+        "merged-main:43a9a74bba18757e25b5433fbfabbb0f753f5782",
+        "growth-marketing-post-permission-run:36757046281",
+        "growth-marketing-plan-job:110029826188:created-and-blocked-in-identical-full-ref-checkout"
       ],
       "reusablePatterns": [
         "REUSABLE_CALLER_MUST_GRANT_EVERY_PERMISSION_REQUESTED_BY_CALLEE",
@@ -534,13 +537,14 @@
         "FETCHING_ALL_BRANCHES_AND_TAGS_INSIDE_A_TEN_MINUTE_CONTROL_PLANE_JOB"
       ],
       "qa": [
-        "local focused System-AI and design reset regression: 25/25 PASS",
+        "local focused System-AI and design reset regression: 26/26 PASS",
         "local staged reset ESM import: PASS",
-        "post-change GitHub Actions: PENDING",
+        "merged main Owner All Games Design Reset run 36757045661: PASS",
+        "bounded Growth Marketing post-change GitHub Actions: PENDING",
         "Studio actual execution: NOT_APPLICABLE_AND_NOT_RUN"
       ],
       "learningState": "TRACE_ONLY",
-      "liveState": "TWO_CAUSAL_CONTROL_PLANE_REPAIRS_LOCAL_QA_PASS; POST_CHANGE_ACTION_STARTUP_AND_DESIGN_RESET_VERIFICATION_PENDING"
+      "liveState": "PERMISSION_AND_DESIGN_RESET_REPAIRS_MERGED_AT_43A9A74B; DESIGN_RESET_ACTUAL_ACTION_PASS; GROWTH_MARKETING_BOUNDED_CHECKOUT_POST_CHANGE_ACTION_PENDING"
     }
   ]
 }

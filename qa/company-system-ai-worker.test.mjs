@@ -25,6 +25,15 @@ test('growth marketing caller grants every permission requested by its reusable 
   assert.match(caller,/uses: \.\/\.github\/workflows\/company-system-ai-workers\.yml/);
 });
 
+test('growth marketing fetches only the canonical runtime refs it consumes',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-growth-marketing-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/fetch-depth: 1/);
+  assert.doesNotMatch(workflow,/fetch-depth: 0/);
+  assert.match(workflow,/git fetch --no-tags --depth=1 origin/);
+  assert.match(workflow,/'company-runtime:refs\/remotes\/origin\/company-runtime'/);
+  assert.match(workflow,/"\$CONTROL_BRANCH:refs\/remotes\/origin\/\$CONTROL_BRANCH"/);
+});
+
 test('system AI edits only assigned system file and leaves completion for supervisor',async()=>{
   const cwd=root(),prev=process.cwd();process.chdir(cwd);
   try{
