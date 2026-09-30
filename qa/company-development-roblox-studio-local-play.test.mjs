@@ -1826,6 +1826,13 @@ test('Studio startup probe explicitly checks dead spawn, start buttons, and bloc
   assert.match(helper,/ROBLOX_STUDIO_DEAD_CHARACTER_ABORT:INITIAL_CHARACTER_NOT_PLAYABLE/);
   assert.match(helper,/initial-character-playable/);
   assert.match(helper,/ui-start-gate/);
+  // Real Studio evidence: the entry label was "게임 시작", so combat ran behind the entry screen.
+  const startBlock=helper.slice(helper.indexOf('const startTarget=entityRows'),helper.indexOf('if(startTarget){'));
+  const startMatcher=startBlock.match(/&&\/(\^.*)\/i\.test\(clean\(row\?\.text\)\)/)?.[1];
+  assert.ok(startMatcher);
+  const matchesStart=new RegExp(startMatcher,'i');
+  for(const label of ['게임 시작','게임 플레이','Game Start','Play','시작'])assert.equal(matchesStart.test(label),true,label);
+  for(const label of ['게임 종료','다시 시작할까요?','공격','게임 초기화'])assert.equal(matchesStart.test(label),false,label);
   assert.match(helper,/start\|play\|begin\|continue\|ready\|시작\|플레이\|계속\|준비/);
   assert.match(helper,/startGateProbe=await collectStudioActualPlayProbe/);
   assert.match(helper,/clean\(row\?\.text\)!==primaryTextBeforeStart/);

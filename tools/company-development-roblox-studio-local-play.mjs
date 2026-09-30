@@ -1504,7 +1504,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const startGateAction=(actions||[]).find(row=>row?.id==='ui-start-gate')||null;
   const initialStartLikeButton=startGateAction
     ?{text:clean(startGateAction.text)}
-    :(entityRows(initialClientProbe?.ui?.interactive).find(row=>row?.visible!==false&&row?.active!==false&&/^(?:start|play|begin|continue|ready|시작|플레이|계속|준비)(?:\s|$)/i.test(clean(row?.text)))||null);
+    :(entityRows(initialClientProbe?.ui?.interactive).find(row=>row?.visible!==false&&row?.active!==false&&/^(?:(?:게임|game)\s+)?(?:start|play|begin|continue|ready|시작|플레이|계속|준비)(?:\s|$)/i.test(clean(row?.text)))||null);
   const onboardingText=visibleTexts.join(' ').toLowerCase();
   const onboardingClarityPass=!signals.onboarding||(
     visibleButtons>0
@@ -2396,7 +2396,7 @@ export async function runOfficialStudioMcpPlay({
         row?.visible!==false
         &&row?.active!==false
         &&clean(row?.text)!==primaryTextBeforeStart
-        &&/^(?:start|play|begin|continue|ready|시작|플레이|계속|준비)(?:\s|$)/i.test(clean(row?.text))
+        &&/^(?:(?:게임|game)\s+)?(?:start|play|begin|continue|ready|시작|플레이|계속|준비)(?:\s|$)/i.test(clean(row?.text))
       )||null;
       if(startTarget){
         let ok=false;
