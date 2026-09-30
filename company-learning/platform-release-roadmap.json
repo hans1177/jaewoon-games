@@ -1,5 +1,5 @@
 {
-  "version": 497,
+  "version": 498,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -1291,16 +1291,16 @@
       ]
     },
     "controlPlaneQueueBacklogMitigation": {
-      "version": 1,
+      "version": 2,
       "authority": "OWNER_DIRECTIVE_2026-09-30",
-      "status": "ENABLED",
+      "status": "ENABLED_UBUNTU_LATEST_CONTROL_DRAIN",
       "objective": "KEEP_COMPLETION_INGEST_AND_REFILL_CONTROL_OFF_THE_SLOW_RESERVE_QUEUE_WITHOUT_DROPPING_GAME_RESULTS",
       "neuronCompletionCallback": {
         "event": "vibe2-neuron-complete",
         "resultBearing": true,
         "coalescingForbidden": true,
         "cancellationForbidden": true,
-        "reserveRunnerPool": "ubuntu-24.04-arm"
+        "reserveRunnerPool": "ubuntu-latest"
       },
       "fanInRefill": {
         "event": "vibe2-fanin-refill",
@@ -1308,11 +1308,14 @@
         "coalesceByExecutionLane": true,
         "topLevelConcurrencyGroupRequired": true,
         "cancelRunningRefill": false,
-        "reserveRunnerPool": "ubuntu-24.04-arm"
+        "reserveRunnerPool": "ubuntu-latest"
       },
       "defaultPushAndManualReserveRunnerPool": "ubuntu-slim",
       "gameWorkerRunnerPolicyUnchanged": true,
-      "qualityOrEvidenceGateWeakeningForbidden": true
+      "qualityOrEvidenceGateWeakeningForbidden": true,
+      "fanInRunnerPool": "ubuntu-latest",
+      "runnerSelectionReason": "OBSERVED_ARM_CONTROL_QUEUE_BLOCKED_WHILE_UBUNTU_LATEST_GAME_WORKERS_WERE_RUNNING",
+      "directCodingOwner": "CHATGPT_SYSTEM_BOTTLENECK_REPAIR"
     }
   },
   "phases": [
@@ -9437,6 +9440,17 @@
       "version": 497,
       "summary": "Move result callbacks/refill reserve control to ARM and coalesce stateless fan-in refill runs by lane while preserving every neuron completion result.",
       "workflow": ".github/workflows/vibe2-continuous-core.yml",
+      "qualityOrEvidenceGateWeakening": false
+    },
+    "vibeControlQueueUbuntuLatest20260930": {
+      "version": 498,
+      "summary": "Route Vibe completion/refill reserve and fan-in control jobs to ubuntu-latest after ARM control jobs remained queued while ubuntu-latest capacity was active.",
+      "workflow": ".github/workflows/vibe2-continuous-core.yml",
+      "evidence": {
+        "queuedNeuronReserveRunner": "ubuntu-24.04-arm",
+        "observedArmState": "QUEUED",
+        "observedUbuntuLatestState": "MULTIPLE_GAME_WORKERS_IN_PROGRESS"
+      },
       "qualityOrEvidenceGateWeakening": false
     }
   },
