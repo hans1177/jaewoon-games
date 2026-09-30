@@ -54,7 +54,8 @@ jobs:
       - name: Install Blender for authored spider mesh
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y blender
+          sudo apt-get install -y blender python3-numpy
+          blender --background --python-expr "import numpy; print('BLENDER_NUMPY_OK', numpy.__version__)"
       - name: Build high-detail spider asset
         run: |
           blender --background --python assets/roblox/world-ghosts/build-spider.py -- --output assets/roblox/world-ghosts/native/spider --render
