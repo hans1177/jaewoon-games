@@ -2649,7 +2649,11 @@ local function bot(role,pos)
  end
  if role=="MONSTER"then
   visuals=decorateClassicMonster(p,monsterId)
-  if model then model.Name="AI_MONSTER_"..monsterId end
+  if model then
+   model.Name="AI_MONSTER_"..monsterId
+   local scale=monsterId=="FRANKENSTEIN"and 1.16 or monsterId=="WEREWOLF"and 1.12 or monsterId=="GRIM_REAPER"and 1.13 or monsterId=="DRACULA"and 1.06 or 1.04
+   pcall(function()model:ScaleTo(scale)end)
+  end
  else
   visuals=decorateHumanBot(p,humanFormId)
   if model then model.Name="AI_SURVIVOR_"..humanFormId end
@@ -2757,6 +2761,46 @@ end
 local function costumeGlow(part,color,range,brightness)
  local light=Instance.new("PointLight");light.Color=color;light.Range=range or 8;light.Brightness=brightness or 1;light.Shadows=false;light.Parent=part
 end
+local function costumeEmitter(part,color,rate,speed,lifetime,sizeStart,sizeEnd)
+ local emitter=Instance.new("ParticleEmitter")
+ emitter.Name="MonsterAura"
+ emitter.Color=ColorSequence.new(color)
+ emitter.LightEmission=.45
+ emitter.Rate=rate or 7
+ emitter.Speed=NumberRange.new((speed or .5)*.55,speed or .5)
+ emitter.Lifetime=NumberRange.new((lifetime or .8)*.75,lifetime or .8)
+ emitter.SpreadAngle=Vector2.new(30,30)
+ emitter.Rotation=NumberRange.new(0,360)
+ emitter.RotSpeed=NumberRange.new(-25,25)
+ emitter.Size=NumberSequence.new({
+  NumberSequenceKeypoint.new(0,sizeStart or .22),
+  NumberSequenceKeypoint.new(1,sizeEnd or .05),
+ })
+ emitter.Transparency=NumberSequence.new({
+  NumberSequenceKeypoint.new(0,.18),
+  NumberSequenceKeypoint.new(.75,.55),
+  NumberSequenceKeypoint.new(1,1),
+ })
+ emitter.Parent=part
+ return emitter
+end
+local function applyMonsterPalette(character,id)
+ local palette={
+  DRACULA={Color3.fromRGB(69,46,48),Enum.Material.Fabric},
+  FRANKENSTEIN={Color3.fromRGB(103,129,94),Enum.Material.SmoothPlastic},
+  WEREWOLF={Color3.fromRGB(91,68,53),Enum.Material.Fabric},
+  MUMMY={Color3.fromRGB(191,179,145),Enum.Material.Fabric},
+  GRIM_REAPER={Color3.fromRGB(28,23,35),Enum.Material.Fabric},
+ }
+ local row=palette[id]
+ if not row then return end
+ for _,part in ipairs(character:GetChildren())do
+  if part:IsA("BasePart")and part.Name~="HumanoidRootPart"and part:GetAttribute("MonsterCostume")~=true then
+   if part.Name~="Head"or id~="DRACULA"then part.Color=row[1]end
+   part.Material=row[2]
+  end
+ end
+end
 local function applyClassicCostume(character,id)
  local torso=character:FindFirstChild("UpperTorso")or character:FindFirstChild("Torso")or character:FindFirstChild("HumanoidRootPart")
  local rootPart=character:FindFirstChild("HumanoidRootPart")or torso
@@ -2779,6 +2823,7 @@ local function applyClassicCostume(character,id)
   costumeGlow(eyeL,eyeL.Color,7,.9);costumeGlow(eyeR,eyeR.Color,7,.9)
   local gem=costumePart(character,torso,"BloodMedallion",Vector3.new(.72,.9,.26),Vector3.new(0,.75,-1.22),Color3.fromRGB(212,35,54),Enum.Material.Neon)
   costumeGlow(gem,gem.Color,7,.8)
+  costumeEmitter(gem,Color3.fromRGB(175,22,40),9,.7,1.1,.28,.04)
 
  elseif id=="FRANKENSTEIN"then
   costumePart(character,head,"FrankenBrow",Vector3.new(2.9,.5,.48),Vector3.new(0,.6,-.68),Color3.fromRGB(45,58,47),Enum.Material.SmoothPlastic)
@@ -2788,6 +2833,7 @@ local function applyClassicCostume(character,id)
   costumePart(character,torso,"ChestPlate",Vector3.new(3.8,3.5,.5),Vector3.new(0,.15,-1.12),Color3.fromRGB(53,67,56),Enum.Material.Metal)
   local core=costumePart(character,torso,"ElectricCore",Vector3.new(1,1.45,.3),Vector3.new(0,.3,-1.42),Color3.fromRGB(134,246,112),Enum.Material.Neon)
   costumeGlow(core,core.Color,10,1.35)
+  costumeEmitter(core,Color3.fromRGB(126,235,108),13,1.15,.65,.18,.02)
   for i=-1,1 do
    local stitch=costumePart(character,head,"FaceStitch"..i,Vector3.new(.58,.09,.09),Vector3.new(i*.5,.05,-.78),Color3.fromRGB(32,39,33),Enum.Material.Metal)
    stitch.Orientation=Vector3.new(0,0,i*18)
@@ -2804,6 +2850,7 @@ local function applyClassicCostume(character,id)
   local eyeL=costumePart(character,head,"WolfEyeL",Vector3.new(.2,.16,.11),Vector3.new(-.4,.3,-.78),Color3.fromRGB(243,178,67),Enum.Material.Neon)
   local eyeR=costumePart(character,head,"WolfEyeR",Vector3.new(.2,.16,.11),Vector3.new(.4,.3,-.78),Color3.fromRGB(243,178,67),Enum.Material.Neon)
   costumeGlow(eyeL,eyeL.Color,6,.75);costumeGlow(eyeR,eyeR.Color,6,.75)
+  costumeEmitter(eyeL,Color3.fromRGB(235,165,72),5,.45,.55,.12,.02)
   costumePart(character,torso,"WolfBackFur",Vector3.new(4,4.8,.9),Vector3.new(0,.4,1.3),Color3.fromRGB(70,51,42),Enum.Material.Fabric)
   local tail=costumePart(character,rootPart,"WolfTail",Vector3.new(.9,4.5,.9),Vector3.new(0,-1.25,2),Color3.fromRGB(83,58,45),Enum.Material.Fabric)
   tail.Orientation=Vector3.new(32,0,0)
@@ -2828,6 +2875,7 @@ local function applyClassicCostume(character,id)
   costumePart(character,torso,"LooseBandageR",Vector3.new(.5,3.5,.34),Vector3.new(2.05,-.75,.4),Color3.fromRGB(183,172,139),Enum.Material.Fabric)
   local scarab=costumePart(character,torso,"CurseScarab",Vector3.new(1,1,.25),Vector3.new(0,.65,-1.18),Color3.fromRGB(226,188,92),Enum.Material.Neon)
   costumeGlow(scarab,scarab.Color,8,.9)
+  costumeEmitter(scarab,Color3.fromRGB(226,196,112),10,.6,1.25,.22,.03)
 
  elseif id=="GRIM_REAPER"then
   costumePart(character,torso,"ReaperCloak",Vector3.new(5.7,6.6,3),Vector3.new(0,-.2,.45),Color3.fromRGB(20,16,27),Enum.Material.Fabric)
@@ -2838,6 +2886,7 @@ local function applyClassicCostume(character,id)
   local eyeL=costumePart(character,head,"VoidEyeL",Vector3.new(.2,.15,.12),Vector3.new(-.38,.3,-1.7),Color3.fromRGB(169,84,255),Enum.Material.Neon)
   local eyeR=costumePart(character,head,"VoidEyeR",Vector3.new(.2,.15,.12),Vector3.new(.38,.3,-1.7),Color3.fromRGB(169,84,255),Enum.Material.Neon)
   costumeGlow(eyeL,eyeL.Color,8,1);costumeGlow(eyeR,eyeR.Color,8,1)
+  costumeEmitter(eyeL,Color3.fromRGB(151,82,235),11,.65,1.15,.23,.03)
   costumePart(character,torso,"ScytheStaff",Vector3.new(.45,7.5,.45),Vector3.new(3.05,0,0),Color3.fromRGB(69,58,52),Enum.Material.Wood)
   local blade=costumePart(character,torso,"ScytheBlade",Vector3.new(.5,3.9,2.7),Vector3.new(3.05,3.35,-1.2),Color3.fromRGB(190,197,205),Enum.Material.Metal)
   blade.Orientation=Vector3.new(0,0,60)
@@ -2851,6 +2900,7 @@ local function applyRoleVisual(p,r)
  if r=="MONSTER"then
   local currentForm=form(p);local mf=Style.Monsters[currentForm.Id]or Style.Monsters.DRACULA;hi.FillColor=mf.Color;hi.OutlineColor=mf.Accent
   applyMonsterBodyScale(c,currentForm.Id)
+  applyMonsterPalette(c,currentForm.Id)
   applyClassicCostume(c,currentForm.Id)
   local head=c:FindFirstChild("Head")or root(p)
   if head then
