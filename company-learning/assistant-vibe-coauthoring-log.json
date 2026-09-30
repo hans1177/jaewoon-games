@@ -583,7 +583,15 @@
         "example-queued-run:36764376790",
         "example-cancelled-run:36763444179",
         "affected-studio-cohort:13-games:ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
-        "owner-exclusive-scope:horror-escape-room-query-only"
+        "owner-exclusive-scope:horror-escape-room-query-only",
+        "pull-request:4208",
+        "pr-checks:company-evolution-security-main-write-central-policy:4-of-4-pass",
+        "merged-main:f6d7f7992d2246d8cc275e5c74831b669ade21bd",
+        "post-change-source-run:36766419731:coordinator-gate-pass",
+        "post-change-deduped-batch-run:36766459380",
+        "post-change-deduped-batch-job:110061764233:DEVELOPMENT_COORDINATOR_ADMISSION=DEDUPED_ACTIVE_BATCH",
+        "post-change-oldest-active-run:36764780916",
+        "post-change-deduped-downstream:native-plan-roblox-unity-web-self-cycle-all-skipped"
       ],
       "reusablePatterns": [
         "COALESCE_ONLY_DUPLICATE_WHOLE_PORTFOLIO_COORDINATORS",
@@ -601,11 +609,13 @@
         "local coordinator isolation and central pipeline regression: 33/33 PASS",
         "local synthetic active-run selection: oldest batch selected and exact-game title ignored",
         "local git diff whitespace validation: PASS",
-        "post-change GitHub Actions: PENDING",
+        "PR #4208 required Actions: 4/4 PASS",
+        "main source-change coordinator gate: PASS",
+        "main unscoped duplicate coordinator gate: PASS; duplicate batch and every downstream fan-out skipped before checkout and matrix execution",
         "Studio actual execution: NOT_RUN; no Studio, F9, or release completion claim"
       ],
       "learningState": "TRACE_ONLY",
-      "liveState": "LOCAL_REPAIR_VERIFIED; PR_AND_POST_CHANGE_ACTIONS_PENDING; NEXT_ROTATION_LINE_DEFENSE_AND_12_SIBLING_STUDIO_SCENARIO_FAILURES_AFTER_COORDINATOR_DRAIN"
+      "liveState": "MERGED_AT_F6D7F799; POST_CHANGE_SOURCE_GATE_PASS; POST_CHANGE_UNSCOPED_DUPLICATE_ACTUALLY_DEDUPED_BEFORE_ALL_FANOUT; NEXT_ROTATION_LINE_DEFENSE_AND_12_SIBLING_STUDIO_SCENARIO_FAILURES_AFTER_LEGACY_BACKLOG_DRAIN; NO_STUDIO_RUNTIME_PASS_CLAIM"
     }
   ]
 }
