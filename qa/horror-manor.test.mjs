@@ -1,3 +1,5 @@
+// 파일명: qa/horror-manor.test.mjs
+// 블렌더 산출물·개인 로비·기존 기능 회귀 검증.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -57,4 +59,25 @@ test('replacement lobby music has no old screaming source and is original instru
  assert.doesNotMatch(config,/1843529635/);assert.match(config,/LobbyMusicId/);
  const m=JSON.parse(read(root+'/generated/music-evidence.json'));assert.equal(m.vocals,false);assert.equal(m.screams,false);assert.equal(m.originalComposition,true);assert.ok(m.durationSeconds>=60);
  assert.ok(fs.statSync(root+'/generated/manor-waltz.mp3').size>10000);
+});
+test('Blender export keeps exact bounds, materials and independently addressable NPCs',()=>{
+ const e=JSON.parse(read(root+'/generated/build-evidence.json'));
+ assert.match(e.generator,/Blender/);
+ assert.equal(e.normalization.up,'Y');assert.equal(e.normalization.forward,'+Z');
+ assert.ok(e.reusedOriginals.includes('world-ghosts/native/mesh/bride.glb'));
+ for(const row of e.models){
+  const b=fs.readFileSync(root+'/generated/'+row.file);
+  assert.equal(crypto.createHash('sha256').update(b).digest('hex'),row.sha256);
+ }
+ const b=fs.readFileSync(root+'/generated/manor-lobby.glb');
+ const d=JSON.parse(b.toString('utf8',20,20+b.readUInt32LE(12)));
+ assert.ok(d.nodes.some(n=>n.name==='Undertaker'));
+ assert.ok(!d.nodes.some(n=>n.name?.includes('Icosphere')),'Blender bone display shapes must not enter the runtime asset');
+ const triangles=d.meshes.flatMap(m=>m.primitives).reduce((n,p)=>n+d.accessors[p.indices].count/3,0);
+ assert.ok(triangles<200000,'Mobile geometry budget exceeded');
+ const bounds=JSON.parse(read(root+'/generated/import-bounds.json'));
+ assert.equal(bounds.width,106);assert.ok(bounds.center.every(Number.isFinite));
+ assert.match(ui,/nav\.Position=UDim2\.new\(\.5,0,0,90\)/);
+ assert.match(lobby,/Vector3\.new\(0,3,-9\)/);
+ assert.match(lobby,/Vector3\.new\(5,4,-9\)/);
 });

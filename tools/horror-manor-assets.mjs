@@ -73,7 +73,7 @@ if(!evidence||evidence.sha256!==hash||!(Number(evidence.assetId)>0)){
  }
  const assetId=operation.response?.assetId;
  if(!operation.done||operation.error||!(Number(assetId)>0))throw Error('MANOR_ASSET_IMPORT_FAILED');
- evidence={assetId:String(assetId),sha256:hash,creator,sourceRevision:process.env.GITHUB_SHA,importedAt:new Date().toISOString()};
+ evidence={...evidence,assetId:String(assetId),sha256:hash,creator,sourceRevision:process.env.GITHUB_SHA,importedAt:new Date().toISOString()};
  fs.writeFileSync(evidencePath,JSON.stringify(evidence,null,2)+'\n');
 }
 const bounds=JSON.parse(fs.readFileSync(`${root}/import-bounds.json`,'utf8'));
