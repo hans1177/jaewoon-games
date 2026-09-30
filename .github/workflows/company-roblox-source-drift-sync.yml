@@ -28,17 +28,17 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: roblox-source-drift-runtime-writer-v2
+  group: roblox-source-drift-runtime-writer-v3-${{ inputs.game_id || github.event.pull_request.number || github.sha || github.run_id }}
   cancel-in-progress: false
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
-  ROBLOX_SOURCE_DRIFT_SYNC_GENERATION: v2
+  ROBLOX_SOURCE_DRIFT_SYNC_GENERATION: v3
 
 jobs:
   sync:
     if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -270,12 +270,41 @@ jobs:
           mapfile -t passed_ids < <(node -e "const r=require('/tmp/roblox-source-drift-results.json');for(const x of r.filter(x=>x.pass===true))console.log(x.gameId)")
           passed="${#passed_ids[@]}"
           echo "ROBLOX_CHANGED_SOURCE_REVALIDATED=$passed"
-          if [[ "$passed" == '1' ]]; then
-            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="${passed_ids[0]}"
-            echo "ROBLOX_CANONICAL_RUNTIME_REDISPATCH=EXACT:${passed_ids[0]}"
-          elif [[ "$passed" =~ ^[2-9][0-9]*$ || "$passed" =~ ^[1-9][0-9]+$ ]]; then
-            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
-            echo 'ROBLOX_CANONICAL_RUNTIME_REDISPATCH=BATCH'
-          else
+          if [[ "$passed" == '0' ]]; then
             echo 'ROBLOX_CANONICAL_RUNTIME_REDISPATCH=NO'
+            exit 0
           fi
+
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?per_page=100" > /tmp/roblox-source-sync-active-runtime.json
+          node <<'NODE' > /tmp/roblox-source-sync-active-exact-ids
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-source-sync-active-runtime.json','utf8'));
+          const active=new Set(['queued','pending','in_progress','requested']);
+          const prefix='Roblox runtime · ';
+          const ids=new Set();
+          for(const run of payload.workflow_runs||[]){
+            if(!active.has(String(run.status||'').toLowerCase()))continue;
+            const title=String(run.display_title||'');
+            if(!title.startsWith(prefix)||title===prefix+'batch')continue;
+            const id=title.slice(prefix.length).trim();
+            if(/^[a-z0-9][a-z0-9-]{1,48}$/.test(id))ids.add(id);
+          }
+          for(const id of [...ids].sort())console.log(id);
+          NODE
+
+          dispatch_count=0
+          deduped_count=0
+          for id in "${passed_ids[@]}"; do
+            [[ -n "$id" ]] || continue
+            if grep -Fxq "$id" /tmp/roblox-source-sync-active-exact-ids; then
+              deduped_count=$((deduped_count+1))
+              echo "ROBLOX_CANONICAL_RUNTIME_REDISPATCH=DEDUPED_ACTIVE:$id"
+              continue
+            fi
+            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+            printf '%s\n' "$id" >> /tmp/roblox-source-sync-active-exact-ids
+            dispatch_count=$((dispatch_count+1))
+            echo "ROBLOX_CANONICAL_RUNTIME_REDISPATCH=EXACT:$id"
+          done
+          echo "ROBLOX_CANONICAL_RUNTIME_EXACT_DISPATCH_COUNT=$dispatch_count"
+          echo "ROBLOX_CANONICAL_RUNTIME_DEDUPED_COUNT=$deduped_count"
