@@ -357,7 +357,7 @@
       "problem": "Company Evolution QA run 36735498688 stopped at homepage-manager-publication-order because the no-direct-child-dispatch assertion also matched the central DEVELOPMENT_CONFIRMED workflow's intentional self-cycle redispatch.",
       "rootCause": "OVERBROAD_QA_REGEX_CONFUSED_SELF_CYCLE_WITH_FORBIDDEN_CHILD_WORKFLOW_API_DISPATCH",
       "decision": "Keep the direct reusable-workflow fan-out and isolated continuous self-cycle. Narrow the guard to only the four forbidden child workflow names.",
-      "change": "Updated the existing homepage publication-order responsibility test. No game code, game asset, balance, save data, release state, or horror-escape-room scope changed.",
+      "change": "Updated all five existing responsibility tests that duplicated the broad prefix assertion. The guards now forbid only the four child workflow API dispatch identities while allowing the central workflow's intentional self-cycle.",
       "evidence": [
         "main:a64347b74a3757dbe41d6e85c1fbb310a40e58cb",
         "failure-run:36735498688",
@@ -365,7 +365,10 @@
         "failure-stage:Validate homepage manager contract",
         "failure-test:qa/homepage-manager-publication-order.test.mjs:central development orchestrator",
         "allowed-self-cycle:company-development-confirmed-runtime.yml",
-        "forbidden-child-dispatches:company-development-roblox-runtime|company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap"
+        "forbidden-child-dispatches:company-development-roblox-runtime|company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap",
+        "pr:4192",
+        "pr-homepage-run:36737174818:PASS",
+        "pr-central-policy-run:36737174898:FAIL_SAME_REGEX_IN_FOUR_CENTRAL_TESTS"
       ],
       "reusablePatterns": [
         "ASSERT_FORBIDDEN_CHILD_IDENTITIES_NOT_BROAD_PREFIXES",
@@ -378,12 +381,14 @@
         "CLAIMING_RUNTIME_PASS_FROM_STATIC_REGEX_VALIDATION"
       ],
       "qa": [
-        "targeted source validation: self-cycle remains present",
-        "targeted source validation: forbidden child gh workflow run calls remain absent",
-        "full Company Evolution QA pending PR/main action"
+        "local catalog normalization: PASS",
+        "local homepage publication-order: 37/37 PASS",
+        "local affected combined regression: 139/139 PASS",
+        "PR Homepage Manager run 36737174818: PASS",
+        "full Company Central Policy Contract QA rerun pending"
       ],
       "learningState": "TRACE_ONLY",
-      "liveState": "CODE_READY_FOR_PR_VERIFICATION"
+      "liveState": "AFFECTED_TESTS_PASS; FULL_PR_POLICY_QA_RERUN_PENDING"
     }
   ]
 }
