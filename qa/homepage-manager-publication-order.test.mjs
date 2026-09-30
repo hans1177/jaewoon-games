@@ -378,12 +378,17 @@ test('homepage exposes a stable deployment verification marker',()=>{
   assert.match(index,/data-homepage-build="2026-09-21-sample-exact"/);
 });
 
-test('sample hero and cards stay free of legacy operational badges',()=>{
+test('sample hero and cards stay free of duplicate operational badges and added card frames',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const index=fs.readFileSync('index.html','utf8');
   const focus=(runtime.split('function buildFocus(catalog,status){')[1]||'').split('function buildCard(row){')[0]||'';
   const card=(runtime.split('function buildCard(row){')[1]||'').split('function buildShelf')[0]||'';
+  const shelf=(runtime.split('function buildShelf(hub,id,title,description,rows){')[1]||'').split('function buildRecentUpdates')[0]||'';
   assert.doesNotMatch(focus,/homeFocusMeta|statusLabel|genreState|playState/);
-  assert.doesNotMatch(card,/foldBadges|foldBadge|statusLabel/);
+  assert.doesNotMatch(card,/foldBadges|foldBadge|statusLabel|gameStatus|releasedCard|developmentCard|data-release-state/);
+  assert.doesNotMatch(shelf,/gameShelfHead|gameShelfCount|releasedShelf|developmentShelf/);
+  assert.doesNotMatch(runtime,/\.releasedShelf|\.developmentShelf|\.gameStatus|\.developmentCard|\.releasedCard/);
+  assert.doesNotMatch(index,/homeInternalReleaseFallback[^]*gameShelfHead/);
   assert.match(card,/<h3>\$\{esc\(game\.name\)\}<\/h3>/);
 });
 
