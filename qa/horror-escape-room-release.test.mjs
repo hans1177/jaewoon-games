@@ -113,7 +113,8 @@ test('상용 로딩과 로비 상태는 서버 정본에 바인딩된다',()=>{
  assert.match(server,/local function syncLobbyState\(phase\)/);
  for(const key of ['LobbyReady','LobbyPhase','LobbyRealPlayers','LobbyAIFill'])assert.ok(server.includes('"'+key+'"'),key);
  assert.match(client,/실제 %d명 · AI %d명 충원 예정/);
- assert.match(client,/roomBrowserPanel\.Visible=browser and not running and not resultCode/);
+ assert.match(client,/roomBrowserPanel\.Visible=false/);
+ assert.match(server,/workspace:SetAttribute\("PhysicalLobbyReady",true\)/);
  assert.match(client,/setupPanel\.Visible=isRoomServer and not running and not resultCode and not spectating/);
  assert.match(client,/ruleCard\.Visible=setupPanel\.Visible and not selectionConfirmed/);
 });
@@ -453,7 +454,9 @@ test('예약방 로비는 8칸 슬롯에서 실제 유저와 AI를 구분한다'
  assert.match(client,/local function refreshRoomSlots\(\)/);
  assert.match(client,/slot\.Text="AI"/);
  assert.match(client,/방장 · /);
- assert.match(client,/roomSlotsPanel\.Visible=roomInfoPanel\.Visible/);
+ assert.match(client,/roomSlotsPanel\.Visible=false/);
+ assert.match(server,/local pad=arenaPart\(f,"LobbySlot"\.\.i/);
+ assert.match(server,/label\.Text="AI 대기"/);
 });
 
 test('세계 괴담 도감 UI는 12종 3단계 진행과 조각 계약서를 보여준다',()=>{
@@ -520,7 +523,7 @@ test('대기 로비 캐릭터도 인원수와 관계없이 실제 바닥 스냅�
  const block=server.slice(server.indexOf('local function onCharacter'),server.indexOf('Players.PlayerAdded:Connect'));
  assert.doesNotMatch(block,/#Players:GetPlayers\(\)==1/);
  assert.match(block,/table\.sort\(players/);
- assert.match(block,/teleport\(p,survivorSpawns\[slot\]\)/);
+ assert.match(block,/teleport\(p,lobbySpawns\[slot\]\)/);
 });
 
 test('스폰 직후 물리 한 프레임 뒤에도 바닥 재스냅하고 로비 에너지는 항상 완충한다',()=>{
