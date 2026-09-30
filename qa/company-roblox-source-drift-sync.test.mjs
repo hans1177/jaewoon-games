@@ -46,6 +46,25 @@ test('active released or playtest Roblox game remains eligible for changed-sourc
   assert.equal(activeRobloxDevelopmentItem({...item(),canonicalState:'DEVELOPMENT_BLOCKED'}),false);
 });
 
+test('changed-source sync respects active owner-exclusive ids but resumes after explicit release',()=>{
+  const source='c'.repeat(40);
+  const blocked=item();
+  const before=JSON.stringify(blocked);
+  const held=reconcileChangedRobloxItems({
+    queue:{items:[blocked]},changedGameIds:['horror-escape-room'],sourceRevision:source,
+    excludedGameIds:['horror-escape-room'],validateItem:()=>({pass:true,buildSourceChanged:true})
+  });
+  assert.equal(held.results[0].reason,'owner-exclusive-direct-development');
+  assert.equal(JSON.stringify(blocked),before);
+  const resumed=item();
+  const out=reconcileChangedRobloxItems({
+    queue:{items:[resumed]},changedGameIds:['horror-escape-room'],sourceRevision:source,
+    excludedGameIds:[],validateItem:()=>({pass:true,buildSourceChanged:true})
+  });
+  assert.equal(out.results[0].pass,true);
+  assert.equal(resumed.robloxSourceCommit,source);
+});
+
 test('changed source invalidates downstream pass flags but preserves prior evidence and publication target',()=>{
   const original=item();
   const evidence=original.robloxInternalReleaseEvidence;
