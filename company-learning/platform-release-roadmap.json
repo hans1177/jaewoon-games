@@ -1,5 +1,5 @@
 {
-  "version": 496,
+  "version": 497,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -1289,6 +1289,30 @@
       "ownerExcludedGameIds": [
         "horror-escape-room"
       ]
+    },
+    "controlPlaneQueueBacklogMitigation": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-30",
+      "status": "ENABLED",
+      "objective": "KEEP_COMPLETION_INGEST_AND_REFILL_CONTROL_OFF_THE_SLOW_RESERVE_QUEUE_WITHOUT_DROPPING_GAME_RESULTS",
+      "neuronCompletionCallback": {
+        "event": "vibe2-neuron-complete",
+        "resultBearing": true,
+        "coalescingForbidden": true,
+        "cancellationForbidden": true,
+        "reserveRunnerPool": "ubuntu-24.04-arm"
+      },
+      "fanInRefill": {
+        "event": "vibe2-fanin-refill",
+        "resultBearing": false,
+        "coalesceByExecutionLane": true,
+        "topLevelConcurrencyGroupRequired": true,
+        "cancelRunningRefill": false,
+        "reserveRunnerPool": "ubuntu-24.04-arm"
+      },
+      "defaultPushAndManualReserveRunnerPool": "ubuntu-slim",
+      "gameWorkerRunnerPolicyUnchanged": true,
+      "qualityOrEvidenceGateWeakeningForbidden": true
     }
   },
   "phases": [
@@ -9407,6 +9431,12 @@
       "excludedGameIds": [
         "horror-escape-room"
       ],
+      "qualityOrEvidenceGateWeakening": false
+    },
+    "vibeControlQueueBacklog20260930": {
+      "version": 497,
+      "summary": "Move result callbacks/refill reserve control to ARM and coalesce stateless fan-in refill runs by lane while preserving every neuron completion result.",
+      "workflow": ".github/workflows/vibe2-continuous-core.yml",
       "qualityOrEvidenceGateWeakening": false
     }
   },
