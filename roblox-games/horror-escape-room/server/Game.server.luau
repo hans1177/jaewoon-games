@@ -76,6 +76,7 @@ local roomCode=""
 local roomHostUserId=0
 local roomHostName=""
 local roomVisibility="PUBLIC"
+local roomSelectedMapId="SCHOOL"
 local roomStartRequested=false
 local roomActionLast={}
 local roomJoinedAt={}
@@ -131,6 +132,7 @@ workspace:SetAttribute("RoomMemberCount",0)
 workspace:SetAttribute("RoomMaxPlayers",(C.Room and C.Room.MaxPlayers)or 8)
 workspace:SetAttribute("RoomStartRequested",false)
 local refreshPhysicalLobby=nil
+local updateMatchBayLabel=nil
 
 local function syncRoomState()
  local count=#Players:GetPlayers()
@@ -143,6 +145,9 @@ local function syncRoomState()
  workspace:SetAttribute("RoomMemberCount",count)
  workspace:SetAttribute("RoomMaxPlayers",(C.Room and C.Room.MaxPlayers)or 8)
  workspace:SetAttribute("RoomStartRequested",roomStartRequested)
+ local selectedMap=mapById(roomSelectedMapId)
+ workspace:SetAttribute("RoomSelectedMapId",selectedMap.Id)
+ workspace:SetAttribute("RoomSelectedMapName",selectedMap.Name)
  for _,player in ipairs(Players:GetPlayers())do
   player:SetAttribute("RoomServer",roomServer)
   player:SetAttribute("RoomCode",roomCode)
@@ -153,6 +158,8 @@ local function syncRoomState()
   player:SetAttribute("RoomMemberCount",count)
   player:SetAttribute("RoomMaxPlayers",(C.Room and C.Room.MaxPlayers)or 8)
   player:SetAttribute("RoomIsHost",roomServer and player.UserId==roomHostUserId)
+  player:SetAttribute("RoomSelectedMapId",selectedMap.Id)
+  player:SetAttribute("RoomSelectedMapName",selectedMap.Name)
  end
  if refreshPhysicalLobby then refreshPhysicalLobby()end
 end
@@ -198,6 +205,16 @@ local function roomDirectoryExpiration()
 end
 local function roomMaxPlayers()
  return math.max(1,math.floor(tonumber(C.Room and C.Room.MaxPlayers)or C.TargetPopulation or 8))
+end
+local function elevatorProfile(index)
+ local list=C.Matchmaking and C.Matchmaking.Elevators or{}
+ for _,row in ipairs(list)do if tonumber(row.Index)==tonumber(index)then return row end end
+ return{Index=index,Label=tostring(index).."번",MinPlayers=1,MaxPlayers=LOBBY_QUEUE_MAX,Countdown=LOBBY_QUEUE_SECONDS}
+end
+local function mapById(id)
+ local wanted=tostring(id or"")
+ for _,map in ipairs(C.Maps or{})do if map.Id==wanted then return map end end
+ return(C.Maps and C.Maps[1])or{Id="SCHOOL",Name="학교"}
 end
 local function setRoomDirectoryEntry(code,data)
  if not roomDirectory or code==""or typeof(data)~="table"then return false end
@@ -250,6 +267,8 @@ local function teleportToReservedRoom(p,record)
   roomVisibility=record.visibility,
   roomCreatedAt=record.createdAt,
   expectedMemberCount=math.max(1,tonumber(record.memberCount)or 1),
+  selectedMapId=tostring(record.mapId or"SCHOOL"),
+  selectedMapName=tostring(record.mapName or"학교"),
  })
  local ok,err=pcall(function()TeleportService:TeleportAsync(game.PlaceId,{p},options)end)
  if not ok then
@@ -279,6 +298,8 @@ local function teleportPlayersToReservedRoom(players,record)
   roomVisibility=record.visibility,
   roomCreatedAt=record.createdAt,
   expectedMemberCount=#valid,
+  selectedMapId=tostring(record.mapId or"SCHOOL"),
+  selectedMapName=tostring(record.mapName or"학교"),
  })
  local ok,err=pcall(function()TeleportService:TeleportAsync(game.PlaceId,valid,options)end)
  if not ok then
@@ -296,11 +317,12 @@ local function teleportPlayersToReservedRoom(players,record)
  return true
 end
 
-local function createQueuedReservedRoom(players)
- if roomServer or state=="RUNNING"or typeof(players)~="table"or #players==0 then return false end
+local function createQueuedReservedRoom(players,selectedMapId)
+ if state=="RUNNING"or typeof(players)~="table"or #players==0 then return false end
+ local selectedMap=mapById(selectedMapId)
  if studioRoomFallback then
   local host=players[1]
-  roomServer=true;roomCode="000001";roomHostUserId=host.UserId;roomHostName=host.DisplayName;roomVisibility="PUBLIC";roomStartRequested=true
+  roomServer=true;roomCode="000001";roomHostUserId=host.UserId;roomHostName=host.DisplayName;roomVisibility="PUBLIC";roomSelectedMapId=selectedMap.Id;roomStartRequested=true
   for _,p in ipairs(players)do roomJoinedAt[p]=os.clock();p:SetAttribute("LobbySelectionConfirmed",true);roomFeedback(p,"CREATED",roomCode)end
   workspace:SetAttribute("StudioRoomFallback",true)
   syncRoomState();syncLobbyState("INTERMISSION")
@@ -313,7 +335,7 @@ local function createQueuedReservedRoom(players)
  local host=players[1]
  local record={
   code=code,accessCode=accessCode,hostUserId=host.UserId,hostName=host.DisplayName,
-  visibility="PUBLIC",memberCount=#players,maxPlayers=roomMaxPlayers(),
+  visibility="PUBLIC",memberCount=#players,maxPlayers=roomMaxPlayers(),mapId=selectedMap.Id,mapName=selectedMap.Name,
   createdAt=os.time(),updatedAt=os.time(),state="WAITING",placeId=game.PlaceId,
  }
  if not setRoomDirectoryEntry(code,record)then for _,p in ipairs(players)do roomFeedback(p,"ERROR","방 등록 실패")end;return false end
@@ -411,6 +433,7 @@ local function adoptReservedRoomFromPlayer(p)
   roomHostUserId=tonumber(teleportData.roomHostUserId)or p.UserId
   roomHostName=tostring(teleportData.roomHostName or p.DisplayName)
   roomVisibility=normalizeRoomVisibility(teleportData.roomVisibility)
+  roomSelectedMapId=mapById(teleportData.selectedMapId).Id
   roomExpectedCount=math.clamp(math.floor(tonumber(teleportData.expectedMemberCount)or 1),1,roomMaxPlayers())
   roomFirstJoinAt=os.clock()
  elseif roomCode~=incomingCode then
@@ -1316,9 +1339,10 @@ makePhysicalLobby=function()
   end
   arenaPart(bay,"ElevatorHeader",Vector3.new(26.5,2.2,2),Vector3.new(x,14.1,210.1),Color3.fromRGB(94,68,47),Enum.Material.Metal)
 
-  local board=arenaPart(bay,"GateBoard",Vector3.new(15,3.5,.55),Vector3.new(x,10.7,211.25),Color3.fromRGB(25,23,22),Enum.Material.Metal)
+  local profile=elevatorProfile(i)
+  local board=arenaPart(bay,"GateBoard",Vector3.new(20,5.2,.55),Vector3.new(x,10.7,211.25),Color3.fromRGB(25,23,22),Enum.Material.Metal)
   board.Orientation=Vector3.new(0,180,0)
-  local label=lobbySurfaceText(board,string.format("승강기 %02d\n입장 가능 · 0/8",i),Color3.fromRGB(236,213,169),21)
+  local label=lobbySurfaceText(board,string.format("승강기 %02d · %s\n학교 · 0/%d · 대기",i,profile.Label,profile.MaxPlayers),Color3.fromRGB(236,213,169),16)
 
   local numberPlate=arenaPart(bay,"ElevatorNumber",Vector3.new(4.4,2.2,.35),Vector3.new(x,15.4,211.25),Color3.fromRGB(171,128,65),Enum.Material.Metal)
   numberPlate.Orientation=Vector3.new(0,180,0)
@@ -1329,12 +1353,33 @@ makePhysicalLobby=function()
   left.CanCollide=false;right.CanCollide=false
 
   lobbyQueueBays[i]={
-   part=bayFloor,label=label,numberLabel=numberLabel,players={},countdown=nil,token=0,index=i,
+   part=bayFloor,label=label,numberLabel=numberLabel,players={},joinedAt={},countdown=nil,token=0,index=i,
+   minPlayers=math.max(1,tonumber(profile.MinPlayers)or 1),maxPlayers=math.max(1,tonumber(profile.MaxPlayers)or LOBBY_QUEUE_MAX),
+   countdownSeconds=math.max(2,tonumber(profile.Countdown)or LOBBY_QUEUE_SECONDS),modeLabel=tostring(profile.Label or("승강기 "..i)),
+   hostUserId=0,selectedMapId="SCHOOL",selectedMapName="학교",
    doorLeft=left,doorRight=right,
    doorLeftOpen=left.CFrame*CFrame.new(-7,0,0),doorRightOpen=right.CFrame*CFrame.new(7,0,0),
    doorLeftClosed=left.CFrame,doorRightClosed=right.CFrame,
   }
   left.CFrame=lobbyQueueBays[i].doorLeftOpen;right.CFrame=lobbyQueueBays[i].doorRightOpen
+  local bayData=lobbyQueueBays[i]
+  for mapIndex,map in ipairs(C.Maps or{})do
+   local bx=x+(mapIndex-2)*6.1
+   local button=arenaPart(bay,"MapSelect_"..map.Id,Vector3.new(5.3,2.5,.35),Vector3.new(bx,5.2,187.05),Color3.fromRGB(55,51,49),Enum.Material.Metal)
+   button.CanCollide=false
+   lobbySurfaceText(button,map.Name,Color3.fromRGB(232,214,177),13)
+   local prompt=Instance.new("ProximityPrompt")
+   prompt.Name="MapSelectPrompt";prompt.ObjectText=map.Name;prompt.ActionText="맵 선택";prompt.HoldDuration=.1;prompt.MaxActivationDistance=8;prompt.RequiresLineOfSight=false;prompt.Parent=button
+   prompt.Triggered:Connect(function(player)
+    if roomServer or state=="RUNNING"or not bayData.players[player]then return end
+    if bayData.hostUserId==0 then bayData.hostUserId=player.UserId end
+    if bayData.hostUserId~=player.UserId then roomFeedback(player,"INFO","승강기 방장만 맵 선택 가능");return end
+    bayData.selectedMapId=map.Id;bayData.selectedMapName=map.Name
+    player:SetAttribute("SelectedElevatorMap",map.Id)
+    roomFeedback(player,"MAP",map.Name)
+    if updateMatchBayLabel then updateMatchBayLabel(bayData)end
+   end)
+  end
  end
 
  -- 승강기 사이 벽체를 따로 만들어 문을 막지 않으면서 한 덩어리 호텔 벽처럼 보이게 한다.
@@ -1344,7 +1389,7 @@ makePhysicalLobby=function()
  end
  local routeSign=arenaPart(f,"ElevatorRouteSign",Vector3.new(56,4,.55),Vector3.new(0,18.1,212.55),Color3.fromRGB(29,25,24),Enum.Material.WoodPlanks)
  routeSign.Orientation=Vector3.new(0,180,0)
- lobbySurfaceText(routeSign,"승강기 안으로 들어가면 자동 매칭",Color3.fromRGB(218,199,163),21)
+ lobbySurfaceText(routeSign,"1번 1인 · 2번 2인 · 3번 3~4인 · 4번 5~8인\n각 승강기 방장이 안에서 맵 선택",Color3.fromRGB(218,199,163),16)
 
  -- 승강기 번호가 가끔 존재하지 않는 13층으로 바뀐다. 로비 어디서든 보이는 반복 연출이다.
  task.spawn(function()
@@ -1428,24 +1473,25 @@ local function playerInsideMatchBay(p,bay)
  return math.abs(localPos.X)<=half.X and math.abs(localPos.Z)<=half.Z and localPos.Y>=-5 and localPos.Y<=8
 end
 
-local function updateMatchBayLabel(bay)
+updateMatchBayLabel=function(bay)
  if not bay or not bay.label then return end
  local count=0
  for p in pairs(bay.players)do if p.Parent==Players then count+=1 end end
- if count==0 then
-  bay.label.Text=string.format("승강기 %02d\n입장 가능 · 0/8",bay.index)
- elseif bay.countdown then
-  bay.label.Text=string.format("승강기 %02d\n출발 준비 · %d/8 · %d초",bay.index,count,math.max(0,math.ceil(bay.countdown)))
- else
-  bay.label.Text=string.format("승강기 %02d\n출발 준비 · %d/8",bay.index,count)
- end
+ local maxPlayers=math.max(1,tonumber(bay.maxPlayers)or LOBBY_QUEUE_MAX)
+ local minPlayers=math.max(1,tonumber(bay.minPlayers)or 1)
+ local mapName=tostring(bay.selectedMapName or"학교")
+ local mode=tostring(bay.modeLabel or"")
+ local status
+ if count<minPlayers then status=string.format("대기 %d/%d",count,minPlayers)
+ elseif bay.countdown then status=string.format("%d/%d · %d초",count,maxPlayers,math.max(0,math.ceil(bay.countdown)))
+ else status=string.format("%d/%d · 출발 준비",count,maxPlayers)end
+ bay.label.Text=string.format("승강기 %02d · %s\n%s · %s",bay.index,mode,mapName,status)
 end
-
 local function beginMatchBayCountdown(bay)
  if not bay or bay.countdown or roomServer then return end
  bay.token+=1
  local token=bay.token
- bay.countdown=LOBBY_QUEUE_SECONDS
+ bay.countdown=math.max(2,tonumber(bay.countdownSeconds)or LOBBY_QUEUE_SECONDS)
  if bay.doorLeft and bay.doorRight then
   TweenService:Create(bay.doorLeft,TweenInfo.new(.35,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{CFrame=bay.doorLeftOpen}):Play()
   TweenService:Create(bay.doorRight,TweenInfo.new(.35,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{CFrame=bay.doorRightOpen}):Play()
@@ -1463,15 +1509,16 @@ local function beginMatchBayCountdown(bay)
    if p.Parent==Players and playerInsideMatchBay(p,bay)then table.insert(group,p)end
   end
   table.sort(group,function(a,b)return a.UserId<b.UserId end)
-  if #group==0 then bay.countdown=nil;bay.players={};updateMatchBayLabel(bay);return end
-  while #group>LOBBY_QUEUE_MAX do table.remove(group)end
+  if #group<(bay.minPlayers or 1)then bay.countdown=nil;bay.players={};bay.joinedAt={};bay.hostUserId=0;updateMatchBayLabel(bay);return end
+  while #group>(bay.maxPlayers or LOBBY_QUEUE_MAX)do table.remove(group)end
   if bay.doorLeft and bay.doorRight then
    TweenService:Create(bay.doorLeft,TweenInfo.new(.45,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{CFrame=bay.doorLeftClosed}):Play()
    TweenService:Create(bay.doorRight,TweenInfo.new(.45,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{CFrame=bay.doorRightClosed}):Play()
    task.wait(.5)
   end
-  bay.countdown=nil;bay.players={};updateMatchBayLabel(bay)
-  createQueuedReservedRoom(group)
+  local selectedMapId=bay.selectedMapId or"SCHOOL"
+  bay.countdown=nil;bay.players={};bay.joinedAt={};bay.hostUserId=0;updateMatchBayLabel(bay)
+  createQueuedReservedRoom(group,selectedMapId)
   task.delay(1,function()
    if bay.doorLeft and bay.doorLeft.Parent then TweenService:Create(bay.doorLeft,TweenInfo.new(.35),{CFrame=bay.doorLeftOpen}):Play()end
    if bay.doorRight and bay.doorRight.Parent then TweenService:Create(bay.doorRight,TweenInfo.new(.35),{CFrame=bay.doorRightOpen}):Play()end
@@ -1501,16 +1548,37 @@ task.spawn(function()
      local inside=not assigned[p] and playerInsideMatchBay(p,bay)
      if inside then
       assigned[p]=true
-      if not bay.players[p]then bay.players[p]=true;changed=true end
+      local count=0;for _ in pairs(bay.players)do count+=1 end
+      if not bay.players[p]and count<(bay.maxPlayers or LOBBY_QUEUE_MAX)then
+       bay.players[p]=true;bay.joinedAt[p]=os.clock();changed=true
+       if bay.hostUserId==0 then
+        bay.hostUserId=p.UserId
+        local preferred=mapById(p:GetAttribute("SelectedElevatorMap")or bay.selectedMapId or"SCHOOL")
+        bay.selectedMapId=preferred.Id;bay.selectedMapName=preferred.Name
+        roomFeedback(p,"HOST","승강기 방장 · 안쪽에서 맵 선택")
+       end
+      elseif not bay.players[p]and count>=(bay.maxPlayers or LOBBY_QUEUE_MAX)then
+       roomFeedback(p,"FULL","이 승강기는 가득 참 · 다른 승강기 이용")
+      end
      elseif bay.players[p]then
-      bay.players[p]=nil;changed=true
+      bay.players[p]=nil;bay.joinedAt[p]=nil;changed=true
+      if bay.hostUserId==p.UserId then
+       bay.hostUserId=0
+       local nextHost=nil;local oldest=math.huge
+       for candidate in pairs(bay.players)do
+        local joined=bay.joinedAt[candidate]or math.huge
+        if joined<oldest then oldest=joined;nextHost=candidate end
+       end
+       if nextHost then bay.hostUserId=nextHost.UserId;roomFeedback(nextHost,"HOST","승강기 방장이 되었어")end
+      end
      end
     end
     for p in pairs(bay.players)do if not p.Parent then bay.players[p]=nil;changed=true end end
     local count=0;for _ in pairs(bay.players)do count+=1 end
-    if count>=LOBBY_QUEUE_MAX and bay.countdown then bay.countdown=1 end
-    if count>0 and not bay.countdown then beginMatchBayCountdown(bay)
-    elseif count==0 and bay.countdown then bay.token+=1;bay.countdown=nil;changed=true end
+    if count>=(bay.maxPlayers or LOBBY_QUEUE_MAX)and bay.countdown then bay.countdown=1 end
+    if count>=(bay.minPlayers or 1)and not bay.countdown then beginMatchBayCountdown(bay)
+    elseif count<(bay.minPlayers or 1)and bay.countdown then bay.token+=1;bay.countdown=nil;changed=true end
+    if count==0 then bay.hostUserId=0 end
     if changed then updateMatchBayLabel(bay)end
    end
   end
@@ -2858,10 +2926,17 @@ local function configure(h,survivorOrder,monsterOrder,nextSurvivor,nextMonster)
 end
 local function startRound()
  local all=Players:GetPlayers();if #all==0 then return false end
+ table.sort(all,function(a,b)return(roomJoinedAt[a]or 0)<(roomJoinedAt[b]or 0)end)
  local h={}
- for i,p in ipairs(all)do if i<=C.TargetPopulation then table.insert(h,p)else setRole(p,"WAITING");p:SetAttribute("RoundState","SPECTATING")end end
- currentMapIndex=(currentMapIndex%#C.Maps)+1
- local map=C.Maps[currentMapIndex]
+ local overflow={}
+ for i,p in ipairs(all)do
+  if i<=C.TargetPopulation then table.insert(h,p)else table.insert(overflow,p)end
+ end
+ if #overflow>0 and not studioRoomFallback then
+  task.spawn(function()createQueuedReservedRoom(overflow,roomSelectedMapId)end)
+ end
+ local map=mapById(roomSelectedMapId)
+ for i,row in ipairs(C.Maps or{})do if row.Id==map.Id then currentMapIndex=i;break end end
  local existing=workspace:FindFirstChild("MidnightArena")
  if existing and workspace:GetAttribute("MapReady")==true and workspace:GetAttribute("CurrentMapId")==map.Id then arena=existing else arena=ensureArena(map)end
  if not arena or workspace:GetAttribute("MapReady")~=true then arena=makeFallbackArena(map,"START_ROUND_NOT_READY")end
