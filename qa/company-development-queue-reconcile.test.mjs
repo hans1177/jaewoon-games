@@ -616,3 +616,28 @@ test('queue reconcile uses fixed 24.04 control capacity without changing seriali
   assert.equal(logMap.developmentQueueReconcileRunnerIsolationEvidence?.expectedRunnerLabels?.reconcile,'ubuntu-24.04');
 });
 
+
+test('source intake registers unfinished Rojo once without inventing design or resetting existing progress',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'source-intake-'));
+  try{
+    writePolicy(root);
+    write(root,'game-catalog.json',{games:[{id:'owner-game',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}],permanentRemovalPolicy:{ids:['removed']}});
+    const old={gameId:'owner-game',status:'ACTIVE',currentStep:'ROBLOX_RUNTIME_QA',robloxSourceCommit:'exact-owner-source',robloxRuntimePassed:false};
+    write(root,'development-queue.json',{items:[old]});
+    for(const id of ['owner-game','new-game','removed','empty']){
+      write(root,`roblox-games/${id}/default.project.json`,{name:id,tree:{$className:'DataModel'}});
+      if(id!=='empty')write(root,`roblox-games/${id}/server/Game.server.luau`,'local savedProgress = 12\n');
+    }
+    const first=reconcileDevelopmentQueue({root});
+    assert.deepEqual(first.admittedSourceGames,['new-game']);
+    const saved=JSON.parse(fs.readFileSync(path.join(root,'game-catalog.json')));
+    const added=saved.games.find(game=>game.id==='new-game');
+    assert.equal(added.sourceIntake.designVerified,false);assert.equal(added.sourceIntake.runtimeVerified,false);
+    assert.equal(added.sourceIntake.externalReleaseApproved,false);
+    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root,'development-queue.json'))).items,[{...old,sourceContinuationPendingAdmission:true}]);
+    assert.equal(reconcileDevelopmentQueue({root}).changed,false);
+    assert.equal(fs.readFileSync(path.join(root,'roblox-games/new-game/server/Game.server.luau'),'utf8'),'local savedProgress = 12\n');
+    write(root,'game-seed-state.json',{seeds:[{id:'owner-game',gameId:'owner-game',status:'PAUSED',productionClass:'DEVELOPMENT_CONFIRMED'}]});
+    assert.ok(reconcileDevelopmentQueue({root}).removed.includes('owner-game'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});

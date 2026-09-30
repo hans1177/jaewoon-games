@@ -227,7 +227,7 @@ test('Unity Web gates upper-platform development without deployment or release',
   assert.equal(roadmap.unityWebFirstStage?.nativeDevelopmentMayRunWithoutWebBuild,false);
   assert.equal(roadmap.webCompanion?.developmentAdmissionGate,true);
   assert.equal(roadmap.webCompanion?.releaseGate,false);
-  assert.equal(roadmap.changeRecord?.legacyWebFirstCleanup20260923?.activeUnityWebRole,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
+  assert.equal(roadmap.directNativeDualPlatformDevelopment?.unityWebMode,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
   assert.equal(roadmap.departmentDrivenPortfolioDevelopmentControl?.runtimeExecution?.unityWebValidationSurface?.role,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
   assert.equal(roadmap.departmentDrivenPortfolioDevelopmentControl?.runtimeExecution?.unityWebValidationSurface?.developmentAdmissionGate,true);
   assert.equal(roadmap.canonicalProductionDepartments?.unityWebRole,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');

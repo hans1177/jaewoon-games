@@ -7069,6 +7069,18 @@
           "nextCycleRoute": "vibe2-fanin-refill"
         }
       }
+    },
+    "existingRobloxSourceIntake": {
+      "authority": "OWNER_DIRECTIVE_2026-09-30",
+      "enabled": true,
+      "entry": "tools/company-development-queue-reconcile.mjs#discoverExistingRobloxGames",
+      "source": "roblox-games/<gameId>/default.project.json AND EXISTING_LUA_SOURCE",
+      "catalogAdmission": "DEVELOPMENT_CONFIRMED_ONLY",
+      "preserveExistingCodeAndSaves": true,
+      "removedOrPausedGamesNeverReactivated": true,
+      "designOrRuntimePassInferredFromSourcePresence": false,
+      "externalReleaseApprovalInferred": false,
+      "ownerExclusiveScopeStillProtected": true
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
@@ -20949,7 +20961,22 @@
         "ROJO_OR_EQUIVALENT_BUILD_PASS",
         "EXISTING_PLACE_PUBLISHED_VERSION",
         "TEMPORARY_PUBLISH_ARTIFACT_REMOVED_IF_CREATED"
-      ]
+      ],
+      "handoff": {
+        "authority": "OWNER_DIRECTIVE_2026-09-30",
+        "scope": "PER_GAME",
+        "otherGamesContinue": true,
+        "resumeTrigger": "EXPLICIT_OWNER_SCOPE_RELEASE",
+        "idleTimeoutNeverTransfersOwnership": true,
+        "resumeExistingSourceAndQueue": true,
+        "sourceAndSaveResetForbidden": true,
+        "enforcedAt": [
+          "PLANNING",
+          "SINGLE_AND_BATCH_RESERVATION",
+          "PRE_SOURCE_GENERATION",
+          "PRE_CANDIDATE_WRITE"
+        ]
+      }
     }
   },
   "planningGrowthMarketingDepartment": {
@@ -25608,7 +25635,34 @@
     "publicationOutcomeMayNotPauseEvolution": true,
     "internalOrExternalExposureStateMayNotPauseEvolution": true,
     "platformVerifiedLoop": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.verifiedF0F9PublicationLoop",
-    "terminalCompletionStateForbidden": true
+    "terminalCompletionStateForbidden": true,
+    "worldLobbyFirst": {
+      "authority": "OWNER_DIRECTIVE_2026-09-30",
+      "appliesTo": "ALL_ACTIVE_GAME_BUILD_UP",
+      "execution": "EXISTING_PLANNER_AND_SOURCE_WORKER",
+      "sequence": [
+        "F2_WORLD_LOBBY_AND_SAFE_SPAWN",
+        "F5_ENTRY_UI_AND_REAL_START",
+        "F8_CORE_PLAY_CONNECTION",
+        "F9_START_RETURN_REGRESSION"
+      ],
+      "conceptAuthority": "CURRENT_GAME_SOURCE_AND_DESIGN",
+      "requirements": [
+        "GAME_SPECIFIC_SPATIAL_LAYOUT_AND_LANDMARK",
+        "COHERENT_LIGHTING_MATERIAL_AUDIO",
+        "SAFE_SPAWN_AND_COLLISION",
+        "REAL_GOAL_START_AND_RETURN_FLOW",
+        "STATE_BOUND_UI",
+        "LOW_END_DEVICE_BUDGET"
+      ],
+      "existingLobbyReuseRequired": true,
+      "genericColorSwapLobbyForbidden": true,
+      "rebuildEveryCycleForbidden": true,
+      "continueFeatureBuildUpAfterLobby": true,
+      "studioWindowsMax": 1,
+      "multiplayerAcceptance": "STATIC_CODE_CONTRACT",
+      "runtimeVerifiedOnlyWhenObserved": true
+    }
   },
   "robloxNativeCodingQualityContract": {
     "version": 3,

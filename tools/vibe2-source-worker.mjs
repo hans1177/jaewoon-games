@@ -3,6 +3,7 @@
 // 기존 게임 루트만 사용하며, 소유자 지시가 명시된 Web 프로토타입은 같은 index 파일 전체 교체를 허용한다.
 
 import fs from 'node:fs';
+import { ownerDevelopmentHeld } from './vibe2-queue-control.mjs';
 import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
@@ -3054,10 +3055,19 @@ export function buildSpecializedVerificationRequest(order={}){
 }
 function waitingDesignEvidence(){return{autoPlayer:{status:'WAITING_EVIDENCE',verified:false},telemetry:{status:'WAITING_EVIDENCE',verified:false},designReview:{status:'WAITING_EVIDENCE',verified:false,decision:null},qa:{status:'WAITING_EVIDENCE',verified:false}};}
 
+export function assertOwnerDevelopmentAvailable({cwd=process.cwd(),order={}}={}){
+  const file=path.join(cwd,'company-learning/platform-release-roadmap.json');
+  const policy=fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')):{};
+  const sourceGame=posix(order?.source?.root).match(/^(?:roblox|unity|web)-games\/([^/]+)$/)?.[1];
+  const ids=unique([order.gameId,order.selectedTask?.gameId,sourceGame]);
+  for(const id of ids)if(ownerDevelopmentHeld(policy,id,order.target))throw new Error(`OWNER_DIRECT_DEVELOPMENT_HELD:${id}`);
+}
+
 export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vibe2/work-order.json',outputRoot='.vibe2/candidates',model=DEFAULT_MODEL,responseFile='',responseFiles=[],applySource=false,luauCompiler=clean(process.env.VIBE2_LUAU_COMPILER)}={}){
   const order=readJson(path.resolve(cwd,workOrderFile));
   if(!order?.run||order?.workMode!=='source-change-candidate')throw new Error('실행 가능한 source-change work order 필요');
   if(order?.workerPolicy?.directMainWrite!==false)throw new Error('directMainWrite 정책 위반');
+  assertOwnerDevelopmentAvailable({cwd,order});
   const centralPolicyPreflight=assertCompiledWorkContractFresh({cwd,contract:order?.compiledWorkContract||{},phase:'PRE_SOURCE_GENERATION'});
   const target=clean(order.target).toLowerCase();
   const developmentAuthority=target==='system'
@@ -3297,6 +3307,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     }
   }
   const centralPolicyCompletion=assertCompiledWorkContractFresh({cwd,contract:order?.compiledWorkContract||{},phase:'PRE_CANDIDATE_WRITE'});
+  assertOwnerDevelopmentAvailable({cwd,order});
   const taskId=safeId(order.taskId);
   const candidateRoot=path.resolve(cwd,outputRoot,taskId);
   const candidateManifestPath=posix(path.relative(cwd,path.join(candidateRoot,'manifest.json')));
