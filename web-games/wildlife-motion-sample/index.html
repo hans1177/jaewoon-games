@@ -3,525 +3,218 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>스타일라이즈드 곰 애니메이션 샘플</title>
+<title>3D 곰 모션 샘플</title>
 <style>
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#172018;color:#f7f2e8;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#182016;color:#f3f0df;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 #app{position:fixed;inset:0}
 canvas{display:block;width:100%;height:100%;touch-action:none}
-.hud{position:fixed;left:max(12px,env(safe-area-inset-left));top:max(12px,env(safe-area-inset-top));z-index:5;background:rgba(17,23,16,.72);backdrop-filter:blur(10px);padding:12px 14px;border:1px solid rgba(255,255,255,.12);border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.28)}
-.hud b{display:block;font-size:15px;margin-bottom:4px}.hud span{font-size:12px;color:#d4dcc9}
-.badge{margin-top:6px;font-size:11px;opacity:.8}
-.controls{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:5;display:flex;gap:8px;padding:8px;background:rgba(17,23,16,.70);border-radius:16px;border:1px solid rgba(255,255,255,.1)}
-button{appearance:none;border:0;border-radius:11px;background:#e5ddc1;color:#1f241c;font-weight:800;padding:10px 14px;min-width:64px}
+.hud{position:fixed;left:max(12px,env(safe-area-inset-left));top:max(12px,env(safe-area-inset-top));z-index:5;background:rgba(20,26,18,.76);backdrop-filter:blur(8px);padding:12px 14px;border:1px solid rgba(255,255,255,.12);border-radius:14px;box-shadow:0 10px 28px rgba(0,0,0,.26)}
+.hud b{display:block;font-size:15px;margin-bottom:4px}.hud span{font-size:12px;color:#cbd4bd}
+.controls{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:5;display:flex;gap:8px;padding:8px;background:rgba(20,26,18,.72);border-radius:16px;border:1px solid rgba(255,255,255,.1)}
+button{appearance:none;border:0;border-radius:11px;background:#e7e0bd;color:#21261c;font-weight:800;padding:10px 14px;min-width:64px}
 button.active{background:#fff;color:#111}
 @media(max-width:560px){.controls{width:calc(100% - 24px);justify-content:space-between}.controls button{flex:1;padding:10px 6px}.hud{right:12px}}
 </style>
 </head>
 <body>
 <div id="app"></div>
-<div class="hud">
-  <b>곰 애니메이션 샘플 V3</b>
-  <span id="state">걷기 · 발 접지 · 어깨/골반 위상차 · 척추 후행</span>
-  <div class="badge">3D 관절 + 키포즈 + 오버랩 + 스프링 블렌드</div>
-</div>
+<div class="hud"><b>곰 3D 관절 모션 샘플</b><span id="state">걷기 · 4족 대각 보행 · 발 접지/몸통 반동</span></div>
 <div class="controls">
-  <button data-state="walk" class="active">걷기</button>
-  <button data-state="run">달리기</button>
-  <button data-state="alert">경계</button>
-  <button data-state="attack">공격</button>
+<button data-state="walk" class="active">걷기</button>
+<button data-state="run">달리기</button>
+<button data-state="alert">경계</button>
+<button data-state="attack">공격</button>
 </div>
 <script type="module">
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 
 const app=document.querySelector('#app');
 const stateText=document.querySelector('#state');
-
 const scene=new THREE.Scene();
-scene.background=new THREE.Color(0x1d291d);
-scene.fog=new THREE.Fog(0x1d291d,20,60);
+scene.background=new THREE.Color(0x1c2819);
+scene.fog=new THREE.FogExp2(0x1c2819,.026);
 
-const camera=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,.1,120);
-camera.position.set(9.8,5.7,12.4);
+const camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,.1,120);
+camera.position.set(11,7.2,13.5);
+camera.lookAt(0,2.2,0);
 
 const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.8));
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));
 renderer.setSize(innerWidth,innerHeight);
 renderer.shadowMap.enabled=true;
 renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 renderer.outputColorSpace=THREE.SRGBColorSpace;
-renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.05;
 app.appendChild(renderer.domElement);
 
-scene.add(new THREE.HemisphereLight(0xd8e9c9,0x20291f,1.75));
-const sun=new THREE.DirectionalLight(0xffe7b8,2.25);
-sun.position.set(-9,15,8);
-sun.castShadow=true;
-sun.shadow.mapSize.set(2048,2048);
+scene.add(new THREE.HemisphereLight(0xcfe1bf,0x263020,1.8));
+const sun=new THREE.DirectionalLight(0xffedc2,2.3);
+sun.position.set(-8,14,7); sun.castShadow=true;
+sun.shadow.mapSize.set(1024,1024);
 sun.shadow.camera.left=-18;sun.shadow.camera.right=18;sun.shadow.camera.top=18;sun.shadow.camera.bottom=-18;
 scene.add(sun);
 
-const rim=new THREE.DirectionalLight(0xa8c7d8,.7);
-rim.position.set(7,8,-10);
-scene.add(rim);
-
 const ground=new THREE.Mesh(
-  new THREE.PlaneGeometry(80,80),
-  new THREE.MeshStandardMaterial({color:0x556847,roughness:1})
+  new THREE.PlaneGeometry(70,70,1,1),
+  new THREE.MeshStandardMaterial({color:0x526444,roughness:1})
 );
-ground.rotation.x=-Math.PI/2;
-ground.receiveShadow=true;
-scene.add(ground);
+ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
 
-const trunkMat=new THREE.MeshStandardMaterial({color:0x5a4130,roughness:1});
-const leafMats=[0x294f32,0x37673d,0x426e44].map(c=>new THREE.MeshStandardMaterial({color:c,roughness:1}));
-for(let i=0;i<30;i++){
-  const a=(i/30)*Math.PI*2+(i%4)*.11;
-  const r=14+(i%5)*2.6;
+const trunkMat=new THREE.MeshStandardMaterial({color:0x4b3b2d,roughness:1,flatShading:true});
+const leafMats=[0x355034,0x405d38,0x2e4930].map(c=>new THREE.MeshStandardMaterial({color:c,roughness:1,flatShading:true}));
+for(let i=0;i<34;i++){
+  const a=(i/34)*Math.PI*2+(i%3)*.13;
+  const r=14+(i%6)*2.4;
   const x=Math.cos(a)*r,z=Math.sin(a)*r;
-  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.28,.48,5.2,7),trunkMat);
-  trunk.position.set(x,2.6,z);trunk.castShadow=true;scene.add(trunk);
-  for(let j=0;j<3;j++){
-    const crown=new THREE.Mesh(new THREE.ConeGeometry(2.0-j*.22,3.4,8),leafMats[(i+j)%leafMats.length]);
-    crown.position.set(x,5.2+j*1.25,z);
-    crown.castShadow=true;
-    scene.add(crown);
-  }
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.24,.38,4.5,6),trunkMat);
+  trunk.position.set(x,2.25,z);trunk.castShadow=true;scene.add(trunk);
+  const crown=new THREE.Mesh(new THREE.ConeGeometry(1.8+(i%3)*.25,5.2,7),leafMats[i%leafMats.length]);
+  crown.position.set(x,6,z);crown.castShadow=true;scene.add(crown);
 }
 
-const rockMat=new THREE.MeshStandardMaterial({color:0x74766c,roughness:1});
-for(let i=0;i<13;i++){
-  const rock=new THREE.Mesh(new THREE.DodecahedronGeometry(.45+(i%4)*.14,0),rockMat);
-  const a=i*.92,r=8+(i%5)*1.45;
-  rock.position.set(Math.cos(a)*r,.32,Math.sin(a)*r);
-  rock.scale.set(1.45,.68,1);
-  rock.rotation.y=a;
-  rock.castShadow=true;
-  scene.add(rock);
+const rockMat=new THREE.MeshStandardMaterial({color:0x77766b,roughness:1,flatShading:true});
+for(let i=0;i<14;i++){
+  const rock=new THREE.Mesh(new THREE.DodecahedronGeometry(.45+(i%4)*.12,0),rockMat);
+  const a=i*.89,r=8+(i%5)*1.3;
+  rock.position.set(Math.cos(a)*r,.3,Math.sin(a)*r);rock.scale.set(1.4,.7,1);rock.rotation.y=a;rock.castShadow=true;scene.add(rock);
 }
 
-function mat(color,rough=.88,metal=.0){
-  return new THREE.MeshStandardMaterial({color,roughness:rough,metalness:metal});
-}
-const M={
-  fur:mat(0x5a3d2c,.94),
-  fur2:mat(0x6a4933,.96),
-  dark:mat(0x2c211b,.98),
-  light:mat(0x8b6548,.95),
-  cream:mat(0xc9a881,.92),
-  eye:mat(0x17120f,.35),
-  eyeWet:mat(0x312015,.18),
-  nose:mat(0x1a1513,.28),
-  paw:mat(0x241b17,.99),
-  mouth:mat(0x3b1717,.95),
-};
+const bear=new THREE.Group();scene.add(bear);
+const matBody=new THREE.MeshStandardMaterial({color:0x4e372b,roughness:.93,flatShading:true});
+const matChest=new THREE.MeshStandardMaterial({color:0x604536,roughness:.96,flatShading:true});
+const matDark=new THREE.MeshStandardMaterial({color:0x241c18,roughness:1,flatShading:true});
+const matLight=new THREE.MeshStandardMaterial({color:0x80614a,roughness:1,flatShading:true});
 
-function ellipsoid(scale,material,segments=14){
-  const m=new THREE.Mesh(new THREE.SphereGeometry(1,segments,Math.max(8,segments-4)),material);
-  m.scale.set(scale[0],scale[1],scale[2]);
-  m.castShadow=true;
-  m.receiveShadow=true;
-  return m;
+function ellipsoid(name,scale,mat,seg=8){
+  const m=new THREE.Mesh(new THREE.SphereGeometry(1,seg,Math.max(5,seg-2)),mat);
+  m.name=name;m.scale.set(...scale);m.castShadow=true;m.receiveShadow=true;return m;
 }
-function tuft(scale,material,rotZ=0){
-  const m=new THREE.Mesh(new THREE.ConeGeometry(1,1,5),material);
-  m.scale.set(scale[0],scale[1],scale[2]);
-  m.rotation.z=rotZ;
-  m.castShadow=true;
-  return m;
-}
-function pivot(name,parent,pos){
-  const g=new THREE.Group();g.name=name;g.position.set(pos[0],pos[1],pos[2]);parent.add(g);return g;
-}
-function capsule(parent,name,len,r,material){
-  const p=pivot(name,parent,[0,0,0]);
-  const mesh=new THREE.Mesh(new THREE.CapsuleGeometry(r,len,4,8),material);
-  mesh.rotation.z=Math.PI/2;
-  mesh.rotation.y=Math.PI/2;
-  mesh.position.y=-len*.5;
-  mesh.castShadow=true;
-  p.add(mesh);
-  return p;
-}
-function clamp01(x){return Math.max(0,Math.min(1,x))}
-function smoothstep(x){x=clamp01(x);return x*x*(3-2*x)}
-function smoother(x){x=clamp01(x);return x*x*x*(x*(x*6-15)+10)}
-function easeOutBack(x){x=clamp01(x);const c1=1.70158,c3=c1+1;return 1+c3*(x-1)**3+c1*(x-1)**2}
-function pulse(t,a,b,c,d){
-  if(t<a||t>d)return 0;
-  if(t<b)return smoothstep((t-a)/(b-a));
-  if(t<c)return 1;
-  return 1-smoothstep((t-c)/(d-c));
+function limb(name,len,width,mat){
+  const pivot=new THREE.Group();pivot.name=name;
+  const mesh=new THREE.Mesh(new THREE.CylinderGeometry(width*.8,width,len,6),mat);
+  mesh.position.y=-len*.5;mesh.castShadow=true;pivot.add(mesh);return {pivot,mesh};
 }
 
-const bear=new THREE.Group();
-bear.name='AnimatedBear';
-scene.add(bear);
+const body=ellipsoid('Body',[1.72,1.04,2.25],matBody,9);body.position.y=2.42;bear.add(body);
+const chest=ellipsoid('Chest',[1.82,1.18,1.48],matChest,9);chest.position.set(0,.16,-1.18);body.add(chest);
+const neck=new THREE.Group();neck.position.set(0,.26,-1.42);neck.rotation.x=-.18;chest.add(neck);
+const neckMesh=ellipsoid('Neck',[.83,.68,.74],matChest,8);neckMesh.position.set(0,.24,-.36);neck.add(neckMesh);
+const head=new THREE.Group();head.position.set(0,.38,-.72);neck.add(head);
+const headMesh=ellipsoid('Head',[1.12,.96,1.02],matBody,9);head.add(headMesh);
+const muzzle=new THREE.Group();muzzle.position.set(0,-.08,-.9);head.add(muzzle);
+const muzzleMesh=ellipsoid('Muzzle',[.78,.47,.62],matLight,8);muzzle.add(muzzleMesh);
+const nose=ellipsoid('Nose',[.32,.22,.2],matDark,7);nose.position.z=-.58;muzzle.add(nose);
+const jaw=new THREE.Group();jaw.position.set(0,-.31,-.05);muzzle.add(jaw);
+const jawMesh=ellipsoid('Jaw',[.66,.18,.5],matDark,7);jaw.add(jawMesh);
 
-const root=pivot('Root',bear,[0,0,0]);
-const pelvis=pivot('Pelvis',root,[0,2.45,.55]);
-const body=ellipsoid([1.62,1.0,1.80],M.fur,16);pelvis.add(body);
-
-const belly=ellipsoid([1.46,.82,1.45],M.fur2,14);belly.position.set(0,-.18,.38);pelvis.add(belly);
-const rump=ellipsoid([1.50,.92,1.32],M.fur,14);rump.position.set(0,.02,1.05);pelvis.add(rump);
-
-const spine=pivot('Spine',pelvis,[0,.16,-.82]);
-const chest=ellipsoid([1.86,1.18,1.46],M.fur2,16);spine.add(chest);
-const shoulderMass=ellipsoid([1.68,.72,1.20],M.dark,14);shoulderMass.position.set(0,.72,.06);spine.add(shoulderMass);
-const chestLight=ellipsoid([1.16,.66,.58],M.light,14);chestLight.position.set(0,-.24,-1.05);spine.add(chestLight);
-
-for(const side of [-1,1]){
-  const shoulderTuft=tuft([.38,.55,.34],M.fur2,side*.30);
-  shoulderTuft.position.set(side*1.43,.26,-.55);
-  shoulderTuft.rotation.x=-.5;
-  spine.add(shoulderTuft);
+for(const s of [-1,1]){
+  const earPivot=new THREE.Group();earPivot.position.set(s*.68,.73,-.03);head.add(earPivot);
+  const ear=ellipsoid('Ear',[.28,.3,.18],matBody,7);earPivot.add(ear);earPivot.userData.side=s;
+  const eye=ellipsoid('Eye',[.095,.095,.095],new THREE.MeshStandardMaterial({color:0x11100e,roughness:.7}),6);
+  eye.position.set(s*.39,.18,-.87);head.add(eye);
 }
-
-const neck=pivot('Neck',spine,[0,.36,-1.42]);
-const neckMass=ellipsoid([1.05,.83,.90],M.fur2,14);neckMass.position.set(0,.05,-.24);neck.add(neckMass);
-
-const head=pivot('Head',neck,[0,.30,-.90]);
-const headMass=ellipsoid([1.08,.98,1.02],M.fur,16);head.add(headMass);
-const browMass=ellipsoid([.84,.34,.55],M.fur2,14);browMass.position.set(0,.32,-.65);head.add(browMass);
-
-const muzzle=pivot('Muzzle',head,[0,-.10,-.82]);
-const muzzleMass=ellipsoid([.74,.48,.68],M.light,14);muzzle.add(muzzleMass);
-const nose=ellipsoid([.34,.24,.22],M.nose,14);nose.position.set(0,.04,-.63);muzzle.add(nose);
-
-const jaw=pivot('Jaw',muzzle,[0,-.29,-.08]);
-const jawMass=ellipsoid([.62,.21,.50],M.dark,12);jaw.add(jawMass);
-const lip=ellipsoid([.42,.08,.30],M.mouth,12);lip.position.set(0,.02,-.45);jaw.add(lip);
-
-const cheeks=[];
-for(const side of [-1,1]){
-  const cheek=ellipsoid([.43,.37,.35],M.fur2,12);
-  cheek.position.set(side*.66,-.02,-.55);
-  head.add(cheek);
-  cheeks.push(cheek);
-
-  const cheekTuft=tuft([.24,.34,.26],M.fur2,side*.55);
-  cheekTuft.position.set(side*.84,-.10,-.34);
-  cheekTuft.rotation.x=-.7;
-  head.add(cheekTuft);
-}
-
-const ears=[];
-for(const side of [-1,1]){
-  const ep=pivot(side<0?'EarL':'EarR',head,[side*.67,.72,-.08]);
-  const ear=ellipsoid([.30,.34,.20],M.fur,12);ep.add(ear);
-  const inner=ellipsoid([.18,.21,.09],M.light,10);inner.position.set(0,0,-.14);ep.add(inner);
-  ears.push(ep);
-}
-
-const eyes=[];
-const brows=[];
-for(const side of [-1,1]){
-  const eyeWhite=ellipsoid([.18,.16,.10],M.cream,12);eyeWhite.position.set(side*.39,.15,-.84);head.add(eyeWhite);
-  const eye=ellipsoid([.105,.115,.07],M.eyeWet,12);eye.position.set(side*.39,.15,-.93);head.add(eye);
-  eyes.push(eye);
-
-  const brow=pivot(side<0?'BrowL':'BrowR',head,[side*.38,.39,-.87]);
-  const browMesh=ellipsoid([.28,.08,.07],M.dark,10);browMesh.rotation.z=side*.12;brow.add(browMesh);
-  brows.push(brow);
-}
+const hump=ellipsoid('Hump',[1.55,.63,.87],matDark,8);hump.position.set(0,.76,.06);chest.add(hump);
 
 const legs={};
-function makeLeg(key,parent,x,z,front){
-  const hip=pivot(key+'Hip',parent,[x,-.50,z]);
-  const upper=ellipsoid([.48,.79,.48],front?M.fur2:M.fur,12);upper.position.set(0,-.64,0);hip.add(upper);
-  const knee=pivot(key+'Knee',hip,[0,-1.18,.02]);
-  const lower=ellipsoid([.38,.72,.38],M.dark,12);lower.position.set(0,-.58,.02);knee.add(lower);
-  const ankle=pivot(key+'Ankle',knee,[0,-1.06,.03]);
-  const paw=ellipsoid([.48,.22,.68],M.paw,12);paw.position.set(0,-.14,-.19);ankle.add(paw);
-  const toe=ellipsoid([.45,.13,.39],M.dark,12);toe.position.set(0,-.12,-.63);ankle.add(toe);
-  legs[key]={hip,knee,ankle,paw};
+function makeLeg(key,parent,x,z,upperLen,lowerLen,w){
+  const upper=limb(key+'Upper',upperLen,w,matBody);upper.pivot.position.set(x,-.44,z);parent.add(upper.pivot);
+  const lower=limb(key+'Lower',lowerLen,w*.82,matDark);lower.pivot.position.y=-upperLen;upper.pivot.add(lower.pivot);
+  const foot=ellipsoid(key+'Foot',[w*1.15,.22,w*1.42],matDark,7);foot.position.set(0,-lowerLen,-w*.22);lower.pivot.add(foot);
+  legs[key]={upper:upper.pivot,lower:lower.pivot,foot};
 }
-makeLeg('FL',spine,-1.11,-.40,true);
-makeLeg('FR',spine, 1.11,-.40,true);
-makeLeg('BL',pelvis,-1.04,1.05,false);
-makeLeg('BR',pelvis, 1.04,1.05,false);
+makeLeg('FL',chest,-1.05,-.17,1.42,1.18,.34);
+makeLeg('FR',chest, 1.05,-.17,1.42,1.18,.34);
+makeLeg('BL',body,-1.05,1.35,1.48,1.15,.35);
+makeLeg('BR',body, 1.05,1.35,1.48,1.15,.35);
 
-const tailBase=pivot('TailBase',pelvis,[0,.15,1.72]);
-const tailMid=pivot('TailMid',tailBase,[0,0,.55]);
-const tail0=ellipsoid([.35,.35,.55],M.fur,12);tail0.position.z=.32;tailBase.add(tail0);
-const tail1=ellipsoid([.28,.28,.45],M.fur2,12);tail1.position.z=.30;tailMid.add(tail1);
+const tail=new THREE.Group();tail.position.set(0,.05,2.08);body.add(tail);
+const tailMesh=ellipsoid('Tail',[.34,.34,.48],matBody,7);tailMesh.position.z=.34;tail.add(tailMesh);
 
-const shadow=new THREE.Mesh(
-  new THREE.CircleGeometry(2.2,32),
-  new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:.23,depthWrite:false})
-);
-shadow.rotation.x=-Math.PI/2;shadow.position.y=.018;scene.add(shadow);
-
-const path=new THREE.CatmullRomCurve3([
-  new THREE.Vector3(-5.8,0,-2.8),
-  new THREE.Vector3(-1.5,0,-4.2),
-  new THREE.Vector3(4.8,0,-2.0),
-  new THREE.Vector3(5.4,0,2.8),
-  new THREE.Vector3(1.1,0,4.4),
-  new THREE.Vector3(-5.2,0,2.6),
-],true,'catmullrom',.55);
-
-const spring=(value,target,velocity,frequency,dt)=>{
-  const f=Math.max(.01,frequency);
-  const omega=2*Math.PI*f;
-  const x=value-target;
-  const exp=Math.exp(-omega*dt);
-  const newValue=target+(x+(velocity+omega*x)*dt)*exp;
-  const newVelocity=(velocity-omega*(velocity+omega*x)*dt)*exp;
-  return [newValue,newVelocity];
-};
-
-const S={
-  mode:'walk',
-  requestedSpeed:4.6,
-  speed:0,
-  speedVel:0,
-  gaitBlend:.25,
-  gaitBlendVel:0,
-  phase:0,
-  pathT:.02,
-  turnLean:0,
-  turnLeanVel:0,
-  spineLag:0,
-  spineLagVel:0,
-  headLag:0,
-  headLagVel:0,
-  attackTime:0,
-  alertWeight:0,
-  alertVel:0,
-  attackWeight:0,
-  attackVel:0,
-  blink:0,
-  nextBlink:2.8,
-  lastTangent:new THREE.Vector3(0,0,1),
-  footLock:{FL:0,FR:0,BL:0,BR:0},
-};
-
+let mode='walk',clock=0,movePhase=0,attackClock=0;
 const modes={
-  walk:{speed:4.6,label:'걷기 · 발 접지 · 어깨/골반 위상차 · 척추 후행'},
-  run:{speed:10.7,label:'달리기 · suspension · 척추 압축/신장 · 머리 후행'},
-  alert:{speed:0,label:'경계 · 키포즈 정지 · 호흡/귀/시선 secondary motion'},
-  attack:{speed:0,label:'공격 · anticipation → contact → follow-through → settle'},
+  walk:{speed:4.8,label:'걷기 · 4족 대각 보행 · 발 접지/몸통 반동'},
+  run:{speed:10.5,label:'달리기 · 보폭 확대 · 척추 압축/신장 · 머리 카운터밸런스'},
+  alert:{speed:0,label:'경계 · 체중 전방 이동 · 목/귀 반응 · 호흡 유지'},
+  attack:{speed:0,label:'공격 · 선행 체중 이동 → 앞발/상체 타격 → 회복'}
 };
-function setMode(mode){
-  S.mode=mode;
-  S.requestedSpeed=modes[mode].speed;
-  S.attackTime=0;
-  document.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.state===mode));
-  stateText.textContent=modes[mode].label;
+
+function setMode(next){
+  mode=next;attackClock=0;
+  document.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.state===next));
+  stateText.textContent=modes[next].label;
 }
 document.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.state)));
 
-function phase01(x){x=x/(Math.PI*2);return x-Math.floor(x)}
-function legCycle(phase){
-  const p=phase01(phase);
-  // stance가 길고 swing은 짧게: 발이 바닥에 붙어 있는 시간이 길어 보여야 한다.
-  if(p<.58){
-    const u=p/.58;
-    return {x:THREE.MathUtils.lerp(.34,-.34,smoother(u)),y:0,stance:1};
-  }
-  const u=(p-.58)/.42;
-  const arc=Math.sin(Math.PI*u);
-  return {x:THREE.MathUtils.lerp(-.34,.34,smoother(u)),y:arc,stance:0};
-}
-function applyLeg(key,phase,amp,lift,runBias){
-  const c=legCycle(phase);
-  const hip=legs[key].hip,knee=legs[key].knee,ankle=legs[key].ankle;
-  const stride=c.x*amp;
-  const airborne=c.y;
-  const kneeBend=(.16+airborne*.62+runBias*.12)*amp;
-  const hipTarget=stride*(.88+runBias*.12);
-  hip.rotation.x=THREE.MathUtils.lerp(hip.rotation.x,hipTarget,1-Math.exp(-18*dtGlobal));
-  hip.rotation.z=THREE.MathUtils.lerp(hip.rotation.z,(key[1]==='L'?-1:1)*S.turnLean*.13,1-Math.exp(-12*dtGlobal));
-  knee.rotation.x=THREE.MathUtils.lerp(knee.rotation.x,-kneeBend,1-Math.exp(-20*dtGlobal));
-  ankle.rotation.x=THREE.MathUtils.lerp(ankle.rotation.x,-hipTarget*.28+kneeBend*.24,1-Math.exp(-22*dtGlobal));
-  const lock=c.stance;
-  const desiredLift=airborne*lift;
-  ankle.position.y=THREE.MathUtils.lerp(ankle.position.y,-1.06+desiredLift,1-Math.exp(-(lock?24:16)*dtGlobal));
-  legs[key].paw.scale.y=THREE.MathUtils.lerp(legs[key].paw.scale.y,1+(lock?.06:-.02)*amp,1-Math.exp(-16*dtGlobal));
+function damp(a,b,s,dt){return THREE.MathUtils.lerp(a,b,1-Math.exp(-s*dt))}
+function legPose(key,phase,stride,knee,lift){
+  const s=Math.sin(phase),c=Math.cos(phase);
+  const swing=s*stride;
+  const bend=Math.max(0,c)*knee+Math.max(0,s)*knee*.28;
+  legs[key].upper.rotation.x=damp(legs[key].upper.rotation.x,swing,15,dtGlobal);
+  legs[key].lower.rotation.x=damp(legs[key].lower.rotation.x,-bend,17,dtGlobal);
+  legs[key].foot.rotation.x=damp(legs[key].foot.rotation.x,-swing*.30+bend*.16,18,dtGlobal);
+  legs[key].foot.position.y=-1.15+Math.max(0,s)*lift;
 }
 
-function updateLocomotion(dt){
-  [S.speed,S.speedVel]=spring(S.speed,S.requestedSpeed,S.speedVel,1.65,dt);
-  const runTarget=S.mode==='run'?1:0;
-  [S.gaitBlend,S.gaitBlendVel]=spring(S.gaitBlend,runTarget,S.gaitBlendVel,1.25,dt);
-
-  const moving=Math.abs(S.speed)>.05;
-  const normalized=clamp01(S.speed/10.7);
-  const cadence=THREE.MathUtils.lerp(4.25,7.35,S.gaitBlend)*THREE.MathUtils.lerp(.55,1,normalized);
-  if(moving)S.phase+=dt*cadence;
-
-  const amp=THREE.MathUtils.lerp(.68,1.15,S.gaitBlend)*THREE.MathUtils.lerp(.35,1,normalized);
-  const lift=THREE.MathUtils.lerp(.15,.30,S.gaitBlend);
-  applyLeg('FL',S.phase,amp,lift,S.gaitBlend);
-  applyLeg('BR',S.phase+.04,amp,lift,S.gaitBlend);
-  applyLeg('FR',S.phase+Math.PI,amp,lift,S.gaitBlend);
-  applyLeg('BL',S.phase+Math.PI+.04,amp,lift,S.gaitBlend);
-
-  const compression=Math.max(0,Math.cos(S.phase*2));
-  const suspension=Math.sin(S.phase*2);
-  const lateral=Math.sin(S.phase);
-  const bodyBob=moving?(Math.abs(suspension)*THREE.MathUtils.lerp(.045,.115,S.gaitBlend))*amp:0;
-  const shoulderRoll=moving?lateral*THREE.MathUtils.lerp(.025,.052,S.gaitBlend)*amp:0;
-  const pelvisRoll=-shoulderRoll*.82;
-  const pelvisPitch=moving?suspension*THREE.MathUtils.lerp(.018,.048,S.gaitBlend)*amp:0;
-  const chestPitch=-pelvisPitch*.80;
-
-  pelvis.position.y=THREE.MathUtils.lerp(pelvis.position.y,2.45+bodyBob,1-Math.exp(-15*dt));
-  pelvis.rotation.z=THREE.MathUtils.lerp(pelvis.rotation.z,pelvisRoll+S.turnLean*.08,1-Math.exp(-13*dt));
-  pelvis.rotation.x=THREE.MathUtils.lerp(pelvis.rotation.x,pelvisPitch,1-Math.exp(-13*dt));
-  spine.rotation.z=THREE.MathUtils.lerp(spine.rotation.z,shoulderRoll-S.turnLean*.05,1-Math.exp(-13*dt));
-  spine.rotation.x=THREE.MathUtils.lerp(spine.rotation.x,chestPitch-S.spineLag*.08,1-Math.exp(-12*dt));
-
-  const squash=1-compression*THREE.MathUtils.lerp(.012,.028,S.gaitBlend)*amp;
-  const stretch=1+compression*THREE.MathUtils.lerp(.009,.022,S.gaitBlend)*amp;
-  body.scale.y=THREE.MathUtils.lerp(body.scale.y,squash,1-Math.exp(-12*dt));
-  body.scale.z=THREE.MathUtils.lerp(body.scale.z,stretch,1-Math.exp(-12*dt));
-  chest.scale.y=THREE.MathUtils.lerp(chest.scale.y,1-(1-squash)*.7,1-Math.exp(-11*dt));
-
-  const headCounter=moving?(-suspension*.055-lateral*.018):Math.sin(clock*.72)*.018;
-  neck.rotation.x=THREE.MathUtils.lerp(neck.rotation.x,-.18+headCounter*.45-S.spineLag*.05,1-Math.exp(-10*dt));
-  head.rotation.x=THREE.MathUtils.lerp(head.rotation.x,headCounter-S.headLag*.09,1-Math.exp(-9*dt));
-  head.rotation.z=THREE.MathUtils.lerp(head.rotation.z,-shoulderRoll*.75,1-Math.exp(-9*dt));
-
-  rump.scale.y=THREE.MathUtils.lerp(rump.scale.y,1+compression*.025*S.gaitBlend,1-Math.exp(-10*dt));
-  belly.scale.y=THREE.MathUtils.lerp(belly.scale.y,1-compression*.022*S.gaitBlend,1-Math.exp(-9*dt));
-}
-
-function updatePath(dt){
-  const moving=S.speed>.08;
-  if(!moving)return;
-  S.pathT=(S.pathT+dt*S.speed*.0108)%1;
-  const pos=path.getPointAt(S.pathT);
-  const tangent=path.getTangentAt(S.pathT).normalize();
-  const turn=S.lastTangent.clone().cross(tangent).y;
-  [S.turnLean,S.turnLeanVel]=spring(S.turnLean,THREE.MathUtils.clamp(turn*9,-1,1),S.turnLeanVel,1.9,dt);
-  [S.spineLag,S.spineLagVel]=spring(S.spineLag,S.turnLean,S.spineLagVel,1.15,dt);
-  [S.headLag,S.headLagVel]=spring(S.headLag,S.spineLag,S.headLagVel,.85,dt);
-  S.lastTangent.lerp(tangent,1-Math.exp(-7*dt)).normalize();
-
-  root.position.lerp(new THREE.Vector3(pos.x,0,pos.z),1-Math.exp(-7*dt));
-  const yaw=Math.atan2(tangent.x,tangent.z);
-  const q=new THREE.Quaternion().setFromEuler(new THREE.Euler(0,yaw,0));
-  root.quaternion.slerp(q,1-Math.exp(-6.5*dt));
-  shadow.position.set(root.position.x,.025,root.position.z);
-}
-
-function updateAlert(dt){
-  const target=S.mode==='alert'?1:0;
-  [S.alertWeight,S.alertVel]=spring(S.alertWeight,target,S.alertVel,1.45,dt);
-  const w=S.alertWeight;
-  if(w<.001)return;
-  spine.rotation.x+=-.08*w;
-  neck.rotation.x+=-.16*w;
-  head.rotation.x+=-.09*w;
-  head.rotation.y+=Math.sin(clock*.82)*.055*w;
-  brows[0].rotation.z=THREE.MathUtils.lerp(brows[0].rotation.z,-.12*w,.18);
-  brows[1].rotation.z=THREE.MathUtils.lerp(brows[1].rotation.z,.12*w,.18);
-  ears[0].rotation.z=THREE.MathUtils.lerp(ears[0].rotation.z,-.12*w,.2);
-  ears[1].rotation.z=THREE.MathUtils.lerp(ears[1].rotation.z,.12*w,.2);
-}
-
-function updateAttack(dt){
-  const target=S.mode==='attack'?1:0;
-  [S.attackWeight,S.attackVel]=spring(S.attackWeight,target,S.attackVel,2.2,dt);
-  if(S.mode==='attack')S.attackTime+=dt;
-  const w=S.attackWeight;
-  if(w<.001)return;
-
-  const t=(S.attackTime%1.38)/1.38;
-  const anticipation=pulse(t,.02,.10,.20,.31);
-  const contact=pulse(t,.22,.32,.38,.50);
-  const follow=pulse(t,.37,.48,.63,.78);
-  const settle=pulse(t,.68,.78,.90,.99);
-
-  pelvis.rotation.x+=.11*anticipation*w-.10*contact*w;
-  pelvis.rotation.z+=-.09*anticipation*w+.12*follow*w;
-  spine.rotation.x+=.16*anticipation*w-.31*contact*w+.10*follow*w;
-  spine.rotation.y+=-.12*anticipation*w+.22*contact*w-.08*follow*w;
-  neck.rotation.x+=.20*anticipation*w-.26*contact*w;
-  head.rotation.x+=.13*anticipation*w-.22*contact*w+.07*follow*w;
-  head.rotation.y+=.08*contact*w;
-
-  legs.FL.hip.rotation.x+=-.85*contact*w+.18*follow*w;
-  legs.FL.knee.rotation.x+=.28*contact*w;
-  legs.FR.hip.rotation.x+=.12*anticipation*w;
-
-  jaw.rotation.x=THREE.MathUtils.lerp(jaw.rotation.x,.42*contact*w,1-Math.exp(-22*dt));
-
-  const squash=1-.055*anticipation*w;
-  const stretch=1+.085*contact*w;
-  chest.scale.y*=squash;
-  chest.scale.z*=stretch;
-  cheeks.forEach((c,i)=>{
-    c.scale.x=THREE.MathUtils.lerp(c.scale.x,1+.045*contact*w,1-Math.exp(-14*dt));
-    c.scale.y=THREE.MathUtils.lerp(c.scale.y,1-.035*contact*w,1-Math.exp(-14*dt));
-  });
-
-  if(settle>0){
-    tailBase.rotation.y+=Math.sin(t*18)*.08*settle*w;
-  }
-}
-
-function updateSecondary(dt){
-  const breathing=.5+.5*Math.sin(clock*1.55);
-  if(S.speed<.35){
-    chest.scale.y*=1+breathing*.012;
-    belly.scale.y*=1+breathing*.018;
-  }
-
-  const tailDrive=Math.sin(clock*(S.speed>5?4.0:2.15)+S.phase*.18);
-  tailBase.rotation.y=THREE.MathUtils.lerp(tailBase.rotation.y,tailDrive*(.08+S.gaitBlend*.07)-S.turnLean*.12,1-Math.exp(-7.5*dt));
-  tailMid.rotation.y=THREE.MathUtils.lerp(tailMid.rotation.y,-tailBase.rotation.y*.68+Math.sin(clock*2.4+.7)*.035,1-Math.exp(-5.5*dt));
-
-  const earFlutter=Math.sin(clock*2.05+1.2)*.035;
-  ears[0].rotation.z=THREE.MathUtils.lerp(ears[0].rotation.z,-.05+earFlutter-S.turnLean*.03,1-Math.exp(-8*dt));
-  ears[1].rotation.z=THREE.MathUtils.lerp(ears[1].rotation.z,.05-earFlutter-S.turnLean*.03,1-Math.exp(-8*dt));
-
-  S.nextBlink-=dt;
-  if(S.nextBlink<=0){
-    S.blink=1;
-    S.nextBlink=2.4+Math.random()*2.8;
-  }
-  S.blink=Math.max(0,S.blink-dt*8.5);
-  const eyeY=Math.max(.08,1-S.blink*.90);
-  eyes.forEach(e=>e.scale.y=THREE.MathUtils.lerp(e.scale.y,eyeY,1-Math.exp(-25*dt)));
-
-  const look=Math.sin(clock*.41)*.025;
-  eyes[0].position.x=-.39+look;
-  eyes[1].position.x=.39+look;
-}
-
-function updateCamera(dt){
-  const forward=new THREE.Vector3(0,0,1).applyQuaternion(root.quaternion);
-  const right=new THREE.Vector3(1,0,0).applyQuaternion(root.quaternion);
-  const desired=root.position.clone().add(right.multiplyScalar(7.4)).add(forward.multiplyScalar(9.6)).add(new THREE.Vector3(0,5.6,0));
-  camera.position.lerp(desired,1-Math.exp(-2.8*dt));
-  const focus=root.position.clone().add(new THREE.Vector3(0,2.2,0)).add(forward.multiplyScalar(-.3));
-  camera.lookAt(focus);
-}
-
-let clock=0,last=performance.now(),dtGlobal=.016;
+let last=performance.now(),dtGlobal=.016;
 function animate(now){
   requestAnimationFrame(animate);
-  dtGlobal=Math.min(.032,(now-last)/1000);
-  last=now;
-  clock+=dtGlobal;
+  dtGlobal=Math.min(.033,(now-last)/1000);last=now;clock+=dtGlobal;
+  const speed=modes[mode].speed;
+  const moving=speed>0;
+  if(moving)movePhase+=dtGlobal*(mode==='run'?7.7:4.1);
 
-  updatePath(dtGlobal);
-  updateLocomotion(dtGlobal);
-  updateAlert(dtGlobal);
-  updateAttack(dtGlobal);
-  updateSecondary(dtGlobal);
-  updateCamera(dtGlobal);
+  let stride=mode==='run'?.66:.40,knee=mode==='run'?.56:.38,lift=mode==='run'?.24:.13;
+  if(moving){
+    legPose('FL',movePhase,stride,knee,lift);
+    legPose('BR',movePhase,stride,knee,lift);
+    legPose('FR',movePhase+Math.PI,stride,knee,lift);
+    legPose('BL',movePhase+Math.PI,stride,knee,lift);
+    const bob=Math.abs(Math.sin(movePhase*2))*(mode==='run'?.105:.055);
+    body.position.y=damp(body.position.y,2.42+bob,12,dtGlobal);
+    body.rotation.z=damp(body.rotation.z,Math.sin(movePhase)* (mode==='run'?.045:.025),12,dtGlobal);
+    chest.rotation.x=damp(chest.rotation.x,Math.sin(movePhase*2+.35)*(mode==='run'?.042:.022),12,dtGlobal);
+    head.rotation.x=damp(head.rotation.x,-Math.sin(movePhase*2+.4)*(mode==='run'?.07:.035),13,dtGlobal);
+    const radiusX=5.7,radiusZ=3.6;
+    const a=clock*(mode==='run'?.42:.22);
+    const x=Math.cos(a)*radiusX,z=Math.sin(a)*radiusZ;
+    const dx=-Math.sin(a)*radiusX,dz=Math.cos(a)*radiusZ;
+    bear.position.x=damp(bear.position.x,x,4.7,dtGlobal);
+    bear.position.z=damp(bear.position.z,z,4.7,dtGlobal);
+    bear.rotation.y=damp(bear.rotation.y,Math.atan2(dx,dz),5.2,dtGlobal);
+  }else{
+    body.position.y=damp(body.position.y,2.42+Math.sin(clock*1.7)*.022,8,dtGlobal);
+    for(const k of Object.keys(legs)){
+      legs[k].upper.rotation.x=damp(legs[k].upper.rotation.x,0,8,dtGlobal);
+      legs[k].lower.rotation.x=damp(legs[k].lower.rotation.x,0,8,dtGlobal);
+      legs[k].foot.rotation.x=damp(legs[k].foot.rotation.x,0,8,dtGlobal);
+    }
+    if(mode==='alert'){
+      chest.rotation.x=damp(chest.rotation.x,-.10,8,dtGlobal);
+      neck.rotation.x=damp(neck.rotation.x,-.30,8,dtGlobal);
+      head.rotation.x=damp(head.rotation.x,-.16,8,dtGlobal);
+    }else if(mode==='attack'){
+      attackClock+=dtGlobal;
+      const t=(attackClock%1.15)/1.15;
+      const wind=t<.22?t/.22:0;
+      const strike=t>=.22&&t<.52?Math.sin((t-.22)/.30*Math.PI):0;
+      chest.rotation.x=damp(chest.rotation.x,.17*wind-.32*strike,18,dtGlobal);
+      neck.rotation.x=damp(neck.rotation.x,-.18*wind+.34*strike,18,dtGlobal);
+      head.rotation.x=damp(head.rotation.x,-.12*wind+.25*strike,18,dtGlobal);
+      legs.FL.upper.rotation.x=damp(legs.FL.upper.rotation.x,-.55*strike,20,dtGlobal);
+      jaw.rotation.x=damp(jaw.rotation.x,.16*strike,20,dtGlobal);
+    }
+  }
+
+  tail.rotation.y=damp(tail.rotation.y,Math.sin(clock*(moving?3.1:1.3))*(moving?.18:.09),9,dtGlobal);
+  const ears=head.children.filter(x=>x.userData&&x.userData.side);
+  ears.forEach(e=>e.rotation.z=damp(e.rotation.z,e.userData.side*Math.sin(clock*2.15)*.035,10,dtGlobal));
 
   renderer.render(scene,camera);
 }
 requestAnimationFrame(animate);
 
 addEventListener('resize',()=>{
-  camera.aspect=innerWidth/innerHeight;
-  camera.updateProjectionMatrix();
+  camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
   renderer.setSize(innerWidth,innerHeight);
 });
 </script>
