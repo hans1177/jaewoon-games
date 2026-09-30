@@ -364,8 +364,8 @@ local survivorSpawns={
 }
 local monsterSpawn=Vector3.new(0,3,-54)
 local lobbySpawns={
- Vector3.new(-18,3,232),Vector3.new(-6,3,232),Vector3.new(6,3,232),Vector3.new(18,3,232),
- Vector3.new(-18,3,244),Vector3.new(-6,3,244),Vector3.new(6,3,244),Vector3.new(18,3,244)
+ Vector3.new(-21,3,270),Vector3.new(-7,3,270),Vector3.new(7,3,270),Vector3.new(21,3,270),
+ Vector3.new(-21,3,258),Vector3.new(-7,3,258),Vector3.new(7,3,258),Vector3.new(21,3,258)
 }
 local assetCache={}
 local objectiveState={round=0,done=0,total=0}
@@ -683,119 +683,196 @@ end
 local function makePhysicalLobby()
  local old=workspace:FindFirstChild("MidnightLobby");if old then old:Destroy()end
  local f=Instance.new("Folder");f.Name="MidnightLobby";f.Parent=workspace
+ local flickerLights={}
 
- -- 심야 대탈출 로비: 오래된 호텔 1층 홀 + 4개 승강기형 매칭 구역.
- local floor=zoneFloor(f,"HotelLobbyFloor",Vector3.new(226,1,156),Vector3.new(0,0,242),Color3.fromRGB(43,39,37),Enum.Material.Slate)
+ -- 폐호텔 메인홀: 이동 범위를 의도적으로 좁혀 빈 광장 느낌을 없앤다.
+ local floor=zoneFloor(f,"HotelLobbyFloor",Vector3.new(178,1.2,136),Vector3.new(0,.05,246),Color3.fromRGB(45,39,36),Enum.Material.Slate)
  floor:SetAttribute("PhysicalLobbyGround",true)
- zoneFloor(f,"HotelCarpet",Vector3.new(92,.18,118),Vector3.new(0,.62,242),Color3.fromRGB(82,34,35),Enum.Material.Fabric)
+ local catch=arenaPart(f,"LobbySafetyCatch",Vector3.new(188,1,146),Vector3.new(0,-4.2,246),Color3.fromRGB(14,13,13),Enum.Material.Concrete)
+ catch.Transparency=1;catch.CanCollide=true
+ arenaPart(f,"HotelCeiling",Vector3.new(178,1,136),Vector3.new(0,21,246),Color3.fromRGB(27,25,24),Enum.Material.Concrete)
 
- -- 앞쪽 승강기 벽.
- arenaPart(f,"ElevatorWall",Vector3.new(150,20,4),Vector3.new(0,10.4,212),Color3.fromRGB(66,59,54),Enum.Material.Concrete)
- arenaPart(f,"ElevatorWallTrimTop",Vector3.new(152,1.1,4.4),Vector3.new(0,19.4,212),Color3.fromRGB(49,42,39),Enum.Material.WoodPlanks)
- arenaPart(f,"ElevatorWallTrimBottom",Vector3.new(152,.8,4.4),Vector3.new(0,1.5,212),Color3.fromRGB(49,42,39),Enum.Material.WoodPlanks)
-
- -- 중앙 프런트와 호텔 이름판.
- local desk=arenaPart(f,"ReceptionDesk",Vector3.new(38,4.8,8),Vector3.new(0,3,274),Color3.fromRGB(71,48,35),Enum.Material.WoodPlanks)
- arenaPart(f,"ReceptionTop",Vector3.new(40,.7,9),Vector3.new(0,5.65,274),Color3.fromRGB(104,78,54),Enum.Material.WoodPlanks)
- arenaPart(f,"ReceptionBackWall",Vector3.new(58,17,3),Vector3.new(0,9,289),Color3.fromRGB(56,50,47),Enum.Material.Concrete)
- local hotelSign=arenaPart(f,"HotelSign",Vector3.new(34,5,.7),Vector3.new(0,13.8,287.2),Color3.fromRGB(36,30,28),Enum.Material.WoodPlanks)
- lobbySurfaceText(hotelSign,"심야 대탈출",Color3.fromRGB(229,205,157),28)
- local bell=arenaPart(f,"DeskBell",Vector3.new(1.5,.7,1.5),Vector3.new(-8,6.2,270.8),Color3.fromRGB(196,159,82),Enum.Material.Metal);bell.Shape=Enum.PartType.Ball;bell.CanCollide=false
- local register=arenaPart(f,"GuestBook",Vector3.new(5,.35,3.5),Vector3.new(7,6.18,270.8),Color3.fromRGB(211,199,170),Enum.Material.Fabric);register.CanCollide=false
-
- -- 벽 기둥/패널로 로비가 단색 박스처럼 보이지 않게 깊이를 만든다.
- for _,x in ipairs({-104,-86,-68,68,86,104})do
-  arenaPart(f,"HotelColumn",Vector3.new(2.2,18,2.2),Vector3.new(x,9.5,245),Color3.fromRGB(61,48,41),Enum.Material.WoodPlanks)
+ -- 외벽/목재 하부 벽체. 로비에서는 맵 밖으로 떨어질 수 없다.
+ arenaPart(f,"BackWall",Vector3.new(178,21,2),Vector3.new(0,10.5,313),Color3.fromRGB(55,49,46),Enum.Material.Plaster)
+ for _,side in ipairs({-1,1})do
+  arenaPart(f,"SideWall",Vector3.new(2,21,136),Vector3.new(side*88.5,10.5,246),Color3.fromRGB(54,49,46),Enum.Material.Plaster)
+  arenaPart(f,"SideWainscot",Vector3.new(2.35,6,134),Vector3.new(side*87.3,3.2,246),Color3.fromRGB(67,48,37),Enum.Material.WoodPlanks)
  end
- for _,z in ipairs({224,244,264,284})do
-  for _,side in ipairs({-1,1})do
-   arenaPart(f,"SideWallPanel",Vector3.new(4,16,17),Vector3.new(side*108,8.8,z),Color3.fromRGB(58,52,49),Enum.Material.Concrete)
-   arenaPart(f,"SideWallTrim",Vector3.new(4.5,.7,17.5),Vector3.new(side*108,4.2,z),Color3.fromRGB(97,70,48),Enum.Material.WoodPlanks)
+ arenaPart(f,"FrontSafetyWallL",Vector3.new(24,21,2),Vector3.new(-77,10.5,179),Color3.fromRGB(45,41,39),Enum.Material.Concrete)
+ arenaPart(f,"FrontSafetyWallR",Vector3.new(24,21,2),Vector3.new(77,10.5,179),Color3.fromRGB(45,41,39),Enum.Material.Concrete)
+
+ -- 중앙 동선은 카펫과 천장등으로 바로 승강기까지 이어진다.
+ zoneFloor(f,"MainCarpet",Vector3.new(36,.16,79),Vector3.new(0,.72,250),Color3.fromRGB(89,29,34),Enum.Material.Fabric)
+ zoneFloor(f,"ElevatorCarpetApron",Vector3.new(150,.17,20),Vector3.new(0,.74,220),Color3.fromRGB(63,28,31),Enum.Material.Fabric)
+ for _,x in ipairs({-15,15})do
+  arenaPart(f,"CarpetBrassEdge",Vector3.new(.18,.18,78),Vector3.new(x,.84,250),Color3.fromRGB(154,119,66),Enum.Material.Metal).CanCollide=false
+ end
+
+ -- 프런트 데스크: 스폰 뒤쪽을 채우고 호텔의 중심점을 만든다.
+ arenaPart(f,"ReceptionBack",Vector3.new(74,18,2),Vector3.new(0,10,307.5),Color3.fromRGB(43,37,35),Enum.Material.Concrete)
+ for _,x in ipairs({-33,-22,-11,0,11,22,33})do
+  arenaPart(f,"ReceptionBackTrim",Vector3.new(.7,16,.45),Vector3.new(x,9.5,306.35),Color3.fromRGB(86,61,43),Enum.Material.WoodPlanks).CanCollide=false
+ end
+ local desk=arenaPart(f,"ReceptionDesk",Vector3.new(44,5.2,8.5),Vector3.new(0,3.25,294),Color3.fromRGB(68,47,37),Enum.Material.WoodPlanks)
+ arenaPart(f,"ReceptionTop",Vector3.new(47,.65,9.5),Vector3.new(0,6.15,294),Color3.fromRGB(116,82,52),Enum.Material.WoodPlanks)
+ for _,x in ipairs({-16,-8,0,8,16})do
+  arenaPart(f,"ReceptionPanel",Vector3.new(6.4,3.3,.35),Vector3.new(x,3.1,289.6),Color3.fromRGB(49,35,31),Enum.Material.WoodPlanks).CanCollide=false
+ end
+ local sign=arenaPart(f,"HotelSign",Vector3.new(37,5.4,.6),Vector3.new(0,14.5,306.15),Color3.fromRGB(30,26,25),Enum.Material.WoodPlanks)
+ lobbySurfaceText(sign,"심야 대탈출",Color3.fromRGB(223,194,137),27)
+ local bell=arenaPart(f,"DeskBell",Vector3.new(1.4,.7,1.4),Vector3.new(-9,6.85,290.6),Color3.fromRGB(184,143,72),Enum.Material.Metal);bell.Shape=Enum.PartType.Ball;bell.CanCollide=false
+ arenaPart(f,"GuestBook",Vector3.new(5.8,.35,3.9),Vector3.new(7,6.82,290.5),Color3.fromRGB(188,176,148),Enum.Material.Fabric).CanCollide=false
+
+ -- 열쇠함과 오래된 객실 번호. 단순 벽이 아니라 호텔처럼 보이게 한다.
+ for row=0,2 do
+  for col=-3,3 do
+   local keyBox=arenaPart(f,"KeyCubby",Vector3.new(6.2,3.1,.55),Vector3.new(col*7.1,8.5+row*3.4,306.05),Color3.fromRGB(39,31,29),Enum.Material.WoodPlanks)
+   keyBox.CanCollide=false
+   local tag=arenaPart(f,"KeyTag",Vector3.new(1.5,.55,.18),Vector3.new(col*7.1,8.5+row*3.4,305.7),Color3.fromRGB(161,125,66),Enum.Material.Metal)
+   tag.CanCollide=false
   end
  end
 
- -- 샹들리에/벽등. 전구는 작은 포인트라 모바일에서도 로비 방향이 보인다.
- for _,x in ipairs({-44,0,44})do
-  arenaPart(f,"ChandelierStem",Vector3.new(.35,5,.35),Vector3.new(x,16.2,247),Color3.fromRGB(82,68,50),Enum.Material.Metal)
-  local lamp=arenaPart(f,"ChandelierGlow",Vector3.new(4.8,.55,4.8),Vector3.new(x,13.6,247),Color3.fromRGB(233,193,116),Enum.Material.Neon)
-  lamp.Shape=Enum.PartType.Cylinder;lamp.Orientation=Vector3.new(0,0,90);lamp.CanCollide=false
-  glow(lamp,lamp.Color,20,1.05)
+ -- 좌우 대기실: 소파/탁자/짐/낡은 액자로 빈 공간을 끊는다.
+ for _,side in ipairs({-1,1})do
+  local sx=side*63
+  for _,z in ipairs({245,270})do
+   arenaPart(f,"LobbyRug",Vector3.new(30,.14,18),Vector3.new(sx,.72,z),Color3.fromRGB(70,42,38),Enum.Material.Fabric)
+   local sofa=arenaPart(f,"LobbySofa",Vector3.new(16,3.3,5.8),Vector3.new(sx,2.25,z+5),Color3.fromRGB(56,39,39),Enum.Material.Fabric)
+   arenaPart(f,"LobbySofaBack",Vector3.new(16,5.4,.9),Vector3.new(sx,4.2,z+7.3),Color3.fromRGB(48,33,34),Enum.Material.Fabric)
+   arenaPart(f,"CoffeeTable",Vector3.new(8,.55,5),Vector3.new(sx,2,z-1.5),Color3.fromRGB(80,56,41),Enum.Material.WoodPlanks)
+   for _,dx in ipairs({-3.1,3.1})do
+    for _,dz in ipairs({-1.7,1.7})do
+     arenaPart(f,"CoffeeLeg",Vector3.new(.45,2.6,.45),Vector3.new(sx+dx,.9,z-1.5+dz),Color3.fromRGB(60,43,34),Enum.Material.WoodPlanks)
+    end
+   end
+   sofa.CastShadow=true
+  end
+  for _,z in ipairs({230,255,280})do
+   local frame=arenaPart(f,"PortraitFrame",Vector3.new(.55,8,10),Vector3.new(side*87,10.7,z),Color3.fromRGB(76,55,39),Enum.Material.WoodPlanks)
+   frame.CanCollide=false
+   local portrait=arenaPart(f,"PortraitShadow",Vector3.new(.3,6.8,8.7),Vector3.new(side*86.65,10.7,z),Color3.fromRGB(24,21,22),Enum.Material.SmoothPlastic)
+   portrait.CanCollide=false
+   local face=arenaPart(f,"PortraitFace",Vector3.new(.22,1.6,1.4),Vector3.new(side*86.45,11.4,z),Color3.fromRGB(84,73,65),Enum.Material.SmoothPlastic)
+   face.CanCollide=false
+  end
  end
- for _,spec in ipairs({{-91,225},{-91,257},{91,225},{91,257}})do
-  local wallLamp=arenaPart(f,"WallLamp",Vector3.new(1.6,2.6,.8),Vector3.new(spec[1],9,spec[2]),Color3.fromRGB(211,165,91),Enum.Material.Neon)
-  wallLamp.CanCollide=false;glow(wallLamp,wallLamp.Color,13,.8)
+ for _,spec in ipairs({{-75,286},{-69,289},{72,287},{77,291}})do
+  arenaPart(f,"OldLuggage",Vector3.new(4.4,4.8,3),Vector3.new(spec[1],2.8,spec[2]),Color3.fromRGB(71,47,36),Enum.Material.WoodPlanks)
+  local strap=arenaPart(f,"LuggageStrap",Vector3.new(.45,4.9,3.1),Vector3.new(spec[1],2.8,spec[2]),Color3.fromRGB(35,29,27),Enum.Material.Leather)
+  strap.CanCollide=false
  end
 
- -- 소파/탁자/짐: 로비 중심을 비우고 가장자리에 배치해 이동선을 방해하지 않는다.
- for _,spec in ipairs({{-61,254,0},{61,254,180},{-61,231,0},{61,231,180}})do
-  local sofa=arenaPart(f,"LobbySofa",Vector3.new(15,3.4,5.5),Vector3.new(spec[1],2.2,spec[2]),Color3.fromRGB(63,43,41),Enum.Material.Fabric)
-  sofa.Orientation=Vector3.new(0,spec[3],0)
-  local back=arenaPart(f,"LobbySofaBack",Vector3.new(15,5,.9),Vector3.new(spec[1],4.3,spec[2]+(spec[3]==0 and 2.3 or -2.3)),Color3.fromRGB(58,39,37),Enum.Material.Fabric)
-  back.Orientation=Vector3.new(0,spec[3],0)
+ -- 천장 보와 샹들리에. 밝은 점이 승강기 방향으로 점점 이어진다.
+ for _,z in ipairs({226,246,266,286})do
+  arenaPart(f,"CeilingBeam",Vector3.new(176,.8,1.2),Vector3.new(0,19.8,z),Color3.fromRGB(50,37,31),Enum.Material.WoodPlanks)
  end
- for _,x in ipairs({-70,70})do
-  arenaPart(f,"SideTable",Vector3.new(6,.6,4),Vector3.new(x,2.1,271),Color3.fromRGB(83,60,43),Enum.Material.WoodPlanks)
-  arenaPart(f,"Luggage",Vector3.new(3.2,4.2,2.2),Vector3.new(x+4,2.6,273),Color3.fromRGB(82,54,39),Enum.Material.WoodPlanks)
+ for _,z in ipairs({236,258,280})do
+  arenaPart(f,"ChandelierStem",Vector3.new(.3,5,.3),Vector3.new(0,17.2,z),Color3.fromRGB(85,66,45),Enum.Material.Metal)
+  local ring=arenaPart(f,"ChandelierRing",Vector3.new(5.5,.45,5.5),Vector3.new(0,14.6,z),Color3.fromRGB(102,76,48),Enum.Material.Metal)
+  ring.Shape=Enum.PartType.Cylinder;ring.Orientation=Vector3.new(0,0,90);ring.CanCollide=false
+  for _,dx in ipairs({-2.1,0,2.1})do
+   local bulb=arenaPart(f,"ChandelierBulb",Vector3.new(.85,1.2,.85),Vector3.new(dx,14.1,z),Color3.fromRGB(221,179,105),Enum.Material.Neon)
+   bulb.CanCollide=false
+   local light=glow(bulb,Color3.fromRGB(255,202,127),z==236 and 17 or 14,z==236 and 1.0 or .72)
+   table.insert(flickerLights,light)
+  end
  end
 
- -- 벽시계와 안내판.
- local clockFace=arenaPart(f,"LobbyClock",Vector3.new(6,6,.55),Vector3.new(0,9.2,213.8),Color3.fromRGB(221,214,195),Enum.Material.SmoothPlastic)
- clockFace.Shape=Enum.PartType.Cylinder;clockFace.Orientation=Vector3.new(0,90,0);clockFace.CanCollide=false
- local guide=arenaPart(f,"LobbyGuide",Vector3.new(28,7,.55),Vector3.new(-82,11.2,213.8),Color3.fromRGB(35,31,30),Enum.Material.WoodPlanks)
- lobbySurfaceText(guide,"승강기에 들어가면\n5초 뒤 출발",Color3.fromRGB(223,211,188),20)
-
- -- 승강기형 매칭: 들어가면 자동 방 개설, 최대 8명, 5초 뒤 출발.
+ -- 승강기 은행. 문이 메인홀 쪽(+Z)을 향하도록 구조를 바로잡는다.
  lobbyQueueBays={}
- for i,x in ipairs({-51,-17,17,51})do
+ for i,x in ipairs({-54,-18,18,54})do
   local bay=Instance.new("Folder");bay.Name="ElevatorBay"..i;bay.Parent=f
+  local bayFloor=zoneFloor(bay,"MatchBay"..i,Vector3.new(25,.38,24),Vector3.new(x,1.02,198),Color3.fromRGB(60,56,53),Enum.Material.Metal)
+  bayFloor:SetAttribute("MatchBayIndex",i);bayFloor:SetAttribute("PhysicalLobbyGround",true)
+  zoneFloor(bay,"ElevatorRunner",Vector3.new(20,.14,20),Vector3.new(x,1.3,198),Color3.fromRGB(71,30,34),Enum.Material.Fabric)
 
-  local bayFloor=arenaPart(bay,"MatchBay"..i,Vector3.new(24,.35,21),Vector3.new(x,1.12,198),Color3.fromRGB(69,60,55),Enum.Material.Metal)
-  bayFloor.CanCollide=true;bayFloor:SetAttribute("MatchBayIndex",i);bayFloor:SetAttribute("WalkableGround",true)
-  zoneFloor(bay,"ElevatorCarpet",Vector3.new(20,.16,17),Vector3.new(x,1.34,199),Color3.fromRGB(91,35,36),Enum.Material.Fabric)
-
-  arenaPart(bay,"ElevatorBack",Vector3.new(23,12,1),Vector3.new(x,7,208),Color3.fromRGB(66,63,60),Enum.Material.Metal)
-  arenaPart(bay,"ElevatorLeft",Vector3.new(1,12,20),Vector3.new(x-11.5,7,198.5),Color3.fromRGB(60,57,55),Enum.Material.Metal)
-  arenaPart(bay,"ElevatorRight",Vector3.new(1,12,20),Vector3.new(x+11.5,7,198.5),Color3.fromRGB(60,57,55),Enum.Material.Metal)
-  arenaPart(bay,"ElevatorCeiling",Vector3.new(24,1,21),Vector3.new(x,13.2,198.5),Color3.fromRGB(46,44,43),Enum.Material.Metal)
-
-  local ceilingLamp=arenaPart(bay,"ElevatorLamp",Vector3.new(6,.4,2),Vector3.new(x,12.45,200),Color3.fromRGB(228,198,135),Enum.Material.Neon)
-  ceilingLamp.CanCollide=false;glow(ceilingLamp,ceilingLamp.Color,12,.7)
-
-  for _,dx in ipairs({-12,12})do
-   arenaPart(bay,"ElevatorFrame",Vector3.new(1.8,14,2),Vector3.new(x+dx,7.5,187.8),Color3.fromRGB(97,74,54),Enum.Material.Metal)
+  arenaPart(bay,"ElevatorBack",Vector3.new(25,13,1),Vector3.new(x,7.1,186.2),Color3.fromRGB(55,53,51),Enum.Material.Metal)
+  arenaPart(bay,"ElevatorLeft",Vector3.new(1,13,24),Vector3.new(x-12,7.1,198),Color3.fromRGB(56,53,51),Enum.Material.Metal)
+  arenaPart(bay,"ElevatorRight",Vector3.new(1,13,24),Vector3.new(x+12,7.1,198),Color3.fromRGB(56,53,51),Enum.Material.Metal)
+  arenaPart(bay,"ElevatorCeiling",Vector3.new(25,1,24),Vector3.new(x,13.5,198),Color3.fromRGB(39,37,36),Enum.Material.Metal)
+  for _,z in ipairs({191,199,206})do
+   local insideLamp=arenaPart(bay,"ElevatorInsideLamp",Vector3.new(5,.28,1.1),Vector3.new(x,12.75,z),Color3.fromRGB(205,166,99),Enum.Material.Neon)
+   insideLamp.CanCollide=false
+   local light=glow(insideLamp,Color3.fromRGB(241,194,120),9,.55);table.insert(flickerLights,light)
   end
-  arenaPart(bay,"ElevatorHeader",Vector3.new(26,2,2),Vector3.new(x,14,187.8),Color3.fromRGB(92,69,50),Enum.Material.Metal)
 
-  local board=arenaPart(bay,"GateBoard",Vector3.new(16,3.6,.5),Vector3.new(x,10.5,186.6),Color3.fromRGB(31,28,27),Enum.Material.Metal)
-  local label=lobbySurfaceText(board,string.format("승강기 %02d\n입장 가능 · 0/8",i),Color3.fromRGB(238,220,181),21)
+  -- 문틀과 양쪽 벽면. 문 앞은 완전히 열려 메인홀에서 바로 들어간다.
+  for _,dx in ipairs({-12.4,12.4})do
+   arenaPart(bay,"ElevatorFrame",Vector3.new(1.8,14.5,2),Vector3.new(x+dx,7.7,210.1),Color3.fromRGB(106,79,51),Enum.Material.Metal)
+  end
+  arenaPart(bay,"ElevatorHeader",Vector3.new(26.5,2.2,2),Vector3.new(x,14.1,210.1),Color3.fromRGB(94,68,47),Enum.Material.Metal)
 
-  local left=arenaPart(bay,"SlidingDoorL",Vector3.new(10.7,10,.65),Vector3.new(x-5.45,6.3,187.75),Color3.fromRGB(89,84,80),Enum.Material.Metal)
-  local right=arenaPart(bay,"SlidingDoorR",Vector3.new(10.7,10,.65),Vector3.new(x+5.45,6.3,187.75),Color3.fromRGB(89,84,80),Enum.Material.Metal)
+  local board=arenaPart(bay,"GateBoard",Vector3.new(15,3.5,.55),Vector3.new(x,10.7,211.25),Color3.fromRGB(25,23,22),Enum.Material.Metal)
+  board.Orientation=Vector3.new(0,180,0)
+  local label=lobbySurfaceText(board,string.format("승강기 %02d\n입장 가능 · 0/8",i),Color3.fromRGB(236,213,169),21)
+
+  local numberPlate=arenaPart(bay,"ElevatorNumber",Vector3.new(4.4,2.2,.35),Vector3.new(x,15.4,211.25),Color3.fromRGB(171,128,65),Enum.Material.Metal)
+  numberPlate.Orientation=Vector3.new(0,180,0)
+  lobbySurfaceText(numberPlate,string.format("%02d",i),Color3.fromRGB(29,25,22),18)
+
+  local left=arenaPart(bay,"SlidingDoorL",Vector3.new(11.6,10.8,.7),Vector3.new(x-5.9,6.7,210.05),Color3.fromRGB(79,75,72),Enum.Material.Metal)
+  local right=arenaPart(bay,"SlidingDoorR",Vector3.new(11.6,10.8,.7),Vector3.new(x+5.9,6.7,210.05),Color3.fromRGB(79,75,72),Enum.Material.Metal)
   left.CanCollide=false;right.CanCollide=false
-  -- 앞쪽 대기 표시판과 황동 번호.
-  local numberPlate=arenaPart(bay,"ElevatorNumber",Vector3.new(4.2,2.2,.35),Vector3.new(x,14.8,186.6),Color3.fromRGB(171,132,70),Enum.Material.Metal)
-  lobbySurfaceText(numberPlate,string.format("%02d",i),Color3.fromRGB(35,29,24),18)
 
   lobbyQueueBays[i]={
    part=bayFloor,label=label,players={},countdown=nil,token=0,index=i,
    doorLeft=left,doorRight=right,
-   doorLeftOpen=left.CFrame*CFrame.new(-6.2,0,0),doorRightOpen=right.CFrame*CFrame.new(6.2,0,0),
+   doorLeftOpen=left.CFrame*CFrame.new(-7,0,0),doorRightOpen=right.CFrame*CFrame.new(7,0,0),
    doorLeftClosed=left.CFrame,doorRightClosed=right.CFrame,
   }
   left.CFrame=lobbyQueueBays[i].doorLeftOpen;right.CFrame=lobbyQueueBays[i].doorRightOpen
  end
 
- -- 방 찾기/코드/나가기는 프런트 옆 작은 단말로 유지한다.
- local _,friendJoinPrompt=lobbyTerminal(f,"QuickFriendRoom",Vector3.new(78,4,278),"친구 방","참가",Color3.fromRGB(72,58,51),function(p)
+ -- 승강기 사이 벽체를 따로 만들어 문을 막지 않으면서 한 덩어리 호텔 벽처럼 보이게 한다.
+ for _,spec in ipairs({{-80,16},{-36,9.5},{0,9.5},{36,9.5},{80,16}})do
+  arenaPart(f,"ElevatorBankWall",Vector3.new(spec[2],20,2),Vector3.new(spec[1],10.5,211.5),Color3.fromRGB(52,47,44),Enum.Material.Plaster)
+  arenaPart(f,"ElevatorBankWainscot",Vector3.new(spec[2]+.4,5.8,2.3),Vector3.new(spec[1],3.2,211.25),Color3.fromRGB(67,47,36),Enum.Material.WoodPlanks)
+ end
+ local routeSign=arenaPart(f,"ElevatorRouteSign",Vector3.new(56,4,.55),Vector3.new(0,18.1,212.55),Color3.fromRGB(29,25,24),Enum.Material.WoodPlanks)
+ routeSign.Orientation=Vector3.new(0,180,0)
+ lobbySurfaceText(routeSign,"승강기 안으로 들어가면 자동 매칭",Color3.fromRGB(218,199,163),21)
+
+ -- 좌우의 어두운 막힌 복도는 깊이감만 만들고 실제 진행로는 아니다.
+ for _,side in ipairs({-1,1})do
+  local hx=side*78
+  local hall=arenaPart(f,"DarkHall",Vector3.new(15,13,1),Vector3.new(hx,7,221),Color3.fromRGB(13,13,14),Enum.Material.SmoothPlastic)
+  hall.CanCollide=true
+  arenaPart(f,"DarkHallFrame",Vector3.new(18,1.2,1.4),Vector3.new(hx,14,221),Color3.fromRGB(71,50,36),Enum.Material.WoodPlanks)
+  for _,dx in ipairs({-8.1,8.1})do arenaPart(f,"DarkHallPillar",Vector3.new(1.2,14,1.4),Vector3.new(hx+dx,7.2,221),Color3.fromRGB(70,49,35),Enum.Material.WoodPlanks)end
+  local exitLamp=arenaPart(f,"HallWarningLamp",Vector3.new(1.1,1.8,.55),Vector3.new(hx,11.4,220.25),Color3.fromRGB(128,27,31),Enum.Material.Neon)
+  exitLamp.CanCollide=false;table.insert(flickerLights,glow(exitLamp,Color3.fromRGB(180,45,48),9,.48))
+ end
+
+ -- 보조 기능은 프런트 양옆에 모아 주동선과 섞이지 않게 한다.
+ local _,friendJoinPrompt=lobbyTerminal(f,"QuickFriendRoom",Vector3.new(61,4,296),"친구 방","참가",Color3.fromRGB(63,53,50),function(p)
   if roomServer or state=="RUNNING"then return end
   quickJoinRoom(p,true)
  end)
- local _,codePrompt=lobbyTerminal(f,"CodeRoomTerminal",Vector3.new(91,4,278),"초대 코드","입력",Color3.fromRGB(63,56,58),function(p)
+ local _,codePrompt=lobbyTerminal(f,"CodeRoomTerminal",Vector3.new(74,4,296),"초대 코드","입력",Color3.fromRGB(57,50,55),function(p)
   if roomServer or state=="RUNNING"then return end
   p:SetAttribute("WorldLobbyCodeInputRequest",tostring(math.floor(os.clock()*1000)))
  end)
- local _,leavePrompt=lobbyTerminal(f,"RoomLeaveTerminal",Vector3.new(-88,4,278),"메인 로비","나가기",Color3.fromRGB(67,50,47),function(p)
+ local _,leavePrompt=lobbyTerminal(f,"RoomLeaveTerminal",Vector3.new(-70,4,296),"메인 로비","나가기",Color3.fromRGB(65,48,46),function(p)
   leaveReservedRoom(p)
+ end)
+
+ -- 드문 조명 깜빡임. 전투 판정과 무관한 로비 연출만 바꾼다.
+ task.spawn(function()
+  local index=1
+  while f.Parent do
+   task.wait(3.2+((index%4)*.8))
+   local light=flickerLights[index]
+   if light and light.Parent then
+    local original=light.Brightness
+    light.Brightness=.05
+    task.wait(.08)
+    if light.Parent then light.Brightness=original*.45 end
+    task.wait(.11)
+    if light.Parent then light.Brightness=original end
+   end
+   index=index%math.max(1,#flickerLights)+1
+  end
  end)
 
  refreshPhysicalLobby=function()
@@ -807,8 +884,8 @@ local function makePhysicalLobby()
  refreshPhysicalLobby()
  workspace:SetAttribute("PhysicalLobbyReady",true)
  workspace:SetAttribute("WorldLobbyMode",true)
- workspace:SetAttribute("LobbyArtPass","MIDNIGHT_HOTEL_LOBBY_V2")
- workspace:SetAttribute("LobbyBuildRevision","MIDNIGHT_HOTEL_20260930B")
+ workspace:SetAttribute("LobbyArtPass","MIDNIGHT_HOTEL_LOBBY_V3")
+ workspace:SetAttribute("LobbyBuildRevision","MIDNIGHT_HOTEL_DETAIL_20260930")
  return f
 end
 
@@ -873,6 +950,18 @@ end
 
 task.spawn(function()
  while true do
+  if state~="RUNNING"and #lobbyQueueBays>0 then
+   local currentPlayers=Players:GetPlayers()
+   table.sort(currentPlayers,function(a,b)return a.UserId<b.UserId end)
+   for i,player in ipairs(currentPlayers)do
+    local rr=root(player)
+    if rr and(rr.Position.Y<-2 or math.abs(rr.Position.X)>86 or rr.Position.Z<182 or rr.Position.Z>310)then
+     local slot=((i-1)%#lobbySpawns)+1
+     teleport(player,lobbySpawns[slot],Vector3.new(0,3,210))
+     player:SetAttribute("LobbySafetyRecoveredAt",workspace:GetServerTimeNow())
+    end
+   end
+  end
   if not roomServer and state~="RUNNING"and #lobbyQueueBays>0 then
    local assigned={}
    for _,bay in ipairs(lobbyQueueBays)do
@@ -1996,12 +2085,17 @@ local function groundedRootTarget(p,pos)
  local standingOffset=math.max(1,tonumber(h.HipHeight)or 0)+(r.Size.Y*.5)
  return Vector3.new(pos.X,groundY+standingOffset+.03,pos.Z)
 end
-local function teleport(p,pos)
+local function teleport(p,pos,lookAtPos)
  local r=root(p);if r then
   local target=groundedRootTarget(p,pos)
   movementGraceUntil[p]=os.clock()+1
   lastValidPosition[p]=target
-  r.CFrame=CFrame.new(target)
+  local targetCFrame=CFrame.new(target)
+  if typeof(lookAtPos)=="Vector3"then
+   local flatLook=Vector3.new(lookAtPos.X,target.Y,lookAtPos.Z)
+   if(flatLook-target).Magnitude>.1 then targetCFrame=CFrame.lookAt(target,flatLook)end
+  end
+  r.CFrame=targetCFrame
   r.AssemblyLinearVelocity=Vector3.zero
   r.AssemblyAngularVelocity=Vector3.zero
   local h=hum(p)
@@ -2017,7 +2111,12 @@ local function teleport(p,pos)
    if math.abs(rr.Position.Y-corrected.Y)>.12 or hh.FloorMaterial==Enum.Material.Air then
     movementGraceUntil[p]=os.clock()+1
     lastValidPosition[p]=corrected
-    rr.CFrame=CFrame.new(corrected)
+    local correctedCFrame=CFrame.new(corrected)
+    if typeof(lookAtPos)=="Vector3"then
+     local flatLook=Vector3.new(lookAtPos.X,corrected.Y,lookAtPos.Z)
+     if(flatLook-corrected).Magnitude>.1 then correctedCFrame=CFrame.lookAt(corrected,flatLook)end
+    end
+    rr.CFrame=correctedCFrame
     rr.AssemblyLinearVelocity=Vector3.zero
     rr.AssemblyAngularVelocity=Vector3.zero
     hh.PlatformStand=false;hh.Sit=false;hh.AutoRotate=true
@@ -2481,7 +2580,7 @@ local function onCharacter(p)
   table.sort(players,function(a,b)return a.UserId<b.UserId end)
   local slot=1
   for i,player in ipairs(players)do if player==p then slot=((i-1)%#lobbySpawns)+1;break end end
-  teleport(p,lobbySpawns[slot])
+  teleport(p,lobbySpawns[slot],Vector3.new(0,3,210))
  end
 end
 Players.PlayerAdded:Connect(function(p)
