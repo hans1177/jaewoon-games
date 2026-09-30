@@ -485,7 +485,7 @@ test('Roblox missing repair evidence schedules exact candidate inspection withou
   assert.equal(inspect(missingRole,row).verificationCandidates.length,0);
 });
 
-test('runtime evidence workflow enforces exact identity and cannot promote or mark repair passed',()=>{
+test('static evidence workflow enforces exact identity and cannot claim actual runtime',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-candidate-release.yml',import.meta.url),'utf8');
   const control=workflow.match(/const fs=require\('fs'\);\n          const queue=JSON.parse\(fs.readFileSync\('\/tmp\/vibe2-current-control-queue.json'[\s\S]*?(?=\n          NODE)/)[0];
   const branch='vibe2/candidate/probe',sha='a'.repeat(40);
@@ -497,10 +497,22 @@ test('runtime evidence workflow enforces exact identity and cannot promote or ma
   assert.match(workflow,/id: promote\n        if: steps.validate.outcome == 'success' && needs.inspect.outputs.evidence_only != 'true'/);
   const settle=workflow.match(/const fs=require\('fs'\);const file='\.vibe2\/queue.json';[\s\S]*?(?=\n          NODE)/)[0];
   let written;
-  vm.runInNewContext(settle,{require:()=>({readFileSync:()=>JSON.stringify({tasks:[task]}),existsSync:()=>false,writeFileSync:(_,value)=>{written=JSON.parse(value);}}),process:{env}});
+  const report={pass:true,sourceRevision:sha,authority:'roblox-candidate-static-source-promotion-gate',validationMode:'STATIC',runtimeVerified:false,releaseClaim:false,blockedReasons:[]};
+  const execute=(review=report,outcome='success')=>vm.runInNewContext(settle,{require:()=>({readFileSync:file=>JSON.stringify(file.endsWith('release-evidence-review.json')?review:{tasks:[task]}),existsSync:()=>review!==null,writeFileSync:(_,value)=>{written=JSON.parse(value);}}),process:{env:{...env,VALIDATE_OUTCOME:outcome}}});
+  execute();
   assert.equal(written.tasks[0].status,'queued');
   assert.equal(written.tasks[0].runtimeEvidenceCandidate.reviewStillRequired,true);
   assert.ok(!written.tasks[0].evidence.includes('role-result:review:PASS'));
-  assert.ok(written.tasks[0].evidence.includes('candidate-runtime-probe:'+sha+':PASS'));
+  assert.ok(written.tasks[0].evidence.includes('candidate-static-probe:'+sha+':PASS'));
+  assert.equal(written.tasks[0].runtimeEvidenceCandidate.staticVerified,true);
+  assert.equal(written.tasks[0].runtimeEvidenceCandidate.verified,false);
+  for(const review of [null,{...report,sourceRevision:'b'.repeat(40)},{...report,pass:false},{...report,runtimeVerified:true},{...report,blockedReasons:['compile-failed']}]){
+    execute(review);
+    assert.equal(written.tasks[0].runtimeEvidenceCandidate.staticVerified,false);
+    assert.equal(written.tasks[0].runtimeEvidenceCandidate.verified,false);
+    assert.ok(written.tasks[0].evidence.includes('candidate-static-probe:'+sha+':FAIL'));
+  }
+  execute(report,'failure');
+  assert.equal(written.tasks[0].runtimeEvidenceCandidate.staticVerified,false);
   assert.throws(()=>vm.runInNewContext(settle,{require:()=>({readFileSync:()=>JSON.stringify({tasks:[task]})}),process:{env:{...env,CANDIDATE_SHA:'b'.repeat(40)}}}),/stale runtime evidence candidate/);
 });
