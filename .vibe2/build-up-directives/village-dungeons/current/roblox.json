@@ -241,7 +241,56 @@
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false,
-    "studioQualityFailure": null
+    "studioQualityFailure": {
+      "sourceRevision": "a39976af003d72b42a2c491ab4ae882e21d6670a",
+      "artifactIdentity": "sha256:110f55e3aa533c4f0fea4a9b2b6bf6feb94b8af6773a712c9ef1f0ac0017542f",
+      "authority": "roblox-official-studio-mcp-product-quality-failure",
+      "workflowRunId": 36701468863,
+      "testedAt": "2026-09-30T10:20:32.296Z",
+      "repairSurfaces": [
+        "MOBILE_UI",
+        "WORLD_GEOMETRY",
+        "MAP_ROUTEABILITY",
+        "ROBLOX_OBSERVED_INTERACTION"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "adaptive-ui-commercial-quality",
+          "repairSurface": "MOBILE_UI",
+          "priority": "HIGH",
+          "hint": "Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.",
+          "observed": "{\"offscreenButtons\":1,\"undersizedTouchButtons\":1,\"suboptimalTouchButtons\":0,\"textOverflowButtons\":0,\"overlapPairs\":0,\"largeOverlayCount\":1,\"largeBlockingOverlayCount\":0,\"largestOverlayCoverage\":0.6242881070579247}"
+        },
+        {
+          "id": "adaptive-ui-blocking-overlay",
+          "repairSurface": "MOBILE_UI",
+          "priority": "CRITICAL",
+          "hint": "Remove or dismiss persistent full-screen modal/guide overlays that block gameplay input or obscure the playable viewport.",
+          "observed": "{\"offscreenButtons\":1,\"undersizedTouchButtons\":1,\"suboptimalTouchButtons\":0,\"textOverflowButtons\":0,\"overlapPairs\":0,\"largeOverlayCount\":1,\"largeBlockingOverlayCount\":0,\"largestOverlayCoverage\":0.6242881070579247}"
+        },
+        {
+          "id": "adaptive-world-safety",
+          "repairSurface": "WORLD_GEOMETRY",
+          "priority": "CRITICAL",
+          "hint": "Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.",
+          "observed": "{\"boundsFinite\":true,\"collidablePartCount\":10,\"floorBelowPlayer\":true,\"floorSamples\":9,\"floorHits\":1,\"floorCoveragePass\":false,\"routeSamples\":1,\"routeSuccess\":1,\"routeCoveragePass\":true,\"spawnThreatDistance\":-1,\"spawnOverlapSafe\":true}"
+        },
+        {
+          "id": "adaptive-map-route-coverage",
+          "repairSurface": "MAP_ROUTEABILITY",
+          "priority": "CRITICAL",
+          "hint": "Repair unreachable/stuck/dead-zone routes discovered during Studio corner-direction traversal.",
+          "observed": "{\"routeAttemptCount\":1,\"routePassCount\":0,\"routeRequired\":1,\"routes\":[{\"id\":\"map-route-unreachable\",\"ok\":false,\"moved\":0,\"fall\":0,\"floorBelow\":false}]}"
+        },
+        {
+          "id": "observed-action-20f70b9a6cc84d436048",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-20f70b9a6cc84d436048\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"map-route-unreachable\",\"targetIdentity\":\"map-route-unreachable\",\"actionType\":\"mcp-map-route-audit\",\"effectRequired\":false,\"attempts\":1}"
+        }
+      ]
+    }
   },
   "qualityGapMap": [
     {
