@@ -1,5 +1,5 @@
 {
-  "version": 25,
+  "version": 26,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-09-30",
@@ -7458,19 +7458,24 @@
       "lodRequired": true
     },
     "motionQuality": [
+      "KEY_POSE",
+      "ANTICIPATION",
+      "CONTACT",
+      "FOLLOW_THROUGH",
+      "SETTLE",
+      "SPRING_BLEND_WALK_RUN",
+      "FOOT_PLANT_STANCE_PHASE",
+      "PELVIS_SHOULDER_COUNTER_PHASE",
+      "SPINE_OVERLAP",
+      "HEAD_FOLLOW_THROUGH",
+      "TAIL_EAR_SECONDARY_MOTION",
       "ARTICULATED_JOINT_MOTION",
       "NO_RIGID_BODY_GLIDE",
       "NO_ROOT_SNAP_TURN",
       "GAIT_SPEED_SYNC",
-      "FOOT_PLANT",
-      "SPINE_COMPRESSION_EXTENSION",
-      "HEAD_COUNTER_BALANCE",
-      "WEIGHT_TRANSFER",
-      "SPECIES_ATTACK_LANGUAGE",
       "DIRECTIONAL_HIT_REACTION",
       "MASS_READABLE_DEATH",
-      "TAIL_EAR_WING_SECONDARY_MOTION_WHEN_APPLICABLE",
-      "RUNTIME_CAPTURE"
+      "ROBLOX_RUNTIME_CAPTURE"
     ],
     "promotionRule": "SEMANTIC_PACK_IS_NOT_VERIFIED_ASSET; NATIVE MODEL_SKIN_AND_MOTION_REQUIRE_TARGET_GAME_RUNTIME_QA",
     "roblox3dImplementation": {
@@ -7482,11 +7487,20 @@
       "dimensionality": "FULL_3D",
       "articulatedMotor6D": true,
       "billboardOrSpriteAnimalForbidden": true,
-      "rootOnlyLocomotionForbidden": true
+      "rootOnlyLocomotionForbidden": true,
+      "package": "assets/roblox/survival-wildlife/SurvivalWildlife.luau",
+      "clientBootstrap": "assets/roblox/survival-wildlife/WildlifeClient.client.luau",
+      "runtime": "ROBLOX_NATIVE",
+      "animationController": true,
+      "animatorInstance": true,
+      "clientSideVisualAnimation": true,
+      "serverAuthoritativeRootAndState": true
     },
     "preview": {
-      "type": "INTERACTIVE_WEB_3D",
-      "path": "/web-games/wildlife-motion-sample/",
+      "type": "ROBLOX_NATIVE_STUDIO_SAMPLE",
+      "project": "assets/roblox/survival-wildlife/default.project.json",
+      "serverSample": "assets/roblox/survival-wildlife/BearWalkSample.server.luau",
+      "clientRuntime": "assets/roblox/survival-wildlife/WildlifeClient.client.luau",
       "subject": "BEAR_DARK_BROWN",
       "motions": [
         "WALK",
