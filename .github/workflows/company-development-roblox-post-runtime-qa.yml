@@ -97,6 +97,8 @@ jobs:
                 if(!states.has(String(r.status||'').toLowerCase()))continue;
                 if(String(r.id)===String(process.env.CURRENT_RUN_ID||''))continue;
                 if(!title.startsWith(prefix))continue;
+                // 오너가 요청한 단일 게임 재검사는 자동 일괄 검사보다 우선 보존한다.
+                if(r.event==='workflow_dispatch'&&title!==prefix+'scan')continue;
                 if(String(r.head_sha||'')===String(process.env.CURRENT_SHA||''))continue;
                 process.stdout.write(String(r.id)+'\n');
               }
