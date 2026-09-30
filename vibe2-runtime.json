@@ -294,18 +294,21 @@
     "entryWorkflow": ".github/workflows/vibe2-24h-runner.yml",
     "workerWorkflow": ".github/workflows/vibe2-continuous-core.yml",
     "gamePrimaryControlRunnerPool": {
-      "authority": "company-learning/platform-release-roadmap.json#changeRecord.lightweightGameIngressRunnerRelief20260927",
+      "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.controlPlaneQueueBacklogMitigation",
       "reserve": "ubuntu-slim",
       "reserveDefault": "ubuntu-slim",
-      "fanInRefillReserve": "ubuntu-24.04-arm",
-      "fanIn": "ubuntu-24.04-arm",
+      "fanInRefillReserve": "ubuntu-latest",
+      "fanIn": "ubuntu-latest",
       "worker": "ubuntu-latest",
       "modelCache": "ubuntu-latest",
-      "lightweightReserveSeparatedFromArmFanIn": true,
+      "lightweightReserveSeparatedFromArmFanIn": false,
       "fanInRefillBypassesSlimPressure": true,
       "heavyGameExecutionUnchanged": true,
       "queueReservationAndStateFanInOnly": true,
-      "ingressControl": "ubuntu-slim"
+      "ingressControl": "ubuntu-slim",
+      "neuronCompletionReserve": "ubuntu-latest",
+      "defaultReserveSeparatedFromCompletionAndFanIn": true,
+      "neuronCompletionBypassesSlimPressure": true
     },
     "slotRefillTrigger": "vibe2-neuron-complete",
     "slotRefillBranchPrefix": "vibe2/refill/",
@@ -648,7 +651,7 @@
     },
     "callbackCoalescing": {
       "enabled": true,
-      "singleGameTaskImmediateCompletionRequired": true,
+      "singleGameTaskImmediateCompletionRequired": false,
       "singleGameTaskFullReviewBeforeCohortCompletion": true,
       "fanInMayReuseSuccessfulExactCommitCoreRegression": true,
       "idleLearningRequiresEmptyDevelopmentAssetAndRecoveryQueues": false,
@@ -673,7 +676,9 @@
         "workerDirectControlWrite": false,
         "newWorkflowCreated": false
       },
-      "immediateDispatchResumesWhenPressureClears": true
+      "immediateDispatchResumesWhenPressureClears": true,
+      "singleGameTaskImmediateCompletionRequiredWhenQueuePressureZero": true,
+      "singleTaskGameMicroFanInPressureExceptionRemoved": true
     },
     "reserveContractRegressionPreflight": {
       "enabled": true,
