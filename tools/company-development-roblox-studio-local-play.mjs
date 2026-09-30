@@ -2809,6 +2809,15 @@ export async function runOfficialStudioMcpPlay({
             hint:'F9 Studio restart did not preserve stable progression/inventory state. Repair save timing, load ordering, schema migration, or reset/duplication behavior.',
             observed:{restartOk,progressionObserved,progressionPreserved,inventoryComparable,inventoryPreserved}
           });
+        }else{
+          // 실제 stop/start 재접속에서 저장 상태가 보존되면 앞선 정적 save-surface 부재는
+          // DataStore 고장 증거가 아니다. 더 강한 실제 persistence 증거로 해당 약한 실패만 상쇄한다.
+          const surfaceIndex=scenarioCoverage.findIndex(row=>row?.id==='adaptive-save-surface');
+          if(surfaceIndex>=0)scenarioCoverage[surfaceIndex]={...scenarioCoverage[surfaceIndex],pass:true,verificationScope:'F9_SAVE_REJOIN_RUNTIME'};
+          const checkpointIndex=checkpoints.findIndex(row=>row?.id==='scenario-adaptive-save-surface');
+          if(checkpointIndex>=0)checkpoints[checkpointIndex]={...checkpoints[checkpointIndex],pass:true,verificationScope:'F9_SAVE_REJOIN_RUNTIME'};
+          qualityFailureKinds=qualityFailureKinds.filter(id=>id!=='adaptive-save-surface');
+          qualityFailureDetails=qualityFailureDetails.filter(row=>row?.id!=='adaptive-save-surface');
         }
       }
       const multiplayerDeclared=actualPlayContract?.adaptiveCoverage?.signals?.multiplayer===true;
@@ -3343,8 +3352,14 @@ export function createLocalStudioPlayEvidence({
     ...checkpoints.filter(row=>row.pass!==true).map(row=>row.name||row.id),
     ...actions.filter(row=>row.ok!==true).map(row=>row.type||row.id)
   ].join(' ');
+  const saveRejoin=runtime?.saveRejoinSummary&&typeof runtime.saveRejoinSummary==='object'?runtime.saveRejoinSummary:null;
+  const explicitDataStoreFailure=Boolean(
+    errors.some(row=>/DataStore|GetDataStore|SetAsync|UpdateAsync|SAVE_ROUNDTRIP/i.test([row.type,row.actionId,row.signature].filter(Boolean).join(' ')))
+    ||qualityFailureKinds.includes('adaptive-save-rejoin-persistence')
+    ||(saveRejoin&&saveRejoin.infrastructureFailure!==true&&saveRejoin.restartOk===true&&(saveRejoin.progressionPreserved!==true||saveRejoin.inventoryPreserved!==true))
+  );
   const robloxFailureClass=pass?null
-    :/DataStore|GetDataStore|SetAsync|UpdateAsync|save|load/i.test(nativeFailureText)?'ROBLOX_DATASTORE_SAVE_LOAD'
+    :explicitDataStoreFailure?'ROBLOX_DATASTORE_SAVE_LOAD'
     :/RemoteEvent|RemoteFunction|OnServer|FireServer|InvokeServer|remote/i.test(nativeFailureText)?'ROBLOX_REMOTE_EVENT_OR_FUNCTION'
     :/touch|input|keyboard|mouse|button/i.test(nativeFailureText)?'ROBLOX_TOUCH_INPUT'
     :/ROBLOX_CHARACTER_MOTION_MANNEQUIN|character-motion-quality|joint|animator|animation/i.test(nativeFailureText)?'ROBLOX_CHARACTER_MOTION_MANNEQUIN'
