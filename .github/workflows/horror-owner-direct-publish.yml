@@ -68,6 +68,26 @@ jobs:
           sha256sum "/tmp/horror-owner/$GAME_ID.rbxlx" | tee /tmp/horror-owner/build.sha256
           echo "PLACE_FILE=/tmp/horror-owner/$GAME_ID.rbxlx" >> "$GITHUB_ENV"
 
+      - name: Configure private experience directly
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$ROBLOX_OPEN_CLOUD_API_KEY"
+          curl --fail-with-body --retry 3 --retry-delay 2 \
+            -X PATCH \
+            -H "x-api-key: $ROBLOX_OPEN_CLOUD_API_KEY" \
+            -H "Content-Type: application/json" \
+            --data '{"displayName":"심야 대탈출","description":"심야 호텔에서 시작되는 8인 공포 추격전","visibility":"PRIVATE"}' \
+            "https://apis.roblox.com/cloud/v2/universes/$UNIVERSE_ID?updateMask=displayName,description,visibility" \
+            -o /tmp/horror-owner/configure.json
+          curl --fail-with-body --retry 3 --retry-delay 2 \
+            -X POST \
+            -H "x-api-key: $ROBLOX_OPEN_CLOUD_API_KEY" \
+            "https://apis.roblox.com/legacy-develop/v1/universes/$UNIVERSE_ID/deactivate" \
+            -o /tmp/horror-owner/private.json
+
       - name: Publish directly with Roblox Open Cloud
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
@@ -78,7 +98,7 @@ jobs:
           curl --fail-with-body --retry 3 --retry-delay 2 \
             -X POST \
             -H "x-api-key: $ROBLOX_OPEN_CLOUD_API_KEY" \
-            -H "Content-Type: application/octet-stream" \
+            -H "Content-Type: application/xml" \
             --data-binary "@$PLACE_FILE" \
             "https://apis.roblox.com/universes/v1/$UNIVERSE_ID/places/$PLACE_ID/versions?versionType=Published" \
             -o /tmp/horror-owner/publish.json
@@ -100,6 +120,8 @@ jobs:
           name: horror-owner-direct-publish
           path: |
             /tmp/horror-owner/build.sha256
+            /tmp/horror-owner/configure.json
+            /tmp/horror-owner/private.json
             /tmp/horror-owner/publish.json
           if-no-files-found: warn
           retention-days: 3
