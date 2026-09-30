@@ -1069,9 +1069,7 @@ makePhysicalLobby=function()
  lobbySpawnLocation.CanCollide=false
  lobbySpawnLocation.CanTouch=false
  lobbySpawnLocation.CanQuery=false
- lobbySpawnLocation.CanCollide=true
- lobbySpawnLocation.CanTouch=false
- lobbySpawnLocation.CanQuery=true
+ lobbySpawnLocation:SetAttribute("WalkableGround",false)
  lobbySpawnLocation.Parent=f
 
  -- 폐호텔 메인홀: 이동 범위를 의도적으로 좁혀 빈 광장 느낌을 없앤다.
