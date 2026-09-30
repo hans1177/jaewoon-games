@@ -34,7 +34,7 @@ function unityGameDevelopmentProfile(principles=[]){
   const mappings=relevant.map(principle=>{
     const text=principle.toLowerCase();
     const behaviors=[];
-    if(/immediate visible|visible state|state feedback|movement feedback|spatially anchored|prompt, legible|prompt and unambiguous/.test(text))behaviors.push('IMMEDIATE_VISIBLE_FEEDBACK');
+    if(/immediate visible|immediate spatial|visible state|state feedback|movement feedback|camera-orientation change|before\/after scene framing|spatially anchored|prompt, legible|prompt and unambiguous/.test(text))behaviors.push('IMMEDIATE_VISIBLE_FEEDBACK');
     if(/onboarding|touch interaction instruction|first playable|first live|game entry|setup milestone|narrative onboarding/.test(text))behaviors.push('CONTEXTUAL_ONBOARDING');
     if(/persistent primary|persistent core state|context-relevant actions|high-frequency progression|action controls visible|action controls/.test(text))behaviors.push('PERSISTENT_ACTION_CONTROLS');
     if(/level requirement|level requirements|danger guidance|risk cue|risk cues|before players commit|before commitment/.test(text))behaviors.push('VISIBLE_PROGRESSION_RISK_CUE');
