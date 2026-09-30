@@ -21,7 +21,7 @@ assert(roomA.folder:GetAttribute("OwnerUserId")==a.UserId,"Wrong owner")
 assert(roomB.folder:GetAttribute("OwnerUserId")==b.UserId,"Wrong owner")
 local meshCount=0
 for _,d in ipairs(roomA.scene:GetDescendants())do
- if d:IsA("MeshPart")then meshCount+=1;assert(d.Anchored and not d.CanCollide,"Unmanaged scene collision")end
+ if d:IsA("MeshPart")then meshCount+=1;assert(d.Anchored,"Unmanaged scene physics");if d.CanCollide then assert(d.Name:match("^ManorSideWall")or d.Name:match("^FacadeWing")or d.Name:match("^BackWall")or d.Name=="HallFloor"or d.Name=="Courtyard"or d.Name=="CrookedRoof","Unexpected solid prop")endend
  assert(not d:IsA("LuaSourceContainer"),"Unexpected imported script")
 end
 assert(meshCount>=200,"Native mesh import incomplete")

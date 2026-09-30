@@ -77,7 +77,8 @@ test('Blender export keeps exact bounds, materials and independently addressable
  assert.ok(triangles<200000,'Mobile geometry budget exceeded');
  const bounds=JSON.parse(read(root+'/generated/import-bounds.json'));
  assert.equal(bounds.width,106);assert.ok(bounds.center.every(Number.isFinite));
- assert.match(ui,/nav\.Position=UDim2\.new\(\.5,0,0,90\)/);
+ assert.ok(d.meshes.length<=350,"Mobile scene mesh budget exceeded");
+ for(const m of d.materials)assert.ok(m.pbrMetallicRoughness?.baseColorTexture,"Every exported material needs an import-safe color texture");
  assert.match(lobby,/Vector3\.new\(0,3,-9\)/);
  assert.match(lobby,/Vector3\.new\(5,4,-9\)/);
 });

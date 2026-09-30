@@ -23,11 +23,6 @@ local function namedParts(model,prefix)
  end
  return result
 end
-local function move(parts,delta,duration)
- for _,p in ipairs(parts)do
-  if p.Parent then TweenService:Create(p,TweenInfo.new(duration,Enum.EasingStyle.Quad),{CFrame=delta*p.CFrame}):Play()end
- end
-end
 local function stamp(p,speaker,text)
  p:SetAttribute("LobbyStoryEvent",speaker.."|"..text.."|"..tostring(workspace:GetServerTimeNow()))
 end
@@ -37,11 +32,18 @@ function Manor.new(remote)
  local self=setmetatable({remote=remote,rooms={},slots={},ready=false},Manor)
  local old=workspace:FindFirstChild("MidnightLobby");if old then old:Destroy()end
  self.root=Instance.new("Folder");self.root.Name="MidnightLobby";self.root.Parent=workspace
- local ok,template=pcall(AssetService.LoadAssetAsync,AssetService,Assets.ModelId)
+ -- 게시 빌드에 검증된 모델을 포함해 새 서버가 자산 서버를 다시 기다리지 않게 한다.
+ local packaged=game:GetService("ServerStorage"):FindFirstChild("ManorTemplate")
+ local ok,template=true,packaged and packaged:Clone()
+ if not template then ok,template=pcall(AssetService.LoadAssetAsync,AssetService,Assets.ModelId)end
  assert(ok and template,"MANOR_NATIVE_ASSET_LOAD_FAILED")
  for _,d in ipairs(template:GetDescendants())do
   if d:IsA("LuaSourceContainer")or d:IsA("RemoteEvent")or d:IsA("RemoteFunction")or d:IsA("Tool")or d:IsA("JointInstance")or d:IsA("WeldConstraint")then d:Destroy()
-  elseif d:IsA("BasePart")then d.Anchored=true;d.CanCollide=false;d.CanTouch=false end
+  elseif d:IsA("BasePart")then
+   d.Anchored=true;d.CanCollide=false;d.CanTouch=false
+   local finish=Assets.Finishes and(Assets.Finishes[d.Name]or(d.Parent and Assets.Finishes[d.Parent.Name]))
+   if finish then d.Material=Enum.Material[finish]end
+  end
  end
  local _,size=template:GetBoundingBox()
  assert(size.X>1 and #namedParts(template,"Butler_")>0,"MANOR_NATIVE_MODEL_INVALID")
@@ -66,7 +68,7 @@ function Manor:Get(p)
  if self.rooms[p]then return self.rooms[p]end
  local index=0;while self.slots[index]do index+=1 end;self.slots[index]=p
  local origin=Vector3.new(index*256,0,270)
- local folder=Instance.new("Model");folder.Name="PersonalManor_"..p.UserId;folder:SetAttribute("OwnerUserId",p.UserId);folder.Parent=self.root
+ local folder=Instance.new("Model");folder.Name="PersonalManor_"..p.UserId;folder:SetAttribute("OwnerUserId",p.UserId)
  local scene=self.template:Clone();scene.Name="ManorScene";scene:PivotTo(CFrame.new(origin)*scene:GetPivot());scene.Parent=folder
  part(folder,"PersonalGround",origin+Vector3.new(0,-.15,-2),Vector3.new(84,1,90),true)
  for _,spec in ipairs({{-42,8,-2,1,18,90},{42,8,-2,1,18,90},{0,8,-47,84,18,1},{0,8,43,84,18,1},
@@ -77,16 +79,18 @@ function Manor:Get(p)
  spawn.Size=Vector3.new(8,.1,8);spawn.Anchored=true;spawn.Transparency=1;spawn.CanCollide=false;spawn.CanTouch=false;spawn.Neutral=true;spawn.Duration=0;spawn.Parent=folder
  local room={folder=folder,scene=scene,origin=origin,spawn=spawn,index=index,busy=false,gag=0,lastPrompt=0}
  self.rooms[p]=room
- p:SetAttribute("ManorOriginX",origin.X);p:SetAttribute("PersonalLobbyOwner",p.UserId)
+ p:SetAttribute("ManorOriginX",origin.X)
  p.RespawnLocation=spawn
  local function prompt(name,pos,caption,menu)
   local anchor=part(folder,name,origin+pos,Vector3.new(1,1,1),false);anchor.CanCollide=false
-  local pr=Instance.new("ProximityPrompt");pr.ObjectText=caption;pr.ActionText="살펴보기";pr.MaxActivationDistance=11;pr.RequiresLineOfSight=false;pr.HoldDuration=.1;pr.Parent=anchor
+  local pr=Instance.new("ProximityPrompt");pr.ObjectText=caption;pr.ActionText=type(menu)=="number"and"건드려 보기"or"이야기하기";pr.MaxActivationDistance=8;pr.RequiresLineOfSight=false;pr.HoldDuration=.15;pr.Parent=anchor
   pr.Triggered:Connect(function(visitor)
    if visitor~=p or not p.Parent or p:GetAttribute("RoundState")=="RUNNING"then return end
    local rr=p.Character and p.Character:FindFirstChild("HumanoidRootPart")
    if not rr or(rr.Position-anchor.Position).Magnitude>14 or os.clock()-room.lastPrompt<.5 then return end
-   room.lastPrompt=os.clock();self.remote:FireClient(p,"MANOR_MENU",menu)
+   room.lastPrompt=os.clock()
+   if type(menu)=="number"then task.spawn(function()self:Gag(p,menu)end);return end
+   self.remote:FireClient(p,"MANOR_MENU",menu)
    if name=="ButlerPrompt"then
     stamp(p,"집사 모티머",p:GetAttribute("MonsterPreference")=="MONSTER"and"오늘은 사냥하러 나가시는군요. 현관 매트에는 발톱을 닦아주십시오."or"무사히 돌아오십시오. 관은 아직 주문하지 않았습니다.")
    elseif name=="ArchivistPrompt"then stamp(p,"기록관 에드윈","목격담은 세 번 확인합니다. 제 머리 위치만 빼고요.")
@@ -97,9 +101,13 @@ function Manor:Get(p)
  prompt("ArchivistPrompt",Vector3.new(-18,4,-27),"목 없는 기록관 · 도감","BOOK")
  prompt("MerchantPrompt",Vector3.new(20,4,-20),"처녀귀신 벨라 · 의상실","DRESS")
  prompt("InvitationPrompt",Vector3.new(-12,4,-18),"막내 유령 · 가족 초대장","EVENT")
- for _,pos in ipairs({Vector3.new(0,15,-22),Vector3.new(-21,6,15),Vector3.new(23,6,19),Vector3.new(-18,8,-25),Vector3.new(20,8,-19),Vector3.new(0,5,-38)})do
-  local anchor=part(folder,"WarmLight",origin+pos,Vector3.one,false);anchor.CanCollide=false
-  local light=Instance.new("PointLight");light.Color=Color3.fromRGB(244,171,95);light.Brightness=1.6;light.Range=30;light.Shadows=true;light.Parent=anchor
+ prompt("ArmorPrompt",Vector3.new(-16,4,-11),"졸고 있는 갑옷",2)
+ prompt("CoffinPrompt",Vector3.new(17,3,-14),"누군가의 낮잠",3)
+ prompt("TeaPrompt",Vector3.new(-15,4,-18),"막내가 훔친 찻잔",4)
+ -- 빛은 소품 가까이만 닿는다. 달빛과 촛불의 명암을 분리한다.
+ for _,spec in ipairs({{Vector3.new(0,17,-24),.75,23,true},{Vector3.new(-21,6,15),.55,15,false},{Vector3.new(23,6,19),.55,15,false},{Vector3.new(-18,7,-25),.65,15,false},{Vector3.new(20,7,-19),.55,15,false},{Vector3.new(0,3,-38),1.05,15,true}})do
+  local anchor=part(folder,"WarmLight",origin+spec[1],Vector3.one,false);anchor.CanCollide=false
+  local light=Instance.new("PointLight");light.Color=Color3.fromRGB(239,176,111);light.Brightness=spec[2];light.Range=spec[3];light.Shadows=spec[4];light.Parent=anchor
  end
  -- 움직이는 장식은 비충돌, 가구의 몸체만 기존 바닥 위에서 이동을 막는다.
  for _,spec in ipairs({{-21,2,-39,13,4,3},{20,2,-38,13,4,3},{24,4,-31,5,8,3},{0,3,-41,13,6,4}})do
@@ -108,7 +116,18 @@ function Manor:Get(p)
  for _,mesh in ipairs(scene:GetDescendants())do
   if mesh:IsA("BasePart")and (mesh.Name:match("^HearthFlame")or mesh.Name:match("^ChandelierFlame"))then
    mesh.Material=Enum.Material.Neon;mesh.Color=Color3.fromRGB(255,185,99)
+  elseif mesh:IsA("BasePart")and(mesh.Name:match("^ManorSideWall")or mesh.Name:match("^FacadeWing")or mesh.Name:match("^BackWall")or mesh.Name=="HallFloor"or mesh.Name=="Courtyard"or mesh.Name=="CrookedRoof")then
+   -- 카메라도 실제 불투명 벽/바닥과 충돌한다. 장식 전체의 볼록 충돌체는 만들지 않는다.
+   mesh.CanCollide=true;mesh.CanQuery=true
   end
+ end
+ -- 양쪽 경첩을 중심으로 열리는 현관문. 문짝은 사람을 밀거나 가두지 않는다.
+ room.doors={};room.doorOpen=nil
+ for _,side in ipairs({-1,1})do
+  local node=scene:FindFirstChild("EntryDoor"..side,true)
+  if node then for _,mesh in ipairs(node:GetDescendants())do
+   if mesh:IsA("BasePart")then table.insert(room.doors,{mesh=mesh,home=mesh.CFrame,pivot=origin+Vector3.new(side*7.2,.5,-2),side=side})end
+  end end
  end
  -- Owner records turn the back wall into a personal collection display.
  local function collection()
@@ -118,6 +137,8 @@ function Manor:Get(p)
   end end
  end
  room.collection=p:GetAttributeChangedSignal("GhostSeenCount"):Connect(collection);collection()
+ folder.Parent=self.root
+ p:SetAttribute("PersonalLobbyOwner",p.UserId)
  task.spawn(function()
   while folder.Parent and p.Parent do
    task.wait(24+math.random()*16)
@@ -169,12 +190,13 @@ function Manor:Rank(p)
  end
  self.remote:FireClient(p,"MANOR_RANKING",ok and self.rankingCache or false)
 end
-function Manor:Gag(p)
+function Manor:Gag(p,requested)
  local room=self.rooms[p];if not room or room.busy then return end
  local rr=p.Character and p.Character:FindFirstChild("HumanoidRootPart")
  if not rr or(rr.Position-room.origin).Magnitude>90 then return end
- room.busy=true;room.gag=room.gag%3+1
- local prefix=room.gag==1 and"Butler_Skull"or room.gag==2 and"ArmorHelmet"or"CoffinLid"
+ if os.clock()-(room.lastGag or -20)<5 then return end
+ room.lastGag=os.clock();room.busy=true;room.gag=requested or(room.gag%4+1)
+ local prefix=room.gag==1 and"Butler_Skull"or room.gag==2 and"ArmorHelmet"or room.gag==3 and"CoffinLid"or"Tea"
  local pieces=namedParts(room.scene,prefix)
  -- The head's face meshes travel together; an invisible assembly root is unnecessary.
  if room.gag==1 then
@@ -184,19 +206,21 @@ function Manor:Gag(p)
   end
  end
  local saved={};local rootPart=pieces[1]
+ for _,mesh in ipairs(pieces)do if not rootPart or mesh.Size.Magnitude>rootPart.Size.Magnitude then rootPart=mesh end end
  if rootPart then
   for _,mesh in ipairs(pieces)do
-   saved[mesh]=mesh.CFrame;mesh.CollisionGroup="ManorGag";mesh.Anchored=false;mesh.CanCollide=true
+   saved[mesh]=mesh.CFrame;mesh.CollisionGroup="ManorGag";mesh.Anchored=false;mesh.CanCollide=mesh==rootPart;mesh.CanQuery=false
+   mesh.CustomPhysicalProperties=PhysicalProperties.new(.5,.65,.18,1,1)
    if mesh~=rootPart then local weld=Instance.new("WeldConstraint");weld.Name="ManorGagWeld";weld.Part0=rootPart;weld.Part1=mesh;weld.Parent=rootPart end
   end
   rootPart:SetNetworkOwner(nil)
-  rootPart.AssemblyLinearVelocity=room.gag==3 and Vector3.new(0,12,2)or Vector3.new(-3,3,5)
-  rootPart.AssemblyAngularVelocity=Vector3.new(1,0,room.gag==3 and 1 or 4)
-  stamp(p,room.gag==1 and"집사 모티머"or room.gag==2 and"갑옷 경비"or"의상실 주인 벨라",
-   room.gag==1 and"고개를 너무 깊이 숙였군요. 잠시만 실례하겠습니다."or room.gag==2 and"위협적인 자세는 관절 보증에 포함되지 않습니다."or"아직 영업시간입니다. 안에서 기다리세요.")
+  rootPart:ApplyImpulse((room.gag==3 and Vector3.new(0,12,2)or Vector3.new(-2,2,3))*rootPart.AssemblyMass)
+  rootPart.AssemblyAngularVelocity=Vector3.new(.6,0,room.gag==3 and 1 or 3)
+  stamp(p,room.gag==1 and"집사 모티머"or room.gag==2 and"갑옷 경비"or room.gag==3 and"의상실 주인 벨라"or"막내 유령",
+   room.gag==1 and"고개를 너무 깊이 숙였군요. 잠시만 실례하겠습니다."or room.gag==2 and"위협적인 자세는 관절 보증에 포함되지 않습니다."or room.gag==3 and"아직 영업시간입니다. 안에서 기다리세요."or"찻잔이 먼저 도망갔어. 내가 쏟은 거 아니야!")
   task.wait(2.2)
   for mesh in pairs(saved)do if mesh.Parent then mesh.Anchored=true;mesh.CanCollide=false;mesh.AssemblyLinearVelocity=Vector3.zero;mesh.AssemblyAngularVelocity=Vector3.zero end end
-  for _,w in ipairs(rootPart:GetChildren())do if w.Name=="ManorGagWeld"then w:Destroy()end end
+  if rootPart.Parent then for _,w in ipairs(rootPart:GetChildren())do if w.Name=="ManorGagWeld"then w:Destroy()end end end
   for mesh,cf in pairs(saved)do if mesh.Parent then TweenService:Create(mesh,TweenInfo.new(.7,Enum.EasingStyle.Back),{CFrame=cf}):Play()end end
   task.wait(.8)
  end
@@ -206,7 +230,17 @@ function Manor:Recover(p)
  local room=self:Get(p);local r=p.Character and p.Character:FindFirstChild("HumanoidRootPart")
  if not r then return nil end
  local localPos=r.Position-room.origin
- if localPos.Y< -2 or localPos.Y>22 or math.abs(localPos.X)>42 or localPos.Z< -47 or localPos.Z>43 then return self:GetSpawn(p)end
+ local nearDoor=math.abs(localPos.X)<13 and localPos.Z> -19 and localPos.Z<14
+ if room.doorOpen~=nearDoor then
+  room.doorOpen=nearDoor
+  for _,door in ipairs(room.doors)do
+   if door.mesh.Parent then
+    local target=nearDoor and(CFrame.new(door.pivot)*CFrame.Angles(0,door.side*math.rad(88),0)*CFrame.new(-door.pivot)*door.home)or door.home
+    TweenService:Create(door.mesh,TweenInfo.new(1.15,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{CFrame=target}):Play()
+   end
+  end
+ end
+ if localPos.Y< -2 or localPos.Y>22 or math.abs(localPos.X)>40 or localPos.Z< -44 or localPos.Z>41 or(localPos.Z< -5 and math.abs(localPos.X)>29)then return self:GetSpawn(p)end
  return nil
 end
 function Manor:Remove(p)

@@ -4,6 +4,7 @@ local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
 local RunService=game:GetService("RunService")
 local Lighting=game:GetService("Lighting")
+local TweenService=game:GetService("TweenService")
 local p=Players.LocalPlayer
 local C=require(RS.Shared.GameConfig)
 local Assets=require(RS.Shared.ManorAssets)
@@ -15,6 +16,7 @@ local ink=Color3.fromRGB(27,30,29)
 local parchment=Color3.fromRGB(235,218,182)
 local accent=Color3.fromRGB(150,104,71)
 local activeMenu=nil
+local notebookOpen=false
 local function corner(parent,n)
  local x=Instance.new("UICorner");x.CornerRadius=UDim.new(0,n or 4);x.Parent=parent
  local line=Instance.new("UIStroke");line.ApplyStrokeMode=Enum.ApplyStrokeMode.Border;line.Color=Color3.fromRGB(158,133,83);line.Transparency=.35;line.Thickness=1;line.Parent=parent
@@ -29,18 +31,20 @@ local function button(parent,text,fn,color)
  x.Text=text;x.TextColor3=parchment;x.TextSize=14;x.Font=Enum.Font.GothamBold;x.AutoButtonColor=true
  x.Parent=parent;corner(x,5);x.Activated:Connect(fn);return x
 end
-local header=Instance.new("Frame");header.Size=UDim2.fromOffset(276,68);header.Position=UDim2.fromOffset(16,14)
-header.BackgroundColor3=ink;header.BackgroundTransparency=.12;header.Parent=gui;corner(header)
-local title=label(header,"MIDNIGHT ESCAPE",30,19);title.Position=UDim2.fromOffset(12,5);title.AutoLocalize=false
-local status=label(header,"나만의 저택",24,11);status.Position=UDim2.fromOffset(12,38)
--- 메뉴는 상단에 두어 휴대폰 기본 조이스틱·점프 버튼 공간을 비워 둔다.
-local nav=Instance.new("Frame");nav.AnchorPoint=Vector2.new(.5,0);nav.Position=UDim2.new(.5,0,0,90)
-nav.Size=UDim2.new(1,-24,0,96);nav.BackgroundTransparency=1;nav.Parent=gui
-local max=Instance.new("UISizeConstraint");max.MaxSize=Vector2.new(600,96);max.Parent=nav
-nav.Size=UDim2.new(1,-24,0,72)
-local grid=Instance.new("UIGridLayout");grid.CellSize=UDim2.new(1/5,-5,0,66);grid.CellPadding=UDim2.fromOffset(6,0);grid.Parent=nav
-local panel=Instance.new("Frame");panel.AnchorPoint=Vector2.new(.5,.5);panel.Position=UDim2.fromScale(.5,.47)
-panel.Size=UDim2.new(1,-32,.72,0);panel.BackgroundColor3=ink;panel.Visible=false;panel.Parent=gui;corner(panel,10)
+-- 화면 구성 · 작은 명패와 접히는 가족 수첩. 이동 중 중앙 시야는 비운다.
+local header=Instance.new("Frame");header.Name="ManorNameplate";header.Size=UDim2.new(1,-174,0,46);header.Position=UDim2.fromOffset(10,6)
+header.BackgroundColor3=ink;header.BackgroundTransparency=.18;header.Parent=gui;corner(header)
+local headerLimit=Instance.new("UISizeConstraint");headerLimit.MaxSize=Vector2.new(206,46);headerLimit.Parent=header
+local title=label(header,"MIDNIGHT ESCAPE",22,15);title.Position=UDim2.fromOffset(10,2);title.AutoLocalize=false
+local status=label(header,"괴물 가족의 저택",18,10);status.Position=UDim2.fromOffset(10,25)
+local commands=Instance.new("Frame");commands.Name="ManorCommands";commands.AnchorPoint=Vector2.new(1,0)
+commands.Position=UDim2.new(1,-10,0,6);commands.Size=UDim2.fromOffset(144,44);commands.BackgroundTransparency=1;commands.Parent=gui
+local nav=Instance.new("Frame");nav.Name="FamilyNotebook";nav.AnchorPoint=Vector2.new(1,0);nav.Position=UDim2.new(1,-10,0,58)
+nav.Size=UDim2.new(1,-20,0,60);nav.BackgroundColor3=ink;nav.BackgroundTransparency=.04;nav.Visible=false;nav.Parent=gui;corner(nav,5)
+local max=Instance.new("UISizeConstraint");max.MaxSize=Vector2.new(360,60);max.Parent=nav
+local grid=Instance.new("UIGridLayout");grid.CellSize=UDim2.new(1/5,-4,1,0);grid.CellPadding=UDim2.fromOffset(5,0);grid.Parent=nav
+local panel=Instance.new("Frame");panel.AnchorPoint=Vector2.new(.5,.5);panel.Position=UDim2.fromScale(.5,.52)
+panel.Size=UDim2.new(1,-28,1,-74);panel.BackgroundColor3=Color3.fromRGB(29,24,25);panel.Visible=false;panel.Parent=gui;corner(panel,10)
 local limit=Instance.new("UISizeConstraint");limit.MaxSize=Vector2.new(460,550);limit.Parent=panel
 local panelTitle=label(panel,"",38,20);panelTitle.Position=UDim2.fromOffset(14,8);panelTitle.Size=UDim2.new(1,-85,0,38)
 local close=button(panel,"×",function()activeMenu=nil;panel.Visible=false end);close.Size=UDim2.fromOffset(42,38);close.Position=UDim2.new(1,-52,0,8)
@@ -66,7 +70,7 @@ local function openStory(item,stage)
  button(body,"도감으로",function()open("BOOK")end)
 end
 open=function(key)
- activeMenu=key;panel.Visible=true;clear();body.CanvasPosition=Vector2.zero
+ activeMenu=key;notebookOpen=false;nav.Visible=false;panel.Visible=true;clear();body.CanvasPosition=Vector2.zero
  if key=="PLAY"then
   panelTitle.Text="오늘 밤의 출정"
   local inRoom=p:GetAttribute("RoomServer")==true
@@ -155,15 +159,22 @@ open=function(key)
   label(body,string.format("괴담 발견  %d\n괴담 완성  %d\n현장 문서  %d\n몬스터 경험  %d",p:GetAttribute("GhostSeenCount")or 0,p:GetAttribute("GhostCompleted")or 0,p:GetAttribute("LoreCount")or 0,p:GetAttribute("MonsterXP")or 0),140,16)
  end
 end
+local depart=button(commands,"출정",function()open("PLAY")end,Color3.fromRGB(81,42,47))
+depart.Size=UDim2.fromOffset(64,44)
+local notebook=button(commands,"수첩",function()
+ notebookOpen=not notebookOpen;nav.Visible=notebookOpen
+ if notebookOpen then activeMenu=nil;panel.Visible=false end
+end)
+notebook.Size=UDim2.fromOffset(74,44);notebook.Position=UDim2.fromOffset(70,0)
 -- 무료 Lucide 아이콘: 원본 ISC/MIT 라이선스를 모델 폴더에 보관.
 for index,entry in ipairs({{"PLAY","현관"},{"BOOK","도감"},{"DRESS","옷장"},{"EVENT","초대장"},{"RECORD","기록"}})do
  local item=button(nav,"",function()if activeMenu==entry[1]and panel.Visible then activeMenu=nil;panel.Visible=false else open(entry[1])end end,entry[1]=="PLAY"and Color3.fromRGB(85,58,52)or ink)
  local icon=Instance.new("ImageLabel");icon.BackgroundTransparency=1;icon.Image="rbxassetid://"..tostring(Assets.IconsId or 0)
- icon.ImageRectOffset=Vector2.new((index-1)*64,0);icon.ImageRectSize=Vector2.new(64,64);icon.Size=UDim2.fromOffset(30,30);icon.AnchorPoint=Vector2.new(.5,0);icon.Position=UDim2.new(.5,0,0,4);icon.Parent=item
- local text=label(item,entry[2],24,12);text.Size=UDim2.new(1,0,0,24);text.Position=UDim2.fromOffset(0,36);text.TextXAlignment=Enum.TextXAlignment.Center
+ icon.ImageRectOffset=Vector2.new((index-1)*64,0);icon.ImageRectSize=Vector2.new(64,64);icon.Size=UDim2.fromOffset(24,24);icon.AnchorPoint=Vector2.new(.5,0);icon.Position=UDim2.new(.5,0,0,6);icon.Parent=item
+ local text=label(item,entry[2],24,12);text.Size=UDim2.new(1,0,0,24);text.Position=UDim2.fromOffset(0,32);text.TextXAlignment=Enum.TextXAlignment.Center
 end
-local toast=label(gui,"",70,14);toast.AnchorPoint=Vector2.new(.5,1);toast.Position=UDim2.new(.5,0,1,-120)
-toast.Size=UDim2.new(1,-36,0,70);toast.BackgroundColor3=ink;toast.BackgroundTransparency=.08;toast.Visible=false;corner(toast)
+local toast=label(gui,"",70,14);toast.AnchorPoint=Vector2.new(.5,1);toast.Position=UDim2.new(.5,0,1,-92)
+toast.Size=UDim2.new(.66,0,0,62);toast.BackgroundColor3=ink;toast.BackgroundTransparency=.08;toast.Visible=false;corner(toast)
 local toastLimit=Instance.new("UISizeConstraint");toastLimit.MaxSize=Vector2.new(520,70);toastLimit.Parent=toast
 local serial=0
 local function notify(text)
@@ -200,11 +211,11 @@ end
 -- 접속 메인: 입장 버튼을 누르면 기본 카메라/조작으로 정확히 복귀한다.
 local entered=false
 local welcome=Instance.new("Frame");welcome.Size=UDim2.fromScale(1,1);welcome.BackgroundColor3=ink;welcome.BackgroundTransparency=.58;welcome.Parent=gui
-local card=Instance.new("Frame");card.AnchorPoint=Vector2.new(.5,.5);card.Position=UDim2.fromScale(.5,.46);card.Size=UDim2.new(1,-48,0,278);card.BackgroundColor3=ink;card.BackgroundTransparency=.06;card.Parent=welcome;corner(card,5)
-local cardLimit=Instance.new("UISizeConstraint");cardLimit.MaxSize=Vector2.new(430,278);cardLimit.Parent=card
-local mainTitle=label(card,"MIDNIGHT ESCAPE",54,26);mainTitle.Size=UDim2.new(1,-24,0,54);mainTitle.Position=UDim2.fromOffset(12,34);mainTitle.TextXAlignment=Enum.TextXAlignment.Center;mainTitle.AutoLocalize=false
-local subtitle=label(card,"심야 대탈출 · 괴물 가족의 저택",38,14);subtitle.Position=UDim2.fromOffset(12,93);subtitle.TextXAlignment=Enum.TextXAlignment.Center
-local greeting=label(card,"집사가 문을 열어두었어.\n이 집에서는 기이한 일도 일상이야.",54,13);greeting.Position=UDim2.fromOffset(12,134);greeting.TextXAlignment=Enum.TextXAlignment.Center
+local card=Instance.new("Frame");card.AnchorPoint=Vector2.new(.5,.5);card.Position=UDim2.fromScale(.5,.46);card.Size=UDim2.new(1,-48,0,224);card.BackgroundColor3=ink;card.BackgroundTransparency=.06;card.Parent=welcome;corner(card,5)
+local cardLimit=Instance.new("UISizeConstraint");cardLimit.MaxSize=Vector2.new(430,224);cardLimit.Parent=card
+local mainTitle=label(card,"MIDNIGHT ESCAPE",54,26);mainTitle.Size=UDim2.new(1,-24,0,54);mainTitle.Position=UDim2.fromOffset(12,14);mainTitle.TextXAlignment=Enum.TextXAlignment.Center;mainTitle.AutoLocalize=false
+local subtitle=label(card,"심야 대탈출 · 괴물 가족의 저택",38,14);subtitle.Position=UDim2.fromOffset(12,65);subtitle.TextXAlignment=Enum.TextXAlignment.Center
+local greeting=label(card,"집사가 문을 열어두었어.\n이 집에서는 기이한 일도 일상이야.",54,13);greeting.Position=UDim2.fromOffset(12,105);greeting.TextXAlignment=Enum.TextXAlignment.Center
 local controls=nil
 local mainCameraActive=false
 local function releaseMainCamera()
@@ -213,6 +224,8 @@ local function releaseMainCamera()
  local camera=workspace.CurrentCamera;local humanoid=p.Character and p.Character:FindFirstChildOfClass("Humanoid")
  if camera then camera.CameraType=Enum.CameraType.Custom;if humanoid then camera.CameraSubject=humanoid end end
  if controls then controls:Enable()end
+ local root=p.Character and p.Character:FindFirstChild("HumanoidRootPart")
+ if camera and root then camera.CFrame=CFrame.lookAt(root.Position+Vector3.new(0,4.5,9),root.Position+Vector3.new(0,2,0))end
 end
 task.spawn(function()
  local scripts=p:WaitForChild("PlayerScripts");local module=scripts:WaitForChild("PlayerModule",10)
@@ -223,29 +236,36 @@ local enter=button(card,"저택 들어가기",function()
  entered=true
  releaseMainCamera()
  if visibility then visibility()end
-end,Color3.fromRGB(99,77,53));enter.Position=UDim2.fromOffset(18,212);enter.Size=UDim2.new(1,-36,0,46)
+end,Color3.fromRGB(99,77,53));enter.Position=UDim2.fromOffset(18,166);enter.Size=UDim2.new(1,-36,0,46)
 local oldLighting=nil
 local atmosphere=nil
 local oldAtmosphere=nil
+local oldZoom=nil
+local grade=Instance.new("ColorCorrectionEffect");grade.Name="ManorColor";grade.TintColor=Color3.fromRGB(229,234,244)
+grade.Brightness=-.015;grade.Contrast=.13;grade.Saturation=-.10;grade.Enabled=false;grade.Parent=Lighting
+local bloom=Instance.new("BloomEffect");bloom.Name="ManorCandleBloom";bloom.Intensity=.12;bloom.Size=12;bloom.Threshold=1.8;bloom.Enabled=false;bloom.Parent=Lighting
 visibility=function()
  local round=tostring(p:GetAttribute("RoundState")or"")
  local visible=p:GetAttribute("LobbyClientReady")==true and workspace:GetAttribute("PhysicalLobbyReady")==true and p:GetAttribute("PersonalLobbyOwner")==p.UserId and round~="RUNNING"and round~="SPECTATING"and not round:match("^RESULT_")
  gui.Enabled=visible
  if p:GetAttribute("RoomServer")==true then entered=true;releaseMainCamera()end
- welcome.Visible=visible and not entered;nav.Visible=visible and entered;header.Visible=visible and entered
- if not visible then panel.Visible=false;activeMenu=nil;releaseMainCamera()end
- status.Text=string.format("나만의 저택 · 괴담 %d/%d · %d 코인",p:GetAttribute("GhostCompleted")or 0,#C.GhostCatalog,p:GetAttribute("Coins")or 0)
+ welcome.Visible=visible and not entered;nav.Visible=visible and entered and notebookOpen;header.Visible=visible and entered;commands.Visible=visible and entered
+ grade.Enabled=visible;bloom.Enabled=visible
+ if not visible then panel.Visible=false;activeMenu=nil;notebookOpen=false;releaseMainCamera()end
+ status.Text=string.format("괴담 %d/%d  ·  %d 코인",p:GetAttribute("GhostCompleted")or 0,#C.GhostCatalog,p:GetAttribute("Coins")or 0)
  if p:GetAttribute("RoomServer")==true then
   status.Text=round=="INTERMISSION"and string.format("출정까지 %d초",p:GetAttribute("TimeLeft")or 0)or string.format("초대 %s · 참가 %d명",p:GetAttribute("RoomCode")or"------",p:GetAttribute("RoomMemberCount")or 1)
  end
  if visible and not oldLighting then
-  oldLighting={ClockTime=Lighting.ClockTime,Brightness=Lighting.Brightness,Ambient=Lighting.Ambient,OutdoorAmbient=Lighting.OutdoorAmbient,FogStart=Lighting.FogStart,FogEnd=Lighting.FogEnd}
-  Lighting.ClockTime=0.35;Lighting.Brightness=2.3;Lighting.Ambient=Color3.fromRGB(91,90,101);Lighting.OutdoorAmbient=Color3.fromRGB(69,86,111)
-  Lighting.FogStart=150;Lighting.FogEnd=300
+  oldLighting={ClockTime=Lighting.ClockTime,Brightness=Lighting.Brightness,Ambient=Lighting.Ambient,OutdoorAmbient=Lighting.OutdoorAmbient,FogStart=Lighting.FogStart,FogEnd=Lighting.FogEnd,ExposureCompensation=Lighting.ExposureCompensation}
+  Lighting.ClockTime=0.35;Lighting.Brightness=1.05;Lighting.Ambient=Color3.fromRGB(49,50,65);Lighting.OutdoorAmbient=Color3.fromRGB(52,68,94)
+  Lighting.ExposureCompensation=-.2;Lighting.FogStart=170;Lighting.FogEnd=400
+  oldZoom={min=p.CameraMinZoomDistance,max=p.CameraMaxZoomDistance};p.CameraMinZoomDistance=5;p.CameraMaxZoomDistance=18
   atmosphere=Lighting:FindFirstChildOfClass("Atmosphere")
-  if atmosphere then oldAtmosphere={Density=atmosphere.Density,Haze=atmosphere.Haze};atmosphere.Density=.12;atmosphere.Haze=.4 end
+  if atmosphere then oldAtmosphere={Density=atmosphere.Density,Haze=atmosphere.Haze};atmosphere.Density=.035;atmosphere.Haze=.15 end
  elseif not visible and oldLighting then
   for k,v in pairs(oldLighting)do Lighting[k]=v end;oldLighting=nil
+  if oldZoom then p.CameraMinZoomDistance=oldZoom.min;p.CameraMaxZoomDistance=oldZoom.max;oldZoom=nil end
   if atmosphere and atmosphere.Parent and oldAtmosphere then for k,v in pairs(oldAtmosphere)do atmosphere[k]=v end end
   atmosphere=nil;oldAtmosphere=nil
  end
@@ -258,7 +278,40 @@ RunService.RenderStepped:Connect(function()
  if x and camera then
   mainCameraActive=true
   camera.CameraType=Enum.CameraType.Scriptable
-  camera.CFrame=CFrame.lookAt(Vector3.new(x,10,268),Vector3.new(x,7,242))
+  camera.CFrame=CFrame.lookAt(Vector3.new(x,9,264),Vector3.new(x,7,242))
   if controls then controls:Disable()end
+ end
+end)
+
+-- 생활 연출 · 거울의 시선, 시계추, 막내의 숨결, 촛불. 서버 물리와 분리한다.
+local animatedScene=nil
+local details={}
+local elapsed=0
+RunService.Heartbeat:Connect(function(dt)
+ elapsed+=dt;if elapsed<.05 or not gui.Enabled then return end;elapsed=0
+ local root=workspace:FindFirstChild("MidnightLobby")
+ local room=root and root:FindFirstChild("PersonalManor_"..p.UserId)
+ local scene=room and room:FindFirstChild("ManorScene")
+ if scene~=animatedScene then
+  animatedScene=scene;details={}
+  if scene then for _,mesh in ipairs(scene:GetDescendants())do
+   if mesh:IsA("BasePart")and(mesh.Name:match("^MirrorPupil")or mesh.Name:match("^ClockPendulum")or mesh.Name:match("^LittleGhost")or mesh.Name:match("^HearthFlame"))then
+    table.insert(details,{part=mesh,home=mesh.CFrame,size=mesh.Size})
+   end
+  end end
+ end
+ local now=workspace:GetServerTimeNow();local playerRoot=p.Character and p.Character:FindFirstChild("HumanoidRootPart")
+ for _,row in ipairs(details)do
+  local mesh=row.part
+  if mesh.Parent then
+   if mesh.Name:match("^MirrorPupil")and playerRoot then
+    local delta=playerRoot.Position-row.home.Position
+    mesh.CFrame=row.home+Vector3.new(math.clamp(delta.X*.022,-.38,.38),math.clamp((delta.Y+10)*.018,-.13,.13),0)
+   elseif mesh.Name:match("^ClockPendulum")then
+    local pivot=Vector3.new((p:GetAttribute("ManorOriginX")or 0)-9,6.7,230.85)
+    mesh.CFrame=CFrame.new(pivot)*CFrame.Angles(0,0,math.sin(now*2.2)*.12)*CFrame.new(-pivot)*row.home
+   elseif mesh.Name:match("^LittleGhost")then mesh.CFrame=row.home+Vector3.new(0,math.sin(now*1.6)*.18,0)
+   elseif mesh.Name:match("^HearthFlame")then mesh.Size=Vector3.new(row.size.X,row.size.Y*(1+math.sin(now*7+row.home.Position.X)*.07),row.size.Z)end
+  end
  end
 end)

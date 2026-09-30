@@ -81,122 +81,6 @@ gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
 gui.IgnoreGuiInset=false
 gui.Parent=p:WaitForChild("PlayerGui")
 
--- 로비 전용 화면 톤. 전투가 시작되면 전부 꺼져 게임플레이 가독성에는 영향을 주지 않는다.
-local lobbyColor=Instance.new("ColorCorrectionEffect")
-lobbyColor.Name="MidnightLobbyColor"
-lobbyColor.TintColor=Color3.fromRGB(240,230,214)
-lobbyColor.Brightness=.19
-lobbyColor.Contrast=.04
-lobbyColor.Saturation=-.04
-lobbyColor.Enabled=false
-lobbyColor.Parent=Lighting
-
-local lobbyBloom=Instance.new("BloomEffect")
-lobbyBloom.Name="MidnightLobbyBloom"
-lobbyBloom.Intensity=.12
-lobbyBloom.Size=16
-lobbyBloom.Threshold=1.18
-lobbyBloom.Enabled=false
-lobbyBloom.Parent=Lighting
-
-local lobbyDepth=Instance.new("DepthOfFieldEffect")
-lobbyDepth.Name="MidnightLobbyDepth"
-lobbyDepth.FarIntensity=.018
-lobbyDepth.NearIntensity=.004
-lobbyDepth.FocusDistance=34
-lobbyDepth.InFocusRadius=42
-lobbyDepth.Enabled=false
-lobbyDepth.Parent=Lighting
-
-local lobbyVignetteTop=Instance.new("Frame")
-lobbyVignetteTop.Name="LobbyVignetteTop"
-lobbyVignetteTop.Size=UDim2.new(1,0,.28,0)
-lobbyVignetteTop.Position=UDim2.fromScale(0,0)
-lobbyVignetteTop.BackgroundColor3=Color3.new(0,0,0)
-lobbyVignetteTop.BackgroundTransparency=0
-lobbyVignetteTop.BorderSizePixel=0
-lobbyVignetteTop.Visible=false
-lobbyVignetteTop.ZIndex=8
-lobbyVignetteTop.Parent=gui
-local lobbyVignetteTopGradient=Instance.new("UIGradient")
-lobbyVignetteTopGradient.Transparency=NumberSequence.new({
- NumberSequenceKeypoint.new(0,.72),
- NumberSequenceKeypoint.new(1,1),
-})
-lobbyVignetteTopGradient.Rotation=90
-lobbyVignetteTopGradient.Parent=lobbyVignetteTop
-
-local lobbyVignetteBottom=lobbyVignetteTop:Clone()
-lobbyVignetteBottom.Name="LobbyVignetteBottom"
-lobbyVignetteBottom.AnchorPoint=Vector2.new(0,1)
-lobbyVignetteBottom.Position=UDim2.fromScale(0,1)
-lobbyVignetteBottom.Parent=gui
-local bottomGradient=lobbyVignetteBottom:FindFirstChildOfClass("UIGradient")
-if bottomGradient then bottomGradient.Rotation=270 end
-
-local lobbyBloodEdge=Instance.new("Frame")
-lobbyBloodEdge.Name="LobbyBloodEdge"
-lobbyBloodEdge.Size=UDim2.fromScale(1,1)
-lobbyBloodEdge.BackgroundColor3=Color3.fromRGB(72,9,14)
-lobbyBloodEdge.BackgroundTransparency=.992
-lobbyBloodEdge.BorderSizePixel=0
-lobbyBloodEdge.Visible=false
-lobbyBloodEdge.ZIndex=7
-lobbyBloodEdge.Parent=gui
-local lobbyBloodGradient=Instance.new("UIGradient")
-lobbyBloodGradient.Transparency=NumberSequence.new({
- NumberSequenceKeypoint.new(0,.82),
- NumberSequenceKeypoint.new(.23,1),
- NumberSequenceKeypoint.new(.77,1),
- NumberSequenceKeypoint.new(1,.82),
-})
-lobbyBloodGradient.Parent=lobbyBloodEdge
-
-local lobbyClarityActive=false
-local lobbyFogRestore=nil
-local lobbyAtmosphereRestore={}
-local function setLobbyClarity(enabled)
- if enabled and not lobbyClarityActive then
-  lobbyClarityActive=true
-  lobbyFogRestore={
-   FogStart=Lighting.FogStart,FogEnd=Lighting.FogEnd,
-   Brightness=Lighting.Brightness,Ambient=Lighting.Ambient,
-   OutdoorAmbient=Lighting.OutdoorAmbient,ExposureCompensation=Lighting.ExposureCompensation,
-  }
-  Lighting.FogStart=210
-  Lighting.FogEnd=1450
-  Lighting.Brightness=math.max(Lighting.Brightness,2.85)
-  Lighting.Ambient=Color3.fromRGB(132,123,114)
-  Lighting.OutdoorAmbient=Color3.fromRGB(108,104,101)
-  Lighting.ExposureCompensation=math.max(Lighting.ExposureCompensation,.22)
-  lobbyAtmosphereRestore={}
-  for _,effect in ipairs(Lighting:GetChildren())do
-   if effect:IsA("Atmosphere")then
-    lobbyAtmosphereRestore[effect]={Density=effect.Density,Haze=effect.Haze,Glare=effect.Glare}
-    effect.Density=math.min(effect.Density,.035)
-    effect.Haze=math.min(effect.Haze,.18)
-    effect.Glare=math.min(effect.Glare,.03)
-   end
-  end
- elseif not enabled and lobbyClarityActive then
-  lobbyClarityActive=false
-  if lobbyFogRestore then
-   Lighting.FogStart=lobbyFogRestore.FogStart
-   Lighting.FogEnd=lobbyFogRestore.FogEnd
-   Lighting.Brightness=lobbyFogRestore.Brightness
-   Lighting.Ambient=lobbyFogRestore.Ambient
-   Lighting.OutdoorAmbient=lobbyFogRestore.OutdoorAmbient
-   Lighting.ExposureCompensation=lobbyFogRestore.ExposureCompensation
-  end
-  for effect,old in pairs(lobbyAtmosphereRestore)do
-   if effect and effect.Parent and old then
-    effect.Density=old.Density;effect.Haze=old.Haze;effect.Glare=old.Glare
-   end
-  end
-  lobbyAtmosphereRestore={}
- end
-end
-
 -- 로딩: 클라이언트 핵심 리소스와 서버 맵 준비가 끝날 때까지 로비 진입을 가린다.
 -- 로딩 화면 생성 전용 지역 범위: 생성용 변수가 파일 전체에 누적되지 않는다.
 local loadingFill
@@ -204,21 +88,22 @@ do
 local loadingLayer=Instance.new("Frame")
 loadingLayer.Name="LoadingScreen"
 loadingLayer.Size=UDim2.fromScale(1,1)
-loadingLayer.BackgroundColor3=Color3.fromRGB(10,10,11)
+loadingLayer.BackgroundColor3=Color3.fromRGB(17,20,25)
 loadingLayer.BorderSizePixel=0
 loadingLayer.ZIndex=100
+loadingLayer.Active=true
 loadingLayer.Parent=gui
 
 local loadingTitle=Instance.new("TextLabel")
 loadingTitle.Name="LoadingTitle"
 loadingTitle.AnchorPoint=Vector2.new(.5,.5)
-loadingTitle.Position=UDim2.fromScale(.5,.43)
+loadingTitle.Position=UDim2.fromScale(.5,.40)
 loadingTitle.Size=UDim2.new(.86,0,0,42)
 loadingTitle.BackgroundTransparency=1
 loadingTitle.Text="MIDNIGHT ESCAPE"
 loadingTitle.AutoLocalize=false
 loadingTitle.TextColor3=Color3.fromRGB(235,222,190)
-loadingTitle.TextSize=30
+loadingTitle.TextSize=26
 loadingTitle.Font=Enum.Font.GothamBold
 loadingTitle.ZIndex=103
 loadingTitle.Parent=loadingLayer
@@ -226,7 +111,7 @@ loadingTitle.Parent=loadingLayer
 local loadingStatus=Instance.new("TextLabel")
 loadingStatus.Name="LoadingStatus"
 loadingStatus.AnchorPoint=Vector2.new(.5,.5)
-loadingStatus.Position=UDim2.fromScale(.5,.51)
+loadingStatus.Position=UDim2.fromScale(.5,.59)
 loadingStatus.Size=UDim2.new(.82,0,0,28)
 loadingStatus.BackgroundTransparency=1
 loadingStatus.Text="개인 저택을 준비하는 중"
@@ -239,8 +124,8 @@ loadingStatus.Parent=loadingLayer
 local loadingTrack=Instance.new("Frame")
 loadingTrack.Name="LoadingTrack"
 loadingTrack.AnchorPoint=Vector2.new(.5,.5)
-loadingTrack.Position=UDim2.fromScale(.5,.57)
-loadingTrack.Size=UDim2.new(.58,0,0,6)
+loadingTrack.Position=UDim2.fromScale(.5,.68)
+loadingTrack.Size=UDim2.new(.52,0,0,3)
 loadingTrack.BackgroundColor3=Color3.fromRGB(34,39,49)
 loadingTrack.BorderSizePixel=0
 loadingTrack.ZIndex=103
@@ -258,25 +143,36 @@ local loadingFillCorner=Instance.new("UICorner");loadingFillCorner.CornerRadius=
 
 local loadingInk=Instance.new("TextLabel")
 loadingInk.AnchorPoint=Vector2.new(.5,.5)
-loadingInk.Position=UDim2.fromScale(.5,.31)
+loadingInk.Position=UDim2.fromScale(.5,.48)
 loadingInk.Size=UDim2.new(.8,0,0,28)
 loadingInk.BackgroundTransparency=1
-loadingInk.Text="집사가 주워야 할 머리가 하나 늘었습니다"
+loadingInk.Text="심야 대탈출 · 괴물 가족의 초대장"
 loadingInk.TextColor3=Color3.fromRGB(177,158,128)
 loadingInk.TextSize=13
 loadingInk.Font=Enum.Font.GothamMedium
 loadingInk.ZIndex=104
 loadingInk.Parent=loadingLayer
 
-local loadingFloor=Instance.new("Frame")
-loadingFloor.AnchorPoint=Vector2.new(.5,1)
-loadingFloor.Position=UDim2.fromScale(.5,1)
-loadingFloor.Size=UDim2.new(1,0,.13,0)
-loadingFloor.BackgroundColor3=Color3.fromRGB(28,25,24)
-loadingFloor.BorderSizePixel=0
-loadingFloor.ZIndex=98
-loadingFloor.Parent=loadingLayer
-
+-- 검은 초대장, 붉은 봉랍과 가느다란 황동 장식.
+local seal=Instance.new("TextLabel");seal.Name="FamilyWaxSeal";seal.AnchorPoint=Vector2.new(.5,.5)
+seal.Position=UDim2.fromScale(.5,.20);seal.Size=UDim2.fromOffset(46,46);seal.Rotation=-12
+seal.BackgroundColor3=Color3.fromRGB(97,36,48);seal.Text="M";seal.Font=Enum.Font.Garamond;seal.TextSize=31
+seal.TextColor3=Color3.fromRGB(221,188,133);seal.ZIndex=103;seal.Parent=loadingLayer
+local sealCorner=Instance.new("UICorner");sealCorner.CornerRadius=UDim.new(1,0);sealCorner.Parent=seal
+local border=Instance.new("UIStroke");border.Color=Color3.fromRGB(158,119,65);border.Thickness=1;border.Parent=seal
+local retry=Instance.new("TextButton");retry.Name="ReconnectManor";retry.AnchorPoint=Vector2.new(.5,.5)
+retry.Position=UDim2.fromScale(.5,.82);retry.Size=UDim2.fromOffset(150,44);retry.Text="다시 연결"
+retry.BackgroundColor3=Color3.fromRGB(73,40,45);retry.TextColor3=Color3.fromRGB(235,218,182);retry.TextSize=14
+retry.Font=Enum.Font.Gotham;retry.Visible=false;retry.ZIndex=105;retry.Parent=loadingLayer
+retry.Activated:Connect(function()
+ if not retry.Active then return end
+ retry.Active=false;retry.Text="연결 중"
+ local ok=pcall(function()game:GetService("TeleportService"):Teleport(game.PlaceId,p)end)
+ if not ok then retry.Active=true;retry.Text="다시 연결"end
+end)
+game:GetService("TeleportService").TeleportInitFailed:Connect(function(player)
+ if player==p and retry.Parent then retry.Active=true;retry.Text="다시 연결"end
+end)
 local loadingVisible=true
 local function setLoadingProgress(progress,status)
  loadingFill:TweenSize(UDim2.fromScale(math.clamp(progress,0,1),1),Enum.EasingDirection.Out,Enum.EasingStyle.Quad,.18,true)
@@ -285,40 +181,36 @@ end
 local function finishLoading()
  if not loadingVisible then return end
  loadingVisible=false
- setLoadingProgress(1,"로비 문이 열린다")
- task.wait(.12)
- TweenService:Create(loadingTitle,TweenInfo.new(.35),{TextTransparency=1}):Play()
- TweenService:Create(loadingStatus,TweenInfo.new(.35),{TextTransparency=1}):Play()
- TweenService:Create(loadingInk,TweenInfo.new(.35),{TextTransparency=1}):Play()
- task.wait(.52)
- local tween=TweenService:Create(loadingLayer,TweenInfo.new(.24,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency=1})
- tween:Play()
- task.delay(.26,function()
-  if loadingLayer then loadingLayer.Visible=false end
-  p:SetAttribute("LobbyClientReady",true)
- end)
+ setLoadingProgress(1,"집사가 문을 열었어")
+ p:SetAttribute("LobbyClientReady",true)
+ local tween=TweenService:Create(loadingLayer,TweenInfo.new(.2),{BackgroundTransparency=1});tween:Play()
+ task.delay(.2,function()loadingLayer:Destroy()end)
 end
 
 task.spawn(function()
- setLoadingProgress(.18,"집사가 촛불을 켜는 중")
- -- 음악 로딩은 저택 연결을 막지 않도록 독립 처리한다.
+ -- 음악은 입장을 막지 않는다. 전체 경기장/장식 사전 다운로드도 하지 않는다.
  task.spawn(function()pcall(function()ContentProvider:PreloadAsync({lobbyBgm})end)end)
- setLoadingProgress(.55,"저택의 초대장을 확인하는 중")
- local deadline=os.clock()+(C.LobbyLoadTimeoutSeconds or 12)
- while workspace:GetAttribute("PhysicalLobbyReady")~=true and os.clock()<deadline do
-  setLoadingProgress(.7,"저택의 소품을 배치하는 중")
+ local started=os.clock()
+ while p.Parent and loadingVisible do
+  local character=p.Character;local root=character and character:FindFirstChild("HumanoidRootPart")
+  local lobby=workspace:FindFirstChild("MidnightLobby")
+  local room=lobby and lobby:FindFirstChild("PersonalManor_"..p.UserId)
+  local ground=room and room:FindFirstChild("PersonalGround")
+  local ready=workspace:GetAttribute("PhysicalLobbyReady")==true and p:GetAttribute("PersonalLobbyOwner")==p.UserId
+  if ready and ground and root and p:GetAttribute("LobbySpawnGroundedAt")then
+   local position=root.Position-ground.Position
+   if math.abs(position.X)<ground.Size.X*.5 and math.abs(position.Z)<ground.Size.Z*.5 and position.Y>0 and position.Y<14 then
+    finishLoading();break
+   end
+  end
+  local errorMessage=workspace:GetAttribute("LobbyLoadError")
+  if errorMessage then setLoadingProgress(.3,"저택 연결이 끊겼어 · 다시 연결해줘")
+  elseif not ready then setLoadingProgress(.3,"집사가 현관문을 여는 중")
+  elseif not ground then setLoadingProgress(.6,"저택을 불러오는 중")
+  else setLoadingProgress(.8,"가족 명부와 입장 위치 확인 중")end
+  retry.Visible=errorMessage~=nil or os.clock()-started>25
   task.wait(.1)
  end
- if workspace:GetAttribute("PhysicalLobbyReady")~=true then
-  setLoadingProgress(.78,"서버 로비 연결 중")
-  while workspace:GetAttribute("PhysicalLobbyReady")~=true do
-   if workspace:GetAttribute("LobbyLoadError")then setLoadingProgress(.78,"저택 연결을 확인하는 중 · 잠시 후 다시 접속해줘")end
-   task.wait(.25)
-  end
- end
- setLoadingProgress(.92,"입장 준비 중")
- while p:GetAttribute("PersonalLobbyOwner")~=p.UserId or not p:GetAttribute("LobbySpawnGroundedAt")do task.wait(.1)end
- finishLoading()
 end)
 
 task.spawn(function()
@@ -2403,8 +2295,6 @@ local function render()
  local browser=not isRoomServer
  local lobbyWaiting=not running and not resultCode and not spectating
  -- PersonalManorUI owns all lobby graphics and navigation.
- lobbyColor.Enabled=false;lobbyBloom.Enabled=false;lobbyDepth.Enabled=false
- lobbyVignetteTop.Visible=false;lobbyVignetteBottom.Visible=false;lobbyBloodEdge.Visible=false
  hud.Visible=running
  roomBrowserPanel.Visible=false
  roomInfoPanel.Visible=false

@@ -36,6 +36,9 @@ jobs:
         shell: pwsh
         run: node tools/horror-manor-assets.mjs
       - name: Build native place
+        env:
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         shell: pwsh
         run: |
           $ErrorActionPreference='Stop'
@@ -47,15 +50,16 @@ jobs:
           Expand-Archive $zip (Join-Path $root 'bin') -Force
           $rojo=(Get-ChildItem (Join-Path $root 'bin') -Filter rojo.exe -Recurse | Select-Object -First 1).FullName
           $place=Join-Path $root 'horror-escape-room.rbxlx'
+          $native=Join-Path $root 'manor.rbxm'
+          $env:MANOR_NATIVE_MODEL=$native
+          node tools/horror-manor-native-check.mjs
+          if($LASTEXITCODE -ne 0){throw 'MANOR_NATIVE_MODEL_FAILED'}
+          $project=Get-Content roblox-games/horror-escape-room/default.project.json -Raw | ConvertFrom-Json -AsHashtable
+          $project.tree['ServerStorage']=@{'$className'='ServerStorage';ManorTemplate=@{'$path'=$native}}
+          $project | ConvertTo-Json -Depth 30 | Set-Content roblox-games/horror-escape-room/default.project.json -Encoding utf8
           & $rojo build roblox-games/horror-escape-room/default.project.json -o $place
           if($LASTEXITCODE -ne 0){throw 'MANOR_BUILD_FAILED'}
           "MANOR_PLACE=$place" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
-      - name: Verify Roblox-converted native model
-        env:
-          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
-          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
-        shell: pwsh
-        run: node tools/horror-manor-native-check.mjs
       - name: Publish verified manor
         if: github.ref == 'refs/heads/main'
         env:
