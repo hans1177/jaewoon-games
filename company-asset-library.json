@@ -1,5 +1,5 @@
 {
-  "version": 27,
+  "version": 28,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-09-30",
@@ -4292,7 +4292,7 @@
         "GLTF",
         "RETARGETABLE"
       ],
-      "acquisition": "ON_DEMAND",
+      "acquisition": "PRIORITY_NOW",
       "promotionRequiresRuntimeConsumer": true
     },
     {
@@ -4316,7 +4316,7 @@
         "GLTF",
         "KAYKIT_MOTION_COMPATIBLE"
       ],
-      "acquisition": "ON_DEMAND",
+      "acquisition": "PRIORITY_NOW",
       "promotionRequiresRuntimeConsumer": true
     },
     {
@@ -4343,7 +4343,7 @@
         "GLB",
         "RETARGETABLE_HUMANOID"
       ],
-      "acquisition": "ON_DEMAND",
+      "acquisition": "PRIORITY_NOW",
       "promotionRequiresRuntimeConsumer": true
     },
     {
@@ -4371,7 +4371,7 @@
         "GLB",
         "RETARGETABLE_HUMANOID"
       ],
-      "acquisition": "ON_DEMAND",
+      "acquisition": "PRIORITY_NOW",
       "promotionRequiresRuntimeConsumer": true
     },
     {
@@ -4397,7 +4397,7 @@
         "GLTF",
         "ANIMATION_FRIENDLY_TOPOLOGY"
       ],
-      "acquisition": "ON_DEMAND",
+      "acquisition": "PRIORITY_NOW",
       "promotionRequiresRuntimeConsumer": true
     },
     {
@@ -4473,6 +4473,59 @@
       ],
       "acquisition": "MANUAL_ACCOUNT_REQUIRED",
       "rawRedistributionAllowed": false,
+      "promotionRequiresRuntimeConsumer": true
+    },
+    {
+      "id": "kenney-mini-forest",
+      "name": "Kenney Mini Forest",
+      "category": "ENVIRONMENT",
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "creator": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/mini-forest",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/mini-forest",
+      "verifiedAt": "2026-09-30",
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "3D_ENVIRONMENT",
+        "20_FILES",
+        "ANIMATION",
+        "FOREST",
+        "BASE_CAMP"
+      ],
+      "acquisition": "PRIORITY_NOW",
+      "promotionRequiresRuntimeConsumer": true
+    },
+    {
+      "id": "kenney-mini-dungeon",
+      "name": "Kenney Mini Dungeon",
+      "category": "ENVIRONMENT",
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "creator": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/mini-dungeon",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/mini-dungeon",
+      "verifiedAt": "2026-09-30",
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "3D_ENVIRONMENT",
+        "30_FILES",
+        "ANIMATION",
+        "VARIATIONS",
+        "WEAPONS",
+        "SHIELDS",
+        "CHARACTER_RIGS",
+        "DUNGEON"
+      ],
+      "acquisition": "PRIORITY_NOW",
       "promotionRequiresRuntimeConsumer": true
     }
   ],
@@ -7837,5 +7890,63 @@
         "ATTACK"
       ]
     }
+  },
+  "urgentAssetPriorities": {
+    "updatedAt": "2026-09-30",
+    "order": [
+      {
+        "rank": 1,
+        "family": "MELEE_ACTION",
+        "label": "근접 액션",
+        "sourceIds": [
+          "quaternius-universal-animation-library-2",
+          "quaternius-universal-animation-library",
+          "kaykit-character-animations-1-1"
+        ],
+        "acquisitionPolicy": "ACQUIRE_FIRST",
+        "requirements": [
+          "MELEE_COMBO",
+          "HIT_REACTION",
+          "DODGE",
+          "BLOCK_OR_GUARD",
+          "ROOT_MOTION_VARIANT",
+          "IN_PLACE_VARIANT",
+          "HUMANOID_RETARGET"
+        ]
+      },
+      {
+        "rank": 2,
+        "family": "ENVIRONMENT",
+        "label": "배경/환경",
+        "sourceIds": [
+          "kenney-mini-forest",
+          "kenney-mini-dungeon"
+        ],
+        "acquisitionPolicy": "ACQUIRE_FIRST",
+        "requirements": [
+          "MODULAR_3D",
+          "MOBILE_FRIENDLY",
+          "UNITY_ROBLOX_REAUTHORABLE",
+          "CC0"
+        ]
+      },
+      {
+        "rank": 3,
+        "family": "CHARACTER",
+        "label": "캐릭터",
+        "sourceIds": [
+          "quaternius-universal-base-characters",
+          "kaykit-adventurers"
+        ],
+        "acquisitionPolicy": "ACQUIRE_FIRST",
+        "requirements": [
+          "HUMANOID_RIG",
+          "RETARGETABLE",
+          "GAME_READY",
+          "STYLE_VARIANT_READY"
+        ]
+      }
+    ],
+    "rule": "급한 3계열은 신규 직접 제작보다 검증된 무료 원본 확보·리타겟·스타일 변형을 먼저 수행"
   }
 }
