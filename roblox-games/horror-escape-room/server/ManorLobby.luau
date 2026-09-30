@@ -104,10 +104,10 @@ function Manor:Get(p)
  prompt("ArmorPrompt",Vector3.new(-16,4,-11),"졸고 있는 갑옷",2)
  prompt("CoffinPrompt",Vector3.new(17,3,-14),"누군가의 낮잠",3)
  prompt("TeaPrompt",Vector3.new(-15,4,-18),"막내가 훔친 찻잔",4)
- -- 빛은 소품 가까이만 닿는다. 달빛과 촛불의 명암을 분리한다.
- for _,spec in ipairs({{Vector3.new(0,17,-24),.75,23,true},{Vector3.new(-21,6,15),.55,15,false},{Vector3.new(23,6,19),.55,15,false},{Vector3.new(-18,7,-25),.65,15,false},{Vector3.new(20,7,-19),.55,15,false},{Vector3.new(0,3,-38),1.05,15,true}})do
+ -- 홀 전체를 비추는 샹들리에와 얼굴 앞의 부드러운 조명. 그림자는 벽난로·샹들리에만 사용한다.
+ for _,spec in ipairs({{Vector3.new(0,16,-24),2.1,38,true},{Vector3.new(-21,7,15),1.4,25,false},{Vector3.new(23,7,19),1.4,25,false},{Vector3.new(-19,9,-22),1.7,23,false},{Vector3.new(20,9,-14),1.7,23,false},{Vector3.new(0,3,-38),1.8,20,true},{Vector3.new(5,9,-3),1.65,23,false},{Vector3.new(0,9,9),1.35,26,false}})do
   local anchor=part(folder,"WarmLight",origin+spec[1],Vector3.one,false);anchor.CanCollide=false
-  local light=Instance.new("PointLight");light.Color=Color3.fromRGB(239,176,111);light.Brightness=spec[2];light.Range=spec[3];light.Shadows=spec[4];light.Parent=anchor
+  local light=Instance.new("PointLight");light.Color=Color3.fromRGB(255,217,167);light.Brightness=spec[2];light.Range=spec[3];light.Shadows=spec[4];light.Parent=anchor
  end
  -- 움직이는 장식은 비충돌, 가구의 몸체만 기존 바닥 위에서 이동을 막는다.
  for _,spec in ipairs({{-21,2,-39,13,4,3},{20,2,-38,13,4,3},{24,4,-31,5,8,3},{0,3,-41,13,6,4}})do
