@@ -63,6 +63,7 @@ jobs:
           git switch -c "$branch"
           node tools/company-roblox-verified-learning-sweep.mjs \
             --root=roblox-games \
+            --roadmap=company-learning/platform-release-roadmap.json \
             --playbooks=/tmp/vibe3-task-playbooks.json \
             --recombination=/tmp/vibe3-recombination-memory.json \
             --report=/tmp/roblox-learning-sweep.json
