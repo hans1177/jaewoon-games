@@ -2595,6 +2595,26 @@ test('active Studio runs survive new requests and all games share the Studio hos
   assert.match(workflow,/const states=new Set\(\['queued','pending','requested','in_progress'\]\)/);
 });
 
+test('batch cleanup preserves manually requested exact-game Studio verification across main changes',()=>{
+  const start=workflow.indexOf('const j=JSON.parse(s);');
+  const end=workflow.indexOf('" > /tmp/roblox-stale-foundation-run-ids',start);
+  assert.ok(start>=0&&end>start);
+  const script=workflow.slice(start,end);
+  const runs=[
+    {id:1,event:'workflow_dispatch',display_title:'Roblox runtime foundation QA · daechung-rpg',status:'queued',head_sha:'old'},
+    {id:2,event:'workflow_dispatch',display_title:'Roblox runtime foundation QA · scan',status:'queued',head_sha:'old'},
+    {id:3,event:'push',display_title:'Roblox runtime foundation QA · scan',status:'queued',head_sha:'old'},
+    {id:4,event:'push',display_title:'Roblox runtime foundation QA · scan',status:'in_progress',head_sha:'current'},
+    {id:5,event:'workflow_dispatch',display_title:'Roblox runtime foundation QA · daechung-rpg',status:'in_progress',head_sha:'old'}
+  ];
+  const result=spawnSync(process.execPath,['-e',"let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{"+script],{
+    input:JSON.stringify({workflow_runs:runs}),encoding:'utf8',
+    env:{...process.env,CURRENT_RUN_ID:'99',CURRENT_SHA:'current'}
+  });
+  assert.equal(result.status,0,result.stderr);
+  assert.deepEqual(result.stdout.trim().split(/\s+/),['2','3']);
+});
+
 
 test('Studio generates separate observed-action patterns so one working button cannot hide another failure',()=>{
   const contract={required:true,requiredScenarios:['adaptive-semantic-interaction-effect']};
