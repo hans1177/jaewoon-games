@@ -2376,8 +2376,8 @@ end)
 local resultPanel=Instance.new("Frame")
 resultPanel.Name="RoundResult"
 resultPanel.AnchorPoint=Vector2.new(.5,.5)
-resultPanel.Position=UDim2.fromScale(.5,.42)
-resultPanel.Size=UDim2.fromOffset(330,292)
+resultPanel.Position=UDim2.fromScale(.5,.17)
+resultPanel.Size=UDim2.fromOffset(340,136)
 resultPanel.BackgroundColor3=Color3.fromRGB(13,12,12)
 resultPanel.BackgroundTransparency=.08
 resultPanel.ZIndex=20
@@ -2409,7 +2409,7 @@ resultDetail.Parent=resultPanel
 local ceremonyJoke=Instance.new("TextLabel")
 ceremonyJoke.Name="CeremonyJoke"
 ceremonyJoke.Size=UDim2.new(1,-20,0,34)
-ceremonyJoke.Position=UDim2.fromOffset(10,108)
+ceremonyJoke.Position=UDim2.fromOffset(10,94)
 ceremonyJoke.BackgroundColor3=Color3.fromRGB(25,22,21)
 ceremonyJoke.BackgroundTransparency=.12
 ceremonyJoke.TextColor3=Color3.fromRGB(240,230,199)
@@ -2424,6 +2424,7 @@ local ceremonyStage=Instance.new("Frame")
 ceremonyStage.Name="TeamCeremony"
 ceremonyStage.Size=UDim2.new(1,-20,0,122)
 ceremonyStage.Position=UDim2.fromOffset(10,150)
+ceremonyStage.Visible=false
 ceremonyStage.BackgroundColor3=Color3.fromRGB(20,18,18)
 ceremonyStage.BackgroundTransparency=.04
 ceremonyStage.ClipsDescendants=true
@@ -2514,51 +2515,61 @@ local function collectCeremonyNames(winner)
  return names
 end
 
+local latestCeremonyStage=nil
+local ceremonyCameraActive=false
+local ceremonyCameraRestoreType=nil
+local ceremonyCameraRestoreSubject=nil
+
+local function stopResultCeremonyCamera()
+ if not ceremonyCameraActive then return end
+ ceremonyCameraActive=false
+ local camera=workspace.CurrentCamera
+ if not camera then return end
+ camera.CameraType=ceremonyCameraRestoreType or Enum.CameraType.Custom
+ local character=p.Character
+ local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+ camera.CameraSubject=humanoid or ceremonyCameraRestoreSubject
+end
+
+local function startResultCeremonyCamera(stage)
+ local camera=workspace.CurrentCamera
+ if not camera then return end
+ if not ceremonyCameraActive then
+  ceremonyCameraActive=true
+  ceremonyCameraRestoreType=camera.CameraType
+  ceremonyCameraRestoreSubject=camera.CameraSubject
+ end
+ local cameraPos=stage and stage.CameraPosition
+ local focusPos=stage and stage.FocusPosition
+ if typeof(cameraPos)~="Vector3"then cameraPos=workspace:GetAttribute("CelebrationCameraPosition")end
+ if typeof(focusPos)~="Vector3"then focusPos=workspace:GetAttribute("CelebrationFocusPosition")end
+ if typeof(cameraPos)~="Vector3"then cameraPos=Vector3.new(0,7.2,32)end
+ if typeof(focusPos)~="Vector3"then focusPos=Vector3.new(0,3.8,12)end
+ camera.CameraType=Enum.CameraType.Scriptable
+ local target=CFrame.lookAt(cameraPos,focusPos)
+ local intro=CFrame.lookAt(cameraPos+Vector3.new(0,2.2,7),focusPos)
+ camera.CFrame=intro
+ TweenService:Create(camera,TweenInfo.new(.85,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{CFrame=target}):Play()
+end
+
 local function playResultCeremony(resultCode)
  ceremonySerial+=1
- local serial=ceremonySerial
  local winner=resultCode=="SURVIVOR"and"SURVIVOR"or resultCode=="MONSTER"and"MONSTER"or"DRAW"
- local names=winner=="DRAW"and{"인간","몬스터","인간 AI","몬스터 AI"}or collectCeremonyNames(winner)
- local palette=winner=="SURVIVOR"and Color3.fromRGB(88,165,195)or winner=="MONSTER"and Color3.fromRGB(166,64,82)or Color3.fromRGB(112,117,130)
- local headColor=winner=="MONSTER"and Color3.fromRGB(92,72,82)or Color3.fromRGB(210,184,158)
- playCeremonyConfetti(palette)
  local ceremonyName=tostring(p:GetAttribute("CelebrationName")or"")
  local ceremonyCaption=tostring(p:GetAttribute("CelebrationCaption")or"")
- local comic=p:GetAttribute("CelebrationComic")==true
- ceremonyJoke.Text=(ceremonyName~=""and ceremonyName or"팀 세레머니").." · "..(ceremonyCaption~=""and ceremonyCaption or"다음 판 준비")..(comic and" · 내가 오늘의 사고 담당"or"")
-
- for i,row in ipairs(ceremonyFigures)do
-  row.body.BackgroundColor3=palette
-  row.head.BackgroundColor3=headColor
-  ceremonyNames[i].Text=names[i]or("팀원 "..i)
-  row.slot.Rotation=0
-  row.slot.Position=UDim2.new((i-.5)/4,0,1,28)
-  TweenService:Create(row.slot,TweenInfo.new(.38+.06*i,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Position=UDim2.new((i-.5)/4,0,1,-8)}):Play()
- end
-
+ ceremonyStage.Visible=false
+ ceremonyJoke.Text=(ceremonyName~=""and ceremonyName or"결과").." · "..(ceremonyCaption~=""and ceremonyCaption or"라운드 종료")
  if winner=="SURVIVOR"then
-  task.delay(.45,function()
-   if ceremonySerial~=serial then return end
-   for i,row in ipairs(ceremonyFigures)do
-    local lift=i==4 and-2 or-10
-    local rot=i==4 and 18 or(i%2==0 and-7 or 7)
-    TweenService:Create(row.slot,TweenInfo.new(.3,Enum.EasingStyle.Back),{Position=UDim2.new((i-.5)/4,0,1,lift),Rotation=rot}):Play()
-   end
-  end)
-  setMotionImpulse("CELEBRATE_HUMAN",2.3)
+  ceremonyJoke.TextColor3=Color3.fromRGB(166,223,236)
+  setMotionImpulse("CELEBRATE_HUMAN",1.2)
  elseif winner=="MONSTER"then
-  task.delay(.4,function()
-   if ceremonySerial~=serial then return end
-   for i,row in ipairs(ceremonyFigures)do
-    local rot=i==3 and 28 or(i%2==0 and-12 or 12)
-    TweenService:Create(row.slot,TweenInfo.new(.36,Enum.EasingStyle.Back),{Rotation=rot}):Play()
-   end
-  end)
-  setMotionImpulse("CELEBRATE_MONSTER",2.3)
+  ceremonyJoke.TextColor3=Color3.fromRGB(232,121,139)
+  setMotionImpulse("CELEBRATE_MONSTER",1.2)
  else
-  for _,row in ipairs(ceremonyFigures)do TweenService:Create(row.slot,TweenInfo.new(.5,Enum.EasingStyle.Quad),{Position=UDim2.new(row.slot.Position.X.Scale,0,1,6),Rotation=8}):Play()end
-  setMotionImpulse("CELEBRATE_DRAW",2.3)
+  ceremonyJoke.TextColor3=Color3.fromRGB(198,202,212)
+  setMotionImpulse("CELEBRATE_DRAW",1.0)
  end
+ startResultCeremonyCamera(latestCeremonyStage)
 end
 
 -- 진행 중 서버 입장자는 다음 라운드까지 관전임을 명확히 보여준다.
@@ -2626,6 +2637,7 @@ local function render()
   objectiveLine.Text="다음 라운드 준비"
  end
  local resultCode=round:match("^RESULT_(.+)$")
+ if not resultCode then stopResultCeremonyCamera()end
  roundLine.Text=running and(string.format("%d초",seconds))or round=="SPECTATING"and"관전"or resultCode and"결과"or round
 
  local realPlayers=tonumber(p:GetAttribute("LobbyRealPlayers"))or #Players:GetPlayers()
@@ -3043,6 +3055,11 @@ remote.OnClientEvent:Connect(function(kind,snapshot)
  end
  if kind=="HUMAN_ABILITY_EFFECT"or kind=="AI_HUMAN_ACTION_EFFECT"then
   playHumanAbilityEffect(snapshot)
+  return
+ end
+ if kind=="RESULT_CEREMONY_STAGE"then
+  latestCeremonyStage=typeof(snapshot)=="table"and snapshot or nil
+  if tostring(p:GetAttribute("RoundState")or""):find("^RESULT_")then startResultCeremonyCamera(latestCeremonyStage)end
   return
  end
  if kind~="MULTIPLAYER_SYNC"or typeof(snapshot)~="table"then return end
