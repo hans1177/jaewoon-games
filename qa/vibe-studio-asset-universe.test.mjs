@@ -9,6 +9,10 @@ import {
   CONCEPT_AXES,
   CREATURE_BODY_PLANS,
   CREATURE_SPECIES,
+  SURVIVAL_WILDLIFE_SPECIES,
+  SURVIVAL_WILDLIFE_ARCHETYPES,
+  SURVIVAL_LOW_POLY_VISUAL_PROFILE,
+  createSurvivalWildlifeAssetProfile,
   CLOTHING_LAYER_SLOTS,
   BIOME_FAMILIES,
   BUILDING_THEMES,
@@ -56,6 +60,32 @@ test('studio asset universe exposes broad reusable catalogs',()=>{
   for(const style of ['INK_WASH','WATERCOLOR','NOIR','TOON_NOIR','SOLARPUNK','BIOPUNK','RETRO_FUTURISM','COZY','PAPER_CRAFT','VOXEL','DREAMCORE','HISTORICAL_EAST_ASIAN','SPACE_OPERA','UNDERWATER_FANTASY','DESERT_FANTASY','MYTHIC_NORDIC']){
     assert.ok(createStudioAssetUniversePlan({styleFamily:style}).styleFamilies.includes(style),style);
   }
+});
+
+test('survival wildlife catalog includes forest animals with distinct visual profiles',()=>{
+  for(const species of ['BEAR','BOAR','DEER','ELK','MOOSE','BISON','WOLF','COYOTE','FOX','RABBIT','RACCOON','SQUIRREL','BEAVER','BADGER','MOUNTAIN_GOAT','TURKEY','CROW']){
+    assert.ok(SURVIVAL_WILDLIFE_SPECIES.includes(species),species);
+    assert.ok(SURVIVAL_WILDLIFE_ARCHETYPES[species],species);
+  }
+  assert.equal(SURVIVAL_LOW_POLY_VISUAL_PROFILE.mesh.primitiveOnlyFinalAnimalForbidden,true);
+  assert.equal(SURVIVAL_LOW_POLY_VISUAL_PROFILE.exactThirdPartyMeshTextureSkinCopy,false);
+  const bear=createSurvivalWildlifeAssetProfile({species:'BEAR',platform:'ROBLOX'});
+  assert.equal(bear.species,'BEAR');
+  assert.equal(bear.bodyPlan,'QUADRUPED_HEAVY');
+  assert.ok(bear.availableSkinVariants.includes('DARK_BROWN'));
+  assert.equal(bear.visualRequirements.meshAndMaterialMustExceedPrimitivePlaceholder,true);
+  assert.equal(bear.rigRequirements.rootOnlyMotionForbidden,true);
+  assert.equal(bear.productionVerified,false);
+});
+
+test('wildlife skins require meaningful anatomy or material variation beyond recolor',()=>{
+  const wolf=createSurvivalWildlifeAssetProfile({species:'WOLF',skinVariant:'DARK_GREY',platform:'ROBLOX'});
+  const deer=createSurvivalWildlifeAssetProfile({species:'DEER',platform:'UNITY'});
+  assert.equal(wolf.skinVariant,'DARK_GREY');
+  assert.equal(wolf.visualRequirements.skinRequiresShapeOrMaterialVariationBeyondHue,true);
+  assert.equal(deer.bodyPlan,'QUADRUPED_HOOFED');
+  assert.equal(deer.platform,'UNITY');
+  assert.equal(deer.runtimeVerificationRequired,true);
 });
 
 test('concept director supports weighted mixed concepts without flattening style identity',()=>{
