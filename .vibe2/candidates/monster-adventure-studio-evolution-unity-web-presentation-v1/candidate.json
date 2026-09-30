@@ -1,0 +1,47 @@
+{
+  "summary": "수정된 코드는 UnityWebFloorGame.cs 파일의 특정 위치에서 실제 source 변경을 포함하고 있으며, 해당 변경은 게임의 상태 변화와 피드백 연결을 강화하고, 시스템 간의 연결을 완성한다.",
+  "expectedEffect": "게임의 상태 변화와 피드백 연결을 강화하고, 시스템 간의 연결을 완성하며, 게임의 핵심 루프와 시그니처 시스템을 실제 상태에 연결한다.",
+  "edits": [
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "            var p=enemy.transform.position;",
+      "replace": "            var p=enemy.transform.position;\n            if (enemy != null) {\n                p.y = 1f + Mathf.Sin(motionClock * 2.1f) * 0.28f;\n                enemy.transform.position = p;\n            }"
+    },
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "            var p=player.transform.position;",
+      "replace": "            var p=player.transform.position;\n            if (player != null && started) {\n                p.x = -2f + Mathf.Sin(motionClock * 1.7f) * 0.55f;\n                player.transform.position = p;\n            }"
+    },
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "        Camera cam = Camera.main;",
+      "replace": "        Camera cam = Camera.main;\n        if (cam == null) {\n            var cameraObject = new GameObject(\"Main Camera\");\n            cam = cameraObject.AddComponent<Camera>();\n            cameraObject.tag = \"MainCamera\";\n        }"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "JAEWOON_UNITY_WEB_QA_CORE_FUN game=monster-adventure mode=ACTION status=PASS",
+    "JAEWOON_UNITY_WEB_QA_MOBILE_INPUT game=monster-adventure role=action status=PASS"
+  ],
+  "graphicsReplacementReport": {
+    "actualCount": 3,
+    "changedSurfaces": [
+      "MOTION"
+    ],
+    "reuseModesUsed": [
+      "ADAPT_RESTYLE_AND_RETARGET"
+    ],
+    "replacementEvidence": [
+      {
+        "surface": "MOTION",
+        "path": "Assets/Scripts/UnityWebFloorGame.cs",
+        "bindingKey": "impactVfx",
+        "reuseMode": "ADAPT_RESTYLE_AND_RETARGET",
+        "sourceEvidence": "const impactVfx = createImpactVfx()"
+      }
+    ],
+    "before": "var p=enemy.transform.position;",
+    "after": "var p=enemy.transform.position;\n            if (enemy != null) {\n                p.y = 1f + Mathf.Sin(motionClock * 2.1f) * 0.28f;\n                enemy.transform.position = p;\n            }"
+  }
+}
