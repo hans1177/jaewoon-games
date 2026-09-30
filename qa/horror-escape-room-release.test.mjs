@@ -448,15 +448,12 @@ test('Studio 방 검증은 TeleportService 대신 로컬 fallback을 사용한�
 });
 
 
-test('예약방 로비는 8칸 슬롯에서 실제 유저와 AI를 구분한다',()=>{
+test('예약방 로비는 8칸 실제 자리만 유지하고 빈자리에 AI 대기 문구를 표시하지 않는다',()=>{
  assert.match(client,/Name="RoomSlots"/);
- assert.match(client,/for i=1,8 do/);
- assert.match(client,/local function refreshRoomSlots\(\)/);
- assert.match(client,/slot\.Text="AI"/);
- assert.match(client,/방장 · /);
  assert.match(client,/roomSlotsPanel\.Visible=false/);
  assert.match(server,/local pad=arenaPart\(f,"LobbySlot"\.\.i/);
- assert.match(server,/label\.Text="AI 대기"/);
+ assert.match(server,/pad\.Material=player and Enum\.Material\.Neon or Enum\.Material\.Metal/);
+ assert.doesNotMatch(server,/AI 대기/);
 });
 
 test('세계 괴담 도감 UI는 12종 3단계 진행과 조각 계약서를 보여준다',()=>{
