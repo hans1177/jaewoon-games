@@ -1,5 +1,5 @@
 {
-  "version": 498,
+  "version": 499,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -1291,16 +1291,21 @@
       ]
     },
     "controlPlaneQueueBacklogMitigation": {
-      "version": 2,
+      "version": 3,
       "authority": "OWNER_DIRECTIVE_2026-09-30",
-      "status": "ENABLED_UBUNTU_LATEST_CONTROL_DRAIN",
+      "status": "ENABLED_PRESSURE_COHORT_FANIN",
       "objective": "KEEP_COMPLETION_INGEST_AND_REFILL_CONTROL_OFF_THE_SLOW_RESERVE_QUEUE_WITHOUT_DROPPING_GAME_RESULTS",
       "neuronCompletionCallback": {
         "event": "vibe2-neuron-complete",
         "resultBearing": true,
-        "coalescingForbidden": true,
+        "coalescingForbidden": false,
         "cancellationForbidden": true,
-        "reserveRunnerPool": "ubuntu-latest"
+        "reserveRunnerPool": "ubuntu-latest",
+        "resultArtifactCoalescingForbidden": true,
+        "callbackWorkflowSuppressionUnderQueuePressure": true,
+        "callbackSuppressionCarrier": "IMMUTABLE_WORKER_ARTIFACT_CONSUMED_BY_COHORT_FAN_IN",
+        "singleTaskGameMicroFanInPressureExceptionRemoved": true,
+        "immediateCallbackAllowedOnlyWhenQueuePressureZero": true
       },
       "fanInRefill": {
         "event": "vibe2-fanin-refill",
@@ -1315,7 +1320,13 @@
       "qualityOrEvidenceGateWeakeningForbidden": true,
       "fanInRunnerPool": "ubuntu-latest",
       "runnerSelectionReason": "OBSERVED_ARM_CONTROL_QUEUE_BLOCKED_WHILE_UBUNTU_LATEST_GAME_WORKERS_WERE_RUNNING",
-      "directCodingOwner": "CHATGPT_SYSTEM_BOTTLENECK_REPAIR"
+      "directCodingOwner": "CHATGPT_SYSTEM_BOTTLENECK_REPAIR",
+      "pressureRule": {
+        "queuedOrPendingRunCountGreaterThan": 0,
+        "assetDevelopmentKeepsImmediateCallback": true,
+        "nonAssetCompletionUsesCohortFanIn": true,
+        "waveLeaderMayDispatchSingleCoalescedRefill": true
+      }
     }
   },
   "phases": [
@@ -9451,6 +9462,13 @@
         "observedArmState": "QUEUED",
         "observedUbuntuLatestState": "MULTIPLE_GAME_WORKERS_IN_PROGRESS"
       },
+      "qualityOrEvidenceGateWeakening": false
+    },
+    "vibePressureCohortFanIn20260930": {
+      "version": 499,
+      "summary": "Remove the game-primary single-task micro-fan-in exception under runner pressure. Preserve each immutable worker result artifact and let the cohort fan-in ingest it; only a wave leader may request one coalesced refill.",
+      "workflow": ".github/workflows/vibe2-continuous-core.yml",
+      "preservesResultArtifacts": true,
       "qualityOrEvidenceGateWeakening": false
     }
   },
