@@ -33,6 +33,12 @@ local roomVisibility="PUBLIC"
 local roomStartRequested=false
 local roomActionLast={}
 local roomJoinedAt={}
+local lobbyQueuePlayers={}
+local lobbyQueueCountdown=nil
+local lobbyQueueToken=0
+local lobbyQueuePart=nil
+local lobbyQueueLabel=nil
+local LOBBY_QUEUE_SECONDS=10
 
 local state="WAITING"
 local timeLeft=0
@@ -194,6 +200,54 @@ local function teleportToReservedRoom(p,record)
  local ok,err=pcall(function()TeleportService:TeleportAsync(game.PlaceId,{p},options)end)
  if not ok then roomFeedback(p,"ERROR","방 이동 실패");warn("Room teleport failed",err);return false end
  roomFeedback(p,"TELEPORTING",record.code or"")
+ return true
+end
+local function teleportPlayersToReservedRoom(players,record)
+ if typeof(players)~="table"or #players==0 or typeof(record)~="table"or typeof(record.accessCode)~="string"or record.accessCode==""then return false end
+ local valid={}
+ for _,p in ipairs(players)do if p and p.Parent==Players then table.insert(valid,p)end end
+ if #valid==0 then return false end
+ local options=Instance.new("TeleportOptions")
+ options.ReservedServerAccessCode=record.accessCode
+ options:SetTeleportData({
+  roomCode=record.code,
+  roomHostUserId=record.hostUserId,
+  roomHostName=record.hostName,
+  roomVisibility=record.visibility,
+  roomCreatedAt=record.createdAt,
+ })
+ local ok,err=pcall(function()TeleportService:TeleportAsync(game.PlaceId,valid,options)end)
+ if not ok then
+  for _,p in ipairs(valid)do roomFeedback(p,"ERROR","방 이동 실패")end
+  warn("Room group teleport failed",err)
+  return false
+ end
+ for _,p in ipairs(valid)do roomFeedback(p,"TELEPORTING",record.code or"")end
+ return true
+end
+
+local function createQueuedReservedRoom(players)
+ if roomServer or state=="RUNNING"or typeof(players)~="table"or #players==0 then return false end
+ if studioRoomFallback then
+  local host=players[1]
+  roomServer=true;roomCode="000001";roomHostUserId=host.UserId;roomHostName=host.DisplayName;roomVisibility="PUBLIC";roomStartRequested=true
+  for _,p in ipairs(players)do roomJoinedAt[p]=os.clock();roomFeedback(p,"CREATED",roomCode)end
+  workspace:SetAttribute("StudioRoomFallback",true)
+  syncRoomState();syncLobbyState("INTERMISSION")
+  return true
+ end
+ local code=createUniqueRoomCode()
+ if not code then for _,p in ipairs(players)do roomFeedback(p,"ERROR","방 코드 생성 실패")end;return false end
+ local ok,accessCode=pcall(function()return TeleportService:ReserveServerAsync(game.PlaceId)end)
+ if not ok or typeof(accessCode)~="string"or accessCode==""then for _,p in ipairs(players)do roomFeedback(p,"ERROR","예약 서버 생성 실패")end;return false end
+ local host=players[1]
+ local record={
+  code=code,accessCode=accessCode,hostUserId=host.UserId,hostName=host.DisplayName,
+  visibility="PUBLIC",memberCount=#players,maxPlayers=roomMaxPlayers(),
+  createdAt=os.time(),updatedAt=os.time(),state="WAITING",placeId=game.PlaceId,
+ }
+ if not setRoomDirectoryEntry(code,record)then for _,p in ipairs(players)do roomFeedback(p,"ERROR","방 등록 실패")end;return false end
+ if not teleportPlayersToReservedRoom(players,record)then removeRoomDirectoryEntry(code);return false end
  return true
 end
 local function createReservedRoom(p,visibility)
@@ -606,34 +660,23 @@ local function makePhysicalLobby()
   local strip=arenaPart(f,"LobbyGuide",Vector3.new(24,.14,1.2),Vector3.new(0,.58,z),Color3.fromRGB(83,190,213),Enum.Material.Neon);strip.CanCollide=false
  end
 
- local _,publicPrompt=lobbyTerminal(f,"CreatePublicRoom",Vector3.new(-48,3,260),"공개 방 만들기","방 만들기",Color3.fromRGB(43,111,92),function(p)
-  if roomServer or state=="RUNNING"then return end
-  createReservedRoom(p,"PUBLIC")
- end)
- local _,friendPrompt=lobbyTerminal(f,"CreateFriendRoom",Vector3.new(-24,3,260),"친구 방 만들기","방 만들기",Color3.fromRGB(69,79,122),function(p)
-  if roomServer or state=="RUNNING"then return end
-  createReservedRoom(p,"FRIENDS")
- end)
- local _,privatePrompt=lobbyTerminal(f,"CreatePrivateRoom",Vector3.new(0,3,260),"비공개 방 만들기","방 만들기",Color3.fromRGB(90,67,101),function(p)
-  if roomServer or state=="RUNNING"then return end
-  createReservedRoom(p,"PRIVATE")
- end)
- local _,quickPrompt=lobbyTerminal(f,"QuickPublicRoom",Vector3.new(28,3,260),"공개 방 빠른 참가","참가",Color3.fromRGB(49,83,120),function(p)
-  if roomServer or state=="RUNNING"then return end
-  quickJoinRoom(p,false)
- end)
- local _,friendJoinPrompt=lobbyTerminal(f,"QuickFriendRoom",Vector3.new(52,3,260),"친구 방 찾기","참가",Color3.fromRGB(70,68,116),function(p)
+ -- 기본 방 입장: 칸 안에 서 있으면 자동으로 대기열에 들어가고 10초 뒤 같은 방으로 이동한다.
+ lobbyQueuePart=arenaPart(f,"AutoRoomQueue",Vector3.new(34,.5,22),Vector3.new(0,.55,207),Color3.fromRGB(48,112,96),Enum.Material.Neon)
+ lobbyQueuePart.CanCollide=true
+ lobbyQueuePart:SetAttribute("AutoRoomQueue",true)
+ lobbyQueueLabel=lobbyLabel(lobbyQueuePart,"방 입장 · 안으로 들어와",Color3.fromRGB(188,255,224))
+ local queueEdge=arenaPart(f,"AutoRoomQueueFrame",Vector3.new(38,.18,26),Vector3.new(0,.68,207),Color3.fromRGB(115,227,190),Enum.Material.Neon);queueEdge.CanCollide=false;queueEdge.Transparency=.5
+
+ -- 코드/친구 참가 같은 보조 기능만 벽쪽 작은 단말로 남긴다.
+ local _,friendJoinPrompt=lobbyTerminal(f,"QuickFriendRoom",Vector3.new(50,3,260),"친구 방 찾기","참가",Color3.fromRGB(70,68,116),function(p)
   if roomServer or state=="RUNNING"then return end
   quickJoinRoom(p,true)
  end)
- local _,codePrompt=lobbyTerminal(f,"CodeRoomTerminal",Vector3.new(52,3,218),"방 코드 참가","코드 입력",Color3.fromRGB(78,72,96),function(p)
+ local _,codePrompt=lobbyTerminal(f,"CodeRoomTerminal",Vector3.new(50,3,240),"방 코드 참가","코드 입력",Color3.fromRGB(78,72,96),function(p)
   if roomServer or state=="RUNNING"then return end
   p:SetAttribute("WorldLobbyCodeInputRequest",tostring(math.floor(os.clock()*1000)))
  end)
- local _,startPrompt=lobbyTerminal(f,"RoomStartTerminal",Vector3.new(-52,3,218),"방장 게임 시작","시작",Color3.fromRGB(42,116,85),function(p)
-  startRoomMatch(p)
- end)
- local _,leavePrompt=lobbyTerminal(f,"RoomLeaveTerminal",Vector3.new(-28,3,218),"방 나가기","나가기",Color3.fromRGB(106,58,66),function(p)
+ local _,leavePrompt=lobbyTerminal(f,"RoomLeaveTerminal",Vector3.new(-50,3,240),"방 나가기","나가기",Color3.fromRGB(106,58,66),function(p)
   leaveReservedRoom(p)
  end)
 
@@ -648,8 +691,9 @@ local function makePhysicalLobby()
 
  refreshPhysicalLobby=function()
   local browser=not roomServer
-  publicPrompt.Enabled=browser;friendPrompt.Enabled=browser;privatePrompt.Enabled=browser;quickPrompt.Enabled=browser;friendJoinPrompt.Enabled=browser;codePrompt.Enabled=browser
-  startPrompt.Enabled=roomServer and state=="WAITING";leavePrompt.Enabled=roomServer and state=="WAITING"
+  friendJoinPrompt.Enabled=browser;codePrompt.Enabled=browser
+  leavePrompt.Enabled=roomServer and state=="WAITING"
+  if lobbyQueuePart then lobbyQueuePart.CanTouch=browser end
   local players=Players:GetPlayers();table.sort(players,function(a,b)
    if a.UserId==roomHostUserId then return true end
    if b.UserId==roomHostUserId then return false end
@@ -668,7 +712,7 @@ local function makePhysicalLobby()
    if roomServer then
     label.Text=string.format("방 %s · %d/8명",roomCode~=""and roomCode or"연결중",#players)
    else
-    label.Text="단말에서 방 만들기 · 참가"
+    label.Text="초록색 방 입장 칸으로 들어가"
    end
   end
  end
@@ -676,6 +720,71 @@ local function makePhysicalLobby()
  workspace:SetAttribute("PhysicalLobbyReady",true)
  return f
 end
+
+local function playerInsideLobbyQueue(p)
+ if not lobbyQueuePart or not lobbyQueuePart.Parent then return false end
+ local r=root(p);if not r then return false end
+ local localPos=lobbyQueuePart.CFrame:PointToObjectSpace(r.Position)
+ local half=lobbyQueuePart.Size*.5
+ return math.abs(localPos.X)<=half.X and math.abs(localPos.Z)<=half.Z and localPos.Y>=-5 and localPos.Y<=8
+end
+
+local function updateLobbyQueueLabel()
+ if not lobbyQueueLabel then return end
+ local count=0
+ for p in pairs(lobbyQueuePlayers)do if p.Parent==Players then count+=1 end end
+ if count==0 then
+  lobbyQueueLabel.Text="방 입장 · 안으로 들어와"
+ elseif lobbyQueueCountdown then
+  lobbyQueueLabel.Text=string.format("방 대기 %d/8 · %d초",count,math.max(0,math.ceil(lobbyQueueCountdown)))
+ else
+  lobbyQueueLabel.Text=string.format("방 대기 %d/8",count)
+ end
+end
+
+local function beginLobbyQueueCountdown()
+ if lobbyQueueCountdown or roomServer then return end
+ lobbyQueueToken+=1
+ local token=lobbyQueueToken
+ lobbyQueueCountdown=LOBBY_QUEUE_SECONDS
+ task.spawn(function()
+  while token==lobbyQueueToken and lobbyQueueCountdown and lobbyQueueCountdown>0 do
+   updateLobbyQueueLabel()
+   task.wait(1)
+   if token~=lobbyQueueToken then return end
+   lobbyQueueCountdown-=1
+  end
+  if token~=lobbyQueueToken then return end
+  local group={}
+  for p in pairs(lobbyQueuePlayers)do if p.Parent==Players and playerInsideLobbyQueue(p)then table.insert(group,p)end end
+  table.sort(group,function(a,b)return a.UserId<b.UserId end)
+  if #group==0 then lobbyQueueCountdown=nil;lobbyQueuePlayers={};updateLobbyQueueLabel();return end
+  while #group>roomMaxPlayers()do table.remove(group)end
+  lobbyQueueCountdown=nil
+  lobbyQueuePlayers={}
+  updateLobbyQueueLabel()
+  createQueuedReservedRoom(group)
+ end)
+end
+
+task.spawn(function()
+ while true do
+  if not roomServer and state~="RUNNING"and lobbyQueuePart and lobbyQueuePart.Parent then
+   local changed=false
+   for _,p in ipairs(Players:GetPlayers())do
+    local inside=playerInsideLobbyQueue(p)
+    if inside and not lobbyQueuePlayers[p]then lobbyQueuePlayers[p]=true;changed=true
+    elseif not inside and lobbyQueuePlayers[p]then lobbyQueuePlayers[p]=nil;changed=true end
+   end
+   for p in pairs(lobbyQueuePlayers)do if not p.Parent then lobbyQueuePlayers[p]=nil;changed=true end end
+   local count=0;for _ in pairs(lobbyQueuePlayers)do count+=1 end
+   if count>0 and not lobbyQueueCountdown then beginLobbyQueueCountdown()
+   elseif count==0 and lobbyQueueCountdown then lobbyQueueToken+=1;lobbyQueueCountdown=nil;changed=true end
+   if changed then updateLobbyQueueLabel()end
+  end
+  task.wait(.2)
+ end
+end)
 
 local function stripLoadedAsset(root)
  for _,d in ipairs(root:GetDescendants())do
@@ -2250,7 +2359,7 @@ Players.PlayerRemoving:Connect(function(p)
  local leavingWasHost=roomServer and p.UserId==roomHostUserId
  local rr=root(p)
  local leavingPos=rr and rr.Position or(leavingRole=="MONSTER"and monsterSpawn or survivorSpawns[1])
- save(p);cooldown[p]=nil;dashCooldown[p]=nil;infectAttackCooldown[p]=nil;energyStationReady[p]=nil;ghostSeenThisRound[p]=nil;roomActionLast[p]=nil;roomJoinedAt[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil;purifyCooldown[p]=nil
+ save(p);lobbyQueuePlayers[p]=nil;cooldown[p]=nil;dashCooldown[p]=nil;infectAttackCooldown[p]=nil;energyStationReady[p]=nil;ghostSeenThisRound[p]=nil;roomActionLast[p]=nil;roomJoinedAt[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil;purifyCooldown[p]=nil
  task.defer(function()
   if state=="RUNNING"and arena and arena.Parent and(leavingRole=="MONSTER"or leavingRole=="SURVIVOR")then
    bot(leavingRole,leavingPos)
