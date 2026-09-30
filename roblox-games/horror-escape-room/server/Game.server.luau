@@ -58,6 +58,7 @@ local movementProbeStart={}
 local movementGuardClock=0
 local pressureLastCounts={SURVIVOR=4,MONSTER=4}
 local foundationSpawn=nil
+local lobbySpawnLocation=nil
 local foundationSeen={}
 local foundationSequence=0
 local foundationLast={}
@@ -844,6 +845,17 @@ local function makePhysicalLobby()
  local old=workspace:FindFirstChild("MidnightLobby");if old then old:Destroy()end
  local f=Instance.new("Folder");f.Name="MidnightLobby";f.Parent=workspace
  local flickerLights={}
+ lobbySpawnLocation=Instance.new("SpawnLocation")
+ lobbySpawnLocation.Name="LobbySpawn"
+ lobbySpawnLocation.Size=Vector3.new(8,1,8)
+ lobbySpawnLocation.Position=Vector3.new(0,.7,270)
+ lobbySpawnLocation.Anchored=true
+ lobbySpawnLocation.Neutral=true
+ lobbySpawnLocation.Transparency=1
+ lobbySpawnLocation.CanCollide=false
+ lobbySpawnLocation.CanTouch=false
+ lobbySpawnLocation.CanQuery=false
+ lobbySpawnLocation.Parent=f
 
  -- 폐호텔 메인홀: 이동 범위를 의도적으로 좁혀 빈 광장 느낌을 없앤다.
  local floor=zoneFloor(f,"HotelLobbyFloor",Vector3.new(178,1.2,136),Vector3.new(0,.05,246),Color3.fromRGB(45,39,36),Enum.Material.Slate)
@@ -1187,7 +1199,7 @@ local function makePhysicalLobby()
  workspace:SetAttribute("PhysicalLobbyReady",true)
  workspace:SetAttribute("WorldLobbyMode",true)
  workspace:SetAttribute("LobbyArtPass","NOCTURNE_CURSED_HOTEL_V6")
- workspace:SetAttribute("LobbyBuildRevision","NOCTURNE_DISTINCT_STAFF_CLEAR_MYSTERY_20260930")
+ workspace:SetAttribute("LobbyBuildRevision","NOCTURNE_GROUNDED_SPAWN_20260930")
  return f
 end
 
@@ -1257,7 +1269,7 @@ task.spawn(function()
    table.sort(currentPlayers,function(a,b)return a.UserId<b.UserId end)
    for i,player in ipairs(currentPlayers)do
     local rr=root(player)
-    if rr and(rr.Position.Y<-2 or math.abs(rr.Position.X)>86 or rr.Position.Z<182 or rr.Position.Z>310)then
+    if rr and(rr.Position.Y<-2 or rr.Position.Y>20 or math.abs(rr.Position.X)>86 or rr.Position.Z<182 or rr.Position.Z>310)then
      local slot=((i-1)%#lobbySpawns)+1
      teleport(player,lobbySpawns[slot],Vector3.new(0,3,210))
      player:SetAttribute("LobbySafetyRecoveredAt",workspace:GetServerTimeNow())
@@ -2363,29 +2375,34 @@ end
 local function groundedRootTarget(p,pos)
  local c=p.Character;local r=root(p);local h=hum(p)
  if not c or not r or not h then return Vector3.new(pos.X,pos.Y,pos.Z)end
+ local lobbyDestination=pos.Z>=180
+ local rootFolders=lobbyDestination and{workspace:FindFirstChild("MidnightLobby")}or{arena}
  local grounds={}
- for _,rootFolder in ipairs({arena,workspace:FindFirstChild("MidnightLobby")})do
+ for _,rootFolder in ipairs(rootFolders)do
   if rootFolder and rootFolder.Parent then
    for _,d in ipairs(rootFolder:GetDescendants())do
     if d:IsA("BasePart")and d:GetAttribute("WalkableGround")==true then table.insert(grounds,d)end
    end
   end
  end
- local params=RaycastParams.new()
- params.IgnoreWater=true
+ local params=RaycastParams.new();params.IgnoreWater=true
  local hit=nil
  if #grounds>0 then
   params.FilterType=Enum.RaycastFilterType.Include
   params.FilterDescendantsInstances=grounds
-  hit=workspace:Raycast(Vector3.new(pos.X,pos.Y+10,pos.Z),Vector3.new(0,-24,0),params)
+  local rayTop=lobbyDestination and 24 or(pos.Y+16)
+  local rayLength=lobbyDestination and 48 or 36
+  hit=workspace:Raycast(Vector3.new(pos.X,rayTop,pos.Z),Vector3.new(0,-rayLength,0),params)
  else
   params.FilterType=Enum.RaycastFilterType.Exclude
   params.FilterDescendantsInstances={c}
-  hit=workspace:Raycast(Vector3.new(pos.X,pos.Y+10,pos.Z),Vector3.new(0,-24,0),params)
+  hit=workspace:Raycast(Vector3.new(pos.X,pos.Y+12,pos.Z),Vector3.new(0,-28,0),params)
  end
- local groundY=hit and hit.Position.Y or .5
+ local groundY=hit and hit.Position.Y or(lobbyDestination and .65 or .5)
  local standingOffset=math.max(1,tonumber(h.HipHeight)or 0)+(r.Size.Y*.5)
- return Vector3.new(pos.X,groundY+standingOffset+.03,pos.Z)
+ local targetY=groundY+standingOffset+.03
+ if lobbyDestination then targetY=math.clamp(targetY,2.8,5.2)end
+ return Vector3.new(pos.X,targetY,pos.Z)
 end
 local function teleport(p,pos,lookAtPos)
  local r=root(p);if r then
@@ -2864,29 +2881,38 @@ local function validateCharacterFoundation(p,c)
 end
 
 local function onCharacter(p)
- task.wait(.1)
- local readyDeadline=os.clock()+10
- while workspace:GetAttribute("MapReady")~=true and os.clock()<readyDeadline do task.wait(.1)end
+ task.wait(.05)
  local c=p.Character
- if c then validateCharacterFoundation(p,c)end
- if state=="RUNNING"then
-  local role=p:GetAttribute("Role")
-  if role=="MONSTER"or role=="SURVIVOR"then setRole(p,role);restoreMovement(p,role=="MONSTER"and 19 or 16)
-  elseif role=="ELIMINATED"then local rr=root(p);if rr then rr.Anchored=true end end
- else
-  -- 대기/방 브라우저에서도 모든 실제 캐릭터를 보이지 않는 SpawnLocation이 아니라 실제 바닥에 둔다.
+ if state~="RUNNING"then
+  local lobbyDeadline=os.clock()+3
+  while workspace:GetAttribute("PhysicalLobbyReady")~=true and os.clock()<lobbyDeadline do task.wait(.05)end
+  if not c or not c.Parent then return end
+  local h=c:WaitForChild("Humanoid",5);local r=c:WaitForChild("HumanoidRootPart",5)
+  if not h or not r then return end
+  if lobbySpawnLocation and lobbySpawnLocation.Parent then p.RespawnLocation=lobbySpawnLocation end
+  h.PlatformStand=false;h.Sit=false;h.AutoRotate=true;r.Anchored=false
   setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
   p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
   p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
-  local players=Players:GetPlayers()
-  table.sort(players,function(a,b)return a.UserId<b.UserId end)
+  local players=Players:GetPlayers();table.sort(players,function(a,b)return a.UserId<b.UserId end)
   local slot=1
   for i,player in ipairs(players)do if player==p then slot=((i-1)%#lobbySpawns)+1;break end end
   teleport(p,lobbySpawns[slot],Vector3.new(0,3,210))
+  p:SetAttribute("LobbySpawnGroundedAt",workspace:GetServerTimeNow())
+  return
  end
+
+ local readyDeadline=os.clock()+10
+ while workspace:GetAttribute("MapReady")~=true and os.clock()<readyDeadline do task.wait(.1)end
+ c=p.Character
+ if c then validateCharacterFoundation(p,c)end
+ local role=p:GetAttribute("Role")
+ if role=="MONSTER"or role=="SURVIVOR"then setRole(p,role);restoreMovement(p,role=="MONSTER"and 19 or 16)
+ elseif role=="ELIMINATED"then local rr=root(p);if rr then rr.Anchored=true end end
 end
 Players.PlayerAdded:Connect(function(p)
  load(p)
+ if state~="RUNNING"and lobbySpawnLocation and lobbySpawnLocation.Parent then p.RespawnLocation=lobbySpawnLocation end
  p:SetAttribute("RoomFeedback","")
  adoptReservedRoomFromPlayer(p)
  if roomServer and #Players:GetPlayers()>roomMaxPlayers()then
@@ -2905,6 +2931,7 @@ Players.PlayerAdded:Connect(function(p)
 end)
 for _,p in ipairs(Players:GetPlayers())do
  load(p)
+ if state~="RUNNING"and lobbySpawnLocation and lobbySpawnLocation.Parent then p.RespawnLocation=lobbySpawnLocation end
  p:SetAttribute("RoomFeedback","")
  adoptReservedRoomFromPlayer(p)
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
