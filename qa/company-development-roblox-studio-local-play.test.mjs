@@ -938,7 +938,7 @@ test('Studio MCP opens the exact local Place as the single Studio before MCP and
   assert.doesNotMatch(reconnect,/Start-Process|Stop-Process/);
   assert.match(helper,/ROBLOX_STUDIO_PLACE_LOADING_WAIT=/);
   assert.match(helper,/const studioAttachAttempts=60/);
-  assert.match(studioMcpBlock,/Wait-Process -Id.*-Timeout 60/);
+  assert.match(studioMcpBlock,/\$ownedStudio\.WaitForExit\(60000\)/);
   assert.match(studioMcpBlock,/foreach \(\$record in \$ownedRecords\)/);
   assert.doesNotMatch(studioMcpBlock,/AutoHotkey|pyautogui|SendKeys|mouse_event|keybd_event/i);
 });
@@ -2441,7 +2441,8 @@ test('final Studio capture requires no user save and closes only after evidence 
   assert.match(finalizeBlock,/ROBLOX_STUDIO_PLAYTEST_SOURCE_MUTATION_PERSIST=NO/);
   assert.doesNotMatch(finalizeBlock,/Stop-Process/);
   const closeBlock=workflow.slice(closeAt,refillAt);
-  assert.match(closeBlock,/Stop-Process -Id \$ownedStudio\.Id/);
+  assert.match(closeBlock,/Stop-Process -InputObject \$ownedStudio/);
+  assert.match(closeBlock,/if \(-not \$ownedStudio\.WaitForExit\(60000\)\)/);
   assert.match(closeBlock,/ROBLOX_STUDIO_AUTOMATED_CLOSE_AFTER_EVIDENCE=YES/);
   assert.match(helper,/finally\{\s*client\.close\(\)/);
   assert.match(finalizeBlock,/ROBLOX_STUDIO_MCP_POST_CAPTURE_UI_RELEASED=YES/);
@@ -2488,6 +2489,10 @@ test('Studio launcher handoff remains bound to one isolated Place and cleanup re
     assert.doesNotMatch(restore,/foreach \(\$proof in @\(/);
   }
   assert.match(close,/ROBLOX_STUDIO_OWNERSHIP_RESTORED_COUNT=/);
+  assert.match(close,/Stop-Process -InputObject \$ownedStudio -Force/);
+  assert.match(close,/if \(-not \$ownedStudio\.WaitForExit\(60000\)\)/);
+  assert.match(close,/finally \{ \$ownedStudio\.Dispose\(\) \}/);
+  assert.doesNotMatch(close,/if \(Get-Process -Id \$ownedStudio.Id/);
   assert.match(close,/\$launchFamily\.ContainsKey\(\[string\]\$_.ProcessId\)/);
   assert.match(close,/\.TotalMilliseconds\) -le 10/);
   assert.doesNotMatch(close,/VIBE2_STUDIO_PROCESS_IDS|Stop-Process -Name/);
@@ -2746,6 +2751,8 @@ test('each Studio job downloads into a unique writable exact-content package dir
  assert.ok(hashCheck>0&&writable>hashCheck&&launch>writable);
  assert.match(block,/CommandLine -notmatch \$legacyPattern/);
  assert.match(block,/CreationDate.ToUniversalTime/);
- assert.match(block,/Stop-Process -Id \$owned.Id/);
+ assert.match(block,/Stop-Process -InputObject \$owned -Force/);
+ assert.match(block,/if \(-not \$owned\.WaitForExit\(60000\)\)/);
+ assert.match(block,/finally \{ \$owned\.Dispose\(\) \}/);
  assert.doesNotMatch(block,/Stop-Process -Name/);
 });

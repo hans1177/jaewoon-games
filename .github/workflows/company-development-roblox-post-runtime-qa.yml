@@ -1816,9 +1816,11 @@ jobs:
             $owned = Get-Process -Id ([int]$legacy.ProcessId) -ErrorAction SilentlyContinue
             if (-not $owned -or $owned.ProcessName -ne 'RobloxStudioBeta') { continue }
             if ([math]::Abs(($owned.StartTime.ToUniversalTime() - $legacy.CreationDate.ToUniversalTime()).TotalSeconds) -gt 1) { continue }
-            Stop-Process -Id $owned.Id -Force -ErrorAction Stop
-            Wait-Process -Id $owned.Id -Timeout 60 -ErrorAction SilentlyContinue
-            Write-Host "ROBLOX_STUDIO_LEGACY_QA_WINDOW_CLOSED=$($legacy.ProcessId)"
+            try {
+              Stop-Process -InputObject $owned -Force -ErrorAction Stop
+              if (-not $owned.WaitForExit(60000)) { throw 'Owned legacy Studio has not exited; next launch remains blocked' }
+              Write-Host "ROBLOX_STUDIO_LEGACY_QA_WINDOW_CLOSED=$($legacy.ProcessId)"
+            } finally { $owned.Dispose() }
           }
 
           if (Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue) {
@@ -2484,12 +2486,14 @@ jobs:
               $ownedStudio = Get-Process -Id ([int]$record.ProcessId) -ErrorAction SilentlyContinue
               if (-not $ownedStudio -or $ownedStudio.ProcessName -ne 'RobloxStudioBeta') { continue }
               if ([math]::Abs(($ownedStudio.StartTime.ToUniversalTime() - $record.CreationDate.ToUniversalTime()).TotalSeconds) -gt 1) { continue }
-              Stop-Process -Id $ownedStudio.Id -Force -ErrorAction Stop
-              Wait-Process -Id $ownedStudio.Id -Timeout 60 -ErrorAction SilentlyContinue
-              if (Get-Process -Id $ownedStudio.Id -ErrorAction SilentlyContinue) {
-                throw "Owned Studio has not exited; next launch must remain blocked:process=$($ownedStudio.Id)"
-              }
-              Write-Host "ROBLOX_STUDIO_AUTOMATED_CLOSE_AFTER_EVIDENCE=YES:process=$($ownedStudio.Id)"
+              try {
+                Stop-Process -InputObject $ownedStudio -Force -ErrorAction Stop
+                # A retained process object may remain queryable after exit; wait on its verified handle.
+                if (-not $ownedStudio.WaitForExit(60000)) {
+                  throw "Owned Studio has not exited; next launch must remain blocked:process=$($ownedStudio.Id)"
+                }
+                Write-Host "ROBLOX_STUDIO_AUTOMATED_CLOSE_AFTER_EVIDENCE=YES:process=$($ownedStudio.Id):exitedAt=$($ownedStudio.ExitTime.ToUniversalTime().ToString('o'))"
+              } finally { $ownedStudio.Dispose() }
             }
             Start-Sleep -Seconds 1
           }
