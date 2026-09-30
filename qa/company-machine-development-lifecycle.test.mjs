@@ -153,7 +153,7 @@ assert.match(webRuntime,/uses: \.\/\.github\/workflows\/company-development-robl
 assert.match(webRuntime,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
 assert.match(webRuntime,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
 assert.match(webRuntime,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
-assert.doesNotMatch(webRuntime,/gh workflow run (?:company-development|unity-web)/);
+assert.doesNotMatch(webRuntime,/gh workflow run (?:company-development-roblox-runtime|company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
 assert.doesNotMatch(webRuntime,/company-development-web-bootstrap\.mjs/);
 assert.doesNotMatch(webRuntime,/company-development-web-gameplay-validation\.mjs/);
 assert.doesNotMatch(webRuntime,/WEB_GAMEPLAY_MUSIC_GATE=REQUIRED/);

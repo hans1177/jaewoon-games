@@ -670,7 +670,7 @@ test('controller allows approved source root but enforces candidate boundary',()
   assert(workflow.includes('candidate escaped approved boundary'));
 });
 
-test('complete non-leader game tasks bypass pressure coalescing while variant joins remain intact',()=>{
+test('queue pressure coalesces complete game callbacks while unpressured single tasks stay immediate',()=>{
   const start=workflow.indexOf('          game_micro_fanin=false');
   const end=workflow.indexOf('          payload="$(node',start);
   assert.ok(start>0&&end>start);
@@ -680,8 +680,8 @@ test('complete non-leader game tasks bypass pressure coalescing while variant jo
       encoding:'utf8',env:{...process.env,VIBE2_EXECUTION_LANE:'game-primary',VIBE2_NEURON_TARGET:target,VIBE2_NEURON_EXPECTED_VARIANTS:'1',VIBE2_PRESSURE_REFILL_LEADER:'false'}
     });
     assert.equal(result.status,0,result.stderr);
-    assert.match(result.stdout,/IMMEDIATE_CALLBACK/);
-    assert.doesNotMatch(result.stdout,/COALESCED_TO_COHORT_FANIN/);
+    assert.match(result.stdout,/COALESCED_TO_COHORT_FANIN/);
+    assert.doesNotMatch(result.stdout,/IMMEDIATE_CALLBACK/);
   }
   const joined=spawnSync('bash',['-c',`set -euo pipefail\nqueue_pressure=3\n${script}\necho IMMEDIATE_CALLBACK`],{
     encoding:'utf8',env:{...process.env,VIBE2_EXECUTION_LANE:'game-primary',VIBE2_NEURON_EXPECTED_VARIANTS:'3',VIBE2_PRESSURE_REFILL_LEADER:'false'}
@@ -691,6 +691,8 @@ test('complete non-leader game tasks bypass pressure coalescing while variant jo
   assert.doesNotMatch(joined.stdout,/IMMEDIATE_CALLBACK/);
   assert.equal(runtime.continuous.callbackCoalescing.singleGameTaskImmediateCompletionRequired,true);
   assert.equal(runtime.continuous.callbackCoalescing.singleGameTaskFullReviewBeforeCohortCompletion,true);
+  assert.equal(runtime.continuous.callbackCoalescing.action,'KEEP_IMMUTABLE_WORKER_ARTIFACT_AND_SKIP_NEW_NEURON_CALLBACK_WORKFLOW');
+  assert.equal(runtime.continuous.callbackCoalescing.immediateDispatchResumesWhenPressureClears,true);
 });
 
 test('complete single-task callbacks reuse full regression and release review without waiting for other workers',()=>{
@@ -1432,11 +1434,11 @@ test('distillation ingest preserves active rebuilds and stays off heavy game run
   assert.match(ingest,/actions\/setup-python@v5[\s\S]{0,100}?python-version: '3\.12'/);
 });
 
-test('Vibe2 control-plane jobs use slim runners while heavy workers retain full runners',()=>{
+test('Vibe2 control-plane and heavy jobs use their selected runner pools',()=>{
   const coreWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   const runnerWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
-  assert.match(coreWorkflow,/\n  reserve:\n(?:\s+#.*\n)*\s+runs-on: \$\{\{ \(github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-slim'\) \}\}/);
-  assert.match(coreWorkflow,/\n  fan_in:[\s\S]*?runs-on: ubuntu-24\.04-arm/);
+  assert.match(coreWorkflow,/\n  reserve:\n(?:\s+#.*\n)*\s+runs-on: \$\{\{ \(github\.event_name == 'repository_dispatch' && \(github\.event\.action == 'vibe2-fanin-refill' \|\| github\.event\.action == 'vibe2-neuron-complete'\) && 'ubuntu-latest' \|\| 'ubuntu-slim'\) \}\}/);
+  assert.match(coreWorkflow,/\n  fan_in:[\s\S]*?runs-on: ubuntu-latest/);
   assert.match(coreWorkflow,/\n  worker:[\s\S]*?runs-on: \$\{\{ \(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && matrix\.target == 'roblox' && 'ubuntu-latest' \|\| \(\(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-latest'\) \}\}/);
   assert.match(runnerWorkflow,/\n  plan:[\s\S]{0,180}?runs-on: ubuntu-24\.04-arm/);
   assert.match(runnerWorkflow,/\n  refill:[\s\S]{0,220}?runs-on: ubuntu-slim/);
@@ -1449,9 +1451,9 @@ test('recovery-fast control work uses a slim runner and never competes for a gam
   assert.equal(runtime.continuous.executionLanes.RECOVERY_FAST.workerFanoutPerTask,1);
 });
 
-test('fan-in refill reserve runs are run-scoped and never serialize same-lane reservations',()=>{
+test('fan-in refill wakes coalesce by lane without a global singleton',()=>{
   assert.match(workflow,/format\('vibe2-continuous-\{0\}-\{1\}', github\.run_id, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
-  assert.doesNotMatch(workflow,/format\('vibe2-fanin-refill-\{0\}'/);
+  assert.match(workflow,/format\('vibe2-fanin-refill-\{0\}'/);
   assert.doesNotMatch(workflow,/vibe2-fanin-refill-singleton/);
   assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'LANE_SCOPED_STATELESS_REFILL_COALESCING');
   assert.equal(runtime.continuous.atomicNeuronStream.sameLaneFanInRefillSerialization,false);
