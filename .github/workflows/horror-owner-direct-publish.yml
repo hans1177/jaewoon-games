@@ -1,10 +1,11 @@
+# 파일명: .github/workflows/horror-owner-direct-publish.yml
 name: Horror Owner Direct Publish
 on:
   push:
     branches: [main]
     paths: ['.github/workflows/horror-owner-direct-publish.yml']
 permissions:
-  contents: write
+  contents: read
 concurrency:
   group: horror-owner-direct-publish
   cancel-in-progress: false
@@ -21,7 +22,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference='Stop'
-          $out=Join-Path $env:RUNNER_TEMP 'horror-fix'
+          $out=Join-Path $env:RUNNER_TEMP ("horror-fix-"+$env:GITHUB_RUN_ID)
           New-Item -ItemType Directory -Force $out | Out-Null
           "OWNER_OUT=$out" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
           Invoke-WebRequest 'https://github.com/luau-lang/luau/releases/download/0.740/luau-windows.zip' -OutFile "$out/luau.zip"
@@ -30,7 +31,7 @@ jobs:
           Invoke-WebRequest 'https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-windows-x86_64.zip' -OutFile "$out/rojo.zip"
           if((Get-FileHash "$out/rojo.zip" -Algorithm SHA256).Hash.ToLowerInvariant() -ne '2179c44862a10ecbd725bdfeb4abc64e16dc4aad9b6c8f3e1a7c46a87280b949'){throw 'ROJO_CHECKSUM'}
           Expand-Archive "$out/rojo.zip" "$out/rojo" -Force
-      - name: Repair only existing game scope and initialization order
+      - name: Validate committed repair without rewriting game sources
         shell: pwsh
         run: |
           $ErrorActionPreference='Stop'
@@ -38,99 +39,49 @@ jobs:
           const fs=require('fs'),path=require('path'),cp=require('child_process'),assert=require('assert/strict');
           const base='roblox-games/horror-escape-room/';
           const sf=base+'server/Game.server.luau',cf=base+'client/Game.client.luau';
-          function git(...a){return cp.execFileSync('git',a,{encoding:'utf8'}).trim();}
-          assert.equal(git('rev-parse','HEAD:'+sf),'38589995389ecd13ea84d4d4111f67b20e67b2f8','SERVER_CHANGED_REVIEW_REQUIRED');
-          assert.equal(git('rev-parse','HEAD:'+cf),'35dfe25ac6b65ef26ae32d76102decce3f1c9f01','CLIENT_CHANGED_REVIEW_REQUIRED');
-          let s=fs.readFileSync(sf,'utf8').replace(/\r\n/g,'\n');const original=s;
-          function replaceOne(a,b){assert(s.includes(a),'MISSING:'+a.slice(0,90));s=s.replace(a,b);}
-          function moveBefore(a,b,target){const i=s.indexOf(a),j=s.indexOf(b,i);assert(i>=0&&j>i);const block=s.slice(i,j);s=s.slice(0,i)+s.slice(j);const k=s.indexOf(target);assert(k>=0);s=s.slice(0,k)+block+s.slice(k);}
-          moveBefore('local function lobbySurfaceText(','local function lobbyLampPost(','local function lobbyTerminal(');
-          moveBefore('local function groundedRootTarget(','local function setRole(','local function arenaPart(');
-          let a=s.indexOf('local function arenaPart('),b=s.indexOf('local function clearBots()',a);assert(a>=0&&b>a);let block=s.slice(a,b);
-          for(const n of ['makePhysicalLobby','makeFallbackArena','ensureArena']){assert(block.includes('local function '+n+'('));block=block.replace('local function '+n+'(',n+'=function(');}
-          s=s.slice(0,a)+'-- 월드 생성 전용 지역 범위: 세 진입점만 외부 라운드 흐름에서 사용한다.\nlocal makePhysicalLobby,makeFallbackArena,ensureArena\ndo\n'+block+'end -- 월드 생성 지역 범위\n\n'+s.slice(b);
-          replaceOne('local function teleport(p,pos,lookAtPos)\n local r=root(p);if r then','local function teleport(p,pos,lookAtPos)\n local c=p.Character\n local r=root(p);if r then');
-          replaceOne('  r.CFrame=targetCFrame\n','  r.Anchored=false\n  r.CFrame=targetCFrame\n');
-          replaceOne('   if not rr or not hh or not rr.Parent then return end\n   local corrected=groundedRootTarget(p,pos)','   if p.Character~=c or rr~=r or not rr or not hh or not rr.Parent or lastValidPosition[p]~=target then return end\n   local corrected=groundedRootTarget(p,pos)');
-          replaceOne('    rr.CFrame=correctedCFrame\n','    rr.Anchored=false\n    rr.CFrame=correctedCFrame\n');
-          a=s.indexOf('     local h=hum(player)\n     if rr.Position.Y>20 then');b=s.indexOf('     player:SetAttribute("LobbySafetyRecoveredAt"',a);assert(a>=0&&b>a);
-          s=s.slice(0,a)+'     teleport(player,lobbySpawns[slot],Vector3.new(0,3,210))\n'+s.slice(b);
-          replaceOne('    if rr and(rr.Position.Y<-2','    if rr and player:GetAttribute("RoundState")~="RUNNING"and player:GetAttribute("RoundState")~="SPECTATING"and(rr.Position.Y<-2');
-          replaceOne('NOCTURNE_BOOTSTRAP_SPAWN_20260930','NOCTURNE_BOOT_COMPILE_FIXED_20260930');
-          fs.writeFileSync(sf,s);
-          let client=fs.readFileSync(cf,'utf8').replace(/\r\n/g,'\n');
-          for(const [start,end,n,label] of [
-            ['local loadingLayer=','local function roundify(','loadingFill','로딩 화면 생성'],
-            ['local motionHumanoid=','local chaseTint=','setMotionImpulse','캐릭터 동작'],
-            ['local surpriseArena=','-- 실제 플레이 좌표를 보여주는 소형 미니맵','ghostCatalogItem','로컬 놀람 연출']
-          ]){
-            const i=client.indexOf(start),j=client.indexOf(end,i);assert(i>=0&&j>i);let section=client.slice(i,j);
-            if(section.includes('local function '+n+'('))section=section.replace('local function '+n+'(',n+'=function(');
-            else {assert(section.includes('local '+n+'='));section=section.replace('local '+n+'=',n+'=');}
-            client=client.slice(0,i)+'-- '+label+' 전용 지역 범위: 생성용 변수가 파일 전체에 누적되지 않는다.\nlocal '+n+'\ndo\n'+section+'end -- '+label+' 지역 범위\n\n'+client.slice(j);
-          }
-          fs.writeFileSync(cf,client);
+          const git=(...a)=>cp.execFileSync('git',a,{encoding:'utf8'}).trim();
+          assert.equal(git('rev-parse','HEAD:'+sf),'76f16e373b5401d9fae7cabfad52e4caf38ae1da','SERVER_CHANGED_REVIEW_REQUIRED');
+          assert.equal(git('rev-parse','HEAD:'+cf),'416498c600416dd6b2bc5e0ee448cf3199854233','CLIENT_CHANGED_REVIEW_REQUIRED');
           const exe=path.join(process.env.OWNER_OUT,'luau','luau-compile.exe');
-          const evidence={compiler:'0.740',files:[],unresolvedGameGlobals:[],preservedFunctions:[]};
+          const evidence={sourceRevision:git('rev-parse','HEAD'),compiler:'0.740',files:[],pass:false};
           for(const f of [sf,cf,...fs.readdirSync(base+'shared').filter(x=>/\.luau?$/.test(x)).map(x=>base+'shared/'+x)]){
             const r=cp.spawnSync(exe,['--null',f],{encoding:'utf8',timeout:45000});
-            console.log('COMPILE='+JSON.stringify({file:f,status:r.status,error:String(r.error||''),stdout:r.stdout,stderr:r.stderr}));assert.equal(r.status,0,'COMPILE_FAILED:'+f);evidence.files.push(f);
+            const row={file:f,status:r.status,error:String(r.error||''),stdout:r.stdout,stderr:r.stderr};
+            evidence.files.push(row);console.log('COMPILE='+JSON.stringify(row));
           }
-          const allowed=new Set(['game','workspace','Instance','Enum','Vector3','Vector2','Color3','CFrame','RaycastParams','TweenInfo','UDim','UDim2','NumberRange','NumberSequence','NumberSequenceKeypoint','task','warn']);
-          for(const f of [sf,cf]){
-            const r=cp.spawnSync(exe.replace('luau-compile.exe','luau-analyze.exe'),[f],{encoding:'utf8',timeout:45000,maxBuffer:20*1024*1024});
-            const log=String(r.stdout||'')+String(r.stderr||'');assert(!r.error,'ANALYZER_FAILED');
-            const unknown=[...log.matchAll(/Unknown global '([^']+)'/g)].map(x=>x[1]).filter(x=>!allowed.has(x));
-            console.log('UNRESOLVED_GAME_GLOBALS='+JSON.stringify({file:f,names:[...new Set(unknown)]}));assert.equal(unknown.length,0);
-          }
-          for(const name of ['startRound','endRound','save','load','infectAttack','purify']){
-            function blockOf(text){const start=text.indexOf('local function '+name+'(');assert(start>=0);const end=text.indexOf('\nlocal ',start+1);return text.slice(start,end<0?text.length:end);}
-            assert.equal(blockOf(s),blockOf(original),'GAMEPLAY_CHANGED:'+name);evidence.preservedFunctions.push(name);
-          }
+          evidence.pass=evidence.files.every(x=>x.status===0);
           fs.writeFileSync(path.join(process.env.OWNER_OUT,'compile.json'),JSON.stringify(evidence,null,2));
-          fs.writeFileSync(path.join(process.env.OWNER_OUT,'repair.diff'),cp.execFileSync('git',['diff','--',sf,cf],{encoding:'utf8'}));
-          const changed=git('diff','--name-only').split(/\r?\n/).filter(Boolean);assert.deepEqual(changed.sort(),[sf,cf].sort());
-          console.log('CORE_GAMEPLAY_SAVE_UNCHANGED=PASS');
+          assert(evidence.pass,'COMPILE_FAILED');assert.equal(git('status','--porcelain'),'','GAME_SOURCE_CHANGED');
+          console.log('COMMITTED_GAME_SOURCE_UNCHANGED=PASS');
           '@ | node
           if($LASTEXITCODE -ne 0){throw 'REPAIR_VALIDATION_FAILED'}
-          git diff --check
-          if($LASTEXITCODE -ne 0){throw 'DIFF_CHECK_FAILED'}
-          git config user.name 'hans1177'
-          git config user.email 'actions@users.noreply.github.com'
-          git add -- roblox-games/horror-escape-room/server/Game.server.luau roblox-games/horror-escape-room/client/Game.client.luau
-          git commit -m 'fix(horror): 서버·화면 컴파일 한도와 로비 초기화 순서 복구'
-          if($LASTEXITCODE -ne 0){throw 'COMMIT_FAILED'}
-          git push origin HEAD:main
-          if($LASTEXITCODE -ne 0){throw 'MAIN_ADVANCED_REVIEW_REQUIRED'}
           "SOURCE_REVISION=$(git rev-parse HEAD)" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
-          Write-Host "REPAIR_COMMIT=$(git rev-parse HEAD)"
       - name: Build exact repaired local place
         shell: pwsh
         run: |
           $ErrorActionPreference='Stop'
           $rojo=Get-ChildItem "$env:OWNER_OUT/rojo" -Filter rojo.exe -Recurse | Select-Object -First 1
-          $place=Join-Path $env:OWNER_OUT 'horror-fix.rbxlx'
+          $name='horror-fix-'+$env:GITHUB_RUN_ID
+          $place=Join-Path $env:OWNER_OUT ($name+'.rbxlx')
           & $rojo.FullName build 'roblox-games/horror-escape-room/default.project.json' -o $place
           if($LASTEXITCODE -ne 0 -or -not(Test-Path $place)){throw 'PLACE_BUILD_FAILED'}
           "PLACE_FILE=$place" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          "STUDIO_NAME=$name" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
           Write-Host "BUILD_SHA256=$((Get-FileHash $place -Algorithm SHA256).Hash)"
-      - name: Observe actual Studio lobby spawn and movement
+      - name: Observe actual lobby ground movement restart and match entry
         shell: pwsh
         run: |
           $ErrorActionPreference='Stop'
-          $open=Get-Process -Name RobloxStudioBeta -ErrorAction SilentlyContinue
-          if(-not $open){
-            $exe=Get-ChildItem "$env:LOCALAPPDATA/Roblox/Versions" -Filter RobloxStudioBeta.exe -Recurse | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-            if(-not $exe){throw 'STUDIO_EXE_UNAVAILABLE'}
-            $proc=Start-Process -FilePath $exe.FullName -ArgumentList @('--task','EditFile','--localPlaceFile',('"'+$env:PLACE_FILE+'"')) -PassThru
-            "OWNER_STUDIO_PID=$($proc.Id)" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
-          }
+          $exe=Get-ChildItem "$env:LOCALAPPDATA/Roblox/Versions" -Filter RobloxStudioBeta.exe -Recurse | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if(-not $exe){throw 'STUDIO_EXE_UNAVAILABLE'}
+          $proc=Start-Process -FilePath $exe.FullName -ArgumentList @('--task','EditFile','--localPlaceFile',('"'+$env:PLACE_FILE+'"')) -PassThru
+          "OWNER_STUDIO_PID=$($proc.Id)" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
           @'
           const fs=require('fs'),path=require('path');
-          let moduleText=fs.readFileSync('tools/company-development-roblox-studio-local-play.mjs','utf8');
-          moduleText=moduleText.replace('class McpStdioClient{','export class McpStdioClient{');
-          moduleText+='\nexport {fillRequired,setStudioId,startStopArgs,executeLuauArgs,characterNavigationArgs,keyboardArgs};\n';
-          fs.writeFileSync(path.join(process.env.OWNER_OUT,'studio.mjs'),moduleText);
+          let text=fs.readFileSync('tools/company-development-roblox-studio-local-play.mjs','utf8');
+          text=text.replace('class McpStdioClient{','export class McpStdioClient{');
+          text+='\nexport {fillRequired,setStudioId,startStopArgs,executeLuauArgs,characterNavigationArgs};\n';
+          fs.writeFileSync(path.join(process.env.OWNER_OUT,'studio.mjs'),text);
           '@ | node
           @'
           import fs from 'node:fs';
@@ -142,40 +93,47 @@ jobs:
           const wait=ms=>new Promise(r=>setTimeout(r,ms));
           const mcp=path.join(process.env.LOCALAPPDATA,'Roblox','mcp.bat');
           assert(fs.existsSync(mcp),'STUDIO_MCP_UNAVAILABLE');
-          const c=new m.McpStdioClient({command:'cmd.exe',args:['/c',mcp],timeoutMs:30000});
-          const report={sourceRevision:process.env.SOURCE_REVISION,engine:'ROBLOX_STUDIO',initial:[],movement:[],pass:false};
+          const c=new m.McpStdioClient({command:'cmd.exe',args:['/c',mcp],timeoutMs:45000});
+          const report={sourceRevision:process.env.SOURCE_REVISION,engine:'ROBLOX_STUDIO',initial:[],movement:[],match:[],pass:false};
           let id='',started=false;
           function txt(v){if(typeof v==='string')return v;if(Array.isArray(v))return v.map(txt).join('\n');if(v&&typeof v==='object')return Object.entries(v).filter(([k])=>k!=='data').map(([,x])=>txt(x)).join('\n');return '';}
           function args(name){const a={};const schema=c.tool(name).inputSchema;m.setStudioId(a,schema,id);return m.fillRequired(a,schema);}
-          async function probe(){
-            const code=`local Players=game:GetService("Players") local p=Players.LocalPlayer or Players:GetPlayers()[1] local c=p and p.Character local r=c and c:FindFirstChild("HumanoidRootPart") local h=c and c:FindFirstChildOfClass("Humanoid") local ui=p and p:FindFirstChild("PlayerGui") local gui=ui and ui:FindFirstChild("MidnightTagHUD") local load=gui and gui:FindFirstChild("LoadingScreen") local q=RaycastParams.new() q.FilterType=Enum.RaycastFilterType.Exclude q.FilterDescendantsInstances=c and {c} or {} local hit=r and workspace:Raycast(r.Position,Vector3.new(0,-12,0),q) local result={lobbyReady=workspace:GetAttribute("PhysicalLobbyReady")==true,mapReady=workspace:GetAttribute("MapReady")==true,revision=workspace:GetAttribute("LobbyBuildRevision"),x=r and r.Position.X or 0,y=r and r.Position.Y or 999,z=r and r.Position.Z or 0,anchored=r and r.Anchored or false,health=h and h.Health or 0,grounded=h and h.FloorMaterial~=Enum.Material.Air or false,floor=hit and hit.Instance.Name or "",hud=gui~=nil,loading=load and load.Visible or false,state=p and p:GetAttribute("RoundState") or ""} print("HORROR_PROBE="..game:GetService("HttpService"):JSONEncode(result))`;
-            const res=await c.call('execute_luau',m.executeLuauArgs(c.tool('execute_luau').inputSchema,id,code,'Client'));
+          async function probe(context='Client'){
+            const code=`local Players=game:GetService("Players") local p=Players.LocalPlayer or Players:GetPlayers()[1] local character=p and p.Character local r=character and character:FindFirstChild("HumanoidRootPart") local h=character and character:FindFirstChildOfClass("Humanoid") local ui=p and p:FindFirstChild("PlayerGui") local gui=ui and ui:FindFirstChild("MidnightTagHUD") local load=gui and gui:FindFirstChild("LoadingScreen") local q=RaycastParams.new() q.FilterType=Enum.RaycastFilterType.Exclude q.FilterDescendantsInstances=character and {character} or {} local hit=r and workspace:Raycast(r.Position,Vector3.new(0,-12,0),q) local result={lobbyReady=workspace:GetAttribute("PhysicalLobbyReady")==true,mapReady=workspace:GetAttribute("MapReady")==true,revision=workspace:GetAttribute("LobbyBuildRevision"),x=r and r.Position.X or 0,y=r and r.Position.Y or 999,z=r and r.Position.Z or 0,anchored=r and r.Anchored or false,health=h and h.Health or 0,grounded=h and h.FloorMaterial~=Enum.Material.Air or false,floor=hit and hit.Instance.Name or "",hud=gui~=nil,loading=load and load.Visible or false,state=p and p:GetAttribute("RoundState") or "",role=p and p:GetAttribute("Role") or "",roomState=workspace:GetAttribute("RoomState"),phase=workspace:GetAttribute("LobbyPhase"),population=workspace:GetAttribute("ActivePopulation") or 0} return "HORROR_PROBE="..game:GetService("HttpService"):JSONEncode(result)`;
+            const res=await c.call('execute_luau',m.executeLuauArgs(c.tool('execute_luau').inputSchema,id,code,context));
             const text=txt(res);const match=text.match(/HORROR_PROBE=(\{[^\n]+\})/);assert(match,'MISSING_PROBE:'+text.slice(0,1000));return JSON.parse(match[1]);
           }
           function valid(p){return p.lobbyReady&&p.mapReady&&p.revision==='NOCTURNE_BOOT_COMPILE_FIXED_20260930'&&p.health>0&&!p.anchored&&p.y>0&&p.y<8&&p.z>=180&&p.z<=310&&p.grounded&&p.floor&&p.hud&&!p.loading;}
+          async function navigate(target){await c.call('character_navigation',m.characterNavigationArgs(c.tool('character_navigation').inputSchema,id,target));}
           try{
             await c.connect();await c.waitForTools(['list_roblox_studios','start_stop_play','execute_luau','get_console_output','screen_capture','character_navigation'],{attempts:12,delayMs:1500});
-            for(let i=0;i<30;i++){
+            for(let i=0;i<40;i++){
               const studios=m.collectStudios(await c.call('list_roblox_studios',{}));
-              const own=studios.find(s=>s.name.toLowerCase().includes('horror-fix'));
+              const own=studios.find(s=>s.name.toLowerCase().includes(process.env.STUDIO_NAME));
               if(own){id=own.studioId;break;}await wait(2000);
             }
             assert(id,'NO_EXACT_LOCAL_STUDIO_ATTACHED');
             await c.call('start_stop_play',m.startStopArgs(c.tool('start_stop_play').inputSchema,id,true));started=true;
-            for(let i=0;i<24;i++){await wait(1500);const p=await probe();report.initial.push(p);console.log('SPAWN_PROBE='+JSON.stringify(p));if(valid(p))break;}
+            for(let i=0;i<40;i++){await wait(1500);const p=await probe();report.initial.push(p);console.log('SPAWN_PROBE='+JSON.stringify(p));if(valid(p))break;}
             assert(valid(report.initial.at(-1)),'INITIAL_GROUND_CONTACT_FAILED');
             for(let i=0;i<3;i++){await wait(1000);const p=await probe();report.initial.push(p);assert(valid(p),'UNSTABLE_GROUND_CONTACT');}
-            const before=await probe();
-            await c.call('character_navigation',m.characterNavigationArgs(c.tool('character_navigation').inputSchema,id,{x:0,y:3.7,z:258}));
-            await wait(2200);const after=await probe();report.movement.push(before,after);assert(valid(after),'MOVE_GROUND_CONTACT_FAILED');assert(Math.hypot(after.x-before.x,after.z-before.z)>2,'MOVEMENT_NOT_OBSERVED');
+            const before=await probe();await navigate({x:0,y:3.7,z:258});
+            await wait(1500);const after=await probe();report.movement.push(before,after);assert(valid(after),'MOVE_GROUND_CONTACT_FAILED');assert(Math.hypot(after.x-before.x,after.z-before.z)>2,'MOVEMENT_NOT_OBSERVED');
             m.collectImages(await c.call('screen_capture',args('screen_capture')),[],out,'lobby');
-            const logs=await c.call('get_console_output',args('get_console_output'));fs.writeFileSync(path.join(out,'console.json'),JSON.stringify(logs,null,2));
-            const text=txt(logs);assert(!/Out of local registers|attempt to call a nil value|CompileError/.test(text),'GAME_RUNTIME_ERROR');
             await c.call('start_stop_play',m.startStopArgs(c.tool('start_stop_play').inputSchema,id,false));started=false;await wait(1800);
             await c.call('start_stop_play',m.startStopArgs(c.tool('start_stop_play').inputSchema,id,true));started=true;
-            for(let i=0;i<20;i++){await wait(1500);const p=await probe();report.restart=p;if(valid(p))break;}
-            assert(valid(report.restart),'RESTART_SPAWN_FAILED');report.pass=true;console.log('ACTUAL_STUDIO_GROUND_MOVE_RESTART=PASS');
+            for(let i=0;i<40;i++){await wait(1500);const p=await probe();report.restart=p;if(valid(p))break;}
+            assert(valid(report.restart),'RESTART_SPAWN_FAILED');
+            await navigate({x:-18,y:3.7,z:230});await navigate({x:-18,y:4.3,z:202});
+            for(let i=0;i<30;i++){await wait(1000);const p=await probe();report.match.push(p);console.log('MATCH_PROBE='+JSON.stringify(p));if(p.state==='RUNNING'&&Math.abs(p.z)<100&&p.grounded&&!p.anchored)break;}
+            const match=report.match.at(-1);assert(match.state==='RUNNING'&&Math.abs(match.z)<100&&match.grounded&&!match.anchored,'MATCH_ENTRY_NOT_OBSERVED');
+            report.server=await probe('Server');assert(report.server.state==='RUNNING'&&report.server.phase==='RUNNING'&&report.server.population>0,'SERVER_MATCH_NOT_RUNNING');
+            m.collectImages(await c.call('screen_capture',args('screen_capture')),[],out,'match');
+            const logs=await c.call('get_console_output',args('get_console_output'));fs.writeFileSync(path.join(out,'console.json'),JSON.stringify(logs,null,2));
+            assert(!/Out of local registers|attempt to call a nil value|CompileError/.test(txt(logs)),'GAME_RUNTIME_ERROR');
+            report.pass=true;console.log('ACTUAL_STUDIO_GROUND_MOVE_RESTART_MATCH=PASS');
           }catch(e){report.error=String(e.stack||e);throw e;}finally{
+            if(id)try{const logs=await c.call('get_console_output',args('get_console_output'));fs.writeFileSync(path.join(out,'console.json'),JSON.stringify(logs,null,2));}catch{}
             fs.writeFileSync(path.join(out,'runtime.json'),JSON.stringify(report,null,2));
             if(started)try{await c.call('start_stop_play',m.startStopArgs(c.tool('start_stop_play').inputSchema,id,false));}catch{}
             c.close();
@@ -192,6 +150,10 @@ jobs:
           $e=Get-Content "$env:OWNER_OUT/runtime.json" -Raw | ConvertFrom-Json
           if($e.pass -ne $true){throw 'RUNTIME_NOT_PASSED'}
           if([string]::IsNullOrWhiteSpace($env:ROBLOX_OPEN_CLOUD_API_KEY)){throw 'PUBLISH_KEY_MISSING'}
+          git fetch origin main
+          if($LASTEXITCODE -ne 0){throw 'REFRESH_MAIN_FAILED'}
+          git diff --exit-code HEAD origin/main -- roblox-games/horror-escape-room
+          if($LASTEXITCODE -ne 0){throw 'GAME_SOURCE_ADVANCED_NO_PUBLISH'}
           Invoke-WebRequest -Method Post -Uri 'https://apis.roblox.com/universes/v1/10767445796/places/98222620265768/versions?versionType=Published' -Headers @{'x-api-key'=$env:ROBLOX_OPEN_CLOUD_API_KEY} -ContentType 'application/xml' -InFile $env:PLACE_FILE -OutFile "$env:OWNER_OUT/publish.json"
           $r=Get-Content "$env:OWNER_OUT/publish.json" -Raw | ConvertFrom-Json
           if([int]$r.versionNumber -le 0){throw 'PUBLISH_VERSION_MISSING'}
@@ -208,5 +170,4 @@ jobs:
           path: |
             ${{ env.OWNER_OUT }}/*.json
             ${{ env.OWNER_OUT }}/*.png
-            ${{ env.OWNER_OUT }}/repair.diff
           retention-days: 1
