@@ -21,7 +21,7 @@ permissions:
 
 concurrency:
   group: owner-roblox-dedicated-private-experiences
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
