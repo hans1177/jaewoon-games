@@ -782,7 +782,11 @@
         "pull-request:4216",
         "source-commit:1fc29be6ef99b10fd546f98c5b898aa5245a2870",
         "merged-main:79e3bae1081eed4676258b2ce979a4d509384d6b",
-        "owner-exclusive-scope:horror-escape-room-query-only"
+        "owner-exclusive-scope:horror-escape-room-query-only",
+        "post-merge-run:36785970167",
+        "post-merge-workers-lock-acquired:28/28",
+        "post-merge-lock-transport-observed:contents-api",
+        "git-cas-fallback-actual-activation:not-observed-api-recovered"
       ],
       "reusablePatterns": [
         "KEEP_LOCK_SEMANTICS_CONSTANT_WHILE_SWITCHING_RATE_LIMITED_TRANSPORT",
@@ -802,11 +806,58 @@
         "node syntax and git diff whitespace validation: PASS",
         "PR #4216 Vibe Shared Work Lock QA: PASS",
         "PR #4216 Vibe2 Core QA test, Development Web browser startup smoke, and Practice fault cards runtime: PASS",
-        "post-merge shared Work Lock fallback actual execution: NOT_YET_OBSERVED",
-        "Roblox Studio actual execution: NOT_RUN; no F9 or release completion claim"
+        "Roblox Studio actual execution: NOT_RUN; no F9 or release completion claim",
+        "post-merge run 36785970167: 28/28 workers acquired the shared Work Lock; normal Contents API transport was observed and Git CAS fallback activation was not required"
       ],
       "learningState": "TRACE_ONLY",
-      "liveState": "MERGED_AT_79E3BAE1; CONTENTS_API_403_429_GIT_CAS_FALLBACK_IMPLEMENTED; REQUIRED_ACTIONS_PASS; POST_MERGE_SOURCE_WORKER_AND_LINE_DEFENSE_STUDIO_REVALIDATION_NOT_YET_OBSERVED; NEXT_ROTATION_EXACT_LOCK_TRANSPORT_SOURCE_ARTIFACT_THEN_OLDEST_NON_OWNER_GAME_RUNTIME"
+      "liveState": "MERGED_AT_79E3BAE1; POST_MERGE_RUN_36785970167_LOCK_ACQUIRE_28_OF_28; CONTENTS_API_RECOVERED_SO_GIT_CAS_FALLBACK_NOT_ACTUALLY_TRIGGERED; SOURCE_GENERATION_RESUMED; LINE_DEFENSE_STUDIO_REACHED_SOURCE_GENERATION_BUT_REMAINED_TIMEOUT_BLOCKED"
+    },
+    {
+      "id": "assistant_vibe_initial_json_prompt_bounded_20261001",
+      "date": "2026-10-01",
+      "gameId": "MULTI_GAME_SOURCE_GENERATION",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "After the shared Work Lock repair reopened source generation, completed Web and Unity workers repeatedly spent their entire first local-model request on oversized prompts. cozy-island Unity used 137506 bytes and timed out at 240 seconds, ant-simulator Web used 89853 bytes and timed out at 240 seconds before recovering to a passing candidate, and cozy-island Web used 218797 bytes and timed out at 240 seconds before later NO_OP failures. The prior bounded prompt repair covered oversized Roblox rebuilds and retry paths but not ordinary first-attempt JSON source candidates.",
+      "rootCause": "ORDINARY_JSON_SOURCE_CANDIDATES_SENT_FULL_READ_ONLY_AND_DUPLICATE_CONTEXT_ON_THE_FIRST_REQUEST_AND_ONLY_COMPACTED_AFTER_A_240_SECOND_TIMEOUT",
+      "decision": "Reuse the existing source-worker prompt builder in an explicit first-attempt bounded mode whenever an ordinary JSON prompt exceeds 64 KB. Preserve exact writable FILE blocks, allowed paths, verified external learning, build-up directives, protected gameplay and save constraints, and all candidate validation. Remove only duplicate planning and read-only context. Keep dedicated Roblox rebuild, Studio package, graphics package, atomic pair, and full-Web paths unchanged.",
+      "change": "Updated tools/vibe2-source-worker.mjs and qa/vibe2-source-worker.test.mjs. A 91151-byte ordinary JSON input now starts at 16087 bytes with verified learning and the exact writable anchor intact. No game source, asset, gameplay value, save structure, queue, candidate, deployment, or owner-exclusive horror-escape-room scope changed.",
+      "evidence": [
+        "post-lock-repair-source-run:36785970167",
+        "cozy-island-unity-job:110127864223:first-prompt=137506:timeout=240000",
+        "ant-simulator-web-job:110127864239:first-prompt=89853:timeout=240000:worker-result=PASS-after-bounded-retry",
+        "cozy-island-web-job:110127864226:first-prompt=218797:timeout=240000:worker-result=FAIL-NO_OP",
+        "pull-request:4219",
+        "pull-request-head:4add1866b0db403bcf52c394c57777401675bcbd",
+        "merged-main:fa985b00a3e9003c5238f99915e643a11956b268",
+        "regression-input-bytes:91151",
+        "regression-first-request-bytes:16087",
+        "owner-exclusive-scope:horror-escape-room-not-touched"
+      ],
+      "reusablePatterns": [
+        "COMPACT_OVERSIZED_JSON_CONTEXT_BEFORE_THE_FIRST_MODEL_CALL",
+        "PRESERVE_VERIFIED_LEARNING_AND_EXACT_WRITABLE_ANCHORS_DURING_COMPACTION",
+        "KEEP_FIRST_ATTEMPT_AND_RECOVERY_SEMANTICS_DISTINCT",
+        "VERIFY_NEW_PROMPT_BUDGET_AGAINST_POST_MERGE_ACTIONS_LOGS"
+      ],
+      "avoidPatterns": [
+        "SPENDING_A_FULL_240_SECOND_ATTEMPT_BEFORE_APPLYING_KNOWN_SAFE_CONTEXT_COMPACTION",
+        "TRUNCATING_VERIFIED_EXTERNAL_LEARNING_TO_REDUCE_PROMPT_SIZE",
+        "REPLACING_EXACT_WRITABLE_SOURCE_WITH_GUESSED_ANCHORS",
+        "CLAIMING_STUDIO_OR_F9_PASS_FROM_STATIC_SOURCE_WORKER_QA"
+      ],
+      "qa": [
+        "local source-worker regression: 219 PASS, 8 Luau-compiler-dependent SKIP, 0 FAIL",
+        "local exploration-worker regression: 25 PASS",
+        "local architecture-related regression: 100 PASS; one canonical-document test not run because its required company-learning file was absent from the isolated worktree",
+        "node syntax and git diff whitespace validation: PASS",
+        "PR #4219 Company Evolution QA: PASS",
+        "PR #4219 Company Central Policy Contract QA: PASS",
+        "PR #4219 Vibe2 Core QA test, Development Web browser startup smoke, and Practice fault cards runtime: PASS",
+        "post-merge exact #4219 source worker execution: NOT_YET_OBSERVED",
+        "Roblox Studio, Unity build, mobile runtime, and F9 actual execution: NOT_RUN"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "MERGED_AT_FA985B00; ORDINARY_JSON_OVER_64KB_STARTS_WITH_BOUNDED_WRITABLE_CONTEXT; POST_MERGE_EXACT_EFFECT_NOT_YET_OBSERVED; LINE_DEFENSE_STUDIO_JOB_110127864340_REMAINS_TIMEOUT_BLOCKED_AT_51566_THEN_42704_BYTES_AND_IS_OUTSIDE_THIS_ORDINARY_PATH; NEXT_ROTATION_LINE_DEFENSE_STANDARD_CANDIDATE_AND_STUDIO_SPECIALIZED_PROMPT_BUDGET_THEN_ACTUAL_STUDIO_F9"
     }
   ]
 }
