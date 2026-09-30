@@ -1,5 +1,5 @@
 {
-  "version": 21,
+  "version": 22,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-09-30",
@@ -4074,6 +4074,30 @@
       "MOBILE_READABILITY",
       "ROBLOX_STUDIO_RUNTIME_CAPTURE"
     ],
-    "verificationRule": "SEMANTIC_PACK_IS_NOT_A_VERIFIED_NATIVE_CLIP; EACH CONSUMED PLATFORM VARIANT REQUIRES TARGET GAME RUNTIME QA"
+    "verificationRule": "SEMANTIC_PACK_IS_NOT_A_VERIFIED_NATIVE_CLIP; EACH CONSUMED PLATFORM VARIANT REQUIRES TARGET GAME RUNTIME QA",
+    "authoringRecipe": "assets/vibe-motion-director.js#createDuelCombatAuthoringRecipe",
+    "authoringMode": "NORMALIZED_PHASE_KEYPOSES_WITH_PLATFORM_NATIVE_JOINT_BINDING",
+    "nativeBinding": {
+      "ROBLOX": [
+        "Animator/AnimationTrack",
+        "Motor6D/Bone cleanup",
+        "IKControl contact correction"
+      ],
+      "UNITY": [
+        "Animator clip",
+        "Humanoid retarget/AvatarMask",
+        "Animation Rigging/IK contact correction"
+      ]
+    },
+    "bodyMechanics": [
+      "FOOT_PLANT",
+      "PELVIS_LEADS_OR_MATCHES_SHOULDER",
+      "TORSO_COUNTER_ROTATION",
+      "WEIGHT_TRANSFER",
+      "CONTACT_ALIGNMENT",
+      "GUARD_RETURN"
+    ],
+    "normalizedTimingPreservesGameplayWindows": true,
+    "rootTranslationRemainsGameplayOwned": true
   }
 }
