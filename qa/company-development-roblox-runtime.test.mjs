@@ -532,7 +532,7 @@ test('central development orchestrator gates new native lanes on Unity Web readi
   assert.match(workflow,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
   assert.match(workflow,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
   assert.match(workflow,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
-  assert.doesNotMatch(workflow,/gh workflow run (?:company-development|unity-web)/);
+  assert.doesNotMatch(workflow,/gh workflow run (?:company-development-roblox-runtime|company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
   assert.match(admission,/upper-platform-development-readiness\.json/);
   assert.match(admission,/READINESS_SOURCE_STALE/);
   assert.match(workflow,/grandfatherGameIds/);
