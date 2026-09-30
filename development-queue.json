@@ -29140,10 +29140,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-30T17:40:07.232Z",
+      "updatedAt": "2026-09-30T21:50:55.443Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -30508,10 +30508,10 @@
       "robloxPublicReleaseFinalEvidence": null,
       "robloxRuntimeLastObservationAttemptAt": "2026-09-27T22:15:42.610Z",
       "platformAdapter": "tools/company-development-unity-platform.mjs",
-      "unityCandidateBranch": null,
-      "unitySourceCommit": null,
-      "unityBuildRunId": null,
-      "unityRuntimeSmokeRunId": null,
+      "unityCandidateBranch": "development/unity-tech-survival-36774290498",
+      "unitySourceCommit": "561f3077d84db2273fc3d5bbb6fe971d3df444ca",
+      "unityBuildRunId": 36778054435,
+      "unityRuntimeSmokeRunId": 36781501031,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityInternalReleaseReady": false,
@@ -30520,21 +30520,24 @@
       "unityPublicReleaseReady": false,
       "unityPublicRelease": false,
       "executionEvidence": {
-        "version": 1,
+        "version": 3,
         "platform": "UNITY",
-        "sourceRevision": null,
-        "sourceFingerprint": null,
-        "buildOrPackagePassed": false,
-        "artifactIdentity": null,
+        "sourceRevision": "561f3077d84db2273fc3d5bbb6fe971d3df444ca",
+        "sourceRootTreeSha": "740fbf2b59da1a8bf0047d4f59b8a1c38f142703",
+        "sourceFingerprint": "16f96eb253d20869018800171a21dbeac127b6ad20e4549d4de86293551f1edb",
+        "buildOrPackagePassed": true,
+        "artifactIdentity": "sha256:cac116de876ef7e4f319dfaee78567df2fd68f35305cbf04eec078b4e4389417",
         "runtimePassed": false,
-        "independentQaPassed": true,
-        "regressionPassed": true,
-        "exactRevision": false,
-        "lastSuccessfulStage": "F9_RELEASE_REGRESSION",
-        "failureStage": null,
-        "failureSignature": null
+        "independentQaPassed": false,
+        "multiplayerPassed": true,
+        "regressionPassed": false,
+        "f0ToF9Passed": false,
+        "exactRevision": true,
+        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
+        "failureStage": "F1_SERVER_BOOT",
+        "failureSignature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee"
       },
-      "resumeStage": "SINGLE_BUILD_OR_PACKAGE",
+      "resumeStage": "F1_SERVER_BOOT",
       "failureCount": 1,
       "contractCanaryPassed": false,
       "robloxValidationTarget": {
@@ -30837,10 +30840,85 @@
         "f9RuntimeReplay": true,
         "internalStudioValidationOnly": true,
         "authority": "roblox-open-cloud-f9-verified-canonical-publish"
+      },
+      "unityF0ThroughF9Evidence": {
+        "version": 1,
+        "platform": "UNITY",
+        "sourceRevision": "561f3077d84db2273fc3d5bbb6fe971d3df444ca",
+        "artifactIdentity": "sha256:cac116de876ef7e4f319dfaee78567df2fd68f35305cbf04eec078b4e4389417",
+        "sourceRootTreeSha": "740fbf2b59da1a8bf0047d4f59b8a1c38f142703",
+        "evidenceMode": "EXISTING_EXACT_APK_RUNTIME_QA_REGRESSION_WITH_PLATFORM_APPLICABILITY",
+        "floors": {
+          "F0": {
+            "state": "PASS",
+            "authority": "IMMUTABLE_APK_BUILD_AND_SOURCE_BINDING"
+          },
+          "F1": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_RUNTIME_SESSION"
+          },
+          "F2": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_RUNTIME_SESSION"
+          },
+          "F3": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_RUNTIME_SESSION"
+          },
+          "F4": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_RUNTIME_SESSION"
+          },
+          "F5": {
+            "state": "FAIL",
+            "authority": "INDEPENDENT_ANDROID_QA_TOUCH_INPUT_SCREEN_RUNTIME"
+          },
+          "F6": {
+            "state": "FAIL",
+            "authority": "INDEPENDENT_ANDROID_QA_AND_EXACT_RUNTIME_STATE_EVIDENCE"
+          },
+          "F7": {
+            "state": "NOT_APPLICABLE",
+            "authority": "VERIFIED_DESIGN_SINGLE_PLAYER",
+            "participantCount": 0,
+            "authoritativeSync": false
+          },
+          "F8": {
+            "state": "FAIL",
+            "authority": "EXACT_RUNTIME_PLUS_INDEPENDENT_QA"
+          },
+          "F9": {
+            "state": "FAIL",
+            "authority": "EXACT_ARTIFACT_REGRESSION_FAN_IN"
+          }
+        },
+        "multiplayerRequired": false,
+        "verifiedAt": "2026-09-30T21:50:55.443Z"
+      },
+      "unityF9ReleaseRegressionPassed": false,
+      "unityF9ReleaseRegressionPassedAt": null,
+      "unityCanonicalPublishPending": false,
+      "unityExecutionEvidence": {
+        "version": 3,
+        "platform": "UNITY",
+        "sourceRevision": "561f3077d84db2273fc3d5bbb6fe971d3df444ca",
+        "sourceRootTreeSha": "740fbf2b59da1a8bf0047d4f59b8a1c38f142703",
+        "sourceFingerprint": "16f96eb253d20869018800171a21dbeac127b6ad20e4549d4de86293551f1edb",
+        "buildOrPackagePassed": true,
+        "artifactIdentity": "sha256:cac116de876ef7e4f319dfaee78567df2fd68f35305cbf04eec078b4e4389417",
+        "runtimePassed": false,
+        "independentQaPassed": false,
+        "multiplayerPassed": true,
+        "regressionPassed": false,
+        "f0ToF9Passed": false,
+        "exactRevision": true,
+        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
+        "failureStage": "F1_SERVER_BOOT",
+        "failureSignature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee"
       }
     }
   ],
-  "updatedAt": "2026-09-30T21:51:00.615Z",
+  "updatedAt": "2026-09-30T21:51:04.250Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
