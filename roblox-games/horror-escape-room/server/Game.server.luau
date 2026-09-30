@@ -153,6 +153,7 @@ local function syncRoomState()
  workspace:SetAttribute("RoomMemberCount",count)
  workspace:SetAttribute("RoomMaxPlayers",(C.Room and C.Room.MaxPlayers)or 8)
  workspace:SetAttribute("RoomStartRequested",roomStartRequested)
+ workspace:SetAttribute("RoomAutoStart",roomSolo or roomVisibility=="PUBLIC")
  local selectedMap=mapById(roomSelectedMapId)
  workspace:SetAttribute("RoomSelectedMapId",selectedMap.Id)
  workspace:SetAttribute("RoomSelectedMapName",selectedMap.Name)
@@ -166,6 +167,7 @@ local function syncRoomState()
   player:SetAttribute("RoomMemberCount",count)
   player:SetAttribute("RoomMaxPlayers",(C.Room and C.Room.MaxPlayers)or 8)
   player:SetAttribute("RoomIsHost",roomServer and player.UserId==roomHostUserId)
+  player:SetAttribute("RoomAutoStart",roomSolo or roomVisibility=="PUBLIC")
   player:SetAttribute("RoomSelectedMapId",selectedMap.Id)
   player:SetAttribute("RoomSelectedMapName",selectedMap.Name)
  end
@@ -355,10 +357,10 @@ local function createReservedRoom(p,visibility,solo)
  local selectedMap=mapById(p:GetAttribute("SelectedLobbyMap")or"SCHOOL")
  if studioRoomFallback then
   roomSolo=solo==true
-  roomServer=true;roomCode="000001";roomHostUserId=p.UserId;roomHostName=p.DisplayName;roomVisibility=normalizeRoomVisibility(visibility);roomSelectedMapId=selectedMap.Id;roomStartRequested=true
+  roomServer=true;roomCode="000001";roomHostUserId=p.UserId;roomHostName=p.DisplayName;roomVisibility=normalizeRoomVisibility(visibility);roomSelectedMapId=selectedMap.Id;roomStartRequested=roomSolo or roomVisibility=="PUBLIC"
   roomJoinedAt[p]=os.clock()
   workspace:SetAttribute("StudioRoomFallback",true)
-  p:SetAttribute("LobbySelectionConfirmed",true);roomFeedback(p,"CREATED",roomCode);syncRoomState();syncLobbyState("INTERMISSION")
+  p:SetAttribute("LobbySelectionConfirmed",true);roomFeedback(p,"CREATED",roomCode);syncRoomState();syncLobbyState(roomStartRequested and"INTERMISSION"or"ROOM_WAITING")
   return
  end
  local code=createUniqueRoomCode()
@@ -3152,7 +3154,8 @@ task.spawn(function()
    local expected=math.clamp(math.floor(tonumber(roomExpectedCount)or 1),1,roomMaxPlayers())
    local grace=math.max(2,tonumber(C.Room and C.Room.ArrivalGraceSeconds)or 6)
    local elapsed=roomFirstJoinAt>0 and(os.clock()-roomFirstJoinAt)or grace
-   if #players>=expected or elapsed>=grace then
+   local autoStart=roomSolo or roomVisibility=="PUBLIC"
+   if autoStart and(#players>=expected or elapsed>=grace)then
     roomStartRequested=true
     workspace:SetAttribute("RoomStartRequested",true)
     syncLobbyState("INTERMISSION")
@@ -3160,8 +3163,8 @@ task.spawn(function()
    else
     for _,p in ipairs(players)do
      p:SetAttribute("RoundState","ROOM_WAITING")
-     p:SetAttribute("TimeLeft",math.max(0,math.ceil(grace-elapsed)))
-     roomFeedback(p,"WAITING",string.format("참가자 연결 중 %d/%d",#players,expected))
+     p:SetAttribute("TimeLeft",autoStart and math.max(0,math.ceil(grace-elapsed))or 0)
+     roomFeedback(p,"WAITING",autoStart and string.format("참가자 연결 중 %d/%d",#players,expected)or"친구를 초대한 뒤 방장이 출정을 시작해.")
     end
     syncLobbyState("ROOM_WAITING")
     task.wait(.2)

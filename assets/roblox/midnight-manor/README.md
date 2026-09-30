@@ -20,6 +20,7 @@ Blender 4.5.3의 `bpy`, NumPy, Pillow가 설치된 Python에서 저장소 루트
 ```sh
 python assets/roblox/midnight-manor/build.py --render
 node --test qa/horror-manor.test.mjs
+LUAU_BIN=/path/to/luau node qa/horror-manor-ui-runtime.mjs
 ```
 
 GLB는 Y 위·+Z 정면·스터드 단위다. `import-bounds.json`은 전체 장면의 실제 중심과 폭을 기록한다. 개인 로비의 충돌 경계와 프롬프트는 `server/ManorLobby.luau`에서 관리한다.
@@ -27,3 +28,5 @@ GLB는 Y 위·+Z 정면·스터드 단위다. `import-bounds.json`은 전체 장
 `--render`는 배포할 GLB를 빈 장면에 다시 임포트하고 `generated/review/`에 검수 렌더와 입력 해시를 기록한다. 제작 장면과 내보낸 파일 사이의 재질·배치 차이를 직접 확인하는 절차다.
 
 검증 기록: 모델 계약 7개, Luau 컴파일, Rojo 빌드 통과. 실제 GLB를 다시 임포트한 렌더에서 재질·초상화·NPC 배치를 확인했다. 현재 환경에서는 브라우저 미리보기와 Roblox 모바일 실기·재접속 검증을 실행하지 못했다. 렌더는 실제 게임 스크린샷이 아니다.
+
+메뉴 동작 검사는 실제 클라이언트 코드와 방 시작/대기 코드를 Luau에서 실행한다. 모의 Roblox 서비스로 호스트/참가자 권한, 친구방 대기, 1인·공개방 자동 시작, 클릭 시 전송 액션, 착용 표시, 스크롤 유지 및 전투 진입 시 로비 숨김을 확인한다. 실제 Roblox 접속 검증과는 구분한다.
