@@ -6468,7 +6468,8 @@
       "coding_negative_16orkhm",
       "coding_negative_1ch061h",
       "coding_negative_wszt72",
-      "coding_negative_1fywtq5"
+      "coding_negative_1fywtq5",
+      "coding_negative_rju3nz"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -17084,7 +17085,7 @@
         "verifiedApplications": 8,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 32,
-        "verifiedFailures": 1006,
+        "verifiedFailures": 1007,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1,
@@ -17413,21 +17414,21 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 36,
+            "verifiedFailures": 37,
             "games": {},
             "targets": {},
             "failureGames": {
-              "line-defense": 36
+              "line-defense": 37
             },
             "failureTargets": {
-              "unity": 36
+              "unity": 37
             },
             "failureClasses": {
-              "STUDIO_QUALITY_DELTA": 36
+              "STUDIO_QUALITY_DELTA": 37
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1hjuwu2",
-            "lastUpdatedAt": "2026-09-30T06:12:35.596Z"
+            "lastFailureEvidence": "coding_negative_rju3nz",
+            "lastUpdatedAt": "2026-09-30T06:39:22.650Z"
           },
           "roblox|INVALID_PATH|NO_OP|OTHER|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -17611,8 +17612,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_zenntq",
-        "lastFailureEvidence": "coding_negative_1fywtq5",
-        "lastUpdatedAt": "2026-09-30T06:37:35.099Z"
+        "lastFailureEvidence": "coding_negative_rju3nz",
+        "lastUpdatedAt": "2026-09-30T06:39:22.650Z"
       }
     }
   },
@@ -20365,7 +20366,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-30T06:38:28.292Z",
+    "lastBuiltAt": "2026-09-30T06:39:22.732Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -28625,5 +28626,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-30T06:38:28.292Z"
+  "updatedAt": "2026-09-30T06:39:22.732Z"
 }
