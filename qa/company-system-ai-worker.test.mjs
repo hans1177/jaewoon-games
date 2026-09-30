@@ -7,7 +7,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { runSystemAiWorker } from '../tools/company-system-ai-worker.mjs';
-import { normalizeSystemAiQueue,reserveSystemAiBatch,reclaimStaleSystemAiReservations,applySystemAiResults,requeueSystemAiTask,acceptSystemAiTask,systemAiImpactProfile } from '../tools/company-system-ai-queue.mjs';
+import { normalizeSystemAiQueue,reserveSystemAiBatch,reserveSystemAiTargets,reclaimStaleSystemAiReservations,applySystemAiResults,requeueSystemAiTask,acceptSystemAiTask,systemAiImpactProfile } from '../tools/company-system-ai-queue.mjs';
+import { planMarketing } from '../tools/company-growth-marketing-planner.mjs';
 import { analyzeSystemAiBottlenecks } from '../tools/company-system-ai-bottleneck-sensor.mjs';
 
 function root(){return fs.mkdtempSync(path.join(os.tmpdir(),'company-system-ai-'));}
@@ -47,6 +48,28 @@ test('growth marketing refreshes and regenerates from the latest queue on every 
   assert.ok(refreshIndex<queueIndex&&queueIndex<regenerateIndex);
   assert.ok(regenerateIndex<commitIndex&&commitIndex<pushIndex);
   assert.match(persist,/test "\$pushed" = 1/);
+});
+
+test('owner-exclusive games are neither planned nor reserved by System AI',()=>{
+  const roadmap={ownerCanonicalRules:{ownerExclusiveDevelopment:{gameIds:['horror-escape-room']}}};
+  const planned=planMarketing({
+    catalog:{games:[
+      {id:'horror-escape-room',lifecycleState:'ACTIVE',productionClass:'RELEASE_CONFIRMED'},
+      {id:'line-defense',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}
+    ]},
+    systemQueue:{tasks:[]},
+    roadmap,
+    now:new Date('2026-10-01T00:00:00Z')
+  });
+  assert.deepEqual(planned.added,['marketing-line-defense-pre-release-v1']);
+  const tasks=[
+    {id:'marketing-horror',status:'queued',gameId:'horror-escape-room',responsibleFiles:['company-learning/marketing/horror-escape-room/latest.json']},
+    {id:'marketing-line',status:'queued',gameId:'line-defense',responsibleFiles:['company-learning/marketing/line-defense/latest.json']}
+  ];
+  const targeted=reserveSystemAiTargets({tasks},{ids:['marketing-horror','marketing-line'],excludedGameIds:['horror-escape-room'],reservationId:'owner-scope-test'});
+  assert.deepEqual(targeted.reserved.map(task=>task.id),['marketing-line']);
+  const batch=reserveSystemAiBatch({tasks},{max:2,excludedGameIds:['horror-escape-room'],reservationId:'owner-scope-batch-test'});
+  assert.deepEqual(batch.reserved.map(task=>task.id),['marketing-line']);
 });
 
 test('system AI edits only assigned system file and leaves completion for supervisor',async()=>{

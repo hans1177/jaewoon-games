@@ -23,6 +23,9 @@ function securityRecoveryRepairFiles(rec={}){
 
 function readJson(file,fallback={}){try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}}
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');}
+export function ownerExclusiveSystemAiGameIds(roadmap={}){
+  return unique(roadmap?.ownerCanonicalRules?.ownerExclusiveDevelopment?.gameIds);
+}
 function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)out[body]=true;else out[body.slice(0,at)]=body.slice(at+1);}return out;}
 function normalizeTask(row={}){
   const retryPolicy=clean(row.retryPolicy).toUpperCase()==='UNLIMITED_CAUSAL_REPAIR'?'UNLIMITED_CAUSAL_REPAIR':'BOUNDED_RETRY';
@@ -423,14 +426,15 @@ export function reserveSecurityRecoveryTask(queueInput,{id='',reservationId='',a
   return{queue:{...queue,tasks},reserved:tasks.filter(t=>t.id===taskId),reservationId:rid,coalesced:compacted.coalesced,coalescedGroups:compacted.groups,rewired:compacted.rewired,scopeReconciled:compacted.scopeReconciled};
 }
 
-export function reserveSystemAiBatch(queueInput,{max=16,reservationId='',leaseMinutes=30,at=Date.now(),preferredIds=[]}={}){
+export function reserveSystemAiBatch(queueInput,{max=16,reservationId='',leaseMinutes=30,at=Date.now(),preferredIds=[],excludedGameIds=[]}={}){
   const reclaimed=reclaimStaleSystemAiReservations(queueInput,{leaseMinutes,at});
   const compacted=coalesceQueuedSystemAiDuplicateRepairs(reclaimed.queue,{at});
   const queue=compacted.queue, active=queue.tasks.filter(t=>t.status==='running');
   const profiles=new Map(queue.tasks.map(task=>[task.id,systemAiImpactProfile(task,queue,{at})]));
   const preferredOrder=new Map(unique(preferredIds).map((id,index)=>[id,index]));
   const preferredRank=task=>preferredOrder.has(task.id)?preferredOrder.get(task.id):Number.MAX_SAFE_INTEGER;
-  const candidates=queue.tasks.filter(t=>t.status==='queued'&&dependencyReady(t,queue))
+  const excluded=new Set(unique(excludedGameIds));
+  const candidates=queue.tasks.filter(t=>t.status==='queued'&&!excluded.has(clean(t.gameId))&&dependencyReady(t,queue))
     .sort((a,b)=>preferredRank(a)-preferredRank(b)
       ||(profiles.get(b.id)?.score||0)-(profiles.get(a.id)?.score||0)
       ||rank(b.priority)-rank(a.priority)
@@ -461,17 +465,18 @@ export function reserveSystemAiBatch(queueInput,{max=16,reservationId='',leaseMi
   });
   return{queue:{...queue,tasks},reserved:tasks.filter(t=>ids.has(t.id)),reservationId:rid,reclaimed:reclaimed.reclaimed,coalesced:compacted.coalesced,coalescedGroups:compacted.groups,rewired:compacted.rewired,scopeReconciled:compacted.scopeReconciled,preferredIds:unique(preferredIds),impactProfiles:Object.fromEntries(chosen.map(t=>[t.id,profiles.get(t.id)]))};
 }
-export function reserveSystemAiTargets(queueInput,{ids=[],reservationId='',leaseMinutes=30,at=Date.now()}={}){
+export function reserveSystemAiTargets(queueInput,{ids=[],reservationId='',leaseMinutes=30,at=Date.now(),excludedGameIds=[]}={}){
   const reclaimed=reclaimStaleSystemAiReservations(queueInput,{leaseMinutes,at});
   const compacted=coalesceQueuedSystemAiDuplicateRepairs(reclaimed.queue,{at});
   const queue=compacted.queue,active=queue.tasks.filter(t=>t.status==='running');
-  const wanted=unique(ids);
+  const wanted=unique(ids),excluded=new Set(unique(excludedGameIds));
   if(!wanted.length)throw new Error('SYSTEM_AI_TARGET_IDS_REQUIRED');
   const byId=new Map(queue.tasks.map(t=>[t.id,t]));
   const chosen=[];
   for(const id of wanted){
     const task=byId.get(id);
     if(!task)throw new Error('SYSTEM_AI_TARGET_NOT_FOUND:'+id);
+    if(excluded.has(clean(task.gameId)))continue;
     if(task.status!=='queued')continue;
     if(!dependencyReady(task,queue))throw new Error('SYSTEM_AI_TARGET_DEPENDENCY_NOT_READY:'+id);
     if([...active,...chosen].some(other=>overlap(task,other)))continue;
@@ -570,6 +575,8 @@ export function acceptSystemAiTask(queueInput,{id,evidence=[]}={}){
 export function runSystemAiQueue(args={}){
   const file=clean(args.queue)||'.vibe2/system-ai-queue.json',command=clean(args.command).toLowerCase();
   let queue=normalizeSystemAiQueue(readJson(file,{tasks:[]}));
+  const roadmapFile=clean(args.roadmap)||'company-learning/platform-release-roadmap.json';
+  const excludedGameIds=ownerExclusiveSystemAiGameIds(readJson(roadmapFile,{}));
   if(command==='assign-security-recovery'){
     const recoveryFile=clean(args.recovery);
     if(!recoveryFile)throw new Error('SYSTEM_AI_SECURITY_RECOVERY_FILE_REQUIRED');
@@ -603,13 +610,14 @@ export function runSystemAiQueue(args={}){
       max:Number(args.max||16),
       reservationId:args.reservation,
       leaseMinutes:Number(args['lease-minutes']||30),
-      preferredIds:clean(args.preferred).split(',').map(clean).filter(Boolean)
+      preferredIds:clean(args.preferred).split(',').map(clean).filter(Boolean),
+      excludedGameIds
     });
     writeJson(file,result.queue);if(clean(args.output))writeJson(args.output,{version:1,reservationId:result.reservationId,tasks:result.reserved});
     return{command,...result};
   }
   if(command==='reserve-targets'){
-    const result=reserveSystemAiTargets(queue,{ids:clean(args.ids).split(',').map(clean).filter(Boolean),reservationId:args.reservation,leaseMinutes:Number(args['lease-minutes']||30)});
+    const result=reserveSystemAiTargets(queue,{ids:clean(args.ids).split(',').map(clean).filter(Boolean),reservationId:args.reservation,leaseMinutes:Number(args['lease-minutes']||30),excludedGameIds});
     writeJson(file,result.queue);if(clean(args.output))writeJson(args.output,{version:1,reservationId:result.reservationId,tasks:result.reserved});
     return{command,...result};
   }
