@@ -241,8 +241,8 @@ local oldLighting=nil
 local atmosphere=nil
 local oldAtmosphere=nil
 local oldZoom=nil
-local grade=Instance.new("ColorCorrectionEffect");grade.Name="ManorColor";grade.TintColor=Color3.fromRGB(229,234,244)
-grade.Brightness=-.015;grade.Contrast=.13;grade.Saturation=-.10;grade.Enabled=false;grade.Parent=Lighting
+local grade=Instance.new("ColorCorrectionEffect");grade.Name="ManorColor";grade.TintColor=Color3.fromRGB(255,255,255)
+grade.Brightness=.04;grade.Contrast=0;grade.Saturation=0;grade.Enabled=false;grade.Parent=Lighting
 local bloom=Instance.new("BloomEffect");bloom.Name="ManorCandleBloom";bloom.Intensity=.12;bloom.Size=12;bloom.Threshold=1.8;bloom.Enabled=false;bloom.Parent=Lighting
 visibility=function()
  local round=tostring(p:GetAttribute("RoundState")or"")
@@ -257,9 +257,10 @@ visibility=function()
   status.Text=round=="INTERMISSION"and string.format("출정까지 %d초",p:GetAttribute("TimeLeft")or 0)or string.format("초대 %s · 참가 %d명",p:GetAttribute("RoomCode")or"------",p:GetAttribute("RoomMemberCount")or 1)
  end
  if visible and not oldLighting then
-  oldLighting={ClockTime=Lighting.ClockTime,Brightness=Lighting.Brightness,Ambient=Lighting.Ambient,OutdoorAmbient=Lighting.OutdoorAmbient,FogStart=Lighting.FogStart,FogEnd=Lighting.FogEnd,ExposureCompensation=Lighting.ExposureCompensation}
-  Lighting.ClockTime=0.35;Lighting.Brightness=1.05;Lighting.Ambient=Color3.fromRGB(49,50,65);Lighting.OutdoorAmbient=Color3.fromRGB(52,68,94)
-  Lighting.ExposureCompensation=-.2;Lighting.FogStart=170;Lighting.FogEnd=400
+  oldLighting={ClockTime=Lighting.ClockTime,Brightness=Lighting.Brightness,Ambient=Lighting.Ambient,OutdoorAmbient=Lighting.OutdoorAmbient,FogStart=Lighting.FogStart,FogEnd=Lighting.FogEnd,ExposureCompensation=Lighting.ExposureCompensation,EnvironmentDiffuseScale=Lighting.EnvironmentDiffuseScale,EnvironmentSpecularScale=Lighting.EnvironmentSpecularScale}
+  -- 저택 전체가 환하게 보이는 기본광. 검은 의복·벽지·구석을 밝기로 숨기지 않는다.
+  Lighting.ClockTime=0.35;Lighting.Brightness=2.5;Lighting.Ambient=Color3.fromRGB(190,185,190);Lighting.OutdoorAmbient=Color3.fromRGB(185,195,210)
+  Lighting.ExposureCompensation=.4;Lighting.EnvironmentDiffuseScale=1;Lighting.EnvironmentSpecularScale=.35;Lighting.FogStart=170;Lighting.FogEnd=400
   oldZoom={min=p.CameraMinZoomDistance,max=p.CameraMaxZoomDistance};p.CameraMinZoomDistance=5;p.CameraMaxZoomDistance=18
   atmosphere=Lighting:FindFirstChildOfClass("Atmosphere")
   if atmosphere then oldAtmosphere={Density=atmosphere.Density,Haze=atmosphere.Haze};atmosphere.Density=.035;atmosphere.Haze=.15 end
