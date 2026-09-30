@@ -157,12 +157,15 @@ end
 
 local function addBreathing(controller, targets, moving)
 	local breath = 0.5 + 0.5 * math.sin(controller.time * 1.52)
-	if moving then
-		return
+	local chestLift = breath * (moving and 0.010 or 0.026)
+	add(targets, "ChestJoint", pose(0, chestLift, 0, breath * (moving and 0.28 or 0.90), 0, 0))
+	add(targets, "BodyJoint", pose(0, breath * (moving and 0.004 or 0.012), 0, -breath * 0.32, 0, 0))
+	add(targets, "BellyJoint", pose(0, -breath * 0.015, breath * 0.012, -breath * 0.32, 0, 0))
+	add(targets, "ChestRuffJoint", pose(0, breath * 0.012, -breath * 0.009, breath * 0.38, 0, 0))
+	add(targets, "RumpJoint", pose(0, breath * 0.006, 0, -breath * 0.14, 0, 0))
+	if not moving then
+		add(targets, "HeadJoint", pitch(math.sin(controller.time * 0.63) * 0.9))
 	end
-	add(targets, "ChestJoint", pose(0, breath * 0.022, 0, breath * 0.85, 0, 0))
-	add(targets, "BodyJoint", pose(0, breath * 0.010, 0, -breath * 0.30, 0, 0))
-	add(targets, "HeadJoint", pitch(math.sin(controller.time * 0.63) * 0.9))
 end
 
 local function locomotionTargets(controller, targets, dt, requestedSpeed)
@@ -224,6 +227,9 @@ local function locomotionTargets(controller, targets, dt, requestedSpeed)
 
 	add(targets, "BodyJoint", pose(0, bob, 0, pelvisPitch, 0, pelvisRoll + controller.turnLean * 5.5))
 	add(targets, "ChestJoint", pose(0, -bob * 0.14, 0, chestPitch - controller.spineLag * 3.5, 0, shoulderRoll - controller.turnLean * 3.2))
+	add(targets, "BellyJoint", pose(0, -compression * 0.020 * amplitude, suspension * 0.015 * amplitude, -pelvisPitch * 0.22, 0, -pelvisRoll * 0.18))
+	add(targets, "RumpJoint", pose(0, compression * 0.013 * amplitude, 0, pelvisPitch * 0.16, 0, pelvisRoll * 0.22))
+	add(targets, "ChestRuffJoint", pose(0, math.abs(suspension) * 0.011 * amplitude, -compression * 0.009 * amplitude, chestPitch * 0.18, 0, shoulderRoll * 0.12))
 
 	-- 큰 동물도 몸통이 판자처럼 움직이지 않도록 척추와 머리가 한 박자 늦게 따라온다.
 	local headCounter = moving and (-suspension * 3.0 - lateral * 0.9) * amplitude or math.sin(controller.time * 0.74) * 1.1
@@ -259,6 +265,10 @@ local function alertTargets(controller, targets)
 	add(targets, "HeadJoint", pose(0, 0, 0, -9 * t, math.sin(controller.time * 0.8) * 3 * t, 0))
 	add(targets, "EarLJoint", roll(-7 * t))
 	add(targets, "EarRJoint", roll(7 * t))
+	add(targets, "BrowLJoint", roll(-10 * t))
+	add(targets, "BrowRJoint", roll(10 * t))
+	add(targets, "CheekLJoint", pose(0, 0.008 * t, -0.006 * t, 0, 0, -2 * t))
+	add(targets, "CheekRJoint", pose(0, 0.008 * t, -0.006 * t, 0, 0, 2 * t))
 	add(targets, "TailBaseJoint", pitch(7 * t))
 end
 
@@ -287,6 +297,12 @@ local function attackTargets(controller, targets)
 		add(targets, "HeadJoint", pitch(10 * anticipate - 22 * contact + 7 * follow))
 		add(targets, "FLHip", pitch(-44 * contact + 12 * follow))
 		add(targets, "FLKnee", pitch(18 * contact))
+		add(targets, "BrowLJoint", pose(0, 0, 0, 0, 0, 14 * contact))
+		add(targets, "BrowRJoint", pose(0, 0, 0, 0, 0, -14 * contact))
+		add(targets, "CheekLJoint", pose(0, -0.010 * contact, -0.012 * contact, 0, 0, -3 * follow))
+		add(targets, "CheekRJoint", pose(0, -0.010 * contact, -0.012 * contact, 0, 0, 3 * follow))
+		add(targets, "BellyJoint", pose(0, -0.028 * anticipate + 0.018 * contact, 0.025 * follow, 4 * anticipate - 5 * contact, 0, 0))
+		add(targets, "ChestRuffJoint", pose(0, 0.020 * contact, -0.018 * contact, -4 * contact, 0, 0))
 	elseif gait == "LOW_HEAVY" then
 		add(targets, "BodyJoint", pitch(9 * anticipate - 15 * contact))
 		add(targets, "ChestJoint", pose(0, 0, -0.12 * contact, 13 * anticipate - 22 * contact, 0, 0))
