@@ -5,15 +5,16 @@ import fs from 'node:fs';
 
 test('central v497 preserves result callbacks while reducing Vibe control queue pressure',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  assert.equal(policy.version,497);
+  assert.equal(policy.version,498);
   const gate=policy.developmentSpeedExecution?.controlPlaneQueueBacklogMitigation||{};
   assert.equal(gate.status,'ENABLED');
   assert.equal(gate.neuronCompletionCallback?.resultBearing,true);
   assert.equal(gate.neuronCompletionCallback?.coalescingForbidden,true);
-  assert.equal(gate.neuronCompletionCallback?.reserveRunnerPool,'ubuntu-24.04-arm');
+  assert.equal(gate.neuronCompletionCallback?.reserveRunnerPool,'ubuntu-latest');
   assert.equal(gate.fanInRefill?.resultBearing,false);
   assert.equal(gate.fanInRefill?.coalesceByExecutionLane,true);
-  assert.equal(gate.fanInRefill?.reserveRunnerPool,'ubuntu-24.04-arm');
+  assert.equal(gate.fanInRefill?.reserveRunnerPool,'ubuntu-latest');
+  assert.equal(gate.fanInRunnerPool,'ubuntu-latest');
   assert.equal(gate.qualityOrEvidenceGateWeakeningForbidden,true);
 });
 
@@ -23,5 +24,6 @@ test('continuous core coalesces only stateless refill and moves callback reserve
   assert.match(workflow,/github\.event\.action == 'vibe2-fanin-refill' \|\| github\.event\.action == 'vibe2-neuron-complete'/);
   assert.match(workflow,/vibe2-neuron-complete'[\s\S]*'ubuntu-24\.04-arm'/);
   assert.doesNotMatch(workflow,/github\.event\.action == 'vibe2-neuron-complete' && format\('vibe2-fanin-refill-/);
+  assert.match(workflow,/fan_in:[\\s\\S]*runs-on: ubuntu-latest/);
   assert.match(workflow,/cancel-in-progress: false/);
 });

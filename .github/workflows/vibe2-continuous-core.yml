@@ -100,9 +100,9 @@ env:
 
 jobs:
   reserve:
-    # Result callbacks and stateless refills use the ARM control pool so ubuntu-slim reserve pressure cannot delay fan-in.
-    # Push/manual reserve stays on slim; heavy game workers remain on their existing execution pools.
-    runs-on: ${{ (github.event_name == 'repository_dispatch' && (github.event.action == 'vibe2-fanin-refill' || github.event.action == 'vibe2-neuron-complete') && 'ubuntu-24.04-arm' || 'ubuntu-slim') }}
+    # Result callbacks and stateless refills use ubuntu-latest because the ARM control pool was observed queued
+    # while ubuntu-latest game workers were actively running. Push/manual reserve stays on slim.
+    runs-on: ${{ (github.event_name == 'repository_dispatch' && (github.event.action == 'vibe2-fanin-refill' || github.event.action == 'vibe2-neuron-complete') && 'ubuntu-latest' || 'ubuntu-slim') }}
     timeout-minutes: 7
     # 같은 레인의 상태 없는 보충 요청만 예약 단계에서 합친다.
     # 완료 결과 전달과 게임 작업은 실행별로 독립 진행한다.
@@ -2233,8 +2233,9 @@ jobs:
   fan_in:
     needs: [reserve, worker]
     if: always() && (needs.reserve.outputs.task_review_required == 'true' || needs.reserve.outputs.worker_count != '0' || needs.reserve.outputs.stranded_review_run != '')
-    # State fan-in stays on the game-control pool; heavy workers remain ubuntu-latest.
-    runs-on: ubuntu-24.04-arm
+    # Fan-in is control-plane work. Keep it on the currently available ubuntu-latest pool so completed
+    # game results are persisted promptly instead of waiting behind the constrained ARM control queue.
+    runs-on: ubuntu-latest
     timeout-minutes: 8
     concurrency:
       # Fan-in jobs must not share one pending GitHub concurrency slot.
