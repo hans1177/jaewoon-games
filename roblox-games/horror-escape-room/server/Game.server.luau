@@ -93,6 +93,7 @@ local botSequence=0
 local cooldown={}
 local dashCooldown={}
 local infectAttackCooldown={}
+local humanAbilityCooldown={}
 local energyStationReady={}
 local ghostSeenThisRound={}
 local arena=nil
@@ -2947,6 +2948,104 @@ local function purify(p)
   if removeBot(targetBot)then awardContribution(p,(C.Reward and C.Reward.PurifyAICoins)or 1);p:SetAttribute("FeedbackEvent","PURIFY_HIT:"..tostring(math.floor(os.clock()*1000)))end
  end
 end
+local function humanAbilityProfile(formInfo)
+ local abilityId=formInfo and formInfo.ActiveAbility or nil
+ local profile=abilityId and C.HumanAbilities and C.HumanAbilities[abilityId]or nil
+ return abilityId,profile
+end
+
+local function humanAbilityTargets(origin,radius)
+ local rows={}
+ for _,player in ipairs(Players:GetPlayers())do
+  if player:GetAttribute("Role")=="MONSTER"then
+   local rr=root(player)
+   if rr then
+    local distance=(rr.Position-origin).Magnitude
+    if distance<=radius then table.insert(rows,{player=player,pos=rr.Position,distance=distance})end
+   end
+  end
+ end
+ for _,b in ipairs(bots)do
+  if b.role=="MONSTER"and b.part and b.part.Parent then
+   local distance=(b.part.Position-origin).Magnitude
+   if distance<=radius then table.insert(rows,{bot=b,pos=b.part.Position,distance=distance})end
+  end
+ end
+ table.sort(rows,function(a,b)return a.distance<b.distance end)
+ return rows
+end
+
+local function applyHumanControlTarget(row,slowSpeed,duration)
+ if row.player then
+  speed(row.player,slowSpeed)
+  task.delay(duration,function()if row.player.Parent and row.player:GetAttribute("Role")=="MONSTER"then speed(row.player,19)end end)
+ elseif row.bot then
+  row.bot.speed=math.min(row.bot.speed or row.bot.baseSpeed or 18,slowSpeed)
+  row.bot.speedResetAt=math.max(row.bot.speedResetAt or 0,os.clock()+duration)
+ end
+end
+
+local function humanAbility(p)
+ if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"then return end
+ local formInfo=humanForm(p)
+ local abilityId,profile=humanAbilityProfile(formInfo)
+ if not abilityId or not profile then return end
+ local rr=root(p);if not rr then return end
+ local now=os.clock()
+ local cooldownSeconds=math.max(1,tonumber(profile.Cooldown)or 8)
+ local last=humanAbilityCooldown[p]
+ if last and now-last<cooldownSeconds then return end
+ local radius=math.max(1,tonumber(profile.Radius)or tonumber(profile.Range)or 12)
+ local rows=humanAbilityTargets(rr.Position,radius)
+ if #rows==0 then p:SetAttribute("EnergyFeedback","NO_TARGET:HUMAN_ABILITY");return end
+ local cost=math.max(0,tonumber(profile.Cost)or 30)
+ if not spendEnergy(p,cost,"HUMAN_ABILITY")then return end
+ humanAbilityCooldown[p]=now
+ p:SetAttribute("HumanAbilityReadyAt",workspace:GetServerTimeNow()+cooldownSeconds)
+ local targetPos=rows[1]and rows[1].pos or nil
+
+ if abilityId=="SIGNAL_JAM"then
+  local drain=math.max(0,tonumber(profile.EnergyDrain)or 20)
+  for _,row in ipairs(rows)do
+   if row.player then setEnergy(row.player,energyOf(row.player)-drain)
+   elseif row.bot then row.bot.energy=math.max(0,(row.bot.energy or 0)-drain)end
+  end
+ elseif abilityId=="OVERLOAD"or abilityId=="CAMERA_FLASH"or abilityId=="SHOCK_BATON"then
+  local slowSpeed=math.max(0,tonumber(profile.SlowSpeed)or 10)
+  local duration=math.max(.2,tonumber(profile.Duration)or 1.2)
+  for _,row in ipairs(rows)do applyHumanControlTarget(row,slowSpeed,duration)end
+ elseif abilityId=="IMPACT_BAG"then
+  local row=rows[1]
+  local force=math.max(10,tonumber(profile.Knockback)or 42)
+  if row then
+   local delta=row.pos-rr.Position
+   local flat=Vector3.new(delta.X,0,delta.Z)
+   if flat.Magnitude>.01 then
+    local dir=flat.Unit
+    if row.player then
+     local targetRoot=root(row.player)
+     if targetRoot then
+      movementGraceUntil[row.player]=now+.55
+      targetRoot.AssemblyLinearVelocity=dir*force+Vector3.new(0,4,0)
+     end
+    elseif row.bot then
+     local step=math.min(8,force*.14)
+     local current=row.bot.part.Position
+     local target=current+dir*step
+     setBotCFrame(row.bot,CFrame.lookAt(target,target+dir))
+    end
+   end
+  end
+ end
+ local stamp=tostring(math.floor(now*1000))
+ p:SetAttribute("HumanAbilityFeedback",(profile.Name or abilityId)..":"..stamp)
+ p:SetAttribute("FeedbackEvent","HUMAN_ABILITY:"..abilityId..":"..stamp)
+ remote:FireAllClients("HUMAN_ABILITY_EFFECT",{
+  Ability=abilityId,Effect=profile.Effect or abilityId,FormId=formInfo.Id,
+  Origin=rr.Position,Target=targetPos,UserId=p.UserId,Stamp=stamp,
+ })
+end
+
 local function survivorDash(p)
  if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"then return end
  local hf=humanForm(p);local now=os.clock();local cd=math.max(3,C.SurvivorDashCooldown+(hf.DashCooldownBonus or 0))
@@ -3203,6 +3302,7 @@ remote.OnServerEvent:Connect(function(p,a,value)
  elseif a==C.Actions.SOLO_SURVIVOR and #Players:GetPlayers()==1 and state~="RUNNING"then p:SetAttribute("MonsterPreference","SURVIVOR");p:SetAttribute("SoloRole","SURVIVOR");p:SetAttribute("LobbySelectionConfirmed",true);soloStartRequested=true
  elseif a==C.Actions.PURIFY or a==C.Actions.RESCUE then purify(p)
  elseif a==C.Actions.DASH then survivorDash(p)
+ elseif a==C.Actions.HUMAN_ABILITY then humanAbility(p)
  elseif a==C.Actions.INFECT_ATTACK then infectAttack(p)
  elseif a==C.Actions.ABILITY then ability(p)
  elseif a==C.Actions.NEXT_MONSTER then nextMonster(p)
@@ -3216,7 +3316,7 @@ remote.OnServerEvent:Connect(function(p,a,value)
  elseif a==C.Actions.QUICK_JOIN_FRIEND then quickJoinRoom(p,true)
  elseif a==C.Actions.START_ROOM then startRoomMatch(p)
  elseif a==C.Actions.LEAVE_ROOM then leaveReservedRoom(p)end
- if a==C.Actions.PURIFY or a==C.Actions.RESCUE or a==C.Actions.DASH or a==C.Actions.INFECT_ATTACK or a==C.Actions.ABILITY then foundationCheckpoint("CORE_LOOP_READY",p,{action=a})end
+ if a==C.Actions.PURIFY or a==C.Actions.RESCUE or a==C.Actions.DASH or a==C.Actions.HUMAN_ABILITY or a==C.Actions.INFECT_ATTACK or a==C.Actions.ABILITY then foundationCheckpoint("CORE_LOOP_READY",p,{action=a})end
  broadcastMultiplayerSync(p)
 end)
 
@@ -3338,7 +3438,7 @@ Players.PlayerRemoving:Connect(function(p)
  local leavingWasHost=roomServer and p.UserId==roomHostUserId
  local rr=root(p)
  local leavingPos=rr and rr.Position or(leavingRole=="MONSTER"and monsterSpawns[1]or survivorSpawns[1])
- save(p);for _,bay in ipairs(lobbyQueueBays)do bay.players[p]=nil end;cooldown[p]=nil;dashCooldown[p]=nil;infectAttackCooldown[p]=nil;energyStationReady[p]=nil;ghostSeenThisRound[p]=nil;roomActionLast[p]=nil;roomJoinedAt[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil;purifyCooldown[p]=nil
+ save(p);for _,bay in ipairs(lobbyQueueBays)do bay.players[p]=nil end;cooldown[p]=nil;dashCooldown[p]=nil;infectAttackCooldown[p]=nil;humanAbilityCooldown[p]=nil;energyStationReady[p]=nil;ghostSeenThisRound[p]=nil;roomActionLast[p]=nil;roomJoinedAt[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil;purifyCooldown[p]=nil
  task.defer(function()
   if state=="RUNNING"and arena and arena.Parent and(leavingRole=="MONSTER"or leavingRole=="SURVIVOR")then
    bot(leavingRole,leavingPos)
