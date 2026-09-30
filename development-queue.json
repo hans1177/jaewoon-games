@@ -60,7 +60,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-30T12:07:02.632Z",
+      "updatedAt": "2026-09-30T13:56:27.588Z",
       "robloxSourceCommit": "b0c2a716f654aca3c0930170a4b2f51969df0847",
       "robloxSourceBootstrapPassedAt": "2026-09-30T12:07:02.632Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -1684,7 +1684,7 @@
         "dedicatedPlaceId": "126302702438348",
         "completedAt": "2026-09-30T10:16:42.257Z"
       },
-      "robloxInternalReleasePublished": true,
+      "robloxInternalReleasePublished": false,
       "robloxInternalPlaytestPassed": false,
       "robloxInternalPlaytestPassedAt": null,
       "robloxStudioLocalPlayRepairRequired": false,
@@ -4833,8 +4833,8 @@
       },
       "robloxProjectPath": "roblox-games/village-dungeons",
       "unityProjectPath": "unity-games/village-dungeons",
-      "targetSourcePath": "roblox-games/village-dungeons",
-      "sourcePath": "roblox-games/village-dungeons",
+      "targetSourcePath": "unity-games/village-dungeons",
+      "sourcePath": "unity-games/village-dungeons",
       "designBaselineSource": "design/village-dungeons/2026-09-19/design-revised.json",
       "designDate": "2026-09-19",
       "minimumDesignContract": {
@@ -4870,7 +4870,7 @@
       "currentStep": "REPAIR_REQUIRED",
       "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-30T12:52:32.149Z",
+      "updatedAt": "2026-09-30T13:56:27.588Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -29099,7 +29099,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-30T13:55:43.130Z",
+  "updatedAt": "2026-09-30T13:56:27.588Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -29165,7 +29165,5 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1,
-  "robloxSourceParallelism": null,
-  "robloxTechnicalParallelism": null
+  "executionContractVersion": 1
 }
