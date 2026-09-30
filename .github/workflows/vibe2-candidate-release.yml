@@ -624,6 +624,7 @@ jobs:
       SOURCE_ROOT: ${{ needs.inspect.outputs.source_root }}
       CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
       PRODUCTION_CLASS: ${{ needs.inspect.outputs.production_class }}
+      BASE_SHA: ${{ needs.inspect.outputs.base_sha }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -639,8 +640,9 @@ jobs:
           set -euo pipefail
           [[ "$GAME_ID" =~ ^[a-zA-Z0-9_-]+$ ]]
           [[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
           test "$SOURCE_ROOT" = "roblox-games/$GAME_ID"
-          git fetch --no-tags --depth=1 origin "$CANDIDATE_SHA" +refs/heads/company-runtime:refs/remotes/origin/company-runtime --quiet
+          git fetch --no-tags --depth=1 origin "$CANDIDATE_SHA" "$BASE_SHA" +refs/heads/company-runtime:refs/remotes/origin/company-runtime --quiet
           mkdir -p /tmp/roblox-candidate/context /tmp/roblox-candidate/package/packages /tmp/roblox-candidate/package/results
           git show origin/company-runtime:development-queue.json > /tmp/roblox-candidate/runtime.json
           node <<'NODE'
@@ -671,7 +673,34 @@ jobs:
           curl -fsSL --retry 3 -o /tmp/luau.zip https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
           echo '8a9b4b381021722c82d6e6cda0964b5c9e7f354ec1035fcd8b657acc22e49247  /tmp/luau.zip' | sha256sum -c -
           unzip -q /tmp/luau.zip -d /tmp/luau-bin
-          chmod +x /tmp/rojo-bin/rojo /tmp/luau-bin/luau-compile
+          chmod +x /tmp/rojo-bin/rojo /tmp/luau-bin/luau-compile /tmp/luau-bin/luau-ast
+          VIBE2_LUAU_COMPILER=/tmp/luau-bin/luau-compile node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import os from 'node:os';
+          import path from 'node:path';
+          import {execFileSync} from 'node:child_process';
+          import {validateCandidateSyntax} from './tools/vibe2-source-worker.mjs';
+          const {BASE_SHA:base,CANDIDATE_SHA:head,SOURCE_ROOT:root}=process.env;
+          const files=execFileSync('git',['diff','--name-only','--no-renames','-z',base,head,'--',root],{encoding:'utf8'}).split('\0').filter(file=>/\.(?:lua|luau)$/i.test(file));
+          const baseline=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-release-source-'));
+          try{
+            const candidate={edits:[],newFiles:[],replaceFiles:[]};
+            for(const file of files){
+              if(!file.startsWith(root+'/'))throw Error('candidate-source-boundary-invalid');
+              const relative=file.slice(root.length+1);
+              const before=execFileSync('git',['ls-tree','--name-only',base,'--',file],{encoding:'utf8'}).trim();
+              if(before){
+                const original=path.join(baseline,relative);
+                fs.mkdirSync(path.dirname(original),{recursive:true});
+                fs.writeFileSync(original,execFileSync('git',['show',base+':'+file]));
+              }
+              const after=execFileSync('git',['ls-tree','--name-only',head,'--',file],{encoding:'utf8'}).trim();
+              candidate.replaceFiles.push({path:relative,content:after?execFileSync('git',['show',head+':'+file],{encoding:'utf8'}):''});
+            }
+            const result=validateCandidateSyntax({candidate,sourceRoot:baseline,target:'roblox',luauCompiler:process.env.VIBE2_LUAU_COMPILER});
+            console.log('VIBE2_CANDIDATE_SOURCE_CHANGE='+JSON.stringify({baseSha:base,candidateSha:head,...result}));
+          }finally{fs.rmSync(baseline,{recursive:true,force:true});}
+          NODE
       - name: Build candidate package before runtime verification
         shell: bash
         run: |

@@ -9,6 +9,44 @@ import { execFileSync } from 'node:child_process';
 const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 const releaseWorkflow=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
 
+test('Luau compiler release gate checks exact candidate trees before package and Studio work',{skip:!process.env.VIBE2_TEST_LUAU_COMPILER},()=>{
+  const block=releaseWorkflow.match(/VIBE2_LUAU_COMPILER=\/tmp\/luau-bin\/luau-compile node --input-type=module <<'NODE'\n([\s\S]*?)\n          NODE/);
+  assert.ok(block);
+  const script=block[1].replace(/^ {10}/gm,'');
+  assert.ok(releaseWorkflow.indexOf(block[0])<releaseWorkflow.indexOf('      - name: Build candidate package before runtime verification'));
+  assert.match(releaseWorkflow,/needs: \[inspect, roblox-package\]/);
+  assert.match(releaseWorkflow,/git fetch --no-tags --depth=1 origin "\$CANDIDATE_SHA" "\$BASE_SHA"/);
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'release-source-delta-'));
+  const root='roblox-games/demo',relative=root+'/client/Game.client.luau';
+  const git=(...args)=>execFileSync('git',args,{cwd:temp,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
+  try{
+    fs.symlinkSync(path.resolve('tools'),path.join(temp,'tools'),'dir');
+    fs.mkdirSync(path.dirname(path.join(temp,relative)),{recursive:true});
+    git('init','-b','main');git('config','user.name','QA');git('config','user.email','qa@example.invalid');
+    const source='local function reportNativeFoundationReady()\n  local character = player.Character or player.CharacterAdded:Wait()\n  return character\nend\nreturn reportNativeFoundationReady()\n';
+    fs.writeFileSync(path.join(temp,relative),source);git('add',root);git('commit','-qm','baseline');
+    const base=git('rev-parse','HEAD');
+    for(const [replacement,reject] of [
+      [source.replace('  local character','local character'),true],
+      ['-- comment-only change\n'+source,true],
+      [source.replace('  return character','  character:SetAttribute("NativeReady",true)\n  return character'),false]
+    ]){
+      fs.writeFileSync(path.join(temp,relative),replacement);git('add',root);git('commit','-qm','candidate');
+      const head=git('rev-parse','HEAD');
+      const run=()=>execFileSync(process.execPath,['--input-type=module','-e',script],{cwd:temp,encoding:'utf8',stdio:['ignore','pipe','pipe'],env:{...process.env,BASE_SHA:base,CANDIDATE_SHA:head,SOURCE_ROOT:root,VIBE2_LUAU_COMPILER:process.env.VIBE2_TEST_LUAU_COMPILER}});
+      if(reject)assert.throws(run,error=>String(error.stderr).includes('변경 없는 edit: LUAU_AST_UNCHANGED'));
+      else{
+        const evidence=JSON.parse(run().trim().split('VIBE2_CANDIDATE_SOURCE_CHANGE=')[1]);
+        assert.equal(evidence.baseSha,base);assert.equal(evidence.candidateSha,head);
+        assert.equal(evidence.runtimeVerified,false);
+        assert.deepEqual(evidence.structuralChangedFiles,['client/Game.client.luau']);
+      }
+      assert.equal(fs.readFileSync(path.join(temp,relative),'utf8'),replacement);
+      assert.equal(git('status','--porcelain','--',root),'');
+    }
+  }finally{fs.rmSync(temp,{recursive:true,force:true});}
+});
+
 test('fast recovery CLI and workflow do not wake again for historical queued recovery evidence',()=>{
   const fast=fs.readFileSync('.github/workflows/vibe2-recovery-fast.yml','utf8');
   const assignment=fast.match(/^            (vibe_requeued=.*)$/m)?.[1];
