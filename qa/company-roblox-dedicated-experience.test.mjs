@@ -129,7 +129,7 @@ test('dedicated Roblox project titles match the published Experience titles',()=
   const expected={
     'cozy-island':'포근섬: 작은 왕국 키우기',
     'daechung-rpg':'5포탈 RPG: 던전 파티',
-    'horror-escape-room':'심야 감염전 [4대4]',
+    'horror-escape-room':'심야 대탈출',
   };
   for(const [gameId,title] of Object.entries(expected)){
     const project=JSON.parse(fs.readFileSync(new URL(`../roblox-games/${gameId}/default.project.json`,import.meta.url),'utf8'));
