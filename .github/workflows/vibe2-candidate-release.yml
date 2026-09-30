@@ -764,6 +764,7 @@ jobs:
     if: needs.inspect.outputs.decision == 'roblox'
     uses: ./.github/workflows/company-development-roblox-post-runtime-qa.yml
     with:
+      run_studio: true
       game_id: ${{ needs.inspect.outputs.game_id }}
       candidate_revision: ${{ needs.inspect.outputs.candidate_sha }}
       control_revision: ${{ needs.inspect.outputs.control_sha }}

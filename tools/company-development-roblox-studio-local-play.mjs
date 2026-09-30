@@ -5,6 +5,7 @@ import crypto from 'node:crypto';
 import readline from 'node:readline';
 import {spawn,spawnSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
+import {ownerDevelopmentHeld} from './vibe2-queue-control.mjs';
 
 const clean=v=>String(v??'').trim();
 const bool=v=>String(v??'').toLowerCase()==='true';
@@ -274,6 +275,10 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
   for(const item of queue?.items||[]){
     if(requested&&clean(item?.gameId)!==requested)continue;
     if(clean(item?.status)==='DISABLED'||clean(item?.lifecycleState)==='DISABLED')continue;
+    if(ownerDevelopmentHeld(roadmap,item?.gameId,'roblox')){
+      console.log('ROBLOX_STUDIO_MCP_OWNER_HELD='+clean(item?.gameId));
+      continue;
+    }
 
     const persistedCandidate=item?.robloxRuntimeCandidateEvidence||{};
     const internal=item?.robloxInternalReleaseEvidence||{};

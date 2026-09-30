@@ -339,6 +339,9 @@ test('Roblox candidate static validation precedes promotion without claiming act
   const promoteStart=releaseWorkflow.indexOf('  roblox-release:');
   assert.ok(packageStart>0&&packageStart<studioStart&&studioStart<promoteStart);
   const build=releaseWorkflow.slice(packageStart,studioStart);
+  const studio=releaseWorkflow.slice(studioStart,promoteStart);
+  assert.match(studio,/needs: \[inspect, roblox-package\]/);
+  assert.match(studio,/with:\n      run_studio: true/);
   assert.match(build,/company-development-roblox-package\.mjs/);
   assert.match(build,/company-development-roblox-build-preflight\.mjs/);
   assert.match(build,/company-development-roblox-headless-fast-mvp\.mjs/);

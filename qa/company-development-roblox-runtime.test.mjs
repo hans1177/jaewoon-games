@@ -937,8 +937,8 @@ test('F0-passed batch candidates collapse to one foundation scan while exact ret
   assert.match(workflow,/name: Route F0-passed artifacts to internal Studio QA without pre-F9 server publish[\s\S]*?if: always\(\)/);
   assert.match(workflow,/ROBLOX_LOCAL_F0_QA_BATCH_SCAN=DISPATCHED:/);
   assert.match(workflow,/ROBLOX_LOCAL_F0_QA_BATCH_SCAN=DEDUPED_ACTIVE:/);
-  assert.match(workflow,/gh workflow run company-development-roblox-post-runtime-qa\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$REQUESTED_GAME_ID"/);
-  assert.match(workflow,/gh workflow run company-development-roblox-post-runtime-qa\.yml --repo "\$GITHUB_REPOSITORY" --ref main\n/);
+  assert.match(workflow,/gh workflow run company-development-roblox-post-runtime-qa\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$REQUESTED_GAME_ID" -f run_studio=true/);
+  assert.match(workflow,/gh workflow run company-development-roblox-post-runtime-qa\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f run_studio=true\n/);
   assert.match(workflow,/ROBLOX_LOCAL_F0_QA_CANDIDATE_COUNT=/);
   assert.match(workflow,/ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED/);
   assert.match(workflow,/ROBLOX_ONLY_FINAL_F9_SERVER_PUBLISH=YES/);
@@ -966,8 +966,8 @@ test('pending F0 batch dispatch routes through one local Studio QA scan before F
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
   assert.match(workflow,/Route F0-passed artifacts to internal Studio QA without pre-F9 server publish/);
   assert.match(workflow,/ROBLOX_LOCAL_F0_QA_BATCH_SCAN=DISPATCHED:/);
-  assert.match(workflow,/gh workflow run company-development-roblox-post-runtime-qa\.yml --repo "\$GITHUB_REPOSITORY" --ref main\n/);
-  assert.match(workflow,/gh workflow run company-development-roblox-post-runtime-qa\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$REQUESTED_GAME_ID"/);
+  assert.match(workflow,/gh workflow run company-development-roblox-post-runtime-qa\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f run_studio=true\n/);
+  assert.match(workflow,/gh workflow run company-development-roblox-post-runtime-qa\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$REQUESTED_GAME_ID" -f run_studio=true/);
   assert.match(workflow,/ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED/);
   assert.match(workflow,/ROBLOX_ONLY_FINAL_F9_SERVER_PUBLISH=YES/);
   assert.doesNotMatch(workflow,/publish_stage=validation/);
@@ -1057,7 +1057,7 @@ test('pre-F9 local Studio QA uses one batch scan while exact retry remains separ
   assert.match(persist,/group: roblox-private-runtime-dispatch-\$\{\{ inputs\.game_id \|\| github\.run_id \}\}/);
   assert.match(persist,/Route F0-passed artifacts to internal Studio QA without pre-F9 server publish/);
   assert.match(persist,/ROBLOX_LOCAL_F0_QA_BATCH_SCAN=DISPATCHED:/);
-  assert.match(persist,/gh workflow run company-development-roblox-post-runtime-qa\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$REQUESTED_GAME_ID"/);
+  assert.match(persist,/gh workflow run company-development-roblox-post-runtime-qa\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$REQUESTED_GAME_ID" -f run_studio=true/);
   assert.match(persist,/ROBLOX_LOCAL_F0_QA_DISPATCH=DEDUPED_ACTIVE:/);
   assert.match(persist,/ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED/);
   assert.doesNotMatch(persist,/publish_stage=validation/);
