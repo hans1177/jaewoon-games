@@ -469,6 +469,216 @@ export function createDuelCombatAuthoringRecipe({
   });
 }
 
+export const SURVIVAL_PLAYER_MOTION_PACK=Object.freeze({
+  locomotion:freezeList([
+    'SURVIVAL_IDLE_RELAXED','SURVIVAL_IDLE_WEIGHT_SHIFT','SURVIVAL_WALK_FORWARD','SURVIVAL_WALK_BACK',
+    'SURVIVAL_STRAFE_LEFT','SURVIVAL_STRAFE_RIGHT','SURVIVAL_JOG','SURVIVAL_RUN','SURVIVAL_SPRINT',
+    'SURVIVAL_START','SURVIVAL_STOP','SURVIVAL_TURN_45','SURVIVAL_TURN_90','SURVIVAL_TURN_180',
+    'SURVIVAL_JUMP_START','SURVIVAL_JUMP_AIR','SURVIVAL_LAND','SURVIVAL_CROUCH_IDLE','SURVIVAL_CROUCH_WALK'
+  ]),
+  tool:freezeList([
+    'SURVIVAL_TOOL_EQUIP','SURVIVAL_TOOL_UNEQUIP','SURVIVAL_AXE_CHOP_R','SURVIVAL_AXE_CHOP_L',
+    'SURVIVAL_PICKAXE_SWING','SURVIVAL_HAMMER_SWING','SURVIVAL_SPEAR_THRUST','SURVIVAL_TOOL_READY'
+  ]),
+  interaction:freezeList([
+    'SURVIVAL_PICKUP_GROUND','SURVIVAL_GATHER_LOW','SURVIVAL_INTERACT_FORWARD','SURVIVAL_OPEN_CONTAINER',
+    'SURVIVAL_CARRY_LIGHT','SURVIVAL_PLACE_OBJECT'
+  ]),
+  reaction:freezeList([
+    'SURVIVAL_HIT_FRONT','SURVIVAL_HIT_BACK','SURVIVAL_HIT_LEFT','SURVIVAL_HIT_RIGHT',
+    'SURVIVAL_STAGGER','SURVIVAL_KNOCKDOWN','SURVIVAL_GET_UP'
+  ]),
+  death:freezeList(['SURVIVAL_DEATH_FRONT','SURVIVAL_DEATH_BACK','SURVIVAL_DEATH_SIDE'])
+});
+
+const wildlifePack=pack=>Object.freeze(Object.fromEntries(
+  Object.entries(pack).map(([key,value])=>[key,Array.isArray(value)?freezeList(value):value])
+));
+
+export const SURVIVAL_WILDLIFE_MOTION_PACKS=Object.freeze({
+  HEAVY_QUADRUPED:wildlifePack({
+    idle:['WILDLIFE_HEAVY_IDLE','WILDLIFE_HEAVY_BREATH','WILDLIFE_HEAVY_LOOK'],
+    locomotion:['WILDLIFE_HEAVY_WALK','WILDLIFE_HEAVY_TROT','WILDLIFE_HEAVY_RUN','WILDLIFE_HEAVY_CHARGE','WILDLIFE_HEAVY_TURN_L','WILDLIFE_HEAVY_TURN_R','WILDLIFE_HEAVY_STOP'],
+    acting:['WILDLIFE_HEAVY_SNIFF','WILDLIFE_HEAVY_GRAZE_OR_FORAGE','WILDLIFE_HEAVY_ALERT','WILDLIFE_HEAVY_THREAT'],
+    attack:['WILDLIFE_HEAVY_BITE','WILDLIFE_HEAVY_SWIPE','WILDLIFE_HEAVY_RAM'],
+    reaction:['WILDLIFE_HEAVY_HIT_FRONT','WILDLIFE_HEAVY_HIT_SIDE','WILDLIFE_HEAVY_STAGGER','WILDLIFE_HEAVY_KNOCKDOWN'],
+    death:['WILDLIFE_HEAVY_DEATH_FRONT','WILDLIFE_HEAVY_DEATH_SIDE']
+  }),
+  LOW_HEAVY_QUADRUPED:wildlifePack({
+    idle:['BOAR_IDLE','BOAR_SNIFF_IDLE'],
+    locomotion:['BOAR_WALK','BOAR_TROT','BOAR_RUN','BOAR_CHARGE','BOAR_TURN_L','BOAR_TURN_R','BOAR_STOP'],
+    acting:['BOAR_ROOT_GROUND','BOAR_SNIFF','BOAR_ALERT','BOAR_THREAT'],
+    attack:['BOAR_TUSK_UPPERCUT','BOAR_SIDE_GORE','BOAR_CHARGE_RAM'],
+    reaction:['BOAR_HIT_FRONT','BOAR_HIT_SIDE','BOAR_STAGGER','BOAR_KNOCKDOWN'],
+    death:['BOAR_DEATH_SIDE','BOAR_DEATH_FORWARD']
+  }),
+  HOOFED_LIGHT:wildlifePack({
+    idle:['HOOFED_IDLE','HOOFED_EAR_FLICK','HOOFED_LOOK'],
+    locomotion:['HOOFED_WALK','HOOFED_TROT','HOOFED_RUN','HOOFED_SPRINT','HOOFED_TURN_L','HOOFED_TURN_R','HOOFED_BRAKE'],
+    acting:['HOOFED_GRAZE','HOOFED_HEAD_RAISE','HOOFED_ALERT','HOOFED_STARTLE'],
+    attack:['HOOFED_FRONT_KICK','HOOFED_REAR_KICK','HOOFED_SHOVE'],
+    reaction:['HOOFED_HIT_FRONT','HOOFED_HIT_SIDE','HOOFED_STUMBLE'],
+    death:['HOOFED_DEATH_SIDE','HOOFED_DEATH_FORWARD']
+  }),
+  HOOFED_HEAVY:wildlifePack({
+    idle:['HOOFED_HEAVY_IDLE','HOOFED_HEAVY_BREATH','HOOFED_HEAVY_LOOK'],
+    locomotion:['HOOFED_HEAVY_WALK','HOOFED_HEAVY_TROT','HOOFED_HEAVY_RUN','HOOFED_HEAVY_CHARGE','HOOFED_HEAVY_TURN_L','HOOFED_HEAVY_TURN_R','HOOFED_HEAVY_STOP'],
+    acting:['HOOFED_HEAVY_GRAZE','HOOFED_HEAVY_ALERT','HOOFED_HEAVY_THREAT'],
+    attack:['HOOFED_HEAVY_ANTLER_SHOVE','HOOFED_HEAVY_FRONT_KICK','HOOFED_HEAVY_CHARGE'],
+    reaction:['HOOFED_HEAVY_HIT_FRONT','HOOFED_HEAVY_HIT_SIDE','HOOFED_HEAVY_STAGGER'],
+    death:['HOOFED_HEAVY_DEATH_SIDE','HOOFED_HEAVY_DEATH_FORWARD']
+  }),
+  CANINE:wildlifePack({
+    idle:['CANINE_IDLE','CANINE_BREATH','CANINE_LOOK'],
+    locomotion:['CANINE_WALK','CANINE_TROT','CANINE_RUN','CANINE_SPRINT','CANINE_TURN_L','CANINE_TURN_R','CANINE_STOP','CANINE_STALK'],
+    acting:['CANINE_SNIFF','CANINE_ALERT','CANINE_GROWL','CANINE_HOWL_OR_BARK'],
+    attack:['CANINE_BITE','CANINE_LUNGE_BITE','CANINE_SIDE_BITE'],
+    reaction:['CANINE_HIT_FRONT','CANINE_HIT_SIDE','CANINE_STAGGER','CANINE_KNOCKDOWN','CANINE_GET_UP'],
+    death:['CANINE_DEATH_SIDE','CANINE_DEATH_FORWARD']
+  }),
+  CANINE_LIGHT:wildlifePack({
+    idle:['CANINE_LIGHT_IDLE','CANINE_LIGHT_EAR_TWITCH','CANINE_LIGHT_LOOK'],
+    locomotion:['CANINE_LIGHT_WALK','CANINE_LIGHT_TROT','CANINE_LIGHT_RUN','CANINE_LIGHT_SPRINT','CANINE_LIGHT_TURN_L','CANINE_LIGHT_TURN_R','CANINE_LIGHT_STOP'],
+    acting:['CANINE_LIGHT_SNIFF','CANINE_LIGHT_ALERT','CANINE_LIGHT_FLEE_LOOK'],
+    attack:['CANINE_LIGHT_BITE','CANINE_LIGHT_LUNGE'],
+    reaction:['CANINE_LIGHT_HIT','CANINE_LIGHT_STUMBLE'],
+    death:['CANINE_LIGHT_DEATH_SIDE','CANINE_LIGHT_DEATH_FORWARD']
+  }),
+  SMALL_MAMMAL:wildlifePack({
+    idle:['SMALL_MAMMAL_IDLE','SMALL_MAMMAL_LOOK','SMALL_MAMMAL_GROOM'],
+    locomotion:['SMALL_MAMMAL_WALK','SMALL_MAMMAL_SCURRY','SMALL_MAMMAL_RUN','SMALL_MAMMAL_TURN','SMALL_MAMMAL_STOP'],
+    acting:['SMALL_MAMMAL_FORAGE','SMALL_MAMMAL_SNIFF','SMALL_MAMMAL_ALERT','SMALL_MAMMAL_FLEE'],
+    attack:['SMALL_MAMMAL_BITE_OR_SCRATCH'],
+    reaction:['SMALL_MAMMAL_HIT','SMALL_MAMMAL_STUN'],
+    death:['SMALL_MAMMAL_DEATH']
+  }),
+  HOPPER:wildlifePack({
+    idle:['RABBIT_IDLE','RABBIT_EAR_TWITCH','RABBIT_LOOK'],
+    locomotion:['RABBIT_HOP_SLOW','RABBIT_HOP_FAST','RABBIT_SPRINT_HOP','RABBIT_TURN','RABBIT_STOP'],
+    acting:['RABBIT_GRAZE','RABBIT_ALERT','RABBIT_FREEZE','RABBIT_FLEE'],
+    attack:[],
+    reaction:['RABBIT_HIT','RABBIT_STUMBLE'],
+    death:['RABBIT_DEATH']
+  }),
+  HOOFED_CLIMBER:wildlifePack({
+    idle:['GOAT_IDLE','GOAT_LOOK','GOAT_HOOF_SHIFT'],
+    locomotion:['GOAT_WALK','GOAT_TROT','GOAT_RUN','GOAT_CLIMB_STEP','GOAT_TURN','GOAT_STOP'],
+    acting:['GOAT_GRAZE','GOAT_ALERT','GOAT_BALANCE'],
+    attack:['GOAT_HEADBUTT','GOAT_REAR_KICK'],
+    reaction:['GOAT_HIT','GOAT_STAGGER'],
+    death:['GOAT_DEATH_SIDE']
+  }),
+  GROUND_BIRD:wildlifePack({
+    idle:['GROUND_BIRD_IDLE','GROUND_BIRD_HEAD_BOB','GROUND_BIRD_LOOK'],
+    locomotion:['GROUND_BIRD_WALK','GROUND_BIRD_RUN','GROUND_BIRD_TURN','GROUND_BIRD_FLAP_HOP','GROUND_BIRD_STOP'],
+    acting:['GROUND_BIRD_PECK','GROUND_BIRD_ALERT','GROUND_BIRD_DISPLAY','GROUND_BIRD_FLEE'],
+    attack:['GROUND_BIRD_PECK_ATTACK'],
+    reaction:['GROUND_BIRD_HIT'],
+    death:['GROUND_BIRD_DEATH']
+  }),
+  BIRD:wildlifePack({
+    idle:['BIRD_PERCH_IDLE','BIRD_HEAD_LOOK','BIRD_WING_ADJUST'],
+    locomotion:['BIRD_TAKEOFF','BIRD_FLAP_FLY','BIRD_GLIDE','BIRD_BANK_L','BIRD_BANK_R','BIRD_LAND','BIRD_HOP'],
+    acting:['BIRD_PECK','BIRD_ALERT','BIRD_CALL','BIRD_FLEE_TAKEOFF'],
+    attack:[],
+    reaction:['BIRD_AIR_HIT','BIRD_GROUND_HIT'],
+    death:['BIRD_FALL_DEATH']
+  })
+});
+
+const SURVIVAL_WILDLIFE_SPECIES_MOTION=Object.freeze({
+  BEAR:'HEAVY_QUADRUPED',
+  BOAR:'LOW_HEAVY_QUADRUPED',
+  DEER:'HOOFED_LIGHT',
+  ELK:'HOOFED_HEAVY',
+  MOOSE:'HOOFED_HEAVY',
+  BISON:'HEAVY_QUADRUPED',
+  WOLF:'CANINE',
+  COYOTE:'CANINE_LIGHT',
+  FOX:'CANINE_LIGHT',
+  RABBIT:'HOPPER',
+  RACCOON:'SMALL_MAMMAL',
+  SQUIRREL:'SMALL_MAMMAL',
+  BEAVER:'SMALL_MAMMAL',
+  BADGER:'SMALL_MAMMAL',
+  MOUNTAIN_GOAT:'HOOFED_CLIMBER',
+  TURKEY:'GROUND_BIRD',
+  CROW:'BIRD'
+});
+
+export function createSurvivalPlayerMotionProfile({platform='ROBLOX',tool='AXE'}={}){
+  const toolKey=upper(tool)||'AXE';
+  const toolMotion={
+    AXE:'SURVIVAL_AXE_CHOP_R',
+    PICKAXE:'SURVIVAL_PICKAXE_SWING',
+    HAMMER:'SURVIVAL_HAMMER_SWING',
+    SPEAR:'SURVIVAL_SPEAR_THRUST',
+    NONE:'SURVIVAL_TOOL_READY'
+  }[toolKey]||'SURVIVAL_TOOL_READY';
+  return Object.freeze({
+    target:'POLISHED_STYLIZED_SURVIVAL_CHARACTER_MOTION',
+    platform:upper(platform),
+    tool:toolKey,
+    primaryToolMotion:toolMotion,
+    groups:SURVIVAL_PLAYER_MOTION_PACK,
+    mechanics:Object.freeze({
+      accelerationBodyLean:true,
+      startStopWeightShift:true,
+      turnFootPlant:true,
+      sprintArmDrive:true,
+      crouchCenterOfMassLowered:true,
+      jumpLandCompression:true,
+      toolGripAlignment:true,
+      toolStrikeUsesHipsSpineShoulders:true,
+      interactionHandsReachTarget:true
+    }),
+    nativePath:upper(platform)==='ROBLOX'
+      ?Object.freeze({primary:'ANIMATOR_ANIMATIONTRACK',cleanup:'MOTOR6D_OR_BONE_TRANSFORM',contact:'IKCONTROL_WHEN_AVAILABLE',rootOnlyForbidden:true})
+      :Object.freeze({primary:'ANIMATOR_CLIP',cleanup:'HUMANOID_RETARGET_AVATAR_MASK',contact:'ANIMATION_RIGGING_OR_IK',rootOnlyForbidden:true}),
+    rootTranslationOwnedByGameplay:true,
+    nativeRuntimeVerificationRequired:true,
+    productionVerified:false
+  });
+}
+
+export function createSurvivalWildlifeMotionProfile({species='BEAR',platform='ROBLOX'}={}){
+  const key=upper(species)||'BEAR';
+  const family=SURVIVAL_WILDLIFE_SPECIES_MOTION[key]||'HEAVY_QUADRUPED';
+  const groups=SURVIVAL_WILDLIFE_MOTION_PACKS[family];
+  return Object.freeze({
+    target:'POLISHED_STYLIZED_SURVIVAL_WILDLIFE_MOTION',
+    platform:upper(platform),
+    species:SURVIVAL_WILDLIFE_SPECIES_MOTION[key]?key:'BEAR',
+    family,
+    groups,
+    motionIds:freezeList(unique(Object.values(groups).flat())),
+    mechanics:Object.freeze({
+      fourLimbOrSpeciesSpecificGait:true,
+      spineCompressionAndExtension:true,
+      headCounterBalance:true,
+      plantedFootContact:true,
+      accelerationAndBrakingVisible:true,
+      turnUsesBodyArcNotRootSnap:true,
+      attackStartsFromBodyWeightShift:true,
+      hitReactionMatchesImpactDirection:true,
+      deathUsesMassAndGroundContact:true,
+      tailEarWingSecondaryMotionWhenApplicable:true
+    }),
+    nativePath:upper(platform)==='ROBLOX'
+      ?Object.freeze({primary:'ANIMATIONCONTROLLER_OR_HUMANOID_ANIMATOR',joints:'MOTOR6D_OR_BONES',contact:'IKCONTROL_WHEN_SUPPORTED',rootOnlyForbidden:true})
+      :Object.freeze({primary:'GENERIC_OR_HUMANOID_ANIMATOR',joints:'RIG_BONES',contact:'ANIMATION_RIGGING_OR_IK',rootOnlyForbidden:true}),
+    runtimeQuality:Object.freeze({
+      noFootSlide:true,
+      noRigidBodyGlide:true,
+      noInstantRootTurn:true,
+      gaitSpeedSynced:true,
+      mobileSilhouetteReadable:true
+    }),
+    nativeRuntimeVerificationRequired:true,
+    productionVerified:false
+  });
+}
+
 export const MOTION_COMPOSITION_CHANNELS=Object.freeze([
   'ROOT','LOCOMOTION','LOWER_BODY','PELVIS_SPINE','UPPER_BODY','LEFT_ARM','RIGHT_ARM','HEAD_GAZE',
   'TAIL','WINGS','EXTRA_LIMBS','SECONDARY_MOTION','PROCEDURAL_CORRECTION',
