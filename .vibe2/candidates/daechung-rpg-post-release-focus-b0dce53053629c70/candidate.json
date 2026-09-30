@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": " local s=Instance.new(\"Sound\");s.Name=name;s.SoundId=id;s.Volume=volume;s.Parent=SoundService;return s",
+      "replace": "local actionSfx=sound(\"RPGAction\",C.Audio.Action,.22)\nlocal hitSfx=sound(\"RPGHit\",C.Audio.Hit,.2)\nlocal skillSfx=sound(\"RPGSkill\",C.Audio.Skill,.24)\nlocal levelSfx=sound(\"RPGLevel\",C.Audio.LevelUp,.26)\nlocal gui=Instance.new(\"ScreenGui\");gui.Name=\"RPGHUD\";gui.ResetOnSpawn=false;gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets;gui:SetAttribute(\"TouchEnabled\",touchEnabled);gui.Parent=p:WaitForChild(\"PlayerGui\")\ntask.spawn(function()\n for _=1,20 do\n  -- Add visual feedback here\n end\n end)"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
