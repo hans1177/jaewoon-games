@@ -865,6 +865,9 @@ local surpriseTriggers={}
 local surpriseSeen={}
 local ghostSightingTriggers={}
 local ghostSightingSeen={}
+local lobbyHauntRoot=nil
+local lobbyHauntTriggers={}
+local lobbyHauntSeen={}
 local surpriseClock=0
 
 local function localPart(name,size,cframe,color,material,shape)
@@ -906,6 +909,57 @@ local function localText(pos,text,color,duration)
  roundify(label,10)
  Debris:AddItem(anchorPart,duration or 2.2)
  return anchorPart
+end
+
+local function playLobbyHaunt(trigger)
+ local kind=tostring(trigger:GetAttribute("LobbyHauntKind")or"")
+ local text=tostring(trigger:GetAttribute("LobbyHauntText")or"")
+ local pos=trigger.Position
+ warningSfx.TimePosition=0;warningSfx:Play()
+
+ if kind=="PORTRAIT_EYES"then
+  local eyeL=localPart("LobbyPortraitEye",Vector3.new(.28,.2,.16),CFrame.new(pos+Vector3.new(-.48,.3,-.2)),Color3.fromRGB(193,42,47),Enum.Material.Neon)
+  local eyeR=localPart("LobbyPortraitEye",Vector3.new(.28,.2,.16),CFrame.new(pos+Vector3.new(.48,.3,-.2)),Color3.fromRGB(193,42,47),Enum.Material.Neon)
+  task.delay(.55,function()
+   for _,eye in ipairs({eyeL,eyeR})do if eye.Parent then TweenService:Create(eye,TweenInfo.new(.22),{Transparency=1}):Play()end end
+  end)
+  Debris:AddItem(eyeL,.9);Debris:AddItem(eyeR,.9)
+ elseif kind=="LUGGAGE_HAND"then
+  local palm=localPart("LobbyLuggageHand",Vector3.new(1.5,.45,1.9),CFrame.new(pos+Vector3.new(0,.7,0)),Color3.fromRGB(188,174,164),Enum.Material.SmoothPlastic)
+  TweenService:Create(palm,TweenInfo.new(.32,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{CFrame=palm.CFrame*CFrame.new(0,2.4,0)*CFrame.Angles(0,0,math.rad(18))}):Play()
+  task.delay(.55,function()if palm.Parent then TweenService:Create(palm,TweenInfo.new(.25),{Transparency=1}):Play()end end)
+  Debris:AddItem(palm,.9)
+ elseif kind=="MAID_CORRIDOR"then
+  local body=localPart("LobbyMaidGhost",Vector3.new(2.7,5.6,1.35),CFrame.new(pos+Vector3.new(0,2.8,0)),Color3.fromRGB(198,195,190),Enum.Material.Fabric)
+  local head=localPart("LobbyMaidGhostHead",Vector3.new(2.1,2.1,2.1),CFrame.new(pos+Vector3.new(0,6.3,0)),Color3.fromRGB(205,198,193),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  body.Transparency=.28;head.Transparency=.22
+  TweenService:Create(body,TweenInfo.new(.9,Enum.EasingStyle.Sine),{Transparency=1,CFrame=body.CFrame*CFrame.new(0,0,-5)}):Play()
+  TweenService:Create(head,TweenInfo.new(.9,Enum.EasingStyle.Sine),{Transparency=1,CFrame=head.CFrame*CFrame.new(0,0,-5)}):Play()
+  Debris:AddItem(body,1);Debris:AddItem(head,1)
+ elseif kind=="ELEVATOR_13"then
+  chaseTint.BackgroundColor3=Color3.fromRGB(104,8,14)
+  chaseTint.BackgroundTransparency=.77
+  task.delay(.12,function()chaseTint.BackgroundTransparency=1 end)
+  localText(pos+Vector3.new(0,5.4,0),"13",Color3.fromRGB(210,47,53),1.1)
+ elseif kind=="CLERK_SMILE"then
+  local face=localPart("LobbyClerkFace",Vector3.new(2.4,2.4,.25),CFrame.new(pos+Vector3.new(0,3.7,0)),Color3.fromRGB(209,195,181),Enum.Material.SmoothPlastic)
+  local smile=localPart("LobbyClerkSmile",Vector3.new(1.35,.14,.12),CFrame.new(pos+Vector3.new(0,3.3,-.2)),Color3.fromRGB(53,17,20),Enum.Material.Neon)
+  TweenService:Create(face,TweenInfo.new(.65),{Transparency=1}):Play()
+  TweenService:Create(smile,TweenInfo.new(.65),{Transparency=1,Size=Vector3.new(1.9,.18,.12)}):Play()
+  Debris:AddItem(face,.75);Debris:AddItem(smile,.75)
+ end
+
+ if text~=""then localText(pos+Vector3.new(0,7,0),text,Color3.fromRGB(232,207,167),2.2)end
+end
+
+local function refreshLobbyHaunts()
+ lobbyHauntTriggers={}
+ lobbyHauntSeen={}
+ lobbyHauntRoot=workspace:FindFirstChild("MidnightLobby")
+ if not lobbyHauntRoot then return end
+ for _,d in ipairs(lobbyHauntRoot:GetDescendants())do
+  if d:IsA("BasePart")and d:GetAttribute("LobbyHauntKind")then table.insert(lobbyHauntTriggers,d)end
+ end
 end
 
 local function tweenParts(parts,offset,duration)
@@ -1055,10 +1109,24 @@ RunService.Heartbeat:Connect(function(dt)
  surpriseClock=0
  local arenaNow=workspace:FindFirstChild("MidnightArena")
  if arenaNow~=surpriseArena then refreshSurpriseTriggers()end
- if p:GetAttribute("RoundState")~="RUNNING"then return end
+ local lobbyNow=workspace:FindFirstChild("MidnightLobby")
+ if lobbyNow~=lobbyHauntRoot then refreshLobbyHaunts()end
  local character=p.Character
  local root=character and character:FindFirstChild("HumanoidRootPart")
  if not root then return end
+
+ if p:GetAttribute("RoundState")~="RUNNING"then
+  for _,trigger in ipairs(lobbyHauntTriggers)do
+   if trigger.Parent and not lobbyHauntSeen[trigger]then
+    local radius=math.max(3,tonumber(trigger:GetAttribute("LobbyHauntRadius"))or 11)
+    if (root.Position-trigger.Position).Magnitude<=radius then
+     lobbyHauntSeen[trigger]=true
+     playLobbyHaunt(trigger)
+    end
+   end
+  end
+  return
+ end
  for _,trigger in ipairs(surpriseTriggers)do
   if trigger.Parent and not surpriseSeen[trigger]then
    local radius=math.max(3,tonumber(trigger:GetAttribute("SurpriseRadius"))or 10)
@@ -1460,7 +1528,7 @@ local lobbyHeaderTitle=Instance.new("TextLabel")
 lobbyHeaderTitle.Size=UDim2.new(1,-18,0,31)
 lobbyHeaderTitle.Position=UDim2.fromOffset(9,5)
 lobbyHeaderTitle.BackgroundTransparency=1
-lobbyHeaderTitle.Text="심야 대탈출"
+lobbyHeaderTitle.Text="NOCTURNE HOTEL · 1927"
 lobbyHeaderTitle.TextColor3=Color3.fromRGB(239,232,218)
 lobbyHeaderTitle.TextSize=21
 lobbyHeaderTitle.Font=Enum.Font.GothamBold
@@ -1472,7 +1540,7 @@ local lobbyHeaderSub=Instance.new("TextLabel")
 lobbyHeaderSub.Size=UDim2.new(1,-18,0,20)
 lobbyHeaderSub.Position=UDim2.fromOffset(9,36)
 lobbyHeaderSub.BackgroundTransparency=1
-lobbyHeaderSub.Text="호텔 1층 · 승강기 1~4 중 하나로 입장"
+lobbyHeaderSub.Text="심야 대탈출 · 서양식 저주 호텔"
 lobbyHeaderSub.TextColor3=Color3.fromRGB(163,154,143)
 lobbyHeaderSub.TextSize=11
 lobbyHeaderSub.Font=Enum.Font.GothamMedium
@@ -1496,6 +1564,70 @@ lobbyHint.Visible=false
 lobbyHint.ZIndex=37
 lobbyHint.Parent=gui
 roundify(lobbyHint,8)
+
+local lobbyDialogue=Instance.new("Frame")
+lobbyDialogue.Name="LobbyStaffDialogue"
+lobbyDialogue.AnchorPoint=Vector2.new(.5,1)
+lobbyDialogue.Position=UDim2.new(.5,0,1,-112)
+lobbyDialogue.Size=UDim2.fromOffset(356,94)
+lobbyDialogue.BackgroundColor3=Color3.fromRGB(13,11,12)
+lobbyDialogue.BackgroundTransparency=.08
+lobbyDialogue.BorderSizePixel=0
+lobbyDialogue.Visible=false
+lobbyDialogue.ZIndex=44
+lobbyDialogue.Parent=gui
+roundify(lobbyDialogue,9);outline(lobbyDialogue,.45)
+
+local lobbyDialogueAccent=Instance.new("Frame")
+lobbyDialogueAccent.Size=UDim2.fromOffset(5,72)
+lobbyDialogueAccent.Position=UDim2.fromOffset(10,11)
+lobbyDialogueAccent.BackgroundColor3=Color3.fromRGB(142,35,42)
+lobbyDialogueAccent.BorderSizePixel=0
+lobbyDialogueAccent.ZIndex=45
+lobbyDialogueAccent.Parent=lobbyDialogue
+roundify(lobbyDialogueAccent,3)
+
+local lobbyDialogueSpeaker=Instance.new("TextLabel")
+lobbyDialogueSpeaker.Size=UDim2.new(1,-32,0,24)
+lobbyDialogueSpeaker.Position=UDim2.fromOffset(24,9)
+lobbyDialogueSpeaker.BackgroundTransparency=1
+lobbyDialogueSpeaker.TextColor3=Color3.fromRGB(225,197,143)
+lobbyDialogueSpeaker.TextSize=14
+lobbyDialogueSpeaker.Font=Enum.Font.GothamBold
+lobbyDialogueSpeaker.TextXAlignment=Enum.TextXAlignment.Left
+lobbyDialogueSpeaker.ZIndex=45
+lobbyDialogueSpeaker.Parent=lobbyDialogue
+
+local lobbyDialogueText=Instance.new("TextLabel")
+lobbyDialogueText.Size=UDim2.new(1,-34,0,51)
+lobbyDialogueText.Position=UDim2.fromOffset(24,34)
+lobbyDialogueText.BackgroundTransparency=1
+lobbyDialogueText.TextColor3=Color3.fromRGB(218,211,201)
+lobbyDialogueText.TextSize=12
+lobbyDialogueText.TextWrapped=true
+lobbyDialogueText.Font=Enum.Font.GothamMedium
+lobbyDialogueText.TextXAlignment=Enum.TextXAlignment.Left
+lobbyDialogueText.TextYAlignment=Enum.TextYAlignment.Top
+lobbyDialogueText.ZIndex=45
+lobbyDialogueText.Parent=lobbyDialogue
+
+local lobbyDialogueSerial=0
+local function showLobbyDialogue(speaker,text)
+ lobbyDialogueSerial+=1
+ local serial=lobbyDialogueSerial
+ lobbyDialogueSpeaker.Text=speaker
+ lobbyDialogueText.Text=text
+ lobbyDialogue.Visible=true
+ task.delay(4.2,function()
+  if lobbyDialogueSerial==serial then lobbyDialogue.Visible=false end
+ end)
+end
+
+p:GetAttributeChangedSignal("LobbyStoryEvent"):Connect(function()
+ local raw=tostring(p:GetAttribute("LobbyStoryEvent")or"")
+ local speaker,text=string.match(raw,"^([^|]+)|([^|]+)|")
+ if speaker and text then showLobbyDialogue(speaker,text)end
+end)
 
 local roomCreateNotice=Instance.new("Frame")
 roomCreateNotice.Name="RoomCreateNotice"
@@ -2307,14 +2439,15 @@ local function render()
  local lobbyWaiting=not running and not resultCode and not spectating
  lobbyHeader.Visible=lobbyWaiting
  lobbyHint.Visible=lobbyWaiting
- lobbyHeaderSub.Text=isRoomServer and "매칭 완료 · 게임 준비 중"or"호텔 1층 · 승강기 1~4 중 하나로 입장"
- lobbyHint.Text=isRoomServer and"방 연결 완료 · 잠시 후 게임이 시작돼"or"① 승강기 선택  →  ② 안으로 들어가기  →  ③ 5초 후 자동 출발"
+ lobbyHeaderSub.Text=isRoomServer and "체크인 완료 · 객실 배정 중"or"심야 대탈출 · 서양식 저주 호텔"
+ lobbyHint.Text=isRoomServer and"직원이 문을 잠그는 중 · 잠시 후 시작"or"① 승강기 선택  →  ② 안으로 들어가기  →  ③ 5초 후 자동 체크인"
  lobbyColor.Enabled=lobbyWaiting
  lobbyBloom.Enabled=lobbyWaiting
  lobbyDepth.Enabled=lobbyWaiting
  lobbyVignetteTop.Visible=lobbyWaiting
  lobbyVignetteBottom.Visible=lobbyWaiting
  hud.Visible=running
+ if running then lobbyDialogue.Visible=false end
  local lobbyFolder=workspace:FindFirstChild("MidnightLobby")
  local rootNow=p.Character and p.Character:FindFirstChild("HumanoidRootPart")
  local nearestBay=nil
