@@ -2361,7 +2361,12 @@ test('mcp-run checks current main head before any Studio MCP play call',()=>{
 });
 
 test('workflow rejects a stale control revision before Studio launch and rejects missing runtime reports',()=>{
+  const plan=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
   const block=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
+  for(const stage of [plan,block]){
+    assert.match(stage,/ref: \$\{\{ inputs\.control_revision \|\| github\.sha \}\}/);
+    assert.doesNotMatch(stage,/ref: \$\{\{ inputs\.control_revision \|\| 'main' \}\}/);
+  }
   const guard=block.indexOf('--mode=check-head');
   const cleanup=block.indexOf('$legacyProcesses =');
   const launch=block.indexOf('$placeLaunchProcess = Start-Process');
