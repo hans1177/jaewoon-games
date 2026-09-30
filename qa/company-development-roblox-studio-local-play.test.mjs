@@ -2441,7 +2441,8 @@ test('final Studio capture requires no user save and closes only after evidence 
   assert.match(finalizeBlock,/ROBLOX_STUDIO_PLAYTEST_SOURCE_MUTATION_PERSIST=NO/);
   assert.doesNotMatch(finalizeBlock,/Stop-Process/);
   const closeBlock=workflow.slice(closeAt,refillAt);
-  assert.match(closeBlock,/Stop-Process -Id \$ownedStudio\.Id/);
+  assert.match(closeBlock,/Stop-Process -InputObject \$ownedStudio/);
+  assert.match(closeBlock,/if \(-not \$ownedStudio\.WaitForExit\(60000\)\)/);
   assert.match(closeBlock,/ROBLOX_STUDIO_AUTOMATED_CLOSE_AFTER_EVIDENCE=YES/);
   assert.match(helper,/finally\{\s*client\.close\(\)/);
   assert.match(finalizeBlock,/ROBLOX_STUDIO_MCP_POST_CAPTURE_UI_RELEASED=YES/);
