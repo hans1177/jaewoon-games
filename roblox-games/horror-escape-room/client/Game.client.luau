@@ -74,18 +74,18 @@ gui.Parent=p:WaitForChild("PlayerGui")
 -- 로비 전용 화면 톤. 전투가 시작되면 전부 꺼져 게임플레이 가독성에는 영향을 주지 않는다.
 local lobbyColor=Instance.new("ColorCorrectionEffect")
 lobbyColor.Name="MidnightLobbyColor"
-lobbyColor.TintColor=Color3.fromRGB(206,188,172)
-lobbyColor.Brightness=-.025
-lobbyColor.Contrast=.2
-lobbyColor.Saturation=-.18
+lobbyColor.TintColor=Color3.fromRGB(228,216,199)
+lobbyColor.Brightness=.11
+lobbyColor.Contrast=.08
+lobbyColor.Saturation=-.08
 lobbyColor.Enabled=false
 lobbyColor.Parent=Lighting
 
 local lobbyBloom=Instance.new("BloomEffect")
 lobbyBloom.Name="MidnightLobbyBloom"
-lobbyBloom.Intensity=.18
-lobbyBloom.Size=18
-lobbyBloom.Threshold=1.08
+lobbyBloom.Intensity=.12
+lobbyBloom.Size=16
+lobbyBloom.Threshold=1.18
 lobbyBloom.Enabled=false
 lobbyBloom.Parent=Lighting
 
@@ -110,7 +110,7 @@ lobbyVignetteTop.ZIndex=8
 lobbyVignetteTop.Parent=gui
 local lobbyVignetteTopGradient=Instance.new("UIGradient")
 lobbyVignetteTopGradient.Transparency=NumberSequence.new({
- NumberSequenceKeypoint.new(0,.16),
+ NumberSequenceKeypoint.new(0,.72),
  NumberSequenceKeypoint.new(1,1),
 })
 lobbyVignetteTopGradient.Rotation=90
@@ -128,17 +128,17 @@ local lobbyBloodEdge=Instance.new("Frame")
 lobbyBloodEdge.Name="LobbyBloodEdge"
 lobbyBloodEdge.Size=UDim2.fromScale(1,1)
 lobbyBloodEdge.BackgroundColor3=Color3.fromRGB(72,9,14)
-lobbyBloodEdge.BackgroundTransparency=.975
+lobbyBloodEdge.BackgroundTransparency=.992
 lobbyBloodEdge.BorderSizePixel=0
 lobbyBloodEdge.Visible=false
 lobbyBloodEdge.ZIndex=7
 lobbyBloodEdge.Parent=gui
 local lobbyBloodGradient=Instance.new("UIGradient")
 lobbyBloodGradient.Transparency=NumberSequence.new({
- NumberSequenceKeypoint.new(0,.55),
+ NumberSequenceKeypoint.new(0,.82),
  NumberSequenceKeypoint.new(.23,1),
  NumberSequenceKeypoint.new(.77,1),
- NumberSequenceKeypoint.new(1,.55),
+ NumberSequenceKeypoint.new(1,.82),
 })
 lobbyBloodGradient.Parent=lobbyBloodEdge
 
@@ -148,9 +148,17 @@ local lobbyAtmosphereRestore={}
 local function setLobbyClarity(enabled)
  if enabled and not lobbyClarityActive then
   lobbyClarityActive=true
-  lobbyFogRestore={FogStart=Lighting.FogStart,FogEnd=Lighting.FogEnd}
-  Lighting.FogStart=150
-  Lighting.FogEnd=950
+  lobbyFogRestore={
+   FogStart=Lighting.FogStart,FogEnd=Lighting.FogEnd,
+   Brightness=Lighting.Brightness,Ambient=Lighting.Ambient,
+   OutdoorAmbient=Lighting.OutdoorAmbient,ExposureCompensation=Lighting.ExposureCompensation,
+  }
+  Lighting.FogStart=170
+  Lighting.FogEnd=1100
+  Lighting.Brightness=math.max(Lighting.Brightness,2.3)
+  Lighting.Ambient=Color3.fromRGB(105,96,88)
+  Lighting.OutdoorAmbient=Color3.fromRGB(86,82,80)
+  Lighting.ExposureCompensation=math.max(Lighting.ExposureCompensation,.12)
   lobbyAtmosphereRestore={}
   for _,effect in ipairs(Lighting:GetChildren())do
    if effect:IsA("Atmosphere")then
@@ -165,6 +173,10 @@ local function setLobbyClarity(enabled)
   if lobbyFogRestore then
    Lighting.FogStart=lobbyFogRestore.FogStart
    Lighting.FogEnd=lobbyFogRestore.FogEnd
+   Lighting.Brightness=lobbyFogRestore.Brightness
+   Lighting.Ambient=lobbyFogRestore.Ambient
+   Lighting.OutdoorAmbient=lobbyFogRestore.OutdoorAmbient
+   Lighting.ExposureCompensation=lobbyFogRestore.ExposureCompensation
   end
   for effect,old in pairs(lobbyAtmosphereRestore)do
    if effect and effect.Parent and old then
@@ -1004,7 +1016,21 @@ local function playLobbyHaunt(trigger)
  local kind=tostring(trigger:GetAttribute("LobbyHauntKind")or"")
  local text=tostring(trigger:GetAttribute("LobbyHauntText")or"")
  local pos=trigger.Position
- warningSfx.TimePosition=0;warningSfx:Play()
+
+ -- 로비 놀람은 비명/경고음을 쓰지 않고 화면과 카메라 반응으로만 전달한다.
+ chaseTint.BackgroundColor3=Color3.fromRGB(116,18,24)
+ chaseTint.BackgroundTransparency=.76
+ task.delay(.16,function()if chaseTint.Parent then chaseTint.BackgroundTransparency=1 end end)
+ local camera=workspace.CurrentCamera
+ if camera then
+  local baseFov=camera.FieldOfView
+  TweenService:Create(camera,TweenInfo.new(.07,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{FieldOfView=math.min(92,baseFov+8)}):Play()
+  task.delay(.09,function()
+   if camera==workspace.CurrentCamera then
+    TweenService:Create(camera,TweenInfo.new(.18,Enum.EasingStyle.Quad,Enum.EasingDirection.InOut),{FieldOfView=baseFov}):Play()
+   end
+  end)
+ end
 
  if kind=="PORTRAIT_EYES"then
   local eyeL=localPart("LobbyPortraitEye",Vector3.new(.28,.2,.16),CFrame.new(pos+Vector3.new(-.48,.3,-.2)),Color3.fromRGB(193,42,47),Enum.Material.Neon)
@@ -1215,7 +1241,7 @@ RunService.Heartbeat:Connect(function(dt)
     local dist=(root.Position-trigger.Position).Magnitude
     local nextAllowed=tonumber(lobbyHauntSeen[trigger])or 0
     if dist<=radius and now>=nextAllowed then
-     lobbyHauntSeen[trigger]=now+18
+     lobbyHauntSeen[trigger]=now+12
      playLobbyHaunt(trigger)
     elseif dist>radius*1.55 and nextAllowed>now+2 then
      lobbyHauntSeen[trigger]=now+2
