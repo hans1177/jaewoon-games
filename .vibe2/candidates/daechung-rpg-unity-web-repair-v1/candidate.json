@@ -1,0 +1,41 @@
+{
+  "summary": "Implement game-specific directive for player state and region handling",
+  "expectedEffect": "The directive ensures the player state is properly updated when moving to a new region",
+  "edits": [
+    {
+      "path": "Assets/Scripts/GameCore.cs",
+      "find": "            if (Player.level < 1)",
+      "replace": "            if (Player.level < 1)\n                Player.level = 1;"
+    },
+    {
+      "path": "Assets/Scripts/GameCore.cs",
+      "find": "            if (Player.gold < 0)",
+      "replace": "            if (Player.gold < 0)\n                Player.gold = 0;"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "JAEWOON_UNITY_WEB_QA_CORE_FUN_GAME_DAECHUNG_RPG_LOOP_COMBAT_DEFATATE_REWARD_STATUS_PASS"
+  ],
+  "graphicsReplacementReport": {
+    "actualCount": 1,
+    "changedSurfaces": [
+      "VFX"
+    ],
+    "reuseModesUsed": [
+      "ADAPT_RESTYLE_AND_RETARGET"
+    ],
+    "replacementEvidence": [
+      {
+        "surface": "VFX",
+        "path": "Assets/Scripts/GameCore.cs",
+        "bindingKey": "impactVfx",
+        "reuseMode": "ADAPT_RESTYLE_AND_RETARGET",
+        "sourceEvidence": "const impactVfx = createImpactVfx()"
+      }
+    ],
+    "before": "",
+    "after": ""
+  }
+}
