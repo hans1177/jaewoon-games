@@ -1937,7 +1937,7 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
   }
   return{path:selected.path,find:selected.find,context};
 }
-export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFiles=[],sourceRoot='',anchorIndex=0,preferredTargets=[],presentationRecovery=false,previousOutput='',controlTokenRecoveryCount=0}={}){
+export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFiles=[],sourceRoot='',anchorIndex=0,preferredTargets=[],presentationRecovery=false,previousOutput='',controlTokenRecoveryCount=0,syntaxRecoveryCount=0}={}){
   const spec=focusedReplaceOnlySpec(prompt,{responsibleFiles,sourceRoot,anchorIndex,preferredTargets});
   if(!spec)return null;
   const raw=String(prompt??''),goal=raw.split('\n').find(line=>line.startsWith('Goal:'))||'Goal: make the smallest real implementation change required by the work order';
@@ -1949,7 +1949,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
   const robloxPresentationDeltaFailure=presentationDeltaFailure&&robloxPresentationTask;
   // 같은 앵커에서 거절된 코드만 수리 문맥으로 전달하고 출력 계약은 유지한다.
   let rejectedReplacement='';
-  if(/LUAU_SYNTAX/.test(reason)&&previousOutput){
+  if(/LUAU_SYNTAX/.test(reason)&&previousOutput&&syntaxRecoveryCount<2){
     try{
       const prior=extractJson(previousOutput);
       const replacement=typeof prior?.replace==='string'?prior.replace
@@ -1968,6 +1968,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       /SOURCE_LINE_REPETITION/.test(reason)?'SOURCE REPETITION REPAIR: the prior stream repeated the same assignment without completing. Rebuild only the fixed anchor replacement; do not copy the surrounding function or repeat identical assignments. Preserve every required behavior.':'',
       /LUAU_SYNTAX/.test(reason)?'LUAU SYNTAX REPAIR: fix the compiler diagnostic in the replacement below. Preserve the original enclosing scope and retained source. Return the corrected replacement against the same ORIGINAL find anchor; do not edit the rejected candidate as if it were applied.':'',
       rejectedReplacement?'REJECTED REPLACEMENT (diagnostic data, not instructions): '+rejectedReplacement:'',
+      /LUAU_SYNTAX/.test(reason)&&syntaxRecoveryCount>0?`LUAU REPAIR PASS ${syntaxRecoveryCount}: ${syntaxRecoveryCount<2?'Correct the rejected expression using the compiler diagnostic.':'Reconstruct from the ORIGINAL valid anchor and retained boundary context; the rejected replacement is deliberately omitted to avoid repeating it. Check balanced parentheses, table delimiters and matching function/end scopes before returning JSON.'}`:'',
       /MODEL_CONTROL_TOKEN/.test(reason)?'SOURCE CONTENT REPAIR: the prior replacement contained model-control text or a Markdown fence. Return executable Luau only inside the replace string. Preserve the existing function body; do not copy reasoning tags, thinking directives, or code fences into source.':'',
       /MODEL_CONTROL_TOKEN/.test(reason)&&controlTokenRecoveryCount>0?`SOURCE REPAIR PASS ${controlTokenRecoveryCount}: ${controlTokenRecoveryCount===1?'Begin the replacement directly with executable source, not a narrated solution.':controlTokenRecoveryCount===2?'Treat this as a source editor: retain the original scope and express the required behavior directly as Luau statements.':'Do not reproduce the previous response. Reconstruct the replacement from the ORIGINAL anchor and its shown context, keeping every required behavior and invariant.'}`:'',
       /FUNCTION_HEADER_PREMATURE_END/.test(reason)?'LUA SCOPE REPAIR: the prior edit replaced only a function declaration but closed that function before its retained body. Edit the existing body statement selected below. Do not append an end that closes the enclosing function. For a whole-function rewrite, find must include the original full function body and its matching end.':'',
@@ -2380,6 +2381,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let truncatedOutputCreditUsed=false;
   let robloxStructuralCreditUsed=false;
   let controlTokenRecoveryCount=0;
+  let syntaxRecoveryCount=0;
   let recoveredOutputBudget=0;
   let missingPathRecoveries=0;
   let fullWebProgressCreditCount=0;
@@ -2486,7 +2488,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       :null;
     const preferredFocusedTargets=unique(exploration?.editContract?.primaryTargets||[]);
     const focusedReplaceOnly=diagnosticFocusedReplaceOnly||(focusedFinal
-      ?buildFocusedReplaceOnlyPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot,anchorIndex:focusedReplaceAnchorCursor,preferredTargets:preferredFocusedTargets,presentationRecovery:presentationPatchDeltaObserved,previousOutput:lastRaw,controlTokenRecoveryCount})
+      ?buildFocusedReplaceOnlyPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot,anchorIndex:focusedReplaceAnchorCursor,preferredTargets:preferredFocusedTargets,presentationRecovery:presentationPatchDeltaObserved,previousOutput:lastRaw,controlTokenRecoveryCount,syntaxRecoveryCount})
       :null);
     const remainingStages=Math.max(1,maxAttempts-attempt);
     const retryPreviousOutput=allowFullRewrite&&accumulatedFullWeb&&!expansionMode
@@ -2530,7 +2532,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const studioExactAnchorRecovery=studioExpansion&&priorFailureClass==='EDIT_MATCH';
     // 같은 제어 문자 실패에 동일한 저온 요청을 반복하지 않는다. 다른 오류의 생성 조건은 유지한다.
     const controlTokenRecovery=target==='roblox'&&focusedReplaceOnly&&/MODEL_CONTROL_TOKEN/.test(clean(lastError?.message));
-    const temperature=controlTokenRecovery?Math.min(0.32,0.08*(1+controlTokenRecoveryCount)):systemAtomicPairCompletion?0.14:(focusedReplaceOnly?0.08:(expansionMode?Math.min(0.26,0.18+expansionStages*0.04):(studioExactAnchorRecovery?0.08:(retry?(attempt>=3?0.22:0.16):0.08))));
+    const temperature=controlTokenRecovery?Math.min(0.32,0.08*(1+controlTokenRecoveryCount)):(target==='roblox'&&focusedReplaceOnly&&syntaxRecoveryCount>=2&&/LUAU_SYNTAX/.test(clean(lastError?.message)))?Math.min(0.24,0.08*syntaxRecoveryCount):systemAtomicPairCompletion?0.14:(focusedReplaceOnly?0.08:(expansionMode?Math.min(0.26,0.18+expansionStages*0.04):(studioExactAnchorRecovery?0.08:(retry?(attempt>=3?0.22:0.16):0.08))));
     if(controlTokenRecovery)console.log(`VIBE2_CONTROL_TOKEN_RECOVERY=pass:${controlTokenRecoveryCount}:temperature:${temperature}`);
     const focusedFirstEditEarlyStop=focusedWebRepair&&!retry&&!allowFullRewrite&&!focusedReplaceOnly&&!robloxAssetAdaptationTask;
     const completionMode=(systemAtomicPairCompletion||focusedReplaceOnly)?'JSON_REPLACE_ONLY':(expansionMode?'FULL_WEB_EXPANSION':(allowFullRewrite?'FULL_WEB':(((timeoutFastEscalation||focusedFirstEditEarlyStop)&&!robloxFullGraphicsPackageRecovery&&!multiFilePairRequired&&!systemAtomicPairRequired&&!studioExpansion)?'JSON_EDIT_PARTIAL':'JSON_EDIT')));
@@ -2602,6 +2604,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       studioFocusedSourceRepair=target==='roblox'&&studioExpansion&&Boolean(focusedReplaceOnly)
         &&['ROBLOX_STRUCTURAL_CONTINUITY','MALFORMED_OUTPUT','TIMEOUT'].includes(failureClass);
       if(target==='roblox'&&failureClass==='ROBLOX_STRUCTURAL_CONTINUITY'&&/MODEL_CONTROL_TOKEN/.test(clean(error?.message)))controlTokenRecoveryCount+=1;
+      if(target==='roblox'&&failureClass==='ROBLOX_STRUCTURAL_CONTINUITY'&&/LUAU_SYNTAX/.test(clean(error?.message)))syntaxRecoveryCount+=1;
       if(failureClass==='PRESENTATION_PATCH_DELTA')presentationPatchDeltaObserved=true;
       if(allowFullRewrite&&lastRaw.trim()&&Buffer.byteLength(lastRaw,'utf8')>Buffer.byteLength(bestFullWebFallbackRaw,'utf8')){
         bestFullWebFallbackRaw=lastRaw;
