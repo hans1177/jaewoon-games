@@ -8,6 +8,47 @@ local AssetService=game:GetService("AssetService")
 local TeleportService=game:GetService("TeleportService")
 local MemoryStoreService=game:GetService("MemoryStoreService")
 local TweenService=game:GetService("TweenService")
+
+-- 서버 부팅 첫 프레임부터 실제 로비 좌표에 SpawnLocation을 둔다.
+-- 동적 로비 생성 전 Roblox 기본 공중 스폰이 노출되는 것을 막는다.
+local lobbyBootstrapSpawn=workspace:FindFirstChild("LobbyBootstrapSpawn")
+if not lobbyBootstrapSpawn or not lobbyBootstrapSpawn:IsA("SpawnLocation")then
+ if lobbyBootstrapSpawn then lobbyBootstrapSpawn:Destroy()end
+ lobbyBootstrapSpawn=Instance.new("SpawnLocation")
+ lobbyBootstrapSpawn.Name="LobbyBootstrapSpawn"
+ lobbyBootstrapSpawn.Size=Vector3.new(18,.2,18)
+ lobbyBootstrapSpawn.Position=Vector3.new(0,.55,270)
+ lobbyBootstrapSpawn.Anchored=true
+ lobbyBootstrapSpawn.Neutral=true
+ lobbyBootstrapSpawn.Transparency=1
+ lobbyBootstrapSpawn.CanCollide=true
+ lobbyBootstrapSpawn.CanTouch=false
+ lobbyBootstrapSpawn.CanQuery=true
+ lobbyBootstrapSpawn.Duration=0
+ lobbyBootstrapSpawn.Parent=workspace
+end
+local function bootstrapLobbyCharacter(player,character)
+ if workspace:GetAttribute("LobbyPhase")=="RUNNING"or workspace:GetAttribute("RoomState")=="RUNNING"then return end
+ player.RespawnLocation=lobbyBootstrapSpawn
+ task.defer(function()
+  local rootPart=character and character:WaitForChild("HumanoidRootPart",5)
+  local humanoid=character and character:WaitForChild("Humanoid",5)
+  if not rootPart or not humanoid or not character.Parent then return end
+  if workspace:GetAttribute("LobbyPhase")=="RUNNING"or workspace:GetAttribute("RoomState")=="RUNNING"then return end
+  character:PivotTo(CFrame.lookAt(Vector3.new(0,3.7,270),Vector3.new(0,3.7,210)))
+  rootPart.AssemblyLinearVelocity=Vector3.zero
+  rootPart.AssemblyAngularVelocity=Vector3.zero
+  humanoid.PlatformStand=false;humanoid.Sit=false;humanoid.AutoRotate=true
+ end)
+end
+local function bindBootstrapLobbySpawn(player)
+ player.RespawnLocation=lobbyBootstrapSpawn
+ player.CharacterAdded:Connect(function(character)bootstrapLobbyCharacter(player,character)end)
+ if player.Character then bootstrapLobbyCharacter(player,player.Character)end
+end
+Players.PlayerAdded:Connect(bindBootstrapLobbySpawn)
+for _,player in ipairs(Players:GetPlayers())do bindBootstrapLobbySpawn(player)end
+
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
 local Style=require(Shared:WaitForChild("VisualStyle"))
@@ -58,7 +99,7 @@ local movementProbeStart={}
 local movementGuardClock=0
 local pressureLastCounts={SURVIVOR=4,MONSTER=4}
 local foundationSpawn=nil
-local lobbySpawnLocation=nil
+local lobbySpawnLocation=lobbyBootstrapSpawn
 local foundationSeen={}
 local foundationSequence=0
 local foundationLast={}
@@ -845,16 +886,16 @@ local function makePhysicalLobby()
  local old=workspace:FindFirstChild("MidnightLobby");if old then old:Destroy()end
  local f=Instance.new("Folder");f.Name="MidnightLobby";f.Parent=workspace
  local flickerLights={}
- lobbySpawnLocation=Instance.new("SpawnLocation")
+ lobbySpawnLocation=lobbyBootstrapSpawn
  lobbySpawnLocation.Name="LobbySpawn"
- lobbySpawnLocation.Size=Vector3.new(8,1,8)
- lobbySpawnLocation.Position=Vector3.new(0,.7,270)
+ lobbySpawnLocation.Size=Vector3.new(18,.2,18)
+ lobbySpawnLocation.Position=Vector3.new(0,.55,270)
  lobbySpawnLocation.Anchored=true
  lobbySpawnLocation.Neutral=true
  lobbySpawnLocation.Transparency=1
- lobbySpawnLocation.CanCollide=false
+ lobbySpawnLocation.CanCollide=true
  lobbySpawnLocation.CanTouch=false
- lobbySpawnLocation.CanQuery=false
+ lobbySpawnLocation.CanQuery=true
  lobbySpawnLocation.Parent=f
 
  -- 폐호텔 메인홀: 이동 범위를 의도적으로 좁혀 빈 광장 느낌을 없앤다.
@@ -1199,7 +1240,7 @@ local function makePhysicalLobby()
  workspace:SetAttribute("PhysicalLobbyReady",true)
  workspace:SetAttribute("WorldLobbyMode",true)
  workspace:SetAttribute("LobbyArtPass","NOCTURNE_CURSED_HOTEL_V6")
- workspace:SetAttribute("LobbyBuildRevision","NOCTURNE_GROUNDED_SPAWN_20260930")
+ workspace:SetAttribute("LobbyBuildRevision","NOCTURNE_BOOTSTRAP_SPAWN_20260930")
  return f
 end
 
@@ -1271,7 +1312,16 @@ task.spawn(function()
     local rr=root(player)
     if rr and(rr.Position.Y<-2 or rr.Position.Y>20 or math.abs(rr.Position.X)>86 or rr.Position.Z<182 or rr.Position.Z>310)then
      local slot=((i-1)%#lobbySpawns)+1
-     teleport(player,lobbySpawns[slot],Vector3.new(0,3,210))
+     local h=hum(player)
+     if rr.Position.Y>20 then
+      movementGraceUntil[player]=os.clock()+1
+      rr.CFrame=CFrame.lookAt(Vector3.new(lobbySpawns[slot].X,3.7,lobbySpawns[slot].Z),Vector3.new(0,3.7,210))
+      rr.AssemblyLinearVelocity=Vector3.zero;rr.AssemblyAngularVelocity=Vector3.zero
+      if h then h.PlatformStand=false;h.Sit=false;h.AutoRotate=true end
+      lastValidPosition[player]=rr.Position
+     else
+      teleport(player,lobbySpawns[slot],Vector3.new(0,3,210))
+     end
      player:SetAttribute("LobbySafetyRecoveredAt",workspace:GetServerTimeNow())
     end
    end
@@ -2401,7 +2451,7 @@ local function groundedRootTarget(p,pos)
  local groundY=hit and hit.Position.Y or(lobbyDestination and .65 or .5)
  local standingOffset=math.max(1,tonumber(h.HipHeight)or 0)+(r.Size.Y*.5)
  local targetY=groundY+standingOffset+.03
- if lobbyDestination then targetY=math.clamp(targetY,2.8,5.2)end
+ if lobbyDestination then targetY=math.clamp(targetY,3.1,4.4)end
  return Vector3.new(pos.X,targetY,pos.Z)
 end
 local function teleport(p,pos,lookAtPos)
