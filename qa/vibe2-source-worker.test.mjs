@@ -5083,6 +5083,37 @@ test('oversized Roblox rebuild starts with owned source and complete learning in
   assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
 });
 
+test('oversized standard JSON edit starts with bounded writable context instead of spending the first request on a guaranteed timeout',async(t)=>{
+  const cwd=tempRoot(),root='web-games/demo',relative='index.html',requests=[];
+  const source='<!doctype html>\n<button id="play">Play</button>\n<script>\n'+('const historicalObservation = "unchanged";\n'.repeat(3500))+'</script>\n';
+  write(path.join(cwd,root,relative),source);
+  const work=order({target:'web',root,responsibleFiles:[root+'/'+relative],taskId:'bounded-standard-input'});
+  const principle='id=persistent-contextual-action-controls;scope=mobile-interaction-observation;lesson=keep contextual controls visible;apply=keep controls beside play';
+  work.knowledgeApplicationContract={mandatoryForGameTarget:true,verifiedExternalLearningIds:['external-black-box-demo'],verifiedExternalLearningRetrievedCount:1,retrievedVerifiedExternalLearningTruncationForbidden:true,allRetrievedPrinciplesHaveExplicitDisposition:true,verifiedExternalLearningDispositions:[{id:'persistent-contextual-action-controls',disposition:'APPLIED_GAME_SOURCE'}]};
+  work.unifiedLearning={playbookReuse:[{id:'external-black-box-demo',verified:true,authority:'verified-task-playbook',distilledApplicationPrinciples:[principle],distilledAvoidancePrinciples:['Do not clone assets']}]};
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(work));
+  const server=http.createServer((req,res)=>{
+    let body='';req.on('data',chunk=>body+=chunk);req.on('end',()=>{
+      requests.push(JSON.parse(body));res.writeHead(503);res.end('probe ends before candidate generation');
+    });
+  });
+  await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(11434,'127.0.0.1',resolve);});
+  t.after(()=>new Promise(resolve=>server.close(resolve)));
+  await assert.rejects(runVibe2SourceWorker({cwd,applySource:true}),/Ollama HTTP 503/);
+  assert.equal(requests.length,1);
+  const request=requests[0];
+  assert.ok(Buffer.byteLength(request.prompt)<64000);
+  assert.match(request.prompt,/INITIAL BOUNDED SOURCE REQUEST/);
+  assert.doesNotMatch(request.prompt,/RECOVERY RETRY/);
+  assert.doesNotMatch(request.prompt,/Previous failure:/);
+  assert.match(request.prompt,/Allowed edit paths: index\.html/);
+  assert.match(request.prompt,/=== FILE index\.html \[EDITABLE\](?: \[TRUNCATED\])? ===/);
+  assert.match(request.prompt,/button id="play"/);
+  assert.ok(request.prompt.includes(principle));
+  assert.match(request.prompt,/Do not clone assets/);
+  assert.deepEqual(request.format,'json');
+});
+
 
 test('Roblox repeated assignment stream aborts before completion and retries without applying partial source',{timeout:5000},async(t)=>{
   const cwd=tempRoot(),root='roblox-games/demo',relative='client/Game.client.luau',requests=[];
