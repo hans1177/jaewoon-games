@@ -18,6 +18,8 @@ import {
   targetPlatformDevelopmentEligible,
   concurrentTargetPlatforms,
   platformDevelopmentEligible,
+  ownerExclusiveDevelopmentGameIds,
+  ownerExclusiveDevelopmentExcluded,
   verifiedOwnerReleaseHandoffEligible,
   canonicalTargetStep,
   canonicalTargetWaitingState,
@@ -35,6 +37,15 @@ const nativeItem=(gameId='dual',selectedPlatform='ROBLOX')=>({
   },
   concurrentTargetPlatforms:['ROBLOX','UNITY'],
   enqueuedAt:'2026-09-21T00:00:00.000Z'
+});
+
+test('owner-exclusive exclusion is active only while the canonical owner scope is active',()=>{
+  const active={ownerCanonicalRules:{ownerExclusiveDevelopment:{status:'ACTIVE',gameIds:['horror-escape-room','demo-game']}}};
+  assert.deepEqual(ownerExclusiveDevelopmentGameIds(active),['horror-escape-room','demo-game']);
+  assert.equal(ownerExclusiveDevelopmentExcluded('horror-escape-room',active),true);
+  const released={ownerCanonicalRules:{ownerExclusiveDevelopment:{status:'INACTIVE_OWNER_RELEASED',gameIds:[],releasedGameIds:['horror-escape-room']}}};
+  assert.deepEqual(ownerExclusiveDevelopmentGameIds(released),[]);
+  assert.equal(ownerExclusiveDevelopmentExcluded('horror-escape-room',released),false);
 });
 
 test('active selected platforms are Roblox and Unity only',()=>{
