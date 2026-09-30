@@ -1,7 +1,9 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
-local store = DataStoreService:GetDataStore("village-dungeons-development-v1")
+local store
+pcall(function() store = DataStoreService:GetDataStore("village-dungeons-development-v1") end)
+local dataLoaded = {}
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
 
@@ -121,21 +123,31 @@ local handlers = {
   ["scope-mobileux-a3fe13f59a"] = scopeHandler7,
 }
 
-Players.PlayerAdded:Connect(function(player)
+local function loadPlayer(player)
+  initializePlayer(player)
+  dataLoaded[player] = nil
+  player:SetAttribute("SaveStatus", "LOADING")
+  if not store then player:SetAttribute("SaveStatus", "UNAVAILABLE"); return end
   local ok, saved = pcall(function()
     return store:GetAsync("player:" .. player.UserId)
   end)
+  if not ok or (saved ~= nil and typeof(saved) ~= "table") then
+    player:SetAttribute("SaveStatus", "LOAD_FAILED")
+    return
+  end
+  if not player.Parent then return end
   if ok and typeof(saved) == "table" then
     for key, fallback in pairs(Config.InitialState) do
       local value = saved[key]
       if typeof(value) == "number" then player:SetAttribute(key, value) else player:SetAttribute(key, fallback) end
     end
-  else
-    initializePlayer(player)
   end
-end)
+  dataLoaded[player] = true
+  player:SetAttribute("SaveStatus", "READY")
+end
+Players.PlayerAdded:Connect(loadPlayer)
 for _, player in ipairs(Players:GetPlayers()) do
-  task.defer(function() if player:GetAttribute("Score") == nil then initializePlayer(player) end end)
+  task.defer(loadPlayer, player)
 end
 remote.OnServerEvent:Connect(function(player, actionId)
   if typeof(actionId) ~= "string" then return end
@@ -148,11 +160,20 @@ remote.OnServerEvent:Connect(function(player, actionId)
   handler(player)
 end)
 Players.PlayerRemoving:Connect(function(player)
-  local snapshot = {}
-  for key, fallback in pairs(Config.InitialState) do snapshot[key] = readNumber(player, key, fallback) end
-  pcall(function()
-    store:UpdateAsync("player:" .. player.UserId, function() return snapshot end)
-  end)
+  if store and dataLoaded[player] then
+    local snapshot = {}
+    for key, fallback in pairs(Config.InitialState) do snapshot[key] = readNumber(player, key, fallback) end
+    local saved = pcall(function()
+      store:UpdateAsync("player:" .. player.UserId, function(previous)
+        if previous ~= nil and typeof(previous) ~= "table" then error("INVALID_SAVED_RECORD") end
+        local merged = typeof(previous) == "table" and table.clone(previous) or {}
+        for key, value in pairs(snapshot) do merged[key] = value end
+        return merged
+      end)
+    end)
+    player:SetAttribute("SaveStatus", saved and "SAVED" or "SAVE_FAILED")
+  end
+  dataLoaded[player] = nil
   lastAction[player] = nil
 end)
 
