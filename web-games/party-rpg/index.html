@@ -93,6 +93,7 @@ button{font:inherit}
 (function(){
 "use strict";
 var SAVE_KEY="party-rpg-v1";
+var MAX_PARTY_SIZE=4;
 var ZONES=[
  {name:"마을",sub:"휴식과 준비",color:"#5f8f58",lv:1,mons:[]},
  {name:"초원",sub:"Lv.1+",color:"#73a95d",lv:1,mons:[["초원 슬라임",55,8,18,16],["뿔토끼",70,10,22,18]]},
@@ -150,6 +151,12 @@ function load(){
  if(v&&typeof v==="object"){s=Object.assign(s,v);s.player=Object.assign(defaultState.player,v.player||{});}
  if(!Array.isArray(s.ai)||s.ai.length!==10)s.ai=AI_NAMES.map(function(_,i){return makeAI(i);});
  s.ai=s.ai.map(function(a,i){return Object.assign(makeAI(i),a||{});});
+ var activeParty=0;
+ s.ai.forEach(function(a){
+  if(!a.party)return;
+  activeParty++;
+  if(activeParty>=MAX_PARTY_SIZE){a.party=false;a.zone=0;a.routine="town";a.routineTime=120;}
+ });
  s.player.ownedWeapons=Array.isArray(s.player.ownedWeapons)?s.player.ownedWeapons:[];
  s.player.ownedArmors=Array.isArray(s.player.ownedArmors)?s.player.ownedArmors:[];
  s.player.drops=Array.isArray(s.player.drops)?s.player.drops:[];
@@ -203,7 +210,7 @@ function resize(){W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,1.
 addEventListener("resize",resize);resize();
 function toast(msg){var el=document.getElementById("toast");el.textContent=msg;el.classList.add("on");clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove("on");},1900);}
 function updateHud(){
- lvText.textContent="Lv."+state.player.level;hpText.textContent="HP "+Math.ceil(state.player.hp)+"/"+state.player.maxHp;atkText.textContent="공격 "+playerAtk();defText.textContent="방어 "+playerArmorDef();goldText.textContent=Math.floor(state.player.gold)+"G";partyText.textContent="파티 1+"+partyCount()+"/4";
+ lvText.textContent="Lv."+state.player.level;hpText.textContent="HP "+Math.ceil(state.player.hp)+"/"+state.player.maxHp;atkText.textContent="공격 "+playerAtk();defText.textContent="방어 "+playerArmorDef();goldText.textContent=Math.floor(state.player.gold)+"G";partyText.textContent="파티 1+"+partyCount()+"/"+MAX_PARTY_SIZE;
  hpFill.style.width=Math.max(0,state.player.hp/state.player.maxHp*100)+"%";xpFill.style.width=Math.max(0,state.player.xp/xpNeed(state.player.level)*100)+"%";
  if(dungeon){zoneName.textContent=dungeon.def.name;zoneSub.textContent="방 "+(dungeon.room+1)+"/"+(dungeon.def.rooms.length+1);if(dungeon.complete)objective.textContent="던전 클리어! 빛에 닿으면 마을로 귀환해.";else if(dungeon.room<dungeon.def.rooms.length)objective.textContent="방의 몬스터를 모두 처치해야 다음 방이 열려. 남은 적 "+aliveEnemies();else objective.textContent="보스 처치가 클리어 조건. 보스 체력을 많이 깎을수록 기여도가 올라.";}
  else{var z=ZONES[state.zone];zoneName.textContent=z.name;zoneSub.textContent=z.sub;objective.textContent=state.zone===0?"AI 유저를 3번 클릭하면 파티 초대/해체. 던전은 최소 2명이 필요해.":"엘리트 몬스터는 더 강하지만 경험치와 골드를 더 많이 줘.";}
@@ -402,7 +409,7 @@ function updateInteractions(){
  prompt.classList.remove("on");
 }
 function interact(){if(modalOpen)return;if(currentInteract){if(currentInteract.kind==="heal"){state.player.hp=state.player.maxHp;partyMembers().forEach(function(a){a.hp=a.maxHp;});toast("모두 회복했어.");save();}else if(currentInteract.kind==="sell")sellMenu();else shopMenu(currentInteract.kind);return;}toast("상호작용할 대상이 없어.");}
-function toggleParty(ai){if(!ai)return;if(ai.party){ai.party=false;setAIRoutine(ai,"town");toast(ai.name+" 파티 해체");}else{if(partyCount()>=4){toast("AI 파티원은 최대 4명까지 초대 가능해.");return;}ai.party=true;ai.zone=state.zone;ai.x=p.x-55;ai.y=p.y+55;ai.hp=ai.maxHp;toast(ai.name+" 파티 합류");}save();}
+function toggleParty(ai){if(!ai)return;if(ai.party){ai.party=false;setAIRoutine(ai,"town");toast(ai.name+" 파티 해체");}else{if(partyCount()>=MAX_PARTY_SIZE-1){toast("파티는 플레이어 포함 최대 "+MAX_PARTY_SIZE+"명이야.");return;}ai.party=true;ai.zone=state.zone;ai.x=p.x-55;ai.y=p.y+55;ai.hp=ai.maxHp;toast(ai.name+" 파티 합류");}save();}
 function onCanvasTap(clientX,clientY){
  if(modalOpen)return;var wx=clientX+camera.x,wy=clientY+camera.y,best=null,bd=42*42;
  state.ai.forEach(function(a){if(dungeon&&!a.party)return;if(!dungeon&&a.zone!==state.zone&&!a.party)return;var dx=a.x-wx,dy=a.y-wy,d=dx*dx+dy*dy;if(d<bd){bd=d;best=a;}});
