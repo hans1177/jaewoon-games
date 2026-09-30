@@ -754,31 +754,95 @@ local function makePhysicalLobby()
  local bridge=arenaPart(f,"PondBridge",Vector3.new(15,.8,4),Vector3.new(0,2,254),Color3.fromRGB(111,70,47),Enum.Material.WoodPlanks)
  bridge.Orientation=Vector3.new(0,90,0)
 
- -- DOORS식 흐름을 참고하되 동양식 객실 문으로 재해석한 4개 자동 매칭 입구.
+ -- 객잔 디테일: 처마 서까래, 창호창, 간판, 짐수레와 차탁.
+ for _,x in ipairs({-36,-18,18,36})do
+  for j=1,5 do
+   arenaPart(f,"MainRoofRafter",Vector3.new(1,1,15),Vector3.new(x+(j-3)*3.1,20.8,289),Color3.fromRGB(48,35,28),Enum.Material.WoodPlanks)
+  end
+ end
+ for _,x in ipairs({-34,-17,17,34})do
+  local window=arenaPart(f,"InnPaperWindow",Vector3.new(12,7,.35),Vector3.new(x,8.8,284.35),Color3.fromRGB(226,216,195),Enum.Material.Glass)
+  window.Transparency=.18;window.CanCollide=false
+  for gx=-4,4,2 do
+   arenaPart(f,"WindowLatticeV",Vector3.new(.16,6.6,.12),Vector3.new(x+gx,8.8,284.1),Color3.fromRGB(78,52,36),Enum.Material.Wood).CanCollide=false
+  end
+  for gy=-2,2,2 do
+   arenaPart(f,"WindowLatticeH",Vector3.new(11.5,.16,.12),Vector3.new(x,8.8+gy,284.1),Color3.fromRGB(78,52,36),Enum.Material.Wood).CanCollide=false
+  end
+ end
+ for _,spec in ipairs({{-28,266},{28,266},{-28,226},{28,226}})do
+  local tableTop=arenaPart(f,"TeaTable",Vector3.new(6,.5,4),Vector3.new(spec[1],2,spec[2]),Color3.fromRGB(104,68,45),Enum.Material.WoodPlanks)
+  for _,dx in ipairs({-2.3,2.3})do for _,dz in ipairs({-1.3,1.3})do arenaPart(f,"TeaTableLeg",Vector3.new(.45,2.3,.45),Vector3.new(spec[1]+dx,1,spec[2]+dz),Color3.fromRGB(82,54,38),Enum.Material.WoodPlanks)end end
+  arenaPart(f,"TeaCup",Vector3.new(.65,.55,.65),Vector3.new(spec[1]+1.2,2.55,spec[2]),Color3.fromRGB(210,205,191),Enum.Material.Ceramic).CanCollide=false
+ end
+ arenaPart(f,"LuggageCart",Vector3.new(8,2.2,4),Vector3.new(-63,2,272),Color3.fromRGB(91,63,43),Enum.Material.WoodPlanks)
+ for _,dx in ipairs({-3,3})do
+  local wheel=arenaPart(f,"CartWheel",Vector3.new(2,2,.5),Vector3.new(-63+dx,.9,270),Color3.fromRGB(45,39,35),Enum.Material.Wood)
+  wheel.Shape=Enum.PartType.Cylinder;wheel.Orientation=Vector3.new(0,90,0)
+ end
+ -- 객실형 매칭: 안으로 들어가면 방이 개설되고, 인원/카운트가 문 위에 즉시 표시된다.
  lobbyQueueBays={}
  for i,x in ipairs({-51,-17,17,51})do
-  local bay=Instance.new("Folder");bay.Name="GuestGate"..i;bay.Parent=f
-  local floor=arenaPart(bay,"MatchBay"..i,Vector3.new(22,.24,17),Vector3.new(x,1.08,198),Color3.fromRGB(85,68,52),Enum.Material.WoodPlanks)
-  floor.CanCollide=true;floor.Transparency=.03;floor:SetAttribute("MatchBayIndex",i);floor:SetAttribute("WalkableGround",true)
-  arenaPart(bay,"GateBack",Vector3.new(24,12,1),Vector3.new(x,6.8,207),Color3.fromRGB(196,187,169),Enum.Material.Plaster)
-  for _,dx in ipairs({-11.2,11.2})do arenaPart(bay,"GatePillar",Vector3.new(1.5,12,1.5),Vector3.new(x+dx,6.6,198),Color3.fromRGB(61,42,30),Enum.Material.WoodPlanks)end
-  arenaPart(bay,"GateLintel",Vector3.new(24,1.4,1.5),Vector3.new(x,12,190.5),Color3.fromRGB(57,39,29),Enum.Material.WoodPlanks)
-  arenaPart(bay,"GateRoof",Vector3.new(28,1.1,20),Vector3.new(x,13.3,199),Color3.fromRGB(34,38,40),Enum.Material.Slate)
+  local bay=Instance.new("Folder");bay.Name="GuestRoom"..i;bay.Parent=f
 
-  local board=arenaPart(bay,"GateBoard",Vector3.new(16,3.4,.55),Vector3.new(x,9.5,190.2),Color3.fromRGB(52,35,26),Enum.Material.WoodPlanks)
-  local label=lobbySurfaceText(board,string.format("객실 %02d",i),Color3.fromRGB(235,207,148),21)
+  -- 객실 내부
+  local floor=arenaPart(bay,"MatchBay"..i,Vector3.new(24,.35,22),Vector3.new(x,1.12,198),Color3.fromRGB(92,70,50),Enum.Material.WoodPlanks)
+  floor.CanCollide=true;floor:SetAttribute("MatchBayIndex",i);floor:SetAttribute("WalkableGround",true)
+  arenaPart(bay,"RoomBackWall",Vector3.new(24,12,1),Vector3.new(x,6.8,208.6),Color3.fromRGB(206,196,177),Enum.Material.Plaster)
+  arenaPart(bay,"RoomLeftWall",Vector3.new(1,12,22),Vector3.new(x-11.6,6.8,198),Color3.fromRGB(70,48,34),Enum.Material.WoodPlanks)
+  arenaPart(bay,"RoomRightWall",Vector3.new(1,12,22),Vector3.new(x+11.6,6.8,198),Color3.fromRGB(70,48,34),Enum.Material.WoodPlanks)
+  arenaPart(bay,"RoomCeiling",Vector3.new(25,1,23),Vector3.new(x,13.1,198),Color3.fromRGB(35,39,40),Enum.Material.Slate)
 
-  local left=arenaPart(bay,"SlidingDoorL",Vector3.new(9.5,7.7,.5),Vector3.new(x-5,5,190.55),Color3.fromRGB(223,215,197),Enum.Material.WoodPlanks)
-  local right=arenaPart(bay,"SlidingDoorR",Vector3.new(9.5,7.7,.5),Vector3.new(x+5,5,190.55),Color3.fromRGB(223,215,197),Enum.Material.WoodPlanks)
+  -- 실내 장식: 다다미, 등불, 벽지, 작은 선반.
+  for tx=-1,1 do
+   for tz=0,1 do
+    local mat=arenaPart(bay,"Tatami",Vector3.new(6.6,.12,8.1),Vector3.new(x+tx*6.8,1.34,196+tz*8),Color3.fromRGB(157,145,105),Enum.Material.Fabric)
+    mat.CanCollide=false
+   end
+  end
+  local roomLamp=arenaPart(bay,"RoomLamp",Vector3.new(2.1,2.7,2.1),Vector3.new(x,9.6,204),Color3.fromRGB(176,55,43),Enum.Material.Neon)
+  roomLamp.Shape=Enum.PartType.Cylinder;roomLamp.Orientation=Vector3.new(0,0,90);roomLamp.CanCollide=false;glow(roomLamp,Color3.fromRGB(255,157,88),17,1)
+  arenaPart(bay,"RoomShelf",Vector3.new(7,4,1.5),Vector3.new(x-7.5,3.3,207),Color3.fromRGB(74,50,35),Enum.Material.WoodPlanks)
+  arenaPart(bay,"RoomScroll",Vector3.new(4.4,5,.18),Vector3.new(x+6.8,6.4,208),Color3.fromRGB(220,210,187),Enum.Material.Fabric).CanCollide=false
+
+  -- 외부 문틀/기와 처마
+  for _,dx in ipairs({-12,12})do arenaPart(bay,"GatePillar",Vector3.new(1.7,13,1.7),Vector3.new(x+dx,6.9,187.5),Color3.fromRGB(57,38,27),Enum.Material.WoodPlanks)end
+  arenaPart(bay,"GateLintel",Vector3.new(25.5,1.5,1.5),Vector3.new(x,12.3,187.5),Color3.fromRGB(57,38,27),Enum.Material.WoodPlanks)
+  arenaPart(bay,"GateRoof",Vector3.new(30,1.1,8),Vector3.new(x,14,189.5),Color3.fromRGB(32,36,38),Enum.Material.Slate)
+  arenaPart(bay,"GateEave",Vector3.new(34,.55,4),Vector3.new(x,13.2,186.5),Color3.fromRGB(45,46,45),Enum.Material.Slate)
+
+  -- 상태판: 평소 '입장 가능', 들어가면 '방 개설 · n/8 · 5초'
+  local board=arenaPart(bay,"GateBoard",Vector3.new(17,4,.55),Vector3.new(x,10,186.5),Color3.fromRGB(47,31,23),Enum.Material.WoodPlanks)
+  local label=lobbySurfaceText(board,string.format("객실 %02d\n입장 가능 · 0/8",i),Color3.fromRGB(238,211,151),21)
+
+  -- 두 짝 미닫이문
+  local left=arenaPart(bay,"SlidingDoorL",Vector3.new(10.5,8.2,.55),Vector3.new(x-5.4,5.2,187.85),Color3.fromRGB(225,216,198),Enum.Material.WoodPlanks)
+  local right=arenaPart(bay,"SlidingDoorR",Vector3.new(10.5,8.2,.55),Vector3.new(x+5.4,5.2,187.85),Color3.fromRGB(225,216,198),Enum.Material.WoodPlanks)
   left.CanCollide=false;right.CanCollide=false
   for _,door in ipairs({left,right})do
    for bar=-3,3,2 do
-    local lattice=arenaPart(bay,"DoorLattice",Vector3.new(.18,7.2,.08),door.Position+Vector3.new(bar*.72,0,-.31),Color3.fromRGB(86,58,40),Enum.Material.Wood)
+    local lattice=arenaPart(bay,"DoorLattice",Vector3.new(.18,7.6,.08),door.Position+Vector3.new(bar*.8,0,-.34),Color3.fromRGB(82,55,38),Enum.Material.Wood)
     lattice.CanCollide=false
    end
+   for bar=-2,2,2 do
+    local cross=arenaPart(bay,"DoorCross",Vector3.new(9.8,.18,.08),door.Position+Vector3.new(0,bar*1.45,-.34),Color3.fromRGB(82,55,38),Enum.Material.Wood)
+    cross.CanCollide=false
+   end
   end
-  local lamp=arenaPart(bay,"GateLantern",Vector3.new(2,2.8,2),Vector3.new(x,11,191),Color3.fromRGB(178,52,44),Enum.Material.Neon);lamp.Shape=Enum.PartType.Cylinder;lamp.Orientation=Vector3.new(0,0,90);lamp.CanCollide=false;glow(lamp,Color3.fromRGB(255,156,86),14,.9)
-  lobbyQueueBays[i]={part=floor,label=label,players={},countdown=nil,token=0,index=i,doorLeft=left,doorRight=right,doorLeftOpen=left.CFrame*CFrame.new(-5.8,0,0),doorRightOpen=right.CFrame*CFrame.new(5.8,0,0),doorLeftClosed=left.CFrame,doorRightClosed=right.CFrame}
+
+  -- 문앞 작은 계단과 번호 등불.
+  for step=1,3 do
+   arenaPart(bay,"GateStep",Vector3.new(24-step*2,.35,2.3),Vector3.new(x,.3+step*.22,185.5+step*1.35),Color3.fromRGB(83,83,80),Enum.Material.Slate)
+  end
+  local lamp=arenaPart(bay,"GateLantern",Vector3.new(2,2.8,2),Vector3.new(x,12,187),Color3.fromRGB(179,54,43),Enum.Material.Neon)
+  lamp.Shape=Enum.PartType.Cylinder;lamp.Orientation=Vector3.new(0,0,90);lamp.CanCollide=false;glow(lamp,Color3.fromRGB(255,158,89),15,.95)
+
+  lobbyQueueBays[i]={
+   part=floor,label=label,players={},countdown=nil,token=0,index=i,
+   doorLeft=left,doorRight=right,
+   doorLeftOpen=left.CFrame*CFrame.new(-6.4,0,0),doorRightOpen=right.CFrame*CFrame.new(6.4,0,0),
+   doorLeftClosed=left.CFrame,doorRightClosed=right.CFrame,
+  }
   left.CFrame=lobbyQueueBays[i].doorLeftOpen;right.CFrame=lobbyQueueBays[i].doorRightOpen
  end
 
@@ -822,11 +886,11 @@ local function updateMatchBayLabel(bay)
  local count=0
  for p in pairs(bay.players)do if p.Parent==Players then count+=1 end end
  if count==0 then
-  bay.label.Text=string.format("객실 %02d",bay.index)
+  bay.label.Text=string.format("객실 %02d\n입장 가능 · 0/8",bay.index)
  elseif bay.countdown then
-  bay.label.Text=string.format("객실 %02d  %d/8  %d초",bay.index,count,math.max(0,math.ceil(bay.countdown)))
+  bay.label.Text=string.format("객실 %02d\n방 개설 · %d/8 · %d초",bay.index,count,math.max(0,math.ceil(bay.countdown)))
  else
-  bay.label.Text=string.format("객실 %02d  %d/8",bay.index,count)
+  bay.label.Text=string.format("객실 %02d\n방 개설 · %d/8",bay.index,count)
  end
 end
 
@@ -885,6 +949,7 @@ task.spawn(function()
     end
     for p in pairs(bay.players)do if not p.Parent then bay.players[p]=nil;changed=true end end
     local count=0;for _ in pairs(bay.players)do count+=1 end
+    if count>=LOBBY_QUEUE_MAX and bay.countdown then bay.countdown=1 end
     if count>0 and not bay.countdown then beginMatchBayCountdown(bay)
     elseif count==0 and bay.countdown then bay.token+=1;bay.countdown=nil;changed=true end
     if changed then updateMatchBayLabel(bay)end
