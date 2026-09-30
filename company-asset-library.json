@@ -1,5 +1,5 @@
 {
-  "version": 25,
+  "version": 26,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-09-30",
@@ -245,6 +245,58 @@
       "path": "/godot-games/bug-defense/assets/spider.svg",
       "license": "project-original",
       "note": "생물형 실루엣 참고"
+    },
+    {
+      "id": "roblox-insect-spider-hd-v1",
+      "title": "고디테일 거미",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "subfamily": "ARACHNID",
+      "platform": "SHARED_REFERENCE",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/native/spider/spider.png",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_NATIVE_IMPORT",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "targetPlatforms": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/build-spider.py",
+        "assets/roblox/world-ghosts/SPIDER.md",
+        "assets/roblox/world-ghosts/native/spider/spider.glb",
+        "assets/roblox/world-ghosts/native/spider/spider.png",
+        "assets/roblox/world-ghosts/native/spider/evidence.json",
+        "assets/roblox/world-ghosts/native/spider/view.html"
+      ],
+      "meshArtifact": "assets/roblox/world-ghosts/native/spider/spider.glb",
+      "meshRigVersion": "SPIDER_HD_RIG_1",
+      "vertices": 18550,
+      "triangles": 35080,
+      "bones": 45,
+      "legCount": 8,
+      "eyeCount": 8,
+      "motionStates": [
+        "idle",
+        "walk",
+        "run",
+        "strafe",
+        "climb",
+        "threat",
+        "bite",
+        "pounce",
+        "web_cast",
+        "hit",
+        "stagger",
+        "death"
+      ],
+      "motionCount": 12,
+      "unityWebVerified": false,
+      "nativeStudioVerified": false,
+      "note": "직접 제작한 고디테일 거미 GLB 원본. 8다리 독립 관절, 8눈, 송곳니·촉지·방적돌기·갑각·감각모 포함. GLB 구조/스킨/12개 내장 동작 CI 검증 완료. Unity/Roblox 실제 런타임·모바일 성능 검증 전."
     },
     {
       "id": "ladybug-sprite",
