@@ -1365,6 +1365,31 @@ roomBrowserFeedback.ZIndex=21
 roomBrowserFeedback.Parent=roomBrowserPanel
 
 -- 실제 3D 로비의 코드 단말에서만 잠깐 열리는 작은 입력창.
+
+local roomCreateNotice=Instance.new("Frame")
+roomCreateNotice.Name="RoomCreateNotice"
+roomCreateNotice.AnchorPoint=Vector2.new(.5,0)
+roomCreateNotice.Position=UDim2.new(.5,0,0,74)
+roomCreateNotice.Size=UDim2.fromOffset(250,44)
+roomCreateNotice.BackgroundColor3=Color3.fromRGB(34,25,20)
+roomCreateNotice.BackgroundTransparency=.12
+roomCreateNotice.BorderSizePixel=0
+roomCreateNotice.Visible=false
+roomCreateNotice.ZIndex=38
+roomCreateNotice.Parent=gui
+roundify(roomCreateNotice,10);outline(roomCreateNotice,.45)
+
+local roomCreateNoticeText=Instance.new("TextLabel")
+roomCreateNoticeText.Size=UDim2.new(1,-14,1,-8)
+roomCreateNoticeText.Position=UDim2.fromOffset(7,4)
+roomCreateNoticeText.BackgroundTransparency=1
+roomCreateNoticeText.Text="객실 입장 · 방 개설"
+roomCreateNoticeText.TextColor3=Color3.fromRGB(239,213,167)
+roomCreateNoticeText.TextSize=14
+roomCreateNoticeText.Font=Enum.Font.GothamBold
+roomCreateNoticeText.ZIndex=39
+roomCreateNoticeText.Parent=roomCreateNotice
+
 local worldCodePanel=Instance.new("Frame")
 worldCodePanel.Name="WorldLobbyCodePanel"
 worldCodePanel.AnchorPoint=Vector2.new(.5,.5)
@@ -2137,6 +2162,26 @@ local function render()
  local isRoomServer=p:GetAttribute("RoomServer")==true
  local roomState=tostring(p:GetAttribute("RoomState")or"BROWSER")
  local browser=not isRoomServer
+ local lobbyFolder=workspace:FindFirstChild("MidnightLobby")
+ local rootNow=p.Character and p.Character:FindFirstChild("HumanoidRootPart")
+ local nearestBay=nil
+ local nearestDist=math.huge
+ if browser and lobbyFolder and rootNow then
+  for _,d in ipairs(lobbyFolder:GetDescendants())do
+   if d:IsA("BasePart")and d:GetAttribute("MatchBayIndex")then
+    local dist=(d.Position-rootNow.Position).Magnitude
+    if dist<nearestDist then nearestDist=dist;nearestBay=d end
+   end
+  end
+ end
+ roomCreateNotice.Visible=browser and nearestBay~=nil and nearestDist<18
+ if roomCreateNotice.Visible then
+  local folder=nearestBay.Parent
+  local board=folder and folder:FindFirstChild("GateBoard")
+  local sg=board and board:FindFirstChild("LobbySurfaceText")
+  local label=sg and sg:FindFirstChildOfClass("TextLabel")
+  roomCreateNoticeText.Text=label and label.Text or "객실 입장 · 방 개설"
+ end
  roomBrowserPanel.Visible=false
  roomInfoPanel.Visible=false
  roomSlotsPanel.Visible=false
