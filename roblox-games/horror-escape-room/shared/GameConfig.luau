@@ -186,11 +186,11 @@ local Config={
   BREACH={Name="돌파",Effect="FORWARD_BREACH",Velocity=96,Lift=3},
  },
  MonsterAbilities={
-  BAT_DASH={Name="박쥐 돌진",Velocity=70,Effect="BLOOD_BATS"},
-  POWER_CHARGE={Name="괴력 돌진",Velocity=85,Lift=4,Effect="ELECTRIC_CHARGE"},
-  RAGE_RUN={Name="야성 질주",Speed=28,Duration=3,Effect="CLAW_RUSH"},
-  CURSE_SLOW={Name="저주의 모래",Radius=22,SlowSpeed=9,Duration=3,Effect="CURSE_RING"},
-  SHADOW_STEP={Name="그림자 이동",Distance=18,Effect="SHADOW_GATE"},
+  BAT_DASH={Name="박쥐 돌진",Velocity=70,DrainRadius=10,EnergyDrain=12,Effect="BLOOD_BATS",Description="돌진하며 주변 인간의 에너지를 빼앗는다"},
+  POWER_CHARGE={Name="괴력 돌진",Velocity=85,Lift=4,ShockRadius=8,ShockDuration=1.0,ShockSlowSpeed=8,Effect="ELECTRIC_CHARGE",Description="괴력 돌진 뒤 전기 충격파를 터뜨린다"},
+  RAGE_RUN={Name="야성 질주",Speed=28,Duration=3,InfectRangeBonus=3,Effect="CLAW_RUSH",Description="질주 중 감염 공격 사거리가 늘어난다"},
+  CURSE_SLOW={Name="저주의 모래",Radius=22,SlowSpeed=9,Duration=3,Effect="CURSE_RING",Description="주변 인간을 저주해 이동을 크게 늦춘다"},
+  SHADOW_STEP={Name="그림자 이동",Distance=18,Effect="SHADOW_GATE",Description="그림자 문을 열어 전방으로 순간 이동한다"},
  },
  MonsterAbilityLabels={
   BAT_DASH="박쥐 돌진",
