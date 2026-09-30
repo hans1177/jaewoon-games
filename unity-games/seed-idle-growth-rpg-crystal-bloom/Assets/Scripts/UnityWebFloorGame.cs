@@ -87,14 +87,20 @@ public sealed class UnityWebFloorGame : MonoBehaviour
         if (enemy != null)
         {
             enemy.transform.Rotate(0f,55f * Time.unscaledDeltaTime,0f,Space.World);
-            var p=enemy.transform.position;
+            var p = enemy.transform.position;
+            Debug.Log("JAEWOON_UNITY_WEB_QA CORE_FUN game=" + GameId + " mode=" + Mode + " status=REPAIR_REQUIRED reason=BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED");
             p.y=1f+Mathf.Sin(motionClock*2.1f)*0.28f;
             enemy.transform.position=p;
         }
         if (equipment != null) equipment.transform.Rotate(35f*Time.unscaledDeltaTime,45f*Time.unscaledDeltaTime,0f);
         if (player != null && started)
         {
-            var p=player.transform.position;
+            Debug.Log("JAEWOON_UNITY_WEB_QA CORE_FUN game=" + GameId + " mode=" + Mode + " status=REPAIR_REQUIRED reason=BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED");
+            LogState();
+        }
+        {
+            var p = player.transform.position;
+            Debug.Log("JAEWOON_UNITY_WEB_QA CORE_FUN game=" + GameId + " mode=" + Mode + " status=REPAIR_REQUIRED reason=BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED");
             p.x=-2f+Mathf.Sin(motionClock*1.7f)*0.55f;
             player.transform.position=p;
         }
@@ -115,10 +121,16 @@ public sealed class UnityWebFloorGame : MonoBehaviour
     private void PerformAction(bool mobile)
     {
         if(!started) StartGameplay();
+        Debug.Log("JAEWOON_UNITY_WEB_QA CORE_FUN game=" + GameId + " mode=" + Mode + " status=REPAIR_REQUIRED reason=BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED");
         actions++;
         progress += Mathf.Max(1,level);
         resource += 1 + (actions % 3);
-        if(progress >= level * 4) level++;
+        if (progress >= level * 4)
+        {
+            level++;
+            Debug.Log("JAEWOON_UNITY_WEB_QA CORE_FUN game=" + GameId + " mode=" + Mode + " status=REPAIR_REQUIRED reason=BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED");
+            LogState();
+        }
         PlayerPrefs.SetInt(SavePrefix+"progress",progress);
         PlayerPrefs.SetInt(SavePrefix+"level",level);
         PlayerPrefs.SetInt(SavePrefix+"resource",resource);
