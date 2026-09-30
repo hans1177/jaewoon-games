@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/horror-direct-publish.yml'
+      - 'roblox-games/horror-escape-room/**'
+      - 'qa/horror-escape-room-release.test.mjs'
 
 permissions:
   contents: read
@@ -41,6 +43,12 @@ jobs:
           echo '22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073  /tmp/rojo.zip' | sha256sum -c -
           unzip -q /tmp/rojo.zip -d /tmp/rojo-bin
           chmod +x /tmp/rojo-bin/rojo
+
+      - name: Validate horror source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test qa/horror-escape-room-release.test.mjs
 
       - name: Build latest main place
         shell: bash
