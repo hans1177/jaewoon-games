@@ -23166,10 +23166,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-30T17:40:07.232Z",
+      "updatedAt": "2026-09-30T21:35:30.126Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -23731,10 +23731,10 @@
       "robloxSharedTargetCurrent": true,
       "robloxFastMvpSupersededBy": null,
       "platformAdapter": "tools/company-development-unity-platform.mjs",
-      "unityCandidateBranch": null,
-      "unitySourceCommit": null,
-      "unityBuildRunId": null,
-      "unityRuntimeSmokeRunId": null,
+      "unityCandidateBranch": "development/unity-tech-seed-puzzle-chromatic-cascade-36773180555",
+      "unitySourceCommit": "7ff69c6e50d3937841819d892247ed0ec3b7f435",
+      "unityBuildRunId": 36776158382,
+      "unityRuntimeSmokeRunId": 36778644539,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityInternalReleaseReady": false,
@@ -23743,21 +23743,24 @@
       "unityPublicReleaseReady": false,
       "unityPublicRelease": false,
       "executionEvidence": {
-        "version": 1,
+        "version": 3,
         "platform": "UNITY",
-        "sourceRevision": null,
-        "sourceFingerprint": null,
-        "buildOrPackagePassed": false,
-        "artifactIdentity": null,
+        "sourceRevision": "7ff69c6e50d3937841819d892247ed0ec3b7f435",
+        "sourceRootTreeSha": "fc8e532a76a4d3e37f738ede4a2edbc4bf04620c",
+        "sourceFingerprint": "b1809cce4a33c7bf5547803946a2b9a867df909e564157c7dbe99acf880e8221",
+        "buildOrPackagePassed": true,
+        "artifactIdentity": "sha256:d09229493d905e986dbff133c0fa5c6ccc67ef337cac07d21f4139ae5725e400",
         "runtimePassed": false,
-        "independentQaPassed": true,
-        "regressionPassed": true,
-        "exactRevision": false,
-        "lastSuccessfulStage": "F9_RELEASE_REGRESSION",
-        "failureStage": null,
-        "failureSignature": null
+        "independentQaPassed": false,
+        "multiplayerPassed": true,
+        "regressionPassed": false,
+        "f0ToF9Passed": false,
+        "exactRevision": true,
+        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
+        "failureStage": "F1_SERVER_BOOT",
+        "failureSignature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee"
       },
-      "resumeStage": "SINGLE_BUILD_OR_PACKAGE",
+      "resumeStage": "F1_SERVER_BOOT",
       "failureCount": 1,
       "contractCanaryPassed": false,
       "robloxReleaseVersionNumber": 7,
@@ -24958,7 +24961,82 @@
         "reason": "EXACT_SOURCE_ARTIFACT_VERSION_STUDIO_INTERNAL_EVIDENCE_ALREADY_VERIFIED"
       },
       "robloxCanonicalPublishRepairRequired": true,
-      "robloxCanonicalPublishRepairCycleId": "825a26d1b013de94f2086c6d38a9839895abb781:sha256:0560d32a2e19d01cdf431b58b4faa16aca09a2f99c2574def82320086cebdd8c"
+      "robloxCanonicalPublishRepairCycleId": "825a26d1b013de94f2086c6d38a9839895abb781:sha256:0560d32a2e19d01cdf431b58b4faa16aca09a2f99c2574def82320086cebdd8c",
+      "unityF0ThroughF9Evidence": {
+        "version": 1,
+        "platform": "UNITY",
+        "sourceRevision": "7ff69c6e50d3937841819d892247ed0ec3b7f435",
+        "artifactIdentity": "sha256:d09229493d905e986dbff133c0fa5c6ccc67ef337cac07d21f4139ae5725e400",
+        "sourceRootTreeSha": "fc8e532a76a4d3e37f738ede4a2edbc4bf04620c",
+        "evidenceMode": "EXISTING_EXACT_APK_RUNTIME_QA_REGRESSION_WITH_PLATFORM_APPLICABILITY",
+        "floors": {
+          "F0": {
+            "state": "PASS",
+            "authority": "IMMUTABLE_APK_BUILD_AND_SOURCE_BINDING"
+          },
+          "F1": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_RUNTIME_SESSION"
+          },
+          "F2": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_RUNTIME_SESSION"
+          },
+          "F3": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_RUNTIME_SESSION"
+          },
+          "F4": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_RUNTIME_SESSION"
+          },
+          "F5": {
+            "state": "FAIL",
+            "authority": "INDEPENDENT_ANDROID_QA_TOUCH_INPUT_SCREEN_RUNTIME"
+          },
+          "F6": {
+            "state": "FAIL",
+            "authority": "INDEPENDENT_ANDROID_QA_AND_EXACT_RUNTIME_STATE_EVIDENCE"
+          },
+          "F7": {
+            "state": "NOT_APPLICABLE",
+            "authority": "VERIFIED_DESIGN_SINGLE_PLAYER",
+            "participantCount": 0,
+            "authoritativeSync": false
+          },
+          "F8": {
+            "state": "FAIL",
+            "authority": "EXACT_RUNTIME_PLUS_INDEPENDENT_QA"
+          },
+          "F9": {
+            "state": "FAIL",
+            "authority": "EXACT_ARTIFACT_REGRESSION_FAN_IN"
+          }
+        },
+        "multiplayerRequired": false,
+        "verifiedAt": "2026-09-30T21:35:30.126Z"
+      },
+      "unityF9ReleaseRegressionPassed": false,
+      "unityF9ReleaseRegressionPassedAt": null,
+      "unityCanonicalPublishPending": false,
+      "unityExecutionEvidence": {
+        "version": 3,
+        "platform": "UNITY",
+        "sourceRevision": "7ff69c6e50d3937841819d892247ed0ec3b7f435",
+        "sourceRootTreeSha": "fc8e532a76a4d3e37f738ede4a2edbc4bf04620c",
+        "sourceFingerprint": "b1809cce4a33c7bf5547803946a2b9a867df909e564157c7dbe99acf880e8221",
+        "buildOrPackagePassed": true,
+        "artifactIdentity": "sha256:d09229493d905e986dbff133c0fa5c6ccc67ef337cac07d21f4139ae5725e400",
+        "runtimePassed": false,
+        "independentQaPassed": false,
+        "multiplayerPassed": true,
+        "regressionPassed": false,
+        "f0ToF9Passed": false,
+        "exactRevision": true,
+        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
+        "failureStage": "F1_SERVER_BOOT",
+        "failureSignature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee"
+      }
     },
     {
       "gameId": "seed-single-defense-strat-celestial-bastion",
@@ -30200,7 +30278,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-30T21:17:39.354Z",
+  "updatedAt": "2026-09-30T21:35:31.591Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
