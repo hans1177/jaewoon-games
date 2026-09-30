@@ -270,7 +270,20 @@ test('Unity executor accepts exact game dispatch from the shared native orchestr
   assert.match(workflowSource,/requested_ids="\$REQUESTED_GAME_ID"/);
   assert.match(workflowSource,/UNITY_REQUESTED_GAME_ID_INVALID=/);
   assert.match(workflowSource,/requestedRows=requestedIds\.length\?rows\.filter\(row=>requestedSet\.has\(row\.gameId\)\):\[\]/);
+  assert.match(workflowSource,/requestedUnavailable=requestedIds\.filter\(id=>!requestedRows\.some\(row=>row\.gameId===id\)\)/);
+  assert.match(workflowSource,/const canary=requestedIds\.length\?null:/);
+  assert.match(workflowSource,/const selected=requestedIds\.length\?requestedRows\.slice/);
+  assert.match(workflowSource,/UNITY_REQUESTED_UNAVAILABLE_IDS=/);
   assert.match(workflowSource,/UNITY_REQUESTED_GAME_IDS=/);
+});
+
+test('Unity planner excludes owner-exclusive games from both exact and batch execution',()=>{
+  assert.match(workflowSource,/ownerCanonicalRules\?\.ownerExclusiveDevelopment/);
+  assert.match(workflowSource,/ownerExclusive\.status==='ACTIVE'\?\(ownerExclusive\.gameIds\|\|\[\]\):\[\]/);
+  assert.match(workflowSource,/ownerExcludedGameIds\.has\(item\.gameId\)/);
+  assert.match(workflowSource,/UNITY_OWNER_EXCLUSIVE_GAME_EXCLUDED=/);
+  assert.match(workflowSource,/UNITY_PUBLICATION_OWNER_EXCLUSIVE_GAME_EXCLUDED=/);
+  assert.match(workflowSource,/ownerExclusive\.status==='ACTIVE'&&\(ownerExclusive\.gameIds\|\|\[\]\)\.includes\(process\.env\.GAME_ID\)/);
 });
 
 test('Unity publication retry lane preserves the exact failed F9 identity and skips a new F0-F9 pass',()=>{
@@ -462,8 +475,8 @@ test('Unity direct native changes override unrelated representative canary selec
   assert.match(workflowSource,/test\("\^unity-games\/\[\^\/\]\+\/"\)/);
   assert.match(workflowSource,/gh api "repos\/\$GITHUB_REPOSITORY\/commits\/\$GITHUB_SHA"/);
   assert.match(workflowSource,/const requestedRows=requestedIds\.length\?rows\.filter/);
-  assert.match(workflowSource,/const canary=requestedRows\.length\?null:/);
-  assert.match(workflowSource,/const selected=requestedRows\.length\?requestedRows\.slice/);
+  assert.match(workflowSource,/const canary=requestedIds\.length\?null:/);
+  assert.match(workflowSource,/const selected=requestedIds\.length\?requestedRows\.slice/);
 });
 
 test('Unity prepare uses slim ingress capacity while technical validation stays on the full runner pool',()=>{
