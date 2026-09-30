@@ -3463,10 +3463,208 @@ task.spawn(function()
  end
 end)
 
+local function botHumanForm(b)
+ local id=b and b.humanFormId or"BROADCAST"
+ for _,row in ipairs(C.HumanForms or{})do if row.Id==id then return row end end
+ return(C.HumanForms and C.HumanForms[1])or{Id="BROADCAST",PurifyRangeBonus=0,PurifyCooldownBonus=0,DashCooldownBonus=0,DashPowerBonus=0}
+end
+
+local function botMonsterForm(b)
+ local id=b and b.monsterId or"DRACULA"
+ for _,row in ipairs(C.MonsterForms or{})do if row.Id==id then return row end end
+ return(C.MonsterForms and C.MonsterForms[1])or{Id="DRACULA",Ability="BAT_DASH"}
+end
+
+local function botSeparationVector(b)
+ local radius=math.max(6,tonumber(C.AICombat and C.AICombat.SeparationRadius)or 12)
+ local force=Vector3.zero
+ local count=0
+ for _,other in ipairs(bots)do
+  if other~=b and other.role==b.role and other.part and other.part.Parent then
+   local delta=b.part.Position-other.part.Position
+   local flat=Vector3.new(delta.X,0,delta.Z)
+   local distance=flat.Magnitude
+   if distance>.01 and distance<radius then
+    force+=flat.Unit*((radius-distance)/radius)
+    count+=1
+   end
+  end
+ end
+ if count>0 then force/=count end
+ return force
+end
+
+local function moveBotDirection(b,direction,dt,speedValue)
+ local flat=Vector3.new(direction.X,0,direction.Z)
+ if flat.Magnitude<.01 then return end
+ local separation=botSeparationVector(b)
+ local separationWeight=math.max(0,tonumber(C.AICombat and C.AICombat.SeparationWeight)or 7)
+ local desired=flat.Unit+separation*(separationWeight/10)
+ if desired.Magnitude<.01 then desired=flat.Unit else desired=desired.Unit end
+ local speedNow=math.max(0,tonumber(speedValue)or b.speed or 14)
+ local current=b.part.Position
+ local nextPos=current+desired*speedNow*dt
+ local limit=math.max(20,(tonumber(C.ArenaLimit)or 176)-4)
+ nextPos=Vector3.new(math.clamp(nextPos.X,-limit,limit),current.Y,math.clamp(nextPos.Z,-limit,limit))
+ setBotCFrame(b,CFrame.lookAt(nextPos,nextPos+desired))
+end
+
+local function botTargetPosition(entry)
+ if entry and entry.p then local rr=root(entry.p);return rr and rr.Position or nil end
+ if entry and entry.b and entry.b.part then return entry.b.part.Position end
+ return nil
+end
+
+local function distributedSurvivorTarget(b)
+ local entries={}
+ for _,entry in ipairs(active())do
+  local pos=botTargetPosition(entry)
+  if pos then table.insert(entries,{entry=entry,pos=pos,distance=(pos-b.part.Position).Magnitude})end
+ end
+ table.sort(entries,function(a,c)return a.distance<c.distance end)
+ if #entries==0 then return nil,nil,math.huge end
+ local spreadCount=math.min(#entries,4)
+ local index=((math.max(1,b.tacticSlot or 1)-1)%spreadCount)+1
+ local chosen=entries[index]
+ return chosen.entry,chosen.pos,chosen.distance
+end
+
+local function distributedMonsterTarget(b)
+ local entries={}
+ for _,player in ipairs(Players:GetPlayers())do
+  if player:GetAttribute("Role")=="MONSTER"then
+   local rr=root(player)
+   if rr then table.insert(entries,{player=player,pos=rr.Position,distance=(rr.Position-b.part.Position).Magnitude})end
+  end
+ end
+ for _,other in ipairs(bots)do
+  if other~=b and other.role=="MONSTER"and other.part and other.part.Parent then
+   local pos=other.part.Position
+   table.insert(entries,{bot=other,pos=pos,distance=(pos-b.part.Position).Magnitude})
+  end
+ end
+ table.sort(entries,function(a,c)return a.distance<c.distance end)
+ if #entries==0 then return nil,nil,math.huge end
+ local spreadCount=math.min(#entries,4)
+ local index=((math.max(1,b.tacticSlot or 1)-1)%spreadCount)+1
+ local chosen=entries[index]
+ return chosen,chosen.pos,chosen.distance
+end
+
+local function fireBotHumanEffect(b,action,targetPos)
+ remote:FireAllClients("AI_HUMAN_ACTION_EFFECT",{
+  Action=action,FormId=b.humanFormId or"BROADCAST",Origin=b.part.Position,
+  Target=targetPos,TacticSlot=b.tacticSlot or 0,
+ })
+end
+
+local function tryBotHumanPurify(b,target,distance)
+ local profile=botHumanForm(b)
+ local range=math.max(4,(C.PurifyDistance or 8)+(tonumber(profile.PurifyRangeBonus)or 0))
+ local cost=math.max(0,tonumber(C.Energy and C.Energy.PurifyCost)or 35)
+ local cooldownSeconds=math.max(2,(C.PurifyCooldown or 5)+(tonumber(profile.PurifyCooldownBonus)or 0))
+ if not target or distance>range or os.clock()<(b.purifyReadyAt or 0)or(b.energy or 0)<cost then return false,range end
+ b.energy=math.max(0,(b.energy or 0)-cost);b.purifyReadyAt=os.clock()+cooldownSeconds
+ local targetPos=target.pos
+ if target.player then
+  eliminateMonsterPlayer(target.player)
+ elseif target.bot then
+  removeBot(target.bot)
+ end
+ fireBotHumanEffect(b,"PURIFY",targetPos)
+ return true,range
+end
+
+local function tryBotHumanDash(b,direction,distance)
+ local profile=botHumanForm(b)
+ local cost=math.max(0,tonumber(C.Energy and C.Energy.DashCost)or 25)
+ local cooldownSeconds=math.max(3,(C.SurvivorDashCooldown or 7)+(tonumber(profile.DashCooldownBonus)or 0))
+ if os.clock()<(b.dashReadyAt or 0)or(b.energy or 0)<cost then return false end
+ local shouldDash=(profile.Id=="COURIER"and distance>12)or distance<6 or distance>30
+ if not shouldDash then return false end
+ local flat=Vector3.new(direction.X,0,direction.Z)
+ if flat.Magnitude<.01 then return false end
+ b.energy=math.max(0,(b.energy or 0)-cost);b.dashReadyAt=os.clock()+cooldownSeconds
+ local dashPower=52+(tonumber(profile.DashPowerBonus)or 0)
+ local current=b.part.Position
+ local step=math.min(15,dashPower*.18)
+ local target=current+flat.Unit*step
+ local limit=math.max(20,(tonumber(C.ArenaLimit)or 176)-4)
+ target=Vector3.new(math.clamp(target.X,-limit,limit),current.Y,math.clamp(target.Z,-limit,limit))
+ setBotCFrame(b,CFrame.lookAt(target,target+flat.Unit))
+ fireBotHumanEffect(b,"DASH",target)
+ return true
+end
+
+local function tryBotMonsterAbility(b,targetPos,distance)
+ if not targetPos then return false end
+ local now=os.clock()
+ if now<(b.abilityReadyAt or 0)then return false end
+ local cost=math.max(0,tonumber(C.Energy and C.Energy.AbilityCost)or 45)
+ if(b.energy or 0)<cost then return false end
+ local formInfo=botMonsterForm(b)
+ local ability=tostring(formInfo.Ability or"")
+ local profile=(C.MonsterAbilities and C.MonsterAbilities[ability])or{}
+ local minRange=math.max(0,tonumber(C.AICombat and C.AICombat.MonsterAbilityMinRange)or 9)
+ local maxRange=math.max(minRange+1,tonumber(C.AICombat and C.AICombat.MonsterAbilityMaxRange)or 34)
+ if ability~="CURSE_SLOW"and(distance<minRange or distance>maxRange)then return false end
+ local origin=b.part.Position
+ local flat=Vector3.new(targetPos.X-origin.X,0,targetPos.Z-origin.Z)
+ if flat.Magnitude<.01 then return false end
+ local look=flat.Unit
+ local effectTarget=nil
+ b.energy=math.max(0,(b.energy or 0)-cost)
+ b.abilityReadyAt=now+(C.MonsterAbilityCooldown or 7)
+ if ability=="BAT_DASH"then
+  local step=math.min(14,math.max(5,distance-4))
+  effectTarget=origin+look*step
+  setBotCFrame(b,CFrame.lookAt(effectTarget,effectTarget+look))
+ elseif ability=="POWER_CHARGE"then
+  local step=math.min(16,math.max(6,distance-4))
+  effectTarget=origin+look*step
+  setBotCFrame(b,CFrame.lookAt(effectTarget,effectTarget+look))
+ elseif ability=="RAGE_RUN"then
+  b.speed=tonumber(profile.Speed)or 28
+  b.speedResetAt=now+(tonumber(profile.Duration)or 3)
+ elseif ability=="CURSE_SLOW"then
+  local radius=tonumber(profile.Radius)or 22
+  if distance>radius then b.energy=math.min(energyMax(),(b.energy or 0)+cost);b.abilityReadyAt=0;return false end
+  local slowSpeed=tonumber(profile.SlowSpeed)or 9
+  local duration=tonumber(profile.Duration)or 3
+  for _,player in ipairs(Players:GetPlayers())do
+   if player:GetAttribute("Role")=="SURVIVOR"then
+    local rr=root(player)
+    if rr and(rr.Position-origin).Magnitude<=radius then
+     speed(player,slowSpeed);task.delay(duration,function()if player.Parent and player:GetAttribute("Role")=="SURVIVOR"then speed(player,16)end end)
+    end
+   end
+  end
+  for _,other in ipairs(bots)do
+   if other.role=="SURVIVOR"and other.part and(other.part.Position-origin).Magnitude<=radius then
+    other.speed=math.min(other.speed or other.baseSpeed or 14,slowSpeed)
+    other.speedResetAt=math.max(other.speedResetAt or 0,now+duration)
+   end
+  end
+ elseif ability=="SHADOW_STEP"then
+  local step=math.min(tonumber(profile.Distance)or 18,math.max(6,distance-4))
+  effectTarget=origin+look*step
+  setBotCFrame(b,CFrame.lookAt(effectTarget,effectTarget+look))
+ else
+  b.energy=math.min(energyMax(),(b.energy or 0)+cost);b.abilityReadyAt=0;return false
+ end
+ remote:FireAllClients("MONSTER_ABILITY_EFFECT",{
+  Ability=ability,Effect=profile.Effect or ability,Origin=origin,Target=effectTarget,Look=look,UserId=0,Stamp=tostring(math.floor(now*1000)),
+ })
+ return true
+end
+
 RunService.Heartbeat:Connect(function(dt)
  if state=="RUNNING"then
   for _,b in ipairs(bots)do
    b.motionClock=(b.motionClock or 0)+dt*(b.role=="MONSTER"and 7.5 or 9)
+   if(b.speedResetAt or 0)>0 and os.clock()>=(b.speedResetAt or 0)then
+    b.speed=b.baseSpeed or(b.role=="MONSTER"and 18 or 14);b.speedResetAt=0
+   end
    if b.visuals then
     local bob=math.sin(b.motionClock*2)*.08
     local stride=math.sin(b.motionClock)
@@ -3477,18 +3675,15 @@ RunService.Heartbeat:Connect(function(dt)
       if string.find(name,"Arm")or string.find(name,"Claw")then pitch=math.rad(stride*18)
       elseif string.find(name,"LegL")then pitch=math.rad(stride*16)
       elseif string.find(name,"LegR")then pitch=math.rad(-stride*16)
-      elseif name=="Cape"or name=="Cloak"then pitch=math.rad(4+stride*3)end
+      elseif name=="Cape"or name=="Cloak"or string.find(name,"Bandage")then pitch=math.rad(4+stride*3)end
       local roleLean=b.role=="MONSTER"and math.rad(-5)or math.rad(-2)
       v.part.CFrame=b.part.CFrame*CFrame.new(v.offset+Vector3.new(0,bob,0))*CFrame.Angles(roleLean+pitch,0,0)*(v.rotation or CFrame.identity)
      end
     end
    end
+
    if b.role=="MONSTER"then
-    local bestEntry,bestPos,bd=nil,nil,math.huge
-    for _,a in ipairs(active())do
-     local pos=a.p and(root(a.p)and root(a.p).Position)or(a.b and a.b.part.Position)
-     if pos then local d=(pos-b.part.Position).Magnitude;if d<bd then bd=d;bestPos=pos;bestEntry=a end end
-    end
+    local bestEntry,bestPos,bd=distributedSurvivorTarget(b)
     if bestPos then
      local infectRange=math.max(2,tonumber(C.Energy and C.Energy.InfectRange)or 8)
      local infectCost=math.max(0,tonumber(C.Energy and C.Energy.InfectAttackCost)or 30)
@@ -3496,31 +3691,41 @@ RunService.Heartbeat:Connect(function(dt)
      if bd<=infectRange and os.clock()>=(b.infectAttackReadyAt or 0)and(b.energy or 0)>=infectCost then
       b.energy=math.max(0,(b.energy or 0)-infectCost);b.infectAttackReadyAt=os.clock()+attackCd
       if bestEntry and bestEntry.p then infectPlayer(bestEntry.p,nil)elseif bestEntry and bestEntry.b then infectBot(bestEntry.b,nil)end
-     else
-      local d=Vector3.new(bestPos.X-b.part.Position.X,0,bestPos.Z-b.part.Position.Z)
-      if d.Magnitude>.1 then
-       local dir=d.Unit;local nextPos=b.part.Position+dir*math.min(d.Magnitude,b.speed*dt)
-       setBotCFrame(b,CFrame.lookAt(nextPos,nextPos+dir))
+     elseif not tryBotMonsterAbility(b,bestPos,bd)then
+      local toTarget=bestPos-b.part.Position
+      local flat=Vector3.new(toTarget.X,0,toTarget.Z)
+      if flat.Magnitude>.1 then
+       local side=(b.tacticSlot or 1)%2==0 and 1 or-1
+       local right=Vector3.new(-flat.Unit.Z,0,flat.Unit.X)
+       local approach=flat.Unit+right*(bd<20 and .28*side or .12*side)
+       moveBotDirection(b,approach,dt,b.speed)
       end
      end
     end
+
    elseif b.role=="SURVIVOR"then
-    local nearest,best=nil,math.huge
-    for _,mpos in ipairs(monsterPositions())do local d=(b.part.Position-mpos).Magnitude;if d<best then best=d;nearest=mpos end end
-    local purifyCost=math.max(0,tonumber(C.Energy and C.Energy.PurifyCost)or 35)
-    if nearest and best<=C.PurifyDistance and os.clock()>=(b.purifyReadyAt or 0)and(b.energy or 0)>=purifyCost then
-     local targetPlayer,targetBot=nil,nil;local targetDist=C.PurifyDistance
-     for _,other in ipairs(Players:GetPlayers())do if other:GetAttribute("Role")=="MONSTER"then local rr=root(other);if rr then local dd=(rr.Position-b.part.Position).Magnitude;if dd<=targetDist then targetDist=dd;targetPlayer=other;targetBot=nil end end end end
-     for _,otherBot in ipairs(bots)do if otherBot~=b and otherBot.role=="MONSTER"then local dd=(otherBot.part.Position-b.part.Position).Magnitude;if dd<=targetDist then targetDist=dd;targetBot=otherBot;targetPlayer=nil end end end
-     if targetPlayer or targetBot then
-      b.energy=math.max(0,(b.energy or 0)-purifyCost);b.purifyReadyAt=os.clock()+6
-      if targetPlayer then eliminateMonsterPlayer(targetPlayer)elseif targetBot then removeBot(targetBot)end
-     end
-    elseif nearest and best<46 then
-     local away=b.part.Position-nearest;local d=Vector3.new(away.X,0,away.Z)
-     if d.Magnitude>.1 then
-      local dir=d.Unit;local nextPos=b.part.Position+dir*b.speed*dt
-      setBotCFrame(b,CFrame.lookAt(nextPos,nextPos+dir))
+    local target,targetPos,best=distributedMonsterTarget(b)
+    if targetPos then
+     local attacked,purifyRange=tryBotHumanPurify(b,target,best)
+     if not attacked then
+      local profile=botHumanForm(b)
+      local preferred=math.max(5,math.min(purifyRange-1,tonumber(C.AICombat and C.AICombat.HumanPreferredRange)or 10))
+      local delta=targetPos-b.part.Position
+      local flat=Vector3.new(delta.X,0,delta.Z)
+      if flat.Magnitude>.1 then
+       local dir=flat.Unit
+       local side=(b.tacticSlot or 1)%2==0 and 1 or-1
+       local right=Vector3.new(-dir.Z,0,dir.X)
+       local moveDir
+       if best>purifyRange+4 then
+        moveDir=dir+right*(.18*side)
+       elseif best<preferred-2 then
+        moveDir=-dir+right*(.38*side)
+       else
+        moveDir=right*side-dir*.08
+       end
+       if not tryBotHumanDash(b,moveDir,best)then moveBotDirection(b,moveDir,dt,b.speed)end
+      end
      end
     end
    end
