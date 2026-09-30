@@ -930,6 +930,39 @@
       ],
       "learningState": "TRACE_ONLY",
       "liveState": "OWNER_SCOPE_RELEASED; HORROR_ESCAPE_ROOM_RETURNS_TO_SHARED_PERPETUAL_ROBLOX_F0_F9; NO_GAMEPLAY_OR_SAVE_RESET"
+    },
+    {
+      "id": "assistant_roblox_save_rejoin_classifier_repair_20261001",
+      "date": "2026-10-01",
+      "gameId": "MULTI_GAME_ROBLOX",
+      "actionType": "RUNTIME_QA_CAUSAL_REPAIR",
+      "problem": "daechung-rpg와 cozy-island의 실제 Studio MCP F9 증거는 save-rejoin persistence를 통과했지만 앞선 adaptive-save-surface 실패 이름에 save가 포함됐다는 이유로 최종 native failure class가 ROBLOX_DATASTORE_SAVE_LOAD로 분류됐다.",
+      "rootCause": "WEAK_SAVE_SURFACE_CHECKPOINT_OUTRANKED_STRONGER_ACTUAL_STOP_START_PERSISTENCE_EVIDENCE_AND_GENERIC_SAVE_LOAD_REGEX_MISCLASSIFIED_THE_FAILURE",
+      "decision": "실제 F9 Studio stop/start에서 progression/inventory가 보존되면 약한 adaptive-save-surface 실패만 상쇄한다. DataStore failure class는 실제 DataStore API 오류, 실제 save-rejoin persistence 실패, 또는 관측된 보존 실패가 있을 때만 사용한다.",
+      "change": "tools/company-development-roblox-studio-local-play.mjs에서 성공한 save-rejoin이 adaptive-save-surface scenario/checkpoint와 관련 quality failure를 해제하도록 수정하고 ROBLOX_DATASTORE_SAVE_LOAD 분류를 명시적 저장 실패 증거로 제한했다. 저장 키, 저장 구조, 보상, 진행도는 변경하지 않았다.",
+      "evidence": [
+        "daechung-rpg:studio-run:36728323389:save-rejoin-pass=true:native-class=ROBLOX_DATASTORE_SAVE_LOAD",
+        "cozy-island:studio-run:36717577102:save-rejoin-pass=true:native-class=ROBLOX_DATASTORE_SAVE_LOAD",
+        "repair-commit:13a98737e620f6c981fc929810f53df4aa3b29b7",
+        "regression-commit:8175787f12605437c6e4ed935ceca8c3d6be542b"
+      ],
+      "reusablePatterns": [
+        "STRONGER_ACTUAL_RUNTIME_EVIDENCE_SUPERSEDES_WEAKER_STATIC_SURFACE_HEURISTIC",
+        "CLASSIFY_DATASTORE_FAILURE_ONLY_FROM_EXPLICIT_STORAGE_EVIDENCE",
+        "PRESERVE_GAME_SAVE_SCHEMA_WHEN_FIXING_QA_CLASSIFICATION"
+      ],
+      "avoidPatterns": [
+        "CLASSIFYING_FAILURE_FROM_CHECKPOINT_NAME_SUBSTRING_ONLY",
+        "CHANGING_GAME_SAVE_CODE_TO_SATISFY_A_VALIDATOR_FALSE_POSITIVE",
+        "KEEPING_WEAK_SAVE_SURFACE_FAILURE_AFTER_ACTUAL_REJOIN_PERSISTENCE_PASS"
+      ],
+      "qa": [
+        "successful F9 save-rejoin clears weaker save-surface failure regression added",
+        "generic save-surface miss no longer maps to ROBLOX_DATASTORE_SAVE_LOAD regression added",
+        "actual post-merge Studio revalidation pending"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "VALIDATOR_REPAIR_IN_PR_4224; GAME_SAVE_DATA_UNCHANGED; POST_MERGE_STUDIO_REVALIDATION_REQUIRED"
     }
   ]
 }
