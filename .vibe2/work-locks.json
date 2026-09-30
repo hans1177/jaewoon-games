@@ -3,25 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-e4xvr0",
-      "worker": "vibe2",
-      "taskId": "cozy-island-existing-web-assessment-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "web-games/cozy-island/index.html"
-      ],
-      "baseSha": "31c2d2d438bd06a8bb1293ff7f69d10377b750fc",
-      "runId": "36664749487",
-      "runAttempt": "1",
-      "acquiredAt": "2026-09-30T03:34:58.220Z",
-      "expiresAt": "2026-09-30T04:19:58.220Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-existing-web-assessment-v1"
-      ]
-    },
-    {
       "id": "wl-1tqmuj6",
       "worker": "vibe2",
       "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-studio-evolution-unity-web-usability-v1",
@@ -342,6 +323,26 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:monster-adventure-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-5kzvzj",
+      "worker": "vibe2",
+      "taskId": "cozy-island-unity-web-base-implementation-v1",
+      "gameId": "cozy-island",
+      "files": [
+        "unity-games/cozy-island/Assets/Scripts/GameCore.cs",
+        "unity-games/cozy-island/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "76f82b1b574b9e549dd2692ffb140cc68c634b87",
+      "runId": "36667362709",
+      "runAttempt": "1",
+      "acquiredAt": "2026-09-30T04:20:38.815Z",
+      "expiresAt": "2026-09-30T05:05:38.815Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:cozy-island-unity-web-base-implementation-v1"
       ]
     }
   ]
