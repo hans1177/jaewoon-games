@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 20
     env:
       GAME_ID: horror-escape-room
@@ -31,87 +31,86 @@ jobs:
           fetch-depth: 1
 
       - name: Verify owner lobby source
-        shell: bash
+        shell: pwsh
         run: |
-          set -euo pipefail
-          grep -F '"name": "심야 대탈출"' "roblox-games/$GAME_ID/default.project.json"
-          grep -F 'LobbyArtPass","MIDNIGHT_HOTEL_LOBBY_V2"' "roblox-games/$GAME_ID/server/Game.server.luau"
-          grep -F 'LobbyBuildRevision","MIDNIGHT_HOTEL_20260930B"' "roblox-games/$GAME_ID/server/Game.server.luau"
-          grep -F 'lobbyHeader.Name="LobbyHeader"' "roblox-games/$GAME_ID/client/Game.client.luau"
-          grep -F 'lobbyHint.Text="승강기에 들어가면 5초 후 출발 · 최대 8명"' "roblox-games/$GAME_ID/client/Game.client.luau"
-          python - <<'PY'
-          from pathlib import Path
-          p=Path("roblox-games/horror-escape-room/client/Game.client.luau")
-          s=p.read_text(encoding="utf-8")
-          assert "local browser=not isRoomServer\\n" not in s
-          assert 'loadingTitle.Text="심야 대탈출"' in s
-          assert 'hud.BackgroundColor3=Color3.fromRGB(12,12,13)' in s
-          print("OWNER_SOURCE_GUARD=PASS")
-          PY
+          $ErrorActionPreference='Stop'
+          $project=Get-Content "roblox-games/$env:GAME_ID/default.project.json" -Raw
+          $server=Get-Content "roblox-games/$env:GAME_ID/server/Game.server.luau" -Raw
+          $client=Get-Content "roblox-games/$env:GAME_ID/client/Game.client.luau" -Raw
+          if(-not $project.Contains('"name": "심야 대탈출"')){ throw 'OWNER_PROJECT_NAME_MISSING' }
+          if(-not $server.Contains('LobbyArtPass","MIDNIGHT_HOTEL_LOBBY_V2"')){ throw 'OWNER_LOBBY_PASS_MISSING' }
+          if(-not $server.Contains('LobbyBuildRevision","MIDNIGHT_HOTEL_20260930B"')){ throw 'OWNER_LOBBY_REVISION_MISSING' }
+          if(-not $client.Contains('lobbyHeader.Name="LobbyHeader"')){ throw 'OWNER_LOBBY_UI_MISSING' }
+          if(-not $client.Contains('lobbyHint.Text="승강기에 들어가면 5초 후 출발 · 최대 8명"')){ throw 'OWNER_LOBBY_HINT_MISSING' }
+          if($client.Contains('local browser=not isRoomServer\n')){ throw 'OWNER_CLIENT_LITERAL_NEWLINE_BUG' }
+          if(-not $client.Contains('loadingTitle.Text="심야 대탈출"')){ throw 'OWNER_LOADING_TITLE_MISSING' }
+          if(-not $client.Contains('hud.BackgroundColor3=Color3.fromRGB(12,12,13)')){ throw 'OWNER_HUD_STYLE_MISSING' }
+          Write-Host 'OWNER_SOURCE_GUARD=PASS'
 
       - name: Install pinned Rojo
-        shell: bash
+        shell: pwsh
         run: |
-          set -euo pipefail
-          mkdir -p /tmp/rojo-bin /tmp/horror-owner
-          curl -fsSL --retry 3 --retry-delay 2 -o /tmp/rojo.zip https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-linux-x86_64.zip
-          echo '22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073  /tmp/rojo.zip' | sha256sum -c -
-          unzip -q /tmp/rojo.zip -d /tmp/rojo-bin
-          chmod +x /tmp/rojo-bin/rojo
+          $ErrorActionPreference='Stop'
+          $root=Join-Path $env:RUNNER_TEMP 'horror-owner-direct'
+          $bin=Join-Path $root 'rojo-bin'
+          New-Item -ItemType Directory -Force -Path $bin | Out-Null
+          $zip=Join-Path $root 'rojo.zip'
+          Invoke-WebRequest -Uri 'https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-windows-x86_64.zip' -OutFile $zip
+          $hash=(Get-FileHash -Algorithm SHA256 $zip).Hash.ToLowerInvariant()
+          if($hash -ne '2179c44862a10ecbd725bdfeb4abc64e16dc4aad9b6c8f3e1a7c46a87280b949'){ throw "ROJO_HASH_MISMATCH:$hash" }
+          Expand-Archive -Path $zip -DestinationPath $bin -Force
+          $rojo=Get-ChildItem -Path $bin -Filter 'rojo.exe' -Recurse | Select-Object -First 1
+          if(-not $rojo){ throw 'ROJO_EXE_MISSING' }
+          "ROJO_EXE=$($rojo.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "OWNER_OUT=$root" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Build exact place
-        shell: bash
+        shell: pwsh
         run: |
-          set -euo pipefail
-          /tmp/rojo-bin/rojo build "roblox-games/$GAME_ID/default.project.json" -o "/tmp/horror-owner/$GAME_ID.rbxlx"
-          test -s "/tmp/horror-owner/$GAME_ID.rbxlx"
-          sha256sum "/tmp/horror-owner/$GAME_ID.rbxlx" | tee /tmp/horror-owner/build.sha256
-          echo "PLACE_FILE=/tmp/horror-owner/$GAME_ID.rbxlx" >> "$GITHUB_ENV"
+          $ErrorActionPreference='Stop'
+          $place=Join-Path $env:OWNER_OUT "$env:GAME_ID.rbxlx"
+          & $env:ROJO_EXE build "roblox-games/$env:GAME_ID/default.project.json" -o $place
+          if(-not (Test-Path $place)){ throw 'PLACE_BUILD_MISSING' }
+          $hash=(Get-FileHash -Algorithm SHA256 $place).Hash.ToLowerInvariant()
+          $hash | Out-File -FilePath (Join-Path $env:OWNER_OUT 'build.sha256') -Encoding utf8
+          Write-Host "OWNER_BUILD_SHA256=$hash"
+          "PLACE_FILE=$place" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Configure private experience directly
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-        shell: bash
+        shell: pwsh
         run: |
-          set -euo pipefail
-          test -n "$ROBLOX_OPEN_CLOUD_API_KEY"
-          curl --fail-with-body --retry 3 --retry-delay 2 \
-            -X PATCH \
-            -H "x-api-key: $ROBLOX_OPEN_CLOUD_API_KEY" \
-            -H "Content-Type: application/json" \
-            --data '{"displayName":"심야 대탈출","description":"심야 호텔에서 시작되는 8인 공포 추격전","visibility":"PRIVATE"}' \
-            "https://apis.roblox.com/cloud/v2/universes/$UNIVERSE_ID?updateMask=displayName,description,visibility" \
-            -o /tmp/horror-owner/configure.json
-          curl --fail-with-body --retry 3 --retry-delay 2 \
-            -X POST \
-            -H "x-api-key: $ROBLOX_OPEN_CLOUD_API_KEY" \
-            "https://apis.roblox.com/legacy-develop/v1/universes/$UNIVERSE_ID/deactivate" \
-            -o /tmp/horror-owner/private.json
+          $ErrorActionPreference='Stop'
+          if([string]::IsNullOrWhiteSpace($env:ROBLOX_OPEN_CLOUD_API_KEY)){ throw 'ROBLOX_OPEN_CLOUD_API_KEY_MISSING' }
+          $headers=@{'x-api-key'=$env:ROBLOX_OPEN_CLOUD_API_KEY}
+          $body=@{
+            displayName='심야 대탈출'
+            description='심야 호텔에서 시작되는 8인 공포 추격전'
+            visibility='PRIVATE'
+          } | ConvertTo-Json -Compress
+          $configOut=Join-Path $env:OWNER_OUT 'configure.json'
+          Invoke-WebRequest -Method Patch -Uri "https://apis.roblox.com/cloud/v2/universes/$env:UNIVERSE_ID?updateMask=displayName,description,visibility" -Headers $headers -ContentType 'application/json' -Body $body -OutFile $configOut
+          $privateOut=Join-Path $env:OWNER_OUT 'private.json'
+          Invoke-WebRequest -Method Post -Uri "https://apis.roblox.com/legacy-develop/v1/universes/$env:UNIVERSE_ID/deactivate" -Headers $headers -OutFile $privateOut
+          Write-Host 'OWNER_PRIVATE_CONFIG=PASS'
 
       - name: Publish directly with Roblox Open Cloud
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-        shell: bash
+        shell: pwsh
         run: |
-          set -euo pipefail
-          test -n "$ROBLOX_OPEN_CLOUD_API_KEY"
-          curl --fail-with-body --retry 3 --retry-delay 2 \
-            -X POST \
-            -H "x-api-key: $ROBLOX_OPEN_CLOUD_API_KEY" \
-            -H "Content-Type: application/xml" \
-            --data-binary "@$PLACE_FILE" \
-            "https://apis.roblox.com/universes/v1/$UNIVERSE_ID/places/$PLACE_ID/versions?versionType=Published" \
-            -o /tmp/horror-owner/publish.json
-          cat /tmp/horror-owner/publish.json
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          r=json.loads(Path("/tmp/horror-owner/publish.json").read_text())
-          n=r.get("versionNumber")
-          assert isinstance(n,int) and n>0, r
-          print("HORROR_OWNER_DIRECT_PUBLISH=PASS")
-          print("ROBLOX_PLACE_VERSION="+str(n))
-          PY
+          $ErrorActionPreference='Stop'
+          if([string]::IsNullOrWhiteSpace($env:ROBLOX_OPEN_CLOUD_API_KEY)){ throw 'ROBLOX_OPEN_CLOUD_API_KEY_MISSING' }
+          $headers=@{'x-api-key'=$env:ROBLOX_OPEN_CLOUD_API_KEY}
+          $out=Join-Path $env:OWNER_OUT 'publish.json'
+          $uri="https://apis.roblox.com/universes/v1/$env:UNIVERSE_ID/places/$env:PLACE_ID/versions?versionType=Published"
+          Invoke-WebRequest -Method Post -Uri $uri -Headers $headers -ContentType 'application/xml' -InFile $env:PLACE_FILE -OutFile $out
+          $r=Get-Content $out -Raw | ConvertFrom-Json
+          $version=[int]$r.versionNumber
+          if($version -le 0){ throw 'ROBLOX_PUBLISH_VERSION_MISSING' }
+          Write-Host 'HORROR_OWNER_DIRECT_PUBLISH=PASS'
+          Write-Host "ROBLOX_PLACE_VERSION=$version"
 
       - name: Upload direct publish evidence
         if: always()
@@ -119,9 +118,9 @@ jobs:
         with:
           name: horror-owner-direct-publish
           path: |
-            /tmp/horror-owner/build.sha256
-            /tmp/horror-owner/configure.json
-            /tmp/horror-owner/private.json
-            /tmp/horror-owner/publish.json
+            ${{ env.OWNER_OUT }}\build.sha256
+            ${{ env.OWNER_OUT }}\configure.json
+            ${{ env.OWNER_OUT }}\private.json
+            ${{ env.OWNER_OUT }}\publish.json
           if-no-files-found: warn
           retention-days: 3
