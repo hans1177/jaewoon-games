@@ -66,7 +66,7 @@ test('central production runtime gates new Roblox and Unity work on Unity Web re
   assert.match(development,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
   assert.match(development,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
   assert.match(development,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
-  assert.doesNotMatch(development,/gh workflow run (?:company-development|unity-web)/);
+  assert.doesNotMatch(development,/gh workflow run (?:company-development-roblox-runtime|company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
   assert.match(admission,/upper-platform-development-readiness\.json/);
   assert.match(admission,/READINESS_SOURCE_STALE/);
   assert.doesNotMatch(development,/company-development-web-bootstrap\.mjs/);

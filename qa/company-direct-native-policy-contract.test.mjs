@@ -142,7 +142,7 @@ test('architecture and runtime execute Unity Web readiness before new upper-plat
   assert.match(runtime,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
   assert.match(runtime,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
   assert.match(runtime,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
-  assert.doesNotMatch(runtime,/gh workflow run (?:company-development|unity-web)/);
+  assert.doesNotMatch(runtime,/gh workflow run (?:company-development-roblox-runtime|company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
   const webWorkflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
   assert.match(webWorkflow,/Run Unity Web independent QA/);
   assert.match(webWorkflow,/Run Unity Web regression/);

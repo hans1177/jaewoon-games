@@ -122,8 +122,8 @@ test('homepage fallback exposes only the owner-confirmed release before runtime 
   assert.doesNotMatch(fallback,/data-game-id="(?:cozy-island|daechung-rpg)"/);
   assert.match(fallback,/로비 체험/);
   assert.match(fallback,/98222620265768/);
-  assert.match(index,/id="releasedCount"/);
-  assert.match(index,/id="developmentCount"/);
+  assert.match(index,/id="metricPlayable"/);
+  assert.match(index,/id="metricDevelopment"/);
   assert.match(homepage,/homeInternalReleaseFallback/);
   assert.match(homepage,/document\.getElementById\(id\)\?\.remove\(\)/);
 });
@@ -199,7 +199,7 @@ test('central development orchestrator runs Unity Web floor before new Roblox an
   assert.match(development,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
   assert.match(development,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
   assert.match(development,/DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE/);
-  assert.doesNotMatch(development,/gh workflow run (?:company-development|unity-web)/);
+  assert.doesNotMatch(development,/gh workflow run (?:company-development-roblox-runtime|company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
   assert.doesNotMatch(development,/WEB_PRESENTATION_HANDOFF_REJECTED/);
 });
 

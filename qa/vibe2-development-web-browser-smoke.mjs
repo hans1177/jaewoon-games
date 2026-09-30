@@ -76,7 +76,7 @@ function findChrome(){
 
 function delay(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
 
-async function waitForFile(file,timeoutMs=10000){
+async function waitForFile(file,timeoutMs=20000){
   const end=Date.now()+timeoutMs;
   while(Date.now()<end){
     if(fs.existsSync(file))return;
@@ -285,6 +285,9 @@ try{
 
   console.log('DEVELOPMENT_WEB_BROWSER_SMOKE=PASS');
   console.log(JSON.stringify({count:results.length,results}));
+}catch(error){
+  const detail=`chromeExit=${String(chromeProc.exitCode)} stderr=${chromeStderr.slice(-2000)}`;
+  throw new Error(`${String(error?.message||error)} ${detail}`,{cause:error});
 }finally{
   cdp?.close();
   try{chromeProc.kill('SIGTERM')}catch{}

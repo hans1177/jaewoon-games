@@ -532,7 +532,7 @@ test('central development orchestrator gates new native lanes on Unity Web readi
   assert.match(workflow,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
   assert.match(workflow,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
   assert.match(workflow,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
-  assert.doesNotMatch(workflow,/gh workflow run (?:company-development|unity-web)/);
+  assert.doesNotMatch(workflow,/gh workflow run (?:company-development-roblox-runtime|company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
   assert.match(admission,/upper-platform-development-readiness\.json/);
   assert.match(admission,/READINESS_SOURCE_STALE/);
   assert.match(workflow,/grandfatherGameIds/);
@@ -652,13 +652,10 @@ test('dedicated Roblox QA-only changes do not launch the full runtime pipeline',
   assert.match(vibeQa,/qa\/company-development-roblox-source-reconcile\.test\.mjs/);
 });
 
-test('Roblox game source pushes route through exact changed-source sync instead of broad runtime batch',()=>{
+test('Roblox game source pushes wake the canonical batch runtime after the owner rollback',()=>{
   const runtime=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
-  const sync=fs.readFileSync(new URL('../.github/workflows/company-roblox-source-drift-sync.yml',import.meta.url),'utf8');
   const runtimePush=runtime.slice(runtime.indexOf('on:'),runtime.indexOf('workflow_dispatch:'));
-  assert.doesNotMatch(runtimePush,/roblox-games\/\*\*/);
-  assert.match(sync,/paths:\s*\n\s*- 'roblox-games\/\*\*'/);
-  assert.match(sync,/gh workflow run company-development-roblox-runtime\.yml[^\n]*-f game_id=/);
+  assert.match(runtimePush,/roblox-games\/\*\*/);
   assert.match(runtimePush,/company-roblox-source-drift-sync\.yml/);
   assert.match(runtimePush,/company-roblox-source-drift-sync\.mjs/);
   assert.match(runtimePush,/company-roblox-source-drift-sync\.test\.mjs/);

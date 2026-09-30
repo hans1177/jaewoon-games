@@ -1687,11 +1687,12 @@ test('24H plan uses optimistic writes while reserve stays lightweight and fan-in
   assert.match(reserveHeader,/github\.event\.client_payload\.execution_lane/);
   assert.match(reserveHeader,/format\('vibe2-reserve-\{0\}', github\.run_id\)/);
   assert.match(reserveHeader,/cancel-in-progress: false/);
-  assert.match(reserveHeader,/runs-on: \$\{\{ \(github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-slim'\) \}\}/);
-  assert.doesNotMatch(reserveHeader,/vibe2-neuron-complete/);
+  assert.match(reserveHeader,/runs-on: \$\{\{ \(github\.event_name == 'repository_dispatch' && \(github\.event\.action == 'vibe2-fanin-refill' \|\| github\.event\.action == 'vibe2-neuron-complete'\) && 'ubuntu-latest' \|\| 'ubuntu-slim'\) \}\}/);
+  assert.match(reserveHeader,/vibe2-neuron-complete/);
   assert.doesNotMatch(reserveHeader,/asset-development/);
   assert.match(reserveHeader,/vibe2-fanin-refill/);
-  assert.match(reserveHeader,/ubuntu-24\.04-arm/);
+  assert.match(reserveHeader,/ubuntu-latest/);
+  assert.doesNotMatch(reserveHeader,/ubuntu-24\.04-arm/);
   assert.match(reserveHeader,/ubuntu-slim/);
   assert.doesNotMatch(reserveHeader,/vibe2-control-state-/);
   assert.match(runner,/runner_pressure: \$\{\{ steps\.queue_state\.outputs\.runner_pressure \}\}/);
