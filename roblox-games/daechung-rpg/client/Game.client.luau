@@ -36,7 +36,7 @@ foundationRemote.OnClientEvent:Connect(function(kind)
 end)
 
 local function sound(name,id,volume)
- local s=Instance.new("Sound");s.Name=name;s.SoundId=id;s.Volume=volume;s.Parent=SoundService;return s
+local s=Instance.new("Sound");s.Name="RPGAction";s.SoundId=C.Audio.Action; s.Volume=0.22; s.Parent=SoundService; return s
 end
 local actionSfx=sound("RPGAction",C.Audio.Action,.22)
 local hitSfx=sound("RPGHit",C.Audio.Hit,.2)
