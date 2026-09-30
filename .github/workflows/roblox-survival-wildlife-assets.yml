@@ -1,0 +1,59 @@
+name: Roblox Survival Wildlife Assets
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'assets/roblox/survival-wildlife/**'
+      - 'qa/roblox-survival-wildlife-sample.test.mjs'
+      - '.github/workflows/roblox-survival-wildlife-assets.yml'
+  pull_request:
+    paths:
+      - 'assets/roblox/survival-wildlife/**'
+      - 'qa/roblox-survival-wildlife-sample.test.mjs'
+      - '.github/workflows/roblox-survival-wildlife-assets.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: survival-wildlife-assets-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build-assets:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install checksum-pinned Roblox asset tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/wildlife-tools/rojo /tmp/wildlife-tools/luau
+          curl -fsSL --retry 3 -o /tmp/wildlife-tools/rojo.zip https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-linux-x86_64.zip
+          curl -fsSL --retry 3 -o /tmp/wildlife-tools/luau.zip https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
+          echo '22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073  /tmp/wildlife-tools/rojo.zip' | sha256sum -c -
+          echo '8a9b4b381021722c82d6e6cda0964b5c9e7f354ec1035fcd8b657acc22e49247  /tmp/wildlife-tools/luau.zip' | sha256sum -c -
+          unzip -q /tmp/wildlife-tools/rojo.zip -d /tmp/wildlife-tools/rojo
+          unzip -q /tmp/wildlife-tools/luau.zip -d /tmp/wildlife-tools/luau
+          chmod +x /tmp/wildlife-tools/rojo/rojo /tmp/wildlife-tools/luau/luau /tmp/wildlife-tools/luau/luau-compile
+      - name: Validate committed native package
+        env:
+          VIBE2_LUAU_BINARY: /tmp/wildlife-tools/luau/luau
+        run: node --test qa/roblox-survival-wildlife-sample.test.mjs
+      - name: Rebuild rbxmx and rbxlx from source
+        env:
+          VIBE2_LUAU_COMPILER: /tmp/wildlife-tools/luau/luau-compile
+          VIBE2_ROJO_BINARY: /tmp/wildlife-tools/rojo/rojo
+        run: node assets/roblox/survival-wildlife/build-native.mjs
+      - name: Validate rebuilt package
+        env:
+          VIBE2_LUAU_BINARY: /tmp/wildlife-tools/luau/luau
+        run: node --test qa/roblox-survival-wildlife-sample.test.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: survival-wildlife-native-${{ github.sha }}
+          path: assets/roblox/survival-wildlife/native/
+          if-no-files-found: error
+          retention-days: 14
