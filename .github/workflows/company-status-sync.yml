@@ -51,6 +51,7 @@ env:
 
 jobs:
   sync:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure'
     runs-on: ubuntu-slim
     timeout-minutes: 10
     steps:
