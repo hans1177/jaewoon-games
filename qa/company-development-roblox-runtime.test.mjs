@@ -289,7 +289,7 @@ test('Roblox source workflow keeps compiled candidates pending when Actions cann
 });
 
 
-test('Roblox package completion follows F0 local Studio QA then F9 canonical publish then repeats',()=>{
+test('Roblox package completion repeats after F9 and publishes only released games',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const preflight=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime-continuation.yml',import.meta.url),'utf8');
   const f0=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-headless-fast-mvp.yml',import.meta.url),'utf8');
@@ -308,7 +308,7 @@ test('Roblox package completion follows F0 local Studio QA then F9 canonical pub
   assert.ok(workflow.includes('company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$REQUESTED_GAME_ID"'));
   assert.ok(runtimeQa.includes("item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION'"));
   assert.ok(f9.includes('Roblox F9 Final Review'));
-  assert.ok(f9.includes('item.robloxCanonicalPublishPending=true'));
+  assert.ok(f9.includes('item.robloxCanonicalPublishPending=serverPublishEligible'));
   assert.ok(f9.includes("item.currentStep='POST_F9_CONTINUOUS_EVOLUTION'"));
   assert.ok(f9.includes('publish_stage=final'));
   assert.ok(publish.includes('ROBLOX_CANONICAL_FINAL_PUBLISH=PASS'));

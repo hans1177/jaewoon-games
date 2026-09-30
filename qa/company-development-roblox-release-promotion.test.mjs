@@ -112,15 +112,16 @@ test('existing post-runtime QA requires actual F1-F8 sentinel evidence on the ex
   assert.doesNotMatch(runtime,/Studio QA \(Disabled\)/);
 });
 
-test('F9 is nonterminal and dispatches exact verified artifact to final canonical publish',()=>{
+test('F9 is nonterminal and dispatches exact artifacts only for released games',()=>{
   const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
   assert.match(finalReview,/Roblox F9 Final Review/);
   assert.match(finalReview,/item\.robloxFinalReviewPassed=true/);
   assert.match(finalReview,/item\.robloxF9ReleaseRegressionPassed=true/);
-  assert.match(finalReview,/item\.robloxInternalReleaseReady=false/);
-  assert.match(finalReview,/item\.robloxCanonicalPublishPending=true/);
+  assert.match(finalReview,/item\.robloxInternalReleaseReady=serverPublishEligible/);
+  assert.match(finalReview,/item\.robloxCanonicalPublishPending=serverPublishEligible/);
   assert.match(finalReview,/item\.currentStep='POST_F9_CONTINUOUS_EVOLUTION'/);
-  assert.match(finalReview,/item\.canonicalState='F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION'/);
+  assert.match(finalReview,/item\.canonicalState=serverPublishEligible\?'F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION':'F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION'/);
+  assert.match(finalReview,/if\(serverPublishEligible&&!publishQueue/);
   assert.match(finalReview,/robloxCanonicalPublishQueue/);
   assert.match(finalReview,/publish_stage=final/);
   assert.match(finalReview,/ROBLOX_F9_CANONICAL_PUBLISH_DISPATCHED=/);
