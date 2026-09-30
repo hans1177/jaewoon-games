@@ -659,6 +659,83 @@ local function save(p)
   GhostProgress=ghostProgressSave(ghostProgressFrom(p:GetAttribute("GhostProgress"))),GhostFragments=p:GetAttribute("GhostFragments")or 0,GhostContracts=p:GetAttribute("GhostContracts")or 0,GhostCatalogBonusClaimed=p:GetAttribute("GhostCatalogBonusClaimed")==true
  })end)
 end
+local function groundedRootTarget(p,pos)
+ local c=p.Character;local r=root(p);local h=hum(p)
+ if not c or not r or not h then return Vector3.new(pos.X,pos.Y,pos.Z)end
+ local lobbyDestination=pos.Z>=180
+ local rootFolders=lobbyDestination and{workspace:FindFirstChild("MidnightLobby")}or{arena}
+ local grounds={}
+ for _,rootFolder in ipairs(rootFolders)do
+  if rootFolder and rootFolder.Parent then
+   for _,d in ipairs(rootFolder:GetDescendants())do
+    if d:IsA("BasePart")and d:GetAttribute("WalkableGround")==true then table.insert(grounds,d)end
+   end
+  end
+ end
+ local params=RaycastParams.new();params.IgnoreWater=true
+ local hit=nil
+ if #grounds>0 then
+  params.FilterType=Enum.RaycastFilterType.Include
+  params.FilterDescendantsInstances=grounds
+  local rayTop=lobbyDestination and 24 or(pos.Y+16)
+  local rayLength=lobbyDestination and 48 or 36
+  hit=workspace:Raycast(Vector3.new(pos.X,rayTop,pos.Z),Vector3.new(0,-rayLength,0),params)
+ else
+  params.FilterType=Enum.RaycastFilterType.Exclude
+  params.FilterDescendantsInstances={c}
+  hit=workspace:Raycast(Vector3.new(pos.X,pos.Y+12,pos.Z),Vector3.new(0,-28,0),params)
+ end
+ local groundY=hit and hit.Position.Y or(lobbyDestination and .65 or .5)
+ local standingOffset=math.max(1,tonumber(h.HipHeight)or 0)+(r.Size.Y*.5)
+ local targetY=groundY+standingOffset+.03
+ if lobbyDestination then targetY=math.clamp(targetY,3.1,4.4)end
+ return Vector3.new(pos.X,targetY,pos.Z)
+end
+local function teleport(p,pos,lookAtPos)
+ local c=p.Character
+ local r=root(p);if r then
+  local target=groundedRootTarget(p,pos)
+  movementGraceUntil[p]=os.clock()+1
+  lastValidPosition[p]=target
+  local targetCFrame=CFrame.new(target)
+  if typeof(lookAtPos)=="Vector3"then
+   local flatLook=Vector3.new(lookAtPos.X,target.Y,lookAtPos.Z)
+   if(flatLook-target).Magnitude>.1 then targetCFrame=CFrame.lookAt(target,flatLook)end
+  end
+  r.Anchored=false
+  r.CFrame=targetCFrame
+  r.AssemblyLinearVelocity=Vector3.zero
+  r.AssemblyAngularVelocity=Vector3.zero
+  local h=hum(p)
+  if h then
+   h.PlatformStand=false;h.Sit=false;h.AutoRotate=true
+   pcall(function()h:ChangeState(Enum.HumanoidStateType.GettingUp)end)
+  end
+  task.defer(function()
+   task.wait()
+   local rr=root(p);local hh=hum(p)
+   if p.Character~=c or rr~=r or not rr or not hh or not rr.Parent or lastValidPosition[p]~=target then return end
+   local corrected=groundedRootTarget(p,pos)
+   if math.abs(rr.Position.Y-corrected.Y)>.12 or hh.FloorMaterial==Enum.Material.Air then
+    movementGraceUntil[p]=os.clock()+1
+    lastValidPosition[p]=corrected
+    local correctedCFrame=CFrame.new(corrected)
+    if typeof(lookAtPos)=="Vector3"then
+     local flatLook=Vector3.new(lookAtPos.X,corrected.Y,lookAtPos.Z)
+     if(flatLook-corrected).Magnitude>.1 then correctedCFrame=CFrame.lookAt(corrected,flatLook)end
+    end
+    rr.Anchored=false
+    rr.CFrame=correctedCFrame
+    rr.AssemblyLinearVelocity=Vector3.zero
+    rr.AssemblyAngularVelocity=Vector3.zero
+    hh.PlatformStand=false;hh.Sit=false;hh.AutoRotate=true
+   end
+  end)
+ end
+end
+-- 월드 생성 전용 지역 범위: 세 진입점만 외부 라운드 흐름에서 사용한다.
+local makePhysicalLobby,makeFallbackArena,ensureArena
+do
 local function arenaPart(f,name,size,pos,color,material)
  local x=Instance.new("Part");x.Name=name;x.Anchored=true;x.Size=size;x.Position=pos;x.Color=color
  x.Material=material or Enum.Material.SmoothPlastic;x.Parent=f;return x
@@ -678,6 +755,12 @@ local function lobbyLabel(part,text,color)
  return label
 end
 
+local function lobbySurfaceText(part,text,color,size)
+ local gui=Instance.new("SurfaceGui");gui.Name="LobbySurfaceText";gui.Face=Enum.NormalId.Front;gui.AlwaysOnTop=false;gui.LightInfluence=.35;gui.SizingMode=Enum.SurfaceGuiSizingMode.PixelsPerStud;gui.PixelsPerStud=36;gui.Parent=part
+ local label=Instance.new("TextLabel");label.Size=UDim2.fromScale(1,1);label.BackgroundTransparency=1;label.Text=text;label.TextColor3=color or Color3.fromRGB(235,240,248);label.TextSize=size or 22;label.TextScaled=true;label.TextStrokeTransparency=.76;label.Font=Enum.Font.GothamBold;label.Parent=gui
+ return label
+end
+
 local function lobbyTerminal(parent,name,pos,labelText,actionText,color,onTriggered)
  local wood=color or Color3.fromRGB(62,43,34)
  local base=arenaPart(parent,name,Vector3.new(6.6,5.6,3.6),pos,wood,Enum.Material.WoodPlanks)
@@ -690,12 +773,6 @@ local function lobbyTerminal(parent,name,pos,labelText,actionText,color,onTrigge
  local prompt=Instance.new("ProximityPrompt");prompt.Name=name.."Prompt";prompt.ObjectText=labelText;prompt.ActionText=actionText;prompt.HoldDuration=.18;prompt.MaxActivationDistance=9;prompt.RequiresLineOfSight=false;prompt.Parent=base
  prompt.Triggered:Connect(onTriggered)
  return base,prompt
-end
-
-local function lobbySurfaceText(part,text,color,size)
- local gui=Instance.new("SurfaceGui");gui.Name="LobbySurfaceText";gui.Face=Enum.NormalId.Front;gui.AlwaysOnTop=false;gui.LightInfluence=.35;gui.SizingMode=Enum.SurfaceGuiSizingMode.PixelsPerStud;gui.PixelsPerStud=36;gui.Parent=part
- local label=Instance.new("TextLabel");label.Size=UDim2.fromScale(1,1);label.BackgroundTransparency=1;label.Text=text;label.TextColor3=color or Color3.fromRGB(235,240,248);label.TextSize=size or 22;label.TextScaled=true;label.TextStrokeTransparency=.76;label.Font=Enum.Font.GothamBold;label.Parent=gui
- return label
 end
 
 local function lobbyLampPost(parent,pos)
@@ -883,7 +960,7 @@ local function lobbyHauntTrigger(parent,name,pos,kind,radius,text)
 end
 
 -- 월드 로비: 오래된 심야 호텔 + 승강기형 자동 매칭.
-local function makePhysicalLobby()
+makePhysicalLobby=function()
  local old=workspace:FindFirstChild("MidnightLobby");if old then old:Destroy()end
  local f=Instance.new("Folder");f.Name="MidnightLobby";f.Parent=workspace
  local flickerLights={}
@@ -1241,7 +1318,7 @@ local function makePhysicalLobby()
  workspace:SetAttribute("PhysicalLobbyReady",true)
  workspace:SetAttribute("WorldLobbyMode",true)
  workspace:SetAttribute("LobbyArtPass","NOCTURNE_CURSED_HOTEL_V6")
- workspace:SetAttribute("LobbyBuildRevision","NOCTURNE_BOOTSTRAP_SPAWN_20260930")
+ workspace:SetAttribute("LobbyBuildRevision","NOCTURNE_BOOT_COMPILE_FIXED_20260930")
  return f
 end
 
@@ -1311,18 +1388,9 @@ task.spawn(function()
    table.sort(currentPlayers,function(a,b)return a.UserId<b.UserId end)
    for i,player in ipairs(currentPlayers)do
     local rr=root(player)
-    if rr and(rr.Position.Y<-2 or rr.Position.Y>20 or math.abs(rr.Position.X)>86 or rr.Position.Z<182 or rr.Position.Z>310)then
+    if rr and player:GetAttribute("RoundState")~="RUNNING"and player:GetAttribute("RoundState")~="SPECTATING"and(rr.Position.Y<-2 or rr.Position.Y>20 or math.abs(rr.Position.X)>86 or rr.Position.Z<182 or rr.Position.Z>310)then
      local slot=((i-1)%#lobbySpawns)+1
-     local h=hum(player)
-     if rr.Position.Y>20 then
-      movementGraceUntil[player]=os.clock()+1
-      rr.CFrame=CFrame.lookAt(Vector3.new(lobbySpawns[slot].X,3.7,lobbySpawns[slot].Z),Vector3.new(0,3.7,210))
-      rr.AssemblyLinearVelocity=Vector3.zero;rr.AssemblyAngularVelocity=Vector3.zero
-      if h then h.PlatformStand=false;h.Sit=false;h.AutoRotate=true end
-      lastValidPosition[player]=rr.Position
-     else
-      teleport(player,lobbySpawns[slot],Vector3.new(0,3,210))
-     end
+     teleport(player,lobbySpawns[slot],Vector3.new(0,3,210))
      player:SetAttribute("LobbySafetyRecoveredAt",workspace:GetServerTimeNow())
     end
    end
@@ -2135,7 +2203,7 @@ local function recordServerQA(status)
  end)
 end
 
-local function makeFallbackArena(map,reason)
+makeFallbackArena=function(map,reason)
  local old=workspace:FindFirstChild("MidnightArena");if old then old:Destroy()end
  local nextArena=workspace:FindFirstChild("MidnightArenaNext");if nextArena then nextArena:Destroy()end
  local f=Instance.new("Folder");f.Name="MidnightArena";f.Parent=workspace
@@ -2166,13 +2234,15 @@ local function makeFallbackArena(map,reason)
  return f
 end
 
-local function ensureArena(map)
+ensureArena=function(map)
  local ok,result=pcall(function()return makeArena(map)end)
  if ok and result and result.Parent and workspace:GetAttribute("MapReady")==true then
   return result
  end
  return makeFallbackArena(map,ok and"NO_READY"or result)
 end
+
+end -- 월드 생성 지역 범위
 
 local function clearBots()
  for _,b in ipairs(bots)do
@@ -2422,77 +2492,6 @@ local function applyRoleVisual(p,r)
    local t=Instance.new("TextLabel");t.Size=UDim2.fromScale(1,1);t.BackgroundTransparency=1;t.TextScaled=true;t.Text=mf.Label;t.TextColor3=mf.Accent;t.TextStrokeTransparency=.25;t.Parent=g
   end
  else hi.FillColor=Style.Survivor;hi.OutlineColor=Color3.fromRGB(166,205,219)end
-end
-local function groundedRootTarget(p,pos)
- local c=p.Character;local r=root(p);local h=hum(p)
- if not c or not r or not h then return Vector3.new(pos.X,pos.Y,pos.Z)end
- local lobbyDestination=pos.Z>=180
- local rootFolders=lobbyDestination and{workspace:FindFirstChild("MidnightLobby")}or{arena}
- local grounds={}
- for _,rootFolder in ipairs(rootFolders)do
-  if rootFolder and rootFolder.Parent then
-   for _,d in ipairs(rootFolder:GetDescendants())do
-    if d:IsA("BasePart")and d:GetAttribute("WalkableGround")==true then table.insert(grounds,d)end
-   end
-  end
- end
- local params=RaycastParams.new();params.IgnoreWater=true
- local hit=nil
- if #grounds>0 then
-  params.FilterType=Enum.RaycastFilterType.Include
-  params.FilterDescendantsInstances=grounds
-  local rayTop=lobbyDestination and 24 or(pos.Y+16)
-  local rayLength=lobbyDestination and 48 or 36
-  hit=workspace:Raycast(Vector3.new(pos.X,rayTop,pos.Z),Vector3.new(0,-rayLength,0),params)
- else
-  params.FilterType=Enum.RaycastFilterType.Exclude
-  params.FilterDescendantsInstances={c}
-  hit=workspace:Raycast(Vector3.new(pos.X,pos.Y+12,pos.Z),Vector3.new(0,-28,0),params)
- end
- local groundY=hit and hit.Position.Y or(lobbyDestination and .65 or .5)
- local standingOffset=math.max(1,tonumber(h.HipHeight)or 0)+(r.Size.Y*.5)
- local targetY=groundY+standingOffset+.03
- if lobbyDestination then targetY=math.clamp(targetY,3.1,4.4)end
- return Vector3.new(pos.X,targetY,pos.Z)
-end
-local function teleport(p,pos,lookAtPos)
- local r=root(p);if r then
-  local target=groundedRootTarget(p,pos)
-  movementGraceUntil[p]=os.clock()+1
-  lastValidPosition[p]=target
-  local targetCFrame=CFrame.new(target)
-  if typeof(lookAtPos)=="Vector3"then
-   local flatLook=Vector3.new(lookAtPos.X,target.Y,lookAtPos.Z)
-   if(flatLook-target).Magnitude>.1 then targetCFrame=CFrame.lookAt(target,flatLook)end
-  end
-  r.CFrame=targetCFrame
-  r.AssemblyLinearVelocity=Vector3.zero
-  r.AssemblyAngularVelocity=Vector3.zero
-  local h=hum(p)
-  if h then
-   h.PlatformStand=false;h.Sit=false;h.AutoRotate=true
-   pcall(function()h:ChangeState(Enum.HumanoidStateType.GettingUp)end)
-  end
-  task.defer(function()
-   task.wait()
-   local rr=root(p);local hh=hum(p)
-   if not rr or not hh or not rr.Parent then return end
-   local corrected=groundedRootTarget(p,pos)
-   if math.abs(rr.Position.Y-corrected.Y)>.12 or hh.FloorMaterial==Enum.Material.Air then
-    movementGraceUntil[p]=os.clock()+1
-    lastValidPosition[p]=corrected
-    local correctedCFrame=CFrame.new(corrected)
-    if typeof(lookAtPos)=="Vector3"then
-     local flatLook=Vector3.new(lookAtPos.X,corrected.Y,lookAtPos.Z)
-     if(flatLook-corrected).Magnitude>.1 then correctedCFrame=CFrame.lookAt(corrected,flatLook)end
-    end
-    rr.CFrame=correctedCFrame
-    rr.AssemblyLinearVelocity=Vector3.zero
-    rr.AssemblyAngularVelocity=Vector3.zero
-    hh.PlatformStand=false;hh.Sit=false;hh.AutoRotate=true
-   end
-  end)
- end
 end
 local function setRole(p,r)
  p:SetAttribute("Role",r);p:SetAttribute("Frozen",false)

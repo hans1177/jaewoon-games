@@ -176,6 +176,9 @@ local function setLobbyClarity(enabled)
 end
 
 -- 로딩: 클라이언트 핵심 리소스와 서버 맵 준비가 끝날 때까지 로비 진입을 가린다.
+-- 로딩 화면 생성 전용 지역 범위: 생성용 변수가 파일 전체에 누적되지 않는다.
+local loadingFill
+do
 local loadingLayer=Instance.new("Frame")
 loadingLayer.Name="LoadingScreen"
 loadingLayer.Size=UDim2.fromScale(1,1)
@@ -221,7 +224,7 @@ loadingTrack.ZIndex=103
 loadingTrack.Parent=loadingLayer
 local loadingTrackCorner=Instance.new("UICorner");loadingTrackCorner.CornerRadius=UDim.new(0,6);loadingTrackCorner.Parent=loadingTrack
 
-local loadingFill=Instance.new("Frame")
+loadingFill=Instance.new("Frame")
 loadingFill.Name="LoadingFill"
 loadingFill.Size=UDim2.fromScale(.08,1)
 loadingFill.BackgroundColor3=Color3.fromRGB(190,151,86)
@@ -369,6 +372,8 @@ task.spawn(function()
  end
 end)
 
+end -- 로딩 화면 생성 지역 범위
+
 local function roundify(target,radius)
  local corner=Instance.new("UICorner");corner.CornerRadius=UDim.new(0,radius or 12);corner.Parent=target
 end
@@ -390,6 +395,9 @@ local function makeButton(parent,text,color)
 end
 
 -- 캐릭터 모션: 기본 Animator를 유지하고 Motor6D C0에 작은 보조 움직임만 합성한다.
+-- 캐릭터 동작 전용 지역 범위: 생성용 변수가 파일 전체에 누적되지 않는다.
+local setMotionImpulse
+do
 local motionHumanoid=nil
 local motionRoot=nil
 local motionJoints={}
@@ -397,7 +405,7 @@ local motionPhase=0
 local motionImpulseKind=""
 local motionImpulseUntil=0
 
-local function setMotionImpulse(kind,duration)
+setMotionImpulse=function(kind,duration)
  motionImpulseKind=kind or""
  motionImpulseUntil=os.clock()+(duration or .3)
 end
@@ -501,6 +509,8 @@ end)
 
 if p.Character then task.defer(bindCharacterMotion,p.Character)end
 p.CharacterAdded:Connect(bindCharacterMotion)
+
+end -- 캐릭터 동작 지역 범위
 
 local chaseTint=Instance.new("Frame")
 -- 학습 효과 초기화 변수는 이 범위와 연결된 콜백에서만 유지한다.
@@ -936,6 +946,9 @@ local function showMapContentToast(text,color,duration)
 end
 
 -- 구석 놀람/코믹 연출: 로컬에서만 생성되며 경쟁 판정에는 관여하지 않는다.
+-- 로컬 놀람 연출 전용 지역 범위: 생성용 변수가 파일 전체에 누적되지 않는다.
+local ghostCatalogItem
+do
 local surpriseArena=nil
 local surpriseTriggers={}
 local surpriseSeen={}
@@ -1123,7 +1136,7 @@ local function playFloatingProp(trigger,kind,text)
  if text and text~=""then localText(pos+Vector3.new(0,2.5,0),text,Color3.fromRGB(229,233,240),1.8)end
 end
 
-local function ghostCatalogItem(id)
+ghostCatalogItem=function(id)
  for _,item in ipairs(C.GhostCatalog or{})do if item.Id==id then return item end end
  return nil
 end
@@ -1231,6 +1244,8 @@ RunService.Heartbeat:Connect(function(dt)
   end
  end
 end)
+
+end -- 로컬 놀람 연출 지역 범위
 
 -- 실제 플레이 좌표를 보여주는 소형 미니맵
 local mapPanel=Instance.new("Frame")
