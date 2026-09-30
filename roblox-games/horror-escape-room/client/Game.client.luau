@@ -1201,7 +1201,7 @@ local roomBrowserInfo=Instance.new("TextLabel")
 roomBrowserInfo.Size=UDim2.new(1,-20,0,34)
 roomBrowserInfo.Position=UDim2.fromOffset(10,44)
 roomBrowserInfo.BackgroundTransparency=1
-roomBrowserInfo.Text="1명부터 시작 가능 · 최대 8명 · 빈자리는 AI"
+roomBrowserInfo.Text="매칭 구역에 들어가면 자동으로 시작"
 roomBrowserInfo.TextColor3=Color3.fromRGB(180,193,209)
 roomBrowserInfo.TextSize=11
 roomBrowserInfo.TextWrapped=true
@@ -2061,9 +2061,9 @@ local function render()
  local lobbyPhase=tostring(p:GetAttribute("LobbyPhase")or round)
  local phaseText=lobbyPhase=="INTERMISSION"and("곧 시작 · "..seconds.."초")or lobbyPhase=="RUNNING"and"게임 중"or lobbyPhase=="RESULT"and"결과"or lobbyPhase=="LOADING"and"준비 중"or"대기"
  if p:GetAttribute("RoomServer")==true then
-  lobbyStatus.Text=string.format("매치 대기 %d명 · %s",realPlayers,phaseText)
+  lobbyStatus.Text=string.format("곧 시작 · %d명",realPlayers)
  else
-  lobbyStatus.Text=string.format("월드 로비 · 접속 %d명",realPlayers)
+  lobbyStatus.Text=""
  end
  local pref=p:GetAttribute("MonsterPreference")or"ANY"
  local prefText=pref=="MONSTER"and"몬스터 선호"or pref=="SURVIVOR"and"인간 선호"or"자동 배정"
@@ -2083,9 +2083,9 @@ local function render()
  if browser then worldCodePanel.Visible=worldCodePanel.Visible and not running and not resultCode end
  ruleCard.Visible=false
  actionDock.Visible=running
- energyTrack.Visible=true
- energyFill.Visible=true
- energyLabel.Visible=true
+ energyTrack.Visible=running
+ energyFill.Visible=running
+ energyLabel.Visible=running
  mapPanel.Visible=running
  spectatorPanel.Visible=spectating
  resultPanel.Visible=resultCode~=nil
