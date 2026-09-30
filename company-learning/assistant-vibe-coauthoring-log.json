@@ -641,7 +641,8 @@
         "post-change-unity-batch-run:36772548003",
         "post-change-unity-prepare-job:110082301354:PASS",
         "post-change-owner-exclusive-log:UNITY_OWNER_EXCLUSIVE_GAME_EXCLUDED=horror-escape-room",
-        "post-change-target-selected:12-of-12:no-horror-escape-room:no-village-dungeons"
+        "post-change-target-selected:12-of-12:no-horror-escape-room:no-village-dungeons",
+        "post-change-staged-result:12-of-12-source-generation-failed-before-build"
       ],
       "reusablePatterns": [
         "EXACT_REQUEST_PRESENCE_NOT_MATCH_COUNT_CONTROLS_BATCH_FALLBACK",
@@ -661,11 +662,51 @@
         "PR #4210 required GitHub Actions: 4/4 PASS",
         "post-change main Unity planner actual execution: PASS; owner-exclusive horror-escape-room excluded and 12 eligible independent games selected",
         "exact unavailable village-dungeons post-change workflow dispatch: NOT_YET_OBSERVED; zero-row behavior is covered by responsibility regression only",
-        "Unity staged APK/runtime actual execution: QUEUED_OR_RUNNING for selected games; no aggregate runtime PASS claim",
+        "Unity staged APK/runtime actual execution: 12/12 source generation FAIL before build; no APK or runtime PASS claim",
         "Roblox Studio actual execution: NOT_RUN; no F9 or release completion claim"
       ],
       "learningState": "TRACE_ONLY",
-      "liveState": "MERGED_AT_3C5BD816; POST_CHANGE_BATCH_OWNER_EXCLUSIVE_FILTER_ACTUALLY_PASS; EXACT_UNAVAILABLE_DYNAMIC_DISPATCH_NOT_YET_OBSERVED; UNITY_STAGED_RUNTIME_IN_PROGRESS; NEXT_ROTATION_EXACT_VILLAGE_DUNGEONS_AND_LINE_DEFENSE_ROBLOX_STUDIO_SCENARIO"
+      "liveState": "MERGED_AT_3C5BD816; POST_CHANGE_BATCH_OWNER_EXCLUSIVE_FILTER_ACTUALLY_PASS; EXACT_UNAVAILABLE_DYNAMIC_DISPATCH_NOT_YET_OBSERVED; TWELVE_ELIGIBLE_UNITY_LANES_FAILED_AT_COMMON_SOURCE_GENERATION; SUPERSEDED_BY_ASSISTANT_UNITY_PORTABLE_PRINCIPLE_MAPPING_REPAIR_20261001"
+    },
+    {
+      "id": "assistant_unity_portable_principle_mapping_repair_20261001",
+      "date": "2026-10-01",
+      "gameId": "MULTI_GAME_UNITY_RUNTIME",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "The post-#4210 main Unity batch correctly excluded owner-exclusive horror-escape-room and selected 12 eligible independent games, but all 12 failed before build in the same source generation step. The first current verified playbook principle described portable touch-look spatial feedback; the relevance classifier admitted it, while the concrete Unity behavior mapper had no matching phrase and aborted every generator lane. The always-run checkpoint then attempted git rev-parse with an empty source revision, replacing the causal generator failure with a second path-not-in-index error and omitting the game-local queue checkpoint.",
+      "rootCause": "PORTABLE_TOUCH_LOOK_PRINCIPLE_ADMITTED_WITHOUT_CONCRETE_UNITY_BEHAVIOR_MAPPING_PLUS_CHECKPOINT_ASSUMED_SOURCE_REVISION_AFTER_SOURCE_STAGE_FAILURE",
+      "decision": "Map the portable immediate spatial and camera-orientation feedback observation to the existing IMMEDIATE_VISIBLE_FEEDBACK behavior without copying platform-specific implementation or changing gameplay. Preserve F0 failure evidence when source generation fails by making source-tree binding conditional on an exact committed project.",
+      "change": "Extended the existing Unity principle mapper with immediate-spatial, camera-orientation-change, and before/after-scene-framing phrases; added an executable regression using the exact failing principle; guarded checkpoint source-tree resolution so an early source failure persists null exact binding and F0 failure instead of crashing. No game rule, health, attack, wave, reward, drop, progression, save shape, protected game source, asset, candidate, task, or deployment changed.",
+      "evidence": [
+        "post-change-run:36772548003",
+        "post-change-selected-games:12",
+        "common-failure-stage:Change-detection-and-exact-source-reuse",
+        "example-failure-job:110082490817:amusement-tycoon",
+        "failure:UNITY_GAME_DEVELOPMENT_PRINCIPLE_UNMAPPED:touch-look-produces-immediate-spatial-feedback",
+        "secondary-failure:path-unity-games/amusement-tycoon-exists-on-disk-but-not-in-index",
+        "real-current-playbook:7-external-black-box-records:13-portable-game-development-principles"
+      ],
+      "reusablePatterns": [
+        "EVERY_ADMITTED_GAME_DEVELOPMENT_PRINCIPLE_NEEDS_A_CONCRETE_TARGET_BEHAVIOR_MAPPING",
+        "PORTABLE_OBSERVATION_MAY_MAP_TO_TARGET_BEHAVIOR_WITHOUT_COPYING_SOURCE_PLATFORM_IMPLEMENTATION",
+        "ALWAYS_RUN_CHECKPOINT_MUST_PRESERVE_EARLY_STAGE_FAILURE_WITHOUT_REQUIRING_LATER_STAGE_OUTPUTS"
+      ],
+      "avoidPatterns": [
+        "ACCEPTING_A_RELEVANT_PRINCIPLE_THEN_ABORTING_BECAUSE_ITS_CURRENT_WORDING_IS_UNMAPPED",
+        "COPYING_ROBLOX_SPECIFIC_IMPLEMENTATION_INTO_UNITY",
+        "MASKING_CAUSAL_SOURCE_FAILURE_WITH_A_SECONDARY_EMPTY_REVISION_GIT_ERROR",
+        "CLAIMING_UNITY_APK_OR_RUNTIME_PASS_FROM_GENERATOR_REGRESSION"
+      ],
+      "qa": [
+        "local Unity plus central coordinator responsibility regression: 74/74 PASS",
+        "exact failing touch-look principle executable regression: PASS",
+        "current verified playbook with 7 records and 13 portable principles generator reproduction: PASS",
+        "post-change GitHub Actions: PENDING",
+        "Unity APK/runtime actual execution on repaired source: NOT_RUN",
+        "Roblox Studio actual execution: NOT_RUN; no F9 or release completion claim"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "LOCAL_COMMON_12_GAME_SOURCE_GENERATOR_REPAIR_VERIFIED; PR_AND_POST_CHANGE_ACTIONS_PENDING; NEXT_ROTATION_POST_CHANGE_UNITY_SOURCE_GENERATION_THEN_LINE_DEFENSE_ROBLOX_STUDIO_SCENARIO"
     }
   ]
 }
