@@ -173,8 +173,32 @@ fi
 pid="$(adb shell pidof "$package" 2>/dev/null | tr -d '\r' | head -n 1 || true)"
 adb shell dumpsys activity activities > "$out_dir/activity.txt" 2>&1 || true
 adb shell dumpsys package "$package" > "$out_dir/package.txt" 2>&1 || true
+adb shell dumpsys gfxinfo "$package" > "$out_dir/gfxinfo.txt" 2>&1 || true
+adb shell dumpsys SurfaceFlinger --latency > "$out_dir/surfaceflinger-latency.txt" 2>&1 || true
+adb shell dumpsys meminfo "$package" > "$out_dir/meminfo.txt" 2>&1 || true
 adb logcat -d > "$out_dir/logcat.txt" 2>&1 || true
 adb exec-out screencap -p > "$out_dir/screenshot.png" 2>/dev/null || true
+
+read -r rendered_frames janky_frames total_pss_kb < <(python3 - "$out_dir/gfxinfo.txt" "$out_dir/surfaceflinger-latency.txt" "$out_dir/meminfo.txt" <<'PY'
+import pathlib,re,sys
+gfx=pathlib.Path(sys.argv[1]).read_text(encoding='utf-8',errors='replace')
+surface=pathlib.Path(sys.argv[2]).read_text(encoding='utf-8',errors='replace')
+mem=pathlib.Path(sys.argv[3]).read_text(encoding='utf-8',errors='replace')
+def number(pattern,text,flags=0):
+    match=re.search(pattern,text,flags)
+    return int(match.group(1).replace(',','')) if match else 0
+frames=number(r'Total frames rendered:\s*([0-9,]+)',gfx,re.I)
+janky=number(r'Janky frames:\s*([0-9,]+)',gfx,re.I)
+surface_frames=sum(1 for line in surface.splitlines() if re.fullmatch(r'\s*\d+\s+\d+\s+\d+\s*',line) and any(int(x)>0 for x in line.split()))
+frames=max(frames,surface_frames)
+pss=number(r'TOTAL PSS:\s*([0-9,]+)',mem,re.I) or number(r'^\s*TOTAL\s+([0-9,]+)',mem,re.M)
+print(frames,janky,pss)
+PY
+)
+platform_metrics_pass=false
+if [[ "$rendered_frames" =~ ^[0-9]+$ && "$rendered_frames" -gt 0 && "$total_pss_kb" =~ ^[0-9]+$ && "$total_pss_kb" -gt 0 ]]; then
+  platform_metrics_pass=true
+fi
 
 fatal=0
 set +e
@@ -211,17 +235,19 @@ if [[ "$runtime_pass" == "true" && "$seed_signals_pass" == "true" ]]; then
   fi
 fi
 
-python3 - "$out_dir/evidence.json" "$apk" "$package" "$pid" "$runtime_pass" "$fatal" "$update_pass" "$launch_command_pass" "$seed_technical" "$boot_observed" "$action_observed" "$save_observed" "$metric_observed" "$runtime_ready_timeout" "$gameplay_input_delivered" "$launch_activity" "$launch_component" "$process_observed_after_launch" "$process_exited_before_runtime_ready" "$launch_process_missing" "$runtime_abi_compatible" "$device_api" "$device_abis" <<'PY'
+python3 - "$out_dir/evidence.json" "$apk" "$package" "$pid" "$runtime_pass" "$fatal" "$update_pass" "$launch_command_pass" "$seed_technical" "$boot_observed" "$action_observed" "$save_observed" "$metric_observed" "$runtime_ready_timeout" "$gameplay_input_delivered" "$launch_activity" "$launch_component" "$process_observed_after_launch" "$process_exited_before_runtime_ready" "$launch_process_missing" "$runtime_abi_compatible" "$device_api" "$device_abis" "$rendered_frames" "$janky_frames" "$total_pss_kb" "$platform_metrics_pass" <<'PY'
 import json,sys,datetime,pathlib
 (out,apk,package,pid,runtime_pass,fatal,update_pass,launch_command_pass,
  seed_technical,boot_observed,action_observed,save_observed,metric_observed,
  runtime_ready_timeout,gameplay_input_delivered,launch_activity,launch_component,
  process_observed_after_launch,process_exited_before_runtime_ready,launch_process_missing,
- runtime_abi_compatible,device_api,device_abis)=sys.argv[1:]
+ runtime_abi_compatible,device_api,device_abis,rendered_frames,janky_frames,total_pss_kb,
+ platform_metrics_pass)=sys.argv[1:]
 flag=lambda value:value.lower()=='true'
 seed_ok=(not flag(seed_technical)) or all(map(flag,[boot_observed,action_observed,save_observed,metric_observed]))
+frames=int(rendered_frames); janky=int(janky_frames); pss_kb=int(total_pss_kb)
 data={
-  'version':5,
+  'version':6,
   'target':'unity-android',
   'testMethod':'Android black-box APK smoke on an architecture-compatible runtime: fresh install + exact launcher activity + runtime-ready gate + gameplay input + update',
   'checkedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),
@@ -236,7 +262,7 @@ data={
   'launcherCommandPassed':flag(launch_command_pass),
   'runtimeSmokePassed':flag(runtime_pass),
   'updateInstallPassed':flag(update_pass),
-  'qaPassEligibleRuntimeEvidence':flag(runtime_pass) and flag(update_pass) and seed_ok and flag(runtime_abi_compatible),
+  'qaPassEligibleRuntimeEvidence':flag(runtime_pass) and flag(update_pass) and seed_ok and flag(runtime_abi_compatible) and flag(platform_metrics_pass),
   'processObservedAfterLaunch':flag(process_observed_after_launch),
   'processAliveAfterInput':bool(pid.strip()),
   'processExitedBeforeRuntimeReady':flag(process_exited_before_runtime_ready),
@@ -252,6 +278,17 @@ data={
     'metricObserved':flag(metric_observed),
     'pass':seed_ok,
   },
+  'androidPerformance':{
+    'provider':'ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO',
+    'graphicsFrameStatsObserved':frames>0,
+    'totalFramesRendered':frames,
+    'jankyFrames':janky,
+    'jankyFrameRatePct':round((janky/frames)*100,2) if frames else None,
+    'memoryTotalPssKb':pss_kb,
+    'memoryTotalPssBytes':pss_kb*1024,
+    'sampleCount':int(frames>0)+int(pss_kb>0),
+    'pass':flag(platform_metrics_pass),
+  },
   'playTestEvidence':[
     f'architecture-compatible Android runtime={flag(runtime_abi_compatible)} deviceAbis={device_abis}',
     f'fresh APK install passed package={package}',
@@ -263,13 +300,15 @@ data={
     f'runtime-ready timeout={flag(runtime_ready_timeout)}',
     f'gameplay input delivered={flag(gameplay_input_delivered)}',
     f'development seed runtime signals pass={seed_ok}',
+    f'Android graphics frames observed={frames} janky={janky}',
+    f'Android process memory TOTAL PSS KB={pss_kb}',
     f'process alive after runtime gate/input={bool(pid.strip())}',
     f'fatal runtime error detected={fatal=="1"}',
     f'same-signed APK update install passed={flag(update_pass)}',
     'activity/package/logcat/screenshot evidence captured even on runtime failure'
   ],
   'artifacts':{
-    'installLog':'install.log','updateInstallLog':'update-install.log','launchLog':'launch.log','launchComponent':'launch-component.txt','logcat':'logcat.txt','packageFatalScan':'package-fatal-scan.txt','screenshot':'screenshot.png','activity':'activity.txt','packageDump':'package.txt','apkBadging':'apk-badging.txt','deviceApi':'device-api.txt','deviceAbis':'device-abis.txt'
+    'installLog':'install.log','updateInstallLog':'update-install.log','launchLog':'launch.log','launchComponent':'launch-component.txt','logcat':'logcat.txt','packageFatalScan':'package-fatal-scan.txt','screenshot':'screenshot.png','activity':'activity.txt','packageDump':'package.txt','gfxInfo':'gfxinfo.txt','surfaceFlingerLatency':'surfaceflinger-latency.txt','memInfo':'meminfo.txt','apkBadging':'apk-badging.txt','deviceApi':'device-api.txt','deviceAbis':'device-abis.txt'
   }
 }
 pathlib.Path(out).write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
@@ -290,6 +329,7 @@ fi
 [[ -n "$pid" ]] || { tail -n 250 "$out_dir/logcat.txt" >&2 || true; echo "[JAEWOON_BUILD_ERROR:APK_PROCESS_EXITED] $package is not alive after launch/runtime gate" >&2; exit 11; }
 [[ "$fatal" -eq 0 ]] || { tail -n 250 "$out_dir/logcat.txt" >&2 || true; echo "[JAEWOON_BUILD_ERROR:APK_FATAL_RUNTIME_ERROR] fatal runtime error detected for $package" >&2; exit 12; }
 [[ "$runtime_pass" == "true" ]] || { echo "[JAEWOON_BUILD_ERROR:APK_RUNTIME_SMOKE_FAILED] Unity APK runtime smoke failed for $package" >&2; exit 13; }
+[[ "$platform_metrics_pass" == "true" ]] || { cat "$out_dir/gfxinfo.txt" >&2 || true; cat "$out_dir/meminfo.txt" >&2 || true; echo "[JAEWOON_BUILD_ERROR:ANDROID_PLATFORM_METRICS_MISSING] rendered_frames=$rendered_frames total_pss_kb=$total_pss_kb package=$package" >&2; exit 21; }
 if [[ "$seed_technical" == "true" && "$runtime_ready_timeout" == "true" ]]; then
   grep -E 'JAEWOON_TECH_(BOOT|ACTION|SAVE|METRIC)' "$out_dir/logcat.txt" >&2 || true
   echo "[JAEWOON_BUILD_ERROR:DEVELOPMENT_SEED_BOOT_TIMEOUT] no JAEWOON_TECH_BOOT observed; gameplay input withheld package=$package" >&2
@@ -301,4 +341,4 @@ if [[ "$seed_technical" == "true" && "$seed_signals_pass" != "true" ]]; then
   exit 15
 fi
 [[ "$update_pass" == "true" ]] || { cat "$out_dir/update-install.log" >&2 || true; echo "[JAEWOON_BUILD_ERROR:APK_UPDATE_INSTALL_FAILED] Same APK could not update installed package $package" >&2; exit 14; }
-echo "UNITY_APK_RUNTIME_SMOKE=PASS package=$package pid=$pid fresh_install=true update_install=true seed_signals=$seed_signals_pass runtime_abi_compatible=$runtime_abi_compatible"
+echo "UNITY_APK_RUNTIME_SMOKE=PASS package=$package pid=$pid fresh_install=true update_install=true seed_signals=$seed_signals_pass runtime_abi_compatible=$runtime_abi_compatible rendered_frames=$rendered_frames total_pss_kb=$total_pss_kb"

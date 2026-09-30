@@ -16,6 +16,7 @@ const runtimeWorkflowSource=fs.readFileSync(path.resolve('.github/workflows/unit
 const independentQaSource=fs.readFileSync(path.resolve('.github/workflows/unity-android-independent-qa.yml'),'utf8');
 const regressionSource=fs.readFileSync(path.resolve('.github/workflows/unity-android-regression.yml'),'utf8');
 const runtimeSmokeSource=fs.readFileSync(path.resolve('tools/unity-apk-runtime-smoke.sh'),'utf8');
+const evidenceTool=path.resolve('tools/company-development-unity-evidence.mjs');
 const expectedUnityEditorVersion='6000.6.0f1';
 const expectedUnityEditorRevision='f7f8ed4d1e24';
 const cases=[
@@ -329,6 +330,56 @@ test('runtime smoke launches the exact APK activity and fails fast on missing or
   assert.match(runtimeSmokeSource,/JAEWOON_TECH_ACTION/);
   assert.match(runtimeSmokeSource,/JAEWOON_TECH_SAVE/);
   assert.match(runtimeSmokeSource,/JAEWOON_TECH_METRIC/);
+});
+
+test('non-seed Unity games bind Android platform metrics without pretending seed-only logs exist',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-unity-evidence-'));
+  const project=path.join(root,'project');
+  fs.mkdirSync(path.join(project,'Assets'),{recursive:true});
+  fs.mkdirSync(path.join(project,'Packages'),{recursive:true});
+  fs.mkdirSync(path.join(project,'ProjectSettings'),{recursive:true});
+  const sha='a'.repeat(64), commit='b'.repeat(40), tree='c'.repeat(40);
+  const build=path.join(root,'build.json'), runtime=path.join(root,'runtime.json'), independent=path.join(root,'independent.json'), output=path.join(root,'evidence.json');
+  fs.writeFileSync(build,JSON.stringify({sha256:sha,sourceCommit:commit,sourceTreeSha:tree,runId:17}));
+  fs.writeFileSync(runtime,JSON.stringify({state:'PASS',runtime:'PASS',qaPassEligibleRuntimeEvidence:true,apkSha256:sha,buildSourceCommit:commit,sourceTreeSha:tree,gameplayInputDelivered:true,updateInstallPassed:true,developmentSeedRuntime:{required:false,pass:true},androidPerformance:{provider:'ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO',graphicsFrameStatsObserved:true,totalFramesRendered:120,jankyFrames:3,jankyFrameRatePct:2.5,memoryTotalPssBytes:67108864,sampleCount:2,pass:true}}));
+  fs.writeFileSync(independent,JSON.stringify({state:'PASS',independentQa:'PASS',independent:true,apkSha256:sha,buildSourceCommit:commit,sourceTreeSha:tree,checks:{backgroundResume:'PASS'}}));
+  const args=[evidenceTool,'--game-id=existing-game',`--build-info=${build}`,`--runtime=${runtime}`,`--independent=${independent}`,`--project=${project}`,`--output=${output}`];
+  const pass=spawnSync(process.execPath,args,{encoding:'utf8'});
+  assert.equal(pass.status,0,pass.stderr||pass.stdout);
+  const evidence=JSON.parse(fs.readFileSync(output,'utf8'));
+  assert.equal(evidence.state,'PASS');
+  assert.equal(evidence.realEvidence.evidenceMode,'ANDROID_PLATFORM_BLACK_BOX');
+  assert.equal(evidence.realEvidence.platformMetricsPass,true);
+  assert.equal(evidence.realEvidence.seedRuntimeRequired,false);
+  assert.equal(evidence.coverage.ANDROID_FPS_FRAME_STABILITY.totalFramesRendered,120);
+  assert.equal(evidence.coverage.SAVE_LOAD_UPDATE_COMPATIBILITY.saveSignalObserved,null);
+
+  const missing=JSON.parse(fs.readFileSync(runtime,'utf8'));
+  delete missing.androidPerformance;
+  fs.writeFileSync(runtime,JSON.stringify(missing));
+  const fail=spawnSync(process.execPath,args,{encoding:'utf8'});
+  assert.equal(fail.status,2,fail.stderr||fail.stdout);
+  assert.match(fail.stdout,/UNITY_PLATFORM_METRICS=FAIL/);
+  assert.equal(JSON.parse(fs.readFileSync(output,'utf8')).state,'FAIL');
+});
+
+test('Unity checkpoint cannot promote child job success when canonical evidence binding fails',()=>{
+  assert.match(workflowSource,/echo "passed=false" >> "\$GITHUB_OUTPUT"[\s\S]*company-development-unity-evidence\.mjs[\s\S]*echo "passed=true" >> "\$GITHUB_OUTPUT"/);
+  assert.match(workflowSource,/CANONICAL_PASS: \$\{\{ steps\.canonical\.outputs\.passed \}\}/);
+  assert.match(workflowSource,/CANONICAL_OUTCOME: \$\{\{ steps\.canonical\.outcome \}\}/);
+  assert.match(workflowSource,/const canonicalEvidenceBound=yes\(process\.env\.CANONICAL_PASS\)&&process\.env\.CANONICAL_OUTCOME==='success'/);
+  assert.match(workflowSource,/const runtime=rawRuntime&&canonicalEvidenceBound,qa=rawQa&&canonicalEvidenceBound,regression=rawRegression&&canonicalEvidenceBound/);
+  assert.match(workflowSource,/code:canonicalEvidenceBound\?'STAGE_NOT_PASSED':'CANONICAL_EVIDENCE_NOT_BOUND'/);
+  assert.match(workflowSource,/unityCanonicalEvidenceBound:canonicalEvidenceBound/);
+});
+
+test('Unity runtime captures platform graphics and memory metrics for every APK',()=>{
+  assert.match(runtimeSmokeSource,/dumpsys gfxinfo "\$package"/);
+  assert.match(runtimeSmokeSource,/dumpsys SurfaceFlinger --latency/);
+  assert.match(runtimeSmokeSource,/dumpsys meminfo "\$package"/);
+  assert.match(runtimeSmokeSource,/ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO/);
+  assert.match(runtimeSmokeSource,/ANDROID_PLATFORM_METRICS_MISSING/);
+  assert.match(runtimeSmokeSource,/qaPassEligibleRuntimeEvidence[^\n]*platform_metrics_pass/);
 });
 
 test('exact artifact regression binds upstream APK SHA and source revision',()=>{

@@ -919,6 +919,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo "passed=false" >> "$GITHUB_OUTPUT"
           runtime_run="${RUNTIME_RUN_NEW:-$RUNTIME_RUN_OLD}"; qa_run="${QA_RUN_NEW:-$QA_RUN_OLD}"; regression_run="${REGRESSION_RUN_NEW:-$REGRESSION_RUN_OLD}"
           rm -rf /tmp/unity-runtime /tmp/unity-independent /tmp/unity-regression
           mkdir -p /tmp/unity-runtime /tmp/unity-independent /tmp/unity-regression
@@ -933,10 +934,11 @@ jobs:
           test -n "$build_info" -a -n "$runtime_json" -a -n "$independent_json"
           node tools/company-development-unity-evidence.mjs --game-id="$GAME_ID" --build-info="$build_info" --runtime="$runtime_json" --independent="$independent_json" --runtime-log="$runtime_log" --independent-log="$independent_log" --project="$PROJECT" --output="$BASE/unity-technical-validation.json"
           regression_json="$(find /tmp/unity-regression -type f -name evidence.json | head -n1 || true)"; [[ -n "$regression_json" ]] && cp "$regression_json" "$BASE/unity-regression-validation.json"
+          echo "passed=true" >> "$GITHUB_OUTPUT"
           echo "runtime_run=$runtime_run" >> "$GITHUB_OUTPUT"; echo "qa_run=$qa_run" >> "$GITHUB_OUTPUT"; echo "regression_run=$regression_run" >> "$GITHUB_OUTPUT"
 
       - name: Prepare free models only after technical stages pass
-        if: steps.regressionstate.outputs.passed == 'true'
+        if: steps.canonical.outputs.passed == 'true'
         uses: ./.github/actions/prepare-ollama
         with:
           model: 'llama3.2:1b'
@@ -946,7 +948,7 @@ jobs:
           cache-model: 'true'
 
       - name: Ensure configured department models only for evidence meeting
-        if: steps.regressionstate.outputs.passed == 'true'
+        if: steps.canonical.outputs.passed == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -972,6 +974,8 @@ jobs:
           RUNTIME_PASS: ${{ steps.runtimestate.outputs.passed }}
           QA_PASS: ${{ steps.independentstate.outputs.passed }}
           REGRESSION_PASS: ${{ steps.regressionstate.outputs.passed }}
+          CANONICAL_PASS: ${{ steps.canonical.outputs.passed }}
+          CANONICAL_OUTCOME: ${{ steps.canonical.outcome }}
           RUNTIME_RUN_NEW: ${{ steps.runtime.outputs.run_id }}
           RUNTIME_RUN_OLD: ${{ matrix.item.unityRuntimeSmokeRunId }}
           QA_RUN_NEW: ${{ steps.independent.outputs.run_id }}
@@ -1000,7 +1004,10 @@ jobs:
           import {failureSignature} from './tools/company-selected-platform-router.mjs';
           import {evaluateInternalRelease} from './tools/company-platform-exposure-control.mjs';
           const yes=v=>String(v).toLowerCase()==='true';
-          const build=yes(process.env.BUILD_PASS),runtime=yes(process.env.RUNTIME_PASS),qa=yes(process.env.QA_PASS),regression=yes(process.env.REGRESSION_PASS);
+          const build=yes(process.env.BUILD_PASS);
+          const rawRuntime=yes(process.env.RUNTIME_PASS),rawQa=yes(process.env.QA_PASS),rawRegression=yes(process.env.REGRESSION_PASS);
+          const canonicalEvidenceBound=yes(process.env.CANONICAL_PASS)&&process.env.CANONICAL_OUTCOME==='success';
+          const runtime=rawRuntime&&canonicalEvidenceBound,qa=rawQa&&canonicalEvidenceBound,regression=rawRegression&&canonicalEvidenceBound;
           const currentQueue=JSON.parse(fs.readFileSync('/tmp/unity-current-queue.json','utf8'));
           const currentItem=(currentQueue.items||[]).find(x=>x.gameId===process.env.GAME_ID)||{};
           let design={};
@@ -1046,7 +1053,7 @@ jobs:
             verifiedAt:stamp
           };
           const internalReady=f0ToF9.floors.F9.state==='PASS';
-          const evidence={version:3,platform:'UNITY',sourceRevision:process.env.SOURCE_REVISION||null,sourceRootTreeSha:process.env.SOURCE_TREE_SHA||null,sourceFingerprint:process.env.SOURCE_FINGERPRINT||null,buildOrPackagePassed:build,artifactIdentity,runtimePassed:runtime,independentQaPassed:qa,multiplayerPassed:multiplayerPass,regressionPassed:regression,f0ToF9Passed:internalReady,exactRevision:exactBinding,lastSuccessfulStage:last,failureStage:failure,failureSignature:failure?failureSignature({stage:failure,code:'STAGE_NOT_PASSED',message:`${process.env.GAME_ID}:${failure}`}):null};
+          const evidence={version:4,platform:'UNITY',sourceRevision:process.env.SOURCE_REVISION||null,sourceRootTreeSha:process.env.SOURCE_TREE_SHA||null,sourceFingerprint:process.env.SOURCE_FINGERPRINT||null,buildOrPackagePassed:build,artifactIdentity,runtimePassed:runtime,independentQaPassed:qa,multiplayerPassed:multiplayerPass,regressionPassed:regression,rawStageResults:{runtime:rawRuntime,independentQa:rawQa,regression:rawRegression},canonicalEvidenceBound,f0ToF9Passed:internalReady,exactRevision:exactBinding,lastSuccessfulStage:last,failureStage:failure,failureSignature:failure?failureSignature({stage:failure,code:canonicalEvidenceBound?'STAGE_NOT_PASSED':'CANONICAL_EVIDENCE_NOT_BOUND',message:`${process.env.GAME_ID}:${failure}`}):null};
           const row={
             gameId:process.env.GAME_ID,status:'ACTIVE',selectedPlatform:'UNITY',targetPlatform:'UNITY',
             currentStep:internalReady?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':'TARGET_PLATFORM_TECHNICAL_VALIDATION',
@@ -1054,7 +1061,7 @@ jobs:
             platformAdapter:'tools/company-development-unity-platform.mjs',
             unityProjectPath:process.env.PROJECT,unityCandidateBranch:process.env.BRANCH||null,unitySourceCommit:process.env.SOURCE_REVISION||null,
             unityBuildRunId:buildRun,unityRuntimeSmokeRunId:runtimeRun,unityIndependentQaRunId:qaRun,unityRegressionRunId:regressionRun,
-            unityF0ThroughF9Evidence:f0ToF9,
+            unityF0ThroughF9Evidence:f0ToF9,unityCanonicalEvidenceBound:canonicalEvidenceBound,
             unityF9ReleaseRegressionPassed:internalReady,
             unityF9ReleaseRegressionPassedAt:internalReady?stamp:null,
             unityCanonicalPublishPending:internalReady,
