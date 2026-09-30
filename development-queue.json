@@ -60,7 +60,7 @@
       "currentStep": "REPAIR_REQUIRED",
       "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-30T03:31:33.609Z",
+      "updatedAt": "2026-09-30T03:42:02.840Z",
       "robloxSourceCommit": "15d9ebb42466049456bb2e215e5bfa08ae5f8f57",
       "robloxSourceBootstrapPassedAt": "2026-09-29T08:43:10.907Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -441,6 +441,12 @@
         },
         "actions": [
           {
+            "id": "ui-start-gate",
+            "type": "mcp-mouse-input",
+            "dispatched": true,
+            "ok": true
+          },
+          {
             "id": "keyboard-w",
             "type": "mcp-keyboard-input",
             "dispatched": true,
@@ -540,16 +546,10 @@
             "id": "prompt-ProximityPrompt",
             "type": "mcp-world-interaction",
             "dispatched": true,
-            "ok": false
-          },
-          {
-            "id": "ui-discovered-TextButton",
-            "type": "mcp-ui-exploration",
-            "dispatched": true,
             "ok": true
           },
           {
-            "id": "ui-discovered-PlayButton",
+            "id": "ui-discovered-TextButton",
             "type": "mcp-ui-exploration",
             "dispatched": true,
             "ok": true
@@ -568,6 +568,12 @@
           },
           {
             "id": "ui-discovered-BlockParry",
+            "type": "mcp-ui-exploration",
+            "dispatched": true,
+            "ok": true
+          },
+          {
+            "id": "ui-discovered-TextButton",
             "type": "mcp-ui-exploration",
             "dispatched": true,
             "ok": true
@@ -685,6 +691,12 @@
           {
             "id": "floating-character-map-readiness",
             "name": "floating-character-map-readiness",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "adaptive-start-gate-input-dispatched",
+            "name": "adaptive-start-gate-input-dispatched",
             "required": true,
             "pass": true
           },
@@ -818,7 +830,7 @@
             "id": "scenario-adaptive-travel-effect",
             "name": "scenario-adaptive-travel-effect",
             "required": true,
-            "pass": true
+            "pass": false
           },
           {
             "id": "scenario-adaptive-gameplay-loop-cadence",
@@ -962,7 +974,7 @@
             "id": "scenario-adaptive-camera-quality",
             "name": "scenario-adaptive-camera-quality",
             "required": true,
-            "pass": true
+            "pass": false
           },
           {
             "id": "scenario-adaptive-performance-budget",
@@ -1040,7 +1052,7 @@
             "id": "scenario-observed-action-7b21d7aa1333c530a902",
             "name": "scenario-observed-action-7b21d7aa1333c530a902",
             "required": true,
-            "pass": true
+            "pass": false
           },
           {
             "id": "scenario-observed-action-40e2627aa09ab49ab477",
@@ -1099,13 +1111,13 @@
           "characterMotionRuntimeRequired": false,
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
-          "scenarioFailureCount": 18,
-          "primaryActionDisplacement": 1059.4953058197416,
-          "primaryActionVelocity": 0.000013115756931273317,
+          "scenarioFailureCount": 21,
+          "primaryActionDisplacement": 18.624452879528107,
+          "primaryActionVelocity": 0.000012945616570029147,
           "primaryActionFeedbackChanged": false,
           "commercialAudit": {
             "auditProfile": "F9_SOAK",
-            "timelineProbeCount": 105,
+            "timelineProbeCount": 106,
             "progressChanged": false,
             "inventoryChanged": false,
             "timelineProgressChanged": false,
@@ -1144,6 +1156,7 @@
         },
         "learningSignals": [
           "roblox official studio mcp local runtime",
+          "mcp-mouse-input",
           "mcp-keyboard-input",
           "mcp-map-route-audit",
           "mcp-world-interaction",
@@ -1155,10 +1168,8 @@
           "actual-play-initial-client-probe",
           "initial-character-playable",
           "floating-character-map-readiness",
+          "adaptive-start-gate-input-dispatched",
           "actual-play-pre-action-client-probe",
-          "initial-character-spawned",
-          "initial-ui-playability",
-          "mcp-input-dispatched",
           "ROBLOX_DATASTORE_SAVE_LOAD"
         ],
         "rawSourceIncluded": false,
@@ -1222,7 +1233,7 @@
           },
           {
             "id": "adaptive-travel-effect",
-            "pass": true
+            "pass": false
           },
           {
             "id": "adaptive-gameplay-loop-cadence",
@@ -1318,7 +1329,7 @@
           },
           {
             "id": "adaptive-camera-quality",
-            "pass": true
+            "pass": false
           },
           {
             "id": "adaptive-performance-budget",
@@ -1370,7 +1381,7 @@
           },
           {
             "id": "observed-action-7b21d7aa1333c530a902",
-            "pass": true
+            "pass": false
           },
           {
             "id": "observed-action-40e2627aa09ab49ab477",
@@ -1390,12 +1401,14 @@
           "adaptive-ui-commercial-quality",
           "adaptive-world-safety",
           "adaptive-system-transaction-effect",
+          "adaptive-travel-effect",
           "adaptive-combat-surface",
           "adaptive-motion-surface",
           "adaptive-companion-ai-surface",
           "adaptive-save-surface",
           "adaptive-retry-loop-surface",
           "adaptive-multiplayer-sync-surface",
+          "adaptive-camera-quality",
           "adaptive-performance-budget",
           "observed-action-749f1a8df420364c0ab0",
           "observed-action-ce7a335281c15e497552",
@@ -1403,6 +1416,7 @@
           "observed-action-8f10652c04dfc34d013c",
           "observed-action-1d7be3f03421ec49af6a",
           "observed-action-eeca420176112b7c4e7b",
+          "observed-action-7b21d7aa1333c530a902",
           "observed-action-40e2627aa09ab49ab477",
           "observed-action-00f7121873e36beeaa1c"
         ],
@@ -1415,7 +1429,7 @@
             "observed": {
               "offscreenButtons": 0,
               "undersizedTouchButtons": 3,
-              "suboptimalTouchButtons": 1,
+              "suboptimalTouchButtons": 0,
               "textOverflowButtons": 0,
               "overlapPairs": 0,
               "largeOverlayCount": 0,
@@ -1436,7 +1450,7 @@
               "floorHits": 6,
               "floorCoveragePass": true,
               "routeSamples": 16,
-              "routeSuccess": 1,
+              "routeSuccess": 7,
               "routeCoveragePass": false,
               "spawnThreatDistance": 780.2060478757685,
               "spawnOverlapSafe": true
@@ -1456,7 +1470,7 @@
                   "semantic": "UPGRADE",
                   "effectObserved": false,
                   "effect": {
-                    "moved": 130.9179683017395,
+                    "moved": 129.66417682775383,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -1471,12 +1485,69 @@
             }
           },
           {
+            "id": "adaptive-travel-effect",
+            "repairSurface": "WORLD_TRAVEL",
+            "priority": "CRITICAL",
+            "hint": "A discovered portal/door/travel action accepted input but did not move the player, change map/round state, or provide authoritative feedback.",
+            "observed": {
+              "travelActionCount": 3,
+              "travelEffectCount": 1,
+              "actions": [
+                {
+                  "id": "prompt-ProximityPrompt",
+                  "effectObserved": true,
+                  "effect": {
+                    "moved": 48.020728249425325,
+                    "progress": false,
+                    "inventory": false,
+                    "feedback": false,
+                    "health": false,
+                    "ui": false,
+                    "round": false,
+                    "map": false,
+                    "effectObserved": true
+                  }
+                },
+                {
+                  "id": "prompt-ProximityPrompt",
+                  "effectObserved": false,
+                  "effect": {
+                    "moved": 0.3758294977537623,
+                    "progress": false,
+                    "inventory": false,
+                    "feedback": false,
+                    "health": false,
+                    "ui": false,
+                    "round": false,
+                    "map": false,
+                    "effectObserved": false
+                  }
+                },
+                {
+                  "id": "prompt-ProximityPrompt",
+                  "effectObserved": false,
+                  "effect": {
+                    "moved": 0.06229529760703474,
+                    "progress": false,
+                    "inventory": false,
+                    "feedback": false,
+                    "health": false,
+                    "ui": false,
+                    "round": false,
+                    "map": false,
+                    "effectObserved": false
+                  }
+                }
+              ]
+            }
+          },
+          {
             "id": "adaptive-combat-surface",
             "repairSurface": "COMBAT_AI",
             "priority": "CRITICAL",
             "hint": "Repair combat targets, damage/state transitions, enemy liveness, attack feedback, and F9 AI movement.",
             "observed": {
-              "combatSurfaceCount": 200,
+              "combatSurfaceCount": 201,
               "mobCount": 80,
               "humanoidMobCount": 0,
               "mobRigAnimationPass": true,
@@ -1499,15 +1570,15 @@
             "priority": "HIGH",
             "hint": "Repair Animator/Motor6D rig behavior and verify movement/action animation response.",
             "observed": {
-              "interactionSurfaceCount": 35,
+              "interactionSurfaceCount": 31,
               "progressionSurfaceCount": 83,
-              "combatSurfaceCount": 200,
+              "combatSurfaceCount": 201,
               "npcSurfaceCount": 27,
               "companionSurfaceCount": 2,
-              "itemSurfaceCount": 9,
+              "itemSurfaceCount": 11,
               "remoteCount": 17,
               "soundCount": 0,
-              "effectCount": 30,
+              "effectCount": 31,
               "promptCount": 18,
               "inventoryCount": 0,
               "currentActualPlayerCount": 1,
@@ -1541,15 +1612,15 @@
             "priority": "CRITICAL",
             "hint": "Repair save/load/rejoin persistence and idempotency without duplicating rewards.",
             "observed": {
-              "interactionSurfaceCount": 35,
+              "interactionSurfaceCount": 31,
               "progressionSurfaceCount": 83,
-              "combatSurfaceCount": 200,
+              "combatSurfaceCount": 201,
               "npcSurfaceCount": 27,
               "companionSurfaceCount": 2,
-              "itemSurfaceCount": 9,
+              "itemSurfaceCount": 11,
               "remoteCount": 17,
               "soundCount": 0,
-              "effectCount": 30,
+              "effectCount": 31,
               "promptCount": 18,
               "inventoryCount": 0,
               "currentActualPlayerCount": 1,
@@ -1564,15 +1635,15 @@
             "priority": "HIGH",
             "hint": "Repair death/failure/restart/respawn flow and remove softlocks after retry.",
             "observed": {
-              "interactionSurfaceCount": 35,
+              "interactionSurfaceCount": 31,
               "progressionSurfaceCount": 83,
-              "combatSurfaceCount": 200,
+              "combatSurfaceCount": 201,
               "npcSurfaceCount": 27,
               "companionSurfaceCount": 2,
-              "itemSurfaceCount": 9,
+              "itemSurfaceCount": 11,
               "remoteCount": 17,
               "soundCount": 0,
-              "effectCount": 30,
+              "effectCount": 31,
               "promptCount": 18,
               "inventoryCount": 0,
               "currentActualPlayerCount": 1,
@@ -1599,13 +1670,36 @@
             }
           },
           {
+            "id": "adaptive-camera-quality",
+            "repairSurface": "CAMERA",
+            "priority": "HIGH",
+            "hint": "Repair camera subject/FOV/occlusion behavior and keep gameplay readable during movement/combat.",
+            "observed": {
+              "interactionSurfaceCount": 31,
+              "progressionSurfaceCount": 83,
+              "combatSurfaceCount": 201,
+              "npcSurfaceCount": 27,
+              "companionSurfaceCount": 2,
+              "itemSurfaceCount": 11,
+              "remoteCount": 17,
+              "soundCount": 0,
+              "effectCount": 31,
+              "promptCount": 18,
+              "inventoryCount": 0,
+              "currentActualPlayerCount": 1,
+              "maxActualPlayerCount": 1,
+              "multiplayerStateTransition": false,
+              "multiplayerActualSessionPass": false
+            }
+          },
+          {
             "id": "adaptive-performance-budget",
             "repairSurface": "PERFORMANCE",
             "priority": "HIGH",
             "hint": "Reduce runaway instance count/memory pressure and keep long-session runtime stable.",
             "observed": {
-              "memoryMb": 2325.23046875,
-              "descendantCount": 4497
+              "memoryMb": 2597.25390625,
+              "descendantCount": 4511
             }
           },
           {
@@ -1711,6 +1805,23 @@
             }
           },
           {
+            "id": "observed-action-7b21d7aa1333c530a902",
+            "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+            "priority": "HIGH",
+            "hint": "Replay the exact observed action and verify its real state change after repair.",
+            "observed": {
+              "id": "observed-action-7b21d7aa1333c530a902",
+              "pass": false,
+              "required": true,
+              "generatedFrom": "OFFICIAL_STUDIO_OBSERVED_ACTION",
+              "actionId": "prompt-ProximityPrompt",
+              "targetIdentity": "Workspace.DaechungRPGWorld.Village.Portal2.ProximityPrompt",
+              "actionType": "mcp-world-interaction",
+              "effectRequired": true,
+              "attempts": 1
+            }
+          },
+          {
             "id": "observed-action-40e2627aa09ab49ab477",
             "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
             "priority": "HIGH",
@@ -1749,11 +1860,11 @@
           "inputDispatched": true,
           "runtimeVerified": false,
           "screenChanged": true,
-          "authoritativeStateChangeObserved": true,
+          "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-09-30T03:31:33.609Z",
-        "workflowRunId": 36664097089,
+        "testedAt": "2026-09-30T03:42:02.840Z",
+        "workflowRunId": 36664916515,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -2072,12 +2183,14 @@
           "adaptive-ui-commercial-quality",
           "adaptive-world-safety",
           "adaptive-system-transaction-effect",
+          "adaptive-travel-effect",
           "adaptive-combat-surface",
           "adaptive-motion-surface",
           "adaptive-companion-ai-surface",
           "adaptive-save-surface",
           "adaptive-retry-loop-surface",
           "adaptive-multiplayer-sync-surface",
+          "adaptive-camera-quality",
           "adaptive-performance-budget",
           "observed-action-749f1a8df420364c0ab0",
           "observed-action-ce7a335281c15e497552",
@@ -2085,6 +2198,7 @@
           "observed-action-8f10652c04dfc34d013c",
           "observed-action-1d7be3f03421ec49af6a",
           "observed-action-eeca420176112b7c4e7b",
+          "observed-action-7b21d7aa1333c530a902",
           "observed-action-40e2627aa09ab49ab477",
           "observed-action-00f7121873e36beeaa1c"
         ],
@@ -2097,7 +2211,7 @@
             "observed": {
               "offscreenButtons": 0,
               "undersizedTouchButtons": 3,
-              "suboptimalTouchButtons": 1,
+              "suboptimalTouchButtons": 0,
               "textOverflowButtons": 0,
               "overlapPairs": 0,
               "largeOverlayCount": 0,
@@ -2118,7 +2232,7 @@
               "floorHits": 6,
               "floorCoveragePass": true,
               "routeSamples": 16,
-              "routeSuccess": 1,
+              "routeSuccess": 7,
               "routeCoveragePass": false,
               "spawnThreatDistance": 780.2060478757685,
               "spawnOverlapSafe": true
@@ -2138,7 +2252,7 @@
                   "semantic": "UPGRADE",
                   "effectObserved": false,
                   "effect": {
-                    "moved": 130.9179683017395,
+                    "moved": 129.66417682775383,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -2153,12 +2267,69 @@
             }
           },
           {
+            "id": "adaptive-travel-effect",
+            "repairSurface": "WORLD_TRAVEL",
+            "priority": "CRITICAL",
+            "hint": "A discovered portal/door/travel action accepted input but did not move the player, change map/round state, or provide authoritative feedback.",
+            "observed": {
+              "travelActionCount": 3,
+              "travelEffectCount": 1,
+              "actions": [
+                {
+                  "id": "prompt-ProximityPrompt",
+                  "effectObserved": true,
+                  "effect": {
+                    "moved": 48.020728249425325,
+                    "progress": false,
+                    "inventory": false,
+                    "feedback": false,
+                    "health": false,
+                    "ui": false,
+                    "round": false,
+                    "map": false,
+                    "effectObserved": true
+                  }
+                },
+                {
+                  "id": "prompt-ProximityPrompt",
+                  "effectObserved": false,
+                  "effect": {
+                    "moved": 0.3758294977537623,
+                    "progress": false,
+                    "inventory": false,
+                    "feedback": false,
+                    "health": false,
+                    "ui": false,
+                    "round": false,
+                    "map": false,
+                    "effectObserved": false
+                  }
+                },
+                {
+                  "id": "prompt-ProximityPrompt",
+                  "effectObserved": false,
+                  "effect": {
+                    "moved": 0.06229529760703474,
+                    "progress": false,
+                    "inventory": false,
+                    "feedback": false,
+                    "health": false,
+                    "ui": false,
+                    "round": false,
+                    "map": false,
+                    "effectObserved": false
+                  }
+                }
+              ]
+            }
+          },
+          {
             "id": "adaptive-combat-surface",
             "repairSurface": "COMBAT_AI",
             "priority": "CRITICAL",
             "hint": "Repair combat targets, damage/state transitions, enemy liveness, attack feedback, and F9 AI movement.",
             "observed": {
-              "combatSurfaceCount": 200,
+              "combatSurfaceCount": 201,
               "mobCount": 80,
               "humanoidMobCount": 0,
               "mobRigAnimationPass": true,
@@ -2181,15 +2352,15 @@
             "priority": "HIGH",
             "hint": "Repair Animator/Motor6D rig behavior and verify movement/action animation response.",
             "observed": {
-              "interactionSurfaceCount": 35,
+              "interactionSurfaceCount": 31,
               "progressionSurfaceCount": 83,
-              "combatSurfaceCount": 200,
+              "combatSurfaceCount": 201,
               "npcSurfaceCount": 27,
               "companionSurfaceCount": 2,
-              "itemSurfaceCount": 9,
+              "itemSurfaceCount": 11,
               "remoteCount": 17,
               "soundCount": 0,
-              "effectCount": 30,
+              "effectCount": 31,
               "promptCount": 18,
               "inventoryCount": 0,
               "currentActualPlayerCount": 1,
@@ -2223,15 +2394,15 @@
             "priority": "CRITICAL",
             "hint": "Repair save/load/rejoin persistence and idempotency without duplicating rewards.",
             "observed": {
-              "interactionSurfaceCount": 35,
+              "interactionSurfaceCount": 31,
               "progressionSurfaceCount": 83,
-              "combatSurfaceCount": 200,
+              "combatSurfaceCount": 201,
               "npcSurfaceCount": 27,
               "companionSurfaceCount": 2,
-              "itemSurfaceCount": 9,
+              "itemSurfaceCount": 11,
               "remoteCount": 17,
               "soundCount": 0,
-              "effectCount": 30,
+              "effectCount": 31,
               "promptCount": 18,
               "inventoryCount": 0,
               "currentActualPlayerCount": 1,
@@ -2246,15 +2417,15 @@
             "priority": "HIGH",
             "hint": "Repair death/failure/restart/respawn flow and remove softlocks after retry.",
             "observed": {
-              "interactionSurfaceCount": 35,
+              "interactionSurfaceCount": 31,
               "progressionSurfaceCount": 83,
-              "combatSurfaceCount": 200,
+              "combatSurfaceCount": 201,
               "npcSurfaceCount": 27,
               "companionSurfaceCount": 2,
-              "itemSurfaceCount": 9,
+              "itemSurfaceCount": 11,
               "remoteCount": 17,
               "soundCount": 0,
-              "effectCount": 30,
+              "effectCount": 31,
               "promptCount": 18,
               "inventoryCount": 0,
               "currentActualPlayerCount": 1,
@@ -2281,13 +2452,36 @@
             }
           },
           {
+            "id": "adaptive-camera-quality",
+            "repairSurface": "CAMERA",
+            "priority": "HIGH",
+            "hint": "Repair camera subject/FOV/occlusion behavior and keep gameplay readable during movement/combat.",
+            "observed": {
+              "interactionSurfaceCount": 31,
+              "progressionSurfaceCount": 83,
+              "combatSurfaceCount": 201,
+              "npcSurfaceCount": 27,
+              "companionSurfaceCount": 2,
+              "itemSurfaceCount": 11,
+              "remoteCount": 17,
+              "soundCount": 0,
+              "effectCount": 31,
+              "promptCount": 18,
+              "inventoryCount": 0,
+              "currentActualPlayerCount": 1,
+              "maxActualPlayerCount": 1,
+              "multiplayerStateTransition": false,
+              "multiplayerActualSessionPass": false
+            }
+          },
+          {
             "id": "adaptive-performance-budget",
             "repairSurface": "PERFORMANCE",
             "priority": "HIGH",
             "hint": "Reduce runaway instance count/memory pressure and keep long-session runtime stable.",
             "observed": {
-              "memoryMb": 2325.23046875,
-              "descendantCount": 4497
+              "memoryMb": 2597.25390625,
+              "descendantCount": 4511
             }
           },
           {
@@ -2393,6 +2587,23 @@
             }
           },
           {
+            "id": "observed-action-7b21d7aa1333c530a902",
+            "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+            "priority": "HIGH",
+            "hint": "Replay the exact observed action and verify its real state change after repair.",
+            "observed": {
+              "id": "observed-action-7b21d7aa1333c530a902",
+              "pass": false,
+              "required": true,
+              "generatedFrom": "OFFICIAL_STUDIO_OBSERVED_ACTION",
+              "actionId": "prompt-ProximityPrompt",
+              "targetIdentity": "Workspace.DaechungRPGWorld.Village.Portal2.ProximityPrompt",
+              "actionType": "mcp-world-interaction",
+              "effectRequired": true,
+              "attempts": 1
+            }
+          },
+          {
             "id": "observed-action-40e2627aa09ab49ab477",
             "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
             "priority": "HIGH",
@@ -2431,18 +2642,20 @@
           "MOBILE_UI",
           "WORLD_GEOMETRY",
           "SYSTEM_TRANSACTION",
+          "WORLD_TRAVEL",
           "COMBAT_AI",
           "CHARACTER_MOTION",
           "COMPANION_AI",
           "SAVE_REJOIN",
           "FAILURE_RECOVERY",
           "MULTIPLAYER_SYNC",
+          "CAMERA",
           "PERFORMANCE",
           "ROBLOX_OBSERVED_INTERACTION"
         ],
         "robloxFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
-        "testedAt": "2026-09-30T03:31:33.609Z",
-        "workflowRunId": 36664097089,
+        "testedAt": "2026-09-30T03:42:02.840Z",
+        "workflowRunId": 36664916515,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxQualityBuildUpLastPassedAt": "2026-09-28T19:49:57.015Z",
@@ -29227,7 +29440,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-30T03:39:12.079Z",
+  "updatedAt": "2026-09-30T03:42:02.840Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
