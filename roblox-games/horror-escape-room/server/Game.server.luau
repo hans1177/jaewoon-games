@@ -228,7 +228,7 @@ local function createQueuedReservedRoom(players)
  if studioRoomFallback then
   local host=players[1]
   roomServer=true;roomCode="000001";roomHostUserId=host.UserId;roomHostName=host.DisplayName;roomVisibility="PUBLIC";roomStartRequested=true
-  for _,p in ipairs(players)do roomJoinedAt[p]=os.clock();roomFeedback(p,"CREATED",roomCode)end
+  for _,p in ipairs(players)do roomJoinedAt[p]=os.clock();p:SetAttribute("LobbySelectionConfirmed",true);roomFeedback(p,"CREATED",roomCode)end
   workspace:SetAttribute("StudioRoomFallback",true)
   syncRoomState();syncLobbyState("INTERMISSION")
   return true
@@ -250,10 +250,10 @@ end
 local function createReservedRoom(p,visibility)
  if roomServer or state=="RUNNING"or not roomActionReady(p)then return end
  if studioRoomFallback then
-  roomServer=true;roomCode="000001";roomHostUserId=p.UserId;roomHostName=p.DisplayName;roomVisibility=normalizeRoomVisibility(visibility);roomStartRequested=false
+  roomServer=true;roomCode="000001";roomHostUserId=p.UserId;roomHostName=p.DisplayName;roomVisibility=normalizeRoomVisibility(visibility);roomStartRequested=true
   roomJoinedAt[p]=os.clock()
   workspace:SetAttribute("StudioRoomFallback",true)
-  roomFeedback(p,"CREATED",roomCode);syncRoomState();syncLobbyState("ROOM_WAITING")
+  p:SetAttribute("LobbySelectionConfirmed",true);roomFeedback(p,"CREATED",roomCode);syncRoomState();syncLobbyState("INTERMISSION")
   return
  end
  local code=createUniqueRoomCode()
@@ -328,7 +328,11 @@ local function adoptReservedRoomFromPlayer(p)
   return
  end
  roomJoinedAt[p]=os.clock()
+ roomStartRequested=true
+ workspace:SetAttribute("RoomStartRequested",true)
+ p:SetAttribute("LobbySelectionConfirmed",true)
  syncRoomState()
+ syncLobbyState("INTERMISSION")
  task.defer(updateCurrentRoomDirectory)
 end
 local function startRoomMatch(p)
@@ -2480,17 +2484,21 @@ task.spawn(function()
    syncLobbyState("ROOM_CONNECTING")
    task.wait(.25)
   elseif not roomStartRequested then
-   state="WAITING"
-   for _,p in ipairs(players)do p:SetAttribute("RoundState","ROOM_WAITING");p:SetAttribute("TimeLeft",0)end
-   syncLobbyState("ROOM_WAITING");updateCurrentRoomDirectory()
-   task.wait(.25)
+   roomStartRequested=true
+   workspace:SetAttribute("RoomStartRequested",true)
+   syncLobbyState("INTERMISSION")
+   task.wait(.1)
   else
    roomStartRequested=false;workspace:SetAttribute("RoomStartRequested",false)
    state="INTERMISSION";syncLobbyState("INTERMISSION");updateCurrentRoomDirectory()
    soloStartRequested=false
-   for t=C.IntermissionSeconds,1,-1 do
-    for _,p in ipairs(Players:GetPlayers())do p:SetAttribute("RoundState","INTERMISSION");p:SetAttribute("TimeLeft",t)end
-    if #Players:GetPlayers()==1 and soloStartRequested then break end
+   local fastStartSeconds=3
+   for t=fastStartSeconds,1,-1 do
+    for _,p in ipairs(Players:GetPlayers())do
+     p:SetAttribute("LobbySelectionConfirmed",true)
+     p:SetAttribute("RoundState","INTERMISSION")
+     p:SetAttribute("TimeLeft",t)
+    end
     task.wait(1)
    end
    if startRound()then
