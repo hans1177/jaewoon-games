@@ -1664,6 +1664,7 @@ jobs:
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
           EVENT_NAME: ${{ github.event_name }}
+          RECHECK_PRODUCT_FAILURE: ${{ github.event_name == 'workflow_dispatch' && inputs.run_studio == true && inputs.game_id != '' }}
           TRIGGER_CHANGED: ${{ github.event_name == 'push' && (contains(toJSON(github.event.head_commit.modified), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.added), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.removed), 'roblox-games/.company-runtime-trigger')) }}
         shell: powershell
         run: |
@@ -1683,7 +1684,7 @@ jobs:
             }
           }
           $planOutput = Join-Path $env:RUNNER_TEMP 'roblox-studio-mcp-matrix.json'
-          & node tools/company-development-roblox-studio-local-play.mjs --mode=plan --queue=../runtime/development-queue.json --roadmap=company-learning/platform-release-roadmap.json --repo-root=. "--game-id=$requested" "--output=$planOutput"
+          & node tools/company-development-roblox-studio-local-play.mjs --mode=plan --queue=../runtime/development-queue.json --roadmap=company-learning/platform-release-roadmap.json --repo-root=. "--game-id=$requested" "--recheck-product-failure=$env:RECHECK_PRODUCT_FAILURE" "--output=$planOutput"
           if ($LASTEXITCODE -ne 0) { throw 'Studio candidate planning failed' }
           $plan = Get-Content $planOutput -Raw | ConvertFrom-Json
           $include = @($plan.include)

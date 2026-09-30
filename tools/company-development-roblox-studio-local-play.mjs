@@ -261,7 +261,7 @@ function localStudioActualPlayContractMetadata(repoRoot='',gameId=''){
   };
 }
 
-export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='',repoRoot=''}={}){
+export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='',repoRoot='',recheckProductFailure=false}={}){
 
   validateLocalStudioPolicy(roadmap);
   const requested=clean(requestedGameId);
@@ -324,7 +324,9 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       &&Number(prior?.versionNumber||0)===Number(candidate?.versionNumber||0)
       &&Date.parse(prior?.testedAt)>Date.parse(item?.robloxQualityBuildUpEvidence?.testedAt)
     );
-    if(activeQualityBuildUp&&!infrastructureRecheck){
+    // Explicit manual single-game diagnosis may replay a failed exact artifact without clearing its findings.
+    const requestedProductRecheck=recheckProductFailure===true&&Boolean(requested)&&activeQualityBuildUp;
+    if(activeQualityBuildUp&&!infrastructureRecheck&&!requestedProductRecheck){
       console.log('ROBLOX_STUDIO_MCP_QUALITY_BUILDUP_SUPPRESSED='+clean(item?.gameId)+':source='+currentSourceRevision);
       continue;
     }
@@ -415,6 +417,7 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
 
     if(!currentExact&&!infrastructurePrerequisiteReplay)continue;
 
+    if(requestedProductRecheck)console.log('ROBLOX_STUDIO_MCP_MANUAL_PRODUCT_RECHECK='+clean(item.gameId)+':source='+currentSourceRevision);
     const sourceRevision=currentExact?currentSourceRevision:candidateSourceRevision;
     const artifactIdentity=currentExact?currentArtifactIdentity:candidateArtifactIdentity;
     const artifactRunId=candidateArtifactRunId;
@@ -3565,6 +3568,7 @@ async function main(){
       queue:readJson(a.queue),
       roadmap:readJson(a.roadmap),
       requestedGameId:clean(a['game-id']),
+      recheckProductFailure:clean(a['recheck-product-failure'])==='true',
       repoRoot:clean(a['repo-root'])
     });
     writeJson(a.output,matrix);
