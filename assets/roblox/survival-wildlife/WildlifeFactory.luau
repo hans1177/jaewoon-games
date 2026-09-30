@@ -2,6 +2,7 @@
 -- 역할: WildlifeCatalog을 실제 3D 저폴리 관절 모델로 생성한다.
 -- 금지: BillboardGui/ImageLabel/SurfaceGui 기반 동물, 한 덩어리 root 이동만으로 걷는 동물.
 
+local CollectionService = game:GetService("CollectionService")
 local Catalog = require(script.Parent.WildlifeCatalog)
 
 local Factory = {}
@@ -274,6 +275,17 @@ function Factory.create(speciesName, skinName)
 	model:SetAttribute("TwoDimensionalPresentationForbidden", true)
 	model:SetAttribute("RootOnlyLocomotionForbidden", true)
 	model:SetAttribute("RuntimeVerified", false)
+	model:SetAttribute("WildlifeMotionState", "LOCOMOTION")
+	model:SetAttribute("WildlifeDesiredSpeed", nil)
+	model:SetAttribute("WildlifeAnimatorRuntime", "ROBLOX_NATIVE")
+	model:SetAttribute("WildlifeAnimationSource", "MOTOR6D_ARTICULATED_CHARACTER_ANIMATION")
+
+	local animationController = Instance.new("AnimationController")
+	animationController.Name = "AnimationController"
+	animationController.Parent = model
+	local robloxAnimator = Instance.new("Animator")
+	robloxAnimator.Name = "Animator"
+	robloxAnimator.Parent = animationController
 
 	local rootHeight = cfg.legUpper.Y * 0.78 + cfg.legLower.Y * 0.78 + cfg.foot.Y * 0.65 + cfg.body.Y * 0.54
 	local root = smoothPart("Root", Vector3.new(cfg.body.X * 0.62, math.max(0.8, cfg.body.Y * 0.62), cfg.body.Z * 0.58), skinData.body)
@@ -344,6 +356,7 @@ function Factory.create(speciesName, skinName)
 	end
 
 	model:ScaleTo(cfg.scale)
+	CollectionService:AddTag(model, "VibeSurvivalWildlife")
 	return model
 end
 
