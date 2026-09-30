@@ -2,7 +2,7 @@
   "version": 6,
   "authority": "ASSISTANT_VIBE_COAUTHORING_TRACE",
   "status": "ACTIVE",
-  "recordedAt": "2026-10-01T00:00:00.000Z",
+  "recordedAt": "2026-10-01",
   "purpose": "Record every assistant-led Vibe Web coauthoring decision, source change, review, QA result, bottleneck repair, and production lesson as traceable learning evidence without bypassing the existing verified experience and canonical training gates.",
   "policy": {
     "everyAssistantCoauthoringActionMustBeRecorded": true,
@@ -895,6 +895,41 @@
       ],
       "learningState": "TRACE_ONLY",
       "liveState": "REPAIR_BRANCH_READY; EXACT_GAME_SYNC_PRESERVED; BATCH_BROAD_GAME_SOURCE_WAKE_REMOVED; POST_MERGE_RUNTIME_REVALIDATION_PENDING"
+    },
+    {
+      "id": "assistant_horror_scope_release_to_shared_perpetual_roblox_20261001",
+      "date": "2026-10-01",
+      "gameId": "horror-escape-room",
+      "actionType": "OWNER_SCOPE_RELEASE_AND_PIPELINE_REJOIN",
+      "problem": "기존 중앙 정책은 심야대탈출을 owner-exclusive direct development로 잠가 Vibe queue/source mutation을 금지하고 있었다. 최신 owner 지시는 심야대탈출도 다른 Roblox 게임과 함께 무한 F0~F9 순환에 다시 넣으라는 명시적 scope release다.",
+      "rootCause": "PRIOR_OWNER_EXCLUSIVE_SCOPE_REMAINED_ACTIVE_AFTER_NEW_EXPLICIT_OWNER_RELEASE",
+      "decision": "기존 handoff의 EXPLICIT_OWNER_SCOPE_RELEASE 조건을 충족한 것으로 기록하고 owner-exclusive active gameIds를 비운다. horror-escape-room은 기존 source/save/release evidence를 보존한 채 공용 Roblox F0~F9와 다음 개선 cycle에 복귀한다.",
+      "change": "platform-release-roadmap ownerExclusiveDevelopment를 INACTIVE_OWNER_RELEASED로 전환하고 horror-escape-room을 releasedGameIds에 기록했다. 공통 Roblox source reconcile, changed-source sync, verified-learning sweep, source/package/F0/continuation planners는 중앙 active owner-exclusive 목록만 제외하도록 통일했다. 현재 목록은 비어 있으므로 horror-escape-room도 다시 자동 순환 대상이다.",
+      "evidence": [
+        "owner-directive:2026-10-01:horror-escape-room-shared-perpetual-cycle",
+        "roadmap-owner-resume-trigger:EXPLICIT_OWNER_SCOPE_RELEASE",
+        "roadmap-version:501",
+        "repair-pr:4224",
+        "duplicate-batch-wake-failure-run:36787879843"
+      ],
+      "reusablePatterns": [
+        "OWNER_SCOPE_RELEASE_REACTIVATES_EXISTING_QUEUE_AND_SOURCE_WITHOUT_RESET",
+        "CENTRAL_ACTIVE_OWNER_EXCLUSIVE_LIST_IS_SINGLE_AUTOMATION_EXCLUSION_SOURCE",
+        "RELEASED_OWNER_SCOPE_RETURNS_TO_PERPETUAL_F0_F9"
+      ],
+      "avoidPatterns": [
+        "STALE_OWNER_EXCLUSIVE_SCOPE_AFTER_EXPLICIT_RELEASE",
+        "RESETTING_SAVE_OR_GAMEPLAY_WHEN_REJOINING_SHARED_AUTOMATION",
+        "SPECIAL_CASE_HORROR_ID_HARDCODED_ACROSS_MULTIPLE_WORKFLOWS"
+      ],
+      "qa": [
+        "central policy regression added",
+        "router active-vs-released exclusion regression added",
+        "source reconcile and changed-source resume regressions added",
+        "post-merge natural Roblox runtime/Studio execution pending"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "OWNER_SCOPE_RELEASED; HORROR_ESCAPE_ROOM_RETURNS_TO_SHARED_PERPETUAL_ROBLOX_F0_F9; NO_GAMEPLAY_OR_SAVE_RESET"
     }
   ]
 }
