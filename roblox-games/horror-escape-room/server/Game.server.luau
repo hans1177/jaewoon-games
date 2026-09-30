@@ -133,6 +133,8 @@ workspace:SetAttribute("RoomMaxPlayers",(C.Room and C.Room.MaxPlayers)or 8)
 workspace:SetAttribute("RoomStartRequested",false)
 local refreshPhysicalLobby=nil
 local updateMatchBayLabel=nil
+local mapById=nil
+local elevatorProfile=nil
 
 local function syncRoomState()
  local count=#Players:GetPlayers()
@@ -206,12 +208,12 @@ end
 local function roomMaxPlayers()
  return math.max(1,math.floor(tonumber(C.Room and C.Room.MaxPlayers)or C.TargetPopulation or 8))
 end
-local function elevatorProfile(index)
+elevatorProfile=function(index)
  local list=C.Matchmaking and C.Matchmaking.Elevators or{}
  for _,row in ipairs(list)do if tonumber(row.Index)==tonumber(index)then return row end end
  return{Index=index,Label=tostring(index).."번",MinPlayers=1,MaxPlayers=LOBBY_QUEUE_MAX,Countdown=LOBBY_QUEUE_SECONDS}
 end
-local function mapById(id)
+mapById=function(id)
  local wanted=tostring(id or"")
  for _,map in ipairs(C.Maps or{})do if map.Id==wanted then return map end end
  return(C.Maps and C.Maps[1])or{Id="SCHOOL",Name="학교"}
@@ -242,6 +244,8 @@ local function updateCurrentRoomDirectory()
  existing.maxPlayers=roomMaxPlayers()
  existing.updatedAt=os.time()
  existing.state=state=="RUNNING"and"RUNNING"or state=="RESULT"and"RESULT"or"WAITING"
+ local selectedMap=mapById(roomSelectedMapId)
+ existing.mapId=selectedMap.Id;existing.mapName=selectedMap.Name
  setRoomDirectoryEntry(roomCode,existing)
 end
 local function createUniqueRoomCode()
@@ -344,8 +348,9 @@ local function createQueuedReservedRoom(players,selectedMapId)
 end
 local function createReservedRoom(p,visibility)
  if roomServer or state=="RUNNING"or not roomActionReady(p)then return end
+ local selectedMap=mapById(p:GetAttribute("SelectedElevatorMap")or"SCHOOL")
  if studioRoomFallback then
-  roomServer=true;roomCode="000001";roomHostUserId=p.UserId;roomHostName=p.DisplayName;roomVisibility=normalizeRoomVisibility(visibility);roomStartRequested=true
+  roomServer=true;roomCode="000001";roomHostUserId=p.UserId;roomHostName=p.DisplayName;roomVisibility=normalizeRoomVisibility(visibility);roomSelectedMapId=selectedMap.Id;roomStartRequested=true
   roomJoinedAt[p]=os.clock()
   workspace:SetAttribute("StudioRoomFallback",true)
   p:SetAttribute("LobbySelectionConfirmed",true);roomFeedback(p,"CREATED",roomCode);syncRoomState();syncLobbyState("INTERMISSION")
@@ -360,7 +365,7 @@ local function createReservedRoom(p,visibility)
  if not ok or typeof(accessCode)~="string"or accessCode==""then roomFeedback(p,"ERROR","예약 서버 생성 실패");return end
  local record={
   code=code,accessCode=accessCode,hostUserId=p.UserId,hostName=p.DisplayName,
-  visibility=normalizeRoomVisibility(visibility),memberCount=0,maxPlayers=roomMaxPlayers(),
+  visibility=normalizeRoomVisibility(visibility),memberCount=0,maxPlayers=roomMaxPlayers(),mapId=selectedMap.Id,mapName=selectedMap.Name,
   createdAt=os.time(),updatedAt=os.time(),state="WAITING",placeId=game.PlaceId,
  }
  if not setRoomDirectoryEntry(code,record)then roomFeedback(p,"ERROR","방 등록 실패");return end
@@ -1363,6 +1368,7 @@ makePhysicalLobby=function()
   }
   left.CFrame=lobbyQueueBays[i].doorLeftOpen;right.CFrame=lobbyQueueBays[i].doorRightOpen
   local bayData=lobbyQueueBays[i]
+  if updateMatchBayLabel then updateMatchBayLabel(bayData)end
   for mapIndex,map in ipairs(C.Maps or{})do
    local bx=x+(mapIndex-2)*6.1
    local button=arenaPart(bay,"MapSelect_"..map.Id,Vector3.new(5.3,2.5,.35),Vector3.new(bx,5.2,187.05),Color3.fromRGB(55,51,49),Enum.Material.Metal)
@@ -1486,6 +1492,12 @@ updateMatchBayLabel=function(bay)
  elseif bay.countdown then status=string.format("%d/%d · %d초",count,maxPlayers,math.max(0,math.ceil(bay.countdown)))
  else status=string.format("%d/%d · 출발 준비",count,maxPlayers)end
  bay.label.Text=string.format("승강기 %02d · %s\n%s · %s",bay.index,mode,mapName,status)
+ workspace:SetAttribute("Elevator"..bay.index.."Mode",mode)
+ workspace:SetAttribute("Elevator"..bay.index.."Map",mapName)
+ workspace:SetAttribute("Elevator"..bay.index.."Count",count)
+ workspace:SetAttribute("Elevator"..bay.index.."Max",maxPlayers)
+ workspace:SetAttribute("Elevator"..bay.index.."Countdown",bay.countdown and math.max(0,math.ceil(bay.countdown))or 0)
+ workspace:SetAttribute("Elevator"..bay.index.."Ready",count>=minPlayers)
 end
 local function beginMatchBayCountdown(bay)
  if not bay or bay.countdown or roomServer then return end
