@@ -8,7 +8,16 @@ local Config={
  MultiplayerRequired = true,
  SoloPlayable=true,CoopRequired=false,CompetitiveRequired=true,MinimumParticipants=1,
  TargetPopulation=8,SurvivorSlots=4,MonsterSlots=4,RoundSeconds=240,IntermissionSeconds=8,ResultSeconds=6,LobbyLoadTimeoutSeconds=12,TagDistance=5.5,PurifyDistance=8,PurifyCooldown=5,RemoteName="GameAction",
- Matchmaking={MatchSize=8,AutoShard=true,OverflowPolicy="NEW_RESERVED_ROOM",ElevatorCount=4,MapSelectionMode="ELEVATOR_HOST_CHOICE",MapVoteEnabled=false,MapSelectionCarryThroughElevator=true},
+ Matchmaking={
+  MatchSize=8,AutoShard=true,OverflowPolicy="NEW_RESERVED_ROOM",ElevatorCount=4,
+  MapSelectionMode="ELEVATOR_HOST_CHOICE",MapVoteEnabled=false,MapSelectionCarryThroughElevator=true,
+  Elevators={
+   {Index=1,Label="1인 전용",MinPlayers=1,MaxPlayers=1,Countdown=3},
+   {Index=2,Label="2인 전용",MinPlayers=2,MaxPlayers=2,Countdown=4},
+   {Index=3,Label="3~4인",MinPlayers=3,MaxPlayers=4,Countdown=5},
+   {Index=4,Label="5~8인",MinPlayers=5,MaxPlayers=8,Countdown=5},
+  },
+ },
  Room={MaxPlayers=8,CodeLength=6,DirectoryExpirationSeconds=7200,ActionCooldownSeconds=1.5,ArrivalGraceSeconds=6,TeleportRetrySeconds=1.25,Visibility={"PUBLIC","FRIENDS","PRIVATE"}},
  SurvivorDashCooldown=7,MonsterAbilityCooldown=7,
  RemoteMinInterval=.08,MaxHorizontalVelocity=92,MaxTeleportStep=48,ArenaLimit=176,
