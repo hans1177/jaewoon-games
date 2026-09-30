@@ -2210,6 +2210,10 @@ jobs:
             Write-Host "ROBLOX_STUDIO_MCP_SESSION_ATTEMPT=$attempt/$maxSessionAttempts"
             $runnerArgs = @(
               '--mode=mcp-run',
+              '--queue=runtime/development-queue.json',
+              '--game-id=${{ matrix.gameId }}',
+              '--source-revision=${{ matrix.sourceRevision }}',
+              '--artifact-identity=${{ matrix.artifactIdentity }}',
               "--control-revision=${{ inputs.control_revision || github.sha }}",
               "--mcp-command=$mcpCommandForAttempt",
               "--studio-name=$env:VIBE2_STUDIO_EXPECTED_NAME",

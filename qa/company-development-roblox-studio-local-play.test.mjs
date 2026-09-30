@@ -2919,3 +2919,49 @@ test('observed class selection must receive the selected class and close its UI 
   assert.equal(existing.clicks,0);
   assert.equal(existing.error,'');
 });
+
+test('single-window multiplayer accepts only the exact static source contract without claiming two clients',()=>{
+  const contract=deriveStudioActualPlayContract({launchCore:['multiplayer team sync'],releaseGates:['F9 regression']});
+  const runtimeIdentity={gameId:'g1',sourceRevision:source,artifactIdentity:artifact};
+  const evidence={...runtimeIdentity,authority:'roblox-static-two-client-source-contract',passed:true,codeContractPassed:true,runtimeTwoClientExecutionRequired:false,
+    checks:{playerRoster:true,participantCount:true,authoritativeBroadcast:true,clientReceive:true,twoParticipantCapablePath:true}};
+  const evaluate=(e= evidence,identity=runtimeIdentity,singleWindow=true)=>evaluateStudioActualPlayContract({contract,auditProfile:'F9_SOAK',singleWindow,multiplayerSourceEvidence:e,runtimeIdentity:identity,clientProbe:{runtime:{actualPlayerCount:1}}});
+  const good=evaluate();
+  const row=result=>result.scenarios.find(row=>row.id==='adaptive-multiplayer-sync-surface');
+  assert.equal(row(good).pass,true);
+  assert.equal(row(good).verificationScope,'STATIC_CODE_CONTRACT');
+  assert.equal(good.metrics.surfaces.multiplayerActualSessionPass,false);
+  for(const bad of [null,{...evidence,sourceRevision:'c'.repeat(40)},{...evidence,artifactIdentity:'sha256:'+'d'.repeat(64)},
+    {...evidence,gameId:'other'},{...evidence,authority:'untrusted'}, {...evidence,checks:{...evidence.checks,clientReceive:false}}])assert.equal(row(evaluate(bad)).pass,false);
+  assert.equal(row(evaluate(evidence,{},true)).pass,false);
+  assert.equal(row(evaluate(evidence,runtimeIdentity,false)).pass,false);
+});
+
+test('exact static multiplayer evidence persists and prevents repeated two-client planning on a single window',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'studio-static-multi-'));
+  try{
+    const gameRoot=path.join(root,'roblox-games','g1');fs.mkdirSync(gameRoot,{recursive:true});
+    const launch={launchCore:['multiplayer team sync'],releaseGates:['F9 regression']};
+    fs.writeFileSync(path.join(gameRoot,'launch-mvp.json'),JSON.stringify(launch));
+    const contract=deriveStudioActualPlayContract(launch),candidate=item(),probe=runtime();
+    candidate.currentStep='FINAL_REVIEW';
+    candidate.robloxMultiplayerQaEvidence={gameId:'g1',sourceRevision:source,artifactIdentity:artifact,authority:'roblox-static-two-client-source-contract',passed:true,codeContractPassed:true,runtimeTwoClientExecutionRequired:false,
+      checks:{playerRoster:true,participantCount:true,authoritativeBroadcast:true,clientReceive:true,twoParticipantCapablePath:true}};
+    Object.assign(probe,{auditProfile:'F9_SOAK',scenarioContractRequired:true,scenarioContractVersion:contract.version,
+      scenarioContractFingerprint:'sha256:'+crypto.createHash('sha256').update(JSON.stringify(contract)).digest('hex'),
+      scenarioCoverage:[{id:'adaptive-multiplayer-sync-surface',pass:true,verificationScope:'STATIC_CODE_CONTRACT'}],
+      multiplayerAuditSummary:{pass:false,skipped:true,codeContractPassed:true,verificationScope:'STATIC_CODE_CONTRACT',sourceRevision:source,artifactIdentity:artifact}});
+    const args={item:candidate,runtime:probe,expected,workflowRunId:42,studioStepSucceeded:true};
+    candidate.robloxInternalVibePlayEvidence=createLocalStudioPlayEvidence(args).evidence;
+    assert.equal(candidate.robloxInternalVibePlayEvidence.pass,true);
+    assert.equal(candidate.robloxInternalVibePlayEvidence.runtimeSummary.commercialAudit.multiplayer.pass,false);
+    assert.equal(planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap(),repoRoot:root}).include.length,0);
+    candidate.robloxMultiplayerQaEvidence.gameId='other';
+    assert.equal(createLocalStudioPlayEvidence(args).pass,false);
+    assert.equal(planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap(),repoRoot:root}).include.length,1);
+    candidate.robloxMultiplayerQaEvidence.gameId='g1';
+    candidate.robloxMultiplayerQaEvidence.sourceRevision='c'.repeat(40);
+    assert.equal(createLocalStudioPlayEvidence(args).pass,false);
+    assert.equal(planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap(),repoRoot:root}).include.length,1);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});

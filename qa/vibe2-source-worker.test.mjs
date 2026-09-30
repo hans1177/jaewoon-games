@@ -5093,3 +5093,24 @@ test('repeated Luau syntax recovery reconstructs from valid source rather than r
   assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
   assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/repeated-luau-syntax/files',relative),'utf8'),/status.Text = "changed"/);
 });
+
+test('Luau focused anchors follow the named responsibility instead of unrelated short cleanup',()=>{
+  const root=tempRoot(),relative='server/Game.server.luau';
+  const unrelated='  if sparkles then sparkles:Destroy() end';
+  const owned='  lobby.Parent = workspace';
+  const source=['local function feedback()',unrelated,'end','',
+    'local function buildLobby()',
+    '  local lobby = Instance.new("Model")',owned,'end'].join('\n');
+  write(path.join(root,relative),source);
+  for(const directive of [false,true]){
+    const prompt=['Engine: roblox','Goal: improve the existing world lobby','Allowed edit paths: '+relative,
+      directive?'[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]\nsourceAnchors=roblox-games/demo/'+relative+':5 FUNCTION buildLobby CURRENT=world INTENDED=lobby ACCEPT=walkable\n[GAME SPECIFIC BUILD UP DIRECTIVE END]':'',
+      '', '=== FILE '+relative+' [EDITABLE] ===','local function feedback()',unrelated,'end'].filter(Boolean).join('\n');
+    const focused=buildFocusedReplaceOnlyPrompt(prompt,{sourceRoot:root,responsibleFiles:[relative],preferredTargets:directive?[]:['buildLobby']});
+    assert.notEqual(focused.spec.find,unrelated);
+    assert.ok([owned,'  local lobby = Instance.new("Model")'].includes(focused.spec.find));
+    assert.ok(source.includes(focused.spec.find));
+    assert.ok(focused.spec.context.includes('local function buildLobby()'));
+  }
+  assert.equal(fs.readFileSync(path.join(root,relative),'utf8'),source);
+});

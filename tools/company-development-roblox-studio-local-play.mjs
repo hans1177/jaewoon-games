@@ -432,6 +432,18 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
     const multiplayerEvidenceExact=requiredAuditProfile!=='F9_SOAK'||scenarioContract.multiplayerRequired!==true||(
       priorMultiplayer?.version===2&&priorMultiplayer?.pass===true&&priorMultiplayer?.bothClientsStatePass===true
       &&priorMultiplayer?.survivorStatePass===true&&priorMultiplayer?.replacementJoinPass===true
+    )||(
+      priorMultiplayer?.verificationScope==='STATIC_CODE_CONTRACT'
+      &&priorMultiplayer?.codeContractPassed===true&&priorMultiplayer?.skipped===true
+      &&priorMultiplayer?.sourceRevision===sourceRevision&&priorMultiplayer?.artifactIdentity===artifactIdentity
+      &&item?.robloxMultiplayerQaEvidence?.passed===true
+      &&clean(item?.gameId)!==''&&item?.robloxMultiplayerQaEvidence?.gameId===item.gameId
+      &&item?.robloxMultiplayerQaEvidence?.codeContractPassed===true
+      &&item?.robloxMultiplayerQaEvidence?.authority==='roblox-static-two-client-source-contract'
+      &&item?.robloxMultiplayerQaEvidence?.runtimeTwoClientExecutionRequired===false
+      &&['playerRoster','participantCount','authoritativeBroadcast','clientReceive','twoParticipantCapablePath'].every(key=>item?.robloxMultiplayerQaEvidence?.checks?.[key]===true)
+      &&item?.robloxMultiplayerQaEvidence?.sourceRevision===sourceRevision
+      &&item?.robloxMultiplayerQaEvidence?.artifactIdentity===artifactIdentity
     );
     const auditProfileEvidenceExact=priorAuditProfile===requiredAuditProfile&&multiplayerEvidenceExact;
     const scenarioEvidenceExact=Boolean(
@@ -1363,7 +1375,7 @@ export function evaluateStudioSaveRejoin({beforeProbe=null,rejoinProbe=null,rest
     error:infrastructureFailure?(restartError||'ROBLOX_STUDIO_REJOIN_PROBE_NOT_OBSERVED'):null,
     restartOk,progressionObserved,progressionPreserved,inventoryComparable,inventoryPreserved,before,after};
 }
-export function evaluateStudioActualPlayContract({contract={},initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,clientProbe=null,serverProbe=null,actions=[],beforeImages=[],afterImages=[],timelineProbes=[],auditProfile='FAST_DEEP',visualCaptureDeferred=false}={}){
+export function evaluateStudioActualPlayContract({contract={},initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,clientProbe=null,serverProbe=null,actions=[],beforeImages=[],afterImages=[],timelineProbes=[],auditProfile='FAST_DEEP',visualCaptureDeferred=false,singleWindow=false,multiplayerSourceEvidence=null,runtimeIdentity={}}={}){
   if(contract?.required!==true)return{required:false,scenarios:[],qualityFailureKinds:[],authoritativeStateChangeObserved:false,capture:{before:{pass:true,frames:[]},after:{pass:true,frames:[]}},metrics:{}};
   const exp=contract?.expectations||{};
   const requiredIds=new Set(Array.isArray(contract?.requiredScenarios)?contract.requiredScenarios.map(clean).filter(Boolean):[]);
@@ -1495,6 +1507,15 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   }
   const multiplayerRuntimeSurface=Number(runtime.remoteCount||0)>0&&(multiplayerSignals>0||entityRows(runtime.progression).some(row=>/party|team|human|playercount|sync|join|멀티|파티|팀|동기화/i.test(clean(row?.name))));
   const multiplayerActualSessionPass=maxActualPlayerCount>=2&&multiplayerRuntimeSurface&&(multiplayerStateTransition||timelineProgressChanged||clean(initialClientProbe?.player?.roundState)!==clean(player.roundState));
+  // 단일 창의 멀티 합격 근거는 같은 소스·빌드의 정적 계약이며 실제 다인 플레이와 구분한다.
+  const multi=multiplayerSourceEvidence;
+  const multiplayerSourceContractPassed=singleWindow===true
+    &&multi?.authority==='roblox-static-two-client-source-contract'
+    &&multi?.passed===true&&multi?.codeContractPassed===true&&multi?.runtimeTwoClientExecutionRequired===false
+    &&clean(runtimeIdentity.gameId)!==''&&multi?.gameId===runtimeIdentity.gameId
+    &&/^[0-9a-f]{40}$/i.test(clean(runtimeIdentity.sourceRevision))&&multi?.sourceRevision===runtimeIdentity.sourceRevision
+    &&/^sha256:[0-9a-f]{64}$/i.test(clean(runtimeIdentity.artifactIdentity))&&multi?.artifactIdentity===runtimeIdentity.artifactIdentity
+    &&['playerRoster','participantCount','authoritativeBroadcast','clientReceive','twoParticipantCapablePath'].every(key=>multi?.checks?.[key]===true);
   const activeLoopExpected=signals.combat||signals.quests||signals.rewards||signals.progression||signals.interactions;
   const activeLoopObserved=semanticEffects>0||timelineProgressChanged||timelineMobDynamic||timelineCompanionDynamic||primaryActionFeedbackChanged||progressChanged||inventoryDelta;
   const performanceTrendPass=!soak||(memoryGrowthMb<=300&&descendantGrowth<=6000);
@@ -1612,7 +1633,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'adaptive-retry-loop-surface',pass:!signals.retry||Number(categories.retry||0)>0},
     {id:'adaptive-retry-action-effect',pass:!signals.retry||retryActions.length===0||retryEffects>0},
     {id:'adaptive-death-respawn-recovery',pass:!deathObserved||respawnObserved},
-    {id:'adaptive-multiplayer-sync-surface',pass:!signals.multiplayer||(soak?multiplayerActualSessionPass:multiplayerRuntimeSurface)},
+    {id:'adaptive-multiplayer-sync-surface',pass:!signals.multiplayer||(singleWindow?multiplayerSourceContractPassed:(soak?multiplayerActualSessionPass:multiplayerRuntimeSurface)),verificationScope:singleWindow?'STATIC_CODE_CONTRACT':'STUDIO_RUNTIME'},
     {id:'adaptive-camera-quality',pass:!signals.camera||(client?.camera?.present===true&&client?.camera?.subjectPresent===true&&Number(client?.camera?.fieldOfView||0)>0&&client?.camera?.occluded!==true)},
     {id:'adaptive-performance-budget',pass:Number(runtime.memoryMb||0)>=0&&Number(runtime.descendantCount||0)<120000&&performanceTrendPass}
   ];
@@ -1657,6 +1678,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     timelineCompanionDynamic,
     auditProfile:soak?'F9_SOAK':'FAST_DEEP',
     timelineProbeCount:timeline.length,
+    multiplayerSourceContractPassed,
     systemActionCount:systemActions.length,
     systemEffectCount:systemEffects,
     travelActionCount:travelActions.length,
@@ -2261,7 +2283,7 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
 
 export async function runOfficialStudioMcpPlay({
   mcpCommand='',output='',expectedStudioName='',timeoutMs=45000,toolAttempts=5,toolDelayMs=1000,
-  settingState='',settingCandidatePathCount=-1,actualPlayContractPath='',auditProfile='FAST_DEEP',singleWindow=true
+  settingState='',settingCandidatePathCount=-1,actualPlayContractPath='',auditProfile='FAST_DEEP',singleWindow=true,multiplayerSourceEvidence=null,runtimeIdentity={}
 }={}){
   const actualPlayLaunch=actualPlayContractPath&&fs.existsSync(actualPlayContractPath)?readJson(actualPlayContractPath):{};
   const actualPlayContract=deriveStudioActualPlayContract(actualPlayLaunch);
@@ -2738,7 +2760,7 @@ export async function runOfficialStudioMcpPlay({
       finalServerProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Server');
       checkpoint('actual-play-final-client-probe',finalClientProbe!=null);
       checkpoint('actual-play-final-server-probe',finalServerProbe!=null);
-      const evaluated=evaluateStudioActualPlayContract({contract:actualPlayContract,initialClientProbe,preActionClientProbe,postActionClientProbe,clientProbe:finalClientProbe,serverProbe:finalServerProbe,actions,beforeImages:[],afterImages:[],timelineProbes,auditProfile:auditMode,visualCaptureDeferred:true});
+      const evaluated=evaluateStudioActualPlayContract({contract:actualPlayContract,initialClientProbe,preActionClientProbe,postActionClientProbe,clientProbe:finalClientProbe,serverProbe:finalServerProbe,actions,beforeImages:[],afterImages:[],timelineProbes,auditProfile:auditMode,visualCaptureDeferred:true,singleWindow,multiplayerSourceEvidence,runtimeIdentity});
       scenarioCoverage=evaluated.scenarios;
       authoritativeStateChangeObserved=evaluated.authoritativeStateChangeObserved===true;
       qualityFailureKinds=evaluated.qualityFailureKinds;
@@ -2786,10 +2808,11 @@ export async function runOfficialStudioMcpPlay({
       }
       const multiplayerDeclared=actualPlayContract?.adaptiveCoverage?.signals?.multiplayer===true;
       // 한 창 검사는 추가 클라이언트를 만들지 않으며 멀티 실증을 주장하지 않는다.
-      if(auditMode==='F9_SOAK'&&multiplayerDeclared&&singleWindow){
-        multiplayerAuditSummary={pass:false,skipped:true,reason:'OWNER_SINGLE_WINDOW_ONLY'};
-        checkpoint('multiplayer-runtime-not-executed',false);
+      if(multiplayerDeclared&&singleWindow){
+        multiplayerAuditSummary={pass:false,skipped:true,reason:'OWNER_SINGLE_WINDOW_ONLY',verificationScope:'STATIC_CODE_CONTRACT',codeContractPassed:scenarioMetrics.multiplayerSourceContractPassed===true,sourceRevision:clean(runtimeIdentity.sourceRevision),artifactIdentity:clean(runtimeIdentity.artifactIdentity)};
+        checkpoint('multiplayer-source-contract',multiplayerAuditSummary.codeContractPassed);
         console.log('ROBLOX_STUDIO_MULTIPLAYER_RUNTIME=SKIPPED_OWNER_SINGLE_WINDOW_ONLY');
+        console.log('ROBLOX_STUDIO_MULTIPLAYER_SOURCE_CONTRACT='+(multiplayerAuditSummary.codeContractPassed?'PASS':'FAIL'));
       }
       if(auditMode==='F9_SOAK'&&multiplayerDeclared&&!singleWindow){
         if(started){
@@ -2975,6 +2998,9 @@ export async function runOfficialStudioMcpPlay({
       checkpoints,
       errors:errors.map(({type,actionId,signature})=>({type,actionId,signature})),
       metrics:{
+        ...scenarioMetrics,
+        routePlanningProbeCount:timelineProbes.filter(probe=>probe?.world?.routePlanningPerformed===true).length,
+        lightweightProbeCount:timelineProbes.filter(probe=>probe?.world?.routePlanningPerformed===false).length,
         beforeFrameCount:beforeImages.length,
         afterFrameCount:afterImages.length,
         distinctFrameChange:beforeImages.length>0&&afterImages.length>0&&beforeImages.map(x=>hash(Buffer.from(x.data,'base64'))).join(',')!==afterImages.map(x=>hash(Buffer.from(x.data,'base64'))).join(','),
@@ -3257,7 +3283,7 @@ export function createLocalStudioPlayEvidence({
     &&characterMotionPass
     &&errors.length===0
   );
-  const scenarioCoverage=(Array.isArray(runtime?.scenarioCoverage)?runtime.scenarioCoverage:[]).map(row=>({id:clean(row?.id||row?.name),pass:row?.pass===true})).filter(row=>row.id);
+  const scenarioCoverage=(Array.isArray(runtime?.scenarioCoverage)?runtime.scenarioCoverage:[]).map(row=>({id:clean(row?.id||row?.name),pass:row?.pass===true,...(row?.verificationScope?{verificationScope:clean(row.verificationScope)}:{})})).filter(row=>row.id);
   const scenarioContractRequired=runtime?.scenarioContractRequired===true;
   const scenarioCoveragePass=scenarioCoverage.length>0&&scenarioCoverage.every(row=>row.pass===true);
   const scenarioContractPass=!scenarioContractRequired||scenarioCoveragePass;
@@ -3271,7 +3297,21 @@ export function createLocalStudioPlayEvidence({
     hint:clean(row?.hint).slice(0,320),
     observed:row?.observed&&typeof row.observed==='object'?row.observed:{}
   })).filter(row=>row.id).slice(0,48);
-  const pass=basePass&&scenarioContractPass;
+  const staticMultiplayer=runtime?.multiplayerAuditSummary?.verificationScope==='STATIC_CODE_CONTRACT';
+  const staticMultiplayerExact=!staticMultiplayer||(
+    runtime?.multiplayerAuditSummary?.codeContractPassed===true
+    &&runtime?.multiplayerAuditSummary?.sourceRevision===sourceRevision
+    &&runtime?.multiplayerAuditSummary?.artifactIdentity===artifactIdentity
+    &&item?.robloxMultiplayerQaEvidence?.authority==='roblox-static-two-client-source-contract'
+    &&item?.robloxMultiplayerQaEvidence?.passed===true
+    &&clean(item?.gameId)!==''&&item?.robloxMultiplayerQaEvidence?.gameId===item.gameId
+    &&item?.robloxMultiplayerQaEvidence?.codeContractPassed===true
+    &&item?.robloxMultiplayerQaEvidence?.runtimeTwoClientExecutionRequired===false
+    &&['playerRoster','participantCount','authoritativeBroadcast','clientReceive','twoParticipantCapablePath'].every(key=>item?.robloxMultiplayerQaEvidence?.checks?.[key]===true)
+    &&item?.robloxMultiplayerQaEvidence?.sourceRevision===sourceRevision
+    &&item?.robloxMultiplayerQaEvidence?.artifactIdentity===artifactIdentity
+  );
+  const pass=basePass&&scenarioContractPass&&staticMultiplayerExact;
   const productFailureObserved=Boolean(
     qualityFailureKinds.length>0
     ||qualityFailureDetails.length>0
@@ -3376,6 +3416,8 @@ export function createLocalStudioPlayEvidence({
         commercialAudit:{
           auditProfile:clean(runtime?.metrics?.auditProfile||runtime?.auditProfile||'FAST_DEEP'),
           timelineProbeCount:Number(runtime?.metrics?.timelineProbeCount||runtime?.timelineProbeCount||0),
+          routePlanningProbeCount:Number(runtime?.metrics?.routePlanningProbeCount||0),
+          lightweightProbeCount:Number(runtime?.metrics?.lightweightProbeCount||0),
           progressChanged:runtime?.metrics?.progressChanged===true,
           inventoryChanged:runtime?.metrics?.inventoryChanged===true,
           timelineProgressChanged:runtime?.metrics?.timelineProgressChanged===true,
@@ -3392,6 +3434,10 @@ export function createLocalStudioPlayEvidence({
             survivorStatePass:runtime.multiplayerAuditSummary.survivorStatePass===true,
             replacementJoinPass:runtime.multiplayerAuditSummary.replacementJoinPass===true,
             verificationScope:clean(runtime.multiplayerAuditSummary.verificationScope),
+            skipped:runtime.multiplayerAuditSummary.skipped===true,
+            codeContractPassed:staticMultiplayerExact&&runtime.multiplayerAuditSummary.codeContractPassed===true,
+            sourceRevision:clean(runtime.multiplayerAuditSummary.sourceRevision),
+            artifactIdentity:clean(runtime.multiplayerAuditSummary.artifactIdentity),
             sameUserRejoinVerified:false
           }:null,
           saveRejoin:runtime?.saveRejoinSummary&&typeof runtime.saveRejoinSummary==='object'?{
@@ -3637,12 +3683,15 @@ async function main(){
       settingState:clean(a['setting-state']),
       settingCandidatePathCount:Number(a['setting-candidate-path-count']??-1),
       actualPlayContractPath:clean(a['actual-play-contract']),
-      auditProfile:clean(a['audit-profile']||'FAST_DEEP')
+      auditProfile:clean(a['audit-profile']||'FAST_DEEP'),
+      runtimeIdentity:{gameId:clean(a['game-id']),sourceRevision:clean(a['source-revision']),artifactIdentity:clean(a['artifact-identity'])},
+      multiplayerSourceEvidence:a.queue?readJson(a.queue).items?.find(item=>item.gameId===clean(a['game-id']))?.robloxMultiplayerQaEvidence:null
     });
     const checkpointSummary=(Array.isArray(result?.checkpoints)?result.checkpoints:[])
       .map(row=>clean(row?.id)+':'+(row?.pass===true?'PASS':'FAIL'))
       .filter(Boolean)
       .join(',');
+    console.log('ROBLOX_STUDIO_ROUTE_PROBES='+JSON.stringify({planned:result?.metrics?.routePlanningProbeCount||0,lightweight:result?.metrics?.lightweightProbeCount||0}));
     const failedCheckpoints=(Array.isArray(result?.checkpoints)?result.checkpoints:[])
       .filter(row=>row?.required!==false&&row?.pass!==true)
       .map(row=>clean(row?.id))
