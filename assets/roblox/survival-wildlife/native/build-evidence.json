@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "kind": "ROBLOX_SURVIVAL_WILDLIFE_NATIVE_PACKAGE",
+  "generatedDirectly": true,
+  "sourceBranch": "wildlife-bear-quality-v5",
+  "artifacts": [
+    {
+      "file": "survival-wildlife.rbxmx",
+      "bytes": 52023,
+      "kind": "RBXMX_REUSABLE_PACKAGE"
+    },
+    {
+      "file": "bear-animation-sample.rbxlx",
+      "bytes": 59589,
+      "kind": "RBXLX_STUDIO_SAMPLE"
+    }
+  ],
+  "sampleSpecies": "BEAR",
+  "sampleMotions": [
+    "WALK",
+    "RUN",
+    "ALERT",
+    "ATTACK"
+  ],
+  "runtime": "ROBLOX_NATIVE",
+  "rig": "MOTOR6D",
+  "animationController": true,
+  "animatorInstance": true,
+  "clientVisualAnimation": true,
+  "serverRootAuthority": true,
+  "animationPrinciples": [
+    "KEY_POSE",
+    "ANTICIPATION",
+    "CONTACT",
+    "FOLLOW_THROUGH",
+    "SETTLE",
+    "SPRING_BLEND",
+    "FOOT_PLANT",
+    "SPINE_OVERLAP",
+    "HEAD_FOLLOW_THROUGH",
+    "SECONDARY_MOTION"
+  ],
+  "webAssetAuthority": false,
+  "nativeStudioVerified": false,
+  "artVerified": false,
+  "gameplayVerified": false
+}
