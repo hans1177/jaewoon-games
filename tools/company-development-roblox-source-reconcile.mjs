@@ -6,7 +6,7 @@ import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import {buildRobloxStudioAssetBootstrapPlan,validateRobloxBootstrap,ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION} from './company-development-roblox-bootstrap.mjs';
-import {platformDevelopmentEligible} from './company-selected-platform-router.mjs';
+import {ownerExclusiveDevelopmentGameIds,platformDevelopmentEligible} from './company-selected-platform-router.mjs';
 import {createRobloxVibe3LearningContext,existingRobloxGameLearningProfile,verifiedExternalBlackBoxPlaybookContract,ROBLOX_SEMANTIC_MAPPING_VERSION} from './vibe3-roblox-learning-context.mjs';
 
 const clean=value=>String(value??'').trim();
@@ -184,10 +184,12 @@ function currentSourceTreeSha({repoRoot='.',sourcePath=''}){
   }
 }
 
-export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevision='',loadBaseline,assetLibrary={},playbooks={}}={}){
+export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevision='',loadBaseline,assetLibrary={},playbooks={},excludedGameIds=[]}={}){
   if(typeof loadBaseline!=='function')throw new Error('loadBaseline callback required');
+  const excluded=new Set((Array.isArray(excludedGameIds)?excludedGameIds:[]).map(clean).filter(Boolean));
   const results=[];
   for(const item of queue.items||[]){
+    if(excluded.has(clean(item.gameId)))continue;
     if(!eligibleForRobloxSourceReconciliation(item))continue;
     const sourcePath=`roblox-games/${item.gameId}`;
     const root=path.join(repoRoot,sourcePath);
@@ -348,16 +350,22 @@ function runCli(){
   const sourceRevision=arg('source-revision');
   const resultsFile=arg('results','/tmp/roblox-source-reconciliation.json');
   const playbooksFile=arg('playbooks');
+  const roadmapFile=path.resolve(arg('roadmap',path.join(repoRoot,'company-learning/platform-release-roadmap.json')));
   if(!queueFile||!runtimeRef||!sourceRevision)throw new Error('required: --queue, --runtime-ref, --source-revision');
+  if(!fs.existsSync(roadmapFile))throw new Error('ROBLOX_OWNER_EXCLUSIVE_ROADMAP_MISSING:'+roadmapFile);
   const queue=readJson(queueFile);
   const assetLibrary=readJson(path.join(repoRoot,'company-asset-library.json'));
   const playbooks=playbooksFile&&fs.existsSync(playbooksFile)?readJson(playbooksFile):{};
+  const roadmap=readJson(roadmapFile);
+  const excludedGameIds=ownerExclusiveDevelopmentGameIds(roadmap);
+  console.log('ROBLOX_SOURCE_RECONCILIATION_OWNER_EXCLUSIVE_EXCLUDED='+(excludedGameIds.join(',')||'NONE'));
   const results=evaluateExistingRobloxSources({
     queue,
     repoRoot,
     sourceRevision,
     assetLibrary,
     playbooks,
+    excludedGameIds,
     loadBaseline:item=>{
       const baselinePath=clean(item.designBaselineSource);
       if(!baselinePath)throw new Error(`designBaselineSource missing: ${item.gameId}`);
