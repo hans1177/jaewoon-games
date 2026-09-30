@@ -6525,7 +6525,10 @@
       "coding_negative_1ncdu92",
       "coding_negative_aaedj2",
       "coding_negative_lt03ah",
-      "coding_negative_bfvtd2"
+      "coding_negative_bfvtd2",
+      "coding_negative_1osnhtg",
+      "coding_negative_tnvtwu",
+      "coding_negative_joex8u"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -17141,7 +17144,7 @@
         "verifiedApplications": 11,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 44,
-        "verifiedFailures": 1060,
+        "verifiedFailures": 1063,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1,
@@ -17300,7 +17303,7 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 373,
+            "verifiedFailures": 374,
             "games": {},
             "targets": {},
             "failureGames": {
@@ -17315,22 +17318,22 @@
               "survival": 42,
               "seed-idle-growth-rpg-crystal-bloom": 34,
               "seed-story-complete-rpg-chronicles-of-eldoria": 40,
-              "seed-casual-realm-weaver": 39,
+              "seed-casual-realm-weaver": 40,
               "seed-puzzle-chromatic-cascade": 30,
               "seed-single-defense-strat-celestial-bastion": 39
             },
             "failureTargets": {
-              "unity": 373
+              "unity": 374
             },
             "failureClasses": {
-              "TIMEOUT": 352,
+              "TIMEOUT": 353,
               "INVALID_PATH": 15,
               "MALFORMED_OUTPUT": 5,
               "NO_OP": 1
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_176d8w5",
-            "lastUpdatedAt": "2026-09-30T07:43:09.955Z"
+            "lastFailureEvidence": "coding_negative_tnvtwu",
+            "lastUpdatedAt": "2026-09-30T07:45:15.659Z"
           },
           "unity|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 2,
@@ -17511,28 +17514,28 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 104,
+            "verifiedFailures": 106,
             "games": {},
             "targets": {},
             "failureGames": {
               "horror-escape-room": 35,
               "fantasy-survival": 35,
-              "line-defense": 18,
+              "line-defense": 19,
               "seed-puzzle-chromatic-cascade": 9,
-              "seed-idle-growth-rpg-crystal-bloom": 7
+              "seed-idle-growth-rpg-crystal-bloom": 8
             },
             "failureTargets": {
-              "unity": 104
+              "unity": 106
             },
             "failureClasses": {
               "INVALID_PATH": 27,
-              "TIMEOUT": 60,
+              "TIMEOUT": 62,
               "MALFORMED_OUTPUT": 9,
               "NO_OP": 8
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_vqj68u",
-            "lastUpdatedAt": "2026-09-30T07:43:09.954Z"
+            "lastFailureEvidence": "coding_negative_joex8u",
+            "lastUpdatedAt": "2026-09-30T07:45:15.659Z"
           },
           "unity|NO_OP|OTHER|PRESENTATION_PATCH_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 1,
@@ -17670,8 +17673,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_1uz8is1",
-        "lastFailureEvidence": "coding_negative_bfvtd2",
-        "lastUpdatedAt": "2026-09-30T07:43:09.960Z"
+        "lastFailureEvidence": "coding_negative_joex8u",
+        "lastUpdatedAt": "2026-09-30T07:45:15.659Z"
       }
     }
   },
@@ -20424,7 +20427,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-30T07:44:11.289Z",
+    "lastBuiltAt": "2026-09-30T07:45:15.741Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -28684,5 +28687,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-30T07:44:11.289Z"
+  "updatedAt": "2026-09-30T07:45:15.741Z"
 }
