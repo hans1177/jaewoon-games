@@ -2751,6 +2751,8 @@ test('each Studio job downloads into a unique writable exact-content package dir
  assert.ok(hashCheck>0&&writable>hashCheck&&launch>writable);
  assert.match(block,/CommandLine -notmatch \$legacyPattern/);
  assert.match(block,/CreationDate.ToUniversalTime/);
- assert.match(block,/Stop-Process -Id \$owned.Id/);
+ assert.match(block,/Stop-Process -InputObject \$owned -Force/);
+ assert.match(block,/if \(-not \$owned\.WaitForExit\(60000\)\)/);
+ assert.match(block,/finally \{ \$owned\.Dispose\(\) \}/);
  assert.doesNotMatch(block,/Stop-Process -Name/);
 });
