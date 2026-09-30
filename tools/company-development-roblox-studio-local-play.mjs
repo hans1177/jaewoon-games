@@ -991,6 +991,8 @@ function studioActualPlayCoreProbeSource(contract={},context='Client'){
     '   row.centerY=row.y+row.height/2',
     '   row.text=d:IsA("TextButton") and tostring(d.Text) or ""',
     '   row.active=d.Active~=false',
+    '   row.classId=d:GetAttribute("ClassId")',
+    '   row.selectAction=d:GetAttribute("SelectAction")',
     '   if row.offscreen then gui.offscreenButtons=gui.offscreenButtons+1 end',
     '   local shortSide=math.min(row.width,row.height)',
     '   if shortSide<36 then gui.undersizedTouchButtons=gui.undersizedTouchButtons+1 elseif shortSide<44 then gui.suboptimalTouchButtons=gui.suboptimalTouchButtons+1 end',
@@ -1045,7 +1047,7 @@ function studioActualPlayCoreProbeSource(contract={},context='Client'){
     'end',
     'local payload={',
     ' context='+JSON.stringify(context)+',',
-    ' player={present=p~=nil,characterPresent=p~=nil and p.Character~=nil,humanoidPresent=hum~=nil,rootPresent=root~=nil,rootX=root and root.Position.X or nil,rootY=root and root.Position.Y or nil,rootZ=root and root.Position.Z or nil,velocityX=root and root.AssemblyLinearVelocity.X or nil,velocityY=root and root.AssemblyLinearVelocity.Y or nil,velocityZ=root and root.AssemblyLinearVelocity.Z or nil,health=hum and hum.Health or nil,maxHealth=hum and hum.MaxHealth or nil,floorMaterial=hum and tostring(hum.FloorMaterial) or nil,humanoidState=hum and tostring(hum:GetState()) or nil,animatorPresent=animator~=nil,animationTrackCount=animationTrackCount,motorCount=motorCount,roundState=attr(p,"RoundState"),role=attr(p,"Role"),monsterPreference=attr(p,"MonsterPreference"),soloRole=attr(p,"SoloRole"),feedbackEvent=attr(p,"FeedbackEvent"),currentMap=attr(p,"CurrentMap"),currentMapEvent=attr(p,"CurrentMapEvent"),humanCount=attr(p,"HumanCount"),monsterCount=attr(p,"MonsterCount"),objectivesDone=attr(p,"ObjectivesDone"),objectivesTotal=attr(p,"ObjectivesTotal")},',
+    ' player={present=p~=nil,characterPresent=p~=nil and p.Character~=nil,humanoidPresent=hum~=nil,rootPresent=root~=nil,rootX=root and root.Position.X or nil,rootY=root and root.Position.Y or nil,rootZ=root and root.Position.Z or nil,velocityX=root and root.AssemblyLinearVelocity.X or nil,velocityY=root and root.AssemblyLinearVelocity.Y or nil,velocityZ=root and root.AssemblyLinearVelocity.Z or nil,health=hum and hum.Health or nil,maxHealth=hum and hum.MaxHealth or nil,floorMaterial=hum and tostring(hum.FloorMaterial) or nil,humanoidState=hum and tostring(hum:GetState()) or nil,animatorPresent=animator~=nil,animationTrackCount=animationTrackCount,motorCount=motorCount,roundState=attr(p,"RoundState"),role=attr(p,"Role"),classId=attr(p,"ClassId"),monsterPreference=attr(p,"MonsterPreference"),soloRole=attr(p,"SoloRole"),feedbackEvent=attr(p,"FeedbackEvent"),currentMap=attr(p,"CurrentMap"),currentMapEvent=attr(p,"CurrentMapEvent"),humanCount=attr(p,"HumanCount"),monsterCount=attr(p,"MonsterCount"),objectivesDone=attr(p,"ObjectivesDone"),objectivesTotal=attr(p,"ObjectivesTotal")},',
     ' camera={present=camera~=nil,viewportX=viewport.X,viewportY=viewport.Y,fieldOfView=camera and camera.FieldOfView or nil,subjectPresent=camera and camera.CameraSubject~=nil or false,distance=cameraDistance,occluded=cameraOccluded},',
     ' ui=gui,',
     ' workspace={MapReady=attr(Workspace,"MapReady"),ActivePopulation=attr(Workspace,"ActivePopulation"),AIBotCount=attr(Workspace,"AIBotCount"),HumanCount=attr(Workspace,"HumanCount"),MonsterCount=attr(Workspace,"MonsterCount"),CurrentMapId=attr(Workspace,"CurrentMapId"),CurrentMapName=attr(Workspace,"CurrentMapName"),CurrentMapEvent=attr(Workspace,"CurrentMapEvent"),WorldArtPass=attr(Workspace,"WorldArtPass"),CharacterArtDirection=attr(Workspace,"CharacterArtDirection"),DesignCodeSync=attr(Workspace,"DesignCodeSync")},',
@@ -1055,7 +1057,7 @@ function studioActualPlayCoreProbeSource(contract={},context='Client'){
   ];
   return lines.join('\n');
 }
-function studioActualPlayWorldProbeSource(){
+function studioActualPlayWorldProbeSource({planRoutes=true}={}){
   return [
     'local HttpService=game:GetService("HttpService")',
     'local Players=game:GetService("Players")',
@@ -1142,7 +1144,8 @@ function studioActualPlayWorldProbeSource(){
     'local routeSampleCount=0',
     'local routeSuccessCount=0',
     'local routeRows={}',
-    'if root then',
+    'local routePlanningPerformed='+(planRoutes?'true':'false'),
+    'if root and routePlanningPerformed then',
     ' local anchors={}',
     ' local function addAnchor(kind,name,x,y,z) if #anchors<16 and tonumber(x) and tonumber(y) and tonumber(z) then table.insert(anchors,{kind=kind,name=tostring(name or kind),x=tonumber(x),y=tonumber(y),z=tonumber(z)}) end end',
     ' for _,row in ipairs(spawnRows) do addAnchor("spawn",row.name,row.x,row.y,row.z) end',
@@ -1159,7 +1162,7 @@ function studioActualPlayWorldProbeSource(){
     'end',
     'local floorBelow=false',
     'if root then local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude;params.FilterDescendantsInstances=p and p.Character and {p.Character} or {};floorBelow=Workspace:Raycast(root.Position+Vector3.new(0,4,0),Vector3.new(0,-128,0),params)~=nil end',
-    'local payload={world={arenaPresent=arena~=nil,arenaPartCount=parts,proximityPromptCount=prompts,clickDetectorCount=clickDetectors,collidablePartCount=collidableParts,spawnLocationCount=spawnLocations,spawns=spawnRows,minSpawnThreatDistance=minSpawnThreatDistance,boundsFinite=boundsFinite,minX=boundsFinite and minX or nil,minY=boundsFinite and minY or nil,minZ=boundsFinite and minZ or nil,maxX=boundsFinite and maxX or nil,maxY=boundsFinite and maxY or nil,maxZ=boundsFinite and maxZ or nil,floorBelowPlayer=floorBelow,floorSampleCount=floorSampleCount,floorHitCount=floorHitCount,routeSampleCount=routeSampleCount,routeSuccessCount=routeSuccessCount,routes=routeRows,prompts=promptRows,mobs=mobRows,npcs=npcRows,companions=companionRows,items=itemRows,environmentModels=environmentModels,effectCount=effectCount}}',
+    'local payload={world={arenaPresent=arena~=nil,arenaPartCount=parts,proximityPromptCount=prompts,clickDetectorCount=clickDetectors,collidablePartCount=collidableParts,spawnLocationCount=spawnLocations,spawns=spawnRows,minSpawnThreatDistance=minSpawnThreatDistance,boundsFinite=boundsFinite,minX=boundsFinite and minX or nil,minY=boundsFinite and minY or nil,minZ=boundsFinite and minZ or nil,maxX=boundsFinite and maxX or nil,maxY=boundsFinite and maxY or nil,maxZ=boundsFinite and maxZ or nil,floorBelowPlayer=floorBelow,floorSampleCount=floorSampleCount,floorHitCount=floorHitCount,routePlanningPerformed=routePlanningPerformed,routeSampleCount=routeSampleCount,routeSuccessCount=routeSuccessCount,routes=routeRows,prompts=promptRows,mobs=mobRows,npcs=npcRows,companions=companionRows,items=itemRows,environmentModels=environmentModels,effectCount=effectCount}}',
     'return "ROBLOX_STUDIO_ACTUAL_PLAY_WORLD="..HttpService:JSONEncode(payload)'
   ].join('\n');
 }
@@ -1246,11 +1249,11 @@ function parseStudioActualPlayProbe(result,marker='ROBLOX_STUDIO_ACTUAL_PLAY_PRO
   }
   return null;
 }
-async function collectStudioActualPlayProbe(client,studioId,contract,context){
+async function collectStudioActualPlayProbe(client,studioId,contract,context,{planRoutes=true}={}){
   const tool=client.tool('execute_luau');
   const segments=[
     {marker:'ROBLOX_STUDIO_ACTUAL_PLAY_CORE=',code:studioActualPlayCoreProbeSource(contract,context)},
-    {marker:'ROBLOX_STUDIO_ACTUAL_PLAY_WORLD=',code:studioActualPlayWorldProbeSource()},
+    {marker:'ROBLOX_STUDIO_ACTUAL_PLAY_WORLD=',code:studioActualPlayWorldProbeSource({planRoutes})},
     {marker:'ROBLOX_STUDIO_ACTUAL_PLAY_RUNTIME=',code:studioActualPlayRuntimeProbeSource()}
   ];
   const merged={};
@@ -2411,6 +2414,36 @@ export async function runOfficialStudioMcpPlay({
         checkpoint('adaptive-start-gate-input-dispatched',ok);
         await wait(1200);
       }
+
+      // Finish observed first-time class selection before movement can leave the village.
+      const classChoiceProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client',{planRoutes:false});
+      const classChoice=entityRows(classChoiceProbe?.ui?.interactive).find(row=>
+        row?.visible!==false&&row?.active!==false&&row?.offscreen!==true
+        &&clean(row?.classId)&&clean(row?.selectAction)
+        &&Number(row?.width)>0&&Number(row?.height)>0
+      )||null;
+      if(classChoice&&clean(classChoiceProbe?.player?.classId)==='NONE'){
+        let dispatched=false,confirmed=false;
+        if(Number.isFinite(Number(classChoice.centerX))&&Number.isFinite(Number(classChoice.centerY))){
+          try{
+            const mouseTool=client.tool('user_mouse_input');
+            const result=await client.call('user_mouse_input',mouseClickArgs(mouseTool.inputSchema||{},studioId,classChoice.centerX,classChoice.centerY));
+            dispatched=result?.isError!==true;
+          }catch{}
+        }
+        if(dispatched){
+          for(let attempt=0;attempt<10;attempt++){
+            await wait(400);
+            const selected=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client',{planRoutes:false});
+            const choiceStillVisible=entityRows(selected?.ui?.interactive).some(row=>row?.visible!==false&&clean(row?.classId)&&clean(row?.selectAction));
+            confirmed=clean(selected?.player?.classId)===clean(classChoice.classId)&&!choiceStillVisible;
+            if(confirmed)break;
+          }
+        }
+        actions.push({id:'ui-class-selection',type:'mcp-mouse-input',dispatched,ok:confirmed,selectedClass:clean(classChoice.classId),panelClosed:confirmed});
+        checkpoint('class-selection-confirmed',confirmed);
+        if(!confirmed)throw new Error('ROBLOX_STUDIO_START_ACTION_ABORT:CLASS_SELECTION_NOT_CONFIRMED');
+      }
     }
 
     if(actualPlayContract?.required===true){
@@ -2556,7 +2589,7 @@ export async function runOfficialStudioMcpPlay({
               const navResult=await client.call('character_navigation',characterNavigationArgs(navigationTool.inputSchema||{},studioId,waypoint));
               if(navResult?.isError===true){navOk=false;break;}
               await wait(300);
-              const next=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+              const next=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client',{planRoutes:false});
               const waypointDistance=Math.hypot(Number(next?.player?.rootX)-Number(waypoint.x),Number(next?.player?.rootZ)-Number(waypoint.z));
               fall=Math.max(fall,Number(probe?.player?.rootY||0)-Number(next?.player?.rootY||0));
               if(!next||next.world?.floorBelowPlayer!==true||!Number.isFinite(waypointDistance)||waypointDistance>6||fall>=35){
@@ -2568,6 +2601,11 @@ export async function runOfficialStudioMcpPlay({
               waypointCount++;
               timelineProbes.push(next);
             }catch{navOk=false;break;}
+          }
+          // Every waypoint still checks live floor, fall and arrival; refresh routes once per segment.
+          if(navOk){
+            probe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+            timelineProbes.push(probe);
           }
           const remaining=Math.hypot(Number(probe?.player?.rootX)-Number(candidate.x),Number(probe?.player?.rootZ)-Number(candidate.z));
           reached=navOk&&Number.isFinite(remaining)&&remaining<=6;
@@ -2684,7 +2722,7 @@ export async function runOfficialStudioMcpPlay({
       const sampleDelay=auditMode==='F9_SOAK'?1200:500;
       for(let sample=0;sample<sampleCount;sample++){
         await wait(sampleDelay);
-        const probe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+        const probe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client',{planRoutes:false});
         if(probe)timelineProbes.push(probe);
         if(sample<sampleCount-1){
           const key=sample%2===0?'W':'D';
@@ -2696,7 +2734,7 @@ export async function runOfficialStudioMcpPlay({
     }
 
     if(actualPlayContract?.required===true){
-      finalClientProbe=timelineProbes.at(-1)||await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+      finalClientProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
       finalServerProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Server');
       checkpoint('actual-play-final-client-probe',finalClientProbe!=null);
       checkpoint('actual-play-final-server-probe',finalServerProbe!=null);
@@ -3020,7 +3058,7 @@ export async function runOfficialStudioMcpPlay({
         id:'adaptive-start-playability',
         repairSurface:Number(preActionClientProbe?.ui?.largeBlockingOverlayCount||0)>0?'MOBILE_UI':'GAME_START',
         priority:'CRITICAL',
-        hint:'The declared start action never became visible after the start-gate probe window. Restore an actionable start control before full Studio QA.',
+        hint:'The start action was unavailable or the observed class selection did not finish. Restore an actionable entry flow and confirm selection before full Studio QA.',
         observed:{
           requiredButtonText:clean(actualPlayContract.primaryActionButtonText),
           visibleButtons:Number(preActionClientProbe?.ui?.visibleButtons||0),

@@ -2796,3 +2796,101 @@ test('each Studio job downloads into a unique writable exact-content package dir
  assert.match(block,/finally \{ \$owned\.Dispose\(\) \}/);
  assert.doesNotMatch(block,/Stop-Process -Name/);
 });
+
+test('route optimization retains every waypoint safety check and refreshes long routes',async()=>{
+  const start=helper.indexOf("const routeLimit=auditMode===");
+  const end=helper.indexOf("const semanticOf=row=>",start);
+  assert.ok(start>=0&&end>start);
+  const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
+  const routeBody=helper.slice(start,end);
+  async function exercise(blockedAt=0){
+    let position=0,steps=0,full=0,light=0;
+    const route=()=>({kind:'prompt',name:'destination',pass:true,x:180,y:0,z:0,
+      waypointCount:Math.max(0,(180-position)/10),
+      waypoints:Array.from({length:Math.min(16,Math.max(0,(180-position)/10))},(_,i)=>({x:position+(i+1)*10,y:0,z:0}))});
+    const probe=()=>({player:{rootX:position,rootY:0,rootZ:0},world:{floorBelowPlayer:steps!==blockedAt||blockedAt===0,routes:[route()]}});
+    const timelineProbes=[],actions=[];
+    const run=new AsyncFunction('env',`
+      const {initialClientProbe,collectStudioActualPlayProbe,timelineProbes,actions,client}=env;
+      const auditMode='FAST_DEEP',studioId='test',actualPlayContract={},navigationTool={inputSchema:{}};
+      const clean=v=>String(v??'').trim(),entityRows=v=>Array.isArray(v)?v:[];
+      const pointDistance=(a,b)=>Math.hypot(b.rootX-a.rootX,b.rootY-a.rootY,b.rootZ-a.rootZ);
+      const characterNavigationArgs=(_schema,_id,waypoint)=>waypoint;
+      const wait=async()=>{};
+      ${routeBody}
+    `);
+    await run({initialClientProbe:probe(),timelineProbes,actions,
+      client:{call:async(_name,waypoint)=>{position=waypoint.x;steps++;return {};}},
+      collectStudioActualPlayProbe:async(_client,_id,_contract,_context,options={})=>{
+        if(options.planRoutes===false)light++;else full++;
+        const result=probe();if(options.planRoutes===false)result.world.routes=[];
+        return result;
+      }});
+    return{steps,full,light,actions};
+  }
+  const completed=await exercise();
+  assert.equal(completed.steps,18);
+  assert.equal(completed.light,18);
+  assert.equal(completed.full,2);
+  assert.equal(completed.actions[0].ok,true);
+  assert.equal(completed.actions[0].waypointCount,18);
+  const blocked=await exercise(3);
+  assert.equal(blocked.steps,3);
+  assert.equal(blocked.light,3);
+  assert.equal(blocked.actions[0].ok,false);
+  assert.match(helper,/finalClientProbe=await collectStudioActualPlayProbe/);
+});
+
+test('lightweight route observations keep live world safety and entity fields',()=>{
+  const start=helper.indexOf('function studioActualPlayWorldProbeSource');
+  const end=helper.indexOf('function studioActualPlayRuntimeProbeSource',start);
+  const build=new Function(helper.slice(start,end)+';return studioActualPlayWorldProbeSource;')();
+  const full=build(),light=build({planRoutes:false});
+  assert.match(full,/local routePlanningPerformed=true/);
+  assert.match(light,/local routePlanningPerformed=false/);
+  for(const source of [full,light]){
+    assert.match(source,/if root and routePlanningPerformed then/);
+    assert.match(source,/floorBelowPlayer=floorBelow/);
+    assert.match(source,/floorSampleCount=floorSampleCount/);
+    assert.match(source,/mobs=mobRows,npcs=npcRows,companions=companionRows/);
+    assert.match(source,/routePlanningPerformed=routePlanningPerformed/);
+  }
+});
+
+test('observed class selection must receive the selected class and close its UI before gameplay',async()=>{
+  const start=helper.indexOf('const classChoiceProbe=await');
+  const end=helper.indexOf("\n    }\n\n    if(actualPlayContract?.required===true){",start);
+  assert.ok(start>=0&&end>start);
+  const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
+  const block=helper.slice(start,end);
+  const run=new AsyncFunction('env',`
+    const {collectStudioActualPlayProbe,client,actions,checkpoint}=env;
+    const studioId='test',actualPlayContract={},clean=v=>String(v??'').trim(),entityRows=v=>Array.isArray(v)?v:[];
+    const mouseClickArgs=(_schema,_id,x,y)=>({x,y}),wait=async()=>{};
+    ${block}
+  `);
+  const button={classId:'BREAKER',selectAction:'SELECT_BREAKER',visible:true,active:true,width:175,height:70,centerX:30,centerY:40};
+  const snapshot=(classId,visible)=>({player:{classId},ui:{interactive:visible?[button]:[]}});
+  async function exercise(snapshots){
+    const actions=[],checks=[];let probes=0,clicks=0,error='';
+    try{await run({actions,checkpoint:(id,pass)=>checks.push({id,pass}),
+      client:{tool:()=>({}),call:async()=>{clicks++;return {};}},
+      collectStudioActualPlayProbe:async()=>snapshots[Math.min(probes++,snapshots.length-1)]
+    });}catch(e){error=e.message;}
+    return{actions,checks,probes,clicks,error};
+  }
+  const good=await exercise([snapshot('NONE',true),snapshot('BREAKER',true),snapshot('BREAKER',false)]);
+  assert.equal(good.clicks,1);
+  assert.equal(good.probes,3);
+  assert.equal(good.actions[0].panelClosed,true);
+  assert.equal(good.error,'');
+  const stuck=await exercise([snapshot('NONE',true),snapshot('BREAKER',true)]);
+  assert.match(stuck.error,/CLASS_SELECTION_NOT_CONFIRMED/);
+  assert.equal(stuck.clicks,1);
+  assert.equal(stuck.actions[0].ok,false);
+  const unacknowledged=await exercise([snapshot('NONE',true),snapshot('NONE',false)]);
+  assert.match(unacknowledged.error,/CLASS_SELECTION_NOT_CONFIRMED/);
+  const existing=await exercise([snapshot('BREAKER',false)]);
+  assert.equal(existing.clicks,0);
+  assert.equal(existing.error,'');
+});
