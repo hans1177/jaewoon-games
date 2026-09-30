@@ -136,6 +136,14 @@ test('lightweight reserve uses slim while fan-in stays on ARM and heavy executio
   assert.match(core,/Record asset no-model cache bypass/);
   assert.match(core,/VIBE2_MODEL_CACHE_RESERVE_PROBE=SKIPPED_ASSET_LANE/);
   assert.match(core,/VIBE2_MODEL_CACHE_WARMUP_DECISION=SKIP_ASSET_WORKER_LOCAL_DECISION/);
+  const orderPos=core.indexOf('      - name: Build reserved task work order');
+  const explorePos=core.indexOf('      - name: Build task-local exploration handoff');
+  const lockPos=core.indexOf('      - name: Acquire shared Work Lock before source write');
+  const restorePos=core.indexOf('      - name: Restore shared Ollama runtime cache');
+  const candidatePos=core.indexOf('      - name: Generate isolated candidate from pinned main contract');
+  assert.ok(orderPos>=0&&orderPos<explorePos&&explorePos<lockPos&&lockPos<restorePos&&restorePos<candidatePos);
+  assert.match(core,/Restore shared Ollama runtime cache[\s\S]{0,220}?steps\.order\.outputs\.route != 'text-source-worker' \|\| steps\.work_lock\.outputs\.acquired == 'true'/);
+  assert.match(core,/VIBE2_WORK_LOCK_ACQUIRE_TIMING=POST_READ_ONLY_EXPLORATION_PRE_MODEL_RESTORE_PRE_SOURCE_WRITE/);
   assert.match(core,/\n  worker:[\s\S]{0,520}?matrix\.target == 'roblox'[\s\S]{0,220}?'ubuntu-latest'[\s\S]{0,220}?'ubuntu-24\.04-arm'/);
   assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentRunnerLabel,'ubuntu-24.04-arm');
   assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentSchedulerPlanRunner,'ubuntu-24.04-arm');
