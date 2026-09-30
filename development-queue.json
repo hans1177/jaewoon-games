@@ -21575,10 +21575,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-30T17:40:07.232Z",
+      "updatedAt": "2026-09-30T21:42:45.093Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -22875,10 +22875,10 @@
       "robloxPublicReleaseFinalEvidence": null,
       "robloxRuntimeLastObservationAttemptAt": "2026-09-27T23:53:16.715Z",
       "platformAdapter": "tools/company-development-unity-platform.mjs",
-      "unityCandidateBranch": null,
-      "unitySourceCommit": null,
-      "unityBuildRunId": null,
-      "unityRuntimeSmokeRunId": null,
+      "unityCandidateBranch": "development/unity-tech-seed-idle-growth-rpg-crystal-bloom-36773180555",
+      "unitySourceCommit": "3aebc33f093c8668ed6d3b55dc7c469bc7ce687a",
+      "unityBuildRunId": 36775710705,
+      "unityRuntimeSmokeRunId": 36778857638,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityInternalReleaseReady": false,
@@ -22887,21 +22887,24 @@
       "unityPublicReleaseReady": false,
       "unityPublicRelease": false,
       "executionEvidence": {
-        "version": 1,
+        "version": 3,
         "platform": "UNITY",
-        "sourceRevision": null,
-        "sourceFingerprint": null,
-        "buildOrPackagePassed": false,
-        "artifactIdentity": null,
+        "sourceRevision": "3aebc33f093c8668ed6d3b55dc7c469bc7ce687a",
+        "sourceRootTreeSha": "d18e2b11621eca1afadd94cdd25573f3ee7e045f",
+        "sourceFingerprint": "179a0797cbe2783a4db133fd59dcd87521c33fac1e1f81027a7496deb4c9bc6e",
+        "buildOrPackagePassed": true,
+        "artifactIdentity": "sha256:2ff5ddcbb0f177e8905176483d8c27720ffd0648cbca13623553db6ff0c82d10",
         "runtimePassed": false,
-        "independentQaPassed": true,
-        "regressionPassed": true,
-        "exactRevision": false,
-        "lastSuccessfulStage": "F9_RELEASE_REGRESSION",
-        "failureStage": null,
-        "failureSignature": null
+        "independentQaPassed": false,
+        "multiplayerPassed": true,
+        "regressionPassed": false,
+        "f0ToF9Passed": false,
+        "exactRevision": true,
+        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
+        "failureStage": "F1_SERVER_BOOT",
+        "failureSignature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee"
       },
-      "resumeStage": "SINGLE_BUILD_OR_PACKAGE",
+      "resumeStage": "F1_SERVER_BOOT",
       "failureCount": 1,
       "contractCanaryPassed": false,
       "robloxInternalPlaytestPassed": false,
@@ -23257,7 +23260,82 @@
         "reason": "EXACT_SOURCE_ARTIFACT_VERSION_STUDIO_INTERNAL_EVIDENCE_ALREADY_VERIFIED"
       },
       "robloxCanonicalPublishRepairRequired": true,
-      "robloxCanonicalPublishRepairCycleId": "825a26d1b013de94f2086c6d38a9839895abb781:sha256:f34852ab83c0f7a1b3ecbb9073b988617d580088f97ca678c3a97be7731969c0"
+      "robloxCanonicalPublishRepairCycleId": "825a26d1b013de94f2086c6d38a9839895abb781:sha256:f34852ab83c0f7a1b3ecbb9073b988617d580088f97ca678c3a97be7731969c0",
+      "unityF0ThroughF9Evidence": {
+        "version": 1,
+        "platform": "UNITY",
+        "sourceRevision": "3aebc33f093c8668ed6d3b55dc7c469bc7ce687a",
+        "artifactIdentity": "sha256:2ff5ddcbb0f177e8905176483d8c27720ffd0648cbca13623553db6ff0c82d10",
+        "sourceRootTreeSha": "d18e2b11621eca1afadd94cdd25573f3ee7e045f",
+        "evidenceMode": "EXISTING_EXACT_APK_RUNTIME_QA_REGRESSION_WITH_PLATFORM_APPLICABILITY",
+        "floors": {
+          "F0": {
+            "state": "PASS",
+            "authority": "IMMUTABLE_APK_BUILD_AND_SOURCE_BINDING"
+          },
+          "F1": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_RUNTIME_SESSION"
+          },
+          "F2": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_RUNTIME_SESSION"
+          },
+          "F3": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_RUNTIME_SESSION"
+          },
+          "F4": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_RUNTIME_SESSION"
+          },
+          "F5": {
+            "state": "FAIL",
+            "authority": "INDEPENDENT_ANDROID_QA_TOUCH_INPUT_SCREEN_RUNTIME"
+          },
+          "F6": {
+            "state": "FAIL",
+            "authority": "INDEPENDENT_ANDROID_QA_AND_EXACT_RUNTIME_STATE_EVIDENCE"
+          },
+          "F7": {
+            "state": "NOT_APPLICABLE",
+            "authority": "VERIFIED_DESIGN_SINGLE_PLAYER",
+            "participantCount": 0,
+            "authoritativeSync": false
+          },
+          "F8": {
+            "state": "FAIL",
+            "authority": "EXACT_RUNTIME_PLUS_INDEPENDENT_QA"
+          },
+          "F9": {
+            "state": "FAIL",
+            "authority": "EXACT_ARTIFACT_REGRESSION_FAN_IN"
+          }
+        },
+        "multiplayerRequired": false,
+        "verifiedAt": "2026-09-30T21:42:45.093Z"
+      },
+      "unityF9ReleaseRegressionPassed": false,
+      "unityF9ReleaseRegressionPassedAt": null,
+      "unityCanonicalPublishPending": false,
+      "unityExecutionEvidence": {
+        "version": 3,
+        "platform": "UNITY",
+        "sourceRevision": "3aebc33f093c8668ed6d3b55dc7c469bc7ce687a",
+        "sourceRootTreeSha": "d18e2b11621eca1afadd94cdd25573f3ee7e045f",
+        "sourceFingerprint": "179a0797cbe2783a4db133fd59dcd87521c33fac1e1f81027a7496deb4c9bc6e",
+        "buildOrPackagePassed": true,
+        "artifactIdentity": "sha256:2ff5ddcbb0f177e8905176483d8c27720ffd0648cbca13623553db6ff0c82d10",
+        "runtimePassed": false,
+        "independentQaPassed": false,
+        "multiplayerPassed": true,
+        "regressionPassed": false,
+        "f0ToF9Passed": false,
+        "exactRevision": true,
+        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
+        "failureStage": "F1_SERVER_BOOT",
+        "failureSignature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee"
+      }
     },
     {
       "gameId": "seed-puzzle-chromatic-cascade",
@@ -30434,7 +30512,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-30T21:40:06.013Z",
+  "updatedAt": "2026-09-30T21:42:46.831Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
