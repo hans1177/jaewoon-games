@@ -1,0 +1,61 @@
+name: Horror Owner Direct Publish
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/horror-owner-direct-publish.yml']
+permissions:
+  contents: read
+concurrency:
+  group: horror-owner-direct-publish
+  cancel-in-progress: false
+jobs:
+  diagnose:
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: c7500e771da2662b474de96761d454013c3bf045
+          fetch-depth: 1
+      - name: Compile actual server and client without publishing
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $out=Join-Path $env:RUNNER_TEMP 'horror-diagnose'
+          New-Item -ItemType Directory -Force $out | Out-Null
+          "OWNER_OUT=$out" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          Invoke-WebRequest 'https://github.com/luau-lang/luau/releases/download/0.740/luau-windows.zip' -OutFile "$out/luau-windows.zip"
+          if((Get-FileHash "$out/luau-windows.zip" -Algorithm SHA256).Hash.ToLowerInvariant() -ne 'be676d9a1092b3d5ee36be5f5f11e2af1976911c32f5644a052548dc7c66bb9c'){throw 'LUAU_CHECKSUM'}
+          Expand-Archive "$out/luau-windows.zip" "$out/luau" -Force
+          $env:OWNER_LUAU=$out
+          @'
+          const fs=require('fs'),path=require('path'),cp=require('child_process');
+          const out=process.env.OWNER_LUAU;
+          const dir=path.join(out,'luau');
+          const files=['server/Game.server.luau','client/Game.client.luau','shared/GameConfig.luau','shared/VisualStyle.luau'];
+          for(const relative of files){
+            const file='roblox-games/horror-escape-room/'+relative;
+            const r=cp.spawnSync(path.join(dir,'luau-compile.exe'),['--null',file],{encoding:'utf8',timeout:45000});
+            console.log('LUAU_COMPILE='+JSON.stringify({file,status:r.status,error:String(r.error||''),stdout:r.stdout,stderr:r.stderr}));
+            const a=cp.spawnSync(path.join(dir,'luau-analyze.exe'),[file],{encoding:'utf8',timeout:45000,maxBuffer:10*1024*1024});
+            const log=String(a.stdout||'')+String(a.stderr||'');
+            fs.writeFileSync(path.join(out,path.basename(relative)+'.analyze.txt'),log);
+            for(const line of log.split(/\r?\n/).filter(x=>/Unknown global.*(lobbySurfaceText|teleport|showLobbyDialogue)|register|local variables|SyntaxError/.test(x)))console.log('LUAU_ANALYZE='+line);
+          }
+          console.log('STUDIO_TOOLS='+JSON.stringify(fs.readdirSync('tools').filter(x=>/roblox/.test(x)&&/studio|actual|runtime|preflight/.test(x))));
+          '@ | node
+          if($LASTEXITCODE -ne 0){throw 'DIAGNOSE_NODE_FAILED'}
+          Get-Process -Name 'RobloxStudioBeta' -ErrorAction SilentlyContinue | Select-Object Id,ProcessName,StartTime | Format-Table
+          Invoke-WebRequest 'https://github.com/luau-lang/luau/releases/download/0.740/luau-ubuntu.zip' -OutFile "$out/luau-ubuntu.zip"
+          if((Get-FileHash "$out/luau-ubuntu.zip" -Algorithm SHA256).Hash.ToLowerInvariant() -ne '7d4035db01816f977f6e4c42e3d5e8ef4235d95e9afe63a3c38905b42dde60f2'){throw 'LUAU_LINUX_CHECKSUM'}
+          Write-Host 'DIAGNOSIS_ONLY_NO_PUBLISH'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: horror-diagnose
+          path: |
+            roblox-games/horror-escape-room
+            qa/horror-escape-room-release.test.mjs
+            ${{ env.OWNER_OUT }}/luau-ubuntu.zip
+            ${{ env.OWNER_OUT }}/*.analyze.txt
+          retention-days: 1
