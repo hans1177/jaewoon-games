@@ -6831,7 +6831,8 @@
       "coding_negative_1g9nwrw",
       "coding_negative_10hsryo",
       "coding_negative_r343uf",
-      "coding_negative_1gwha76"
+      "coding_negative_1gwha76",
+      "coding_negative_1lssmfi"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -18213,7 +18214,7 @@
         "verifiedApplications": 13,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 53,
-        "verifiedFailures": 1287,
+        "verifiedFailures": 1288,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1,
@@ -18636,22 +18637,22 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 10,
+            "verifiedFailures": 11,
             "games": {},
             "targets": {},
             "failureGames": {
-              "fantasy-survival": 10
+              "fantasy-survival": 11
             },
             "failureTargets": {
-              "roblox": 10
+              "roblox": 11
             },
             "failureClasses": {
               "TIMEOUT": 8,
-              "NO_OP": 2
+              "NO_OP": 3
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1rmp935",
-            "lastUpdatedAt": "2026-09-30T11:40:04.627Z"
+            "lastFailureEvidence": "coding_negative_1lssmfi",
+            "lastUpdatedAt": "2026-09-30T12:24:50.189Z"
           },
           "unity|AUTHORITATIVE_TARGET_ENGINE_QA_MISSING|FOCUSED_MARKER_NOT_PASS|FOCUSED_QA_NOT_PASS|INVALID_PATH|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -18914,8 +18915,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_gu6x9n",
-        "lastFailureEvidence": "coding_negative_1gwha76",
-        "lastUpdatedAt": "2026-09-30T12:23:57.472Z"
+        "lastFailureEvidence": "coding_negative_1lssmfi",
+        "lastUpdatedAt": "2026-09-30T12:24:50.189Z"
       }
     }
   },
@@ -21668,7 +21669,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-30T12:23:57.540Z",
+    "lastBuiltAt": "2026-09-30T12:24:50.264Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -29928,5 +29929,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-30T12:23:57.540Z"
+  "updatedAt": "2026-09-30T12:24:50.264Z"
 }

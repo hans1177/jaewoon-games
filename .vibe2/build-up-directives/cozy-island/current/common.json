@@ -180,7 +180,131 @@
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false,
-    "studioQualityFailure": null
+    "studioQualityFailure": {
+      "sourceRevision": "84540de91959087198a8e541f6f56658917bd8f3",
+      "artifactIdentity": "sha256:808a81787999ed8015172ac566f6d0a8d408904b7438aabc207817097da1fb12",
+      "authority": "roblox-official-studio-mcp-product-quality-failure",
+      "workflowRunId": 36713062333,
+      "testedAt": "2026-09-30T12:18:13.062Z",
+      "repairSurfaces": [
+        "MOBILE_UI",
+        "WORLD_GEOMETRY",
+        "MAP_ROUTEABILITY",
+        "SYSTEM_TRANSACTION",
+        "COMPANION_AI",
+        "SAVE_REJOIN",
+        "FAILURE_RECOVERY",
+        "MULTIPLAYER_SYNC",
+        "ROBLOX_OBSERVED_INTERACTION"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "adaptive-ui-commercial-quality",
+          "repairSurface": "MOBILE_UI",
+          "priority": "HIGH",
+          "hint": "Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.",
+          "observed": "{\"offscreenButtons\":0,\"undersizedTouchButtons\":1,\"suboptimalTouchButtons\":0,\"textOverflowButtons\":0,\"overlapPairs\":0,\"largeOverlayCount\":0,\"largeBlockingOverlayCount\":0,\"largestOverlayCoverage\":0}"
+        },
+        {
+          "id": "adaptive-world-safety",
+          "repairSurface": "WORLD_GEOMETRY",
+          "priority": "CRITICAL",
+          "hint": "Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.",
+          "observed": "{\"boundsFinite\":true,\"collidablePartCount\":248,\"floorBelowPlayer\":true,\"floorSamples\":9,\"floorHits\":1,\"floorCoveragePass\":false,\"routeSamples\":16,\"routeSuccess\":2,\"routeCoveragePass\":false,\"spawnThreatDistance\":63.41423532244157,\"spawnOverlapSafe\":true}"
+        },
+        {
+          "id": "adaptive-map-route-coverage",
+          "repairSurface": "MAP_ROUTEABILITY",
+          "priority": "CRITICAL",
+          "hint": "Repair unreachable/stuck/dead-zone routes discovered during Studio corner-direction traversal.",
+          "observed": "{\"routeAttemptCount\":1,\"routePassCount\":0,\"routeRequired\":1,\"routes\":[{\"id\":\"map-route-prompt:작물\",\"ok\":false,\"moved\":0,\"fall\":0,\"floorBelow\":true}]}"
+        },
+        {
+          "id": "adaptive-system-transaction-effect",
+          "repairSurface": "SYSTEM_TRANSACTION",
+          "priority": "CRITICAL",
+          "hint": "One or more discovered shop/craft/equip/upgrade actions accepted input without changing inventory, currency/progression, feedback, or relevant UI state. Repair each transaction chain independently.",
+          "observed": "{\"systemActionCount\":1,\"systemEffectCount\":0,\"actions\":[{\"id\":\"prompt-ProximityPrompt\",\"semantic\":\"UPGRADE\",\"effectObserved\":false,\"effect\":{\"moved\":68.14443998183546,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":true,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":true}}]}"
+        },
+        {
+          "id": "adaptive-companion-ai-surface",
+          "repairSurface": "COMPANION_AI",
+          "priority": "CRITICAL",
+          "hint": "Repair companion spawn/follow/target/attack/recovery behavior and F9 liveness.",
+          "observed": "{\"companionSurfaceCount\":0,\"companionCount\":0,\"companionMotion\":{\"matched\":0,\"moved\":0,\"stateChanged\":0,\"healthChanged\":0,\"targetChanged\":0,\"dynamic\":false},\"timelineCompanionDynamic\":false}"
+        },
+        {
+          "id": "adaptive-save-surface",
+          "repairSurface": "SAVE_REJOIN",
+          "priority": "CRITICAL",
+          "hint": "Repair save/load/rejoin persistence and idempotency without duplicating rewards.",
+          "observed": "{\"interactionSurfaceCount\":41,\"progressionSurfaceCount\":10,\"combatSurfaceCount\":25,\"npcSurfaceCount\":16,\"companionSurfaceCount\":0,\"itemSurfaceCount\":1,\"remoteCount\":17,\"soundCount\":0,\"effectCount\":0,\"promptCount\":36,\"inventoryCount\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":false,\"multiplayerActualSessionPass\":false}"
+        },
+        {
+          "id": "adaptive-retry-loop-surface",
+          "repairSurface": "FAILURE_RECOVERY",
+          "priority": "HIGH",
+          "hint": "Repair death/failure/restart/respawn flow and remove softlocks after retry.",
+          "observed": "{\"interactionSurfaceCount\":41,\"progressionSurfaceCount\":10,\"combatSurfaceCount\":25,\"npcSurfaceCount\":16,\"companionSurfaceCount\":0,\"itemSurfaceCount\":1,\"remoteCount\":17,\"soundCount\":0,\"effectCount\":0,\"promptCount\":36,\"inventoryCount\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":false,\"multiplayerActualSessionPass\":false}"
+        },
+        {
+          "id": "adaptive-multiplayer-sync-surface",
+          "repairSurface": "MULTIPLAYER_SYNC",
+          "priority": "CRITICAL",
+          "hint": "The game declares multiplayer/co-op behavior but Studio found no credible replicated player/team state plus server Remote surface. Restore actual 2+ player synchronization evidence before release.",
+          "observed": "{\"declaredMultiplayer\":true,\"auditProfile\":\"F9_SOAK\",\"multiplayerRuntimeSurface\":false,\"multiplayerActualSessionPass\":false,\"multiplayerSignals\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":false,\"remoteCount\":17}"
+        },
+        {
+          "id": "observed-action-503dee5e7e7e85a2b073",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-503dee5e7e7e85a2b073\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"map-route-prompt:작물\",\"targetIdentity\":\"map-route-prompt:작물\",\"actionType\":\"mcp-map-route-audit\",\"effectRequired\":false,\"attempts\":1}"
+        },
+        {
+          "id": "observed-action-2e4e2ff2958630bc2c9e",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-2e4e2ff2958630bc2c9e\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"prompt-ProximityPrompt\",\"targetIdentity\":\"Workspace.CozyConquestWorld.HomeNPCs.Captain.ProximityPrompt\",\"actionType\":\"mcp-world-interaction\",\"effectRequired\":true,\"attempts\":1}"
+        },
+        {
+          "id": "observed-action-b4a378bc999b601bc3a3",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-b4a378bc999b601bc3a3\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"prompt-ProximityPrompt\",\"targetIdentity\":\"Workspace.CozyConquestWorld.HomeNPCs.Chief.ProximityPrompt\",\"actionType\":\"mcp-world-interaction\",\"effectRequired\":true,\"attempts\":1}"
+        },
+        {
+          "id": "observed-action-28a5d01cabeed379ed6c",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-28a5d01cabeed379ed6c\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"prompt-ProximityPrompt\",\"targetIdentity\":\"Workspace.CozyConquestWorld.ManualGatherForest.WoodNode4.ProximityPrompt\",\"actionType\":\"mcp-world-interaction\",\"effectRequired\":true,\"attempts\":1}"
+        },
+        {
+          "id": "observed-action-b44707afa0efc7f8fa15",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-b44707afa0efc7f8fa15\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"prompt-ProximityPrompt\",\"targetIdentity\":\"Workspace.CozyConquestWorld.ManualGatherForest.WoodNode8.ProximityPrompt\",\"actionType\":\"mcp-world-interaction\",\"effectRequired\":true,\"attempts\":1}"
+        },
+        {
+          "id": "observed-action-bffcb6fc96faff9b4d69",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-bffcb6fc96faff9b4d69\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"prompt-ProximityPrompt\",\"targetIdentity\":\"Workspace.CozyConquestWorld.ManualGatherForest.WoodNode3.ProximityPrompt\",\"actionType\":\"mcp-world-interaction\",\"effectRequired\":true,\"attempts\":1}"
+        },
+        {
+          "id": "observed-action-2f171c50682d6d552850",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-2f171c50682d6d552850\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"prompt-ProximityPrompt\",\"targetIdentity\":\"Workspace.CozyConquestWorld.ManualGatherForest.WoodNode12.ProximityPrompt\",\"actionType\":\"mcp-world-interaction\",\"effectRequired\":true,\"attempts\":1}"
+        }
+      ]
+    }
   },
   "qualityGapMap": [
     {
