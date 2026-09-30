@@ -759,6 +759,54 @@
       ],
       "learningState": "TRACE_ONLY",
       "liveState": "MERGED_AT_A2066D43; SOURCE_PROMPT_OVERSIZE_CAUSE_REPAIRED; POST_MERGE_EXACT_SOURCE_GENERATION_NOT_YET_OBSERVED; LINE_DEFENSE_STUDIO_REVALIDATION_BLOCKED_UNTIL_A_NEW_SOURCE_CANDIDATE_EXISTS; NEXT_ROTATION_POST_MERGE_UNITY_SOURCE_ARTIFACT_THEN_OLDEST_NON_OWNER_GAME_STUDIO_SCENARIO"
+    },
+    {
+      "id": "assistant_vibe_work_lock_api_limit_fallback_20261001",
+      "date": "2026-10-01",
+      "gameId": "MULTI_GAME_SHARED_WORK_LOCK",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "After the prompt-budget repair, two Vibe2 Continuous Core runs reserved independent work across line-defense and many other active games but every observed source worker stopped before source generation at Acquire shared Work Lock before source write. The remote state read succeeded, the lock branch contained no active conflicts, and the subsequent Contents API PUT failed with HTTP 403. A Unity independent QA artifact download at the same time reported API rate limit exceeded for installation, confirming an infrastructure quota failure rather than a game-file conflict.",
+      "rootCause": "BURST_WORKERS_DEPENDED_EXCLUSIVELY_ON_GITHUB_CONTENTS_API_FOR_SHARED_LOCK_STATE_WRITES_AND_TREATED_403_OR_429_QUOTA_RESPONSES_AS_FATAL",
+      "decision": "Preserve the existing shared lock state, blob-SHA compare-and-swap contract, file overlap rules, leases, and retry loop. When Contents API reads or writes are rate limited, use the same dedicated vibe2-work-locks Git branch as a second transport: verify the observed blob, build a commit with Git plumbing, and update the branch only through force-with-lease so stale writers re-enter the existing retry path.",
+      "change": "Updated tools/vibe2-remote-work-lock.mjs with a Git CAS transport used only for 403/429 fallback and retained the existing Contents API path for normal operation. Added mocked read/write throttling tests and a real local bare-repository integration that fetches the lock branch, validates the blob, commits the updated state, force-with-lease pushes, and reads the exact task back. No game source, asset, balance, save data, queue state, candidate, deployment, or owner-exclusive horror-escape-room scope changed.",
+      "evidence": [
+        "failure-runs:36781175676,36776169423",
+        "example-line-defense-worker-job:110117291440",
+        "example-failure:work-lock-state-update-failed-http-403",
+        "affected-worker-count-observed:27-plus-29-across-two-runs",
+        "unity-rate-limit-corroboration-run:36781976771",
+        "unity-rate-limit-corroboration-job:110114195920",
+        "lock-branch-head-before-repair:b1ff7de4ef3fdcae95939ffd02703da1027d4803",
+        "lock-branch-last-update:2026-09-30T21:20:32Z",
+        "lock-branch-active-locks:0",
+        "pull-request:4216",
+        "source-commit:1fc29be6ef99b10fd546f98c5b898aa5245a2870",
+        "merged-main:79e3bae1081eed4676258b2ce979a4d509384d6b",
+        "owner-exclusive-scope:horror-escape-room-query-only"
+      ],
+      "reusablePatterns": [
+        "KEEP_LOCK_SEMANTICS_CONSTANT_WHILE_SWITCHING_RATE_LIMITED_TRANSPORT",
+        "VERIFY_OBSERVED_BLOB_BEFORE_GIT_FORCE_WITH_LEASE_CAS",
+        "RETURN_LEASE_RACES_TO_THE_EXISTING_STATE_REEVALUATION_LOOP",
+        "CORRELATE_CROSS_WORKFLOW_403_WITH_EXPLICIT_RATE_LIMIT_EVIDENCE_BEFORE_CHANGING_LOCK_LOGIC"
+      ],
+      "avoidPatterns": [
+        "TREATING_RATE_LIMITED_LOCK_STATE_WRITES_AS_GAME_FILE_CONFLICTS",
+        "BYPASSING_THE_SHARED_LOCK_AND_ALLOWING_UNCOORDINATED_SOURCE_WRITES",
+        "REPLACING_THE_EXISTING_LOCK_STATE_WITH_A_SECOND_PARALLEL_LOCK_STRUCTURE",
+        "CLAIMING_SOURCE_STUDIO_OR_F9_PASS_BEFORE_A_POST_MERGE_WORKER_COMPLETES"
+      ],
+      "qa": [
+        "local Work Lock, controller, and Roblox co-development affected regressions: 92/92 PASS",
+        "local bare Git CAS integration: PASS",
+        "node syntax and git diff whitespace validation: PASS",
+        "PR #4216 Vibe Shared Work Lock QA: PASS",
+        "PR #4216 Vibe2 Core QA test, Development Web browser startup smoke, and Practice fault cards runtime: PASS",
+        "post-merge shared Work Lock fallback actual execution: NOT_YET_OBSERVED",
+        "Roblox Studio actual execution: NOT_RUN; no F9 or release completion claim"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "MERGED_AT_79E3BAE1; CONTENTS_API_403_429_GIT_CAS_FALLBACK_IMPLEMENTED; REQUIRED_ACTIONS_PASS; POST_MERGE_SOURCE_WORKER_AND_LINE_DEFENSE_STUDIO_REVALIDATION_NOT_YET_OBSERVED; NEXT_ROTATION_EXACT_LOCK_TRANSPORT_SOURCE_ARTIFACT_THEN_OLDEST_NON_OWNER_GAME_RUNTIME"
     }
   ]
 }
