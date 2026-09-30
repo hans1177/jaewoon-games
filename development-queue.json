@@ -57,10 +57,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "VIBE_INTERNAL_PLAY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-30T09:56:32.006Z",
+      "updatedAt": "2026-09-30T10:00:41.198Z",
       "robloxSourceCommit": "33f5aa4c39b889a740fea927cd07e23fd6c90de6",
       "robloxSourceBootstrapPassedAt": "2026-09-30T09:40:54.415Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -283,9 +283,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
       "robloxFailureStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_STUDIO_INTERNAL_VALIDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
       "routingBlockers": [
-        "roblox-studio-internal-validation-pending"
+        "roblox-studio-mcp-play-repair-required"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -340,12 +340,12 @@
         "externalGuiAutomation": false,
         "undocumentedStudioCliAutomation": false,
         "studioLaunchTarget": "LOCAL_EXACT_BUILD_ARTIFACT",
-        "sourceRevision": "cc303fdadcbd7cd3c72ec5cb236198491b7787a1",
-        "artifactIdentity": "sha256:e77f6c381c8f1660d16761ece43f8088b8a0487b34f4d6ae4e0996b2bb1ae6a8",
-        "artifactRunId": 36689861801,
+        "sourceRevision": "33f5aa4c39b889a740fea927cd07e23fd6c90de6",
+        "artifactIdentity": "sha256:a1a21b8dd57df4633ab02dbd47c984cdf7dd8949cdf550e834c1e2c4cdbe7c61",
+        "artifactRunId": 36696476151,
         "universeId": "",
         "placeId": "",
-        "versionNumber": 36689861801,
+        "versionNumber": 36696476151,
         "historicalSharedTargetExactArtifact": true,
         "historicalExactBuildReplay": false,
         "currentSourceArtifactBinding": true,
@@ -912,7 +912,7 @@
             "id": "scenario-adaptive-performance-budget",
             "name": "scenario-adaptive-performance-budget",
             "required": true,
-            "pass": true
+            "pass": false
           },
           {
             "id": "scenario-observed-action-749f1a8df420364c0ab0",
@@ -1043,15 +1043,15 @@
           "characterMotionRuntimeRequired": false,
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
-          "scenarioFailureCount": 20,
-          "primaryActionDisplacement": 29.75888625182927,
-          "primaryActionVelocity": 0.00008423618755490214,
+          "scenarioFailureCount": 21,
+          "primaryActionDisplacement": 29.736069102745937,
+          "primaryActionVelocity": 0.000006293634776577397,
           "primaryActionFeedbackChanged": false,
           "commercialAudit": {
             "auditProfile": "F9_SOAK",
-            "timelineProbeCount": 111,
-            "routePlanningProbeCount": 16,
-            "lightweightProbeCount": 95,
+            "timelineProbeCount": 117,
+            "routePlanningProbeCount": 17,
+            "lightweightProbeCount": 100,
             "progressChanged": false,
             "inventoryChanged": false,
             "timelineProgressChanged": false,
@@ -1085,7 +1085,7 @@
               "multiplayerActualSessionPass": false
             },
             "performance": {
-              "memoryMb": 2666.28515625,
+              "memoryMb": 2446.79296875,
               "descendantCount": 4511
             },
             "multiplayer": {
@@ -1098,8 +1098,8 @@
               "verificationScope": "STATIC_CODE_CONTRACT",
               "skipped": true,
               "codeContractPassed": false,
-              "sourceRevision": "cc303fdadcbd7cd3c72ec5cb236198491b7787a1",
-              "artifactIdentity": "sha256:e77f6c381c8f1660d16761ece43f8088b8a0487b34f4d6ae4e0996b2bb1ae6a8",
+              "sourceRevision": "33f5aa4c39b889a740fea927cd07e23fd6c90de6",
+              "artifactIdentity": "sha256:a1a21b8dd57df4633ab02dbd47c984cdf7dd8949cdf550e834c1e2c4cdbe7c61",
               "sameUserRejoinVerified": false
             },
             "saveRejoin": {
@@ -1299,7 +1299,7 @@
           },
           {
             "id": "adaptive-performance-budget",
-            "pass": true
+            "pass": false
           },
           {
             "id": "observed-action-749f1a8df420364c0ab0",
@@ -1375,6 +1375,7 @@
           "adaptive-save-surface",
           "adaptive-retry-loop-surface",
           "adaptive-multiplayer-sync-surface",
+          "adaptive-performance-budget",
           "observed-action-749f1a8df420364c0ab0",
           "observed-action-ce7a335281c15e497552",
           "observed-action-7a30d05dfc5fe9edfc16",
@@ -1451,7 +1452,7 @@
                   "semantic": "UPGRADE",
                   "effectObserved": false,
                   "effect": {
-                    "moved": 134.07720917463084,
+                    "moved": 128.8705990352613,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -1478,7 +1479,7 @@
                   "id": "prompt-ProximityPrompt",
                   "effectObserved": true,
                   "effect": {
-                    "moved": 56.41325993150083,
+                    "moved": 46.155922268666004,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -1493,7 +1494,7 @@
                   "id": "prompt-ProximityPrompt",
                   "effectObserved": false,
                   "effect": {
-                    "moved": 0.07212670190105794,
+                    "moved": 0.36243251035567153,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -1508,7 +1509,7 @@
                   "id": "prompt-ProximityPrompt",
                   "effectObserved": false,
                   "effect": {
-                    "moved": 0.36080823757537334,
+                    "moved": 0.07805871413408427,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -1648,6 +1649,16 @@
               "maxActualPlayerCount": 1,
               "multiplayerStateTransition": false,
               "remoteCount": 17
+            }
+          },
+          {
+            "id": "adaptive-performance-budget",
+            "repairSurface": "PERFORMANCE",
+            "priority": "HIGH",
+            "hint": "Reduce runaway instance count/memory pressure and keep long-session runtime stable.",
+            "observed": {
+              "memoryMb": 2446.79296875,
+              "descendantCount": 4511
             }
           },
           {
@@ -1811,8 +1822,8 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-09-30T09:17:30.322Z",
-        "workflowRunId": 36693888241,
+        "testedAt": "2026-09-30T10:00:41.198Z",
+        "workflowRunId": 36698899418,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -2119,12 +2130,12 @@
       "robloxNativeFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
       "robloxQualityBuildUpRequired": true,
       "robloxQualityFailureClass": "PRODUCT",
-      "robloxQualityBuildUpSourceRevision": "cc303fdadcbd7cd3c72ec5cb236198491b7787a1",
+      "robloxQualityBuildUpSourceRevision": "33f5aa4c39b889a740fea927cd07e23fd6c90de6",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
-        "sourceRevision": "cc303fdadcbd7cd3c72ec5cb236198491b7787a1",
-        "artifactIdentity": "sha256:e77f6c381c8f1660d16761ece43f8088b8a0487b34f4d6ae4e0996b2bb1ae6a8",
-        "versionNumber": 36689861801,
+        "sourceRevision": "33f5aa4c39b889a740fea927cd07e23fd6c90de6",
+        "artifactIdentity": "sha256:a1a21b8dd57df4633ab02dbd47c984cdf7dd8949cdf550e834c1e2c4cdbe7c61",
+        "versionNumber": 36696476151,
         "failureStage": "VIBE_INTERNAL_PLAY",
         "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
         "qualityFailureKinds": [
@@ -2139,6 +2150,7 @@
           "adaptive-save-surface",
           "adaptive-retry-loop-surface",
           "adaptive-multiplayer-sync-surface",
+          "adaptive-performance-budget",
           "observed-action-749f1a8df420364c0ab0",
           "observed-action-ce7a335281c15e497552",
           "observed-action-7a30d05dfc5fe9edfc16",
@@ -2215,7 +2227,7 @@
                   "semantic": "UPGRADE",
                   "effectObserved": false,
                   "effect": {
-                    "moved": 134.07720917463084,
+                    "moved": 128.8705990352613,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -2242,7 +2254,7 @@
                   "id": "prompt-ProximityPrompt",
                   "effectObserved": true,
                   "effect": {
-                    "moved": 56.41325993150083,
+                    "moved": 46.155922268666004,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -2257,7 +2269,7 @@
                   "id": "prompt-ProximityPrompt",
                   "effectObserved": false,
                   "effect": {
-                    "moved": 0.07212670190105794,
+                    "moved": 0.36243251035567153,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -2272,7 +2284,7 @@
                   "id": "prompt-ProximityPrompt",
                   "effectObserved": false,
                   "effect": {
-                    "moved": 0.36080823757537334,
+                    "moved": 0.07805871413408427,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -2412,6 +2424,16 @@
               "maxActualPlayerCount": 1,
               "multiplayerStateTransition": false,
               "remoteCount": 17
+            }
+          },
+          {
+            "id": "adaptive-performance-budget",
+            "repairSurface": "PERFORMANCE",
+            "priority": "HIGH",
+            "hint": "Reduce runaway instance count/memory pressure and keep long-session runtime stable.",
+            "observed": {
+              "memoryMb": 2446.79296875,
+              "descendantCount": 4511
             }
           },
           {
@@ -2579,11 +2601,12 @@
           "SAVE_REJOIN",
           "FAILURE_RECOVERY",
           "MULTIPLAYER_SYNC",
+          "PERFORMANCE",
           "ROBLOX_OBSERVED_INTERACTION"
         ],
         "robloxFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
-        "testedAt": "2026-09-30T09:17:30.322Z",
-        "workflowRunId": 36693888241,
+        "testedAt": "2026-09-30T10:00:41.198Z",
+        "workflowRunId": 36698899418,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxQualityBuildUpLastPassedAt": "2026-09-28T19:49:57.015Z",
@@ -29253,7 +29276,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-30T09:58:10.616Z",
+  "updatedAt": "2026-09-30T10:00:41.198Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
