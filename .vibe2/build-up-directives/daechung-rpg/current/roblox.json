@@ -489,7 +489,146 @@
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false,
-    "studioQualityFailure": null
+    "studioQualityFailure": {
+      "sourceRevision": "e445b3e5413207463e08a221a103000afe15bf03",
+      "artifactIdentity": "sha256:d1f1445506b2dc87e352da32153a5219002756fe81a53fc79d971736d36ea732",
+      "authority": "roblox-official-studio-mcp-product-quality-failure",
+      "workflowRunId": 36728323389,
+      "testedAt": "2026-09-30T14:27:08.530Z",
+      "repairSurfaces": [
+        "MOBILE_UI",
+        "WORLD_GEOMETRY",
+        "SYSTEM_TRANSACTION",
+        "COMBAT_AI",
+        "CHARACTER_MOTION",
+        "COMPANION_AI",
+        "SAVE_REJOIN",
+        "FAILURE_RECOVERY",
+        "MULTIPLAYER_SYNC",
+        "ROBLOX_OBSERVED_INTERACTION"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "adaptive-ui-commercial-quality",
+          "repairSurface": "MOBILE_UI",
+          "priority": "HIGH",
+          "hint": "Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.",
+          "observed": "{\"offscreenButtons\":0,\"undersizedTouchButtons\":2,\"suboptimalTouchButtons\":0,\"textOverflowButtons\":0,\"overlapPairs\":0,\"largeOverlayCount\":2,\"largeBlockingOverlayCount\":0,\"largestOverlayCoverage\":0.8962804028363883}"
+        },
+        {
+          "id": "adaptive-ui-blocking-overlay",
+          "repairSurface": "MOBILE_UI",
+          "priority": "CRITICAL",
+          "hint": "Remove or dismiss persistent full-screen modal/guide overlays that block gameplay input or obscure the playable viewport.",
+          "observed": "{\"offscreenButtons\":0,\"undersizedTouchButtons\":2,\"suboptimalTouchButtons\":0,\"textOverflowButtons\":0,\"overlapPairs\":0,\"largeOverlayCount\":2,\"largeBlockingOverlayCount\":0,\"largestOverlayCoverage\":0.8962804028363883}"
+        },
+        {
+          "id": "adaptive-world-safety",
+          "repairSurface": "WORLD_GEOMETRY",
+          "priority": "CRITICAL",
+          "hint": "Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.",
+          "observed": "{\"boundsFinite\":true,\"collidablePartCount\":1125,\"floorBelowPlayer\":true,\"floorSamples\":9,\"floorHits\":6,\"floorCoveragePass\":true,\"routeSamples\":16,\"routeSuccess\":7,\"routeCoveragePass\":false,\"spawnThreatDistance\":780.2060478757685,\"spawnOverlapSafe\":true}"
+        },
+        {
+          "id": "adaptive-system-transaction-effect",
+          "repairSurface": "SYSTEM_TRANSACTION",
+          "priority": "CRITICAL",
+          "hint": "One or more discovered shop/craft/equip/upgrade actions accepted input without changing inventory, currency/progression, feedback, or relevant UI state. Repair each transaction chain independently.",
+          "observed": "{\"systemActionCount\":1,\"systemEffectCount\":0,\"actions\":[{\"id\":\"prompt-ProximityPrompt\",\"semantic\":\"UPGRADE\",\"effectObserved\":false,\"effect\":{\"moved\":133.57057352220417,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":true}}]}"
+        },
+        {
+          "id": "adaptive-combat-surface",
+          "repairSurface": "COMBAT_AI",
+          "priority": "CRITICAL",
+          "hint": "Repair combat targets, damage/state transitions, enemy liveness, attack feedback, and F9 AI movement.",
+          "observed": "{\"combatSurfaceCount\":201,\"mobCount\":80,\"humanoidMobCount\":0,\"mobRigAnimationPass\":true,\"mobMotion\":{\"matched\":80,\"moved\":0,\"stateChanged\":0,\"healthChanged\":0,\"targetChanged\":0,\"dynamic\":false},\"timelineMobDynamic\":false,\"combatActionCount\":1,\"combatEffectCount\":0}"
+        },
+        {
+          "id": "adaptive-motion-surface",
+          "repairSurface": "CHARACTER_MOTION",
+          "priority": "HIGH",
+          "hint": "Repair Animator/Motor6D rig behavior and verify movement/action animation response.",
+          "observed": "{\"interactionSurfaceCount\":38,\"progressionSurfaceCount\":83,\"combatSurfaceCount\":201,\"npcSurfaceCount\":27,\"companionSurfaceCount\":2,\"itemSurfaceCount\":11,\"remoteCount\":17,\"soundCount\":0,\"effectCount\":31,\"promptCount\":18,\"inventoryCount\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":false,\"multiplayerActualSessionPass\":false}"
+        },
+        {
+          "id": "adaptive-companion-ai-surface",
+          "repairSurface": "COMPANION_AI",
+          "priority": "CRITICAL",
+          "hint": "Repair companion spawn/follow/target/attack/recovery behavior and F9 liveness.",
+          "observed": "{\"companionSurfaceCount\":2,\"companionCount\":0,\"companionMotion\":{\"matched\":0,\"moved\":0,\"stateChanged\":0,\"healthChanged\":0,\"targetChanged\":0,\"dynamic\":false},\"timelineCompanionDynamic\":false}"
+        },
+        {
+          "id": "adaptive-save-surface",
+          "repairSurface": "SAVE_REJOIN",
+          "priority": "CRITICAL",
+          "hint": "Repair save/load/rejoin persistence and idempotency without duplicating rewards.",
+          "observed": "{\"interactionSurfaceCount\":38,\"progressionSurfaceCount\":83,\"combatSurfaceCount\":201,\"npcSurfaceCount\":27,\"companionSurfaceCount\":2,\"itemSurfaceCount\":11,\"remoteCount\":17,\"soundCount\":0,\"effectCount\":31,\"promptCount\":18,\"inventoryCount\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":false,\"multiplayerActualSessionPass\":false}"
+        },
+        {
+          "id": "adaptive-retry-loop-surface",
+          "repairSurface": "FAILURE_RECOVERY",
+          "priority": "HIGH",
+          "hint": "Repair death/failure/restart/respawn flow and remove softlocks after retry.",
+          "observed": "{\"interactionSurfaceCount\":38,\"progressionSurfaceCount\":83,\"combatSurfaceCount\":201,\"npcSurfaceCount\":27,\"companionSurfaceCount\":2,\"itemSurfaceCount\":11,\"remoteCount\":17,\"soundCount\":0,\"effectCount\":31,\"promptCount\":18,\"inventoryCount\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":false,\"multiplayerActualSessionPass\":false}"
+        },
+        {
+          "id": "adaptive-multiplayer-sync-surface",
+          "repairSurface": "MULTIPLAYER_SYNC",
+          "priority": "CRITICAL",
+          "hint": "The game declares multiplayer/co-op behavior but Studio found no credible replicated player/team state plus server Remote surface. Restore actual 2+ player synchronization evidence before release.",
+          "observed": "{\"declaredMultiplayer\":true,\"auditProfile\":\"F9_SOAK\",\"multiplayerRuntimeSurface\":true,\"multiplayerActualSessionPass\":false,\"multiplayerSignals\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":false,\"remoteCount\":17}"
+        },
+        {
+          "id": "observed-action-749f1a8df420364c0ab0",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-749f1a8df420364c0ab0\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"commercial-combat-action\",\"targetIdentity\":\"commercial-combat-action\",\"actionType\":\"mcp-combat-action\",\"effectRequired\":true,\"attempts\":1}"
+        },
+        {
+          "id": "observed-action-ce7a335281c15e497552",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-ce7a335281c15e497552\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"prompt-ProximityPrompt\",\"targetIdentity\":\"Workspace.DaechungRPGWorld.Village.VillageChief.ProximityPrompt\",\"actionType\":\"mcp-world-interaction\",\"effectRequired\":true,\"attempts\":1}"
+        },
+        {
+          "id": "observed-action-7a30d05dfc5fe9edfc16",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-7a30d05dfc5fe9edfc16\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"prompt-ProximityPrompt\",\"targetIdentity\":\"Workspace.DaechungRPGWorld.Village.WeaponMerchant.ProximityPrompt\",\"actionType\":\"mcp-world-interaction\",\"effectRequired\":true,\"attempts\":1}"
+        },
+        {
+          "id": "observed-action-8f10652c04dfc34d013c",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-8f10652c04dfc34d013c\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"prompt-ProximityPrompt\",\"targetIdentity\":\"Workspace.DaechungRPGWorld.Village.VillageHealer.ProximityPrompt\",\"actionType\":\"mcp-world-interaction\",\"effectRequired\":true,\"attempts\":1}"
+        },
+        {
+          "id": "observed-action-1d7be3f03421ec49af6a",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-1d7be3f03421ec49af6a\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"prompt-ProximityPrompt\",\"targetIdentity\":\"Workspace.DaechungRPGWorld.Village.AdvancementMaster.ProximityPrompt\",\"actionType\":\"mcp-world-interaction\",\"effectRequired\":true,\"attempts\":1}"
+        },
+        {
+          "id": "observed-action-eeca420176112b7c4e7b",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-eeca420176112b7c4e7b\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"prompt-ProximityPrompt\",\"targetIdentity\":\"Workspace.DaechungRPGWorld.Village.ArmorMerchant.ProximityPrompt\",\"actionType\":\"mcp-world-interaction\",\"effectRequired\":true,\"attempts\":1}"
+        },
+        {
+          "id": "observed-action-00f7121873e36beeaa1c",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-00f7121873e36beeaa1c\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"ui-discovered-TextButton\",\"targetIdentity\":\"RPGHUD.CombatDock.TextButton\",\"actionType\":\"mcp-ui-exploration\",\"effectRequired\":true,\"attempts\":1}"
+        }
+      ]
+    }
   },
   "qualityGapMap": [
     {
