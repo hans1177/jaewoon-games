@@ -146,7 +146,7 @@ test('dedicated Roblox workflow recovers and persists the durable target registr
   assert.match(workflow,/git add development-queue\.json roblox-dedicated-targets\.json/);
   assert.match(workflow,/gameName: '포근섬: 작은 왕국 키우기'/);
   assert.match(workflow,/gameName: '5포탈 RPG: 던전 파티'/);
-  assert.match(workflow,/gameName: '심야 감염전 \[4대4\]'/);
+  assert.match(workflow,/gameName: '심야 대탈출'/);
   assert.match(workflow,/const canonicalSourceRevision=String\(item\.robloxSourceCommit\|\|''\)\.trim\(\)/);
   assert.match(workflow,/const canonicalArtifactIdentity=String\(item\.robloxBuildArtifactIdentity\|\|''\)\.trim\(\)/);
   assert.match(workflow,/DEDICATED_PUBLISH_ARTIFACT_NOT_BOUND_TO_CANONICAL_GAME_SOURCE/);
