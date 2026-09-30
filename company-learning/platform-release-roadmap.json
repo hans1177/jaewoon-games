@@ -1,5 +1,5 @@
 {
-  "version": 499,
+  "version": 500,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -1327,6 +1327,29 @@
         "nonAssetCompletionUsesCohortFanIn": true,
         "waveLeaderMayDispatchSingleCoalescedRefill": true
       }
+    },
+    "controlWorkflowNoiseSuppression": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-30",
+      "status": "ENABLED",
+      "objective": "CANCELLED_OR_SKIPPED_UPSTREAM_WORKFLOW_RUNS_MUST_NOT_CONSUME_CONTROL_RUNNERS",
+      "upstreamConclusionsThatMayRunControlJobs": [
+        "success",
+        "failure"
+      ],
+      "ignoredConclusions": [
+        "cancelled",
+        "skipped",
+        "neutral",
+        "timed_out",
+        "action_required",
+        "stale"
+      ],
+      "statusSyncSuccessAndFailureOnly": true,
+      "queueReconcileGateSuccessAndFailureOnly": true,
+      "failedGameEvidencePreserved": true,
+      "cancellationNoiseMayNotTriggerHeavyControlWork": true,
+      "qualityOrEvidenceGateWeakeningForbidden": true
     }
   },
   "phases": [
@@ -9469,6 +9492,15 @@
       "summary": "Remove the game-primary single-task micro-fan-in exception under runner pressure. Preserve each immutable worker result artifact and let the cohort fan-in ingest it; only a wave leader may request one coalesced refill.",
       "workflow": ".github/workflows/vibe2-continuous-core.yml",
       "preservesResultArtifacts": true,
+      "qualityOrEvidenceGateWeakening": false
+    },
+    "controlWorkflowNoiseSuppression20260930": {
+      "version": 500,
+      "summary": "Skip Company Status Sync and development queue reconcile gate work for cancelled/skipped workflow_run events while preserving real success/failure processing.",
+      "workflows": [
+        ".github/workflows/company-status-sync.yml",
+        ".github/workflows/company-development-queue-reconcile.yml"
+      ],
       "qualityOrEvidenceGateWeakening": false
     }
   },
