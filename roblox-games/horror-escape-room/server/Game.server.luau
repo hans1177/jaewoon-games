@@ -869,7 +869,7 @@ local function makePhysicalLobby()
  workspace:SetAttribute("PhysicalLobbyReady",true)
  workspace:SetAttribute("WorldLobbyMode",true)
  workspace:SetAttribute("LobbyArtPass","EASTERN_MIDNIGHT_INN_V1")
- workspace:SetAttribute("LobbyBuildRevision","EASTERN_INN_DIRECT_PUBLISH_1")
+ workspace:SetAttribute("LobbyBuildRevision","EASTERN_INN_DIRECT_PUBLISH_2")
  return f
 end
 
