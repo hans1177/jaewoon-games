@@ -2265,6 +2265,15 @@ local function currentMonsterFormInfo()
  for _,row in ipairs(C.MonsterForms or{})do if row.Id==id then return row end end
  return(C.MonsterForms and C.MonsterForms[1])or{Id="DRACULA",Name="드라큘라",Ability="BAT_DASH"}
 end
+local function currentHumanAbilityProfile()
+ local hf=currentHumanFormInfo()
+ local id=hf.ActiveAbility
+ return id,(id and C.HumanAbilities and C.HumanAbilities[id])or nil
+end
+local function currentHumanAbilityName()
+ local id,profile=currentHumanAbilityProfile()
+ return profile and profile.Name or tostring(id or"인간 스킬")
+end
 local function currentAbilityName()
  if p:GetAttribute("Infected")==true then
   local hf=currentHumanFormInfo()
@@ -2281,25 +2290,31 @@ local actionDock=Instance.new("Frame")
 actionDock.Name="RoundActions"
 actionDock.AnchorPoint=Vector2.new(.5,1)
 actionDock.Position=UDim2.new(.5,0,1,-18)
-actionDock.Size=UDim2.fromOffset(236,58)
+actionDock.Size=UDim2.fromOffset(332,58)
 actionDock.BackgroundTransparency=1
 actionDock.ZIndex=10
 actionDock.Parent=gui
 
 local rescueButton=makeButton(actionDock,"정화 공격",Color3.fromRGB(75,91,94))
-rescueButton.Size=UDim2.fromOffset(110,50);rescueButton.Position=UDim2.fromOffset(5,4);rescueButton.ZIndex=11
+rescueButton.Size=UDim2.fromOffset(104,50);rescueButton.Position=UDim2.fromOffset(2,4);rescueButton.ZIndex=11
 rescueButton.Activated:Connect(function()setMotionImpulse("PURIFY",.34);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.PURIFY)end)
 
 local dashButton=makeButton(actionDock,"대시",Color3.fromRGB(87,78,66))
-dashButton.Size=UDim2.fromOffset(110,50);dashButton.Position=UDim2.fromOffset(121,4);dashButton.ZIndex=11
+dashButton.Size=UDim2.fromOffset(104,50);dashButton.Position=UDim2.fromOffset(114,4);dashButton.ZIndex=11
 dashButton.Activated:Connect(function()setMotionImpulse("DASH",.38);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.DASH)end)
 
+local humanAbilityButton=makeButton(actionDock,"인간 스킬",Color3.fromRGB(61,96,105))
+humanAbilityButton.Size=UDim2.fromOffset(104,50);humanAbilityButton.Position=UDim2.fromOffset(226,4);humanAbilityButton.ZIndex=11
+humanAbilityButton.Activated:Connect(function()
+ setMotionImpulse("ABILITY",.42);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.HUMAN_ABILITY)
+end)
+
 local infectButton=makeButton(actionDock,"감염 공격",Color3.fromRGB(111,45,49))
-infectButton.Size=UDim2.fromOffset(110,50);infectButton.Position=UDim2.fromOffset(5,4);infectButton.ZIndex=11
+infectButton.Size=UDim2.fromOffset(104,50);infectButton.Position=UDim2.fromOffset(57,4);infectButton.ZIndex=11
 infectButton.Activated:Connect(function()setMotionImpulse("INFECT_ATTACK",.34);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.INFECT_ATTACK)end)
 
 local abilityButton=makeButton(actionDock,"괴물 스킬",Color3.fromRGB(72,55,77))
-abilityButton.Size=UDim2.fromOffset(110,50);abilityButton.Position=UDim2.fromOffset(121,4);abilityButton.ZIndex=11
+abilityButton.Size=UDim2.fromOffset(104,50);abilityButton.Position=UDim2.fromOffset(171,4);abilityButton.ZIndex=11
 abilityButton.Activated:Connect(function()setMotionImpulse("ABILITY",.44);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.ABILITY)end)
 
 -- 액션 쿨다운과 에너지 비용은 서버 상태 기준으로 표시한다.
@@ -2332,6 +2347,8 @@ RunService.RenderStepped:Connect(function(dt)
 
  updateCooldownButton(rescueButton,p:GetAttribute("PurifyReadyAt"),"정화 공격","정화",C.Energy and C.Energy.PurifyCost or 35)
  updateCooldownButton(dashButton,p:GetAttribute("DashReadyAt"),"대시","대시",C.Energy and C.Energy.DashCost or 25)
+ local _,humanAbilityProfile=currentHumanAbilityProfile()
+ updateCooldownButton(humanAbilityButton,p:GetAttribute("HumanAbilityReadyAt"),currentHumanAbilityName(),"스킬",humanAbilityProfile and humanAbilityProfile.Cost or 30)
  updateCooldownButton(infectButton,p:GetAttribute("InfectReadyAt"),"감염 공격","감염",C.Energy and C.Energy.InfectAttackCost or 30)
  updateCooldownButton(abilityButton,p:GetAttribute("AbilityReadyAt"),currentAbilityName(),"스킬",C.Energy and C.Energy.AbilityCost or 45)
 
@@ -2700,6 +2717,7 @@ local function render()
  end
  rescueButton.Visible=running and role=="SURVIVOR"
  dashButton.Visible=running and role=="SURVIVOR"
+ humanAbilityButton.Visible=running and role=="SURVIVOR"
  infectButton.Visible=running and role=="MONSTER"
  abilityButton.Visible=running and role=="MONSTER"
 
@@ -2726,7 +2744,7 @@ local function render()
  lastRoundState=round
 end
 
-for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","LastRoundBaseReward","LastRoundWinBonus","LastRoundContribution","PurifyReadyAt","DashReadyAt","InfectReadyAt","AbilityReadyAt","FalseAlarmUntil","BlackoutUntil","HuntFlashUntil","AbilityFeedback","Energy","EnergyMax","PressurePassive","Spectating","OwnedCosmetics","EquippedCosmetic","CelebrationName","CelebrationCaption","CelebrationWinner","CelebrationComic","LoreCount","LoreTotal","LoreTitle","GhostProgress","GhostSeenCount","GhostCompleted","GhostTotal","GhostTitle","GhostFragments","GhostContracts","RoomServer","RoomCode","RoomHostUserId","RoomHostName","RoomVisibility","RoomState","RoomMemberCount","RoomMaxPlayers","RoomIsHost"})do
+for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","LastRoundBaseReward","LastRoundWinBonus","LastRoundContribution","PurifyReadyAt","DashReadyAt","HumanAbilityReadyAt","InfectReadyAt","AbilityReadyAt","FalseAlarmUntil","BlackoutUntil","HuntFlashUntil","AbilityFeedback","HumanAbilityFeedback","Energy","EnergyMax","PressurePassive","Spectating","OwnedCosmetics","EquippedCosmetic","CelebrationName","CelebrationCaption","CelebrationWinner","CelebrationComic","LoreCount","LoreTotal","LoreTitle","GhostProgress","GhostSeenCount","GhostCompleted","GhostTotal","GhostTitle","GhostFragments","GhostContracts","RoomServer","RoomCode","RoomHostUserId","RoomHostName","RoomVisibility","RoomState","RoomMemberCount","RoomMaxPlayers","RoomIsHost"})do
  p:GetAttributeChangedSignal(k):Connect(function()render();updateCosmeticUI();updateGhostBookUI()end)
 end
 p:GetAttributeChangedSignal("GhostFeedback"):Connect(function()
