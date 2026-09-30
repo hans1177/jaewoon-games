@@ -352,19 +352,26 @@ test('parallel horror-only private deploy workflow is removed so canonical publi
 });
 
 
-test('source-sync implementation edits do not wake a batch runtime',()=>{
+test('source-sync contract edits wake runtime control while game edits use exact changed-source dispatch',()=>{
   const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
-  assert.doesNotMatch(runtime,/company-roblox-source-drift-sync\.yml/);
-  assert.doesNotMatch(runtime,/tools\/company-roblox-source-drift-sync\.mjs/);
-  assert.doesNotMatch(runtime,/qa\/company-roblox-source-drift-sync\.test\.mjs/);
-  assert.match(runtime,/company-development-roblox-runtime\.yml/);
-  assert.match(runtime,/company-development-roblox-headless-fast-mvp\.yml/);
+  const runtimePush=runtime.slice(runtime.indexOf('on:'),runtime.indexOf('workflow_call:'));
+  const sync=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  assert.match(runtimePush,/company-roblox-source-drift-sync\.yml/);
+  assert.match(runtimePush,/tools\/company-roblox-source-drift-sync\.mjs/);
+  assert.match(runtimePush,/qa\/company-roblox-source-drift-sync\.test\.mjs/);
+  assert.doesNotMatch(runtimePush,/roblox-games\/\*\*/);
+  assert.match(sync,/paths:\s*\n\s*- 'roblox-games\/\*\*'/);
+  assert.match(sync,/gh workflow run company-development-roblox-runtime\.yml[^\n]*-f game_id=/);
 });
 
 
-test('latest exact Roblox run supersedes stale exact work while batch remains non-cancelling',()=>{
+test('exact Roblox runs deduplicate before work without cancelling an active build',()=>{
   const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
   assert.match(runtime,/^\s*group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}$/m);
-  assert.match(runtime,/^\s*cancel-in-progress: \$\{\{ inputs\.game_id != '' \}\}$/m);
-  assert.match(runtime,/batch-push/);
+  assert.match(runtime.slice(0,runtime.indexOf('\njobs:\n')),/^\s*cancel-in-progress: false$/m);
+  const freshness=runtime.slice(runtime.indexOf('      - name: Reject superseded batch scheduler'),runtime.indexOf('      - name: Cancel stale exact-game runtime runs'));
+  assert.match(freshness,/String\(r\.display_title\|\|''\)===title/);
+  assert.match(freshness,/ROBLOX_RUNTIME_EXACT_DEDUPED_ACTIVE=/);
+  assert.match(freshness,/echo 'run=false' >> "\$GITHUB_OUTPUT"/);
+  assert.match(freshness,/ROBLOX_EXACT_CONTRACT_SUPERSEDED_REDISPATCH=YES:/);
 });
