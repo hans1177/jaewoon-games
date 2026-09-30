@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 recovered partial timeout edit",
+  "expectedEffect": "recovered complete edit from bounded timeout output",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "  <script type=\"module\" src=\"./iron-worker-pre-v15.js\"></script>",
+      "replace": "  <script type=\"module\" src=\"./iron-worker-pre-v15.js\"></script>\n  <script type=\"module\" src=\"./cozy-island-build-up-g1-c8aa66f0c387.js\"></script>"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
