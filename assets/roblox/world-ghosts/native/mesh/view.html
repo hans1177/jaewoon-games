@@ -8,11 +8,13 @@
 <title>처녀귀신 · 모델 보기</title>
 <style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0d1821;color:#edf3f5;font-family:system-ui,sans-serif}canvas{display:block;touch-action:none;width:100%;height:100%}header{position:absolute;top:max(20px,env(safe-area-inset-top));left:22px;pointer-events:none}h1{font-size:23px;margin:0 0 7px;letter-spacing:-1px}header p{font-size:12px;color:#a3b8c4;line-height:1.6;margin:0}.panel{position:absolute;bottom:max(15px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(94%,430px);background:#12232ded;border:1px solid #34434b;border-radius:17px;padding:12px;backdrop-filter:blur(14px)}.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}button{min-height:43px;border:1px solid #44535b;border-radius:9px;background:#233740;color:#edf3f5;font-size:13px;font-weight:650;cursor:pointer}button[aria-pressed=true]{background:#76323b;border-color:#bd6571}.tools{display:flex;gap:8px;margin-top:9px}.tools button,.tools a{flex:1}.tools a{display:flex;align-items:center;justify-content:center;min-height:41px;text-decoration:none;color:#c2d9e2;font-size:12px;border:1px solid #34434b;border-radius:9px}.note{margin:10px 0 0;text-align:center;font-size:11px;color:#9bb1bc;line-height:1.5}#status{position:absolute;top:47%;width:100%;text-align:center;font-size:14px;pointer-events:none}#status.error{background:#381f25;padding:20px;pointer-events:auto}button:disabled{opacity:.45}@media(max-height:550px){header{top:10px;left:12px}h1{font-size:17px}.panel{left:auto;right:10px;transform:none;width:230px;bottom:10px}.note{display:none}button{min-height:34px}}
+#fallback{position:absolute;inset:90px 0 80px;width:100%;height:calc(100% - 170px);object-fit:contain}.fallback canvas,.fallback .actions,.fallback .tools{display:none}.fallback #status{top:auto;bottom:72px;font-size:12px}.fallback .panel{padding:6px}.fallback .note{display:block}@media(max-height:550px){.fallback #fallback{inset:60px 0 60px;height:calc(100% - 120px)}.fallback #status{bottom:45px}.fallback .panel{width:auto;left:10px;right:10px}}
 </style>
 <script type="importmap">{"imports":{"three":"./three/three.module.js","three/addons/":"./three/examples/jsm/"}}</script>
 </head>
 <body>
 <header><h1>처녀귀신</h1><p>직접 제작한 입체 모델 시안<br>한 손가락으로 회전 · 두 손가락으로 확대</p></header>
+<img id="fallback" alt="직접 제작한 처녀귀신 모델의 움직임" hidden>
 <div id="status" role="status">모델을 불러오는 중이야…</div>
 <div class="panel">
  <div class="actions" aria-label="동작 선택">
@@ -25,6 +27,7 @@
 <script type="module">
 // 임포트 / 모델 로딩
 const status=document.getElementById('status');
+function showFallback(){const preview=document.getElementById('fallback');preview.src='./bride.gif';preview.hidden=false;document.body.classList.add('fallback');document.querySelector('header p').textContent='직접 제작한 모델의 애니메이션 미리보기';status.hidden=false;status.textContent='이 브라우저에서는 움직이는 미리보기로 보여줄게.';}
 try{
  const THREE=await import('three');
  const [{GLTFLoader},{OrbitControls},{RoomEnvironment}]=await Promise.all([import('three/addons/loaders/GLTFLoader.js'),import('three/addons/controls/OrbitControls.js'),import('three/addons/environments/RoomEnvironment.js')]);
@@ -60,10 +63,10 @@ try{
  select('idle');status.hidden=true;document.body.dataset.loaded='true';
  function resize(){const side=innerHeight<=550;const w=side?Math.max(240,innerWidth-250):innerWidth,h=side?innerHeight:Math.max(240,innerHeight-210);renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
  addEventListener('resize',resize);resize();
- renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();status.hidden=false;status.textContent='화면이 잠시 끊겼어. 새로고침하면 다시 볼 수 있어.';});
+ renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();renderer.setAnimationLoop(null);showFallback();});
  let last=performance.now();renderer.setAnimationLoop(now=>{const dt=Math.min((now-last)/1000,.05);last=now;if(document.hidden)return;if(!paused)mixer.update(dt);controls.update();renderer.render(scene,camera);});
  document.addEventListener('visibilitychange',()=>{last=performance.now();});
-}catch(error){status.hidden=false;status.className='error';status.textContent='모델을 불러오지 못했어. 연결을 확인하고 새로고침해 줘.';console.error(error);}
+}catch(error){showFallback();console.error(error);}
 </script>
 </body>
 </html>
