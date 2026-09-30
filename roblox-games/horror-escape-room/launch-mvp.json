@@ -1,5 +1,5 @@
 {
-  "version": 23,
+  "version": 24,
   "gameId": "horror-escape-room",
   "gameName": "심야 감염전 [4대4]",
   "releaseStrategy": "FAST_MVP",
@@ -128,7 +128,9 @@
     "room creation uses reserved servers of game.PlaceId instead of a separate lobby or match place",
     "alternate horror place creation is forbidden",
     "spawn positions are separated from energy stations and interaction props",
-    "ground snap raycasts only parts marked WalkableGround"
+    "ground snap raycasts only parts marked WalkableGround",
+    "post-physics spawn resnap keeps real characters grounded after teleport",
+    "lobby and room-browser energy initializes to full maximum before round start"
   ],
   "evidencePolicy": {
     "runtimePassRequired": true,
@@ -141,7 +143,7 @@
     "startUiRegressionPassRequired": true,
     "audioFeedbackPassRequired": true
   },
-  "updatedAt": "2026-09-30T07:17:00+09:00",
+  "updatedAt": "2026-09-30T10:27:00+09:00",
   "externalReleaseCandidate": true,
   "candidateScopeVersion": 6,
   "gameTitleKo": "심야 감염전 [4대4]",
