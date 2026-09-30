@@ -389,6 +389,8 @@ test('sample hero and cards stay free of duplicate operational badges and added 
   assert.doesNotMatch(shelf,/gameShelfHead|gameShelfCount|releasedShelf|developmentShelf/);
   assert.doesNotMatch(runtime,/\.releasedShelf|\.developmentShelf|\.gameStatus|\.developmentCard|\.releasedCard/);
   assert.doesNotMatch(index,/homeInternalReleaseFallback[^]*gameShelfHead/);
+  assert.doesNotMatch(index,/releaseNav|releasedCount|developmentCount/);
+  assert.doesNotMatch(runtime,/releasedCount|developmentCount/);
   assert.match(card,/<h3>\$\{esc\(game\.name\)\}<\/h3>/);
 });
 
