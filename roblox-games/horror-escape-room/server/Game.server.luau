@@ -28,6 +28,7 @@ if not lobbyBootstrapSpawn or not lobbyBootstrapSpawn:IsA("SpawnLocation")then
  lobbyBootstrapSpawn:SetAttribute("WalkableGround",false)
  lobbyBootstrapSpawn.Parent=workspace
 end
+do
 local function bootstrapLobbyCharacter(player,character)
  if workspace:GetAttribute("LobbyPhase")=="RUNNING"or workspace:GetAttribute("RoomState")=="RUNNING"then return end
  player.RespawnLocation=lobbyBootstrapSpawn
@@ -51,9 +52,15 @@ local function bindBootstrapLobbySpawn(player)
 end
 Players.PlayerAdded:Connect(bindBootstrapLobbySpawn)
 for _,player in ipairs(Players:GetPlayers())do bindBootstrapLobbySpawn(player)end
+end
 
+local bootstrapGround=Instance.new("Part")
+bootstrapGround.Name="ManorBootstrapGround";bootstrapGround.Size=Vector3.new(84,1,90)
+bootstrapGround.Position=Vector3.new(0,-.15,268);bootstrapGround.Anchored=true;bootstrapGround.Transparency=1;bootstrapGround.Parent=workspace
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
+local manorLobby=nil
+local ManorLobby=require(script.Parent:WaitForChild("ManorLobby"))
 local Style=require(Shared:WaitForChild("VisualStyle"))
 local store
 pcall(function()store=DSS:GetDataStore("midnight-tag-v3")end)
@@ -81,14 +88,12 @@ local roomHostName=""
 local roomVisibility="PUBLIC"
 local roomSelectedMapId="SCHOOL"
 local roomStartRequested=false
+local roomSolo=false
 local roomActionLast={}
 local roomJoinedAt={}
 local roomExpectedCount=1
 local roomFirstJoinAt=0
 local roomTeleportPending={}
-local lobbyQueueBays={}
-local LOBBY_QUEUE_SECONDS=5
-local LOBBY_QUEUE_MAX=8
 
 local state="WAITING"
 local timeLeft=0
@@ -135,9 +140,7 @@ workspace:SetAttribute("RoomMemberCount",0)
 workspace:SetAttribute("RoomMaxPlayers",(C.Room and C.Room.MaxPlayers)or 8)
 workspace:SetAttribute("RoomStartRequested",false)
 local refreshPhysicalLobby=nil
-local updateMatchBayLabel=nil
 local mapById=nil
-local elevatorProfile=nil
 
 local function syncRoomState()
  local count=#Players:GetPlayers()
@@ -209,12 +212,7 @@ local function roomDirectoryExpiration()
  return math.max(300,math.floor(tonumber(C.Room and C.Room.DirectoryExpirationSeconds)or 7200))
 end
 local function roomMaxPlayers()
- return math.max(1,math.floor(tonumber(C.Room and C.Room.MaxPlayers)or C.TargetPopulation or 8))
-end
-elevatorProfile=function(index)
- local list=C.Matchmaking and C.Matchmaking.Elevators or{}
- for _,row in ipairs(list)do if tonumber(row.Index)==tonumber(index)then return row end end
- return{Index=index,Label=tostring(index).."번",MinPlayers=1,MaxPlayers=LOBBY_QUEUE_MAX,Countdown=LOBBY_QUEUE_SECONDS}
+ return roomSolo and 1 or math.max(1,math.floor(tonumber(C.Room and C.Room.MaxPlayers)or C.TargetPopulation or 8))
 end
 mapById=function(id)
  local wanted=tostring(id or"")
@@ -273,6 +271,8 @@ local function teleportToReservedRoom(p,record)
   roomHostName=record.hostName,
   roomVisibility=record.visibility,
   roomCreatedAt=record.createdAt,
+  soloSession=record.soloSession==true,
+  rolePreference=p:GetAttribute("MonsterPreference"),
   expectedMemberCount=math.max(1,tonumber(record.memberCount)or 1),
   selectedMapId=tostring(record.mapId or"SCHOOL"),
   selectedMapName=tostring(record.mapName or"학교"),
@@ -304,6 +304,7 @@ local function teleportPlayersToReservedRoom(players,record)
   roomHostName=record.hostName,
   roomVisibility=record.visibility,
   roomCreatedAt=record.createdAt,
+  soloSession=record.soloSession==true,
   expectedMemberCount=#valid,
   selectedMapId=tostring(record.mapId or"SCHOOL"),
   selectedMapName=tostring(record.mapName or"학교"),
@@ -312,7 +313,7 @@ local function teleportPlayersToReservedRoom(players,record)
  if not ok then
   for _,p in ipairs(valid)do
    roomTeleportPending[p]=nil
-   roomFeedback(p,"ERROR","방 연결 실패 · 승강기에서 다시 시도")
+   roomFeedback(p,"ERROR","방 연결 실패 · 집사에게 다시 시도")
   end
   warn("Room group teleport failed",err)
   return false
@@ -349,10 +350,11 @@ local function createQueuedReservedRoom(players,selectedMapId)
  if not teleportPlayersToReservedRoom(players,record)then removeRoomDirectoryEntry(code);return false end
  return true
 end
-local function createReservedRoom(p,visibility)
+local function createReservedRoom(p,visibility,solo)
  if roomServer or state=="RUNNING"or not roomActionReady(p)then return end
- local selectedMap=mapById(p:GetAttribute("SelectedElevatorMap")or"SCHOOL")
+ local selectedMap=mapById(p:GetAttribute("SelectedLobbyMap")or"SCHOOL")
  if studioRoomFallback then
+  roomSolo=solo==true
   roomServer=true;roomCode="000001";roomHostUserId=p.UserId;roomHostName=p.DisplayName;roomVisibility=normalizeRoomVisibility(visibility);roomSelectedMapId=selectedMap.Id;roomStartRequested=true
   roomJoinedAt[p]=os.clock()
   workspace:SetAttribute("StudioRoomFallback",true)
@@ -368,7 +370,7 @@ local function createReservedRoom(p,visibility)
  if not ok or typeof(accessCode)~="string"or accessCode==""then roomFeedback(p,"ERROR","예약 서버 생성 실패");return end
  local record={
   code=code,accessCode=accessCode,hostUserId=p.UserId,hostName=p.DisplayName,
-  visibility=normalizeRoomVisibility(visibility),memberCount=0,maxPlayers=roomMaxPlayers(),mapId=selectedMap.Id,mapName=selectedMap.Name,
+  visibility=normalizeRoomVisibility(visibility),memberCount=0,maxPlayers=solo and 1 or roomMaxPlayers(),soloSession=solo==true,mapId=selectedMap.Id,mapName=selectedMap.Name,
   createdAt=os.time(),updatedAt=os.time(),state="WAITING",placeId=game.PlaceId,
  }
  if not setRoomDirectoryEntry(code,record)then roomFeedback(p,"ERROR","방 등록 실패");return end
@@ -379,6 +381,7 @@ local function canJoinRoom(p,record,explicitCode)
  if tonumber(record.placeId)~=game.PlaceId then return false,"다른 장소의 방"end
  if tostring(record.state or"WAITING")~="WAITING"then return false,"이미 게임 진행 중"end
  if (tonumber(record.memberCount)or 0)>=(tonumber(record.maxPlayers)or roomMaxPlayers())then return false,"방이 가득 참"end
+ if record.soloSession==true and p.UserId~=tonumber(record.hostUserId)then return false,"1인 플레이 진행 중"end
  local visibility=normalizeRoomVisibility(record.visibility)
  if visibility=="PRIVATE"and explicitCode~=true then return false,"비공개 방"end
  if visibility=="FRIENDS"and p.UserId~=tonumber(record.hostUserId)then
@@ -398,7 +401,7 @@ local function joinRoomByCode(p,rawCode)
 end
 local function quickJoinRoom(p,friendsOnly)
  if roomServer or state=="RUNNING"or not roomActionReady(p)then return end
- if not roomDirectory then roomFeedback(p,"EMPTY","로컬 테스트는 승강기로 입장");return end
+ if not roomDirectory then roomActionLast[p]=nil;createReservedRoom(p,"PUBLIC");return end
  local ok,rows=pcall(function()return roomDirectory:GetRangeAsync(Enum.SortDirection.Descending,30)end)
  if not ok or typeof(rows)~="table"then roomFeedback(p,"ERROR","방 목록 조회 실패");return end
  for _,row in ipairs(rows)do
@@ -412,7 +415,8 @@ local function quickJoinRoom(p,friendsOnly)
    end
   end
  end
- roomFeedback(p,"EMPTY",friendsOnly and"참가 가능한 친구 방 없음"or"참가 가능한 공개 방 없음")
+ if not friendsOnly then roomActionLast[p]=nil;createReservedRoom(p,"PUBLIC");return end
+ roomFeedback(p,"EMPTY","참가 가능한 친구 방 없음")
 end
 local function adoptReservedRoomFromPlayer(p)
  if not roomServer then return end
@@ -441,6 +445,8 @@ local function adoptReservedRoomFromPlayer(p)
   roomHostUserId=tonumber(teleportData.roomHostUserId)or p.UserId
   roomHostName=tostring(teleportData.roomHostName or p.DisplayName)
   roomVisibility=normalizeRoomVisibility(teleportData.roomVisibility)
+  roomSolo=teleportData.soloSession==true
+  if teleportData.rolePreference=="MONSTER"or teleportData.rolePreference=="SURVIVOR"then p:SetAttribute("MonsterPreference",teleportData.rolePreference)end
   roomSelectedMapId=mapById(teleportData.selectedMapId).Id
   roomExpectedCount=math.clamp(math.floor(tonumber(teleportData.expectedMemberCount)or 1),1,roomMaxPlayers())
   roomFirstJoinAt=os.clock()
@@ -493,10 +499,10 @@ local function shuffledSpawns(source)
  end
  return shuffled
 end
-local lobbySpawns={
- Vector3.new(-21,3,270),Vector3.new(-7,3,270),Vector3.new(7,3,270),Vector3.new(21,3,270),
- Vector3.new(-21,3,258),Vector3.new(-7,3,258),Vector3.new(7,3,258),Vector3.new(21,3,258)
-}
+local function personalSpawn(p)
+ if manorLobby then return manorLobby:GetSpawn(p)end
+ return Vector3.new(0,3,293),Vector3.new(0,4,262),lobbyBootstrapSpawn
+end
 local assetCache={}
 local objectiveState={round=0,done=0,total=0}
 local escapedPlayers={}
@@ -835,769 +841,32 @@ local function zoneFloor(f,name,size,pos,color,material)
 end
 
 
--- 실제 3D 로비: 메뉴 화면 대신 캐릭터가 걸어 다니며 단말을 직접 사용한다.
-local function lobbyLabel(part,text,color)
- local gui=Instance.new("BillboardGui");gui.Name="LobbyLabel";gui.Size=UDim2.fromOffset(132,28);gui.StudsOffset=Vector3.new(0,3.6,0);gui.AlwaysOnTop=false;gui.MaxDistance=34;gui.Parent=part
- local label=Instance.new("TextLabel");label.Size=UDim2.fromScale(1,1);label.BackgroundTransparency=.38;label.BackgroundColor3=Color3.fromRGB(15,18,25);label.Text=text;label.TextColor3=color or Color3.fromRGB(235,240,248);label.TextScaled=false;label.TextSize=14;label.TextWrapped=false;label.Font=Enum.Font.GothamBold;label.Parent=gui
- return label
-end
-
-local function lobbySurfaceText(part,text,color,size)
- local gui=Instance.new("SurfaceGui");gui.Name="LobbySurfaceText";gui.Face=Enum.NormalId.Front;gui.AlwaysOnTop=false;gui.LightInfluence=.35;gui.SizingMode=Enum.SurfaceGuiSizingMode.PixelsPerStud;gui.PixelsPerStud=36;gui.Parent=part
- local label=Instance.new("TextLabel");label.Size=UDim2.fromScale(1,1);label.BackgroundTransparency=1;label.Text=text;label.TextColor3=color or Color3.fromRGB(235,240,248);label.TextSize=size or 22;label.TextScaled=true;label.TextStrokeTransparency=.76;label.Font=Enum.Font.GothamBold;label.Parent=gui
- return label
-end
-
-local function lobbyTerminal(parent,name,pos,labelText,actionText,color,onTriggered)
- local wood=color or Color3.fromRGB(62,43,34)
- local base=arenaPart(parent,name,Vector3.new(6.6,5.6,3.6),pos,wood,Enum.Material.WoodPlanks)
- base:SetAttribute("LobbyTerminal",true)
- local cap=arenaPart(parent,name.."Cap",Vector3.new(7.2,.55,4.1),pos+Vector3.new(0,3,0),Color3.fromRGB(112,80,48),Enum.Material.WoodPlanks);cap.CanCollide=false
- local brassFrame=arenaPart(parent,name.."BrassFrame",Vector3.new(5.4,3.15,.24),pos+Vector3.new(0,.55,-1.92),Color3.fromRGB(159,119,61),Enum.Material.Metal);brassFrame.CanCollide=false
- local screen=arenaPart(parent,name.."Screen",Vector3.new(4.7,2.5,.18),pos+Vector3.new(0,.55,-2.08),Color3.fromRGB(53,44,37),Enum.Material.SmoothPlastic);screen.CanCollide=false
- lobbySurfaceText(screen,labelText,Color3.fromRGB(225,206,169),17)
- local slot=arenaPart(parent,name.."KeySlot",Vector3.new(1.25,.18,.12),pos+Vector3.new(0,-1.5,-2.03),Color3.fromRGB(179,137,67),Enum.Material.Metal);slot.CanCollide=false
- local prompt=Instance.new("ProximityPrompt");prompt.Name=name.."Prompt";prompt.ObjectText=labelText;prompt.ActionText=actionText;prompt.HoldDuration=.18;prompt.MaxActivationDistance=9;prompt.RequiresLineOfSight=false;prompt.Parent=base
- prompt.Triggered:Connect(onTriggered)
- return base,prompt
-end
-
-local function lobbyLampPost(parent,pos)
- local pole=arenaPart(parent,"LobbyLampPost",Vector3.new(.65,9,.65),pos+Vector3.new(0,4.5,0),Color3.fromRGB(45,49,57),Enum.Material.Metal)
- local arm=arenaPart(parent,"LobbyLampArm",Vector3.new(3,.4,.4),pos+Vector3.new(1.2,8.65,0),Color3.fromRGB(45,49,57),Enum.Material.Metal)
- local lamp=arenaPart(parent,"LobbyStreetLight",Vector3.new(1.8,.35,1.2),pos+Vector3.new(2.4,8.3,0),Color3.fromRGB(232,209,145),Enum.Material.Neon);lamp.CanCollide=false
- glow(lamp,lamp.Color,22,1.15)
- pole.CastShadow=true;arm.CastShadow=true
-end
-
-local function lobbyBuilding(parent,name,pos,size,baseColor,windowColor)
- local body=arenaPart(parent,name,size,pos,baseColor,Enum.Material.Concrete)
- local floors=math.max(2,math.floor(size.Y/7))
- local cols=math.max(2,math.floor(size.X/10))
- local frontZ=pos.Z-(size.Z*.5)-.08
- for row=1,floors do
-  for col=1,cols do
-   if (row+col)%3~=0 then
-    local wx=pos.X-size.X*.5+5+(col-1)*(size.X-10)/math.max(1,cols-1)
-    local wy=pos.Y-size.Y*.5+4+(row-1)*(size.Y-8)/math.max(1,floors-1)
-    local win=arenaPart(parent,name.."Window",Vector3.new(3.8,2.1,.18),Vector3.new(wx,wy,frontZ),windowColor,Enum.Material.Glass)
-    win.Transparency=.22;win.CanCollide=false
-   end
-  end
- end
- local trim=arenaPart(parent,name.."RoofTrim",Vector3.new(size.X+1,.7,size.Z+1),pos+Vector3.new(0,size.Y*.5+.35,0),Color3.fromRGB(32,36,44),Enum.Material.Metal)
- trim.CastShadow=true
- return body
-end
-
--- 로비 직원은 전투와 무관한 R15 연출 전용 NPC다.
-local function lobbyStaff(parent,staffId,pos,lookAt,labelText,promptText,lines)
- local model=Instance.new("Model");model.Name="LobbyStaff_"..staffId;model.Parent=parent
- local facePoint=Vector3.new(lookAt.X,pos.Y,lookAt.Z)
- local rootCf=CFrame.lookAt(pos,facePoint)
- local root=Instance.new("Part");root.Name="StaffRoot";root.Size=Vector3.new(2.6,7,2.2);root.CFrame=rootCf*CFrame.new(0,3.5,0);root.Transparency=1
- root.Anchored=true;root.CanCollide=false;root.CanTouch=false;root.CanQuery=false;root.Parent=model;model.PrimaryPart=root
-
- local parts={}
- local function part(name,size,offset,color,material,shape,rotation,className)
-  local p=Instance.new(className or"Part");p.Name=name;p.Size=size;p.Color=color;p.Material=material or Enum.Material.SmoothPlastic
-  p.Anchored=true;p.CanCollide=false;p.CanTouch=false;p.CanQuery=false;p.CastShadow=true
-  if shape and p:IsA("Part")then p.Shape=shape end
-  p.CFrame=rootCf*CFrame.new(offset)*(rotation or CFrame.new())
-  p.Parent=model;table.insert(parts,p);return p
- end
- local function cylinder(name,length,width,offset,color,material,tilt)
-  return part(name,Vector3.new(length,width,width),offset,color,material,Enum.PartType.Cylinder,CFrame.Angles(0,0,math.rad(90+(tilt or 0))))
- end
-
- local black=Color3.fromRGB(18,17,19)
- local wine=Color3.fromRGB(80,18,25)
- local red=Color3.fromRGB(113,22,29)
- local brass=Color3.fromRGB(184,137,64)
- local ivory=Color3.fromRGB(216,205,189)
- local skin=staffId=="MAID"and Color3.fromRGB(190,181,177)or staffId=="BELLBOY"and Color3.fromRGB(202,185,166)or Color3.fromRGB(211,195,177)
- local head,smile,eyeL,eyeR
-
- if staffId=="CLERK"then
-  -- 미스터 블랙: 비정상적으로 큰 키, 긴 팔다리, 좁은 어깨와 길게 찢어진 미소.
-  part("Tailcoat",Vector3.new(2.35,4.8,1.15),Vector3.new(0,5.25,0),black,Enum.Material.Fabric)
-  part("CoatTailL",Vector3.new(.92,3.8,.75),Vector3.new(-.52,1.75,.42),black,Enum.Material.Fabric,nil,CFrame.Angles(math.rad(-5),0,math.rad(3)))
-  part("CoatTailR",Vector3.new(.92,3.8,.75),Vector3.new(.52,1.75,.42),black,Enum.Material.Fabric,nil,CFrame.Angles(math.rad(-5),0,math.rad(-3)))
-  part("WineVest",Vector3.new(1.65,3.1,.16),Vector3.new(0,5.2,-.67),wine,Enum.Material.Fabric)
-  part("ShirtFront",Vector3.new(.72,2.75,.12),Vector3.new(0,5.55,-.78),ivory,Enum.Material.Fabric)
-  part("Tie",Vector3.new(.22,2.05,.11),Vector3.new(0,5.3,-.88),Color3.fromRGB(8,8,9),Enum.Material.Fabric)
-  cylinder("LegL",3.7,.52,Vector3.new(-.42,-.85,0),black,Enum.Material.Fabric,0)
-  cylinder("LegR",3.7,.52,Vector3.new(.42,-.85,0),black,Enum.Material.Fabric,0)
-  cylinder("ArmL",4.35,.43,Vector3.new(-1.42,4.8,.04),black,Enum.Material.Fabric,4)
-  cylinder("ArmR",4.35,.43,Vector3.new(1.42,4.8,.04),black,Enum.Material.Fabric,-4)
-  part("GloveL",Vector3.new(.58,.78,.58),Vector3.new(-1.6,2.65,-.02),ivory,Enum.Material.Fabric,Enum.PartType.Ball)
-  part("GloveR",Vector3.new(.58,.78,.58),Vector3.new(1.6,2.65,-.02),ivory,Enum.Material.Fabric,Enum.PartType.Ball)
-  part("ShoeL",Vector3.new(.76,.42,1.35),Vector3.new(-.42,-2.8,-.28),Color3.fromRGB(7,7,8),Enum.Material.SmoothPlastic)
-  part("ShoeR",Vector3.new(.76,.42,1.35),Vector3.new(.42,-2.8,-.28),Color3.fromRGB(7,7,8),Enum.Material.SmoothPlastic)
-  part("LongNeck",Vector3.new(.46,2.35,.46),Vector3.new(0,8.55,0),skin,Enum.Material.SmoothPlastic)
-  head=part("Head",Vector3.new(1.42,2.85,1.38),Vector3.new(0,10.35,-.02),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
-  part("SlickHair",Vector3.new(1.6,.6,1.45),Vector3.new(0,10.62,.12),Color3.fromRGB(19,16,16),Enum.Material.Fabric)
-  eyeL=part("EyeL",Vector3.new(.12,.28,.1),Vector3.new(-.31,10.62,-.74),Color3.fromRGB(7,7,8),Enum.Material.SmoothPlastic)
-  eyeR=part("EyeR",Vector3.new(.28,.11,.1),Vector3.new(.34,10.48,-.74),Color3.fromRGB(153,18,27),Enum.Material.Neon)
-  smile=part("Smile",Vector3.new(1.55,.11,.09),Vector3.new(.08,9.72,-.77),Color3.fromRGB(132,8,18),Enum.Material.Neon)
-  part("JawShadow",Vector3.new(1.22,.42,.1),Vector3.new(.08,9.48,-.75),Color3.fromRGB(36,10,14),Enum.Material.SmoothPlastic)
-  for finger=1,3 do
-   part("ExtraFingerL"..finger,Vector3.new(.11,.7,.11),Vector3.new(-1.78+(finger*.16),2.25,-.28),skin,Enum.Material.SmoothPlastic)
-  end
-  part("NamePlate",Vector3.new(.75,.24,.1),Vector3.new(.43,6.15,-.73),brass,Enum.Material.Metal)
- elseif staffId=="BELLBOY"then
-  -- 토비: 작고 넓은 몸통, 큰 머리와 과장된 모자, 황동 장식이 많은 붉은 제복.
-  part("BellboyBody",Vector3.new(3.25,3.05,1.65),Vector3.new(0,2.65,0),red,Enum.Material.Fabric)
-  part("JacketFront",Vector3.new(2.45,2.5,.15),Vector3.new(0,2.75,-.89),Color3.fromRGB(132,27,35),Enum.Material.Fabric)
-  part("GoldBelt",Vector3.new(3.35,.32,1.72),Vector3.new(0,1.45,0),brass,Enum.Material.Metal)
-  cylinder("LegL",1.8,.75,Vector3.new(-.72,-.05,0),Color3.fromRGB(28,24,25),Enum.Material.Fabric,0)
-  cylinder("LegR",1.8,.75,Vector3.new(.72,-.05,0),Color3.fromRGB(28,24,25),Enum.Material.Fabric,0)
-  cylinder("ArmL",2.7,.7,Vector3.new(-1.8,2.45,0),red,Enum.Material.Fabric,-12)
-  cylinder("ArmR",2.7,.7,Vector3.new(1.8,2.45,0),red,Enum.Material.Fabric,12)
-  part("WhiteGloveL",Vector3.new(.76,.9,.76),Vector3.new(-2.08,1.1,-.04),ivory,Enum.Material.Fabric,Enum.PartType.Ball)
-  part("WhiteGloveR",Vector3.new(.76,.9,.76),Vector3.new(2.08,1.1,-.04),ivory,Enum.Material.Fabric,Enum.PartType.Ball)
-  part("ShoeL",Vector3.new(1,.45,1.35),Vector3.new(-.72,-1.15,-.22),Color3.fromRGB(10,10,11),Enum.Material.SmoothPlastic)
-  part("ShoeR",Vector3.new(1,.45,1.35),Vector3.new(.72,-1.15,-.22),Color3.fromRGB(10,10,11),Enum.Material.SmoothPlastic)
-  part("BellboyHump",Vector3.new(3.5,2.15,1.5),Vector3.new(0,3.25,1.15),Color3.fromRGB(87,19,27),Enum.Material.Fabric)
-  head=part("Head",Vector3.new(3.05,2.75,2.65),Vector3.new(0,5.55,-.02),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
-  eyeL=part("EyeL",Vector3.new(.52,.48,.12),Vector3.new(-.58,5.78,-1.37),Color3.fromRGB(18,15,16),Enum.Material.SmoothPlastic)
-  eyeR=part("EyeR",Vector3.new(.12,.17,.12),Vector3.new(.64,5.58,-1.38),Color3.fromRGB(194,35,44),Enum.Material.Neon)
-  smile=part("Smile",Vector3.new(1.72,.2,.1),Vector3.new(.08,4.92,-1.42),Color3.fromRGB(111,16,24),Enum.Material.Neon)
-  part("BellboyCheekL",Vector3.new(.62,.48,.12),Vector3.new(-.8,5.05,-1.36),Color3.fromRGB(159,111,98),Enum.Material.SmoothPlastic)
-  part("BellboyCheekR",Vector3.new(.62,.48,.12),Vector3.new(.8,5.05,-1.36),Color3.fromRGB(159,111,98),Enum.Material.SmoothPlastic)
-  part("HatBrim",Vector3.new(3.15,.3,2.65),Vector3.new(0,6.4,-.02),brass,Enum.Material.Metal)
-  part("Hat",Vector3.new(2.55,1.15,2.25),Vector3.new(0,7.05,-.02),Color3.fromRGB(102,17,25),Enum.Material.Fabric)
-  part("HatBand",Vector3.new(2.62,.22,2.32),Vector3.new(0,6.75,-.02),brass,Enum.Material.Metal)
-  for y=2.1,3.35,.62 do part("Button"..tostring(y),Vector3.new(.2,.2,.12),Vector3.new(0,y,-.98),brass,Enum.Material.Metal,Enum.PartType.Ball)end
- elseif staffId=="MAID"then
-  -- 메리: 긴 목과 팔, 좁은 상체, 바닥까지 떨어지는 검은 드레스와 그림자 얼굴.
-  part("DressTorso",Vector3.new(1.75,3.5,1.15),Vector3.new(0,5,0),black,Enum.Material.Fabric)
-  part("DressSkirt",Vector3.new(3.4,4.6,1.8),Vector3.new(0,1.1,.08),Color3.fromRGB(20,19,21),Enum.Material.Fabric)
-  part("Apron",Vector3.new(1.8,4.5,.14),Vector3.new(0,2.35,-.98),Color3.fromRGB(195,190,182),Enum.Material.Fabric)
-  cylinder("ArmL",4.5,.4,Vector3.new(-1.18,4.25,.05),black,Enum.Material.Fabric,-3)
-  cylinder("ArmR",4.5,.4,Vector3.new(1.18,4.25,.05),black,Enum.Material.Fabric,3)
-  part("HandL",Vector3.new(.48,.8,.48),Vector3.new(-1.35,1.98,-.02),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
-  part("HandR",Vector3.new(.48,.8,.48),Vector3.new(1.35,1.98,-.02),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
-  part("LongNeck",Vector3.new(.38,2.5,.38),Vector3.new(0,7.8,0),skin,Enum.Material.SmoothPlastic)
-  head=part("Head",Vector3.new(1.5,2.55,1.5),Vector3.new(0,9.65,-.03),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
-  part("MaidHairCurtain",Vector3.new(1.7,3.15,.36),Vector3.new(0,9.2,-.62),Color3.fromRGB(25,22,24),Enum.Material.Fabric)
-  part("FaceShadow",Vector3.new(1.22,1.05,.12),Vector3.new(0,9.68,-.83),Color3.fromRGB(22,19,21),Enum.Material.SmoothPlastic)
-  eyeL=part("EyeL",Vector3.new(.12,.22,.09),Vector3.new(-.26,9.86,-.94),Color3.fromRGB(189,30,39),Enum.Material.Neon)
-  eyeR=part("EyeR",Vector3.new(.05,.05,.07),Vector3.new(.31,9.72,-.94),Color3.fromRGB(5,5,6),Enum.Material.SmoothPlastic)
-  smile=part("Smile",Vector3.new(.78,.07,.08),Vector3.new(-.08,9.25,-.95),Color3.fromRGB(92,14,20),Enum.Material.SmoothPlastic)
-  part("MaidFingerL",Vector3.new(.1,1.25,.1),Vector3.new(-1.38,1.52,-.22),skin,Enum.Material.SmoothPlastic)
-  part("MaidFingerR",Vector3.new(.1,1.25,.1),Vector3.new(1.38,1.52,-.22),skin,Enum.Material.SmoothPlastic)
-  part("MaidCap",Vector3.new(2.05,.5,1.55),Vector3.new(0,9.9,.04),Color3.fromRGB(207,202,193),Enum.Material.Fabric)
-  part("Collar",Vector3.new(1.6,.38,.15),Vector3.new(0,6.35,-.74),Color3.fromRGB(207,202,193),Enum.Material.Fabric)
-  part("Ribbon",Vector3.new(.66,.66,.12),Vector3.new(0,5.95,-.82),wine,Enum.Material.Fabric,nil,CFrame.Angles(0,0,math.rad(45)))
- end
-
- local labelAnchor=part("StaffLabelAnchor",Vector3.new(.1,.1,.1),Vector3.new(0,staffId=="CLERK"and 12.3 or staffId=="BELLBOY"and 8.6 or 11,0),Color3.new(1,1,1),Enum.Material.SmoothPlastic)
- labelAnchor.Transparency=1
- local nameGui=Instance.new("BillboardGui");nameGui.Name="StaffLabel";nameGui.Size=UDim2.fromOffset(155,25);nameGui.AlwaysOnTop=false;nameGui.MaxDistance=22;nameGui.Parent=labelAnchor
- local nameLabel=Instance.new("TextLabel");nameLabel.Size=UDim2.fromScale(1,1);nameLabel.BackgroundTransparency=1;nameLabel.TextColor3=Color3.fromRGB(210,190,151);nameLabel.TextStrokeTransparency=.35;nameLabel.TextSize=11;nameLabel.Text=labelText;nameLabel.Font=Enum.Font.GothamBold;nameLabel.Parent=nameGui
-
- local speechAnchor=part("SpeechAnchor",Vector3.new(.1,.1,.1),Vector3.new(0,staffId=="CLERK"and 11.6 or staffId=="BELLBOY"and 7.9 or 10.4,0),Color3.new(1,1,1),Enum.Material.SmoothPlastic)
- speechAnchor.Transparency=1
- local speechGui=Instance.new("BillboardGui");speechGui.Name="StaffSpeech";speechGui.Size=UDim2.fromOffset(330,86);speechGui.StudsOffset=Vector3.new(0,1.25,0);speechGui.AlwaysOnTop=true;speechGui.MaxDistance=34;speechGui.Enabled=false;speechGui.Parent=speechAnchor
- local speechLabel=Instance.new("TextLabel");speechLabel.Size=UDim2.fromScale(1,1);speechLabel.BackgroundColor3=Color3.fromRGB(10,8,9);speechLabel.BackgroundTransparency=.03;speechLabel.TextColor3=Color3.fromRGB(238,225,199);speechLabel.TextSize=14;speechLabel.TextWrapped=true;speechLabel.Font=Enum.Font.GothamBold;speechLabel.Parent=speechGui
- local speechStroke=Instance.new("UIStroke");speechStroke.Color=staffId=="MAID"and Color3.fromRGB(133,28,34)or brass;speechStroke.Transparency=.25;speechStroke.Thickness=1.5;speechStroke.Parent=speechLabel
- local speechCorner=Instance.new("UICorner");speechCorner.CornerRadius=UDim.new(0,7);speechCorner.Parent=speechLabel
-
- local prompt=Instance.new("ProximityPrompt");prompt.Name="LobbyStaffPrompt";prompt.ObjectText=labelText;prompt.ActionText=promptText;prompt.HoldDuration=.08;prompt.MaxActivationDistance=12;prompt.RequiresLineOfSight=false;prompt.Parent=root
- local lineIndex,serial=0,0
- prompt.Triggered:Connect(function(player)
-  local options=typeof(lines)=="table"and lines or{}
-  if #options==0 then return end
-  lineIndex=lineIndex%#options+1;serial+=1
-  local token=serial;local line=tostring(options[lineIndex])
-  speechLabel.Text=line;speechGui.Enabled=true
-  player:SetAttribute("LobbyStoryEvent",labelText.."|"..line.."|"..tostring(math.floor(workspace:GetServerTimeNow()*1000)))
-  local headBase=head.CFrame;local smileBase=smile.Size
-  if staffId=="CLERK"then
-   TweenService:Create(head,TweenInfo.new(.14,Enum.EasingStyle.Quad),{CFrame=headBase*CFrame.Angles(0,0,math.rad(26))}):Play()
-   TweenService:Create(smile,TweenInfo.new(.16,Enum.EasingStyle.Back),{Size=Vector3.new(smileBase.X*1.85,smileBase.Y,smileBase.Z)}):Play()
-  elseif staffId=="BELLBOY"then
-   TweenService:Create(head,TweenInfo.new(.09,Enum.EasingStyle.Quad),{CFrame=headBase*CFrame.Angles(0,math.rad(48),math.rad(-8))}):Play()
-  else
-   TweenService:Create(head,TweenInfo.new(.2,Enum.EasingStyle.Sine),{CFrame=headBase*CFrame.Angles(math.rad(22),0,math.rad(-9))}):Play()
-   eyeL.Size=Vector3.new(.28,.22,.09);eyeR.Size=Vector3.new(.28,.22,.09)
-  end
-  task.delay(.7,function()
-   if head.Parent then TweenService:Create(head,TweenInfo.new(.24),{CFrame=headBase}):Play()end
-   if smile.Parent then TweenService:Create(smile,TweenInfo.new(.24),{Size=smileBase}):Play()end
-  end)
-  task.delay(4.2,function()if serial==token and speechGui.Parent then speechGui.Enabled=false end end)
- end)
-
- -- 직원은 가만히 서 있어도 서로 다른 기괴한 습관을 보여 준다.
- task.spawn(function()
-  local base=head.CFrame
-  while model.Parent do
-   task.wait(staffId=="BELLBOY"and 5.3 or staffId=="MAID"and 7.1 or 6.4)
-   if not head.Parent then break end
-   if staffId=="CLERK"then
-    TweenService:Create(head,TweenInfo.new(.6,Enum.EasingStyle.Sine),{CFrame=base*CFrame.Angles(0,math.rad(10),math.rad(7))}):Play();task.wait(.8)
-   elseif staffId=="BELLBOY"then
-    TweenService:Create(head,TweenInfo.new(.08,Enum.EasingStyle.Linear),{CFrame=base*CFrame.Angles(0,math.rad(-38),0)}):Play();task.wait(.28)
-   else
-    TweenService:Create(head,TweenInfo.new(.9,Enum.EasingStyle.Sine),{CFrame=base*CFrame.Angles(math.rad(12),0,0)}):Play();task.wait(1.1)
-   end
-   if head.Parent then TweenService:Create(head,TweenInfo.new(.3,Enum.EasingStyle.Sine),{CFrame=base}):Play()end
-  end
- end)
- return model
-end
-
-local function lobbyHauntTrigger(parent,name,pos,kind,radius,text)
- local trigger=arenaPart(parent,"LobbyHaunt_"..name,Vector3.new(1,1,1),pos,Color3.new(1,1,1),Enum.Material.SmoothPlastic)
- trigger.Transparency=1;trigger.CanCollide=false;trigger.CanTouch=false;trigger.CanQuery=false
- trigger:SetAttribute("LobbyHauntKind",kind);trigger:SetAttribute("LobbyHauntRadius",radius or 12);trigger:SetAttribute("LobbyHauntText",text or"")
- return trigger
-end
-
--- 월드 로비: 오래된 심야 호텔 + 승강기형 자동 매칭.
+-- New native GLB scene with one spatial instance per player.
 makePhysicalLobby=function()
- local old=workspace:FindFirstChild("MidnightLobby");if old then old:Destroy()end
- local f=Instance.new("Folder");f.Name="MidnightLobby";f.Parent=workspace
- local flickerLights={}
+ manorLobby=ManorLobby.new(remote)
  lobbySpawnLocation=lobbyBootstrapSpawn
  lobbySpawnLocation.Name="LobbySpawn"
- lobbySpawnLocation.Size=Vector3.new(18,.2,18)
- lobbySpawnLocation.Position=Vector3.new(0,.55,270)
- lobbySpawnLocation.Anchored=true
- lobbySpawnLocation.Neutral=true
- lobbySpawnLocation.Transparency=1
  lobbySpawnLocation.CanCollide=false
- lobbySpawnLocation.CanTouch=false
- lobbySpawnLocation.CanQuery=false
- lobbySpawnLocation:SetAttribute("WalkableGround",false)
- lobbySpawnLocation.Parent=f
-
- -- 폐호텔 메인홀: 이동 범위를 의도적으로 좁혀 빈 광장 느낌을 없앤다.
- local floor=zoneFloor(f,"HotelLobbyFloor",Vector3.new(178,1.2,136),Vector3.new(0,.05,246),Color3.fromRGB(45,39,36),Enum.Material.Slate)
- floor:SetAttribute("PhysicalLobbyGround",true)
- local catch=arenaPart(f,"LobbySafetyCatch",Vector3.new(188,1,146),Vector3.new(0,-4.2,246),Color3.fromRGB(14,13,13),Enum.Material.Concrete)
- catch.Transparency=1;catch.CanCollide=true
- arenaPart(f,"HotelCeiling",Vector3.new(178,1,136),Vector3.new(0,21,246),Color3.fromRGB(27,25,24),Enum.Material.Concrete)
-
- -- 외벽/목재 하부 벽체. 로비에서는 맵 밖으로 떨어질 수 없다.
- arenaPart(f,"BackWall",Vector3.new(178,21,2),Vector3.new(0,10.5,313),Color3.fromRGB(55,49,46),Enum.Material.Plaster)
- for _,side in ipairs({-1,1})do
-  arenaPart(f,"SideWall",Vector3.new(2,21,136),Vector3.new(side*88.5,10.5,246),Color3.fromRGB(54,49,46),Enum.Material.Plaster)
-  arenaPart(f,"SideWainscot",Vector3.new(2.35,6,134),Vector3.new(side*87.3,3.2,246),Color3.fromRGB(67,48,37),Enum.Material.WoodPlanks)
- end
- arenaPart(f,"FrontSafetyWallL",Vector3.new(24,21,2),Vector3.new(-77,10.5,179),Color3.fromRGB(45,41,39),Enum.Material.Concrete)
- arenaPart(f,"FrontSafetyWallR",Vector3.new(24,21,2),Vector3.new(77,10.5,179),Color3.fromRGB(45,41,39),Enum.Material.Concrete)
-
- -- 1920년대 서양 호텔 벽지와 몰딩. 평평한 검은 상자 인상을 줄인다.
- for _,side in ipairs({-1,1})do
-  for _,z in ipairs({225,245,265,285})do
-   local paper=arenaPart(f,"WallpaperPanel",Vector3.new(.18,10.5,17),Vector3.new(side*87.05,12.7,z),Color3.fromRGB(46,52,43),Enum.Material.Fabric)
-   paper.CanCollide=false
-   arenaPart(f,"WallpaperGoldTop",Vector3.new(.22,.25,17.2),Vector3.new(side*86.92,17.8,z),Color3.fromRGB(133,99,54),Enum.Material.Metal).CanCollide=false
-   arenaPart(f,"WallpaperGoldBottom",Vector3.new(.22,.25,17.2),Vector3.new(side*86.92,7.55,z),Color3.fromRGB(108,78,47),Enum.Material.Metal).CanCollide=false
-  end
- end
- for _,z in ipairs({233,258,283})do
-  local pool=arenaPart(f,"WallSconceGlow",Vector3.new(1,.75,.42),Vector3.new(-86.3,11.7,z),Color3.fromRGB(238,191,105),Enum.Material.Neon);pool.CanCollide=false;glow(pool,pool.Color,23,1.15)
-  local pool2=arenaPart(f,"WallSconceGlow",Vector3.new(1,.75,.42),Vector3.new(86.3,11.7,z),Color3.fromRGB(238,191,105),Enum.Material.Neon);pool2.CanCollide=false;glow(pool2,pool2.Color,23,1.15)
- end
- local staffDoor=arenaPart(f,"StaffOnlyDoor",Vector3.new(11,14,.9),Vector3.new(72,7.2,306),Color3.fromRGB(49,34,30),Enum.Material.WoodPlanks)
- local staffPlaque=arenaPart(f,"StaffOnlyPlaque",Vector3.new(6.5,1.7,.18),Vector3.new(72,11.7,305.45),Color3.fromRGB(127,91,48),Enum.Material.Metal);staffPlaque.CanCollide=false
- lobbySurfaceText(staffPlaque,"STAFF ONLY",Color3.fromRGB(228,207,168),16)
- for i=-2,2 do
-  local chain=arenaPart(f,"StaffDoorChain",Vector3.new(12,.22,.22),Vector3.new(72,7.4+i*.38,305.35),Color3.fromRGB(92,87,79),Enum.Material.Metal)
-  chain.Orientation=Vector3.new(0,0,i%2==0 and 13 or -13);chain.CanCollide=false
- end
-
- -- 중앙 동선은 카펫과 천장등으로 바로 승강기까지 이어진다.
- zoneFloor(f,"MainCarpet",Vector3.new(36,.16,79),Vector3.new(0,.72,250),Color3.fromRGB(89,29,34),Enum.Material.Fabric)
- zoneFloor(f,"ElevatorCarpetApron",Vector3.new(150,.17,20),Vector3.new(0,.74,220),Color3.fromRGB(63,28,31),Enum.Material.Fabric)
- for _,x in ipairs({-15,15})do
-  arenaPart(f,"CarpetBrassEdge",Vector3.new(.18,.18,78),Vector3.new(x,.84,250),Color3.fromRGB(154,119,66),Enum.Material.Metal).CanCollide=false
- end
-
- -- 프런트 데스크: 스폰 뒤쪽을 채우고 호텔의 중심점을 만든다.
- arenaPart(f,"ReceptionBack",Vector3.new(74,18,2),Vector3.new(0,10,307.5),Color3.fromRGB(43,37,35),Enum.Material.Concrete)
- for _,x in ipairs({-33,-22,-11,0,11,22,33})do
-  arenaPart(f,"ReceptionBackTrim",Vector3.new(.7,16,.45),Vector3.new(x,9.5,306.35),Color3.fromRGB(86,61,43),Enum.Material.WoodPlanks).CanCollide=false
- end
- local desk=arenaPart(f,"ReceptionDesk",Vector3.new(44,5.2,8.5),Vector3.new(0,3.25,294),Color3.fromRGB(68,47,37),Enum.Material.WoodPlanks)
- arenaPart(f,"ReceptionTop",Vector3.new(47,.65,9.5),Vector3.new(0,6.15,294),Color3.fromRGB(116,82,52),Enum.Material.WoodPlanks)
- for _,x in ipairs({-16,-8,0,8,16})do
-  arenaPart(f,"ReceptionPanel",Vector3.new(6.4,3.3,.35),Vector3.new(x,3.1,289.6),Color3.fromRGB(49,35,31),Enum.Material.WoodPlanks).CanCollide=false
- end
- local sign=arenaPart(f,"HotelSign",Vector3.new(37,5.4,.6),Vector3.new(0,14.5,306.15),Color3.fromRGB(30,26,25),Enum.Material.WoodPlanks)
- lobbySurfaceText(sign,"NOCTURNE HOTEL · 1927\n심야 대탈출",Color3.fromRGB(223,194,137),23)
- local bell=arenaPart(f,"DeskBell",Vector3.new(1.4,.7,1.4),Vector3.new(-9,6.85,290.6),Color3.fromRGB(184,143,72),Enum.Material.Metal);bell.Shape=Enum.PartType.Ball;bell.CanCollide=false
- arenaPart(f,"GuestBook",Vector3.new(5.8,.35,3.9),Vector3.new(7,6.82,290.5),Color3.fromRGB(188,176,148),Enum.Material.Fabric).CanCollide=false
- -- 프런트와 대기실 소품: 오래된 호텔이 실제로 운영 중인 듯한 밀도를 만든다.
- local phoneBase=arenaPart(f,"FrontDeskPhone",Vector3.new(3.2,.8,2.5),Vector3.new(15,6.85,291),Color3.fromRGB(37,32,31),Enum.Material.SmoothPlastic);phoneBase.CanCollide=false
- local receiver=arenaPart(f,"FrontDeskReceiver",Vector3.new(3.5,.45,.7),Vector3.new(15,7.55,291),Color3.fromRGB(21,20,21),Enum.Material.SmoothPlastic);receiver.CanCollide=false
- receiver.Orientation=Vector3.new(0,8,-4)
- local radio=arenaPart(f,"LobbyOldRadio",Vector3.new(5.8,3.8,2.6),Vector3.new(-28,2.6,301),Color3.fromRGB(74,51,37),Enum.Material.WoodPlanks)
- radio.CanCollide=false
- local radioDial=arenaPart(f,"LobbyRadioDial",Vector3.new(1.25,1.25,.2),Vector3.new(-26.3,2.6,299.62),Color3.fromRGB(190,145,71),Enum.Material.Metal);radioDial.CanCollide=false
- local vending=arenaPart(f,"BrokenVendingMachine",Vector3.new(7.2,12,4.5),Vector3.new(-77,6.5,242),Color3.fromRGB(52,59,61),Enum.Material.Metal)
- local vendingGlow=arenaPart(f,"VendingGhostDisplay",Vector3.new(5.3,4.2,.25),Vector3.new(-77,8.6,239.68),Color3.fromRGB(82,155,142),Enum.Material.Neon);vendingGlow.CanCollide=false;vendingGlow.Transparency=.22
- local umbrellaStand=arenaPart(f,"UmbrellaStand",Vector3.new(3.3,4.2,3.3),Vector3.new(-72,2.55,231),Color3.fromRGB(66,59,54),Enum.Material.Metal);umbrellaStand.Shape=Enum.PartType.Cylinder
- for i=-1,1 do
-  local umbrella=arenaPart(f,"LobbyUmbrella",Vector3.new(.34,6,.34),Vector3.new(-72+i*.75,5.6,231),Color3.fromRGB(51+i*5,43,47),Enum.Material.Metal)
-  umbrella.Orientation=Vector3.new(i*5,0,i*4);umbrella.CanCollide=false
- end
- local cleaningCart=arenaPart(f,"CleaningCart",Vector3.new(6.5,3.2,4),Vector3.new(70,2.2,246),Color3.fromRGB(92,84,72),Enum.Material.Metal)
- local bucket=arenaPart(f,"MopBucket",Vector3.new(2.4,2,2.4),Vector3.new(72.2,2,244.8),Color3.fromRGB(132,111,61),Enum.Material.Metal);bucket.Shape=Enum.PartType.Cylinder
- local mop=arenaPart(f,"MopHandle",Vector3.new(.34,8,.34),Vector3.new(68.4,5.1,245),Color3.fromRGB(101,71,44),Enum.Material.Wood)
- mop.Orientation=Vector3.new(0,0,14);mop.CanCollide=false
- local doll=arenaPart(f,"LostAndFoundDoll",Vector3.new(1.5,2.6,1.2),Vector3.new(64,2.1,269),Color3.fromRGB(184,155,142),Enum.Material.Fabric)
- doll.CanCollide=false
- local dollEye=arenaPart(f,"LostDollEye",Vector3.new(.16,.16,.1),Vector3.new(64.25,2.55,268.35),Color3.fromRGB(141,23,31),Enum.Material.Neon);dollEye.CanCollide=false
- local wetSign=arenaPart(f,"WetFloorSign",Vector3.new(2.8,4,.6),Vector3.new(58,2.6,239),Color3.fromRGB(201,164,51),Enum.Material.SmoothPlastic)
- wetSign.Orientation=Vector3.new(0,-18,0)
- local shoeL=arenaPart(f,"LostShoeL",Vector3.new(1.3,.55,2.2),Vector3.new(-52,1.05,272),Color3.fromRGB(39,31,29),Enum.Material.Fabric);shoeL.Orientation=Vector3.new(0,28,4)
- local shoeR=arenaPart(f,"LostShoeR",Vector3.new(1.3,.55,2.2),Vector3.new(-49.8,1.05,270.7),Color3.fromRGB(39,31,29),Enum.Material.Fabric);shoeR.Orientation=Vector3.new(0,-12,-7)
- for _,x in ipairs({-14,0,14})do
-  local deskLamp=arenaPart(f,"ReceptionDownlight",Vector3.new(3.8,.3,1.2),Vector3.new(x,18.2,295),Color3.fromRGB(236,190,108),Enum.Material.Neon)
-  deskLamp.CanCollide=false;glow(deskLamp,deskLamp.Color,26,1.35)
- end
-
- -- 로비 자체가 게임 튜토리얼 역할을 한다. 안내판도 호텔의 미친 투숙 규정으로 보인다.
- local rules=arenaPart(f,"MadHotelRules",Vector3.new(24,10,.7),Vector3.new(-50,10.6,306.05),Color3.fromRGB(28,24,23),Enum.Material.WoodPlanks)
- lobbySurfaceText(rules,"심야 투숙 규정\n1. 승강기 안에 서면 5초 뒤 체크인\n2. 인간은 정화 · 괴물은 감염\n3. 상대 진영이 0명이면 승리\n4. 같은 직원이 두 번 보이면 뛰지 마시오",Color3.fromRGB(219,202,169),15)
- local rulesPrompt=Instance.new("ProximityPrompt");rulesPrompt.Name="HotelRulesPrompt";rulesPrompt.ObjectText="심야 투숙 규정";rulesPrompt.ActionText="읽기";rulesPrompt.HoldDuration=.12;rulesPrompt.MaxActivationDistance=10;rulesPrompt.RequiresLineOfSight=false;rulesPrompt.Parent=rules
- rulesPrompt.Triggered:Connect(function(player)
-  player:SetAttribute("LobbyStoryEvent","투숙 규정|승강기에 들어가면 5초 뒤 체크인. 인간은 정화, 괴물은 감염. 상대 진영을 0명으로 만들면 승리.|"..tostring(math.floor(workspace:GetServerTimeNow()*1000)))
-  local before=rules.Color;rules.Color=Color3.fromRGB(65,44,37);task.delay(.25,function()if rules.Parent then rules.Color=before end end)
- end)
- local warningBoard=arenaPart(f,"MadWarning",Vector3.new(24,5.6,.65),Vector3.new(50,13.1,306.05),Color3.fromRGB(35,28,28),Enum.Material.WoodPlanks)
- lobbySurfaceText(warningBoard,"직원을 믿지 마십시오\n웃고 있는 직원은 더더욱.",Color3.fromRGB(167,48,53),19)
- for i=1,5 do
-  local scratch=arenaPart(f,"WallScratch",Vector3.new(.16,3.4,.12),Vector3.new(38+i*2.3,5.7+(i%2)*.5,305.65),Color3.fromRGB(91,25,29),Enum.Material.Neon)
-  scratch.Orientation=Vector3.new(0,0,-18+(i*7));scratch.CanCollide=false
- end
-
- local clerkLines={
-  "어서 오세요. 체크아웃은… 살아 계실 때만 가능합니다.",
-  "승강기 안에 서 계시면 객실이 알아서 손님을 골라 드립니다.",
-  "직원이 두 명으로 보이면 눈을 감지 마세요. 하나는 제가 아닙니다.",
- }
- lobbyStaff(f,"CLERK",Vector3.new(0,3.05,299),Vector3.new(0,3.05,270),"야간 프런트 · 미스터 블랙","문의",clerkLines)
- local bellboyLines={
-  "짐은 제가 들겠습니다. 손님까지 들 필요는 없겠죠?",
-  "13층 버튼은 누르지 마세요. 없는 층이라서 더 빨리 옵니다.",
-  "승강기가 웃으면 다른 칸을 타십시오. 네, 승강기가요.",
- }
- lobbyStaff(f,"BELLBOY",Vector3.new(-64,1.25,282),Vector3.new(-42,1.25,260),"벨보이 · 토비","말 걸기",bellboyLines)
- local maidLines={
-  "방금 복도에 떨어진 손님은 청소했습니다. 아주 깨끗하게요.",
-  "피 얼룩은 지워지는데 비명 얼룩은 잘 안 지워져요.",
-  "저를 세 번째 보셨다면 프런트에는 비밀로 해 주세요.",
- }
- lobbyStaff(f,"MAID",Vector3.new(77,2.35,231),Vector3.new(48,2.35,250),"야간 메이드 · 메리","질문",maidLines)
-
- local bellPrompt=Instance.new("ProximityPrompt");bellPrompt.Name="DeskBellPrompt";bellPrompt.ObjectText="프런트 벨";bellPrompt.ActionText="누르기";bellPrompt.HoldDuration=.1;bellPrompt.MaxActivationDistance=7;bellPrompt.RequiresLineOfSight=false;bellPrompt.Parent=bell
- bellPrompt.Triggered:Connect(function(player)
-  local line="딩— 예약 확인 완료. 손님 수: 살아 있는 만큼."
-  player:SetAttribute("LobbyStoryEvent","호텔 벨|"..line.."|"..tostring(math.floor(workspace:GetServerTimeNow()*1000)))
-  local oldColor=bell.Color;bell.Color=Color3.fromRGB(225,54,59)
-  task.delay(.18,function()if bell.Parent then bell.Color=oldColor end end)
-  for _,light in ipairs(flickerLights)do
-   if light and light.Parent then
-    local before=light.Brightness;light.Brightness=.02
-    task.delay(.16,function()if light.Parent then light.Brightness=before end end)
-   end
-  end
- end)
-
- -- 열쇠함과 오래된 객실 번호. 단순 벽이 아니라 호텔처럼 보이게 한다.
- for row=0,2 do
-  for col=-3,3 do
-   local keyBox=arenaPart(f,"KeyCubby",Vector3.new(6.2,3.1,.55),Vector3.new(col*7.1,8.5+row*3.4,306.05),Color3.fromRGB(39,31,29),Enum.Material.WoodPlanks)
-   keyBox.CanCollide=false
-   local tag=arenaPart(f,"KeyTag",Vector3.new(1.5,.55,.18),Vector3.new(col*7.1,8.5+row*3.4,305.7),Color3.fromRGB(161,125,66),Enum.Material.Metal)
-   tag.CanCollide=false
-  end
- end
-
- -- 1927 호텔 로비의 상징물: 황동 짐수레, 멈춘 시계, 폐쇄된 13층 표지.
- local cartBase=arenaPart(f,"BellhopCartBase",Vector3.new(7,.65,4.2),Vector3.new(-58,1.25,284),Color3.fromRGB(102,72,42),Enum.Material.Metal)
- for _,dx in ipairs({-2.6,2.6})do
-  for _,dz in ipairs({-1.55,1.55})do
-   local wheel=arenaPart(f,"BellhopCartWheel",Vector3.new(1.2,1.2,.45),Vector3.new(-58+dx,.75,284+dz),Color3.fromRGB(27,25,25),Enum.Material.SmoothPlastic)
-   wheel.Shape=Enum.PartType.Cylinder;wheel.Orientation=Vector3.new(0,90,0)
-  end
- end
- for _,dx in ipairs({-3,3})do arenaPart(f,"BellhopCartPost",Vector3.new(.32,6,.32),Vector3.new(-58+dx,4,284),Color3.fromRGB(170,128,61),Enum.Material.Metal)end
- arenaPart(f,"BellhopCartTop",Vector3.new(6.3,.32,.32),Vector3.new(-58,7,284),Color3.fromRGB(170,128,61),Enum.Material.Metal)
- arenaPart(f,"CartSuitcase1",Vector3.new(3.4,2.8,2.8),Vector3.new(-59,3,284),Color3.fromRGB(74,49,37),Enum.Material.Fabric)
- arenaPart(f,"CartSuitcase2",Vector3.new(2.4,2.1,2.5),Vector3.new(-56.3,2.6,284.1),Color3.fromRGB(47,42,39),Enum.Material.Fabric)
-
- for i,spec in ipairs({{-22,"03:13"},{0,"03:13"},{22,"13:13"}})do
-  local clock=arenaPart(f,"LobbyClock"..i,Vector3.new(8,4.1,.42),Vector3.new(spec[1],17,306),Color3.fromRGB(26,24,24),Enum.Material.Metal)
-  lobbySurfaceText(clock,(i==3 and"13F  "or"")..spec[2],i==3 and Color3.fromRGB(177,43,48)or Color3.fromRGB(207,189,154),18)
- end
- local floorNotice=arenaPart(f,"Floor13Notice",Vector3.new(16,3.8,.5),Vector3.new(66,8,306),Color3.fromRGB(44,34,31),Enum.Material.WoodPlanks)
- lobbySurfaceText(floorNotice,"13층 폐쇄\n직원도 출입 금지",Color3.fromRGB(178,54,57),18)
- local floorPrompt=Instance.new("ProximityPrompt");floorPrompt.Name="Floor13Prompt";floorPrompt.ObjectText="폐쇄 안내";floorPrompt.ActionText="읽기";floorPrompt.HoldDuration=.12;floorPrompt.MaxActivationDistance=9;floorPrompt.RequiresLineOfSight=false;floorPrompt.Parent=floorNotice
- floorPrompt.Triggered:Connect(function(player)
-  player:SetAttribute("LobbyStoryEvent","13층 안내|13층은 존재하지 않습니다. 따라서 폐쇄할 수도 없습니다.|"..tostring(math.floor(workspace:GetServerTimeNow()*1000)))
- end)
-
- -- 좌우 대기실: 소파/탁자/짐/낡은 액자로 빈 공간을 끊는다.
- for _,side in ipairs({-1,1})do
-  local sx=side*63
-  for _,z in ipairs({245,270})do
-   arenaPart(f,"LobbyRug",Vector3.new(30,.14,18),Vector3.new(sx,.72,z),Color3.fromRGB(70,42,38),Enum.Material.Fabric)
-   local sofa=arenaPart(f,"LobbySofa",Vector3.new(16,3.3,5.8),Vector3.new(sx,2.25,z+5),Color3.fromRGB(56,39,39),Enum.Material.Fabric)
-   arenaPart(f,"LobbySofaBack",Vector3.new(16,5.4,.9),Vector3.new(sx,4.2,z+7.3),Color3.fromRGB(48,33,34),Enum.Material.Fabric)
-   arenaPart(f,"CoffeeTable",Vector3.new(8,.55,5),Vector3.new(sx,2,z-1.5),Color3.fromRGB(80,56,41),Enum.Material.WoodPlanks)
-   for _,dx in ipairs({-3.1,3.1})do
-    for _,dz in ipairs({-1.7,1.7})do
-     arenaPart(f,"CoffeeLeg",Vector3.new(.45,2.6,.45),Vector3.new(sx+dx,.9,z-1.5+dz),Color3.fromRGB(60,43,34),Enum.Material.WoodPlanks)
-    end
-   end
-   sofa.CastShadow=true
-  end
-  for _,z in ipairs({230,255,280})do
-   local frame=arenaPart(f,"PortraitFrame",Vector3.new(.55,8,10),Vector3.new(side*87,10.7,z),Color3.fromRGB(76,55,39),Enum.Material.WoodPlanks)
-   frame.CanCollide=false
-   local portrait=arenaPart(f,"PortraitShadow",Vector3.new(.3,6.8,8.7),Vector3.new(side*86.65,10.7,z),Color3.fromRGB(24,21,22),Enum.Material.SmoothPlastic)
-   portrait.CanCollide=false
-   local face=arenaPart(f,"PortraitFace",Vector3.new(.22,1.6,1.4),Vector3.new(side*86.45,11.4,z),Color3.fromRGB(84,73,65),Enum.Material.SmoothPlastic)
-   face.CanCollide=false
-  end
- end
- -- 벽지 얼룩과 누수 흔적. 깨끗한 호텔 인상을 의도적으로 깨뜨린다.
- for _,spec in ipairs({
-  {-84,7,238,8,5},{-84,12,265,7,9},{84,6,250,6,7},{84,13,286,8,5},
-  {-31,18,306,9,3},{26,17,306,7,4}
- })do
-  local stain=arenaPart(f,"WallStain",Vector3.new(spec[4],spec[5],.12),Vector3.new(spec[1],spec[2],spec[3]),Color3.fromRGB(40,32,29),Enum.Material.SmoothPlastic)
-  stain.Transparency=.38;stain.CanCollide=false
- end
- for _,spec in ipairs({{-82,4,225},{82,4,225},{-55,2,234},{56,2,278}})do
-  local debris=arenaPart(f,"BrokenTrim",Vector3.new(7,.45,.7),Vector3.new(spec[1],spec[2],spec[3]),Color3.fromRGB(65,47,36),Enum.Material.WoodPlanks)
-  debris.Orientation=Vector3.new((spec[1]%9)-4,(spec[3]%13)-6,12);debris.CanCollide=false
- end
-
- for _,spec in ipairs({{-75,286},{-69,289},{72,287},{77,291}})do
-  arenaPart(f,"OldLuggage",Vector3.new(4.4,4.8,3),Vector3.new(spec[1],2.8,spec[2]),Color3.fromRGB(71,47,36),Enum.Material.WoodPlanks)
-  local strap=arenaPart(f,"LuggageStrap",Vector3.new(.45,4.9,3.1),Vector3.new(spec[1],2.8,spec[2]),Color3.fromRGB(35,29,27),Enum.Material.Fabric)
-  strap.CanCollide=false
- end
-
- -- 천장 보와 샹들리에. 밝은 점이 승강기 방향으로 점점 이어진다.
- -- 코믹한 공포 포인트: 짐가방 손, 액자 시선, 13층, 복도 메이드 잔상.
- local hand=arenaPart(f,"LuggageHand",Vector3.new(1.2,.45,2.4),Vector3.new(-72.5,5.15,285.5),Color3.fromRGB(171,155,145),Enum.Material.SmoothPlastic)
- hand.Orientation=Vector3.new(0,0,-18);hand.CanCollide=false
- for finger=1,4 do
-  local fp=arenaPart(f,"LuggageFinger",Vector3.new(.26,.26,1.4),Vector3.new(-73.35+finger*.42,5.55,285.2),Color3.fromRGB(171,155,145),Enum.Material.SmoothPlastic)
-  fp.Orientation=Vector3.new(-15,0,-8+finger*4);fp.CanCollide=false
- end
- lobbyHauntTrigger(f,"Portrait",Vector3.new(-70,9,255),"PORTRAIT_EYES",13,"초상화 속 손님이 눈을 돌렸다.")
- lobbyHauntTrigger(f,"Bellboy",Vector3.new(-66,3,278),"LUGGAGE_HAND",12,"벨보이: 짐은 제가 들겠습니다. 손님도요.")
- lobbyHauntTrigger(f,"Maid",Vector3.new(74,3,235),"MAID_CORRIDOR",13,"메이드: 청소할 손님이 한 명 늘었네요.")
- lobbyHauntTrigger(f,"HallShadow",Vector3.new(0,3,252),"MAID_CORRIDOR",10,"방금 네 뒤로 누가 지나갔다.")
- lobbyHauntTrigger(f,"Elevator13",Vector3.new(0,3,225),"ELEVATOR_13",12,"띵— 13층은 존재하지 않습니다.")
- lobbyHauntTrigger(f,"Clerk",Vector3.new(2,3,286),"CLERK_SMILE",11,"프런트 직원의 미소가 너무 길다.")
- lobbyHauntTrigger(f,"Phone",Vector3.new(15,3,291),"PHONE_GLITCH",10,"전화선은 끊겼는데 예약 전화가 왔다.")
- lobbyHauntTrigger(f,"Vending",Vector3.new(-77,4,242),"VENDING_SHAKE",11,"자판기가 캔 대신 객실 열쇠를 내놓으려 한다.")
- lobbyHauntTrigger(f,"Doll",Vector3.new(64,3,269),"DOLL_TURN",9,"분실물 인형이 프런트 쪽을 보고 있었다.")
- lobbyHauntTrigger(f,"CleaningCart",Vector3.new(70,3,246),"CART_ROLL",10,"청소 카트가 스스로 야간 순찰을 시작했다.")
- lobbyHauntTrigger(f,"Umbrella",Vector3.new(-72,3,231),"UMBRELLA_TWITCH",9,"비도 안 오는데 우산들이 출근 준비를 한다.")
-
- -- 천장 보와 샹들리에. 밝은 점이 승강기 방향으로 점점 이어진다.
- for _,z in ipairs({226,246,266,286})do
-  arenaPart(f,"CeilingBeam",Vector3.new(176,.8,1.2),Vector3.new(0,19.8,z),Color3.fromRGB(50,37,31),Enum.Material.WoodPlanks)
- end
- for _,z in ipairs({236,258,280})do
-  arenaPart(f,"ChandelierStem",Vector3.new(.3,5,.3),Vector3.new(0,17.2,z),Color3.fromRGB(85,66,45),Enum.Material.Metal)
-  local ring=arenaPart(f,"ChandelierRing",Vector3.new(5.5,.45,5.5),Vector3.new(0,14.6,z),Color3.fromRGB(102,76,48),Enum.Material.Metal)
-  ring.Shape=Enum.PartType.Cylinder;ring.Orientation=Vector3.new(0,0,90);ring.CanCollide=false
-  for _,dx in ipairs({-2.1,0,2.1})do
-   local bulb=arenaPart(f,"ChandelierBulb",Vector3.new(.85,1.2,.85),Vector3.new(dx,14.1,z),Color3.fromRGB(221,179,105),Enum.Material.Neon)
-   bulb.CanCollide=false
-   local light=glow(bulb,Color3.fromRGB(255,211,145),z==236 and 24 or 20,z==236 and 1.7 or 1.3)
-   table.insert(flickerLights,light)
-  end
- end
-
- -- 승강기 은행. 문이 메인홀 쪽(+Z)을 향하도록 구조를 바로잡는다.
- lobbyQueueBays={}
- for i,x in ipairs({-54,-18,18,54})do
-  local bay=Instance.new("Folder");bay.Name="ElevatorBay"..i;bay.Parent=f
-  local bayFloor=zoneFloor(bay,"MatchBay"..i,Vector3.new(25,.38,24),Vector3.new(x,1.02,198),Color3.fromRGB(60,56,53),Enum.Material.Metal)
-  bayFloor:SetAttribute("MatchBayIndex",i);bayFloor:SetAttribute("PhysicalLobbyGround",true)
-  zoneFloor(bay,"ElevatorRunner",Vector3.new(20,.14,20),Vector3.new(x,1.3,198),Color3.fromRGB(71,30,34),Enum.Material.Fabric)
-
-  arenaPart(bay,"ElevatorBack",Vector3.new(25,13,1),Vector3.new(x,7.1,186.2),Color3.fromRGB(55,53,51),Enum.Material.Metal)
-  arenaPart(bay,"ElevatorLeft",Vector3.new(1,13,24),Vector3.new(x-12,7.1,198),Color3.fromRGB(56,53,51),Enum.Material.Metal)
-  arenaPart(bay,"ElevatorRight",Vector3.new(1,13,24),Vector3.new(x+12,7.1,198),Color3.fromRGB(56,53,51),Enum.Material.Metal)
-  arenaPart(bay,"ElevatorCeiling",Vector3.new(25,1,24),Vector3.new(x,13.5,198),Color3.fromRGB(39,37,36),Enum.Material.Metal)
-  for _,z in ipairs({191,199,206})do
-   local insideLamp=arenaPart(bay,"ElevatorInsideLamp",Vector3.new(5,.28,1.1),Vector3.new(x,12.75,z),Color3.fromRGB(205,166,99),Enum.Material.Neon)
-   insideLamp.CanCollide=false
-   local light=glow(insideLamp,Color3.fromRGB(248,205,132),14,.82);table.insert(flickerLights,light)
-  end
-
-  -- 문틀과 양쪽 벽면. 문 앞은 완전히 열려 메인홀에서 바로 들어간다.
-  for _,dx in ipairs({-12.4,12.4})do
-   arenaPart(bay,"ElevatorFrame",Vector3.new(1.8,14.5,2),Vector3.new(x+dx,7.7,210.1),Color3.fromRGB(106,79,51),Enum.Material.Metal)
-  end
-  arenaPart(bay,"ElevatorHeader",Vector3.new(26.5,2.2,2),Vector3.new(x,14.1,210.1),Color3.fromRGB(94,68,47),Enum.Material.Metal)
-
-  local profile=elevatorProfile(i)
-  local board=arenaPart(bay,"GateBoard",Vector3.new(20,5.2,.55),Vector3.new(x,10.7,211.25),Color3.fromRGB(25,23,22),Enum.Material.Metal)
-  board.Orientation=Vector3.new(0,180,0)
-  local label=lobbySurfaceText(board,string.format("승강기 %02d · %s\n학교 · 0/%d · 대기",i,profile.Label,profile.MaxPlayers),Color3.fromRGB(236,213,169),16)
-
-  local numberPlate=arenaPart(bay,"ElevatorNumber",Vector3.new(4.4,2.2,.35),Vector3.new(x,15.4,211.25),Color3.fromRGB(171,128,65),Enum.Material.Metal)
-  numberPlate.Orientation=Vector3.new(0,180,0)
-  local numberLabel=lobbySurfaceText(numberPlate,string.format("%02d",i),Color3.fromRGB(29,25,22),18)
-
-  local left=arenaPart(bay,"SlidingDoorL",Vector3.new(11.6,10.8,.7),Vector3.new(x-5.9,6.7,210.05),Color3.fromRGB(79,75,72),Enum.Material.Metal)
-  local right=arenaPart(bay,"SlidingDoorR",Vector3.new(11.6,10.8,.7),Vector3.new(x+5.9,6.7,210.05),Color3.fromRGB(79,75,72),Enum.Material.Metal)
-  left.CanCollide=false;right.CanCollide=false
-
-  lobbyQueueBays[i]={
-   part=bayFloor,label=label,numberLabel=numberLabel,players={},joinedAt={},countdown=nil,token=0,index=i,
-   minPlayers=math.max(1,tonumber(profile.MinPlayers)or 1),maxPlayers=math.max(1,tonumber(profile.MaxPlayers)or LOBBY_QUEUE_MAX),
-   countdownSeconds=math.max(2,tonumber(profile.Countdown)or LOBBY_QUEUE_SECONDS),modeLabel=tostring(profile.Label or("승강기 "..i)),
-   hostUserId=0,selectedMapId="SCHOOL",selectedMapName="학교",
-   doorLeft=left,doorRight=right,
-   doorLeftOpen=left.CFrame*CFrame.new(-7,0,0),doorRightOpen=right.CFrame*CFrame.new(7,0,0),
-   doorLeftClosed=left.CFrame,doorRightClosed=right.CFrame,
-  }
-  left.CFrame=lobbyQueueBays[i].doorLeftOpen;right.CFrame=lobbyQueueBays[i].doorRightOpen
-  local bayData=lobbyQueueBays[i]
-  if updateMatchBayLabel then updateMatchBayLabel(bayData)end
-  for mapIndex,map in ipairs(C.Maps or{})do
-   local bx=x+(mapIndex-2)*6.1
-   local button=arenaPart(bay,"MapSelect_"..map.Id,Vector3.new(5.3,2.5,.35),Vector3.new(bx,5.2,187.05),Color3.fromRGB(55,51,49),Enum.Material.Metal)
-   button.CanCollide=false
-   lobbySurfaceText(button,map.Name,Color3.fromRGB(232,214,177),13)
-   local prompt=Instance.new("ProximityPrompt")
-   prompt.Name="MapSelectPrompt";prompt.ObjectText=map.Name;prompt.ActionText="맵 선택";prompt.HoldDuration=.1;prompt.MaxActivationDistance=8;prompt.RequiresLineOfSight=false;prompt.Parent=button
-   prompt.Triggered:Connect(function(player)
-    if roomServer or state=="RUNNING"or not bayData.players[player]then return end
-    if bayData.hostUserId==0 then bayData.hostUserId=player.UserId end
-    if bayData.hostUserId~=player.UserId then roomFeedback(player,"INFO","승강기 방장만 맵 선택 가능");return end
-    bayData.selectedMapId=map.Id;bayData.selectedMapName=map.Name
-    player:SetAttribute("SelectedElevatorMap",map.Id)
-    roomFeedback(player,"MAP",map.Name)
-    if updateMatchBayLabel then updateMatchBayLabel(bayData)end
-   end)
-  end
- end
-
- -- 승강기 사이 벽체를 따로 만들어 문을 막지 않으면서 한 덩어리 호텔 벽처럼 보이게 한다.
- for _,spec in ipairs({{-80,16},{-36,9.5},{0,9.5},{36,9.5},{80,16}})do
-  arenaPart(f,"ElevatorBankWall",Vector3.new(spec[2],20,2),Vector3.new(spec[1],10.5,211.5),Color3.fromRGB(52,47,44),Enum.Material.Plaster)
-  arenaPart(f,"ElevatorBankWainscot",Vector3.new(spec[2]+.4,5.8,2.3),Vector3.new(spec[1],3.2,211.25),Color3.fromRGB(67,47,36),Enum.Material.WoodPlanks)
- end
- local routeSign=arenaPart(f,"ElevatorRouteSign",Vector3.new(56,4,.55),Vector3.new(0,18.1,212.55),Color3.fromRGB(29,25,24),Enum.Material.WoodPlanks)
- routeSign.Orientation=Vector3.new(0,180,0)
- lobbySurfaceText(routeSign,"1번 1인 · 2번 2인 · 3번 3~4인 · 4번 5~8인\n각 승강기 방장이 안에서 맵 선택",Color3.fromRGB(218,199,163),16)
-
- -- 승강기 번호가 가끔 존재하지 않는 13층으로 바뀐다. 로비 어디서든 보이는 반복 연출이다.
- task.spawn(function()
-  local cursor=0
-  while f.Parent do
-   task.wait(9.5)
-   if #lobbyQueueBays>0 then
-    cursor=cursor%#lobbyQueueBays+1
-    local bay=lobbyQueueBays[cursor]
-    local numberLabel=bay and bay.numberLabel
-    if numberLabel and numberLabel.Parent then
-     numberLabel.Text="13";numberLabel.TextColor3=Color3.fromRGB(205,48,52)
-     task.wait(.72)
-     if numberLabel.Parent then numberLabel.Text=string.format("%02d",bay.index);numberLabel.TextColor3=Color3.fromRGB(29,25,22)end
-    end
-   end
-  end
- end)
-
- -- 좌우의 어두운 막힌 복도는 깊이감만 만들고 실제 진행로는 아니다.
- for _,side in ipairs({-1,1})do
-  local hx=side*78
-  local hall=arenaPart(f,"DarkHall",Vector3.new(15,13,1),Vector3.new(hx,7,221),Color3.fromRGB(13,13,14),Enum.Material.SmoothPlastic)
-  hall.CanCollide=true
-  arenaPart(f,"DarkHallFrame",Vector3.new(18,1.2,1.4),Vector3.new(hx,14,221),Color3.fromRGB(71,50,36),Enum.Material.WoodPlanks)
-  for _,dx in ipairs({-8.1,8.1})do arenaPart(f,"DarkHallPillar",Vector3.new(1.2,14,1.4),Vector3.new(hx+dx,7.2,221),Color3.fromRGB(70,49,35),Enum.Material.WoodPlanks)end
-  local exitLamp=arenaPart(f,"HallWarningLamp",Vector3.new(1.1,1.8,.55),Vector3.new(hx,11.4,220.25),Color3.fromRGB(128,27,31),Enum.Material.Neon)
-  exitLamp.CanCollide=false;table.insert(flickerLights,glow(exitLamp,Color3.fromRGB(180,45,48),9,.48))
- end
-
- -- 보조 기능은 프런트 양옆에 모아 주동선과 섞이지 않게 한다.
- local _,friendJoinPrompt=lobbyTerminal(f,"QuickFriendRoom",Vector3.new(61,4,296),"친구 방","참가",Color3.fromRGB(63,53,50),function(p)
-  if roomServer or state=="RUNNING"then return end
-  quickJoinRoom(p,true)
- end)
- local _,codePrompt=lobbyTerminal(f,"CodeRoomTerminal",Vector3.new(74,4,296),"초대 코드","입력",Color3.fromRGB(57,50,55),function(p)
-  if roomServer or state=="RUNNING"then return end
-  p:SetAttribute("WorldLobbyCodeInputRequest",tostring(math.floor(os.clock()*1000)))
- end)
- local _,leavePrompt=lobbyTerminal(f,"RoomLeaveTerminal",Vector3.new(-70,4,296),"메인 로비","나가기",Color3.fromRGB(65,48,46),function(p)
-  leaveReservedRoom(p)
- end)
-
- -- 드문 조명 깜빡임. 전투 판정과 무관한 로비 연출만 바꾼다.
- task.spawn(function()
-  local index=1
-  while f.Parent do
-   task.wait(3.2+((index%4)*.8))
-   local light=flickerLights[index]
-   if light and light.Parent then
-    local original=light.Brightness
-    light.Brightness=.05
-    task.wait(.08)
-    if light.Parent then light.Brightness=original*.45 end
-    task.wait(.11)
-    if light.Parent then light.Brightness=original end
-   end
-   index=index%math.max(1,#flickerLights)+1
-  end
- end)
-
- refreshPhysicalLobby=function()
-  local browser=not roomServer
-  friendJoinPrompt.Enabled=browser;codePrompt.Enabled=browser
-  leavePrompt.Enabled=roomServer and state=="WAITING"
-  for _,bay in ipairs(lobbyQueueBays)do if bay.part then bay.part.CanTouch=browser end end
- end
- refreshPhysicalLobby()
+ lobbySpawnLocation.Position=Vector3.new(0,.4,293)
+ local safety=workspace:FindFirstChild("ManorBootstrapGround");if safety then safety:Destroy()end
+ for _,player in ipairs(Players:GetPlayers())do manorLobby:Get(player)end
+ refreshPhysicalLobby=function()end
  workspace:SetAttribute("PhysicalLobbyReady",true)
  workspace:SetAttribute("WorldLobbyMode",true)
- workspace:SetAttribute("LobbyArtPass","NOCTURNE_CURSED_HOTEL_V7")
- workspace:SetAttribute("LobbyBuildRevision","NOCTURNE_GROTESQUE_COMIC_LOBBY_20260930")
- return f
-end
-
-local function playerInsideMatchBay(p,bay)
- if not bay or not bay.part or not bay.part.Parent then return false end
- local r=root(p);if not r then return false end
- local localPos=bay.part.CFrame:PointToObjectSpace(r.Position)
- local half=bay.part.Size*.5
- return math.abs(localPos.X)<=half.X and math.abs(localPos.Z)<=half.Z and localPos.Y>=-5 and localPos.Y<=8
-end
-
-updateMatchBayLabel=function(bay)
- if not bay or not bay.label then return end
- local count=0
- for p in pairs(bay.players)do if p.Parent==Players then count+=1 end end
- local maxPlayers=math.max(1,tonumber(bay.maxPlayers)or LOBBY_QUEUE_MAX)
- local minPlayers=math.max(1,tonumber(bay.minPlayers)or 1)
- local mapName=tostring(bay.selectedMapName or"학교")
- local mode=tostring(bay.modeLabel or"")
- local status
- if count<minPlayers then status=string.format("대기 %d/%d",count,minPlayers)
- elseif bay.countdown then status=string.format("%d/%d · %d초",count,maxPlayers,math.max(0,math.ceil(bay.countdown)))
- else status=string.format("%d/%d · 출발 준비",count,maxPlayers)end
- bay.label.Text=string.format("승강기 %02d · %s\n%s · %s",bay.index,mode,mapName,status)
- workspace:SetAttribute("Elevator"..bay.index.."Mode",mode)
- workspace:SetAttribute("Elevator"..bay.index.."Map",mapName)
- workspace:SetAttribute("Elevator"..bay.index.."Count",count)
- workspace:SetAttribute("Elevator"..bay.index.."Max",maxPlayers)
- workspace:SetAttribute("Elevator"..bay.index.."Countdown",bay.countdown and math.max(0,math.ceil(bay.countdown))or 0)
- workspace:SetAttribute("Elevator"..bay.index.."Ready",count>=minPlayers)
-end
-local function beginMatchBayCountdown(bay)
- if not bay or bay.countdown or roomServer then return end
- bay.token+=1
- local token=bay.token
- bay.countdown=math.max(2,tonumber(bay.countdownSeconds)or LOBBY_QUEUE_SECONDS)
- if bay.doorLeft and bay.doorRight then
-  TweenService:Create(bay.doorLeft,TweenInfo.new(.35,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{CFrame=bay.doorLeftOpen}):Play()
-  TweenService:Create(bay.doorRight,TweenInfo.new(.35,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{CFrame=bay.doorRightOpen}):Play()
- end
- task.spawn(function()
-  while token==bay.token and bay.countdown and bay.countdown>0 do
-   updateMatchBayLabel(bay)
-   task.wait(1)
-   if token~=bay.token then return end
-   bay.countdown-=1
-  end
-  if token~=bay.token then return end
-  local group={}
-  for p in pairs(bay.players)do
-   if p.Parent==Players and playerInsideMatchBay(p,bay)then table.insert(group,p)end
-  end
-  table.sort(group,function(a,b)return a.UserId<b.UserId end)
-  if #group<(bay.minPlayers or 1)then bay.countdown=nil;bay.players={};bay.joinedAt={};bay.hostUserId=0;updateMatchBayLabel(bay);return end
-  while #group>(bay.maxPlayers or LOBBY_QUEUE_MAX)do table.remove(group)end
-  if bay.doorLeft and bay.doorRight then
-   TweenService:Create(bay.doorLeft,TweenInfo.new(.45,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{CFrame=bay.doorLeftClosed}):Play()
-   TweenService:Create(bay.doorRight,TweenInfo.new(.45,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{CFrame=bay.doorRightClosed}):Play()
-   task.wait(.5)
-  end
-  local selectedMapId=bay.selectedMapId or"SCHOOL"
-  bay.countdown=nil;bay.players={};bay.joinedAt={};bay.hostUserId=0;updateMatchBayLabel(bay)
-  createQueuedReservedRoom(group,selectedMapId)
-  task.delay(1,function()
-   if bay.doorLeft and bay.doorLeft.Parent then TweenService:Create(bay.doorLeft,TweenInfo.new(.35),{CFrame=bay.doorLeftOpen}):Play()end
-   if bay.doorRight and bay.doorRight.Parent then TweenService:Create(bay.doorRight,TweenInfo.new(.35),{CFrame=bay.doorRightOpen}):Play()end
-  end)
- end)
+ return manorLobby.root
 end
 
 task.spawn(function()
  while true do
-  if state~="RUNNING"and #lobbyQueueBays>0 then
-   local currentPlayers=Players:GetPlayers()
-   table.sort(currentPlayers,function(a,b)return a.UserId<b.UserId end)
-   for i,player in ipairs(currentPlayers)do
-    local rr=root(player)
-    if rr and player:GetAttribute("RoundState")~="RUNNING"and player:GetAttribute("RoundState")~="SPECTATING"and(rr.Position.Y<-2 or rr.Position.Y>20 or math.abs(rr.Position.X)>86 or rr.Position.Z<182 or rr.Position.Z>310)then
-     local slot=((i-1)%#lobbySpawns)+1
-     teleport(player,lobbySpawns[slot],Vector3.new(0,3,210))
-     player:SetAttribute("LobbySafetyRecoveredAt",workspace:GetServerTimeNow())
+  task.wait(.5)
+  if manorLobby and state~="RUNNING"then
+   for _,p in ipairs(Players:GetPlayers())do
+    if not roomTeleportPending[p]and p:GetAttribute("RoundState")~="SPECTATING"then
+     local destination,look=manorLobby:Recover(p)
+     if destination then teleport(p,destination,look);p:SetAttribute("LobbySafetyRecoveredAt",workspace:GetServerTimeNow())end
     end
    end
   end
-  if not roomServer and state~="RUNNING"and #lobbyQueueBays>0 then
-   local assigned={}
-   for _,bay in ipairs(lobbyQueueBays)do
-    local changed=false
-    for _,p in ipairs(Players:GetPlayers())do
-     local inside=not assigned[p] and playerInsideMatchBay(p,bay)
-     if inside then
-      assigned[p]=true
-      local count=0;for _ in pairs(bay.players)do count+=1 end
-      if not bay.players[p]and count<(bay.maxPlayers or LOBBY_QUEUE_MAX)then
-       bay.players[p]=true;bay.joinedAt[p]=os.clock();changed=true
-       if bay.hostUserId==0 then
-        bay.hostUserId=p.UserId
-        local preferred=mapById(p:GetAttribute("SelectedElevatorMap")or bay.selectedMapId or"SCHOOL")
-        bay.selectedMapId=preferred.Id;bay.selectedMapName=preferred.Name
-        roomFeedback(p,"HOST","승강기 방장 · 안쪽에서 맵 선택")
-       end
-      elseif not bay.players[p]and count>=(bay.maxPlayers or LOBBY_QUEUE_MAX)then
-       roomFeedback(p,"FULL","이 승강기는 가득 참 · 다른 승강기 이용")
-      end
-     elseif bay.players[p]then
-      bay.players[p]=nil;bay.joinedAt[p]=nil;changed=true
-      if bay.hostUserId==p.UserId then
-       bay.hostUserId=0
-       local nextHost=nil;local oldest=math.huge
-       for candidate in pairs(bay.players)do
-        local joined=bay.joinedAt[candidate]or math.huge
-        if joined<oldest then oldest=joined;nextHost=candidate end
-       end
-       if nextHost then bay.hostUserId=nextHost.UserId;roomFeedback(nextHost,"HOST","승강기 방장이 되었어")end
-      end
-     end
-    end
-    for p in pairs(bay.players)do if not p.Parent then bay.players[p]=nil;changed=true end end
-    local count=0;for _ in pairs(bay.players)do count+=1 end
-    if count>=(bay.maxPlayers or LOBBY_QUEUE_MAX)and bay.countdown then bay.countdown=1 end
-    if count>=(bay.minPlayers or 1)and not bay.countdown then beginMatchBayCountdown(bay)
-    elseif count<(bay.minPlayers or 1)and bay.countdown then bay.token+=1;bay.countdown=nil;changed=true end
-    if count==0 then bay.hostUserId=0 end
-    if changed then updateMatchBayLabel(bay)end
-   end
-  end
-  task.wait(.2)
  end
 end)
 
@@ -2904,8 +2173,12 @@ end
 local function setRole(p,r)
  p:SetAttribute("Role",r);p:SetAttribute("Frozen",false)
  if state=="RUNNING"and foundationSpawn and foundationSpawn.Parent then p.RespawnLocation=foundationSpawn end
- if r=="MONSTER"or r=="SURVIVOR"then p:SetAttribute("RoundTeam",r)end
+ if r=="MONSTER"or r=="SURVIVOR"then
+  p:SetAttribute("RoundTeam",r)
+  if p.Character then for _,d in ipairs(p.Character:GetDescendants())do if d:IsA("BasePart")then d.CollisionGroup="Default"end end end
+ end
  restoreMovement(p,r=="MONSTER"and 19 or 16);applyRoleVisual(p,r)
+ if manorLobby then manorLobby:Dress(p)end
  tagGraceUntil[p]=os.clock()+6
 end
 local function active()
@@ -3164,9 +2437,11 @@ local function endRound(winner)
  workspace:SetAttribute("CelebrationWinnerTeam","");workspace:SetAttribute("CelebrationName","");workspace:SetAttribute("CelebrationCaption","");workspace:SetAttribute("CelebrationAIWinners",0);workspace:SetAttribute("CelebrationStagedCount",0)
  local players=Players:GetPlayers();table.sort(players,function(a,b)return a.UserId<b.UserId end)
  for i,p in ipairs(players)do
-  p:SetAttribute("RoundState",roomServer and "ROOM_WAITING"or"ROOM_BROWSER")
-  teleport(p,lobbySpawns[((i-1)%#lobbySpawns)+1])
+  p:SetAttribute("RoundState","ROOM_BROWSER")
+  teleport(p,personalSpawn(p))
+  if roomServer and not studioRoomFallback then leaveReservedRoom(p)end
  end
+ if studioRoomFallback then roomServer=false;roomCode="";roomSolo=false end
  if refreshPhysicalLobby then refreshPhysicalLobby()end
 end
 local purifyCooldown={}
@@ -3526,6 +2801,7 @@ local function equipCosmetic(p,id)
  local owned=ownedCosmeticsFrom(p:GetAttribute("OwnedCosmetics"))
  if not owned[id]then p:SetAttribute("CosmeticFeedback","NOT_OWNED:"..id);return end
  p:SetAttribute("EquippedCosmetic",id);p:SetAttribute("CosmeticFeedback","EQUIPPED:"..id)
+ if manorLobby then manorLobby:Dress(p)end
  save(p)
 end
 local function reportGhostSighting(p,id)
@@ -3585,10 +2861,18 @@ local function broadcastMultiplayerSync(actor)
 end
 remote.OnServerEvent:Connect(function(p,a,value)
  if not validRemoteAction(p,a)then return end
- if a==C.Actions.PREFER_MONSTER and state~="RUNNING"then
-  p:SetAttribute("MonsterPreference","MONSTER");p:SetAttribute("SoloRole","MONSTER");p:SetAttribute("LobbySelectionConfirmed",true);if #Players:GetPlayers()==1 then soloStartRequested=true end
+ if a==C.Actions.SELECT_MAP and state~="RUNNING"and not roomServer then
+  if typeof(value)=="string"then local map=mapById(value);p:SetAttribute("SelectedLobbyMap",map.Id);p:SetAttribute("SelectedLobbyMapName",map.Name)end
+ elseif a==C.Actions.MANOR_SOLO and state~="RUNNING"and not roomServer then
+  createReservedRoom(p,"PRIVATE",true)
+ elseif a==C.Actions.MANOR_RANK and state~="RUNNING"and manorLobby then
+  task.spawn(function()manorLobby:Rank(p)end)
+ elseif a==C.Actions.MANOR_GAG and state~="RUNNING"and manorLobby then
+  local now=os.clock();if now-(p:GetAttribute("ManorGagAt")or 0)>20 then p:SetAttribute("ManorGagAt",now);task.spawn(function()manorLobby:Gag(p)end)end
+ elseif a==C.Actions.PREFER_MONSTER and state~="RUNNING"then
+  p:SetAttribute("MonsterPreference","MONSTER");p:SetAttribute("SoloRole","MONSTER");p:SetAttribute("LobbySelectionConfirmed",true);applyRoleVisual(p,"MONSTER")
  elseif a==C.Actions.PREFER_SURVIVOR and state~="RUNNING"then
-  p:SetAttribute("MonsterPreference","SURVIVOR");p:SetAttribute("SoloRole","SURVIVOR");p:SetAttribute("LobbySelectionConfirmed",true);if #Players:GetPlayers()==1 then soloStartRequested=true end
+  p:SetAttribute("MonsterPreference","SURVIVOR");p:SetAttribute("SoloRole","SURVIVOR");p:SetAttribute("LobbySelectionConfirmed",true);applyRoleVisual(p,"SURVIVOR")
  elseif a==C.Actions.SOLO_MONSTER and #Players:GetPlayers()==1 and state~="RUNNING"then p:SetAttribute("MonsterPreference","MONSTER");p:SetAttribute("SoloRole","MONSTER");p:SetAttribute("LobbySelectionConfirmed",true);soloStartRequested=true
  elseif a==C.Actions.SOLO_SURVIVOR and #Players:GetPlayers()==1 and state~="RUNNING"then p:SetAttribute("MonsterPreference","SURVIVOR");p:SetAttribute("SoloRole","SURVIVOR");p:SetAttribute("LobbySelectionConfirmed",true);soloStartRequested=true
  elseif a==C.Actions.PURIFY or a==C.Actions.RESCUE then purify(p)
@@ -3596,7 +2880,7 @@ remote.OnServerEvent:Connect(function(p,a,value)
  elseif a==C.Actions.HUMAN_ABILITY then humanAbility(p)
  elseif a==C.Actions.INFECT_ATTACK then infectAttack(p)
  elseif a==C.Actions.ABILITY then ability(p)
- elseif a==C.Actions.NEXT_MONSTER then nextMonster(p)
+ elseif a==C.Actions.NEXT_MONSTER then nextMonster(p);if state~="RUNNING"and p:GetAttribute("MonsterPreference")=="MONSTER"then applyRoleVisual(p,"MONSTER")end
  elseif a==C.Actions.NEXT_HUMAN then nextHuman(p)
  elseif a==C.Actions.BUY_COSMETIC then buyCosmetic(p,value)
  elseif a==C.Actions.EQUIP_COSMETIC then equipCosmetic(p,value)
@@ -3648,7 +2932,7 @@ local function onCharacter(p)
  task.wait(.05)
  local c=p.Character
  if state~="RUNNING"then
-  local lobbyDeadline=os.clock()+3
+  local lobbyDeadline=os.clock()+60
   while workspace:GetAttribute("PhysicalLobbyReady")~=true and os.clock()<lobbyDeadline do task.wait(.05)end
   if not c or not c.Parent then return end
   local h=c:WaitForChild("Humanoid",5);local r=c:WaitForChild("HumanoidRootPart",5)
@@ -3658,10 +2942,11 @@ local function onCharacter(p)
   setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
   p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
   p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
-  local players=Players:GetPlayers();table.sort(players,function(a,b)return a.UserId<b.UserId end)
-  local slot=1
-  for i,player in ipairs(players)do if player==p then slot=((i-1)%#lobbySpawns)+1;break end end
-  teleport(p,lobbySpawns[slot],Vector3.new(0,3,210))
+  local destination,look,spawn=personalSpawn(p)
+  p.RespawnLocation=spawn
+  teleport(p,destination,look)
+  for _,d in ipairs(c:GetDescendants())do if d:IsA("BasePart")then d.CollisionGroup="ManorAvatar"end end
+  if manorLobby then manorLobby:Dress(p)end
   p:SetAttribute("LobbySpawnGroundedAt",workspace:GetServerTimeNow())
   return
  end
@@ -3768,7 +3053,7 @@ Players.PlayerRemoving:Connect(function(p)
  local leavingWasHost=roomServer and p.UserId==roomHostUserId
  local rr=root(p)
  local leavingPos=rr and rr.Position or(leavingRole=="MONSTER"and monsterSpawns[1]or survivorSpawns[1])
- save(p);for _,bay in ipairs(lobbyQueueBays)do bay.players[p]=nil end;cooldown[p]=nil;dashCooldown[p]=nil;infectAttackCooldown[p]=nil;humanAbilityCooldown[p]=nil;energyStationReady[p]=nil;ghostSeenThisRound[p]=nil;roomActionLast[p]=nil;roomJoinedAt[p]=nil;roomTeleportPending[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil;purifyCooldown[p]=nil
+ save(p);if manorLobby then manorLobby:Remove(p)end;cooldown[p]=nil;dashCooldown[p]=nil;infectAttackCooldown[p]=nil;humanAbilityCooldown[p]=nil;energyStationReady[p]=nil;ghostSeenThisRound[p]=nil;roomActionLast[p]=nil;roomJoinedAt[p]=nil;roomTeleportPending[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil;purifyCooldown[p]=nil
  task.defer(function()
   if state=="RUNNING"and arena and arena.Parent and(leavingRole=="MONSTER"or leavingRole=="SURVIVOR")then
    bot(leavingRole,leavingPos)
@@ -3794,7 +3079,7 @@ end)
 TeleportService.TeleportInitFailed:Connect(function(player,teleportResult,errorMessage)
  if player and player.Parent==Players then
   roomTeleportPending[player]=nil
-  roomFeedback(player,"ERROR","방 연결 실패 · 승강기에서 다시 시도")
+  roomFeedback(player,"ERROR","방 연결 실패 · 집사에게 다시 시도")
   warn("Room teleport init failed",player.UserId,teleportResult,errorMessage)
  end
 end)
@@ -3915,19 +3200,20 @@ task.spawn(function()
  end
 end)
 
-local function botHumanForm(b)
+local BotAI={}
+function BotAI.botHumanForm(b)
  local id=b and b.humanFormId or"BROADCAST"
  for _,row in ipairs(C.HumanForms or{})do if row.Id==id then return row end end
  return(C.HumanForms and C.HumanForms[1])or{Id="BROADCAST",PurifyRangeBonus=0,PurifyCooldownBonus=0,DashCooldownBonus=0,DashPowerBonus=0}
 end
 
-local function botMonsterForm(b)
+function BotAI.botMonsterForm(b)
  local id=b and b.monsterId or"DRACULA"
  for _,row in ipairs(C.MonsterForms or{})do if row.Id==id then return row end end
  return(C.MonsterForms and C.MonsterForms[1])or{Id="DRACULA",Ability="BAT_DASH"}
 end
 
-local function botSeparationVector(b)
+function BotAI.botSeparationVector(b)
  local radius=math.max(6,tonumber(C.AICombat and C.AICombat.SeparationRadius)or 12)
  local force=Vector3.zero
  local count=0
@@ -3946,7 +3232,7 @@ local function botSeparationVector(b)
  return force
 end
 
-local function steerBotAroundObstacle(b,desired)
+function BotAI.steerBotAroundObstacle(b,desired)
  local flat=Vector3.new(desired.X,0,desired.Z)
  if flat.Magnitude<.01 then return desired end
  flat=flat.Unit
@@ -3975,14 +3261,14 @@ local function steerBotAroundObstacle(b,desired)
  return right*sign
 end
 
-local function moveBotDirection(b,direction,dt,speedValue)
+function BotAI.moveBotDirection(b,direction,dt,speedValue)
  local flat=Vector3.new(direction.X,0,direction.Z)
  if flat.Magnitude<.01 then return end
- local separation=botSeparationVector(b)
+ local separation=BotAI.botSeparationVector(b)
  local separationWeight=math.max(0,tonumber(C.AICombat and C.AICombat.SeparationWeight)or 7)
  local desired=flat.Unit+separation*(separationWeight/10)
  if desired.Magnitude<.01 then desired=flat.Unit else desired=desired.Unit end
- desired=steerBotAroundObstacle(b,desired)
+ desired=BotAI.steerBotAroundObstacle(b,desired)
  local speedNow=math.max(0,tonumber(speedValue)or b.speed or 14)
  local current=b.part.Position
  local nextPos=current+desired*speedNow*dt
@@ -3991,7 +3277,7 @@ local function moveBotDirection(b,direction,dt,speedValue)
  setBotCFrame(b,CFrame.lookAt(nextPos,nextPos+desired))
 end
 
-local function botTargetPosition(entry)
+function BotAI.botTargetPosition(entry)
  if entry and entry.p then local rr=root(entry.p);return rr and rr.Position or nil end
  if entry and entry.b and entry.b.part then return entry.b.part.Position end
  return nil
@@ -4002,12 +3288,12 @@ local botPatrolPoints={
  Vector3.new(-118,3,36),Vector3.new(0,3,12),Vector3.new(118,3,36),
  Vector3.new(-86,3,108),Vector3.new(0,3,92),Vector3.new(86,3,108),
 }
-local function botEntryKey(entry)
+function BotAI.botEntryKey(entry)
  if entry and entry.p then return"P:"..tostring(entry.p.UserId)end
  if entry and entry.b then return"B:"..tostring(entry.b.tacticSlot or 0)end
  return""
 end
-local function botFindEntryByKey(role,key)
+function BotAI.botFindEntryByKey(role,key)
  if key==""then return nil,nil end
  if string.sub(key,1,2)=="P:"then
   local id=tonumber(string.sub(key,3))
@@ -4024,14 +3310,14 @@ local function botFindEntryByKey(role,key)
  end
  return nil,nil
 end
-local function botTargetLoad(role,key,exclude)
+function BotAI.botTargetLoad(role,key,exclude)
  local count=0
  for _,other in ipairs(bots)do
   if other~=exclude and other.role==role and other.currentTargetKey==key and(os.clock()<(other.targetLockUntil or 0))then count+=1 end
  end
  return count
 end
-local function botPatrolTarget(b)
+function BotAI.botPatrolTarget(b)
  local reach=math.max(4,tonumber(C.AICombat and C.AICombat.PatrolReachDistance)or 8)
  local refresh=math.max(3,tonumber(C.AICombat and C.AICombat.PatrolRefreshSeconds)or 7)
  local now=os.clock()
@@ -4046,20 +3332,20 @@ local function botPatrolTarget(b)
  return Vector3.new(b.patrolTarget.X,b.part.Position.Y,b.patrolTarget.Z)
 end
 
-local function distributedSurvivorTarget(b)
+function BotAI.distributedSurvivorTarget(b)
  local now=os.clock()
  if b.currentTargetKey and now<(b.targetLockUntil or 0)then
-  local locked,pos=botFindEntryByKey("SURVIVOR",b.currentTargetKey)
+  local locked,pos=BotAI.botFindEntryByKey("SURVIVOR",b.currentTargetKey)
   if locked and pos then return locked,pos,(pos-b.part.Position).Magnitude end
  end
  local entries={}
  for _,entry in ipairs(active())do
-  local pos=botTargetPosition(entry)
+  local pos=BotAI.botTargetPosition(entry)
   if pos then
-   local key=botEntryKey(entry)
+   local key=BotAI.botEntryKey(entry)
    local distance=(pos-b.part.Position).Magnitude
-   local load=botTargetLoad("MONSTER",key,b)
-   local lane=math.abs(pos.X-(botPatrolTarget(b).X))*.035
+   local load=BotAI.botTargetLoad("MONSTER",key,b)
+   local lane=math.abs(pos.X-(BotAI.botPatrolTarget(b).X))*.035
    table.insert(entries,{entry=entry,pos=pos,distance=distance,key=key,score=distance+load*(tonumber(C.AICombat and C.AICombat.TargetCrowdPenalty)or 38)+lane})
   end
  end
@@ -4071,10 +3357,10 @@ local function distributedSurvivorTarget(b)
  return chosen.entry,chosen.pos,chosen.distance
 end
 
-local function distributedMonsterTarget(b)
+function BotAI.distributedMonsterTarget(b)
  local now=os.clock()
  if b.currentTargetKey and now<(b.targetLockUntil or 0)then
-  local locked,pos=botFindEntryByKey("MONSTER",b.currentTargetKey)
+  local locked,pos=BotAI.botFindEntryByKey("MONSTER",b.currentTargetKey)
   if locked and pos then
    return locked.p and{player=locked.p,pos=pos}or{bot=locked.b,pos=pos},pos,(pos-b.part.Position).Magnitude
   end
@@ -4085,7 +3371,7 @@ local function distributedMonsterTarget(b)
    local rr=root(player)
    if rr then
     local key="P:"..tostring(player.UserId);local distance=(rr.Position-b.part.Position).Magnitude
-    local load=botTargetLoad("SURVIVOR",key,b)
+    local load=BotAI.botTargetLoad("SURVIVOR",key,b)
     table.insert(entries,{player=player,pos=rr.Position,distance=distance,key=key,score=distance+load*(tonumber(C.AICombat and C.AICombat.TargetCrowdPenalty)or 38)})
    end
   end
@@ -4093,7 +3379,7 @@ local function distributedMonsterTarget(b)
  for _,other in ipairs(bots)do
   if other~=b and other.role=="MONSTER"and other.part and other.part.Parent then
    local pos=other.part.Position;local key="B:"..tostring(other.tacticSlot or 0);local distance=(pos-b.part.Position).Magnitude
-   local load=botTargetLoad("SURVIVOR",key,b)
+   local load=BotAI.botTargetLoad("SURVIVOR",key,b)
    table.insert(entries,{bot=other,pos=pos,distance=distance,key=key,score=distance+load*(tonumber(C.AICombat and C.AICombat.TargetCrowdPenalty)or 38)})
   end
  end
@@ -4105,15 +3391,15 @@ local function distributedMonsterTarget(b)
  return chosen,chosen.pos,chosen.distance
 end
 
-local function fireBotHumanEffect(b,action,targetPos)
+function BotAI.fireBotHumanEffect(b,action,targetPos)
  remote:FireAllClients("AI_HUMAN_ACTION_EFFECT",{
   Action=action,FormId=b.humanFormId or"BROADCAST",Origin=b.part.Position,
   Target=targetPos,TacticSlot=b.tacticSlot or 0,
  })
 end
 
-local function tryBotHumanPurify(b,target,distance)
- local profile=botHumanForm(b)
+function BotAI.tryBotHumanPurify(b,target,distance)
+ local profile=BotAI.botHumanForm(b)
  local range=math.max(4,(C.PurifyDistance or 8)+(tonumber(profile.PurifyRangeBonus)or 0))
  local cost=math.max(0,tonumber(C.Energy and C.Energy.PurifyCost)or 35)
  local cooldownSeconds=math.max(2,(C.PurifyCooldown or 5)+(tonumber(profile.PurifyCooldownBonus)or 0))
@@ -4125,12 +3411,12 @@ local function tryBotHumanPurify(b,target,distance)
  elseif target.bot then
   removeBot(target.bot)
  end
- fireBotHumanEffect(b,"PURIFY",targetPos)
+ BotAI.fireBotHumanEffect(b,"PURIFY",targetPos)
  return true,range
 end
 
-local function tryBotHumanDash(b,direction,distance)
- local profile=botHumanForm(b)
+function BotAI.tryBotHumanDash(b,direction,distance)
+ local profile=BotAI.botHumanForm(b)
  local cost=math.max(0,tonumber(C.Energy and C.Energy.DashCost)or 25)
  local cooldownSeconds=math.max(3,(C.SurvivorDashCooldown or 7)+(tonumber(profile.DashCooldownBonus)or 0))
  if os.clock()<(b.dashReadyAt or 0)or(b.energy or 0)<cost then return false end
@@ -4146,12 +3432,12 @@ local function tryBotHumanDash(b,direction,distance)
  local limit=math.max(20,(tonumber(C.ArenaLimit)or 176)-4)
  target=Vector3.new(math.clamp(target.X,-limit,limit),current.Y,math.clamp(target.Z,-limit,limit))
  setBotCFrame(b,CFrame.lookAt(target,target+flat.Unit))
- fireBotHumanEffect(b,"DASH",target)
+ BotAI.fireBotHumanEffect(b,"DASH",target)
  return true
 end
 
-local function tryBotHumanAbility(b,target,distance)
- local formInfo=botHumanForm(b)
+function BotAI.tryBotHumanAbility(b,target,distance)
+ local formInfo=BotAI.botHumanForm(b)
  local abilityId=formInfo and formInfo.ActiveAbility or nil
  local profile=abilityId and C.HumanAbilities and C.HumanAbilities[abilityId]or nil
  if not abilityId or not profile then return false end
@@ -4226,13 +3512,13 @@ local function tryBotHumanAbility(b,target,distance)
  return true
 end
 
-local function tryBotMonsterAbility(b,targetPos,distance)
+function BotAI.tryBotMonsterAbility(b,targetPos,distance)
  if not targetPos then return false end
  local now=os.clock()
  if now<(b.abilityReadyAt or 0)then return false end
  local cost=math.max(0,tonumber(C.Energy and C.Energy.AbilityCost)or 45)
  if(b.energy or 0)<cost then return false end
- local formInfo=botMonsterForm(b)
+ local formInfo=BotAI.botMonsterForm(b)
  local ability=tostring(formInfo.Ability or"")
  local profile=(C.MonsterAbilities and C.MonsterAbilities[ability])or{}
  local minRange=math.max(0,tonumber(C.AICombat and C.AICombat.MonsterAbilityMinRange)or 9)
@@ -4346,10 +3632,10 @@ RunService.Heartbeat:Connect(function(dt)
    end
 
    if b.role=="MONSTER"then
-    local bestEntry,bestPos,bd=distributedSurvivorTarget(b)
+    local bestEntry,bestPos,bd=BotAI.distributedSurvivorTarget(b)
     if bestPos then
      local infectRange=math.max(2,tonumber(C.Energy and C.Energy.InfectRange)or 8)
-     local botForm=botMonsterForm(b)
+     local botForm=BotAI.botMonsterForm(b)
      if botForm.Ability=="RAGE_RUN"and(b.rageUntil or 0)>os.clock()then
       local rageProfile=(C.MonsterAbilities and C.MonsterAbilities.RAGE_RUN)or{}
       infectRange+=math.max(0,tonumber(rageProfile.InfectRangeBonus)or 0)
@@ -4359,25 +3645,25 @@ RunService.Heartbeat:Connect(function(dt)
      if bd<=infectRange and os.clock()>=(b.infectAttackReadyAt or 0)and(b.energy or 0)>=infectCost then
       b.energy=math.max(0,(b.energy or 0)-infectCost);b.infectAttackReadyAt=os.clock()+attackCd
       if bestEntry and bestEntry.p then infectPlayer(bestEntry.p,nil)elseif bestEntry and bestEntry.b then infectBot(bestEntry.b,nil)end
-     elseif not tryBotMonsterAbility(b,bestPos,bd)then
+     elseif not BotAI.tryBotMonsterAbility(b,bestPos,bd)then
       local toTarget=bestPos-b.part.Position
       local flat=Vector3.new(toTarget.X,0,toTarget.Z)
       if flat.Magnitude>.1 then
        local side=b.strafeSign or((b.tacticSlot or 1)%2==0 and 1 or-1)
        local right=Vector3.new(-flat.Unit.Z,0,flat.Unit.X)
        local approach=flat.Unit+right*(bd<20 and .28*side or .12*side)
-       moveBotDirection(b,approach,dt,b.speed)
+       BotAI.moveBotDirection(b,approach,dt,b.speed)
       end
      end
     end
 
    elseif b.role=="SURVIVOR"then
-    local target,targetPos,best=distributedMonsterTarget(b)
+    local target,targetPos,best=BotAI.distributedMonsterTarget(b)
     local engageRange=math.max(20,tonumber(C.AICombat and C.AICombat.HumanEngageRange)or 46)
     if targetPos and best<=engageRange then
-     local usedAbility=tryBotHumanAbility(b,target,best)
-     local attacked,purifyRange=false,math.max(4,(C.PurifyDistance or 8)+(tonumber(botHumanForm(b).PurifyRangeBonus)or 0))
-     if not usedAbility then attacked,purifyRange=tryBotHumanPurify(b,target,best)end
+     local usedAbility=BotAI.tryBotHumanAbility(b,target,best)
+     local attacked,purifyRange=false,math.max(4,(C.PurifyDistance or 8)+(tonumber(BotAI.botHumanForm(b).PurifyRangeBonus)or 0))
+     if not usedAbility then attacked,purifyRange=BotAI.tryBotHumanPurify(b,target,best)end
      if not usedAbility and not attacked then
       local preferred=math.max(5,math.min(purifyRange-1,tonumber(C.AICombat and C.AICombat.HumanPreferredRange)or 10))
       local delta=targetPos-b.part.Position
@@ -4390,14 +3676,14 @@ RunService.Heartbeat:Connect(function(dt)
        if best>purifyRange+4 then moveDir=dir+right*(.25*side)
        elseif best<preferred-2 then moveDir=-dir+right*(.48*side)
        else moveDir=right*side-dir*.08 end
-       if not tryBotHumanDash(b,moveDir,best)then moveBotDirection(b,moveDir,dt,b.speed)end
+       if not BotAI.tryBotHumanDash(b,moveDir,best)then BotAI.moveBotDirection(b,moveDir,dt,b.speed)end
       end
      end
     else
      b.currentTargetKey=nil
-     local patrol=botPatrolTarget(b)
+     local patrol=BotAI.botPatrolTarget(b)
      local delta=patrol-b.part.Position
-     if delta.Magnitude>.5 then moveBotDirection(b,delta,dt,b.speed*.88)end
+     if delta.Magnitude>.5 then BotAI.moveBotDirection(b,delta,dt,b.speed*.88)end
     end
    end
   end

@@ -1,0 +1,14 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>심야대탈출 — 폐저택 GLB 검수</title>
+<style>body{margin:0;background:#11161c;color:#f2dfbd;font-family:system-ui}canvas{display:block}aside{position:fixed;left:28px;top:24px;pointer-events:none}small{letter-spacing:3px;color:#a7b5ae}h1{font-size:27px;margin:8px 0}p{color:#b9b4b0;font-size:13px}.badge{position:fixed;bottom:22px;left:28px;color:#bbb;font-size:12px}</style>
+<script type="importmap">{"imports":{"three":"../world-ghosts/native/mesh/three/three.module.js","three/addons/":"../world-ghosts/native/mesh/three/examples/jsm/"}}</script>
+<aside><small>MIDNIGHT ESCAPE</small><h1>살아 있는 폐저택</h1><p>새 GLB 배경 · 집사 / 장의사 / 기록관 · 모델 검수 화면</p></aside><div class="badge">드래그 회전 · 휠 확대 · 실제 Roblox 화면이 아닌 GLB 검수용 뷰어</div>
+<script type="module">
+import * as THREE from 'three';import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+const scene=new THREE.Scene();scene.background=new THREE.Color('#17232c');scene.fog=new THREE.Fog('#17232c',110,230);
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;document.body.append(renderer.domElement);
+const camera=new THREE.PerspectiveCamera(44,innerWidth/innerHeight,.1,400);const inside=location.search.includes('inside');camera.position.set(...(inside?[1,9,-8]:[72,52,101]));const controls=new OrbitControls(camera,renderer.domElement);controls.target.set(0,12,-10);if(inside)controls.target.set(0,6,-28);controls.update();
+scene.add(new THREE.HemisphereLight(0xa2c8d4,0x453235,2.1));const moon=new THREE.DirectionalLight(0xb9def1,3);moon.position.set(-50,85,30);moon.castShadow=true;moon.shadow.bias=-.0005;moon.shadow.normalBias=.15;moon.shadow.mapSize.set(2048,2048);Object.assign(moon.shadow.camera,{left:-80,right:80,top:80,bottom:-80,near:1,far:230});scene.add(moon);
+for(const [x,y,z] of [[0,14,-17],[-20,6,10],[20,7,15],[-18,5,-26],[20,5,-22]]){const l=new THREE.PointLight(0xffac54,200,42,1.6);l.position.set(x,y,z);scene.add(l)}
+new GLTFLoader().load('generated/manor-lobby.glb',g=>{g.scene.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});scene.add(g.scene);window.modelReady=true;window.sceneMeshCount=0;g.scene.traverse(o=>{if(o.isMesh)window.sceneMeshCount++})},undefined,e=>{window.modelError=String(e);console.error(e)});
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});renderer.setAnimationLoop(()=>renderer.render(scene,camera));
+</script></html>
