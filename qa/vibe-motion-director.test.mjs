@@ -10,6 +10,11 @@ import {
   MOTION_LIBRARY_GRAPH_NODES,
   ROBLOX_CHARACTER_MOTION_FAILURE,
   ROBLOX_MOTION_SOURCE_PRIORITY,
+  DUEL_COMBAT_MOTION_TARGET,
+  DUEL_COMBAT_REQUIRED_ROLES,
+  WEAPON_COMBAT_MOTION_PACKS,
+  UNARMED_MARTIAL_ARTS_STYLES,
+  createDuelCombatMotionLoadout,
   createMotionDNA,
   scoreMotionCandidate,
   selectContextMotion,
@@ -79,6 +84,47 @@ test('explicit failed quality cannot win through company ownership',()=>{
   const dna=createMotionDNA({id:'test',bodyPlan:'HUMANOID',rigProfile:'R15',platformVariant:'ROBLOX'});
   const selection=selectRobloxCharacterMotionSource({candidates:[{id:'bad-owned',companyVerified:true,dna,qualityReview:{verdict:'FAIL'}},{id:'external',licenseVerified:true,sourceType:'EXTERNAL',dna}],context:{bodyPlan:'HUMANOID',rigProfile:'R15'}});
   assert.equal(selection.selected.id,'external');
+});
+
+test('duel combat motion library covers weapon duels and martial arts',()=>{
+  assert.equal(DUEL_COMBAT_MOTION_TARGET,'RESPONSIVE_DUEL_ARENA_COMBAT');
+  for(const family of ['UNARMED','KATANA','ONE_HAND_SWORD','DUAL_BLADE','TWO_HAND_SWORD','DAGGER','SPEAR','AXE','HAMMER','STAFF_OR_WAND','SHIELD_SWORD','BOW','FIREARM']){
+    assert.ok(WEAPON_COMBAT_MOTION_PACKS[family],family);
+  }
+  for(const style of ['BOXING','KICKBOXING','MUAY_THAI','KARATE','TAEKWONDO','SANDA','WUSHU_KUNG_FU','WRESTLING','JUDO_THROWING','JIU_JITSU_GRAPPLING','MMA_HYBRID','STREET_BRAWLER','WUXIA_UNARMED_FANTASY']){
+    assert.ok(UNARMED_MARTIAL_ARTS_STYLES[style],style);
+  }
+  assert.ok(DUEL_COMBAT_REQUIRED_ROLES.includes('PARRY_OR_COUNTER'));
+  assert.ok(DUEL_COMBAT_REQUIRED_ROLES.includes('FINISHER'));
+});
+
+test('duel loadout binds katana and unarmed martial arts without taking gameplay authority',()=>{
+  const katana=createDuelCombatMotionLoadout({weaponFamily:'katana',platform:'roblox'});
+  assert.equal(katana.weaponFamily,'KATANA');
+  assert.equal(katana.platform,'ROBLOX');
+  assert.ok(katana.groups.lightCombo.includes('KATANA_DIAGONAL_CUT_R'));
+  assert.ok(katana.groups.defense.includes('KATANA_PARRY_COUNTER'));
+  assert.equal(katana.exactThirdPartyClipCopy,false);
+  assert.equal(katana.gameplayAuthority,false);
+
+  const muayThai=createDuelCombatMotionLoadout({weaponFamily:'unarmed',martialStyle:'muay_thai',platform:'roblox'});
+  assert.equal(muayThai.weaponFamily,'UNARMED');
+  assert.equal(muayThai.martialStyle,'MUAY_THAI');
+  assert.ok(muayThai.groups.lightCombo.includes('MUAY_THAI_ELBOW'));
+  assert.ok(muayThai.groups.heavy.includes('MUAY_THAI_KNEE'));
+  assert.ok(muayThai.groups.grapple.includes('MUAY_THAI_CLINCH_ENTRY'));
+  assert.equal(muayThai.nativeRuntimeVerificationRequired,true);
+});
+
+test('motion director exposes combat loadout as a composable presentation system',()=>{
+  const plan=createMotionDirectorPlan({
+    platform:'ROBLOX',
+    combat:{weaponFamily:'DUAL_BLADE'}
+  });
+  assert.equal(plan.combatLoadout.weaponFamily,'DUAL_BLADE');
+  assert.ok(plan.combatLoadout.groups.gapCloser.includes('DUAL_BLADE_DASH_CROSS'));
+  assert.ok(plan.systems.includes('DUEL_COMBAT_MOTION_KIT'));
+  assert.equal(plan.gameplayAuthority,false);
 });
 
 test('motion DNA captures high-end compatibility metadata',()=>{
@@ -394,6 +440,11 @@ test('planner exposes automatic motion gap audits for bootstrap sets',async()=>{
   assert.equal(plan.policy.automaticMotionCoverageGapFill,true);
   assert.equal(plan.policy.automaticMotionGapMayNotSelfPromote,true);
   assert.equal(plan.policy.motionGapDuplicateSuppressionRequired,true);
+  assert.equal(plan.companyGraphicsLibrary.duelCombatMotion.enabled,true);
+  assert.ok(plan.companyGraphicsLibrary.weaponPacks.includes('KATANA'));
+  assert.ok(plan.companyGraphicsLibrary.duelCombatMotion.unarmedStyles.includes('MUAY_THAI'));
+  assert.ok(plan.companyGraphicsLibrary.duelCombatMotion.requiredRoles.includes('LIGHT_COMBO'));
+  assert.equal(plan.companyGraphicsLibrary.duelCombatMotion.exactThirdPartyClipCopyForbidden,true);
 });
 
 
