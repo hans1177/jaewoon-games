@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 recovered partial timeout edit",
+  "expectedEffect": "recovered complete edit from bounded timeout output",
+  "edits": [
+    {
+      "path": "Assets/Scripts/GameCore.cs",
+      "find": "            if (Player.level < 1)",
+      "replace": "            if (Player.level < 1)\n                Player.level = 1;"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
