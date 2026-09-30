@@ -391,6 +391,60 @@
       "note": "실제 Luau 코드 자산. 게임별 복제본을 패키지에 고정하고 parity 검사로 일치 확인. 보유 장비·도구·진행 데이터만 표시. 모바일/게임패드 UI 구현, 실제 Studio 검증 전 VERIFIED 아님."
     },
     {
+      "id": "roblox-insect-spider-hd",
+      "title": "고디테일 거미",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "subfamily": "INSECT_ARACHNID",
+      "platform": "SHARED_NATIVE_SOURCE",
+      "platformTargets": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/native/spider/spider.png",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "GLB_VALIDATED_NATIVE_RUNTIME_PENDING",
+      "robloxStudioVerified": false,
+      "unityWebVerified": false,
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/build-spider.py",
+        "assets/roblox/world-ghosts/SPIDER.md",
+        "assets/roblox/world-ghosts/native/spider/view.html"
+      ],
+      "nativeArtifacts": [
+        "assets/roblox/world-ghosts/native/spider/spider.glb",
+        "assets/roblox/world-ghosts/native/spider/spider.png",
+        "assets/roblox/world-ghosts/native/spider/evidence.json"
+      ],
+      "rigFormat": "SPIDER_HD_RIG_1",
+      "meshStats": {
+        "vertices": 18550,
+        "triangles": 35080,
+        "meshObjects": 9,
+        "bones": 45,
+        "legs": 8,
+        "eyes": 8
+      },
+      "motionStates": [
+        "idle",
+        "walk",
+        "run",
+        "strafe",
+        "climb",
+        "threat",
+        "bite",
+        "pounce",
+        "web_cast",
+        "hit",
+        "stagger",
+        "death"
+      ],
+      "note": "직접 제작 고디테일 거미 GLB. 8다리 독립 관절, 8눈, 송곳니·촉지·방적돌기·갑각·감각모 포함. CI에서 GLB/스킨/45본/12모션 구조 검증 완료. Roblox Studio와 Unity Web 실제 런타임 검증 전이라 production PASS로 표시하지 않음."
+    },
+    {
       "id": "roblox-world-ghost-skins-v1",
       "title": "세계 귀신·몬스터 스킨 100종",
       "category": "CREATURE",
