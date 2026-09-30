@@ -137,6 +137,12 @@ jobs:
           const item=(q.items||[]).find(row=>row.gameId===process.env.GAME_ID);
           if(!item)throw new Error('Unity publication retry game missing');
           const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const ownerExclusive=policy?.ownerCanonicalRules?.ownerExclusiveDevelopment||{};
+          if(ownerExclusive.status==='ACTIVE'&&(ownerExclusive.gameIds||[]).includes(process.env.GAME_ID)){
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,'eligible=false\n');
+            console.log('UNITY_PUBLICATION_OWNER_EXCLUSIVE_GAME_EXCLUDED='+process.env.GAME_ID);
+            process.exit(0);
+          }
           const eligible=evaluateInternalRelease(item,'UNITY',policy).ready;
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`eligible=${eligible}\n`);
           if(!eligible){console.log('UNITY_SERVER_PUBLICATION=SKIPPED_DEVELOPMENT');process.exit(0);}
@@ -380,10 +386,16 @@ jobs:
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const grandfatherGameIds=roadmap?.directNativeDualPlatformDevelopment?.upperPlatformAdmissionMigration?.grandfatherGameIds||[];
+          const ownerExclusive=roadmap?.ownerCanonicalRules?.ownerExclusiveDevelopment||{};
+          const ownerExcludedGameIds=new Set(ownerExclusive.status==='ACTIVE'?(ownerExclusive.gameIds||[]):[]);
           const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
           const windowIds=new Set(globalWindow.map(item=>item.gameId));
           const rows=(q.items||[]).filter(item=>{
             if(!windowIds.has(item.gameId))return false;
+            if(ownerExcludedGameIds.has(item.gameId)){
+              console.log('UNITY_OWNER_EXCLUSIVE_GAME_EXCLUDED='+item.gameId);
+              return false;
+            }
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')return false;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')return false;
             const admission=classifyUpperPlatformAdmission(item,{repoRoot:process.cwd(),grandfatherGameIds});
@@ -414,9 +426,10 @@ jobs:
           const requestedIds=[...new Set(String(process.env.REQUESTED_GAME_IDS||'').split(',').map(x=>x.trim()).filter(Boolean))];
           const requestedSet=new Set(requestedIds);
           const requestedRows=requestedIds.length?rows.filter(row=>requestedSet.has(row.gameId)):[];
-          const canary=requestedRows.length?null:(canaryRequired?selectRepresentativeCanary(rows):null);
+          const requestedUnavailable=requestedIds.filter(id=>!requestedRows.some(row=>row.gameId===id));
+          const canary=requestedIds.length?null:(canaryRequired?selectRepresentativeCanary(rows):null);
           const batchMax=Math.max(1,Math.min(256,Number(roadmap?.developmentSpeedExecution?.externalMatrixBatchMax||256)));
-          const selected=requestedRows.length?requestedRows.slice(0,batchMax):(canary?[canary]:rows.slice(0,batchMax));
+          const selected=requestedIds.length?requestedRows.slice(0,batchMax):(canary?[canary]:rows.slice(0,batchMax));
           const parallel=Math.max(1,Math.min(batchMax,selected.length||1));
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`run=${selected.length?'true':'false'}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify(selected)}\n`);
@@ -426,6 +439,7 @@ jobs:
           console.log(`UNITY_TARGET_N=${rows.length}`);
           console.log(`UNITY_SELECTED_N=${selected.length}`);
           console.log(`UNITY_REQUESTED_GAME_IDS=${requestedIds.join(',')||'NONE'}`);
+          console.log(`UNITY_REQUESTED_UNAVAILABLE_IDS=${requestedUnavailable.join(',')||'NONE'}`);
           console.log(`REPRESENTATIVE_CANARY=${canary?.gameId||'NONE'}`);
           console.log(`COMMON_FAILURE_DETECTED=${repeated?'YES':'NO'}`);
           console.log(`UNITY_EXECUTION_BATCH_CAPACITY=${batchMax}`);
@@ -1529,4 +1543,3 @@ jobs:
           [[ "$QA_PASS" == true ]] || { echo 'FAILED_STAGE=INDEPENDENT_QA' >&2; exit 23; }
           [[ "$REGRESSION_PASS" == true ]] || { echo 'FAILED_STAGE=REGRESSION' >&2; exit 24; }
           echo 'UNITY_SPEED_SEQUENCE=PASS'
-

@@ -616,6 +616,48 @@
       ],
       "learningState": "TRACE_ONLY",
       "liveState": "MERGED_AT_F6D7F799; POST_CHANGE_SOURCE_GATE_PASS; POST_CHANGE_UNSCOPED_DUPLICATE_ACTUALLY_DEDUPED_BEFORE_ALL_FANOUT; NEXT_ROTATION_LINE_DEFENSE_AND_12_SIBLING_STUDIO_SCENARIO_FAILURES_AFTER_LEGACY_BACKLOG_DRAIN; NO_STUDIO_RUNTIME_PASS_CLAIM"
+    },
+    {
+      "id": "assistant_unity_exact_game_fanout_repair_20261001",
+      "date": "2026-10-01",
+      "gameId": "MULTI_GAME_UNITY_RUNTIME",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "After the coordinator repair, three exact-main DEVELOPMENT cycles each produced 25 failed Unity staged-validation jobs. The exact village-dungeons reusable call was not Unity-eligible, so requestedRows was empty and the planner incorrectly fell through to representative-canary or whole-batch selection. That one exact-game lane then duplicated other games already running in their own lanes and included the owner-exclusive horror-escape-room in Unity validation. The repeated runs were 36766419731, 36767607384, and 36768561888.",
+      "rootCause": "EXACT_GAME_REQUEST_WITH_ZERO_ELIGIBLE_ROWS_FELL_THROUGH_TO_BATCH_SELECTION_PLUS_OWNER_EXCLUSIVE_SCOPE_MISSING_FROM_UNITY_PLANNER_AND_PUBLICATION_RETRY",
+      "decision": "Treat the presence of an exact requested id as authoritative even when it resolves to zero eligible rows: select zero work and report the unavailable id instead of falling back. Derive owner-exclusive exclusions from the active canonical roadmap for both normal Unity planning and publication retry, while preserving independent eligible games and all gameplay values.",
+      "change": "Changed the existing Unity planner selection conditions from requestedRows.length to requestedIds.length, added an explicit requested-unavailable diagnostic, filtered active owner-exclusive game ids before exact or batch matrix construction, and rejected owner-exclusive publication retry before artifact download or persistence. Extended the existing Unity responsibility tests; no game source, asset, balance, save schema, queue record, candidate, or publication artifact changed.",
+      "evidence": [
+        "baseline-main:2a664306a90a5cdf4fc1286ff414014eaeb76b4b",
+        "repeated-failure-runs:36766419731,36767607384,36768561888",
+        "failed-unity-staged-jobs-per-run:25",
+        "exact-parent-lane:village-dungeons",
+        "exact-request-unity-eligible:false",
+        "owner-exclusive-leak-job:110073000023:Unity-staged-validation-horror-escape-room",
+        "line-defense-example-failure-job:110072808060",
+        "queue-authority:company-runtime@0a908481f8e84afed4fe0764c6ba4333ca5bc92b",
+        "vibe2-authority:vibe2-unreal-core@afd85f419221102944b8c35fe1c7796d1dd5d94b"
+      ],
+      "reusablePatterns": [
+        "EXACT_REQUEST_PRESENCE_NOT_MATCH_COUNT_CONTROLS_BATCH_FALLBACK",
+        "ZERO_ELIGIBLE_EXACT_GAME_MEANS_ZERO_WORK_NOT_WHOLE_PORTFOLIO",
+        "OWNER_EXCLUSIVE_SCOPE_FILTERS_PLANNING_AND_PUBLICATION_RETRY",
+        "EACH_REUSABLE_EXACT_GAME_CALL_MAY_ONLY_VALIDATE_ITS_OWN_GAME"
+      ],
+      "avoidPatterns": [
+        "FALLING_BACK_TO_BATCH_WHEN_AN_EXACT_REQUEST_IS_INELIGIBLE",
+        "DUPLICATING_SIBLING_GAME_VALIDATION_INSIDE_ONE_EXACT_LANE",
+        "RUNNING_OWNER_EXCLUSIVE_GAME_VALIDATION_OR_PUBLICATION_FROM_SHARED_UNITY_AUTOMATION",
+        "CLAIMING_UNITY_OR_STUDIO_PASS_FROM_STATIC_REGRESSION"
+      ],
+      "qa": [
+        "local Unity plus central coordinator responsibility regression: 73/73 PASS",
+        "local JSON parse and git diff whitespace validation: PASS",
+        "post-change GitHub Actions: PENDING",
+        "Unity APK/runtime actual execution: NOT_RUN on repaired source",
+        "Roblox Studio actual execution: NOT_RUN; no F9 or release completion claim"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "LOCAL_REPAIR_VERIFIED; PR_AND_POST_CHANGE_ACTIONS_PENDING; NEXT_ROTATION_LINE_DEFENSE_ROBLOX_STUDIO_SCENARIO_AND_INDEPENDENT_UNITY_LANE_AFTER_EXACT_FANOUT_REPAIR"
     }
   ]
 }
