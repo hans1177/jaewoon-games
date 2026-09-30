@@ -3,9 +3,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-test('central policy v496 isolates one game failure from the continuous development cycle',()=>{
+test('central policy v496+ isolates one game failure from the continuous development cycle',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  assert.equal(policy.version,496);
+  assert.ok(policy.version>=496);
   const isolation=policy.developmentSpeedExecution?.perGameFailureIsolation||{};
   assert.equal(isolation.enabled,true);
   assert.equal(isolation.failureScope,'GAME_AND_PLATFORM_LANE_ONLY');
@@ -23,7 +23,9 @@ test('DEVELOPMENT_CONFIRMED workflow continues after failed game lanes and keeps
   assert.match(workflow,/continue-cycle:/);
   assert.match(workflow,/needs: \[native-plan, dispatch-roblox, dispatch-unity, dispatch-unity-web-floor, dispatch-unity-web-bootstrap\]/);
   assert.match(workflow,/if: \$\{\{ always\(\) && needs\.native-plan\.result == 'success'/);
-  assert.match(workflow,/gh workflow run company-development-confirmed-runtime\.yml/);
+  assert.match(workflow,/repository_dispatch:[\s\S]*company-development-cycle-refill/);
+  assert.match(workflow,/repos\/\$GITHUB_REPOSITORY\/dispatches/);
+  assert.doesNotMatch(workflow,/gh workflow run company-development-confirmed-runtime\.yml/);
   assert.match(workflow,/CONTINUOUS_PER_GAME_ISOLATED_CYCLE/);
   assert.match(workflow,/SINGLE_GAME_FAILURE_BLOCKS_GLOBAL_CYCLE=NO/);
 });
