@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
-import {concurrentTargetPlatforms} from './company-selected-platform-router.mjs';
+import {concurrentTargetPlatforms,ownerExclusiveDevelopmentGameIds} from './company-selected-platform-router.mjs';
 import {validateExistingRobloxSourceTree} from './company-development-roblox-source-reconcile.mjs';
 
 const clean=v=>String(v??'').trim();
@@ -189,12 +189,14 @@ export function restartRobloxFromF0(item,{sourceRevision,stamp=new Date().toISOS
   return item;
 }
 
-export function reconcileChangedRobloxItems({queue={},changedGameIds=[],sourceRevision='',stamp=new Date().toISOString(),validateItem,forceF0Restart=false}={}){
+export function reconcileChangedRobloxItems({queue={},changedGameIds=[],sourceRevision='',stamp=new Date().toISOString(),validateItem,forceF0Restart=false,excludedGameIds=[]}={}){
   if(typeof validateItem!=='function')throw new Error('validateItem callback required');
   if(!/^[0-9a-f]{40}$/i.test(sourceRevision))throw new Error('sourceRevision must be a 40-char sha');
   const changed=[...new Set((changedGameIds||[]).map(clean).filter(Boolean))];
+  const excluded=new Set((Array.isArray(excludedGameIds)?excludedGameIds:[]).map(clean).filter(Boolean));
   const results=[];
   for(const gameId of changed){
+    if(excluded.has(gameId)){results.push({gameId,skipped:true,reason:'owner-exclusive-direct-development'});continue;}
     const item=(queue.items||[]).find(x=>clean(x.gameId)===gameId);
     if(!item||!activeRobloxDevelopmentItem(item)){results.push({gameId,skipped:true,reason:'not-active-development'});continue;}
     const verdict=validateItem(item);
@@ -254,10 +256,15 @@ function runCli(){
   const changedGameIds=arg('changed-game-ids').split(',').map(clean).filter(Boolean);
   const forceF0Restart=upper(arg('force-f0-restart'))==='TRUE';
   const output=arg('output','/tmp/company-roblox-source-drift-sync.json');
+  const roadmapFile=path.resolve(arg('roadmap','company-learning/platform-release-roadmap.json'));
   if(!queueFile||!runtimeRef||!sourceRevision)throw new Error('required: --queue, --runtime-ref, --source-revision');
+  if(!fs.existsSync(roadmapFile))throw new Error('ROBLOX_OWNER_EXCLUSIVE_ROADMAP_MISSING:'+roadmapFile);
   const queue=JSON.parse(fs.readFileSync(queueFile,'utf8'));
+  const roadmap=JSON.parse(fs.readFileSync(roadmapFile,'utf8').replace(/^\uFEFF/,''));
+  const excludedGameIds=ownerExclusiveDevelopmentGameIds(roadmap);
+  console.log('ROBLOX_CHANGED_SOURCE_OWNER_EXCLUSIVE_EXCLUDED='+(excludedGameIds.join(',')||'NONE'));
   const result=reconcileChangedRobloxItems({
-    queue,changedGameIds,sourceRevision,forceF0Restart,
+    queue,changedGameIds,sourceRevision,forceF0Restart,excludedGameIds,
     validateItem:item=>{
       const sourcePath=`roblox-games/${item.gameId}`;
       const root=path.join(repoRoot,sourcePath);
