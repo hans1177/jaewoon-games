@@ -529,7 +529,11 @@
         "concurrency-safe-marketing-run:36759259828",
         "concurrency-safe-marketing-plan-job:110037311619:PASS",
         "owner-exclusive-selection-leak:marketing-horror-escape-room-pre-release-v1",
-        "owner-exclusive-filter-main-run:36760019152:planner-and-reservation-boundary-pass-target-list-still-unfiltered"
+        "owner-exclusive-filter-main-run:36760019152:planner-and-reservation-boundary-pass-target-list-still-unfiltered",
+        "owner-exclusive-selector-main-run:36760737418:PASS",
+        "owner-exclusive-selector-plan-job:110042325187:PASS:horror-escape-room-absent",
+        "next-rotation:line-defense:VIBE_INTERNAL_PLAY:ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
+        "next-rotation-common-cohort:10-games-same-studio-mcp-scenario-contract-failure"
       ],
       "reusablePatterns": [
         "REUSABLE_CALLER_MUST_GRANT_EVERY_PERMISSION_REQUESTED_BY_CALLEE",
@@ -554,11 +558,11 @@
         "bounded checkout reached generation and persist in run 36757725022: PASS until concurrent push rejection",
         "concurrency-safe Growth Marketing run 36759259828 plan/persist/select: PASS",
         "owner-exclusive planning and reservation post-change main execution: PASS",
-        "owner-exclusive target selection post-change GitHub Actions: PENDING",
+        "owner-exclusive target selection main run 36760737418: PASS; 23 independent game tasks retained and horror-escape-room absent",
         "Studio actual execution: NOT_APPLICABLE_AND_NOT_RUN"
       ],
       "learningState": "TRACE_ONLY",
-      "liveState": "PERMISSION_AND_DESIGN_RESET_REPAIRS_MERGED_AT_43A9A74B; BOUNDED_MARKETING_CHECKOUT_MERGED_AT_48CB4CC4; CONCURRENCY_SAFE_MARKETING_PERSIST_MERGED_AT_6BB7DA97; OWNER_EXCLUSIVE_PLANNER_AND_RESERVATION_FILTER_MERGED_AT_560CF306; DESIGN_RESET_AND_MARKETING_PLAN_ACTUAL_ACTION_PASS; OWNER_EXCLUSIVE_TARGET_SELECTOR_POST_CHANGE_ACTION_PENDING"
+      "liveState": "CONTROL_PLANE_REPAIRS_MERGED_THROUGH_D33C58AB; DESIGN_RESET_AND_GROWTH_MARKETING_ACTUAL_ACTION_PASS; OWNER_EXCLUSIVE_GAME_NOT_PLANNED_SELECTED_OR_RESERVED; NEXT_ROTATION_LINE_DEFENSE_STUDIO_MCP_COMMON_FAILURE_COHORT; NO_STUDIO_RUNTIME_PASS_CLAIM"
     }
   ]
 }
