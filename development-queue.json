@@ -60,7 +60,7 @@
       "currentStep": "REPAIR_REQUIRED",
       "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-30T03:01:10.577Z",
+      "updatedAt": "2026-09-30T03:13:30.505Z",
       "robloxSourceCommit": "15d9ebb42466049456bb2e215e5bfa08ae5f8f57",
       "robloxSourceBootstrapPassedAt": "2026-09-29T08:43:10.907Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -812,7 +812,7 @@
             "id": "scenario-adaptive-system-transaction-effect",
             "name": "scenario-adaptive-system-transaction-effect",
             "required": true,
-            "pass": false
+            "pass": true
           },
           {
             "id": "scenario-adaptive-travel-effect",
@@ -1028,7 +1028,7 @@
             "id": "scenario-observed-action-1d7be3f03421ec49af6a",
             "name": "scenario-observed-action-1d7be3f03421ec49af6a",
             "required": true,
-            "pass": false
+            "pass": true
           },
           {
             "id": "scenario-observed-action-eeca420176112b7c4e7b",
@@ -1099,9 +1099,9 @@
           "characterMotionRuntimeRequired": false,
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
-          "scenarioFailureCount": 17,
-          "primaryActionDisplacement": 140.31036869705787,
-          "primaryActionVelocity": 0.000006500552742649464,
+          "scenarioFailureCount": 15,
+          "primaryActionDisplacement": 136.94704074706112,
+          "primaryActionVelocity": 0.000006634816089047066,
           "primaryActionFeedbackChanged": false,
           "commercialAudit": {
             "auditProfile": "F9_SOAK",
@@ -1217,7 +1217,7 @@
           },
           {
             "id": "adaptive-system-transaction-effect",
-            "pass": false
+            "pass": true
           },
           {
             "id": "adaptive-travel-effect",
@@ -1361,7 +1361,7 @@
           },
           {
             "id": "observed-action-1d7be3f03421ec49af6a",
-            "pass": false
+            "pass": true
           },
           {
             "id": "observed-action-eeca420176112b7c4e7b",
@@ -1388,7 +1388,6 @@
         "qualityFailureKinds": [
           "adaptive-ui-commercial-quality",
           "adaptive-world-safety",
-          "adaptive-system-transaction-effect",
           "adaptive-combat-surface",
           "adaptive-motion-surface",
           "adaptive-companion-ai-surface",
@@ -1400,7 +1399,6 @@
           "observed-action-ce7a335281c15e497552",
           "observed-action-7a30d05dfc5fe9edfc16",
           "observed-action-8f10652c04dfc34d013c",
-          "observed-action-1d7be3f03421ec49af6a",
           "observed-action-eeca420176112b7c4e7b",
           "observed-action-00f7121873e36beeaa1c"
         ],
@@ -1438,34 +1436,6 @@
               "routeCoveragePass": false,
               "spawnThreatDistance": 780.2060478757685,
               "spawnOverlapSafe": true
-            }
-          },
-          {
-            "id": "adaptive-system-transaction-effect",
-            "repairSurface": "SYSTEM_TRANSACTION",
-            "priority": "CRITICAL",
-            "hint": "One or more discovered shop/craft/equip/upgrade actions accepted input without changing inventory, currency/progression, feedback, or relevant UI state. Repair each transaction chain independently.",
-            "observed": {
-              "systemActionCount": 1,
-              "systemEffectCount": 0,
-              "actions": [
-                {
-                  "id": "prompt-ProximityPrompt",
-                  "semantic": "UPGRADE",
-                  "effectObserved": false,
-                  "effect": {
-                    "moved": 129.8609132091098,
-                    "progress": false,
-                    "inventory": false,
-                    "feedback": false,
-                    "health": false,
-                    "ui": false,
-                    "round": false,
-                    "map": false,
-                    "effectObserved": true
-                  }
-                }
-              ]
             }
           },
           {
@@ -1602,7 +1572,7 @@
             "priority": "HIGH",
             "hint": "Reduce runaway instance count/memory pressure and keep long-session runtime stable.",
             "observed": {
-              "memoryMb": 1503.390625,
+              "memoryMb": 1929.203125,
               "descendantCount": 4497
             }
           },
@@ -1675,23 +1645,6 @@
             }
           },
           {
-            "id": "observed-action-1d7be3f03421ec49af6a",
-            "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
-            "priority": "HIGH",
-            "hint": "Replay the exact observed action and verify its real state change after repair.",
-            "observed": {
-              "id": "observed-action-1d7be3f03421ec49af6a",
-              "pass": false,
-              "required": true,
-              "generatedFrom": "OFFICIAL_STUDIO_OBSERVED_ACTION",
-              "actionId": "prompt-ProximityPrompt",
-              "targetIdentity": "Workspace.DaechungRPGWorld.Village.AdvancementMaster.ProximityPrompt",
-              "actionType": "mcp-world-interaction",
-              "effectRequired": true,
-              "attempts": 1
-            }
-          },
-          {
             "id": "observed-action-eeca420176112b7c4e7b",
             "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
             "priority": "HIGH",
@@ -1733,8 +1686,8 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-09-30T03:01:10.577Z",
-        "workflowRunId": 36661711360,
+        "testedAt": "2026-09-30T03:13:30.505Z",
+        "workflowRunId": 36662809150,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -2052,7 +2005,6 @@
         "qualityFailureKinds": [
           "adaptive-ui-commercial-quality",
           "adaptive-world-safety",
-          "adaptive-system-transaction-effect",
           "adaptive-combat-surface",
           "adaptive-motion-surface",
           "adaptive-companion-ai-surface",
@@ -2064,7 +2016,6 @@
           "observed-action-ce7a335281c15e497552",
           "observed-action-7a30d05dfc5fe9edfc16",
           "observed-action-8f10652c04dfc34d013c",
-          "observed-action-1d7be3f03421ec49af6a",
           "observed-action-eeca420176112b7c4e7b",
           "observed-action-00f7121873e36beeaa1c"
         ],
@@ -2102,34 +2053,6 @@
               "routeCoveragePass": false,
               "spawnThreatDistance": 780.2060478757685,
               "spawnOverlapSafe": true
-            }
-          },
-          {
-            "id": "adaptive-system-transaction-effect",
-            "repairSurface": "SYSTEM_TRANSACTION",
-            "priority": "CRITICAL",
-            "hint": "One or more discovered shop/craft/equip/upgrade actions accepted input without changing inventory, currency/progression, feedback, or relevant UI state. Repair each transaction chain independently.",
-            "observed": {
-              "systemActionCount": 1,
-              "systemEffectCount": 0,
-              "actions": [
-                {
-                  "id": "prompt-ProximityPrompt",
-                  "semantic": "UPGRADE",
-                  "effectObserved": false,
-                  "effect": {
-                    "moved": 129.8609132091098,
-                    "progress": false,
-                    "inventory": false,
-                    "feedback": false,
-                    "health": false,
-                    "ui": false,
-                    "round": false,
-                    "map": false,
-                    "effectObserved": true
-                  }
-                }
-              ]
             }
           },
           {
@@ -2266,7 +2189,7 @@
             "priority": "HIGH",
             "hint": "Reduce runaway instance count/memory pressure and keep long-session runtime stable.",
             "observed": {
-              "memoryMb": 1503.390625,
+              "memoryMb": 1929.203125,
               "descendantCount": 4497
             }
           },
@@ -2339,23 +2262,6 @@
             }
           },
           {
-            "id": "observed-action-1d7be3f03421ec49af6a",
-            "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
-            "priority": "HIGH",
-            "hint": "Replay the exact observed action and verify its real state change after repair.",
-            "observed": {
-              "id": "observed-action-1d7be3f03421ec49af6a",
-              "pass": false,
-              "required": true,
-              "generatedFrom": "OFFICIAL_STUDIO_OBSERVED_ACTION",
-              "actionId": "prompt-ProximityPrompt",
-              "targetIdentity": "Workspace.DaechungRPGWorld.Village.AdvancementMaster.ProximityPrompt",
-              "actionType": "mcp-world-interaction",
-              "effectRequired": true,
-              "attempts": 1
-            }
-          },
-          {
             "id": "observed-action-eeca420176112b7c4e7b",
             "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
             "priority": "HIGH",
@@ -2393,7 +2299,6 @@
         "repairSurfaces": [
           "MOBILE_UI",
           "WORLD_GEOMETRY",
-          "SYSTEM_TRANSACTION",
           "COMBAT_AI",
           "CHARACTER_MOTION",
           "COMPANION_AI",
@@ -2404,8 +2309,8 @@
           "ROBLOX_OBSERVED_INTERACTION"
         ],
         "robloxFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
-        "testedAt": "2026-09-30T03:01:10.577Z",
-        "workflowRunId": 36661711360,
+        "testedAt": "2026-09-30T03:13:30.505Z",
+        "workflowRunId": 36662809150,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxQualityBuildUpLastPassedAt": "2026-09-28T19:49:57.015Z",
@@ -29251,7 +29156,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-30T03:13:22.884Z",
+  "updatedAt": "2026-09-30T03:13:30.505Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
