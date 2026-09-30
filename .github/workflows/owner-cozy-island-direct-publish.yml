@@ -1,0 +1,147 @@
+name: Owner Cozy Island Direct Publish
+run-name: Owner Cozy publish · ${{ github.sha }}
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'roblox-games/cozy-island/**'
+      - '.github/workflows/owner-cozy-island-direct-publish.yml'
+      - 'tools/company-roblox-dedicated-experience.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: owner-cozy-island-direct-publish
+  cancel-in-progress: true
+
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+  GAME_ID: cozy-island
+  GAME_NAME: '포근섬: 작은 왕국 키우기'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout canonical main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+          fetch-depth: 1
+
+      - name: Checkout company runtime
+        uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          path: runtime
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install pinned Rojo
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/rojo-bin
+          curl -fsSL --retry 3 --retry-delay 2 -o /tmp/rojo.zip https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-linux-x86_64.zip
+          echo '22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073  /tmp/rojo.zip' | sha256sum -c -
+          unzip -q /tmp/rojo.zip -d /tmp/rojo-bin
+          chmod +x /tmp/rojo-bin/rojo
+
+      - name: Resolve existing Cozy Island target
+        id: reuse
+        working-directory: main
+        env:
+          GAME_ID: ${{ env.GAME_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
+          const item=(q.items||[]).find(x=>x.gameId===process.env.GAME_ID);
+          if(!item)throw new Error('queue item missing: '+process.env.GAME_ID);
+          const valid=v=>/^[1-9][0-9]*$/.test(String(v||''));
+          const registry=fs.existsSync('../runtime/roblox-dedicated-targets.json')
+            ?JSON.parse(fs.readFileSync('../runtime/roblox-dedicated-targets.json','utf8'))
+            :{targets:[]};
+          const current=item.robloxPublicationTarget||{};
+          const registered=(registry.targets||[]).find(x=>x.gameId===process.env.GAME_ID)||{};
+          const currentOk=current.dedicated===true&&current.shared!==true&&valid(current.universeId)&&valid(current.placeId);
+          const registeredOk=registered.dedicated===true&&registered.shared!==true&&valid(registered.universeId)&&valid(registered.placeId);
+          const chosen=currentOk?current:(registeredOk?registered:{});
+          const reuse=valid(chosen.universeId)&&valid(chosen.placeId);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'universe_id='+(reuse?chosen.universeId:'')+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'place_id='+(reuse?chosen.placeId:'')+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'reuse='+(reuse?'true':'false')+'\n');
+          console.log('COZY_OWNER_TARGET_REUSE='+(reuse?'YES':'NO'));
+          console.log('COZY_OWNER_UNIVERSE_ID='+(reuse?chosen.universeId:'NEW'));
+          console.log('COZY_OWNER_PLACE_ID='+(reuse?chosen.placeId:'NEW'));
+          NODE
+
+      - name: Build Cozy Island from current main
+        working-directory: main
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "roblox-games/$GAME_ID/default.project.json"
+          mkdir -p /tmp/cozy-owner-publish
+          /tmp/rojo-bin/rojo build "roblox-games/$GAME_ID/default.project.json" -o "/tmp/cozy-owner-publish/$GAME_ID.rbxlx"
+          test -s "/tmp/cozy-owner-publish/$GAME_ID.rbxlx"
+          sha256sum "/tmp/cozy-owner-publish/$GAME_ID.rbxlx" | tee /tmp/cozy-owner-publish/build.sha256
+
+      - name: Publish Cozy Island to owner dedicated Roblox Experience
+        working-directory: main
+        env:
+          REUSE_UNIVERSE_ID: ${{ steps.reuse.outputs.universe_id }}
+          REUSE_PLACE_ID: ${{ steps.reuse.outputs.place_id }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(
+            --game-id "$GAME_ID"
+            --game-name "$GAME_NAME"
+            --place-file "/tmp/cozy-owner-publish/$GAME_ID.rbxlx"
+            --source-revision "$GITHUB_SHA"
+            --output "/tmp/cozy-owner-publish/$GAME_ID.result.json"
+          )
+          if [[ -n "${REUSE_UNIVERSE_ID:-}" && -n "${REUSE_PLACE_ID:-}" ]]; then
+            args+=(--reuse-universe-id "$REUSE_UNIVERSE_ID" --reuse-place-id "$REUSE_PLACE_ID")
+          fi
+          node tools/company-roblox-dedicated-experience.mjs "${args[@]}"
+
+      - name: Verify Cozy Island publication
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const fs=require('fs');
+          const p='/tmp/cozy-owner-publish/cozy-island.result.json';
+          const r=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(r.pass!==true||r.private!==true||r.published!==true)throw new Error('COZY_OWNER_PUBLISH_FAILED:'+String(r.stage||'unknown')+':'+String(r.error||'unknown'));
+          if(!/^[1-9][0-9]*$/.test(String(r.universeId||''))||!/^[1-9][0-9]*$/.test(String(r.placeId||'')))throw new Error('COZY_OWNER_TARGET_INVALID');
+          console.log('COZY_OWNER_PUBLISH_PASS=YES');
+          console.log('COZY_OWNER_UNIVERSE_ID='+r.universeId);
+          console.log('COZY_OWNER_PLACE_ID='+r.placeId);
+          console.log('COZY_OWNER_VERSION_NUMBER='+r.versionNumber);
+          console.log('COZY_OWNER_SOURCE_REVISION='+String(r.sourceRevision||''));
+          NODE
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: owner-cozy-island-publish
+          path: |
+            /tmp/cozy-owner-publish/cozy-island.result.json
+            /tmp/cozy-owner-publish/build.sha256
+          if-no-files-found: error
+          retention-days: 14
