@@ -115,6 +115,7 @@ const VERIFIED_EXTERNAL_LEARNING_BEGIN='[VERIFIED EXTERNAL BLACK-BOX LEARNING BE
 const VERIFIED_EXTERNAL_LEARNING_END='[VERIFIED EXTERNAL BLACK-BOX LEARNING END]';
 const VERIFIED_LEARNING_MOTOR_BEGIN='[VIBE VERIFIED LEARNING MOTOR]';
 const LARGE_EMBEDDED_LEARNING_GOAL_BYTES=64000;
+const MAX_INITIAL_JSON_PROMPT_BYTES=64000;
 const COMPACT_DIRECTIVE_LINE_BYTES=1800;
 
 const TARGET_EXTENSIONS=Object.freeze({
@@ -2164,7 +2165,7 @@ export function recoverFocusedReplaceOnly(raw,spec={}){
   }
   return null;
 }
-export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2,previousOutput='',sourceRoot='',systemAtomicPairRequired=false,multiFilePairRequired=false,studioInitial=false,robloxGraphicsInitial=false,robloxFullGraphicsPackageActive=false}={}){
+export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2,previousOutput='',sourceRoot='',systemAtomicPairRequired=false,multiFilePairRequired=false,studioInitial=false,robloxGraphicsInitial=false,robloxFullGraphicsPackageActive=false,oversizedInitial=false}={}){
   const rawPrompt=String(prompt??'');
   const studioExpansion=/\[STUDIO[_ ]QUALITY[_ ]EVOLUTION\]/i.test(rawPrompt);
   const allowedLine=rawPrompt.split('\n').find(line=>line.trimStart().startsWith('Allowed edit paths:'))||'';
@@ -2173,7 +2174,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
     : [];
   const exactResponsible=unique(responsibleFiles.length?responsibleFiles:allowedPaths);
   const exactPath=exactResponsible.length===1?exactResponsible[0]:'';
-  const reason=robloxGraphicsInitial?'INITIAL_ROBLOX_GRAPHICS_PACKAGE':studioInitial?'INITIAL_STUDIO_PACKAGE':(clean(error?.message||error).slice(0,240)||'malformed candidate');
+  const reason=robloxGraphicsInitial?'INITIAL_ROBLOX_GRAPHICS_PACKAGE':studioInitial?'INITIAL_STUDIO_PACKAGE':oversizedInitial?'INITIAL_OVERSIZED_PROMPT':(clean(error?.message||error).slice(0,240)||'malformed candidate');
   const zeroChange=/실제 source 변경/i.test(reason);
   const noChangeEdit=/변경 없는 edit/i.test(reason);
   const timeoutFailure=/시간 초과|timeout|prediction aborted|token repeat limit/i.test(reason);
@@ -2260,7 +2261,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
       retryBase=[criticalPrefix,...editable].join('\n\n');
     }
   }
-  if(!allowFullRewrite&&(zeroChange||noChangeEdit||invalidPath||editMatchFailure||semanticDiffViolation||presentationDelta||robloxFullGraphicsPackageRecovery||studioQualityDelta||systemCausalTestRequired||systemSyntaxInvalid||(attempt>=2&&timeoutFailure))){
+  if(!allowFullRewrite&&(oversizedInitial||zeroChange||noChangeEdit||invalidPath||editMatchFailure||semanticDiffViolation||presentationDelta||robloxFullGraphicsPackageRecovery||studioQualityDelta||systemCausalTestRequired||systemSyntaxInvalid||(attempt>=2&&timeoutFailure))){
     const marker='\n=== FILE ';
     const starts=[];
     for(let at=retryBase.indexOf(marker);at>=0;at=retryBase.indexOf(marker,at+marker.length))starts.push(at);
@@ -2278,7 +2279,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
           .replace(/\s+===$/,'')
           .trim();
         if(header.includes('[EDITABLE]')||exactResponsible.includes(sectionPath)){
-          if(attempt>=3||timeoutFailure||studioInitial||robloxGraphicsInitial){
+          if(attempt>=3||timeoutFailure||studioInitial||robloxGraphicsInitial||oversizedInitial){
             const body=section.split('\n').slice(1).join('\n');
             const excerpt=boundedLargeExcerpt(body,robloxGraphicsInitial?3200:(studioInitial?2500:5000));
             section=header+'\n'+excerpt.content;
@@ -2287,7 +2288,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         }
       }
       if(editable.length){
-        const compactRetryPrefix=(invalidPath||timeoutFailure||presentationDelta||robloxFullGraphicsPackageRecovery||studioQualityDelta||(studioExpansion&&editMatchFailure))?[
+        const compactRetryPrefix=(oversizedInitial||invalidPath||timeoutFailure||presentationDelta||robloxFullGraphicsPackageRecovery||studioQualityDelta||(studioExpansion&&editMatchFailure))?[
           'You are the Vibe2 game source worker. Return JSON only.',
           rawPrompt.split('\n').find(line=>line.startsWith('Engine:'))||'',
           rawPrompt.split('\n').find(line=>line.startsWith('Goal:'))||'',
@@ -2343,9 +2344,9 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         'The response MUST begin with VIBE2_FULL_FILE and MUST end with ---VIBE2_FILE_END---. Finish the game before the limit rather than adding optional polish.'
       ].join('\n')
     : [
-        robloxGraphicsInitial?'INITIAL ROBLOX FULL GRAPHICS PACKAGE: generate the complete connected visual package directly from the writable source; this is the first attempt, not a recovery retry.':studioInitial?'STUDIO QUALITY BUILD-UP: generate the connected implementation package directly.':zeroChange?'RECOVERY RETRY: the previous candidate contained zero actual source changes.':noChangeEdit?'RECOVERY RETRY: the previous edit copied the same text without changing source.':editMatchFailure?'RECOVERY RETRY: the previous edits[].find text did not match the writable source.':semanticDiffViolation?'RECOVERY RETRY: the previous candidate crossed the compiled semantic edit budget.':presentationDelta?'RECOVERY RETRY: the previous presentation candidate did not change any actual visible source behavior.':studioQualityDelta?'RECOVERY RETRY: the previous studio-quality candidate was too small for the required connected implementation package.':unityBootstrapPairFailure?'RECOVERY RETRY: the Unity Web bootstrap candidate did not edit both required game-source files in one atomic candidate.':systemCausalTestRequired?'RECOVERY RETRY: the system architecture candidate did not include the required atomic source plus causal regression-test pair.':systemSyntaxInvalid?'RECOVERY RETRY: the system architecture candidate was syntactically invalid before incremental QA.':timeoutFailure?'RECOVERY RETRY: the previous model response exceeded the time budget.':invalidPath?'RECOVERY RETRY: the previous candidate used an invalid edit path.':'RECOVERY RETRY: the previous candidate was not strict valid JSON.',
+        robloxGraphicsInitial?'INITIAL ROBLOX FULL GRAPHICS PACKAGE: generate the complete connected visual package directly from the writable source; this is the first attempt, not a recovery retry.':studioInitial?'STUDIO QUALITY BUILD-UP: generate the connected implementation package directly.':oversizedInitial?'INITIAL BOUNDED SOURCE REQUEST: this is the first generation attempt. The original work order exceeded the local model context budget, so duplicate planning and read-only context were removed while exact writable source, verified learning, and responsibility constraints remain authoritative.':zeroChange?'RECOVERY RETRY: the previous candidate contained zero actual source changes.':noChangeEdit?'RECOVERY RETRY: the previous edit copied the same text without changing source.':editMatchFailure?'RECOVERY RETRY: the previous edits[].find text did not match the writable source.':semanticDiffViolation?'RECOVERY RETRY: the previous candidate crossed the compiled semantic edit budget.':presentationDelta?'RECOVERY RETRY: the previous presentation candidate did not change any actual visible source behavior.':studioQualityDelta?'RECOVERY RETRY: the previous studio-quality candidate was too small for the required connected implementation package.':unityBootstrapPairFailure?'RECOVERY RETRY: the Unity Web bootstrap candidate did not edit both required game-source files in one atomic candidate.':systemCausalTestRequired?'RECOVERY RETRY: the system architecture candidate did not include the required atomic source plus causal regression-test pair.':systemSyntaxInvalid?'RECOVERY RETRY: the system architecture candidate was syntactically invalid before incremental QA.':timeoutFailure?'RECOVERY RETRY: the previous model response exceeded the time budget.':invalidPath?'RECOVERY RETRY: the previous candidate used an invalid edit path.':'RECOVERY RETRY: the previous candidate was not strict valid JSON.',
         retryBase.includes('[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]')?'':buildUpDirectiveBlockFromPrompt(rawPrompt,{responsiblePaths:invalidPath?exactResponsible:[]}),
-        `Previous failure: ${safeReason}`,
+        oversizedInitial?`Initial compaction reason: ${safeReason}`:`Previous failure: ${safeReason}`,
         robloxFullGraphicsPackageInstruction||standardRetryInstruction,
         missingRobloxVisualDomains.length?'MISSING CORE VISUAL DOMAINS TO ADD FIRST: '+missingRobloxVisualDomains.join(', ')+'. Keep every already-satisfied core domain and native motion while adding the missing ones.':'',
         previousRobloxGraphicsCandidate?'Use the previous valid partial candidate below as a preservation reference. Return a complete candidate against the ORIGINAL source and exact anchors; never return edits whose find text exists only inside the previous candidate.':'',
@@ -2356,6 +2357,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         retryAnchorInstruction,
         zeroChange?'You MUST produce at least one edits[] entry. Use one EXACT FIND ANCHOR OPTION above when available, then make replace materially different. Do not return empty edits/newFiles/replaceFiles.':noChangeEdit?'Return at least one edits[] entry whose replace is materially different from find. Use one EXACT FIND ANCHOR OPTION above when available, then make the smallest real implementation change required by the work order.':editMatchFailure?(studioExpansion?'Return 3-6 connected edits. For every edit, copy a different EXACT FIND ANCHOR OPTION character-for-character; do not paraphrase, normalize, reconstruct, reuse, or guess any find string.':robloxFullGraphicsPackageRecovery?'Use distinct EXACT FIND ANCHOR OPTIONS for the connected edits[] package. Copy every chosen anchor character-for-character and do not reuse, paraphrase, normalize, reconstruct, or guess any find string.':'Use exactly one EXACT FIND ANCHOR OPTION above when available. Copy the entire anchor value character-for-character, including whitespace and punctuation. Do not paraphrase, normalize, reconstruct, or guess source text.'):semanticDiffViolation?'Keep the patch inside the COMPILED EDIT CONTRACT. Touch the primary responsibility and only directly required dependencies. Remove any unrelated economy, combat, progression, save, input, placement, AI, world, interaction, or goal-state mutation not listed in the semantic budget.':presentationDelta?'Use a visual/render anchor when available. The replacement MUST create an actual visible presentation delta through material/color/lighting/mesh/UI/motion/camera/VFX source while preserving gameplay values, save meaning, progression and combat semantics. Do not satisfy this with a version marker, attribute-only metadata, comments, or unrelated gameplay changes.':studioQualityDelta?`${studioInitial?'Return 3-6 connected edits and at least 3 actual source deltas from the first candidate; do not begin with a one-edit micro patch.':'Return 3-6 connected edits and at least 3 actual source deltas; the previous 1-edit micro patch is invalid for BUILD_UP.'} ${/focus=PRESENTATION/i.test(rawPrompt)?'At least 2 edits must be real visual source deltas. ':''}Use distinct exact anchors and keep each replacement concise.`:invalidPath?'Use only the exact writable path copied exactly from Allowed edit paths. Never output placeholders, labels, globs, guessed filenames, or any READ-ONLY path.':'Prefer the smallest responsible edit that satisfies the work order.',
         robloxPresentationTask?'ROBLOX VISUAL OWNER RULE: choose a client/visual/render/UI/camera/VFX owner path first when one is writable. The changed source must cover a game-relevant visual domain plus coherent style and mandatory native motion; additional visual domains have no upper limit.':'',
+        oversizedInitial?'Initial bounded context intentionally contains only writable FILE blocks; do not bypass responsible-file boundaries, widen scope, invent a new file, or expose READ-ONLY paths.':'',
         zeroChange||noChangeEdit||invalidPath||editMatchFailure||semanticDiffViolation||presentationDelta||studioQualityDelta||systemCausalTestRequired||systemSyntaxInvalid||timeoutFailure?'Recovery context intentionally contains only writable FILE blocks; do not bypass responsible-file boundaries, widen scope, invent a new file, or expose READ-ONLY paths.':'',
         timeoutFailure&&!multiFilePairRequired&&!systemAtomicPairRequired&&!studioExpansion&&!robloxFullGraphicsPackageRecovery?'Start immediately with the JSON object. Use only the "edits" top-level key and exactly one edit. Keep find to the shortest unique exact source text and keep replace to the smallest coherent implementation that fixes the requested behavior.':systemSyntaxInvalid?'Repair the syntax error while preserving the required source-plus-regression-test atomic candidate. Both changed JavaScript files must pass node --check before incremental QA.':''
       ].filter(Boolean).join('\n');
@@ -2452,11 +2454,21 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     &&/Engine:\s*roblox/i.test(String(prompt??''))
     &&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(String(prompt??''));
   if(robloxGraphicsInitial)robloxFullGraphicsPackageActive=true;
-  const initialStudioPrompt=studioExpansion&&!allowFullRewrite
+  const specializedInitialPrompt=studioExpansion&&!allowFullRewrite
     ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,studioInitial:true})
     :robloxGraphicsInitial
       ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,robloxGraphicsInitial:true,robloxFullGraphicsPackageActive:true})
       :prompt;
+  const dedicatedRobloxOversizePath=target==='roblox'
+    &&/\[(?:SECOND_PLATFORM_ADAPTATION_REBUILD:ROBLOX|POST_RELEASE_FOCUSED_DEVELOPMENT)\]/.test(String(prompt));
+  const oversizedStandardInitial=!allowFullRewrite
+    &&specializedInitialPrompt===prompt
+    &&!dedicatedRobloxOversizePath
+    &&Buffer.byteLength(prompt,'utf8')>MAX_INITIAL_JSON_PROMPT_BYTES;
+  const initialStudioPrompt=oversizedStandardInitial
+    ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,multiFilePairRequired,oversizedInitial:true})
+    :specializedInitialPrompt;
+  if(oversizedStandardInitial)console.log(`VIBE2_INITIAL_JSON_PROMPT_COMPACTED=${Buffer.byteLength(prompt,'utf8')}->${Buffer.byteLength(initialStudioPrompt,'utf8')}`);
   // 과대한 재구축·출시 후 집중 개선 주문은 기존 책임 앵커 경로로 바로 시작한다.
   // 연결 패키지/원자적 파일 쌍은 기존 경로를 유지하고 최종 후보 검증도 그대로 적용한다.
   const robloxRebuildFocused=target==='roblox'&&!allowFullRewrite&&!studioExpansion&&!robloxGraphicsInitial
