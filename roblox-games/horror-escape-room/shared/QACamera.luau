@@ -1,7 +1,8 @@
+-- 파일명: roblox-games/horror-escape-room/shared/QACamera.luau
 local QACamera={}
 
 function QACamera.install(config,screenGui,pointProvider)
- if config.QACameraEnabled~=true then return end
+ if config.QACameraEnabled~=true or not game:GetService("RunService"):IsStudio()then return end
  local CaptureService=game:GetService("CaptureService")
  local ReplicatedStorage=game:GetService("ReplicatedStorage")
  local Workspace=game:GetService("Workspace")

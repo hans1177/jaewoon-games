@@ -52,7 +52,8 @@ class Scene:
         bs.inputs['Base Color'].default_value = (*color, 1)
         bs.inputs['Roughness'].default_value = .48 if name in ['brass','glass'] else .76
         bs.inputs['Metallic'].default_value = .65 if name == 'brass' else 0
-        if name in ['wood','plum','stone','teal','brass']:
+        m['manorFinish']={'wood':'Wood','plum':'Fabric','teal':'Fabric','red':'Fabric','stone':'Slate','roof':'Slate','brass':'Metal','courtyard':'Cobblestone'}.get(name,'SmoothPlastic')
+        if name in ['wood','plum','stone','teal','brass','red']:
             # 작고 반복 가능한 질감. GLB 안에 내장하므로 외부 텍스처 요청이 없다.
             n = 256
             yy,xx = np.mgrid[0:n,0:n]
@@ -62,10 +63,17 @@ class Scene:
             elif name in ['plum','teal']:
                 petal=np.cos(xx*math.pi/32)*np.cos(yy*math.pi/32)
                 pattern=.82+.25*(np.abs(petal)>.73)+.08*np.cos(xx*math.pi/8)+grain*.35
+            elif name == 'red':
+                pattern=.84+.05*np.sin(xx*math.pi)+.05*np.cos(yy*math.pi)+.08*np.cos(xx*.045)+grain*.4
+            elif name == 'stone':
+                pattern=.86+.10*np.sin(xx*.049)*np.cos(yy*.061)+grain*1.5
             else:
                 pattern = .90 + grain + .07*np.sin(xx*.071+yy*.09)
             pixels=np.ones((n,n,4),dtype=np.float32)
             for i,c in enumerate(color): pixels[:,:,i]=np.clip(c*pattern,0,1)
+            if name=='brass':
+                patina=np.clip(np.sin(xx*.033)*np.cos(yy*.05)-.5,0,.5)*.3
+                pixels[:,:,0]*=1-patina;pixels[:,:,1]+=patina*.055;pixels[:,:,2]+=patina*.03
             img=bpy.data.images.new(name+'_256',width=n,height=n)
             img.pixels.foreach_set(pixels.ravel());img.pack()
             tex=m.node_tree.nodes.new('ShaderNodeTexImage');tex.image=img
@@ -178,6 +186,7 @@ class Scene:
                     original=slot.material
                     tint=(.32,.19,.15) if pack=='furniture' else (.43,.43,.39)
                     material=original.copy();slot.material=material
+                    material['manorFinish']='Wood' if pack=='furniture' else 'Metal' if any(word in key for word in ['iron','fence','lantern','lightpost']) else 'Slate'
                     if material.use_nodes:
                         bs=material.node_tree.nodes.get('Principled BSDF')
                         if bs:
@@ -198,12 +207,51 @@ class Scene:
         return group
 
     def write(self,path):
+        # Roblox 변환에서도 단색 재질이 흰색으로 사라지지 않게 색을 이미지에 고정한다.
+        for mat in {m for o in self.collection.objects if o.type=='MESH' for m in o.data.materials if m}:
+            if not mat.use_nodes:continue
+            bs=mat.node_tree.nodes.get('Principled BSDF')
+            if not bs or bs.inputs['Base Color'].is_linked:continue
+            color=tuple(bs.inputs['Base Color'].default_value)
+            img=bpy.data.images.new(mat.name+'_color',width=4,height=4)
+            img.pixels.foreach_set(list(color)*16);img.pack()
+            tex=mat.node_tree.nodes.new('ShaderNodeTexImage');tex.image=img
+            mat.node_tree.links.new(tex.outputs['Color'],bs.inputs['Base Color'])
+            bs.inputs['Base Color'].default_value=(1,1,1,1)
         bpy.ops.object.select_all(action='DESELECT')
         for o in self.collection.objects:o.select_set(True)
         bpy.context.view_layer.objects.active=next((o for o in self.collection.objects if o.type=='MESH'),None)
         bpy.ops.export_scene.gltf(filepath=str(path),export_format='GLB',use_selection=True,export_apply=True,export_animations=False,export_cameras=False,export_lights=False,export_yup=True)
         raw=path.read_bytes();n=struct.unpack_from('<I',raw,12)[0];d=json.loads(raw[20:20+n])
         return {'file':path.name,'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest(),'nodes':len(d['nodes']),'meshes':len(d['meshes'])}
+
+    def batch_static(self):
+        # 장식의 수는 유지하고 같은 재질의 고정 소품만 병합한다. 움직이는 노드는 보존한다.
+        keep=('Butler','Archivist','Undertaker','CoffinLid','CoffinHand','ArmorHelmet','LittleGhost',
+              'TeaCup','Tea','Chandelier','Mirror','FamilyPortrait','PortraitCanvas','HearthFlame',
+              'ManorSideWall','FacadeWing','BackWall','HallFloor','Courtyard','CrookedRoof','Clock','EntryDoor')
+        groups={}
+        bpy.context.view_layer.update()
+        for o in list(self.collection.objects):
+            if o.type!='MESH' or o.name.startswith(keep):continue
+            material=o.data.materials[0] if len(o.data.materials)==1 else None
+            if not material:continue
+            # 재질 복제본도 원본 이미지와 색이 같으면 함께 묶는다.
+            bs=material.node_tree.nodes.get('Principled BSDF') if material.use_nodes else None
+            textures=tuple(n.image.name for n in material.node_tree.nodes if n.type=='TEX_IMAGE' and n.image) if material.use_nodes else ()
+            key=(textures,tuple(bs.inputs['Base Color'].default_value) if bs else tuple(material.diffuse_color),material.get('manorFinish','SmoothPlastic'))
+            groups.setdefault(key,[]).append(o)
+        for index,objects in enumerate(groups.values()):
+            if len(objects)<2:continue
+            bpy.ops.object.select_all(action='DESELECT')
+            for o in objects:o.select_set(True)
+            bpy.context.view_layer.objects.active=objects[0]
+            bpy.ops.object.convert(target='MESH')
+            bpy.ops.object.join()
+            combined=bpy.context.object;combined.name='ManorDetail'+str(index)
+            material=combined.data.materials[0]
+            combined.data.materials.clear();combined.data.materials.append(material)
+            for polygon in combined.data.polygons:polygon.material_index=0
 
 def palette(s):
     return {k:s.material(k,v) for k,v in {
@@ -284,6 +332,11 @@ def build():
     s.box('BackWall',(0,11,-43),(60,22,1.5),c['plum'])
     s.box('EntryLintel',(0,14,-2),(18,3,4),c['wood'])
     s.box('EntryThreshold',(0,.40,-2),(16,.4,6),c['stone'])
+    for side in [-1,1]:
+        door=s.node('EntryDoor'+str(side),pos=(side*7.2,.5,-2))
+        s.box('EntryDoorWood'+str(side),(-side*3.5,5.8,0),(7,11.6,.5),c['wood'],parent=door)
+        for y in [2.7,8.6]:s.box('EntryDoorPanel'+str(side)+str(y),(-side*3.5,y,.3),(5.3,4.4,.16),c['teal'],parent=door)
+        s.lathe('EntryDoorKnob'+str(side),(-side*6.2,5.4,.5),.22,.22,.4,c['brass'],parent=door)
     # Asymmetric roof ridge, using custom six-sided prism rather than a hotel box.
     roof=[[-33,22,-46],[33,22,-46],[33,22,0],[-33,22,0],[-5,39,-46],[-5,36,0]]
     s.node('CrookedRoof',s.mesh('CrookedRoof',roof,[[0,4,1],[3,2,5],[0,3,5,4],[4,5,2,1],[0,1,2,3]],c['roof']))
@@ -323,6 +376,13 @@ def build():
         s.box('InteriorDado'+str(side),(side*28.1,3,-23),(.3,5,37),c['wood'])
         for z in [-10,-19,-28,-37]:s.box('WallPanel'+str(side)+str(z),(side*27.8,3,z),(.35,4,7),c['teal'])
     s.box('BackDado',(0,3,-42),(56,5,.6),c['wood'])
+    # 집안의 시간도 살짝 고장났다. 시계추·시곗바늘은 클라이언트가 느리게 움직인다.
+    s.box('ClockCase',(-9,5,-40.3),(3.2,9.2,1.8),c['wood'])
+    s.ellipsoid('ClockFace',(-9,8.6,-39.32),(2.5,2.5,.12),c['ivory'])
+    s.box('ClockMinute',(-9,9.05,-39.2),(.12,.95,.08),c['black'])
+    s.box('ClockHour',(-8.64,8.6,-39.15),(.78,.15,.08),c['black'])
+    s.lathe('ClockPendulumRod',(-9,4.8,-39.15),.055,.055,3.8,c['brass'])
+    s.ellipsoid('ClockPendulum',(-9,3,-39.1),(1.1,1.1,.14),c['brass'])
     for i in range(9):s.box('FloorPlank'+str(i),(-26+i*6,.365,-23),(.06,.02,36),c['black'])
     for i,(x,z) in enumerate([(-22,15),(24,19),(-22,-10),(22,-9)]):s.prop('graveyard','lightpost-single','LampPost'+str(i),(x,0,z),9)
     for i,(x,z) in enumerate([(-21,29),(22,32)]):s.prop('graveyard','bench-damaged','Bench'+str(i),(x,0,z),3,math.pi)
@@ -495,12 +555,14 @@ def build():
                 o=s.lathe('Cobweb'+str(side)+str(ring)+str(j),(0,0,0),.018,.018,delta.length,c['ivory'])
                 o.location=(a+b)/2;o.rotation_euler=delta.to_track_quat('Z','Y').to_euler()
 
+    s.batch_static()
     results=[s.write(OUT/'manor-lobby.glb')]
     bpy.context.view_layer.update()
     coords=[o.matrix_world@Vector(v) for o in s.collection.objects if o.type=='MESH' for v in o.bound_box]
     lo=Vector([min(v[i] for v in coords)for i in range(3)]);hi=Vector([max(v[i] for v in coords)for i in range(3)])
     center=(lo+hi)/2
-    (OUT/'import-bounds.json').write_text(json.dumps({'width':hi.x-lo.x,'center':[center.x,center.z,-center.y]},indent=2)+'\n')
+    finishes={o.name:o.data.materials[0].get('manorFinish','SmoothPlastic') for o in s.collection.objects if o.type=='MESH' and o.data.materials}
+    (OUT/'import-bounds.json').write_text(json.dumps({'width':hi.x-lo.x,'center':[center.x,center.z,-center.y],'finishes':finishes},indent=2)+'\n')
     bpy.ops.wm.save_as_mainfile(filepath=str(OUT/'manor.blend'),compress=True)
     for kind in ['Butler','Undertaker','Archivist']:
         p=Scene();npc(p,kind,(0,0,0));results.append(p.write(OUT/(kind.lower()+'.glb')))
@@ -537,7 +599,7 @@ def render_export():
     sc=bpy.context.scene;sc.render.engine='CYCLES';sc.cycles.samples=16;sc.cycles.use_denoising=True
     sc.render.resolution_x=1200;sc.render.resolution_y=780;sc.render.resolution_percentage=100
     sc.view_settings.view_transform='AgX';sc.view_settings.look='AgX - Medium High Contrast';sc.view_settings.exposure=.8
-    for name,pos,target in [('interior',(-2,10,0),(0,8,-27)),('butler',(0,8,1),(5,6,-9))]:
+    for name,pos,target in [('interior',(-2,10,-6),(0,8,-27)),('butler',(0,8,-5),(5,6,-9))]:
         o.location=xyz(pos);o.rotation_euler=(Vector(xyz(target))-o.location).to_track_quat('-Z','Y').to_euler()
         sc.render.filepath=str(review/(name+'.png'));bpy.ops.render.render(write_still=True)
     (review/'evidence.json').write_text(json.dumps({'renderer':'Blender '+bpy.app.version_string+' Cycles','input':'generated/manor-lobby.glb','sha256':hashlib.sha256((OUT/'manor-lobby.glb').read_bytes()).hexdigest(),'method':'Import exported GLB into empty scene, then render','actualRobloxPlayTest':False},indent=2)+'\n')

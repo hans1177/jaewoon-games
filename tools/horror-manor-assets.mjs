@@ -110,7 +110,8 @@ const grants=await request('https://apis.roblox.com/asset-permissions-api/v1/ass
  method:'PATCH',headers:{...headers,'content-type':'application/json'},body:JSON.stringify({subjectType:'Universe',subjectId:universeId,action:'Use',requests:[evidence.assetId,evidence.musicId,evidence.iconsId].map(id=>({assetId:Number(id),grantToDependencies:true}))})
 });
 if(grants.errors?.length)throw Error('MANOR_ASSET_PERMISSION_FAILED:'+grants.errors.map(e=>e.code).join(','));
-fs.writeFileSync('roblox-games/horror-escape-room/shared/ManorAssets.luau',`-- 파일명: shared/ManorAssets.luau\n-- 검증된 모델 ${hash}\nreturn {ModelId=${evidence.assetId},LobbyMusicId=${evidence.musicId},IconsId=${evidence.iconsId},SourceWidth=${bounds.width},SourceCenter=Vector3.new(${bounds.center.join(',')})}\n`);
+const finishes=Object.entries(bounds.finishes||{}).map(([name,material])=>`[${JSON.stringify(name)}]=${JSON.stringify(material)}`).join(',');
+fs.writeFileSync('roblox-games/horror-escape-room/shared/ManorAssets.luau',`-- 파일명: shared/ManorAssets.luau\n-- 검증된 모델 ${hash}\nreturn {ModelId=${evidence.assetId},LobbyMusicId=${evidence.musicId},IconsId=${evidence.iconsId},SourceWidth=${bounds.width},SourceCenter=Vector3.new(${bounds.center.join(',')}),Finishes={${finishes}}}\n`);
 console.log(`MANOR_ASSET_ID=${evidence.assetId}`);
 console.log(`MANOR_MUSIC_ID=${evidence.musicId}`);
 console.log(`MANOR_ICONS_ID=${evidence.iconsId}`);

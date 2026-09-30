@@ -26,7 +26,7 @@ function lz4(input,size){
  }
  assert.equal(o,size,'LZ4 output mismatch');return out;
 }
-const classes=new Map(),names=[];
+const classes=new Map(),names=[],textures=[];
 if(file.toString('utf8',0,8)==='<roblox!'){
  assert.equal(file.readUInt16LE(14),0,'Unknown RBXM version');
  const chunks=[];
@@ -45,20 +45,28 @@ if(file.toString('utf8',0,8)==='<roblox!'){
  for(const {kind,value:b}of chunks){
   if(kind!=='PROP')continue;
   const id=b.readUInt32LE(0),len=b.readUInt32LE(4),name=b.toString('utf8',8,8+len);
-  if(name!=='Name'||b[8+len]!==1)continue;
+  if(!['Name','TextureID'].includes(name)||b[8+len]!==1)continue;
   let offset=9+len;
-  for(let i=0;i<(classes.get(id)?.count||0);i++){const n=b.readUInt32LE(offset);offset+=4;names.push(b.toString('utf8',offset,offset+n));offset+=n;}
+  for(let i=0;i<(classes.get(id)?.count||0);i++){
+   const n=b.readUInt32LE(offset);offset+=4;const value=b.toString('utf8',offset,offset+n);offset+=n;
+   if(name==='Name')names.push(value);else if(value)textures.push(value);
+  }
  }
 }else{
  const xml=file.toString('utf8');assert.match(xml,/<roblox/,'Unknown native model encoding');
  for(const m of xml.matchAll(/<Item class="([^"]+)"/g)){const entry=classes.get(m[1])||{name:m[1],count:0};entry.count++;classes.set(m[1],entry);}
  for(const m of xml.matchAll(/<string name="Name">([^<]*)<\/string>/g))names.push(m[1]);
+ for(const m of xml.matchAll(/<Content name="TextureID">\s*<url>([^<]+)<\/url>/g))textures.push(m[1]);
 }
 const values=[...classes.values()];const meshes=values.filter(x=>x.name==='MeshPart').reduce((n,x)=>n+x.count,0);
 assert.ok(meshes>=200,`Native import contains only ${meshes} meshes`);
+assert.ok(meshes<=400,`Native import exceeds the mobile mesh budget: ${meshes}`);
+assert.ok(textures.length>=meshes*.8,`Imported color textures missing: ${textures.length}/${meshes}`);
 assert.ok(!values.some(x=>['Script','LocalScript','ModuleScript','RemoteEvent','RemoteFunction','Tool'].includes(x.name)),'Unexpected executable asset content');
 for(const name of ['ButlerHead','ArchivistHead','CoffinLid'])assert.ok(names.includes(name),`Missing native node ${name}`);
 assert.ok(names.some(x=>x.startsWith('Butler_')),'Missing imported butler GLB');
-const result={assetId:evidence.assetId,meshCount:meshes,byteCount:file.length,classes:values,pass:true,actualPlayTest:false,checkedAt:new Date().toISOString()};
+const result={assetId:evidence.assetId,meshCount:meshes,texturedMeshCount:textures.length,byteCount:file.length,classes:values,pass:true,actualPlayTest:false,checkedAt:new Date().toISOString()};
 fs.writeFileSync(`${root}/native-import-check.json`,JSON.stringify(result,null,2)+'\n');
+// 검증한 바로 그 바이트를 Rojo의 ServerStorage에 넣는다. 서버 부팅 때 재다운로드하지 않는다.
+if(process.env.MANOR_NATIVE_MODEL)fs.writeFileSync(process.env.MANOR_NATIVE_MODEL,file);
 console.log(`MANOR_NATIVE_IMPORT_CHECK=PASS:${meshes}`);

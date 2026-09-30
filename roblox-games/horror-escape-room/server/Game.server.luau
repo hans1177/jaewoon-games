@@ -561,9 +561,12 @@ local function foundationCheckpoint(name,p,extra)
  warn("Foundation checkpoint write failed",name,lastError)
  return false
 end
-loadFoundationState()
-foundationCheckpoint("SERVER_BOOT",nil,{placeVersion=game.PlaceVersion})
-foundationCheckpoint("MODULE_GRAPH_READY",nil,{modulesReady=true})
+-- 검증 기록 저장은 화면·월드 생성의 선행 조건이 아니다.
+task.spawn(function()
+ loadFoundationState()
+ foundationCheckpoint("SERVER_BOOT",nil,{placeVersion=game.PlaceVersion})
+ foundationCheckpoint("MODULE_GRAPH_READY",nil,{modulesReady=true})
+end)
 local function restoreMovement(p,v)
  local h=hum(p);local r=root(p)
  if r then r.Anchored=false end
@@ -785,7 +788,11 @@ local function groundedRootTarget(p,pos)
   hit=workspace:Raycast(Vector3.new(pos.X,pos.Y+20,pos.Z),Vector3.new(0,-44,0),params)
  end
  local groundY=hit and hit.Position.Y or(lobbyDestination and .65 or .5)
- local standingOffset=math.max(1,tonumber(h.HipHeight)or 0)+(r.Size.Y*.5)
+ local standingOffset=(tonumber(h.HipHeight)or 0)+(r.Size.Y*.5)
+ if h.RigType==Enum.HumanoidRigType.R6 then
+  local leg=c:FindFirstChild("Left Leg")or c:FindFirstChild("Right Leg")
+  standingOffset+=leg and leg.Size.Y or 2
+ end
  local targetY=groundY+standingOffset
  return Vector3.new(pos.X,targetY,pos.Z)
 end
@@ -3039,6 +3046,7 @@ Players.PlayerAdded:Connect(function(p)
  syncLobbyState()
 end)
 for _,p in ipairs(Players:GetPlayers())do
+ task.spawn(function()
  load(p)
  if state~="RUNNING"and lobbySpawnLocation and lobbySpawnLocation.Parent then p.RespawnLocation=lobbySpawnLocation end
  p:SetAttribute("RoomFeedback","")
@@ -3047,6 +3055,7 @@ for _,p in ipairs(Players:GetPlayers())do
  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
  p.CharacterAdded:Connect(function()onCharacter(p)end)
  if p.Character then task.defer(function()onCharacter(p)end)end
+ end)
 end
 syncLobbyState()
 qaCaptureRemote.OnServerEvent:Connect(function(p,label,value)

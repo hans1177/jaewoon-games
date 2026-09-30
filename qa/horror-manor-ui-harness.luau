@@ -11,6 +11,7 @@ end
 function methods:Destroy()self.Parent=nil end
 function methods:FindFirstChildOfClass(class)for _,o in ipairs(self:GetChildren())do if o.ClassName==class then return o end end end
 function methods:WaitForChild(name)return self[name]end
+function methods:FindFirstChild(name)for _,o in ipairs(self:GetChildren())do if o.Name==name then return o end end end
 Instance={new=function(class)
  local values={ClassName=class,Activated=signal(),AttributeChanged=signal(),Visible=true,Enabled=true,Active=true,CanvasPosition={X=0,Y=0}}
  local o=setmetatable({}, {__index=function(_,k)return methods[k]or values[k]end,__newindex=function(_,k,v)values[k]=v end})
@@ -19,7 +20,7 @@ end}
 local function enum()return setmetatable({}, {__index=function(_,k)return k end})end
 Enum=setmetatable({}, {__index=function()return enum()end})
 UDim={new=function(...)return {...}end}
-UDim2={new=function(...)return {...}end,fromOffset=function(...)return {...}end,fromScale=function(...)return {...}end}
+UDim2={new=function(...)return {...}end,fromOffset=function(x,y)return {0,x,0,y}end,fromScale=function(x,y)return {x,0,y,0}end}
 Vector2={new=function(x,y)return {X=x,Y=y}end,zero={X=0,Y=0}}
 Vector3={new=function(...)return {...}end}
 CFrame={lookAt=function(...)return {...}end}
@@ -43,7 +44,7 @@ function remote:FireServer(action,value)table.insert(self.sent,{action,value})en
 local C={RemoteName="GameEvent",Actions=setmetatable({}, {__index=function(_,k)return k end}),Maps={{Id="SCHOOL",Name="학교"}},GhostCatalog={},MonsterForms={{Id="DRACULA",Name="드라큘라",UnlockXP=0}},Cosmetics={{Id="DEFAULT",Name="기본",Price=0}}}
 local RS={Shared={GameConfig="CONFIG",ManorAssets="ASSETS",MonsterStories="STORIES"},WaitForChild=function()return remote end}
 local Lighting={FindFirstChildOfClass=function()return nil end}
-local services={Players={LocalPlayer=p},ReplicatedStorage=RS,Lighting=Lighting,RunService={RenderStepped=signal()}}
+local services={Players={LocalPlayer=p},ReplicatedStorage=RS,Lighting=Lighting,RunService={RenderStepped=signal(),Heartbeat=signal()}}
 game={GetService=function(_,name)return services[name]end}
 workspace={CurrentCamera={},GetAttribute=function(_,key)return key=="PhysicalLobbyReady"end,GetAttributeChangedSignal=function()return signal()end}
 local function require(id)
@@ -62,6 +63,26 @@ local function open(key)remote.OnClientEvent:Fire("MANOR_MENU",key);flush()end
 local function sent(action)assert(remote.sent[#remote.sent][1]==action,"Incorrect remote action")end
 -- __MANOR_CLIENT_SOURCE__
 click("저택 들어가기")
+local named={};for _,o in ipairs(all)do if o.Name then named[o.Name]=o end end
+assert(named.FamilyNotebook.Visible==false,"Navigation obscures the lobby before user opens it")
+click("수첩");assert(named.FamilyNotebook.Visible==true)
+click("수첩");assert(named.FamilyNotebook.Visible==false)
+click("출정");assert(find("오늘 밤의 출정"))
+local function bounds(o,width,height)
+ if not o or o.ClassName=="ScreenGui"or o==p.PlayerGui then return {x=0,y=0,w=width,h=height}end
+ local parent=bounds(o.Parent,width,height);local size=o.Size or{0,0,0,0};local pos=o.Position or{0,0,0,0};local anchor=o.AnchorPoint or Vector2.zero
+ local w=parent.w*size[1]+size[2];local h=parent.h*size[3]+size[4]
+ for _,child in ipairs(o:GetChildren())do if child.ClassName=="UISizeConstraint"then w=math.min(w,child.MaxSize.X);h=math.min(h,child.MaxSize.Y)end end
+ return{x=parent.x+parent.w*pos[1]+pos[2]-w*anchor.X,y=parent.y+parent.h*pos[3]+pos[4]-h*anchor.Y,w=w,h=h}
+end
+for _,viewport in ipairs({{320,520},{390,760},{740,274},{844,320},{1024,640}})do
+ local head=bounds(named.ManorNameplate,viewport[1],viewport[2]);local commands=bounds(named.ManorCommands,viewport[1],viewport[2])
+ assert(head.x+head.w<=commands.x,"Mobile header and controls overlap")
+ assert(commands.y+commands.h<=52,"Controls obscure gameplay")
+ local panel=find("오늘 밤의 출정").Parent;local rect=bounds(panel,viewport[1],viewport[2])
+ assert(rect.x>=0 and rect.y>=0 and rect.x+rect.w<=viewport[1] and rect.y+rect.h<=viewport[2],"Menu clips the viewport")
+end
+print("MANOR_MOBILE_LAYOUT_QA=PASS:5")
 open("PLAY");click("친구 경기 만들기");sent("CREATE_ROOM");assert(remote.sent[#remote.sent][2]=="FRIENDS")
 p:SetAttribute("RoomServer",true);p:SetAttribute("RoomState","ROOM_WAITING");p:SetAttribute("RoomIsHost",true);p:SetAttribute("RoomAutoStart",false);p:SetAttribute("RoomCode","123456");p:SetAttribute("RoomMemberCount",2);flush()
 open("PLAY");assert(find("친구 준비 완료 · 출정 시작"));assert(not find("친구 경기 만들기"));click("친구 준비 완료 · 출정 시작");sent("START_ROOM")
