@@ -5115,6 +5115,33 @@ test('oversized standard JSON edit starts with bounded writable context instead 
 });
 
 
+test('oversized standard JSON edit bounds a giant single-line Goal before the first model request',async(t)=>{
+  const cwd=tempRoot(),root='web-games/demo',relative='index.html',requests=[];
+  const source='<!doctype html>\n<button id="play">Play</button>\n<script>let ready=true;</script>\n';
+  write(path.join(cwd,root,relative),source);
+  const work=order({target:'web',root,responsibleFiles:[root+'/'+relative],taskId:'bounded-large-goal'});
+  work.goal='Repair the existing mobile lobby. '+('Historical planner observation. '.repeat(9000))+'PRESERVE_TAIL_MARKER';
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(work));
+  const server=http.createServer((req,res)=>{
+    let body='';req.on('data',chunk=>body+=chunk);req.on('end',()=>{
+      requests.push(JSON.parse(body));res.writeHead(503);res.end('probe ends before candidate generation');
+    });
+  });
+  await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(11434,'127.0.0.1',resolve);});
+  t.after(()=>new Promise(resolve=>server.close(resolve)));
+  await assert.rejects(runVibe2SourceWorker({cwd,applySource:true}),/Ollama HTTP 503/);
+  assert.equal(requests.length,1);
+  const request=requests[0];
+  assert.ok(Buffer.byteLength(request.prompt)<64000);
+  assert.match(request.prompt,/INITIAL BOUNDED SOURCE REQUEST/);
+  assert.match(request.prompt,/Repair the existing mobile lobby/);
+  assert.match(request.prompt,/PRESERVE_TAIL_MARKER/);
+  assert.doesNotMatch(request.prompt,/(?:Historical planner observation\. ){500}/);
+  assert.match(request.prompt,/=== FILE index\.html \[EDITABLE\]/);
+  assert.deepEqual(request.format,'json');
+});
+
+
 test('Roblox repeated assignment stream aborts before completion and retries without applying partial source',{timeout:5000},async(t)=>{
   const cwd=tempRoot(),root='roblox-games/demo',relative='client/Game.client.luau',requests=[];
   const source='local status = {Text = "ready"}\nstatus.Text = "ready"\n';

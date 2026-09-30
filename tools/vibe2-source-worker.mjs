@@ -672,7 +672,7 @@ export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sour
 export function buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration={},sourceRoot='',responsibleFiles=[],error=null}={}){
   const spec=diagnosticFocusedReplaceOnlySpec({exploration,sourceRoot,responsibleFiles});
   if(!spec)return null;
-  const raw=String(prompt??''),goal=raw.split('\n').find(line=>line.startsWith('Goal:'))||'Goal: repair the reproduced diagnostic';
+  const raw=String(prompt??''),goal=boundedPromptText(raw.split('\n').find(line=>line.startsWith('Goal:'))||'Goal: repair the reproduced diagnostic',6000);
   const reason=clean(error?.message||error).replace(/\s+/g,' ').slice(0,240);
   const hardRule=spec.diagnosticType==='INTERVAL_CLEANUP_RISK'
     ?'HARD POSTCONDITION: replacement source must add a real clearInterval(...) lifecycle path so the exact INTERVAL_CLEANUP_RISK rescan is absent. Do not merely rename or move setInterval.'
@@ -1998,7 +1998,7 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
 export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFiles=[],sourceRoot='',anchorIndex=0,preferredTargets=[],presentationRecovery=false,previousOutput='',controlTokenRecoveryCount=0,syntaxRecoveryCount=0}={}){
   const spec=focusedReplaceOnlySpec(prompt,{responsibleFiles,sourceRoot,anchorIndex,preferredTargets});
   if(!spec)return null;
-  const raw=String(prompt??''),goal=raw.split('\n').find(line=>line.startsWith('Goal:'))||'Goal: make the smallest real implementation change required by the work order';
+  const raw=String(prompt??''),goal=boundedPromptText(raw.split('\n').find(line=>line.startsWith('Goal:'))||'Goal: make the smallest real implementation change required by the work order',6000);
   const reason=clean(error?.message||error).replace(/\s+/g,' ').slice(0,240);
   const presentationTask=/^Goal:[^\n]*(?:presentation|graphics|visual)|^\[PRESENTATION(?:_PASS:| IMPLEMENTATION)|^(?:\[STUDIO_QUALITY_EVOLUTION\]|directiveId=)[^\n]*(?:focus|primaryFocus)=PRESENTATION/im.test(raw.split(/\n=== FILE /)[0]);
   const robloxPresentationTask=presentationTask&&/Engine:\s*roblox/i.test(raw);
@@ -2103,7 +2103,7 @@ export function systemAtomicPairCompletionSpec(prompt,{responsibleFiles=[],sourc
 export function buildSystemAtomicPairCompletionPrompt(prompt,{error=null,responsibleFiles=[],sourceRoot='',partialCandidate=null,multiFilePairRequired=false}={}){
   const completion=systemAtomicPairCompletionSpec(prompt,{responsibleFiles,sourceRoot,partialCandidate,multiFilePairRequired});
   if(!completion)return null;
-  const raw=String(prompt??''),goal=raw.split('\n').find(line=>line.startsWith('Goal:'))||'Goal: repair the verified system architecture cause';
+  const raw=String(prompt??''),goal=boundedPromptText(raw.split('\n').find(line=>line.startsWith('Goal:'))||'Goal: repair the verified system architecture cause',6000);
   const reason=clean(error?.message||error).replace(/\s+/g,' ').slice(0,240);
   const roleRule=completion.missingRole==='game-source'
     ?'Complete the missing Unity game-source file. Connect it to the preserved counterpart using the same state, method names and existing save contract. The final candidate must change BOTH required files and pass all original checks.'
@@ -2226,7 +2226,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
     const criticalPrefix=[
       'You are the Vibe2 game source worker. Return exactly one raw VIBE2_FULL_FILE envelope. Do not return JSON.',
       rawPrompt.split('\n').find(line=>line.startsWith('Engine:'))||'',
-      rawPrompt.split('\n').find(line=>line.startsWith('Goal:'))||'',
+      boundedPromptText(rawPrompt.split('\n').find(line=>line.startsWith('Goal:'))||'',6000),
       verifiedExternalLearningBlockFromPrompt(rawPrompt),
       buildUpDirectiveBlockFromPrompt(rawPrompt,{compact:true,responsiblePaths:exactResponsible}),
       allowedLine,
@@ -2291,7 +2291,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         const compactRetryPrefix=(oversizedInitial||invalidPath||timeoutFailure||presentationDelta||robloxFullGraphicsPackageRecovery||studioQualityDelta||(studioExpansion&&editMatchFailure))?[
           'You are the Vibe2 game source worker. Return JSON only.',
           rawPrompt.split('\n').find(line=>line.startsWith('Engine:'))||'',
-          rawPrompt.split('\n').find(line=>line.startsWith('Goal:'))||'',
+          boundedPromptText(rawPrompt.split('\n').find(line=>line.startsWith('Goal:'))||'',6000),
           verifiedExternalLearningBlockFromPrompt(rawPrompt),
           buildUpDirectiveBlockFromPrompt(rawPrompt,{compact:true,responsiblePaths:exactResponsible}),
           allowedLine,
