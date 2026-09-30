@@ -22,16 +22,17 @@ test('인간 감염과 양 진영 0명 승리조건',()=>{
  assert.match(server,/endRound\("DRAW"\)/);
 });
 
-test('HumanForms는 도구 패시브와 서로 다른 감염능력으로 확장된다',()=>{
+test('HumanForms는 플레이어와 AI가 공유하는 5개 액티브 전투 스킬을 가진다',()=>{
  assert.match(config,/HumanForms=/);
  for(const id of ['BROADCAST','ELECTRICIAN','COURIER','PHOTOGRAPHER','SECURITY'])assert.ok(config.includes('Id="'+id+'"'));
- for(const key of ['Tool=','Passive=','InfectedAbility='])assert.ok(config.includes(key));
- for(const id of ['FALSE_ALARM','BLACKOUT','RUSH','HUNT_FLASH','BREACH'])assert.ok(config.includes(id+'={'),id);
- assert.match(server,/local function humanForm\(p\)/);assert.match(server,/local function nextHuman\(p\)/);
- assert.match(client,/local function currentHumanFormInfo\(\)/);
- assert.match(client,/local function currentAbilityName\(\)/);
- assert.ok(launch.releaseGates.includes('expandable human-form roster'));
- assert.ok(launch.releaseGates.includes('five infected-human abilities have distinct server-authoritative behavior and client feedback'));
+ for(const key of ['Tool=','Passive=','ActiveAbility=','InfectedAbility='])assert.ok(config.includes(key));
+ for(const id of ['SIGNAL_JAM','OVERLOAD','IMPACT_BAG','CAMERA_FLASH','SHOCK_BATON'])assert.ok(config.includes(id+'={'),id);
+ assert.match(config,/HUMAN_ABILITY="HUMAN_ABILITY"/);
+ assert.match(server,/local function humanAbility\(p\)/);
+ assert.match(server,/local function tryBotHumanAbility\(b,target,distance\)/);
+ assert.match(client,/local humanAbilityButton=makeButton/);
+ assert.match(client,/C\.Actions\.HUMAN_ABILITY/);
+ assert.match(client,/playHumanAbilityEffect\(snapshot\)/);
 });
 
 test('인간 정화공격은 몬스터를 제거한다',()=>{
@@ -43,7 +44,7 @@ test('인간 정화공격은 몬스터를 제거한다',()=>{
 test('감염전 HUD는 현재 진영 인원을 표시한다',()=>{
  for(const marker of ['8인 감염전 · 인간 4 VS 몬스터 4','정화 공격','몬스터 변경','인간 변경','감염 완료'])assert.ok(client.includes(marker),marker);
  assert.match(client,/인간 %d : 몬스터 %d/);
- assert.match(client,/rescueButton\.Visible=running and role=="SURVIVOR"/);assert.match(client,/abilityButton\.Visible=running and role=="MONSTER"/);
+ assert.match(client,/rescueButton\.Visible=running and role=="SURVIVOR"/);assert.match(client,/humanAbilityButton\.Visible=running and role=="SURVIVOR"/);assert.match(client,/abilityButton\.Visible=running and role=="MONSTER"/);
 });
 
 test('세 맵 이벤트 오디오 보안은 유지된다',()=>{
@@ -197,11 +198,19 @@ test('플레이어와 AI 추격 모션은 기존 Animator 위에 레이어로 �
 });
 
 
-test('AI 추격 이동은 진행 방향을 바라본다',()=>{
- assert.match(server,/CFrame\.lookAt\(nextPos,nextPos\+dir\)/);
- assert.match(server,/local dir=d\.Unit/);
+test('AI는 몰려다니지 않고 분산 교전하며 양 진영 스킬을 실제 사용한다',()=>{
+ assert.match(config,/SeparationRadius=12/);
+ assert.match(config,/SeparationWeight=7/);
+ assert.match(server,/local function botSeparationVector\(b\)/);
+ assert.match(server,/local function distributedSurvivorTarget\(b\)/);
+ assert.match(server,/local function distributedMonsterTarget\(b\)/);
+ assert.match(server,/local function tryBotMonsterAbility\(b,targetPos,distance\)/);
+ assert.match(server,/local function tryBotHumanAbility\(b,target,distance\)/);
+ assert.match(server,/local function tryBotHumanPurify\(b,target,distance\)/);
+ assert.match(server,/local function tryBotHumanDash\(b,direction,distance\)/);
+ assert.match(server,/AI_HUMAN_ACTION_EFFECT/);
+ assert.match(server,/MONSTER_ABILITY_EFFECT/);
 });
-
 
 test('보상은 기존 기본값을 유지하면서 실제 기여도만 제한적으로 추가한다',()=>{
  assert.match(config,/ParticipationCoins=12/);
@@ -396,18 +405,17 @@ test('중도 입장과 이탈은 다음 라운드 관전 및 AI 보충으로 복
 });
 
 
-test('승리 결과는 서버가 확정한 코믹 팀 세레머니로 마무리된다',()=>{
- assert.match(client,/Name="TeamCeremony"/);
- assert.match(client,/local function playResultCeremony\(resultCode\)/);
- assert.match(client,/CELEBRATE_HUMAN/);
- assert.match(client,/CELEBRATE_MONSTER/);
- assert.match(client,/CELEBRATE_DRAW/);
- assert.match(server,/local function chooseCelebration\(winner\)/);
- assert.match(server,/CelebrationName/);
- assert.match(server,/CelebrationCaption/);
- assert.doesNotMatch(client,/playResultCeremony\([\s\S]{0,600}FireServer/);
+test('승리 결과는 실제 캐릭터 3D 스테이징과 시네마틱 카메라로 마무리된다',()=>{
+ assert.match(server,/local function stageResultCeremony\(winner,celebrationPlayers\)/);
+ assert.match(server,/CelebrationCameraPosition/);
+ assert.match(server,/CelebrationFocusPosition/);
+ assert.match(server,/FireAllClients\("RESULT_CEREMONY_STAGE"/);
+ assert.match(client,/local function startResultCeremonyCamera\(stage\)/);
+ assert.match(client,/CameraType=Enum\.CameraType\.Scriptable/);
+ assert.match(client,/local function stopResultCeremonyCamera\(\)/);
+ assert.match(client,/ceremonyStage\.Visible=false/);
+ assert.doesNotMatch(client,/playResultCeremony\(resultCode\)[\s\S]{0,1200}playCeremonyConfetti/);
 });
-
 
 test('맵 놀람 요소는 경쟁 판정과 레이캐스트에서 완전히 제외된다',()=>{
  assert.match(server,/AmbientDecorativeOnly/);
@@ -435,20 +443,16 @@ test('병원과 놀이공원도 학교처럼 별도 코믹 발견거리를 가�
  for(const marker of ['LocalXrayDuck','LocalRunawayBed','LocalArcadeGhostScreen','LocalPopcorn'])assert.ok(client.includes(marker),marker);
 });
 
-test('승리 세레머니는 결과 단계 전용이며 서버가 팀과 랜덤 연출을 확정한다',()=>{
+test('세레머니 콘셉트는 생존 완료와 사냥 완료 중심이며 구형 코믹 춤을 사용하지 않는다',()=>{
  assert.match(config,/ResultSeconds=6/);
- assert.match(config,/Celebrations=\{/);
- for(const id of ['PHOTO_FAIL','PURIFIER_HIGHFIVE','CLOCK_OUT','ROLL_CALL','SHRUG_DANCE','SCARY_POSE','AWKWARD_CLAP'])assert.ok(config.includes('Id="'+id+'"'),id);
- assert.match(server,/local function chooseCelebration\(winner\)/);
- assert.match(server,/CelebrationWinnerTeam/);
- assert.match(server,/CelebrationAIWinners/);
- assert.match(server,/task\.wait\(C\.ResultSeconds or 6\)/);
- assert.match(client,/Name="TeamCeremony"/);
- assert.match(client,/playCeremonyConfetti/);
- assert.match(client,/CelebrationCaption/);
- assert.doesNotMatch(config,/Celebrations=[\s\S]{0,1400}(Damage|WalkSpeed|PurifyDistance|InfectRange|RegenMultiplier)/);
+ for(const id of ['LAST_LIGHT','CLEAN_EXIT','FINAL_PURIFY','HUNT_COMPLETE','NIGHT_PROCESSION','RED_CHECKIN','DEADLOCK'])assert.ok(config.includes('Id="'+id+'"'),id);
+ for(const removed of ['PHOTO_FAIL','PURIFIER_HIGHFIVE','CLOCK_OUT','ROLL_CALL','SHRUG_DANCE','SCARY_POSE','AWKWARD_CLAP'])assert.ok(!config.includes('Id="'+removed+'"'),removed);
+ assert.match(server,/stageResultCeremony/);
+ assert.match(server,/CelebrationStagedCount/);
+ assert.match(client,/RESULT_CEREMONY_STAGE/);
+ assert.match(client,/실제 캐릭터 중심|startResultCeremonyCamera|ceremonyStage\.Visible=false/);
+ assert.doesNotMatch(config,/Emote="dance/);
 });
-
 
 test('초기 세계 괴담 도감은 12종 3단계이며 서버 근접 검증을 사용한다',()=>{
  const catalog=config.slice(config.indexOf('GhostCatalog={'),config.indexOf('GhostTitles={'));
