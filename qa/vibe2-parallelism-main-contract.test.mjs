@@ -320,7 +320,7 @@ test('stale main push wake exits before expensive reserve work without cancellin
 
   assert.match(core,/Drop stale reserve wake before reserve work/);
   assert.match(core,/VIBE2_MAIN_PUSH_WAKE_STALE_DROPPED=/);
-  assert.match(core,/VIBE2_FANIN_WAKE_STALE_DROPPED=/);
+  assert.match(core,/VIBE2_FANIN_WAKE_REBASED_TO_LATEST=/);
   assert.match(core,/VIBE2_RESERVE_WAKE_FRESHNESS=NEURON_CALLBACK_ALWAYS_INGEST/);
   assert.match(core,/gh api "repos\/\$GITHUB_REPOSITORY\/commits\/main" --jq '\.sha'/);
   assert.match(core,/Prepare latest main machine contract\n\s+id: contract\n\s+if: steps\.main_wake\.outputs\.proceed == 'true'/);

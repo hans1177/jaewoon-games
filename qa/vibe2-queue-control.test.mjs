@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {execFileSync} from 'node:child_process';
 import {
   synchronizeOwnerDevelopmentHolds,
   enqueueVibeTask,
@@ -1571,7 +1572,7 @@ test('continuous core fan-in replays immutable results on latest runtime head in
   assert.doesNotMatch(fanIn,/git pull --rebase origin vibe2-unreal-core/);
 });
 
-test('continuous core drops stale fan-in refill wakes but always ingests neuron completion callbacks',()=>{
+test('continuous core rebases refill wakes to latest main and always ingests neuron completion callbacks',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   const start=workflow.indexOf('- name: Drop stale reserve wake before reserve work');
   const end=workflow.indexOf('- name: Download atomic neuron completion result',start);
@@ -1579,12 +1580,34 @@ test('continuous core drops stale fan-in refill wakes but always ingests neuron 
   const block=workflow.slice(start,end);
   assert.match(block,/VIBE2_DISPATCH_ACTION: \$\{\{ github\.event\.action \|\| '' \}\}/);
   assert.match(block,/vibe2-fanin-refill/);
-  assert.match(block,/VIBE2_FANIN_WAKE_STALE_DROPPED/);
+  assert.match(block,/VIBE2_FANIN_WAKE_REBASED_TO_LATEST/);
   assert.match(block,/VIBE2_RESERVE_WAKE_EVENT_SHA/);
   assert.match(block,/VIBE2_RESERVE_WAKE_LATEST_SHA/);
   assert.match(block,/vibe2-neuron-complete/);
   assert.match(block,/VIBE2_RESERVE_WAKE_FRESHNESS=NEURON_CALLBACK_ALWAYS_INGEST/);
   assert.doesNotMatch(block,/BYPASS_NON_MAIN_PUSH/);
+  const script=block.slice(block.indexOf('run: |')+'run: |'.length).replace(/^ {10}/gm,'');
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'refill-main-drift-'));
+  try{
+    const gh=path.join(temp,'gh'),output=path.join(temp,'output');
+    fs.writeFileSync(gh,'#!/bin/sh\nprintf "%s\\n" "$TEST_LATEST_MAIN"\n',{mode:0o755});
+    for(const [event,action,eventSha,latestSha,expected,marker] of [
+      ['repository_dispatch','vibe2-fanin-refill','old-owner-main','new-owner-main','true','VIBE2_FANIN_WAKE_REBASED_TO_LATEST'],
+      ['push','','old-owner-main','new-owner-main','false','VIBE2_MAIN_PUSH_WAKE_STALE_DROPPED'],
+      ['repository_dispatch','vibe2-fanin-refill','same-main','same-main','true','VIBE2_RESERVE_WAKE_FRESH'],
+      ['repository_dispatch','vibe2-neuron-complete','old-owner-main','new-owner-main','true','NEURON_CALLBACK_ALWAYS_INGEST']
+    ]){
+      fs.writeFileSync(output,'');
+      const log=execFileSync('bash',['-euo','pipefail','-c',script],{encoding:'utf8',env:{...process.env,PATH:temp+path.delimiter+process.env.PATH,GITHUB_EVENT_NAME:event,GITHUB_REF_NAME:'main',VIBE2_DISPATCH_ACTION:action,GITHUB_SHA:eventSha,TEST_LATEST_MAIN:latestSha,GITHUB_REPOSITORY:'test/repo',GITHUB_OUTPUT:output}});
+      assert.equal(fs.readFileSync(output,'utf8').trim(),'proceed='+expected);
+      assert.ok(log.includes(marker));
+    }
+    const contract=workflow.slice(workflow.indexOf('- name: Prepare latest main machine contract'),workflow.indexOf('- name: Fast scheduler preflight'));
+    assert.match(contract,/if \[ "\$dispatch_type" = 'vibe2-neuron-complete' \]/);
+    assert.match(contract,/git fetch --depth=1 --no-tags origin main --quiet/);
+    assert.match(contract,/contract_sha="\$\(git rev-parse FETCH_HEAD\)"/);
+    assert.match(workflow,/vibe2-refill-reserve-\{0\}/);
+  }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
 
 test('continuous core keeps pending neuron callbacks light and blocks broken contracts before reserve',()=>{

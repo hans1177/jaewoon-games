@@ -150,10 +150,12 @@ jobs:
             echo "VIBE2_RESERVE_WAKE_EVENT_SHA=$GITHUB_SHA"
             echo "VIBE2_RESERVE_WAKE_LATEST_SHA=$latest_main"
             if [[ "$GITHUB_SHA" != "$latest_main" ]]; then
-              proceed=false
               if [[ "${GITHUB_EVENT_NAME:-}" == 'repository_dispatch' ]]; then
-                echo "VIBE2_FANIN_WAKE_STALE_DROPPED=$GITHUB_SHA:$latest_main"
+                # A refill carries no source snapshot. The next step fetches latest main,
+                # then reserves only current, unlocked work using that pinned contract.
+                echo "VIBE2_FANIN_WAKE_REBASED_TO_LATEST=$GITHUB_SHA:$latest_main"
               else
+                proceed=false
                 echo "VIBE2_MAIN_PUSH_WAKE_STALE_DROPPED=$GITHUB_SHA:$latest_main"
               fi
             else
