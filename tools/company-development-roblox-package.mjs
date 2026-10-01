@@ -59,6 +59,56 @@ export function validateRobloxArtifactScriptInventory({artifactPath='',expected=
   return Object.freeze(actual);
 }
 
+function robloxLightingSerializationProfile(project={}){
+  const {technology,technologyToken,lightingStyle,lightingStyleToken,prioritizeLightingQuality,expectsRetro}=robloxLightingSerializationProfile(project);
+  return Object.freeze({technology,technologyToken:technologyToken,lightingStyle,lightingStyleToken,prioritizeLightingQuality,expectsRetro});
+}
+
+function upsertRobloxXmlProperty(propertiesXml,{tag,name,value}){
+  const expression=new RegExp(`<${tag}\\s+name="${name}">[\\s\\S]*?<\\/${tag}>`,'i');
+  const serialized=`<${tag} name="${name}">${value}</${tag}>`;
+  if(expression.test(propertiesXml))return propertiesXml.replace(expression,serialized);
+  return propertiesXml.replace(/<\/Properties>/i,`  ${serialized}\n    </Properties>`);
+}
+
+export function normalizeRobloxArtifactLightingSerialization({artifactPath='',projectPath=''}={}){
+  const artifact=path.resolve(clean(artifactPath));
+  const projectFile=path.resolve(clean(projectPath));
+  if(!fs.existsSync(artifact))throw new Error(`Roblox artifact missing: ${artifact}`);
+  if(!fs.existsSync(projectFile))throw new Error(`Roblox project missing: ${projectFile}`);
+  const project=readJson(projectFile);
+  const profile=robloxLightingSerializationProfile(project);
+  let xml=fs.readFileSync(artifact,'utf8');
+  const lightingStart=xml.search(/<Item\\s+class="Lighting"(?:\\s|>)/i);
+  if(lightingStart<0)throw new Error('ROBLOX_LIGHTING_ITEM_REQUIRED');
+  const propertiesStart=xml.indexOf('<Properties>',lightingStart);
+  const propertiesClose=xml.indexOf('</Properties>',propertiesStart);
+  if(propertiesStart<0||propertiesClose<0)throw new Error('ROBLOX_LIGHTING_PROPERTIES_REQUIRED');
+  const propertiesEnd=propertiesClose+'</Properties>'.length;
+  let lightingProperties=xml.slice(propertiesStart,propertiesEnd);
+  lightingProperties=upsertRobloxXmlProperty(lightingProperties,{tag:'token',name:'Technology',value:profile.technologyToken});
+  lightingProperties=upsertRobloxXmlProperty(lightingProperties,{tag:'token',name:'LightingStyle',value:profile.lightingStyleToken});
+  lightingProperties=upsertRobloxXmlProperty(lightingProperties,{tag:'bool',name:'PrioritizeLightingQuality',value:profile.prioritizeLightingQuality?'true':'false'});
+  xml=xml.slice(0,propertiesStart)+lightingProperties+xml.slice(propertiesEnd);
+
+  if(profile.expectsRetro){
+    const toneName=/<string\\s+name="Name">\\s*CompatibilityToneMap\\s*<\\/string>/i;
+    const match=toneName.exec(xml);
+    if(!match)throw new Error('ROBLOX_LIGHTING_RETRO_TONEMAP_INSTANCE_REQUIRED');
+    const toneNameAt=match.index;
+    const tonePropertiesStart=xml.lastIndexOf('<Properties>',toneNameAt);
+    const tonePropertiesClose=xml.indexOf('</Properties>',toneNameAt);
+    if(tonePropertiesStart<lightingStart||tonePropertiesClose<0)throw new Error('ROBLOX_LIGHTING_RETRO_TONEMAP_PROPERTIES_REQUIRED');
+    const tonePropertiesEnd=tonePropertiesClose+'</Properties>'.length;
+    let toneProperties=xml.slice(tonePropertiesStart,tonePropertiesEnd);
+    toneProperties=upsertRobloxXmlProperty(toneProperties,{tag:'token',name:'TonemapperPreset',value:1});
+    xml=xml.slice(0,tonePropertiesStart)+toneProperties+xml.slice(tonePropertiesEnd);
+  }
+
+  fs.writeFileSync(artifact,xml,'utf8');
+  return Object.freeze({pass:true,...profile});
+}
+
 export function validateRobloxArtifactLightingMigrationGuard({artifactPath='',projectPath=''}={}){
   const artifact=path.resolve(clean(artifactPath));
   if(!fs.existsSync(artifact))throw new Error(`Roblox artifact missing: ${artifact}`);
@@ -199,12 +249,14 @@ export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',source
     if(expectedScripts.total<=0)throw new Error('Roblox source contains no executable Luau scripts');
     const artifact=path.join(outDir,`${safeName(id)}.rbxlx`);
     execFileSync(rojo,['build','default.project.json','--output',artifact],{cwd:root,stdio:'pipe',encoding:'utf8',maxBuffer:16*1024*1024});
+    const lightingSerialization=normalizeRobloxArtifactLightingSerialization({artifactPath:artifact,projectPath:path.join(root,'default.project.json')});
     const stat=fs.statSync(artifact);
     if(!stat.isFile()||stat.size<=0)throw new Error('Rojo package artifact missing or empty');
     const actualScripts=validateRobloxArtifactScriptInventory({artifactPath:artifact,expected:expectedScripts});
     const lightingGuard=validateRobloxArtifactLightingMigrationGuard({artifactPath:artifact,projectPath:path.join(root,'default.project.json')});
     const sha256=crypto.createHash('sha256').update(fs.readFileSync(artifact)).digest('hex');
     console.log(`ROBLOX_BUILD_SCRIPT_INVENTORY=PASS:${actualScripts.Script}/${actualScripts.LocalScript}/${actualScripts.ModuleScript}`);
+    console.log(`ROBLOX_BUILD_LIGHTING_SERIALIZATION=NORMALIZED:technology=${lightingSerialization.technology}:lightingStyle=${lightingSerialization.lightingStyle}`);
     console.log(`ROBLOX_BUILD_LIGHTING_MIGRATION_GUARD=PASS:technology=${lightingGuard.technology}:lightingStyle=${lightingGuard.lightingStyle}:retroRequired=${lightingGuard.expectsRetro}:retroToneMap=${lightingGuard.compatibilityToneMap}`);
     return createRobloxBuildEvidence({
       gameId:id,
