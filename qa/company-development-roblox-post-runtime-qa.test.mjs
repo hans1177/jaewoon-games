@@ -144,7 +144,7 @@ test('foundation runtime write contention merges unrelated games and revalidates
 });
 
 
-test('post-runtime QA deduplicates heavy scans without blocking local Studio planning',()=>{
+test('post-runtime QA deduplicates heavy scans while Studio planning avoids the shared Windows host',()=>{
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
   assert.match(workflow,/run-name: Roblox runtime foundation QA · \$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
@@ -159,7 +159,10 @@ test('post-runtime QA deduplicates heavy scans without blocking local Studio pla
   const studioPlan=workflow.slice(studioPlanAt,studioAutoPlayAt);
   assert.doesNotMatch(studioPlan,/\n\s+needs:\s+dedupe(?:\s|$)/);
   assert.match(studioPlan,/concurrency:\n\s+group: roblox-studio-mcp-plan-/);
-  assert.match(studioPlan,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
+  assert.match(studioPlan,/runs-on: ubuntu-slim/);
+  assert.match(studioPlan,/ROBLOX_STUDIO_MCP_PLAN_RUNNER=HOSTED_CONTROL/);
+  assert.match(studioPlan,/ROBLOX_STUDIO_SHARED_HOST_CONSUMED_BY_PLANNER=NO/);
+  assert.doesNotMatch(studioPlan,/roblox-studio-authenticated/);
 });
 
 
