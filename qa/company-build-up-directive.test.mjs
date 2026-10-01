@@ -69,7 +69,7 @@ test('game-specific directive covers the whole game and all visual domains',()=>
     responsibleFiles:['roblox-games/bug-defense/server/Game.server.luau']
   });
   assert.equal(directive.gameId,'bug-defense');
-  assert.equal(directive.version,2);
+  assert.equal(directive.version,3);
   assert.equal(directive.generation,1);
   assert.equal(directive.coverage.allDomainsConsidered,true);
   assert.equal(directive.qualityGapMap.length,BUILD_UP_DOMAINS.length);
@@ -92,6 +92,8 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.ok(directive.platformAdaptationDirectives.FORTNITE_UEFN);
   assert.ok(directive.platformAdaptationDirectives.UNITY_WEB);
   assert.ok(directive.platformAdaptationDirectives.UNITY_APP);
+  assert.equal(directive.perceptibleExperienceBuildUp.perceptiblePlayerEffectRequired,true);
+  assert.equal(directive.perceptibleExperienceBuildUp.existenceOnlyPassForbidden,true);
   assert.equal(directive.autonomousContentExpansion.version,2);
   assert.equal(directive.autonomousContentExpansion.executionBoundary,'EXISTING_BUILD_UP_ONLY');
   assert.equal(directive.autonomousContentExpansion.autonomousDecisionOwner,'VIBE');
