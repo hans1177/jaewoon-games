@@ -1794,6 +1794,58 @@ test('commercial adaptive Studio contract expands automatically from launch core
   assert.match(contract.adaptiveCoverage.contractHash,/^sha256:[0-9a-f]{64}$/);
 });
 
+test('Roblox Studio audio audit checks runtime playback spatial rolloff grouping and duplicate loops',()=>{
+  assert.match(helper,/local soundGroupCount=0/);
+  assert.match(helper,/RollOffMinDistance/);
+  assert.match(helper,/RollOffMaxDistance/);
+  assert.match(helper,/duplicateLoopingPlayingSoundCount/);
+  assert.match(helper,/playingSoundSignature/);
+  assert.match(helper,/audioGroupCoverage/);
+  assert.match(helper,/owner-disabled audio categories/i);
+
+  const contract=deriveStudioActualPlayContract({
+    launchCore:['exploration with BGM music audio'],
+    releaseGates:['audio feedback pass']
+  });
+  const probe={
+    player:{characterPresent:true,humanoidPresent:true,rootPresent:true,rootX:0,rootY:5,rootZ:0,animatorPresent:true,motorCount:6,roundState:'RUNNING',currentMap:'Forest'},
+    camera:{present:true,subjectPresent:true,fieldOfView:70,occluded:false},
+    ui:{visibleButtons:1,visibleObjects:1,visibleTexts:[{name:'Goal',text:'탐험'}],offscreenButtons:0,undersizedTouchButtons:0,textOverflowButtons:0,overlapPairs:0,largeOverlayCount:0,largeBlockingOverlayCount:0,largestOverlayCoverage:0,required:{}},
+    world:{boundsFinite:true,collidablePartCount:40,floorBelowPlayer:true,floorSampleCount:9,floorHitCount:9,routeSampleCount:0,routeSuccessCount:0,minSpawnThreatDistance:-1,proximityPromptCount:0,clickDetectorCount:0,mobs:[],npcs:[],companions:[],items:[],environmentModels:1,effectCount:0},
+    runtime:{
+      remoteCount:1,progression:[],inventory:[],inventoryCount:0,systemSignals:1,descendantCount:100,memoryMb:100,
+      soundCount:2,playingSoundCount:1,loopingSoundCount:1,playingLoopingSoundCount:1,
+      spatialSoundCount:1,spatialConfiguredCount:1,groupedSoundCount:2,soundGroupCount:1,bgmSoundCount:1,
+      playingMissingSoundIdCount:0,duplicateLoopingPlayingSoundCount:0,
+      playingSoundSignature:'rbxassetid://1|SoundService|true',categories:{}
+    },
+    workspace:{CurrentMapId:'FOREST'},lighting:{brightness:1.2}
+  };
+  const pass=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:probe,preActionClientProbe:probe,
+    postActionClientProbe:{...probe,player:{...probe.player,rootX:1}},
+    clientProbe:probe,serverProbe:{runtime:probe.runtime,world:probe.world,workspace:probe.workspace},
+    actions:[{id:'keyboard-w',dispatched:true,ok:true}]
+  });
+  assert.equal(pass.scenarios.find(row=>row.id==='adaptive-audio-surface')?.pass,true);
+  assert.equal(pass.metrics.audioQuality.pass,true);
+  assert.equal(pass.metrics.audioQuality.audioGroupCoverage,1);
+
+  const broken=structuredClone(probe);
+  broken.runtime.spatialConfiguredCount=0;
+  broken.runtime.duplicateLoopingPlayingSoundCount=1;
+  const fail=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:broken,preActionClientProbe:broken,
+    postActionClientProbe:{...broken,player:{...broken.player,rootX:1}},
+    clientProbe:broken,serverProbe:{runtime:broken.runtime,world:broken.world,workspace:broken.workspace},
+    actions:[{id:'keyboard-w',dispatched:true,ok:true}]
+  });
+  assert.equal(fail.scenarios.find(row=>row.id==='adaptive-audio-surface')?.pass,false);
+  assert.equal(fail.qualityFailureDetails.find(row=>row.id==='adaptive-audio-surface')?.repairSurface,'AUDIO');
+  assert.equal(fail.metrics.audioQuality.spatialUnconfiguredCount,1);
+  assert.equal(fail.metrics.audioQuality.duplicateLoopingPlayingSoundCount,1);
+});
+
 test('worker automation, save rejoin, and map rerolls do not invent companion or retry requirements',()=>{
   const contract=deriveStudioActualPlayContract({
     launchCore:['resident hiring and worker automation','seeded room layout rerolls each new empty run','monster aggro and leash reset'],
@@ -2020,7 +2072,7 @@ test('missing local character aborts before movement and routes to exact-source 
 });
 
 test('Studio startup probe follows declared entry steps, exact start action, and blocking-overlay gates before normal QA',()=>{
-  assert.equal(ROBLOX_STUDIO_HARNESS_VERSION,16);
+  assert.equal(ROBLOX_STUDIO_HARNESS_VERSION,17);
   assert.match(helper,/ROBLOX_STUDIO_DEAD_CHARACTER_ABORT:INITIAL_CHARACTER_NOT_PLAYABLE/);
   assert.match(helper,/initial-character-playable/);
   assert.match(helper,/const entryButtonTexts=launchStringList\(actualPlayContract\.entryButtonTexts\)/);
