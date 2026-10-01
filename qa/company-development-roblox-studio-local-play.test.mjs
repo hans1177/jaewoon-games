@@ -2020,7 +2020,7 @@ test('missing local character aborts before movement and routes to exact-source 
 });
 
 test('Studio startup probe follows declared entry steps, exact start action, and blocking-overlay gates before normal QA',()=>{
-  assert.equal(ROBLOX_STUDIO_HARNESS_VERSION,16);
+  assert.equal(ROBLOX_STUDIO_HARNESS_VERSION,17);
   assert.match(helper,/ROBLOX_STUDIO_DEAD_CHARACTER_ABORT:INITIAL_CHARACTER_NOT_PLAYABLE/);
   assert.match(helper,/initial-character-playable/);
   assert.match(helper,/const entryButtonTexts=launchStringList\(actualPlayContract\.entryButtonTexts\)/);
@@ -2038,6 +2038,12 @@ test('Studio startup probe follows declared entry steps, exact start action, and
   assert.match(helper,/largeBlockingOverlayCount/);
   assert.match(helper,/largestOverlayCoverage/);
   assert.match(helper,/adaptive-ui-blocking-overlay/);
+  assert.match(helper,/experience-buildup-motion/);
+  assert.match(helper,/experience-buildup-audio-music/);
+  assert.match(helper,/experience-buildup-inventory-equipment/);
+  assert.match(helper,/experience-buildup-overall/);
+  assert.match(helper,/playingAudioLayerCount/);
+  assert.match(helper,/activeRuntimePlayback/);
 });
 
 test('large overlay detection uses actual panel or image opacity and does not treat transparent full-screen text alone as an occluder',()=>{
