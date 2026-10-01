@@ -687,6 +687,7 @@ export function buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration={},s
       'You are the Vibe2 causal diagnostic source repair worker. Return JSON only.',
       goal,
       verifiedExternalLearningBlockFromPrompt(raw),
+      codingExecutionContractBlockFromPrompt(raw),
       `Reproduced diagnostic: ${spec.diagnosticType}:${spec.path}; line=${spec.diagnosticLine??'UNKNOWN'}; needle=${spec.diagnosticNeedle||'UNKNOWN'}`,
       spec.diagnosticMicroTask?`Required repair: ${spec.diagnosticMicroTask}`:'',
       hardRule,
@@ -884,6 +885,7 @@ export function buildFullWebExpansionPrompt(basePrompt,seed,{stage=1,minBytes=FU
     line('Goal:'),
     verifiedExternalLearningBlockFromPrompt(promptText),
     buildUpDirectiveBlockFromPrompt(promptText),
+    codingExecutionContractBlockFromPrompt(promptText),
     line('Allowed edit paths:'),
     line('Full Web generation target after automatic expansion:')||line('Full Web generation target:'),
     'Preserve the exact responsible path and existing playable systems. Do not widen scope.'
@@ -1317,6 +1319,17 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
     const prefix=line.slice(0,at+1);
     return[prefix+boundedPromptText(line.slice(at+1),Math.max(256,COMPACT_DIRECTIVE_LINE_BYTES-Buffer.byteLength(prefix,'utf8')))];
   }).join('\n');
+}
+
+export function codingExecutionContractBlockFromPrompt(prompt=''){
+  const raw=String(prompt??'');
+  const begin='[CODING EXECUTION CONTRACT BEGIN]';
+  const end='[CODING EXECUTION CONTRACT END]';
+  const start=raw.indexOf(begin);
+  if(start<0)return'';
+  const finish=raw.indexOf(end,start+begin.length);
+  if(finish<0)throw new Error('CODING_EXECUTION_CONTRACT_PROMPT_BLOCK_TRUNCATED');
+  return raw.slice(start,finish+end.length);
 }
 
 
@@ -2031,6 +2044,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       goal,
       verifiedExternalLearningBlockFromPrompt(raw),
       buildUpDirectiveBlockFromPrompt(raw,{compact:true,focusedRobloxVisual:robloxPresentationTask,focusedPresentation:presentationTask,selectedPath:spec.path}),
+      codingExecutionContractBlockFromPrompt(raw),
       reason?'Previous failure: '+reason:'',
       /SOURCE_LINE_REPETITION/.test(reason)?'SOURCE REPETITION REPAIR: the prior stream repeated the same assignment without completing. Rebuild only the fixed anchor replacement; do not copy the surrounding function or repeat identical assignments. Preserve every required behavior.':'',
       /LUAU_SYNTAX/.test(reason)?'LUAU SYNTAX REPAIR: fix the compiler diagnostic in the replacement below. Preserve the original enclosing scope and retained source. Return the corrected replacement against the same ORIGINAL find anchor; do not edit the rejected candidate as if it were applied.':'',
@@ -2125,6 +2139,7 @@ export function buildSystemAtomicPairCompletionPrompt(prompt,{error=null,respons
       'You are the Vibe2 system atomic-pair completion worker. Return JSON only.',
       goal,
       buildUpDirectiveBlockFromPrompt(raw),
+      codingExecutionContractBlockFromPrompt(raw),
       reason?'Previous failure: '+reason:'',
       roleRule,
       verifiedExternalLearningBlockFromPrompt(raw),
@@ -2238,6 +2253,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
       rawPrompt.split('\n').find(line=>line.startsWith('Goal:'))||'',
       verifiedExternalLearningBlockFromPrompt(rawPrompt),
       buildUpDirectiveBlockFromPrompt(rawPrompt,{compact:true,responsiblePaths:exactResponsible}),
+      codingExecutionContractBlockFromPrompt(rawPrompt),
       allowedLine,
       fullWebTargetLine,
       'Preserve the exact responsible path. Do not touch homepage/company files or widen writable scope.',
@@ -2303,6 +2319,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
           rawPrompt.split('\n').find(line=>line.startsWith('Goal:'))||'',
           verifiedExternalLearningBlockFromPrompt(rawPrompt),
           buildUpDirectiveBlockFromPrompt(rawPrompt,{compact:true,responsiblePaths:exactResponsible}),
+          codingExecutionContractBlockFromPrompt(rawPrompt),
           allowedLine,
           'Preserve gameplay values, save meaning and existing behavior unless the work order explicitly authorizes a protected change.',
           'Every edits[].path MUST be one exact path from Allowed edit paths.',
