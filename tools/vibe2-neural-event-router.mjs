@@ -1,5 +1,5 @@
 // 파일명: tools/vibe2-neural-event-router.mjs
-// 역할: 이벤트 기반 뉴런 라우팅 결정을 계산하고, 중앙정책이 허용한 안전 범위에서는 기존 wave scheduler에 gated 실행 힌트를 전달한다.
+// 역할: 이벤트 기반 뉴런 라우팅 결정을 계산하고, 중앙정책이 허용한 안전 범위에서는 기존 direct queue reservation 경로에 gated 실행 힌트를 전달한다.
 // 원칙: 정책/보안/릴리즈 권한은 확장하지 않는다. 실제 실행은 기존 queue/reserve/fan-in 경로만 사용한다.
 
 import { buildNeuralWorkGraph, neuralWorkGraphEvidence } from './vibe2-neural-work-graph.mjs';
@@ -148,7 +148,7 @@ export function simulateNeuralEventRoute({
     &&nonAuthorityInhibitors.length===0;
   const workerCreationAllowed=gatedActionAllowed&&['PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR','PREPARE_DIAGNOSTIC_REVALIDATION'].includes(proposedAction.kind);
   const queueMutationAllowed=gatedActionAllowed;
-  const waveReorderAllowed=gatedActionAllowed;
+  const directReservationReorderAllowed=gatedActionAllowed;
   const automaticTuningAllowed=gatedActionAllowed;
   const authorityMode=gatedActionAllowed?'GATED':'SHADOW';
 
@@ -164,7 +164,7 @@ export function simulateNeuralEventRoute({
       fireAllowed:gatedActionAllowed,
       workerCreationAllowed,
       queueMutationAllowed,
-      waveReorderAllowed,
+      directReservationReorderAllowed,
       automaticTuningAllowed
     },
     dependencies:normalizedEvent.dependencies,
@@ -182,14 +182,14 @@ export function simulateNeuralEventRoute({
     fireAllowed:gatedActionAllowed,
     workerCreationAllowed,
     queueMutationAllowed,
-    waveReorderAllowed,
+    directReservationReorderAllowed,
     automaticTuningAllowed,
     lockAcquisitionAllowed:false,
     policyMutationAllowed:false,
     learningEligible:false,
     authorityPromotionEligible:false,
-    comparisonTarget:'CURRENT_WAVE_SCHEDULER_OUTCOME',
-    authority:gatedActionAllowed?'GATED_EXISTING_SCHEDULER_ONLY':'SIMULATION_ONLY'
+    comparisonTarget:'CURRENT_DIRECT_QUEUE_RESERVATION_OUTCOME',
+    authority:gatedActionAllowed?'GATED_DIRECT_QUEUE_RESERVATION_ONLY':'SIMULATION_ONLY'
   };
 }
 
@@ -211,7 +211,7 @@ export function neuralEventRouteEvidence(route={}){
     fireAllowed:route.fireAllowed===true,
     workerCreationAllowed:route.workerCreationAllowed===true,
     queueMutationAllowed:route.queueMutationAllowed===true,
-    waveReorderAllowed:route.waveReorderAllowed===true,
+    directReservationReorderAllowed:route.directReservationReorderAllowed===true,
     automaticTuningAllowed:route.automaticTuningAllowed===true,
     lockAcquisitionAllowed:false,
     policyMutationAllowed:false,
