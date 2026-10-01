@@ -8389,10 +8389,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T00:35:50.781Z",
+      "updatedAt": "2026-10-01T00:40:07.614Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -9524,7 +9524,7 @@
       "unityCandidateBranch": "development/unity-tech-bug-defense-36774290498",
       "unitySourceCommit": "ce1112ea78581b5a2ea212fd55b0141e7b3e1eda",
       "unityBuildRunId": 36793081585,
-      "unityRuntimeSmokeRunId": 36796127974,
+      "unityRuntimeSmokeRunId": 36797165954,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityInternalReleaseReady": false,
@@ -9938,7 +9938,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-01T00:27:59.114Z"
+        "verifiedAt": "2026-10-01T00:40:07.614Z"
       },
       "unityF9ReleaseRegressionPassed": false,
       "unityF9ReleaseRegressionPassedAt": null,
@@ -27821,7 +27821,7 @@
       "unityCanonicalEvidenceBound": false
     }
   ],
-  "updatedAt": "2026-10-01T00:38:12.157Z",
+  "updatedAt": "2026-10-01T00:40:09.206Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
