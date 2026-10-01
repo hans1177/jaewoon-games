@@ -867,16 +867,16 @@
       "problem": "기존 그래픽 제작 구조는 자산·모션·환경 계획과 런타임 품질 게이트를 보유했지만 캐릭터 정체성/환경 디테일 내부 모듈의 총괄 결속과 실제 런타임 결함의 다음 source-worker 수정 입력 연결이 불완전했다.",
       "decision": "새 그래픽 파이프라인이나 큐를 만들지 않고 기존 GRAPHICS_PRODUCTION 루트 안에서 character identity, environment detail, runtime before/after audit, declared interface/scene-object coverage를 결속하고 실패 결과를 affected visual responsibility만 수정하는 폐쇄루프로 전달한다.",
       "change": [
-        "assets/vibe-art-pipeline.js: 중앙에 이미 정의된 environmentDirector/characterIdentity 내부 모듈을 실제 GRAPHICS_PRODUCTION에 결속",
-        "assets/vibe-visual-quality-gate.js: 요구된 HUD/MENU/MINIMAP/INTERACTION 및 필수 장면 오브젝트의 실제 관찰/검토/바인딩 증거와 구조화 repairTargets 추가",
-        "tools/vibe2-asset-production-plan.mjs: runtime visual audit 실패를 runtimeVisualRepair로 변환",
-        "tools/vibe2-source-worker.mjs: runtimeVisualRepair를 실제 수정 프롬프트에 보존해 전달",
-        "회귀검사: 런타임 인터페이스/장면 오브젝트 결함, 캐릭터/환경 총괄 결속, source-worker 전달 검증",
-        "assets/vibe-character-identity-director.js: 캐릭터 제작을 실루엣→해부/비율→얼굴·손발→의상/장비→토폴로지→리그/소켓→재질→모션 준비로 세분화",
-        "assets/vibe-studio-asset-universe.js: 자산별 INSPECT→DEFINE_REPAIR→AUTHOR→APPLY→REINSPECT 자동 체인과 거리별 디테일 제작 규칙 추가",
-        "assets/vibe-environment-director.js: 맵/건물/환경을 blockout→구조→기능 디테일→재질/사용흔적→환경동작→플랫폼 변형→적용 순으로 실제 제작",
-        "tools/vibe2-asset-production-plan.mjs: 사용 가능한 같은 게임/회사/저장소 자산을 신규 제작 전에 실제 적용하고 약한 부위만 derived variant로 보강",
-        "tools/vibe2-source-worker.mjs: APPLY_USABLE_ASSETS_FIRST 및 PRECISION_PRODUCTION_CHAIN을 실제 수정 프롬프트에 전달"
+        "기존 GRAPHICS_PRODUCTION 안에 character identity/environment detail/runtime visual repair를 결속",
+        "사용 가능 자산을 same-game → native-ready company → repository → acquired external 후보로 먼저 적용",
+        "적용된 저퀄 자산은 SILHOUETTE/PROPORTION/ANATOMY/STRUCTURE/FACE_HANDS_FEET/MATERIAL/RIG/SOCKET/MOTION/LOD/UI_STATE 등 품질 축으로 분해",
+        "강한 품질 축은 유지하고 실패한 축만 derived variant로 재제작",
+        "호환 자산은 전체 대체뿐 아니라 파츠·리그·재질·소켓·모션·native variant 기증자로 재조립",
+        "캐릭터·몬스터·건물·환경·무기·소품·UI를 GAME_CAMERA/MID_RANGE/CLOSEUP/CONTACT 거리별 디테일로 제작",
+        "맵은 blockout → 구조 → 기능 디테일 → 재질/사용흔적 → ambient motion → native variant → 기존 월드 적용 순서",
+        "검사 → 수정범위 → authoring → 기존 책임 시스템 적용 → 같은 런타임 뷰 재검사를 한 작업 체인으로 연결",
+        "source worker에서 검사/수정계획만 제출하고 멈추는 것을 금지하고 authoring capability가 있으면 제작·적용까지 진행",
+        "랜덤 소품·텍스처 노이즈·과도한 폴리곤을 디테일로 계산하지 않고 기능/구조/접촉/날씨/손상 원인을 가진 디테일만 허용"
       ],
       "preserved": [
         "EXISTING_GRAPHICS_PRODUCTION_ROOT",
@@ -897,13 +897,17 @@
         "newPipelineCreated": false
       },
       "verification": [
-        "RUNTIME_VISUAL_CLOSED_LOOP_REGRESSIONS_PASS_OBSERVED_ON_PR_CI",
-        "APPLY_FIRST_AND_PRECISION_PRODUCTION_REGRESSIONS_ADDED",
-        "FULL_PR_CI_REVALIDATION_PENDING",
-        "ACTUAL_ROBLOX_OR_UNITY_RENDER_RUNTIME_NOT_CLAIMED"
+        "runtime interface / scene object gap 회귀 PASS observed in Vibe QA before unrelated horror suite failure",
+        "Vibe Integrated Regression PASS on prior head",
+        "Company Evolution QA PASS on prior head",
+        "apply-first asset reuse regression added",
+        "precision production chain regression added",
+        "low-quality axis rescue and donor recomposition regression added",
+        "latest CI pending",
+        "actual Roblox/Unity rendered asset production not claimed from source-only tests"
       ],
       "learningState": "TRACE_ONLY",
-      "liveState": "APPLY_FIRST_AND_PRECISION_AUTHORING_IMPLEMENTED_ON_PR_BRANCH; CI_REVALIDATION_PENDING; ACTUAL_RENDER_RUNTIME_REQUIRES_PLATFORM_EVIDENCE"
+      "liveState": "APPLY_FIRST_AND_PRECISION_AUTHORING_IMPLEMENTED_ON_PR_BRANCH; LATEST_CI_PENDING; RUNTIME_REOBSERVATION_REQUIRED_BEFORE_QUALITY_CLOSURE"
     }
   ]
 }
