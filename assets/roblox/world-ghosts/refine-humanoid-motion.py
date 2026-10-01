@@ -83,6 +83,26 @@ QA_THRESHOLDS = {
     'rootLocationMax': 1e-7,
     'maxEulerRad': 1.60,
     'leftRightPhaseErrorRad': 0.020,
+    'framePosePopMaxRad': 0.32,
+    'bodyChainActivitySpreadMinRad': 0.010,
+    'footVerticalLiftMinNormalizedByClip': {
+        'hero_walk_hq': 0.006,
+        'hero_jog_hq': 0.008,
+        'hero_run_hq': 0.010,
+        'hero_sprint_hq': 0.012,
+        'hero_backward_hq': 0.006,
+        'hero_strafe_left_hq': 0.006,
+        'hero_strafe_right_hq': 0.006,
+    },
+    'heelToeRotationRangeMinRadByClip': {
+        'hero_walk_hq': 0.050,
+        'hero_jog_hq': 0.060,
+        'hero_run_hq': 0.080,
+        'hero_sprint_hq': 0.100,
+        'hero_backward_hq': 0.050,
+        'hero_strafe_left_hq': 0.050,
+        'hero_strafe_right_hq': 0.050,
+    },
     'footContactLateralVerticalDriftNormalizedMaxByClip': {
         'hero_walk_hq': 0.035,
         'hero_jog_hq': 0.045,
@@ -647,6 +667,17 @@ def contact_drift(clip_name, bone_name, start, end, samples=9):
     return max(math.hypot(row[0]-base[0],row[2]-base[2]) for row in rows)
 
 
+def vertical_lift(clip_name, bone_name, samples=33):
+    rows=[bone_world_position(clip_name,i/(samples-1),bone_name) for i in range(samples)]
+    zs=[row[2] for row in rows]
+    return max(zs)-min(zs)
+
+
+def frame_pose_pop(clip_name, samples=49):
+    snaps=[sampled_snapshot(clip_name,i/(samples-1)) for i in range(samples)]
+    return max(snapshot_distance(a,b)['rotationMaxRad'] for a,b in zip(snaps,snaps[1:]))
+
+
 def rig_height():
     heads=[RIG.matrix_world @ bone.head_local for bone in RIG.data.bones]
     if not heads:
@@ -705,6 +736,25 @@ for clip_name,(left_window,right_window) in contact_windows.items():
         'left':contact_drift(clip_name,'FootL',*left_window)/height,
         'right':contact_drift(clip_name,'FootR',*right_window)/height,
     }
+foot_vertical_lift_metrics={
+    clip_name:{
+        'left':vertical_lift(clip_name,'FootL')/height,
+        'right':vertical_lift(clip_name,'FootR')/height,
+    }
+    for clip_name in LOCOMOTION_QA_CLIPS
+}
+heel_toe_metrics={
+    clip_name:{
+        'left':rotation_activity(clip_name,'FootL'),
+        'right':rotation_activity(clip_name,'FootR'),
+    }
+    for clip_name in LOCOMOTION_QA_CLIPS
+}
+frame_pose_pop_metrics={clip_name:frame_pose_pop(clip_name) for clip_name in CLIPS}
+body_chain_activity_spread={}
+for clip_name in LOCOMOTION_QA_CLIPS:
+    chain=[rotation_activity(clip_name,bone) for bone in ('Hips','Spine','Chest','Head')]
+    body_chain_activity_spread[clip_name]=max(chain)-min(chain)
 primary_activity={
     clip_name:{bone:rotation_activity(clip_name,bone) for bone in QA_THRESHOLDS['primaryJointRotationRangeMinRad']}
     for clip_name in LOCOMOTION_QA_CLIPS
@@ -748,6 +798,22 @@ for clip_name,feet in foot_contact_metrics.items():
     for side,value in feet.items():
         if value>maximum:
             qa_failures.append(f'FOOT_CONTACT_DRIFT:{clip_name}:{side}')
+for clip_name,feet in foot_vertical_lift_metrics.items():
+    minimum=QA_THRESHOLDS['footVerticalLiftMinNormalizedByClip'][clip_name]
+    for side,value in feet.items():
+        if value<minimum:
+            qa_failures.append(f'FOOT_VERTICAL_LIFT:{clip_name}:{side}')
+for clip_name,feet in heel_toe_metrics.items():
+    minimum=QA_THRESHOLDS['heelToeRotationRangeMinRadByClip'][clip_name]
+    for side,value in feet.items():
+        if value<minimum:
+            qa_failures.append(f'HEEL_TOE_ACTIVITY:{clip_name}:{side}')
+for clip_name,value in frame_pose_pop_metrics.items():
+    if value>QA_THRESHOLDS['framePosePopMaxRad']:
+        qa_failures.append('FRAME_POSE_POP:'+clip_name)
+for clip_name,value in body_chain_activity_spread.items():
+    if value<QA_THRESHOLDS['bodyChainActivitySpreadMinRad']:
+        qa_failures.append('BODY_CHAIN_TOO_UNIFORM:'+clip_name)
 for clip_name,rows in primary_activity.items():
     for bone,minimum in QA_THRESHOLDS['primaryJointRotationRangeMinRad'].items():
         if rows[bone]<minimum:
@@ -762,6 +828,10 @@ qa_metrics={
     'speedBlendRotationMaxRad':speed_blend_metrics,
     'leftRightPhaseErrorRad':phase_metrics,
     'footContactLateralVerticalDriftNormalized':foot_contact_metrics,
+    'footVerticalLiftNormalized':foot_vertical_lift_metrics,
+    'heelToeRotationRangeRad':heel_toe_metrics,
+    'framePosePopMaxRadByClip':frame_pose_pop_metrics,
+    'bodyChainActivitySpreadRad':body_chain_activity_spread,
     'primaryJointRotationRangeRad':primary_activity,
     'secondaryRotationRangeMaxRadByClip':secondary_activity,
     'root':root_metrics,
@@ -871,6 +941,9 @@ evidence = {
         'PELVIS_SPINE_CHEST_DELAYED_CHAIN',
         'FOOT_PLANT_AND_KNEE_COMPRESSION',
         'HEEL_TOE_PITCH_AND_COUNTER_SWING',
+        'MEASURED_FOOT_VERTICAL_LIFT_AND_CONTACT_DRIFT',
+        'FRAME_TO_FRAME_POSE_POP_LIMIT',
+        'PELVIS_SPINE_CHEST_HEAD_ACTIVITY_SEPARATION',
         'START_STOP_WEIGHT_TRANSFER',
         'TURN_45_90_180_WITH_PLANTED_PIVOT',
         'JUMP_COMPRESSION_AIR_POSE_AND_LANDING_SETTLE',
