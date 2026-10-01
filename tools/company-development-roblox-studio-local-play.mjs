@@ -14,7 +14,7 @@ const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,'
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(path.resolve(file)),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const stableSha256=value=>crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
-export const ROBLOX_STUDIO_HARNESS_VERSION=11;
+export const ROBLOX_STUDIO_HARNESS_VERSION=12;
 
 export function assertCurrentStudioWorkflowHead({
   workflowSha=clean(process.env.GITHUB_SHA),
@@ -2845,9 +2845,14 @@ export async function runOfficialStudioMcpPlay({
           await wait(Math.max(350,Math.min(2200,holdMs+250)));
           const interactionProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
           const effect=probeEffectSummary(beforeProbe||{},interactionProbe||{});
-          const semanticPass=semanticEffectPass(semantic,effect);
+          const px=Number(prompt?.x),py=Number(prompt?.y),pz=Number(prompt?.z);
+          const rx=Number(interactionProbe?.player?.rootX),ry=Number(interactionProbe?.player?.rootY),rz=Number(interactionProbe?.player?.rootZ);
+          const promptDistance=[px,py,pz,rx,ry,rz].every(Number.isFinite)?Math.hypot(rx-px,ry-py,rz-pz):Number.POSITIVE_INFINITY;
+          const activationDistance=Math.max(1,Number(prompt?.maxDistance||10));
+          const inRange=Number.isFinite(promptDistance)&&promptDistance<=activationDistance+1.5;
+          const semanticPass=inRange&&semanticEffectPass(semantic,effect);
           if(interactionProbe)timelineProbes.push(interactionProbe);
-          actions.push({id:'prompt-'+clean(prompt?.name||prompt?.objectText||'interaction'),type:'mcp-world-interaction',targetIdentity:clean(prompt?.path)||clean(prompt?.objectText)||clean(prompt?.name),semantic,dispatched:true,ok:navOk&&inputOk,effectObserved:semanticPass,effect});
+          actions.push({id:'prompt-'+clean(prompt?.name||prompt?.objectText||'interaction'),type:'mcp-world-interaction',targetIdentity:clean(prompt?.path)||clean(prompt?.objectText)||clean(prompt?.name),semantic,dispatched:true,ok:navOk&&inputOk&&inRange,effectObserved:semanticPass,promptDistance,activationDistance,inRange,effect});
         }catch{
           actions.push({id:'prompt-'+clean(prompt?.name||prompt?.objectText||'interaction'),type:'mcp-world-interaction',targetIdentity:clean(prompt?.path)||clean(prompt?.objectText)||clean(prompt?.name),semantic,dispatched:true,ok:false,effectObserved:false});
         }

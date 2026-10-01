@@ -46,6 +46,9 @@ test('Studio world probe excludes Terrain extents and approaches prompts within 
   assert.match(helper,/row\.maxDistance/);
   assert.match(helper,/const promptApproachTarget=/);
   assert.match(helper,/Number\(prompt\?\.maxDistance\|\|10\)\*\.55/);
+  assert.match(helper,/const promptDistance=\[px,py,pz,rx,ry,rz\]\.every\(Number\.isFinite\)\?Math\.hypot/);
+  assert.match(helper,/const inRange=Number\.isFinite\(promptDistance\)&&promptDistance<=activationDistance\+1\.5/);
+  assert.match(helper,/ok:navOk&&inputOk&&inRange/);
 });
 
 test('Roblox failure classifier does not mistake generic asset load text for DataStore failure',()=>{
