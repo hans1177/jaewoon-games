@@ -1558,18 +1558,31 @@ jobs:
           test "$pushed" = '1'
           echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=YES'
 
-      - name: Dispatch one F9 scan for all runtime-accepted candidates
+      - name: Dispatch exact F9 reviews for all runtime-accepted candidates in parallel
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
           test -f /tmp/roblox-f9-ids || exit 0
-          candidate_count="$(wc -l < /tmp/roblox-f9-ids | tr -d '[:space:]')"
-          candidate_count="${candidate_count:-0}"
+          mapfile -t ids < <(awk 'NF&&!seen[$0]++' /tmp/roblox-f9-ids)
+          candidate_count="${#ids[@]}"
           [ "$candidate_count" -gt 0 ] || exit 0
-          gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$GITHUB_REPOSITORY" --ref main
-          echo "ROBLOX_F9_SCAN_DISPATCHED=candidates=$candidate_count"
+          pids=()
+          for id in "${ids[@]}"; do
+            (
+              gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+              echo "ROBLOX_F9_EXACT_DISPATCHED=$id"
+            ) &
+            pids+=("$!")
+          done
+          dispatch_failed=0
+          for pid in "${pids[@]}"; do
+            if ! wait "$pid"; then dispatch_failed=1; fi
+          done
+          [ "$dispatch_failed" -eq 0 ]
+          echo "ROBLOX_F9_EXACT_DISPATCH_COUNT=$candidate_count"
+          echo 'ROBLOX_F9_CROSS_GAME_PARALLEL=YES'
 
       - name: Dispatch exact Studio MCP follow-up after new runtime foundation evidence
         if: ${{ inputs.run_studio == true && inputs.retry_open_cloud_only != true }}
