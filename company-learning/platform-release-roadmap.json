@@ -13260,40 +13260,6 @@
     "centralCi": ".github/workflows/company-evolution-qa.yml",
     "centralCiRunForIntegration": 35448282718,
     "verifiedAt": "2026-09-19T14:53:07Z",
-    "verification": {
-      "workflow": "Vibe2 24H Runner",
-      "runId": 35450038247,
-      "runNumber": 1317,
-      "conclusion": "success",
-      "checks": [
-        "vibe2-auto-planner syntax+tests",
-        "vibe2-source-worker tests",
-        "vibe2-incremental-qa tests",
-        "company-development-web-runtime presentation tests",
-        "vibe2-learning-motor presentation mastery tests",
-        "vibe2-practice-distillation presentation tests"
-      ],
-      "observedPresentationTaskGeneration": "seed-casual-realm-weaver-presentation-asset-adaptation-v1",
-      "controlBranchPresentationDomainsInitialized": [
-        "ASSET_ADAPTATION",
-        "LIVING_MOTION",
-        "ANIMATION_FEEL",
-        "VFX",
-        "AUDIO_FEEL",
-        "CAMERA_LANGUAGE"
-      ],
-      "verifiedSuccessXpExpectedBeforeRealGamePass": 0,
-      "ownerPreservationRouting": {
-        "pilotGameId": "fantasy-survival",
-        "intakeSeedPath": "owner-design-reset-queue.json",
-        "intakeSeedState": "ACTIVE_DESIGN_ONLY",
-        "plannerRepairCommit": "2b029df8054900f321c8a6edea91f0124c208500",
-        "regressionCommit": "5f166cb22fbc5045d8be8ed119d481a2af3ced14",
-        "behavior": "PRESERVATION_PRESENTATION_TASK_PREEMPTS_GENERIC_WEB_REPAIR",
-        "verificationState": "CODE_AND_REGRESSION_COMMITTED_CI_STATUS_NOT_YET_REPORTED",
-        "nextRuntimeStep": "CONFIRM_OR_MATERIALIZE_COMPANY_RUNTIME_GAME_SEED_THEN_RUN_STRICT_DESIGN"
-      }
-    },
     "staticQa": "tools/vibe2-incremental-qa.mjs",
     "highEndVisualProductionBinding": {
       "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.highEndVisualProductionContract",
@@ -26677,13 +26643,14 @@
       "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.sourceCommit",
       "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.workflowTelemetryCommit",
       "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.editMatchFastEscalationSourceCommit",
-      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.editMatchFastEscalationTestCommit"
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.editMatchFastEscalationTestCommit",
+      "presentationPipelineImplementation.verification"
     ],
-    "latestArchiveRecord": "company-records/operations/2026/2026-10-01/company/central-policy-archive--central-policy-archive-20261001-ai-v3.json",
-    "latestArchiveRecordId": "central-policy-archive-20261001-ai-v3",
-    "latestArchiveSourceRevision": "d1557c5034aad62560b76b73b4518e1e29c17a04",
-    "latestArchiveAt": "2026-10-01T04:25:00.000Z",
-    "latestArchivePathCount": 37,
+    "latestArchiveRecord": "company-records/operations/2026/2026-10-01/company/central-policy-archive--central-policy-archive-20261001-headroom-1.json",
+    "latestArchiveRecordId": "central-policy-archive-20261001-headroom-1",
+    "latestArchiveSourceRevision": "c0a50b520840502dc806e9fbdecd3779022d5e1d",
+    "latestArchiveAt": "2026-10-01T07:24:26.077Z",
+    "latestArchivePathCount": 1,
     "softTargetEnforced": true,
     "candidateCommand": "node tools/company-records-governance.mjs --central-candidates"
   }
