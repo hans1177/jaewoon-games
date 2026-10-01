@@ -1384,6 +1384,7 @@ test('continuous reserve reuses exact-sha Core QA or fail-closes on the same fan
   assert.match(preflightBlock,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE/);
   assert.match(preflightBlock,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_SAME_FAN_IN_SUITE/);
   assert.match(preflightBlock,/node --test --test-concurrency=4/);
+  assert.match(preflightBlock,/contract_regression_passed=true/);
   assert.match(preflightBlock,/VIBE2_RESERVE_CONTRACT_REGRESSION=PASS/);
   const runtime=JSON.parse(fs.readFileSync('vibe2-runtime.json','utf8'));
   const regression=runtime.continuous.reserveContractRegressionPreflight;
@@ -1637,11 +1638,12 @@ test('continuous core keeps pending neuron callbacks light and blocks broken con
   assert.match(workflow,/requested_contract_sha=.*client_payload\?\.contract_sha/);
   assert.ok(workflow.includes("fs.writeFileSync('/tmp/vibe2-batch.json',JSON.stringify(payload,null,2)+'\\n');"));
   assert.ok(!workflow.includes("fs.writeFileSync('/tmp/vibe2-batch.json',JSON.stringify(payload,null,2)+'\\\\n');"));
-  assert.match(workflow,/Fast scheduler preflight\n\s+if: steps\.main_wake\.outputs\.proceed == 'true' && \(github\.event_name != 'repository_dispatch' \|\| github\.event\.action != 'vibe2-neuron-complete'\)/);
+  assert.match(workflow,/Fast scheduler preflight\n\s+id: preflight\n\s+if: steps\.main_wake\.outputs\.proceed == 'true' && \(github\.event_name != 'repository_dispatch' \|\| github\.event\.action != 'vibe2-neuron-complete'\)/);
   assert.match(workflow,/VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=PASS/);
   assert.match(workflow,/VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=FAIL_LOCAL_REGRESSION/);
   assert.match(workflow,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE/);
   assert.match(workflow,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_SAME_FAN_IN_SUITE/);
+  assert.match(workflow,/contract_regression_passed: \$\{\{ steps\.preflight\.outputs\.contract_regression_passed \}\}/);
   assert.match(workflow,/VIBE2_RESERVE_CONTRACT_REGRESSION=PASS/);
   assert.doesNotMatch(workflow,/VIBE2_NEURON_REFILL_PLANNER_SYNC=PASS/);
   assert.doesNotMatch(workflow,/\[ "\$callback_kind" = 'fanin' \] \|\| \[ "\$callback_kind" = 'neuron' \]/);
