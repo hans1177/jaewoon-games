@@ -52,6 +52,12 @@ test('Roblox failure classifier does not mistake generic asset load text for Dat
   assert.doesNotMatch(helper,/DataStore\|GetDataStore\|SetAsync\|UpdateAsync\|save\|load/);
 });
 
+test('Studio route audit does not invent failure when every remote anchor is already reached or valid',()=>{
+  assert.match(helper,/const unresolvedRemoteRoute=routeRows\.some\(row=>row\?\.pass!==true/);
+  assert.match(helper,/if\(unresolvedRemoteRoute&&routeIndex===0\)/);
+  assert.doesNotMatch(helper,/if\(routeRows\.length>0&&routeIndex===0\)/);
+});
+
 function roadmap(){
   return {
     roblox:{studioExecution:{
