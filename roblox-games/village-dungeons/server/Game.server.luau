@@ -192,41 +192,70 @@ end
 local nativeFoundationSpawn = workspace:FindFirstChild("NativeFoundationSpawn")
 -- A packaged place has no Studio baseplate. Build solid ground before exposing its spawn.
 local villageGround = workspace:FindFirstChild("VillageGround")
+if villageGround and not villageGround:IsA("BasePart") then villageGround:Destroy(); villageGround = nil end
 if not villageGround then
   villageGround = Instance.new("Part")
   villageGround.Name = "VillageGround"
-  villageGround.Size = Vector3.new(160, 2, 160)
-  villageGround.Position = Vector3.new(0, 1, 0)
-  villageGround.Anchored = true
-  villageGround.CanCollide = true
-  villageGround.Material = Enum.Material.Cobblestone
-  villageGround.Color = Color3.fromRGB(119, 126, 109)
-  villageGround.TopSurface = Enum.SurfaceType.Smooth
   villageGround.Parent = workspace
-  for index, edge in ipairs({
-    {Vector3.new(160, 10, 2), Vector3.new(0, 7, -79)},
-    {Vector3.new(160, 10, 2), Vector3.new(0, 7, 79)},
-    {Vector3.new(2, 10, 156), Vector3.new(-79, 7, 0)},
-    {Vector3.new(2, 10, 156), Vector3.new(79, 7, 0)},
-  }) do
-    local wall = Instance.new("Part")
-    wall.Name = "VillageBoundary" .. index
-    wall.Size = edge[1]
-    wall.Position = edge[2]
-    wall.Anchored = true
-    wall.CanCollide = true
-    wall.Material = Enum.Material.Brick
-    wall.Color = Color3.fromRGB(105, 112, 97)
-    wall.Parent = villageGround
-  end
 end
+villageGround.Size = Vector3.new(240, 2, 240)
+villageGround.Position = Vector3.new(0, 1, 0)
+villageGround.Anchored = true
+villageGround.CanCollide = true
+villageGround.CanQuery = true
+villageGround.Material = Enum.Material.Cobblestone
+villageGround.Color = Color3.fromRGB(119, 126, 109)
+villageGround.TopSurface = Enum.SurfaceType.Smooth
+for _, child in ipairs(villageGround:GetChildren()) do
+  if child.Name:match("^VillageBoundary") or child.Name == "VillageQuestBoard" then child:Destroy() end
+end
+for index, edge in ipairs({
+  {Vector3.new(240, 10, 2), Vector3.new(0, 7, -119)},
+  {Vector3.new(240, 10, 2), Vector3.new(0, 7, 119)},
+  {Vector3.new(2, 10, 236), Vector3.new(-119, 7, 0)},
+  {Vector3.new(2, 10, 236), Vector3.new(119, 7, 0)},
+}) do
+  local wall = Instance.new("Part")
+  wall.Name = "VillageBoundary" .. index
+  wall.Size = edge[1]
+  wall.Position = edge[2]
+  wall.Anchored = true
+  wall.CanCollide = true
+  wall.CanQuery = true
+  wall.Material = Enum.Material.Brick
+  wall.Color = Color3.fromRGB(105, 112, 97)
+  wall.Parent = villageGround
+end
+local questBoard = Instance.new("Part")
+questBoard.Name = "VillageQuestBoard"
+questBoard.Size = Vector3.new(10, 6, 1)
+questBoard.Position = Vector3.new(0, 5, -34)
+questBoard.Anchored = true
+questBoard.CanCollide = true
+questBoard.CanQuery = true
+questBoard.Material = Enum.Material.WoodPlanks
+questBoard.Color = Color3.fromRGB(113, 82, 54)
+questBoard.Parent = villageGround
+local questPrompt = Instance.new("ProximityPrompt")
+questPrompt.Name = "QuestBoardPrompt"
+questPrompt.ObjectText = "마을 의뢰 게시판"
+questPrompt.ActionText = "퀘스트 확인"
+questPrompt.HoldDuration = 0.15
+questPrompt.MaxActivationDistance = 10
+questPrompt.RequiresLineOfSight = false
+questPrompt.Parent = questBoard
+questPrompt.Triggered:Connect(function(player)
+  if player and player.Parent then scopeHandler2(player) end
+end)
 if not nativeFoundationSpawn then
   nativeFoundationSpawn = Instance.new("SpawnLocation")
   nativeFoundationSpawn.Name = "NativeFoundationSpawn"
   nativeFoundationSpawn.Size = Vector3.new(8, 1, 8)
   nativeFoundationSpawn.Position = Vector3.new(0, 3, 0)
   nativeFoundationSpawn.Anchored = true
-  nativeFoundationSpawn.CanCollide = true
+  nativeFoundationSpawn.CanCollide = false
+  nativeFoundationSpawn.CanTouch = false
+  nativeFoundationSpawn.CanQuery = false
   nativeFoundationSpawn.Neutral = true
   nativeFoundationSpawn.Parent = workspace
 end
