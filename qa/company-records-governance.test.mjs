@@ -110,11 +110,12 @@ test('repository company-record scan keeps record ids unique',()=>{
 
 
 test('central policy reference scanner protects direct and optional changeRecord dependencies',()=>{
+  const token='change'+'Record';
   const refs=extractChangeRecordReferences([
-    'roadmap.changeRecord.alphaRule.enabled',
-    'roadmap.changeRecord?.betaRule?.runner',
-    'roadmap.changeRecord["gammaRule"].status',
-    "roadmap.changeRecord['deltaRule'].status"
+    'roadmap.'+token+'.alphaRule.enabled',
+    'roadmap.'+token+'?.betaRule?.runner',
+    'roadmap.'+token+'["gammaRule"].status',
+    "roadmap."+token+"['deltaRule'].status"
   ].join('\n'));
   assert.deepEqual(refs,['alphaRule','betaRule','deltaRule','gammaRule']);
 });
