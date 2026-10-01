@@ -1,5 +1,5 @@
 {
-  "version": 512,
+  "version": 513,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -1368,7 +1368,7 @@
     },
     "cohortBarrierForbiddenForIndependentCompletion": true,
     "completionFanInMode": "PER_INDEPENDENT_NEURON_IMMEDIATE",
-    "externalMatrixBatchMaxMeaning": "GITHUB_MATRIX_TRANSPORT_PARTITION_ONLY_NOT_A_SCHEDULING_STAGE_OR_GLOBAL_CAP",
+    "externalMatrixBatchMaxMeaning": "GITHUB_MATRIX_TRANSPORT_LIMIT_ONLY_NOT_SCHEDULER_NOT_GLOBAL_CAP",
     "independentReservationContinuation": true,
     "independentReservationContinuationMayRunWhilePriorWorkersActive": true,
     "topLevelSchedulerSingletonForbidden": true,
@@ -1419,9 +1419,17 @@
       "qualityGateWeakeningForbidden": true,
       "securityGateWeakeningForbidden": true,
       "releaseGateWeakeningForbidden": true,
-      "gameplayBalanceSaveProgressionNetworkAuthorityImmutable": true
+      "gameplayBalanceSaveProgressionNetworkAuthorityImmutable": true,
+      "runtimeProjectionShellsRemoved": true,
+      "schedulerEpochProjectionRemoved": true,
+      "disabledPreflightProjectionRemoved": true,
+      "disabledCallbackCoalescingProjectionRemoved": true
     },
-    "minimumNecessaryProcedureEnforcement": "NO_DUPLICATE_CHECKS_ON_HOT_PATH_REUSE_VALID_EVIDENCE"
+    "minimumNecessaryProcedureEnforcement": "NO_DUPLICATE_CHECKS_ON_HOT_PATH_REUSE_VALID_EVIDENCE",
+    "executionDispatchModel": "EVENT_DRIVEN_DIRECT_TASK_INGRESS",
+    "schedulerLayerPresent": false,
+    "waveLayerPresent": false,
+    "batchContinuationDispatcherPresent": false
   },
   "phases": [
     {
@@ -9647,13 +9655,13 @@
       "pressureObservationFailureAction": "KEEP_ONE_LEARNING_WORKER",
       "minimumActiveWorkersUnderPressure": 1,
       "productionMayNotWaitForLearningReserve": true,
-      "schedulerEpoch": "vibe2-24h-cycle-singleton-v6",
       "ownerDirective20261001Preservation": {
         "maxActiveWorkers": 1,
         "fixedWorkerSlots": 1,
         "workflowConcurrencyGroupPreserved": true,
         "mayMutateGameParallelismControl": false
-      }
+      },
+      "executionModel": "FIXED_SINGLE_WORKER_DIRECT_TASK_EVENT"
     },
     "releaseWait": {
       "taskClass": "RELEASE_WAIT",
@@ -15244,7 +15252,9 @@
       },
       "globalBarrierUsed": false,
       "taskReorderAuthorityCreated": false,
-      "independentAssetLaneParticipation": "DEDICATED_ASSET_LANE_INSIDE_EXISTING_EVENT_DRIVEN_DAG"
+      "independentAssetLaneParticipation": "DEDICATED_ASSET_LANE_INSIDE_EXISTING_EVENT_DRIVEN_DAG",
+      "executionModel": "DEDICATED_ASSET_LANE_DIRECT_TASK_EVENT",
+      "globalBarrier": false
     },
     "failureHandling": {
       "state": "ASSET_REPAIR_REQUIRED",

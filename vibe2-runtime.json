@@ -250,7 +250,7 @@
       "qaAndReleaseAuthorityUnchanged": true,
       "laneMaxMeaning": "NO_INTERNAL_CAP"
     },
-    "refillMode": "independent-neuron-immediate-fanin-plus-five-minute-safety-net",
+    "refillMode": "PER_TASK_EVENT_REFILL_WITH_FIVE_MINUTE_WATCHDOG",
     "refillRef": "vibe2-unreal-core",
     "refillRequiresEligibleWork": true,
     "refillPlannerOnDispatch": false,
@@ -537,13 +537,8 @@
       "responsibleFileConflictLocksPreserved": true,
       "sourceRootWideLocksForbidden": true,
       "liveRunnerQueuePressureCoalescing": false,
-      "cohortFanInConsumesCoalescedResults": false,
-      "coalescedCompletionIsNotFailure": true,
-      "logicalPerTaskVariantJoinStillRequiredWhenCoalesced": true,
-      "fanInRefillConcurrencyScope": "INDEPENDENT_RUN_SCOPED",
       "globalFanInRefillSingletonForbidden": true,
       "sameLaneFanInRefillSerialization": false,
-      "pressureCoalescingIndependentFreeSlotRefillPreserved": false,
       "globalBarrier": false,
       "independentImmediateCompletionFanIn": true
     },
@@ -634,54 +629,6 @@
       "readOnly": true,
       "failOpenToExistingImmediateDispatch": true
     },
-    "callbackCoalescing": {
-      "enabled": false,
-      "singleGameTaskImmediateCompletionRequired": true,
-      "singleGameTaskFullReviewBeforeCohortCompletion": true,
-      "fanInMayReuseSuccessfulExactCommitCoreRegression": true,
-      "idleLearningRequiresEmptyDevelopmentAssetAndRecoveryQueues": false,
-      "minimumLearningWorkersUnderProductionPressure": 1,
-      "assetCandidatesRequireExistingFullReviewAndReleaseGate": true,
-      "strandedAssetReviewResumesImmutableWorkerResults": true,
-      "robloxPublishRechecksLatestSourceAndF9OnEveryAttempt": true,
-      "trigger": "RETIRED",
-      "action": "IMMEDIATE_INDEPENDENT_NEURON_CALLBACK",
-      "fallbackConsumer": null,
-      "taskFailure": false,
-      "resultLossForbidden": true,
-      "workerDirectControlWrite": false,
-      "capacityRefillMayProceedWhileResultCoalesced": false,
-      "pressureCapacityRefill": {
-        "enabled": false,
-        "scope": "RETIRED_NO_GROUPED_LEADER",
-        "event": "vibe2-fanin-refill",
-        "resultConsumption": false,
-        "resultRemainsCohortFanInOwned": false,
-        "workerDirectControlWrite": false,
-        "newWorkflowCreated": false,
-        "maxSignalsPerDispatch": 0
-      },
-      "immediateDispatchResumesWhenPressureClears": true
-    },
-    "reserveContractRegressionPreflight": {
-      "enabled": true,
-      "executionLane": "GAME_PRIMARY",
-      "exactContractShaRequired": true,
-      "reuseSuccessfulCoreQaForExactSha": true,
-      "coreQaActiveCompletion": {
-        "concurrencyGroup": "vibe2-core-qa-${{ github.ref }}",
-        "cancelInProgress": false,
-        "pendingPolicy": "KEEP_ONLY_LATEST_PENDING_SAME_REF",
-        "runner": "ubuntu-slim"
-      },
-      "fallback": "LOCAL_SAME_FAN_IN_CORE_REGRESSION",
-      "observationFailureAction": "RUN_LOCAL_REGRESSION",
-      "blocksReservationOnFailure": true,
-      "gameWorkerStartBeforePass": false,
-      "neuronCompletionCallbackExcluded": true,
-      "newWorkflowCreated": false,
-      "newSchedulerCreated": false
-    },
     "fanInRegressionFailureRecovery": {
       "enabled": true,
       "requeueAffectedTasksFirst": true,
@@ -701,20 +648,16 @@
         "VIBE2_FAN_IN_REGRESSION_REFILL=DISPATCH_FAILED_FAIL_OPEN"
       ]
     },
-    "cohortFanInPressureIngressEnabled": false,
-    "schedulerConcurrencyEpoch": "NO_TOP_LEVEL_SINGLETON",
     "reserveConcurrency": {
       "mode": "PARALLEL_RESERVE_OPTIMISTIC_SHARED_QUEUE_WRITE",
       "crossLaneGlobalReserveLock": false,
       "sameLaneReserveSerialization": false,
-      "statelessRefillCoalescing": "ASSET_DEVELOPMENT_ONLY",
       "sharedQueueWriteRetryAttempts": null,
       "sharedQueueWriteRetryPolicy": "UNBOUNDED_WITH_CAPPED_BACKOFF",
       "reserveJobsParallel": true,
       "serializationScope": "ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY",
       "globalInternalCap": null,
-      "externalMatrixTransportPartitionMax": 256,
-      "topLevelReserveConcurrencyGroup": false
+      "externalMatrixTransportPartitionMax": 256
     },
     "assetDevelopmentControlRunnerPool": {
       "authority": "company-learning/platform-release-roadmap.json#changeRecord.assetArmControlPlaneIsolation20260927",
@@ -749,8 +692,12 @@
       "taskLocalExploration": true,
       "sourceWriteOnlyOnCandidateBranch": true,
       "directMainGameSourceWriteForbidden": true,
-      "fixedGlobalBarrier": false
-    }
+      "fixedGlobalBarrier": false,
+      "schedulerLayer": false
+    },
+    "dispatchModel": "DIRECT_TASK_EVENT",
+    "schedulerLayer": false,
+    "batchContinuationDispatcher": false
   },
   "adaptiveBackpressure": {
     "enabled": true,

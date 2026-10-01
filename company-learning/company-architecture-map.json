@@ -1,5 +1,5 @@
 {
-  "version": 303,
+  "version": 304,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4379,7 +4379,7 @@
       ]
     }
   },
-  "updatedAt": "2026-10-01T23:45:00+09:00",
+  "updatedAt": "2026-10-01T13:10:00+09:00",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -5508,38 +5508,6 @@
     ],
     "authorityExpanded": false
   },
-  "vibe24hSchedulerEpochTopology": {
-    "version": 5,
-    "source": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
-    "workflow": ".github/workflows/vibe2-24h-runner.yml",
-    "concurrency": {
-      "mode": "INDEPENDENT_INVOCATIONS",
-      "currentGroup": null,
-      "cancelInProgress": false,
-      "maxCurrentEpochChains": null,
-      "wakeSignalsCollapse": false,
-      "topLevelSingleton": false
-    },
-    "historicalSingleton": {
-      "previousGroup": "vibe2-24h-cycle-singleton-v9",
-      "retired": true,
-      "retiredAt": "2026-10-01",
-      "reason": "OWNER_DIRECTIVE_REMOVE_WAVE_AND_GLOBAL_ORCHESTRATION_SERIALIZATION"
-    },
-    "stateSafety": {
-      "optimisticStateWriteRetryPreserved": true,
-      "directWorkerControlWriteForbidden": true,
-      "candidateBranchIsolationPreserved": true,
-      "atomicSharedStateWriteIsOnlySerializationScope": true
-    },
-    "learningLaneFixedWorkers": 1,
-    "assetDevelopmentLaneMax": 64,
-    "assetDevelopmentSpeculativeVariantsPerTask": 1,
-    "durableHandoff": "tools/vibe2-handoff.mjs",
-    "newPipelineCreated": false,
-    "authorityExpanded": false,
-    "runtimeFile": "vibe2-runtime.json"
-  },
   "robloxDevelopmentParallelismProjection": {
     "version": 3,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxGameWideWorkflowSerializationRemoval20260926",
@@ -5823,19 +5791,6 @@
     "allJobs": "ubuntu-slim",
     "sharesHeavyGameRunnerPool": false,
     "managerSupervisorTopologyUnchanged": true
-  },
-  "fanInRefillParallelReserve": {
-    "version": 2,
-    "source": "company-learning/platform-release-roadmap.json#changeRecord.fanInRefillParallelReserve20260927",
-    "workflow": ".github/workflows/vibe2-continuous-core.yml",
-    "workflowConcurrency": "RUN_SCOPED_GENERAL_ASSET_REFILL_MAY_KEEP_DEDICATED_LANE_GROUP",
-    "sameLaneSerialization": false,
-    "reserveJobsParallel": true,
-    "sharedStateWriteConflictControl": "OPTIMISTIC_RETRY_ATOMIC_WRITE_ONLY",
-    "topLevelSchedulerSingleton": false,
-    "reserveJobConcurrencyGroup": false,
-    "externalMatrixTransportPartitionMax": 256,
-    "globalInternalCap": null
   },
   "unityExactChildRunDedupe": {
     "version": 1,
@@ -6875,6 +6830,39 @@
       "EXACT_DUPLICATE_SUPPRESSION",
       "ATOMIC_SHARED_STATE_WRITE"
     ],
-    "schedulingStageGrouping": false
+    "schedulerLayer": false,
+    "batchContinuationDispatcher": false
+  },
+  "directEventRefillParallelism": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
+    "workflow": ".github/workflows/vibe2-continuous-core.yml",
+    "mode": "PER_TASK_EVENT_REFILL",
+    "sameLaneSerialization": false,
+    "reserveJobsParallel": true,
+    "sharedStateWriteConflictControl": "OPTIMISTIC_RETRY_ATOMIC_WRITE_ONLY",
+    "externalMatrixTransportPartitionMax": 256,
+    "globalInternalCap": null
+  },
+  "directTaskExecutionTopology20261001": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
+    "mode": "EVENT_DRIVEN_DIRECT_TASK_INGRESS",
+    "schedulerLayer": false,
+    "waveLayer": false,
+    "batchContinuationDispatcher": false,
+    "globalBarrier": false,
+    "externalMatrixTransportPartitionMax": 256,
+    "externalMatrixTransportPartitionIsNotGlobalCap": true,
+    "learningIdleFixedWorkers": 1,
+    "assetDevelopmentLaneMax": 64,
+    "assetDevelopmentSpeculativeVariantsPerTask": 1,
+    "durableHandoff": "tools/vibe2-handoff.mjs",
+    "serializationScope": [
+      "RESPONSIBLE_FILE_CONFLICT",
+      "ACTUAL_DEPENDENCY",
+      "EXACT_DUPLICATE_SUPPRESSION",
+      "ATOMIC_SHARED_STATE_WRITE"
+    ]
   }
 }
