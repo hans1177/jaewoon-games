@@ -2,7 +2,7 @@
   "version": 3,
   "publicSafe": true,
   "internalCompanySurface": true,
-  "updatedAt": "2026-09-30T23:54:11.372Z",
+  "updatedAt": "2026-10-01T01:05:54.283Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -816,14 +816,14 @@
         },
         {
           "platform": "UNITY",
-          "technicalReady": true,
+          "technicalReady": false,
           "internalReleaseState": "NATIVE_DEVELOPMENT",
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
+            "technicalReady": false,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
@@ -844,8 +844,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "e521068400ed4ffa48301811a35e57ad93f44397",
-            "artifactIdentity": "sha256:9826f0d7fd3c0eed7bdee9aaa19391aef3ab304995aa9a7d1f581ce062539077",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "internalReleasePublished": false,
@@ -1604,20 +1604,22 @@
             "checks": {
               "design": true,
               "publication": true,
-              "exactRuntime": true,
+              "exactRuntime": false,
               "lobby": false,
               "movement": false,
-              "noRuntimeErrors": true
+              "noRuntimeErrors": false
             },
             "blockers": [
+              "exactRuntime",
               "lobby",
-              "movement"
+              "movement",
+              "noRuntimeErrors"
             ],
             "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
             "artifactIdentity": "sha256:91ce8b13e87151d6c7946e7027f6415a3cf46726a69410bf30069994a43c539f",
-            "verifiedAt": "2026-09-28T23:50:45.923Z"
+            "verifiedAt": null
           },
-          "internalReleasePublished": true,
+          "internalReleasePublished": false,
           "internalPlaytestPassed": false,
           "externalExposureAllowed": false,
           "externalExposureState": "INTERNAL_ONLY",
@@ -1661,7 +1663,7 @@
             ],
             "candidateVersionNumber": 0
           },
-          "perpetualBuildupActive": true,
+          "perpetualBuildupActive": false,
           "testerTickets": {
             "openBlocking": [
               "bug-cc0f8b50b5481b708817"
@@ -1675,18 +1677,18 @@
             "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
             "publicDiscoveryAllowed": false
           },
-          "rebuildRequired": true
+          "rebuildRequired": false
         },
         {
           "platform": "UNITY",
-          "technicalReady": true,
+          "technicalReady": false,
           "internalReleaseState": "NATIVE_DEVELOPMENT",
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
+            "technicalReady": false,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
@@ -1831,7 +1833,7 @@
             "artifactIdentity": "sha256:4a832af7f08bc074bfc903e85a3732428b8d65b6798a4bee4b80fdbaf34b6040",
             "verifiedAt": "2026-09-28T21:52:57.239Z"
           },
-          "internalReleasePublished": true,
+          "internalReleasePublished": false,
           "internalPlaytestPassed": false,
           "externalExposureAllowed": false,
           "externalExposureState": "INTERNAL_ONLY",
@@ -1875,7 +1877,7 @@
             ],
             "candidateVersionNumber": 0
           },
-          "perpetualBuildupActive": true,
+          "perpetualBuildupActive": false,
           "testerTickets": {
             "openBlocking": [
               "bug-6152d67e2c31cae915b4"
@@ -1889,18 +1891,18 @@
             "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
             "publicDiscoveryAllowed": false
           },
-          "rebuildRequired": true
+          "rebuildRequired": false
         },
         {
           "platform": "UNITY",
-          "technicalReady": true,
+          "technicalReady": false,
           "internalReleaseState": "NATIVE_DEVELOPMENT",
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
+            "technicalReady": false,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
@@ -1921,8 +1923,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "92c76090d928b7724e18a0fd980f1f173a4581ba",
-            "artifactIdentity": "sha256:dd5eb00fd41cfac2127da4486308deb34c995f85f641b3c31646addfaa6aacc7",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "internalReleasePublished": false,
@@ -2035,20 +2037,22 @@
             "checks": {
               "design": true,
               "publication": true,
-              "exactRuntime": true,
+              "exactRuntime": false,
               "lobby": false,
               "movement": false,
-              "noRuntimeErrors": true
+              "noRuntimeErrors": false
             },
             "blockers": [
+              "exactRuntime",
               "lobby",
-              "movement"
+              "movement",
+              "noRuntimeErrors"
             ],
             "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
             "artifactIdentity": "sha256:9aa9ec5fd1a750dd740efc2c425ee19cff287e30b3f2f3e1593a37265b47b9cd",
-            "verifiedAt": "2026-09-28T23:34:32.482Z"
+            "verifiedAt": null
           },
-          "internalReleasePublished": true,
+          "internalReleasePublished": false,
           "internalPlaytestPassed": false,
           "externalExposureAllowed": false,
           "externalExposureState": "INTERNAL_ONLY",
@@ -2092,7 +2096,7 @@
             ],
             "candidateVersionNumber": 0
           },
-          "perpetualBuildupActive": true,
+          "perpetualBuildupActive": false,
           "testerTickets": {
             "openBlocking": [
               "bug-044321159062f1bdd81f"
@@ -2106,7 +2110,7 @@
             "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
             "publicDiscoveryAllowed": false
           },
-          "rebuildRequired": true
+          "rebuildRequired": false
         },
         {
           "platform": "UNITY",
@@ -2262,7 +2266,7 @@
             "artifactIdentity": "sha256:9e9e4476caf9224d4ec45c9221122d0a47966f1db08288ac11e1c8e36c9751f9",
             "verifiedAt": "2026-09-28T23:27:40.245Z"
           },
-          "internalReleasePublished": true,
+          "internalReleasePublished": false,
           "internalPlaytestPassed": false,
           "externalExposureAllowed": false,
           "externalExposureState": "INTERNAL_ONLY",
@@ -2306,7 +2310,7 @@
             ],
             "candidateVersionNumber": 0
           },
-          "perpetualBuildupActive": true,
+          "perpetualBuildupActive": false,
           "testerTickets": {
             "openBlocking": [
               "bug-0e778fae0d7491732692"
@@ -2320,7 +2324,7 @@
             "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
             "publicDiscoveryAllowed": false
           },
-          "rebuildRequired": true
+          "rebuildRequired": false
         },
         {
           "platform": "UNITY",
@@ -2476,7 +2480,7 @@
             "artifactIdentity": "sha256:f34852ab83c0f7a1b3ecbb9073b988617d580088f97ca678c3a97be7731969c0",
             "verifiedAt": "2026-09-28T23:46:37.976Z"
           },
-          "internalReleasePublished": true,
+          "internalReleasePublished": false,
           "internalPlaytestPassed": false,
           "externalExposureAllowed": false,
           "externalExposureState": "INTERNAL_ONLY",
@@ -2520,7 +2524,7 @@
             ],
             "candidateVersionNumber": 0
           },
-          "perpetualBuildupActive": true,
+          "perpetualBuildupActive": false,
           "testerTickets": {
             "openBlocking": [
               "bug-752025cd9115e84ff395"
@@ -2534,7 +2538,7 @@
             "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
             "publicDiscoveryAllowed": false
           },
-          "rebuildRequired": true
+          "rebuildRequired": false
         },
         {
           "platform": "UNITY",
@@ -2677,20 +2681,22 @@
             "checks": {
               "design": true,
               "publication": true,
-              "exactRuntime": true,
+              "exactRuntime": false,
               "lobby": false,
               "movement": false,
-              "noRuntimeErrors": true
+              "noRuntimeErrors": false
             },
             "blockers": [
+              "exactRuntime",
               "lobby",
-              "movement"
+              "movement",
+              "noRuntimeErrors"
             ],
             "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
             "artifactIdentity": "sha256:0560d32a2e19d01cdf431b58b4faa16aca09a2f99c2574def82320086cebdd8c",
-            "verifiedAt": "2026-09-28T22:11:55.106Z"
+            "verifiedAt": null
           },
-          "internalReleasePublished": true,
+          "internalReleasePublished": false,
           "internalPlaytestPassed": false,
           "externalExposureAllowed": false,
           "externalExposureState": "INTERNAL_ONLY",
@@ -2733,7 +2739,7 @@
             ],
             "candidateVersionNumber": 0
           },
-          "perpetualBuildupActive": true,
+          "perpetualBuildupActive": false,
           "testerTickets": {
             "openBlocking": []
           },
@@ -2745,7 +2751,7 @@
             "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
             "publicDiscoveryAllowed": false
           },
-          "rebuildRequired": true
+          "rebuildRequired": false
         },
         {
           "platform": "UNITY",
@@ -2904,7 +2910,7 @@
             "artifactIdentity": "sha256:2f1da667fcdc53f82f72d79ae1ca49e9783f743b4f7da4af3d5dc02b1779fc02",
             "verifiedAt": "2026-09-28T23:31:38.683Z"
           },
-          "internalReleasePublished": true,
+          "internalReleasePublished": false,
           "internalPlaytestPassed": false,
           "externalExposureAllowed": false,
           "externalExposureState": "INTERNAL_ONLY",
@@ -2948,7 +2954,7 @@
             ],
             "candidateVersionNumber": 0
           },
-          "perpetualBuildupActive": true,
+          "perpetualBuildupActive": false,
           "testerTickets": {
             "openBlocking": [
               "bug-dedda7f0c486bd827522"
@@ -2962,7 +2968,7 @@
             "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
             "publicDiscoveryAllowed": false
           },
-          "rebuildRequired": true
+          "rebuildRequired": false
         },
         {
           "platform": "UNITY",
@@ -3118,7 +3124,7 @@
             "artifactIdentity": "sha256:27eac451197d7647d0217f4c7eef45869ee21f36864d68753ef535e04bbf9b33",
             "verifiedAt": "2026-09-28T23:53:17.882Z"
           },
-          "internalReleasePublished": true,
+          "internalReleasePublished": false,
           "internalPlaytestPassed": false,
           "externalExposureAllowed": false,
           "externalExposureState": "INTERNAL_ONLY",
@@ -3162,7 +3168,7 @@
             ],
             "candidateVersionNumber": 0
           },
-          "perpetualBuildupActive": true,
+          "perpetualBuildupActive": false,
           "testerTickets": {
             "openBlocking": [
               "bug-ad65fa030c0d96b78fa0"
@@ -3176,7 +3182,7 @@
             "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
             "publicDiscoveryAllowed": false
           },
-          "rebuildRequired": true
+          "rebuildRequired": false
         },
         {
           "platform": "UNITY",
@@ -3332,7 +3338,7 @@
             "artifactIdentity": "sha256:edde01008a5b0cb29455891ee4c750846d2dc5a8e9769bca40268e88f2bd24c1",
             "verifiedAt": "2026-09-28T22:48:22.333Z"
           },
-          "internalReleasePublished": true,
+          "internalReleasePublished": false,
           "internalPlaytestPassed": false,
           "externalExposureAllowed": false,
           "externalExposureState": "INTERNAL_ONLY",
@@ -3375,7 +3381,7 @@
             ],
             "candidateVersionNumber": 0
           },
-          "perpetualBuildupActive": true,
+          "perpetualBuildupActive": false,
           "testerTickets": {
             "openBlocking": []
           },
@@ -3387,7 +3393,7 @@
             "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
             "publicDiscoveryAllowed": false
           },
-          "rebuildRequired": true
+          "rebuildRequired": false
         },
         {
           "platform": "UNITY",
