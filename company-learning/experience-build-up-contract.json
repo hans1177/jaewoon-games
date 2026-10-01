@@ -1,0 +1,199 @@
+{
+  "version": 1,
+  "status": "ACTIVE",
+  "authority": "DERIVED_EXECUTION_PROFILE",
+  "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+  "objective": "MAKE_BUILD_UP_PLAYER_PERCEPTIBLE_ACROSS_MOTION_UI_INVENTORY_AUDIO_CAMERA_VFX_WORLD_AND_USABILITY_WITH_PLATFORM_NATIVE_IMPLEMENTATION",
+  "constraints": {
+    "reuseExistingBuildUpPipeline": true,
+    "newPipelineForbidden": true,
+    "newStageForbidden": true,
+    "markerOnlyPassForbidden": true,
+    "sourceDeltaAloneCannotProveImprovement": true,
+    "preserveApprovedRulesBalanceEconomySaveAndNetworkAuthority": true
+  },
+  "platforms": [
+    "WEB",
+    "ROBLOX",
+    "UNITY"
+  ],
+  "surfaces": [
+    {
+      "id": "MOTION_ACTING",
+      "domains": [
+        "ANIMATION",
+        "SECONDARY_MOTION",
+        "GAME_FEEL",
+        "AUDIO_VISUAL_TIMING"
+      ],
+      "goal": "idle/locomotion/anticipation/impact/recovery/hit/death를 실제 이벤트와 연결하고 정상 플레이 크기에서 움직임이 읽히게 한다."
+    },
+    {
+      "id": "UI_HUD_MENU",
+      "domains": [
+        "UI_HUD",
+        "UI_DESIGN_SYSTEM",
+        "UI_INFORMATION_PRIORITY",
+        "MENU_FLOW",
+        "FEEDBACK_CLARITY"
+      ],
+      "goal": "HUD·메뉴·팝업·상태 표시의 위계, 입력 반응, 실패 이유와 모바일 가독성을 같은 디자인 언어로 정리한다."
+    },
+    {
+      "id": "INVENTORY_EQUIPMENT",
+      "domains": [
+        "INVENTORY",
+        "INVENTORY_USABILITY",
+        "EQUIPMENT_LOADOUT",
+        "CRAFTING",
+        "SYSTEM_CONNECTION"
+      ],
+      "goal": "획득→정렬/선택→사용/장착/교체→외형/스탯/행동 반영이 한 authoritative 상태로 이어지게 한다."
+    },
+    {
+      "id": "AUDIO_MUSIC_SFX",
+      "domains": [
+        "AUDIO_MUSIC_SFX",
+        "AUDIO_VISUAL_TIMING"
+      ],
+      "goal": "게임이 허용한 오디오 범위에서 지역/상태/전투 음악 전환과 핵심 사건 피드백을 분리하고 시각 이벤트와 동기화한다. 의도적으로 비활성화된 SFX는 강제로 되살리지 않는다."
+    },
+    {
+      "id": "CAMERA_VFX_FEEDBACK",
+      "domains": [
+        "CAMERA",
+        "VFX",
+        "FEEDBACK_CLARITY",
+        "GAME_FEEL"
+      ],
+      "goal": "핵심 입력·공격·피격·보스·발견의 카메라/VFX 강도와 지속시간을 구분하고 사건 시점에 맞춘다."
+    },
+    {
+      "id": "WORLD_LIGHTING_MATERIALS",
+      "domains": [
+        "ENVIRONMENT",
+        "TERRAIN",
+        "MATERIALS",
+        "PALETTE",
+        "LIGHTING",
+        "BUILDINGS_AND_PROPS",
+        "ENVIRONMENTAL_MOTION"
+      ],
+      "goal": "지형·재질·조명·소품·환경 움직임이 지역 기능, 위험, 동선과 랜드마크를 읽게 한다."
+    },
+    {
+      "id": "INPUT_MOBILE",
+      "domains": [
+        "INPUT",
+        "MOBILE_UX",
+        "ACCESSIBILITY",
+        "SETTINGS_ACCESSIBILITY",
+        "CONVENIENCE"
+      ],
+      "goal": "터치 우선 입력, 안전영역, 오입력 방지, 감도/흔들림/UI 크기 설정과 즉시 반응을 실제 기기 흐름에서 검증한다."
+    },
+    {
+      "id": "ONBOARDING_SESSION",
+      "domains": [
+        "TUTORIAL_ONBOARDING",
+        "SESSION_FLOW",
+        "FIRST_10_MINUTES",
+        "FAILURE_RESPAWN_CHECKPOINTS",
+        "ERROR_RECOVERY"
+      ],
+      "goal": "접속→첫 행동→목표→실패/성공→보상→재도전의 흐름을 끊김 없이 연결하고 실패 이유와 복구를 명확히 한다."
+    },
+    {
+      "id": "PERFORMANCE_STABILITY",
+      "domains": [
+        "PERFORMANCE",
+        "PERFORMANCE_BUDGET",
+        "RUNTIME_STABILITY",
+        "ERROR_RECOVERY"
+      ],
+      "goal": "표현을 키우면서 객체/파티클/업데이트/메모리/프레임/이벤트 수명을 함께 관리한다."
+    },
+    {
+      "id": "EVENT_COHERENCE",
+      "domains": [
+        "AUDIO_VISUAL_TIMING",
+        "FEEDBACK_CLARITY",
+        "SYSTEM_CONNECTION",
+        "GAME_FEEL"
+      ],
+      "goal": "입력, authoritative 상태 변화, 모션 impact, VFX, 카메라, UI, 오디오가 같은 사건 타임라인을 공유하게 한다."
+    }
+  ],
+  "rotation": {
+    "auditAllApplicableEveryGeneration": true,
+    "maxUntouchedGenerations": 3,
+    "commonMinimumActiveSurfaces": 4,
+    "robloxMinimumActiveSurfaces": 6,
+    "unityMinimumActiveSurfaces": 4,
+    "webMinimumActiveSurfaces": 4,
+    "gapFirst": true,
+    "leastRecentlyTouchedNext": true,
+    "oneSurfaceCannotMonopolizeBuildUp": true
+  },
+  "acceptance": {
+    "beforeAfterOrVerifiedBaselineRequired": true,
+    "normalPlayScalePerceptibleDeltaRequired": true,
+    "sourceAndRuntimeOrPlayEvidenceRequired": true,
+    "microAmplitudeOnlyCannotCloseGap": true,
+    "decorativeMarkerCannotCloseGap": true,
+    "changedSurfaceMustAffectRealGamePath": true,
+    "protectedSemanticsRegressionForbidden": true,
+    "effectMustBeReplayedOnRelevantInputScenario": true
+  },
+  "platformProfiles": {
+    "ROBLOX": {
+      "priorityWeight": 2,
+      "strictPerceptualQuality": true,
+      "motion": {
+        "articulatedActorRequiresAnimatorOrAnimationController": true,
+        "rootOnlyOrWholeModelWobbleCannotCountAsHighQualityCharacterMotion": true,
+        "jointOrAnimationTrackStateTransitionsRequiredWhenActorIsArticulated": true,
+        "blendAndSpeedSyncRequired": true,
+        "anticipationImpactRecoveryRequiredForCombatActions": true,
+        "hitDeathReactionRequiredWhenCombatApplies": true,
+        "ikOrProceduralCorrectionPreferred": true
+      },
+      "ui": {
+        "ScreenGuiStateMustBindAuthoritativeGameState": true,
+        "touchFirst": true,
+        "safeAreaAndOverlapReviewRequired": true,
+        "visibleEquippedSelectedDisabledCooldownStatesRequired": true
+      },
+      "inventory": {
+        "serverAuthoritativeInventoryAndEquipmentWhenApplicable": true,
+        "equipReplaceUnequipFlowMustBeObservable": true,
+        "characterVisualOrBehaviorReflectionRequiredWhenApplicable": true
+      },
+      "audio": {
+        "SoundServiceLifecycleReviewRequired": true,
+        "musicStateTransitionReviewRequired": true,
+        "eventSfxMustNotDuplicateOrLeak": true,
+        "intentionallyDisabledSfxMustRemainDisabled": true
+      },
+      "presentation": {
+        "cameraVfxLightingMustUseBoundedMobileSafeIntensity": true,
+        "exactStudioActualPlayReplayRequiredForChangedPerceptualScenario": true,
+        "beforeAfterCapturePreferred": true
+      }
+    },
+    "WEB": {
+      "priorityWeight": 1,
+      "motion": "canvas/dom/css motion must be visibly legible at normal scale and remain presentation-only when gameplay authority is separate.",
+      "ui": "touch targets, safe areas, modal/input consumption, scroll, inventory/equipment states and responsive layout are required when applicable.",
+      "audio": "WebAudio/media lifecycle, autoplay unlock, BGM state transitions and intentional mute policy must be preserved.",
+      "presentation": "render cost, pixel density, VFX lifetime and camera response must remain mobile bounded."
+    },
+    "UNITY": {
+      "priorityWeight": 1,
+      "motion": "Animator/AnimationClip/rig state transitions and event timing should drive visible actor motion when applicable.",
+      "ui": "Canvas or UI Toolkit flow must bind actual game state, mobile safe areas and inventory/equipment states.",
+      "audio": "AudioMixer/AudioSource state transitions, music layers and event timing must be bounded and leak-free.",
+      "presentation": "camera/post-processing/VFX/lighting quality must be mobile-budgeted and validated in actual runtime."
+    }
+  }
+}
