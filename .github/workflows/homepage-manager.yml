@@ -93,6 +93,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 # A self-QA candidate reaches one Director review-and-publish stage; duplicate publication jobs are forbidden.
 # Failed upstream workflow_run events are isolated so they cannot interrupt a valid run.
@@ -619,6 +620,8 @@ jobs:
             gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash
             git push origin --delete "$branch" >/dev/null 2>&1 || true
             echo 'HOMEPAGE_PUBLICATION=PR_VALIDATED_AND_MERGED_AFTER_DIRECTOR'
+            gh workflow run company-status-sync.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'HOMEPAGE_RUNTIME_STATUS_SYNC=DISPATCHED'
           else
             cat /tmp/homepage-pr-error.log >&2 || true
             echo "HOMEPAGE_PUBLICATION_BRANCH_READY=$branch"
