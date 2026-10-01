@@ -3017,6 +3017,17 @@ test('observed class selection must receive the selected class and close its UI 
   assert.equal(existing.error,'');
 });
 
+test('exact multiplayer source contract is prebound before Studio pending branch',()=>{
+  const prebind=workflow.indexOf('ROBLOX_F7_MULTIPLAYER_CODE_CONTRACT_PREBOUND=');
+  const studioWait=workflow.indexOf('if(!exactStudioInternalValidation)');
+  assert.ok(prebind>0&&studioWait>prebind);
+  const block=workflow.slice(Math.max(0,prebind-1800),studioWait);
+  assert.match(block,/sourceRevision,/);
+  assert.match(block,/artifactIdentity,/);
+  assert.match(block,/authority:'roblox-static-two-client-source-contract'/);
+  assert.match(block,/runtimeTwoClientExecutionRequired:false/);
+});
+
 test('single-window multiplayer accepts only the exact static source contract without claiming two clients',()=>{
   const contract=deriveStudioActualPlayContract({launchCore:['multiplayer team sync'],releaseGates:['F9 regression']});
   const runtimeIdentity={gameId:'g1',sourceRevision:source,artifactIdentity:artifact};
