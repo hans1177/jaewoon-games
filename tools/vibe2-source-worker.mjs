@@ -1725,6 +1725,7 @@ export function verifiedExternalLearningBlockFromPrompt(prompt=''){
 export function compactVerifiedExternalLearningBlockFromPrompt(prompt=''){
   const block=verifiedExternalLearningBlockFromPrompt(prompt);
   if(!block)return'';
+  if(Buffer.byteLength(block,'utf8')<=18000)return block;
   const itemPattern=/\[EXTERNAL_LEARNING ([^\]]+)\]\n([\s\S]*?)\n\[END_EXTERNAL_LEARNING \1\]/g;
   const items=[...block.matchAll(itemPattern)];
   if(!items.length)return block;
@@ -1734,7 +1735,7 @@ export function compactVerifiedExternalLearningBlockFromPrompt(prompt=''){
     const raw=String(value??'').replace(/\s+/g,' ').trim();
     const limit=Math.max(48,Number(maxBytes)||48);
     if(Buffer.byteLength(raw,'utf8')<=limit)return raw;
-    const marker=' …[COMPACT]… ';
+    const marker=' ...[COMPACTED_DUPLICATE_DETAIL]... ';
     const chars=[...raw];
     let low=0,high=chars.length,best=marker.trim();
     while(low<=high){
