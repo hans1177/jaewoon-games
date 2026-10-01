@@ -59,8 +59,8 @@ function Manor.new(remote)
  Players.PlayerRemoving:Connect(function(p)self:Remove(p)end)
  self.ready=true
  workspace:SetAttribute("PersonalLobby",true)
- workspace:SetAttribute("LobbyArtPass","BLENDER_MONSTER_FAMILY_V2")
- workspace:SetAttribute("LobbyBuildRevision","BLENDER_MANOR_20260930")
+ workspace:SetAttribute("LobbyArtPass","REBUILD_PENDING_STUDIO")
+ workspace:SetAttribute("LobbyBuildRevision","BLENDER_MANOR_REBUILD_20261002")
  return self
 end
 
@@ -70,16 +70,15 @@ function Manor:Get(p)
  local origin=Vector3.new(index*256,0,270)
  local folder=Instance.new("Model");folder.Name="PersonalManor_"..p.UserId;folder:SetAttribute("OwnerUserId",p.UserId)
  local scene=self.template:Clone();scene.Name="ManorScene";scene:PivotTo(CFrame.new(origin)*scene:GetPivot());scene.Parent=folder
- part(folder,"PersonalGround",origin+Vector3.new(0,-.15,-2),Vector3.new(84,1,90),true)
- for _,spec in ipairs({{-42,8,-2,1,18,90},{42,8,-2,1,18,90},{0,8,-47,84,18,1},{0,8,43,84,18,1},
-  {-29,10,-23,1.5,20,40},{29,10,-23,1.5,20,40},{0,10,-43,58,20,1},{-20,10,-3,24,20,2},{20,10,-3,24,20,2}})do
+ part(folder,"PersonalGround",origin+Vector3.new(0,-.15,10),Vector3.new(160,1,156),true)
+ for _,spec in ipairs({{-80,12,10,1,28,156},{80,12,10,1,28,156},{0,12,-68,160,28,1},{0,12,88,160,28,1}})do
   part(folder,"ManorBoundary",origin+Vector3.new(spec[1],spec[2],spec[3]),Vector3.new(spec[4],spec[5],spec[6]),false)
  end
- local spawn=Instance.new("SpawnLocation");spawn.Name="PersonalSpawn";spawn.Position=origin+Vector3.new(0,.4,-9)
- spawn.Size=Vector3.new(8,.1,8);spawn.Anchored=true;spawn.Transparency=1;spawn.CanCollide=false;spawn.CanTouch=false;spawn.Neutral=true;spawn.Duration=0;spawn.Parent=folder
+ local spawn=Instance.new("SpawnLocation");spawn.Name="PersonalSpawn";spawn.Position=origin+Vector3.new(0,.4,60)
+ spawn.Size=Vector3.new(10,.1,10);spawn.Anchored=true;spawn.Transparency=1;spawn.CanCollide=false;spawn.CanTouch=false;spawn.Neutral=true;spawn.Duration=0;spawn.Parent=folder
  local room={folder=folder,scene=scene,origin=origin,spawn=spawn,index=index,busy=false,gag=0,lastPrompt=0}
  self.rooms[p]=room
- p:SetAttribute("ManorOriginX",origin.X)
+ p:SetAttribute("ManorOriginX",origin.X);p:SetAttribute("ManorOriginZ",origin.Z)
  p.RespawnLocation=spawn
  local function prompt(name,pos,caption,menu)
   local anchor=part(folder,name,origin+pos,Vector3.new(1,1,1),false);anchor.CanCollide=false
@@ -94,12 +93,12 @@ function Manor:Get(p)
    if name=="ButlerPrompt"then
     stamp(p,"집사 모티머",p:GetAttribute("MonsterPreference")=="MONSTER"and"오늘은 사냥하러 나가시는군요. 현관 매트에는 발톱을 닦아주십시오."or"무사히 돌아오십시오. 관은 아직 주문하지 않았습니다.")
    elseif name=="ArchivistPrompt"then stamp(p,"기록관 에드윈","목격담은 세 번 확인합니다. 제 머리 위치만 빼고요.")
-   elseif name=="MerchantPrompt"then stamp(p,"의상실 주인 벨라","옷은 오래 입으셔도 됩니다. 저희 가족은 시간이 많거든요.")end
+   elseif name=="MerchantPrompt"then stamp(p,"장의사","옷은 오래 입으셔도 됩니다. 이 집의 장례복은 특히 오래 갑니다.")end
   end)
  end
  prompt("ButlerPrompt",Vector3.new(5,4,-9),"집사 모티머 · 출정","PLAY")
  prompt("ArchivistPrompt",Vector3.new(-18,4,-27),"목 없는 기록관 · 도감","BOOK")
- prompt("MerchantPrompt",Vector3.new(20,4,-20),"처녀귀신 벨라 · 의상실","DRESS")
+ prompt("MerchantPrompt",Vector3.new(20,4,-22),"장의사 · 의상실","DRESS")
  prompt("InvitationPrompt",Vector3.new(-12,4,-18),"막내 유령 · 가족 초대장","EVENT")
  prompt("ArmorPrompt",Vector3.new(-16,4,-11),"졸고 있는 갑옷",2)
  prompt("CoffinPrompt",Vector3.new(17,3,-14),"누군가의 낮잠",3)
@@ -116,7 +115,7 @@ function Manor:Get(p)
  for _,mesh in ipairs(scene:GetDescendants())do
   if mesh:IsA("BasePart")and (mesh.Name:match("^HearthFlame")or mesh.Name:match("^ChandelierFlame"))then
    mesh.Material=Enum.Material.Neon;mesh.Color=Color3.fromRGB(255,185,99)
-  elseif mesh:IsA("BasePart")and(mesh.Name:match("^ManorSideWall")or mesh.Name:match("^FacadeWing")or mesh.Name:match("^BackWall")or mesh.Name=="HallFloor"or mesh.Name=="Courtyard"or mesh.Name=="CrookedRoof")then
+  elseif mesh:IsA("BasePart")and(mesh.Name:match("^ManorSideWall")or mesh.Name:match("^FacadeWing")or mesh.Name:match("^OuterWingWall")or mesh.Name:match("^WingBackWall")or mesh.Name:match("RoomDivider$")or mesh.Name:match("RoomDoor$")or mesh.Name:match("^LockedGuestDoor")or mesh.Name:match("^GrandStair")or mesh.Name:match("^BalconyWalk")or mesh.Name=="SecondFloorGallery"or mesh.Name=="LeftWingFloor"or mesh.Name=="RightWingFloor"or mesh.Name:match("^BackWall")or mesh.Name=="HallFloor"or mesh.Name=="Courtyard"or mesh.Name=="CrookedRoof")then
    -- 카메라도 실제 불투명 벽/바닥과 충돌한다. 장식 전체의 볼록 충돌체는 만들지 않는다.
    mesh.CanCollide=true;mesh.CanQuery=true
   end
@@ -150,7 +149,7 @@ end
 
 function Manor:GetSpawn(p)
  local room=self:Get(p)
- return room.origin+Vector3.new(0,3,-9),room.origin+Vector3.new(0,4,-27),room.spawn
+ return room.origin+Vector3.new(0,3,60),room.origin+Vector3.new(0,5,-2),room.spawn
 end
 function Manor:Dress(p)
  local char=p.Character;if not char then return end
@@ -216,7 +215,7 @@ function Manor:Gag(p,requested)
   rootPart:SetNetworkOwner(nil)
   rootPart:ApplyImpulse((room.gag==3 and Vector3.new(0,12,2)or Vector3.new(-2,2,3))*rootPart.AssemblyMass)
   rootPart.AssemblyAngularVelocity=Vector3.new(.6,0,room.gag==3 and 1 or 3)
-  stamp(p,room.gag==1 and"집사 모티머"or room.gag==2 and"갑옷 경비"or room.gag==3 and"의상실 주인 벨라"or"막내 유령",
+  stamp(p,room.gag==1 and"집사 모티머"or room.gag==2 and"갑옷 경비"or room.gag==3 and"장의사"or"막내 유령",
    room.gag==1 and"고개를 너무 깊이 숙였군요. 잠시만 실례하겠습니다."or room.gag==2 and"위협적인 자세는 관절 보증에 포함되지 않습니다."or room.gag==3 and"아직 영업시간입니다. 안에서 기다리세요."or"찻잔이 먼저 도망갔어. 내가 쏟은 거 아니야!")
   task.wait(2.2)
   for mesh in pairs(saved)do if mesh.Parent then mesh.Anchored=true;mesh.CanCollide=false;mesh.AssemblyLinearVelocity=Vector3.zero;mesh.AssemblyAngularVelocity=Vector3.zero end end
@@ -240,7 +239,7 @@ function Manor:Recover(p)
    end
   end
  end
- if localPos.Y< -2 or localPos.Y>22 or math.abs(localPos.X)>40 or localPos.Z< -44 or localPos.Z>41 or(localPos.Z< -5 and math.abs(localPos.X)>29)then return self:GetSpawn(p)end
+ if localPos.Y< -3 or localPos.Y>30 or math.abs(localPos.X)>78 or localPos.Z< -67 or localPos.Z>86 then return self:GetSpawn(p)end
  return nil
 end
 function Manor:Remove(p)
