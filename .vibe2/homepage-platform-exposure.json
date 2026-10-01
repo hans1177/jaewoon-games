@@ -2,7 +2,7 @@
   "version": 3,
   "publicSafe": true,
   "internalCompanySurface": true,
-  "updatedAt": "2026-10-01T15:53:41.710Z",
+  "updatedAt": "2026-10-01T16:04:16.064Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -90,12 +90,11 @@
               "publication": true,
               "exactRuntime": false,
               "lobby": true,
-              "movement": false,
+              "movement": true,
               "noRuntimeErrors": true
             },
             "blockers": [
-              "exactRuntime",
-              "movement"
+              "exactRuntime"
             ],
             "sourceRevision": "15d9ebb42466049456bb2e215e5bfa08ae5f8f57",
             "artifactIdentity": "sha256:5da5b0060f238775c6cff0da1967faf3c236a61d3fd75dadf8dd5b302e9c3548",
@@ -335,7 +334,7 @@
               "gameCompletion": false,
               "platformAdaptation": false,
               "saveRejoin": false,
-              "multiplayer": false,
+              "multiplayer": true,
               "serverClientAuthority": false,
               "mobileAndPerformance": false,
               "security": false,
@@ -353,7 +352,6 @@
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
               "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
               "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
-              "ROBLOX_PUBLIC_HARD_GATE_MULTIPLAYER",
               "ROBLOX_PUBLIC_HARD_GATE_SERVERCLIENTAUTHORITY",
               "ROBLOX_PUBLIC_HARD_GATE_MOBILEANDPERFORMANCE",
               "ROBLOX_PUBLIC_HARD_GATE_SECURITY",
@@ -546,7 +544,7 @@
             "checks": {
               "technical": false,
               "realServerBoot": true,
-              "exactRuntime": false,
+              "exactRuntime": true,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
               "noBlockingTickets": false,
@@ -563,7 +561,6 @@
             },
             "blockers": [
               "ROBLOX_PUBLIC_HARD_GATE_TECHNICAL",
-              "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
               "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
               "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
               "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
@@ -762,7 +759,7 @@
             "checks": {
               "technical": false,
               "realServerBoot": true,
-              "exactRuntime": false,
+              "exactRuntime": true,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
               "noBlockingTickets": false,
@@ -779,7 +776,6 @@
             },
             "blockers": [
               "ROBLOX_PUBLIC_HARD_GATE_TECHNICAL",
-              "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
               "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
               "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
               "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
@@ -1624,7 +1620,7 @@
             "checks": {
               "technical": false,
               "realServerBoot": true,
-              "exactRuntime": false,
+              "exactRuntime": true,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
               "noBlockingTickets": false,
@@ -1641,7 +1637,6 @@
             },
             "blockers": [
               "ROBLOX_PUBLIC_HARD_GATE_TECHNICAL",
-              "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
               "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
               "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
               "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
@@ -3107,18 +3102,19 @@
             "checks": {
               "design": true,
               "publication": true,
-              "exactRuntime": true,
+              "exactRuntime": false,
               "lobby": false,
               "movement": false,
               "noRuntimeErrors": true
             },
             "blockers": [
+              "exactRuntime",
               "lobby",
               "movement"
             ],
             "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
             "artifactIdentity": "sha256:27eac451197d7647d0217f4c7eef45869ee21f36864d68753ef535e04bbf9b33",
-            "verifiedAt": "2026-09-28T23:53:17.882Z"
+            "verifiedAt": null
           },
           "internalReleasePublished": false,
           "internalPlaytestPassed": false,
