@@ -8930,10 +8930,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T19:14:31.401Z",
+      "updatedAt": "2026-10-01T20:33:48.654Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -9338,7 +9338,7 @@
       "robloxInternalVibePlayEvidence": {
         "version": 2,
         "gameId": "line-defense",
-        "studioHarnessVersion": 16,
+        "studioHarnessVersion": 17,
         "authority": "roblox-official-studio-mcp-runtime",
         "pass": false,
         "actualPlay": false,
@@ -9379,8 +9379,8 @@
         },
         "actions": [
           {
-            "id": "floating-character-map-readiness",
-            "type": "mcp-world-safety-abort",
+            "id": "initial-character-playable",
+            "type": "mcp-start-playability-abort",
             "dispatched": true,
             "ok": false
           }
@@ -9426,20 +9426,14 @@
             "id": "initial-character-playable",
             "name": "initial-character-playable",
             "required": true,
-            "pass": true
-          },
-          {
-            "id": "floating-character-map-readiness",
-            "name": "floating-character-map-readiness",
-            "required": true,
             "pass": false
           }
         ],
         "errors": [
           {
-            "type": "studio-product-world-geometry-error",
-            "actionId": "floating-character-map-readiness",
-            "signature": "ROBLOX_STUDIO_FLOATING_CHARACTER_ABORT:NO_WALKABLE_WORLD"
+            "type": "studio-product-start-playability-error",
+            "actionId": "initial-character-playable",
+            "signature": "ROBLOX_STUDIO_DEAD_CHARACTER_ABORT:INITIAL_CHARACTER_NOT_PLAYABLE"
           }
         ],
         "runtimeSummary": {
@@ -9479,7 +9473,6 @@
           "PRE_PLAY_STUDIO_MODAL_GATE",
           "play-mode-started",
           "actual-play-initial-client-probe",
-          "initial-character-playable",
           "debugging",
           "runtime error",
           "ROBLOX_CHARACTER_RESPAWN_STATE"
@@ -9492,25 +9485,26 @@
         "scenarioContractFingerprint": "sha256:3129901407da0a818d5e5c56a1289f358d880f1193b1efaf1af43a617dad0b14",
         "scenarioCoverage": [
           {
-            "id": "adaptive-world-safety",
+            "id": "adaptive-start-playability",
             "pass": false
           }
         ],
         "scenarioCoveragePass": false,
         "qualityFailureKinds": [
-          "adaptive-world-safety"
+          "adaptive-start-playability"
         ],
         "qualityFailureDetails": [
           {
-            "id": "adaptive-world-safety",
-            "repairSurface": "WORLD_GEOMETRY",
+            "id": "adaptive-start-playability",
+            "repairSurface": "GAME_START",
             "priority": "CRITICAL",
-            "hint": "Spawned character has no walkable floor; restore the world floor and spawn collision before further Studio QA.",
+            "hint": "Studio started with a dead/unplayable character. Restore healthy spawn/respawn/start state before normal gameplay QA.",
             "observed": {
-              "floorBelowPlayer": false,
-              "floorSampleCount": 9,
-              "floorHitCount": 0,
-              "collidablePartCount": 3
+              "characterPresent": true,
+              "humanoidPresent": true,
+              "health": 0,
+              "maxHealth": 100,
+              "humanoidState": "Enum.HumanoidStateType.Dead"
             }
           }
         ],
@@ -9521,8 +9515,8 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-10-01T19:00:32.679Z",
-        "workflowRunId": 36908677455,
+        "testedAt": "2026-10-01T20:33:48.654Z",
+        "workflowRunId": 36919854592,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -9597,28 +9591,29 @@
         "failureStage": "VIBE_INTERNAL_PLAY",
         "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
         "qualityFailureKinds": [
-          "adaptive-world-safety"
+          "adaptive-start-playability"
         ],
         "qualityFailureDetails": [
           {
-            "id": "adaptive-world-safety",
-            "repairSurface": "WORLD_GEOMETRY",
+            "id": "adaptive-start-playability",
+            "repairSurface": "GAME_START",
             "priority": "CRITICAL",
-            "hint": "Spawned character has no walkable floor; restore the world floor and spawn collision before further Studio QA.",
+            "hint": "Studio started with a dead/unplayable character. Restore healthy spawn/respawn/start state before normal gameplay QA.",
             "observed": {
-              "floorBelowPlayer": false,
-              "floorSampleCount": 9,
-              "floorHitCount": 0,
-              "collidablePartCount": 3
+              "characterPresent": true,
+              "humanoidPresent": true,
+              "health": 0,
+              "maxHealth": 100,
+              "humanoidState": "Enum.HumanoidStateType.Dead"
             }
           }
         ],
         "repairSurfaces": [
-          "WORLD_GEOMETRY"
+          "GAME_START"
         ],
         "robloxFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
-        "testedAt": "2026-10-01T19:00:32.679Z",
-        "workflowRunId": 36908677455,
+        "testedAt": "2026-10-01T20:33:48.654Z",
+        "workflowRunId": 36919854592,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxNativeFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
@@ -23083,7 +23078,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T20:30:54.461Z",
+  "updatedAt": "2026-10-01T20:33:48.654Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
