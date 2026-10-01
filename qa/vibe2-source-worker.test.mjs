@@ -4150,7 +4150,15 @@ test('Studio initial prompt compacts repeated directive prose and expands model 
     ('void Step() { HandleTouch(); }\n').repeat(800)
   ].join('\n');
   const initial=buildGenerationRetryPrompt(prompt,{responsibleFiles:['Assets/Scripts/Game.cs'],attempt:1,studioInitial:true});
-  assert.equal(verifiedExternalLearningBlockFromPrompt(initial),external);
+  const compactLearning=verifiedExternalLearningBlockFromPrompt(initial);
+  assert.match(compactLearning,/\[VERIFIED EXTERNAL BLACK-BOX LEARNING BEGIN\]/);
+  assert.match(compactLearning,/\[EXTERNAL_LEARNING source-a\]/);
+  assert.match(compactLearning,/DISPOSITION=mobile-controls:APPLIED_GAME_SOURCE/);
+  assert.match(compactLearning,/APPLY=id=mobile-controls;lesson=/);
+  assert.match(compactLearning,/\[COMPACTED_DUPLICATE_DETAIL\]/);
+  assert.match(compactLearning,/\[END_EXTERNAL_LEARNING source-a\]/);
+  assert.match(compactLearning,/\[VERIFIED EXTERNAL BLACK-BOX LEARNING END\]/);
+  assert.ok(Buffer.byteLength(compactLearning,'utf8')<Buffer.byteLength(external,'utf8'));
   assert.equal((initial.match(/^sourceAnchors=/gm)||[]).length,3);
   assert.ok(Buffer.byteLength(initial,'utf8')<50000);
   assert.equal(sourcePromptContextWindow(initial,{baseContextWindow:16384,maxPredict:3072}),24576);
