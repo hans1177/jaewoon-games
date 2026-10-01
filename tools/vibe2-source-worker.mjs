@@ -3442,8 +3442,14 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const imageAssetObservation=await observeAssetReferenceImages({order,cwd});
   order.imageAssetObservation=imageAssetObservation;
   if(!order.assetProduction?.runtimeVisualReview&&clean(process.env.VIBE2_RUNTIME_VISUAL_EVIDENCE_ROOT)){
-    const task={...(order.selectedTask||{}),gameId:order.gameId||order.selectedTask?.gameId,target:order.target,sourceRoot:order.source?.root||order.selectedTask?.sourceRoot,sourceRevision:clean(process.env.VIBE2_BASE_MAIN_SHA)||clean(process.env.GITHUB_SHA)};
-    const autoRuntimeVisual=discoverRuntimeVisualEvidence({task,target:order.target,evidenceRoot:process.env.VIBE2_RUNTIME_VISUAL_EVIDENCE_ROOT});
+    const task={
+      ...(order.selectedTask||{}),
+      gameId:order.gameId||order.selectedTask?.gameId||clean(process.env.GAME_ID),
+      target:order.target||order.selectedTask?.target||clean(process.env.TARGET),
+      sourceRoot:order.sourceRoot||order.source?.root||order.selectedTask?.sourceRoot||clean(process.env.SOURCE_ROOT),
+      sourceRevision:clean(process.env.VIBE2_BASE_MAIN_SHA)||clean(process.env.GITHUB_SHA)
+    };
+    const autoRuntimeVisual=discoverRuntimeVisualEvidence({task,target:task.target,evidenceRoot:process.env.VIBE2_RUNTIME_VISUAL_EVIDENCE_ROOT});
     if(autoRuntimeVisual){
       order.assetProduction={...(order.assetProduction||{}),runtimeVisualReview:createAssetRuntimeVisualReviewPlan(autoRuntimeVisual)};
       console.log('VIBE2_RUNTIME_VISUAL_EVIDENCE_AUTO_BOUND='+autoRuntimeVisual.captures.length);
