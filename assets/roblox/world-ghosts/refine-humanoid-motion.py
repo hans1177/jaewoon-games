@@ -607,7 +607,7 @@ transition_metrics={
 }
 
 phase_metrics={}
-for clip_name in ('hero_walk_hq','hero_run_hq'):
+for clip_name in ('hero_walk_hq','hero_run_hq','hero_walk_back_hq','hero_crouch_walk_hq'):
     left0=sampled_snapshot(clip_name,0.0)['ThighL']['r'][0]
     right_half=sampled_snapshot(clip_name,0.5)['ThighR']['r'][0]
     phase_metrics[clip_name]=abs(left0-right_half)
@@ -627,6 +627,16 @@ foot_contact_metrics={
 primary_activity={
     clip_name:{bone:rotation_activity(clip_name,bone) for bone in QA_THRESHOLDS['primaryJointRotationRangeMinRad']}
     for clip_name in ('hero_walk_hq','hero_run_hq')
+}
+added_activity={
+    clip_name:{
+        'Hips':rotation_activity(clip_name,'Hips'),
+        'Spine':rotation_activity(clip_name,'Spine'),
+        'Chest':rotation_activity(clip_name,'Chest'),
+        'ThighL':rotation_activity(clip_name,'ThighL'),
+        'ThighR':rotation_activity(clip_name,'ThighR'),
+    }
+    for clip_name in ('hero_walk_back_hq','hero_crouch_idle_hq','hero_crouch_walk_hq','hero_jump_air_hq')
 }
 secondary_candidates=[bone for bone in SECONDARY_QA_BONES if bone in RIG.pose.bones]
 secondary_activity=max(
