@@ -2193,11 +2193,19 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Live runner pressure is read-only. When GitHub Actions already has queued/pending/requested
-          # work, every non-asset completion keeps its immutable worker result artifact and lets the
-          # existing cohort fan-in consume it instead of creating another repository_dispatch workflow.
-          # Single-task GAME_PRIMARY is not exempt under pressure. Observation failure is fail-open to
-          # immediate callback behavior so result delivery never depends on telemetry.
+          # High-fanout GAME_PRIMARY never emits per-worker repository_dispatch callbacks.
+          # Immutable worker artifacts are consumed once by the existing cohort fan-in, which removes
+          # the zero-pressure thundering-herd race where many workers can all observe an empty queue
+          # before any of their callbacks become visible to the Actions API.
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then
+            echo 'VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT'
+            echo 'VIBE2_GAME_PRIMARY_CALLBACK_DISPATCH=COALESCED_TO_COHORT_FANIN'
+            echo 'VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN'
+            exit 0
+          fi
+
+          # Auxiliary lanes keep immediate atomic callbacks while capacity is genuinely idle.
+          # Under live runner pressure they coalesce to their cohort fan-in as well.
           queue_pressure=0
           if curl --fail-with-body --silent --show-error \
             --header 'Accept: application/vnd.github+json' \
@@ -2224,20 +2232,12 @@ jobs:
           fi
           echo "VIBE2_LIVE_RUNNER_QUEUE_PRESSURE=${queue_pressure:-0}"
 
-          game_micro_fanin=false
-          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "${VIBE2_NEURON_EXPECTED_VARIANTS:-1}" = '1' ]; then
-            game_micro_fanin=true
-          fi
           if [ "${queue_pressure:-0}" -gt 0 ]; then
             echo 'VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT'
             echo 'VIBE2_PRESSURE_REFILL_DISPATCH=SKIPPED_DEFER_TO_COHORT_FANIN'
             echo 'VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN'
             exit 0
           fi
-          if [ "$game_micro_fanin" = 'true' ]; then
-            echo 'VIBE2_GAME_MICRO_FANIN=IMMEDIATE_ONLY_WITHOUT_QUEUE_PRESSURE'
-          fi
-
           payload="$(node <<'NODE'
           const payload={
             event_type:'vibe2-neuron-complete',
