@@ -255,14 +255,33 @@ function compileCodingExecutionContract({
       evidenceRequired:['PRIMARY_AND_DIRECT_DEPENDENCY_DISPROVED','SAME_SCENARIO_RECHECK']
     }
   ];
+  const platformRuntimeVerification=target==='roblox'
+    ?Object.freeze({
+      id:'ROBLOX_EXACT_STUDIO_RUNTIME',
+      required:micro?.exactStudioRecheckRequired===true,
+      proof:'OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD_ARTIFACT'
+    })
+    :target==='web'
+      ?Object.freeze({
+        id:'WEB_MOBILE_BROWSER_ACTUAL_PLAY',
+        required:true,
+        proof:'MOBILE_390X844_TOUCH_BROWSER_ACTUAL_PLAY_PLUS_DETERMINISTIC_INPUT_REPLAY'
+      })
+      :target==='unity'
+        ?Object.freeze({
+          id:'UNITY_EXACT_APK_RUNTIME',
+          required:true,
+          proof:'EXACT_SOURCE_TREE_APK_ANDROID_RUNTIME_PLUS_INDEPENDENT_QA_PLUS_REGRESSION'
+        })
+        :Object.freeze({id:'TARGET_RUNTIME_RECHECK',required:false,proof:'TARGET_PLATFORM_RUNTIME_WHEN_AVAILABLE'});
   const verificationLadder=[
     {order:1,id:'PREPATCH_CAUSE',required:repairRequired,proof:causalReplay?.executable===true?'EXACT_CAUSAL_REPLAY':'CURRENT_SOURCE_AND_FAILURE_EVIDENCE'},
-    {order:2,id:'SYNTAX_OR_COMPILE',required:true,proof:target==='roblox'?'LUAU_OR_STRUCTURAL_SYNTAX':'TARGET_LANGUAGE_SYNTAX'},
+    {order:2,id:'SYNTAX_OR_COMPILE',required:true,proof:target==='roblox'?'LUAU_OR_STRUCTURAL_SYNTAX':target==='unity'?'CSHARP_PROJECT_COMPILE_OR_EXISTING_UNITY_BUILD_GATE':'TARGET_LANGUAGE_SYNTAX'},
     {order:3,id:'FOCUSED_CHECKS',required:true,proof:(requiredFocusedChecks||[]).slice(0,12)},
     {order:4,id:'SAME_SCENARIO',required:repairRequired,proof:primaryScenario||'ORIGINAL_FAILURE_SCENARIO'},
     {order:5,id:'DEPENDENT_REGRESSION',required:true,proof:'DIRECT_DEPENDENTS_AND_TOUCHED_SYSTEMS'},
     {order:6,id:'FULL_REGRESSION',required:true,proof:'CANONICAL_FAN_IN'},
-    {order:7,id:'EXACT_RUNTIME_RECHECK',required:target==='roblox'&&micro?.exactStudioRecheckRequired===true,proof:'OFFICIAL_STUDIO_MCP_EXACT_ARTIFACT'}
+    {order:7,...platformRuntimeVerification}
   ];
   return{
     version:1,
@@ -304,7 +323,13 @@ function compileCodingExecutionContract({
     },
     completion:{
       sourceDeltaAloneIsPass:false,
-      required:['PRIMARY_RESPONSIBILITY_CHANGED','INVARIANTS_PRESERVED','FOCUSED_CHECKS_PASS','DEPENDENT_REGRESSION_PASS',...(repairRequired?['ORIGINAL_SCENARIO_REPLAY_PASS']:[]),...(target==='roblox'&&micro?.exactStudioRecheckRequired===true?['OFFICIAL_STUDIO_MCP_EXACT_ARTIFACT_RECHECK']:[])],
+      required:[
+        'PRIMARY_RESPONSIBILITY_CHANGED','INVARIANTS_PRESERVED','FOCUSED_CHECKS_PASS','DEPENDENT_REGRESSION_PASS',
+        ...(repairRequired?['ORIGINAL_SCENARIO_REPLAY_PASS']:[]),
+        ...(target==='roblox'&&micro?.exactStudioRecheckRequired===true?['OFFICIAL_STUDIO_MCP_EXACT_ARTIFACT_RECHECK']:[]),
+        ...(target==='web'?['WEB_MOBILE_BROWSER_ACTUAL_PLAY_PASS','WEB_DETERMINISTIC_INPUT_REPLAY_PASS']:[]),
+        ...(target==='unity'?['UNITY_EXACT_APK_RUNTIME_PASS','UNITY_INDEPENDENT_QA_PASS','UNITY_REGRESSION_PASS']:[])
+      ],
       runtimePassFabricationForbidden:true
     },
     authorityExpanded:false
