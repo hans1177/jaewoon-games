@@ -1612,7 +1612,7 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.equal(parallel.assetDevelopmentUsesExistingContinuousCore,true);
   assert.equal(parallel.assetDevelopmentDedicatedRunner,true);
   assert.equal(parallel.assetDevelopmentRunnerLabel,'ubuntu-24.04-arm');
-  assert.equal(parallel.assetDevelopmentSchedulerPlanRunner,'ubuntu-24.04-arm');
+  assert.equal(parallel.assetDevelopmentPlanRunner,'ubuntu-24.04-arm');
   assert.equal(parallel.assetDevelopmentReserveRunner,'ubuntu-slim');
   assert.equal(parallel.assetDevelopmentModelCacheRunner,'ubuntu-24.04-arm');
   assert.equal(parallel.assetDevelopmentArchitectureAwareCache,true);

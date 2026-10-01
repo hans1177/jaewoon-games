@@ -14947,7 +14947,7 @@
       "gameplayCodeAndAssetProductionConcurrent": true,
       "responsibleFilesMustBeExplicitAndDisjoint": true,
       "sameResponsibleFileParallelForbidden": true,
-      "executionAuthority": "EXISTING_DAG_SCHEDULER_WITH_ATOMIC_COMPLETION_CALLBACK",
+      "executionAuthority": "EXISTING_DAG_RESERVATION_WITH_ATOMIC_COMPLETION_CALLBACK",
       "graphicsAtomicNeuronMode": "PER_TASK_MICRO_FANIN",
       "completionEvent": "vibe2-neuron-complete",
       "speculativeVariantsJoinScope": "PER_GRAPHICS_TASK",
@@ -14982,7 +14982,6 @@
         "fullGraphicsLongRetryAfterFocusedFailure": false,
         "gamePrimaryGenerationPolicyUnchanged": true
       },
-      "assetDevelopmentSchedulerPlanRunner": "ubuntu-24.04-arm",
       "assetDevelopmentReserveRunner": "ubuntu-slim",
       "assetDevelopmentModelCacheRunner": "ubuntu-24.04-arm",
       "assetDevelopmentOllamaCacheKey": "vibe2-ollama-v5-${runner.os}-${runner.arch}-qwen3-1.7b",
@@ -15015,7 +15014,8 @@
       "taskReorderAuthorityCreated": false,
       "independentAssetLaneParticipation": "DEDICATED_ASSET_LANE_INSIDE_EXISTING_EVENT_DRIVEN_DAG",
       "executionModel": "DEDICATED_ASSET_LANE_DIRECT_TASK_EVENT",
-      "globalBarrier": false
+      "globalBarrier": false,
+      "assetDevelopmentPlanRunner": "ubuntu-24.04-arm"
     },
     "failureHandling": {
       "state": "ASSET_REPAIR_REQUIRED",
