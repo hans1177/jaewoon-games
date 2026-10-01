@@ -1615,6 +1615,14 @@ function nextGraphicsEvolutionTask(project,repoRoot,queue,relatives,stages){
     ]);
     out.workUnits=7;
     out.assetProductionLane=true;
+    if(project.engine==='roblox'){
+      out.responsibleFiles=[`${posix(project.projectPath)}/client/Presentation.client.luau`];
+      out.evidence=[...new Set([
+        ...(out.evidence||[]),
+        'asset-presentation-owner:ISOLATED_CLIENT_SCRIPT',
+        'asset-presentation-readonly-game-context:REQUIRED'
+      ])];
+    }
     out.estimatedRisk='high';
     out.speculativeEligible=true;
     out.atomicNeuronMode='PER_TASK_MICRO_FANIN';
@@ -1694,7 +1702,11 @@ export function findPresentationQualityTask(project,repoRoot,queue){
   if(!['development-confirmed','release-confirmed'].includes(clean(project.releaseState).toLowerCase()))return null;
   if(engine!=='web'&&!assetProductionEnabled(repoRoot))return null;
   const relatives=presentationSourcesForProject(project,repoRoot);
-  const relative=relatives[0]||null;
+  const unityPresentationRelatives=engine==='unity'
+    ?relatives.filter(file=>/(?:PrototypeAnimatedVisuals|Presentation|Visual|Render|Vfx|VFX|UI)\.cs$/i.test(file))
+    :[];
+  const presentationResponsibles=engine==='unity'&&unityPresentationRelatives.length?unityPresentationRelatives:relatives;
+  const relative=presentationResponsibles[0]||null;
   if(!relative)return null;
   const stages=presentationStagesForProject(project);
   let previousId=null;
@@ -1707,7 +1719,7 @@ export function findPresentationQualityTask(project,repoRoot,queue){
       continue;
     }
     if(previousId&&!taskVerified(queue,previousId))return null;
-    const out=task(id,project,stage.goal,relatives,project.gameId==='fantasy-survival'?'owner-immediate':'normal','medium',[
+    const out=task(id,project,stage.goal,presentationResponsibles,project.gameId==='fantasy-survival'?'owner-immediate':'normal','medium',[
       'asset-production-parallel:v1',
       'presentation-quality-pipeline:v1',
       `presentation-pass:${stage.pass}`,
@@ -1726,6 +1738,14 @@ export function findPresentationQualityTask(project,repoRoot,queue){
     ]);
     out.workUnits=7;
     out.assetProductionLane=true;
+    if(engine==='roblox'){
+      out.responsibleFiles=[`${posix(project.projectPath)}/client/Presentation.client.luau`];
+      out.evidence=[...new Set([
+        ...(out.evidence||[]),
+        'asset-presentation-owner:ISOLATED_CLIENT_SCRIPT',
+        'asset-presentation-readonly-game-context:REQUIRED'
+      ])];
+    }
     out.estimatedRisk='high';
     out.speculativeEligible=true;
     out.atomicNeuronMode='PER_TASK_MICRO_FANIN';
@@ -1738,7 +1758,7 @@ export function findPresentationQualityTask(project,repoRoot,queue){
     ])];
     return applyAdaptiveGraphicsReplacementContract(out,project,stage.pass);
   }
-  return nextGraphicsEvolutionTask(project,repoRoot,queue,relatives,stages);
+  return nextGraphicsEvolutionTask(project,repoRoot,queue,presentationResponsibles,stages);
 }
 export function findWebPresentationQualityTask(project,repoRoot,queue){
   if(clean(project?.engine).toLowerCase()!=='web')return null;
@@ -2894,10 +2914,41 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
       const project=allProjects.find(row=>row.gameId===item.gameId&&row.engine===item.target);
       if(project)item=applyWorldLobbyFirst(item,project,repoRoot);
     }
-    if(clean(item?.status).toLowerCase()!=='queued'
-      ||clean(item?.target).toLowerCase()!=='roblox'
-      ||clean(item?.studioQualityEvolution?.focusPillar).toUpperCase()!=='PRESENTATION')return item;
+    const evidence=(item.evidence||[]).map(clean);
+    const genericPresentation=!item.studioQualityEvolution
+      &&evidence.includes('presentation-quality-pipeline:v1')
+      &&!item.studioAssetBackfill
+      &&!evidence.includes('roblox-studio-asset-backfill:v1');
+    if(clean(item?.status).toLowerCase()!=='queued')return item;
+    const target=clean(item?.target).toLowerCase();
     const responsible=(item.responsibleFiles||[]).map(posix).filter(Boolean);
+    const assetLane=item.assetProductionLane===true||evidence.includes('asset-production-parallel:v1');
+    if(target==='unity'&&genericPresentation&&assetLane){
+      const visualOnly=responsible.filter(file=>/(?:PrototypeAnimatedVisuals|Presentation|Visual|Render|Vfx|VFX|UI)\.cs$/i.test(file));
+      if(visualOnly.length&&visualOnly.length<responsible.length){
+        return{
+          ...item,
+          responsibleFiles:visualOnly,
+          evidence:[...new Set([...(item.evidence||[]),'asset-presentation-unity-visual-responsibility:REPAIRED'])]
+        };
+      }
+      return item;
+    }
+    if(target!=='roblox'||!genericPresentation)return item;
+    if(assetLane){
+      const isolatedPresentationPath=`roblox-games/${clean(item.gameId)}/client/Presentation.client.luau`;
+      if(responsible.length===1&&responsible[0]===isolatedPresentationPath)return item;
+      return{
+        ...item,
+        responsibleFiles:[isolatedPresentationPath],
+        evidence:[...new Set([
+          ...(item.evidence||[]),
+          'studio-presentation-client-responsibility:REPAIRED',
+          'asset-presentation-owner:ISOLATED_CLIENT_SCRIPT',
+          'asset-presentation-readonly-game-context:REQUIRED'
+        ])]
+      };
+    }
     if(responsible.some(file=>file.includes('/client/')&&(file.endsWith('.client.luau')||file.endsWith('.lua'))))return item;
     const clientPath=`roblox-games/${clean(item.gameId)}/client/Game.client.luau`;
     if(!fs.existsSync(path.join(repoRoot,clientPath)))return item;

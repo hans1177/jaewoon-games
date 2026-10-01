@@ -40,6 +40,36 @@ function order({ target = 'unity', root = 'unity-games/demo', responsibleFiles =
   };
 }
 
+test('asset-development can bootstrap only the isolated Roblox presentation owner',()=>{
+  process.env.VIBE2_EXECUTION_LANE='asset-development';
+  const responsible=['client/Presentation.client.luau'];
+  const candidate=normalizeCandidate({
+    summary:'isolated presentation owner',
+    newFiles:[{path:'client/Presentation.client.luau',content:'local Lighting = game:GetService("Lighting")\\nLighting.Brightness = 2\\n'}]
+  },{target:'roblox',responsibleFiles:responsible,sourceRootRelative:'roblox-games/demo'});
+  assert.deepEqual(candidate.edits,[]);
+  assert.deepEqual(candidate.newFiles.map(row=>row.path),responsible);
+  assert.throws(()=>normalizeCandidate({
+    newFiles:[{path:'client/Other.client.luau',content:'return {}\\n'}]
+  },{target:'roblox',responsibleFiles:responsible,sourceRootRelative:'roblox-games/demo'}),/책임 파일 범위 밖 수정 금지/);
+
+  const prompt=buildPrompt({
+    target:'roblox',
+    selectedTask:{assetProductionLane:true},
+    presentationQuality:{required:true,pass:'ASSET_ADAPTATION'},
+    qa:['syntax']
+  },{
+    files:[{path:'client/Game.client.luau',content:'local gui = Instance.new("ScreenGui")',editable:false}]
+  },responsible);
+  assert.match(prompt,/ASSET DEVELOPMENT ISOLATED PRESENTATION OWNER/);
+  assert.match(prompt,/Return exactly one newFiles entry/);
+
+  process.env.VIBE2_EXECUTION_LANE='game-primary';
+  assert.throws(()=>normalizeCandidate({
+    newFiles:[{path:'client/Presentation.client.luau',content:'return {}\\n'}]
+  },{target:'roblox',responsibleFiles:responsible,sourceRootRelative:'roblox-games/demo'}),/새 파일 자동 생성 금지/);
+});
+
 function robloxFullGraphicsMotionPatch(accent='70,95,130') {
   return [
     'local RunService = game:GetService("RunService")',
