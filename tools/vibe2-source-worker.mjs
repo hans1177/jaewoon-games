@@ -2039,7 +2039,12 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
   const rows=[];
   const presentationTask=/^Goal:[^\n]*(?:presentation|graphics|visual)|^\[PRESENTATION(?:_PASS:| IMPLEMENTATION)|^(?:\[STUDIO_QUALITY_EVOLUTION\]|directiveId=)[^\n]*(?:focus|primaryFocus)=PRESENTATION/im.test(raw.split(/\n=== FILE /)[0]);
   const preferred=unique(preferredTargets).filter(name=>/^[A-Za-z_$][\w$]{1,80}$/.test(name));
-  const directiveAnchors=[...buildUpDirectiveBlockFromPrompt(raw).matchAll(/(?:^sourceAnchors=| \| )([^|\r\n]+?):(?:\d+|\?) \S+ ([A-Za-z_][\w.:]*)/gm)];
+  const directiveAnchors=[...buildUpDirectiveBlockFromPrompt(raw).matchAll(/(?:^sourceAnchors=| \| )([^|\r\n]+?):(\d+|\?) \S+ ([A-Za-z_][\w.:]*)/gm)]
+    .map(match=>({
+      path:posix(match[1]),
+      line:/^\d+$/.test(match[2])?Number(match[2]):null,
+      symbol:match[3]
+    }));
   if(fullSource&&preferred.length){
     for(const symbol of preferred.slice(0,12)){
       const escaped=regexEscape(symbol);
@@ -2069,10 +2074,12 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
     const sectionPath=header.match(/^=== FILE (.*?) \[/)?.[1];
     if(responsibleFiles.length&&!responsibleFiles.includes(sectionPath))continue;
     const luau=/\.(?:lua|luau)\s+\[EDITABLE\]/i.test(header);
-    const ownedSymbols=unique([...preferred,...directiveAnchors.filter(row=>posix(row[1])===posix(sectionPath)||posix(row[1]).endsWith('/'+posix(sectionPath))).map(row=>row[2])])
+    const ownedDirectiveAnchors=directiveAnchors.filter(row=>row.path===posix(sectionPath)||row.path.endsWith('/'+posix(sectionPath)));
+    const ownedSymbols=unique([...preferred,...ownedDirectiveAnchors.map(row=>row.symbol)])
       .filter(symbol=>!presentationTask||/(?:render|visual|presentation|camera|vfx|effect|ui|hud|style|Color|Material|Lighting|Tween|Animation|Particle|Trail|Beam|CFrame|FieldOfView|World|Lobby)/i.test(symbol));
-    // 책임 함수가 소스 발췌 밖에 있어도 디스크의 원본 본문에서 편집 구간을 찾는다.
-    const sourceLines=luau&&fullSource&&ownedSymbols.length?fullSource.split('\n'):parts;
+    const ownedLineHints=ownedDirectiveAnchors.map(row=>row.line).filter(Number.isFinite);
+    // 책임 함수/줄번호가 소스 발췌 밖에 있어도 디스크의 원본 본문에서 편집 구간을 찾는다.
+    const sourceLines=luau&&fullSource&&(ownedSymbols.length||ownedLineHints.length)?fullSource.split('\n'):parts;
     const body=sourceLines.join('\n');
     let ownedFunctionIndent=null,ownedFunctionLine=-1;
     for(const [lineIndex,original] of sourceLines.entries()){
@@ -2104,6 +2111,12 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
       let score=0;
       if(luau&&(ownedSymbols.some(symbol=>new RegExp('\\b'+regexEscape(symbol)+'\\b').test(trimmed))
         ||(ownedFunctionIndent!==null&&original.search(/\S/)>ownedFunctionIndent)))score+=1000-Math.min(400,lineIndex-ownedFunctionLine);
+      if(luau&&ownedLineHints.length){
+        const nearest=Math.min(...ownedLineHints.map(line=>Math.abs((lineIndex+1)-line)));
+        if(nearest===0)score+=1200;
+        else if(nearest<=2)score+=1000-nearest*120;
+        else if(nearest<=6)score+=620-nearest*60;
+      }
       if(/\b(?:function|const|let|var|if|for|while|return|addEventListener|querySelector|getElementById|classList|dataset|localStorage)\b|<(?:button|canvas|div|section|main)\b|\bid=|\bdata-/i.test(trimmed))score+=4;
       if(/\b(?:assert(?:\.|\()|test\s*\(|describe\s*\(|it\s*\()/i.test(trimmed))score+=8;
       if(presentationTask&&/(?:Color3|BackgroundColor3|Material|Texture|Mesh|Instance\.new|Camera|FieldOfView|Particle|Trail|Beam|Tween|Animation|Animator|Motor6D|CFrame|\.Size\b|\.Position\b|Lighting|render|visual|motion|vfx|effect|Frame|ImageLabel|ImageButton)/i.test(trimmed))score+=160;
