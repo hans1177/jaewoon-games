@@ -256,6 +256,43 @@ jobs:
             --playbooks=/tmp/vibe3-task-playbooks.json \
             --results=/tmp/roblox-source-reconciliation.json
 
+      - name: Dispatch verified learning sweep when reconciliation finds refresh debt
+        if: steps.freshness.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          learning_debt="$(node - <<'NODE'
+          const fs=require('fs');
+          const rows=JSON.parse(fs.readFileSync('/tmp/roblox-source-reconciliation.json','utf8'));
+          const ids=(rows||[]).filter(row=>row?.failure==='existing-source-verified-external-learning-required').map(row=>String(row.gameId||'')).filter(Boolean);
+          process.stdout.write(String(ids.length));
+          if(ids.length)console.error('ROBLOX_VERIFIED_LEARNING_REBIND_IDS='+ids.join(','));
+          NODE
+          )"
+          echo "ROBLOX_VERIFIED_LEARNING_REBIND_COUNT=$learning_debt"
+          if [ "$learning_debt" -eq 0 ]; then
+            echo 'ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=NOT_REQUIRED'
+            exit 0
+          fi
+
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-roblox-verified-learning-sweep.yml/runs?per_page=100" > /tmp/roblox-learning-sweep-runs.json
+          active="$(node - <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-learning-sweep-runs.json','utf8'));
+          const states=new Set(['queued','pending','in_progress','requested']);
+          const count=(payload.workflow_runs||[]).filter(run=>states.has(String(run.status||'').toLowerCase())).length;
+          process.stdout.write(String(count));
+          NODE
+          )"
+          if [ "$active" -gt 0 ]; then
+            echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=DEDUPED_ACTIVE:$active"
+            exit 0
+          fi
+          gh workflow run company-roblox-verified-learning-sweep.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=YES:debt=$learning_debt"
+
       - name: Resolve next Roblox source execution slice from unbounded native queue
         if: steps.freshness.outputs.run == 'true'
         id: targets
