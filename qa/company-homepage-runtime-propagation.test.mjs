@@ -109,6 +109,11 @@ test('homepage exposes Unity Web as the required pre-native development test sur
   const snap=buildHomepagePlatformExposure({policy,catalog:{games:[]},queue:{items:[]}});
   const web=policy.directNativeDualPlatformDevelopment.unityWebValidationSurface;
   assert.equal(policy.serverHomepageIntegration.showUnityWeb,true);
+  assert.equal(policy.serverHomepageIntegration.showWebPlay,true);
+  assert.equal(policy.serverHomepageIntegration.ownerWebUpload.changedGameIdsOnly,false);
+  assert.equal(policy.serverHomepageIntegration.ownerWebUpload.reconcileExistingCatalogGamesEveryStatusSync,true);
+  assert.equal(policy.serverHomepageIntegration.managerContract.developmentProgressDisplay.cardVisibilityRequiresRunnableTarget,true);
+  assert.equal(policy.serverHomepageIntegration.managerContract.developmentProgressDisplay.titleOnlyCardExposureForbidden,true);
   assert.equal(snap.unityWebEnabled,true);
   assert.equal(policy.directNativeDualPlatformDevelopment.unityWebRequired,true);
   assert.equal(policy.directNativeDualPlatformDevelopment.unityWebGateRequired,true);
@@ -133,6 +138,8 @@ test('homepage exposes Unity Web as the required pre-native development test sur
   assert.match(renderer,/unityWebAvailable:true/);
   assert.match(renderer,/Unity Web · 개발중/);
   assert.match(renderer,/function playableWebHref\(row\)/);
+  assert.match(renderer,/function hasRunnableHomepageTarget\(game\)/);
+  assert.match(renderer,/\.filter\(hasRunnableHomepageTarget\)/);
   assert.match(renderer,/웹 플레이/);
   assert.match(renderer,/links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|''/);
   assert.match(renderer,/return links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|'';/);
