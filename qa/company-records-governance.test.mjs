@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import {validateCompanyRecord,scanCompanyRecords} from '../tools/company-records-governance.mjs';
+import {validateCompanyRecord,scanCompanyRecords,extractChangeRecordReferences,planCentralDocumentArchive,inspectCentralDocument} from '../tools/company-records-governance.mjs';
 
 const root=process.cwd();
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
@@ -106,4 +106,48 @@ test('repository company-record scan keeps record ids unique',()=>{
     const report=scanCompanyRecords();
     assert.ok(report.errors.some(x=>x.startsWith('DUPLICATE_RECORD_ID:duplicate-test-001:')));
   }finally{rm(path.join(root,'company-records/qa/2026'));}
+});
+
+
+test('central policy reference scanner protects direct and optional changeRecord dependencies',()=>{
+  const refs=extractChangeRecordReferences([
+    'roadmap.changeRecord.alphaRule.enabled',
+    'roadmap.changeRecord?.betaRule?.runner',
+    'roadmap.changeRecord["gammaRule"].status',
+    "roadmap.changeRecord['deltaRule'].status"
+  ].join('\n'));
+  assert.deepEqual(refs,['alphaRule','betaRule','deltaRule','gammaRule']);
+});
+
+test('central archive plan removes explicit history before unreferenced compatibility records',()=>{
+  const roadmap={
+    centralDocumentRetention:{
+      maxUtf8Bytes:1600,
+      softTargetUtf8Bytes:900,
+      archiveUnreferencedChangeRecords:true,
+      pinnedChangeRecordKeys:['pinnedRule'],
+      historicalArchiveSelectors:['history.largeRun']
+    },
+    changeRecord:{
+      protectedRule:{enabled:true,note:'x'.repeat(220)},
+      pinnedRule:{enabled:true,note:'p'.repeat(220)},
+      oldRule:{enabled:true,note:'o'.repeat(420)}
+    },
+    history:{largeRun:{events:Array.from({length:20},(_,i)=>({i,text:'h'.repeat(40)}))}}
+  };
+  const plan=planCentralDocumentArchive({roadmap,protectedChangeRecordKeys:['protectedRule']});
+  assert.ok(plan.archivedPaths.includes('history.largeRun'));
+  assert.equal(plan.roadmap.changeRecord.protectedRule.enabled,true);
+  assert.equal(plan.roadmap.changeRecord.pinnedRule.enabled,true);
+  assert.ok(!plan.archivedPaths.includes('changeRecord.protectedRule'));
+  assert.ok(!plan.archivedPaths.includes('changeRecord.pinnedRule'));
+  assert.equal(plan.hardLimitSatisfied,true);
+});
+
+test('current central policy stays within hard retention limit and keeps every referenced compatibility record',()=>{
+  const report=inspectCentralDocument();
+  assert.deepEqual(report.errors,[]);
+  assert.ok(report.utf8Bytes<=report.maxUtf8Bytes);
+  assert.deepEqual(report.missingProtectedChangeRecords,[]);
+  assert.ok(report.headroomBytes>=0);
 });
