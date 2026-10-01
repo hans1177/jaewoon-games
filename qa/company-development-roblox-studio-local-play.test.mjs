@@ -821,6 +821,18 @@ test('Studio MCP client negotiates Roblox protocol and waits for the official to
   assert.match(helper,/STUDIO_PROXY_CONNECTION/);
 });
 
+test('Studio fails closed before gameplay QA when Play is blocked after Studio becomes readable',()=>{
+  const stateAt=helper.indexOf("checkpoint('studio-state-readable',true)");
+  const gatePassAt=helper.indexOf("checkpoint('PRE_PLAY_STUDIO_MODAL_GATE',true)");
+  assert.ok(stateAt>0&&gatePassAt>stateAt);
+  assert.match(helper,/ROBLOX_STUDIO_PRE_PLAY_BLOCKER_ABORT:/);
+  assert.match(helper,/checkpoint\('PRE_PLAY_STUDIO_MODAL_GATE',false\)/);
+  assert.match(helper,/id:'pre-play-studio-modal-gate'/);
+  assert.match(helper,/repairSurface:'STUDIO_PROJECT_OPEN'/);
+  assert.match(helper,/type:'studio-product-pre-play-blocker'/);
+  assert.match(helper,/do not auto-click it/);
+});
+
 test('Studio MCP waits for a connected Studio after tool inventory becomes ready',()=>{
   assert.match(helper,/const studioAttachAttempts=60/);
   assert.match(helper,/ROBLOX_STUDIO_MCP_STUDIO_ATTACH_WAIT=/);
