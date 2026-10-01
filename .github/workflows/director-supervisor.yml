@@ -27,6 +27,15 @@ on:
       - '.github/workflows/company-design-promotion-sync.yml'
       - '.github/workflows/company-development-confirmed-runtime.yml'
       - '.github/workflows/company-development-unity-runtime.yml'
+      - '.github/workflows/vibe2-24h-runner.yml'
+      - '.github/workflows/vibe2-continuous-core.yml'
+      - '.github/workflows/vibe2-core-qa.yml'
+      - 'tools/company-shared-context.mjs'
+      - 'tools/vibe2-central-work-contract.mjs'
+      - 'qa/company-shared-context.test.mjs'
+      - 'qa/vibe2-central-work-contract.test.mjs'
+      - 'qa/vibe2-controller-contract.test.mjs'
+      - 'qa/vibe2-queue-control.test.mjs'
       - '.github/workflows/director-supervisor.yml'
 
 permissions:
