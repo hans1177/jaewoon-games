@@ -7,6 +7,7 @@ import {spawn,spawnSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import {ownerDevelopmentHeld} from './vibe2-queue-control.mjs';
 import {validateRobloxMultiplayerSourceContract} from './company-development-roblox-runtime-foundation.mjs';
+import {evaluateExperienceBuildup,experienceAxisEvidence} from './company-experience-buildup-contract.mjs';
 
 const clean=v=>String(v??'').trim();
 const bool=v=>String(v??'').toLowerCase()==='true';
@@ -14,7 +15,7 @@ const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,'
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(path.resolve(file)),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const stableSha256=value=>crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
-export const ROBLOX_STUDIO_HARNESS_VERSION=16;
+export const ROBLOX_STUDIO_HARNESS_VERSION=17;
 
 export function assertCurrentStudioWorkflowHead({
   workflowSha=clean(process.env.GITHUB_SHA),
@@ -222,7 +223,10 @@ export function deriveStudioActualPlayContract(launch={}){
     'adaptive-companion-ai-surface','adaptive-item-surface','adaptive-environment-surface',
     'adaptive-effects-surface','adaptive-quest-loop-surface','adaptive-reward-loop-surface',
     'adaptive-economy-surface','adaptive-save-surface','adaptive-save-rejoin-persistence','adaptive-retry-loop-surface','adaptive-retry-action-effect','adaptive-death-respawn-recovery',
-    'adaptive-multiplayer-sync-surface','adaptive-camera-quality','adaptive-performance-budget'
+    'adaptive-multiplayer-sync-surface','adaptive-camera-quality','adaptive-performance-budget',
+    'experience-buildup-motion','experience-buildup-combat-feel','experience-buildup-ui-hud','experience-buildup-inventory-equipment',
+    'experience-buildup-audio-music','experience-buildup-vfx','experience-buildup-camera','experience-buildup-world-art-lighting',
+    'experience-buildup-onboarding-readability','experience-buildup-mobile-input','experience-buildup-performance-stability','experience-buildup-overall'
   ];
   const explicitScenarios=launchStringList(explicit?.requiredScenarios);
   return Object.freeze({
@@ -830,6 +834,78 @@ export function classifyStudioConsoleOutput(consoleResult,{ownedSourceText=''}={
 export function collectCharacterMotionRuntimeEvidence(consoleResult){
   const text=flattenText(consoleResult,[]).join('\n');
   const lines=text.split(/\r?\n/).map(line=>clean(line)).filter(Boolean);
+  const commercialInputObserved=actions.some(row=>row?.dispatched===true&&row?.ok===true&&['mcp-mouse-input','mcp-keyboard-input','mcp-ui-exploration','mcp-world-interaction','mcp-combat-action'].includes(clean(row?.type)));
+  const animationRuntimeObserved=player.animatorPresent===true&&Number(player.motorCount||0)>0&&(Number(player.animationTrackCount||0)>0||displacement>=0.1);
+  const inventorySystemObserved=signals.items===true||Number(categories.inventory||0)>0||Number(runtime.inventoryCount||0)>0;
+  const audioLayerCount=Number(runtime.soundCount||0),playingAudioLayerCount=Number(runtime.playingSoundCount||0);
+  const experienceBuildup=evaluateExperienceBuildup({
+    platform:'ROBLOX',
+    axesEvidence:{
+      __runtimeObserved:true,
+      __beforeAfterObserved:visualCaptureDeferred===true?false:(before.pass===true&&after.pass===true),
+      MOTION:experienceAxisEvidence({
+        animator:player.animatorPresent===true,
+        articulated:Number(player.motorCount||0)>0,
+        activeTrackOrVisibleMotion:animationRuntimeObserved,
+        dynamicCombatActors:mobRows.length===0?100:(timelineMobDynamic||mobMotion.dynamic)?100:0
+      },{applicable:signals.motion===true||Number(player.motorCount||0)>0||mobRows.length>0}),
+      COMBAT_FEEL:experienceAxisEvidence({
+        actionEffect:primaryActionFeedbackChanged||combatEffects>0,
+        readableImpact:Number(world.effectCount||0)>0||primaryActionFeedbackChanged,
+        runtimeStateDelta:combatEffects>0||mobMotion.healthChanged>0||mobMotion.stateChanged>0,
+        cameraResponse:client?.camera?.present===true
+      },{applicable:signals.combat===true}),
+      UI_HUD:experienceAxisEvidence({
+        commercialLayout:uiCommercialPass,
+        noBlockingOverlay:blockingOverlayPass,
+        visibleAction:Number(ui.visibleButtons||0)>0,
+        readableText:Number(ui.textOverflowButtons||0)===0
+      }),
+      INVENTORY_EQUIPMENT:experienceAxisEvidence({
+        discoverableSurface:itemSurfaceCount>0,
+        inventoryStateObservable:Number(categories.inventory||0)>0||Number(runtime.inventoryCount||0)>0,
+        exercisedTransactionChanged:systemActions.length===0||systemEffects===systemActions.length
+      },{applicable:inventorySystemObserved}),
+      AUDIO_MUSIC:experienceAxisEvidence({
+        authoredAudio:audioLayerCount>0,
+        activeRuntimePlayback:playingAudioLayerCount>0,
+        layeredCombatAudio:signals.combat!==true||audioLayerCount>=2
+      }),
+      VFX:experienceAxisEvidence({
+        effectSurface:Number(world.effectCount||0)>0,
+        actionSynchronized:signals.combat!==true||primaryActionFeedbackChanged||combatEffects>0,
+        gameplayReadable:Number(ui.largeBlockingOverlayCount||0)===0
+      },{applicable:signals.effects===true||signals.combat===true}),
+      CAMERA:experienceAxisEvidence({
+        present:client?.camera?.present===true,
+        subjectBound:client?.camera?.subjectPresent===true,
+        notOccluded:client?.camera?.occluded!==true,
+        validFov:Number(client?.camera?.fieldOfView||0)>0
+      },{applicable:signals.camera===true||signals.map===true}),
+      WORLD_ART_LIGHTING:experienceAxisEvidence({
+        environmentSurface:Number(world.environmentModels||0)>0||Number(world.collidablePartCount||0)>=20,
+        lightingReadable:lightingBrightness>=Number(exp.minimumLightingBrightness||0),
+        worldDensity:Number(world.arenaPartCount||world.collidablePartCount||0)>=20
+      },{applicable:signals.map===true||signals.environment===true}),
+      ONBOARDING_READABILITY:experienceAxisEvidence({
+        firstStateReadable:onboardingClarityPass||visibleButtons>0,
+        actionableControl:visibleButtons>0,
+        noBlockingOverlay:blockingOverlayPass
+      }),
+      MOBILE_INPUT:experienceAxisEvidence({
+        inputActuallyDispatched:commercialInputObserved,
+        noUndersizedEssentialTargets:Number(ui.undersizedTouchButtons||0)===0,
+        noOffscreenButtons:Number(ui.offscreenButtons||0)===0,
+        noOverlap:Number(ui.overlapPairs||0)===0
+      }),
+      PERFORMANCE_STABILITY:experienceAxisEvidence({
+        runtimeTrendStable:performanceTrendPass,
+        memoryObserved:Number(runtime.memoryMb||0)>=0,
+        sceneBudget:Number(runtime.descendantCount||0)<120000
+      })
+    }
+  });
+
   const rows=[];
   for(const line of lines){
     const markerIndex=line.indexOf('ROBLOX_CHARACTER_MOTION_RUNTIME=');
@@ -1787,7 +1863,9 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'adaptive-death-respawn-recovery',pass:!deathObserved||respawnObserved},
     {id:'adaptive-multiplayer-sync-surface',pass:!signals.multiplayer||(singleWindow?multiplayerSourceContractPassed:(soak?multiplayerActualSessionPass:multiplayerRuntimeSurface)),verificationScope:singleWindow?'STATIC_CODE_CONTRACT':'STUDIO_RUNTIME'},
     {id:'adaptive-camera-quality',pass:!signals.camera||(client?.camera?.present===true&&client?.camera?.subjectPresent===true&&Number(client?.camera?.fieldOfView||0)>0&&client?.camera?.occluded!==true)},
-    {id:'adaptive-performance-budget',pass:Number(runtime.memoryMb||0)>=0&&Number(runtime.descendantCount||0)<120000&&performanceTrendPass}
+    {id:'adaptive-performance-budget',pass:Number(runtime.memoryMb||0)>=0&&Number(runtime.descendantCount||0)<120000&&performanceTrendPass},
+    ...experienceBuildup.axes.filter(row=>row.required).map(row=>({id:'experience-buildup-'+row.id.toLowerCase().replaceAll('_','-'),pass:row.pass,score:row.score,target:row.target})),
+    {id:'experience-buildup-overall',pass:experienceBuildup.pass,score:experienceBuildup.overallScore,target:experienceBuildup.minimumOverallScore}
   ];
   // 실제 발견한 버튼·상호작용·이동 경로별 검증 패턴을 기존 판정 흐름에 추가한다.
   const discoveredPatterns=new Map();
@@ -1843,10 +1921,11 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     ftue:{declared:signals.onboarding===true,pass:onboardingClarityPass,visibleTextCount:visibleTexts.length,visibleButtonCount:visibleButtons},
     uiCommercial:{offscreenButtons:Number(ui.offscreenButtons||0),undersizedTouchButtons:Number(ui.undersizedTouchButtons||0),suboptimalTouchButtons:Number(ui.suboptimalTouchButtons||0),textOverflowButtons:Number(ui.textOverflowButtons||0),overlapPairs:Number(ui.overlapPairs||0),largeOverlayCount:Number(ui.largeOverlayCount||0),largeBlockingOverlayCount:Number(ui.largeBlockingOverlayCount||0),largestOverlayCoverage:Number(ui.largestOverlayCoverage||0)},
     startPlayability:{initialDead,finalDead,initialHealth:Number.isFinite(initialHealth)?initialHealth:null,finalHealth:Number.isFinite(finalHealth)?finalHealth:null,startGateVisible:Boolean(initialStartLikeButton),startGateActionOk:startGateAction?.ok===true,startGateEffectObserved},
-    surfaces:{interactionSurfaceCount,progressionSurfaceCount,combatSurfaceCount,npcSurfaceCount,companionSurfaceCount,itemSurfaceCount,remoteCount:Number(runtime.remoteCount||0),soundCount:Number(runtime.soundCount||0),effectCount:Number(world.effectCount||0),promptCount:Number(world.proximityPromptCount||0),inventoryCount:Number(runtime.inventoryCount||0),currentActualPlayerCount,maxActualPlayerCount,multiplayerStateTransition,multiplayerActualSessionPass},
+    surfaces:{interactionSurfaceCount,progressionSurfaceCount,combatSurfaceCount,npcSurfaceCount,companionSurfaceCount,itemSurfaceCount,remoteCount:Number(runtime.remoteCount||0),soundCount:Number(runtime.soundCount||0),playingSoundCount:Number(runtime.playingSoundCount||0),effectCount:Number(world.effectCount||0),promptCount:Number(world.proximityPromptCount||0),inventoryCount:Number(runtime.inventoryCount||0),currentActualPlayerCount,maxActualPlayerCount,multiplayerStateTransition,multiplayerActualSessionPass},
     performance:{memoryMb:Number(runtime.memoryMb||0),descendantCount:Number(runtime.descendantCount||0)},
     worldAudit:{floorSamples,floorHits,floorCoveragePass,routeSamples,routeSuccess,routeCoveragePass,spawnThreatDistance,spawnOverlapSafe},
-    characterAndAi:{mobRigAnimationPass,humanoidMobCount:humanoidMobRows.length,cameraOccluded:client?.camera?.occluded===true,cameraDistance:Number(client?.camera?.distance||0)}
+    characterAndAi:{mobRigAnimationPass,humanoidMobCount:humanoidMobRows.length,cameraOccluded:client?.camera?.occluded===true,cameraDistance:Number(client?.camera?.distance||0)},
+    experienceBuildup
   };
   const repairMap={
     'adaptive-start-playability':['GAME_START','CRITICAL','Repair initial character health/state and start/continue flow so Studio reaches a healthy controllable character and gameplay state.'],
@@ -1886,6 +1965,18 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     'adaptive-multiplayer-sync-surface':['MULTIPLAYER_SYNC','CRITICAL','The game declares multiplayer/co-op behavior but Studio found no credible replicated player/team state plus server Remote surface. Restore actual 2+ player synchronization evidence before release.'],
     'adaptive-camera-quality':['CAMERA','HIGH','Repair camera subject/FOV/occlusion behavior and keep gameplay readable during movement/combat.'],
     'adaptive-performance-budget':['PERFORMANCE','HIGH','Reduce runaway instance count/memory pressure and keep long-session runtime stable.'],
+    'experience-buildup-motion':['CHARACTER_MOTION','HIGH','Build up authored locomotion/idle/turn/attack/hit/death motion until actual Studio playback shows articulated movement, active animation, weight and state response.'],
+    'experience-buildup-combat-feel':['COMBAT_FEEL','HIGH','Increase anticipation, impact, recoil, hit readability and action feedback without changing damage or timing authority.'],
+    'experience-buildup-ui-hud':['MOBILE_UI','HIGH','Build up hierarchy, readability, safe-area layout, touch sizing and immediate state feedback across mobile gameplay.'],
+    'experience-buildup-inventory-equipment':['ITEM_INVENTORY','HIGH','Make inventory/equip state discoverable and verify acquisition/equip actions visibly change authoritative state.'],
+    'experience-buildup-audio-music':['AUDIO','HIGH','Add and actively play concept-fit music/audio layers; combat games need more than a dormant single Sound instance.'],
+    'experience-buildup-vfx':['VFX_FEEDBACK','MEDIUM','Build readable telegraph/impact/signature VFX hierarchy synchronized to actual gameplay events.'],
+    'experience-buildup-camera':['CAMERA','HIGH','Build responsive follow/framing/impact camera language without hiding telegraphs or mobile controls.'],
+    'experience-buildup-world-art-lighting':['ENVIRONMENT_ART','HIGH','Build region identity through materials, lighting, landmarks, atmosphere and environment dressing while preserving gameplay readability.'],
+    'experience-buildup-onboarding-readability':['FTUE_ONBOARDING','MEDIUM','Make the first playable state immediately communicate objective and next action without a blocking tutorial wall.'],
+    'experience-buildup-mobile-input':['MOBILE_UI','HIGH','Ensure primary actions are actually exercised, touch-sized, on-screen, non-overlapping and responsive.'],
+    'experience-buildup-performance-stability':['PERFORMANCE','HIGH','Keep the visual/audio buildup inside stable memory and scene-complexity budgets.'],
+    'experience-buildup-overall':['PRESENTATION_BUILDUP','HIGH','Repeat weakest-axis focused buildup and actual Studio before/after verification until the commercial perceptual target is reached.'],
     'primary-action-effect':['ACTION_IMPLEMENTATION','CRITICAL','Ensure primary action produces authoritative gameplay feedback, movement, damage, or state transition.'],
     'visual-capture-sane':['VISUAL_RUNTIME','HIGH','Repair blank/invalid/too-small viewport or unreadable lighting during actual play.'],
     'character-camera-ready':['CHARACTER_BOOT','CRITICAL','Repair character spawn, Humanoid/root, and camera binding before gameplay starts.']
@@ -1904,6 +1995,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     if(id==='adaptive-progression-surface'||id==='adaptive-quest-loop-surface'||id==='adaptive-reward-loop-surface')return{progressionSurfaceCount,progressChanged,timelineProgressChanged};
     if(id==='adaptive-item-surface')return{itemSurfaceCount,inventoryCount:Number(runtime.inventoryCount||0),inventoryChanged:inventoryDelta};
     if(id==='adaptive-performance-budget')return metrics.performance;
+    if(id.startsWith('experience-buildup-'))return metrics.experienceBuildup;
     if(id==='adaptive-interaction-surface')return{interactionSurfaceCount,promptCount:Number(world.proximityPromptCount||0),clickDetectorCount:Number(world.clickDetectorCount||0),visibleButtons};
     if(id==='adaptive-semantic-interaction-effect')return{semanticActionCount:semanticActions.length,semanticEffectCount:semanticEffects,actions:semanticActions.slice(0,10).map(row=>({id:row.id,type:row.type,semantic:row.semantic||null,effectObserved:row.effectObserved===true,effect:row.effect||null}))};
     if(id==='adaptive-system-transaction-effect')return{systemActionCount:systemActions.length,systemEffectCount:systemEffects,actions:systemActions.slice(0,12).map(row=>({id:row.id,semantic:row.semantic,effectObserved:row.effectObserved===true,effect:row.effect||null}))};
