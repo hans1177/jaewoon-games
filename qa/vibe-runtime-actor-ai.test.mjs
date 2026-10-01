@@ -184,7 +184,7 @@ test('social director combines selfhood relationship inner state dialogue initia
     world:{emotion:'alert',activity:'travel',attentionTarget:'bridge',currentConcern:'unsafe bridge'},
     memory:[{id:'shared-1',type:'shared-danger'}],history:[{speechAct:'warn',topic:'bridge'}]
   });
-  assert.equal(director.version,3);
+  assert.equal(director.version,4);
   assert.equal(director.qualityDNA.profile,'COMPANION');
   assert.equal(director.selfhood.lifeProject.longTermGoal,'map the old frontier');
   assert.equal(director.policy.playerNotUniversalCenter,true);
