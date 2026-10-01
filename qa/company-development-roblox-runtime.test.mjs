@@ -246,7 +246,7 @@ test('Rojo project maps shared server and client source roots',()=>{
   assert.equal(project.tree.Lighting.$properties.LightingStyle,'Soft');
   assert.equal(project.tree.Lighting.$properties.PrioritizeLightingQuality,false);
   assert.equal(project.tree.Lighting.CompatibilityToneMap.$className,'ColorGradingEffect');
-  assert.equal(project.tree.Lighting.CompatibilityToneMap.$properties.TonemapperPreset,'Retro');
+  assert.equal(project.tree.Lighting.CompatibilityToneMap,undefined);
   assert.equal(project.tree.ReplicatedStorage.Shared.$path,'shared');
   assert.equal(project.tree.ServerScriptService.GameServer.$path,'server');
   assert.equal(project.tree.StarterPlayer.StarterPlayerScripts.GameClient.$path,'client');
@@ -779,7 +779,7 @@ test('Roblox batch scheduler keeps control work fixed while preserving uncapped 
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
   assert.match(workflow,/group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}/);
-  assert.match(workflow,/cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
+  assert.match(workflow,/cancel-in-progress: false/);
   assert.match(workflow,/\n  source-plan:\n[\s\S]*?runs-on: ubuntu-24\.04/);
   assert.doesNotMatch(workflow,/\n  source-plan:\n[\s\S]{0,260}?runs-on: ubuntu-slim/);
   assert.doesNotMatch(workflow,/max-parallel:/);
@@ -1057,7 +1057,7 @@ test('Roblox runtime collapses duplicate exact-game and batch planners with same
   assert.match(workflow,/ROBLOX_RUNTIME_EXACT_DEDUPED_ACTIVE=/);
   assert.match(workflow,/ROBLOX_RUNTIME_BATCH_DEDUPED_NEWER_ACTIVE=/);
   assert.match(workflow,/process\.stdout\.write\(String\(ids\[ids\.length-1\]\)\)/);
-  assert.match(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n(?:\s+#.*\n)*\s+cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
+  assert.match(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n(?:\s+#.*\n)*\s+cancel-in-progress: false/);
 });
 
 
