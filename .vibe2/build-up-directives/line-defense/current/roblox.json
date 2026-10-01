@@ -231,49 +231,7 @@
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false,
-    "studioQualityFailure": {
-      "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
-      "artifactIdentity": "sha256:aa8f5298a4962b860d3a3f371eb0b37479f989c87d72a7c58eb6f9128d06ee42",
-      "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 36481661807,
-      "testedAt": "2026-09-28T23:56:21.030Z",
-      "repairSurfaces": [
-        "CHARACTER_BOOT",
-        "GAME_START",
-        "MOBILE_UI",
-        "WORLD_GEOMETRY"
-      ],
-      "qualityFailureDetails": [
-        {
-          "id": "character-camera-ready",
-          "repairSurface": "CHARACTER_BOOT",
-          "priority": "CRITICAL",
-          "hint": "Repair character spawn, Humanoid/root, and camera binding before gameplay starts.",
-          "observed": "{\"interactionSurfaceCount\":1,\"progressionSurfaceCount\":2,\"combatSurfaceCount\":0,\"npcSurfaceCount\":0,\"companionSurfaceCount\":0,\"itemSurfaceCount\":0,\"remoteCount\":14,\"soundCount\":0,\"effectCount\":0,\"promptCount\":0,\"inventoryCount\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":false,\"multiplayerActualSessionPass\":false}"
-        },
-        {
-          "id": "adaptive-start-playability",
-          "repairSurface": "GAME_START",
-          "priority": "CRITICAL",
-          "hint": "Repair initial character health/state and start/continue flow so Studio reaches a healthy controllable character and gameplay state.",
-          "observed": "{\"initialDead\":false,\"finalDead\":true,\"initialHealth\":100,\"finalHealth\":0,\"startGateVisible\":false,\"startGateActionOk\":false,\"startGateEffectObserved\":true}"
-        },
-        {
-          "id": "adaptive-ui-commercial-quality",
-          "repairSurface": "MOBILE_UI",
-          "priority": "HIGH",
-          "hint": "Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.",
-          "observed": "{\"offscreenButtons\":0,\"undersizedTouchButtons\":1,\"suboptimalTouchButtons\":0,\"textOverflowButtons\":0,\"overlapPairs\":0,\"largeOverlayCount\":0,\"largeBlockingOverlayCount\":0,\"largestOverlayCoverage\":0}"
-        },
-        {
-          "id": "adaptive-world-safety",
-          "repairSurface": "WORLD_GEOMETRY",
-          "priority": "CRITICAL",
-          "hint": "Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.",
-          "observed": "{\"boundsFinite\":true,\"collidablePartCount\":1,\"floorBelowPlayer\":false,\"floorSamples\":9,\"floorHits\":0,\"floorCoveragePass\":false,\"routeSamples\":0,\"routeSuccess\":0,\"routeCoveragePass\":true,\"spawnThreatDistance\":-1,\"spawnOverlapSafe\":true}"
-        }
-      ]
-    }
+    "studioQualityFailure": null
   },
   "qualityGapMap": [
     {
