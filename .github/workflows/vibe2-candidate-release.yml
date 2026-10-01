@@ -41,6 +41,7 @@ jobs:
       task_id: ${{ steps.gate.outputs.task_id }}
       game_id: ${{ steps.gate.outputs.game_id }}
       target: ${{ steps.gate.outputs.target }}
+      execution_surface: ${{ steps.gate.outputs.execution_surface }}
       source_root: ${{ steps.gate.outputs.source_root }}
       base_sha: ${{ steps.gate.outputs.base_sha }}
       transport_base_sha: ${{ steps.gate.outputs.transport_base_sha }}
@@ -103,6 +104,7 @@ jobs:
           const task=String(m.taskId||'').trim();
           const game=String(m.gameId||'').trim();
           const target=String(m.target||'').trim().toLowerCase();
+          const executionSurface=String(m.executionSurface||'').trim().toUpperCase();
           const root=String(m.sourceRoot||'').replaceAll('\\','/').replace(/^\.\//,'').replace(/\/$/,'');
           const base=String(m.baseMainSha||'').trim();
           const transportBase=String(m.transportBaseSha||base).trim();
@@ -114,14 +116,18 @@ jobs:
           let decision='reject', reason='unknown';
           if(!task||!game||!base||!transportBase) reason='manifest-required-field-missing';
           else if(!['roblox','web','unity'].includes(target)) reason='target-auto-release-not-configured';
+          else if(target==='unity' && !['UNITY_WEB','UNITY_NATIVE'].includes(executionSurface)) reason='unity-execution-surface-missing-or-invalid';
           else if(target==='roblox' && root!==`roblox-games/${game}`) reason='roblox-source-root-mismatch';
           else if(target==='web' && root!==`web-games/${game}`) reason='web-source-root-mismatch';
           else if(target==='unity' && root!==`unity-games/${game}`) reason='unity-source-root-mismatch';
           else if(!['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(productionClass)) reason='current-production-class-not-auto-deployable';
-          else { decision=target; reason='candidate-authorized'; }
+          else {
+            decision=target==='unity'&&executionSurface==='UNITY_WEB'?'unity-web':target;
+            reason='candidate-authorized';
+          }
           put('candidate_decision',decision); put('candidate_reason',reason); put('task_id',task); put('game_id',game);
-          put('target',target); put('source_root',root); put('base_sha',base); put('transport_base_sha',transportBase); put('release_state',state); put('production_class',productionClass); put('origin',origin);
-          put('request_file',target==='unity'?`.build-requests/unity/${game}.json`:'');
+          put('target',target); put('execution_surface',executionSurface); put('source_root',root); put('base_sha',base); put('transport_base_sha',transportBase); put('release_state',state); put('production_class',productionClass); put('origin',origin);
+          put('request_file',decision==='unity'?`.build-requests/unity/${game}.json`:'');
           NODE
 
           decision="$(sed -n 's/^candidate_decision=//p' "$GITHUB_OUTPUT" | tail -n1)"
@@ -570,6 +576,88 @@ jobs:
             gh workflow run vibe2-candidate-release.yml --repo "$GITHUB_REPOSITORY" --ref main -f candidate_branch="$CANDIDATE_BRANCH" || true
           fi
           exit 0
+
+  unity-web-build:
+    needs: inspect
+    if: needs.inspect.outputs.decision == 'unity-web'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Dispatch candidate Unity Web QA and reviewed promotion
+        id: dispatch
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ needs.inspect.outputs.game_id }}
+          SOURCE_ROOT: ${{ needs.inspect.outputs.source_root }}
+          CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
+          BASE_SHA: ${{ needs.inspect.outputs.base_sha }}
+          TASK_ID: ${{ needs.inspect.outputs.task_id }}
+          CANDIDATE_BRANCH: ${{ needs.inspect.outputs.candidate_branch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run unity-web-first-stage-build.yml --repo "$GITHUB_REPOSITORY" --ref main \
+            -f game_id="$GAME_ID" \
+            -f project_path="$SOURCE_ROOT" \
+            -f source_commit="$CANDIDATE_SHA" \
+            -f base_main_sha="$BASE_SHA" \
+            -f publish_to_main=true \
+            -f vibe2_task_id="$TASK_ID" \
+            -f vibe2_candidate_branch="$CANDIDATE_BRANCH"
+          echo 'VIBE2_UNITY_WEB_RELEASE_DISPATCHED=YES'
+          echo "VIBE2_CANDIDATE_EXECUTION_SURFACE=UNITY_WEB"
+
+      - name: Recover queue if Unity Web dispatch failed
+        if: steps.dispatch.outcome != 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TASK_ID: ${{ needs.inspect.outputs.task_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/vibe2-control
+          gh auth setup-git --hostname github.com
+          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch --depth=1 --no-tags >/dev/null 2>&1
+          git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
+          rm -rf /tmp/vibe2-main-contract
+          git -C /tmp/vibe2-control worktree add --detach /tmp/vibe2-main-contract origin/main >/dev/null
+          cd /tmp/vibe2-control
+          git config user.name 'jaewoon-vibe2-release'
+          git config user.email 'vibe2-release@users.noreply.github.com'
+          settled=0
+          for attempt in 1 2 3; do
+            git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
+            git reset --hard origin/vibe2-unreal-core
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=unity-web-build-dispatch-failed --evidence="actions-run-${GITHUB_RUN_ID}"
+            git add .vibe2/queue.json
+            if git diff --cached --quiet; then
+              settled=1
+              break
+            fi
+            git commit -m "vibe2: recover Unity Web dispatch failure ${TASK_ID} [skip ci]"
+            if git push origin HEAD:vibe2-unreal-core; then
+              settled=1
+              break
+            fi
+            sleep $((attempt * 2))
+          done
+          test "$settled" = 1
+          payload="$(jq -nc \
+            --arg run "${GITHUB_RUN_ID:-}" \
+            --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
+            --arg task "${TASK_ID:-}" \
+            --arg outcome "QUEUE_UPDATED" \
+            '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$task,source_outcome:$outcome,reason:"dependency-or-retry-ready"}}')"
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+            --data "$payload"
+          echo "VIBE2_EVENT_DRIVEN_DEPENDENCY_REFILL=${TASK_ID:-NONE}:QUEUE_UPDATED"
+          exit 1
 
   unity-build:
     needs: inspect
