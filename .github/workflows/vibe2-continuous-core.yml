@@ -1435,14 +1435,38 @@ jobs:
           fi
 
           cd "$candidate_dir"
-          node --check tools/company-shared-context.mjs
-          node tools/company-shared-context.mjs \
-            --pinned-hash-verify=true \
-            --expected-policy-sha256="$WORKER_CONTEXT_EXPECTED_POLICY_SHA256" \
-            --expected-log-map-sha256="$WORKER_CONTEXT_EXPECTED_LOG_MAP_SHA256" \
-            --expected-architecture-sha256="$WORKER_CONTEXT_EXPECTED_ARCHITECTURE_SHA256" \
-            --expected-security-policy-sha256="$WORKER_CONTEXT_EXPECTED_SECURITY_POLICY_SHA256" \
-            --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-before.json" | tee "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-before.log"
+          verify_candidate_shared_context_sha() {
+            local phase="$1"
+            local output="$2"
+            local policy_sha log_map_sha architecture_sha security_sha
+            policy_sha="$(sha256sum company-learning/platform-release-roadmap.json | cut -d\' \' -f1)"
+            log_map_sha="$(sha256sum company-learning/company-log-map.json | cut -d\' \' -f1)"
+            architecture_sha="$(sha256sum company-learning/company-architecture-map.json | cut -d\' \' -f1)"
+            security_sha="$(sha256sum company-learning/security-immune-system.json | cut -d\' \' -f1)"
+            test "$policy_sha" = "$WORKER_CONTEXT_EXPECTED_POLICY_SHA256"
+            test "$log_map_sha" = "$WORKER_CONTEXT_EXPECTED_LOG_MAP_SHA256"
+            test "$architecture_sha" = "$WORKER_CONTEXT_EXPECTED_ARCHITECTURE_SHA256"
+            test "$security_sha" = "$WORKER_CONTEXT_EXPECTED_SECURITY_POLICY_SHA256"
+            PHASE="$phase" OUTPUT="$output" POLICY_SHA="$policy_sha" LOG_MAP_SHA="$log_map_sha" ARCHITECTURE_SHA="$architecture_sha" SECURITY_SHA="$security_sha" node <<\'NODE\'
+          const fs=require('fs');
+          const result={
+            pass:true,
+            version:2,
+            verificationMode:'PINNED_SHA_ONLY',
+            phase:String(process.env.PHASE||''),
+            hashes:{
+              policySha256:String(process.env.POLICY_SHA||''),
+              logMapSha256:String(process.env.LOG_MAP_SHA||''),
+              architectureSha256:String(process.env.ARCHITECTURE_SHA||''),
+              securityPolicySha256:String(process.env.SECURITY_SHA||'')
+            },
+            checkedAt:new Date().toISOString()
+          };
+          fs.writeFileSync(process.env.OUTPUT,JSON.stringify(result,null,2)+'\\n');
+          NODE
+            echo "VIBE2_CANDIDATE_SHARED_CONTEXT_SHA_ONLY=$phase"
+          }
+          verify_candidate_shared_context_sha BEFORE "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-before.json"
           export VIBE2_BASE_MAIN_SHA="$base_sha"
           export VIBE2_SPECULATIVE_VARIANT="$VARIANT"
           export VIBE2_EXPLORATION_FILE=.vibe2/exploration.json
@@ -1462,13 +1486,7 @@ jobs:
           echo "generation_attempts=$generation_attempts" >> "$GITHUB_OUTPUT"
           echo "failure_class=$failure_class" >> "$GITHUB_OUTPUT"
           echo "failure_message=$failure_message" >> "$GITHUB_OUTPUT"
-          node tools/company-shared-context.mjs \
-            --pinned-hash-verify=true \
-            --expected-policy-sha256="$WORKER_CONTEXT_EXPECTED_POLICY_SHA256" \
-            --expected-log-map-sha256="$WORKER_CONTEXT_EXPECTED_LOG_MAP_SHA256" \
-            --expected-architecture-sha256="$WORKER_CONTEXT_EXPECTED_ARCHITECTURE_SHA256" \
-            --expected-security-policy-sha256="$WORKER_CONTEXT_EXPECTED_SECURITY_POLICY_SHA256" \
-            --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.json" | tee "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.log"
+          verify_candidate_shared_context_sha AFTER "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.json"
           if [ "$worker_rc" -ne 0 ]; then exit "$worker_rc"; fi
           candidate_manifest_rel="$(sed -n 's/^VIBE2_CANDIDATE_MANIFEST=//p' "$source_worker_log" | tail -n1)"
           test -n "$candidate_manifest_rel"

@@ -3839,20 +3839,24 @@ test('asset-development Roblox graphics stays on bounded focused retries while g
   assert.match(workflow,/coding-roblox-timeout-recovery-escalated-full-graphics:YES/);
 });
 
-test('failed source generation still performs post-work shared-context validation before exiting the candidate step',()=>{
+test('failed source generation still performs post-work shared-context SHA validation before exiting the candidate step',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
-  const after='--output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.json"';
+  const candidateStart=workflow.indexOf('- name: Generate isolated candidate from pinned main contract');
+  const candidateEnd=workflow.indexOf('\n      - name:',candidateStart+1);
+  assert.ok(candidateStart>=0&&candidateEnd>candidateStart);
+  const candidate=workflow.slice(candidateStart,candidateEnd);
+  const before='verify_candidate_shared_context_sha BEFORE "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-before.json"';
+  const after='verify_candidate_shared_context_sha AFTER "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.json"';
   const failureExit='if [ "$worker_rc" -ne 0 ]; then exit "$worker_rc"; fi';
-  const afterAt=workflow.indexOf(after);
-  const exitAt=workflow.indexOf(failureExit);
-  assert.ok(afterAt>=0);
-  assert.ok(exitAt>=0);
-  assert.ok(afterAt<exitAt);
-  assert.equal(workflow.indexOf(after,afterAt+1),-1);
-  const validationStart=workflow.lastIndexOf('node tools/company-shared-context.mjs',afterAt);
-  assert.ok(validationStart>=0);
-  assert.ok(validationStart<afterAt);
-  assert.match(workflow.slice(validationStart,afterAt),/--pinned-hash-verify=true/);
+  const beforeAt=candidate.indexOf(before);
+  const afterAt=candidate.indexOf(after);
+  const exitAt=candidate.indexOf(failureExit);
+  assert.ok(beforeAt>=0&&afterAt>beforeAt&&exitAt>afterAt);
+  assert.match(candidate,/verificationMode:'PINNED_SHA_ONLY'/);
+  assert.match(candidate,/sha256sum company-learning\/platform-release-roadmap\.json/);
+  assert.match(candidate,/VIBE2_CANDIDATE_SHARED_CONTEXT_SHA_ONLY=\$phase/);
+  assert.doesNotMatch(candidate,/node tools\/company-shared-context\.mjs/);
+  assert.doesNotMatch(candidate,/--pinned-hash-verify=true/);
 });
 
 test('focused replace Ollama requests keep canonical budget and enforce one-key schema',()=>{
