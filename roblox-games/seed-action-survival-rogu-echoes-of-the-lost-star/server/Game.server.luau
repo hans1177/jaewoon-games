@@ -171,14 +171,42 @@ if not nativeFoundationRemote then
   nativeFoundationRemote.Name = "RuntimeFoundationReport"
   nativeFoundationRemote.Parent = ReplicatedStorage
 end
+local nativeFoundationFloor = workspace:FindFirstChild("NativeFoundationFloor")
+if nativeFoundationFloor and not nativeFoundationFloor:IsA("BasePart") then
+  nativeFoundationFloor:Destroy()
+  nativeFoundationFloor = nil
+end
+if not nativeFoundationFloor then
+  nativeFoundationFloor = Instance.new("Part")
+  nativeFoundationFloor.Name = "NativeFoundationFloor"
+  nativeFoundationFloor.Size = Vector3.new(96, 1, 96)
+  nativeFoundationFloor.Position = Vector3.new(0, 0, 0)
+  nativeFoundationFloor.Anchored = true
+  nativeFoundationFloor.CanCollide = true
+  nativeFoundationFloor.CanTouch = true
+  nativeFoundationFloor.Parent = workspace
+else
+  nativeFoundationFloor.Anchored = true
+  nativeFoundationFloor.CanCollide = true
+end
+
 local nativeFoundationSpawn = workspace:FindFirstChild("NativeFoundationSpawn")
+if nativeFoundationSpawn and not nativeFoundationSpawn:IsA("SpawnLocation") then
+  nativeFoundationSpawn:Destroy()
+  nativeFoundationSpawn = nil
+end
 if not nativeFoundationSpawn then
   nativeFoundationSpawn = Instance.new("SpawnLocation")
   nativeFoundationSpawn.Name = "NativeFoundationSpawn"
   nativeFoundationSpawn.Size = Vector3.new(8, 1, 8)
   nativeFoundationSpawn.Position = Vector3.new(0, 3, 0)
   nativeFoundationSpawn.Neutral = true
+  nativeFoundationSpawn.Anchored = true
+  nativeFoundationSpawn.CanCollide = true
   nativeFoundationSpawn.Parent = workspace
+else
+  nativeFoundationSpawn.Anchored = true
+  nativeFoundationSpawn.CanCollide = true
 end
 local function bindNativeFoundationCharacter(character)
   local humanoid = character:WaitForChild("Humanoid")
