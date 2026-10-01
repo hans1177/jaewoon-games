@@ -2,7 +2,7 @@
   "version": 3,
   "publicSafe": true,
   "internalCompanySurface": true,
-  "updatedAt": "2026-10-01T15:32:06.928Z",
+  "updatedAt": "2026-10-01T15:53:41.710Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -741,13 +741,12 @@
               "design": true,
               "publication": true,
               "exactRuntime": false,
-              "lobby": false,
+              "lobby": true,
               "movement": true,
               "noRuntimeErrors": true
             },
             "blockers": [
-              "exactRuntime",
-              "lobby"
+              "exactRuntime"
             ],
             "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
             "artifactIdentity": "sha256:ae8a90f2df02fc1cea9bc06fe1bf6d01957b6be439c14f0b73970803c0e4aac8",
@@ -1171,18 +1170,19 @@
             "checks": {
               "design": true,
               "publication": true,
-              "exactRuntime": true,
+              "exactRuntime": false,
               "lobby": false,
               "movement": false,
               "noRuntimeErrors": true
             },
             "blockers": [
+              "exactRuntime",
               "lobby",
               "movement"
             ],
             "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
             "artifactIdentity": "sha256:aa8f5298a4962b860d3a3f371eb0b37479f989c87d72a7c58eb6f9128d06ee42",
-            "verifiedAt": "2026-09-28T23:56:21.030Z"
+            "verifiedAt": null
           },
           "internalReleasePublished": false,
           "internalPlaytestPassed": false,
@@ -2891,18 +2891,20 @@
             "checks": {
               "design": true,
               "publication": true,
-              "exactRuntime": true,
+              "exactRuntime": false,
               "lobby": false,
               "movement": false,
-              "noRuntimeErrors": true
+              "noRuntimeErrors": false
             },
             "blockers": [
+              "exactRuntime",
               "lobby",
-              "movement"
+              "movement",
+              "noRuntimeErrors"
             ],
             "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
             "artifactIdentity": "sha256:2f1da667fcdc53f82f72d79ae1ca49e9783f743b4f7da4af3d5dc02b1779fc02",
-            "verifiedAt": "2026-09-28T23:31:38.683Z"
+            "verifiedAt": null
           },
           "internalReleasePublished": false,
           "internalPlaytestPassed": false,
@@ -3319,18 +3321,20 @@
             "checks": {
               "design": true,
               "publication": true,
-              "exactRuntime": true,
+              "exactRuntime": false,
               "lobby": false,
               "movement": false,
-              "noRuntimeErrors": true
+              "noRuntimeErrors": false
             },
             "blockers": [
+              "exactRuntime",
               "lobby",
-              "movement"
+              "movement",
+              "noRuntimeErrors"
             ],
             "sourceRevision": "7f9333f29c1843b81279bcc82436a572921b2985",
             "artifactIdentity": "sha256:edde01008a5b0cb29455891ee4c750846d2dc5a8e9769bca40268e88f2bd24c1",
-            "verifiedAt": "2026-09-28T22:48:22.333Z"
+            "verifiedAt": null
           },
           "internalReleasePublished": false,
           "internalPlaytestPassed": false,
