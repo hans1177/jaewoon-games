@@ -303,7 +303,7 @@ root:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))
 root.Name = "Root"
 root.AnchorPoint = Vector2.new(0.5, 1)
 root.Position = UDim2.fromScale(0.5, 0.98)
-root.Size = UDim2.new(1, -24, 0, 360)
+root.Size = UDim2.new(1, -24, 0.46, 0)
 root.BackgroundTransparency = 0.15
 root.BackgroundColor3 = Color3.fromRGB(18, 28, 48)
 root.Parent = gui
@@ -339,25 +339,25 @@ remote.OnClientEvent:Connect(function(kind, payload)
   multiplayerStatus.Text = string.format("Players %d · Shared %d · Round %d", payload.ParticipantCount or 0, payload.SharedObjective or 0, payload.RoundScore or 0)
 end)
 
-local list = Instance.new("ScrollingFrame")
+local list = Instance.new("Frame")
 list.Name = "ApprovedActions"
 list.Size = UDim2.new(1, -20, 1, -150)
 list.Position = UDim2.fromOffset(10, 142)
 list.BackgroundTransparency = 1
 list.BorderSizePixel = 0
-list.AutomaticCanvasSize = Enum.AutomaticSize.Y
-list.CanvasSize = UDim2.new()
-list.ScrollBarThickness = 6
+list.ClipsDescendants = true
 list.Parent = root
-local layout = Instance.new("UIListLayout")
-layout.Padding = UDim.new(0, 8)
+local layout = Instance.new("UIGridLayout")
+layout.CellPadding = UDim2.fromOffset(8, 8)
+layout.CellSize = UDim2.new(0.5, -6, 0, 44)
+layout.FillDirectionMaxCells = 2
 layout.SortOrder = Enum.SortOrder.LayoutOrder
 layout.Parent = list
 for index, action in ipairs(Config.Actions) do
   local button = Instance.new("TextButton")
   button.Name = "ScopeAction" .. index
   button.LayoutOrder = index
-  button.Size = UDim2.new(1, -4, 0, 56)
+  button.Size = UDim2.new(0.5, -6, 0, 44)
   button.BackgroundColor3 = Color3.fromRGB(235, 242, 255)
   button.TextColor3 = Color3.fromRGB(16, 24, 40)
   button.TextWrapped = true
