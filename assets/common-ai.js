@@ -393,6 +393,76 @@ export class JaewoonCommonAI {
     });
   }
 
+  restoreMindState(snapshot = {}, { engineValidated = false, restoreTransientContext = false } = {}) {
+    if (engineValidated !== true) {
+      return Object.freeze({ restored: false, reason: 'engine_validation_required', persistentWrite: false, gameplayAuthority: false });
+    }
+
+    const restoredMemory = [];
+    const seenMemoryIds = new Set();
+    for (const row of Array.isArray(snapshot?.memory) ? snapshot.memory.slice(-this.memoryLimit) : []) {
+      const id = String(row?.id || '');
+      const type = String(row?.type || '');
+      if (!id || !type || seenMemoryIds.has(id)) continue;
+      seenMemoryIds.add(id);
+      restoredMemory.push(Object.freeze({ ...row }));
+    }
+    this.memory = restoredMemory;
+
+    this.relationships.clear();
+    for (const row of Array.isArray(snapshot?.relationships) ? snapshot.relationships : []) {
+      const id = String(row?.id || '');
+      if (!id || !row?.state || typeof row.state !== 'object') continue;
+      this.setRelationship(id, row.state);
+    }
+
+    const relationshipCauseIds = [...this.relationships.values()]
+      .flatMap(state => Array.isArray(state?.causeEventIds) ? state.causeEventIds : [])
+      .map(String)
+      .filter(Boolean);
+    const memorySourceIds = this.memory
+      .map(row => String(row?.sourceEventId || row?.id || ''))
+      .filter(Boolean);
+
+    this.relationshipEvents = new Set([
+      ...(Array.isArray(snapshot?.relationshipEventIds) ? snapshot.relationshipEventIds : []),
+      ...relationshipCauseIds
+    ].map(String).filter(Boolean));
+
+    this.causalEventIds = new Set([
+      ...(Array.isArray(snapshot?.causalEventIds) ? snapshot.causalEventIds : []),
+      ...memorySourceIds,
+      ...relationshipCauseIds
+    ].map(String).filter(Boolean));
+
+    this.emotion = String(snapshot?.emotion || this.emotion || 'calm');
+    this.lastIntent = String(snapshot?.lastIntent || '');
+
+    if (restoreTransientContext === true && snapshot?.causalContext && typeof snapshot.causalContext === 'object') {
+      const transient = snapshot.causalContext;
+      this.causalContext = Object.freeze({
+        ...transient,
+        actionPreferences: Object.freeze(Array.isArray(transient.actionPreferences) ? [...transient.actionPreferences] : []),
+        dialogueActs: Object.freeze(Array.isArray(transient.dialogueActs) ? [...transient.dialogueActs] : []),
+        persistentMutationRequiresEngineValidation: true,
+        gameplayAuthority: false
+      });
+    } else {
+      this.causalContext = null;
+    }
+
+    return Object.freeze({
+      restored: true,
+      memoryCount: this.memory.length,
+      relationshipCount: this.relationships.size,
+      relationshipEventCount: this.relationshipEvents.size,
+      causalEventCount: this.causalEventIds.size,
+      transientContextRestored: this.causalContext !== null,
+      persistentWrite: false,
+      gameplayAuthority: false
+    });
+  }
+
   snapshotMind() {
     return Object.freeze({
       identity: this.identity,
