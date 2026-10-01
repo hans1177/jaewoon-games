@@ -2,7 +2,7 @@
   "version": 3,
   "authority": "company-runtime",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
-  "centralPolicyFingerprint": "6eca97429e773ed4910e0e585e3cd5c7be54641a755cb26a3a2e7072246dbe99",
+  "centralPolicyFingerprint": "9d54efb3ea99678e20642221d15c558ac166f90a990931de5766957c7acd9c8b",
   "centralPolicyVersion": 8,
   "publicSafe": true,
   "internalCompanySurface": true,
@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": true,
-  "generatedAt": "2026-10-01T18:08:56.187Z",
+  "generatedAt": "2026-10-01T18:27:02.908Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -138,7 +138,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T18:03:42.184Z"
+      "updatedAt": "2026-10-01T18:26:53.101Z"
     },
     {
       "gameId": "bug-defense",
@@ -257,7 +257,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T18:05:07.325Z"
+      "updatedAt": "2026-10-01T18:22:47.088Z"
     },
     {
       "gameId": "cozy-island",
@@ -384,7 +384,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T18:07:22.084Z"
+      "updatedAt": "2026-10-01T18:22:47.088Z"
     },
     {
       "gameId": "daechung-rpg",
@@ -511,7 +511,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T18:02:03.959Z"
+      "updatedAt": "2026-10-01T18:26:53.101Z"
     },
     {
       "gameId": "fantasy-survival",
@@ -630,7 +630,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T18:02:14.405Z"
+      "updatedAt": "2026-10-01T18:26:53.101Z"
     },
     {
       "gameId": "horror-escape-room",
@@ -747,7 +747,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T17:59:44.571Z"
+      "updatedAt": "2026-10-01T18:26:53.101Z"
     },
     {
       "gameId": "line-defense",
@@ -877,7 +877,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T18:08:06.989Z"
+      "updatedAt": "2026-10-01T18:22:47.088Z"
     },
     {
       "gameId": "monster-adventure",
@@ -999,7 +999,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T17:59:44.571Z"
+      "updatedAt": "2026-10-01T18:22:47.088Z"
     },
     {
       "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -1121,7 +1121,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T18:06:13.689Z"
+      "updatedAt": "2026-10-01T18:22:47.088Z"
     },
     {
       "gameId": "seed-casual-realm-weaver",
@@ -1243,7 +1243,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T17:59:44.571Z"
+      "updatedAt": "2026-10-01T18:22:47.088Z"
     },
     {
       "gameId": "seed-idle-growth-rpg-crystal-bloom",
@@ -1373,7 +1373,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T18:06:07.136Z"
+      "updatedAt": "2026-10-01T18:22:47.088Z"
     },
     {
       "gameId": "seed-puzzle-chromatic-cascade",
@@ -1503,7 +1503,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T18:06:23.462Z"
+      "updatedAt": "2026-10-01T18:22:47.088Z"
     },
     {
       "gameId": "seed-single-defense-strat-celestial-bastion",
@@ -1625,7 +1625,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T18:07:05.748Z"
+      "updatedAt": "2026-10-01T18:22:47.088Z"
     },
     {
       "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -1673,12 +1673,13 @@
               "exactRuntime": false,
               "lobby": false,
               "movement": false,
-              "noRuntimeErrors": true
+              "noRuntimeErrors": false
             },
             "blockers": [
               "exactRuntime",
               "lobby",
-              "movement"
+              "movement",
+              "noRuntimeErrors"
             ],
             "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
             "artifactIdentity": "sha256:27eac451197d7647d0217f4c7eef45869ee21f36864d68753ef535e04bbf9b33",
@@ -1746,7 +1747,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T18:04:14.870Z"
+      "updatedAt": "2026-10-01T18:22:47.088Z"
     },
     {
       "gameId": "survival",
@@ -1868,7 +1869,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T18:07:44.046Z"
+      "updatedAt": "2026-10-01T18:22:47.088Z"
     },
     {
       "gameId": "village-dungeons",
@@ -1995,7 +1996,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T18:07:59.263Z"
+      "updatedAt": "2026-10-01T18:22:47.088Z"
     }
   ]
 }
