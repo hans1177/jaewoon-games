@@ -124,7 +124,7 @@ function writePolicy(root,version=196,overrides={}){
         mayExpandNeuralAuthority:false
       },
       executionBoundary:{
-        executionAuthority:'EXISTING_DAG_SCHEDULER_ONLY',
+        executionAuthority:'DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES',
         neuralExecutionAuthority:false,
         workerCreationAuthority:false,
         queueMutationAuthority:false,
@@ -191,7 +191,7 @@ test('current central roadmap compiles a complete Vibe work request without auth
   assert.equal(contract.workLock.baseSha,'abc123');
   assert.deepEqual(contract.workLock.files,['web-games/bug-defense/index.html']);
   assert.equal(contract.workLock.releaseRule,'RELEASE_AFTER_FAN_IN_QA_OR_ABORT');
-  assert.equal(contract.workRequest.authorityBoundary.executionAuthority,'EXISTING_DAG_SCHEDULER_ONLY');
+  assert.equal(contract.workRequest.authorityBoundary.executionAuthority,'DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES');
   assert.equal(contract.workRequest.authorityBoundary.workerCreationAuthority,false);
   assert.equal(contract.workRequest.authorityBoundary.queueMutationAuthority,false);
   assert.equal(contract.failureRoute.failureStage,'VIBE_WEB_REPAIR');
