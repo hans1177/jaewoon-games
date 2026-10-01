@@ -268,6 +268,36 @@ export function inspectCentralDocument({roadmap=null,protectedReferences=null}={
     errors:Object.freeze(errors)
   });
 }
+export function classifyCentralChangeRecordRetention(key='',value=null){
+  const recordKey=clean(key);
+  if(!recordKey)return Object.freeze({key:recordKey,archiveEligible:false,reason:'EMPTY_KEY_RETAIN'});
+  if(!isObject(value))return Object.freeze({key:recordKey,archiveEligible:false,reason:'NON_OBJECT_POLICY_METADATA_RETAIN'});
+  const status=clean(value.status).toUpperCase();
+  const authority=clean(value.authority);
+  const explicitHistorical=value.historical===true||value.archiveEligible===true||value.current===false;
+  const retiredStatus=/(?:ARCHIVED|HISTORICAL|SUPERSEDED|RETIRED|OBSOLETE|REPLACED|DEPRECATED_RECORD_ONLY)/.test(status);
+  const activeStatus=/(?:^|_)(?:ACTIVE|CURRENT|PENDING|CODE_UPDATED|LIVE|REPAIR|ENFORCED|REQUIRED|COMPATIBILITY_RECORD)(?:_|$)/.test(status);
+  const policyMeaning=Boolean(
+    value.enabled===true
+    ||value.required===true
+    ||value.enforced===true
+    ||value.policy===true
+    ||value.current===true
+    ||activeStatus
+    ||/^OWNER_DIRECTIVE_/i.test(authority)
+    ||/platform-release-roadmap\.json#/i.test(authority)
+  );
+  const archiveEligible=Boolean((explicitHistorical||retiredStatus)&&!policyMeaning);
+  return Object.freeze({
+    key:recordKey,
+    archiveEligible,
+    reason:archiveEligible?'EXPLICIT_HISTORICAL_OR_RETIRED_RECORD':'CURRENT_OR_UNCLASSIFIED_POLICY_RETAIN',
+    status:status||null,
+    authority:authority||null,
+    policyMeaning
+  });
+}
+
 export function planCentralDocumentArchive({roadmap,protectedChangeRecordKeys=[],targetBytes=null}={}){
   if(!isObject(roadmap))throw new Error('roadmap object required');
   const work=cloneJson(roadmap);
@@ -286,7 +316,9 @@ export function planCentralDocumentArchive({roadmap,protectedChangeRecordKeys=[]
   if(retention.archiveUnreferencedChangeRecords===true&&isObject(work.changeRecord)){
     for(const [key,value] of Object.entries(work.changeRecord)){
       if(protectedSet.has(key)||pinnedSet.has(key))continue;
-      candidates.push({kind:'change-record',path:'changeRecord.'+key,key,bytes:utf8Bytes(JSON.stringify(value))});
+      const disposition=classifyCentralChangeRecordRetention(key,value);
+      if(disposition.archiveEligible!==true)continue;
+      candidates.push({kind:'change-record',path:'changeRecord.'+key,key,bytes:utf8Bytes(JSON.stringify(value)),disposition});
     }
   }
   candidates.sort((a,b)=>{
