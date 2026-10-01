@@ -25,6 +25,7 @@ on:
       - 'roblox-games/**'
       - 'tools/company-development-roblox-build-preflight.mjs'
       - 'tools/company-development-roblox-runtime-smoke.luau'
+      - 'tools/company-development-roblox-runtime-persist.mjs'
   workflow_call:
     inputs:
       game_id:
@@ -1320,6 +1321,72 @@ jobs:
           path: /tmp/roblox-technical
           if-no-files-found: error
           retention-days: 3
+      - name: Persist this exact Roblox technical result immediately and dispatch F0 QA
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ matrix.gameId }}
+          SOURCE_PATH: ${{ matrix.sourcePath }}
+          SOURCE_REVISION: ${{ matrix.sourceRevision }}
+          SECONDARY_OWNER_FOCUS: ${{ matrix.secondaryOwnerFocus }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          persist_tool=/tmp/company-development-roblox-runtime-persist.mjs
+          cp tools/company-development-roblox-runtime-persist.mjs "$persist_tool"
+          safe="$(printf '%s' "$GAME_ID" | tr -cs 'A-Za-z0-9._-' '-')"
+          result_file="/tmp/roblox-technical/results/${safe}.result.json"
+          test -f "$result_file"
+
+          git config user.name 'jaewoon-roblox-development'
+          git config user.email 'actions@users.noreply.github.com'
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+            git checkout -B "roblox-technical-worker-persist" "origin/$COMPANY_RUNTIME_BRANCH"
+            echo "ROBLOX_TECHNICAL_WORKER_PERSIST_ATTEMPT=$GAME_ID:$attempt"
+            node "$persist_tool" --technical               --queue=development-queue.json               --root=/tmp/roblox-technical/results               "--game-id=$GAME_ID"               "--source-path=$SOURCE_PATH"               "--source-revision=$SOURCE_REVISION"               "--secondary-owner-focus=$SECONDARY_OWNER_FOCUS"
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              echo "ROBLOX_TECHNICAL_WORKER_PERSIST_NO_CHANGE=$GAME_ID"
+              break
+            fi
+            git commit -m "runtime: persist Roblox F0 checkpoint $GAME_ID [skip ci]"
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              echo "ROBLOX_TECHNICAL_WORKER_PERSIST_PUSH=PASS:$GAME_ID:$attempt"
+              break
+            fi
+            echo "ROBLOX_TECHNICAL_WORKER_PERSIST_CONFLICT_RETRY=$GAME_ID:$attempt"
+            sleep 2
+          done
+
+          f0_pass="$(node -e "const r=require(process.argv[1]);process.stdout.write(String(r.f0Pass===true))" "$result_file")"
+          secondary="$(printf '%s' "$SECONDARY_OWNER_FOCUS" | tr '[:upper:]' '[:lower:]')"
+          if [ "$f0_pass" = 'true' ] && [ "$secondary" != 'true' ]; then
+            payload="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-post-runtime-qa.yml/runs?per_page=100")"
+            active_state="$(printf '%s' "$payload" | GAME_ID="$GAME_ID" node -e "
+              let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
+                const j=JSON.parse(s);
+                const states=new Set(['queued','pending','in_progress','requested']);
+                const prefix='Roblox runtime foundation QA · ';
+                const game=String(process.env.GAME_ID||'').trim();
+                const exact=(j.workflow_runs||[]).some(r=>states.has(String(r.status||'').toLowerCase())&&String(r.display_title||'')===prefix+game);
+                const legacy=(j.workflow_runs||[]).some(r=>states.has(String(r.status||'').toLowerCase())&&String(r.display_title||'')===prefix+'scan');
+                process.stdout.write(legacy?'LEGACY_SCAN':exact?'EXACT':'NONE');
+              });
+            ")"
+            if [ "$active_state" = 'NONE' ]; then
+              gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID" -f run_studio=true
+              echo "ROBLOX_F0_IMMEDIATE_QA_DISPATCH=$GAME_ID"
+            else
+              echo "ROBLOX_F0_IMMEDIATE_QA_DISPATCH=DEDUPED:$GAME_ID:$active_state"
+            fi
+          else
+            echo "ROBLOX_F0_IMMEDIATE_QA_DISPATCH=NOT_READY:$GAME_ID"
+          fi
+
       - name: Enforce fused package preflight and F0 result after checkpoint capture
         if: always()
         env:
@@ -1389,129 +1456,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          persist_tool=/tmp/company-development-roblox-runtime-persist.mjs
+          cp tools/company-development-roblox-runtime-persist.mjs "$persist_tool"
           attempt=0
           while true; do
             attempt=$((attempt+1))
             git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
             git checkout -B roblox-technical-persist "origin/$COMPANY_RUNTIME_BRANCH"
             echo "ROBLOX_TECHNICAL_PERSIST_ATTEMPT=$attempt"
-            node <<'NODE'
-          const fs=require('fs');
-          const path=require('path');
-          const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
-          const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
-          const root='/tmp/roblox-technical-batch/results';
-          const results=[];
-          if(fs.existsSync(root)){
-            for(const name of fs.readdirSync(root).filter(x=>x.endsWith('.result.json')).sort())results.push(JSON.parse(fs.readFileSync(path.join(root,name),'utf8')));
-          }
-          const byId=new Map(results.map(x=>[x.gameId,x]));
-          for(const target of expected){
-            if(!byId.has(target.gameId))results.push({gameId:target.gameId,pass:false,sourcePath:target.sourcePath,sourceRevision:target.sourceRevision,failure:'roblox-package-result-missing'});
-          }
-          const stamp=new Date().toISOString();
-          let passCount=0,failCount=0;
-          const expectedById=new Map(expected.map(target=>[target.gameId,target]));
-          for(const result of results){
-            const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
-            if(!item)throw new Error(`queue item missing during Roblox package persist: ${result.gameId}`);
-            if(result.superseded===true){
-              console.log(`ROBLOX_PACKAGE_SUPERSEDED_RESULT_IGNORED=${result.gameId}:${result.supersedeReason||'UNKNOWN'}`);
-              continue;
-            }
-            const secondaryOwnerFocus=expectedById.get(result.gameId)?.secondaryOwnerFocus===true;
-            const boundSourceRevision=String(secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
-            const resultSourceRevision=String(result.sourceRevision||'').trim();
-            if(boundSourceRevision!==resultSourceRevision){
-              console.log(`ROBLOX_PACKAGE_STALE_RESULT_IGNORED=${result.gameId}:${resultSourceRevision||'MISSING'}:${boundSourceRevision||'MISSING'}`);
-              continue;
-            }
-            if(secondaryOwnerFocus){
-              if(result.pass===true&&String(result.artifactIdentity||'').startsWith('sha256:')){
-                Object.assign(item,{
-                  ownerFocusRobloxBuildOrPackagePassed:true,ownerFocusRobloxBuildSourceRevision:result.sourceRevision,
-                  ownerFocusRobloxBuildArtifactIdentity:result.artifactIdentity,ownerFocusRobloxBuildPassedAt:stamp,ownerFocusRobloxBuildFailedAt:null,
-                  ownerFocusRobloxBuildPreflightPassed:false,ownerFocusRobloxBuildPreflightPassedAt:null,ownerFocusRobloxBuildPreflightFailedAt:null,
-                  ownerFocusRobloxRuntimePassed:false,ownerFocusRobloxRuntimePassedAt:null,ownerFocusRobloxRuntimeFailedAt:null,
-                  ownerFocusRobloxAssetPipelineState:'BUILD_READY',updatedAt:stamp,
-                });
-                passCount++;
-              }else{
-                Object.assign(item,{
-                  ownerFocusRobloxBuildOrPackagePassed:false,ownerFocusRobloxBuildSourceRevision:result.sourceRevision,
-                  ownerFocusRobloxBuildFailedAt:stamp,ownerFocusRobloxBuildPreflightPassed:false,
-                  ownerFocusRobloxRuntimePassed:false,ownerFocusRobloxAssetPipelineState:'BUILD_REPAIR_REQUIRED',
-                  ownerFocusRobloxBuildFailure:result.failure||'ROBLOX_BUILD_PACKAGE_FAILED',updatedAt:stamp,
-                });
-                failCount++;
-              }
-              continue;
-            }
-            if(result.pass===true&&String(result.artifactIdentity||'').startsWith('sha256:')){
-              const preflightExact=result.preflightPass===true
-                &&result.preflightEvidence?.sourceRevision===result.sourceRevision
-                &&result.preflightEvidence?.artifactIdentity===result.artifactIdentity;
-              const f0Exact=preflightExact&&result.f0Pass===true
-                &&result.f0Evidence?.sourceRevision===result.sourceRevision
-                &&result.f0Evidence?.artifactIdentity===result.artifactIdentity;
-              Object.assign(item,{
-                status:'ACTIVE',
-                currentStep:f0Exact?'VIBE_INTERNAL_PLAY':preflightExact?'ROBLOX_F0_SOURCE_PREFLIGHT':'TARGET_PLATFORM_TECHNICAL_VALIDATION',
-                canonicalState:f0Exact?'F0_SOURCE_PREFLIGHT_PASSED':preflightExact?'F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED':'TARGET_PLATFORM_REPAIR_REQUIRED',
-                robloxBuildOrPackagePassed:true,robloxBuildSourceRevision:result.sourceRevision,robloxBuildArtifactIdentity:result.artifactIdentity,
-                robloxBuildPassedAt:stamp,robloxBuildFailedAt:null,
-                robloxBuildPreflightPassed:preflightExact,robloxBuildPreflightPassedAt:preflightExact?stamp:null,robloxBuildPreflightFailedAt:preflightExact?null:stamp,robloxBuildPreflightEvidence:result.preflightEvidence||null,
-                robloxFoundationF0Passed:f0Exact,robloxFoundationF0PassedAt:f0Exact?stamp:null,robloxFoundationF0Evidence:f0Exact?result.f0Evidence:null,
-                robloxHeadlessFastMvpPassed:f0Exact,robloxHeadlessFastMvpEvidence:f0Exact?result.f0Evidence:null,robloxHeadlessFinalReviewPassed:false,
-                robloxExactRevisionPassed:f0Exact,
-                robloxRuntimeCandidateEvidence:null,robloxRuntimeFoundationPassed:false,robloxRuntimeFoundationEvidence:null,
-                robloxRuntimePassed:false,robloxRuntimePassedAt:null,robloxRuntimeFailedAt:null,robloxRuntimeEvidence:null,robloxRuntimeRetryCount:0,
-                robloxServerClientBoundaryPassed:false,robloxDatastoreRejoinPassed:false,robloxMobileControlUiPassed:false,
-                robloxIndependentQaPassed:false,robloxIndependentQaPassedAt:null,robloxRegressionPassed:false,robloxRegressionPassedAt:null,
-                robloxFinalReviewPassed:false,robloxFinalReviewPassedAt:null,robloxF9ReleaseRegressionPassed:false,robloxF9ReleaseRegressionEvidence:null,robloxPostRuntimeQaEvidence:null,
-                robloxInternalReleaseReady:false,robloxInternalReleaseAt:null,
-                robloxLastSuccessfulStage:f0Exact?'F0_SOURCE_PREFLIGHT':preflightExact?'VIBE_SHARED_MODEL_BUILD_PREFLIGHT':'TARGET_PLATFORM_BUILD_OR_PACKAGE',
-                robloxFailureStage:f0Exact?'VIBE_INTERNAL_PLAY':preflightExact?'F0_SOURCE_INTEGRITY':'VIBE_SHARED_MODEL_BUILD_PREFLIGHT',
-                robloxFailureSignature:f0Exact?'ROBLOX_STUDIO_INTERNAL_VALIDATION_PENDING':preflightExact?'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED':'ROBLOX_BUILD_PREFLIGHT_BLOCKED',
-                routingBlockers:[f0Exact?'roblox-studio-internal-validation-pending':preflightExact?'roblox-f0-source-preflight-failed':'roblox-build-preflight-blocked'],
-                updatedAt:stamp,
-              });
-              passCount++;
-            }else{
-              Object.assign(item,{
-                status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
-                robloxBuildOrPackagePassed:false,robloxBuildSourceRevision:result.sourceRevision,robloxBuildFailedAt:stamp,
-                robloxBuildPreflightPassed:false,robloxBuildPreflightPassedAt:null,robloxBuildPreflightFailedAt:null,robloxBuildPreflightEvidence:null,
-                robloxFoundationF0Passed:false,robloxFoundationF0PassedAt:null,robloxFoundationF0Evidence:null,
-                robloxHeadlessFastMvpPassed:false,robloxHeadlessFastMvpEvidence:null,robloxHeadlessFinalReviewPassed:false,
-                robloxRuntimeCandidateEvidence:null,robloxRuntimeFoundationPassed:false,robloxRuntimeFoundationEvidence:null,
-                robloxRuntimePassed:false,robloxRuntimePassedAt:null,robloxRuntimeFailedAt:null,robloxRuntimeEvidence:null,robloxRuntimeRetryCount:0,
-                robloxServerClientBoundaryPassed:false,robloxDatastoreRejoinPassed:false,robloxMobileControlUiPassed:false,
-                robloxIndependentQaPassed:false,robloxIndependentQaPassedAt:null,robloxRegressionPassed:false,robloxRegressionPassedAt:null,
-                robloxFinalReviewPassed:false,robloxFinalReviewPassedAt:null,robloxF9ReleaseRegressionPassed:false,robloxF9ReleaseRegressionEvidence:null,robloxPostRuntimeQaEvidence:null,
-                robloxInternalReleaseReady:false,robloxInternalReleaseAt:null,
-                robloxFailureStage:'TARGET_PLATFORM_BUILD_OR_PACKAGE',robloxFailureSignature:result.failure||'ROBLOX_BUILD_PACKAGE_FAILED',
-                routingBlockers:[`roblox-build-package:${result.failure||'ROBLOX_BUILD_PACKAGE_FAILED'}`],updatedAt:stamp,
-              });
-              failCount++;
-            }
-          }
-          queue.robloxTechnicalParallelism=null;
-          queue.developmentGameWipMax=null;
-          queue.updatedAt=stamp;
-          fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
-          console.log(`ROBLOX_BUILD_PACKAGE_PASS_COUNT=${passCount}`);
-          console.log(`ROBLOX_BUILD_PACKAGE_FAIL_COUNT=${failCount}`);
-          console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
-          console.log('ROBLOX_PER_GAME_PROMOTION=YES');
-          console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
-          console.log('ROBLOX_BUILD_PREFLIGHT_PASS=NO');
-          console.log('ROBLOX_RUNTIME_PASS=NO');
-          console.log('ROBLOX_INDEPENDENT_QA_PASS=NO');
-          console.log('ROBLOX_REGRESSION_PASS=NO');
-          console.log('ROBLOX_FINAL_REVIEW_PASS=NO');
-          console.log('ROBLOX_RELEASE_CLAIM=NO');
-          NODE
+            node "$persist_tool" --technical --queue=development-queue.json --root=/tmp/roblox-technical-batch/results
             git config user.name 'jaewoon-roblox-development'
             git config user.email 'actions@users.noreply.github.com'
             git add development-queue.json
@@ -1685,45 +1638,56 @@ jobs:
           }
           NODE
 
-          candidate_count="$(wc -l < /tmp/roblox-local-f0-qa-ids | tr -d '[:space:]')"
-          candidate_count="${candidate_count:-0}"
+          mapfile -t candidate_ids < <(awk 'NF&&!seen[$0]++' /tmp/roblox-local-f0-qa-ids)
+          candidate_count="${#candidate_ids[@]}"
           dispatch_count=0
           deduped_count=0
 
           if [ "$candidate_count" -gt 0 ]; then
             gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-post-runtime-qa.yml/runs?per_page=100" > /tmp/roblox-local-f0-active-runs.json
-            if [ -n "$REQUESTED_GAME_ID" ]; then
-              exact_active="$(REQUESTED_GAME_ID="$REQUESTED_GAME_ID" node -e "
-                const fs=require('fs');
-                const payload=JSON.parse(fs.readFileSync('/tmp/roblox-local-f0-active-runs.json','utf8'));
-                const states=new Set(['queued','pending','in_progress','requested']);
-                const title='Roblox runtime foundation QA · '+String(process.env.REQUESTED_GAME_ID||'').trim();
-                process.stdout.write(String((payload.workflow_runs||[]).filter(run=>states.has(String(run.status||'').toLowerCase())&&String(run.display_title||'')===title).length));
-              ")"
-              if [ "$exact_active" -gt 0 ]; then
-                deduped_count=1
-                echo "ROBLOX_LOCAL_F0_QA_DISPATCH=DEDUPED_ACTIVE:$REQUESTED_GAME_ID"
-              else
-                gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$REQUESTED_GAME_ID" -f run_studio=true
-                dispatch_count=1
-                echo "ROBLOX_LOCAL_F0_QA_DISPATCH=$REQUESTED_GAME_ID"
-              fi
+            node <<'NODE' > /tmp/roblox-local-f0-active-ids
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-local-f0-active-runs.json','utf8'));
+          const states=new Set(['queued','pending','in_progress','requested']);
+          const prefix='Roblox runtime foundation QA · ';
+          const ids=new Set();
+          let scanActive=false;
+          for(const run of payload.workflow_runs||[]){
+            if(!states.has(String(run.status||'').toLowerCase()))continue;
+            const title=String(run.display_title||'');
+            if(title===prefix+'scan'){scanActive=true;continue;}
+            if(!title.startsWith(prefix))continue;
+            const id=title.slice(prefix.length).trim();
+            if(/^[a-z0-9][a-z0-9-]{1,48}$/.test(id))ids.add(id);
+          }
+          if(scanActive)console.log('__LEGACY_SCAN_ACTIVE__');
+          for(const id of [...ids].sort())console.log(id);
+          NODE
+
+            if grep -Fxq '__LEGACY_SCAN_ACTIVE__' /tmp/roblox-local-f0-active-ids; then
+              deduped_count="$candidate_count"
+              echo "ROBLOX_LOCAL_F0_QA_LEGACY_SCAN_PRESERVED:candidates=$candidate_count"
             else
-              scan_active="$(node -e "
-                const fs=require('fs');
-                const payload=JSON.parse(fs.readFileSync('/tmp/roblox-local-f0-active-runs.json','utf8'));
-                const states=new Set(['queued','pending','in_progress','requested']);
-                const title='Roblox runtime foundation QA · scan';
-                process.stdout.write(String((payload.workflow_runs||[]).filter(run=>states.has(String(run.status||'').toLowerCase())&&String(run.display_title||'')===title).length));
-              ")"
-              if [ "$scan_active" -gt 0 ]; then
-                deduped_count="$candidate_count"
-                echo "ROBLOX_LOCAL_F0_QA_BATCH_SCAN=DEDUPED_ACTIVE:candidates=$candidate_count"
-              else
-                gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f run_studio=true
-                dispatch_count=1
-                echo "ROBLOX_LOCAL_F0_QA_BATCH_SCAN=DISPATCHED:candidates=$candidate_count"
-              fi
+              pids=()
+              for id in "${candidate_ids[@]}"; do
+                if grep -Fxq "$id" /tmp/roblox-local-f0-active-ids; then
+                  deduped_count=$((deduped_count+1))
+                  echo "ROBLOX_LOCAL_F0_QA_DISPATCH=DEDUPED_ACTIVE:$id"
+                  continue
+                fi
+                (
+                  gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id" -f run_studio=true
+                  echo "ROBLOX_LOCAL_F0_QA_EXACT_DISPATCHED=$id"
+                ) &
+                pids+=("$!")
+                dispatch_count=$((dispatch_count+1))
+              done
+              dispatch_failed=0
+              for pid in "${pids[@]}"; do
+                if ! wait "$pid"; then dispatch_failed=1; fi
+              done
+              [ "$dispatch_failed" -eq 0 ]
+              echo 'ROBLOX_LOCAL_F0_QA_CROSS_GAME_PARALLEL=YES'
             fi
           fi
 

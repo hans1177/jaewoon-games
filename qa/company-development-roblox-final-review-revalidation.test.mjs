@@ -69,10 +69,11 @@ test('canonical evaluator preserves fail-closed multiplayer and release gates', 
 });
 
 
-test('exact Roblox F9 review is isolated per game after multiplayer acceptance',()=>{
-  assert.match(workflow,/group: company-development-roblox-f9-final-review-\$\{\{ inputs\.game_id/);
-  assert.match(workflow,/scheduled-scan/);
-  assert.match(workflow,/manual-scan/);
+test('exact Roblox F9 review serializes only duplicate same-game work while unrelated games remain parallel',()=>{
+  assert.match(workflow,/concurrency:\n\s+group: company-development-roblox-f9-final-review-\$\{\{ inputs\.game_id \|\| github\.run_id \}\}/);
+  assert.match(workflow,/cancel-in-progress: false/);
+  assert.match(workflow,/run-name: Roblox F9 · \$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
+  assert.match(workflow,/title='Roblox F9 · '\+\(game\|\|'scan'\)/);
   assert.doesNotMatch(workflow,/group: company-development-roblox-f9-final-review\s*\n/);
 });
 

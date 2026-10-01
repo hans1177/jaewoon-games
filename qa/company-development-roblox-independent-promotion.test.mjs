@@ -37,6 +37,26 @@ test('shared-model preflight remains a per-game evidence stage without adding a 
   assert.ok(workflow.includes('result.preflightEvidence?.artifactIdentity===result.artifactIdentity'));
 });
 
+test('each Roblox technical worker persists and dispatches its F0 result before batch reconciliation',()=>{
+  const workerAt=workflow.indexOf('\n  technical-worker:');
+  const immediateAt=workflow.indexOf('Persist this exact Roblox technical result immediately and dispatch F0 QA',workerAt);
+  const batchAt=workflow.indexOf('\n  technical-persist:',workerAt);
+  assert.ok(workerAt>0&&immediateAt>workerAt&&batchAt>immediateAt);
+  const workerBlock=workflow.slice(workerAt,batchAt);
+  assert.match(workerBlock,/ROBLOX_TECHNICAL_WORKER_PERSIST_ATTEMPT=/);
+  assert.match(workerBlock,/company-development-roblox-runtime-persist\.mjs/);
+  assert.match(workerBlock,/--technical/);
+  assert.match(workerBlock,/ROBLOX_TECHNICAL_WORKER_PERSIST_CONFLICT_RETRY=/);
+  assert.match(workerBlock,/ROBLOX_F0_IMMEDIATE_QA_DISPATCH=/);
+  assert.match(workerBlock,/company-development-roblox-post-runtime-qa\.yml[\s\S]*?-f game_id="\$GAME_ID" -f run_studio=true/);
+
+  const batchBlock=workflow.slice(batchAt);
+  assert.match(batchBlock,/Persist exact Roblox build package evidence/);
+  assert.match(batchBlock,/company-development-roblox-runtime-persist\.mjs/);
+  assert.match(batchBlock,/--technical --queue=development-queue\.json --root=\/tmp\/roblox-technical-batch\/results/);
+  assert.match(batchBlock,/ROBLOX_TECHNICAL_PERSIST_CONFLICT_RETRY=/);
+});
+
 test('preflight or F0 recovery uses continuation while fused F0 success routes directly to local Studio QA',()=>{
   assert.ok(workflow.includes('let packagePending=0,preflightReady=0,f0Ready=0,externalBlocked=0;'));
   assert.ok(workflow.includes("const f0Passed=secondaryOwnerFocus?false:item.robloxFoundationF0Passed===true;"));
@@ -50,11 +70,16 @@ test('preflight or F0 recovery uses continuation while fused F0 success routes d
   assert.doesNotMatch(workflow,/publish_stage=validation/);
 });
 
-test('batch F0 local QA dispatch dedupes active exact-game QA without server-publish recovery waits',()=>{
+test('batch F0 local QA dispatches exact games in parallel while preserving active exact or legacy scan work',()=>{
   assert.ok(workflow.includes('actions/workflows/company-development-roblox-post-runtime-qa.yml/runs?per_page=100'));
   assert.ok(workflow.includes('ROBLOX_LOCAL_F0_QA_DISPATCH=DEDUPED_ACTIVE:'));
+  assert.ok(workflow.includes('ROBLOX_LOCAL_F0_QA_EXACT_DISPATCHED='));
+  assert.ok(workflow.includes('ROBLOX_LOCAL_F0_QA_LEGACY_SCAN_PRESERVED:'));
+  assert.ok(workflow.includes('ROBLOX_LOCAL_F0_QA_CROSS_GAME_PARALLEL=YES'));
+  assert.match(workflow,/for id in "\$\{candidate_ids\[@\]\}"; do[\s\S]*?gh workflow run company-development-roblox-post-runtime-qa\.yml[\s\S]*?-f game_id="\$id" -f run_studio=true[\s\S]*?\) &/);
   assert.ok(workflow.includes('ROBLOX_LOCAL_F0_QA_DISPATCH_COUNT='));
   assert.ok(workflow.includes('ROBLOX_ONLY_FINAL_F9_SERVER_PUBLISH=YES'));
+  assert.doesNotMatch(workflow,/ROBLOX_LOCAL_F0_QA_BATCH_SCAN=DISPATCHED/);
   assert.doesNotMatch(workflow,/batchRecoveryGraceMs/);
   assert.doesNotMatch(workflow,/ROBLOX_PRIVATE_RUNTIME_BATCH_RECOVERY_WAIT_MS=/);
 });

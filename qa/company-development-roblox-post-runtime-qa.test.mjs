@@ -155,6 +155,14 @@ test('post-runtime QA deduplicates heavy scans without blocking local Studio pla
 });
 
 
+test('shared Roblox Studio host remains intentionally serialized while non-Studio QA may run per game',()=>{
+  const studioAt=workflow.indexOf('\n  studio-mcp-auto-play:');
+  assert.ok(studioAt>0);
+  const studioBlock=workflow.slice(studioAt,workflow.length);
+  assert.match(studioBlock,/concurrency:\n\s+group: roblox-studio-shared-host\n\s+cancel-in-progress: false/);
+  assert.match(studioBlock,/strategy:[\s\S]{0,180}fail-fast: false[\s\S]{0,180}max-parallel: 1/);
+});
+
 test('Studio MCP actual play passes each game launch contract into the official helper',()=>{
   assert.match(workflow,/--actual-play-contract=main\/roblox-games\/\$\{\{ matrix\.gameId \}\}\/launch-mvp\.json/);
 });
@@ -347,14 +355,19 @@ test('runtime-state persistence defines its local F0 candidate resolver in the s
 });
 
 
-test('runtime QA collapses F9 fanout to one scan for all ready games',()=>{
+test('runtime QA dispatches each F9-ready game independently without cross-game fan-in serialization',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
-  const start=workflow.indexOf('Dispatch one F9 scan for all runtime-accepted candidates');
+  const start=workflow.indexOf('Dispatch exact F9 reviews for all runtime-accepted candidates in parallel');
   const end=workflow.indexOf('Dispatch exact Studio MCP follow-up',start);
   const block=workflow.slice(start,end);
   assert.ok(start>0&&end>start);
-  assert.match(block,/company-development-roblox-final-review-revalidation\.yml --repo "\$GITHUB_REPOSITORY" --ref main\n/);
-  assert.match(block,/ROBLOX_F9_SCAN_DISPATCHED=candidates=/);
-  assert.doesNotMatch(block,/-f game_id=/);
-  assert.doesNotMatch(block,/while read -r id/);
+  assert.match(block,/mapfile -t ids < <\(awk 'NF&&!seen\[\$0\]\+\+'/);
+  assert.match(block,/for id in "\$\{ids\[@\]\}"; do/);
+  assert.match(block,/company-development-roblox-final-review-revalidation\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
+  assert.match(block,/\) &/);
+  assert.match(block,/pids\+=\("\$!"\)/);
+  assert.match(block,/ROBLOX_F9_EXACT_DISPATCHED=/);
+  assert.match(block,/ROBLOX_F9_EXACT_DISPATCH_COUNT=/);
+  assert.match(block,/ROBLOX_F9_CROSS_GAME_PARALLEL=YES/);
+  assert.doesNotMatch(block,/ROBLOX_F9_SCAN_DISPATCHED/);
 });

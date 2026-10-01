@@ -7,6 +7,7 @@ import {runInNewContext} from 'node:vm';
 import {projectJsonForGame,requiresPersistentSave,robloxBuildProfileFromBaseline,validateRobloxBootstrap,compileRobloxSource,classifyRobloxScope,applyRobloxStudioAssetBindingToExistingSource} from '../tools/company-development-roblox-bootstrap.mjs';
 import {deriveApprovedScopeInventory} from '../tools/company-approved-scope-contract.mjs';
 import {createRobloxVibe3LearningContext} from '../tools/vibe3-roblox-learning-context.mjs';
+import {applyRobloxTechnicalResults} from '../tools/company-development-roblox-runtime-persist.mjs';
 
 const VERIFIED_ROBLOX_LEARNING_REUSE=Object.freeze({
   id:'external-black-box-runtime-test',
@@ -139,6 +140,124 @@ player:GetAttributeChangedSignal("Coins"):Connect(render)
 player:GetAttributeChangedSignal("Level"):Connect(render)
 render()
 ${'-- client ui\n'.repeat(45)}`;
+
+test('per-game Roblox technical persistence promotes exact F0 evidence without mutating sibling games',()=>{
+  const sourceRevision='a'.repeat(40);
+  const artifactIdentity='sha256:'+'b'.repeat(64);
+  const sibling={gameId:'sibling',robloxSourceCommit:'c'.repeat(40),marker:'unchanged'};
+  const queue={items:[
+    {gameId:'ready',productionClass:'DEVELOPMENT_CONFIRMED',robloxSourceCommit:sourceRevision,currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED'},
+    sibling,
+  ]};
+  const result={
+    gameId:'ready',
+    pass:true,
+    sourcePath:'roblox-games/ready',
+    sourceRevision,
+    artifactIdentity,
+    preflightPass:true,
+    f0Pass:true,
+    preflightEvidence:{pass:true,sourceRevision,artifactIdentity},
+    f0Evidence:{pass:true,sourceRevision,artifactIdentity,artifactRunId:77,validationMode:'HEADLESS_SOURCE_PREFLIGHT_F0'},
+  };
+  const outcome=applyRobloxTechnicalResults({
+    queue,
+    results:[result],
+    expected:[{gameId:'ready',sourcePath:'roblox-games/ready',sourceRevision,secondaryOwnerFocus:false}],
+    stamp:'2026-10-01T00:00:00.000Z',
+  });
+  const ready=outcome.queue.items.find(row=>row.gameId==='ready');
+  const untouched=outcome.queue.items.find(row=>row.gameId==='sibling');
+  assert.equal(outcome.passCount,1);
+  assert.equal(outcome.failCount,0);
+  assert.equal(ready.robloxFoundationF0Passed,true);
+  assert.equal(ready.robloxBuildPreflightPassed,true);
+  assert.equal(ready.robloxBuildArtifactIdentity,artifactIdentity);
+  assert.equal(ready.currentStep,'VIBE_INTERNAL_PLAY');
+  assert.equal(ready.canonicalState,'F0_SOURCE_PREFLIGHT_PASSED');
+  assert.equal(ready.robloxFailureSignature,'ROBLOX_STUDIO_INTERNAL_VALIDATION_PENDING');
+  assert.equal(untouched.marker,'unchanged');
+  assert.equal(untouched.robloxFoundationF0Passed,undefined);
+});
+
+test('per-game Roblox technical persistence ignores stale source results instead of overwriting newer state',()=>{
+  const queue={items:[{gameId:'g',robloxSourceCommit:'d'.repeat(40),robloxFoundationF0Passed:false,marker:'newer'}]};
+  const outcome=applyRobloxTechnicalResults({
+    queue,
+    results:[{gameId:'g',pass:true,sourceRevision:'e'.repeat(40),artifactIdentity:'sha256:'+'f'.repeat(64),preflightPass:true,f0Pass:true}],
+    expected:[{gameId:'g',sourceRevision:'e'.repeat(40),secondaryOwnerFocus:false}],
+    stamp:'2026-10-01T00:00:00.000Z',
+  });
+  assert.equal(outcome.ignoredCount,1);
+  assert.equal(outcome.queue.items[0].marker,'newer');
+  assert.equal(outcome.queue.items[0].robloxFoundationF0Passed,false);
+});
+
+test('late batch reconciliation never rewinds a game that already advanced past the same exact F0',()=>{
+  const sourceRevision='1'.repeat(40);
+  const artifactIdentity='sha256:'+'2'.repeat(64);
+  const f0Evidence={pass:true,sourceRevision,artifactIdentity,artifactRunId:91};
+  const queue={items:[{
+    gameId:'advanced',
+    robloxSourceCommit:sourceRevision,
+    robloxBuildOrPackagePassed:true,
+    robloxBuildSourceRevision:sourceRevision,
+    robloxBuildArtifactIdentity:artifactIdentity,
+    robloxBuildPreflightPassed:true,
+    robloxFoundationF0Passed:true,
+    robloxFoundationF0Evidence:f0Evidence,
+    currentStep:'ROBLOX_FINAL_REVIEW_REVALIDATION',
+    canonicalState:'ROBLOX_RUNTIME_ACCEPTANCE_PASSED',
+    robloxRuntimePassed:true,
+    robloxIndependentQaPassed:true,
+    robloxRegressionPassed:true,
+    marker:'advanced-state'
+  }]};
+  const result={
+    gameId:'advanced',pass:true,sourceRevision,artifactIdentity,preflightPass:true,f0Pass:true,
+    preflightEvidence:{pass:true,sourceRevision,artifactIdentity},f0Evidence,
+  };
+  const outcome=applyRobloxTechnicalResults({
+    queue,
+    results:[result],
+    expected:[{gameId:'advanced',sourceRevision,secondaryOwnerFocus:false}],
+    stamp:'2026-10-01T00:00:00.000Z',
+  });
+  const item=outcome.queue.items[0];
+  assert.equal(outcome.ignoredCount,1);
+  assert.equal(item.currentStep,'ROBLOX_FINAL_REVIEW_REVALIDATION');
+  assert.equal(item.canonicalState,'ROBLOX_RUNTIME_ACCEPTANCE_PASSED');
+  assert.equal(item.robloxRuntimePassed,true);
+  assert.equal(item.robloxIndependentQaPassed,true);
+  assert.equal(item.robloxRegressionPassed,true);
+  assert.equal(item.marker,'advanced-state');
+});
+
+test('missing batch artifact cannot overwrite an F0 result already persisted by its worker',()=>{
+  const sourceRevision='3'.repeat(40);
+  const artifactIdentity='sha256:'+'4'.repeat(64);
+  const queue={items:[{
+    gameId:'persisted',
+    robloxSourceCommit:sourceRevision,
+    robloxBuildOrPackagePassed:true,
+    robloxBuildSourceRevision:sourceRevision,
+    robloxBuildArtifactIdentity:artifactIdentity,
+    robloxFoundationF0Passed:true,
+    robloxFoundationF0Evidence:{sourceRevision,artifactIdentity},
+    currentStep:'VIBE_INTERNAL_PLAY',
+  }]};
+  const outcome=applyRobloxTechnicalResults({
+    queue,
+    results:[],
+    expected:[{gameId:'persisted',sourceRevision,secondaryOwnerFocus:false}],
+    stamp:'2026-10-01T00:00:00.000Z',
+  });
+  assert.equal(outcome.ignoredCount,1);
+  assert.equal(outcome.failCount,0);
+  assert.equal(outcome.queue.items[0].robloxBuildOrPackagePassed,true);
+  assert.equal(outcome.queue.items[0].robloxFoundationF0Passed,true);
+  assert.equal(outcome.queue.items[0].currentStep,'VIBE_INTERNAL_PLAY');
+});
 
 test('persistent Roblox design requires save evidence in generated source',()=>{
   assert.equal(requiresPersistentSave(baseline),true);

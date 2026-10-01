@@ -97,6 +97,14 @@ test('pre-F9 publish is isolated to validation target and canonical publish requ
   assert.match(candidate,/ROBLOX_CANONICAL_GAME_TARGET_MUTATED=NO/);
 });
 
+test('final server publication independently rejects development games even if manually dispatched',()=>{
+  assert.match(workflow,/evaluateInternalRelease\(item,'ROBLOX',roadmap\)\.ready/);
+  assert.match(workflow,/skip_reason','development-game-server-publication-forbidden'/);
+  assert.match(workflow,/ROBLOX_SERVER_PUBLICATION=SKIPPED_DEVELOPMENT/);
+  assert.match(workflow,/ROBLOX_PUBLISH_STAGE_FINAL_ONLY/);
+  assert.doesNotMatch(workflow,/options:[\s\S]{0,120}- validation/);
+});
+
 test('existing post-runtime QA requires actual F1-F8 sentinel evidence on the exact candidate',()=>{
   const runtime=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   assert.match(runtime,/Roblox Runtime Foundation QA/);
@@ -110,6 +118,12 @@ test('existing post-runtime QA requires actual F1-F8 sentinel evidence on the ex
   assert.match(runtime,/item\.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION'/);
   assert.match(runtime,/actualRuntimeEvidence:true/);
   assert.doesNotMatch(runtime,/Studio QA \(Disabled\)/);
+});
+
+test('final Roblox server publish serializes duplicate same-game uploads but does not serialize different games',()=>{
+  assert.match(workflow,/concurrency:\n\s+group: roblox-final-publish-\$\{\{ inputs\.game_id \|\| github\.run_id \}\}/);
+  assert.match(workflow,/cancel-in-progress: false/);
+  assert.match(workflow,/select one active private runtime deployment per game/);
 });
 
 test('F9 is nonterminal and dispatches exact artifacts only for released games',()=>{
