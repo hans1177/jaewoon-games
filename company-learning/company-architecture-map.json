@@ -1,5 +1,5 @@
 {
-  "version": 302,
+  "version": 303,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6115,11 +6115,11 @@
     "qualityGateWeakening": false
   },
   "nativeExactGameWorkflowConcurrency": {
-    "version": 2,
-    "source": "company-learning/platform-release-roadmap.json#changeRecord.nativeExactGameWorkflowConcurrency20260927",
+    "version": 3,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxBatchConcurrencyEpoch20261002",
     "ROBLOX": {
       "workflow": ".github/workflows/company-development-roblox-runtime.yml",
-      "group": "roblox-native-exact-<gameId-or-push-batch-or-runId>",
+      "group": "roblox-native-exact-<gameId-or-push-batch-v2-or-runId>",
       "cancelInProgress": false,
       "exactGameCancelInProgress": false,
       "pushBatchCancelInProgress": true,
@@ -6139,12 +6139,14 @@
     "batchGlobalSerialization": false,
     "centralActiveRunScanPreserved": true,
     "qualityGateWeakening": false,
-    "pushBatchFallback": "batch-push",
+    "pushBatchFallback": "batch-push-v2",
     "nonPushEmptyBatchFallback": "RUN_ID",
     "pushBatchCoalesced": true,
     "manualEmptyBatchRunScoped": true,
     "pushBatchLatestWins": true,
-    "exactGameActiveExecutionPreserved": true
+    "exactGameActiveExecutionPreserved": true,
+    "legacyPushBatchFallback": "batch-push",
+    "legacyQueuedGroupBypassed": true
   },
   "lightweightGameIngressRunnerRelief": {
     "version": 2,

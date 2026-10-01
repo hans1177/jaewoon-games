@@ -42,7 +42,9 @@ permissions:
   actions: write
 
 concurrency:
-  group: roblox-native-exact-${{ inputs.game_id || (github.event_name == 'push' && 'batch-push') || github.run_id }}
+  group: roblox-native-exact-${{ inputs.game_id || (github.event_name == 'push' && 'batch-push-v2') || github.run_id }}
+  # Push batch epoch v2 bypasses the legacy batch-push group if an old queued run is stranded.
+  # Exact-game and manual identities stay unchanged.
   # Only main-push batch planners are disposable. Exact-game and manual runs keep active execution.
   cancel-in-progress: ${{ github.event_name == 'push' }}
 
