@@ -59,6 +59,25 @@ export function validateRobloxArtifactScriptInventory({artifactPath='',expected=
   return Object.freeze(actual);
 }
 
+export function validateRobloxArtifactLightingMigrationGuard({artifactPath=''}={}){
+  const artifact=path.resolve(clean(artifactPath));
+  if(!fs.existsSync(artifact))throw new Error(`Roblox artifact missing: ${artifact}`);
+  const xml=fs.readFileSync(artifact,'utf8');
+  const checks={
+    technologyVoxel:/<token\s+name="Technology">\s*1\s*<\/token>/i.test(xml),
+    lightingStyleSoft:/<token\s+name="LightingStyle">\s*1\s*<\/token>/i.test(xml),
+    prioritizeLightingQualityFalse:/<bool\s+name="PrioritizeLightingQuality">\s*false\s*<\/bool>/i.test(xml),
+    compatibilityToneMap:/<Item\s+class="ColorGradingEffect"(?:\s|>)[\s\S]*?<string\s+name="Name">\s*CompatibilityToneMap\s*<\/string>[\s\S]*?<token\s+name="TonemapperPreset">\s*1\s*<\/token>/i.test(xml),
+  };
+  const missing=[];
+  if(!checks.technologyVoxel)missing.push('ROBLOX_LIGHTING_TECHNOLOGY_VOXEL_REQUIRED');
+  if(!checks.lightingStyleSoft)missing.push('ROBLOX_LIGHTING_STYLE_SOFT_REQUIRED');
+  if(!checks.prioritizeLightingQualityFalse)missing.push('ROBLOX_LIGHTING_QUALITY_PRIORITY_FALSE_REQUIRED');
+  if(!checks.compatibilityToneMap)missing.push('ROBLOX_LIGHTING_RETRO_TONEMAP_REQUIRED');
+  if(missing.length)throw new Error('ROBLOX_LIGHTING_MIGRATION_GUARD_FAILED:'+missing.join(','));
+  return Object.freeze({pass:true,...checks});
+}
+
 export function createRobloxBuildEvidence({gameId='',sourcePath='',sourceRevision='',artifactPath='',artifactSha256='',sourceValidationPassed=false,saveRequired=false}={}){
   const identity=clean(artifactSha256)?`sha256:${clean(artifactSha256)}`:null;
   return Object.freeze({
@@ -167,8 +186,10 @@ export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',source
     const stat=fs.statSync(artifact);
     if(!stat.isFile()||stat.size<=0)throw new Error('Rojo package artifact missing or empty');
     const actualScripts=validateRobloxArtifactScriptInventory({artifactPath:artifact,expected:expectedScripts});
+    const lightingGuard=validateRobloxArtifactLightingMigrationGuard({artifactPath:artifact});
     const sha256=crypto.createHash('sha256').update(fs.readFileSync(artifact)).digest('hex');
     console.log(`ROBLOX_BUILD_SCRIPT_INVENTORY=PASS:${actualScripts.Script}/${actualScripts.LocalScript}/${actualScripts.ModuleScript}`);
+    console.log(`ROBLOX_BUILD_LIGHTING_MIGRATION_GUARD=PASS:technologyVoxel=${lightingGuard.technologyVoxel}:lightingStyleSoft=${lightingGuard.lightingStyleSoft}:retroToneMap=${lightingGuard.compatibilityToneMap}`);
     return createRobloxBuildEvidence({
       gameId:id,
       sourcePath:relativeSource,
