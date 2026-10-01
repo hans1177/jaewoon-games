@@ -91,10 +91,10 @@ env:
   VIBE2_LEARNING_LANE_MAX: '4'
   VIBE2_ASSET_DEVELOPMENT_MAX: '64'
 
-# Keep one continuous scheduler chain. v9 releases the stale v8 scheduler epoch
-# while keeping the canonical scheduler and moving only its lightweight plan onto the ARM control pool.
+# Keep one continuous scheduler chain. v10 releases the stale v9 scheduler epoch
+# that can remain occupied by an already-active learning worker while preserving the canonical scheduler.
 concurrency:
-  group: vibe2-24h-cycle-singleton-v9
+  group: vibe2-24h-cycle-singleton-v10
   cancel-in-progress: false
 
 jobs:
@@ -113,6 +113,7 @@ jobs:
       asset_development_active: ${{ steps.queue_state.outputs.asset_development_active }}
       asset_development_refill_ready: ${{ steps.queue_state.outputs.asset_development_refill_ready }}
       learning_idle_queued: ${{ steps.queue_state.outputs.learning_idle_queued }}
+      learning_idle_active: ${{ steps.queue_state.outputs.learning_idle_active }}
       recovery_fast_queued: ${{ steps.queue_state.outputs.recovery_fast_queued }}
       runner_pressure: ${{ steps.queue_state.outputs.runner_pressure }}
     steps:
@@ -670,6 +671,7 @@ jobs:
           const activeAsset=tasks.filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)==='ASSET_DEVELOPMENT').length;
           const assetQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='ASSET_DEVELOPMENT').length;
           const learningQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='LEARNING_IDLE').length;
+          const activeLearning=tasks.filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)==='LEARNING_IDLE').length;
           const recoveryQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='RECOVERY_FAST').length;
           const control=JSON.parse(fs.readFileSync('.vibe2/parallelism-control.json','utf8'));
           const configuredMax=Math.max(1,Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||256));
@@ -692,6 +694,7 @@ jobs:
             'asset_development_active='+activeAsset+'\n'+
             'asset_development_refill_ready='+assetRefillReady+'\n'+
             'learning_idle_queued='+learningQueued+'\n'+
+            'learning_idle_active='+activeLearning+'\n'+
             'recovery_fast_queued='+recoveryQueued+'\n');
           console.log('VIBE2_24H_ACTIVE_GAME_WORKER_RESERVATIONS='+activeGame);
           console.log('VIBE2_24H_GAME_PRIMARY_ACTIVE_MAX='+effectiveMax);
@@ -704,6 +707,7 @@ jobs:
           console.log('VIBE2_ASSET_DEVELOPMENT_ACTIVE='+activeAsset);
           console.log('VIBE2_ASSET_DEVELOPMENT_REFILL_READY='+assetRefillReady);
           console.log('VIBE2_24H_LEARNING_IDLE_QUEUED='+learningQueued);
+          console.log('VIBE2_24H_LEARNING_IDLE_ACTIVE='+activeLearning);
           console.log('VIBE2_24H_RECOVERY_FAST_QUEUED='+recoveryQueued);
           console.log('VIBE2_24H_WAVE_READY='+waveReady);
           NODE
@@ -859,8 +863,8 @@ jobs:
 
   learning_idle:
     needs: plan
-    # Reserve exactly one learning worker, including when production is idle.
-    if: ${{ needs.plan.outputs.learning_idle_queued != '0' }}
+    # 기존 학습 워커가 이미 예약/실행 중이면 중복 호출을 만들지 않아 24H 사이클과 자산 재시도를 막지 않는다.
+    if: ${{ needs.plan.outputs.learning_idle_queued != '0' && needs.plan.outputs.learning_idle_active == '0' }}
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: learning-idle
