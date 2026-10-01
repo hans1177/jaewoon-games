@@ -16,7 +16,7 @@ permissions:
   contents: write
 concurrency:
   group: ghost-assets-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   build-assets:
     runs-on: ubuntu-24.04
