@@ -33,6 +33,7 @@ CLIPS = {
     'hero_start_hq': 0.75,
     'hero_stop_hq': 0.66,
     'hero_turn_90_hq': 0.78,
+    'hero_walk_back_hq': 1.12,
 }
 REQUIRED_BONES = {
     'Hips','Spine','Chest','Head',
@@ -378,6 +379,29 @@ def turn_pose(t):
     apply_secondary(t, drive=0.8, turn=turn, braking=settle)
 
 
+def backward_gait_pose(t):
+    body_y = phase_curve(t, [(0.00,-1.0),(0.15,-0.22),(0.30,0.58),(0.50,-0.84),(0.66,-0.10),(0.82,0.64),(1.00,-1.0)])
+    yaw = phase_curve(t, [(0.00,-1.0),(0.24,0.08),(0.50,1.0),(0.76,-0.05),(1.00,-1.0)])
+    loc('Hips', 0.0, 0.0, 0.026 * body_y)
+    rot('Hips', -0.020, yaw * 0.070, yaw * 0.028)
+    rot('Spine', -0.018, -yaw * 0.045, -yaw * 0.020)
+    rot('Chest', -0.010, -yaw * 0.035, yaw * 0.026)
+    rot('Head', 0.025, yaw * 0.018, -yaw * 0.012)
+    for side, sign in [('L', -1), ('R', 1)]:
+        p = (t + (0.5 if side == 'R' else 0.0)) % 1.0
+        thigh = phase_curve(p, [(0.00,-0.82),(0.16,-0.52),(0.34,0.30),(0.52,0.70),(0.70,0.34),(0.86,-0.48),(1.00,-0.82)])
+        knee = phase_curve(p, [(0.00,0.10),(0.18,0.04),(0.38,0.14),(0.56,0.62),(0.72,0.82),(0.88,0.30),(1.00,0.10)])
+        foot = phase_curve(p, [(0.00,0.16),(0.18,0.07),(0.38,-0.08),(0.58,0.18),(0.76,0.30),(0.90,0.18),(1.00,0.16)])
+        arm = phase_curve(p, [(0.00,0.72),(0.24,0.26),(0.50,-0.68),(0.76,-0.22),(1.00,0.72)])
+        rot('Thigh' + side, thigh * 0.32, 0.0, -sign * yaw * 0.018)
+        rot('Shin' + side, knee * 0.42, 0.0, 0.0)
+        rot('Foot' + side, foot * 0.38, 0.0, sign * 0.009)
+        rot('UpperArm' + side, arm * 0.24, sign * 0.026, -sign * 0.030)
+        rot('Forearm' + side, -0.10 - max(0.0, -arm) * 0.10, sign * 0.012, 0.0)
+    detail_face_and_hands(t, moving=0.62, alert=0.28)
+    apply_secondary(t, drive=0.92, turn=yaw * 0.24, braking=0.10)
+
+
 def animate(name, normalized_time):
     reset_pose()
     t = clamp01(normalized_time)
@@ -387,6 +411,8 @@ def animate(name, normalized_time):
         gait_pose(t, running=False)
     elif name == 'hero_run_hq':
         gait_pose(t, running=True)
+    elif name == 'hero_walk_back_hq':
+        backward_gait_pose(t)
     elif name == 'hero_start_hq':
         start_pose(t)
         # 시작 끝은 걷기 첫 접지 포즈와 직접 이어져야 한다.
