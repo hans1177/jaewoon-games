@@ -303,7 +303,16 @@ export function createAssetCustomizationPlan({assets=[],recipes=[],styleBible={}
     const revision=text(base?.sourceHash||base?.contentHash||base?.sha256);
     if(!revision)issues.push('SOURCE_HASH_REQUIRED');
     const locked=uniq(recipe.lockedParameters);
-    const parameters={...(recipe.parameters||{})};
+    const scoped=recipe.editableParameters!==undefined;
+    const editable=uniq(Array.isArray(recipe.editableParameters)?recipe.editableParameters:[]);
+    const previous=recipe.previousParameters||{};
+    const parameters={...(scoped?previous:{}),...(recipe.parameters||{})};
+    if(scoped){
+      if(!Array.isArray(recipe.editableParameters)||!editable.length)issues.push('EDIT_SCOPE_REQUIRED');
+      if(!recipe.previousParameters||!Object.keys(previous).length)issues.push('EDIT_BASELINE_REQUIRED');
+      for(const key of editable)if(!Object.hasOwn(controls,key))issues.push('UNSUPPORTED_EDIT_SCOPE:'+key);
+      for(const [key,value] of Object.entries(recipe.parameters||{}))if(!editable.includes(key)&&JSON.stringify(value)!==JSON.stringify(previous[key]))issues.push('OUTSIDE_EDIT_SCOPE:'+key);
+    }
     for(const key of locked){
       if(!Object.hasOwn(recipe.previousParameters||{},key))issues.push('LOCKED_VALUE_MISSING:'+key);
       else parameters[key]=recipe.previousParameters[key];
@@ -347,6 +356,9 @@ export function createAssetCustomizationPlan({assets=[],recipes=[],styleBible={}
       status:issues.length?'AUTHORING_REQUIRED':'DECLARED_BINDINGS_READY',
       axes:ASSET_CUSTOMIZATION_AXES[family]||freezeList([]),
       parameters:Object.freeze(parameters),lockedParameters:freezeList(locked),
+      editableParameters:scoped?freezeList(editable):null,
+      changedParameters:freezeList(Object.keys(parameters).filter(key=>JSON.stringify(parameters[key])!==JSON.stringify(previous[key]))),
+      editOperations:freezeList(issues.length?[]:operations.filter(operation=>JSON.stringify(operation.value)!==JSON.stringify(previous[operation.key]))),
       operations:freezeList(issues.length?[]:operations),issues:freezeList(issues),
       identityAnchors:freezeList(recipe.identityAnchors||[]),
       authoringRequirements:freezeList(['INSPECT_ACTUAL_MESH_RIG_MORPHS_AND_SOCKETS','PRESERVE_SOURCE_AND_EDIT_DERIVATIVE','CONFORM_ADJACENT_PARTS_AND_CLOTHING','RECHECK_CONTACT_CLIPPING_AND_GAMEPLAY_BOUNDS']),
@@ -497,6 +509,71 @@ export function synchronizeAssetCustomization({document=null,currentDocument=nul
     applications:freezeList(issues.length?[]:applications),motions:freezeList(issues.length?[]:motions),
     transport:'EXISTING_ASSET_REGISTRY_AND_WORK_ORDER',atomicApplicationRequired:true,
     gameplayAuthority:false,sourceMutationPerformed:false,runtimeVerified:false
+  });
+}
+
+// 동일 조건 비교와 부위별 재작업 입력. 캡처 등록 자체는 시각 품질 PASS가 아니다.
+export function createAssetDetailReviewPlan({customization={},styles=['CARTOON','REALISTIC','DARK_FANTASY'],platforms=['UNITY','WEB'],captureContract={},captures=[],findings=[]}={}){
+  const styleKeys=uniq(styles.map(upper)),targetPlatforms=uniq(platforms.map(upper));
+  const items=customization.items||[],byId=new Map(items.map(item=>[item.id,item]));
+  const issues=[],validCaptures=[],repairs=[],rejectedFindings=[];
+  const stable=value=>JSON.stringify(value,(_,entry)=>entry&&typeof entry==='object'&&!Array.isArray(entry)?Object.fromEntries(Object.keys(entry).sort().map(key=>[key,entry[key]])):entry);
+  const same=(a,b)=>stable(a)===stable(b);
+  const sampleTimes=captureContract.normalizedTimes;
+  const contractReady=['cameraHash','lightingHash','actionId'].every(key=>text(captureContract[key]))
+    &&Number.isSafeInteger(captureContract.seed)&&captureContract.seed>=0
+    &&typeof captureContract.durationSeconds==='number'&&Number.isFinite(captureContract.durationSeconds)&&captureContract.durationSeconds>0
+    &&Array.isArray(sampleTimes)&&sampleTimes.length>=3&&sampleTimes[0]===0&&sampleTimes.at(-1)===1
+    &&sampleTimes.every((value,index)=>typeof value==='number'&&Number.isFinite(value)&&value>=0&&value<=1&&(index===0||value>sampleTimes[index-1]));
+  if(!contractReady)issues.push('MATCHED_CAPTURE_CONTRACT_REQUIRED');
+  if(!styleKeys.length||styleKeys.some(key=>!ASSET_STYLE_PROFILES[key]))issues.push('SUPPORTED_STYLE_PROFILES_REQUIRED');
+  if(!targetPlatforms.length||targetPlatforms.some(key=>!['UNITY','WEB','ROBLOX'].includes(key)))issues.push('SUPPORTED_PLATFORMS_REQUIRED');
+  if(!items.length)issues.push('CUSTOMIZATION_SUBJECT_REQUIRED');
+  const seen=new Set();
+  for(const capture of captures){
+    const item=byId.get(capture?.recipeId),key=[capture?.recipeId,capture?.styleFamily,capture?.platform].join(':');
+    const valid=contractReady&&item?.sourceHash&&capture.sourceHash===item.sourceHash
+      &&same(capture.parameters,item.parameters)&&same(capture.identityAnchors,item.identityAnchors)
+      &&styleKeys.includes(capture.styleFamily)&&targetPlatforms.includes(capture.platform)
+      &&['cameraHash','lightingHash','actionId','seed','durationSeconds'].every(field=>capture[field]===captureContract[field])
+      &&same(capture.normalizedTimes,sampleTimes)&&text(capture.artifactRef)&&text(capture.artifactHash)
+      &&(item.family!=='UI'||same(capture.iconPreviewPixels,[24,32,48,64]));
+    if(!valid||seen.has(key)){issues.push('CAPTURE_MISMATCH_OR_DUPLICATE:'+key);continue;}
+    seen.add(key);validCaptures.push({...capture});
+  }
+  const missing=items.flatMap(item=>styleKeys.flatMap(style=>targetPlatforms.filter(platform=>!seen.has([item.id,style,platform].join(':'))).map(platform=>({recipeId:item.id,styleFamily:style,platform}))));
+  const findingIds=new Set();
+  for(const finding of findings){
+    const item=byId.get(finding?.recipeId),reasons=[];
+    if(!finding||!text(finding.id)||findingIds.has(finding.id)){rejectedFindings.push({id:finding?.id||null,reasons:['FINDING_ID_REQUIRED_OR_DUPLICATED']});continue;}
+    findingIds.add(finding.id);
+    const capture=validCaptures.find(row=>row.recipeId===finding.recipeId&&row.sourceHash===finding.sourceHash&&row.platform===finding.platform&&row.styleFamily===finding.styleFamily&&row.artifactHash===finding.artifactHash);
+    if(!capture)reasons.push('CURRENT_MATCHED_CAPTURE_REQUIRED');
+    if(!text(finding.region)||!text(finding.observed)||!text(finding.requestedChange))reasons.push('LOCALIZED_FINDING_REQUIRED');
+    if(!['BLOCKER','HIGH','MEDIUM','LOW'].includes(finding.severity))reasons.push('SEVERITY_REQUIRED');
+    const range=finding.normalizedTimeRange;
+    if(!Array.isArray(range)||range.length!==2||range.some(value=>typeof value!=='number'||!Number.isFinite(value)||value<0||value>1)||range[0]>range[1])reasons.push('FRAME_RANGE_REQUIRED');
+    const keys=uniq(Array.isArray(finding.parameterKeys)?finding.parameterKeys:[]);
+    if(!keys.length||keys.some(key=>!Object.hasOwn(item?.parameters||{},key)))reasons.push('EXISTING_PARAMETER_TARGET_REQUIRED');
+    if(keys.some(key=>(item?.lockedParameters||[]).includes(key)))reasons.push('LOCKED_IDENTITY_TARGET');
+    if(reasons.length){rejectedFindings.push({id:finding.id,reasons});continue;}
+    repairs.push({findingId:finding.id,recipeId:item.id,baseAssetId:item.baseAssetId,sourceHash:item.sourceHash,
+      severity:finding.severity,region:finding.region,normalizedTimeRange:[...range],
+      observed:finding.observed,requestedChange:finding.requestedChange,
+      evidence:{artifactRef:capture.artifactRef,artifactHash:capture.artifactHash,platform:capture.platform,styleFamily:capture.styleFamily},
+      recipe:{id:item.id,family:item.family,subfamily:item.subfamily,baseAssetId:item.baseAssetId,previousParameters:{...item.parameters},parameters:{},editableParameters:keys,lockedParameters:[...item.lockedParameters],identityAnchors:[...item.identityAnchors]},
+      applyNewValuesOnlyAfterAuthoring:true,closed:false,runtimeVerified:false});
+  }
+  const severity={BLOCKER:0,HIGH:1,MEDIUM:2,LOW:3};repairs.sort((a,b)=>severity[a.severity]-severity[b.severity]||a.findingId.localeCompare(b.findingId));
+  return Object.freeze({
+    version:1,status:issues.length||missing.length?'CAPTURES_REQUIRED':rejectedFindings.length?'REVIEW_EVIDENCE_REQUIRED':repairs.length?'LOCAL_REPAIR_REQUIRED':'CAPTURE_SET_READY_FOR_VISUAL_REVIEW',
+    comparisonStyles:freezeList(styleKeys.filter(key=>ASSET_STYLE_PROFILES[key]).map(key=>({styleFamily:key,styleBible:createStyleBible({styleFamily:key}),motionModifiers:ASSET_STYLE_PROFILES[key].motion}))),
+    captureContract:{...captureContract},subjects:freezeList(items.map(item=>({recipeId:item.id,baseAssetId:item.baseAssetId,sourceHash:item.sourceHash,parameters:item.parameters,lockedParameters:item.lockedParameters,identityAnchors:item.identityAnchors}))),
+    issues:freezeList(issues),missingCaptures:freezeList(missing),acceptedCaptureCount:validCaptures.length,
+    repairs:freezeList(repairs),rejectedFindings:freezeList(rejectedFindings),
+    nextAction:repairs.length?'REPAIR_SPECIFIED_REGIONS_THEN_RECAPTURE_SAME_CONDITIONS':'CAPTURE_AND_REVIEW_SAME_CONDITIONS',
+    protectedSemantics:freezeList(['GAMEPLAY_EVENTS','CLIP_DURATION','ROOT_AUTHORITY','MAP_CONNECTIVITY','UI_HIT_TARGETS','SAVE_MEANING']),
+    captureMetadataIsNotQualityProof:true,sourceMutationPerformed:false,runtimeVerified:false
   });
 }
 

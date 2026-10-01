@@ -1,5 +1,5 @@
 {
-  "version": 502,
+  "version": 503,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -7492,7 +7492,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-10-01T09:12:00+09:00",
+  "updatedAt": "2026-10-01T09:24:00+09:00",
   "priorityTiers": [
     {
       "tier": 1,
@@ -9454,6 +9454,21 @@
         "schedulerChanged": false,
         "existingAssetLicenseAndRuntimePromotionGuardsPreserved": true
       }
+    },
+    "assetLocalizedDetailIteration20261001": {
+      "ownerIntent": "고급 자산 제작 AI를 계속 업데이트: 스타일 비교·잠금 보존 부분 수정·연속 동작 실측",
+      "implementation": [
+        "assets/vibe-studio-asset-universe.js",
+        "assets/vibe-motion-director.js",
+        "tools/vibe2-asset-production-plan.mjs"
+      ],
+      "centralDocumentationImpact": {
+        "architectureTopologyChanged": false,
+        "loggingContractChanged": false,
+        "securityAuthorityChanged": false,
+        "schedulerChanged": false
+      },
+      "actualRenderedArtifactOrRuntimePassClaimed": false
     }
   },
   "vibeExecutionLaneContract": {
@@ -19718,7 +19733,23 @@
                 "TOON_NOIR"
               ],
               "sameSourceAndActionComparativeReview": true,
-              "missingTransitionMeasurements": "UNVERIFIED"
+              "missingTransitionMeasurements": "UNVERIFIED",
+              "traceMeasurement": {
+                "implementation": "assets/vibe-motion-director.js::auditMotionContinuityTrace",
+                "input": "task.motionContinuityTrace",
+                "sourceHashCheckedAgainstRegistry": true,
+                "units": "ROOT_AND_CONTACT_WORLD_METERS_JOINTS_ROOT_LOCAL_METERS_YAW_RADIANS",
+                "fullClipBoundariesAndSampleGapRequired": true,
+                "metrics": [
+                  "ROOT_ACCELERATION",
+                  "JOINT_SPEED",
+                  "WRAPPED_YAW_SPEED",
+                  "CUMULATIVE_PLANTED_CONTACT_DRIFT"
+                ],
+                "invalidOrMissingSamples": "UNVERIFIED",
+                "violationsReportRegionFrameAndNormalizedTimeRange": true,
+                "tracePassIsNotFullRuntimeOrVisualQualityPass": true
+              }
             }
           },
           "existingGraphicsProductionOnly": true,
@@ -19860,6 +19891,28 @@
             "immutableOriginalAndEditableDerivative": true,
             "noSubdivideNoiseOrHueOnlyCompletion": true,
             "dccMeshRigTextureAndClipAuthoringRequired": true
+          },
+          "detailIteration": {
+            "enabled": true,
+            "implementation": "assets/vibe-studio-asset-universe.js::createAssetDetailReviewPlan",
+            "input": "task.assetDetailReview",
+            "styles": [
+              "CARTOON",
+              "REALISTIC",
+              "DARK_FANTASY"
+            ],
+            "sameSourceCameraLightingSeedClipAndSampleTimes": true,
+            "findingsRequireCurrentSourceAndCaptureHash": true,
+            "findingsRequireRegionAndNormalizedFrameRange": true,
+            "repairUsesExistingCustomizationRecipe": true,
+            "editableParametersLimitChanges": true,
+            "previousParametersPreservedOutsideEditScope": true,
+            "identityLocksAndGameplaySemanticsImmutable": true,
+            "recaptureAndReviewRequiredBeforeClosingFinding": true,
+            "captureMetadataNotQualityPass": true,
+            "existingWorkOrderOnly": true,
+            "newQueueOrScheduler": false,
+            "capturesMustMatchCurrentParameterAndIdentitySnapshot": true
           }
         }
       },

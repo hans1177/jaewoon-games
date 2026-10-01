@@ -50,6 +50,20 @@ test('image-only asset input delivers actual pixels and binds observations to th
   await assert.rejects(observeAssetReferenceImages({order,model:'fixture',requestModel:async()=>'{}'}),/OBSERVATION_INCOMPLETE/);
 });
 
+test('detail and measured motion repair reach the production work order and use registry source identity',()=>{
+  const frames=Array.from({length:31},(_,index)=>({timeSeconds:index/30,rootPosition:[0,0,0],rootYawRadians:0,jointPositions:{hip:[0,1,0]},contacts:{foot:{planted:true,worldPosition:[index*.01,0,0]}}}));
+  const input={target:'web',task:{gameId:'review',goal:'모션 디테일',motionContinuityTrace:{assetId:'clip',sourceHash:'old',expectedSourceHash:'old',clipId:'idle',durationSeconds:1,characterHeightMeters:2,frames}},manifest:{assets:[{id:'clip',family:'MOTION',sourceHash:'current',types:['animation'],license:'project-original'}]},presetCatalog:{presets:[]}};
+  const stale=buildVibeAssetProductionPlan(input);
+  assert.equal(stale.motionContinuityAudit.verdict,'UNVERIFIED');
+  assert.ok(stale.motionContinuityAudit.issues.includes('CURRENT_SOURCE_HASH_REQUIRED'));
+  input.task.motionContinuityTrace.sourceHash='current';
+  const measured=buildVibeAssetProductionPlan(input);
+  assert.equal(measured.motionContinuityAudit.verdict,'FAIL');
+  assert.equal(measured.motionContinuityAudit.violations[0].region,'foot');
+  const guidance=assetProductionGuidance(measured);
+  assert.match(guidance,/STYLE COMPARISON AND LOCAL REPAIR/);assert.match(guidance,/MEASURED CONTINUOUS MOTION/);assert.match(guidance,/editableParameters/);assert.match(guidance,/frameRange/);
+});
+
 test('navigation sketch preserves actual route topology and expands functional detail layers deterministically',()=>{
   const sketch={nodes:[{id:'entry',role:'spawn'},{id:'market',role:'landmark'},{id:'exit',role:'transition'}],edges:[{from:'entry',to:'market'},{from:'market',to:'exit',oneWay:true}],districts:[{id:'market-block',anchorNodeId:'market',function:'MARKET'}]};
   const assets=[{id:'shop',family:'BUILDING',sourceHash:'shop-v1',mapDetailRoles:['STRUCTURE'],districtFunctions:['MARKET']}];

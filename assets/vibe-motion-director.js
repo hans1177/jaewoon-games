@@ -1435,6 +1435,65 @@ export function applySemanticGapPreparation({profile={},gapPlan={}}={}){
 }
 
 
+// 실제 시간/좌표 표본에서 연속성 문제를 계산한다. 미적 품질·게임 판정 검증은 별도다.
+export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',clipId='',durationSeconds,characterHeightMeters,frames=[],limits={}}={}){
+  const thresholds={maxSampleGapSeconds:1/15,maxRootAcceleration:80,maxJointSpeed:12,maxYawSpeed:20,maxPlantedDrift:.015,...limits};
+  const issues=[],violations=[],metrics={maxRootAcceleration:0,maxJointSpeed:0,maxYawSpeed:0,maxPlantedDrift:0};
+  const finite=value=>typeof value==='number'&&Number.isFinite(value);
+  const vec=value=>Array.isArray(value)&&value.length===3&&value.every(finite);
+  const distance=(a,b)=>Math.hypot(...a.map((value,index)=>value-b[index]));
+  if(!text(sourceHash)||sourceHash!==expectedSourceHash)issues.push('CURRENT_SOURCE_HASH_REQUIRED');
+  if(!text(clipId))issues.push('CLIP_ID_REQUIRED');
+  if(!finite(durationSeconds)||durationSeconds<=0||!finite(characterHeightMeters)||characterHeightMeters<=0)issues.push('DURATION_AND_BODY_SCALE_REQUIRED');
+  if(Object.values(thresholds).some(value=>!finite(value)||value<=0))issues.push('POSITIVE_FINITE_LIMITS_REQUIRED');
+  if(!Array.isArray(frames)||frames.length<3)issues.push('CONTINUOUS_FRAME_SAMPLES_REQUIRED');
+  const samples=Array.isArray(frames)?frames:[];
+  const jointKeys=Object.keys(samples[0]?.jointPositions||{}),contactKeys=Object.keys(samples[0]?.contacts||{});
+  if(!jointKeys.length||!contactKeys.length)issues.push('TRACKED_JOINTS_AND_CONTACTS_REQUIRED');
+  for(let index=0;index<samples.length;index++){
+    const frame=samples[index];
+    if(!frame||!finite(frame.timeSeconds)||!vec(frame.rootPosition)||!finite(frame.rootYawRadians)
+      ||jointKeys.some(key=>!vec(frame.jointPositions?.[key]))||Object.keys(frame.jointPositions||{}).length!==jointKeys.length
+      ||contactKeys.some(key=>typeof frame.contacts?.[key]?.planted!=='boolean'||!vec(frame.contacts?.[key]?.worldPosition))||Object.keys(frame.contacts||{}).length!==contactKeys.length){issues.push('INVALID_FRAME:'+index);continue;}
+    if(frame.timeSeconds<0||frame.timeSeconds>durationSeconds)issues.push('FRAME_OUTSIDE_CLIP:'+index);
+    if(index&&(frame.timeSeconds<=samples[index-1]?.timeSeconds||frame.timeSeconds-samples[index-1]?.timeSeconds>thresholds.maxSampleGapSeconds+1e-9))issues.push('FRAME_GAP_OR_ORDER:'+index);
+  }
+  if(samples[0]?.timeSeconds!==0||!finite(samples.at(-1)?.timeSeconds)||Math.abs(samples.at(-1).timeSeconds-durationSeconds)>1e-6)issues.push('FULL_CLIP_BOUNDARIES_REQUIRED');
+  if(issues.length)return Object.freeze({verdict:'UNVERIFIED',sourceHash:text(sourceHash),clipId:text(clipId),issues:freezeList(issues),violations:freezeList([]),metrics:null,blocksVerifiedPromotion:true,runtimeVerified:false});
+  const anchors=new Map(),openViolations=new Map();let previousVelocity=null,previousDt=null;
+  const report=(kind,index,value,limit,region)=>{
+    metrics[kind]=Math.max(metrics[kind],value);
+    const key=kind+':'+region,open=openViolations.get(key);
+    if(value<=limit){openViolations.delete(key);return;}
+    if(open&&open.frameRange[1]===index-1){
+      open.frameRange[1]=index;open.normalizedTimeRange[1]=samples[index].timeSeconds/durationSeconds;
+      if(value>open.value){open.value=value;open.peakFrame=index;}
+    }else{
+      const finding={kind,region,value,limit,peakFrame:index,frameRange:[index-1,index],normalizedTimeRange:[samples[index-1].timeSeconds/durationSeconds,samples[index].timeSeconds/durationSeconds]};
+      violations.push(finding);openViolations.set(key,finding);
+    }
+  };
+  for(const key of contactKeys)if(samples[0].contacts[key].planted)anchors.set(key,samples[0].contacts[key].worldPosition);
+  for(let index=1;index<samples.length;index++){
+    const before=samples[index-1],after=samples[index],dt=after.timeSeconds-before.timeSeconds;
+    const velocity=after.rootPosition.map((value,axis)=>(value-before.rootPosition[axis])/dt/characterHeightMeters);
+    if(previousVelocity)report('maxRootAcceleration',index,distance(velocity,previousVelocity)/((dt+previousDt)/2),thresholds.maxRootAcceleration,'ROOT');
+    previousVelocity=velocity;previousDt=dt;
+    const yawDelta=after.rootYawRadians-before.rootYawRadians;
+    report('maxYawSpeed',index,Math.abs(Math.atan2(Math.sin(yawDelta),Math.cos(yawDelta)))/dt,thresholds.maxYawSpeed,'ROOT_YAW');
+    for(const key of jointKeys)report('maxJointSpeed',index,distance(after.jointPositions[key],before.jointPositions[key])/dt/characterHeightMeters,thresholds.maxJointSpeed,key);
+    for(const key of contactKeys){
+      const contact=after.contacts[key];
+      if(!contact.planted){anchors.delete(key);continue;}
+      if(!anchors.has(key))anchors.set(key,contact.worldPosition);
+      report('maxPlantedDrift',index,distance(contact.worldPosition,anchors.get(key))/characterHeightMeters,thresholds.maxPlantedDrift,key);
+    }
+  }
+  return Object.freeze({verdict:violations.length?'FAIL':'PASS',sourceHash,clipId,issues:freezeList([]),metrics:Object.freeze(metrics),violations:freezeList(violations),thresholds:Object.freeze(thresholds),
+    frameCount:samples.length,coordinateContract:'ROOT_AND_CONTACT_WORLD_METERS_JOINTS_ROOT_LOCAL_METERS_YAW_RADIANS',
+    blocksVerifiedPromotion:violations.length>0,traceChecksOnly:true,runtimeVerified:false});
+}
+
 export function evaluateMotionTransition({
   from={},
   to={},
@@ -2034,7 +2093,7 @@ export function createMotionDirectorPlan({
   platform='UNITY',bodyPlan='HUMANOID',rigProfile='HUMANOID',styleFamily='STYLIZED_FANTASY',
   motionCandidates=[],context={},layers={},skill={},pair=null,reaction={},recentMotionIds=[],
   transition=null,contactQa=null,gameplayEvent=null,procedural=null,group=null,multiActor=null,
-  emotion=null,lod=null,lineage=null,runtimeSignals=[],robloxCharacterMotion=null,combat=null,styles=[],styleModifiers={}
+  emotion=null,lod=null,lineage=null,runtimeSignals=[],robloxCharacterMotion=null,combat=null,styles=[],styleModifiers={},continuityTrace=null
 }={}){
   const selector=selectContextMotion({
     candidates:motionCandidates,
@@ -2051,6 +2110,7 @@ export function createMotionDirectorPlan({
     motionDNA:createMotionDNA(selectedDNA),
     selector,
     composition,
+    continuityAudit:continuityTrace?auditMotionContinuityTrace(continuityTrace):null,
     continuity:Object.freeze({
       startFromCurrentPoseAndVelocity:true,footPhaseAndContactAwareLocomotion:true,
       turnStartStopAndInterruptedRecoveryRequired:true,poseVelocityContinuityAtEveryTransition:true,

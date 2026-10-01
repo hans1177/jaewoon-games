@@ -32,6 +32,7 @@ import {
   createStyleBible,
   createAssetCustomizationPlan,
   synchronizeAssetCustomization,
+  createAssetDetailReviewPlan,
   evaluateStyleBible,
   evaluateAssetIdentity,
   checkClothingLayerCompatibility,
@@ -65,6 +66,41 @@ function sharedCustomizationFixture(){
   const motionBindings=[{state:'IDLE',assetId:'idle',sourceHash:'idle-v1',clip:'IDLE',durationSeconds:2,events:[{id:'contact',normalizedTime:.5}]}];
   return{assets,customization,styleBible,motionStyle,motionBindings,gameId:'demo',platform:'WEB'};
 }
+
+test('localized customization merges its baseline and rejects changes outside the selected region',()=>{
+  const assets=[{id:'body',family:'CHARACTER',sourceHash:'v1',customization:{controls:{
+    jaw:{kind:'MORPH',axis:'FACE',target:'Jaw',min:0,max:1},
+    wear:{kind:'MATERIAL_SCALAR',axis:'SURFACE_WEAR',target:'Wear',min:0,max:1}
+  }}}];
+  const recipe={family:'CHARACTER',baseAssetId:'body',previousParameters:{jaw:.3,wear:.1},parameters:{wear:.5},editableParameters:['wear'],lockedParameters:['jaw']};
+  const result=createAssetCustomizationPlan({assets,recipes:[recipe]}).items[0];
+  assert.deepEqual(result.parameters,{jaw:.3,wear:.5});
+  assert.deepEqual(result.changedParameters,['wear']);assert.deepEqual(result.editOperations.map(row=>row.key),['wear']);
+  assert.deepEqual(recipe.previousParameters,{jaw:.3,wear:.1});
+  const bad=createAssetCustomizationPlan({assets,recipes:[{...recipe,parameters:{jaw:.8,wear:.5}}]}).items[0];
+  assert.ok(bad.issues.includes('OUTSIDE_EDIT_SCOPE:jaw'));assert.deepEqual(bad.operations,[]);assert.deepEqual(bad.editOperations,[]);
+});
+
+test('style comparison findings require current matched captures and produce bounded repair recipes',()=>{
+  const item={id:'hero',family:'CHARACTER',baseAssetId:'body',sourceHash:'v1',parameters:{jaw:.3,wear:.1},lockedParameters:['jaw'],identityAnchors:['one-horn']};
+  const captureContract={cameraHash:'camera',lightingHash:'light',actionId:'walk-stop',seed:12,durationSeconds:2,normalizedTimes:[0,.5,1]};
+  const capture={...captureContract,recipeId:'hero',sourceHash:'v1',parameters:{...item.parameters},identityAnchors:[...item.identityAnchors],styleFamily:'CARTOON',platform:'WEB',artifactRef:'qa/hero.png',artifactHash:'render-v1'};
+  const finding={id:'f1',recipeId:'hero',sourceHash:'v1',styleFamily:'CARTOON',platform:'WEB',artifactHash:'render-v1',region:'cape hem',severity:'HIGH',normalizedTimeRange:[.4,.6],parameterKeys:['wear'],observed:'No seam wear at the hem',requestedChange:'Add localized edge wear'};
+  const input={customization:{items:[item]},styles:['CARTOON'],platforms:['WEB'],captureContract,captures:[capture],findings:[finding]};
+  const result=createAssetDetailReviewPlan(input);
+  assert.equal(result.status,'LOCAL_REPAIR_REQUIRED');
+  assert.deepEqual(result.repairs[0].recipe.previousParameters,item.parameters);
+  assert.deepEqual(result.repairs[0].recipe.editableParameters,['wear']);assert.equal(result.repairs[0].closed,false);
+  assert.equal(createAssetDetailReviewPlan({...input,findings:[]}).status,'CAPTURE_SET_READY_FOR_VISUAL_REVIEW');
+  assert.equal(result.runtimeVerified,false);
+  for(const invalid of [{...finding,parameterKeys:['jaw']},{...finding,sourceHash:'old'},{...finding,normalizedTimeRange:[NaN,1]}]){
+    const rejected=createAssetDetailReviewPlan({...input,findings:[invalid]});assert.equal(rejected.repairs.length,0);assert.equal(rejected.rejectedFindings.length,1);
+  }
+  const mismatch=createAssetDetailReviewPlan({...input,captures:[{...capture,lightingHash:'other'}]});
+  assert.equal(mismatch.acceptedCaptureCount,0);assert.equal(mismatch.repairs.length,0);assert.equal(mismatch.status,'CAPTURES_REQUIRED');
+  const staleParameters=createAssetDetailReviewPlan({...input,captures:[{...capture,parameters:{jaw:.3,wear:.5}}]});
+  assert.equal(staleParameters.acceptedCaptureCount,0);assert.deepEqual(staleParameters.repairs,[]);
+});
 
 test('Unity and Web round-trip one visual document with explicit morph scales and matching motion events',()=>{
   const input=sharedCustomizationFixture(),web=synchronizeAssetCustomization(input);

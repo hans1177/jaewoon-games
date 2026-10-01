@@ -48,6 +48,7 @@ import {
   buildAutomaticMotionGapFillPlan,
   applySemanticGapPreparation,
   evaluateMotionTransition,
+  auditMotionContinuityTrace,
   auditMotionContact,
   bindGameplayEventToMotion,
   createProceduralMotionProfile,
@@ -71,6 +72,40 @@ const studioReviewFixture=()=>({
   stages:Object.fromEntries(createMotionDirectorPlan().studioProduction.stages.map(stage=>[stage,{pass:true,evidence:'fixture/'+stage}]))
 });
 const observedMotionFixture=()=>({hasHumanoid:true,hasAnimator:true,hasMotor6D:true,visibleLocomotion:true,rootTransformChanges:true,jointTransformChanges:true,playbackSpeedSynced:true,footSlideNormalized:.01,officialStudioRuntimeObserved:true,sourceRevision:'a'.repeat(40),clipVersion:'clip-v1',studioReview:studioReviewFixture()});
+
+function continuityFixture(){return{
+  sourceHash:'clip-v1',expectedSourceHash:'clip-v1',clipId:'walk-stop',durationSeconds:1,characterHeightMeters:2,
+  frames:Array.from({length:31},(_,index)=>({timeSeconds:index/30,rootPosition:[index/30,0,0],rootYawRadians:0,jointPositions:{hip:[0,1,0],head:[0,1.8,0]},contacts:{leftFoot:{planted:true,worldPosition:[0,0,0]},rightFoot:{planted:false,worldPosition:[index/30,0,0]}}}))
+};}
+
+test('motion continuity measures smooth traces, angle wrapping, foot drift and localized pose jumps',()=>{
+  const input=continuityFixture(),smooth=auditMotionContinuityTrace(input);
+  assert.equal(smooth.verdict,'PASS');assert.equal(smooth.runtimeVerified,false);
+  input.frames.forEach((frame,index)=>{frame.rootYawRadians=index<15?Math.PI-.001:-Math.PI+.001;});
+  assert.equal(auditMotionContinuityTrace(input).verdict,'PASS');
+  input.frames.forEach((frame,index)=>{frame.contacts.leftFoot.worldPosition=[index*.002,0,0];});
+  input.frames[12].jointPositions.head=[0,3.8,0];
+  const failed=auditMotionContinuityTrace(input);
+  assert.equal(failed.verdict,'FAIL');
+  const foot=failed.violations.find(row=>row.region==='leftFoot');
+  assert.ok(foot.value>.015);assert.equal(foot.frameRange[1],30);assert.equal(foot.peakFrame,30);
+  assert.equal(failed.violations.filter(row=>row.region==='leftFoot').length,1);
+  assert.ok(failed.violations.some(row=>row.region==='head'&&row.frameRange[0]===11));
+  assert.deepEqual(createMotionDirectorPlan({continuityTrace:input}).continuityAudit,failed);
+});
+
+test('motion trace cannot pass with gaps, stale source, missing joints, invalid numbers or partial clip',()=>{
+  const changes=[
+    input=>{input.expectedSourceHash='new';},
+    input=>{input.frames.splice(4,3);},
+    input=>{input.frames[3].rootPosition[0]=NaN;},
+    input=>{delete input.frames[4].jointPositions.head;},
+    input=>{input.frames.pop();},
+    input=>{input.limits={maxPlantedDrift:Infinity};},
+    input=>{input.frames[4].timeSeconds=input.frames[3].timeSeconds;}
+  ];
+  for(const change of changes){const input=continuityFixture();change(input);const result=auditMotionContinuityTrace(input);assert.equal(result.verdict,'UNVERIFIED');assert.equal(result.metrics,null);assert.equal(result.blocksVerifiedPromotion,true);}
+});
 
 test('studio review rejects missing, stale, incomplete and single-player evidence',()=>{
   assert.equal(auditRobloxCharacterMotionEvidence(observedMotionFixture()).pass,true);
