@@ -1,5 +1,5 @@
 {
-  "version": 515,
+  "version": 516,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-01",
@@ -7967,7 +7967,12 @@
       "pushBatchIdentity": "batch-push",
       "nonPushEmptyBatchIdentity": "github.run_id",
       "pushBatchRunsCoalesced": true,
-      "manualEmptyBatchRunsRunScoped": true
+      "manualEmptyBatchRunsRunScoped": true,
+      "cancelInProgressMeaning": "EXACT_GAME_AND_NON_PUSH_BATCH_PRESERVE_ACTIVE_EXECUTION",
+      "pushBatchCancelInProgress": true,
+      "exactGameCancelInProgress": false,
+      "manualEmptyBatchCancelInProgress": false,
+      "pushBatchSupersededRunMayCancel": true
     },
     "learningPreparationRunnerIsolation20260927": {
       "id": "LEARNING_PREPARATION_RUNNER_ISOLATION_2026-09-27",
@@ -8546,6 +8551,14 @@
         "activeGateCancellationForbidden": true,
         "activeSupervisionCancellationForbidden": true,
         "fallbackStillAvailableOnNonVibeCoreDirectorTriggers": true
+      },
+      "nativeBatchScheduling": {
+        "pushBatchLatestWins": true,
+        "exactGameActiveRunCancellationForbidden": true,
+        "manualEmptyBatchRunScoped": true,
+        "roblox": true,
+        "unity": true,
+        "reason": "RAPID_MAIN_CHURN_MUST_NOT_KEEP_OBSOLETE_NATIVE_BATCH_PLANNERS_ALIVE"
       }
     }
   },
