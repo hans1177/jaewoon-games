@@ -67,6 +67,8 @@ QA_THRESHOLDS = {
     'mobileMotionCountMax': 40,
     'mobileMaxFramesPerClip': 120,
     'mobileKeyedPoseEstimateMax': 220000,
+    'addedCoreRotationRangeMinRad': 0.003,
+    'addedLegRotationRangeMinRad': 0.015,
     'primaryJointRotationRangeMinRad': {
         'Hips': 0.045,
         'Spine': 0.025,
@@ -677,8 +679,28 @@ for clip_name,rows in primary_activity.items():
     for bone,minimum in QA_THRESHOLDS['primaryJointRotationRangeMinRad'].items():
         if rows[bone]<minimum:
             qa_failures.append(f'PRIMARY_JOINT_ACTIVITY:{clip_name}:{bone}')
+for clip_name,row in added_activity.items():
+    for bone in ('Hips','Spine','Chest'):
+        if row[bone]<QA_THRESHOLDS['addedCoreRotationRangeMinRad']:
+            qa_failures.append(f'ADDED_CORE_ACTIVITY:{clip_name}:{bone}')
+    for bone in ('ThighL','ThighR'):
+        if row[bone]<QA_THRESHOLDS['addedLegRotationRangeMinRad']:
+            qa_failures.append(f'ADDED_LEG_ACTIVITY:{clip_name}:{bone}')
 if secondary_activity<QA_THRESHOLDS['secondaryRotationRangeMinRad']:
     qa_failures.append('SECONDARY_MOTION_ACTIVITY')
+
+mobile_motion_budget={
+    'motionCount':len(CLIPS),
+    'maxFramesPerClip':max(round(duration*FPS)+1 for duration in CLIPS.values()),
+    'keyedPoseEstimate':sum((round(duration*FPS)+1)*(len(RIG.pose.bones)-1) for duration in CLIPS.values()),
+}
+mobile_motion_budget['pass']=(
+    mobile_motion_budget['motionCount']<=QA_THRESHOLDS['mobileMotionCountMax']
+    and mobile_motion_budget['maxFramesPerClip']<=QA_THRESHOLDS['mobileMaxFramesPerClip']
+    and mobile_motion_budget['keyedPoseEstimate']<=QA_THRESHOLDS['mobileKeyedPoseEstimateMax']
+)
+if not mobile_motion_budget['pass']:
+    qa_failures.append('MOBILE_ANIMATION_BUDGET')
 
 qa_metrics={
     'thresholds':QA_THRESHOLDS,
@@ -687,7 +709,9 @@ qa_metrics={
     'leftRightPhaseErrorRad':phase_metrics,
     'footContactLateralVerticalDriftNormalized':foot_contact_metrics,
     'primaryJointRotationRangeRad':primary_activity,
+    'addedJointRotationRangeRad':added_activity,
     'secondaryRotationRangeMaxRad':secondary_activity,
+    'mobileMotionBudget':mobile_motion_budget,
     'root':root_metrics,
     'maxEulerRad':max_euler,
     'allSamplesFinite':all_finite,
