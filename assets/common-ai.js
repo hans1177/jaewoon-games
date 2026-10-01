@@ -27,6 +27,8 @@ export class JaewoonCommonAI {
     this.memory = [];
     this.relationships = new Map();
     this.relationshipEvents = new Set();
+    this.causalEventIds = new Set();
+    this.causalContext = null;
     this.lastIntent = '';
     this.intentHoldUntil = 0;
     this.order = JaewoonCommonAI.Order.AUTO;
@@ -70,6 +72,8 @@ export class JaewoonCommonAI {
     const allies = Array.isArray(context.allies) ? context.allies : [];
     const S = JaewoonCommonAI.State;
     const O = JaewoonCommonAI.Order;
+    const causal = context.causalContext || this.causalContext;
+    const causalPreferences = Array.isArray(causal?.actionPreferences) ? causal.actionPreferences : [];
 
     const personality = this.personality;
     const effectiveDanger = this.clamp(danger + personality.caution * 0.12 - personality.courage * 0.10);
@@ -95,6 +99,9 @@ export class JaewoonCommonAI {
 
     if (effectiveDanger >= this.config.dangerThreshold) return this.action(S.DODGE, 'high_danger');
     if (hp <= effectiveRetreatHp) return this.action(S.RETREAT, 'low_hp');
+    if (causalPreferences.includes('avoid-source') && context.canDisengage === true) return this.action(S.RETREAT, 'causal_avoid_source');
+    if (causalPreferences.includes('investigate-cause') && context.investigateTarget) return this.action(S.SEARCH, 'causal_investigate', context.investigateTarget);
+    if (causalPreferences.includes('support-target') && context.canInteract && !enemies.length) return this.action(S.INTERACT, 'causal_support_target', context.interactTarget || null);
 
     if ([JaewoonCommonAI.Role.HEALER, JaewoonCommonAI.Role.SUPPORT].includes(this.role)) {
       if (context.canRevive) {
@@ -122,11 +129,16 @@ export class JaewoonCommonAI {
     const S = JaewoonCommonAI.State;
     const danger = this.clamp(context.danger ?? 0);
     const enemies = Array.isArray(context.enemies) ? context.enemies : [];
+    const causal = context.causalContext || this.causalContext;
+    const causalPreferences = Array.isArray(causal?.actionPreferences) ? causal.actionPreferences : [];
     if (danger >= this.config.dangerThreshold && !context.hostile) return this.action(S.RETREAT, 'npc_danger');
     if (context.hostile) {
       const target = this.chooseEnemy(enemies);
       if (target) return this.action(this.canAttack(target) ? S.ATTACK : S.SEARCH, 'npc_hostile', target);
     }
+    if (causalPreferences.includes('avoid-source') && context.canDisengage === true) return this.action(S.RETREAT, 'causal_avoid_source');
+    if (causalPreferences.includes('investigate-cause') && context.investigateTarget) return this.action(S.SEARCH, 'causal_investigate', context.investigateTarget);
+    if ((causalPreferences.includes('cooperate-with-source') || causalPreferences.includes('support-target')) && context.canInteract) return this.action(S.INTERACT, 'causal_social_followup', context.interactTarget || null);
     if (context.canInteract && this.personality.sociability >= -0.35) return this.action(S.INTERACT, 'player_nearby');
     if (context.investigateTarget && this.personality.curiosity > 0.2) return this.action(S.SEARCH, 'npc_curiosity', context.investigateTarget);
     if (context.patrolReady !== false) return this.action(S.PATROL, 'npc_patrol');
@@ -140,12 +152,16 @@ export class JaewoonCommonAI {
     const enemies = Array.isArray(context.enemies) ? context.enemies : [];
     const allies = Array.isArray(context.allies) ? context.allies : [];
     const personality = this.personality;
+    const causal = context.causalContext || this.causalContext;
+    const causalPreferences = Array.isArray(causal?.actionPreferences) ? causal.actionPreferences : [];
     const retreatLine = this.clamp(this.config.retreatHpRatio + personality.caution * 0.14 - personality.courage * 0.10 - personality.aggression * 0.05);
     const pressure = personality.aggression * 0.35 + personality.courage * 0.20 - personality.caution * 0.20;
     const target = this.chooseEnemy(enemies);
     if (hp <= retreatLine && context.canRetreat !== false) return this.action(S.RETREAT, 'enemy_self_preservation', target);
     if (context.allyLostRecently && personality.loyalty > 0.35 && target) return this.action(S.ATTACK, 'enemy_ally_loss_pressure', target);
     if (danger > 0.8 && personality.courage < 0.1) return this.action(S.DODGE, 'enemy_high_danger');
+    if (causalPreferences.includes('avoid-source') && context.canRetreat !== false) return this.action(S.RETREAT, 'causal_avoid_source', target);
+    if (causalPreferences.includes('investigate-cause') && context.investigateTarget) return this.action(S.SEARCH, 'causal_investigate', context.investigateTarget);
     if (target) {
       if (context.canFlank && personality.caution > 0.2 && pressure < 0.25) return this.action(S.SEARCH, 'enemy_flank', target);
       if (this.canAttack(target)) return this.action(S.ATTACK, pressure > 0.25 ? 'enemy_pressure' : 'enemy_attack', target);
@@ -199,6 +215,13 @@ export class JaewoonCommonAI {
         curiosity: this.personality.curiosity
       }),
       emotion: this.emotion,
+      causalContext: this.causalContext ? Object.freeze({
+        sourceEventId: this.causalContext.sourceEventId,
+        relationshipTargetId: this.causalContext.relationshipTargetId,
+        attentionTargetId: this.causalContext.attentionTargetId,
+        actionPreferences: Object.freeze([...(this.causalContext.actionPreferences || [])]),
+        dialogueActs: Object.freeze([...(this.causalContext.dialogueActs || [])])
+      }) : null,
       gameplayAuthority: false
     };
   }
@@ -223,6 +246,64 @@ export class JaewoonCommonAI {
   }
 
   setEmotion(emotion = 'calm') { this.emotion = String(emotion || 'calm'); return this.emotion; }
+
+  observeCausalEvent(packet = {}) {
+    const event = packet.sourceEvent || packet.event || {};
+    const eventId = String(event.id || event.eventId || '');
+    const eventType = String(event.type || '');
+    if (!eventId || !eventType) return Object.freeze({ applied: false, reason: 'source_event_required', gameplayAuthority: false });
+    if (packet.perceived === false) return Object.freeze({ applied: false, reason: 'no_information_path', gameplayAuthority: false });
+    if (this.causalEventIds.has(eventId)) return Object.freeze({ applied: false, reason: 'duplicate_event', state: this.snapshotMind(), gameplayAuthority: false });
+
+    const relationshipTargetId = String(packet.relationshipTargetId || event.actorId || event.actor || '');
+    const memoryCandidate = packet.memoryCandidate || {
+      id: eventId,
+      type: eventType,
+      sourceEventId: eventId,
+      actor: String(event.actorId || event.actor || ''),
+      target: relationshipTargetId,
+      observerId: String(this.identity.id || this.identity.name || ''),
+      perspectiveSpecific: true,
+      certainty: Number(packet.interpretation?.certainty ?? 1),
+      emotionBefore: this.emotion,
+      emotionAfter: String(packet.emotionAfter || this.emotion),
+      authoritative: false
+    };
+    const remembered = this.remember(memoryCandidate);
+    if (packet.emotionAfter) this.setEmotion(packet.emotionAfter);
+
+    let relationshipResult = Object.freeze({ applied: false, reason: 'no_relationship_delta' });
+    const deltas = packet.relationshipDelta && typeof packet.relationshipDelta === 'object' ? packet.relationshipDelta : {};
+    const hasRelationshipDelta = Object.entries(deltas).some(([key, value]) => key === 'stage' ? Boolean(value) : Number(value) !== 0);
+    if (relationshipTargetId && hasRelationshipDelta) {
+      relationshipResult = this.applyRelationshipEvent(relationshipTargetId, event, deltas);
+    }
+
+    const next = packet.next && typeof packet.next === 'object' ? packet.next : {};
+    this.causalContext = Object.freeze({
+      sourceEventId: eventId,
+      sourceEventType: eventType,
+      relationshipTargetId,
+      attentionTargetId: String(next.attentionTargetId || relationshipTargetId || event.objectId || ''),
+      actionPreferences: Object.freeze(Array.isArray(next.actionPreferences) ? [...next.actionPreferences] : []),
+      dialogueActs: Object.freeze(Array.isArray(next.dialogueActs) ? [...next.dialogueActs] : []),
+      eventCandidate: next.eventCandidate || null,
+      questCandidate: next.questCandidate || null,
+      emotion: this.emotion,
+      persistentMutationRequiresEngineValidation: true,
+      gameplayAuthority: false
+    });
+    this.causalEventIds.add(eventId);
+    return Object.freeze({
+      applied: true,
+      remembered,
+      emotion: this.emotion,
+      relationship: relationshipResult,
+      causalContext: this.causalContext,
+      persistentWrite: false,
+      gameplayAuthority: false
+    });
+  }
 
   remember(event = {}) {
     if (!event || !event.id || !event.type) return false;
@@ -266,7 +347,7 @@ export class JaewoonCommonAI {
     const frozen = Object.freeze(next);
     this.relationships.set(key, frozen);
     this.relationshipEvents.add(eventId);
-    this.remember({ id: eventId, type: String(event.type), actor: event.actor || '', target: key, relationshipEffect: { ...deltas } });
+    this.remember({ id: eventId, type: String(event.type), actor: event.actor || event.actorId || '', target: key, relationshipEffect: { ...deltas } });
     return { applied: true, state: frozen };
   }
 
@@ -303,6 +384,8 @@ export class JaewoonCommonAI {
       memory: Object.freeze([...this.memory]),
       relationships: Object.freeze([...this.relationships.entries()].map(([id, state]) => Object.freeze({ id, state }))),
       relationshipEventIds: Object.freeze([...this.relationshipEvents]),
+      causalEventIds: Object.freeze([...this.causalEventIds]),
+      causalContext: this.causalContext,
       gameplayAuthority: false
     });
   }
