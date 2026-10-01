@@ -118,7 +118,8 @@ const VERIFIED_EXTERNAL_LEARNING_BEGIN='[VERIFIED EXTERNAL BLACK-BOX LEARNING BE
 const VERIFIED_EXTERNAL_LEARNING_END='[VERIFIED EXTERNAL BLACK-BOX LEARNING END]';
 const VERIFIED_LEARNING_MOTOR_BEGIN='[VIBE VERIFIED LEARNING MOTOR]';
 const LARGE_EMBEDDED_LEARNING_GOAL_BYTES=64000;
-const MAX_INITIAL_JSON_PROMPT_BYTES=64000;
+const MAX_INITIAL_JSON_PROMPT_BYTES=36000;
+const RETRY_OBSERVATION_CHUNK_BYTES=1600;
 const COMPACT_DIRECTIVE_LINE_BYTES=1800;
 
 const TARGET_EXTENSIONS=Object.freeze({
@@ -2807,7 +2808,10 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     // 압축·부분 수정·확장 재시도에서도 원본 관찰과 잠금/수정 범위를 보존하고 실제 전송량으로 예산을 잡는다.
     for(const label of ['IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR','RUNTIME VISUAL REVIEW']){
       const block=prompt.match(new RegExp('\\['+label+' BEGIN\\][\\s\\S]*?\\['+label+' END\\]'))?.[0]||'';
-      if(block&&!attemptPrompt.includes(block))attemptPrompt+='\n'+block;
+      if(!block||attemptPrompt.includes(block))continue;
+      const retryBlock=retry?boundedLargeExcerpt(block,RETRY_OBSERVATION_CHUNK_BYTES).content:block;
+      attemptPrompt+='\n'+retryBlock;
+      if(retry&&retryBlock!==block)console.log(`VIBE2_RETRY_OBSERVATION_COMPACTED=${label}:${Buffer.byteLength(block,'utf8')}->${Buffer.byteLength(retryBlock,'utf8')}`);
     }
     const contextWindow=sourcePromptContextWindow(attemptPrompt,{baseContextWindow,maxPredict});
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
