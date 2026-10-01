@@ -672,8 +672,9 @@ export function collectStudioConsoleEntries(value,out=[]){
 
 function ownedStudioSourceText(actualPlayContractPath=''){
   const contract=clean(actualPlayContractPath);
-  if(!contract||!fs.existsSync(contract))return'';
+  if(!contract)return'';
   const root=path.dirname(path.resolve(contract));
+  if(!fs.existsSync(root))return'';
   const chunks=[];
   let total=0;
   const walk=dir=>{
