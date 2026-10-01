@@ -24,6 +24,15 @@ on:
       source_commit:
         required: false
         type: string
+      base_main_sha:
+        required: false
+        type: string
+      vibe2_task_id:
+        required: false
+        type: string
+      vibe2_candidate_branch:
+        required: false
+        type: string
       publish_to_main:
         required: false
         default: false
@@ -55,8 +64,23 @@ on:
         required: false
         default: ''
         type: string
+      base_main_sha:
+        description: 'Pinned main revision used to reject concurrent Unity source drift'
+        required: false
+        default: ''
+        type: string
+      vibe2_task_id:
+        description: 'Optional Vibe2 task settled only after reviewed merge and Cloudflare main deployment'
+        required: false
+        default: ''
+        type: string
+      vibe2_candidate_branch:
+        description: 'Optional exact Vibe2 candidate branch for audit evidence'
+        required: false
+        default: ''
+        type: string
       publish_to_main:
-        description: 'Create a PR containing verified output for web-games'
+        description: 'Create one reviewed PR containing candidate Unity source plus verified WebGL output'
         required: false
         default: false
         type: boolean
@@ -584,19 +608,33 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ steps.request.outputs.game_id }}
+          SOURCE_COMMIT: ${{ steps.request.outputs.source_commit || github.sha }}
+          BASE_MAIN_SHA: ${{ inputs.base_main_sha }}
+          VIBE2_TASK_ID: ${{ inputs.vibe2_task_id }}
+          VIBE2_CANDIDATE_BRANCH: ${{ inputs.vibe2_candidate_branch }}
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch --no-tags origin main
-          branch="unity-web/${GAME_ID}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git fetch --no-tags origin main "$SOURCE_COMMIT"
+          if [ -n "$VIBE2_TASK_ID" ]; then
+            [[ "$BASE_MAIN_SHA" =~ ^[0-9a-fA-F]{40}$ ]] || { echo 'VIBE2_UNITY_WEB_BASE_MAIN_SHA_INVALID' >&2; exit 1; }
+            [ -n "$VIBE2_CANDIDATE_BRANCH" ] || { echo 'VIBE2_UNITY_WEB_CANDIDATE_BRANCH_MISSING' >&2; exit 1; }
+          fi
+          if [ -n "$BASE_MAIN_SHA" ]; then
+            git cat-file -e "${BASE_MAIN_SHA}^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$BASE_MAIN_SHA"
+            git diff --quiet "$BASE_MAIN_SHA" origin/main -- "unity-games/$GAME_ID" || { echo 'VIBE2_UNITY_WEB_MAIN_SOURCE_DRIFT_BEFORE_PR' >&2; exit 1; }
+          fi
+
+          branch="unity-web/$GAME_ID-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git checkout -B "$branch" origin/main
+          git checkout "$SOURCE_COMMIT" -- "unity-games/$GAME_ID"
           rm -rf "web-games/$GAME_ID"
           mkdir -p "web-games/$GAME_ID"
           cp -R "/tmp/unity-web/web-games/$GAME_ID"/. "web-games/$GAME_ID"/
           test -d "web-games/$GAME_ID/Build"
           test -s "web-games/$GAME_ID/unity-web-deploy-manifest.json"
-          git add "web-games/$GAME_ID"
+          git add "unity-games/$GAME_ID" "web-games/$GAME_ID"
           # Historical repo-wide Unity ignore rules matched this nested public Build directory.
           # Force-add the runtime bundle so index.html never lands without loader/data/framework/wasm.
           git add -f "web-games/$GAME_ID/Build"
@@ -607,18 +645,171 @@ jobs:
           git diff --cached --check
           if git diff --cached --quiet; then
             echo "UNITY_WEB_PUBLICATION_PR=NO_CHANGE"
+            if [ -n "$VIBE2_TASK_ID" ]; then
+              echo 'VIBE2_UNITY_WEB_REVIEWED_PROMOTION_REQUIRED_BUT_NO_CHANGE' >&2
+              exit 1
+            fi
             exit 0
           fi
+
           git commit -m "build: publish $GAME_ID Unity Web readiness"
+          release_commit="$(git rev-parse HEAD)"
           git push --force-with-lease origin HEAD:"$branch"
-          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch"             --title "build: publish $GAME_ID Unity Web readiness"             --body "Verified Unity Web development-floor artifact from workflow run $GITHUB_RUN_ID. upper-platform-development-readiness.json must PASS before Roblox/Unity upper-platform development starts. This artifact is not release or deployment authority.")"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" \
+            --title "build: publish $GAME_ID Unity Web readiness" \
+            --body "Verified Unity Web development-floor artifact from workflow run $GITHUB_RUN_ID. This reviewed PR binds candidate unity-games/$GAME_ID source and the exact validated web-games/$GAME_ID WebGL bundle. upper-platform-development-readiness.json must PASS before upper-platform development continues.")"
           echo "UNITY_WEB_READINESS_PR=$pr_url"
+          echo "UNITY_WEB_REVIEWED_PROMOTION_PR=$pr_url"
           echo 'UNITY_WEB_DIRECT_MAIN_WRITE=NO'
 
+          for attempt in $(seq 1 60); do
+            pages_state="$(gh api -H 'Accept: application/vnd.github+json' \
+              "repos/$GITHUB_REPOSITORY/commits/$release_commit/check-runs?per_page=100" \
+              --jq '[.check_runs[] | select(.name=="Cloudflare Pages")] | sort_by(.started_at) | last | if . == null then "missing:" else (.status + ":" + (.conclusion // "")) end')"
+            echo "UNITY_WEB_CLOUDFLARE_PREVIEW=$pages_state"
+            case "$pages_state" in
+              completed:success) break ;;
+              completed:*) echo "Unity Web Cloudflare preview failed: $pages_state" >&2; exit 1 ;;
+            esac
+            if [ "$attempt" -ge 60 ]; then echo 'Unity Web Cloudflare preview did not complete successfully' >&2; exit 1; fi
+            sleep 10
+          done
+
+          git fetch --no-tags origin main
+          if [ -n "$BASE_MAIN_SHA" ]; then
+            git diff --quiet "$BASE_MAIN_SHA" origin/main -- "unity-games/$GAME_ID" || { echo 'VIBE2_UNITY_WEB_MAIN_SOURCE_DRIFT_BEFORE_MERGE' >&2; exit 1; }
+          fi
+          gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
+          git fetch --no-tags origin main
+          git diff --quiet "$release_commit" origin/main -- "unity-games/$GAME_ID" "web-games/$GAME_ID" || { echo 'UNITY_WEB_MERGED_TREE_MISMATCH' >&2; exit 1; }
+
+          promotion_sha="$(git rev-parse origin/main)"
+          unity_source_tree_sha="$(git rev-parse "origin/main:unity-games/$GAME_ID")"
+          web_source_tree_sha="$(git rev-parse "origin/main:web-games/$GAME_ID")"
+          [[ "$unity_source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$web_source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
+
+          for attempt in $(seq 1 60); do
+            pages_state="$(gh api -H 'Accept: application/vnd.github+json' \
+              "repos/$GITHUB_REPOSITORY/commits/$promotion_sha/check-runs?per_page=100" \
+              --jq '[.check_runs[] | select(.name=="Cloudflare Pages")] | sort_by(.started_at) | last | if . == null then "missing:" else (.status + ":" + (.conclusion // "")) end')"
+            echo "UNITY_WEB_CLOUDFLARE_MAIN=$pages_state"
+            case "$pages_state" in
+              completed:success) break ;;
+              completed:*) echo "Unity Web Cloudflare main deployment failed: $pages_state" >&2; exit 1 ;;
+            esac
+            if [ "$attempt" -ge 60 ]; then echo 'Unity Web Cloudflare main deployment did not complete successfully' >&2; exit 1; fi
+            sleep 10
+          done
+
+          echo "UNITY_WEB_MAIN_PROMOTION_SHA=$promotion_sha"
+          echo "UNITY_WEB_MAIN_UNITY_SOURCE_TREE_SHA=$unity_source_tree_sha"
+          echo "UNITY_WEB_MAIN_RUNTIME_SOURCE_TREE_SHA=$web_source_tree_sha"
+
+          if [ -n "$VIBE2_TASK_ID" ]; then
+            rm -rf /tmp/vibe2-control /tmp/vibe2-main-contract
+            gh auth setup-git --hostname github.com
+            gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch --depth=1 --no-tags >/dev/null 2>&1
+            git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
+            git -C /tmp/vibe2-control worktree add --detach /tmp/vibe2-main-contract origin/main >/dev/null
+            git -C /tmp/vibe2-control config user.name 'jaewoon-unity-web-release'
+            git -C /tmp/vibe2-control config user.email 'unity-web-release@users.noreply.github.com'
+            settled=0
+            for settle_attempt in 1 2 3; do
+              git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
+              git -C /tmp/vibe2-control reset --hard origin/vibe2-unreal-core
+              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --queue=/tmp/vibe2-control/.vibe2/queue.json --id="$VIBE2_TASK_ID" --evidence="execution-surface:UNITY_WEB,unity-web-webgl-build-pass,unity-web-browser-play-pass,unity-web-independent-qa-pass,unity-web-regression-pass,unity-web-cloudflare-preview-pass,unity-web-main-pr-merged,unity-web-cloudflare-deployment-pass,unity-web-candidate-branch:$VIBE2_CANDIDATE_BRANCH,unity-web-source-tree:$unity_source_tree_sha,unity-web-runtime-source-tree:$web_source_tree_sha,unity-web-main-sha:$promotion_sha,actions-run-${GITHUB_RUN_ID}"
+              git -C /tmp/vibe2-control add .vibe2/queue.json
+              if git -C /tmp/vibe2-control diff --cached --quiet; then
+                settled=1
+                break
+              fi
+              git -C /tmp/vibe2-control commit -m "vibe2: settle Unity Web task $VIBE2_TASK_ID PASS [skip ci]"
+              if git -C /tmp/vibe2-control push origin HEAD:vibe2-unreal-core; then
+                settled=1
+                break
+              fi
+              sleep $((settle_attempt * 2))
+            done
+            test "$settled" = 1
+            payload="$(jq -nc \
+              --arg run "${GITHUB_RUN_ID:-}" \
+              --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
+              --arg task "$VIBE2_TASK_ID" \
+              --arg outcome "VERIFIED" \
+              '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$task,source_outcome:$outcome,reason:"unity-web-reviewed-main-cloudflare-pass"}}')"
+            curl --fail-with-body --silent --show-error \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+              --data "$payload"
+            echo "VIBE2_EVENT_DRIVEN_DEPENDENCY_REFILL=$VIBE2_TASK_ID:VERIFIED"
+            echo "VIBE2_UNITY_WEB_TASK_FINAL_PASS=EXACT_SOURCE_RUNTIME_AND_DEPLOYMENT:$unity_source_tree_sha:$web_source_tree_sha"
+          fi
+
+
+  settle-vibe2-failure:
+    name: Settle failed Vibe2 Unity Web candidate
+    needs: build
+    if: always() && needs.build.result == 'failure' && inputs.vibe2_task_id != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - name: Requeue exact failed Unity Web stage
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VIBE2_TASK_ID: ${{ inputs.vibe2_task_id }}
+          VIBE2_CANDIDATE_BRANCH: ${{ inputs.vibe2_candidate_branch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/vibe2-control /tmp/vibe2-main-contract
+          gh auth setup-git --hostname github.com
+          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch --depth=1 --no-tags >/dev/null 2>&1
+          git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
+          git -C /tmp/vibe2-control worktree add --detach /tmp/vibe2-main-contract origin/main >/dev/null
+          git -C /tmp/vibe2-control config user.name 'jaewoon-unity-web-release'
+          git -C /tmp/vibe2-control config user.email 'unity-web-release@users.noreply.github.com'
+          settled=0
+          for attempt in 1 2 3; do
+            git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
+            git -C /tmp/vibe2-control reset --hard origin/vibe2-unreal-core
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --queue=/tmp/vibe2-control/.vibe2/queue.json --id="$VIBE2_TASK_ID" --blocker=unity-web-runtime-or-promotion-failed --evidence="execution-surface:UNITY_WEB,unity-web-candidate-branch:$VIBE2_CANDIDATE_BRANCH,actions-run-${GITHUB_RUN_ID}"
+            git -C /tmp/vibe2-control add .vibe2/queue.json
+            if git -C /tmp/vibe2-control diff --cached --quiet; then
+              settled=1
+              break
+            fi
+            git -C /tmp/vibe2-control commit -m "vibe2: settle Unity Web task $VIBE2_TASK_ID REPAIR_REQUIRED [skip ci]"
+            if git -C /tmp/vibe2-control push origin HEAD:vibe2-unreal-core; then
+              settled=1
+              break
+            fi
+            sleep $((attempt * 2))
+          done
+          test "$settled" = 1
+          payload="$(jq -nc \
+            --arg run "${GITHUB_RUN_ID:-}" \
+            --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
+            --arg task "$VIBE2_TASK_ID" \
+            --arg outcome "QUEUE_UPDATED" \
+            '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$task,source_outcome:$outcome,reason:"unity-web-repair-required"}}')"
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+            --data "$payload"
+          echo "VIBE2_UNITY_WEB_TASK_REPAIR_REQUIRED=$VIBE2_TASK_ID"
 
   repair-vibe2:
     name: Re-enter Vibe2 Unity Web causal repair
-    needs: build
+    needs: [build, settle-vibe2-failure]
     if: always() && (needs.build.outputs.repair_required == 'true' || needs.build.result == 'failure')
     permissions:
       contents: write
