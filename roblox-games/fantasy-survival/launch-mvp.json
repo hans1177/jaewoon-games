@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "gameId": "fantasy-survival",
+  "gameTitleKo": "마력숲 생존기",
+  "target": "ROBLOX",
+  "source": "CANONICAL_EXISTING_GAME_MEANING_AND_ROBLOX_GAMECONFIG",
+  "launchCore": [
+    "survival exploration combat with enemy pressure and visible action feedback",
+    "inventory equipment weapon armor and crafting interaction",
+    "mobile touch HUD menu inventory and contextual controls",
+    "articulated player NPC creature character motion with attack hit and recovery animation",
+    "state-adaptive BGM music and ambient audio while preserving owner-disabled SFX intent",
+    "combat VFX telegraphs camera response lighting materials and region readability",
+    "world regions resources landmarks crafting stations and discovery routes",
+    "progression rewards quests and meaningful next-step guidance",
+    "server authoritative multiplayer co-op sync and join/rejoin behavior",
+    "save load rejoin persistence without changing canonical save meaning"
+  ],
+  "releaseGates": [
+    "actual Roblox Studio play with mobile-first input",
+    "perceptible character motion rather than root-only or whole-model bobbing",
+    "inventory and equipment state is authoritative and visibly confirmed",
+    "crafting and interaction input produces observable state feedback",
+    "BGM or intended ambience is actually playing and multi-sound mix uses SoundGroup organization",
+    "owner-disabled sound effects remain disabled unless the owner explicitly changes that decision",
+    "combat VFX and camera feedback preserve telegraph and mobile readability",
+    "lighting and region presentation improve identity without obscuring hazards",
+    "multiplayer state is server authoritative and synchronized",
+    "save and rejoin preserve stable progression and inventory where persistent",
+    "performance remains mobile-safe during presentation build-up"
+  ],
+  "evidencePolicy": {
+    "runtimePassRequired": true,
+    "mobilePassRequired": true,
+    "multiplayerPassRequired": true,
+    "saveRejoinPassRequired": true,
+    "regressionPassRequired": true,
+    "audioFeedbackPassRequired": true,
+    "startUiRegressionPassRequired": true,
+    "aiMayInventPass": false
+  },
+  "studioActualPlayContract": {
+    "version": 3,
+    "required": true,
+    "source": "FANTASY_SURVIVAL_PERCEPTIBLE_EXPERIENCE_BUILD_UP",
+    "postActionWaitMs": 450,
+    "requiredScenarios": [
+      "character-camera-ready",
+      "visual-capture-sane",
+      "adaptive-runtime-surface",
+      "adaptive-ui-commercial-quality",
+      "adaptive-ui-blocking-overlay",
+      "adaptive-world-safety",
+      "adaptive-map-route-coverage",
+      "adaptive-interaction-surface",
+      "adaptive-semantic-interaction-effect",
+      "adaptive-system-transaction-effect",
+      "adaptive-gameplay-loop-cadence",
+      "adaptive-progression-surface",
+      "adaptive-remote-surface",
+      "adaptive-combat-surface",
+      "adaptive-combat-action-effect",
+      "adaptive-mob-animation-ai",
+      "adaptive-motion-surface",
+      "adaptive-audio-surface",
+      "adaptive-item-surface",
+      "adaptive-environment-surface",
+      "adaptive-effects-surface",
+      "adaptive-save-surface",
+      "adaptive-save-rejoin-persistence",
+      "adaptive-multiplayer-sync-surface",
+      "adaptive-camera-quality",
+      "adaptive-performance-budget"
+    ],
+    "expectations": {
+      "screenGuiName": "ApprovedScopeHud",
+      "requiredGuiObjects": [
+        "Root",
+        "ApprovedActions"
+      ],
+      "minimumVisibleButtons": 1,
+      "minimumCaptureWidth": 320,
+      "minimumCaptureHeight": 180,
+      "minimumCaptureBytes": 2048,
+      "minimumLightingBrightness": 0.35
+    },
+    "notes": [
+      "This contract does not change gameplay balance, economy, save meaning, or network authority.",
+      "Web Magic Forest features already present in the canonical game are quality targets, not permission to invent unrelated Roblox systems.",
+      "Roblox implementation must use native Roblox motion, UI, audio, lighting and server/client responsibilities rather than literal Web code translation.",
+      "Sound objects, semantic asset atoms, source markers, or generic action buttons alone do not satisfy perceptible quality.",
+      "The owner previously disabled unwanted effect sounds; build-up must not re-enable them. Music and allowed ambience still require live runtime verification."
+    ]
+  },
+  "updatedAt": "2026-10-02T04:00:00+09:00"
+}

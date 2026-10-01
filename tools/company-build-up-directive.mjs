@@ -39,12 +39,12 @@ const DESIGNLESS_SAFE_BUILD_UP_FOCI=Object.freeze(['PRESENTATION','USABILITY','S
 const DESIGNLESS_SAFE_BUILD_UP_DOMAINS=Object.freeze({
   PRESENTATION:Object.freeze([
     'CHARACTER_VISUALS','ENEMY_VISUALS','WEAPONS_AND_EQUIPMENT','BUILDINGS_AND_PROPS','ENVIRONMENT','TERRAIN','MATERIALS','PALETTE',
-    'LIGHTING','ANIMATION','SECONDARY_MOTION','VFX','CAMERA','UI_HUD','AUDIO_VISUAL_TIMING','ENVIRONMENTAL_MOTION',
+    'LIGHTING','ANIMATION','SECONDARY_MOTION','VFX','CAMERA','UI_HUD','AUDIO_MUSIC_SFX','AUDIO_VISUAL_TIMING','ENVIRONMENTAL_MOTION',
     'UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','MOBILE_UX','PERFORMANCE_BUDGET'
   ]),
   USABILITY:Object.freeze([
     'INPUT','MOBILE_UX','ACCESSIBILITY','SETTINGS_ACCESSIBILITY','MENU_FLOW','CONVENIENCE','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY',
-    'FEEDBACK_CLARITY','FIRST_10_MINUTES','SESSION_FLOW','ERROR_RECOVERY','PERFORMANCE_BUDGET'
+    'INVENTORY_USABILITY','EQUIPMENT_LOADOUT','FEEDBACK_CLARITY','FIRST_10_MINUTES','SESSION_FLOW','ERROR_RECOVERY','PERFORMANCE_BUDGET'
   ]),
   STABILITY:Object.freeze([
     'RUNTIME_STABILITY','ERROR_RECOVERY','SAVE_AND_RECOVERY','SAVE_COMPLETENESS','RECONNECT_RECOVERY',
@@ -57,6 +57,51 @@ export const VISUAL_DOMAINS=Object.freeze([
   'MATERIAL_SURFACE','PALETTE','LIGHTING','ANIMATION','SECONDARY_MOTION','VFX','CAMERA',
   'UI_HUD','AUDIO_VISUAL_SYNC','ENVIRONMENTAL_MOTION','SCENE_DENSITY','LANDMARK_READABILITY'
 ]);
+
+export const EXPERIENCE_BUILD_UP_POLICY_PATH='company-learning/cross-platform-experience-build-up.json';
+function experienceBuildUpPolicy(repoRoot=process.cwd()){
+  const requested=path.resolve(repoRoot,EXPERIENCE_BUILD_UP_POLICY_PATH);
+  const canonical=path.resolve(process.cwd(),EXPERIENCE_BUILD_UP_POLICY_PATH);
+  const policy=readJson(requested,null)||readJson(canonical,null);
+  if(!policy||policy.status!=='ACTIVE_EXECUTABLE_CONTRACT'||!Array.isArray(policy.surfaces)||!policy.platformProfiles){
+    throw new Error('EXPERIENCE_BUILD_UP_POLICY_INVALID');
+  }
+  return policy;
+}
+function normalizeBuildUpPlatform(value=''){
+  const raw=clean(value).toUpperCase().replaceAll('-','_');
+  if(raw==='ROBLOX')return'ROBLOX';
+  if(['UNITY','UNITY_APP','UNITY_NATIVE'].includes(raw))return'UNITY';
+  if(['WEB','UNITY_WEB','UNITY_WEBGL'].includes(raw))return raw.startsWith('UNITY_')?'UNITY':'WEB';
+  return'WEB';
+}
+export function buildPerceptibleExperienceDirective({platform='WEB',repoRoot=process.cwd()}={}){
+  const policy=experienceBuildUpPolicy(repoRoot);
+  const normalized=normalizeBuildUpPlatform(platform);
+  const profile=policy.platformProfiles?.[normalized]||policy.platformProfiles.WEB;
+  const surfaces=policy.surfaces.map(row=>Object.freeze({
+    id:clean(row.id),
+    appliesWhen:clean(row.appliesWhen),
+    goal:clean(row.goal),
+    evidence:Object.freeze([...(row.evidence||[]).map(clean).filter(Boolean)])
+  }));
+  return Object.freeze({
+    version:Number(policy.version||1),
+    policyPath:EXPERIENCE_BUILD_UP_POLICY_PATH,
+    objective:clean(policy.objective),
+    platform:normalized,
+    strictness:clean(profile?.strictness),
+    runtime:clean(profile?.runtime),
+    commonCycle:Object.freeze({...policy.commonCycle}),
+    applicableSurfaceReview:Object.freeze(surfaces),
+    platformRequirements:Object.freeze([...(profile?.requirements||[]).map(clean).filter(Boolean)]),
+    hardFailures:Object.freeze([...(profile?.hardFailures||[]).map(clean).filter(Boolean)]),
+    robloxExtraAttention:policy.priorityPolicy?.robloxExtraAttention===true,
+    existenceOnlyPassForbidden:policy.commonCycle?.existenceOnlyPassForbidden===true,
+    bindOnlyPassForbidden:policy.commonCycle?.bindOnlyPassForbidden===true,
+    perceptiblePlayerEffectRequired:policy.commonCycle?.perceptiblePlayerEffectRequired===true
+  });
+}
 
 const AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH='company-learning/vibe-autonomous-content-expansion-policy.json';
 const AUTONOMOUS_CONTENT_EXPANSION_DEFAULT=Object.freeze({
@@ -950,9 +995,9 @@ function buildAutonomousContentExpansion({
 }
 
 function platformDirectives({identity,goal}){
-  const web=`${identity}: 동일 공통 목표 "${goal}"를 현재 canonical Web 경로에 구현하고 브라우저 터치/카메라/렌더 비용을 맞춘다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.`;
-  const roblox=`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 다른 플랫폼 구현을 그대로 복사하지 않는다.`;
-  const unity=`${identity}: 동일 공통 목표 "${goal}"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.`;
+  const web=`${identity}: 동일 공통 목표 "${goal}"를 canonical Web 런타임에 구현한다. 실제 터치 입력→게임 상태→렌더/모션/UI/인벤/오디오 피드백을 한 흐름으로 검증하고, 정상 플레이 배율에서 체감되지 않는 미세 bob/회전이나 파일 로드만으로 품질 완료를 주장하지 않는다. Canvas/DOM/WebGL/WebAudio는 현재 책임 코드에서 직접 개선하고 모바일 safe-area·스크롤·포인터 수명·프레임 비용을 함께 확인한다. Unity WebGL이 canonical Web인 게임은 같은 unity-games 소스를 사용하며 복제 코드베이스를 만들지 않는다.`;
+  const roblox=`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 가장 엄격하게 본다. articulated PLAYER/NPC/CREATURE는 Animator/AnimationTrack·Motor6D/Bone 등 실제 관절 모션과 blend/speed sync를 사용하고 root-only CFrame·whole-model bob·weld-only 마네킹으로 모션 PASS를 만들지 않는다. HUD/메뉴/인벤/장비는 모바일 safe-area·스크롤·뒤로가기·장착 표시와 authoritative 상태를 실제 입력으로 확인한다. 오디오는 현재 owner 의도를 보존하면서 SoundService/SoundGroup 중심의 음악/SFX/UI/환경 믹스, 상태형 BGM 전환·ducking·공간음을 적용하며 사용자가 꺼둔 효과음을 임의로 되살리지 않는다. VFX/카메라/Lighting/Atmosphere/ColorCorrection/Bloom은 전투 전조와 모바일 가독성을 가리지 않게 제한한다. 최종 체감 증거는 공식 Roblox Studio MCP 실제 입력·캡처·상태 변화로 확인하고 asset binding이나 source marker만으로 완료 처리하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.`;
+  const unity=`${identity}: 동일 공통 목표 "${goal}"를 canonical Unity 프로젝트에 구현한다. Animator/AnimationClip/BlendTree 또는 동등한 native rig, Canvas/uGUI 또는 UI Toolkit, authoritative 인벤/장비 상태, AudioMixer/상태 전환/공간음, native lighting/material/post-processing을 모바일 성능 예산 안에서 사용한다. Unity WebGL과 앱은 같은 gameplay/UI 책임 소스를 공유하고 실제 입력→상태→표현의 before/after 체감 차이를 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.`;
   const fortnite=`${identity}: 동일 공통 목표 "${goal}"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.`;
   return{
     WEB:web,
@@ -975,6 +1020,9 @@ export function directivePrompt(d={}){
   const expansionBundle=(expansion.coherentContentBundle||[]).map(row=>`- ${row}`).join('\n');
   const continuityQuestions=(expansion.continuityAndCausality?.questions||[]).join(',');
   const platformGuidance=d.platformAdaptationDirectives?.[clean(d.platform).toUpperCase()]||d.platformAdaptationDirectives?.WEB||'';
+  const experience=d.perceptibleExperienceBuildUp||{};
+  const experienceSurfaces=(experience.applicableSurfaceReview||[]).map(row=>'- '+row.id+': '+row.goal+' | EVIDENCE='+(row.evidence||[]).join(',')).join('\n');
+  const experienceRequirements=(experience.platformRequirements||[]).map(row=>'- '+row).join('\n');
   return[
     '[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]',
     `id=${d.directiveId}; generation=${d.generation}; depth=${d.developmentDepth}; stage=${d.escalationStage}; focus=${d.primaryFocus}`,
@@ -1001,6 +1049,12 @@ export function directivePrompt(d={}){
     `CONTINUITY_CAUSALITY: required=${expansion.continuityAndCausality?.required===true}; questions=${continuityQuestions}`,
     `DERIVED_RULE_EVOLUTION: ${expansion.derivedRuleEvolution?.rule||'PRESERVE_CANONICAL_RULES'}`,
     `PLATFORM_NATIVE_GUIDANCE: ${platformGuidance}`,
+    `EXPERIENCE_BUILD_UP: platform=${experience.platform||clean(d.platform).toUpperCase()}; strictness=${experience.strictness||'HIGH'}; runtime=${experience.runtime||'RUNTIME_REQUIRED'}; perceptiblePlayerEffectRequired=${experience.perceptiblePlayerEffectRequired===true}; existenceOnlyPassForbidden=${experience.existenceOnlyPassForbidden===true}; bindOnlyPassForbidden=${experience.bindOnlyPassForbidden===true}`,
+    'EXPERIENCE_SURFACE_MATRIX:',
+    experienceSurfaces||'- NO_SURFACE_POLICY',
+    'PLATFORM_EXPERIENCE_REQUIREMENTS:',
+    experienceRequirements||'- FOLLOW_COMMON_RUNTIME_BEFORE_AFTER_REQUIREMENTS',
+    `PLATFORM_EXPERIENCE_HARD_FAILURES: ${(experience.hardFailures||[]).join(',')||'NONE'}`,
     `GAMEPLAY: ${d.gameplayImplementationDirectives.join(' | ')}`,
     `PROGRESSION_WORLD: ${d.progressionContentWorldDirectives.join(' | ')}`,
     'HOLISTIC_CORE_DOMAIN_STATUS:',
@@ -1220,7 +1274,10 @@ export function buildGameSpecificBuildUpDirective({
     'AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP',
     'CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE',
     'EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP',
-    'WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT'
+    'WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT',
+    'PERCEPTIBLE_PLAYER_FACING_DELTA_REQUIRED_FOR_PLAYER_FACING_QUALITY_CLAIMS',
+    'SOURCE_MARKER_ASSET_BINDING_OR_FEATURE_EXISTENCE_ALONE_CANNOT_CLOSE_QUALITY_GAP',
+    'MOTION_UI_INVENTORY_AUDIO_VFX_CAMERA_LIGHTING_REVIEWED_WHEN_APPLICABLE'
   ];
   const safeGameplay=[
     '현재 소스에 이미 존재하는 행동·상태·화면 연결만 읽고 수정한다. 새 핵심 규칙·밸런스·경제·퀘스트·진행 의미를 추측해 만들지 않는다.',
@@ -1250,7 +1307,7 @@ export function buildGameSpecificBuildUpDirective({
       'OPTIMIZE_MOBILE_FRAME_INPUT_RENDER_OR_STATE_BOTTLENECK_WHEN_VERIFIED'
     ]);
   return Object.freeze({
-    version:2,
+    version:3,
     directiveId:`${id}-build-up-g${generation}-${fingerprint.slice(0,12)}`,
     directiveFingerprint:fingerprint,
     previousDirectiveFingerprint:previousFingerprint||null,
@@ -1293,6 +1350,7 @@ export function buildGameSpecificBuildUpDirective({
     visualBuildUpDirective:buildVisualDirective({gameId:id,design,source,focus}),
     uxInputDirectives:ux,
     platformAdaptationDirectives:platformDirectives({identity,goal}),
+    perceptibleExperienceBuildUp:buildPerceptibleExperienceDirective({platform,repoRoot}),
     robloxNativeExecution,
     preserveConstraints:[
       '기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.',

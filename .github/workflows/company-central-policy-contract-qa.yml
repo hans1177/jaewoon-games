@@ -40,7 +40,9 @@ on:
       - 'tools/company-strict-production-review.mjs'
       - 'tools/company-development-unity-bootstrap.mjs'
       - 'tools/company-build-up-directive.mjs'
+      - 'company-learning/cross-platform-experience-build-up.json'
       - 'qa/company-build-up-directive.test.mjs'
+      - 'qa/cross-platform-experience-build-up.test.mjs'
       - 'tools/company-development-unity-evidence.mjs'
       - 'tools/company-release-production-cycle.mjs'
       - 'tools/company-development-roblox-bootstrap.mjs'
@@ -146,7 +148,9 @@ on:
       - 'tools/company-strict-production-review.mjs'
       - 'tools/company-development-unity-bootstrap.mjs'
       - 'tools/company-build-up-directive.mjs'
+      - 'company-learning/cross-platform-experience-build-up.json'
       - 'qa/company-build-up-directive.test.mjs'
+      - 'qa/cross-platform-experience-build-up.test.mjs'
       - 'tools/company-development-unity-evidence.mjs'
       - 'tools/company-release-production-cycle.mjs'
       - 'tools/company-development-roblox-bootstrap.mjs'
@@ -264,6 +268,7 @@ jobs:
           node --check assets/vibe-presentation-director.js
           node --test \
             qa/company-build-up-directive.test.mjs \
+            qa/cross-platform-experience-build-up.test.mjs \
             qa/company-direct-native-policy-contract.test.mjs \
             qa/company-high-end-visual-contract.test.mjs \
             qa/vibe-visual-runtime-quality.test.mjs \

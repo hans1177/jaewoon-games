@@ -25,6 +25,10 @@ test('Roblox runtime foundation lane remains Open Cloud only while post-release 
   assert.doesNotMatch(workflow,/vibe2-roblox-studio-cli-runner|--task\s+RunScript|--runScriptFile/);
 });
 
+test('runtime QA rescans when a game-specific Studio quality contract changes',()=>{
+  assert.match(workflow,/roblox-games\/\*\*\/launch-mvp\\.json/);
+});
+
 test('runtime QA rescans when the private candidate producer workflow changes',()=>{
   assert.match(workflow,/\.github\/workflows\/company-development-roblox-release-promotion\.yml/);
 });

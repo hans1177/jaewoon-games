@@ -1992,7 +1992,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   const verified=designContextOverride||latestVerifiedDesign(repoRoot,project.gameId);
   const minimum=verified?null:latestMinimumDesign(repoRoot,project.gameId);
   const designContext=verified||minimum;
-  const requestedFocus=clean(taskInput?.studioQualityEvolution?.focusPillar).toUpperCase();
+  const requestedFocus=clean(taskInput?.studioQualityEvolution?.focusPillar||taskInput?.buildUpDirective?.primaryFocus).toUpperCase();
   const sourceSafeNoDesign=Boolean(
     !designContext
     &&clean(project.engine).toLowerCase()==='web'
@@ -2021,7 +2021,9 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     ?taskHistory.filter(item=>clean(item?.buildUpDirective?.directiveId)===latestDirectiveId)
     :[];
   const activeDirectiveTask=[...latestDirectiveTasks].reverse().find(item=>!inactiveDirectiveStatuses.has(clean(item.status).toLowerCase()));
-  if(activeDirectiveTask?.buildUpDirective){
+  if(activeDirectiveTask?.buildUpDirective
+    &&Number(activeDirectiveTask.buildUpDirective.version||0)>=3
+    &&activeDirectiveTask.buildUpDirective.perceptibleExperienceBuildUp?.perceptiblePlayerEffectRequired===true){
     const repairRequired=platformLane==='roblox'&&project.queueRobloxQualityBuildUpRequired===true;
     const directive={
       ...activeDirectiveTask.buildUpDirective,
@@ -2052,6 +2054,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
         ...(taskInput.evidence||[]),
         'game-specific-build-up-directive:v1',
         'game-specific-build-up-directive:v2',
+        'game-specific-build-up-directive:v3',
         'build-up-source-anchor-count:'+String((directive.responsibleSystemsAndFiles?.sourceAnchors||[]).length),
         'build-up-previous-effectiveness:'+clean(directive.effectivenessMeasurement?.previousGeneration?.classification),
         'build-up-next-vibe-action:'+clean(directive.nextActionDecision?.action),
@@ -2063,6 +2066,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
         'build-up-focus:'+directive.primaryFocus,
         'build-up-source-tree:'+directive.sourceTreeFingerprint,
         'build-up-platform-common-goal:YES',
+        'build-up-perceptible-player-effect-required:YES',
       'autonomous-content-expansion-build-up:v1',
       'autonomous-content-expansion-existing-build-up-only:YES',
       'autonomous-content-expansion-platforms:WEB,ROBLOX,UNITY',
@@ -2154,6 +2158,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       ...(taskInput.evidence||[]),
       'game-specific-build-up-directive:v1',
       'game-specific-build-up-directive:v2',
+        'game-specific-build-up-directive:v3',
       'build-up-source-anchor-count:'+String((directive.responsibleSystemsAndFiles?.sourceAnchors||[]).length),
       'build-up-previous-effectiveness:'+clean(directive.effectivenessMeasurement?.previousGeneration?.classification),
       'build-up-next-vibe-action:'+clean(directive.nextActionDecision?.action),
@@ -2165,6 +2170,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       'build-up-every-loop-regenerate:YES',
       'build-up-all-domain-coverage:YES',
       'build-up-platform-common-goal:YES',
+        'build-up-perceptible-player-effect-required:YES',
       sourceSafeNoDesign?'build-up-design-context:SOURCE_SAFE_NO_DESIGN':'build-up-design-context:APPROVED_OR_MINIMUM_DESIGN',
       ...(sourceSafeNoDesign?['build-up-designless-gameplay-expansion:FORBIDDEN']:[]),
       'autonomous-content-expansion-build-up:v1',
@@ -2429,6 +2435,7 @@ function bindSharedBuildUpDirective(taskInput,directive){
     evidence:[...new Set([
       ...(taskInput.evidence||[]),
       'game-specific-build-up-directive:v2',
+        'game-specific-build-up-directive:v3',
       'build-up-shared-generation-exact-object:YES',
       'build-up-source-anchor-count:'+String((directive.responsibleSystemsAndFiles?.sourceAnchors||[]).length),
       'build-up-previous-effectiveness:'+clean(directive.effectivenessMeasurement?.previousGeneration?.classification),
@@ -2439,6 +2446,7 @@ function bindSharedBuildUpDirective(taskInput,directive){
       'build-up-focus:'+directive.primaryFocus,
       'build-up-source-tree:'+directive.sourceTreeFingerprint,
       'build-up-platform-common-goal:YES',
+        'build-up-perceptible-player-effect-required:YES',
       'autonomous-content-expansion-build-up:v1',
       'autonomous-content-expansion-existing-build-up-only:YES',
       'autonomous-content-expansion-platforms:WEB,ROBLOX,UNITY',
@@ -2452,8 +2460,13 @@ function bindSharedBuildUpDirective(taskInput,directive){
 function hasCurrentAutonomousContentExpansionDirective(directive={}){
   const expansion=directive?.autonomousContentExpansion;
   const ledger=expansion?.themeCoverageLedger;
+  const experience=directive?.perceptibleExperienceBuildUp;
   return Boolean(
     clean(directive?.directiveId)
+    &&Number(directive?.version||0)>=3
+    &&experience?.perceptiblePlayerEffectRequired===true
+    &&experience?.existenceOnlyPassForbidden===true
+    &&experience?.bindOnlyPassForbidden===true
     &&Number(expansion?.version||0)>=2
     &&clean(expansion?.executionBoundary).toUpperCase()==='EXISTING_BUILD_UP_ONLY'
     &&expansion?.autonomousDecisionOwner==='VIBE'
@@ -2510,12 +2523,18 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
         candidate={...candidate,evidence:[...new Set([...(candidate.evidence||[]),'build-up-directive-backfill:queued-existing-work'])]};
       }
       rebound+=1;changed+=1;
-      freshness=currentDirectiveNeedsContractMigration?'RECONCILED_LEGACY_DIRECTIVE_TO_ACTIVE_AUTONOMOUS_GENERATION':'RECONCILED_TO_ACTIVE_GENERATION';
+      freshness=currentDirectiveNeedsContractMigration?'RECONCILED_LEGACY_DIRECTIVE_TO_ACTIVE_V3_GENERATION':'RECONCILED_TO_ACTIVE_GENERATION';
     }else if(currentDirectiveNeedsContractMigration){
       const verifiedDesign=latestVerifiedDesign(repoRoot,gameId);
-      if(!verifiedDesign){
+      const migrationFocus=clean(item?.studioQualityEvolution?.focusPillar||item?.buildUpDirective?.primaryFocus).toUpperCase();
+      const sourceSafeNoDesign=Boolean(
+        !verifiedDesign
+        &&clean(project.engine).toLowerCase()==='web'
+        &&['PRESENTATION','USABILITY','STABILITY'].includes(migrationFocus)
+      );
+      if(!verifiedDesign&&!sourceSafeNoDesign){
         designPending+=1;
-        freshness='LEGACY_AUTONOMOUS_EXPANSION_MIGRATION_DESIGN_PENDING';
+        freshness='LEGACY_BUILD_UP_V3_MIGRATION_DESIGN_PENDING';
         candidate={...item,evidence:[...new Set([...(item.evidence||[]),'build-up-directive-contract-migration:DESIGN_PENDING'])]};
       }else{
         const legacyGeneration=Math.max(1,currentGeneration||1);
@@ -2530,7 +2549,7 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
           ...item,
           id:item.id+'-legacy-contract-baseline',
           status:'superseded',
-          blocker:'superseded-by:AUTONOMOUS_CONTENT_EXPANSION_CONTRACT_BACKFILL',
+          blocker:'superseded-by:PERCEPTIBLE_EXPERIENCE_V3_CONTRACT_BACKFILL',
           buildUpDirective:{...item.buildUpDirective,generation:syntheticPreviousGeneration},
           buildUpGeneration:syntheticPreviousGeneration
         };
@@ -2541,15 +2560,15 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
           candidate=bindSharedBuildUpDirective(item,refreshed.buildUpDirective);
           candidate={...candidate,evidence:[...new Set([
             ...(candidate.evidence||[]),...(refreshed.evidence||[]),
-            'build-up-directive-contract-migration:AUTONOMOUS_CONTENT_EXPANSION_V2',
+            'build-up-directive-contract-migration:PERCEPTIBLE_EXPERIENCE_V3',
             'build-up-directive-contract-migration-generation:PRESERVED'
           ])]};
           canonicalByScope.set(scope,refreshed.buildUpDirective);
           rebound+=1;changed+=1;
-          freshness='MIGRATED_LEGACY_DIRECTIVE_TO_AUTONOMOUS_CONTENT_EXPANSION_SAME_GENERATION';
+          freshness='MIGRATED_LEGACY_DIRECTIVE_TO_PERCEPTIBLE_EXPERIENCE_V3_SAME_GENERATION';
         }else{
           designPending+=1;
-          freshness='LEGACY_AUTONOMOUS_EXPANSION_MIGRATION_FAILED';
+          freshness='LEGACY_BUILD_UP_V3_MIGRATION_FAILED';
         }
       }
     }else if(!currentId){
