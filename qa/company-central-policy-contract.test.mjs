@@ -1694,7 +1694,7 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.equal(architecture.neuralWorkGraphTopology.currentIndependentExecution.mainPushGamePrimaryWake.workflowCallLaneRunsRunScoped,true);
   assert.equal(logMap.mainPushWakeFreshnessEvidence.workflowCallInheritedPushEventMustRemainRunScoped,true);
   assert.equal(logMap.reusableCoreLaneConcurrencyEvidence.requiresExplicitLaneEmptyForMainPushSingleton,true);
-  assert.match(vibeContinuousCore,/inputs\.execution_lane == '' && 'vibe2-main-push-game-primary-wake'/);
+  assert.doesNotMatch(vibeContinuousCore,/vibe2-main-push-game-primary-wake/);
   assert.match(vibeContinuousCore,/format\('vibe2-continuous-\{0\}-\{1\}', github\.run_id, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
 });
 
