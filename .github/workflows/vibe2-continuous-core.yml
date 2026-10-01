@@ -574,8 +574,11 @@ jobs:
           artifact_probe_tsv=/tmp/vibe2-completed-worker-artifacts.tsv
           artifact_probe_json=/tmp/vibe2-completed-worker-artifacts.json
           : > "$artifact_probe_tsv"
-          artifact_probe_failures=0
+          probe_parallelism=16
+          echo "VIBE2_RESERVE_PROBE_PARALLELISM=$probe_parallelism"
           artifact_probe_runs=0
+          artifact_probe_pids=()
+          rm -f /tmp/vibe2-artifact-probe-*.names /tmp/vibe2-artifact-probe-*.tsv /tmp/vibe2-artifact-probe-*.error
           if [ -n "$candidate_reservation_runs" ]; then
             IFS=',' read -r -a artifact_run_ids <<< "$candidate_reservation_runs"
             for reservation_run_id in "${artifact_run_ids[@]}"; do
@@ -585,16 +588,23 @@ jobs:
                 break
               fi
               artifact_probe_runs=$((artifact_probe_runs+1))
-              if artifact_names="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/runs/${reservation_run_id}/artifacts?per_page=100" --jq '.artifacts[].name' 2>/dev/null)"; then
-                while IFS= read -r artifact_name; do
-                  [ -n "$artifact_name" ] || continue
-                  printf '%s\t%s\n' "$reservation_run_id" "$artifact_name" >> "$artifact_probe_tsv"
-                done <<< "$artifact_names"
-              else
-                artifact_probe_failures=$((artifact_probe_failures+1))
-              fi
+              (
+                names_file="/tmp/vibe2-artifact-probe-${reservation_run_id}.names"
+                tsv_file="/tmp/vibe2-artifact-probe-${reservation_run_id}.tsv"
+                if gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/runs/${reservation_run_id}/artifacts?per_page=100" --jq '.artifacts[].name' > "$names_file" 2>/dev/null; then
+                  awk -v run="$reservation_run_id" 'NF { print run "\t" $0 }' "$names_file" > "$tsv_file"
+                else
+                  : > "/tmp/vibe2-artifact-probe-${reservation_run_id}.error"
+                fi
+              ) &
+              artifact_probe_pids+=("$!")
             done
           fi
+          for probe_pid in "${artifact_probe_pids[@]}"; do wait "$probe_pid" || true; done
+          while IFS= read -r probe_file; do
+            cat "$probe_file" >> "$artifact_probe_tsv"
+          done < <(find /tmp -maxdepth 1 -type f -name 'vibe2-artifact-probe-*.tsv' | sort)
+          artifact_probe_failures="$(find /tmp -maxdepth 1 -type f -name 'vibe2-artifact-probe-*.error' | wc -l | tr -d ' ')"
           node - "$artifact_probe_tsv" "$artifact_probe_json" <<'NODE'
           const fs=require('fs');
           const [input,output]=process.argv.slice(2);
@@ -621,18 +631,33 @@ jobs:
           fi
 
           completed_probe_failures=0
+          rm -f /tmp/vibe2-run-probe-*.completed /tmp/vibe2-run-probe-*.error
           if [ -n "$candidate_reservation_runs" ]; then
             IFS=',' read -r -a reservation_run_ids <<< "$candidate_reservation_runs"
-            completed_ids=()
+            status_probe_pids=()
             for reservation_run_id in "${reservation_run_ids[@]}"; do
               [ -n "$reservation_run_id" ] || continue
-              reservation_run_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${reservation_run_id}" --jq '.status' 2>/dev/null || true)"
-              if [ "$reservation_run_status" = 'completed' ]; then
-                completed_ids+=("$reservation_run_id")
-              elif [ -z "$reservation_run_status" ]; then
-                completed_probe_failures=$((completed_probe_failures+1))
+              (
+                reservation_run_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${reservation_run_id}" --jq '.status' 2>/dev/null || true)"
+                if [ "$reservation_run_status" = 'completed' ]; then
+                  printf '%s\n' "$reservation_run_id" > "/tmp/vibe2-run-probe-${reservation_run_id}.completed"
+                elif [ -z "$reservation_run_status" ]; then
+                  : > "/tmp/vibe2-run-probe-${reservation_run_id}.error"
+                fi
+              ) &
+              status_probe_pids+=("$!")
+              if [ "${#status_probe_pids[@]}" -ge "$probe_parallelism" ]; then
+                for probe_pid in "${status_probe_pids[@]}"; do wait "$probe_pid" || true; done
+                status_probe_pids=()
               fi
             done
+            for probe_pid in "${status_probe_pids[@]}"; do wait "$probe_pid" || true; done
+            mapfile -t completed_ids < <(
+              while IFS= read -r probe_file; do cat "$probe_file"; done < <(
+                find /tmp -maxdepth 1 -type f -name 'vibe2-run-probe-*.completed' | sort
+              )
+            )
+            completed_probe_failures="$(find /tmp -maxdepth 1 -type f -name 'vibe2-run-probe-*.error' | wc -l | tr -d ' ')"
             if [ "${#completed_ids[@]}" -gt 0 ]; then
               completed_reservation_runs="$(IFS=,; echo "${completed_ids[*]}")"
             fi

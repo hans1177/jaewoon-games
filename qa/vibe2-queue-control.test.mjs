@@ -1102,6 +1102,10 @@ test('completed reservation probe prioritizes oldest running reservations and co
   assert.match(block,/reservedAt:Date\.parse/);
   assert.match(block,/\.sort\(\(a,b\)=>a\.reservedAt-b\.reservedAt\|\|Number\(a\.runId\)-Number\(b\.runId\)\)/);
   assert.match(block,/if\(ids\.length>=256\)break/);
+  assert.match(block,/VIBE2_RESERVE_PROBE_PARALLELISM=\$probe_parallelism/);
+  assert.match(block,/probe_parallelism=16/);
+  assert.match(block,/status_probe_pids/);
+  assert.match(block,/artifact_probe_pids/);
   assert.doesNotMatch(block,/slice\(0,64\)/);
 });
 
