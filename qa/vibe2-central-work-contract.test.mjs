@@ -117,18 +117,18 @@ function writePolicy(root,version=196,overrides={}){
       operatingModel:{dedupeRequired:true},
       assistantRole:{
         mayCreateExecutionWorker:false,
-        mayMutateWaveQueue:false,
-        mayReorderWave:false,
+        mayMutateExecutionQueue:false,
+        mayReorderIndependentTasks:false,
         mayMutateLocksOrPolicy:false,
         mayAutoPromoteLearningOrTuning:false,
         mayExpandNeuralAuthority:false
       },
       executionBoundary:{
-        executionAuthority:'EXISTING_WAVE_SCHEDULER_ONLY',
+        executionAuthority:'EXISTING_DAG_SCHEDULER_ONLY',
         neuralExecutionAuthority:false,
         workerCreationAuthority:false,
         queueMutationAuthority:false,
-        waveReorderAuthority:false,
+        taskReorderAuthority:false,
         lockPolicyMutationAuthority:false,
         automaticLearningTuningPromotionAuthority:false
       },
@@ -191,7 +191,7 @@ test('current central roadmap compiles a complete Vibe work request without auth
   assert.equal(contract.workLock.baseSha,'abc123');
   assert.deepEqual(contract.workLock.files,['web-games/bug-defense/index.html']);
   assert.equal(contract.workLock.releaseRule,'RELEASE_AFTER_FAN_IN_QA_OR_ABORT');
-  assert.equal(contract.workRequest.authorityBoundary.executionAuthority,'EXISTING_WAVE_SCHEDULER_ONLY');
+  assert.equal(contract.workRequest.authorityBoundary.executionAuthority,'EXISTING_DAG_SCHEDULER_ONLY');
   assert.equal(contract.workRequest.authorityBoundary.workerCreationAuthority,false);
   assert.equal(contract.workRequest.authorityBoundary.queueMutationAuthority,false);
   assert.equal(contract.failureRoute.failureStage,'VIBE_WEB_REPAIR');
