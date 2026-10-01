@@ -66,11 +66,12 @@ test('foundation workflow edits self-trigger exact current game revalidation',()
   assert.match(workflow,/push:\s*\n\s*branches: \[main\][\s\S]*company-development-roblox-post-runtime-qa\.yml/);
   assert.match(workflow,/paths:[\s\S]*company-development-roblox-post-runtime-qa\.yml[\s\S]*roblox-games\/\.company-runtime-trigger/);
   assert.match(workflow,/EVENT_NAME: \$\{\{ github\.event_name \}\}/);
-  assert.ok((workflow.match(/TRIGGER_CHANGED:/g)||[]).length>=3);
-  assert.ok(workflow.includes("TRIGGER_CHANGED: ${{ github.event_name == 'push' && (contains(toJSON(github.event.head_commit.modified), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.added), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.removed), 'roblox-games/.company-runtime-trigger')) }}"));
+  assert.match(workflow,/PUSH_BEFORE: \$\{\{ github\.event\.before \|\| '' \}\}/);
+  assert.ok((workflow.match(/trigger_changed=false/g)||[]).length>=3);
+  assert.ok((workflow.match(/git diff --quiet "\$PUSH_BEFORE" HEAD -- roblox-games\/\.company-runtime-trigger/g)||[]).length>=3);
   assert.doesNotMatch(workflow,/TRIGGER_CHANGED: .*github\.event\.commits/);
   assert.match(workflow,/process\.env\.EVENT_NAME==='push'&&String\(process\.env\.TRIGGER_CHANGED\|\|''\)\.toLowerCase\(\)==='true'/);
-  assert.match(workflow,/\[ "\$EVENT_NAME" = 'push' \] && \[ "\$TRIGGER_CHANGED" = 'true' \]/);
+  assert.match(workflow,/export TRIGGER_CHANGED="\$trigger_changed"/);
   assert.match(workflow,/roblox-games\/\.company-runtime-trigger/);
   assert.match(workflow,/ROBLOX_FOUNDATION_REQUESTED_GAME_ID=/);
   assert.match(workflow,/ROBLOX_FOUNDATION_REQUESTED_GAME_ID_INVALID/);
@@ -252,7 +253,7 @@ test('exact transient Open Cloud retry does not consume the Studio MCP lane',()=
   const studioAutoPlayAt=workflow.indexOf('\n  studio-mcp-auto-play:',studioPlanAt);
   assert.ok(studioPlanAt>0&&studioAutoPlayAt>studioPlanAt);
   const studioPlan=workflow.slice(studioPlanAt,studioAutoPlayAt);
-  assert.match(studioPlan,/if: \$\{\{ inputs\.run_studio == true && inputs\.retry_open_cloud_only != true \}\}/);
+  assert.match(studioPlan,/if: \$\{\{ inputs\.retry_open_cloud_only != true && \(inputs\.run_studio == true \|\| github\.event_name == 'push'\) \}\}/);
 });
 
 
@@ -322,10 +323,11 @@ test('batch scan cancels stale queued foundation runs and preserves active valid
   assert.match(cleanup,/Cancel stale queued foundation runs before batch scan/);
   assert.match(cleanup,/github\.event_name != 'workflow_dispatch' \|\| inputs\.game_id == ''/);
   assert.match(cleanup,/const states=new Set\(\['queued','pending','requested','in_progress'\]\)/);
-  assert.match(cleanup,/ROBLOX_ACTIVE_STUDIO_RUN_PRESERVED=/);
-  assert.match(cleanup,/select\(\.status == "in_progress"\)/);
+  assert.match(cleanup,/ROBLOX_PENDING_STUDIO_RUN_PRESERVED=/);
+  assert.match(cleanup,/ROBLOX_PENDING_STUDIO_PLANNER_PRESERVED=/);
+  assert.match(cleanup,/select\(\.status == "queued" or \.status == "pending" or \.status == "requested" or \.status == "waiting" or \.status == "in_progress"\)/);
   assert.match(cleanup,/ROBLOX_OBSOLETE_RUN_ONLY_WAITING_FOR_RUNNER=/);
-  assert.ok(cleanup.indexOf('ROBLOX_ACTIVE_STUDIO_RUN_PRESERVED=') < cleanup.indexOf('actions/runs/$run_id/cancel'));
+  assert.ok(cleanup.indexOf('ROBLOX_PENDING_STUDIO_RUN_PRESERVED=') < cleanup.indexOf('actions/runs/$run_id/cancel'));
   assert.match(dedupe,/head_sha/);
   assert.match(dedupe,/actions\/runs\/\$run_id\/cancel/);
   assert.match(dedupe,/ROBLOX_STALE_FOUNDATION_RUN_CANCELLED=/);

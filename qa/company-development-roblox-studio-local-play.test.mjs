@@ -3039,6 +3039,7 @@ test('newer exact infrastructure failures resume without clearing product repair
  candidate.robloxQualityBuildUpSourceRevision=source;
  candidate.robloxQualityBuildUpEvidence={testedAt:'2026-09-28T00:00:00Z'};
  candidate.robloxInternalVibePlayEvidence={...candidate.robloxRuntimeCandidateEvidence,
+   studioHarnessVersion:ROBLOX_STUDIO_HARNESS_VERSION,
    infrastructureFailure:true,failureClass:'STUDIO_MCP_INFRASTRUCTURE_PENDING',testedAt:'2026-09-29T00:00:00Z'};
  const before=structuredClone(candidate);
  assert.equal(planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()}).include.length,1);
