@@ -91,10 +91,10 @@ env:
   VIBE2_LEARNING_LANE_MAX: '4'
   VIBE2_ASSET_DEVELOPMENT_MAX: '64'
 
-# Keep one continuous scheduler chain. v9 releases the stale v8 scheduler epoch
-# while keeping the canonical scheduler and moving only its lightweight plan onto the ARM control pool.
+# Keep one continuous scheduler chain. v10 releases the stale v9 scheduler epoch
+# that can remain occupied by an already-active learning worker while preserving the canonical scheduler.
 concurrency:
-  group: vibe2-24h-cycle-singleton-v9
+  group: vibe2-24h-cycle-singleton-v10
   cancel-in-progress: false
 
 jobs:
