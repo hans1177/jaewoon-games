@@ -11,11 +11,12 @@ on:
       - 'roblox-games/horror-escape-room/server/ManorLobby.luau'
       - 'roblox-games/horror-escape-room/client/ManorLobby.client.luau'
       - 'qa/horror-manor.test.mjs'
+      - 'qa/horror-manor-ui-harness.luau'
 permissions:
   contents: read
 concurrency:
-  group: horror-owner-system-publish
-  cancel-in-progress: false
+  group: horror-owner-system-publish-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 jobs:
   import-build-publish:
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
