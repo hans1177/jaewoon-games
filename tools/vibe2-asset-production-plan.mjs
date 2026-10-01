@@ -8,7 +8,7 @@ import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { planAssetApplication } from '../assets/asset-selector.js';
 import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant,auditMotionContinuityTrace} from '../assets/vibe-motion-director.js';
-import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan} from '../assets/vibe-studio-asset-universe.js';
+import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison} from '../assets/vibe-visual-quality-gate.js';
 
@@ -1053,6 +1053,11 @@ export function buildVibeAssetProductionPlan({
   const assetCustomization=assetSynchronization?.customization
     ?freeze({...studioUniversePlan.customization,items:assetSynchronization.customization.items,unresolvedCount:assetSynchronization.customization.unresolvedCount})
     :studioUniversePlan?.customization||null;
+  const runtimeVisualReview=task.assetRuntimeVisualReview?createAssetRuntimeVisualReviewPlan({
+    ...task.assetRuntimeVisualReview,
+    sourceRevision:task.assetRuntimeVisualReview.sourceRevision||task.sourceRevision||'',
+    platforms:task.assetRuntimeVisualReview.platforms||[resolvedTarget.toUpperCase()]
+  }):null;
   const mapDetailReconstruction=task.mapReconstruction?createVibeMapDetailReconstruction({
     sketch:task.mapReconstruction.sketch||{},assets:[...universeRepositoryAssets,...(companyRegistry?.assets||[])],
     styleFamily:assetSynchronization?.document?.styleBible?.profileKey||studioUniversePlan?.styleBible?.profileKey,
@@ -1138,6 +1143,7 @@ export function buildVibeAssetProductionPlan({
       customization:assetSynchronization?.customization||studioUniversePlan.customization,
       platforms:task.assetDetailReview?.platforms||(['unity','web'].includes(resolvedTarget)?['UNITY','WEB']:[resolvedTarget.toUpperCase()])
     }):null,
+    runtimeVisualReview,
     motionContinuityAudit,
     runtimeVisualAudit,
     runtimeVisualRepair,
@@ -1578,6 +1584,7 @@ export function assetProductionGuidance(plan={}){
     plan.applyFirstSummary?.enabled?`[APPLY USABLE ASSETS FIRST] ${JSON.stringify(plan.applyFirstSummary)}. 먼저 현재 게임/회사/저장소에서 target-compatible하고 실제 경로 또는 native binding이 있는 자산을 게임에 적용한다. 적용 후 실제 게임 카메라에서 품질을 확인하고 부족한 부위만 derived variant로 조형·재질·리그·LOD를 보강해 재적용한다. 사용 가능한 자산이 목표 품질에 도달할 수 있는데 새 자산부터 만들지 않는다. 품질이 부족하면 SILHOUETTE/PROPORTION/STRUCTURE/FACE_HANDS_FEET/MATERIAL/RIG/SOCKET/MOTION/LOD/UI_STATE 같은 축으로 분해하고 강한 축은 유지한다. 다른 호환 자산은 전체 대체뿐 아니라 파츠·리그·재질·모션 기증자로 사용해 derived variant를 재조립한다. GAME_CAMERA→MID_RANGE→CLOSEUP→CONTACT 디테일 바닥을 채우고, 랜덤 소품/노이즈/텍스처 과밀로 디테일을 가장하지 않는다. 핵심 형태나 구조 품질이 부분 보강으로 회복 불가능할 때만 전체 신규 제작으로 넘어간다.`:'' ,
     plan.generatedAssetOutputContract?`[GENERATED NATIVE ASSET CONTRACT] ${JSON.stringify(plan.generatedAssetOutputContract)}. Roblox/Unity에서 기존 자산이 목표 품질을 못 채우면 Blender/Python 또는 엔진 네이티브 authoring으로 실제 원본 자산을 만든다. 생성 소스 레시피와 원본/파생 파일, 동일 조건 미리보기, evidence.json, 회사 자산 장부 등록을 남긴다. GLB/이미지 파일이 생겼다는 사실만으로 VERIFIED 처리하지 말고 대상 native 런타임에서 실제 바인딩·표현·성능 검증 뒤 승격한다.`:'',
     plan.detailReview?`[STYLE COMPARISON AND LOCAL REPAIR] ${JSON.stringify(plan.detailReview)}. 같은 원형·카메라·조명·동작·표본 시점으로 카툰/실사/다크를 비교한다. repairs의 현재 소스/캡처 근거가 있는 부위·프레임·editableParameters만 수정하고 previousParameters와 잠긴 특징은 유지한다. 수정 뒤 동일 조건 재촬영으로 재검토하며 캡처 등록이나 파라미터 변경만으로 문제를 닫지 않는다.`:'',
+    plan.runtimeVisualReview?`[RUNTIME VISUAL PIXEL REVIEW] ${JSON.stringify(plan.runtimeVisualReview)}. Roblox Studio·Unity Editor/Android APK·Web Browser의 실제 캡처를 현재 sourceRevision에 묶어 픽셀로 검수한다. expectedSubjects 중 해당 view에서 required인 대상만 누락 판정 대상으로 삼고, 가림·화면 밖·판독 불확실은 누락으로 확정하지 않는다. 실제 픽셀에서 확인된 누락 오브젝트·약한 디테일·겹침·잘림·가독성 문제를 APPLY_FIRST 후보와 precisionProduction의 약한 축 입력으로 사용한다. 먼저 사용 가능 자산을 적용하고 부족 축만 파생 제작·재적용하며 게임 규칙·밸런스·저장·네트워크 권한은 바꾸지 않는다. 수정 후 같은 surface/view에서 재캡처해야 하며 캡처 메타데이터만으로 품질 PASS를 주장하지 않는다.`:'',
     plan.motionContinuityAudit?`[MEASURED CONTINUOUS MOTION] ${JSON.stringify(plan.motionContinuityAudit)}. 루트·접촉점·손/무기 목표점=월드 미터, 관절=루트 로컬 미터, 지지물 접촉=동일 supportId의 로컬 미터, 회전/시선 오차=라디안, 표정=0~1 가중치다. violations의 region/frameRange/normalizedTimeRange에서 발 고정·손/무기 접촉·의상 관통·시선 추적·표정 튐을 수정한다. attachments는 active와 effectorWorldPosition/targetWorldPosition, penetrations는 depthMeters, gaze는 tracking과 forwardWorld/targetDirectionWorld, expressions는 morph별 가중치를 모든 프레임에 계측한다. 레지스트리 motionQA.requiredDetailChannels/limits를 작업 입력이 약화할 수 없다. 현재 소스 해시와 클립 전체 표본 및 선언된 채널이 없으면 UNVERIFIED다. 판정 시점·클립 길이·게임 이동 권한을 바꾸지 말고 재측정한다. unmeasuredGroups는 미검수이며 수치 PASS는 전체 시각 품질이나 런타임 승격 PASS가 아니다.`:'',
     plan.runtimeVisualRepair?`[RUNTIME VISUAL REPAIR LOOP] ${JSON.stringify(plan.runtimeVisualRepair)}. defects만 실제 책임 파일에서 수정한다. INTERFACE는 요구된 HUD/MENU/MINIMAP/INTERACTION 표면만, SCENE_OBJECT는 선언된 필수 오브젝트 바인딩만 보완한다. ENVIRONMENT/COHESION/PRESENTATION은 같은 카메라·조명·상태를 유지한 before/after 캡처로 다시 확인한다. 게임 규칙·저장·멀티 권한·판정 타이밍은 수정하지 않는다. 같은 결함은 실제 런타임 재관찰 전에는 닫지 않는다.`:'',
     plan.precisionProduction?`[PRECISION PRODUCTION CHAIN] ${JSON.stringify(plan.precisionProduction)}. 검사 결과를 보고서로 끝내지 않는다. 현재 소스와 실제 화면에서 결함을 찾고 정확한 수정 범위를 만든 뒤, 같은 작업에서 editable source와 native derivative를 실제 제작하고 기존 게임 책임 위치에 적용한다. 디테일은 GAME_CAMERA→MID_RANGE→CLOSEUP→CONTACT 순으로 제작하며 실루엣/구조/재질/접촉을 각각 해결한다. 소품 수나 랜덤 노이즈로 디테일을 대신하지 말고 기능·접촉·날씨·손상 원인을 가진 디테일만 만든다. 제작 성공 후 바로 적용 단계로 넘어가며 검사나 수정 계획만 제출하고 멈추지 않는다. 제작 도구가 없을 때만 정확한 AUTHORING 단계와 필요한 원본을 남기고 완료를 주장하지 않는다.`:'',
