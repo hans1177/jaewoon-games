@@ -677,7 +677,7 @@ test('exact Roblox dispatch stays per-game while batch runs and runtime writers 
   assert.equal(execution.crossGameWorkflowSerializationForbidden,true);
   assert.equal(execution.exactGameDuplicateWorkflowSerializationAllowed,true);
   assert.equal(execution.internalSameWorkflowGameMatrixParallelismPreserved,true);
-  assert.match(workflow,/concurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n(?:\s+#.*\n)*\s+cancel-in-progress: false/);
+  assert.match(workflow,/concurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n(?:\s+#.*\n)*\s+cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
   assert.doesNotMatch(workflow,/max-parallel:/);
   for(const job of ['source-plan','source-bootstrap','technical-plan','technical-persist']){
     const header=`  ${job}:\n`;
@@ -1058,7 +1058,7 @@ test('Roblox runtime collapses duplicate exact-game and batch planners with same
   assert.match(workflow,/ROBLOX_RUNTIME_EXACT_DEDUPED_ACTIVE=/);
   assert.match(workflow,/ROBLOX_RUNTIME_BATCH_DEDUPED_NEWER_ACTIVE=/);
   assert.match(workflow,/process\.stdout\.write\(String\(ids\[ids\.length-1\]\)\)/);
-  assert.match(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n(?:\s+#.*\n)*\s+cancel-in-progress: false/);
+  assert.match(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n(?:\s+#.*\n)*\s+cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
 });
 
 

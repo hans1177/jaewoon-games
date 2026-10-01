@@ -284,10 +284,8 @@ jobs:
           echo 'DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN'
 
   game-primary-gate:
-    needs: runner-drain
-    # Drain stale control/refill work first so the lightweight gate does not compete with queue cleanup.
-    # A superseded pending drain cancels this old gate as well; a real drain failure still allows gating.
-    if: always() && needs.runner-drain.result != 'cancelled' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'cancelled')
+    # Gate and queue drain are independent lightweight control lanes; supervision waits for both.
+    if: always() && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'cancelled')
     concurrency:
       group: director-game-primary-gate-v1
       # Preserve the active fallback gate so queued GAME_PRIMARY work is not starved.
