@@ -3636,7 +3636,19 @@
       "developmentAdmissionAuthority": true,
       "upperPlatformReadinessGate": "UPPER_PLATFORM_DEVELOPMENT_READY",
       "newUpperPlatformEntryBlocking": true,
-      "existingNativeDevelopmentGrandfathered": true
+      "existingNativeDevelopmentGrandfathered": true,
+      "candidateManifestExecutionSurface": "UNITY_WEB",
+      "nativeUnityExecutionSurface": "UNITY_NATIVE",
+      "candidateReleaseGate": ".github/workflows/vibe2-candidate-release.yml",
+      "candidateReleaseRouting": "UNITY_WEB_TO_UNITY_WEB_FIRST_STAGE_BUILD__UNITY_NATIVE_TO_ANDROID_NATIVE_GATE",
+      "reviewedPromotionRoots": [
+        "unity-games/<gameId>/",
+        "web-games/<gameId>/"
+      ],
+      "reviewedPromotionMustBindExactCandidateUnitySource": true,
+      "cloudflarePreviewRequiredBeforeMerge": true,
+      "cloudflareMainDeploymentRequiredBeforeVibePass": true,
+      "vibePassAfterReviewedMergeAndCloudflareMainOnly": true
     },
     "admissionAuthority": "UPPER_PLATFORM_DEVELOPMENT_READY",
     "strictDesignScoreAdmissionAuthority": false,
