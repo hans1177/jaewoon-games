@@ -657,10 +657,10 @@ test('dedicated Roblox QA-only changes do not launch the full runtime pipeline',
   assert.match(vibeQa,/qa\/company-development-roblox-source-reconcile\.test\.mjs/);
 });
 
-test('Roblox game source pushes wake the canonical batch runtime after the owner rollback',()=>{
+test('Roblox game source pushes route through source drift sync without duplicate runtime ingress',()=>{
   const runtime=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const runtimePush=runtime.slice(runtime.indexOf('on:'),runtime.indexOf('workflow_dispatch:'));
-  assert.match(runtimePush,/roblox-games\/\*\*/);
+  assert.doesNotMatch(runtimePush,/roblox-games\/\*\*/);
   assert.match(runtimePush,/company-roblox-source-drift-sync\.yml/);
   assert.match(runtimePush,/company-roblox-source-drift-sync\.mjs/);
   assert.match(runtimePush,/company-roblox-source-drift-sync\.test\.mjs/);
