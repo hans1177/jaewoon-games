@@ -22082,10 +22082,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T00:31:44.717Z",
+      "updatedAt": "2026-10-01T00:31:45.574Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -22522,7 +22522,7 @@
       "unityCandidateBranch": "development/unity-tech-seed-puzzle-chromatic-cascade-36773180555",
       "unitySourceCommit": "7ff69c6e50d3937841819d892247ed0ec3b7f435",
       "unityBuildRunId": 36778411976,
-      "unityRuntimeSmokeRunId": 36792095567,
+      "unityRuntimeSmokeRunId": 36796414246,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityInternalReleaseReady": false,
@@ -22531,7 +22531,7 @@
       "unityPublicReleaseReady": false,
       "unityPublicRelease": false,
       "executionEvidence": {
-        "version": 3,
+        "version": 4,
         "platform": "UNITY",
         "sourceRevision": "7ff69c6e50d3937841819d892247ed0ec3b7f435",
         "sourceRootTreeSha": "fc8e532a76a4d3e37f738ede4a2edbc4bf04620c",
@@ -22542,11 +22542,17 @@
         "independentQaPassed": false,
         "multiplayerPassed": true,
         "regressionPassed": false,
+        "rawStageResults": {
+          "runtime": false,
+          "independentQa": false,
+          "regression": false
+        },
+        "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": true,
         "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
         "failureStage": "F1_SERVER_BOOT",
-        "failureSignature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee"
+        "failureSignature": "54a968f2f5824ce65c933b4bd7188cfc35292ed4e0c02930174eb16c0c7312f3"
       },
       "resumeStage": "F1_SERVER_BOOT",
       "failureCount": 1,
@@ -23126,13 +23132,13 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-09-30T23:42:42.659Z"
+        "verifiedAt": "2026-10-01T00:31:45.574Z"
       },
       "unityF9ReleaseRegressionPassed": false,
       "unityF9ReleaseRegressionPassedAt": null,
       "unityCanonicalPublishPending": false,
       "unityExecutionEvidence": {
-        "version": 3,
+        "version": 4,
         "platform": "UNITY",
         "sourceRevision": "7ff69c6e50d3937841819d892247ed0ec3b7f435",
         "sourceRootTreeSha": "fc8e532a76a4d3e37f738ede4a2edbc4bf04620c",
@@ -23143,12 +23149,19 @@
         "independentQaPassed": false,
         "multiplayerPassed": true,
         "regressionPassed": false,
+        "rawStageResults": {
+          "runtime": false,
+          "independentQa": false,
+          "regression": false
+        },
+        "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": true,
         "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
         "failureStage": "F1_SERVER_BOOT",
-        "failureSignature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee"
-      }
+        "failureSignature": "54a968f2f5824ce65c933b4bd7188cfc35292ed4e0c02930174eb16c0c7312f3"
+      },
+      "unityCanonicalEvidenceBound": false
     },
     {
       "gameId": "seed-single-defense-strat-celestial-bastion",
@@ -27756,7 +27769,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T00:31:44.717Z",
+  "updatedAt": "2026-10-01T00:31:52.549Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
