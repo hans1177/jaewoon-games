@@ -1615,6 +1615,14 @@ function nextGraphicsEvolutionTask(project,repoRoot,queue,relatives,stages){
     ]);
     out.workUnits=7;
     out.assetProductionLane=true;
+    if(project.engine==='roblox'){
+      out.responsibleFiles=[`${posix(project.projectPath)}/client/Presentation.client.luau`];
+      out.evidence=[...new Set([
+        ...(out.evidence||[]),
+        'asset-presentation-owner:ISOLATED_CLIENT_SCRIPT',
+        'asset-presentation-readonly-game-context:REQUIRED'
+      ])];
+    }
     out.estimatedRisk='high';
     out.speculativeEligible=true;
     out.atomicNeuronMode='PER_TASK_MICRO_FANIN';
@@ -1726,6 +1734,14 @@ export function findPresentationQualityTask(project,repoRoot,queue){
     ]);
     out.workUnits=7;
     out.assetProductionLane=true;
+    if(engine==='roblox'){
+      out.responsibleFiles=[`${posix(project.projectPath)}/client/Presentation.client.luau`];
+      out.evidence=[...new Set([
+        ...(out.evidence||[]),
+        'asset-presentation-owner:ISOLATED_CLIENT_SCRIPT',
+        'asset-presentation-readonly-game-context:REQUIRED'
+      ])];
+    }
     out.estimatedRisk='high';
     out.speculativeEligible=true;
     out.atomicNeuronMode='PER_TASK_MICRO_FANIN';
@@ -2907,11 +2923,15 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
       const project=allProjects.find(row=>row.gameId===item.gameId&&row.engine===item.target);
       if(project)item=applyWorldLobbyFirst(item,project,repoRoot);
     }
+    const evidence=(item.evidence||[]).map(clean);
+    const studioPresentation=clean(item?.studioQualityEvolution?.focusPillar).toUpperCase()==='PRESENTATION';
+    const genericPresentation=evidence.includes('presentation-quality-pipeline:v1')
+      &&!item.studioAssetBackfill
+      &&!evidence.includes('roblox-studio-asset-backfill:v1');
     if(clean(item?.status).toLowerCase()!=='queued'
       ||clean(item?.target).toLowerCase()!=='roblox'
-      ||clean(item?.studioQualityEvolution?.focusPillar).toUpperCase()!=='PRESENTATION')return item;
+      ||(!studioPresentation&&!genericPresentation))return item;
     const responsible=(item.responsibleFiles||[]).map(posix).filter(Boolean);
-    const evidence=(item.evidence||[]).map(clean);
     const assetLane=item.assetProductionLane===true||evidence.includes('asset-production-parallel:v1');
     if(assetLane){
       const isolatedPresentationPath=`roblox-games/${clean(item.gameId)}/client/Presentation.client.luau`;
