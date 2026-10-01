@@ -943,10 +943,10 @@ test('known Roblox source repair debt outranks reconciliation pass and canonical
   assert.match(workflow,/const knownSourceRepairDebt=\(Boolean\(bootstrapFailed\)&&!resolvedSourceBindDebt\)\|\|f0FoundationRepair/);
   assert.match(workflow,/ROBLOX_STALE_SOURCE_BIND_DEBT_RESOLVED_BY_EXACT_RECONCILIATION=/);
   assert.match(workflow,/const existingSourceLearningRebind=reconciliationRow\?\.failure==='existing-source-verified-external-learning-required'/);
-  assert.match(workflow,/ROBLOX_RUNTIME_OWNS_VERIFIED_LEARNING_REBIND=/);
-  assert.doesNotMatch(workflow,/ROBLOX_VERIFIED_LEARNING_SWEEP_OWNS_REBIND=/);
-  assert.doesNotMatch(workflow,/if\(existingSourceLearningRebind\)\{[\s\S]*?continue;/);
-  assert.match(workflow,/const existingSourceMaintenanceRebind=existingSourceAssetRebind\|\|existingSourceLearningRebind/);
+  assert.match(workflow,/ROBLOX_VERIFIED_LEARNING_SWEEP_OWNS_REBIND=/);
+  assert.doesNotMatch(workflow,/ROBLOX_RUNTIME_OWNS_VERIFIED_LEARNING_REBIND=/);
+  assert.match(workflow,/if\(existingSourceLearningRebind\)\{[\s\S]*?continue;/);
+  assert.match(workflow,/const existingSourceMaintenanceRebind=existingSourceAssetRebind;/);
   assert.match(workflow,/const repairSupersedesCandidate=existingSourceMaintenanceRebind\|\|knownSourceRepairDebt/);
   assert.match(workflow,/if\(candidateReady&&!repairSupersedesCandidate\)continue/);
   assert.match(workflow,/ROBLOX_STALE_SOURCE_CANDIDATE_BYPASSED_FOR_REPAIR=/);
