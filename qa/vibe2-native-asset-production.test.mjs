@@ -1138,3 +1138,29 @@ function applyWorldSnapshot(w){if(w.weather)setWeather(w.weather.kind)}
     assert.equal(result.weatherPresentationQa.runtimeStillRequired,true);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+
+test('runtime visual defects flow from asset planning into the source worker prompt',()=>{
+  const revision='7'.repeat(40);
+  const roles=['PLAYER_OR_PRIMARY_CHARACTER_CLOSEUP','PRIMARY_ENEMY_OR_CREATURE_CLOSEUP','CORE_GAMEPLAY_ACTION','WORLD_OR_REGION_WIDE','MOBILE_GAMEPLAY_HUD'];
+  const runtimeVisualEvidence={
+    stage:'INTERNAL_PLAYTEST',candidateRevision:revision,
+    captures:roles.map((role,index)=>({role,source:'roblox-runtime-capture',artifactId:'cap-'+index,candidateRevision:revision,observed:true,reviewed:true,comparison:{pass:true}})),
+    primaryActors:[{id:'player',presentation:'rigged-mesh'}],
+    requiredInterfaceSurfaces:['HUD','MINIMAP'],
+    interfaceCoverage:{HUD:{required:true,pass:true,observed:true,reviewed:true},MINIMAP:{required:true,pass:false,observed:true,reviewed:true}},
+    sceneObjectCoverage:{requirements:[{id:'quest-board',required:true}],observations:[]}
+  };
+  const plan=buildVibeAssetProductionPlan({target:'roblox',task:{gameId:'runtime-visual-demo',goal:'로블록스 UI와 월드 디테일 보완',runtimeVisualEvidence}});
+  assert.equal(plan.runtimeVisualAudit.pass,false);
+  assert.equal(plan.runtimeVisualRepair.status,'RUNTIME_VISUAL_REPAIR_REQUIRED');
+  assert.deepEqual([...plan.runtimeVisualRepair.interfaceMissing],['MINIMAP']);
+  assert.deepEqual([...plan.runtimeVisualRepair.sceneObjectsMissing],['quest-board']);
+  assert.equal(plan.runtimeVisualRepair.declarationOnlyClosureForbidden,true);
+  assert.match(assetProductionGuidance(plan),/RUNTIME VISUAL REPAIR LOOP/);
+  const prompt=buildPrompt({target:'roblox',goal:'시각 결함만 수정',assetProduction:plan},{files:[{path:'client/Game.client.luau',content:'return true',editable:true}]},['client/Game.client.luau']);
+  assert.match(prompt,/RUNTIME VISUAL REPAIR BEGIN/);
+  assert.match(prompt,/MINIMAP/);
+  assert.match(prompt,/quest-board/);
+  assert.match(prompt,/runtime re-observation is required/);
+});
