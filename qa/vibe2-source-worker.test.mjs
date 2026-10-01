@@ -3841,7 +3841,7 @@ test('asset-development Roblox graphics stays on bounded focused retries while g
 
 test('failed source generation still performs post-work shared-context validation before exiting the candidate step',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
-  const after='node tools/company-shared-context.mjs --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.json"';
+  const after='--output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.json"';
   const failureExit='if [ "$worker_rc" -ne 0 ]; then exit "$worker_rc"; fi';
   const afterAt=workflow.indexOf(after);
   const exitAt=workflow.indexOf(failureExit);
@@ -3849,6 +3849,10 @@ test('failed source generation still performs post-work shared-context validatio
   assert.ok(exitAt>=0);
   assert.ok(afterAt<exitAt);
   assert.equal(workflow.indexOf(after,afterAt+1),-1);
+  const validationStart=workflow.lastIndexOf('node tools/company-shared-context.mjs',afterAt);
+  assert.ok(validationStart>=0);
+  assert.ok(validationStart<afterAt);
+  assert.match(workflow.slice(validationStart,afterAt),/--pinned-hash-verify=true/);
 });
 
 test('focused replace Ollama requests keep canonical budget and enforce one-key schema',()=>{
