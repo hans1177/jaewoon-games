@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {assetProductionGuidance,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,inspectVibeSourceGlb} from '../tools/vibe2-asset-production-plan.mjs';
-import {observeAssetReferenceImages,buildPrompt} from '../tools/vibe2-source-worker.mjs';
+import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
@@ -48,6 +48,49 @@ test('image-only asset input delivers actual pixels and binds observations to th
   const bad={assetProduction:{imageAssetCreation:{enabled:true,studies:[{request:{...request,imageRef:'../outside.png'}}]}}};
   await assert.rejects(observeAssetReferenceImages({order:bad,model:'fixture'}),/LOCAL_REFERENCE_REQUIRED/);
   await assert.rejects(observeAssetReferenceImages({order,model:'fixture',requestModel:async()=>'{}'}),/OBSERVATION_INCOMPLETE/);
+});
+
+
+test('current runtime screenshots become bounded visual repairs and never treat uncertainty as a missing object',async()=>{
+  const task={gameId:'runtime-review',goal:'실제 게임 화면 디테일 검수',assetRuntimeVisualReview:{
+    sourceRevision:'rev-current',platforms:['ROBLOX'],requiredSurfaces:['ROBLOX_STUDIO'],requiredViews:['GAME_CAMERA'],
+    captures:[{id:'studio-game',platform:'ROBLOX',surface:'ROBLOX_STUDIO',view:'GAME_CAMERA',sceneId:'spawn',imageRef:'assets/roblox/world-ghosts/dokkaebi.png',sourceRevision:'rev-current',viewport:{width:1280,height:720}}],
+    expectedSubjects:[
+      {id:'hero',role:'CHARACTER',required:true,mustBeVisibleIn:['GAME_CAMERA'],identityAnchors:['ONE_HORN']},
+      {id:'shrine',role:'LANDMARK',required:true,mustBeVisibleIn:['GAME_CAMERA']}
+    ],
+    editableTargets:['hero','shrine','scene-lighting'],visualGoals:['mobile silhouette readability','landmark presence']
+  }};
+  const plan=buildVibeAssetProductionPlan({target:'roblox',task,manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.equal(plan.runtimeVisualReview.status,'READY_FOR_PIXEL_INSPECTION');
+  assert.equal(plan.runtimeVisualReview.captures[0].sourceRevision,'rev-current');
+  let calls=0;
+  const observed=await observeAssetRuntimeCaptures({order:{assetProduction:plan},model:'fixture-vision',requestModel:async(prompt,options)=>{
+    calls++;assert.match(prompt,/ACTUAL runtime screenshot pixels/);assert.match(prompt,/ROBLOX_STUDIO/);
+    assert.ok(Buffer.from(options.images[0],'base64').length>1000);
+    return JSON.stringify({
+      visibleSubjects:['hero'],missingSubjects:['shrine'],uncertainSubjects:[],
+      findings:[
+        {id:'missing-shrine',severity:'HIGH',category:'MISSING_OBJECT',regionNormalized:[0,0,1,1],targetIds:['shrine'],observed:'Required shrine is not visible in the gameplay view',requestedChange:'Restore the expected shrine using the existing landmark responsibility'},
+        {id:'hero-detail',severity:'MEDIUM',category:'WEAK_DETAIL',regionNormalized:[.2,.1,.3,.6],targetIds:['hero'],observed:'Hero silhouette loses small-scale material separation',requestedChange:'Strengthen existing hero material separation without changing identity'}
+      ]
+    });
+  }});
+  assert.equal(calls,1);assert.equal(observed.status,'VISUAL_REPAIR_REQUIRED');assert.equal(observed.pixelInspectionPerformed,true);
+  assert.equal(observed.repairs.length,2);assert.equal(observed.captures[0].pixelInputDelivered,true);
+  assert.equal(observed.captures[0].sourceRevision,'rev-current');assert.match(observed.captures[0].artifactHash,/^[a-f0-9]{64}$/);
+  const prompt=buildPrompt({target:'roblox',assetProduction:plan,runtimeVisualObservation:observed},{files:[{path:'client/Game.client.luau',content:'local ready = true',editable:true}]},['client/Game.client.luau']);
+  assert.match(prompt,/RUNTIME VISUAL REVIEW BEGIN/);assert.match(prompt,/missing-shrine/);assert.match(prompt,/Never convert uncertain\/off-camera\/occluded evidence into an addition/);
+  assert.ok(!prompt.includes('iVBOR'));
+
+  const uncertain=await observeAssetRuntimeCaptures({order:{assetProduction:plan},model:'fixture-vision',requestModel:async()=>JSON.stringify({
+    visibleSubjects:['hero'],missingSubjects:[],uncertainSubjects:['shrine'],findings:[]
+  })});
+  assert.equal(uncertain.status,'REVIEW_EVIDENCE_REQUIRED');assert.equal(uncertain.repairs.length,0);
+
+  const stale=buildVibeAssetProductionPlan({target:'roblox',task:{...task,assetRuntimeVisualReview:{...task.assetRuntimeVisualReview,captures:[{...task.assetRuntimeVisualReview.captures[0],sourceRevision:'old'}]}},manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.equal(stale.runtimeVisualReview.status,'CAPTURES_REQUIRED');
+  await assert.rejects(observeAssetRuntimeCaptures({order:{assetProduction:stale},model:'fixture-vision'}),/RUNTIME_VISUAL_CAPTURES_REQUIRED/);
 });
 
 test('detail and measured motion repair reach the production work order and use registry source identity',()=>{
