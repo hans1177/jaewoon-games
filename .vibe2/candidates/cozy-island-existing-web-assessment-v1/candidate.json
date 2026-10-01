@@ -1,0 +1,20 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "  <script type=\"module\" src=\"./render-performance.js\"></script>",
+      "replace": ""
+    },
+    {
+      "path": "index.html",
+      "find": "      <div class=\"hud-main\">",
+      "replace": ""
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
