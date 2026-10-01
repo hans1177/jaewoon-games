@@ -781,7 +781,71 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
   });
 }
 
-function createPostDownloadInternalComparison({matched=[],target='',binding={}}={}){
+
+function createConceptFitContract({task={},requestedConcept={},binding={}}={}){
+  const weightedStyles=Array.isArray(requestedConcept?.styles)?requestedConcept.styles.map(row=>freeze({
+    family:clean(row?.family||row?.styleFamily||row?.id),
+    weight:Number(row?.weight??row?.ratio??1)||1
+  })).filter(row=>row.family):[];
+  const primaryStyle=clean(task.styleFamily||task.style)||weightedStyles.sort((a,b)=>b.weight-a.weight)[0]?.family||null;
+  const visualLanguages=task.visualLanguages&&typeof task.visualLanguages==='object'?task.visualLanguages:{};
+  const worldDna=task.worldDna&&typeof task.worldDna==='object'?task.worldDna:task.mapDna&&typeof task.mapDna==='object'?task.mapDna:{};
+  const role=clean(binding?.type).toUpperCase()||'ASSET';
+  return freeze({
+    version:1,
+    role,
+    primaryStyle,
+    weightedStyles:freezeList(weightedStyles),
+    artTone:freezeList(Array.isArray(requestedConcept?.artTone)?requestedConcept.artTone:[]),
+    worldEra:freezeList(Array.isArray(requestedConcept?.worldEra)?requestedConcept.worldEra:[]),
+    combatFeel:freezeList(Array.isArray(requestedConcept?.combatFeel)?requestedConcept.combatFeel:[]),
+    presentation:freezeList(Array.isArray(requestedConcept?.presentation)?requestedConcept.presentation:[]),
+    customTags:freezeList(Array.isArray(requestedConcept?.customTags)?requestedConcept.customTags:[]),
+    visualLanguages:freeze({...visualLanguages}),
+    worldDna:freeze({...worldDna}),
+    requiredChecks:freezeList([
+      'STYLE_FAMILY_AND_RENDER_LANGUAGE',
+      'WORLD_ERA_AND_TECHNOLOGY_LANGUAGE',
+      'SILHOUETTE_VOCABULARY',
+      'MATERIAL_LANGUAGE',
+      'PALETTE_VALUE_AND_CONTRAST_HIERARCHY',
+      'GAMEPLAY_ROLE_READABILITY',
+      'NEIGHBOR_ASSET_COHERENCE',
+      ...(role==='UI'?['UI_SHAPE_ICON_TYPOGRAPHY_LANGUAGE']:[]),
+      ...(role==='ANIMATION'?['MOTION_PERSONALITY_WEIGHT_AND_RHYTHM']:[]),
+      ...(['BACKGROUND','PROP','ENVIRONMENT'].includes(role)?['BIOME_ARCHITECTURE_AND_PROP_DENSITY_LANGUAGE']:[])
+    ]),
+    fullReplacementHardGate:'NO_MAJOR_CONCEPT_CONTRADICTION',
+    majorMismatchExamples:freezeList([
+      'REALISM_LEVEL_CONTRADICTS_GAME_STYLE',
+      'ERA_OR_TECHNOLOGY_BREAKS_WORLD_LANGUAGE',
+      'SILHOUETTE_OR_PROPORTION_BREAKS_FACTION_SPECIES_OR_ROLE_LANGUAGE',
+      'MATERIAL_OR_PALETTE_BREAKS_WORLD_VISUAL_DNA',
+      'MOTION_PERSONALITY_BREAKS_CHARACTER_WEIGHT_OR_COMBAT_FEEL',
+      'UI_GRAMMAR_BREAKS_EXISTING_INTERFACE_LANGUAGE'
+    ]),
+    mismatchHandling:freeze({
+      fullReplacementBlocked:true,
+      compatiblePartDonorAllowed:true,
+      donorAxesMustIndividuallyPassConceptFit:true,
+      recolorAloneCannotRepairStructuralStyleMismatch:true,
+      materialSwapAloneCannotRepairEraOrSilhouetteMismatch:true,
+      currentGameContextCapturePreferred:true
+    }),
+    comparisonContext:freeze({
+      sameCameraLightingDistanceAction:true,
+      compareNextToExistingNeighborAssets:true,
+      gameCameraFirst:true,
+      closeupSecondary:true,
+      mobileReadabilityRequired:true
+    }),
+    evidenceRule:'CURRENT_GAME_STYLE_BIBLE_VISUAL_DNA_AND_ACTUAL_RUNTIME_CONTEXT_BEAT_GENERIC_ASSET_QUALITY',
+    runtimeVerified:false,
+    selectedAssetId:null
+  });
+}
+
+function createPostDownloadInternalComparison({matched=[],target='',binding={},conceptFit=null}={}){
   const internal=matched.filter(asset=>asset.acquiredExternal!==true&&[
     'VERIFIED_COMPANY_ASSET','SAME_GAME_EXISTING_ROBLOX_ASSET','LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET'
   ].includes(asset.sourceTier));
@@ -809,12 +873,16 @@ function createPostDownloadInternalComparison({matched=[],target='',binding={}}=
     internalBaselineCandidateIds:freezeList(internalRows.slice(0,6).map(row=>row.id)),
     comparisonViews:freezeList(['GAME_CAMERA','MID_RANGE','CLOSEUP','CONTACT']),
     hardGates:freezeList(['LICENSE_AND_PROVENANCE','SOURCE_HASH','TARGET_PLATFORM_IMPORT','NO_RUNTIME_ERROR','MOBILE_PERFORMANCE_BUDGET']),
-    qualityAxes:freezeList(['GAME_STYLE_FIT','SILHOUETTE_AND_READABILITY','MATERIAL_AND_SURFACE_DETAIL','PROPORTION_AND_SCALE','RIG_CONTACT_OR_INTERACTION','MOTION_AND_SECONDARY_MOTION','DETAIL_BY_DISTANCE']),
+    qualityAxes:freezeList(['GAME_STYLE_FIT','CONCEPT_AND_WORLD_COHERENCE','SILHOUETTE_AND_READABILITY','MATERIAL_AND_SURFACE_DETAIL','PROPORTION_AND_SCALE','RIG_CONTACT_OR_INTERACTION','MOTION_AND_SECONDARY_MOTION','DETAIL_BY_DISTANCE']),
+    conceptFit,
+    conceptFitHardGate:true,
+    conceptMismatchBlocksFullReplacement:true,
+    conceptCompatibleDonorUseAllowed:true,
     sameConditionsRequired:true,
     sameCameraLightingDistanceActionRequired:true,
     actualRuntimePixelsRequiredForVisualWinner:true,
     noPreDownloadWinner:true,
-    externalFullReplacementRule:'MUST_IMPROVE_AT_LEAST_ONE_CORE_QUALITY_AXIS_WITHOUT_REGRESSING_ANY_PROTECTED_CORE_AXIS',
+    externalFullReplacementRule:'MUST_PASS_CONCEPT_HARD_GATE_AND_IMPROVE_AT_LEAST_ONE_CORE_QUALITY_AXIS_WITHOUT_REGRESSING_ANY_PROTECTED_CORE_AXIS',
     mixedResultRule:'KEEP_INTERNAL_BASE_AND_USE_EXTERNAL_ONLY_AS_PROVEN_PART_RIG_MATERIAL_MOTION_OR_DETAIL_DONOR',
     comparableQualityRule:'KEEP_INTERNAL_ASSET',
     bothFailRule:'DERIVE_TARGETED_REPAIR_THEN_NEW_AUTHORING_LAST',
@@ -827,7 +895,7 @@ function createPostDownloadInternalComparison({matched=[],target='',binding={}}=
   });
 }
 
-function decisionFor(selector={},target='',binding={},manifest={}){
+function decisionFor(selector={},target='',binding={},manifest={},conceptContext={}){
   const type=clean(binding.type);
   const qualityDNA=qualityDnaForType(type);
   const matched=matchedForType(selector,type,manifest,target);
@@ -840,7 +908,8 @@ function decisionFor(selector={},target='',binding={},manifest={}){
   const candidateRows=freezeList([...reuseCandidates,...externalCandidates].map(asset=>assetApplyFirstCandidate(asset,target,binding)));
   const applyFirstCandidates=freezeList(candidateRows.filter(row=>row.ready).sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
   const donorCandidates=freezeList(candidateRows.filter(row=>row.sourceHash&&row.donorCapabilities.length).sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
-  const postDownloadComparison=createPostDownloadInternalComparison({matched,target,binding});
+  const conceptFit=createConceptFitContract({task:conceptContext.task||{},requestedConcept:conceptContext.requestedConcept||{},binding});
+  const postDownloadComparison=createPostDownloadInternalComparison({matched,target,binding,conceptFit});
   const preferredCandidateId=postDownloadComparison.required?null:(applyFirstCandidates[0]?.id||null);
   const decisionOrder=unique([
     'COMPARE_TARGET_GAME_QUALITY',
@@ -924,8 +993,10 @@ function decisionFor(selector={},target='',binding={},manifest={}){
       selectionState:postDownloadComparison.required?postDownloadComparison.status:'TARGET_GAME_REVIEW_REQUIRED',
       selectedAssetId:null,
       sourcePreferenceOnlyAfterQualityPass:true,
-      postDownloadInternalComparisonRequired:postDownloadComparison.required
+      postDownloadInternalComparisonRequired:postDownloadComparison.required,
+      conceptFitHardGate:true
     }),
+    conceptFit,
     postDownloadComparison,
     motionReusePlan,
     generatorFallback:freeze({
@@ -1120,7 +1191,7 @@ export function buildVibeAssetProductionPlan({
     presetCatalog:presetInput,
     rebuild:/FULL_WEB_GAME_REBUILD/i.test(request)
   });
-  const decisions=freezeList((selector.binding||[]).map(binding=>decisionFor(selector,resolvedTarget,binding,manifestInput)));
+  const decisions=freezeList((selector.binding||[]).map(binding=>decisionFor(selector,resolvedTarget,binding,manifestInput,{task,requestedConcept})));
   const highEnd=highEndVisualContract(repoRoot);
   const highEndActive=highEnd?.status==='ACTIVE_EXECUTABLE_CONTRACT';
   const companyLibrary=companyGraphicsLibraryContract(repoRoot);
@@ -1925,7 +1996,7 @@ export function assetProductionGuidance(plan={}){
     lines.push(`- type=${row.type}; reuse=${reuse}; external=${external}; direct=${direct}; order=${(row.decisionOrder||[]).join('>')}`);
     if(row.postDownloadComparison?.required){
       const cmp=row.postDownloadComparison;
-      lines.push(`다운로드 후 내부자산 비교=${cmp.status}; external=${cmp.externalCandidateIds.join('|')||'none'}; internal=${cmp.internalBaselineCandidateIds.join('|')||'none'}. 외부 다운로드본은 sourceHash·라이선스·타깃 플랫폼 import를 통과한 뒤 내부 기준 자산과 같은 카메라·조명·거리·행동으로 A/B 비교한다. 외부가 핵심 품질축 하나 이상을 개선하면서 보호 품질축을 후퇴시키지 않을 때만 전체 교체 후보가 된다. 혼합 결과면 내부 베이스를 유지하고 외부는 이긴 파츠/리그/재질/모션/디테일 축의 도너로만 사용한다. 동급이면 내부자산을 유지하고, 둘 다 부족하면 부분 파생 수정 후 신규 제작을 마지막에 사용한다.`);
+      lines.push(`다운로드 후 내부자산 비교=${cmp.status}; external=${cmp.externalCandidateIds.join('|')||'none'}; internal=${cmp.internalBaselineCandidateIds.join('|')||'none'}. 외부 다운로드본은 sourceHash·라이선스·타깃 플랫폼 import를 통과한 뒤 내부 기준 자산과 같은 카메라·조명·거리·행동으로 A/B 비교한다. 외부가 conceptFit 하드 게이트를 통과하고 핵심 품질축 하나 이상을 개선하면서 보호 품질축을 후퇴시키지 않을 때만 전체 교체 후보가 된다. 실사도·시대/기술·실루엣·재질·팔레트·모션 성격·UI 문법이 현재 Style Bible/Game Visual DNA와 충돌하면 전체 교체를 금지하고, 컨셉 적합도가 개별 검증된 축만 도너로 사용한다. 혼합 결과면 내부 베이스를 유지하고 외부는 이긴 파츠/리그/재질/모션/디테일 축의 도너로만 사용한다. 동급이면 내부자산을 유지하고, 둘 다 부족하면 부분 파생 수정 후 신규 제작을 마지막에 사용한다.`);
     }
     if(row.type==='animation')lines.push(`모션 품질 비교 필수=${(row.qualitySelection?.requiredChecks||[]).join(',')}; 품질 미달 후보를 적용하지 말고 비교 결과와 선택 이유를 남긴다.`);
     if(row.motionReusePlan){
