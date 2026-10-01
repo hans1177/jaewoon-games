@@ -4319,35 +4319,6 @@
           "incidentTool": "tools/company-security-incident.mjs",
           "regressionTest": "qa/company-security-steward.test.mjs"
         },
-        "verification": {
-          "companySecurityImmuneSystem": {
-            "state": "PASS",
-            "runId": 35496240787,
-            "scanJob": "PASS",
-            "enforceJob": "PASS",
-            "incidentRecordJob": "SKIPPED_NO_INCIDENT"
-          },
-          "vibeQa": {
-            "state": "PASS",
-            "runId": 35496240788
-          },
-          "companyEvolutionQa": {
-            "state": "PASS",
-            "runId": 35496240873
-          },
-          "integratedRegression": {
-            "state": "PASS",
-            "runId": 35496240801
-          },
-          "vibe3EngineContract": {
-            "state": "PASS",
-            "runId": 35496240804
-          },
-          "mergedPrProvenance": {
-            "state": "PASS",
-            "runId": 35496273845
-          }
-        },
         "invariants": {
           "exactPrimaryAiReviewMarkerUnchanged": true,
           "scanIdentityAndFindingCountChecksUnchanged": true,
@@ -8751,16 +8722,6 @@
         "conclusion": "success"
       }
     },
-    "liveVerification": {
-      "effectiveExecutionWaveMax": 20,
-      "planningBacklogTarget": 60,
-      "planningBacklogCurrentBefore": 18,
-      "planningBacklogAfter": 18,
-      "activeWorkerReservations": 16,
-      "waveReady": "NO",
-      "releaseWaitExcluded": 0,
-      "interpretation": "PLANNER_EXECUTES_DURING_ACTIVE_WAVE_BUT_DOES_NOT_INVENT_CONFLICTING_OR_NONINDEPENDENT_WORK"
-    },
     "ownerPreservationDesignLane": {
       "version": 1,
       "taskClass": "DESIGN_ONLY_OWNER_PRESERVATION",
@@ -9242,25 +9203,6 @@
         "qaBypassAllowed": false,
         "authorityExpanded": false,
         "protectedGameplayAndSaveSemanticsPreserved": true
-      },
-      "verification": {
-        "verifiedHead": "8f649d4cd66a8a1fade50ee58dae2c9800d6c471",
-        "coreQa": {
-          "runId": 35438787598,
-          "conclusion": "success"
-        },
-        "vibeQa": {
-          "runId": 35438787581,
-          "conclusion": "success"
-        },
-        "integratedRegression": {
-          "runId": 35438787571,
-          "conclusion": "success"
-        },
-        "centralPolicy": {
-          "runId": 35438787599,
-          "conclusion": "success"
-        }
       }
     },
     "phase3": {
@@ -9368,13 +9310,6 @@
         "driftCannotExpandAuthority": true,
         "constitutionAdvisoryOnly": true,
         "impactPredictionCannotGrantWriteAuthority": true
-      },
-      "verification": {
-        "semanticBoundaryQaPassHead": "f61f594a104b8c20d2915db22924a6072b472352",
-        "phase5SupersetQaHead": "c945cd94408a91cd050c53dd7107ccce11d3abf2",
-        "coreQaRunId": 35441313591,
-        "vibeQaRunId": 35441313567,
-        "integratedRegressionRunId": 35441313546
       }
     },
     "stagedSourceSynthesis": {
@@ -9452,51 +9387,6 @@
         "LIVE_20_WAVE_SOURCE_FAILURE_REVALIDATION",
         "COMPARE_TIMEOUT_EDIT_MATCH_FULL_REWRITE_SIZE_BEFORE_AFTER"
       ],
-      "verification": {
-        "head": "c945cd94408a91cd050c53dd7107ccce11d3abf2",
-        "coreQa": {
-          "runId": 35441313591,
-          "jobId": 105892463601,
-          "result": "SUCCESS"
-        },
-        "vibeQa": {
-          "runId": 35441313567,
-          "jobId": 105892463257,
-          "result": "SUCCESS"
-        },
-        "integratedRegression": {
-          "runId": 35441313546,
-          "jobId": 105892463312,
-          "result": "SUCCESS"
-        },
-        "liveRevalidationPending": true,
-        "baselineComparisonRunId": 35438982255,
-        "baselineFailureClasses": {
-          "TIMEOUT": 9,
-          "EDIT_MATCH": 2,
-          "FULL_REWRITE_SIZE": 7,
-          "NO_OP": 1,
-          "MALFORMED_OUTPUT": 1
-        }
-      },
-      "stageTargetVerification": {
-        "head": "aa38e79e7a74dea46cbc1b911d2a87a54e2eaa99",
-        "coreQa": {
-          "runId": 35441514826,
-          "jobId": 105893006839,
-          "result": "SUCCESS"
-        },
-        "vibeQa": {
-          "runId": 35441514838,
-          "jobId": 105893002119,
-          "result": "SUCCESS"
-        },
-        "integratedRegression": {
-          "runId": 35441514837,
-          "jobId": 105893002407,
-          "result": "SUCCESS"
-        }
-      },
       "contextEfficiencyLearning": {
         "state": "VERIFIED",
         "verifiedOnly": true,
@@ -9517,13 +9407,7 @@
         "sourceWorkerAppliesPreferredContextMode": true,
         "preferenceCanChangeContextPackingOnly": true,
         "writableScopeExpansionAllowed": false,
-        "qaWeakeningAllowed": false,
-        "verification": {
-          "head": "dfa87b82780f304fc15b0be6938ec7022dad1832",
-          "coreQaRunId": 35441804484,
-          "vibeQaRunId": 35441804337,
-          "integratedRegressionRunId": 35441804365
-        }
+        "qaWeakeningAllowed": false
       }
     },
     "fullCodingAbsorptionAndCapabilityDistillation": {
@@ -9954,19 +9838,6 @@
             "state": "PASS",
             "runId": 35491306582
           }
-        },
-        "productionObservation": {
-          "state": "RUNTIME_VERIFIED",
-          "checkedAfterMerge": true,
-          "checkedRef": "vibe2-unreal-core",
-          "experienceRecordCount": 25,
-          "capabilityApplicationRecordCount": 90,
-          "capabilityRecordsWithApplicationEvidence": 9,
-          "runtimeApplicationEvidenceObserved": true,
-          "runtimeLifecycleEvidenceObserved": true,
-          "repeatedIndependentFreshQaObserved": true,
-          "unrelatedFailureNoPenaltyObserved": true,
-          "completionClaimAllowed": true
         },
         "runtimeVerifiedAt": "2026-09-20"
       },
@@ -14028,23 +13899,6 @@
       "waveSchedulerRemainsAuthoritative": true,
       "authorityChange": "GATED_EXISTING_SCHEDULER_ONLY",
       "nextGate": "CAPTURE_LIVE_RUNTIME_RESULT_AND_TASK_MICRO_FANIN_EVIDENCE_THEN_OPTIMIZE_VERIFIED_THROUGHPUT",
-      "productionVerification": {
-        "runId": 35503376196,
-        "verifiedMainHead": "7cdbb5239abb8b8d0280bf6a980dbb094754ed94",
-        "workflowConclusion": "SUCCESS",
-        "workerVariants": 3,
-        "fanInReview": "PASS",
-        "durableGraphCount": 3,
-        "graphConflicts": 0,
-        "unauthorizedPermissionBits": 0,
-        "unauthorizedFireCount": 0,
-        "phase2ReviewEligible": false,
-        "phase2ReviewReason": "SHADOW_EVIDENCE_NOT_YET_SUFFICIENT_FOR_PHASE2_REVIEW",
-        "calibrationAccuracy": 0,
-        "verifiedRootCauseCount": 0,
-        "rootCauseSampleConflicts": 170,
-        "verificationScope": "HISTORICAL_SHADOW_BASELINE_ONLY"
-      },
       "evidencePrefixes": [
         "neural-work-graph-shadow:",
         "neural-work-graph-gated:"
@@ -15068,26 +14922,6 @@
             "authorityChange": "NONE"
           }
         ],
-        "latestRuntimeObservation": {
-          "controlRef": "vibe2-unreal-core",
-          "runId": 35500348340,
-          "lastUpdatedAt": "2026-09-20T08:52:28.902Z",
-          "workerCount": 21,
-          "actualPeakConcurrency": 19,
-          "failureRatePct": 52.38,
-          "pressureLevel": "SEVERE",
-          "reportedPrimaryBottleneck": "SOURCE_CANDIDATE_GENERATION",
-          "controlCurrentMax": 256,
-          "telemetryEffectiveMax": 256,
-          "effectivePeakUtilizationPct": 7.42,
-          "queueSnapshot": {
-            "cancelled": 64,
-            "done": 33,
-            "blocked": 1,
-            "running": 5,
-            "queued": 4
-          }
-        },
         "openBottlenecks": [
           {
             "id": "GAME_PRIMARY_EFFECTIVE_MAX_DENOMINATOR_MISMATCH",
@@ -23006,16 +22840,6 @@
         "writableScopeExpansionAllowed": false,
         "unmatchedLocatorFailsClosedAsInvalidPath": true,
         "observedIncident": "Assets/Scripts/UnityWebFloorGame.cs:149"
-      },
-      "latestObservedMissingPathIncident": {
-        "runId": 36057026213,
-        "affectedRobloxTasks": 13,
-        "observedSequence": [
-          "NO_OP",
-          "EMPTY_RELATIVE_PATH"
-        ],
-        "priorTerminalClassification": "OTHER",
-        "repairedClassification": "INVALID_PATH"
       }
     },
     "throughputControl": {
@@ -23171,40 +22995,7 @@
         "qa/company-system-ai-worker.test.mjs",
         "qa/company-system-ai-supervision-loop.test.mjs"
       ],
-      "implementationState": "IMPLEMENTED_QA_PASS",
-      "verification": {
-        "verifiedHead": "d50698df3e998b1a9d15ba7a65bf76c5fe1c66c7",
-        "vibe2CoreQa": {
-          "runId": 35757618764,
-          "result": "PASS"
-        },
-        "integratedRegression": {
-          "runId": 35757618765,
-          "result": "PASS"
-        },
-        "centralPolicyContract": {
-          "runId": 35757618713,
-          "result": "PASS"
-        },
-        "vibeQa": {
-          "runId": 35757618597,
-          "result": "PASS"
-        },
-        "vibe3EngineContract": {
-          "runId": 35757618715,
-          "result": "PASS"
-        },
-        "companyEvolutionQa": {
-          "runId": 35757618647,
-          "result": "PASS"
-        },
-        "homepageSelfQaPreviousEquivalentHomepageHead": {
-          "runId": 35757463696,
-          "result": "PASS",
-          "note": "Homepage files unchanged after this validated homepage head; subsequent commits only changed System AI queue/tests."
-        },
-        "deterministicEvidenceOnly": true
-      }
+      "implementationState": "IMPLEMENTED_QA_PASS"
     },
     "systemAiEvolution": {
       "version": 1,
@@ -26787,13 +26578,25 @@
       "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.workflowTelemetryCommit",
       "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.editMatchFastEscalationSourceCommit",
       "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.editMatchFastEscalationTestCommit",
-      "presentationPipelineImplementation.verification"
+      "presentationPipelineImplementation.verification",
+      "aiExecutionEfficiency.systemAiBottleneckResilience.verification",
+      "neuralDevelopmentBrain.phase2WorkGraphImplementation.productionVerification",
+      "vibeCodingMethodSelfImprovement.stagedSourceSynthesis.verification",
+      "developmentLifecycleMachine.securityImmuneSystem.policyReviewSourceIdentity.verification",
+      "vibeCodingMethodSelfImprovement.fullCodingAbsorptionAndCapabilityDistillation.implementationPhase3.productionObservation",
+      "assistantRoadmapOrchestration.implementationState.vibeBottleneckCentralCheckpoint.latestRuntimeObservation",
+      "vibeExecutionLaneContract.liveVerification",
+      "vibeCodingMethodSelfImprovement.phase2.verification",
+      "vibeCodingMethodSelfImprovement.stagedSourceSynthesis.stageTargetVerification",
+      "vibeCodingMethodSelfImprovement.phase4.verification",
+      "neuralGatedExecution.sourceCandidateGeneration.latestObservedMissingPathIncident",
+      "vibeCodingMethodSelfImprovement.stagedSourceSynthesis.contextEfficiencyLearning.verification"
     ],
-    "latestArchiveRecord": "company-records/operations/2026/2026-10-01/company/central-policy-archive--central-policy-archive-20261001-headroom-1.json",
-    "latestArchiveRecordId": "central-policy-archive-20261001-headroom-1",
-    "latestArchiveSourceRevision": "c0a50b520840502dc806e9fbdecd3779022d5e1d",
-    "latestArchiveAt": "2026-10-01T07:24:26.077Z",
-    "latestArchivePathCount": 1,
+    "latestArchiveRecord": "company-records/operations/2026/2026-10-01/company/central-policy-archive--central-policy-archive-20261001-2f96b2400aea.json",
+    "latestArchiveRecordId": "central-policy-archive-20261001-2f96b2400aea",
+    "latestArchiveSourceRevision": "2f96b2400aea8d111755b8b61b6c07d22aa7a581",
+    "latestArchiveAt": "2026-10-01T12:08:00.000Z",
+    "latestArchivePathCount": 12,
     "softTargetEnforced": true,
     "candidateCommand": "node tools/company-records-governance.mjs --central-candidates"
   }
