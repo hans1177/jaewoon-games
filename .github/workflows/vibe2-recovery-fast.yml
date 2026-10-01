@@ -18,8 +18,9 @@ permissions:
   actions: write
 
 concurrency:
+  # Recovery recomputes from the latest control state, so stale runs are disposable.
   group: vibe2-recovery-fast
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   recover:
