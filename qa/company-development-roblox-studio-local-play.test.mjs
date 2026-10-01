@@ -2806,7 +2806,7 @@ test('manual single-game diagnosis preserves product failures and still rejects 
    assert.equal(planLocalStudioCandidates({...options,queue:{items:[changed]},recheckProductFailure:true}).include.length,0);
  }
  assert.ok(workflow.includes("RECHECK_PRODUCT_FAILURE: ${{ github.event_name == 'workflow_dispatch' && inputs.run_studio == true && inputs.game_id != '' }}"));
- assert.ok(workflow.includes('"--recheck-product-failure=$env:RECHECK_PRODUCT_FAILURE"'));
+ assert.ok(workflow.includes('"--recheck-product-failure=$RECHECK_PRODUCT_FAILURE"'));
 });
 
 test('newer exact infrastructure failures resume without clearing product repair evidence',()=>{
