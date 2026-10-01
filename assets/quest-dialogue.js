@@ -34,6 +34,70 @@ export class JaewoonQuestDialogue {
     return state;
   }
 
+  registerActorQuestCandidate(state, candidate = {}, engineProposal = {}) {
+    this.ensureExtendedState(state);
+    if (candidate?.candidateOnly !== true) return { ok: false, reason: 'ACTOR_QUEST_CANDIDATE_REQUIRED' };
+    if (candidate?.acceptanceCompletionRewardPersistentMutation !== 'engine-only') return { ok: false, reason: 'ENGINE_AUTHORITY_CONTRACT_REQUIRED' };
+    const proposerId = String(candidate.giverOrOrigin || '').trim();
+    const causeEventIds = Array.isArray(candidate.causeEventIds) ? candidate.causeEventIds.map(String).map(value => value.trim()).filter(Boolean) : [];
+    const personalStake = String(candidate.personalStake || '').trim();
+    const worldStake = String(candidate.worldStake || '').trim();
+    const primaryVerb = String(candidate.primaryVerb || '').trim();
+    const branches = Array.isArray(candidate.optionalBranches) ? candidate.optionalBranches.map(String) : [];
+    const id = String(engineProposal.id || '').trim();
+    const whyNow = String(engineProposal.whyNow || '').trim();
+    const objectives = Array.isArray(engineProposal.objectives) ? engineProposal.objectives : [];
+    if (!proposerId) return { ok: false, reason: 'PROPOSER_ID_REQUIRED' };
+    if (!causeEventIds.length && !personalStake) return { ok: false, reason: 'ACTOR_QUEST_CAUSE_REQUIRED' };
+    if (!id) return { ok: false, reason: 'ENGINE_PROPOSAL_ID_REQUIRED' };
+    if (!whyNow) return { ok: false, reason: 'ENGINE_WHY_NOW_REQUIRED' };
+    if (!objectives.length) return { ok: false, reason: 'ENGINE_OBJECTIVES_REQUIRED' };
+
+    const signature = [
+      proposerId,
+      causeEventIds.join(','),
+      personalStake,
+      worldStake,
+      primaryVerb,
+      branches.join(',')
+    ].join('|').toLowerCase();
+    const duplicate = Object.values(state.questProposals).find((proposal) => String(proposal?.meta?.actorCandidateSignature || '') === signature);
+    if (duplicate) return { ok: true, duplicate: true, proposal: clone(duplicate) };
+
+    const sourceEventId = String(engineProposal.sourceEventId || causeEventIds[0] || '').trim();
+    const cause = String(
+      engineProposal.cause
+      || (sourceEventId ? `source-event:${sourceEventId}` : '')
+      || (personalStake ? `personal-goal:${personalStake}` : '')
+    ).trim();
+    const actorGoal = String(engineProposal.actorGoal || personalStake).trim();
+    return this.registerQuestProposal(state, {
+      id,
+      proposerId,
+      class: String(engineProposal.class || 'PERSONAL_SIDE'),
+      title: String(engineProposal.title || id),
+      cause,
+      whyNow,
+      actorGoal,
+      sourceEventId,
+      objectives,
+      requirements: clone(engineProposal.requirements) || {},
+      consequence: clone(engineProposal.consequence) || {},
+      stake: String(engineProposal.stake || worldStake || personalStake),
+      proposalLineIntent: String(engineProposal.proposalLineIntent || 'ask-for-help-in-character'),
+      playerAcceptanceRequired: engineProposal.playerAcceptanceRequired !== false,
+      meta: {
+        ...(clone(engineProposal.meta) || {}),
+        actorCandidateSignature: signature,
+        actorCandidatePrimaryVerb: primaryVerb || null,
+        actorCandidateBranches: branches,
+        actorCandidateCauseEventIds: causeEventIds,
+        actorCandidateOnly: true,
+        engineValidatedProposal: true
+      }
+    });
+  }
+
   registerQuestProposal(state, proposal = {}) {
     this.ensureExtendedState(state);
     const id = String(proposal.id || '').trim();
