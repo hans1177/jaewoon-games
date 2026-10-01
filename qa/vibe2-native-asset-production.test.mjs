@@ -50,7 +50,6 @@ test('image-only asset input delivers actual pixels and binds observations to th
   await assert.rejects(observeAssetReferenceImages({order,model:'fixture',requestModel:async()=>'{}'}),/OBSERVATION_INCOMPLETE/);
 });
 
-
 test('current runtime screenshots become bounded visual repairs and never treat uncertainty as a missing object',async()=>{
   const task={gameId:'runtime-review',goal:'실제 게임 화면 디테일 검수',assetRuntimeVisualReview:{
     sourceRevision:'rev-current',platforms:['ROBLOX'],requiredSurfaces:['ROBLOX_STUDIO'],requiredViews:['GAME_CAMERA'],
@@ -1180,4 +1179,147 @@ function applyWorldSnapshot(w){if(w.weather)setWeather(w.weather.kind)}
     assert.equal(result.weatherPresentationQa.status,'STATIC_PASS');
     assert.equal(result.weatherPresentationQa.runtimeStillRequired,true);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+
+test('runtime visual defects flow from asset planning into the source worker prompt',()=>{
+  const revision='7'.repeat(40);
+  const roles=['PLAYER_OR_PRIMARY_CHARACTER_CLOSEUP','PRIMARY_ENEMY_OR_CREATURE_CLOSEUP','CORE_GAMEPLAY_ACTION','WORLD_OR_REGION_WIDE','MOBILE_GAMEPLAY_HUD'];
+  const runtimeVisualEvidence={
+    stage:'INTERNAL_PLAYTEST',candidateRevision:revision,
+    captures:roles.map((role,index)=>({role,source:'roblox-runtime-capture',artifactId:'cap-'+index,candidateRevision:revision,observed:true,reviewed:true,comparison:{pass:true}})),
+    primaryActors:[{id:'player',presentation:'rigged-mesh'}],
+    requiredInterfaceSurfaces:['HUD','MINIMAP'],
+    interfaceCoverage:{HUD:{required:true,pass:true,observed:true,reviewed:true},MINIMAP:{required:true,pass:false,observed:true,reviewed:true}},
+    sceneObjectCoverage:{requirements:[{id:'quest-board',required:true}],observations:[]}
+  };
+  const plan=buildVibeAssetProductionPlan({target:'roblox',task:{gameId:'runtime-visual-demo',goal:'로블록스 UI와 월드 디테일 보완',runtimeVisualEvidence}});
+  assert.equal(plan.runtimeVisualAudit.pass,false);
+  assert.equal(plan.runtimeVisualRepair.status,'RUNTIME_VISUAL_REPAIR_REQUIRED');
+  assert.deepEqual([...plan.runtimeVisualRepair.interfaceMissing],['MINIMAP']);
+  assert.deepEqual([...plan.runtimeVisualRepair.sceneObjectsMissing],['quest-board']);
+  assert.equal(plan.runtimeVisualRepair.declarationOnlyClosureForbidden,true);
+  assert.match(assetProductionGuidance(plan),/RUNTIME VISUAL REPAIR LOOP/);
+  const prompt=buildPrompt({target:'roblox',goal:'시각 결함만 수정',assetProduction:plan},{files:[{path:'client/Game.client.luau',content:'return true',editable:true}]},['client/Game.client.luau']);
+  assert.match(prompt,/RUNTIME VISUAL REPAIR BEGIN/);
+  assert.match(prompt,/MINIMAP/);
+  assert.match(prompt,/quest-board/);
+  assert.match(prompt,/runtime re-observation is required/);
+});
+
+
+test('usable same-game asset is applied before new authoring and weak regions derive later',()=>{
+  const sameGame={
+    id:'existing-wolf',path:'roblox-games/apply-first-demo/assets/wolf.glb',types:['enemy'],
+    tags:['wolf','enemy'],license:'project-original',platforms:['roblox'],
+    sameGameExistingRoblox:true,sourceHash:'wolf-v1',robloxAssetId:'123456'
+  };
+  const company={
+    id:'company-wolf',path:'assets/roblox/wolf.glb',types:['enemy'],
+    tags:['wolf','enemy'],license:'project-original',platforms:['roblox'],
+    companyVerified:true,sourceHash:'company-wolf-v1'
+  };
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',
+    manifest:{assets:[sameGame,company]},
+    presetCatalog:{version:1,presets:[{id:'wolf',name:'Wolf',genre:'survival',keywords:['wolf'],actorAssets:['existing-wolf','company-wolf'],effectAssets:[],toolCandidates:[],platformProfiles:{roblox:{},unity:{},webValidation:{}}}]},
+    task:{gameId:'apply-first-demo',goal:'wolf enemy 그래픽을 실제 게임에 적용하고 더 디테일하게'}
+  });
+  const enemy=plan.decisions.find(row=>row.type==='enemy');
+  assert.ok(enemy);
+  assert.equal(enemy.applyFirst.enabled,true);
+  assert.equal(enemy.applyFirst.candidates[0].id,'existing-wolf');
+  assert.equal(enemy.applyFirst.candidates[0].mode,'PATCH_EXISTING_GAME_BINDING');
+  assert.equal(enemy.applyFirst.deriveBeforeReplace,true);
+  assert.equal(enemy.applyFirst.qualityRescue.axisBased,true);
+  assert.equal(enemy.applyFirst.qualityRescue.donorRecompositionAllowed,true);
+  assert.ok(enemy.applyFirst.donorCandidates.some(row=>row.id==='company-wolf'));
+  assert.ok(enemy.applyFirst.candidates[0].qualityAxes.includes('SPECIES_SILHOUETTE'));
+  assert.ok(enemy.applyFirst.candidates[0].qualityAxes.includes('SURFACE_MATERIAL'));
+  assert.ok(enemy.applyFirst.candidates[0].rescueLadder.includes('RECOMPOSE_COMPATIBLE_PART_DONORS'));
+  assert.equal(enemy.applyFirst.candidates[0].randomDetailInflationForbidden,true);
+  assert.equal(plan.applyFirstSummary.existingAssetApplicationBeforeNewAuthoring,true);
+  assert.equal(plan.applyFirstSummary.newAuthoringOnlyAfterReusableCandidateFailure,true);
+  assert.match(assetProductionGuidance(plan),/APPLY USABLE ASSETS FIRST/);
+  const prompt=buildPrompt(
+    {target:'roblox',goal:'기존 사용 가능 자산부터 적용',assetProduction:plan},
+    {files:[{path:'client/Game.client.luau',content:'return true',editable:true}]},
+    ['client/Game.client.luau']
+  );
+  assert.match(prompt,/APPLY USABLE ASSETS FIRST BEGIN/);
+  assert.match(prompt,/PATCH_EXISTING_GAME_BINDING/);
+  assert.match(prompt,/Keep strong axes and rebuild only failed axes/);
+  assert.match(prompt,/donate parts, rig structure, material language, sockets, motion/);
+  assert.match(prompt,/Random clutter, texture noise/);
+});
+
+test('precision production continues from inspection through authoring and application',()=>{
+  const asset={
+    id:'hero-body',family:'CHARACTER',types:['character'],tags:['character'],
+    license:'project-original',sourceHash:'hero-v1',
+    customization:{controls:{jaw:{kind:'MORPH',axis:'FACE',target:'Jaw',min:0,max:1}}}
+  };
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',manifest:{assets:[asset]},presetCatalog:{presets:[]},
+    task:{
+      gameId:'precision-demo',goal:'캐릭터와 마을을 정밀하게 실제 제작해서 적용',
+      assetCustomization:{recipes:[{id:'hero',family:'CHARACTER',baseAssetId:'hero-body',previousParameters:{jaw:.2},editableParameters:['jaw'],parameters:{jaw:.35}}]},
+      mapReconstruction:{seed:'precision-demo',sketch:{
+        sourceId:'map',sourceHash:'map-v1',metersPerUnit:1,
+        nodes:[{id:'START',role:'spawn'},{id:'HUB',role:'landmark'},{id:'EXIT',role:'transition'}],
+        edges:[{from:'START',to:'HUB'},{from:'HUB',to:'EXIT'}],
+        districts:[{id:'hub',anchorNodeId:'HUB',function:'village',landmark:'hall'}]
+      }}
+    }
+  });
+  assert.equal(plan.precisionProduction.mode,'INSPECT_REPAIR_AUTHOR_APPLY_REINSPECT');
+  assert.equal(plan.precisionProduction.automaticAdvance,true);
+  assert.equal(plan.precisionProduction.continuation.stopAfterInspection,false);
+  assert.equal(plan.precisionProduction.continuation.stopAfterRepairPlan,false);
+  assert.equal(plan.precisionProduction.continuation.stopAfterAuthoring,false);
+  assert.equal(plan.precisionProduction.application.directExistingResponsibilityBinding,true);
+  assert.equal(plan.mapDetailReconstruction.productionChain.reportOnlyCompletionForbidden,true);
+  assert.ok(plan.mapDetailReconstruction.regions[0].layers.some(row=>row.productionAction==='CREATE_EDITABLE_NATIVE_ASSET'));
+  assert.match(assetProductionGuidance(plan),/PRECISION PRODUCTION CHAIN/);
+  const prompt=buildPrompt(
+    {target:'roblox',goal:'검사부터 제작 적용까지 진행',assetProduction:plan},
+    {files:[{path:'client/Game.client.luau',content:'return true',editable:true}]},
+    ['client/Game.client.luau']
+  );
+  assert.match(prompt,/PRECISION PRODUCTION CHAIN BEGIN/);
+  assert.match(prompt,/INSPECT -> DEFINE_REPAIR -> AUTHOR -> APPLY/);
+  assert.match(prompt,/GAME_CAMERA silhouette\/function/);
+});
+
+
+test('low-quality asset rescue preserves strong axes and escalates to full authoring only after targeted derivation',()=>{
+  const manifest={assets:[
+    {id:'base-hero',path:'roblox-games/rescue-demo/assets/hero.glb',types:['character'],tags:['character','hero'],license:'project-original',platforms:['roblox'],sameGameExistingRoblox:true,sourceHash:'hero-base',robloxAssetId:'111',rigType:'R15',retargetable:true},
+    {id:'donor-hero',path:'assets/roblox/hero-donor.glb',types:['character'],tags:['character','hero'],license:'project-original',platforms:['roblox'],companyVerified:true,sourceHash:'hero-donor',rigType:'R15',retargetable:true,
+      platformVariants:{ROBLOX:{path:'assets/roblox/hero-donor.glb'}}}
+  ]};
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',manifest,
+    presetCatalog:{version:1,presets:[{id:'hero',name:'Hero',genre:'rpg',keywords:['hero','character'],actorAssets:['base-hero','donor-hero'],effectAssets:[],toolCandidates:[],platformProfiles:{roblox:{},unity:{},webValidation:{}}}]},
+    task:{gameId:'rescue-demo',goal:'hero character 저퀄 자산을 디테일하게 보강해서 적용'}
+  });
+  const row=plan.decisions.find(item=>item.type==='character');
+  assert.ok(row);
+  assert.equal(row.applyFirst.enabled,true);
+  assert.equal(row.applyFirst.qualityRescue.fullAssetReplacementNotDefault,true);
+  assert.equal(row.applyFirst.qualityRescue.preserveStrongAxes,true);
+  assert.equal(row.applyFirst.failedCandidateCanRemainAsReusablePartDonor,true);
+  assert.ok(row.applyFirst.candidateLadder.length>=1);
+  assert.ok(row.applyFirst.donorCandidates.some(item=>item.id==='donor-hero'));
+  const base=row.applyFirst.candidates.find(item=>item.id==='base-hero');
+  assert.ok(base);
+  for(const axis of ['SILHOUETTE','PROPORTION','ANATOMY','FACE_HANDS_FEET','MATERIAL','RIG','SOCKET','MOTION','LOD'])assert.ok(base.qualityAxes.includes(axis),axis);
+  assert.equal(base.fullReauthorTrigger,'CORE_IDENTITY_OR_STRUCTURAL_QUALITY_STILL_BLOCKED_AFTER_TARGETED_DERIVATION');
+  assert.equal(base.sourceAssetMayRemainAsPartialDonorAfterReplacement,true);
+  assert.equal(base.visualQualityNotImpliedByVerification,true);
+  assert.ok(base.detailInvestmentPolicy.prioritySignals.includes('SCREEN_SPACE_OCCUPANCY'));
+  assert.ok(base.detailInvestmentPolicy.prioritySignals.includes('INTERACTION_FREQUENCY'));
+  assert.equal(base.detailInvestmentPolicy.polygonOrTextureCountAloneIsNotQuality,true);
+  assert.equal(plan.applyFirstSummary.visualVerificationAndVisualQualitySeparated,true);
+  assert.ok(plan.applyFirstSummary.detailInvestmentPriority.includes('CAMERA_PROXIMITY'));
 });

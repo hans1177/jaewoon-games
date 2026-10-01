@@ -739,3 +739,33 @@ test('asset production plan exposes dedicated asset lane and reusable cross-genr
   assert.ok(plan.companyGraphicsLibrary.studioAssetUniverse.coverage.missingSlotCount>=300);
   assert.equal(plan.companyGraphicsLibrary.studioAssetUniverse.preparedSemanticMayNotClaimVerified,true);
 });
+
+
+test('asset customization emits automatic inspect-repair-author-apply chain with distance detail',()=>{
+  const assets=[{
+    id:'hero-body',family:'CHARACTER',sourceHash:'hero-v1',
+    customization:{controls:{jaw:{kind:'MORPH',axis:'FACE',target:'Jaw',min:0,max:1}}}
+  }];
+  const plan=createAssetCustomizationPlan({
+    assets,platform:'ROBLOX',
+    recipes:[{
+      id:'hero',family:'CHARACTER',baseAssetId:'hero-body',
+      previousParameters:{jaw:.2},editableParameters:['jaw'],parameters:{jaw:.35},
+      identityAnchors:['ONE_HORN']
+    }]
+  });
+  assert.deepEqual([...plan.automaticProductionChain.sequence],['INSPECT','DEFINE_REPAIR','AUTHOR','APPLY','REINSPECT']);
+  assert.equal(plan.automaticProductionChain.reportOnlyInspectionForbidden,true);
+  assert.equal(plan.automaticProductionChain.reportOnlyRepairPlanForbidden,true);
+  const hero=plan.items[0];
+  assert.equal(hero.productionChain.automaticAdvance,true);
+  assert.equal(hero.productionChain.author.editableSourceRequired,true);
+  assert.ok(hero.precisionProduction.construction.includes('FACE_HANDS_FEET'));
+  assert.ok(hero.precisionProduction.detailByDistance.GAME_CAMERA.includes('ROLE_SILHOUETTE'));
+  assert.ok(hero.precisionProduction.detailByDistance.CONTACT.includes('HAND_WEAPON_GRIP'));
+  assert.ok(hero.productionChain.apply.steps.includes('IMPORT_TO_EXISTING_ROBLOX_GAME_ASSET_PATH'));
+  assert.equal(hero.productionChain.reinspect.failedRegionOnlyReentersRepair,true);
+  assert.ok(plan.causalDetailRules.includes('RANDOM_NOISE_IS_NOT_DETAIL'));
+  assert.ok(plan.uiAndIconReview.scope.includes('MINIMAP'));
+  assert.ok(plan.uiAndIconReview.scope.includes('INTERACTION'));
+});

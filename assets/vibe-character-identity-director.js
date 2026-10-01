@@ -58,7 +58,57 @@ export function resolveVibeCharacterBehaviorIntent({persona={},context={}}={}){
 export function createVibePopulationPersonaDiversity(characters=[]){const personas=characters.map((c,i)=>createVibeCharacterPersona(c,i)),keys=personas.map(p=>JSON.stringify([p.temperament,p.voice.formality,p.voice.sentenceRhythm,p.desire,p.fear,p.behaviorIntent.socialTendency,p.behaviorIntent.combatTendency])),unique=uniq(keys).length,score=Math.round(unique/Math.max(1,personas.length)*100);return Object.freeze({score,unique,total:personas.length,pass:score>=75,rule:'major characters must not collapse into one voice personality or behavior intent'})}
 export function createVibeGameplayMotionLinks({events=[],character={},index=0}={}){const identity=createVibeMotionIdentity(character,index),links=[];for(const e of uniq(events)){if(e==='move')links.push({event:e,visual:identity.signature.move,meaning:'movement-state'});else if(e==='attack')links.push({event:e,visual:identity.signature.attack,meaning:'attack-intent-and-impact'});else if(e==='hit')links.push({event:e,visual:identity.signature.hit,meaning:'damage-confirmed'});else if(e==='death')links.push({event:e,visual:identity.signature.death,meaning:'death-confirmed'});else links.push({event:e,visual:['identity-accent'],meaning:`${e}-state`})}return Object.freeze(links.map(x=>Object.freeze({...x,ruleSafe:true}))) }
 export function createVibeSignatureMove(character={},index=0){const ids=inferVibeCharacterArchetypes(character),primary=ids[0],body=createVibeBodyIdentity(character,index),map={melee:['weapon-drag-anticipation','torso-twist-release'],ranged:['micro-aim-correction','release-recoil'],healer:['protective-hand-circle','soft-release-wave'],insect:['antenna-lock','multi-leg-brace','thorax-snap'],flying:['bank-in','wing-brake','altitude-recover'],heavy:['ground-compress','massive-drive','delayed-settle'],magic:['focus-orbit','cast-snap','residual-hand-drift']};return Object.freeze({name:character.name||'character',primary,sequence:Object.freeze([...(map[primary]||['anticipation','action','recovery']),body.visualMass==='heavy'||body.visualMass==='very-heavy'?'mass-settle':'light-recover']),usage:'presentation-variation-only',forbid:Object.freeze(['extra-damage','extra-hit','speed-bonus','cooldown-change'])})}
-export function createVibeCharacterAssetMorphPlan(character={},index=0){const identity=createVibeMotionIdentity(character,index);return Object.freeze({character:identity.name,body:identity.body,appearance:identity.appearance,equipment:identity.equipment,assetParts:Object.freeze(['head','torso','upper-arm','forearm','hand','upper-leg','lower-leg','foot','hair-or-crest','equipment','species-parts']),morphAxes:Object.freeze(['height-presentation','shoulder-width','torso-length','limb-length','head-ratio','visual-mass','posture','left-right-asymmetry']),animationBindings:Object.freeze(['idle','walk','run','turn','stop','interact','attack','hit','death']),requirements:Object.freeze(['stable-pivot','stable-collision','no-game-scale-change','no-stretch-artifact','equipment-follows-morph','silhouette-readable-mobile']),rule:'use authored part/morph ranges; never arbitrary whole-sprite scaling'})}
+export function createVibeCharacterAssetMorphPlan(character={},index=0){
+  const identity=createVibeMotionIdentity(character,index);
+  const bodyParts=Object.freeze(['head','neck','torso','pelvis','upper-arm','forearm','hand','fingers','upper-leg','lower-leg','foot','hair-or-crest','equipment','species-parts']);
+  const faceParts=Object.freeze(['brow','eyelid','eye','nose','cheek','lip','jaw','ear-or-horn-root','teeth-or-mouth-interior']);
+  const productionPasses=Object.freeze([
+    Object.freeze({id:'PRIMARY_FORM',work:Object.freeze(['silhouette','height-width-depth-ratios','head-body-ratio','shoulder-pelvis-balance','limb-lengths','center-of-mass']),goal:'게임 카메라 거리에서도 캐릭터 역할과 종이 읽히는 3D 덩어리와 비율 제작'}),
+    Object.freeze({id:'SECONDARY_ANATOMY',work:Object.freeze(['ribcage-pelvis-transition','shoulder-elbow-knee-ankle-landmarks','hand-foot-volume','neck-jaw-connection','species-joint-structure']),goal:'관절 변형과 동작을 버틸 해부·구조 형태 제작'}),
+    Object.freeze({id:'FACE_AND_IDENTITY',work:faceParts,goal:'눈꺼풀·입술·턱·귀/뿔 뿌리·비대칭·개별 표식을 실제 메시/모프 구조로 제작'}),
+    Object.freeze({id:'CLOTHING_AND_EQUIPMENT_FIT',work:Object.freeze(['layer-thickness','seam-lines','fold-zones','armor-overlap','body-clearance','strap-buckle-fastener','weapon-holster-and-grip']),goal:'의상과 장비가 체형·관절·소켓을 따라 실제로 맞물리도록 제작'}),
+    Object.freeze({id:'DEFORMATION_TOPOLOGY',work:Object.freeze(['shoulder-loops','elbow-loops','wrist-and-finger-loops','hip-knee-ankle-loops','face-deformation-loops','hard-soft-edge-separation']),goal:'관절과 표정 변형이 무너지지 않는 토폴로지 제작'}),
+    Object.freeze({id:'RIG_AND_SOCKETS',work:Object.freeze(['root-pelvis-spine-neck-head','arm-hand-finger-chain','leg-foot-toe-chain','face-or-expression-controls','weapon-grip','back-hip-hand-equipment-sockets','species-extra-bones']),goal:'실제 애니메이션·장비 연결이 가능한 리그와 소켓 제작'}),
+    Object.freeze({id:'SURFACE_AUTHORING',work:Object.freeze(['material-region-separation','skin-shell-hair-cloth-metal-leather-stone-response','roughness-variation','edge-wear','contact-dirt','micro-normal-or-stylized-detail']),goal:'색만 다른 재질이 아니라 재질별 빛 반응과 사용 흔적 제작'}),
+    Object.freeze({id:'MOTION_PREP',work:Object.freeze(['idle-deformation','locomotion-deformation','attack-contact','hit-reaction','death-collapse','secondary-cloth-hair-equipment']),goal:'실제 모션에서 메시·장비·표정이 살아 움직이도록 제작'})
+  ]);
+  return Object.freeze({
+    character:identity.name,
+    body:identity.body,
+    appearance:identity.appearance,
+    equipment:identity.equipment,
+    assetParts:bodyParts,
+    faceParts,
+    morphAxes:Object.freeze(['height-presentation','shoulder-width','torso-length','limb-length','head-ratio','visual-mass','posture','left-right-asymmetry','face-width','jaw-depth','eye-spacing','brow-shape','nose-length','mouth-width']),
+    animationBindings:Object.freeze(['idle','walk','jog','run','sprint','start','stop','turn','jump','land','interact','attack','skill','hit','stun','knockdown','get-up','death']),
+    productionPasses,
+    editableSource:Object.freeze({
+      preferred:'BLENDER_OR_EQUIVALENT_DCC_EDITABLE_SOURCE',
+      destructiveBakeBeforeApprovalForbidden:true,
+      separateHighLowOrPlatformDerivatives:true,
+      originalSourceImmutable:true
+    }),
+    authoredOutputs:Object.freeze([
+      'EDITABLE_SOURCE',
+      'RETOPOLOGIZED_GAME_MESH',
+      'UV_OR_ATLAS_LAYOUT',
+      'MATERIAL_REGION_SET',
+      'RIG_AND_SOCKET_MAP',
+      'EXPRESSION_OR_FACE_CONTROL_SET',
+      'NATIVE_PLATFORM_DERIVATIVES'
+    ]),
+    platformAuthoring:Object.freeze({
+      ROBLOX:Object.freeze(['IMPORT_READY_GLB','BONE_OR_MOTOR6D_COMPATIBLE_RIG','ANIMATOR_OR_ANIMATIONCONTROLLER_BINDING','ATTACHMENT_AND_GRIP_SOCKET_LAYOUT','SURFACEAPPEARANCE_OR_MATERIAL_BINDINGS','COLLISION_PROXY_AND_MOBILE_LOD']),
+      UNITY:Object.freeze(['IMPORT_READY_FBX_OR_GLB','SKINNED_MESH_RENDERER_READY_RIG','ANIMATOR_AVATAR_BINDING','PREFAB_EQUIPMENT_SOCKETS','MATERIAL_AND_TEXTURE_BINDINGS','LOD_GROUP_VARIANTS'])
+    }),
+    requirements:Object.freeze([
+      'stable-pivot','stable-collision','no-game-scale-change','no-stretch-artifact','equipment-follows-morph','silhouette-readable-mobile',
+      'actual-3d-volume-not-flat-card','joint-deformation-ready-topology','face-hands-feet-have-authored-structure','clothing-equipment-clearance-authored','native-rig-and-socket-ready'
+    ]),
+    protected:Object.freeze(['gameplay-hitbox-meaning','movement-speed','damage','cooldown','save-meaning','network-authority']),
+    rule:'use authored part/morph ranges and real mesh-rig-material construction; never arbitrary whole-sprite scaling or color-only completion'
+  });
+}
 export function createVibePopulationPhysicalDiversity(characters=[]){const rows=characters.map((c,i)=>createVibeMotionIdentity(c,i)),keys=rows.map(x=>JSON.stringify([x.body.heightCm,x.body.weightKg,x.body.frame,x.body.proportions,x.body.posture,x.physical.walk.cadence,x.physical.walk.armSwing,x.appearance.face.shape,x.appearance.surface])),unique=uniq(keys).length,score=Math.round(unique/Math.max(1,rows.length)*100);return Object.freeze({score,unique,total:rows.length,cloneRate:Math.round((rows.length-unique)/Math.max(1,rows.length)*100),pass:score>=80})}
 export function createVibePhysicalDiversityGate({characters=[]}={}){const rows=characters.map((c,i)=>createVibeMotionIdentity(c,i)),issues=[];for(let i=0;i<rows.length;i++)for(let j=i+1;j<rows.length;j++){const a=rows[i],b=rows[j],same=[a.body.frame===b.body.frame,a.body.proportions.limbs===b.body.proportions.limbs,a.body.posture===b.body.posture,a.physical.walk.cadence===b.physical.walk.cadence,a.physical.walk.armSwing===b.physical.walk.armSwing,a.appearance.face.shape===b.appearance.face.shape].filter(Boolean).length;if(same>=5)issues.push(`${a.name}:${b.name}:physical-clone`)}return Object.freeze({pass:!issues.length,issues:Object.freeze(issues),rule:'major characters must differ across several body appearance and gait axes, not only palette'})}
 export function scoreVibeMotionOriginality(characters=[]){const signatures=characters.map((c,i)=>createVibeMotionIdentity(c,i)),keys=signatures.map(s=>JSON.stringify([s.archetypes,s.body,s.signature.move,s.signature.attack,s.physical.walk])),unique=uniq(keys).length,score=Math.round((unique/Math.max(1,characters.length))*100);return Object.freeze({score,unique,total:characters.length,duplicates:characters.length-unique,needsDiversification:score<80})}

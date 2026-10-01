@@ -4,6 +4,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   createVibeArtPipeline,
+  createVibeGraphicsProduction,
+  GRAPHICS_PRODUCTION_INTERNAL_MODULES,
   createVibeAssetAcquisitionPlan,
   createVibeVisualDebtEntry,
   VIBE_ASSET_ACQUISITION_ORDER,
@@ -125,4 +127,54 @@ test('runtime before-after comparison requires two distinct stable actual runtim
   const unstable=auditVibeRuntimeBeforeAfterComparison({...evidence,comparison:{...evidence.comparison,beforeStable:false}});
   assert.equal(unstable.pass,false);
   assert.ok(unstable.reasons.includes('runtime-capture-not-deterministic'));
+});
+
+
+test('declared interface and scene object gaps become localized runtime repair targets',()=>{
+  const revision='e'.repeat(40);
+  const result=auditVibeRuntimeVisualEvidence({
+    stage:'INTERNAL_PLAYTEST',candidateRevision:revision,captures:captures(revision),
+    primaryActors:[{id:'player',presentation:'rigged-mesh'}],
+    requiredInterfaceSurfaces:['HUD','MINIMAP','INTERACTION'],
+    interfaceCoverage:{
+      HUD:{required:true,pass:true,observed:true,reviewed:true},
+      MINIMAP:{required:true,pass:false,observed:true,reviewed:true},
+      INTERACTION:{required:true,pass:true,observed:true,reviewed:true}
+    },
+    sceneObjectCoverage:{
+      requirements:[{id:'village-shop',required:true},{id:'quest-board',required:true}],
+      observations:[{id:'village-shop',observed:true,reviewed:true,bound:true,pass:true}]
+    }
+  });
+  assert.equal(result.pass,false);
+  assert.deepEqual([...result.interfaceCoverage.missing],['MINIMAP']);
+  assert.deepEqual([...result.sceneObjectCoverage.missing],['quest-board']);
+  assert.ok(result.reasons.includes('declared-interface-runtime-evidence-incomplete'));
+  assert.ok(result.reasons.includes('declared-scene-object-runtime-evidence-incomplete'));
+  assert.ok(result.repairTargets.some(row=>row.surface==='INTERFACE'&&row.id==='MINIMAP'));
+  assert.ok(result.repairTargets.some(row=>row.surface==='SCENE_OBJECT'&&row.id==='quest-board'));
+});
+
+test('graphics production binds character identity environment detail and runtime repair loop inside one root',()=>{
+  const production=createVibeGraphicsProduction({
+    gameId:'demo',request:'로블록스 캐릭터와 마을을 더 디테일하게',target:'roblox',quality:2,
+    game:{gameplay:'exploration',world:'village'},world:{theme:'fantasy'},
+    characters:[{name:'Hero',role:'player',body:'humanoid'}],
+    characterEvents:{Hero:['idle','move','attack','hit','death']},
+    mapDetailInput:{
+      sketch:{sourceId:'map',sourceHash:'sha256:map',metersPerUnit:1,
+        nodes:[{id:'START',role:'spawn'},{id:'SHOP',role:'landmark'},{id:'EXIT',role:'transition'}],
+        edges:[{from:'START',to:'SHOP'},{from:'SHOP',to:'EXIT'}],
+        districts:[{id:'market',anchorNodeId:'SHOP',function:'commerce',landmark:'shop'}]},
+      assets:[],styleFamily:'STYLIZED_FANTASY',seed:'demo'
+    }
+  });
+  assert.equal(GRAPHICS_PRODUCTION_INTERNAL_MODULES.environmentDirector,'assets/vibe-environment-director.js');
+  assert.equal(GRAPHICS_PRODUCTION_INTERNAL_MODULES.characterIdentity,'assets/vibe-character-identity-director.js');
+  assert.equal(production.characterIdentity.plans.length,1);
+  assert.equal(production.mapDetail.status,'DETAIL_AUTHORING_PLAN');
+  assert.equal(production.runtimeRepairLoop.status,'RUNTIME_EVIDENCE_PENDING');
+  assert.equal(production.engineMeasurementCapture.required,true);
+  assert.equal(production.policy.runtimeVisualRepairLoopRequired,true);
+  assert.equal(production.policy.declaredInterfaceSurfacesRequireMobileRuntimeEvidence,true);
 });
