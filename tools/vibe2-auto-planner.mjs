@@ -1986,6 +1986,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
         ...(taskInput.evidence||[]),
         'game-specific-build-up-directive:v1',
         'game-specific-build-up-directive:v2',
+        'game-specific-build-up-directive:v3',
         'build-up-source-anchor-count:'+String((directive.responsibleSystemsAndFiles?.sourceAnchors||[]).length),
         'build-up-previous-effectiveness:'+clean(directive.effectivenessMeasurement?.previousGeneration?.classification),
         'build-up-next-vibe-action:'+clean(directive.nextActionDecision?.action),
@@ -2086,6 +2087,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       ...(taskInput.evidence||[]),
       'game-specific-build-up-directive:v1',
       'game-specific-build-up-directive:v2',
+        'game-specific-build-up-directive:v3',
       'build-up-source-anchor-count:'+String((directive.responsibleSystemsAndFiles?.sourceAnchors||[]).length),
       'build-up-previous-effectiveness:'+clean(directive.effectivenessMeasurement?.previousGeneration?.classification),
       'build-up-next-vibe-action:'+clean(directive.nextActionDecision?.action),
@@ -2359,6 +2361,7 @@ function bindSharedBuildUpDirective(taskInput,directive){
     evidence:[...new Set([
       ...(taskInput.evidence||[]),
       'game-specific-build-up-directive:v2',
+      'game-specific-build-up-directive:v3',
       'build-up-shared-generation-exact-object:YES',
       'build-up-source-anchor-count:'+String((directive.responsibleSystemsAndFiles?.sourceAnchors||[]).length),
       'build-up-previous-effectiveness:'+clean(directive.effectivenessMeasurement?.previousGeneration?.classification),
@@ -2384,12 +2387,17 @@ function hasCurrentAutonomousContentExpansionDirective(directive={}){
   const ledger=expansion?.themeCoverageLedger;
   return Boolean(
     clean(directive?.directiveId)
+    &&Number(directive?.version||0)>=3
     &&Number(expansion?.version||0)>=2
     &&clean(expansion?.executionBoundary).toUpperCase()==='EXISTING_BUILD_UP_ONLY'
     &&expansion?.autonomousDecisionOwner==='VIBE'
     &&Number(ledger?.version||0)>=1
     &&Array.isArray(ledger?.requiredThemes)
     &&ledger.requiredThemes.length>=7
+    &&Number(directive?.gameDevelopmentDNA?.version||0)>=1
+    &&Number(directive?.playChainRepairPlan?.version||0)>=1
+    &&Array.isArray(directive?.playChainRepairPlan?.stages)
+    &&directive.playChainRepairPlan.stages.length===7
   );
 }
 
@@ -2472,6 +2480,7 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
           candidate={...candidate,evidence:[...new Set([
             ...(candidate.evidence||[]),...(refreshed.evidence||[]),
             'build-up-directive-contract-migration:AUTONOMOUS_CONTENT_EXPANSION_V2',
+            'build-up-directive-contract-migration:GAME_DNA_PLAY_CHAIN_V3',
             'build-up-directive-contract-migration-generation:PRESERVED'
           ])]};
           canonicalByScope.set(scope,refreshed.buildUpDirective);

@@ -23,6 +23,9 @@ function design(){
         {name:'포식 관계',purpose:'적 조합에 따라 정답이 달라진다',playerChoice:'현재 웨이브에 맞는 포식자를 선택'}
       ],
       progressionDirection:'새 곤충과 진화를 해금해 더 복잡한 웨이브 조합을 상대한다',
+      visualDirection:'선명한 곤충 실루엣과 자연 서식지 대비가 있는 스타일라이즈드 정원',
+      mobileUx:'엄지 조작에서 웨이브 정보와 배치 대상이 겹치지 않는 터치 우선 HUD',
+      marketTargetDirection:'global strategy players',
       multiplayerMode:'SINGLE',
       platformProfiles:{
         ROBLOX:{platform:'ROBLOX'},
@@ -69,7 +72,7 @@ test('game-specific directive covers the whole game and all visual domains',()=>
     responsibleFiles:['roblox-games/bug-defense/server/Game.server.luau']
   });
   assert.equal(directive.gameId,'bug-defense');
-  assert.equal(directive.version,2);
+  assert.equal(directive.version,3);
   assert.equal(directive.generation,1);
   assert.equal(directive.coverage.allDomainsConsidered,true);
   assert.equal(directive.qualityGapMap.length,BUILD_UP_DOMAINS.length);
@@ -119,8 +122,21 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.ok(directive.responsibleSystemsAndFiles.sourceAnchors.every(row=>String(row.observableAcceptance||'').includes(row.file)));
   assert.ok(directive.effectivenessMeasurement.expectedPlayerEffect.length>20);
   assert.equal(directive.effectivenessMeasurement.previousGeneration.classification,'NO_PREVIOUS_GENERATION');
+  assert.equal(directive.gameDevelopmentDNA.version,1);
+  assert.ok(directive.gameDevelopmentDNA.identityAnchors.some(value=>/곤충|정원/.test(value)));
+  assert.ok(directive.gameDevelopmentDNA.signatureSystems.some(row=>row.name==='서식지 상성'));
+  assert.match(directive.gameDevelopmentDNA.presentationIdentity.visualDirection,/곤충 실루엣|정원/);
+  assert.match(directive.gameDevelopmentDNA.presentationIdentity.mobileUx,/터치|HUD/);
+  assert.equal(directive.gameDevelopmentDNA.presentationIdentity.genericStyleReplacementForbidden,true);
+  assert.equal(directive.playChainRepairPlan.version,1);
+  assert.equal(directive.playChainRepairPlan.stages.length,7);
+  assert.deepEqual(directive.playChainRepairPlan.stages.map(row=>row.id),['ENTRY_CONTEXT','PLAYER_INTENT','INPUT','AUTHORITY_CHECK','STATE_CHANGE','FEEDBACK','NEXT_CHOICE']);
+  assert.ok(directive.playChainRepairPlan.acceptance.includes('INPUT_TO_STATE_TO_FEEDBACK_OBSERVABLE'));
   assert.equal(directive.nextActionDecision.action,'CONTINUE_BUILD_UP_CURRENT_SYSTEM');
   assert.match(directivePrompt(directive),/GAME_SPECIFIC_BUILD_UP_DIRECTIVE/);
+  assert.match(directivePrompt(directive),/GAME_DEVELOPMENT_DNA:/);
+  assert.match(directivePrompt(directive),/PLAY_CHAIN_REPAIR_PLAN:/);
+  assert.match(directivePrompt(directive),/DETAIL_RULE:/);
   assert.match(directivePrompt(directive),/SOURCE_ANCHORS:/);
   assert.match(directivePrompt(directive),/EXPECTED_PLAYER_EFFECT:/);
   assert.match(directivePrompt(directive),/HOLISTIC_CORE_DOMAIN_STATUS:/);
@@ -364,7 +380,14 @@ test('verified product-quality failure routes first buildup generation directly 
       runtimePassed:false,
       failureStage:'VIBE_INTERNAL_PLAY',
       failureSignature:'ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED',
-      blockers:['primary-action-effect']
+      blockers:['primary-action-effect'],
+      studioQualityFailure:{
+        repairSurfaces:['MOBILE_UI','COMBAT_AI'],
+        qualityFailureDetails:[
+          {id:'adaptive-ui-commercial-quality',repairSurface:'MOBILE_UI',priority:'HIGH'},
+          {id:'adaptive-combat-surface',repairSurface:'COMBAT_AI',priority:'CRITICAL'}
+        ]
+      }
     },
     qualitySignals:['primary-action-effect']
   });
@@ -372,6 +395,11 @@ test('verified product-quality failure routes first buildup generation directly 
   assert.equal(directive.effectivenessMeasurement.previousGeneration.classification,'REGRESSION');
   assert.equal(directive.nextActionDecision.action,'CAUSAL_REPAIR');
   assert.match(directive.nextActionDecision.reason,/failure|regression/i);
+  assert.deepEqual([...directive.gameDevelopmentDNA.runtimeRepairSurfaces],['MOBILE_UI','COMBAT_AI']);
+  assert.ok(directive.gameDevelopmentDNA.detailPriorities.includes('TOUCH_TARGET_AND_LOCAL_FEEDBACK'));
+  assert.ok(directive.gameDevelopmentDNA.detailPriorities.includes('ANTICIPATION_IMPACT_RECOVERY'));
+  assert.deepEqual([...directive.playChainRepairPlan.repairPriorityStages],['ENTRY_CONTEXT','PLAYER_INTENT','INPUT','AUTHORITY_CHECK','STATE_CHANGE','FEEDBACK','NEXT_CHOICE']);
+  assert.equal(directive.playChainRepairPlan.exactReplayRequired,true);
 });
 
 

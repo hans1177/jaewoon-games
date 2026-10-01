@@ -3711,6 +3711,11 @@ test('game-specific BUILD_UP directive survives compact generation retries',()=>
     '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
     'directiveId=bug-defense-build-up-g3-demo generation=3 primaryFocus=PRESENTATION',
     'gameIdentity=곤충 생태 상성과 서식지 배치가 핵심인 정원 방어',
+    'gameDNA=anchors:곤충 생태 상성 > 서식지 배치; systems:포식 관계:현재 웨이브에 맞는 포식자 선택; coreFun:상성을 읽고 배치 선택을 바꾸는 재미; progression:새 곤충 해금',
+    'playChain=ENTRY_CONTEXT[VERIFY]=웨이브 읽기 | PLAYER_INTENT[VERIFY]=곤충 선택 | INPUT[VERIFY]=배치 | AUTHORITY_CHECK[VERIFY]=비용 검증 | STATE_CHANGE[VERIFY]=배치 상태 변경 | FEEDBACK[REPAIR_PRIORITY]=공격 전조 | NEXT_CHOICE[VERIFY]=다음 웨이브 준비',
+    'playChainPriority=FEEDBACK exactReplayRequired:true',
+    'detailCheckpoints=SILHOUETTE_ROLE_READABILITY,ANTICIPATION_IMPACT_RECOVERY',
+    'runtimeRepairSurfaces=CHARACTER_MOTION,COMBAT_AI',
     'primaryGoal=벌 돌진, 거미 속박, 사마귀 베기의 실루엣과 공격 리듬을 실제 플레이에서 구분한다.',
     'visual=CHARACTER=실루엣 강화 | ENEMY_CREATURE=종별 공격 전조 분리 | ANIMATION=anticipation impact recovery 연결',
     'platform=Roblox 네이티브 Luau와 3D presentation으로 동일 목표를 구현한다.',
@@ -3736,12 +3741,21 @@ test('game-specific BUILD_UP directive survives compact generation retries',()=>
   });
   assert.match(retry,/bug-defense-build-up-g3-demo/);
   assert.match(retry,/벌 돌진, 거미 속박, 사마귀 베기/);
+  assert.match(retry,/gameDNA=anchors:곤충 생태 상성/);
+  assert.match(retry,/playChain=.*FEEDBACK\[REPAIR_PRIORITY\]/);
+  assert.match(retry,/detailCheckpoints=SILHOUETTE_ROLE_READABILITY/);
+  assert.match(retry,/runtimeRepairSurfaces=CHARACTER_MOTION,COMBAT_AI/);
   assert.match(retry,/ACTUAL_RENDERED_CHANGE_REQUIRED/);
 });
 
 
 test('game-specific BUILD_UP worker guidance carries source current-to-intended behavior and player effect',()=>{
   const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(source,/gameDNA=/);
+  assert.match(source,/playChain=/);
+  assert.match(source,/playChainPriority=/);
+  assert.match(source,/detailCheckpoints=/);
+  assert.match(source,/runtimeRepairSurfaces=/);
   assert.match(source,/sourceAnchors=.*CURRENT=/);
   assert.match(source,/INTENDED=/);
   assert.match(source,/ACCEPT=/);

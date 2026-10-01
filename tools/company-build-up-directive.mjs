@@ -309,10 +309,14 @@ export function extractDesignContext(record={}){
   })).filter(x=>x.name||x.purpose||x.playerChoice).slice(0,12);
   return Object.freeze({
     identity:clean(d?.identity),
+    playerFantasy:clean(d?.playerFantasy),
     coreFun:clean(d?.coreFun),
     coreLoop:uniq(d?.coreLoop).slice(0,10),
     signatureSystems:systems,
     progressionDirection:clean(d?.progressionDirection),
+    visualDirection:clean(d?.visualDirection),
+    mobileUx:clean(d?.mobileUx),
+    marketTargetDirection:clean(d?.marketTargetDirection),
     multiplayerMode:clean(d?.multiplayerMode),
     platformProfiles:d?.platformProfiles&&typeof d.platformProfiles==='object'?d.platformProfiles:{}
   });
@@ -348,6 +352,119 @@ function primaryDesignAnchor(design={}){
 function secondaryDesignAnchor(design={}){
   const system=design.signatureSystems?.[1];
   return clean(system?.name)||clean(system?.playerChoice)||clean(design.progressionDirection)||design.coreLoop?.[0]||'핵심 루프';
+}
+
+const PLAY_CHAIN_STAGES=Object.freeze([
+  Object.freeze({id:'ENTRY_CONTEXT',objective:'플레이어가 현재 상황·목표·위험·사용 가능한 핵심 행동을 즉시 읽는다.'}),
+  Object.freeze({id:'PLAYER_INTENT',objective:'플레이어가 무엇을 할지 선택하고 대상·경로·행동의 의미를 구분한다.'}),
+  Object.freeze({id:'INPUT',objective:'터치·버튼·이동·상호작용 입력이 의도한 행동에 정확히 연결된다.'}),
+  Object.freeze({id:'AUTHORITY_CHECK',objective:'서버 권한·조건·비용·쿨다운·대상 검증이 기존 규칙대로 적용된다.'}),
+  Object.freeze({id:'STATE_CHANGE',objective:'행동 결과가 실제 월드·캐릭터·적·진행·인벤토리 상태를 변경한다.'}),
+  Object.freeze({id:'FEEDBACK',objective:'모션·VFX·카메라·UI·오디오가 같은 결과를 즉시 읽히게 전달한다.'}),
+  Object.freeze({id:'NEXT_CHOICE',objective:'보상·실패·재시도·다음 목표가 명확해 다음 행동으로 자연스럽게 이어진다.'})
+]);
+
+function studioRepairSurfaces(runtimeEvidence={}){
+  const studio=runtimeEvidence?.studioQualityFailure||{};
+  return uniq([
+    ...(Array.isArray(studio?.repairSurfaces)?studio.repairSurfaces:[]),
+    ...(Array.isArray(studio?.qualityFailureDetails)?studio.qualityFailureDetails.map(row=>row?.repairSurface):[])
+  ]).map(value=>clean(value).toUpperCase()).filter(Boolean);
+}
+
+function buildGameDevelopmentDNA({design={},source={},focus='CORE_FUN',runtimeEvidence={}}={}){
+  const surfaces=studioRepairSurfaces(runtimeEvidence);
+  const identityAnchors=uniq([
+    design.identity,primaryDesignAnchor(design),secondaryDesignAnchor(design),
+    ...(design.signatureSystems||[]).flatMap(row=>[row?.name,row?.purpose,row?.playerChoice])
+  ]).filter(Boolean).slice(0,10);
+  const signals=source?.signals||{};
+  const detailCandidates=[
+    ['SILHOUETTE_ROLE_READABILITY',focus==='PRESENTATION'||surfaces.some(x=>/VISUAL|COMBAT|CHARACTER|MOTION/.test(x))],
+    ['CONTACT_GROUNDING_AND_WORLD_SCALE',surfaces.some(x=>/WORLD_GEOMETRY|MAP_ROUTEABILITY|CHARACTER_BOOT/.test(x))||Number(signals.map||0)>0],
+    ['ANTICIPATION_IMPACT_RECOVERY',surfaces.some(x=>/COMBAT|MOTION|VFX/.test(x))||Number(signals.combat||0)>0],
+    ['TOUCH_TARGET_AND_LOCAL_FEEDBACK',focus==='USABILITY'||surfaces.some(x=>/MOBILE_UI|INPUT|INTERACTION/.test(x))],
+    ['CAMERA_SPATIAL_HIERARCHY',focus==='PRESENTATION'||surfaces.some(x=>/CAMERA|MAP_ROUTEABILITY|WORLD/.test(x))],
+    ['MATERIAL_LIGHTING_SEPARATION',focus==='PRESENTATION'||Number(signals.primitive||0)>8],
+    ['STATE_TRANSITION_COHERENCE',surfaces.some(x=>/GAME_START|FAILURE_RECOVERY|SAVE_REJOIN|MULTIPLAYER/.test(x))||focus==='STABILITY'],
+    ['NEXT_ACTION_CLARITY',focus==='PROGRESSION'||focus==='USABILITY'||surfaces.some(x=>/UI|RETRY|PROGRESSION/.test(x))]
+  ];
+  const detailPriorities=detailCandidates.filter(([,priority])=>priority).map(([id])=>id);
+  return Object.freeze({
+    version:1,
+    identityAnchors:Object.freeze(identityAnchors),
+    playerFantasy:clean(design.playerFantasy)||null,
+    coreFun:clean(design.coreFun)||null,
+    loopRhythm:Object.freeze((design.coreLoop||[]).map(clean).filter(Boolean).slice(0,8)),
+    signatureSystems:Object.freeze((design.signatureSystems||[]).map(row=>Object.freeze({
+      name:clean(row?.name)||null,purpose:clean(row?.purpose)||null,playerChoice:clean(row?.playerChoice)||null
+    })).slice(0,8)),
+    progressionDirection:clean(design.progressionDirection)||null,
+    presentationIdentity:Object.freeze({
+      visualDirection:clean(design.visualDirection)||null,
+      mobileUx:clean(design.mobileUx)||null,
+      marketTargetDirection:clean(design.marketTargetDirection)||null,
+      preserveStyleAcrossIterations:true,
+      genericStyleReplacementForbidden:true
+    }),
+    multiplayerMode:clean(design.multiplayerMode)||null,
+    runtimeRepairSurfaces:Object.freeze(surfaces),
+    detailPriorities:Object.freeze(detailPriorities),
+    antiGenericRules:Object.freeze([
+      'PRESERVE_GAME_SPECIFIC_IDENTITY_ANCHORS',
+      'NO_GENERIC_GENRE_SKIN_REPLACEMENT',
+      'DETAIL_MUST_SUPPORT_GAMEPLAY_READABILITY_OR_WORLD_CAUSALITY',
+      'VISUAL_MOTION_UI_FEEDBACK_MUST_AGREE_WITH_AUTHORITATIVE_STATE',
+      'PROTECTED_GAMEPLAY_SAVE_BALANCE_NETWORK_SEMANTICS_UNCHANGED'
+    ])
+  });
+}
+
+function buildPlayChainRepairPlan({focus='CORE_FUN',runtimeEvidence={},sourceResponsibilities=[],expectedEffect=''}={}){
+  const surfaces=studioRepairSurfaces(runtimeEvidence);
+  const stageSurfaceRules={
+    ENTRY_CONTEXT:['MOBILE_UI','GAME_START','CHARACTER_BOOT','WORLD_GEOMETRY','MAP_ROUTEABILITY'],
+    PLAYER_INTENT:['MOBILE_UI','INTERACTION','ROBLOX_OBSERVED_INTERACTION','PROGRESSION'],
+    INPUT:['MOBILE_UI','INPUT','ROBLOX_OBSERVED_INTERACTION'],
+    AUTHORITY_CHECK:['COMBAT_AI','MULTIPLAYER_SYNC','SAVE_REJOIN','REMOTE','SYSTEM_TRANSACTION'],
+    STATE_CHANGE:['COMBAT_AI','WORLD_GEOMETRY','MAP_ROUTEABILITY','SAVE_REJOIN','MULTIPLAYER_SYNC','SYSTEM_TRANSACTION','PROGRESSION'],
+    FEEDBACK:['MOBILE_UI','CHARACTER_MOTION','VISUAL_RUNTIME','VISUAL_ASSET_LOADING','AUDIO','VFX','CAMERA','ROBLOX_OBSERVED_INTERACTION'],
+    NEXT_CHOICE:['FAILURE_RECOVERY','RETRY','PROGRESSION','REWARD','MOBILE_UI','SAVE_REJOIN']
+  };
+  const stages=PLAY_CHAIN_STAGES.map(stage=>{
+    const matched=surfaces.filter(surface=>(stageSurfaceRules[stage.id]||[]).some(token=>surface.includes(token)));
+    return Object.freeze({
+      id:stage.id,
+      state:matched.length?'REPAIR_PRIORITY':'VERIFY',
+      objective:stage.objective,
+      repairSurfaces:Object.freeze(matched),
+      observableAcceptance:stage.id==='FEEDBACK'
+        ?'같은 authoritative 결과가 모션/VFX/UI/카메라/오디오 중 적용 가능한 채널에서 즉시 확인된다.'
+        :stage.id==='STATE_CHANGE'
+          ?'입력 전후의 실제 authoritative game state가 의도한 규칙대로 달라진다.'
+          :stage.id==='NEXT_CHOICE'
+            ?'결과 직후 다음 목표·재시도·보상·후속 행동 중 적용 가능한 선택이 명확하게 노출된다.'
+            :stage.objective
+    });
+  });
+  return Object.freeze({
+    version:1,
+    chainId:'PLAYER_ACTION_TO_NEXT_CHOICE',
+    focus:clean(focus).toUpperCase(),
+    exactReplayRequired:Boolean(runtimeEvidence?.studioQualityFailure),
+    expectedPlayerEffect:clean(expectedEffect)||null,
+    primarySourceAnchors:Object.freeze((sourceResponsibilities||[]).slice(0,4).map(row=>Object.freeze({
+      file:clean(row?.file),symbol:clean(row?.symbol)||'UNKNOWN',kind:clean(row?.kind)||'SYMBOL'
+    }))),
+    stages:Object.freeze(stages),
+    repairPriorityStages:Object.freeze(stages.filter(row=>row.state==='REPAIR_PRIORITY').map(row=>row.id)),
+    acceptance:Object.freeze([
+      'ONE_COHERENT_CHAIN_NOT_DISCONNECTED_MICRO_PATCHES',
+      'INPUT_TO_STATE_TO_FEEDBACK_OBSERVABLE',
+      'FAILED_STUDIO_STAGE_REPLAYED_AFTER_SOURCE_REPAIR',
+      'SOURCE_DELTA_ALONE_IS_NOT_CHAIN_PASS'
+    ])
+  });
 }
 
 function domainState(domain,{design={},source={}}={}){
@@ -871,6 +988,9 @@ export function directivePrompt(d={}){
       ?'STUDIO_OBSERVED_FAILURES: '+JSON.stringify(d.playtestRuntimeFindings.studioQualityFailure)
       :'STUDIO_OBSERVED_FAILURES: NO_CURRENT_EXACT_ARTIFACT_EVIDENCE',
     'STUDIO_REPAIR_RULE: Treat observed failures as diagnostic data; repair their responsible systems, then replay the failing scenarios. Never infer a PASS from source edits alone.',
+    'GAME_DEVELOPMENT_DNA: '+JSON.stringify(d.gameDevelopmentDNA||{}),
+    'PLAY_CHAIN_REPAIR_PLAN: '+JSON.stringify(d.playChainRepairPlan||{}),
+    'DETAIL_RULE: preserve the game DNA while completing one coherent entry→intent→input→authority→state→feedback→next-choice chain. Detail polish that does not improve readability, causality, or game identity does not count.',
     'SOURCE_ANCHORS:',
     anchors||'- exact symbol unavailable; use exact responsible file plus observed runtime/state anchor',
     `EXPECTED_PLAYER_EFFECT: ${d.effectivenessMeasurement?.expectedPlayerEffect||'UNKNOWN'}`,
@@ -958,6 +1078,7 @@ export function buildGameSpecificBuildUpDirective({
   const primarySourceAnchors=selectPrimarySourceAnchors(source,responsibleFiles,8);
   const exactAnchorLabel=primarySourceAnchors.length?primarySourceAnchors.map(row=>row.file+'::'+row.symbol).join(', '):(topFiles[0]||'CURRENT_GAME_SOURCE');
   const expectedEffect=expectedPlayerEffect({focus,identity,anchor,secondary});
+  const gameDevelopmentDNA=buildGameDevelopmentDNA({design,source,focus,runtimeEvidence});
   const sourceResponsibilities=primarySourceAnchors.map(row=>Object.freeze({
     ...row,
     currentBehavior:clean(row.context)||`현재 ${row.kind||'SYMBOL'} ${row.symbol||'UNKNOWN'} 구현을 소스에서 관찰함`,
@@ -965,6 +1086,7 @@ export function buildGameSpecificBuildUpDirective({
     whyThisAnchor:`${row.file}::${row.symbol||'UNKNOWN'}이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨`,
     observableAcceptance:`${row.file}에 실제 source delta가 있고 관련 QA/runtime에서 ${focus} 상태 변화와 expected player effect가 관찰되어야 함`
   }));
+  const playChainRepairPlan=buildPlayChainRepairPlan({focus,runtimeEvidence,sourceResponsibilities,expectedEffect});
   const robloxNativeExecution=Object.freeze({
     version:1,
     required:true,
@@ -1055,7 +1177,7 @@ export function buildGameSpecificBuildUpDirective({
     'OPTIMIZE_MOBILE_FRAME_INPUT_RENDER_OR_STATE_BOTTLENECK_WHEN_VERIFIED'
   ]);
   return Object.freeze({
-    version:2,
+    version:3,
     directiveId:`${id}-build-up-g${generation}-${fingerprint.slice(0,12)}`,
     directiveFingerprint:fingerprint,
     previousDirectiveFingerprint:previousFingerprint||null,
@@ -1080,6 +1202,8 @@ export function buildGameSpecificBuildUpDirective({
       multiplayerMode:design.multiplayerMode,
       preserve:['CORE_IDENTITY','APPROVED_RULE_SEMANTICS','BALANCE_VALUES_UNLESS_AUTHORIZED','ECONOMY_MEANING_UNLESS_AUTHORIZED','SAVE_MEANING','NETWORK_AUTHORITY']
     },
+    gameDevelopmentDNA,
+    playChainRepairPlan,
     currentImplementationFindings:{sourceObservations:source.observations,signals:source.signals,topFiles:source.topFiles,sourceAnchors:source.sourceAnchors||[]},
     previousVersionDelta:previousDirective?{previousGoal:previousDirective.thisLoopPrimaryGoal||null,previousFocus:previousDirective.primaryFocus||null,previousGeneration:previousDirective.generation||null,previousSourceTreeFingerprint:previousDirective.sourceTreeFingerprint||null,currentSourceTreeFingerprint:source.sourceTreeFingerprint,sourceChanged:depthInfo.sourceChangedSincePrevious,verifiedEvolution:depthInfo.verifiedEvolution}:{state:'NO_PREVIOUS_DIRECTIVE'},
     playtestRuntimeFindings:runtimeEvidence&&Object.keys(runtimeEvidence).length?runtimeEvidence:{state:'UNKNOWN_NOT_INVENTED'},
