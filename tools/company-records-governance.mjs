@@ -277,17 +277,17 @@ export function classifyCentralChangeRecordRetention(key='',value=null){
   const explicitHistorical=value.historical===true||value.archiveEligible===true||value.current===false;
   const retiredStatus=/(?:ARCHIVED|HISTORICAL|SUPERSEDED|RETIRED|OBSOLETE|REPLACED|DEPRECATED_RECORD_ONLY)/.test(status);
   const activeStatus=/(?:^|_)(?:ACTIVE|CURRENT|PENDING|CODE_UPDATED|LIVE|REPAIR|ENFORCED|REQUIRED|COMPATIBILITY_RECORD)(?:_|$)/.test(status);
-  const policyMeaning=Boolean(
+  const explicitCurrent=Boolean(
     value.enabled===true
     ||value.required===true
     ||value.enforced===true
     ||value.policy===true
     ||value.current===true
     ||activeStatus
-    ||/^OWNER_DIRECTIVE_/i.test(authority)
-    ||/platform-release-roadmap\.json#/i.test(authority)
   );
-  const archiveEligible=Boolean((explicitHistorical||retiredStatus)&&!policyMeaning);
+  const authorityCarriesPolicyMeaning=/^OWNER_DIRECTIVE_/i.test(authority)||/platform-release-roadmap\.json#/i.test(authority);
+  const policyMeaning=Boolean(explicitCurrent||(!explicitHistorical&&!retiredStatus&&authorityCarriesPolicyMeaning));
+  const archiveEligible=Boolean((explicitHistorical||retiredStatus)&&!explicitCurrent);
   return Object.freeze({
     key:recordKey,
     archiveEligible,
