@@ -370,19 +370,22 @@ test('reserve probes model cache lookup-only and skips the dedicated warmup runn
   const modelBlock=workflow.slice(modelStart,workerStart);
   const workerBlock=workflow.slice(workerStart,fanInStart);
   assert.match(reserveBlock,/model_cache_hit: \${{ steps\.ollama_cache_probe\.outputs\.cache-hit }}/);
-  assert.match(reserveBlock,/Probe shared Ollama cache from reserve runner/);
+  assert.match(reserveBlock,/Probe dedicated Vibe2 model cache/);
+  assert.match(reserveBlock,/Probe canonical Ollama runtime cache/);
   assert.match(reserveBlock,/uses: actions\/cache\/restore@v4/);
   assert.match(reserveBlock,/lookup-only: true/);
   assert.match(reserveBlock,/VIBE2_MODEL_CACHE_RESERVE_PROBE_LOOKUP_ONLY=YES/);
   assert.match(reserveBlock,/VIBE2_MODEL_CACHE_WARMUP_DECISION=SKIP_CACHE_HIT/);
   assert.match(modelBlock,/if: needs\.reserve\.outputs\.worker_count != '0' && needs\.reserve\.outputs\.model_cache_hit != 'true'/);
-  assert.match(modelBlock,/Recheck or persist shared Ollama runtime cache/);
-  assert.match(modelBlock,/lookup-only: false/);
+  assert.match(modelBlock,/Recheck or persist dedicated Vibe2 model cache/);
+  assert.match(modelBlock,/Warm canonical Ollama runtime and local coding model once/);
+  assert.match(modelBlock,/uses: \.\/vibe2-contract\/\.github\/actions\/prepare-ollama/);
   assert.match(modelBlock,/VIBE2_MODEL_CACHE_WARMUP_JOB=RUN_CACHE_MISS/);
   assert.match(workerBlock,/needs: \[reserve, model_cache\]/);
   assert.match(workerBlock,/if: always\(\) && needs\.reserve\.outputs\.worker_count != '0'/);
-  assert.match(workerBlock,/Restore shared Ollama runtime cache/);
+  assert.match(workerBlock,/Restore dedicated Vibe2 model cache/);
   assert.match(workerBlock,/uses: actions\/cache\/restore@v4/);
+  assert.match(workerBlock,/Prepare cached Ollama runtime/);
   assert.equal(runtime.workers.textSource.modelLoadOptimization.reserveCacheProbeLookupOnly,true);
   assert.equal(runtime.workers.textSource.modelLoadOptimization.prewarmCacheProbeLookupOnlyOnHit,true);
   assert.equal(runtime.workers.textSource.modelLoadOptimization.prewarmFullRestoreOnHitForbidden,true);
@@ -404,7 +407,7 @@ test('worker prepares the model and read-only exploration before acquiring the s
   const constitution=workerPart.indexOf('- name: Enforce canonical constitution before source write');
   const order=workerPart.indexOf('- name: Build reserved task work order');
   const modelNeed=workerPart.indexOf('- name: Decide worker local model requirement');
-  const cache=workerPart.indexOf('- name: Restore shared Ollama runtime cache');
+  const cache=workerPart.indexOf('- name: Restore dedicated Vibe2 model cache');
   const prepare=workerPart.indexOf('- name: Prepare cached Ollama runtime');
   const metrics=workerPart.indexOf('- name: Measure worker Ollama preparation');
   const exploration=workerPart.indexOf('- name: Build task-local exploration handoff');
@@ -422,9 +425,9 @@ test('worker prepares the model and read-only exploration before acquiring the s
   assert.ok(budget>exploration);
   assert.ok(lock>budget);
   assert.ok(candidate>lock);
-  assert.ok(workerPart.includes('node tools/company-shared-context.mjs'));
-  assert.ok(workerPart.includes('--pinned-hash-verify=true'));
-  assert.ok(workerPart.includes('--output=/tmp/vibe2-worker-shared-context.json'));
+  assert.ok(workerPart.includes('sha256sum "$contract_root/company-learning/platform-release-roadmap.json"'));
+  assert.ok(workerPart.includes("WORKER_CONTEXT_MODE=PINNED_SHA_ONLY"));
+  assert.equal(workerPart.includes('--output=/tmp/vibe2-worker-shared-context.json'),false);
   assert.ok(workerPart.includes('verify-worker-sync'));
   assert.ok(workerPart.includes('--reservation-id="$RESERVATION_ID"'));
   assert.ok(workerPart.includes('--reservation-run="$RESERVATION_RUN_ID"'));
@@ -683,29 +686,20 @@ test('controller allows approved source root but enforces candidate boundary',()
   assert(workflow.includes('candidate escaped approved boundary'));
 });
 
-test('queue pressure coalesces complete game callbacks while unpressured single tasks stay immediate',()=>{
-  const start=workflow.indexOf('          game_micro_fanin=false');
-  const end=workflow.indexOf('          payload="$(node',start);
-  assert.ok(start>0&&end>start);
-  const script=workflow.slice(start,end).split('\n').map(line=>line.slice(10)).join('\n');
-  for(const target of ['roblox','unity','web']){
-    const result=spawnSync('bash',['-c',`set -euo pipefail\nqueue_pressure=3\n${script}\necho IMMEDIATE_CALLBACK`],{
-      encoding:'utf8',env:{...process.env,VIBE2_EXECUTION_LANE:'game-primary',VIBE2_NEURON_TARGET:target,VIBE2_NEURON_EXPECTED_VARIANTS:'1',VIBE2_PRESSURE_REFILL_LEADER:'false'}
-    });
-    assert.equal(result.status,0,result.stderr);
-    assert.match(result.stdout,/COALESCED_TO_COHORT_FANIN/);
-    assert.doesNotMatch(result.stdout,/IMMEDIATE_CALLBACK/);
-  }
-  const joined=spawnSync('bash',['-c',`set -euo pipefail\nqueue_pressure=3\n${script}\necho IMMEDIATE_CALLBACK`],{
-    encoding:'utf8',env:{...process.env,VIBE2_EXECUTION_LANE:'game-primary',VIBE2_NEURON_EXPECTED_VARIANTS:'3',VIBE2_PRESSURE_REFILL_LEADER:'false'}
-  });
-  assert.equal(joined.status,0,joined.stderr);
-  assert.match(joined.stdout,/COALESCED_TO_COHORT_FANIN/);
-  assert.doesNotMatch(joined.stdout,/IMMEDIATE_CALLBACK/);
-  assert.equal(runtime.continuous.callbackCoalescing.singleGameTaskImmediateCompletionRequired,true);
-  assert.equal(runtime.continuous.callbackCoalescing.singleGameTaskFullReviewBeforeCohortCompletion,true);
-  assert.equal(runtime.continuous.callbackCoalescing.action,'KEEP_IMMUTABLE_WORKER_ARTIFACT_AND_SKIP_NEW_NEURON_CALLBACK_WORKFLOW');
-  assert.equal(runtime.continuous.callbackCoalescing.immediateDispatchResumesWhenPressureClears,true);
+test('game-primary callbacks always coalesce to cohort fan-in while auxiliary lanes remain pressure-aware',()=>{
+  const start=workflow.indexOf('- name: Dispatch or coalesce atomic neuron completion');
+  const end=workflow.indexOf('\n  fan_in:',start);
+  assert.ok(start>=0&&end>start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/if \[ "\$VIBE2_EXECUTION_LANE" = 'game-primary' \]; then/);
+  assert.match(block,/VIBE2_GAME_PRIMARY_CALLBACK_DISPATCH=COALESCED_TO_COHORT_FANIN/);
+  assert.match(block,/VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN/);
+  assert.match(block,/if \[ "\$\{queue_pressure:-0\}" -gt 0 \]; then/);
+  assert.equal(runtime.continuous.callbackCoalescing.singleGameTaskImmediateCompletionRequired,false);
+  assert.equal(runtime.continuous.callbackCoalescing.singleGameTaskFullReviewBeforeCohortCompletion,false);
+  assert.equal(runtime.continuous.callbackCoalescing.gamePrimaryAlwaysCohortFanIn,true);
+  assert.equal(runtime.continuous.callbackCoalescing.auxiliaryImmediateDispatchAllowedWhenUnpressured,true);
+  assert.equal(runtime.continuous.callbackCoalescing.immediateDispatchResumesWhenPressureClears,false);
 });
 
 test('complete single-task callbacks reuse full regression and release review without waiting for other workers',()=>{
@@ -1016,7 +1010,7 @@ test('worker never mutates shared queue state and only emits an atomic completio
 });
 
 test('worker model cache is architecture-aware while runtime preparation reuses the shared pinned action',()=>{
-  assert(workflow.includes('~/.cache/vibe2-ollama/lib/ollama'));
+  assert(workflow.includes('~/.cache/jaewoon-ollama/ollama-linux-*-cpu-0.33.3.tar.zst'));
   assert(workflow.includes('vibe2-ollama-v5-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b'));
   assert(workflow.includes('uses: ./vibe2-contract/.github/actions/prepare-ollama'));
   assert(workflow.includes("pull-model: 'true'"));
@@ -1497,9 +1491,9 @@ test('recovery-fast control work uses a slim runner and never competes for a gam
 
 test('fan-in refill wakes coalesce by lane without a global singleton',()=>{
   assert.match(workflow,/format\('vibe2-continuous-\{0\}-\{1\}', github\.run_id, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
-  assert.match(workflow,/format\('vibe2-fanin-refill-\{0\}'/);
+  assert.doesNotMatch(workflow,/format\('vibe2-fanin-refill-/);
   assert.doesNotMatch(workflow,/vibe2-fanin-refill-singleton/);
-  assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'LANE_SCOPED_STATELESS_REFILL_COALESCING');
+  assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'RUN_UNIQUE_OPTIMISTIC_SHARED_QUEUE_WRITE');
   assert.equal(runtime.continuous.atomicNeuronStream.sameLaneFanInRefillSerialization,false);
   assert.equal(runtime.continuous.atomicNeuronStream.globalFanInRefillSingletonForbidden,true);
   assert.equal(runtime.continuous.reserveConcurrency.sameLaneReserveSerialization,false);
@@ -1538,12 +1532,14 @@ test('candidate strategy rotation blocks task-local failed repair strategies whi
 
 
 test('game and asset-development workers bind verified learning-runtime playbooks and preserve complete knowledge attribution',()=>{
-  assert.ok(workflow.includes('Checkout verified learning memory'));
+  assert.ok(workflow.includes('Prepare verified learning memory once for worker cohort'));
+  assert.ok(workflow.includes('Download cohort verified learning memory'));
   assert.ok(workflow.includes("if: env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development'"));
-  assert.ok(workflow.includes('ref: vibe2-learning-runtime'));
+  assert.ok(workflow.includes('git fetch --depth=1 --no-tags origin vibe2-learning-runtime --quiet'));
   assert.ok(workflow.includes('company-learning/vibe3-task-playbooks.json'));
   assert.ok(workflow.includes('VIBE2_VERIFIED_COMMERCIAL_PLAYBOOK=PASS'));
-  assert.match(workflow,/name: Verify commercial learning memory is reusable\n\s+if: env\.VIBE2_EXECUTION_LANE == 'game-primary' \|\| env\.VIBE2_EXECUTION_LANE == 'asset-development'/);
+  assert.match(workflow,/name: Prepare verified learning memory once for worker cohort[\s\S]*?VIBE2_VERIFIED_COMMERCIAL_PLAYBOOK=PASS/);
+  assert.match(workflow,/name: Verify cohort learning memory SHA[\s\S]*?VIBE2_VERIFIED_LEARNING_MEMORY_MODE=COHORT_ARTIFACT_SHA_ONLY/);
   assert.ok(workflow.includes("generatedFrom||'')!=='VERIFIED_MEMORY_ONLY'"));
   assert.ok(workflow.includes('VERIFIED_PLAYBOOK_AUTHORITY_REQUIRED'));
   assert.ok(workflow.includes('VERIFIED_EXTERNAL_DISTILLED_CONTENT_REQUIRED'));
