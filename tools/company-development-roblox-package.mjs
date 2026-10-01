@@ -60,8 +60,28 @@ export function validateRobloxArtifactScriptInventory({artifactPath='',expected=
 }
 
 function robloxLightingSerializationProfile(project={}){
-  const {technology,technologyToken,lightingStyle,lightingStyleToken,prioritizeLightingQuality,expectsRetro}=robloxLightingSerializationProfile(project);
-  return Object.freeze({technology,technologyToken:technologyToken,lightingStyle,lightingStyleToken,prioritizeLightingQuality,expectsRetro});
+  const sourceProperties=project?.tree?.Lighting?.$properties||{};
+  const technology=clean(sourceProperties.Technology)||'Voxel';
+  const profiles={
+    Voxel:{technologyToken:1,lightingStyle:'Soft',lightingStyleToken:1,prioritizeLightingQuality:false},
+    ShadowMap:{technologyToken:3,lightingStyle:'Soft',lightingStyleToken:1,prioritizeLightingQuality:true},
+    Future:{technologyToken:4,lightingStyle:'Realistic',lightingStyleToken:0,prioritizeLightingQuality:true},
+  };
+  const profile=profiles[technology];
+  if(!profile)throw new Error('ROBLOX_LIGHTING_SOURCE_TECHNOLOGY_UNSUPPORTED:'+technology);
+  const lightingStyle=clean(sourceProperties.LightingStyle)||profile.lightingStyle;
+  const lightingStyleToken=lightingStyle==='Realistic'?0:lightingStyle==='Soft'?1:null;
+  if(lightingStyleToken===null)throw new Error('ROBLOX_LIGHTING_SOURCE_STYLE_UNSUPPORTED:'+lightingStyle);
+  const prioritizeLightingQuality=sourceProperties.PrioritizeLightingQuality??profile.prioritizeLightingQuality;
+  const expectsRetro=clean(project?.tree?.Lighting?.CompatibilityToneMap?.$properties?.TonemapperPreset)==='Retro';
+  return Object.freeze({
+    technology,
+    technologyToken:profile.technologyToken,
+    lightingStyle,
+    lightingStyleToken,
+    prioritizeLightingQuality,
+    expectsRetro,
+  });
 }
 
 function upsertRobloxXmlProperty(propertiesXml,{tag,name,value}){
@@ -114,23 +134,10 @@ export function validateRobloxArtifactLightingMigrationGuard({artifactPath='',pr
   if(!fs.existsSync(artifact))throw new Error(`Roblox artifact missing: ${artifact}`);
   const projectFile=clean(projectPath)?path.resolve(clean(projectPath)):'';
   const project=projectFile&&fs.existsSync(projectFile)?readJson(projectFile):null;
-  const sourceProperties=project?.tree?.Lighting?.$properties||{};
-  const technology=clean(sourceProperties.Technology)||'Voxel';
-  const profiles={
-    Voxel:{token:1,lightingStyle:'Soft',lightingStyleToken:1,prioritizeLightingQuality:false},
-    ShadowMap:{token:3,lightingStyle:'Soft',lightingStyleToken:1,prioritizeLightingQuality:true},
-    Future:{token:4,lightingStyle:'Realistic',lightingStyleToken:0,prioritizeLightingQuality:true},
-  };
-  const profile=profiles[technology];
-  if(!profile)throw new Error('ROBLOX_LIGHTING_SOURCE_TECHNOLOGY_UNSUPPORTED:'+technology);
-  const lightingStyle=clean(sourceProperties.LightingStyle)||profile.lightingStyle;
-  const lightingStyleToken=lightingStyle==='Realistic'?0:lightingStyle==='Soft'?1:null;
-  if(lightingStyleToken===null)throw new Error('ROBLOX_LIGHTING_SOURCE_STYLE_UNSUPPORTED:'+lightingStyle);
-  const prioritizeLightingQuality=sourceProperties.PrioritizeLightingQuality??profile.prioritizeLightingQuality;
-  const expectsRetro=clean(project?.tree?.Lighting?.CompatibilityToneMap?.$properties?.TonemapperPreset)==='Retro';
+  const {technology,technologyToken,lightingStyle,lightingStyleToken,prioritizeLightingQuality,expectsRetro}=robloxLightingSerializationProfile(project||{});
   const xml=fs.readFileSync(artifact,'utf8');
   const checks={
-    supportedTechnology:new RegExp(`<token\\s+name="Technology">\\s*${profile.token}\\s*<\\/token>`,'i').test(xml),
+    supportedTechnology:new RegExp(`<token\\s+name="Technology">\\s*${technologyToken}\\s*<\\/token>`,'i').test(xml),
     lightingStyle:new RegExp(`<token\\s+name="LightingStyle">\\s*${lightingStyleToken}\\s*<\\/token>`,'i').test(xml),
     prioritizeLightingQuality:new RegExp(`<bool\\s+name="PrioritizeLightingQuality">\\s*${prioritizeLightingQuality?'true':'false'}\\s*<\\/bool>`,'i').test(xml),
     compatibilityToneMap:!expectsRetro||/<Item\s+class="ColorGradingEffect"(?:\s|>)[\s\S]*?<string\s+name="Name">\s*CompatibilityToneMap\s*<\/string>[\s\S]*?<token\s+name="TonemapperPreset">\s*1\s*<\/token>/i.test(xml),
