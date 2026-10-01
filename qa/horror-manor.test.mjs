@@ -74,10 +74,15 @@ test('Blender export keeps exact bounds, materials and independently addressable
  const e=JSON.parse(read(root+'/generated/build-evidence.json'));
  assert.match(e.generator,/Blender/);
  assert.equal(e.normalization.up,'Y');assert.equal(e.normalization.forward,'+Z');
- assert.ok(e.reusedOriginals.includes('world-ghosts/native/mesh/bride.glb'));
+ assert.equal(e.npcGeometry,'DIRECT_PROCEDURAL_ROLE_SPECIFIC_V4');
+ assert.ok(!e.reusedOriginals.some(x=>/bride/i.test(x)),'Lobby NPCs must not reuse the bride head/body');
  for(const row of e.models){
   const b=fs.readFileSync(root+'/generated/'+row.file);
   assert.equal(crypto.createHash('sha256').update(b).digest('hex'),row.sha256);
+  if(/^(butler|undertaker|archivist)\.glb$/.test(row.file)){
+   assert.ok(row.meshes>=45,row.file+' role mesh layer count too low');
+   assert.ok(row.triangles>=6000,row.file+' face/body detail too low');
+  }
  }
  const b=fs.readFileSync(root+'/generated/manor-lobby.glb');
  const d=JSON.parse(b.toString('utf8',20,20+b.readUInt32LE(12)));
@@ -86,9 +91,20 @@ test('Blender export keeps exact bounds, materials and independently addressable
  const triangles=d.meshes.flatMap(m=>m.primitives).reduce((n,p)=>n+d.accessors[p.indices].count/3,0);
  assert.ok(triangles<200000,'Mobile geometry budget exceeded');
  const bounds=JSON.parse(read(root+'/generated/import-bounds.json'));
- assert.equal(bounds.width,106);assert.ok(bounds.center.every(Number.isFinite));
+ assert.ok(bounds.width>=150,'Expanded manor width is too small: '+bounds.width);assert.ok(bounds.center.every(Number.isFinite));
  assert.ok(d.meshes.length<=350,"Mobile scene mesh budget exceeded");
  for(const m of d.materials)assert.ok(m.pbrMetallicRoughness?.baseColorTexture,"Every exported material needs an import-safe color texture");
- assert.match(lobby,/Vector3\.new\(0,3,-9\)/);
+ assert.match(lobby,/Vector3\.new\(0,3,60\)/);
  assert.match(lobby,/Vector3\.new\(5,4,-9\)/);
+ const review=JSON.parse(read(root+'/generated/review/evidence.json'));
+ assert.equal(review.sharedBrideHeadUsedForNPCs,false);
+ assert.equal(review.npcRoleSpecificGeometry,true);
+ for(const kind of ['butler','undertaker','archivist']){
+  const files=review.npcReviewFiles?.[kind]||[];
+  assert.equal(files.length,3,kind+' must have front/three-quarter/full-body review renders');
+  for(const file of files){
+   const stat=fs.statSync(root+'/generated/review/'+file);
+   assert.ok(stat.size>10000,file+' preview is too small to be useful evidence');
+  }
+ }
 });
