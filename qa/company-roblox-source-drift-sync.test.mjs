@@ -368,7 +368,7 @@ test('source-sync contract edits wake runtime control while game edits use exact
 test('exact Roblox runs deduplicate before work without cancelling an active build',()=>{
   const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
   assert.match(runtime,/^\s*group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}$/m);
-  assert.match(runtime.slice(0,runtime.indexOf('\njobs:\n')),/^\s*cancel-in-progress: false$/m);
+  assert.match(runtime.slice(0,runtime.indexOf('\njobs:\n')),/^\s*cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}$/m);
   const freshness=runtime.slice(runtime.indexOf('      - name: Reject superseded batch scheduler'),runtime.indexOf('      - name: Cancel stale exact-game runtime runs'));
   assert.match(freshness,/String\(r\.display_title\|\|''\)===title/);
   assert.match(freshness,/ROBLOX_RUNTIME_EXACT_DEDUPED_ACTIVE=/);
