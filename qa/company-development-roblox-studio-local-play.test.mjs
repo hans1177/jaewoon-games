@@ -2592,6 +2592,32 @@ test('Studio launcher handoff remains bound to one isolated Place and cleanup re
 });
 
 
+test('Studio commercial UI ignores internal QA controls and offscreen scrolling content',()=>{
+  assert.match(helper,/internalQa=string\.find\(row\.name,"InternalQA"/);
+  assert.match(helper,/ancestor:IsA\("ScrollingFrame"\)/);
+  assert.match(helper,/if not scrollable then gui\.offscreenButtons=gui\.offscreenButtons\+1 end/);
+});
+
+test('actionable large panels are not classified as blocking overlays',()=>{
+  assert.match(helper,/const blockingOverlayPass=Number\(ui\.largeBlockingOverlayCount\|\|0\)===0/);
+  assert.doesNotMatch(helper,/blockingOverlayPass=[\s\S]{0,180}largeOverlayCount\|\|0\)===0/);
+});
+
+test('Studio player motion uses actual displacement with Animator instead of requiring Motor6D',()=>{
+  assert.match(helper,/adaptive-motion-surface[^\n]+player\.animatorPresent===true&&displacement>=0\.1/);
+  assert.doesNotMatch(helper,/adaptive-motion-surface[^\n]+motorCount/);
+});
+
+test('external animation warnings absent from game-owned source are suppressed but owned assets still fail',()=>{
+  const warning={content:[{type:'text',text:JSON.stringify({message:'Failed to load animation with sanitized ID rbxassetid://114302219876492: Animation failed to load',messageType:3})}]};
+  const external=classifyStudioConsoleOutput(warning,{ownedSourceText:'local x = 1'});
+  assert.equal(external.errors.length,0);
+  assert.equal(external.externalAnimationAssetWarningsSuppressed,1);
+  const owned=classifyStudioConsoleOutput(warning,{ownedSourceText:'AnimationId = "rbxassetid://114302219876492"'});
+  assert.equal(owned.errors.length,1);
+  assert.equal(owned.errors[0].type,'studio-asset-load-error');
+});
+
 test('Studio flags inaccessible graphics assets for exact visual repair while retaining ordinary warnings',()=>{
   const result=classifyStudioConsoleOutput({content:[{type:'text',text:[
     JSON.stringify({message:'Failed to load texture asset rbxassetid://123: not authorized to access',messageType:2,timestamp:1}),
