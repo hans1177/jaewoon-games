@@ -13309,10 +13309,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
-      "canonicalState": "F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T17:34:42.465Z",
+      "updatedAt": "2026-10-01T17:41:39.292Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -13752,7 +13752,7 @@
       },
       "robloxInternalReleaseReady": false,
       "robloxInternalReleaseAt": null,
-      "robloxLastSuccessfulStage": "F9_RELEASE_REGRESSION",
+      "robloxLastSuccessfulStage": "VIBE_INTERNAL_PLAY",
       "robloxFailureStage": null,
       "robloxFailureSignature": null,
       "robloxMultiplayerQaPassed": true,
@@ -13827,7 +13827,7 @@
       "robloxInternalVibePlayEvidence": {
         "version": 2,
         "gameId": "fantasy-survival",
-        "studioHarnessVersion": 9,
+        "studioHarnessVersion": 15,
         "authority": "roblox-official-studio-mcp-runtime",
         "pass": true,
         "actualPlay": true,
@@ -13904,6 +13904,30 @@
             "ok": true
           },
           {
+            "id": "ui-discovered-ScopeAction5",
+            "type": "mcp-ui-exploration",
+            "dispatched": true,
+            "ok": true
+          },
+          {
+            "id": "ui-discovered-ScopeAction1",
+            "type": "mcp-ui-exploration",
+            "dispatched": true,
+            "ok": true
+          },
+          {
+            "id": "ui-discovered-ScopeAction3",
+            "type": "mcp-ui-exploration",
+            "dispatched": true,
+            "ok": true
+          },
+          {
+            "id": "ui-discovered-ScopeAction6",
+            "type": "mcp-ui-exploration",
+            "dispatched": true,
+            "ok": true
+          },
+          {
             "id": "explore-0-w",
             "type": "mcp-keyboard-input",
             "dispatched": true,
@@ -13917,6 +13941,54 @@
           },
           {
             "id": "explore-2-w",
+            "type": "mcp-keyboard-input",
+            "dispatched": true,
+            "ok": true
+          },
+          {
+            "id": "explore-3-d",
+            "type": "mcp-keyboard-input",
+            "dispatched": true,
+            "ok": true
+          },
+          {
+            "id": "explore-4-w",
+            "type": "mcp-keyboard-input",
+            "dispatched": true,
+            "ok": true
+          },
+          {
+            "id": "explore-5-d",
+            "type": "mcp-keyboard-input",
+            "dispatched": true,
+            "ok": true
+          },
+          {
+            "id": "explore-6-w",
+            "type": "mcp-keyboard-input",
+            "dispatched": true,
+            "ok": true
+          },
+          {
+            "id": "explore-7-d",
+            "type": "mcp-keyboard-input",
+            "dispatched": true,
+            "ok": true
+          },
+          {
+            "id": "explore-8-w",
+            "type": "mcp-keyboard-input",
+            "dispatched": true,
+            "ok": true
+          },
+          {
+            "id": "explore-9-d",
+            "type": "mcp-keyboard-input",
+            "dispatched": true,
+            "ok": true
+          },
+          {
+            "id": "explore-10-w",
             "type": "mcp-keyboard-input",
             "dispatched": true,
             "ok": true
@@ -13992,6 +14064,12 @@
           {
             "id": "mcp-input-dispatched",
             "name": "mcp-input-dispatched",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "actual-play-post-keyboard-client-probe",
+            "name": "actual-play-post-keyboard-client-probe",
             "required": true,
             "pass": true
           },
@@ -14293,14 +14371,14 @@
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
           "scenarioFailureCount": 0,
-          "primaryActionDisplacement": 4.301757764712715,
-          "primaryActionVelocity": 0.00000664184101888777,
+          "primaryActionDisplacement": 1.8697044793217228,
+          "primaryActionVelocity": 0.30027830601004113,
           "primaryActionFeedbackChanged": false,
           "commercialAudit": {
-            "auditProfile": "FAST_DEEP",
-            "timelineProbeCount": 6,
-            "routePlanningProbeCount": 2,
-            "lightweightProbeCount": 4,
+            "auditProfile": "F9_SOAK",
+            "timelineProbeCount": 18,
+            "routePlanningProbeCount": 6,
+            "lightweightProbeCount": 12,
             "progressChanged": true,
             "inventoryChanged": false,
             "timelineProgressChanged": true,
@@ -14334,7 +14412,7 @@
               "multiplayerActualSessionPass": false
             },
             "performance": {
-              "memoryMb": 2625.76953125,
+              "memoryMb": 2669.80859375,
               "descendantCount": 311
             },
             "multiplayer": null,
@@ -14366,24 +14444,12 @@
           "initial-character-spawned",
           "initial-ui-playability",
           "mcp-input-dispatched",
+          "actual-play-post-keyboard-client-probe",
           "commercial-audit-timeline-sampled",
           "actual-play-final-client-probe",
           "actual-play-final-server-probe",
           "scenario-character-camera-ready",
-          "scenario-adaptive-start-playability",
-          "scenario-visual-capture-sane",
-          "scenario-adaptive-runtime-surface",
-          "scenario-adaptive-ftue-clarity",
-          "scenario-adaptive-ui-commercial-quality",
-          "scenario-adaptive-ui-blocking-overlay",
-          "scenario-adaptive-world-safety",
-          "scenario-adaptive-map-route-coverage",
-          "scenario-adaptive-spawn-safety",
-          "scenario-adaptive-interaction-surface",
-          "scenario-adaptive-semantic-interaction-effect",
-          "scenario-adaptive-system-transaction-effect",
-          "scenario-adaptive-travel-effect",
-          "scenario-adaptive-gameplay-loop-cadence"
+          "scenario-adaptive-start-playability"
         ],
         "rawSourceIncluded": false,
         "rawGameplayValuesIncluded": false,
@@ -14572,8 +14638,8 @@
           "authoritativeStateChangeObserved": true,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-10-01T15:03:57.624Z",
-        "workflowRunId": 36878049746,
+        "testedAt": "2026-10-01T17:41:39.292Z",
+        "workflowRunId": 36896295029,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -14626,7 +14692,7 @@
       "failureCount": 1,
       "contractCanaryPassed": false,
       "robloxInternalPlaytestPassed": true,
-      "robloxInternalPlaytestPassedAt": "2026-10-01T15:03:57.624Z",
+      "robloxInternalPlaytestPassedAt": "2026-10-01T17:41:39.292Z",
       "robloxStudioLocalPlayRepairRequired": false,
       "robloxStudioLocalPlayInfrastructurePending": false,
       "robloxQualityBuildUpRequired": false,
@@ -14661,7 +14727,7 @@
         "newSourceRevision": "861b8f30962b38f30953215b72a10e314f71d250",
         "invalidatedAt": "2026-10-01T13:35:21.501Z"
       },
-      "robloxQualityBuildUpLastPassedAt": "2026-10-01T15:03:57.624Z",
+      "robloxQualityBuildUpLastPassedAt": "2026-10-01T17:41:39.292Z",
       "robloxMultiplayerQaPassedAt": "2026-10-01T15:56:27.717Z",
       "robloxMultiplayerQaEvidence": {
         "version": 2,
@@ -25447,7 +25513,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T17:41:10.686Z",
+  "updatedAt": "2026-10-01T17:41:39.292Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
