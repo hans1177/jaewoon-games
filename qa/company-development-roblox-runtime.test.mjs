@@ -895,6 +895,39 @@ test('line-defense existing visible Studio binding is accepted during F0 foundat
 });
 
 
+test('existing Roblox source normalization preserves supported lighting, authored ambience, and effects',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-lighting-preserve-'));
+  const root=path.join(tmp,'line-defense');
+  try{
+    fs.cpSync('roblox-games/line-defense',root,{recursive:true});
+    const projectFile=path.join(root,'default.project.json');
+    const project=JSON.parse(fs.readFileSync(projectFile,'utf8'));
+    project.tree.Lighting={
+      $properties:{Technology:'Future',LightingStyle:'Realistic',PrioritizeLightingQuality:true,Brightness:3.4},
+      AuthoredBloom:{$className:'BloomEffect',$properties:{Intensity:0.35}},
+    };
+    fs.writeFileSync(projectFile,JSON.stringify(project,null,2)+'\n');
+    const assetLibrary=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+    applyRobloxStudioAssetBindingToExistingSource({
+      root,
+      gameId:'line-defense',
+      baseline,
+      assetLibrary,
+      learning:createRobloxVibe3LearningContext({gameId:'line-defense',profile:robloxBuildProfileFromBaseline(baseline),artbook:{},playbooks:verifiedRobloxPlaybooks()}),
+    });
+    const after=JSON.parse(fs.readFileSync(projectFile,'utf8'));
+    assert.equal(after.tree.Lighting.$properties.Technology,'Future');
+    assert.equal(after.tree.Lighting.$properties.LightingStyle,'Realistic');
+    assert.equal(after.tree.Lighting.$properties.PrioritizeLightingQuality,true);
+    assert.equal(after.tree.Lighting.$properties.Brightness,3.4);
+    assert.equal(after.tree.Lighting.AuthoredBloom.$properties.Intensity,0.35);
+    assert.equal(after.tree.Lighting.CompatibilityToneMap,undefined);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+
 test('known Roblox source repair debt outranks reconciliation pass and canonical-state rewrites',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
