@@ -403,7 +403,7 @@
     "audioDepartmentRequired": true
   },
   "unityWebGameDevelopmentEvidence": {
-    "version": 3,
+    "version": 4,
     "role": "UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR",
     "policySource": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebDevelopmentLane",
     "nativeGateAuthority": true,
@@ -422,8 +422,23 @@
       "UNITY_WEB_FLOOR_IDS",
       "UNITY_WEB_FLOOR_BOOTSTRAP_IDS",
       "UNITY_WEB_BOOTSTRAP_GENERATED_ID",
-      "UNITY_WEB_CANONICAL_SOURCE=SAME_UNITY_PROJECT"
-    ]
+      "UNITY_WEB_CANONICAL_SOURCE=SAME_UNITY_PROJECT",
+      "VIBE2_CANDIDATE_EXECUTION_SURFACE=UNITY_WEB",
+      "VIBE2_UNITY_WEB_RELEASE_DISPATCHED=YES",
+      "UNITY_WEB_CLOUDFLARE_PREVIEW",
+      "UNITY_WEB_CLOUDFLARE_MAIN",
+      "VIBE2_UNITY_WEB_TASK_FINAL_PASS"
+    ],
+    "candidateManifestExecutionSurface": "UNITY_WEB",
+    "nativeUnityExecutionSurface": "UNITY_NATIVE",
+    "candidateReleaseGate": ".github/workflows/vibe2-candidate-release.yml",
+    "runtimeWorkflow": ".github/workflows/unity-web-first-stage-build.yml",
+    "reviewedPromotionRoots": [
+      "unity-games/<gameId>/",
+      "web-games/<gameId>/"
+    ],
+    "cloudflarePreviewRequired": true,
+    "cloudflareMainDeploymentRequiredBeforeVibePass": true
   },
   "highEndVisualEvidenceContract": {
     "version": 2,
@@ -2890,5 +2905,48 @@
     "publicationFailureMustRemainRetryTracked": true,
     "automaticPublicationRetryRequired": true,
     "publicationRetryPreservesExactFailedCycleIdentity": true
+  },
+  "playableWebMandatoryDeploymentEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "workflow": ".github/workflows/vibe2-candidate-release.yml",
+    "markers": [
+      "WEB_DEPLOYMENT_ELIGIBILITY=PLAYABLE_F0_F9_PLUS_STATIC_SAVE_QA",
+      "WEB_NATIVE_HOMEPAGE_READINESS_REQUIRED=NO",
+      "WEB_PLAYABLE_VERIFIED_MUST_DEPLOY=YES",
+      "VIBE2_RELEASE_PAGES_CHECK",
+      "VIBE2_WEB_CURRENT_DEPLOYMENT_CHECK",
+      "WEB_SAME_VERIFIED_CANDIDATE_RETRY=YES",
+      "VIBE2_WEB_TASK_FINAL_PASS=EXACT_SOURCE_RUNTIME_AND_DEPLOYMENT",
+      "WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED"
+    ],
+    "homepageAutoIngestMarkers": [
+      "COMPANY_OWNER_WEB_ADDED",
+      "COMPANY_OWNER_WEB_UPDATED"
+    ],
+    "taskPassBeforeMainCloudflareForbidden": true
+  },
+  "perpetualBuildUpDataCapacityEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "policy": "company-learning/vibe-autonomous-content-expansion-policy.json#dataCapacityBudget",
+    "generator": "tools/company-build-up-directive.mjs",
+    "qa": "qa/company-build-up-directive.test.mjs",
+    "limits": {
+      "savePersistedDataBytes": 2097152,
+      "webDownloadBytes": 104857600,
+      "singleFileBytes": 26214400,
+      "mobileMemoryTargetBytes": 314572800,
+      "mobileMinimumFps": 30
+    },
+    "states": [
+      "NORMAL",
+      "WARNING",
+      "EXCEEDED"
+    ],
+    "buildUpContinuesAtAllStates": true,
+    "warningRecombinationPreferred": true,
+    "generationLimit": null,
+    "contentCountLimit": null
   }
 }
