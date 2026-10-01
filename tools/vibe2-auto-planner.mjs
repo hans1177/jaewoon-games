@@ -2331,7 +2331,20 @@ ${existingBackfillInstruction}${phaseInstruction}${visualInstruction}${designIns
   const presentationBound=focusPillar==='PRESENTATION'
     ?applyAdaptiveGraphicsReplacementContract(out,project,'ASSET_ADAPTATION')
     :out;
-  return attachGameSpecificBuildUpDirective(applyWorldLobbyFirst(presentationBound,project,repoRoot),project,repoRoot,queue,designContext);
+  const worldLobbyBound=attachGameSpecificBuildUpDirective(applyWorldLobbyFirst(presentationBound,project,repoRoot),project,repoRoot,queue,designContext);
+  if(focusPillar==='PRESENTATION'&&project.engine==='roblox'&&worldLobbyBound.assetProductionLane===true){
+    const isolatedPresentationPath=`${posix(project.projectPath)}/client/Presentation.client.luau`;
+    return{
+      ...worldLobbyBound,
+      responsibleFiles:[isolatedPresentationPath],
+      evidence:[...new Set([
+        ...(worldLobbyBound.evidence||[]),
+        'asset-presentation-owner:ISOLATED_CLIENT_SCRIPT',
+        'asset-presentation-readonly-game-context:REQUIRED'
+      ])]
+    };
+  }
+  return worldLobbyBound;
 }
 function bindSharedBuildUpDirective(taskInput,directive){
   if(!taskInput||!directive?.directiveId)return taskInput;
@@ -2898,6 +2911,22 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
       ||clean(item?.target).toLowerCase()!=='roblox'
       ||clean(item?.studioQualityEvolution?.focusPillar).toUpperCase()!=='PRESENTATION')return item;
     const responsible=(item.responsibleFiles||[]).map(posix).filter(Boolean);
+    const evidence=(item.evidence||[]).map(clean);
+    const assetLane=item.assetProductionLane===true||evidence.includes('asset-production-parallel:v1');
+    if(assetLane){
+      const isolatedPresentationPath=`roblox-games/${clean(item.gameId)}/client/Presentation.client.luau`;
+      if(responsible.length===1&&responsible[0]===isolatedPresentationPath)return item;
+      return{
+        ...item,
+        responsibleFiles:[isolatedPresentationPath],
+        evidence:[...new Set([
+          ...(item.evidence||[]),
+          'studio-presentation-client-responsibility:REPAIRED',
+          'asset-presentation-owner:ISOLATED_CLIENT_SCRIPT',
+          'asset-presentation-readonly-game-context:REQUIRED'
+        ])]
+      };
+    }
     if(responsible.some(file=>file.includes('/client/')&&(file.endsWith('.client.luau')||file.endsWith('.lua'))))return item;
     const clientPath=`roblox-games/${clean(item.gameId)}/client/Game.client.luau`;
     if(!fs.existsSync(path.join(repoRoot,clientPath)))return item;
