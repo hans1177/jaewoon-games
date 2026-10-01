@@ -213,6 +213,104 @@ function compilePatchRecipe({order={},failures=[],primaryTargets=[],dependentSym
   };
 }
 
+function compileCodingExecutionContract({
+  order={},repairRequired=false,repairMode='FOCUSED_REPAIR',repairRepeatCount=0,
+  primaryTargets=[],allowedDependentSymbolsOrSystems=[],ownedState=[],readState=[],
+  preserveSemantics=[],semanticDiffBudget={},requiredFocusedChecks=[],causalReplay={},responsibilityGraph={}
+}={}){
+  const directive=order?.selectedTask?.buildUpDirective
+    ||order?.buildUpDirective
+    ||order?.workPackage?.sharedContext?.buildUpDirective
+    ||{};
+  const playChain=directive?.playChainContract||{};
+  const micro=directive?.microIterationContract||{};
+  const selectedStage=clean(micro?.selectedPlayChainStage||playChain?.selectedStage)||null;
+  const primaryRepairSurface=clean(micro?.primaryRepairSurface||playChain?.primaryFailure?.repairSurface)||null;
+  const primaryScenario=clean(micro?.primaryScenario||playChain?.primaryFailure?.id)||null;
+  const target=clean(order?.target).toLowerCase();
+  const preferredFileRange=Array.isArray(micro?.preferredResponsibleFileCount)&&micro.preferredResponsibleFileCount.length===2
+    ?micro.preferredResponsibleFileCount.map(Number)
+    :[1,3];
+  const firstPrimary=clean(primaryTargets[0])||'PRIMARY_RESPONSIBILITY';
+  const firstDependent=clean(allowedDependentSymbolsOrSystems[0])||'DIRECT_DEPENDENCY';
+  const hypothesisLadder=[
+    {
+      rank:1,
+      id:'PRIMARY_RESPONSIBILITY_BREAK',
+      claim:selectedStage
+        ?`The earliest verified break is at play-chain stage ${selectedStage}; repair ${firstPrimary} before widening scope.`
+        :`The current requirement or failure belongs first to ${firstPrimary}; repair that responsibility before widening scope.`,
+      evidenceRequired:primaryScenario?[`REPLAY_SCENARIO:${primaryScenario}`,'PRIMARY_STATE_OR_BEHAVIOR_DELTA']:['PRIMARY_STATE_OR_BEHAVIOR_DELTA']
+    },
+    {
+      rank:2,
+      id:'DIRECT_DEPENDENCY_PROPAGATION',
+      claim:`If the primary responsibility is correct, inspect only direct dependency ${firstDependent} for missing state/event propagation.`,
+      evidenceRequired:['PRIMARY_PATH_CONFIRMED','DIRECT_DEPENDENCY_CAUSAL_EVIDENCE']
+    },
+    {
+      rank:3,
+      id:'ORDERING_OR_EVIDENCE_MISMATCH',
+      claim:'Only after the first two hypotheses are disproved, test initialization/order/evidence mismatch without weakening the gameplay or QA contract.',
+      evidenceRequired:['PRIMARY_AND_DIRECT_DEPENDENCY_DISPROVED','SAME_SCENARIO_RECHECK']
+    }
+  ];
+  const verificationLadder=[
+    {order:1,id:'PREPATCH_CAUSE',required:repairRequired,proof:causalReplay?.executable===true?'EXACT_CAUSAL_REPLAY':'CURRENT_SOURCE_AND_FAILURE_EVIDENCE'},
+    {order:2,id:'SYNTAX_OR_COMPILE',required:true,proof:target==='roblox'?'LUAU_OR_STRUCTURAL_SYNTAX':'TARGET_LANGUAGE_SYNTAX'},
+    {order:3,id:'FOCUSED_CHECKS',required:true,proof:(requiredFocusedChecks||[]).slice(0,12)},
+    {order:4,id:'SAME_SCENARIO',required:repairRequired,proof:primaryScenario||'ORIGINAL_FAILURE_SCENARIO'},
+    {order:5,id:'DEPENDENT_REGRESSION',required:true,proof:'DIRECT_DEPENDENTS_AND_TOUCHED_SYSTEMS'},
+    {order:6,id:'FULL_REGRESSION',required:true,proof:'CANONICAL_FAN_IN'},
+    {order:7,id:'EXACT_RUNTIME_RECHECK',required:target==='roblox'&&micro?.exactStudioRecheckRequired===true,proof:'OFFICIAL_STUDIO_MCP_EXACT_ARTIFACT'}
+  ];
+  return{
+    version:1,
+    mode:repairRequired?'CAUSAL_IMPLEMENTATION':'FEATURE_IMPLEMENTATION',
+    target,
+    selectedPlayChainStage:selectedStage,
+    primaryRepairSurface,
+    primaryScenario,
+    hypothesisLadder,
+    readBeforeWrite:{
+      primaryTargets:primaryTargets.slice(0,8),
+      directDependents:allowedDependentSymbolsOrSystems.slice(0,16),
+      ownedState:ownedState.slice(0,16),
+      readState:readState.slice(0,16),
+      relevantEdges:(responsibilityGraph?.relevantEdges||[]).slice(0,24)
+    },
+    invariantLocks:unique([
+      ...preserveSemantics,
+      'NO_WRAPPER_SHADOW_OVERRIDE',
+      'NO_DUPLICATE_ARCHITECTURE',
+      'NO_UNRELATED_RULE_OR_SAVE_SEMANTIC_CHANGE'
+    ]).slice(0,40),
+    changeBudget:{
+      preferredResponsibleFileCountMin:Math.max(1,Number(preferredFileRange[0])||1),
+      preferredResponsibleFileCountMax:Math.max(1,Number(preferredFileRange[1])||3),
+      maxSystemCount:Math.max(1,Number(semanticDiffBudget?.maxSystemCount)||1),
+      unrelatedSystemMutationForbidden:semanticDiffBudget?.unrelatedSystemMutationForbidden!==false,
+      newFileCreationAllowed:false,
+      wrapperShadowOverrideAllowed:false,
+      duplicateArchitectureAllowed:false
+    },
+    verificationLadder,
+    retryPolicy:{
+      repeatCount:Number(repairRepeatCount||0),
+      mode:repairMode,
+      sameFailureRequiresDifferentHypothesis:true,
+      unchangedApproachWithoutNewEvidenceForbidden:repairRequired&&repairMode==='ROOT_CAUSE_MODE',
+      rootCauseCompareRevisionsRequired:repairRequired&&repairMode==='ROOT_CAUSE_MODE'
+    },
+    completion:{
+      sourceDeltaAloneIsPass:false,
+      required:['PRIMARY_RESPONSIBILITY_CHANGED','INVARIANTS_PRESERVED','FOCUSED_CHECKS_PASS','DEPENDENT_REGRESSION_PASS',...(repairRequired?['ORIGINAL_SCENARIO_REPLAY_PASS']:[]),...(target==='roblox'&&micro?.exactStudioRecheckRequired===true?['OFFICIAL_STUDIO_MCP_EXACT_ARTIFACT_RECHECK']:[])],
+      runtimePassFabricationForbidden:true
+    },
+    authorityExpanded:false
+  };
+}
+
 function compileEditContract({order={},sourceText='',responsibleFiles=[],protectedScopeSignals=[],testTargets=[],diagnosticReplayBaseline=null}={}){
   const sourceAnalysis=analyzeExistingGameSource(sourceText);
   const gameplaySketch=taskGameplaySketch(order,sourceAnalysis);
@@ -359,6 +457,13 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
   const relevantEdges=(graph.edges||[]).filter(edge=>primarySet.has(edge.from)||primarySet.has(edge.to)||directDependentSymbols.includes(edge.from)||directDependentSymbols.includes(edge.to)).slice(0,40);
   const allowedDependentSymbolsOrSystems=unique([...directDependentSymbols,...directDependentSystems]).slice(0,24);
   const patchRecipe=compilePatchRecipe({order,failures:repairFailures,primaryTargets,dependentSymbols:allowedDependentSymbolsOrSystems,ownedState,requiredFocusedChecks,preserveSemantics});
+  const codingExecutionContract=compileCodingExecutionContract({
+    order,repairRequired,repairMode,repairRepeatCount,primaryTargets,allowedDependentSymbolsOrSystems,
+    ownedState,readState,preserveSemantics,
+    semanticDiffBudget:{allowedSystems,preferredPrimarySymbols:primaryTargets,maxSystemCount:Math.max(1,allowedSystems.length||primarySystems.length||1),unrelatedSystemMutationForbidden:true,saveKeysMustRemainCompatible:sourceAnalysis.storageKeys||[]},
+    requiredFocusedChecks,causalReplay,
+    responsibilityGraph:{relevantEdges}
+  });
   return{
     version:1,
     mode:'COMPILED_EDIT_CONTRACT',
@@ -404,6 +509,7 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
     causalReplay,
     gameRepair,
     patchRecipe,
+    codingExecutionContract,
     codingArchitecture:{
       developmentMode:codingArchitecture?.developmentMode||null,
       stateOwnershipSystems:(codingArchitecture?.stateOwnership||[]).map(row=>row.system),
@@ -583,6 +689,17 @@ export function explorationGuidance(handoff={}){
         `verified reuse=${(handoff.editContract.patchRecipe.reusePatterns||[]).join(' | ')||'NONE'}`,
         `verified avoid=${(handoff.editContract.patchRecipe.avoidPatterns||[]).join(' | ')||'NONE'}`,
         'Patch recipe는 검증된 기억을 우선 사용하지만 현재 소스와 맞지 않으면 적용하지 않는다. 범위 확대/QA 우회 권한은 없다.'
+      ]:[]),
+      ...(handoff.editContract.codingExecutionContract?[
+        '[CODING EXECUTION CONTRACT BEGIN]',
+        `mode=${handoff.editContract.codingExecutionContract.mode}; target=${handoff.editContract.codingExecutionContract.target}; selectedStage=${handoff.editContract.codingExecutionContract.selectedPlayChainStage||'NONE'}; repairSurface=${handoff.editContract.codingExecutionContract.primaryRepairSurface||'NONE'}; primaryScenario=${handoff.editContract.codingExecutionContract.primaryScenario||'NONE'}`,
+        ...((handoff.editContract.codingExecutionContract.hypothesisLadder||[]).map(row=>`hypothesis${row.rank}=${row.id}: ${row.claim} | proof=${(row.evidenceRequired||[]).join(',')||'NONE'}`)),
+        `changeBudget=files:${handoff.editContract.codingExecutionContract.changeBudget?.preferredResponsibleFileCountMin||1}-${handoff.editContract.codingExecutionContract.changeBudget?.preferredResponsibleFileCountMax||3}; maxSystems:${handoff.editContract.codingExecutionContract.changeBudget?.maxSystemCount||1}; wrappers=FORBIDDEN; duplicateArchitecture=FORBIDDEN; unrelatedMutation=${handoff.editContract.codingExecutionContract.changeBudget?.unrelatedSystemMutationForbidden===true?'FORBIDDEN':'CONDITIONAL'}`,
+        `verificationLadder=${(handoff.editContract.codingExecutionContract.verificationLadder||[]).map(row=>row.id+':'+(row.required?'REQUIRED':'CONDITIONAL')).join('>')||'NONE'}`,
+        `retryPolicy=repeat:${handoff.editContract.codingExecutionContract.retryPolicy?.repeatCount||0}; mode:${handoff.editContract.codingExecutionContract.retryPolicy?.mode||'FOCUSED_REPAIR'}; sameFailureNeedsNewHypothesis:${handoff.editContract.codingExecutionContract.retryPolicy?.sameFailureRequiresDifferentHypothesis===true}; unchangedApproachForbidden:${handoff.editContract.codingExecutionContract.retryPolicy?.unchangedApproachWithoutNewEvidenceForbidden===true}`,
+        `invariantLocks=${(handoff.editContract.codingExecutionContract.invariantLocks||[]).join('|')||'NONE'}`,
+        'Do not narrate private reasoning. Use this contract to choose the smallest causal implementation and return only the required source candidate format.',
+        '[CODING EXECUTION CONTRACT END]'
       ]:[]),
       `불변조건=${(handoff.editContract.codingArchitecture?.invariantIds||[]).join(', ')||'NONE'}`,
       '주 책임 심볼부터 수정하고 의존 심볼은 요구사항 충족에 꼭 필요할 때만 수정한다. 책임 파일/예약 범위 확대는 금지한다.'
