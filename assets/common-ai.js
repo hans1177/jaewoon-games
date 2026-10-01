@@ -126,7 +126,6 @@ export class JaewoonCommonAI {
       const target = this.chooseEnemy(enemies);
       if (target) return this.action(this.canAttack(target) ? S.ATTACK : S.SEARCH, 'npc_hostile', target);
     }
-    if (context.canInteract) return this.action(S.INTERACT, 'player_nearby');
     if (context.canInteract && this.personality.sociability >= -0.35) return this.action(S.INTERACT, 'player_nearby');
     if (context.investigateTarget && this.personality.curiosity > 0.2) return this.action(S.SEARCH, 'npc_curiosity', context.investigateTarget);
     if (context.patrolReady !== false) return this.action(S.PATROL, 'npc_patrol');
