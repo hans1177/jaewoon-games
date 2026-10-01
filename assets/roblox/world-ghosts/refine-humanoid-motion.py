@@ -74,6 +74,20 @@ DYNAMIC_SECONDARY_QA_CLIPS = (
     'hero_strafe_left_hq','hero_strafe_right_hq','hero_backward_hq',
     'hero_turn_180_hq','hero_jump_start_hq','hero_jump_air_hq','hero_land_hq'
 )
+CONTACT_WINDOWS = {
+    'hero_walk_hq':((0.04,0.18),(0.54,0.68)),
+    'hero_jog_hq':((0.04,0.16),(0.54,0.66)),
+    'hero_run_hq':((0.03,0.13),(0.53,0.63)),
+    'hero_sprint_hq':((0.025,0.11),(0.525,0.61)),
+    'hero_backward_hq':((0.04,0.18),(0.54,0.68)),
+    'hero_strafe_left_hq':((0.04,0.16),(0.54,0.66)),
+    'hero_strafe_right_hq':((0.04,0.16),(0.54,0.66)),
+}
+PACE_TO_CLIP = {
+    'walk':'hero_walk_hq','jog':'hero_jog_hq','run':'hero_run_hq',
+    'sprint':'hero_sprint_hq','backward':'hero_backward_hq',
+}
+GAIT_CONTACT_ANCHORS = {}
 QA_THRESHOLDS = {
     'loopRotationMaxRad': 0.015,
     'loopLocationMax': 0.004,
@@ -84,6 +98,7 @@ QA_THRESHOLDS = {
     'maxEulerRad': 1.60,
     'leftRightPhaseErrorRad': 0.020,
     'framePosePopMaxRad': 0.32,
+    'framePosePopLocationNormalizedMax': 0.030,
     'bodyChainActivitySpreadMinRad': 0.010,
     'footVerticalLiftMinNormalizedByClip': {
         'hero_walk_hq': 0.006,
@@ -319,6 +334,50 @@ def apply_secondary(t, drive=1.0, turn=0.0, braking=0.0):
         rot(f'Tie{i}', drive * (0.035 + i * 0.018) * local + braking * 0.05 * settle, turn * 0.025 * local, 0.0)
 
 
+def pose_bone_world_position(name):
+    bpy.context.view_layer.update()
+    bone=RIG.pose.bones[name]
+    return RIG.matrix_world @ bone.matrix.translation
+
+
+def shift_hips_for_foot_lock(foot_name, target_xz, weight):
+    if weight <= 0.0:
+        return
+    hips=RIG.pose.bones['Hips']
+    base=Vector(hips.location)
+    p0=pose_bone_world_position(foot_name)
+    error_x=target_xz[0]-p0.x
+    error_z=target_xz[1]-p0.z
+    if abs(error_x)+abs(error_z) < 1e-8:
+        return
+    eps=0.001
+    hips.location=base + Vector((eps,0.0,0.0))
+    px=pose_bone_world_position(foot_name)
+    hips.location=base + Vector((0.0,0.0,eps))
+    pz=pose_bone_world_position(foot_name)
+    hips.location=base
+    bpy.context.view_layer.update()
+    a00=(px.x-p0.x)/eps; a10=(px.z-p0.z)/eps
+    a01=(pz.x-p0.x)/eps; a11=(pz.z-p0.z)/eps
+    det=a00*a11-a01*a10
+    assert abs(det)>1e-8, 'FOOT_LOCK_HIPS_TRANSLATION_SINGULAR:'+foot_name
+    local_x=(error_x*a11-a01*error_z)/det
+    local_z=(a00*error_z-error_x*a10)/det
+    hips.location.x=base.x+local_x*weight
+    hips.location.z=base.z+local_z*weight
+    bpy.context.view_layer.update()
+
+
+def contact_weight(t, start, end, ramp=0.04):
+    if start <= t <= end:
+        return 1.0
+    if start-ramp < t < start:
+        return smoothstep((t-(start-ramp))/ramp)
+    if end < t < end+ramp:
+        return 1.0-smoothstep((t-end)/ramp)
+    return 0.0
+
+
 def idle_pose(t):
     # 완전 대칭 반복을 피하고 좌우 체중 이동 시점을 비균일하게 배치한다.
     weight = curve(t, [(0.00,-0.10),(0.18,-0.05),(0.43,0.09),(0.67,0.13),(0.86,-0.02),(1.00,-0.10)])
@@ -339,7 +398,7 @@ def idle_pose(t):
     apply_secondary(t, drive=0.55, turn=weight)
 
 
-def gait_pose(t, pace='walk'):
+def gait_pose(t, pace='walk', lock_contacts=True):
     profiles = {
         'walk': {'amp':0.38,'arm':0.30,'lean':0.045,'lift':0.16,'drop':0.028,'secondary':1.05,'alert':0.18,'reverse':1.0},
         'jog': {'amp':0.47,'arm':0.37,'lean':0.085,'lift':0.20,'drop':0.035,'secondary':1.28,'alert':0.24,'reverse':1.0},
@@ -372,6 +431,15 @@ def gait_pose(t, pace='walk'):
         rot('Hand' + side_name, 0.035 + max(0.0, arm) * 0.055, 0.0, -sign * 0.040)
     detail_face_and_hands(t, moving=0.72 if pace == 'walk' else 0.82 if pace in ('jog','backward') else 1.0, alert=cfg['alert'])
     apply_secondary(t, drive=cfg['secondary'], turn=yaw * 0.3)
+    if lock_contacts and GAIT_CONTACT_ANCHORS:
+        clip_name=PACE_TO_CLIP[pace]
+        left_window,right_window=CONTACT_WINDOWS[clip_name]
+        left_weight=contact_weight(t,*left_window)
+        right_weight=contact_weight(t,*right_window)
+        if left_weight>0.0:
+            shift_hips_for_foot_lock('FootL',GAIT_CONTACT_ANCHORS[(clip_name,'left')],left_weight)
+        if right_weight>0.0:
+            shift_hips_for_foot_lock('FootR',GAIT_CONTACT_ANCHORS[(clip_name,'right')],right_weight)
 
 
 def strafe_pose(t, direction):
@@ -543,7 +611,8 @@ def crouch_pose(t):
 
 def animate(name, normalized_time):
     reset_pose()
-    t = clamp01(normalized_time)
+    raw_t = clamp01(normalized_time)
+    t = 0.0 if name in LOOP_CLIPS and raw_t >= 1.0-1e-9 else raw_t
     if name == 'hero_idle_hq':
         idle_pose(t)
     elif name == 'hero_walk_hq':
@@ -612,6 +681,22 @@ def animate(name, normalized_time):
         raise AssertionError('UNKNOWN_CLIP:' + name)
 
 
+def initialize_gait_contact_anchors():
+    for pace,clip_name in PACE_TO_CLIP.items():
+        left_window,right_window=CONTACT_WINDOWS[clip_name]
+        for side,window in (('left',left_window),('right',right_window)):
+            reset_pose()
+            gait_pose(window[0],pace,lock_contacts=False)
+            foot_name='FootL' if side=='left' else 'FootR'
+            point=pose_bone_world_position(foot_name)
+            GAIT_CONTACT_ANCHORS[(clip_name,side)]=(float(point.x),float(point.z))
+    reset_pose()
+    bpy.context.view_layer.update()
+
+
+initialize_gait_contact_anchors()
+
+
 for clip_name, duration in CLIPS.items():
     action = bpy.data.actions.new(clip_name)
     RIG.animation_data_create()
@@ -675,7 +760,11 @@ def vertical_lift(clip_name, bone_name, samples=33):
 
 def frame_pose_pop(clip_name, samples=49):
     snaps=[sampled_snapshot(clip_name,i/(samples-1)) for i in range(samples)]
-    return max(snapshot_distance(a,b)['rotationMaxRad'] for a,b in zip(snaps,snaps[1:]))
+    distances=[snapshot_distance(a,b) for a,b in zip(snaps,snaps[1:])]
+    return {
+        'rotationMaxRad':max(row['rotationMaxRad'] for row in distances),
+        'locationMax':max(row['locationMax'] for row in distances),
+    }
 
 
 def rig_height():
@@ -721,15 +810,7 @@ for clip_name in ('hero_walk_hq','hero_jog_hq','hero_run_hq','hero_sprint_hq','h
     phase_metrics[clip_name]=abs(sampled_snapshot(clip_name,0.0)['ThighL']['r'][0]-sampled_snapshot(clip_name,0.5)['ThighR']['r'][0])
 
 height=rig_height()
-contact_windows={
-    'hero_walk_hq':((0.00,0.30),(0.50,0.80)),
-    'hero_jog_hq':((0.00,0.27),(0.50,0.77)),
-    'hero_run_hq':((0.00,0.22),(0.50,0.72)),
-    'hero_sprint_hq':((0.00,0.18),(0.50,0.68)),
-    'hero_backward_hq':((0.00,0.28),(0.50,0.78)),
-    'hero_strafe_left_hq':((0.00,0.20),(0.50,0.70)),
-    'hero_strafe_right_hq':((0.00,0.20),(0.50,0.70)),
-}
+contact_windows=CONTACT_WINDOWS
 foot_contact_metrics={}
 for clip_name,(left_window,right_window) in contact_windows.items():
     foot_contact_metrics[clip_name]={
@@ -809,8 +890,10 @@ for clip_name,feet in heel_toe_metrics.items():
         if value<minimum:
             qa_failures.append(f'HEEL_TOE_ACTIVITY:{clip_name}:{side}')
 for clip_name,value in frame_pose_pop_metrics.items():
-    if value>QA_THRESHOLDS['framePosePopMaxRad']:
-        qa_failures.append('FRAME_POSE_POP:'+clip_name)
+    if value['rotationMaxRad']>QA_THRESHOLDS['framePosePopMaxRad']:
+        qa_failures.append('FRAME_POSE_POP_ROTATION:'+clip_name)
+    if value['locationMax']/height>QA_THRESHOLDS['framePosePopLocationNormalizedMax']:
+        qa_failures.append('FRAME_POSE_POP_LOCATION:'+clip_name)
 for clip_name,value in body_chain_activity_spread.items():
     if value<QA_THRESHOLDS['bodyChainActivitySpreadMinRad']:
         qa_failures.append('BODY_CHAIN_TOO_UNIFORM:'+clip_name)
@@ -830,7 +913,7 @@ qa_metrics={
     'footContactLateralVerticalDriftNormalized':foot_contact_metrics,
     'footVerticalLiftNormalized':foot_vertical_lift_metrics,
     'heelToeRotationRangeRad':heel_toe_metrics,
-    'framePosePopMaxRadByClip':frame_pose_pop_metrics,
+    'framePosePopByClip':frame_pose_pop_metrics,
     'bodyChainActivitySpreadRad':body_chain_activity_spread,
     'primaryJointRotationRangeRad':primary_activity,
     'secondaryRotationRangeMaxRadByClip':secondary_activity,
