@@ -8,7 +8,7 @@ import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
-import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
@@ -5203,6 +5203,43 @@ test('oversized initial JSON prompt caps editable context while preserving allow
   assert.equal((studio.match(/^=== FILE /gm)||[]).length,4);
   assert.ok(Buffer.byteLength(studio,'utf8')<36000);
 });
+
+test('oversized initial prompt compacts verified external learning without dropping learning ids or dispositions',()=>{
+  const id='external-oversized-demo';
+  const rows=Array.from({length:12},(_,index)=>[
+    `DISPOSITION=principle-${index}:APPLIED_GAME_SOURCE;GAME=demo;TARGET=unity;DOMAINS=GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT;GENRE_MOOD=demo`,
+    'APPLY=principle-'+index+' '+('source guidance '.repeat(420))
+  ]).flat();
+  const learning=[
+    '[VERIFIED EXTERNAL BLACK-BOX LEARNING BEGIN]',
+    'dispositions=12/12; sourcePrinciples=12; validationOnly=0; truncation=FORBIDDEN',
+    'sourcePromptScope=ALL_DISPOSED_APPLICATION_PRINCIPLES; nonSourceAvoidanceAndUsePolicy=RETAINED_IN_VERIFIED_MEMORY_AND_QA',
+    'HARD SOURCE-WORKER RULE: preserve verified application intent.',
+    `[EXTERNAL_LEARNING ${id}]`,
+    ...rows,
+    `[END_EXTERNAL_LEARNING ${id}]`,
+    '[VERIFIED EXTERNAL BLACK-BOX LEARNING END]'
+  ].join('\n');
+  const file='Assets/Scripts/GameCore.cs';
+  const prompt=[
+    'You are the Vibe2 game source worker. Return JSON only.',
+    'Engine: unity',
+    'Goal: improve the connected implementation',
+    'Allowed edit paths: '+file,
+    learning,
+    `=== FILE ${file} [EDITABLE] ===`,
+    ('public sealed class GameCore { public int Value = 1; }\n').repeat(500)
+  ].join('\n');
+  assert.ok(Buffer.byteLength(prompt,'utf8')>36000);
+  const compactLearning=compactVerifiedExternalLearningBlockFromPrompt(prompt);
+  assertVerifiedExternalLearningPromptCoverage(compactLearning,{required:true,ids:[id]});
+  const compact=buildGenerationRetryPrompt(prompt,{responsibleFiles:[file],attempt:1,oversizedInitial:true});
+  assert.ok(Buffer.byteLength(compact,'utf8')<36000);
+  assertVerifiedExternalLearningPromptCoverage(compact,{required:true,ids:[id]});
+  assert.match(compact,/principle-11:APPLIED_GAME_SOURCE/);
+  assert.match(compact,/APPLY=principle-11/);
+});
+
 
 test('large JSON prompts compact at 36KB and retry-only observation blocks stay bounded',()=>{
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
