@@ -15,6 +15,21 @@ import {
 import {buildGameFlowArchitecture,evaluateGameFlowArchitecture,FLOW_ARCHETYPES} from '../tools/company-vibe2-game-flow-architect.mjs';
 import {buildApprovedScopeGenerationPrompt} from '../tools/company-development-web-bootstrap.mjs';
 import {evaluateDeterministicReplayEvidence} from '../tools/company-web-deterministic-replay.mjs';
+import {
+  createVibeActorQualityDNA,
+  createVibeCompanionSelfhoodDNA,
+  createVibeCompanionInnerState,
+  createVibeCompanionRelationshipFrame,
+  createVibeCausalEventFrame,
+  createVibeActorEventAppraisal,
+  createVibeActorPlayerModel,
+  createVibeGameplayGuidanceFrame,
+  createVibeAutonomousContentCandidate,
+  createVibeIndividualActivityPlan,
+  planVibeLivingActorDirector,
+} from '../assets/vibe-ai-role-director.js';
+import {JaewoonCommonAI} from '../assets/common-ai.js';
+import {createAIPartyConfig,createDefaultAIEntries} from '../assets/ai-party.js';
 
 const inventory=[
   {id:'scope-map',path:'world.map',label:'explore map regions and routes'},
@@ -290,4 +305,209 @@ test('Vibe bootstrap receives the complete macro flow architecture before coding
   assert.match(prompt,/IMPLEMENT_REPLAY_SEED_CONTRACT/);
   assert.match(prompt,/REPLAY_SAME_SEED_AND_INPUT_SEQUENCE/);
   assert.match(prompt,/EXISTING_HTML:/);
+});
+
+
+test('living actor AI uses source-event causality and actor-specific player beliefs',()=>{
+  const event=createVibeCausalEventFrame({
+    event:{id:'evt-door-1',type:'protected-object',actorId:'player',objectId:'village-gate',targetIds:['village'],location:'gate'},
+    witnesses:[{actorId:'companion-a',channel:'VISION',confidence:1,direct:true}]
+  });
+  assert.equal(event.validSourceEvent,true);
+  assert.equal(event.neutralObjectCanBeCausalContext,true);
+  const appraisal=createVibeActorEventAppraisal({
+    actor:{id:'companion-a',values:['duty'],boundaries:['protect-village']},
+    event:{id:'evt-door-1',type:'protected-object',actorId:'player',objectId:'village-gate'},
+    relationship:{trust:10,respect:5},
+    knowledgeConfidence:1
+  });
+  assert.equal(appraisal.sourceEvent.validSourceEvent,true);
+  assert.equal(appraisal.relationshipMutationRequiresEngineValidation,true);
+  assert.equal(appraisal.gameplayAuthority,false);
+
+  const model=createVibeActorPlayerModel({
+    actor:{id:'companion-a'},
+    observations:[
+      {id:'a',type:'rescue',actor:'player'},
+      {id:'b',type:'promise-kept',actor:'player'},
+      {id:'c',type:'followed-advice',actor:'player'},
+    ]
+  });
+  assert.equal(model.patterns.helpsOthers,1);
+  assert.equal(model.patterns.keepsPromises,1);
+  assert.equal(model.patterns.listensToAdvice,1);
+  assert.equal(model.beliefNotGlobalTruth,true);
+  assert.equal(model.noHiddenPlayerState,true);
+});
+
+test('named companion has selfhood worldview self-actualization relationship voice and private inner state',()=>{
+  const companion={
+    id:'mira',role:'companion',background:'border medic',
+    values:['care','freedom','truth'],boundaries:['do-not-abandon-wounded'],
+    selfImage:'reliable medic',fearedSelf:'coward',desiredSelf:'someone who can protect a whole team',
+    longTermGoal:'build a safe clinic',unresolvedThread:'failed to save an old squadmate',
+    worldview:{worldBelief:'people survive by relying on each other',peopleBelief:'trust must be earned'},
+    formality:'casual',verbosity:'short',directness:'high',humor:'dry',
+    profanityLevel:'CASUAL',catchphraseBudget:1,
+    selfActualization:['become-reliable','protect-a-community']
+  };
+  const dna=createVibeActorQualityDNA({role:'companion',named:true});
+  assert.equal(dna.profile,'COMPANION');
+  assert.ok(dna.required.includes('WORLDVIEW'));
+  const selfhood=createVibeCompanionSelfhoodDNA(companion);
+  assert.equal(selfhood.selfImage.current,'reliable medic');
+  assert.equal(selfhood.lifeProject.longTermGoal,'build a safe clinic');
+  assert.equal(selfhood.rule,'player-is-important-but-not-the-center-of-this-persons-entire-life');
+
+  const inner=createVibeCompanionInnerState({
+    companion,
+    situation:{currentConcern:'player keeps rushing alone',currentHope:'team slows down',unsaidFeeling:'worried',viewOfPlayer:'brave but reckless'},
+    relationship:{trust:35,respect:20},
+    memory:[{id:'evt-1',type:'rescue'}],
+    emotion:'alert'
+  });
+  assert.equal(inner.currentConcern,'player keeps rushing alone');
+  assert.equal(inner.privacy.playerDoesNotAutomaticallyKnow,true);
+  assert.ok(inner.use.includes('subtext'));
+
+  const relationship=createVibeCompanionRelationshipFrame({
+    companion,other:{id:'player'},relationship:{trust:35,affection:10,stage:'working-trust'},
+    events:[{id:'evt-1',type:'rescue',actor:'player',target:'mira'}]
+  });
+  assert.equal(relationship.perspectiveSpecific,true);
+  assert.equal(relationship.causes[0].id,'evt-1');
+  assert.ok(relationship.affects.includes('personal-space'));
+
+  const director=planVibeLivingActorDirector({
+    actor:companion,player:{id:'player'},world:{emotion:'alert',activity:'travel',attentionTarget:'bridge'},
+    relationship:{trust:35,stage:'working-trust'},memory:[{id:'evt-1',type:'rescue',actor:'player'}],
+    recentFailures:[{id:'fail-1',type:'same-damage-source'},{id:'fail-2',type:'same-damage-source'}],
+    gameRating:'TEEN'
+  });
+  assert.equal(director.qualityDNA.profile,'COMPANION');
+  assert.equal(director.policy.playerNotUniversalCenter,undefined);
+  assert.equal(director.policy.sourceEventCausalityRequired,true);
+  assert.equal(director.guidance.spoilerLevel,'DIRECTION');
+  assert.equal(director.guidance.profanity.level,'CASUAL');
+  assert.equal(director.autonomousContent.engineValidationRequired,true);
+});
+
+test('autonomous actor content is a causal candidate and never owns quest reward or world mutation',()=>{
+  const valid=createVibeAutonomousContentCandidate({
+    actor:{id:'mira'},
+    kind:'PERSONAL_ERRAND',
+    cause:{id:'evt-supply',type:'resource-shortage',actorId:'mira'},
+    goal:'find clean bandages',
+    world:{location:'village'},
+    relationship:{trust:20},
+    recentContent:[]
+  });
+  assert.equal(valid.candidateValid,true);
+  assert.ok(valid.engineOwns.includes('reward'));
+  assert.ok(valid.engineOwns.includes('world-mutation'));
+  assert.equal(valid.gameplayAuthority,false);
+
+  const invalid=createVibeAutonomousContentCandidate({
+    actor:{id:'mira'},kind:'PERSONAL_ERRAND',cause:{type:'resource-shortage'},goal:'find clean bandages',world:{location:'village'}
+  });
+  assert.equal(invalid.candidateValid,false);
+
+  const duplicate=createVibeAutonomousContentCandidate({
+    actor:{id:'mira'},kind:'PERSONAL_ERRAND',
+    cause:{id:'evt-supply-2',type:'resource-shortage',actorId:'mira'},
+    goal:'find clean bandages',world:{location:'village'},
+    recentContent:[{signature:'personal_errand|find clean bandages|mira|village'}]
+  });
+  assert.equal(duplicate.duplicateRecent,true);
+  assert.equal(duplicate.candidateValid,false);
+});
+
+test('rare monster and boss can live in world without gaining authoritative combat or reward control',()=>{
+  const rare=createVibeIndividualActivityPlan({
+    actor:{id:'white-stag',role:'rare-monster'},world:{time:'dawn',location:'marsh'},importance:'important'
+  });
+  assert.ok(rare.activities.includes('forage'));
+  assert.ok(rare.activities.includes('guard-territory'));
+  assert.equal(rare.playerPresenceNotRequiredForIdentityOrRoutine,true);
+  assert.equal(rare.offscreenAuthoritativeOutcomeForbidden,true);
+
+  const boss=planVibeLivingActorDirector({
+    actor:{id:'warden',role:'boss',species:'guardian'},world:{location:'arena'},importance:'hero'
+  });
+  assert.equal(boss.qualityDNA.profile,'BOSS');
+  assert.ok(boss.activity.activities.includes('observe-arena'));
+  assert.equal(boss.activity.gameplayAuthority,false);
+  assert.equal(boss.policy.engineAuthoritative,true);
+});
+
+test('common runtime AI relationship updates require causal events and are idempotent',()=>{
+  const ai=new JaewoonCommonAI({
+    role:JaewoonCommonAI.Role.SUPPORT,
+    identity:{id:'mira'},
+    personality:{empathy:.8,protectiveness:.7,caution:.2}
+  });
+  ai.setRelationship('player',{trust:10,respect:5,stage:'acquaintance'});
+  const missing=ai.applyRelationshipEvent('player',{type:'rescue'},{trust:5});
+  assert.equal(missing.applied,false);
+  assert.equal(missing.reason,'source_event_required');
+
+  const applied=ai.applyRelationshipEvent('player',{id:'evt-1',type:'rescue',actor:'player'},{trust:8,respect:4,protectiveness:3});
+  assert.equal(applied.applied,true);
+  assert.equal(applied.state.trust,18);
+  const duplicate=ai.applyRelationshipEvent('player',{id:'evt-1',type:'rescue',actor:'player'},{trust:8});
+  assert.equal(duplicate.applied,false);
+  assert.equal(duplicate.reason,'duplicate_event');
+
+  ai.remember({id:'evt-2',type:'followed-advice',actor:'player'});
+  const model=ai.inferPlayerModel('player');
+  assert.equal(model.patterns.helpful,1);
+  assert.equal(model.patterns.adviceFollowed,1);
+  assert.equal(model.globalTruth,false);
+  assert.equal(ai.snapshotMind().gameplayAuthority,false);
+});
+
+test('default AI party entries carry stable companion identity instead of role-only bots',()=>{
+  const config=createAIPartyConfig({humanPlayers:1,aiCount:2,roles:['tank','healer']});
+  const entries=createDefaultAIEntries(config);
+  assert.equal(entries.length,2);
+  assert.equal(entries[0].identity.qualityProfile,'COMPANION');
+  assert.equal(entries[0].personalityStableAcrossDecisions,true);
+  assert.equal(entries[0].relationshipDirectional,true);
+  assert.equal(entries[0].memoryRequiresSourceEvent,true);
+  assert.equal(entries[0].gameplayAuthority,false);
+  assert.notEqual(entries[0].identity.stableSeed,entries[1].identity.stableSeed);
+});
+
+test('Vibe gameplay plan requires causal living-actor implementation and runtime evidence when actors exist',()=>{
+  const actorInventory=[
+    {id:'npc',path:'world.npc',label:'NPC companion dialogue relationship memory'},
+    {id:'enemy',path:'combat.enemy',label:'monster boss combat enemy behavior'},
+    {id:'quest',path:'quest.system',label:'quest objective progression'}
+  ];
+  const sketch=deriveGameplaySketch({gameId:'actors',genre:'STORY_COMPLETE_RPG',baseline:{content:{}},inventory:actorInventory});
+  assert.equal(sketch.actors.runtimeActorIntelligenceRequired,true);
+  assert.equal(sketch.actors.causalRelationshipModelRequired,true);
+  assert.equal(sketch.actors.actorSpecificPlayerModelRequired,true);
+  assert.equal(sketch.actors.individualActivitySimulationRequired,true);
+
+  const plan=buildVibePatchPlan({gameplaySketch:sketch,sourceAnalysis:{present:true,storageKeys:[],functions:[]},inventory:actorInventory});
+  const ids=plan.tasks.map(row=>row.id);
+  for(const id of [
+    'BIND_RUNTIME_ACTOR_AI_QUALITY_DNA',
+    'IMPLEMENT_CAUSAL_ACTOR_RELATIONSHIP_GRAPH',
+    'IMPLEMENT_ACTOR_SPECIFIC_PLAYER_MODEL',
+    'IMPLEMENT_INDIVIDUAL_ACTOR_ACTIVITY_SIMULATION',
+    'IMPLEMENT_IN_CHARACTER_GAMEPLAY_MENTOR_BARKS',
+    'IMPLEMENT_AUTONOMOUS_PERSONAL_EVENT_AND_QUEST_PROPOSALS',
+    'IMPLEMENT_MONSTER_TEMPERAMENT_TACTICS_AND_ECOLOGY',
+    'IMPLEMENT_BOSS_RARE_MONSTER_LIVING_ACTIVITY'
+  ]) assert.ok(ids.includes(id),id);
+
+  const validation=buildRuntimeValidationPlan({gameplaySketch:sketch,sourceAnalysis:{capabilities:{},storageKeys:[]}});
+  assert.equal(validation.livingActorCausality.required,true);
+  const blockers=runtimeValidationBlockers({plan:validation,evidence:{
+    longGoal:{pass:true},replayRegression:{pass:true},softlock:{pass:true},difficulty:{pass:true},performance:{pass:true},mobile:{pass:true},
+    contentDepth:{pass:true},livingActorCausality:{pass:false}
+  }});
+  assert.ok(blockers.includes('LIVING_ACTOR_CAUSALITY_FAILED'));
 });

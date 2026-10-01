@@ -1,5 +1,5 @@
 {
-  "version": 505,
+  "version": 510,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -7492,7 +7492,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-10-01T10:07:00+09:00",
+  "updatedAt": "2026-10-01T11:12:00+09:00",
   "priorityTiers": [
     {
       "tier": 1,
@@ -12524,6 +12524,1645 @@
       "undeclaredDamageRewardEconomyProgressMutationForbidden": true,
       "persistentWhenGameOwnsSave": true,
       "backwardCompatibleLazyStateExpansionRequired": true
+    },
+    "runtimeActorIntelligence": {
+      "version": 3,
+      "authority": "OWNER_DIRECTIVE_2026-10-01",
+      "status": "ACTIVE_EXECUTABLE_CONTRACT",
+      "objective": "LIVING_GAME_ACTORS_WITH_DISTINCT_IDENTITY_PERSONALITY_MEMORY_RELATIONSHIP_DIALOGUE_TACTICS_ECOLOGY_AND_EMBODIED_BEHAVIOR_WITHOUT_TRANSFERRING_GAMEPLAY_AUTHORITY_TO_AI",
+      "implementation": [
+        "assets/vibe-ai-role-director.js",
+        "assets/common-ai.js",
+        "assets/ai-party.js",
+        "tools/company-vibe2-gameplay-intelligence.mjs"
+      ],
+      "appliesTo": [
+        "COMPANION",
+        "NPC",
+        "MERCHANT",
+        "ALLY",
+        "ENEMY",
+        "MONSTER",
+        "ELITE",
+        "BOSS",
+        "CROWD_ACTOR_WHEN_RELEVANT"
+      ],
+      "authorityBoundary": {
+        "aiMayChooseIntent": true,
+        "aiMayChooseDialogue": true,
+        "aiMayChooseAttention": true,
+        "aiMayChooseAllowedTacticalPreference": true,
+        "aiMayChooseSocialReaction": true,
+        "aiMayChooseRoutinePreference": true,
+        "engineOwnsDamageHpHitCooldownRewardDropInventoryEconomySaveProgressionQuestCompletionSpawnCollisionNetworkAuthority": true,
+        "authoritativeActionMustResolveThroughDeclaredGameApi": true,
+        "networkServerAuthorityMustRemainIntact": true,
+        "aiOutputMayNotDirectlyMutateProtectedGameplayState": true,
+        "deterministicFallbackRequired": true,
+        "remoteOrModelAiMustNotBeRequiredForCorePlayableLoop": true
+      },
+      "actorQualityDna": {
+        "purpose": "ROLE_SPECIFIC_MINIMUM_INTELLIGENCE_AND_PERSONALITY_FLOOR_NOT_AN_ARBITRARY_RUNTIME_SCORE",
+        "profiles": {
+          "BACKGROUND_ACTOR": {
+            "required": [
+              "IDENTITY",
+              "ROUTINE",
+              "ATTENTION",
+              "PERSONAL_SPACE",
+              "BASIC_EMOTION",
+              "CONTEXT_REACTION"
+            ],
+            "optional": [
+              "LONG_TERM_MEMORY",
+              "COMBAT_TACTICS",
+              "DIALOGUE"
+            ]
+          },
+          "GAMEPLAY_NPC": {
+            "required": [
+              "IDENTITY",
+              "PERSONALITY",
+              "GOALS",
+              "ROUTINE",
+              "ATTENTION",
+              "RELATIONSHIP",
+              "CONTEXT_DIALOGUE",
+              "KNOWLEDGE_BOUNDARY",
+              "EMBODIED_REACTION"
+            ]
+          },
+          "COMPANION": {
+            "required": [
+              "IDENTITY",
+              "PERSONALITY",
+              "VALUES",
+              "GOALS",
+              "RELATIONSHIP",
+              "MEMORY",
+              "CONTEXT_DIALOGUE",
+              "COMBAT_STYLE",
+              "COOPERATION",
+              "INITIATIVE",
+              "PLAYER_STYLE_COMPLEMENT",
+              "PERSONAL_SPACE",
+              "EMOTION",
+              "EMBODIED_REACTION"
+            ]
+          },
+          "FOREGROUND_MONSTER": {
+            "required": [
+              "SPECIES_IDENTITY",
+              "TEMPERAMENT",
+              "TERRITORY",
+              "THREAT_ASSESSMENT",
+              "TACTICAL_STYLE",
+              "FLEE_OR_PRESSURE_RULE",
+              "GROUP_BEHAVIOR",
+              "ECOLOGY",
+              "ATTENTION",
+              "MOTION_IDENTITY"
+            ]
+          },
+          "ELITE_MONSTER": {
+            "required": [
+              "SPECIES_IDENTITY",
+              "INDIVIDUAL_VARIANT",
+              "TACTICAL_STYLE",
+              "TARGET_PREFERENCE",
+              "GROUP_ROLE",
+              "PRESSURE_RELEASE_PATTERN",
+              "REACTION_TO_ALLY_LOSS",
+              "RETREAT_OR_COMMIT_PERSONALITY",
+              "MOTION_IDENTITY"
+            ]
+          },
+          "BOSS": {
+            "required": [
+              "IDENTITY",
+              "PERSONALITY",
+              "PHASE_ATTITUDE",
+              "TACTICAL_STYLE",
+              "TARGET_AND_SPACE_REASONING",
+              "DIALOGUE_VOICE",
+              "REACTION_MEMORY",
+              "PRESENTATION_INTENT",
+              "ALLOWED_PATTERN_VARIATION",
+              "MOTION_IDENTITY"
+            ],
+            "phaseThresholdAuthority": "ENGINE_ONLY"
+          },
+          "HERO_NPC": {
+            "required": [
+              "IDENTITY",
+              "VALUES",
+              "DESIRE",
+              "NEED",
+              "FEAR",
+              "PRIVATE_GOAL",
+              "RELATIONSHIP",
+              "LONG_TERM_MEMORY",
+              "VOICE",
+              "SUBTEXT",
+              "EMOTION",
+              "INITIATIVE",
+              "PERSONAL_ARC",
+              "WORLD_MODEL",
+              "EMBODIED_REACTION"
+            ]
+          }
+        },
+        "qualityAxes": [
+          "IDENTITY_DISTINCTNESS",
+          "PERSONALITY_CONSISTENCY",
+          "GOAL_AND_VALUE_CONSISTENCY",
+          "DECISION_STYLE",
+          "KNOWLEDGE_BOUNDARY",
+          "ATTENTION_AND_PERCEPTION",
+          "EMOTION_REGULATION",
+          "RELATIONSHIP_CAUSALITY",
+          "MEMORY_CAUSALITY",
+          "SPEECH_VOICE_DISTINCTNESS",
+          "DIALOGUE_CONTEXT_FIT",
+          "COMBAT_TACTICAL_IDENTITY",
+          "ALLY_COOPERATION",
+          "GROUP_COORDINATION",
+          "ECOLOGY_AND_ROUTINE",
+          "SPATIAL_AND_PERSONAL_DISTANCE",
+          "EMBODIED_MOTION_REACTION",
+          "INITIATIVE_WITHOUT_AUTHORITY_EXPANSION",
+          "REPETITION_CONTROL",
+          "PERFORMANCE_SCALABILITY"
+        ],
+        "namedImportantActorsUseLockedAuthoredIdentity": true,
+        "proceduralPopulationUsesArchetypePlusStableSeed": true,
+        "personalityMustNotRerollEveryDecision": true,
+        "sameSpeciesMayShareBiologyButMustNotRequireIdenticalPersonality": true,
+        "verificationStateIsNotPersonalityQuality": true
+      },
+      "personalityDna": {
+        "stableTraits": [
+          "COURAGE",
+          "CAUTION",
+          "AGGRESSION",
+          "EMPATHY",
+          "CURIOSITY",
+          "SOCIABILITY",
+          "PATIENCE",
+          "LOYALTY",
+          "GREED",
+          "PRIDE",
+          "DISCIPLINE",
+          "HUMOR",
+          "DIRECTNESS",
+          "INDEPENDENCE",
+          "PROTECTIVENESS",
+          "VENGEFULNESS"
+        ],
+        "authoredIdentity": [
+          "VALUES",
+          "DESIRE",
+          "NEED",
+          "FEAR",
+          "BOUNDARIES",
+          "LIKES",
+          "DISLIKES",
+          "HABITS",
+          "INSECURITIES",
+          "LOYALTIES",
+          "TABOOS"
+        ],
+        "stableTraitsAndTemporaryEmotionMustRemainSeparate": true,
+        "traitsBiasChoicesButDoNotOverrideEngineRules": true,
+        "contradictoryTraitsAllowedWhenCharacterDesignExplainsThem": true,
+        "namedActorIdentityLockPreferred": true
+      },
+      "decisionModel": {
+        "canonicalLoop": [
+          "PERCEIVE",
+          "INTERPRET_WITH_KNOWLEDGE_LIMITS",
+          "UPDATE_SHORT_TERM_CONTEXT",
+          "SCORE_ALLOWED_INTENTS",
+          "SELECT_INTENT",
+          "SELECT_DECLARED_ACTION",
+          "ENGINE_VALIDATE",
+          "EXECUTE_OR_FALLBACK",
+          "OBSERVE_RESULT",
+          "UPDATE_MEMORY_AND_RELATIONSHIP"
+        ],
+        "utilityFactors": [
+          "SURVIVAL",
+          "CURRENT_GOAL",
+          "ROLE",
+          "PERSONALITY",
+          "RELATIONSHIP",
+          "RECENT_EVENT",
+          "THREAT",
+          "DISTANCE",
+          "COVER",
+          "ALLY_STATE",
+          "OBJECTIVE",
+          "TERRAIN",
+          "RESOURCE_VISIBILITY",
+          "PLAYER_OBSERVED_STYLE",
+          "UNCERTAINTY"
+        ],
+        "hysteresisRequired": true,
+        "minimumIntentHoldWindowPreferred": true,
+        "decisionThrashingForbidden": true,
+        "repeatedFailureMayChangePreferenceButNotGameRules": true,
+        "sameStimulusMayProduceDifferentChoiceOnlyWhenContextOrPersonalityExplainsIt": true,
+        "pureRandomBehaviorIsNotPersonality": true
+      },
+      "perceptionAndKnowledge": {
+        "channels": [
+          "VISION",
+          "HEARING",
+          "DAMAGE_SOURCE",
+          "LOCAL_EVENT",
+          "ALLY_SIGNAL",
+          "DECLARED_WORLD_STATE"
+        ],
+        "unseenHiddenStateMustNotBeKnown": true,
+        "noGlobalTelepathy": true,
+        "noOmniscientGroupCoordination": true,
+        "uncertaintyAndConfidenceSupported": true,
+        "staleKnowledgeMayExistUntilReobserved": true,
+        "rememberedFactRequiresObservedOrDeclaredSource": true,
+        "actorAttentionTargetMustBeExplicitWhenRelevant": true,
+        "gazeAndBodyOrientationShouldFollowAttentionWhenPresentationSupportsIt": true
+      },
+      "memory": {
+        "layers": {
+          "WORKING": "RECENT_SECONDS_OR_CURRENT_ENCOUNTER",
+          "EPISODIC": "IMPORTANT_PERSONAL_EVENTS",
+          "RELATIONSHIP_SUMMARY": "COMPRESSED_DIRECTIONAL_SOCIAL_HISTORY",
+          "IDENTITY_ANCHOR": "RARE_LONG_TERM_PERSONALLY_IMPORTANT_FACTS"
+        },
+        "sourceEventRequired": true,
+        "eventIdIdempotencyRequiredWhenPersisted": true,
+        "workingMemoryBounded": true,
+        "minorEventsMayDecay": true,
+        "importantEventsMayBePromoted": true,
+        "oldEpisodesMayCompressToSummary": true,
+        "memoryMustRemainActorPerspectiveSpecific": true,
+        "persistentWritesEngineControlledOnly": true,
+        "saveSchemaExpansionMustBeBackwardCompatible": true
+      },
+      "relationship": {
+        "directionalNotAutomaticallySymmetric": true,
+        "dimensions": [
+          "TRUST",
+          "FAMILIARITY",
+          "RESPECT",
+          "AFFECTION",
+          "TENSION",
+          "FEAR",
+          "DEBT",
+          "RIVALRY",
+          "PROTECTIVENESS"
+        ],
+        "mutationRequiresCauseEvent": true,
+        "dimensionsEvolveIndependently": true,
+        "relationshipAffectsDialogueAndPreferenceNotRawStats": true,
+        "repeatedBehaviorMayAccumulateGradually": true,
+        "singleMinorEventShouldNotUsuallyRewriteEntireRelationship": true
+      },
+      "emotion": {
+        "separatesTraitFromState": true,
+        "stateExamples": [
+          "CALM",
+          "CURIOUS",
+          "ALERT",
+          "FEAR",
+          "ANGER",
+          "PANIC",
+          "GRIEF",
+          "RELIEF",
+          "CONFIDENCE",
+          "FATIGUED_PRESENTATION"
+        ],
+        "emotionChangesAttentionDialogueMotionAndIntentWeights": true,
+        "emotionMustNotDirectlyChangeProtectedStatsUnlessExistingGameRuleExplicitlyOwnsThatMechanic": true,
+        "decayOrRecoveryRequiredWhenContextAllows": true,
+        "constantMaxEmotionForbidden": true
+      },
+      "dialogueAndVoice": {
+        "voiceDna": [
+          "FORMALITY",
+          "HONORIFIC_REGISTER",
+          "VERBOSITY",
+          "DIRECTNESS",
+          "VOCABULARY",
+          "SENTENCE_RHYTHM",
+          "HUMOR_STYLE",
+          "FAVORITE_TOPICS",
+          "AVOIDED_TOPICS",
+          "VERBAL_HABITS",
+          "SILENCE_PREFERENCE",
+          "RELATIONSHIP_SPEECH_SHIFT"
+        ],
+        "lineSelectionInputs": [
+          "CURRENT_ACTIVITY",
+          "EMOTION",
+          "RELATIONSHIP",
+          "RECENT_SHARED_EVENT",
+          "DANGER",
+          "LOCATION",
+          "ATTENTION_TARGET",
+          "CONVERSATION_HISTORY",
+          "PLAYER_RECENT_TONE"
+        ],
+        "speechSpamForbidden": true,
+        "eventCooldownRequired": true,
+        "repeatedLineSuppressionRequired": true,
+        "catchphraseBudgetRequired": true,
+        "silenceIsValidResponse": true,
+        "sameVoiceForAllActorsForbidden": true,
+        "generatedDialogueMustNotRevealUnknownInformation": true,
+        "dialogueMustNotCommitQuestRewardOrProgressWithoutEngineValidation": true
+      },
+      "combatAndCooperation": {
+        "combatPersonas": [
+          "AGGRESSIVE_PRESSURE",
+          "CAUTIOUS_POKE",
+          "FLANKER",
+          "AMBUSHER",
+          "PROTECTOR",
+          "SUPPORTER",
+          "SKIRMISHER",
+          "RETREAT_AND_REENTER",
+          "OBJECTIVE_GUARD",
+          "PACK_COORDINATOR"
+        ],
+        "tacticalChoices": [
+          "PRESSURE",
+          "WAIT",
+          "FLANK",
+          "RETREAT",
+          "GUARD",
+          "INVESTIGATE",
+          "REPOSITION",
+          "SUPPORT_ALLY",
+          "PROTECT_TARGET",
+          "BAIT",
+          "FOCUS_VISIBLE_THREAT",
+          "BREAK_LINE_OF_SIGHT"
+        ],
+        "companionMayComplementObservedPlayerStyle": true,
+        "companionMayProtectReviveOrSupportWhenDeclaredActionExists": true,
+        "companionMustRespectExplicitPlayerOrdersWithinGameRules": true,
+        "personalityMayAffectHowOrderIsExecutedNotWhetherEngineRulesExist": true,
+        "bossAiMayChooseAmongCurrentPhaseAllowedPatterns": true,
+        "bossAiMayNotChangePhaseThresholdDamageCooldownOrGuaranteedOutcome": true,
+        "targetSelectionMustUseObservedOrDeclaredInformation": true
+      },
+      "groupIntelligence": {
+        "localGroupBlackboardAllowed": true,
+        "blackboardMayContainOnlyObservedDeclaredOrEngineSharedFacts": true,
+        "leaderMaySuggestGroupIntent": true,
+        "individualPersonalityMayModifyExecution": true,
+        "formationAndSpacingPreferencesAllowed": true,
+        "allyLossMayAffectEmotionAndTacticalPreference": true,
+        "identicalSynchronizedRobotBehaviorForbiddenUnlessDesignRequiresIt": true,
+        "sharedKnowledgeMustNotBecomeTelepathy": true
+      },
+      "ecologyAndRoutine": {
+        "contexts": [
+          "TIME_OF_DAY",
+          "WEATHER",
+          "HABITAT",
+          "HOME_OR_TERRITORY",
+          "FOOD_OR_RESOURCE",
+          "PREDATOR_OR_THREAT",
+          "ALLY_GROUP",
+          "PLAYER_PRESENCE",
+          "LOCAL_EVENT"
+        ],
+        "behaviors": [
+          "REST",
+          "WORK",
+          "TRAVEL",
+          "PATROL",
+          "FORAGE",
+          "EAT_OR_DRINK_PRESENTATION",
+          "SOCIALIZE",
+          "GUARD",
+          "INVESTIGATE",
+          "AVOID_DANGER",
+          "RETURN_HOME",
+          "TERRITORY_RESPONSE",
+          "CARE_OR_PROTECT_GROUP"
+        ],
+        "playerAbsenceShouldNotFreezeImportantForegroundActorsWhenSimulationBudgetAllows": true,
+        "backgroundActorsMayUseDeterministicLowFrequencySimulation": true,
+        "ecosystemBehaviorMustNotInventResourceRewardsOrSpawnCounts": true
+      },
+      "spatialAndEmbodiedBehavior": {
+        "personalSpaceProfiles": [
+          "INTIMATE_OR_TRUSTED",
+          "CONVERSATION",
+          "FOLLOW",
+          "COMBAT",
+          "THREAT_AVOIDANCE"
+        ],
+        "avoidFaceClippingAndConstantCrowding": true,
+        "attentionMayDriveHeadEyeTorsoOrientation": true,
+        "gesturesShouldMatchSpeechActAndEmotionWhenMotionExists": true,
+        "locomotionStyleMayReflectPersonalityWithoutChangingAuthoritativeSpeed": true,
+        "hesitationLookBackWeightShiftAndRecoveryMayExpressDecisionState": true,
+        "motionIdentityShouldReuseExistingMotionDirector": true
+      },
+      "proceduralDiversity": {
+        "formula": "AUTHORED_ARCHETYPE + ROLE_CONSTRAINTS + STABLE_SEED + LOCAL_HISTORY",
+        "stableSeedRequiredForGenericActors": true,
+        "namedActorStableSeedIsNotSubstituteForAuthoredIdentity": true,
+        "variationAxes": [
+          "TRAIT_MIX",
+          "ROUTINE_PREFERENCE",
+          "SOCIAL_DISTANCE",
+          "RISK_TOLERANCE",
+          "TACTICAL_PREFERENCE",
+          "ATTENTION_SPAN",
+          "SPEECH_FREQUENCY",
+          "HUMOR_FREQUENCY"
+        ],
+        "colorOrNameOnlyVariationForbidden": true,
+        "perFrameRandomPersonalityForbidden": true
+      },
+      "performance": {
+        "decisionMode": "EVENT_DRIVEN_AND_BOUNDED_INTERVAL",
+        "nearPlayerActors": "FULL_CONTEXT_WITHIN_BUDGET",
+        "midDistanceActors": "REDUCED_DECISION_FREQUENCY",
+        "farBackgroundActors": "DETERMINISTIC_SIMULATION_OR_SLEEP",
+        "perFrameLanguageModelCallsForbidden": true,
+        "remoteAiTimeoutMustFallbackDeterministically": true,
+        "remoteAiFailureMustNotBreakCoreGameplay": true,
+        "contextBudgetMustBeBounded": true,
+        "memoryMustBeCompressedBeforeUnboundedGrowth": true
+      },
+      "runtimeStateSeparation": {
+        "profileState": "AUTHORED_OR_STABLE_SEEDED_IDENTITY",
+        "transientState": "EMOTION_ATTENTION_CURRENT_GOAL_AND_RECENT_MEMORY",
+        "authoritativeGameplayState": "ENGINE_OWNED",
+        "profileDataMustNotContainDamageRewardDropCooldownOrSaveAuthority": true,
+        "transientAiStateMayBeDiscardableUnlessExplicitlyPersistent": true
+      },
+      "authoringFlow": [
+        "READ_DESIGN_AND_EXISTING_GAME_AI",
+        "CLASSIFY_ACTOR_ROLE_AND_IMPORTANCE",
+        "BIND_ACTOR_QUALITY_DNA",
+        "AUTHOR_IDENTITY_PERSONALITY_AND_VOICE",
+        "AUTHOR_PERCEPTION_KNOWLEDGE_AND_MEMORY_POLICY",
+        "AUTHOR_RELATIONSHIP_AND_EMOTION",
+        "AUTHOR_COMBAT_OR_ROUTINE_BEHAVIOR",
+        "AUTHOR_DIALOGUE_AND_EMBODIED_REACTIONS",
+        "BIND_DECLARED_ENGINE_ACTION_APIS",
+        "RUN_SCENARIO_VARIANTS",
+        "REPAIR_COLLAPSED_PERSONALITY_REPETITION_OR_KNOWLEDGE_LEAK",
+        "APPLY_TO_EXISTING_GAME_AI_RESPONSIBILITY",
+        "REVERIFY_RUNTIME_BEHAVIOR"
+      ],
+      "qa": {
+        "required": [
+          "ACTION_LEGALITY",
+          "KNOWLEDGE_BOUNDARY",
+          "PERSONALITY_CONSISTENCY",
+          "VOICE_DISTINCTNESS",
+          "MEMORY_CAUSALITY",
+          "RELATIONSHIP_CAUSALITY",
+          "TACTICAL_DIVERSITY",
+          "COMPANION_COOPERATION",
+          "MONSTER_ECOLOGY",
+          "DIALOGUE_REPETITION",
+          "PERSONAL_SPACE",
+          "ATTENTION_AND_GAZE",
+          "DETERMINISTIC_FALLBACK",
+          "NETWORK_AUTHORITY",
+          "SAVE_ROUND_TRIP_WHEN_PERSISTENT"
+        ],
+        "scenarioMatrix": [
+          "CALM",
+          "PLAYER_NEAR",
+          "PLAYER_FAR",
+          "DANGER",
+          "LOW_SELF_HEALTH",
+          "ALLY_DOWN",
+          "OUTNUMBERED",
+          "OBJECTIVE_THREAT",
+          "RECENT_RESCUE",
+          "RECENT_BETRAYAL",
+          "REPEATED_PLAYER_BEHAVIOR",
+          "NO_REMOTE_AI_AVAILABLE"
+        ],
+        "reportOnlyPassForbidden": true,
+        "sourceMarkersAloneCannotProveLivingAiQuality": true
+      },
+      "learning": {
+        "existingCanonicalLearningMotorOnly": true,
+        "verifiedRuntimeOutcomeRequiredForPositiveLearning": true,
+        "learnableFailures": [
+          "PERSONALITY_COLLAPSE",
+          "VOICE_COLLAPSE",
+          "REPETITION_SPAM",
+          "KNOWLEDGE_LEAK",
+          "MEMORY_WITHOUT_SOURCE_EVENT",
+          "RELATIONSHIP_JUMP_WITHOUT_CAUSE",
+          "TACTICAL_THRASHING",
+          "ROBOTIC_GROUP_SYNCHRONY",
+          "COMPANION_ORDER_CONFLICT",
+          "NPC_ROUTINE_FREEZE",
+          "MONSTER_ECOLOGY_COLLAPSE",
+          "PERSONAL_SPACE_VIOLATION",
+          "AI_AUTHORITY_VIOLATION"
+        ],
+        "rawGeneratedDialogueOrAiDecisionCannotDirectlyBecomeCanonicalMastery": true
+      },
+      "companionSelfhood": {
+        "objective": "COMPANION_IS_AN_INDEPENDENT_PERSON_WITH_A_PRIVATE_WORLDVIEW_SELF_IMAGE_LIFE_DIRECTION_RELATIONSHIP_HISTORY_AND_CAPACITY_TO_INITIATE_CHANGE_NOT_A_PLAYER_FOLLOWER_WITH_RANDOM_LINES",
+        "selfLayers": {
+          "identity": [
+            "NAME_AND_SELF_LABEL",
+            "BACKGROUND",
+            "ORIGIN",
+            "ROLE",
+            "BELONGING",
+            "RESPONSIBILITIES",
+            "REPUTATION_AS_THEY_BELIEVE_IT"
+          ],
+          "worldview": [
+            "WHAT_THE_WORLD_IS_LIKE",
+            "WHAT_PEOPLE_ARE_LIKE",
+            "WHAT_IS_FAIR",
+            "WHAT_IS_DANGEROUS",
+            "WHAT_IS_WORTH_SACRIFICING_FOR",
+            "WHAT_COUNTS_AS_SUCCESS"
+          ],
+          "values": [
+            "CARE",
+            "FREEDOM",
+            "ORDER",
+            "LOYALTY",
+            "TRUTH",
+            "POWER",
+            "CRAFT",
+            "FAMILY",
+            "BELONGING",
+            "JUSTICE",
+            "SURVIVAL",
+            "CURIOSITY"
+          ],
+          "selfImage": [
+            "WHO_I_THINK_I_AM",
+            "WHO_I_FEAR_I_AM",
+            "WHO_I_WANT_TO_BECOME",
+            "WHAT_I_REFUSE_TO_BECOME"
+          ],
+          "lifeProject": [
+            "CURRENT_LONG_TERM_AIM",
+            "PERSONAL_CRAFT_OR_DUTY",
+            "RELATIONSHIP_AIM",
+            "UNRESOLVED_PERSONAL_PROBLEM",
+            "FUTURE_IMAGE"
+          ],
+          "contradictions": [
+            "VALUE_VS_DESIRE",
+            "LOYALTY_VS_SELF_PRESERVATION",
+            "PRIDE_VS_INSECURITY",
+            "CARE_VS_ANGER",
+            "DUTY_VS_FREEDOM"
+          ],
+          "agency": [
+            "MAY_START_CONVERSATION",
+            "MAY_DISAGREE",
+            "MAY_DELAY_NONCRITICAL_REQUEST",
+            "MAY_SUGGEST_AN_ALTERNATIVE",
+            "MAY_PURSUE_PERSONAL_TASK_WHEN_GAME_RULES_ALLOW",
+            "MAY_CHOOSE_SILENCE",
+            "MAY_REPAIR_RELATIONSHIP",
+            "MAY_SET_A_BOUNDARY"
+          ]
+        },
+        "motivationHierarchy": {
+          "layers": [
+            "SURVIVAL_AND_IMMEDIATE_NEED",
+            "CURRENT_DUTY",
+            "RELATIONSHIP_NEED",
+            "PERSONAL_GOAL",
+            "IDENTITY_PROTECTION",
+            "SELF_ACTUALIZATION"
+          ],
+          "selfActualizationExamples": [
+            "BECOME_RELIABLE",
+            "MASTER_A_CRAFT",
+            "PROTECT_A_COMMUNITY",
+            "PROVE_SELF_WORTH",
+            "OVERCOME_A_FEAR",
+            "REPAIR_A_PAST_WRONG",
+            "FIND_BELONGING",
+            "GAIN_AUTONOMY",
+            "UNDERSTAND_THE_WORLD",
+            "CREATE_A_LEGACY"
+          ],
+          "multipleActiveMotivesAllowed": true,
+          "motivesMayConflict": true,
+          "conflictMustProduceHESITATION_PRIORITY_SHIFT_OR_SUBTEXT_NOT_RANDOM_BEHAVIOR": true,
+          "persistentGoalChangeRequiresMeaningfulEvent": true
+        },
+        "subjectiveInnerState": {
+          "components": [
+            "CURRENT_CONCERN",
+            "CURRENT_HOPE",
+            "CURRENT_FEAR",
+            "UNSAID_FEELING",
+            "INTERPRETATION_OF_RECENT_EVENT",
+            "CURRENT_VIEW_OF_PLAYER",
+            "CURRENT_VIEW_OF_SELF"
+          ],
+          "use": "DRIVES_INTENT_SUBTEXT_SILENCE_ATTENTION_GESTURE_AND_LINE_SELECTION",
+          "notAChainOfThought": true,
+          "longFreeformHiddenReasoningNotRequired": true,
+          "conciseStructuredInnerStatePreferred": true,
+          "mayRemainUnspoken": true,
+          "playerMustNotAutomaticallyKnowPrivateInnerState": true
+        },
+        "relationshipFormation": {
+          "directional": true,
+          "dimensions": [
+            "TRUST",
+            "FAMILIARITY",
+            "RESPECT",
+            "AFFECTION",
+            "TENSION",
+            "FEAR",
+            "DEBT",
+            "RIVALRY",
+            "PROTECTIVENESS",
+            "DEPENDENCE",
+            "BOUNDARY_COMFORT"
+          ],
+          "stages": [
+            "STRANGER",
+            "ACQUAINTANCE",
+            "WORKING_TRUST",
+            "PERSONAL_TRUST",
+            "CLOSE_BOND",
+            "STRAINED",
+            "RIVAL",
+            "HOSTILE_WHEN_GAME_ALLOWS"
+          ],
+          "causes": [
+            "HELP",
+            "HARM",
+            "KEEP_PROMISE",
+            "BREAK_PROMISE",
+            "RESCUE",
+            "ABANDON",
+            "LISTEN",
+            "DISMISS",
+            "SHARE_RISK",
+            "SHARE_SUCCESS",
+            "GIVE_SPACE",
+            "CROSS_BOUNDARY",
+            "DEFEND_VALUES",
+            "BETRAY_CONFIDENCE",
+            "REPEATED_ROUTINE_TOGETHER"
+          ],
+          "repeatedSmallEventsMayAccumulate": true,
+          "majorEventMayCauseLargerButBoundedShift": true,
+          "oneMinorEventMustNotRewriteEntireBond": true,
+          "relationshipHistoryMustAffectSpeechInitiativePersonalSpaceAndCooperation": true,
+          "relationshipDoesNotDirectlyModifyProtectedCombatStats": true
+        },
+        "conversationHumanity": {
+          "lineSelection": [
+            "CURRENT_INTENT",
+            "SUBTEXT",
+            "RELATIONSHIP_STAGE",
+            "RECENT_SHARED_MEMORY",
+            "CURRENT_ACTIVITY",
+            "EMOTION",
+            "ATTENTION_TARGET",
+            "PRIVATE_BOUNDARY",
+            "WHAT_HAS_ALREADY_BEEN_SAID",
+            "WHAT_SHOULD_REMAIN_UNSAID"
+          ],
+          "speechActs": [
+            "INFORM",
+            "ASK",
+            "WARN",
+            "TEASE",
+            "REASSURE",
+            "DISAGREE",
+            "APOLOGIZE",
+            "THANK",
+            "CONFIDE",
+            "DEFLECT",
+            "CHALLENGE",
+            "NEGOTIATE",
+            "REMEMBER",
+            "NOTICE",
+            "CHANGE_TOPIC",
+            "END_CONVERSATION",
+            "CHOOSE_SILENCE"
+          ],
+          "naturalFeatures": [
+            "HESITATION",
+            "SELF_CORRECTION",
+            "SHORT_REPLY",
+            "INTERRUPTION_WHEN_CONTEXT_ALLOWS",
+            "CALLBACK",
+            "UNFINISHED_SENTENCE_WHEN_EMOTIONAL",
+            "SUBTEXT",
+            "TOPIC_AVOIDANCE",
+            "DIFFERENT_WORDING_FOR_DIFFERENT_RELATIONSHIPS"
+          ],
+          "noExpositionDumpByDefault": true,
+          "noConstantQuips": true,
+          "noEveryEventCommentary": true,
+          "noRandomCatchphraseSpam": true,
+          "repeatedExactLineSuppression": true,
+          "topicCooldownRequired": true,
+          "importantLineMayBeRememberedAndReferencedLater": true
+        },
+        "personalArc": {
+          "loop": [
+            "EXPERIENCE",
+            "INTERPRET",
+            "FEEL",
+            "UPDATE_PRIORITY_OR_BELIEF_IF_JUSTIFIED",
+            "CHOOSE_NEXT_PERSONAL_INTENTION",
+            "ACT_WHEN_GAME_ALLOWS",
+            "REFLECT"
+          ],
+          "axes": [
+            "SELF_CONFIDENCE",
+            "BELIEF",
+            "RESPONSIBILITY",
+            "BELONGING",
+            "AUTONOMY",
+            "AMBITION",
+            "FORGIVENESS",
+            "RESENTMENT",
+            "FEAR",
+            "TRUST"
+          ],
+          "growthMustFollowExperience": true,
+          "levelNumberAloneCannotCausePersonalityGrowth": true,
+          "mayRegressAfterFailure": true,
+          "mayHoldContradictoryBeliefsDuringTransition": true,
+          "majorCompanionShouldHaveAtLeastOneUnresolvedPersonalThread": true
+        },
+        "playerRelationshipWithoutServitude": {
+          "playerIsImportantButNotUniversalCenter": true,
+          "companionMayHaveFriendsRivalsDutiesAndInterestsUnrelatedToPlayer": true,
+          "companionCanDisagreeWithoutSabotagingCoreGameplay": true,
+          "explicitPlayerOrderIsConstraintWhenSupportedByGameRule": true,
+          "orderExecutionStyleMayReflectPersonality": true,
+          "companionMaySuggestRestRetreatAlternativeRouteOrDifferentTarget": true,
+          "companionCannotInventNewAuthorityToRefuseMandatoryGameRules": true
+        },
+        "embodiedHumanity": {
+          "channels": [
+            "GAZE",
+            "HEAD_TURN",
+            "TORSO_ORIENTATION",
+            "PERSONAL_DISTANCE",
+            "PACE",
+            "GESTURE",
+            "IDLE_VARIANT",
+            "PAUSE_BEFORE_REPLY",
+            "LOOK_AWAY",
+            "LOOK_BACK",
+            "WEIGHT_SHIFT",
+            "EQUIPMENT_HANDLING"
+          ],
+          "speechAndBodyShouldShareSameIntent": true,
+          "emotionalStateMayBiasMotionStyleWithoutChangingAuthoritativeMovementStats": true,
+          "repeatedIdenticalGestureForEveryLineForbidden": true,
+          "silenceMayStillHaveEmbodiedReaction": true
+        },
+        "sharedLife": {
+          "sharedExperiencesCanCreate": [
+            "PRIVATE_JOKE",
+            "CALLBACK",
+            "SHARED_FEAR",
+            "RITUAL",
+            "HABIT",
+            "TRUST_SHORTCUT",
+            "ARGUMENT_TOPIC",
+            "PLACE_MEMORY",
+            "VICTORY_MEMORY",
+            "LOSS_MEMORY"
+          ],
+          "sharedExperienceInterpretationMayDifferPerActor": true,
+          "twoActorsMayRememberSameEventDifferently": true,
+          "playerMayDiscoverCompanionPerspectiveLater": true
+        },
+        "autonomySafety": {
+          "offscreenAiMayProposeIntentButEngineResolvesWorldEffects": true,
+          "aiMayNotInventCompletedQuestLootDamageDeathTeleportOrWorldMutation": true,
+          "personalArcWritesPersistentStateOnlyThroughExistingEngineSaveApi": true,
+          "companionPersonalityNeverOwnsNetworkAuthority": true,
+          "deterministicFallbackMustPreserveCoreGameplay": true
+        },
+        "authoringMinimumForNamedCompanion": [
+          "ONE_CLEAR_WORLDVIEW",
+          "THREE_OR_MORE_STABLE_VALUES_OR_BOUNDARIES",
+          "ONE_PERSONAL_LONG_TERM_GOAL",
+          "ONE_SELF_IMAGE_TENSION",
+          "ONE_UNRESOLVED_PERSONAL_THREAD",
+          "DISTINCT_SPEECH_PROFILE",
+          "RELATIONSHIP_STAGE_RULES",
+          "MEMORY_SOURCE_EVENT_POLICY",
+          "COMBAT_OR_SUPPORT_STYLE",
+          "PERSONAL_SPACE_STYLE",
+          "EMOTION_TO_BODY_LANGUAGE_MAPPING",
+          "INITIATIVE_RULES",
+          "SILENCE_RULES",
+          "GAME_PROGRESS_HELPER_VOICE",
+          "ADVICE_COOLDOWN_AND_ESCALATION_RULES",
+          "PROFANITY_OR_SLANG_PROFILE",
+          "PERSONAL_EVENT_INITIATION_RULES",
+          "PERSONAL_QUEST_CAUSE_RULES",
+          "SUCCESS_FAILURE_REACTION_FOR_PERSONAL_QUESTS"
+        ]
+      },
+      "gameplayMentorDialogue": {
+        "objective": "NPC_AND_COMPANION_HELP_WITH_GAME_PROGRESS_THROUGH_IN_CHARACTER_OBSERVATION_ADVICE_AND_EVENT_BARKS_WITHOUT_BECOMING_AN_OMNISCIENT_TUTOR",
+        "triggerFamilies": [
+          "OBJECTIVE_UPDATE",
+          "NEW_REGION",
+          "NEW_SYSTEM_UNLOCK",
+          "LOW_HEALTH_OR_DANGER",
+          "RESOURCE_SHORTAGE",
+          "INVENTORY_OR_EQUIPMENT_ISSUE",
+          "REPEATED_FAILURE",
+          "PLAYER_IDLE_OR_LOST",
+          "BOSS_OR_ELITE_WARNING",
+          "CRAFT_OR_UPGRADE_OPPORTUNITY",
+          "PARTY_MEMBER_DOWN",
+          "QUEST_STALLED",
+          "SUCCESS_OR_RECOVERY",
+          "DISCOVERED_INTERACTABLE",
+          "PLAYER_STYLE_PATTERN"
+        ],
+        "adviceModel": {
+          "evidenceSources": [
+            "OBSERVED_PLAYER_ACTIONS",
+            "DECLARED_GAME_STATE",
+            "VISIBLE_WORLD_STATE",
+            "KNOWN_TUTORIAL_FACTS",
+            "ACTOR_PERSONAL_KNOWLEDGE"
+          ],
+          "hiddenMechanicCheatingForbidden": true,
+          "unknownInformationMustRemainUnknown": true,
+          "adviceMayPointOut": "MISSING_PREPARATION_RISK_OR_INEFFICIENT_OBSERVED_PATTERN",
+          "adviceMustNotRevealUndiscoveredStorySecrets": true,
+          "adviceMustNotGuaranteeOutcome": true,
+          "repeatedAdviceSuppressionRequired": true,
+          "cooldownAndEscalationRequired": true,
+          "conciseFirstHintThenOptionalDeeperHint": true,
+          "playerCanIgnoreAdvice": true
+        },
+        "personalityExpression": {
+          "sameGameplayFactDifferentCharacterWordingRequired": true,
+          "examples": [
+            "CAUTIOUS_COMPANION_WARNS_BEFORE_DANGER",
+            "BOLD_COMPANION_CHALLENGES_PLAYER",
+            "ANALYTICAL_NPC_EXPLAINS_PATTERN",
+            "SARCASTIC_COMPANION_TEASES_THEN_GIVES_USEFUL_HINT",
+            "QUIET_COMPANION_USES_SHORT_OBSERVATION",
+            "PROTECTIVE_COMPANION_PRIORITIZES_SAFETY"
+          ],
+          "adviceToneMayChangeWithRelationshipStage": true,
+          "frustrationMayChangeToneButNotGameplayFacts": true
+        },
+        "outputKinds": [
+          "EVENT_BARK",
+          "PROGRESS_HINT",
+          "PREPARATION_ADVICE",
+          "TACTICAL_SUGGESTION",
+          "RESOURCE_HINT",
+          "OPTIONAL_DEEPER_EXPLANATION",
+          "CELEBRATION",
+          "CAUTION",
+          "SILENCE"
+        ]
+      },
+      "profanityAndSpeechRegister": {
+        "objective": "CHARACTER_SPECIFIC_LANGUAGE_REGISTER_MAY_INCLUDE_CONTEXTUAL_PROFANITY_WHEN_ALLOWED_BY_GAME_RATING_STYLE_AND_CHARACTER_IDENTITY",
+        "profileFields": [
+          "FORMALITY",
+          "HONORIFIC_REGISTER",
+          "SLANG_LEVEL",
+          "PROFANITY_LEVEL",
+          "DIRECTNESS",
+          "VERBOSITY",
+          "SENTENCE_RHYTHM",
+          "REGIONAL_OR_SOCIAL_FLAVOR_WHEN_AUTHORED",
+          "RELATIONSHIP_DEPENDENT_REGISTER"
+        ],
+        "profanityLevels": [
+          "NONE",
+          "MILD",
+          "MODERATE",
+          "STRONG_WHEN_GAME_POLICY_EXPLICITLY_ALLOWS"
+        ],
+        "defaultWhenNoGameLanguagePolicy": "NONE_OR_MILD",
+        "contextualUses": [
+          "PAIN",
+          "SHOCK",
+          "ANGER",
+          "FEAR",
+          "FRUSTRATION",
+          "ROUGH_HUMOR",
+          "INTIMACY_WITH_TRUSTED_COMPANION"
+        ],
+        "rules": {
+          "profanityCannotBeRandomFiller": true,
+          "profanityFrequencyMustMatchCharacterAndSituation": true,
+          "sameProfanityAcrossAllCharactersForbidden": true,
+          "escalationMayFollowEmotionButMustRespectGameLanguagePolicy": true,
+          "targetedProtectedClassSlurGenerationForbidden": true,
+          "harassmentStyleMustNotBecomeDefaultCompanionBehavior": true,
+          "relationshipAndSettingCanChangeRegister": true,
+          "localizationMayReplaceOrSoftenExpression": true
+        }
+      },
+      "autonomousEventAndQuestIdeation": {
+        "objective": "NAMED_NPC_OR_COMPANION_CAN_INITIATE_EVENT_AND_QUEST_CANDIDATES_FROM_PERSONAL_GOALS_RELATIONSHIPS_MEMORY_WORLD_STATE_AND_UNRESOLVED_THREADS",
+        "sourceCauses": [
+          "PERSONAL_LONG_TERM_GOAL",
+          "UNRESOLVED_PERSONAL_THREAD",
+          "RELATIONSHIP_CHANGE",
+          "PROMISE_OR_DEBT",
+          "WITNESSED_EVENT",
+          "FACTION_DUTY",
+          "PLACE_MEMORY",
+          "FEAR_OR_VALUE_CONFLICT",
+          "PLAYER_REPEATED_BEHAVIOR",
+          "LOCAL_WORLD_CHANGE",
+          "COMPANION_SELF_ACTUALIZATION_STEP"
+        ],
+        "eventCandidateTypes": [
+          "OPTIONAL_CONVERSATION",
+          "REQUEST_FOR_HELP",
+          "PERSONAL_ERRAND",
+          "RELATIONSHIP_SCENE",
+          "TRAINING_OR_PRACTICE",
+          "VISIT_PLACE",
+          "INVESTIGATE",
+          "REPAIR_MISTAKE",
+          "KEEP_OR_BREAK_PROMISE_SCENE",
+          "FACTION_OR_COMMUNITY_DUTY",
+          "PERSONAL_GOAL_MILESTONE",
+          "RIVALRY_SCENE",
+          "RECOVERY_OR_RECONCILIATION"
+        ],
+        "questCandidateContract": {
+          "mustHave": [
+            "SOURCE_CAUSE",
+            "ACTOR_GOAL",
+            "WHY_NOW",
+            "PLAYER_OPTIONAL_ROLE_OR_REQUIRED_ROLE_FROM_DESIGN",
+            "LOCATION_OR_CONTEXT",
+            "OBJECTIVE_STRUCTURE",
+            "STAKE",
+            "POSSIBLE_CONSEQUENCE",
+            "ACTOR_REACTION_TO_SUCCESS_OR_FAILURE"
+          ],
+          "shouldAvoid": [
+            "GENERIC_KILL_N_WITHOUT_CONTEXT",
+            "GENERIC_COLLECT_N_WITHOUT_CONTEXT",
+            "REPEATED_IDENTICAL_STRUCTURE",
+            "REWARD_FIRST_QUEST_WITHOUT_CHARACTER_CAUSE"
+          ],
+          "mustUseExistingWorldAndGameActionsWhenPossible": true,
+          "mayReferenceExistingQuestSystem": true,
+          "duplicateQuestRuntimeForbidden": true,
+          "eventOrQuestCandidateMustPassExistingQuestDiversityAndContinuityChecks": true
+        },
+        "authorityBoundary": {
+          "aiMayProposeEventCandidate": true,
+          "aiMayProposeQuestCandidate": true,
+          "aiMayProposeDialogueAndActorIntention": true,
+          "engineMustValidatePrerequisites": true,
+          "engineMustOwnQuestCreationRegistration": true,
+          "engineMustOwnRewardsCompletionProgressSpawnInventoryAndSaveWrites": true,
+          "aiMayNotInventUnavailableGameplayApi": true,
+          "aiMayNotForcePlayerAcceptance": true,
+          "aiMayNotDeclareQuestCompleted": true
+        },
+        "selfGenerationLoop": [
+          "READ_PERSONAL_GOAL_AND_UNRESOLVED_THREAD",
+          "READ_RELATIONSHIP_AND_RECENT_SOURCE_EVENTS",
+          "READ_CURRENT_WORLD_AND_QUEST_STATE",
+          "FIND_CAUSAL_REASON_TO_ACT_NOW",
+          "PROPOSE_EVENT_OR_QUEST_CANDIDATE",
+          "CHECK_DUPLICATION_CONTINUITY_AND_KNOWLEDGE",
+          "ENGINE_VALIDATE_AVAILABLE_ACTIONS_AND_PREREQUISITES",
+          "PRESENT_IN_CHARACTER",
+          "PLAYER_OR_WORLD_RESPONSE",
+          "ENGINE_RECORDS_OUTCOME",
+          "ACTOR_MEMORY_RELATIONSHIP_AND_PERSONAL_ARC_REFLECT_OUTCOME"
+        ]
+      },
+      "livingWorldAutonomy": {
+        "objective": "NPC_COMPANION_BOSS_RARE_MONSTER_AND_FOREGROUND_MONSTER_CONTINUE_MEANINGFUL_PERSONAL_ACTIVITY_INSIDE_AUTHORED_GAME_CONTENT_INSTEAD_OF_IDLING_UNTIL_PLAYER_INTERACTION",
+        "canonicalLifeLoop": [
+          "PERCEIVE_LOCAL_WORLD",
+          "CHECK_NEEDS_DUTIES_RELATIONSHIPS_AND_PERSONAL_GOALS",
+          "BUILD_BOUNDED_ACTIVITY_CANDIDATES",
+          "SELECT_CURRENT_ACTIVITY",
+          "ENGINE_VALIDATE_ACTIVITY",
+          "TRAVEL_OR_POSITION",
+          "PERFORM_ACTIVITY",
+          "REACT_TO_INTERRUPTIONS",
+          "OBSERVE_RESULT",
+          "UPDATE_MEMORY_RELATIONSHIP_AND_PERSONAL_PLAN",
+          "RESUME_OR_CHOOSE_NEXT_ACTIVITY"
+        ],
+        "activitySources": [
+          "BIOLOGICAL_OR_REST_NEED",
+          "OCCUPATION_OR_DUTY",
+          "HOME_OR_TERRITORY",
+          "PERSONAL_LONG_TERM_GOAL",
+          "RELATIONSHIP_OBLIGATION",
+          "FACTION_OR_GROUP_DUTY",
+          "LOCAL_WORLD_EVENT",
+          "RECENT_MEMORY",
+          "PLAYER_INTERACTION",
+          "OPPORTUNITY_OR_THREAT",
+          "TIME_OF_DAY",
+          "WEATHER_WHEN_RELEVANT"
+        ],
+        "actorTaskStack": {
+          "lanes": [
+            "IMMEDIATE_SAFETY",
+            "CURRENT_COMMITMENT",
+            "ROUTINE",
+            "SOCIAL_OBLIGATION",
+            "PERSONAL_PROJECT",
+            "SELF_ACTUALIZATION",
+            "OPTIONAL_CURIOSITY"
+          ],
+          "onePrimaryActivityAtATime": true,
+          "secondaryAttentionMayRunInParallel": true,
+          "interruptionPolicy": "HIGHER_PRIORITY_CONTEXT_MAY_PAUSE_NOT_ERASE_CURRENT_ACTIVITY",
+          "pausedActivityShouldResumeWhenStillValid": true,
+          "abandonedActivityNeedsReason": true,
+          "noPerFrameGoalReroll": true
+        },
+        "worldAnchors": {
+          "examples": [
+            "HOME",
+            "WORKPLACE",
+            "SHOP",
+            "GUARD_POST",
+            "BED_OR_REST_AREA",
+            "MEETING_SPOT",
+            "FOOD_OR_RESOURCE_AREA",
+            "TRAINING_AREA",
+            "SHRINE_OR_PERSONAL_PLACE",
+            "TERRITORY_CENTER",
+            "NEST_OR_DEN",
+            "PATROL_ROUTE",
+            "SOCIAL_HUB",
+            "PERSONAL_PROJECT_SITE"
+          ],
+          "actorMayHaveMultipleAnchors": true,
+          "anchorsMustReferenceAuthoredGameLocations": true,
+          "aiMayNotInventUnreachableOrNonexistentWorldLocations": true
+        },
+        "activityFamilies": {
+          "NPC": [
+            "WORK",
+            "OPEN_OR_CLOSE_SHOP_PRESENTATION",
+            "CRAFT_OR_PREPARE_PRESENTATION",
+            "TRAVEL",
+            "REST",
+            "EAT_OR_DRINK_PRESENTATION",
+            "SOCIALIZE",
+            "VISIT_SOMEONE",
+            "PATROL",
+            "OBSERVE",
+            "INVESTIGATE",
+            "CARE_FOR_PLACE_OR_OBJECT",
+            "PURSUE_PERSONAL_PROJECT",
+            "RETURN_HOME",
+            "RESPOND_TO_LOCAL_EVENT"
+          ],
+          "COMPANION": [
+            "FOLLOW_WHEN_COMMITTED_TO_PLAYER",
+            "SCOUT",
+            "GUARD",
+            "REST",
+            "MAINTAIN_EQUIPMENT_PRESENTATION",
+            "TALK_WITH_OTHER_NPC",
+            "PURSUE_PERSONAL_GOAL",
+            "VISIT_PERSONAL_ANCHOR",
+            "HELP_AUTHORED_NPC",
+            "TRAIN_OR_PRACTICE_PRESENTATION",
+            "OBSERVE_WORLD",
+            "START_CONTEXTUAL_CONVERSATION",
+            "SUGGEST_PLAYER_ACTION",
+            "REQUEST_PERSONAL_HELP_CANDIDATE"
+          ],
+          "MONSTER": [
+            "REST",
+            "PATROL_TERRITORY",
+            "FORAGE_OR_HUNT_PRESENTATION",
+            "DRINK_PRESENTATION",
+            "FOLLOW_PACK",
+            "GUARD_NEST_OR_GROUP",
+            "INVESTIGATE_SOUND_OR_INTRUSION",
+            "AVOID_THREAT",
+            "RETURN_TO_TERRITORY",
+            "SOCIAL_OR_DOMINANCE_DISPLAY",
+            "MIGRATE_WITHIN_AUTHORED_HABITAT"
+          ],
+          "RARE_MONSTER": [
+            "SIGNATURE_PATROL",
+            "REST_AT_SIGNATURE_ANCHOR",
+            "HUNT_OR_FORAGE_PRESENTATION",
+            "AVOID_CROWD_OR_THREAT",
+            "MARK_TERRITORY_PRESENTATION",
+            "REACT_TO_WORLD_EVENT",
+            "MOVE_BETWEEN_AUTHORED_RARE_ANCHORS"
+          ],
+          "BOSS": [
+            "IDLE_RITUAL_OR_SIGNATURE_ACTIVITY",
+            "PATROL_OR_GUARD_DOMAIN",
+            "INTERACT_WITH_AUTHORED_LAIR_OBJECTS",
+            "RESPOND_TO_INTRUSION",
+            "COMMAND_OR_SIGNAL_SUBORDINATES_PRESENTATION",
+            "PREPARE_ALLOWED_COMBAT_PATTERN",
+            "RECOVER_OR_REPOSITION_BETWEEN_ALLOWED_PATTERNS"
+          ]
+        },
+        "persistentContinuity": {
+          "storesWhenGamePersistsActorLife": [
+            "CURRENT_ACTIVITY",
+            "PAUSED_ACTIVITY",
+            "CURRENT_PERSONAL_GOAL",
+            "IMPORTANT_MEMORIES",
+            "RELATIONSHIP_SUMMARY",
+            "LAST_KNOWN_ANCHOR",
+            "UNRESOLVED_PERSONAL_THREAD",
+            "ROUTINE_VARIATION_STATE"
+          ],
+          "backwardCompatibleSaveExpansionRequired": true,
+          "saveWriteEngineControlledOnly": true,
+          "missingPersistenceMustFallbackToStableAuthoredBaseline": true,
+          "actorMustNotForgetMajorRelationshipHistoryOnOrdinarySceneReload": true
+        },
+        "offscreenSimulation": {
+          "NEAR_PLAYER": "FULL_DECISION_AND_EMBODIED_BEHAVIOR_WITHIN_BUDGET",
+          "SAME_REGION_FAR": "REDUCED_FREQUENCY_ACTIVITY_SIMULATION",
+          "OTHER_REGION": "DETERMINISTIC_SCHEDULE_AND_EVENT_SUMMARY_ONLY",
+          "SLEEPING_ACTOR": "NO_FRAME_SIMULATION_KEEP_NEXT_WAKE_AND_ACTIVITY_STATE",
+          "returnToForeground": "RECONCILE_TO_VALID_AUTHORED_ANCHOR_AND_CONTINUE_PERSONAL_CONTEXT",
+          "offscreenAiCannotResolveCombatRewardsDeathsQuestCompletionOrWorldDestructionWithoutExistingEngineRule": true
+        },
+        "socialLife": {
+          "actorToActorInteractionEnabled": true,
+          "examples": [
+            "GREET",
+            "AVOID",
+            "ASK",
+            "WARN",
+            "TRADE_PRESENTATION",
+            "ARGUE",
+            "APOLOGIZE",
+            "THANK",
+            "WORK_TOGETHER",
+            "VISIT",
+            "TRAIN_TOGETHER",
+            "SHARE_RECENT_EVENT",
+            "REMEMBER_SHARED_EVENT"
+          ],
+          "interactionsUseDirectionalRelationships": true,
+          "socialActivityMayCreateSourceEventMemory": true,
+          "allActorsNeedNotKnowEverySocialEvent": true
+        },
+        "emergentContentCandidates": {
+          "principle": "ACTOR_LIFE_MAY_PROPOSE_CONTENT_BUT_ENGINE_CONTENT_SYSTEM_VALIDATES_AND_COMMITS_IT",
+          "companionAndNpcMayPropose": [
+            "CONTEXTUAL_HELP_TIP",
+            "WARNING",
+            "OPTIONAL_EVENT",
+            "PERSONAL_REQUEST",
+            "RELATIONSHIP_SCENE",
+            "PERSONAL_QUEST_CANDIDATE",
+            "WORLD_EVENT_REACTION",
+            "FOLLOWUP_TO_OLD_MEMORY"
+          ],
+          "monsterAndBossMayPropose": [
+            "TERRITORY_RESPONSE",
+            "PACK_RESPONSE",
+            "INVESTIGATION",
+            "RETREAT_OR_REPOSITION_INTENT",
+            "ALLOWED_ENCOUNTER_PRESENTATION_VARIATION"
+          ],
+          "questCandidateMustInclude": [
+            "SOURCE_ACTOR",
+            "SOURCE_EVENT_OR_PERSONAL_GOAL",
+            "WHY_NOW",
+            "INTENDED_RELATIONSHIP_OR_WORLD_MEANING",
+            "ALLOWED_EXISTING_OBJECTIVE_VERBS",
+            "ENGINE_VALIDATION_REQUIRED"
+          ],
+          "aiCannotCreateUndeclaredReward": true,
+          "aiCannotCreateSpawnCount": true,
+          "aiCannotCompleteQuest": true,
+          "aiCannotChangeBossPhaseThreshold": true
+        },
+        "continuityQuality": {
+          "required": [
+            "ACTOR_HAS_SOMETHING_TO_DO_WITHOUT_PLAYER",
+            "ACTIVITY_HAS_CAUSE",
+            "ACTIVITY_USES_REAL_WORLD_ANCHOR",
+            "INTERRUPTION_DOES_NOT_ERASE_IDENTITY",
+            "PLAYER_INTERACTION_CAN_CHANGE_RELATIONSHIP_OR_PRIORITY",
+            "ACTOR_RESUMES_OR_REPLANS_COHERENTLY",
+            "OFFSCREEN_RETURN_DOES_NOT_RESET_MAJOR_IDENTITY",
+            "NAMED_ACTOR_REPEATS_ARE_CONTROLLED"
+          ],
+          "idleIsAllowedWhenRestObservationOrWaitingMakesSense": true,
+          "meaninglessConstantMovementForbidden": true,
+          "fakeBusynessWithoutWorldCauseForbidden": true,
+          "teleportingBetweenActivitiesForbiddenUnlessExistingGameRuleAllows": true
+        }
+      },
+      "causalRelationshipModel": {
+        "objective": "ACTORS_FORM_OPINIONS_AND_RELATIONSHIPS_FROM_OBSERVED_CAUSES_NOT_FROM_DIRECT_PLAYER_SCORE_WRITES",
+        "entityTypes": [
+          "PLAYER",
+          "COMPANION",
+          "NPC",
+          "ALLY",
+          "ENEMY",
+          "MONSTER",
+          "ELITE_MONSTER",
+          "BOSS",
+          "FACTION",
+          "NEUTRAL_OBJECT",
+          "LANDMARK",
+          "RESOURCE_NODE",
+          "QUEST_OBJECT"
+        ],
+        "canonicalCausalLoop": [
+          "SOURCE_EVENT_OCCURS",
+          "ACTOR_PERCEIVES_OR_LEARNS_EVENT",
+          "KNOWLEDGE_CONFIDENCE_RECORDED",
+          "ACTOR_ATTRIBUTES_CAUSE_AND_INTENT",
+          "ACTOR_APPRAISES_EVENT_USING_VALUES_GOALS_PERSONALITY_RELATIONSHIP_AND_CONTEXT",
+          "MEMORY_SALIENCE_DECIDED",
+          "RELATIONSHIP_EMOTION_OR_GOAL_DELTA_SUGGESTED",
+          "ENGINE_VALIDATES_PERSISTENT_MUTATION",
+          "FUTURE_SPEECH_ATTENTION_COOPERATION_DISTANCE_AND_TACTICS_USE_UPDATED_STATE"
+        ],
+        "sourceEvent": {
+          "requiredFields": [
+            "EVENT_ID",
+            "TYPE",
+            "ACTOR_ID",
+            "TARGET_IDS",
+            "LOCATION",
+            "TIME_OR_TICK",
+            "OBSERVABILITY"
+          ],
+          "optionalFields": [
+            "INTENT_DECLARED_BY_GAME",
+            "MAGNITUDE",
+            "WITNESSES",
+            "OBJECT_ID",
+            "FACTION_ID",
+            "QUEST_ID",
+            "DAMAGE_CAUSE_ID",
+            "PROMISE_ID"
+          ],
+          "duplicateEventMustBeIdempotent": true,
+          "sourceEventMayNotBeInventedAfterRelationshipChange": true
+        },
+        "perception": {
+          "directWitnessHigherConfidenceThanRumor": true,
+          "rumorMayBeWrong": true,
+          "actorCanMisinterpretAmbiguousIntent": true,
+          "hiddenEventCannotAffectActorWithoutInformationPath": true,
+          "neutralObjectInteractionMayBeWitnessedAndBecomeSocialEvidence": true,
+          "destroyedOpenedStolenRepairedProtectedOrUsedObjectMayBecomeCausalContext": true
+        },
+        "attribution": {
+          "questions": [
+            "WHO_CAUSED_IT",
+            "WAS_IT_INTENTIONAL",
+            "WHO_BENEFITED",
+            "WHO_WAS_HARMED",
+            "DID_IT_MATCH_A_PROMISE",
+            "DID_IT_CROSS_A_BOUNDARY",
+            "DID_IT_SUPPORT_MY_VALUES_OR_GOALS"
+          ],
+          "uncertaintyAllowed": true,
+          "laterEvidenceMayReviseInterpretation": true,
+          "revisedInterpretationMustPreserveOriginalEventHistory": true
+        },
+        "appraisal": {
+          "inputs": [
+            "PERSONAL_VALUES",
+            "CURRENT_GOAL",
+            "SELF_IMAGE",
+            "RELATIONSHIP_HISTORY",
+            "MEMORY",
+            "FACTION_VIEW",
+            "CURRENT_EMOTION",
+            "RISK",
+            "BOUNDARIES",
+            "EXPECTED_BEHAVIOR"
+          ],
+          "outputs": [
+            "HELPFUL",
+            "HARMFUL",
+            "LOYAL",
+            "DISLOYAL",
+            "BRAVE",
+            "RECKLESS",
+            "KIND",
+            "SELFISH",
+            "RESPECTFUL",
+            "DISRESPECTFUL",
+            "RELIABLE",
+            "UNRELIABLE",
+            "THREATENING",
+            "INTERESTING",
+            "UNKNOWN"
+          ],
+          "sameEventMayProduceDifferentAppraisalAcrossActors": true
+        },
+        "relationshipDelta": {
+          "dimensions": [
+            "TRUST",
+            "FAMILIARITY",
+            "RESPECT",
+            "AFFECTION",
+            "TENSION",
+            "FEAR",
+            "DEBT",
+            "RIVALRY",
+            "PROTECTIVENESS",
+            "DEPENDENCE",
+            "BOUNDARY_COMFORT"
+          ],
+          "bounded": true,
+          "causeEventRequired": true,
+          "changeMagnitudeDependsOnHistoryAndEventSalience": true,
+          "repeatedPatternMayMatterMoreThanSingleSmallEvent": true,
+          "noDirectRelationshipSetterFromDialogueModel": true,
+          "engineOwnsPersistentMutation": true
+        },
+        "consequences": {
+          "mayAffect": [
+            "DIALOGUE_TONE",
+            "WILLINGNESS_TO_HELP",
+            "INITIATIVE",
+            "PERSONAL_SPACE",
+            "ATTENTION_PRIORITY",
+            "TACTICAL_SUPPORT_PREFERENCE",
+            "WARNING_FREQUENCY",
+            "QUEST_CANDIDATE_CONTEXT",
+            "AVOIDANCE",
+            "RIVALRY_EXPRESSION",
+            "MEMORY_CALLBACK"
+          ],
+          "mayNotAffectWithoutExistingGameRule": [
+            "RAW_DAMAGE",
+            "RAW_HP",
+            "DROP_RATE",
+            "REWARD_AMOUNT",
+            "COOLDOWN",
+            "STAT_GROWTH",
+            "QUEST_COMPLETION",
+            "NETWORK_AUTHORITY"
+          ]
+        },
+        "playerModel": {
+          "eachActorMaintainsOwnViewOfPlayer": true,
+          "inferredFromObservedPatterns": [
+            "KEEPS_PROMISES",
+            "HELPS_OTHERS",
+            "ABANDONS_ALLIES",
+            "TAKES_RISKS",
+            "STEALS_OR_BREAKS_OBJECTS_WHEN_GAME_EXPOSES_IT",
+            "RESPECTS_BOUNDARIES",
+            "PREFERS_STEALTH_OR_AGGRESSION",
+            "RETREATS_WHEN_PRESSURED",
+            "USES_RESOURCES_CAREFULLY",
+            "LISTENS_TO_ADVICE"
+          ],
+          "inferenceIsActorBeliefNotGlobalTruth": true,
+          "confidenceRequired": true,
+          "playerMayRepairOrDamageRelationshipThroughRepeatedBehavior": true
+        }
+      },
+      "gameplayGuidanceDialogue": {
+        "objective": "NPC_AND_COMPANION_CAN_HELP_THE_PLAYER_PROGRESS_USING_CHARACTER_SPECIFIC_OBSERVATION_AND_ADVICE_WITHOUT_BECOMING_AN_OMNISCIENT_TUTOR",
+        "helperModes": [
+          "CONTEXT_HINT",
+          "DANGER_WARNING",
+          "RESOURCE_HINT",
+          "COMBAT_TACTIC_ADVICE",
+          "BUILD_OR_LOADOUT_OBSERVATION",
+          "ROUTE_OR_OBJECTIVE_REMINDER",
+          "RECENT_FAILURE_REFLECTION",
+          "SYSTEM_REMINDER_IF_CHARACTER_CAN_REASONABLY_KNOW_IT",
+          "OPTIONAL_PERSONAL_OPINION"
+        ],
+        "playerGapInference": {
+          "inputs": [
+            "RECENT_FAILURES",
+            "REPEATED_DAMAGE_SOURCE",
+            "MISSED_VISIBLE_OBJECTIVE",
+            "RESOURCE_SHORTAGE",
+            "REPEATED_ROUTE_LOOP",
+            "UNUSED_DECLARED_MECHANIC",
+            "TEAMMATE_DOWN_EVENTS",
+            "PLAYER_RESPONSE_TO_PRIOR_HINTS"
+          ],
+          "output": "SUGGESTION_ONLY",
+          "spoilerBudget": [
+            "NUDGE",
+            "DIRECTION",
+            "EXPLICIT_HINT_WHEN_REPEATED_FAILURE_OR_PLAYER_REQUEST"
+          ],
+          "hiddenPuzzleSolutionOrUnseenInformationForbiddenUnlessAuthoredCharacterKnowledgeAllows": true,
+          "doNotRepeatIgnoredAdviceContinuously": true
+        },
+        "personalityExpression": {
+          "sameAdviceDifferentVoiceRequired": true,
+          "examples": [
+            "BLUNT",
+            "GENTLE",
+            "SARCASTIC",
+            "NERVOUS",
+            "TACTICAL",
+            "PROUD",
+            "PLAYFUL",
+            "FORMAL",
+            "GRUFF"
+          ],
+          "relationshipChangesWordChoice": true,
+          "stressChangesSentenceLengthAndDirectness": true,
+          "silenceAllowed": true
+        },
+        "profanity": {
+          "allowedWhenGameRatingStyleAndCharacterPermit": true,
+          "levels": [
+            "NONE",
+            "MILD",
+            "CASUAL",
+            "ROUGH"
+          ],
+          "perCharacterProfileRequired": true,
+          "relationshipAndStressMayAffectFrequency": true,
+          "constantProfanityForbidden": true,
+          "hateSlurGenerationForbidden": true,
+          "profanityMustNotReplaceDistinctVoice": true,
+          "ageRatingAndProjectStyleWin": true
+        },
+        "repetitionControl": {
+          "semanticRepeatCooldownRequired": true,
+          "exactLineRepeatSuppressionRequired": true,
+          "recentAdviceMemoryRequired": true,
+          "hintEscalationRequiresFailureOrPlayerRequest": true
+        }
+      },
+      "selfGeneratedRuntimeContent": {
+        "objective": "ACTORS_MAY_PROPOSE_SMALL_CONTEXTUAL_EVENTS_AND_QUESTS_FROM_THEIR_OWN_GOALS_RELATIONSHIPS_MEMORIES_WORLD_STATE_AND_UNRESOLVED_THREADS",
+        "contentSources": [
+          "PERSONAL_GOAL",
+          "PERSONAL_DUTY",
+          "UNRESOLVED_MEMORY",
+          "RELATIONSHIP_TENSION",
+          "PROMISE",
+          "DEBT",
+          "FACTION_GOAL",
+          "DISCOVERED_WORLD_EVENT",
+          "MONSTER_TERRITORY",
+          "RESOURCE_NEED",
+          "PLACE_MEMORY",
+          "PLAYER_PATTERN"
+        ],
+        "eventCandidateTypes": [
+          "REQUEST_HELP",
+          "WARN_ABOUT_THREAT",
+          "INVITE_TO_ACTIVITY",
+          "PERSONAL_ERRAND",
+          "INVESTIGATE_EVENT",
+          "REPAIR_MISTAKE",
+          "VISIT_PERSON_OR_PLACE",
+          "SETTLE_DEBT",
+          "TRAIN_OR_PRACTICE",
+          "RELATIONSHIP_CONVERSATION",
+          "RIVAL_CHALLENGE",
+          "PROTECT_LOCATION",
+          "MONSTER_TERRITORY_EVENT",
+          "RARE_MONSTER_ENCOUNTER_CONTEXT"
+        ],
+        "questCandidateContract": {
+          "aiMayPropose": true,
+          "engineMustValidatePrerequisites": true,
+          "engineMustOwnObjectiveState": true,
+          "engineMustOwnRewards": true,
+          "engineMustOwnSpawnAndWorldMutation": true,
+          "candidateMustHaveCause": true,
+          "candidateMustHaveCharacterMotivation": true,
+          "candidateMustHaveWorldContext": true,
+          "candidateMustNotDuplicateRecentQuestSignature": true,
+          "candidateMustRespectCurrentWorldState": true
+        },
+        "selfInitiatedContentCooldownRequired": true,
+        "playerCanIgnoreNoncriticalActorInitiatedContent": true,
+        "namedActorPersonalArcMayGenerateRecurringThread": true,
+        "genericNpcContentMustUseBoundedArchetypeTemplatesPlusContext": true,
+        "bossAndRareMonsterMayGenerateContextualSignsThreatsRivalryOrTerritoryEventsButNotRewriteBossRules": true
+      },
+      "individualActivitySimulation": {
+        "objective": "IMPORTANT_ACTORS_HAVE_ONGOING_ACTIVITY_WHEN_NOT_DIRECTLY_INTERACTING_WITH_PLAYER",
+        "activityInputs": [
+          "ROLE",
+          "OCCUPATION",
+          "PERSONAL_GOAL",
+          "TIME",
+          "LOCATION",
+          "WEATHER",
+          "NEED",
+          "RELATIONSHIP",
+          "FACTION",
+          "RECENT_EVENT",
+          "TERRITORY",
+          "KNOWN_THREAT"
+        ],
+        "companionActivities": [
+          "FOLLOW_OR_REJOIN",
+          "MAINTAIN_EQUIPMENT_PRESENTATION",
+          "OBSERVE_WORLD",
+          "TALK_TO_NPC",
+          "REST",
+          "PRACTICE",
+          "INVESTIGATE",
+          "PERSONAL_ERRAND",
+          "CHECK_ON_ALLY",
+          "RETURN_TO_PLAYER_WHEN_REQUIRED_BY_GAME_RULE"
+        ],
+        "npcActivities": [
+          "WORK",
+          "TRAVEL",
+          "REST",
+          "EAT_OR_DRINK_PRESENTATION",
+          "SOCIALIZE",
+          "TRADE",
+          "VISIT",
+          "INVESTIGATE",
+          "AVOID_DANGER",
+          "RETURN_HOME",
+          "PERSONAL_GOAL"
+        ],
+        "monsterActivities": [
+          "REST",
+          "PATROL",
+          "FORAGE",
+          "DRINK_PRESENTATION",
+          "FOLLOW_GROUP",
+          "GUARD_NEST_OR_TERRITORY",
+          "INVESTIGATE_SOUND",
+          "AVOID_PREDATOR_OR_THREAT",
+          "HUNT_WHEN_EXISTING_RULE_ALLOWS",
+          "RETURN_HOME"
+        ],
+        "bossActivities": [
+          "PRESENTATION_IDLE",
+          "OBSERVE_ARENA",
+          "REACT_TO_INTRUSION",
+          "ADDRESS_PLAYER_WHEN_AUTHORED",
+          "PHASE_ATTITUDE_ONLY_WITHIN_ENGINE_PHASE",
+          "GUARD_OBJECTIVE_OR_TERRITORY"
+        ],
+        "rareMonsterActivities": [
+          "ROAM_WITHIN_ALLOWED_REGION",
+          "FEED_OR_REST_PRESENTATION",
+          "AVOID_OR_STALK_BASED_ON_TEMPERAMENT",
+          "RESPOND_TO_TERRITORY_INTRUSION",
+          "REMEMBER_RECENT_PLAYER_ENCOUNTER_IF_GAME_PERSISTS_IT"
+        ],
+        "simulationLod": {
+          "nearPlayer": "FULL_DECISION_CONTEXT",
+          "midDistance": "LOW_FREQUENCY_INTENT_UPDATE",
+          "farBackground": "DETERMINISTIC_SCHEDULE_OR_SLEEP",
+          "namedImportantActorMayPreserveCompressedOffscreenIntent": true
+        },
+        "offscreenSimulationCannotInventAuthoritativeLootDamageDeathQuestCompletionOrTeleport": true
+      }
     }
   },
   "presentationPipelineImplementation": {
