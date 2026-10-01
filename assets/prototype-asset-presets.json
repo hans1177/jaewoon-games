@@ -1,32 +1,94 @@
 {
-  "version": 3,
-  "purpose": "재운컴퍼니/바이브2 모바일 게임 제작용 무료 재사용 프리셋. Web은 모바일에서 가능한 최대 품질을 목표로 하고, 무거운 3D 본개발은 Unity Android를 우선한다.",
+  "version": 4,
+  "purpose": "재운컴퍼니/바이브 모바일 게임용 재사용 자산 프리셋. 활성 native 타깃은 Roblox/Unity이며 플랫폼 미지정 시 Roblox를 우선한다. Web은 native 대체물이 아니라 필요한 검증/동반 표면으로 취급한다.",
   "rules": {
     "mobileFirst": true,
-    "supportedTargets": ["mobile-web", "unity-android"],
+    "supportedTargets": [
+      "roblox",
+      "unity",
+      "unity-web-validation"
+    ],
     "webHighQualityAllowed": true,
     "unityAndroidPreferredForHeavy3D": true,
     "prototypeOnly": false,
     "actorRequiresVerifiedAnimation": true,
-    "actorRequiredStates": ["idle", "move", "attack", "hit", "death"],
+    "actorRequiredStates": [
+      "idle",
+      "move",
+      "attack",
+      "hit",
+      "death"
+    ],
     "locomotionRequired": true,
     "staticActorBlocked": true,
     "geometricActorBlocked": true,
-    "blockedLicenses": ["NC", "unknown", "unclear-redistribution"],
-    "preferredLicenses": ["CC0", "MIT", "commercial-no-attribution", "CC-BY"],
+    "blockedLicenses": [
+      "NC",
+      "unknown",
+      "unclear-redistribution"
+    ],
+    "preferredLicenses": [
+      "CC0",
+      "MIT",
+      "commercial-no-attribution",
+      "CC-BY"
+    ],
     "downloadPolicy": "on-demand-cache-after-first-use",
     "replaceableWithoutGameplayRewrite": true,
     "releaseRequiresSeparateAssetReview": true,
     "publicUseRequiresLicenseLedger": true,
     "externalToolAutoInstall": false,
-    "externalToolApprovalRequired": true
+    "externalToolApprovalRequired": true,
+    "activeNativeTargets": [
+      "ROBLOX",
+      "UNITY"
+    ],
+    "initialNativeTarget": "ROBLOX",
+    "pausedNativeTargets": [
+      "FORTNITE_UEFN"
+    ],
+    "webValidationSurfaceOnly": true,
+    "generatedAssetSourceRecipeRequired": true,
+    "generatedAssetReviewEvidenceRequired": true,
+    "nativeRuntimeVerificationBeforePromotion": true,
+    "originalAssetAuthoringPreferredWhenLibraryQualityInsufficient": true
   },
   "reusableToolCandidates": [
-    {"id":"unity-input-system","name":"Unity Input System","scope":"common","licenseReview":"package-policy","autoInstall":false},
-    {"id":"unity-cinemachine","name":"Unity Cinemachine","scope":"3d-camera","licenseReview":"package-policy","autoInstall":false},
-    {"id":"unity-probuilder","name":"Unity ProBuilder","scope":"level-blockout","licenseReview":"package-policy","autoInstall":false},
-    {"id":"dotween","name":"DOTween","scope":"tween-ui-vfx","licenseReview":"external-ledger-required","autoInstall":false},
-    {"id":"runtime-debug-console","name":"In-game Debug Console candidate","scope":"debug","licenseReview":"external-ledger-required","autoInstall":false}
+    {
+      "id": "unity-input-system",
+      "name": "Unity Input System",
+      "scope": "common",
+      "licenseReview": "package-policy",
+      "autoInstall": false
+    },
+    {
+      "id": "unity-cinemachine",
+      "name": "Unity Cinemachine",
+      "scope": "3d-camera",
+      "licenseReview": "package-policy",
+      "autoInstall": false
+    },
+    {
+      "id": "unity-probuilder",
+      "name": "Unity ProBuilder",
+      "scope": "level-blockout",
+      "licenseReview": "package-policy",
+      "autoInstall": false
+    },
+    {
+      "id": "dotween",
+      "name": "DOTween",
+      "scope": "tween-ui-vfx",
+      "licenseReview": "external-ledger-required",
+      "autoInstall": false
+    },
+    {
+      "id": "runtime-debug-console",
+      "name": "In-game Debug Console candidate",
+      "scope": "debug",
+      "licenseReview": "external-ledger-required",
+      "autoInstall": false
+    }
   ],
   "presets": [
     {
@@ -35,160 +97,1190 @@
       "genre": "rpg",
       "default": true,
       "defaultTarget": "unity-android",
-      "keywords": ["rpg", "판타지", "용사", "전사", "궁수", "마법", "퀘스트", "던전"],
-      "actorAssets": ["oga-adventurer-slime", "oga-animated-monsters", "oga-unity-slime-12", "github-pixel-snapped-pirate-skeleton"],
-      "effectAssets": ["oga-basic-pixel-spells"],
-      "supportingSourcePriority": ["Kenney", "Poly Haven", "ambientCG"],
+      "keywords": [
+        "rpg",
+        "판타지",
+        "용사",
+        "전사",
+        "궁수",
+        "마법",
+        "퀘스트",
+        "던전"
+      ],
+      "actorAssets": [
+        "oga-adventurer-slime",
+        "oga-animated-monsters",
+        "oga-unity-slime-12",
+        "github-pixel-snapped-pirate-skeleton"
+      ],
+      "effectAssets": [
+        "oga-basic-pixel-spells"
+      ],
+      "supportingSourcePriority": [
+        "Kenney",
+        "Poly Haven",
+        "ambientCG"
+      ],
       "platformProfiles": {
-        "mobileWeb": {"qualityTarget":"high-mobile-web","input":["virtual-stick","large-action-buttons"],"modules":["quest","inventory","equipment","save","dialogue","vfx-audio"],"performance":["object-pooling","texture-budget","effect-budget"]},
-        "unityAndroid": {"qualityTarget":"full-mobile-production","input":["input-system","virtual-stick","touch-camera"],"modules":["third-person-controller","cinemachine","quest","inventory","equipment","save","animation","vfx-audio"],"performance":["urp-mobile","lod","object-pooling","occlusion","mobile-shader-budget"]}
+        "mobileWeb": {
+          "qualityTarget": "high-mobile-web",
+          "input": [
+            "virtual-stick",
+            "large-action-buttons"
+          ],
+          "modules": [
+            "quest",
+            "inventory",
+            "equipment",
+            "save",
+            "dialogue",
+            "vfx-audio"
+          ],
+          "performance": [
+            "object-pooling",
+            "texture-budget",
+            "effect-budget"
+          ]
+        },
+        "unityAndroid": {
+          "qualityTarget": "full-mobile-production",
+          "input": [
+            "input-system",
+            "virtual-stick",
+            "touch-camera"
+          ],
+          "modules": [
+            "third-person-controller",
+            "cinemachine",
+            "quest",
+            "inventory",
+            "equipment",
+            "save",
+            "animation",
+            "vfx-audio"
+          ],
+          "performance": [
+            "urp-mobile",
+            "lod",
+            "object-pooling",
+            "occlusion",
+            "mobile-shader-budget"
+          ]
+        },
+        "roblox": {
+          "qualityTarget": "native-roblox-production",
+          "input": [
+            "virtual-stick",
+            "large-action-buttons"
+          ],
+          "modules": [
+            "quest",
+            "inventory",
+            "equipment",
+            "save",
+            "dialogue",
+            "vfx-audio",
+            "third-person-controller",
+            "cinemachine",
+            "animation",
+            "native-asset-binding"
+          ],
+          "performance": [
+            "object-pooling",
+            "texture-budget",
+            "effect-budget",
+            "streaming-budget",
+            "mobile-memory-budget"
+          ]
+        }
       },
-      "toolCandidates": ["unity-input-system", "unity-cinemachine", "dotween", "runtime-debug-console"],
-      "notes": "Web도 고품질 모바일 RPG로 만들 수 있으나 3D 전투·월드 규모가 커지면 Unity Android 본개발을 우선한다."
+      "toolCandidates": [
+        "unity-input-system",
+        "unity-cinemachine",
+        "dotween",
+        "runtime-debug-console"
+      ],
+      "notes": "Web도 고품질 모바일 RPG로 만들 수 있으나 3D 전투·월드 규모가 커지면 Unity Android 본개발을 우선한다.",
+      "defaultNativeTarget": "roblox",
+      "assetAuthoring": {
+        "priority": [
+          "REUSE_VERIFIED_COMPANY_ASSET",
+          "REUSE_SAME_GAME_ASSET",
+          "REUSE_LICENSED_REPOSITORY_ASSET",
+          "BLENDER_OR_NATIVE_DIRECT_AUTHORING",
+          "LICENSE_VERIFIED_EXTERNAL_GAP_FILL"
+        ],
+        "sourceRecipeRequired": true,
+        "previewRenderRequired": true,
+        "evidenceJsonRequired": true,
+        "companyAssetLibraryRegistrationRequired": true,
+        "nativeRuntimeVerificationRequiredBeforeVerifiedPromotion": true
+      }
     },
     {
       "id": "set-b-survival-field",
       "name": "모바일 생존/필드",
       "genre": "survival",
       "defaultTarget": "unity-android",
-      "keywords": ["생존", "서바이벌", "필드", "채집", "오픈월드", "야외", "전투", "크래프팅", "제작"],
-      "actorAssets": ["github-pixel-snapped-pirate-skeleton", "oga-animated-monsters"],
-      "effectAssets": ["oga-basic-pixel-spells"],
-      "supportingSourcePriority": ["Kenney", "Poly Haven", "ambientCG"],
+      "keywords": [
+        "생존",
+        "서바이벌",
+        "필드",
+        "채집",
+        "오픈월드",
+        "야외",
+        "전투",
+        "크래프팅",
+        "제작"
+      ],
+      "actorAssets": [
+        "github-pixel-snapped-pirate-skeleton",
+        "oga-animated-monsters"
+      ],
+      "effectAssets": [
+        "oga-basic-pixel-spells"
+      ],
+      "supportingSourcePriority": [
+        "Kenney",
+        "Poly Haven",
+        "ambientCG"
+      ],
       "platformProfiles": {
-        "mobileWeb": {"qualityTarget":"high-mobile-web-small-world","input":["virtual-stick","context-action","attack-button"],"modules":["gathering","inventory","crafting","health","enemy-ai","save"],"performance":["small-active-zone","object-pooling","spawn-budget","effect-budget"]},
-        "unityAndroid": {"qualityTarget":"full-mobile-production","input":["input-system","virtual-stick","touch-camera","context-action"],"modules":["third-person-controller","terrain","gathering","inventory","crafting","survival-stats","enemy-ai","save","vfx-audio"],"performance":["urp-mobile","lod","occlusion","object-pooling","spawn-budget","streaming-budget"]}
+        "mobileWeb": {
+          "qualityTarget": "high-mobile-web-small-world",
+          "input": [
+            "virtual-stick",
+            "context-action",
+            "attack-button"
+          ],
+          "modules": [
+            "gathering",
+            "inventory",
+            "crafting",
+            "health",
+            "enemy-ai",
+            "save"
+          ],
+          "performance": [
+            "small-active-zone",
+            "object-pooling",
+            "spawn-budget",
+            "effect-budget"
+          ]
+        },
+        "unityAndroid": {
+          "qualityTarget": "full-mobile-production",
+          "input": [
+            "input-system",
+            "virtual-stick",
+            "touch-camera",
+            "context-action"
+          ],
+          "modules": [
+            "third-person-controller",
+            "terrain",
+            "gathering",
+            "inventory",
+            "crafting",
+            "survival-stats",
+            "enemy-ai",
+            "save",
+            "vfx-audio"
+          ],
+          "performance": [
+            "urp-mobile",
+            "lod",
+            "occlusion",
+            "object-pooling",
+            "spawn-budget",
+            "streaming-budget"
+          ]
+        },
+        "roblox": {
+          "qualityTarget": "native-roblox-production",
+          "input": [
+            "virtual-stick",
+            "context-action",
+            "attack-button"
+          ],
+          "modules": [
+            "gathering",
+            "inventory",
+            "crafting",
+            "health",
+            "enemy-ai",
+            "save",
+            "third-person-controller",
+            "terrain",
+            "survival-stats",
+            "vfx-audio",
+            "native-asset-binding",
+            "animation"
+          ],
+          "performance": [
+            "small-active-zone",
+            "object-pooling",
+            "spawn-budget",
+            "effect-budget",
+            "streaming-budget",
+            "mobile-memory-budget"
+          ]
+        }
       },
-      "toolCandidates": ["unity-input-system", "unity-cinemachine", "unity-probuilder", "runtime-debug-console"],
-      "notes": "작은 생존 루프는 Web 고퀄 가능. 넓은 3D 맵·다수 AI·복합 물리는 Unity Android를 기본으로 한다."
+      "toolCandidates": [
+        "unity-input-system",
+        "unity-cinemachine",
+        "unity-probuilder",
+        "runtime-debug-console"
+      ],
+      "notes": "작은 생존 루프는 Web 고퀄 가능. 넓은 3D 맵·다수 AI·복합 물리는 Unity Android를 기본으로 한다.",
+      "defaultNativeTarget": "roblox",
+      "assetAuthoring": {
+        "priority": [
+          "REUSE_VERIFIED_COMPANY_ASSET",
+          "REUSE_SAME_GAME_ASSET",
+          "REUSE_LICENSED_REPOSITORY_ASSET",
+          "BLENDER_OR_NATIVE_DIRECT_AUTHORING",
+          "LICENSE_VERIFIED_EXTERNAL_GAP_FILL"
+        ],
+        "sourceRecipeRequired": true,
+        "previewRenderRequired": true,
+        "evidenceJsonRequired": true,
+        "companyAssetLibraryRegistrationRequired": true,
+        "nativeRuntimeVerificationRequiredBeforeVerifiedPromotion": true
+      }
     },
     {
       "id": "set-c-dungeon-tower",
       "name": "모바일 로그라이크/던전/탑",
       "genre": "roguelike",
       "defaultTarget": "mobile-web",
-      "keywords": ["탑", "던전", "층", "보스", "로그라이크", "웨이브", "지하"],
-      "actorAssets": ["oga-animated-monsters", "github-pixel-snapped-pirate-skeleton", "oga-unity-slime-12"],
-      "effectAssets": ["oga-basic-pixel-spells"],
-      "supportingSourcePriority": ["Kenney", "Poly Haven", "ambientCG"],
+      "keywords": [
+        "탑",
+        "던전",
+        "층",
+        "보스",
+        "로그라이크",
+        "웨이브",
+        "지하"
+      ],
+      "actorAssets": [
+        "oga-animated-monsters",
+        "github-pixel-snapped-pirate-skeleton",
+        "oga-unity-slime-12"
+      ],
+      "effectAssets": [
+        "oga-basic-pixel-spells"
+      ],
+      "supportingSourcePriority": [
+        "Kenney",
+        "Poly Haven",
+        "ambientCG"
+      ],
       "platformProfiles": {
-        "mobileWeb": {"qualityTarget":"high-mobile-web","input":["virtual-stick-or-tap","large-skill-buttons"],"modules":["floor-progression","combat","loot","skills","save","vfx-audio"],"performance":["room-budget","object-pooling","enemy-cap"]},
-        "unityAndroid": {"qualityTarget":"full-mobile-production","input":["input-system","virtual-stick","skill-buttons"],"modules":["room-generation","combat","loot","skills","save","animation","vfx-audio"],"performance":["urp-mobile","object-pooling","enemy-cap","effect-budget"]}
+        "mobileWeb": {
+          "qualityTarget": "high-mobile-web",
+          "input": [
+            "virtual-stick-or-tap",
+            "large-skill-buttons"
+          ],
+          "modules": [
+            "floor-progression",
+            "combat",
+            "loot",
+            "skills",
+            "save",
+            "vfx-audio"
+          ],
+          "performance": [
+            "room-budget",
+            "object-pooling",
+            "enemy-cap"
+          ]
+        },
+        "unityAndroid": {
+          "qualityTarget": "full-mobile-production",
+          "input": [
+            "input-system",
+            "virtual-stick",
+            "skill-buttons"
+          ],
+          "modules": [
+            "room-generation",
+            "combat",
+            "loot",
+            "skills",
+            "save",
+            "animation",
+            "vfx-audio"
+          ],
+          "performance": [
+            "urp-mobile",
+            "object-pooling",
+            "enemy-cap",
+            "effect-budget"
+          ]
+        },
+        "roblox": {
+          "qualityTarget": "native-roblox-production",
+          "input": [
+            "virtual-stick-or-tap",
+            "large-skill-buttons"
+          ],
+          "modules": [
+            "floor-progression",
+            "combat",
+            "loot",
+            "skills",
+            "save",
+            "vfx-audio",
+            "room-generation",
+            "animation",
+            "native-asset-binding"
+          ],
+          "performance": [
+            "room-budget",
+            "object-pooling",
+            "enemy-cap",
+            "streaming-budget",
+            "mobile-memory-budget",
+            "effect-budget"
+          ]
+        }
       },
-      "toolCandidates": ["unity-input-system", "dotween", "runtime-debug-console"],
-      "notes": "웹과 Unity 모두 적합하며 2D/탑다운은 Web 우선, 무거운 3D 전투는 Unity Android 우선."
+      "toolCandidates": [
+        "unity-input-system",
+        "dotween",
+        "runtime-debug-console"
+      ],
+      "notes": "웹과 Unity 모두 적합하며 2D/탑다운은 Web 우선, 무거운 3D 전투는 Unity Android 우선.",
+      "defaultNativeTarget": "roblox",
+      "assetAuthoring": {
+        "priority": [
+          "REUSE_VERIFIED_COMPANY_ASSET",
+          "REUSE_SAME_GAME_ASSET",
+          "REUSE_LICENSED_REPOSITORY_ASSET",
+          "BLENDER_OR_NATIVE_DIRECT_AUTHORING",
+          "LICENSE_VERIFIED_EXTERNAL_GAP_FILL"
+        ],
+        "sourceRecipeRequired": true,
+        "previewRenderRequired": true,
+        "evidenceJsonRequired": true,
+        "companyAssetLibraryRegistrationRequired": true,
+        "nativeRuntimeVerificationRequiredBeforeVerifiedPromotion": true
+      }
     },
     {
       "id": "set-d-defense-strategy",
       "name": "모바일 디펜스/전략",
       "genre": "defense-strategy",
       "defaultTarget": "mobile-web",
-      "keywords": ["디펜스", "타워디펜스", "전략", "rts", "웨이브", "타워", "영토"],
-      "actorAssets": ["oga-animated-monsters"],
-      "effectAssets": ["oga-basic-pixel-spells"],
-      "supportingSourcePriority": ["Kenney"],
+      "keywords": [
+        "디펜스",
+        "타워디펜스",
+        "전략",
+        "rts",
+        "웨이브",
+        "타워",
+        "영토"
+      ],
+      "actorAssets": [
+        "oga-animated-monsters"
+      ],
+      "effectAssets": [
+        "oga-basic-pixel-spells"
+      ],
+      "supportingSourcePriority": [
+        "Kenney"
+      ],
       "platformProfiles": {
-        "mobileWeb": {"qualityTarget":"high-mobile-web","input":["tap-place","drag-pan","pinch-zoom"],"modules":["wave","placement","upgrade","economy","save","vfx-audio"],"performance":["unit-cap","projectile-pooling","effect-budget"]},
-        "unityAndroid": {"qualityTarget":"full-mobile-production","input":["tap-place","drag-pan","pinch-zoom"],"modules":["wave","placement","upgrade","economy","save","camera","vfx-audio"],"performance":["urp-mobile","unit-cap","projectile-pooling","lod"]}
+        "mobileWeb": {
+          "qualityTarget": "high-mobile-web",
+          "input": [
+            "tap-place",
+            "drag-pan",
+            "pinch-zoom"
+          ],
+          "modules": [
+            "wave",
+            "placement",
+            "upgrade",
+            "economy",
+            "save",
+            "vfx-audio"
+          ],
+          "performance": [
+            "unit-cap",
+            "projectile-pooling",
+            "effect-budget"
+          ]
+        },
+        "unityAndroid": {
+          "qualityTarget": "full-mobile-production",
+          "input": [
+            "tap-place",
+            "drag-pan",
+            "pinch-zoom"
+          ],
+          "modules": [
+            "wave",
+            "placement",
+            "upgrade",
+            "economy",
+            "save",
+            "camera",
+            "vfx-audio"
+          ],
+          "performance": [
+            "urp-mobile",
+            "unit-cap",
+            "projectile-pooling",
+            "lod"
+          ]
+        },
+        "roblox": {
+          "qualityTarget": "native-roblox-production",
+          "input": [
+            "tap-place",
+            "drag-pan",
+            "pinch-zoom"
+          ],
+          "modules": [
+            "wave",
+            "placement",
+            "upgrade",
+            "economy",
+            "save",
+            "vfx-audio",
+            "camera",
+            "native-asset-binding",
+            "animation"
+          ],
+          "performance": [
+            "unit-cap",
+            "projectile-pooling",
+            "effect-budget",
+            "streaming-budget",
+            "mobile-memory-budget"
+          ]
+        }
       },
-      "toolCandidates": ["unity-input-system", "dotween", "runtime-debug-console"],
-      "notes": "모바일 Web에서 높은 완성도를 내기 좋은 장르. 3D 대규모 유닛전만 Unity Android 우선."
+      "toolCandidates": [
+        "unity-input-system",
+        "dotween",
+        "runtime-debug-console"
+      ],
+      "notes": "모바일 Web에서 높은 완성도를 내기 좋은 장르. 3D 대규모 유닛전만 Unity Android 우선.",
+      "defaultNativeTarget": "roblox",
+      "assetAuthoring": {
+        "priority": [
+          "REUSE_VERIFIED_COMPANY_ASSET",
+          "REUSE_SAME_GAME_ASSET",
+          "REUSE_LICENSED_REPOSITORY_ASSET",
+          "BLENDER_OR_NATIVE_DIRECT_AUTHORING",
+          "LICENSE_VERIFIED_EXTERNAL_GAP_FILL"
+        ],
+        "sourceRecipeRequired": true,
+        "previewRenderRequired": true,
+        "evidenceJsonRequired": true,
+        "companyAssetLibraryRegistrationRequired": true,
+        "nativeRuntimeVerificationRequiredBeforeVerifiedPromotion": true
+      }
     },
     {
       "id": "set-e-action-rpg",
       "name": "모바일 액션 RPG",
       "genre": "action-rpg",
       "defaultTarget": "unity-android",
-      "keywords": ["액션 rpg", "액션rpg", "핵앤슬래시", "근접전", "콤보", "락온", "보스전"],
-      "actorAssets": ["github-pixel-snapped-pirate-skeleton", "oga-animated-monsters"],
-      "effectAssets": ["oga-basic-pixel-spells"],
-      "supportingSourcePriority": ["Kenney", "Poly Haven"],
+      "keywords": [
+        "액션 rpg",
+        "액션rpg",
+        "핵앤슬래시",
+        "근접전",
+        "콤보",
+        "락온",
+        "보스전"
+      ],
+      "actorAssets": [
+        "github-pixel-snapped-pirate-skeleton",
+        "oga-animated-monsters"
+      ],
+      "effectAssets": [
+        "oga-basic-pixel-spells"
+      ],
+      "supportingSourcePriority": [
+        "Kenney",
+        "Poly Haven"
+      ],
       "platformProfiles": {
-        "mobileWeb": {"qualityTarget":"high-mobile-web-light-combat","input":["virtual-stick","attack-button","skill-buttons","auto-target"],"modules":["combat","skills","equipment","save","vfx-audio"],"performance":["enemy-cap","effect-budget","animation-budget"]},
-        "unityAndroid": {"qualityTarget":"full-mobile-production","input":["input-system","virtual-stick","touch-camera","attack-button","skill-buttons","lock-on"],"modules":["third-person-controller","cinemachine","combat","combo","skills","equipment","save","animation","vfx-audio"],"performance":["urp-mobile","lod","object-pooling","effect-budget","animation-budget"]}
+        "mobileWeb": {
+          "qualityTarget": "high-mobile-web-light-combat",
+          "input": [
+            "virtual-stick",
+            "attack-button",
+            "skill-buttons",
+            "auto-target"
+          ],
+          "modules": [
+            "combat",
+            "skills",
+            "equipment",
+            "save",
+            "vfx-audio"
+          ],
+          "performance": [
+            "enemy-cap",
+            "effect-budget",
+            "animation-budget"
+          ]
+        },
+        "unityAndroid": {
+          "qualityTarget": "full-mobile-production",
+          "input": [
+            "input-system",
+            "virtual-stick",
+            "touch-camera",
+            "attack-button",
+            "skill-buttons",
+            "lock-on"
+          ],
+          "modules": [
+            "third-person-controller",
+            "cinemachine",
+            "combat",
+            "combo",
+            "skills",
+            "equipment",
+            "save",
+            "animation",
+            "vfx-audio"
+          ],
+          "performance": [
+            "urp-mobile",
+            "lod",
+            "object-pooling",
+            "effect-budget",
+            "animation-budget"
+          ]
+        },
+        "roblox": {
+          "qualityTarget": "native-roblox-production",
+          "input": [
+            "virtual-stick",
+            "attack-button",
+            "skill-buttons",
+            "auto-target"
+          ],
+          "modules": [
+            "combat",
+            "skills",
+            "equipment",
+            "save",
+            "vfx-audio",
+            "third-person-controller",
+            "cinemachine",
+            "combo",
+            "animation",
+            "native-asset-binding"
+          ],
+          "performance": [
+            "enemy-cap",
+            "effect-budget",
+            "animation-budget",
+            "streaming-budget",
+            "mobile-memory-budget"
+          ]
+        }
       },
-      "toolCandidates": ["unity-input-system", "unity-cinemachine", "dotween", "runtime-debug-console"],
-      "notes": "전투 애니메이션·카메라·VFX 비중이 높으므로 Unity Android 본개발을 기본으로 한다."
+      "toolCandidates": [
+        "unity-input-system",
+        "unity-cinemachine",
+        "dotween",
+        "runtime-debug-console"
+      ],
+      "notes": "전투 애니메이션·카메라·VFX 비중이 높으므로 Unity Android 본개발을 기본으로 한다.",
+      "defaultNativeTarget": "roblox",
+      "assetAuthoring": {
+        "priority": [
+          "REUSE_VERIFIED_COMPANY_ASSET",
+          "REUSE_SAME_GAME_ASSET",
+          "REUSE_LICENSED_REPOSITORY_ASSET",
+          "BLENDER_OR_NATIVE_DIRECT_AUTHORING",
+          "LICENSE_VERIFIED_EXTERNAL_GAP_FILL"
+        ],
+        "sourceRecipeRequired": true,
+        "previewRenderRequired": true,
+        "evidenceJsonRequired": true,
+        "companyAssetLibraryRegistrationRequired": true,
+        "nativeRuntimeVerificationRequiredBeforeVerifiedPromotion": true
+      }
     },
     {
       "id": "set-f-fps-shooter",
       "name": "모바일 FPS/슈터",
       "genre": "fps-shooter",
       "defaultTarget": "unity-android",
-      "keywords": ["fps", "슈터", "총", "사격", "조준", "1인칭"],
-      "actorAssets": ["oga-animated-monsters"],
-      "effectAssets": ["oga-basic-pixel-spells"],
-      "supportingSourcePriority": ["Kenney", "Poly Haven"],
+      "keywords": [
+        "fps",
+        "슈터",
+        "총",
+        "사격",
+        "조준",
+        "1인칭"
+      ],
+      "actorAssets": [
+        "oga-animated-monsters"
+      ],
+      "effectAssets": [
+        "oga-basic-pixel-spells"
+      ],
+      "supportingSourcePriority": [
+        "Kenney",
+        "Poly Haven"
+      ],
       "platformProfiles": {
-        "mobileWeb": {"qualityTarget":"high-mobile-web-light-shooter","input":["dual-stick","fire-button","aim-assist"],"modules":["shooting","enemy-ai","health","save","vfx-audio"],"performance":["enemy-cap","projectile-pooling","effect-budget"]},
-        "unityAndroid": {"qualityTarget":"full-mobile-production","input":["input-system","dual-stick","fire-button","aim-assist"],"modules":["first-person-controller","cinemachine","shooting","enemy-ai","save","vfx-audio"],"performance":["urp-mobile","lod","occlusion","projectile-pooling","effect-budget"]}
+        "mobileWeb": {
+          "qualityTarget": "high-mobile-web-light-shooter",
+          "input": [
+            "dual-stick",
+            "fire-button",
+            "aim-assist"
+          ],
+          "modules": [
+            "shooting",
+            "enemy-ai",
+            "health",
+            "save",
+            "vfx-audio"
+          ],
+          "performance": [
+            "enemy-cap",
+            "projectile-pooling",
+            "effect-budget"
+          ]
+        },
+        "unityAndroid": {
+          "qualityTarget": "full-mobile-production",
+          "input": [
+            "input-system",
+            "dual-stick",
+            "fire-button",
+            "aim-assist"
+          ],
+          "modules": [
+            "first-person-controller",
+            "cinemachine",
+            "shooting",
+            "enemy-ai",
+            "save",
+            "vfx-audio"
+          ],
+          "performance": [
+            "urp-mobile",
+            "lod",
+            "occlusion",
+            "projectile-pooling",
+            "effect-budget"
+          ]
+        },
+        "roblox": {
+          "qualityTarget": "native-roblox-production",
+          "input": [
+            "dual-stick",
+            "fire-button",
+            "aim-assist"
+          ],
+          "modules": [
+            "shooting",
+            "enemy-ai",
+            "health",
+            "save",
+            "vfx-audio",
+            "first-person-controller",
+            "cinemachine",
+            "native-asset-binding",
+            "animation"
+          ],
+          "performance": [
+            "enemy-cap",
+            "projectile-pooling",
+            "effect-budget",
+            "streaming-budget",
+            "mobile-memory-budget"
+          ]
+        }
       },
-      "toolCandidates": ["unity-input-system", "unity-cinemachine", "runtime-debug-console"],
-      "notes": "정교한 3D 조준·카메라·물리·VFX가 필요해 Unity Android가 기본."
+      "toolCandidates": [
+        "unity-input-system",
+        "unity-cinemachine",
+        "runtime-debug-console"
+      ],
+      "notes": "정교한 3D 조준·카메라·물리·VFX가 필요해 Unity Android가 기본.",
+      "defaultNativeTarget": "roblox",
+      "assetAuthoring": {
+        "priority": [
+          "REUSE_VERIFIED_COMPANY_ASSET",
+          "REUSE_SAME_GAME_ASSET",
+          "REUSE_LICENSED_REPOSITORY_ASSET",
+          "BLENDER_OR_NATIVE_DIRECT_AUTHORING",
+          "LICENSE_VERIFIED_EXTERNAL_GAP_FILL"
+        ],
+        "sourceRecipeRequired": true,
+        "previewRenderRequired": true,
+        "evidenceJsonRequired": true,
+        "companyAssetLibraryRegistrationRequired": true,
+        "nativeRuntimeVerificationRequiredBeforeVerifiedPromotion": true
+      }
     },
     {
       "id": "set-g-zombie-horror",
       "name": "모바일 좀비/호러",
       "genre": "zombie-horror",
       "defaultTarget": "unity-android",
-      "keywords": ["좀비", "호러", "공포", "폐허", "생존 호러"],
-      "actorAssets": ["oga-animated-monsters", "github-pixel-snapped-pirate-skeleton"],
-      "effectAssets": ["oga-basic-pixel-spells"],
-      "supportingSourcePriority": ["Kenney", "Poly Haven", "ambientCG"],
+      "keywords": [
+        "좀비",
+        "호러",
+        "공포",
+        "폐허",
+        "생존 호러"
+      ],
+      "actorAssets": [
+        "oga-animated-monsters",
+        "github-pixel-snapped-pirate-skeleton"
+      ],
+      "effectAssets": [
+        "oga-basic-pixel-spells"
+      ],
+      "supportingSourcePriority": [
+        "Kenney",
+        "Poly Haven",
+        "ambientCG"
+      ],
       "platformProfiles": {
-        "mobileWeb": {"qualityTarget":"high-mobile-web-small-zone","input":["virtual-stick","attack-button","interact-button"],"modules":["enemy-ai","combat","loot","save","lighting-audio"],"performance":["enemy-cap","small-active-zone","effect-budget"]},
-        "unityAndroid": {"qualityTarget":"full-mobile-production","input":["input-system","virtual-stick","touch-camera","attack-button","interact-button"],"modules":["third-person-controller","enemy-ai","combat","loot","save","lighting","vfx-audio"],"performance":["urp-mobile","lod","occlusion","enemy-cap","object-pooling"]}
+        "mobileWeb": {
+          "qualityTarget": "high-mobile-web-small-zone",
+          "input": [
+            "virtual-stick",
+            "attack-button",
+            "interact-button"
+          ],
+          "modules": [
+            "enemy-ai",
+            "combat",
+            "loot",
+            "save",
+            "lighting-audio"
+          ],
+          "performance": [
+            "enemy-cap",
+            "small-active-zone",
+            "effect-budget"
+          ]
+        },
+        "unityAndroid": {
+          "qualityTarget": "full-mobile-production",
+          "input": [
+            "input-system",
+            "virtual-stick",
+            "touch-camera",
+            "attack-button",
+            "interact-button"
+          ],
+          "modules": [
+            "third-person-controller",
+            "enemy-ai",
+            "combat",
+            "loot",
+            "save",
+            "lighting",
+            "vfx-audio"
+          ],
+          "performance": [
+            "urp-mobile",
+            "lod",
+            "occlusion",
+            "enemy-cap",
+            "object-pooling"
+          ]
+        },
+        "roblox": {
+          "qualityTarget": "native-roblox-production",
+          "input": [
+            "virtual-stick",
+            "attack-button",
+            "interact-button"
+          ],
+          "modules": [
+            "enemy-ai",
+            "combat",
+            "loot",
+            "save",
+            "lighting-audio",
+            "third-person-controller",
+            "lighting",
+            "vfx-audio",
+            "native-asset-binding",
+            "animation"
+          ],
+          "performance": [
+            "enemy-cap",
+            "small-active-zone",
+            "effect-budget",
+            "streaming-budget",
+            "mobile-memory-budget"
+          ]
+        }
       },
-      "toolCandidates": ["unity-input-system", "unity-cinemachine", "runtime-debug-console"],
-      "notes": "조명·3D 적 AI·공간 연출이 중요해 Unity Android 우선. 작은 탑다운/2D형은 Web도 가능."
+      "toolCandidates": [
+        "unity-input-system",
+        "unity-cinemachine",
+        "runtime-debug-console"
+      ],
+      "notes": "조명·3D 적 AI·공간 연출이 중요해 Unity Android 우선. 작은 탑다운/2D형은 Web도 가능.",
+      "defaultNativeTarget": "roblox",
+      "assetAuthoring": {
+        "priority": [
+          "REUSE_VERIFIED_COMPANY_ASSET",
+          "REUSE_SAME_GAME_ASSET",
+          "REUSE_LICENSED_REPOSITORY_ASSET",
+          "BLENDER_OR_NATIVE_DIRECT_AUTHORING",
+          "LICENSE_VERIFIED_EXTERNAL_GAP_FILL"
+        ],
+        "sourceRecipeRequired": true,
+        "previewRenderRequired": true,
+        "evidenceJsonRequired": true,
+        "companyAssetLibraryRegistrationRequired": true,
+        "nativeRuntimeVerificationRequiredBeforeVerifiedPromotion": true
+      }
     },
     {
       "id": "set-h-casual",
       "name": "모바일 캐주얼/미니게임",
       "genre": "casual",
       "defaultTarget": "mobile-web",
-      "keywords": ["캐주얼", "낚시", "미니게임", "간단", "타이밍", "클리커", "퍼즐"],
-      "actorAssets": ["oga-unity-slime-12", "oga-adventurer-slime"],
-      "effectAssets": ["oga-basic-pixel-spells"],
-      "supportingSourcePriority": ["Kenney"],
+      "keywords": [
+        "캐주얼",
+        "낚시",
+        "미니게임",
+        "간단",
+        "타이밍",
+        "클리커",
+        "퍼즐"
+      ],
+      "actorAssets": [
+        "oga-unity-slime-12",
+        "oga-adventurer-slime"
+      ],
+      "effectAssets": [
+        "oga-basic-pixel-spells"
+      ],
+      "supportingSourcePriority": [
+        "Kenney"
+      ],
       "platformProfiles": {
-        "mobileWeb": {"qualityTarget":"high-mobile-web","input":["tap","swipe","drag"],"modules":["session-loop","save","ui-animation","vfx-audio"],"performance":["fast-load","small-bundle","effect-budget"]},
-        "unityAndroid": {"qualityTarget":"full-mobile-production","input":["input-system","tap","swipe","drag"],"modules":["session-loop","save","ui-animation","vfx-audio"],"performance":["fast-load","small-build","object-pooling"]}
+        "mobileWeb": {
+          "qualityTarget": "high-mobile-web",
+          "input": [
+            "tap",
+            "swipe",
+            "drag"
+          ],
+          "modules": [
+            "session-loop",
+            "save",
+            "ui-animation",
+            "vfx-audio"
+          ],
+          "performance": [
+            "fast-load",
+            "small-bundle",
+            "effect-budget"
+          ]
+        },
+        "unityAndroid": {
+          "qualityTarget": "full-mobile-production",
+          "input": [
+            "input-system",
+            "tap",
+            "swipe",
+            "drag"
+          ],
+          "modules": [
+            "session-loop",
+            "save",
+            "ui-animation",
+            "vfx-audio"
+          ],
+          "performance": [
+            "fast-load",
+            "small-build",
+            "object-pooling"
+          ]
+        },
+        "roblox": {
+          "qualityTarget": "native-roblox-production",
+          "input": [
+            "tap",
+            "swipe",
+            "drag"
+          ],
+          "modules": [
+            "session-loop",
+            "save",
+            "ui-animation",
+            "vfx-audio",
+            "native-asset-binding",
+            "animation"
+          ],
+          "performance": [
+            "fast-load",
+            "small-bundle",
+            "effect-budget",
+            "streaming-budget",
+            "mobile-memory-budget"
+          ]
+        }
       },
-      "toolCandidates": ["dotween", "runtime-debug-console"],
-      "notes": "모바일 Web에서 높은 품질과 빠른 배포를 내기 가장 좋은 장르군."
+      "toolCandidates": [
+        "dotween",
+        "runtime-debug-console"
+      ],
+      "notes": "모바일 Web에서 높은 품질과 빠른 배포를 내기 가장 좋은 장르군.",
+      "defaultNativeTarget": "roblox",
+      "assetAuthoring": {
+        "priority": [
+          "REUSE_VERIFIED_COMPANY_ASSET",
+          "REUSE_SAME_GAME_ASSET",
+          "REUSE_LICENSED_REPOSITORY_ASSET",
+          "BLENDER_OR_NATIVE_DIRECT_AUTHORING",
+          "LICENSE_VERIFIED_EXTERNAL_GAP_FILL"
+        ],
+        "sourceRecipeRequired": true,
+        "previewRenderRequired": true,
+        "evidenceJsonRequired": true,
+        "companyAssetLibraryRegistrationRequired": true,
+        "nativeRuntimeVerificationRequiredBeforeVerifiedPromotion": true
+      }
     },
     {
       "id": "set-i-2d-rpg",
       "name": "모바일 2D RPG/탑다운",
       "genre": "2d-rpg",
       "defaultTarget": "mobile-web",
-      "keywords": ["2d rpg", "2d", "탑다운", "픽셀", "타일맵", "2d 액션"],
-      "actorAssets": ["oga-adventurer-slime", "oga-animated-monsters", "oga-unity-slime-12"],
-      "effectAssets": ["oga-basic-pixel-spells"],
-      "supportingSourcePriority": ["Kenney"],
+      "keywords": [
+        "2d rpg",
+        "2d",
+        "탑다운",
+        "픽셀",
+        "타일맵",
+        "2d 액션"
+      ],
+      "actorAssets": [
+        "oga-adventurer-slime",
+        "oga-animated-monsters",
+        "oga-unity-slime-12"
+      ],
+      "effectAssets": [
+        "oga-basic-pixel-spells"
+      ],
+      "supportingSourcePriority": [
+        "Kenney"
+      ],
       "platformProfiles": {
-        "mobileWeb": {"qualityTarget":"high-mobile-web","input":["virtual-stick","action-buttons"],"modules":["tilemap","combat","quest","inventory","save","vfx-audio"],"performance":["sprite-atlas","object-pooling","small-bundle"]},
-        "unityAndroid": {"qualityTarget":"full-mobile-production","input":["input-system","virtual-stick","action-buttons"],"modules":["tilemap","combat","quest","inventory","save","animation","vfx-audio"],"performance":["sprite-atlas","object-pooling","small-build"]}
+        "mobileWeb": {
+          "qualityTarget": "high-mobile-web",
+          "input": [
+            "virtual-stick",
+            "action-buttons"
+          ],
+          "modules": [
+            "tilemap",
+            "combat",
+            "quest",
+            "inventory",
+            "save",
+            "vfx-audio"
+          ],
+          "performance": [
+            "sprite-atlas",
+            "object-pooling",
+            "small-bundle"
+          ]
+        },
+        "unityAndroid": {
+          "qualityTarget": "full-mobile-production",
+          "input": [
+            "input-system",
+            "virtual-stick",
+            "action-buttons"
+          ],
+          "modules": [
+            "tilemap",
+            "combat",
+            "quest",
+            "inventory",
+            "save",
+            "animation",
+            "vfx-audio"
+          ],
+          "performance": [
+            "sprite-atlas",
+            "object-pooling",
+            "small-build"
+          ]
+        },
+        "roblox": {
+          "qualityTarget": "native-roblox-production",
+          "input": [
+            "virtual-stick",
+            "action-buttons"
+          ],
+          "modules": [
+            "tilemap",
+            "combat",
+            "quest",
+            "inventory",
+            "save",
+            "vfx-audio",
+            "animation",
+            "native-asset-binding"
+          ],
+          "performance": [
+            "sprite-atlas",
+            "object-pooling",
+            "small-bundle",
+            "streaming-budget",
+            "mobile-memory-budget",
+            "effect-budget"
+          ]
+        }
       },
-      "toolCandidates": ["unity-input-system", "dotween", "runtime-debug-console"],
-      "notes": "Web에서도 완성판 수준을 목표로 할 수 있고 필요 시 Unity Android로 동일 설계를 확장한다."
+      "toolCandidates": [
+        "unity-input-system",
+        "dotween",
+        "runtime-debug-console"
+      ],
+      "notes": "Web에서도 완성판 수준을 목표로 할 수 있고 필요 시 Unity Android로 동일 설계를 확장한다.",
+      "defaultNativeTarget": "roblox",
+      "assetAuthoring": {
+        "priority": [
+          "REUSE_VERIFIED_COMPANY_ASSET",
+          "REUSE_SAME_GAME_ASSET",
+          "REUSE_LICENSED_REPOSITORY_ASSET",
+          "BLENDER_OR_NATIVE_DIRECT_AUTHORING",
+          "LICENSE_VERIFIED_EXTERNAL_GAP_FILL"
+        ],
+        "sourceRecipeRequired": true,
+        "previewRenderRequired": true,
+        "evidenceJsonRequired": true,
+        "companyAssetLibraryRegistrationRequired": true,
+        "nativeRuntimeVerificationRequiredBeforeVerifiedPromotion": true
+      }
     },
     {
       "id": "set-j-ui-minimal",
       "name": "모바일 UI/관리형",
       "genre": "ui-management",
       "defaultTarget": "mobile-web",
-      "keywords": ["ui", "메뉴", "상점", "인벤토리", "대화", "관리", "시뮬레이션"],
+      "keywords": [
+        "ui",
+        "메뉴",
+        "상점",
+        "인벤토리",
+        "대화",
+        "관리",
+        "시뮬레이션"
+      ],
       "actorAssets": [],
       "effectAssets": [],
-      "supportingSourcePriority": ["Kenney"],
+      "supportingSourcePriority": [
+        "Kenney"
+      ],
       "platformProfiles": {
-        "mobileWeb": {"qualityTarget":"high-mobile-web","input":["tap","drag","scroll"],"modules":["responsive-ui","safe-area","save","ui-animation","audio"],"performance":["fast-load","small-bundle"]},
-        "unityAndroid": {"qualityTarget":"full-mobile-production","input":["input-system","tap","drag","scroll"],"modules":["responsive-ui","safe-area","save","ui-animation","audio"],"performance":["small-build","fast-load"]}
+        "mobileWeb": {
+          "qualityTarget": "high-mobile-web",
+          "input": [
+            "tap",
+            "drag",
+            "scroll"
+          ],
+          "modules": [
+            "responsive-ui",
+            "safe-area",
+            "save",
+            "ui-animation",
+            "audio"
+          ],
+          "performance": [
+            "fast-load",
+            "small-bundle"
+          ]
+        },
+        "unityAndroid": {
+          "qualityTarget": "full-mobile-production",
+          "input": [
+            "input-system",
+            "tap",
+            "drag",
+            "scroll"
+          ],
+          "modules": [
+            "responsive-ui",
+            "safe-area",
+            "save",
+            "ui-animation",
+            "audio"
+          ],
+          "performance": [
+            "small-build",
+            "fast-load"
+          ]
+        },
+        "roblox": {
+          "qualityTarget": "native-roblox-production",
+          "input": [
+            "tap",
+            "drag",
+            "scroll"
+          ],
+          "modules": [
+            "responsive-ui",
+            "safe-area",
+            "save",
+            "ui-animation",
+            "audio",
+            "native-asset-binding",
+            "animation"
+          ],
+          "performance": [
+            "fast-load",
+            "small-bundle",
+            "streaming-budget",
+            "mobile-memory-budget",
+            "effect-budget"
+          ]
+        }
       },
-      "toolCandidates": ["dotween", "runtime-debug-console"],
-      "notes": "캐릭터가 필요 없는 관리/시뮬레이션은 Web을 우선한다."
+      "toolCandidates": [
+        "dotween",
+        "runtime-debug-console"
+      ],
+      "notes": "캐릭터가 필요 없는 관리/시뮬레이션은 Web을 우선한다.",
+      "defaultNativeTarget": "roblox",
+      "assetAuthoring": {
+        "priority": [
+          "REUSE_VERIFIED_COMPANY_ASSET",
+          "REUSE_SAME_GAME_ASSET",
+          "REUSE_LICENSED_REPOSITORY_ASSET",
+          "BLENDER_OR_NATIVE_DIRECT_AUTHORING",
+          "LICENSE_VERIFIED_EXTERNAL_GAP_FILL"
+        ],
+        "sourceRecipeRequired": true,
+        "previewRenderRequired": true,
+        "evidenceJsonRequired": true,
+        "companyAssetLibraryRegistrationRequired": true,
+        "nativeRuntimeVerificationRequiredBeforeVerifiedPromotion": true
+      }
     }
   ]
 }
