@@ -1,5 +1,5 @@
 {
-  "version": 507,
+  "version": 508,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -12526,7 +12526,7 @@
       "backwardCompatibleLazyStateExpansionRequired": true
     },
     "runtimeActorIntelligence": {
-      "version": 2,
+      "version": 3,
       "authority": "OWNER_DIRECTIVE_2026-10-01",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "objective": "LIVING_GAME_ACTORS_WITH_DISTINCT_IDENTITY_PERSONALITY_MEMORY_RELATIONSHIP_DIALOGUE_TACTICS_ECOLOGY_AND_EMBODIED_BEHAVIOR_WITHOUT_TRANSFERRING_GAMEPLAY_AUTHORITY_TO_AI",
@@ -13379,7 +13379,193 @@
           "PERSONAL_SPACE_STYLE",
           "EMOTION_TO_BODY_LANGUAGE_MAPPING",
           "INITIATIVE_RULES",
-          "SILENCE_RULES"
+          "SILENCE_RULES",
+          "GAME_PROGRESS_HELPER_VOICE",
+          "ADVICE_COOLDOWN_AND_ESCALATION_RULES",
+          "PROFANITY_OR_SLANG_PROFILE",
+          "PERSONAL_EVENT_INITIATION_RULES",
+          "PERSONAL_QUEST_CAUSE_RULES",
+          "SUCCESS_FAILURE_REACTION_FOR_PERSONAL_QUESTS"
+        ]
+      },
+      "gameplayMentorDialogue": {
+        "objective": "NPC_AND_COMPANION_HELP_WITH_GAME_PROGRESS_THROUGH_IN_CHARACTER_OBSERVATION_ADVICE_AND_EVENT_BARKS_WITHOUT_BECOMING_AN_OMNISCIENT_TUTOR",
+        "triggerFamilies": [
+          "OBJECTIVE_UPDATE",
+          "NEW_REGION",
+          "NEW_SYSTEM_UNLOCK",
+          "LOW_HEALTH_OR_DANGER",
+          "RESOURCE_SHORTAGE",
+          "INVENTORY_OR_EQUIPMENT_ISSUE",
+          "REPEATED_FAILURE",
+          "PLAYER_IDLE_OR_LOST",
+          "BOSS_OR_ELITE_WARNING",
+          "CRAFT_OR_UPGRADE_OPPORTUNITY",
+          "PARTY_MEMBER_DOWN",
+          "QUEST_STALLED",
+          "SUCCESS_OR_RECOVERY",
+          "DISCOVERED_INTERACTABLE",
+          "PLAYER_STYLE_PATTERN"
+        ],
+        "adviceModel": {
+          "evidenceSources": [
+            "OBSERVED_PLAYER_ACTIONS",
+            "DECLARED_GAME_STATE",
+            "VISIBLE_WORLD_STATE",
+            "KNOWN_TUTORIAL_FACTS",
+            "ACTOR_PERSONAL_KNOWLEDGE"
+          ],
+          "hiddenMechanicCheatingForbidden": true,
+          "unknownInformationMustRemainUnknown": true,
+          "adviceMayPointOut": "MISSING_PREPARATION_RISK_OR_INEFFICIENT_OBSERVED_PATTERN",
+          "adviceMustNotRevealUndiscoveredStorySecrets": true,
+          "adviceMustNotGuaranteeOutcome": true,
+          "repeatedAdviceSuppressionRequired": true,
+          "cooldownAndEscalationRequired": true,
+          "conciseFirstHintThenOptionalDeeperHint": true,
+          "playerCanIgnoreAdvice": true
+        },
+        "personalityExpression": {
+          "sameGameplayFactDifferentCharacterWordingRequired": true,
+          "examples": [
+            "CAUTIOUS_COMPANION_WARNS_BEFORE_DANGER",
+            "BOLD_COMPANION_CHALLENGES_PLAYER",
+            "ANALYTICAL_NPC_EXPLAINS_PATTERN",
+            "SARCASTIC_COMPANION_TEASES_THEN_GIVES_USEFUL_HINT",
+            "QUIET_COMPANION_USES_SHORT_OBSERVATION",
+            "PROTECTIVE_COMPANION_PRIORITIZES_SAFETY"
+          ],
+          "adviceToneMayChangeWithRelationshipStage": true,
+          "frustrationMayChangeToneButNotGameplayFacts": true
+        },
+        "outputKinds": [
+          "EVENT_BARK",
+          "PROGRESS_HINT",
+          "PREPARATION_ADVICE",
+          "TACTICAL_SUGGESTION",
+          "RESOURCE_HINT",
+          "OPTIONAL_DEEPER_EXPLANATION",
+          "CELEBRATION",
+          "CAUTION",
+          "SILENCE"
+        ]
+      },
+      "profanityAndSpeechRegister": {
+        "objective": "CHARACTER_SPECIFIC_LANGUAGE_REGISTER_MAY_INCLUDE_CONTEXTUAL_PROFANITY_WHEN_ALLOWED_BY_GAME_RATING_STYLE_AND_CHARACTER_IDENTITY",
+        "profileFields": [
+          "FORMALITY",
+          "HONORIFIC_REGISTER",
+          "SLANG_LEVEL",
+          "PROFANITY_LEVEL",
+          "DIRECTNESS",
+          "VERBOSITY",
+          "SENTENCE_RHYTHM",
+          "REGIONAL_OR_SOCIAL_FLAVOR_WHEN_AUTHORED",
+          "RELATIONSHIP_DEPENDENT_REGISTER"
+        ],
+        "profanityLevels": [
+          "NONE",
+          "MILD",
+          "MODERATE",
+          "STRONG_WHEN_GAME_POLICY_EXPLICITLY_ALLOWS"
+        ],
+        "defaultWhenNoGameLanguagePolicy": "NONE_OR_MILD",
+        "contextualUses": [
+          "PAIN",
+          "SHOCK",
+          "ANGER",
+          "FEAR",
+          "FRUSTRATION",
+          "ROUGH_HUMOR",
+          "INTIMACY_WITH_TRUSTED_COMPANION"
+        ],
+        "rules": {
+          "profanityCannotBeRandomFiller": true,
+          "profanityFrequencyMustMatchCharacterAndSituation": true,
+          "sameProfanityAcrossAllCharactersForbidden": true,
+          "escalationMayFollowEmotionButMustRespectGameLanguagePolicy": true,
+          "targetedProtectedClassSlurGenerationForbidden": true,
+          "harassmentStyleMustNotBecomeDefaultCompanionBehavior": true,
+          "relationshipAndSettingCanChangeRegister": true,
+          "localizationMayReplaceOrSoftenExpression": true
+        }
+      },
+      "autonomousEventAndQuestIdeation": {
+        "objective": "NAMED_NPC_OR_COMPANION_CAN_INITIATE_EVENT_AND_QUEST_CANDIDATES_FROM_PERSONAL_GOALS_RELATIONSHIPS_MEMORY_WORLD_STATE_AND_UNRESOLVED_THREADS",
+        "sourceCauses": [
+          "PERSONAL_LONG_TERM_GOAL",
+          "UNRESOLVED_PERSONAL_THREAD",
+          "RELATIONSHIP_CHANGE",
+          "PROMISE_OR_DEBT",
+          "WITNESSED_EVENT",
+          "FACTION_DUTY",
+          "PLACE_MEMORY",
+          "FEAR_OR_VALUE_CONFLICT",
+          "PLAYER_REPEATED_BEHAVIOR",
+          "LOCAL_WORLD_CHANGE",
+          "COMPANION_SELF_ACTUALIZATION_STEP"
+        ],
+        "eventCandidateTypes": [
+          "OPTIONAL_CONVERSATION",
+          "REQUEST_FOR_HELP",
+          "PERSONAL_ERRAND",
+          "RELATIONSHIP_SCENE",
+          "TRAINING_OR_PRACTICE",
+          "VISIT_PLACE",
+          "INVESTIGATE",
+          "REPAIR_MISTAKE",
+          "KEEP_OR_BREAK_PROMISE_SCENE",
+          "FACTION_OR_COMMUNITY_DUTY",
+          "PERSONAL_GOAL_MILESTONE",
+          "RIVALRY_SCENE",
+          "RECOVERY_OR_RECONCILIATION"
+        ],
+        "questCandidateContract": {
+          "mustHave": [
+            "SOURCE_CAUSE",
+            "ACTOR_GOAL",
+            "WHY_NOW",
+            "PLAYER_OPTIONAL_ROLE_OR_REQUIRED_ROLE_FROM_DESIGN",
+            "LOCATION_OR_CONTEXT",
+            "OBJECTIVE_STRUCTURE",
+            "STAKE",
+            "POSSIBLE_CONSEQUENCE",
+            "ACTOR_REACTION_TO_SUCCESS_OR_FAILURE"
+          ],
+          "shouldAvoid": [
+            "GENERIC_KILL_N_WITHOUT_CONTEXT",
+            "GENERIC_COLLECT_N_WITHOUT_CONTEXT",
+            "REPEATED_IDENTICAL_STRUCTURE",
+            "REWARD_FIRST_QUEST_WITHOUT_CHARACTER_CAUSE"
+          ],
+          "mustUseExistingWorldAndGameActionsWhenPossible": true,
+          "mayReferenceExistingQuestSystem": true,
+          "duplicateQuestRuntimeForbidden": true,
+          "eventOrQuestCandidateMustPassExistingQuestDiversityAndContinuityChecks": true
+        },
+        "authorityBoundary": {
+          "aiMayProposeEventCandidate": true,
+          "aiMayProposeQuestCandidate": true,
+          "aiMayProposeDialogueAndActorIntention": true,
+          "engineMustValidatePrerequisites": true,
+          "engineMustOwnQuestCreationRegistration": true,
+          "engineMustOwnRewardsCompletionProgressSpawnInventoryAndSaveWrites": true,
+          "aiMayNotInventUnavailableGameplayApi": true,
+          "aiMayNotForcePlayerAcceptance": true,
+          "aiMayNotDeclareQuestCompleted": true
+        },
+        "selfGenerationLoop": [
+          "READ_PERSONAL_GOAL_AND_UNRESOLVED_THREAD",
+          "READ_RELATIONSHIP_AND_RECENT_SOURCE_EVENTS",
+          "READ_CURRENT_WORLD_AND_QUEST_STATE",
+          "FIND_CAUSAL_REASON_TO_ACT_NOW",
+          "PROPOSE_EVENT_OR_QUEST_CANDIDATE",
+          "CHECK_DUPLICATION_CONTINUITY_AND_KNOWLEDGE",
+          "ENGINE_VALIDATE_AVAILABLE_ACTIONS_AND_PREREQUISITES",
+          "PRESENT_IN_CHARACTER",
+          "PLAYER_OR_WORLD_RESPONSE",
+          "ENGINE_RECORDS_OUTCOME",
+          "ACTOR_MEMORY_RELATIONSHIP_AND_PERSONAL_ARC_REFLECT_OUTCOME"
         ]
       }
     }
