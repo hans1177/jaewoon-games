@@ -302,7 +302,7 @@ test('existing Web PRESENTATION BUILD_UP enforces real graphics replacement and 
   fs.mkdirSync(webRoot,{recursive:true});
   fs.writeFileSync(
     path.join(webRoot,'index.html'),
-    '<!doctype html><html><body data-spatial-dimension="2.5d"><canvas id="game"></canvas><button data-gameplay-action="attack">공격</button><script>const canvas=document.querySelector("#game"); const ctx=canvas.getContext("2d"); function render(){ctx.fillRect(0,0,32,32);requestAnimationFrame(render)} render();</script></body></html>',
+    '<!doctype html><html><body data-spatial-dimension="2.5d"><canvas id="game"></canvas><button data-gameplay-action="gather">채집</button><script>const canvas=document.querySelector("#game"); const ctx=canvas.getContext("2d"); function render(){ctx.fillRect(0,0,32,32);requestAnimationFrame(render)} render();</script></body></html>',
     'utf8'
   );
   writeStudioDesign(root,gameId,{identity:'실제 Web 표현을 가진 생존 액션 게임'});
