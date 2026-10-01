@@ -231,7 +231,33 @@
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false,
-    "studioQualityFailure": null
+    "studioQualityFailure": {
+      "sourceRevision": "165f9e2394e51293fcfb61451ad42305ed26d123",
+      "artifactIdentity": "sha256:a594338f9b73502255c82771dabac945fb46b8ea01dc451ba4d15705e34c6ddc",
+      "authority": "roblox-official-studio-mcp-product-quality-failure",
+      "workflowRunId": 36885359752,
+      "testedAt": "2026-10-01T15:47:38.923Z",
+      "repairSurfaces": [
+        "WORLD_GEOMETRY",
+        "CORE_GAMEPLAY_LOOP"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "adaptive-world-safety",
+          "repairSurface": "WORLD_GEOMETRY",
+          "priority": "CRITICAL",
+          "hint": "Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.",
+          "observed": "{\"boundsFinite\":true,\"collidablePartCount\":3,\"floorBelowPlayer\":false,\"floorSamples\":9,\"floorHits\":0,\"floorCoveragePass\":false,\"routeSamples\":0,\"routeSuccess\":0,\"routeCoveragePass\":true,\"spawnThreatDistance\":-1,\"spawnOverlapSafe\":true}"
+        },
+        {
+          "id": "adaptive-gameplay-loop-cadence",
+          "repairSurface": "CORE_GAMEPLAY_LOOP",
+          "priority": "CRITICAL",
+          "hint": "Actual-play samples show no meaningful action-feedback-progression/AI change across an active gameplay loop. Reduce dead time or restore the broken loop transition.",
+          "observed": "{\"activeLoopExpected\":true,\"activeLoopObserved\":false,\"activeTimelineTransitions\":4,\"idleTimelineTransitions\":0,\"semanticEffectCount\":0,\"timelineProgressChanged\":false,\"timelineMobDynamic\":false,\"timelineCompanionDynamic\":false}"
+        }
+      ]
+    }
   },
   "qualityGapMap": [
     {
