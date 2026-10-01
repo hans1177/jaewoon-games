@@ -326,6 +326,35 @@ test('causal actor loop carries action event observer interpretation memory emot
   assert.ok(loop.engineOwns.includes('network-authority'));
 });
 
+test('common AI rejects incomplete or unperceived causal events on direct calls',()=>{
+  const ai=new JaewoonCommonAI({identity:{id:'mira'}});
+  const incomplete=ai.observeCausalEvent({
+    sourceEvent:{id:'evt-incomplete',type:'help',actorId:'player'},
+    perceived:true,
+    informationPath:'direct-witness'
+  });
+  assert.equal(incomplete.applied,false);
+  assert.equal(incomplete.reason,'source_event_contract_incomplete');
+
+  const hidden=ai.observeCausalEvent({
+    sourceEvent:{
+      id:'evt-hidden-direct',
+      type:'help',
+      actorId:'player',
+      targetIds:['mira'],
+      location:'camp',
+      tick:72,
+      observability:'LOCAL_VISIBLE',
+      contractComplete:true,
+      witnesses:[]
+    },
+    perceived:true
+  });
+  assert.equal(hidden.applied,false);
+  assert.equal(hidden.reason,'no_information_path');
+  assert.equal(ai.memory.length,0);
+});
+
 test('common ai applies one causal source event once and feeds it into the next declared action choice',()=>{
   const loop=planVibeCausalActorLoop({
     event:{
