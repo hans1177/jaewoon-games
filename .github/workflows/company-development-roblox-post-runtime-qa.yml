@@ -1558,18 +1558,52 @@ jobs:
           test "$pushed" = '1'
           echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=YES'
 
-      - name: Dispatch one F9 scan for all runtime-accepted candidates
+      - name: Dispatch exact F9 review for every runtime-accepted candidate
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
           test -f /tmp/roblox-f9-ids || exit 0
+          sort -u /tmp/roblox-f9-ids -o /tmp/roblox-f9-ids
           candidate_count="$(wc -l < /tmp/roblox-f9-ids | tr -d '[:space:]')"
           candidate_count="${candidate_count:-0}"
           [ "$candidate_count" -gt 0 ] || exit 0
-          gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$GITHUB_REPOSITORY" --ref main
-          echo "ROBLOX_F9_SCAN_DISPATCHED=candidates=$candidate_count"
+
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-final-review-revalidation.yml/runs?per_page=100" > /tmp/roblox-f9-active-runs.json
+          node <<'NODE' > /tmp/roblox-f9-active-ids
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-f9-active-runs.json','utf8'));
+          const states=new Set(['queued','pending','in_progress','requested']);
+          const prefix='Roblox F9 · ';
+          const ids=new Set();
+          for(const run of payload.workflow_runs||[]){
+            if(!states.has(String(run.status||'').toLowerCase()))continue;
+            const title=String(run.display_title||'');
+            if(!title.startsWith(prefix))continue;
+            const id=title.slice(prefix.length).trim();
+            if(id&&id!=='scan')ids.add(id);
+          }
+          for(const id of [...ids].sort())console.log(id);
+          NODE
+
+          dispatch_count=0
+          deduped_count=0
+          while read -r id; do
+            [ -n "$id" ] || continue
+            if grep -Fxq "$id" /tmp/roblox-f9-active-ids; then
+              deduped_count=$((deduped_count+1))
+              echo "ROBLOX_F9_EXACT_DISPATCH=DEDUPED_ACTIVE:$id"
+              continue
+            fi
+            gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+            printf '%s\n' "$id" >> /tmp/roblox-f9-active-ids
+            dispatch_count=$((dispatch_count+1))
+            echo "ROBLOX_F9_EXACT_DISPATCHED=$id"
+          done < /tmp/roblox-f9-ids
+          echo "ROBLOX_F9_EXACT_CANDIDATE_COUNT=$candidate_count"
+          echo "ROBLOX_F9_EXACT_DISPATCH_COUNT=$dispatch_count"
+          echo "ROBLOX_F9_EXACT_DEDUPED_COUNT=$deduped_count"
 
       - name: Dispatch exact Studio MCP follow-up after new runtime foundation evidence
         if: ${{ inputs.run_studio == true && inputs.retry_open_cloud_only != true }}
