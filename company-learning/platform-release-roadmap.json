@@ -915,8 +915,6 @@
       "responsibleFileConflictSerializationOnly": true,
       "graphicsAndGameplayParallelWhenResponsibilitiesDoNotOverlap": true,
       "releaseQaFailureIsLaneLocalUntilSharedFanIn": true,
-      "defaultRequestedGameWorkers": 256,
-      "recoverToExternalProviderBoundaryAfterPressure": true,
       "workflowLevelGameWideSerializationForbidden": false,
       "workflowLevelConcurrencyGroupByGameIdForbidden": false,
       "sameGameConflictSerializationScope": "EXACT_DUPLICATE_WORKFLOW_OR_RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY",
@@ -924,7 +922,8 @@
       "exactGameDuplicateWorkflowSerializationAllowed": true,
       "exactGameDuplicateWorkflowSerializationPurpose": "RACE_DUPLICATE_PLANNER_AND_HEAVY_NATIVE_EXECUTION_SUPPRESSION_ONLY",
       "exactGameDuplicateWorkflowSerializationAuthority": "company-learning/platform-release-roadmap.json#changeRecord.nativeExactGameWorkflowConcurrency20260927",
-      "internalSameWorkflowGameMatrixParallelismPreserved": true
+      "internalSameWorkflowGameMatrixParallelismPreserved": true,
+      "matrixBatchMeaning": "TRANSPORT_PARTITION_ONLY"
     },
     "candidateReleaseConcurrency": {
       "scope": "CANDIDATE_BRANCH",
@@ -976,9 +975,7 @@
       "latestDiagnosticFailureClasses": {
         "MALFORMED_OUTPUT": 4
       },
-      "diagnosticRunIsClean20Wave": true,
       "currentEvaluationRun": 35476818311,
-      "clean20WaveRequiredForEffectivenessDecision": false,
       "sourceCommit": "f9fab12ef9f26a7c2dad425bf4f611d493954fa3",
       "testCommits": [
         "7aec400eb5e46e01978c683585e35f8f383c145e",
@@ -1057,34 +1054,6 @@
           "conclusion": "success",
           "head": "35a23af193bfdeb14c05d567132cf40891ec87e8"
         }
-      },
-      "verifiedEffectivenessWave": {
-        "runId": 35476177742,
-        "contractSha": "5aedde856690c89e72252fcaedcbcd88c6f9fa8d",
-        "candidateCount": 25,
-        "peakParallel": 20,
-        "cacheHitRatePercent": 100,
-        "baselineSuccessRatePercent": 25,
-        "observedSuccessRatePercent": 80,
-        "observedFailureRatePercent": 20,
-        "sourceGenerationFailures": 4,
-        "sourceGenerationFailureClasses": {
-          "MALFORMED_OUTPUT": 4
-        },
-        "editMatchFinalFailures": 0,
-        "fullRewriteSizeFinalFailures": 0,
-        "fanIn": "PASS",
-        "regression": "PASS",
-        "releaseCandidates": 7,
-        "packageCycleAverageMs": 470094.11,
-        "preparationRatioPercent": 2.54,
-        "workloadFeaturesCompleted": 7,
-        "workloadChangedFiles": 21,
-        "workloadChangedLines": 54,
-        "telemetryBottleneck": "RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION",
-        "observedLongRunningWorkerStage": "SOURCE_CANDIDATE_GENERATION",
-        "clean20ConcurrencyWaveSatisfied": true,
-        "effectivenessDecision": "PASS_ABOVE_25_PERCENT_BASELINE"
       },
       "firstCompleteEditEarlyStop": {
         "enabled": true,
@@ -1188,29 +1157,10 @@
           "writableScopeExpanded": false
         },
         "authorityChange": "NONE",
-        "nextGate": "CI_PASS_THEN_PRODUCTION_WAVE_VERIFY_PLACEHOLDER_FAILURE_DISAPPEARS_OR_RECLASSIFIES_WITH_REAL_CAUSAL_CLASS"
-      },
-      "latestProductionBottleneckEvidence": {
-        "runId": 36229097447,
-        "observedAt": "2026-09-26",
-        "sourceGenerationFailures": 37,
-        "failureClasses": {
-          "TIMEOUT": 9,
-          "NO_OP": 12,
-          "INVALID_PATH": 12,
-          "OTHER": 2,
-          "ROBLOX_VISUAL_DOMAINS": 1,
-          "STUDIO_QUALITY_DELTA": 1
-        },
-        "repeatedZeroOutputTimeoutsObserved": true,
-        "repeatedFullGraphicsRecoveryBudget": {
-          "timeoutMs": 240000,
-          "maxPredict": 3072
-        },
-        "sharedContextResultContaminationObserved": "SOURCE_FAILURE_EXITED_BEFORE_AFTER_WORK_REVALIDATION"
+        "nextGate": "CI_PASS_THEN_RUNTIME_EXECUTION_VERIFY_PLACEHOLDER_FAILURE_DISAPPEARS_OR_RECLASSIFIES_WITH_REAL_CAUSAL_CLASS"
       },
       "focusedTimeoutPolicyResync": {
-        "state": "CI_VERIFIED_LIVE_PENDING_STALE_SCHEDULER_EPOCH_RELEASE",
+        "state": "CI_VERIFIED_RUNTIME_REVALIDATION_PENDING",
         "authorityChange": "NONE",
         "executionScopeChange": "NONE",
         "qaBypassAllowed": false,
@@ -1227,7 +1177,7 @@
           ".github/workflows/vibe2-continuous-core.yml",
           "qa/vibe2-source-worker.test.mjs"
         ],
-        "nextGate": "CI_PASS_THEN_VERIFY_NEXT_PRODUCTION_WAVE_REDUCES_ZERO_OUTPUT_TIMEOUT_TAIL_AND_SHARED_CONTEXT_MISSING_FALSE_EVIDENCE"
+        "nextGate": "CI_PASS_THEN_VERIFY_NEXT_RUNTIME_EXECUTION_REDUCES_ZERO_OUTPUT_TIMEOUT_TAIL_AND_SHARED_CONTEXT_MISSING_FALSE_EVIDENCE"
       },
       "robloxZeroOutputTimeoutFocusedRecoveryStickyWithinAttemptBudget": true,
       "robloxZeroOutputTimeoutFocusedRecoveryRule": "AFTER_FIRST_ZERO_OUTPUT_TIMEOUT_KEEP_REMAINING_EXISTING_ATTEMPTS_ON_PINNED_FOCUSED_REPLACE_BUDGET_INSTEAD_OF_RETURNING_TO_240S_FULL_PACKAGE_GENERATION",
@@ -1257,9 +1207,6 @@
     "responsibleFileConflictOnlySerialization": true,
     "releaseOrRuntimeWaitDoesNotConsumeIndependentDevelopmentCapacity": true,
     "graphicsQaFailureDoesNotSerializeUnrelatedSameGameDevelopment": true,
-    "defaultRequestedParallelism": 256,
-    "verifiedExternalPressureMayTemporarilyDownshift": true,
-    "staleOrMissingPressureEvidenceRecoversToExternalBoundary": true,
     "globalHeavyExecutionSerializationForbidden": true,
     "globalOrchestrationSerializationForbidden": true,
     "longRunningNativeBuildMayNotBlockUnityWebDevelopment": true,
@@ -1289,50 +1236,6 @@
         "horror-escape-room"
       ]
     },
-    "controlPlaneQueueBacklogMitigation": {
-      "version": 3,
-      "authority": "OWNER_DIRECTIVE_2026-09-30",
-      "status": "RETIRED_OWNER_DIRECTIVE_2026-10-01_INDEPENDENT_EXECUTION",
-      "objective": "HISTORICAL_CONTROL_PLANE_PRESSURE_RECORD_ONLY",
-      "neuronCompletionCallback": {
-        "event": "vibe2-neuron-complete",
-        "resultBearing": true,
-        "coalescingForbidden": false,
-        "cancellationForbidden": true,
-        "reserveRunnerPool": "ubuntu-latest",
-        "resultArtifactCoalescingForbidden": true,
-        "callbackWorkflowSuppressionUnderQueuePressure": false,
-        "callbackSuppressionCarrier": null,
-        "singleTaskGameMicroFanInPressureExceptionRemoved": false,
-        "immediateCallbackAllowedOnlyWhenQueuePressureZero": false,
-        "callbackSuppressionUnderQueuePressure": false
-      },
-      "fanInRefill": {
-        "event": "vibe2-fanin-refill",
-        "resultBearing": false,
-        "coalesceByExecutionLane": false,
-        "topLevelConcurrencyGroupRequired": false,
-        "cancelRunningRefill": false,
-        "reserveRunnerPool": "ubuntu-latest"
-      },
-      "defaultPushAndManualReserveRunnerPool": "ubuntu-slim",
-      "gameWorkerRunnerPolicyUnchanged": true,
-      "qualityOrEvidenceGateWeakeningForbidden": true,
-      "fanInRunnerPool": "ubuntu-latest",
-      "runnerSelectionReason": "OBSERVED_ARM_CONTROL_QUEUE_BLOCKED_WHILE_UBUNTU_LATEST_GAME_WORKERS_WERE_RUNNING",
-      "directCodingOwner": "CHATGPT_SYSTEM_BOTTLENECK_REPAIR",
-      "pressureRule": {
-        "queuedOrPendingRunCountGreaterThan": 0,
-        "assetDevelopmentKeepsImmediateCallback": true,
-        "nonAssetCompletionUsesCohortFanIn": false,
-        "independentCompletionCallbackRequired": true,
-        "pressureLeaderDispatchUsed": false
-      },
-      "supersededBy": "INDEPENDENT_NEURON_IMMEDIATE_FANIN_AND_INDEPENDENT_PARALLEL_RESERVATION",
-      "pressureLeaderDispatchUsed": false,
-      "independentCompletionCallbackRequired": true,
-      "nonAssetCompletionUsesCohortFanIn": false
-    },
     "controlWorkflowNoiseSuppression": {
       "version": 1,
       "authority": "OWNER_DIRECTIVE_2026-09-30",
@@ -1356,28 +1259,13 @@
       "cancellationNoiseMayNotTriggerHeavyControlWork": true,
       "qualityOrEvidenceGateWeakeningForbidden": true
     },
-    "ownerDirective20261001ParallelPreservation": {
-      "learningIdleFixedWorkers": 1,
-      "assetDevelopmentLaneMax": 64,
-      "assetDevelopmentSpeculativeVariantsPerTask": 1,
-      "durableHandoffRequired": true,
-      "independentNonoverlappingGameAndNeuralWorkParallelByDefault": true,
-      "serializationAllowedOnlyForResponsibleFileConflictDependencyExactDuplicateOrAtomicSharedStateWrite": true,
-      "topLevelSchedulerSingletonForbidden": true,
-      "reserveJobLaneSerializationForbidden": true
-    },
-    "cohortBarrierForbiddenForIndependentCompletion": true,
-    "completionFanInMode": "PER_INDEPENDENT_NEURON_IMMEDIATE",
-    "externalMatrixBatchMaxMeaning": "GITHUB_MATRIX_TRANSPORT_LIMIT_ONLY_NOT_SCHEDULER_NOT_GLOBAL_CAP",
+    "completionFanInMode": "PER_INDEPENDENT_TASK_MICRO_FANIN_IMMEDIATE",
+    "externalMatrixBatchMaxMeaning": "GITHUB_MATRIX_TRANSPORT_PARTITION_ONLY_NOT_INTERNAL_CAP",
     "independentReservationContinuation": true,
     "independentReservationContinuationMayRunWhilePriorWorkersActive": true,
-    "topLevelSchedulerSingletonForbidden": true,
     "reserveJobLaneSerializationForbidden": true,
     "sharedStateWriteCoordination": "OPTIMISTIC_RETRY_ATOMIC_WRITE_ONLY",
     "generalExecutionInternalGlobalCap": null,
-    "schedulingModel": "INDEPENDENT_TASK_EVENT_DRIVEN",
-    "globalBarrierUsed": false,
-    "groupLeaderRefillUsed": false,
     "developmentCheckDeduplication": {
       "version": 3,
       "authority": "OWNER_DIRECTIVE_2026-10-01",
@@ -1411,7 +1299,7 @@
         "NEURAL_EXPANSION_READINESS_QA_IN_24H_PLANNER",
         "UNCONSUMED_SHARED_CONTEXT_BEFORE_AFTER_PLAN_SNAPSHOTS",
         "PREPLAN_GAME_PRIMARY_DUPLICATE_DISPATCH",
-        "UNCONDITIONAL_24H_SELF_REFILL_SCHEDULER",
+        "UNCONDITIONAL_24H_SELF_REFILL_CONTROL_LOOP",
         "UNCONSUMED_WORKER_SHARED_CONTEXT_BEFORE_AFTER_SNAPSHOTS",
         "WORKER_SHARED_CONTEXT_SYNC_DUPLICATE_OF_RESERVATION_IDENTITY_CHECK",
         "GIT_DIFF_CHECK_DUPLICATE_OF_INCREMENTAL_QA_CONFLICT_MARKER_VALIDATION"
@@ -1428,21 +1316,46 @@
       "releaseGateWeakeningForbidden": true,
       "gameplayBalanceSaveProgressionNetworkAuthorityImmutable": true,
       "runtimeProjectionShellsRemoved": true,
-      "schedulerEpochProjectionRemoved": true,
       "disabledPreflightProjectionRemoved": true,
       "disabledCallbackCoalescingProjectionRemoved": true,
       "neuralExpansionReadinessOwner": "DEDICATED_CI_AND_EXPLICIT_SELF_ARCHITECTURE_REVIEW_NOT_GAME_DEVELOPMENT_HOT_PATH",
       "sharedContextRule": "GENERATE_ONLY_WHEN_A_CONSUMER_REQUIRES_IT",
-      "hotPathSelfSchedulingLoopForbidden": true,
       "prePlanDuplicateDispatchForbidden": true,
       "workerSynchronizationAuthority": "PINNED_CONTRACT_SHA_PLUS_VERIFY_WORKER_SYNC",
-      "conflictMarkerAuthority": "VIBE2_INCREMENTAL_QA"
+      "conflictMarkerAuthority": "VIBE2_INCREMENTAL_QA",
+      "orchestrationEpochProjectionRemoved": true,
+      "hotPathSelfDispatchLoopForbidden": true
     },
     "minimumNecessaryProcedureEnforcement": "NO_DUPLICATE_CHECKS_ON_HOT_PATH_REUSE_VALID_EVIDENCE",
     "executionDispatchModel": "EVENT_DRIVEN_DIRECT_TASK_INGRESS",
-    "schedulerLayerPresent": false,
-    "waveLayerPresent": false,
-    "batchContinuationDispatcherPresent": false
+    "directExecutionContract": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-01",
+      "mode": "INDEPENDENT_TASK_EVENT_DRIVEN",
+      "independentEligibleTaskStart": "IMMEDIATE",
+      "internalGlobalParallelCap": null,
+      "externalMatrixTransportPartitionMax": 256,
+      "externalMatrixTransportPartitionMeaning": "GITHUB_MATRIX_TRANSPORT_PARTITION_ONLY_NOT_INTERNAL_CONCURRENCY_POLICY",
+      "learningIdleFixedWorkers": 1,
+      "assetDevelopmentLaneMax": 64,
+      "assetDevelopmentSpeculativeVariantsPerTask": 1,
+      "assetDedicatedRunnerPreserved": true,
+      "assetCanonicalQueuePreserved": true,
+      "taskMicroFanInPreserved": true,
+      "durableHandoffRequired": true,
+      "handoffTool": "tools/vibe2-handoff.mjs",
+      "sharedStateWriteCoordination": "OPTIMISTIC_RETRY_ATOMIC_WRITE_ONLY",
+      "serializationReasons": [
+        "RESPONSIBLE_FILE_CONFLICT",
+        "ACTUAL_DEPENDENCY",
+        "EXACT_DUPLICATE_SUPPRESSION",
+        "ATOMIC_SHARED_STATE_WRITE"
+      ],
+      "qaSecurityReleaseGatesPreserved": true,
+      "gameplayBalanceSaveProgressionNetworkAuthorityImmutable": true
+    },
+    "orchestrationWideSingletonForbidden": true,
+    "completionBarrierForbiddenForIndependentTasks": true
   },
   "phases": [
     {
@@ -3202,61 +3115,44 @@
         "queueController": "tools/vibe2-queue-control.mjs",
         "adaptiveBackpressure": "tools/vibe2-adaptive-backpressure.mjs",
         "telemetry": "tools/vibe2-parallelism-telemetry.mjs",
-        "scheduler": ".github/workflows/vibe2-24h-runner.yml",
         "worker": ".github/workflows/vibe2-continuous-core.yml",
         "releaseDispatchRecovery": "tools/vibe2-release-dispatch-recovery.mjs",
         "robloxRunnerSelfHeal": ".github/workflows/roblox-runner-self-heal.yml",
         "recoveryQueue": ".vibe2/recovery-queue.json",
         "recoveryQueueTool": "tools/company-recovery-queue.mjs",
-        "recoveryLearningTool": "tools/company-recovery-learning.mjs"
+        "recoveryLearningTool": "tools/company-recovery-learning.mjs",
+        "executionWorkflow": ".github/workflows/vibe2-24h-runner.yml"
       },
       "automaticRecovery": {
         "staleRunningReservation": "RELEASE_AND_REQUEUE_WITH_RECOVERY_EVIDENCE",
         "retryableWorkerFailure": "EXISTING_QUEUE_RETRY_WITH_MAX_RETRIES",
         "fanInRegressionFailure": "REQUEUE_AFFECTED_TASKS_THROUGH_EXISTING_GATE",
-        "reserveContractRegressionPreflight": "GAME_PRIMARY_REUSE_SUCCESSFUL_EXACT_SHA_VIBE2_CORE_QA_ELSE_RUN_SAME_FAN_IN_CORE_REGRESSION_BEFORE_RESERVE_AND_BLOCK_BROKEN_CONTRACT_WAVE_START",
+        "reserveContractRegressionPreflight": "GAME_PRIMARY_REUSE_SUCCESSFUL_EXACT_SHA_VIBE2_CORE_QA_ELSE_RUN_SAME_FAN_IN_CORE_REGRESSION_BEFORE_RESERVE_AND_BLOCK_BROKEN_CONTRACT_TASK_START",
         "brokenContractGameWorkerStart": "FORBIDDEN",
         "reserveContractRegressionObservationFailure": "RUN_LOCAL_EXACT_SHA_REGRESSION_FAIL_CLOSED",
-        "runnerCapacityOrStartupSerialization": "ADAPTIVE_CONCURRENCY_STEP_DOWN_PRIMARY_GAME_WORKERS_FIRST_SPECULATION_ONLY_FROM_SPARE_ADAPTIVE_CAPACITY_THEN_EVENT_DRIVEN_REFILL",
-        "incrementalQaBottleneck": "REDUCE_PRESSURE_KEEP_INCREMENTAL_FIRST_AND_SINGLE_FAN_IN_REGRESSION",
-        "checkoutOrNetworkPressure": "REDUCE_PRESSURE_PRESERVE_QUEUE_AND_RETRY_EXISTING_FETCH_PATH",
-        "healthySaturatedRuns": "RECOVER_CONCURRENCY_ONE_STEP_AFTER_HEALTHY_STREAK",
+        "runnerCapacityOrStartupSerialization": "RECORD_PRESSURE_AND_SUPPRESS_OPTIONAL_SPECULATION_ONLY; PRESERVE_ALL_INDEPENDENT_PRIMARY_ELIGIBILITY",
+        "incrementalQaBottleneck": "PRESERVE_PRIMARY_ELIGIBILITY_KEEP_INCREMENTAL_FIRST_AND_SINGLE_INTEGRATION_REGRESSION",
+        "checkoutOrNetworkPressure": "RECORD_PRESSURE_PRESERVE_QUEUE_PRIMARY_ELIGIBILITY_AND_RETRY_EXISTING_FETCH_PATH",
+        "healthySaturatedRuns": "CLEAR_PRESSURE_SIGNAL_AND_REENABLE_OPTIONAL_SPECULATION",
         "robloxRunnerFailure": "USE_EXISTING_AUTHENTICATED_RUNNER_SELF_HEAL",
         "externalModelQuota": "CHECKPOINT_AND_CONTINUE_NON_BLOCKED_VIBE_WORK",
         "waitingForVerifiedSamples": "CONTINUE_SAMPLE_COLLECTION_NOT_FAILURE",
-        "staleMachineStateBlockerAfterStateNormalization": "REPAIR_QUEUE_TO_EXTERNAL_WAVE_256_AND_INVALID_V3_PARALLELISM_STEP_BEFORE_STRICT_HANDOFF_CHECK_THEN_REVALIDATE_AND_CLEAR_ONLY_KNOWN_STALE_MACHINE_BLOCKERS",
+        "staleMachineStateBlockerAfterStateNormalization": "NORMALIZE_LEGACY_PARALLELISM_STATE_TO_TELEMETRY_ONLY; KEEP_INTERNAL_GLOBAL_CAP_NULL_AND_EXTERNAL_MATRIX_256_AS_TRANSPORT_PARTITION",
         "runContractShaDrift": "PIN_RESERVE_TIME_MAIN_SHA_ACROSS_EXPLORATION_WORKER_FAN_IN_AND_REQUEUE_ONLY_REAL_REGRESSION_FAILURES",
         "globalExplorationBarrier": "MOVE_EXPLORATION_INTO_EACH_WORKER_AND_START_GAME_IMPLEMENTATION_AS_SOON_AS_ITS_OWN_EXPLORATION_IS_READY",
-        "refillDispatchStorm": "INDEPENDENT_RESULT_FANIN_WITH_OPTIMISTIC_ATOMIC_STATE_WRITE_NO_WAVE_BARRIER"
+        "refillDispatchStorm": "INDEPENDENT_RESULT_MICRO_FANIN_WITH_OPTIMISTIC_ATOMIC_STATE_WRITE_NO_GLOBAL_BARRIER"
       },
       "bottleneckPolicy": {
-        "adaptiveSteps": [
-          256,
-          128,
-          64,
-          32,
-          20,
-          16,
-          8,
-          4
-        ],
-        "maxStepChangesPerRun": 1,
         "productionWorkPreemptsPractice": true,
-        "postReleaseProtectedRunnerSlots": 1,
-        "longWorkProtectedSlots": 1,
         "disjointWorkMayContinueWhileOneRouteBlocked": true,
         "ownerDirectiveAlwaysHighestPriority": true,
         "doNotConsumeDevelopmentSlotForExternalQuotaWait": true,
-        "staleTelemetryTtlMinutes": 90,
-        "staleTelemetryMayNotPinConcurrency": true,
-        "fastHealthyRamp": true,
-        "laneSpecificBackpressurePreferred": true,
+        "waitingWorkConsumesWorkerCapacity": false,
+        "laneSpecificPressureTelemetry": true,
+        "pressureMaySuppressOptionalSpeculationOnly": true,
+        "pressureMayNotReduceIndependentPrimaryEligibility": true,
         "globalCollapseForSingleLaneFailureForbidden": true,
         "workStealing": true,
-        "softReservations": true,
-        "waitingWorkConsumesSlot": false,
-        "systemStewardProtectedSlots": 1,
-        "systemStewardSlotBorrowableWhenIdle": true,
         "controlStateRecovery": {
           "blankOrMissingQueueAutoRecovery": true,
           "canonicalQueueVersion": 5,
@@ -3265,43 +3161,25 @@
           "nonEmptyMalformedJsonFailClosed": true,
           "policyOrGameplayMutationAllowed": false
         },
-        "policyConcurrencyLimit": null,
-        "primaryCoverageBeforeSpeculation": true,
-        "speculativeMayNotReduceIndependentPrimaryTaskCoverage": true,
-        "measuredRunnerPeakEvidence": {
-          "runId": "35425782021",
-          "actualPeakConcurrency": 12,
-          "priorWorkerFanOut": 41,
-          "priorReservedTasks": 19,
-          "recoveryAdaptiveStep": 16
-        },
-        "gameImplementationPreemptsNonblockingSupervision": true,
-        "nonblockingSupervisionUsesSpareCapacityOnly": true,
-        "ownerAndSystemStewardProtectionPreserved": true,
-        "globalExplorationBarrierForbidden": true,
-        "taskLocalExplorationRequired": true,
-        "supervisorExplorationMayNotBlockGameWorkerStart": true,
+        "internalGlobalParallelCap": null,
         "workerDirectControlWriteForbidden": true,
         "atomicCompletionCallbackRefillEnabled": true,
         "atomicCompletionIngress": "PERSIST_RESULT_ONLY_UNTIL_TASK_MICRO_FANIN_COMPLETE",
         "pendingVariantCallbackRunsHeavyReserve": false,
         "taskMicroFanInDispatchesSingleRefill": true,
         "taskMicroFanInReleasesCapacityImmediately": true,
-        "independentFreeSlotRefillBeforeCohortFanIn": true,
-        "cohortFanInRole": "REGRESSION_RELEASE_AUDIT_ONLY",
-        "selfAdaptiveExpansionSteps": [
-          30,
-          32,
-          64,
-          128,
-          256
-        ],
+        "independentCompletionRefillImmediate": true,
+        "aggregateFanInRole": "REGRESSION_RELEASE_AUDIT_ONLY",
         "externalMatrixTransportPartitionMax": 256,
         "externalMatrixTransportPartitionIsNotGlobalCap": true,
-        "waveSchedulingActive": false,
-        "waveLeaderActive": false,
-        "independentCompletionImmediateFanIn": true,
-        "independentReservationContinuation": true
+        "independentReservationContinuation": true,
+        "sharedStateWriteCoordination": "OPTIMISTIC_RETRY_ATOMIC_WRITE_ONLY",
+        "serializationReasons": [
+          "RESPONSIBLE_FILE_CONFLICT",
+          "ACTUAL_DEPENDENCY",
+          "EXACT_DUPLICATE_SUPPRESSION",
+          "ATOMIC_SHARED_STATE_WRITE"
+        ]
       },
       "invariants": {
         "noGateBypass": true,
@@ -3414,22 +3292,14 @@
           "verifiedLearningDeletion": false
         },
         "staleMachineStateRecoveryGuard": {
-          "requiredQueueMax": 256,
-          "requiredParallelismControlVersion": 3,
-          "allowedCurrentMaxSteps": [
-            4,
-            8,
-            16,
-            32,
-            64,
-            128,
-            256
-          ],
+          "requiredInternalGlobalCap": null,
+          "externalMatrixTransportPartitionMax": 256,
+          "parallelismControlRole": "TELEMETRY_AND_OPTIONAL_SPECULATION_SIGNAL_ONLY",
           "clearOnlyKnownMachineStateInconsistentBlockers": true,
           "actualMachineMismatchMustRemainBlocked": true,
-          "machineContractMeaning": "EXTERNAL_WAVE_BOUND_NOT_INTERNAL_POLICY_CAP",
+          "machineContractMeaning": "NO_INTERNAL_GLOBAL_CAP_MATRIX_256_TRANSPORT_ONLY",
           "repairBeforeStrictHandoffValidation": true,
-          "invalidV3CurrentMaxStepRepair": "RESET_TO_EXTERNAL_WAVE_256",
+          "invalidLegacyParallelismStateRepair": "NORMALIZE_TO_TELEMETRY_ONLY_STATE",
           "samePassStaleBlockerRequeueAfterSuccessfulRepair": true
         }
       },
@@ -3518,931 +3388,39 @@
         "gameRuntimeEvidenceStillRequiredForGameLearning": true
       },
       "developmentBottleneckFocus": {
-        "version": 79,
-        "authority": "OWNER_DIRECTIVE_2026-09-19",
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-10-01",
         "enabled": true,
-        "priority": "DEVELOPMENT_AND_RELEASE_BOTTLENECK_FIRST",
-        "activation": "ANY_CRITICAL_COMMON_DEVELOPMENT_OR_RELEASE_BOTTLENECK",
-        "objective": "RESTORE_REAL_GAME_DEVELOPMENT_THROUGHPUT_BEFORE_NON_CRITICAL_AUXILIARY_WORK",
-        "workerRouting": {
-          "VIBE2_VIBE3": "PRIMARY_GAME_SOURCE_IMPLEMENTATION_EXACT_STAGE_RESUME_AND_FALLBACK_FOR_UNSAFE_OR_UNSCOPED_REPAIR",
-          "SYSTEM_AI": "ORCHESTRATION_CI_QUEUE_PLANNER_COMMON_BOTTLENECK_AND_SCOPED_ASSIGNED_GAME_SOURCE_REPAIR_WITH_CANDIDATE_ISOLATION",
-          "QA_REVIEW": "VERIFY_CAUSAL_REPAIR_UPDATE_STALE_CONTRACT_TESTS_AND_UNBLOCK_NEXT_DEVELOPMENT_STAGE",
-          "DIRECTOR": "KEEP_ALL_ELIGIBLE_WORKERS_ALIGNED_TO_HIGHEST_IMPACT_DEVELOPMENT_BOTTLENECK",
-          "LEARNING": "USE_ONLY_IDLE_CAPACITY_WHILE_ACTIONABLE_DEVELOPMENT_BOTTLENECK_EXISTS"
-        },
-        "productionPreempts": [
-          "IDLE_LEARNING",
-          "NON_CRITICAL_DIAGNOSTICS",
-          "NON_CRITICAL_HOMEPAGE_MAINTENANCE"
-        ],
+        "priority": "INDEPENDENT_CAUSAL_RECOVERY",
+        "activation": "CAUSAL_FAILURE_OR_VERIFIED_BOTTLENECK",
+        "objective": "RECOVER_CAUSAL_FAILURES_WITHOUT_SERIALIZING_UNRELATED_WORK",
+        "workerRouting": "EXISTING_RECOVERY_FAST_AND_GAME_PRIMARY_LANES",
+        "productionPreempts": "PRACTICE_ONLY",
         "mustContinue": [
-          "SECURITY_GATES",
-          "DETERMINISTIC_QA",
-          "RUNTIME_EVIDENCE_INTEGRITY",
-          "RELEASE_SAFETY_GATES"
+          "INDEPENDENT_GAME_WORK",
+          "INDEPENDENT_RECOVERY_WORK",
+          "INDEPENDENT_NEURAL_WORK",
+          "LEARNING_ONE_WORKER",
+          "ASSET_DEVELOPMENT_UP_TO_64"
         ],
-        "currentIncident": {
-          "signature": "VIBE2_POST_REPAIR_SOURCE_SUCCESS_AND_GAME_PRIMARY_SLOT_PROTECTION",
-          "status": "LIVE_20_WAVE_RUNNING_LATEST_REPAIRS_QA_PASS",
-          "symptom": "LIVE_20_WAVE_IS_HEALTHY_BUT_PINNED_OLDER_CONTRACT_LEAVES_A_LONG_SOURCE_GENERATION_TAIL_AND_COARSE_SOURCE_CANDIDATE_FAILURES_CAN_REPEAT_WITHOUT_CAUSAL_RETRY_CONTEXT",
-          "rootCause": {
-            "hiddenWorkerFailure": "CANDIDATE_STEP_USED_CONTINUE_ON_ERROR_SO_GITHUB_JOB_SUCCESS_MASKED_INTERNAL_SOURCE_CANDIDATE_FAILURE_UNTIL_FAN_IN_ARTIFACT_INSPECTION",
-            "generationTail": "TWO_ATTEMPTS_WERE_INSUFFICIENT_FOR_REPEATED_NO_OP_EDIT_MATCH_TIMEOUT_AND_UNDERSIZED_FULL_WEB_OUTPUTS",
-            "telemetryLoss": "FAILED_CANDIDATE_STEP_DID_NOT_PERSIST_CANDIDATE_DURATION_FAILURE_CLASS_OR_TASK_LOCAL_EXPLORATION_RESULT_IN_THE_IMMUTABLE_WORKER_RESULT",
-            "refillPlannerBypass": "VIBE2_FANIN_REFILL_REPOSITORY_DISPATCH_ENTERED_CONTINUOUS_CORE_RESERVE_DIRECTLY_AND_DID_NOT_RUN_THE_DETERMINISTIC_AUTO_PLANNER_BEFORE_RESERVING_THE_NEXT_WAVE",
-            "exactRepairEvidence": "EXISTING_EXACT_WEB_REPAIR_TASKS_THEREFORE_RETAINED_GENERIC_GOALS_EVEN_THOUGH_COMPANY_RUNTIME_ROUTING_BLOCKERS_CONTAINED_PRECISE_WEB_VALIDATION_FAILURES",
-            "sourceGenerationTail": "OLDER_PINNED_WAVES_USE_ONLY_TWO_GENERATION_ATTEMPTS_AND_CAN_END_IN_NO_OP_TIMEOUT_OR_UNDERSIZED_FULL_WEB_OUTPUT_BEFORE_NEW_RECOVERY_LOGIC",
-            "causalFailureTelemetry": "WORKER_JOB_SUCCESS_CAN_ENCAPSULATE_AN_INTERNAL_FAIL_AND_WITHOUT_FAILURE_CLASS_MESSAGE_THE_QUEUE_ONLY_SEES_SOURCE_CANDIDATE_GENERATION_FAILED",
-            "fanInRefillPlannerSync": "FAN_IN_REFILL_MUST_SYNC_LATEST_PLANNER_STATE_BEFORE_RESERVE_SO_EXISTING_EXACT_WEB_REPAIR_GOALS_AND_RECOVERY_STATE_ARE_NOT_STALE",
-            "exactWebRepairLongTail": "EXACT_WEB_REPAIR_USED_GENERAL_1536_TOKEN_32K_CONTEXT_GENERATION_PROFILE_DESPITE_SINGLE_INDEX_HTML_RESPONSIBILITY_CAUSING_LONG_NO_OP_AND_TIMEOUT_TAILS",
-            "refillMainSnapshot": "FANIN_REFILL_RESERVE_CREATED_A_GIT_WORKTREE_ONLY_TO_READ_THE_LATEST_MAIN_MACHINE_CONTRACT_AND_COULD_FAIL_BEFORE_RESERVATION_WITHOUT_DIAGNOSTIC_OUTPUT",
-            "externalPlaytestSlotPressure": "EXTERNAL_MOBILE_REFERENCE_PLAYTEST_COULD_OCCUPY_A_HOSTED_RUNNER_WHILE_20_GAME_PRIMARY_TASKS_WERE_ACTIVE",
-            "rawValidationBlockerSemantics": "COMPANY_RUNTIME_VALIDATION_CODES_WERE_CORRECT_BUT_TOO_ABSTRACT_FOR_THE_LOCAL_SOURCE_MODEL_CAUSING_REPEAT_NO_OP_REPAIRS",
-            "fullWebBaseRebuildSize": "FULL_WEB_BASE_REBUILD_ALLOWED_UNDERSIZED_PLAYABLE_SHELL_ATTEMPTS_BEFORE_THE_EXISTING_MINIMUM_SIZE_GATE_REJECTED_THEM"
-          },
-          "liveEvidence": {
-            "failedWaveRun": "35430477537",
-            "failedWaveContractSha": "bca24b0825871a7a0fe74d581d7aa0ec662a834d",
-            "reservedTasks": 20,
-            "workerGithubJobSuccessCount": 20,
-            "immutableWorkerPassCount": 0,
-            "immutableWorkerFailCount": 20,
-            "failureDistribution": {
-              "FULL_REWRITE_SIZE": 7,
-              "TIMEOUT": 7,
-              "NO_OP": 5,
-              "EDIT_MATCH": 1
-            },
-            "fanIn": "PASS",
-            "fanInRefill": "PASS",
-            "nextLiveWaveRun": "35430996704",
-            "nextLiveWaveContractSha": "02d42674c3505420d2e974e055a76d6695850f84",
-            "nextLiveWaveReservedTasks": 20,
-            "nextLiveWaveNote": "PINNED_BEFORE_LATEST_SOURCE_RECOVERY_AND_FANIN_REFILL_PLANNER_SYNC_REPAIRS",
-            "companyRuntimeWebRepairRequiredCount": 19,
-            "companyRuntimeRoutingBlockersPresent": 19,
-            "preRepairExistingExactGoalsWithCompanyRuntimeFailureEvidence": 0,
-            "activeContinuousRun": "35430996704",
-            "activeContinuousContractSha": "02d42674c3505420d2e974e055a76d6695850f84",
-            "activeContinuousReservedTasks": 20,
-            "activeContinuousWorkersCompleted": 13,
-            "activeContinuousWorkersInProgress": 7,
-            "activeContinuousTailStep": "GENERATE_ISOLATED_CANDIDATE_FROM_PINNED_MAIN_CONTRACT",
-            "latestSkipped24hRun": "35431210884",
-            "latestSkipped24hReason": "EXISTING_LIVE_20_WAVE_ALREADY_OWNS_ALL_RESERVED_GAME_TASKS",
-            "latestRepairHead": "7952985b201eacaa9425fcfabc0128fdabb5ebee",
-            "latestCoreQaRun": "35431344381",
-            "latestCoreQa": "PASS",
-            "latestIntegratedRegressionRun": "35431344404",
-            "latestIntegratedRegression": "PASS",
-            "fanInRefillCanonicalWorkflow": ".github/workflows/vibe2-continuous-core.yml",
-            "nonexistentFanInRefillWorkflowReferenceRemoved": true,
-            "previousWaveRun": "35430996704",
-            "previousWaveStatus": "WORKERS_20_OF_20_COMPLETE_FAN_IN_PASS",
-            "previousWaveFirst19ImmutableResults": {
-              "pass": 2,
-              "fail": 17
-            },
-            "previousWaveObservedFailureDistribution": {
-              "NO_OP": 7,
-              "FULL_REWRITE_SIZE": 5,
-              "TIMEOUT": 5
-            },
-            "failedFanInRefillRun": "35431631909",
-            "failedFanInRefillStep": "PREPARE_LATEST_MAIN_MACHINE_CONTRACT",
-            "currentPostRepairWaveRun": "35431717289",
-            "currentPostRepairContractSha": "1fb8276f767ec79003d3794413e2fe60e4fd2395",
-            "currentPostRepairReservedTasks": 20,
-            "currentPostRepairWorkerState": {
-              "in_progress": 19,
-              "queued": 1
-            },
-            "currentPostRepairAdaptiveMax": 20,
-            "compactWebRepairHead": "83ed9ee098a631b132d82198e2b5ad008a479624",
-            "compactWebRepairCoreQaRun": "35431549317",
-            "compactWebRepairCoreQa": "PASS",
-            "compactWebRepairIntegratedRegressionRun": "35431549309",
-            "compactWebRepairIntegratedRegression": "PASS",
-            "archiveSnapshotHead": "e448dbb96ca2e40545e1decb45b8fcfcaf1826ed",
-            "archiveSnapshotCoreQaRun": "35431787744",
-            "archiveSnapshotCoreQa": "PASS",
-            "archiveSnapshotIntegratedRegressionRun": "35431787677",
-            "archiveSnapshotIntegratedRegression": "PASS",
-            "recoveryCallbackRuns": [
-              "35431828859",
-              "35431830284"
-            ],
-            "observedCompletedWorkerSample": 12,
-            "observedImmutablePass": 5,
-            "observedImmutableFail": 7,
-            "observedFailureDistribution": {
-              "FULL_REWRITE_SIZE": 4,
-              "NO_OP": 1,
-              "MALFORMED_OUTPUT": 1,
-              "EDIT_MATCH": 1
-            },
-            "externalPlaytestGateRun": "35432080063",
-            "externalPlaytestActiveGameWork": 20,
-            "externalPlaytestResult": "PLAYTEST_SKIPPED_DEFER_TO_GAME_PRIMARY",
-            "actionableWebRepairHintsHead": "6c115212bb788c9c27f69037e6d0d7a489da155b",
-            "actionableWebRepairHintsCoreQa": "PASS",
-            "actionableWebRepairHintsIntegratedRegression": "PASS",
-            "fullWebCompletenessHead": "91bc4d6872761830b1f0528cb423eeba712bb7ec",
-            "fullWebCompletenessCoreQaRun": "35432298253",
-            "fullWebCompletenessCoreQa": "PASS",
-            "fullWebCompletenessIntegratedRegressionRun": "35432298285",
-            "fullWebCompletenessIntegratedRegression": "PASS",
-            "latestMainRevalidationRun": "35444351457",
-            "latestMainRevalidationContractSha": "ccfb20d9f114c713af7a37aa0ca147c56f999fc9",
-            "latestMainRevalidationState": "RUNNING",
-            "latestMainRevalidationPurpose": "FULL_WEB_EXPANSION_TARGETING_FIX",
-            "timeoutRecoveryTelemetryCommits": [
-              "5129f254fa1efa4d90bf124f9c1cd361d12bb588",
-              "9da66b9d83ebb2235e4c8cf64893eaaf0127515e",
-              "d0d7122da1034e040195d3369e11c0f407a66c19"
-            ],
-            "timeoutRecoveryTelemetryEffectiveFromNextWave": true,
-            "previousFanInRegression": {
-              "runId": "35443243108",
-              "jobId": "105900475104",
-              "testsPassed": 235,
-              "testsFailed": 0,
-              "regressionRole": "PASS"
-            },
-            "malformedPartialRecoveryCommits": [
-              "ee60e101336b9027ceea02e0eb8a4ab428ea2cb6",
-              "648dbf73ee0efa29a492e3e68e26d930003859ae",
-              "3e154f52c834405ff9befbc2aee2a903f74e53bd"
-            ],
-            "malformedPartialRecoveryEffectiveFromNextWave": true,
-            "currentWaveFirstCompletedFailure": {
-              "runId": "35444351457",
-              "jobId": "105900741285",
-              "class": "MALFORMED_OUTPUT",
-              "attempts": 3
-            },
-            "invalidFullWebExpansionShapeCommits": [
-              "fbeac577dbd7a51d68a64fd07b0b1d69589096ac",
-              "0103aca7a5e96ad0fadbd9dcfcee292fe63cc777"
-            ],
-            "invalidFullWebExpansionShapeEffectiveFromNextWave": true,
-            "streamedTimeoutEarlyStopCommits": [
-              "4db870b5fd90b4bee7407a39dbeeecc9d4916b04",
-              "2e6d310e887723236b98b336b05c28782babfb8e",
-              "0a7a0c45cb83096a6795ce2edc8ab8a2c788f045"
-            ],
-            "streamedTimeoutEarlyStopEffectiveFromNextWave": true,
-            "timeoutRetryPrefixCompactionCommits": [
-              "342f82f6703b851d88b28eb1fbc07d121f8b7177",
-              "a9fc8b65aeadecbc72742e09081952fd994d0318"
-            ],
-            "timeoutRetryPrefixCompactionEffectiveFromNextWave": true,
-            "previousCompletedWave": {
-              "runId": "35444351457",
-              "workerCount": 20,
-              "pass": 0,
-              "fail": 20,
-              "failureDistribution": {
-                "TIMEOUT": 13,
-                "OTHER": 6,
-                "MALFORMED_OUTPUT": 1
-              },
-              "bottleneck": "SOURCE_CANDIDATE_GENERATION"
-            },
-            "currentWave": {
-              "runId": "35445626679",
-              "pinnedContractSha": "cba1a0f400a8fa312bc754fad93d40c98cb23ff7",
-              "observedCompletedWorkers": 8,
-              "observedInProgressWorkers": 12
-            },
-            "speculativeRetryBudgetCommits": [
-              "41eea8d07362a51158cb4b75081f66420eaecd64",
-              "30c281817019ff8e9a342afb226fd37874891f8f",
-              "045a3e970db8dd8b69e4824a12814373f69b9096"
-            ],
-            "speculativeRetryBudgetEffectiveFromNextWave": true,
-            "currentWaveEarlyEffect": {
-              "runId": "35445626679",
-              "pinnedContractSha": "cba1a0f400a8fa312bc754fad93d40c98cb23ff7",
-              "completed": 8,
-              "pass": 5,
-              "fail": 3,
-              "passRatePct": 62.5,
-              "failureDistribution": {
-                "TIMEOUT": 2,
-                "EDIT_MATCH": 1
-              }
-            },
-            "focusedMinimalJsonRetryCommits": [
-              "ca8ea51acab5ef39d20798bc2b03b88cc233258a",
-              "197a1884e296d28f5210d513281e2a8cfef64977",
-              "070d47598063a4aacc2e7226b1c156dc25471cee",
-              "80091b7fc44b9fec07db94b9a2a3b81c45d095d6",
-              "d8d9ae3f98356cbbb01b2567c2d756dcdfe276e5"
-            ],
-            "focusedMinimalJsonRetryEffectiveFromNextWave": true,
-            "completedWave35445626679": {
-              "pass": 5,
-              "fail": 15,
-              "passRatePct": 25,
-              "failureDistribution": {
-                "TIMEOUT": 12,
-                "FULL_REWRITE_SIZE": 2,
-                "EDIT_MATCH": 1
-              },
-              "fanIn": "FAIL_REQUEUED_STALE_TEST_ASSERTION"
-            },
-            "fullWebLargestPartialRetryCommits": [
-              "314e74c5c5331f3e687cf17dc72d54ffb4309ec5",
-              "db42d71bad17ad602ad566b41872edd4aca982b8",
-              "c3a8a8cfa96127d6b9f9f9694cf29e5d6ca5252e",
-              "944f15da5a5066b2eb59d8dd0c5afd4768e4e21f"
-            ],
-            "nextReservationRunId": "35446727233",
-            "currentRun35446727233": {
-              "pinnedContractSha": "944f15da5a5066b2eb59d8dd0c5afd4768e4e21f",
-              "hierarchicalFanOut": 20,
-              "reservedTaskCount": 14,
-              "state": "RUNNING"
-            },
-            "currentWave35446727233": {
-              "pinnedContractSha": "944f15da5a5066b2eb59d8dd0c5afd4768e4e21f",
-              "focusedRepairEffectivenessValid": false,
-              "invalidationReason": "FOCUSED_FINAL_PRE_INIT_REFERENCE",
-              "fullWebObservationAllowed": true
-            },
-            "fullWebRetryPromptCompactionCommits": [
-              "57e03fbadfa248ae5fcf74ee251f3a906d84762d",
-              "ec735a04e9839b3a3d2ac6b88563ffa582bb282d",
-              "1026b115592bd3b74f72dfc38f82b71e8832ea6a"
-            ],
-            "focusedRetryPreInitFixCommits": [
-              "c8f373efb34e6c9289a119fc0caa3d207bc1c09f",
-              "6b0f0a8aab1ba9e37a11588cda0d10ea86e83e6c"
-            ],
-            "fullWebSeedFirstStrategyCommits": [
-              "9ef7994739ea552f4b4c90283a9a3b246e3af2f4",
-              "779b47c444c9bddfe470a518015a6fbf9ec3c144",
-              "5b7f73cc37c303368691d0c26c012477e9b4a042"
-            ],
-            "nextCleanWaveRequired": true,
-            "speculativeSlotLatencyPriorityCommits": [
-              "3208edd52549bcb45a9b2f8396a9dc47174a3b34",
-              "cf1fd2ef0b5450344c1bad7fc1745581d8e2ec0a"
-            ],
-            "speculativeSlotLatencyPriorityEffectiveFromNextCleanWave": true,
-            "fullWebInternalTimeoutAlignmentCommits": [
-              "d2d34d2a4d56c123bfe7f1ac73eec7202bca175e",
-              "70f6c5a9541c25e695c75f10c9ace5666d3c9e72"
-            ],
-            "fullWebInternalTimeoutAlignmentEffectiveFromNextCleanWave": true,
-            "fullWebExpansionContextCompactionCommits": [
-              "545e76b3d51f7828427cf092a43b8eb60b1304f0",
-              "88887af40c1ac18580409630e29db56609df7f81"
-            ],
-            "fullWebExpansionContextCompactionEffectiveFromNextCleanWave": true,
-            "fullWebExpansionDocumentSeedRecoveryCommits": [
-              "24368a6f7f9d368c30273e1789f9007aba76390c",
-              "d03ee39935cc1001a80aaeee640e57a8860ecb06",
-              "a87eb6eb340b6cca4ba8919f0cd868bedfc0ac11",
-              "0b4ae4b59c188fcc798332da9cf811ceebcc5ec4"
-            ],
-            "fullWebExpansionDocumentSeedRecoveryEffectiveFromNextCleanWave": true,
-            "reserveFastRegressionGateCommits": [
-              "de96a9d6fa0a7cd7cdc6ca2a5590e39c69f30761",
-              "cb11104e4c7c51ba7a478a7629923c382767bfbc"
-            ],
-            "reserveFastRegressionGateEffectiveFromNextCleanWave": true,
-            "reserveFastRegressionStaticContract": {
-              "sourceWorkerAssertions": 34,
-              "workflowAssertions": 6,
-              "failing": 0
-            },
-            "cleanWave35447976923": {
-              "pinnedContractSha": "af623808436c3f0b470bfac5fac9a06d1337d82f",
-              "latestFixesPresent": true,
-              "observedWorkerState": {
-                "completed": 0,
-                "inProgress": 8,
-                "queued": 12
-              },
-              "runnerCapacityObservation": "GITHUB_HOSTED_RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION"
-            },
-            "fastPreflightExecutionMarkerPendingNextRun": true,
-            "reserveFullRegressionPreflightCommits": [
-              "60fc75e3714e6252dc3c56c2c854e1c6806971c4",
-              "8d7725b3759eb9950d24dbfae51d92caec8a08b3"
-            ],
-            "reserveFullRegressionPreflightEffectiveFromNextReserve": true,
-            "reserveFullRegressionPreflightTestCount": 13,
-            "fullWebFinalAdditiveCommits": [
-              "5762c8b620081db6ba05dad2ab9a6fd2b6095551",
-              "c8a3a38e710af8333dbb9b89e6227c5d0c02c92e",
-              "2547378f19cdc4148dcb7fd967eb46cb2d47232c",
-              "31ae76086c35fee48aefd6049387db601229d28f",
-              "790e3a4b45fb529672265d32e6f4301ce994030f"
-            ],
-            "fullWebClosedHtmlEarlyStopCommits": [
-              "f75d974042c8383df12a05a1f649db84dd143d8f",
-              "47f72be5d42fda451d45ad1bd484e872e7344305",
-              "fbad79cf0d70402445bb914fbe09e3679551ddbb",
-              "8b4e8ef37c8e52639a8d29d08dd08707b86e50c1"
-            ],
-            "currentCleanWaveFirstResult": {
-              "runId": "35447976923",
-              "jobId": "105910478736",
-              "failureClass": "MALFORMED_OUTPUT",
-              "attempts": 4
-            },
-            "completedWave35452958416": {
-              "pass": 2,
-              "fail": 18,
-              "passRatePct": 10,
-              "failureDistribution": {
-                "TIMEOUT": 6,
-                "NO_OP": 2,
-                "EDIT_MATCH": 6,
-                "FULL_REWRITE_SIZE": 3,
-                "MALFORMED_OUTPUT": 1
-              },
-              "fanIn": "PASS",
-              "bottleneck": "SOURCE_CANDIDATE_GENERATION"
-            },
-            "focusedExactFindAnchorCommits": [
-              "523f68d5346461279e078cdfc106ddb8d821573d",
-              "dcfc7acd7303fe75703141838bf504bb85aee45a",
-              "934dcea674c0702660080ee999c0fd1977818e4c"
-            ],
-            "focusedExactFindAnchorEffectiveFromNextRefill": true,
-            "currentRun35453739103": {
-              "pinnedContractSha": "c6853fe008d149a34089b20e7a905eff9cc455a1",
-              "includesFocusedExactAnchorFix": false
-            },
-            "focusedExactFindFullSourceCommits": [
-              "e4db3b01c3f1106f851ed8cb8103071312e5c71a",
-              "1e77f2c6afdb5ecf5054785da9786596c31848ac"
-            ],
-            "focusedExactFindFullSourceEffectiveFromNextRefill": true,
-            "centralSyncAtHead": {
-              "mainHead": "5f166cb22fbc5045d8be8ed119d481a2af3ced14",
-              "completedWaveRunId": "35452958416",
-              "pass": 2,
-              "fail": 18,
-              "passRatePct": 10,
-              "bottleneck": "SOURCE_CANDIDATE_GENERATION",
-              "dominantFailures": {
-                "TIMEOUT": 6,
-                "EDIT_MATCH": 6
-              },
-              "currentLargestBottleneck": "FULL_WEB_BASE_REBUILD_SUCCESS_RATE_AND_FINAL_ACTIVE_WORKER_TAIL"
-            },
-            "editMatchCausalFastPath": {
-              "baselineWave": 35452958416,
-              "baselineEditMatchFailures": 6,
-              "baselineTimeoutFailures": 6,
-              "firstEditMatchFailureFastEscalatesToReplaceOnlyOnAttempt2": true,
-              "timeoutFailureFastEscalatesToReplaceOnlyOnAttempt2": true,
-              "focusedReplaceTimeoutMs": 90000,
-              "firstAttemptTargetSelectionPreserved": true,
-              "qaGatesWeakened": false,
-              "commits": [
-                "03d8c27e8bbf3ec9759f9d8bd4758b22d7a78c03",
-                "8903d637486725e6501e1d0231e49fa2ddd87447",
-                "b6ef7e4fbcfd010d7f373ef66e81a437dbf4943a"
-              ]
-            },
-            "focusedReplacementCorruptionGuard": {
-              "detectedBy": "COMPANY_CENTRAL_POLICY_CONTRACT_QA",
-              "contaminatedGame": "seed-single-defense-strat-celestial-bastion",
-              "restoredCommit": "dd08e22db81e6d88a3a0abec302ef8e9169ba479",
-              "placeholderGuardCommit": "e2f44a6d9340e9626f35e4a1de55b9cce180f8e1",
-              "placeholderGuardTestCommit": "0b72565fe475bac1fac7c445a6ed3f0cf86d7ca1",
-              "repositorySearchRemainingExactPlaceholderHits": 0
-            }
-          },
-          "repairs": [
-            "CLASSIFY_SOURCE_GENERATION_FAILURES_AS_NO_OP_TIMEOUT_INVALID_PATH_FULL_REWRITE_SIZE_MALFORMED_OUTPUT_EDIT_MATCH_OR_OTHER",
-            "PERSIST_FAILURE_CLASS_FAILURE_MESSAGE_AND_CANDIDATE_DURATION_EVEN_WHEN_SOURCE_GENERATION_STEP_FAILS",
-            "PRESERVE_TASK_LOCAL_EXPLORATION_EVIDENCE_IN_FAILED_WORKER_RESULTS_INSTEAD_OF_REPORTING_FALSE_EXPLORATION_FAILURE",
-            "ALLOW_ONE_SHORT_90_SECOND_COMPACT_THIRD_JSON_RETRY_FOR_NO_OP_TIMEOUT_INVALID_PATH_OR_EDIT_MATCH_AFTER_THE_NORMAL_RETRY",
-            "ALLOW_ONE_BOUNDED_240_SECOND_THIRD_FULL_WEB_RETRY_ONLY_AFTER_UNDERSIZED_FULL_WEB_OUTPUT_WITH_THE_EXISTING_MINIMUM_SIZE_GATE_UNCHANGED",
-            "RUN_DETERMINISTIC_AUTO_PLANNER_INSIDE_FANIN_REFILL_RESERVE_BEFORE_RESERVE_BATCH",
-            "REFRESH_EXISTING_QUEUED_FAILED_OR_BLOCKED_EXACT_WEB_REPAIR_GOALS_FROM_LATEST_COMPANY_RUNTIME_ROUTING_BLOCKERS_BEFORE_THE_NEXT_FANIN_ONLY_WAVE",
-            "KEEP_CANDIDATE_IDENTITY_GATE_AND_FULL_REGRESSION_UNCHANGED",
-            "REMOVE_NONEXISTENT_VIBE2_FANIN_REFILL_WORKFLOW_REFERENCE_AND_KEEP_CONTINUOUS_CORE_AS_THE_SINGLE_CANONICAL_FANIN_REFILL_OWNER",
-            "COMPACT_EXACT_WEB_REPAIR_TO_AT_MOST_3_CONTEXT_FILES_48000_CONTEXT_BYTES_1024_OUTPUT_TOKENS_AND_16384_CONTEXT_WINDOW_WHILE_PRESERVING_FULL_REBUILD_AND_OTHER_ENGINE_PROFILES",
-            "PIN_LATEST_MAIN_WITH_FETCH_HEAD_IN_REFILL_RESERVE",
-            "REPLACE_READ_ONLY_REFILL_MAIN_CONTRACT_WORKTREE_WITH_GIT_ARCHIVE_SNAPSHOT",
-            "KEEP_CANDIDATE_BRANCH_WORKTREES_UNCHANGED",
-            "KEEP_20_WAVE_GAME_PRIMARY_TASK_LOCAL_EXPLORATION_FAN_IN_ONLY_REFILL_AND_ALL_QA_GATES_UNCHANGED",
-            "DEFER_EXTERNAL_MOBILE_REFERENCE_PLAYTEST_WHILE_ACTIONABLE_GAME_IMPLEMENTATION_TASKS_ARE_QUEUED_OR_RUNNING",
-            "TRANSLATE_COMPANY_RUNTIME_WEB_VALIDATION_CODES_INTO_ACTIONABLE_IMPLEMENTATION_HINTS_WHILE_PRESERVING_RAW_BLOCKER_EVIDENCE_AND_ALL_GATES",
-            "REQUIRE_FULL_WEB_REBUILD_OUTPUT_TO_IMPLEMENT_DIRECT_INPUT_MUTABLE_STATE_UPDATE_LOOP_PROGRESSION_WIN_OR_LOSS_RESTART_AND_RESPONSIVE_MOBILE_LAYOUT_BEFORE_FINISHING",
-            "KEEP_MIN_FULL_REWRITE_BYTES_AT_1800_AND_REPORT_ACTUAL_BYTES_MIN_AND_MAX_ON_REJECTION"
-          ],
-          "codeBindings": [
-            "tools/vibe2-source-worker.mjs",
-            ".github/workflows/vibe2-continuous-core.yml",
-            "tools/vibe2-auto-planner.mjs",
-            "tools/vibe2-fan-in-review.mjs",
-            "qa/vibe2-source-worker.test.mjs",
-            "qa/vibe2-controller-contract.test.mjs",
-            "qa/vibe2-auto-planner.test.mjs",
-            "company-learning/platform-release-roadmap.json",
-            ".github/workflows/external-mobile-free-game-playtest.yml"
-          ],
-          "repairCommits": [
-            "4e14cde97f53af4c03fe96bb655300b98b538418",
-            "389736d2a9248aa010bcc9b3c25f11b1731dcf77",
-            "7f38daa65e7b4b911d6b22a6aa14d80565e5c1d6",
-            "93cf859d5c343c61cfca64372debb62a99ffcf10",
-            "9ba763b7006f7907e4b02437396dfb3839f04818",
-            "17fe95b129da50db00b6e62cf76a0322a961f27e",
-            "c12d391535d3c4cf60f3872279b4a942bb5b842d",
-            "7952985b201eacaa9425fcfabc0128fdabb5ebee",
-            "3b280d595ecea08f10c3afbb34a111405b360f75",
-            "83ed9ee098a631b132d82198e2b5ad008a479624",
-            "74ddf86784b4215913da180883a81fb1954d3a57",
-            "849d5def95e8747055fced38ced9e020875a6213",
-            "118ae3700159fa51d8962b757aa099bfdeec4e24",
-            "e448dbb96ca2e40545e1decb45b8fcfcaf1826ed",
-            "17d5568072941b7b5c60216b8fe6e3dce6e92da9",
-            "9793d5c5b4f0860644d0f7abb2f77a206a3e00fb",
-            "6c115212bb788c9c27f69037e6d0d7a489da155b",
-            "9a27754de06d814f3b7db2971887657866d87c7a",
-            "91bc4d6872761830b1f0528cb423eeba712bb7ec"
-          ],
-          "verification": {
-            "vibe2CoreQaRun": "35431344381",
-            "vibe2CoreQa": "PASS",
-            "integratedRegressionRun": "35431344404",
-            "integratedRegression": "PASS",
-            "qaGatesWeakened": false,
-            "compactWebRepairCoreQa": "PASS",
-            "compactWebRepairIntegratedRegression": "PASS",
-            "archiveRefillCoreQa": "PASS",
-            "archiveRefillIntegratedRegression": "PASS",
-            "actionableWebRepairHints": "PASS",
-            "fullWebCompleteness": "PASS",
-            "externalPlaytestGamePrimaryGate": "PASS",
-            "minimumFullRewriteBytes": 1800
-          },
-          "nextVerification": [
-            "CURRENT_20_WAVE_COMPLETES_AND_FAN_IN_RUNS",
-            "POST_91BC4D_FULL_WEB_BASE_REBUILD_SUCCESS_RATE_IMPROVES",
-            "NEXT_FULL_REWRITE_SIZE_FAILURE_REPORTS_ACTUAL_BYTES",
-            "NEXT_WEB_REPAIR_GOAL_CONTAINS_ACTIONABLE_HINTS_AND_RAW_COMPANY_RUNTIME_EVIDENCE",
-            "EXTERNAL_PLAYTEST_REMAINS_SKIPPED_WHILE_GAME_PRIMARY_ACTIVE",
-            "NEXT_FANIN_REFILL_USES_ARCHIVE_MAIN_SNAPSHOT",
-            "OWNER_MINIMUM_WAVE_REMAINS_20",
-            "TASK_LOCAL_EXPLORATION_REMAINS_PER_WORKER",
-            "FAN_IN_ONLY_REFILL_REMAINS_ACTIVE",
-            "POST_REPAIR_WAVE_INTERNAL_RESULT_SUCCESS_RATE_IMPROVES_VS_PREVIOUS_2_OF_19_OBSERVED_SAMPLE",
-            "EXACT_WEB_REPAIR_GENERATION_TELEMETRY_REPORTS_FOCUSED_WEB_REPAIR_PROFILE",
-            "NEXT_FANIN_REFILL_PREPARES_MAIN_WITH_ARCHIVE_SNAPSHOT_AND_NO_WORKTREE_STATE",
-            "NEXT_FANIN_REFILL_RESERVES_OWNER_MINIMUM_20_WHEN_20_ACTIONABLE_GAME_TASKS_EXIST",
-            "CANDIDATE_BRANCH_WORKTREE_IS_UNCHANGED",
-            "GAME_PRIMARY_REMAINS_AHEAD_OF_NONBLOCKING_SYSTEM_AI",
-            "CURRENT_PINNED_02D426_WAVE_COMPLETES_WITHOUT_MANUAL_CANCELLATION",
-            "FAN_IN_SETTLES_ALL_20_RESERVATIONS",
-            "REFILL_RESERVES_POST_7952985_MAIN_CONTRACT",
-            "POST_REPAIR_WORKER_RESULT_EXPOSES_CAUSAL_GENERATION_FAILURE_CLASS_AND_MESSAGE",
-            "NO_OP_TIMEOUT_OR_UNDERSIZED_FULL_WEB_FAILURE_USES_BOUNDED_RECOVERY_INSTEAD_OF_GENERIC_REPEAT",
-            "CURRENT_OLD_PINNED_WAVE_COMPLETES_WITHOUT_INTERRUPTION",
-            "NEXT_FANIN_REFILL_LOG_CONTAINS_VIBE2_FANIN_REFILL_PLANNER_SYNC_PASS",
-            "NEXT_RUNTIME_REPAIR_GOALS_CONTAIN_COMPANY_RUNTIME_FAILURE_EVIDENCE_BEFORE_RESERVE",
-            "NEXT_POST_REPAIR_WAVE_CONTRACT_SHA_INCLUDES_7952985_OR_LATER",
-            "FAILED_WORKER_ARTIFACTS_REPORT_CAUSAL_SOURCE_GENERATION_FAILURE_CLASS_AND_REAL_CANDIDATE_DURATION",
-            "FAILED_CANDIDATE_DOES_NOT_FALSELY_REPORT_TASK_LOCAL_EXPLORATION_FAILURE",
-            "NO_OP_TIMEOUT_AND_EDIT_MATCH_CAN_USE_AT_MOST_ONE_COMPACT_FINAL_JSON_RETRY",
-            "UNDERSIZED_FULL_WEB_CAN_USE_AT_MOST_ONE_BOUNDED_FINAL_FULL_WEB_RETRY",
-            "FULL_WEB_MINIMUM_SIZE_GATE_REMAINS_ENFORCED",
-            "PER_WORKER_REFILL_REMAINS_DISABLED",
-            "FAN_IN_DISPATCHES_AT_MOST_ONE_REFILL",
-            "GAME_PRIMARY_REMAINS_AHEAD_OF_NONBLOCKING_SUPERVISION"
-          ],
-          "ownerWaveOverride": 20,
-          "repair": "PRESERVE_20_WAVE_GAME_PRIMARY_AND_FAN_IN_ONLY_REFILL; ADD_CAUSAL_GENERATION_FAILURE_CLASS_AND_MESSAGE_TO_IMMUTABLE_RESULT; ADD_BOUNDED_THIRD_FOCUSED_JSON_RETRY; RECOVER_JSON_TIMEOUT_AND_UNDERSIZED_FULL_WEB_TAILS_WITHOUT_LOWERING_QA_OR_SIZE_GATES; SYNC_PLANNER_STATE_INSIDE_FAN_IN_REFILL_RESERVE"
-        },
-        "exitCondition": "NO_CRITICAL_COMMON_DEVELOPMENT_OR_RELEASE_BOTTLENECK_REMAINS",
         "currentExecution": {
-          "gameDevelopment": "VIBE2_VIBE3_RUNNING_PRIMARY_FIRST",
-          "systemBottleneckWorkers": "NONBLOCKING_WHILE_GAME_PRIMARY_SELF_ADAPTIVE_WAVE_RUNS",
-          "nonCriticalIdleWork": "PREEMPTED_WHILE_ACTIONABLE_GAME_DEVELOPMENT_WORK_EXISTS",
-          "releaseProgression": "ADVANCE_ONLY_AFTER_EXISTING_GATES_PASS",
-          "qaContract": "PASS",
-          "centralPolicyContract": "PASS",
-          "currentLargestBottleneck": "FULL_WEB_BASE_REBUILD_SUCCESS_RATE_AND_FINAL_ACTIVE_WORKER_TAIL",
-          "adaptiveWave": "RETIRED",
-          "speculativePolicy": "SPARE_CAPACITY_ONLY_AFTER_PRIMARY_COVERAGE",
-          "wavePolicy": "RETIRED",
-          "vibe2CoreQa": "PASS_RUN_35426882175",
-          "schedulerPriority": "OWNER_OR_STEWARD_CRITICAL_THEN_RELEASE_THEN_GAME_DEVELOPMENT_THEN_NONBLOCKING_SUPERVISION",
-          "supervisorCapacityPolicy": "SPARE_CAPACITY_ONLY_WHILE_ACTIONABLE_GAME_DEVELOPMENT_EXISTS",
-          "waveContractPolicy": "RETIRED",
-          "controlBranchRole": "STATE_ONLY",
-          "explorationPolicy": "TASK_LOCAL_NONBLOCKING",
-          "refillPolicy": "FAN_IN_ONLY",
-          "ownerWaveFloor": null,
-          "ownerWaveFloorPolicy": "RETIRED_OWNER_DIRECTIVE_2026-10-01_NO_WAVE_EXECUTION",
-          "webVibeRepairPlannerInput": "FIXED_PENDING_LIVE_QUEUE_VERIFICATION",
-          "sourceGenerationRepair": "FOCUSED_CONTEXT_AND_ONE_TIME_INFRA_REQUEUE",
-          "exactWebRepairSupersession": "ENABLED",
-          "controlWaveState": "RETIRED",
-          "webVibeRepairLiveCreation": "CONFIRMED_9_EXACT_REPAIR_TASKS_CREATED_AND_RUNNING",
-          "companyStatusRuntimeStateMerge": "FIXED",
-          "missingSourceExactBaseRecovery": "FIXED",
-          "currentLiveWave": {
-            "runId": "35431717289",
-            "contractSha": "1fb8276f767ec79003d3794413e2fe60e4fd2395",
-            "reservedTasks": 20,
-            "status": "RUNNING",
-            "note": "POST_COMPACT_WEB_REPAIR_WAVE; LATEST_HINT_AND_FULL_WEB_COMPLETENESS_FIXES_APPLY_NEXT_REFILL"
-          },
-          "fanInDiagnosis": "RUN_35429351974_FAILED_ON_4_STALE_REGRESSION_EXPECTATIONS",
-          "exactManifestQaBinding": "FIXED_PENDING_LIVE_WAVE_VERIFICATION",
-          "noOpRetry": "FIXED",
-          "jsonRetryTimeoutMs": 240000,
-          "latestRepairHead": "91bc4d6872761830b1f0528cb423eeba712bb7ec",
-          "nextVerificationRun": {
-            "runId": "35430088606",
-            "triggerHead": "bc102e770e77e9ea9fb530ec267a572b3d0bb8fd",
-            "expectedContract": "LATEST_MAIN_AT_RESERVE_TIME",
-            "mustInclude": [
-              "ef6437c9f53a9476c06cb33d1e9c5cc7e988cb0a",
-              "e7f4fbba8a72688e4cd6adecd3b76ae88cefde3c",
-              "bc102e770e77e9ea9fb530ec267a572b3d0bb8fd"
-            ],
-            "status": "PENDING_BEHIND_CURRENT_20_WAVE"
-          },
-          "structuredWebFailureEvidence": "FIXED_PENDING_COMPANY_RUNTIME_LIVE_REFRESH",
-          "exactWebRepairFailureContext": "FIXED_PENDING_NEXT_VIBE_PLAN",
-          "nextCompanyRuntimeVerification": {
-            "runIds": [
-              "35430427563",
-              "35430430584"
-            ],
-            "expected": "STRUCTURED_VIBE_WEB_IMPLEMENTATION_REASON_AND_ROUTING_BLOCKER"
-          },
-          "nextVibeVerification": {
-            "runId": "35430430884",
-            "expected": "LATEST_MAIN_PINNED_20_WAVE_WITH_EXACT_MANIFEST_AND_STRUCTURED_REPAIR_CONTEXT"
-          },
-          "fanInCandidateIdentityGate": "FIXED_PENDING_NEXT_LIVE_CONTRACT_VERIFICATION",
-          "existingExactWebRepairGoalRefresh": "FIXED",
-          "latestVerifiedRepairHead": "91bc4d6872761830b1f0528cb423eeba712bb7ec",
-          "latestVerifiedCoreQaRun": "35432298253",
-          "latestVerifiedIntegratedRegressionRun": "35432298285",
-          "sourceGenerationFailureTelemetry": "FIXED",
-          "focusedThirdRetry": "FIXED_QA_PASS_PENDING_LIVE",
-          "fanInRefillPlannerSync": "FIXED_QA_PASS_PENDING_LIVE",
-          "sourceGenerationCausalTelemetry": "FIXED_QA_PASS_PENDING_LIVE",
-          "fanInRefillCanonicalWorkflow": ".github/workflows/vibe2-continuous-core.yml",
-          "compactExactWebRepairGeneration": "FIXED_QA_PASS_LIVE_WAVE_RUNNING",
-          "fanInRefillMainContractSnapshot": "ARCHIVE_FIXED_QA_PASS_PENDING_NEXT_REFILL_LIVE",
-          "externalPlaytestGamePrimaryGate": "LIVE_CONFIRMED",
-          "actionableWebRepairHints": "QA_PASS_PENDING_NEXT_REFILL",
-          "fullWebCompletenessContract": "QA_PASS_PENDING_NEXT_REFILL",
-          "adaptiveWaveBaseline": null,
-          "adaptiveWaveMin": null,
-          "adaptiveWaveMax": null,
-          "runnerPressureSpeculativeSuppression": "IMPLEMENTED_QA_VERIFIED",
-          "runnerPressureSpeculativeSuppressionRule": "KEEP_ALL_PRIMARY_GAME_TASKS; DISABLE_ONLY_OPTIONAL_SPECULATIVE_VARIANTS_WHILE_ADAPTIVE_CONTROL_REPORTS_RUNNER_CAPACITY_QUEUE_WAIT_OR_CHECKOUT_PRESSURE; RESTORE_SPECULATION_AUTOMATICALLY_AFTER_PRESSURE_CLEARS",
-          "primaryCoverageUnaffectedBySpeculativeSuppression": true,
-          "qaAndFanInUnchangedBySpeculativeSuppression": true,
-          "runnerPressureSpeculativeSuppressionCodeHead": "4bac61bf02c4787111da3b2c66e2e4cfc62d2a7f",
-          "runnerPressureSpeculativeSuppressionVerification": {
-            "vibe2CoreQa": {
-              "runId": 36200348261,
-              "result": "PASS"
-            },
-            "parallelismContract": {
-              "runId": 36200348285,
-              "result": "PASS"
-            },
-            "centralPolicyContract": {
-              "runId": 36200348257,
-              "result": "PASS"
-            },
-            "companyEvolutionQa": {
-              "runId": 36200348264,
-              "result": "PASS"
-            },
-            "mainWriteGuard": {
-              "runId": 36200348265,
-              "result": "PASS"
-            },
-            "securityImmune": {
-              "runId": 36200348267,
-              "attempt": 2,
-              "result": "PASS"
-            }
-          },
-          "currentExecutionInfrastructureBottleneck": "WORKER_MODEL_CACHE_RESTORE_BEFORE_WORK_ORDER_AND_LOCK",
-          "runnerPressureCallbackCoalescing": "IMPLEMENTATION_IN_PROGRESS",
-          "runnerPressureCallbackCoalescingRule": "IF_RECENT_REPOSITORY_ACTIONS_HAVE_QUEUED_PENDING_OR_REQUESTED_RUNS, DO_NOT CREATE_ANOTHER_ATOMIC_NEURON_CALLBACK_WORKFLOW; KEEP_THE_IMMUTABLE_WORKER_RESULT_ARTIFACT_AND_LET_EXISTING_COHORT_FAN_IN_CONSUME_IT; WHEN_QUEUE_PRESSURE_CLEARS, RESUME_IMMEDIATE_CALLBACK",
-          "runnerPressureCallbackCoalescingPreserves": [
-            "WORKER_RESULT_ARTIFACT",
-            "COHORT_FAN_IN",
-            "TASK_OUTCOME",
-            "INCREMENTAL_QA",
-            "FULL_REGRESSION",
-            "SECURITY_GATE",
-            "RELEASE_GATE"
-          ],
-          "runnerPressureCallbackCoalescingWorkerDirectControlWrite": false,
-          "workerControlCheckoutRelief": "IMPLEMENTED_PENDING_QA",
-          "workerControlCheckoutScope": "VIBE2_STATE_ONLY",
-          "workerExecutableCodeSource": "PINNED_MAIN_CONTRACT",
-          "workerControlCheckoutGamePrimaryBoundary": 256,
-          "workerControlCheckoutAdaptiveBehaviorUnchanged": true,
-          "reserveConcurrencyRelief": "LIVE_VERIFIED",
-          "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v6",
-          "learningIdleRunnerPressureDeferral": "LIVE_VERIFIED",
-          "gamePrimaryExternalBoundary": 256,
-          "lastLanePressureLiveVerificationRun": 36204978877,
-          "lastLanePressureLiveVerificationResult": "PASS",
-          "modelCacheHitRestoreRelief": "LIVE_VERIFIED",
-          "modelCacheWarmupProbe": "RESERVE_LOOKUP_ONLY_ON_HIT",
-          "modelCacheWarmupRunnerRelief": "LIVE_VERIFIED_SKIP_MODEL_CACHE_JOB_ON_RESERVE_CACHE_HIT",
-          "modelCacheHitRestoreLiveRun": 36208311596,
-          "workerConditionalModelRestore": "IMPLEMENTED_PENDING_QA_AND_LIVE",
-          "schedulerEpochStaleRelease": "IMPLEMENTED_PENDING_CI_AND_ASSET_ARM_LIVE",
-          "schedulerEpochStaleReleaseReason": "V5_24H_PLAN_QUEUED_ON_SLIM_CONTROL_POOL_WHILE_ASSET_QUEUE_WAITED",
-          "executionModel": "INDEPENDENT_NONOVERLAPPING_TASK_DISPATCH",
-          "independentCompletionFanIn": true,
-          "independentReservationContinuation": true
+          "mode": "INDEPENDENT_TASK_EVENT_DRIVEN",
+          "internalGlobalParallelCap": null,
+          "externalMatrixTransportPartitionMax": 256,
+          "learningIdleFixedWorkers": 1,
+          "assetDevelopmentLaneMax": 64,
+          "assetDevelopmentSpeculativeVariantsPerTask": 1,
+          "taskMicroFanInPreserved": true,
+          "durableHandoffRequired": true,
+          "sharedStateWriteMode": "OPTIMISTIC_RETRY_ATOMIC_WRITE_ONLY",
+          "serializationReasons": [
+            "RESPONSIBLE_FILE_CONFLICT",
+            "ACTUAL_DEPENDENCY",
+            "EXACT_DUPLICATE_SUPPRESSION",
+            "ATOMIC_SHARED_STATE_WRITE"
+          ]
         },
-        "incidentHistory": [
-          {
-            "signature": "VIBE2_MACHINE_STATE_QUEUE_MAX_DIVERGED_INVALID_V3_PARALLELISM_STEP",
-            "symptom": "GAME_DEVELOPMENT_WORKERS_NOT_RESERVED",
-            "repair": "SYSTEM_STEWARD_BEFORE_HANDOFF_PLUS_SAME_PASS_REQUEUE",
-            "codeBindings": [
-              "tools/vibe2-system-steward.mjs",
-              "qa/vibe2-system-steward.test.mjs",
-              ".github/workflows/vibe2-24h-runner.yml"
-            ],
-            "status": "PRIMARY_MACHINE_STATE_BOTTLENECK_UNBLOCKED_DEVELOPMENT_RUNNING",
-            "verifiedEvidence": [
-              "VIBE2_MACHINE_STATE=CONSISTENT",
-              "VIBE2_ACTIVE_WORKERS=19",
-              "VIBE2_RESERVED_TASK_COUNT=19",
-              "VIBE2_HIERARCHICAL_FAN_OUT=41",
-              "VIBE2_CORE_QA=PASS",
-              "CENTRAL_POLICY_CONTRACT_QA=PASS",
-              "VIBE2_RETRY_RESERVATION_RUN=35426081736",
-              "SYSTEM_AI_ROOT_TASKS_RUNNING=5"
-            ],
-            "secondaryRepairs": [
-              {
-                "signature": "LEGACY_TELEMETRY_MAX_30",
-                "repair": "PARALLELISM_TELEMETRY_EXTERNAL_WAVE_MAX_256",
-                "binding": "tools/vibe2-parallelism-telemetry.mjs"
-              },
-              {
-                "signature": "SYSTEM_AI_NOT_WAKING_ON_CENTRAL_POLICY_CHANGE",
-                "repair": "CENTRAL_ROADMAP_PUSH_TRIGGER_ADDED",
-                "binding": ".github/workflows/company-system-ai-workers.yml"
-              },
-              {
-                "signature": "SYSTEM_AI_EMPTY_EDIT_TERMINAL_FAILURE",
-                "repair": "ONE_SCOPED_STRICT_EMPTY_CHANGE_RETRY_BEFORE_FAILURE",
-                "binding": "tools/company-system-ai-worker.mjs"
-              },
-              {
-                "signature": "MAIN_MACHINE_STATE_CONTRACT_STALE_30_20",
-                "repair": "SYNC_QUEUE_256_AND_CANONICAL_PARALLELISM_STEP",
-                "bindings": [
-                  ".vibe2/queue.json",
-                  ".vibe2/parallelism-control.json"
-                ]
-              },
-              {
-                "signature": "SYSTEM_AI_TRANSIENT_MODEL_ABORT",
-                "symptom": "LOCAL_MODEL_REQUEST_ABORTS_ON_TOKEN_REPEAT_BEFORE_SCOPED_EDIT_RESULT",
-                "repair": "ONE_COMPACT_SCOPED_REQUEST_RETRY_BEFORE_IMPLEMENTATION_FAILURE",
-                "binding": "tools/company-system-ai-worker.mjs"
-              }
-            ]
-          },
-          {
-            "signature": "RUN_CONTRACT_SHA_DRIFT_FANIN_STALE_CONTROL_CODE",
-            "symptom": "RESERVE_AND_WORKERS_USE_MAIN_CONTRACT_WHILE_FAN_IN_REGRESSION_USED_STALE_CONTROL_BRANCH_CODE_CAUSING_SUCCESSFUL_WORK_TO_REQUEUE",
-            "status": "REPAIR_APPLIED_PENDING_LIVE_WAVE_VERIFICATION",
-            "rootCause": "ACTIVE_WAVE_DID_NOT_SHARE_ONE_IMMUTABLE_MAIN_CONTRACT_SHA",
-            "repair": "RESERVE_EXPORTS_CONTRACT_SHA_EXPLORATION_WORKER_AND_FAN_IN_CHECKOUT_EXACT_SHA_CONTROL_BRANCH_STATE_ONLY",
-            "verifiedEvidence": [
-              "PREVIOUS_FAN_IN_REGRESSION_FAILURE_AFTER_SUCCESSFUL_WORKERS",
-              "CONTROL_BRANCH_STORES_RUNTIME_STATE",
-              "MAIN_IS_CODE_AND_MACHINE_CONTRACT_AUTHORITY",
-              "VIBE2_CORE_QA_BEFORE_SHA_PIN=PASS",
-              "CENTRAL_POLICY_CONTRACT_QA_BEFORE_SHA_PIN=PASS"
-            ],
-            "codeBindings": [
-              ".github/workflows/vibe2-continuous-core.yml",
-              "tools/vibe2-continuous-runner.mjs",
-              "qa/vibe2-controller-contract.test.mjs",
-              "vibe2-runtime.json"
-            ],
-            "nextVerification": [
-              "RESERVE_OUTPUT_CONTRACT_SHA_PRESENT",
-              "EXPLORATION_BASE_SHA_EQUALS_CONTRACT_SHA",
-              "WORKER_BASE_SHA_EQUALS_CONTRACT_SHA",
-              "FAN_IN_REGRESSION_EXECUTES_FROM_CONTRACT_SHA",
-              "FAN_IN_REGRESSION_PASS_OR_REQUEUE_ONLY_ON_REAL_CURRENT_CONTRACT_FAILURE",
-              "20_WAVE_REMAINS_PRIMARY_GAME_DEVELOPMENT_FIRST"
-            ],
-            "ownerWaveOverride": 20
-          },
-          {
-            "signature": "GLOBAL_EXPLORATION_MATRIX_BARRIER_BLOCKING_GAME_WORKERS",
-            "symptom": "18_OR_MORE_EXPLORATION_ROWS_COMPLETED_BUT_ONE_QUEUED_SUPERVISOR_EXPLORATION_PREVENTED_ALL_GAME_WORKERS_FROM_STARTING",
-            "status": "REPAIR_APPLIED_PENDING_LIVE_WAVE_VERIFICATION",
-            "rootCause": "WORKER_JOB_DEPENDED_ON_COMPLETION_OF_ENTIRE_EXPLORATION_MATRIX",
-            "repair": "REMOVE_GLOBAL_EXPLORATION_JOB_AND_BUILD_PINNED_TASK_LOCAL_EXPLORATION_INSIDE_EACH_WORKER",
-            "verifiedEvidence": [
-              "RUN_35427458752_EXPLORATION_ROWS_COMPLETED_BEFORE_LAST_SUPERVISOR_ROW",
-              "RUN_35427458752_WORKER_COUNT_ZERO_WHILE_ONE_EXPLORATION_ROW_QUEUED",
-              "RESERVE_CONTRACT_SHA_C10924A9307D3E9EB12357E01307B3F46CE5ED16",
-              "VIBE2_CORE_QA_SHA_PIN_CONTRACT=PASS_RUN_35427503309"
-            ],
-            "codeBindings": [
-              ".github/workflows/vibe2-continuous-core.yml",
-              "qa/vibe2-controller-contract.test.mjs",
-              "vibe2-runtime.json"
-            ],
-            "nextVerification": [
-              "WORKER_JOB_HAS_NO_GLOBAL_EXPLORATION_NEED",
-              "TASK_LOCAL_EXPLORATION_BASE_SHA_EQUALS_RESERVED_CONTRACT_SHA",
-              "GAME_WORKERS_START_WITHOUT_WAITING_FOR_SUPERVISOR_EXPLORATION",
-              "FAN_IN_STILL_USES_RESERVED_CONTRACT_SHA",
-              "20_WAVE_LIMIT_AND_PRIMARY_GAME_PRIORITY_REMAIN_ACTIVE"
-            ],
-            "ownerWaveOverride": 20
-          },
-          {
-            "signature": "PER_WORKER_REFILL_DISPATCH_STORM",
-            "symptom": "SUCCESSFUL_WORKERS_EMITTED_REPOSITORY_DISPATCH_RUNS_THAT_RESERVED_ZERO_NEW_WORKERS_AND_CONSUMED_ACTIONS_SLOTS",
-            "status": "VERIFIED_RESOLVED_RUN_35428014822",
-            "rootCause": "EACH_SINGLE_VARIANT_WORKER_COMPLETION_LAUNCHED_A_FULL_CONTINUOUS_CORE_REFILL_WORKFLOW",
-            "repair": "REMOVE_SLOT_REFILL_DISPATCH_AND_REFILL_ONLY_ONCE_AFTER_FAN_IN",
-            "verifiedEvidence": [
-              "RUN_35427804233_REFILL_RESERVED_TASK_COUNT=0",
-              "RUN_35427804233_HIERARCHICAL_FAN_OUT=0",
-              "MULTIPLE_REPOSITORY_DISPATCH_CONTINUOUS_CORE_RUNS_COMPLETED_OR_CANCELLED_WITHOUT_GAME_WORKERS",
-              "RUN_35427458752_WORKER_SUCCESS_COUNT=19_BEFORE_FINAL_WORKER",
-              "RUN_35428014822_FAN_IN_REGRESSION=PASS",
-              "RUN_35428014822_HIERARCHICAL_FAN_IN=PASS",
-              "RUN_35428014822_FAN_IN_REFILL_DISPATCH_COUNT=1",
-              "RUN_35428014822_PER_WORKER_REFILL_DISPATCH=0"
-            ],
-            "codeBindings": [
-              ".github/workflows/vibe2-continuous-core.yml",
-              "vibe2-runtime.json",
-              "qa/vibe2-controller-contract.test.mjs",
-              "qa/vibe2-exploration-worker.test.mjs"
-            ],
-            "nextVerification": [
-              "NO_VIBE2_SLOT_REFILL_DISPATCH_AFTER_WORKER_COMPLETION",
-              "FAN_IN_DISPATCHES_AT_MOST_ONE_NEXT_WAVE_REFILL",
-              "NEXT_WAVE_WORKERS_START_WITH_TASK_LOCAL_EXPLORATION",
-              "20_WAVE_LIMIT_REMAINS_ACTIVE",
-              "GAME_IMPLEMENTATION_PRIORITY_REMAINS_AHEAD_OF_NONBLOCKING_SUPERVISION"
-            ],
-            "ownerWaveOverride": 20
-          },
-          {
-            "signature": "WEB_VIBE_REPAIR_QUEUE_NOT_PASSED_TO_AUTOPLANNER",
-            "symptom": "COMPANY_RUNTIME_HAD_19_WEB_VIBE_REPAIR_REQUIRED_ITEMS_BUT_VIBE_CONTROL_QUEUE_HAD_ZERO_WEB_RUNTIME_REPAIR_TASKS",
-            "status": "REPAIR_APPLIED_PENDING_LIVE_QUEUE_VERIFICATION",
-            "rootCause": "VIBE2_24H_RUNNER_FETCHED_COMPANY_RUNTIME_DEVELOPMENT_QUEUE_BUT_DID_NOT_PASS_IT_TO_VIBE2_AUTO_PLANNER",
-            "repair": "PASS_EXACT_COMPANY_RUNTIME_DEVELOPMENT_QUEUE_TO_AUTO_PLANNER_CANCEL_SUPERSEDED_GENERIC_WEB_WORK_AND_CREATE_EXACT_WEB_REPAIR",
-            "codeBindings": [
-              ".github/workflows/vibe2-24h-runner.yml",
-              "tools/vibe2-auto-planner.mjs",
-              "qa/company-web-vibe-handoff-e2e.test.mjs",
-              "qa/vibe2-auto-planner.test.mjs"
-            ],
-            "verifiedEvidence": [
-              "COMPANY_RUNTIME_DEVELOPMENT_QUEUE_WEB_VIBE_REPAIR_REQUIRED_COUNT=19",
-              "PRE_REPAIR_VIBE_CONTROL_QUEUE_WEB_RUNTIME_REPAIR_TASK_COUNT=0",
-              "PLANNER_EXACT_STAGE_WEB_REPAIR_CONSUMER_PRESENT",
-              "CONTROL_PARALLELISM_STATE_RESTORED_TO_OWNER_MINIMUM_20",
-              "STALE_GENERIC_WEB_IMPLEMENTATION_IS_SUPERSEDED_BEFORE_EXACT_REPAIR_PLANNING"
-            ],
-            "nextVerification": [
-              "VIBE_CONTROL_QUEUE_CREATES_WEB_RUNTIME_REPAIR_V1_TASKS",
-              "REPAIR_TASKS_KEEP_RESPONSIBLE_FILE_BOUNDARY",
-              "PRIMARY_GAME_WORK_REMAINS_AHEAD_OF_NONBLOCKING_SYSTEM_AI",
-              "20_WAVE_TASK_LOCAL_FAN_IN_ONLY_CONTRACT_REMAINS_ACTIVE",
-              "NO_SUPERSEDED_GENERIC_WEB_TASK_REOPENS_BESIDE_EXACT_REPAIR"
-            ],
-            "ownerWaveOverride": 20
-          },
-          {
-            "signature": "WEB_RUNTIME_STATE_DEDUP_AND_STALE_BASE_AUTHORITY_DEAD_END",
-            "symptom": "COMPANY_RUNTIME_HAD_19_WEB_VIBE_REPAIR_REQUIRED_ITEMS_BUT_STATUS_DEDUPE_AND_STALE_CANCELLED_BASE_TASKS_PREVENTED_ALL_EXACT_STAGES_FROM_BECOMING_RUNNABLE",
-            "status": "REPAIR_APPLIED_PENDING_NEXT_LIVE_FAN_IN_REFILL_VERIFICATION",
-            "rootCauses": [
-              "COLLECT_PROJECTS_DROPPED_COMPANY_RUNTIME_QUEUE_STATE_WHEN_COMPANY_STATUS_ALREADY_CONTAINED_THE_WEB_PROJECT",
-              "CANCELLED_WEB_BASE_IMPLEMENTATION_IDS_FROM_OLD_DESIGN_ONLY_AUTHORITY_BLOCKED_RECREATION_AFTER_CURRENT_DEVELOPMENT_CONFIRMED_AUTHORITY",
-              "GENERIC_SOURCE_RECOVERY_COULD_COMPETE_WITH_EXACT_WEB_REPAIR"
-            ],
-            "repairs": [
-              "MERGE_COMPANY_RUNTIME_QUEUE_STATE_INTO_EXISTING_COMPANY_STATUS_WEB_ROWS",
-              "SUPERSEDE_OVERLAPPING_GENERIC_WEB_WORK_WITH_EXACT_RUNTIME_REPAIR",
-              "PRESERVE_AND_RECOVER_WEB_BASE_IMPLEMENTATION_WHEN_SOURCE_IS_MISSING",
-              "RESTORE_STALE_CANCELLED_EXACT_BASE_TASK_ONLY_WHEN_CURRENT_CATALOG_AND_RUNTIME_AUTHORITY_ARE_ACTIVE_DEVELOPMENT_CONFIRMED",
-              "KEEP_SOURCE_GENERATION_RECOVERY_SCOPED_TO_EXACT_WEB_RUNTIME_OR_BASE_TASKS",
-              "PIN_INVALID_PATH_RETRY_TO_THE_SINGLE_WRITABLE_RESPONSIBLE_FILE"
-            ],
-            "codeBindings": [
-              "tools/vibe2-auto-planner.mjs",
-              "tools/vibe2-queue-control.mjs",
-              "tools/vibe2-source-worker.mjs",
-              "qa/vibe2-auto-planner.test.mjs",
-              "qa/vibe2-queue-control.test.mjs",
-              "qa/vibe2-source-worker.test.mjs"
-            ],
-            "liveEvidence": [
-              "COMPANY_RUNTIME_WEB_VIBE_REPAIR_REQUIRED_COUNT=19",
-              "EXACT_WEB_RUNTIME_REPAIR_TASKS_CREATED=9",
-              "STALE_GENERIC_WEB_TASKS_SUPERSEDED=13",
-              "RUN_35428898216_OWNER_MINIMUM_WAVE=20",
-              "RUN_35428898216_ADAPTIVE_MAX=20",
-              "RUN_35428898216_RESERVED_TASK_COUNT=11",
-              "RUN_35428898216_MATRIX_FAN_OUT=13",
-              "TASK_LOCAL_EXPLORATION=PASS_ON_COMPLETED_WORKERS",
-              "NO_PER_WORKER_REFILL_OBSERVED"
-            ],
-            "currentPinnedContractWorkerFailures": [
-              "MONSTER_ADVENTURE_FULL_REWRITE_MIN_SIZE_VIOLATION_ON_OLD_PINNED_CONTRACT",
-              "SEED_CASUAL_REALM_WEAVER_OUT_OF_RESPONSIBLE_PATH_ON_OLD_PINNED_CONTRACT"
-            ],
-            "nextVerification": [
-              "CURRENT_WAVE_REACHES_SINGLE_FAN_IN",
-              "NEXT_REFILL_USES_POST_REPAIR_MAIN_CONTRACT",
-              "ALL_CURRENT_DEVELOPMENT_CONFIRMED_SOURCE_MISSING_GAMES_GET_EXACT_WEB_BASE_IMPLEMENTATION",
-              "ALL_EXISTING_SOURCE_WEB_VIBE_REPAIR_REQUIRED_GAMES_GET_EXACT_WEB_RUNTIME_REPAIR",
-              "NO_STALE_DESIGN_ONLY_CANCELLATION_BLOCKS_CURRENT_DEVELOPMENT_CONFIRMED_PRIMARY_WORK"
-            ]
-          },
-          {
-            "signature": "VIBE2_SOURCE_CANDIDATE_INVALID_OUTPUT_BEFORE_FAN_IN",
-            "symptom": "RUN_35428014822_WORKER_RESULTS_FAILED_BEFORE_FAN_IN_SO_FAN_IN_REVIEW_SKIPPED_ALL_ACTIONABLE_GAME_CANDIDATES",
-            "status": "REPAIR_APPLIED_PENDING_NEXT_WAVE_VERIFICATION",
-            "rootCause": "LOCAL_MODEL_CONTEXT_WAS_OVERSIZED_FOR_QWEN3_1_7B_AND_INVALID_OUTPUT_RECOVERY_REUSED_TOO_WIDE_CONTEXT_CAUSING_ZERO_CHANGE_JSON_PATH_AND_TOKEN_REPEAT_FAILURES",
-            "failureDistribution": {
-              "runId": "35428014822",
-              "workerCount": 16,
-              "zeroOrInvalidChangeSet": 10,
-              "jsonParseFailure": 3,
-              "invalidAllowedPath": 3,
-              "fanInRegression": "PASS",
-              "fanInReleaseCandidates": 0
-            },
-            "repair": "LIMIT_EDIT_CONTEXT_TO_96KB_USE_32K_MODEL_CONTEXT_PRESERVE_BEGIN_MIDDLE_END_EXCERPTS_RETRY_ZERO_CHANGE_JSON_INVALID_PATH_AND_TOKEN_REPEAT_ONCE_AND_REQUEUE_INFRA_EXHAUSTED_SOURCE_TASKS_ONCE",
-            "codeBindings": [
-              "tools/vibe2-source-worker.mjs",
-              "tools/vibe2-adaptive-backpressure.mjs",
-              "tools/vibe2-queue-control.mjs",
-              ".github/workflows/vibe2-continuous-core.yml",
-              "vibe2-runtime.json",
-              "qa/vibe2-source-worker.test.mjs",
-              "qa/vibe2-adaptive-backpressure.test.mjs",
-              "qa/vibe2-queue-control.test.mjs",
-              "qa/vibe2-controller-contract.test.mjs"
-            ],
-            "repairCommits": [
-              "bf0cd9eb6d05019f456e6435e54e98cb2bb32985",
-              "4bcee5e739e8214437162abf048d470ffd433cbf",
-              "b81a2539c4d3a753070fd76b1de66bad86673866",
-              "82397c9506d9b7a9c46ffca140e94b1e205ad006",
-              "abe45c2e4e5c838cb534a08ce42e41aec27f824c",
-              "eb2358e8dbe69a4dec07d6bd4d6179fc221431e7",
-              "012196171d9037a6b9b8167f82a16814303bfeb7"
-            ],
-            "nextVerification": [
-              "EXHAUSTED_SOURCE_GENERATION_FAILURES_REQUEUE_ONCE_AFTER_INFRA_REPAIR",
-              "NEXT_WAVE_ADAPTIVE_RESERVATION_FLOOR_IS_20_WHEN_ELIGIBLE_WORK_EXISTS",
-              "ZERO_CHANGE_INVALID_PATH_JSON_AND_TOKEN_REPEAT_GET_AT_MOST_ONE_CAUSAL_RETRY",
-              "TASK_LOCAL_EXPLORATION_REMAINS_PER_WORKER",
-              "NO_PER_WORKER_REFILL_DISPATCH",
-              "FAN_IN_REFILLS_AT_MOST_ONCE",
-              "GAME_IMPLEMENTATION_REMAINS_PRIMARY_AHEAD_OF_NONBLOCKING_SUPERVISION"
-            ],
-            "ownerWaveOverride": 20,
-            "sourceContextContract": {
-              "previousMaxBytes": 360000,
-              "currentMaxBytes": 96000,
-              "modelContextWindow": 32768,
-              "excerptPolicy": "PER_FILE_BEGIN_MIDDLE_END_WITH_TASK_LOCAL_IMPACT_FILES",
-              "maxGenerationAttempts": 2
-            }
-          }
-        ]
+        "exitCondition": "CAUSAL_FAILURE_RESOLVED_AND_REQUIRED_QA_PASSES"
       },
       "selfArchitectureEvolution": {
         "version": 1,
@@ -14638,7 +13616,6 @@
     "synchronizationEndState": "EXPLICIT_DEPENDENCY_OR_RESOURCE_SYNCHRONIZATION_ONLY_NOT_PRIMARY_SCHEDULER",
     "currentIndependentExecution": {
       "mode": "ATOMIC_NEURON_STREAM",
-      "schedulerAuthority": "EXISTING_DAG_SCHEDULER_WITH_ATOMIC_COMPLETION_CALLBACK",
       "globalActiveWorkerBarrier": false,
       "independentReservationWhileOtherWorkersActive": true,
       "queueReserveBatchIsCapacityAuthority": false,
@@ -14652,16 +13629,16 @@
       "taskMicroFanIn": true,
       "speculativeJoinScope": "PER_TASK",
       "integrationFanInRole": "REGRESSION_RELEASE_AUDIT_ONLY",
-      "neuralAuthorityScope": "GATED_EXISTING_SCHEDULER_ONLY",
       "runtimeResultIngress": true,
       "shadowFallbackPreserved": true,
       "responsibleFileConflictProtectionStillRequired": true,
       "sourceRootWideLockForbidden": true,
       "internalGlobalParallelCap": null,
-      "defaultRequestedParallelism": null,
       "externalCapacityMayQueueWithoutChangingInternalEligibility": true,
       "durableHandoffRequired": true,
-      "handoffConsumer": "tools/vibe2-handoff.mjs"
+      "handoffConsumer": "tools/vibe2-handoff.mjs",
+      "executionAuthority": "EXISTING_DAG_RESERVATION_AND_ATOMIC_COMPLETION",
+      "neuralAuthorityScope": "GATED_EXISTING_QUEUE_AND_RUNTIME_RESULT_AUTHORITY_ONLY"
     }
   },
   "assistantRoadmapOrchestration": {
