@@ -123,6 +123,10 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.match(directivePrompt(directive),/GAME_SPECIFIC_BUILD_UP_DIRECTIVE/);
   assert.match(directivePrompt(directive),/SOURCE_ANCHORS:/);
   assert.match(directivePrompt(directive),/EXPECTED_PLAYER_EFFECT:/);
+  assert.ok(directive.gameDna.signatureChoices.length>=1);
+  assert.ok(directive.playChainContract.sequence.some(row=>row.stage==='PLAYER_ACTION'));
+  assert.ok(directive.playChainContract.sequence.some(row=>row.stage==='RECOVERY_RETRY'));
+  assert.equal(directive.microIterationContract.connectedDependenciesRequired,true);
   assert.match(directivePrompt(directive),/HOLISTIC_CORE_DOMAIN_STATUS:/);
   assert.match(directivePrompt(directive),/AUTONOMOUS_CONTENT_EXPANSION:/);
   assert.match(directivePrompt(directive),/CONTENT_BREADTH_LEDGER:/);
@@ -364,7 +368,13 @@ test('verified product-quality failure routes first buildup generation directly 
       runtimePassed:false,
       failureStage:'VIBE_INTERNAL_PLAY',
       failureSignature:'ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED',
-      blockers:['primary-action-effect']
+      blockers:['primary-action-effect'],
+      studioQualityFailure:{
+        qualityFailureDetails:[
+          {id:'adaptive-ui-blocking-overlay',repairSurface:'MOBILE_UI',priority:'CRITICAL',hint:'overlay blocks input',observed:{largeBlockingOverlayCount:1}},
+          {id:'adaptive-world-safety',repairSurface:'WORLD_GEOMETRY',priority:'CRITICAL',hint:'floor coverage weak',observed:{floorCoveragePass:false}}
+        ]
+      }
     },
     qualitySignals:['primary-action-effect']
   });
@@ -372,6 +382,13 @@ test('verified product-quality failure routes first buildup generation directly 
   assert.equal(directive.effectivenessMeasurement.previousGeneration.classification,'REGRESSION');
   assert.equal(directive.nextActionDecision.action,'CAUSAL_REPAIR');
   assert.match(directive.nextActionDecision.reason,/failure|regression/i);
+  assert.equal(directive.gameDna.identity,'품질 실패 첫 세대');
+  assert.equal(directive.gameDna.genericizationForbidden,true);
+  assert.equal(directive.playChainContract.primaryFailure.repairSurface,'MOBILE_UI');
+  assert.equal(directive.playChainContract.selectedStage,'PLAYER_ACTION');
+  assert.equal(directive.microIterationContract.primaryScenario,'adaptive-ui-blocking-overlay');
+  assert.deepEqual([...directive.microIterationContract.preferredResponsibleFileCount],[1,3]);
+  assert.equal(directive.microIterationContract.exactStudioRecheckRequired,false);
 });
 
 
