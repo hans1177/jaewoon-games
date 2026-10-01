@@ -2,7 +2,7 @@ function clone(value) { return value == null ? value : JSON.parse(JSON.stringify
 function int(value, fallback = 0) { const n = Number(value); return Number.isFinite(n) ? Math.trunc(n) : fallback; }
 
 export class JaewoonQuestDialogue {
-  createState({ quests = {}, flags = {}, npc = {}, story = {}, relationships = {}, memories = {}, clues = {}, facts = {}, factions = {}, factionRelationships = {} } = {}) {
+  createState({ quests = {}, flags = {}, npc = {}, story = {}, relationships = {}, memories = {}, clues = {}, facts = {}, factions = {}, factionRelationships = {}, questProposals = {} } = {}) {
     return {
       quests: clone(quests) || {},
       flags: clone(flags) || {},
@@ -14,6 +14,7 @@ export class JaewoonQuestDialogue {
       facts: clone(facts) || {},
       factions: clone(factions) || {},
       factionRelationships: clone(factionRelationships) || {},
+      questProposals: clone(questProposals) || {},
     };
   }
 
