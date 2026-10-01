@@ -12,6 +12,8 @@ import {
   createVibeCompanionPersonalArc,
   createVibeCausalEvent,
   createVibeCausalInterpretation,
+  planVibeCausalActorLoop,
+  planVibeLivingActorDirector,
   createVibePlayerJudgment,
   createVibeAutonomousLifePlan,
   createVibeGuidanceIntent,
@@ -257,4 +259,125 @@ test('AI action validator rejects attempts to own protected gameplay state',()=>
   assert.equal(bad.safe,false);
   assert.ok(bad.touched.includes('damage'));
   assert.ok(bad.touched.includes('reward'));
+});
+
+
+test('causal actor loop carries action event observer interpretation memory emotion relationship and next intent without hidden knowledge',()=>{
+  const loop=planVibeCausalActorLoop({
+    event:{
+      id:'evt-rescue-chain',
+      type:'rescue',
+      actorId:'player',
+      targetId:'mira',
+      location:'old-bridge',
+      tick:22,
+      witnesses:['mira'],
+      magnitude:2,
+      actionId:'act-rescue-1',
+      actionType:'rescue'
+    },
+    world:{location:'old-bridge',region:'frontier'},
+    player:{id:'player'},
+    observers:[
+      {
+        actor:companion,
+        relationship:{trust:10,respect:5},
+        memory:[],
+        emotion:'alert',
+        knowledge:{observed:true,confidence:.95,attribution:'direct-cause'},
+        allowQuestProposal:true,
+        questVerb:'investigate'
+      },
+      {
+        actor:{...companion,id:'hidden-observer'},
+        relationship:{trust:10},
+        memory:[],
+        emotion:'calm',
+        knowledge:{observed:false,reported:false}
+      }
+    ]
+  });
+  assert.deepEqual([...loop.canonicalSequence],['action','event','observer','interpretation','memory','emotion','relationship','next-judgment','dialogue','action-preference','quest-candidate','engine-validation']);
+  assert.equal(loop.sourceEvent.contractComplete,true);
+  const mira=loop.observers[0],hidden=loop.observers[1];
+  assert.equal(mira.perceived,true);
+  assert.equal(mira.memoryCandidate.sourceEventId,'evt-rescue-chain');
+  assert.equal(mira.emotionAfter,'relief');
+  assert.ok(mira.relationshipDelta.trust>0);
+  assert.ok(mira.next.actionPreferences.includes('cooperate-with-source'));
+  assert.equal(mira.next.questCandidate.candidateOnly,true);
+  assert.equal(mira.next.questCandidate.acceptanceCompletionRewardPersistentMutation,'engine-only');
+  assert.equal(hidden.perceived,false);
+  assert.equal(hidden.memoryCandidate,null);
+  assert.deepEqual(hidden.relationshipDelta,{});
+  assert.deepEqual([...hidden.next.actionPreferences],[]);
+  assert.equal(loop.noHiddenEventEffectWithoutInformationPath,true);
+  assert.ok(loop.engineOwns.includes('network-authority'));
+});
+
+test('common ai applies one causal source event once and feeds it into the next declared action choice',()=>{
+  const loop=planVibeCausalActorLoop({
+    event:{
+      id:'evt-help-1',
+      type:'help',
+      actorId:'player',
+      targetId:'mira',
+      location:'camp',
+      tick:30,
+      witnesses:['mira']
+    },
+    observers:[{
+      actor:companion,
+      relationship:{trust:0},
+      memory:[],
+      emotion:'calm',
+      knowledge:{observed:true,confidence:1,attribution:'direct-cause'}
+    }]
+  });
+  const ai=new JaewoonCommonAI({
+    role:'support',
+    identity:{id:'mira'},
+    personality:{courage:.2,caution:.1,empathy:.8,sociability:.7,loyalty:.7}
+  });
+  const packet=loop.observers[0];
+  const first=ai.observeCausalEvent(packet);
+  assert.equal(first.applied,true);
+  assert.equal(ai.memory.length,1);
+  assert.ok(ai.relationshipWith('player').trust>0);
+  assert.equal(ai.causalContext.sourceEventId,'evt-help-1');
+  const trustAfter=ai.relationshipWith('player').trust;
+  const duplicate=ai.observeCausalEvent(packet);
+  assert.equal(duplicate.applied,false);
+  assert.equal(duplicate.reason,'duplicate_event');
+  assert.equal(ai.relationshipWith('player').trust,trustAfter);
+  const next=ai.decide({entityKind:'npc',danger:0,hostile:false,canInteract:true,patrolReady:true});
+  assert.equal(next.state,JaewoonCommonAI.State.INTERACT);
+  assert.equal(next.reason,'causal_social_followup');
+  assert.equal(next.causalContext.sourceEventId,'evt-help-1');
+  assert.equal(next.gameplayAuthority,false);
+});
+
+test('living actor director can consume a source event through the same causal contract',()=>{
+  const director=planVibeLivingActorDirector({
+    actor:companion,
+    player:{id:'player'},
+    world:{location:'frontier-gate'},
+    relationship:{trust:20},
+    memory:[],
+    causalEvent:{
+      id:'evt-warning-1',
+      type:'threat',
+      actorId:'raider',
+      targetId:'mira',
+      location:'frontier-gate',
+      tick:41,
+      witnesses:['mira']
+    },
+    causalKnowledge:{observed:true,confidence:.9,attribution:'direct-cause'}
+  });
+  assert.equal(director.version,2);
+  assert.equal(director.causal.sourceEvent.id,'evt-warning-1');
+  assert.equal(director.causal.perceived,true);
+  assert.ok(director.causal.next.actionPreferences.length>0);
+  assert.equal(director.policy.engineAuthoritative,true);
 });
