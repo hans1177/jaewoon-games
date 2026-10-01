@@ -462,7 +462,7 @@ function focusedCaretakerProject(project={},repoRoot=process.cwd()){
   if(!policy.enabled)return false;
   return policy.ownerIds.has(clean(project.gameId))||(policy.includeAllReleaseConfirmed&&clean(project.releaseState).toLowerCase()==='release-confirmed');
 }
-function projectSort(a,b){
+export function projectSort(a,b){
   const focus=(b.ownerFocusedCaretaker===true?1:0)-(a.ownerFocusedCaretaker===true?1:0);if(focus)return focus;
   const bottleneck=bottleneckRank(a)-bottleneckRank(b);if(bottleneck)return bottleneck;
   const engine=(ENGINE_RANK[a.engine]??9)-(ENGINE_RANK[b.engine]??9);if(engine)return engine;
