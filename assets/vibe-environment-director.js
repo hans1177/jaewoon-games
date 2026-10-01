@@ -212,33 +212,71 @@ export function createVibeMapDetailReconstruction({sketch={},assets=[],styleFami
   const districts=Array.isArray(sketch.districts)?sketch.districts:[];
   if(!districts.length)issues.push('DISTRICT_INTERPRETATION_REQUIRED');
   if(districts.some(row=>!row?.id||!ids.has(row.anchorNodeId)||!row.function)||new Set(districts.map(row=>row?.id)).size!==districts.length)issues.push('DISTRICT_ANCHOR_OR_FUNCTION_REQUIRED');
+
   const layerRules=[
-    ['TERRAIN','ENVIRONMENT','elevation drainage ground strata and traversable shoulders'],
-    ['STRUCTURE','BUILDING','plot roof facade doorway window supports joints and back-side construction'],
-    ['VEGETATION','ENVIRONMENT','species clusters age variation root-soil contact and canopy gaps'],
-    ['FUNCTIONAL_PROPS','PROP','district-specific work storage seating signs tools and human use'],
-    ['SURFACE_HISTORY','MATERIAL','edge wear runoff cracks mud repair patches and contact dirt'],
-    ['AMBIENT_LIFE','VFX','wind cloth leaves water light and restrained background movement']
+    ['TERRAIN','ENVIRONMENT','elevation drainage ground strata and traversable shoulders',
+      ['MACRO_ELEVATION','TRAVERSABLE_SLOPES','DRAINAGE_CHANNELS','SOIL_ROCK_STRATA','ROUTE_SHOULDERS','GROUND_MATERIAL_BLEND','EROSION_AND_USAGE_WEAR']],
+    ['STRUCTURE','BUILDING','plot roof facade doorway window supports joints and back-side construction',
+      ['MASSING_AND_FOOTPRINT','FOUNDATION_FRAME','WALLS_OPENINGS','DOORS_WINDOWS_DEPTH','ROOF_AND_DRAINAGE','INTERIOR_SHELL','TRIM_FASTENERS_JOINTS','FUNCTIONAL_FIXTURES']],
+    ['VEGETATION','ENVIRONMENT','species clusters age variation root-soil contact and canopy gaps',
+      ['SPECIES_SELECTION','AGE_SCALE_VARIANTS','TRUNK_BRANCH_FORM','ROOT_SOIL_CONTACT','CANOPY_CLUSTERING','UNDERSTORY','DEAD_FALLEN_VARIANTS','WIND_RESPONSE']],
+    ['FUNCTIONAL_PROPS','PROP','district-specific work storage seating signs tools and human use',
+      ['FUNCTION_INVENTORY','PRIMARY_PROP_FORMS','ASSEMBLY_AND_SUPPORT','HANDLES_HINGES_LIDS','PLACEMENT_BY_USE','INTERACTION_CLEARANCE','WEAR_BY_CONTACT']],
+    ['SURFACE_HISTORY','MATERIAL','edge wear runoff cracks mud repair patches and contact dirt',
+      ['MATERIAL_REGION_SPLIT','EDGE_BEVEL_RESPONSE','RUNOFF_AND_DRAINAGE','FOOT_HAND_TOOL_CONTACT','CRACK_REPAIR_PATCH','MUD_DUST_WETNESS','AGE_VARIATION']],
+    ['AMBIENT_LIFE','VFX','wind cloth leaves water light and restrained background movement',
+      ['WIND_LAYER','LEAF_GRASS_RESPONSE','CLOTH_SIGN_RESPONSE','WATER_SURFACE_MOTION','LIGHT_FLICKER_OR_CYCLE','DISTANT_AMBIENT_ACTIVITY']]
   ];
+
+  const distanceDetail=Object.freeze({
+    GAME_CAMERA:Object.freeze(['REGION_SILHOUETTE','LANDMARK_HIERARCHY','ROUTE_READABILITY','DISTRICT_VALUE_AND_COLOR_BLOCKS']),
+    MID_RANGE:Object.freeze(['BUILDING_MODULES','VEGETATION_CLUSTERS','FUNCTIONAL_PROP_GROUPS','SECONDARY_PATHS']),
+    CLOSEUP:Object.freeze(['JOINTS_FASTENERS','SURFACE_WEAR','ROOT_SOIL_CONTACT','GUTTERS_TRIM','SIGNS_TOOLS_STORAGE']),
+    CONTACT:Object.freeze(['DOOR_STAIR_HANDLE','INTERACTION_ANCHOR','GROUND_FOOTING','RESOURCE_CLEARANCE','WALL_FLOOR_OBJECT_CONTACT'])
+  });
+
   let hash=2166136261;for(const char of String(seed)){hash^=char.charCodeAt(0);hash=Math.imul(hash,16777619);}hash>>>=0;
   const regions=districts.filter(row=>row?.id&&ids.has(row.anchorNodeId)).map((district,index)=>({
     id:district.id,anchorNodeId:district.anchorNodeId,function:district.function,
     landmark:district.landmark||null,styleFamily,
-    layers:layerRules.map(([layer,family,detail],layerIndex)=>{
+    productionSequence:['BLOCKOUT','STRUCTURAL_AUTHORING','FUNCTIONAL_DETAIL','MATERIAL_AND_HISTORY','AMBIENT_MOTION','PLATFORM_VARIANTS','APPLY_TO_WORLD'],
+    detailByDistance:distanceDetail,
+    layers:layerRules.map(([layer,family,detail,authoringPasses],layerIndex)=>{
       const candidates=assets.filter(asset=>String(asset.family||asset.category).toUpperCase()===family&&(asset.sourceHash||asset.contentHash||asset.sha256)&&Array.isArray(asset.mapDetailRoles)&&asset.mapDetailRoles.includes(layer)&&(!asset.districtFunctions?.length||asset.districtFunctions.includes(district.function)));
       const selected=candidates.length?candidates[(hash+index*7+layerIndex*3)%candidates.length]:null;
-      return{layer,family,detail,cause:district.function,assetId:selected?.id||null,sourceHash:selected?.sourceHash||selected?.contentHash||selected?.sha256||null,status:selected?'REUSE_CANDIDATE':'AUTHORING_REQUIRED',runtimeVerified:false};
+      return{
+        layer,family,detail,authoringPasses:Object.freeze(authoringPasses),cause:district.function,
+        assetId:selected?.id||null,sourceHash:selected?.sourceHash||selected?.contentHash||selected?.sha256||null,
+        status:selected?'REUSE_AND_REAUTHOR':'AUTHORING_REQUIRED',
+        productionAction:selected?'ADAPT_EXISTING_ASSET_TO_DISTRICT_AND_STYLE':'CREATE_EDITABLE_NATIVE_ASSET',
+        applyAction:'BIND_TO_EXISTING_WORLD_REGION_AND_NAVIGATION_SAFE_PLACEMENT',
+        runtimeVerified:false
+      };
     }),
-    placementRules:['PRESERVE_ROAD_INTERSECTIONS_AND_ONE_WAY_LINKS','BUILDING_ENTRANCES_FACE_ACCESS_ROUTE','KEEP_LANDMARK_SIGHTLINE','CLUSTER_BY_FUNCTION_NOT_UNIFORM_SCATTER','KEEP_NAVIGATION_AND_INTERACTION_CLEARANCE','WEAR_FOLLOWS_WATER_CONTACT_AND_USAGE'],
-    detailScale:['PRIMARY_MASSES_FROM_GAME_CAMERA','SECONDARY_CONSTRUCTION_AT_MID_RANGE','TERTIARY_SURFACE_AT_CLOSEUP']
+    placementRules:['PRESERVE_ROAD_INTERSECTIONS_AND_ONE_WAY_LINKS','BUILDING_ENTRANCES_FACE_ACCESS_ROUTE','KEEP_LANDMARK_SIGHTLINE','CLUSTER_BY_FUNCTION_NOT_UNIFORM_SCATTER','KEEP_NAVIGATION_AND_INTERACTION_CLEARANCE','WEAR_FOLLOWS_WATER_CONTACT_AND_USAGE','DETAIL_DENSITY_FOLLOWS_PLAYER_DWELL_TIME_AND_GAMEPLAY_IMPORTANCE'],
+    detailScale:['PRIMARY_MASSES_FROM_GAME_CAMERA','SECONDARY_CONSTRUCTION_AT_MID_RANGE','TERTIARY_SURFACE_AT_CLOSEUP','CONTACT_DETAIL_AT_INTERACTION_RANGE'],
+    causalDetailRules:['NO_RANDOM_CLUTTER_FOR_DETAIL_SCORE','PROPS_REQUIRE_FUNCTION_OR_WORLD_CAUSE','WEAR_REQUIRES_CONTACT_WEATHER_OR_DAMAGE_CAUSE','FASTENERS_AND_JOINTS_APPEAR_WHERE_PARTS_CONNECT','DRAINAGE_MARKS_FOLLOW_GRAVITY_AND_WATER_PATHS']
   }));
+  const productionChain=Object.freeze({
+    sequence:Object.freeze(['INSPECT_MAP_AND_RUNTIME','DEFINE_REGION_REPAIR_SCOPE','AUTHOR_REGION_ASSETS_AND_MATERIALS','APPLY_TO_EXISTING_WORLD','REINSPECT_ROUTE_AND_GAME_CAMERA']),
+    automaticAdvance:true,
+    inspect:Object.freeze(['SOURCE_MAP_TOPOLOGY','CURRENT_RUNTIME_CAMERA','LANDMARK_VISIBILITY','ROUTE_AND_INTERACTION_CLEARANCE','CURRENT_REGION_ASSET_BINDINGS']),
+    repair:Object.freeze(['KEEP_VALID_TOPOLOGY','TARGET_ONLY_WEAK_REGIONS','PRESERVE_SPAWN_OBJECTIVE_INTERACTION_COLLISION_SAVE_MEANING']),
+    author:Object.freeze(['EDITABLE_TERRAIN_OR_WORLD_SOURCE','MODULAR_BUILDING_KITS','VEGETATION_VARIANTS','FUNCTIONAL_PROP_KITS','MATERIAL_HISTORY_PASSES','AMBIENT_MOTION_VARIANTS']),
+    apply:Object.freeze(['USE_EXISTING_WORLD_RESPONSIBILITY','NO_SHADOW_MAP','BIND_NAV_COLLISION_WITHOUT_CHANGING_GAMEPLAY_MEANING','MOBILE_LOD_AND_STREAMING_VARIANTS']),
+    reinspect:Object.freeze(['TOP_DOWN_ROUTE_OVERLAY','EYE_LEVEL_WALKTHROUGH','LANDMARK_REVEAL','INTERACTION_RANGE_CLOSEUP','GAME_CAMERA_DETAIL_READABILITY']),
+    failedRegionOnlyLoops:true,
+    reportOnlyCompletionForbidden:true
+  });
   return Object.freeze({
-    version:1,status:issues.length?'MAP_INTERPRETATION_REQUIRED':'DETAIL_AUTHORING_PLAN',issues:Object.freeze(issues),seed:String(seed),styleFamily,
+    version:2,status:issues.length?'MAP_INTERPRETATION_REQUIRED':'DETAIL_AUTHORING_PLAN',issues:Object.freeze(issues),seed:String(seed),styleFamily,
     sourceId:sketch.sourceId||null,sourceHash:sketch.sourceHash||null,
     topology:issues.length?null:routes,regions:Object.freeze(issues.length?[]:regions),
+    productionChain,
+    detailByDistance:distanceDetail,
     spatialScale:typeof sketch.metersPerUnit==='number'&&Number.isFinite(sketch.metersPerUnit)&&sketch.metersPerUnit>0?{metersPerUnit:sketch.metersPerUnit,measured:false}:{status:'SCALE_AUTHORING_REQUIRED',measured:false},
     preserve:Object.freeze(['ROUTE_CONNECTIVITY','JUNCTION_ORDER','LANDMARK_ANCHORS','SPAWN_OBJECTIVE_AND_INTERACTION_AREAS','COLLISION_AND_SAVE_MEANING']),
-    comparison:Object.freeze(['SOURCE_MAP_ROUTE_OVERLAY','TOP_DOWN_GENERATED_LAYOUT','EYE_LEVEL_ROUTE_WALKTHROUGH','LANDMARK_SIGHTLINES','CLOSEUP_MATERIAL_CONSTRUCTION','UNITY_WEB_SAME_SEED_AND_MOBILE_LOD']),
+    comparison:Object.freeze(['SOURCE_MAP_ROUTE_OVERLAY','TOP_DOWN_GENERATED_LAYOUT','EYE_LEVEL_ROUTE_WALKTHROUGH','LANDMARK_SIGHTLINES','CLOSEUP_MATERIAL_CONSTRUCTION','PLATFORM_NATIVE_SAME_SEED_AND_MOBILE_LOD']),
     unseenArchitectureIsCreativeProposal:true,assetCountIsNotDetailQuality:true,sourceMutationPerformed:false,runtimeVerified:false
   });
 }
