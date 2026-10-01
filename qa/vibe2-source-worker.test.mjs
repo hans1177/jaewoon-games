@@ -2732,6 +2732,62 @@ test('timeout partial recovery is persisted in coding method and immutable worke
   assert.match(workflowSource,/baseCodingMethod\?\.partialTimeoutRecovery===true\?'coding-timeout-partial-recovery:YES'/);
 });
 
+test('zero-output focused Roblox Studio recovery bounds oversized build-up guidance below the 8K context threshold',()=>{
+  const sourceRoot=tempRoot();
+  const relative='client/Game.client.luau';
+  write(path.join(sourceRoot,relative),[
+    'local TweenService=game:GetService("TweenService")',
+    'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    'return panel'
+  ].join('\n')+'\n');
+  const external=[
+    '[VERIFIED EXTERNAL BLACK-BOX LEARNING BEGIN]',
+    'dispositions=1/1; sourcePrinciples=1; validationOnly=0; truncation=FORBIDDEN',
+    '[EXTERNAL_LEARNING source-a]',
+    'DISPOSITION=visual-feedback:APPLIED_GAME_SOURCE;GAME=demo;TARGET=ROBLOX;DOMAINS=GAMEPLAY_HUD;GENRE_MOOD=demo',
+    'APPLY=id=visual-feedback;lesson=keep combat feedback readable;apply=bind visible feedback to current state',
+    '[END_EXTERNAL_LEARNING source-a]',
+    '[VERIFIED EXTERNAL BLACK-BOX LEARNING END]'
+  ].join('\n');
+  const huge='connected presentation detail '.repeat(900);
+  const directive=[
+    '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
+    'directiveId=demo-g2 primaryFocus=PRESENTATION',
+    'gameIdentity=demo survival',
+    'primaryGoal=make combat presentation readable',
+    'implementationUnit='+huge,
+    ...Array.from({length:8},(_,index)=>'sourceAnchors='+relative+':'+(index+1)+' METHOD Visual'+index+' CURRENT=weak INTENDED='+huge+' ACCEPT=visible'),
+    'contentTheme='+huge,
+    'contentCompletionAcceptance='+huge,
+    'visual='+huge,
+    'platform='+huge,
+    'preserve=SAVE_KEYS|DAMAGE_VALUES|PROGRESSION',
+    'acceptance=VISIBLE_NATIVE_DELTA',
+    '[GAME SPECIFIC BUILD UP DIRECTIVE END]'
+  ].join('\n');
+  const prompt=[
+    'Engine: roblox',
+    'Goal: [STUDIO_QUALITY_EVOLUTION] [PRESENTATION_PASS:ASSET_ADAPTATION] improve real visible Roblox presentation',
+    external,
+    directive,
+    'Allowed edit paths: '+relative,
+    '=== FILE '+relative+' [EDITABLE] ===',
+    fs.readFileSync(path.join(sourceRoot,relative),'utf8')
+  ].join('\n');
+  const focused=buildFocusedReplaceOnlyPrompt(prompt,{
+    error:new Error('Ollama 첫 출력 시간 초과: 120000ms'),
+    responsibleFiles:[relative],
+    sourceRoot
+  });
+  assert.ok(focused);
+  assert.equal(verifiedExternalLearningBlockFromPrompt(focused.prompt),external);
+  assert.match(focused.prompt,/primaryGoal=make combat presentation readable/);
+  assert.match(focused.prompt,/preserve=SAVE_KEYS\|DAMAGE_VALUES\|PROGRESSION/);
+  assert.match(focused.prompt,/VISIBLE_NATIVE_DELTA/);
+  assert.ok(Buffer.byteLength(focused.prompt,'utf8')<19000);
+  assert.equal(sourcePromptContextWindow(focused.prompt,{baseContextWindow:8192,maxPredict:768}),8192);
+});
+
 test('zero-output timeout keeps focused recovery enabled for studio build-up',()=>{
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(workerSource,/const zeroOutputTimeoutRecovery=!allowFullRewrite/);

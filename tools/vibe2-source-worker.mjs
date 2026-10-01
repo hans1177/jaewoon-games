@@ -1305,7 +1305,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
     return file&&paths.some(relative=>posix(file)===posix(relative)||posix(file).endsWith('/'+posix(relative)));
   }):[];
   let anchorsWritten=false;
-  return lines.flatMap(line=>{
+  const compactedLines=lines.flatMap(line=>{
     if(line.startsWith('sourceAnchors=')&&paths.length){
       if(anchorsWritten)return[];
       anchorsWritten=true;
@@ -1318,7 +1318,43 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
     if(at<0)return[boundedPromptText(line,COMPACT_DIRECTIVE_LINE_BYTES)];
     const prefix=line.slice(0,at+1);
     return[prefix+boundedPromptText(line.slice(at+1),Math.max(256,COMPACT_DIRECTIVE_LINE_BYTES-Buffer.byteLength(prefix,'utf8')))];
+  });
+  const compacted=compactedLines.join('\n');
+  if(!compact||Buffer.byteLength(compacted,'utf8')<=6000)return compacted;
+
+  const essentialPrefixes=[
+    'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'contentTheme=','contentCompletionAcceptance=',
+    ...(focusedPresentation||focusedRobloxVisual?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
+    'platform=','preserve=','acceptance='
+  ];
+  const essential=[];
+  const seen=new Set();
+  let essentialAnchors=0;
+  for(const line of compactedLines){
+    if(line===begin||line===end){essential.push(line);continue;}
+    const prefix=essentialPrefixes.find(value=>line.startsWith(value));
+    if(!prefix)continue;
+    if(prefix==='sourceAnchors='){
+      if(essentialAnchors>=3)continue;
+      essentialAnchors+=1;
+    }else{
+      if(seen.has(prefix))continue;
+      seen.add(prefix);
+    }
+    essential.push(line);
+  }
+  const payloadCount=Math.max(1,essential.filter(line=>line!==begin&&line!==end).length);
+  const lineBudget=Math.max(256,Math.min(640,Math.floor(5400/payloadCount)));
+  const bounded=essential.map(line=>{
+    if(line===begin||line===end)return line;
+    const at=line.indexOf('=');
+    if(at<0)return boundedPromptText(line,lineBudget);
+    const prefix=line.slice(0,at+1);
+    return prefix+boundedPromptText(line.slice(at+1),Math.max(256,lineBudget-Buffer.byteLength(prefix,'utf8')));
   }).join('\n');
+  console.log('VIBE2_COMPACT_BUILD_UP_BYTES='+Buffer.byteLength(compacted,'utf8')+'->'+Buffer.byteLength(bounded,'utf8'));
+  return bounded;
 }
 
 
