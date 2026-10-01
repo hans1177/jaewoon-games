@@ -556,6 +556,30 @@ jobs:
           if(!pass)console.log('UPPER_PLATFORM_REPAIR_REQUIRED='+JSON.stringify(criteria));
           NODE
 
+      - name: Bind Unity Web screenshot for asset visual review
+        shell: bash
+        env:
+          GAME_ID: ${{ steps.request.outputs.game_id }}
+          SOURCE_COMMIT: ${{ steps.request.outputs.source_commit }}
+        run: |
+          set -euo pipefail
+          test -s /tmp/unity-web/gameplay-mobile.png
+          node --input-type=module <<'NODE'
+          import {writeRuntimeVisualEvidenceManifest} from './tools/vibe2-asset-production-plan.mjs';
+          writeRuntimeVisualEvidenceManifest({
+            output:'/tmp/unity-web/asset-runtime-visual-evidence.json',
+            gameId:process.env.GAME_ID,
+            platform:'UNITY',
+            surface:'UNITY_WEB_BROWSER',
+            sourceRevision:process.env.SOURCE_COMMIT,
+            sourceRoot:'unity-games/'+process.env.GAME_ID,
+            sceneId:'unity-web-gameplay',
+            captures:[{id:'unity-web-game-camera',path:'/tmp/unity-web/gameplay-mobile.png',view:'GAME_CAMERA'}],
+            visualGoals:['gameplay composition','asset detail readability','mobile browser readability'],
+            editableTargets:['SCENE','UI','CHARACTER','ENVIRONMENT','VFX','LIGHTING'],
+            producer:{workflow:'unity-web-first-stage-build',runId:process.env.GITHUB_RUN_ID,runAttempt:process.env.GITHUB_RUN_ATTEMPT}
+          });
+          NODE
       - name: Upload Unity Web artifact
         uses: actions/upload-artifact@v4
         with:
