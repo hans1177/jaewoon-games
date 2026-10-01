@@ -681,29 +681,82 @@ jobs:
               --completed-runs="$completed_reservation_runs" | tee /tmp/vibe2-completed-reservation-recovery.log
           fi
 
-          active_worker_reservations="$(node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const requested=String(process.env.VIBE2_EXECUTION_LANE||'game-primary').toUpperCase().replaceAll('-','_');const lane=t=>{const status=String(t.status||'').toLowerCase(),blocker=String(t.blocker||''),dep=String(t.department||'').toLowerCase(),type=String(t.type||'implementation').toLowerCase(),ev=(t.evidence||[]).map(String);if(status==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*qa|qa.*awaiting|slot-released.*fan-in/i.test(blocker))return'RELEASE_WAIT';if(ev.includes('learning-practice-only')||dep==='learning'||(dep==='development'&&type==='research'))return'LEARNING_IDLE';if(t.assetProductionLane===true||ev.includes('asset-production-parallel:v1'))return'ASSET_DEVELOPMENT';if(dep==='development'&&type==='implementation')return'GAME_PRIMARY';if(t.systemSteward===true)return'RECOVERY_FAST';return'CONTROL_FAST';};const rows=(q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)===requested);process.stdout.write(String(rows.length))" "$control_root/.vibe2/queue.json")"
-          echo "VIBE2_EXECUTION_LANE=$VIBE2_EXECUTION_LANE"
-          echo "VIBE2_ACTIVE_LANE_RESERVATIONS_BEFORE_RESERVE=${active_worker_reservations:-0}"
-          reservation_id="${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}"
-          reserved_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-          lane_min='1'
-          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then lane_min="$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN"; fi
-          if [ "${active_worker_reservations:-0}" -gt 0 ]; then
-            echo 'VIBE2_RESERVE_MODE=FREE_SLOT_REFILL_DURING_ACTIVE_WORK'
+          rm -f /tmp/vibe2-early-review-run /tmp/vibe2-early-review-candidates.txt
+          VIBE2_EXECUTION_LANE="$VIBE2_EXECUTION_LANE" node - "$control_root/.vibe2/queue.json" <<'NODE' > /tmp/vibe2-early-review-candidates.txt
+          const fs=require('fs');
+          const queue=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const lane=String(process.env.VIBE2_EXECUTION_LANE||'game-primary').toLowerCase();
+          const runs=[];
+          const seen=new Set();
+          for(const task of queue.tasks||[]){
+            if(task.status!=='running'||!/slot-released.*fan-in/i.test(String(task.blocker||'')))continue;
+            if((task.evidence||[]).includes('role-result:review:PASS'))continue;
+            const asset=task.assetProductionLane===true||(task.evidence||[]).includes('asset-production-parallel:v1');
+            if(lane==='asset-development'?!asset:asset)continue;
+            const run=String(task.reservationRunId||'');
+            if(!/^\d+$/.test(run)||seen.has(run))continue;
+            seen.add(run);runs.push(run);
+            if(runs.length>=3)break;
+          }
+          process.stdout.write(runs.join('\n'));
+          NODE
+          while IFS= read -r early_source_run || [ -n "$early_source_run" ]; do
+            [ -n "$early_source_run" ] || continue
+            early_status="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$early_source_run" --jq '.status' 2>/dev/null || true)"
+            case "$early_status" in in_progress|completed) ;; *) continue ;; esac
+            early_available="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$early_source_run/artifacts?per_page=100" --jq '[.artifacts[] | select(.expired == false and (.name | startswith("vibe2-result-")))] | length' 2>/dev/null || echo 0)"
+            [ "${early_available:-0}" -gt 0 ] || continue
+            printf '%s\n' "$early_source_run" > /tmp/vibe2-early-review-run
+            echo "VIBE2_BATCH_EARLY_FAN_IN_READY=$early_source_run:$early_status"
+            break
+          done < /tmp/vibe2-early-review-candidates.txt
+          early_review_run="$(cat /tmp/vibe2-early-review-run 2>/dev/null || true)"
+
+          if [ -n "$early_review_run" ]; then
+            echo "VIBE2_RESERVE_MODE=BATCH_EARLY_FAN_IN_DRAIN:$early_review_run"
+            node <<'NODE'
+          const fs=require('fs');
+          const payload={
+            version:1,
+            createdAt:new Date().toISOString(),
+            matrix:[],
+            scheduler:{
+              requestedMaxConcurrentTasks:0,
+              effectiveMaxConcurrentTasks:0,
+              primaryTaskCount:0,
+              longWorkProtectedSlotUsed:false,
+              speculativeExpansionAllowed:false,
+              speculativeExpansionReason:'BATCH_EARLY_FAN_IN_DRAIN'
+            }
+          };
+          fs.writeFileSync('/tmp/vibe2-batch.json',JSON.stringify(payload,null,2)+'\n');
+          NODE
           else
-            echo 'VIBE2_RESERVE_MODE=NEW_WAVE_OR_IDLE_REFILL'
-          fi
-          node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch \
-            --queue="$control_root/.vibe2/queue.json" \
-            --control="$control_root/.vibe2/parallelism-control.json" \
-            --lane="$VIBE2_EXECUTION_LANE" \
-            --max="$VIBE2_LANE_MAX" \
-            --min="$lane_min" \
-            --reservation-id="$reservation_id" \
-            --reservation-run="$GITHUB_RUN_ID" \
-            --reservation-attempt="$GITHUB_RUN_ATTEMPT" \
-            --reserved-at="$reserved_at" \
-            --output=/tmp/vibe2-batch.json | tee /tmp/vibe2-reserve.log
+            active_worker_reservations="$(node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const requested=String(process.env.VIBE2_EXECUTION_LANE||'game-primary').toUpperCase().replaceAll('-','_');const lane=t=>{const status=String(t.status||'').toLowerCase(),blocker=String(t.blocker||''),dep=String(t.department||'').toLowerCase(),type=String(t.type||'implementation').toLowerCase(),ev=(t.evidence||[]).map(String);if(status==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*qa|qa.*awaiting|slot-released.*fan-in/i.test(blocker))return'RELEASE_WAIT';if(ev.includes('learning-practice-only')||dep==='learning'||(dep==='development'&&type==='research'))return'LEARNING_IDLE';if(t.assetProductionLane===true||ev.includes('asset-production-parallel:v1'))return'ASSET_DEVELOPMENT';if(dep==='development'&&type==='implementation')return'GAME_PRIMARY';if(t.systemSteward===true)return'RECOVERY_FAST';return'CONTROL_FAST';};const rows=(q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)===requested);process.stdout.write(String(rows.length))" "$control_root/.vibe2/queue.json")"
+            echo "VIBE2_EXECUTION_LANE=$VIBE2_EXECUTION_LANE"
+            echo "VIBE2_ACTIVE_LANE_RESERVATIONS_BEFORE_RESERVE=${active_worker_reservations:-0}"
+            reservation_id="${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}"
+            reserved_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            lane_min='1'
+            if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then lane_min="$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN"; fi
+            if [ "${active_worker_reservations:-0}" -gt 0 ]; then
+              echo 'VIBE2_RESERVE_MODE=FREE_SLOT_REFILL_DURING_ACTIVE_WORK'
+            else
+              echo 'VIBE2_RESERVE_MODE=NEW_WAVE_OR_IDLE_REFILL'
+            fi
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch \
+              --queue="$control_root/.vibe2/queue.json" \
+              --control="$control_root/.vibe2/parallelism-control.json" \
+              --lane="$VIBE2_EXECUTION_LANE" \
+              --max="$VIBE2_LANE_MAX" \
+              --min="$lane_min" \
+              --reservation-id="$reservation_id" \
+              --reservation-run="$GITHUB_RUN_ID" \
+              --reservation-attempt="$GITHUB_RUN_ATTEMPT" \
+              --reserved-at="$reserved_at" \
+              --output=/tmp/vibe2-batch.json | tee /tmp/vibe2-reserve.log
+            fi
+
           node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
             --runtime=/tmp/vibe2-main/vibe2-runtime.json \
             --queue="$control_root/.vibe2/queue.json" \
@@ -925,6 +978,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [ -s /tmp/vibe2-early-review-run ]; then
+            source_run="$(cat /tmp/vibe2-early-review-run)"
+            status="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$source_run" --jq '.status' 2>/dev/null || true)"
+            available="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$source_run/artifacts?per_page=100" --jq '[.artifacts[] | select(.expired == false and (.name | startswith("vibe2-result-")))] | length' 2>/dev/null || echo 0)"
+            if { [ "$status" = 'in_progress' ] || [ "$status" = 'completed' ]; } && [ "${available:-0}" -gt 0 ]; then
+              echo "source_run=$source_run" >> "$GITHUB_OUTPUT"
+              echo "VIBE2_COMPLETED_RESULT_REVIEW_RESUME=EARLY_SLOT:$source_run:$status"
+              exit 0
+            fi
+          fi
           node <<'NODE' > /tmp/vibe2-stranded-review-runs.tsv
           const fs=require('fs');
           const queue=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));

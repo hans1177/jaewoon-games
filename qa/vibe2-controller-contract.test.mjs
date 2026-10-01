@@ -1628,6 +1628,15 @@ test('completed worker results batch into early fan-in without per-worker dispat
     assert.equal(runtime.continuous.callbackCoalescing.earlyFanInFiltersToReleasedTaskIds,true);
     assert.equal(runtime.continuous.callbackCoalescing.earlyFanInPerWorkerDispatchRequired,false);
     assert.equal(runtime.continuous.callbackCoalescing.earlyFanInConsumer,'CENTRAL_RESERVE_BATCH_FAN_IN');
+    assert.equal(runtime.continuous.callbackCoalescing.earlyFanInReservationDrainRun,true);
+    assert.equal(runtime.continuous.callbackCoalescing.earlyFanInDrainRefillAfterReview,true);
+    assert.match(workflow,/VIBE2_BATCH_EARLY_FAN_IN_READY=/);
+    assert.match(workflow,/VIBE2_RESERVE_MODE=BATCH_EARLY_FAN_IN_DRAIN:/);
+    assert.match(workflow,/speculativeExpansionReason:'BATCH_EARLY_FAN_IN_DRAIN'/);
+    const drainAt=workflow.indexOf('VIBE2_RESERVE_MODE=BATCH_EARLY_FAN_IN_DRAIN:');
+    const reserveAt=workflow.indexOf('vibe2-queue-control.mjs reserve-batch',drainAt);
+    assert.ok(drainAt>=0&&reserveAt>drainAt);
+    assert.match(workflow.slice(drainAt,reserveAt),/else/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
