@@ -1,5 +1,5 @@
 {
-  "version": 510,
+  "version": 511,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -873,7 +873,7 @@
     "cronMustNotBePrimaryProgressionEngine": true,
     "existingEventChainPreferred": true,
     "globalAdaptiveParallelMax": null,
-    "parallelismMode": "SCHEDULING_WAVES_WITH_UNBOUNDED_INTERNAL_ELIGIBILITY",
+    "parallelismMode": "UNBOUNDED_INDEPENDENT_NONOVERLAPPING_DISPATCH",
     "externalMatrixBatchMax": 256,
     "robloxEndToEndParallelExecution": {
       "version": 1,
@@ -1292,7 +1292,7 @@
     "controlPlaneQueueBacklogMitigation": {
       "version": 3,
       "authority": "OWNER_DIRECTIVE_2026-09-30",
-      "status": "ACTIVE_SCHEDULING_WAVE_CONTROL_WITH_INDEPENDENT_TASK_MICRO_FANIN",
+      "status": "RETIRED_OWNER_DIRECTIVE_2026-10-01_INDEPENDENT_EXECUTION",
       "objective": "HISTORICAL_CONTROL_PLANE_PRESSURE_RECORD_ONLY",
       "neuronCompletionCallback": {
         "event": "vibe2-neuron-complete",
@@ -1301,17 +1301,17 @@
         "cancellationForbidden": true,
         "reserveRunnerPool": "ubuntu-latest",
         "resultArtifactCoalescingForbidden": true,
-        "callbackWorkflowSuppressionUnderQueuePressure": true,
+        "callbackWorkflowSuppressionUnderQueuePressure": false,
         "callbackSuppressionCarrier": null,
         "singleTaskGameMicroFanInPressureExceptionRemoved": false,
-        "immediateCallbackAllowedOnlyWhenQueuePressureZero": true,
+        "immediateCallbackAllowedOnlyWhenQueuePressureZero": false,
         "callbackSuppressionUnderQueuePressure": false
       },
       "fanInRefill": {
         "event": "vibe2-fanin-refill",
         "resultBearing": false,
-        "coalesceByExecutionLane": true,
-        "topLevelConcurrencyGroupRequired": true,
+        "coalesceByExecutionLane": false,
+        "topLevelConcurrencyGroupRequired": false,
         "cancelRunningRefill": false,
         "reserveRunnerPool": "ubuntu-latest"
       },
@@ -1324,13 +1324,11 @@
       "pressureRule": {
         "queuedOrPendingRunCountGreaterThan": 0,
         "assetDevelopmentKeepsImmediateCallback": true,
-        "nonAssetCompletionUsesCohortFanIn": true,
-        "independentCompletionCallbackRequired": false,
-        "waveLeaderMayDispatchSingleCoalescedRefill": true,
-        "queuePressureMayNotCreateWaveLeader": false,
-        "schedulingWaveLeaderOnlyCoordinatesRefill": true
+        "nonAssetCompletionUsesCohortFanIn": false,
+        "independentCompletionCallbackRequired": true,
+        "pressureLeaderDispatchUsed": false
       },
-      "supersededBy": null,
+      "supersededBy": "INDEPENDENT_NEURON_IMMEDIATE_FANIN_AND_INDEPENDENT_PARALLEL_RESERVATION",
       "pressureLeaderDispatchUsed": false,
       "independentCompletionCallbackRequired": true,
       "nonAssetCompletionUsesCohortFanIn": false
@@ -1363,42 +1361,23 @@
       "assetDevelopmentLaneMax": 64,
       "assetDevelopmentSpeculativeVariantsPerTask": 1,
       "durableHandoffRequired": true,
-      "schedulingWaveRequired": true,
-      "fixedLegacyWaveCountForbidden": true,
       "independentNonoverlappingGameAndNeuralWorkParallelByDefault": true,
-      "serializationAllowedOnlyForResponsibleFileConflictDependencyExactDuplicateOrAtomicSharedStateWrite": true
+      "serializationAllowedOnlyForResponsibleFileConflictDependencyExactDuplicateOrAtomicSharedStateWrite": true,
+      "topLevelSchedulerSingletonForbidden": true,
+      "reserveJobLaneSerializationForbidden": true
     },
     "cohortBarrierForbiddenForIndependentCompletion": true,
-    "completionFanInMode": "PER_TASK_MICRO_FANIN_WITH_SCHEDULING_WAVE_REFILL",
-    "externalMatrixBatchMaxMeaning": "GITHUB_MATRIX_TRANSPORT_PARTITION_PER_SCHEDULING_WAVE_NOT_TOTAL_CONCURRENCY_CAP",
+    "completionFanInMode": "PER_INDEPENDENT_NEURON_IMMEDIATE",
+    "externalMatrixBatchMaxMeaning": "GITHUB_MATRIX_TRANSPORT_PARTITION_ONLY_NOT_A_SCHEDULING_STAGE_OR_GLOBAL_CAP",
     "independentReservationContinuation": true,
     "independentReservationContinuationMayRunWhilePriorWorkersActive": true,
-    "topLevelSchedulerSingletonForbidden": false,
-    "reserveJobLaneSerializationForbidden": false,
+    "topLevelSchedulerSingletonForbidden": true,
+    "reserveJobLaneSerializationForbidden": true,
     "sharedStateWriteCoordination": "OPTIMISTIC_RETRY_ATOMIC_WRITE_ONLY",
     "generalExecutionInternalGlobalCap": null,
     "schedulingModel": "INDEPENDENT_TASK_EVENT_DRIVEN",
     "globalBarrierUsed": false,
-    "groupLeaderRefillUsed": false,
-    "immediateWaveRefill": true,
-    "schedulingWave": {
-      "enabled": true,
-      "purpose": "ORDER_AND_TRANSPORT_INDEPENDENT_RUNNABLE_WORK_WITHOUT_CREATING_A_GLOBAL_HEAVY_EXECUTION_BARRIER",
-      "fixedWaveCount": null,
-      "fixedWaveSize": null,
-      "legacyThreeWaveModeForbidden": true,
-      "legacyTwentyWaveFloorOrCapForbidden": true,
-      "internalEligibilityCap": null,
-      "externalMatrixTransportPartitionMax": 256,
-      "externalMatrixTransportPartitionIsNotTotalConcurrencyCap": true,
-      "independentWorkersFromEarlierSchedulingWavesMayRemainActive": true,
-      "nextSchedulingWaveMayReserveWhileEarlierIndependentWorkersRemainActive": true,
-      "globalCompletionBarrier": false,
-      "responsibleFileDependencyAndAtomicSharedStateAreOnlySerializationReasons": true,
-      "learningIdleFixedWorkers": 1,
-      "assetDevelopmentLaneMax": 64,
-      "assetDevelopmentSpeculativeVariantsPerTask": 1
-    }
+    "groupLeaderRefillUsed": false
   },
   "phases": [
     {
@@ -2958,8 +2937,7 @@
         "enabled": true,
         "continueExactCheckpoint": true,
         "sourceRevisionResponsibleFilesQaFailureAndNextActionRequired": true,
-        "handoffMayNotSerializeIndependentWork": true,
-        "schedulingWaveMetadataMayBeIncluded": true
+        "handoffMayNotSerializeIndependentWork": true
       }
     },
     "platformPriorityInvariant": {
@@ -7541,7 +7519,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-10-01T13:10:00+09:00",
+  "updatedAt": "2026-10-01T23:55:00+09:00",
   "priorityTiers": [
     {
       "tier": 1,
@@ -13397,9 +13375,7 @@
       "gatedExecutionPolicyRef": "neuralGatedExecution",
       "runtimeResultIngress": "company-runtime:development-queue.json#executionEvidence->RUNTIME_RESULT",
       "taskReorderAuthority": "GATED_CONFLICT_FREE_EXISTING_TASKS_ONLY",
-      "schedulerRemainsAuthoritative": true,
-      "waveSchedulerRemainsAuthoritative": true,
-      "waveReorderAuthority": "GATED_CONFLICT_FREE_EXISTING_TASKS_ONLY"
+      "schedulerRemainsAuthoritative": true
     },
     "changeRecord": {
       "id": "NEURAL_DEVELOPMENT_BRAIN_TARGET_ARCHITECTURE_V1_2026-09-20",
@@ -13947,7 +13923,7 @@
       "mode": "MERGED_MAIN_GATED_EXECUTION_WITH_SHADOW_FALLBACK",
       "mainCommit": "92e2628e5b1ace38587121126663064783d5ade2",
       "activated": true,
-      "executionAuthority": "EXISTING_SCHEDULING_WAVE_DAG_WITH_GATED_NEURAL_CONTROL",
+      "executionAuthority": "EXISTING_DAG_SCHEDULER_WITH_GATED_NEURAL_CONTROL",
       "neuralExecutionAuthority": true,
       "neuralWorkerCreationAuthority": "EXISTING_QUEUED_TASK_DISPATCH_ONLY",
       "neuralQueueMutationAuthority": "REQUEUE_REPRIORITIZE_REFILL_ONLY",
@@ -13958,8 +13934,7 @@
       "shadowHardeningCommit": "37266037d7b2fc58073876c374259f197c9e0006",
       "securityLearningHoldCommit": "ce00d4d3b2ffcf1ba6c263ac7b2b359c5b28ec79",
       "syncedMainHead": "92e2628e5b1ace38587121126663064783d5ade2",
-      "neuralTaskReorderAuthority": "CONFLICT_FREE_EXISTING_TASKS_ONLY",
-      "neuralWaveReorderAuthority": "CONFLICT_FREE_EXISTING_TASKS_ONLY"
+      "neuralTaskReorderAuthority": "CONFLICT_FREE_EXISTING_TASKS_ONLY"
     },
     "liveShadowObservation": {
       "observedAt": "2026-09-20",
@@ -15164,14 +15139,12 @@
       "completionEvent": "vibe2-neuron-complete",
       "speculativeVariantsJoinScope": "PER_GRAPHICS_TASK",
       "isolatedCandidateBranchesRequired": true,
-      "globalWaveBarrierForbidden": true,
       "sourceAndFileConflictProtectionStillRequired": true,
       "qaSecurityReleaseGatesPreserved": true,
       "realRuntimePresentationHardGatePreserved": true,
       "phase2NeuralExecutionAuthorityCreated": false,
       "newWorkerAuthorityCreated": false,
       "queueMutationAuthorityCreated": false,
-      "waveReorderAuthorityCreated": false,
       "assetDevelopmentExecutionLane": "ASSET_DEVELOPMENT",
       "assetDevelopmentUsesExistingCanonicalQueue": true,
       "assetDevelopmentUsesExistingContinuousCore": true,
@@ -15225,7 +15198,9 @@
         "distinctAssetTaskParallelismPreserved": true,
         "sameResponsibleFileParallelForbidden": true
       },
-      "schedulingWaveParticipation": "DEDICATED_ASSET_LANE_INSIDE_EXISTING_SCHEDULING_WAVE_ORCHESTRATION"
+      "globalBarrierUsed": false,
+      "taskReorderAuthorityCreated": false,
+      "independentAssetLaneParticipation": "DEDICATED_ASSET_LANE_INSIDE_EXISTING_EVENT_DRIVEN_DAG"
     },
     "failureHandling": {
       "state": "ASSET_REPAIR_REQUIRED",
