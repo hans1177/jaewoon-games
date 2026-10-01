@@ -13,6 +13,7 @@ const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,'
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(path.resolve(file)),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const stableSha256=value=>crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
+export const ROBLOX_STUDIO_HARNESS_VERSION=9;
 
 export function assertCurrentStudioWorkflowHead({
   workflowSha=clean(process.env.GITHUB_SHA),
@@ -315,6 +316,10 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       item?.robloxQualityBuildUpRequired===true
       &&clean(item?.robloxQualityBuildUpSourceRevision)===currentSourceRevision
     );
+    const harnessRecheck=Boolean(
+      activeQualityBuildUp
+      &&Number(prior?.studioHarnessVersion||0)<ROBLOX_STUDIO_HARNESS_VERSION
+    );
     // A newer exact infrastructure failure needs a harness recheck, not a source rewrite.
     // Keep the product repair evidence intact; only a real successful audit may clear it.
     const infrastructureRecheck=Boolean(
@@ -331,11 +336,12 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
     );
     // Explicit manual single-game diagnosis may replay a failed exact artifact without clearing its findings.
     const requestedProductRecheck=recheckProductFailure===true&&Boolean(requested)&&activeQualityBuildUp;
-    if(activeQualityBuildUp&&!infrastructureRecheck&&!requestedProductRecheck){
+    if(activeQualityBuildUp&&!infrastructureRecheck&&!requestedProductRecheck&&!harnessRecheck){
       console.log('ROBLOX_STUDIO_MCP_QUALITY_BUILDUP_SUPPRESSED='+clean(item?.gameId)+':source='+currentSourceRevision);
       continue;
     }
     if(infrastructureRecheck)console.log('ROBLOX_STUDIO_MCP_INFRASTRUCTURE_RECHECK='+clean(item?.gameId)+':source='+currentSourceRevision);
+    if(harnessRecheck)console.log('ROBLOX_STUDIO_MCP_HARNESS_RECHECK='+clean(item?.gameId)+':from='+Number(prior?.studioHarnessVersion||0)+':to='+ROBLOX_STUDIO_HARNESS_VERSION);
 
     const publishedCandidateExact=Boolean(
       candidate?.published===true
@@ -3058,6 +3064,7 @@ export async function runOfficialStudioMcpPlay({
     const runtimeVerified=required.length>0&&required.every(x=>x.pass===true)&&errors.length===0;
     const result={
       version:1,
+      studioHarnessVersion:ROBLOX_STUDIO_HARNESS_VERSION,
       authority:'roblox-official-studio-mcp-runtime',
       runtimeVerified,
       capabilities:{
@@ -3246,6 +3253,7 @@ export async function runOfficialStudioMcpPlay({
     }
     const result={
       version:1,
+      studioHarnessVersion:ROBLOX_STUDIO_HARNESS_VERSION,
       authority:'roblox-official-studio-mcp-runtime',
       runtimeVerified:false,
       capabilities:{officialStudioMcp:false,playMode:false,mcpInput:false,screenCapture:false,consoleCapture:false,characterMotionRuntime:false,executeLuauRuntimeProbe:false},
@@ -3472,6 +3480,7 @@ export function createLocalStudioPlayEvidence({
     evidence:{
       version:2,
       gameId:clean(item?.gameId),
+      studioHarnessVersion:Number(runtime?.studioHarnessVersion||0),
       authority:'roblox-official-studio-mcp-runtime',
       pass,
       actualPlay,
