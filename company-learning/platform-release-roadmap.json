@@ -941,8 +941,6 @@
       "qualityOrEvidenceGateWeakeningForbidden": true,
       "webDeploymentEligibility": "WEB_F0_F9_PLAYABLE_VERIFIED_AND_STATIC_SAVE_QA_PASS",
       "webNativeHomepageReadinessRequired": false,
-      "webDeploymentMandatoryWhenPlayable": true,
-      "webCloudflarePreviewRequired": true,
       "webMainCloudflareDeploymentRequiredBeforeTaskPass": true,
       "webDeploymentFailureAction": "RETRY_SAME_VERIFIED_CANDIDATE_UNTIL_DEPLOYED",
       "webDeploymentFailureMayAdvanceBuildUp": false
@@ -6232,9 +6230,7 @@
       "productionClassPromotionRequired": false,
       "shelf": "homeWebGameCenter",
       "label": "웹게임",
-      "directPlayRequired": true,
-      "nativeHomepageReadinessRequiredForWebDeployment": false,
-      "playableVerifiedWebMustDeploy": true
+      "directPlayRequired": true
     },
     "robloxDeploymentHistory": {
       "includeWhen": [
@@ -6998,20 +6994,7 @@
       "canonicalNormalizationRequiredBeforePublication": true,
       "normalizationOwner": "tools/company-status-sync.mjs + tools/game-catalog-normalization.mjs"
     },
-    "releaseClassificationSource": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.internalRelease.lobbyGate",
-    "playableWebAutoDeployment": {
-      "version": 1,
-      "authority": "OWNER_DIRECTIVE_2026-10-02",
-      "enabled": true,
-      "eligibility": "WEB_F0_F9_PLAYABLE_VERIFIED_AND_STATIC_SAVE_QA_PASS",
-      "nativeHomepageReadinessRequired": false,
-      "deploymentTarget": "CLOUDFLARE_PAGES",
-      "reviewedPrRequired": true,
-      "previewDeploymentRequired": true,
-      "mainDeploymentRequiredBeforeTaskPass": true,
-      "failureAction": "RETRY_SAME_VERIFIED_CANDIDATE",
-      "failureBlocksNextBuildUp": true
-    }
+    "releaseClassificationSource": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.internalRelease.lobbyGate"
   },
   "longHorizonVision": {
     "version": 2,
@@ -8589,49 +8572,29 @@
     "playableWebMandatoryDeployment20261002": {
       "id": "PLAYABLE_WEB_MANDATORY_DEPLOYMENT_2026-10-02",
       "authority": "OWNER_DIRECTIVE_2026-10-02",
-      "objective": "DEPLOY_EVERY_VERIFIED_PLAYABLE_WEB_GAME_WITHOUT_WAITING_FOR_ROBLOX_OR_UNITY_HOMEPAGE_READINESS",
       "playableAuthority": "WEB_F0_F9_VERIFIED_PLUS_STATIC_AND_SAVE_QA",
       "nativeHomepageReadinessRequired": false,
-      "cloudflarePreviewRequired": true,
-      "reviewedPrMergeRequired": true,
       "cloudflareMainRequiredBeforeVibePass": true,
       "deploymentFailureAction": "RETRY_SAME_VERIFIED_CANDIDATE_UNTIL_DEPLOYED",
       "nextBuildUpBeforeDeploymentSuccessForbidden": true,
-      "gameplayQualityGateWeakened": false,
-      "saveCompatibilityGateWeakened": false,
-      "securityGateWeakened": false,
-      "implementationBindings": [
-        ".github/workflows/vibe2-candidate-release.yml",
-        "qa/vibe2-continuous-release-dispatch.test.mjs",
-        "company-learning/company-architecture-map.json",
-        "company-learning/company-log-map.json"
-      ],
       "postDeployment": {
         "perpetualBuildUp": true,
         "generationLimit": null,
-        "immediateNextGenerationAfterCloudflareMainPass": true,
         "newIdeaRequiredEveryCycle": true,
-        "sameIdeaRepeatWithoutNewEvidenceForbidden": true,
         "capacityBoundariesOnly": [
-          "SAVE_AND_PERSISTED_DATA_BUDGET",
-          "CONTENT_AND_BUNDLE_SIZE_BUDGET",
-          "MEMORY_BUDGET",
-          "MOBILE_FRAME_AND_RUNTIME_PERFORMANCE_BUDGET"
+          "SAVE_DATA",
+          "WEB_BUNDLE",
+          "MEMORY",
+          "MOBILE_FPS"
         ]
       }
     },
     "recentOwnerWebInternalPriority20261002": {
       "id": "RECENT_OWNER_WEB_INTERNAL_PRIORITY_2026-10-02",
       "authority": "OWNER_DIRECTIVE_2026-10-02",
-      "objective": "PRIORITIZE_RECENT_OWNER_WEB_WORK_ONLY_AGAINST_OTHER_EQUIVALENT_WEB_WORK_WITHOUT_RAISING_WEB_ABOVE_EXISTING_GLOBAL_PRIORITY",
       "scope": "WEB_ONLY",
       "globalPriorityChanged": false,
-      "recentWorkSignal": "ownerDirectWebUpload && webDevelopmentResetRequired && web-games/<gameId> exists && homepageWebPlayable != true",
-      "firstPlayableDeployClearsSpecialPriority": true,
-      "implementationBindings": [
-        "tools/vibe2-auto-planner.mjs",
-        "qa/vibe2-auto-planner.test.mjs"
-      ]
+      "firstPlayableDeployClearsSpecialPriority": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -25712,13 +25675,7 @@
         "generationLimit": null,
         "perpetualAfterDeployment": true,
         "everyDeployedWebCycleCreatesNextDirective": true,
-        "ideaRegeneratedEveryCycle": true,
-        "onlyCapacityBoundaries": [
-          "SAVE_AND_PERSISTED_DATA_BUDGET",
-          "CONTENT_AND_BUNDLE_SIZE_BUDGET",
-          "MEMORY_BUDGET",
-          "MOBILE_FRAME_AND_RUNTIME_PERFORMANCE_BUDGET"
-        ]
+        "ideaRegeneratedEveryCycle": true
       },
       "platformHandoff": {
         "sharedCommonGoal": true,
@@ -26197,31 +26154,13 @@
       "version": 1,
       "authority": "OWNER_DIRECTIVE_2026-10-02",
       "enabled": true,
-      "playableWebMustDeployBeforeNextCycle": true,
       "deploymentSuccessNextAction": "IMMEDIATE_NEXT_BUILD_UP_GENERATION",
       "deploymentFailureNextAction": "RETRY_SAME_VERIFIED_CANDIDATE_UNTIL_DEPLOYED",
       "generationLimit": null,
       "terminalCompletionStateForbidden": true,
       "everyDeployedCycleGeneratesNewIdea": true,
-      "ideaGenerator": "tools/company-build-up-directive.mjs",
-      "ideaInputs": [
-        "LATEST_VERIFIED_DESIGN",
-        "CURRENT_DEPLOYED_GAME_SOURCE",
-        "PREVIOUS_BUILD_UP_RESULT",
-        "LATEST_RUNTIME_AND_QA_EVIDENCE",
-        "CURRENT_HIGHEST_VALUE_GAPS"
-      ],
       "repeatedIdeaWithoutNewEvidenceForbidden": true,
-      "onlyCapacityBoundaries": [
-        "SAVE_AND_PERSISTED_DATA_BUDGET",
-        "CONTENT_AND_BUNDLE_SIZE_BUDGET",
-        "MEMORY_BUDGET",
-        "MOBILE_FRAME_AND_RUNTIME_PERFORMANCE_BUDGET"
-      ],
-      "capacityBoundaryAction": "OPTIMIZE_OR_RESTRUCTURE_WITHOUT_CHANGING_PROTECTED_GAME_MEANING",
-      "protectedGameMeaningStillPreserved": true,
-      "saveSchemaAndMeaningStillPreserved": true,
-      "balanceEconomyAndNetworkAuthorityStillPreserved": true
+      "capacityBoundaryAction": "OPTIMIZE_OR_RECOMBINE_WITHOUT_CHANGING_PROTECTED_GAME_MEANING"
     },
     "playableWebDeploymentMustCompleteBeforeWebNextCycle": true,
     "webDeploymentSuccessImmediatelyResumesPerpetualBuildUp": true,
@@ -26233,21 +26172,9 @@
       "scope": "WEB_ONLY",
       "globalPlatformPriorityUnchanged": true,
       "mayNotOutrankNonWebWorkSolelyBecauseRecent": true,
-      "orderWithinEquivalentWebPriority": [
-        "RECENT_OWNER_WEB_WORK_AWAITING_FIRST_PLAYABLE_DEPLOY",
-        "OTHER_WEB_WORK"
-      ],
-      "recentOwnerWebEligibility": [
-        "DEVELOPMENT_CONFIRMED",
-        "OWNER_DIRECT_WEB_UPLOAD_TRUE",
-        "WEB_DEVELOPMENT_RESET_REQUIRED_TRUE",
-        "WEB_GAMES_SOURCE_EXISTS",
-        "HOMEPAGE_WEB_PLAYABLE_NOT_TRUE"
-      ],
-      "recentPriorityEndsWhen": "FIRST_PLAYABLE_MAIN_DEPLOY_AND_STATUS_SYNC_SETS_HOMEPAGE_WEB_PLAYABLE_TRUE",
-      "postDeployPriority": "RETURN_TO_EXISTING_NORMAL_WEB_PRIORITY",
-      "existingRepairAndReleaseSeverityOrderPreserved": true,
-      "nativeAndOtherPlatformPriorityUnaffected": true
+      "recentOwnerWebEligibility": "DEVELOPMENT_CONFIRMED && ownerDirectWebUpload && webDevelopmentResetRequired && web-games/<gameId> exists && homepageWebPlayable!=true",
+      "recentPriorityEndsWhen": "homepageWebPlayable=true",
+      "postDeployPriority": "RETURN_TO_EXISTING_NORMAL_WEB_PRIORITY"
     }
   },
   "robloxNativeCodingQualityContract": {
