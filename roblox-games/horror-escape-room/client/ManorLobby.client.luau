@@ -85,6 +85,24 @@ open=function(key)
   if inRoom then
    panelTitle.Text="출정 대기실"
    label(body,string.format("초대 코드 %s\n%s · 참가 %d/%d명",p:GetAttribute("RoomCode")or"------",p:GetAttribute("RoomSelectedMapName")or"학교",p:GetAttribute("RoomMemberCount")or 1,p:GetAttribute("RoomMaxPlayers")or 8),64,15)
+   local roomPlayers=Players:GetPlayers()
+   local hostId=tonumber(p:GetAttribute("RoomHostUserId"))or 0
+   table.sort(roomPlayers,function(a,b)
+    if a.UserId==hostId then return true end
+    if b.UserId==hostId then return false end
+    return a.UserId<b.UserId
+   end)
+   local slotLines={}
+   for i=1,8 do
+    local player=roomPlayers[i]
+    if player then
+     table.insert(slotLines,string.format("%d · %s%s",i,player.UserId==hostId and"방장 · "or"",player.DisplayName))
+    else
+     table.insert(slotLines,string.format("%d · AI",i))
+    end
+   end
+   local roomSlots=label(body,table.concat(slotLines,"\n"),148,13)
+   roomSlots.Name="ManorRoomSlots"
    if waiting and p:GetAttribute("RoomIsHost")==true and p:GetAttribute("RoomAutoStart")~=true then
     button(body,"친구 준비 완료 · 출정 시작",function()send(C.Actions.START_ROOM)end,Color3.fromRGB(107,56,64))
    elseif not waiting then
@@ -282,9 +300,14 @@ visibility=function()
  welcome.Visible=visible and not entered;nav.Visible=visible and entered and notebookOpen;header.Visible=visible and entered;commands.Visible=visible and entered
  grade.Enabled=visible;bloom.Enabled=visible
  if not visible then panel.Visible=false;activeMenu=nil;activeStory=nil;notebookOpen=false;releaseMainCamera()end
- status.Text=string.format("괴담 %d/%d  ·  %d 코인",p:GetAttribute("GhostCompleted")or 0,#C.GhostCatalog,p:GetAttribute("Coins")or 0)
+ local energy=math.max(0,math.floor((tonumber(p:GetAttribute("Energy"))or 0)+.5))
+ local maxEnergy=math.max(1,math.floor((tonumber(p:GetAttribute("EnergyMax"))or tonumber(C.Energy and C.Energy.Max)or 100)+.5))
+ local cosmeticTitle="신입 참가자"
+ local equippedCosmetic=tostring(p:GetAttribute("EquippedCosmetic")or"DEFAULT")
+ for _,item in ipairs(C.Cosmetics or{})do if item.Id==equippedCosmetic then cosmeticTitle=item.Title or cosmeticTitle;break end end
+ status.Text=string.format("괴담 %d/%d · %d 코인 · 에너지 %d/%d · %s",p:GetAttribute("GhostCompleted")or 0,#C.GhostCatalog,p:GetAttribute("Coins")or 0,energy,maxEnergy,cosmeticTitle)
  if p:GetAttribute("RoomServer")==true then
-  status.Text=round=="INTERMISSION"and string.format("출정까지 %d초",p:GetAttribute("TimeLeft")or 0)or string.format("초대 %s · 참가 %d명",p:GetAttribute("RoomCode")or"------",p:GetAttribute("RoomMemberCount")or 1)
+  status.Text=(round=="INTERMISSION"and string.format("출정까지 %d초",p:GetAttribute("TimeLeft")or 0)or string.format("초대 %s · 참가 %d명",p:GetAttribute("RoomCode")or"------",p:GetAttribute("RoomMemberCount")or 1))..string.format(" · 에너지 %d/%d · %s",energy,maxEnergy,cosmeticTitle)
  end
  if visible and not oldLighting then
   oldLighting={ClockTime=Lighting.ClockTime,Brightness=Lighting.Brightness,Ambient=Lighting.Ambient,OutdoorAmbient=Lighting.OutdoorAmbient,FogStart=Lighting.FogStart,FogEnd=Lighting.FogEnd,ExposureCompensation=Lighting.ExposureCompensation,EnvironmentDiffuseScale=Lighting.EnvironmentDiffuseScale,EnvironmentSpecularScale=Lighting.EnvironmentSpecularScale}
