@@ -34,6 +34,7 @@ CLIPS = {
     'hero_stop_hq': 0.66,
     'hero_turn_90_hq': 0.78,
     'hero_walk_back_hq': 1.12,
+    'hero_crouch_idle_hq': 3.20,
 }
 REQUIRED_BONES = {
     'Hips','Spine','Chest','Head',
@@ -402,6 +403,24 @@ def backward_gait_pose(t):
     apply_secondary(t, drive=0.92, turn=yaw * 0.24, braking=0.10)
 
 
+def crouch_idle_pose(t):
+    weight=curve(t,[(0,-0.08),(0.20,-0.02),(0.46,0.09),(0.72,0.04),(1,-0.08)])
+    breathe=curve(t,[(0,0),(0.28,0.60),(0.56,1),(0.80,0.34),(1,0)])
+    loc('Hips',weight*0.012,0,-0.185+breathe*0.010)
+    rot('Hips',0.125,weight*0.035,weight*0.026)
+    rot('Spine',0.085+breathe*0.012,-weight*0.026,-weight*0.024)
+    rot('Chest',0.050-breathe*0.010,-weight*0.018,weight*0.032)
+    rot('Head',-0.095+breathe*0.010,weight*0.018,-weight*0.018)
+    for side,sign in [('L',-1),('R',1)]:
+        rot('Thigh'+side,0.50+sign*weight*0.018,0,-sign*0.025)
+        rot('Shin'+side,0.76+max(0,-sign*weight)*0.022)
+        rot('Foot'+side,-0.27,0,sign*0.012)
+        rot('UpperArm'+side,0.07+sign*weight*0.014,sign*0.025,-sign*0.030)
+        rot('Forearm'+side,-0.18,sign*0.012,0)
+    detail_face_and_hands(t,moving=0.12,alert=0.40)
+    apply_secondary(t,drive=0.46,turn=weight*0.50)
+
+
 def animate(name, normalized_time):
     reset_pose()
     t = clamp01(normalized_time)
@@ -413,6 +432,8 @@ def animate(name, normalized_time):
         gait_pose(t, running=True)
     elif name == 'hero_walk_back_hq':
         backward_gait_pose(t)
+    elif name == 'hero_crouch_idle_hq':
+        crouch_idle_pose(t)
     elif name == 'hero_start_hq':
         start_pose(t)
         # 시작 끝은 걷기 첫 접지 포즈와 직접 이어져야 한다.
