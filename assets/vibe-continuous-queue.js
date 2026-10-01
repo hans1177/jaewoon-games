@@ -45,16 +45,11 @@ export const VIBE_QUEUE_PRIORITIES = freezeList(['owner-immediate', 'critical', 
 export const VIBE_RELEASE_STATES = freezeList(['release-confirmed', 'development-confirmed', 'reviewing', 'other']);
 export const DEFAULT_MAX_CONCURRENT_TASKS = Number.MAX_SAFE_INTEGER;
 export const EXTERNAL_MATRIX_BATCH_MAX = 256;
+export const LEARNING_IDLE_MAX_ACTIVE_WORKERS = 1;
+export const ASSET_DEVELOPMENT_MAX_ACTIVE_WORKERS = 64;
 
 const PRIORITY_SCORE = freeze({ 'owner-immediate': 100, critical: 80, high: 60, normal: 40, low: 20 });
 const RELEASE_STATE_SCORE = freeze({ 'release-confirmed': 400, 'development-confirmed': 300, reviewing: 200, other: 100 });
-const BASE_SHARD_SLOTS = freeze({ unity: 5, web: 11, verification: 7, support: 7 });
-function normalizeConcurrencyLimit(value, fallback = DEFAULT_MAX_CONCURRENT_TASKS) {
-  const raw = Number(value);
-  if (!Number.isFinite(raw) || raw <= 0) return fallback;
-  return Math.max(1, Math.floor(raw));
-}
-
 const UNLIMITED_RETRY_POLICY='UNLIMITED_CAUSAL_REPAIR';
 function unlimitedRetryEligible(input = {}) {
   const explicit=clean(input.retryPolicy).toUpperCase();
@@ -374,38 +369,30 @@ function normalizeTask(input = {}, index = 0) {
 
 export function createVibeContinuousQueue(seed = {}) {
   const source = Array.isArray(seed) ? seed : Array.isArray(seed?.tasks) ? seed.tasks : [];
-  const configuredMax = Array.isArray(seed) ? DEFAULT_MAX_CONCURRENT_TASKS : normalizeConcurrencyLimit(seed?.maxConcurrentTasks, DEFAULT_MAX_CONCURRENT_TASKS);
   const tasks = source.map(normalizeTask);
   return freeze({
-    version: 5,
-    mode: 'hierarchical-dag-sharded-work-stealing-queue',
-    maxConcurrentTasks: configuredMax,
+    version: 6,
+    mode: 'independent-dag-direct-reservation-queue',
+    maxConcurrentTasks: null,
     ownerDirectivePreemptsAutonomy: true,
     releaseStatePriority: freezeList(['release-confirmed', 'development-confirmed', 'reviewing', 'other']),
-    scheduling: freeze({
+    execution: freeze({
       dagDependencies: true,
-      hierarchicalParallelism: true,
-      shardAware: true,
       workStealing: true,
       sourceRootExclusive: false,
       gameWideLockForbidden: true,
       sameGameNonOverlappingPackagesParallel: true,
       responsibleFileExclusive: true,
-      unityReleaseFocusSlots: null,
-      postReleaseFocusedSlots: null,
-      postReleaseFocusedSlotsScaleWithEligibleGames: true,
-      postReleaseCaretakerMode: 'per-game-persistent',
-      systemStewardProtectedSlots: 1,
-      systemStewardSlotBorrowableWhenIdle: true,
-      longWorkProtectedSlots: 1,
-      roleSeparation: true,
-      baseShardSlots: BASE_SHARD_SLOTS,
-      dynamicBackpressure: true,
+      exactDuplicateSuppression: true,
+      atomicSharedStateWriteMode: 'OPTIMISTIC_RETRY',
       atomicNeuronCompletion: true,
-      speculativeParallelism: 'high-risk-opt-in-only',
-      workPackageAware: true,
-      longWorkPackagePriority: true,
-      minimumWorkloadGate: true
+      taskMicroFanIn: true,
+      independentEligibleTaskStart: 'IMMEDIATE',
+      internalGlobalParallelCap: null,
+      externalMatrixTransportPartitionMax: EXTERNAL_MATRIX_BATCH_MAX,
+      learningIdleFixedWorkers: LEARNING_IDLE_MAX_ACTIVE_WORKERS,
+      assetDevelopmentLaneMax: ASSET_DEVELOPMENT_MAX_ACTIVE_WORKERS,
+      assetDevelopmentSpeculativeVariantsPerTask: 1
     }),
     defaultMaxRetries: null,
     defaultRetryPolicy: UNLIMITED_RETRY_POLICY,
@@ -505,32 +492,6 @@ function isPostReleaseFocused(task) {
     && (releaseState === 'release-confirmed' || isHistoricalPostReleaseMaintenance(task))
     && !['inspect','research','qa'].includes(clean(task?.type).toLowerCase());
 }
-function dynamicConcurrency(queue, requested = null) {
-  const persistentMax = normalizeConcurrencyLimit(queue?.maxConcurrentTasks, DEFAULT_MAX_CONCURRENT_TASKS);
-  const requestedMax = requested === null || requested === undefined || clean(requested) === ''
-    ? persistentMax
-    : normalizeConcurrencyLimit(requested, persistentMax);
-  const hardMax = Math.min(persistentMax, requestedMax);
-  const running = queue.tasks.filter((task) => task.status === 'running');
-  const awaitingQa = running.filter(isAwaitingQaTask).length;
-  const retryPressure = queue.tasks.filter((task) =>
-    task.status === 'queued' &&
-    task.lastOutcome === 'FAIL' &&
-    task.retries > 0 &&
-    retryLimitAllows(task,task.retries)
-  ).length;
-  // Queue-local pressure is observed but must not collapse unrelated lanes.
-  // Persistent adaptive control reacts to verified runner/system pressure; waiting QA/quota/runtime work already releases capacity.
-  const limit = hardMax;
-  return freeze({
-    persistentMaxConcurrentTasks: persistentMax,
-    requestedMaxConcurrentTasks: requestedMax,
-    effectiveMaxConcurrentTasks: Math.max(1, limit),
-    awaitingQaCount: awaitingQa,
-    retryPressureCount: retryPressure
-  });
-}
-
 function normalizedExecutionLane(value='all'){
   const lane=clean(value).toLowerCase().replaceAll('_','-');
   return ['game-primary','asset-development','recovery-fast','control-fast','learning-idle','release-wait'].includes(lane)?lane:'all';
@@ -540,45 +501,61 @@ function taskMatchesExecutionLane(task={},lane='all'){
   if(requested==='all')return true;
   return clean(task.executionLane).toLowerCase().replaceAll('_','-')===requested;
 }
-export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, lane = 'all' } = {}) {
-  const queue = createVibeContinuousQueue(queueInput);
-  const laneMode=normalizedExecutionLane(lane);
-  const running = queue.tasks.filter((task) => task.status === 'running');
-  const capacityRunning = running.filter((task) => !releasesWorkerCapacity(task) && taskMatchesExecutionLane(task,laneMode));
-  // 학습은 게임 작업 유무와 관계없이 한 슬롯만 예약한다.
-  const concurrency = dynamicConcurrency(queue, laneMode === 'learning-idle' ? 1 : maxConcurrentTasks);
-  const effectiveMax = concurrency.effectiveMaxConcurrentTasks;
-  const freeSlots = Math.max(0, effectiveMax - capacityRunning.length);
-  const completed = completedIds(queue);
-  const blocked = [];
-  const laneDeferred = [];
-  const candidates = [];
-  queue.tasks.forEach((task, index) => {
-    if (task.status !== 'queued') return;
-    if(!taskMatchesExecutionLane(task,laneMode)){laneDeferred.push(task);return;}
-    const reasons = taskBlockedReasons(task, completed);
-    if (reasons.length) blocked.push(freeze({ task, reasons }));
-    else candidates.push(freeze({ task, score: scoreTask(task, index) }));
+function fixedLaneWorkerLimit(lane='all'){
+  const normalized=normalizedExecutionLane(lane);
+  if(normalized==='learning-idle')return LEARNING_IDLE_MAX_ACTIVE_WORKERS;
+  if(normalized==='asset-development')return ASSET_DEVELOPMENT_MAX_ACTIVE_WORKERS;
+  return null;
+}
+function taskExecutionLane(task={}){
+  return normalizedExecutionLane(clean(task.executionLane)||'all');
+}
+function activeLaneWorkerCount(active=[],lane='all'){
+  const normalized=normalizedExecutionLane(lane);
+  return active.filter((task)=>!releasesWorkerCapacity(task)&&taskMatchesExecutionLane(task,normalized)).length;
+}
+function laneCapacityAvailable(task={},active=[]){
+  const lane=taskExecutionLane(task);
+  const limit=fixedLaneWorkerLimit(lane);
+  return limit===null||activeLaneWorkerCount(active,lane)<limit;
+}
+function executionPressure(queue){
+  const running=queue.tasks.filter((task)=>task.status==='running');
+  return freeze({
+    awaitingQaCount:running.filter(isAwaitingQaTask).length,
+    retryPressureCount:queue.tasks.filter((task)=>
+      task.status==='queued'&&task.lastOutcome==='FAIL'&&task.retries>0&&retryLimitAllows(task,task.retries)
+    ).length
   });
-  candidates.sort((a, b) => b.score - a.score || a.task.id.localeCompare(b.task.id));
+}
+
+export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, lane = 'all' } = {}) {
+  void maxConcurrentTasks;
+  const queue=createVibeContinuousQueue(queueInput);
+  const laneMode=normalizedExecutionLane(lane);
+  const running=queue.tasks.filter((task)=>task.status==='running');
+  const capacityRunning=running.filter((task)=>!releasesWorkerCapacity(task)&&taskMatchesExecutionLane(task,laneMode));
+  const completed=completedIds(queue);
+  const blocked=[];
+  const laneDeferred=[];
+  const candidates=[];
+  queue.tasks.forEach((task,index)=>{
+    if(task.status!=='queued')return;
+    if(!taskMatchesExecutionLane(task,laneMode)){laneDeferred.push(task);return;}
+    const reasons=taskBlockedReasons(task,completed);
+    if(reasons.length)blocked.push(freeze({task,reasons}));
+    else candidates.push(freeze({task,score:scoreTask(task,index)}));
+  });
+  candidates.sort((a,b)=>b.score-a.score||a.task.id.localeCompare(b.task.id));
+
   const priorityLane=['game-primary','asset-development'].includes(laneMode);
   const platform=(task)=>clean(task.target).toLowerCase();
-  // Roblox:Unity:Web 6:2:1은 현재 실행량을 시작점으로 같은 배치 안에서 계속 재계산한다.
-  // 완료된 과거 작업은 다음 배치의 플랫폼 몫을 잠식하지 않는다.
   const weights={roblox:6,unity:2,web:1};
   const service=Object.fromEntries(Object.keys(weights).map((name)=>[
     name,queue.tasks.filter((task)=>platform(task)===name&&task.status==='running'&&taskMatchesExecutionLane(task,laneMode)).length
   ]));
-  const platformRows=Object.fromEntries(Object.keys(weights).map((name)=>[
-    name,candidates.filter((row)=>platform(row.task)===name)
-  ]));
   const strictOwnerRank=(task)=>task.ownerDirective===true?1:0;
   const strictReleaseRank=(task)=>RELEASE_STATE_SCORE[task.releaseState]||0;
-  const strictlyHigherPlatformPriority=(left,right)=>{
-    const ownerDelta=strictOwnerRank(left)-strictOwnerRank(right);
-    if(ownerDelta!==0)return ownerDelta>0;
-    return strictReleaseRank(left)>strictReleaseRank(right);
-  };
   const weightedPlatformOrder=(rows)=>{
     const pending=[...rows];
     const ordered=[];
@@ -590,9 +567,9 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
       const tier=ownerTier.filter((row)=>strictReleaseRank(row.task)===releaseRank);
       tier.sort((a,b)=>{
         const pa=platform(a.task),pb=platform(b.task);
-        const sa=weights[pa] ? (virtualService[pa]+1)/weights[pa] : 2;
-        const sb=weights[pb] ? (virtualService[pb]+1)/weights[pb] : 2;
-        return sa-sb || b.score-a.score || a.task.id.localeCompare(b.task.id);
+        const sa=weights[pa]?(virtualService[pa]+1)/weights[pa]:2;
+        const sb=weights[pb]?(virtualService[pb]+1)/weights[pb]:2;
+        return sa-sb||b.score-a.score||a.task.id.localeCompare(b.task.id);
       });
       const next=tier[0];
       ordered.push(next);
@@ -602,152 +579,80 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     }
     return ordered;
   };
-  const schedulingCandidates=priorityLane?weightedPlatformOrder(candidates):candidates;
-  const robloxCandidateAvailable=priorityLane&&platformRows.roblox.length>0;
-  const robloxFirstDeferred=[];
-  const selected = [];
-  const deferredConflicts = [];
-  const active = [...running];
-  const shardUse = Object.create(null);
-  for (const task of capacityRunning) shardUse[task.shard] = (shardUse[task.shard] || 0) + 1;
+  const orderedCandidates=priorityLane?weightedPlatformOrder(candidates):candidates;
+  const robloxCandidateAvailable=priorityLane&&orderedCandidates.some((row)=>platform(row.task)==='roblox');
 
-  const focusedGameId=(task)=>clean(task?.gameId)||clean(task?.sourceRoot)||clean(task?.id);
-  const focusedRunning=capacityRunning.filter(isPostReleaseFocused);
-  const focusedCandidates=schedulingCandidates.filter((row)=>isPostReleaseFocused(row.task));
-  const focusedGameIds=new Set(focusedRunning.map(focusedGameId).filter(Boolean));
-  const eligibleFocusedGameIds=new Set([...focusedGameIds,...focusedCandidates.map((row)=>focusedGameId(row.task)).filter(Boolean)]);
-  const postReleaseFocusedSlotLimit=effectiveMax;
-  const postReleaseFocusedTaskIds=[];
-  const focusedSlotAvailable=(_task)=>true;
-  const noteFocusedSelection=(task)=>{
-    if(!isPostReleaseFocused(task))return;
-    const gameId=focusedGameId(task);
-    if(gameId)focusedGameIds.add(gameId);
-    postReleaseFocusedTaskIds.push(task.id);
-  };
+  const selected=[];
+  const deferredConflicts=[];
+  const laneCapacityDeferred=[];
+  const active=[...running];
 
-  if (freeSlots > 0) {
-    for (const focusedRow of focusedCandidates) {
-      if(priorityLane && selected.length>=Math.max(0,freeSlots-(platformRows.unity.length?1:0)-(platformRows.web.length?1:0)))break;
-      if(selected.length>=freeSlots||!focusedSlotAvailable(focusedRow.task))continue;
-      const conflict = conflictDetails(focusedRow.task, active);
-      if (conflict) {
-        if (!deferredConflicts.some((item) => item.task.id === focusedRow.task.id)) deferredConflicts.push(freeze({ task: focusedRow.task, reason: conflict.reason, conflictTaskId: conflict.taskId, conflictExecutionLane: conflict.executionLane, conflictBlocker: conflict.blocker }));
-        continue;
-      }
-      selected.push(focusedRow.task);
-      active.push(focusedRow.task);
-      shardUse[focusedRow.task.shard] = (shardUse[focusedRow.task.shard] || 0) + 1;
-      noteFocusedSelection(focusedRow.task);
+  for(const row of orderedCandidates){
+    if(!laneCapacityAvailable(row.task,active)){
+      laneCapacityDeferred.push(row.task);
+      continue;
     }
-  }
-
-  const postReleaseFocusedSlotUsed=postReleaseFocusedTaskIds.length>0;
-  const postReleaseFocusedTaskId=postReleaseFocusedTaskIds[0]||null;
-
-  // Unity/Web 최소 슬롯은 보장하되 더 높은 owner/release 단계 작업을 밀어내지는 않는다.
-  if(priorityLane && freeSlots>=3){
-    const selectedIds=()=>new Set(selected.map((task)=>task.id));
-    const floorCanUseSlot=(row)=>{
-      const used=selectedIds();
-      const higherPending=schedulingCandidates.filter((candidate)=>
-        !used.has(candidate.task.id)
-        &&candidate.task.id!==row.task.id
-        &&strictlyHigherPlatformPriority(candidate.task,row.task)
-      ).length;
-      return selected.length+higherPending<freeSlots;
-    };
-    for(const name of ['unity','web']){
-      if(!platformRows[name].length || selected.some((task)=>platform(task)===name))continue;
-      for(const row of schedulingCandidates.filter((candidate)=>platform(candidate.task)===name)){
-        if(selected.length>=freeSlots)break;
-        if(!floorCanUseSlot(row))continue;
-        const conflict=conflictDetails(row.task,active);
-        if(conflict)continue;
-        selected.push(row.task);active.push(row.task);
-        shardUse[row.task.shard]=(shardUse[row.task.shard]||0)+1;
-        noteFocusedSelection(row.task);
-        break;
-      }
+    const conflict=conflictDetails(row.task,active);
+    if(conflict){
+      deferredConflicts.push(freeze({
+        task:row.task,
+        reason:conflict.reason,
+        conflictTaskId:conflict.taskId,
+        conflictExecutionLane:conflict.executionLane,
+        conflictBlocker:conflict.blocker
+      }));
+      continue;
     }
+    selected.push(row.task);
+    active.push(row.task);
   }
 
-  let longWorkProtectedSlotUsed = false;
-  let longWorkOwnerTaskId = null;
-  if (freeSlots > 0 && !capacityRunning.some(isProtectedLongOwner)) {
-    for (const protectedRow of schedulingCandidates.filter((row) => isProtectedLongOwner(row.task))) {
-      if(selected.length>=freeSlots)break;
-      if(isPostReleaseFocused(protectedRow.task)&&!focusedSlotAvailable(protectedRow.task))continue;
-      const conflict = conflictDetails(protectedRow.task, active);
-      if (conflict) {
-        if (!deferredConflicts.some((item) => item.task.id === protectedRow.task.id)) deferredConflicts.push(freeze({ task: protectedRow.task, reason: conflict.reason, conflictTaskId: conflict.taskId, conflictExecutionLane: conflict.executionLane, conflictBlocker: conflict.blocker }));
-        continue;
-      }
-      selected.push(protectedRow.task);
-      active.push(protectedRow.task);
-      shardUse[protectedRow.task.shard] = (shardUse[protectedRow.task.shard] || 0) + 1;
-      noteFocusedSelection(protectedRow.task);
-      longWorkProtectedSlotUsed = true;
-      longWorkOwnerTaskId = protectedRow.task.id;
-      break;
-    }
-  }
-
-  for (const row of schedulingCandidates) {
-    if (selected.length >= freeSlots) break;
-    if (selected.some((task) => task.id === row.task.id)) continue;
-    if(isPostReleaseFocused(row.task)&&!focusedSlotAvailable(row.task))continue;
-    const baseSlots = BASE_SHARD_SLOTS[row.task.shard] || 1;
-    if ((shardUse[row.task.shard] || 0) >= baseSlots) continue;
-    const conflict = conflictDetails(row.task, active);
-    if (conflict) { if (!deferredConflicts.some((item) => item.task.id === row.task.id)) deferredConflicts.push(freeze({ task: row.task, reason: conflict.reason, conflictTaskId: conflict.taskId, conflictExecutionLane: conflict.executionLane, conflictBlocker: conflict.blocker })); continue; }
-    selected.push(row.task); active.push(row.task); shardUse[row.task.shard] = (shardUse[row.task.shard] || 0) + 1; noteFocusedSelection(row.task);
-  }
-  for (const row of schedulingCandidates) {
-    if (selected.length >= freeSlots) break;
-    if (selected.some((task) => task.id === row.task.id)) continue;
-    if(isPostReleaseFocused(row.task)&&!focusedSlotAvailable(row.task))continue;
-    const conflict = conflictDetails(row.task, active);
-    if (conflict) { if (!deferredConflicts.some((item) => item.task.id === row.task.id)) deferredConflicts.push(freeze({ task: row.task, reason: conflict.reason, conflictTaskId: conflict.taskId, conflictExecutionLane: conflict.executionLane, conflictBlocker: conflict.blocker })); continue; }
-    selected.push(row.task); active.push(row.task); shardUse[row.task.shard] = (shardUse[row.task.shard] || 0) + 1; noteFocusedSelection(row.task);
-  }
-
-  const queuedEligible = schedulingCandidates.length;
+  const laneMaxActiveWorkers=fixedLaneWorkerLimit(laneMode);
+  const activeLaneWorkers=laneMode==='all'?null:capacityRunning.length;
+  const availableLaneCapacity=laneMaxActiveWorkers===null
+    ?null
+    :Math.max(0,laneMaxActiveWorkers-capacityRunning.length);
+  const pressure=executionPressure(queue);
+  const shardUse=Object.create(null);
+  for(const task of [...capacityRunning,...selected])shardUse[task.shard]=(shardUse[task.shard]||0)+1;
+  const queuedEligible=orderedCandidates.length;
+  const onlyLaneCapacityBlocked=selected.length===0&&laneCapacityDeferred.length>0&&deferredConflicts.length===0;
   return freeze({
-    selected: freeze([...selected].sort((a,b)=>scoreTask(b,0)-scoreTask(a,0)||a.id.localeCompare(b.id))),
-    lane: laneMode,
-    laneDeferred: freeze([...laneDeferred,...robloxFirstDeferred]),
-    robloxFirstMode: robloxCandidateAvailable,
-    robloxFirstDeferred: freeze(robloxFirstDeferred),
-    running: freeze(running),
-    capacityRunning: freeze(capacityRunning),
-    awaitingQa: freeze(running.filter(isAwaitingQaTask)),
-    quotaWaiting: freeze(running.filter(isExternalQuotaWaitingTask)),
-    externalRuntimeWaiting: freeze(running.filter(isExternalRuntimeWaitingTask)),
-    releasedWorkerSlots: freeze(running.filter(isReleasedWorkerSlotTask)),
-    hasEligibleWork: selected.length > 0,
-    blocked: freeze(blocked),
-    deferredConflicts: freeze(deferredConflicts),
-    continueRequired: selected.length > 0,
-    brainLive: true,
-    causalReplanRequired: selected.length===0&&freeSlots>0,
-    persistentMaxConcurrentTasks: concurrency.persistentMaxConcurrentTasks,
-    requestedMaxConcurrentTasks: concurrency.requestedMaxConcurrentTasks,
-    effectiveMaxConcurrentTasks: effectiveMax,
-    backpressure: freeze({
-      awaitingQaCount: concurrency.awaitingQaCount,
-      retryPressureCount: concurrency.retryPressureCount
-    }),
-    freeSlots,
-    postReleaseFocusedSlotUsed,
-    postReleaseFocusedTaskId,
-    postReleaseFocusedTaskIds: freeze([...postReleaseFocusedTaskIds]),
-    postReleaseFocusedSlotLimit,
-    longWorkProtectedSlotUsed,
-    longWorkOwnerTaskId,
-    workStealingUsed: selected.some((task) => (shardUse[task.shard] || 0) > (BASE_SHARD_SLOTS[task.shard] || 1)),
-    shardUse: freeze({ ...shardUse }),
-    stopReason: selected.length ? null : freeSlots === 0 ? 'PARALLEL_CAPACITY_FULL' : queuedEligible ? 'ONLY_CONFLICTING_WORK_AVAILABLE' : blocked.length ? 'NO_ELIGIBLE_UNBLOCKED_TASK' : 'AWAITING_CAUSAL_REPLAN_OR_EVENT'
+    selected:freeze([...selected].sort((a,b)=>scoreTask(b,0)-scoreTask(a,0)||a.id.localeCompare(b.id))),
+    lane:laneMode,
+    laneDeferred:freeze(laneDeferred),
+    laneCapacityDeferred:freeze(laneCapacityDeferred),
+    robloxFirstMode:robloxCandidateAvailable,
+    robloxFirstDeferred:freeze([]),
+    running:freeze(running),
+    capacityRunning:freeze(capacityRunning),
+    awaitingQa:freeze(running.filter(isAwaitingQaTask)),
+    quotaWaiting:freeze(running.filter(isExternalQuotaWaitingTask)),
+    externalRuntimeWaiting:freeze(running.filter(isExternalRuntimeWaitingTask)),
+    releasedWorkerSlots:freeze(running.filter(isReleasedWorkerSlotTask)),
+    hasEligibleWork:selected.length>0,
+    blocked:freeze(blocked),
+    deferredConflicts:freeze(deferredConflicts),
+    continueRequired:selected.length>0,
+    brainLive:true,
+    causalReplanRequired:selected.length===0&&!onlyLaneCapacityBlocked&&queuedEligible===0&&blocked.length===0,
+    internalGlobalParallelCap:null,
+    laneMaxActiveWorkers,
+    activeLaneWorkers,
+    availableLaneCapacity,
+    externalMatrixTransportPartitionMax:EXTERNAL_MATRIX_BATCH_MAX,
+    pressure,
+    shardUse:freeze({...shardUse}),
+    workStealingUsed:new Set(selected.map((task)=>task.shard)).size>1,
+    stopReason:selected.length
+      ?null
+      :onlyLaneCapacityBlocked
+        ?'LANE_FIXED_CAPACITY_FULL'
+        :deferredConflicts.length
+          ?'ONLY_CONFLICTING_WORK_AVAILABLE'
+          :blocked.length
+            ?'NO_ELIGIBLE_UNBLOCKED_TASK'
+            :'AWAITING_CAUSAL_REPLAN_OR_EVENT'
   });
 }
 
@@ -862,39 +767,37 @@ export function finishVibeQueueTask(queueInput, { taskId = '', outcome = 'PASS',
 }
 
 export function summarizeVibeContinuousQueue(queueInput, { maxConcurrentTasks = null, lane = 'all' } = {}) {
-  const queue = createVibeContinuousQueue(queueInput);
-  const counts = Object.fromEntries(VIBE_QUEUE_STATUSES.map((status) => [status, queue.tasks.filter((task) => task.status === status).length]));
-  const next = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane });
+  const queue=createVibeContinuousQueue(queueInput);
+  const counts=Object.fromEntries(VIBE_QUEUE_STATUSES.map((status)=>[status,queue.tasks.filter((task)=>task.status===status).length]));
+  const next=selectVibeQueueBatch(queue,{maxConcurrentTasks,lane});
   return freeze({
-    version: 5,
-    counts: freeze(counts),
-    nextTaskId: next.selected[0]?.id || null,
-    nextTaskIds: freezeList(next.selected.map((task) => task.id)),
-    runningTaskId: next.running[0]?.id || null,
-    runningTaskIds: freezeList(next.running.map((task) => task.id)),
-    capacityRunningTaskIds: freezeList(next.capacityRunning.map((task) => task.id)),
-    awaitingQaTaskIds: freezeList(next.awaitingQa.map((task) => task.id)),
-    quotaWaitingTaskIds: freezeList(next.quotaWaiting.map((task) => task.id)),
-    releasedWorkerSlotTaskIds: freezeList(next.releasedWorkerSlots.map((task) => task.id)),
-    nextReleaseState: next.selected[0]?.releaseState || null,
-    continueRequired: next.continueRequired,
-    brainLive: true,
-    causalReplanRequired: next.causalReplanRequired===true,
-    stopReason: next.stopReason,
-    executionLaneCounts: freeze(Object.fromEntries(VIBE_EXECUTION_LANES.map((lane)=>[lane,queue.tasks.filter((task)=>task.executionLane===lane&&['queued','running','blocked'].includes(task.status)).length]))),
-    ownerDirectiveWaiting: queue.tasks.some((task) => task.ownerDirective && ['queued', 'running', 'blocked'].includes(task.status)),
-    maxConcurrentTasks: queue.maxConcurrentTasks,
-    persistentMaxConcurrentTasks: next.persistentMaxConcurrentTasks,
-    requestedMaxConcurrentTasks: next.requestedMaxConcurrentTasks,
-    effectiveMaxConcurrentTasks: next.effectiveMaxConcurrentTasks,
-    backpressure: next.backpressure,
-    freeSlots: next.freeSlots,
-    postReleaseFocusedSlotUsed: next.postReleaseFocusedSlotUsed,
-    postReleaseFocusedTaskId: next.postReleaseFocusedTaskId,
-    longWorkProtectedSlotUsed: next.longWorkProtectedSlotUsed,
-    longWorkOwnerTaskId: next.longWorkOwnerTaskId,
-    shardUse: next.shardUse,
-    workStealingUsed: next.workStealingUsed
+    version:6,
+    counts:freeze(counts),
+    nextTaskId:next.selected[0]?.id||null,
+    nextTaskIds:freezeList(next.selected.map((task)=>task.id)),
+    runningTaskId:next.running[0]?.id||null,
+    runningTaskIds:freezeList(next.running.map((task)=>task.id)),
+    capacityRunningTaskIds:freezeList(next.capacityRunning.map((task)=>task.id)),
+    awaitingQaTaskIds:freezeList(next.awaitingQa.map((task)=>task.id)),
+    quotaWaitingTaskIds:freezeList(next.quotaWaiting.map((task)=>task.id)),
+    releasedWorkerSlotTaskIds:freezeList(next.releasedWorkerSlots.map((task)=>task.id)),
+    nextReleaseState:next.selected[0]?.releaseState||null,
+    continueRequired:next.continueRequired,
+    brainLive:true,
+    causalReplanRequired:next.causalReplanRequired===true,
+    stopReason:next.stopReason,
+    executionLaneCounts:freeze(Object.fromEntries(VIBE_EXECUTION_LANES.map((laneName)=>[
+      laneName,queue.tasks.filter((task)=>task.executionLane===laneName&&['queued','running','blocked'].includes(task.status)).length
+    ]))),
+    ownerDirectiveWaiting:queue.tasks.some((task)=>task.ownerDirective&&['queued','running','blocked'].includes(task.status)),
+    internalGlobalParallelCap:null,
+    laneMaxActiveWorkers:next.laneMaxActiveWorkers,
+    activeLaneWorkers:next.activeLaneWorkers,
+    availableLaneCapacity:next.availableLaneCapacity,
+    externalMatrixTransportPartitionMax:EXTERNAL_MATRIX_BATCH_MAX,
+    pressure:next.pressure,
+    shardUse:next.shardUse,
+    workStealingUsed:next.workStealingUsed
   });
 }
 
