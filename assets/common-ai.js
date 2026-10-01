@@ -289,7 +289,7 @@ export class JaewoonCommonAI {
     const deltas = packet.relationshipDelta && typeof packet.relationshipDelta === 'object' ? packet.relationshipDelta : {};
     const hasRelationshipDelta = Object.entries(deltas).some(([key, value]) => key === 'stage' ? Boolean(value) : Number(value) !== 0);
     if (relationshipTargetId && hasRelationshipDelta) {
-      relationshipResult = this.applyRelationshipEvent(relationshipTargetId, event, deltas);
+      relationshipResult = this.applyRelationshipEvent(relationshipTargetId, event, deltas, { currentObservation: true });
     }
 
     const next = packet.next && typeof packet.next === 'object' ? packet.next : {};
@@ -345,12 +345,12 @@ export class JaewoonCommonAI {
     return next;
   }
 
-  applyRelationshipEvent(id = '', event = {}, deltas = {}) {
+  applyRelationshipEvent(id = '', event = {}, deltas = {}, { currentObservation = false } = {}) {
     const key = String(id || ''), eventId = String(event?.id || event?.eventId || '');
     if (!key || !eventId || !event?.type) return { applied: false, reason: 'source_event_required' };
     const existing = this.relationshipWith(key);
     const rememberedSourceEvent = this.memory.some(row => String(row?.sourceEventId || row?.id || '') === eventId);
-    if (this.relationshipEvents.has(eventId) || existing?.causeEventIds?.includes(eventId) || rememberedSourceEvent) return { applied: false, reason: 'duplicate_event', state: existing };
+    if (this.relationshipEvents.has(eventId) || existing?.causeEventIds?.includes(eventId) || (rememberedSourceEvent && currentObservation !== true)) return { applied: false, reason: 'duplicate_event', state: existing };
     const current = existing || this.setRelationship(key, {});
     const axis = value => Math.max(-100, Math.min(100, Math.round(Number(value) || 0)));
     const fields = ['trust','familiarity','respect','tension','affection','fear','debt','rivalry','protectiveness','dependence','boundaryComfort'];
