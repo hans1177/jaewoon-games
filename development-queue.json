@@ -4613,7 +4613,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T14:33:18.867Z",
+      "updatedAt": "2026-10-01T14:37:41.725Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -5524,14 +5524,14 @@
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
           "scenarioFailureCount": 0,
-          "primaryActionDisplacement": 30.885853792373098,
-          "primaryActionVelocity": 0.000013129492422170396,
+          "primaryActionDisplacement": 31.3552144426843,
+          "primaryActionVelocity": 0.00001304981600425735,
           "primaryActionFeedbackChanged": false,
           "commercialAudit": {
             "auditProfile": "FAST_DEEP",
-            "timelineProbeCount": 25,
+            "timelineProbeCount": 24,
             "routePlanningProbeCount": 5,
-            "lightweightProbeCount": 20,
+            "lightweightProbeCount": 19,
             "progressChanged": true,
             "inventoryChanged": false,
             "timelineProgressChanged": true,
@@ -5565,7 +5565,7 @@
               "multiplayerActualSessionPass": false
             },
             "performance": {
-              "memoryMb": 2594.6875,
+              "memoryMb": 2634.828125,
               "descendantCount": 317
             },
             "multiplayer": null,
@@ -5814,8 +5814,8 @@
           "authoritativeStateChangeObserved": true,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-10-01T14:33:18.867Z",
-        "workflowRunId": 36876190057,
+        "testedAt": "2026-10-01T14:37:41.725Z",
+        "workflowRunId": 36875314493,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -5894,7 +5894,7 @@
       "failureCount": 1,
       "contractCanaryPassed": false,
       "robloxInternalPlaytestPassed": true,
-      "robloxInternalPlaytestPassedAt": "2026-10-01T14:33:18.867Z",
+      "robloxInternalPlaytestPassedAt": "2026-10-01T14:37:41.725Z",
       "robloxStudioLocalPlayRepairRequired": false,
       "robloxStudioLocalPlayInfrastructurePending": false,
       "robloxQualityBuildUpRequired": false,
@@ -5920,7 +5920,7 @@
         "bootstrapState": "PUBLISHED_PRIVATE"
       },
       "robloxCanonicalPublishPending": false,
-      "robloxQualityBuildUpLastPassedAt": "2026-10-01T14:33:18.867Z",
+      "robloxQualityBuildUpLastPassedAt": "2026-10-01T14:37:41.725Z",
       "robloxF9PendingInParallel": false,
       "robloxCanonicalPublishQueue": [
         {
@@ -27094,7 +27094,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T14:37:23.384Z",
+  "updatedAt": "2026-10-01T14:37:41.725Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
