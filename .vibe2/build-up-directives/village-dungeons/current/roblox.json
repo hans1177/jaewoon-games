@@ -245,8 +245,8 @@
       "sourceRevision": "25b1b2b162099754e756b8171e2ab440a455dfd4",
       "artifactIdentity": "sha256:4deca0802a0ec0a6af024e95fdd07db82aea7930abd5daaa2cf1faa4102f154d",
       "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 36896295029,
-      "testedAt": "2026-10-01T17:11:26.611Z",
+      "workflowRunId": 36908677455,
+      "testedAt": "2026-10-01T18:52:33.324Z",
       "repairSurfaces": [
         "SYSTEM_TRANSACTION",
         "ROBLOX_OBSERVED_INTERACTION"
@@ -257,7 +257,7 @@
           "repairSurface": "SYSTEM_TRANSACTION",
           "priority": "CRITICAL",
           "hint": "One or more discovered shop/craft/equip/upgrade actions accepted input without changing inventory, currency/progression, feedback, or relevant UI state. Repair each transaction chain independently.",
-          "observed": "{\"systemActionCount\":1,\"systemEffectCount\":0,\"actions\":[{\"id\":\"ui-discovered-ScopeAction4\",\"semantic\":\"EQUIP\",\"effectObserved\":false,\"effect\":{\"moved\":3.5652192309498787e-10,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":false}}]}"
+          "observed": "{\"systemActionCount\":1,\"systemEffectCount\":0,\"actions\":[{\"id\":\"ui-discovered-ScopeAction4\",\"semantic\":\"EQUIP\",\"effectObserved\":false,\"effect\":{\"moved\":2.1464074961841106e-10,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":false}}]}"
         },
         {
           "id": "observed-action-cc7378b4b159247bc4b8",
