@@ -181,9 +181,17 @@ jobs:
       - name: Run Roblox Phase 1 adapter tests
         run: node qa/vibe3-roblox-platform.test.mjs
 
-      - name: Run Roblox native foundation and tester QA contract tests
+      - name: Run Roblox native foundation F0-F9 and release contract tests
         run: |
-          node --test             qa/company-development-roblox-runtime-foundation.test.mjs             qa/company-development-roblox-headless-fast-mvp.test.mjs             qa/company-development-roblox-release-promotion.test.mjs             qa/company-tester-debug-intake.test.mjs             qa/company-development-roblox-runtime.test.mjs
+          node --test \
+            qa/company-development-roblox-runtime-foundation.test.mjs \
+            qa/company-development-roblox-headless-fast-mvp.test.mjs \
+            qa/company-development-roblox-runtime.test.mjs \
+            qa/company-development-roblox-independent-promotion.test.mjs \
+            qa/company-development-roblox-post-runtime-qa.test.mjs \
+            qa/company-development-roblox-final-review-revalidation.test.mjs \
+            qa/company-development-roblox-release-promotion.test.mjs \
+            qa/company-tester-debug-intake.test.mjs
 
       - name: Run direct native router tests
         run: node --test qa/company-selected-platform-router.test.mjs
