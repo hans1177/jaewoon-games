@@ -379,6 +379,9 @@ function matchedForType(selector={},type='',manifest={},target=''){
         companyVerified:asset.companyVerified===true,
         sameGameExistingRoblox:asset.sameGameExistingRoblox===true,
         robloxAssetId:clean(asset.robloxAssetId)||null,
+        sourceHash:clean(asset.sourceHash||asset.contentHash||asset.sha256)||null,
+        platformVariants:freeze(asset.platformVariants&&typeof asset.platformVariants==='object'?asset.platformVariants:{}),
+        productionVerified:asset.productionVerified===true||asset.verifiedCompanyReusable===true,
         retargetable:asset.retargetable===true,
         studioMotionCandidate:asset.studioMotionCandidate===true,
         creatureFamily:clean(asset.creatureFamily)||null,
@@ -505,6 +508,29 @@ function directAuthoringFor(target='',type=''){
   return freezeList([]);
 }
 
+function assetApplyFirstCandidate(asset={},target=''){
+  const platform=clean(target).toLowerCase();
+  const variant=asset?.platformVariants?.[platform.toUpperCase()]||asset?.platformVariants?.[platform]||null;
+  const sameGame=asset.sameGameExistingRoblox===true&&platform==='roblox';
+  const hasNativeReference=Boolean(sameGame&&(asset.path||asset.robloxAssetId)||variant?.path||asset.path||asset.robloxAssetId);
+  const mode=sameGame?'PATCH_EXISTING_GAME_BINDING':asset.companyVerified===true?'IMPORT_VERIFIED_COMPANY_NATIVE_VARIANT':'IMPORT_EXISTING_REPOSITORY_ASSET';
+  const bindingCost=sameGame?0:asset.companyVerified===true?1:2;
+  return freeze({
+    id:asset.id,
+    sourceTier:asset.sourceTier,
+    mode,
+    bindingCost,
+    path:asset.path||variant?.path||null,
+    robloxAssetId:asset.robloxAssetId||null,
+    sourceHash:asset.sourceHash||null,
+    productionVerified:asset.productionVerified===true,
+    ready:Boolean(hasNativeReference&&asset.downloaded!==false),
+    adaptationAllowed:true,
+    qualityPassRequiredBeforeKeep:true,
+    runtimeCheckRequiredAfterApply:true
+  });
+}
+
 function decisionFor(selector={},target='',binding={},manifest={}){
   const type=clean(binding.type);
   const matched=matchedForType(selector,type,manifest,target);
@@ -514,10 +540,12 @@ function decisionFor(selector={},target='',binding={},manifest={}){
   const externalCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='LICENSE_VERIFIED_EXTERNAL_ASSET'));
   const reuseCandidates=freezeList([...companyCandidates,...sameGameCandidates,...repositoryCandidates]);
   const directAuthoring=directAuthoringFor(target,type);
+  const applyFirstCandidates=freezeList(reuseCandidates.map(asset=>assetApplyFirstCandidate(asset,target)).filter(row=>row.ready).sort((a,b)=>a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
   const decisionOrder=unique([
     'COMPARE_TARGET_GAME_QUALITY',
-    companyCandidates.length?'REUSE_VERIFIED_COMPANY_ASSET':'',
+    applyFirstCandidates.length?'APPLY_READY_EXISTING_ASSET_FIRST':'',
     sameGameCandidates.length?'REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET':'',
+    companyCandidates.length?'REUSE_VERIFIED_COMPANY_ASSET':'',
     repositoryCandidates.length?'REUSE_LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET':'',
     externalCandidates.length?'ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET':'',
     directAuthoring.length?'VIBE_DIRECT_AUTHOR':'',
@@ -546,6 +574,16 @@ function decisionFor(selector={},target='',binding={},manifest={}){
     repositoryCandidates,
     externalCandidates,
     reuseCandidates,
+    applyFirst:freeze({
+      enabled:applyFirstCandidates.length>0,
+      candidates:applyFirstCandidates,
+      sequence:freezeList(['COMPARE_READY_CANDIDATES_IN_TARGET_CONTEXT','APPLY_BEST_READY_CANDIDATE','CHECK_ACTUAL_GAME_PRESENTATION','DERIVE_ONLY_FAILED_REGIONS_IF_NEEDED','REAPPLY_DERIVED_VARIANT','AUTHOR_NEW_ONLY_IF_READY_ASSETS_CANNOT_REACH_TARGET']),
+      keepCondition:'TARGET_QUALITY_AND_RUNTIME_BINDING_PASS',
+      deriveBeforeReplace:true,
+      fullReauthorOnlyAfterReusableCandidatesExhausted:true,
+      sameGameBindingCostPreferredWhenQualityComparable:true,
+      gameplayAuthority:false
+    }),
     directAuthoring,
     decisionOrder:freezeList(decisionOrder),
     qualitySelection:freeze({
@@ -981,6 +1019,14 @@ export function buildVibeAssetProductionPlan({
     requestedTypes:freezeList(selector.requestedTypes||[]),
     missingTypes:freezeList(selector.missingTypes||[]),
     decisions,
+    applyFirstSummary:freeze({
+      enabled:decisions.some(row=>row.applyFirst?.enabled),
+      candidateCount:decisions.reduce((sum,row)=>sum+(row.applyFirst?.candidates?.length||0),0),
+      sequence:freezeList(['APPLY_USABLE_EXISTING_FIRST','OBSERVE_IN_GAME','DERIVE_WEAK_PARTS_ONLY','REAPPLY','NEW_AUTHORING_LAST']),
+      existingAssetApplicationBeforeNewAuthoring:true,
+      qualityGateStillRequired:true,
+      newAuthoringOnlyAfterReusableCandidateFailure:true
+    }),
     generatedAssetOutputContract:GENERATED_ASSET_OUTPUT_CONTRACT,
     baseMaterialLoadout,
     assetCustomization,
@@ -1428,6 +1474,7 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
+    plan.applyFirstSummary?.enabled?`[APPLY USABLE ASSETS FIRST] ${JSON.stringify(plan.applyFirstSummary)}. 먼저 현재 게임/회사/저장소에서 target-compatible하고 실제 경로 또는 native binding이 있는 자산을 게임에 적용한다. 적용 후 실제 게임 카메라에서 품질을 확인하고 부족한 부위만 derived variant로 조형·재질·리그·LOD를 보강해 재적용한다. 사용 가능한 자산이 목표 품질에 도달할 수 있는데 새 자산부터 만들지 않는다. 반대로 품질이 부족한 자산을 억지로 유지하지도 않는다.`:'' ,
     plan.generatedAssetOutputContract?`[GENERATED NATIVE ASSET CONTRACT] ${JSON.stringify(plan.generatedAssetOutputContract)}. Roblox/Unity에서 기존 자산이 목표 품질을 못 채우면 Blender/Python 또는 엔진 네이티브 authoring으로 실제 원본 자산을 만든다. 생성 소스 레시피와 원본/파생 파일, 동일 조건 미리보기, evidence.json, 회사 자산 장부 등록을 남긴다. GLB/이미지 파일이 생겼다는 사실만으로 VERIFIED 처리하지 말고 대상 native 런타임에서 실제 바인딩·표현·성능 검증 뒤 승격한다.`:'',
     plan.detailReview?`[STYLE COMPARISON AND LOCAL REPAIR] ${JSON.stringify(plan.detailReview)}. 같은 원형·카메라·조명·동작·표본 시점으로 카툰/실사/다크를 비교한다. repairs의 현재 소스/캡처 근거가 있는 부위·프레임·editableParameters만 수정하고 previousParameters와 잠긴 특징은 유지한다. 수정 뒤 동일 조건 재촬영으로 재검토하며 캡처 등록이나 파라미터 변경만으로 문제를 닫지 않는다.`:'',
     plan.motionContinuityAudit?`[MEASURED CONTINUOUS MOTION] ${JSON.stringify(plan.motionContinuityAudit)}. 루트·접촉점·손/무기 목표점=월드 미터, 관절=루트 로컬 미터, 지지물 접촉=동일 supportId의 로컬 미터, 회전/시선 오차=라디안, 표정=0~1 가중치다. violations의 region/frameRange/normalizedTimeRange에서 발 고정·손/무기 접촉·의상 관통·시선 추적·표정 튐을 수정한다. attachments는 active와 effectorWorldPosition/targetWorldPosition, penetrations는 depthMeters, gaze는 tracking과 forwardWorld/targetDirectionWorld, expressions는 morph별 가중치를 모든 프레임에 계측한다. 레지스트리 motionQA.requiredDetailChannels/limits를 작업 입력이 약화할 수 없다. 현재 소스 해시와 클립 전체 표본 및 선언된 채널이 없으면 UNVERIFIED다. 판정 시점·클립 길이·게임 이동 권한을 바꾸지 말고 재측정한다. unmeasuredGroups는 미검수이며 수치 PASS는 전체 시각 품질이나 런타임 승격 PASS가 아니다.`:'',
