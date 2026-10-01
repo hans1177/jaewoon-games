@@ -1647,6 +1647,7 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.match(vibe24hRunner,/VIBE2_ASSET_DEVELOPMENT_ACTIVE=/);
   assert.match(vibe24hRunner,/learning_idle_active:/);
   assert.match(vibe24hRunner,/VIBE2_24H_LEARNING_IDLE_ACTIVE=/);
+  assert.match(vibe24hRunner,/group: vibe2-24h-cycle-singleton-v10/);
   assert.match(vibe24hRunner,/learning_idle:[\s\S]*learning_idle_queued != '0' && needs\.plan\.outputs\.learning_idle_active == '0'/);
   assert.match(vibe24hRunner,/game_study:[\s\S]*needs: \[plan, continuous, asset_development, learning_idle\]/);
   assert.match(vibe24hRunner,/asset_development_queued == '0'[\s\S]*asset_development_active == '0'/);
