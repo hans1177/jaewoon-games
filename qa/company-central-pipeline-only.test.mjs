@@ -136,7 +136,7 @@ test('native development trigger ownership avoids duplicate central plus child p
   ]) assert.ok(!developmentPush.includes(nonRuntimeWake),nonRuntimeWake);
   assert.match(development,/group: company-development-confirmed-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'main-push'\) \|\| github\.run_id \}\}/);
   assert.match(development,/group: company-development-confirmed-[\s\S]{0,180}?cancel-in-progress: false/);
-  assert.match(roblox,/group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push-v2'\) \|\| github\.run_id \}\}/);
+  assert.match(roblox,/group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}/);
   assert.match(unity,/group: unity-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}/);
   for(const childPath of [
     '.github/workflows/company-development-roblox-runtime.yml',
@@ -677,9 +677,8 @@ test('exact-game native workflow concurrency closes dedupe races without global 
   const unity=read('.github/workflows/company-development-unity-runtime.yml');
   const central=read('.github/workflows/company-development-confirmed-runtime.yml');
   const change=roadmap.changeRecord?.nativeExactGameWorkflowConcurrency20260927;
-  const robloxBatchEpoch=roadmap.changeRecord?.robloxBatchConcurrencyEpoch20261002;
 
-  assert.match(roblox,/concurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push-v2'\) \|\| github\.run_id \}\}\n(?:\s+#.*\n)*\s+cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
+  assert.match(roblox,/concurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n(?:\s+#.*\n)*\s+cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
   assert.match(unity,/concurrency:\n\s+group: unity-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n(?:\s+#.*\n)*\s+cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
   assert.match(central,/ROBLOX_NATIVE_DISPATCH_DEDUPED_ACTIVE=/);
   assert.match(central,/UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE=/);
@@ -696,15 +695,6 @@ test('exact-game native workflow concurrency closes dedupe races without global 
   assert.equal(change?.manualEmptyBatchRunsRunScoped,true);
   assert.equal(change?.batchRunsGloballySerialized,false);
   assert.equal(change?.globalNativeSerializationForbidden,true);
-  assert.equal(robloxBatchEpoch?.previousPushBatchIdentity,'batch-push');
-  assert.equal(robloxBatchEpoch?.pushBatchIdentity,'batch-push-v2');
-  assert.equal(robloxBatchEpoch?.legacyQueuedGroupBypassed,true);
-  assert.equal(robloxBatchEpoch?.exactGameIdentityUnchanged,true);
-  assert.equal(robloxBatchEpoch?.manualEmptyBatchIdentityUnchanged,true);
-  assert.equal(architecture.nativeExactGameWorkflowConcurrency?.pushBatchFallback,'batch-push-v2');
-  assert.equal(architecture.nativeExactGameWorkflowConcurrency?.legacyPushBatchFallback,'batch-push');
-  assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.pushBatchRunIdentity,'batch-push-v2');
-  assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.legacyPushBatchRunIdentity,'batch-push');
   assert.equal(architecture.nativeExactGameWorkflowConcurrency?.distinctGamesParallel,true);
   assert.equal(architecture.nativeExactGameWorkflowConcurrency?.batchGlobalSerialization,false);
   assert.equal(architecture.nativeExactGameWorkflowConcurrency?.pushBatchCoalesced,true);

@@ -1,5 +1,5 @@
 {
-  "version": 521,
+  "version": 520,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-02",
@@ -8631,26 +8631,6 @@
       "existingStatusSyncReused": true,
       "titleOnlyCardExposureForbidden": true,
       "actualCanonicalWebEntryEnablesHomepagePlay": true
-    },
-    "robloxBatchConcurrencyEpoch20261002": {
-      "id": "ROBLOX_BATCH_CONCURRENCY_EPOCH_2026-10-02",
-      "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
-      "status": "CODE_UPDATED_LIVE_REVALIDATION_PENDING",
-      "objective": "BYPASS_LEGACY_ROBLOX_PUSH_BATCH_CONCURRENCY_GROUP_STUCK_QUEUED_WITHOUT_CHANGING_EXACT_GAME_OR_MANUAL_BATCH_EXECUTION",
-      "workflow": ".github/workflows/company-development-roblox-runtime.yml",
-      "previousPushBatchIdentity": "batch-push",
-      "pushBatchIdentity": "batch-push-v2",
-      "legacyQueuedGroupBypassed": true,
-      "legacyQueuedRunMayRemainHistorical": true,
-      "exactGameIdentityUnchanged": true,
-      "manualEmptyBatchIdentityUnchanged": true,
-      "exactGameCancelInProgress": false,
-      "manualEmptyBatchCancelInProgress": false,
-      "pushBatchCancelInProgress": true,
-      "distinctGamesParallel": true,
-      "batchGlobalSerializationAdded": false,
-      "gameRuntimeOrQaGateChanged": false,
-      "qualitySecurityReleaseGatesUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {
