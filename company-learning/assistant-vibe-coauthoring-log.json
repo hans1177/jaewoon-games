@@ -2,7 +2,7 @@
   "version": 6,
   "authority": "ASSISTANT_VIBE_COAUTHORING_TRACE",
   "status": "ACTIVE",
-  "recordedAt": "2026-09-26",
+  "recordedAt": "2026-10-01",
   "purpose": "Record every assistant-led Vibe Web coauthoring decision, source change, review, QA result, bottleneck repair, and production lesson as traceable learning evidence without bypassing the existing verified experience and canonical training gates.",
   "policy": {
     "everyAssistantCoauthoringActionMustBeRecorded": true,
@@ -858,6 +858,39 @@
       ],
       "learningState": "TRACE_ONLY",
       "liveState": "MERGED_AT_FA985B00; ORDINARY_JSON_OVER_64KB_STARTS_WITH_BOUNDED_WRITABLE_CONTEXT; POST_MERGE_EXACT_EFFECT_NOT_YET_OBSERVED; LINE_DEFENSE_STUDIO_JOB_110127864340_REMAINS_TIMEOUT_BLOCKED_AT_51566_THEN_42704_BYTES_AND_IS_OUTSIDE_THIS_ORDINARY_PATH; NEXT_ROTATION_LINE_DEFENSE_STANDARD_CANDIDATE_AND_STUDIO_SPECIALIZED_PROMPT_BUDGET_THEN_ACTUAL_STUDIO_F9"
+    },
+    {
+      "id": "assistant_horror_scope_release_shared_roblox_cycle_20261001",
+      "date": "2026-10-01",
+      "gameId": "horror-escape-room",
+      "actionType": "OWNER_SCOPE_RELEASE_AND_PIPELINE_REJOIN",
+      "problem": "horror-escape-room remained owner-exclusive after the owner explicitly requested shared Roblox development again.",
+      "rootCause": "PRIOR_OWNER_EXCLUSIVE_SCOPE_REMAINED_ACTIVE_AFTER_NEW_EXPLICIT_OWNER_SCOPE_RELEASE",
+      "decision": "Use EXPLICIT_OWNER_SCOPE_RELEASE and preserve existing source, save schema, release evidence, and publication target while returning the game to shared perpetual Roblox F0-F9.",
+      "change": "Deactivated the active owner-exclusive list, retained horror-escape-room as released, removed duplicate broad Roblox batch wake, and kept exact changed-source sync as the source-change ingress.",
+      "reusablePatterns": [
+        "OWNER_SCOPE_RELEASE_REUSES_EXISTING_SOURCE_QUEUE_SAVE_AND_RELEASE_EVIDENCE",
+        "GAME_SOURCE_CHANGE_USES_EXACT_SYNC_NOT_DUPLICATE_PORTFOLIO_BATCH_WAKE"
+      ],
+      "avoidPatterns": [
+        "RESETTING_GAME_OR_SAVE_STATE_ON_SCOPE_RELEASE",
+        "STALE_OWNER_EXCLUSIVE_LOCK_AFTER_EXPLICIT_RELEASE"
+      ],
+      "qa": [
+        "central owner scope release regression added",
+        "exact source-sync ownership regression aligned",
+        "post-merge Roblox runtime and Studio evidence pending"
+      ],
+      "learningState": "TRACE_ONLY",
+      "evidence": [
+        "owner-directive:2026-10-01:include-horror-escape-room",
+        "pull-request:4240",
+        "roadmap-version:505",
+        "change-record-budget:43/43",
+        "latest-asset-detail-record-preserved:assetFineMotionAndRetryDetail20261001",
+        "archived-unreferenced-change-records:customizableDetailedAssetProduction20261001,assetLocalizedDetailIteration20261001@778168be1936206c72b07cfd4b8fae54dd3b6642"
+      ],
+      "liveState": "PR_4240_REBUILT_ON_MAIN_778168BE; OWNER_SCOPE_RELEASED; EXACT_SOURCE_SYNC_SINGLE_INGRESS; LATEST_ASSET_FINE_MOTION_RECORD_PRESERVED; POST_MERGE_RUNTIME_REVALIDATION_PENDING"
     }
   ]
 }
