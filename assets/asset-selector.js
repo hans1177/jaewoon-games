@@ -30,8 +30,19 @@ function blockedLicense(license='') {
   });
 }
 const BLOCKED_ACTOR_VISUAL_WORDS = Object.freeze(['circle', 'sphere', 'orb', 'ball', '원형', '구체', 'placeholder', 'dummy', 'primitive']);
+const ACTIVE_NATIVE_TARGETS = Object.freeze(['roblox', 'unity']);
+const PAUSED_NATIVE_TARGETS = Object.freeze(['fortnite-uefn']);
 
 function text(value) { return String(value ?? '').trim(); }
+function normalizeProductionTarget(value = '') {
+  const source = text(value).toLowerCase();
+  if (!source) return '';
+  if (['roblox', '로블록스'].includes(source)) return 'roblox';
+  if (['unity', 'unity-android', 'android', '유니티', '안드로이드', 'apk'].includes(source)) return 'unity';
+  if (['web', 'mobile-web', 'browser', '웹', '브라우저', 'unity-web', 'unity-web-validation'].includes(source)) return 'web-validation';
+  if (['uefn', 'fortnite', 'fortnite-uefn', '포트나이트'].includes(source)) return 'fortnite-uefn';
+  return source;
+}
 function unique(values) { return [...new Set(values.filter(Boolean))]; }
 function hasAny(source, words) { const value = text(source).toLowerCase(); return words.some((word) => value.includes(String(word).toLowerCase())); }
 function declaredTypes(asset) { return Array.isArray(asset?.types) ? asset.types.map((value) => text(value).toLowerCase()) : []; }
@@ -137,11 +148,15 @@ function choosePrototypePreset(request, presetCatalog) {
     name:text(best.name),
     genre:text(best.genre),
     defaultTarget:text(best.defaultTarget || 'mobile-web'),
+    defaultNativeTarget:normalizeProductionTarget(best.defaultNativeTarget || 'roblox'),
     actorAssets:frozenList(best.actorAssets),
     effectAssets:frozenList(best.effectAssets),
     supportingSourcePriority:frozenList(best.supportingSourcePriority),
     toolCandidates:frozenList(best.toolCandidates),
     platformProfiles:Object.freeze({
+      roblox:normalizePlatformProfile(best?.platformProfiles?.roblox || best?.platformProfiles?.mobileWeb),
+      unity:normalizePlatformProfile(best?.platformProfiles?.unity || best?.platformProfiles?.unityAndroid),
+      webValidation:normalizePlatformProfile(best?.platformProfiles?.webValidation || best?.platformProfiles?.mobileWeb),
       mobileWeb:normalizePlatformProfile(best?.platformProfiles?.mobileWeb),
       unityAndroid:normalizePlatformProfile(best?.platformProfiles?.unityAndroid),
     }),
@@ -155,26 +170,43 @@ function presetPreferredIds(preset) {
 
 function chooseProductionTarget(request, preset) {
   const source = text(request).toLowerCase();
-  if (/\bweb\b|웹|브라우저/.test(source)) return 'mobile-web';
-  if (/\bunity\b|유니티|android|안드로이드|apk/.test(source)) return 'unity-android';
-  return text(preset?.defaultTarget || 'mobile-web');
+  if (/\broblox\b|로블록스/.test(source)) return 'roblox';
+  if (/\buefn\b|\bfortnite\b|포트나이트/.test(source)) return 'fortnite-uefn';
+  if (/\bunity\b|유니티|android|안드로이드|apk/.test(source)) return 'unity';
+  if (/\bweb\b|웹|브라우저/.test(source)) return 'web-validation';
+  return normalizeProductionTarget(preset?.defaultNativeTarget || preset?.defaultTarget || 'roblox') || 'roblox';
 }
 
 function buildProductionPlan(request, preset) {
   if (!preset) return null;
   const recommendedTarget = chooseProductionTarget(request, preset);
+  const nativePrimaryTarget = ACTIVE_NATIVE_TARGETS.includes(recommendedTarget)
+    ? recommendedTarget
+    : normalizeProductionTarget(preset.defaultNativeTarget || 'roblox') || 'roblox';
   return Object.freeze({
     mobileFirst:true,
     genre:preset.genre,
     recommendedTarget,
+    nativePrimaryTarget,
+    activeNativeTargets:[...ACTIVE_NATIVE_TARGETS],
+    pausedNativeTargets:[...PAUSED_NATIVE_TARGETS],
+    webValidationSurfaceOnly:true,
+    robloxFirstWhenPlatformUnspecified:nativePrimaryTarget === 'roblox',
     webQualityAllowed:true,
+    roblox:preset.platformProfiles.roblox,
+    unity:preset.platformProfiles.unity,
+    webValidation:preset.platformProfiles.webValidation,
     mobileWeb:preset.platformProfiles.mobileWeb,
     unityAndroid:preset.platformProfiles.unityAndroid,
     toolCandidates:preset.toolCandidates,
     externalToolAutoInstall:false,
     externalToolApprovalRequired:true,
     publicUseRequiresLicenseLedger:true,
+    nativeGeneratedAssetSourceRecipeRequired:true,
+    nativeGeneratedAssetReviewEvidenceRequired:true,
+    nativeRuntimeVerificationRequiredBeforePromotion:true,
     heavy3dUnityAndroidPreferred:['survival','rpg','action-rpg','fps-shooter','zombie-horror'].includes(preset.genre),
+    legacyHeavy3dHintDoesNotOverrideExplicitOrCentralNativeTarget:true,
   });
 }
 
@@ -204,7 +236,7 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
     replaceable:true,
   }));
   return Object.freeze({
-    version:9,
+    version:10,
     request,
     rebuild:Boolean(rebuild),
     prototypePreset,
@@ -229,6 +261,13 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
       existingAssetsFirst:true,
       prototypePresetFirst:true,
       mobileFirst:true,
+      activeNativeTargets:[...ACTIVE_NATIVE_TARGETS],
+      pausedNativeTargets:[...PAUSED_NATIVE_TARGETS],
+      defaultNativeTarget:'roblox',
+      webValidationSurfaceOnly:true,
+      generatedAssetSourceRecipeRequired:true,
+      generatedAssetReviewEvidenceRequired:true,
+      generatedAssetNativeRuntimeVerificationRequired:true,
       webHighQualityAllowed:true,
       unityAndroidPreferredForHeavy3D:true,
       blockedLicenses:[...BLOCKED_LICENSE_WORDS],
@@ -255,9 +294,9 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
     }),
     steps:Object.freeze([
       '장르에 맞는 모바일 prototype-asset-presets 프리셋 자동 선택',
-      '모바일 Web과 Unity Android 프로필을 함께 계산하고 장르/요청에 맞는 기본 타깃 선택',
-      'Web은 저품질 임시판이 아니라 모바일 브라우저에서 가능한 최대 품질을 목표로 설정',
-      '무거운 3D 생존/RPG/액션RPG/FPS/호러는 Unity Android 본개발을 기본 추천',
+      '중앙정책의 활성 native 타깃을 우선하고 플랫폼 미지정 시 Roblox를 기본 native 제작 타깃으로 선택',
+      'Web은 native 대체 타깃이 아니라 필요한 경우 검증/동반 표면으로만 분리',
+      'Roblox/Unity용 생성 자산은 원본 제작 레시피·미리보기·evidence·런타임 검증을 분리해 기록',
       '외부 무료 제작툴은 후보만 제시하고 라이선스/버전 승인 전 자동 설치 금지',
       '기존 저장소 에셋 확인 후 KEEP/ENHANCE/COMBINE/REPLACE 분류',
       '캐릭터/적/보스는 실제 프레임 애니메이션, 검증 모션 소스가 연결된 리타겟 가능 리그, 또는 Motion Engine 실행 증거를 확인',

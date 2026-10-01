@@ -61,6 +61,19 @@ Web PASS는 Roblox/Unity/UEFN native build/runtime/independent QA/regression PAS
 - 기존 저장소 에셋을 우선하고 외부 에셋은 CC0 또는 상업 이용+수정 허용이 명확한 것만 쓴다.
 - 게임별 Style Lock은 팔레트, 조명, 외곽선, 그림자, 재질, VFX 밀도, 모션 과장도, UI 모션 언어를 고정한다.
 
+### 실제 native 자산 제작
+
+- 자산 선택/제작 입력은 `tools/vibe2-asset-production-plan.mjs`, `assets/asset-selector.js`, `company-asset-library.json`을 함께 사용한다.
+- 플랫폼이 명시되지 않은 제작 작업은 중앙정책의 초기 native 타깃을 따르며 현재는 Roblox를 우선한다. Unity가 명시되면 Unity용으로 제작하고 Web 결과를 native 완료 근거로 대신하지 않는다.
+- 기존 회사 검증 자산 → 같은 게임 기존 자산 → 저장소 라이선스 검증 자산을 먼저 비교하되, 품질이 부족하면 기존 자산을 억지로 쓰지 말고 직접 제작으로 전환한다.
+- 캐릭터·몬스터·건물·환경·무기·소품·애니메이션처럼 3D 제작이 필요한 경우 Blender/Python 기반 원본 제작을 정식 경로로 사용한다. 단순 Luau primitive 조합만으로 고품질 자산 완료를 주장하지 않는다.
+- 직접 제작 자산은 가능한 한 재실행 가능한 제작 레시피(`build.py` 또는 동등한 원본 authoring script), 편집 가능한 원본, GLB/플랫폼 파생본, 동일 조건 review render, `evidence.json`을 함께 남긴다.
+- `evidence.json`에는 최소한 source hash, generator/authoring path, artifact hash, preview 경로, 라이선스/권리, 대상 플랫폼, runtime verification state를 기록한다.
+- 생성 자산은 `company-asset-library.json`에 등록하되 실제 Roblox/Unity 런타임 바인딩·외형·성능 검증 전에는 `productionVerified` 또는 `verifiedCompanyReusable`을 true로 올리지 않는다.
+- 이미지 한 장을 기반으로 제작할 때는 보이는 실루엣·비율·재질 경계를 관찰하고, 가려진 뒷면·관절·접합부는 창작 설계로 분리한다. 이미지를 평면으로 붙인 것을 3D 완성 자산으로 취급하지 않는다.
+- 바이너리 결과물을 문자열 패치로 조작하지 않는다. 원본 제작 소스에서 다시 빌드하고, 파생본을 생성한 뒤 검증한다.
+- 게임 규칙·밸런스·저장·공격 판정은 그래픽 자산 제작 편의 때문에 바꾸지 않는다.
+
 ### 살아있는 모션
 
 - Idle에서도 숨쉬기, 몸통 미세 흔들림, 머리 후행, 손/무기 미세 후행이 지속되어야 한다.

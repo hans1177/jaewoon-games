@@ -1,9 +1,13 @@
 {
-  "version": 3,
-  "purpose": "재운컴퍼니/바이브2 모바일 게임 제작용 무료 재사용 프리셋. Web은 모바일에서 가능한 최대 품질을 목표로 하고, 무거운 3D 본개발은 Unity Android를 우선한다.",
+  "version": 4,
+  "purpose": "재운컴퍼니/바이브 모바일 게임용 재사용 자산 프리셋. 활성 native 타깃은 Roblox/Unity이며 플랫폼 미지정 시 Roblox를 우선한다. Web은 native 대체물이 아니라 필요한 검증/동반 표면으로 취급한다.",
   "rules": {
     "mobileFirst": true,
-    "supportedTargets": ["mobile-web", "unity-android"],
+    "supportedTargets": ["roblox", "unity", "unity-web-validation"],
+    "activeNativeTargets": ["ROBLOX", "UNITY"],
+    "initialNativeTarget": "ROBLOX",
+    "pausedNativeTargets": ["FORTNITE_UEFN"],
+    "webValidationSurfaceOnly": true,
     "webHighQualityAllowed": true,
     "unityAndroidPreferredForHeavy3D": true,
     "prototypeOnly": false,
@@ -18,6 +22,10 @@
     "replaceableWithoutGameplayRewrite": true,
     "releaseRequiresSeparateAssetReview": true,
     "publicUseRequiresLicenseLedger": true,
+    "generatedAssetSourceRecipeRequired": true,
+    "generatedAssetReviewEvidenceRequired": true,
+    "nativeRuntimeVerificationBeforePromotion": true,
+    "originalAssetAuthoringPreferredWhenLibraryQualityInsufficient": true,
     "externalToolAutoInstall": false,
     "externalToolApprovalRequired": true
   },
