@@ -1827,16 +1827,15 @@ jobs:
           echo 'ROBLOX_OPEN_CLOUD_BLOCKING_PROBE_FAILURE=NO'
 
   studio-local-plan:
-    # Slow owner PC: actual Studio tests require an explicit opt-in.
+    # Planning is read-only control work. Only actual Studio execution consumes the shared Windows host.
     # A skipped job is never runtime or multiplayer PASS.
     # 계획과 실행은 요청 시점의 동일한 제어 리비전을 사용한다.
     if: ${{ inputs.run_studio == true && inputs.retry_open_cloud_only != true }}
-    # Resolve work on the available Studio host instead of waiting for hosted control capacity.
     name: plan exact local Studio MCP playtests for earliest eligible artifacts
     concurrency:
       group: roblox-studio-mcp-plan-${{ inputs.game_id || github.sha }}
       cancel-in-progress: true
-    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    runs-on: ubuntu-slim
     timeout-minutes: 5
     outputs:
       matrix: ${{ steps.plan.outputs.matrix }}
@@ -1871,14 +1870,21 @@ jobs:
 
       - name: Bind isolated candidate context without canonical state mutation
         if: inputs.candidate_context != ''
-        shell: powershell
         env:
           CANDIDATE_REVISION: ${{ inputs.candidate_revision }}
           CANDIDATE_GAME: ${{ inputs.game_id }}
+        shell: bash
         run: |
-          $ErrorActionPreference = 'Stop'
-          node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('candidate-context/development-queue.json','utf8'));const i=q.items?.[0];if(q.items?.length!==1||i.gameId!==process.env.CANDIDATE_GAME||i.robloxSourceCommit!==process.env.CANDIDATE_REVISION||!/^[0-9a-f]{40}$/.test(i.robloxSourceCommit)||!/^[-a-zA-Z0-9_]+$/.test(i.gameId))throw Error('candidate context identity mismatch');fs.copyFileSync('candidate-context/development-queue.json','runtime/development-queue.json');fs.mkdirSync('main/roblox-games/'+i.gameId,{recursive:true});fs.copyFileSync('candidate-context/launch-mvp.json','main/roblox-games/'+i.gameId+'/launch-mvp.json');"
-          if ($LASTEXITCODE -ne 0) { throw 'isolated candidate context rejected' }
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('candidate-context/development-queue.json','utf8'));
+          const i=q.items?.[0];
+          if(q.items?.length!==1||i.gameId!==process.env.CANDIDATE_GAME||i.robloxSourceCommit!==process.env.CANDIDATE_REVISION||!/^[0-9a-f]{40}$/.test(i.robloxSourceCommit)||!/^[-a-zA-Z0-9_]+$/.test(i.gameId))throw Error('candidate context identity mismatch');
+          fs.copyFileSync('candidate-context/development-queue.json','runtime/development-queue.json');
+          fs.mkdirSync('main/roblox-games/'+i.gameId,{recursive:true});
+          fs.copyFileSync('candidate-context/launch-mvp.json','main/roblox-games/'+i.gameId+'/launch-mvp.json');
+          NODE
 
       - name: Select exact runtime-foundation or internal-release artifacts needing official Studio MCP play
         id: plan
@@ -1888,34 +1894,38 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           RECHECK_PRODUCT_FAILURE: ${{ github.event_name == 'workflow_dispatch' && inputs.run_studio == true && inputs.game_id != '' }}
           TRIGGER_CHANGED: ${{ github.event_name == 'push' && (contains(toJSON(github.event.head_commit.modified), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.added), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.removed), 'roblox-games/.company-runtime-trigger')) }}
-        shell: powershell
+          CANDIDATE_CONTEXT: ${{ inputs.candidate_context }}
+        shell: bash
         run: |
-          $ErrorActionPreference = 'Stop'
-          if ('${{ inputs.candidate_context }}' -eq '') {
-            & git -C ../runtime fetch --no-tags origin company-runtime
-            if ($LASTEXITCODE -ne 0) { throw 'runtime fetch failed' }
-            & git -C ../runtime reset --hard origin/company-runtime
-            if ($LASTEXITCODE -ne 0) { throw 'runtime refresh failed' }
-          }
-          $requested = [string]$env:REQUESTED_GAME_ID
-          if (-not $requested -and $env:EVENT_NAME -eq 'push' -and $env:TRIGGER_CHANGED -eq 'true') {
-            $triggerPath = 'roblox-games/.company-runtime-trigger'
-            if (Test-Path $triggerPath) {
-              $line = Get-Content $triggerPath | Where-Object { $_ -match '^gameId:\s*' } | Select-Object -First 1
-              if ($line) { $requested = ($line -replace '^gameId:\s*', '').Trim() }
-            }
-          }
-          $planOutput = Join-Path $env:RUNNER_TEMP 'roblox-studio-mcp-matrix.json'
-          & node tools/company-development-roblox-studio-local-play.mjs --mode=plan --queue=../runtime/development-queue.json --roadmap=company-learning/platform-release-roadmap.json --repo-root=. "--game-id=$requested" "--recheck-product-failure=$env:RECHECK_PRODUCT_FAILURE" "--output=$planOutput"
-          if ($LASTEXITCODE -ne 0) { throw 'Studio candidate planning failed' }
-          $plan = Get-Content $planOutput -Raw | ConvertFrom-Json
-          $include = @($plan.include)
-          if ('${{ inputs.candidate_context }}' -ne '' -and $include.Count -ne 1) { throw 'candidate must schedule exactly one Studio playtest' }
-          $matrix = @{ include = $include } | ConvertTo-Json -Compress -Depth 12
-          "matrix=$matrix" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-          "count=$($include.Count)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-          Write-Host "ROBLOX_STUDIO_MCP_PLAN_COUNT=$($include.Count)"
-          Write-Host 'ROBLOX_STUDIO_MCP_PLAN_RUNNER=LOCAL_STUDIO_HOST'
+          set -euo pipefail
+          if [ -z "$CANDIDATE_CONTEXT" ]; then
+            git -C ../runtime fetch --no-tags origin company-runtime
+            git -C ../runtime reset --hard origin/company-runtime
+          fi
+          requested="$REQUESTED_GAME_ID"
+          if [ -z "$requested" ] && [ "$EVENT_NAME" = 'push' ] && [ "$TRIGGER_CHANGED" = 'true' ] && [ -f roblox-games/.company-runtime-trigger ]; then
+            requested="$(sed -n 's/^gameId:[[:space:]]*//p' roblox-games/.company-runtime-trigger | head -n1 | xargs)"
+          fi
+          plan_output="$RUNNER_TEMP/roblox-studio-mcp-matrix.json"
+          node tools/company-development-roblox-studio-local-play.mjs \
+            --mode=plan \
+            --queue=../runtime/development-queue.json \
+            --roadmap=company-learning/platform-release-roadmap.json \
+            --repo-root=. \
+            "--game-id=$requested" \
+            "--recheck-product-failure=$RECHECK_PRODUCT_FAILURE" \
+            "--output=$plan_output"
+          PLAN_OUTPUT="$plan_output" node <<'NODE'
+          const fs=require('fs');
+          const plan=JSON.parse(fs.readFileSync(process.env.PLAN_OUTPUT,'utf8'));
+          const include=Array.isArray(plan.include)?plan.include:[];
+          if(process.env.CANDIDATE_CONTEXT&&include.length!==1)throw new Error('candidate must schedule exactly one Studio playtest');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'matrix='+JSON.stringify({include})+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'count='+include.length+'\n');
+          console.log('ROBLOX_STUDIO_MCP_PLAN_COUNT='+include.length);
+          console.log('ROBLOX_STUDIO_MCP_PLAN_RUNNER=HOSTED_CONTROL');
+          console.log('ROBLOX_STUDIO_SHARED_HOST_CONSUMED_BY_PLANNER=NO');
+          NODE
 
   studio-mcp-auto-play:
     name: Official Studio MCP actual play ${{ matrix.gameId }}
