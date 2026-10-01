@@ -549,6 +549,17 @@ test('development WIP is policy-unbounded while execution capacity and gates rem
   assert.equal(roadmap.developmentSpeedExecution.globalSelectedPlatformDevelopmentWipMax,null);
   assert.equal(roadmap.developmentSpeedExecution.internalArtificialConcurrencyCapsForbidden,true);
   assert.equal(roadmap.developmentSpeedExecution.externalMatrixBatchMax,256);
+  assert.equal(roadmap.developmentSpeedExecution.externalMatrixBatchMaxMeaning,'GITHUB_MATRIX_TRANSPORT_PARTITION_ONLY_NOT_SCHEDULING_WAVE_OR_GLOBAL_CAP');
+  assert.equal(roadmap.developmentSpeedExecution.parallelismMode,'UNBOUNDED_INDEPENDENT_NONOVERLAPPING_DISPATCH');
+  assert.equal(roadmap.developmentSpeedExecution.waveSchedulingForbidden,true);
+  assert.equal(roadmap.developmentSpeedExecution.waveLeaderForbidden,true);
+  assert.equal(roadmap.developmentSpeedExecution.cohortBarrierForbiddenForIndependentCompletion,true);
+  assert.equal(roadmap.developmentSpeedExecution.completionFanInMode,'PER_INDEPENDENT_NEURON_IMMEDIATE');
+  assert.equal(roadmap.vibeExecutionLaneContract.learningIdle.maxActiveWorkers,1);
+  assert.equal(roadmap.vibeExecutionLaneContract.learningIdle.fixedWorkerSlots,1);
+  assert.equal(roadmap.assetProductionParallelContract.parallelism.assetDevelopmentLaneMax,64);
+  assert.equal(roadmap.assetProductionParallelContract.parallelism.assetDevelopmentSpeculativeVariantsPerTask,1);
+  assert.equal(roadmap.developmentLifecycleMachine.projectMachineState.generatedHandoffConsumer,'tools/vibe2-handoff.mjs');
   assert.equal(roadmap.developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.invariants.noGateBypass,true);
   assert.equal(directive.executionPause.strictDesignReviewParallel,true);
   assert.equal(directive.stageGateScoringV2.designScoreRole,'PARALLEL_QUALITY_SIGNAL_NOT_DEVELOPMENT_ADMISSION');
