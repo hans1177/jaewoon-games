@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-10-01T16:57:14.092Z",
+  "updatedAt": "2026-10-01T17:02:35.866Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -2638,8 +2638,8 @@
       "externalReleaseBlockingOnly": true,
       "status": "OPEN",
       "createdAt": "2026-09-27T22:12:11.993Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 276
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 277
     },
     {
       "id": "bug-01db4d43370f3d6ba193",
@@ -2686,8 +2686,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T12:54:28.283Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 157
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 158
     },
     {
       "id": "bug-35b4ad98cdc42c363569",
@@ -3390,7 +3390,8 @@
       "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
       "responsibleFiles": [],
       "evidence": [
-        "{\"version\":1,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":true,\"regressionPassed\":true,\"exactRevision\":false,\"lastSuccessfulStage\":\"F9_RELEASE_REGRESSION\",\"failureStage\":null,\"failureSignature\":null}"
+        "{\"version\":1,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":true,\"regressionPassed\":true,\"exactRevision\":false,\"lastSuccessfulStage\":\"F9_RELEASE_REGRESSION\",\"failureStage\":null,\"failureSignature\":null}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ce1112ea78581b5a2ea212fd55b0141e7b3e1eda\",\"sourceRootTreeSha\":\"e607a1edde76eac8dff375f2e21ddf58306d6154\",\"sourceFingerprint\":\"d444e3efe6e0744d6d2a10060de50425d09cf4ec508b6b3d13bb82723885c4b3\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:0a1ca9bfc20cb53b1e155ac3ba5f8f9a8af6cadd8348270364f15a90aad810ae\",\"runtimePassed\":false,\"independentQaPassed\":true,\"multiplayerPassed\":true,\"regressionPassed\":true,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F9_RELEASE_REGRESSION\",\"failureStage\":null,\"failureSignature\":null}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -3399,8 +3400,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T15:19:01.326Z",
-      "updatedAt": "2026-09-30T20:44:49.111Z",
-      "occurrenceCount": 146
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 147
     },
     {
       "id": "bug-fd4b40cd2c63f4d52c40",
@@ -3423,8 +3424,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T15:19:01.326Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 150
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 151
     },
     {
       "id": "bug-28742303370de6603f9c",
@@ -4074,8 +4075,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 71
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 72
     },
     {
       "id": "bug-2acb75a00e5cafb13c0d",
@@ -4098,8 +4099,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 71
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 72
     },
     {
       "id": "bug-5ad58a17f9c4534fdd6e",
@@ -4213,8 +4214,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 74
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 75
     },
     {
       "id": "bug-d9e5661f7dd58f8c5453",
@@ -4236,8 +4237,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 74
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 75
     },
     {
       "id": "bug-6f1b7a96dc298a6caaf7",
@@ -4307,8 +4308,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 74
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 75
     },
     {
       "id": "bug-ee2bb9b32489fc14c5ea",
@@ -4330,8 +4331,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 74
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 75
     },
     {
       "id": "bug-2ddae6fab29f5f2b4b38",
@@ -4353,8 +4354,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 74
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 75
     },
     {
       "id": "bug-ff7fe4e52ca181e9ff3a",
@@ -4376,8 +4377,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 74
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 75
     },
     {
       "id": "bug-2ca8e7f5523f34654efa",
@@ -4399,8 +4400,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 74
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 75
     },
     {
       "id": "bug-d3cba4a8f5856471b1dc",
@@ -4422,8 +4423,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 74
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 75
     },
     {
       "id": "bug-5e816165c0f0f83635eb",
@@ -4445,8 +4446,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 74
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 75
     },
     {
       "id": "bug-cc7641c29eebe23b8c0b",
@@ -4468,8 +4469,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 74
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 75
     },
     {
       "id": "bug-1d8894d1c82feb1243b0",
@@ -4491,8 +4492,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 74
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 75
     },
     {
       "id": "bug-19a912de55ae9a8c84ba",
@@ -4514,8 +4515,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 74
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 75
     },
     {
       "id": "bug-5870d9401f6d5cae7548",
@@ -4537,8 +4538,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 74
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 75
     },
     {
       "id": "bug-47f3be81f359303158cf",
@@ -4560,8 +4561,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 74
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 75
     },
     {
       "id": "bug-ab6f051a1a16a239f2e2",
@@ -4583,8 +4584,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 74
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 75
     },
     {
       "id": "bug-42220c2d2fef96fae63d",
@@ -4606,8 +4607,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 74
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 75
     },
     {
       "id": "bug-21028bfb47f55f646b9c",
@@ -4629,8 +4630,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 74
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 75
     },
     {
       "id": "bug-d5def86cf0344ad62060",
@@ -4652,8 +4653,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 74
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 75
     },
     {
       "id": "bug-d9e7f5c22b9694a30202",
@@ -4675,8 +4676,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T08:29:20.591Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 42
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 43
     },
     {
       "id": "bug-facd02143430e1e64db0",
@@ -4698,8 +4699,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T08:29:20.591Z",
-      "updatedAt": "2026-10-01T16:57:14.088Z",
-      "occurrenceCount": 42
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 43
     },
     {
       "id": "bug-b316de99b67e78a43b48",
@@ -4862,6 +4863,29 @@
       "createdAt": "2026-10-01T12:56:10.606Z",
       "updatedAt": "2026-10-01T13:09:13.551Z",
       "occurrenceCount": 5
+    },
+    {
+      "id": "bug-f9d7a7f938eee3e808c5",
+      "gameId": "daechung-rpg",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "UNITY_RUNTIME_FAILED",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"dcb0c574594500da5c1eba3830e956dacd6aab6c\",\"sourceRootTreeSha\":\"f07770c67f822a90555f53d48caedb317e29c8da\",\"sourceFingerprint\":\"74e980574272e59d284d0ea57020bef9d0faa20034c12f95025f7fc7f659cc0c\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:e57a85a9d710549f5fadba89855b0936797eb938ac6167ec7125278d0422cb95\",\"runtimePassed\":false,\"independentQaPassed\":true,\"multiplayerPassed\":false,\"regressionPassed\":true,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F9_RELEASE_REGRESSION\",\"failureStage\":null,\"failureSignature\":null}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-01T17:02:35.863Z",
+      "updatedAt": "2026-10-01T17:02:35.863Z",
+      "occurrenceCount": 1
     }
   ]
 }
