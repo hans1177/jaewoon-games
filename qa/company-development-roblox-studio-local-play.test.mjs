@@ -1109,8 +1109,8 @@ test('automatic Roblox foundation work keeps only newest same-identity run befor
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_EXACT_DEDUPED=/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_SCAN_DEDUPED_NEWER=/);
   const studioPlanBlock=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
-  assert.match(studioPlanBlock,/concurrency:\n\s+group: roblox-studio-mcp-plan-\$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
-  assert.match(studioPlanBlock,/cancel-in-progress: true/);
+  assert.match(studioPlanBlock,/concurrency:\n\s+group: roblox-studio-mcp-plan-\$\{\{ github\.run_id \}\}/);
+  assert.match(studioPlanBlock,/cancel-in-progress: false/);
   assert.doesNotMatch(studioPlanBlock,/needs: dedupe/);
   assert.doesNotMatch(studioPlanBlock,/needs\.dedupe/);
 });
@@ -2917,6 +2917,13 @@ test('Studio planning excludes owner-held games in batch and explicit rechecks w
  }
  const released={...roadmap(),ownerCanonicalRules:{ownerExclusiveDevelopment:{status:'RELEASED',gameIds:['g1']}}};
  assert.equal(planLocalStudioCandidates({queue:{items:[candidate]},roadmap:released}).include.length,1);
+});
+
+test('Studio planner cannot be cancelled by a later generic push before exact-game Studio jobs are created',()=>{
+ const plan=workflow.slice(workflow.indexOf('  studio-local-plan:'),workflow.indexOf('  studio-mcp-auto-play:'));
+ assert.match(plan,/group: roblox-studio-mcp-plan-\$\{\{ github\.run_id \}\}/);
+ assert.match(plan,/cancel-in-progress: false/);
+ assert.doesNotMatch(plan,/group: roblox-studio-mcp-plan-\$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
 });
 
 test('Studio planner removes only superseded pending automatic runs for the exact planned games',()=>{
