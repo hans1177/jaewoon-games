@@ -1648,8 +1648,8 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   ]);
   assert.equal(topology.dedicatedExecution.lane,'ASSET_DEVELOPMENT');
   assert.equal(topology.dedicatedExecution.runnerLabel,'ubuntu-24.04-arm');
-  assert.equal(topology.dedicatedExecution.schedulerPlanRunner,'ubuntu-24.04-arm');
-  assert.equal(topology.dedicatedExecution.reserveRunner,'ubuntu-24.04-arm');
+  assert.equal(topology.dedicatedExecution.planRunner,'ubuntu-24.04-arm');
+  assert.equal(topology.dedicatedExecution.reserveRunner,'ubuntu-slim');
   assert.equal(topology.dedicatedExecution.modelCacheRunner,'ubuntu-24.04-arm');
   assert.equal(topology.dedicatedExecution.architectureAwareCache,true);
   assert.equal(topology.dedicatedExecution.gamePrimaryRunnerLabel,'ubuntu-latest');
