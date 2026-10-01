@@ -2623,7 +2623,7 @@ export async function runOfficialStudioMcpPlay({
           target=entityRows(selectionProbe?.ui?.interactive).find(row=>
             row?.visible!==false&&row?.active!==false&&row?.offscreen!==true&&clean(row?.text)===selectionText
           )||selectionProbe?.ui?.buttons?.[selectionText]||null;
-          if(target?.visible!==false&&target?.offscreen!==true)break;
+          if(target&&target.visible!==false&&target.offscreen!==true)break;
           target=null;
           if(attempt<9){
             await wait(250);
