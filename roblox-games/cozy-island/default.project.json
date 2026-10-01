@@ -2,6 +2,19 @@
   "name": "포근섬: 작은 왕국 키우기",
   "tree": {
     "$className": "DataModel",
+    "Lighting": {
+      "$properties": {
+        "Technology": "Voxel",
+        "LightingStyle": "Soft",
+        "PrioritizeLightingQuality": false
+      },
+      "CompatibilityToneMap": {
+        "$className": "ColorGradingEffect",
+        "$properties": {
+          "TonemapperPreset": "Retro"
+        }
+      }
+    },
     "ReplicatedStorage": {
       "Shared": {
         "$path": "shared"

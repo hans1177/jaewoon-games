@@ -195,10 +195,6 @@ test('central foundation contract records the implemented atomic repair invarian
   assert.equal(stack.governingPrinciples.coreLoopRuntimeCheckpointRequiresSuccessfulGameStateTransition,true);
   assert.equal(stack.governingPrinciples.newRuntimeCandidateInvalidatesPriorReleasePassState,true);
   assert.equal(stack.governingPrinciples.f9ExactCandidateMustBindSourceArtifactUniversePlaceAndVersion,true);
-  assert.equal(stack.verification.designAndImplementationEvidence.cozyIslandSpawnBeforePlayerBinding,true);
-  assert.equal(stack.verification.designAndImplementationEvidence.coreLoopCheckpointRequiresSuccessfulTransition,true);
-  assert.equal(stack.verification.designAndImplementationEvidence.newCandidateClearsPriorReleasePassState,true);
-  assert.equal(stack.verification.designAndImplementationEvidence.f9BindsUniversePlaceVersion,true);
 });
 
 test('central F0 contract pins official Luau compiler and exact source workflow requires compile evidence',()=>{

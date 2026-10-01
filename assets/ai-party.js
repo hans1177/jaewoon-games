@@ -16,6 +16,36 @@ function clean(value) { return String(value ?? '').trim(); }
 function lower(value) { return clean(value).toLowerCase(); }
 function clamp(value, min, max) { return Math.max(min, Math.min(max, Number(value) || 0)); }
 function unique(values) { return [...new Set(values.filter(Boolean))]; }
+function stableSeed(value = '') {
+  let hash = 2166136261;
+  for (const ch of clean(value)) { hash ^= ch.charCodeAt(0); hash = Math.imul(hash, 16777619); }
+  return (hash >>> 0).toString(36);
+}
+function defaultCompanionIdentity(role, index) {
+  const archetype = {
+    tank: { temperament:'steady', values:['protect-others','duty'], traits:{ courage:.55,caution:.15,protectiveness:.75,discipline:.6 } },
+    melee: { temperament:'bold', values:['courage','mastery'], traits:{ courage:.65,aggression:.45,pride:.25,loyalty:.3 } },
+    ranged: { temperament:'observant', values:['precision','awareness'], traits:{ caution:.35,curiosity:.35,patience:.55,discipline:.45 } },
+    healer: { temperament:'gentle', values:['care','responsibility'], traits:{ empathy:.75,caution:.25,protectiveness:.55,patience:.55 } },
+    support: { temperament:'social', values:['teamwork','adaptation'], traits:{ empathy:.45,sociability:.6,curiosity:.35,loyalty:.45 } },
+    mage: { temperament:'curious', values:['knowledge','self-control'], traits:{ curiosity:.75,caution:.2,pride:.2,independence:.35 } }
+  }[role] || { temperament:'balanced', values:['survival','cooperation'], traits:{} };
+  return Object.freeze({
+    id:'ai-' + (index + 1),
+    qualityProfile:'COMPANION',
+    stableSeed:stableSeed(role + '|' + (index + 1)),
+    temperament:archetype.temperament,
+    values:Object.freeze(archetype.values),
+    traits:Object.freeze(archetype.traits),
+    selfImage:role + '-companion',
+    longTermGoal:'become-more-capable-without-losing-personal-values',
+    unresolvedThread:'authored-game-specific-thread-required-for-named-companion',
+    worldview:Object.freeze({ worldBelief:'context-dependent', peopleBelief:'relationship-dependent' }),
+    speech:Object.freeze({ relationshipSpeechShift:true, silenceAllowed:true, repetitionSuppression:true }),
+    authoredIdentityPlaceholder:true,
+    namedCompanionMustReplacePlaceholderIdentity:true
+  });
+}
 
 function roleFromText(prompt) {
   const text = lower(prompt);
@@ -46,17 +76,35 @@ export function createAIPartyConfig({ request = '', humanPlayers = 1, aiCount = 
     fillEmptySlotsWithAi: Boolean(fillEmptySlots && bots > 0),
     mixedHumanAi: humans > 0 && bots > 0,
     localDecision: Object.freeze({ enabled: bots > 0, intervalMs: 350, fallbackOffline: true }),
-    serverAuthority: Object.freeze({ movement: false, combat: false, rewards: false, save: false }),
+    serverAuthority: Object.freeze({
+      movement: false,
+      combat: false,
+      rewards: false,
+      save: false,
+      spawn: false,
+      network: false,
+      progression: false,
+      quest: false,
+      gameRules: false,
+    }),
   });
 }
 
 export function createDefaultAIEntries(config = {}) {
   const roles = Array.isArray(config.aiRoles) ? config.aiRoles : [];
-  return Object.freeze(roles.map((role, index) => Object.freeze({
-    id: `ai-${index + 1}`,
-    role: ROLES.includes(role) ? role : 'melee',
-    controlledBy: 'local-ai',
-  })));
+  return Object.freeze(roles.map((role, index) => {
+    const normalizedRole = ROLES.includes(role) ? role : 'melee';
+    return Object.freeze({
+      id: 'ai-' + (index + 1),
+      role: normalizedRole,
+      controlledBy: 'local-ai',
+      identity: defaultCompanionIdentity(normalizedRole, index),
+      personalityStableAcrossDecisions: true,
+      relationshipDirectional: true,
+      memoryRequiresSourceEvent: true,
+      gameplayAuthority: false
+    });
+  }));
 }
 
 export function validateAIPartyConfig(config = {}) {

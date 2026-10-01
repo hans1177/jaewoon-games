@@ -1903,6 +1903,25 @@ class McpStdioClient{
   }
 }
 
+export function validateStudioPlaceArtifactPreOpen({placeFile=''}={}){
+  const file=path.resolve(clean(placeFile));
+  if(!file||!fs.existsSync(file))throw new Error('ROBLOX_STUDIO_PRE_PLAY_PLACE_MISSING:'+file);
+  if(path.extname(file).toLowerCase()!=='.rbxlx')throw new Error('ROBLOX_STUDIO_PRE_PLAY_PLACE_XML_REQUIRED:'+path.extname(file));
+  const xml=fs.readFileSync(file,'utf8');
+  const lightingStart=xml.search(/<Item\s+class="Lighting"(?:\s|>)/i);
+  if(lightingStart<0)throw new Error('ROBLOX_STUDIO_PRE_PLAY_LIGHTING_ITEM_MISSING');
+  const propertiesStart=xml.indexOf('<Properties>',lightingStart);
+  const propertiesClose=xml.indexOf('</Properties>',propertiesStart);
+  if(propertiesStart<0||propertiesClose<0)throw new Error('ROBLOX_STUDIO_PRE_PLAY_LIGHTING_PROPERTIES_MISSING');
+  const properties=xml.slice(propertiesStart,propertiesClose+'</Properties>'.length);
+  const technologyMatch=properties.match(/<token\s+name="Technology">\s*([0-9]+)\s*<\/token>/i);
+  if(!technologyMatch)throw new Error('ROBLOX_STUDIO_PRE_PLAY_LIGHTING_MIGRATION_REQUIRED:MISSING_TECHNOLOGY');
+  const technologyToken=Number(technologyMatch[1]);
+  if(technologyToken===2)throw new Error('ROBLOX_STUDIO_PRE_PLAY_LIGHTING_MIGRATION_REQUIRED:COMPATIBILITY');
+  if(![1,3,4].includes(technologyToken))throw new Error('ROBLOX_STUDIO_PRE_PLAY_LIGHTING_TECHNOLOGY_UNSUPPORTED:'+technologyToken);
+  return Object.freeze({pass:true,technologyToken,authority:'roblox-place-pre-open-modal-gate'});
+}
+
 function chooseStudio(listResult,expectedName=''){
   const studios=collectStudios(listResult,[]);
   const unique=[...new Map(studios.map(x=>[x.studioId,x])).values()];
@@ -2355,9 +2374,16 @@ export async function runOfficialStudioMcpPlay({
     checkpoint('studio-state-readable',true);
 
     const playTool=client.tool('start_stop_play');
-    await client.call('start_stop_play',startStopArgs(playTool.inputSchema||{},studioId,true));
-    started=true;
-    checkpoint('play-mode-started',true);
+    try{
+      await client.call('start_stop_play',startStopArgs(playTool.inputSchema||{},studioId,true));
+      started=true;
+      checkpoint('PRE_PLAY_STUDIO_MODAL_GATE',true);
+      checkpoint('play-mode-started',true);
+    }catch(error){
+      checkpoint('PRE_PLAY_STUDIO_MODAL_GATE',false);
+      const detail=clean(error?.message||error).replace(/\s+/g,' ').slice(0,360);
+      throw new Error('ROBLOX_STUDIO_PRE_PLAY_BLOCKER_ABORT:'+detail);
+    }
     await wait(2500);
 
     if(actualPlayContract?.required===true){
@@ -3067,12 +3093,24 @@ export async function runOfficialStudioMcpPlay({
       signature=(signature+':settingHint=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY').slice(0,500);
       console.log('ROBLOX_STUDIO_MCP_SETTING_HINT=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY');
     }
+    const prePlayStudioBlocker=signature.startsWith('ROBLOX_STUDIO_PRE_PLAY_BLOCKER_ABORT:');
     const deadStart=signature.startsWith('ROBLOX_STUDIO_DEAD_CHARACTER_ABORT:');
     const missingCharacter=signature.startsWith('ROBLOX_STUDIO_MISSING_CHARACTER_ABORT:');
     const floatingWorld=signature.startsWith('ROBLOX_STUDIO_FLOATING_CHARACTER_ABORT:');
     const blockingOverlay=signature.startsWith('ROBLOX_STUDIO_BLOCKING_OVERLAY_ABORT:');
     const missingStartAction=signature.startsWith('ROBLOX_STUDIO_START_ACTION_ABORT:');
-    if(missingCharacter){
+    if(prePlayStudioBlocker){
+      scenarioCoverage.push({id:'pre-play-studio-modal-gate',pass:false,required:true});
+      qualityFailureKinds.push('pre-play-studio-modal-gate');
+      qualityFailureDetails.push({
+        id:'pre-play-studio-modal-gate',
+        repairSurface:'STUDIO_PROJECT_OPEN',
+        priority:'CRITICAL',
+        hint:'Studio is attached and readable but Play could not begin. Treat this as a blocking Studio dialog or lifecycle gate; do not auto-click it. Remove the project/source cause, reopen the exact local place, then rerun Studio QA.',
+        observed:{signature,expectedStudioName:clean(expectedStudioName)}
+      });
+      errors.push({type:'studio-product-pre-play-blocker',actionId:'PRE_PLAY_STUDIO_MODAL_GATE',signature});
+    }else if(missingCharacter){
       scenarioCoverage.push({id:'character-camera-ready',pass:false,required:true});
       qualityFailureKinds.push('character-camera-ready');
       qualityFailureDetails.push({
@@ -3659,6 +3697,12 @@ function args(argv=process.argv.slice(2)){
 async function main(){
   const a=args();
   const mode=clean(a.mode);
+  if(mode==='validate-place'){
+    const result=validateStudioPlaceArtifactPreOpen({placeFile:clean(a.place)});
+    if(clean(a.output))writeJson(a.output,result);
+    console.log('ROBLOX_STUDIO_PRE_PLAY_PLACE_GATE=PASS:technology='+result.technologyToken);
+    return;
+  }
   if(mode==='diagnose-setting'){
     const result=detectStudioMcpAssistantSetting({settingsRoot:clean(a['settings-root'])});
     if(clean(a.output))writeJson(a.output,result);
@@ -3780,7 +3824,7 @@ async function main(){
     console.log('RESUME_STAGE='+(applied.item.robloxQualityBuildUpRequired===true?'REPAIR_REQUIRED':'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'));
     return;
   }
-  throw new Error('unsupported --mode; expected diagnose-setting, plan, mcp-run, or persist');
+  throw new Error('unsupported --mode; expected validate-place, diagnose-setting, plan, mcp-run, or persist');
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){

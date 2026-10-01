@@ -30,6 +30,9 @@ function scopeGroups(inventory=[]){
     placement:has(/tower|placement|build|deploy|slot|grid/),
     strategy:has(/strategy|choice|loadout|build|tower|tactic/),
     narrative:has(/story|narrative|quest|dialog|npc|companion|relationship|memory|lore|character|스토리|서사|퀘스트|대사|동료|관계|기억/),
+    companion:has(/companion|party|ally|follower|동료|파티|아군|동행/),
+    npcAi:has(/npc|merchant|villager|resident|대화|상인|주민/),
+    monsterAi:has(/enemy|monster|mob|boss|creature|적|몬스터|보스|생물/),
   };
 }
 
@@ -58,7 +61,22 @@ export function deriveGameplaySketch({gameId='',genre='',baseline={},inventory=[
       initialPlayableZonePrewarmRequired:groups.movement||groups.placement,
       authoritativeWorldStateMustSurviveChunkUnload:true
     },
-    actors:{playerRequired:true,npcOrObjectInteractionRequired:groups.interaction,enemyBehaviorRequired:groups.combat},
+    actors:{
+      playerRequired:true,
+      npcOrObjectInteractionRequired:groups.interaction,
+      enemyBehaviorRequired:groups.combat,
+      runtimeActorIntelligenceRequired:groups.interaction||groups.combat||groups.companion||groups.npcAi||groups.monsterAi,
+      companionIntelligenceRequired:groups.companion,
+      npcIntelligenceRequired:groups.npcAi||groups.interaction,
+      monsterIntelligenceRequired:groups.monsterAi||groups.combat,
+      actorQualityDnaRequired:groups.interaction||groups.combat||groups.companion,
+      autonomousQuestProposalRequired:groups.companion||groups.npcAi,
+      inCharacterGameplayMentorRequired:groups.companion||groups.npcAi,
+      causalRelationshipModelRequired:groups.interaction||groups.companion||groups.npcAi||groups.monsterAi,
+      actorSpecificPlayerModelRequired:groups.companion||groups.npcAi||groups.monsterAi,
+      individualActivitySimulationRequired:groups.interaction||groups.combat||groups.companion||groups.npcAi||groups.monsterAi,
+      bossRareMonsterLivingActivityRequired:groups.monsterAi||groups.combat
+    },
     interactionGraph:{required:groups.interaction,contract:'APPROACH_OR_SELECT -> REAL_INPUT -> TARGET_STATE_CHANGE -> GAME_RESULT_CHANGE'},
     combatModel:{required:groups.combat,strategicOutcomeDifferenceRequired:groups.strategy},economyModel:{required:groups.economy},
     progressionModel:{required:groups.progression,objectives},
@@ -69,7 +87,12 @@ export function deriveGameplaySketch({gameId='',genre='',baseline={},inventory=[
       relationshipMemoryRequired:groups.narrative||groups.interaction,
       foreshadowingPayoffRequired:groups.narrative,
       worldNarrativeBindingRequired:groups.narrative||groups.movement,
-      authoritativeGameplayWriteForbidden:true
+      authoritativeGameplayWriteForbidden:true,
+      actorSelfhoodRequired:groups.companion||groups.npcAi,
+      personalWorldviewAndLifeGoalRequired:groups.companion,
+      autonomousEventQuestCandidateRequired:groups.companion||groups.npcAi,
+      inCharacterGameplayAdviceRequired:groups.companion||groups.npcAi,
+      questRegistrationAndRewardAuthority:'ENGINE_ONLY'
     },
     placementModel:{required:groups.placement,contract:'POSITION_SELECTION -> ENTITY_PLACEMENT -> COMBAT_OR_WORLD_EFFECT'},
     stateMachine:{required:true,contract:'LOCAL_PLAYABLE_CYCLE: ENTRY -> INPUT -> CORE_ACTION -> STATE_CHANGE -> REWARD_OR_CHOICE -> RISK_OR_PRESSURE -> GOAL_OR_RETRY; MACRO_PROGRESSION_MUST_FOLLOW flowArchitecture INSTEAD_OF_REPEATING_THIS_SAME_LOOP'},
@@ -155,6 +178,35 @@ export function buildVibePatchPlan({gameplaySketch={},sourceAnalysis={},codingAr
   if(gameplaySketch?.combatModel?.strategicOutcomeDifferenceRequired)add('IMPLEMENT_DIVERGENT_STRATEGY_RESULTS','Different strategic choices must produce observably different combat/world outcomes.');
   if(sourceAnalysis.capabilities?.randomness&&!sourceAnalysis.capabilities?.replaySeedContract)add('IMPLEMENT_REPLAY_SEED_CONTRACT','Randomized gameplay must expose a stable replay seed and accept replaySeed so the same input trace can be independently reproduced.',preserveDependency);
   if(gameplaySketch?.progressionModel?.required)add('CONNECT_PROGRESSION','Rewards, objectives and unlocks must connect back into the core loop.');
+  if(gameplaySketch?.actors?.runtimeActorIntelligenceRequired){
+    add('BIND_RUNTIME_ACTOR_AI_QUALITY_DNA','Bind role-specific AI QUALITY DNA to existing NPC/companion/enemy responsibilities; personality, memory and intent may guide suggestions but cannot own protected gameplay state.',preserveDependency);
+    add('IMPLEMENT_ACTOR_PERCEPTION_KNOWLEDGE_AND_ATTENTION','Use only observed/declared information, explicit attention targets and bounded uncertainty; forbid omniscience and hidden-state knowledge.',['BIND_RUNTIME_ACTOR_AI_QUALITY_DNA']);
+    add('IMPLEMENT_ACTOR_MEMORY_RELATIONSHIP_AND_EMOTION','Separate stable personality from temporary emotion; memories require source events and directional relationships change causally and gradually.',['BIND_RUNTIME_ACTOR_AI_QUALITY_DNA']);
+    add('IMPLEMENT_CAUSAL_ACTOR_RELATIONSHIP_GRAPH','Bind SOURCE_EVENT -> perception/information path -> attribution -> actor-specific appraisal -> bounded memory/relationship/intent suggestion -> engine validation. Neutral-object interactions may affect relationships only when the actor actually observes or learns the event.',['IMPLEMENT_ACTOR_MEMORY_RELATIONSHIP_AND_EMOTION']);
+    if(sourceAnalysis.capabilities?.saveState||sourceAnalysis.storageKeys?.length){
+      add('BIND_ACTOR_MIND_TO_EXISTING_SAVE_RESTORE','Reuse the existing save owner and existing save key meanings to persist only bounded actor mind state that the game already chooses to persist: source-event memory, emotion and directional relationships. Restore through engine-validated mind snapshots, suppress duplicate source events after reload, and do not create a parallel save authority or change existing save-key meaning.',['IMPLEMENT_CAUSAL_ACTOR_RELATIONSHIP_GRAPH',...(sourceAnalysis.storageKeys?.length?['PRESERVE_SAVE_CONTRACT']:[])]);
+    }
+    add('IMPLEMENT_ACTOR_SPECIFIC_PLAYER_MODEL','Each relevant NPC, companion, boss or rare/foreground monster keeps its own evidence-bounded view of player behavior such as reliability, risk, help, abandonment, boundary respect and response to advice; this is actor belief, not global truth.',['IMPLEMENT_CAUSAL_ACTOR_RELATIONSHIP_GRAPH']);
+    add('IMPLEMENT_INDIVIDUAL_ACTOR_ACTIVITY_SIMULATION','Important actors keep doing role-, goal-, schedule-, territory-, relationship- and event-driven activities without direct player interaction. Near actors use full context, mid-distance actors update at reduced frequency, and far actors use deterministic schedule/sleep without inventing authoritative outcomes.',['BIND_RUNTIME_ACTOR_AI_QUALITY_DNA']);
+    add('IMPLEMENT_ACTOR_EMBODIED_REACTIONS','Bind gaze, facing, personal distance, pauses, gestures and motion identity to intent/emotion without changing authoritative movement or combat stats.',['BIND_RUNTIME_ACTOR_AI_QUALITY_DNA']);
+  }
+  if(gameplaySketch?.actors?.companionIntelligenceRequired){
+    add('IMPLEMENT_COMPANION_SELFHOOD_WORLDVIEW_AND_SELF_ACTUALIZATION','Named companions need authored worldview, self-image, values, long-term life project, unresolved personal thread, contradictions, boundaries and player-independent relationships.',['BIND_RUNTIME_ACTOR_AI_QUALITY_DNA']);
+    add('IMPLEMENT_COMPANION_COOPERATION_AND_PLAYER_STYLE_COMPLEMENT','Companions may protect, support, warn, disagree, suggest alternatives and complement observed player style through allowed actions only.',['IMPLEMENT_COMPANION_SELFHOOD_WORLDVIEW_AND_SELF_ACTUALIZATION']);
+  }
+  if(gameplaySketch?.actors?.inCharacterGameplayMentorRequired){
+    add('IMPLEMENT_IN_CHARACTER_GAMEPLAY_MENTOR_BARKS','NPCs/companions infer only observable player gaps from repeated failures, visible threats, resource shortages, route loops, ally-down events and unused declared mechanics, then provide personality-specific hints with spoiler escalation, cooldown, silence and repetition suppression; hidden or unknown mechanics remain unknown.',['IMPLEMENT_ACTOR_SPECIFIC_PLAYER_MODEL']);
+    add('IMPLEMENT_CHARACTER_SPEECH_REGISTER_AND_LANGUAGE_POLICY','Bind formality, slang, verbosity, humor and optional profanity strength per actor and relationship; strong language requires explicit game language policy and may never become random filler.',['IMPLEMENT_IN_CHARACTER_GAMEPLAY_MENTOR_BARKS']);
+  }
+  if(gameplaySketch?.actors?.autonomousQuestProposalRequired){
+    add('IMPLEMENT_AUTONOMOUS_PERSONAL_EVENT_AND_QUEST_PROPOSALS','NPCs/companions may propose optional events and quest candidates only from personal goals, unresolved threads, source-event memories, relationships, duties or current world changes.',['IMPLEMENT_COMPANION_SELFHOOD_WORLDVIEW_AND_SELF_ACTUALIZATION']);
+    add('BIND_AI_QUEST_PROPOSALS_TO_EXISTING_QUEST_ENGINE','Store AI-generated quest proposals separately, run continuity/diversity/prerequisite checks, require engine registration, and keep reward/completion/progression/spawn/inventory/save authority in the existing quest/game engine.',['IMPLEMENT_AUTONOMOUS_PERSONAL_EVENT_AND_QUEST_PROPOSALS']);
+    add('VERIFY_PERSONAL_QUEST_CAUSALITY_AND_RELATIONSHIP_FEEDBACK','Verify WHY_NOW, actor goal, source cause, player acceptance/decline, success/failure reaction and resulting memory/relationship/personal-arc feedback without duplicate rewards or shadow quest runtimes.',['BIND_AI_QUEST_PROPOSALS_TO_EXISTING_QUEST_ENGINE']);
+  }
+  if(gameplaySketch?.actors?.monsterIntelligenceRequired){
+    add('IMPLEMENT_MONSTER_TEMPERAMENT_TACTICS_AND_ECOLOGY','Give foreground monsters species identity plus individual temperament, territory, threat assessment, group role, ecology, retreat/pressure preference and motion identity; do not use color/name-only variation.',['BIND_RUNTIME_ACTOR_AI_QUALITY_DNA']);
+    add('IMPLEMENT_BOSS_RARE_MONSTER_LIVING_ACTIVITY','Bosses and rare monsters keep bounded territory, observation, rest/roam, intrusion reaction, rivalry memory and presentation activity outside direct combat; they may choose only among engine-declared patterns and may not alter phase thresholds, rewards, spawns, damage or cooldowns.',['IMPLEMENT_MONSTER_TEMPERAMENT_TACTICS_AND_ECOLOGY','IMPLEMENT_INDIVIDUAL_ACTOR_ACTIVITY_SIMULATION']);
+  }
   if(gameplaySketch?.narrativeModel?.required){
     add('IMPLEMENT_NARRATIVE_STATE_AND_QUEST_GRAPH','Reuse the existing quest/dialogue state responsibility; bind story stages, causal story-transition history, quest prerequisites, consequences, clues and payoff threads as declared state instead of a shadow narrative runtime.',['ESTABLISH_CODING_ARCHITECTURE']);
     add('IMPLEMENT_CHARACTER_PERSONA_VOICE_AND_MEMORY','Bind distinct character persona/voice/knowledge boundaries, relationship changes, faction membership/relationships and source-event memories to NPC/companion/enemy behavior intent without granting narrative code target-selection movement combat reward progression networking or other gameplay authority.',['IMPLEMENT_NARRATIVE_STATE_AND_QUEST_GRAPH']);
@@ -165,7 +217,7 @@ export function buildVibePatchPlan({gameplaySketch={},sourceAnalysis={},codingAr
   for(const blocker of uniq(blockers).slice(0,24))add(`FIX_${clean(blocker).replace(/[^A-Za-z0-9]+/g,'_').slice(0,64)}`,`Resolve validator/rework failure: ${clean(blocker)}`);
   const developmentMode=codingArchitecture?.developmentMode||null;
   const mode=developmentMode==='GREENFIELD'?'GREENFIELD_ARCHITECT_THEN_IMPLEMENT':developmentMode==='RECOMPOSE'?'RECOMPOSE_ALLOWED_COMPONENTS_INTO_NEW_ARCHITECTURE':'PATCH_EXISTING_RESPONSIBLE_SYSTEMS';
-  return{version:4,mode,developmentMode,forbidden:['FULL_GAME_REWRITE_WHEN_SOURCE_EXISTS','SAVE_KEY_OR_MEANING_BREAK','TEMPLATE_SWAP_TO_HIDE_MISSING_FEATURES','STATIC_LABEL_AS_IMPLEMENTATION','VALIDATION_PROXY_AS_GAMEPLAY','SAME_MACRO_LOOP_RENAMED_ACROSS_ALL_PHASES','COSMETIC_ONLY_FLOW_VARIATION','WRITE_COMPLEX_GAME_IN_ONE_UNVERIFIED_PASS','DIRECT_CROSS_SYSTEM_STATE_MUTATION','UNAUTHORIZED_EXTERNAL_SOURCE_ASSET_OR_TEXT_COPY','PATCH_WITHOUT_RESPONSIBILITY_TRACE_WHEN_FAILURE_EVIDENCE_EXISTS','ACCEPT_HARD_SENIOR_REVIEW_BLOCKER'],preserve:{storageKeys:sourceAnalysis.storageKeys||[],workingFunctions:(sourceAnalysis.functions||[]).slice(0,30),mechanicIds:sourceAnalysis.mechanicIds||[]},approvedScopeIds:inventory.map(x=>clean(x?.id)).filter(Boolean),tasks,verificationOrder:['FLOW_ARCHITECTURE_CONTRACT','CODING_ARCHITECTURE_CONTRACT','RESPONSIBILITY_GRAPH','CAUSAL_DEBUG_TARGET','SYNTAX_TYPE_IMPORT_CHECK','SYSTEM_MICRO_RUNTIME_TESTS','INVARIANT_CHECKS','END_TO_END_BEHAVIOR_CHAINS','SENIOR_CODE_REVIEW','STATIC_CONTRACT','MOBILE_RUNTIME','REAL_INPUT_AND_STATE_CHANGE','APPROVED_SCOPE_BEHAVIOR','WIN_AND_FAIL','LONG_GOAL_PLAY','REPLAY_REGRESSION','SAVE_RESTORE','SOFTLOCK','ECONOMY','DIFFICULTY','MAP_ROUTE_STREAMING_WHEN_APPLICABLE','NARRATIVE_STATE_CAUSALITY_WHEN_APPLICABLE','PERFORMANCE','FULL_CANONICAL_VALIDATION','FINAL_CONTENT_DEPTH_WHEN_APPLICABLE']};
+  return{version:4,mode,developmentMode,forbidden:['FULL_GAME_REWRITE_WHEN_SOURCE_EXISTS','SAVE_KEY_OR_MEANING_BREAK','TEMPLATE_SWAP_TO_HIDE_MISSING_FEATURES','STATIC_LABEL_AS_IMPLEMENTATION','VALIDATION_PROXY_AS_GAMEPLAY','SAME_MACRO_LOOP_RENAMED_ACROSS_ALL_PHASES','COSMETIC_ONLY_FLOW_VARIATION','WRITE_COMPLEX_GAME_IN_ONE_UNVERIFIED_PASS','DIRECT_CROSS_SYSTEM_STATE_MUTATION','UNAUTHORIZED_EXTERNAL_SOURCE_ASSET_OR_TEXT_COPY','PATCH_WITHOUT_RESPONSIBILITY_TRACE_WHEN_FAILURE_EVIDENCE_EXISTS','ACCEPT_HARD_SENIOR_REVIEW_BLOCKER'],preserve:{storageKeys:sourceAnalysis.storageKeys||[],workingFunctions:(sourceAnalysis.functions||[]).slice(0,30),mechanicIds:sourceAnalysis.mechanicIds||[]},approvedScopeIds:inventory.map(x=>clean(x?.id)).filter(Boolean),tasks,verificationOrder:['FLOW_ARCHITECTURE_CONTRACT','CODING_ARCHITECTURE_CONTRACT','RESPONSIBILITY_GRAPH','CAUSAL_DEBUG_TARGET','SYNTAX_TYPE_IMPORT_CHECK','SYSTEM_MICRO_RUNTIME_TESTS','INVARIANT_CHECKS','END_TO_END_BEHAVIOR_CHAINS','SENIOR_CODE_REVIEW','STATIC_CONTRACT','MOBILE_RUNTIME','REAL_INPUT_AND_STATE_CHANGE','APPROVED_SCOPE_BEHAVIOR','WIN_AND_FAIL','LONG_GOAL_PLAY','REPLAY_REGRESSION','SAVE_RESTORE','ACTOR_MIND_SAVE_RESTORE_WHEN_APPLICABLE','SOFTLOCK','ECONOMY','DIFFICULTY','MAP_ROUTE_STREAMING_WHEN_APPLICABLE','RUNTIME_ACTOR_AI_CAUSALITY_WHEN_APPLICABLE','ACTOR_PLAYER_MODEL_AND_INDIVIDUAL_ACTIVITY_WHEN_APPLICABLE','PERSONAL_QUEST_PROPOSAL_ENGINE_AUTHORITY_WHEN_APPLICABLE','NARRATIVE_STATE_CAUSALITY_WHEN_APPLICABLE','PERFORMANCE','FULL_CANONICAL_VALIDATION','FINAL_CONTENT_DEPTH_WHEN_APPLICABLE']};
 }
 
 export function buildDependencyAnalysis({sourceAnalysis={},patchPlan={},expertDevelopment=null}={}){
@@ -183,6 +235,7 @@ function classifyFailure(value){
   if(/CODING|ARCHITECT|STATE_OWNER|INVARIANT|MICRO_TEST|REGRESSION_CASE|IMPACT|DUPLICATE_CAUSAL|CROSS_SYSTEM/.test(upper))return'CODING_ARCHITECTURE';
   if(/FLOW|PHASE|BRANCH|WORLD_REACT|REGION_RULE|PLAYSTYLE|ENDING/.test(upper))return'GAME_FLOW_ARCHITECTURE';
   if(/CONTENT|30MIN|DEPTH|REPET|LONG_GOAL/.test(upper))return'CONTENT_DEPTH';
+  if(/ACTOR_AI|COMPANION|MONSTER|RELATIONSHIP|PERSONALITY|MEMORY_CAUSALITY|KNOWLEDGE_LEAK|PLAYER_MODEL|GUIDANCE|AUTONOMOUS_QUEST|ECOLOGY|PERSONAL_SPACE/.test(upper))return'LIVING_ACTOR_AI';
   if(/INTERACTION|NPC|OBJECT/.test(upper))return'ENTITY_INTERACTION';
   if(/SPATIAL|3D|ROUTE|COLLISION|PLACEMENT|TOWER/.test(upper))return'SPATIAL_GAMEPLAY';
   if(/STRATEG|OUTCOME|CHOICE/.test(upper))return'STRATEGY_OUTCOME';
@@ -194,19 +247,21 @@ function classifyFailure(value){
 }
 
 export function buildRuntimeValidationPlan({gameplaySketch={},sourceAnalysis={}}={}){
-  const hasSave=Boolean(sourceAnalysis.capabilities?.saveState||sourceAnalysis.storageKeys?.length),needsEconomy=Boolean(gameplaySketch?.economyModel?.required||sourceAnalysis.capabilities?.economy),needsStrategy=Boolean(gameplaySketch?.combatModel?.strategicOutcomeDifferenceRequired);
+  const hasSave=Boolean(sourceAnalysis.capabilities?.saveState||sourceAnalysis.storageKeys?.length),needsEconomy=Boolean(gameplaySketch?.economyModel?.required||sourceAnalysis.capabilities?.economy),needsStrategy=Boolean(gameplaySketch?.combatModel?.strategicOutcomeDifferenceRequired),needsLivingActors=Boolean(gameplaySketch?.actors?.runtimeActorIntelligenceRequired);
   return{
     version:2,mode:'INDEPENDENT_RUNTIME_EVIDENCE',
     longGoal:{required:true,contract:'ADVANCE_REAL_OBJECTIVES_WITHOUT_TIME_SKIP_OR_VALIDATION_PROXY_AND_ACCUMULATE_NEW_GAMEPLAY_DIMENSIONS'},
     replayRegression:{required:true,contract:'REPLAY_SAME_SEED_AND_INPUT_SEQUENCE_OR_EQUIVALENT_SCENARIO_AND_COMPARE_CRITICAL_STATE_TRANSITIONS',randomizedGameRequiresReplaySeedContract:sourceAnalysis.capabilities?.randomness===true},
     softlock:{required:true,contract:'NO_NON_TERMINAL_STATE_MAY_REMOVE_ALL_MEANINGFUL_PROGRESS_ACTIONS_WITHOUT_A_REAL_RETRY_OR_EXIT_PATH'},
     saveRestore:{required:hasSave,protectedKeys:uniq(sourceAnalysis.storageKeys||[]),readKeys:uniq(sourceAnalysis.storageReads||[]),writeKeys:uniq(sourceAnalysis.storageWrites||[]),contract:'SAVE_THEN_RELOAD_OR_REENTER_MUST_RESTORE_MEANINGFUL_PROGRESS_WITHOUT_CHANGING_EXISTING_KEY_MEANING'},
+    actorMindSaveRestore:{required:hasSave&&needsLivingActors,contract:'EXISTING_SAVE_AUTHORITY_RESTORES_BOUNDED_ACTOR_MEMORY_EMOTION_AND_DIRECTIONAL_RELATIONSHIPS_THROUGH_ENGINE_VALIDATED_SNAPSHOT; ACTOR_IDENTITY_MUST_MATCH; TRANSIENT_INTENT_REPLAY_FORBIDDEN_BY_DEFAULT; DUPLICATE_SOURCE_EVENT_MUST_NOT_REAPPLY_AFTER_RELOAD; NO_PARALLEL_SAVE_KEY_OR_AUTHORITY'},
     economy:{required:needsEconomy,contract:'RESOURCE_SOURCES_SINKS_COSTS_AND_REWARDS_MUST_CHANGE_THROUGH_REAL_PLAY_WITHOUT_FREE_OR_NEGATIVE_EXPLOIT_LOOPS'},
     difficulty:{required:true,contract:'PROGRESSION_MUST_NOT_CREATE_IMMEDIATE_UNAVOIDABLE_FAILURE_OR_ZERO_PRESSURE_STALL_ACROSS_OBSERVED_STAGES'},
     performance:{required:true,contract:'MOBILE_RUNTIME_MUST_REMAIN_RESPONSIVE_DURING_ACTIVE_GAMEPLAY_WITH_BOUNDED_ERROR_AND_FRAME_STALL_EVIDENCE'},
     mobile:{required:true,contract:'390X844_TOUCH_OR_POINTER_GAMEPLAY_INPUT_MUST_REACH_CORE_ACTIONS_WITHOUT_CLIPPED_REQUIRED_CONTROLS'},
     strategyOutcomes:{required:needsStrategy,contract:'AT_LEAST_TWO_DISTINCT_STRATEGIC_CHOICES_MUST_PRODUCE_OBSERVABLY_DIFFERENT_COMBAT_OR_WORLD_OUTCOMES'},
     contentDepth:{required:Boolean(gameplaySketch?.expansionPlan?.requiredForFinalDepth),contract:'RETRY_IDLE_AND_DUPLICATE_ACTION_TIME_EXCLUDED; NEW_ENEMY_AREA_OBJECTIVE_INTERACTION_STRATEGY_OR_FLOW_RESULTS_REQUIRED'},
+    livingActorCausality:{required:needsLivingActors,contract:'SOURCE_EVENT -> PERCEPTION_OR_INFORMATION_PATH -> ATTRIBUTION -> ACTOR_SPECIFIC_APPRAISAL -> MEMORY_RELATIONSHIP_OR_INTENT_SUGGESTION -> ENGINE_VALIDATION; ACTOR_PLAYER_MODEL_IS_PERSPECTIVE_SPECIFIC; OFFSCREEN_ACTIVITY_CANNOT_INVENT_AUTHORITATIVE_OUTCOMES'},
   };
 }
 
@@ -214,8 +269,8 @@ export function runtimeValidationBlockers({plan={},evidence={}}={}){
   const blockers=[];
   const checks=[
     ['longGoal','LONG_GOAL_PLAY_FAILED'],['replayRegression','REPLAY_SAME_SEED_MISMATCH'],['softlock','SOFTLOCK_PROGRESS_PATH_FAILED'],
-    ['saveRestore','SAVE_RESTORE_FAILED'],['economy','ECONOMY_RUNTIME_FAILED'],['difficulty','DIFFICULTY_RUNTIME_FAILED'],
-    ['performance','PERFORMANCE_RUNTIME_FAILED'],['mobile','MOBILE_RUNTIME_FAILED'],['strategyOutcomes','STRATEGY_OUTCOME_DIVERGENCE_FAILED'],['contentDepth','FINAL_CONTENT_DEPTH_FAILED'],
+    ['saveRestore','SAVE_RESTORE_FAILED'],['actorMindSaveRestore','ACTOR_MIND_SAVE_RESTORE_FAILED'],['economy','ECONOMY_RUNTIME_FAILED'],['difficulty','DIFFICULTY_RUNTIME_FAILED'],
+    ['performance','PERFORMANCE_RUNTIME_FAILED'],['mobile','MOBILE_RUNTIME_FAILED'],['strategyOutcomes','STRATEGY_OUTCOME_DIVERGENCE_FAILED'],['contentDepth','FINAL_CONTENT_DEPTH_FAILED'],['livingActorCausality','LIVING_ACTOR_CAUSALITY_FAILED'],
   ];
   for(const [key,code] of checks){
     const requirement=plan?.[key];if(requirement?.required!==true)continue;
@@ -243,15 +298,15 @@ export function loadCanonicalRuntimeEvidence({evidencePath=process.env.WEB_FINAL
 export function buildFailureDrivenRepairLoop({blockers=[],patchPlan={},runtimeValidationPlan=null,runtimeEvidence=null,expertDevelopment=null}={}){
   const runtimeBlockers=runtimeValidationPlan&&runtimeEvidence?runtimeValidationBlockers({plan:runtimeValidationPlan,evidence:runtimeEvidence}):[];
   const failures=uniq([...blockers,...runtimeBlockers]).slice(0,32),classifications=failures.map(value=>({failure:value,type:classifyFailure(value)}));
-  const repairTaskIds=(patchPlan.tasks||[]).filter(task=>task.id.startsWith('FIX_')||task.id.startsWith('IMPLEMENT_FLOW_')||task.id.startsWith('IMPLEMENT_FEATURE_')||['ESTABLISH_CODING_ARCHITECTURE','IMPLEMENT_GREENFIELD_ARCHITECTURE_FIRST','PRESERVE_PATCH_CURRENT_CODEBASE','RECOMPOSE_ALLOWED_COMPONENTS_INTO_NEW_ARCHITECTURE','ENFORCE_STATE_OWNERSHIP_APIS_AND_INVARIANTS','PREDICT_CHANGE_IMPACT_BEFORE_PATCH','GENERATE_REGRESSION_CASE_PER_FEATURE_OR_BUG','APPLY_RECOVERY_PERFORMANCE_AND_CHANGE_BUDGET','ESTABLISH_RESPONSIBILITY_GRAPH','TRACE_FAILURE_TO_PRIMARY_STATE_WRITER','VERIFY_END_TO_END_BEHAVIOR_CHAINS','RUN_SENIOR_CODE_REVIEW_GATE','IMPLEMENT_GAME_FLOW_ARCHITECTURE','IMPLEMENT_PARALLEL_GOALS_AND_BRANCH_CONSEQUENCES','IMPLEMENT_WORLD_REACTIVITY_AND_NPC_INITIATIVE','IMPLEMENT_DISTINCT_FAILURE_AND_VICTORY_STRUCTURES','IMPLEMENT_PLAYSTYLE_AND_REGION_RULE_VARIATION','IMPLEMENT_SESSION_RHYTHM_INFORMATION_AND_REVISIT','IMPLEMENT_PLAYABLE_SPACE','IMPLEMENT_ADAPTIVE_WORLD_GENERATION_PLAN','VERIFY_MAP_ROUTE_AND_STREAMING_STATE','IMPLEMENT_ENTITY_INTERACTIONS','IMPLEMENT_POSITIONAL_PLACEMENT','IMPLEMENT_NARRATIVE_STATE_AND_QUEST_GRAPH','IMPLEMENT_CHARACTER_PERSONA_VOICE_AND_MEMORY','BIND_WORLD_STORY_STATE','VERIFY_NARRATIVE_CAUSALITY_AND_SAVE','IMPLEMENT_DIVERGENT_STRATEGY_RESULTS','IMPLEMENT_REPLAY_SEED_CONTRACT','CONNECT_PROGRESSION','EXPAND_MEANINGFUL_CONTENT'].includes(task.id)).map(task=>task.id);
+  const repairTaskIds=(patchPlan.tasks||[]).filter(task=>task.id.startsWith('FIX_')||task.id.startsWith('IMPLEMENT_FLOW_')||task.id.startsWith('IMPLEMENT_FEATURE_')||['ESTABLISH_CODING_ARCHITECTURE','IMPLEMENT_GREENFIELD_ARCHITECTURE_FIRST','PRESERVE_PATCH_CURRENT_CODEBASE','RECOMPOSE_ALLOWED_COMPONENTS_INTO_NEW_ARCHITECTURE','ENFORCE_STATE_OWNERSHIP_APIS_AND_INVARIANTS','PREDICT_CHANGE_IMPACT_BEFORE_PATCH','GENERATE_REGRESSION_CASE_PER_FEATURE_OR_BUG','APPLY_RECOVERY_PERFORMANCE_AND_CHANGE_BUDGET','ESTABLISH_RESPONSIBILITY_GRAPH','TRACE_FAILURE_TO_PRIMARY_STATE_WRITER','VERIFY_END_TO_END_BEHAVIOR_CHAINS','RUN_SENIOR_CODE_REVIEW_GATE','IMPLEMENT_GAME_FLOW_ARCHITECTURE','IMPLEMENT_PARALLEL_GOALS_AND_BRANCH_CONSEQUENCES','IMPLEMENT_WORLD_REACTIVITY_AND_NPC_INITIATIVE','IMPLEMENT_DISTINCT_FAILURE_AND_VICTORY_STRUCTURES','IMPLEMENT_PLAYSTYLE_AND_REGION_RULE_VARIATION','IMPLEMENT_SESSION_RHYTHM_INFORMATION_AND_REVISIT','IMPLEMENT_PLAYABLE_SPACE','IMPLEMENT_ADAPTIVE_WORLD_GENERATION_PLAN','VERIFY_MAP_ROUTE_AND_STREAMING_STATE','IMPLEMENT_ENTITY_INTERACTIONS','BIND_RUNTIME_ACTOR_AI_QUALITY_DNA','IMPLEMENT_ACTOR_PERCEPTION_KNOWLEDGE_AND_ATTENTION','IMPLEMENT_ACTOR_MEMORY_RELATIONSHIP_AND_EMOTION','IMPLEMENT_CAUSAL_ACTOR_RELATIONSHIP_GRAPH','BIND_ACTOR_MIND_TO_EXISTING_SAVE_RESTORE','IMPLEMENT_ACTOR_SPECIFIC_PLAYER_MODEL','IMPLEMENT_INDIVIDUAL_ACTOR_ACTIVITY_SIMULATION','IMPLEMENT_ACTOR_EMBODIED_REACTIONS','IMPLEMENT_COMPANION_SELFHOOD_WORLDVIEW_AND_SELF_ACTUALIZATION','IMPLEMENT_COMPANION_COOPERATION_AND_PLAYER_STYLE_COMPLEMENT','IMPLEMENT_IN_CHARACTER_GAMEPLAY_MENTOR_BARKS','IMPLEMENT_CHARACTER_SPEECH_REGISTER_AND_LANGUAGE_POLICY','IMPLEMENT_AUTONOMOUS_PERSONAL_EVENT_AND_QUEST_PROPOSALS','BIND_AI_QUEST_PROPOSALS_TO_EXISTING_QUEST_ENGINE','VERIFY_PERSONAL_QUEST_CAUSALITY_AND_RELATIONSHIP_FEEDBACK','IMPLEMENT_MONSTER_TEMPERAMENT_TACTICS_AND_ECOLOGY','IMPLEMENT_BOSS_RARE_MONSTER_LIVING_ACTIVITY','IMPLEMENT_POSITIONAL_PLACEMENT','IMPLEMENT_NARRATIVE_STATE_AND_QUEST_GRAPH','IMPLEMENT_CHARACTER_PERSONA_VOICE_AND_MEMORY','BIND_WORLD_STORY_STATE','VERIFY_NARRATIVE_CAUSALITY_AND_SAVE','IMPLEMENT_DIVERGENT_STRATEGY_RESULTS','IMPLEMENT_REPLAY_SEED_CONTRACT','CONNECT_PROGRESSION','EXPAND_MEANINGFUL_CONTENT'].includes(task.id)).map(task=>task.id);
   const causalDebug=buildCausalDebugPlan({failures,responsibilityGraph:expertDevelopment?.responsibilityGraph||{}});
-  return{version:5,mode:'FAILURE_DRIVEN_TARGETED_REPAIR',failures:classifications,runtimeEvidenceBound:Boolean(runtimeEvidence&&typeof runtimeEvidence==='object'),runtimeFailureCount:runtimeBlockers.length,repairTaskIds:uniq(repairTaskIds),causalTraces:causalDebug.traces,responsibleTargets:causalDebug.responsibleTargets,retryContract:['READ_FAILURE_EVIDENCE','REPRODUCE_FAILURE','TRACE_TO_PRIMARY_STATE_WRITER','TRACE_CALLERS_AND_DEPENDENTS','PREDICT_AFFECTED_SYSTEMS','PATCH_MINIMUM_COHERENT_RESPONSIBLE_BLOCK','RUN_RELEVANT_MICRO_RUNTIME_TEST','VERIFY_END_TO_END_BEHAVIOR_CHAIN','CHECK_STATE_OWNERSHIP_AND_INVARIANTS','RUN_SENIOR_CODE_REVIEW','ADD_OR_UPDATE_REGRESSION_CASE','RERUN_FAILED_VALIDATION','VERIFY_FLOW_ARCHITECTURE_WHEN_RELEVANT','RUN_LONG_GOAL_PLAY_WHEN_RELEVANT','RUN_REPLAY_REGRESSION','VERIFY_SAVE_RESTORE','VERIFY_SOFTLOCK_ECONOMY_DIFFICULTY_PERFORMANCE_MOBILE','PRESERVE_SAVE_AND_WORKING_BEHAVIOR'],stopCondition:'ORIGINAL_FAILURES_CLEARED_WITH_SENIOR_REVIEW_AND_DEPENDENT_REGRESSION_GREEN'};
+  return{version:5,mode:'FAILURE_DRIVEN_TARGETED_REPAIR',failures:classifications,runtimeEvidenceBound:Boolean(runtimeEvidence&&typeof runtimeEvidence==='object'),runtimeFailureCount:runtimeBlockers.length,repairTaskIds:uniq(repairTaskIds),causalTraces:causalDebug.traces,responsibleTargets:causalDebug.responsibleTargets,retryContract:['READ_FAILURE_EVIDENCE','REPRODUCE_FAILURE','TRACE_TO_PRIMARY_STATE_WRITER','TRACE_CALLERS_AND_DEPENDENTS','PREDICT_AFFECTED_SYSTEMS','PATCH_MINIMUM_COHERENT_RESPONSIBLE_BLOCK','RUN_RELEVANT_MICRO_RUNTIME_TEST','VERIFY_END_TO_END_BEHAVIOR_CHAIN','CHECK_STATE_OWNERSHIP_AND_INVARIANTS','RUN_SENIOR_CODE_REVIEW','ADD_OR_UPDATE_REGRESSION_CASE','RERUN_FAILED_VALIDATION','VERIFY_FLOW_ARCHITECTURE_WHEN_RELEVANT','VERIFY_LIVING_ACTOR_CAUSALITY_WHEN_RELEVANT','RUN_LONG_GOAL_PLAY_WHEN_RELEVANT','RUN_REPLAY_REGRESSION','VERIFY_SAVE_RESTORE','VERIFY_SOFTLOCK_ECONOMY_DIFFICULTY_PERFORMANCE_MOBILE','PRESERVE_SAVE_AND_WORKING_BEHAVIOR'],stopCondition:'ORIGINAL_FAILURES_CLEARED_WITH_SENIOR_REVIEW_AND_DEPENDENT_REGRESSION_GREEN'};
 }
 
 export function buildVibeDevelopmentContext({gameId='',genre='',baseline={},inventory=[],existingHtml='',blockers=[],runtimeEvidence=undefined,developmentMode=''}={}){
   const boundRuntimeEvidence=runtimeEvidence===undefined?loadCanonicalRuntimeEvidence():runtimeEvidence;
   const gameplaySketch=deriveGameplaySketch({gameId,genre,baseline,inventory}),flowArchitectureValidation=evaluateGameFlowArchitecture(gameplaySketch.flowArchitecture||{}),sourceAnalysis=analyzeExistingGameSource(existingHtml),codingArchitecture=buildCodingArchitecture({gameId,genre,baseline,gameplaySketch,sourceAnalysis,explicitDevelopmentMode:developmentMode}),codingArchitectureValidation=evaluateCodingArchitecture(codingArchitecture),expertDevelopment=buildExpertDevelopmentAnalysis({source:existingHtml,sourceAnalysis,gameplaySketch,failures:blockers}),patchPlan=buildVibePatchPlan({gameplaySketch,sourceAnalysis,codingArchitecture,expertDevelopment,inventory,blockers}),dependencyAnalysis=buildDependencyAnalysis({sourceAnalysis,patchPlan,expertDevelopment}),runtimeValidationPlan=buildRuntimeValidationPlan({gameplaySketch,sourceAnalysis}),repairLoop=buildFailureDrivenRepairLoop({blockers,patchPlan,runtimeValidationPlan,runtimeEvidence:boundRuntimeEvidence,expertDevelopment});
-  return{version:6,gameplaySketch,flowArchitectureValidation,codingArchitecture,codingArchitectureValidation,sourceAnalysis,responsibilityGraph:expertDevelopment.responsibilityGraph,causalDebug:repairLoop.causalTraces?.length?{...expertDevelopment.causalDebug,traces:repairLoop.causalTraces,responsibleTargets:repairLoop.responsibleTargets}:expertDevelopment.causalDebug,behaviorChains:expertDevelopment.behaviorChains,seniorCodeReview:expertDevelopment.seniorCodeReview,dependencyAnalysis,patchPlan,repairLoop,runtimeValidationPlan,runtimeEvidence:boundRuntimeEvidence};
+  return{version:7,gameplaySketch,flowArchitectureValidation,codingArchitecture,codingArchitectureValidation,sourceAnalysis,responsibilityGraph:expertDevelopment.responsibilityGraph,causalDebug:repairLoop.causalTraces?.length?{...expertDevelopment.causalDebug,traces:repairLoop.causalTraces,responsibleTargets:repairLoop.responsibleTargets}:expertDevelopment.causalDebug,behaviorChains:expertDevelopment.behaviorChains,seniorCodeReview:expertDevelopment.seniorCodeReview,dependencyAnalysis,patchPlan,repairLoop,runtimeValidationPlan,runtimeEvidence:boundRuntimeEvidence};
 }
 
 export function clipPreservedSourceForModel(source='',max=24000){
