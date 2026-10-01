@@ -3039,11 +3039,11 @@ test('Studio planner removes only superseded pending automatic runs for the exac
  assert.match(plan,/ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_UNRELATED=/);
  assert.match(plan,/ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_EXACT_TRIGGER=/);
  assert.match(plan,/ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_UNRELATED_EXACT_TRIGGER=/);
- assert.match(plan,/contents\\/roblox-games\\/\\.company-runtime-trigger\\?ref=\\$run_head/);
- assert.match(plan,/older_trigger_game=/);
- assert.match(plan,/OWNER_EXACT="\\$CURRENT_TRIGGER_CHANGED"/);
- assert.match(plan,/OLDER_EXACT="\\$older_exact_trigger"/);
- assert.match(plan,/if\\(ownerExact&&!olderExact\\)return process\\.stdout\\.write\\('CANCEL'\\)/);
+ assert.ok(plan.includes('contents/roblox-games/.company-runtime-trigger?ref=$run_head'));
+ assert.ok(plan.includes('older_trigger_game='));
+ assert.ok(plan.includes('OWNER_EXACT="$CURRENT_TRIGGER_CHANGED"'));
+ assert.ok(plan.includes('OLDER_EXACT="$older_exact_trigger"'));
+ assert.ok(plan.includes("if(ownerExact&&!olderExact)return process.stdout.write('CANCEL')"));
  assert.match(plan,/CURRENT_TRIGGER_CHANGED: \$\{\{ steps\.plan\.outputs\.trigger_changed \}\}/);
  assert.match(plan,/commits\/\$run_head/);
  assert.match(plan,/roblox-games\/\.company-runtime-trigger/);
