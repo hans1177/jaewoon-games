@@ -91,6 +91,7 @@ env:
   VIBE2_LEARNING_LANE_MAX: '4'
   VIBE2_ASSET_DEVELOPMENT_MAX: '64'
   VIBE2_RUNNER_PRESSURE_DISPATCH_THRESHOLD: '4'
+  VIBE2_RELEASE_RECOVERY_BATCH_MAX: '2'
 
 # Keep one continuous scheduler chain. v9 releases the stale v8 scheduler epoch
 # while keeping the canonical scheduler and moving only its lightweight plan onto the ARM control pool.
@@ -785,6 +786,13 @@ jobs:
             done < /tmp/vibe2-release-recovery-candidates.tsv
 
             count="$(wc -l < /tmp/vibe2-release-recovery-current.tsv | tr -d ' ')"
+            recovery_batch_max="${VIBE2_RELEASE_RECOVERY_BATCH_MAX:-2}"
+            if [ "${count:-0}" -gt "$recovery_batch_max" ]; then
+              head -n "$recovery_batch_max" /tmp/vibe2-release-recovery-current.tsv > /tmp/vibe2-release-recovery-limited.tsv
+              mv /tmp/vibe2-release-recovery-limited.tsv /tmp/vibe2-release-recovery-current.tsv
+              count="$(wc -l < /tmp/vibe2-release-recovery-current.tsv | tr -d ' ')"
+              echo "VIBE2_RELEASE_RECOVERY_BATCH_LIMIT=$recovery_batch_max"
+            fi
             echo "VIBE2_RELEASE_RECOVERY_COUNT=${count:-0}"
             if [ "${count:-0}" -eq 0 ]; then
               pushed=1
