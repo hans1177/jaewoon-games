@@ -253,7 +253,7 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.equal(runtime.continuous.auxiliaryLaneFanIn.recoveryFastCausalGameRefillAllowed,true);
   assert.equal(runtime.continuous.auxiliaryLaneFanIn.recoveryFastCausalGameRefillPressureGuardRequired,true);
   assert.equal(runtime.continuous.auxiliaryLaneFanIn.recoveryFastCausalGameRefillQueuePressureThreshold,4);
-  assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'RUN_UNIQUE_OPTIMISTIC_SHARED_QUEUE_WRITE');
+  assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'LANE_SCOPED_STATELESS_WAKE_COALESCING');
   assert.equal(runtime.continuous.atomicNeuronStream.globalFanInRefillSingletonForbidden,true);
   assert.equal(runtime.continuous.atomicNeuronStream.pressureCoalescingIndependentFreeSlotRefillPreserved,false);
   assert.equal(runtime.continuous.callbackCoalescing.capacityRefillMayProceedWhileResultCoalesced,false);
@@ -284,11 +284,10 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.doesNotMatch(reserveHeader,/vibe2-refill-reserve-/);
   assert.doesNotMatch(reserveHeader,/format\('vibe2-reserve-\{0\}', github\.run_id\)/);
   assert.doesNotMatch(reserveHeader,/\n    concurrency:/);
-  assert.match(reserveHeader,/Reserve runs are run-unique/);
-  assert.equal(reserve.statelessRefillCoalescing,'NONE_RUN_UNIQUE');
-  assert.equal(runtime.continuous.reserveConcurrency.statelessRefillCoalescing,'NONE_RUN_UNIQUE');
-  assert.equal(reserve.statelessRefillCoalescingScope,'DISABLED_RUN_UNIQUE');
-  assert.equal(runtime.continuous.reserveConcurrency.statelessRefillCoalescingScope,'DISABLED_RUN_UNIQUE');
+  assert.equal(reserve.statelessRefillCoalescing,'LANE_SCOPED_ONE_RUNNING_ONE_PENDING');
+  assert.equal(runtime.continuous.reserveConcurrency.statelessRefillCoalescing,'LANE_SCOPED_ONE_RUNNING_ONE_PENDING');
+  assert.equal(reserve.statelessRefillCoalescingScope,'VIBE2_FANIN_REFILL_ONLY');
+  assert.equal(runtime.continuous.reserveConcurrency.statelessRefillCoalescingScope,'VIBE2_FANIN_REFILL_ONLY');
   const workerHeader=core.slice(core.indexOf('\n  worker:'),core.indexOf('\n    steps:',core.indexOf('\n  worker:')));
   assert.ok(workerHeader.length>0);
   assert.doesNotMatch(workerHeader,/\n    concurrency:/);
@@ -296,7 +295,7 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.match(core,/format\('vibe2-continuous-\{0\}-\{1\}', github\.run_id, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
   assert.doesNotMatch(core,/format\('vibe2-continuous-\{0\}', github\.run_id\)/);
   assert.doesNotMatch(core,/vibe2-fanin-refill-singleton/);
-  assert.doesNotMatch(core,/format\('vibe2-fanin-refill-\{0\}'/);
+  assert.match(core,/github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-fanin-refill-\{0\}', inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
   assert.doesNotMatch(core,/\|\| 'vibe2-control-state-vibe2-unreal-core'/);
   assert.match(runner,/group: vibe2-24h-cycle-singleton-v9/);
   assert.match(runner,/VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=PASS/);
