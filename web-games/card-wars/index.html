@@ -63,4 +63,53 @@ const UNIT={
  '궁수':{hp:70,atk:25,range:2,cost:50,type:'단일'},
  '마법사':{hp:60,atk:35,range:2,cost:70,type:'범위',splash:15},
  '방패병':{hp:150,atk:18,range:1,cost:60,type:'단일',reduce:.30},
- '창병':{hp:130,atk:60
+ '창병':{hp:130,atk:60,range:1,cost:65,type:'단일'},
+ '쇠뇌병':{hp:60,atk:55,range:2,cost:70,type:'단일'},
+ '망치병':{hp:170,atk:80,range:1,cost:60,type:'특수',hammer:true}
+};
+const ENEMY={
+ '고블린':{hp:50,atk:15,range:1},
+ '스켈레톤 전사':{hp:70,atk:25,range:1},
+ '강화 고블린':{hp:80,atk:30,range:1},
+ '골렘':{hp:180,atk:45,range:1,golem:true},
+ '멧돼지':{hp:100,atk:35,range:1,boar:true},
+ '방패 고블린':{hp:120,atk:30,range:1,reduce:.40},
+ '독 전갈':{hp:90,atk:35,range:1,poison:true},
+ '돌격 오크':{hp:150,atk:45,range:1,charger:true},
+ '유적 수호자':{hp:190,atk:40,range:1,guardian:true}
+};
+const STAGE={
+ 1:{name:'초원의 습격',w:5,h:5,gold:200,allyMax:10,enemyMax:6,enemies:['고블린','고블린','고블린','고블린','고블린','고블린'],reward:'열쇠 2개'},
+ 2:{name:'폐허가 된 성',w:5,h:5,gold:250,allyMax:12,enemyMax:8,enemies:Array(8).fill('스켈레톤 전사'),reward:'열쇠 1개 + 다이아 200 + 업그레이드 해금'},
+ 3:{name:'바위 협곡',w:5,h:5,gold:250,allyMax:12,enemyMax:8,enemies:['강화 고블린','강화 고블린','강화 고블린','골렘','골렘','멧돼지','멧돼지','멧돼지'],reward:'열쇠 3개 + 신규 캐릭터 4종 뽑기 해금'},
+ 4:{name:'특수 발판 전장',w:7,h:5,gold:250,allyMax:12,enemyMax:8,enemies:['방패 고블린','방패 고블린','독 전갈','독 전갈','돌격 오크','돌격 오크','유적 수호자','유적 수호자'],reward:'클리어'}
+};
+const TILE_TYPES=['가시','회복','점프','균열'];
+let game=null, selected=null, summonChoice=null;
+
+// ==============================
+// 메뉴
+// ==============================
+function renderMeta(){ $('keys').textContent=save.keys; $('diamonds').textContent=save.diamonds; $('unlocked').textContent=save.unlockedStage; $('gold').textContent=game?game.gold:'-'; }
+function showPanel(which){
+ ['menuPanel','gachaPanel','upgradePanel','rulesPanel'].forEach(id=>$(id).classList.add('hidden'));
+ ['tabStage','tabGacha','tabUpgrade','tabRules'].forEach(id=>$(id).classList.remove('on'));
+ if(which==='stage'){$('menuPanel').classList.remove('hidden');$('tabStage').classList.add('on');renderStages()}
+ if(which==='gacha'){$('gachaPanel').classList.remove('hidden');$('tabGacha').classList.add('on');renderGacha()}
+ if(which==='upgrade'){$('upgradePanel').classList.remove('hidden');$('tabUpgrade').classList.add('on');renderUpgrades()}
+ if(which==='rules'){$('rulesPanel').classList.remove('hidden');$('tabRules').classList.add('on');renderRules()}
+}
+function renderStages(){
+ $('stageList').innerHTML=Object.entries(STAGE).map(([n,s])=>`<button class="btn stageBtn ${Number(n)<=save.unlockedStage?'primary':''}" data-stage="${n}" ${Number(n)>save.unlockedStage?'disabled':''}><b>${n}스테이지 · ${s.name}</b><small>${s.w}×${s.h} · 시작 골드 ${s.gold} · 아군 최대 ${s.allyMax} · 적 최대 ${s.enemyMax}<br>보상: ${s.reward}</small></button>`).join('');
+ $('stageList').querySelectorAll('[data-stage]').forEach(b=>b.onclick=()=>startStage(Number(b.dataset.stage)));
+}
+function renderGacha(){
+ const basePool=['창병','쇠뇌병','망치병'];
+ const newText=save.newFourUnlocked?'<div class="specialInfo" style="margin-top:8px">3스테이지 보상으로 신규 캐릭터 4종 뽑기 슬롯이 해금됐어. 현재 이름/수치가 확정되지 않은 캐릭터는 임의로 만들지 않았어.</div>':'';
+ $('gachaPanel').innerHTML=`<div class="title">열쇠 뽑기</div><div class="muted">열쇠 1개로 1회. 1스테이지 이후 창병·쇠뇌병·망치병을 획득할 수 있어.</div><div class="legend">${basePool.map(n=>`<span class="tag">${n}${save.owned.includes(n)?' · 보유':''}</span>`).join('')}</div><button id="drawBtn" class="btn gold" style="width:100%;margin-top:9px" ${save.keys<1?'disabled':''}>열쇠 1개 사용</button>${newText}`;
+ $('drawBtn').onclick=()=>{if(save.keys<1)return;save.keys--;const notOwned=basePool.filter(n=>!save.owned.includes(n));const pool=notOwned.length?notOwned:basePool;const got=pool[Math.floor(Math.random()*pool.length)];if(!save.owned.includes(got))save.owned.push(got);persist();showResult('뽑기 결과',got+' 획득');renderGacha()};
+}
+function renderUpgrades(){
+ if(!save.upgradeUnlocked){$('upgradePanel').innerHTML='<div class="title">업그레이드</div><div class="muted">2스테이지를 클리어하면 해금돼.</div>';return}
+ $('upgradePanel').innerHTML='<div class="title">업그레이드</div><div class="muted">최대 3회 · 첫 비용 50골드 · 다음 비용은 1.3배 · HP/공격력 ×1.25</div><div id="upgradeRows"></div>';
+ $('upgradeRows').innerHTML=save.owned.filter(n=>UNIT[n]).map(n=>{const lv=save.upgrades[n]||0,cost=Math.round(50*Math.pow
