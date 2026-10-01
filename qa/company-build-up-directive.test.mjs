@@ -527,6 +527,83 @@ test('verified product-quality failure keeps autonomous expansion inside existin
 });
 
 
+test('perpetual BUILD_UP carries exact data budgets without content or generation caps',()=>{
+  const directive=buildGameSpecificBuildUpDirective({
+    gameId:'data-budget-normal',
+    platform:'WEB',
+    designRecord:design(),
+    sourceObservation:{
+      sourceRoot:'web-games/data-budget-normal',
+      sourceTreeFingerprint:'7'.repeat(64),
+      fileCount:4,dataFileCount:4,sourceBytes:10*1024*1024,largestFileBytes:2*1024*1024,
+      topFiles:[],sourceAnchors:[],
+      signals:{combat:3,progression:3,ai:2,save:2,multiplayer:0,animation:2,vfx:2,camera:1,ui:2,uiFlow:2,input:2,map:3,landmark:1,interaction:2,inventory:1,equipment:1,settings:1,feedback:2,session:2,content:5,choice:2,connection:1,performance:3,lighting:1,primitive:1,todo:0,errorRecovery:2},
+      observations:['CURRENT_SOURCE_FILES=4']
+    }
+  });
+  const budget=directive.autonomousContentExpansion.dataCapacityBudget;
+  assert.equal(budget.state,'NORMAL');
+  assert.equal(budget.limits.savePersistedDataBytes,2*1024*1024);
+  assert.equal(budget.limits.webDownloadBytes,100*1024*1024);
+  assert.equal(budget.limits.singleFileBytes,25*1024*1024);
+  assert.equal(budget.limits.mobileMemoryTargetBytes,300*1024*1024);
+  assert.equal(budget.limits.mobileMinimumFps,30);
+  assert.equal(budget.generationLimit,null);
+  assert.equal(budget.contentCountLimit,null);
+  assert.equal(budget.buildUpMustContinue,true);
+});
+
+test('Web capacity warning pivots ideas to reuse and recombination without ending BUILD_UP',()=>{
+  const directive=buildGameSpecificBuildUpDirective({
+    gameId:'data-budget-warning',
+    platform:'WEB',
+    designRecord:design(),
+    sourceObservation:{
+      sourceRoot:'web-games/data-budget-warning',
+      sourceTreeFingerprint:'8'.repeat(64),
+      fileCount:10,dataFileCount:20,sourceBytes:85*1024*1024,largestFileBytes:21*1024*1024,
+      topFiles:[],sourceAnchors:[],
+      signals:{combat:3,progression:3,ai:2,save:2,multiplayer:0,animation:2,vfx:2,camera:1,ui:2,uiFlow:2,input:2,map:3,landmark:1,interaction:2,inventory:1,equipment:1,settings:1,feedback:2,session:2,content:8,choice:2,connection:1,performance:3,lighting:1,primitive:1,todo:0,errorRecovery:2},
+      observations:['CURRENT_SOURCE_FILES=10']
+    }
+  });
+  const budget=directive.autonomousContentExpansion.dataCapacityBudget;
+  assert.equal(budget.state,'WARNING');
+  assert.ok(budget.warning.includes('WEB_DOWNLOAD_BUDGET'));
+  assert.ok(budget.warning.includes('SINGLE_FILE_BUDGET'));
+  assert.match(budget.strategy,/REUSE_RECOMBINATION/);
+  assert.equal(budget.buildUpMustContinue,true);
+  const prompt=directivePrompt(directive);
+  assert.match(prompt,/DATA_CAPACITY_BUDGET: state=WARNING/);
+  assert.match(prompt,/generationLimit=NONE; contentCountLimit=NONE/);
+  assert.match(prompt,/재사용·재조합/);
+});
+
+test('capacity exceedance becomes causal capacity repair and preserves perpetual idea generation',()=>{
+  const directive=buildGameSpecificBuildUpDirective({
+    gameId:'data-budget-exceeded',
+    platform:'WEB',
+    designRecord:design(),
+    sourceObservation:{
+      sourceRoot:'web-games/data-budget-exceeded',
+      sourceTreeFingerprint:'9'.repeat(64),
+      fileCount:10,dataFileCount:20,sourceBytes:110*1024*1024,largestFileBytes:26*1024*1024,
+      topFiles:[],sourceAnchors:[],
+      signals:{combat:3,progression:3,ai:2,save:2,multiplayer:0,animation:2,vfx:2,camera:1,ui:2,uiFlow:2,input:2,map:3,landmark:1,interaction:2,inventory:1,equipment:1,settings:1,feedback:2,session:2,content:8,choice:2,connection:1,performance:3,lighting:1,primitive:1,todo:0,errorRecovery:2},
+      observations:['CURRENT_SOURCE_FILES=10']
+    },
+    runtimeEvidence:{persistedDataBytes:3*1024*1024,mobileMemoryBytes:340*1024*1024,mobileFps:24}
+  });
+  const budget=directive.autonomousContentExpansion.dataCapacityBudget;
+  assert.equal(budget.state,'EXCEEDED');
+  for(const key of ['SAVE_AND_PERSISTED_DATA_BUDGET','WEB_DOWNLOAD_BUDGET','SINGLE_FILE_BUDGET','MOBILE_MEMORY_BUDGET','MOBILE_FRAME_BUDGET'])assert.ok(budget.exceeded.includes(key));
+  assert.match(budget.strategy,/CAUSAL_CAPACITY_REPAIR/);
+  assert.equal(budget.generationLimit,null);
+  assert.equal(budget.contentCountLimit,null);
+  assert.equal(budget.buildUpMustContinue,true);
+  assert.equal(budget.protectedStateDeletionForbidden,true);
+});
+
 test('each approved loop and signature choice reaches the shared implementation prompt',()=>{
   for(const platform of ['ROBLOX','WEB']){
     const directive=buildGameSpecificBuildUpDirective({gameId:'design-chain',platform,designRecord:design(),sourceObservation:{sourceTreeFingerprint:'test',signals:{},observations:[],topFiles:[],sourceAnchors:[]}});
