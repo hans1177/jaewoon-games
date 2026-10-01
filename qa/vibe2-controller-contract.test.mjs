@@ -804,11 +804,11 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert(workflow.includes('VIBE2_LIVE_RUNNER_QUEUE_PRESSURE='));
   assert(workflow.includes('VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT'));
   assert(workflow.includes('VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN'));
-  assert(workflow.includes('pressureRefillLeaderAssigned'));
-  assert(workflow.includes('VIBE2_PRESSURE_REFILL_LEADER'));
-  assert(workflow.includes("reason:'runner-pressure-wave-leader-free-slot-refill'"));
-  assert(workflow.includes('VIBE2_PRESSURE_REFILL_DISPATCH=WAVE_LEADER_EXISTING_FANIN_REFILL'));
-  assert(workflow.indexOf('VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN') < workflow.lastIndexOf("https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches"));
+  assert.equal(workflow.includes('pressureRefillLeaderAssigned'),false);
+  assert.equal(workflow.includes('VIBE2_PRESSURE_REFILL_LEADER'),false);
+  assert.equal(workflow.includes("reason:'runner-pressure-wave-leader-free-slot-refill'"),false);
+  assert(workflow.includes('VIBE2_PRESSURE_REFILL_DISPATCH=SKIPPED_DEFER_TO_COHORT_FANIN'));
+  assert(workflow.includes('if [ "${queue_pressure:-0}" -gt 0 ]; then'));
   assert(workflow.includes('pattern: vibe2-result-*'));
   assert(workflow.includes('merge-multiple: true'));
   assert.equal(runtime.continuous.perWorkerCompletionSignalPressureAware,true);
