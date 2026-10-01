@@ -1419,7 +1419,10 @@ test('every non-neuron reserve ingress syncs current company runtime before plan
   const reserve=workflow.indexOf('node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch',handoff);
   assert.ok(steward>=0&&fetchRuntime>steward&&planner>fetchRuntime&&learning>planner&&handoff>learning&&reserve>handoff);
   const block=workflow.slice(steward,handoff);
-  assert.match(block,/git -C "\$control_root" show origin\/company-runtime:development-queue\.json > \/tmp\/vibe2-company-runtime-queue\.json/);
+  assert.match(block,/company_runtime_snapshot_sha="\$\(git -C "\$control_root" rev-parse origin\/company-runtime\)"/);
+  assert.match(block,/git -C "\$control_root" show "\$company_runtime_snapshot_sha:development-queue\.json" > \/tmp\/vibe2-company-runtime-queue\.json/);
+  assert.match(block,/VIBE2_RESERVE_RUNTIME_SNAPSHOT=PINNED_FIRST_ATTEMPT/);
+  assert.match(block,/VIBE2_RESERVE_RUNTIME_SNAPSHOT=REUSED_RETRY/);
   assert.match(block,/--development-queue=\/tmp\/vibe2-company-runtime-queue\.json/);
   assert.match(block,/--company-queue=\/tmp\/vibe2-company-runtime-queue\.json/);
   assert.match(block,/VIBE2_RESERVE_RUNTIME_SYNC=PASS/);
@@ -1458,7 +1461,7 @@ test('24h scheduler fetches only required shallow refs before planning',()=>{
 test('continuous planners overlay company-runtime design evidence before autonomous planning',()=>{
   assert.match(workflow,/git -C "\$control_root" fetch origin company-runtime --quiet/);
   assert.match(workflow,/for runtime_design_path in design game-seed-state\.json/);
-  assert.match(workflow,/git -C "\$control_root" archive "origin\/company-runtime" "\$runtime_design_path" \| tar -x -C \/tmp\/vibe2-main/);
+  assert.match(workflow,/git -C "\$control_root" archive "\$company_runtime_snapshot_sha" "\$runtime_design_path" \| tar -x -C \/tmp\/vibe2-main/);
   assert.match(workflow,/VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state\.json/);
 
   assert.match(safetyNetWorkflow,/git -C \/tmp\/vibe2-main fetch origin [^\n]*company-runtime[^\n]*--quiet/);
