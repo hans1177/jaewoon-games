@@ -4110,7 +4110,7 @@ test('oversized stale learning guidance is deduplicated without truncating the v
   assert.ok(Buffer.byteLength(prompt,'utf8')<12000);
 });
 
-test('Studio initial prompt compacts repeated directive prose and expands model context to fit',()=>{
+test('Studio initial prompt compacts repeated directive prose within the base model context',()=>{
   const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(source,/studioInitial\?1500:\(oversizedInitial\?3500:5000\)/);
   assert.doesNotMatch(source,/studioInitial\?2500/);
@@ -4161,7 +4161,7 @@ test('Studio initial prompt compacts repeated directive prose and expands model 
   assert.ok(Buffer.byteLength(compactLearning,'utf8')<Buffer.byteLength(external,'utf8'));
   assert.equal((initial.match(/^sourceAnchors=/gm)||[]).length,3);
   assert.ok(Buffer.byteLength(initial,'utf8')<50000);
-  assert.equal(sourcePromptContextWindow(initial,{baseContextWindow:16384,maxPredict:3072}),24576);
+  assert.equal(sourcePromptContextWindow(initial,{baseContextWindow:16384,maxPredict:3072}),16384);
 });
 
 test('fan-in accepts only proven model-prompt or deterministic APK learning application',()=>{
