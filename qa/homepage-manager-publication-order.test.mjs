@@ -463,9 +463,11 @@ test('Unity Web homepage links require a deployable manifest or verified Unity i
   assert.equal(display.staleSharedRobloxTargetHomepageLinkForbidden,true);
   assert.equal(display.playableWebCompanionButtonEnabled,true);
   assert.equal(display.playableWebCompanionButtonLabel,'웹 플레이');
-  assert.equal(display.playableWebCompanionSource,'COMPANY_RUNTIME_GAME_CATALOG');
+  assert.equal(display.playableWebCompanionSource,'ACTUAL_CANONICAL_WEB_ENTRY');
   assert.equal(display.playableWebCompanionRequiresPlayableAndArchive,true);
   assert.equal(display.playableWebCompanionRequiresExistingCanonicalIndex,true);
+  assert.equal(display.cardVisibilityRequiresRunnableTarget,true);
+  assert.equal(display.titleOnlyCardExposureForbidden,true);
   assert.equal(display.runtimeCatalogMirrorsToHomepageOnEverySuccessfulNonPrSync,true);
   assert.equal(display.mainCatalogMayNotOverrideFresherCompanyRuntime,true);
   assert.equal(display.runtimeCatalogMirrorMode,'RECONCILE_RUNTIME_STATE_ON_CANONICAL_MAIN_REGISTRY');
@@ -481,6 +483,9 @@ test('Unity Web homepage links require a deployable manifest or verified Unity i
   assert.equal(directiveDisplay.unityWebLegacyBuildCompatibility,true);
   assert.equal(directiveDisplay.playableWebCompanionButtonEnabled,true);
   assert.equal(directiveDisplay.playableWebCompanionButtonLabel,'웹 플레이');
+  assert.equal(directiveDisplay.playableWebCompanionSource,'ACTUAL_CANONICAL_WEB_ENTRY');
+  assert.equal(directiveDisplay.cardVisibilityRequiresRunnableTarget,true);
+  assert.equal(directiveDisplay.titleOnlyCardExposureForbidden,true);
   assert.equal(directiveDisplay.runtimeCatalogMirrorsToHomepageOnEverySuccessfulNonPrSync,true);
   assert.equal(directiveDisplay.runtimeCatalogMirrorMode,'RECONCILE_RUNTIME_STATE_ON_CANONICAL_MAIN_REGISTRY');
   assert.equal(directiveDisplay.rawRuntimeCatalogDirectCopyForbidden,true);
