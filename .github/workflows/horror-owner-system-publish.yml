@@ -12,6 +12,7 @@ on:
       - 'roblox-games/horror-escape-room/client/ManorLobby.client.luau'
       - 'qa/horror-manor.test.mjs'
       - 'qa/horror-manor-ui-harness.luau'
+      - 'tools/horror-manor-studio-review.mjs'
 permissions:
   contents: read
 concurrency:
@@ -85,6 +86,7 @@ jobs:
           $ErrorActionPreference='Stop'
           $out=Join-Path $env:RUNNER_TEMP 'midnight-manor-studio-review'
           New-Item -ItemType Directory -Force -Path $out | Out-Null
+          $env:MANOR_REVIEW_OUT=$out
           "MANOR_REVIEW_OUT=$out" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
           $studio=Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Roblox/Versions') -Directory |
             Sort-Object LastWriteTime -Descending |
