@@ -231,7 +231,64 @@
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false,
-    "studioQualityFailure": null
+    "studioQualityFailure": {
+      "sourceRevision": "dde4152f54fab44c91b3509ddc0628dbc6c4dcc8",
+      "artifactIdentity": "sha256:a7c9d96690fd1598545b104f65f0b46a62bd69a336a57dc3a7416a825e9415e0",
+      "authority": "roblox-official-studio-mcp-product-quality-failure",
+      "workflowRunId": 36865178723,
+      "testedAt": "2026-10-01T13:20:46.413Z",
+      "repairSurfaces": [
+        "MOBILE_UI",
+        "WORLD_GEOMETRY",
+        "MAP_ROUTEABILITY",
+        "ROBLOX_OBSERVED_INTERACTION",
+        "VISUAL_ASSET_LOADING"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "adaptive-ui-commercial-quality",
+          "repairSurface": "MOBILE_UI",
+          "priority": "HIGH",
+          "hint": "Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.",
+          "observed": "{\"offscreenButtons\":2,\"undersizedTouchButtons\":7,\"suboptimalTouchButtons\":0,\"textOverflowButtons\":0,\"overlapPairs\":0,\"largeOverlayCount\":0,\"largeBlockingOverlayCount\":0,\"largestOverlayCoverage\":0}"
+        },
+        {
+          "id": "adaptive-world-safety",
+          "repairSurface": "WORLD_GEOMETRY",
+          "priority": "CRITICAL",
+          "hint": "Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.",
+          "observed": "{\"boundsFinite\":true,\"collidablePartCount\":5,\"floorBelowPlayer\":true,\"floorSamples\":9,\"floorHits\":1,\"floorCoveragePass\":false,\"routeSamples\":1,\"routeSuccess\":1,\"routeCoveragePass\":true,\"spawnThreatDistance\":-1,\"spawnOverlapSafe\":true}"
+        },
+        {
+          "id": "adaptive-map-route-coverage",
+          "repairSurface": "MAP_ROUTEABILITY",
+          "priority": "CRITICAL",
+          "hint": "Repair unreachable/stuck/dead-zone routes discovered during Studio corner-direction traversal.",
+          "observed": "{\"routeAttemptCount\":1,\"routePassCount\":0,\"routeRequired\":1,\"routes\":[{\"id\":\"map-route-unreachable\",\"ok\":false,\"moved\":0,\"fall\":0,\"floorBelow\":false}]}"
+        },
+        {
+          "id": "observed-action-20f70b9a6cc84d436048",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-20f70b9a6cc84d436048\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"map-route-unreachable\",\"targetIdentity\":\"map-route-unreachable\",\"actionType\":\"mcp-map-route-audit\",\"effectRequired\":false,\"attempts\":1}"
+        },
+        {
+          "id": "observed-action-cc7378b4b159247bc4b8",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-cc7378b4b159247bc4b8\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"ui-discovered-ScopeAction4\",\"targetIdentity\":\"ApprovedScopeHud.Root.ApprovedActions.ScopeAction4\",\"actionType\":\"mcp-ui-exploration\",\"effectRequired\":true,\"attempts\":1}"
+        },
+        {
+          "id": "visual-asset-load-integrity",
+          "repairSurface": "VISUAL_ASSET_LOADING",
+          "priority": "HIGH",
+          "hint": "Repair unavailable or unauthorized Roblox mesh, texture, image, or animation assets observed during Studio play.",
+          "observed": "{\"assetErrors\":[\"Failed to load animation with sanitized ID rbxassetid://114302219876492: Animation failed to load, assetId: https://assetdelivery.roblox.com/v1/asset?id=114302219876492&serverplaceid=0 Failed to load animation with sanitized ID rbxassetid://114302219876492: Animation failed to load, assetId: https://assetdelivery.roblox.com/v1/asset?id=114302219876492&serverplaceid=0 Failed to load animation with sanitized ID rbxassetid://114302219876492: Animation failed to load, assetId: https://assetdelivery.\"]}"
+        }
+      ]
+    }
   },
   "qualityGapMap": [
     {
