@@ -264,6 +264,33 @@ test('web candidate release blocks inline script syntax and generic storage-cont
 });
 
 
+test('Unity candidate release routes WebGL and native execution surfaces independently',()=>{
+  assert.match(releaseWorkflow,/execution_surface: \$\{\{ steps\.gate\.outputs\.execution_surface \}\}/);
+  assert.match(releaseWorkflow,/const executionSurface=String\(m\.executionSurface\|\|''\)\.trim\(\)\.toUpperCase\(\)/);
+  assert.match(releaseWorkflow,/target==='unity' && !\['UNITY_WEB','UNITY_NATIVE'\]\.includes\(executionSurface\)/);
+  assert.match(releaseWorkflow,/decision=target==='unity'&&executionSurface==='UNITY_WEB'\?'unity-web':target/);
+
+  const webStart=releaseWorkflow.indexOf('  unity-web-build:');
+  const nativeStart=releaseWorkflow.indexOf('\n  unity-build:',webStart);
+  const robloxStart=releaseWorkflow.indexOf('\n  roblox-package:',nativeStart);
+  assert.ok(webStart>=0&&nativeStart>webStart&&robloxStart>nativeStart);
+  const web=releaseWorkflow.slice(webStart,nativeStart);
+  const native=releaseWorkflow.slice(nativeStart,robloxStart);
+  assert.match(web,/needs\.inspect\.outputs\.decision == 'unity-web'/);
+  assert.match(web,/unity-web-first-stage-build\.yml/);
+  assert.match(web,/-f source_commit="\$CANDIDATE_SHA"/);
+  assert.match(web,/-f base_main_sha="\$BASE_SHA"/);
+  assert.match(web,/-f publish_to_main=true/);
+  assert.match(web,/-f vibe2_task_id="\$TASK_ID"/);
+  assert.match(web,/VIBE2_CANDIDATE_EXECUTION_SURFACE=UNITY_WEB/);
+  assert.doesNotMatch(web,/unity-hybrid-android-build\.yml|APK QA/);
+
+  assert.match(native,/needs\.inspect\.outputs\.decision == 'unity'/);
+  assert.match(native,/Dispatch candidate APK QA/);
+  assert.match(native,/unity-hybrid-android-build\.yml/);
+  assert.doesNotMatch(native,/unity-web-first-stage-build\.yml/);
+});
+
 test('Unity dispatch failure recovery emits QUEUE_UPDATED without undefined result state',()=>{
   const start=releaseWorkflow.indexOf('  unity-build:');
   const end=releaseWorkflow.indexOf('\n  roblox-package:',start);
@@ -344,23 +371,59 @@ test('platform review cannot claim native runtime F9 before platform verificatio
   assert.match(dispatch,/PLATFORM_PUBLISH_OR_DEPLOY_DISPATCHED=/);
 });
 
-test('Web requires F0-F9 fan-in proof before deploy and immediately refills regardless deploy outcome',()=>{
+test('Web requires F0-F9 proof, mandatory deployment, then resumes perpetual BUILD_UP',()=>{
   const fanInReview=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
   assert.match(fanInReview,/evidence\.add\('web-f0-f9-verified'\)/);
   assert.match(fanInReview,/evidence\.add\('web-f9-verified'\)/);
   assert.match(fanInReview,/if\(platformTarget==='web'\)\{[\s\S]*status:'verified'[\s\S]*lastOutcome:'PASS'/);
   assert.match(releaseWorkflow,/target!==\'web\'\|\|\([\s\S]*evidence\.includes\('web-f0-f9-verified'\)[\s\S]*&&evidence\.includes\('web-f9-verified'\)[\s\S]*\)/);
   assert.match(releaseWorkflow,/const publicationPending=task[\s\S]*task\.status==='verified'[\s\S]*web-publish-after-f9-required/);
-  assert.match(workflow,/VIBE2_RELEASE_DISPATCH_RETRY=/);
-  assert.match(workflow,/PLATFORM_PUBLISH_DISPATCH_FAILURE_BLOCKS_NEXT_EVOLUTION=NO/);
+
+  const dispatch=workflow.slice(
+    workflow.indexOf('      - name: Dispatch reviewed winner candidates to release gate'),
+    workflow.indexOf('      - name: Dispatch verified system architecture candidates')
+  );
+  assert.match(dispatch,/VIBE2_RELEASE_DISPATCH_RETRY=/);
+  assert.match(dispatch,/if \[ "\$target" = web \]; then[\s\S]*PLATFORM_PUBLISH_DISPATCH_FAILURE_BLOCKS_NEXT_EVOLUTION=YES:WEB:/);
+  assert.match(dispatch,/WEB_SAME_VERIFIED_CANDIDATE_DISPATCH_RETRY_REQUIRED=/);
+
   const start=releaseWorkflow.indexOf('  web-release:');
-  const end=releaseWorkflow.indexOf('\n  unity-build:',start);
+  const end=releaseWorkflow.indexOf('\n  unity-web-build:',start);
+  assert.ok(start>=0&&end>start);
   const section=releaseWorkflow.slice(start,end);
   assert.match(section,/WEB_F9_VERIFIED=YES/);
-  assert.match(section,/WEB_DEPLOY_ATTEMPTED=/);
+  assert.match(section,/WEB_DEPLOYMENT_ELIGIBILITY=PLAYABLE_F0_F9_PLUS_STATIC_SAVE_QA/);
+  assert.match(section,/WEB_NATIVE_HOMEPAGE_READINESS_REQUIRED=NO/);
+  assert.match(section,/WEB_PLAYABLE_VERIFIED_MUST_DEPLOY=YES/);
+  assert.doesNotMatch(section,/evaluateInternalRelease/);
+  assert.doesNotMatch(section,/DEVELOPMENT_VERIFIED/);
+  assert.match(section,/result=DEPLOY_RETRY_REQUIRED/);
+  assert.match(section,/WEB_PUBLICATION_OUTCOME_BLOCKS_EVOLUTION=YES/);
+  assert.match(section,/WEB_SAME_VERIFIED_CANDIDATE_RETRY=YES/);
+  assert.match(section,/vibe2-queue-control\.mjs pass[\s\S]*web-cloudflare-deployment-pass/);
   assert.match(section,/WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED=/);
   assert.match(section,/PLATFORM_NEXT_EVOLUTION_CYCLE_DISPATCHED=WEB:/);
-  assert.match(section,/WEB_PUBLICATION_OUTCOME_BLOCKS_EVOLUTION=NO/);
+  assert.match(section,/VIBE2_WEB_TASK_FINAL_PASS=EXACT_SOURCE_RUNTIME_AND_DEPLOYMENT/);
+
+  const passAt=section.indexOf('if [ "$result" = PASS ]; then\n            echo "WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED=');
+  const deployRetryAt=section.indexOf('if [ "$result" = DEPLOY_RETRY_REQUIRED ]; then');
+  assert.ok(deployRetryAt>=0&&passAt>deployRetryAt);
+});
+
+test('playable Web deployment policy has no native readiness gate and deployment precedes next BUILD_UP',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const deployment=policy.changeRecord?.playableWebMandatoryDeployment20261002;
+  const loop=policy.continuousGameplaySystemEvolutionContract?.webPostDeploymentPerpetualBuildUp;
+  assert.equal(deployment?.nativeHomepageReadinessRequired,false);
+  assert.equal(deployment?.cloudflareMainRequiredBeforeVibePass,true);
+  assert.equal(deployment?.nextBuildUpBeforeDeploymentSuccessForbidden,true);
+  assert.equal(deployment?.postDeployment?.perpetualBuildUp,true);
+  assert.equal(deployment?.postDeployment?.generationLimit,null);
+  assert.equal(deployment?.postDeployment?.newIdeaRequiredEveryCycle,true);
+  assert.equal(loop?.enabled,true);
+  assert.equal(loop?.deploymentSuccessNextAction,'IMMEDIATE_NEXT_BUILD_UP_GENERATION');
+  assert.equal(loop?.generationLimit,null);
+  assert.equal(loop?.terminalCompletionStateForbidden,true);
 });
 
 test('Roblox generic candidate release cannot publish canonical Open Cloud before native F9',()=>{
