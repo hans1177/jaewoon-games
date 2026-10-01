@@ -380,6 +380,9 @@ function matchedForType(selector={},type='',manifest={},target=''){
         sameGameExistingRoblox:asset.sameGameExistingRoblox===true,
         robloxAssetId:clean(asset.robloxAssetId)||null,
         sourceHash:clean(asset.sourceHash||asset.contentHash||asset.sha256)||null,
+        tags:freezeList(unique([...(Array.isArray(asset.tags)?asset.tags:[]),clean(asset.family),clean(asset.category),clean(asset.subfamily)].map(clean).filter(Boolean))),
+        family:clean(asset.family||asset.category)||null,
+        subfamily:clean(asset.subfamily)||null,
         platformVariants:freeze(asset.platformVariants&&typeof asset.platformVariants==='object'?asset.platformVariants:{}),
         productionVerified:asset.productionVerified===true||asset.verifiedCompanyReusable===true,
         retargetable:asset.retargetable===true,
@@ -508,26 +511,44 @@ function directAuthoringFor(target='',type=''){
   return freezeList([]);
 }
 
-function assetApplyFirstCandidate(asset={},target=''){
+function assetApplyFirstCandidate(asset={},target='',binding={}){
   const platform=clean(target).toLowerCase();
   const variant=asset?.platformVariants?.[platform.toUpperCase()]||asset?.platformVariants?.[platform]||null;
   const sameGame=asset.sameGameExistingRoblox===true&&platform==='roblox';
   const hasNativeReference=Boolean(sameGame&&(asset.path||asset.robloxAssetId)||variant?.path||asset.path||asset.robloxAssetId);
-  const mode=sameGame?'PATCH_EXISTING_GAME_BINDING':asset.companyVerified===true?'IMPORT_VERIFIED_COMPANY_NATIVE_VARIANT':'IMPORT_EXISTING_REPOSITORY_ASSET';
-  const bindingCost=sameGame?0:asset.companyVerified===true?1:2;
+  const nativeReady=Boolean(sameGame||variant?.path||asset.productionVerified===true);
+  const adaptable=Boolean(!nativeReady&&hasNativeReference&&(asset.retargetable===true||asset.rigType||asset.sourceHash));
+  const lane=nativeReady?(sameGame?'A_SAME_GAME_BOUND':'B_NATIVE_READY'):adaptable?'C_MINIMAL_ADAPT':'D_AUTHORING_REQUIRED';
+  const bindingCost=lane==='A_SAME_GAME_BOUND'?0:lane==='B_NATIVE_READY'?1:lane==='C_MINIMAL_ADAPT'?2:3;
+  const requestedType=clean(binding?.type).toLowerCase();
+  const roleTokens=unique([requestedType,...(binding?.targetStates||[]).map(clean)]).map(value=>value.toLowerCase()).filter(Boolean);
+  const tags=(asset.tags||[]).map(value=>clean(value).toLowerCase());
+  const roleMatches=roleTokens.filter(token=>tags.some(tag=>tag.includes(token)||token.includes(tag))).length;
+  const compatibilityScore=
+    (lane==='A_SAME_GAME_BOUND'?50:lane==='B_NATIVE_READY'?40:lane==='C_MINIMAL_ADAPT'?25:0)
+    +(asset.productionVerified===true?20:0)
+    +(asset.companyVerified===true?8:0)
+    +Math.min(12,roleMatches*4)
+    +(asset.sourceHash?5:0)
+    +(asset.retargetable===true?5:0);
   return freeze({
     id:asset.id,
     sourceTier:asset.sourceTier,
-    mode,
+    lane,
+    mode:lane==='A_SAME_GAME_BOUND'?'PATCH_EXISTING_GAME_BINDING':lane==='B_NATIVE_READY'?'IMPORT_NATIVE_READY_ASSET':lane==='C_MINIMAL_ADAPT'?'ADAPT_THEN_APPLY':'AUTHORING_REQUIRED',
     bindingCost,
+    compatibilityScore,
+    roleMatches,
     path:asset.path||variant?.path||null,
     robloxAssetId:asset.robloxAssetId||null,
     sourceHash:asset.sourceHash||null,
     productionVerified:asset.productionVerified===true,
-    ready:Boolean(hasNativeReference&&asset.downloaded!==false),
+    ready:Boolean(hasNativeReference&&asset.downloaded!==false&&lane!=='D_AUTHORING_REQUIRED'),
     adaptationAllowed:true,
+    adaptationAxes:freezeList(lane==='C_MINIMAL_ADAPT'?['RIG_RETARGET','MATERIAL_REMAP','SOCKET_REBIND','SCALE_AXIS_PIVOT_NORMALIZE','LOD_GENERATION']:[]),
     qualityPassRequiredBeforeKeep:true,
-    runtimeCheckRequiredAfterApply:true
+    runtimeCheckRequiredAfterApply:true,
+    derivedRepairAxes:freezeList(['SILHOUETTE','PROPORTION','MATERIAL','RIG','SOCKET','MOTION','LOD','UI_STATE'])
   });
 }
 
@@ -540,7 +561,7 @@ function decisionFor(selector={},target='',binding={},manifest={}){
   const externalCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='LICENSE_VERIFIED_EXTERNAL_ASSET'));
   const reuseCandidates=freezeList([...companyCandidates,...sameGameCandidates,...repositoryCandidates]);
   const directAuthoring=directAuthoringFor(target,type);
-  const applyFirstCandidates=freezeList(reuseCandidates.map(asset=>assetApplyFirstCandidate(asset,target)).filter(row=>row.ready).sort((a,b)=>a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
+  const applyFirstCandidates=freezeList(reuseCandidates.map(asset=>assetApplyFirstCandidate(asset,target,binding)).filter(row=>row.ready).sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
   const decisionOrder=unique([
     'COMPARE_TARGET_GAME_QUALITY',
     applyFirstCandidates.length?'APPLY_READY_EXISTING_ASSET_FIRST':'',
@@ -577,7 +598,9 @@ function decisionFor(selector={},target='',binding={},manifest={}){
     applyFirst:freeze({
       enabled:applyFirstCandidates.length>0,
       candidates:applyFirstCandidates,
-      sequence:freezeList(['COMPARE_READY_CANDIDATES_IN_TARGET_CONTEXT','APPLY_BEST_READY_CANDIDATE','CHECK_ACTUAL_GAME_PRESENTATION','DERIVE_ONLY_FAILED_REGIONS_IF_NEEDED','REAPPLY_DERIVED_VARIANT','AUTHOR_NEW_ONLY_IF_READY_ASSETS_CANNOT_REACH_TARGET']),
+      preferredCandidateId:applyFirstCandidates[0]?.id||null,
+      lanes:freezeList(['A_SAME_GAME_BOUND','B_NATIVE_READY','C_MINIMAL_ADAPT','D_AUTHORING_REQUIRED']),
+      sequence:freezeList(['SELECT_LOWEST_COST_COMPATIBLE_LANE','APPLY_BEST_READY_CANDIDATE','CHECK_ACTUAL_GAME_PRESENTATION','DERIVE_ONLY_FAILED_AXES_IF_NEEDED','REAPPLY_DERIVED_VARIANT','AUTHOR_NEW_ONLY_IF_READY_ASSETS_CANNOT_REACH_TARGET']),
       keepCondition:'TARGET_QUALITY_AND_RUNTIME_BINDING_PASS',
       deriveBeforeReplace:true,
       fullReauthorOnlyAfterReusableCandidatesExhausted:true,
