@@ -193,7 +193,7 @@ test('motion planning reuses company clips per state and does not invent coverag
     assert.equal(motion.qualitySelection.selectedAssetId,null);
     assert.equal(motion.qualitySelection.selectionState,'DOWNLOAD_REQUIRED_BEFORE_INTERNAL_COMPARISON');
     assert.equal(motion.postDownloadComparison.required,true);
-    assert.deepEqual(motion.postDownloadComparison.internalBaselineCandidateIds,['owned-motion']);
+    assert.deepEqual(motion.postDownloadComparison.internalBaselineCandidateIds,['owned-motion','unknown-clips']);
     assert.deepEqual(motion.postDownloadComparison.pendingDownloadCandidateIds,['external-motion']);
     assert.ok(motion.qualitySelection.compareCandidateIds.includes('external-motion'));
     assert.ok(!motion.qualitySelection.compareCandidateIds.includes('reference-motion'));
