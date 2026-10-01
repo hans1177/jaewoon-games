@@ -18,10 +18,16 @@ import {
   WEAPON_COMBAT_MOTION_PACKS,
   UNARMED_MARTIAL_ARTS_STYLES,
   UNARMED_MARTIAL_MECHANICS,
+  HERO_STANDARD_RIG_TARGET,
+  HERO_STANDARD_RIG_MOTION_PACK,
+  HERO_SURVIVAL_WEAPON_FAMILIES,
   SURVIVAL_PLAYER_MOTION_PACK,
+  MOUNT_RIDER_MOTION_PACKS,
   SURVIVAL_WILDLIFE_MOTION_PACKS,
   createDuelCombatMotionLoadout,
   createDuelCombatAuthoringRecipe,
+  createHeroStandardMotionProfile,
+  createMountRiderMotionProfile,
   createSurvivalPlayerMotionProfile,
   createSurvivalWildlifeMotionProfile,
   createMotionDNA,
@@ -284,6 +290,45 @@ test('motion director exposes combat loadout as a composable presentation system
   assert.ok(plan.combatLoadout.groups.gapCloser.includes('DUAL_BLADE_DASH_CROSS'));
   assert.ok(plan.systems.includes('DUEL_COMBAT_MOTION_KIT'));
   assert.equal(plan.gameplayAuthority,false);
+});
+
+test('shared hero standard rig exposes exactly forty core motions and survival weapon families',()=>{
+  const ids=Object.values(HERO_STANDARD_RIG_MOTION_PACK).flat();
+  assert.equal(HERO_STANDARD_RIG_TARGET,'HIGH_END_SHARED_HERO_STANDARD_RIG');
+  assert.equal(ids.length,40);
+  assert.equal(new Set(ids).size,40);
+  assert.deepEqual(HERO_SURVIVAL_WEAPON_FAMILIES,['ONE_HAND_SWORD','SPEAR','AXE','HAMMER','DAGGER','BOW']);
+  for(const required of ['HERO_IDLE_RELAXED','HERO_SPRINT','HERO_DODGE_BACK','HERO_ATTACK_4','HERO_PARRY','HERO_HIT_BACK','HERO_SPAWN']){
+    assert.ok(ids.includes(required),required);
+  }
+});
+
+test('hero standard profile composes survival weapon and mount motion without taking gameplay authority',()=>{
+  const hero=createHeroStandardMotionProfile({platform:'ROBLOX',weaponFamily:'SPEAR',includeSurvival:true,mountType:'WOLF'});
+  assert.equal(hero.baseMotionCount,40);
+  assert.equal(hero.weaponFamily,'SPEAR');
+  assert.ok(hero.survivalMotionIds.includes('SURVIVAL_CRAFT'));
+  assert.ok(hero.survivalMotionIds.includes('SURVIVAL_BANDAGE'));
+  assert.equal(hero.mountProfile.mountType,'WOLF');
+  assert.equal(hero.quality.rootOnlyVisibleMotionForbidden,true);
+  assert.equal(hero.directCrossPlatformBinaryReuseForbidden,true);
+  assert.equal(hero.gameplayAuthority,false);
+});
+
+test('horse and wolf mount rider packs preserve articulated pair contact and mounted combat',()=>{
+  assert.equal(MOUNT_RIDER_MOTION_PACKS.HORSE.pair.length,12);
+  assert.equal(MOUNT_RIDER_MOTION_PACKS.WOLF.pair.length,12);
+  assert.ok(MOUNT_RIDER_MOTION_PACKS.HORSE.signature.includes('HORSE_REAR'));
+  assert.ok(MOUNT_RIDER_MOTION_PACKS.WOLF.signature.includes('WOLF_POUNCE'));
+  assert.deepEqual(MOUNT_RIDER_MOTION_PACKS.mountedCombat,['MOUNTED_SWORD_ATTACK','MOUNTED_SPEAR_THRUST','MOUNTED_BOW_SHOT']);
+
+  const horse=createMountRiderMotionProfile({mountType:'HORSE',platform:'UNITY'});
+  assert.equal(horse.riderContact.pelvisFollowsMountMass,true);
+  assert.equal(horse.riderContact.feetMaintainStirrupOrBodyContact,true);
+  assert.equal(horse.mountMotion.riderMayNotRemainRigidWhileMountMoves,true);
+  assert.equal(horse.pairAlignment.contactPointsRequired,true);
+  assert.equal(horse.gameplayMovementAuthority,false);
+  assert.equal(horse.nativeRuntimeVerificationRequired,true);
 });
 
 test('survival player motion profile covers locomotion tools interactions and reactions',()=>{
