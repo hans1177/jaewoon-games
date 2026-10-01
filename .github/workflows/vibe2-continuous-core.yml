@@ -70,13 +70,10 @@ permissions:
   contents: write
   actions: write
 
-# Coalesce only stateless fan-in refill events by execution lane.
-# Result-bearing neuron completions stay run-unique so no completion artifact can be dropped.
-# GAME_PRIMARY must never wait behind recovery-fast, learning-idle or control-fast refill work.
+# Only true singletons stay serialized. Fan-in refills and result-bearing runs are run-unique;
+# shared queue writes already use optimistic fetch/reset/replan/push retries.
 concurrency:
-  # Only a direct main push without an explicit lane uses the disposable main-wake singleton.
-  # Learning uses one shared execution group; other explicit lanes remain run-scoped.
-  group: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && 'vibe2-learning-single-worker' || github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-refill-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || github.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake' || github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && 'vibe2-main-push-game-primary-wake' || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
+  group: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && 'vibe2-learning-single-worker' || github.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake' || github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && 'vibe2-main-push-game-primary-wake' || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
   cancel-in-progress: false
 
 env:
@@ -106,11 +103,7 @@ jobs:
     # while ubuntu-latest game workers were actively running. Push/manual reserve stays on slim.
     runs-on: ${{ (github.event_name == 'repository_dispatch' && (github.event.action == 'vibe2-fanin-refill' || github.event.action == 'vibe2-neuron-complete') && 'ubuntu-latest' || 'ubuntu-slim') }}
     timeout-minutes: 7
-    # 같은 레인의 상태 없는 보충 요청만 예약 단계에서 합친다.
-    # 완료 결과 전달과 게임 작업은 실행별로 독립 진행한다.
-    concurrency:
-      group: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-refill-reserve-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || format('vibe2-reserve-{0}', github.run_id) }}
-      cancel-in-progress: false
+    # Shared queue writes are conflict-safe through optimistic retry; do not serialize reserve jobs.
     outputs:
       worker_matrix: ${{ steps.batch.outputs.worker_matrix }}
       worker_count: ${{ steps.batch.outputs.worker_count }}
