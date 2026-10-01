@@ -27,7 +27,7 @@ import {
   verifyVibeWorkerSynchronization,
   runQueueCommand
 } from '../tools/vibe2-queue-control.mjs';
-import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
+import { createVibeContinuousQueue, selectVibeQueueBatch, DEFAULT_MAX_CONCURRENT_TASKS, EXTERNAL_MATRIX_BATCH_MAX } from '../assets/vibe-continuous-queue.js';
 
 const continuousWorkflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 
@@ -53,7 +53,7 @@ test('shared queue retains first and latest shadow observations without growing 
   assert.deepEqual(createVibeContinuousQueue(first).tasks[0].evidence,retained);
 });
 
-test('legacy Roblox roots cannot reserve overlapping source files in one wave',()=>{
+test('legacy Roblox roots cannot reserve overlapping source files in one parallel reservation',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[
     {id:'release-focus',goal:'Repair shared Roblox client',gameId:'same',target:'roblox',department:'development',type:'implementation',status:'queued',
       sourceRoot:'roblox-games/same',responsibleFiles:['roblox-games/same/client/Game.client.luau'],releaseState:'release-confirmed',priority:'high'},
@@ -288,7 +288,7 @@ test('learning-idle lane reservation uses its own cap instead of game adaptive c
   assert.equal(result.tasks.some(task=>task.id==='game'),false);
 });
 
-test('game-primary keeps adaptive telemetry but reserves primary work to provider boundary',()=>{
+test('game-primary has no internal global cap while each GitHub matrix stays a transport partition',()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-game-primary-summary-'));
   const queueFile=path.join(dir,'queue.json');
   const controlFile=path.join(dir,'control.json');
@@ -298,35 +298,43 @@ test('game-primary keeps adaptive telemetry but reserves primary work to provide
     goal:'running',status:'running',sourceRoot:`web-games/running-${i}`,responsibleFiles:['index.html'],
     reservationId:'prior:1',reservationRunId:'prior',reservedAt:new Date().toISOString()
   }));
-  const queued=Array.from({length:20},(_,i)=>({
+  const queued=Array.from({length:300},(_,i)=>({
     id:`queued-${i}`,gameId:`queued-${i}`,target:'web',department:'development',type:'implementation',
     goal:'queued',status:'queued',sourceRoot:`web-games/queued-${i}`,responsibleFiles:['index.html']
   }));
   fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:256,tasks:[...running,...queued]},null,2));
   fs.writeFileSync(controlFile,JSON.stringify({version:4,currentMax:20,lastDecision:'HOLD'},null,2));
 
-  const summary=runQueueCommand({command:'summary',queue:queueFile,control:controlFile,lane:'game-primary',max:'256',min:'20'});
-  assert.equal(summary.summary.persistentMaxConcurrentTasks,256);
-  assert.equal(summary.adaptiveMaxConcurrentTasks,20);
-  assert.equal(summary.reservationMaxConcurrentTasks,256);
-  assert.equal(summary.summary.requestedMaxConcurrentTasks,256);
-  assert.equal(summary.summary.effectiveMaxConcurrentTasks,256);
-  assert.equal(summary.summary.freeSlots,249);
+  const summary=runQueueCommand({command:'summary',queue:queueFile,control:controlFile,lane:'game-primary',max:String(DEFAULT_MAX_CONCURRENT_TASKS),min:'20'});
+  assert.equal(summary.summary.persistentMaxConcurrentTasks,DEFAULT_MAX_CONCURRENT_TASKS);
+  assert.equal(summary.summary.requestedMaxConcurrentTasks,DEFAULT_MAX_CONCURRENT_TASKS);
+  assert.equal(summary.summary.effectiveMaxConcurrentTasks,DEFAULT_MAX_CONCURRENT_TASKS);
+  assert.equal(summary.summary.freeSlots,DEFAULT_MAX_CONCURRENT_TASKS-7);
 
   const reserved=runQueueCommand({
-    command:'reserve-batch',queue:queueFile,control:controlFile,lane:'game-primary',max:'256',min:'20',
+    command:'reserve-batch',queue:queueFile,control:controlFile,lane:'game-primary',max:String(DEFAULT_MAX_CONCURRENT_TASKS),min:'20',
+    'batch-max':String(EXTERNAL_MATRIX_BATCH_MAX),
     'reservation-id':'current:1','reservation-run':'current','reserved-at':'2026-09-20T10:01:00Z',output:batchFile
   });
   const batch=JSON.parse(fs.readFileSync(batchFile,'utf8'));
-  assert.equal(reserved.adaptiveMaxConcurrentTasks,20);
-  assert.equal(reserved.reservationMaxConcurrentTasks,256);
-  assert.equal(batch.scheduler.persistentMaxConcurrentTasks,256);
-  assert.equal(batch.scheduler.adaptiveMaxConcurrentTasks,20);
-  assert.equal(batch.scheduler.effectiveMaxConcurrentTasks,256);
-  assert.equal(batch.scheduler.freeSlotsBeforeReservation,249);
-  assert.equal(reserved.tasks.length,20);
-  assert.equal(reserved.summary.effectiveMaxConcurrentTasks,256);
-  assert.equal(reserved.summary.freeSlots,229);
+  assert.equal(reserved.reservationMaxConcurrentTasks,DEFAULT_MAX_CONCURRENT_TASKS);
+  assert.equal(reserved.externalBatchLimit,EXTERNAL_MATRIX_BATCH_MAX);
+  assert.equal(reserved.globalInternalParallelCap,null);
+  assert.equal(batch.scheduler.persistentMaxConcurrentTasks,DEFAULT_MAX_CONCURRENT_TASKS);
+  assert.equal(batch.scheduler.externalBatchLimit,EXTERNAL_MATRIX_BATCH_MAX);
+  assert.equal(batch.scheduler.globalInternalParallelCap,null);
+  assert.equal(batch.scheduler.batchTruncated,true);
+  assert.equal(batch.scheduler.remainingRunnableAfterBatchLimit,44);
+  assert.equal(reserved.tasks.length,EXTERNAL_MATRIX_BATCH_MAX);
+  assert.equal(reserved.summary.effectiveMaxConcurrentTasks,DEFAULT_MAX_CONCURRENT_TASKS);
+});
+
+test('continuous core has no active wave leader or pressure-cohort completion gate',()=>{
+  assert.doesNotMatch(continuousWorkflow,/WAVE_LEADER|wave-leader|NEXT_EXTERNAL_MATRIX_WINDOW|NEW_WAVE_OR_IDLE_REFILL/);
+  assert.doesNotMatch(continuousWorkflow,/VIBE2_PRESSURE_REFILL_LEADER/);
+  assert.match(continuousWorkflow,/VIBE2_ATOMIC_NEURON_COMPLETION_MODE=INDEPENDENT_IMMEDIATE_FANIN/);
+  assert.match(continuousWorkflow,/Continue independent parallel reservation/);
+  assert.match(continuousWorkflow,/VIBE2_INDEPENDENT_PARALLEL_RESERVATION_CONTINUE=DISPATCHED/);
 });
 
 test('auxiliary fan-in never mutates game-primary adaptive control',()=>{
@@ -510,7 +518,7 @@ test('system steward protection still preempts ordinary development implementati
   assert.equal(selectVibeQueueBatch(queue,{maxConcurrentTasks:1}).selected[0].id,'steward-repair');
 });
 
-test('game-primary reserve lane excludes recovery control and learning tasks from the 20-wave budget',()=>{
+test('game-primary reservation excludes recovery control and learning tasks from its independent execution lane',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[
     {id:'control-fast',gameId:'system-steward',target:'web',department:'system-supervision',type:'research',goal:'repair control',status:'queued',priority:'critical',systemSteward:true},
     {id:'learning-idle',gameId:'learning',target:'web',department:'development',type:'research',goal:'practice',status:'queued',priority:'low',evidence:['learning-practice-only']},
@@ -530,7 +538,7 @@ test('recovery-fast lane runs disjoint system work in parallel while responsible
   assert.ok(start>=0&&end>start);
   const recoveryBlock=runner.slice(start,end);
   assert.match(recoveryBlock,/execution_lane: recovery-fast/);
-  assert.match(recoveryBlock,/lane_max: '5'/);
+  assert.match(recoveryBlock,/lane_max: '9007199254740991'/);
 
   const tasks=[
     ['sys-a','tools/a.mjs'],
@@ -542,7 +550,7 @@ test('recovery-fast lane runs disjoint system work in parallel while responsible
     goal:'repair '+id,status:'queued',priority:'critical',systemSteward:true,sourceRoot:'.',responsibleFiles:[file]
   }));
   const queue=createVibeContinuousQueue({maxConcurrentTasks:256,tasks});
-  const bounded=selectVibeQueueBatch(queue,{maxConcurrentTasks:5,lane:'recovery-fast'});
+  const bounded=selectVibeQueueBatch(queue,{maxConcurrentTasks:DEFAULT_MAX_CONCURRENT_TASKS,lane:'recovery-fast'});
   assert.equal(bounded.selected.length,3);
   assert.deepEqual(new Set(bounded.selected.map(task=>task.id)),new Set(['sys-a','sys-b','sys-c']));
   assert.ok(bounded.selected.every(task=>task.executionLane==='RECOVERY_FAST'));
@@ -1803,7 +1811,7 @@ test('blank control queue is canonically recovered before queue commands',()=>{
   assert.equal(result.queueStateRecovered,true);
   const repaired=JSON.parse(fs.readFileSync(queueFile,'utf8'));
   assert.equal(repaired.version,5);
-  assert.equal(repaired.maxConcurrentTasks,256);
+  assert.equal(repaired.maxConcurrentTasks,DEFAULT_MAX_CONCURRENT_TASKS);
   assert.deepEqual(repaired.tasks,[]);
 });
 
