@@ -869,6 +869,8 @@ test('24H safety-net refills free game slots while preserving responsible-file c
   assert(safetyNetWorkflow.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '256'"));
   assert(safetyNetWorkflow.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '30'"));
   assert(safetyNetWorkflow.includes("VIBE2_RUNNER_PRESSURE_DISPATCH_THRESHOLD: '4'"));
+  assert(safetyNetWorkflow.includes("VIBE2_RELEASE_RECOVERY_BATCH_MAX: '2'"));
+  assert(safetyNetWorkflow.includes('VIBE2_RELEASE_RECOVERY_BATCH_LIMIT='));
   assert(safetyNetWorkflow.includes('VIBE2_24H_RUNNER_PRESSURE_THRESHOLD='));
   assert(safetyNetWorkflow.includes('const controlTarget=Math.max(adaptiveMin,Number(control.currentMax||baselineTarget));'));
   assert(safetyNetWorkflow.includes('const effectiveMax=configuredMax;'));
@@ -1189,6 +1191,8 @@ test('fan-in defers candidate release dispatch while the GitHub runner queue is 
   const block=workflow.slice(start,end);
   assert.match(block,/VIBE2_RELEASE_DISPATCH_QUEUE_PRESSURE=/);
   assert.match(block,/VIBE2_RELEASE_DISPATCH_QUEUE_THRESHOLD/);
+  assert.match(block,/VIBE2_NATIVE_RELEASE_DISPATCH_BATCH_MAX/);
+  assert.match(block,/VIBE2_NATIVE_RELEASE_DISPATCH=DEFERRED_BATCH_LIMIT/);
   assert.match(block,/VIBE2_RELEASE_DISPATCH=DEFERRED_TO_24H_RECOVERY_RUNNER_PRESSURE/);
   assert.match(block,/actions\/workflows\/vibe2-candidate-release\.yml\/dispatches/);
 });
