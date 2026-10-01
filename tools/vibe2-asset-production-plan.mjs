@@ -531,6 +531,27 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
     +Math.min(12,roleMatches*4)
     +(asset.sourceHash?5:0)
     +(asset.retargetable===true?5:0);
+  const qualityAxes=/character|player|npc/i.test(requestedType)
+    ?['SILHOUETTE','PROPORTION','ANATOMY','FACE_HANDS_FEET','CLOTHING_EQUIPMENT_FIT','MATERIAL','RIG','SOCKET','MOTION','SECONDARY_MOTION','LOD']
+    :/enemy|boss|creature/i.test(requestedType)
+      ?['SPECIES_SILHOUETTE','BODY_PLAN','HEAD_MOUTH_EYES','LIMB_APPENDAGE_STRUCTURE','SURFACE_MATERIAL','RIG','ATTACK_CONTACT','LOCOMOTION','HIT_DEATH_MOTION','LOD']
+      :/background|environment/i.test(requestedType)
+        ?['MACRO_FORM','LANDMARK','ROUTE_READABILITY','STRUCTURAL_DENSITY','VEGETATION','FUNCTIONAL_PROPS','MATERIAL_HISTORY','AMBIENT_MOTION','STREAMING_LOD']
+        :/item|weapon|prop/i.test(requestedType)
+          ?['PROFILE','PROPORTION','PART_CONSTRUCTION','GRIP_PIVOT','MATERIAL','FASTENERS','CONTACT','WEAR','LOD']
+          :/ui/i.test(requestedType)
+            ?['INFORMATION_HIERARCHY','SHAPE_LANGUAGE','ICON_SILHOUETTE','TYPOGRAPHY_SPACING','MATERIAL_DEPTH','STATE_VARIANTS','TOUCH_FEEDBACK','SMALL_SIZE_READABILITY']
+            :/animation|motion/i.test(requestedType)
+              ?['POSE_IDENTITY','WEIGHT_TRANSFER','CONTACT','ROOT_MOTION','TRANSITION','INTERRUPT','SECONDARY_MOTION','REACTION','LOD']
+              :['SILHOUETTE','PROPORTION','STRUCTURE','MATERIAL','CONTACT','PLATFORM_PRESENTATION'];
+  const donorCapabilities=freezeList(unique([
+    asset.sourceHash?'GEOMETRY_OR_SOURCE_DONOR':'',
+    asset.rigType?'RIG_DONOR':'',
+    asset.retargetable===true?'MOTION_RETARGET_DONOR':'',
+    Object.keys(asset.platformVariants||{}).length?'NATIVE_VARIANT_DONOR':'',
+    /ui/i.test(requestedType)?'ICON_OR_STATE_STYLE_DONOR':'',
+    /background|environment|prop/i.test(requestedType)?'MATERIAL_OR_STRUCTURE_DONOR':''
+  ]));
   return freeze({
     id:asset.id,
     sourceTier:asset.sourceTier,
@@ -548,10 +569,30 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
     adaptationAxes:freezeList(lane==='C_MINIMAL_ADAPT'?['RIG_RETARGET','MATERIAL_REMAP','SOCKET_REBIND','SCALE_AXIS_PIVOT_NORMALIZE','LOD_GENERATION']:[]),
     qualityPassRequiredBeforeKeep:true,
     runtimeCheckRequiredAfterApply:true,
-    derivedRepairAxes:freezeList(['SILHOUETTE','PROPORTION','MATERIAL','RIG','SOCKET','MOTION','LOD','UI_STATE'])
+    qualityAxes:freezeList(qualityAxes),
+    donorCapabilities,
+    detailFloor:Object.freeze({
+      GAME_CAMERA:'ROLE_SILHOUETTE_AND_FUNCTION',
+      MID_RANGE:'STRUCTURE_PARTS_AND_SECONDARY_FORMS',
+      CLOSEUP:'CONSTRUCTION_MATERIAL_AND_IDENTITY',
+      CONTACT:'JOINT_GRIP_FASTENER_FOOTING_AND_INTERACTION'
+    }),
+    rescueLadder:freezeList([
+      'KEEP_STRONG_BASE_IDENTITY',
+      'FIX_ONLY_FAILED_QUALITY_AXES',
+      'RECOMPOSE_COMPATIBLE_PART_DONORS',
+      'REAUTHOR_MATERIAL_AND_SURFACE_RESPONSE',
+      'REBUILD_RIG_SOCKET_OR_CONTACT_IF_NEEDED',
+      'REAUTHOR_MOTION_OR_SECONDARY_MOTION_IF_NEEDED',
+      'BUILD_PLATFORM_NATIVE_LOD_AND_PRESENTATION_VARIANT',
+      'FULL_REAUTHOR_ONLY_WHEN_CORE_FORM_OR_STRUCTURE_CANNOT_BE_SAVED'
+    ]),
+    derivedRepairAxes:freezeList(qualityAxes),
+    fullReauthorTrigger:'CORE_IDENTITY_OR_STRUCTURAL_QUALITY_STILL_BLOCKED_AFTER_TARGETED_DERIVATION',
+    randomDetailInflationForbidden:true,
+    sourceAssetMayRemainAsPartialDonorAfterReplacement:true
   });
 }
-
 function decisionFor(selector={},target='',binding={},manifest={}){
   const type=clean(binding.type);
   const matched=matchedForType(selector,type,manifest,target);
@@ -561,7 +602,9 @@ function decisionFor(selector={},target='',binding={},manifest={}){
   const externalCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='LICENSE_VERIFIED_EXTERNAL_ASSET'));
   const reuseCandidates=freezeList([...companyCandidates,...sameGameCandidates,...repositoryCandidates]);
   const directAuthoring=directAuthoringFor(target,type);
-  const applyFirstCandidates=freezeList(reuseCandidates.map(asset=>assetApplyFirstCandidate(asset,target,binding)).filter(row=>row.ready).sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
+  const candidateRows=freezeList([...reuseCandidates,...externalCandidates].map(asset=>assetApplyFirstCandidate(asset,target,binding)));
+  const applyFirstCandidates=freezeList(candidateRows.filter(row=>row.ready).sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
+  const donorCandidates=freezeList(candidateRows.filter(row=>row.sourceHash&&row.donorCapabilities.length).sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
   const decisionOrder=unique([
     'COMPARE_TARGET_GAME_QUALITY',
     applyFirstCandidates.length?'APPLY_READY_EXISTING_ASSET_FIRST':'',
@@ -599,10 +642,34 @@ function decisionFor(selector={},target='',binding={},manifest={}){
       enabled:applyFirstCandidates.length>0,
       candidates:applyFirstCandidates,
       preferredCandidateId:applyFirstCandidates[0]?.id||null,
+      candidateLadder:freezeList(applyFirstCandidates.map((row,index)=>freeze({order:index+1,id:row.id,lane:row.lane,mode:row.mode,compatibilityScore:row.compatibilityScore,productionVerified:row.productionVerified}))),
+      donorCandidates:freezeList(donorCandidates.map(row=>freeze({id:row.id,lane:row.lane,sourceTier:row.sourceTier,qualityAxes:row.qualityAxes,donorCapabilities:row.donorCapabilities,sourceHash:row.sourceHash}))),
       lanes:freezeList(['A_SAME_GAME_BOUND','B_NATIVE_READY','C_MINIMAL_ADAPT','D_AUTHORING_REQUIRED']),
-      sequence:freezeList(['SELECT_LOWEST_COST_COMPATIBLE_LANE','APPLY_BEST_READY_CANDIDATE','CHECK_ACTUAL_GAME_PRESENTATION','DERIVE_ONLY_FAILED_AXES_IF_NEEDED','REAPPLY_DERIVED_VARIANT','AUTHOR_NEW_ONLY_IF_READY_ASSETS_CANNOT_REACH_TARGET']),
+      sequence:freezeList([
+        'SELECT_LOWEST_COST_HIGH_COMPATIBILITY_READY_ASSET',
+        'APPLY_CANDIDATE_TO_EXISTING_GAME_RESPONSIBILITY',
+        'INSPECT_QUALITY_BY_AXIS_AND_DETAIL_DISTANCE',
+        'KEEP_STRONG_AXES',
+        'DERIVE_ONLY_FAILED_AXES',
+        'USE_COMPATIBLE_ASSET_AS_PART_RIG_MATERIAL_OR_MOTION_DONOR_WHEN_BETTER',
+        'REAPPLY_DERIVED_VARIANT',
+        'ADVANCE_READY_CANDIDATE_IF_CORE_QUALITY_STILL_BLOCKED',
+        'FULL_NEW_AUTHORING_ONLY_AFTER_RESCUE_AND_READY_CANDIDATES_FAIL'
+      ]),
+      qualityRescue:Object.freeze({
+        axisBased:true,
+        donorRecompositionAllowed:true,
+        fullAssetReplacementNotDefault:true,
+        preserveStrongAxes:true,
+        preserveSourceProvenance:true,
+        detailFloorRequired:true,
+        randomDetailInflationForbidden:true,
+        fullReauthorTrigger:'CORE_IDENTITY_OR_STRUCTURAL_QUALITY_STILL_BLOCKED_AFTER_TARGETED_DERIVATION'
+      }),
       keepCondition:'TARGET_QUALITY_AND_RUNTIME_BINDING_PASS',
       deriveBeforeReplace:true,
+      candidateFailureAdvancesLadder:true,
+      failedCandidateCanRemainAsReusablePartDonor:true,
       fullReauthorOnlyAfterReusableCandidatesExhausted:true,
       sameGameBindingCostPreferredWhenQualityComparable:true,
       gameplayAuthority:false
@@ -1497,7 +1564,7 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
-    plan.applyFirstSummary?.enabled?`[APPLY USABLE ASSETS FIRST] ${JSON.stringify(plan.applyFirstSummary)}. 먼저 현재 게임/회사/저장소에서 target-compatible하고 실제 경로 또는 native binding이 있는 자산을 게임에 적용한다. 적용 후 실제 게임 카메라에서 품질을 확인하고 부족한 부위만 derived variant로 조형·재질·리그·LOD를 보강해 재적용한다. 사용 가능한 자산이 목표 품질에 도달할 수 있는데 새 자산부터 만들지 않는다. 반대로 품질이 부족한 자산을 억지로 유지하지도 않는다.`:'' ,
+    plan.applyFirstSummary?.enabled?`[APPLY USABLE ASSETS FIRST] ${JSON.stringify(plan.applyFirstSummary)}. 먼저 현재 게임/회사/저장소에서 target-compatible하고 실제 경로 또는 native binding이 있는 자산을 게임에 적용한다. 적용 후 실제 게임 카메라에서 품질을 확인하고 부족한 부위만 derived variant로 조형·재질·리그·LOD를 보강해 재적용한다. 사용 가능한 자산이 목표 품질에 도달할 수 있는데 새 자산부터 만들지 않는다. 품질이 부족하면 SILHOUETTE/PROPORTION/STRUCTURE/FACE_HANDS_FEET/MATERIAL/RIG/SOCKET/MOTION/LOD/UI_STATE 같은 축으로 분해하고 강한 축은 유지한다. 다른 호환 자산은 전체 대체뿐 아니라 파츠·리그·재질·모션 기증자로 사용해 derived variant를 재조립한다. GAME_CAMERA→MID_RANGE→CLOSEUP→CONTACT 디테일 바닥을 채우고, 랜덤 소품/노이즈/텍스처 과밀로 디테일을 가장하지 않는다. 핵심 형태나 구조 품질이 부분 보강으로 회복 불가능할 때만 전체 신규 제작으로 넘어간다.`:'' ,
     plan.generatedAssetOutputContract?`[GENERATED NATIVE ASSET CONTRACT] ${JSON.stringify(plan.generatedAssetOutputContract)}. Roblox/Unity에서 기존 자산이 목표 품질을 못 채우면 Blender/Python 또는 엔진 네이티브 authoring으로 실제 원본 자산을 만든다. 생성 소스 레시피와 원본/파생 파일, 동일 조건 미리보기, evidence.json, 회사 자산 장부 등록을 남긴다. GLB/이미지 파일이 생겼다는 사실만으로 VERIFIED 처리하지 말고 대상 native 런타임에서 실제 바인딩·표현·성능 검증 뒤 승격한다.`:'',
     plan.detailReview?`[STYLE COMPARISON AND LOCAL REPAIR] ${JSON.stringify(plan.detailReview)}. 같은 원형·카메라·조명·동작·표본 시점으로 카툰/실사/다크를 비교한다. repairs의 현재 소스/캡처 근거가 있는 부위·프레임·editableParameters만 수정하고 previousParameters와 잠긴 특징은 유지한다. 수정 뒤 동일 조건 재촬영으로 재검토하며 캡처 등록이나 파라미터 변경만으로 문제를 닫지 않는다.`:'',
     plan.motionContinuityAudit?`[MEASURED CONTINUOUS MOTION] ${JSON.stringify(plan.motionContinuityAudit)}. 루트·접촉점·손/무기 목표점=월드 미터, 관절=루트 로컬 미터, 지지물 접촉=동일 supportId의 로컬 미터, 회전/시선 오차=라디안, 표정=0~1 가중치다. violations의 region/frameRange/normalizedTimeRange에서 발 고정·손/무기 접촉·의상 관통·시선 추적·표정 튐을 수정한다. attachments는 active와 effectorWorldPosition/targetWorldPosition, penetrations는 depthMeters, gaze는 tracking과 forwardWorld/targetDirectionWorld, expressions는 morph별 가중치를 모든 프레임에 계측한다. 레지스트리 motionQA.requiredDetailChannels/limits를 작업 입력이 약화할 수 없다. 현재 소스 해시와 클립 전체 표본 및 선언된 채널이 없으면 UNVERIFIED다. 판정 시점·클립 길이·게임 이동 권한을 바꾸지 말고 재측정한다. unmeasuredGroups는 미검수이며 수치 PASS는 전체 시각 품질이나 런타임 승격 PASS가 아니다.`:'',
