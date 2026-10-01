@@ -140,7 +140,7 @@ for action in list(bpy.data.actions):
 
 SCENE = bpy.context.scene
 SCENE.render.fps = FPS
-RIG['MotionDerivative'] = 'HERO_FOUNDATION_HQ_V1'
+RIG['MotionDerivative'] = 'HERO_FOUNDATION_HQ_V2'
 RIG['SourceSha256'] = source_hash
 RIG['ProductionVerified'] = False
 
