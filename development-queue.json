@@ -14050,10 +14050,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "REPAIR_REQUIRED",
-      "canonicalState": "REPAIR_REQUIRED",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T13:56:55.094Z",
+      "updatedAt": "2026-10-01T14:06:43.683Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -15328,7 +15328,7 @@
       "unityCandidateBranch": "development/unity-tech-fantasy-survival-36773180555",
       "unitySourceCommit": "a68e86025e2a8f309b29e4ed3645064ca8a633f9",
       "unityBuildRunId": 36775590969,
-      "unityRuntimeSmokeRunId": 36870543958,
+      "unityRuntimeSmokeRunId": 36873427215,
       "unityIndependentQaRunId": 36779727853,
       "unityRegressionRunId": 36780140458,
       "unityInternalReleaseReady": false,
@@ -15719,7 +15719,7 @@
           }
         },
         "multiplayerRequired": true,
-        "verifiedAt": "2026-10-01T13:44:33.854Z"
+        "verifiedAt": "2026-10-01T14:06:43.683Z"
       },
       "unityF9ReleaseRegressionPassed": false,
       "unityF9ReleaseRegressionPassedAt": null,
@@ -27342,7 +27342,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T14:01:15.478Z",
+  "updatedAt": "2026-10-01T14:06:46.673Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
