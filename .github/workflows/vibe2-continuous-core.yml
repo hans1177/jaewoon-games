@@ -76,7 +76,7 @@ permissions:
 concurrency:
   # Only a direct main push without an explicit lane uses the disposable main-wake singleton.
   # Learning uses one shared execution group; other explicit lanes remain run-scoped.
-  group: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && 'vibe2-learning-single-worker' || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill') && 'vibe2-fanin-refill-asset-development' || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
+  group: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && 'vibe2-learning-single-worker' || github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-scheduling-wave-refill-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || github.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wave' || github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && 'vibe2-main-push-game-primary-wave' || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
   cancel-in-progress: false
 
 env:
@@ -104,7 +104,11 @@ jobs:
     # while ubuntu-latest game workers were actively running. Push/manual reserve stays on slim.
     runs-on: ${{ (github.event_name == 'repository_dispatch' && (github.event.action == 'vibe2-fanin-refill' || github.event.action == 'vibe2-neuron-complete') && 'ubuntu-latest' || 'ubuntu-slim') }}
     timeout-minutes: 7
-    # Reserve jobs may overlap. Shared queue writes are protected by optimistic retry only.
+    # 같은 레인의 상태 없는 보충 요청만 예약 단계에서 합친다.
+    # 완료 결과 전달과 게임 작업은 실행별로 독립 진행한다.
+    concurrency:
+      group: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-refill-reserve-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || format('vibe2-reserve-{0}', github.run_id) }}
+      cancel-in-progress: false
     outputs:
       worker_matrix: ${{ steps.batch.outputs.worker_matrix }}
       worker_count: ${{ steps.batch.outputs.worker_count }}
@@ -564,9 +568,9 @@ jobs:
           lane_min='1'
           if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then lane_min="$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN"; fi
           if [ "${active_worker_reservations:-0}" -gt 0 ]; then
-            echo 'VIBE2_RESERVE_MODE=INDEPENDENT_PARALLEL_REFILL_DURING_ACTIVE_WORK'
+            echo 'VIBE2_RESERVE_MODE=FREE_SLOT_REFILL_DURING_ACTIVE_WORK'
           else
-            echo 'VIBE2_RESERVE_MODE=INDEPENDENT_PARALLEL_DISPATCH'
+            echo 'VIBE2_RESERVE_MODE=NEW_WAVE_OR_IDLE_REFILL'
           fi
           node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch \
             --queue="$control_root/.vibe2/queue.json" \
@@ -663,16 +667,21 @@ jobs:
           const batch=JSON.parse(fs.readFileSync('/tmp/vibe2-batch.json','utf8'));
           const workers=[];
           const safe=value=>String(value||'task').replace(/[^A-Za-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)||'task';
+          const pressureRefillEligible=String(process.env.VIBE2_EXECUTION_LANE||'').toLowerCase()==='game-primary';
+          let pressureRefillLeaderAssigned=false;
           let suppressedSpeculativeWorkers=0;
           const assetLane=String(process.env.VIBE2_EXECUTION_LANE||'').toLowerCase()==='asset-development';
+          const robloxLeaderTaskId=pressureRefillEligible?(batch.matrix||[]).find(row=>row.target==='roblox'&&Number(row.speculativeVariants||1)===1)?.taskId||'':'';
           for(const row of batch.matrix||[]){
             const safeTask=safe(row.taskId);
             const requestedVariantCount=Math.max(1,Math.min(Math.max(1,Number(process.env.VIBE2_EXTERNAL_MATRIX_BATCH_MAX)||256),Number(row.speculativeVariants||1)));
             const variantCount=assetLane?1:requestedVariantCount;
             if(assetLane)suppressedSpeculativeWorkers+=Math.max(0,requestedVariantCount-1);
             const shared={taskId:row.taskId,target:row.target||'',safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',longWorkProtected:row.longWorkProtected===true,reservationId:row.reservationId||'',reservationRunId:row.reservationRunId||'',reservationRunAttempt:Number(row.reservationRunAttempt||0),reservedAt:row.reservedAt||batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||256),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||256),expectedVariants:variantCount};
-            workers.push({...shared,variant:'primary'});
-            for(let i=1;i<variantCount;i++)workers.push({...shared,variant:`speculative-${i}`});
+            const pressureRefillLeader=pressureRefillEligible&&!pressureRefillLeaderAssigned&&(!robloxLeaderTaskId||row.taskId===robloxLeaderTaskId);
+            workers.push({...shared,variant:'primary',pressureRefillLeader});
+            if(pressureRefillLeader)pressureRefillLeaderAssigned=true;
+            for(let i=1;i<variantCount;i++)workers.push({...shared,variant:`speculative-${i}`,pressureRefillLeader:false});
           }
           fs.appendFileSync(out,`worker_matrix=${JSON.stringify({include:workers})}\n`);
           fs.appendFileSync(out,`worker_count=${workers.length}\n`);
@@ -691,14 +700,14 @@ jobs:
           console.log(`VIBE2_LONG_WORK_PROTECTED_SLOT=${batch.scheduler?.longWorkProtectedSlotUsed?'USED':'NOT_USED'}`);
           NODE
 
-      - name: Continue independent parallel reservation
+      - name: Dispatch next scheduling wave partition
         if: steps.batch.outputs.more_runnable == 'true' && env.VIBE2_EXECUTION_LANE != 'asset-development' && env.VIBE2_EXECUTION_LANE != 'learning-idle'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',source_attempt:process.env.GITHUB_RUN_ATTEMPT||'',execution_lane:process.env.VIBE2_EXECUTION_LANE||'game-primary',reason:'independent-parallel-reservation-continue'}}))")"
+          payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',source_attempt:process.env.GITHUB_RUN_ATTEMPT||'',execution_lane:process.env.VIBE2_EXECUTION_LANE||'game-primary',reason:'scheduling-wave-refill'}}))")"
           curl --fail-with-body --silent --show-error \
             --request POST \
             --header 'Accept: application/vnd.github+json' \
@@ -706,7 +715,7 @@ jobs:
             --header 'X-GitHub-Api-Version: 2022-11-28' \
             "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
             --data "$payload"
-          echo 'VIBE2_INDEPENDENT_PARALLEL_RESERVATION_CONTINUE=DISPATCHED'
+          echo 'VIBE2_NEXT_SCHEDULING_WAVE=DISPATCHED'
 
       - name: Probe shared Ollama cache from reserve runner
         id: ollama_cache_probe
@@ -2262,15 +2271,72 @@ jobs:
           VIBE2_NEURON_TASK_ID: ${{ matrix.taskId }}
           VIBE2_NEURON_RESERVATION_ID: ${{ matrix.reservationId }}
           VIBE2_NEURON_CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
+          VIBE2_PRESSURE_REFILL_LEADER: ${{ matrix.pressureRefillLeader }}
           VIBE2_NEURON_TARGET: ${{ matrix.target }}
         shell: bash
         run: |
           set -euo pipefail
 
-          # Every independent neuron result dispatches its own atomic fan-in immediately.
-          # No grouped completion barrier or runner-pressure completion suppression is allowed.
-          echo 'VIBE2_ATOMIC_NEURON_COMPLETION_MODE=INDEPENDENT_IMMEDIATE_FANIN'
-          echo 'VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT_AND_CALLBACK'
+          # Live runner pressure is read-only. When GitHub Actions already has queued/pending/requested
+          # work, every non-asset completion keeps its immutable worker result artifact and lets the
+          # existing cohort fan-in consume it instead of creating another repository_dispatch workflow.
+          # Single-task GAME_PRIMARY is not exempt under pressure. Observation failure is fail-open to
+          # immediate callback behavior so result delivery never depends on telemetry.
+          queue_pressure=0
+          if curl --fail-with-body --silent --show-error \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" \
+            --output /tmp/vibe2-live-actions-runs.json; then
+            queue_pressure="$(node <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-live-actions-runs.json','utf8'));
+          const currentRun=String(process.env.GITHUB_RUN_ID||'');
+          const pressureStates=new Set(['queued','pending','requested']);
+          const pressure=(payload.workflow_runs||[]).filter(row=>
+            String(row.id||'')!==currentRun &&
+            pressureStates.has(String(row.status||'').toLowerCase())
+          ).length;
+          process.stdout.write(String(pressure));
+          NODE
+            )"
+            echo 'VIBE2_ATOMIC_NEURON_PRESSURE_OBSERVATION=PASS'
+          else
+            echo 'VIBE2_ATOMIC_NEURON_PRESSURE_OBSERVATION=FAIL_OPEN'
+            queue_pressure=0
+          fi
+          echo "VIBE2_LIVE_RUNNER_QUEUE_PRESSURE=${queue_pressure:-0}"
+
+          game_micro_fanin=false
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "${VIBE2_NEURON_EXPECTED_VARIANTS:-1}" = '1' ]; then
+            game_micro_fanin=true
+          fi
+          if [ "${queue_pressure:-0}" -gt 0 ] && [ "$VIBE2_EXECUTION_LANE" != 'asset-development' ]; then
+            echo 'VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT'
+            if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "${VIBE2_PRESSURE_REFILL_LEADER:-false}" = 'true' ]; then
+              refill_payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',source_attempt:process.env.GITHUB_RUN_ATTEMPT||'',execution_lane:'game-primary',reason:'runner-pressure-wave-leader-free-slot-refill'}}))")"
+              curl --fail-with-body --silent --show-error \
+                --request POST \
+                --header 'Accept: application/vnd.github+json' \
+                --header "Authorization: Bearer $GH_TOKEN" \
+                --header 'X-GitHub-Api-Version: 2022-11-28' \
+                "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+                --data "$refill_payload"
+              echo 'VIBE2_PRESSURE_REFILL_DISPATCH=WAVE_LEADER_EXISTING_FANIN_REFILL'
+            else
+              echo 'VIBE2_PRESSURE_REFILL_DISPATCH=SKIPPED_NON_LEADER_OR_NON_GAME_PRIMARY'
+            fi
+            echo 'VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN'
+            exit 0
+          fi
+          if [ "$game_micro_fanin" = 'true' ]; then
+            echo 'VIBE2_GAME_MICRO_FANIN=IMMEDIATE_ONLY_WITHOUT_QUEUE_PRESSURE'
+          fi
+          if [ "${queue_pressure:-0}" -gt 0 ] && [ "$VIBE2_EXECUTION_LANE" = 'asset-development' ]; then
+            echo 'VIBE2_ASSET_NEURON_PRESSURE_BYPASS=IMMEDIATE_MICRO_FANIN'
+            echo 'VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT_AND_CALLBACK'
+          fi
 
           payload="$(node <<'NODE'
           const payload={
@@ -2789,7 +2855,7 @@ jobs:
         if: always()
         continue-on-error: true
         env:
-          REQUESTED_MAX: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && '1' || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && '64') || '9007199254740991' }}
+          REQUESTED_MAX: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && '1' || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && '64') || inputs.lane_max || '9007199254740991' }}
           EFFECTIVE_MAX: ${{ needs.reserve.outputs.effective_max }}
           TASK_COUNT: ${{ needs.reserve.outputs.task_count }}
           FAN_CHECKOUT_MS: ${{ steps.fan_checkout_metrics.outputs.ms }}
