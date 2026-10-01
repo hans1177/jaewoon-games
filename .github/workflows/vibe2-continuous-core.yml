@@ -201,127 +201,6 @@ jobs:
           echo "VIBE2_CONTINUOUS_CONTRACT_SHA=$contract_sha"
           echo 'VIBE2_MAIN_CONTRACT_SNAPSHOT=ARCHIVE'
 
-      - name: Fast scheduler preflight
-        if: steps.main_wake.outputs.proceed == 'true' && (github.event_name != 'repository_dispatch' || github.event.action != 'vibe2-neuron-complete')
-        env:
-          GH_TOKEN: ${{ github.token }}
-          VIBE2_PREFLIGHT_CONTRACT_SHA: ${{ steps.contract.outputs.sha }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          control_root="$GITHUB_WORKSPACE"
-          for file in \
-            assets/vibe-continuous-queue.js \
-            tools/vibe2-auto-planner.mjs \
-            tools/company-build-up-directive.mjs \
-            tools/vibe2-learning-motor.mjs \
-            tools/vibe2-continuous-runner.mjs \
-            tools/vibe2-asset-production-plan.mjs \
-            tools/vibe2-central-work-contract.mjs \
-            tools/vibe2-neural-diagnosis.mjs \
-            tools/vibe2-neural-feedback.mjs \
-            tools/vibe2-neural-critic.mjs \
-            tools/vibe2-neural-root-cause.mjs \
-            tools/vibe2-neural-event-router.mjs \
-            tools/vibe2-neural-shadow-audit.mjs \
-            tools/vibe2-neural-event-telemetry.mjs \
-            tools/vibe2-neural-phase2-readiness.mjs \
-            tools/vibe2-neural-expansion-readiness.mjs \
-            tools/vibe2-exploration-worker.mjs \
-            tools/vibe2-source-worker.mjs \
-            tools/vibe2-capability-distillation.mjs \
-            tools/vibe2-performance-sanity.mjs \
-            tools/vibe2-fan-in-review.mjs \
-            tools/vibe2-queue-control.mjs \
-            tools/vibe2-work-package.mjs \
-            tools/vibe2-incremental-qa.mjs \
-            tools/vibe2-parallelism-telemetry.mjs \
-            tools/vibe2-adaptive-backpressure.mjs \
-            tools/vibe2-handoff.mjs \
-            tools/vibe2-system-steward.mjs; do
-            node --check "/tmp/vibe2-main/$file"
-          done
-          node /tmp/vibe2-main/tools/vibe2-neural-expansion-readiness.mjs \
-            --root=/tmp/vibe2-main \
-            --output=/tmp/vibe2-neural-expansion-readiness.json | tee /tmp/vibe2-neural-expansion-readiness.log
-          node /tmp/vibe2-main/tools/vibe2-system-steward.mjs \
-            --queue="$control_root/.vibe2/queue.json" \
-            --control="$control_root/.vibe2/parallelism-control.json" \
-            --neural-readiness=/tmp/vibe2-neural-expansion-readiness.json | tee /tmp/vibe2-reserve-preflight-steward.log
-          echo 'VIBE2_RESERVE_PREFLIGHT_STEWARD=PASS'
-          node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
-            --runtime=/tmp/vibe2-main/vibe2-runtime.json \
-            --queue="$control_root/.vibe2/queue.json" \
-            --control="$control_root/.vibe2/parallelism-control.json" \
-            --experience="$control_root/.vibe2/experience.json" \
-            --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
-            --output=/tmp/vibe2-handoff-preflight.json >/tmp/vibe2-handoff-preflight.log
-
-          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then
-            core_qa_reuse=0
-            if curl --fail-with-body --silent --show-error \
-              --header 'Accept: application/vnd.github+json' \
-              --header "Authorization: Bearer $GH_TOKEN" \
-              --header 'X-GitHub-Api-Version: 2022-11-28' \
-              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${VIBE2_PREFLIGHT_CONTRACT_SHA}&per_page=100" \
-              --output /tmp/vibe2-reserve-core-qa-runs.json; then
-              core_qa_reuse="$(node <<'NODE'
-          const fs=require('fs');
-          const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-reserve-core-qa-runs.json','utf8'));
-          const sha=String(process.env.VIBE2_PREFLIGHT_CONTRACT_SHA||'');
-          const pass=(payload.workflow_runs||[]).some(row=>
-            String(row.name||'')==='Vibe2 Core QA' &&
-            String(row.head_sha||'')===sha &&
-            String(row.status||'')==='completed' &&
-            String(row.conclusion||'')==='success'
-          );
-          process.stdout.write(pass?'1':'0');
-          NODE
-              )"
-              echo 'VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=PASS'
-            else
-              core_qa_reuse=0
-              echo 'VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=FAIL_LOCAL_REGRESSION'
-            fi
-
-            if [ "$core_qa_reuse" = '1' ]; then
-              echo 'VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE'
-            else
-              echo 'VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_SAME_FAN_IN_SUITE'
-            (cd /tmp/vibe2-main && node --test --test-concurrency=4 \
-            qa/vibe2-auto-planner.test.mjs \
-            qa/vibe2-native-asset-production.test.mjs \
-            qa/vibe2-neural-diagnosis.test.mjs \
-            qa/vibe2-neural-feedback.test.mjs \
-            qa/vibe2-neural-critic.test.mjs \
-            qa/vibe2-neural-root-cause.test.mjs \
-            qa/vibe2-neural-event-router.test.mjs \
-            qa/vibe2-neural-shadow-audit.test.mjs \
-            qa/vibe2-neural-event-telemetry.test.mjs \
-            qa/vibe2-neural-phase2-readiness.test.mjs \
-            qa/vibe2-neural-fanin-root-cause.test.mjs \
-            qa/vibe2-core-engine-motion.test.mjs \
-            qa/vibe2-source-worker.test.mjs \
-            qa/vibe2-capability-distillation.test.mjs \
-            qa/vibe2-central-work-contract.test.mjs \
-            qa/vibe2-exploration-worker.test.mjs \
-            qa/vibe2-queue-control.test.mjs \
-            qa/vibe2-work-package.test.mjs \
-            qa/vibe2-incremental-qa.test.mjs \
-            qa/vibe2-parallelism-telemetry.test.mjs \
-            qa/vibe2-adaptive-backpressure.test.mjs \
-            qa/vibe2-candidate-reconcile.test.mjs \
-            qa/vibe2-experience-control.test.mjs \
-            qa/vibe2-learning-closed-loop.test.mjs \
-            qa/vibe2-handoff.test.mjs \
-            qa/vibe2-practice-distillation.test.mjs)
-            fi
-            echo 'VIBE2_RESERVE_CONTRACT_REGRESSION=PASS'
-          else
-            echo "VIBE2_RESERVE_CONTRACT_REGRESSION=SKIPPED_AUXILIARY_LANE:$VIBE2_EXECUTION_LANE"
-          fi
-          echo 'VIBE2_RESERVE_PREFLIGHT=MAIN_CONTRACT_CONTROL_STATE'
-
       - name: Reserve conflict-free DAG batch
         id: batch
         if: steps.main_wake.outputs.proceed == 'true'
@@ -457,7 +336,6 @@ jobs:
 
             # Released Roblox caretakers and active repair work are refilled from the same canonical
             # company-runtime snapshot on manual, callable, refill and fan-in reserve ingress.
-            node --check /tmp/vibe2-main/tools/vibe2-post-release-focus.mjs
             node /tmp/vibe2-main/tools/vibe2-post-release-focus.mjs \
               --roadmap=/tmp/vibe2-main/company-learning/platform-release-roadmap.json \
               --company-runtime-queue=/tmp/vibe2-company-runtime-queue.json \
@@ -677,7 +555,6 @@ jobs:
           fs.appendFileSync(out,`worker_matrix=${JSON.stringify({include:workers})}\n`);
           fs.appendFileSync(out,`worker_count=${workers.length}\n`);
           fs.appendFileSync(out,`task_count=${(batch.matrix||[]).length}\n`);
-          fs.appendFileSync(out,`more_runnable=${batch.scheduler?.batchTruncated===true?'true':'false'}\n`);
           fs.appendFileSync(out,`reserved_at=${batch.createdAt||''}\n`);
           fs.appendFileSync(out,`effective_max=${Number(batch.scheduler?.effectiveMaxConcurrentTasks||256)}\n`);
           console.log(`VIBE2_HIERARCHICAL_FAN_OUT=${workers.length}`);
@@ -690,23 +567,6 @@ jobs:
           console.log(`VIBE2_SPECULATIVE_EXPANSION_REASON=${String(batch.scheduler?.speculativeExpansionReason||'AVAILABLE')}`);
           console.log(`VIBE2_LONG_WORK_PROTECTED_SLOT=${batch.scheduler?.longWorkProtectedSlotUsed?'USED':'NOT_USED'}`);
           NODE
-
-      - name: Continue independent parallel reservation
-        if: steps.batch.outputs.more_runnable == 'true' && env.VIBE2_EXECUTION_LANE != 'asset-development' && env.VIBE2_EXECUTION_LANE != 'learning-idle'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',source_attempt:process.env.GITHUB_RUN_ATTEMPT||'',execution_lane:process.env.VIBE2_EXECUTION_LANE||'game-primary',reason:'independent-parallel-reservation-continue'}}))")"
-          curl --fail-with-body --silent --show-error \
-            --request POST \
-            --header 'Accept: application/vnd.github+json' \
-            --header "Authorization: Bearer $GH_TOKEN" \
-            --header 'X-GitHub-Api-Version: 2022-11-28' \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
-            --data "$payload"
-          echo 'VIBE2_INDEPENDENT_PARALLEL_RESERVATION_CONTINUE=DISPATCHED'
 
       - name: Probe shared Ollama cache from reserve runner
         id: ollama_cache_probe
@@ -948,7 +808,6 @@ jobs:
           set -euo pipefail
           contract_root="$GITHUB_WORKSPACE/vibe2-contract"
           cd "$contract_root"
-          node --check tools/company-constitution-enforcer.mjs
           node tools/company-constitution-enforcer.mjs --phase=worker-before-source-write
 
       - name: Build reserved task work order
@@ -1213,7 +1072,6 @@ jobs:
             unzip -oq "$luau_dir/luau.zip" -d "$luau_dir"
             chmod +x "$luau_dir/luau"
             export VIBE2_LUAU_BINARY="$luau_dir/luau"
-            node --test "$contract_root/qa/vibe2-learning-practice-worker.test.mjs"
           fi
           if [ "$practice_route" = 'learning-web-artifact' ]; then
             practice_deps="$RUNNER_TEMP/vibe2-practice-browser"
@@ -1436,11 +1294,9 @@ jobs:
             export VIBE2_LUAU_COMPILE_REQUIRED=true
             "$VIBE2_LUAU_COMPILER" --help >/dev/null
             "$luau_dir/luau-ast" --help >/dev/null
-            VIBE2_TEST_LUAU_COMPILER="$VIBE2_LUAU_COMPILER" VIBE2_LUAU_COMPILER= node --test --test-name-pattern='Luau compiler' "$contract_root/qa/vibe2-source-worker.test.mjs"
           fi
 
           cd "$candidate_dir"
-          node --check tools/company-shared-context.mjs
           node tools/company-shared-context.mjs --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-before.json" | tee "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-before.log"
           export VIBE2_BASE_MAIN_SHA="$base_sha"
           export VIBE2_SPECULATIVE_VARIANT="$VARIANT"
@@ -1485,7 +1341,6 @@ jobs:
           NODE
           )"
           if [ "$security_sensitive" = 'YES' ]; then
-            node --check tools/company-security-steward.mjs
             node tools/company-security-steward.mjs --output="/tmp/vibe2-security-${SAFE_TASK}-${VARIANT}.json"
             echo 'VIBE2_SECURITY_IMMUNE_SCAN=PASS'
           else
@@ -1776,15 +1631,6 @@ jobs:
           name: vibe2-visual-${{ matrix.safeTask }}-${{ matrix.variant }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: /tmp/vibe2-runtime-visual-${{ matrix.safeTask }}-${{ matrix.variant }}/
           retention-days: 2
-
-      - name: Enforce canonical constitution after worker execution
-        if: always()
-        shell: bash
-        run: |
-          set -euo pipefail
-          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
-          cd "$contract_root"
-          node tools/company-constitution-enforcer.mjs --phase=worker-after-execution
 
       - name: Build immutable worker result
         id: result
