@@ -816,13 +816,30 @@ export function createVibeIndividualActivityPlan({actor={},world={},importance='
   });
 }
 
-export function planVibeLivingActorDirector({actor={},player={},world={},relationship={},memory=[],history=[],recentFailures=[],recentAdvice=[],recentContent=[],importance='foreground',gameRating='GENERAL'}={}){
+export function planVibeLivingActorDirector({
+  actor={},player={},world={},relationship={},memory=[],history=[],recentFailures=[],recentAdvice=[],recentContent=[],
+  importance='foreground',gameRating='GENERAL',causalEvent=null,causalKnowledge={},allowEventProposal=false,allowQuestProposal=false
+}={}){
   const role=actor.role||'npc';
   const playerModel=createVibeActorPlayerModel({actor,observations:memory});
   const companion=/companion|ally/.test(cleanText(role).toLowerCase());
   const monster=/boss|rare|elite|monster|enemy|mob/.test(cleanText(role).toLowerCase());
+  const causal=causalEvent?planVibeCausalActorLoop({
+    event:causalEvent,
+    world,
+    player,
+    observers:[{
+      actor,
+      relationship,
+      memory,
+      emotion:actor.emotion||world.emotion||'calm',
+      knowledge:causalKnowledge,
+      allowEventProposal,
+      allowQuestProposal
+    }]
+  }).observers[0]:null;
   return Object.freeze({
-    version:1,
+    version:2,
     qualityDNA:createVibeActorQualityDNA({role,named:actor.named!==false}),
     actor:createVibeLivingActorContract(actor),
     selfhood:companion?createVibeCompanionSelfhoodDNA(actor):createVibeActorSelfModel(actor),
@@ -832,6 +849,7 @@ export function planVibeLivingActorDirector({actor={},player={},world={},relatio
     guidance:createVibeGameplayGuidanceFrame({actor,playerModel,world,recentFailures,recentAdvice,gameRating}),
     social:companion?planVibeCompanionSocialDirector({companion:actor,player,relationship,world,memory,history}):null,
     ecology:monster?createVibeMonsterEcologyMind(actor):null,
+    causal,
     autonomousContent:Object.freeze({
       enabled:true,
       sources:Object.freeze(['personal-goal','personal-duty','unresolved-memory','relationship-tension','promise','debt','faction-goal','discovered-world-event','territory','resource-need','place-memory','player-pattern']),
@@ -850,22 +868,53 @@ export function planVibeLivingActorDirector({actor={},player={},world={},relatio
     })
   });
 }
+
 export function createVibeCausalEvent({
-  id='',type='',actorId='',targetId='',objectId='',location='',witnesses=[],facts={},authority='engine'
+  id='',type='',actorId='',targetId='',targetIds=[],objectId='',factionId='',questId='',promiseId='',damageCauseId='',
+  location='',tick=null,time=null,observability='LOCAL_VISIBLE',witnesses=[],facts={},intentional=null,declaredIntent='',magnitude=null,authority='engine'
 }={}){
   const eventId=cleanText(id);
+  const eventType=cleanText(type);
+  const sourceActorId=cleanText(actorId);
+  const targets=stableList([targetId,...(Array.isArray(targetIds)?targetIds:[])]);
+  const witnessRows=Object.freeze((Array.isArray(witnesses)?witnesses:[]).map(row=>{
+    if(typeof row==='string')return Object.freeze({actorId:cleanText(row),channel:'VISION',confidence:1,direct:true});
+    return Object.freeze({
+      actorId:cleanText(row?.actorId||row?.id||row?.name),
+      channel:cleanText(row?.channel||'VISION'),
+      confidence:Math.max(0,Math.min(1,Number(row?.confidence??1))),
+      direct:row?.direct!==false
+    });
+  }).filter(row=>row.actorId));
+  const witnessIds=stableList(witnessRows.map(row=>row.actorId));
+  const eventTick=tick??time??null;
+  const eventMagnitude=Number.isFinite(Number(magnitude))?Number(magnitude):(Number.isFinite(Number(facts?.magnitude))?Number(facts.magnitude):null);
+  const valid=Boolean(eventId&&eventType&&sourceActorId);
   return Object.freeze({
     id:eventId,
-    type:cleanText(type),
-    actorId:cleanText(actorId),
-    targetId:cleanText(targetId),
+    type:eventType,
+    actorId:sourceActorId,
+    targetId:targets[0]||'',
+    targetIds:targets,
     objectId:cleanText(objectId),
+    factionId:cleanText(factionId),
+    questId:cleanText(questId),
+    promiseId:cleanText(promiseId),
+    damageCauseId:cleanText(damageCauseId),
     location:cleanText(location),
-    witnesses:stableList(witnesses),
+    tick:eventTick,
+    observability:cleanText(observability||'LOCAL_VISIBLE'),
+    witnesses:witnessIds,
+    witnessDetails:witnessRows,
     facts:Object.freeze(facts&&typeof facts==='object'?{...facts}:{}),
+    intentional:intentional===true?true:intentional===false?false:null,
+    declaredIntent:cleanText(declaredIntent),
+    magnitude:eventMagnitude,
     authority:authority==='engine'?'engine':'reported',
-    valid:Boolean(eventId&&type),
-    relationshipMutationEligible:Boolean(eventId&&type),
+    valid,
+    contractComplete:Boolean(valid&&cleanText(location)&&eventTick!==null&&cleanText(observability)),
+    relationshipMutationEligible:valid,
+    duplicateMustBeIdempotent:true,
     rule:'relationship-or-memory-change-requires-source-event'
   });
 }
@@ -873,12 +922,19 @@ export function createVibeCausalEvent({
 export function createVibeCausalInterpretation({actor={},event={},relationship={},knowledge={},emotion='calm'}={}){
   const personality=createVibeCompanionPersonalityDNA(actor);
   const causalEvent=createVibeCausalEvent(event);
-  const witnessed=causalEvent.witnesses.includes(actor.id||actor.name)||knowledge.observed===true||knowledge.reported===true;
-  const certainty=Math.max(0,Math.min(1,Number(knowledge.confidence??(witnessed?1:0))));
+  const actorId=cleanText(actor.id||actor.name||'actor');
+  const directWitness=causalEvent.witnesses.includes(actorId)||knowledge.observed===true;
+  const reported=!directWitness&&knowledge.reported===true;
+  const perceived=directWitness||reported;
+  const defaultConfidence=directWitness?1:reported?.55:0;
+  const certainty=Math.max(0,Math.min(1,Number(knowledge.confidence??defaultConfidence)));
   return Object.freeze({
-    actor:actor.id||actor.name||'actor',
+    actor:actorId,
     event:causalEvent,
-    perceived:witnessed,
+    perceived,
+    directWitness,
+    reported,
+    informationPath:directWitness?'direct-witness':reported?cleanText(knowledge.channel||'reported'):'none',
     certainty,
     attribution:cleanText(knowledge.attribution||'unknown'),
     personalityBias:Object.freeze({
@@ -901,6 +957,165 @@ export function createVibeCausalInterpretation({actor={},event={},relationship={
     extremePermanentShiftAllowed:certainty>=0.75&&causalEvent.valid,
     laterEvidenceMayCorrectInterpretation:true,
     noHiddenFactAccess:true
+  });
+}
+
+export function planVibeCausalActorLoop({event={},observers=[],world={},player={}}={}){
+  const sourceEvent=createVibeCausalEvent(event);
+  const sourceType=cleanText(sourceEvent.type).toLowerCase();
+  const positive=/help|rescue|protect|heal|gift|share-success|keep-promise|promise-kept|repair|return|respect-boundary|defend/.test(sourceType);
+  const negative=/harm|hurt|attack|betray|abandon|steal|break-promise|promise-broken|cross-boundary|threat|destroy|failed-to-help|fail-to-help/.test(sourceType);
+  const discovery=/discover|investigate|unknown|rumor|found|clue/.test(sourceType);
+  const rows=(Array.isArray(observers)?observers:[]).map(entry=>{
+    const row=entry&&entry.actor?entry:{actor:entry||{}};
+    const actor=row.actor||{};
+    const actorId=cleanText(actor.id||actor.name||'actor');
+    const relationship=row.relationship||{};
+    const memory=Array.isArray(row.memory)?row.memory:[];
+    const emotionBefore=cleanText(row.emotion||'calm');
+    const knowledge=row.knowledge&&typeof row.knowledge==='object'?row.knowledge:{};
+    const interpretation=createVibeCausalInterpretation({actor,event:sourceEvent,relationship,knowledge,emotion:emotionBefore});
+    const personality=createVibeCompanionPersonalityDNA(actor);
+    const traits=personality.traits;
+    const targeted=sourceEvent.targetIds.includes(actorId);
+    const repeatCount=memory.filter(item=>cleanText(item?.type).toLowerCase()===sourceType).length;
+    const magnitude=Math.min(5,Math.max(0,Math.abs(Number(sourceEvent.magnitude??1))));
+    const salience=interpretation.perceived
+      ? Math.max(0,Math.min(1,.3+(targeted?.3:0)+(positive||negative?.15:discovery?.1:0)+Math.min(.15,magnitude*.03)+Math.min(.1,repeatCount*.02)))
+      : 0;
+    const relationTargetId=sourceEvent.actorId===actorId
+      ? cleanText(sourceEvent.targetIds[0]||sourceEvent.objectId)
+      : cleanText(sourceEvent.actorId);
+    const empathy=(traits.empathy+100)/200;
+    const loyalty=(traits.loyalty+100)/200;
+    const pride=(traits.pride+100)/200;
+    const vengeance=(traits.vengefulness+100)/200;
+    const caution=(traits.caution+100)/200;
+    const courage=(traits.courage+100)/200;
+    const repeatFactor=Math.min(1.5,1+repeatCount*.08);
+    const baseStrength=Math.max(1,Math.min(12,Math.round((3+salience*5)*interpretation.certainty*repeatFactor)));
+    const delta={};
+    if(interpretation.perceived&&relationTargetId&&relationTargetId!==actorId){
+      if(positive){
+        delta.trust=Math.min(20,Math.max(1,Math.round(baseStrength*(.7+.3*loyalty))));
+        delta.respect=Math.min(20,Math.max(1,Math.round(baseStrength*(.45+.35*courage))));
+        delta.affection=Math.min(20,Math.max(0,Math.round(baseStrength*(.25+.35*empathy))));
+        delta.tension=-Math.min(8,Math.max(0,Math.round(baseStrength*.35)));
+        if(/rescue|protect|help/.test(sourceType))delta.debt=Math.min(20,Math.max(1,Math.round(baseStrength*(.3+.4*pride))));
+        if(/respect-boundary/.test(sourceType))delta.boundaryComfort=Math.min(20,Math.max(1,Math.round(baseStrength*.8)));
+      }else if(negative){
+        const negativeStrength=Math.min(20,Math.max(1,Math.round(baseStrength*(.75+.25*vengeance))));
+        delta.trust=-negativeStrength;
+        delta.respect=-Math.min(20,Math.max(1,Math.round(negativeStrength*(.4+.3*pride))));
+        delta.tension=Math.min(20,Math.max(1,Math.round(negativeStrength*(.6+.25*vengeance))));
+        if(/threat|attack|harm|hurt|destroy/.test(sourceType))delta.fear=Math.min(20,Math.max(0,Math.round(negativeStrength*(.25+.5*caution))));
+        if(/betray|abandon|break-promise|promise-broken/.test(sourceType))delta.rivalry=Math.min(20,Math.max(1,Math.round(negativeStrength*(.25+.45*vengeance))));
+        if(/cross-boundary/.test(sourceType))delta.boundaryComfort=-Math.min(20,Math.max(1,Math.round(negativeStrength*.9)));
+      }
+    }
+    let emotionAfter=emotionBefore;
+    if(interpretation.perceived){
+      if(positive)emotionAfter=targeted?'relief':empathy>=.55?'warm':'calm';
+      else if(negative)emotionAfter=(/threat|attack|harm|hurt/.test(sourceType)&&caution>courage+.1)?'fear':(vengeance+pride>=1.05?'anger':'alert');
+      else if(discovery)emotionAfter=traits.curiosity>=0?'curious':'alert';
+      else emotionAfter='alert';
+    }
+    const appraisal=interpretation.perceived
+      ? positive
+        ? Object.freeze({primary:/promise/.test(sourceType)?'reliable':/respect-boundary/.test(sourceType)?'respectful':'helpful',valence:'positive'})
+        : negative
+          ? Object.freeze({primary:/betray|abandon|break-promise/.test(sourceType)?'disloyal':/threat|attack|harm|hurt/.test(sourceType)?'threatening':'harmful',valence:'negative'})
+          : Object.freeze({primary:discovery?'interesting':'unknown',valence:'uncertain'})
+      : Object.freeze({primary:'unknown',valence:'unobserved'});
+    const memoryCandidate=interpretation.perceived&&sourceEvent.valid?Object.freeze({
+      id:sourceEvent.id,
+      type:sourceEvent.type,
+      sourceEventId:sourceEvent.id,
+      actor:sourceEvent.actorId,
+      target:relationTargetId,
+      observerId:actorId,
+      perspectiveSpecific:true,
+      appraisal,
+      attribution:interpretation.attribution,
+      certainty:interpretation.certainty,
+      salience,
+      emotionBefore,
+      emotionAfter,
+      location:sourceEvent.location,
+      objectId:sourceEvent.objectId,
+      relationshipEffect:Object.freeze({...delta}),
+      authoritative:false
+    }):null;
+    const actionPreferences=interpretation.perceived
+      ? positive
+        ? ['cooperate-with-source','support-target','approach-source']
+        : negative
+          ? [emotionAfter==='fear'?'avoid-source':'challenge-source','watch-source',targeted?'protect-boundary':'protect-target']
+          : discovery?['investigate-cause','observe-source']:['observe-source']
+      : [];
+    const dialogueActs=interpretation.perceived
+      ? positive?['thank','acknowledge','reassure','remember']
+        : negative?['warn','disagree','challenge','choose-silence']
+          : discovery?['notice','ask','speculate-carefully','choose-silence']:['notice','choose-silence']
+      : [];
+    const personalStake=cleanText(actor.unresolvedThread||actor.longTermGoal||actor.futureGoal||actor.personalDuty);
+    const allowQuest=row.allowQuestProposal===true&&interpretation.perceived&&sourceEvent.valid&&Boolean(personalStake);
+    const questCandidate=allowQuest?createVibeActorQuestCandidate({
+      actor,
+      causeEvents:[sourceEvent],
+      personalStake,
+      worldStake:cleanText(row.worldStake||world.region||world.location),
+      primaryVerb:cleanText(row.questVerb||sourceEvent.facts?.questVerb||'investigate'),
+      branches:Array.isArray(row.questBranches)?row.questBranches:[]
+    }):null;
+    const allowEvent=row.allowEventProposal===true&&interpretation.perceived&&sourceEvent.valid;
+    const eventCandidate=allowEvent?createVibeActorEventCandidate({
+      actor,
+      causeEvents:[sourceEvent],
+      world,
+      motive:cleanText(row.motive||personalStake||appraisal.primary),
+      goal:cleanText(row.goal||personalStake||'respond-to-event'),
+      urgency:cleanText(row.urgency||'normal')
+    }):null;
+    return Object.freeze({
+      actorId,
+      sourceEvent,
+      perceived:interpretation.perceived,
+      interpretation,
+      appraisal,
+      memoryCandidate,
+      emotionBefore,
+      emotionAfter,
+      relationshipTargetId:relationTargetId,
+      relationshipBefore:createVibeRelationshipState(relationship),
+      relationshipDelta:Object.freeze(delta),
+      next:Object.freeze({
+        attentionTargetId:relationTargetId||sourceEvent.objectId||sourceEvent.targetId,
+        judgmentEvidence:memoryCandidate,
+        dialogueActs:Object.freeze(dialogueActs),
+        actionPreferences:Object.freeze(actionPreferences),
+        eventCandidate,
+        questCandidate
+      }),
+      persistentMutationRequiresEngineValidation:true,
+      gameplayAuthority:false
+    });
+  });
+  return Object.freeze({
+    version:1,
+    sourceAction:Object.freeze({
+      id:cleanText(event.actionId),
+      type:cleanText(event.actionType||event.action),
+      actorId:sourceEvent.actorId
+    }),
+    sourceEvent,
+    canonicalSequence:Object.freeze(['action','event','observer','interpretation','memory','emotion','relationship','next-judgment','dialogue','action-preference','quest-candidate','engine-validation']),
+    contractSequence:Object.freeze(['source-event-occurs','actor-perceives-or-learns-event','knowledge-confidence-recorded','actor-attributes-cause-and-intent','actor-appraises-event','memory-salience-decided','relationship-emotion-or-goal-delta-suggested','engine-validates-persistent-mutation','future-speech-attention-cooperation-distance-and-tactics-use-updated-state']),
+    observers:Object.freeze(rows),
+    engineOwns:Object.freeze(['damage','hp','hit-result','cooldown','reward','drop','inventory','economy','save','progression','quest-completion','spawn','collision','network-authority']),
+    noHiddenEventEffectWithoutInformationPath:true,
+    duplicateEventMustBeIdempotent:true,
+    gameplayAuthority:false
   });
 }
 
