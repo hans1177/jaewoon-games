@@ -1,5 +1,5 @@
 {
-  "version": 504,
+  "version": 505,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -7492,7 +7492,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-10-01T09:31:00+09:00",
+  "updatedAt": "2026-10-01T10:07:00+09:00",
   "priorityTiers": [
     {
       "tier": 1,
@@ -9436,7 +9436,7 @@
       }
     },
     "customizableDetailedAssetProduction20261001": {
-      "ownerIntent": "고품질 공통 원형과 외부 GLB를 활용해 모든 시각 자산을 커마 방식으로 제작하고 도깨비 캐릭터를 최소 디테일 기준으로 사용",
+      "ownerIntent": "공통 원형·GLB·실제 엔진 캡처 기반 자산 제작을 부분 디테일·모션·픽셀 검수까지 같은 GRAPHICS_PRODUCTION에서 반복 개선",
       "responsiblePolicy": "assetProductionParallelContract.companyGraphicsLibrary24h.composableBaseMaterialLibrary.customization",
       "implementation": [
         "assets/vibe-studio-asset-universe.js",
@@ -9445,7 +9445,7 @@
         "tools/vibe2-source-worker.mjs",
         "assets/vibe-environment-director.js"
       ],
-      "scope": "AUTHORING_STYLE_MEASUREMENT_UNITY_WEB_SYNC_PIXEL_IMAGE_MAP_AND_GLB_INPUTS",
+      "scope": "AUTHORING_CUSTOMIZATION_MOTION_AND_RUNTIME_PIXEL_REVIEW",
       "actualNewModelsOrNativeRuntimePassClaimed": false,
       "centralDocumentationImpact": {
         "architectureTopologyChanged": false,
@@ -9454,36 +9454,6 @@
         "schedulerChanged": false,
         "existingAssetLicenseAndRuntimePromotionGuardsPreserved": true
       }
-    },
-    "assetLocalizedDetailIteration20261001": {
-      "ownerIntent": "고급 자산 제작 AI를 계속 업데이트: 스타일 비교·잠금 보존 부분 수정·연속 동작 실측",
-      "implementation": [
-        "assets/vibe-studio-asset-universe.js",
-        "assets/vibe-motion-director.js",
-        "tools/vibe2-asset-production-plan.mjs"
-      ],
-      "centralDocumentationImpact": {
-        "architectureTopologyChanged": false,
-        "loggingContractChanged": false,
-        "securityAuthorityChanged": false,
-        "schedulerChanged": false
-      },
-      "actualRenderedArtifactOrRuntimePassClaimed": false
-    },
-    "assetFineMotionAndRetryDetail20261001": {
-      "ownerIntent": "자산 제작 AI를 더 디테일하게: 손·무기 접촉, 의상 관통, 시선·표정, 이동 발판 접촉 실측과 부분 수정 재시도 보존",
-      "implementation": [
-        "assets/vibe-motion-director.js",
-        "tools/vibe2-asset-production-plan.mjs",
-        "tools/vibe2-source-worker.mjs"
-      ],
-      "centralDocumentationImpact": {
-        "architectureTopologyChanged": false,
-        "loggingContractChanged": false,
-        "securityAuthorityChanged": false,
-        "schedulerChanged": false
-      },
-      "actualRenderedArtifactOrRuntimePassClaimed": false
     }
   },
   "vibeExecutionLaneContract": {
@@ -20002,6 +19972,17 @@
               "actualTransmittedPromptUsedForContextBudget": true,
               "newQueueOrScheduler": false,
               "promptRetentionIsNotRenderedQualityOrRepairCompletionProof": true
+            },
+            "runtimePixelReview": {
+              "enabled": true,
+              "planner": "assets/vibe-studio-asset-universe.js::createAssetRuntimeVisualReviewPlan",
+              "visionWorker": "tools/vibe2-source-worker.mjs::observeAssetRuntimeCaptures",
+              "surfaces": "ROBLOX_STUDIO|UNITY_EDITOR|UNITY_ANDROID_APK|WEB_BROWSER",
+              "contract": "CURRENT_SOURCE_REVISION+LOCAL_IMAGE_SHA256+NORMALIZED_REGION; REQUIRED_EXPECTED_SUBJECT_ONLY; UNCERTAIN_NEVER_ADD; EXISTING_RESPONSIBILITY_ONLY; PRESERVE_GAMEPLAY_BALANCE_SAVE_NETWORK; SAME_SURFACE_VIEW_RECAPTURE",
+              "retryBlock": "RUNTIME VISUAL REVIEW",
+              "engineCaptureProductionImplemented": false,
+              "pixelReviewPassIsNotRuntimeOrReleasePass": true,
+              "newQueueOrScheduler": false
             }
           }
         }
@@ -26610,8 +26591,8 @@
     "maxChangeRecordEntries": 43,
     "scope": "CURRENT_RULES_AND_EXECUTABLE_CONTRACTS",
     "historicalExecutionLogsAuthority": "GIT_HISTORY",
-    "archivedChangeRecordCommit": "601abba37796177dbb54ab9d44806489b112e052",
-    "archivedUnreferencedChangeRecords": 77,
+    "archivedChangeRecordCommit": "efe3c62bcd19614bb645c2cffe97701e04a25249",
+    "archivedUnreferencedChangeRecords": 80,
     "currentOwnerRulesMustRemain": true,
     "f0ThroughF9MustRemain": true,
     "publicationApprovalMustRemain": true,
