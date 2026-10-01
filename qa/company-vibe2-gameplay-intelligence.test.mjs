@@ -261,7 +261,7 @@ test('validation report runtime evidence binds into Vibe development context',()
   const runtimeEvidence={longGoal:{pass:true},replayRegression:{pass:false,status:'CRITICAL_STATE_DIVERGED'},softlock:{pass:true},saveRestore:{required:false,pass:true},economy:{required:false,pass:true},difficulty:{pass:true},performance:{pass:true},mobile:{pass:true},strategyOutcomes:{pass:false},contentDepth:{pass:false}};
   assert.deepEqual(runtimeEvidenceFromValidationReport({runtimeValidationEvidence:runtimeEvidence}),runtimeEvidence);
   const context=buildVibeDevelopmentContext({gameId:'g',genre:'SINGLE_DEFENSE_STRATEGY',baseline:{content:{}},inventory,existingHtml:'<main><script>let wave=1</script></main>',blockers:['RUNTIME_REWORK_REQUIRED'],runtimeEvidence});
-  assert.equal(context.version,6);
+  assert.equal(context.version,7);
   assert.equal(context.flowArchitectureValidation.pass,true);
   assert.deepEqual(context.runtimeEvidence,runtimeEvidence);
   assert.equal(context.repairLoop.runtimeEvidenceBound,true);
@@ -281,7 +281,7 @@ test('Vibe bootstrap receives the complete macro flow architecture before coding
   const existingHtml=`<main><script>function saveGame(){} localStorage.setItem('save-v5','1');const roll=Math.random()</script></main>`;
   const context=buildVibeDevelopmentContext({gameId:'g',genre:'SINGLE_DEFENSE_STRATEGY',baseline,inventory,existingHtml,blockers:['RUNTIME_REWORK_REQUIRED:FINAL_CONTENT_DEPTH_REWORK_REQUIRED'],runtimeEvidence:null});
   const prompt=buildApprovedScopeGenerationPrompt({gameId:'g',gameName:'Game',baseline,inventory,existingHtml,preservationBlockers:['RUNTIME_REWORK_REQUIRED:FINAL_CONTENT_DEPTH_REWORK_REQUIRED'],developmentContext:context});
-  assert.equal(context.version,6);
+  assert.equal(context.version,7);
   assert.match(prompt,/VIBE_DEVELOPMENT_CONTEXT:/);
   assert.match(prompt,/DERIVED_FROM_LOCKED_DESIGN_BASELINE/);
   assert.match(prompt,/flowArchitecture/);
