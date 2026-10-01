@@ -552,45 +552,111 @@ def npc(s,kind,pos):
 
 def build():
     s=Scene();c=palette(s)
-    s.box('Courtyard',(0,-.2,9),(84,.8,68),s.material('courtyard',(.13,.19,.19)))
-    s.box('HallFloor',(0,.1,-23),(59,.5,40),c['wood'])
-    # Compact footprint, exaggerated height and crooked silhouette.
+    # 대저택 전체 규모: 중앙 2층 그랜드홀 + 좌우 날개 + 정식 정원 플레이 영역.
+    s.box('Courtyard',(0,-.2,20),(156,.8,132),s.material('courtyard',(.12,.17,.17)))
+    s.box('HallFloor',(0,.1,-29),(108,.5,72),c['wood'])
+    s.box('LeftWingFloor',(-58,.1,-30),(36,.48,64),c['wood'])
+    s.box('RightWingFloor',(58,.1,-30),(36,.48,64),c['wood'])
+    s.box('Runner',(0,.48,-25),(12,.08,61),c['red'])
+    # 중앙 홀 외피와 좌우 날개. 중앙 시야를 막는 대형 빈 박스가 아니라 방 단위로 깊이를 나눈다.
     for side in [-1,1]:
-        s.box('ManorSideWall'+str(side),(side*29,11,-23),(1.5,22,40),c['plum'],lean=side*1.0)
-        s.box('FacadeWing'+str(side),(side*20,12,-3),(24,24,2),c['plum'],lean=side*.7)
-        for z in [-37,-23,-9]:
-            s.box('WallRib'+str(side)+str(z),(side*28,10,z),(1.5,20,1),c['wood'])
-        for x in [side*13,side*25]:
-            for y in [7,17]:
-                s.box('WindowFrame'+str(x)+str(y),(x,y,-1.8),(6,8,.8),c['wood'])
-                s.box('WindowGlass'+str(x)+str(y),(x,y,-1.25),(4.7,6.8,.12),c['amber'])
-                s.box('WindowMullion'+str(x)+str(y),(x,y,-1.0),(.28,7,.15),c['black'])
-                s.box('WindowCross'+str(x)+str(y),(x,y,-.9),(5,.25,.2),c['black'])
-        s.box('EntryPillar'+str(side),(side*8.1,7,-2),(1.6,14,4),c['stone'],lean=-side*.7)
-    s.box('BackWall',(0,11,-43),(60,22,1.5),c['plum'])
-    s.box('EntryLintel',(0,14,-2),(18,3,4),c['wood'])
-    s.box('EntryThreshold',(0,.40,-2),(16,.4,6),c['stone'])
+        s.box('ManorSideWall'+str(side),(side*54,13,-29),(1.5,26,72),c['plum'],lean=side*.65)
+        s.box('FacadeWing'+str(side),(side*43,13,-2),(34,26,2),c['plum'],lean=side*.5)
+        s.box('OuterWingWall'+str(side),(side*75,11,-31),(1.2,22,64),c['plum'],lean=side*.35)
+        s.box('WingBackWall'+str(side),(side*58,11,-63),(35,22,1.2),c['plum'])
+        for z in [-55,-39,-23,-7]:
+            s.box('WallRib'+str(side)+str(z),(side*53.4,11,z),(1.2,22,1),c['wood'])
+        # 1·2층 창을 분리해 외관 비율을 읽을 수 있게 한다.
+        for x in [side*33,side*45,side*61,side*70]:
+            for y in [6.8,17.2]:
+                s.box('WindowFrame'+str(x)+str(y),(x,y,-.8),(6.2,8.4,.75),c['wood'])
+                s.box('WindowGlass'+str(x)+str(y),(x,y,-.35),(4.8,6.8,.12),c['glass'])
+                s.box('WindowMullion'+str(x)+str(y),(x,y,-.15),(.28,7,.12),c['black'])
+                s.box('WindowCross'+str(x)+str(y),(x,y,-.12),(5,.25,.14),c['black'])
+        s.box('EntryPillar'+str(side),(side*8.5,7.5,-2),(1.8,15,4),c['stone'],lean=-side*.45)
+    s.box('BackWall',(0,13,-65),(110,26,1.5),c['plum'])
+    s.box('EntryLintel',(0,15,-2),(20,3.5,4),c['wood'])
+    s.box('EntryThreshold',(0,.40,-2),(18,.4,6),c['stone'])
+
+    # 현관문은 기존 상호작용 이름을 유지한다.
     for side in [-1,1]:
         door=s.node('EntryDoor'+str(side),pos=(side*7.2,.5,-2))
         s.box('EntryDoorWood'+str(side),(-side*3.5,5.8,0),(7,11.6,.5),c['wood'],parent=door)
         for y in [2.7,8.6]:s.box('EntryDoorPanel'+str(side)+str(y),(-side*3.5,y,.3),(5.3,4.4,.16),c['teal'],parent=door)
         s.lathe('EntryDoorKnob'+str(side),(-side*6.2,5.4,.5),.22,.22,.4,c['brass'],parent=door)
-    # Asymmetric roof ridge, using custom six-sided prism rather than a hotel box.
-    roof=[[-33,22,-46],[33,22,-46],[33,22,0],[-33,22,0],[-5,39,-46],[-5,36,0]]
+
+    # 중앙부는 2층 높이로 솟고 좌우 지붕은 낮아 실루엣이 단계적으로 읽힌다.
+    roof=[[-61,25,-67],[61,25,-67],[61,25,1],[-61,25,1],[-7,46,-67],[-7,42,1]]
     s.node('CrookedRoof',s.mesh('CrookedRoof',roof,[[0,4,1],[3,2,5],[0,3,5,4],[4,5,2,1],[0,1,2,3]],c['roof']))
-    s.box('LeaningChimney',(20,34,-30),(5,22,5),c['stone'],lean=3)
-    s.box('ChimneyCap',(23,45,-30),(7,1.1,7),c['black'])
-    s.lathe('LeftTurret',(-27,24,-35),6,5,22,c['plum'],sides=8)
-    s.lathe('LeftTurretRoof',(-28,43,-35),8,0,17,c['roof'],sides=8)
-    s.box('Runner',(0,.48,-21),(11,.08,36),c['red'])
-    for z in range(3,35,5):s.box('PathStone'+str(z),(math.sin(z)*.4,.35,z),(10,.32,4),c['stone'],rot=math.sin(z)*.06)
-    for x in [-35,35]:
-        for z in [-28,-8,12,32]:s.prop('graveyard','iron-fence','Fence'+str(x)+str(z),(x,.2,z),5,math.pi/2)
-    for x,z,h in [(-36,30,17),(35,28,20),(-39,-14,24),(37,-32,22)]:
-        s.box('CrookedTreeTrunk'+str(x),(x,h*.4,z),(1.2,h*.8,1.1),c['wood'],lean=2)
-        for i in range(4):
-            sign=1 if i%2 else -1
-            s.box('BareBranch'+str(x)+str(i),(x+sign*2,h*(.35+i*.12),z),(sign*0+0.65,h*.34,.55),c['wood'],lean=sign*4)
+    s.box('CentralTower',(0,29,-36),(28,17,25),c['plum'])
+    s.lathe('CentralTowerCrown',(0,46,-36),15,11,13,c['roof'],sides=8)
+    s.box('LeaningChimney',(31,38,-42),(5,24,5),c['stone'],lean=2.4)
+    s.box('ChimneyCap',(33,50,-42),(7,1.1,7),c['black'])
+    s.lathe('LeftTurret',(-57,27,-48),7,5.5,25,c['plum'],sides=10)
+    s.lathe('LeftTurretRoof',(-58,48,-48),9,0,17,c['roof'],sides=10)
+    s.lathe('RightTurret',(57,27,-48),7,5.5,25,c['plum'],sides=10)
+    s.lathe('RightTurretRoof',(58,48,-48),9,0,17,c['roof'],sides=10)
+
+    # 큰 계단과 2층 난간 복도. 실제 보행면은 얇은 연속 계단으로 구성한다.
+    for i in range(12):
+        step_y=.42+i*.78;step_z=-43-i*1.30
+        s.box('GrandStair'+str(i),(0,step_y,step_z),(28,step_y*.16+1.2,1.55),c['wood'])
+    s.box('SecondFloorGallery',(0,10.2,-55),(92,.55,19),c['wood'])
+    for side in [-1,1]:
+        s.box('BalconyWalk'+str(side),(side*43,10.2,-31),(15,.55,48),c['wood'])
+        for z in range(-53,-7,4):
+            s.lathe('Baluster'+str(side)+str(z),(side*36,11.3,z),.11,.10,2.1,c['brass'],sides=12)
+    for x in range(-42,43,5):s.lathe('BackBaluster'+str(x),(x,11.3,-46),.11,.10,2.1,c['brass'],sides=12)
+
+    # 좌우 날개 방: 기록보관실/서재/응접실/의상실/장례용품실/라운지.
+    room_specs=[
+      (-58,-54,'ArchiveRoom'),(-58,-33,'LibraryRoom'),(-58,-12,'ParlorRoom'),
+      (58,-54,'MortuaryRoom'),(58,-33,'WardrobeRoom'),(58,-12,'LoungeRoom')
+    ]
+    for x,z,name in room_specs:
+        s.box(name+'Divider',(x,7,z),(34,14,1),c['plum'])
+        s.box(name+'Door',(x,5,z+.55),(5.6,10,.35),c['wood'])
+        s.lathe(name+'Knob',(x+1.8,5,z+.85),.16,.16,.22,c['brass'],sides=20)
+        for side in [-1,1]:s.box(name+'Sconce'+str(side),(x+side*8,6,z+.7),(1.3,3,.30),c['brass'])
+    # 2층 잠긴 객실문.
+    for i,x in enumerate([-36,-22,-8,8,22,36]):
+        s.box('LockedGuestDoor'+str(i),(x,15,-63.9),(5.2,8.5,.34),c['wood'])
+        s.lathe('LockedGuestKnob'+str(i),(x+1.7,14.7,-63.55),.13,.13,.18,c['brass'],sides=18)
+
+    # 정원 중앙 진입로와 분수/부서진 동상.
+    for i,z in enumerate(range(8,71,5)):
+        s.box('PathStone'+str(i),(math.sin(i*.9)*.35,.18,z),(12.5,.26,4.2),c['stone'],rot=math.sin(i*.7)*.035)
+    s.lathe('FountainBasin',(0,.55,39),7.4,7.0,1.1,c['stone'],sides=48)
+    s.lathe('FountainPool',(0,1.15,39),5.8,5.8,.18,c['glass'],sides=48)
+    s.lathe('FountainStem',(0,3.2,39),.85,.62,4.7,c['stone'],sides=32)
+    s.ellipsoid('BrokenStatueTorso',(0,5.7,39),(2.8,4.2,1.7),c['stone'])
+    statue=s.ellipsoid('BrokenStatueHead',(.45,8.0,39.1),(1.4,1.6,1.3),c['stone']);statue.rotation_euler.z=.19
+
+    # 가스등/벤치/폐마차/생울타리/외곽 산책로.
+    for i,(x,z) in enumerate([(-13,54),(13,54),(-20,28),(20,28),(-29,9),(29,9),(-57,34),(57,34)]):
+        s.lathe('GasLampPole'+str(i),(x,3.5,z),.16,.14,7,c['black'],sides=18)
+        s.ellipsoid('GasLampGlass'+str(i),(x,7.4,z),(1.0,1.5,1.0),c['glass'])
+        s.ellipsoid('GasLampFlame'+str(i),(x,7.4,z),(.25,.60,.25),c['amber'])
+    for i,(x,z,rot) in enumerate([(-31,35,0),(31,35,0),(-57,10,math.pi/2),(57,10,math.pi/2)]):
+        s.box('GardenBenchSeat'+str(i),(x,1.6,z),(6,.35,1.5),c['wood'],rot=rot)
+        s.box('GardenBenchBack'+str(i),(x,3.0,z-.55),(6,3.0,.30),c['wood'],rot=rot)
+    s.box('CarriageBody',(46,2.6,47),(8,3.8,4.6),c['wood'],rot=.12)
+    for i,(dx,dz) in enumerate([(-3,-2),(-3,2),(3,-2),(3,2)]):
+        wheel=s.lathe('CarriageWheel'+str(i),(46+dx,1.5,47+dz),1.6,1.6,.22,c['black'],sides=32);wheel.rotation_euler.x=math.pi/2
+    s.box('CarriageShaft',(37,1.7,48),(11,.35,.35),c['wood'],rot=.12)
+    for side in [-1,1]:
+        for j,z in enumerate(range(8,67,9)):
+            s.box('Hedge'+str(side)+str(j),(side*35,1.3,z),(18,2.6,2.2),s.material('DeadHedge',(.09,.14,.09)))
+            s.box('SidePath'+str(side)+str(j),(side*56,.08,z),(11,.12,7),c['stone'])
+    # 마른 나무와 일부 묘비/정원석.
+    for t,(x,z,h) in enumerate([(-65,49,15),(65,52,17),(-61,19,14),(62,16,16),(-44,66,13),(43,67,15)]):
+        s.box('DeadTreeTrunk'+str(t),(x,h*.40,z),(1.3,h*.80,1.2),c['wood'],lean=(-1 if t%2 else 1)*1.5)
+        for i in range(5):
+            side=-1 if i%2 else 1
+            s.box('DeadTreeBranch'+str(t)+'_'+str(i),(x+side*(1.5+i*.35),h*(.44+i*.085),z),(0.55,h*.26,.50),c['wood'],lean=side*(3+i*.4))
+    for i,(x,z) in enumerate([(-69,33),(-63,28),(-59,39),(69,29),(63,35),(58,40),(-47,58),(48,59)]):
+        s.box('Gravestone'+str(i),(x,1.7,z),(2.3,3.4,.65),c['stone'],lean=(-.16+i*.04))
+        s.box('GraveBase'+str(i),(x,.35,z),(3.3,.55,1.7),c['stone'])
     # Carved trims, imperfect rooflines and pointed arch panels give a western manor silhouette.
     for side in [-1,1]:
         for y in [1,11.5,22.5]:s.box('FacadeCornice'+str(side)+str(y),(side*20,y,-1.35),(25,.6,1.2),c['wood'])
