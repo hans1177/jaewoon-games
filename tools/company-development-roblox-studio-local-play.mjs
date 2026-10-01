@@ -14,7 +14,7 @@ const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,'
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(path.resolve(file)),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const stableSha256=value=>crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
-export const ROBLOX_STUDIO_HARNESS_VERSION=15;
+export const ROBLOX_STUDIO_HARNESS_VERSION=16;
 
 export function assertCurrentStudioWorkflowHead({
   workflowSha=clean(process.env.GITHUB_SHA),
@@ -2586,24 +2586,77 @@ export async function runOfficialStudioMcpPlay({
       }
       checkpoint('floating-character-map-readiness',true);
       let startGateProbe=initialClientProbe;
-      if(clean(actualPlayContract.selectionButtonText)){
-        const target=initialClientProbe?.ui?.buttons?.[clean(actualPlayContract.selectionButtonText)]||null;
+      const entryButtonTexts=launchStringList(actualPlayContract.entryButtonTexts);
+      for(let entryIndex=0;entryIndex<entryButtonTexts.length;entryIndex++){
+        const entryText=entryButtonTexts[entryIndex];
+        let entryProbe=startGateProbe;
+        let target=null;
+        for(let attempt=0;attempt<10;attempt++){
+          target=entityRows(entryProbe?.ui?.interactive).find(row=>
+            row?.visible!==false&&row?.active!==false&&row?.offscreen!==true&&clean(row?.text)===entryText
+          )||null;
+          if(target)break;
+          if(attempt<9){
+            await wait(250);
+            entryProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client',{planRoutes:false})||entryProbe;
+          }
+        }
         let ok=false;
-        if(target?.visible===true&&Number.isFinite(Number(target.centerX))&&Number.isFinite(Number(target.centerY))){
+        if(target&&Number.isFinite(Number(target.centerX))&&Number.isFinite(Number(target.centerY))){
+          try{
+            const mouseTool=client.tool('user_mouse_input');
+            const result=await client.call('user_mouse_input',mouseClickArgs(mouseTool.inputSchema||{},studioId,target.centerX,target.centerY));
+            ok=result?.isError!==true;
+          }catch{}
+        }
+        actions.push({id:`ui-entry-${entryIndex+1}`,type:'mcp-mouse-input',dispatched:target!=null,ok,text:entryText});
+        checkpoint(`entry-action-${entryIndex+1}-dispatched`,ok);
+        if(!ok)throw new Error('ROBLOX_STUDIO_START_ACTION_ABORT:ENTRY_ACTION_NOT_VISIBLE:'+entryText);
+        await wait(Math.max(200,Number(actualPlayContract.afterEntryWaitMs||350)));
+        startGateProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client',{planRoutes:false})||entryProbe;
+      }
+      if(clean(actualPlayContract.selectionButtonText)){
+        const selectionText=clean(actualPlayContract.selectionButtonText);
+        let selectionProbe=startGateProbe;
+        let target=null;
+        for(let attempt=0;attempt<10;attempt++){
+          target=entityRows(selectionProbe?.ui?.interactive).find(row=>
+            row?.visible!==false&&row?.active!==false&&row?.offscreen!==true&&clean(row?.text)===selectionText
+          )||selectionProbe?.ui?.buttons?.[selectionText]||null;
+          if(target&&target.visible!==false&&target.offscreen!==true)break;
+          target=null;
+          if(attempt<9){
+            await wait(250);
+            selectionProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client',{planRoutes:false})||selectionProbe;
+          }
+        }
+        let ok=false;
+        if(target&&Number.isFinite(Number(target.centerX))&&Number.isFinite(Number(target.centerY))){
           try{const mouseTool=client.tool('user_mouse_input');const result=await client.call('user_mouse_input',mouseClickArgs(mouseTool.inputSchema||{},studioId,target.centerX,target.centerY));ok=result?.isError!==true;}catch{}
         }
-        actions.push({id:'ui-role-selection',type:'mcp-mouse-input',dispatched:target!=null,ok});
+        actions.push({id:'ui-role-selection',type:'mcp-mouse-input',dispatched:target!=null,ok,text:selectionText});
         checkpoint('role-selection-input-dispatched',ok);
+        if(!ok)throw new Error('ROBLOX_STUDIO_START_ACTION_ABORT:ROLE_SELECTION_NOT_VISIBLE:'+selectionText);
         await wait(Math.max(250,Number(actualPlayContract.afterSelectionWaitMs||1800)));
-        startGateProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client')||initialClientProbe;
+        startGateProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client',{planRoutes:false})||selectionProbe;
       }
       const primaryTextBeforeStart=clean(actualPlayContract.primaryActionButtonText);
-      const startTarget=entityRows(startGateProbe?.ui?.interactive).find(row=>
-        row?.visible!==false
-        &&row?.active!==false
-        &&clean(row?.text)!==primaryTextBeforeStart
-        &&/^(?:(?:게임|game)\s+)?(?:start|play|begin|continue|ready|시작|플레이|계속|준비)(?:\s|$)/i.test(clean(row?.text))
-      )||null;
+      const exactStartText=clean(actualPlayContract.startButtonText);
+      const startTarget=exactStartText
+        ?entityRows(startGateProbe?.ui?.interactive).find(row=>
+          row?.visible!==false&&row?.active!==false&&row?.offscreen!==true&&clean(row?.text)===exactStartText
+        )||null
+        :entityRows(startGateProbe?.ui?.interactive).find(row=>
+          row?.visible!==false
+          &&row?.active!==false
+          &&clean(row?.text)!==primaryTextBeforeStart
+          &&/^(?:(?:게임|game)\s+)?(?:start|play|begin|continue|ready|시작|플레이|계속|준비)(?:\s|$)/i.test(clean(row?.text))
+        )||null;
+      if(exactStartText&&!startTarget){
+        checkpoint('adaptive-start-gate-input-dispatched',false);
+        actions.push({id:'ui-start-gate',type:'mcp-mouse-input',dispatched:false,ok:false,text:exactStartText});
+        throw new Error('ROBLOX_STUDIO_START_ACTION_ABORT:START_ACTION_NOT_VISIBLE:'+exactStartText);
+      }
       if(startTarget){
         let ok=false;
         if(Number.isFinite(Number(startTarget.centerX))&&Number.isFinite(Number(startTarget.centerY))){
@@ -2615,7 +2668,8 @@ export async function runOfficialStudioMcpPlay({
         }
         actions.push({id:'ui-start-gate',type:'mcp-mouse-input',dispatched:true,ok,text:clean(startTarget.text)});
         checkpoint('adaptive-start-gate-input-dispatched',ok);
-        await wait(1200);
+        if(!ok)throw new Error('ROBLOX_STUDIO_START_ACTION_ABORT:START_ACTION_INPUT_FAILED:'+clean(startTarget.text));
+        await wait(Math.max(250,Number(actualPlayContract.afterStartWaitMs||1200)));
       }
 
       // Finish observed first-time class selection before movement can leave the village.
