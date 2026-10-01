@@ -199,7 +199,7 @@ function adaptiveCoverageSignals(launch={}){
     rewards:/reward|gold|coin|xp|loot|drop|chest|prize|currency|income|보상|골드|코인|경험치|전리품|드롭|상자|재화|수입/.test(text),
     economy:/gold|coin|currency|shop|merchant|price|cost|upgrade|purchase|sell/.test(text),
     save:/save|load|rejoin|datastore|persist|progression persists|unlock persists/.test(text),
-    retry:/retry|restart|respawn|round restart|new run|reroll|reset/.test(text),
+    retry:/retry|restart|respawn|round restart|new run|reset/.test(text),
     camera:/camera|chase screen|field of view|fov|spectat/.test(text),
     performance:/performance|optimization|streaming|large map|expanded map|population|many|roster/.test(text)
   });
