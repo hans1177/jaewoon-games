@@ -763,7 +763,32 @@
     "releaseDispatchQueueThreshold": 4,
     "nativeReleaseDispatchBatchMax": 2,
     "releaseRecoveryBatchMax": 2,
-    "schedulerDispatchBackpressure": true
+    "schedulerDispatchBackpressure": true,
+    "plannerCoreQaReuse": {
+      "enabled": true,
+      "exactMainShaRequired": true,
+      "successfulCoreQaRequired": true,
+      "duplicateTestsSkipped": [
+        "qa/vibe2-learning-motor.test.mjs",
+        "qa/vibe2-auto-planner.test.mjs",
+        "qa/vibe2-native-asset-production.test.mjs",
+        "qa/vibe2-source-worker.test.mjs",
+        "qa/vibe2-capability-distillation.test.mjs",
+        "qa/vibe2-incremental-qa.test.mjs",
+        "qa/vibe2-practice-distillation.test.mjs",
+        "qa/vibe2-design-intelligence.test.mjs"
+      ],
+      "directPlannerTestsPreserved": [
+        "qa/company-shared-context.test.mjs",
+        "qa/vibe-studio-asset-universe.test.mjs",
+        "qa/vibe3-roblox-distillation.test.mjs",
+        "qa/company-development-web-runtime.test.mjs"
+      ],
+      "sharedContextValidationPreserved": true,
+      "constitutionalEnforcementPreserved": true,
+      "observationFailureAction": "RUN_TARGETED_QA",
+      "qualityGateWeakening": false
+    }
   },
   "adaptiveBackpressure": {
     "enabled": true,
