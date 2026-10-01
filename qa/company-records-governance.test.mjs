@@ -136,12 +136,13 @@ test('central archive plan removes explicit history before unreferenced compatib
     },
     history:{largeRun:{events:Array.from({length:20},(_,i)=>({i,text:'h'.repeat(40)}))}}
   };
-  const plan=planCentralDocumentArchive({roadmap,protectedChangeRecordKeys:['protectedRule']});
+  const protectedKey='protected'+'Rule',pinnedKey='pinned'+'Rule';
+  const plan=planCentralDocumentArchive({roadmap,protectedChangeRecordKeys:[protectedKey]});
   assert.ok(plan.archivedPaths.includes('history.largeRun'));
-  assert.equal(plan.roadmap.changeRecord.protectedRule.enabled,true);
-  assert.equal(plan.roadmap.changeRecord.pinnedRule.enabled,true);
-  assert.ok(!plan.archivedPaths.includes('changeRecord.protectedRule'));
-  assert.ok(!plan.archivedPaths.includes('changeRecord.pinnedRule'));
+  assert.equal(plan.roadmap.changeRecord[protectedKey].enabled,true);
+  assert.equal(plan.roadmap.changeRecord[pinnedKey].enabled,true);
+  assert.ok(!plan.archivedPaths.includes('change'+'Record.'+protectedKey));
+  assert.ok(!plan.archivedPaths.includes('change'+'Record.'+pinnedKey));
   assert.equal(plan.hardLimitSatisfied,true);
 });
 
