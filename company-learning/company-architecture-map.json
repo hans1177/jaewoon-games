@@ -1286,7 +1286,7 @@
         "heavyGameExecutionUnchanged": true,
         "ingressControl": "ubuntu-slim",
         "coreQaRunner": "ubuntu-slim",
-        "coreQaConcurrencyMode": "MAIN_LATEST_SHA_NON_MAIN_ACTIVE_PRESERVED",
+        "coreQaConcurrencyMode": "MAIN_LATEST_SHA_ONLY_NON_MAIN_ACTIVE_PRESERVED",
         "coreQaCancelInProgress": false,
         "coreQaBrowserSmokeRunner": "ubuntu-24.04",
         "coreQaBrowserSmokeSeparateJob": true,
@@ -1295,7 +1295,10 @@
         "coreQaBrowserSmokeParallel": true,
         "coreQaBrowserSmokeRequiresRealBrowser": true,
         "coreQaBrowserSmokeUsesGamePrimaryLabel": false,
-        "coreQaMainPushCancelsSupersededInProgress": true
+        "coreQaMainPushCancelsSupersededInProgress": true,
+        "callbackReserve": "ubuntu-latest",
+        "lightweightReserveSeparatedFromFanIn": true,
+        "coreQaNonMainCancelInProgress": false
       },
       "capacityAuthority": "tools/vibe2-queue-control.mjs::reserveVibeTaskBatch",
       "globalActiveWaveBarrier": false,
