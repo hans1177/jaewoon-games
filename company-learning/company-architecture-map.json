@@ -1414,7 +1414,7 @@
         ],
         "crossLaneGlobalReserveLock": false,
         "sameLaneReserveSerialization": false,
-        "statelessRefillCoalescing": "ONE_RUNNING_AND_LATEST_PENDING_PER_LANE",
+        "statelessRefillCoalescing": "RUN_UNIQUE_OPTIMISTIC_SHARED_QUEUE_WRITE",
         "sharedQueue": "vibe2-unreal-core:.vibe2/queue.json",
         "conflictResolution": "FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UNBOUNDED_WITH_CAPPED_BACKOFF_ON_ACTUAL_WRITE_CONFLICT",
         "workerDirectControlWrite": false,
