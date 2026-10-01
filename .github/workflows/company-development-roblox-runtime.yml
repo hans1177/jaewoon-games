@@ -337,8 +337,11 @@ jobs:
             const reconciliationRow=reconciliationById.get(item.gameId);
             const existingSourceAssetRebind=reconciliationRow?.failure==='existing-source-studio-asset-binding-required';
             const existingSourceLearningRebind=reconciliationRow?.failure==='existing-source-verified-external-learning-required';
-            const existingSourceMaintenanceRebind=existingSourceAssetRebind||existingSourceLearningRebind;
-            if(existingSourceLearningRebind)console.log('ROBLOX_RUNTIME_OWNS_VERIFIED_LEARNING_REBIND='+item.gameId);
+            if(existingSourceLearningRebind){
+              console.log('ROBLOX_VERIFIED_LEARNING_SWEEP_OWNS_REBIND='+item.gameId);
+              continue;
+            }
+            const existingSourceMaintenanceRebind=existingSourceAssetRebind;
             const bootstrapFailed=secondaryOwnerFocus?item.ownerFocusRobloxSourceBootstrapFailedAt:item.robloxSourceBootstrapFailedAt;
             const f0FoundationRepair=!secondaryOwnerFocus
               &&item.robloxFoundationF0Passed!==true
@@ -357,7 +360,7 @@ jobs:
             const repairSupersedesCandidate=existingSourceMaintenanceRebind||knownSourceRepairDebt;
             if(candidateReady&&!repairSupersedesCandidate)continue;
             if(candidateReady&&repairSupersedesCandidate){
-              console.log('ROBLOX_STALE_SOURCE_CANDIDATE_BYPASSED_FOR_REPAIR='+item.gameId+':'+(existingSourceLearningRebind?'VERIFIED_EXTERNAL_LEARNING_REBIND':existingSourceAssetRebind?'STUDIO_ASSET_REBIND':'KNOWN_SOURCE_REPAIR_DEBT'));
+              console.log('ROBLOX_STALE_SOURCE_CANDIDATE_BYPASSED_FOR_REPAIR='+item.gameId+':'+(existingSourceAssetRebind?'STUDIO_ASSET_REBIND':'KNOWN_SOURCE_REPAIR_DEBT'));
             }
             if(!secondaryOwnerFocus&&reconciledPass.has(item.gameId)&&!knownSourceRepairDebt)continue;
             if(fs.existsSync(target)&&!knownSourceRepairDebt&&!existingSourceMaintenanceRebind)continue;
