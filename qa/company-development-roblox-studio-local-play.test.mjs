@@ -2154,6 +2154,43 @@ test('commercial Studio evaluator records progression and AI movement deltas',()
 });
 
 
+
+test('commercial Studio baseline also protects perceptible motion and audio, not only object counts',()=>{
+  assert.match(helper,/perceptibility:runtime\?\.metrics\?\.perceptibility/);
+  assert.match(helper,/commercial-regression-perceptibility-/);
+  assert.match(helper,/Previously verified perceptible/);
+
+  const candidate=item();
+  candidate.robloxInternalVibePlayEvidence={
+    pass:true,
+    sourceRevision:source,artifactIdentity:artifact,artifactRunId:777,universeId:'123',placeId:'456',versionNumber:9,
+    runtimeSummary:{commercialAudit:{
+      auditProfile:'FAST_DEEP',
+      surfaces:{soundCount:4},
+      perceptibility:{
+        motion:{pass:true,playingAnimationTrackCount:1},
+        audio:{pass:true,soundCount:4,playingSoundCount:1,soundGroupCount:2,multiSoundMixOrganized:true}
+      }
+    }}
+  };
+  const broken=runtime();
+  broken.metrics={
+    ...(broken.metrics||{}),
+    auditProfile:'FAST_DEEP',
+    perceptibility:{
+      motion:{pass:false,playingAnimationTrackCount:0},
+      audio:{pass:false,soundCount:4,playingSoundCount:0,soundGroupCount:0,multiSoundMixOrganized:false}
+    },
+    surfaces:{soundCount:4}
+  };
+  const result=createLocalStudioPlayEvidence({
+    item:candidate,runtime:broken,expected,workflowRunId:99,studioStepSucceeded:true,
+    testedAt:'2026-10-02T00:00:00.000Z'
+  });
+  assert.equal(result.evidence.runtimeSummary.commercialAudit.perceptibility.motion.pass,false);
+  assert.equal(result.evidence.runtimeSummary.commercialAudit.perceptibility.audio.pass,false);
+});
+
 test('commercial Studio baseline turns disappearing verified gameplay surfaces into repair-required regression',()=>{
   const candidate=item();
   candidate.robloxInternalVibePlayEvidence={
