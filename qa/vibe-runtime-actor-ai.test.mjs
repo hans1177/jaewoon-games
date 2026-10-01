@@ -483,6 +483,12 @@ test('engine-validated actor mind restore preserves memory emotion relationship 
   assert.equal(denied.reason,'engine_validation_required');
   assert.equal(restored.memory.length,0);
 
+  const wrongActor=new JaewoonCommonAI({identity:{id:'other-actor'},memoryLimit:8});
+  const mismatch=wrongActor.restoreMindState(snapshot,{engineValidated:true});
+  assert.equal(mismatch.restored,false);
+  assert.equal(mismatch.reason,'actor_identity_mismatch');
+  assert.equal(wrongActor.memory.length,0);
+
   const result=restored.restoreMindState(snapshot,{engineValidated:true});
   assert.equal(result.restored,true);
   assert.equal(result.persistentWrite,false);
