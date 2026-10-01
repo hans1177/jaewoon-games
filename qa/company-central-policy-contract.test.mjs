@@ -729,7 +729,7 @@ test('Vibe may evolve its own internal architecture from verified structural evi
   assert.equal(e.rollbackOnRegressionOrNoImprovement,true);
   assert.equal(e.authorityExpansionForbidden,true);
   assert.equal(e.gateWeakeningForbidden,true);
-  assert.equal(e.executionUsesExistingScheduler,true);
+  assert.equal(e.executionUsesExistingDirectQueueReservation,true);
 });
 
 
