@@ -259,6 +259,30 @@ test('Vibe gameplay plan automatically requests causal living actor implementati
   assert.ok(plan.verificationOrder.includes('PERSONAL_QUEST_PROPOSAL_ENGINE_AUTHORITY_WHEN_APPLICABLE'));
 });
 
+test('save-enabled living actor plans reuse the existing save authority for bounded mind restore',()=>{
+  const inventory=[
+    {id:'npc',path:'world.npc',label:'NPC companion relationship memory'},
+    {id:'quest',path:'story.quest',label:'quest dialogue'}
+  ];
+  const sketch=deriveGameplaySketch({gameId:'saved-living-ai',genre:'RPG',baseline:{content:{coreLoop:['explore','talk']}},inventory});
+  const source=analyzeExistingGameSource(`<main data-npc="smith"><script>
+    const SAVE_KEY='player-save';
+    const raw=localStorage.getItem('player-save');
+    localStorage.setItem('player-save', JSON.stringify({raw}));
+    let hp=10;
+  </script></main>`);
+  const plan=buildVibePatchPlan({gameplaySketch:sketch,sourceAnalysis:source,inventory});
+  const ids=plan.tasks.map(row=>row.id);
+  assert.ok(ids.includes('PRESERVE_SAVE_CONTRACT'));
+  assert.ok(ids.includes('BIND_ACTOR_MIND_TO_EXISTING_SAVE_RESTORE'));
+  const task=plan.tasks.find(row=>row.id==='BIND_ACTOR_MIND_TO_EXISTING_SAVE_RESTORE');
+  assert.ok(task.dependsOn.includes('IMPLEMENT_CAUSAL_ACTOR_RELATIONSHIP_GRAPH'));
+  assert.ok(task.dependsOn.includes('PRESERVE_SAVE_CONTRACT'));
+  assert.match(task.reason,/existing save owner/i);
+  assert.match(task.reason,/do not create a parallel save authority/i);
+  assert.ok(plan.verificationOrder.includes('ACTOR_MIND_SAVE_RESTORE_WHEN_APPLICABLE'));
+});
+
 test('AI action validator rejects attempts to own protected gameplay state',()=>{
   assert.equal(validateVibeAIAction({intent:'warn'}).safe,true);
   const bad=validateVibeAIAction({
