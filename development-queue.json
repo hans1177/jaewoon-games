@@ -16437,10 +16437,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T00:57:57.188Z",
+      "updatedAt": "2026-10-01T00:59:24.148Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -17535,7 +17535,7 @@
       "unityCandidateBranch": "development/unity-tech-monster-adventure-36773180555",
       "unitySourceCommit": "92c76090d928b7724e18a0fd980f1f173a4581ba",
       "unityBuildRunId": 36777792645,
-      "unityRuntimeSmokeRunId": 36780766141,
+      "unityRuntimeSmokeRunId": 36798633295,
       "unityIndependentQaRunId": 36791814550,
       "unityRegressionRunId": 36792018085,
       "unityInternalReleaseReady": false,
@@ -17556,9 +17556,9 @@
         "multiplayerPassed": true,
         "regressionPassed": false,
         "rawStageResults": {
-          "runtime": true,
-          "independentQa": true,
-          "regression": true
+          "runtime": false,
+          "independentQa": false,
+          "regression": false
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
@@ -17931,7 +17931,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-01T00:29:11.067Z"
+        "verifiedAt": "2026-10-01T00:59:24.148Z"
       },
       "unityF9ReleaseRegressionPassed": false,
       "unityF9ReleaseRegressionPassedAt": null,
@@ -17949,9 +17949,9 @@
         "multiplayerPassed": true,
         "regressionPassed": false,
         "rawStageResults": {
-          "runtime": true,
-          "independentQa": true,
-          "regression": true
+          "runtime": false,
+          "independentQa": false,
+          "regression": false
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
@@ -27925,7 +27925,7 @@
       "unityCanonicalEvidenceBound": false
     }
   ],
-  "updatedAt": "2026-10-01T00:57:57.188Z",
+  "updatedAt": "2026-10-01T00:59:26.331Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
