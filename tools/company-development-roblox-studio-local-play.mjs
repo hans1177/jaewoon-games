@@ -191,7 +191,7 @@ function adaptiveCoverageSignals(launch={}){
     motion:/dash|dodge|parry|block|movement|move|chase|charge|jump|attack|skill|ability/.test(text),
     audio:/audio|bgm|music|sound|sfx|footstep/.test(text),
     npc:/npc|merchant|chief|healer|resident|worker|villager|quest giver|trainer|master|shopkeeper|상인|이장|치유사|주민|일꾼|마을사람|교관|전직|상점주인/.test(text),
-    companion:/companion|follower|pet|summon|party member|ai party|boss companion|worker automation|동료|펫|소환|파티원|동료 ai|자동 일꾼/.test(text),
+    companion:/companion|follower|pet|summon|party member|ai party|boss companion|동료|펫|소환|파티원|동료 ai/.test(text),
     items:/item|loot|drop|weapon|armor|relic|inventory|resource|material|chest|food|potion/.test(text),
     environment:/environment|decoration|asset|visual|art|biome|terrain|lighting|forest|village|house|building|theme/.test(text),
     effects:/vfx|effect|feedback|telegraph|trail|flash|particle|beam|highlight|sound|sfx/.test(text),
@@ -199,7 +199,7 @@ function adaptiveCoverageSignals(launch={}){
     rewards:/reward|gold|coin|xp|loot|drop|chest|prize|currency|income|보상|골드|코인|경험치|전리품|드롭|상자|재화|수입/.test(text),
     economy:/gold|coin|currency|shop|merchant|price|cost|upgrade|purchase|sell/.test(text),
     save:/save|load|rejoin|datastore|persist|progression persists|unlock persists/.test(text),
-    retry:/retry|restart|respawn|round restart|new run|reroll|reset|rejoin/.test(text),
+    retry:/retry|restart|respawn|round restart|new run|reroll|reset/.test(text),
     camera:/camera|chase screen|field of view|fov|spectat/.test(text),
     performance:/performance|optimization|streaming|large map|expanded map|population|many|roster/.test(text)
   });
