@@ -424,6 +424,53 @@ test('reconstructed actor state suppresses a source event already present in mem
   assert.equal(restoredFromMemory.relationshipWith('player').trust,12);
 });
 
+test('engine-validated actor mind restore preserves memory emotion relationship and source-event idempotency without replaying transient intent',()=>{
+  const source=new JaewoonCommonAI({identity:{id:'mira'},memoryLimit:8});
+  const packet=planVibeCausalActorLoop({
+    event:{
+      id:'evt-restore-mind-1',
+      type:'rescue',
+      actorId:'player',
+      targetId:'mira',
+      location:'camp',
+      tick:70,
+      witnesses:['mira']
+    },
+    observers:[{
+      actor:companion,
+      relationship:{trust:5,dependence:4},
+      memory:[],
+      emotion:'alert',
+      knowledge:{observed:true,confidence:1,attribution:'direct-cause'}
+    }]
+  }).observers[0];
+  const applied=source.observeCausalEvent(packet);
+  assert.equal(applied.applied,true);
+  const snapshot=source.snapshotMind();
+
+  const restored=new JaewoonCommonAI({identity:{id:'mira'},memoryLimit:8});
+  const denied=restored.restoreMindState(snapshot);
+  assert.equal(denied.restored,false);
+  assert.equal(denied.reason,'engine_validation_required');
+  assert.equal(restored.memory.length,0);
+
+  const result=restored.restoreMindState(snapshot,{engineValidated:true});
+  assert.equal(result.restored,true);
+  assert.equal(result.persistentWrite,false);
+  assert.equal(result.gameplayAuthority,false);
+  assert.equal(result.transientContextRestored,false);
+  assert.equal(restored.causalContext,null);
+  assert.equal(restored.memory.length,1);
+  assert.equal(restored.emotion,'relief');
+  assert.ok(restored.relationshipWith('player').trust>5);
+  assert.ok(restored.relationshipWith('player').causeEventIds.includes('evt-restore-mind-1'));
+
+  const duplicate=restored.observeCausalEvent(packet);
+  assert.equal(duplicate.applied,false);
+  assert.equal(duplicate.reason,'duplicate_event');
+  assert.equal(restored.memory.length,1);
+});
+
 test('browser runtime exposes the same causal actor loop instead of a parallel shadow implementation',()=>{
   assert.match(roleDirectorSource,/planJaewoonVibeCausalActorLoop:planVibeCausalActorLoop/);
 });
