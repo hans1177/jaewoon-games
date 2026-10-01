@@ -2371,7 +2371,7 @@ test('commercial Studio probes are split into parser-safe core world and runtime
   assert.ok(block.indexOf('local function attr')<block.indexOf('roundState=attr('));
 });
 
-test('Studio evidence push conflicts reapply onto latest company-runtime instead of rebasing JSON',()=>{
+test('Studio evidence push conflicts reapply onto latest company-runtime until convergence',()=>{
   const persistStart=workflow.indexOf('- name: Persist exact Studio MCP play evidence');
   const persistEnd=workflow.indexOf('- name: Refill existing 24H development loop after verified play',persistStart);
   assert.ok(persistStart>=0&&persistEnd>persistStart);
@@ -2379,6 +2379,11 @@ test('Studio evidence push conflicts reapply onto latest company-runtime instead
   assert.match(block,/ROBLOX_STUDIO_MCP_RUNTIME_PUSH_CONFLICT=REAPPLY_LATEST/);
   assert.match(block,/git -C runtime reset --hard origin\/company-runtime/);
   assert.match(block,/Studio MCP evidence reapply on latest runtime failed/);
+  assert.match(block,/\$attempt = 0/);
+  assert.match(block,/while \(-not \$pushed\)/);
+  assert.match(block,/ROBLOX_STUDIO_MCP_RUNTIME_PUSH_RETRY_DELAY=/);
+  assert.doesNotMatch(block,/\$attempt -le 5/);
+  assert.doesNotMatch(block,/runtime evidence push failed after latest-state reapply retries/);
   assert.doesNotMatch(block,/git -C runtime rebase origin\/company-runtime/);
 });
 
