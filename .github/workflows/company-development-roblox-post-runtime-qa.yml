@@ -1571,6 +1571,10 @@ jobs:
 
       - name: Persist runtime tester and QA evidence
         working-directory: runtime
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_STUDIO: ${{ inputs.run_studio || false }}
+          RETRY_OPEN_CLOUD_ONLY: ${{ inputs.retry_open_cloud_only || false }}
         shell: bash
         run: |
           set -euo pipefail
@@ -1718,6 +1722,20 @@ jobs:
           }
           console.log('ROBLOX_FOUNDATION_DOWNSTREAM_CONFLICT_FILTER_COUNT='+conflicts.size);
           NODE
+
+          if [ -s /tmp/roblox-foundation-persist-same-field-conflicts ]; then
+            cut -d'|' -f1 /tmp/roblox-foundation-persist-same-field-conflicts | sort -u > /tmp/roblox-foundation-revalidation-ids
+            while read -r id; do
+              [ -n "$id" ] || continue
+              args=(workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id")
+              if [ "$RUN_STUDIO" = 'true' ]; then args+=(-f run_studio=true); fi
+              if [ "$RETRY_OPEN_CLOUD_ONLY" = 'true' ]; then args+=(-f retry_open_cloud_only=true); fi
+              gh "${args[@]}"
+              echo "ROBLOX_FOUNDATION_CONFLICT_REVALIDATION_DISPATCHED=$id"
+            done < /tmp/roblox-foundation-revalidation-ids
+          else
+            echo 'ROBLOX_FOUNDATION_CONFLICT_REVALIDATION_DISPATCHED=NONE'
+          fi
           echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=YES_OR_ALREADY_MERGED'
 
       - name: Dispatch exact F9 review for every runtime-accepted candidate
