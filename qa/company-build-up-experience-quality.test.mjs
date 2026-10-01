@@ -92,7 +92,11 @@ test('Roblox BUILD_UP gives motion UI inventory audio VFX camera extra native at
   assert.equal(experience.robloxExtra.runtimeEvidence.officialStudioMcpRequired,true);
   assert.equal(experience.robloxExtra.runtimeEvidence.sourceMarkersAloneCannotPass,true);
   assert.ok(experience.weakestTracks.includes('MOTION_AND_ACTING'));
+  assert.ok(experience.weakestTracks.includes('AUDIO_MUSIC_AND_FEEDBACK'));
   assert.ok(experience.weakestTracks.includes('COMBAT_AND_PRIMARY_ACTION_FEEL'));
+  assert.deepEqual(experience.priorityOrder.slice(0,3),[
+    'MOTION_AND_ACTING','AUDIO_MUSIC_AND_FEEDBACK','COMBAT_AND_PRIMARY_ACTION_FEEL'
+  ]);
   const audioRow=directive.allDomainImplementationDirectives.find(row=>row.domain==='AUDIO_MUSIC_SFX');
   const inventoryRow=directive.allDomainImplementationDirectives.find(row=>row.domain==='INVENTORY_USABILITY');
   assert.ok(['FIX_NOW','BUILD_UP_NOW'].includes(audioRow.priority));
