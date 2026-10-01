@@ -16,6 +16,15 @@ const CINEMATIC_SCENE_INTENT=Object.freeze(['EMOTIONAL_INTENT','RISK_OR_TENSION'
 const CINEMATIC_MOTION_LAYERS=Object.freeze(['PRIMARY_MOTION','SECONDARY_MOTION','PROCEDURAL_RESPONSE']);
 const VFX_INTENSITY_HIERARCHY=Object.freeze(['AMBIENT','NORMAL','HEAVY','CRITICAL_OR_SIGNATURE','BOSS_OR_ULTIMATE']);
 const ADAPTIVE_AUDIO_STATES=Object.freeze(['EXPLORATION','DISCOVERY_OR_TENSION','COMBAT','DANGER','BOSS','VICTORY','REST_OR_HUB','SPECIAL_EVENT']);
+const EXPERIENCE_BUILDUP_AXES=Object.freeze([
+  'MOTION','COMBAT_FEEL','UI_HUD','INVENTORY_EQUIPMENT','AUDIO_MUSIC','VFX','CAMERA','WORLD_ART_LIGHTING','ONBOARDING_READABILITY','MOBILE_INPUT','PERFORMANCE_STABILITY'
+]);
+const EXPERIENCE_PLATFORM_EMPHASIS=Object.freeze({
+  web:Object.freeze(['UI_HUD','MOBILE_INPUT','MOTION','COMBAT_FEEL','AUDIO_MUSIC']),
+  roblox:Object.freeze(['MOTION','COMBAT_FEEL','UI_HUD','AUDIO_MUSIC','CAMERA','WORLD_ART_LIGHTING']),
+  unity:Object.freeze(['MOTION','UI_HUD','AUDIO_MUSIC','WORLD_ART_LIGHTING','PERFORMANCE_STABILITY'])
+});
+
 
 export function auditVibePresentation(files=[]){const text=textOf(files).toLowerCase(),dimensions=[];for(const[name,hints]of Object.entries(DIMENSIONS)){const hits=hints.filter(x=>text.includes(x)).length,score=clamp(hits/hints.length*100);dimensions.push(Object.freeze({name,score,debt:100-score,priority:score<30?'critical':score<55?'high':score<75?'medium':'low'}))}dimensions.sort((a,b)=>b.debt-a.debt);const overall=clamp(dimensions.reduce((n,x)=>n+x.score,0)/(dimensions.length||1));return Object.freeze({score:overall,grade:overall>=85?'A':overall>=70?'B':overall>=50?'C':'D',dimensions:Object.freeze(dimensions),priority:Object.freeze(dimensions.slice(0,4).map(x=>x.name))})}
 export function createVibeDesignSystem(files=[]){const text=textOf(files),rounded=/border-radius|corner_radius/i.test(text),shadow=/box-shadow|shadow_/i.test(text),outline=/outline|stroke|border/i.test(text),largeTouch=/44px|48px|custom_minimum_size/i.test(text);return Object.freeze({version:1,principles:Object.freeze(['gameplay-first-hierarchy','one-primary-action','consistent-spacing','state-visible-at-glance','touch-first','safe-area-aware']),tokens:Object.freeze({radius:rounded?'existing':'12px-baseline',shadow:shadow?'existing':'subtle-depth',outline:outline?'existing':'readability-outline',touchTarget:largeTouch?'existing':'44px-minimum'}),protected:Object.freeze(['gameplay-layout-function','input-binding','game-rule-values','save-structure'])})}
@@ -44,6 +53,48 @@ export function createVibeAudioUIExecution(event,{muted=false,reducedMotion=fals
 export function executeVibeAudioUIEvent(event,handlers={},options={}){const execution=createVibeAudioUIExecution(event,options);if(!execution.accepted)return execution;const results=[];for(const command of execution.commands){const handler=handlers[command.channel];if(typeof handler==='function')results.push(Object.freeze({channel:command.channel,result:handler(command,event)}))}return Object.freeze({...execution,handled:results.length>0,results:Object.freeze(results)})}
 export function routeVibePresentationEvent(event,handlers={}){if(!event||event.authority!=='presentation-only'||event.gameplayMutationAllowed!==false)return Object.freeze({handled:false,reason:'invalid-presentation-event',results:Object.freeze([])});const results=[];for(const channel of event.channels||[]){const handler=handlers[channel];if(typeof handler!=='function')continue;results.push(Object.freeze({channel,result:handler(event)}))}return Object.freeze({handled:results.length>0,eventId:event.presentationEventId,results:Object.freeze(results)})}
 export function buildVibePresentationTimeline(events=[]){const order=['spawn','wave','attack','hit','skill','boss','death','victory'],present=uniq(events),timeline=order.filter(x=>present.includes(x)).map(x=>createVibeCinematicBeat(x,{importance:x==='boss'||x==='victory'?'major':'normal'}));return Object.freeze(timeline)}
+export function createVibeExperienceBuildUpPlan({target='web',evidence={}}={}){
+  const platform=clean(target).toLowerCase()==='roblox'?'roblox':clean(target).toLowerCase()==='unity'?'unity':'web';
+  const emphasis=EXPERIENCE_PLATFORM_EMPHASIS[platform]||EXPERIENCE_PLATFORM_EMPHASIS.web;
+  const axes=EXPERIENCE_BUILDUP_AXES.map(id=>{
+    const row=evidence?.[id]||{};
+    const score=Number.isFinite(Number(row.score))?clamp(row.score):null;
+    return Object.freeze({
+      id,
+      score,
+      emphasis:emphasis.includes(id),
+      status:score===null?'BASELINE_REQUIRED':score>=82?'STRONG':score>=66?'BUILDUP':score>=40?'WEAK':'CRITICAL'
+    });
+  }).sort((a,b)=>(a.score??-1)-(b.score??-1)||(b.emphasis?1:0)-(a.emphasis?1:0));
+  const tasks=axes.map(axis=>Object.freeze({
+    domain:'experience-buildup',
+    target:axis.id,
+    action:`baseline-diagnose-build-runtime-compare-${axis.id.toLowerCase()}`,
+    priority:axis.status==='CRITICAL'?'critical':axis.status==='WEAK'?'high':axis.status==='BUILDUP'?'medium':'normal',
+    platform,
+    runtimeEvidenceRequired:true,
+    presenceOnlyPassForbidden:true
+  }));
+  return Object.freeze({
+    version:1,
+    platform,
+    qualityProfile:'HIGH_END_PERCEPTUAL_BUILDUP',
+    axes:Object.freeze(axes),
+    emphasis:Object.freeze([...emphasis]),
+    loop:Object.freeze(['BASELINE_CAPTURE','WEAKEST_AXIS_DIAGNOSIS','FOCUSED_BUILDUP','RUNTIME_REPLAY','BEFORE_AFTER_COMPARE','REGRESSION_CHECK','REPEAT_UNTIL_TARGET']),
+    tasks:Object.freeze(tasks),
+    rules:Object.freeze({
+      presenceOnlyPassForbidden:true,
+      markerOnlyPassForbidden:true,
+      weakestAxisFirst:true,
+      beforeAfterRuntimeEvidenceRequired:true,
+      gameplayAuthorityMustRemainUnchanged:true,
+      focusedRepairPreferred:true,
+      fullRegressionAfterFocusedRepair:true
+    })
+  });
+}
+
 export function createVibeHighEndPresentationStack({request=''}={}){return Object.freeze({
   version:2,
   target:'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION',
@@ -54,25 +105,27 @@ export function createVibeHighEndPresentationStack({request=''}={}){return Objec
   rules:Object.freeze(['presentation-follows-authoritative-gameplay-events','signature-events-use-dedicated-presentation','scene-intent-precedes-decoration','character-and-creature-acting-is-part-of-visual-quality','primary-secondary-procedural-motion-layers-compose-together','game-specific-vfx-language-and-intensity-hierarchy','lighting-supports-region-risk-and-event-readability','camera-never-hides-required-telegraph','audio-vfx-camera-lighting-share-one-art-direction','audio-selection-follows-game-concept-and-runtime-state','mobile-readability-and-reduced-motion-preserved','presentation-checkpoint-never-means-terminal-completion']),
   protected:Object.freeze(['damage','cooldown','reward','spawn-rule','save','progression','economy','hit-semantics'])
 })}
-export function planVibePresentationAutopilot({files=[],events=[],request='',changeRequest=null}={}){
+export function planVibePresentationAutopilot({files=[],events=[],request='',changeRequest=null,target='web',experienceEvidence={}}={}){
   const audit=auditVibePresentation(files);
   const designSystem=createVibeDesignSystem(files);
   const timeline=buildVibePresentationTimeline(events);
   const highEnd=createVibeHighEndPresentationStack({request});
   const cinematicDirection=highEnd.cinematicDirection;
+  const experienceBuildUp=createVibeExperienceBuildUpPlan({target,evidence:experienceEvidence});
   const tasks=[];
   for(const area of audit.priority)tasks.push(Object.freeze({domain:'presentation',target:area,action:`improve-${area}`,risk:['camera','transition'].includes(area)?'medium':'low'}));
   tasks.push(Object.freeze({domain:'presentation',target:'cinematic-direction',action:'align-scene-intent-acting-motion-vfx-camera-lighting-audio',risk:'medium'}));
+  for(const task of experienceBuildUp.tasks.slice(0,6))tasks.push(task);
   if(timeline.length)tasks.push(Object.freeze({domain:'presentation',target:'event-timeline',action:'wire-cinematic-beats',risk:'medium'}));
   return Object.freeze({
     version:3,
     request:String(request),
     qualityProfile:'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION',
-    audit,designSystem,timeline,highEnd,cinematicDirection,
+    audit,designSystem,timeline,highEnd,cinematicDirection,experienceBuildUp,
     changeRequest:changeRequest||null,
     tasks:Object.freeze(tasks.slice(0,10)),
     policy:Object.freeze({serverAI:false,checkpoint:true,checkpointIsTerminal:false,continuousEvolution:true,highEndCompletionIsReleaseGate:false,mobileFirst:true,gameplayAuthoritative:true,noRuleMutation:true,lightingIsPresentationOnly:true,signatureEventPresentationRequired:true,artDirectionCohesionRequired:true,latestOwnerIntentWinsSameScope:true,directResponsibleSystemEditPreferred:true,wrapperOrShadowAccumulationForbidden:true})
   });
 }
 export function scoreVibeScreenComposition({primaryActions=1,overlaps=0,edgeClips=0,unreadableLabels=0,criticalHudVisible=true,touchTargetsSmall=0}={}){let score=100;score-=Math.max(0,primaryActions-1)*8;score-=overlaps*15;score-=edgeClips*18;score-=unreadableLabels*10;score-=touchTargetsSmall*8;if(!criticalHudVisible)score-=30;score=clamp(score);return Object.freeze({score,grade:score>=90?'A':score>=75?'B':score>=60?'C':'D',issues:Object.freeze([overlaps&&'overlap',edgeClips&&'edge-clip',unreadableLabels&&'readability',touchTargetsSmall&&'touch-target',!criticalHudVisible&&'critical-hud-hidden'].filter(Boolean))})}
-if(typeof window!=='undefined'){window.auditJaewoonVibePresentation=auditVibePresentation;window.createJaewoonVibeDesignSystem=createVibeDesignSystem;window.createJaewoonVibeCinematicDirection=createVibeCinematicDirection;window.createJaewoonVibeCinematicBeat=createVibeCinematicBeat;window.createJaewoonVibePresentationEvent=createVibePresentationEvent;window.compileJaewoonVibePresentationEvents=compileVibePresentationEvents;window.createJaewoonVibeAudioUIExecution=createVibeAudioUIExecution;window.executeJaewoonVibeAudioUIEvent=executeVibeAudioUIEvent;window.routeJaewoonVibePresentationEvent=routeVibePresentationEvent;window.buildJaewoonVibePresentationTimeline=buildVibePresentationTimeline;window.createJaewoonVibeHighEndPresentationStack=createVibeHighEndPresentationStack;window.planJaewoonVibePresentationAutopilot=planVibePresentationAutopilot;window.scoreJaewoonVibeScreenComposition=scoreVibeScreenComposition}
+if(typeof window!=='undefined'){window.auditJaewoonVibePresentation=auditVibePresentation;window.createJaewoonVibeDesignSystem=createVibeDesignSystem;window.createJaewoonVibeCinematicDirection=createVibeCinematicDirection;window.createJaewoonVibeCinematicBeat=createVibeCinematicBeat;window.createJaewoonVibePresentationEvent=createVibePresentationEvent;window.compileJaewoonVibePresentationEvents=compileVibePresentationEvents;window.createJaewoonVibeAudioUIExecution=createVibeAudioUIExecution;window.executeJaewoonVibeAudioUIEvent=executeVibeAudioUIEvent;window.routeJaewoonVibePresentationEvent=routeVibePresentationEvent;window.buildJaewoonVibePresentationTimeline=buildVibePresentationTimeline;window.createJaewoonVibeHighEndPresentationStack=createVibeHighEndPresentationStack;window.createJaewoonVibeExperienceBuildUpPlan=createVibeExperienceBuildUpPlan;window.planJaewoonVibePresentationAutopilot=planVibePresentationAutopilot;window.scoreJaewoonVibeScreenComposition=scoreVibeScreenComposition}
