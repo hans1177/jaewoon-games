@@ -2493,6 +2493,10 @@ jobs:
           $productFailureObserved = $false
           $productFailureSignature = ''
 
+          & git -C main fetch --no-tags --depth=1 origin '${{ matrix.sourceRevision }}'
+          if ($LASTEXITCODE -ne 0) { throw 'Exact Studio source revision fetch failed before static multiplayer binding' }
+          Write-Host 'ROBLOX_STUDIO_EXACT_SOURCE_REVISION_FETCH=PASS'
+
           while ($true) {
             $attempt++
             if (Test-Path $result) { Remove-Item $result -Force -ErrorAction SilentlyContinue }

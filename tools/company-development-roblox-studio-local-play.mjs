@@ -6,6 +6,7 @@ import readline from 'node:readline';
 import {spawn,spawnSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import {ownerDevelopmentHeld} from './vibe2-queue-control.mjs';
+import {validateRobloxMultiplayerSourceContract} from './company-development-roblox-runtime-foundation.mjs';
 
 const clean=v=>String(v??'').trim();
 const bool=v=>String(v??'').toLowerCase()==='true';
@@ -13,7 +14,7 @@ const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,'
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(path.resolve(file)),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const stableSha256=value=>crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
-export const ROBLOX_STUDIO_HARNESS_VERSION=9;
+export const ROBLOX_STUDIO_HARNESS_VERSION=10;
 
 export function assertCurrentStudioWorkflowHead({
   workflowSha=clean(process.env.GITHUB_SHA),
@@ -200,7 +201,7 @@ function adaptiveCoverageSignals(launch={}){
     rewards:/reward|gold|coin|xp|loot|drop|chest|prize|currency|income|보상|골드|코인|경험치|전리품|드롭|상자|재화|수입/.test(text),
     economy:/gold|coin|currency|shop|merchant|price|cost|upgrade|purchase|sell/.test(text),
     save:/save|load|rejoin|datastore|persist|progression persists|unlock persists/.test(text),
-    retry:/retry|restart|respawn|round restart|new run|reset/.test(text),
+    retry:/\bretry\b|\brestart\b|\brespawn\b|\bround restart\b|\bnew run\b|재도전|재시작|리스폰|부활/.test(text),
     camera:/camera|chase screen|field of view|fov|spectat/.test(text),
     performance:/performance|optimization|streaming|large map|expanded map|population|many|roster/.test(text)
   });
@@ -694,6 +695,53 @@ function ownedStudioSourceText(actualPlayContractPath=''){
   };
   walk(root);
   return chunks.join('\n');
+}
+
+function gitTreeTextAtRevision(repoRoot,revision,relativeRoot){
+  const ls=spawnSync('git',['-C',repoRoot,'ls-tree','-r','--name-only',revision,'--',relativeRoot],{encoding:'utf8'});
+  if(ls.status!==0)return'';
+  const files=String(ls.stdout||'').split(/\r?\n/).map(clean).filter(file=>/\.lua[u]?$/i.test(file));
+  const chunks=[];
+  for(const file of files){
+    const shown=spawnSync('git',['-C',repoRoot,'show',revision+':'+file],{encoding:'utf8',maxBuffer:8*1024*1024});
+    if(shown.status!==0)return'';
+    chunks.push(String(shown.stdout||''));
+  }
+  return chunks.join('\n');
+}
+
+export function deriveExactStaticMultiplayerEvidence({actualPlayContractPath='',runtimeIdentity={},priorEvidence=null}={}){
+  const gameId=clean(runtimeIdentity?.gameId);
+  const sourceRevision=clean(runtimeIdentity?.sourceRevision);
+  const artifactIdentity=clean(runtimeIdentity?.artifactIdentity);
+  const checkKeys=['playerRoster','participantCount','authoritativeBroadcast','clientReceive','twoParticipantCapablePath'];
+  const priorExact=priorEvidence
+    &&priorEvidence.authority==='roblox-static-two-client-source-contract'
+    &&priorEvidence.passed===true&&priorEvidence.codeContractPassed===true
+    &&priorEvidence.runtimeTwoClientExecutionRequired===false
+    &&priorEvidence.gameId===gameId
+    &&priorEvidence.sourceRevision===sourceRevision
+    &&priorEvidence.artifactIdentity===artifactIdentity
+    &&checkKeys.every(key=>priorEvidence?.checks?.[key]===true);
+  if(priorExact)return priorEvidence;
+  if(!gameId||!/^[0-9a-f]{40}$/i.test(sourceRevision)||!/^sha256:[0-9a-f]{64}$/i.test(artifactIdentity))return null;
+  const contract=clean(actualPlayContractPath);
+  if(!contract||!fs.existsSync(contract))return null;
+  const gameRoot=path.dirname(path.resolve(contract));
+  const rootProbe=spawnSync('git',['-C',gameRoot,'rev-parse','--show-toplevel'],{encoding:'utf8'});
+  const repoRoot=clean(rootProbe.stdout);
+  if(rootProbe.status!==0||!repoRoot)return null;
+  const relativeGameRoot=path.relative(repoRoot,gameRoot).replace(/\\/g,'/');
+  const serverSource=gitTreeTextAtRevision(repoRoot,sourceRevision,relativeGameRoot+'/server');
+  const clientSource=gitTreeTextAtRevision(repoRoot,sourceRevision,relativeGameRoot+'/client');
+  if(!serverSource||!clientSource)return null;
+  const validated=validateRobloxMultiplayerSourceContract({serverSource,clientSource});
+  if(validated?.passed!==true)return null;
+  return{
+    version:2,gameId,sourceRevision,artifactIdentity,passed:true,codeContractPassed:true,
+    checks:validated.checks,runtimeTwoClientExecutionRequired:false,
+    authority:'roblox-static-two-client-source-contract'
+  };
 }
 
 export function classifyStudioConsoleOutput(consoleResult,{ownedSourceText=''}={}){
@@ -1709,6 +1757,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     if(!actionId)continue;
     // 의미를 모르는 공용 UI를 게임 기능 회귀 검사로 오인하지 않는다.
     if(action.type==='mcp-ui-exploration'&&action.semantic==='GENERAL')continue;
+    if(action.type!=='mcp-map-route-audit'&&action.ok!==true)continue;
     const targetIdentity=clean(action?.targetIdentity)||actionId;
     const id='observed-action-'+stableSha256({type:action.type,targetIdentity}).slice(0,20);
     if(!discoveredPatterns.has(id)&&discoveredPatterns.size>=64){discoveredPatternOverflow=true;continue;}
@@ -3799,6 +3848,11 @@ async function main(){
     const headGuard=assertCurrentStudioWorkflowHead({workflowSha:clean(a['control-revision'])||clean(process.env.GITHUB_SHA)});
     console.log('ROBLOX_STUDIO_WORKFLOW_HEAD_FRESH=YES:'+headGuard.checkoutSha);
     if(mode==='check-head')return;
+    const runtimeIdentity={gameId:clean(a['game-id']),sourceRevision:clean(a['source-revision']),artifactIdentity:clean(a['artifact-identity'])};
+    const queueItem=a.queue?readJson(a.queue).items?.find(item=>item.gameId===runtimeIdentity.gameId):null;
+    const multiplayerSourceEvidence=deriveExactStaticMultiplayerEvidence({
+      actualPlayContractPath:clean(a['actual-play-contract']),runtimeIdentity,priorEvidence:queueItem?.robloxMultiplayerQaEvidence||null
+    });
     const result=await runOfficialStudioMcpPlay({
       mcpCommand:clean(a['mcp-command']),
       output:clean(a.output),
@@ -3810,8 +3864,7 @@ async function main(){
       settingCandidatePathCount:Number(a['setting-candidate-path-count']??-1),
       actualPlayContractPath:clean(a['actual-play-contract']),
       auditProfile:clean(a['audit-profile']||'FAST_DEEP'),
-      runtimeIdentity:{gameId:clean(a['game-id']),sourceRevision:clean(a['source-revision']),artifactIdentity:clean(a['artifact-identity'])},
-      multiplayerSourceEvidence:a.queue?readJson(a.queue).items?.find(item=>item.gameId===clean(a['game-id']))?.robloxMultiplayerQaEvidence:null
+      runtimeIdentity,multiplayerSourceEvidence
     });
     const checkpointSummary=(Array.isArray(result?.checkpoints)?result.checkpoints:[])
       .map(row=>clean(row?.id)+':'+(row?.pass===true?'PASS':'FAIL'))

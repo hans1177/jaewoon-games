@@ -24,6 +24,7 @@ import {
   stopOwnedStudioMultiplayerTests,
   validateStudioPlaceArtifactPreOpen,
   evaluateStudioSaveRejoin,
+  deriveExactStaticMultiplayerEvidence,
   ROBLOX_STUDIO_HARNESS_VERSION
 } from '../tools/company-development-roblox-studio-local-play.mjs';
 
@@ -1733,7 +1734,7 @@ test('commercial adaptive Studio contract expands automatically from launch core
 
 test('worker automation, save rejoin, and map rerolls do not invent companion or retry requirements',()=>{
   const contract=deriveStudioActualPlayContract({
-    launchCore:['resident hiring and worker automation','seeded room layout rerolls each new empty run'],
+    launchCore:['resident hiring and worker automation','seeded room layout rerolls each new empty run','monster aggro and leash reset'],
     releaseGates:['save/rejoin']
   });
   assert.equal(contract.adaptiveCoverage.signals.companion,false);
@@ -2783,6 +2784,18 @@ test('batch cleanup preserves manually requested exact-game Studio verification 
 });
 
 
+test('failed Studio input dispatch is not promoted into a product observed-action failure',()=>{
+  const contract={required:true,requiredScenarios:['adaptive-semantic-interaction-effect']};
+  const actions=[
+    {id:'combat-input-miss',type:'mcp-combat-action',dispatched:true,ok:false,effectObserved:false},
+    {id:'shop-noop',type:'mcp-world-interaction',semantic:'SHOP',dispatched:true,ok:true,effectObserved:false}
+  ];
+  const result=evaluateStudioActualPlayContract({contract,actions});
+  const patterns=result.scenarios.filter(row=>row.generatedFrom==='OFFICIAL_STUDIO_OBSERVED_ACTION');
+  assert.equal(patterns.some(row=>row.actionId==='combat-input-miss'),false);
+  assert.equal(patterns.find(row=>row.actionId==='shop-noop')?.pass,false);
+});
+
 test('Studio generates separate observed-action patterns so one working button cannot hide another failure',()=>{
   const contract={required:true,requiredScenarios:['adaptive-semantic-interaction-effect']};
   const actions=[
@@ -2913,7 +2926,7 @@ test('manual single-game diagnosis preserves product failures and still rejects 
  candidate.robloxQualityBuildUpRequired=true;
  candidate.robloxQualityBuildUpSourceRevision=source;
  candidate.robloxQualityBuildUpEvidence={qualityFailureKinds:['adaptive-world-safety']};
- candidate.robloxInternalVibePlayEvidence={pass:false,runtimeVerified:false,failureClass:'STUDIO_PRODUCT_QUALITY_FAILURE'};
+ candidate.robloxInternalVibePlayEvidence={studioHarnessVersion:ROBLOX_STUDIO_HARNESS_VERSION,pass:false,runtimeVerified:false,failureClass:'STUDIO_PRODUCT_QUALITY_FAILURE'};
  const peer=structuredClone(candidate);peer.gameId='g2';
  const queue={items:[candidate,peer]};
  const before=structuredClone(queue);
@@ -3112,6 +3125,13 @@ test('observed class selection must receive the selected class and close its UI 
   assert.equal(existing.error,'');
 });
 
+test('Studio fetches the exact candidate source revision before deriving single-window multiplayer evidence',()=>{
+  const block=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
+  assert.match(block,/git -C main fetch --no-tags --depth=1 origin '\$\{\{ matrix\.sourceRevision \}\}'/);
+  assert.match(helper,/deriveExactStaticMultiplayerEvidence/);
+  assert.match(helper,/gitTreeTextAtRevision/);
+});
+
 test('exact multiplayer source contract is prebound before Studio pending branch',()=>{
   const prebind=workflow.indexOf('ROBLOX_F7_MULTIPLAYER_CODE_CONTRACT_PREBOUND=');
   const studioWait=workflow.indexOf('if(!exactStudioInternalValidation)');
@@ -3121,6 +3141,32 @@ test('exact multiplayer source contract is prebound before Studio pending branch
   assert.match(block,/artifactIdentity,/);
   assert.match(block,/authority:'roblox-static-two-client-source-contract'/);
   assert.match(block,/runtimeTwoClientExecutionRequired:false/);
+});
+
+test('Studio rebuilds exact static multiplayer evidence from the candidate source revision when queue evidence is stale',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'studio-exact-multi-'));
+  try{
+    const gameRoot=path.join(root,'roblox-games','g1');
+    fs.mkdirSync(path.join(gameRoot,'server'),{recursive:true});
+    fs.mkdirSync(path.join(gameRoot,'client'),{recursive:true});
+    fs.writeFileSync(path.join(gameRoot,'launch-mvp.json'),JSON.stringify({launchCore:['multiplayer team sync']}));
+    fs.writeFileSync(path.join(gameRoot,'server','Game.server.luau'),'local Players=game:GetService("Players")\nlocal rows=Players:GetPlayers()\nremote:FireAllClients("MULTIPLAYER_SYNC",{ParticipantCount=#rows})\n');
+    fs.writeFileSync(path.join(gameRoot,'client','Game.client.luau'),'remote.OnClientEvent:Connect(function(kind) if kind=="MULTIPLAYER_SYNC" then print(kind) end end)\n');
+    for(const args of [['init'],['config','user.email','qa@example.com'],['config','user.name','qa'],['add','.'],['commit','-m','fixture']]){
+      const r=spawnSync('git',args,{cwd:root,encoding:'utf8'});assert.equal(r.status,0,r.stderr);
+    }
+    const sourceRevision=spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).stdout.trim();
+    const artifactIdentity='sha256:'+'b'.repeat(64);
+    const evidence=deriveExactStaticMultiplayerEvidence({
+      actualPlayContractPath:path.join(gameRoot,'launch-mvp.json'),
+      runtimeIdentity:{gameId:'g1',sourceRevision,artifactIdentity},
+      priorEvidence:{gameId:'g1',sourceRevision:'c'.repeat(40),artifactIdentity:'sha256:'+'d'.repeat(64),passed:true,codeContractPassed:true}
+    });
+    assert.equal(evidence?.passed,true);
+    assert.equal(evidence?.sourceRevision,sourceRevision);
+    assert.equal(evidence?.artifactIdentity,artifactIdentity);
+    assert.equal(evidence?.checks?.twoParticipantCapablePath,true);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('single-window multiplayer accepts only the exact static source contract without claiming two clients',()=>{
