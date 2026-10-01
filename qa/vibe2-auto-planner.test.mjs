@@ -3791,3 +3791,52 @@ test('real cozy-island Web source produces both code BUILD_UP and graphics repla
   assert.ok(graphicsBuildUp.responsibleFiles.every(file=>file.startsWith(sourceRoot+'/')));
   assert.ok(graphicsBuildUp.responsibleFiles.some(file=>/\.(?:html?|css|js|mjs)$/i.test(file)));
 });
+test('actual fantasy-survival Web source emits code and graphics BUILD_UP work',()=>{
+  const root=path.resolve(process.cwd());
+  const sourceFile=path.join(root,'web-games','fantasy-survival','index.html');
+  assert.ok(fs.existsSync(sourceFile),'actual fantasy-survival Web source must exist');
+  assert.ok(fs.statSync(sourceFile).size>100000,'actual fantasy-survival source must be the real game, not a tiny fixture');
+
+  const catalogData=JSON.parse(fs.readFileSync(path.join(root,'game-catalog.json'),'utf8'));
+  const game=(catalogData.games||[]).find(row=>row.id==='fantasy-survival');
+  assert.ok(game,'fantasy-survival must exist in the real catalog');
+
+  const projects=collectProjects({projects:[]},{games:[game]},root,{items:[]});
+  const project=projects.find(row=>row.gameId==='fantasy-survival'&&row.engine==='web');
+  assert.ok(project,'real fantasy-survival must enter the Web planner lane');
+  assert.equal(project.projectPath,'web-games/fantasy-survival');
+
+  const tasks=findStudioContinuousImprovementTasks(project,root,{tasks:[]});
+  assert.ok(tasks.length>=3,'real Web BUILD_UP should emit multiple quality-axis tasks');
+  const presentation=tasks.find(row=>row.studioQualityEvolution?.focusPillar==='PRESENTATION');
+  const code=tasks.find(row=>['CORE_FUN','PROGRESSION','USABILITY','STABILITY'].includes(row.studioQualityEvolution?.focusPillar));
+
+  assert.ok(code,'real Web BUILD_UP must include a non-presentation code/system task');
+  assert.ok((code.responsibleFiles||[]).includes('web-games/fantasy-survival/index.html'));
+  assert.equal(code.target,'web');
+  assert.ok(code.buildUpDirective?.directiveId);
+
+  assert.ok(presentation,'real Web BUILD_UP must include a PRESENTATION task');
+  assert.equal(presentation.target,'web');
+  assert.equal(presentation.assetProductionLane,true);
+  assert.ok((presentation.responsibleFiles||[]).includes('web-games/fantasy-survival/index.html'));
+  assert.equal(presentation.graphicsReplacementContract?.platform,'WEB');
+  assert.equal(presentation.graphicsReplacementContract?.adaptiveCount?.minimumActual,1);
+  assert.equal(presentation.graphicsReplacementContract?.adaptiveCount?.maximumActual,60);
+  assert.equal(presentation.graphicsReplacementContract?.implementation?.actualSourceOrBindingDeltaRequired,true);
+  assert.equal(presentation.graphicsReplacementContract?.implementation?.beforeAfterEvidenceRequired,true);
+  assert.ok((presentation.evidence||[]).includes('graphics-pass-real-asset-binding-runtime-required'));
+  assert.ok((presentation.evidence||[]).includes('presentation-runtime-qa-required'));
+  assert.ok((presentation.evidence||[]).includes('adaptive-graphics-replacement:v1'));
+
+  assert.equal(code.buildUpDirectiveId,presentation.buildUpDirectiveId,'code and graphics work must share the same BUILD_UP generation');
+  assert.equal(code.buildUpGeneration,presentation.buildUpGeneration);
+  assert.equal(presentation.buildUpDirective?.designContextMode,'SOURCE_SAFE_NO_DESIGN');
+  assert.equal(presentation.buildUpDirective?.autonomousContentExpansion?.designlessSafeMode,true);
+  assert.equal(presentation.buildUpDirective?.autonomousContentExpansion?.derivedRuleEvolution?.allowed,false);
+  assert.ok((presentation.evidence||[]).includes('build-up-designless-gameplay-expansion:FORBIDDEN'));
+  assert.deepEqual(
+    new Set(tasks.map(row=>row.studioQualityEvolution?.focusPillar)),
+    new Set(['PRESENTATION','USABILITY','STABILITY'])
+  );
+});
