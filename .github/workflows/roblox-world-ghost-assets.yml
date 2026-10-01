@@ -63,7 +63,8 @@ jobs:
         run: |
           blender --background --python assets/roblox/world-ghosts/refine-humanoid-motion.py -- \
             --source assets/roblox/world-ghosts/native/mesh/bride.glb \
-            --output assets/roblox/world-ghosts/native/mesh/bride-motion-v2
+            --output assets/roblox/world-ghosts/native/mesh/bride-motion-v2 \
+            --render-dir assets/roblox/world-ghosts/native/mesh/bride-motion-v2/previews
       - name: Validate humanoid foundation GLB and 6 motions
         run: |
           python3 - <<'PY'
@@ -80,6 +81,13 @@ jobs:
           assert evidence['productionVerified'] is False
           assert evidence['nativeStudioVerified'] is False
           assert evidence['unityRuntimeVerified'] is False
+          assert evidence['staticMotionQa']['staticMotionQaPass'] is True, evidence['staticMotionQa']
+          assert evidence['staticMotionQa']['failures']==[]
+          assert evidence['staticMotionQa']['root']['rotationMaxRad']<=evidence['staticMotionQa']['thresholds']['rootRotationMaxRad']
+          assert evidence['staticMotionQa']['root']['locationMax']<=evidence['staticMotionQa']['thresholds']['rootLocationMax']
+          assert evidence['staticMotionQa']['allSamplesFinite'] is True
+          assert len(evidence.get('previewFiles',[]))==6
+          assert evidence.get('previewIsRuntimeProof') is False
           assert evidence['sourceSha256']==hashlib.sha256(source.read_bytes()).hexdigest()
           glb=root/'bride-motion-v2.glb'
           assert evidence['derivedSha256']==hashlib.sha256(glb.read_bytes()).hexdigest()
