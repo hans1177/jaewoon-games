@@ -288,6 +288,54 @@ test('internal asset development is not ready when verified commercial distillat
   assert.equal(plan.commercialDistillation.applicationCoveragePct,0);
   assert.equal(plan.commercialDistillation.exactRetrievedSetBinding,false);
 });
+
+test('native asset production defaults to Roblox and exposes reproducible Blender authoring evidence',()=>{
+  const root=tempRoot();
+  try{
+    const policyFile=path.join(root,'company-learning','platform-release-roadmap.json');
+    const policy=JSON.parse(fs.readFileSync(policyFile,'utf8'));
+    policy.gameSeed={initialTargetPlatform:'ROBLOX',allowedTargetPlatforms:['ROBLOX','UNITY'],pausedTargetPlatforms:['FORTNITE_UEFN']};
+    fs.writeFileSync(policyFile,JSON.stringify(policy,null,2));
+
+    const presetCatalog={version:4,presets:[{
+      id:'native-rpg',name:'Native RPG',genre:'rpg',defaultNativeTarget:'roblox',
+      keywords:['캐릭터','몬스터','배경','무기'],actorAssets:[],effectAssets:[],toolCandidates:[],
+      platformProfiles:{
+        roblox:{qualityTarget:'native-roblox-production',input:['virtual-stick'],modules:['animation'],performance:['mobile-memory-budget']},
+        unity:{qualityTarget:'native-unity-production',input:['virtual-stick'],modules:['animation'],performance:['mobile-memory-budget']},
+        webValidation:{qualityTarget:'validation-only',input:['touch'],modules:[],performance:[]}
+      }
+    }]};
+    const common={
+      repoRoot:root,
+      task:{gameId:'native-default',goal:'캐릭터 몬스터 배경 무기 3D 그래픽 제작'},
+      manifest:{version:1,assets:[]},
+      presetCatalog
+    };
+    const plan=buildVibeAssetProductionPlan(common);
+    assert.equal(plan.target,'roblox');
+    assert.equal(plan.targetResolution.source,'CENTRAL_POLICY_INITIAL_NATIVE_TARGET');
+    assert.equal(plan.targetResolution.explicit,false);
+    assert.deepEqual(plan.activeNativeTargets,['ROBLOX','UNITY']);
+    assert.deepEqual(plan.pausedNativeTargets,['FORTNITE_UEFN']);
+    assert.equal(plan.productionProfile.nativePrimaryTarget,'roblox');
+    assert.equal(plan.productionProfile.webValidationSurfaceOnly,true);
+    assert.ok(plan.decisions.some(row=>row.directAuthoring.includes('blender-python-original-mesh-rig-and-glb')));
+    assert.equal(plan.generatedAssetOutputContract.deterministicSourceRecipeRequired,true);
+    assert.equal(plan.generatedAssetOutputContract.previewRenderRequired,true);
+    assert.equal(plan.generatedAssetOutputContract.evidenceJsonRequired,true);
+    assert.equal(plan.generatedAssetOutputContract.nativeRuntimeVerificationRequiredBeforeVerifiedPromotion,true);
+    assert.ok(plan.decisions.every(row=>row.generatorFallback.outputContract===plan.generatedAssetOutputContract));
+    assert.match(assetProductionGuidance(plan),/GENERATED NATIVE ASSET CONTRACT/);
+
+    const unity=buildVibeAssetProductionPlan({...common,target:'unity-android'});
+    assert.equal(unity.target,'unity');
+    assert.equal(unity.targetResolution.source,'TASK_OR_CALLER');
+    assert.equal(unity.targetResolution.explicit,true);
+    assert.ok(unity.decisions.some(row=>row.directAuthoring.includes('blender-python-original-mesh-rig-and-glb')));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('web-only assets are never reused directly by Unity or Roblox',()=>{
   const manifest={version:1,assets:[
     {id:'web-tree',path:'web-games/demo/assets/tree.png',types:['prop'],tags:['나무'],license:'CC0'},
