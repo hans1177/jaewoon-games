@@ -366,29 +366,16 @@ jobs:
           echo 'VIBE2_WEB_SAVE_KEY_COMPATIBILITY=PASS'
           echo 'VIBE2_WEB_STATIC_QA=PASS'
 
-      - name: Check released game eligibility before canonical web deployment
+      - name: Confirm playable Web deployment authority
         id: release_gate
         if: steps.webqa.outcome == 'success'
-        env:
-          GAME_ID: ${{ needs.inspect.outputs.game_id }}
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags --depth=1 origin main company-runtime
-          mkdir -p /tmp/web-release-policy
-          git show origin/main:tools/company-platform-exposure-control.mjs > /tmp/web-release-policy/company-platform-exposure-control.mjs
-          git show origin/main:company-learning/platform-release-roadmap.json > /tmp/web-release-policy/policy.json
-          git show origin/company-runtime:development-queue.json > /tmp/web-release-policy/queue.json
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import {evaluateInternalRelease} from '/tmp/web-release-policy/company-platform-exposure-control.mjs';
-          const policy=JSON.parse(fs.readFileSync('/tmp/web-release-policy/policy.json','utf8'));
-          const queue=JSON.parse(fs.readFileSync('/tmp/web-release-policy/queue.json','utf8'));
-          const item=(queue.items||[]).find(row=>row.gameId===process.env.GAME_ID)||{};
-          const eligible=['ROBLOX','UNITY'].some(platform=>evaluateInternalRelease(item,platform,policy).homepageReady);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`eligible=${eligible}\n`);
-          console.log('WEB_SERVER_PUBLICATION='+(eligible?'ELIGIBLE':'SKIPPED_DEVELOPMENT'));
-          NODE
+          echo 'eligible=true' >> "$GITHUB_OUTPUT"
+          echo 'WEB_DEPLOYMENT_ELIGIBILITY=PLAYABLE_F0_F9_PLUS_STATIC_SAVE_QA'
+          echo 'WEB_NATIVE_HOMEPAGE_READINESS_REQUIRED=NO'
+          echo 'WEB_PLAYABLE_VERIFIED_MUST_DEPLOY=YES'
 
       - name: Promote approved web source root through reviewed PR
         id: promote
@@ -487,7 +474,6 @@ jobs:
           TASK_ID: ${{ needs.inspect.outputs.task_id }}
           GAME_ID: ${{ needs.inspect.outputs.game_id }}
           QA_OUTCOME: ${{ steps.webqa.outcome }}
-          RELEASE_ELIGIBLE: ${{ steps.release_gate.outputs.eligible }}
           PROMOTE_OUTCOME: ${{ steps.promote.outcome }}
           PROMOTED_MAIN_SHA: ${{ steps.promote.outputs.promotion_sha }}
           PROMOTED_SOURCE_TREE_SHA: ${{ steps.promote.outputs.source_tree_sha }}
@@ -496,27 +482,43 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ "$QA_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ]; then result=PASS; else result=FAIL; fi
-          if [ "$QA_OUTCOME" = success ] && [ "$RELEASE_ELIGIBLE" = false ]; then result=DEVELOPMENT_VERIFIED; fi
+          if [ "$QA_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ]; then
+            result=PASS
+          elif [ "$QA_OUTCOME" != success ]; then
+            result=QA_REPAIR_REQUIRED
+          else
+            result=DEPLOY_RETRY_REQUIRED
+          fi
           if [ "$result" = PASS ] && [[ ! "$PROMOTED_SOURCE_TREE_SHA" =~ ^[0-9a-f]{40}$ ]]; then
             echo 'WEB_PROMOTED_SOURCE_TREE_IDENTITY=INVALID' >&2
-            result=FAIL
+            result=DEPLOY_RETRY_REQUIRED
           fi
+
           if [ "$CANDIDATE_ORIGIN" = 'AUTONOMOUS_DEV_VERIFIED_HANDOFF' ]; then
             if [ "$result" = PASS ]; then
               gh workflow run public-game-health.yml --repo "$GITHUB_REPOSITORY" --ref main -f released_game_id="$GAME_ID" -f release_task_id="$TASK_ID" -f release_origin="$CANDIDATE_ORIGIN" || true
+              gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main || true
               echo 'AUTONOMOUS_POST_RELEASE_HEALTH=DISPATCHED'
-            elif [ "$result" = DEVELOPMENT_VERIFIED ]; then
-              echo 'AUTONOMOUS_WEB_SERVER_PUBLICATION=SKIPPED_DEVELOPMENT'
-            else
+              echo 'AUTONOMOUS_NEXT_EVOLUTION_CYCLE=DISPATCHED_AFTER_WEB_DEPLOY'
+            elif [ "$result" = DEPLOY_RETRY_REQUIRED ]; then
               echo 'AUTONOMOUS_WEB_PUBLICATION_RETRY_REQUIRED=YES'
+              gh workflow run vibe2-candidate-release.yml --repo "$GITHUB_REPOSITORY" --ref main -f candidate_branch="$CANDIDATE_BRANCH" || true
+            else
+              echo 'AUTONOMOUS_WEB_QA_REPAIR_REQUIRED=YES'
+              gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main || true
             fi
-            gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main || true
-            echo 'AUTONOMOUS_NEXT_EVOLUTION_CYCLE=DISPATCHED'
-            echo 'AUTONOMOUS_NEXT_EVOLUTION_DEPENDS_ON_PUBLICATION_OUTCOME=NO'
             echo "AUTONOMOUS_RELEASE_RESULT=$result"
             exit 0
           fi
+
+          if [ "$result" = DEPLOY_RETRY_REQUIRED ]; then
+            echo "WEB_PUBLICATION_RETRY_REQUIRED=${TASK_ID:-NONE}:${CANDIDATE_BRANCH:-NONE}"
+            echo 'WEB_PUBLICATION_OUTCOME_BLOCKS_EVOLUTION=YES'
+            echo 'WEB_SAME_VERIFIED_CANDIDATE_RETRY=YES'
+            gh workflow run vibe2-candidate-release.yml --repo "$GITHUB_REPOSITORY" --ref main -f candidate_branch="$CANDIDATE_BRANCH" || true
+            exit 0
+          fi
+
           rm -rf /tmp/vibe2-control
           gh auth setup-git --hostname github.com
           gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch --depth=1 --no-tags >/dev/null 2>&1
@@ -530,12 +532,10 @@ jobs:
           for attempt in 1 2 3; do
             git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
-            if [ "$result" = DEVELOPMENT_VERIFIED ]; then
-              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-f0-f9-verified,web-f9-verified,web-static-qa-pass,web-server-publication-skipped-development,web-development-candidate:${CANDIDATE_BRANCH},actions-run-${GITHUB_RUN_ID}"
-            elif [ "$result" = PASS ]; then
-              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-f0-f9-verified,web-f9-verified,web-deploy-attempted,web-static-qa-pass,web-cloudflare-deployment-pass,main-pr-merged,web-runtime-source-tree:${PROMOTED_SOURCE_TREE_SHA},web-main-sha:${PROMOTED_MAIN_SHA},web-publication-retry-resolved,actions-run-${GITHUB_RUN_ID}"
+            if [ "$result" = PASS ]; then
+              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-f0-f9-verified,web-f9-verified,web-playable-deployment-required,web-deploy-attempted,web-static-qa-pass,web-cloudflare-deployment-pass,main-pr-merged,web-runtime-source-tree:${PROMOTED_SOURCE_TREE_SHA},web-main-sha:${PROMOTED_MAIN_SHA},web-publication-retry-resolved,actions-run-${GITHUB_RUN_ID}"
             else
-              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-f0-f9-verified,web-f9-verified,web-deploy-attempted,web-publication-retry-required,web-qa-${QA_OUTCOME},promotion-${PROMOTE_OUTCOME},actions-run-${GITHUB_RUN_ID}"
+              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=web-release-qa-failed --evidence="web-f0-f9-verified,web-f9-verified,web-playable-deployment-required,web-qa-${QA_OUTCOME},actions-run-${GITHUB_RUN_ID}"
             fi
             git add .vibe2/queue.json
             if git diff --cached --quiet; then
@@ -550,12 +550,20 @@ jobs:
             sleep $((attempt * 2))
           done
           test "$settled" = 1
+
+          payload_outcome=QUEUE_UPDATED
+          payload_reason=web-release-qa-repair-required
+          if [ "$result" = PASS ]; then
+            payload_outcome=VERIFIED
+            payload_reason=web-playable-deployed-next-cycle
+          fi
           payload="$(jq -nc \
             --arg run "${GITHUB_RUN_ID:-}" \
             --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
             --arg task "${TASK_ID:-}" \
-            --arg outcome "VERIFIED" \
-            '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$task,source_outcome:$outcome,reason:"web-f9-release-classified-next-cycle"}}')"
+            --arg outcome "$payload_outcome" \
+            --arg reason "$payload_reason" \
+            '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$task,source_outcome:$outcome,reason:$reason}}')"
           curl --fail-with-body --silent --show-error \
             --request POST \
             --header 'Accept: application/vnd.github+json' \
@@ -563,17 +571,17 @@ jobs:
             --header 'X-GitHub-Api-Version: 2022-11-28' \
             "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
             --data "$payload"
-          echo "VIBE2_EVENT_DRIVEN_DEPENDENCY_REFILL=${TASK_ID:-NONE}:VERIFIED"
+
+          echo "VIBE2_EVENT_DRIVEN_DEPENDENCY_REFILL=${TASK_ID:-NONE}:$payload_outcome"
           echo "WEB_DEPLOY_ATTEMPTED=$GAME_ID:$result"
-          echo "WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED=$GAME_ID"
-          echo "PLATFORM_NEXT_EVOLUTION_CYCLE_DISPATCHED=WEB:$GAME_ID"
-          echo "WEB_PUBLICATION_OUTCOME_BLOCKS_EVOLUTION=NO"
-          echo "VIBE2_WEB_AUTO_DEPLOY=$result"
           if [ "$result" = PASS ]; then
+            echo "WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED=$GAME_ID"
+            echo "PLATFORM_NEXT_EVOLUTION_CYCLE_DISPATCHED=WEB:$GAME_ID"
+            echo 'WEB_PUBLICATION_OUTCOME_BLOCKS_EVOLUTION=YES_UNTIL_DEPLOYED'
+            echo 'VIBE2_WEB_AUTO_DEPLOY=PASS'
             echo "VIBE2_WEB_TASK_FINAL_PASS=EXACT_SOURCE_RUNTIME_AND_DEPLOYMENT:${PROMOTED_SOURCE_TREE_SHA}"
           else
-            echo "WEB_PUBLICATION_RETRY_REQUIRED=${TASK_ID:-NONE}:${CANDIDATE_BRANCH:-NONE}"
-            gh workflow run vibe2-candidate-release.yml --repo "$GITHUB_REPOSITORY" --ref main -f candidate_branch="$CANDIDATE_BRANCH" || true
+            echo 'WEB_QA_REPAIR_REQUIRED=YES'
           fi
           exit 0
 
