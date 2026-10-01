@@ -227,7 +227,7 @@
       "enabled": true,
       "workflow": ".github/workflows/director-supervisor.yml",
       "trigger": "QUEUED_GAME_PRIMARY_AND_NO_ACTIVE_NON_PUSH_VIBE_CORE",
-      "completionWakeSource": "VIBE2_CONTINUOUS_CORE_WORKFLOW_RUN_COMPLETED",
+      "completionWakeSource": "DIRECTOR_SCHEDULE_AND_NON_VIBE_CORE_EVENTS",
       "dispatchTarget": ".github/workflows/vibe2-continuous-core.yml",
       "dispatchEvent": "WORKFLOW_DISPATCH",
       "executionLane": "GAME_PRIMARY",
@@ -246,7 +246,13 @@
       "superviseWaitsForRunnerDrainAndGamePrimaryGate": true,
       "cancelledCoreCompletionSuppressed": true,
       "responsibleFileConflictProtectionPreserved": true,
-      "qaAndReleaseAuthorityUnchanged": true
+      "qaAndReleaseAuthorityUnchanged": true,
+      "vibe2CoreCompletionWakeDisabled": true,
+      "continuitySources": [
+        "VIBE2_COHORT_FAN_IN_REFILL",
+        "VIBE2_24H_FIVE_MINUTE_SAFETY_NET",
+        "RECOVERY_FAST_CAUSAL_RETURN"
+      ]
     },
     "refillMode": "task-micro-fanin-repository-dispatch-with-five-minute-safety-net",
     "refillRef": "vibe2-unreal-core",
