@@ -74,6 +74,30 @@ function Manor:Get(p)
  for _,spec in ipairs({{-80,12,10,1,28,156},{80,12,10,1,28,156},{0,12,-68,160,28,1},{0,12,88,160,28,1}})do
   part(folder,"ManorBoundary",origin+Vector3.new(spec[1],spec[2],spec[3]),Vector3.new(spec[4],spec[5],spec[6]),false)
  end
+ -- 확장 저택 구조 충돌은 시각 GLB 병합과 분리한다. 정적 메시 이름이 합쳐져도 보행/벽 충돌은 유지된다.
+ for _,spec in ipairs({
+  {-75,11,-31,1.2,22,64},{75,11,-31,1.2,22,64},
+  {-58,11,-63,35,22,1.2},{58,11,-63,35,22,1.2},
+  {0,13,-65,110,26,1.5},
+ })do
+  part(folder,"ManorStructureBoundary",origin+Vector3.new(spec[1],spec[2],spec[3]),Vector3.new(spec[4],spec[5],spec[6]),false)
+ end
+ -- 큰 계단/2층 복도는 실제 WalkableGround로 별도 보장한다.
+ for i=0,11 do
+  local stepY=.42+i*.78;local stepZ=-43-i*1.30
+  part(folder,"GrandStairGround",origin+Vector3.new(0,stepY,stepZ),Vector3.new(28,stepY*.16+1.2,1.55),true)
+ end
+ part(folder,"SecondFloorGround",origin+Vector3.new(0,10.2,-55),Vector3.new(92,.55,19),true)
+ part(folder,"SecondFloorGround",origin+Vector3.new(-43,10.2,-31),Vector3.new(15,.55,48),true)
+ part(folder,"SecondFloorGround",origin+Vector3.new(43,10.2,-31),Vector3.new(15,.55,48),true)
+ -- 마당 주요 소품은 단순 안정 충돌체를 사용해 복잡한 장식 메시 끼임을 막는다.
+ for _,spec in ipairs({
+  {0,2.5,39,15,5,15},{46,2.6,47,10,5,7},
+  {-31,2.0,35,7,4,2},{31,2.0,35,7,4,2},
+  {-57,2.0,10,2,4,7},{57,2.0,10,2,4,7},
+ })do
+  part(folder,"GardenBoundary",origin+Vector3.new(spec[1],spec[2],spec[3]),Vector3.new(spec[4],spec[5],spec[6]),false)
+ end
  local spawn=Instance.new("SpawnLocation");spawn.Name="PersonalSpawn";spawn.Position=origin+Vector3.new(0,.4,60)
  spawn.Size=Vector3.new(10,.1,10);spawn.Anchored=true;spawn.Transparency=1;spawn.CanCollide=false;spawn.CanTouch=false;spawn.Neutral=true;spawn.Duration=0;spawn.Parent=folder
  local room={folder=folder,scene=scene,origin=origin,spawn=spawn,index=index,busy=false,gag=0,lastPrompt=0}
