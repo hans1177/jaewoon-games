@@ -21728,10 +21728,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "VIBE_INTERNAL_PLAY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T13:18:59.197Z",
+      "updatedAt": "2026-10-01T13:52:30.555Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -21959,9 +21959,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
       "robloxFailureStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_STUDIO_INTERNAL_VALIDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
       "routingBlockers": [
-        "roblox-studio-internal-validation-pending"
+        "roblox-studio-mcp-play-repair-required"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -22217,7 +22217,7 @@
         "infrastructureFailure": false,
         "failureClass": "STUDIO_PRODUCT_QUALITY_FAILURE",
         "robloxFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
-        "actualPlayEligibility": "INTERNAL_RELEASE_OR_HISTORICAL_REPLAY",
+        "actualPlayEligibility": "PRIVATE_INTERNAL_CANDIDATE_EXACT",
         "studioMcpServerEnablementRequired": false,
         "operatorPrerequisite": null,
         "localPlaceFile": true,
@@ -22227,12 +22227,12 @@
         "externalGuiAutomation": false,
         "undocumentedStudioCliAutomation": false,
         "studioLaunchTarget": "LOCAL_EXACT_BUILD_ARTIFACT",
-        "sourceRevision": "fb6aed1141930142bdb66f4a573b09cb5220ddd7",
-        "artifactIdentity": "sha256:5eef7e0999d40be7e63d1089ca77e265b1fc4390e8efd2b51e581521ce206fa5",
-        "artifactRunId": 36790211594,
+        "sourceRevision": "4c3cf511eb45cd86134c2216d7ac4a3396cae702",
+        "artifactIdentity": "sha256:c28504b3d4bfad1acb8d03844f355008b3fdfa4d71789068967cb31e5c089642",
+        "artifactRunId": 36865832220,
         "universeId": "",
         "placeId": "",
-        "versionNumber": 36790211594,
+        "versionNumber": 36865832220,
         "historicalSharedTargetExactArtifact": false,
         "historicalExactBuildReplay": false,
         "currentSourceArtifactBinding": true,
@@ -22248,8 +22248,8 @@
         },
         "actions": [
           {
-            "id": "floating-character-map-readiness",
-            "type": "mcp-world-safety-abort",
+            "id": "initial-character-playable",
+            "type": "mcp-start-playability-abort",
             "dispatched": true,
             "ok": false
           }
@@ -22274,6 +22274,12 @@
             "pass": true
           },
           {
+            "id": "PRE_PLAY_STUDIO_MODAL_GATE",
+            "name": "PRE_PLAY_STUDIO_MODAL_GATE",
+            "required": true,
+            "pass": true
+          },
+          {
             "id": "play-mode-started",
             "name": "play-mode-started",
             "required": true,
@@ -22289,20 +22295,14 @@
             "id": "initial-character-playable",
             "name": "initial-character-playable",
             "required": true,
-            "pass": true
-          },
-          {
-            "id": "floating-character-map-readiness",
-            "name": "floating-character-map-readiness",
-            "required": true,
             "pass": false
           }
         ],
         "errors": [
           {
-            "type": "studio-product-world-geometry-error",
-            "actionId": "floating-character-map-readiness",
-            "signature": "ROBLOX_STUDIO_FLOATING_CHARACTER_ABORT:NO_WALKABLE_WORLD"
+            "type": "studio-product-start-playability-error",
+            "actionId": "initial-character-playable",
+            "signature": "ROBLOX_STUDIO_DEAD_CHARACTER_ABORT:INITIAL_CHARACTER_NOT_PLAYABLE"
           }
         ],
         "runtimeSummary": {
@@ -22339,9 +22339,9 @@
           "official-studio-mcp-connected",
           "local-studio-selected",
           "studio-state-readable",
+          "PRE_PLAY_STUDIO_MODAL_GATE",
           "play-mode-started",
           "actual-play-initial-client-probe",
-          "initial-character-playable",
           "debugging",
           "runtime error",
           "ROBLOX_CHARACTER_RESPAWN_STATE"
@@ -22354,25 +22354,26 @@
         "scenarioContractFingerprint": "sha256:3129901407da0a818d5e5c56a1289f358d880f1193b1efaf1af43a617dad0b14",
         "scenarioCoverage": [
           {
-            "id": "adaptive-world-safety",
+            "id": "adaptive-start-playability",
             "pass": false
           }
         ],
         "scenarioCoveragePass": false,
         "qualityFailureKinds": [
-          "adaptive-world-safety"
+          "adaptive-start-playability"
         ],
         "qualityFailureDetails": [
           {
-            "id": "adaptive-world-safety",
-            "repairSurface": "WORLD_GEOMETRY",
+            "id": "adaptive-start-playability",
+            "repairSurface": "GAME_START",
             "priority": "CRITICAL",
-            "hint": "Spawned character has no walkable floor; restore the world floor and spawn collision before further Studio QA.",
+            "hint": "Studio started with a dead/unplayable character. Restore healthy spawn/respawn/start state before normal gameplay QA.",
             "observed": {
-              "floorBelowPlayer": false,
-              "floorSampleCount": 9,
-              "floorHitCount": 0,
-              "collidablePartCount": 4
+              "characterPresent": true,
+              "humanoidPresent": true,
+              "health": 0,
+              "maxHealth": 100,
+              "humanoidState": "Enum.HumanoidStateType.Dead"
             }
           }
         ],
@@ -22383,8 +22384,8 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-10-01T00:15:39.698Z",
-        "workflowRunId": 36793847874,
+        "testedAt": "2026-10-01T13:52:30.555Z",
+        "workflowRunId": 36868932093,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -22403,37 +22404,38 @@
       "robloxStudioLocalPlayInfrastructurePending": false,
       "robloxQualityBuildUpRequired": true,
       "robloxQualityFailureClass": "PRODUCT",
-      "robloxQualityBuildUpSourceRevision": "fb6aed1141930142bdb66f4a573b09cb5220ddd7",
+      "robloxQualityBuildUpSourceRevision": "4c3cf511eb45cd86134c2216d7ac4a3396cae702",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
-        "sourceRevision": "fb6aed1141930142bdb66f4a573b09cb5220ddd7",
-        "artifactIdentity": "sha256:5eef7e0999d40be7e63d1089ca77e265b1fc4390e8efd2b51e581521ce206fa5",
-        "versionNumber": 36790211594,
+        "sourceRevision": "4c3cf511eb45cd86134c2216d7ac4a3396cae702",
+        "artifactIdentity": "sha256:c28504b3d4bfad1acb8d03844f355008b3fdfa4d71789068967cb31e5c089642",
+        "versionNumber": 36865832220,
         "failureStage": "VIBE_INTERNAL_PLAY",
         "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
         "qualityFailureKinds": [
-          "adaptive-world-safety"
+          "adaptive-start-playability"
         ],
         "qualityFailureDetails": [
           {
-            "id": "adaptive-world-safety",
-            "repairSurface": "WORLD_GEOMETRY",
+            "id": "adaptive-start-playability",
+            "repairSurface": "GAME_START",
             "priority": "CRITICAL",
-            "hint": "Spawned character has no walkable floor; restore the world floor and spawn collision before further Studio QA.",
+            "hint": "Studio started with a dead/unplayable character. Restore healthy spawn/respawn/start state before normal gameplay QA.",
             "observed": {
-              "floorBelowPlayer": false,
-              "floorSampleCount": 9,
-              "floorHitCount": 0,
-              "collidablePartCount": 4
+              "characterPresent": true,
+              "humanoidPresent": true,
+              "health": 0,
+              "maxHealth": 100,
+              "humanoidState": "Enum.HumanoidStateType.Dead"
             }
           }
         ],
         "repairSurfaces": [
-          "WORLD_GEOMETRY"
+          "GAME_START"
         ],
         "robloxFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
-        "testedAt": "2026-10-01T00:15:39.698Z",
-        "workflowRunId": 36793847874,
+        "testedAt": "2026-10-01T13:52:30.555Z",
+        "workflowRunId": 36868932093,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxNativeFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
@@ -27452,7 +27454,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T13:49:51.926Z",
+  "updatedAt": "2026-10-01T13:52:30.555Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
