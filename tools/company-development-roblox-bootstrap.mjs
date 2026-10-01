@@ -140,6 +140,17 @@ export function projectJsonForGame(gameId=''){
     name:clean(gameId)||'jaewoon-roblox-game',
     tree:{
       $className:'DataModel',
+      Lighting:{
+        $properties:{
+          Technology:'Voxel',
+          LightingStyle:'Soft',
+          PrioritizeLightingQuality:false,
+        },
+        CompatibilityToneMap:{
+          $className:'ColorGradingEffect',
+          $properties:{TonemapperPreset:'Retro'},
+        },
+      },
       ReplicatedStorage:{Shared:{$path:'shared'}},
       ServerScriptService:{GameServer:{$path:'server'}},
       StarterPlayer:{StarterPlayerScripts:{GameClient:{$path:'client'}}},
