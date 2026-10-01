@@ -49,14 +49,31 @@ export function applyRobloxTechnicalResults({queue,results=[],expected=[],stamp=
       continue;
     }
     const secondaryOwnerFocus=expectedById.get(result.gameId)?.secondaryOwnerFocus===true;
+    const target=expectedById.get(result.gameId)||{};
     const boundSourceRevision=String(secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
     const resultSourceRevision=String(result.sourceRevision||'').trim();
+    const exactArtifact=String(result.artifactIdentity||'').trim();
     if(boundSourceRevision!==resultSourceRevision){
       console.log(`ROBLOX_PACKAGE_STALE_RESULT_IGNORED=${result.gameId}:${resultSourceRevision||'MISSING'}:${boundSourceRevision||'MISSING'}`);
       ignoredCount++;
       continue;
     }
+
     if(secondaryOwnerFocus){
+      const alreadyPersisted=
+        result.pass===true
+        &&item.ownerFocusRobloxBuildOrPackagePassed===true
+        &&String(item.ownerFocusRobloxBuildSourceRevision||'').trim()===resultSourceRevision
+        &&String(item.ownerFocusRobloxBuildArtifactIdentity||'').trim()===exactArtifact;
+      const missingAfterPersist=
+        result.failure==='roblox-package-result-missing'
+        &&item.ownerFocusRobloxBuildOrPackagePassed===true
+        &&String(item.ownerFocusRobloxBuildSourceRevision||'').trim()===String(target.sourceRevision||'').trim();
+      if(alreadyPersisted||missingAfterPersist){
+        console.log(`ROBLOX_PACKAGE_RECONCILIATION_ALREADY_PERSISTED=${result.gameId}:SECONDARY`);
+        ignoredCount++;
+        continue;
+      }
       if(result.pass===true&&String(result.artifactIdentity||'').startsWith('sha256:')){
         Object.assign(item,{
           ownerFocusRobloxBuildOrPackagePassed:true,ownerFocusRobloxBuildSourceRevision:result.sourceRevision,
@@ -77,6 +94,25 @@ export function applyRobloxTechnicalResults({queue,results=[],expected=[],stamp=
       }
       continue;
     }
+
+    const alreadyPersistedF0=
+      result.pass===true
+      &&result.f0Pass===true
+      &&item.robloxFoundationF0Passed===true
+      &&String(item.robloxBuildSourceRevision||'').trim()===resultSourceRevision
+      &&String(item.robloxBuildArtifactIdentity||'').trim()===exactArtifact
+      &&String(item.robloxFoundationF0Evidence?.sourceRevision||'').trim()===resultSourceRevision
+      &&String(item.robloxFoundationF0Evidence?.artifactIdentity||'').trim()===exactArtifact;
+    const missingAfterPersist=
+      result.failure==='roblox-package-result-missing'
+      &&item.robloxBuildOrPackagePassed===true
+      &&String(item.robloxBuildSourceRevision||'').trim()===String(target.sourceRevision||'').trim();
+    if(alreadyPersistedF0||missingAfterPersist){
+      console.log(`ROBLOX_PACKAGE_RECONCILIATION_ALREADY_PERSISTED=${result.gameId}:PRIMARY`);
+      ignoredCount++;
+      continue;
+    }
+
     if(result.pass===true&&String(result.artifactIdentity||'').startsWith('sha256:')){
       const preflightExact=result.preflightPass===true
         &&result.preflightEvidence?.sourceRevision===result.sourceRevision
