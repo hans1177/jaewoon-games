@@ -121,7 +121,7 @@ test('상용 로딩과 로비 상태는 서버 정본에 바인딩된다',()=>{
  assert.match(client,/workspace:GetAttribute\("MapReady"\)/);
  assert.match(server,/local function syncLobbyState\(phase\)/);
  for(const key of ['LobbyReady','LobbyPhase','LobbyRealPlayers','LobbyAIFill'])assert.ok(server.includes('"'+key+'"'),key);
- assert.match(client,/실제 %d명 · AI %d명 충원 예정/);
+ assert.match(manorClient,/roomSlots\.Name="ManorRoomSlots"/);
  assert.match(manorClient,/local visible=.*PhysicalLobbyReady/);
  assert.match(manorClient,/p:GetAttribute\("RoomServer"\)==true/);
  assert.match(manorClient,/panelTitle\.Text="출정 대기실"/);
@@ -204,8 +204,8 @@ test('플레이어와 AI 추격 모션은 기존 Animator 위에 레이어로 �
 
 
 test('AI는 몰려다니지 않고 분산 교전하며 양 진영 스킬을 실제 사용한다',()=>{
- assert.match(config,/SeparationRadius=12/);
- assert.match(config,/SeparationWeight=7/);
+ assert.match(config,/SeparationRadius=15/);
+ assert.match(config,/SeparationWeight=10/);
  assert.match(server,/function BotAI\.botSeparationVector\(b\)/);
  assert.match(server,/function BotAI\.distributedSurvivorTarget\(b\)/);
  assert.match(server,/function BotAI\.distributedMonsterTarget\(b\)/);
@@ -341,7 +341,7 @@ test('머신 시스템 로드맵은 P1 P2를 진행 중으로 고정한다',()=>
  assert.equal(byId.P1_CORE_MATCH_AND_ROLE_COMBAT.status,'IN_PROGRESS');
  assert.equal(byId.P2_HUMAN_FORM_IDENTITY.status,'IN_PROGRESS');
  assert.ok(road.invariants.includes('infection occurs only through explicit server-authoritative INFECT_ATTACK'));
- assert.ok(road.invariants.includes('converted human remains active as monster'));
+ assert.ok(road.invariants.includes('infected humans convert to MONSTER without leaving the round'));
 });
 
 test('인간과 몬스터 주요 행동은 같은 에너지 규칙을 사용한다',()=>{
