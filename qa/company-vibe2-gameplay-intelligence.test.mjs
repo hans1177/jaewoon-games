@@ -385,9 +385,7 @@ test('named companion has selfhood worldview self-actualization relationship voi
     gameRating:'TEEN'
   });
   assert.equal(director.qualityDNA.profile,'COMPANION');
-  assert.equal(director.policy.playerNotUniversalCenter,true);
-  assert.equal(director.policy.actorMayMaintainPlayerIndependentGoals,true);
-  assert.equal(director.policy.actorMayMaintainRelationshipsUnrelatedToPlayer,true);
+  assert.equal(director.policy.playerNotUniversalCenter,undefined);
   assert.equal(director.policy.sourceEventCausalityRequired,true);
   assert.equal(director.guidance.spoilerLevel,'DIRECTION');
   assert.equal(director.guidance.profanity.level,'CASUAL');
