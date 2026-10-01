@@ -354,46 +354,72 @@ function assetTargetCompatible(asset={},target=''){
 }
 
 function matchedForType(selector={},type='',manifest={},target=''){
-  const byId=new Map((Array.isArray(manifest?.assets)?manifest.assets:[]).map(asset=>[clean(asset?.id),asset]));
-  return freezeList((selector.matched||[])
-    .filter(row=>clean(row.type)===clean(type))
+  const assets=Array.isArray(manifest?.assets)?manifest.assets:[];
+  const byId=new Map(assets.map(asset=>[clean(asset?.id),asset]));
+  const selectedRows=(selector.matched||[]).filter(row=>clean(row.type)===clean(type));
+  const selectedIds=new Set(selectedRows.map(row=>clean(row.id)).filter(Boolean));
+  const licenseBlocked=asset=>{
+    const value=clean(asset?.license||asset?.policy),lower=value.toLowerCase();
+    return !value||/(?:^|[^a-z0-9])nc(?:[^a-z0-9]|$)/i.test(value)||lower.includes('unknown')||lower.includes('출처 불명')||lower.includes('재배포 제한');
+  };
+  const declaredFor=asset=>{
+    const explicit=Array.isArray(asset?.types)?asset.types.map(value=>clean(value).toLowerCase()).filter(Boolean):[];
+    const categoryTypes=COMPANY_CATEGORY_TYPES[clean(asset?.category||asset?.family).toUpperCase()]||[];
+    return unique([...explicit,...categoryTypes.map(value=>clean(value).toLowerCase()),clean(asset?.type).toLowerCase()].filter(Boolean));
+  };
+  const normalize=(row,adaptationBaseOnly=false)=>{
+    const asset=byId.get(clean(row.id))||row;
+    return freeze({
+      id:clean(row.id||asset.id),
+      path:clean(row.path||asset.path)||null,
+      license:clean(row.license||asset.license)||null,
+      source:clean(row.source||asset.source)||null,
+      sourceUrl:clean(asset.sourceUrl)||null,
+      downloaded:asset.downloaded!==false,
+      animated:adaptationBaseOnly?false:row.animated===true,
+      motionMode:adaptationBaseOnly?null:clean(row.motionMode)||null,
+      motionStates:freezeList(unique([...(Array.isArray(asset.states)?asset.states:[]),...(Array.isArray(asset.animations)?asset.animations:[])].filter(value=>typeof value==='string').map(value=>clean(value).toLowerCase()))),
+      rigType:clean(asset.rigType)||null,
+      sourceTier:sourceTierFor(asset),
+      companyVerified:asset.companyVerified===true,
+      sameGameExistingRoblox:asset.sameGameExistingRoblox===true,
+      robloxAssetId:clean(asset.robloxAssetId)||null,
+      sourceHash:clean(asset.sourceHash||asset.contentHash||asset.sha256)||null,
+      tags:freezeList(unique([...(Array.isArray(asset.tags)?asset.tags:[]),clean(asset.family),clean(asset.category),clean(asset.subfamily)].map(clean).filter(Boolean))),
+      family:clean(asset.family||asset.category)||null,
+      subfamily:clean(asset.subfamily)||null,
+      platformVariants:freeze(asset.platformVariants&&typeof asset.platformVariants==='object'?asset.platformVariants:{}),
+      productionVerified:asset.productionVerified===true||asset.verifiedCompanyReusable===true,
+      retargetable:asset.retargetable===true,
+      studioMotionCandidate:asset.studioMotionCandidate===true,
+      creatureFamily:clean(asset.creatureFamily)||null,
+      compatibleMotionSourceIds:freezeList(asset.compatibleMotionSourceIds||[]),
+      adaptationBaseOnly,
+      finalUseStillRequiresOriginalSelectorContract:adaptationBaseOnly,
+      targetCompatible:true
+    });
+  };
+
+  const finalCandidates=selectedRows
     .filter(row=>assetTargetCompatible(byId.get(clean(row.id))||row,target))
     .filter(row=>{
       const asset=byId.get(clean(row.id))||row;
       return asset.referenceOnly!==true&&!/_REFERENCE(?:_ONLY)?$/.test(clean(asset.platform).toUpperCase());
     })
-    .map(row=>{
-      const asset=byId.get(clean(row.id))||row;
-      return freeze({
-        id:clean(row.id),
-        path:clean(row.path)||null,
-        license:clean(row.license)||null,
-        source:clean(row.source)||null,
-        sourceUrl:clean(asset.sourceUrl)||null,
-        downloaded:asset.downloaded!==false,
-        animated:row.animated===true,
-        motionMode:clean(row.motionMode)||null,
-        motionStates:freezeList(unique([...(Array.isArray(asset.states)?asset.states:[]),...(Array.isArray(asset.animations)?asset.animations:[])].filter(value=>typeof value==='string').map(value=>clean(value).toLowerCase()))),
-        rigType:clean(asset.rigType)||null,
-        sourceTier:sourceTierFor(asset),
-        companyVerified:asset.companyVerified===true,
-        sameGameExistingRoblox:asset.sameGameExistingRoblox===true,
-        robloxAssetId:clean(asset.robloxAssetId)||null,
-        sourceHash:clean(asset.sourceHash||asset.contentHash||asset.sha256)||null,
-        tags:freezeList(unique([...(Array.isArray(asset.tags)?asset.tags:[]),clean(asset.family),clean(asset.category),clean(asset.subfamily)].map(clean).filter(Boolean))),
-        family:clean(asset.family||asset.category)||null,
-        subfamily:clean(asset.subfamily)||null,
-        platformVariants:freeze(asset.platformVariants&&typeof asset.platformVariants==='object'?asset.platformVariants:{}),
-        productionVerified:asset.productionVerified===true||asset.verifiedCompanyReusable===true,
-        retargetable:asset.retargetable===true,
-        studioMotionCandidate:asset.studioMotionCandidate===true,
-        creatureFamily:clean(asset.creatureFamily)||null,
-        compatibleMotionSourceIds:freezeList(asset.compatibleMotionSourceIds||[]),
-        targetCompatible:true
-      });
-    }));
-}
+    .map(row=>normalize(row,false));
 
+  const authoringBases=assets
+    .filter(asset=>!selectedIds.has(clean(asset.id)))
+    .filter(asset=>declaredFor(asset).includes(clean(type).toLowerCase()))
+    .filter(asset=>!licenseBlocked(asset))
+    .filter(asset=>assetTargetCompatible(asset,target))
+    .filter(asset=>asset.referenceOnly!==true&&!/_REFERENCE(?:_ONLY)?$/.test(clean(asset.platform).toUpperCase()))
+    .map(asset=>normalize(asset,true));
+
+  const deduped=new Map();
+  for(const row of [...finalCandidates,...authoringBases])if(row.id&&!deduped.has(row.id))deduped.set(row.id,row);
+  return freezeList([...deduped.values()]);
+}
 const BASE_MATERIAL_FAMILIES_BY_ASSET_TYPE=Object.freeze({
   character:['CHARACTER'],
   enemy:['CREATURE'],
@@ -616,7 +642,6 @@ function decisionFor(selector={},target='',binding={},manifest={}){
   const donorCandidates=freezeList(candidateRows.filter(row=>row.sourceHash&&row.donorCapabilities.length).sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
   const decisionOrder=unique([
     'COMPARE_TARGET_GAME_QUALITY',
-    applyFirstCandidates.length?'APPLY_READY_EXISTING_ASSET_FIRST':'',
     sameGameCandidates.length?'REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET':'',
     companyCandidates.length?'REUSE_VERIFIED_COMPANY_ASSET':'',
     repositoryCandidates.length?'REUSE_LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET':'',
