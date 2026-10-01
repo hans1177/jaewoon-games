@@ -262,7 +262,9 @@ export class JaewoonCommonAI {
     const eventType = String(event.type || '');
     if (!eventId || !eventType) return Object.freeze({ applied: false, reason: 'source_event_required', gameplayAuthority: false });
     if (packet.perceived === false) return Object.freeze({ applied: false, reason: 'no_information_path', gameplayAuthority: false });
-    if (this.causalEventIds.has(eventId)) return Object.freeze({ applied: false, reason: 'duplicate_event', state: this.snapshotMind(), gameplayAuthority: false });
+    const rememberedSourceEvent = this.memory.some(row => String(row?.sourceEventId || row?.id || '') === eventId);
+    const relationshipSourceEvent = [...this.relationships.values()].some(state => Array.isArray(state?.causeEventIds) && state.causeEventIds.includes(eventId));
+    if (this.causalEventIds.has(eventId) || rememberedSourceEvent || relationshipSourceEvent) return Object.freeze({ applied: false, reason: 'duplicate_event', state: this.snapshotMind(), gameplayAuthority: false });
 
     const relationshipTargetId = String(packet.relationshipTargetId || event.actorId || event.actor || '');
     const memoryCandidate = packet.memoryCandidate || {
@@ -336,6 +338,7 @@ export class JaewoonCommonAI {
       tension: axis(state.tension), affection: axis(state.affection), fear: axis(state.fear),
       debt: axis(state.debt), rivalry: axis(state.rivalry), protectiveness: axis(state.protectiveness),
       dependence: axis(state.dependence), boundaryComfort: axis(state.boundaryComfort), stage: String(state.stage || 'stranger'),
+      causeEventIds: Object.freeze([...(Array.isArray(state.causeEventIds) ? state.causeEventIds : [])].map(String).filter(Boolean).slice(-24)),
       initialized: true, gameplayAuthority: false
     });
     this.relationships.set(key, next);
@@ -345,8 +348,9 @@ export class JaewoonCommonAI {
   applyRelationshipEvent(id = '', event = {}, deltas = {}) {
     const key = String(id || ''), eventId = String(event?.id || event?.eventId || '');
     if (!key || !eventId || !event?.type) return { applied: false, reason: 'source_event_required' };
-    if (this.relationshipEvents.has(eventId)) return { applied: false, reason: 'duplicate_event', state: this.relationshipWith(key) };
-    const current = this.relationshipWith(key) || this.setRelationship(key, {});
+    const existing = this.relationshipWith(key);
+    if (this.relationshipEvents.has(eventId) || existing?.causeEventIds?.includes(eventId)) return { applied: false, reason: 'duplicate_event', state: existing };
+    const current = existing || this.setRelationship(key, {});
     const axis = value => Math.max(-100, Math.min(100, Math.round(Number(value) || 0)));
     const fields = ['trust','familiarity','respect','tension','affection','fear','debt','rivalry','protectiveness','dependence','boundaryComfort'];
     const next = { ...current };
@@ -354,6 +358,7 @@ export class JaewoonCommonAI {
     if (deltas.stage) next.stage = String(deltas.stage);
     next.lastCauseEventId = eventId;
     next.lastCauseType = String(event.type);
+    next.causeEventIds = Object.freeze([...(Array.isArray(current.causeEventIds) ? current.causeEventIds : []),eventId].slice(-24));
     next.initialized = false;
     next.gameplayAuthority = false;
     const frozen = Object.freeze(next);
