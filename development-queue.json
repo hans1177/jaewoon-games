@@ -11354,10 +11354,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "REPAIR_REQUIRED",
-      "canonicalState": "REPAIR_REQUIRED",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T14:48:48.730Z",
+      "updatedAt": "2026-10-01T14:52:36.760Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -12882,7 +12882,7 @@
       "unityCandidateBranch": "development/unity-tech-cozy-island-36831315548",
       "unitySourceCommit": "4432b8b37953480242da03ee8cb093e08adafac4",
       "unityBuildRunId": 36832968944,
-      "unityRuntimeSmokeRunId": 36870514263,
+      "unityRuntimeSmokeRunId": 36879566652,
       "unityIndependentQaRunId": 36272387104,
       "unityRegressionRunId": 36272500664,
       "unityInternalReleaseReady": false,
@@ -13371,7 +13371,7 @@
           }
         },
         "multiplayerRequired": true,
-        "verifiedAt": "2026-10-01T13:44:10.400Z"
+        "verifiedAt": "2026-10-01T14:52:36.760Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -26757,7 +26757,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T14:48:48.730Z",
+  "updatedAt": "2026-10-01T14:52:38.349Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
