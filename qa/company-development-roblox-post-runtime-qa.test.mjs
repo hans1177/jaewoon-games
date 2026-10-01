@@ -97,7 +97,7 @@ test('stale published Roblox version preserves the exact failed stage and retrie
 });
 
 
-test('exact Roblox foundation QA keeps active runs independent while deduplicating pending work',()=>{
+test('exact Roblox foundation QA keeps active runs independent while merging unrelated runtime writes optimistically',()=>{
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
   assert.match(workflow,/run-name: Roblox runtime foundation QA · \$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
@@ -108,7 +108,9 @@ test('exact Roblox foundation QA keeps active runs independent while deduplicati
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_EXACT_DEDUPED=/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_SCAN_DEDUPED_NEWER=/);
   assert.match(workflow,/strategy:[\s\S]{0,180}fail-fast: false[\s\S]{0,180}matrix:/);
-  assert.match(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(workflow,/ROBLOX_FOUNDATION_PERSIST_OPTIMISTIC_ATTEMPT=\$attempt\/5/);
+  assert.match(workflow,/SAME_GAME_ATOMIC_STATE/);
+  assert.doesNotMatch(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
 });
 
 test('F7 multiplayer checks the exact Roblox source contract before F9',()=>{
@@ -130,9 +132,15 @@ test('shared fallback QA only probes the one current candidate and marks older d
 });
 
 
-test('foundation runtime write contention defers only the stale write and keeps unrelated Studio play available',()=>{
-  assert.match(workflow,/ROBLOX_FOUNDATION_RUNTIME_WRITE_CONFLICT=DEFERRED_TO_NEXT_CYCLE/);
-  assert.match(workflow,/if ! git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"; then[\s\S]*git rebase --abort \|\| true[\s\S]*exit 0/);
+test('foundation runtime write contention merges unrelated games and revalidates only same-game conflicts',()=>{
+  assert.match(workflow,/ROBLOX_FOUNDATION_PERSIST_SAME_FIELD_CONFLICT_COUNT=/);
+  assert.match(workflow,/EXACT_SOURCE_REVISION/);
+  assert.match(workflow,/EXACT_ARTIFACT_IDENTITY/);
+  assert.match(workflow,/EXACT_CANDIDATE_VERSION/);
+  assert.match(workflow,/SAME_GAME_ATOMIC_STATE/);
+  assert.match(workflow,/ROBLOX_FOUNDATION_CONFLICT_REVALIDATION_DISPATCHED=\$id/);
+  assert.match(workflow,/ROBLOX_FOUNDATION_DOWNSTREAM_CONFLICT_FILTER_COUNT=/);
+  assert.doesNotMatch(workflow,/ROBLOX_FOUNDATION_RUNTIME_WRITE_CONFLICT=DEFERRED_TO_NEXT_CYCLE/);
 });
 
 
