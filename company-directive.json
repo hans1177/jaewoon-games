@@ -1,44 +1,32 @@
 {
   "version": 2,
-  "revision": 86,
-  "updatedAt": "2026-09-28T07:10:00.363Z",
+  "revision": 87,
+  "updatedAt": "2026-10-02T03:00:00+09:00",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "instruction": "Use company-learning/platform-release-roadmap.json as the canonical machine execution policy source of truth. This file mirrors executable values and invariant flags only and cannot create or override policy.",
   "documentationSynchronization": {
     "centralPolicyFirst": true,
-    "machinePolicyPath": "company-learning/platform-release-roadmap.json",
-    "machinePolicyCompanions": [
-      "company-learning/company-log-map.json",
-      "company-learning/company-architecture-map.json",
-      "company-learning/security-immune-system.json"
-    ],
-    "executionProjectionsMustMatchCentralPolicy": true,
-    "implementationMayStartAfterMachineContextValidation": true,
-    "humanReadableDocumentRequired": false,
-    "humanReadableDocumentMayCreateOrOverridePolicy": false,
+    "workDocumentsMustMirrorCurrentCentralPolicy": true,
+    "syncRelevantWorkDocumentsOnEveryPolicyChange": true,
+    "implementationWorkStartsAfterRelevantWorkDocumentsAreSynchronized": true,
+    "workDocumentsCannotOverrideCentralPolicy": true,
+    "centralPolicyPath": "company-learning/platform-release-roadmap.json",
+    "genrePresentationAndCommercialReadinessMirrored": true,
     "syncTargets": [
-      "company-directive.json",
-      "tools/company-shared-context.mjs",
+      "company-learning/platform-release-roadmap.json",
+      ".github/agents/planning.agent.md",
+      ".github/agents/development.agent.md",
+      ".github/agents/graphics.agent.md",
+      ".github/agents/qa.agent.md",
+      ".github/agents/balance.agent.md",
+      "tools/vibe2-auto-planner.mjs",
       "tools/company-selected-platform-router.mjs",
-      "tools/design-only-promotion-sync.mjs",
-      "tools/company-minimum-design-contract.mjs",
-      "tools/company-baseline-gate.mjs",
-      "assets/vibe-art-pipeline.js",
-      "_worker.js",
-      "tools/vibe2-learning-motor.mjs",
-      "company-learning/vibe2-learning-motor.json",
-      "tools/vibe2-asset-production-plan.mjs",
-      "assets/asset-selector.js",
-      "assets/asset-manifest.json",
-      "company-asset-library.json",
-      "assets/vibe-motion-director.js",
-      "tools/company-development-unity-bootstrap.mjs",
-      ".github/workflows/company-development-unity-runtime.yml",
-      "tools/company-development-roblox-bootstrap.mjs",
-      "tools/company-development-roblox-source-reconcile.mjs",
-      ".github/workflows/company-development-roblox-runtime.yml"
-    ]
+      "assets/homepage-enhancements.js",
+      "_worker.js"
+    ],
+    "syncRelevantCanonicalDocumentsOnEveryPolicyChange": true,
+    "humanPolicyMirrorRequired": false
   },
   "homepageOperations": {
     "mode": "SINGLE_MANAGER_WITH_SINGLE_POST_WORK_SUPERVISOR",
@@ -139,7 +127,7 @@
       "playableWebCompanionButtonEnabled": true,
       "playableWebCompanionButtonLabel": "웹 플레이",
       "playableWebCompanionSource": "ACTUAL_CANONICAL_WEB_ENTRY",
-      "playableWebCompanionRequiresPlayableAndArchive": false,
+      "playableWebCompanionRequiresPlayableAndArchive": true,
       "playableWebCompanionRequiresExistingCanonicalIndex": true,
       "runtimeCatalogMirrorsToHomepageOnEverySuccessfulNonPrSync": true,
       "mainCatalogMayNotOverrideFresherCompanyRuntime": true,
@@ -148,7 +136,9 @@
       "actualGameFileSourceMetadataPreserved": true,
       "canonicalNormalizationRequiredBeforeHomepagePublication": true,
       "playableWebCompanionAvailability": "ALL_VISIBLE_GAME_CARDS_WHEN_WEB_GAMES_GAME_ID_INDEX_EXISTS",
-      "playableWebCompanionMissingEntryState": "DISABLED_WEB_BUILD_MISSING"
+      "playableWebCompanionMissingEntryState": "HIDE_CARD_WHEN_NO_OTHER_RUNNABLE_TARGET",
+      "cardVisibilityRequiresRunnableTarget": true,
+      "titleOnlyCardExposureForbidden": true
     },
     "autoClassification": {
       "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
@@ -941,10 +931,7 @@
     "maxVisibleTestCandidates": 30,
     "ranking": "STRICT_IMPLEMENTATION_SCORE_DESC",
     "artbookRequiredForHomepageRegistration": true,
-    "officialCardRequiresPromotion": true,
-    "surface": "UNITY_WEB_DEVELOPMENT_TEST_SURFACE_NO_RELEASE_AUTHORITY",
-    "developmentAdmissionAuthority": false,
-    "nativeReleaseAuthority": false
+    "officialCardRequiresPromotion": true
   },
   "productionThroughput": {
     "concurrentGameWipTarget": 30,
