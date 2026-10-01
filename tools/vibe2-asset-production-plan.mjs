@@ -130,6 +130,24 @@ export function discoverExistingRobloxGameAssets({repoRoot=process.cwd(),gameId=
   return freezeList([...discovered.values()]);
 }
 const readJson=(file,fallback={})=>fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')):fallback;
+function normalizeAssetProductionTarget(value=''){
+  const target=clean(value).toLowerCase();
+  if(!target)return'';
+  if(['roblox','로블록스'].includes(target))return'roblox';
+  if(['unity','unity-android','android','유니티','안드로이드','apk'].includes(target))return'unity';
+  if(['web','mobile-web','browser','웹','브라우저','unity-web','unity-web-validation'].includes(target))return'web';
+  if(['uefn','fortnite','fortnite-uefn','포트나이트'].includes(target))return'fortnite-uefn';
+  return target;
+}
+function resolveAssetProductionTarget({target='',task={},repoRoot=process.cwd()}={}){
+  const explicit=normalizeAssetProductionTarget(target||task.target||task.targetPlatform||task.initialTargetPlatform);
+  if(explicit)return freeze({target:explicit,source:'TASK_OR_CALLER',explicit:true});
+  const roadmap=readJson(path.join(repoRoot,'company-learning','platform-release-roadmap.json'),{});
+  const directive=readJson(path.join(repoRoot,'company-directive.json'),{});
+  const configured=normalizeAssetProductionTarget(roadmap?.gameSeed?.initialTargetPlatform||directive?.gameSeed?.initialTargetPlatform||'ROBLOX');
+  const resolved=['roblox','unity'].includes(configured)?configured:'roblox';
+  return freeze({target:resolved,source:'CENTRAL_POLICY_INITIAL_NATIVE_TARGET',explicit:false});
+}
 const highEndVisualContract=repoRoot=>readJson(path.join(repoRoot,'company-learning','platform-release-roadmap.json'),{})?.assetProductionParallelContract?.highEndVisualProductionContract||{};
 const companyGraphicsLibraryContract=repoRoot=>readJson(path.join(repoRoot,'company-learning','platform-release-roadmap.json'),{})?.assetProductionParallelContract?.companyGraphicsLibrary24h||{};
 const companyAssetLibraryRegistry=repoRoot=>readJson(path.join(repoRoot,'company-asset-library.json'),{version:0,assets:[],externalSources:[]});
@@ -244,6 +262,25 @@ const ROBLOX_DIRECT_AUTHORING=freeze([
   'luau-runtime-animation-and-secondary-motion',
   'luau-ui-presentation'
 ]);
+
+const NATIVE_DCC_AUTHORING=freeze([
+  'blender-python-original-mesh-rig-and-glb',
+  'blender-uv-material-texture-and-detail-pass',
+  'blender-review-render-and-evidence'
+]);
+
+const GENERATED_ASSET_OUTPUT_CONTRACT=freeze({
+  originalOrLicenseVerifiedDerivativeOnly:true,
+  deterministicSourceRecipeRequired:true,
+  sourceArtifactRequired:true,
+  nativeArtifactRequired:true,
+  previewRenderRequired:true,
+  evidenceJsonRequired:true,
+  companyAssetLibraryRegistrationRequired:true,
+  nativeRuntimeVerificationRequiredBeforeVerifiedPromotion:true,
+  generatedArtifactAloneDoesNotProveRuntimePass:true,
+  requiredEvidenceFields:freezeList(['sourceHash','generator','artifactHash','preview','license','targetPlatforms','runtimeVerificationState'])
+});
 
 const COMPANY_CATEGORY_TYPES=freeze({
   CHARACTER:freeze(['character']),
@@ -449,6 +486,7 @@ function buildComposableBaseMaterialLoadout({companyRegistry={},studioUniversePl
 function directAuthoringFor(target='',type=''){
   const resolvedTarget=clean(target).toLowerCase();
   const actor=/character|player|enemy|boss|npc|animation/i.test(clean(type));
+  const dcc=/character|player|enemy|boss|npc|animation|background|environment|item|weapon|prop/i.test(clean(type));
   const audio=/audio|sound|music|bgm|sfx/i.test(clean(type));
   if(resolvedTarget==='web'){
     if(audio) return freezeList(['web-audio-sfx']);
@@ -457,11 +495,11 @@ function directAuthoringFor(target='',type=''){
   }
   if(resolvedTarget==='unity'){
     if(audio) return freezeList([]);
-    return UNITY_DIRECT_AUTHORING;
+    return freezeList([...(dcc?NATIVE_DCC_AUTHORING:[]),...UNITY_DIRECT_AUTHORING]);
   }
   if(resolvedTarget==='roblox'){
     if(audio) return freezeList([]);
-    return ROBLOX_DIRECT_AUTHORING;
+    return freezeList([...(dcc?NATIVE_DCC_AUTHORING:[]),...ROBLOX_DIRECT_AUTHORING]);
   }
   return freezeList([]);
 }
@@ -526,7 +564,8 @@ function decisionFor(selector={},target='',binding={},manifest={}){
       requestedKinds:BINARY_AUTHORING_KINDS,
       onlyWhenCompanyRepositoryExternalAndDirectAuthoringCannotMeetQuality:true,
       directBinaryTextEditForbidden:true,
-      paidToolAutoInstallForbidden:true
+      paidToolAutoInstallForbidden:true,
+      outputContract:GENERATED_ASSET_OUTPUT_CONTRACT
     })
   });
 }
@@ -540,7 +579,8 @@ export function buildVibeAssetProductionPlan({
   verifiedLearning=null,
   executionLane=''
 }={}){
-  const resolvedTarget=clean(target||task.target).toLowerCase()||'web';
+  const targetResolution=resolveAssetProductionTarget({target,task,repoRoot});
+  const resolvedTarget=targetResolution.target;
   const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
   const companyRegistry=companyAssetLibraryRegistry(repoRoot);
   const currentCustomizationDocument=(companyRegistry?.baseMaterialLibrary?.customization?.documents||[]).find(row=>row.gameId===clean(task.gameId))||null;
@@ -853,6 +893,9 @@ export function buildVibeAssetProductionPlan({
     plannerRole:'GRAPHICS_PRODUCTION_INPUT_ONLY',
     gameId:clean(task.gameId)||null,
     target:resolvedTarget,
+    targetResolution,
+    activeNativeTargets:freezeList(['ROBLOX','UNITY']),
+    pausedNativeTargets:freezeList(['FORTNITE_UEFN']),
     implementationOwner:'VIBE2_VIBE3',
     selectorVersion:Number(selector.version||0),
     presetId:clean(selector.prototypePreset?.id)||null,
@@ -861,6 +904,7 @@ export function buildVibeAssetProductionPlan({
     requestedTypes:freezeList(selector.requestedTypes||[]),
     missingTypes:freezeList(selector.missingTypes||[]),
     decisions,
+    generatedAssetOutputContract:GENERATED_ASSET_OUTPUT_CONTRACT,
     baseMaterialLoadout,
     assetCustomization:assetSynchronization?.customization?freeze({...studioUniversePlan.customization,items:assetSynchronization.customization.items,unresolvedCount:assetSynchronization.customization.unresolvedCount}):studioUniversePlan?.customization||null,
     assetSynchronization,
@@ -879,7 +923,7 @@ export function buildVibeAssetProductionPlan({
     imageAssetCreation:freeze({
       enabled:referenceImageStudies.some(row=>['ASSET_CREATION','MAP_RECONSTRUCTION'].includes(row.request.purpose)),
       studies:freezeList(referenceImageStudies.filter(row=>['ASSET_CREATION','MAP_RECONSTRUCTION'].includes(row.request.purpose))),
-      workflow:freezeList(['READ_ACTUAL_IMAGE_PIXELS','EXTRACT_VISIBLE_FORM_MATERIAL_AND_IDENTITY','DESIGN_UNSEEN_VIEWS_AND_ARTICULATION','SELECT_COMPATIBLE_BASE_OR_AUTHOR','CUSTOMIZE_AND_SCULPT_DETAILS','RIG_RETARGET_AND_ACT','COMPARE_REFERENCE_AND_RENDER','UNITY_WEB_VARIANTS_AND_RUNTIME_QA']),
+      workflow:freezeList(['READ_ACTUAL_IMAGE_PIXELS','EXTRACT_VISIBLE_FORM_MATERIAL_AND_IDENTITY','DESIGN_UNSEEN_VIEWS_AND_ARTICULATION','SELECT_COMPATIBLE_BASE_OR_AUTHOR','CUSTOMIZE_AND_SCULPT_DETAILS','RIG_RETARGET_AND_ACT','COMPARE_REFERENCE_AND_RENDER','TARGET_NATIVE_VARIANTS_AND_RUNTIME_QA']),
       minimumQuality:studioUniversePlan?.customization?.minimumQuality||null,
       singleImageAccepted:true,missingTextBriefAllowed:true,
       unseenGeometryIsCreativeProposal:true,stillImageDoesNotProveMotion:true,
@@ -1307,6 +1351,7 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
+    plan.generatedAssetOutputContract?`[GENERATED NATIVE ASSET CONTRACT] ${JSON.stringify(plan.generatedAssetOutputContract)}. Roblox/Unity에서 기존 자산이 목표 품질을 못 채우면 Blender/Python 또는 엔진 네이티브 authoring으로 실제 원본 자산을 만든다. 생성 소스 레시피와 원본/파생 파일, 동일 조건 미리보기, evidence.json, 회사 자산 장부 등록을 남긴다. GLB/이미지 파일이 생겼다는 사실만으로 VERIFIED 처리하지 말고 대상 native 런타임에서 실제 바인딩·표현·성능 검증 뒤 승격한다.`:'',
     plan.detailReview?`[STYLE COMPARISON AND LOCAL REPAIR] ${JSON.stringify(plan.detailReview)}. 같은 원형·카메라·조명·동작·표본 시점으로 카툰/실사/다크를 비교한다. repairs의 현재 소스/캡처 근거가 있는 부위·프레임·editableParameters만 수정하고 previousParameters와 잠긴 특징은 유지한다. 수정 뒤 동일 조건 재촬영으로 재검토하며 캡처 등록이나 파라미터 변경만으로 문제를 닫지 않는다.`:'',
     plan.motionContinuityAudit?`[MEASURED CONTINUOUS MOTION] ${JSON.stringify(plan.motionContinuityAudit)}. 루트·접촉점·손/무기 목표점=월드 미터, 관절=루트 로컬 미터, 지지물 접촉=동일 supportId의 로컬 미터, 회전/시선 오차=라디안, 표정=0~1 가중치다. violations의 region/frameRange/normalizedTimeRange에서 발 고정·손/무기 접촉·의상 관통·시선 추적·표정 튐을 수정한다. attachments는 active와 effectorWorldPosition/targetWorldPosition, penetrations는 depthMeters, gaze는 tracking과 forwardWorld/targetDirectionWorld, expressions는 morph별 가중치를 모든 프레임에 계측한다. 레지스트리 motionQA.requiredDetailChannels/limits를 작업 입력이 약화할 수 없다. 현재 소스 해시와 클립 전체 표본 및 선언된 채널이 없으면 UNVERIFIED다. 판정 시점·클립 길이·게임 이동 권한을 바꾸지 말고 재측정한다. unmeasuredGroups는 미검수이며 수치 PASS는 전체 시각 품질이나 런타임 승격 PASS가 아니다.`:'',
     ...(plan.sourceGlbReconstruction||[]).map(source=>`[BASIC GLB TO DETAILED ASSET] ${JSON.stringify(source)}. 기본 GLB의 실제 원형·부품·재질·리그·애니메이션을 재사용하고 약한 형태를 재조형한다. 해부학/구조 접합/의복 겹침/눈꺼풀·입술·손발/문·창·지붕/목재·금속·돌·천의 마감과 사용 흔적을 자산 종류에 맞게 풍부하게 만든다. 단순 subdivide나 노이즈·색 변경으로 완성 처리하지 않는다. 원본은 보존하고 실제 DCC에서 파생본을 만든 뒤 morph/socket/리타겟 연결과 Unity/Web GLB·네이티브 변형을 등록한다. 메시·리깅·텍스처 제작 도구가 없으면 AUTHORING_REQUIRED를 유지한다.`),
