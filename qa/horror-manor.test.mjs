@@ -12,6 +12,7 @@ const lobby=read('roblox-games/horror-escape-room/server/ManorLobby.luau');
 const ui=read('roblox-games/horror-escape-room/client/ManorLobby.client.luau');
 const oldUI=read('roblox-games/horror-escape-room/client/Game.client.luau');
 const config=read('roblox-games/horror-escape-room/shared/GameConfig.luau');
+const manorBuild=read(root+'/build.py');
 test('downloaded assets retain original bytes and CC0 license',()=>{
  const manifest=JSON.parse(read(root+'/asset-manifest.json'));
  assert.equal(manifest.models.length,231);
@@ -29,6 +30,15 @@ test('downloaded assets retain original bytes and CC0 license',()=>{
  }
  for(const m of manifest.models){const b=files.get(m.file);assert.ok(b,m.file);assert.equal(b.length,m.bytes);assert.equal(crypto.createHash('sha256').update(b).digest('hex'),m.sha256);assert.equal(b.toString('utf8',0,4),'glTF');}
  for(const p of ['graveyard','furniture'])assert.match(files.get(`sources/${p}/LICENSE.txt`).toString(),/CC0/);
+});
+test('NPC source uses continuous-surface role-specific geometry instead of primitive body assembly',()=>{
+ const start=manorBuild.indexOf('def npc(s,kind,pos):');const stop=manorBuild.indexOf('\\ndef build():',start);assert.ok(start>=0&&stop>start);
+ const npcSource=manorBuild.slice(start,stop);
+ assert.match(manorBuild,/def loft\(self,name,pos,sections/);assert.match(manorBuild,/def prism\(self,name,pos,outline/);assert.match(manorBuild,/def capsule\(self,name,pos,height/);
+ for(const name of ['ButlerHead','UndertakerHead','ArchivistHead'])assert.match(npcSource,new RegExp("kind\\+'Head'|"+name));
+ assert.doesNotMatch(npcSource,/s\.ellipsoid\(kind\+'_Head'/);
+ assert.doesNotMatch(npcSource,/s\.box\(kind\+'_CoatTail'/);
+ assert.match(manorBuild,/DIRECT_PROCEDURAL_ROLE_SPECIFIC_CONTINUOUS_SURFACE_V4/);
 });
 test('manor GLB is self-contained and all geometry buffers are in bounds',()=>{
  const b=fs.readFileSync(root+'/generated/manor-lobby.glb');assert.equal(b.readUInt32LE(8),b.length);assert.ok(b.length<20*1024*1024);
