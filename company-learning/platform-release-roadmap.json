@@ -1,5 +1,5 @@
 {
-  "version": 516,
+  "version": 517,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-01",
@@ -8454,15 +8454,17 @@
     "fanInRefillRunnerPressureBypass20260927": {
       "id": "FAN_IN_REFILL_RUNNER_PRESSURE_BYPASS_2026-09-27",
       "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
-      "status": "SUPERSEDED_BY_RUNNER_BACKPRESSURE_2026_10_01",
+      "status": "SUPERSEDED_BY_GAME_CONTROL_RUNNER_RELIEF_2026_10_01",
       "objective": "HISTORICAL_RUNNER_ROUTING_RECORD_SUPERSEDED_BY_CURRENT_QUEUE_PRESSURE_RELIEF",
       "runnerRouting": {
         "defaultReserve": "ubuntu-slim",
         "fanInRefillReserve": "ubuntu-latest",
+        "neuronCompletionReserve": "ubuntu-latest",
         "fanIn": "ubuntu-latest"
       },
-      "sourceOfTruth": "company-learning/platform-release-roadmap.json#changeRecord.runnerBackpressureBottleneckRelief20261001",
-      "historicalExecutionEvidenceArchived": true
+      "sourceOfTruth": "CURRENT_RUNNER_POOL_AND_VIBE2_CONTINUOUS_CORE",
+      "historicalExecutionEvidenceArchived": true,
+      "supersededHistoricalArmRouting": true
     },
     "runnerBackpressureBottleneckRelief20261001": {
       "id": "RUNNER_BACKPRESSURE_BOTTLENECK_RELIEF_2026-10-01",
@@ -8560,6 +8562,27 @@
         "unity": true,
         "reason": "RAPID_MAIN_CHURN_MUST_NOT_KEEP_OBSOLETE_NATIVE_BATCH_PLANNERS_ALIVE"
       }
+    },
+    "gameControlRunnerRelief20261001": {
+      "id": "GAME_CONTROL_RUNNER_RELIEF_2026-10-01",
+      "authority": "OWNER_DIRECTIVE_2026-10-01",
+      "objective": "REMOVE_ARM_CONTROL_POOL_QUEUEING_FROM_VIBE_CALLBACK_RESERVE_AND_FAN_IN_WHILE_KEEPING_UNITY_ASSET_AND_ANDROID_RUNTIME_WORK_ON_REQUIRED_ARM_EXECUTION",
+      "defaultReserve": "ubuntu-slim",
+      "callbackReserve": "ubuntu-latest",
+      "fanIn": "ubuntu-latest",
+      "gamePrimaryWorker": "ubuntu-latest",
+      "unityAssetWorker": "ubuntu-24.04-arm",
+      "androidRuntimeSmoke": "ubuntu-24.04-arm",
+      "heavyExecutionSemanticsUnchanged": true,
+      "qaGateWeakening": false,
+      "existingArchitectureOnly": true,
+      "newWorkflowCreated": false,
+      "implementationBindings": [
+        ".github/workflows/vibe2-continuous-core.yml",
+        "vibe2-runtime.json",
+        "company-learning/company-architecture-map.json"
+      ],
+      "implementationState": "IMPLEMENTED_MAIN"
     }
   },
   "vibeExecutionLaneContract": {
