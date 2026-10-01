@@ -3542,6 +3542,46 @@ test('queued Roblox presentation task repairs stale gameplay ownership before re
   assert.equal(batch.deferredConflicts.some(row=>row.id===queued.id),false);
 });
 
+test('legacy queued presentation assets migrate off active gameplay files on Roblox and Unity',()=>{
+  const root=tempRepo();
+  const robloxId='legacy-asset-roblox';
+  for(const file of ['client/Game.client.luau','server/Game.server.luau','shared/GameConfig.luau']){
+    const full=path.join(root,'roblox-games',robloxId,file);
+    fs.mkdirSync(path.dirname(full),{recursive:true});
+    fs.writeFileSync(full,'return {}\n','utf8');
+  }
+  const unityId='legacy-asset-unity';
+  const unityDir=path.join(root,'unity-games',unityId,'Assets','Scripts');
+  fs.mkdirSync(unityDir,{recursive:true});
+  for(const file of ['PrototypeAnimatedVisuals.cs','RuntimeBootstrap.cs','GameCore.cs'])fs.writeFileSync(path.join(unityDir,file),'public class X {}\n','utf8');
+
+  const legacyEvidence=['asset-production-parallel:v1','presentation-quality-pipeline:v1','presentation-pass:ASSET_ADAPTATION'];
+  const tasks=[
+    {id:`${robloxId}-roblox-presentation-asset-adaptation-v1`,gameId:robloxId,target:'roblox',department:'development',type:'implementation',sourceRoot:`roblox-games/${robloxId}`,responsibleFiles:[
+      `roblox-games/${robloxId}/client/Game.client.luau`,`roblox-games/${robloxId}/server/Game.server.luau`,`roblox-games/${robloxId}/shared/GameConfig.luau`
+    ],status:'queued',releaseState:'development-confirmed',assetProductionLane:true,evidence:legacyEvidence},
+    {id:`${unityId}-unity-presentation-asset-adaptation-v1`,gameId:unityId,target:'unity',department:'development',type:'implementation',sourceRoot:`unity-games/${unityId}`,responsibleFiles:[
+      `unity-games/${unityId}/Assets/Scripts/PrototypeAnimatedVisuals.cs`,`unity-games/${unityId}/Assets/Scripts/RuntimeBootstrap.cs`,`unity-games/${unityId}/Assets/Scripts/GameCore.cs`
+    ],status:'queued',releaseState:'development-confirmed',assetProductionLane:true,evidence:legacyEvidence}
+  ];
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[
+      {gameId:robloxId,ownerDecision:'PASS',target:'roblox',projectPath:`roblox-games/${robloxId}`,progress:80},
+      {gameId:unityId,ownerDecision:'PASS',target:'unity',projectPath:`unity-games/${unityId}`,progress:80}
+    ]},
+    catalog:{games:[
+      {id:robloxId,name:'Legacy Roblox',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'},
+      {id:unityId,name:'Legacy Unity',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}
+    ]},
+    queue:{maxConcurrentTasks:20,tasks},repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:2,planningBacklogMinimum:0
+  });
+  const rr=result.queue.tasks.find(row=>row.id===tasks[0].id);
+  const ur=result.queue.tasks.find(row=>row.id===tasks[1].id);
+  assert.deepEqual([...rr.responsibleFiles],[`roblox-games/${robloxId}/client/Presentation.client.luau`]);
+  assert.deepEqual([...ur.responsibleFiles],[`unity-games/${unityId}/Assets/Scripts/PrototypeAnimatedVisuals.cs`]);
+  assert.ok(ur.evidence.includes('asset-presentation-unity-visual-responsibility:REPAIRED'));
+});
+
 test('studio PRESENTATION focus receives the same adaptive replacement contract inside existing BUILD_UP',()=>{
   const root=tempRepo();
   const gameId='adaptive-studio-presentation';
