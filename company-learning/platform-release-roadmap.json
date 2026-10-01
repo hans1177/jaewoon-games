@@ -9436,7 +9436,7 @@
       }
     },
     "customizableDetailedAssetProduction20261001": {
-      "ownerIntent": "고품질 공통 원형과 외부 GLB를 활용해 모든 시각 자산을 커마 방식으로 제작하고 도깨비 캐릭터를 최소 디테일 기준으로 사용",
+      "ownerIntent": "고품질 공통 원형·외부 GLB·실제 엔진 캡처를 활용해 모든 시각 자산을 커마 방식으로 제작하고, 부분 디테일·연속 모션·런타임 픽셀 검수까지 같은 GRAPHICS_PRODUCTION 작업에서 반복 개선",
       "responsiblePolicy": "assetProductionParallelContract.companyGraphicsLibrary24h.composableBaseMaterialLibrary.customization",
       "implementation": [
         "assets/vibe-studio-asset-universe.js",
@@ -9445,7 +9445,7 @@
         "tools/vibe2-source-worker.mjs",
         "assets/vibe-environment-director.js"
       ],
-      "scope": "AUTHORING_STYLE_MEASUREMENT_UNITY_WEB_SYNC_PIXEL_IMAGE_MAP_AND_GLB_INPUTS",
+      "scope": "AUTHORING_STYLE_MEASUREMENT_NATIVE_SYNC_PIXEL_IMAGE_MAP_GLB_MOTION_DETAIL_AND_RUNTIME_PIXEL_REVIEW",
       "actualNewModelsOrNativeRuntimePassClaimed": false,
       "centralDocumentationImpact": {
         "architectureTopologyChanged": false,
@@ -9453,52 +9453,12 @@
         "securityAuthorityChanged": false,
         "schedulerChanged": false,
         "existingAssetLicenseAndRuntimePromotionGuardsPreserved": true
+      },
+      "currentEvolution": {
+        "localizedDetail": "SAME_SOURCE_CAMERA_LIGHTING_ACTION_CAPTURE_LOCAL_REPAIR_WITH_PARAMETER_AND_IDENTITY_LOCKS",
+        "measuredMotion": "HAND_WEAPON_ATTACHMENT_CLOTH_PENETRATION_GAZE_EXPRESSION_AND_MOVING_SUPPORT_CONTACT",
+        "runtimePixelReview": "CURRENT_SOURCE_REVISION_ROBLOX_STUDIO_UNITY_EDITOR_ANDROID_APK_WEB_CAPTURE_PIXELS_TO_EXISTING_RESPONSIBILITY_REPAIR"
       }
-    },
-    "assetLocalizedDetailIteration20261001": {
-      "ownerIntent": "고급 자산 제작 AI를 계속 업데이트: 스타일 비교·잠금 보존 부분 수정·연속 동작 실측",
-      "implementation": [
-        "assets/vibe-studio-asset-universe.js",
-        "assets/vibe-motion-director.js",
-        "tools/vibe2-asset-production-plan.mjs"
-      ],
-      "centralDocumentationImpact": {
-        "architectureTopologyChanged": false,
-        "loggingContractChanged": false,
-        "securityAuthorityChanged": false,
-        "schedulerChanged": false
-      },
-      "actualRenderedArtifactOrRuntimePassClaimed": false
-    },
-    "assetFineMotionAndRetryDetail20261001": {
-      "ownerIntent": "자산 제작 AI를 더 디테일하게: 손·무기 접촉, 의상 관통, 시선·표정, 이동 발판 접촉 실측과 부분 수정 재시도 보존",
-      "implementation": [
-        "assets/vibe-motion-director.js",
-        "tools/vibe2-asset-production-plan.mjs",
-        "tools/vibe2-source-worker.mjs"
-      ],
-      "centralDocumentationImpact": {
-        "architectureTopologyChanged": false,
-        "loggingContractChanged": false,
-        "securityAuthorityChanged": false,
-        "schedulerChanged": false
-      },
-      "actualRenderedArtifactOrRuntimePassClaimed": false
-    },
-    "assetRuntimePixelReviewLoop20261001": {
-      "ownerIntent": "자산 제작 AI가 Roblox Studio·Unity Editor/Android APK·Web의 실제 캡처 픽셀을 보고 누락 오브젝트와 약한 디테일을 기존 개발 작업으로 되돌려 보완",
-      "implementation": [
-        "assets/vibe-studio-asset-universe.js",
-        "tools/vibe2-asset-production-plan.mjs",
-        "tools/vibe2-source-worker.mjs"
-      ],
-      "centralDocumentationImpact": {
-        "architectureTopologyChanged": false,
-        "loggingContractChanged": false,
-        "securityAuthorityChanged": false,
-        "schedulerChanged": false
-      },
-      "actualRenderedArtifactOrRuntimePassClaimed": false
     }
   },
   "vibeExecutionLaneContract": {
@@ -26662,8 +26622,8 @@
     "maxChangeRecordEntries": 43,
     "scope": "CURRENT_RULES_AND_EXECUTABLE_CONTRACTS",
     "historicalExecutionLogsAuthority": "GIT_HISTORY",
-    "archivedChangeRecordCommit": "601abba37796177dbb54ab9d44806489b112e052",
-    "archivedUnreferencedChangeRecords": 77,
+    "archivedChangeRecordCommit": "efe3c62bcd19614bb645c2cffe97701e04a25249",
+    "archivedUnreferencedChangeRecords": 80,
     "currentOwnerRulesMustRemain": true,
     "f0ThroughF9MustRemain": true,
     "publicationApprovalMustRemain": true,
