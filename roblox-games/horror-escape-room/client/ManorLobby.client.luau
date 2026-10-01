@@ -3,6 +3,7 @@
 local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
 local RunService=game:GetService("RunService")
+local TweenService=game:GetService("TweenService")
 local Lighting=game:GetService("Lighting")
 local p=Players.LocalPlayer
 local C=require(RS.Shared.GameConfig)
@@ -13,52 +14,116 @@ local gui=Instance.new("ScreenGui");gui.Name="PersonalManorUI";gui.ResetOnSpawn=
 gui.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
 gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets;gui.Parent=p:WaitForChild("PlayerGui")
 local ink=Color3.fromRGB(20,15,18)
-local parchment=Color3.fromRGB(215,190,140)
-local wood=Color3.fromRGB(49,29,24)
-local brass=Color3.fromRGB(142,105,56)
-local wine=Color3.fromRGB(70,24,36)
+local parchment=Color3.fromRGB(218,194,145)
+local ivory=Color3.fromRGB(230,214,176)
+local wood=Color3.fromRGB(48,27,21)
+local leather=Color3.fromRGB(39,20,25)
+local brass=Color3.fromRGB(151,113,61)
+local wine=Color3.fromRGB(76,24,38)
 local activeMenu=nil
 local activeStory=nil
 local invitationCode=""
 local rankingRows={}
 local notebookOpen=false
-local function corner(parent,n)
- local x=Instance.new("UICorner");x.CornerRadius=UDim.new(0,n or 2);x.Parent=parent
- local line=Instance.new("UIStroke");line.ApplyStrokeMode=Enum.ApplyStrokeMode.Border;line.Color=brass;line.Transparency=.12;line.Thickness=2;line.Parent=parent
+
+local function frameStroke(parent,thickness,transparency)
+ local line=Instance.new("UIStroke");line.ApplyStrokeMode=Enum.ApplyStrokeMode.Border;line.Color=brass
+ line.Transparency=transparency or .10;line.Thickness=thickness or 2;line.Parent=parent;return line
 end
-local function label(parent,text,height,size)
+local function corner(parent,n)
+ local x=Instance.new("UICorner");x.CornerRadius=UDim.new(0,n or 1);x.Parent=parent
+ frameStroke(parent,2,.10)
+end
+local function brassRule(parent,y)
+ local rule=Instance.new("Frame");rule.BackgroundColor3=brass;rule.BackgroundTransparency=.22
+ rule.BorderSizePixel=0;rule.Size=UDim2.new(1,-18,0,1);rule.Position=UDim2.new(0,9,0,y);rule.Parent=parent;return rule
+end
+local function label(parent,text,height,size,color)
  local x=Instance.new("TextLabel");x.BackgroundTransparency=1;x.Size=UDim2.new(1,-12,0,height or 32)
- x.Text=text;x.TextColor3=parchment;x.TextSize=size or 14;x.TextWrapped=true;x.Font=Enum.Font.Antique;x.AutomaticSize=Enum.AutomaticSize.Y
+ x.Text=text;x.TextColor3=color or parchment;x.TextSize=size or 14;x.TextWrapped=true;x.Font=Enum.Font.Antique;x.AutomaticSize=Enum.AutomaticSize.Y
  x.TextXAlignment=Enum.TextXAlignment.Left;x.Parent=parent;return x
 end
 local function button(parent,text,fn,color)
- local x=Instance.new("TextButton");x.Size=UDim2.new(1,-12,0,52);x.BackgroundColor3=color or wood
- x.Text=text;x.TextColor3=parchment;x.TextSize=15;x.TextWrapped=true;x.Font=Enum.Font.Antique;x.AutoButtonColor=true;x.AutomaticSize=Enum.AutomaticSize.Y
- x.Parent=parent;corner(x,5);x.Activated:Connect(fn);return x
+ local x=Instance.new("TextButton");x.Size=UDim2.new(1,-12,0,54);x.BackgroundColor3=color or wood
+ x.Text=text;x.TextColor3=ivory;x.TextSize=15;x.TextWrapped=true;x.Font=Enum.Font.Antique;x.AutoButtonColor=false
+ x.Parent=parent;corner(x,1)
+ local left=Instance.new("Frame");left.BackgroundColor3=brass;left.BackgroundTransparency=.08;left.BorderSizePixel=0
+ left.Size=UDim2.fromOffset(3,38);left.Position=UDim2.new(0,6,.5,-19);left.Parent=x
+ x.MouseEnter:Connect(function()if x.Active then x.BackgroundColor3=color or Color3.fromRGB(60,34,27)end end)
+ x.MouseLeave:Connect(function()if x.Active then x.BackgroundColor3=color or wood end end)
+ x.Activated:Connect(fn);return x
 end
--- 화면 구성 · 작은 명패와 접히는 가족 수첩. 이동 중 중앙 시야는 비운다.
-local header=Instance.new("Frame");header.Name="ManorNameplate";header.Size=UDim2.new(1,-184,0,52);header.Position=UDim2.fromOffset(10,6)
-header.BackgroundColor3=wood;header.BackgroundTransparency=.06;header.Parent=gui;corner(header,1)
-local headerLimit=Instance.new("UISizeConstraint");headerLimit.MaxSize=Vector2.new(216,52);headerLimit.Parent=header
-local title=label(header,"MIDNIGHT ESCAPE",22,15);title.Position=UDim2.fromOffset(10,2);title.AutoLocalize=false
-local status=label(header,"괴물 가족의 저택",18,10);status.Position=UDim2.fromOffset(10,25)
+local function ledgerRow(parent,leftText,rightText)
+ local row=Instance.new("Frame");row.Size=UDim2.new(1,-12,0,42);row.BackgroundColor3=Color3.fromRGB(48,30,30);row.BorderSizePixel=0;row.Parent=parent
+ frameStroke(row,1,.48)
+ local left=label(row,leftText,36,13,ivory);left.Position=UDim2.fromOffset(10,3);left.Size=UDim2.new(.66,-12,0,36)
+ local right=label(row,rightText or"",36,12,brass);right.AnchorPoint=Vector2.new(1,0);right.Position=UDim2.new(1,-9,0,3);right.Size=UDim2.new(.34,-8,0,36);right.TextXAlignment=Enum.TextXAlignment.Right
+ return row
+end
+local function mapPostcard(parent,map,chosen,fn)
+ local x=button(parent,(chosen and"◆  "or"◇  ")..map.Name,fn,chosen and wine or Color3.fromRGB(55,34,29))
+ x.Name="MapPostcard_"..tostring(map.Id);x.Size=UDim2.new(1,-12,0,66);x.TextXAlignment=Enum.TextXAlignment.Left
+ x.Text="      "..x.Text
+ local tag=label(x,"벽걸이 지도 · 낡은 현장 사진",18,10,brass);tag.Position=UDim2.new(0,31,1,-22);tag.Size=UDim2.new(1,-42,0,18)
+ return x
+end
+-- 화면 구성 · 황동 명패, 가죽 책갈피, 좌측/하단 장부. 중앙 플레이 시야를 최대한 비운다.
+local header=Instance.new("Frame");header.Name="ManorNameplate";header.Size=UDim2.fromOffset(238,56);header.Position=UDim2.fromOffset(10,6)
+header.BackgroundColor3=wood;header.BackgroundTransparency=.02;header.Parent=gui;corner(header,1);brassRule(header,27)
+local title=label(header,"MIDNIGHT ESCAPE",23,15,ivory);title.Position=UDim2.fromOffset(11,2);title.AutoLocalize=false
+local status=label(header,"괴물 가족의 저택",22,10,parchment);status.Position=UDim2.fromOffset(11,30);status.Size=UDim2.new(1,-22,0,22)
+
 local commands=Instance.new("Frame");commands.Name="ManorCommands";commands.AnchorPoint=Vector2.new(1,0)
-commands.Position=UDim2.new(1,-10,0,6);commands.Size=UDim2.fromOffset(152,52);commands.BackgroundTransparency=1;commands.Parent=gui
-local nav=Instance.new("Frame");nav.Name="FamilyNotebook";nav.AnchorPoint=Vector2.new(1,0);nav.Position=UDim2.new(1,-10,0,66)
-nav.Size=UDim2.new(1,-20,0,64);nav.BackgroundColor3=Color3.fromRGB(38,22,25);nav.BackgroundTransparency=.02;nav.Visible=false;nav.Parent=gui;corner(nav,1)
-local max=Instance.new("UISizeConstraint");max.MaxSize=Vector2.new(360,60);max.Parent=nav
-local grid=Instance.new("UIGridLayout");grid.CellSize=UDim2.new(1/5,-4,1,0);grid.CellPadding=UDim2.fromOffset(5,0);grid.Parent=nav
+commands.Position=UDim2.new(1,-10,0,6);commands.Size=UDim2.fromOffset(162,54);commands.BackgroundTransparency=1;commands.Parent=gui
+
+local nav=Instance.new("Frame");nav.Name="FamilyNotebook";nav.AnchorPoint=Vector2.new(1,0);nav.Position=UDim2.new(1,-10,0,68)
+nav.Size=UDim2.fromOffset(92,304);nav.BackgroundColor3=leather;nav.BackgroundTransparency=.01;nav.Visible=false;nav.Parent=gui;corner(nav,1)
+local navPadding=Instance.new("UIPadding");navPadding.PaddingTop=UDim.new(0,7);navPadding.PaddingBottom=UDim.new(0,7);navPadding.PaddingLeft=UDim.new(0,6);navPadding.PaddingRight=UDim.new(0,6);navPadding.Parent=nav
+local navList=Instance.new("UIListLayout");navList.Padding=UDim.new(0,6);navList.SortOrder=Enum.SortOrder.LayoutOrder;navList.Parent=nav
+
 local shade=Instance.new("Frame");shade.Name="NotebookShade";shade.Size=UDim2.fromScale(1,1)
-shade.BackgroundColor3=ink;shade.BackgroundTransparency=.4;shade.Active=true;shade.Visible=false;shade.ZIndex=10;shade.Parent=gui
-local panel=Instance.new("Frame");panel.Name="NotebookPage";panel.AnchorPoint=Vector2.new(.5,0);panel.Position=UDim2.new(.5,0,0,68)
-panel.Size=UDim2.new(1,-28,1,-80);panel.BackgroundColor3=Color3.fromRGB(40,24,28);panel.Visible=false;panel.ZIndex=11;panel.Parent=gui;corner(panel,2)
+shade.BackgroundTransparency=1;shade.Active=true;shade.Visible=false;shade.ZIndex=10;shade.Parent=gui
+
+local panel=Instance.new("CanvasGroup");panel.Name="NotebookPage";panel.AnchorPoint=Vector2.new(0,0);panel.Position=UDim2.fromOffset(10,70)
+panel.Size=UDim2.fromOffset(420,520);panel.BackgroundColor3=leather;panel.Visible=false;panel.ZIndex=11;panel.Parent=gui;corner(panel,1)
+local binding=Instance.new("Frame");binding.Name="LeatherBinding";binding.BackgroundColor3=wood;binding.BorderSizePixel=0
+binding.Size=UDim2.new(0,13,1,-8);binding.Position=UDim2.fromOffset(4,4);binding.Parent=panel
+local bindingLine=Instance.new("Frame");bindingLine.BackgroundColor3=brass;bindingLine.BackgroundTransparency=.18;bindingLine.BorderSizePixel=0
+bindingLine.Size=UDim2.new(0,2,1,-14);bindingLine.Position=UDim2.fromOffset(17,7);bindingLine.Parent=panel
 panel:GetPropertyChangedSignal("Visible"):Connect(function()shade.Visible=panel.Visible end)
-local limit=Instance.new("UISizeConstraint");limit.MaxSize=Vector2.new(460,550);limit.Parent=panel
-local panelTitle=label(panel,"",38,20);panelTitle.Position=UDim2.fromOffset(14,8);panelTitle.Size=UDim2.new(1,-85,0,38)
-local close=button(panel,"×",function()activeMenu=nil;activeStory=nil;panel.Visible=false end);close.Size=UDim2.fromOffset(52,52);close.Position=UDim2.new(1,-60,0,6)
-local body=Instance.new("ScrollingFrame");body.Position=UDim2.fromOffset(12,66);body.Size=UDim2.new(1,-20,1,-78)
-body.BackgroundTransparency=1;body.BorderSizePixel=0;body.ScrollBarThickness=3;body.AutomaticCanvasSize=Enum.AutomaticSize.Y;body.CanvasSize=UDim2.new();body.Parent=panel
+local panelTitle=label(panel,"",42,21,ivory);panelTitle.Position=UDim2.fromOffset(28,8);panelTitle.Size=UDim2.new(1,-104,0,42)
+brassRule(panel,55)
+local function hidePanel()
+ activeMenu=nil;activeStory=nil
+ if not panel.Visible then return end
+ local tween=TweenService:Create(panel,TweenInfo.new(.16,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{GroupTransparency=1})
+ tween:Play();tween.Completed:Once(function()if panel.GroupTransparency>=.99 then panel.Visible=false end end)
+end
+local close=button(panel,"×",hidePanel);close.Size=UDim2.fromOffset(54,54);close.Position=UDim2.new(1,-62,0,5)
+local body=Instance.new("ScrollingFrame");body.Position=UDim2.fromOffset(25,65);body.Size=UDim2.new(1,-36,1,-78)
+body.BackgroundColor3=Color3.fromRGB(31,22,24);body.BackgroundTransparency=.12;body.BorderSizePixel=0;body.ScrollBarThickness=3
+body.ScrollBarImageColor3=brass;body.AutomaticCanvasSize=Enum.AutomaticSize.Y;body.CanvasSize=UDim2.new();body.Parent=panel
+local bodyPad=Instance.new("UIPadding");bodyPad.PaddingTop=UDim.new(0,7);bodyPad.PaddingBottom=UDim.new(0,10);bodyPad.PaddingLeft=UDim.new(0,5);bodyPad.PaddingRight=UDim.new(0,3);bodyPad.Parent=body
 local layout=Instance.new("UIListLayout");layout.Padding=UDim.new(0,8);layout.SortOrder=Enum.SortOrder.LayoutOrder;layout.Parent=body
+
+local lastViewport=Vector2.zero
+local function applyManorLayout()
+ local camera=workspace.CurrentCamera;local v=camera and camera.ViewportSize or Vector2.new(1280,720)
+ if v==lastViewport then return end;lastViewport=v
+ local mobile=v.X<760
+ if mobile then
+  panel.AnchorPoint=Vector2.new(0,1);panel.Position=UDim2.new(0,8,1,-8)
+  panel.Size=UDim2.new(1,-16,0,math.floor(math.min(430,v.Y*.52)))
+  nav.Position=UDim2.new(1,-8,0,66);nav.Size=UDim2.fromOffset(86,294)
+  header.Size=UDim2.fromOffset(math.min(224,math.max(176,v.X-190)),56)
+ else
+  panel.AnchorPoint=Vector2.new(0,0);panel.Position=UDim2.fromOffset(10,70)
+  panel.Size=UDim2.new(0,420,1,-84)
+  nav.Position=UDim2.new(1,-10,0,68);nav.Size=UDim2.fromOffset(92,304)
+  header.Size=UDim2.fromOffset(238,56)
+ end
+end
+applyManorLayout()
 local function clear()for _,x in ipairs(body:GetChildren())do if x~=layout then x:Destroy()end end end
 local function progress()
  local r={};for id,n in string.gmatch(tostring(p:GetAttribute("GhostProgress")or""),"([^:,]+):(%d+)")do r[id]=tonumber(n)or 0 end;return r
@@ -80,7 +145,7 @@ local function openStory(item,stage)
 end
 open=function(key)
  if not gui.Enabled then return end
- activeMenu=key;activeStory=nil;rankingRows={};notebookOpen=false;nav.Visible=false;panel.Visible=true;clear();body.CanvasPosition=Vector2.zero
+ activeMenu=key;activeStory=nil;rankingRows={};notebookOpen=false;nav.Visible=false;panel.Visible=true;panel.GroupTransparency=1;clear();body.CanvasPosition=Vector2.zero;TweenService:Create(panel,TweenInfo.new(.18,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{GroupTransparency=0}):Play()
  if key=="PLAY"then
   panelTitle.Text="오늘 밤의 출정"
   local inRoom=p:GetAttribute("RoomServer")==true
@@ -95,17 +160,17 @@ open=function(key)
     if b.UserId==hostId then return false end
     return a.UserId<b.UserId
    end)
-   local slotLines={}
+   local roomSlots=Instance.new("Frame");roomSlots.Name="ManorRoomSlots";roomSlots.BackgroundTransparency=1
+   roomSlots.Size=UDim2.new(1,-12,0,8*44);roomSlots.AutomaticSize=Enum.AutomaticSize.Y;roomSlots.Parent=body
+   local roomLayout=Instance.new("UIListLayout");roomLayout.Padding=UDim.new(0,2);roomLayout.Parent=roomSlots
    for i=1,8 do
     local player=roomPlayers[i]
     if player then
-     table.insert(slotLines,string.format("%d · %s%s",i,player.UserId==hostId and"방장 · "or"",player.DisplayName))
+     ledgerRow(roomSlots,string.format("%02d · %s",i,player.DisplayName),player.UserId==hostId and"방장"or"손님")
     else
-     table.insert(slotLines,string.format("%d · AI",i))
+     ledgerRow(roomSlots,string.format("%02d · 빈 객실",i),"AI 예약")
     end
    end
-   local roomSlots=label(body,table.concat(slotLines,"\n"),148,13)
-   roomSlots.Name="ManorRoomSlots"
    if waiting and p:GetAttribute("RoomIsHost")==true and p:GetAttribute("RoomAutoStart")~=true then
     button(body,"친구 준비 완료 · 출정 시작",function()send(C.Actions.START_ROOM)end,Color3.fromRGB(107,56,64))
    elseif not waiting then
@@ -122,19 +187,33 @@ open=function(key)
   if not inRoom then
   for _,map in ipairs(C.Maps)do
    local chosen=(p:GetAttribute("SelectedLobbyMap")or"SCHOOL")==map.Id
-   button(body,(chosen and"✓  "or"    ")..map.Name,function()send(C.Actions.SELECT_MAP,map.Id)end,chosen and Color3.fromRGB(63,88,81)or nil)
+   mapPostcard(body,map,chosen,function()send(C.Actions.SELECT_MAP,map.Id)end)
   end
-  button(body,"1인 플레이 · 빈자리는 AI",function()send(C.Actions.MANOR_SOLO);panel.Visible=false end,Color3.fromRGB(107,56,64))
-  button(body,"대전 참가 · 공개 경기",function()send(C.Actions.QUICK_JOIN_PUBLIC);panel.Visible=false end,Color3.fromRGB(70,81,105))
-  button(body,"친구 경기 만들기",function()send(C.Actions.CREATE_ROOM,"FRIENDS");panel.Visible=false end)
+  button(body,"1인 플레이 · 빈자리는 AI",function()send(C.Actions.MANOR_SOLO);hidePanel() end,wine)
+  button(body,"대전 참가 · 공개 경기",function()send(C.Actions.QUICK_JOIN_PUBLIC);hidePanel() end,Color3.fromRGB(53,45,58))
+  button(body,"친구 경기 만들기",function()send(C.Actions.CREATE_ROOM,"FRIENDS");hidePanel() end)
   button(body,"초대 코드로 참가",function()open("CODE")end)
   end
  elseif key=="CODE"then
   panelTitle.Text="초대장 번호"
-  local input=Instance.new("TextBox");input.Name="InvitationCode";input.Size=UDim2.new(1,-12,0,50);input.PlaceholderText="6자리 방 코드";input.Text=invitationCode;input.ClearTextOnFocus=false
-  input.TextSize=22;input.TextColor3=ink;input.BackgroundColor3=parchment;input.Parent=body;corner(input)
-  input:GetPropertyChangedSignal("Text"):Connect(function()invitationCode=input.Text end)
-  button(body,"참가",function()send(C.Actions.JOIN_ROOM_CODE,input.Text)end)
+  label(body,"예약 카드의 여섯 칸을 눌러 초대 번호를 적어.",34,13,parchment)
+  local codeCard=Instance.new("Frame");codeCard.Name="InvitationCard";codeCard.Size=UDim2.new(1,-12,0,68);codeCard.BackgroundColor3=parchment;codeCard.Parent=body;corner(codeCard,1)
+  local codeGrid=Instance.new("UIGridLayout");codeGrid.CellSize=UDim2.new(1/6,-7,0,52);codeGrid.CellPadding=UDim2.fromOffset(6,0);codeGrid.HorizontalAlignment=Enum.HorizontalAlignment.Center;codeGrid.VerticalAlignment=Enum.VerticalAlignment.Center;codeGrid.Parent=codeCard
+  local cells={}
+  for i=1,6 do
+   local cell=Instance.new("TextLabel");cell.Name="CodeCell"..i;cell.BackgroundColor3=Color3.fromRGB(198,170,118);cell.TextColor3=ink
+   cell.TextSize=22;cell.Font=Enum.Font.Antique;cell.Text="·";cell.Parent=codeCard;corner(cell,1);cells[i]=cell
+  end
+  local input=Instance.new("TextBox");input.Name="InvitationCode";input.Size=UDim2.fromScale(1,1);input.BackgroundTransparency=1
+  input.TextTransparency=1;input.Text=invitationCode;input.ClearTextOnFocus=false;input.MaxVisibleGraphemes=6;input.ZIndex=4;input.Parent=codeCard
+  local function refreshCode()
+   local clean=string.upper(input.Text):gsub("[^A-Z0-9]",""):sub(1,6)
+   if clean~=input.Text then input.Text=clean;return end
+   invitationCode=clean
+   for i=1,6 do cells[i].Text=string.sub(clean,i,i)~=""and string.sub(clean,i,i)or"·"end
+  end
+  input:GetPropertyChangedSignal("Text"):Connect(refreshCode);refreshCode()
+  button(body,"예약 카드로 참가",function()send(C.Actions.JOIN_ROOM_CODE,invitationCode)end,wine)
   button(body,"출정 메뉴로",function()open("PLAY")end)
  elseif key=="BOOK"then
   panelTitle.Text="기록관의 괴담 도감"
@@ -201,7 +280,7 @@ end)
 notebook.Size=UDim2.fromOffset(78,52);notebook.Position=UDim2.fromOffset(74,0)
 -- 무료 Lucide 아이콘: 원본 ISC/MIT 라이선스를 모델 폴더에 보관.
 for index,entry in ipairs({{"PLAY","현관"},{"BOOK","도감"},{"DRESS","옷장"},{"EVENT","초대장"},{"RECORD","기록"}})do
- local item=button(nav,"",function()if activeMenu==entry[1]and panel.Visible then activeMenu=nil;panel.Visible=false else open(entry[1])end end,entry[1]=="PLAY"and Color3.fromRGB(85,58,52)or ink)
+ local item=button(nav,"",function()if activeMenu==entry[1]and panel.Visible then hidePanel()else open(entry[1])end end,entry[1]=="PLAY"and wine or leather);item.Size=UDim2.new(1,0,0,52)
  local icon=Instance.new("ImageLabel");icon.BackgroundTransparency=1;icon.Image="rbxassetid://"..tostring(Assets.IconsId or 0)
  icon.ImageRectOffset=Vector2.new((index-1)*64,0);icon.ImageRectSize=Vector2.new(64,64);icon.Size=UDim2.fromOffset(24,24);icon.AnchorPoint=Vector2.new(.5,0);icon.Position=UDim2.new(.5,0,0,6);icon.Parent=item
  local text=label(item,entry[2],24,12);text.Size=UDim2.new(1,0,0,24);text.Position=UDim2.fromOffset(0,32);text.TextXAlignment=Enum.TextXAlignment.Center
@@ -333,6 +412,7 @@ end
 p.AttributeChanged:Connect(visibility);workspace:GetAttributeChangedSignal("PhysicalLobbyReady"):Connect(visibility);visibility()
 -- 실제 입장 위치가 보이는 실내 메인 카메라. 입장 후에는 기본 카메라/터치 조작을 쓴다.
 RunService.RenderStepped:Connect(function()
+ applyManorLayout()
  if not gui.Enabled or entered then return end
  local x=p:GetAttribute("ManorOriginX");local z=p:GetAttribute("ManorOriginZ");local camera=workspace.CurrentCamera
  if x and z and camera then
