@@ -55,10 +55,10 @@ const AUTONOMOUS_CONTENT_EXPANSION_DEFAULT=Object.freeze({
   autonomy:Object.freeze({decisionOwner:'VIBE'}),
   dataCapacityBudget:Object.freeze({
     limits:Object.freeze({
-      savePersistedDataBytes:2*1024*1024,
-      webDownloadBytes:100*1024*1024,
+      savePersistedDataBytes:3*1024*1024,
+      webDownloadBytes:120*1024*1024,
       singleFileBytes:25*1024*1024,
-      mobileMemoryTargetBytes:300*1024*1024,
+      mobileMemoryTargetBytes:350*1024*1024,
       mobileMinimumFps:30
     }),
     warningRatio:0.8,
@@ -760,10 +760,10 @@ function autonomousContentExpansionPolicy(repoRoot=process.cwd()){
 function capacityBudgetState({policy={},source={},runtimeEvidence={},platform='COMMON'}={}){
   const contract=policy?.dataCapacityBudget||AUTONOMOUS_CONTENT_EXPANSION_DEFAULT.dataCapacityBudget;
   const limits={
-    savePersistedDataBytes:Number(contract?.limits?.savePersistedDataBytes||2*1024*1024),
-    webDownloadBytes:Number(contract?.limits?.webDownloadBytes||100*1024*1024),
+    savePersistedDataBytes:Number(contract?.limits?.savePersistedDataBytes||3*1024*1024),
+    webDownloadBytes:Number(contract?.limits?.webDownloadBytes||120*1024*1024),
     singleFileBytes:Number(contract?.limits?.singleFileBytes||25*1024*1024),
-    mobileMemoryTargetBytes:Number(contract?.limits?.mobileMemoryTargetBytes||300*1024*1024),
+    mobileMemoryTargetBytes:Number(contract?.limits?.mobileMemoryTargetBytes||350*1024*1024),
     mobileMinimumFps:Number(contract?.limits?.mobileMinimumFps||30)
   };
   const warningRatio=Math.min(0.95,Math.max(0.5,Number(contract?.warningRatio||0.8)));
