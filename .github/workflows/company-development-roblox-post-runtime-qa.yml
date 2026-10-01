@@ -116,12 +116,12 @@ jobs:
                 echo "ROBLOX_PENDING_STUDIO_RUN_PRESERVED=$run_id"
                 continue
               fi
-              active_jobs="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" --jq '[.jobs[] | select(.status == "in_progress")] | length' 2>/dev/null || echo 1)"
+              active_jobs="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" --jq '[.jobs[] | select(.status == "in_progress")] | length' 2>/dev/null || echo 0)"
               if [ "$active_jobs" != '0' ]; then
-                echo "ROBLOX_ACTIVE_STUDIO_RUN_PRESERVED=$run_id"
-                continue
+                echo "ROBLOX_STALE_FOUNDATION_ACTIVE_NON_STUDIO_CANCEL_REQUESTED=$run_id:$active_jobs"
+              else
+                echo "ROBLOX_OBSOLETE_RUN_ONLY_WAITING_FOR_RUNNER=$run_id"
               fi
-              echo "ROBLOX_OBSOLETE_RUN_ONLY_WAITING_FOR_RUNNER=$run_id"
             fi
             gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/cancel" >/dev/null 2>&1 || true
             run_status="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id" --jq '.status' 2>/dev/null || true)"
