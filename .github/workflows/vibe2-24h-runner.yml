@@ -91,11 +91,8 @@ env:
   VIBE2_LEARNING_LANE_MAX: '1'
   VIBE2_ASSET_DEVELOPMENT_MAX: '64'
 
-# Keep one scheduling-wave control chain. Heavy workers from earlier waves may remain active;
-# this singleton only orders scheduler state, not game/source execution.
-concurrency:
-  group: vibe2-24h-cycle-singleton-v9
-  cancel-in-progress: false
+# Scheduler invocations may overlap. Shared control-state writes use optimistic retry;
+# independent game/recovery work must never wait behind an orchestration-wide singleton.
 
 jobs:
   plan:
@@ -104,9 +101,8 @@ jobs:
     timeout-minutes: 8
     outputs:
       continue_required: ${{ steps.queue_state.outputs.continue_required }}
-      wave_ready: ${{ steps.queue_state.outputs.wave_ready }}
+      execution_idle: ${{ steps.queue_state.outputs.execution_idle }}
       game_refill_ready: ${{ steps.queue_state.outputs.game_refill_ready }}
-      free_worker_slots: ${{ steps.queue_state.outputs.free_worker_slots }}
       active_worker_reservations: ${{ steps.queue_state.outputs.active_worker_reservations }}
       game_primary_queued: ${{ steps.queue_state.outputs.game_primary_queued }}
       asset_development_queued: ${{ steps.queue_state.outputs.asset_development_queued }}
@@ -672,20 +668,17 @@ jobs:
           const learningQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='LEARNING_IDLE').length;
           const recoveryQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='RECOVERY_FAST').length;
           const control=JSON.parse(fs.readFileSync('.vibe2/parallelism-control.json','utf8'));
-          const configuredMax=Math.max(1,Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||256));
-          const baselineTarget=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_BASELINE_TARGET||20));
+          const configuredMax=Math.max(1,Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||Number.MAX_SAFE_INTEGER));
+          const baselineTarget=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_BASELINE_TARGET||256));
           const adaptiveMin=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_ADAPTIVE_MIN||30));
           const controlTarget=Math.max(adaptiveMin,Number(control.currentMax||baselineTarget));
-          const effectiveMax=configuredMax;
-          const freeWorkerSlots=Math.max(0,effectiveMax-activeGame);
-          const waveReady=activeGame===0?'YES':'NO';
-          const gameRefillReady=freeWorkerSlots>0?'YES':'NO';
+          const executionIdle=activeGame===0?'YES':'NO';
+          const gameRefillReady=gameQueued>0?'YES':'NO';
           const assetMax=Math.max(1,Number(process.env.VIBE2_ASSET_DEVELOPMENT_MAX||64));
           const assetRefillReady=Math.max(0,assetMax-activeAsset)>0?'YES':'NO';
           fs.appendFileSync(process.env.GITHUB_OUTPUT,
-            'wave_ready='+waveReady+'\n'+
+            'execution_idle='+executionIdle+'\n'+
             'game_refill_ready='+gameRefillReady+'\n'+
-            'free_worker_slots='+freeWorkerSlots+'\n'+
             'active_worker_reservations='+activeGame+'\n'+
             'game_primary_queued='+gameQueued+'\n'+
             'asset_development_queued='+assetQueued+'\n'+
@@ -694,10 +687,9 @@ jobs:
             'learning_idle_queued='+learningQueued+'\n'+
             'recovery_fast_queued='+recoveryQueued+'\n');
           console.log('VIBE2_24H_ACTIVE_GAME_WORKER_RESERVATIONS='+activeGame);
-          console.log('VIBE2_24H_GAME_PRIMARY_ACTIVE_MAX='+effectiveMax);
+          console.log('VIBE2_24H_GAME_PRIMARY_INTERNAL_CAP=NONE');
           console.log('VIBE2_24H_ADAPTIVE_RECOMMENDED_MAX='+controlTarget);
-          console.log('VIBE2_24H_GAME_PRIMARY_RESERVATION_LIMIT_SOURCE=CONFIGURED_EXTERNAL_PROVIDER_BOUNDARY');
-          console.log('VIBE2_24H_FREE_GAME_WORKER_SLOTS='+freeWorkerSlots);
+          console.log('VIBE2_24H_EXTERNAL_MATRIX_TRANSPORT_PARTITION='+process.env.VIBE2_EXTERNAL_MATRIX_BATCH_MAX);
           console.log('VIBE2_24H_GAME_REFILL_READY='+gameRefillReady);
           console.log('VIBE2_24H_GAME_PRIMARY_QUEUED='+gameQueued);
           console.log('VIBE2_ASSET_DEVELOPMENT_QUEUED='+assetQueued);
@@ -705,7 +697,7 @@ jobs:
           console.log('VIBE2_ASSET_DEVELOPMENT_REFILL_READY='+assetRefillReady);
           console.log('VIBE2_24H_LEARNING_IDLE_QUEUED='+learningQueued);
           console.log('VIBE2_24H_RECOVERY_FAST_QUEUED='+recoveryQueued);
-          console.log('VIBE2_24H_WAVE_READY='+waveReady);
+          console.log('VIBE2_24H_EXECUTION_IDLE='+executionIdle);
           NODE
           echo "VIBE2_24H_CONTINUE=${continue_required:-NO}"
 
@@ -871,7 +863,7 @@ jobs:
 
   game_study:
     needs: [plan, continuous, asset_development, learning_idle]
-    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.asset_development_queued == '0' && needs.plan.outputs.asset_development_active == '0' && needs.plan.outputs.learning_idle_queued == '0' }}
+    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.execution_idle == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.asset_development_queued == '0' && needs.plan.outputs.asset_development_active == '0' && needs.plan.outputs.learning_idle_queued == '0' }}
     uses: hans1177/jaewoon-games/.github/workflows/vibe2-game-study-continuous.yml@vibe2-unreal-core
     permissions:
       contents: write
