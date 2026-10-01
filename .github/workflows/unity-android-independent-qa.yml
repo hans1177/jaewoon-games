@@ -68,14 +68,20 @@ jobs:
           expected="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1],encoding="utf-8-sig"))["sha256"])' "$info")"
           source_commit="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1],encoding="utf-8-sig"))["sourceCommit"])' "$info")"
           source_tree="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1],encoding="utf-8-sig")).get("sourceTreeSha", ""))' "$info")"
+          project_path="$(python3 -c 'import json,sys; d=json.load(open(sys.argv[1],encoding="utf-8-sig")); p=str(d.get("projectPath","")).replace("\\","/").strip("/"); g=str(d.get("gameId","")).strip(); print(p or (("unity-games/"+g) if g else ""))' "$info")"
+          game_id="$(python3 -c 'import json,sys; d=json.load(open(sys.argv[1],encoding="utf-8-sig")); p=str(d.get("projectPath","")).replace("\\","/").strip("/"); g=str(d.get("gameId","")).strip(); print(g or (p.split("/")[-1] if p.startswith("unity-games/") else ""))' "$info")"
           actual="$(sha256sum "$apk" | awk '{print $1}')"
           [[ "$actual" == "$expected" ]] || { echo "APK SHA mismatch expected=$expected actual=$actual" >&2; exit 4; }
           [[ "$source_commit" =~ ^[0-9a-f]{40}$ ]] || { echo 'invalid exact source commit' >&2; exit 5; }
           [[ -z "$source_tree" || "$source_tree" =~ ^[0-9a-f]{40}$ ]] || { echo 'invalid source tree sha' >&2; exit 6; }
+          [[ "$game_id" =~ ^[a-z0-9][a-z0-9-]{1,48}$ ]] || { echo 'invalid game id in build-info' >&2; exit 6; }
+          [[ "$project_path" =~ ^unity-games/[A-Za-z0-9._-]+$ ]] || { echo 'invalid project path in build-info' >&2; exit 6; }
           echo "path=$apk" >> "$GITHUB_OUTPUT"
           echo "sha256=$actual" >> "$GITHUB_OUTPUT"
           echo "source_commit=$source_commit" >> "$GITHUB_OUTPUT"
           echo "source_tree=$source_tree" >> "$GITHUB_OUTPUT"
+          echo "game_id=$game_id" >> "$GITHUB_OUTPUT"
+          echo "project_path=$project_path" >> "$GITHUB_OUTPUT"
 
       - name: Prepare independent native ARM64 Android 16 runtime
         shell: bash
@@ -160,6 +166,8 @@ jobs:
           BUILD_SHA: ${{ steps.apk.outputs.sha256 }}
           BUILD_SOURCE_COMMIT: ${{ steps.apk.outputs.source_commit }}
           BUILD_SOURCE_TREE: ${{ steps.apk.outputs.source_tree }}
+          GAME_ID: ${{ steps.apk.outputs.game_id }}
+          SOURCE_ROOT: ${{ steps.apk.outputs.project_path }}
           UPSTREAM_RUN: ${{ steps.upstream.outputs.run_id }}
         shell: bash
         run: |
@@ -231,6 +239,37 @@ jobs:
               json.dump(evidence,f,ensure_ascii=False,indent=2)
               f.write('\n')
           PY
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, struct
+          root=pathlib.Path('qa-artifacts/unity-independent-qa')
+          image=root/'screen.png'
+          raw=image.read_bytes()
+          if raw[:8] != b'\x89PNG\r\n\x1a\n':
+              raise SystemExit('Unity independent QA screen is not PNG')
+          width,height=struct.unpack('>II',raw[16:24])
+          if width<=0 or height<=0:
+              raise SystemExit('Unity independent QA viewport invalid')
+          manifest={
+              'version':1,
+              'gameId':os.environ['GAME_ID'],
+              'sourceRevision':os.environ['BUILD_SOURCE_COMMIT'],
+              'sourceRoot':os.environ['SOURCE_ROOT'],
+              'platform':'UNITY',
+              'surface':'UNITY_ANDROID_APK',
+              'sceneId':'android-independent-qa',
+              'captures':[{
+                  'id':'android-game-camera',
+                  'view':'GAME_CAMERA',
+                  'imageRef':'screen.png',
+                  'artifactHash':hashlib.sha256(raw).hexdigest(),
+                  'viewport':{'width':width,'height':height}
+              }],
+              'editableTargets':['SCENE','UI','CHARACTER','ENVIRONMENT','VFX','LIGHTING'],
+              'visualGoals':['mobile gameplay readability','asset detail','composition'],
+              'producer':{'workflow':'unity-android-independent-qa','upstreamBuildRunId':int(os.environ['UPSTREAM_RUN'])}
+          }
+          (root/'asset-runtime-visual-evidence.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          PY
           echo "INDEPENDENT_QA=PASS"
           echo "INDEPENDENT_BUILD_ID=$BUILD_SHA"
           echo "INDEPENDENT_SOURCE_COMMIT=$BUILD_SOURCE_COMMIT"
@@ -261,5 +300,16 @@ jobs:
             /tmp/jaewoon-independent-redroid-docker.txt
             /tmp/jaewoon-independent-redroid-adb-connect.txt
             /tmp/jaewoon-independent-redroid-ashmem-build.log
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload game-addressable Unity runtime visual evidence
+        if: always() && steps.apk.outputs.game_id != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: asset-runtime-visual-${{ steps.apk.outputs.game_id }}-unity-android-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            qa-artifacts/unity-independent-qa/screen.png
+            qa-artifacts/unity-independent-qa/asset-runtime-visual-evidence.json
           if-no-files-found: warn
           retention-days: 14
