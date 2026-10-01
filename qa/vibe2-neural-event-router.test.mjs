@@ -21,7 +21,7 @@ test('verified root cause proposes exact repair but cannot fire before Phase2 au
   assert.equal(route.fireAllowed,false);
   assert.equal(route.workerCreationAllowed,false);
   assert.equal(route.queueMutationAllowed,false);
-  assert.equal(route.waveReorderAllowed,false);
+  assert.equal(route.directReservationReorderAllowed,false);
   assert.equal(route.workGraph.mode,'PHASE2_SHADOW_NEURAL_WORK_GRAPH');
   assert.equal(route.workGraph.summary.actionKind,'PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR');
   assert.equal(route.workGraph.authority.executionAllowed,false);
@@ -125,7 +125,7 @@ test('shadow event evidence includes deterministic event identity and platform',
 });
 
 
-test('verified root cause can fire only the central-policy gated scheduler action',()=>{
+test('verified root cause can fire only the central-policy gated direct reservation action',()=>{
   const route=simulateNeuralEventRoute({
     event:{id:'gated-task|run-1|WORKER_RESULT',type:'WORKER_RESULT',outcome:'FAIL'},
     diagnosis,
@@ -137,7 +137,7 @@ test('verified root cause can fire only the central-policy gated scheduler actio
   assert.equal(route.fireAllowed,true);
   assert.equal(route.workerCreationAllowed,true);
   assert.equal(route.queueMutationAllowed,true);
-  assert.equal(route.waveReorderAllowed,true);
+  assert.equal(route.directReservationReorderAllowed,true);
   assert.equal(route.automaticTuningAllowed,true);
   assert.equal(route.policyMutationAllowed,false);
   assert.equal(route.lockAcquisitionAllowed,false);
@@ -163,7 +163,7 @@ test('successful CI result never mutates queue even when historical root cause i
   assert.equal(route.queueMutationAllowed,false);
 });
 
-test('verified supervisor revise may use gated existing-scheduler mutation',()=>{
+test('verified supervisor revise may use gated direct reservation mutation',()=>{
   const route=simulateNeuralEventRoute({
     event:{id:'supervisor-revise',type:'SUPERVISOR_RESULT',outcome:'REVISE'},
     diagnosis,
