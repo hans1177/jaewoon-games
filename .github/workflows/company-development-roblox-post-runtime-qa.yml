@@ -2649,7 +2649,9 @@ jobs:
           git -C runtime config user.name 'jaewoon-roblox-studio-mcp'
           git -C runtime config user.email 'actions@users.noreply.github.com'
           $pushed = $false
-          for ($attempt=1; $attempt -le 5; $attempt++) {
+          $attempt = 0
+          while (-not $pushed) {
+            $attempt++
             git -C runtime add development-queue.json
             git -C runtime diff --cached --check
             if ($LASTEXITCODE -ne 0) { throw 'runtime evidence diff check failed' }
@@ -2678,9 +2680,10 @@ jobs:
 
             & node 'main/tools/company-development-roblox-studio-local-play.mjs' @persistArgs
             if ($LASTEXITCODE -ne 0) { throw 'Studio MCP evidence reapply on latest runtime failed' }
-            Start-Sleep -Seconds ($attempt * 2)
+            $retryDelay = [math]::Min(30,[math]::Max(2,$attempt * 2))
+            Write-Host "ROBLOX_STUDIO_MCP_RUNTIME_PUSH_RETRY_DELAY=$retryDelay"
+            Start-Sleep -Seconds $retryDelay
           }
-          if (-not $pushed) { throw 'runtime evidence push failed after latest-state reapply retries' }
 
           $state = (& node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('runtime/development-queue.json','utf8'));const row=(q.items||[]).find(x=>x.gameId===process.env.GAME_ID);if(!row){console.error('ROBLOX_STUDIO_MCP_QUEUE_ITEM_MISSING:'+process.env.GAME_ID);process.exit(2)}const e=row.robloxInternalVibePlayEvidence||{};if(e.pass===true){process.stdout.write('PASS')}else if(e.infrastructureFailure===true){process.stdout.write('INFRA')}else{process.stdout.write('FAIL')}" ).Trim()
           if ($LASTEXITCODE -eq 2) { throw "ROBLOX_STUDIO_MCP_QUEUE_ITEM_MISSING:$env:GAME_ID" }
