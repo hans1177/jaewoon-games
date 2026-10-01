@@ -16,6 +16,15 @@ local store
 pcall(function()store=DSS:GetDataStore("cozy-island-conquest-v3")end)
 local remote=RS:FindFirstChild(C.RemoteName)or Instance.new("RemoteEvent")
 remote.Name=C.RemoteName;remote.Parent=RS
+local saveSurface=RS:FindFirstChild("SavePersistence")
+if not saveSurface then
+ saveSurface=Instance.new("Folder")
+ saveSurface.Name="SavePersistence"
+ saveSurface.Parent=RS
+end
+saveSurface:SetAttribute("Enabled",C.SaveEnabled==true)
+saveSurface:SetAttribute("SchemaVersion",3)
+saveSurface:SetAttribute("StoreAvailable",store~=nil)
 local qaCaptureStore
 pcall(function()qaCaptureStore=DSS:GetDataStore("qa-camera-captures-v1")end)
 local qaCaptureRemote=RS:FindFirstChild(C.QACaptureRemoteName or "QACaptureReport")or Instance.new("RemoteEvent")
@@ -200,19 +209,22 @@ local function gather(p,key,amount,text)
 end
 
 local function freeResidents(p)return n(p,"Residents",0)-n(p,"WoodWorkers",0)-n(p,"Farmers",0)end
-local function hire(p)if n(p,"Coins",0)<10 then msg(p,"주민 고용 코인 부족")return false end;s(p,"Coins",n(p,"Coins",0)-10);s(p,"Residents",n(p,"Residents",0)+1);msg(p,"주민 고용");return true end
+local function hire(p)
+ if n(p,"Coins",0)<10 then msg(p,"주민 고용 코인 부족");feedback(p,"HIRE_BLOCKED");return false end
+ s(p,"Coins",n(p,"Coins",0)-10);s(p,"Residents",n(p,"Residents",0)+1);msg(p,"주민 고용");feedback(p,"HIRE");return true
+end
 local function job(p,key)
- if freeResidents(p)<=0 then msg(p,"배치할 주민 없음")return false end
- s(p,key,n(p,key,0)+1);msg(p,key=="WoodWorkers"and"벌목 주민 배치"or"농장 주민 배치");return true
+ if freeResidents(p)<=0 then msg(p,"배치할 주민 없음");feedback(p,"JOB_BLOCKED");return false end
+ s(p,key,n(p,key,0)+1);msg(p,key=="WoodWorkers"and"벌목 주민 배치"or"농장 주민 배치");feedback(p,"JOB");return true
 end
 local function barracks(p)
  local lv=n(p,"BarracksLevel",1);local wc=14+lv*8;local fc=10+lv*6;local ic=math.max(0,(lv-1)*4)
- if n(p,"Wood",0)<wc or n(p,"Food",0)<fc or n(p,"Iron",0)<ic then msg(p,string.format("병영 재료 부족 · 나무%d 식량%d 철%d",wc,fc,ic))return false end
+ if n(p,"Wood",0)<wc or n(p,"Food",0)<fc or n(p,"Iron",0)<ic then msg(p,string.format("병영 재료 부족 · 나무%d 식량%d 철%d",wc,fc,ic));feedback(p,"BUILD_BLOCKED");return false end
  s(p,"Wood",n(p,"Wood",0)-wc);s(p,"Food",n(p,"Food",0)-fc);s(p,"Iron",n(p,"Iron",0)-ic);s(p,"BarracksLevel",lv+1);msg(p,"병영 Lv."..(lv+1));feedback(p,"BUILD");return true
 end
 local function recruit(p)
  local lv=n(p,"BarracksLevel",1);local fc=4+lv;local wc=2+math.floor(lv/2);local ic=lv>=3 and 1 or 0
- if n(p,"Food",0)<fc or n(p,"Wood",0)<wc or n(p,"Iron",0)<ic then msg(p,"병사 모집 자원 부족")return false end
+ if n(p,"Food",0)<fc or n(p,"Wood",0)<wc or n(p,"Iron",0)<ic then msg(p,"병사 모집 자원 부족");feedback(p,"RECRUIT_BLOCKED");return false end
  s(p,"Food",n(p,"Food",0)-fc);s(p,"Wood",n(p,"Wood",0)-wc);s(p,"Iron",n(p,"Iron",0)-ic);s(p,"Troops",n(p,"Troops",0)+1);msg(p,"병사 +1");feedback(p,"BUILD");return true
 end
 local function supportPower(p)local total=0;for _,o in ipairs(Players:GetPlayers())do if o~=p and o:GetAttribute("SupportReady")==true then total+=n(o,"Troops",0)*2 end end;return total end
@@ -220,17 +232,23 @@ local function broadcastMultiplayerSync(actor)
  local participants=Players:GetPlayers()
  local sharedObjective=0
  local sharedSupportPower=0
+ local syncVersion=math.max(0,math.floor(tonumber(workspace:GetAttribute("RoundSyncVersion"))or 0))+1
  for _,o in ipairs(participants)do
   sharedObjective=math.max(sharedObjective,n(o,"CapturedBases",0))
   if o:GetAttribute("SupportReady")==true then sharedSupportPower+=n(o,"Troops",0)*2 end
+  o:SetAttribute("RoundPlayerCount",#participants)
+  o:SetAttribute("RoundSyncVersion",syncVersion)
  end
+ workspace:SetAttribute("RoundPlayerCount",#participants)
+ workspace:SetAttribute("RoundSyncVersion",syncVersion)
  remote:FireAllClients("MULTIPLAYER_SYNC",{
   ActorUserId=actor and actor.UserId or 0,
   ParticipantCount=#participants,
   SharedObjective=sharedObjective,
   SharedSupportPower=sharedSupportPower,
+  SyncVersion=syncVersion,
  })
- if #participants>=2 then foundationCheckpoint("MULTIPLAYER_SYNC",actor,{participantCount=#participants})end
+ if #participants>=2 then foundationCheckpoint("MULTIPLAYER_SYNC",actor,{participantCount=#participants,syncVersion=syncVersion})end
 end
 local function attackBase(p)
  if battling[p]then msg(p,"전투 중")return false end
@@ -348,6 +366,7 @@ end)
  terrain.WaterWaveSize=.14
  terrain.WaterWaveSpeed=9
  terrain:FillBlock(CFrame.new(0,seaLevel-10,0),Vector3.new(940,20,940),Enum.Material.Water)
+ terrain:FillBlock(CFrame.new(0,seaLevel-23,0),Vector3.new(940,8,940),Enum.Material.Sand)
  workspace:SetAttribute("SeaSwimmable",true)
  for index,r in ipairs(Style.Regions)do
   local island=part(world,r.Name,r.Size,r.Pos,r.Color,r.Material);label(island,r.Name,r.Accent,58)
@@ -378,7 +397,7 @@ end)
    for i=1,10 do
     local row=math.floor((i-1)/5);local col=(i-1)%5
     local crop=part(farm,"FoodNode"..i,Vector3.new(5,2.4,5),Vector3.new(-70+col*9,topY+1.9,-48+row*14),Color3.fromRGB(127,182,72),Enum.Material.Grass)
-    crop.Shape=Enum.PartType.Ball;label(crop,"작물",Color3.fromRGB(231,242,163),17)
+    crop.Shape=Enum.PartType.Ball;crop.CanCollide=false;crop.CanTouch=false;label(crop,"작물",Color3.fromRGB(231,242,163),17)
     prompt(crop,"작물","수확").Triggered:Connect(function(p)gather(p,"Food",C.ManualGatherAmount,"수확")end)
    end
 
@@ -422,16 +441,16 @@ local function init(p)
  local h=hum(p);if h then h.MaxHealth=100;h.Health=100 end
 end
 local function load(p)
- init(p);dataLoaded[p]=nil;p:SetAttribute("SaveStatus","LOADING")
+ init(p);dataLoaded[p]=nil;p:SetAttribute("SaveStatus","LOADING");saveSurface:SetAttribute("LastLoadState","LOADING")
  local ok,d=pcall(function()return store:GetAsync("p:"..p.UserId)end)
  if not ok or(d~=nil and typeof(d)~="table")then
-  p:SetAttribute("SaveStatus","LOAD_FAILED")
+  p:SetAttribute("SaveStatus","LOAD_FAILED");saveSurface:SetAttribute("LastLoadState","LOAD_FAILED")
   msg(p,"저장 데이터 연결 실패 · 기존 진행 보호를 위해 저장을 보류했어")
   return false
  end
  if typeof(d)=="table"then for k,v in pairs(C.InitialState)do if typeof(d[k])=="number"then p:SetAttribute(k,d[k])end end;if typeof(d.SupportReady)=="boolean"then p:SetAttribute("SupportReady",d.SupportReady)end end
  if not p.Parent then return false end
- dataLoaded[p]=true;p:SetAttribute("SaveStatus","READY")
+ dataLoaded[p]=true;p:SetAttribute("SaveStatus","READY");saveSurface:SetAttribute("LastLoadState","READY")
  return true
 end
 local function save(p)
@@ -445,7 +464,7 @@ local function save(p)
    return updated
   end)
  end)
- p:SetAttribute("SaveStatus",ok and"SAVED"or"SAVE_FAILED")
+ p:SetAttribute("SaveStatus",ok and"SAVED"or"SAVE_FAILED");saveSurface:SetAttribute("LastSaveState",ok and"SAVED"or"SAVE_FAILED")
  return ok
 end
 
@@ -495,10 +514,11 @@ local function bindPlayer(p)
  load(p)
  p.CharacterAdded:Connect(function(c)validateCharacterFoundation(p,c)end)
  if p.Character then task.spawn(validateCharacterFoundation,p,p.Character)end
+ task.defer(function()if p.Parent==Players then broadcastMultiplayerSync(p)end end)
 end
 Players.PlayerAdded:Connect(bindPlayer)
 for _,p in ipairs(Players:GetPlayers())do bindPlayer(p)end
-Players.PlayerRemoving:Connect(function(p)save(p);dataLoaded[p]=nil;lastRequest[p]=nil;battling[p]=nil;gatherCooldown[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;BattleVisual.cleanup(p)end)
+Players.PlayerRemoving:Connect(function(p)save(p);dataLoaded[p]=nil;lastRequest[p]=nil;battling[p]=nil;gatherCooldown[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;BattleVisual.cleanup(p);task.defer(function()broadcastMultiplayerSync(nil)end)end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
 task.spawn(function()
