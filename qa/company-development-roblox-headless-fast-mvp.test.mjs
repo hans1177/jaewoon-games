@@ -216,3 +216,18 @@ test('F0 local Studio QA handoff does not wait for a Roblox publication target',
   assert.doesNotMatch(block,/robloxInternalReleaseEvidence/);
   assert.doesNotMatch(block,/robloxReleaseEvidence/);
 });
+
+test('seed puzzle keeps a collidable walkable foundation under the native spawn',()=>{
+  const source=fs.readFileSync('roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau','utf8');
+  const floorAt=source.indexOf('nativeFoundationFloor');
+  const spawnAt=source.indexOf('nativeFoundationSpawn');
+  assert.ok(floorAt>0&&spawnAt>floorAt);
+  assert.match(source,/nativeFoundationFloor\.Size = Vector3\.new\(96, 1, 96\)/);
+  assert.match(source,/nativeFoundationFloor\.Position = Vector3\.new\(0, 0, 0\)/);
+  assert.match(source,/nativeFoundationFloor\.Anchored = true/);
+  assert.match(source,/nativeFoundationFloor\.CanCollide = true/);
+  assert.match(source,/nativeFoundationSpawn\.Position = Vector3\.new\(0, 3, 0\)/);
+  assert.match(source,/nativeFoundationSpawn\.Anchored = true/);
+  assert.match(source,/workspace:Raycast\(rootPart\.Position, Vector3\.new\(0, -10, 0\)\)/);
+});
+
