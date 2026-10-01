@@ -452,10 +452,18 @@ def npc(s,kind,pos):
     stance=.32 if kind=='Butler' else .39 if kind=='Undertaker' else .29
     for side in [-1,1]:
         sx=side*w*stance
-        s.loft(kind+'_Leg'+str(side),(sx,0,0),[
-          (.62,w*.18,w*.20),(h*.13,w*.17,w*.18),(h*.23,w*.205,w*.22),
-          (h*.33,w*.24,w*.255),(h*.405,w*.22,w*.24)
-        ],trousers,sides=24,parent=p)
+        # 무릎을 살짝 굽힌 연속 경로 곡면. 다리 전체가 하나의 메시라 관절 이음새가 없다.
+        leg_points=[
+          (sx,.62,.04),
+          (sx+side*w*.012,h*.13,.02),
+          (sx+side*w*.030,h*.23,0),
+          (sx-side*w*.018,h*.33,-.025),
+          (sx,h*.405,-.035),
+        ]
+        s.curve_tube(kind+'_Leg'+str(side),leg_points,
+          [w*.18,w*.17,w*.205,w*.24,w*.22],
+          [w*.20,w*.18,w*.22,w*.255,w*.24],
+          trousers,sides=26,parent=p)
         shoe=s.loft(kind+'_Shoe'+str(side),(sx,.08,.14),[
           (0,w*.26,w*.48,0,.18,.05),(0.24,w*.29,w*.57,0,.26,.08),
           (.48,w*.255,w*.52,0,.20,.05),(.60,w*.20,w*.40,0,.08,0)
@@ -500,25 +508,41 @@ def npc(s,kind,pos):
         lapel=s.prism(kind+'_Lapel'+str(side),(side*w*.10,h*.695,.59),lapel_outline,.10,q['coat'],parent=p)
         lapel.rotation_euler.y=side*.035
 
-        # 팔은 어깨/상완/팔꿈치/전완이 하나의 실루엣으로 읽히도록 길이 비율을 분리한다.
-        arm=s.node(kind+'_ArmRig'+str(side),pos=(side*w*.69,h*.64,.00),parent=p)
-        arm.rotation_euler.y=(.05 if kind=='Butler' else -.15 if kind=='Undertaker' else -.23)*side
-        arm.rotation_euler.x=.08 if kind=='Butler' else .12
-        s.loft(kind+'_Arm'+str(side),(0,0,0),[
-          (h*.05,w*.255,w*.27),(0,w*.23,w*.245),(-h*.12,w*.20,w*.215),
-          (-h*.235,w*.17,w*.19),(-h*.315,w*.16,w*.18)
-        ],q['coat'],sides=24,parent=arm)
-        s.loft(kind+'_Cuff'+str(side),(0,-h*.315,.02),[
+        # 팔은 역할별 어깨-팔꿈치-손목 경로를 직접 만든다. 굽힘이 실제 실루엣에 반영된다.
+        shoulder=(side*w*.69,h*.64,.00)
+        if kind=='Butler':
+            elbow=(side*w*.76,h*.535,.055)
+            wrist=(side*w*.69,h*.405,.18)
+        elif kind=='Undertaker':
+            elbow=(side*w*.84,h*.525,-.035)
+            wrist=(side*w*.75,h*.385,.04)
+        else:
+            elbow=(side*w*.80,h*.515,.08)
+            wrist=(side*w*.61,h*.385,.26)
+        arm_points=[
+          shoulder,
+          (side*(abs(shoulder[0])*.98),h*.595,.015),
+          elbow,
+          (side*(abs(elbow[0])*.96),(elbow[1]+wrist[1])*.5,(elbow[2]+wrist[2])*.5),
+          wrist,
+        ]
+        s.curve_tube(kind+'_Arm'+str(side),arm_points,
+          [w*.255,w*.235,w*.205,w*.18,w*.155],
+          [w*.27,w*.245,w*.215,w*.195,w*.18],
+          q['coat'],sides=28,parent=p)
+        s.loft(kind+'_Cuff'+str(side),wrist,[
           (-h*.025,w*.18,w*.19),(0,w*.19,w*.20),(h*.025,w*.18,w*.19)
-        ],c['ivory'],sides=20,parent=arm)
-        s.loft(kind+'_Hand'+str(side),(0,-h*.385,.07),[
+        ],c['ivory'],sides=20,parent=p)
+        hand_center=(wrist[0],wrist[1]-h*.07,wrist[2]+.045)
+        s.loft(kind+'_Hand'+str(side),hand_center,[
           (-h*.045,w*.14,w*.15),(0,w*.165,w*.17),(h*.045,w*.14,w*.15)
-        ],glove,sides=22,parent=arm)
+        ],glove,sides=22,parent=p)
         for finger in range(4):
-            fx=(finger-1.5)*w*.065
-            finger_obj=s.capsule(kind+'_Finger'+str(side)+'_'+str(finger),(fx,-h*.46,.13),h*.105,w*.027,w*.030,glove,parent=arm,taper=.68)
+            fx=hand_center[0]+(finger-1.5)*w*.065
+            finger_obj=s.capsule(kind+'_Finger'+str(side)+'_'+str(finger),(fx,hand_center[1]-h*.075,hand_center[2]+.06),h*.105,w*.027,w*.030,glove,parent=p,taper=.68)
             finger_obj.rotation_euler.x=.05+(finger%2)*.025
-        thumb=s.capsule(kind+'_Thumb'+str(side),(side*w*.13,-h*.415,.14),h*.10,w*.035,w*.038,glove,parent=arm,taper=.70)
+            finger_obj.rotation_euler.z=side*(.025*(finger-1.5))
+        thumb=s.capsule(kind+'_Thumb'+str(side),(hand_center[0]+side*w*.13,hand_center[1]-h*.025,hand_center[2]+.055),h*.10,w*.035,w*.038,glove,parent=p,taper=.70)
         thumb.rotation_euler.z=side*.32
 
     # 코트 자락도 사각 박스 대신 불규칙 윤곽과 벌어진 뒷자락을 갖는다.
@@ -1029,8 +1053,21 @@ def render_export():
     bpy.context.scene.camera=o;d.lens=23
     sc=bpy.context.scene
     fast_review=str(os.environ.get('GITHUB_REF','')).startswith('refs/heads/chatgpt/')
-    sc.render.engine='BLENDER_EEVEE_NEXT' if fast_review else 'CYCLES'
-    if sc.render.engine=='CYCLES':
+    def select_review_engine(scene,fast):
+        if not fast:
+            scene.render.engine='CYCLES'
+            return 'CYCLES'
+        # Blender 4.x/5.x에서 Eevee 식별자가 달라진다. 설치된 엔진을 직접 선택한다.
+        for engine in ('BLENDER_EEVEE_NEXT','BLENDER_EEVEE','BLENDER_WORKBENCH'):
+            try:
+                scene.render.engine=engine
+                return engine
+            except (TypeError,ValueError):
+                continue
+        scene.render.engine='CYCLES'
+        return 'CYCLES'
+    review_engine=select_review_engine(sc,fast_review)
+    if review_engine=='CYCLES':
         sc.cycles.samples=16;sc.cycles.use_denoising=True
     else:
         sc.render.image_settings.file_format='PNG'
@@ -1060,8 +1097,8 @@ def render_export():
         cam_data=bpy.data.cameras.new('NPCReviewCamera');cam=bpy.data.objects.new('NPCReviewCamera',cam_data);npc_collection.objects.link(cam)
         bpy.context.scene.camera=cam;cam_data.lens=64
         sc=bpy.context.scene
-        sc.render.engine='BLENDER_EEVEE_NEXT' if fast_review else 'CYCLES'
-        if sc.render.engine=='CYCLES':
+        npc_review_engine=select_review_engine(sc,fast_review)
+        if npc_review_engine=='CYCLES':
             sc.cycles.samples=20;sc.cycles.use_denoising=True
         else:
             sc.render.image_settings.file_format='PNG'
@@ -1077,7 +1114,7 @@ def render_export():
             name=kind+'-'+view+'.png';sc.render.filepath=str(review/name);bpy.ops.render.render(write_still=True);files.append(name)
         npc_reviews[kind]=files
     (review/'evidence.json').write_text(json.dumps({
-      'renderer':'Blender '+bpy.app.version_string+' '+('EEVEE_NEXT_BRANCH_REVIEW' if fast_review else 'CYCLES_MAIN_REVIEW'),
+      'renderer':'Blender '+bpy.app.version_string+' '+(npc_review_engine if fast_review else 'CYCLES'),
       'input':'generated/manor-lobby.glb',
       'sha256':hashlib.sha256((OUT/'manor-lobby.glb').read_bytes()).hexdigest(),
       'method':'Import exported manor and each exported NPC GLB into empty scenes, then render',
