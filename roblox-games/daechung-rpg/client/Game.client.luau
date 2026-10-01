@@ -487,7 +487,12 @@ block.InputEnded:Connect(function(input)
  if input.UserInputType==Enum.UserInputType.Touch or input.UserInputType==Enum.UserInputType.MouseButton1 then setBlock(false)end
 end)
 UserInputService.InputBegan:Connect(function(input,processed)
- if not processed and gui:GetAttribute("RPGMenuOpen")~=true and input.KeyCode==Enum.KeyCode.F then setBlock(true)end
+ if processed or gui:GetAttribute("RPGMenuOpen")==true then return end
+ if input.KeyCode==Enum.KeyCode.F then
+  setBlock(true)
+ elseif input.UserInputType==Enum.UserInputType.MouseButton1 then
+  setBlock(false);playCombatAnimation(false);actionSfx:Play();remote:FireServer(C.Actions.ATTACK)
+ end
 end)
 UserInputService.InputEnded:Connect(function(input)
  if input.KeyCode==Enum.KeyCode.F then setBlock(false)end
