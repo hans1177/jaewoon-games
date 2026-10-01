@@ -4060,7 +4060,9 @@ test('verified APK learning preserves game-source and QA-only dispositions throu
   assert.match(withLearning,/OWNER: keep all save keys/);
   assert.match(withLearning,/verified-commercial-app-reuse=external-black-box-a-run-1/);
   assert.equal(verifiedExternalLearningBlockFromPrompt(withLearning),contract.block);
-  assert.equal(withLearning.split('A-no-clone').length-1,1);
+  assert.equal(withLearning.split('A-no-clone').length-1,0);
+  assert.equal(rows[0].distilledAvoidancePrinciples.includes('A-no-clone'),true);
+  assert.match(withLearning,/nonSourceAvoidanceAndUsePolicy=RETAINED_IN_VERIFIED_MEMORY_AND_QA/);
   assert.equal(rawGoal.includes(qaPrinciple),true);
   const customGoal=rawGoal.replace('검증되지 않은 성공은 재사용하지 않는다.','사용자 수정 학습 지시');
   const custom=buildPrompt({...order,goal:customGoal,unifiedLearning:learning},context,['index.html']);
@@ -5144,7 +5146,9 @@ test('oversized Roblox rebuild starts with owned source and complete learning in
   assert.match(request.prompt,/SAVE_KEY_DEMO/);
   assert.match(request.prompt,/TWO_CLIENT_RESULT_REQUIRED/);
   assert.ok(request.prompt.includes(principle));
-  assert.match(request.prompt,/Do not clone assets/);
+  assert.doesNotMatch(request.prompt,/Do not clone assets/);
+  assert.equal(work.unifiedLearning.playbookReuse[0].distilledAvoidancePrinciples.includes('Do not clone assets'),true);
+  assert.match(request.prompt,/nonSourceAvoidanceAndUsePolicy=RETAINED_IN_VERIFIED_MEMORY_AND_QA/);
   assert.ok(request.options.num_predict>=1024);
   assert.ok(request.options.num_ctx>=16384);
   // 출시 후 집중 개선에도 같은 입력·출력 예산과 학습 보존을 적용한다.
@@ -5212,7 +5216,9 @@ test('oversized standard JSON edit starts with bounded writable context instead 
   assert.match(request.prompt,/=== FILE index\.html \[EDITABLE\](?: \[TRUNCATED\])? ===/);
   assert.match(request.prompt,/button id="play"/);
   assert.ok(request.prompt.includes(principle));
-  assert.match(request.prompt,/Do not clone assets/);
+  assert.doesNotMatch(request.prompt,/Do not clone assets/);
+  assert.equal(work.unifiedLearning.playbookReuse[0].distilledAvoidancePrinciples.includes('Do not clone assets'),true);
+  assert.match(request.prompt,/nonSourceAvoidanceAndUsePolicy=RETAINED_IN_VERIFIED_MEMORY_AND_QA/);
   assert.deepEqual(request.format,'json');
 });
 
