@@ -926,7 +926,7 @@ export function createVibeCausalInterpretation({actor={},event={},relationship={
   const directWitness=causalEvent.witnesses.includes(actorId)||knowledge.observed===true;
   const reported=!directWitness&&knowledge.reported===true;
   const perceived=directWitness||reported;
-  const defaultConfidence=directWitness?1:reported?.55:0;
+  const defaultConfidence=directWitness ? 1 : (reported ? .55 : 0);
   const certainty=Math.max(0,Math.min(1,Number(knowledge.confidence??defaultConfidence)));
   return Object.freeze({
     actor:actorId,
