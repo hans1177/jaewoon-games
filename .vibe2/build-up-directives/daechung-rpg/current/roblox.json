@@ -493,8 +493,8 @@
       "sourceRevision": "caf107a8a2415fafa179b1e076d93704506398c9",
       "artifactIdentity": "sha256:fc2c92e482f47e15e9ae7db9dd7fab2861b633fbe87d53b14bde0d291c711f6a",
       "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 36874740774,
-      "testedAt": "2026-10-01T14:20:39.460Z",
+      "workflowRunId": 36875314493,
+      "testedAt": "2026-10-01T14:28:14.202Z",
       "repairSurfaces": [
         "SYSTEM_TRANSACTION",
         "QUEST_LOOP",
@@ -508,7 +508,7 @@
           "repairSurface": "SYSTEM_TRANSACTION",
           "priority": "CRITICAL",
           "hint": "One or more discovered shop/craft/equip/upgrade actions accepted input without changing inventory, currency/progression, feedback, or relevant UI state. Repair each transaction chain independently.",
-          "observed": "{\"systemActionCount\":3,\"systemEffectCount\":0,\"actions\":[{\"id\":\"prompt-ProximityPrompt\",\"semantic\":\"SHOP\",\"effectObserved\":false,\"effect\":{\"moved\":51.255247845938975,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":true}},{\"id\":\"prompt-ProximityPrompt\",\"semantic\":\"UPGRADE\",\"effectObserved\":false,\"effect\":{\"moved\":24.4690174082625,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":true}},{\"id\":\"prompt-ProximityPrompt\",\"semantic\":\"SHOP\",\"effectObserved\":false,\"effect\":{\"moved\":45.1678321037126,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":true}}]}"
+          "observed": "{\"systemActionCount\":3,\"systemEffectCount\":2,\"actions\":[{\"id\":\"prompt-ProximityPrompt\",\"semantic\":\"SHOP\",\"effectObserved\":false,\"effect\":{\"moved\":41.69847402401138,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":true}},{\"id\":\"prompt-ProximityPrompt\",\"semantic\":\"UPGRADE\",\"effectObserved\":true,\"effect\":{\"moved\":24.99795059564624,\"progress\":false,\"inventory\":false,\"feedback\":true,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":true}},{\"id\":\"prompt-ProximityPrompt\",\"semantic\":\"SHOP\",\"effectObserved\":true,\"effect\":{\"moved\":47.97397676008598,\"progress\":false,\"inventory\":false,\"feedback\":true,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":true}}]}"
         },
         {
           "id": "adaptive-quest-state-transition",
@@ -558,20 +558,6 @@
           "priority": "HIGH",
           "hint": "Replay the exact observed action and verify its real state change after repair.",
           "observed": "{\"id\":\"observed-action-8f10652c04dfc34d013c\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"prompt-ProximityPrompt\",\"targetIdentity\":\"Workspace.DaechungRPGWorld.Village.VillageHealer.ProximityPrompt\",\"actionType\":\"mcp-world-interaction\",\"effectRequired\":true,\"attempts\":1}"
-        },
-        {
-          "id": "observed-action-1d7be3f03421ec49af6a",
-          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
-          "priority": "HIGH",
-          "hint": "Replay the exact observed action and verify its real state change after repair.",
-          "observed": "{\"id\":\"observed-action-1d7be3f03421ec49af6a\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"prompt-ProximityPrompt\",\"targetIdentity\":\"Workspace.DaechungRPGWorld.Village.AdvancementMaster.ProximityPrompt\",\"actionType\":\"mcp-world-interaction\",\"effectRequired\":true,\"attempts\":1}"
-        },
-        {
-          "id": "observed-action-eeca420176112b7c4e7b",
-          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
-          "priority": "HIGH",
-          "hint": "Replay the exact observed action and verify its real state change after repair.",
-          "observed": "{\"id\":\"observed-action-eeca420176112b7c4e7b\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"prompt-ProximityPrompt\",\"targetIdentity\":\"Workspace.DaechungRPGWorld.Village.ArmorMerchant.ProximityPrompt\",\"actionType\":\"mcp-world-interaction\",\"effectRequired\":true,\"attempts\":1}"
         }
       ]
     }
