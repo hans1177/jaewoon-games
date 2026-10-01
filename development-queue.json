@@ -4518,10 +4518,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "ROBLOX_FINAL_REVIEW_REVALIDATION",
-      "canonicalState": "ROBLOX_INTERNAL_STUDIO_VALIDATION_PASSED",
+      "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
+      "canonicalState": "F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T15:56:27.717Z",
+      "updatedAt": "2026-10-01T15:57:55.716Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -4746,10 +4746,43 @@
       "robloxIndependentQaPassedAt": "2026-10-01T15:56:27.717Z",
       "robloxRegressionPassed": true,
       "robloxRegressionPassedAt": "2026-10-01T15:56:27.717Z",
-      "robloxFinalReviewPassed": false,
-      "robloxFinalReviewPassedAt": null,
-      "robloxF9ReleaseRegressionPassed": false,
-      "robloxF9ReleaseRegressionEvidence": null,
+      "robloxFinalReviewPassed": true,
+      "robloxFinalReviewPassedAt": "2026-10-01T15:57:55.716Z",
+      "robloxF9ReleaseRegressionPassed": true,
+      "robloxF9ReleaseRegressionEvidence": {
+        "version": 1,
+        "gameId": "village-dungeons",
+        "sourceRevision": "25b1b2b162099754e756b8171e2ab440a455dfd4",
+        "artifactIdentity": "sha256:4deca0802a0ec0a6af024e95fdd07db82aea7930abd5daaa2cf1faa4102f154d",
+        "artifactRunId": 36864811737,
+        "candidateVersionNumber": 36864811737,
+        "postRuntimeQaAuthority": "roblox-internal-studio-single-session-qa",
+        "noCurrentCriticalOrHighTesterFailure": true,
+        "studioAssetBindingRequired": true,
+        "studioAssetRuntimeBindingPassed": true,
+        "studioAssetRuntimeBindingEvidence": {
+          "version": 2,
+          "gameId": "village-dungeons",
+          "sourceRevision": "25b1b2b162099754e756b8171e2ab440a455dfd4",
+          "artifactIdentity": "sha256:4deca0802a0ec0a6af024e95fdd07db82aea7930abd5daaa2cf1faa4102f154d",
+          "candidateVersionNumber": 36864811737,
+          "localStudioRuntime": true,
+          "officialStudioMcp": true,
+          "marker": "ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS",
+          "authority": "roblox-studio-local-exact-build-asset-binding",
+          "verifiedAt": "2026-10-01T15:56:27.717Z"
+        },
+        "exactCandidateReusedWithoutRepublish": true,
+        "deterministicRegression": [
+          "qa/company-development-roblox-runtime-foundation.test.mjs",
+          "qa/company-development-roblox-headless-fast-mvp.test.mjs",
+          "qa/company-tester-debug-intake.test.mjs",
+          "qa/company-development-roblox-release-promotion.test.mjs",
+          "qa/vibe3-roblox-platform.test.mjs"
+        ],
+        "authority": "deterministic-f9-exact-runtime-candidate-review",
+        "verifiedAt": "2026-10-01T15:57:55.716Z"
+      },
       "robloxPostRuntimeQaEvidence": {
         "version": 6,
         "gameId": "village-dungeons",
@@ -4794,12 +4827,10 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_REGRESSION",
-      "robloxFailureStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
-      "robloxFailureSignature": "ROBLOX_FINAL_REVIEW_PENDING",
-      "routingBlockers": [
-        "roblox-final-review-pending"
-      ],
+      "robloxLastSuccessfulStage": "F9_RELEASE_REGRESSION",
+      "robloxFailureStage": null,
+      "robloxFailureSignature": null,
+      "routingBlockers": [],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -4968,7 +4999,7 @@
       },
       "robloxSharedTargetCurrent": true,
       "robloxFastMvpSupersededBy": null,
-      "robloxReleaseVersionNumber": 9,
+      "robloxReleaseVersionNumber": null,
       "robloxPublicRelease": false,
       "robloxInternalVibePlayEvidence": {
         "version": 2,
@@ -5843,9 +5874,9 @@
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": true,
-        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
-        "failureStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
-        "failureSignature": "ROBLOX_FINAL_REVIEW_PENDING"
+        "lastSuccessfulStage": "F9_RELEASE_REGRESSION",
+        "failureStage": null,
+        "failureSignature": null
       },
       "resumeStage": "F1_SERVER_BOOT",
       "failureCount": 1,
@@ -5878,7 +5909,7 @@
       },
       "robloxCanonicalPublishPending": false,
       "robloxQualityBuildUpLastPassedAt": "2026-10-01T14:37:41.725Z",
-      "robloxF9PendingInParallel": true,
+      "robloxF9PendingInParallel": false,
       "robloxCanonicalPublishQueue": [
         {
           "version": 1,
@@ -6066,22 +6097,22 @@
       "robloxF9VerifiedPrepublishEvidence": {
         "version": 1,
         "gameId": "village-dungeons",
-        "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
-        "artifactIdentity": "sha256:979513fcc1e8220add6098a6dfaf682d401fcad9a0e2214d03283a44772f3d31",
-        "artifactRunId": 36432015025,
+        "sourceRevision": "25b1b2b162099754e756b8171e2ab440a455dfd4",
+        "artifactIdentity": "sha256:4deca0802a0ec0a6af024e95fdd07db82aea7930abd5daaa2cf1faa4102f154d",
+        "artifactRunId": 36864811737,
         "validationUniverseId": "",
         "validationPlaceId": "",
-        "validationVersionNumber": 36432015025,
+        "validationVersionNumber": 36864811737,
         "finalReviewPassed": true,
         "f9ReleaseRegressionPassed": true,
         "f9RuntimeReplay": false,
         "internalStudioValidationOnly": true,
         "runtimeAcceptancePassed": true,
         "studioAssetRuntimeBindingPassed": true,
-        "canonicalPublishRequired": true,
+        "canonicalPublishRequired": false,
         "canonicalPublishCompleted": false,
         "authority": "roblox-f9-verified-prepublish-gate",
-        "verifiedAt": "2026-09-28T15:14:33.023Z"
+        "verifiedAt": "2026-10-01T15:57:55.716Z"
       },
       "robloxInternalReleasePublished": false,
       "robloxPromotionBlockers": [],
@@ -26617,7 +26648,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T15:57:36.188Z",
+  "updatedAt": "2026-10-01T15:57:55.716Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
