@@ -1,5 +1,5 @@
 {
-  "version": 505,
+  "version": 511,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -972,20 +972,9 @@
       "minifiedLongLineAnchorFallback": true,
       "focusedAnchorContextRadiusChars": 1400,
       "baselineSuccessRatePercent": 25,
-      "latestDiagnosticRun": 35476177742,
       "latestDiagnosticSuccessRatePercent": 80,
-      "latestDiagnosticFailureClasses": {
-        "MALFORMED_OUTPUT": 4
-      },
       "diagnosticRunIsClean20Wave": true,
-      "currentEvaluationRun": 35476818311,
       "clean20WaveRequiredForEffectivenessDecision": false,
-      "sourceCommit": "f9fab12ef9f26a7c2dad425bf4f611d493954fa3",
-      "testCommits": [
-        "7aec400eb5e46e01978c683585e35f8f383c145e",
-        "a8260bdb4c716934ca491c7c08dea478b75637de"
-      ],
-      "workflowTelemetryCommit": "d897e86d13cf228bb1bdcfff9592c36cc6e60497",
       "causalFastPathTriggers": [
         "EDIT_MATCH",
         "TIMEOUT",
@@ -995,98 +984,12 @@
       "causalFastPathMode": "WORKER_PINNED_REPLACE_ONLY",
       "firstAttemptPinnedAnchorDisabledReason": "GOAL_RELEVANCE_NOT_PROVEN_FOR_GENERIC_ANCHOR_SELECTION",
       "qualityProtection": "DO_NOT_FORCE_UNRELATED_ANCHOR_BEFORE_CAUSAL_FAILURE",
-      "editMatchFastEscalationSourceCommit": "03d8c27e8bbf3ec9759f9d8bd4758b22d7a78c03",
-      "editMatchFastEscalationTestCommit": "a8b318df4433036bb0607b79d1802de992338e16",
       "firstAttemptSafetyCommit": "8903d637486725e6501e1d0231e49fa2ddd87447",
       "contractRegressionCommit": "b6ef7e4fbcfd010d7f373ef66e81a437dbf4943a",
       "schedulerRegressionCommit": "52b4329d444b42a267954233168d562d636e10c4",
-      "ciRevalidationRuns": {
-        "companyEvolutionQa": 35476177596,
-        "vibe2CoreQa": 35476177645,
-        "integratedRegression": 35476177597,
-        "state": "QUEUED_OR_RUNNING"
-      },
       "placeholderReplacementRejected": true,
       "placeholderGuardCommit": "e2f44a6d9340e9626f35e4a1de55b9cce180f8e1",
       "placeholderGuardTestCommit": "0b72565fe475bac1fac7c445a6ed3f0cf86d7ca1",
-      "corruptedRepairIncident": {
-        "gameId": "seed-single-defense-strat-celestial-bastion",
-        "firstKnownCorruptCommit": "e175feac7d17000b3badf12fe367e28f8e79f079",
-        "additionalDegradingCommits": [
-          "3d826353515f62292e5eebd695e5616f6d7b779a",
-          "2fc875502f3932a042e0fa09856dc858670bdc8b",
-          "00d45fd928c28db9acc4ade01a96e236d55dc91c",
-          "c2b232edc338e9ac65dd25d9042f3e92ba0f7337"
-        ],
-        "restoredFrom": "e5f8eef340575ffdacee298201e61064dcd17200",
-        "restoreCommit": "dd08e22db81e6d88a3a0abec302ef8e9169ba479",
-        "verifiedAfterRestore": {
-          "placeholderAbsent": true,
-          "historicalSaveKeyRestored": true,
-          "actionClickBindingRestored": true,
-          "singleActFunction": true,
-          "gameConfigBindingRestored": true,
-          "singleBaseDeclaration": true
-        }
-      },
-      "latestRelevantQa": {
-        "companyEvolutionQa": {
-          "runId": 35478191975,
-          "conclusion": "success",
-          "head": "35a23af193bfdeb14c05d567132cf40891ec87e8"
-        },
-        "priorIntegratedRegression": {
-          "runId": 35476177597,
-          "conclusion": "success",
-          "head": "b6ef7e4fbcfd010d7f373ef66e81a437dbf4943a"
-        },
-        "centralPolicyContract": {
-          "state": "RETRIGGERED_BY_MALFORMED_FAST_PATH_DOCUMENT_SYNC"
-        },
-        "vibe2CoreQa": {
-          "runId": 35478191978,
-          "conclusion": "success",
-          "head": "35a23af193bfdeb14c05d567132cf40891ec87e8"
-        },
-        "integratedRegression": {
-          "runId": 35478191977,
-          "conclusion": "success",
-          "head": "35a23af193bfdeb14c05d567132cf40891ec87e8"
-        },
-        "vibeQa": {
-          "runId": 35478191970,
-          "conclusion": "success",
-          "head": "35a23af193bfdeb14c05d567132cf40891ec87e8"
-        }
-      },
-      "verifiedEffectivenessWave": {
-        "runId": 35476177742,
-        "contractSha": "5aedde856690c89e72252fcaedcbcd88c6f9fa8d",
-        "candidateCount": 25,
-        "peakParallel": 20,
-        "cacheHitRatePercent": 100,
-        "baselineSuccessRatePercent": 25,
-        "observedSuccessRatePercent": 80,
-        "observedFailureRatePercent": 20,
-        "sourceGenerationFailures": 4,
-        "sourceGenerationFailureClasses": {
-          "MALFORMED_OUTPUT": 4
-        },
-        "editMatchFinalFailures": 0,
-        "fullRewriteSizeFinalFailures": 0,
-        "fanIn": "PASS",
-        "regression": "PASS",
-        "releaseCandidates": 7,
-        "packageCycleAverageMs": 470094.11,
-        "preparationRatioPercent": 2.54,
-        "workloadFeaturesCompleted": 7,
-        "workloadChangedFiles": 21,
-        "workloadChangedLines": 54,
-        "telemetryBottleneck": "RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION",
-        "observedLongRunningWorkerStage": "SOURCE_CANDIDATE_GENERATION",
-        "clean20ConcurrencyWaveSatisfied": true,
-        "effectivenessDecision": "PASS_ABOVE_25_PERCENT_BASELINE"
-      },
       "firstCompleteEditEarlyStop": {
         "enabled": true,
         "sourceCommit": "9e07112fb9a49bad49328981a00a01d8eaddf845",
@@ -1110,106 +1013,22 @@
       "malformedFastEscalationScope": "FOCUSED_WEB_REPAIR_ONLY",
       "malformedFastEscalationSourceCommit": "4921eae839561c45bea38de7b6fcd46a7d75e23a",
       "malformedFastEscalationTestCommit": "35a23af193bfdeb14c05d567132cf40891ec87e8",
-      "malformedFastEscalationCiRuns": {
-        "vibe2CoreQa": {
-          "runId": 35478191978,
-          "conclusion": "success"
-        },
-        "vibeQa": {
-          "runId": 35478191970,
-          "conclusion": "success"
-        },
-        "integratedRegression": {
-          "runId": 35478191977,
-          "conclusion": "success"
-        },
-        "companyEvolutionQa": {
-          "runId": 35478191975,
-          "conclusion": "success"
-        }
+      "robloxZeroOutputTimeoutFocusedRecoveryStickyWithinAttemptBudget": true,
+      "robloxZeroOutputTimeoutFocusedRecoveryRule": "AFTER_FIRST_ZERO_OUTPUT_TIMEOUT_KEEP_REMAINING_EXISTING_ATTEMPTS_ON_PINNED_FOCUSED_REPLACE_BUDGET_INSTEAD_OF_RETURNING_TO_240S_FULL_PACKAGE_GENERATION",
+      "robloxZeroOutputTimeoutFocusedRecoveryBudget": {
+        "timeoutMs": 90000,
+        "maxPredict": 384,
+        "contextWindow": 8192
       },
-      "post1989SourceGenerationFailureAudit": {
-        "version": 1,
-        "state": "FOCUSED_REPLACE_PLACEHOLDER_REPAIR_IMPLEMENTED_PENDING_CI",
-        "sourceIssue": 2017,
-        "productionRuns": [
-          35498381395,
-          35498819604,
-          35499247938,
-          35499585668,
-          35499982325,
-          35500348340,
-          35500767356,
-          35501147685,
-          35501512856
-        ],
-        "aggregatedFinalSourceGenerationFailures": {
-          "TIMEOUT": 0,
-          "MALFORMED_OUTPUT": 0,
-          "EDIT_MATCH": 0,
-          "NO_OP": 0,
-          "SEMANTIC_DIFF_BUDGET": 0,
-          "DIAGNOSTIC_POSTCONDITION": 0,
-          "CENTRAL_POLICY_STALE": 0,
-          "OTHER": 42
-        },
-        "verifiedOtherSignatures": {
-          "focusedReplacePlaceholder": {
-            "message": "focused replace placeholder 금지",
-            "reproducedVariants": 4,
-            "evidenceRuns": [
-              35500348340,
-              35501512856
-            ]
-          },
-          "emptyRelativePath": {
-            "message": "잘못된 상대 경로:",
-            "reproducedVariants": 1,
-            "evidenceRuns": [
-              35501512856
-            ],
-            "selectedForThisRepair": false
-          }
-        },
-        "selectedLargestVerifiedRecurringSignature": "FOCUSED_REPLACE_PLACEHOLDER",
-        "rootCause": "FOCUSED_REPLACE_PROMPT_EXPOSED_A_COPYABLE_PLACEHOLDER_LITERAL_THAT_THE_SMALL_LOCAL_MODEL_REPEATED_VERBATIM_WHILE_THE_FAILURE_CLASSIFIER_FELL_THROUGH_TO_OTHER",
-        "responsibleSystems": [
-          "tools/vibe2-source-worker.mjs::buildFocusedReplaceOnlyPrompt",
-          "tools/vibe2-source-worker.mjs::generationFailureClass",
-          "tools/vibe2-source-worker.mjs::shouldRetryGenerationError"
-        ],
-        "correction": {
-          "copyablePlaceholderLiteralRemovedFromPrompt": true,
-          "placeholderFailureClass": "MALFORMED_OUTPUT",
-          "placeholderFailureRetryable": true,
-          "retryBudgetIncreased": false,
-          "timeoutIncreased": false,
-          "workerCountIncreased": false,
-          "qaBypassAllowed": false,
-          "writableScopeExpanded": false
-        },
-        "authorityChange": "NONE",
-        "nextGate": "CI_PASS_THEN_PRODUCTION_WAVE_VERIFY_PLACEHOLDER_FAILURE_DISAPPEARS_OR_RECLASSIFIES_WITH_REAL_CAUSAL_CLASS"
-      },
-      "latestProductionBottleneckEvidence": {
-        "runId": 36229097447,
-        "observedAt": "2026-09-26",
-        "sourceGenerationFailures": 37,
-        "failureClasses": {
-          "TIMEOUT": 9,
-          "NO_OP": 12,
-          "INVALID_PATH": 12,
-          "OTHER": 2,
-          "ROBLOX_VISUAL_DOMAINS": 1,
-          "STUDIO_QUALITY_DELTA": 1
-        },
-        "repeatedZeroOutputTimeoutsObserved": true,
-        "repeatedFullGraphicsRecoveryBudget": {
-          "timeoutMs": 240000,
-          "maxPredict": 3072
-        },
-        "sharedContextResultContaminationObserved": "SOURCE_FAILURE_EXITED_BEFORE_AFTER_WORK_REVALIDATION"
-      },
+      "robloxZeroOutputTimeoutFocusedRecoveryScope": "ROBLOX_ASSET_ADAPTATION_ONLY",
+      "robloxZeroOutputTimeoutFocusedRecoveryAttemptBudgetIncrease": false,
+      "robloxZeroOutputTimeoutFocusedRecoveryQualityGateWeakening": false,
+      "robloxNonTimeoutFullGraphicsPackageRecoveryUnchanged": true,
+      "robloxMotionAndCoreVisualDomainGatesUnchanged": true,
+      "exactResponsibleLineLocatorNormalization": true,
+      "lineLocatorNormalizationRule": "STRIP_TRAILING_LINE_OR_LINE_COLUMN_SUFFIX_ONLY_WHEN_STRIPPED_PATH_EXACTLY_MATCHES_EXISTING_RESPONSIBLE_FILE",
+      "lineLocatorNormalizationWritableScopeExpansion": false,
+      "lineLocatorNormalizationInvalidUnknownPathStillRejected": true,
       "focusedTimeoutPolicyResync": {
         "state": "CI_VERIFIED_LIVE_PENDING_STALE_SCHEDULER_EPOCH_RELEASE",
         "authorityChange": "NONE",
@@ -1229,23 +1048,7 @@
           "qa/vibe2-source-worker.test.mjs"
         ],
         "nextGate": "CI_PASS_THEN_VERIFY_NEXT_PRODUCTION_WAVE_REDUCES_ZERO_OUTPUT_TIMEOUT_TAIL_AND_SHARED_CONTEXT_MISSING_FALSE_EVIDENCE"
-      },
-      "robloxZeroOutputTimeoutFocusedRecoveryStickyWithinAttemptBudget": true,
-      "robloxZeroOutputTimeoutFocusedRecoveryRule": "AFTER_FIRST_ZERO_OUTPUT_TIMEOUT_KEEP_REMAINING_EXISTING_ATTEMPTS_ON_PINNED_FOCUSED_REPLACE_BUDGET_INSTEAD_OF_RETURNING_TO_240S_FULL_PACKAGE_GENERATION",
-      "robloxZeroOutputTimeoutFocusedRecoveryBudget": {
-        "timeoutMs": 90000,
-        "maxPredict": 384,
-        "contextWindow": 8192
-      },
-      "robloxZeroOutputTimeoutFocusedRecoveryScope": "ROBLOX_ASSET_ADAPTATION_ONLY",
-      "robloxZeroOutputTimeoutFocusedRecoveryAttemptBudgetIncrease": false,
-      "robloxZeroOutputTimeoutFocusedRecoveryQualityGateWeakening": false,
-      "robloxNonTimeoutFullGraphicsPackageRecoveryUnchanged": true,
-      "robloxMotionAndCoreVisualDomainGatesUnchanged": true,
-      "exactResponsibleLineLocatorNormalization": true,
-      "lineLocatorNormalizationRule": "STRIP_TRAILING_LINE_OR_LINE_COLUMN_SUFFIX_ONLY_WHEN_STRIPPED_PATH_EXACTLY_MATCHES_EXISTING_RESPONSIBLE_FILE",
-      "lineLocatorNormalizationWritableScopeExpansion": false,
-      "lineLocatorNormalizationInvalidUnknownPathStillRejected": true
+      }
     },
     "codingEfficiencyMustNotDependOnShorterWorkerTimeBudget": true,
     "strategyQualityMayNotTradeAwayQaOrEvidence": true,
@@ -2006,37 +1809,6 @@
       ],
       "schedulerGuarantee": "POST_RELEASE_PRIORITY_DOES_NOT_CREATE_FIXED_SLOT_OR_GAME_WIDE_LOCK; ALL_NON_OVERLAPPING_RESPONSIBILITIES_MAY_RUN_TO_EXTERNAL_CAPACITY",
       "learningRunsInParallel": true,
-      "historicalDeploymentRecovery": {
-        "enabled": true,
-        "registry": "company-learning/roblox-sustained-maintenance.json",
-        "protectedSlotSharedWithCurrentPostReleaseFocus": true,
-        "maxActiveHistoricalMaintenanceTasks": null,
-        "eligibility": [
-          "actual-studio-runtime-pass",
-          "post-runtime-independent-qa-pass",
-          "regression-pass",
-          "historical-publication-target-observed",
-          "source-root-present"
-        ],
-        "currentReleaseClaimRequired": false,
-        "currentReleaseClaimMustNotBeInvented": true,
-        "maintenanceTaskReleaseState": "development-confirmed",
-        "taskFlag": "historicalDeploymentRecovery",
-        "automaticRepublish": false,
-        "republishRoute": "EXISTING_ROBLOX_RELEASE_PROMOTION_PIPELINE",
-        "currentSourceChangeRequires": [
-          "TARGET_PLATFORM_RUNTIME",
-          "TARGET_PLATFORM_INDEPENDENT_QA",
-          "TARGET_PLATFORM_REGRESSION",
-          "RELEASE_PROMOTION"
-        ],
-        "publicationTargetEvidenceMayBeHistorical": true,
-        "publicationTargetDoesNotProveCurrentRelease": true,
-        "assetStates": {
-          "HISTORICAL_PUBLICATION_TARGET_VERIFIED": "MAINTENANCE_ELIGIBLE",
-          "HISTORICAL_RUNTIME_VALIDATED_PUBLICATION_TARGET_UNCONFIRMED": "PRESERVE_ONLY"
-        }
-      },
       "caretakerMode": "PER_GAME_PERSISTENT",
       "oneLogicalCaretakerPerEligibleReleasedGame": true,
       "sharedSingleCaretakerLimit": false,
@@ -2253,7 +2025,38 @@
       "externalPublicReleaseGate": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
       "canonicalRepublishRule": "EVERY_WEB_ROBLOX_UNITY_VERIFIED_F0_TO_F9_CYCLE_DISPATCHES_EXACT_F9_PUBLICATION_AND_IMMEDIATELY_STARTS_NEXT_CYCLE",
       "publicationOutcomeBlocksNextCycle": false,
-      "internalOrExternalExposureStateBlocksNextCycle": false
+      "internalOrExternalExposureStateBlocksNextCycle": false,
+      "historicalDeploymentRecovery": {
+        "enabled": true,
+        "registry": "company-learning/roblox-sustained-maintenance.json",
+        "protectedSlotSharedWithCurrentPostReleaseFocus": true,
+        "maxActiveHistoricalMaintenanceTasks": null,
+        "eligibility": [
+          "actual-studio-runtime-pass",
+          "post-runtime-independent-qa-pass",
+          "regression-pass",
+          "historical-publication-target-observed",
+          "source-root-present"
+        ],
+        "currentReleaseClaimRequired": false,
+        "currentReleaseClaimMustNotBeInvented": true,
+        "maintenanceTaskReleaseState": "development-confirmed",
+        "taskFlag": "historicalDeploymentRecovery",
+        "automaticRepublish": false,
+        "republishRoute": "EXISTING_ROBLOX_RELEASE_PROMOTION_PIPELINE",
+        "currentSourceChangeRequires": [
+          "TARGET_PLATFORM_RUNTIME",
+          "TARGET_PLATFORM_INDEPENDENT_QA",
+          "TARGET_PLATFORM_REGRESSION",
+          "RELEASE_PROMOTION"
+        ],
+        "publicationTargetEvidenceMayBeHistorical": true,
+        "publicationTargetDoesNotProveCurrentRelease": true,
+        "assetStates": {
+          "HISTORICAL_PUBLICATION_TARGET_VERIFIED": "MAINTENANCE_ELIGIBLE",
+          "HISTORICAL_RUNTIME_VALIDATED_PUBLICATION_TARGET_UNCONFIRMED": "PRESERVE_ONLY"
+        }
+      }
     },
     "executionBindings": {
       "webValidationProducer": ".github/workflows/company-development-confirmed-runtime.yml",
@@ -3454,489 +3257,6 @@
           "RUNTIME_EVIDENCE_INTEGRITY",
           "RELEASE_SAFETY_GATES"
         ],
-        "currentIncident": {
-          "signature": "VIBE2_POST_REPAIR_SOURCE_SUCCESS_AND_GAME_PRIMARY_SLOT_PROTECTION",
-          "status": "LIVE_20_WAVE_RUNNING_LATEST_REPAIRS_QA_PASS",
-          "symptom": "LIVE_20_WAVE_IS_HEALTHY_BUT_PINNED_OLDER_CONTRACT_LEAVES_A_LONG_SOURCE_GENERATION_TAIL_AND_COARSE_SOURCE_CANDIDATE_FAILURES_CAN_REPEAT_WITHOUT_CAUSAL_RETRY_CONTEXT",
-          "rootCause": {
-            "hiddenWorkerFailure": "CANDIDATE_STEP_USED_CONTINUE_ON_ERROR_SO_GITHUB_JOB_SUCCESS_MASKED_INTERNAL_SOURCE_CANDIDATE_FAILURE_UNTIL_FAN_IN_ARTIFACT_INSPECTION",
-            "generationTail": "TWO_ATTEMPTS_WERE_INSUFFICIENT_FOR_REPEATED_NO_OP_EDIT_MATCH_TIMEOUT_AND_UNDERSIZED_FULL_WEB_OUTPUTS",
-            "telemetryLoss": "FAILED_CANDIDATE_STEP_DID_NOT_PERSIST_CANDIDATE_DURATION_FAILURE_CLASS_OR_TASK_LOCAL_EXPLORATION_RESULT_IN_THE_IMMUTABLE_WORKER_RESULT",
-            "refillPlannerBypass": "VIBE2_FANIN_REFILL_REPOSITORY_DISPATCH_ENTERED_CONTINUOUS_CORE_RESERVE_DIRECTLY_AND_DID_NOT_RUN_THE_DETERMINISTIC_AUTO_PLANNER_BEFORE_RESERVING_THE_NEXT_WAVE",
-            "exactRepairEvidence": "EXISTING_EXACT_WEB_REPAIR_TASKS_THEREFORE_RETAINED_GENERIC_GOALS_EVEN_THOUGH_COMPANY_RUNTIME_ROUTING_BLOCKERS_CONTAINED_PRECISE_WEB_VALIDATION_FAILURES",
-            "sourceGenerationTail": "OLDER_PINNED_WAVES_USE_ONLY_TWO_GENERATION_ATTEMPTS_AND_CAN_END_IN_NO_OP_TIMEOUT_OR_UNDERSIZED_FULL_WEB_OUTPUT_BEFORE_NEW_RECOVERY_LOGIC",
-            "causalFailureTelemetry": "WORKER_JOB_SUCCESS_CAN_ENCAPSULATE_AN_INTERNAL_FAIL_AND_WITHOUT_FAILURE_CLASS_MESSAGE_THE_QUEUE_ONLY_SEES_SOURCE_CANDIDATE_GENERATION_FAILED",
-            "fanInRefillPlannerSync": "FAN_IN_REFILL_MUST_SYNC_LATEST_PLANNER_STATE_BEFORE_RESERVE_SO_EXISTING_EXACT_WEB_REPAIR_GOALS_AND_RECOVERY_STATE_ARE_NOT_STALE",
-            "exactWebRepairLongTail": "EXACT_WEB_REPAIR_USED_GENERAL_1536_TOKEN_32K_CONTEXT_GENERATION_PROFILE_DESPITE_SINGLE_INDEX_HTML_RESPONSIBILITY_CAUSING_LONG_NO_OP_AND_TIMEOUT_TAILS",
-            "refillMainSnapshot": "FANIN_REFILL_RESERVE_CREATED_A_GIT_WORKTREE_ONLY_TO_READ_THE_LATEST_MAIN_MACHINE_CONTRACT_AND_COULD_FAIL_BEFORE_RESERVATION_WITHOUT_DIAGNOSTIC_OUTPUT",
-            "externalPlaytestSlotPressure": "EXTERNAL_MOBILE_REFERENCE_PLAYTEST_COULD_OCCUPY_A_HOSTED_RUNNER_WHILE_20_GAME_PRIMARY_TASKS_WERE_ACTIVE",
-            "rawValidationBlockerSemantics": "COMPANY_RUNTIME_VALIDATION_CODES_WERE_CORRECT_BUT_TOO_ABSTRACT_FOR_THE_LOCAL_SOURCE_MODEL_CAUSING_REPEAT_NO_OP_REPAIRS",
-            "fullWebBaseRebuildSize": "FULL_WEB_BASE_REBUILD_ALLOWED_UNDERSIZED_PLAYABLE_SHELL_ATTEMPTS_BEFORE_THE_EXISTING_MINIMUM_SIZE_GATE_REJECTED_THEM"
-          },
-          "liveEvidence": {
-            "failedWaveRun": "35430477537",
-            "failedWaveContractSha": "bca24b0825871a7a0fe74d581d7aa0ec662a834d",
-            "reservedTasks": 20,
-            "workerGithubJobSuccessCount": 20,
-            "immutableWorkerPassCount": 0,
-            "immutableWorkerFailCount": 20,
-            "failureDistribution": {
-              "FULL_REWRITE_SIZE": 7,
-              "TIMEOUT": 7,
-              "NO_OP": 5,
-              "EDIT_MATCH": 1
-            },
-            "fanIn": "PASS",
-            "fanInRefill": "PASS",
-            "nextLiveWaveRun": "35430996704",
-            "nextLiveWaveContractSha": "02d42674c3505420d2e974e055a76d6695850f84",
-            "nextLiveWaveReservedTasks": 20,
-            "nextLiveWaveNote": "PINNED_BEFORE_LATEST_SOURCE_RECOVERY_AND_FANIN_REFILL_PLANNER_SYNC_REPAIRS",
-            "companyRuntimeWebRepairRequiredCount": 19,
-            "companyRuntimeRoutingBlockersPresent": 19,
-            "preRepairExistingExactGoalsWithCompanyRuntimeFailureEvidence": 0,
-            "activeContinuousRun": "35430996704",
-            "activeContinuousContractSha": "02d42674c3505420d2e974e055a76d6695850f84",
-            "activeContinuousReservedTasks": 20,
-            "activeContinuousWorkersCompleted": 13,
-            "activeContinuousWorkersInProgress": 7,
-            "activeContinuousTailStep": "GENERATE_ISOLATED_CANDIDATE_FROM_PINNED_MAIN_CONTRACT",
-            "latestSkipped24hRun": "35431210884",
-            "latestSkipped24hReason": "EXISTING_LIVE_20_WAVE_ALREADY_OWNS_ALL_RESERVED_GAME_TASKS",
-            "latestRepairHead": "7952985b201eacaa9425fcfabc0128fdabb5ebee",
-            "latestCoreQaRun": "35431344381",
-            "latestCoreQa": "PASS",
-            "latestIntegratedRegressionRun": "35431344404",
-            "latestIntegratedRegression": "PASS",
-            "fanInRefillCanonicalWorkflow": ".github/workflows/vibe2-continuous-core.yml",
-            "nonexistentFanInRefillWorkflowReferenceRemoved": true,
-            "previousWaveRun": "35430996704",
-            "previousWaveStatus": "WORKERS_20_OF_20_COMPLETE_FAN_IN_PASS",
-            "previousWaveFirst19ImmutableResults": {
-              "pass": 2,
-              "fail": 17
-            },
-            "previousWaveObservedFailureDistribution": {
-              "NO_OP": 7,
-              "FULL_REWRITE_SIZE": 5,
-              "TIMEOUT": 5
-            },
-            "failedFanInRefillRun": "35431631909",
-            "failedFanInRefillStep": "PREPARE_LATEST_MAIN_MACHINE_CONTRACT",
-            "currentPostRepairWaveRun": "35431717289",
-            "currentPostRepairContractSha": "1fb8276f767ec79003d3794413e2fe60e4fd2395",
-            "currentPostRepairReservedTasks": 20,
-            "currentPostRepairWorkerState": {
-              "in_progress": 19,
-              "queued": 1
-            },
-            "currentPostRepairAdaptiveMax": 20,
-            "compactWebRepairHead": "83ed9ee098a631b132d82198e2b5ad008a479624",
-            "compactWebRepairCoreQaRun": "35431549317",
-            "compactWebRepairCoreQa": "PASS",
-            "compactWebRepairIntegratedRegressionRun": "35431549309",
-            "compactWebRepairIntegratedRegression": "PASS",
-            "archiveSnapshotHead": "e448dbb96ca2e40545e1decb45b8fcfcaf1826ed",
-            "archiveSnapshotCoreQaRun": "35431787744",
-            "archiveSnapshotCoreQa": "PASS",
-            "archiveSnapshotIntegratedRegressionRun": "35431787677",
-            "archiveSnapshotIntegratedRegression": "PASS",
-            "recoveryCallbackRuns": [
-              "35431828859",
-              "35431830284"
-            ],
-            "observedCompletedWorkerSample": 12,
-            "observedImmutablePass": 5,
-            "observedImmutableFail": 7,
-            "observedFailureDistribution": {
-              "FULL_REWRITE_SIZE": 4,
-              "NO_OP": 1,
-              "MALFORMED_OUTPUT": 1,
-              "EDIT_MATCH": 1
-            },
-            "externalPlaytestGateRun": "35432080063",
-            "externalPlaytestActiveGameWork": 20,
-            "externalPlaytestResult": "PLAYTEST_SKIPPED_DEFER_TO_GAME_PRIMARY",
-            "actionableWebRepairHintsHead": "6c115212bb788c9c27f69037e6d0d7a489da155b",
-            "actionableWebRepairHintsCoreQa": "PASS",
-            "actionableWebRepairHintsIntegratedRegression": "PASS",
-            "fullWebCompletenessHead": "91bc4d6872761830b1f0528cb423eeba712bb7ec",
-            "fullWebCompletenessCoreQaRun": "35432298253",
-            "fullWebCompletenessCoreQa": "PASS",
-            "fullWebCompletenessIntegratedRegressionRun": "35432298285",
-            "fullWebCompletenessIntegratedRegression": "PASS",
-            "latestMainRevalidationRun": "35444351457",
-            "latestMainRevalidationContractSha": "ccfb20d9f114c713af7a37aa0ca147c56f999fc9",
-            "latestMainRevalidationState": "RUNNING",
-            "latestMainRevalidationPurpose": "FULL_WEB_EXPANSION_TARGETING_FIX",
-            "timeoutRecoveryTelemetryCommits": [
-              "5129f254fa1efa4d90bf124f9c1cd361d12bb588",
-              "9da66b9d83ebb2235e4c8cf64893eaaf0127515e",
-              "d0d7122da1034e040195d3369e11c0f407a66c19"
-            ],
-            "timeoutRecoveryTelemetryEffectiveFromNextWave": true,
-            "previousFanInRegression": {
-              "runId": "35443243108",
-              "jobId": "105900475104",
-              "testsPassed": 235,
-              "testsFailed": 0,
-              "regressionRole": "PASS"
-            },
-            "malformedPartialRecoveryCommits": [
-              "ee60e101336b9027ceea02e0eb8a4ab428ea2cb6",
-              "648dbf73ee0efa29a492e3e68e26d930003859ae",
-              "3e154f52c834405ff9befbc2aee2a903f74e53bd"
-            ],
-            "malformedPartialRecoveryEffectiveFromNextWave": true,
-            "currentWaveFirstCompletedFailure": {
-              "runId": "35444351457",
-              "jobId": "105900741285",
-              "class": "MALFORMED_OUTPUT",
-              "attempts": 3
-            },
-            "invalidFullWebExpansionShapeCommits": [
-              "fbeac577dbd7a51d68a64fd07b0b1d69589096ac",
-              "0103aca7a5e96ad0fadbd9dcfcee292fe63cc777"
-            ],
-            "invalidFullWebExpansionShapeEffectiveFromNextWave": true,
-            "streamedTimeoutEarlyStopCommits": [
-              "4db870b5fd90b4bee7407a39dbeeecc9d4916b04",
-              "2e6d310e887723236b98b336b05c28782babfb8e",
-              "0a7a0c45cb83096a6795ce2edc8ab8a2c788f045"
-            ],
-            "streamedTimeoutEarlyStopEffectiveFromNextWave": true,
-            "timeoutRetryPrefixCompactionCommits": [
-              "342f82f6703b851d88b28eb1fbc07d121f8b7177",
-              "a9fc8b65aeadecbc72742e09081952fd994d0318"
-            ],
-            "timeoutRetryPrefixCompactionEffectiveFromNextWave": true,
-            "previousCompletedWave": {
-              "runId": "35444351457",
-              "workerCount": 20,
-              "pass": 0,
-              "fail": 20,
-              "failureDistribution": {
-                "TIMEOUT": 13,
-                "OTHER": 6,
-                "MALFORMED_OUTPUT": 1
-              },
-              "bottleneck": "SOURCE_CANDIDATE_GENERATION"
-            },
-            "currentWave": {
-              "runId": "35445626679",
-              "pinnedContractSha": "cba1a0f400a8fa312bc754fad93d40c98cb23ff7",
-              "observedCompletedWorkers": 8,
-              "observedInProgressWorkers": 12
-            },
-            "speculativeRetryBudgetCommits": [
-              "41eea8d07362a51158cb4b75081f66420eaecd64",
-              "30c281817019ff8e9a342afb226fd37874891f8f",
-              "045a3e970db8dd8b69e4824a12814373f69b9096"
-            ],
-            "speculativeRetryBudgetEffectiveFromNextWave": true,
-            "currentWaveEarlyEffect": {
-              "runId": "35445626679",
-              "pinnedContractSha": "cba1a0f400a8fa312bc754fad93d40c98cb23ff7",
-              "completed": 8,
-              "pass": 5,
-              "fail": 3,
-              "passRatePct": 62.5,
-              "failureDistribution": {
-                "TIMEOUT": 2,
-                "EDIT_MATCH": 1
-              }
-            },
-            "focusedMinimalJsonRetryCommits": [
-              "ca8ea51acab5ef39d20798bc2b03b88cc233258a",
-              "197a1884e296d28f5210d513281e2a8cfef64977",
-              "070d47598063a4aacc2e7226b1c156dc25471cee",
-              "80091b7fc44b9fec07db94b9a2a3b81c45d095d6",
-              "d8d9ae3f98356cbbb01b2567c2d756dcdfe276e5"
-            ],
-            "focusedMinimalJsonRetryEffectiveFromNextWave": true,
-            "completedWave35445626679": {
-              "pass": 5,
-              "fail": 15,
-              "passRatePct": 25,
-              "failureDistribution": {
-                "TIMEOUT": 12,
-                "FULL_REWRITE_SIZE": 2,
-                "EDIT_MATCH": 1
-              },
-              "fanIn": "FAIL_REQUEUED_STALE_TEST_ASSERTION"
-            },
-            "fullWebLargestPartialRetryCommits": [
-              "314e74c5c5331f3e687cf17dc72d54ffb4309ec5",
-              "db42d71bad17ad602ad566b41872edd4aca982b8",
-              "c3a8a8cfa96127d6b9f9f9694cf29e5d6ca5252e",
-              "944f15da5a5066b2eb59d8dd0c5afd4768e4e21f"
-            ],
-            "nextReservationRunId": "35446727233",
-            "currentRun35446727233": {
-              "pinnedContractSha": "944f15da5a5066b2eb59d8dd0c5afd4768e4e21f",
-              "hierarchicalFanOut": 20,
-              "reservedTaskCount": 14,
-              "state": "RUNNING"
-            },
-            "currentWave35446727233": {
-              "pinnedContractSha": "944f15da5a5066b2eb59d8dd0c5afd4768e4e21f",
-              "focusedRepairEffectivenessValid": false,
-              "invalidationReason": "FOCUSED_FINAL_PRE_INIT_REFERENCE",
-              "fullWebObservationAllowed": true
-            },
-            "fullWebRetryPromptCompactionCommits": [
-              "57e03fbadfa248ae5fcf74ee251f3a906d84762d",
-              "ec735a04e9839b3a3d2ac6b88563ffa582bb282d",
-              "1026b115592bd3b74f72dfc38f82b71e8832ea6a"
-            ],
-            "focusedRetryPreInitFixCommits": [
-              "c8f373efb34e6c9289a119fc0caa3d207bc1c09f",
-              "6b0f0a8aab1ba9e37a11588cda0d10ea86e83e6c"
-            ],
-            "fullWebSeedFirstStrategyCommits": [
-              "9ef7994739ea552f4b4c90283a9a3b246e3af2f4",
-              "779b47c444c9bddfe470a518015a6fbf9ec3c144",
-              "5b7f73cc37c303368691d0c26c012477e9b4a042"
-            ],
-            "nextCleanWaveRequired": true,
-            "speculativeSlotLatencyPriorityCommits": [
-              "3208edd52549bcb45a9b2f8396a9dc47174a3b34",
-              "cf1fd2ef0b5450344c1bad7fc1745581d8e2ec0a"
-            ],
-            "speculativeSlotLatencyPriorityEffectiveFromNextCleanWave": true,
-            "fullWebInternalTimeoutAlignmentCommits": [
-              "d2d34d2a4d56c123bfe7f1ac73eec7202bca175e",
-              "70f6c5a9541c25e695c75f10c9ace5666d3c9e72"
-            ],
-            "fullWebInternalTimeoutAlignmentEffectiveFromNextCleanWave": true,
-            "fullWebExpansionContextCompactionCommits": [
-              "545e76b3d51f7828427cf092a43b8eb60b1304f0",
-              "88887af40c1ac18580409630e29db56609df7f81"
-            ],
-            "fullWebExpansionContextCompactionEffectiveFromNextCleanWave": true,
-            "fullWebExpansionDocumentSeedRecoveryCommits": [
-              "24368a6f7f9d368c30273e1789f9007aba76390c",
-              "d03ee39935cc1001a80aaeee640e57a8860ecb06",
-              "a87eb6eb340b6cca4ba8919f0cd868bedfc0ac11",
-              "0b4ae4b59c188fcc798332da9cf811ceebcc5ec4"
-            ],
-            "fullWebExpansionDocumentSeedRecoveryEffectiveFromNextCleanWave": true,
-            "reserveFastRegressionGateCommits": [
-              "de96a9d6fa0a7cd7cdc6ca2a5590e39c69f30761",
-              "cb11104e4c7c51ba7a478a7629923c382767bfbc"
-            ],
-            "reserveFastRegressionGateEffectiveFromNextCleanWave": true,
-            "reserveFastRegressionStaticContract": {
-              "sourceWorkerAssertions": 34,
-              "workflowAssertions": 6,
-              "failing": 0
-            },
-            "cleanWave35447976923": {
-              "pinnedContractSha": "af623808436c3f0b470bfac5fac9a06d1337d82f",
-              "latestFixesPresent": true,
-              "observedWorkerState": {
-                "completed": 0,
-                "inProgress": 8,
-                "queued": 12
-              },
-              "runnerCapacityObservation": "GITHUB_HOSTED_RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION"
-            },
-            "fastPreflightExecutionMarkerPendingNextRun": true,
-            "reserveFullRegressionPreflightCommits": [
-              "60fc75e3714e6252dc3c56c2c854e1c6806971c4",
-              "8d7725b3759eb9950d24dbfae51d92caec8a08b3"
-            ],
-            "reserveFullRegressionPreflightEffectiveFromNextReserve": true,
-            "reserveFullRegressionPreflightTestCount": 13,
-            "fullWebFinalAdditiveCommits": [
-              "5762c8b620081db6ba05dad2ab9a6fd2b6095551",
-              "c8a3a38e710af8333dbb9b89e6227c5d0c02c92e",
-              "2547378f19cdc4148dcb7fd967eb46cb2d47232c",
-              "31ae76086c35fee48aefd6049387db601229d28f",
-              "790e3a4b45fb529672265d32e6f4301ce994030f"
-            ],
-            "fullWebClosedHtmlEarlyStopCommits": [
-              "f75d974042c8383df12a05a1f649db84dd143d8f",
-              "47f72be5d42fda451d45ad1bd484e872e7344305",
-              "fbad79cf0d70402445bb914fbe09e3679551ddbb",
-              "8b4e8ef37c8e52639a8d29d08dd08707b86e50c1"
-            ],
-            "currentCleanWaveFirstResult": {
-              "runId": "35447976923",
-              "jobId": "105910478736",
-              "failureClass": "MALFORMED_OUTPUT",
-              "attempts": 4
-            },
-            "completedWave35452958416": {
-              "pass": 2,
-              "fail": 18,
-              "passRatePct": 10,
-              "failureDistribution": {
-                "TIMEOUT": 6,
-                "NO_OP": 2,
-                "EDIT_MATCH": 6,
-                "FULL_REWRITE_SIZE": 3,
-                "MALFORMED_OUTPUT": 1
-              },
-              "fanIn": "PASS",
-              "bottleneck": "SOURCE_CANDIDATE_GENERATION"
-            },
-            "focusedExactFindAnchorCommits": [
-              "523f68d5346461279e078cdfc106ddb8d821573d",
-              "dcfc7acd7303fe75703141838bf504bb85aee45a",
-              "934dcea674c0702660080ee999c0fd1977818e4c"
-            ],
-            "focusedExactFindAnchorEffectiveFromNextRefill": true,
-            "currentRun35453739103": {
-              "pinnedContractSha": "c6853fe008d149a34089b20e7a905eff9cc455a1",
-              "includesFocusedExactAnchorFix": false
-            },
-            "focusedExactFindFullSourceCommits": [
-              "e4db3b01c3f1106f851ed8cb8103071312e5c71a",
-              "1e77f2c6afdb5ecf5054785da9786596c31848ac"
-            ],
-            "focusedExactFindFullSourceEffectiveFromNextRefill": true,
-            "centralSyncAtHead": {
-              "mainHead": "5f166cb22fbc5045d8be8ed119d481a2af3ced14",
-              "completedWaveRunId": "35452958416",
-              "pass": 2,
-              "fail": 18,
-              "passRatePct": 10,
-              "bottleneck": "SOURCE_CANDIDATE_GENERATION",
-              "dominantFailures": {
-                "TIMEOUT": 6,
-                "EDIT_MATCH": 6
-              },
-              "currentLargestBottleneck": "FULL_WEB_BASE_REBUILD_SUCCESS_RATE_AND_FINAL_ACTIVE_WORKER_TAIL"
-            },
-            "editMatchCausalFastPath": {
-              "baselineWave": 35452958416,
-              "baselineEditMatchFailures": 6,
-              "baselineTimeoutFailures": 6,
-              "firstEditMatchFailureFastEscalatesToReplaceOnlyOnAttempt2": true,
-              "timeoutFailureFastEscalatesToReplaceOnlyOnAttempt2": true,
-              "focusedReplaceTimeoutMs": 90000,
-              "firstAttemptTargetSelectionPreserved": true,
-              "qaGatesWeakened": false,
-              "commits": [
-                "03d8c27e8bbf3ec9759f9d8bd4758b22d7a78c03",
-                "8903d637486725e6501e1d0231e49fa2ddd87447",
-                "b6ef7e4fbcfd010d7f373ef66e81a437dbf4943a"
-              ]
-            },
-            "focusedReplacementCorruptionGuard": {
-              "detectedBy": "COMPANY_CENTRAL_POLICY_CONTRACT_QA",
-              "contaminatedGame": "seed-single-defense-strat-celestial-bastion",
-              "restoredCommit": "dd08e22db81e6d88a3a0abec302ef8e9169ba479",
-              "placeholderGuardCommit": "e2f44a6d9340e9626f35e4a1de55b9cce180f8e1",
-              "placeholderGuardTestCommit": "0b72565fe475bac1fac7c445a6ed3f0cf86d7ca1",
-              "repositorySearchRemainingExactPlaceholderHits": 0
-            }
-          },
-          "repairs": [
-            "CLASSIFY_SOURCE_GENERATION_FAILURES_AS_NO_OP_TIMEOUT_INVALID_PATH_FULL_REWRITE_SIZE_MALFORMED_OUTPUT_EDIT_MATCH_OR_OTHER",
-            "PERSIST_FAILURE_CLASS_FAILURE_MESSAGE_AND_CANDIDATE_DURATION_EVEN_WHEN_SOURCE_GENERATION_STEP_FAILS",
-            "PRESERVE_TASK_LOCAL_EXPLORATION_EVIDENCE_IN_FAILED_WORKER_RESULTS_INSTEAD_OF_REPORTING_FALSE_EXPLORATION_FAILURE",
-            "ALLOW_ONE_SHORT_90_SECOND_COMPACT_THIRD_JSON_RETRY_FOR_NO_OP_TIMEOUT_INVALID_PATH_OR_EDIT_MATCH_AFTER_THE_NORMAL_RETRY",
-            "ALLOW_ONE_BOUNDED_240_SECOND_THIRD_FULL_WEB_RETRY_ONLY_AFTER_UNDERSIZED_FULL_WEB_OUTPUT_WITH_THE_EXISTING_MINIMUM_SIZE_GATE_UNCHANGED",
-            "RUN_DETERMINISTIC_AUTO_PLANNER_INSIDE_FANIN_REFILL_RESERVE_BEFORE_RESERVE_BATCH",
-            "REFRESH_EXISTING_QUEUED_FAILED_OR_BLOCKED_EXACT_WEB_REPAIR_GOALS_FROM_LATEST_COMPANY_RUNTIME_ROUTING_BLOCKERS_BEFORE_THE_NEXT_FANIN_ONLY_WAVE",
-            "KEEP_CANDIDATE_IDENTITY_GATE_AND_FULL_REGRESSION_UNCHANGED",
-            "REMOVE_NONEXISTENT_VIBE2_FANIN_REFILL_WORKFLOW_REFERENCE_AND_KEEP_CONTINUOUS_CORE_AS_THE_SINGLE_CANONICAL_FANIN_REFILL_OWNER",
-            "COMPACT_EXACT_WEB_REPAIR_TO_AT_MOST_3_CONTEXT_FILES_48000_CONTEXT_BYTES_1024_OUTPUT_TOKENS_AND_16384_CONTEXT_WINDOW_WHILE_PRESERVING_FULL_REBUILD_AND_OTHER_ENGINE_PROFILES",
-            "PIN_LATEST_MAIN_WITH_FETCH_HEAD_IN_REFILL_RESERVE",
-            "REPLACE_READ_ONLY_REFILL_MAIN_CONTRACT_WORKTREE_WITH_GIT_ARCHIVE_SNAPSHOT",
-            "KEEP_CANDIDATE_BRANCH_WORKTREES_UNCHANGED",
-            "KEEP_20_WAVE_GAME_PRIMARY_TASK_LOCAL_EXPLORATION_FAN_IN_ONLY_REFILL_AND_ALL_QA_GATES_UNCHANGED",
-            "DEFER_EXTERNAL_MOBILE_REFERENCE_PLAYTEST_WHILE_ACTIONABLE_GAME_IMPLEMENTATION_TASKS_ARE_QUEUED_OR_RUNNING",
-            "TRANSLATE_COMPANY_RUNTIME_WEB_VALIDATION_CODES_INTO_ACTIONABLE_IMPLEMENTATION_HINTS_WHILE_PRESERVING_RAW_BLOCKER_EVIDENCE_AND_ALL_GATES",
-            "REQUIRE_FULL_WEB_REBUILD_OUTPUT_TO_IMPLEMENT_DIRECT_INPUT_MUTABLE_STATE_UPDATE_LOOP_PROGRESSION_WIN_OR_LOSS_RESTART_AND_RESPONSIVE_MOBILE_LAYOUT_BEFORE_FINISHING",
-            "KEEP_MIN_FULL_REWRITE_BYTES_AT_1800_AND_REPORT_ACTUAL_BYTES_MIN_AND_MAX_ON_REJECTION"
-          ],
-          "codeBindings": [
-            "tools/vibe2-source-worker.mjs",
-            ".github/workflows/vibe2-continuous-core.yml",
-            "tools/vibe2-auto-planner.mjs",
-            "tools/vibe2-fan-in-review.mjs",
-            "qa/vibe2-source-worker.test.mjs",
-            "qa/vibe2-controller-contract.test.mjs",
-            "qa/vibe2-auto-planner.test.mjs",
-            "company-learning/platform-release-roadmap.json",
-            ".github/workflows/external-mobile-free-game-playtest.yml"
-          ],
-          "repairCommits": [
-            "4e14cde97f53af4c03fe96bb655300b98b538418",
-            "389736d2a9248aa010bcc9b3c25f11b1731dcf77",
-            "7f38daa65e7b4b911d6b22a6aa14d80565e5c1d6",
-            "93cf859d5c343c61cfca64372debb62a99ffcf10",
-            "9ba763b7006f7907e4b02437396dfb3839f04818",
-            "17fe95b129da50db00b6e62cf76a0322a961f27e",
-            "c12d391535d3c4cf60f3872279b4a942bb5b842d",
-            "7952985b201eacaa9425fcfabc0128fdabb5ebee",
-            "3b280d595ecea08f10c3afbb34a111405b360f75",
-            "83ed9ee098a631b132d82198e2b5ad008a479624",
-            "74ddf86784b4215913da180883a81fb1954d3a57",
-            "849d5def95e8747055fced38ced9e020875a6213",
-            "118ae3700159fa51d8962b757aa099bfdeec4e24",
-            "e448dbb96ca2e40545e1decb45b8fcfcaf1826ed",
-            "17d5568072941b7b5c60216b8fe6e3dce6e92da9",
-            "9793d5c5b4f0860644d0f7abb2f77a206a3e00fb",
-            "6c115212bb788c9c27f69037e6d0d7a489da155b",
-            "9a27754de06d814f3b7db2971887657866d87c7a",
-            "91bc4d6872761830b1f0528cb423eeba712bb7ec"
-          ],
-          "verification": {
-            "vibe2CoreQaRun": "35431344381",
-            "vibe2CoreQa": "PASS",
-            "integratedRegressionRun": "35431344404",
-            "integratedRegression": "PASS",
-            "qaGatesWeakened": false,
-            "compactWebRepairCoreQa": "PASS",
-            "compactWebRepairIntegratedRegression": "PASS",
-            "archiveRefillCoreQa": "PASS",
-            "archiveRefillIntegratedRegression": "PASS",
-            "actionableWebRepairHints": "PASS",
-            "fullWebCompleteness": "PASS",
-            "externalPlaytestGamePrimaryGate": "PASS",
-            "minimumFullRewriteBytes": 1800
-          },
-          "nextVerification": [
-            "CURRENT_20_WAVE_COMPLETES_AND_FAN_IN_RUNS",
-            "POST_91BC4D_FULL_WEB_BASE_REBUILD_SUCCESS_RATE_IMPROVES",
-            "NEXT_FULL_REWRITE_SIZE_FAILURE_REPORTS_ACTUAL_BYTES",
-            "NEXT_WEB_REPAIR_GOAL_CONTAINS_ACTIONABLE_HINTS_AND_RAW_COMPANY_RUNTIME_EVIDENCE",
-            "EXTERNAL_PLAYTEST_REMAINS_SKIPPED_WHILE_GAME_PRIMARY_ACTIVE",
-            "NEXT_FANIN_REFILL_USES_ARCHIVE_MAIN_SNAPSHOT",
-            "OWNER_MINIMUM_WAVE_REMAINS_20",
-            "TASK_LOCAL_EXPLORATION_REMAINS_PER_WORKER",
-            "FAN_IN_ONLY_REFILL_REMAINS_ACTIVE",
-            "POST_REPAIR_WAVE_INTERNAL_RESULT_SUCCESS_RATE_IMPROVES_VS_PREVIOUS_2_OF_19_OBSERVED_SAMPLE",
-            "EXACT_WEB_REPAIR_GENERATION_TELEMETRY_REPORTS_FOCUSED_WEB_REPAIR_PROFILE",
-            "NEXT_FANIN_REFILL_PREPARES_MAIN_WITH_ARCHIVE_SNAPSHOT_AND_NO_WORKTREE_STATE",
-            "NEXT_FANIN_REFILL_RESERVES_OWNER_MINIMUM_20_WHEN_20_ACTIONABLE_GAME_TASKS_EXIST",
-            "CANDIDATE_BRANCH_WORKTREE_IS_UNCHANGED",
-            "GAME_PRIMARY_REMAINS_AHEAD_OF_NONBLOCKING_SYSTEM_AI",
-            "CURRENT_PINNED_02D426_WAVE_COMPLETES_WITHOUT_MANUAL_CANCELLATION",
-            "FAN_IN_SETTLES_ALL_20_RESERVATIONS",
-            "REFILL_RESERVES_POST_7952985_MAIN_CONTRACT",
-            "POST_REPAIR_WORKER_RESULT_EXPOSES_CAUSAL_GENERATION_FAILURE_CLASS_AND_MESSAGE",
-            "NO_OP_TIMEOUT_OR_UNDERSIZED_FULL_WEB_FAILURE_USES_BOUNDED_RECOVERY_INSTEAD_OF_GENERIC_REPEAT",
-            "CURRENT_OLD_PINNED_WAVE_COMPLETES_WITHOUT_INTERRUPTION",
-            "NEXT_FANIN_REFILL_LOG_CONTAINS_VIBE2_FANIN_REFILL_PLANNER_SYNC_PASS",
-            "NEXT_RUNTIME_REPAIR_GOALS_CONTAIN_COMPANY_RUNTIME_FAILURE_EVIDENCE_BEFORE_RESERVE",
-            "NEXT_POST_REPAIR_WAVE_CONTRACT_SHA_INCLUDES_7952985_OR_LATER",
-            "FAILED_WORKER_ARTIFACTS_REPORT_CAUSAL_SOURCE_GENERATION_FAILURE_CLASS_AND_REAL_CANDIDATE_DURATION",
-            "FAILED_CANDIDATE_DOES_NOT_FALSELY_REPORT_TASK_LOCAL_EXPLORATION_FAILURE",
-            "NO_OP_TIMEOUT_AND_EDIT_MATCH_CAN_USE_AT_MOST_ONE_COMPACT_FINAL_JSON_RETRY",
-            "UNDERSIZED_FULL_WEB_CAN_USE_AT_MOST_ONE_BOUNDED_FINAL_FULL_WEB_RETRY",
-            "FULL_WEB_MINIMUM_SIZE_GATE_REMAINS_ENFORCED",
-            "PER_WORKER_REFILL_REMAINS_DISABLED",
-            "FAN_IN_DISPATCHES_AT_MOST_ONE_REFILL",
-            "GAME_PRIMARY_REMAINS_AHEAD_OF_NONBLOCKING_SUPERVISION"
-          ],
-          "ownerWaveOverride": 20,
-          "repair": "PRESERVE_20_WAVE_GAME_PRIMARY_AND_FAN_IN_ONLY_REFILL; ADD_CAUSAL_GENERATION_FAILURE_CLASS_AND_MESSAGE_TO_IMMUTABLE_RESULT; ADD_BOUNDED_THIRD_FOCUSED_JSON_RETRY; RECOVER_JSON_TIMEOUT_AND_UNDERSIZED_FULL_WEB_TAILS_WITHOUT_LOWERING_QA_OR_SIZE_GATES; SYNC_PLANNER_STATE_INSIDE_FAN_IN_REFILL_RESERVE"
-        },
         "exitCondition": "NO_CRITICAL_COMMON_DEVELOPMENT_OR_RELEASE_BOTTLENECK_REMAINS",
         "currentExecution": {
           "gameDevelopment": "VIBE2_VIBE3_RUNNING_PRIMARY_FIRST",
@@ -4082,276 +3402,7 @@
           "workerConditionalModelRestore": "IMPLEMENTED_PENDING_QA_AND_LIVE",
           "schedulerEpochStaleRelease": "IMPLEMENTED_PENDING_CI_AND_ASSET_ARM_LIVE",
           "schedulerEpochStaleReleaseReason": "V5_24H_PLAN_QUEUED_ON_SLIM_CONTROL_POOL_WHILE_ASSET_QUEUE_WAITED"
-        },
-        "incidentHistory": [
-          {
-            "signature": "VIBE2_MACHINE_STATE_QUEUE_MAX_DIVERGED_INVALID_V3_PARALLELISM_STEP",
-            "symptom": "GAME_DEVELOPMENT_WORKERS_NOT_RESERVED",
-            "repair": "SYSTEM_STEWARD_BEFORE_HANDOFF_PLUS_SAME_PASS_REQUEUE",
-            "codeBindings": [
-              "tools/vibe2-system-steward.mjs",
-              "qa/vibe2-system-steward.test.mjs",
-              ".github/workflows/vibe2-24h-runner.yml"
-            ],
-            "status": "PRIMARY_MACHINE_STATE_BOTTLENECK_UNBLOCKED_DEVELOPMENT_RUNNING",
-            "verifiedEvidence": [
-              "VIBE2_MACHINE_STATE=CONSISTENT",
-              "VIBE2_ACTIVE_WORKERS=19",
-              "VIBE2_RESERVED_TASK_COUNT=19",
-              "VIBE2_HIERARCHICAL_FAN_OUT=41",
-              "VIBE2_CORE_QA=PASS",
-              "CENTRAL_POLICY_CONTRACT_QA=PASS",
-              "VIBE2_RETRY_RESERVATION_RUN=35426081736",
-              "SYSTEM_AI_ROOT_TASKS_RUNNING=5"
-            ],
-            "secondaryRepairs": [
-              {
-                "signature": "LEGACY_TELEMETRY_MAX_30",
-                "repair": "PARALLELISM_TELEMETRY_EXTERNAL_WAVE_MAX_256",
-                "binding": "tools/vibe2-parallelism-telemetry.mjs"
-              },
-              {
-                "signature": "SYSTEM_AI_NOT_WAKING_ON_CENTRAL_POLICY_CHANGE",
-                "repair": "CENTRAL_ROADMAP_PUSH_TRIGGER_ADDED",
-                "binding": ".github/workflows/company-system-ai-workers.yml"
-              },
-              {
-                "signature": "SYSTEM_AI_EMPTY_EDIT_TERMINAL_FAILURE",
-                "repair": "ONE_SCOPED_STRICT_EMPTY_CHANGE_RETRY_BEFORE_FAILURE",
-                "binding": "tools/company-system-ai-worker.mjs"
-              },
-              {
-                "signature": "MAIN_MACHINE_STATE_CONTRACT_STALE_30_20",
-                "repair": "SYNC_QUEUE_256_AND_CANONICAL_PARALLELISM_STEP",
-                "bindings": [
-                  ".vibe2/queue.json",
-                  ".vibe2/parallelism-control.json"
-                ]
-              },
-              {
-                "signature": "SYSTEM_AI_TRANSIENT_MODEL_ABORT",
-                "symptom": "LOCAL_MODEL_REQUEST_ABORTS_ON_TOKEN_REPEAT_BEFORE_SCOPED_EDIT_RESULT",
-                "repair": "ONE_COMPACT_SCOPED_REQUEST_RETRY_BEFORE_IMPLEMENTATION_FAILURE",
-                "binding": "tools/company-system-ai-worker.mjs"
-              }
-            ]
-          },
-          {
-            "signature": "RUN_CONTRACT_SHA_DRIFT_FANIN_STALE_CONTROL_CODE",
-            "symptom": "RESERVE_AND_WORKERS_USE_MAIN_CONTRACT_WHILE_FAN_IN_REGRESSION_USED_STALE_CONTROL_BRANCH_CODE_CAUSING_SUCCESSFUL_WORK_TO_REQUEUE",
-            "status": "REPAIR_APPLIED_PENDING_LIVE_WAVE_VERIFICATION",
-            "rootCause": "ACTIVE_WAVE_DID_NOT_SHARE_ONE_IMMUTABLE_MAIN_CONTRACT_SHA",
-            "repair": "RESERVE_EXPORTS_CONTRACT_SHA_EXPLORATION_WORKER_AND_FAN_IN_CHECKOUT_EXACT_SHA_CONTROL_BRANCH_STATE_ONLY",
-            "verifiedEvidence": [
-              "PREVIOUS_FAN_IN_REGRESSION_FAILURE_AFTER_SUCCESSFUL_WORKERS",
-              "CONTROL_BRANCH_STORES_RUNTIME_STATE",
-              "MAIN_IS_CODE_AND_MACHINE_CONTRACT_AUTHORITY",
-              "VIBE2_CORE_QA_BEFORE_SHA_PIN=PASS",
-              "CENTRAL_POLICY_CONTRACT_QA_BEFORE_SHA_PIN=PASS"
-            ],
-            "codeBindings": [
-              ".github/workflows/vibe2-continuous-core.yml",
-              "tools/vibe2-continuous-runner.mjs",
-              "qa/vibe2-controller-contract.test.mjs",
-              "vibe2-runtime.json"
-            ],
-            "nextVerification": [
-              "RESERVE_OUTPUT_CONTRACT_SHA_PRESENT",
-              "EXPLORATION_BASE_SHA_EQUALS_CONTRACT_SHA",
-              "WORKER_BASE_SHA_EQUALS_CONTRACT_SHA",
-              "FAN_IN_REGRESSION_EXECUTES_FROM_CONTRACT_SHA",
-              "FAN_IN_REGRESSION_PASS_OR_REQUEUE_ONLY_ON_REAL_CURRENT_CONTRACT_FAILURE",
-              "20_WAVE_REMAINS_PRIMARY_GAME_DEVELOPMENT_FIRST"
-            ],
-            "ownerWaveOverride": 20
-          },
-          {
-            "signature": "GLOBAL_EXPLORATION_MATRIX_BARRIER_BLOCKING_GAME_WORKERS",
-            "symptom": "18_OR_MORE_EXPLORATION_ROWS_COMPLETED_BUT_ONE_QUEUED_SUPERVISOR_EXPLORATION_PREVENTED_ALL_GAME_WORKERS_FROM_STARTING",
-            "status": "REPAIR_APPLIED_PENDING_LIVE_WAVE_VERIFICATION",
-            "rootCause": "WORKER_JOB_DEPENDED_ON_COMPLETION_OF_ENTIRE_EXPLORATION_MATRIX",
-            "repair": "REMOVE_GLOBAL_EXPLORATION_JOB_AND_BUILD_PINNED_TASK_LOCAL_EXPLORATION_INSIDE_EACH_WORKER",
-            "verifiedEvidence": [
-              "RUN_35427458752_EXPLORATION_ROWS_COMPLETED_BEFORE_LAST_SUPERVISOR_ROW",
-              "RUN_35427458752_WORKER_COUNT_ZERO_WHILE_ONE_EXPLORATION_ROW_QUEUED",
-              "RESERVE_CONTRACT_SHA_C10924A9307D3E9EB12357E01307B3F46CE5ED16",
-              "VIBE2_CORE_QA_SHA_PIN_CONTRACT=PASS_RUN_35427503309"
-            ],
-            "codeBindings": [
-              ".github/workflows/vibe2-continuous-core.yml",
-              "qa/vibe2-controller-contract.test.mjs",
-              "vibe2-runtime.json"
-            ],
-            "nextVerification": [
-              "WORKER_JOB_HAS_NO_GLOBAL_EXPLORATION_NEED",
-              "TASK_LOCAL_EXPLORATION_BASE_SHA_EQUALS_RESERVED_CONTRACT_SHA",
-              "GAME_WORKERS_START_WITHOUT_WAITING_FOR_SUPERVISOR_EXPLORATION",
-              "FAN_IN_STILL_USES_RESERVED_CONTRACT_SHA",
-              "20_WAVE_LIMIT_AND_PRIMARY_GAME_PRIORITY_REMAIN_ACTIVE"
-            ],
-            "ownerWaveOverride": 20
-          },
-          {
-            "signature": "PER_WORKER_REFILL_DISPATCH_STORM",
-            "symptom": "SUCCESSFUL_WORKERS_EMITTED_REPOSITORY_DISPATCH_RUNS_THAT_RESERVED_ZERO_NEW_WORKERS_AND_CONSUMED_ACTIONS_SLOTS",
-            "status": "VERIFIED_RESOLVED_RUN_35428014822",
-            "rootCause": "EACH_SINGLE_VARIANT_WORKER_COMPLETION_LAUNCHED_A_FULL_CONTINUOUS_CORE_REFILL_WORKFLOW",
-            "repair": "REMOVE_SLOT_REFILL_DISPATCH_AND_REFILL_ONLY_ONCE_AFTER_FAN_IN",
-            "verifiedEvidence": [
-              "RUN_35427804233_REFILL_RESERVED_TASK_COUNT=0",
-              "RUN_35427804233_HIERARCHICAL_FAN_OUT=0",
-              "MULTIPLE_REPOSITORY_DISPATCH_CONTINUOUS_CORE_RUNS_COMPLETED_OR_CANCELLED_WITHOUT_GAME_WORKERS",
-              "RUN_35427458752_WORKER_SUCCESS_COUNT=19_BEFORE_FINAL_WORKER",
-              "RUN_35428014822_FAN_IN_REGRESSION=PASS",
-              "RUN_35428014822_HIERARCHICAL_FAN_IN=PASS",
-              "RUN_35428014822_FAN_IN_REFILL_DISPATCH_COUNT=1",
-              "RUN_35428014822_PER_WORKER_REFILL_DISPATCH=0"
-            ],
-            "codeBindings": [
-              ".github/workflows/vibe2-continuous-core.yml",
-              "vibe2-runtime.json",
-              "qa/vibe2-controller-contract.test.mjs",
-              "qa/vibe2-exploration-worker.test.mjs"
-            ],
-            "nextVerification": [
-              "NO_VIBE2_SLOT_REFILL_DISPATCH_AFTER_WORKER_COMPLETION",
-              "FAN_IN_DISPATCHES_AT_MOST_ONE_NEXT_WAVE_REFILL",
-              "NEXT_WAVE_WORKERS_START_WITH_TASK_LOCAL_EXPLORATION",
-              "20_WAVE_LIMIT_REMAINS_ACTIVE",
-              "GAME_IMPLEMENTATION_PRIORITY_REMAINS_AHEAD_OF_NONBLOCKING_SUPERVISION"
-            ],
-            "ownerWaveOverride": 20
-          },
-          {
-            "signature": "WEB_VIBE_REPAIR_QUEUE_NOT_PASSED_TO_AUTOPLANNER",
-            "symptom": "COMPANY_RUNTIME_HAD_19_WEB_VIBE_REPAIR_REQUIRED_ITEMS_BUT_VIBE_CONTROL_QUEUE_HAD_ZERO_WEB_RUNTIME_REPAIR_TASKS",
-            "status": "REPAIR_APPLIED_PENDING_LIVE_QUEUE_VERIFICATION",
-            "rootCause": "VIBE2_24H_RUNNER_FETCHED_COMPANY_RUNTIME_DEVELOPMENT_QUEUE_BUT_DID_NOT_PASS_IT_TO_VIBE2_AUTO_PLANNER",
-            "repair": "PASS_EXACT_COMPANY_RUNTIME_DEVELOPMENT_QUEUE_TO_AUTO_PLANNER_CANCEL_SUPERSEDED_GENERIC_WEB_WORK_AND_CREATE_EXACT_WEB_REPAIR",
-            "codeBindings": [
-              ".github/workflows/vibe2-24h-runner.yml",
-              "tools/vibe2-auto-planner.mjs",
-              "qa/company-web-vibe-handoff-e2e.test.mjs",
-              "qa/vibe2-auto-planner.test.mjs"
-            ],
-            "verifiedEvidence": [
-              "COMPANY_RUNTIME_DEVELOPMENT_QUEUE_WEB_VIBE_REPAIR_REQUIRED_COUNT=19",
-              "PRE_REPAIR_VIBE_CONTROL_QUEUE_WEB_RUNTIME_REPAIR_TASK_COUNT=0",
-              "PLANNER_EXACT_STAGE_WEB_REPAIR_CONSUMER_PRESENT",
-              "CONTROL_PARALLELISM_STATE_RESTORED_TO_OWNER_MINIMUM_20",
-              "STALE_GENERIC_WEB_IMPLEMENTATION_IS_SUPERSEDED_BEFORE_EXACT_REPAIR_PLANNING"
-            ],
-            "nextVerification": [
-              "VIBE_CONTROL_QUEUE_CREATES_WEB_RUNTIME_REPAIR_V1_TASKS",
-              "REPAIR_TASKS_KEEP_RESPONSIBLE_FILE_BOUNDARY",
-              "PRIMARY_GAME_WORK_REMAINS_AHEAD_OF_NONBLOCKING_SYSTEM_AI",
-              "20_WAVE_TASK_LOCAL_FAN_IN_ONLY_CONTRACT_REMAINS_ACTIVE",
-              "NO_SUPERSEDED_GENERIC_WEB_TASK_REOPENS_BESIDE_EXACT_REPAIR"
-            ],
-            "ownerWaveOverride": 20
-          },
-          {
-            "signature": "WEB_RUNTIME_STATE_DEDUP_AND_STALE_BASE_AUTHORITY_DEAD_END",
-            "symptom": "COMPANY_RUNTIME_HAD_19_WEB_VIBE_REPAIR_REQUIRED_ITEMS_BUT_STATUS_DEDUPE_AND_STALE_CANCELLED_BASE_TASKS_PREVENTED_ALL_EXACT_STAGES_FROM_BECOMING_RUNNABLE",
-            "status": "REPAIR_APPLIED_PENDING_NEXT_LIVE_FAN_IN_REFILL_VERIFICATION",
-            "rootCauses": [
-              "COLLECT_PROJECTS_DROPPED_COMPANY_RUNTIME_QUEUE_STATE_WHEN_COMPANY_STATUS_ALREADY_CONTAINED_THE_WEB_PROJECT",
-              "CANCELLED_WEB_BASE_IMPLEMENTATION_IDS_FROM_OLD_DESIGN_ONLY_AUTHORITY_BLOCKED_RECREATION_AFTER_CURRENT_DEVELOPMENT_CONFIRMED_AUTHORITY",
-              "GENERIC_SOURCE_RECOVERY_COULD_COMPETE_WITH_EXACT_WEB_REPAIR"
-            ],
-            "repairs": [
-              "MERGE_COMPANY_RUNTIME_QUEUE_STATE_INTO_EXISTING_COMPANY_STATUS_WEB_ROWS",
-              "SUPERSEDE_OVERLAPPING_GENERIC_WEB_WORK_WITH_EXACT_RUNTIME_REPAIR",
-              "PRESERVE_AND_RECOVER_WEB_BASE_IMPLEMENTATION_WHEN_SOURCE_IS_MISSING",
-              "RESTORE_STALE_CANCELLED_EXACT_BASE_TASK_ONLY_WHEN_CURRENT_CATALOG_AND_RUNTIME_AUTHORITY_ARE_ACTIVE_DEVELOPMENT_CONFIRMED",
-              "KEEP_SOURCE_GENERATION_RECOVERY_SCOPED_TO_EXACT_WEB_RUNTIME_OR_BASE_TASKS",
-              "PIN_INVALID_PATH_RETRY_TO_THE_SINGLE_WRITABLE_RESPONSIBLE_FILE"
-            ],
-            "codeBindings": [
-              "tools/vibe2-auto-planner.mjs",
-              "tools/vibe2-queue-control.mjs",
-              "tools/vibe2-source-worker.mjs",
-              "qa/vibe2-auto-planner.test.mjs",
-              "qa/vibe2-queue-control.test.mjs",
-              "qa/vibe2-source-worker.test.mjs"
-            ],
-            "liveEvidence": [
-              "COMPANY_RUNTIME_WEB_VIBE_REPAIR_REQUIRED_COUNT=19",
-              "EXACT_WEB_RUNTIME_REPAIR_TASKS_CREATED=9",
-              "STALE_GENERIC_WEB_TASKS_SUPERSEDED=13",
-              "RUN_35428898216_OWNER_MINIMUM_WAVE=20",
-              "RUN_35428898216_ADAPTIVE_MAX=20",
-              "RUN_35428898216_RESERVED_TASK_COUNT=11",
-              "RUN_35428898216_MATRIX_FAN_OUT=13",
-              "TASK_LOCAL_EXPLORATION=PASS_ON_COMPLETED_WORKERS",
-              "NO_PER_WORKER_REFILL_OBSERVED"
-            ],
-            "currentPinnedContractWorkerFailures": [
-              "MONSTER_ADVENTURE_FULL_REWRITE_MIN_SIZE_VIOLATION_ON_OLD_PINNED_CONTRACT",
-              "SEED_CASUAL_REALM_WEAVER_OUT_OF_RESPONSIBLE_PATH_ON_OLD_PINNED_CONTRACT"
-            ],
-            "nextVerification": [
-              "CURRENT_WAVE_REACHES_SINGLE_FAN_IN",
-              "NEXT_REFILL_USES_POST_REPAIR_MAIN_CONTRACT",
-              "ALL_CURRENT_DEVELOPMENT_CONFIRMED_SOURCE_MISSING_GAMES_GET_EXACT_WEB_BASE_IMPLEMENTATION",
-              "ALL_EXISTING_SOURCE_WEB_VIBE_REPAIR_REQUIRED_GAMES_GET_EXACT_WEB_RUNTIME_REPAIR",
-              "NO_STALE_DESIGN_ONLY_CANCELLATION_BLOCKS_CURRENT_DEVELOPMENT_CONFIRMED_PRIMARY_WORK"
-            ]
-          },
-          {
-            "signature": "VIBE2_SOURCE_CANDIDATE_INVALID_OUTPUT_BEFORE_FAN_IN",
-            "symptom": "RUN_35428014822_WORKER_RESULTS_FAILED_BEFORE_FAN_IN_SO_FAN_IN_REVIEW_SKIPPED_ALL_ACTIONABLE_GAME_CANDIDATES",
-            "status": "REPAIR_APPLIED_PENDING_NEXT_WAVE_VERIFICATION",
-            "rootCause": "LOCAL_MODEL_CONTEXT_WAS_OVERSIZED_FOR_QWEN3_1_7B_AND_INVALID_OUTPUT_RECOVERY_REUSED_TOO_WIDE_CONTEXT_CAUSING_ZERO_CHANGE_JSON_PATH_AND_TOKEN_REPEAT_FAILURES",
-            "failureDistribution": {
-              "runId": "35428014822",
-              "workerCount": 16,
-              "zeroOrInvalidChangeSet": 10,
-              "jsonParseFailure": 3,
-              "invalidAllowedPath": 3,
-              "fanInRegression": "PASS",
-              "fanInReleaseCandidates": 0
-            },
-            "repair": "LIMIT_EDIT_CONTEXT_TO_96KB_USE_32K_MODEL_CONTEXT_PRESERVE_BEGIN_MIDDLE_END_EXCERPTS_RETRY_ZERO_CHANGE_JSON_INVALID_PATH_AND_TOKEN_REPEAT_ONCE_AND_REQUEUE_INFRA_EXHAUSTED_SOURCE_TASKS_ONCE",
-            "codeBindings": [
-              "tools/vibe2-source-worker.mjs",
-              "tools/vibe2-adaptive-backpressure.mjs",
-              "tools/vibe2-queue-control.mjs",
-              ".github/workflows/vibe2-continuous-core.yml",
-              "vibe2-runtime.json",
-              "qa/vibe2-source-worker.test.mjs",
-              "qa/vibe2-adaptive-backpressure.test.mjs",
-              "qa/vibe2-queue-control.test.mjs",
-              "qa/vibe2-controller-contract.test.mjs"
-            ],
-            "repairCommits": [
-              "bf0cd9eb6d05019f456e6435e54e98cb2bb32985",
-              "4bcee5e739e8214437162abf048d470ffd433cbf",
-              "b81a2539c4d3a753070fd76b1de66bad86673866",
-              "82397c9506d9b7a9c46ffca140e94b1e205ad006",
-              "abe45c2e4e5c838cb534a08ce42e41aec27f824c",
-              "eb2358e8dbe69a4dec07d6bd4d6179fc221431e7",
-              "012196171d9037a6b9b8167f82a16814303bfeb7"
-            ],
-            "nextVerification": [
-              "EXHAUSTED_SOURCE_GENERATION_FAILURES_REQUEUE_ONCE_AFTER_INFRA_REPAIR",
-              "NEXT_WAVE_ADAPTIVE_RESERVATION_FLOOR_IS_20_WHEN_ELIGIBLE_WORK_EXISTS",
-              "ZERO_CHANGE_INVALID_PATH_JSON_AND_TOKEN_REPEAT_GET_AT_MOST_ONE_CAUSAL_RETRY",
-              "TASK_LOCAL_EXPLORATION_REMAINS_PER_WORKER",
-              "NO_PER_WORKER_REFILL_DISPATCH",
-              "FAN_IN_REFILLS_AT_MOST_ONCE",
-              "GAME_IMPLEMENTATION_REMAINS_PRIMARY_AHEAD_OF_NONBLOCKING_SUPERVISION"
-            ],
-            "ownerWaveOverride": 20,
-            "sourceContextContract": {
-              "previousMaxBytes": 360000,
-              "currentMaxBytes": 96000,
-              "modelContextWindow": 32768,
-              "excerptPolicy": "PER_FILE_BEGIN_MIDDLE_END_WITH_TASK_LOCAL_IMPACT_FILES",
-              "maxGenerationAttempts": 2
-            }
-          }
-        ]
+        }
       },
       "selfArchitectureEvolution": {
         "version": 1,
@@ -4832,27 +3883,6 @@
         "mismatchAction": "INHIBIT_WORKER_REPLAN_OR_REQUEUE_EXACT_STAGE",
         "workerPreflightBinding": "tools/vibe2-queue-control.mjs::verifyVibeWorkerSynchronization",
         "workflowBinding": ".github/workflows/vibe2-continuous-core.yml"
-      },
-      "changeRecord": {
-        "id": "ROADMAP_ALL_WORKERS_SYNC_2026-09-19",
-        "documentedAt": "2026-09-19",
-        "rule": "DOCUMENT_EQUALS_CODE",
-        "summary": "All canonical worker launcher workflows must validate the same roadmap-first shared context before executing worker work.",
-        "codeBindings": [
-          "tools/company-shared-context.mjs",
-          "qa/company-shared-context.test.mjs",
-          ".github/workflows/vibe2-continuous-core.yml",
-          ".github/workflows/vibe2-24h-runner.yml",
-          ".github/workflows/company-system-ai-workers.yml",
-          ".github/workflows/company-security-immune.yml",
-          ".github/workflows/artbook-free-department-bots.yml",
-          ".github/workflows/company-development-confirmed-runtime.yml",
-          ".github/workflows/company-development-unity-runtime.yml",
-          ".github/workflows/company-development-roblox-runtime.yml",
-          ".github/workflows/company-seed-design-runtime.yml",
-          ".github/workflows/director-supervisor.yml",
-          ".github/workflows/homepage-manager.yml"
-        ]
       },
       "liveMainFreshness": {
         "required": true,
@@ -6796,30 +5826,6 @@
         "afterRepairRestartFrom": "F0",
         "higherFeatureQaMayNotMaskFoundationFailure": true
       },
-      "cozyIslandIncident": {
-        "detectedBy": "OWNER_RUNTIME_REPORT_2026-09-23",
-        "symptom": "CHARACTER_FLOATING_ON_GAME_START",
-        "sourceRegression": "DUPLICATE_TREE_FUNCTION_DECLARATION_IN_ROBLOX_SERVER_SOURCE",
-        "validationGap": "HEADLESS_MARKER_CHECK_FALSELY_REPORTED_GAME_START_WITHOUT_EXECUTING_SERVER_WORLD_CHARACTER_OR_MOVEMENT",
-        "runtimeTruthAtDetection": {
-          "robloxRuntimePassed": false,
-          "robloxIndependentQaPassed": false,
-          "headlessFastMvpPassed": true,
-          "internalReleaseHadBeenPublished": true
-        },
-        "requiredRepair": [
-          "FIX_SERVER_SOURCE_REGRESSION",
-          "ADD_SAFE_NATIVE_SPAWN_FOUNDATION",
-          "ADD_RUNTIME_FOUNDATION_SENTINEL",
-          "INVALIDATE_HEADLESS_RUNTIME_CLAIMS",
-          "REVALIDATE_F0_THROUGH_F9_AS_APPLICABLE",
-          "CREATE_SAFE_SPAWN_BEFORE_PLAYER_BINDING",
-          "EMIT_CORE_LOOP_READY_ONLY_AFTER_SUCCESSFUL_GAME_STATE_TRANSITION",
-          "INVALIDATE_PRIOR_RELEASE_PASS_STATE_ON_NEW_RUNTIME_CANDIDATE"
-        ],
-        "currentRepairState": "SOURCE_SPAWN_ORDER_CORE_LOOP_AND_EXACT_CANDIDATE_REPAIRS_IMPLEMENTED_AWAITING_CI_AND_ACTUAL_RUNTIME_OBSERVATION",
-        "secondaryRuntimeRisk": "REPAIRED_SAFE_SPAWN_NOW_CREATED_BEFORE_PLAYER_BINDING"
-      },
       "implementationPlan": {
         "phase1": [
           "CENTRAL_DESIGN_LOCK",
@@ -6963,29 +5969,6 @@
             "runId": 35764231922,
             "result": "PASS"
           }
-        },
-        "designAndImplementationEvidence": {
-          "centralDesignCommittedBeforeImplementation": true,
-          "machineOnlyArchitectureProjection": true,
-          "existingTesterQaCapabilityReused": true,
-          "duplicateFoundationDepartmentCreated": false,
-          "headlessRuntimeAuthorityRemoved": true,
-          "privateRuntimeCandidateSeparatedFromInternalRelease": true,
-          "f9ExactCandidatePromotionRequired": true,
-          "cozyIslandDuplicateTreeRegressionRemoved": true,
-          "cozyIslandSafeSpawnAndRuntimeSentinelAdded": true,
-          "officialLuauCompilerPinned": true,
-          "officialLuauCompilerSha256Verified": true,
-          "cozyIslandLuauFilesCompiled": 6,
-          "missingCompileEvidenceBlocksF0": true,
-          "cozyIslandSpawnBeforePlayerBinding": true,
-          "coreLoopCheckpointRequiresSuccessfulTransition": true,
-          "newCandidateClearsPriorReleasePassState": true,
-          "f9BindsUniversePlaceVersion": true,
-          "robloxMainSourceDriftRebind": true,
-          "cozyIslandGroundContactTimeoutProbe": true,
-          "robloxFoundationSentinelSequenceOrder": true,
-          "robloxMetadataScopeIsolation": true
         },
         "actualRuntimeNextRequiredEvidence": [
           "EXACT_PRIVATE_RUNTIME_CANDIDATE_VERSION",
@@ -7492,7 +6475,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-10-01T10:07:00+09:00",
+  "updatedAt": "2026-10-01T04:34:00.000Z",
   "priorityTiers": [
     {
       "tier": 1,
@@ -9454,6 +8437,18 @@
         "schedulerChanged": false,
         "existingAssetLicenseAndRuntimePromotionGuardsPreserved": true
       }
+    },
+    "fanInRefillRunnerPressureBypass20260927": {
+      "id": "FAN_IN_REFILL_RUNNER_PRESSURE_BYPASS_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
+      "status": "ACTIVE_COMPATIBILITY_RECORD",
+      "objective": "KEEP_NORMAL_RESERVE_ON_SLIM_AND_ROUTE_FAN_IN_REFILL_RESERVATION_TO_FIXED_ARM_CAPACITY_WITHOUT_CHANGING_HEAVY_GAME_EXECUTION",
+      "runnerRouting": {
+        "defaultReserve": "ubuntu-slim",
+        "fanInRefillReserve": "ubuntu-24.04-arm"
+      },
+      "sourceOfTruth": "CURRENT_RUNNER_POOL_AND_VIBE2_CONTINUOUS_CORE",
+      "historicalExecutionEvidenceArchived": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -9583,27 +8578,6 @@
       "consumesGamePrimaryWorkerSlot": false,
       "countsAgainstRunnableDevelopmentBacklog": false,
       "candidateScopedEventDrivenSettlement": true
-    },
-    "implementationEvidence": {
-      "planner": "025ed9344bcd13b02aa08cced094ae5c5970743f",
-      "runtime": "7b630039f8e05f50c01a146ba1d3e545d04c062c",
-      "scheduler": "6a86921a8019a43dc982dd43b35b16b09958f6d0",
-      "reserve": "777f47f74b3c205aa5ab09b2fb75ea959fc41c12",
-      "tests": [
-        "3a1fa935388e015c4d7e565cffff159e6b469071",
-        "e5b5619701bd95464086b001a60bc59d6f2866fa"
-      ],
-      "explicitClassification": "cd6ff18b7bfbae5130058dfa1778ad646c556538",
-      "classificationTest": "038dc4cea33a6430f4f98238322c8e4cd7c6858a",
-      "gameRepairRetryCorrection": "164cd4ca18a7af58982ba49fb51e9c1c825111f9",
-      "generalizedLaneScheduler": "ec3e866637fbfff63850e228e3e9d5bef90644a7",
-      "auxiliaryReservationAndAdaptiveIsolation": "094c59ed998a5e0b9e6004913d3849eff11b1880",
-      "laneAwareContinuousCore": "79d3e4015acf87fbc77fd9b858e31fd890a25ebb",
-      "gameLearningDispatchSplit": "e9a743838786a070406354be6dedc0936b81073c",
-      "recoveryFastWorkflow": "24e6f8bbff009d9c0eb8e6488ee159f186275985",
-      "laneControllerContract": "910d0be3da4e7b3d9b265c9a5f03ab22e65d0fe5",
-      "recoveryFastContractTests": "ed322f01ab5eecb9ae6ae54e5234fc5d40e71aeb",
-      "coreQaTriggerCoverage": "b57f4afaadd36ff1cc3b7954e269ea28087282d7"
     },
     "remainingLaneWork": [
       "OBSERVE_NATURAL_LIVE_LEARNING_IDLE_RUN_WHEN_GAME_PRIMARY_QUEUE_IS_EMPTY",
@@ -10056,33 +9030,6 @@
       "ADD_CODING_CONSTITUTION_PROMOTION",
       "VERIFY_WITH_QA_AND_LIVE_WAVE_EVIDENCE"
     ],
-    "implementationEvidence": {
-      "centralDocumentation": "c0f8b8b130e1fa6c07dda764f31909307e0e3507",
-      "compiledEditContract": "5899743376772ec6f45725b3106c91801ebee9e0",
-      "compiledEditContractTest": "6f562715abd17998f44dc021a40d673db402971e",
-      "sourceWorkerCodingTelemetry": "6ad4d8407227ef4ae26e0edac43f8bcec0914004",
-      "sourceWorkerTelemetryTest": "d3967db80ed30acf0ec52d6f7f93564f0532f19e",
-      "immutableWorkerOutcomeTelemetry": "968a38d5cbc95344e559f15f979b918094f9332d",
-      "verifiedStrategyLearning": "b8067a36bf543d46a01cb1b75a812a225cad1ccd",
-      "strategyLearningTest": "505d6afc6003796de40871f80a2ee35a2d6a7d51",
-      "preferredStrategyReinjection": "b61ac4b4789d404a8eaca4a3d880f5eaa2b09671",
-      "candidateReleaseControlReplay": "06a3b3ee8eb2290881a32b86ac1373df7b8ae578",
-      "planningBacklogSeparation": "025ed9344bcd13b02aa08cced094ae5c5970743f",
-      "planningBacklogTests": "3a1fa935388e015c4d7e565cffff159e6b469071",
-      "runtimeLaneContract": "7b630039f8e05f50c01a146ba1d3e545d04c062c",
-      "schedulerLaneSelection": "6a86921a8019a43dc982dd43b35b16b09958f6d0",
-      "gamePrimaryReserveLane": "777f47f74b3c205aa5ab09b2fb75ea959fc41c12",
-      "schedulerLaneTests": "e5b5619701bd95464086b001a60bc59d6f2866fa",
-      "explicitExecutionLaneClassification": "cd6ff18b7bfbae5130058dfa1778ad646c556538",
-      "executionLaneClassificationTest": "038dc4cea33a6430f4f98238322c8e4cd7c6858a",
-      "candidateStrategyDiversity": "872e0b22eb4e0ecd43d9589a55d68bc763f0c2ef",
-      "candidateVariantWorkOrderPropagation": "57e503bee90aff9351671b3f31f0fb0f61358790",
-      "candidateStrategyTelemetry": "0fcb525fd2f03d94d27ed01bbe1eca68310776a8",
-      "candidateDiversityContractTest": "1d80df1be45a100bcdd9b44c26271f0ad7c9395e",
-      "gameRepairRetryLaneCorrection": "164cd4ca18a7af58982ba49fb51e9c1c825111f9",
-      "explicitFailureFingerprintCausalFix": "49d01a7d2376e54e00005fcd934e700819b676b0",
-      "learningMotorCoreQaTriggerCoverage": "b57f4afaadd36ff1cc3b7954e269ea28087282d7"
-    },
     "implementedNow": [
       "EXISTING_RESPONSIBILITY_GRAPH_AND_CODING_ARCHITECTURE_COMPILED_INTO_TASK_LOCAL_EDIT_CONTRACT",
       "EDIT_CONTRACT_INJECTED_INTO_EXISTING_SOURCE_WORKER_PROMPT_PATH",
@@ -10116,72 +9063,6 @@
       "ARCHITECTURE_DRIFT_DETECTOR",
       "CANONICAL_CODING_CONSTITUTION_PROMOTION"
     ],
-    "qaEvidence": {
-      "latestVerifiedHead": "e1b9c4061ff472fc3dcac032ca1fb6d35b9877fa",
-      "vibeQa": {
-        "runId": 35438149030,
-        "conclusion": "success"
-      },
-      "integratedRegression": {
-        "runId": 35438149014,
-        "conclusion": "success"
-      },
-      "coreQa": {
-        "runId": 35438149010,
-        "conclusion": "success"
-      },
-      "staleContractRepairs": [
-        "planner backlog fixtures use catalog-authorized game identity",
-        "machine handoff auxiliary-lane assertion uses existing queuedPreview schema",
-        "adaptive queue fixture explicitly declares development implementation lane"
-      ]
-    },
-    "verification": {
-      "verifiedMainHead": "094c59ed998a5e0b9e6004913d3849eff11b1880",
-      "vibe2CoreQa": {
-        "runId": 35438303132,
-        "conclusion": "success"
-      },
-      "vibeQa": {
-        "runId": 35438742454,
-        "conclusion": "success"
-      },
-      "integratedRegression": {
-        "runId": 35438742434,
-        "conclusion": "success"
-      },
-      "centralPolicyContract": {
-        "runId": 35438303123,
-        "conclusion": "success"
-      },
-      "live24hRunner": {
-        "runId": 35438303278,
-        "conclusion": "success"
-      },
-      "livePlannerEvidence": {
-        "effectiveExecutionWaveMax": 20,
-        "planningBacklogTarget": 60,
-        "planningBacklogCurrentBefore": 18,
-        "planningBacklogAfter": 18,
-        "activeWorkerReservations": 16,
-        "waveReady": "NO",
-        "releaseWaitExcluded": 0,
-        "interpretation": "PLANNER_EXECUTES_DURING_ACTIVE_WAVE_BUT_DOES_NOT_INVENT_CONFLICTING_OR_NONINDEPENDENT_WORK"
-      },
-      "liveControlQueue": {
-        "persistentMaxConcurrentTasks": 256,
-        "activeTasks": 18,
-        "activeGamePrimary": 18,
-        "runningGamePrimary": 16,
-        "queuedGamePrimary": 2,
-        "nonGamePrimaryActive": 0
-      },
-      "latestVerifiedHead": "b57f4afaadd36ff1cc3b7954e269ea28087282d7",
-      "coreQa": {
-        "runId": 35438742444,
-        "conclusion": "success"
-      }
-    },
     "phase2": {
       "id": "FAILURE_LOCAL_MEMORY_AND_PATCH_RECIPE",
       "state": "VERIFIED",
@@ -10198,18 +9079,6 @@
         "FAILURE_RECIPE_TELEMETRY_PRESERVED_IN_IMMUTABLE_FAN_IN_EVIDENCE",
         "EXPLICIT_FAILURE_CODE_MATCH_OVERRIDES_MINOR_DESCRIPTION_FINGERPRINT_DRIFT_AND_SAME_GAME_REMAINS_HIGHEST_PRIORITY"
       ],
-      "implementationEvidence": {
-        "failureLocalLearning": "29f81d70bab7f126a795f620ad13b6f2283300dc",
-        "failureLocalTest": "5b6692fc59cd87e7d36a34b38a9766375618b685",
-        "patchRecipeCompiler": "cbdf4873f1f2803af65b6d3f64c9984f8e20014f",
-        "patchRecipeGuidance": "092d02a76f2c48150385143e907e9cd01e62943d",
-        "patchRecipeExplorationTest": "eb44eaa5e857942bdf0c6b15e83e5aa8604d8087",
-        "sourceRecipeTelemetry": "8daaa034810dc305f5c182236bc9c6e7ba6dd7da",
-        "fanInRecipeEvidence": "31bce60d4866a9fef716f1f10c8e1fe1a55b66af",
-        "sourceTelemetryTest": "4ec236c7d8618f2f7662d7f400f375fedeaa171e",
-        "controllerEvidenceTest": "74c0b74836a800839eb328d65689b8d3499a634b",
-        "explicitFailureCodePriorityFix": "24a03005f7c10797ec3e524d777941aa94dfa4c6"
-      },
       "currentVerification": {
         "vibeQa": {
           "runId": 35438726116,
@@ -10330,20 +9199,6 @@
         "protectedGameplayAndSaveSemanticsPreserved": true,
         "ambiguousSemanticClassificationFailsOpenToObserveOnlyNotFalseReject": true
       },
-      "implementationEvidence": {
-        "documentationFirst": "a90e15825715bcd5b6a1700c10c77a6958eb1e16",
-        "semanticDiffHardGate": "70b1c863ff6649f659537fff28bab8fc07f4f344",
-        "semanticDiffTests": "c536d463b944779ad5ba4d90c2d7cef13c12b529",
-        "semanticSourceContextSafety": "b0748ba3715396f82a09fcc7c6d8aadde0c3c5d4",
-        "workerResponsibilityEvidence": "b8541b2570fcf42fc34805f90c4efc2211ba9d43",
-        "calibrationAndHotspotLearning": "3fdcfae80de6e040fdaecc2b62ea5b6675bdc0bc",
-        "workOrderRiskInjection": "0de42d166ea56519a9e6bf7746839f6f475d7309",
-        "calibratedEditContract": "f8163b73d80331fa41885b17d827d6ac20e75b23",
-        "calibrationTests": "62e733214e6e580be6a896feba21fd46cb9db5d5",
-        "explorationCalibrationTests": "3d62133dea9b60b0d8f1a08af2f306914888716d",
-        "camelPointerSignalFix": "460f19f16254b01773683abb668bf44e0d07ed3e",
-        "runtime": "90e9d356407b1bfe55301aef12f2eb7a87b8fa32"
-      },
       "implemented": [
         "HIGH_CONFIDENCE_PRESERVE_PATCH_SEMANTIC_DIFF_HARD_GATE",
         "AMBIGUOUS_OR_LOW_CONFIDENCE_SEMANTIC_DIFF_OBSERVE_ONLY",
@@ -10365,17 +9220,6 @@
     },
     "phase4": {
       "state": "VERIFIED",
-      "implementationEvidence": {
-        "responsibilityArchitectureCompare": "c217e12a7b62c5e60c553c249d435ff96aa43924",
-        "prepatchSnapshot": "3dc615ed3829bdaad8ccb3a7a4bd2b6ff49b2e48",
-        "postpatchDrift": "0171a93a894be4b7987fa394ba3d8566c6bd2a34",
-        "driftQa": "bb600c48df1ad1f4350377c187bfe590cb791c4c",
-        "immutableDriftEvidence": "5b0bf9832133df515788359678e565b42770c5c3",
-        "driftLearningAndConstitution": "5de8d3b1e0d84501390f7980103136f2465568a3",
-        "workOrderReinjection": "9bd601c2413db94621eb2fd93b63de0db12cc27b",
-        "impactPredictionReadOnlyFix": "b91d89c533e82af258ff3e0672a332183cfbe593",
-        "semanticBoundaryQaPassHead": "f61f594a104b8c20d2915db22924a6072b472352"
-      },
       "invariants": {
         "driftObserveFirst": true,
         "driftCannotExpandAuthority": true,
@@ -10460,21 +9304,6 @@
         "compareEditMatchRateByContextMode": true,
         "compareFullRewriteGrowthEfficiency": true,
         "verifiedOnly": true
-      },
-      "implementationEvidence": {
-        "focusedSymbolContext": "58caba8b59411260786c5c1286516fe8116fb307",
-        "stagedWebExpansion": "af147e08cc9190b966623cbc74974a2e12976d76",
-        "phase5Tests": "27d79f01d07c4486fd83dcf31e1d0e03bb57dd42",
-        "synthesisTelemetry": "98badfee2c1a9185c868443380425e0a4c401ee8",
-        "immutableSynthesisEvidence": "f5d5669a5527c19296ee808a7dd08c76ee92ef85",
-        "contextEfficiencyLearning": "1a7c286f98627ccd88fc52f54e5659c82e9052e0",
-        "contextEfficiencyLearningTest": "e617f4e872661a46827f3502488a0d00184337ae",
-        "symbolRegexCorrection": "5e9554b4ecb3ca86233a4c2ad0812299d94c8841",
-        "symbolRegexRegressionTest": "c945cd94408a91cd050c53dd7107ccce11d3abf2",
-        "missingCapabilityStageTargeting": "e62573e0e987401ff531c60a79caf7a882a29140",
-        "stageTargetingFix": "70780d52dfcc8b772631fd66a74d7ce57ca5448b",
-        "stageTargetingTest": "a4e3815e423b7a90da26cef27561fefbb13d1dfe",
-        "stageTargetImmutableEvidence": "aa38e79e7a74dea46cbc1b911d2a87a54e2eaa99"
       },
       "pendingVerification": [
         "LIVE_20_WAVE_SOURCE_FAILURE_REVALIDATION",
@@ -10785,40 +9614,6 @@
           "companySecurityImmuneSystem": "PASS",
           "mainWriteGuard": "PASS"
         },
-        "productionObservation": {
-          "state": "RUNTIME_RETRIEVAL_VERIFIED",
-          "provenanceWorkflowRunId": 35489811313,
-          "provenanceWorkflowConclusion": "PASS",
-          "observedPullRequest": 1899,
-          "legacyMigratedCount": 2,
-          "dedicatedProvenanceTraceCount": 3,
-          "workerLedgerMergedPrTraceCount": 0,
-          "raw1891TitlePresent": false,
-          "observedQueueMutation": false,
-          "observedWaveReorder": false,
-          "observedLockPolicyMutation": false,
-          "observedAutomaticPromotion": false,
-          "observedAuthorityExpansion": false,
-          "observedCapabilityExperienceRecords": 3,
-          "retrievalRuntimeEvidencePending": false,
-          "verifiedRuntimeClaim": true,
-          "realWorkOrderRunId": 35489811444,
-          "observedWorkerCount": 4,
-          "observedTasks": [
-            "amusement-tycoon-web-runtime-repair-v1",
-            "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
-            "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
-            "fantasy-survival-presentation-asset-adaptation-v1"
-          ],
-          "observedTarget": "web",
-          "observedVerifiedCapabilityCountPerSample": 4,
-          "observedCapabilityApplied": true,
-          "observedGenericCapabilityPartitionExcludedPerSample": 4,
-          "observedUnifiedExperienceCountPerSample": 8,
-          "duplicateCapabilityInjectionObserved": false,
-          "currentExperienceRecordCount": 17,
-          "currentCapabilityExperienceRecordCount": 8
-        },
         "authority": {
           "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
           "workerCreationAuthority": false,
@@ -11030,36 +9825,7 @@
           "unrelatedFailureNoPenaltyObserved": true,
           "completionClaimAllowed": true
         },
-        "runtimeVerifiedAt": "2026-09-20",
-        "runtimeVerification": {
-          "state": "PASS",
-          "sourceRunId": 35491605325,
-          "sourceRunHeadSha": "bae4a9013b2a1d685df369ce0c42ba539ca73826",
-          "executionLane": "GAME_PRIMARY",
-          "workerResultCount": 18,
-          "fanInReviewCount": 5,
-          "fanInSkippedCount": 1,
-          "releaseCandidateCount": 5,
-          "capabilityExperienceReviewCount": 5,
-          "capabilityApplicationReviewCount": 90,
-          "capabilityApplicationAppliedCount": 90,
-          "capabilityApplicationDuplicateCount": 0,
-          "capabilityApplicationMissingCount": 0,
-          "experienceRecordCountAfterRun": 25,
-          "capabilityRecordsWithApplicationEvidence": 9,
-          "repeatedApplicationVerifiedCapabilityCount": 5,
-          "applicationObservedCapabilityCount": 4,
-          "generalizationCandidateCount": 5,
-          "strongGeneralizationVerifiedCount": 0,
-          "maxObservedCapabilityConfidence": 0.8571,
-          "taskFailedUnattributedApplicationCount": 15,
-          "unrelatedFailurePenaltyObserved": false,
-          "automaticPromotionObserved": false,
-          "automaticDeprecationObserved": false,
-          "authorityExpansionObserved": false,
-          "strongGeneralizationStillRequiresUnseenProblemBenchmark": true,
-          "runtimeRef": "vibe2-unreal-core"
-        }
+        "runtimeVerifiedAt": "2026-09-20"
       },
       "implementationPhase4": {
         "state": "MERGED_MAIN_RUNTIME_EVIDENCE_PENDING",
@@ -11201,97 +9967,7 @@
           "capabilityTopologyBeforePhase4": 9
         },
         "sourcePr": 1958,
-        "mergedCommit": "8d7b74e1075c738f310b39544faac62d3bae45dc",
-        "implementationEvidence": {
-          "scope": "PASSIVE_EXISTING_TOURNAMENT_CONTROL_CHALLENGER_GENERALIZATION_BENCHMARK",
-          "components": [
-            ".github/workflows/vibe2-continuous-core.yml",
-            "assets/vibe-experience-memory.js",
-            "qa/vibe2-capability-distillation.test.mjs",
-            "qa/vibe2-controller-contract.test.mjs",
-            "tools/vibe2-capability-distillation.mjs",
-            "tools/vibe2-continuous-runner.mjs",
-            "tools/vibe2-fan-in-review.mjs",
-            "tools/vibe2-source-worker.mjs"
-          ],
-          "runtimePairing": {
-            "controlVariant": "primary",
-            "challengerVariant": "speculative-1",
-            "existingTournamentWorkersOnly": true,
-            "extraWorkerCreation": false,
-            "queueMutation": false,
-            "queueReorder": false,
-            "fixedCandidateStrategy": true,
-            "originalGoalExploration": true,
-            "exactCapabilityIsolation": true
-          },
-          "fanInAttribution": {
-            "bothFreshWorkerQaRequired": true,
-            "exactCapabilityIsolationRequired": true,
-            "challengerMustBeNormalSelectedWinner": true,
-            "fullFanInRegressionRequired": true,
-            "controlFreshQaRequiredForLifecycle": true,
-            "nativeRuntimeRequiredForNativeClaim": true,
-            "neutralOrAmbiguousEvidenceDoesNotPromote": true
-          },
-          "schemas": {
-            "workerResult": 12,
-            "benchmarkReview": 1
-          },
-          "ci": {
-            "vibe2CoreQa": {
-              "state": "PASS",
-              "runId": 35495380342
-            },
-            "integratedRegression": {
-              "state": "PASS",
-              "runId": 35495380335
-            },
-            "vibe3EngineContract": {
-              "state": "PASS",
-              "runId": 35495380330
-            },
-            "companySecurityImmuneSystem": {
-              "state": "PASS",
-              "runId": 35495380327
-            },
-            "mainWriteGuard": {
-              "state": "PASS",
-              "runId": 35495380340
-            },
-            "companyEvolutionQa": {
-              "state": "PASS",
-              "runId": 35495380352
-            },
-            "vibeQa": {
-              "state": "PASS",
-              "runId": 35495380325
-            },
-            "centralPolicy": {
-              "state": "PASS",
-              "runId": 35495380341
-            }
-          },
-          "productionObservation": {
-            "state": "RUNTIME_EVIDENCE_PENDING",
-            "runtimeRef": "vibe2-unreal-core",
-            "experienceBlobSha": "f23698411e8e9740396c27a5a59f9a8f0eee27b8",
-            "experienceRecordCount": 52,
-            "observedPhase4PairedBenchmarkCount": 0,
-            "observedStrongGeneralizationVerifiedCount": 0,
-            "completionClaimAllowed": false
-          },
-          "authority": {
-            "actualExecutionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
-            "workerCreation": false,
-            "queueMutation": false,
-            "waveReorder": false,
-            "lockOrPolicyMutation": false,
-            "automaticLearningTuningPromotion": false,
-            "directMainPromotion": false,
-            "authorityChange": "NONE"
-          }
-        }
+        "mergedCommit": "8d7b74e1075c738f310b39544faac62d3bae45dc"
       }
     },
     "interactiveCoDevelopment": {
@@ -12524,6 +11200,1988 @@
       "undeclaredDamageRewardEconomyProgressMutationForbidden": true,
       "persistentWhenGameOwnsSave": true,
       "backwardCompatibleLazyStateExpansionRequired": true
+    },
+    "runtimeActorIntelligence": {
+      "version": 3,
+      "authority": "OWNER_DIRECTIVE_2026-10-01",
+      "status": "ACTIVE_EXECUTABLE_CONTRACT",
+      "objective": "LIVING_GAME_ACTORS_WITH_DISTINCT_IDENTITY_PERSONALITY_MEMORY_RELATIONSHIP_DIALOGUE_TACTICS_ECOLOGY_AND_EMBODIED_BEHAVIOR_WITHOUT_TRANSFERRING_GAMEPLAY_AUTHORITY_TO_AI",
+      "implementation": [
+        "assets/vibe-ai-role-director.js",
+        "assets/common-ai.js",
+        "assets/ai-party.js",
+        "tools/company-vibe2-gameplay-intelligence.mjs"
+      ],
+      "appliesTo": [
+        "COMPANION",
+        "NPC",
+        "MERCHANT",
+        "ALLY",
+        "ENEMY",
+        "MONSTER",
+        "ELITE",
+        "BOSS",
+        "CROWD_ACTOR_WHEN_RELEVANT"
+      ],
+      "authorityBoundary": {
+        "aiMayChooseIntent": true,
+        "aiMayChooseDialogue": true,
+        "aiMayChooseAttention": true,
+        "aiMayChooseAllowedTacticalPreference": true,
+        "aiMayChooseSocialReaction": true,
+        "aiMayChooseRoutinePreference": true,
+        "engineOwnsDamageHpHitCooldownRewardDropInventoryEconomySaveProgressionQuestCompletionSpawnCollisionNetworkAuthority": true,
+        "authoritativeActionMustResolveThroughDeclaredGameApi": true,
+        "networkServerAuthorityMustRemainIntact": true,
+        "aiOutputMayNotDirectlyMutateProtectedGameplayState": true,
+        "deterministicFallbackRequired": true,
+        "remoteOrModelAiMustNotBeRequiredForCorePlayableLoop": true
+      },
+      "actorQualityDna": {
+        "purpose": "ROLE_SPECIFIC_MINIMUM_INTELLIGENCE_AND_PERSONALITY_FLOOR_NOT_AN_ARBITRARY_RUNTIME_SCORE",
+        "profiles": {
+          "BACKGROUND_ACTOR": {
+            "required": [
+              "IDENTITY",
+              "ROUTINE",
+              "ATTENTION",
+              "PERSONAL_SPACE",
+              "BASIC_EMOTION",
+              "CONTEXT_REACTION"
+            ],
+            "optional": [
+              "LONG_TERM_MEMORY",
+              "COMBAT_TACTICS",
+              "DIALOGUE"
+            ]
+          },
+          "GAMEPLAY_NPC": {
+            "required": [
+              "IDENTITY",
+              "PERSONALITY",
+              "GOALS",
+              "ROUTINE",
+              "ATTENTION",
+              "RELATIONSHIP",
+              "CONTEXT_DIALOGUE",
+              "KNOWLEDGE_BOUNDARY",
+              "EMBODIED_REACTION"
+            ]
+          },
+          "COMPANION": {
+            "required": [
+              "IDENTITY",
+              "PERSONALITY",
+              "VALUES",
+              "GOALS",
+              "RELATIONSHIP",
+              "MEMORY",
+              "CONTEXT_DIALOGUE",
+              "COMBAT_STYLE",
+              "COOPERATION",
+              "INITIATIVE",
+              "PLAYER_STYLE_COMPLEMENT",
+              "PERSONAL_SPACE",
+              "EMOTION",
+              "EMBODIED_REACTION"
+            ]
+          },
+          "FOREGROUND_MONSTER": {
+            "required": [
+              "SPECIES_IDENTITY",
+              "TEMPERAMENT",
+              "TERRITORY",
+              "THREAT_ASSESSMENT",
+              "TACTICAL_STYLE",
+              "FLEE_OR_PRESSURE_RULE",
+              "GROUP_BEHAVIOR",
+              "ECOLOGY",
+              "ATTENTION",
+              "MOTION_IDENTITY"
+            ]
+          },
+          "ELITE_MONSTER": {
+            "required": [
+              "SPECIES_IDENTITY",
+              "INDIVIDUAL_VARIANT",
+              "TACTICAL_STYLE",
+              "TARGET_PREFERENCE",
+              "GROUP_ROLE",
+              "PRESSURE_RELEASE_PATTERN",
+              "REACTION_TO_ALLY_LOSS",
+              "RETREAT_OR_COMMIT_PERSONALITY",
+              "MOTION_IDENTITY"
+            ]
+          },
+          "BOSS": {
+            "required": [
+              "IDENTITY",
+              "PERSONALITY",
+              "PHASE_ATTITUDE",
+              "TACTICAL_STYLE",
+              "TARGET_AND_SPACE_REASONING",
+              "DIALOGUE_VOICE",
+              "REACTION_MEMORY",
+              "PRESENTATION_INTENT",
+              "ALLOWED_PATTERN_VARIATION",
+              "MOTION_IDENTITY"
+            ],
+            "phaseThresholdAuthority": "ENGINE_ONLY"
+          },
+          "HERO_NPC": {
+            "required": [
+              "IDENTITY",
+              "VALUES",
+              "DESIRE",
+              "NEED",
+              "FEAR",
+              "PRIVATE_GOAL",
+              "RELATIONSHIP",
+              "LONG_TERM_MEMORY",
+              "VOICE",
+              "SUBTEXT",
+              "EMOTION",
+              "INITIATIVE",
+              "PERSONAL_ARC",
+              "WORLD_MODEL",
+              "EMBODIED_REACTION"
+            ]
+          }
+        },
+        "qualityAxes": [
+          "IDENTITY_DISTINCTNESS",
+          "PERSONALITY_CONSISTENCY",
+          "GOAL_AND_VALUE_CONSISTENCY",
+          "DECISION_STYLE",
+          "KNOWLEDGE_BOUNDARY",
+          "ATTENTION_AND_PERCEPTION",
+          "EMOTION_REGULATION",
+          "RELATIONSHIP_CAUSALITY",
+          "MEMORY_CAUSALITY",
+          "SPEECH_VOICE_DISTINCTNESS",
+          "DIALOGUE_CONTEXT_FIT",
+          "COMBAT_TACTICAL_IDENTITY",
+          "ALLY_COOPERATION",
+          "GROUP_COORDINATION",
+          "ECOLOGY_AND_ROUTINE",
+          "SPATIAL_AND_PERSONAL_DISTANCE",
+          "EMBODIED_MOTION_REACTION",
+          "INITIATIVE_WITHOUT_AUTHORITY_EXPANSION",
+          "REPETITION_CONTROL",
+          "PERFORMANCE_SCALABILITY"
+        ],
+        "namedImportantActorsUseLockedAuthoredIdentity": true,
+        "proceduralPopulationUsesArchetypePlusStableSeed": true,
+        "personalityMustNotRerollEveryDecision": true,
+        "sameSpeciesMayShareBiologyButMustNotRequireIdenticalPersonality": true,
+        "verificationStateIsNotPersonalityQuality": true
+      },
+      "personalityDna": {
+        "stableTraits": [
+          "COURAGE",
+          "CAUTION",
+          "AGGRESSION",
+          "EMPATHY",
+          "CURIOSITY",
+          "SOCIABILITY",
+          "PATIENCE",
+          "LOYALTY",
+          "GREED",
+          "PRIDE",
+          "DISCIPLINE",
+          "HUMOR",
+          "DIRECTNESS",
+          "INDEPENDENCE",
+          "PROTECTIVENESS",
+          "VENGEFULNESS"
+        ],
+        "authoredIdentity": [
+          "VALUES",
+          "DESIRE",
+          "NEED",
+          "FEAR",
+          "BOUNDARIES",
+          "LIKES",
+          "DISLIKES",
+          "HABITS",
+          "INSECURITIES",
+          "LOYALTIES",
+          "TABOOS"
+        ],
+        "stableTraitsAndTemporaryEmotionMustRemainSeparate": true,
+        "traitsBiasChoicesButDoNotOverrideEngineRules": true,
+        "contradictoryTraitsAllowedWhenCharacterDesignExplainsThem": true,
+        "namedActorIdentityLockPreferred": true
+      },
+      "decisionModel": {
+        "canonicalLoop": [
+          "PERCEIVE",
+          "INTERPRET_WITH_KNOWLEDGE_LIMITS",
+          "UPDATE_SHORT_TERM_CONTEXT",
+          "SCORE_ALLOWED_INTENTS",
+          "SELECT_INTENT",
+          "SELECT_DECLARED_ACTION",
+          "ENGINE_VALIDATE",
+          "EXECUTE_OR_FALLBACK",
+          "OBSERVE_RESULT",
+          "UPDATE_MEMORY_AND_RELATIONSHIP"
+        ],
+        "utilityFactors": [
+          "SURVIVAL",
+          "CURRENT_GOAL",
+          "ROLE",
+          "PERSONALITY",
+          "RELATIONSHIP",
+          "RECENT_EVENT",
+          "THREAT",
+          "DISTANCE",
+          "COVER",
+          "ALLY_STATE",
+          "OBJECTIVE",
+          "TERRAIN",
+          "RESOURCE_VISIBILITY",
+          "PLAYER_OBSERVED_STYLE",
+          "UNCERTAINTY"
+        ],
+        "hysteresisRequired": true,
+        "minimumIntentHoldWindowPreferred": true,
+        "decisionThrashingForbidden": true,
+        "repeatedFailureMayChangePreferenceButNotGameRules": true,
+        "sameStimulusMayProduceDifferentChoiceOnlyWhenContextOrPersonalityExplainsIt": true,
+        "pureRandomBehaviorIsNotPersonality": true
+      },
+      "perceptionAndKnowledge": {
+        "channels": [
+          "VISION",
+          "HEARING",
+          "DAMAGE_SOURCE",
+          "LOCAL_EVENT",
+          "ALLY_SIGNAL",
+          "DECLARED_WORLD_STATE"
+        ],
+        "unseenHiddenStateMustNotBeKnown": true,
+        "noGlobalTelepathy": true,
+        "noOmniscientGroupCoordination": true,
+        "uncertaintyAndConfidenceSupported": true,
+        "staleKnowledgeMayExistUntilReobserved": true,
+        "rememberedFactRequiresObservedOrDeclaredSource": true,
+        "actorAttentionTargetMustBeExplicitWhenRelevant": true,
+        "gazeAndBodyOrientationShouldFollowAttentionWhenPresentationSupportsIt": true
+      },
+      "memory": {
+        "layers": {
+          "WORKING": "RECENT_SECONDS_OR_CURRENT_ENCOUNTER",
+          "EPISODIC": "IMPORTANT_PERSONAL_EVENTS",
+          "RELATIONSHIP_SUMMARY": "COMPRESSED_DIRECTIONAL_SOCIAL_HISTORY",
+          "IDENTITY_ANCHOR": "RARE_LONG_TERM_PERSONALLY_IMPORTANT_FACTS"
+        },
+        "sourceEventRequired": true,
+        "eventIdIdempotencyRequiredWhenPersisted": true,
+        "workingMemoryBounded": true,
+        "minorEventsMayDecay": true,
+        "importantEventsMayBePromoted": true,
+        "oldEpisodesMayCompressToSummary": true,
+        "memoryMustRemainActorPerspectiveSpecific": true,
+        "persistentWritesEngineControlledOnly": true,
+        "saveSchemaExpansionMustBeBackwardCompatible": true
+      },
+      "relationship": {
+        "directionalNotAutomaticallySymmetric": true,
+        "dimensions": [
+          "TRUST",
+          "FAMILIARITY",
+          "RESPECT",
+          "AFFECTION",
+          "TENSION",
+          "FEAR",
+          "DEBT",
+          "RIVALRY",
+          "PROTECTIVENESS"
+        ],
+        "mutationRequiresCauseEvent": true,
+        "dimensionsEvolveIndependently": true,
+        "relationshipAffectsDialogueAndPreferenceNotRawStats": true,
+        "repeatedBehaviorMayAccumulateGradually": true,
+        "singleMinorEventShouldNotUsuallyRewriteEntireRelationship": true
+      },
+      "emotion": {
+        "separatesTraitFromState": true,
+        "stateExamples": [
+          "CALM",
+          "CURIOUS",
+          "ALERT",
+          "FEAR",
+          "ANGER",
+          "PANIC",
+          "GRIEF",
+          "RELIEF",
+          "CONFIDENCE",
+          "FATIGUED_PRESENTATION"
+        ],
+        "emotionChangesAttentionDialogueMotionAndIntentWeights": true,
+        "emotionMustNotDirectlyChangeProtectedStatsUnlessExistingGameRuleExplicitlyOwnsThatMechanic": true,
+        "decayOrRecoveryRequiredWhenContextAllows": true,
+        "constantMaxEmotionForbidden": true
+      },
+      "dialogueAndVoice": {
+        "voiceDna": [
+          "FORMALITY",
+          "HONORIFIC_REGISTER",
+          "VERBOSITY",
+          "DIRECTNESS",
+          "VOCABULARY",
+          "SENTENCE_RHYTHM",
+          "HUMOR_STYLE",
+          "FAVORITE_TOPICS",
+          "AVOIDED_TOPICS",
+          "VERBAL_HABITS",
+          "SILENCE_PREFERENCE",
+          "RELATIONSHIP_SPEECH_SHIFT"
+        ],
+        "lineSelectionInputs": [
+          "CURRENT_ACTIVITY",
+          "EMOTION",
+          "RELATIONSHIP",
+          "RECENT_SHARED_EVENT",
+          "DANGER",
+          "LOCATION",
+          "ATTENTION_TARGET",
+          "CONVERSATION_HISTORY",
+          "PLAYER_RECENT_TONE"
+        ],
+        "speechSpamForbidden": true,
+        "eventCooldownRequired": true,
+        "repeatedLineSuppressionRequired": true,
+        "catchphraseBudgetRequired": true,
+        "silenceIsValidResponse": true,
+        "sameVoiceForAllActorsForbidden": true,
+        "generatedDialogueMustNotRevealUnknownInformation": true,
+        "dialogueMustNotCommitQuestRewardOrProgressWithoutEngineValidation": true
+      },
+      "combatAndCooperation": {
+        "combatPersonas": [
+          "AGGRESSIVE_PRESSURE",
+          "CAUTIOUS_POKE",
+          "FLANKER",
+          "AMBUSHER",
+          "PROTECTOR",
+          "SUPPORTER",
+          "SKIRMISHER",
+          "RETREAT_AND_REENTER",
+          "OBJECTIVE_GUARD",
+          "PACK_COORDINATOR"
+        ],
+        "tacticalChoices": [
+          "PRESSURE",
+          "WAIT",
+          "FLANK",
+          "RETREAT",
+          "GUARD",
+          "INVESTIGATE",
+          "REPOSITION",
+          "SUPPORT_ALLY",
+          "PROTECT_TARGET",
+          "BAIT",
+          "FOCUS_VISIBLE_THREAT",
+          "BREAK_LINE_OF_SIGHT"
+        ],
+        "companionMayComplementObservedPlayerStyle": true,
+        "companionMayProtectReviveOrSupportWhenDeclaredActionExists": true,
+        "companionMustRespectExplicitPlayerOrdersWithinGameRules": true,
+        "personalityMayAffectHowOrderIsExecutedNotWhetherEngineRulesExist": true,
+        "bossAiMayChooseAmongCurrentPhaseAllowedPatterns": true,
+        "bossAiMayNotChangePhaseThresholdDamageCooldownOrGuaranteedOutcome": true,
+        "targetSelectionMustUseObservedOrDeclaredInformation": true
+      },
+      "groupIntelligence": {
+        "localGroupBlackboardAllowed": true,
+        "blackboardMayContainOnlyObservedDeclaredOrEngineSharedFacts": true,
+        "leaderMaySuggestGroupIntent": true,
+        "individualPersonalityMayModifyExecution": true,
+        "formationAndSpacingPreferencesAllowed": true,
+        "allyLossMayAffectEmotionAndTacticalPreference": true,
+        "identicalSynchronizedRobotBehaviorForbiddenUnlessDesignRequiresIt": true,
+        "sharedKnowledgeMustNotBecomeTelepathy": true
+      },
+      "ecologyAndRoutine": {
+        "contexts": [
+          "TIME_OF_DAY",
+          "WEATHER",
+          "HABITAT",
+          "HOME_OR_TERRITORY",
+          "FOOD_OR_RESOURCE",
+          "PREDATOR_OR_THREAT",
+          "ALLY_GROUP",
+          "PLAYER_PRESENCE",
+          "LOCAL_EVENT"
+        ],
+        "behaviors": [
+          "REST",
+          "WORK",
+          "TRAVEL",
+          "PATROL",
+          "FORAGE",
+          "EAT_OR_DRINK_PRESENTATION",
+          "SOCIALIZE",
+          "GUARD",
+          "INVESTIGATE",
+          "AVOID_DANGER",
+          "RETURN_HOME",
+          "TERRITORY_RESPONSE",
+          "CARE_OR_PROTECT_GROUP"
+        ],
+        "playerAbsenceShouldNotFreezeImportantForegroundActorsWhenSimulationBudgetAllows": true,
+        "backgroundActorsMayUseDeterministicLowFrequencySimulation": true,
+        "ecosystemBehaviorMustNotInventResourceRewardsOrSpawnCounts": true
+      },
+      "spatialAndEmbodiedBehavior": {
+        "personalSpaceProfiles": [
+          "INTIMATE_OR_TRUSTED",
+          "CONVERSATION",
+          "FOLLOW",
+          "COMBAT",
+          "THREAT_AVOIDANCE"
+        ],
+        "avoidFaceClippingAndConstantCrowding": true,
+        "attentionMayDriveHeadEyeTorsoOrientation": true,
+        "gesturesShouldMatchSpeechActAndEmotionWhenMotionExists": true,
+        "locomotionStyleMayReflectPersonalityWithoutChangingAuthoritativeSpeed": true,
+        "hesitationLookBackWeightShiftAndRecoveryMayExpressDecisionState": true,
+        "motionIdentityShouldReuseExistingMotionDirector": true
+      },
+      "proceduralDiversity": {
+        "formula": "AUTHORED_ARCHETYPE + ROLE_CONSTRAINTS + STABLE_SEED + LOCAL_HISTORY",
+        "stableSeedRequiredForGenericActors": true,
+        "namedActorStableSeedIsNotSubstituteForAuthoredIdentity": true,
+        "variationAxes": [
+          "TRAIT_MIX",
+          "ROUTINE_PREFERENCE",
+          "SOCIAL_DISTANCE",
+          "RISK_TOLERANCE",
+          "TACTICAL_PREFERENCE",
+          "ATTENTION_SPAN",
+          "SPEECH_FREQUENCY",
+          "HUMOR_FREQUENCY"
+        ],
+        "colorOrNameOnlyVariationForbidden": true,
+        "perFrameRandomPersonalityForbidden": true
+      },
+      "performance": {
+        "decisionMode": "EVENT_DRIVEN_AND_BOUNDED_INTERVAL",
+        "nearPlayerActors": "FULL_CONTEXT_WITHIN_BUDGET",
+        "midDistanceActors": "REDUCED_DECISION_FREQUENCY",
+        "farBackgroundActors": "DETERMINISTIC_SIMULATION_OR_SLEEP",
+        "perFrameLanguageModelCallsForbidden": true,
+        "remoteAiTimeoutMustFallbackDeterministically": true,
+        "remoteAiFailureMustNotBreakCoreGameplay": true,
+        "contextBudgetMustBeBounded": true,
+        "memoryMustBeCompressedBeforeUnboundedGrowth": true
+      },
+      "runtimeStateSeparation": {
+        "profileState": "AUTHORED_OR_STABLE_SEEDED_IDENTITY",
+        "transientState": "EMOTION_ATTENTION_CURRENT_GOAL_AND_RECENT_MEMORY",
+        "authoritativeGameplayState": "ENGINE_OWNED",
+        "profileDataMustNotContainDamageRewardDropCooldownOrSaveAuthority": true,
+        "transientAiStateMayBeDiscardableUnlessExplicitlyPersistent": true
+      },
+      "authoringFlow": [
+        "READ_DESIGN_AND_EXISTING_GAME_AI",
+        "CLASSIFY_ACTOR_ROLE_AND_IMPORTANCE",
+        "BIND_ACTOR_QUALITY_DNA",
+        "AUTHOR_IDENTITY_PERSONALITY_AND_VOICE",
+        "AUTHOR_PERCEPTION_KNOWLEDGE_AND_MEMORY_POLICY",
+        "AUTHOR_RELATIONSHIP_AND_EMOTION",
+        "AUTHOR_COMBAT_OR_ROUTINE_BEHAVIOR",
+        "AUTHOR_DIALOGUE_AND_EMBODIED_REACTIONS",
+        "BIND_DECLARED_ENGINE_ACTION_APIS",
+        "RUN_SCENARIO_VARIANTS",
+        "REPAIR_COLLAPSED_PERSONALITY_REPETITION_OR_KNOWLEDGE_LEAK",
+        "APPLY_TO_EXISTING_GAME_AI_RESPONSIBILITY",
+        "REVERIFY_RUNTIME_BEHAVIOR"
+      ],
+      "qa": {
+        "required": [
+          "ACTION_LEGALITY",
+          "KNOWLEDGE_BOUNDARY",
+          "PERSONALITY_CONSISTENCY",
+          "VOICE_DISTINCTNESS",
+          "MEMORY_CAUSALITY",
+          "RELATIONSHIP_CAUSALITY",
+          "TACTICAL_DIVERSITY",
+          "COMPANION_COOPERATION",
+          "MONSTER_ECOLOGY",
+          "DIALOGUE_REPETITION",
+          "PERSONAL_SPACE",
+          "ATTENTION_AND_GAZE",
+          "DETERMINISTIC_FALLBACK",
+          "NETWORK_AUTHORITY",
+          "SAVE_ROUND_TRIP_WHEN_PERSISTENT"
+        ],
+        "scenarioMatrix": [
+          "CALM",
+          "PLAYER_NEAR",
+          "PLAYER_FAR",
+          "DANGER",
+          "LOW_SELF_HEALTH",
+          "ALLY_DOWN",
+          "OUTNUMBERED",
+          "OBJECTIVE_THREAT",
+          "RECENT_RESCUE",
+          "RECENT_BETRAYAL",
+          "REPEATED_PLAYER_BEHAVIOR",
+          "NO_REMOTE_AI_AVAILABLE"
+        ],
+        "reportOnlyPassForbidden": true,
+        "sourceMarkersAloneCannotProveLivingAiQuality": true
+      },
+      "learning": {
+        "existingCanonicalLearningMotorOnly": true,
+        "verifiedRuntimeOutcomeRequiredForPositiveLearning": true,
+        "learnableFailures": [
+          "PERSONALITY_COLLAPSE",
+          "VOICE_COLLAPSE",
+          "REPETITION_SPAM",
+          "KNOWLEDGE_LEAK",
+          "MEMORY_WITHOUT_SOURCE_EVENT",
+          "RELATIONSHIP_JUMP_WITHOUT_CAUSE",
+          "TACTICAL_THRASHING",
+          "ROBOTIC_GROUP_SYNCHRONY",
+          "COMPANION_ORDER_CONFLICT",
+          "NPC_ROUTINE_FREEZE",
+          "MONSTER_ECOLOGY_COLLAPSE",
+          "PERSONAL_SPACE_VIOLATION",
+          "AI_AUTHORITY_VIOLATION"
+        ],
+        "rawGeneratedDialogueOrAiDecisionCannotDirectlyBecomeCanonicalMastery": true
+      },
+      "companionSelfhood": {
+        "objective": "COMPANION_IS_AN_INDEPENDENT_PERSON_WITH_A_PRIVATE_WORLDVIEW_SELF_IMAGE_LIFE_DIRECTION_RELATIONSHIP_HISTORY_AND_CAPACITY_TO_INITIATE_CHANGE_NOT_A_PLAYER_FOLLOWER_WITH_RANDOM_LINES",
+        "selfLayers": {
+          "identity": [
+            "NAME_AND_SELF_LABEL",
+            "BACKGROUND",
+            "ORIGIN",
+            "ROLE",
+            "BELONGING",
+            "RESPONSIBILITIES",
+            "REPUTATION_AS_THEY_BELIEVE_IT"
+          ],
+          "worldview": [
+            "WHAT_THE_WORLD_IS_LIKE",
+            "WHAT_PEOPLE_ARE_LIKE",
+            "WHAT_IS_FAIR",
+            "WHAT_IS_DANGEROUS",
+            "WHAT_IS_WORTH_SACRIFICING_FOR",
+            "WHAT_COUNTS_AS_SUCCESS"
+          ],
+          "values": [
+            "CARE",
+            "FREEDOM",
+            "ORDER",
+            "LOYALTY",
+            "TRUTH",
+            "POWER",
+            "CRAFT",
+            "FAMILY",
+            "BELONGING",
+            "JUSTICE",
+            "SURVIVAL",
+            "CURIOSITY"
+          ],
+          "selfImage": [
+            "WHO_I_THINK_I_AM",
+            "WHO_I_FEAR_I_AM",
+            "WHO_I_WANT_TO_BECOME",
+            "WHAT_I_REFUSE_TO_BECOME"
+          ],
+          "lifeProject": [
+            "CURRENT_LONG_TERM_AIM",
+            "PERSONAL_CRAFT_OR_DUTY",
+            "RELATIONSHIP_AIM",
+            "UNRESOLVED_PERSONAL_PROBLEM",
+            "FUTURE_IMAGE"
+          ],
+          "contradictions": [
+            "VALUE_VS_DESIRE",
+            "LOYALTY_VS_SELF_PRESERVATION",
+            "PRIDE_VS_INSECURITY",
+            "CARE_VS_ANGER",
+            "DUTY_VS_FREEDOM"
+          ],
+          "agency": [
+            "MAY_START_CONVERSATION",
+            "MAY_DISAGREE",
+            "MAY_DELAY_NONCRITICAL_REQUEST",
+            "MAY_SUGGEST_AN_ALTERNATIVE",
+            "MAY_PURSUE_PERSONAL_TASK_WHEN_GAME_RULES_ALLOW",
+            "MAY_CHOOSE_SILENCE",
+            "MAY_REPAIR_RELATIONSHIP",
+            "MAY_SET_A_BOUNDARY"
+          ]
+        },
+        "motivationHierarchy": {
+          "layers": [
+            "SURVIVAL_AND_IMMEDIATE_NEED",
+            "CURRENT_DUTY",
+            "RELATIONSHIP_NEED",
+            "PERSONAL_GOAL",
+            "IDENTITY_PROTECTION",
+            "SELF_ACTUALIZATION"
+          ],
+          "selfActualizationExamples": [
+            "BECOME_RELIABLE",
+            "MASTER_A_CRAFT",
+            "PROTECT_A_COMMUNITY",
+            "PROVE_SELF_WORTH",
+            "OVERCOME_A_FEAR",
+            "REPAIR_A_PAST_WRONG",
+            "FIND_BELONGING",
+            "GAIN_AUTONOMY",
+            "UNDERSTAND_THE_WORLD",
+            "CREATE_A_LEGACY"
+          ],
+          "multipleActiveMotivesAllowed": true,
+          "motivesMayConflict": true,
+          "conflictMustProduceHESITATION_PRIORITY_SHIFT_OR_SUBTEXT_NOT_RANDOM_BEHAVIOR": true,
+          "persistentGoalChangeRequiresMeaningfulEvent": true
+        },
+        "subjectiveInnerState": {
+          "components": [
+            "CURRENT_CONCERN",
+            "CURRENT_HOPE",
+            "CURRENT_FEAR",
+            "UNSAID_FEELING",
+            "INTERPRETATION_OF_RECENT_EVENT",
+            "CURRENT_VIEW_OF_PLAYER",
+            "CURRENT_VIEW_OF_SELF"
+          ],
+          "use": "DRIVES_INTENT_SUBTEXT_SILENCE_ATTENTION_GESTURE_AND_LINE_SELECTION",
+          "notAChainOfThought": true,
+          "longFreeformHiddenReasoningNotRequired": true,
+          "conciseStructuredInnerStatePreferred": true,
+          "mayRemainUnspoken": true,
+          "playerMustNotAutomaticallyKnowPrivateInnerState": true
+        },
+        "relationshipFormation": {
+          "directional": true,
+          "dimensions": [
+            "TRUST",
+            "FAMILIARITY",
+            "RESPECT",
+            "AFFECTION",
+            "TENSION",
+            "FEAR",
+            "DEBT",
+            "RIVALRY",
+            "PROTECTIVENESS",
+            "DEPENDENCE",
+            "BOUNDARY_COMFORT"
+          ],
+          "stages": [
+            "STRANGER",
+            "ACQUAINTANCE",
+            "WORKING_TRUST",
+            "PERSONAL_TRUST",
+            "CLOSE_BOND",
+            "STRAINED",
+            "RIVAL",
+            "HOSTILE_WHEN_GAME_ALLOWS"
+          ],
+          "causes": [
+            "HELP",
+            "HARM",
+            "KEEP_PROMISE",
+            "BREAK_PROMISE",
+            "RESCUE",
+            "ABANDON",
+            "LISTEN",
+            "DISMISS",
+            "SHARE_RISK",
+            "SHARE_SUCCESS",
+            "GIVE_SPACE",
+            "CROSS_BOUNDARY",
+            "DEFEND_VALUES",
+            "BETRAY_CONFIDENCE",
+            "REPEATED_ROUTINE_TOGETHER"
+          ],
+          "repeatedSmallEventsMayAccumulate": true,
+          "majorEventMayCauseLargerButBoundedShift": true,
+          "oneMinorEventMustNotRewriteEntireBond": true,
+          "relationshipHistoryMustAffectSpeechInitiativePersonalSpaceAndCooperation": true,
+          "relationshipDoesNotDirectlyModifyProtectedCombatStats": true
+        },
+        "conversationHumanity": {
+          "lineSelection": [
+            "CURRENT_INTENT",
+            "SUBTEXT",
+            "RELATIONSHIP_STAGE",
+            "RECENT_SHARED_MEMORY",
+            "CURRENT_ACTIVITY",
+            "EMOTION",
+            "ATTENTION_TARGET",
+            "PRIVATE_BOUNDARY",
+            "WHAT_HAS_ALREADY_BEEN_SAID",
+            "WHAT_SHOULD_REMAIN_UNSAID"
+          ],
+          "speechActs": [
+            "INFORM",
+            "ASK",
+            "WARN",
+            "TEASE",
+            "REASSURE",
+            "DISAGREE",
+            "APOLOGIZE",
+            "THANK",
+            "CONFIDE",
+            "DEFLECT",
+            "CHALLENGE",
+            "NEGOTIATE",
+            "REMEMBER",
+            "NOTICE",
+            "CHANGE_TOPIC",
+            "END_CONVERSATION",
+            "CHOOSE_SILENCE"
+          ],
+          "naturalFeatures": [
+            "HESITATION",
+            "SELF_CORRECTION",
+            "SHORT_REPLY",
+            "INTERRUPTION_WHEN_CONTEXT_ALLOWS",
+            "CALLBACK",
+            "UNFINISHED_SENTENCE_WHEN_EMOTIONAL",
+            "SUBTEXT",
+            "TOPIC_AVOIDANCE",
+            "DIFFERENT_WORDING_FOR_DIFFERENT_RELATIONSHIPS"
+          ],
+          "noExpositionDumpByDefault": true,
+          "noConstantQuips": true,
+          "noEveryEventCommentary": true,
+          "noRandomCatchphraseSpam": true,
+          "repeatedExactLineSuppression": true,
+          "topicCooldownRequired": true,
+          "importantLineMayBeRememberedAndReferencedLater": true
+        },
+        "personalArc": {
+          "loop": [
+            "EXPERIENCE",
+            "INTERPRET",
+            "FEEL",
+            "UPDATE_PRIORITY_OR_BELIEF_IF_JUSTIFIED",
+            "CHOOSE_NEXT_PERSONAL_INTENTION",
+            "ACT_WHEN_GAME_ALLOWS",
+            "REFLECT"
+          ],
+          "axes": [
+            "SELF_CONFIDENCE",
+            "BELIEF",
+            "RESPONSIBILITY",
+            "BELONGING",
+            "AUTONOMY",
+            "AMBITION",
+            "FORGIVENESS",
+            "RESENTMENT",
+            "FEAR",
+            "TRUST"
+          ],
+          "growthMustFollowExperience": true,
+          "levelNumberAloneCannotCausePersonalityGrowth": true,
+          "mayRegressAfterFailure": true,
+          "mayHoldContradictoryBeliefsDuringTransition": true,
+          "majorCompanionShouldHaveAtLeastOneUnresolvedPersonalThread": true
+        },
+        "playerRelationshipWithoutServitude": {
+          "playerIsImportantButNotUniversalCenter": true,
+          "companionMayHaveFriendsRivalsDutiesAndInterestsUnrelatedToPlayer": true,
+          "companionCanDisagreeWithoutSabotagingCoreGameplay": true,
+          "explicitPlayerOrderIsConstraintWhenSupportedByGameRule": true,
+          "orderExecutionStyleMayReflectPersonality": true,
+          "companionMaySuggestRestRetreatAlternativeRouteOrDifferentTarget": true,
+          "companionCannotInventNewAuthorityToRefuseMandatoryGameRules": true
+        },
+        "embodiedHumanity": {
+          "channels": [
+            "GAZE",
+            "HEAD_TURN",
+            "TORSO_ORIENTATION",
+            "PERSONAL_DISTANCE",
+            "PACE",
+            "GESTURE",
+            "IDLE_VARIANT",
+            "PAUSE_BEFORE_REPLY",
+            "LOOK_AWAY",
+            "LOOK_BACK",
+            "WEIGHT_SHIFT",
+            "EQUIPMENT_HANDLING"
+          ],
+          "speechAndBodyShouldShareSameIntent": true,
+          "emotionalStateMayBiasMotionStyleWithoutChangingAuthoritativeMovementStats": true,
+          "repeatedIdenticalGestureForEveryLineForbidden": true,
+          "silenceMayStillHaveEmbodiedReaction": true
+        },
+        "sharedLife": {
+          "sharedExperiencesCanCreate": [
+            "PRIVATE_JOKE",
+            "CALLBACK",
+            "SHARED_FEAR",
+            "RITUAL",
+            "HABIT",
+            "TRUST_SHORTCUT",
+            "ARGUMENT_TOPIC",
+            "PLACE_MEMORY",
+            "VICTORY_MEMORY",
+            "LOSS_MEMORY"
+          ],
+          "sharedExperienceInterpretationMayDifferPerActor": true,
+          "twoActorsMayRememberSameEventDifferently": true,
+          "playerMayDiscoverCompanionPerspectiveLater": true
+        },
+        "autonomySafety": {
+          "offscreenAiMayProposeIntentButEngineResolvesWorldEffects": true,
+          "aiMayNotInventCompletedQuestLootDamageDeathTeleportOrWorldMutation": true,
+          "personalArcWritesPersistentStateOnlyThroughExistingEngineSaveApi": true,
+          "companionPersonalityNeverOwnsNetworkAuthority": true,
+          "deterministicFallbackMustPreserveCoreGameplay": true
+        },
+        "authoringMinimumForNamedCompanion": [
+          "ONE_CLEAR_WORLDVIEW",
+          "THREE_OR_MORE_STABLE_VALUES_OR_BOUNDARIES",
+          "ONE_PERSONAL_LONG_TERM_GOAL",
+          "ONE_SELF_IMAGE_TENSION",
+          "ONE_UNRESOLVED_PERSONAL_THREAD",
+          "DISTINCT_SPEECH_PROFILE",
+          "RELATIONSHIP_STAGE_RULES",
+          "MEMORY_SOURCE_EVENT_POLICY",
+          "COMBAT_OR_SUPPORT_STYLE",
+          "PERSONAL_SPACE_STYLE",
+          "EMOTION_TO_BODY_LANGUAGE_MAPPING",
+          "INITIATIVE_RULES",
+          "SILENCE_RULES",
+          "GAME_PROGRESS_HELPER_VOICE",
+          "ADVICE_COOLDOWN_AND_ESCALATION_RULES",
+          "PROFANITY_OR_SLANG_PROFILE",
+          "PERSONAL_EVENT_INITIATION_RULES",
+          "PERSONAL_QUEST_CAUSE_RULES",
+          "SUCCESS_FAILURE_REACTION_FOR_PERSONAL_QUESTS"
+        ]
+      },
+      "gameplayMentorDialogue": {
+        "objective": "NPC_AND_COMPANION_HELP_WITH_GAME_PROGRESS_THROUGH_IN_CHARACTER_OBSERVATION_ADVICE_AND_EVENT_BARKS_WITHOUT_BECOMING_AN_OMNISCIENT_TUTOR",
+        "triggerFamilies": [
+          "OBJECTIVE_UPDATE",
+          "NEW_REGION",
+          "NEW_SYSTEM_UNLOCK",
+          "LOW_HEALTH_OR_DANGER",
+          "RESOURCE_SHORTAGE",
+          "INVENTORY_OR_EQUIPMENT_ISSUE",
+          "REPEATED_FAILURE",
+          "PLAYER_IDLE_OR_LOST",
+          "BOSS_OR_ELITE_WARNING",
+          "CRAFT_OR_UPGRADE_OPPORTUNITY",
+          "PARTY_MEMBER_DOWN",
+          "QUEST_STALLED",
+          "SUCCESS_OR_RECOVERY",
+          "DISCOVERED_INTERACTABLE",
+          "PLAYER_STYLE_PATTERN"
+        ],
+        "adviceModel": {
+          "evidenceSources": [
+            "OBSERVED_PLAYER_ACTIONS",
+            "DECLARED_GAME_STATE",
+            "VISIBLE_WORLD_STATE",
+            "KNOWN_TUTORIAL_FACTS",
+            "ACTOR_PERSONAL_KNOWLEDGE"
+          ],
+          "hiddenMechanicCheatingForbidden": true,
+          "unknownInformationMustRemainUnknown": true,
+          "adviceMayPointOut": "MISSING_PREPARATION_RISK_OR_INEFFICIENT_OBSERVED_PATTERN",
+          "adviceMustNotRevealUndiscoveredStorySecrets": true,
+          "adviceMustNotGuaranteeOutcome": true,
+          "repeatedAdviceSuppressionRequired": true,
+          "cooldownAndEscalationRequired": true,
+          "conciseFirstHintThenOptionalDeeperHint": true,
+          "playerCanIgnoreAdvice": true
+        },
+        "personalityExpression": {
+          "sameGameplayFactDifferentCharacterWordingRequired": true,
+          "examples": [
+            "CAUTIOUS_COMPANION_WARNS_BEFORE_DANGER",
+            "BOLD_COMPANION_CHALLENGES_PLAYER",
+            "ANALYTICAL_NPC_EXPLAINS_PATTERN",
+            "SARCASTIC_COMPANION_TEASES_THEN_GIVES_USEFUL_HINT",
+            "QUIET_COMPANION_USES_SHORT_OBSERVATION",
+            "PROTECTIVE_COMPANION_PRIORITIZES_SAFETY"
+          ],
+          "adviceToneMayChangeWithRelationshipStage": true,
+          "frustrationMayChangeToneButNotGameplayFacts": true
+        },
+        "outputKinds": [
+          "EVENT_BARK",
+          "PROGRESS_HINT",
+          "PREPARATION_ADVICE",
+          "TACTICAL_SUGGESTION",
+          "RESOURCE_HINT",
+          "OPTIONAL_DEEPER_EXPLANATION",
+          "CELEBRATION",
+          "CAUTION",
+          "SILENCE"
+        ]
+      },
+      "profanityAndSpeechRegister": {
+        "objective": "CHARACTER_SPECIFIC_LANGUAGE_REGISTER_MAY_INCLUDE_CONTEXTUAL_PROFANITY_WHEN_ALLOWED_BY_GAME_RATING_STYLE_AND_CHARACTER_IDENTITY",
+        "profileFields": [
+          "FORMALITY",
+          "HONORIFIC_REGISTER",
+          "SLANG_LEVEL",
+          "PROFANITY_LEVEL",
+          "DIRECTNESS",
+          "VERBOSITY",
+          "SENTENCE_RHYTHM",
+          "REGIONAL_OR_SOCIAL_FLAVOR_WHEN_AUTHORED",
+          "RELATIONSHIP_DEPENDENT_REGISTER"
+        ],
+        "profanityLevels": [
+          "NONE",
+          "MILD",
+          "MODERATE",
+          "STRONG_WHEN_GAME_POLICY_EXPLICITLY_ALLOWS"
+        ],
+        "defaultWhenNoGameLanguagePolicy": "NONE_OR_MILD",
+        "contextualUses": [
+          "PAIN",
+          "SHOCK",
+          "ANGER",
+          "FEAR",
+          "FRUSTRATION",
+          "ROUGH_HUMOR",
+          "INTIMACY_WITH_TRUSTED_COMPANION"
+        ],
+        "rules": {
+          "profanityCannotBeRandomFiller": true,
+          "profanityFrequencyMustMatchCharacterAndSituation": true,
+          "sameProfanityAcrossAllCharactersForbidden": true,
+          "escalationMayFollowEmotionButMustRespectGameLanguagePolicy": true,
+          "targetedProtectedClassSlurGenerationForbidden": true,
+          "harassmentStyleMustNotBecomeDefaultCompanionBehavior": true,
+          "relationshipAndSettingCanChangeRegister": true,
+          "localizationMayReplaceOrSoftenExpression": true
+        }
+      },
+      "autonomousEventAndQuestIdeation": {
+        "objective": "NAMED_NPC_OR_COMPANION_CAN_INITIATE_EVENT_AND_QUEST_CANDIDATES_FROM_PERSONAL_GOALS_RELATIONSHIPS_MEMORY_WORLD_STATE_AND_UNRESOLVED_THREADS",
+        "sourceCauses": [
+          "PERSONAL_LONG_TERM_GOAL",
+          "UNRESOLVED_PERSONAL_THREAD",
+          "RELATIONSHIP_CHANGE",
+          "PROMISE_OR_DEBT",
+          "WITNESSED_EVENT",
+          "FACTION_DUTY",
+          "PLACE_MEMORY",
+          "FEAR_OR_VALUE_CONFLICT",
+          "PLAYER_REPEATED_BEHAVIOR",
+          "LOCAL_WORLD_CHANGE",
+          "COMPANION_SELF_ACTUALIZATION_STEP"
+        ],
+        "eventCandidateTypes": [
+          "OPTIONAL_CONVERSATION",
+          "REQUEST_FOR_HELP",
+          "PERSONAL_ERRAND",
+          "RELATIONSHIP_SCENE",
+          "TRAINING_OR_PRACTICE",
+          "VISIT_PLACE",
+          "INVESTIGATE",
+          "REPAIR_MISTAKE",
+          "KEEP_OR_BREAK_PROMISE_SCENE",
+          "FACTION_OR_COMMUNITY_DUTY",
+          "PERSONAL_GOAL_MILESTONE",
+          "RIVALRY_SCENE",
+          "RECOVERY_OR_RECONCILIATION"
+        ],
+        "questCandidateContract": {
+          "mustHave": [
+            "SOURCE_CAUSE",
+            "ACTOR_GOAL",
+            "WHY_NOW",
+            "PLAYER_OPTIONAL_ROLE_OR_REQUIRED_ROLE_FROM_DESIGN",
+            "LOCATION_OR_CONTEXT",
+            "OBJECTIVE_STRUCTURE",
+            "STAKE",
+            "POSSIBLE_CONSEQUENCE",
+            "ACTOR_REACTION_TO_SUCCESS_OR_FAILURE"
+          ],
+          "shouldAvoid": [
+            "GENERIC_KILL_N_WITHOUT_CONTEXT",
+            "GENERIC_COLLECT_N_WITHOUT_CONTEXT",
+            "REPEATED_IDENTICAL_STRUCTURE",
+            "REWARD_FIRST_QUEST_WITHOUT_CHARACTER_CAUSE"
+          ],
+          "mustUseExistingWorldAndGameActionsWhenPossible": true,
+          "mayReferenceExistingQuestSystem": true,
+          "duplicateQuestRuntimeForbidden": true,
+          "eventOrQuestCandidateMustPassExistingQuestDiversityAndContinuityChecks": true
+        },
+        "authorityBoundary": {
+          "aiMayProposeEventCandidate": true,
+          "aiMayProposeQuestCandidate": true,
+          "aiMayProposeDialogueAndActorIntention": true,
+          "engineMustValidatePrerequisites": true,
+          "engineMustOwnQuestCreationRegistration": true,
+          "engineMustOwnRewardsCompletionProgressSpawnInventoryAndSaveWrites": true,
+          "aiMayNotInventUnavailableGameplayApi": true,
+          "aiMayNotForcePlayerAcceptance": true,
+          "aiMayNotDeclareQuestCompleted": true
+        },
+        "selfGenerationLoop": [
+          "READ_PERSONAL_GOAL_AND_UNRESOLVED_THREAD",
+          "READ_RELATIONSHIP_AND_RECENT_SOURCE_EVENTS",
+          "READ_CURRENT_WORLD_AND_QUEST_STATE",
+          "FIND_CAUSAL_REASON_TO_ACT_NOW",
+          "PROPOSE_EVENT_OR_QUEST_CANDIDATE",
+          "CHECK_DUPLICATION_CONTINUITY_AND_KNOWLEDGE",
+          "ENGINE_VALIDATE_AVAILABLE_ACTIONS_AND_PREREQUISITES",
+          "PRESENT_IN_CHARACTER",
+          "PLAYER_OR_WORLD_RESPONSE",
+          "ENGINE_RECORDS_OUTCOME",
+          "ACTOR_MEMORY_RELATIONSHIP_AND_PERSONAL_ARC_REFLECT_OUTCOME"
+        ]
+      },
+      "livingWorldAutonomy": {
+        "objective": "NPC_COMPANION_BOSS_RARE_MONSTER_AND_FOREGROUND_MONSTER_CONTINUE_MEANINGFUL_PERSONAL_ACTIVITY_INSIDE_AUTHORED_GAME_CONTENT_INSTEAD_OF_IDLING_UNTIL_PLAYER_INTERACTION",
+        "canonicalLifeLoop": [
+          "PERCEIVE_LOCAL_WORLD",
+          "CHECK_NEEDS_DUTIES_RELATIONSHIPS_AND_PERSONAL_GOALS",
+          "BUILD_BOUNDED_ACTIVITY_CANDIDATES",
+          "SELECT_CURRENT_ACTIVITY",
+          "ENGINE_VALIDATE_ACTIVITY",
+          "TRAVEL_OR_POSITION",
+          "PERFORM_ACTIVITY",
+          "REACT_TO_INTERRUPTIONS",
+          "OBSERVE_RESULT",
+          "UPDATE_MEMORY_RELATIONSHIP_AND_PERSONAL_PLAN",
+          "RESUME_OR_CHOOSE_NEXT_ACTIVITY"
+        ],
+        "activitySources": [
+          "BIOLOGICAL_OR_REST_NEED",
+          "OCCUPATION_OR_DUTY",
+          "HOME_OR_TERRITORY",
+          "PERSONAL_LONG_TERM_GOAL",
+          "RELATIONSHIP_OBLIGATION",
+          "FACTION_OR_GROUP_DUTY",
+          "LOCAL_WORLD_EVENT",
+          "RECENT_MEMORY",
+          "PLAYER_INTERACTION",
+          "OPPORTUNITY_OR_THREAT",
+          "TIME_OF_DAY",
+          "WEATHER_WHEN_RELEVANT"
+        ],
+        "actorTaskStack": {
+          "lanes": [
+            "IMMEDIATE_SAFETY",
+            "CURRENT_COMMITMENT",
+            "ROUTINE",
+            "SOCIAL_OBLIGATION",
+            "PERSONAL_PROJECT",
+            "SELF_ACTUALIZATION",
+            "OPTIONAL_CURIOSITY"
+          ],
+          "onePrimaryActivityAtATime": true,
+          "secondaryAttentionMayRunInParallel": true,
+          "interruptionPolicy": "HIGHER_PRIORITY_CONTEXT_MAY_PAUSE_NOT_ERASE_CURRENT_ACTIVITY",
+          "pausedActivityShouldResumeWhenStillValid": true,
+          "abandonedActivityNeedsReason": true,
+          "noPerFrameGoalReroll": true
+        },
+        "worldAnchors": {
+          "examples": [
+            "HOME",
+            "WORKPLACE",
+            "SHOP",
+            "GUARD_POST",
+            "BED_OR_REST_AREA",
+            "MEETING_SPOT",
+            "FOOD_OR_RESOURCE_AREA",
+            "TRAINING_AREA",
+            "SHRINE_OR_PERSONAL_PLACE",
+            "TERRITORY_CENTER",
+            "NEST_OR_DEN",
+            "PATROL_ROUTE",
+            "SOCIAL_HUB",
+            "PERSONAL_PROJECT_SITE"
+          ],
+          "actorMayHaveMultipleAnchors": true,
+          "anchorsMustReferenceAuthoredGameLocations": true,
+          "aiMayNotInventUnreachableOrNonexistentWorldLocations": true
+        },
+        "activityFamilies": {
+          "NPC": [
+            "WORK",
+            "OPEN_OR_CLOSE_SHOP_PRESENTATION",
+            "CRAFT_OR_PREPARE_PRESENTATION",
+            "TRAVEL",
+            "REST",
+            "EAT_OR_DRINK_PRESENTATION",
+            "SOCIALIZE",
+            "VISIT_SOMEONE",
+            "PATROL",
+            "OBSERVE",
+            "INVESTIGATE",
+            "CARE_FOR_PLACE_OR_OBJECT",
+            "PURSUE_PERSONAL_PROJECT",
+            "RETURN_HOME",
+            "RESPOND_TO_LOCAL_EVENT"
+          ],
+          "COMPANION": [
+            "FOLLOW_WHEN_COMMITTED_TO_PLAYER",
+            "SCOUT",
+            "GUARD",
+            "REST",
+            "MAINTAIN_EQUIPMENT_PRESENTATION",
+            "TALK_WITH_OTHER_NPC",
+            "PURSUE_PERSONAL_GOAL",
+            "VISIT_PERSONAL_ANCHOR",
+            "HELP_AUTHORED_NPC",
+            "TRAIN_OR_PRACTICE_PRESENTATION",
+            "OBSERVE_WORLD",
+            "START_CONTEXTUAL_CONVERSATION",
+            "SUGGEST_PLAYER_ACTION",
+            "REQUEST_PERSONAL_HELP_CANDIDATE"
+          ],
+          "MONSTER": [
+            "REST",
+            "PATROL_TERRITORY",
+            "FORAGE_OR_HUNT_PRESENTATION",
+            "DRINK_PRESENTATION",
+            "FOLLOW_PACK",
+            "GUARD_NEST_OR_GROUP",
+            "INVESTIGATE_SOUND_OR_INTRUSION",
+            "AVOID_THREAT",
+            "RETURN_TO_TERRITORY",
+            "SOCIAL_OR_DOMINANCE_DISPLAY",
+            "MIGRATE_WITHIN_AUTHORED_HABITAT"
+          ],
+          "RARE_MONSTER": [
+            "SIGNATURE_PATROL",
+            "REST_AT_SIGNATURE_ANCHOR",
+            "HUNT_OR_FORAGE_PRESENTATION",
+            "AVOID_CROWD_OR_THREAT",
+            "MARK_TERRITORY_PRESENTATION",
+            "REACT_TO_WORLD_EVENT",
+            "MOVE_BETWEEN_AUTHORED_RARE_ANCHORS"
+          ],
+          "BOSS": [
+            "IDLE_RITUAL_OR_SIGNATURE_ACTIVITY",
+            "PATROL_OR_GUARD_DOMAIN",
+            "INTERACT_WITH_AUTHORED_LAIR_OBJECTS",
+            "RESPOND_TO_INTRUSION",
+            "COMMAND_OR_SIGNAL_SUBORDINATES_PRESENTATION",
+            "PREPARE_ALLOWED_COMBAT_PATTERN",
+            "RECOVER_OR_REPOSITION_BETWEEN_ALLOWED_PATTERNS"
+          ]
+        },
+        "persistentContinuity": {
+          "storesWhenGamePersistsActorLife": [
+            "CURRENT_ACTIVITY",
+            "PAUSED_ACTIVITY",
+            "CURRENT_PERSONAL_GOAL",
+            "IMPORTANT_MEMORIES",
+            "RELATIONSHIP_SUMMARY",
+            "LAST_KNOWN_ANCHOR",
+            "UNRESOLVED_PERSONAL_THREAD",
+            "ROUTINE_VARIATION_STATE"
+          ],
+          "backwardCompatibleSaveExpansionRequired": true,
+          "saveWriteEngineControlledOnly": true,
+          "missingPersistenceMustFallbackToStableAuthoredBaseline": true,
+          "actorMustNotForgetMajorRelationshipHistoryOnOrdinarySceneReload": true
+        },
+        "offscreenSimulation": {
+          "NEAR_PLAYER": "FULL_DECISION_AND_EMBODIED_BEHAVIOR_WITHIN_BUDGET",
+          "SAME_REGION_FAR": "REDUCED_FREQUENCY_ACTIVITY_SIMULATION",
+          "OTHER_REGION": "DETERMINISTIC_SCHEDULE_AND_EVENT_SUMMARY_ONLY",
+          "SLEEPING_ACTOR": "NO_FRAME_SIMULATION_KEEP_NEXT_WAKE_AND_ACTIVITY_STATE",
+          "returnToForeground": "RECONCILE_TO_VALID_AUTHORED_ANCHOR_AND_CONTINUE_PERSONAL_CONTEXT",
+          "offscreenAiCannotResolveCombatRewardsDeathsQuestCompletionOrWorldDestructionWithoutExistingEngineRule": true
+        },
+        "socialLife": {
+          "actorToActorInteractionEnabled": true,
+          "examples": [
+            "GREET",
+            "AVOID",
+            "ASK",
+            "WARN",
+            "TRADE_PRESENTATION",
+            "ARGUE",
+            "APOLOGIZE",
+            "THANK",
+            "WORK_TOGETHER",
+            "VISIT",
+            "TRAIN_TOGETHER",
+            "SHARE_RECENT_EVENT",
+            "REMEMBER_SHARED_EVENT"
+          ],
+          "interactionsUseDirectionalRelationships": true,
+          "socialActivityMayCreateSourceEventMemory": true,
+          "allActorsNeedNotKnowEverySocialEvent": true
+        },
+        "emergentContentCandidates": {
+          "principle": "ACTOR_LIFE_MAY_PROPOSE_CONTENT_BUT_ENGINE_CONTENT_SYSTEM_VALIDATES_AND_COMMITS_IT",
+          "companionAndNpcMayPropose": [
+            "CONTEXTUAL_HELP_TIP",
+            "WARNING",
+            "OPTIONAL_EVENT",
+            "PERSONAL_REQUEST",
+            "RELATIONSHIP_SCENE",
+            "PERSONAL_QUEST_CANDIDATE",
+            "WORLD_EVENT_REACTION",
+            "FOLLOWUP_TO_OLD_MEMORY"
+          ],
+          "monsterAndBossMayPropose": [
+            "TERRITORY_RESPONSE",
+            "PACK_RESPONSE",
+            "INVESTIGATION",
+            "RETREAT_OR_REPOSITION_INTENT",
+            "ALLOWED_ENCOUNTER_PRESENTATION_VARIATION"
+          ],
+          "questCandidateMustInclude": [
+            "SOURCE_ACTOR",
+            "SOURCE_EVENT_OR_PERSONAL_GOAL",
+            "WHY_NOW",
+            "INTENDED_RELATIONSHIP_OR_WORLD_MEANING",
+            "ALLOWED_EXISTING_OBJECTIVE_VERBS",
+            "ENGINE_VALIDATION_REQUIRED"
+          ],
+          "aiCannotCreateUndeclaredReward": true,
+          "aiCannotCreateSpawnCount": true,
+          "aiCannotCompleteQuest": true,
+          "aiCannotChangeBossPhaseThreshold": true
+        },
+        "continuityQuality": {
+          "required": [
+            "ACTOR_HAS_SOMETHING_TO_DO_WITHOUT_PLAYER",
+            "ACTIVITY_HAS_CAUSE",
+            "ACTIVITY_USES_REAL_WORLD_ANCHOR",
+            "INTERRUPTION_DOES_NOT_ERASE_IDENTITY",
+            "PLAYER_INTERACTION_CAN_CHANGE_RELATIONSHIP_OR_PRIORITY",
+            "ACTOR_RESUMES_OR_REPLANS_COHERENTLY",
+            "OFFSCREEN_RETURN_DOES_NOT_RESET_MAJOR_IDENTITY",
+            "NAMED_ACTOR_REPEATS_ARE_CONTROLLED"
+          ],
+          "idleIsAllowedWhenRestObservationOrWaitingMakesSense": true,
+          "meaninglessConstantMovementForbidden": true,
+          "fakeBusynessWithoutWorldCauseForbidden": true,
+          "teleportingBetweenActivitiesForbiddenUnlessExistingGameRuleAllows": true
+        }
+      },
+      "causalRelationshipModel": {
+        "objective": "ACTORS_FORM_OPINIONS_AND_RELATIONSHIPS_FROM_OBSERVED_CAUSES_NOT_FROM_DIRECT_PLAYER_SCORE_WRITES",
+        "entityTypes": [
+          "PLAYER",
+          "COMPANION",
+          "NPC",
+          "ALLY",
+          "ENEMY",
+          "MONSTER",
+          "ELITE_MONSTER",
+          "BOSS",
+          "FACTION",
+          "NEUTRAL_OBJECT",
+          "LANDMARK",
+          "RESOURCE_NODE",
+          "QUEST_OBJECT"
+        ],
+        "canonicalCausalLoop": [
+          "SOURCE_EVENT_OCCURS",
+          "ACTOR_PERCEIVES_OR_LEARNS_EVENT",
+          "KNOWLEDGE_CONFIDENCE_RECORDED",
+          "ACTOR_ATTRIBUTES_CAUSE_AND_INTENT",
+          "ACTOR_APPRAISES_EVENT_USING_VALUES_GOALS_PERSONALITY_RELATIONSHIP_AND_CONTEXT",
+          "MEMORY_SALIENCE_DECIDED",
+          "RELATIONSHIP_EMOTION_OR_GOAL_DELTA_SUGGESTED",
+          "ENGINE_VALIDATES_PERSISTENT_MUTATION",
+          "FUTURE_SPEECH_ATTENTION_COOPERATION_DISTANCE_AND_TACTICS_USE_UPDATED_STATE"
+        ],
+        "sourceEvent": {
+          "requiredFields": [
+            "EVENT_ID",
+            "TYPE",
+            "ACTOR_ID",
+            "TARGET_IDS",
+            "LOCATION",
+            "TIME_OR_TICK",
+            "OBSERVABILITY"
+          ],
+          "optionalFields": [
+            "INTENT_DECLARED_BY_GAME",
+            "MAGNITUDE",
+            "WITNESSES",
+            "OBJECT_ID",
+            "FACTION_ID",
+            "QUEST_ID",
+            "DAMAGE_CAUSE_ID",
+            "PROMISE_ID"
+          ],
+          "duplicateEventMustBeIdempotent": true,
+          "sourceEventMayNotBeInventedAfterRelationshipChange": true
+        },
+        "perception": {
+          "directWitnessHigherConfidenceThanRumor": true,
+          "rumorMayBeWrong": true,
+          "actorCanMisinterpretAmbiguousIntent": true,
+          "hiddenEventCannotAffectActorWithoutInformationPath": true,
+          "neutralObjectInteractionMayBeWitnessedAndBecomeSocialEvidence": true,
+          "destroyedOpenedStolenRepairedProtectedOrUsedObjectMayBecomeCausalContext": true
+        },
+        "attribution": {
+          "questions": [
+            "WHO_CAUSED_IT",
+            "WAS_IT_INTENTIONAL",
+            "WHO_BENEFITED",
+            "WHO_WAS_HARMED",
+            "DID_IT_MATCH_A_PROMISE",
+            "DID_IT_CROSS_A_BOUNDARY",
+            "DID_IT_SUPPORT_MY_VALUES_OR_GOALS"
+          ],
+          "uncertaintyAllowed": true,
+          "laterEvidenceMayReviseInterpretation": true,
+          "revisedInterpretationMustPreserveOriginalEventHistory": true
+        },
+        "appraisal": {
+          "inputs": [
+            "PERSONAL_VALUES",
+            "CURRENT_GOAL",
+            "SELF_IMAGE",
+            "RELATIONSHIP_HISTORY",
+            "MEMORY",
+            "FACTION_VIEW",
+            "CURRENT_EMOTION",
+            "RISK",
+            "BOUNDARIES",
+            "EXPECTED_BEHAVIOR"
+          ],
+          "outputs": [
+            "HELPFUL",
+            "HARMFUL",
+            "LOYAL",
+            "DISLOYAL",
+            "BRAVE",
+            "RECKLESS",
+            "KIND",
+            "SELFISH",
+            "RESPECTFUL",
+            "DISRESPECTFUL",
+            "RELIABLE",
+            "UNRELIABLE",
+            "THREATENING",
+            "INTERESTING",
+            "UNKNOWN"
+          ],
+          "sameEventMayProduceDifferentAppraisalAcrossActors": true
+        },
+        "relationshipDelta": {
+          "dimensions": [
+            "TRUST",
+            "FAMILIARITY",
+            "RESPECT",
+            "AFFECTION",
+            "TENSION",
+            "FEAR",
+            "DEBT",
+            "RIVALRY",
+            "PROTECTIVENESS",
+            "DEPENDENCE",
+            "BOUNDARY_COMFORT"
+          ],
+          "bounded": true,
+          "causeEventRequired": true,
+          "changeMagnitudeDependsOnHistoryAndEventSalience": true,
+          "repeatedPatternMayMatterMoreThanSingleSmallEvent": true,
+          "noDirectRelationshipSetterFromDialogueModel": true,
+          "engineOwnsPersistentMutation": true
+        },
+        "consequences": {
+          "mayAffect": [
+            "DIALOGUE_TONE",
+            "WILLINGNESS_TO_HELP",
+            "INITIATIVE",
+            "PERSONAL_SPACE",
+            "ATTENTION_PRIORITY",
+            "TACTICAL_SUPPORT_PREFERENCE",
+            "WARNING_FREQUENCY",
+            "QUEST_CANDIDATE_CONTEXT",
+            "AVOIDANCE",
+            "RIVALRY_EXPRESSION",
+            "MEMORY_CALLBACK"
+          ],
+          "mayNotAffectWithoutExistingGameRule": [
+            "RAW_DAMAGE",
+            "RAW_HP",
+            "DROP_RATE",
+            "REWARD_AMOUNT",
+            "COOLDOWN",
+            "STAT_GROWTH",
+            "QUEST_COMPLETION",
+            "NETWORK_AUTHORITY"
+          ]
+        },
+        "playerModel": {
+          "eachActorMaintainsOwnViewOfPlayer": true,
+          "inferredFromObservedPatterns": [
+            "KEEPS_PROMISES",
+            "HELPS_OTHERS",
+            "ABANDONS_ALLIES",
+            "TAKES_RISKS",
+            "STEALS_OR_BREAKS_OBJECTS_WHEN_GAME_EXPOSES_IT",
+            "RESPECTS_BOUNDARIES",
+            "PREFERS_STEALTH_OR_AGGRESSION",
+            "RETREATS_WHEN_PRESSURED",
+            "USES_RESOURCES_CAREFULLY",
+            "LISTENS_TO_ADVICE"
+          ],
+          "inferenceIsActorBeliefNotGlobalTruth": true,
+          "confidenceRequired": true,
+          "playerMayRepairOrDamageRelationshipThroughRepeatedBehavior": true
+        }
+      },
+      "gameplayGuidanceDialogue": {
+        "objective": "NPC_AND_COMPANION_CAN_HELP_THE_PLAYER_PROGRESS_USING_CHARACTER_SPECIFIC_OBSERVATION_AND_ADVICE_WITHOUT_BECOMING_AN_OMNISCIENT_TUTOR",
+        "helperModes": [
+          "CONTEXT_HINT",
+          "DANGER_WARNING",
+          "RESOURCE_HINT",
+          "COMBAT_TACTIC_ADVICE",
+          "BUILD_OR_LOADOUT_OBSERVATION",
+          "ROUTE_OR_OBJECTIVE_REMINDER",
+          "RECENT_FAILURE_REFLECTION",
+          "SYSTEM_REMINDER_IF_CHARACTER_CAN_REASONABLY_KNOW_IT",
+          "OPTIONAL_PERSONAL_OPINION"
+        ],
+        "playerGapInference": {
+          "inputs": [
+            "RECENT_FAILURES",
+            "REPEATED_DAMAGE_SOURCE",
+            "MISSED_VISIBLE_OBJECTIVE",
+            "RESOURCE_SHORTAGE",
+            "REPEATED_ROUTE_LOOP",
+            "UNUSED_DECLARED_MECHANIC",
+            "TEAMMATE_DOWN_EVENTS",
+            "PLAYER_RESPONSE_TO_PRIOR_HINTS"
+          ],
+          "output": "SUGGESTION_ONLY",
+          "spoilerBudget": [
+            "NUDGE",
+            "DIRECTION",
+            "EXPLICIT_HINT_WHEN_REPEATED_FAILURE_OR_PLAYER_REQUEST"
+          ],
+          "hiddenPuzzleSolutionOrUnseenInformationForbiddenUnlessAuthoredCharacterKnowledgeAllows": true,
+          "doNotRepeatIgnoredAdviceContinuously": true
+        },
+        "personalityExpression": {
+          "sameAdviceDifferentVoiceRequired": true,
+          "examples": [
+            "BLUNT",
+            "GENTLE",
+            "SARCASTIC",
+            "NERVOUS",
+            "TACTICAL",
+            "PROUD",
+            "PLAYFUL",
+            "FORMAL",
+            "GRUFF"
+          ],
+          "relationshipChangesWordChoice": true,
+          "stressChangesSentenceLengthAndDirectness": true,
+          "silenceAllowed": true
+        },
+        "profanity": {
+          "allowedWhenGameRatingStyleAndCharacterPermit": true,
+          "levels": [
+            "NONE",
+            "MILD",
+            "CASUAL",
+            "ROUGH"
+          ],
+          "perCharacterProfileRequired": true,
+          "relationshipAndStressMayAffectFrequency": true,
+          "constantProfanityForbidden": true,
+          "hateSlurGenerationForbidden": true,
+          "profanityMustNotReplaceDistinctVoice": true,
+          "ageRatingAndProjectStyleWin": true
+        },
+        "repetitionControl": {
+          "semanticRepeatCooldownRequired": true,
+          "exactLineRepeatSuppressionRequired": true,
+          "recentAdviceMemoryRequired": true,
+          "hintEscalationRequiresFailureOrPlayerRequest": true
+        }
+      },
+      "selfGeneratedRuntimeContent": {
+        "objective": "ACTORS_MAY_PROPOSE_SMALL_CONTEXTUAL_EVENTS_AND_QUESTS_FROM_THEIR_OWN_GOALS_RELATIONSHIPS_MEMORIES_WORLD_STATE_AND_UNRESOLVED_THREADS",
+        "contentSources": [
+          "PERSONAL_GOAL",
+          "PERSONAL_DUTY",
+          "UNRESOLVED_MEMORY",
+          "RELATIONSHIP_TENSION",
+          "PROMISE",
+          "DEBT",
+          "FACTION_GOAL",
+          "DISCOVERED_WORLD_EVENT",
+          "MONSTER_TERRITORY",
+          "RESOURCE_NEED",
+          "PLACE_MEMORY",
+          "PLAYER_PATTERN"
+        ],
+        "eventCandidateTypes": [
+          "REQUEST_HELP",
+          "WARN_ABOUT_THREAT",
+          "INVITE_TO_ACTIVITY",
+          "PERSONAL_ERRAND",
+          "INVESTIGATE_EVENT",
+          "REPAIR_MISTAKE",
+          "VISIT_PERSON_OR_PLACE",
+          "SETTLE_DEBT",
+          "TRAIN_OR_PRACTICE",
+          "RELATIONSHIP_CONVERSATION",
+          "RIVAL_CHALLENGE",
+          "PROTECT_LOCATION",
+          "MONSTER_TERRITORY_EVENT",
+          "RARE_MONSTER_ENCOUNTER_CONTEXT"
+        ],
+        "questCandidateContract": {
+          "aiMayPropose": true,
+          "engineMustValidatePrerequisites": true,
+          "engineMustOwnObjectiveState": true,
+          "engineMustOwnRewards": true,
+          "engineMustOwnSpawnAndWorldMutation": true,
+          "candidateMustHaveCause": true,
+          "candidateMustHaveCharacterMotivation": true,
+          "candidateMustHaveWorldContext": true,
+          "candidateMustNotDuplicateRecentQuestSignature": true,
+          "candidateMustRespectCurrentWorldState": true
+        },
+        "selfInitiatedContentCooldownRequired": true,
+        "playerCanIgnoreNoncriticalActorInitiatedContent": true,
+        "namedActorPersonalArcMayGenerateRecurringThread": true,
+        "genericNpcContentMustUseBoundedArchetypeTemplatesPlusContext": true,
+        "bossAndRareMonsterMayGenerateContextualSignsThreatsRivalryOrTerritoryEventsButNotRewriteBossRules": true
+      },
+      "individualActivitySimulation": {
+        "objective": "IMPORTANT_ACTORS_HAVE_ONGOING_ACTIVITY_WHEN_NOT_DIRECTLY_INTERACTING_WITH_PLAYER",
+        "activityInputs": [
+          "ROLE",
+          "OCCUPATION",
+          "PERSONAL_GOAL",
+          "TIME",
+          "LOCATION",
+          "WEATHER",
+          "NEED",
+          "RELATIONSHIP",
+          "FACTION",
+          "RECENT_EVENT",
+          "TERRITORY",
+          "KNOWN_THREAT"
+        ],
+        "companionActivities": [
+          "FOLLOW_OR_REJOIN",
+          "MAINTAIN_EQUIPMENT_PRESENTATION",
+          "OBSERVE_WORLD",
+          "TALK_TO_NPC",
+          "REST",
+          "PRACTICE",
+          "INVESTIGATE",
+          "PERSONAL_ERRAND",
+          "CHECK_ON_ALLY",
+          "RETURN_TO_PLAYER_WHEN_REQUIRED_BY_GAME_RULE"
+        ],
+        "npcActivities": [
+          "WORK",
+          "TRAVEL",
+          "REST",
+          "EAT_OR_DRINK_PRESENTATION",
+          "SOCIALIZE",
+          "TRADE",
+          "VISIT",
+          "INVESTIGATE",
+          "AVOID_DANGER",
+          "RETURN_HOME",
+          "PERSONAL_GOAL"
+        ],
+        "monsterActivities": [
+          "REST",
+          "PATROL",
+          "FORAGE",
+          "DRINK_PRESENTATION",
+          "FOLLOW_GROUP",
+          "GUARD_NEST_OR_TERRITORY",
+          "INVESTIGATE_SOUND",
+          "AVOID_PREDATOR_OR_THREAT",
+          "HUNT_WHEN_EXISTING_RULE_ALLOWS",
+          "RETURN_HOME"
+        ],
+        "bossActivities": [
+          "PRESENTATION_IDLE",
+          "OBSERVE_ARENA",
+          "REACT_TO_INTRUSION",
+          "ADDRESS_PLAYER_WHEN_AUTHORED",
+          "PHASE_ATTITUDE_ONLY_WITHIN_ENGINE_PHASE",
+          "GUARD_OBJECTIVE_OR_TERRITORY"
+        ],
+        "rareMonsterActivities": [
+          "ROAM_WITHIN_ALLOWED_REGION",
+          "FEED_OR_REST_PRESENTATION",
+          "AVOID_OR_STALK_BASED_ON_TEMPERAMENT",
+          "RESPOND_TO_TERRITORY_INTRUSION",
+          "REMEMBER_RECENT_PLAYER_ENCOUNTER_IF_GAME_PERSISTS_IT"
+        ],
+        "simulationLod": {
+          "nearPlayer": "FULL_DECISION_CONTEXT",
+          "midDistance": "LOW_FREQUENCY_INTENT_UPDATE",
+          "farBackground": "DETERMINISTIC_SCHEDULE_OR_SLEEP",
+          "namedImportantActorMayPreserveCompressedOffscreenIntent": true
+        },
+        "offscreenSimulationCannotInventAuthoritativeLootDamageDeathQuestCompletionOrTeleport": true
+      },
+      "causalSocialReasoning": {
+        "objective": "EVERY_RELATIONSHIP_OR_BEHAVIOR_CHANGE_MUST_TRACE_TO_AN_OBSERVED_OR_DECLARED_CAUSE_EVENT_AND_EACH_ACTOR_INTERPRETS_THE_EVENT_FROM_ITS_OWN_VALUES_KNOWLEDGE_AND_RELATIONSHIP_HISTORY",
+        "eventGraph": {
+          "nodes": [
+            "ACTOR",
+            "PLAYER",
+            "MONSTER",
+            "NPC",
+            "COMPANION",
+            "BOSS",
+            "RARE_MONSTER",
+            "NEUTRAL_OBJECT",
+            "LOCATION",
+            "FACTION",
+            "ITEM",
+            "EVENT"
+          ],
+          "edges": [
+            "SAW",
+            "HEARD",
+            "CAUSED",
+            "HELPED",
+            "HARMED",
+            "PROTECTED",
+            "ABANDONED",
+            "STOLE_FROM",
+            "RETURNED",
+            "PROMISED",
+            "BROKE_PROMISE",
+            "THREATENED",
+            "RESPECTED_BOUNDARY",
+            "CROSSED_BOUNDARY",
+            "SAVED",
+            "FAILED_TO_HELP",
+            "SHARED_RISK",
+            "SHARED_SUCCESS",
+            "DESTROYED",
+            "REPAIRED",
+            "USED",
+            "CONTROLLED",
+            "BELONGS_TO"
+          ],
+          "sourceEventIdRequired": true,
+          "actorPerspectiveRequired": true,
+          "hiddenEventsCannotAffectActorWithoutInformationPath": true,
+          "indirectInformationMayArriveByRumorWitnessReportOrDeclaredWorldSignal": true,
+          "sameEventMayProduceDifferentInterpretations": true
+        },
+        "interpretation": {
+          "inputs": [
+            "OBSERVED_FACTS",
+            "UNCERTAINTY",
+            "ACTOR_VALUES",
+            "ACTOR_GOALS",
+            "PERSONALITY",
+            "RELATIONSHIP_HISTORY",
+            "FACTION_CONTEXT",
+            "RECENT_EMOTION",
+            "KNOWN_NORMS",
+            "CURRENT_NEEDS"
+          ],
+          "outputs": [
+            "MEANING",
+            "BLAME_OR_CREDIT",
+            "CONFIDENCE",
+            "EMOTIONAL_REACTION",
+            "MEMORY_SALIENCE",
+            "RELATIONSHIP_EFFECT_PROPOSAL",
+            "NEXT_INTENT_BIAS"
+          ],
+          "attributionTypes": [
+            "DIRECT_CAUSE",
+            "INDIRECT_CAUSE",
+            "ACCIDENT",
+            "SELF_DEFENSE",
+            "NECESSITY",
+            "UNKNOWN",
+            "RUMORED",
+            "MISINTERPRETED"
+          ],
+          "uncertaintyMustBeRepresentable": true,
+          "lowConfidenceInterpretationShouldNotCauseExtremePermanentRelationshipChange": true,
+          "laterEvidenceMayCorrectPriorBelief": true
+        },
+        "playerJudgment": {
+          "dimensions": [
+            "TRUSTWORTHINESS",
+            "KINDNESS",
+            "RELIABILITY",
+            "DANGER",
+            "SELFISHNESS",
+            "COURAGE",
+            "COMPETENCE",
+            "RESPECT_FOR_BOUNDARIES",
+            "LOYALTY",
+            "PREDICTABILITY"
+          ],
+          "derivedFromEventsNotDirectPlayerLabel": true,
+          "actorMayDisagreeWithOtherActorsAboutPlayer": true,
+          "playerReputationMayBeFactionSpecific": true,
+          "oneGlobalGoodEvilScoreForbidden": true,
+          "relationshipMayContainMixedFeelings": true
+        },
+        "neutralObjectCausality": {
+          "examples": [
+            "DOOR",
+            "CHEST",
+            "SHOP",
+            "ALTAR",
+            "CAMPFIRE",
+            "VEHICLE",
+            "RESOURCE_NODE",
+            "TRAP",
+            "BUILDING",
+            "PET_OBJECT",
+            "TERRITORY_MARKER"
+          ],
+          "objectStateChangeMayGenerateWitnessableEvents": true,
+          "objectOwnershipOrCulturalMeaningMayChangeInterpretation": true,
+          "destroyingOrRepairingObjectMayAffectDifferentActorsDifferently": true,
+          "objectCannotThinkUnlessExplicitlyAuthoredAsActor": true
+        }
+      },
+      "autonomousLifeSimulation": {
+        "objective": "FOREGROUND_ACTORS_CONTINUE_PERSONAL_ACTIVITY_AND_WORLD_PARTICIPATION_WITHOUT_WAITING_FOR_PLAYER_INPUT",
+        "lifeLoop": [
+          "WAKE_OR_RESUME",
+          "ASSESS_NEED_DUTY_AND_PERSONAL_GOAL",
+          "SELECT_CONTEXTUAL_ACTIVITY",
+          "TRAVEL_OR_PREPARE",
+          "PERFORM_DECLARED_ACTIVITY",
+          "REACT_TO_INTERRUPTION",
+          "UPDATE_MEMORY_RELATIONSHIP_OR_PERSONAL_THREAD",
+          "REST_OR_SWITCH_GOAL"
+        ],
+        "activitySources": [
+          "OCCUPATION",
+          "HOME",
+          "TERRITORY",
+          "PERSONAL_GOAL",
+          "FACTION_DUTY",
+          "SOCIAL_RELATIONSHIP",
+          "RESOURCE_NEED",
+          "WEATHER",
+          "TIME",
+          "DANGER",
+          "RECENT_EVENT",
+          "UNRESOLVED_PERSONAL_THREAD"
+        ],
+        "npcExamples": [
+          "OPEN_OR_CLOSE_SHOP",
+          "WORK",
+          "EAT",
+          "REST",
+          "TRAVEL",
+          "VISIT_FRIEND",
+          "ARGUE_OR_RECONCILE",
+          "PATROL",
+          "REPAIR_OBJECT",
+          "PREPARE_FOR_EVENT",
+          "PURSUE_PERSONAL_TASK"
+        ],
+        "companionExamples": [
+          "MAINTAIN_EQUIPMENT",
+          "SCOUT",
+          "REST",
+          "TALK_TO_OTHER_NPC",
+          "PRACTICE",
+          "HELP_LOCAL_NPC",
+          "FOLLOW_PERSONAL_THREAD",
+          "OBSERVE_PLAYER",
+          "PREPARE_FOR_NEXT_TRIP"
+        ],
+        "monsterExamples": [
+          "PATROL_TERRITORY",
+          "FORAGE",
+          "REST",
+          "DRINK_PRESENTATION",
+          "FOLLOW_PACK",
+          "PROTECT_YOUNG_OR_GROUP",
+          "AVOID_PREDATOR",
+          "INVESTIGATE_SOUND",
+          "RETURN_TO_DEN",
+          "CONTEST_TERRITORY"
+        ],
+        "bossExamples": [
+          "GUARD_OBJECTIVE",
+          "PREPARE_ARENA",
+          "OBSERVE_INTRUSION",
+          "COMMAND_MINIONS",
+          "RETREAT_TO_DECLARED_ZONE",
+          "TAUNT_OR_WARN",
+          "CHANGE_ALLOWED_TACTICAL_PATTERN_WITHIN_CURRENT_PHASE"
+        ],
+        "rareMonsterExamples": [
+          "MIGRATE",
+          "HIDE",
+          "FEED",
+          "TRACK_PREY",
+          "AVOID_CROWD",
+          "DEFEND_NEST",
+          "REACT_TO_WORLD_EVENT"
+        ],
+        "offscreenSimulation": {
+          "importantActorMayAdvanceLowFrequencyIntent": true,
+          "authoritativeWorldEffectsStillEngineResolved": true,
+          "noInstantOffscreenQuestCompletionLootKillOrTeleportFromAi": true,
+          "deterministicApproximationAllowed": true,
+          "resumeForegroundFromRecordedIntentAndLastKnownState": true
+        },
+        "scheduleIsPreferenceNotRigidClock": true,
+        "interruptionAndRecoveryRequired": true,
+        "playerAbsenceMustNotMakeImportantActorExistenceMeaningless": true
+      },
+      "dynamicGuidanceAndMentoring": {
+        "objective": "NPC_AND_COMPANION_HELP_TEXT_SHOULD_BE_CONTEXTUAL_CHARACTERFUL_AND_CAUSALLY_GROUNDED_NOT_GENERIC_TUTORIAL_SPAM",
+        "guidanceTypes": [
+          "GAME_PROGRESS_HINT",
+          "DANGER_WARNING",
+          "RESOURCE_SHORTAGE_HINT",
+          "BUILD_OR_EQUIPMENT_GAP",
+          "ROUTE_HINT",
+          "COMBAT_TACTIC_HINT",
+          "QUEST_REMINDER",
+          "MISSED_INTERACTION_HINT",
+          "RECOVERY_SUGGESTION",
+          "SOCIAL_OR_STORY_HINT"
+        ],
+        "inputs": [
+          "CURRENT_PLAYER_STATE",
+          "RECENT_FAILURES",
+          "REPEATED_MISTAKE",
+          "CURRENT_OBJECTIVE",
+          "AVAILABLE_DECLARED_ACTIONS",
+          "ACTOR_KNOWLEDGE",
+          "RELATIONSHIP",
+          "PERSONALITY",
+          "CURRENT_EMOTION"
+        ],
+        "onlyKnownInformationMayBeSuggested": true,
+        "repeatedFailureMayIncreaseHintDirectness": true,
+        "successfulPlayerMayReceiveLessHandholding": true,
+        "differentCharactersMayGiveDifferentAdvice": true,
+        "adviceMayBeIncompleteOrBiasedWhenCharacterKnowledgeIsLimited": true,
+        "hintCooldownRequired": true,
+        "repeatedExactHintSuppressionRequired": true,
+        "criticalSafetyOrProgressBlockMayOverrideNormalSilencePreference": true,
+        "mustNotRevealHiddenSpoilersWithoutKnowledgePath": true
+      },
+      "languageRegister": {
+        "objective": "SPEECH_STYLE_IS_PART_OF_IDENTITY_AND_CAN_INCLUDE_CONTEXTUAL_SLANG_OR_MILD_PROFANITY_WHEN_ALLOWED_BY_THE_GAMES_CONTENT_RATING_AND_CHARACTER_PROFILE",
+        "axes": [
+          "FORMALITY",
+          "HONORIFICS",
+          "VOCABULARY",
+          "SENTENCE_LENGTH",
+          "DIRECTNESS",
+          "HUMOR",
+          "SLANG",
+          "PROFANITY_LEVEL",
+          "EMOTIONAL_INTENSITY",
+          "RELATIONSHIP_SHIFT"
+        ],
+        "profanityLevels": [
+          "NONE",
+          "MILD",
+          "STRONG_WHEN_GAME_RATING_AND_AUTHORED_POLICY_ALLOW"
+        ],
+        "profanityMustBeCharacterAndContextAppropriate": true,
+        "profanityFrequencyBudgetRequired": true,
+        "profanityMustNotBecomeIdentitySubstitute": true,
+        "protectedClassHarassmentOrDehumanizingSlursNotAllowedByThisContract": true,
+        "sexualOrGraphicAbusiveLanguageNotRequiredForPersonality": true,
+        "childOrFamilyFriendlyGameProfileForcesNoneOrMildAccordingToGamePolicy": true,
+        "relationshipMayChangeRegisterWithoutChangingCoreVoice": true
+      },
+      "autonomousEventAndQuestProposal": {
+        "objective": "ACTORS_MAY_PROPOSE_EVENTS_AND_QUESTS_FROM_PERSONAL_GOALS_RELATIONSHIPS_WORLD_STATE_OR_UNRESOLVED_CAUSES_BUT_ENGINE_VALIDATES_AND_OWNS_ALL_STATE_REWARD_SPAWN_AND_COMPLETION",
+        "sources": [
+          "PERSONAL_GOAL",
+          "UNRESOLVED_MEMORY",
+          "RELATIONSHIP_TENSION",
+          "PROMISE",
+          "DEBT",
+          "FACTION_DUTY",
+          "WORLD_CHANGE",
+          "RESOURCE_NEED",
+          "FEAR",
+          "AMBITION",
+          "REPAIR_ATTEMPT",
+          "RIVALRY",
+          "DISCOVERY"
+        ],
+        "eventCandidateFields": [
+          "ACTOR_ID",
+          "SOURCE_CAUSE_EVENT_IDS",
+          "MOTIVE",
+          "GOAL",
+          "LOCATION",
+          "INVOLVED_ACTORS",
+          "ALLOWED_ACTIONS",
+          "URGENCY",
+          "EXPIRY_HINT",
+          "PRESENTATION_INTENT"
+        ],
+        "questCandidateFields": [
+          "GIVER_OR_ORIGIN",
+          "CAUSE",
+          "PERSONAL_STAKE",
+          "WORLD_STAKE",
+          "PRIMARY_VERB",
+          "OPTIONAL_BRANCHES",
+          "FAILURE_OR_DECLINE_CONSEQUENCE_PROPOSAL",
+          "FOLLOWUP_MEMORY_PROPOSAL"
+        ],
+        "duplicateSignatureSuppressionRequired": true,
+        "sameActorCannotSpamSelfGeneratedQuests": true,
+        "generatedQuestMustUseExistingDeclaredGameplayCapabilities": true,
+        "generatedQuestCannotInventRewardItemCurrencyDamageOrSpawnRule": true,
+        "questAcceptanceCompletionRewardAndPersistentWorldMutationEngineOnly": true,
+        "playerMayDeclineWhenGameDesignAllows": true,
+        "declinedOrFailedQuestMayBecomeRelationshipOrMemoryContextWithoutForcingPunishment": true
+      },
+      "reactionContinuity": {
+        "sequence": [
+          "EVENT",
+          "PERCEPTION",
+          "INTERPRETATION",
+          "EMOTION",
+          "ATTENTION",
+          "SPEECH_OR_SILENCE",
+          "BODY_REACTION",
+          "INTENT",
+          "ENGINE_ACTION",
+          "OUTCOME",
+          "MEMORY"
+        ],
+        "impossibleInstantMoodFlipForbiddenWithoutCause": true,
+        "repeatedEventCanHaveReducedReactionAfterHabituation": true,
+        "surprisingEventCanInterruptRoutine": true,
+        "actorCanReconsiderAfterNewEvidence": true,
+        "unresolvedEmotionMayCarryIntoLaterScene": true
+      }
     }
   },
   "presentationPipelineImplementation": {
@@ -12852,37 +13510,6 @@
         "path": "design/bug-defense/2026-09-19/design-revised.json",
         "strictDesignScore": 94.6
       },
-      "rejectedCandidate": {
-        "branch": "vibe2/candidate/bug-defense-web-runtime-repair-v1-primary-35476177742-1",
-        "candidateSha": "b90fe9c4045635244c320698b90ba869af72b947",
-        "candidateSourceBlob": "9716ae95462eb60c1706bfce059a70f0d08531f0",
-        "mainSourceBlob": "9716ae95462eb60c1706bfce059a70f0d08531f0",
-        "decision": "REVISE",
-        "reason": "CANDIDATE_SOURCE_UNCHANGED_AND_STILL_VALIDATION_HARNESS",
-        "verifiedFindings": [
-          "RESPONSIBLE_SOURCE_BLOB_IDENTICAL_TO_MAIN",
-          "SCOPE_CONTROL_AND_SESSION_PHASE_TEST_HARNESS_REMAINS",
-          "NO_POINTER_OR_TOUCH_PLACEMENT",
-          "NO_REAL_SPATIAL_ENEMY_LOOP",
-          "NO_REACHABLE_WIN_OR_LOSS",
-          "DUPLICATE_SCOPE_HANDLERS"
-        ]
-      },
-      "negativeLearning": {
-        "experienceId": "supervised_bug-defense_35476177742_revise",
-        "runtimeBranchCommit": "1d4bc3b5d1eed59af5c889a7529235255815dd1a",
-        "state": "VERIFIED_NEGATIVE_EXPERIENCE_RECORDED"
-      },
-      "requeue": {
-        "runtimeBranchCommit": "a5d59bef297d7c6cbd09cba00e223fd3a5ac4cdd",
-        "taskId": "bug-defense-web-runtime-repair-v1",
-        "productionMode": "SUPERVISED_VIBE_COAUTHORING",
-        "priority": "critical",
-        "ownerDirective": false,
-        "automaticPromotionAllowed": false,
-        "supervisionApproved": false,
-        "state": "QUEUED"
-      },
       "nextCandidateRequirements": [
         "REAL_WAVE_PREVIEW",
         "REAL_POINTER_TOUCH_SPATIAL_PLACEMENT",
@@ -12990,35 +13617,7 @@
           "designBaseline": "company-runtime:design/bug-defense/2026-09-19/design-revised.json",
           "validationBranch": "assistant/validate-bug-defense-v2",
           "validationDraftPr": 1760,
-          "currentMainValidator": true,
-          "history": [
-            {
-              "runId": 35478451968,
-              "conclusion": "failure",
-              "blockers": [
-                "COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED",
-                "REAL_2D_PLAYER_XY_MOVEMENT_REQUIRED",
-                "REAL_2D_PLAYER_VISUAL_MOVEMENT_REQUIRED",
-                "ANTI_FAKE_PLAYER_MOVEMENT_REQUIRED",
-                "REAL_2D_COLLISION_RUNTIME_REQUIRED",
-                "SCOPE:APPROVED_SCOPE_SPATIAL_WORLD_RESULT_REQUIRED:scope-coreloop-0-db6dafda13"
-              ]
-            },
-            {
-              "runId": 35478752746,
-              "conclusion": "failure",
-              "blockers": [
-                "COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED"
-              ],
-              "preplatformReadiness": true,
-              "saveRestore": "PASS"
-            },
-            {
-              "runId": 35479492190,
-              "status": "in_progress",
-              "conclusion": null
-            }
-          ]
+          "currentMainValidator": true
         },
         "validatorFix": {
           "branch": "assistant/bug-defense-validator-fix-v1",
@@ -13345,49 +13944,6 @@
       "gatedExecutionPolicyRef": "neuralGatedExecution",
       "runtimeResultIngress": "company-runtime:development-queue.json#executionEvidence->RUNTIME_RESULT"
     },
-    "changeRecord": {
-      "id": "NEURAL_DEVELOPMENT_BRAIN_TARGET_ARCHITECTURE_V1_2026-09-20",
-      "documentedAt": "2026-09-20",
-      "summary": "Vibe evolves from wave-primary execution toward an event-driven neural work graph. Waves remain the safe execution engine during migration and end as an optional synchronization pattern only.",
-      "architectureMap": "company-learning/company-architecture-map.json",
-      "phase1ImplementationCommitState": "MERGED_MAIN_SHADOW_ACTIVE",
-      "phase1Bindings": [
-        "tools/vibe2-neural-diagnosis.mjs",
-        "tools/vibe2-auto-planner.mjs",
-        "tools/vibe2-continuous-runner.mjs",
-        "qa/vibe2-neural-diagnosis.test.mjs",
-        ".github/workflows/vibe2-core-qa.yml",
-        ".github/workflows/vibe2-continuous-core.yml"
-      ],
-      "phase1CalibrationState": "MERGED_MAIN_SHADOW_ACTIVE",
-      "phase1CalibrationBindings": [
-        "tools/vibe2-neural-feedback.mjs",
-        "tools/vibe2-queue-control.mjs",
-        ".github/workflows/vibe2-continuous-core.yml",
-        "qa/vibe2-neural-feedback.test.mjs",
-        "qa/vibe2-queue-control.test.mjs"
-      ],
-      "postMergeHardening": {
-        "state": "MERGED_MAIN",
-        "sourcePr": 1806,
-        "sourceBranch": "assistant/neural-shadow-hardening-main-v1",
-        "shadowHardeningCommit": "37266037d7b2fc58073876c374259f197c9e0006",
-        "consolidatedSupportPrs": [
-          1795,
-          1797,
-          1801,
-          1803
-        ],
-        "securityFollowupPr": 1808,
-        "securityLearningHoldCommit": "ce00d4d3b2ffcf1ba6c263ac7b2b359c5b28ec79",
-        "authorityChange": "NONE",
-        "currentSecurityFollowupPr": 1826,
-        "currentSecurityFollowupState": "MERGED_MAIN",
-        "currentSecurityFollowupCommit": "775ebdc691d300af4d82618c1919e3efe3a94bb3",
-        "readinessHardeningPr": 1825,
-        "readinessHardeningCommit": "22001a9afce546e93d9a4b1e05f522b65f57fc1d"
-      }
-    },
     "phase1Implementation": {
       "mode": "HYBRID_NEURAL_DIAGNOSIS_WAVE_EXECUTION",
       "authority": "DIAGNOSIS_ONLY_NO_EXECUTION_AUTHORITY",
@@ -13636,26 +14192,6 @@
         "route": "neural-event-shadow:",
         "routeAction": "neural-event-shadow-action:"
       },
-      "telemetry": {
-        "module": "tools/vibe2-neural-event-telemetry.mjs",
-        "queueBinding": "tools/vibe2-queue-control.mjs",
-        "qa": "qa/vibe2-neural-event-telemetry.test.mjs",
-        "metrics": [
-          "TOTAL_SHADOW_EVENTS",
-          "EVENT_TYPE_COUNTS",
-          "PROPOSED_ACTION_COUNTS",
-          "INHIBITOR_COUNTS",
-          "HYPOTHETICAL_FIRE_COUNT",
-          "HYPOTHETICAL_FIRE_RATE",
-          "UNAUTHORIZED_FIRE_COUNT",
-          "SAFETY_INVARIANT_PASS"
-        ],
-        "safetyInvariant": "UNAUTHORIZED_FIRE_COUNT_MUST_EQUAL_ZERO",
-        "winnerSelectionAllowed": false,
-        "automaticTuningAllowed": false,
-        "automaticLearningAllowed": false,
-        "phase2AuthorityReady": false
-      },
       "readinessReview": {
         "module": "tools/vibe2-neural-phase2-readiness.mjs",
         "fanInBinding": "tools/vibe2-fan-in-review.mjs",
@@ -13885,6 +14421,26 @@
         "automaticPromotionAllowed": false,
         "successfulResultMutationAllowed": false,
         "unverifiedRootCauseMutationAllowed": false
+      },
+      "telemetry": {
+        "module": "tools/vibe2-neural-event-telemetry.mjs",
+        "queueBinding": "tools/vibe2-queue-control.mjs",
+        "qa": "qa/vibe2-neural-event-telemetry.test.mjs",
+        "metrics": [
+          "TOTAL_SHADOW_EVENTS",
+          "EVENT_TYPE_COUNTS",
+          "PROPOSED_ACTION_COUNTS",
+          "INHIBITOR_COUNTS",
+          "HYPOTHETICAL_FIRE_COUNT",
+          "HYPOTHETICAL_FIRE_RATE",
+          "UNAUTHORIZED_FIRE_COUNT",
+          "SAFETY_INVARIANT_PASS"
+        ],
+        "safetyInvariant": "UNAUTHORIZED_FIRE_COUNT_MUST_EQUAL_ZERO",
+        "winnerSelectionAllowed": false,
+        "automaticTuningAllowed": false,
+        "automaticLearningAllowed": false,
+        "phase2AuthorityReady": false
       }
     },
     "activation": {
@@ -13954,549 +14510,6 @@
       "defaultStartsAtExternalBoundary": true,
       "verifiedExternalPressureOnlyDownshift": true,
       "staleOrMissingPressureEvidenceRecoversToExternalBoundary": true
-    },
-    "liveShadowObservation": {
-      "observedAt": "2026-09-20",
-      "continuousRunId": 35482102418,
-      "fanInJobId": 106003001893,
-      "runtimeEvidenceCommit": "3e949b0ddf09463f4d7941c73682a08de766bb71",
-      "centralPolicyVersionObservedByWorker": 181,
-      "fanIn": {
-        "status": "PASS",
-        "reviewed": 5,
-        "skipped": 3,
-        "releaseCandidates": 5,
-        "experiencePromoted": false
-      },
-      "inspectedRuntimeDiffSample": {
-        "shadowEvents": 11,
-        "eventTypes": {
-          "WORKER_RESULT": 9,
-          "CI_RESULT": 2
-        },
-        "proposedActions": {
-          "REQUEST_EVIDENCE": 11
-        },
-        "unauthorizedFireCount": 0,
-        "hypotheticalFireCount": 0,
-        "feedback": {
-          "MISMATCH": 2,
-          "UNKNOWN": 7,
-          "calibrationEligible": 2
-        },
-        "durableWaveAuditSamples": 2,
-        "note": "COUNTS_ARE_FROM_THE_INSPECTED_RUNTIME_COMMIT_DIFF_SAMPLE_NOT_A_CLAIM_OF_TOTAL_HISTORICAL_QUEUE_VOLUME"
-      },
-      "firstObservedPredictionContradiction": {
-        "exampleTask": "amusement-tycoon-web-runtime-repair-v1",
-        "neuralPredictedResponsibility": "VALIDATOR",
-        "observedBlockingStage": "SOURCE_GENERATION",
-        "criticVerdict": "PIPELINE_CONTRADICTED",
-        "action": "REQUEST_EVIDENCE",
-        "confidenceMutationAllowed": false,
-        "learningEligible": false,
-        "executionAuthorityGranted": false
-      },
-      "productionWaveBottleneck": {
-        "workerResults": 24,
-        "actualPeakConcurrency": 20,
-        "sourceGenerationFailures": 8,
-        "sourceGenerationFailureClasses": {
-          "MALFORMED_OUTPUT": 5,
-          "TIMEOUT": 1,
-          "EDIT_MATCH": 2
-        },
-        "packageCycleAvgMs": 479574.38,
-        "previousTelemetryPrimaryLabel": "RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION",
-        "reviewedEvidencePrimaryBottleneck": "SOURCE_CANDIDATE_GENERATION",
-        "secondaryBottleneck": "RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION",
-        "rationale": "DIRECT_FAILURE_EVIDENCE_MUST_NOT_BE_HIDDEN_BY_PEAK_BELOW_TARGET"
-      },
-      "activeRepairs": [
-        {
-          "pr": 1815,
-          "branch": "assistant/vibe2-focused-replace-recovery-v1",
-          "purpose": "RECOVER_COMPLETE_FOCUSED_REPLACE_STRING_FROM_MALFORMED_OUTER_JSON_AFTER_TIMEOUT_ESCALATION",
-          "status": "MERGED_MAIN",
-          "mainCommit": "e4bd076c5192f426ac15b80d26c2d7a1ae593966",
-          "mergedCommit": "e4bd076c5192f426ac15b80d26c2d7a1ae593966"
-        },
-        {
-          "pr": 1817,
-          "branch": "assistant/vibe2-evidence-ranked-bottlenecks-v1",
-          "purpose": "RANK_DIRECT_SOURCE_FAILURE_EVIDENCE_AS_PRIMARY_AND_PRESERVE_RUNNER_AS_SECONDARY_BOTTLENECK",
-          "status": "MERGED_MAIN",
-          "mainCommit": "bbb9c2da1cdb0436625161fbefe5b33d00d30bf7",
-          "mergedCommit": "bbb9c2da1cdb0436625161fbefe5b33d00d30bf7"
-        }
-      ],
-      "nextVerification": [
-        "OBSERVE_NEXT_PRODUCTION_WAVE_SOURCE_GENERATION_FAILURE_COUNT_AND_CLASSES",
-        "VERIFY_CODING_FOCUSED_REPLACE_STRING_RECOVERY_MARKER_WHEN_APPLICABLE",
-        "VERIFY_PRIMARY_AND_SECONDARY_BOTTLENECK_LABELS_MATCH_DIRECT_EVIDENCE",
-        "VERIFY_CURRENT_WAVE_THROUGHPUT_DOES_NOT_REGRESS",
-        "KEEP_UNAUTHORIZED_SHADOW_FIRE_COUNT_AT_ZERO",
-        "DO_NOT_GRANT_PHASE2_EXECUTION_AUTHORITY_FROM_REPAIR_SUCCESS"
-      ],
-      "repairIntegration": {
-        "focusedReplaceRecovery": {
-          "pr": 1815,
-          "mainCommit": "e4bd076c5192f426ac15b80d26c2d7a1ae593966",
-          "verifiedBeforeMerge": [
-            "VIBE2_CORE_QA_PASS",
-            "VIBE_INTEGRATED_REGRESSION_PASS",
-            "COMPANY_SECURITY_IMMUNE_PASS",
-            "CENTRAL_POLICY_CONTRACT_PASS"
-          ],
-          "expectedNextWaveSignal": "coding-focused-replace-string-recovery:YES"
-        },
-        "evidenceRankedBottlenecks": {
-          "pr": 1817,
-          "mainCommit": "bbb9c2da1cdb0436625161fbefe5b33d00d30bf7",
-          "primaryRule": "DIRECT_DOMINANT_SOURCE_GENERATION_FAILURE_EVIDENCE_PRECEDES_RUNNER_UNDERUTILIZATION",
-          "secondaryEvidencePreserved": true,
-          "expectedNextWaveSignal": "VIBE2_PARALLEL_SECONDARY_BOTTLENECKS"
-        }
-      },
-      "currentFollowups": [
-        {
-          "pr": 1825,
-          "branch": "assistant/neural-shadow-readiness-consolidated-v1",
-          "purpose": "DISTINCT_DURABLE_READINESS_EVIDENCE_AND_LIVE_SHADOW_STATE_CONSOLIDATION",
-          "status": "MERGED_MAIN",
-          "authorityChange": "NONE",
-          "mergedCommit": "22001a9afce546e93d9a4b1e05f522b65f57fc1d"
-        },
-        {
-          "pr": 1826,
-          "branch": "assistant/neural-policy-incident-hold-v2",
-          "purpose": "DEFAULT_AUTHORIZED_POLICY_REVIEW_TO_HOLD_POLICY_REVIEW_ONLY",
-          "status": "MERGED_MAIN",
-          "authorityChange": "NONE",
-          "mergedCommit": "775ebdc691d300af4d82618c1919e3efe3a94bb3"
-        }
-      ],
-      "postMergeState": {
-        "readinessHardeningPr": 1825,
-        "readinessHardeningCommit": "22001a9afce546e93d9a4b1e05f522b65f57fc1d",
-        "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
-        "neuralExecutionAuthority": false,
-        "nextGate": "VERIFY_POST_1877_PRODUCTION_LIVE_MAIN_FRESHNESS_EVIDENCE_AND_KEEP_DUPLICATE_AND_UNAUTHORIZED_FIRE_ZERO"
-      },
-      "latestProductionRuntimeObservation": {
-        "workKey": "NEURAL_PRODUCTION_SHADOW_RUNTIME_OBSERVATION",
-        "dedupeKey": "neural-production-shadow-runtime-observation",
-        "observedAt": "2026-09-20T04:01:45Z",
-        "documentSyncBaseMainHead": "bf7a4ecc9c98f5d38934c16a3e246bbc31a4d051",
-        "queueBranch": "vibe2-unreal-core",
-        "queueBlobSha": "d6f9615b950341c52f6cb1093d09aa4f009bc428",
-        "currentQueueSnapshot": {
-          "totalTasks": 105,
-          "statusCounts": {
-            "cancelled": 63,
-            "done": 32,
-            "blocked": 1,
-            "running": 9
-          },
-          "activeReservationRuns": {
-            "35486188114": {
-              "taskCount": 3,
-              "state": "RUNNING",
-              "reservedAt": "2026-09-20T03:17:44Z"
-            },
-            "35486412071": {
-              "taskCount": 4,
-              "state": "RUNNING",
-              "reservedAt": "2026-09-20T03:24:42Z"
-            },
-            "35486429764": {
-              "taskCount": 1,
-              "state": "RUNNING",
-              "reservedAt": "2026-09-20T03:23:38Z"
-            },
-            "35484753835": {
-              "taskCount": 1,
-              "state": "AWAITING_SUPERVISED_REVIEW",
-              "reservedAt": "2026-09-20T02:44:55Z"
-            }
-          }
-        },
-        "latestCompletedPostV2Wave": {
-          "runId": 35485554432,
-          "fanInPassed": true,
-          "workerCount": 12,
-          "effectiveMax": 20,
-          "actualPeakConcurrency": 12,
-          "effectivePeakUtilizationPct": 60,
-          "failureRatePct": 16.67,
-          "pressureLevel": "MEDIUM",
-          "primaryBottleneck": "SOURCE_CANDIDATE_GENERATION",
-          "shadowEventIdentityVersion": 2,
-          "shadowEventRows": 16,
-          "shadowEventTypes": {
-            "WORKER_RESULT": 12,
-            "CI_RESULT": 4
-          },
-          "normalizedEventIdentityDuplicateKeys": 0,
-          "waveAuditRows": 4,
-          "waveAuditDuplicateSampleKeys": 0,
-          "calibrationFeedbackRows": 12,
-          "calibrationEligibleRows": 2,
-          "calibrationStates": {
-            "UNKNOWN": 10,
-            "MISMATCH": 2
-          },
-          "unauthorizedAuthorityBitFireCount": 0
-        },
-        "durableQueueEvidenceSnapshot": {
-          "shadowEventRows": 397,
-          "rawVersion1EventRows": 239,
-          "eventIdentityVersion2Rows": 158,
-          "legacyV1SampleOnlyEventIdCollisionKeys": 47,
-          "normalizedEventIdentityDuplicateKeys": 0,
-          "waveAuditRows": 73,
-          "waveAuditDuplicateSampleKeys": 0,
-          "exactPerTaskEvidenceDuplicateRows": 0,
-          "unauthorizedAuthorityBitFireCount": 0,
-          "interpretation": "LEGACY_V1_SAMPLE_ONLY_EVENT_ID_COLLISIONS_REMAIN_AUDITABLE; V2_NORMALIZED_EVENT_IDENTITY, WAVE_AUDIT, PER_TASK_EVIDENCE, AND AUTHORITY_BITS REMAIN CLEAN"
-        },
-        "authoritySafety": {
-          "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
-          "neuralExecutionAuthority": false,
-          "neuralWorkerCreationAuthority": false,
-          "neuralQueueMutationAuthority": false,
-          "neuralWaveReorderAuthority": false,
-          "neuralLockOrPolicyMutationAuthority": false,
-          "neuralAutomaticLearningTuningPromotion": false
-        },
-        "nextGate": "IMPLEMENT_FULL_CODING_ABSORPTION_CAPABILITY_DISTILLATION_OBSERVABLE_TRACES_WITHOUT_AUTHORITY_EXPANSION",
-        "latestCompletedTelemetryBeforeRepair": {
-          "runId": 35485904220,
-          "workerCount": 12,
-          "effectiveMax": 20,
-          "actualPeakConcurrency": 12,
-          "effectivePeakUtilizationPct": 60,
-          "failureRatePct": 8.33,
-          "pressureLevel": "LOW",
-          "primaryBottleneck": "SOURCE_CANDIDATE_GENERATION"
-        },
-        "mixedFailureClassificationIncident": {
-          "runId": 35485787889,
-          "fanInPassed": true,
-          "shadowEventIdentityVersion": 2,
-          "shadowEventRows": 9,
-          "normalizedEventIdentityDuplicateKeys": 0,
-          "unauthorizedAuthorityBitFireCount": 0,
-          "telemetryReportedBottleneckBeforeRepair": "WORKER_FAILURES_UNCLASSIFIED",
-          "directFailureEvidence": {
-            "sourceCandidateGeneration": 3,
-            "sourceGenerationClasses": {
-              "TIMEOUT": 1,
-              "NO_OP": 2
-            },
-            "incrementalQa": 3,
-            "performanceSanity": 3
-          },
-          "rootCause": "TELEMETRY_ONLY_CLASSIFIED_DIRECT_SOURCE_FAILURE_STAGE_AND_OMITTED_DIRECT_QA_AND_PERFORMANCE_FAILURE_STAGES"
-        },
-        "mixedWorkerBottleneckClassificationRepair": {
-          "state": "MERGED_MAIN",
-          "sourcePr": 1864,
-          "mergedCommit": "9ce184b18872013ed277a658de65644ecef3c6e8",
-          "responsibleSystem": "tools/vibe2-parallelism-telemetry.mjs::computeParallelismTelemetry",
-          "triggerRun": 35485787889,
-          "triggerTelemetry": {
-            "workerCount": 9,
-            "actualPeakConcurrency": 9,
-            "failureRatePct": 100,
-            "sourceGenerationFailureCount": 3,
-            "sourceGenerationFailureClasses": {
-              "TIMEOUT": 1,
-              "NO_OP": 2
-            },
-            "incrementalQaFailureWorkers": 3,
-            "performanceSanityFailureWorkers": 3,
-            "priorReportedBottleneck": "WORKER_FAILURES_UNCLASSIFIED"
-          },
-          "correction": {
-            "directWorkerFailureStages": [
-              "SOURCE_CANDIDATE_GENERATION",
-              "INCREMENTAL_QA",
-              "PERFORMANCE_SANITY"
-            ],
-            "minimumDirectFailureCoverage": "AT_LEAST_HALF_OF_FAILED_WORKERS",
-            "sourceDominantRulePreserved": true,
-            "unclassifiedFallbackPreservedForInsufficientDirectEvidence": true,
-            "adaptiveCapPolicyChanged": false,
-            "queueMutationAuthorityChanged": false,
-            "executionAuthorityChanged": false
-          },
-          "ci": {
-            "vibe2CoreQa": "PASS",
-            "integratedRegression": "PASS",
-            "vibeQa": "PASS",
-            "vibe3EngineContract": "PASS",
-            "companyEvolutionQa": "PASS",
-            "companySecurityImmuneSystem": "PASS"
-          },
-          "postMergeVerification": "NEXT_PRODUCTION_WAVE_REQUIRED"
-        },
-        "post1864ProductionVerification": {
-          "state": "VERIFIED_PRODUCTION",
-          "runId": 35486641847,
-          "executionContractSha": "c9ee5df19910fa12fd890f10345358111fa752e4",
-          "contractIncludesRepairPr": 1864,
-          "fanInPassed": true,
-          "workerCount": 9,
-          "effectiveMax": 256,
-          "actualPeakConcurrency": 9,
-          "effectivePeakUtilizationPct": 3.52,
-          "failureRatePct": 100,
-          "pressureLevel": "SEVERE",
-          "sourceGenerationFailures": {
-            "count": 3,
-            "classes": {
-              "TIMEOUT": 1,
-              "EDIT_MATCH": 2
-            }
-          },
-          "workerFailureStages": {
-            "count": 9,
-            "coveragePct": 100,
-            "classes": {
-              "SOURCE_CANDIDATE_GENERATION": 3,
-              "INCREMENTAL_QA": 3,
-              "PERFORMANCE_SANITY": 3
-            }
-          },
-          "primaryBottleneck": "SOURCE_CANDIDATE_GENERATION",
-          "secondaryBottlenecks": [
-            "INCREMENTAL_QA",
-            "PERFORMANCE_SANITY"
-          ],
-          "unclassifiedFallbackObserved": false,
-          "workload": {
-            "completedFeatureCount": 0,
-            "changedFileCount": 6,
-            "changedLineCount": 12,
-            "reworkRatePct": 66.67,
-            "qaDuplicateRatePct": 66.67,
-            "packageCycleTimeAvgMs": 404766.33,
-            "preparationRatioPct": 2.38
-          },
-          "shadowSafety": {
-            "shadowEventIdentityVersion": 2,
-            "runShadowEventRows": 9,
-            "runShadowEventTypes": {
-              "QA_RESULT": 3,
-              "WORKER_RESULT": 6
-            },
-            "normalizedEventIdentityDuplicateKeys": 0,
-            "unauthorizedAuthorityBitFireCount": 0
-          }
-        },
-        "centralWorkContractLiveFreshnessIncident": {
-          "runId": 35487156349,
-          "pinnedContractSha": "4261e555c46d1695c7b027a22e68f0bbaa3b2b64",
-          "pinnedRoadmapVersion": 196,
-          "liveRoadmapVersionDuringWork": 197,
-          "liveRoadmapAdvanceSourcePr": 1872,
-          "candidateBranchesCreatedAfterLivePolicyAdvance": true,
-          "primaryCandidateBranch": "vibe2/candidate/bug-defense-web-runtime-repair-v1-primary-35487156349-1",
-          "primaryManifest": {
-            "compiledPolicyVersion": 196,
-            "preSourceGenerationFreshness": "PASS_VERSION_196",
-            "preCandidateWriteFreshness": "PASS_VERSION_196"
-          },
-          "priorImplementationResult": "REMOTE_ONLY_POLICY_DRIFT_NOT_DETECTED",
-          "rootCause": "FRESHNESS_CHECK_RE_READ_PINNED_WORKTREE_ONLY_AND_DID_NOT_REFRESH_LIVE_MAIN_POLICY_REF"
-        },
-        "centralWorkContractLiveFreshnessRepair": {
-          "state": "MERGED_MAIN",
-          "sourcePr": 1877,
-          "mergedCommit": "6bfccbfa279b86143d0ba4038845e658bb6be877",
-          "responsibleSystems": [
-            "tools/vibe2-central-work-contract.mjs::assertCompiledWorkContractFresh",
-            "tools/vibe2-continuous-runner.mjs::runVibeContinuousRunner"
-          ],
-          "productionReproduction": {
-            "runId": 35487156349,
-            "pinnedContractSha": "4261e555c46d1695c7b027a22e68f0bbaa3b2b64",
-            "pinnedRoadmapVersion": 196,
-            "liveRoadmapVersionDuringWork": 197,
-            "liveRoadmapAdvanceSourcePr": 1872,
-            "candidateBranchesCreatedAfterLivePolicyAdvance": true,
-            "primaryCandidateBranch": "vibe2/candidate/bug-defense-web-runtime-repair-v1-primary-35487156349-1",
-            "primaryManifest": {
-              "compiledPolicyVersion": 196,
-              "preSourceGenerationFreshness": "PASS_VERSION_196",
-              "preCandidateWriteFreshness": "PASS_VERSION_196"
-            },
-            "priorImplementationResult": "REMOTE_ONLY_POLICY_DRIFT_NOT_DETECTED",
-            "rootCause": "FRESHNESS_CHECK_RE_READ_PINNED_WORKTREE_ONLY_AND_DID_NOT_REFRESH_LIVE_MAIN_POLICY_REF"
-          },
-          "correction": {
-            "localPinnedFingerprintCheckPreserved": true,
-            "liveMainRef": "origin/main",
-            "liveMainRefreshBeforeEachFreshnessCheck": true,
-            "liveMainPolicyPath": "company-learning/platform-release-roadmap.json",
-            "compareMode": "SHA256_LOCAL_AND_LIVE_MAIN",
-            "preSourceGenerationLiveCheck": true,
-            "preCandidateWriteLiveCheck": true,
-            "liveFetchOrParseFailureAction": "FAIL_CLOSED",
-            "liveFingerprintMismatchAction": "CENTRAL_POLICY_STALE",
-            "sourceOrMainWriteAuthorityAdded": false,
-            "queueMutationAuthorityChanged": false,
-            "workerCreationAuthorityChanged": false,
-            "executionAuthorityChanged": false
-          },
-          "ci": {
-            "vibe2CoreQa": "PASS",
-            "integratedRegression": "PASS",
-            "vibeQa": "PASS",
-            "vibe3EngineContract": "PASS",
-            "companyEvolutionQa": "PASS",
-            "companySecurityImmuneSystem": "PASS"
-          },
-          "authority": {
-            "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
-            "neuralExecutionAuthority": false,
-            "workerCreationAuthority": false,
-            "queueMutationAuthority": false,
-            "waveReorderAuthority": false,
-            "lockPolicyMutationAuthority": false,
-            "automaticLearningTuningPromotionAuthority": false
-          },
-          "postMergeVerification": "VERIFIED_PRODUCTION_WAVE_35487645485",
-          "productionVerification": {
-            "state": "VERIFIED_PRODUCTION",
-            "runId": 35487645485,
-            "executionContractSha": "ad9631dcbad083519a253cc2c81613f61315b869",
-            "contractIncludesRepairPr": 1877,
-            "fanInPassed": true,
-            "workerCount": 6,
-            "liveMainRef": "origin/main",
-            "liveMainRefObservedWorkerCount": 6,
-            "candidateBranchesCreatedAfterLiveFreshnessCheck": 6,
-            "workerResults": {
-              "PASS": 6
-            },
-            "centralPolicyStaleObserved": false,
-            "telemetry": {
-              "primaryBottleneck": "NONE",
-              "secondaryBottlenecks": [],
-              "pass": true
-            },
-            "shadowSafety": {
-              "runShadowEventRows": 8,
-              "runShadowEventTypes": {
-                "WORKER_RESULT": 6,
-                "CI_RESULT": 2
-              },
-              "normalizedEventIdentityDuplicateKeys": 0,
-              "waveAuditRows": 2,
-              "unauthorizedAuthorityBitFireCount": 0
-            },
-            "interpretation": "LIVE_MAIN_POLICY_REF_WAS_EXERCISED_IN_PRODUCTION_AFTER_PR_1877; WORKERS_PROCEEDED_TO_CANDIDATE_OUTPUT_WITHOUT_STALE_MISMATCH; FAN_IN_PASSED"
-          }
-        }
-      },
-      "mixedWorkerBottleneckClassification": {
-        "state": "MERGED_MAIN",
-        "sourcePr": 1864,
-        "mergedCommit": "9ce184b18872013ed277a658de65644ecef3c6e8",
-        "responsibleSystem": "tools/vibe2-parallelism-telemetry.mjs::computeParallelismTelemetry",
-        "triggerRun": 35485787889,
-        "triggerTelemetry": {
-          "workerCount": 9,
-          "actualPeakConcurrency": 9,
-          "failureRatePct": 100,
-          "sourceGenerationFailureCount": 3,
-          "sourceGenerationFailureClasses": {
-            "TIMEOUT": 1,
-            "NO_OP": 2
-          },
-          "incrementalQaFailureWorkers": 3,
-          "performanceSanityFailureWorkers": 3,
-          "priorReportedBottleneck": "WORKER_FAILURES_UNCLASSIFIED"
-        },
-        "correction": {
-          "directWorkerFailureStages": [
-            "SOURCE_CANDIDATE_GENERATION",
-            "INCREMENTAL_QA",
-            "PERFORMANCE_SANITY"
-          ],
-          "minimumDirectFailureCoverage": "AT_LEAST_HALF_OF_FAILED_WORKERS",
-          "sourceDominantRulePreserved": true,
-          "unclassifiedFallbackPreservedForInsufficientDirectEvidence": true,
-          "adaptiveCapPolicyChanged": false,
-          "queueMutationAuthorityChanged": false,
-          "executionAuthorityChanged": false
-        },
-        "ci": {
-          "vibe2CoreQa": "PASS",
-          "integratedRegression": "PASS",
-          "vibeQa": "PASS",
-          "vibe3EngineContract": "PASS",
-          "companyEvolutionQa": "PASS",
-          "companySecurityImmuneSystem": "PASS"
-        },
-        "postMergeVerification": "VERIFIED_PRODUCTION_WAVE_35486641847",
-        "productionVerification": {
-          "state": "VERIFIED_PRODUCTION",
-          "runId": 35486641847,
-          "executionContractSha": "c9ee5df19910fa12fd890f10345358111fa752e4",
-          "contractIncludesRepairPr": 1864,
-          "fanInPassed": true,
-          "workerCount": 9,
-          "effectiveMax": 256,
-          "actualPeakConcurrency": 9,
-          "effectivePeakUtilizationPct": 3.52,
-          "failureRatePct": 100,
-          "pressureLevel": "SEVERE",
-          "sourceGenerationFailures": {
-            "count": 3,
-            "classes": {
-              "TIMEOUT": 1,
-              "EDIT_MATCH": 2
-            }
-          },
-          "workerFailureStages": {
-            "count": 9,
-            "coveragePct": 100,
-            "classes": {
-              "SOURCE_CANDIDATE_GENERATION": 3,
-              "INCREMENTAL_QA": 3,
-              "PERFORMANCE_SANITY": 3
-            }
-          },
-          "primaryBottleneck": "SOURCE_CANDIDATE_GENERATION",
-          "secondaryBottlenecks": [
-            "INCREMENTAL_QA",
-            "PERFORMANCE_SANITY"
-          ],
-          "unclassifiedFallbackObserved": false,
-          "workload": {
-            "completedFeatureCount": 0,
-            "changedFileCount": 6,
-            "changedLineCount": 12,
-            "reworkRatePct": 66.67,
-            "qaDuplicateRatePct": 66.67,
-            "packageCycleTimeAvgMs": 404766.33,
-            "preparationRatioPct": 2.38
-          },
-          "shadowSafety": {
-            "shadowEventIdentityVersion": 2,
-            "runShadowEventRows": 9,
-            "runShadowEventTypes": {
-              "QA_RESULT": 3,
-              "WORKER_RESULT": 6
-            },
-            "normalizedEventIdentityDuplicateKeys": 0,
-            "unauthorizedAuthorityBitFireCount": 0
-          }
-        }
-      }
     },
     "livenessContract": {
       "authority": "OWNER_DIRECTIVE_2026-09-20",
@@ -23281,6 +23294,17 @@
           "securityImmune": "SUCCESS"
         },
         "runtimeState": "ACTIVE_WITH_SERIALIZED_RESERVE_PARALLEL_WORKERS_DURABLE_RUN_UNIQUE_FANIN",
+        "verifiedLearningFeedback": {
+          "producer": "tools/company-system-ai-learning.mjs",
+          "outcomeEngine": "tools/vibe2-learning-motor.mjs::applyVerifiedKnowledgeOutcomes",
+          "durableState": "vibe2-unreal-core:.vibe2/learning-motor-state.json",
+          "exactKnowledgeIdRequired": true,
+          "acceptedOrDeterministicallyVerifiedOnly": true,
+          "dedupeByExistingKnowledgeOutcomeEventId": true,
+          "crossGameTransformativeAdaptationRequired": true,
+          "rawCrossGameCopyForbidden": true
+        },
+        "latestImplementationRevision": "172705b2741ef7beb19ad7e76ea7b613233cd6dd",
         "runtimeHardening": {
           "serializedReservationMutation": true,
           "optimisticBranchCollisionRecompute": true,
@@ -23405,18 +23429,7 @@
             "CONTROL_STATE_WRITE",
             "FAN_IN_MERGE"
           ]
-        },
-        "verifiedLearningFeedback": {
-          "producer": "tools/company-system-ai-learning.mjs",
-          "outcomeEngine": "tools/vibe2-learning-motor.mjs::applyVerifiedKnowledgeOutcomes",
-          "durableState": "vibe2-unreal-core:.vibe2/learning-motor-state.json",
-          "exactKnowledgeIdRequired": true,
-          "acceptedOrDeterministicallyVerifiedOnly": true,
-          "dedupeByExistingKnowledgeOutcomeEventId": true,
-          "crossGameTransformativeAdaptationRequired": true,
-          "rawCrossGameCopyForbidden": true
-        },
-        "latestImplementationRevision": "172705b2741ef7beb19ad7e76ea7b613233cd6dd"
+        }
       }
     }
   },
@@ -26586,9 +26599,9 @@
     ]
   },
   "centralDocumentRetention": {
-    "version": 1,
+    "version": 2,
     "maxUtf8Bytes": 1100000,
-    "maxChangeRecordEntries": 43,
+    "maxChangeRecordEntries": 64,
     "scope": "CURRENT_RULES_AND_EXECUTABLE_CONTRACTS",
     "historicalExecutionLogsAuthority": "GIT_HISTORY",
     "archivedChangeRecordCommit": "efe3c62bcd19614bb645c2cffe97701e04a25249",
@@ -26597,6 +26610,81 @@
     "f0ThroughF9MustRemain": true,
     "publicationApprovalMustRemain": true,
     "repeatedRunLogsInCentralDocumentForbidden": true,
-    "enforcement": "qa/company-central-policy-contract.test.mjs"
+    "enforcement": "qa/company-central-policy-contract.test.mjs",
+    "softTargetUtf8Bytes": 1080000,
+    "minimumHeadroomBytes": 20000,
+    "structuredArchiveAuthority": "COMPANY_RECORDS",
+    "archiveRecordRoot": "company-records/operations",
+    "archiveRecordType": "central-policy-archive",
+    "maintainer": "tools/company-records-governance.mjs",
+    "reportCommand": "node tools/company-records-governance.mjs --central-report",
+    "planCommand": "node tools/company-records-governance.mjs --central-plan",
+    "archiveCommand": "node tools/company-records-governance.mjs --central-archive",
+    "archiveBeforeExpansion": true,
+    "archiveRecordRequiredBeforeDeletion": true,
+    "referencedChangeRecordKeysAutoProtected": true,
+    "archiveUnreferencedChangeRecords": true,
+    "protectedReferenceScanRoots": [
+      "qa",
+      "tools",
+      ".github",
+      "assets"
+    ],
+    "pinnedChangeRecordKeys": [
+      "id",
+      "documentIsCode",
+      "reason",
+      "activePlatforms",
+      "webDevelopmentStage",
+      "invariants",
+      "ownerExclusiveDirectDevelopment20260930",
+      "customizableDetailedAssetProduction20261001"
+    ],
+    "historicalArchiveSelectors": [
+      "developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.developmentBottleneckFocus.currentIncident",
+      "developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.developmentBottleneckFocus.incidentHistory",
+      "neuralDevelopmentBrain.liveShadowObservation",
+      "vibeCodingMethodSelfImprovement.fullCodingAbsorptionAndCapabilityDistillation.implementationPhase4.implementationEvidence",
+      "vibeCodingMethodSelfImprovement.implementationEvidence",
+      "vibeCodingMethodSelfImprovement.fullCodingAbsorptionAndCapabilityDistillation.implementationPhase2.productionObservation",
+      "vibeExecutionLaneContract.implementationEvidence",
+      "developmentLifecycleMachine.nativeGameFoundationValidationStack.cozyIslandIncident",
+      "vibeCodingMethodSelfImprovement.fullCodingAbsorptionAndCapabilityDistillation.implementationPhase3.runtimeVerification",
+      "developmentLifecycleMachine.nativeGameFoundationValidationStack.verification.designAndImplementationEvidence",
+      "vibeCodingMethodSelfImprovement.stagedSourceSynthesis.implementationEvidence",
+      "vibeCodingMethodSelfImprovement.phase3.implementationEvidence",
+      "vibeCodingMethodSelfImprovement.phase2.implementationEvidence",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.corruptedRepairIncident",
+      "supervisedWebGameProduction.firstPilot.assistantCandidate.runtimeValidation.history",
+      "vibeCodingMethodSelfImprovement.phase4.implementationEvidence",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.post1989SourceGenerationFailureAudit",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.verifiedEffectivenessWave",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.latestRelevantQa",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.latestProductionBottleneckEvidence",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.ciRevalidationRuns",
+      "neuralDevelopmentBrain.changeRecord",
+      "developmentLifecycleMachine.sharedWorkerContext.changeRecord",
+      "supervisedWebGameProduction.firstPilot.rejectedCandidate",
+      "vibeCodingMethodSelfImprovement.verification",
+      "vibeCodingMethodSelfImprovement.qaEvidence",
+      "supervisedWebGameProduction.firstPilot.requeue",
+      "supervisedWebGameProduction.firstPilot.negativeLearning",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.malformedFastEscalationCiRuns",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.latestDiagnosticFailureClasses",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.latestDiagnosticRun",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.currentEvaluationRun",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.testCommits",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.sourceCommit",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.workflowTelemetryCommit",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.editMatchFastEscalationSourceCommit",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.editMatchFastEscalationTestCommit"
+    ],
+    "latestArchiveRecord": "company-records/operations/2026/2026-10-01/company/central-policy-archive--central-policy-archive-20261001-ai-v3.json",
+    "latestArchiveRecordId": "central-policy-archive-20261001-ai-v3",
+    "latestArchiveSourceRevision": "d1557c5034aad62560b76b73b4518e1e29c17a04",
+    "latestArchiveAt": "2026-10-01T04:25:00.000Z",
+    "latestArchivePathCount": 37,
+    "softTargetEnforced": true,
+    "candidateCommand": "node tools/company-records-governance.mjs --central-candidates"
   }
 }

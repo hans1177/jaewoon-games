@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import {validateCompanyRecord,scanCompanyRecords} from '../tools/company-records-governance.mjs';
+import {validateCompanyRecord,scanCompanyRecords,extractChangeRecordReferences,classifyCentralChangeRecordRetention,planCentralDocumentArchive,inspectCentralDocument,discoverCentralArchiveCandidates} from '../tools/company-records-governance.mjs';
 
 const root=process.cwd();
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
@@ -106,4 +106,85 @@ test('repository company-record scan keeps record ids unique',()=>{
     const report=scanCompanyRecords();
     assert.ok(report.errors.some(x=>x.startsWith('DUPLICATE_RECORD_ID:duplicate-test-001:')));
   }finally{rm(path.join(root,'company-records/qa/2026'));}
+});
+
+
+test('central policy reference scanner protects direct and optional changeRecord dependencies',()=>{
+  const token='change'+'Record';
+  const refs=extractChangeRecordReferences([
+    'roadmap.'+token+'.alphaRule.enabled',
+    'roadmap.'+token+'?.betaRule?.runner',
+    'roadmap.'+token+'["gammaRule"].status',
+    "roadmap."+token+"['deltaRule'].status"
+  ].join('\n'));
+  assert.deepEqual(refs,['alphaRule','betaRule','deltaRule','gammaRule']);
+});
+
+test('central change record archival requires semantic retirement and never relies on an unreferenced name alone',()=>{
+  const active=classifyCentralChangeRecordRetention('oldLookingName',{status:'ACTIVE_COMPATIBILITY_RECORD',authority:'company-learning/platform-release-roadmap.json#developmentSpeedExecution'});
+  const pending=classifyCentralChangeRecordRetention('historicalLookingName',{status:'CODE_UPDATED_PENDING_QA_AND_LIVE'});
+  const retired=classifyCentralChangeRecordRetention('plainName',{status:'SUPERSEDED',historical:true});
+  const retiredOwner=classifyCentralChangeRecordRetention('ownerRule',{status:'SUPERSEDED',historical:true,authority:'OWNER_DIRECTIVE_2026-09-01'});
+  assert.equal(active.archiveEligible,false);
+  assert.equal(active.policyMeaning,true);
+  assert.equal(pending.archiveEligible,false);
+  assert.equal(retired.archiveEligible,true);
+  assert.equal(retired.reason,'EXPLICIT_HISTORICAL_OR_RETIRED_RECORD');
+  assert.equal(retiredOwner.archiveEligible,true);
+  assert.equal(retiredOwner.policyMeaning,false);
+});
+
+test('central archive plan removes explicit history before unreferenced compatibility records',()=>{
+  const roadmap={
+    centralDocumentRetention:{
+      maxUtf8Bytes:1600,
+      softTargetUtf8Bytes:900,
+      archiveUnreferencedChangeRecords:true,
+      pinnedChangeRecordKeys:['pinnedRule'],
+      historicalArchiveSelectors:['history.largeRun']
+    },
+    changeRecord:{
+      protectedRule:{enabled:true,note:'x'.repeat(220)},
+      pinnedRule:{enabled:true,note:'p'.repeat(220)},
+      activeCompatibility:{status:'ACTIVE_COMPATIBILITY_RECORD',authority:'company-learning/platform-release-roadmap.json#developmentSpeedExecution',note:'a'.repeat(180)},
+      oldRule:{status:'SUPERSEDED',historical:true,note:'o'.repeat(420)}
+    },
+    history:{largeRun:{events:Array.from({length:20},(_,i)=>({i,text:'h'.repeat(40)}))}}
+  };
+  const changeToken='change'+'Record';
+  const protectedKey='protected'+'Rule',pinnedKey='pinned'+'Rule',activeKey='active'+'Compatibility',oldKey='old'+'Rule';
+  const plan=planCentralDocumentArchive({roadmap,protectedChangeRecordKeys:[protectedKey]});
+  assert.ok(plan.archivedPaths.includes('history.largeRun'));
+  assert.equal(plan.roadmap[changeToken][protectedKey].enabled,true);
+  assert.equal(plan.roadmap[changeToken][pinnedKey].enabled,true);
+  assert.equal(plan.roadmap[changeToken][activeKey].status,'ACTIVE_COMPATIBILITY_RECORD');
+  assert.ok(!plan.archivedPaths.includes(changeToken+'.'+protectedKey));
+  assert.ok(!plan.archivedPaths.includes(changeToken+'.'+pinnedKey));
+  assert.ok(!plan.archivedPaths.includes(changeToken+'.'+activeKey));
+  assert.ok(plan.archivedPaths.includes(changeToken+'.'+oldKey));
+  assert.equal(plan.hardLimitSatisfied,true);
+});
+
+test('current central policy stays within hard retention limit and keeps every referenced compatibility record',()=>{
+  const report=inspectCentralDocument();
+  assert.deepEqual(report.errors,[]);
+  assert.ok(report.utf8Bytes<=report.maxUtf8Bytes);
+  assert.deepEqual(report.missingProtectedChangeRecords,[]);
+  assert.ok(report.headroomBytes>=0);
+});
+
+
+test('central candidate discovery reports historical-shaped nested state but never mutates it',()=>{
+  const roadmap={
+    centralDocumentRetention:{historicalArchiveSelectors:[]},
+    currentPolicy:{enabled:true},
+    workerState:{
+      latestRun:{id:123,details:'x'.repeat(700)},
+      currentContract:{enabled:true,details:'y'.repeat(700)}
+    }
+  };
+  const rows=discoverCentralArchiveCandidates({roadmap,minBytes:100,limit:10});
+  assert.ok(rows.some(row=>row.path==='workerState.latestRun'));
+  assert.ok(!rows.some(row=>row.path==='workerState.currentContract'));
+  assert.equal(roadmap.workerState.latestRun.id,123);
 });

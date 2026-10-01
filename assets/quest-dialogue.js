@@ -2,7 +2,7 @@ function clone(value) { return value == null ? value : JSON.parse(JSON.stringify
 function int(value, fallback = 0) { const n = Number(value); return Number.isFinite(n) ? Math.trunc(n) : fallback; }
 
 export class JaewoonQuestDialogue {
-  createState({ quests = {}, flags = {}, npc = {}, story = {}, relationships = {}, memories = {}, clues = {}, facts = {}, factions = {}, factionRelationships = {} } = {}) {
+  createState({ quests = {}, flags = {}, npc = {}, story = {}, relationships = {}, memories = {}, clues = {}, facts = {}, factions = {}, factionRelationships = {}, questProposals = {} } = {}) {
     return {
       quests: clone(quests) || {},
       flags: clone(flags) || {},
@@ -14,6 +14,7 @@ export class JaewoonQuestDialogue {
       facts: clone(facts) || {},
       factions: clone(factions) || {},
       factionRelationships: clone(factionRelationships) || {},
+      questProposals: clone(questProposals) || {},
     };
   }
 
@@ -29,7 +30,167 @@ export class JaewoonQuestDialogue {
     state.facts ||= {};
     state.factions ||= {};
     state.factionRelationships ||= {};
+    state.questProposals ||= {};
     return state;
+  }
+
+  registerActorQuestCandidate(state, candidate = {}, engineProposal = {}) {
+    this.ensureExtendedState(state);
+    if (candidate?.candidateOnly !== true) return { ok: false, reason: 'ACTOR_QUEST_CANDIDATE_REQUIRED' };
+    if (candidate?.acceptanceCompletionRewardPersistentMutation !== 'engine-only') return { ok: false, reason: 'ENGINE_AUTHORITY_CONTRACT_REQUIRED' };
+    if (candidate?.existingDeclaredGameplayCapabilitiesOnly !== true) return { ok: false, reason: 'DECLARED_GAMEPLAY_CAPABILITY_CONTRACT_REQUIRED' };
+    const proposerId = String(candidate.giverOrOrigin || '').trim();
+    const causeEventIds = Array.isArray(candidate.causeEventIds) ? candidate.causeEventIds.map(String).map(value => value.trim()).filter(Boolean) : [];
+    const personalStake = String(candidate.personalStake || '').trim();
+    const worldStake = String(candidate.worldStake || '').trim();
+    const primaryVerb = String(candidate.primaryVerb || '').trim();
+    const branches = Array.isArray(candidate.optionalBranches) ? candidate.optionalBranches.map(String) : [];
+    const id = String(engineProposal.id || '').trim();
+    const whyNow = String(engineProposal.whyNow || '').trim();
+    const objectives = Array.isArray(engineProposal.objectives) ? engineProposal.objectives : [];
+    const allowedObjectiveVerbs = Array.isArray(engineProposal.allowedObjectiveVerbs)
+      ? engineProposal.allowedObjectiveVerbs.map(String).map(value => value.trim()).filter(Boolean)
+      : [];
+    if (!proposerId) return { ok: false, reason: 'PROPOSER_ID_REQUIRED' };
+    if (!causeEventIds.length && !personalStake) return { ok: false, reason: 'ACTOR_QUEST_CAUSE_REQUIRED' };
+    if (!id) return { ok: false, reason: 'ENGINE_PROPOSAL_ID_REQUIRED' };
+    if (!whyNow) return { ok: false, reason: 'ENGINE_WHY_NOW_REQUIRED' };
+    if (!objectives.length) return { ok: false, reason: 'ENGINE_OBJECTIVES_REQUIRED' };
+    if (primaryVerb && !allowedObjectiveVerbs.includes(primaryVerb)) return { ok: false, reason: 'ENGINE_OBJECTIVE_VERB_NOT_DECLARED' };
+
+    const signature = [
+      proposerId,
+      causeEventIds.join(','),
+      personalStake,
+      worldStake,
+      primaryVerb,
+      branches.join(',')
+    ].join('|').toLowerCase();
+    const duplicate = Object.values(state.questProposals).find((proposal) => String(proposal?.meta?.actorCandidateSignature || '') === signature);
+    if (duplicate) return { ok: true, duplicate: true, proposal: clone(duplicate) };
+
+    const sourceEventId = String(engineProposal.sourceEventId || causeEventIds[0] || '').trim();
+    const cause = String(
+      engineProposal.cause
+      || (sourceEventId ? `source-event:${sourceEventId}` : '')
+      || (personalStake ? `personal-goal:${personalStake}` : '')
+    ).trim();
+    const actorGoal = String(engineProposal.actorGoal || personalStake).trim();
+    return this.registerQuestProposal(state, {
+      id,
+      proposerId,
+      class: String(engineProposal.class || 'PERSONAL_SIDE'),
+      title: String(engineProposal.title || id),
+      cause,
+      whyNow,
+      actorGoal,
+      sourceEventId,
+      objectives,
+      requirements: clone(engineProposal.requirements) || {},
+      consequence: clone(engineProposal.consequence) || {},
+      stake: String(engineProposal.stake || worldStake || personalStake),
+      proposalLineIntent: String(engineProposal.proposalLineIntent || 'ask-for-help-in-character'),
+      playerAcceptanceRequired: engineProposal.playerAcceptanceRequired !== false,
+      meta: {
+        ...(clone(engineProposal.meta) || {}),
+        actorCandidateSignature: signature,
+        actorCandidatePrimaryVerb: primaryVerb || null,
+        actorCandidateAllowedObjectiveVerbs: allowedObjectiveVerbs,
+        actorCandidateBranches: branches,
+        actorCandidateCauseEventIds: causeEventIds,
+        actorCandidateOnly: true,
+        engineValidatedProposal: true
+      }
+    });
+  }
+
+  registerQuestProposal(state, proposal = {}) {
+    this.ensureExtendedState(state);
+    const id = String(proposal.id || '').trim();
+    const proposerId = String(proposal.proposerId || '').trim();
+    const cause = String(proposal.cause || '').trim();
+    const whyNow = String(proposal.whyNow || '').trim();
+    const actorGoal = String(proposal.actorGoal || '').trim();
+    const sourceEventId = String(proposal.sourceEventId || '').trim();
+    const objectives = Array.isArray(proposal.objectives) ? proposal.objectives : [];
+    if (!id) return { ok: false, reason: 'PROPOSAL_ID_REQUIRED' };
+    if (!proposerId) return { ok: false, reason: 'PROPOSER_ID_REQUIRED' };
+    if (!cause || !whyNow || !actorGoal) return { ok: false, reason: 'CAUSAL_PERSONAL_CONTEXT_REQUIRED' };
+    if (!objectives.length) return { ok: false, reason: 'OBJECTIVES_REQUIRED' };
+    if (state.questProposals[id]) return { ok: true, duplicate: true, proposal: clone(state.questProposals[id]) };
+    state.questProposals[id] = {
+      id,
+      proposerId,
+      class: String(proposal.class || 'PERSONAL_SIDE').toUpperCase(),
+      title: String(proposal.title || id),
+      status: 'proposed',
+      cause,
+      whyNow,
+      actorGoal,
+      sourceEventId: sourceEventId || null,
+      proposalLineIntent: String(proposal.proposalLineIntent || 'ask-for-help-in-character'),
+      objectives: clone(objectives) || [],
+      requirements: clone(proposal.requirements) || {},
+      consequence: clone(proposal.consequence) || {},
+      stake: String(proposal.stake || ''),
+      meta: clone(proposal.meta) || {},
+      generatedByRuntimeActorAI: true,
+      rewardAuthority: 'engine-only',
+      completionAuthority: 'engine-only',
+      progressionAuthority: 'engine-only',
+      playerAcceptanceRequired: proposal.playerAcceptanceRequired !== false,
+    };
+    return { ok: true, duplicate: false, proposal: clone(state.questProposals[id]) };
+  }
+
+  acceptQuestProposal(state, proposalId, engineDefinition = {}) {
+    this.ensureExtendedState(state);
+    const id = String(proposalId || '').trim();
+    const proposal = state.questProposals[id];
+    if (!proposal || proposal.status !== 'proposed') return { ok: false, reason: 'QUEST_PROPOSAL_NOT_AVAILABLE' };
+    const definition = this.createQuestDefinition({
+      id: String(engineDefinition.id || proposal.id),
+      title: String(engineDefinition.title || proposal.title),
+      class: String(engineDefinition.class || proposal.class),
+      cause: proposal.cause,
+      consequence: clone(engineDefinition.consequence ?? proposal.consequence) || {},
+      requirements: clone(engineDefinition.requirements ?? proposal.requirements) || {},
+      objectives: clone(engineDefinition.objectives ?? proposal.objectives) || [],
+      rewards: clone(engineDefinition.rewards) || [],
+      meta: {
+        ...(clone(proposal.meta) || {}),
+        ...(clone(engineDefinition.meta) || {}),
+        proposerId: proposal.proposerId,
+        sourceEventId: proposal.sourceEventId,
+        whyNow: proposal.whyNow,
+        actorGoal: proposal.actorGoal,
+        generatedFromQuestProposal: proposal.id,
+      }
+    });
+    if (!definition.id) return { ok: false, reason: 'ENGINE_QUEST_ID_REQUIRED' };
+    if (!this.canStartQuest(state, definition)) return { ok: false, reason: 'QUEST_PREREQUISITE_FAILED' };
+    if (!this.startQuest(state, definition)) return { ok: false, reason: 'QUEST_START_REJECTED' };
+    proposal.status = 'accepted';
+    proposal.acceptedQuestId = definition.id;
+    return { ok: true, questId: definition.id, proposal: clone(proposal) };
+  }
+
+  declineQuestProposal(state, proposalId, sourceEvent = '') {
+    this.ensureExtendedState(state);
+    const id = String(proposalId || '').trim();
+    const proposal = state.questProposals[id];
+    if (!proposal || proposal.status !== 'proposed') return { ok: false, reason: 'QUEST_PROPOSAL_NOT_AVAILABLE' };
+    proposal.status = 'declined';
+    proposal.declineSourceEvent = String(sourceEvent || '').trim() || null;
+    return { ok: true, proposal: clone(proposal) };
+  }
+
+  listQuestProposals(state, { proposerId = '', status = '' } = {}) {
+    this.ensureExtendedState(state);
+    return Object.values(state.questProposals)
+      .filter((row) => !proposerId || String(row.proposerId) === String(proposerId))
+      .filter((row) => !status || String(row.status) === String(status))
+      .map(clone);
   }
 
   startQuest(state, definition = {}) {
@@ -217,15 +378,21 @@ export class JaewoonQuestDialogue {
     return true;
   }
 
-  adjustRelationship(state, fromNpcId, toId, delta = {}) {
+  adjustRelationship(state, fromNpcId, toId, delta = {}, sourceEvent = '') {
     this.ensureExtendedState(state);
     const from = String(fromNpcId || '').trim(), to = String(toId || '').trim();
+    const eventId = String(sourceEvent || delta.sourceEvent || delta.eventId || '').trim();
     if (!from || !to) throw new Error('relationship ids are required');
+    if (!eventId) throw new Error('relationship source event is required');
     const key = `${from}->${to}`;
-    const current = state.relationships[key] || { trust: 0, affinity: 0, fear: 0, respect: 0, debt: 0, betrayal: 0 };
+    const current = state.relationships[key] || { trust: 0, affinity: 0, fear: 0, respect: 0, debt: 0, betrayal: 0, events: [] };
+    current.events ||= [];
+    if (current.events.includes(eventId)) return clone(current);
     for (const axis of ['trust','affinity','fear','respect','debt','betrayal']) {
       current[axis] = Math.max(-100, Math.min(100, int(current[axis], 0) + int(delta[axis], 0)));
     }
+    current.events.push(eventId);
+    current.lastCauseEventId = eventId;
     state.relationships[key] = current;
     return clone(current);
   }

@@ -2045,6 +2045,10 @@ jobs:
           if ("sha256:$hash" -ne $expected) { throw "Local Place SHA256 mismatch: sha256:$hash != $expected" }
           $places[0].IsReadOnly = $false
 
+          & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=validate-place "--place=$($places[0].FullName)"
+          if ($LASTEXITCODE -ne 0) { throw 'Local Place rejected by PRE_PLAY_STUDIO_MODAL_GATE before Studio launch' }
+          Write-Host 'ROBLOX_STUDIO_PRE_PLAY_STUDIO_MODAL_GATE=PASS'
+
           $existingStudio = @(Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue)
           if ($existingStudio.Count) {
             Write-Host "ROBLOX_STUDIO_USER_SESSION_PRESERVED=YES:existing=$($existingStudio.Count)"

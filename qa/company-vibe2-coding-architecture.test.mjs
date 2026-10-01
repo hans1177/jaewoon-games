@@ -94,7 +94,7 @@ test('Vibe context binds coding architecture into the existing canonical patch a
   const baseline={content:{coreLoop:['enter','fight','reward']}};
   const existingHtml=`<main><script>function saveGame(){} localStorage.setItem('save-v5','1');const roll=Math.random()</script></main>`;
   const context=buildVibeDevelopmentContext({gameId:'g',genre:'SINGLE_DEFENSE_STRATEGY',baseline,inventory,existingHtml,blockers:['CODING_INVARIANT_VIOLATION'],runtimeEvidence:null});
-  assert.equal(context.version,6);
+  assert.equal(context.version,7);
   assert.equal(context.codingArchitecture.developmentMode,'PRESERVE_PATCH');
   assert.equal(context.codingArchitectureValidation.pass,true);
   assert.equal(context.patchPlan.mode,'PATCH_EXISTING_RESPONSIBLE_SYSTEMS');
