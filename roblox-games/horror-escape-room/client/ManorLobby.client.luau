@@ -150,7 +150,7 @@ open=function(key)
    button(body,item.Name..(unlocked and" · 이야기"or" · 봉인"),function()openStory(item,unlocked and 3 or 0)end)
   end
  elseif key=="DRESS"or key=="SHOP"then
-  panelTitle.Text=key=="DRESS"and"벨라의 의상실"or"벨라의 상점"
+  panelTitle.Text=key=="DRESS"and"장의사의 의상실"or"장의사의 상점"
   label(body,string.format("보유 %d 코인 · 인간과 몬스터 공용 장식",p:GetAttribute("Coins")or 0),36,13)
   if key=="DRESS"then
    label(body,"선택한 귀신으로 저택을 돌아다녀. 경기에서 변신하면 같은 귀신을 사용해.",60,13)
@@ -167,7 +167,7 @@ open=function(key)
     if form.Id==p:GetAttribute("HumanForm")then label(body,"인간 직업 · "..form.Name,32,13);break end
    end
    button(body,"다음 인간 직업",function()send(C.Actions.NEXT_HUMAN)end)
-   button(body,"벨라의 상점",function()open("SHOP")end)
+   button(body,"장의사의 상점",function()open("SHOP")end)
   end
   for _,item in ipairs(C.Cosmetics)do
    if key=="SHOP"or owned(item.Id)then
