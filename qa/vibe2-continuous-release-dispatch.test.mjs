@@ -249,6 +249,19 @@ test('web candidate release blocks inline script syntax and generic storage-cont
 });
 
 
+test('Unity dispatch failure recovery emits QUEUE_UPDATED without undefined result state',()=>{
+  const start=releaseWorkflow.indexOf('  unity-build:');
+  const end=releaseWorkflow.indexOf('\n  roblox-package:',start);
+  assert.ok(start>=0&&end>start);
+  const section=releaseWorkflow.slice(start,end);
+  const recoveryStart=section.indexOf('- name: Recover queue if build dispatch failed');
+  assert.ok(recoveryStart>=0);
+  const recovery=section.slice(recoveryStart);
+  assert.match(recovery,/--arg outcome "QUEUE_UPDATED"/);
+  assert.match(recovery,/VIBE2_EVENT_DRIVEN_DEPENDENCY_REFILL=\$\{TASK_ID:-NONE\}:QUEUE_UPDATED/);
+  assert.doesNotMatch(recovery,/\$result/);
+});
+
 test('candidate release queue recovery always fetches main into an explicit remote-tracking ref',()=>{
   const explicit='git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet';
   const legacy='git -C /tmp/vibe2-control fetch origin main --quiet';
