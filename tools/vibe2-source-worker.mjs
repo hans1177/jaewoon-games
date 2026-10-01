@@ -1669,6 +1669,13 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
     'Repair only defects listed in defects and only inside the current responsible visual files. INTERFACE means only declared HUD/MENU/MINIMAP/INTERACTION presentation. SCENE_OBJECT means only declared required object binding/presentation. Preserve gameplay values, save meaning, multiplayer authority, hit timing, quest/progression rules and unrelated visual systems. Re-capture the same runtime role with the same camera, lighting and state after mutation. Do not close a defect from source markers, declarations, generated files, or a model claim; runtime re-observation is required.',
     '[RUNTIME VISUAL REPAIR END]'
   ].join('\n'):'';
+  const precisionProduction=order.assetProduction?.precisionProduction;
+  const precisionProductionBlock=precisionProduction?[
+    '[PRECISION PRODUCTION CHAIN BEGIN]',
+    JSON.stringify(precisionProduction),
+    'Continue through INSPECT -> DEFINE_REPAIR -> AUTHOR -> APPLY within the current task whenever the responsible source and authoring capability are available. Inspection and repair planning are not terminal outputs. Produce or rebuild editable source plus the target-native derivative, then bind it directly into the existing responsible game system. Build detail in four readable scales: GAME_CAMERA silhouette/function, MID_RANGE structure/parts, CLOSEUP construction/material identity, CONTACT joints/grips/doors/footing/interaction. Every micro-detail needs a functional, construction, contact, weathering, damage, or cultural cause; random clutter/noise is not detail. Do not create a shadow asset path, wrapper binding, or duplicate responsibility. If the authoring tool is genuinely unavailable, leave the exact AUTHOR stage pending with required source/output contract and do not claim the asset was produced.',
+    '[PRECISION PRODUCTION CHAIN END]'
+  ].join('\n'):'';
   let goal=String(order.goal??'');
   const originalLearning=learningGuidance(order.unifiedLearning||{});
   if(learningContract.block&&(originalLearning||goal.includes(VERIFIED_LEARNING_MOTOR_BEGIN))){
@@ -1694,6 +1701,7 @@ presentationWorkerGuidance(order),
 universalAssetWorkerGuidance(order),
 assetDetailBlock,
 runtimeVisualRepairBlock,
+precisionProductionBlock,
 order.imageAssetObservation?.required?'[IMAGE ASSET OBSERVATION BEGIN]\n'+JSON.stringify(order.imageAssetObservation)+'\nVisible observations are proposals from actual pixels. Hidden geometry and motion are creative proposals. Implement editable native assets, then compare close-up/full-turnaround/game-camera/action frames to the source; no placeholder or declaration-only completion.\n[IMAGE ASSET OBSERVATION END]':'',
 studioQualityWorkerGuidance(order),
 gameSpecificBuildUpDirectiveGuidance(order,responsibleFiles),
