@@ -148,16 +148,17 @@ test('central archive plan removes explicit history before unreferenced compatib
     },
     history:{largeRun:{events:Array.from({length:20},(_,i)=>({i,text:'h'.repeat(40)}))}}
   };
-  const protectedKey='protected'+'Rule',pinnedKey='pinned'+'Rule';
+  const changeToken='change'+'Record';
+  const protectedKey='protected'+'Rule',pinnedKey='pinned'+'Rule',activeKey='active'+'Compatibility',oldKey='old'+'Rule';
   const plan=planCentralDocumentArchive({roadmap,protectedChangeRecordKeys:[protectedKey]});
   assert.ok(plan.archivedPaths.includes('history.largeRun'));
-  assert.equal(plan.roadmap.changeRecord[protectedKey].enabled,true);
-  assert.equal(plan.roadmap.changeRecord[pinnedKey].enabled,true);
-  assert.equal(plan.roadmap.changeRecord.activeCompatibility.status,'ACTIVE_COMPATIBILITY_RECORD');
-  assert.ok(!plan.archivedPaths.includes('change'+'Record.'+protectedKey));
-  assert.ok(!plan.archivedPaths.includes('change'+'Record.'+pinnedKey));
-  assert.ok(!plan.archivedPaths.includes('changeRecord.activeCompatibility'));
-  assert.ok(plan.archivedPaths.includes('changeRecord.oldRule'));
+  assert.equal(plan.roadmap[changeToken][protectedKey].enabled,true);
+  assert.equal(plan.roadmap[changeToken][pinnedKey].enabled,true);
+  assert.equal(plan.roadmap[changeToken][activeKey].status,'ACTIVE_COMPATIBILITY_RECORD');
+  assert.ok(!plan.archivedPaths.includes(changeToken+'.'+protectedKey));
+  assert.ok(!plan.archivedPaths.includes(changeToken+'.'+pinnedKey));
+  assert.ok(!plan.archivedPaths.includes(changeToken+'.'+activeKey));
+  assert.ok(plan.archivedPaths.includes(changeToken+'.'+oldKey));
   assert.equal(plan.hardLimitSatisfied,true);
 });
 
