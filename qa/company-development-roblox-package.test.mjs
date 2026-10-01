@@ -85,16 +85,30 @@ test('Roblox package rejects artifacts missing mapped Luau script classes',()=>{
   }
 });
 
-test('Roblox package rejects a place artifact that can reopen as deprecated Compatibility lighting',()=>{
+test('Roblox package rejects artifacts that can reopen as deprecated Compatibility lighting without rewriting supported profiles',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-lighting-guard-'));
   try{
-    const good=path.join(root,'good.rbxlx');
-    fs.writeFileSync(good,'<roblox><Item class="Lighting"><Properties><token name="Technology">1</token><token name="LightingStyle">1</token><bool name="PrioritizeLightingQuality">false</bool></Properties><Item class="ColorGradingEffect"><Properties><string name="Name">CompatibilityToneMap</string><token name="TonemapperPreset">1</token></Properties></Item></Item></roblox>');
-    assert.equal(validateRobloxArtifactLightingMigrationGuard({artifactPath:good}).pass,true);
+    const voxelProject=path.join(root,'voxel.project.json');
+    fs.writeFileSync(voxelProject,JSON.stringify({tree:{Lighting:{$properties:{Technology:'Voxel',LightingStyle:'Soft',PrioritizeLightingQuality:false},CompatibilityToneMap:{$className:'ColorGradingEffect',$properties:{TonemapperPreset:'Retro'}}}}}));
+    const voxelArtifact=path.join(root,'voxel.rbxlx');
+    fs.writeFileSync(voxelArtifact,'<roblox><Item class="Lighting"><Properties><token name="Technology">1</token><token name="LightingStyle">1</token><bool name="PrioritizeLightingQuality">false</bool></Properties><Item class="ColorGradingEffect"><Properties><string name="Name">CompatibilityToneMap</string><token name="TonemapperPreset">1</token></Properties></Item></Item></roblox>');
+    const voxel=validateRobloxArtifactLightingMigrationGuard({artifactPath:voxelArtifact,projectPath:voxelProject});
+    assert.equal(voxel.pass,true);
+    assert.equal(voxel.technology,'Voxel');
+    assert.equal(voxel.expectsRetro,true);
+
+    const futureProject=path.join(root,'future.project.json');
+    fs.writeFileSync(futureProject,JSON.stringify({tree:{Lighting:{$properties:{Technology:'Future',LightingStyle:'Realistic',PrioritizeLightingQuality:true}}}}));
+    const futureArtifact=path.join(root,'future.rbxlx');
+    fs.writeFileSync(futureArtifact,'<roblox><Item class="Lighting"><Properties><token name="Technology">4</token><token name="LightingStyle">0</token><bool name="PrioritizeLightingQuality">true</bool></Properties></Item></roblox>');
+    const future=validateRobloxArtifactLightingMigrationGuard({artifactPath:futureArtifact,projectPath:futureProject});
+    assert.equal(future.pass,true);
+    assert.equal(future.technology,'Future');
+    assert.equal(future.expectsRetro,false);
 
     const bad=path.join(root,'bad.rbxlx');
     fs.writeFileSync(bad,'<roblox><Item class="Lighting"><Properties><token name="LightingStyle">1</token><bool name="PrioritizeLightingQuality">false</bool></Properties></Item></roblox>');
-    assert.throws(()=>validateRobloxArtifactLightingMigrationGuard({artifactPath:bad}),/ROBLOX_LIGHTING_TECHNOLOGY_VOXEL_REQUIRED/);
+    assert.throws(()=>validateRobloxArtifactLightingMigrationGuard({artifactPath:bad,projectPath:voxelProject}),/ROBLOX_LIGHTING_SUPPORTED_TECHNOLOGY_REQUIRED/);
   }finally{
     fs.rmSync(root,{recursive:true,force:true});
   }
