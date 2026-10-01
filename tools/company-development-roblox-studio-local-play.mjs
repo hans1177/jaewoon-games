@@ -2355,9 +2355,16 @@ export async function runOfficialStudioMcpPlay({
     checkpoint('studio-state-readable',true);
 
     const playTool=client.tool('start_stop_play');
-    await client.call('start_stop_play',startStopArgs(playTool.inputSchema||{},studioId,true));
-    started=true;
-    checkpoint('play-mode-started',true);
+    try{
+      await client.call('start_stop_play',startStopArgs(playTool.inputSchema||{},studioId,true));
+      started=true;
+      checkpoint('PRE_PLAY_STUDIO_MODAL_GATE',true);
+      checkpoint('play-mode-started',true);
+    }catch(error){
+      checkpoint('PRE_PLAY_STUDIO_MODAL_GATE',false);
+      const detail=clean(error?.message||error).replace(/\s+/g,' ').slice(0,360);
+      throw new Error('ROBLOX_STUDIO_PRE_PLAY_BLOCKER_ABORT:'+detail);
+    }
     await wait(2500);
 
     if(actualPlayContract?.required===true){
@@ -3049,12 +3056,24 @@ export async function runOfficialStudioMcpPlay({
       signature=(signature+':settingHint=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY').slice(0,500);
       console.log('ROBLOX_STUDIO_MCP_SETTING_HINT=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY');
     }
+    const prePlayStudioBlocker=signature.startsWith('ROBLOX_STUDIO_PRE_PLAY_BLOCKER_ABORT:');
     const deadStart=signature.startsWith('ROBLOX_STUDIO_DEAD_CHARACTER_ABORT:');
     const missingCharacter=signature.startsWith('ROBLOX_STUDIO_MISSING_CHARACTER_ABORT:');
     const floatingWorld=signature.startsWith('ROBLOX_STUDIO_FLOATING_CHARACTER_ABORT:');
     const blockingOverlay=signature.startsWith('ROBLOX_STUDIO_BLOCKING_OVERLAY_ABORT:');
     const missingStartAction=signature.startsWith('ROBLOX_STUDIO_START_ACTION_ABORT:');
-    if(missingCharacter){
+    if(prePlayStudioBlocker){
+      scenarioCoverage.push({id:'pre-play-studio-modal-gate',pass:false,required:true});
+      qualityFailureKinds.push('pre-play-studio-modal-gate');
+      qualityFailureDetails.push({
+        id:'pre-play-studio-modal-gate',
+        repairSurface:'STUDIO_PROJECT_OPEN',
+        priority:'CRITICAL',
+        hint:'Studio is attached and readable but Play could not begin. Treat this as a blocking Studio dialog or lifecycle gate; do not auto-click it. Remove the project/source cause, reopen the exact local place, then rerun Studio QA.',
+        observed:{signature,expectedStudioName:clean(expectedStudioName)}
+      });
+      errors.push({type:'studio-product-pre-play-blocker',actionId:'PRE_PLAY_STUDIO_MODAL_GATE',signature});
+    }else if(missingCharacter){
       scenarioCoverage.push({id:'character-camera-ready',pass:false,required:true});
       qualityFailureKinds.push('character-camera-ready');
       qualityFailureDetails.push({
