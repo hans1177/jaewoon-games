@@ -117,3 +117,16 @@ test('Roblox perceptible v3 work bypasses shallow deterministic cosmetic present
   assert.match(sourceWorker,/experienceRequirements=/);
   assert.match(sourceWorker,/Do not close a player-facing quality gap with source markers, asset binding, style constants/);
 });
+
+
+test('queued legacy BUILD_UP work is upgraded to v3 before reservation, including source-safe Web quality work',()=>{
+  assert.match(planner,/Number\(directive\?\.version\|\|0\)>=3/);
+  assert.match(planner,/experience\?\.perceptiblePlayerEffectRequired===true/);
+  assert.match(planner,/experience\?\.existenceOnlyPassForbidden===true/);
+  assert.match(planner,/experience\?\.bindOnlyPassForbidden===true/);
+  assert.match(planner,/currentDirectiveNeedsContractMigration/);
+  assert.match(planner,/build-up-directive-contract-migration:PERCEPTIBLE_EXPERIENCE_V3/);
+  assert.match(planner,/MIGRATED_LEGACY_DIRECTIVE_TO_PERCEPTIBLE_EXPERIENCE_V3_SAME_GENERATION/);
+  assert.match(planner,/sourceSafeNoDesign=Boolean[\s\S]*project\.engine[\s\S]*PRESENTATION[\s\S]*USABILITY[\s\S]*STABILITY/);
+  assert.match(planner,/PERCEPTIBLE_EXPERIENCE_V3_CONTRACT_BACKFILL/);
+});
