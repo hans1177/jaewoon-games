@@ -15,7 +15,6 @@ on:
       - Public Game Health
       - Unity Hybrid Android Build
       - Unity Android Runtime Smoke
-      - Vibe2 Continuous Core
     types: [completed]
   push:
     branches: [main]
@@ -27,15 +26,6 @@ on:
       - '.github/workflows/company-design-promotion-sync.yml'
       - '.github/workflows/company-development-confirmed-runtime.yml'
       - '.github/workflows/company-development-unity-runtime.yml'
-      - '.github/workflows/vibe2-24h-runner.yml'
-      - '.github/workflows/vibe2-continuous-core.yml'
-      - '.github/workflows/vibe2-core-qa.yml'
-      - 'tools/company-shared-context.mjs'
-      - 'tools/vibe2-central-work-contract.mjs'
-      - 'qa/company-shared-context.test.mjs'
-      - 'qa/vibe2-central-work-contract.test.mjs'
-      - 'qa/vibe2-controller-contract.test.mjs'
-      - 'qa/vibe2-queue-control.test.mjs'
       - '.github/workflows/director-supervisor.yml'
 
 permissions:
@@ -47,9 +37,9 @@ jobs:
     name: drain superseded queued work
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'cancelled'
     concurrency:
-      # Drain is stateless against the latest Actions list; keep only the newest drain.
+      # Preserve an active drain; GitHub coalesces pending runs within the same group.
       group: director-runner-drain-v2
-      cancel-in-progress: true
+      cancel-in-progress: false
     # Queue eviction must not wait behind the saturated slim control pool.
     # Keep game-heavy ubuntu-latest untouched and use the already-allowed fixed 24.04 pool.
     runs-on: ubuntu-24.04
@@ -294,8 +284,8 @@ jobs:
     if: always() && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'cancelled')
     concurrency:
       group: director-game-primary-gate-v1
-      # Gate reads current queue pressure only; a newer gate supersedes an older one.
-      cancel-in-progress: true
+      # Preserve the active fallback gate so queued GAME_PRIMARY work is not starved.
+      cancel-in-progress: false
     runs-on: ubuntu-slim
     outputs:
       defer: ${{ steps.gate.outputs.defer }}
@@ -382,8 +372,7 @@ jobs:
     if: always() && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'cancelled') && (needs.runner-drain.result == 'success' || needs.runner-drain.result == 'skipped') && needs.game-primary-gate.outputs.defer != 'true'
     concurrency:
       group: director-central-company-supervise-v3
-      # Supervision re-reads current main/runtime state, so stale work may be replaced.
-      cancel-in-progress: true
+      cancel-in-progress: false
     runs-on: ubuntu-slim
     timeout-minutes: 8
     steps:
