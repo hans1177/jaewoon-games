@@ -4331,10 +4331,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "REPAIR_REQUIRED",
-      "canonicalState": "REPAIR_REQUIRED",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T16:35:08.077Z",
+      "updatedAt": "2026-10-01T16:40:08.997Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -5810,7 +5810,7 @@
       "unityCandidateBranch": "development/unity-tech-village-dungeons-36794831239",
       "unitySourceCommit": "d72216eef80f68ee91d0b608f1d2373e3a91223e",
       "unityBuildRunId": 36796761382,
-      "unityRuntimeSmokeRunId": 36870511852,
+      "unityRuntimeSmokeRunId": 36893418395,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityInternalReleaseReady": false,
@@ -5827,20 +5827,20 @@
         "buildOrPackagePassed": true,
         "artifactIdentity": "sha256:90bc5bc75e0054b02d92365687fc4f977c82a9f150125156fa17e5939d93dbfe",
         "runtimePassed": false,
-        "independentQaPassed": true,
+        "independentQaPassed": false,
         "multiplayerPassed": true,
-        "regressionPassed": true,
+        "regressionPassed": false,
         "rawStageResults": {
           "runtime": false,
-          "independentQa": false,
-          "regression": false
+          "independentQa": true,
+          "regression": true
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": true,
-        "lastSuccessfulStage": "F9_RELEASE_REGRESSION",
-        "failureStage": null,
-        "failureSignature": null
+        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
+        "failureStage": "F1_SERVER_BOOT",
+        "failureSignature": "2b2442097907ed5f3fd1ea363411c07f18180e3123b86b61ecab02c463f66bfd"
       },
       "resumeStage": "F1_SERVER_BOOT",
       "failureCount": 1,
@@ -6284,7 +6284,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-01T13:44:16.269Z"
+        "verifiedAt": "2026-10-01T16:40:08.997Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -6304,8 +6304,8 @@
         "regressionPassed": false,
         "rawStageResults": {
           "runtime": false,
-          "independentQa": false,
-          "regression": false
+          "independentQa": true,
+          "regression": true
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
@@ -25760,7 +25760,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T16:35:08.077Z",
+  "updatedAt": "2026-10-01T16:40:10.869Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",

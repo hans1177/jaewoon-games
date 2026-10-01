@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": true,
-  "generatedAt": "2026-10-01T16:19:31.405Z",
+  "generatedAt": "2026-10-01T16:40:11.069Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -184,13 +184,12 @@
               "design": true,
               "publication": true,
               "exactRuntime": false,
-              "lobby": false,
+              "lobby": true,
               "movement": true,
               "noRuntimeErrors": true
             },
             "blockers": [
-              "exactRuntime",
-              "lobby"
+              "exactRuntime"
             ],
             "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
             "artifactIdentity": "sha256:ef3b9fd4105437aa70929582c887654c9e204f201005186d573172538e99dd8a",
@@ -258,7 +257,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T15:29:57.664Z"
+      "updatedAt": "2026-10-01T16:26:22.452Z"
     },
     {
       "gameId": "cozy-island",
@@ -512,7 +511,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T16:18:44.313Z"
+      "updatedAt": "2026-10-01T16:22:07.802Z"
     },
     {
       "gameId": "fantasy-survival",
@@ -1165,18 +1164,20 @@
             "checks": {
               "design": true,
               "publication": true,
-              "exactRuntime": true,
+              "exactRuntime": false,
               "lobby": false,
               "movement": false,
-              "noRuntimeErrors": true
+              "noRuntimeErrors": false
             },
             "blockers": [
+              "exactRuntime",
               "lobby",
-              "movement"
+              "movement",
+              "noRuntimeErrors"
             ],
             "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
             "artifactIdentity": "sha256:9e9e4476caf9224d4ec45c9221122d0a47966f1db08288ac11e1c8e36c9751f9",
-            "verifiedAt": "2026-09-28T23:27:40.245Z"
+            "verifiedAt": null
           },
           "historicalInternalRelease": false,
           "internalReleaseState": "NOT_READY",
@@ -1240,7 +1241,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T15:29:57.664Z"
+      "updatedAt": "2026-10-01T16:30:24.011Z"
     },
     {
       "gameId": "seed-idle-growth-rpg-crystal-bloom",
@@ -1991,7 +1992,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T16:18:07.848Z"
+      "updatedAt": "2026-10-01T16:40:08.997Z"
     }
   ]
 }
