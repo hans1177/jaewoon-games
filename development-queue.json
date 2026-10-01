@@ -5329,10 +5329,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "ROBLOX_FINAL_REVIEW_REVALIDATION",
-      "canonicalState": "ROBLOX_RUNTIME_ACCEPTANCE_PASSED",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T18:26:53.101Z",
+      "updatedAt": "2026-10-01T18:29:12.063Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -6666,7 +6666,7 @@
       "unityCandidateBranch": "development/unity-tech-amusement-tycoon-36774290498",
       "unitySourceCommit": "e521068400ed4ffa48301811a35e57ad93f44397",
       "unityBuildRunId": 36777483297,
-      "unityRuntimeSmokeRunId": 36903628294,
+      "unityRuntimeSmokeRunId": 36906951063,
       "unityIndependentQaRunId": 36788904424,
       "unityRegressionRunId": 36789066493,
       "unityInternalReleaseReady": false,
@@ -6688,8 +6688,8 @@
         "regressionPassed": false,
         "rawStageResults": {
           "runtime": false,
-          "independentQa": true,
-          "regression": true
+          "independentQa": false,
+          "regression": false
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
@@ -7056,7 +7056,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-01T18:03:42.184Z"
+        "verifiedAt": "2026-10-01T18:29:12.063Z"
       },
       "unityF9ReleaseRegressionPassed": false,
       "unityF9ReleaseRegressionPassedAt": null,
@@ -7075,8 +7075,8 @@
         "regressionPassed": false,
         "rawStageResults": {
           "runtime": false,
-          "independentQa": true,
-          "regression": true
+          "independentQa": false,
+          "regression": false
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
@@ -22438,7 +22438,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T18:27:24.295Z",
+  "updatedAt": "2026-10-01T18:29:15.145Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
