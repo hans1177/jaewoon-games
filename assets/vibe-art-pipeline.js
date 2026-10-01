@@ -4,10 +4,11 @@
 
 import {planVibeStyleAwareGraphicsAutopilot,planVibeVisualAutopilot} from './vibe-visual-autopilot.js';
 import {planVibePresentationAutopilot} from './vibe-presentation-director.js';
-import {auditVibeRuntimeVisualEvidence} from './vibe-visual-quality-gate.js';
+import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison,auditVibeHighEndTargetFrameEvidence} from './vibe-visual-quality-gate.js';
 import {createMotionDirectorPlan,MOTION_COMPOSITION_CHANNELS,MOTION_DNA_FIELDS,MOTION_LIBRARY_GRAPH_NODES,MOTION_GRAMMARS} from './vibe-motion-director.js';
 import {createStudioAssetUniversePlan,STUDIO_ASSET_UNIVERSE_TARGET,STUDIO_ASSET_FAMILIES,CREATURE_BODY_PLANS,CREATURE_SPECIES,CLOTHING_LAYER_SLOTS,BIOME_FAMILIES,BUILDING_THEMES} from './vibe-studio-asset-universe.js';
-import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation} from './vibe-environment-director.js';
+import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from './vibe-environment-director.js';
+import {planVibeCharacterIdentityAutopilot} from './vibe-character-identity-director.js';
 
 const QUALITY_WORDS = Object.freeze({
   art: ['그래픽', '그림', '비주얼', '캐릭터', '곤충', '배경', '에셋', '퀄리티', '고퀄'],
@@ -31,7 +32,9 @@ export const GRAPHICS_PRODUCTION_INTERNAL_MODULES=Object.freeze({
   presentation:'assets/vibe-presentation-director.js',
   runtimeQuality:'assets/vibe-visual-quality-gate.js',
   motionDirector:'assets/vibe-motion-director.js',
-  studioAssetUniverse:'assets/vibe-studio-asset-universe.js'
+  studioAssetUniverse:'assets/vibe-studio-asset-universe.js',
+  environmentDirector:'assets/vibe-environment-director.js',
+  characterIdentity:'assets/vibe-character-identity-director.js'
 });
 export const GRAPHICS_PRODUCTION_STAGES=Object.freeze([
   'ART_DIRECTION_AND_VISUAL_TARGET_LOCK',
@@ -313,6 +316,8 @@ export function createVibeArtPipeline({ request = '', target = 'auto', style = n
   if (needsArt) steps.push('허용 에셋은 원본을 보존한 채 V3 변형 후보를 최소 3개 독립 생성하고 각각 별도 derived 경로에 저장');
   if (needsArt) steps.push('변형 후보를 스타일 일관성·실루엣 가독성·시각 품질·애니메이션 준비도·모바일 성능으로 실제 화면 비교 후 1개만 채택');
   if (needsArt) steps.push('모든 Unity/Roblox 네이티브 게임은 회사 라이브러리를 먼저 조회하고, 같은 게임/회사 검증 자산 → 라이선스 검증 기존 저장소 → 라이선스 검증 외부 에셋·모션 → 리타겟/클린업 → 신규 제작 순서로 부족한 부분을 채운다');
+  if (needsArt) steps.push('사용 가능한 target-compatible 자산은 신규 제작보다 먼저 실제 게임 책임 위치에 적용한다. 같은 게임에 이미 바인딩된 자산은 품질이 비슷하면 통합비용이 가장 낮은 후보로 우선하고, 실제 게임 카메라에서 부족한 부위만 파생 재제작한다');
+  if (needsArt) steps.push('기존 자산 전체를 버리고 다시 만드는 대신 실루엣/구조/재질/리그/접촉/LOD 중 약한 책임만 파생본으로 재authoring하고 원본은 불변으로 유지한다');
   if (needsArt) steps.push('외부 에셋·모션은 다운로드만으로 회사 자산이 되지 않는다. 출처·라이선스·변형 이력을 보존하고 플랫폼 네이티브 적용과 실제 런타임·모바일 QA를 통과한 뒤에만 승격한다');
   if (needsArt) steps.push('Studio Asset Universe에서 CHARACTER/CREATURE/BUILDING/ENVIRONMENT/WEAPON/SKILL/MATERIAL/AUDIO/VFX/UI/MOTION/PROP 전체 Coverage를 스캔하고 실제 게임 수요·Style Lock·플랫폼 기준의 최대 gap부터 채운다');
   if (needsArt) steps.push('모든 Vibe 네이티브 업그레이드는 12개 에셋 계열을 전부 평가하고, 기존 게임에 존재하는 계열은 실제 책임 소스에 APPLIED로 바인딩한다. 배경·지형·건물·마을·학교·상점·랜드마크·소품은 ENVIRONMENT/BUILDING/PROP 실제 에셋 사용을 요구하며 마커/색상/단일 primitive만으로 완료 처리하지 않는다');
@@ -349,6 +354,9 @@ export function createVibeArtPipeline({ request = '', target = 'auto', style = n
   steps.push('모바일 해상도에서 실루엣 가독성·디테일·성능을 확인하고 필요 시 표현만 단순화');
   steps.push('에셋 라이선스·출처·귀속·경로·참조 무결성 검사');
   steps.push('실제 게임 화면에서 시각 품질·모션 가독성·VFX 과밀도를 비교하고 부족하면 표현 계층만 재수정');
+  steps.push('실제 런타임 전/후 캡처를 같은 카메라·조명·상태에서 비교하고 결함을 ENVIRONMENT/COHESION/PRESENTATION/INTERFACE/SCENE_OBJECT 단위로 분해해 책임 범위만 다시 수정');
+  steps.push('HUD·메뉴·미니맵·상호작용은 게임별 요구된 표면만 선언하고 모바일 런타임에서 실제 관찰·검토된 경우에만 완료 처리');
+  steps.push('디자인·맵·실제 화면을 대조해 선언된 필수 오브젝트가 실제 장면에 바인딩됐는지 확인하고 누락은 게임 규칙을 바꾸지 않는 시각 오브젝트 보완으로만 되돌림');
   steps.push('GRAPHICS_PASS는 현재 표현 범위의 검증 체크포인트로만 기록하고 내부/공개 출시 뒤에도 다음 증거와 사용자 수정요청에 따라 계속 발전');
   const godot = target === 'godot' || /godot|고도|\.gd|씬/i.test(prompt);
   const web = target === 'web' || /웹|브라우저|html|javascript/i.test(prompt);
@@ -567,7 +575,13 @@ export function createVibeGraphicsProduction({
   visualTargetFramesRef='',
   previousOwnerRequests=[],
   affectedScopes=[],
-  referenceImages=[]
+  referenceImages=[],
+  characterEvents={},
+  mapDetailInput=null,
+  runtimeBeforeAfterEvidence=null,
+  interfaceRequirements=[],
+  sceneObjectRequirements=[],
+  engineMeasurementCapture=null
 }={}){
   const platforms=graphicsProductionPlatforms(target);
   const changeRequestStability=createVibeOwnerChangeRequestStability({request,previousRequests:previousOwnerRequests,affectedScopes});
@@ -575,6 +589,8 @@ export function createVibeGraphicsProduction({
   const visualDirection=planVibeStyleAwareGraphicsAutopilot({game,world,characters,platform:platforms.length===2?'mobile':String(platforms[0]||'mobile').toLowerCase()});
   const visualWork=planVibeVisualAutopilot({files,graph,request});
   const presentation=planVibePresentationAutopilot({files,events,request,changeRequest:changeRequestStability});
+  const characterIdentity=planVibeCharacterIdentityAutopilot({characters,eventMap:characterEvents||{}});
+  const mapDetail=mapDetailInput&&typeof mapDetailInput==='object'?createVibeMapDetailReconstruction(mapDetailInput):null;
   const assetPlanBound=assetProductionPlan?.kind==='vibe2-asset-production-plan';
   const referenceImageStudies=Object.freeze((referenceImages||[]).map((row,index)=>{
     const request=createVibeReferenceImageStudyRequest({
@@ -589,8 +605,43 @@ export function createVibeGraphicsProduction({
     }):null;
     return Object.freeze({request,observation});
   }));
-  const runtimeAudit=runtimeEvidence&&Object.keys(runtimeEvidence).length?auditVibeRuntimeVisualEvidence(runtimeEvidence):null;
-  const status=runtimeAudit?(runtimeAudit.pass?'GRAPHICS_PASS':'ASSET_REPAIR_REQUIRED'):'GRAPHICS_PRODUCTION_ACTIVE';
+  const interfaceSource=(interfaceRequirements||[]).length?interfaceRequirements:(game?.interfaceRequirements||game?.uiRequirements||[]);
+  const requiredInterfaceSurfaces=Object.freeze(unique((interfaceSource||[]).map(row=>typeof row==='string'?row:row?.surface||row?.id).map(value=>String(value||'').trim().toUpperCase()).filter(value=>['HUD','MENU','MINIMAP','INTERACTION'].includes(value))));
+  const sceneSource=(sceneObjectRequirements||[]).length?sceneObjectRequirements:(world?.requiredObjects||game?.requiredSceneObjects||[]);
+  const sceneRequirements=Object.freeze((sceneSource||[]).map(row=>typeof row==='string'?Object.freeze({id:row,required:true}):Object.freeze({...row})).filter(row=>clean(row?.id)));
+  const runtimeEvidenceBase=runtimeEvidence&&typeof runtimeEvidence==='object'?runtimeEvidence:{};
+  const runtimeEvidenceBound=(Object.keys(runtimeEvidenceBase).length||requiredInterfaceSurfaces.length||sceneRequirements.length||runtimeBeforeAfterEvidence)?{
+    ...runtimeEvidenceBase,
+    ...(requiredInterfaceSurfaces.length?{requiredInterfaceSurfaces}:{}),
+    ...(sceneRequirements.length?{sceneObjectCoverage:{...(runtimeEvidenceBase.sceneObjectCoverage||{}),requirements:sceneRequirements}}:{}),
+    ...(runtimeBeforeAfterEvidence?{visualRegression:runtimeBeforeAfterEvidence}:{})
+  }:null;
+  const runtimeAudit=runtimeEvidenceBound?auditVibeRuntimeVisualEvidence(runtimeEvidenceBound):null;
+  const beforeAfterAudit=runtimeEvidenceBound?.visualRegression?auditVibeRuntimeBeforeAfterComparison(runtimeEvidenceBound.visualRegression):null;
+  const highEndFrameAudit=runtimeEvidenceBound&&(runtimeEvidenceBound.highEndVisualRequired===true||String(runtimeEvidenceBound.qualityProfile||'').toUpperCase()==='HIGH_END_COMMERCIAL_NATIVE_PRESENTATION')?auditVibeHighEndTargetFrameEvidence(runtimeEvidenceBound):null;
+  const runtimeRepairLoop=runtimeAudit?Object.freeze({
+    status:runtimeAudit.pass?'VERIFIED_CHECKPOINT':'RUNTIME_VISUAL_REPAIR_REQUIRED',
+    defects:Object.freeze([...(runtimeAudit.repairTargets||[])]),
+    beforeAfter:beforeAfterAudit,
+    highEndFrames:highEndFrameAudit,
+    sameCaptureConditionsRequired:true,
+    changedVisualResponsibilityOnly:true,
+    gameplaySaveBalanceMutationForbidden:true,
+    recaptureAfterEveryRepair:true,
+    closeOnlyAfterRuntimeReobservation:true
+  }):Object.freeze({status:'RUNTIME_EVIDENCE_PENDING',defects:Object.freeze([]),sameCaptureConditionsRequired:true,recaptureAfterEveryRepair:true,closeOnlyAfterRuntimeReobservation:true});
+  const measurementCapture=Object.freeze({
+    required:Boolean(artSpec.animation?.required||artSpec.highEndVisual?.required),
+    provided:Boolean(engineMeasurementCapture&&typeof engineMeasurementCapture==='object'&&Object.keys(engineMeasurementCapture).length),
+    automatic:engineMeasurementCapture?.automatic===true,
+    sourceHash:clean(engineMeasurementCapture?.sourceHash)||null,
+    captureHash:clean(engineMeasurementCapture?.captureHash)||null,
+    platform:clean(engineMeasurementCapture?.platform)||null,
+    channels:Object.freeze([...(engineMeasurementCapture?.channels||[])]),
+    missingCaptureRemainsUnverified:true,
+    captureDeclarationAloneCannotCloseDefect:true
+  });
+  const status=runtimeAudit?(runtimeAudit.pass?'GRAPHICS_PASS':'RUNTIME_VISUAL_REPAIR_REQUIRED'):'GRAPHICS_PRODUCTION_ACTIVE';
   const evidence=createVibeGraphicsProductionEvidenceRoot({
     gameId,candidateRevision,sourceRevision,platformEvidenceRefs,assetProvenanceRefs,artBibleRef,visualTargetFramesRef,runtimeAudit
   });
@@ -613,12 +664,18 @@ export function createVibeGraphicsProduction({
     visualDirection,
     visualWork,
     presentation,
+    characterIdentity,
+    mapDetail,
     referenceImageStudies,
     referenceImageObservationReadyCount:referenceImageStudies.filter(row=>row.request.ready&&row.observation?.valid).length,
     verifiedReferenceImageObservationCount:referenceImageStudies.filter(row=>row.observation?.verifiedAgainstSource===true).length,
     changeRequestStability,
     continuousEvolution:Object.freeze({enabled:true,graphicsPassIsCheckpointNotTerminal:true,continuesAfterInternalRelease:true,continuesAfterPublicRelease:true,highEndCompletionIsReleaseGate:false}),
     runtimeAudit,
+    runtimeRepairLoop,
+    engineMeasurementCapture:measurementCapture,
+    interfaceRequirements:requiredInterfaceSurfaces,
+    sceneObjectRequirements:sceneRequirements,
     evidence,
     queue:Object.freeze({
       siblingTopLevelGraphicsTasksForbidden:true,
@@ -652,7 +709,15 @@ export function createVibeGraphicsProduction({
       rightsVerifiedReferenceImageObservationSupported:true,
       rawProtectedReferenceImagePersistentLearningForbidden:true,
       directReferenceSceneOrMapCopyForbidden:true,
-      referenceObservationIsProposalUntilVerifiedAgainstSource:true
+      referenceObservationIsProposalUntilVerifiedAgainstSource:true,
+      runtimeVisualRepairLoopRequired:true,
+      runtimeBeforeAfterComparisonRequiredForHighEnd:true,
+      declaredInterfaceSurfacesRequireMobileRuntimeEvidence:true,
+      declaredSceneObjectsRequireRuntimeBindingEvidence:true,
+      characterIdentityDirectorIntegrated:true,
+      environmentDetailDirectorIntegrated:true,
+      engineMeasurementCaptureRequired:true,
+      missingEngineMeasurementRemainsUnverified:true
     })
   });
 }

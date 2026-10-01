@@ -1527,8 +1527,6 @@ export async function observeAssetReferenceImages({order={},cwd=process.cwd(),mo
   if(!observations.length)throw new Error('IMAGE_ASSET_REFERENCE_REQUIRED');
   return{required:true,observations,runtimeVerified:false};
 }
-
-// Roblox Studio / Unity / APK / Web의 실제 캡처 픽셀을 판독해 현재 작업의 제한된 시각 수정 입력으로 되돌린다.
 export async function observeAssetRuntimeCaptures({order={},cwd=process.cwd(),model=clean(process.env.VIBE2_VISION_MODEL),requestModel=requestLocalModel}={}){
   const review=order.assetProduction?.runtimeVisualReview;
   if(!review?.enabled)return{required:false,status:'NOT_REQUIRED',captures:[],repairs:[],runtimeVerified:false};
@@ -1768,6 +1766,27 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
     'Repair only the measured regions and listed editableParameters against the exact sourceHash and previousParameters. Preserve lockedParameters, identityAnchors, untouched parameter values, gameplay event times, clip duration and root authority. Missing measurements remain UNVERIFIED; unmeasuredGroups are not inspected. Re-measure and recapture after authoring; do not mark findings closed from declarations or a numeric trace PASS.',
     '[ASSET DETAIL REPAIR END]'
   ].join('\n'):'';
+  const runtimeVisualRepair=order.assetProduction?.runtimeVisualRepair;
+  const runtimeVisualRepairBlock=runtimeVisualRepair?[
+    '[RUNTIME VISUAL REPAIR BEGIN]',
+    JSON.stringify(runtimeVisualRepair),
+    'Repair only defects listed in defects and only inside the current responsible visual files. INTERFACE means only declared HUD/MENU/MINIMAP/INTERACTION presentation. SCENE_OBJECT means only declared required object binding/presentation. Preserve gameplay values, save meaning, multiplayer authority, hit timing, quest/progression rules and unrelated visual systems. Re-capture the same runtime role with the same camera, lighting and state after mutation. Do not close a defect from source markers, declarations, generated files, or a model claim; runtime re-observation is required.',
+    '[RUNTIME VISUAL REPAIR END]'
+  ].join('\n'):'';
+  const applyFirst=order.assetProduction?.applyFirstSummary;
+  const applyFirstBlock=applyFirst?.enabled?[
+    '[APPLY USABLE ASSETS FIRST BEGIN]',
+    JSON.stringify({summary:applyFirst,decisions:(order.assetProduction?.decisions||[]).map(row=>({type:row.type,applyFirst:row.applyFirst}))}),
+    'Use target-compatible assets that already have a real path, native variant, or existing same-game binding before starting new authoring. When quality is comparable, prefer the candidate with the lowest integration cost, especially an already-bound same-game asset. Apply it into the existing responsible game system first. Judge quality by explicit axes such as silhouette, proportion, anatomy/structure, face-hands-feet, material response, rig, sockets, motion, secondary motion, LOD and UI states. Keep strong axes and rebuild only failed axes. Other compatible candidates may donate parts, rig structure, material language, sockets, motion, or native variants; recombine them only when compatibility and provenance are preserved. Build detail from GAME_CAMERA to MID_RANGE to CLOSEUP to CONTACT. Random clutter, texture noise, excessive decals, or extra polygons without construction/function/contact cause do not count as detail. Preserve the original asset and gameplay semantics. A verified or production-safe asset is not automatically high visual quality. Spend detail effort first on assets with high screen-space occupancy, player dwell time, interaction frequency, hero/boss/signature role, camera proximity, repeated visibility, or gameplay readability needs. Distant or rare assets may use simpler LOD/material detail. Polygon count, texture size, or verification status alone must not decide visual quality. Full new authoring is last, only when core identity or structural quality remains blocked after targeted derivation and candidate reuse.',
+    '[APPLY USABLE ASSETS FIRST END]'
+  ].join('\n'):'';
+  const precisionProduction=order.assetProduction?.precisionProduction;
+  const precisionProductionBlock=precisionProduction?[
+    '[PRECISION PRODUCTION CHAIN BEGIN]',
+    JSON.stringify(precisionProduction),
+    'Continue through INSPECT -> DEFINE_REPAIR -> AUTHOR -> APPLY within the current task whenever the responsible source and authoring capability are available. Inspection and repair planning are not terminal outputs. Produce or rebuild editable source plus the target-native derivative, then bind it directly into the existing responsible game system. Build detail in four readable scales: GAME_CAMERA silhouette/function, MID_RANGE structure/parts, CLOSEUP construction/material identity, CONTACT joints/grips/doors/footing/interaction. Every micro-detail needs a functional, construction, contact, weathering, damage, or cultural cause; random clutter/noise is not detail. Do not create a shadow asset path, wrapper binding, or duplicate responsibility. If the authoring tool is genuinely unavailable, leave the exact AUTHOR stage pending with required source/output contract and do not claim the asset was produced.',
+    '[PRECISION PRODUCTION CHAIN END]'
+  ].join('\n'):'';
   const runtimeVisual=order.runtimeVisualObservation;
   const runtimeVisualBlock=runtimeVisual?.required?[
     '[RUNTIME VISUAL REVIEW BEGIN]',
@@ -1807,6 +1826,9 @@ presentationWorkerGuidance(order),
 universalAssetWorkerGuidance(order),
 assetDetailBlock,
 runtimeVisualBlock,
+runtimeVisualRepairBlock,
+applyFirstBlock,
+precisionProductionBlock,
 order.imageAssetObservation?.required?'[IMAGE ASSET OBSERVATION BEGIN]\n'+JSON.stringify(order.imageAssetObservation)+'\nVisible observations are proposals from actual pixels. Hidden geometry and motion are creative proposals. Implement editable native assets, then compare close-up/full-turnaround/game-camera/action frames to the source; no placeholder or declaration-only completion.\n[IMAGE ASSET OBSERVATION END]':'',
 studioQualityWorkerGuidance(order),
 gameSpecificBuildUpDirectiveGuidance(order,responsibleFiles),
