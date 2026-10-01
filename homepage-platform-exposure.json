@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": true,
-  "generatedAt": "2026-10-01T14:29:33.332Z",
+  "generatedAt": "2026-10-01T14:36:51.904Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -1741,7 +1741,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T14:29:29.960Z"
+      "updatedAt": "2026-10-01T14:36:49.902Z"
     },
     {
       "gameId": "survival",
@@ -1915,14 +1915,12 @@
               "design": true,
               "publication": true,
               "exactRuntime": false,
-              "lobby": false,
+              "lobby": true,
               "movement": true,
-              "noRuntimeErrors": false
+              "noRuntimeErrors": true
             },
             "blockers": [
-              "exactRuntime",
-              "lobby",
-              "noRuntimeErrors"
+              "exactRuntime"
             ],
             "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
             "artifactIdentity": "sha256:979513fcc1e8220add6098a6dfaf682d401fcad9a0e2214d03283a44772f3d31",
@@ -1990,7 +1988,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T13:44:16.269Z"
+      "updatedAt": "2026-10-01T14:33:18.867Z"
     }
   ]
 }
