@@ -1982,3 +1982,21 @@ test('central document has a bounded current-policy budget and archives historic
   assert.equal(policy.f0ThroughF9MustRemain,true);
   assert.equal(policy.publicationApprovalMustRemain,true);
 });
+
+
+test('owner scope release returns horror-escape-room to shared perpetual Roblox F0-F9 without reset',()=>{
+  const owner=roadmap.ownerCanonicalRules?.ownerExclusiveDevelopment;
+  const historical=roadmap.changeRecord?.ownerExclusiveDirectDevelopment20260930;
+  assert.equal(owner?.status,'INACTIVE_OWNER_RELEASED');
+  assert.deepEqual(owner?.gameIds,[]);
+  assert.ok(owner?.releasedGameIds?.includes('horror-escape-room'));
+  assert.equal(owner?.releaseAuthority,'OWNER_DIRECTIVE_2026-10-01');
+  assert.equal(owner?.handoff?.scope,'NONE_ACTIVE');
+  assert.equal(owner?.handoff?.resumeTrigger,'EXPLICIT_OWNER_SCOPE_RELEASE');
+  assert.equal(owner?.handoff?.resumeExistingSourceAndQueue,true);
+  assert.equal(owner?.handoff?.sourceAndSaveResetForbidden,true);
+  assert.equal(historical?.status,'SUPERSEDED_BY_OWNER_SCOPE_RELEASE_2026-10-01');
+  assert.equal(historical?.resumeMode,'RETURN_HORROR_ESCAPE_ROOM_TO_SHARED_PERPETUAL_F0_F9');
+  assert.equal(Object.keys(roadmap.changeRecord||{}).length,roadmap.centralDocumentRetention.maxChangeRecordEntries);
+  assert.ok(roadmap.changeRecord?.assetFineMotionAndRetryDetail20261001);
+});
