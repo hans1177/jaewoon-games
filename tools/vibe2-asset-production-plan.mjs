@@ -537,6 +537,66 @@ function directAuthoringFor(target='',type=''){
   return freezeList([]);
 }
 
+function qualityDnaForType(type=''){
+  const kind=clean(type).toLowerCase();
+  const profile=/character|player|npc/.test(kind)?'HERO_CHARACTER'
+    :/boss/.test(kind)?'HERO_BOSS'
+    :/enemy|creature/.test(kind)?'FOREGROUND_CREATURE'
+    :/background|environment/.test(kind)?'REGION_WORLD'
+    :/item|weapon/.test(kind)?'INTERACTIVE_EQUIPMENT'
+    :/prop/.test(kind)?'FUNCTIONAL_PROP'
+    :/ui/.test(kind)?'INTERFACE'
+    :/animation|motion/.test(kind)?'MOTION'
+    :'GENERAL_VISUAL';
+  const axes=/character|player|npc/.test(kind)
+    ?['SILHOUETTE','PROPORTION','ANATOMY','FACE_HANDS_FEET','CLOTHING_EQUIPMENT_FIT','MATERIAL','RIG','SOCKET','MOTION','SECONDARY_MOTION','LOD']
+    :/boss|enemy|creature/.test(kind)
+      ?['SPECIES_SILHOUETTE','BODY_PLAN','HEAD_MOUTH_EYES','LIMB_APPENDAGE_STRUCTURE','SURFACE_MATERIAL','RIG','ATTACK_CONTACT','LOCOMOTION','HIT_DEATH_MOTION','LOD']
+      :/background|environment/.test(kind)
+        ?['MACRO_FORM','LANDMARK','ROUTE_READABILITY','STRUCTURAL_DENSITY','VEGETATION','FUNCTIONAL_PROPS','MATERIAL_HISTORY','AMBIENT_MOTION','STREAMING_LOD']
+        :/item|weapon|prop/.test(kind)
+          ?['PROFILE','PROPORTION','PART_CONSTRUCTION','GRIP_PIVOT','MATERIAL','FASTENERS','CONTACT','WEAR','LOD']
+          :/ui/.test(kind)
+            ?['INFORMATION_HIERARCHY','SHAPE_LANGUAGE','ICON_SILHOUETTE','TYPOGRAPHY_SPACING','MATERIAL_DEPTH','STATE_VARIANTS','TOUCH_FEEDBACK','SMALL_SIZE_READABILITY']
+            :/animation|motion/.test(kind)
+              ?['POSE_IDENTITY','WEIGHT_TRANSFER','CONTACT','ROOT_MOTION','TRANSITION','INTERRUPT','SECONDARY_MOTION','REACTION','LOD']
+              :['SILHOUETTE','PROPORTION','STRUCTURE','MATERIAL','CONTACT','PLATFORM_PRESENTATION'];
+  const hero=['HERO_CHARACTER','HERO_BOSS','INTERACTIVE_EQUIPMENT','INTERFACE'].includes(profile);
+  const floors=Object.freeze(Object.fromEntries(axes.map(axis=>[axis,hero?'HERO_GRADE':'GAMEPLAY_READABLE_GRADE'])));
+  return freeze({
+    version:1,
+    profile,
+    axes:freezeList(axes),
+    minimumFloors:floors,
+    detailLod:Object.freeze({
+      GAME_CAMERA:'PRIMARY_IDENTITY_AND_FUNCTION_MUST_READ',
+      MID_RANGE:'SECONDARY_STRUCTURE_AND_PART_BREAKDOWN_REQUIRED',
+      CLOSEUP:'CONSTRUCTION_MATERIAL_AND_IDENTITY_DETAIL_REQUIRED',
+      CONTACT:'FUNCTIONAL_CONTACT_JOINT_GRIP_FASTENER_OR_INTERACTION_DETAIL_REQUIRED'
+    }),
+    donorPolicy:Object.freeze({
+      donorMayReplaceOnlyFailedAxes:true,
+      donorMustPreserveStyleIdentity:true,
+      donorMustPreserveSourceProvenance:true,
+      donorCannotOverrideLockedIdentityAnchors:true,
+      mixedDonorAssemblyRequiresCompatibility:true
+    }),
+    evidence:Object.freeze({
+      actualRuntimeCaptureRequiredForVisualClosure:true,
+      sourceHashRequiredForDerivedRepair:true,
+      verificationStatusIsNotVisualQuality:true,
+      polygonTextureCountIsNotQuality:true,
+      declarationOnlyPassForbidden:true
+    }),
+    rescue:Object.freeze({
+      preservePassingAxes:true,
+      repairFailedAxesOnly:true,
+      fullReauthorOnlyAfterTargetedRepairFails:true,
+      randomDetailInflationForbidden:true
+    })
+  });
+}
+
 function assetApplyFirstCandidate(asset={},target='',binding={}){
   const platform=clean(target).toLowerCase();
   const variant=asset?.platformVariants?.[platform.toUpperCase()]||asset?.platformVariants?.[platform]||null;
@@ -557,19 +617,8 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
     +Math.min(20,roleMatches*6)
     +(asset.sourceHash?5:0)
     +(asset.retargetable===true?5:0);
-  const qualityAxes=/character|player|npc/i.test(requestedType)
-    ?['SILHOUETTE','PROPORTION','ANATOMY','FACE_HANDS_FEET','CLOTHING_EQUIPMENT_FIT','MATERIAL','RIG','SOCKET','MOTION','SECONDARY_MOTION','LOD']
-    :/enemy|boss|creature/i.test(requestedType)
-      ?['SPECIES_SILHOUETTE','BODY_PLAN','HEAD_MOUTH_EYES','LIMB_APPENDAGE_STRUCTURE','SURFACE_MATERIAL','RIG','ATTACK_CONTACT','LOCOMOTION','HIT_DEATH_MOTION','LOD']
-      :/background|environment/i.test(requestedType)
-        ?['MACRO_FORM','LANDMARK','ROUTE_READABILITY','STRUCTURAL_DENSITY','VEGETATION','FUNCTIONAL_PROPS','MATERIAL_HISTORY','AMBIENT_MOTION','STREAMING_LOD']
-        :/item|weapon|prop/i.test(requestedType)
-          ?['PROFILE','PROPORTION','PART_CONSTRUCTION','GRIP_PIVOT','MATERIAL','FASTENERS','CONTACT','WEAR','LOD']
-          :/ui/i.test(requestedType)
-            ?['INFORMATION_HIERARCHY','SHAPE_LANGUAGE','ICON_SILHOUETTE','TYPOGRAPHY_SPACING','MATERIAL_DEPTH','STATE_VARIANTS','TOUCH_FEEDBACK','SMALL_SIZE_READABILITY']
-            :/animation|motion/i.test(requestedType)
-              ?['POSE_IDENTITY','WEIGHT_TRANSFER','CONTACT','ROOT_MOTION','TRANSITION','INTERRUPT','SECONDARY_MOTION','REACTION','LOD']
-              :['SILHOUETTE','PROPORTION','STRUCTURE','MATERIAL','CONTACT','PLATFORM_PRESENTATION'];
+  const qualityDNA=qualityDnaForType(requestedType);
+  const qualityAxes=qualityDNA.axes;
   const donorCapabilities=freezeList(unique([
     asset.sourceHash?'GEOMETRY_OR_SOURCE_DONOR':'',
     asset.rigType?'RIG_DONOR':'',
@@ -595,6 +644,7 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
     adaptationAxes:freezeList(lane==='C_MINIMAL_ADAPT'?['RIG_RETARGET','MATERIAL_REMAP','SOCKET_REBIND','SCALE_AXIS_PIVOT_NORMALIZE','LOD_GENERATION']:[]),
     qualityPassRequiredBeforeKeep:true,
     runtimeCheckRequiredAfterApply:true,
+    qualityDNA,
     qualityAxes:freezeList(qualityAxes),
     donorCapabilities,
     detailFloor:Object.freeze({
@@ -630,6 +680,7 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
 }
 function decisionFor(selector={},target='',binding={},manifest={}){
   const type=clean(binding.type);
+  const qualityDNA=qualityDnaForType(type);
   const matched=matchedForType(selector,type,manifest,target);
   const sameGameCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='SAME_GAME_EXISTING_ROBLOX_ASSET'));
   const companyCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='VERIFIED_COMPANY_ASSET'));
@@ -665,6 +716,7 @@ function decisionFor(selector={},target='',binding={},manifest={}){
   }):null;
   return freeze({
     type,
+    qualityDNA,
     required:binding.required!==false,
     targetStates:freezeList(binding.targetStates||[]),
     sameGameCandidates,
@@ -1088,6 +1140,20 @@ export function buildVibeAssetProductionPlan({
     styleFamily:assetSynchronization?.document?.styleBible?.profileKey||studioUniversePlan?.styleBible?.profileKey,
     seed:task.mapReconstruction.seed||clean(task.gameId)
   }):null;
+  const qualityDNA=freeze({
+    version:1,
+    gameId:clean(task.gameId)||null,
+    styleProfile:clean(task.styleFamily||task.style)||studioUniversePlan?.styleBible?.profileKey||null,
+    contracts:freezeList(decisions.map(row=>freeze({type:row.type,qualityDNA:row.qualityDNA}))),
+    commonRules:Object.freeze({
+      strongAxesLockedDuringRepair:true,
+      failedAxesOnlyEditableByDefault:true,
+      donorAssemblyBeforeFullReauthor:true,
+      detailLodRequired:true,
+      actualRuntimeEvidenceRequired:true,
+      verificationStatusIsNotVisualQuality:true
+    })
+  });
   const precisionProduction=freeze({
     version:1,
     mode:'INSPECT_REPAIR_AUTHOR_APPLY_REINSPECT',
@@ -1161,7 +1227,8 @@ export function buildVibeAssetProductionPlan({
     generatedAssetOutputContract:GENERATED_ASSET_OUTPUT_CONTRACT,
     baseMaterialLoadout,
     assetCustomization,
-    precisionProduction,
+    qualityDNA,
+    precisionProduction:freeze({...precisionProduction,qualityDNA}),
     assetSynchronization,
     detailReview:studioUniversePlan?.customization?createAssetDetailReviewPlan({
       ...task.assetDetailReview,
@@ -1606,6 +1673,7 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
+    plan.qualityDNA?`[QUALITY DNA] ${JSON.stringify(plan.qualityDNA)}. 이 값은 현재 자산의 임의 점수가 아니라 게임별 최소 제작 하한이다. 각 type의 minimumFloors와 detailLod를 만족시키도록 강한 축은 잠그고 실패한 축만 수정한다. donor는 실패 축만 교체하고 스타일 정체성·출처·잠긴 특징을 보존한다. 검증 상태나 폴리곤/텍스처 수만으로 고퀄 판정하지 않는다.`:'',
     plan.applyFirstSummary?.enabled?`[APPLY USABLE ASSETS FIRST] ${JSON.stringify(plan.applyFirstSummary)}. 먼저 현재 게임/회사/저장소에서 target-compatible하고 실제 경로 또는 native binding이 있는 자산을 게임에 적용한다. 적용 후 실제 게임 카메라에서 품질을 확인하고 부족한 부위만 derived variant로 조형·재질·리그·LOD를 보강해 재적용한다. 사용 가능한 자산이 목표 품질에 도달할 수 있는데 새 자산부터 만들지 않는다. 품질이 부족하면 SILHOUETTE/PROPORTION/STRUCTURE/FACE_HANDS_FEET/MATERIAL/RIG/SOCKET/MOTION/LOD/UI_STATE 같은 축으로 분해하고 강한 축은 유지한다. 다른 호환 자산은 전체 대체뿐 아니라 파츠·리그·재질·모션 기증자로 사용해 derived variant를 재조립한다. GAME_CAMERA→MID_RANGE→CLOSEUP→CONTACT 디테일 바닥을 채우고, 랜덤 소품/노이즈/텍스처 과밀로 디테일을 가장하지 않는다. 핵심 형태나 구조 품질이 부분 보강으로 회복 불가능할 때만 전체 신규 제작으로 넘어간다.`:'' ,
     plan.generatedAssetOutputContract?`[GENERATED NATIVE ASSET CONTRACT] ${JSON.stringify(plan.generatedAssetOutputContract)}. Roblox/Unity에서 기존 자산이 목표 품질을 못 채우면 Blender/Python 또는 엔진 네이티브 authoring으로 실제 원본 자산을 만든다. 생성 소스 레시피와 원본/파생 파일, 동일 조건 미리보기, evidence.json, 회사 자산 장부 등록을 남긴다. GLB/이미지 파일이 생겼다는 사실만으로 VERIFIED 처리하지 말고 대상 native 런타임에서 실제 바인딩·표현·성능 검증 뒤 승격한다.`:'',
     plan.detailReview?`[STYLE COMPARISON AND LOCAL REPAIR] ${JSON.stringify(plan.detailReview)}. 같은 원형·카메라·조명·동작·표본 시점으로 카툰/실사/다크를 비교한다. repairs의 현재 소스/캡처 근거가 있는 부위·프레임·editableParameters만 수정하고 previousParameters와 잠긴 특징은 유지한다. 수정 뒤 동일 조건 재촬영으로 재검토하며 캡처 등록이나 파라미터 변경만으로 문제를 닫지 않는다.`:'',
