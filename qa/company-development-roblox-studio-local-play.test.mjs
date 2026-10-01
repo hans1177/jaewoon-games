@@ -100,7 +100,11 @@ test('Studio route audit does not invent failure when every remote anchor is alr
 });
 
 test('Studio route audit keeps duplicate-named prompts distinct and skips already reached waypoints',()=>{
-  assert.match(helper,/const routeIdentity=row=>\[/);
+  assert.match(helper,/local function addAnchor\(kind,name,x,y,z,maxDistance,identity\)/);
+  assert.match(helper,/sourceX,sourceY,sourceZ=tonumber\(x\),tonumber\(y\),tonumber\(z\)/);
+  assert.match(helper,/row\.maxDistance,row\.path/);
+  assert.match(helper,/identity=row\.identity/);
+  assert.match(helper,/const routeIdentity=row=>clean\(row\?\.identity\)\|\|\[/);
   assert.match(helper,/!visitedRoutes\.has\(routeIdentity\(row\)\)/);
   assert.match(helper,/const beforeWaypointDistance=Math\.hypot/);
   assert.match(helper,/beforeWaypointDistance<=6/);

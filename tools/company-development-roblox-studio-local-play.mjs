@@ -1287,27 +1287,29 @@ function studioActualPlayWorldProbeSource({planRoutes=true}={}){
     'local routePlanningPerformed='+(planRoutes?'true':'false'),
     'if root and routePlanningPerformed then',
     ' local anchors={}',
-    ' local function addAnchor(kind,name,x,y,z,maxDistance)',
+    ' local function addAnchor(kind,name,x,y,z,maxDistance,identity)',
     '  if #anchors>=16 or not tonumber(x) or not tonumber(y) or not tonumber(z) then return end',
-    '  local tx,ty,tz=tonumber(x),tonumber(y),tonumber(z)',
+    '  local sourceX,sourceY,sourceZ=tonumber(x),tonumber(y),tonumber(z)',
+    '  local tx,ty,tz=sourceX,sourceY,sourceZ',
     '  if kind=="prompt" and root then',
     '   local dx,dz=tx-root.Position.X,tz-root.Position.Z',
     '   local mag=math.sqrt(dx*dx+dz*dz)',
     '   local stop=math.max(2,math.min(6,(tonumber(maxDistance)or 10)*.55))',
     '   if mag>stop then tx=tx-dx/mag*stop;tz=tz-dz/mag*stop end',
     '  end',
-    '  table.insert(anchors,{kind=kind,name=tostring(name or kind),x=tx,y=ty,z=tz})',
+    '  local stableIdentity=tostring(identity or (tostring(kind)..":"..tostring(name or kind)..":"..string.format("%.2f:%.2f",sourceX,sourceZ)))',
+    '  table.insert(anchors,{kind=kind,name=tostring(name or kind),identity=stableIdentity,x=tx,y=ty,z=tz,sourceX=sourceX,sourceY=sourceY,sourceZ=sourceZ})',
     ' end',
-    ' for _,row in ipairs(spawnRows) do addAnchor("spawn",row.name,row.x,row.y,row.z) end',
-    ' for _,row in ipairs(promptRows) do addAnchor("prompt",row.objectText~="" and row.objectText or row.name,row.x,row.y,row.z,row.maxDistance) end',
-    ' for _,row in ipairs(npcRows) do addAnchor("npc",row.name,row.x,row.y,row.z) end',
-    ' for _,row in ipairs(mobRows) do addAnchor("mob",row.name,row.x,row.y,row.z) end',
+    ' for _,row in ipairs(spawnRows) do addAnchor("spawn",row.name,row.x,row.y,row.z,nil,"spawn:"..tostring(row.name)) end',
+    ' for _,row in ipairs(promptRows) do addAnchor("prompt",row.objectText~="" and row.objectText or row.name,row.x,row.y,row.z,row.maxDistance,row.path) end',
+    ' for _,row in ipairs(npcRows) do addAnchor("npc",row.name,row.x,row.y,row.z,nil,"npc:"..tostring(row.name)) end',
+    ' for _,row in ipairs(mobRows) do addAnchor("mob",row.name,row.x,row.y,row.z,nil,"mob:"..tostring(row.name)) end',
     ' for _,row in ipairs(anchors) do',
     '  routeSampleCount=routeSampleCount+1',
     '  local ok,pathObj=pcall(function() local path=PathfindingService:CreatePath({AgentRadius=2,AgentHeight=5,AgentCanJump=true});path:ComputeAsync(root.Position,Vector3.new(row.x,row.y,row.z));return path end)',
     '  local pass=ok and pathObj and pathObj.Status==Enum.PathStatus.Success',
     '  if pass then routeSuccessCount=routeSuccessCount+1 end',
-    '  if #routeRows<16 then local points={};local total=0;if pass then local waypoints=pathObj:GetWaypoints();total=#waypoints;for i=2,math.min(#waypoints,17) do local v=waypoints[i].Position;table.insert(points,{x=v.X,y=v.Y,z=v.Z}) end end;table.insert(routeRows,{kind=row.kind,name=row.name,pass=pass,x=row.x,y=row.y,z=row.z,waypointCount=math.max(0,total-1),waypoints=points}) end',
+    '  if #routeRows<16 then local points={};local total=0;if pass then local waypoints=pathObj:GetWaypoints();total=#waypoints;for i=2,math.min(#waypoints,17) do local v=waypoints[i].Position;table.insert(points,{x=v.X,y=v.Y,z=v.Z}) end end;table.insert(routeRows,{kind=row.kind,name=row.name,identity=row.identity,pass=pass,x=row.x,y=row.y,z=row.z,sourceX=row.sourceX,sourceY=row.sourceY,sourceZ=row.sourceZ,waypointCount=math.max(0,total-1),waypoints=points}) end',
     ' end',
     'end',
     'local floorBelow=false',
@@ -2749,9 +2751,9 @@ export async function runOfficialStudioMcpPlay({
         actions.push({id:'commercial-combat-action',type:'mcp-combat-action',dispatched:true,ok:navOk&&attackOk,effectObserved:generic.effectObserved||mobDelta.healthChanged>0||mobDelta.stateChanged>0||mobDelta.targetChanged>0,effect:{...generic,mobDelta}});
       }
       const routeLimit=auditMode==='F9_SOAK'?4:2;
-      const routeIdentity=row=>[
+      const routeIdentity=row=>clean(row?.identity)||[
         clean(row?.kind),clean(row?.name),
-        Number(row?.x||0).toFixed(2),Number(row?.z||0).toFixed(2)
+        Number(row?.sourceX??row?.x??0).toFixed(2),Number(row?.sourceZ??row?.z??0).toFixed(2)
       ].join(':');
       const visitedRoutes=new Set();
       let previousRouteProbe=initialClientProbe;
