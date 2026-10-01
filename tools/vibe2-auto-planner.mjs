@@ -1992,7 +1992,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   const verified=designContextOverride||latestVerifiedDesign(repoRoot,project.gameId);
   const minimum=verified?null:latestMinimumDesign(repoRoot,project.gameId);
   const designContext=verified||minimum;
-  const requestedFocus=clean(taskInput?.studioQualityEvolution?.focusPillar).toUpperCase();
+  const requestedFocus=clean(taskInput?.studioQualityEvolution?.focusPillar||taskInput?.buildUpDirective?.primaryFocus).toUpperCase();
   const sourceSafeNoDesign=Boolean(
     !designContext
     &&clean(project.engine).toLowerCase()==='web'
