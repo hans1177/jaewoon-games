@@ -834,25 +834,41 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-      - name: Probe shared Ollama cache from reserve runner
-        id: ollama_cache_probe
+      - name: Probe dedicated Vibe2 model cache
+        id: ollama_model_cache_probe
         if: steps.batch.outputs.worker_count != '0' && env.VIBE2_EXECUTION_LANE != 'asset-development'
         uses: actions/cache/restore@v4
         with:
-          path: |
-            ~/.ollama/models
-            ~/.cache/vibe2-ollama/bin/ollama
-            ~/.cache/vibe2-ollama/lib/ollama
+          path: ~/.ollama/models
           key: vibe2-ollama-v5-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
           lookup-only: true
 
-      - name: Record reserve model cache decision
+      - name: Probe canonical Ollama runtime cache
+        id: ollama_runtime_cache_probe
         if: steps.batch.outputs.worker_count != '0' && env.VIBE2_EXECUTION_LANE != 'asset-development'
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cache/jaewoon-ollama/ollama-linux-*-cpu-0.33.3.tar.zst
+          key: jaewoon-ollama-cpu-runtime-v2-${{ runner.os }}-${{ runner.arch }}-0.33.3
+          lookup-only: true
+
+      - name: Record reserve model cache decision
+        id: ollama_cache_probe
+        if: steps.batch.outputs.worker_count != '0' && env.VIBE2_EXECUTION_LANE != 'asset-development'
+        env:
+          MODEL_CACHE_HIT: ${{ steps.ollama_model_cache_probe.outputs.cache-hit }}
+          RUNTIME_CACHE_HIT: ${{ steps.ollama_runtime_cache_probe.outputs.cache-hit }}
         shell: bash
         run: |
+          set -euo pipefail
+          combined=false
+          if [ "$MODEL_CACHE_HIT" = 'true' ] && [ "$RUNTIME_CACHE_HIT" = 'true' ]; then combined=true; fi
+          echo "cache-hit=$combined" >> "$GITHUB_OUTPUT"
           echo 'VIBE2_MODEL_CACHE_RESERVE_PROBE_LOOKUP_ONLY=YES'
-          echo "VIBE2_MODEL_CACHE_RESERVE_PROBE_HIT=${{ steps.ollama_cache_probe.outputs.cache-hit }}"
-          if [ "${{ steps.ollama_cache_probe.outputs.cache-hit }}" = 'true' ]; then
+          echo "VIBE2_MODEL_CACHE_RESERVE_PROBE_HIT=$MODEL_CACHE_HIT"
+          echo "VIBE2_RUNTIME_CACHE_RESERVE_PROBE_HIT=$RUNTIME_CACHE_HIT"
+          echo "VIBE2_MODEL_RUNTIME_CACHE_COMBINED_HIT=$combined"
+          if [ "$combined" = 'true' ]; then
             echo 'VIBE2_MODEL_CACHE_WARMUP_DECISION=SKIP_CACHE_HIT'
           else
             echo 'VIBE2_MODEL_CACHE_WARMUP_DECISION=RUN_CACHE_MISS'
@@ -905,16 +921,27 @@ jobs:
     timeout-minutes: 12
     continue-on-error: true
     steps:
-      - name: Recheck or persist shared Ollama runtime cache
+      - name: Checkout pinned Ollama preparation action
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.reserve.outputs.contract_sha }}
+          path: vibe2-contract
+          fetch-depth: 1
+          sparse-checkout: |
+            .github/actions/prepare-ollama
+
+      - name: Recheck or persist dedicated Vibe2 model cache
         id: ollama_cache
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.ollama/models
-            ~/.cache/vibe2-ollama/bin/ollama
-            ~/.cache/vibe2-ollama/lib/ollama
+          path: ~/.ollama/models
           key: vibe2-ollama-v5-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
-          lookup-only: false
+
+      - name: Warm canonical Ollama runtime and local coding model once
+        uses: ./vibe2-contract/.github/actions/prepare-ollama
+        with:
+          model: ${{ env.VIBE2_LOCAL_MODEL }}
+          pull-model: 'true'
 
       - name: Record model cache probe
         shell: bash
@@ -922,40 +949,8 @@ jobs:
           echo 'VIBE2_MODEL_CACHE_WARMUP_LOOKUP_ONLY=NO'
           echo 'VIBE2_MODEL_CACHE_WARMUP_PERSIST_ON_MISS=YES'
           echo "VIBE2_MODEL_CACHE_WARMUP_HIT=${{ steps.ollama_cache.outputs.cache-hit }}"
+          echo 'VIBE2_RUNTIME_CACHE_WARMUP=CANONICAL_PREPARE_OLLAMA'
           echo 'VIBE2_MODEL_CACHE_WARMUP_JOB=RUN_CACHE_MISS'
-
-      - name: Warm local coding model once on cache miss
-        if: steps.ollama_cache.outputs.cache-hit != 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          installed=0
-          for attempt in 1 2 3; do
-            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
-            sleep $((attempt * 4))
-          done
-          test "$installed" = 1
-          mkdir -p "$HOME/.cache/vibe2-ollama/bin" "$HOME/.cache/vibe2-ollama/lib/ollama"
-          cp "$(command -v ollama)" "$HOME/.cache/vibe2-ollama/bin/ollama"
-          chmod +x "$HOME/.cache/vibe2-ollama/bin/ollama"
-          runtime_lib=""
-          for candidate in /usr/local/lib/ollama /usr/lib/ollama; do
-            if [ -d "$candidate" ] && find "$candidate" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .; then
-              runtime_lib="$candidate"
-              break
-            fi
-          done
-          test -n "$runtime_lib"
-          cp -a "$runtime_lib/." "$HOME/.cache/vibe2-ollama/lib/ollama/"
-          find "$HOME/.cache/vibe2-ollama/lib/ollama" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .
-          nohup ollama serve > /tmp/ollama-prewarm.log 2>&1 &
-          for i in $(seq 1 30); do
-            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
-            if [ "$i" = 30 ]; then cat /tmp/ollama-prewarm.log || true; exit 1; fi
-            sleep 2
-          done
-          ollama pull "$VIBE2_LOCAL_MODEL"
-          echo 'VIBE2_MODEL_PREWARM=PASS'
 
   worker:
     needs: [reserve, model_cache]
@@ -1149,15 +1144,12 @@ jobs:
           fi
           echo "VIBE2_WORKER_MODEL_CACHE_REASON=$reason"
 
-      - name: Restore shared Ollama runtime cache
+      - name: Restore dedicated Vibe2 model cache
         id: worker_ollama_cache
         if: steps.model_need.outputs.required == 'true'
         uses: actions/cache/restore@v4
         with:
-          path: |
-            ~/.ollama/models
-            ~/.cache/vibe2-ollama/bin/ollama
-            ~/.cache/vibe2-ollama/lib/ollama
+          path: ~/.ollama/models
           key: vibe2-ollama-v5-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
 
       - name: Mark worker Ollama preparation start

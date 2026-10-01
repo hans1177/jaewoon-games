@@ -602,6 +602,10 @@ test('shared Ollama model cache is opt-in for native development workers and pre
   assert.match(vibe,/key: vibe2-ollama-v5-/);
   assert.match(vibe,/runner\.os/);
   assert.match(vibe,/runner\.arch/);
+  assert.match(vibe,/path: ~\/\.ollama\/models/);
+  assert.match(vibe,/jaewoon-ollama-cpu-runtime-v2-/);
+  assert.doesNotMatch(vibe,/\.cache\/vibe2-ollama\/bin/);
+  assert.doesNotMatch(vibe,/\.cache\/vibe2-ollama\/lib/);
   assert.doesNotMatch(vibe,/cache-model: 'true'/);
 
   assert.ok(centralQa.includes(".github/actions/prepare-ollama/action.yml"));
