@@ -2710,6 +2710,17 @@ test('zero-output timeout keeps focused recovery enabled for studio build-up',()
   assert.match(workerSource,/VIBE2_ZERO_OUTPUT_TIMEOUT_FOCUSED_RECOVERY/);
 });
 
+test('zero-output model stalls use first-output deadline and stop after two empty timeouts',()=>{
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(workerSource,/MODEL_FIRST_OUTPUT_TIMEOUT_MS=Math\.max\(30000,Math\.min\(DEFAULT_TIMEOUT_MS,Number\(process\.env\.VIBE2_MODEL_FIRST_OUTPUT_TIMEOUT_MS\|\|120000\)\)\)/);
+  assert.match(workerSource,/ZERO_OUTPUT_RETRY_TIMEOUT_MS=120000/);
+  assert.match(workerSource,/Ollama 첫 출력 시간 초과/);
+  assert.match(workerSource,/VIBE2_ZERO_OUTPUT_TIMEOUT_STREAK/);
+  assert.match(workerSource,/consecutiveZeroOutputTimeouts>=2/);
+  assert.match(workerSource,/VIBE2_ZERO_OUTPUT_TIMEOUT_CIRCUIT_OPEN/);
+  assert.match(workerSource,/priorFailureClass==='TIMEOUT'&&!clean\(lastRaw\)[\s\S]*?ZERO_OUTPUT_RETRY_TIMEOUT_MS/);
+});
+
 test('Unity Studio timeout recovery pins one exact responsible file before another large model retry',()=>{
   const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(source,/const UNITY_STUDIO_FOCUSED_TIMEOUT_MS=120000/);
