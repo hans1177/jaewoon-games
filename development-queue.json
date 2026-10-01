@@ -2168,7 +2168,7 @@
       "currentStep": "REPAIR_REQUIRED",
       "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-10-01T18:27:24.295Z",
+      "updatedAt": "2026-10-01T18:47:35.964Z",
       "robloxSourceCommit": "e3ff6bb1a0ccd6eb8398da4431d413c28974267d",
       "robloxSourceBootstrapPassedAt": "2026-10-01T17:17:05.535Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -2429,7 +2429,7 @@
       "robloxInternalVibePlayEvidence": {
         "version": 2,
         "gameId": "horror-escape-room",
-        "studioHarnessVersion": 15,
+        "studioHarnessVersion": 16,
         "authority": "roblox-official-studio-mcp-runtime",
         "pass": false,
         "actualPlay": false,
@@ -2470,13 +2470,7 @@
         },
         "actions": [
           {
-            "id": "ui-role-selection",
-            "type": "mcp-mouse-input",
-            "dispatched": false,
-            "ok": false
-          },
-          {
-            "id": "ui-primary-action",
+            "id": "ui-entry-1",
             "type": "mcp-mouse-input",
             "dispatched": false,
             "ok": false
@@ -2532,26 +2526,8 @@
             "pass": true
           },
           {
-            "id": "role-selection-input-dispatched",
-            "name": "role-selection-input-dispatched",
-            "required": true,
-            "pass": false
-          },
-          {
-            "id": "actual-play-pre-action-client-probe",
-            "name": "actual-play-pre-action-client-probe",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "primary-action-input-dispatched",
-            "name": "primary-action-input-dispatched",
-            "required": true,
-            "pass": false
-          },
-          {
-            "id": "primary-action-available",
-            "name": "primary-action-available",
+            "id": "entry-action-1-dispatched",
+            "name": "entry-action-1-dispatched",
             "required": true,
             "pass": false
           }
@@ -2560,7 +2536,7 @@
           {
             "type": "studio-product-start-action-error",
             "actionId": "ui-primary-action",
-            "signature": "ROBLOX_STUDIO_START_ACTION_ABORT:PRIMARY_ACTION_NOT_VISIBLE"
+            "signature": "ROBLOX_STUDIO_START_ACTION_ABORT:ENTRY_ACTION_NOT_VISIBLE:저택 들어가기"
           }
         ],
         "runtimeSummary": {
@@ -2602,7 +2578,6 @@
           "actual-play-initial-client-probe",
           "initial-character-playable",
           "floating-character-map-readiness",
-          "actual-play-pre-action-client-probe",
           "debugging",
           "runtime error",
           "ROBLOX_TOUCH_INPUT"
@@ -2611,8 +2586,8 @@
         "rawGameplayValuesIncluded": false,
         "rawViewportIncluded": false,
         "scenarioContractRequired": true,
-        "scenarioContractVersion": 2,
-        "scenarioContractFingerprint": "sha256:e4bf85b4c99f5a3b279b5c45d695fec5c0628699bf987fc04d748775802ad6ad",
+        "scenarioContractVersion": 3,
+        "scenarioContractFingerprint": "sha256:88d4a4aff0340a9fe462275cb6c3e57b42e0469ebf7c6eb7c4324fbf65744dd5",
         "scenarioCoverage": [
           {
             "id": "adaptive-start-playability",
@@ -2631,7 +2606,7 @@
             "hint": "The start action was unavailable or the observed class selection did not finish. Restore an actionable entry flow and confirm selection before full Studio QA.",
             "observed": {
               "requiredButtonText": "대시",
-              "visibleButtons": 1,
+              "visibleButtons": 0,
               "largeBlockingOverlayCount": 0
             }
           }
@@ -2643,8 +2618,8 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-10-01T18:27:24.295Z",
-        "workflowRunId": 36905865850,
+        "testedAt": "2026-10-01T18:47:35.964Z",
+        "workflowRunId": 36908677455,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -2982,7 +2957,7 @@
             "hint": "The start action was unavailable or the observed class selection did not finish. Restore an actionable entry flow and confirm selection before full Studio QA.",
             "observed": {
               "requiredButtonText": "대시",
-              "visibleButtons": 1,
+              "visibleButtons": 0,
               "largeBlockingOverlayCount": 0
             }
           }
@@ -2991,8 +2966,8 @@
           "GAME_START"
         ],
         "robloxFailureClass": "ROBLOX_TOUCH_INPUT",
-        "testedAt": "2026-10-01T18:27:24.295Z",
-        "workflowRunId": 36905865850,
+        "testedAt": "2026-10-01T18:47:35.964Z",
+        "workflowRunId": 36908677455,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxQualityBuildUpLastPassedAt": "2026-09-28T13:51:01.540Z",
@@ -22434,7 +22409,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T18:35:20.831Z",
+  "updatedAt": "2026-10-01T18:47:35.964Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
