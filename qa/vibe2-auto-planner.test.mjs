@@ -2895,13 +2895,15 @@ test('backlog gate binds queued existing game work to platform-lane-specific BUI
   assert.deepEqual(new Set(rows.map(row=>row.buildUpDirective.platform)),new Set(['ROBLOX','UNITY']));
   assert.deepEqual(new Set(rows.map(row=>row.buildUpDirective.sourceRoot)),new Set([`roblox-games/${gameId}`,`unity-games/${gameId}`]));
   assert.ok(rows.every(row=>row.goal.includes('[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]')));
-  assert.ok(rows.every(row=>row.buildUpDirective.version===2));
+  assert.ok(rows.every(row=>row.buildUpDirective.version===3));
   assert.ok(rows.every(row=>row.buildUpStatus==='DIRECTIVE_BOUND'));
   assert.ok(rows.every(row=>row.developmentDepth===1));
   assert.ok(rows.every(row=>row.escalationStage==='FOUNDATION_COMPLETENESS'));
   assert.ok(rows.every(row=>(row.evidence||[]).includes('build-up-directive-backfill:queued-existing-work')));
   assert.ok(rows.every(row=>(row.evidence||[]).includes('build-up-pre-reserve-binding:CHECKED')));
   assert.ok(rows.every(row=>(row.evidence||[]).includes('game-specific-build-up-directive:v2')));
+  assert.ok(rows.every(row=>(row.evidence||[]).includes('game-specific-build-up-directive:v3')));
+  assert.ok(rows.every(row=>row.buildUpDirective.perceptibleExperienceBuildUp?.perceptiblePlayerEffectRequired===true));
   assert.ok(rows[0].buildUpDirective.responsibleSystemsAndFiles.sourceAnchors.some(row=>row.symbol==='Combat.resolveAttack'));
 });
 
