@@ -9329,7 +9329,7 @@
         "productionWorkPreemptsPractice": true
       },
       "authorityBoundary": {
-        "executionAuthority": "EXISTING_DAG_RESERVATION_AND_REQUIRED_GATES_ONLY",
+        "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
         "workerCreationAuthority": false,
         "queueMutationAuthority": false,
         "lockPolicyMutationAuthority": false,
@@ -9394,7 +9394,7 @@
           "fanInVerificationRepair": "PASS"
         },
         "authority": {
-          "executionAuthority": "EXISTING_DAG_RESERVATION_AND_REQUIRED_GATES_ONLY",
+          "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
           "workerCreationAuthority": false,
           "queueMutationAuthority": false,
           "lockPolicyMutationAuthority": false,
@@ -9480,7 +9480,7 @@
           "mainWriteGuard": "PASS"
         },
         "authority": {
-          "executionAuthority": "EXISTING_DAG_RESERVATION_AND_REQUIRED_GATES_ONLY",
+          "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
           "workerCreationAuthority": false,
           "queueMutationAuthority": false,
           "lockPolicyMutationAuthority": false,
@@ -9606,7 +9606,7 @@
           ]
         },
         "authority": {
-          "executionAuthority": "EXISTING_DAG_RESERVATION_AND_REQUIRED_GATES_ONLY",
+          "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
           "workerCreationAuthority": false,
           "queueMutationAuthority": false,
           "lockPolicyMutationAuthority": false,
@@ -9802,7 +9802,7 @@
           "secretsOrCredentialsStored": false
         },
         "authority": {
-          "executionAuthority": "EXISTING_DAG_RESERVATION_AND_REQUIRED_GATES_ONLY",
+          "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
           "workerCreationAuthority": false,
           "queueMutationAuthority": false,
           "lockPolicyMutationAuthority": false,
@@ -14487,7 +14487,7 @@
       "mayReorderIndependentTasks": false
     },
     "executionBoundary": {
-      "executionAuthority": "EXISTING_DAG_RESERVATION_AND_REQUIRED_GATES_ONLY",
+      "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
       "neuralExecutionAuthority": false,
       "workerCreationAuthority": false,
       "queueMutationAuthority": false,
