@@ -499,6 +499,7 @@ jobs:
           import fs from 'node:fs';
           import path from 'node:path';
           import {execFileSync} from 'node:child_process';
+          import {evaluateExperienceBuildup,experienceAxisEvidence} from './tools/company-experience-buildup-contract.mjs';
           const gameId=process.env.GAME_ID;
           const root='/tmp/unity-web/web-games/'+gameId;
           const queue=JSON.parse(fs.readFileSync('/tmp/company-runtime-development-queue.json','utf8'));
@@ -520,7 +521,15 @@ jobs:
             &&Boolean(item.platformDesignProfiles?.ROBLOX?.source)
             &&Boolean(item.platformDesignProfiles?.UNITY?.source);
           const codePass=play.pass===true&&play.gameplay?.pass===true&&play.coreFun?.pass===true&&play.noCriticalRuntimeError===true;
-          const graphicsCounts={Art:countFiles('Art'),Prefabs:countFiles('Prefabs'),Materials:countFiles('Materials'),Animations:countFiles('Animations')};
+          const graphicsCounts={Art:countFiles('Art'),Prefabs:countFiles('Prefabs'),Materials:countFiles('Materials'),Animations:countFiles('Animations'),Audio:countFiles('Audio'),UI:countFiles('UI'),VFX:countFiles('VFX')};
+          const scriptsRoot=path.join(project,'Assets','Scripts');
+          let scriptsText='';
+          if(fs.existsSync(scriptsRoot)){
+            const walkScripts=p=>{for(const e of fs.readdirSync(p,{withFileTypes:true})){const full=path.join(p,e.name);if(e.isDirectory())walkScripts(full);else if(e.isFile()&&e.name.endsWith('.cs')){try{scriptsText+='\n'+fs.readFileSync(full,'utf8')}catch{}}}};
+            walkScripts(scriptsRoot);
+          }
+          const inventoryApplicable=/inventory|equip|weapon|armor|item/i.test(scriptsText);
+          const combatApplicable=/attack|combat|enemy|monster|boss|damage/i.test(scriptsText);
           const floorSourceFile=path.join(project,'unity-web-floor-source.json');
           let floorSource={};try{if(fs.existsSync(floorSourceFile))floorSource=JSON.parse(fs.readFileSync(floorSourceFile,'utf8'));}catch{}
           const bootstrapGraphicsBlocked=floorSource?.presentationState==='BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP'||floorSource?.upperPlatformReady===false;
@@ -532,6 +541,24 @@ jobs:
             &&Boolean(build.buildTreeSha256)
             &&fs.existsSync(path.join(root,'unity-web-deploy-manifest.json'));
           const actualPlayPass=play.pass===true&&play.mobile?.pass===true&&play.coreFun?.pass===true;
+          const experienceBuildup=evaluateExperienceBuildup({
+            platform:'UNITY',
+            axesEvidence:{
+              __runtimeObserved:actualPlayPass,
+              __beforeAfterObserved:play.gameplay?.coreActionObserved===true&&play.gameplay?.progressObserved===true,
+              MOTION:experienceAxisEvidence({animationAssets:graphicsCounts.Animations>0,actualPlay:actualPlayPass,actionObserved:play.gameplay?.coreActionObserved===true}),
+              COMBAT_FEEL:experienceAxisEvidence({coreFun:play.coreFun?.pass===true,actionObserved:play.gameplay?.coreActionObserved===true,noCritical:play.noCriticalRuntimeError===true},{applicable:combatApplicable}),
+              UI_HUD:experienceAxisEvidence({uiAuthored:graphicsCounts.UI>0||/canvas|button|hud|ui/i.test(scriptsText),mobileReadable:play.mobile?.pass===true,noCritical:play.noCriticalRuntimeError===true}),
+              INVENTORY_EQUIPMENT:experienceAxisEvidence({systemAuthored:inventoryApplicable,actualPlay:actualPlayPass,stateful:/inventory|equip/i.test(scriptsText)},{applicable:inventoryApplicable}),
+              AUDIO_MUSIC:experienceAxisEvidence({audioAssets:graphicsCounts.Audio>0||/audio|music|sound/i.test(scriptsText),actualRuntime:actualPlayPass,noCritical:play.noCriticalRuntimeError===true}),
+              VFX:experienceAxisEvidence({vfxAuthored:graphicsCounts.VFX>0||/particle|vfx|trail|effect/i.test(scriptsText),actionSynchronized:play.gameplay?.coreActionObserved===true,gameplayReadable:play.mobile?.pass===true},{applicable:combatApplicable||graphicsCounts.VFX>0}),
+              CAMERA:experienceAxisEvidence({cameraAuthored:/camera/i.test(scriptsText),actualPlay:actualPlayPass,mobileReadable:play.mobile?.pass===true}),
+              WORLD_ART_LIGHTING:experienceAxisEvidence({artAssets:graphicsCounts.Art>0,materials:graphicsCounts.Materials>0,prefabs:graphicsCounts.Prefabs>0,actualPlay:actualPlayPass}),
+              ONBOARDING_READABILITY:experienceAxisEvidence({gameplayEntry:play.gameplay?.gameplayStartObserved===true,firstAction:play.input?.pass===true,safeReturn:play.gameplay?.safeReturnOrResetObserved===true}),
+              MOBILE_INPUT:experienceAxisEvidence({realTouch:play.mobile?.actualBrowserTouchDispatched===true,handlerObserved:play.mobile?.realGameTouchHandlerObserved===true,pass:play.mobile?.pass===true}),
+              PERFORMANCE_STABILITY:experienceAxisEvidence({performancePass:play.performance?.pass===true,noCritical:play.noCriticalRuntimeError===true,regression:regression.performance?.pass!==false})
+            }
+          });
           const designSource=String(item.minimumDesignContract?.source||'');
           let multiplayerRequired=false;
           if(designSource){
@@ -558,6 +585,7 @@ jobs:
             actualPlay:{pass:actualPlayPass},
             qa:{pass:qaPass,multiplayerRequired,multiplayerPass},
             portability:{pass:portabilityPass},
+            experience:{pass:experienceBuildup.pass,overallScore:experienceBuildup.overallScore,failedAxes:experienceBuildup.failedAxes,repairPlan:experienceBuildup.repairPlan},
           };
           const pass=Object.values(criteria).every(row=>row.pass===true);
           const evidence={
@@ -569,6 +597,7 @@ jobs:
             unitySourceTreeSha256:process.env.UNITY_SOURCE_TREE_SHA,
             buildTreeSha256:build.buildTreeSha256,
             criteria,
+            experienceBuildup,
             passAction:pass?'START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT':null,
             failureAction:pass?null:'REPAIR_CAUSAL_UNITY_WEB_FLOOR_THEN_REBUILD_REPLAY_REQA_REREGRESSION',
             releaseOrDeploymentAuthority:false,
