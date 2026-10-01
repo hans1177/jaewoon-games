@@ -235,18 +235,18 @@
       "sourceRevision": "165f9e2394e51293fcfb61451ad42305ed26d123",
       "artifactIdentity": "sha256:a594338f9b73502255c82771dabac945fb46b8ea01dc451ba4d15705e34c6ddc",
       "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 36908677455,
-      "testedAt": "2026-10-01T19:00:32.679Z",
+      "workflowRunId": 36919854592,
+      "testedAt": "2026-10-01T20:33:48.654Z",
       "repairSurfaces": [
-        "WORLD_GEOMETRY"
+        "GAME_START"
       ],
       "qualityFailureDetails": [
         {
-          "id": "adaptive-world-safety",
-          "repairSurface": "WORLD_GEOMETRY",
+          "id": "adaptive-start-playability",
+          "repairSurface": "GAME_START",
           "priority": "CRITICAL",
-          "hint": "Spawned character has no walkable floor; restore the world floor and spawn collision before further Studio QA.",
-          "observed": "{\"floorBelowPlayer\":false,\"floorSampleCount\":9,\"floorHitCount\":0,\"collidablePartCount\":3}"
+          "hint": "Studio started with a dead/unplayable character. Restore healthy spawn/respawn/start state before normal gameplay QA.",
+          "observed": "{\"characterPresent\":true,\"humanoidPresent\":true,\"health\":0,\"maxHealth\":100,\"humanoidState\":\"Enum.HumanoidStateType.Dead\"}"
         }
       ]
     }
