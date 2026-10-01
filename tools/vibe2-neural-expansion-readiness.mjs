@@ -107,9 +107,8 @@ export function evaluateNeuralExpansionReadiness({root=process.cwd(),runner=runN
   return buildReadinessResult(results);
 }
 
-async function runBoundedChecks({root,entries,runner,maxParallelChecks}){
-  const requested=Number(maxParallelChecks);
-  const limit=Math.max(1,Math.min(Number.isFinite(requested)&&requested>0?requested:entries.length,entries.length));
+async function runIndependentChecks({root,entries,runner}){
+  const limit=Math.max(1,entries.length);
   const settled=new Array(entries.length);
   let cursor=0;
   const workers=Array.from({length:limit},async()=>{
@@ -130,7 +129,8 @@ export async function evaluateNeuralExpansionReadinessParallel({
   maxParallelChecks=null
 }={}){
   const entries=Object.entries(NEURAL_EXPANSION_READINESS_CHECKS);
-  const {settled,limit}=await runBoundedChecks({root,entries,runner,maxParallelChecks});
+  void maxParallelChecks;
+  const {settled,limit}=await runIndependentChecks({root,entries,runner});
   return buildReadinessResult(Object.fromEntries(settled),{
     evaluationMode:'PARALLEL_UNCAPPED_INDEPENDENT_QA_ORDERED_FINAL_GATE',
     parallelLaneCount:limit
