@@ -47,9 +47,9 @@ jobs:
     name: drain superseded queued work
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'cancelled'
     concurrency:
-      # Advance the epoch so legacy pending v1 drains cannot serialize this isolated runner.
+      # Drain is stateless against the latest Actions list; keep only the newest drain.
       group: director-runner-drain-v2
-      cancel-in-progress: false
+      cancel-in-progress: true
     # Queue eviction must not wait behind the saturated slim control pool.
     # Keep game-heavy ubuntu-latest untouched and use the already-allowed fixed 24.04 pool.
     runs-on: ubuntu-24.04
@@ -294,9 +294,8 @@ jobs:
     if: always() && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'cancelled')
     concurrency:
       group: director-game-primary-gate-v1
-      # Preserve the active fallback gate so workflow_run bursts cannot starve GAME_PRIMARY.
-      # GitHub keeps only the newest pending run in the same group while this one completes.
-      cancel-in-progress: false
+      # Gate reads current queue pressure only; a newer gate supersedes an older one.
+      cancel-in-progress: true
     runs-on: ubuntu-slim
     outputs:
       defer: ${{ steps.gate.outputs.defer }}
@@ -383,7 +382,8 @@ jobs:
     if: always() && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'cancelled') && (needs.runner-drain.result == 'success' || needs.runner-drain.result == 'skipped') && needs.game-primary-gate.outputs.defer != 'true'
     concurrency:
       group: director-central-company-supervise-v3
-      cancel-in-progress: false
+      # Supervision re-reads current main/runtime state, so stale work may be replaced.
+      cancel-in-progress: true
     runs-on: ubuntu-slim
     timeout-minutes: 8
     steps:
