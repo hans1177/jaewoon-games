@@ -32,7 +32,7 @@ test('downloaded assets retain original bytes and CC0 license',()=>{
  for(const p of ['graveyard','furniture'])assert.match(files.get(`sources/${p}/LICENSE.txt`).toString(),/CC0/);
 });
 test('NPC source uses continuous-surface role-specific geometry instead of primitive body assembly',()=>{
- const start=manorBuild.indexOf('def npc(s,kind,pos):');const stop=manorBuild.indexOf('\\ndef build():',start);assert.ok(start>=0&&stop>start);
+ const start=manorBuild.indexOf('def npc(s,kind,pos):');const stop=manorBuild.indexOf('\ndef build():',start);assert.ok(start>=0&&stop>start);
  const npcSource=manorBuild.slice(start,stop);
  assert.match(manorBuild,/def loft\(self,name,pos,sections/);assert.match(manorBuild,/def prism\(self,name,pos,outline/);assert.match(manorBuild,/def capsule\(self,name,pos,height/);
  for(const name of ['ButlerHead','UndertakerHead','ArchivistHead'])assert.match(npcSource,new RegExp("kind\\+'Head'|"+name));
@@ -74,7 +74,7 @@ test('Blender export keeps exact bounds, materials and independently addressable
  const e=JSON.parse(read(root+'/generated/build-evidence.json'));
  assert.match(e.generator,/Blender/);
  assert.equal(e.normalization.up,'Y');assert.equal(e.normalization.forward,'+Z');
- assert.equal(e.npcGeometry,'DIRECT_PROCEDURAL_ROLE_SPECIFIC_V4');
+ assert.equal(e.npcGeometry,'DIRECT_PROCEDURAL_ROLE_SPECIFIC_CONTINUOUS_SURFACE_V4');
  assert.ok(!e.reusedOriginals.some(x=>/bride/i.test(x)),'Lobby NPCs must not reuse the bride head/body');
  for(const row of e.models){
   const b=fs.readFileSync(root+'/generated/'+row.file);
