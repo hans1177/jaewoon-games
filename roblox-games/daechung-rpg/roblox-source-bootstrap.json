@@ -1,0 +1,211 @@
+{
+  "version": 6,
+  "gameId": "daechung-rpg",
+  "gameName": "대충 RPG",
+  "platform": "ROBLOX",
+  "policyDocument": "company-learning/platform-release-roadmap.json",
+  "stage": "TARGET_PLATFORM_SOURCE_BIND",
+  "sourcePath": "roblox-games/daechung-rpg",
+  "sourceValidationPassed": true,
+  "runtimePassed": false,
+  "independentQaPassed": false,
+  "regressionPassed": false,
+  "releaseClaim": false,
+  "existingSourcePreserved": true,
+  "gameplayAuthorityChanged": false,
+  "serverSourceChanged": false,
+  "foundationRepairApplied": false,
+  "generatedFiles": [
+    "shared/GameConfig.luau",
+    "client/Game.client.luau"
+  ],
+  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
+  "modelUsed": false,
+  "modelAttempts": 0,
+  "modelContractFailures": [],
+  "vibe3LearningApplied": true,
+  "recombinationRecipeId": "recombine_f02989c69aa93617",
+  "verifiedExternalLearningAppliedToExistingSource": true,
+  "verifiedExternalLearningFirst": true,
+  "verifiedExternalLearningCoveragePct": 100,
+  "verifiedExternalLearningRetrievedCount": 7,
+  "verifiedExternalLearningAppliedCount": 7,
+  "verifiedExternalLearningIds": [
+    "external-black-box-block-blast-run-30",
+    "external-black-box-cavern-cravers-run-47",
+    "external-black-box-idle-fantasy-run-42",
+    "external-black-box-luanti-run-10",
+    "external-black-box-revengate-run-59",
+    "external-black-box-sgtpuzzles-run-29",
+    "external-black-box-shattered-pixel-dungeon-run-4"
+  ],
+  "verifiedExternalLearningFingerprint": "hfed4s",
+  "verifiedExternalLearningApplyAxes": [
+    "CORE_GAMEPLAY_FEEL",
+    "PLAYER_INPUT_AND_TOUCH",
+    "VISIBLE_ACTION_FEEDBACK",
+    "HUD_AND_CONTEXTUAL_GUIDANCE",
+    "MOBILE_READABILITY_AND_RESPONSE",
+    "PROGRESSION_RISK_READABILITY",
+    "REWARD_AND_EVENT_PRESENTATION",
+    "CAMERA_RESPONSE",
+    "WORLD_AND_BACKGROUND_PRESENTATION",
+    "CHARACTER_NPC_CREATURE_ANIMATION",
+    "MOTION_AND_TRANSITIONS",
+    "CONTEXTUAL_ONBOARDING"
+  ],
+  "studioAssetBinding": {
+    "version": 3,
+    "bindingVersion": 2,
+    "applied": true,
+    "source": "company-asset-library.json#baseMaterialLibrary",
+    "libraryVersion": 28,
+    "atomState": "PREPARED_SEMANTIC_ATOM_LIBRARY",
+    "selectedAtomCount": 46,
+    "families": {
+      "UI": [
+        "FRAME_PANEL",
+        "BUTTON_PRIMARY",
+        "BAR_HEALTH"
+      ],
+      "ENVIRONMENT": [
+        "TREE_TRUNK_THICK",
+        "TREE_CROWN_ROUND",
+        "ROCK_MEDIUM",
+        "ROAD_DIRT"
+      ],
+      "BUILDING": [
+        "FOUNDATION_RECT",
+        "WALL_SOLID",
+        "DOOR_SINGLE",
+        "ROOF_GABLE"
+      ],
+      "PROP": [
+        "CHEST",
+        "CRATE",
+        "LAMP"
+      ],
+      "MATERIAL": [
+        "WOOD",
+        "STONE",
+        "METAL"
+      ],
+      "AUDIO": [
+        "ENV_WIND",
+        "ENV_WATER",
+        "UI_CONFIRM"
+      ],
+      "VFX": [
+        "IMPACT_FLASH",
+        "TRAIL_SHORT",
+        "SHAPE_BURST"
+      ],
+      "SKILL": [
+        "CAST_HAND",
+        "TELEGRAPH_CIRCLE",
+        "IMPACT_SMALL"
+      ],
+      "WEAPON": [
+        "BLADE_LONG",
+        "GUARD_CROSS",
+        "GRIP_LONG"
+      ],
+      "CHARACTER": [
+        "TORSO_CLOTH",
+        "SHOULDER_LIGHT",
+        "BACK_CAPE"
+      ],
+      "CREATURE": [
+        "HEAD_CANINE",
+        "JAW_LONG",
+        "CLAW"
+      ],
+      "MOTION": [
+        "IDLE_RELAXED",
+        "WALK",
+        "JOG",
+        "RUN",
+        "START",
+        "STOP",
+        "TURN_90",
+        "JUMP_START",
+        "LAND",
+        "HIT_FRONT",
+        "DEATH_FRONT"
+      ]
+    },
+    "universalAssetFirst": {
+      "required": true,
+      "allFamilies": [
+        "CHARACTER",
+        "CREATURE",
+        "BUILDING",
+        "ENVIRONMENT",
+        "WEAPON",
+        "SKILL",
+        "MATERIAL",
+        "AUDIO",
+        "VFX",
+        "UI",
+        "MOTION",
+        "PROP"
+      ],
+      "allFamiliesEvaluated": true,
+      "missingFamilies": [],
+      "familyResultRequired": "APPLIED_OR_EXPLICIT_NOT_APPLICABLE",
+      "actualSourceBindingRequired": true,
+      "markerOnlyApplicationForbidden": true,
+      "mapEnvironmentBuildingPropRequired": true
+    },
+    "recipeId": "NORMAL_VARIANT",
+    "motionQuality": {
+      "contract": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",
+      "motionAtoms": [
+        "IDLE_RELAXED",
+        "WALK",
+        "JOG",
+        "RUN",
+        "START",
+        "STOP",
+        "TURN_90",
+        "JUMP_START",
+        "LAND",
+        "HIT_FRONT",
+        "DEATH_FRONT"
+      ],
+      "libraryFirst": true,
+      "semanticAtomsAreNotAnimationClips": true,
+      "nativeAnimationClipRuntimeVerificationRequired": true,
+      "actorClasses": [
+        "PLAYER",
+        "HUMANOID_NPC",
+        "CREATURE"
+      ],
+      "articulatedRigRequired": true,
+      "animatorRequired": true,
+      "blendAndSpeedSyncRequired": true,
+      "ikAndProceduralCorrectionPreferred": true,
+      "mannequinHardFailure": "CHARACTER_MOTION_MANNEQUIN"
+    },
+    "productionVerified": false,
+    "runtimeVerificationRequired": true,
+    "verifiedPromotionAllowed": false,
+    "gameplayAuthority": false
+  },
+  "studioAssetBindingApplied": true,
+  "studioAssetRuntimeVerified": false,
+  "studioAssetPromotionEligible": false,
+  "implementationNotes": [
+    "existing Roblox gameplay source preserved",
+    "company library Studio asset binding updated in existing config and client presentation",
+    "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
+  ],
+  "buildUpDirectiveId": "daechung-rpg-build-up-g1-5bbf160b0f17",
+  "buildUpGeneration": 1,
+  "buildUpGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
+  "buildUpDirectiveFingerprint": "5bbf160b0f171aaca61d899645c3b22f88cfa6fea756145cd4a35f7db57f7893",
+  "buildUpDirectiveConsumed": true,
+  "buildUpDirectiveCompletionClaim": false,
+  "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
+  "createdAt": "2026-09-30T11:52:41.365Z"
+}
