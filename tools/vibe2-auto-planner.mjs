@@ -2351,20 +2351,7 @@ ${existingBackfillInstruction}${phaseInstruction}${visualInstruction}${designIns
   const presentationBound=focusPillar==='PRESENTATION'
     ?applyAdaptiveGraphicsReplacementContract(out,project,'ASSET_ADAPTATION')
     :out;
-  const worldLobbyBound=attachGameSpecificBuildUpDirective(applyWorldLobbyFirst(presentationBound,project,repoRoot),project,repoRoot,queue,designContext);
-  if(focusPillar==='PRESENTATION'&&project.engine==='roblox'&&worldLobbyBound.assetProductionLane===true){
-    const isolatedPresentationPath=`${posix(project.projectPath)}/client/Presentation.client.luau`;
-    return{
-      ...worldLobbyBound,
-      responsibleFiles:[isolatedPresentationPath],
-      evidence:[...new Set([
-        ...(worldLobbyBound.evidence||[]),
-        'asset-presentation-owner:ISOLATED_CLIENT_SCRIPT',
-        'asset-presentation-readonly-game-context:REQUIRED'
-      ])]
-    };
-  }
-  return worldLobbyBound;
+  return attachGameSpecificBuildUpDirective(applyWorldLobbyFirst(presentationBound,project,repoRoot),project,repoRoot,queue,designContext);
 }
 function bindSharedBuildUpDirective(taskInput,directive){
   if(!taskInput||!directive?.directiveId)return taskInput;
@@ -2928,8 +2915,8 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
       if(project)item=applyWorldLobbyFirst(item,project,repoRoot);
     }
     const evidence=(item.evidence||[]).map(clean);
-    const studioPresentation=clean(item?.studioQualityEvolution?.focusPillar).toUpperCase()==='PRESENTATION';
-    const genericPresentation=evidence.includes('presentation-quality-pipeline:v1')
+    const genericPresentation=!item.studioQualityEvolution
+      &&evidence.includes('presentation-quality-pipeline:v1')
       &&!item.studioAssetBackfill
       &&!evidence.includes('roblox-studio-asset-backfill:v1');
     if(clean(item?.status).toLowerCase()!=='queued')return item;
@@ -2947,7 +2934,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
       }
       return item;
     }
-    if(target!=='roblox'||(!studioPresentation&&!genericPresentation))return item;
+    if(target!=='roblox'||!genericPresentation)return item;
     if(assetLane){
       const isolatedPresentationPath=`roblox-games/${clean(item.gameId)}/client/Presentation.client.luau`;
       if(responsible.length===1&&responsible[0]===isolatedPresentationPath)return item;
