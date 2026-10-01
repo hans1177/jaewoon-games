@@ -4112,8 +4112,8 @@ test('oversized stale learning guidance is deduplicated without truncating the v
 
 test('Studio initial prompt compacts repeated directive prose and expands model context to fit',()=>{
   const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
-  assert.match(source,/studioInitial\?1500:5000/);
-  assert.doesNotMatch(source,/studioInitial\?2500:5000/);
+  assert.match(source,/studioInitial\?1500:\(oversizedInitial\?3500:5000\)/);
+  assert.doesNotMatch(source,/studioInitial\?2500/);
   const external=[
     '[VERIFIED EXTERNAL BLACK-BOX LEARNING BEGIN]',
     'dispositions=1/1; sourcePrinciples=1; validationOnly=0; truncation=FORBIDDEN',
