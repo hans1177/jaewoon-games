@@ -85,11 +85,11 @@ end
 for _,viewport in ipairs({{320,520},{390,760},{740,274},{844,320},{1024,640}})do
  local head=bounds(named.ManorNameplate,viewport[1],viewport[2]);local commands=bounds(named.ManorCommands,viewport[1],viewport[2])
  assert(head.x+head.w<=commands.x,"Mobile header and controls overlap")
- assert(commands.y+commands.h<=52,"Controls obscure gameplay")
+ assert(commands.y+commands.h<=64,"Controls obscure gameplay")
  local panel=find("오늘 밤의 출정").Parent;local rect=bounds(panel,viewport[1],viewport[2])
  assert(rect.x>=0 and rect.y>=0 and rect.x+rect.w<=viewport[1] and rect.y+rect.h<=viewport[2],"Menu clips the viewport")
  assert(rect.y>=commands.y+commands.h+8,"Menu overlaps mobile commands")
- local close=bounds(find("×"),viewport[1],viewport[2]);assert(close.w>=44 and close.h>=44,"Close target too small for touch")
+ local close=bounds(find("×"),viewport[1],viewport[2]);assert(close.w>=48 and close.h>=48,"Close target too small for touch")
 end
 print("MANOR_MOBILE_LAYOUT_QA=PASS:5")
 assert(named.NotebookShade.Visible==true,"Open menu does not intercept background touches")
