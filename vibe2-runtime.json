@@ -93,16 +93,16 @@
       "observedMainHead": "f2332ac1000010b4fe63edda2344c4c53cc961a6",
       "verifiedAt": "2026-09-25T07:39:13+09:00",
       "centralGoalRefs": [
-        "company-learning/platform-release-roadmap.json::neuralDevelopmentBrain.currentWaveExecution",
+        "company-learning/platform-release-roadmap.json::neuralDevelopmentBrain.currentIndependentExecution",
         "company-learning/company-architecture-map.json::neuralWorkGraphTopology.phase1RuntimeBindings.selfAdaptiveGamePrimaryConcurrency",
         "vibe2-runtime.json::continuous.atomicNeuronStream"
       ],
       "verifiedState": [
         "PR_2038_MERGED_ATOMIC_NEURON_STREAM_LIVE",
-        "FIXED_GLOBAL_WAVE_BARRIER_FALSE",
+        "GLOBAL_EXECUTION_BARRIER_FALSE",
         "REPOSITORY_DISPATCH_NEURON_CALLBACKS_LIVE",
         "TASK_VARIANT_RESULTS_RECORDED_IN_SERIALIZED_CONTROLLER",
-        "COHORT_FAN_IN_REMAINS_REGRESSION_RELEASE_AUDIT_ONLY",
+        "INTEGRATION_FAN_IN_REMAINS_REGRESSION_RELEASE_AUDIT_ONLY",
         "GAME_PRIMARY_INTERNAL_POLICY_CAP_NULL",
         "CURRENT_EXTERNAL_PROVIDER_BOUNDARY_256",
         "ATOMIC_TELEMETRY_USES_CURRENT_RESERVATION_CAP",
@@ -121,7 +121,7 @@
         "GRAPHICS_PRESENTATION_BUILDUP_RESERVE_WORKER_QA_REQUEUE_FLOW_OBSERVED",
         "SOURCE_ROOT_AND_GAME_WIDE_LOCKS_PERMANENTLY_FORBIDDEN",
         "RESPONSIBLE_FILE_CONFLICT_SERIALIZATION_PRESERVED",
-        "GAME_PRIMARY_DEFAULT_256_VERIFIED_PRESSURE_FLOOR_30",
+        "GAME_PRIMARY_INTERNAL_CAP_NULL_EXTERNAL_MATRIX_PARTITION_256",
         "SAME_GAME_NON_OVERLAPPING_PACKAGES_PARALLEL"
       ],
       "liveEvidence": [
@@ -144,7 +144,7 @@
         "P2_GRAPHICS_TRANSIENT_LOCK_OBSERVABILITY: preserve automatic retry for presentation/asset adaptation tasks and track transient work-lock collision rate separately from graphics quality failures"
       ],
       "hardConstraints": [
-        "NO_GLOBAL_WAVE_BARRIER_REINTRODUCTION",
+        "NO_GLOBAL_EXECUTION_BARRIER_REINTRODUCTION",
         "NO_GATE_OR_THRESHOLD_WEAKENING",
         "NO_WORKER_DIRECT_SHARED_CONTROL_STATE_WRITE",
         "PRESERVE_CANDIDATE_BRANCH_AND_RELEASE_AUTHORITY",
@@ -655,11 +655,11 @@
         "enabled": false,
         "scope": "RETIRED_NO_GROUPED_LEADER",
         "event": "vibe2-fanin-refill",
-        "maxSignalsPerWave": 0,
         "resultConsumption": false,
         "resultRemainsCohortFanInOwned": false,
         "workerDirectControlWrite": false,
-        "newWorkflowCreated": false
+        "newWorkflowCreated": false,
+        "maxSignalsPerDispatch": 0
       },
       "immediateDispatchResumesWhenPressureClears": true
     },
@@ -1410,7 +1410,7 @@
       "neverReduceSafetyOrQa": true,
       "neverShrinkStudioQualityPackageToMicroPatch": true
     },
-    "capacityPolicy": "UNBOUNDED_BY_POLICY_FILL_EXTERNAL_PROVIDER_CAPACITY_IN_IMMEDIATE_WAVES",
+    "capacityPolicy": "UNBOUNDED_BY_POLICY_INDEPENDENT_DISPATCH_EXTERNAL_PROVIDER_CAPACITY_ONLY",
     "totalPackageLimit": null,
     "maxPackagesPerCycleMeaning": "PER_CYCLE_EXECUTION_WINDOW_ONLY_NOT_TOTAL_PACKAGE_LIMIT",
     "totalTaskLimit": null,
