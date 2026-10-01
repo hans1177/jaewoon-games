@@ -11082,10 +11082,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T16:45:58.714Z",
+      "updatedAt": "2026-10-01T17:00:22.946Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -11428,7 +11428,7 @@
             "ok": true
           },
           {
-            "id": "map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode8.ProximityPrompt",
+            "id": "map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode3.ProximityPrompt",
             "type": "mcp-map-route-audit",
             "dispatched": true,
             "ok": false
@@ -11479,7 +11479,7 @@
             "id": "prompt-ProximityPrompt",
             "type": "mcp-world-interaction",
             "dispatched": true,
-            "ok": false
+            "ok": true
           },
           {
             "id": "ui-discovered-TextButton",
@@ -11910,8 +11910,8 @@
             "pass": true
           },
           {
-            "id": "scenario-observed-action-f4b7925e7730baec4ae6",
-            "name": "scenario-observed-action-f4b7925e7730baec4ae6",
+            "id": "scenario-observed-action-7648ed9a6296eb3f1c04",
+            "name": "scenario-observed-action-7648ed9a6296eb3f1c04",
             "required": true,
             "pass": false
           },
@@ -11934,14 +11934,20 @@
             "pass": true
           },
           {
+            "id": "scenario-observed-action-ba70933adab1e2e60a5f",
+            "name": "scenario-observed-action-ba70933adab1e2e60a5f",
+            "required": true,
+            "pass": true
+          },
+          {
             "id": "scenario-observed-action-b44707afa0efc7f8fa15",
             "name": "scenario-observed-action-b44707afa0efc7f8fa15",
             "required": true,
             "pass": true
           },
           {
-            "id": "scenario-observed-action-ba70933adab1e2e60a5f",
-            "name": "scenario-observed-action-ba70933adab1e2e60a5f",
+            "id": "scenario-observed-action-bffcb6fc96faff9b4d69",
+            "name": "scenario-observed-action-bffcb6fc96faff9b4d69",
             "required": true,
             "pass": true
           },
@@ -11997,13 +12003,13 @@
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
           "scenarioFailureCount": 2,
-          "primaryActionDisplacement": 2.1351917378678715,
-          "primaryActionVelocity": 0.0862518698011087,
+          "primaryActionDisplacement": 2.591476640511954,
+          "primaryActionVelocity": 0.000026062561488489637,
           "primaryActionFeedbackChanged": false,
           "commercialAudit": {
             "auditProfile": "F9_SOAK",
-            "timelineProbeCount": 21,
-            "routePlanningProbeCount": 9,
+            "timelineProbeCount": 22,
+            "routePlanningProbeCount": 10,
             "lightweightProbeCount": 12,
             "progressChanged": false,
             "inventoryChanged": false,
@@ -12038,8 +12044,8 @@
               "multiplayerActualSessionPass": false
             },
             "performance": {
-              "memoryMb": 2832.15625,
-              "descendantCount": 1864
+              "memoryMb": 2896.89453125,
+              "descendantCount": 1865
             },
             "multiplayer": {
               "version": 2,
@@ -12103,7 +12109,6 @@
           "initial-character-spawned",
           "initial-ui-playability",
           "mcp-input-dispatched",
-          "actual-play-post-keyboard-client-probe",
           "ROBLOX_STUDIO_RUNTIME"
         ],
         "rawSourceIncluded": false,
@@ -12275,7 +12280,7 @@
             "pass": true
           },
           {
-            "id": "observed-action-f4b7925e7730baec4ae6",
+            "id": "observed-action-7648ed9a6296eb3f1c04",
             "pass": false
           },
           {
@@ -12291,11 +12296,15 @@
             "pass": true
           },
           {
+            "id": "observed-action-ba70933adab1e2e60a5f",
+            "pass": true
+          },
+          {
             "id": "observed-action-b44707afa0efc7f8fa15",
             "pass": true
           },
           {
-            "id": "observed-action-ba70933adab1e2e60a5f",
+            "id": "observed-action-bffcb6fc96faff9b4d69",
             "pass": true
           },
           {
@@ -12310,7 +12319,7 @@
         "scenarioCoveragePass": false,
         "qualityFailureKinds": [
           "adaptive-map-route-coverage",
-          "observed-action-f4b7925e7730baec4ae6"
+          "observed-action-7648ed9a6296eb3f1c04"
         ],
         "qualityFailureDetails": [
           {
@@ -12324,7 +12333,7 @@
               "routeRequired": 1,
               "routes": [
                 {
-                  "id": "map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode8.ProximityPrompt",
+                  "id": "map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode3.ProximityPrompt",
                   "ok": false,
                   "moved": 0,
                   "fall": 0,
@@ -12334,17 +12343,17 @@
             }
           },
           {
-            "id": "observed-action-f4b7925e7730baec4ae6",
+            "id": "observed-action-7648ed9a6296eb3f1c04",
             "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
             "priority": "HIGH",
             "hint": "Replay the exact observed action and verify its real state change after repair.",
             "observed": {
-              "id": "observed-action-f4b7925e7730baec4ae6",
+              "id": "observed-action-7648ed9a6296eb3f1c04",
               "pass": false,
               "required": true,
               "generatedFrom": "OFFICIAL_STUDIO_OBSERVED_ACTION",
-              "actionId": "map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode8.ProximityPrompt",
-              "targetIdentity": "map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode8.ProximityPrompt",
+              "actionId": "map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode3.ProximityPrompt",
+              "targetIdentity": "map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode3.ProximityPrompt",
               "actionType": "mcp-map-route-audit",
               "effectRequired": false,
               "attempts": 1
@@ -12358,8 +12367,8 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-10-01T16:40:52.625Z",
-        "workflowRunId": 36891609008,
+        "testedAt": "2026-10-01T17:00:22.946Z",
+        "workflowRunId": 36889761781,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -12656,7 +12665,7 @@
         "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
         "qualityFailureKinds": [
           "adaptive-map-route-coverage",
-          "observed-action-f4b7925e7730baec4ae6"
+          "observed-action-7648ed9a6296eb3f1c04"
         ],
         "qualityFailureDetails": [
           {
@@ -12670,7 +12679,7 @@
               "routeRequired": 1,
               "routes": [
                 {
-                  "id": "map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode8.ProximityPrompt",
+                  "id": "map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode3.ProximityPrompt",
                   "ok": false,
                   "moved": 0,
                   "fall": 0,
@@ -12680,17 +12689,17 @@
             }
           },
           {
-            "id": "observed-action-f4b7925e7730baec4ae6",
+            "id": "observed-action-7648ed9a6296eb3f1c04",
             "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
             "priority": "HIGH",
             "hint": "Replay the exact observed action and verify its real state change after repair.",
             "observed": {
-              "id": "observed-action-f4b7925e7730baec4ae6",
+              "id": "observed-action-7648ed9a6296eb3f1c04",
               "pass": false,
               "required": true,
               "generatedFrom": "OFFICIAL_STUDIO_OBSERVED_ACTION",
-              "actionId": "map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode8.ProximityPrompt",
-              "targetIdentity": "map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode8.ProximityPrompt",
+              "actionId": "map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode3.ProximityPrompt",
+              "targetIdentity": "map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode3.ProximityPrompt",
               "actionType": "mcp-map-route-audit",
               "effectRequired": false,
               "attempts": 1
@@ -12702,8 +12711,8 @@
           "ROBLOX_OBSERVED_INTERACTION"
         ],
         "robloxFailureClass": "ROBLOX_STUDIO_RUNTIME",
-        "testedAt": "2026-10-01T16:40:52.625Z",
-        "workflowRunId": 36891609008,
+        "testedAt": "2026-10-01T17:00:22.946Z",
+        "workflowRunId": 36889761781,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxQualityBuildUpLastPassedAt": "2026-09-28T19:43:44.738Z",
@@ -12745,7 +12754,7 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-01T16:40:52.625Z"
+        "verifiedAt": "2026-10-01T17:00:22.946Z"
       },
       "robloxRuntimeEvidenceReuse": {
         "sourceRevision": "f1edcf85599d6e73120ae474dc867f222b9318d4",
@@ -25292,7 +25301,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T16:58:57.016Z",
+  "updatedAt": "2026-10-01T17:00:22.946Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
