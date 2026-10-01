@@ -1,5 +1,5 @@
 {
-  "version": 61,
+  "version": 62,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -466,7 +466,7 @@
     "failureAction": "QUARANTINE_AFFECTED_ASSET_OR_SCOPE_AND_ROUTE_ASSET_REPAIR_REQUIRED",
     "wholeCompanyStopDefault": false
   },
-  "updatedAt": "2026-09-26",
+  "updatedAt": "2026-10-02",
   "graphicsProductionUnificationSecurity": {
     "version": 1,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -1023,5 +1023,18 @@
     "publicationRetryMayNotGateNextEvolution": true,
     "f10Forbidden": true,
     "terminalEvolutionStateForbidden": true
+  },
+  "unityFoundationAdapterSecurity": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.nativeGameFoundationValidationStack.unityAdapter",
+    "exactSourceArtifactBindingRequired": true,
+    "fabricatedFloorPassForbidden": true,
+    "missingRuntimeEvidenceFailsClosed": true,
+    "staleRuntimeEvidenceMayNotPromote": true,
+    "duplicatePerFloorRuntimeReplayForbidden": true,
+    "f9MayOnlyFanInPreviouslyVerifiedExactRuntimeAndIndependentQaEvidence": true,
+    "f9RuntimeReplayForbidden": true,
+    "publicationBeforeF9Forbidden": true,
+    "failureRoutesExistingRepairPipeline": true
   }
 }
