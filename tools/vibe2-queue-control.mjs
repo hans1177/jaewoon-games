@@ -505,7 +505,7 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, re
   };
 }
 
-export function markVibeTaskAwaiting(queueInput, { taskId = '', evidence = [], blocker = 'awaiting-qa', expectedReservationId = '' } = {}) {
+export function markVibeTaskAwaiting(queueInput, { taskId = '', evidence = [], blocker = 'awaiting-qa', expectedReservationId = '', retainedResponsibleFileLocks = [] } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
   const id = clean(taskId);
   const expected = clean(expectedReservationId);
@@ -527,6 +527,7 @@ export function markVibeTaskAwaiting(queueInput, { taskId = '', evidence = [], b
       ...task,
       status: 'running',
       blocker: clean(blocker) || 'awaiting-qa',
+      retainedResponsibleFileLocks:[...new Set((retainedResponsibleFileLocks||[]).map(clean).filter(Boolean))],
       evidence: [...new Set(mergedEvidence)]
     };
   });
@@ -544,7 +545,17 @@ export function releaseVibeTaskExecutionSlot(queueInput, { taskId = '', evidence
   if (/candidate-awaiting-runtime-evidence|awaiting.*qa|qa.*awaiting/i.test(currentBlocker) || /slot-released.*fan-in/i.test(currentBlocker)) {
     return { released:false, updated:false, reason:'ALREADY_RELEASED', queue };
   }
-  const nextQueue = markVibeTaskAwaiting(queue, { taskId:id, evidence, blocker:clean(blocker) || 'slot-released-awaiting-fan-in' });
+  const root=clean(task.sourceRoot).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
+  const retainedResponsibleFileLocks=[...new Set((task.responsibleFiles||[])
+    .map(value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,''))
+    .filter(Boolean)
+    .map(file=>root&&!file.startsWith(root+'/')?root+'/'+file:file))];
+  const nextQueue = markVibeTaskAwaiting(queue, {
+    taskId:id,
+    evidence,
+    blocker:clean(blocker) || 'slot-released-awaiting-fan-in',
+    retainedResponsibleFileLocks
+  });
   return { released:true, updated:true, reason:'RELEASED', queue:nextQueue };
 }
 
