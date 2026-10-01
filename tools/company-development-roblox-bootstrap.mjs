@@ -593,7 +593,13 @@ function replaceOrInsertVerifiedExternalLearningConfig(source='',learning={}){
 
 function bindExistingClientVerifiedExternalLearning(source='',learning={}){
   let output=source;
-  const requireMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*require\([^\n]*GameConfig[^\n]*\)/);
+  let requireMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*require\([^\n]*GameConfig[^\n]*\)/);
+  if(!requireMatch){
+    const configRequire='local VerifiedExternalLearningConfig = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("GameConfig"))\n';
+    const commentHeader=output.match(/^(?:(?:--[^\n]*\n)|\s*\n)*/)?.[0]||'';
+    output=commentHeader+configRequire+output.slice(commentHeader.length);
+    requireMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*require\([^\n]*GameConfig[^\n]*\)/);
+  }
   if(!requireMatch)throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CLIENT_CONFIG_REQUIRE_MISSING');
   const configVar=requireMatch[1];
   const contextBlock=`-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN
