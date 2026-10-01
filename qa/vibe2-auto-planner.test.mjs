@@ -3975,12 +3975,22 @@ test('queued Web assessment with PRESENTATION generation is repaired into graphi
   assert.equal(first.task.id,`${gameId}-existing-web-assessment-v1`);
   assert.ok(first.task.buildUpDirective?.directiveId,'assessment must bind the BUILD_UP generation immediately');
 
+  fs.rmSync(path.join(root,'design',gameId),{recursive:true,force:true});
+  const legacyDirectiveId=`${gameId}-build-up-g1-legacy-presentation`;
   const stale={
     ...first.task,
     status:'queued',
     presentationPass:null,
     graphicsReplacementContract:null,
-    buildUpDirective:{...first.task.buildUpDirective,primaryFocus:'PRESENTATION'},
+    buildUpDirectiveId:legacyDirectiveId,
+    buildUpGeneration:1,
+    buildUpDirective:{
+      directiveId:legacyDirectiveId,
+      gameId,
+      generation:1,
+      primaryFocus:'PRESENTATION',
+      autonomousContentExpansion:{version:1}
+    },
     evidence:(first.task.evidence||[]).filter(value=>
       value!=='presentation-pass:ASSET_ADAPTATION'
       &&value!=='presentation-quality-pipeline:v1'
