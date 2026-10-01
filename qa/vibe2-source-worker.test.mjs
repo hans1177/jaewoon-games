@@ -5202,6 +5202,42 @@ test('oversized standard JSON edit starts with bounded writable context instead 
 });
 
 
+test('oversized retry prompt bounds a giant single-line goal while preserving explicit learning and writable scope',()=>{
+  const hugeGoal='Goal: BEGIN_PRIORITY '+('duplicate-detail '.repeat(18000))+' END_PRIORITY';
+  const learning=[
+    '[VERIFIED EXTERNAL BLACK-BOX LEARNING BEGIN]',
+    'dispositions=1/1; sourcePrinciples=1; validationOnly=0; truncation=FORBIDDEN',
+    '[EXTERNAL_LEARNING external-black-box-demo]',
+    'DISPOSITION=principle-1:APPLIED_GAME_SOURCE;GAME=demo;TARGET=unity;DOMAINS=UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY;GENRE_MOOD=neutral',
+    'APPLY=keep the primary mobile control visible beside the active gameplay state',
+    '[END_EXTERNAL_LEARNING external-black-box-demo]',
+    '[VERIFIED EXTERNAL BLACK-BOX LEARNING END]'
+  ].join('\n');
+  const prompt=[
+    'You are the Vibe2 game source worker. Return JSON only.',
+    'Engine: unity',
+    hugeGoal,
+    learning,
+    'Allowed edit paths: Assets/Scripts/GameCore.cs',
+    '=== FILE Assets/Scripts/GameCore.cs [EDITABLE] ===',
+    'public class GameCore { public int State = 1; }'
+  ].join('\n');
+  const retry=buildGenerationRetryPrompt(prompt,{
+    allowFullRewrite:false,
+    error:new Error('Ollama 응답 시간 초과: 240000ms'),
+    responsibleFiles:['Assets/Scripts/GameCore.cs'],
+    attempt:2,
+    sourceRoot:'unity-games/demo'
+  });
+  assert.ok(Buffer.byteLength(retry,'utf8')<20000);
+  assert.match(retry,/Goal: BEGIN_PRIORITY/);
+  assert.match(retry,/END_PRIORITY/);
+  assert.match(retry,/COMPACTED_DUPLICATE_DETAIL/);
+  assert.match(retry,/APPLY=keep the primary mobile control visible/);
+  assert.match(retry,/Allowed edit paths: Assets\/Scripts\/GameCore\.cs/);
+  assert.doesNotMatch(retry,/duplicate-detail (?:duplicate-detail ){200}/);
+});
+
 test('Roblox repeated assignment stream aborts before completion and retries without applying partial source',{timeout:5000},async(t)=>{
   const cwd=tempRoot(),root='roblox-games/demo',relative='client/Game.client.luau',requests=[];
   const source='local status = {Text = "ready"}\nstatus.Text = "ready"\n';
