@@ -649,51 +649,15 @@ export class JaewoonGeminiAI {
     this.cache = new Map();
   }
 
-  async askDialogue({
-    characterId = '', personality = '', voiceProfile = {}, relationship = {}, playerModel = {},
-    knowledgeBoundary = '', recentAdvice = [], profanityProfile = {}, gameContext = '', playerText = '', fallbackSpeech = '...'
-  } = {}) {
+  async askDialogue({ characterId = '', personality = '', gameContext = '', playerText = '', fallbackSpeech = '...' } = {}) {
     const fallback = { ok: false, fallback: true, speech: fallbackSpeech, mood: 'neutral', intent: 'talk' };
-    const cacheKey = `dialogue|${characterId}|${gameContext}|${playerText}|${JSON.stringify(relationship)}`;
+    const cacheKey = `dialogue|${characterId}|${gameContext}|${playerText}`;
     return this.ask({
       purpose: 'dialogue',
-      system: [
-        `Character ID: ${String(characterId).slice(0, 80)}`,
-        `Personality: ${String(personality).slice(0, 800)}`,
-        `Voice profile: ${JSON.stringify(voiceProfile).slice(0, 900)}`,
-        `Relationship: ${JSON.stringify(relationship).slice(0, 900)}`,
-        `Actor view of player: ${JSON.stringify(playerModel).slice(0, 900)}`,
-        `Knowledge boundary: ${String(knowledgeBoundary).slice(0, 500)}`,
-        `Recent advice: ${JSON.stringify(recentAdvice).slice(0, 700)}`,
-        `Profanity profile: ${JSON.stringify(profanityProfile).slice(0, 500)}`,
-        'Stay in character. Silence or a short reply is valid. Do not reveal information outside the character knowledge boundary. Do not repeat recent advice unless the player asked again or repeated failure justifies a stronger hint. Do not decide rewards, quest completion, damage, saves, or authoritative game state.'
-      ].join('\n'),
+      system: `Character ID: ${String(characterId).slice(0, 80)}\nPersonality: ${String(personality).slice(0, 800)}`,
       context: String(gameContext).slice(0, 5000),
       user_text: String(playerText).slice(0, 2000)
     }, cacheKey, fallback);
-  }
-
-  async askGuidance({
-    characterId = '', personality = '', gameContext = '', observedPlayerModel = {}, recentFailures = [],
-    recentAdvice = [], allowedHintSubjects = [], spoilerLevel = 'NUDGE', profanityProfile = {}, fallbackSpeech = ''
-  } = {}) {
-    const fallback = { ok: false, fallback: true, speech: fallbackSpeech, intent: 'silence', hintSubject: '' };
-    return this.ask({
-      purpose: 'dialogue',
-      system: [
-        `Character ID: ${String(characterId).slice(0, 80)}`,
-        `Personality: ${String(personality).slice(0, 800)}`,
-        `Observed player model: ${JSON.stringify(observedPlayerModel).slice(0, 1000)}`,
-        `Recent failures: ${JSON.stringify(recentFailures).slice(0, 1000)}`,
-        `Recent advice: ${JSON.stringify(recentAdvice).slice(0, 800)}`,
-        `Allowed hint subjects: ${JSON.stringify(allowedHintSubjects).slice(0, 800)}`,
-        `Spoiler level: ${String(spoilerLevel)}`,
-        `Profanity profile: ${JSON.stringify(profanityProfile).slice(0, 500)}`,
-        'Return character-specific progress help only from observed or engine-provided information. If no useful new advice exists, choose silence. Do not invent hidden puzzle answers, rewards, stats, spawns, or quest completion.'
-      ].join('\n'),
-      context: String(gameContext).slice(0, 5000),
-      user_text: 'Choose whether to give one useful in-character gameplay hint now.'
-    }, '', fallback);
   }
 
   async askStrategy({ actorId = '', role = '', gameContext = '', allowedActions = [], fallbackAction = 'follow' } = {}) {
