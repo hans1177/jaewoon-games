@@ -1768,6 +1768,20 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
     'Repair only the measured regions and listed editableParameters against the exact sourceHash and previousParameters. Preserve lockedParameters, identityAnchors, untouched parameter values, gameplay event times, clip duration and root authority. Missing measurements remain UNVERIFIED; unmeasuredGroups are not inspected. Re-measure and recapture after authoring; do not mark findings closed from declarations or a numeric trace PASS.',
     '[ASSET DETAIL REPAIR END]'
   ].join('\n'):'';
+  const runtimeVisual=order.runtimeVisualObservation;
+  const runtimeVisualBlock=runtimeVisual?.required?[
+    '[RUNTIME VISUAL REVIEW BEGIN]',
+    JSON.stringify({
+      status:runtimeVisual.status,sourceRevision:runtimeVisual.sourceRevision,
+      captures:(runtimeVisual.captures||[]).map(capture=>({
+        captureId:capture.captureId,artifactHash:capture.artifactHash,platform:capture.platform,surface:capture.surface,view:capture.view,sceneId:capture.sceneId,
+        visibleSubjects:capture.visibleSubjects,missingSubjects:capture.missingSubjects,uncertainSubjects:capture.uncertainSubjects,findings:capture.findings
+      })),
+      repairs:runtimeVisual.repairs||[],uncertainSubjects:runtimeVisual.uncertainSubjects||[],protectedSemantics:runtimeVisual.protectedSemantics||[]
+    }),
+    'Use only pixel-proven findings from the exact sourceRevision and capture artifactHash. Add a missing object only when it is a required expected subject proven missing in that exact view. Never convert uncertain/off-camera/occluded evidence into an addition. Repair existing responsible source/assets only, preserve protected gameplay/save/network semantics, then require a same-surface/view recapture before closing the visual finding.',
+    '[RUNTIME VISUAL REVIEW END]'
+  ].join('\n'):'';
   let goal=String(order.goal??'');
   const originalLearning=learningGuidance(order.unifiedLearning||{});
   if(learningContract.block&&(originalLearning||goal.includes(VERIFIED_LEARNING_MOTOR_BEGIN))){
@@ -1792,6 +1806,7 @@ explorationGuidance(exploration),
 presentationWorkerGuidance(order),
 universalAssetWorkerGuidance(order),
 assetDetailBlock,
+runtimeVisualBlock,
 order.imageAssetObservation?.required?'[IMAGE ASSET OBSERVATION BEGIN]\n'+JSON.stringify(order.imageAssetObservation)+'\nVisible observations are proposals from actual pixels. Hidden geometry and motion are creative proposals. Implement editable native assets, then compare close-up/full-turnaround/game-camera/action frames to the source; no placeholder or declaration-only completion.\n[IMAGE ASSET OBSERVATION END]':'',
 studioQualityWorkerGuidance(order),
 gameSpecificBuildUpDirectiveGuidance(order,responsibleFiles),
@@ -2751,7 +2766,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
       :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:(robloxRebuildFocused?JSON_CONTEXT_WINDOW:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))));
     // 압축·부분 수정·확장 재시도에서도 원본 관찰과 잠금/수정 범위를 보존하고 실제 전송량으로 예산을 잡는다.
-    for(const label of ['IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR']){
+    for(const label of ['IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR','RUNTIME VISUAL REVIEW']){
       const block=prompt.match(new RegExp('\\['+label+' BEGIN\\][\\s\\S]*?\\['+label+' END\\]'))?.[0]||'';
       if(block&&!attemptPrompt.includes(block))attemptPrompt+='\n'+block;
     }
@@ -3401,6 +3416,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   }
   const imageAssetObservation=await observeAssetReferenceImages({order,cwd});
   order.imageAssetObservation=imageAssetObservation;
+  const runtimeVisualObservation=await observeAssetRuntimeCaptures({order,cwd});
+  order.runtimeVisualObservation=runtimeVisualObservation;
   const prompt=buildPrompt(order,context,responsibleFiles,{allowFullRewrite,exploration,sourceRootBootstrap:bootstrap,focusedWebRepair,verifiedExternalLearningContract});
   const editContract=exploration?.editContract||{};
   const systemRegressionFiles=target==='system'?responsibleFiles.filter(file=>/^qa\/.+\.test\.(?:mjs|js|cjs)$/i.test(file)):[];
@@ -3730,6 +3747,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     specializedVerificationRequest:buildSpecializedVerificationRequest(order),
     assetProduction:order?.assetProduction&&typeof order.assetProduction==='object'?order.assetProduction:{required:false},
     imageAssetObservation,
+    runtimeVisualObservation,
     presentationQuality:order?.presentationQuality&&typeof order.presentationQuality==='object'?order.presentationQuality:{required:false,pass:null,authorityExpanded:false},
     graphicsReplacementReport:candidate.graphicsReplacementReport||null,
     graphicsReplacementValidation:semanticDiffEnforcement?.graphicsReplacementReport||{required:false,pass:true,reason:'NOT_REQUIRED',groundedCount:0},
