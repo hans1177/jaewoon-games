@@ -333,14 +333,30 @@ test('batch scan cancels stale queued foundation runs and preserves active valid
 });
 
 
-test('runtime foundation workflow retriggers when its deterministic QA contract changes',()=>{
+test('runtime foundation critical path uses responsibility-local QA and QA-only edits do not wake gameplay',()=>{
   const head=workflow.slice(0,workflow.indexOf('\njobs:\n'));
   for(const path of [
+    'qa/fixtures/company-roblox-studio-local-play-scenario.json',
     'qa/company-development-roblox-runtime-foundation.test.mjs',
     'qa/company-development-roblox-headless-fast-mvp.test.mjs',
     'qa/company-development-roblox-studio-local-play.test.mjs',
     'qa/company-tester-debug-intake.test.mjs',
-  ]) assert.ok(head.includes(path),path);
+  ]) assert.ok(!head.includes(path),path);
+
+  const start=workflow.indexOf('Run responsibility-local foundation protocol QA');
+  const end=workflow.indexOf('\n      - name:',start+20);
+  assert.ok(start>0&&end>start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/qa\/company-development-roblox-runtime-foundation\.test\.mjs/);
+  assert.match(block,/qa\/company-tester-debug-intake\.test\.mjs/);
+  assert.doesNotMatch(block,/qa\/company-development-roblox-headless-fast-mvp\.test\.mjs/);
+  assert.doesNotMatch(block,/qa\/company-development-roblox-studio-local-play\.test\.mjs/);
+  assert.match(block,/ROBLOX_FOUNDATION_DUPLICATE_F0_STUDIO_CONTRACT_QA=SKIPPED_CANONICAL_CI/);
+
+  const central=fs.readFileSync('.github/workflows/company-central-policy-contract-qa.yml','utf8');
+  const vibe3=fs.readFileSync('.github/workflows/vibe3-engine-contract.yml','utf8');
+  assert.match(central,/qa\/company-development-roblox-studio-local-play\.test\.mjs/);
+  assert.match(vibe3,/qa\/company-development-roblox-headless-fast-mvp\.test\.mjs/);
 });
 
 
