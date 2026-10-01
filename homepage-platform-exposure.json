@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": true,
-  "generatedAt": "2026-10-01T16:01:26.686Z",
+  "generatedAt": "2026-10-01T16:18:15.743Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -138,7 +138,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T15:57:28.658Z"
+      "updatedAt": "2026-10-01T16:17:53.776Z"
     },
     {
       "gameId": "bug-defense",
@@ -440,12 +440,11 @@
               "publication": true,
               "exactRuntime": false,
               "lobby": true,
-              "movement": false,
+              "movement": true,
               "noRuntimeErrors": true
             },
             "blockers": [
-              "exactRuntime",
-              "movement"
+              "exactRuntime"
             ],
             "sourceRevision": "15d9ebb42466049456bb2e215e5bfa08ae5f8f57",
             "artifactIdentity": "sha256:5da5b0060f238775c6cff0da1967faf3c236a61d3fd75dadf8dd5b302e9c3548",
@@ -513,7 +512,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T15:34:17.128Z"
+      "updatedAt": "2026-10-01T16:02:45.685Z"
     },
     {
       "gameId": "fantasy-survival",
@@ -632,7 +631,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T15:57:36.188Z"
+      "updatedAt": "2026-10-01T16:17:04.959Z"
     },
     {
       "gameId": "horror-escape-room",
@@ -749,7 +748,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T15:56:27.717Z"
+      "updatedAt": "2026-10-01T16:17:04.959Z"
     },
     {
       "gameId": "line-defense",
@@ -923,18 +922,19 @@
             "checks": {
               "design": true,
               "publication": true,
-              "exactRuntime": true,
+              "exactRuntime": false,
               "lobby": false,
               "movement": false,
               "noRuntimeErrors": true
             },
             "blockers": [
+              "exactRuntime",
               "lobby",
               "movement"
             ],
             "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
             "artifactIdentity": "sha256:4a832af7f08bc074bfc903e85a3732428b8d65b6798a4bee4b80fdbaf34b6040",
-            "verifiedAt": "2026-09-28T21:52:57.239Z"
+            "verifiedAt": null
           },
           "historicalInternalRelease": false,
           "internalReleaseState": "NOT_READY",
@@ -998,7 +998,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T15:29:57.664Z"
+      "updatedAt": "2026-10-01T16:18:13.568Z"
     },
     {
       "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -1293,18 +1293,19 @@
             "checks": {
               "design": true,
               "publication": true,
-              "exactRuntime": true,
+              "exactRuntime": false,
               "lobby": false,
               "movement": false,
               "noRuntimeErrors": true
             },
             "blockers": [
+              "exactRuntime",
               "lobby",
               "movement"
             ],
             "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
             "artifactIdentity": "sha256:f34852ab83c0f7a1b3ecbb9073b988617d580088f97ca678c3a97be7731969c0",
-            "verifiedAt": "2026-09-28T23:46:37.976Z"
+            "verifiedAt": null
           },
           "historicalInternalRelease": false,
           "internalReleaseState": "NOT_READY",
@@ -1368,7 +1369,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T15:29:57.664Z"
+      "updatedAt": "2026-10-01T16:15:38.744Z"
     },
     {
       "gameId": "seed-puzzle-chromatic-cascade",
@@ -1990,7 +1991,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T15:57:55.716Z"
+      "updatedAt": "2026-10-01T16:18:07.848Z"
     }
   ]
 }

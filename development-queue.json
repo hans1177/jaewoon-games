@@ -15306,10 +15306,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "REPAIR_REQUIRED",
-      "canonicalState": "REPAIR_REQUIRED",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T16:11:12.940Z",
+      "updatedAt": "2026-10-01T16:18:13.568Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -16557,7 +16557,7 @@
       "unityCandidateBranch": "development/unity-tech-monster-adventure-36773180555",
       "unitySourceCommit": "92c76090d928b7724e18a0fd980f1f173a4581ba",
       "unityBuildRunId": 36777792645,
-      "unityRuntimeSmokeRunId": 36883281202,
+      "unityRuntimeSmokeRunId": 36890698356,
       "unityIndependentQaRunId": 36791814550,
       "unityRegressionRunId": 36792018085,
       "unityInternalReleaseReady": false,
@@ -16916,7 +16916,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-01T15:21:35.260Z"
+        "verifiedAt": "2026-10-01T16:18:13.568Z"
       },
       "unityF9ReleaseRegressionPassed": false,
       "unityF9ReleaseRegressionPassedAt": null,
@@ -26491,7 +26491,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T16:18:07.848Z",
+  "updatedAt": "2026-10-01T16:18:15.547Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
