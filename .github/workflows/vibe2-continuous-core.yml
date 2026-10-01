@@ -116,6 +116,10 @@ jobs:
       reserved_at: ${{ steps.batch.outputs.reserved_at }}
       effective_max: ${{ steps.batch.outputs.effective_max }}
       contract_sha: ${{ steps.contract.outputs.sha }}
+      shared_policy_sha256: ${{ steps.shared_context.outputs.policy_sha256 }}
+      shared_log_map_sha256: ${{ steps.shared_context.outputs.log_map_sha256 }}
+      shared_architecture_sha256: ${{ steps.shared_context.outputs.architecture_sha256 }}
+      shared_security_sha256: ${{ steps.shared_context.outputs.security_sha256 }}
       task_review_required: ${{ steps.batch.outputs.task_review_required }}
       stranded_review_run: ${{ steps.stranded_review.outputs.source_run }}
       model_cache_hit: ${{ steps.ollama_cache_probe.outputs.cache-hit }}
@@ -204,6 +208,34 @@ jobs:
           echo "sha=$contract_sha" >> "$GITHUB_OUTPUT"
           echo "VIBE2_CONTINUOUS_CONTRACT_SHA=$contract_sha"
           echo 'VIBE2_MAIN_CONTRACT_SNAPSHOT=ARCHIVE'
+
+      - name: Compile central shared context once for worker cohort
+        id: shared_context
+        if: steps.main_wake.outputs.proceed == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          (
+            cd /tmp/vibe2-main
+            node tools/company-shared-context.mjs --output=/tmp/vibe2-reserve-shared-context.json | tee /tmp/vibe2-reserve-shared-context.log
+          )
+          grep -q '^WORKER_CONTEXT_SYNC=PASS$' /tmp/vibe2-reserve-shared-context.log
+          node <<'NODE'
+          const fs=require('fs');
+          const ctx=JSON.parse(fs.readFileSync('/tmp/vibe2-reserve-shared-context.json','utf8'));
+          const hashes=ctx.hashes||{};
+          const required=[
+            ['policy_sha256',hashes.policySha256],
+            ['log_map_sha256',hashes.logMapSha256],
+            ['architecture_sha256',hashes.architectureSha256],
+            ['security_sha256',hashes.securityPolicySha256]
+          ];
+          for(const [key,value] of required){
+            if(!/^[a-f0-9]{64}$/i.test(String(value||'')))throw new Error('VIBE2_RESERVE_SHARED_CONTEXT_HASH_MISSING:'+key);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,`${key}=${value}\n`);
+          }
+          console.log('VIBE2_RESERVE_SHARED_CONTEXT=FULL_VALIDATION_PASS');
+          NODE
 
       - name: Fast scheduler preflight
         if: steps.main_wake.outputs.proceed == 'true' && (github.event_name != 'repository_dispatch' || github.event.action != 'vibe2-neuron-complete')
@@ -830,6 +862,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.reserve.outputs.worker_matrix) }}
+    env:
+      WORKER_CONTEXT_EXPECTED_POLICY_SHA256: ${{ needs.reserve.outputs.shared_policy_sha256 }}
+      WORKER_CONTEXT_EXPECTED_LOG_MAP_SHA256: ${{ needs.reserve.outputs.shared_log_map_sha256 }}
+      WORKER_CONTEXT_EXPECTED_ARCHITECTURE_SHA256: ${{ needs.reserve.outputs.shared_architecture_sha256 }}
+      WORKER_CONTEXT_EXPECTED_SECURITY_POLICY_SHA256: ${{ needs.reserve.outputs.shared_security_sha256 }}
     steps:
       - name: Mark worker start
         shell: bash
@@ -924,7 +961,13 @@ jobs:
           test "$(git -C "$contract_root" rev-parse HEAD)" = "$CONTRACT_SHA"
           (
             cd "$contract_root"
-            node tools/company-shared-context.mjs --output=/tmp/vibe2-worker-shared-context.json | tee /tmp/vibe2-worker-shared-context.log
+            node tools/company-shared-context.mjs \
+              --pinned-hash-verify=true \
+              --expected-policy-sha256="$WORKER_CONTEXT_EXPECTED_POLICY_SHA256" \
+              --expected-log-map-sha256="$WORKER_CONTEXT_EXPECTED_LOG_MAP_SHA256" \
+              --expected-architecture-sha256="$WORKER_CONTEXT_EXPECTED_ARCHITECTURE_SHA256" \
+              --expected-security-policy-sha256="$WORKER_CONTEXT_EXPECTED_SECURITY_POLICY_SHA256" \
+              --output=/tmp/vibe2-worker-shared-context.json | tee /tmp/vibe2-worker-shared-context.log
           )
           grep -q '^WORKER_CONTEXT_SYNC=PASS$' /tmp/vibe2-worker-shared-context.log
           node "$contract_root/tools/vibe2-queue-control.mjs" verify-worker-sync             --queue="$GITHUB_WORKSPACE/.vibe2/queue.json"             --id="$TASK_ID"             --reservation-id="$RESERVATION_ID"             --reservation-run="$RESERVATION_RUN_ID"             --reservation-attempt="$RESERVATION_RUN_ATTEMPT"             --reserved-at="$RESERVED_AT" | tee /tmp/vibe2-worker-sync.log
@@ -1318,7 +1361,13 @@ jobs:
 
           cd "$candidate_dir"
           node --check tools/company-shared-context.mjs
-          node tools/company-shared-context.mjs --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-before.json" | tee "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-before.log"
+          node tools/company-shared-context.mjs \
+            --pinned-hash-verify=true \
+            --expected-policy-sha256="$WORKER_CONTEXT_EXPECTED_POLICY_SHA256" \
+            --expected-log-map-sha256="$WORKER_CONTEXT_EXPECTED_LOG_MAP_SHA256" \
+            --expected-architecture-sha256="$WORKER_CONTEXT_EXPECTED_ARCHITECTURE_SHA256" \
+            --expected-security-policy-sha256="$WORKER_CONTEXT_EXPECTED_SECURITY_POLICY_SHA256" \
+            --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-before.json" | tee "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-before.log"
           export VIBE2_BASE_MAIN_SHA="$base_sha"
           export VIBE2_SPECULATIVE_VARIANT="$VARIANT"
           export VIBE2_EXPLORATION_FILE=.vibe2/exploration.json
@@ -1338,7 +1387,13 @@ jobs:
           echo "generation_attempts=$generation_attempts" >> "$GITHUB_OUTPUT"
           echo "failure_class=$failure_class" >> "$GITHUB_OUTPUT"
           echo "failure_message=$failure_message" >> "$GITHUB_OUTPUT"
-          node tools/company-shared-context.mjs --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.json" | tee "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.log"
+          node tools/company-shared-context.mjs \
+            --pinned-hash-verify=true \
+            --expected-policy-sha256="$WORKER_CONTEXT_EXPECTED_POLICY_SHA256" \
+            --expected-log-map-sha256="$WORKER_CONTEXT_EXPECTED_LOG_MAP_SHA256" \
+            --expected-architecture-sha256="$WORKER_CONTEXT_EXPECTED_ARCHITECTURE_SHA256" \
+            --expected-security-policy-sha256="$WORKER_CONTEXT_EXPECTED_SECURITY_POLICY_SHA256" \
+            --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.json" | tee "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.log"
           if [ "$worker_rc" -ne 0 ]; then exit "$worker_rc"; fi
           candidate_manifest_rel="$(sed -n 's/^VIBE2_CANDIDATE_MANIFEST=//p' "$source_worker_log" | tail -n1)"
           test -n "$candidate_manifest_rel"
