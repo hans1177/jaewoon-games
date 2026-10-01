@@ -53,6 +53,18 @@ const AUTONOMOUS_CONTENT_EXPANSION_DEFAULT=Object.freeze({
     platforms:Object.freeze(['WEB','ROBLOX','UNITY'])
   }),
   autonomy:Object.freeze({decisionOwner:'VIBE'}),
+  dataCapacityBudget:Object.freeze({
+    limits:Object.freeze({
+      savePersistedDataBytes:2*1024*1024,
+      webDownloadBytes:100*1024*1024,
+      singleFileBytes:25*1024*1024,
+      mobileMemoryTargetBytes:300*1024*1024,
+      mobileMinimumFps:30
+    }),
+    warningRatio:0.8,
+    contentCountLimit:null,
+    buildUpGenerationLimit:null
+  }),
   completenessEvolution:Object.freeze({
     eachIterationMustCheckExistingContentToo:true,
     quantityOnlyExpansionForbidden:true,
@@ -208,7 +220,7 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
     const extension=path.extname(file).toLowerCase();
     const text=TEXT_SOURCE_EXTENSIONS.has(extension)?buffer.toString('utf8'):'';
     const relative=posix(path.relative(repoRoot,file));
-    return{file:relative,text,buffer,sourceAnchors:TEXT_SOURCE_EXTENSIONS.has(extension)?sourceAnchorCandidates(text,relative):[]};
+    return{file:relative,text,buffer,bytes:buffer.length,sourceAnchors:TEXT_SOURCE_EXTENSIONS.has(extension)?sourceAnchorCandidates(text,relative):[]};
   });
   const joined=rows.map(row=>row.text).join('\n');
   const fingerprint=crypto.createHash('sha256');
@@ -254,6 +266,8 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
     sourceRoot:posix(sourceRoot),
     sourceTreeFingerprint:files.length?fingerprint.digest('hex'):sha('missing:'+sourceRoot),
     fileCount:files.length,
+    sourceBytes:rows.reduce((sum,row)=>sum+Number(row.bytes||0),0),
+    largestFileBytes:rows.reduce((max,row)=>Math.max(max,Number(row.bytes||0)),0),
     topFiles,
     sourceAnchors:Object.freeze(sourceAnchors),
     signals,
@@ -291,6 +305,8 @@ export function inspectGameSources({repoRoot=process.cwd(),sourceRoots=[]}={}){
     sourceRoots:Object.freeze(roots),
     sourceTreeFingerprint:combinedFingerprint,
     fileCount:parts.reduce((n,part)=>n+Number(part.fileCount||0),0),
+    sourceBytes:parts.reduce((n,part)=>n+Number(part.sourceBytes||0),0),
+    largestFileBytes:parts.reduce((n,part)=>Math.max(n,Number(part.largestFileBytes||0)),0),
     topFiles:Object.freeze(topFiles),
     sourceAnchors:Object.freeze(sourceAnchors),
     signals:Object.freeze(signals),
@@ -716,11 +732,65 @@ function autonomousContentExpansionPolicy(repoRoot=process.cwd()){
   return AUTONOMOUS_CONTENT_EXPANSION_DEFAULT;
 }
 
+function capacityBudgetState({policy={},source={},runtimeEvidence={},platform='COMMON'}={}){
+  const contract=policy?.dataCapacityBudget||AUTONOMOUS_CONTENT_EXPANSION_DEFAULT.dataCapacityBudget;
+  const limits={
+    savePersistedDataBytes:Number(contract?.limits?.savePersistedDataBytes||2*1024*1024),
+    webDownloadBytes:Number(contract?.limits?.webDownloadBytes||100*1024*1024),
+    singleFileBytes:Number(contract?.limits?.singleFileBytes||25*1024*1024),
+    mobileMemoryTargetBytes:Number(contract?.limits?.mobileMemoryTargetBytes||300*1024*1024),
+    mobileMinimumFps:Number(contract?.limits?.mobileMinimumFps||30)
+  };
+  const warningRatio=Math.min(0.95,Math.max(0.5,Number(contract?.warningRatio||0.8)));
+  const requestedPlatform=clean(platform).toUpperCase()||'COMMON';
+  const measured={
+    sourceBytes:Math.max(0,Number(source?.sourceBytes||0)),
+    largestFileBytes:Math.max(0,Number(source?.largestFileBytes||0)),
+    savePersistedDataBytes:Math.max(0,Number(runtimeEvidence?.persistedDataBytes??runtimeEvidence?.saveBytes??0)),
+    mobileMemoryBytes:Math.max(0,Number(runtimeEvidence?.mobileMemoryBytes??runtimeEvidence?.memoryBytes??0)),
+    mobileFps:Math.max(0,Number(runtimeEvidence?.mobileFps??runtimeEvidence?.fps??0))
+  };
+  const exceeded=[],warning=[];
+  const checkBytes=(name,value,limit)=>{
+    if(!(value>0&&limit>0))return;
+    if(value>limit)exceeded.push(name);
+    else if(value>=limit*warningRatio)warning.push(name);
+  };
+  checkBytes('SAVE_AND_PERSISTED_DATA_BUDGET',measured.savePersistedDataBytes,limits.savePersistedDataBytes);
+  checkBytes('SINGLE_FILE_BUDGET',measured.largestFileBytes,limits.singleFileBytes);
+  if(requestedPlatform==='WEB')checkBytes('WEB_DOWNLOAD_BUDGET',measured.sourceBytes,limits.webDownloadBytes);
+  checkBytes('MOBILE_MEMORY_BUDGET',measured.mobileMemoryBytes,limits.mobileMemoryTargetBytes);
+  if(measured.mobileFps>0){
+    if(measured.mobileFps<limits.mobileMinimumFps)exceeded.push('MOBILE_FRAME_BUDGET');
+    else if(measured.mobileFps<limits.mobileMinimumFps/warningRatio)warning.push('MOBILE_FRAME_BUDGET');
+  }
+  const state=exceeded.length?'EXCEEDED':warning.length?'WARNING':'NORMAL';
+  const strategy=state==='NORMAL'
+    ?'CONTINUE_HIGHEST_VALUE_COHERENT_BUILD_UP'
+    :state==='WARNING'
+      ?'PREFER_REUSE_RECOMBINATION_COMPRESSION_STREAMING_POOLING_AND_EXISTING_SYSTEM_DEPTH'
+      :'CAUSAL_CAPACITY_REPAIR_USING_REUSE_RECOMBINATION_COMPRESSION_STREAMING_POOLING_THEN_CONTINUE_BUILD_UP';
+  return Object.freeze({
+    state,
+    limits:Object.freeze(limits),
+    warningRatio,
+    measured:Object.freeze(measured),
+    warning:Object.freeze(warning),
+    exceeded:Object.freeze(exceeded),
+    strategy,
+    generationLimit:null,
+    contentCountLimit:null,
+    buildUpMustContinue:true,
+    protectedStateDeletionForbidden:true
+  });
+}
+
 function buildAutonomousContentExpansion({
   repoRoot=process.cwd(),source={},states=[],focus='CORE_FUN',previousDirective=null,
-  previousEffectiveness={},nextActionDecision={},platform='COMMON'
+  previousEffectiveness={},nextActionDecision={},platform='COMMON',runtimeEvidence={}
 }={}){
   const policy=autonomousContentExpansionPolicy(repoRoot);
+  const capacity=capacityBudgetState({policy,source,runtimeEvidence,platform});
   const stateByDomain=new Map(states.map(row=>[clean(row.domain),clean(row.state).toUpperCase()]));
   const previousExpansion=previousDirective?.autonomousContentExpansion||null;
   const previousTheme=clean(previousExpansion?.selectedTheme);
@@ -774,6 +844,7 @@ function buildAutonomousContentExpansion({
     platformScope:Object.freeze([...(policy?.scope?.platforms||['WEB','ROBLOX','UNITY'])]),
     requestedPlatform:clean(platform).toUpperCase()||'COMMON',
     executionMode:repairFirst?'CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT':'AUTONOMOUS_CONTENT_BUILD_UP',
+    dataCapacityBudget:capacity,
     existingCompletenessReview:Object.freeze({
       requiredEveryBuildUp:true,
       mode:'CHECK_EXISTING_AND_EXPAND_OR_IMPROVE_WHICHEVER_HAS_HIGHER_PLAYER_VALUE',
@@ -830,7 +901,8 @@ function buildAutonomousContentExpansion({
     completionAcceptance:Object.freeze([
       'REAL_GAME_SOURCE_DELTA_REQUIRED','PLAYER_FACING_OR_GAMEPLAY_SYSTEM_EFFECT_REQUIRED',
       'DISTINCT_FROM_EXISTING_CONTENT_BY_MEANING_NOT_ONLY_NAME_OR_STATS','CONNECTED_TO_EXISTING_GAME_FLOW',
-      'CONTINUITY_AND_CAUSALITY_PRESERVED','EXISTING_RELEVANT_INCREMENTAL_QA_PASSES'
+      'CONTINUITY_AND_CAUSALITY_PRESERVED','EXISTING_RELEVANT_INCREMENTAL_QA_PASSES',
+      'DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP'
     ])
   });
 }
@@ -878,6 +950,8 @@ export function directivePrompt(d={}){
     `NEXT_VIBE_ACTION: ${d.nextActionDecision?.action||'CONTINUE_BUILD_UP_CURRENT_SYSTEM'} - ${d.nextActionDecision?.reason||''}`,
     `AUTONOMOUS_CONTENT_EXPANSION: mode=${expansion.executionMode||'AUTONOMOUS_CONTENT_BUILD_UP'}; theme=${expansion.selectedTheme||'AUTO'}; themeDepth=${expansion.themeDepth||1}; decisionOwner=${expansion.autonomousDecisionOwner||'VIBE'}; boundary=${expansion.executionBoundary||'EXISTING_BUILD_UP_ONLY'}`,
     `CONTENT_BREADTH_LEDGER: covered=${expansion.themeCoverageLedger?.distinctCovered||0}/${expansion.themeCoverageLedger?.totalThemes||0}; missing=${(expansion.themeCoverageLedger?.missingThemes||[]).join(',')||'NONE'}; leastCovered=${(expansion.themeCoverageLedger?.leastCoveredThemes||[]).join(',')||'NONE'}`,
+    `DATA_CAPACITY_BUDGET: state=${expansion.dataCapacityBudget?.state||'NORMAL'}; strategy=${expansion.dataCapacityBudget?.strategy||'CONTINUE_BUILD_UP'}; saveMax=${expansion.dataCapacityBudget?.limits?.savePersistedDataBytes||0}; webMax=${expansion.dataCapacityBudget?.limits?.webDownloadBytes||0}; singleFileMax=${expansion.dataCapacityBudget?.limits?.singleFileBytes||0}; mobileMemoryTarget=${expansion.dataCapacityBudget?.limits?.mobileMemoryTargetBytes||0}; mobileMinFps=${expansion.dataCapacityBudget?.limits?.mobileMinimumFps||0}; generationLimit=NONE; contentCountLimit=NONE`,
+    expansion.dataCapacityBudget?.state==='NORMAL'?'DATA_CAPACITY_ACTION: 새 콘텐츠와 기존 시스템 심화 중 플레이어 가치가 높은 쪽을 선택한다.':'DATA_CAPACITY_ACTION: BUILD_UP을 멈추지 말고 새 원시 데이터 추가보다 기존 에셋/시스템 재사용·재조합, 압축, 스트리밍/LOD, 풀링, 수명 관리와 시스템 심화를 우선한다. 저장 진행/인벤토리/장비/해금/퀘스트 의미를 삭제해서 예산을 맞추지 않는다.',
     `EXISTING_COMPLETENESS_CHECK: ${expansion.existingCompletenessReview?.mode||'CHECK_EXISTING_AND_EXPAND_OR_IMPROVE'}; dimensions=${(expansion.existingCompletenessReview?.dimensions||[]).join(',')}`,
     'COHERENT_CONTENT_BUNDLE:',
     expansionBundle,
@@ -1002,7 +1076,7 @@ export function buildGameSpecificBuildUpDirective({
   });
   const nextActionDecision=decideNextVibeAction({previousEffectiveness,previousOutcome:previousDirectiveOutcome,focus});
   const autonomousContentExpansion=buildAutonomousContentExpansion({
-    repoRoot,source,states,focus,previousDirective,previousEffectiveness,nextActionDecision,platform
+    repoRoot,source,states,focus,previousDirective,previousEffectiveness,nextActionDecision,platform,runtimeEvidence
   });
   const systemNames=design.signatureSystems.map(x=>x.name).filter(Boolean);
   const gameplay=[
