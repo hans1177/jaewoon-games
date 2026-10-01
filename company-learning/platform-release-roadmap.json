@@ -1,5 +1,5 @@
 {
-  "version": 508,
+  "version": 509,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -13567,6 +13567,233 @@
           "ENGINE_RECORDS_OUTCOME",
           "ACTOR_MEMORY_RELATIONSHIP_AND_PERSONAL_ARC_REFLECT_OUTCOME"
         ]
+      },
+      "livingWorldAutonomy": {
+        "objective": "NPC_COMPANION_BOSS_RARE_MONSTER_AND_FOREGROUND_MONSTER_CONTINUE_MEANINGFUL_PERSONAL_ACTIVITY_INSIDE_AUTHORED_GAME_CONTENT_INSTEAD_OF_IDLING_UNTIL_PLAYER_INTERACTION",
+        "canonicalLifeLoop": [
+          "PERCEIVE_LOCAL_WORLD",
+          "CHECK_NEEDS_DUTIES_RELATIONSHIPS_AND_PERSONAL_GOALS",
+          "BUILD_BOUNDED_ACTIVITY_CANDIDATES",
+          "SELECT_CURRENT_ACTIVITY",
+          "ENGINE_VALIDATE_ACTIVITY",
+          "TRAVEL_OR_POSITION",
+          "PERFORM_ACTIVITY",
+          "REACT_TO_INTERRUPTIONS",
+          "OBSERVE_RESULT",
+          "UPDATE_MEMORY_RELATIONSHIP_AND_PERSONAL_PLAN",
+          "RESUME_OR_CHOOSE_NEXT_ACTIVITY"
+        ],
+        "activitySources": [
+          "BIOLOGICAL_OR_REST_NEED",
+          "OCCUPATION_OR_DUTY",
+          "HOME_OR_TERRITORY",
+          "PERSONAL_LONG_TERM_GOAL",
+          "RELATIONSHIP_OBLIGATION",
+          "FACTION_OR_GROUP_DUTY",
+          "LOCAL_WORLD_EVENT",
+          "RECENT_MEMORY",
+          "PLAYER_INTERACTION",
+          "OPPORTUNITY_OR_THREAT",
+          "TIME_OF_DAY",
+          "WEATHER_WHEN_RELEVANT"
+        ],
+        "actorTaskStack": {
+          "lanes": [
+            "IMMEDIATE_SAFETY",
+            "CURRENT_COMMITMENT",
+            "ROUTINE",
+            "SOCIAL_OBLIGATION",
+            "PERSONAL_PROJECT",
+            "SELF_ACTUALIZATION",
+            "OPTIONAL_CURIOSITY"
+          ],
+          "onePrimaryActivityAtATime": true,
+          "secondaryAttentionMayRunInParallel": true,
+          "interruptionPolicy": "HIGHER_PRIORITY_CONTEXT_MAY_PAUSE_NOT_ERASE_CURRENT_ACTIVITY",
+          "pausedActivityShouldResumeWhenStillValid": true,
+          "abandonedActivityNeedsReason": true,
+          "noPerFrameGoalReroll": true
+        },
+        "worldAnchors": {
+          "examples": [
+            "HOME",
+            "WORKPLACE",
+            "SHOP",
+            "GUARD_POST",
+            "BED_OR_REST_AREA",
+            "MEETING_SPOT",
+            "FOOD_OR_RESOURCE_AREA",
+            "TRAINING_AREA",
+            "SHRINE_OR_PERSONAL_PLACE",
+            "TERRITORY_CENTER",
+            "NEST_OR_DEN",
+            "PATROL_ROUTE",
+            "SOCIAL_HUB",
+            "PERSONAL_PROJECT_SITE"
+          ],
+          "actorMayHaveMultipleAnchors": true,
+          "anchorsMustReferenceAuthoredGameLocations": true,
+          "aiMayNotInventUnreachableOrNonexistentWorldLocations": true
+        },
+        "activityFamilies": {
+          "NPC": [
+            "WORK",
+            "OPEN_OR_CLOSE_SHOP_PRESENTATION",
+            "CRAFT_OR_PREPARE_PRESENTATION",
+            "TRAVEL",
+            "REST",
+            "EAT_OR_DRINK_PRESENTATION",
+            "SOCIALIZE",
+            "VISIT_SOMEONE",
+            "PATROL",
+            "OBSERVE",
+            "INVESTIGATE",
+            "CARE_FOR_PLACE_OR_OBJECT",
+            "PURSUE_PERSONAL_PROJECT",
+            "RETURN_HOME",
+            "RESPOND_TO_LOCAL_EVENT"
+          ],
+          "COMPANION": [
+            "FOLLOW_WHEN_COMMITTED_TO_PLAYER",
+            "SCOUT",
+            "GUARD",
+            "REST",
+            "MAINTAIN_EQUIPMENT_PRESENTATION",
+            "TALK_WITH_OTHER_NPC",
+            "PURSUE_PERSONAL_GOAL",
+            "VISIT_PERSONAL_ANCHOR",
+            "HELP_AUTHORED_NPC",
+            "TRAIN_OR_PRACTICE_PRESENTATION",
+            "OBSERVE_WORLD",
+            "START_CONTEXTUAL_CONVERSATION",
+            "SUGGEST_PLAYER_ACTION",
+            "REQUEST_PERSONAL_HELP_CANDIDATE"
+          ],
+          "MONSTER": [
+            "REST",
+            "PATROL_TERRITORY",
+            "FORAGE_OR_HUNT_PRESENTATION",
+            "DRINK_PRESENTATION",
+            "FOLLOW_PACK",
+            "GUARD_NEST_OR_GROUP",
+            "INVESTIGATE_SOUND_OR_INTRUSION",
+            "AVOID_THREAT",
+            "RETURN_TO_TERRITORY",
+            "SOCIAL_OR_DOMINANCE_DISPLAY",
+            "MIGRATE_WITHIN_AUTHORED_HABITAT"
+          ],
+          "RARE_MONSTER": [
+            "SIGNATURE_PATROL",
+            "REST_AT_SIGNATURE_ANCHOR",
+            "HUNT_OR_FORAGE_PRESENTATION",
+            "AVOID_CROWD_OR_THREAT",
+            "MARK_TERRITORY_PRESENTATION",
+            "REACT_TO_WORLD_EVENT",
+            "MOVE_BETWEEN_AUTHORED_RARE_ANCHORS"
+          ],
+          "BOSS": [
+            "IDLE_RITUAL_OR_SIGNATURE_ACTIVITY",
+            "PATROL_OR_GUARD_DOMAIN",
+            "INTERACT_WITH_AUTHORED_LAIR_OBJECTS",
+            "RESPOND_TO_INTRUSION",
+            "COMMAND_OR_SIGNAL_SUBORDINATES_PRESENTATION",
+            "PREPARE_ALLOWED_COMBAT_PATTERN",
+            "RECOVER_OR_REPOSITION_BETWEEN_ALLOWED_PATTERNS"
+          ]
+        },
+        "persistentContinuity": {
+          "storesWhenGamePersistsActorLife": [
+            "CURRENT_ACTIVITY",
+            "PAUSED_ACTIVITY",
+            "CURRENT_PERSONAL_GOAL",
+            "IMPORTANT_MEMORIES",
+            "RELATIONSHIP_SUMMARY",
+            "LAST_KNOWN_ANCHOR",
+            "UNRESOLVED_PERSONAL_THREAD",
+            "ROUTINE_VARIATION_STATE"
+          ],
+          "backwardCompatibleSaveExpansionRequired": true,
+          "saveWriteEngineControlledOnly": true,
+          "missingPersistenceMustFallbackToStableAuthoredBaseline": true,
+          "actorMustNotForgetMajorRelationshipHistoryOnOrdinarySceneReload": true
+        },
+        "offscreenSimulation": {
+          "NEAR_PLAYER": "FULL_DECISION_AND_EMBODIED_BEHAVIOR_WITHIN_BUDGET",
+          "SAME_REGION_FAR": "REDUCED_FREQUENCY_ACTIVITY_SIMULATION",
+          "OTHER_REGION": "DETERMINISTIC_SCHEDULE_AND_EVENT_SUMMARY_ONLY",
+          "SLEEPING_ACTOR": "NO_FRAME_SIMULATION_KEEP_NEXT_WAKE_AND_ACTIVITY_STATE",
+          "returnToForeground": "RECONCILE_TO_VALID_AUTHORED_ANCHOR_AND_CONTINUE_PERSONAL_CONTEXT",
+          "offscreenAiCannotResolveCombatRewardsDeathsQuestCompletionOrWorldDestructionWithoutExistingEngineRule": true
+        },
+        "socialLife": {
+          "actorToActorInteractionEnabled": true,
+          "examples": [
+            "GREET",
+            "AVOID",
+            "ASK",
+            "WARN",
+            "TRADE_PRESENTATION",
+            "ARGUE",
+            "APOLOGIZE",
+            "THANK",
+            "WORK_TOGETHER",
+            "VISIT",
+            "TRAIN_TOGETHER",
+            "SHARE_RECENT_EVENT",
+            "REMEMBER_SHARED_EVENT"
+          ],
+          "interactionsUseDirectionalRelationships": true,
+          "socialActivityMayCreateSourceEventMemory": true,
+          "allActorsNeedNotKnowEverySocialEvent": true
+        },
+        "emergentContentCandidates": {
+          "principle": "ACTOR_LIFE_MAY_PROPOSE_CONTENT_BUT_ENGINE_CONTENT_SYSTEM_VALIDATES_AND_COMMITS_IT",
+          "companionAndNpcMayPropose": [
+            "CONTEXTUAL_HELP_TIP",
+            "WARNING",
+            "OPTIONAL_EVENT",
+            "PERSONAL_REQUEST",
+            "RELATIONSHIP_SCENE",
+            "PERSONAL_QUEST_CANDIDATE",
+            "WORLD_EVENT_REACTION",
+            "FOLLOWUP_TO_OLD_MEMORY"
+          ],
+          "monsterAndBossMayPropose": [
+            "TERRITORY_RESPONSE",
+            "PACK_RESPONSE",
+            "INVESTIGATION",
+            "RETREAT_OR_REPOSITION_INTENT",
+            "ALLOWED_ENCOUNTER_PRESENTATION_VARIATION"
+          ],
+          "questCandidateMustInclude": [
+            "SOURCE_ACTOR",
+            "SOURCE_EVENT_OR_PERSONAL_GOAL",
+            "WHY_NOW",
+            "INTENDED_RELATIONSHIP_OR_WORLD_MEANING",
+            "ALLOWED_EXISTING_OBJECTIVE_VERBS",
+            "ENGINE_VALIDATION_REQUIRED"
+          ],
+          "aiCannotCreateUndeclaredReward": true,
+          "aiCannotCreateSpawnCount": true,
+          "aiCannotCompleteQuest": true,
+          "aiCannotChangeBossPhaseThreshold": true
+        },
+        "continuityQuality": {
+          "required": [
+            "ACTOR_HAS_SOMETHING_TO_DO_WITHOUT_PLAYER",
+            "ACTIVITY_HAS_CAUSE",
+            "ACTIVITY_USES_REAL_WORLD_ANCHOR",
+            "INTERRUPTION_DOES_NOT_ERASE_IDENTITY",
+            "PLAYER_INTERACTION_CAN_CHANGE_RELATIONSHIP_OR_PRIORITY",
+            "ACTOR_RESUMES_OR_REPLANS_COHERENTLY",
+            "OFFSCREEN_RETURN_DOES_NOT_RESET_MAJOR_IDENTITY",
+            "NAMED_ACTOR_REPEATS_ARE_CONTROLLED"
+          ],
+          "idleIsAllowedWhenRestObservationOrWaitingMakesSense": true,
+          "meaninglessConstantMovementForbidden": true,
+          "fakeBusynessWithoutWorldCauseForbidden": true,
+          "teleportingBetweenActivitiesForbiddenUnlessExistingGameRuleAllows": true
+        }
       }
     }
   },
