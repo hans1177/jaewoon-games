@@ -3015,12 +3015,14 @@ test('queued legacy BUILD_UP directive is migrated in place to autonomous conten
   assert.equal(migrated.buildUpDirective.autonomousContentExpansion.version,2);
   assert.equal(migrated.buildUpDirective.autonomousContentExpansion.executionBoundary,'EXISTING_BUILD_UP_ONLY');
   assert.equal(migrated.buildUpDirective.autonomousContentExpansion.autonomousDecisionOwner,'VIBE');
+  assert.equal(migrated.buildUpDirective.version,3);
+  assert.equal(migrated.buildUpDirective.perceptibleExperienceBuildUp.perceptiblePlayerEffectRequired,true);
   assert.deepEqual([...migrated.buildUpDirective.autonomousContentExpansion.platformScope],['WEB','ROBLOX','UNITY']);
   assert.equal(migrated.buildUpDirective.autonomousContentExpansion.antiCloneContract.nameColorOrStatOnlyCloneForbidden,true);
   assert.equal(migrated.buildUpDirective.autonomousContentExpansion.continuityAndCausality.required,true);
-  assert.ok(migrated.evidence.includes('build-up-directive-contract-migration:AUTONOMOUS_CONTENT_EXPANSION_V2'));
+  assert.ok(migrated.evidence.includes('build-up-directive-contract-migration:PERCEPTIBLE_EXPERIENCE_V3'));
   assert.ok(migrated.evidence.includes('build-up-directive-contract-migration-generation:PRESERVED'));
-  assert.ok(migrated.evidence.includes('build-up-directive-freshness:MIGRATED_LEGACY_DIRECTIVE_TO_AUTONOMOUS_CONTENT_EXPANSION_SAME_GENERATION'));
+  assert.ok(migrated.evidence.includes('build-up-directive-freshness:MIGRATED_LEGACY_DIRECTIVE_TO_PERCEPTIBLE_EXPERIENCE_V3_SAME_GENERATION'));
   assert.equal((migrated.goal.match(/\[GAME_SPECIFIC_BUILD_UP_DIRECTIVE\]/g)||[]).length,1);
 });
 
@@ -3059,11 +3061,13 @@ test('queued autonomous expansion v1 without breadth ledger upgrades to v2 witho
   assert.equal(migrated.buildUpGeneration,queued.buildUpGeneration);
   assert.equal(migrated.buildUpDirective.autonomousContentExpansion.version,2);
   assert.equal(migrated.buildUpDirective.autonomousContentExpansion.themeCoverageLedger.version,1);
+  assert.equal(migrated.buildUpDirective.version,3);
+  assert.equal(migrated.buildUpDirective.perceptibleExperienceBuildUp.perceptiblePlayerEffectRequired,true);
   assert.equal(migrated.buildUpDirective.autonomousContentExpansion.themeCoverageLedger.totalThemes,7);
   assert.ok(migrated.buildUpDirective.autonomousContentExpansion.themeCoverageLedger.requiredThemes.length>=7);
-  assert.ok(migrated.evidence.includes('build-up-directive-contract-migration:AUTONOMOUS_CONTENT_EXPANSION_V2'));
+  assert.ok(migrated.evidence.includes('build-up-directive-contract-migration:PERCEPTIBLE_EXPERIENCE_V3'));
   assert.ok(migrated.evidence.includes('build-up-directive-contract-migration-generation:PRESERVED'));
-  assert.ok(migrated.evidence.includes('build-up-directive-freshness:MIGRATED_LEGACY_DIRECTIVE_TO_AUTONOMOUS_CONTENT_EXPANSION_SAME_GENERATION'));
+  assert.ok(migrated.evidence.includes('build-up-directive-freshness:MIGRATED_LEGACY_DIRECTIVE_TO_PERCEPTIBLE_EXPERIENCE_V3_SAME_GENERATION'));
 });
 
 test('stale queued directive rebinds to the active shared generation before reserve',()=>{
