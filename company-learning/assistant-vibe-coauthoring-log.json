@@ -2,7 +2,7 @@
   "version": 6,
   "authority": "ASSISTANT_VIBE_COAUTHORING_TRACE",
   "status": "ACTIVE",
-  "recordedAt": "2026-09-26",
+  "recordedAt": "2026-10-01",
   "purpose": "Record every assistant-led Vibe Web coauthoring decision, source change, review, QA result, bottleneck repair, and production lesson as traceable learning evidence without bypassing the existing verified experience and canonical training gates.",
   "policy": {
     "everyAssistantCoauthoringActionMustBeRecorded": true,
@@ -858,6 +858,44 @@
       ],
       "learningState": "TRACE_ONLY",
       "liveState": "MERGED_AT_FA985B00; ORDINARY_JSON_OVER_64KB_STARTS_WITH_BOUNDED_WRITABLE_CONTEXT; POST_MERGE_EXACT_EFFECT_NOT_YET_OBSERVED; LINE_DEFENSE_STUDIO_JOB_110127864340_REMAINS_TIMEOUT_BLOCKED_AT_51566_THEN_42704_BYTES_AND_IS_OUTSIDE_THIS_ORDINARY_PATH; NEXT_ROTATION_LINE_DEFENSE_STANDARD_CANDIDATE_AND_STUDIO_SPECIALIZED_PROMPT_BUDGET_THEN_ACTUAL_STUDIO_F9"
+    },
+    {
+      "id": "assistant_vibe_game_dna_play_chain_v3_20261001",
+      "date": "2026-10-01",
+      "gameId": "MULTI_GAME_VIBE_DEVELOPMENT",
+      "actionType": "VIBE_CAPABILITY_EVOLUTION",
+      "problem": "Vibe BUILD_UP already knew generic focus pillars and source anchors, but detail repair was still too abstract: Studio repair surfaces did not identify which player action chain stage to repair, and compact retries could lose game-specific identity/detail intent.",
+      "rootCause": "BUILD_UP_HAD_GOALS_AND_ANCHORS_BUT_NO_EXPLICIT_GAME_DNA_OR_END_TO_END_PLAYER_ACTION_CHAIN_MODEL",
+      "decision": "Extend the existing BUILD_UP directive, planner migration, and source-worker prompt path directly. Do not add a new queue, wrapper, approval stage, or shadow pipeline.",
+      "change": "Added gameDevelopmentDNA and a seven-stage ENTRY_CONTEXT->PLAYER_INTENT->INPUT->AUTHORITY_CHECK->STATE_CHANGE->FEEDBACK->NEXT_CHOICE repair plan. Studio repair surfaces map to REPAIR_PRIORITY stages; detail checkpoints cover silhouette/role readability, contact grounding, anticipation-impact-recovery, touch feedback, camera hierarchy, material/lighting separation, state coherence, and next-action clarity. Compact/focused retries preserve these fields. Queued v2 directives migrate in place to v3 without consuming a new generation.",
+      "evidence": [
+        "pull-request:4243",
+        "main-base:778168be1936206c72b07cfd4b8fae54dd3b6642",
+        "latest-homepage-main-compatible:ee39b3cd51247ba2f8153dd7b6c51be9702a9eb2",
+        "latest-asset-fine-motion-source-worker-preserved:YES",
+        "build-up-contract-version:3",
+        "play-chain-stage-count:7"
+      ],
+      "reusablePatterns": [
+        "PRESERVE_GAME_DNA_WHILE_REPAIRING_ONE_COHERENT_PLAYER_CHAIN",
+        "MAP_STUDIO_REPAIR_SURFACES_TO_PLAYER_CHAIN_STAGES",
+        "COMPACT_RETRY_MUST_PRESERVE_IDENTITY_CHAIN_AND_DETAIL_INTENT",
+        "MIGRATE_QUEUED_BUILD_UP_CONTRACT_WITHOUT_CONSUMING_GENERATION"
+      ],
+      "avoidPatterns": [
+        "GENERIC_GENRE_POLISH_WITHOUT_GAME_IDENTITY",
+        "DISCONNECTED_MICRO_PATCHES_ACROSS_UNRELATED_SYSTEMS",
+        "SOURCE_DELTA_AS_PLAYER_VALUE_PROOF",
+        "NEW_SHADOW_PIPELINE_FOR_DETAIL_POLISH"
+      ],
+      "qa": [
+        "company-build-up-directive v3 regressions added",
+        "source-worker compact retry preservation regressions added",
+        "auto-planner v2-to-v3 queued migration regressions added",
+        "actual post-merge Studio v3 replay not yet observed"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "PR_4243_OPEN; BUILD_UP_V3_DNA_PLAY_CHAIN_IMPLEMENTED; POST_MERGE_EXACT_STUDIO_REPLAY_REQUIRED"
     }
   ]
 }
