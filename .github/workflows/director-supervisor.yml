@@ -43,9 +43,9 @@ jobs:
       # Preserve an active drain; GitHub coalesces pending runs within the same group.
       group: director-runner-drain-v2
       cancel-in-progress: false
-    # Queue eviction is lightweight control work. The slim pool is the fastest observed control lane;
-    # keep game-heavy ubuntu-latest and the constrained fixed 24.04 pool free for their existing work.
-    runs-on: ubuntu-slim
+    # Queue eviction is isolated from the saturated slim control pool by the central runner contract.
+    # Keep heavy game execution on ubuntu-latest while drain uses fixed 24.04.
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
       contents: read
@@ -284,10 +284,8 @@ jobs:
           echo 'DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN'
 
   game-primary-gate:
-    needs: runner-drain
-    # Drain stale control/refill work first so the lightweight gate does not compete with queue cleanup.
-    # A superseded pending drain cancels this old gate as well; a real drain failure still allows gating.
-    if: always() && needs.runner-drain.result != 'cancelled' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'cancelled')
+    # Run independently from runner-drain so queue cleanup cannot serialize or starve the fallback gate.
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'cancelled'
     concurrency:
       group: director-game-primary-gate-v1
       # Preserve the active fallback gate so queued GAME_PRIMARY work is not starved.
