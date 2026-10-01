@@ -82,6 +82,48 @@ test('Unity Web readiness publication uses PR instead of direct main write',()=>
 });
 
 
+test('Unity Web reviewed promotion binds candidate Unity source and verified WebGL bundle before Vibe2 PASS',()=>{
+  const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
+  assert.match(workflow,/base_main_sha:/);
+  assert.match(workflow,/vibe2_task_id:/);
+  assert.match(workflow,/vibe2_candidate_branch:/);
+
+  const start=workflow.indexOf('      - name: Create verified Unity Web readiness PR');
+  const end=workflow.indexOf('\n\n  settle-vibe2-failure:',start);
+  assert.ok(start>=0&&end>start);
+  const section=workflow.slice(start,end);
+  assert.match(section,/git checkout "\$SOURCE_COMMIT" -- "unity-games\/\$GAME_ID"/);
+  assert.match(section,/git add "unity-games\/\$GAME_ID" "web-games\/\$GAME_ID"/);
+  assert.match(section,/UNITY_WEB_CLOUDFLARE_PREVIEW=/);
+  assert.match(section,/gh pr merge "\$pr_url"/);
+  assert.match(section,/git diff --quiet "\$release_commit" origin\/main -- "unity-games\/\$GAME_ID" "web-games\/\$GAME_ID"/);
+  assert.match(section,/UNITY_WEB_CLOUDFLARE_MAIN=/);
+  const mainDeploy=section.indexOf('UNITY_WEB_CLOUDFLARE_MAIN=');
+  const queuePass=section.indexOf('vibe2-queue-control.mjs pass');
+  assert.ok(mainDeploy>=0&&queuePass>mainDeploy);
+  assert.match(section,/execution-surface:UNITY_WEB/);
+  assert.match(section,/unity-web-webgl-build-pass/);
+  assert.match(section,/unity-web-browser-play-pass/);
+  assert.match(section,/unity-web-independent-qa-pass/);
+  assert.match(section,/unity-web-regression-pass/);
+  assert.match(section,/unity-web-cloudflare-deployment-pass/);
+  assert.match(section,/VIBE2_UNITY_WEB_TASK_FINAL_PASS=EXACT_SOURCE_RUNTIME_AND_DEPLOYMENT/);
+});
+
+test('failed Vibe2 Unity Web execution requeues the exact task instead of claiming PASS',()=>{
+  const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
+  const start=workflow.indexOf('  settle-vibe2-failure:');
+  const end=workflow.indexOf('\n\n  repair-vibe2:',start);
+  assert.ok(start>=0&&end>start);
+  const section=workflow.slice(start,end);
+  assert.match(section,/needs\.build\.result == 'failure'/);
+  assert.match(section,/vibe2-queue-control\.mjs fail/);
+  assert.match(section,/--blocker=unity-web-runtime-or-promotion-failed/);
+  assert.match(section,/execution-surface:UNITY_WEB/);
+  assert.match(section,/source_outcome:\$outcome/);
+  assert.doesNotMatch(section,/vibe2-queue-control\.mjs pass/);
+});
+
 test('Unity Web build never directly fans out; main-bound readiness evidence owns upper-platform admission',()=>{
   const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
   const policy=JSON.parse(fs.readFileSync(path.join(repo,'company-learning','platform-release-roadmap.json'),'utf8'));
