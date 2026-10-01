@@ -461,21 +461,6 @@ def jump_air_pose(t):
     apply_secondary(t,drive=0.92,turn=a*0.22)
 
 
-def jump_takeoff_pose(t):
-    c=curve(t,[(0,0),(0.22,1),(0.42,0.72),(0.68,0.08),(1,0)])
-    p=curve(t,[(0,0),(0.34,0),(0.60,1),(0.82,0.34),(1,0)])
-    loc('Hips',0,0,-0.13*c+0.035*p)
-    rot('Hips',0.16*c-0.06*p);rot('Spine',0.11*c-0.025*p)
-    rot('Chest',0.07*c-0.02*p);rot('Head',-0.10*c+0.035*p)
-    for side,sign in [('L',-1),('R',1)]:
-        rot('Thigh'+side,0.44*c-0.16*p+sign*0.025*p)
-        rot('Shin'+side,0.70*c+0.12*p);rot('Foot'+side,-0.26*c)
-        rot('UpperArm'+side,-0.38*p+sign*0.035,sign*0.022,-sign*0.030)
-        rot('Forearm'+side,-0.16-0.10*p)
-    detail_face_and_hands(t,moving=0.62,alert=0.52)
-    apply_secondary(t,drive=0.72+p*0.85,braking=-p)
-
-
 def animate(name, normalized_time):
     reset_pose()
     t = clamp01(normalized_time)
