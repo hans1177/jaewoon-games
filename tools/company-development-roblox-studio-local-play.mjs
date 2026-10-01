@@ -999,7 +999,6 @@ function studioActualPlayCoreProbeSource(contract={},context='Client'){
     '   if #gui.visibleTexts<80 then table.insert(gui.visibleTexts,{name=d.Name,text=tostring(d.Text)}) end',
     '  end',
     '  if (d:IsA("TextButton") or d:IsA("ImageButton")) and visible(d) then',
-    '   gui.visibleButtons=gui.visibleButtons+1',
     '   local row=guiInfo(d)',
     '   row.name=d.Name',
     '   row.path=string.sub(d:GetFullName(),#pg:GetFullName()+2)',
@@ -1010,12 +1009,16 @@ function studioActualPlayCoreProbeSource(contract={},context='Client'){
     '   row.active=d.Active~=false',
     '   row.classId=d:GetAttribute("ClassId")',
     '   row.selectAction=d:GetAttribute("SelectAction")',
-    '   if row.offscreen then gui.offscreenButtons=gui.offscreenButtons+1 end',
-    '   local shortSide=math.min(row.width,row.height)',
-    '   if shortSide<36 then gui.undersizedTouchButtons=gui.undersizedTouchButtons+1 elseif shortSide<44 then gui.suboptimalTouchButtons=gui.suboptimalTouchButtons+1 end',
-    '   if d:IsA("TextButton") and not d.TextScaled and d.TextBounds.X>row.width+3 then gui.textOverflowButtons=gui.textOverflowButtons+1 end',
-    '   if #gui.interactive<80 then table.insert(gui.interactive,row) end',
-    '   for _,target in ipairs(requiredButtonTexts) do if d:IsA("TextButton") and tostring(d.Text)==target then gui.buttons[target]=row end end',
+    '   local measurable=row.width>=1 and row.height>=1',
+    '   if measurable then',
+    '    gui.visibleButtons=gui.visibleButtons+1',
+    '    if row.offscreen then gui.offscreenButtons=gui.offscreenButtons+1 end',
+    '    local shortSide=math.min(row.width,row.height)',
+    '    if shortSide<36 then gui.undersizedTouchButtons=gui.undersizedTouchButtons+1 elseif shortSide<44 then gui.suboptimalTouchButtons=gui.suboptimalTouchButtons+1 end',
+    '    if d:IsA("TextButton") and not d.TextScaled and d.TextBounds.X>row.width+3 then gui.textOverflowButtons=gui.textOverflowButtons+1 end',
+    '    if #gui.interactive<80 then table.insert(gui.interactive,row) end',
+    '    for _,target in ipairs(requiredButtonTexts) do if d:IsA("TextButton") and tostring(d.Text)==target then gui.buttons[target]=row end end',
+    '   end',
     '  end',
     ' end',
     ' for i=1,#gui.interactive do',
@@ -1100,7 +1103,7 @@ function studioActualPlayWorldProbeSource({planRoutes=true}={}){
     'local minX,minY,minZ=math.huge,math.huge,math.huge',
     'local maxX,maxY,maxZ=-math.huge,-math.huge,-math.huge',
     'for _,d in ipairs(Workspace:GetDescendants()) do',
-    ' if d:IsA("BasePart") then',
+    ' if d:IsA("BasePart") and not d:IsA("Terrain") then',
     '  if d.CanCollide then',
     '   collidableParts=collidableParts+1',
     '   local p0=d.Position',
@@ -1164,9 +1167,19 @@ function studioActualPlayWorldProbeSource({planRoutes=true}={}){
     'local routePlanningPerformed='+(planRoutes?'true':'false'),
     'if root and routePlanningPerformed then',
     ' local anchors={}',
-    ' local function addAnchor(kind,name,x,y,z) if #anchors<16 and tonumber(x) and tonumber(y) and tonumber(z) then table.insert(anchors,{kind=kind,name=tostring(name or kind),x=tonumber(x),y=tonumber(y),z=tonumber(z)}) end end',
+    ' local function addAnchor(kind,name,x,y,z,maxDistance)',
+    '  if #anchors>=16 or not tonumber(x) or not tonumber(y) or not tonumber(z) then return end',
+    '  local tx,ty,tz=tonumber(x),tonumber(y),tonumber(z)',
+    '  if kind=="prompt" and root then',
+    '   local dx,dz=tx-root.Position.X,tz-root.Position.Z',
+    '   local mag=math.sqrt(dx*dx+dz*dz)',
+    '   local stop=math.max(2,math.min(6,(tonumber(maxDistance)or 10)*.55))',
+    '   if mag>stop then tx=tx-dx/mag*stop;tz=tz-dz/mag*stop end',
+    '  end',
+    '  table.insert(anchors,{kind=kind,name=tostring(name or kind),x=tx,y=ty,z=tz})',
+    ' end',
     ' for _,row in ipairs(spawnRows) do addAnchor("spawn",row.name,row.x,row.y,row.z) end',
-    ' for _,row in ipairs(promptRows) do addAnchor("prompt",row.objectText~="" and row.objectText or row.name,row.x,row.y,row.z) end',
+    ' for _,row in ipairs(promptRows) do addAnchor("prompt",row.objectText~="" and row.objectText or row.name,row.x,row.y,row.z,row.maxDistance) end',
     ' for _,row in ipairs(npcRows) do addAnchor("npc",row.name,row.x,row.y,row.z) end',
     ' for _,row in ipairs(mobRows) do addAnchor("mob",row.name,row.x,row.y,row.z) end',
     ' for _,row in ipairs(anchors) do',
@@ -2710,12 +2723,21 @@ export async function runOfficialStudioMcpPlay({
         if(selectedPrompts.length>=exploreLimit)break;
         if(!selectedPrompts.includes(row))selectedPrompts.push(row);
       }
+      const promptApproachTarget=(prompt,probe)=>{
+        const px=Number(prompt?.x||0),py=Number(prompt?.y||0),pz=Number(prompt?.z||0);
+        const rx=Number(probe?.player?.rootX),rz=Number(probe?.player?.rootZ);
+        if(!Number.isFinite(rx)||!Number.isFinite(rz))return{x:px,y:py,z:pz};
+        const dx=px-rx,dz=pz-rz,mag=Math.hypot(dx,dz);
+        const stop=Math.max(2,Math.min(6,Number(prompt?.maxDistance||10)*.55));
+        if(Number.isFinite(mag)&&mag>stop)return{x:px-dx/mag*stop,y:py,z:pz-dz/mag*stop};
+        return{x:px,y:py,z:pz};
+      };
       for(const prompt of selectedPrompts){
         let navOk=false,inputOk=false;
         const beforeProbe=timelineProbes.at(-1)||initialClientProbe;
         const semantic=semanticOf(prompt);
         try{
-          const target={x:Number(prompt?.x||0),y:Number(prompt?.y||0),z:Number(prompt?.z||0)};
+          const target=promptApproachTarget(prompt,beforeProbe);
           const navResult=await client.call('character_navigation',characterNavigationArgs(navigationTool.inputSchema||{},studioId,target));
           navOk=navResult?.isError!==true;
           await wait(450);
@@ -3382,7 +3404,7 @@ export function createLocalStudioPlayEvidence({
     ...actions.filter(row=>row.ok!==true).map(row=>row.type||row.id)
   ].join(' ');
   const robloxFailureClass=pass?null
-    :/DataStore|GetDataStore|SetAsync|UpdateAsync|save|load/i.test(nativeFailureText)?'ROBLOX_DATASTORE_SAVE_LOAD'
+    :/DataStore|GetDataStore|SetAsync|UpdateAsync|save-rejoin|save persistence|SaveStatus|SAVE_FAILED|LOAD_FAILED|studio-save-rejoin/i.test(nativeFailureText)?'ROBLOX_DATASTORE_SAVE_LOAD'
     :/RemoteEvent|RemoteFunction|OnServer|FireServer|InvokeServer|remote/i.test(nativeFailureText)?'ROBLOX_REMOTE_EVENT_OR_FUNCTION'
     :/touch|input|keyboard|mouse|button/i.test(nativeFailureText)?'ROBLOX_TOUCH_INPUT'
     :/ROBLOX_CHARACTER_MOTION_MANNEQUIN|character-motion-quality|joint|animator|animation/i.test(nativeFailureText)?'ROBLOX_CHARACTER_MOTION_MANNEQUIN'
