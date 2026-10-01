@@ -6475,7 +6475,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-10-01T04:25:00.000Z",
+  "updatedAt": "2026-10-01T04:34:00.000Z",
   "priorityTiers": [
     {
       "tier": 1,
@@ -26683,6 +26683,8 @@
     "latestArchiveRecordId": "central-policy-archive-20261001-ai-v3",
     "latestArchiveSourceRevision": "d1557c5034aad62560b76b73b4518e1e29c17a04",
     "latestArchiveAt": "2026-10-01T04:25:00.000Z",
-    "latestArchivePathCount": 37
+    "latestArchivePathCount": 37,
+    "softTargetEnforced": true,
+    "candidateCommand": "node tools/company-records-governance.mjs --central-candidates"
   }
 }
