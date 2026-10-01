@@ -4610,10 +4610,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T13:44:16.269Z",
+      "updatedAt": "2026-10-01T14:33:18.867Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -4839,12 +4839,10 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
-      "routingBlockers": [
-        "roblox-studio-mcp-play-repair-required"
-      ],
+      "robloxLastSuccessfulStage": "VIBE_INTERNAL_PLAY",
+      "robloxFailureStage": null,
+      "robloxFailureSignature": null,
+      "routingBlockers": [],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -5018,15 +5016,16 @@
       "robloxInternalVibePlayEvidence": {
         "version": 2,
         "gameId": "village-dungeons",
+        "studioHarnessVersion": 9,
         "authority": "roblox-official-studio-mcp-runtime",
-        "pass": false,
+        "pass": true,
         "actualPlay": true,
-        "runtimeVerified": false,
+        "runtimeVerified": true,
         "learningReusable": true,
         "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
         "infrastructureFailure": false,
-        "failureClass": "STUDIO_PRODUCT_QUALITY_FAILURE",
-        "robloxFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
+        "failureClass": null,
+        "robloxFailureClass": null,
         "actualPlayEligibility": "PRIVATE_INTERNAL_CANDIDATE_EXACT",
         "studioMcpServerEnablementRequired": false,
         "operatorPrerequisite": null,
@@ -5261,7 +5260,7 @@
             "id": "scenario-adaptive-ui-commercial-quality",
             "name": "scenario-adaptive-ui-commercial-quality",
             "required": true,
-            "pass": false
+            "pass": true
           },
           {
             "id": "scenario-adaptive-ui-blocking-overlay",
@@ -5273,7 +5272,7 @@
             "id": "scenario-adaptive-world-safety",
             "name": "scenario-adaptive-world-safety",
             "required": true,
-            "pass": false
+            "pass": true
           },
           {
             "id": "scenario-adaptive-map-route-coverage",
@@ -5501,7 +5500,7 @@
             "id": "no-release-blocking-runtime-errors",
             "name": "no-release-blocking-runtime-errors",
             "required": true,
-            "pass": false
+            "pass": true
           },
           {
             "id": "final-visual-capture-sane",
@@ -5516,37 +5515,31 @@
             "pass": true
           }
         ],
-        "errors": [
-          {
-            "type": "studio-asset-load-error",
-            "actionId": null,
-            "signature": "Failed to load animation with sanitized ID rbxassetid://114302219876492: Animation failed to load, assetId: https://assetdelivery.roblox.com/v1/asset?id=114302219876492&serverplaceid=0 Failed to load animation with sanitized ID rbxassetid://114302219876492: Animation failed to load, assetId: https://assetdelivery.roblox.com/v1/asset?id=114302219876492&serverplaceid=0 Failed to load animation with sanitized ID rbxassetid://114302219876492: Animation failed to load, assetId: https://assetdelivery."
-          }
-        ],
+        "errors": [],
         "runtimeSummary": {
-          "consoleErrorCount": 1,
+          "consoleErrorCount": 0,
           "consoleWarningCount": 0,
           "distinctFrameChange": true,
           "characterMotionRuntimeRequired": false,
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
-          "scenarioFailureCount": 3,
-          "primaryActionDisplacement": 32.92269239754113,
-          "primaryActionVelocity": 0.000013160154968935953,
+          "scenarioFailureCount": 0,
+          "primaryActionDisplacement": 30.885853792373098,
+          "primaryActionVelocity": 0.000013129492422170396,
           "primaryActionFeedbackChanged": false,
           "commercialAudit": {
             "auditProfile": "FAST_DEEP",
-            "timelineProbeCount": 30,
+            "timelineProbeCount": 25,
             "routePlanningProbeCount": 5,
-            "lightweightProbeCount": 25,
+            "lightweightProbeCount": 20,
             "progressChanged": true,
             "inventoryChanged": false,
             "timelineProgressChanged": true,
             "timelineMobDynamic": false,
             "timelineCompanionDynamic": false,
             "uiCommercial": {
-              "offscreenButtons": 3,
-              "undersizedTouchButtons": 1,
+              "offscreenButtons": 0,
+              "undersizedTouchButtons": 0,
               "suboptimalTouchButtons": 0,
               "textOverflowButtons": 0,
               "overlapPairs": 0,
@@ -5555,7 +5548,7 @@
               "largestOverlayCoverage": 0
             },
             "surfaces": {
-              "interactionSurfaceCount": 10,
+              "interactionSurfaceCount": 6,
               "progressionSurfaceCount": 8,
               "combatSurfaceCount": 0,
               "npcSurfaceCount": 0,
@@ -5572,7 +5565,7 @@
               "multiplayerActualSessionPass": false
             },
             "performance": {
-              "memoryMb": 2642.50390625,
+              "memoryMb": 2594.6875,
               "descendantCount": 317
             },
             "multiplayer": null,
@@ -5615,13 +5608,12 @@
           "scenario-visual-capture-sane",
           "scenario-adaptive-runtime-surface",
           "scenario-adaptive-ftue-clarity",
+          "scenario-adaptive-ui-commercial-quality",
           "scenario-adaptive-ui-blocking-overlay",
+          "scenario-adaptive-world-safety",
           "scenario-adaptive-map-route-coverage",
           "scenario-adaptive-spawn-safety",
-          "scenario-adaptive-interaction-surface",
-          "scenario-adaptive-semantic-interaction-effect",
-          "scenario-adaptive-system-transaction-effect",
-          "ROBLOX_DATASTORE_SAVE_LOAD"
+          "scenario-adaptive-interaction-surface"
         ],
         "rawSourceIncluded": false,
         "rawGameplayValuesIncluded": false,
@@ -5652,7 +5644,7 @@
           },
           {
             "id": "adaptive-ui-commercial-quality",
-            "pass": false
+            "pass": true
           },
           {
             "id": "adaptive-ui-blocking-overlay",
@@ -5660,7 +5652,7 @@
           },
           {
             "id": "adaptive-world-safety",
-            "pass": false
+            "pass": true
           },
           {
             "id": "adaptive-map-route-coverage",
@@ -5809,72 +5801,21 @@
           },
           {
             "id": "visual-asset-load-integrity",
-            "pass": false
+            "pass": true
           }
         ],
-        "scenarioCoveragePass": false,
-        "qualityFailureKinds": [
-          "adaptive-ui-commercial-quality",
-          "adaptive-world-safety",
-          "visual-asset-load-integrity"
-        ],
-        "qualityFailureDetails": [
-          {
-            "id": "adaptive-ui-commercial-quality",
-            "repairSurface": "MOBILE_UI",
-            "priority": "HIGH",
-            "hint": "Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.",
-            "observed": {
-              "offscreenButtons": 3,
-              "undersizedTouchButtons": 1,
-              "suboptimalTouchButtons": 0,
-              "textOverflowButtons": 0,
-              "overlapPairs": 0,
-              "largeOverlayCount": 0,
-              "largeBlockingOverlayCount": 0,
-              "largestOverlayCoverage": 0
-            }
-          },
-          {
-            "id": "adaptive-world-safety",
-            "repairSurface": "WORLD_GEOMETRY",
-            "priority": "CRITICAL",
-            "hint": "Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.",
-            "observed": {
-              "boundsFinite": true,
-              "collidablePartCount": 10,
-              "floorBelowPlayer": true,
-              "floorSamples": 9,
-              "floorHits": 1,
-              "floorCoveragePass": false,
-              "routeSamples": 2,
-              "routeSuccess": 2,
-              "routeCoveragePass": true,
-              "spawnThreatDistance": -1,
-              "spawnOverlapSafe": true
-            }
-          },
-          {
-            "id": "visual-asset-load-integrity",
-            "repairSurface": "VISUAL_ASSET_LOADING",
-            "priority": "HIGH",
-            "hint": "Repair unavailable or unauthorized Roblox mesh, texture, image, or animation assets observed during Studio play.",
-            "observed": {
-              "assetErrors": [
-                "Failed to load animation with sanitized ID rbxassetid://114302219876492: Animation failed to load, assetId: https://assetdelivery.roblox.com/v1/asset?id=114302219876492&serverplaceid=0 Failed to load animation with sanitized ID rbxassetid://114302219876492: Animation failed to load, assetId: https://assetdelivery.roblox.com/v1/asset?id=114302219876492&serverplaceid=0 Failed to load animation with sanitized ID rbxassetid://114302219876492: Animation failed to load, assetId: https://assetdelivery."
-              ]
-            }
-          }
-        ],
+        "scenarioCoveragePass": true,
+        "qualityFailureKinds": [],
+        "qualityFailureDetails": [],
         "functionalChainEvidence": {
           "inputDispatched": true,
-          "runtimeVerified": false,
+          "runtimeVerified": true,
           "screenChanged": true,
           "authoritativeStateChangeObserved": true,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-10-01T13:25:20.461Z",
-        "workflowRunId": 36865169523,
+        "testedAt": "2026-10-01T14:33:18.867Z",
+        "workflowRunId": 36876190057,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -5952,84 +5893,15 @@
       "resumeStage": "F1_SERVER_BOOT",
       "failureCount": 1,
       "contractCanaryPassed": false,
-      "robloxInternalPlaytestPassed": false,
-      "robloxInternalPlaytestPassedAt": null,
-      "robloxStudioLocalPlayRepairRequired": true,
+      "robloxInternalPlaytestPassed": true,
+      "robloxInternalPlaytestPassedAt": "2026-10-01T14:33:18.867Z",
+      "robloxStudioLocalPlayRepairRequired": false,
       "robloxStudioLocalPlayInfrastructurePending": false,
-      "robloxQualityBuildUpRequired": true,
-      "robloxQualityFailureClass": "PRODUCT",
-      "robloxQualityBuildUpSourceRevision": "25b1b2b162099754e756b8171e2ab440a455dfd4",
-      "robloxQualityBuildUpEvidence": {
-        "version": 1,
-        "sourceRevision": "25b1b2b162099754e756b8171e2ab440a455dfd4",
-        "artifactIdentity": "sha256:4deca0802a0ec0a6af024e95fdd07db82aea7930abd5daaa2cf1faa4102f154d",
-        "versionNumber": 36864811737,
-        "failureStage": "VIBE_INTERNAL_PLAY",
-        "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
-        "qualityFailureKinds": [
-          "adaptive-ui-commercial-quality",
-          "adaptive-world-safety",
-          "visual-asset-load-integrity"
-        ],
-        "qualityFailureDetails": [
-          {
-            "id": "adaptive-ui-commercial-quality",
-            "repairSurface": "MOBILE_UI",
-            "priority": "HIGH",
-            "hint": "Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.",
-            "observed": {
-              "offscreenButtons": 3,
-              "undersizedTouchButtons": 1,
-              "suboptimalTouchButtons": 0,
-              "textOverflowButtons": 0,
-              "overlapPairs": 0,
-              "largeOverlayCount": 0,
-              "largeBlockingOverlayCount": 0,
-              "largestOverlayCoverage": 0
-            }
-          },
-          {
-            "id": "adaptive-world-safety",
-            "repairSurface": "WORLD_GEOMETRY",
-            "priority": "CRITICAL",
-            "hint": "Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.",
-            "observed": {
-              "boundsFinite": true,
-              "collidablePartCount": 10,
-              "floorBelowPlayer": true,
-              "floorSamples": 9,
-              "floorHits": 1,
-              "floorCoveragePass": false,
-              "routeSamples": 2,
-              "routeSuccess": 2,
-              "routeCoveragePass": true,
-              "spawnThreatDistance": -1,
-              "spawnOverlapSafe": true
-            }
-          },
-          {
-            "id": "visual-asset-load-integrity",
-            "repairSurface": "VISUAL_ASSET_LOADING",
-            "priority": "HIGH",
-            "hint": "Repair unavailable or unauthorized Roblox mesh, texture, image, or animation assets observed during Studio play.",
-            "observed": {
-              "assetErrors": [
-                "Failed to load animation with sanitized ID rbxassetid://114302219876492: Animation failed to load, assetId: https://assetdelivery.roblox.com/v1/asset?id=114302219876492&serverplaceid=0 Failed to load animation with sanitized ID rbxassetid://114302219876492: Animation failed to load, assetId: https://assetdelivery.roblox.com/v1/asset?id=114302219876492&serverplaceid=0 Failed to load animation with sanitized ID rbxassetid://114302219876492: Animation failed to load, assetId: https://assetdelivery."
-              ]
-            }
-          }
-        ],
-        "repairSurfaces": [
-          "MOBILE_UI",
-          "WORLD_GEOMETRY",
-          "VISUAL_ASSET_LOADING"
-        ],
-        "robloxFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
-        "testedAt": "2026-10-01T13:25:20.461Z",
-        "workflowRunId": 36865169523,
-        "authority": "roblox-official-studio-mcp-product-quality-failure"
-      },
-      "robloxNativeFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
+      "robloxQualityBuildUpRequired": false,
+      "robloxQualityFailureClass": null,
+      "robloxQualityBuildUpSourceRevision": null,
+      "robloxQualityBuildUpEvidence": null,
+      "robloxNativeFailureClass": null,
       "robloxValidationTarget": {
         "version": 3,
         "gameId": "village-dungeons",
@@ -6048,7 +5920,7 @@
         "bootstrapState": "PUBLISHED_PRIVATE"
       },
       "robloxCanonicalPublishPending": false,
-      "robloxQualityBuildUpLastPassedAt": "2026-09-28T14:02:50.104Z",
+      "robloxQualityBuildUpLastPassedAt": "2026-10-01T14:33:18.867Z",
       "robloxF9PendingInParallel": false,
       "robloxCanonicalPublishQueue": [
         {
@@ -27222,7 +27094,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T14:29:33.157Z",
+  "updatedAt": "2026-10-01T14:33:18.867Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
