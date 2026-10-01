@@ -22,8 +22,8 @@ test('3개 내부 빌드는 QA 카메라와 서버 기록 통로를 유지한다
 test('포근섬은 넓은 기본섬과 채집/NPC/몹 밀도를 가진다',()=>{
  const style=read('roblox-games/cozy-island/shared/VisualStyle.luau');
  const server=read('roblox-games/cozy-island/server/Game.server.luau');
- assert.match(style,/Size=Vector3\.new\(176,10,176\)/);
- for(const marker of ['ManualGatherForest','ManualGatherFarm','WoodNode','FoodNode','HomeNPCs','HomeMobs','WildBoar','IslandRaider','COZY_CHIBI_KINGDOM_WORLD_V8','terrain:FillBlock','Enum.Material.Water','seaLevel','ChiefHat','StrawHat','VillageBoat','BoarBody','BoarSnout'])assert.match(server,new RegExp(marker.replaceAll('.','\\.')));
+ assert.match(style,/Size=Vector3\.new\(220,10,220\)/);
+ for(const marker of ['ManualGatherForest','ManualGatherFarm','WoodNode','FoodNode','HomeNPCs','HomeMobs','WildBoar','IslandRaider','COZY_CHIBI_KINGDOM_WORLD_V9_WILDLIFE','terrain:FillBlock','Enum.Material.Water','seaLevel','ChiefHat','StrawHat','VillageBoat','BoarBody','BoarSnout'])assert.match(server,new RegExp(marker.replaceAll('.','\\.')));
  assert.doesNotMatch(server,/CreateHumanoidModelFromDescription/);
  assert.doesNotMatch(server,/part\(world,"Sea"/);
 });
