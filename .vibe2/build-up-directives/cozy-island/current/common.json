@@ -184,10 +184,11 @@
       "sourceRevision": "1d5938ed3471d9221bc283a580f4a28e07ead33a",
       "artifactIdentity": "sha256:2e83865ec0acb0b0742011cb5b79b42e275d2a72eabfcabc44c95c220c65a0ac",
       "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 36878049746,
-      "testedAt": "2026-10-01T14:48:48.730Z",
+      "workflowRunId": 36882693362,
+      "testedAt": "2026-10-01T15:30:39.860Z",
       "repairSurfaces": [
         "MAP_ROUTEABILITY",
+        "SYSTEM_TRANSACTION",
         "ROBLOX_OBSERVED_INTERACTION"
       ],
       "qualityFailureDetails": [
@@ -199,6 +200,13 @@
           "observed": "{\"routeAttemptCount\":1,\"routePassCount\":0,\"routeRequired\":1,\"routes\":[{\"id\":\"map-route-prompt:나무\",\"ok\":false,\"moved\":0,\"fall\":0,\"floorBelow\":true}]}"
         },
         {
+          "id": "adaptive-system-transaction-effect",
+          "repairSurface": "SYSTEM_TRANSACTION",
+          "priority": "CRITICAL",
+          "hint": "One or more discovered shop/craft/equip/upgrade actions accepted input without changing inventory, currency/progression, feedback, or relevant UI state. Repair each transaction chain independently.",
+          "observed": "{\"systemActionCount\":1,\"systemEffectCount\":0,\"actions\":[{\"id\":\"prompt-ProximityPrompt\",\"semantic\":\"UPGRADE\",\"effectObserved\":false,\"effect\":{\"moved\":63.00156420017927,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":true,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":true}}]}"
+        },
+        {
           "id": "observed-action-c44dd2cc2f66a76ba1ed",
           "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
           "priority": "HIGH",
@@ -206,11 +214,11 @@
           "observed": "{\"id\":\"observed-action-c44dd2cc2f66a76ba1ed\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"map-route-prompt:나무\",\"targetIdentity\":\"map-route-prompt:나무\",\"actionType\":\"mcp-map-route-audit\",\"effectRequired\":false,\"attempts\":1}"
         },
         {
-          "id": "observed-action-b4a378bc999b601bc3a3",
+          "id": "observed-action-2e4e2ff2958630bc2c9e",
           "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
           "priority": "HIGH",
           "hint": "Replay the exact observed action and verify its real state change after repair.",
-          "observed": "{\"id\":\"observed-action-b4a378bc999b601bc3a3\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"prompt-ProximityPrompt\",\"targetIdentity\":\"Workspace.CozyConquestWorld.HomeNPCs.Chief.ProximityPrompt\",\"actionType\":\"mcp-world-interaction\",\"effectRequired\":true,\"attempts\":1}"
+          "observed": "{\"id\":\"observed-action-2e4e2ff2958630bc2c9e\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"prompt-ProximityPrompt\",\"targetIdentity\":\"Workspace.CozyConquestWorld.HomeNPCs.Captain.ProximityPrompt\",\"actionType\":\"mcp-world-interaction\",\"effectRequired\":true,\"attempts\":1}"
         }
       ]
     }
