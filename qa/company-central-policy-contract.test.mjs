@@ -2016,3 +2016,31 @@ test('central document has a bounded current-policy budget and archives historic
   assert.equal(policy.f0ThroughF9MustRemain,true);
   assert.equal(policy.publicationApprovalMustRemain,true);
 });
+test('perpetual BUILD_UP capacity budget stays aligned across policy and projections',()=>{
+  const limits=autonomousExpansionPolicy.dataCapacityBudget?.limits||{};
+  assert.equal(autonomousExpansionPolicy.dataCapacityBudget?.version,2);
+  assert.equal(limits.savePersistedDataBytes,3*1024*1024);
+  assert.equal(limits.webDownloadBytes,120*1024*1024);
+  assert.equal(limits.singleFileBytes,25*1024*1024);
+  assert.equal(limits.mobileMemoryTargetBytes,350*1024*1024);
+  assert.equal(limits.mobileMinimumFps,30);
+  assert.equal(autonomousExpansionPolicy.dataCapacityBudget?.buildUpGenerationLimit,null);
+  assert.equal(autonomousExpansionPolicy.dataCapacityBudget?.contentCountLimit,null);
+
+  const projected=architecture.perpetualBuildUpDataCapacityBudget||{};
+  assert.equal(projected.version,2);
+  assert.equal(projected.savePersistedDataBytes,limits.savePersistedDataBytes);
+  assert.equal(projected.webDownloadBytes,limits.webDownloadBytes);
+  assert.equal(projected.singleFileBytes,limits.singleFileBytes);
+  assert.equal(projected.mobileMemoryTargetBytes,limits.mobileMemoryTargetBytes);
+  assert.equal(projected.mobileMinimumFps,limits.mobileMinimumFps);
+  assert.equal(projected.buildUpGenerationLimit,null);
+  assert.equal(projected.contentCountLimit,null);
+
+  const evidence=logMap.perpetualBuildUpDataCapacityEvidence||{};
+  assert.equal(evidence.version,2);
+  assert.deepEqual(evidence.limits,limits);
+  assert.equal(evidence.buildUpContinuesAtAllStates,true);
+  assert.equal(evidence.generationLimit,null);
+  assert.equal(evidence.contentCountLimit,null);
+});
