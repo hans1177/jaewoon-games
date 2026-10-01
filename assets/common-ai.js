@@ -409,6 +409,11 @@ export class JaewoonCommonAI {
     if (engineValidated !== true) {
       return Object.freeze({ restored: false, reason: 'engine_validation_required', persistentWrite: false, gameplayAuthority: false });
     }
+    const selfId = String(this.identity?.id || this.identity?.name || '');
+    const snapshotId = String(snapshot?.identity?.id || snapshot?.identity?.name || '');
+    if (selfId && snapshotId && selfId !== snapshotId) {
+      return Object.freeze({ restored: false, reason: 'actor_identity_mismatch', actorId: selfId, snapshotActorId: snapshotId, persistentWrite: false, gameplayAuthority: false });
+    }
 
     const restoredMemory = [];
     const seenMemoryIds = new Set();
