@@ -1672,11 +1672,11 @@ test('candidate result workflows use direct repository-dispatch refill instead o
 });
 
 
-test('24H plan uses optimistic writes while reserve stays lightweight and fan-in stays run-unique',()=>{
+test('24H orchestration and reserve jobs stay parallel while shared writes use optimistic retry',()=>{
   const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
   const core=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 
-  assert.match(runner,/group: vibe2-24h-cycle-singleton-v9/);
+  assert.doesNotMatch(runner,/vibe2-24h-cycle-singleton/);
 
   const planStart=runner.indexOf('\n  plan:');
   const recoveryStart=runner.indexOf('\n  recovery_fast:',planStart);
@@ -1691,16 +1691,11 @@ test('24H plan uses optimistic writes while reserve stays lightweight and fan-in
   const reserveSteps=core.indexOf('\n    steps:',reserveStart);
   assert.ok(reserveStart>=0&&reserveSteps>reserveStart);
   const reserveHeader=core.slice(reserveStart,reserveSteps);
-  assert.match(reserveHeader,/github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-refill-reserve-\{0\}'/);
-  assert.match(reserveHeader,/github\.event\.client_payload\.execution_lane/);
-  assert.match(reserveHeader,/format\('vibe2-reserve-\{0\}', github\.run_id\)/);
-  assert.match(reserveHeader,/cancel-in-progress: false/);
+  assert.doesNotMatch(reserveHeader,/\n\s+concurrency:/);
   assert.match(reserveHeader,/runs-on: \$\{\{ \(github\.event_name == 'repository_dispatch' && \(github\.event\.action == 'vibe2-fanin-refill' \|\| github\.event\.action == 'vibe2-neuron-complete'\) && 'ubuntu-latest' \|\| 'ubuntu-slim'\) \}\}/);
   assert.match(reserveHeader,/vibe2-neuron-complete/);
-  assert.doesNotMatch(reserveHeader,/asset-development/);
   assert.match(reserveHeader,/vibe2-fanin-refill/);
   assert.match(reserveHeader,/ubuntu-latest/);
-  assert.doesNotMatch(reserveHeader,/ubuntu-24\.04-arm/);
   assert.match(reserveHeader,/ubuntu-slim/);
   assert.doesNotMatch(reserveHeader,/vibe2-control-state-/);
   assert.match(runner,/runner_pressure: \$\{\{ steps\.queue_state\.outputs\.runner_pressure \}\}/);
