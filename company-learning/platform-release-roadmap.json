@@ -1,8 +1,8 @@
 {
-  "version": 511,
+  "version": 512,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
-  "recordedAt": "2026-09-28",
+  "recordedAt": "2026-10-01",
   "priority": [
     "ROBLOX",
     "UNITY"
@@ -7320,19 +7320,19 @@
       "trigger": "AT_LEAST_ONE_RECENT_REPOSITORY_WORKFLOW_RUN_STATUS_IS_QUEUED_PENDING_OR_REQUESTED",
       "pressureAction": "COALESCE_THIS_WORKER_RESULT_TO_EXISTING_COHORT_FAN_IN",
       "pressureCapacityRefill": {
-        "enabled": true,
-        "scope": "GAME_PRIMARY_PRIMARY_VARIANT_WAVE_LEADER_ONLY",
+        "enabled": false,
+        "scope": "DISABLED_UNDER_RUNNER_PRESSURE",
         "signal": "EXISTING_VIBE2_FANIN_REFILL_EVENT",
-        "reason": "RUNNER_PRESSURE_WAVE_LEADER_FREE_SLOT_REFILL",
-        "maxSignalsPerWave": 1,
+        "reason": "SUPERSEDED_BY_RUNNER_BACKPRESSURE_BOTTLENECK_RELIEF_2026_10_01",
+        "maxSignalsPerWave": 0,
         "resultConsumption": false,
         "resultRemainsCohortFanInOwned": true,
         "workerDirectControlWrite": false,
         "newWorkflowCreated": false,
         "newSchedulerCreated": false,
-        "purpose": "REFILL_EXISTING_FREE_GAME_PRIMARY_SLOTS_WITHOUT_PER_WORKER_CALLBACK_BURST"
+        "purpose": "NO_NEW_REFILL_RUN_WHILE_GITHUB_ACTIONS_QUEUE_IS_PRESSURED"
       },
-      "coalescingMayNotBlockIndependentFreeSlotRefill": true,
+      "coalescingMayNotBlockIndependentFreeSlotRefill": false,
       "healthyAction": "DISPATCH_EXISTING_VIBE2_NEURON_COMPLETE_EVENT",
       "failOpenIfPressureObservationUnavailable": true,
       "immutableArtifactRequired": true,
@@ -7345,7 +7345,9 @@
         "company-learning/company-architecture-map.json",
         "company-learning/company-log-map.json"
       ],
-      "implementationState": "IMPLEMENTATION_IN_PROGRESS"
+      "implementationState": "SUPERSEDED_SAFE_BACKPRESSURE",
+      "independentFreeSlotRefillResumesBelowPressureThreshold": true,
+      "supersededBy": "RUNNER_BACKPRESSURE_BOTTLENECK_RELIEF_2026-10-01"
     },
     "vibeFocusedRetryHistoryReuse20260927": {
       "id": "VIBE_FOCUSED_RETRY_HISTORY_REUSE_2026-09-27",
@@ -8449,6 +8451,61 @@
       },
       "sourceOfTruth": "CURRENT_RUNNER_POOL_AND_VIBE2_CONTINUOUS_CORE",
       "historicalExecutionEvidenceArchived": true
+    },
+    "runnerBackpressureBottleneckRelief20261001": {
+      "id": "RUNNER_BACKPRESSURE_BOTTLENECK_RELIEF_2026-10-01",
+      "authority": "OWNER_DIRECTIVE_2026-10-01",
+      "objective": "STOP_ACTIONS_QUEUE_AMPLIFICATION_AND_DUPLICATE_CENTRAL_VALIDATION_WITHOUT_WEAKENING_GAME_QA_OR_RESULT_DURABILITY",
+      "existingArchitectureOnly": true,
+      "shadowPipelineCreated": false,
+      "newWorkflowCreated": false,
+      "queuePressureThreshold": 4,
+      "centralDocumentValidation": {
+        "fullCanonicalValidation": "ONCE_PER_RESERVED_COHORT",
+        "workerBeforeAfterValidation": "PINNED_CANONICAL_SHA_REUSE",
+        "mismatchAction": "FAIL_CLOSED",
+        "stalePolicyGuardPreserved": true
+      },
+      "workerCompletionUnderPressure": "KEEP_IMMUTABLE_RESULT_ARTIFACT_AND_DEFER_NEW_CALLBACK_TO_COHORT_FAN_IN",
+      "freeSlotRefillUnderPressure": "DEFER_UNTIL_QUEUE_BELOW_THRESHOLD",
+      "scheduler": {
+        "preplanDispatchUnderPressure": "DEFER",
+        "laneLaunchUnderPressure": "DEFER",
+        "refillUnderPressure": "DEFER_TO_FIVE_MINUTE_SAFETY_NET",
+        "duplicateSchedulerDispatch": "SKIP_WHEN_ANOTHER_24H_RUN_IS_ACTIVE"
+      },
+      "release": {
+        "dispatchQueueThreshold": 4,
+        "nativeReleaseDispatchBatchMax": 2,
+        "reviewedWinnerRecoveryBatchMax": 2,
+        "deferredNativeCandidateStatePreservedIn": "vibe2-unreal-core:.vibe2/queue.json"
+      },
+      "regression": {
+        "reserveExactShaPassReusableAtFanIn": true,
+        "fanInReuseOrder": [
+          "RESERVE_EXACT_SHA_REGRESSION",
+          "EXACT_SHA_CORE_QA",
+          "LOCAL_FULL_REGRESSION"
+        ],
+        "qaGateWeakening": false
+      },
+      "coreQa": {
+        "mainPushCancelsSupersededInProgress": true,
+        "nonMainActiveRunPreserved": true,
+        "exactShaAuthorityPreserved": true
+      },
+      "resultLossForbidden": true,
+      "directWorkerControlWriteForbidden": true,
+      "implementationBindings": [
+        ".github/workflows/vibe2-continuous-core.yml",
+        ".github/workflows/vibe2-24h-runner.yml",
+        ".github/workflows/vibe2-core-qa.yml",
+        ".github/workflows/director-supervisor.yml",
+        "tools/company-shared-context.mjs",
+        "tools/vibe2-central-work-contract.mjs",
+        "vibe2-runtime.json"
+      ],
+      "implementationState": "IMPLEMENTED_MAIN"
     }
   },
   "vibeExecutionLaneContract": {
