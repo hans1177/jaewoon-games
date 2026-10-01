@@ -271,11 +271,19 @@ jobs:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
           RETRY_OPEN_CLOUD_ONLY: ${{ inputs.retry_open_cloud_only || false }}
           EVENT_NAME: ${{ github.event_name }}
-          TRIGGER_CHANGED: ${{ github.event_name == 'push' && (contains(toJSON(github.event.head_commit.modified), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.added), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.removed), 'roblox-games/.company-runtime-trigger')) }}
+          PUSH_BEFORE: ${{ github.event.before || '' }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         shell: bash
         run: |
           set -euo pipefail
+          trigger_changed=false
+          if [ "$EVENT_NAME" = 'push' ] && [[ "$PUSH_BEFORE" =~ ^[0-9a-f]{40}$ ]] && [ "$PUSH_BEFORE" != '0000000000000000000000000000000000000000' ]; then
+            git fetch --no-tags --depth=1 origin "$PUSH_BEFORE"
+            if ! git diff --quiet "$PUSH_BEFORE" HEAD -- roblox-games/.company-runtime-trigger; then
+              trigger_changed=true
+            fi
+          fi
+          export TRIGGER_CHANGED="$trigger_changed"
           test -n "$ROBLOX_OPEN_CLOUD_API_KEY"
           git -C ../runtime fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
           git -C ../runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
@@ -452,12 +460,20 @@ jobs:
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
           EVENT_NAME: ${{ github.event_name }}
-          TRIGGER_CHANGED: ${{ github.event_name == 'push' && (contains(toJSON(github.event.head_commit.modified), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.added), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.removed), 'roblox-games/.company-runtime-trigger')) }}
+          PUSH_BEFORE: ${{ github.event.before || '' }}
           SERVER_DIAGNOSTIC_ENABLED: ${{ inputs.retry_open_cloud_only || false }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         shell: bash
         run: |
           set -euo pipefail
+          trigger_changed=false
+          if [ "$EVENT_NAME" = 'push' ] && [[ "$PUSH_BEFORE" =~ ^[0-9a-f]{40}$ ]] && [ "$PUSH_BEFORE" != '0000000000000000000000000000000000000000' ]; then
+            git fetch --no-tags --depth=1 origin "$PUSH_BEFORE"
+            if ! git diff --quiet "$PUSH_BEFORE" HEAD -- roblox-games/.company-runtime-trigger; then
+              trigger_changed=true
+            fi
+          fi
+          export TRIGGER_CHANGED="$trigger_changed"
           git -C ../runtime fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
           git -C ../runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
           node --input-type=module <<'NODE'
@@ -1923,19 +1939,29 @@ jobs:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
           EVENT_NAME: ${{ github.event_name }}
           RECHECK_PRODUCT_FAILURE: ${{ github.event_name == 'workflow_dispatch' && inputs.run_studio == true && inputs.game_id != '' }}
-          TRIGGER_CHANGED: ${{ github.event_name == 'push' && (contains(toJSON(github.event.head_commit.modified), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.added), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.removed), 'roblox-games/.company-runtime-trigger')) }}
+          PUSH_BEFORE: ${{ github.event.before || '' }}
           CANDIDATE_CONTEXT: ${{ inputs.candidate_context }}
         shell: bash
         run: |
           set -euo pipefail
+          trigger_changed=false
+          if [ "$EVENT_NAME" = 'push' ] && [[ "$PUSH_BEFORE" =~ ^[0-9a-f]{40}$ ]] && [ "$PUSH_BEFORE" != '0000000000000000000000000000000000000000' ]; then
+            git fetch --no-tags --depth=1 origin "$PUSH_BEFORE"
+            if ! git diff --quiet "$PUSH_BEFORE" HEAD -- roblox-games/.company-runtime-trigger; then
+              trigger_changed=true
+            fi
+          fi
+          export TRIGGER_CHANGED="$trigger_changed"
           if [ -z "$CANDIDATE_CONTEXT" ]; then
             git -C ../runtime fetch --no-tags origin company-runtime
             git -C ../runtime reset --hard origin/company-runtime
           fi
           requested="$REQUESTED_GAME_ID"
-          if [ -z "$requested" ] && [ "$EVENT_NAME" = 'push' ] && [ "$TRIGGER_CHANGED" = 'true' ] && [ -f roblox-games/.company-runtime-trigger ]; then
+          if [ -z "$requested" ] && [ "$EVENT_NAME" = 'push' ] && [ "$trigger_changed" = 'true' ] && [ -f roblox-games/.company-runtime-trigger ]; then
             requested="$(sed -n 's/^gameId:[[:space:]]*//p' roblox-games/.company-runtime-trigger | head -n1 | xargs)"
           fi
+          echo "ROBLOX_STUDIO_TRIGGER_CHANGED=$trigger_changed"
+          echo "ROBLOX_STUDIO_REQUESTED_GAME_ID=${requested:-ALL_PENDING}"
           plan_output="$RUNNER_TEMP/roblox-studio-mcp-matrix.json"
           node tools/company-development-roblox-studio-local-play.mjs \
             --mode=plan \

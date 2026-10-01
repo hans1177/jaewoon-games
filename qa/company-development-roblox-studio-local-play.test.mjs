@@ -1036,6 +1036,16 @@ test('Assistant log readiness is advisory and official required-tool handshake r
   assert.match(studioMcpBlock,/--tool-attempts=12/);
 });
 
+test('Studio push trigger scopes exact revalidation from the actual before-to-head diff',()=>{
+  const studioPlanBlock=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
+  assert.match(studioPlanBlock,/PUSH_BEFORE: \$\{\{ github\.event\.before \|\| '' \}\}/);
+  assert.match(studioPlanBlock,/git fetch --no-tags --depth=1 origin "\$PUSH_BEFORE"/);
+  assert.match(studioPlanBlock,/git diff --quiet "\$PUSH_BEFORE" HEAD -- roblox-games\/\.company-runtime-trigger/);
+  assert.match(studioPlanBlock,/ROBLOX_STUDIO_TRIGGER_CHANGED=\$trigger_changed/);
+  assert.match(studioPlanBlock,/ROBLOX_STUDIO_REQUESTED_GAME_ID=\$\{requested:-ALL_PENDING\}/);
+  assert.doesNotMatch(studioPlanBlock,/github\.event\.head_commit\.(?:modified|added|removed)/);
+});
+
 test('Studio MCP planner stays independent and does not consume the authenticated Studio host',()=>{
   const central=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
