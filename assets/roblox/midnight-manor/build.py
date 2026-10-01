@@ -502,42 +502,43 @@ def npc(s,kind,pos):
     }
     head_size=(w*.98*hx,h*.225*hy,w*.92*hz)
     head=s.sculpted_face(kind+'Head',(0,head_y,0),head_size,q['skin'],face_profiles[kind],parent=p)
+    face_front=head_size[2]*.5
 
-    # 코는 콧대-콧방울-끝이 이어지는 작은 전용 loft다.
-    nose=s.loft(kind+'_Nose',(0,head_y+h*.005,.42),[
-      (-h*.04,w*.07,w*.08,0,0,.03),
-      (0,w*.065,w*.09,0,.08,.09),
-      (h*.055,w*.055,w*.065,0,.02,.04),
-    ],q['skin'],sides=20,parent=p)
+    # 코는 실제 얼굴 전면에서 시작해 콧대-콧방울-끝이 앞으로 이어진다.
+    nose=s.loft(kind+'_Nose',(0,head_y+h*.005,face_front*.92),[
+      (-h*.04,w*.075,w*.075,0,.01,.035),
+      (0,w*.072,w*.085,0,.12,.075),
+      (h*.052,w*.060,w*.060,0,.24,.045),
+    ],q['skin'],sides=28,parent=p)
     nose.rotation_euler.x=-.05 if kind=='Butler' else .015
 
     # 눈은 얇은 렌즈형 곡면 + 홍채/동공, 눈꺼풀/눈썹은 윤곽 패널.
     for side in [-1,1]:
         ex=side*w*.205
-        s.loft(kind+'_Sclera'+str(side),(ex,head_y+h*.026,.445),[
+        s.loft(kind+'_Sclera'+str(side),(ex,head_y+h*.026,face_front+.025),[
           (-h*.018,w*.095,w*.035),(0,w*.115,w*.050),(h*.018,w*.095,w*.035)
         ],c['ivory'],sides=20,parent=p)
-        s.loft(kind+'_Iris'+str(side),(ex,head_y+h*.026,.493),[
+        s.loft(kind+'_Iris'+str(side),(ex,head_y+h*.026,face_front+.073),[
           (-h*.012,w*.040,w*.014),(0,w*.046,w*.018),(h*.012,w*.040,w*.014)
         ],q['eye'],sides=18,parent=p)
-        s.loft(kind+'_Pupil'+str(side),(ex,head_y+h*.026,.511),[
+        s.loft(kind+'_Pupil'+str(side),(ex,head_y+h*.026,face_front+.096),[
           (-h*.008,w*.017,w*.008),(0,w*.020,w*.010),(h*.008,w*.017,w*.008)
         ],c['black'],sides=16,parent=p)
-        lid=s.prism(kind+'_UpperLid'+str(side),(ex,head_y+h*.045,.505),[
+        lid=s.prism(kind+'_UpperLid'+str(side),(ex,head_y+h*.045,face_front+.083),[
           (-w*.115,0),(w*.115,0),(w*.085,h*.017),(-w*.075,h*.018)
         ],.025,q['skin'],parent=p)
         lid.rotation_euler.z=side*(-.03 if kind=='Butler' else .04 if kind=='Undertaker' else .01)
-        brow=s.prism(kind+'_Brow'+str(side),(ex,head_y+h*.085,.515),[
+        brow=s.prism(kind+'_Brow'+str(side),(ex,head_y+h*.085,face_front+.075),[
           (-w*.13,0),(w*.13,side*h*.006),(w*.10,h*.020),(-w*.11,h*.018)
         ],.035,q['hair'],parent=p)
         brow.rotation_euler.z=side*(.08 if kind=='Undertaker' else -.04 if kind=='Butler' else .02)
 
     # 입/귀도 별도 윤곽을 사용한다.
     lip=s.material(kind+'Lip',(.22,.10,.11))
-    s.prism(kind+'_UpperLip',(0,head_y-h*.045,.515),[
+    s.prism(kind+'_UpperLip',(0,head_y-h*.045,face_front+.045),[
       (-w*.16,0),(-w*.04,h*.012),(0,h*.004),(w*.04,h*.012),(w*.16,0),(0,-h*.010)
     ],.032,q['accent'] if kind=='Undertaker' else lip,parent=p)
-    s.prism(kind+'_LowerLip',(0,head_y-h*.064,.518),[
+    s.prism(kind+'_LowerLip',(0,head_y-h*.064,face_front+.049),[
       (-w*.14,0),(0,-h*.012),(w*.14,0),(0,h*.010)
     ],.034,lip,parent=p)
     for side in [-1,1]:
@@ -556,7 +557,7 @@ def npc(s,kind,pos):
               (-w*.07,h*.055),(w*.07,h*.045),(w*.055,-h*.045),(-w*.045,-h*.06)
             ],.10,q['hair'],parent=p)
             lock.rotation_euler.z=-side*.08
-            moustache=s.prism('Butler_Moustache'+str(side),(side*w*.105,head_y-h*.033,.525),[
+            moustache=s.prism('Butler_Moustache'+str(side),(side*w*.105,head_y-h*.033,face_front+.060),[
               (-w*.105,h*.010),(w*.105,0),(w*.075,-h*.025),(-w*.04,-h*.015)
             ],.025,q['hair'],parent=p)
             moustache.rotation_euler.z=side*.12
@@ -578,7 +579,7 @@ def npc(s,kind,pos):
         ],c['black'],sides=32,parent=p)
         s.lathe('UndertakerHatRibbon',(0,head_y+h*.175,.02),w*.47,w*.47,h*.026,q['accent'],sides=32,parent=p)
         for side in [-1,1]:
-            s.prism('Undertaker_CheekShadow'+str(side),(side*w*.24,head_y-h*.018,.47),[
+            s.prism('Undertaker_CheekShadow'+str(side),(side*w*.24,head_y-h*.018,face_front+.020),[
               (-w*.09,h*.025),(w*.10,h*.015),(w*.08,-h*.04),(-w*.05,-h*.05)
             ],.018,q['vest'],parent=p)
         s.box('Undertaker_Ledger',(w*.62,h*.43,.66),(w*.72,h*.18,.18),q['accent'],parent=p)
@@ -596,8 +597,8 @@ def npc(s,kind,pos):
               (-w*.05,0),(0,h*.12),(w*.06,h*.02),(w*.03,-h*.035)
             ],.055,q['hair'],parent=p)
             wisp.rotation_euler.z=side*.14
-            s.lathe('Archivist_GlassRim'+str(side),(side*w*.205,head_y+h*.03,.535),w*.14,w*.14,.026,c['brass'],sides=28,parent=p)
-        s.prism('Archivist_GlassBridge',(0,head_y+h*.03,.548),[
+            s.lathe('Archivist_GlassRim'+str(side),(side*w*.205,head_y+h*.03,face_front+.095),w*.14,w*.14,.026,c['brass'],sides=28,parent=p)
+        s.prism('Archivist_GlassBridge',(0,head_y+h*.03,face_front+.110),[
           (-w*.09,-h*.008),(w*.09,-h*.008),(w*.09,h*.008),(-w*.09,h*.008)
         ],.020,c['brass'],parent=p)
         s.prism('Archivist_InkStainL',(-w*.11,h*.43,.615),[
