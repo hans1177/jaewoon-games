@@ -706,6 +706,86 @@ jobs:
           done
           echo "ROBLOX_F9_CANONICAL_PUBLISH_DISPATCH_COUNT=$count"
 
+      - name: Immediately continue each successfully persisted Roblox F9 game
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          patch_file=/tmp/roblox-f9-runtime-patch.json
+          test -f "$patch_file"
+          git -C runtime fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git -C runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+          REQUESTED_GAME_ID="$REQUESTED_GAME_ID" node --input-type=module <<'NODE' > /tmp/roblox-f9-next-cycle-ids
+          import fs from 'node:fs';
+          const patch=JSON.parse(fs.readFileSync('/tmp/roblox-f9-runtime-patch.json','utf8'));
+          const queue=JSON.parse(fs.readFileSync('runtime/development-queue.json','utf8'));
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          const conflictPath='/tmp/roblox-f9-persist-same-field-conflicts';
+          const conflicted=new Set(
+            fs.existsSync(conflictPath)
+              ?fs.readFileSync(conflictPath,'utf8').split(/\r?\n/).map(line=>line.split('|')[0].trim()).filter(Boolean)
+              :[]
+          );
+          const ids=new Set();
+          for(const delta of patch.patches||[]){
+            const gameId=String(delta?.gameId||'').trim();
+            if(!gameId||conflicted.has(gameId))continue;
+            if(requested&&gameId!==requested)continue;
+            const item=(queue.items||[]).find(row=>String(row?.gameId||'')===gameId);
+            if(!item)continue;
+            const exact=
+              item.robloxFinalReviewPassed===true
+              &&item.robloxF9ReleaseRegressionPassed===true
+              &&String(item.robloxSourceCommit||'')===String(delta.sourceRevision||'')
+              &&String(item.robloxBuildArtifactIdentity||'')===String(delta.artifactIdentity||'')
+              &&item.robloxQualityBuildUpRequired!==true
+              &&item.robloxStudioLocalPlayRepairRequired!==true;
+            if(exact)ids.add(gameId);
+          }
+          for(const id of [...ids].sort())console.log(id);
+          NODE
+
+          next_count="$(wc -l < /tmp/roblox-f9-next-cycle-ids | tr -d '[:space:]')"
+          next_count="${next_count:-0}"
+          if [ "$next_count" -eq 0 ]; then
+            echo 'ROBLOX_F9_NEXT_CYCLE_DISPATCH_COUNT=0'
+            exit 0
+          fi
+
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-confirmed-runtime.yml/runs?per_page=100" > /tmp/roblox-development-active-runs.json
+          dispatch_count=0
+          deduped_count=0
+          while read -r id; do
+            [ -n "$id" ] || continue
+            active="$(GAME_ID="$id" node - <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-development-active-runs.json','utf8'));
+          const states=new Set(['queued','pending','in_progress','requested']);
+          const prefix='DEVELOPMENT cycle | '+String(process.env.GAME_ID||'')+' | ';
+          process.stdout.write(String((payload.workflow_runs||[]).filter(run=>
+            states.has(String(run.status||'').toLowerCase())
+            &&String(run.display_title||'').startsWith(prefix)
+          ).length));
+          NODE
+            )"
+            if [ "$active" -gt 0 ]; then
+              deduped_count=$((deduped_count+1))
+              echo "ROBLOX_F9_NEXT_CYCLE_DISPATCH=DEDUPED_ACTIVE:$id"
+              continue
+            fi
+            gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main \
+              -f game_id="$id" \
+              -f trigger_source=ROBLOX_F9_PER_GAME_CONTINUATION
+            dispatch_count=$((dispatch_count+1))
+            echo "ROBLOX_F9_NEXT_CYCLE_DISPATCHED=$id"
+          done < /tmp/roblox-f9-next-cycle-ids
+          echo "ROBLOX_F9_NEXT_CYCLE_CANDIDATE_COUNT=$next_count"
+          echo "ROBLOX_F9_NEXT_CYCLE_DISPATCH_COUNT=$dispatch_count"
+          echo "ROBLOX_F9_NEXT_CYCLE_DEDUPED_COUNT=$deduped_count"
+          echo 'ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO'
+
       - name: Fan verified F9 runtime proof into waiting Vibe Roblox tasks
         env:
           GH_TOKEN: ${{ github.token }}
