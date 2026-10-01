@@ -12,43 +12,46 @@ local remote=RS:WaitForChild(C.RemoteName)
 local gui=Instance.new("ScreenGui");gui.Name="PersonalManorUI";gui.ResetOnSpawn=false;gui.DisplayOrder=15;gui.Enabled=false
 gui.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
 gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets;gui.Parent=p:WaitForChild("PlayerGui")
-local ink=Color3.fromRGB(27,30,29)
-local parchment=Color3.fromRGB(235,218,182)
+local ink=Color3.fromRGB(20,15,18)
+local parchment=Color3.fromRGB(215,190,140)
+local wood=Color3.fromRGB(49,29,24)
+local brass=Color3.fromRGB(142,105,56)
+local wine=Color3.fromRGB(70,24,36)
 local activeMenu=nil
 local activeStory=nil
 local invitationCode=""
 local rankingRows={}
 local notebookOpen=false
 local function corner(parent,n)
- local x=Instance.new("UICorner");x.CornerRadius=UDim.new(0,n or 4);x.Parent=parent
- local line=Instance.new("UIStroke");line.ApplyStrokeMode=Enum.ApplyStrokeMode.Border;line.Color=Color3.fromRGB(158,133,83);line.Transparency=.35;line.Thickness=1;line.Parent=parent
+ local x=Instance.new("UICorner");x.CornerRadius=UDim.new(0,n or 2);x.Parent=parent
+ local line=Instance.new("UIStroke");line.ApplyStrokeMode=Enum.ApplyStrokeMode.Border;line.Color=brass;line.Transparency=.12;line.Thickness=2;line.Parent=parent
 end
 local function label(parent,text,height,size)
  local x=Instance.new("TextLabel");x.BackgroundTransparency=1;x.Size=UDim2.new(1,-12,0,height or 32)
- x.Text=text;x.TextColor3=parchment;x.TextSize=size or 14;x.TextWrapped=true;x.Font=Enum.Font.Gotham;x.AutomaticSize=Enum.AutomaticSize.Y
+ x.Text=text;x.TextColor3=parchment;x.TextSize=size or 14;x.TextWrapped=true;x.Font=Enum.Font.Antique;x.AutomaticSize=Enum.AutomaticSize.Y
  x.TextXAlignment=Enum.TextXAlignment.Left;x.Parent=parent;return x
 end
 local function button(parent,text,fn,color)
- local x=Instance.new("TextButton");x.Size=UDim2.new(1,-12,0,44);x.BackgroundColor3=color or Color3.fromRGB(56,51,62)
- x.Text=text;x.TextColor3=parchment;x.TextSize=14;x.TextWrapped=true;x.Font=Enum.Font.GothamBold;x.AutoButtonColor=true;x.AutomaticSize=Enum.AutomaticSize.Y
+ local x=Instance.new("TextButton");x.Size=UDim2.new(1,-12,0,52);x.BackgroundColor3=color or wood
+ x.Text=text;x.TextColor3=parchment;x.TextSize=15;x.TextWrapped=true;x.Font=Enum.Font.Antique;x.AutoButtonColor=true;x.AutomaticSize=Enum.AutomaticSize.Y
  x.Parent=parent;corner(x,5);x.Activated:Connect(fn);return x
 end
 -- 화면 구성 · 작은 명패와 접히는 가족 수첩. 이동 중 중앙 시야는 비운다.
 local header=Instance.new("Frame");header.Name="ManorNameplate";header.Size=UDim2.new(1,-174,0,46);header.Position=UDim2.fromOffset(10,6)
-header.BackgroundColor3=ink;header.BackgroundTransparency=.18;header.Parent=gui;corner(header)
+header.BackgroundColor3=wood;header.BackgroundTransparency=.06;header.Parent=gui;corner(header,1)
 local headerLimit=Instance.new("UISizeConstraint");headerLimit.MaxSize=Vector2.new(206,46);headerLimit.Parent=header
 local title=label(header,"MIDNIGHT ESCAPE",22,15);title.Position=UDim2.fromOffset(10,2);title.AutoLocalize=false
 local status=label(header,"괴물 가족의 저택",18,10);status.Position=UDim2.fromOffset(10,25)
 local commands=Instance.new("Frame");commands.Name="ManorCommands";commands.AnchorPoint=Vector2.new(1,0)
 commands.Position=UDim2.new(1,-10,0,6);commands.Size=UDim2.fromOffset(144,44);commands.BackgroundTransparency=1;commands.Parent=gui
 local nav=Instance.new("Frame");nav.Name="FamilyNotebook";nav.AnchorPoint=Vector2.new(1,0);nav.Position=UDim2.new(1,-10,0,58)
-nav.Size=UDim2.new(1,-20,0,60);nav.BackgroundColor3=ink;nav.BackgroundTransparency=.04;nav.Visible=false;nav.Parent=gui;corner(nav,5)
+nav.Size=UDim2.new(1,-20,0,64);nav.BackgroundColor3=Color3.fromRGB(38,22,25);nav.BackgroundTransparency=.02;nav.Visible=false;nav.Parent=gui;corner(nav,1)
 local max=Instance.new("UISizeConstraint");max.MaxSize=Vector2.new(360,60);max.Parent=nav
 local grid=Instance.new("UIGridLayout");grid.CellSize=UDim2.new(1/5,-4,1,0);grid.CellPadding=UDim2.fromOffset(5,0);grid.Parent=nav
 local shade=Instance.new("Frame");shade.Name="NotebookShade";shade.Size=UDim2.fromScale(1,1)
 shade.BackgroundColor3=ink;shade.BackgroundTransparency=.4;shade.Active=true;shade.Visible=false;shade.ZIndex=10;shade.Parent=gui
 local panel=Instance.new("Frame");panel.Name="NotebookPage";panel.AnchorPoint=Vector2.new(.5,0);panel.Position=UDim2.new(.5,0,0,60)
-panel.Size=UDim2.new(1,-28,1,-72);panel.BackgroundColor3=Color3.fromRGB(29,24,25);panel.Visible=false;panel.ZIndex=11;panel.Parent=gui;corner(panel,10)
+panel.Size=UDim2.new(1,-28,1,-72);panel.BackgroundColor3=Color3.fromRGB(40,24,28);panel.Visible=false;panel.ZIndex=11;panel.Parent=gui;corner(panel,2)
 panel:GetPropertyChangedSignal("Visible"):Connect(function()shade.Visible=panel.Visible end)
 local limit=Instance.new("UISizeConstraint");limit.MaxSize=Vector2.new(460,550);limit.Parent=panel
 local panelTitle=label(panel,"",38,20);panelTitle.Position=UDim2.fromOffset(14,8);panelTitle.Size=UDim2.new(1,-85,0,38)
@@ -259,11 +262,14 @@ end
 -- 접속 메인: 입장 버튼을 누르면 기본 카메라/조작으로 정확히 복귀한다.
 local entered=false
 local welcome=Instance.new("Frame");welcome.Name="ManorWelcome";welcome.ZIndex=13;welcome.Active=true;welcome.Size=UDim2.fromScale(1,1);welcome.BackgroundColor3=ink;welcome.BackgroundTransparency=.58;welcome.Parent=gui
-local card=Instance.new("Frame");card.AnchorPoint=Vector2.new(.5,.5);card.Position=UDim2.fromScale(.5,.46);card.Size=UDim2.new(1,-48,0,224);card.BackgroundColor3=ink;card.BackgroundTransparency=.06;card.Parent=welcome;corner(card,5)
-local cardLimit=Instance.new("UISizeConstraint");cardLimit.MaxSize=Vector2.new(430,224);cardLimit.Parent=card
-local mainTitle=label(card,"MIDNIGHT ESCAPE",54,26);mainTitle.Size=UDim2.new(1,-24,0,54);mainTitle.Position=UDim2.fromOffset(12,14);mainTitle.TextXAlignment=Enum.TextXAlignment.Center;mainTitle.AutoLocalize=false
-local subtitle=label(card,"심야 대탈출 · 괴물 가족의 저택",38,14);subtitle.Position=UDim2.fromOffset(12,65);subtitle.TextXAlignment=Enum.TextXAlignment.Center
-local greeting=label(card,"집사가 문을 열어두었어.\n이 집에서는 기이한 일도 일상이야.",54,13);greeting.Position=UDim2.fromOffset(12,105);greeting.TextXAlignment=Enum.TextXAlignment.Center
+local card=Instance.new("Frame");card.AnchorPoint=Vector2.new(.5,.5);card.Position=UDim2.fromScale(.5,.72);card.Size=UDim2.new(1,-48,0,238);card.BackgroundColor3=parchment;card.BackgroundTransparency=.02;card.Parent=welcome;corner(card,1)
+local cardLimit=Instance.new("UISizeConstraint");cardLimit.MaxSize=Vector2.new(430,238);cardLimit.Parent=card
+local mainTitle=label(card,"MIDNIGHT ESCAPE",54,26);mainTitle.Size=UDim2.new(1,-24,0,54);mainTitle.Position=UDim2.fromOffset(12,14);mainTitle.TextXAlignment=Enum.TextXAlignment.Center;mainTitle.TextColor3=ink;mainTitle.AutoLocalize=false
+local subtitle=label(card,"심야 대탈출 · 괴물 가족의 저택",38,14);subtitle.Position=UDim2.fromOffset(12,65);subtitle.TextXAlignment=Enum.TextXAlignment.Center;subtitle.TextColor3=ink
+local greeting=label(card,"집사가 문을 열어두었어.\n이 집에서는 기이한 일도 일상이야.",54,13);greeting.Position=UDim2.fromOffset(12,105);greeting.TextXAlignment=Enum.TextXAlignment.Center;greeting.TextColor3=ink
+local wax=Instance.new("Frame");wax.Name="WaxSeal";wax.AnchorPoint=Vector2.new(.5,.5);wax.Position=UDim2.new(.5,0,0,161);wax.Size=UDim2.fromOffset(34,34);wax.BackgroundColor3=Color3.fromRGB(112,31,39);wax.Parent=card
+local waxCorner=Instance.new("UICorner");waxCorner.CornerRadius=UDim.new(1,0);waxCorner.Parent=wax
+local waxMark=label(wax,"M",30,18);waxMark.Size=UDim2.fromScale(1,1);waxMark.TextColor3=Color3.fromRGB(205,155,87);waxMark.TextXAlignment=Enum.TextXAlignment.Center;waxMark.TextYAlignment=Enum.TextYAlignment.Center
 local controls=nil
 local mainCameraActive=false
 local function releaseMainCamera()
@@ -284,7 +290,7 @@ local enter=button(card,"저택 들어가기",function()
  entered=true
  releaseMainCamera()
  if visibility then visibility()end
-end,Color3.fromRGB(99,77,53));enter.Position=UDim2.fromOffset(18,166);enter.Size=UDim2.new(1,-36,0,46)
+end,wood);enter.Position=UDim2.fromOffset(18,174);enter.Size=UDim2.new(1,-36,0,52)
 local oldLighting=nil
 local atmosphere=nil
 local oldAtmosphere=nil
@@ -328,11 +334,11 @@ p.AttributeChanged:Connect(visibility);workspace:GetAttributeChangedSignal("Phys
 -- 실제 입장 위치가 보이는 실내 메인 카메라. 입장 후에는 기본 카메라/터치 조작을 쓴다.
 RunService.RenderStepped:Connect(function()
  if not gui.Enabled or entered then return end
- local x=p:GetAttribute("ManorOriginX");local camera=workspace.CurrentCamera
- if x and camera then
+ local x=p:GetAttribute("ManorOriginX");local z=p:GetAttribute("ManorOriginZ");local camera=workspace.CurrentCamera
+ if x and z and camera then
   mainCameraActive=true
   camera.CameraType=Enum.CameraType.Scriptable
-  camera.CFrame=CFrame.lookAt(Vector3.new(x,9,264),Vector3.new(x,7,242))
+  camera.CFrame=CFrame.lookAt(Vector3.new(x,12,z+54),Vector3.new(x,9,z-4))
   if controls then controls:Disable()end
  end
 end)
