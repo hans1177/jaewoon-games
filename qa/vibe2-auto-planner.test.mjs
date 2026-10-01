@@ -3795,6 +3795,12 @@ test('real cozy-island Web source produces both code BUILD_UP and graphics repla
 test('owner-direct unfinished games bypass a full normal backlog and keep generating BUILD_UP generations',()=>{
   const repoRoot=path.resolve(process.cwd());
   const catalog=JSON.parse(fs.readFileSync(path.join(repoRoot,'game-catalog.json'),'utf8'));
+  const plannerCatalog={...catalog,games:[...(catalog.games||[]),{
+    id:'generic-game',
+    name:'백로그 점유 테스트 게임',
+    productionClass:'DEVELOPMENT_CONFIRMED',
+    lifecycleState:'ACTIVE'
+  }]};
   const sourceRevision='e3ff6bb1a0ccd6eb8398da4431d413c28974267d';
   const artifactIdentity='sha256:'+'1'.repeat(64);
   const developmentQueue={items:[{
@@ -3872,7 +3878,7 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
   };
   const result=planVibe2AutonomousTasks({
     status:{projects:[]},
-    catalog,
+    catalog:plannerCatalog,
     developmentQueue,
     queue:createVibeContinuousQueue({tasks:[occupied],maxConcurrentTasks:256}),
     repoRoot,
