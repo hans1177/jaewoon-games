@@ -120,7 +120,7 @@ const STAGES={
   2:{blueMax:12,redMax:8,redPool:['SKELETON_SOLDIER','SKELETON_ARCHER','SKELETON_MAGE','ORC','SLIME']}
 };
 const GACHA_POOL=['LANCER','CROSSBOW','HAMMER'];
-const UNIT_SPRITE='/card-grid-duel/units.webp';
+const UNIT_SPRITE='/card-grid-duel/units.webp?v=4283be1-2';
 const SPRITE_POS={
   SWORDSMAN:[0,0],ARCHER:[1,0],MAGE:[2,0],GUARDIAN:[3,0],
   GOBLIN:[0,1],SKELETON_ARCHER:[1,1],SKELETON_MAGE:[2,1],ORC:[3,1]
@@ -277,10 +277,24 @@ function checkWin(){
     state.winner='BLUE'
   }
 }
+function resolveHammerHits(s){
+  const hammers=[...state.units].filter(u=>u.side===s&&u.card==='HAMMER'&&u.hammerTarget);
+  for(const hammer of hammers){
+    const target=byId(hammer.hammerTarget);
+    hammer.hammerTarget='';
+    if(!target||target.hp<=0)continue;
+    applyDamage(target,55,s);
+    removeDeadAndSplit();
+    checkWin();
+    if(state.winner||state.phase!=='BATTLE')break
+  }
+}
 function startTurn(s){
   state.current=s;
   state.turn++;
   state.summonUsed=false;
+  resolveHammerHits(s);
+  if(state.winner||state.phase!=='BATTLE')return;
   for(const u of state.units.filter(x=>x.side===s)){
     u.moved=false;
     u.attacked=false;
@@ -315,7 +329,7 @@ function processAction(actor,p){
       attacked:false,
       freeze:0,
       frozenNow:false,
-      hammerReady:false
+      hammerTarget:''
     });
     state.summonUsed=true;
   }else if(p.type==='move'){
@@ -329,10 +343,10 @@ function processAction(actor,p){
     const d=card(actor,a.card);
     if(attackDist(a,t)>d.range)return false;
 
-    if(d.charge&&!a.hammerReady){
-      a.hammerReady=true;
+    if(d.charge){
+      a.hammerTarget=t.id;
       a.attacked=true;
-      msg('망치병이 공격을 준비했어. 다음 턴에 공격 가능');
+      msg('망치병이 '+card(t.side,t.card).name+'을 목표로 지정했어. 다음 자기 턴에 55 피해');
       state.version++;
       return true
     }
@@ -351,7 +365,6 @@ function processAction(actor,p){
     const alive=byId(tid);
     if(alive&&alive.hp>0&&d.freeze&&Math.random()<d.freeze)alive.freeze=Math.max(alive.freeze||0,1);
     a.attacked=true;
-    if(d.charge)a.hammerReady=false;
     removeDeadAndSplit();
     checkWin();
   }else if(p.type==='end'){
@@ -386,7 +399,7 @@ function artHtml(id,d){
 }
 function unitText(u){
   const d=card(u.side,u.card);
-  const charge=u.card==='HAMMER'?(u.hammerReady?' · 충전완료':' · 충전필요'):'';
+  const charge=u.card==='HAMMER'?(u.hammerTarget?' · 공격예약':' · 대상지정 필요'):'';
   return '<div class="unit '+(u.side==='BLUE'?'blue':'red')+'">'+portraitHtml(u.card,d)+'<b>'+d.name+'</b><small>'+u.hp+'/'+d.hp+' · 공'+d.atk+' 사'+d.range+charge+(u.frozenNow?' · 봉인':'')+'</small><span class="hp"><i style="width:'+Math.max(0,u.hp/d.hp*100)+'%"></i></span></div>'
 }
 function render(){
@@ -543,13 +556,14 @@ $('#nextStage').onclick=()=>{
   state.current='BLUE';
   state.summonUsed=false;
   state.winner='';
+  state.gold.BLUE=250;
   state.gold.RED=0;
   state.summons={BLUE:0,RED:0};
   state.units=[];
   selectedUnit=null;
   selectedCard='';
   $('#drawResult').textContent='';
-  msg('2스테이지 시작 · 적 8마리 / 아군 12마리');
+  msg('2스테이지 시작 · 기본 골드 250 · 적 8마리 / 아군 12마리');
   state.version++;
   broadcast();
   render()
