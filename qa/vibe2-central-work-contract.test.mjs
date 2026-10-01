@@ -227,6 +227,25 @@ test('Vibe candidate evidence binds all four canonical document hashes',()=>{
   assert.equal(logMap.workerContextLogContract.allCanonicalDocumentHashesMustBeBoundToExecutionEvidence,true);
 });
 
+test('verified learning memory is validated once per cohort and workers reuse one immutable artifact',()=>{
+  const workflow=fs.readFileSync(path.resolve(process.cwd(),'.github/workflows/vibe2-continuous-core.yml'),'utf8');
+  const reserveStart=workflow.indexOf('\n  reserve:\n');
+  const workerStart=workflow.indexOf('\n  worker:\n');
+  const fanInStart=workflow.indexOf('\n  fan_in:\n');
+  assert.ok(reserveStart>=0&&workerStart>reserveStart&&fanInStart>workerStart);
+  const reserve=workflow.slice(reserveStart,workerStart);
+  const worker=workflow.slice(workerStart,fanInStart);
+  assert.match(reserve,/Prepare verified learning memory once for worker cohort/);
+  assert.match(reserve,/git fetch --depth=1 --no-tags origin vibe2-learning-runtime --quiet/);
+  assert.match(reserve,/VIBE2_VERIFIED_LEARNING_MEMORY_VALIDATION=COHORT_ONCE/);
+  assert.match(reserve,/Upload verified learning memory for worker cohort/);
+  assert.match(worker,/Download cohort verified learning memory/);
+  assert.match(worker,/VIBE2_VERIFIED_LEARNING_MEMORY_MODE=COHORT_ARTIFACT_SHA_ONLY/);
+  assert.match(worker,/sha256sum/);
+  assert.doesNotMatch(worker,/ref: vibe2-learning-runtime/);
+  assert.doesNotMatch(worker,/VERIFIED_PLAYBOOK_SOURCE_REQUIRED/);
+});
+
 test('central roadmap snapshot rejects execution authority expansion',()=>{
   const root=tempRoot();
   writePolicy(root,196);
