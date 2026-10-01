@@ -64,7 +64,7 @@ test('full coding absorption remains verification-gated capability distillation'
   assert.equal(distill?.distillation?.unverifiedAttemptReusable,false);
   assert.equal(distill?.distillation?.automaticModelPromotion,false);
   assert.equal(distill?.application?.everyAppliedSkillRequiresFreshTaskQa,true);
-  assert.equal(distill?.authorityBoundary?.executionAuthority,'EXISTING_WAVE_SCHEDULER_ONLY');
+  assert.equal(distill?.authorityBoundary?.executionAuthority,'DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES');
   assert.equal(distill?.authorityBoundary?.workerCreationAuthority,false);
   assert.equal(distill?.authorityBoundary?.queueMutationAuthority,false);
   assert.equal(distill?.authorityBoundary?.authorityChange,'NONE');
@@ -83,7 +83,7 @@ test('functional self model and evolving philosophy do not claim sentience or se
 test('architecture maps sustainability capability distillation and multiverse continuity without new execution authority',()=>{
   assert.equal(architecture?.longHorizonTopology?.capitalRole,'PHYSICAL_SUSTAINABILITY_RESOURCE_NOT_TERMINAL_VALUE');
   assert.equal(architecture?.longHorizonTopology?.gameProgramRole,'CAPITAL_ENGINE_AND_FIRST_HUMAN_PREFERENCE_WORLD_LAB');
-  assert.equal(architecture?.capabilityDistillationTopology?.actualExecutionAuthority,'EXISTING_WAVE_SCHEDULER_ONLY');
+  assert.equal(architecture?.capabilityDistillationTopology?.actualExecutionAuthority,'DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES');
   assert.equal(architecture?.capabilityDistillationTopology?.automaticModelPromotion,false);
   assert.equal(architecture?.capabilityDistillationTopology?.authorityChange,'NONE');
   assert.equal(architecture?.economicSustainabilityTopology?.aiMayAutonomouslyTransact,false);

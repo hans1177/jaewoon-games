@@ -238,9 +238,9 @@ export function buildNeuralDiagnosis({task={},project={}}={}){
       eligible:false,
       reason:'SHADOW_DIAGNOSIS_REQUIRES_POST_QA_ROOT_CAUSE_VERIFICATION'
     },
-    waveControl:{
-      currentWaveSchedulerRemainsAuthoritative:true,
-      mayReorderWave:false,
+    directReservationControl:{
+      currentDirectQueueReservationRemainsAuthoritative:true,
+      mayReorderDirectReservations:false,
       mayCreateWorker:false
     }
   };

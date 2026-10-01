@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {assetProductionGuidance,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb} from '../tools/vibe2-asset-production-plan.mjs';
+import {assetProductionGuidance,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,evaluateDownloadedAssetComparison,inspectVibeSourceGlb,writeRuntimeVisualEvidenceManifest} from '../tools/vibe2-asset-production-plan.mjs';
 import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
@@ -48,6 +48,82 @@ test('image-only asset input delivers actual pixels and binds observations to th
   const bad={assetProduction:{imageAssetCreation:{enabled:true,studies:[{request:{...request,imageRef:'../outside.png'}}]}}};
   await assert.rejects(observeAssetReferenceImages({order:bad,model:'fixture'}),/LOCAL_REFERENCE_REQUIRED/);
   await assert.rejects(observeAssetReferenceImages({order,model:'fixture',requestModel:async()=>'{}'}),/OBSERVATION_INCOMPLETE/);
+});
+
+
+test('all current-source-compatible runtime captures are reused newest first across recent artifacts',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-all-runtime-captures-'));
+  try{
+    const revision='b'.repeat(40),source=path.resolve('assets/roblox/world-ghosts/dokkaebi.png');
+    const rows=[
+      {dir:'older',run:101,createdAt:'2026-09-29T01:00:00Z',id:'before'},
+      {dir:'newer',run:202,createdAt:'2026-10-01T01:00:00Z',id:'after'}
+    ];
+    for(const row of rows){
+      const output=path.join(root,row.dir,'asset-runtime-visual-evidence.json');
+      writeRuntimeVisualEvidenceManifest({
+        output,gameId:'all-captures',platform:'ROBLOX',surface:'ROBLOX_STUDIO',
+        sourceRevision:revision,sourceRoot:'roblox-games/all-captures',
+        captures:[{id:row.id,path:source,view:'GAME_CAMERA'}],
+        producer:{workflow:'company-development-roblox-post-runtime-qa',workflowRunId:row.run,artifactCreatedAt:row.createdAt}
+      });
+      const manifest=JSON.parse(fs.readFileSync(output,'utf8'));
+      manifest.currentSourceCompatible=true;
+      manifest.currentSourceRevision=revision;
+      manifest.sourceCompatibility='EXACT_SOURCE_ROOT_NO_DIFF';
+      fs.writeFileSync(output,JSON.stringify(manifest,null,2)+'\n');
+    }
+    const discovered=discoverRuntimeVisualEvidence({
+      task:{gameId:'all-captures',sourceRoot:'roblox-games/all-captures',sourceRevision:revision},
+      target:'roblox',evidenceRoot:root
+    });
+    assert.ok(discovered);
+    assert.equal(discovered.allCompatibleCapturesIncluded,true);
+    assert.equal(discovered.captureSelection,'ALL_CURRENT_SOURCE_COMPATIBLE_RECENT_FIRST');
+    assert.equal(discovered.captures.length,2);
+    assert.equal(discovered.captures[0].capturedAt,'2026-10-01T01:00:00Z');
+    assert.equal(discovered.captures[1].capturedAt,'2026-09-29T01:00:00Z');
+    assert.deepEqual(discovered.captures.map(row=>row.producer.workflowRunId),[202,101]);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('asset workflow collects all nonexpired recent compatible QA artifacts instead of one page or one screenshot',()=>{
+  const core=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  const android=fs.readFileSync('.github/workflows/unity-android-independent-qa.yml','utf8');
+  assert.match(core,/Reuse all recent exact runtime visual evidence for asset work/);
+  assert.match(core,/--paginate','--slurp/);
+  assert.match(core,/VIBE2_RUNTIME_VISUAL_CAPTURE_POLICY=ALL_CURRENT_SOURCE_COMPATIBLE_RECENT_FIRST/);
+  assert.match(core,/VIBE2_RUNTIME_VISUAL_CAPTURES_COMPATIBLE/);
+  assert.match(android,/surface':'UNITY_ANDROID_APK/);
+  assert.match(android,/asset-runtime-visual-\$\{\{ steps\.apk\.outputs\.game_id \}\}-unity-android/);
+});
+
+test('downloaded asset comparison extracts only proven external advantages and keeps passing internal dimensions',()=>{
+  const contract={
+    required:true,type:'item',
+    hardGates:['LICENSE_AND_PROVENANCE','SOURCE_HASH','TARGET_PLATFORM_IMPORT','NO_RUNTIME_ERROR','MOBILE_PERFORMANCE_BUDGET'],
+    familyQualityProfile:{
+      family:'WEAPON',
+      applicableDimensions:['SILHOUETTE','MATERIAL_TEXTURE','COLOR_VALUE_LIGHTING','WEAPON_DETAIL','MOBILE_SCREEN_QUALITY','WORLD_LORE_FIT','EXISTING_STYLE_CONSISTENCY','PERFORMANCE_COST'],
+      minimumScorePerApplicableDimension:60,meaningfulAdvantageDelta:8,protectedRegressionLimit:5
+    },
+    evidenceProtocol:{minimumDistinctRenderedViews:3}
+  };
+  const externalHardGates=Object.fromEntries(contract.hardGates.map(key=>[key,true]));
+  const result=evaluateDownloadedAssetComparison({
+    contract,
+    internal:{assetId:'internal',dimensionScores:{SILHOUETTE:78,MATERIAL_TEXTURE:61,COLOR_VALUE_LIGHTING:72,WEAPON_DETAIL:55,MOBILE_SCREEN_QUALITY:80,WORLD_LORE_FIT:88,EXISTING_STYLE_CONSISTENCY:90,PERFORMANCE_COST:84}},
+    external:{assetId:'external',hardGates:externalHardGates,dimensionScores:{SILHOUETTE:80,MATERIAL_TEXTURE:82,COLOR_VALUE_LIGHTING:74,WEAPON_DETAIL:83,MOBILE_SCREEN_QUALITY:78,WORLD_LORE_FIT:79,EXISTING_STYLE_CONSISTENCY:77,PERFORMANCE_COST:80},evidence:{actualRenderedPixels:true,sameCameraLightingDistancePose:true,distinctRenderedViews:4,runtimePerformanceMeasured:true}}
+  });
+  assert.equal(result.decision,'REAUTHOR_INTERNAL_FROM_EXTERNAL_ADVANTAGES');
+  assert.ok(result.externalAdvantages.includes('MATERIAL_TEXTURE'));
+  assert.ok(result.externalAdvantages.includes('WEAPON_DETAIL'));
+  assert.ok(result.internalAdvantages.includes('WORLD_LORE_FIT'));
+  assert.ok(result.internalAdvantages.includes('EXISTING_STYLE_CONSISTENCY'));
+  assert.equal(result.rawExternalAssetCopyForbidden,true);
+  assert.equal(result.preserveInternalPassingDimensions,true);
+  assert.equal(result.applyOnlyProvenAdvantageDimensions,true);
+  assert.equal(result.sameConditionRecaptureRequired,true);
 });
 
 test('current runtime screenshots become bounded visual repairs and never treat uncertainty as a missing object',async()=>{

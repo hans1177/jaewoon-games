@@ -1,6 +1,6 @@
 // 파일명: tools/vibe2-queue-control.mjs
-// 역할: Vibe2 병렬 DAG 큐의 추가·예약·원자 뉴런 결과·QA대기·완료·실패·gated 재계획 상태를 영속화한다.
-// 원칙: 기존 scheduler와 책임 파일 충돌 보호를 유지하고 source-root/game-wide lock은 만들지 않으며, 검증된 neural gated 실행은 재큐·재우선순위·refill 힌트만 직접 반영한다.
+// 역할: Vibe2 병렬 DAG 큐의 추가·직접 예약·원자 뉴런 결과·QA대기·완료·실패·gated 재계획 상태를 영속화한다.
+// 원칙: 일반 game/recovery/neural 작업에는 내부 총량 cap을 두지 않고, 책임 파일 충돌·실제 의존성·정확한 중복·원자 공유상태 쓰기만 직렬화한다.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -13,8 +13,9 @@ import {
   beginVibeQueueBatch,
   finishVibeQueueTask,
   summarizeVibeContinuousQueue,
-  DEFAULT_MAX_CONCURRENT_TASKS,
-  EXTERNAL_MATRIX_BATCH_MAX
+  EXTERNAL_MATRIX_BATCH_MAX,
+  LEARNING_IDLE_MAX_ACTIVE_WORKERS,
+  ASSET_DEVELOPMENT_MAX_ACTIVE_WORKERS
 } from '../assets/vibe-continuous-queue.js';
 import { computeParallelismTelemetry } from './vibe2-parallelism-telemetry.mjs';
 import { adaptiveRequestedMax, createParallelismControl, decideAdaptiveBackpressure, DEFAULT_ADAPTIVE_TARGET, DEFAULT_ADAPTIVE_MIN } from './vibe2-adaptive-backpressure.mjs';
@@ -108,6 +109,16 @@ function maxConcurrent(value) {
   return Math.max(1,Math.floor(raw));
 }
 function optionalMaxConcurrent(value) { return clean(value) ? maxConcurrent(value) : null; }
+function fixedLaneWorkerLimit(value='') {
+  const lane=clean(value).toLowerCase().replaceAll('_','-');
+  if(lane==='learning-idle')return LEARNING_IDLE_MAX_ACTIVE_WORKERS;
+  if(lane==='asset-development')return ASSET_DEVELOPMENT_MAX_ACTIVE_WORKERS;
+  return null;
+}
+function pressureAdvisoryTarget(control,args={}) {
+  const minimum=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_MIN;
+  return adaptiveRequestedMax(control, EXTERNAL_MATRIX_BATCH_MAX, { minimumMax:minimum });
+}
 function reservationFromArgs(args = {}) {
   const id=clean(args['reservation-id']);
   return id ? {
@@ -394,16 +405,16 @@ export function reserveNextVibeTask(queueInput, { maxConcurrentTasks = null, res
   return { reserved: started.started, task: started.task || null, queue: started.queue, selection, recovered: recovered.recovered };
 }
 
-export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, reservation = {}, lane = 'game-primary', speculativeExpansionAllowed = true, speculativeExpansionReason = 'AVAILABLE', policy = readJson(CANONICAL_RESERVATION_POLICY) } = {}) {
+export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, batchLimit = EXTERNAL_MATRIX_BATCH_MAX, reservation = {}, lane = 'game-primary', speculativeExpansionAllowed = true, speculativeExpansionReason = 'AVAILABLE', policy = readJson(CANONICAL_RESERVATION_POLICY) } = {}) {
   const recovered = recoverRunnableInfrastructureState(queueInput);
   const queue=synchronizeOwnerDevelopmentHolds(recovered.queue,policy);
   const laneMode=clean(lane||'game-primary').toLowerCase();
-  const started = beginVibeQueueBatch(queue, { maxConcurrentTasks, reservation, lane:laneMode });
+  const started = beginVibeQueueBatch(queue, { maxConcurrentTasks, batchLimit, reservation, lane:laneMode });
   let tasks = started.tasks || [];
   const reservedTaskOrder = tasks.map((task) => task.id);
   const workerBudget = Math.max(
     tasks.length,
-    Math.floor(Number(started.selection?.effectiveMaxConcurrentTasks ?? maxConcurrentTasks ?? queue.maxConcurrentTasks) || tasks.length || 1)
+    Math.floor(Number(batchLimit)||EXTERNAL_MATRIX_BATCH_MAX)
   );
   const speculativeVariants = new Map(tasks.map((task) => [task.id, 1]));
   const speculativePriority = (task) => {
@@ -420,7 +431,7 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, re
     .sort((a,b)=>a.priority-b.priority||a.index-b.index)
     .map(row=>row.task);
   let spareWorkerSlots = speculativeExpansionAllowed===true?Math.max(0, workerBudget - tasks.length):0;
-  for (let round = 0; round < 2 && spareWorkerSlots > 0; round += 1) {
+  while (spareWorkerSlots > 0 && speculativeEligible.length) {
     for (const task of speculativeEligible) {
       if (spareWorkerSlots <= 0) break;
       speculativeVariants.set(task.id, (speculativeVariants.get(task.id) || 1) + 1);
@@ -826,7 +837,7 @@ export function recordVibeNeuronResult(queueInput, rowInput = {}, { expectedVari
   let queue = createVibeContinuousQueue(queueInput);
   const taskId = clean(rowInput?.taskId);
   const variant = clean(rowInput?.variant) || 'primary';
-  const expected = Math.max(1, Math.min(5, Math.floor(Number(expectedVariants) || 1)));
+  const expected = Math.max(1, Math.min(EXTERNAL_MATRIX_BATCH_MAX, Math.floor(Number(expectedVariants) || 1)));
   const task = queue.tasks.find((item) => item.id === taskId);
   if (!task) return { updated:false, ready:false, slotReleased:false, stale:true, reason:'TASK_NOT_FOUND', taskId, variant, expectedVariants:expected, resultCount:0, queue };
   const rowReservationId = resultReservationId(rowInput);
@@ -874,7 +885,11 @@ export function runQueueCommand(args = {}) {
   const queueFileBlank=!queueFileMissing&&!clean(fs.readFileSync(file,'utf8'));
   const rawQueue = readJson(file, { tasks: [] });
   const rawTasks = Array.isArray(rawQueue) ? rawQueue : Array.isArray(rawQueue?.tasks) ? rawQueue.tasks : [];
-  const atomicSchemaMigrationNeeded = rawQueue?.scheduling?.atomicNeuronCompletion !== true
+  const legacyExecutionShellMigrationNeeded =
+    rawQueue?.version !== 6
+    || rawQueue?.scheduling !== undefined
+    || (Object.prototype.hasOwnProperty.call(rawQueue||{},'maxConcurrentTasks') && rawQueue?.maxConcurrentTasks !== null);
+  const atomicSchemaMigrationNeeded = rawQueue?.execution?.atomicNeuronCompletion !== true
     || rawTasks.some((task) => {
       const row=task&&typeof task==='object'?task:{};
       const evidence=Array.isArray(row.evidence)?row.evidence.map(clean):[];
@@ -891,9 +906,9 @@ export function runQueueCommand(args = {}) {
         ));
     });
   const queueStateRecovered=queueFileMissing||queueFileBlank;
-  let queue = createVibeContinuousQueue(queueStateRecovered?{...rawQueue,maxConcurrentTasks:EXTERNAL_MATRIX_BATCH_MAX}:rawQueue);
-  if(queueStateRecovered)writeJson(file,queue);
-  const command = clean(args.command).toLowerCase();
+  let queue=createVibeContinuousQueue(rawQueue);
+  if(queueStateRecovered||legacyExecutionShellMigrationNeeded)writeJson(file,queue);
+    const command = clean(args.command).toLowerCase();
   const transientLockRecovery=['reserve','reserve-batch','neuron-complete'].includes(command)?recoverTransientWorkLockBlocks(queue):{recovered:0,queue};
   queue=transientLockRecovery.queue;
   let result;
@@ -932,66 +947,76 @@ export function runQueueCommand(args = {}) {
     };
   } else if (command === 'reserve') {
     const executionLane=clean(args.lane)||'game-primary';
-    const configuredMaxConcurrentTasks=executionLane==='learning-idle'?1:(optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks);
+    const laneMaxActiveWorkers=fixedLaneWorkerLimit(executionLane);
     const adaptiveControl=readParallelismControl(args);
-    const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_MIN;
-    const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
-    const reservationMaxConcurrentTasks=configuredMaxConcurrentTasks;
-    const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: reservationMaxConcurrentTasks, reservation: reservationFromArgs(args), lane:executionLane });
-    if (reserved.reserved || reserved.recovered || transientLockRecovery.recovered || atomicSchemaMigrationNeeded) writeJson(file, reserved.queue);
-    result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, schemaMigrated:atomicSchemaMigrationNeeded, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane }) };
+    const pressureTarget=pressureAdvisoryTarget(adaptiveControl,args);
+    const reserved=reserveNextVibeTask(queue,{reservation:reservationFromArgs(args),lane:executionLane});
+    if(reserved.reserved||reserved.recovered||transientLockRecovery.recovered||atomicSchemaMigrationNeeded||legacyExecutionShellMigrationNeeded)writeJson(file,reserved.queue);
+    result={
+      command,executionLane,laneMaxActiveWorkers,internalGlobalParallelCap:null,
+      externalMatrixTransportPartitionMax:EXTERNAL_MATRIX_BATCH_MAX,
+      pressureAdvisoryTarget:pressureTarget,adaptiveControl,
+      schemaMigrated:atomicSchemaMigrationNeeded||legacyExecutionShellMigrationNeeded,
+      ...reserved,
+      summary:summarizeVibeContinuousQueue(reserved.queue,{lane:executionLane})
+    };
   } else if (command === 'reserve-batch') {
     const executionLane=clean(args.lane)||'game-primary';
-    const configuredMaxConcurrentTasks=executionLane==='learning-idle'?1:(optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks);
+    const laneMaxActiveWorkers=fixedLaneWorkerLimit(executionLane);
     const adaptiveControl=readParallelismControl(args);
-    const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_MIN;
-    const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
-    const reservationMaxConcurrentTasks=configuredMaxConcurrentTasks;
+    const pressureTarget=pressureAdvisoryTarget(adaptiveControl,args);
+    const requestedBatchLimit=optionalMaxConcurrent(args['batch-max']) ?? EXTERNAL_MATRIX_BATCH_MAX;
+    const externalBatchLimit=Math.min(EXTERNAL_MATRIX_BATCH_MAX,requestedBatchLimit);
     const speculativeExpansion=executionLane==='game-primary'
       ?speculativeExpansionPolicy(adaptiveControl)
       :Object.freeze({allowed:true,reason:'AUXILIARY_LANE_UNCHANGED',primaryCoveragePreserved:true});
-    const reserved = reserveVibeTaskBatch(queue, {
-      maxConcurrentTasks: reservationMaxConcurrentTasks,
-      reservation: reservationFromArgs(args),
+    const reserved=reserveVibeTaskBatch(queue,{
+      batchLimit:externalBatchLimit,
+      reservation:reservationFromArgs(args),
       lane:executionLane,
       speculativeExpansionAllowed:speculativeExpansion.allowed,
       speculativeExpansionReason:speculativeExpansion.reason
     });
-    if (reserved.reserved || reserved.recovered || transientLockRecovery.recovered || atomicSchemaMigrationNeeded) writeJson(file, reserved.queue);
-    if (clean(args.output)) {
+    if(reserved.reserved||reserved.recovered||transientLockRecovery.recovered||atomicSchemaMigrationNeeded||legacyExecutionShellMigrationNeeded)writeJson(file,reserved.queue);
+    if(clean(args.output)){
       const createdAt=new Date().toISOString();
-      const requestedMaxConcurrentTasks=reserved.selection?.requestedMaxConcurrentTasks ?? reservationMaxConcurrentTasks;
-      const persistentMaxConcurrentTasks=reserved.selection?.persistentMaxConcurrentTasks ?? queue.maxConcurrentTasks;
-      writeJson(clean(args.output), {
-        version:4, createdAt, matrix:reserved.matrix,
-        scheduler:{
-          lane:reserved.selection?.lane || executionLane,
-          persistentMaxConcurrentTasks,
-          configuredMaxConcurrentTasks,
-          adaptiveMaxConcurrentTasks,
-          reservationMaxConcurrentTasks,
+      writeJson(clean(args.output),{
+        version:5,
+        createdAt,
+        matrix:reserved.matrix,
+        execution:{
+          lane:reserved.selection?.lane||executionLane,
+          internalGlobalParallelCap:null,
+          laneMaxActiveWorkers,
+          externalMatrixTransportPartitionMax:EXTERNAL_MATRIX_BATCH_MAX,
+          externalBatchLimit,
+          pressureAdvisoryTarget:pressureTarget,
           speculativeExpansionAllowed:reserved.speculativeExpansionAllowed===true,
           speculativeExpansionReason:reserved.speculativeExpansionReason||speculativeExpansion.reason,
           primaryTaskCount:reserved.primaryTaskCount||0,
           workerCount:reserved.workerCount||0,
-          requestedMaxConcurrentTasks,
-          effectiveMaxConcurrentTasks:reserved.selection?.effectiveMaxConcurrentTasks ?? Math.min(persistentMaxConcurrentTasks, requestedMaxConcurrentTasks),
-          freeSlotsBeforeReservation:reserved.selection?.freeSlots ?? 0,
-          runningBeforeReservation:reserved.selection?.running?.length ?? 0,
-          activeWorkersBeforeReservation:reserved.selection?.capacityRunning?.length ?? 0,
-          awaitingQaBeforeReservation:reserved.selection?.awaitingQa?.length ?? 0,
-          backpressure:reserved.selection?.backpressure || { awaitingQaCount:0, retryPressureCount:0 },
-          blockedCount:reserved.selection?.blocked?.length ?? 0,
-          conflictCount:reserved.selection?.deferredConflicts?.length ?? 0,
-          workStealingUsed:reserved.selection?.workStealingUsed === true,
-          longWorkProtectedSlotUsed:reserved.selection?.longWorkProtectedSlotUsed === true,
-          longWorkOwnerTaskId:reserved.selection?.longWorkOwnerTaskId || null,
-          shardUse:reserved.selection?.shardUse || {},
-          stopReason:reserved.selection?.stopReason || null
+          availableLaneCapacity:reserved.selection?.availableLaneCapacity??null,
+          activeLaneWorkers:reserved.selection?.activeLaneWorkers??null,
+          runningBeforeReservation:reserved.selection?.running?.length??0,
+          activeWorkersBeforeReservation:reserved.selection?.capacityRunning?.length??0,
+          awaitingQaBeforeReservation:reserved.selection?.awaitingQa?.length??0,
+          pressure:reserved.selection?.pressure||{awaitingQaCount:0,retryPressureCount:0},
+          blockedCount:reserved.selection?.blocked?.length??0,
+          conflictCount:reserved.selection?.deferredConflicts?.length??0,
+          workStealingUsed:reserved.selection?.workStealingUsed===true,
+          shardUse:reserved.selection?.shardUse||{},
+          stopReason:reserved.selection?.stopReason||null
         }
       });
     }
-    result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, speculativeExpansion, schemaMigrated:atomicSchemaMigrationNeeded, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane }) };
+    result={
+      command,executionLane,laneMaxActiveWorkers,externalBatchLimit,
+      internalGlobalParallelCap:null,externalMatrixTransportPartitionMax:EXTERNAL_MATRIX_BATCH_MAX,
+      pressureAdvisoryTarget:pressureTarget,adaptiveControl,speculativeExpansion,
+      schemaMigrated:atomicSchemaMigrationNeeded||legacyExecutionShellMigrationNeeded,
+      ...reserved,
+      summary:summarizeVibeContinuousQueue(reserved.queue,{lane:executionLane})
+    };
   } else if (command === 'release-slot') {
     const released = releaseVibeTaskExecutionSlot(queue, { taskId: clean(args.id), evidence: list(args.evidence), blocker: clean(args.blocker) });
     queue = released.queue;
@@ -1002,33 +1027,32 @@ export function runQueueCommand(args = {}) {
     writeJson(file, queue);
     result = { command, updated: true, taskId: clean(args.id), queue, summary: summarizeVibeContinuousQueue(queue) };
   } else if (command === 'neuron-complete') {
-    const input = clean(args.input);
-    if (!input) throw new Error('--input result json required');
-    const payload = readJson(input, {});
-    const row = Array.isArray(payload) ? payload[0] : (payload?.result && typeof payload.result === 'object' ? payload.result : payload);
-    const executionLane = clean(args.lane) || 'game-primary';
-    const configuredMaxConcurrentTasks=executionLane==='learning-idle'?1:(optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks);
+    const input=clean(args.input);
+    if(!input)throw new Error('--input result json required');
+    const payload=readJson(input,{});
+    const row=Array.isArray(payload)?payload[0]:(payload?.result&&typeof payload.result==='object'?payload.result:payload);
+    const executionLane=clean(args.lane)||'game-primary';
+    const laneMaxActiveWorkers=fixedLaneWorkerLimit(executionLane);
     const adaptiveControl=readParallelismControl(args);
-    const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_MIN;
-    const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
-    const reservationMaxConcurrentTasks=configuredMaxConcurrentTasks;
+    const pressureTarget=pressureAdvisoryTarget(adaptiveControl,args);
     const assetNeuronCollapse=executionLane==='asset-development';
-    const neuronExpectedVariants=assetNeuronCollapse?1:(optionalMaxConcurrent(args['expected-variants']) ?? 1);
-    const neuron = recordVibeNeuronResult(queue, row, {
+    const neuronExpectedVariants=assetNeuronCollapse?1:Math.min(EXTERNAL_MATRIX_BATCH_MAX,optionalMaxConcurrent(args['expected-variants'])??1);
+    const neuron=recordVibeNeuronResult(queue,row,{
       expectedVariants:neuronExpectedVariants,
       collapseExpectedVariants:assetNeuronCollapse
     });
-    queue = neuron.queue;
-    if (neuron.updated || transientLockRecovery.recovered) writeJson(file, queue);
+    queue=neuron.queue;
+    if(neuron.updated||transientLockRecovery.recovered)writeJson(file,queue);
     const refillSelection=neuron.reason==='TASK_MICRO_FANIN_COMPLETE'
-      ?selectVibeQueueBatch(queue,{maxConcurrentTasks:reservationMaxConcurrentTasks,lane:executionLane})
+      ?selectVibeQueueBatch(queue,{lane:executionLane})
       :null;
-    result = {
-      command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks,
-      reservationMaxConcurrentTasks, adaptiveControl, ...neuron,
+    result={
+      command,executionLane,laneMaxActiveWorkers,internalGlobalParallelCap:null,
+      externalMatrixTransportPartitionMax:EXTERNAL_MATRIX_BATCH_MAX,
+      pressureAdvisoryTarget:pressureTarget,adaptiveControl,...neuron,
       refillReady:refillSelection?.hasEligibleWork===true,
       refillStopReason:refillSelection?.stopReason||null,
-      summary:summarizeVibeContinuousQueue(queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane })
+      summary:summarizeVibeContinuousQueue(queue,{lane:executionLane})
     };
   } else if (command === 'fan-in-regression-fail') {
     const input = clean(args.input);
@@ -1040,37 +1064,38 @@ export function runQueueCommand(args = {}) {
     if (recovered.recovered) writeJson(file, queue);
     result = { command, updated:recovered.recovered > 0, ...recovered, summary:summarizeVibeContinuousQueue(queue) };
   } else if (command === 'fan-in') {
-    const input = clean(args.input);
-    if (!input) throw new Error('--input result json required');
-    const payload = readJson(input, []);
-    const rows = Array.isArray(payload) ? payload : Array.isArray(payload.results) ? payload.results : [];
+    const input=clean(args.input);
+    if(!input)throw new Error('--input result json required');
+    const payload=readJson(input,[]);
+    const rows=Array.isArray(payload)?payload:Array.isArray(payload.results)?payload.results:[];
     const executionLane=clean(args.lane)||'game-primary';
     const adaptiveEligible=executionLane==='game-primary';
     const currentControl=readParallelismControl(args);
-    const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_MIN;
-    const firstMetrics=rows.find((row)=>row?.metrics)?.metrics || {};
+    const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min)??DEFAULT_ADAPTIVE_MIN;
+    const firstMetrics=rows.find((row)=>row?.metrics)?.metrics||{};
     const taskCount=new Set(rows.map((row)=>clean(row?.taskId)).filter(Boolean)).size;
     const telemetry=computeParallelismTelemetry({
       results:rows,
       tasks:queue.tasks,
-      requestedMax:firstMetrics.requestedMax || currentControl.currentMax,
-      effectiveMax:firstMetrics.effectiveMax || currentControl.currentMax,
+      requestedMax:firstMetrics.requestedMax||EXTERNAL_MATRIX_BATCH_MAX,
+      effectiveMax:firstMetrics.effectiveMax||Math.max(1,Math.min(EXTERNAL_MATRIX_BATCH_MAX,rows.length||1)),
       taskCount
     });
     const nextControl=adaptiveEligible
-      ? decideAdaptiveBackpressure(currentControl, telemetry, { minimumMax:adaptiveMinimumConcurrentTasks })
-      : currentControl;
-    const merged = applyVibeFanInResults(queue, rows);
-    queue = merged.queue;
-    writeJson(file, queue);
-    if(adaptiveEligible)writeJson(controlFileFrom(args), nextControl);
-    const configuredMaxConcurrentTasks=executionLane==='learning-idle'?1:(optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks);
-    const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(nextControl,configuredMaxConcurrentTasks,{minimumMax:adaptiveMinimumConcurrentTasks});
-    const reservationMaxConcurrentTasks=configuredMaxConcurrentTasks;
-    result = {
-      command, executionLane, adaptiveEligible, updated: merged.applied.length > 0, telemetry,
-      adaptiveControl:nextControl, previousAdaptiveControl:currentControl, ...merged,
-      summary:summarizeVibeContinuousQueue(queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane })
+      ?decideAdaptiveBackpressure(currentControl,telemetry,{minimumMax:adaptiveMinimumConcurrentTasks})
+      :currentControl;
+    const merged=applyVibeFanInResults(queue,rows);
+    queue=merged.queue;
+    writeJson(file,queue);
+    if(adaptiveEligible)writeJson(controlFileFrom(args),nextControl);
+    result={
+      command,executionLane,adaptiveEligible,updated:merged.applied.length>0,telemetry,
+      laneMaxActiveWorkers:fixedLaneWorkerLimit(executionLane),
+      internalGlobalParallelCap:null,
+      externalMatrixTransportPartitionMax:EXTERNAL_MATRIX_BATCH_MAX,
+      pressureAdvisoryTarget:pressureAdvisoryTarget(nextControl,args),
+      adaptiveControl:nextControl,previousAdaptiveControl:currentControl,...merged,
+      summary:summarizeVibeContinuousQueue(queue,{lane:executionLane})
     };
   } else if (['pass','fail','block','cancel'].includes(command)) {
     const outcome = command === 'pass' ? 'PASS' : command === 'fail' ? 'FAIL' : command === 'block' ? 'BLOCKED' : 'CANCELLED';
@@ -1083,19 +1108,19 @@ export function runQueueCommand(args = {}) {
   } else if (command === 'summary') {
     const executionLane=clean(args.lane);
     if(executionLane){
-      const configuredMaxConcurrentTasks=executionLane==='learning-idle'?1:(optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks);
       const adaptiveControl=readParallelismControl(args);
-      const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_MIN;
-      const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl,configuredMaxConcurrentTasks,{minimumMax:adaptiveMinimumConcurrentTasks});
-      const reservationMaxConcurrentTasks=configuredMaxConcurrentTasks;
-      const summary=summarizeVibeContinuousQueue(queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane });
-      result = {
-        command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks,
-        adaptiveControl, queue, summary,
-        selection:selectVibeQueueBatch(queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane })
+      const summary=summarizeVibeContinuousQueue(queue,{lane:executionLane});
+      result={
+        command,executionLane,
+        laneMaxActiveWorkers:fixedLaneWorkerLimit(executionLane),
+        internalGlobalParallelCap:null,
+        externalMatrixTransportPartitionMax:EXTERNAL_MATRIX_BATCH_MAX,
+        pressureAdvisoryTarget:pressureAdvisoryTarget(adaptiveControl,args),
+        adaptiveControl,queue,summary,
+        selection:selectVibeQueueBatch(queue,{lane:executionLane})
       };
-    } else {
-      result = { command, queue, summary: summarizeVibeContinuousQueue(queue), selection: selectVibeQueueBatch(queue) };
+    }else{
+      result={command,queue,summary:summarizeVibeContinuousQueue(queue),selection:selectVibeQueueBatch(queue)};
     }
   } else throw new Error(`unknown queue command: ${command}`);
   return {...result,queueStateRecovered};
@@ -1115,7 +1140,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_WORKER_SYNC_TASK=${result.taskId||'NONE'}`);
     console.log(`VIBE2_WORKER_SYNC_RESERVATION=${result.reservationId||'NONE'}`);
   }
-  if(result.reservationMaxConcurrentTasks)console.log(`VIBE2_LANE_RESERVATION_MAX=${result.reservationMaxConcurrentTasks}`);
   if(result.command==='fan-in')console.log(`VIBE2_FANIN_ADAPTIVE_ELIGIBLE=${result.adaptiveEligible===true?'YES':'NO'}`);
   if(Array.isArray(result.dependencyReadyTaskIds)){
     console.log(`VIBE2_DEPENDENCY_READY_BATCH=${result.dependencyReadyTaskIds.join(',')||'NONE'}`);
@@ -1134,18 +1158,17 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   console.log(`VIBE2_QUEUE_NEXT=${result.summary?.nextTaskId || 'NONE'}`);
   console.log(`VIBE2_QUEUE_NEXT_BATCH=${(result.summary?.nextTaskIds || []).join(',') || 'NONE'}`);
   console.log(`VIBE2_QUEUE_RUNNING=${(result.summary?.runningTaskIds || []).join(',') || 'NONE'}`);
-  console.log(`VIBE2_QUEUE_PERSISTENT_MAX=${result.summary?.persistentMaxConcurrentTasks ?? result.summary?.maxConcurrentTasks ?? DEFAULT_MAX_CONCURRENT_TASKS}`);
-  console.log(`VIBE2_QUEUE_REQUESTED_MAX=${result.summary?.requestedMaxConcurrentTasks ?? result.summary?.maxConcurrentTasks ?? DEFAULT_MAX_CONCURRENT_TASKS}`);
-  console.log(`VIBE2_QUEUE_EFFECTIVE_MAX=${result.summary?.effectiveMaxConcurrentTasks ?? result.summary?.maxConcurrentTasks ?? DEFAULT_MAX_CONCURRENT_TASKS}`);
+  console.log('VIBE2_INTERNAL_GLOBAL_PARALLEL_CAP=NONE');
+  console.log(`VIBE2_EXTERNAL_MATRIX_TRANSPORT_PARTITION_MAX=${EXTERNAL_MATRIX_BATCH_MAX}`);
+  console.log(`VIBE2_LANE_FIXED_WORKER_MAX=${result.summary?.laneMaxActiveWorkers ?? result.laneMaxActiveWorkers ?? 'UNBOUNDED'}`);
   console.log(`VIBE2_QUEUE_ACTIVE_WORKERS=${(result.summary?.capacityRunningTaskIds || []).length}`);
   console.log(`VIBE2_QUEUE_AWAITING_QA=${(result.summary?.awaitingQaTaskIds || []).length}`);
   console.log(`VIBE2_QUEUE_QUOTA_WAITING=${(result.summary?.quotaWaitingTaskIds || []).length}`);
-  console.log(`VIBE2_QUEUE_FREE_SLOTS=${result.summary?.freeSlots ?? 0}`);
-  console.log(`VIBE2_QUEUE_LONG_WORK_SLOT=${result.summary?.longWorkProtectedSlotUsed ? 'USED' : 'NOT_USED'}`);
+  console.log(`VIBE2_QUEUE_AVAILABLE_LANE_CAPACITY=${result.summary?.availableLaneCapacity ?? 'UNBOUNDED'}`);
   console.log(`VIBE2_QUEUE_CONTINUE=${result.summary?.continueRequired ? 'YES' : 'NO'}`);
   console.log(`VIBE2_BRAIN_LIVE=${result.summary?.brainLive===true?'YES':'NO'}`);
   console.log(`VIBE2_CAUSAL_REPLAN_REQUIRED=${result.summary?.causalReplanRequired===true?'YES':'NO'}`);
-  console.log(`VIBE2_QUEUE_RELEASED_WORKER_SLOTS=${(result.summary?.releasedWorkerSlotTaskIds || []).length}`);
+  console.log(`VIBE2_QUEUE_RELEASED_WORKERS=${(result.summary?.releasedWorkerSlotTaskIds || []).length}`);
   if(Array.isArray(result.selection?.deferredConflicts)){
     const conflicts=result.selection.deferredConflicts.slice(0,20);
     console.log(`VIBE2_QUEUE_DEFERRED_CONFLICT_COUNT=${result.selection.deferredConflicts.length}`);

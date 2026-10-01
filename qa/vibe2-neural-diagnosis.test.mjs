@@ -19,8 +19,8 @@ test('runtime playable-cycle evidence creates game-runtime hypothesis without tu
   assert.ok(d.hypotheses.some(x=>x.id==='runtime-gameplay-cycle'));
   assert.ok(d.facts.every(x=>x.verified===true));
   assert.equal(d.facts.some(x=>x.value.includes('runtime-gameplay-cycle')),false);
-  assert.equal(d.waveControl.mayReorderWave,false);
-  assert.equal(d.waveControl.mayCreateWorker,false);
+  assert.equal(d.directReservationControl.mayReorderDirectReservations,false);
+  assert.equal(d.directReservationControl.mayCreateWorker,false);
 });
 
 test('validator classification evidence routes responsibility to validator in shadow mode',()=>{
@@ -34,7 +34,7 @@ test('validator classification evidence routes responsibility to validator in sh
   assert.equal(d.actionRecommendation.restartFromBeginning,false);
 });
 
-test('supervised work has a hard inhibitor but diagnosis cannot cancel or reprioritize the wave',()=>{
+test('supervised work has a hard inhibitor but diagnosis cannot bypass direct reservation authority',()=>{
   const d=buildNeuralDiagnosis({task:{
     goal:'major supervised web repair',
     supervisionContract:{required:true},
@@ -43,7 +43,7 @@ test('supervised work has a hard inhibitor but diagnosis cannot cancel or reprio
   }});
   assert.ok(d.inhibitors.includes('SUPERVISOR_PASS_REQUIRED_BUT_MISSING'));
   assert.equal(d.actionRecommendation.blocked,true);
-  assert.equal(d.waveControl.currentWaveSchedulerRemainsAuthoritative,true);
+  assert.equal(d.directReservationControl.currentDirectQueueReservationRemainsAuthoritative,true);
   assert.equal(d.bottleneck.advisoryOnly,true);
 });
 
@@ -93,8 +93,8 @@ test('current deterministic diagnostic responsibility outranks stale historical 
   assert.equal(d.hypotheses[0].diagnosticFile,'index.js');
   assert.equal(d.hypotheses[0].verified,false);
   assert.equal(d.learning.eligible,false);
-  assert.equal(d.waveControl.mayReorderWave,false);
-  assert.equal(d.waveControl.mayCreateWorker,false);
+  assert.equal(d.directReservationControl.mayReorderDirectReservations,false);
+  assert.equal(d.directReservationControl.mayCreateWorker,false);
 });
 
 test('ambiguous current diagnostic does not override weighted shadow responsibility',()=>{

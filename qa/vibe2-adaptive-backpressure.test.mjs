@@ -1,5 +1,5 @@
 // 파일명: qa/vibe2-adaptive-backpressure.test.mjs
-// 역할: 외부 한계 256을 기본 요청하고 검증된 외부 압력에서만 단계적으로 낮아졌다가 복구되는지 검증한다.
+// 역할: 외부 압력 텔레메트리가 일반 작업 예약 cap이 아니라 선택적 speculative advisory로만 동작하는지 검증한다.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -31,14 +31,14 @@ function tempFiles(){
   return{dir,queue:path.join(dir,'queue.json'),control:path.join(dir,'parallelism-control.json'),output:path.join(dir,'batch.json')};
 }
 
-test('default requests the external boundary immediately',()=>{
+test('default advisory signal starts at transport partition context',()=>{
   assert.equal(DEFAULT_ADAPTIVE_TARGET,256);
   assert.equal(DEFAULT_ADAPTIVE_MIN,4);
   assert.equal(createParallelismControl({}).currentMax,256);
   assert.equal(adaptiveRequestedMax(createParallelismControl({}),256),256);
 });
 
-test('verified external pressure downshifts one step without an internal floor at 20',()=>{
+test('verified external pressure changes advisory signal without creating a primary reservation cap',()=>{
   const from256=decideAdaptiveBackpressure(createParallelismControl({currentMax:256}),pressuredTelemetry({runId:'p256'}));
   assert.equal(from256.currentMax,128);
   assert.equal(from256.lastDecision,'DOWN');
@@ -47,7 +47,7 @@ test('verified external pressure downshifts one step without an internal floor a
     pressuredTelemetry({runId:'p20',workerCount:20,effectiveMax:20,actualPeakConcurrency:10}),
     {minimumMax:4}
   );
-  assert.equal(from20.currentMax,16);
+  assert.equal(from20.currentMax,8);
   assert.equal(from20.lastDecision,'DOWN');
 });
 
@@ -66,12 +66,12 @@ test('observed external concurrency ceiling fast-converges to the nearest safe s
     }),
     {minimumMax:4}
   );
-  assert.equal(next.currentMax,20);
+  assert.equal(next.currentMax,32);
   assert.equal(next.lastDecision,'DOWN');
   assert.equal(next.lastReason,'EXTERNAL_CAPACITY_OBSERVED_19');
 });
 
-test('small low-load wave is not mistaken for an external capacity ceiling',()=>{
+test('small low-load execution sample is not mistaken for an external capacity ceiling',()=>{
   const next=decideAdaptiveBackpressure(
     createParallelismControl({currentMax:256}),
     pressuredTelemetry({
@@ -96,7 +96,7 @@ test('verified pressure can reach floor 4 but never lower',()=>{
   );
   assert.equal(at4.currentMax,4);
   assert.equal(at4.lastDecision,'HOLD');
-  assert.match(at4.lastReason,/OWNER_MINIMUM_WAVE_4/);
+  assert.match(at4.lastReason,/ADVISORY_MINIMUM_SIGNAL_4/);
 });
 
 test('healthy saturated capacity recovers upward after pressure',()=>{
@@ -108,7 +108,7 @@ test('healthy saturated capacity recovers upward after pressure',()=>{
   assert.equal(next.lastDecision,'UP');
 });
 
-test('low load does not invent pressure or reduce requested capacity',()=>{
+test('low load does not invent pressure or reduce primary eligibility',()=>{
   const next=decideAdaptiveBackpressure(
     createParallelismControl({currentMax:256}),
     pressuredTelemetry({runId:'low-load',workerCount:12,effectiveMax:256})
@@ -118,7 +118,7 @@ test('low load does not invent pressure or reduce requested capacity',()=>{
   assert.equal(next.lastReason,'LOW_LOAD');
 });
 
-test('run-local backpressure does not double-apply persistent pressure',()=>{
+test('run-local pressure does not double-apply advisory pressure',()=>{
   const next=decideAdaptiveBackpressure(
     createParallelismControl({currentMax:256}),
     pressuredTelemetry({runId:'local',effectiveMax:128})
@@ -135,7 +135,7 @@ test('duplicate telemetry cannot apply the same pressure twice',()=>{
   assert.equal(twice.lastReason,'DUPLICATE_RUN');
 });
 
-test('missing or corrupt control state falls back to maximum default 256',()=>{
+test('missing or corrupt advisory state falls back to transport context 256',()=>{
   const files=tempFiles();
   try{
     fs.writeFileSync(files.queue,JSON.stringify({maxConcurrentTasks:256,tasks:[]}),'utf8');
@@ -149,7 +149,7 @@ test('missing or corrupt control state falls back to maximum default 256',()=>{
   }finally{fs.rmSync(files.dir,{recursive:true,force:true});}
 });
 
-test('stale pressure evidence resets to maximum before fresh evaluation',()=>{
+test('stale pressure evidence resets advisory signal before fresh evaluation',()=>{
   const next=decideAdaptiveBackpressure(
     createParallelismControl({currentMax:32,lastUpdatedAt:'2026-09-19T08:00:00Z'}),
     healthyTelemetry({runId:'stale',workerCount:256,effectiveMax:256,actualPeakConcurrency:256}),
@@ -160,26 +160,27 @@ test('stale pressure evidence resets to maximum before fresh evaluation',()=>{
 });
 
 
-test('game-primary keeps adaptive pressure telemetry while reserving to provider boundary',()=>{
+test('game-primary keeps pressure advisory while primary eligibility remains uncapped',()=>{
   const files=tempFiles();
   try{
     const tasks=Array.from({length:40},(_,i)=>({
       id:`adaptive-task-${i}`,gameId:`g-${i}`,target:'web',department:'development',type:'implementation',
       goal:'adaptive reservation',status:'queued',sourceRoot:`web-games/g-${i}`,responsibleFiles:['index.html']
     }));
-    fs.writeFileSync(files.queue,JSON.stringify({maxConcurrentTasks:256,tasks}), 'utf8');
+    fs.writeFileSync(files.queue,JSON.stringify({version:5,maxConcurrentTasks:6,tasks}), 'utf8');
     fs.writeFileSync(files.control,JSON.stringify({version:4,currentMax:20,lastReason:'EXTERNAL_CAPACITY_OBSERVED_19'}),'utf8');
     const result=runQueueCommand({
       command:'reserve-batch',queue:files.queue,control:files.control,lane:'game-primary',
-      max:'256',min:'4','reservation-id':'adaptive:1','reservation-run':'adaptive','reserved-at':'2026-09-28T00:00:00Z',output:files.output
+      max:'6',min:'4','reservation-id':'adaptive:1','reservation-run':'adaptive','reserved-at':'2026-09-28T00:00:00Z',output:files.output
     });
-    assert.equal(result.adaptiveMaxConcurrentTasks,20);
-    assert.equal(result.reservationMaxConcurrentTasks,256);
+    assert.equal(result.pressureAdvisoryTarget,16);
+    assert.equal(result.internalGlobalParallelCap,null);
+    assert.equal(result.externalMatrixTransportPartitionMax,256);
     assert.equal(result.tasks.length,40);
   }finally{fs.rmSync(files.dir,{recursive:true,force:true});}
 });
 
-test('auxiliary reserve-batch is not capped by game-primary adaptive control',()=>{
+test('asset reserve keeps fixed lane 64 independent of game pressure advisory',()=>{
   const files=tempFiles();
   try{
     const tasks=Array.from({length:24},(_,i)=>({
@@ -187,14 +188,15 @@ test('auxiliary reserve-batch is not capped by game-primary adaptive control',()
       assetProductionLane:true,goal:'asset production',status:'queued',sourceRoot:`unity-games/asset-${i}`,
       responsibleFiles:['Assets/asset.txt'],evidence:['asset-production-parallel:v1']
     }));
-    fs.writeFileSync(files.queue,JSON.stringify({maxConcurrentTasks:256,tasks}), 'utf8');
+    fs.writeFileSync(files.queue,JSON.stringify({version:6,maxConcurrentTasks:null,tasks}), 'utf8');
     fs.writeFileSync(files.control,JSON.stringify({version:4,currentMax:20,lastReason:'EXTERNAL_CAPACITY_OBSERVED_19'}),'utf8');
     const result=runQueueCommand({
       command:'reserve-batch',queue:files.queue,control:files.control,lane:'asset-development',
-      max:'64',min:'4','reservation-id':'asset:1','reservation-run':'asset','reserved-at':'2026-09-28T00:00:00Z',output:files.output
+      max:'2',min:'4','reservation-id':'asset:1','reservation-run':'asset','reserved-at':'2026-09-28T00:00:00Z',output:files.output
     });
-    assert.equal(result.adaptiveMaxConcurrentTasks,20);
-    assert.equal(result.reservationMaxConcurrentTasks,64);
+    assert.equal(result.pressureAdvisoryTarget,16);
+    assert.equal(result.laneMaxActiveWorkers,64);
+    assert.equal(result.internalGlobalParallelCap,null);
     assert.equal(result.tasks.length,24);
   }finally{fs.rmSync(files.dir,{recursive:true,force:true});}
 });

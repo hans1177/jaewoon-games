@@ -18,22 +18,62 @@ const freezeList=value=>freeze([...(value||[])]);
 const unique=value=>[...new Set((value||[]).map(clean).filter(Boolean))];
 
 
+function runtimeVisualPngDimensions(buffer){
+  if(!Buffer.isBuffer(buffer)||buffer.length<24||buffer.subarray(0,8).toString('hex')!=='89504e470d0a1a0a')return null;
+  return{width:buffer.readUInt32BE(16),height:buffer.readUInt32BE(20)};
+}
+export function writeRuntimeVisualEvidenceManifest({
+  output='',gameId='',platform='',surface='',sourceRevision='',sourceRoot='',sceneId='runtime',
+  captures=[],expectedSubjects=[],visualGoals=[],editableTargets=['SCENE'],producer={}
+}={}){
+  const out=path.resolve(clean(output));
+  if(!clean(output))throw new Error('RUNTIME_VISUAL_EVIDENCE_OUTPUT_REQUIRED');
+  const evidenceRoot=path.dirname(out),resolvedGame=clean(gameId),resolvedPlatform=runtimeVisualTargetPlatform(platform),resolvedSurface=clean(surface).toUpperCase();
+  const surfacePlatform={ROBLOX_STUDIO:'ROBLOX',UNITY_EDITOR:'UNITY',UNITY_ANDROID_APK:'UNITY',UNITY_WEB_BROWSER:'UNITY',WEB_BROWSER:'WEB'};
+  const revision=clean(sourceRevision),root=clean(sourceRoot).replaceAll('\\','/').replace(/^\.\//,'');
+  if(!resolvedGame||!resolvedPlatform||!resolvedSurface||surfacePlatform[resolvedSurface]!==resolvedPlatform||!/^[0-9a-f]{40}$/i.test(revision)||!root)throw new Error('RUNTIME_VISUAL_EVIDENCE_IDENTITY_REQUIRED');
+  fs.mkdirSync(evidenceRoot,{recursive:true});
+  const rows=[];
+  for(const [index,input] of (Array.isArray(captures)?captures:[]).entries()){
+    const source=typeof input==='string'?{path:input}:input||{};
+    const rawPath=clean(source.path||source.imageRef);
+    if(!rawPath)continue;
+    let file;try{file=fs.realpathSync(path.resolve(rawPath));}catch{continue;}
+    const stat=fs.statSync(file);
+    if(!stat.isFile()||stat.size<=0||stat.size>20*1024*1024)continue;
+    const bytes=fs.readFileSync(file),dims=runtimeVisualPngDimensions(bytes);
+    if(!dims)throw new Error('RUNTIME_VISUAL_EVIDENCE_PNG_REQUIRED:'+rawPath);
+    let imageRef=path.relative(evidenceRoot,file).replaceAll('\\','/');
+    if(imageRef.startsWith('..')){
+      const target=path.join(evidenceRoot,'captures',path.basename(file));
+      fs.mkdirSync(path.dirname(target),{recursive:true});
+      fs.copyFileSync(file,target);
+      file=target;
+      imageRef=path.relative(evidenceRoot,file).replaceAll('\\','/');
+    }
+    const sha256=crypto.createHash('sha256').update(bytes).digest('hex');
+    if(clean(source.artifactHash||source.sha256)&&clean(source.artifactHash||source.sha256)!==sha256)throw new Error('RUNTIME_VISUAL_EVIDENCE_HASH_MISMATCH:'+rawPath);
+    rows.push(Object.freeze({id:clean(source.id)||'capture-'+(index+1),imageRef,artifactHash:sha256,view:clean(source.view||'GAME_CAMERA').toUpperCase(),sceneId:clean(source.sceneId||sceneId),viewport:{width:dims.width,height:dims.height}}));
+  }
+  if(!rows.length)throw new Error('RUNTIME_VISUAL_EVIDENCE_CAPTURE_REQUIRED');
+  const manifest={version:1,gameId:resolvedGame,platform:resolvedPlatform,surface:resolvedSurface,sourceRevision:revision,sourceRoot:root,currentSourceCompatible:false,currentSourceRevision:null,sceneId:clean(sceneId)||'runtime',captures:rows,expectedSubjects:Array.isArray(expectedSubjects)?expectedSubjects:[],visualGoals:Array.isArray(visualGoals)?visualGoals:[],editableTargets:unique(Array.isArray(editableTargets)?editableTargets:['SCENE']),producer:{...producer},createdAt:new Date().toISOString(),releaseAuthority:false};
+  fs.writeFileSync(out,JSON.stringify(manifest,null,2)+'\n');
+  return freeze(manifest);
+}
 function runtimeVisualTargetPlatform(target=''){
   const value=clean(target).toUpperCase();
   return value==='ROBLOX'?'ROBLOX':value==='UNITY'?'UNITY':value==='WEB'?'WEB':'';
 }
-function runtimeVisualManifestFiles(root,max=32){
+function runtimeVisualManifestFiles(root){
   const out=[],stack=[root];
-  while(stack.length&&out.length<max){
+  while(stack.length){
     const current=stack.pop();
     let entries=[];
     try{entries=fs.readdirSync(current,{withFileTypes:true});}catch{continue;}
     for(const entry of entries.sort((a,b)=>a.name.localeCompare(b.name))){
       const full=path.join(current,entry.name);
-      if(entry.isDirectory()){
-        if(stack.length<128)stack.push(full);
-      }else if(entry.isFile()&&entry.name==='asset-runtime-visual-evidence.json')out.push(full);
-      if(out.length>=max)break;
+      if(entry.isDirectory())stack.push(full);
+      else if(entry.isFile()&&entry.name==='asset-runtime-visual-evidence.json')out.push(full);
     }
   }
   return out;
@@ -50,9 +90,14 @@ export function discoverRuntimeVisualEvidence({task={},target='',evidenceRoot=pr
   if(!gameId||!platform||!/^[0-9a-f]{40}$/i.test(currentSourceRevision))return null;
   const captures=[],expectedSubjects=[],visualGoals=[],editableTargets=['SCENE'],evidenceProvenance=[];
   const seenCaptureIds=new Set(),seenSubjectIds=new Set();
-  for(const file of runtimeVisualManifestFiles(root)){
-    let manifest;
-    try{manifest=JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));}catch{continue;}
+  const manifests=runtimeVisualManifestFiles(root).map(file=>{
+    try{
+      const manifest=JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
+      const producer=manifest?.producer&&typeof manifest.producer==='object'?manifest.producer:{};
+      return{file,manifest,recency:clean(producer.artifactCreatedAt||producer.artifactUpdatedAt||manifest.createdAt||'')};
+    }catch{return null;}
+  }).filter(Boolean).sort((a,b)=>b.recency.localeCompare(a.recency)||a.file.localeCompare(b.file));
+  for(const {file,manifest,recency} of manifests){
     const manifestSourceRoot=clean(manifest.sourceRoot).replaceAll('\\','/').replace(/^\.\//,'');
     if(Number(manifest.version)!==1||clean(manifest.gameId)!==gameId||clean(manifest.platform).toUpperCase()!==platform)continue;
     if(manifest.currentSourceCompatible!==true||clean(manifest.currentSourceRevision)!==currentSourceRevision)continue;
@@ -83,6 +128,7 @@ export function discoverRuntimeVisualEvidence({task={},target='',evidenceRoot=pr
         captureSourceRevision:clean(manifest.sourceRevision),
         sourceCompatibility:'EXACT_SOURCE_ROOT_NO_DIFF',
         viewport:{width:Number(viewport.width),height:Number(viewport.height)},
+        capturedAt:recency||null,
         producer:{...producer,manifest:path.relative(root,file).replaceAll('\\','/')}
       });
     }
@@ -95,7 +141,7 @@ export function discoverRuntimeVisualEvidence({task={},target='',evidenceRoot=pr
     editableTargets.push(...(Array.isArray(manifest.editableTargets)?manifest.editableTargets:[]));
     evidenceProvenance.push({
       platform,surface,sourceRevision:clean(manifest.sourceRevision),currentSourceRevision,
-      sourceCompatibility:'EXACT_SOURCE_ROOT_NO_DIFF',producer:{...producer},
+      sourceCompatibility:'EXACT_SOURCE_ROOT_NO_DIFF',producer:{...producer},capturedAt:recency||null,
       manifest:path.relative(root,file).replaceAll('\\','/')
     });
   }
@@ -111,6 +157,8 @@ export function discoverRuntimeVisualEvidence({task={},target='',evidenceRoot=pr
     editableTargets:freezeList(unique(editableTargets)),
     evidenceRoot:root,
     evidenceProvenance:freezeList(evidenceProvenance),
+    captureSelection:'ALL_CURRENT_SOURCE_COMPATIBLE_RECENT_FIRST',
+    allCompatibleCapturesIncluded:true,
     automaticallyBoundExistingRuntimeEvidence:true
   });
 }
@@ -870,7 +918,43 @@ function createConceptFitContract({task={},requestedConcept={},binding={}}={}){
   });
 }
 
+const DETAILED_ASSET_COMPARISON_DIMENSIONS=freezeList(['SILHOUETTE','MATERIAL_TEXTURE','COLOR_VALUE_LIGHTING','ANIMATION','CHARACTER_PERSONALITY','MONSTER_SPECIES_IDENTITY','WEAPON_DETAIL','ENVIRONMENT_DENSITY','ARCHITECTURAL_DETAIL','UI_READABILITY','MOBILE_SCREEN_QUALITY','WORLD_LORE_FIT','EXISTING_STYLE_CONSISTENCY','PERFORMANCE_COST']);
+function detailedAssetComparisonProfile(type=''){
+  const kind=clean(type).toLowerCase();
+  let family='GENERAL',applicable=[...DETAILED_ASSET_COMPARISON_DIMENSIONS];
+  if(/character|player|npc/.test(kind)){family='CHARACTER';applicable=['SILHOUETTE','MATERIAL_TEXTURE','COLOR_VALUE_LIGHTING','ANIMATION','CHARACTER_PERSONALITY','MOBILE_SCREEN_QUALITY','WORLD_LORE_FIT','EXISTING_STYLE_CONSISTENCY','PERFORMANCE_COST'];}
+  else if(/enemy|boss|creature|monster/.test(kind)){family='MONSTER';applicable=['SILHOUETTE','MATERIAL_TEXTURE','COLOR_VALUE_LIGHTING','ANIMATION','MONSTER_SPECIES_IDENTITY','MOBILE_SCREEN_QUALITY','WORLD_LORE_FIT','EXISTING_STYLE_CONSISTENCY','PERFORMANCE_COST'];}
+  else if(/item|weapon|tool/.test(kind)){family='WEAPON';applicable=['SILHOUETTE','MATERIAL_TEXTURE','COLOR_VALUE_LIGHTING','WEAPON_DETAIL','MOBILE_SCREEN_QUALITY','WORLD_LORE_FIT','EXISTING_STYLE_CONSISTENCY','PERFORMANCE_COST'];}
+  else if(/background|environment|building|prop/.test(kind)){family='WORLD';applicable=['SILHOUETTE','MATERIAL_TEXTURE','COLOR_VALUE_LIGHTING','ENVIRONMENT_DENSITY','ARCHITECTURAL_DETAIL','MOBILE_SCREEN_QUALITY','WORLD_LORE_FIT','EXISTING_STYLE_CONSISTENCY','PERFORMANCE_COST'];}
+  else if(/ui/.test(kind)){family='UI';applicable=['COLOR_VALUE_LIGHTING','UI_READABILITY','MOBILE_SCREEN_QUALITY','WORLD_LORE_FIT','EXISTING_STYLE_CONSISTENCY','PERFORMANCE_COST'];}
+  else if(/animation|motion/.test(kind)){family='MOTION';applicable=['ANIMATION','CHARACTER_PERSONALITY','MONSTER_SPECIES_IDENTITY','MOBILE_SCREEN_QUALITY','WORLD_LORE_FIT','EXISTING_STYLE_CONSISTENCY','PERFORMANCE_COST'];}
+  else if(/effect|vfx/.test(kind)){family='VFX';applicable=['COLOR_VALUE_LIGHTING','ANIMATION','MOBILE_SCREEN_QUALITY','WORLD_LORE_FIT','EXISTING_STYLE_CONSISTENCY','PERFORMANCE_COST'];}
+  return freeze({version:1,family,allDimensions:DETAILED_ASSET_COMPARISON_DIMENSIONS,applicableDimensions:freezeList(applicable),minimumScorePerApplicableDimension:60,meaningfulAdvantageDelta:8,protectedRegressionLimit:5,totalScoreOnlyDecisionForbidden:true});
+}
+export function evaluateDownloadedAssetComparison({contract={},internal={},external={}}={}){
+  if(contract?.required!==true)return freeze({required:false,decision:'KEEP_INTERNAL',reason:'EXTERNAL_COMPARISON_NOT_REQUIRED',runtimeVerified:false});
+  const gateNames=Array.isArray(contract.hardGates)?contract.hardGates:[];
+  const gates=external?.hardGates&&typeof external.hardGates==='object'?external.hardGates:{};
+  const failed=gateNames.filter(name=>gates[name]!==true);
+  if(failed.length)return freeze({required:true,decision:'KEEP_INTERNAL',reason:'EXTERNAL_HARD_GATE_FAILED',failedExternalGates:freezeList(failed),runtimeVerified:false});
+  const profile=contract.familyQualityProfile||detailedAssetComparisonProfile(contract.type);
+  const dims=profile.applicableDimensions||[];
+  const score=(src,key)=>{const n=Number(src?.dimensionScores?.[key]);return Number.isFinite(n)?Math.max(0,Math.min(100,n)):null;};
+  const evidence=external?.evidence&&typeof external.evidence==='object'?external.evidence:{};
+  const minimumViews=Number(contract?.evidenceProtocol?.minimumDistinctRenderedViews||3);
+  const evidenceReady=evidence.actualRenderedPixels===true&&evidence.sameCameraLightingDistancePose===true&&Number(evidence.distinctRenderedViews||0)>=minimumViews&&(!dims.includes('PERFORMANCE_COST')||evidence.runtimePerformanceMeasured===true);
+  const a={},b={},delta={},missing=[];
+  for(const key of dims){a[key]=score(internal,key);b[key]=score(external,key);if(a[key]==null||b[key]==null)missing.push(key);delta[key]=a[key]==null||b[key]==null?null:Number((b[key]-a[key]).toFixed(3));}
+  if(!evidenceReady||missing.length)return freeze({required:true,decision:'REVIEW_REQUIRED',reason:'COMPARISON_EVIDENCE_INCOMPLETE',missingDimensions:freezeList(missing),minimumViews,renderedViews:Number(evidence.distinctRenderedViews||0),runtimePerformanceMeasured:evidence.runtimePerformanceMeasured===true,runtimeVerified:false});
+  const min=Number(profile.minimumScorePerApplicableDimension||60),adv=Number(profile.meaningfulAdvantageDelta||8),reg=Number(profile.protectedRegressionLimit||5);
+  const internalBelow=dims.filter(key=>a[key]<min),externalBelow=dims.filter(key=>b[key]<min),externalAdvantages=dims.filter(key=>delta[key]>=adv),internalAdvantages=dims.filter(key=>delta[key]<=-adv),protectedRegressions=dims.filter(key=>delta[key]<-reg),fills=externalAdvantages.filter(key=>internalBelow.includes(key)&&!externalBelow.includes(key));
+  let decision='KEEP_INTERNAL',reason='INTERNAL_BASELINE_EQUAL_OR_BETTER';
+  if(internalBelow.length&&!externalAdvantages.length){decision='AUTHOR_NEW';reason='INTERNAL_GAPS_NOT_FILLED_BY_EXTERNAL';}
+  else if(externalAdvantages.length){decision='REAUTHOR_INTERNAL_FROM_EXTERNAL_ADVANTAGES';reason=fills.length?'EXTERNAL_ADVANTAGES_FILL_INTERNAL_GAPS':'EXTERNAL_HAS_PROVEN_LOCAL_ADVANTAGES';}
+  return freeze({required:true,decision,reason,internalAssetId:clean(internal.assetId)||null,externalReferenceAssetId:clean(external.assetId)||null,family:profile.family,dimensionScores:freeze({internal:freeze({...a}),external:freeze({...b})}),dimensionDeltas:freeze({...delta}),externalAdvantages:freezeList(externalAdvantages),internalAdvantages:freezeList(internalAdvantages),fillsInternalGaps:freezeList(fills),internalBelowMinimum:freezeList(internalBelow),externalBelowMinimum:freezeList(externalBelow),protectedRegressions:freezeList(protectedRegressions),rawExternalAssetCopyForbidden:true,reconstructionRequired:decision==='REAUTHOR_INTERNAL_FROM_EXTERNAL_ADVANTAGES',preserveInternalPassingDimensions:true,applyOnlyProvenAdvantageDimensions:true,sameConditionRecaptureRequired:decision!=='KEEP_INTERNAL',runtimeVerified:false});
+}
 function createPostDownloadInternalComparison({matched=[],target='',binding={},conceptFit=null}={}){
+  const familyQualityProfile=detailedAssetComparisonProfile(binding?.type);
   const internal=matched.filter(asset=>asset.acquiredExternal!==true&&[
     'VERIFIED_COMPANY_ASSET','SAME_GAME_EXISTING_ROBLOX_ASSET','LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET'
   ].includes(asset.sourceTier));
@@ -900,6 +984,9 @@ function createPostDownloadInternalComparison({matched=[],target='',binding={},c
     comparisonViews:freezeList(['GAME_CAMERA','MID_RANGE','CLOSEUP','CONTACT']),
     hardGates:freezeList(['LICENSE_AND_PROVENANCE','SOURCE_HASH','TARGET_PLATFORM_IMPORT','NO_RUNTIME_ERROR','MOBILE_PERFORMANCE_BUDGET']),
     qualityAxes:freezeList(['GAME_STYLE_FIT','CONCEPT_AND_WORLD_COHERENCE','SILHOUETTE_AND_READABILITY','MATERIAL_AND_SURFACE_DETAIL','PROPORTION_AND_SCALE','RIG_CONTACT_OR_INTERACTION','MOTION_AND_SECONDARY_MOTION','DETAIL_BY_DISTANCE']),
+    detailedQualityDimensions:DETAILED_ASSET_COMPARISON_DIMENSIONS,
+    familyQualityProfile,
+    type:clean(binding?.type),
     conceptFit,
     conceptFitReferenceOnly:true,
     conceptMismatchBlocksFullReplacement:false,
@@ -908,6 +995,9 @@ function createPostDownloadInternalComparison({matched=[],target='',binding={},c
     testApplyBeforeConceptDecision:true,
     sameConditionsRequired:true,
     sameCameraLightingDistanceActionRequired:true,
+    samePoseRequired:true,
+    sourceBlindScoringRequired:true,
+    evidenceProtocol:freeze({minimumDistinctRenderedViews:3,actualRenderedPixelsRequired:true,sameCameraLightingDistancePoseRequired:true,runtimePerformanceMeasurementRequired:true}),
     actualRuntimePixelsRequiredForVisualWinner:true,
     noPreDownloadWinner:true,
     externalFullReplacementRule:'AFTER_OPTIONAL_CONCEPT_TRANSFORMATION_MUST_IMPROVE_AT_LEAST_ONE_CORE_QUALITY_AXIS_WITHOUT_REGRESSING_ANY_PROTECTED_CORE_AXIS',
@@ -918,13 +1008,18 @@ function createPostDownloadInternalComparison({matched=[],target='',binding={},c
     internalTieBreakWhenQualityComparable:true,
     licenseOrRuntimeFailureDisqualifiesExternal:true,
     sourcePreferenceAppliedOnlyAfterQualityComparison:true,
+    externalAssetDirectCopyForbidden:true,
+    externalWinAction:'EXTRACT_PROVEN_ADVANTAGES_AND_REAUTHOR_INTERNAL',
+    internalWinAction:'KEEP_INTERNAL_EXTERNAL_REFERENCE_ONLY',
+    multiDonorSynthesis:freeze({allowed:true,identityAnchorsMustRemainLocked:true,eachDonorAdvantageMustBeDimensionProven:true,licenseAndProvenanceRequired:true,rawMashupForbidden:true,smallestEffectiveLocalChangeFirst:true}),
+    singleImageOrGlbReconstruction:freeze({enabled:true,flow:freezeList(['READ_ACTUAL_PIXELS_OR_GLB_STRUCTURE','EXTRACT_VISIBLE_ADVANTAGE_DIMENSIONS','SEPARATE_UNKNOWN_OR_HIDDEN_STRUCTURE_FROM_OBSERVATION','REAUTHOR_INTERNAL_BASE_OR_DERIVED_ASSET','PRESERVE_GAME_IDENTITY_AND_STRONG_DIMENSIONS','BUILD_TARGET_PLATFORM_VARIANT','SAME_CONDITION_RUNTIME_RECAPTURE','MOBILE_PERFORMANCE_REVERIFY'])}),
     selectedAssetId:null,
     runtimeVerified:false,
     gameplayAuthority:false
   });
 }
 
-function decisionFor(selector={},target='',binding={},manifest={},conceptContext={}){
+function decisionFor(selector={},target='',binding={},manifest={},conceptContext={},comparisonInput=null){
   const type=clean(binding.type);
   const qualityDNA=qualityDnaForType(type);
   const matched=matchedForType(selector,type,manifest,target);
@@ -939,6 +1034,7 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
   const donorCandidates=freezeList(candidateRows.filter(row=>row.sourceHash&&row.donorCapabilities.length).sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
   const conceptFit=createConceptFitContract({task:conceptContext.task||{},requestedConcept:conceptContext.requestedConcept||{},binding});
   const postDownloadComparison=createPostDownloadInternalComparison({matched,target,binding,conceptFit});
+  const postDownloadComparisonEvaluation=comparisonInput&&postDownloadComparison.required===true?evaluateDownloadedAssetComparison({contract:postDownloadComparison,internal:comparisonInput.internal||{},external:comparisonInput.external||{}}):null;
   const preferredCandidateId=postDownloadComparison.required?null:(applyFirstCandidates[0]?.id||null);
   const decisionOrder=unique([
     'COMPARE_TARGET_GAME_QUALITY',
@@ -1019,8 +1115,10 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
       requiredChecks:freezeList(type==='animation'
         ?['GAME_STYLE_FIT','RIG_AND_JOINT_COMPATIBILITY','FOOT_SLIDING_AND_CONTACT','TRANSITION_AND_INTERRUPT','ACTUAL_CLIP_PLAYBACK','MULTIPLAYER_SYNC']
         :['GAME_STYLE_FIT','SILHOUETTE_AND_READABILITY','MATERIAL_AND_SCALE_COHERENCE','TARGET_RUNTIME_AND_MOBILE_PERFORMANCE']),
-      selectionState:postDownloadComparison.required?postDownloadComparison.status:'TARGET_GAME_REVIEW_REQUIRED',
+      selectionState:postDownloadComparisonEvaluation?.decision||(postDownloadComparison.required?postDownloadComparison.status:'TARGET_GAME_REVIEW_REQUIRED'),
       selectedAssetId:null,
+      externalReferenceAssetId:postDownloadComparisonEvaluation?.externalReferenceAssetId||null,
+      reconstructionRequired:postDownloadComparisonEvaluation?.reconstructionRequired===true,
       sourcePreferenceOnlyAfterQualityPass:true,
       postDownloadInternalComparisonRequired:postDownloadComparison.required,
       conceptFitReferenceOnly:true,
@@ -1028,6 +1126,7 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
     }),
     conceptFit,
     postDownloadComparison,
+    postDownloadComparisonEvaluation,
     motionReusePlan,
     generatorFallback:freeze({
       route:'AUTHORING_GENERATOR_REQUEST',
@@ -1221,7 +1320,9 @@ export function buildVibeAssetProductionPlan({
     presetCatalog:presetInput,
     rebuild:/FULL_WEB_GAME_REBUILD/i.test(request)
   });
-  const decisions=freezeList((selector.binding||[]).map(binding=>decisionFor(selector,resolvedTarget,binding,manifestInput,{task,requestedConcept})));
+  const comparisonResults=task.assetDownloadedComparisons&&typeof task.assetDownloadedComparisons==='object'?task.assetDownloadedComparisons:{};
+  const comparisonFor=binding=>{const exact=comparisonResults[clean(binding.type)];if(exact)return exact;const key=Object.keys(comparisonResults).find(name=>clean(name).toLowerCase()===clean(binding.type).toLowerCase());return key?comparisonResults[key]:null;};
+  const decisions=freezeList((selector.binding||[]).map(binding=>decisionFor(selector,resolvedTarget,binding,manifestInput,{task,requestedConcept},comparisonFor(binding))));
   const highEnd=highEndVisualContract(repoRoot);
   const highEndActive=highEnd?.status==='ACTIVE_EXECUTABLE_CONTRACT';
   const companyLibrary=companyGraphicsLibraryContract(repoRoot);
@@ -2028,6 +2129,8 @@ export function assetProductionGuidance(plan={}){
       const cmp=row.postDownloadComparison;
       lines.push(`다운로드 후 내부자산 비교=${cmp.status}; external=${cmp.externalCandidateIds.join('|')||'none'}; internal=${cmp.internalBaselineCandidateIds.join('|')||'none'}. 외부 다운로드본은 sourceHash·라이선스·타깃 플랫폼 import를 통과한 뒤 내부 기준 자산과 같은 카메라·조명·거리·행동으로 A/B 비교한다. 컨셉은 강제 탈락 게이트가 아니라 변형 목표다. 외부 다운로드본이 현재 Style Bible/Game Visual DNA와 달라도 후보 브랜치/테스트 장면에 먼저 적용해 보고, 차이가 변형 가능한지 판단한다. 가능하면 팔레트·명도→재질/셰이더→장식→실루엣/비율→시대·기술 디테일→리그/접촉→모션 성격→UI 문법→LOD 순으로 필요한 축만 수정한 뒤 같은 조건으로 재비교한다. 변형 후 핵심 품질축 하나 이상을 개선하면서 보호 품질축을 후퇴시키지 않으면 전체 자산으로 채택할 수 있다. 전체가 안 맞아도 좋은 파츠/리그/재질/모션/디테일은 도너로 재조합할 수 있다. 동급이면 내부자산을 유지하고, 둘 다 부족하면 부분 파생 수정 후 신규 제작을 마지막에 사용한다.`);
     }
+    if(row.postDownloadComparison?.required)lines.push(`다운로드↔내부 정규화 비교=${row.postDownloadComparison.status}; 세부축=${(row.postDownloadComparison.familyQualityProfile?.applicableDimensions||[]).join('|')}; 소스 출처를 가리고 같은 카메라·조명·거리·포즈에서 최소 ${row.postDownloadComparison.evidenceProtocol.minimumDistinctRenderedViews}개 실제 렌더와 모바일 성능을 비교한다. 외부가 우수해도 원본을 그대로 복사하지 않고 우수 축만 추출해 내부 자산을 국소 재구성한다. 내부가 우수한 축은 보존하고 외부는 참고로만 사용한다.`);
+    if(row.postDownloadComparisonEvaluation)lines.push(`자산 비교 판정=${row.postDownloadComparisonEvaluation.decision}; 외부장점=${(row.postDownloadComparisonEvaluation.externalAdvantages||[]).join(',')||'none'}; 내부장점=${(row.postDownloadComparisonEvaluation.internalAdvantages||[]).join(',')||'none'}; 내부부족보강=${(row.postDownloadComparisonEvaluation.fillsInternalGaps||[]).join(',')||'none'}; raw외부복사=금지; 동일조건 재캡처=${row.postDownloadComparisonEvaluation.sameConditionRecaptureRequired?'필수':'불필요'}.`);
     if(row.type==='animation')lines.push(`모션 품질 비교 필수=${(row.qualitySelection?.requiredChecks||[]).join(',')}; 품질 미달 후보를 적용하지 말고 비교 결과와 선택 이유를 남긴다.`);
     if(row.motionReusePlan){
       const studio=row.motionReusePlan.studioProduction;

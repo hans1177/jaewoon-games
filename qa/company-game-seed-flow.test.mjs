@@ -76,7 +76,9 @@ test('central machine policy preserves historical bootstrap while latest owner p
   assert.equal(directive.productionThroughput.modelExecutionBudget.singleModelCallTimeoutSeconds,150);
   assert.equal(directive.productionThroughput.modelExecutionBudget.designSchemaAttemptsMax,2);
   assert.equal(directive.productionThroughput.modelExecutionBudget.designWorkflowTimeoutMinutes,45);
-  assert.equal(roadmap.vibeExecutionLaneContract.gamePrimary.externalProviderBoundary,256);
+  assert.equal(roadmap.vibeExecutionLaneContract.gamePrimary.internalGlobalParallelCap,null);
+  assert.equal(roadmap.vibeExecutionLaneContract.gamePrimary.externalMatrixTransportPartitionMax,256);
+  assert.equal(roadmap.vibeExecutionLaneContract.gamePrimary.externalMatrixTransportPartitionMeaning,'GITHUB_MATRIX_TRANSPORT_PARTITION_ONLY');
 });
 
 test('five department scores drive expansion bands exactly as central policy defines',()=>{

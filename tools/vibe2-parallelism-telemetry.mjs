@@ -115,8 +115,8 @@ function computeWorkload(rows,tasks=[]){
 
 export function computeParallelismTelemetry(input={}){
   const rows=Array.isArray(input.results)?input.results:[];
-  const externalWaveMax=256;
-  const requestedMax=clamp(Math.floor(num(input.requestedMax||rows[0]?.metrics?.requestedMax||externalWaveMax)||externalWaveMax),1,externalWaveMax);
+  const externalTransportPartitionMax=256;
+  const requestedMax=clamp(Math.floor(num(input.requestedMax||rows[0]?.metrics?.requestedMax||externalTransportPartitionMax)||externalTransportPartitionMax),1,externalTransportPartitionMax);
   const effectiveMax=clamp(Math.floor(num(input.effectiveMax||rows[0]?.metrics?.effectiveMax||requestedMax)||requestedMax),1,requestedMax);
   const taskCount=Math.max(0,Math.floor(num(input.taskCount||0)));
   const workerCount=rows.length;
@@ -150,16 +150,16 @@ export function computeParallelismTelemetry(input={}){
     authority:'MEASURED_WORKER_FILE_DIFF_AND_QA_OUTCOME',
     releaseCompletionClaim:false
   };
-  const waveStarts=rows.map(row=>parseTime(row?.metrics?.workerStartedAt)).filter(Boolean);
-  const waveEnds=rows.map(row=>parseTime(row?.metrics?.workerFinishedAt)).filter(Boolean);
-  const waveElapsedMs=waveStarts.length&&waveEnds.length?Math.max(1,Math.max(...waveEnds)-Math.min(...waveStarts)):0;
-  const waveElapsedMinutes=waveElapsedMs>0?waveElapsedMs/60000:0;
+  const executionStarts=rows.map(row=>parseTime(row?.metrics?.workerStartedAt)).filter(Boolean);
+  const executionEnds=rows.map(row=>parseTime(row?.metrics?.workerFinishedAt)).filter(Boolean);
+  const executionElapsedMs=executionStarts.length&&executionEnds.length?Math.max(1,Math.max(...executionEnds)-Math.min(...executionStarts)):0;
+  const executionElapsedMinutes=executionElapsedMs>0?executionElapsedMs/60000:0;
   const passTaskIds=new Set(rows.filter(row=>clean(row?.outcome).toUpperCase()==='PASS').map(row=>clean(row?.taskId)).filter(Boolean));
   const primaryRows=rows.filter(row=>!clean(row?.variant)||clean(row.variant)==='primary');
   const primaryPassCount=primaryRows.filter(row=>clean(row?.outcome).toUpperCase()==='PASS').length;
   const firstCandidatePassRatePct=round(primaryRows.length?primaryPassCount/primaryRows.length*100:0);
-  const verifiedCandidatesPerMinute=round(waveElapsedMinutes?passTaskIds.size/waveElapsedMinutes:0);
-  const changedLinesPerMinute=round(waveElapsedMinutes?workload.changedLineCount/waveElapsedMinutes:0);
+  const verifiedCandidatesPerMinute=round(executionElapsedMinutes?passTaskIds.size/executionElapsedMinutes:0);
+  const changedLinesPerMinute=round(executionElapsedMinutes?workload.changedLineCount/executionElapsedMinutes:0);
   const transientWorkLockDeferrals=rows.filter(row=>
     clean(row?.outcome).toUpperCase()==='BLOCKED'
     &&/^work-lock-conflict:(?:transient-state-update-race|file-lock-conflict)$/i.test(clean(row?.blocker))
@@ -225,7 +225,7 @@ export function computeParallelismTelemetry(input={}){
     effectivePeakUtilizationPct:round(effectiveMax?peak/effectiveMax*100:0),
     workerStartSpreadMs:starts.length?Math.max(...starts)-Math.min(...starts):0,
     throughput:{
-      waveElapsedMs:round(waveElapsedMs),
+      executionElapsedMs:round(executionElapsedMs),
       verifiedCandidateCount:passTaskIds.size,
       verifiedCandidatesPerMinute,
       firstCandidatePassRatePct,

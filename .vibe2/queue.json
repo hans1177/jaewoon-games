@@ -1,7 +1,7 @@
 {
-  "version": 5,
-  "mode": "hierarchical-dag-sharded-work-stealing-queue",
-  "maxConcurrentTasks": 256,
+  "version": 6,
+  "mode": "independent-dag-direct-reservation-queue",
+  "maxConcurrentTasks": null,
   "ownerDirectivePreemptsAutonomy": true,
   "releaseStatePriority": [
     "release-confirmed",
@@ -9,28 +9,7 @@
     "reviewing",
     "other"
   ],
-  "scheduling": {
-    "dagDependencies": true,
-    "hierarchicalParallelism": true,
-    "shardAware": true,
-    "workStealing": true,
-    "sourceRootExclusive": false,
-    "responsibleFileExclusive": true,
-    "unityReleaseFocusSlots": null,
-    "baseShardSlots": {
-      "unity": 3,
-      "web": 7,
-      "verification": 5,
-      "support": 5
-    },
-    "dynamicBackpressure": true,
-    "speculativeParallelism": "high-risk-opt-in-only",
-    "gameWideLockForbidden": true,
-    "sameGameNonOverlappingPackagesParallel": true,
-    "internalConcurrencyCap": null,
-    "externalCapacityOnlyBoundary": true
-  },
-  "defaultMaxRetries": 2,
+  "defaultMaxRetries": null,
   "tasks": [
     {
       "id": "daechung-rpg-region-controls-4-7",
@@ -1329,5 +1308,24 @@
       "estimatedRisk": "low",
       "shard": "web"
     }
-  ]
+  ],
+  "execution": {
+    "dagDependencies": true,
+    "workStealing": true,
+    "sourceRootExclusive": false,
+    "gameWideLockForbidden": true,
+    "sameGameNonOverlappingPackagesParallel": true,
+    "responsibleFileExclusive": true,
+    "exactDuplicateSuppression": true,
+    "atomicSharedStateWriteMode": "OPTIMISTIC_RETRY",
+    "atomicNeuronCompletion": true,
+    "taskMicroFanIn": true,
+    "independentEligibleTaskStart": "IMMEDIATE",
+    "internalGlobalParallelCap": null,
+    "externalMatrixTransportPartitionMax": 256,
+    "learningIdleFixedWorkers": 1,
+    "assetDevelopmentLaneMax": 64,
+    "assetDevelopmentSpeculativeVariantsPerTask": 1
+  },
+  "defaultRetryPolicy": "UNLIMITED_CAUSAL_REPAIR"
 }

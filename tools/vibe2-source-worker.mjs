@@ -17,6 +17,8 @@ import { assertCompiledWorkContractFresh } from './vibe2-central-work-contract.m
 import { classifyVerifiedExternalBlackBoxPrinciples, learningGuidance } from './vibe2-learning-motor.mjs';
 import { assertSystemArchitectureTask, isAllowedSystemArchitecturePath, systemArchitectureGuidance } from './vibe2-system-architecture-contract.mjs';
 import {bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
+import {discoverRuntimeVisualEvidence} from './vibe2-asset-production-plan.mjs';
+import {createAssetRuntimeVisualReviewPlan} from '../assets/vibe-studio-asset-universe.js';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -3439,6 +3441,20 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   }
   const imageAssetObservation=await observeAssetReferenceImages({order,cwd});
   order.imageAssetObservation=imageAssetObservation;
+  if(!order.assetProduction?.runtimeVisualReview&&clean(process.env.VIBE2_RUNTIME_VISUAL_EVIDENCE_ROOT)){
+    const task={
+      ...(order.selectedTask||{}),
+      gameId:order.gameId||order.selectedTask?.gameId||clean(process.env.GAME_ID),
+      target:order.target||order.selectedTask?.target||clean(process.env.TARGET),
+      sourceRoot:order.sourceRoot||order.source?.root||order.selectedTask?.sourceRoot||clean(process.env.SOURCE_ROOT),
+      sourceRevision:clean(process.env.VIBE2_BASE_MAIN_SHA)||clean(process.env.GITHUB_SHA)
+    };
+    const autoRuntimeVisual=discoverRuntimeVisualEvidence({task,target:task.target,evidenceRoot:process.env.VIBE2_RUNTIME_VISUAL_EVIDENCE_ROOT});
+    if(autoRuntimeVisual){
+      order.assetProduction={...(order.assetProduction||{}),runtimeVisualReview:createAssetRuntimeVisualReviewPlan(autoRuntimeVisual)};
+      console.log('VIBE2_RUNTIME_VISUAL_EVIDENCE_AUTO_BOUND='+autoRuntimeVisual.captures.length);
+    }else console.log('VIBE2_RUNTIME_VISUAL_EVIDENCE_AUTO_BOUND=0');
+  }
   const runtimeVisualObservation=await observeAssetRuntimeCaptures({order,cwd});
   order.runtimeVisualObservation=runtimeVisualObservation;
   const prompt=buildPrompt(order,context,responsibleFiles,{allowFullRewrite,exploration,sourceRootBootstrap:bootstrap,focusedWebRepair,verifiedExternalLearningContract});

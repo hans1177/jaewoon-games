@@ -1,6 +1,6 @@
 // 파일명: tools/vibe2-neural-work-graph.mjs
 // 역할: 진단/원인/이벤트를 결정론적 neural work graph로 투영하고 중앙정책이 허용한 범위의 gated 실행 상태를 표현한다.
-// 원칙: 기존 scheduler만 실행하며 정책/보안/릴리즈/자기권한확장은 금지한다.
+// 원칙: 기존 direct queue reservation 경로만 실행하며 정책/보안/릴리즈/자기권한확장은 금지한다.
 
 const clean=value=>String(value??'').trim();
 const uniq=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
@@ -222,7 +222,7 @@ export function buildNeuralWorkGraph({
   const executionAllowed=gated&&route?.fireAllowed===true&&inhibitors.length===0;
   const workerCreationAllowed=executionAllowed&&route?.workerCreationAllowed===true;
   const queueMutationAllowed=executionAllowed&&route?.queueMutationAllowed===true;
-  const waveReorderAllowed=executionAllowed&&route?.waveReorderAllowed===true;
+  const directReservationReorderAllowed=executionAllowed&&route?.directReservationReorderAllowed===true;
   const automaticTuningAllowed=executionAllowed&&route?.automaticTuningAllowed===true;
   const actionInputs=[
     nodes.some(x=>x.id==='plan')?'plan':'',
@@ -265,14 +265,14 @@ export function buildNeuralWorkGraph({
       executionAllowed,
       workerCreationAllowed,
       queueMutationAllowed,
-      waveReorderAllowed,
+      directReservationReorderAllowed,
       automaticTuningAllowed,
       lockAcquisitionAllowed:false,
       policyMutationAllowed:false,
       automaticLearningAllowed:false,
       authorityPromotionAllowed:false
     },
-    currentWaveSchedulerRemainsAuthoritative:true,
+    currentDirectQueueReservationRemainsAuthoritative:true,
     deterministic:true
   };
 }
@@ -302,7 +302,7 @@ export function neuralWorkGraphEvidence(graph={}){
     executionAllowed:authority.executionAllowed===true,
     workerCreationAllowed:authority.workerCreationAllowed===true,
     queueMutationAllowed:authority.queueMutationAllowed===true,
-    waveReorderAllowed:authority.waveReorderAllowed===true,
+    directReservationReorderAllowed:authority.directReservationReorderAllowed===true,
     automaticTuningAllowed:authority.automaticTuningAllowed===true,
     lockAcquisitionAllowed:false,
     policyMutationAllowed:false,
@@ -343,7 +343,7 @@ export function summarizeNeuralWorkGraphEvidence(values=[]){
       row.lockAcquisitionAllowed,row.policyMutationAllowed,row.automaticLearningAllowed,row.authorityPromotionAllowed
     ].some(Boolean);
     const gatedExecutionViolation=!gated&&[
-      row.executionAllowed,row.workerCreationAllowed,row.queueMutationAllowed,row.waveReorderAllowed,row.automaticTuningAllowed
+      row.executionAllowed,row.workerCreationAllowed,row.queueMutationAllowed,(row.directReservationReorderAllowed===true||row.waveReorderAllowed===true),row.automaticTuningAllowed
     ].some(Boolean);
     if(protectedAuthorityViolation||gatedExecutionViolation)unauthorizedAuthorityBitCount+=1;
   }

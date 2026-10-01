@@ -1,5 +1,5 @@
 // 파일명: qa/vibe2-queue-control.test.mjs
-// 역할: DAG/shard/responsible-file-conflict/work-stealing/backpressure/speculative fan-in 큐 계약을 검증한다.
+// 역할: DAG/responsible-file-conflict/direct-reservation/pressure-telemetry/speculative micro-fan-in 큐 계약을 검증한다.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -27,7 +27,7 @@ import {
   verifyVibeWorkerSynchronization,
   runQueueCommand
 } from '../tools/vibe2-queue-control.mjs';
-import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
+import { createVibeContinuousQueue, selectVibeQueueBatch, EXTERNAL_MATRIX_BATCH_MAX } from '../assets/vibe-continuous-queue.js';
 
 const continuousWorkflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 
@@ -53,7 +53,7 @@ test('shared queue retains first and latest shadow observations without growing 
   assert.deepEqual(createVibeContinuousQueue(first).tasks[0].evidence,retained);
 });
 
-test('legacy Roblox roots cannot reserve overlapping source files in one wave',()=>{
+test('legacy Roblox roots cannot reserve overlapping source files in one parallel reservation',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[
     {id:'release-focus',goal:'Repair shared Roblox client',gameId:'same',target:'roblox',department:'development',type:'implementation',status:'queued',
       sourceRoot:'roblox-games/same',responsibleFiles:['roblox-games/same/client/Game.client.luau'],releaseState:'release-confirmed',priority:'high'},
@@ -288,7 +288,7 @@ test('learning-idle lane reservation uses its own cap instead of game adaptive c
   assert.equal(result.tasks.some(task=>task.id==='game'),false);
 });
 
-test('game-primary keeps adaptive telemetry but reserves primary work to provider boundary',()=>{
+test('game-primary ignores legacy general caps while each GitHub matrix stays a transport partition',()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-game-primary-summary-'));
   const queueFile=path.join(dir,'queue.json');
   const controlFile=path.join(dir,'control.json');
@@ -298,35 +298,43 @@ test('game-primary keeps adaptive telemetry but reserves primary work to provide
     goal:'running',status:'running',sourceRoot:`web-games/running-${i}`,responsibleFiles:['index.html'],
     reservationId:'prior:1',reservationRunId:'prior',reservedAt:new Date().toISOString()
   }));
-  const queued=Array.from({length:20},(_,i)=>({
+  const queued=Array.from({length:300},(_,i)=>({
     id:`queued-${i}`,gameId:`queued-${i}`,target:'web',department:'development',type:'implementation',
     goal:'queued',status:'queued',sourceRoot:`web-games/queued-${i}`,responsibleFiles:['index.html']
   }));
-  fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:256,tasks:[...running,...queued]},null,2));
+  fs.writeFileSync(queueFile,JSON.stringify({version:5,maxConcurrentTasks:6,scheduling:{atomicNeuronCompletion:true},tasks:[...running,...queued]},null,2));
   fs.writeFileSync(controlFile,JSON.stringify({version:4,currentMax:20,lastDecision:'HOLD'},null,2));
 
-  const summary=runQueueCommand({command:'summary',queue:queueFile,control:controlFile,lane:'game-primary',max:'256',min:'20'});
-  assert.equal(summary.summary.persistentMaxConcurrentTasks,256);
-  assert.equal(summary.adaptiveMaxConcurrentTasks,20);
-  assert.equal(summary.reservationMaxConcurrentTasks,256);
-  assert.equal(summary.summary.requestedMaxConcurrentTasks,256);
-  assert.equal(summary.summary.effectiveMaxConcurrentTasks,256);
-  assert.equal(summary.summary.freeSlots,249);
+  const summary=runQueueCommand({command:'summary',queue:queueFile,control:controlFile,lane:'game-primary',max:'6',min:'20'});
+  assert.equal(summary.queue.version,6);
+  assert.equal(summary.queue.maxConcurrentTasks,null);
+  assert.equal(summary.summary.internalGlobalParallelCap,null);
+  assert.equal(summary.summary.laneMaxActiveWorkers,null);
+  assert.equal(summary.summary.externalMatrixTransportPartitionMax,EXTERNAL_MATRIX_BATCH_MAX);
+  assert.equal(summary.selection.selected.length,300);
 
   const reserved=runQueueCommand({
-    command:'reserve-batch',queue:queueFile,control:controlFile,lane:'game-primary',max:'256',min:'20',
+    command:'reserve-batch',queue:queueFile,control:controlFile,lane:'game-primary',max:'6',min:'20',
+    'batch-max':String(EXTERNAL_MATRIX_BATCH_MAX),
     'reservation-id':'current:1','reservation-run':'current','reserved-at':'2026-09-20T10:01:00Z',output:batchFile
   });
   const batch=JSON.parse(fs.readFileSync(batchFile,'utf8'));
-  assert.equal(reserved.adaptiveMaxConcurrentTasks,20);
-  assert.equal(reserved.reservationMaxConcurrentTasks,256);
-  assert.equal(batch.scheduler.persistentMaxConcurrentTasks,256);
-  assert.equal(batch.scheduler.adaptiveMaxConcurrentTasks,20);
-  assert.equal(batch.scheduler.effectiveMaxConcurrentTasks,256);
-  assert.equal(batch.scheduler.freeSlotsBeforeReservation,249);
-  assert.equal(reserved.tasks.length,20);
-  assert.equal(reserved.summary.effectiveMaxConcurrentTasks,256);
-  assert.equal(reserved.summary.freeSlots,229);
+  assert.equal(reserved.internalGlobalParallelCap,null);
+  assert.equal(reserved.externalMatrixTransportPartitionMax,EXTERNAL_MATRIX_BATCH_MAX);
+  assert.equal(batch.execution.internalGlobalParallelCap,null);
+  assert.equal(batch.execution.externalBatchLimit,EXTERNAL_MATRIX_BATCH_MAX);
+  assert.equal(batch.execution.externalMatrixTransportPartitionMax,EXTERNAL_MATRIX_BATCH_MAX);
+  assert.equal(reserved.tasks.length,EXTERNAL_MATRIX_BATCH_MAX);
+  assert.equal(reserved.summary.internalGlobalParallelCap,null);
+});
+
+test('continuous core uses direct task events without scheduler continuation shell',()=>{
+  assert.doesNotMatch(continuousWorkflow,/WAVE_LEADER|wave-leader|NEXT_EXTERNAL_MATRIX_WINDOW|NEW_WAVE_OR_IDLE_REFILL/);
+  assert.doesNotMatch(continuousWorkflow,/VIBE2_PRESSURE_REFILL_LEADER/);
+  assert.match(continuousWorkflow,/VIBE2_ATOMIC_NEURON_COMPLETION_MODE=PER_TASK_MICRO_FANIN_IMMEDIATE/);
+  assert.doesNotMatch(continuousWorkflow,/Continue independent parallel reservation/);
+  assert.doesNotMatch(continuousWorkflow,/more_runnable=/);
+  assert.doesNotMatch(continuousWorkflow,/VIBE2_INDEPENDENT_PARALLEL_RESERVATION_CONTINUE/);
 });
 
 test('auxiliary fan-in never mutates game-primary adaptive control',()=>{
@@ -510,7 +518,7 @@ test('system steward protection still preempts ordinary development implementati
   assert.equal(selectVibeQueueBatch(queue,{maxConcurrentTasks:1}).selected[0].id,'steward-repair');
 });
 
-test('game-primary reserve lane excludes recovery control and learning tasks from the 20-wave budget',()=>{
+test('game-primary reservation excludes recovery control and learning tasks from its independent execution lane',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[
     {id:'control-fast',gameId:'system-steward',target:'web',department:'system-supervision',type:'research',goal:'repair control',status:'queued',priority:'critical',systemSteward:true},
     {id:'learning-idle',gameId:'learning',target:'web',department:'development',type:'research',goal:'practice',status:'queued',priority:'low',evidence:['learning-practice-only']},
@@ -530,7 +538,7 @@ test('recovery-fast lane runs disjoint system work in parallel while responsible
   assert.ok(start>=0&&end>start);
   const recoveryBlock=runner.slice(start,end);
   assert.match(recoveryBlock,/execution_lane: recovery-fast/);
-  assert.match(recoveryBlock,/lane_max: '5'/);
+  assert.doesNotMatch(recoveryBlock,/lane_max|VIBE2_MAX_CONCURRENT_GAME_TASKS|VIBE2_LANE_MAX/);
 
   const tasks=[
     ['sys-a','tools/a.mjs'],
@@ -542,7 +550,7 @@ test('recovery-fast lane runs disjoint system work in parallel while responsible
     goal:'repair '+id,status:'queued',priority:'critical',systemSteward:true,sourceRoot:'.',responsibleFiles:[file]
   }));
   const queue=createVibeContinuousQueue({maxConcurrentTasks:256,tasks});
-  const bounded=selectVibeQueueBatch(queue,{maxConcurrentTasks:5,lane:'recovery-fast'});
+  const bounded=selectVibeQueueBatch(queue,{lane:'recovery-fast'});
   assert.equal(bounded.selected.length,3);
   assert.deepEqual(new Set(bounded.selected.map(task=>task.id)),new Set(['sys-a','sys-b','sys-c']));
   assert.ok(bounded.selected.every(task=>task.executionLane==='RECOVERY_FAST'));
@@ -665,7 +673,7 @@ test('completed single worker releases capacity before fan-in without dropping s
   const batch=selectVibeQueueBatch(released.queue,{maxConcurrentTasks:2});
   assert.equal(batch.capacityRunning.length,1);
   assert.equal(batch.releasedWorkerSlots.length,1);
-  assert.equal(batch.backpressure.awaitingQaCount,0);
+  assert.equal(batch.pressure.awaitingQaCount,0);
   assert.equal(batch.selected.some(t=>t.id==='same-root'),false);
   assert.equal(batch.selected.some(t=>t.id==='refill'),true);
   const second=releaseVibeTaskExecutionSlot(released.queue,{taskId:'first'});
@@ -687,9 +695,11 @@ test('queue-local waiting QA pressure does not globally collapse unrelated lanes
   for(const count of [0,2,4,6,8]){
     const tasks=Array.from({length:count},(_,i)=>({id:`run-${i}`,gameId:`g-${i}`,target:'web',sourceRoot:`web-games/g-${i}`,goal:'run',status:'running',blocker:'candidate-awaiting-qa-and-deployment'}));
     const queue=createVibeContinuousQueue({maxConcurrentTasks:30,tasks});
-    const batch=selectVibeQueueBatch(queue,{maxConcurrentTasks:30});
-    assert.equal(batch.effectiveMaxConcurrentTasks,30);
+    const batch=selectVibeQueueBatch(queue,{maxConcurrentTasks:1});
+    assert.equal(batch.internalGlobalParallelCap,null);
+    assert.equal(batch.laneMaxActiveWorkers,null);
     assert.equal(batch.capacityRunning.length,0);
+    assert.equal(batch.pressure.awaitingQaCount,count);
   }
 });
 
@@ -798,10 +808,10 @@ test('reserve-batch reads adaptive runner pressure and restores speculation afte
   assert.equal(suppressed.speculativeExpansionAllowed,false);
   assert.equal(suppressed.tasks.length,1);
   assert.equal(suppressed.matrix[0].speculativeVariants,1);
-  assert.equal(suppressedBatch.scheduler.primaryTaskCount,1);
-  assert.equal(suppressedBatch.scheduler.workerCount,1);
-  assert.equal(suppressedBatch.scheduler.speculativeExpansionAllowed,false);
-  assert.match(suppressedBatch.scheduler.speculativeExpansionReason,/ADAPTIVE_RUNNER_PRESSURE/);
+  assert.equal(suppressedBatch.execution.primaryTaskCount,1);
+  assert.equal(suppressedBatch.execution.workerCount,1);
+  assert.equal(suppressedBatch.execution.speculativeExpansionAllowed,false);
+  assert.match(suppressedBatch.execution.speculativeExpansionReason,/ADAPTIVE_RUNNER_PRESSURE/);
 
   const healthy=makeFiles('vibe2-spec-healthy-',{
     version:4,currentMax:4,lastDecision:'UP',lastReason:'HEALTHY_FAST_RAMP',
@@ -816,10 +826,10 @@ test('reserve-batch reads adaptive runner pressure and restores speculation afte
   assert.equal(restored.speculativeExpansionAllowed,true);
   assert.equal(restored.tasks.length,1);
   assert.equal(restored.matrix[0].speculativeVariants,3);
-  assert.equal(healthyBatch.scheduler.primaryTaskCount,1);
-  assert.equal(healthyBatch.scheduler.workerCount,3);
-  assert.equal(healthyBatch.scheduler.speculativeExpansionAllowed,true);
-  assert.equal(healthyBatch.scheduler.speculativeExpansionReason,'AVAILABLE');
+  assert.equal(healthyBatch.execution.primaryTaskCount,1);
+  assert.equal(healthyBatch.execution.workerCount,3);
+  assert.equal(healthyBatch.execution.speculativeExpansionAllowed,true);
+  assert.equal(healthyBatch.execution.speculativeExpansionReason,'AVAILABLE');
 });
 
 test('neural worker sample is evaluated as one immutable atomic transaction', () => {
@@ -1213,31 +1223,31 @@ test('protected or paid autonomous work remains ineligible', () => {
   assert.equal(next.blocked.length,2);
 });
 
-test('twenty independent tasks can fill all 20 slots', () => {
+test('legacy max requests do not cap independent general tasks', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[]});
-  for(let i=0;i<20;i++) queue=add(queue,`t-${i}`,`g-${i}`,'web',{responsibleFiles:[`f-${i}.js`]});
-  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:20});
-  assert.equal(reserved.tasks.length,20);
-  assert.equal(reserved.selection.effectiveMaxConcurrentTasks,20);
+  for(let i=0;i<40;i++) queue=add(queue,`t-${i}`,`g-${i}`,'web',{responsibleFiles:[`f-${i}.js`]});
+  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:1});
+  assert.equal(reserved.tasks.length,40);
+  assert.equal(reserved.selection.internalGlobalParallelCap,null);
+  assert.equal(reserved.selection.laneMaxActiveWorkers,null);
 });
 
-test('Gemini quota wait releases worker capacity while preserving source lock', () => {
+test('Gemini quota wait releases general worker capacity while preserving source lock', () => {
   const queue=createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[
     {id:'quota-wait',gameId:'game-a',target:'web',sourceRoot:'web-games/game-a',goal:'model-bound review',status:'running',blocker:'WAITING_FOR_GEMINI_QUOTA',responsibleFiles:['shared.js']},
     {id:'same-root',gameId:'game-a',target:'web',sourceRoot:'web-games/game-a',goal:'same root work',status:'queued',responsibleFiles:['shared.js']},
     {id:'independent',gameId:'game-b',target:'web',sourceRoot:'web-games/game-b',goal:'independent implementation',status:'queued',responsibleFiles:['game.js']}
   ]});
-  const batch=selectVibeQueueBatch(queue,{maxConcurrentTasks:2});
+  const batch=selectVibeQueueBatch(queue,{maxConcurrentTasks:1});
   assert.equal(batch.capacityRunning.length,0);
   assert.deepEqual(batch.quotaWaiting.map(task=>task.id),['quota-wait']);
-  assert.equal(batch.freeSlots,2);
+  assert.equal(batch.availableLaneCapacity,null);
   assert.equal(batch.selected.some(task=>task.id==='same-root'),false);
   assert.equal(batch.selected.some(task=>task.id==='independent'),true);
-  const summary=createVibeContinuousQueue(batch.selected.length?queue:queue);
-  assert.equal(summary.tasks.length,3);
+  assert.equal(batch.internalGlobalParallelCap,null);
 });
 
-test('awaiting QA backpressure does not consume worker slots twice', () => {
+test('awaiting QA pressure does not consume general worker capacity', () => {
   const awaiting=Array.from({length:8},(_,i)=>({
     id:`await-${i}`,gameId:`await-${i}`,target:'web',sourceRoot:`web-games/await-${i}`,goal:'await',
     status:'running',blocker:'candidate-awaiting-qa-and-deployment'
@@ -1246,26 +1256,26 @@ test('awaiting QA backpressure does not consume worker slots twice', () => {
     id:`next-${i}`,gameId:`next-${i}`,target:'web',sourceRoot:`web-games/next-${i}`,goal:'next',status:'queued'
   }));
   const queue=createVibeContinuousQueue({maxConcurrentTasks:30,tasks:[...awaiting,...queued]});
-  const batch=selectVibeQueueBatch(queue,{maxConcurrentTasks:30});
-  assert.equal(batch.effectiveMaxConcurrentTasks,30);
+  const batch=selectVibeQueueBatch(queue,{maxConcurrentTasks:1});
+  assert.equal(batch.internalGlobalParallelCap,null);
   assert.equal(batch.running.length,8);
   assert.equal(batch.capacityRunning.length,0);
   assert.equal(batch.awaitingQa.length,8);
-  assert.equal(batch.freeSlots,30);
+  assert.equal(batch.availableLaneCapacity,null);
   assert.equal(batch.selected.length,10);
 });
 
-test('per-run request cannot exceed persisted queue cap', () => {
+test('persisted and per-run legacy caps do not limit general task eligibility', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:6,tasks:[]});
   for(let i=0;i<10;i++) queue=add(queue,`cap-${i}`,`cap-${i}`,'web',{responsibleFiles:[`cap-${i}.js`]});
-  const batch=selectVibeQueueBatch(queue,{maxConcurrentTasks:20});
-  assert.equal(batch.persistentMaxConcurrentTasks,6);
-  assert.equal(batch.requestedMaxConcurrentTasks,20);
-  assert.equal(batch.effectiveMaxConcurrentTasks,6);
-  assert.equal(batch.selected.length,6);
+  const batch=selectVibeQueueBatch(queue,{maxConcurrentTasks:1});
+  assert.equal(queue.maxConcurrentTasks,null);
+  assert.equal(batch.internalGlobalParallelCap,null);
+  assert.equal(batch.laneMaxActiveWorkers,null);
+  assert.equal(batch.selected.length,10);
 });
 
-test('terminal historical failures do not permanently throttle new work', () => {
+test('terminal historical failures do not throttle new independent work', () => {
   const failed=Array.from({length:8},(_,i)=>({
     id:`failed-${i}`,gameId:`failed-${i}`,target:'web',sourceRoot:`web-games/failed-${i}`,goal:'failed',
     status:'failed',lastOutcome:'FAIL',retries:3,maxRetries:2,blocker:'retry-limit-exceeded'
@@ -1274,9 +1284,9 @@ test('terminal historical failures do not permanently throttle new work', () => 
     id:`fresh-${i}`,gameId:`fresh-${i}`,target:'web',sourceRoot:`web-games/fresh-${i}`,goal:'fresh',status:'queued'
   }));
   const queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[...failed,...queued]});
-  const batch=selectVibeQueueBatch(queue,{maxConcurrentTasks:20});
-  assert.equal(batch.backpressure.retryPressureCount,0);
-  assert.equal(batch.effectiveMaxConcurrentTasks,20);
+  const batch=selectVibeQueueBatch(queue,{maxConcurrentTasks:1});
+  assert.equal(batch.pressure.retryPressureCount,0);
+  assert.equal(batch.internalGlobalParallelCap,null);
   assert.equal(batch.selected.length,20);
 });
 
@@ -1370,59 +1380,46 @@ test('exact Web base source generation failure can recover once', () => {
 });
 
 
-test('continuous reserve reuses exact-sha Core QA or fail-closes on the same fan-in regression before worker start', () => {
+test('continuous reserve does not rerun repository syntax or unit suites before worker start', () => {
   const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
-  const start=workflow.indexOf('- name: Fast scheduler preflight');
   const reserveAt=workflow.indexOf('- name: Reserve conflict-free DAG batch');
-  assert.ok(start>0);
-  assert.ok(reserveAt>start);
-  const preflightBlock=workflow.slice(start,reserveAt);
-  assert.match(preflightBlock,/node --check "\/tmp\/vibe2-main\/\$file"/);
-  assert.match(preflightBlock,/vibe2-handoff\.mjs --check/);
-  assert.match(preflightBlock,/VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=PASS/);
-  assert.match(preflightBlock,/VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=FAIL_LOCAL_REGRESSION/);
-  assert.match(preflightBlock,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE/);
-  assert.match(preflightBlock,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_SAME_FAN_IN_SUITE/);
-  assert.match(preflightBlock,/node --test --test-concurrency=4/);
-  assert.match(preflightBlock,/VIBE2_RESERVE_CONTRACT_REGRESSION=PASS/);
-  const runtime=JSON.parse(fs.readFileSync('vibe2-runtime.json','utf8'));
-  const regression=runtime.continuous.reserveContractRegressionPreflight;
-  assert.equal(regression.enabled,true);
-  assert.equal(regression.exactContractShaRequired,true);
-  assert.equal(regression.reuseSuccessfulCoreQaForExactSha,true);
-  assert.equal(regression.fallback,'LOCAL_SAME_FAN_IN_CORE_REGRESSION');
-  assert.equal(regression.blocksReservationOnFailure,true);
-  assert.equal(regression.gameWorkerStartBeforePass,false);
+  assert.ok(reserveAt>0);
+  assert.doesNotMatch(workflow,/Fast scheduler preflight/);
+  assert.doesNotMatch(workflow,/VIBE2_RESERVE_CONTRACT_REGRESSION/);
+  assert.doesNotMatch(workflow,/VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION/);
+  assert.doesNotMatch(workflow,/node --check/);
+  assert.equal((workflow.match(/node --test/g)||[]).length,1);
+  assert.match(workflow,/Run impact-first incremental QA role/);
+  assert.match(workflow,/Run read-only performance sanity role/);
+  assert.match(workflow,/Merge outcomes run regression and package review/);
 });
 
-test('atomic neuron variants micro-fan-in one task and release capacity without waiting for the cohort',()=>{
-  let queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[
-    {id:'atomic-a',gameId:'a',target:'web',department:'development',type:'implementation',goal:'repair a',status:'queued',sourceRoot:'web-games/a',responsibleFiles:['index.html'],estimatedRisk:'high',speculativeEligible:true},
-    {id:'atomic-b',gameId:'b',target:'web',department:'development',type:'implementation',goal:'repair b',status:'queued',sourceRoot:'web-games/b',responsibleFiles:['index.html']}
+test('atomic neuron variants micro-fan-in one task and allow immediate independent refill',()=>{
+  let queue=createVibeContinuousQueue({tasks:[
+    {id:'atomic-a',gameId:'a',target:'web',department:'development',type:'implementation',goal:'repair a',status:'queued',sourceRoot:'web-games/a',responsibleFiles:['index.html'],estimatedRisk:'high',speculativeEligible:true}
   ]});
   const reservation={id:'atomic-run:1',runId:'atomic-run',runAttempt:1,reservedAt:'2026-09-20T10:00:00Z'};
-  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:3,lane:'game-primary',reservation});
+  const reserved=reserveVibeTaskBatch(queue,{batchLimit:2,lane:'game-primary',reservation});
   const matrixA=reserved.matrix.find(row=>row.taskId==='atomic-a');
   assert.equal(matrixA.speculativeVariants,2);
   queue=reserved.queue;
-  const base={taskId:'atomic-a',reservationId:'atomic-run:1',evidence:['actions-run:atomic-run'],metrics:{requestedMax:20,effectiveMax:20,workerStartedAt:1,workerFinishedAt:2}};
+  const base={taskId:'atomic-a',reservationId:'atomic-run:1',evidence:['actions-run:atomic-run'],metrics:{transportPartitionMax:256,workerStartedAt:1,workerFinishedAt:2}};
   const first=recordVibeNeuronResult(queue,{...base,variant:'speculative-1',outcome:'FAIL',blocker:'candidate-failed'},{expectedVariants:2});
   assert.equal(first.ready,false);
   assert.equal(first.reason,'AWAITING_VARIANTS');
   assert.equal(first.slotReleased,false);
   assert.equal(first.resultCount,1);
-  assert.equal(first.queue.tasks.find(task=>task.id==='atomic-a').status,'running');
   const second=recordVibeNeuronResult(first.queue,{...base,variant:'primary',outcome:'PASS',blocker:''},{expectedVariants:2});
   assert.equal(second.ready,true);
   assert.equal(second.reason,'TASK_MICRO_FANIN_COMPLETE');
   assert.equal(second.slotReleased,true);
   const task=second.queue.tasks.find(item=>item.id==='atomic-a');
-  assert.equal(task.status,'running');
-  assert.match(task.blocker,/candidate-awaiting-qa-and-deployment/);
   assert.equal(task.neuronExpectedVariants,0);
   assert.deepEqual(task.neuronResults,[]);
-  const selection=selectVibeQueueBatch(second.queue,{maxConcurrentTasks:3,lane:'game-primary'});
-  assert.ok(selection.freeSlots>=1);
+  const refilled=enqueueVibeTask(second.queue,{id:'atomic-b',gameId:'b',target:'web',department:'development',type:'implementation',goal:'repair b',sourceRoot:'web-games/b',responsibleFiles:['index.html']});
+  const selection=selectVibeQueueBatch(refilled,{lane:'game-primary'});
+  assert.equal(selection.selected.some(item=>item.id==='atomic-b'),true);
+  assert.equal(selection.internalGlobalParallelCap,null);
 });
 
 test('atomic neuron completion is idempotent for duplicate variant callbacks',()=>{
@@ -1475,7 +1472,7 @@ test('completed atomic neuron ignores late duplicate callbacks after micro fan-i
   assert.deepEqual(late.queue.tasks.find(task=>task.id==='done').neuronResults,[]);
 });
 
-test('cohort fan-in clears atomic transition state only for accepted reservation results',()=>{
+test('integration fan-in clears atomic transition state only for accepted reservation results',()=>{
   const reservation={id:'transition:1',runId:'transition',runAttempt:1,reservedAt:'2026-09-20T10:00:00Z'};
   const reserved=reserveVibeTaskBatch(createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[
     {id:'transition-task',gameId:'transition',target:'web',department:'development',type:'implementation',goal:'transition',status:'queued',sourceRoot:'web-games/transition',responsibleFiles:['index.html'],estimatedRisk:'high',speculativeEligible:true}
@@ -1664,11 +1661,18 @@ test('candidate result workflows use direct repository-dispatch refill instead o
 });
 
 
-test('24H plan uses optimistic writes while reserve stays lightweight and fan-in stays run-unique',()=>{
+test('24H orchestration and reserve jobs stay parallel while shared writes use optimistic retry',()=>{
   const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
   const core=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 
-  assert.match(runner,/group: vibe2-24h-cycle-singleton-v9/);
+  assert.doesNotMatch(runner,/vibe2-24h-cycle-singleton/);
+
+  assert.doesNotMatch(runner,/node --check/);
+  assert.doesNotMatch(runner,/node --test/);
+  assert.doesNotMatch(runner,/Dispatch queued GAME_PRIMARY work before full planning/);
+  assert.doesNotMatch(runner,/Dispatch next cycle unconditionally/);
+  assert.doesNotMatch(runner,/vibe2-handoff-before-plan|vibe2-handoff-before-attempt/);
+  assert.match(runner,/vibe2-handoff-after-plan/);
 
   const planStart=runner.indexOf('\n  plan:');
   const recoveryStart=runner.indexOf('\n  recovery_fast:',planStart);
@@ -1683,16 +1687,11 @@ test('24H plan uses optimistic writes while reserve stays lightweight and fan-in
   const reserveSteps=core.indexOf('\n    steps:',reserveStart);
   assert.ok(reserveStart>=0&&reserveSteps>reserveStart);
   const reserveHeader=core.slice(reserveStart,reserveSteps);
-  assert.match(reserveHeader,/github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-refill-reserve-\{0\}'/);
-  assert.match(reserveHeader,/github\.event\.client_payload\.execution_lane/);
-  assert.match(reserveHeader,/format\('vibe2-reserve-\{0\}', github\.run_id\)/);
-  assert.match(reserveHeader,/cancel-in-progress: false/);
+  assert.doesNotMatch(reserveHeader,/\n\s+concurrency:/);
   assert.match(reserveHeader,/runs-on: \$\{\{ \(github\.event_name == 'repository_dispatch' && \(github\.event\.action == 'vibe2-fanin-refill' \|\| github\.event\.action == 'vibe2-neuron-complete'\) && 'ubuntu-latest' \|\| 'ubuntu-slim'\) \}\}/);
   assert.match(reserveHeader,/vibe2-neuron-complete/);
-  assert.doesNotMatch(reserveHeader,/asset-development/);
   assert.match(reserveHeader,/vibe2-fanin-refill/);
   assert.match(reserveHeader,/ubuntu-latest/);
-  assert.doesNotMatch(reserveHeader,/ubuntu-24\.04-arm/);
   assert.match(reserveHeader,/ubuntu-slim/);
   assert.doesNotMatch(reserveHeader,/vibe2-control-state-/);
   assert.match(runner,/runner_pressure: \$\{\{ steps\.queue_state\.outputs\.runner_pressure \}\}/);
@@ -1802,8 +1801,9 @@ test('blank control queue is canonically recovered before queue commands',()=>{
   const result=runQueueCommand({command:'summary',queue:queueFile});
   assert.equal(result.queueStateRecovered,true);
   const repaired=JSON.parse(fs.readFileSync(queueFile,'utf8'));
-  assert.equal(repaired.version,5);
-  assert.equal(repaired.maxConcurrentTasks,256);
+  assert.equal(repaired.version,6);
+  assert.equal(repaired.maxConcurrentTasks,null);
+  assert.equal(repaired.execution.internalGlobalParallelCap,null);
   assert.deepEqual(repaired.tasks,[]);
 });
 

@@ -11,7 +11,7 @@ const clean=v=>String(v??'').trim();
 const parseArgs=(argv=process.argv.slice(2))=>Object.fromEntries(argv.filter(x=>x.startsWith('--')&&x.includes('=')).map(x=>{const [k,...rest]=x.slice(2).split('=');return[k,rest.join('=')]}));
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
 
-export const NEURAL_EXPANSION_MAX_PARALLEL_CHECKS=5;
+export const NEURAL_EXPANSION_MAX_PARALLEL_CHECKS=Number.MAX_SAFE_INTEGER;
 
 export const NEURAL_EXPANSION_READINESS_CHECKS=Object.freeze({
   rule1QaPass:['qa/vibe2-owner-rule1-continuity.test.mjs'],
@@ -87,7 +87,8 @@ function buildReadinessResult(results,{evaluationMode='SERIAL_COMPATIBILITY_QA_O
     details,
     evaluationMode,
     parallelLaneCount,
-    maxParallelChecks:NEURAL_EXPANSION_MAX_PARALLEL_CHECKS,
+    maxParallelChecks:parallelLaneCount,
+    internalParallelCap:null,
     orderedRuleGatePass,
     bottleneckGatePass:checks.bottleneckQaPass===true,
     finalGateOrderEnforced:true,
@@ -106,8 +107,8 @@ export function evaluateNeuralExpansionReadiness({root=process.cwd(),runner=runN
   return buildReadinessResult(results);
 }
 
-async function runBoundedChecks({root,entries,runner,maxParallelChecks}){
-  const limit=Math.max(1,Math.min(NEURAL_EXPANSION_MAX_PARALLEL_CHECKS,Number(maxParallelChecks)||NEURAL_EXPANSION_MAX_PARALLEL_CHECKS,entries.length));
+async function runIndependentChecks({root,entries,runner}){
+  const limit=Math.max(1,entries.length);
   const settled=new Array(entries.length);
   let cursor=0;
   const workers=Array.from({length:limit},async()=>{
@@ -125,12 +126,13 @@ async function runBoundedChecks({root,entries,runner,maxParallelChecks}){
 export async function evaluateNeuralExpansionReadinessParallel({
   root=process.cwd(),
   runner=runNodeTestsAsync,
-  maxParallelChecks=NEURAL_EXPANSION_MAX_PARALLEL_CHECKS
+  maxParallelChecks=null
 }={}){
   const entries=Object.entries(NEURAL_EXPANSION_READINESS_CHECKS);
-  const {settled,limit}=await runBoundedChecks({root,entries,runner,maxParallelChecks});
+  void maxParallelChecks;
+  const {settled,limit}=await runIndependentChecks({root,entries,runner});
   return buildReadinessResult(Object.fromEntries(settled),{
-    evaluationMode:'PARALLEL_BOUNDED_INDEPENDENT_QA_ORDERED_FINAL_GATE',
+    evaluationMode:'PARALLEL_UNCAPPED_INDEPENDENT_QA_ORDERED_FINAL_GATE',
     parallelLaneCount:limit
   });
 }

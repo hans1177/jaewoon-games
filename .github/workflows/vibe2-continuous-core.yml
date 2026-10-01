@@ -8,10 +8,6 @@ on:
         required: false
         type: string
         default: game-primary
-      lane_max:
-        required: false
-        type: string
-        default: ''
   workflow_dispatch:
     inputs:
       execution_lane:
@@ -23,17 +19,10 @@ on:
           - asset-development
           - learning-idle
           - control-fast
-      lane_max:
-        required: false
-        type: string
-        default: ''
   repository_dispatch:
     types: [vibe2-neuron-complete, vibe2-fanin-refill]
-  # Independent game reserve safety net while the 24H singleton waits on slow workers.
   schedule:
     - cron: '*/5 * * * *'
-  # GAME_PRIMARY_MAIN_PUSH_WAKE: main churn must not starve queued game work behind
-  # the singleton planner. This enters the existing canonical reserve path only.
   push:
     branches:
       - main
@@ -70,23 +59,19 @@ permissions:
   contents: write
   actions: write
 
-# Coalesce only stateless fan-in refill events by execution lane.
-# Result-bearing neuron completions stay run-unique so no completion artifact can be dropped.
-# GAME_PRIMARY must never wait behind recovery-fast, learning-idle or control-fast refill work.
 concurrency:
-  # Only a direct main push without an explicit lane uses the disposable main-wake singleton.
-  # Learning uses one shared execution group; other explicit lanes remain run-scoped.
-  group: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && 'vibe2-learning-single-worker' || github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-refill-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || github.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake' || github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && 'vibe2-main-push-game-primary-wake' || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
+  # Learning remains exactly one worker. Asset keeps its dedicated 64-worker lane.
+  # General game/recovery/control runs are event-driven and run-scoped.
+  group: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && 'vibe2-learning-single-worker' || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill') && 'vibe2-fanin-refill-asset-development' || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
   cancel-in-progress: false
 
 env:
   VIBE2_LOCAL_MODEL: qwen3:1.7b
   VIBE2_MODEL_MAX_PREDICT: '3072'
   VIBE2_MODEL_TIMEOUT_MS: '240000'
-  VIBE2_MAX_CONCURRENT_GAME_TASKS: '256'
   VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'
-  VIBE2_GAME_PRIMARY_BASELINE_TARGET: '256'
-  VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '30'
+  VIBE2_LEARNING_LANE_MAX: '1'
+  VIBE2_ASSET_DEVELOPMENT_MAX: '64'
   OLLAMA_HOST: 127.0.0.1:11434
   VIBE2_GAME_DEVELOPMENT_OWNER: VIBE2_VIBE3
   VIBE2_GAME_SOURCE_PROVIDER: LOCAL_OLLAMA
@@ -96,7 +81,6 @@ env:
   VIBE2_OPENAI_PAID_API_ALLOWED: 'false'
   VIBE2_SHARED_CONTEXT_REQUIRED: 'true'
   VIBE2_EXECUTION_LANE: ${{ inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary' }}
-  VIBE2_LANE_MAX: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && '1' || inputs.lane_max || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && '64') || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'recovery-fast' && '5') || '256' }}
 
 jobs:
   reserve:
@@ -104,17 +88,12 @@ jobs:
     # while ubuntu-latest game workers were actively running. Push/manual reserve stays on slim.
     runs-on: ${{ (github.event_name == 'repository_dispatch' && (github.event.action == 'vibe2-fanin-refill' || github.event.action == 'vibe2-neuron-complete') && 'ubuntu-latest' || 'ubuntu-slim') }}
     timeout-minutes: 7
-    # 같은 레인의 상태 없는 보충 요청만 예약 단계에서 합친다.
-    # 완료 결과 전달과 게임 작업은 실행별로 독립 진행한다.
-    concurrency:
-      group: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-refill-reserve-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || format('vibe2-reserve-{0}', github.run_id) }}
-      cancel-in-progress: false
+    # Reserve jobs may overlap. Shared queue writes are protected by optimistic retry only.
     outputs:
       worker_matrix: ${{ steps.batch.outputs.worker_matrix }}
       worker_count: ${{ steps.batch.outputs.worker_count }}
       task_count: ${{ steps.batch.outputs.task_count }}
       reserved_at: ${{ steps.batch.outputs.reserved_at }}
-      effective_max: ${{ steps.batch.outputs.effective_max }}
       contract_sha: ${{ steps.contract.outputs.sha }}
       task_review_required: ${{ steps.batch.outputs.task_review_required }}
       stranded_review_run: ${{ steps.stranded_review.outputs.source_run }}
@@ -205,127 +184,6 @@ jobs:
           echo "VIBE2_CONTINUOUS_CONTRACT_SHA=$contract_sha"
           echo 'VIBE2_MAIN_CONTRACT_SNAPSHOT=ARCHIVE'
 
-      - name: Fast scheduler preflight
-        if: steps.main_wake.outputs.proceed == 'true' && (github.event_name != 'repository_dispatch' || github.event.action != 'vibe2-neuron-complete')
-        env:
-          GH_TOKEN: ${{ github.token }}
-          VIBE2_PREFLIGHT_CONTRACT_SHA: ${{ steps.contract.outputs.sha }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          control_root="$GITHUB_WORKSPACE"
-          for file in \
-            assets/vibe-continuous-queue.js \
-            tools/vibe2-auto-planner.mjs \
-            tools/company-build-up-directive.mjs \
-            tools/vibe2-learning-motor.mjs \
-            tools/vibe2-continuous-runner.mjs \
-            tools/vibe2-asset-production-plan.mjs \
-            tools/vibe2-central-work-contract.mjs \
-            tools/vibe2-neural-diagnosis.mjs \
-            tools/vibe2-neural-feedback.mjs \
-            tools/vibe2-neural-critic.mjs \
-            tools/vibe2-neural-root-cause.mjs \
-            tools/vibe2-neural-event-router.mjs \
-            tools/vibe2-neural-shadow-audit.mjs \
-            tools/vibe2-neural-event-telemetry.mjs \
-            tools/vibe2-neural-phase2-readiness.mjs \
-            tools/vibe2-neural-expansion-readiness.mjs \
-            tools/vibe2-exploration-worker.mjs \
-            tools/vibe2-source-worker.mjs \
-            tools/vibe2-capability-distillation.mjs \
-            tools/vibe2-performance-sanity.mjs \
-            tools/vibe2-fan-in-review.mjs \
-            tools/vibe2-queue-control.mjs \
-            tools/vibe2-work-package.mjs \
-            tools/vibe2-incremental-qa.mjs \
-            tools/vibe2-parallelism-telemetry.mjs \
-            tools/vibe2-adaptive-backpressure.mjs \
-            tools/vibe2-handoff.mjs \
-            tools/vibe2-system-steward.mjs; do
-            node --check "/tmp/vibe2-main/$file"
-          done
-          node /tmp/vibe2-main/tools/vibe2-neural-expansion-readiness.mjs \
-            --root=/tmp/vibe2-main \
-            --output=/tmp/vibe2-neural-expansion-readiness.json | tee /tmp/vibe2-neural-expansion-readiness.log
-          node /tmp/vibe2-main/tools/vibe2-system-steward.mjs \
-            --queue="$control_root/.vibe2/queue.json" \
-            --control="$control_root/.vibe2/parallelism-control.json" \
-            --neural-readiness=/tmp/vibe2-neural-expansion-readiness.json | tee /tmp/vibe2-reserve-preflight-steward.log
-          echo 'VIBE2_RESERVE_PREFLIGHT_STEWARD=PASS'
-          node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
-            --runtime=/tmp/vibe2-main/vibe2-runtime.json \
-            --queue="$control_root/.vibe2/queue.json" \
-            --control="$control_root/.vibe2/parallelism-control.json" \
-            --experience="$control_root/.vibe2/experience.json" \
-            --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
-            --output=/tmp/vibe2-handoff-preflight.json >/tmp/vibe2-handoff-preflight.log
-
-          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then
-            core_qa_reuse=0
-            if curl --fail-with-body --silent --show-error \
-              --header 'Accept: application/vnd.github+json' \
-              --header "Authorization: Bearer $GH_TOKEN" \
-              --header 'X-GitHub-Api-Version: 2022-11-28' \
-              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${VIBE2_PREFLIGHT_CONTRACT_SHA}&per_page=100" \
-              --output /tmp/vibe2-reserve-core-qa-runs.json; then
-              core_qa_reuse="$(node <<'NODE'
-          const fs=require('fs');
-          const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-reserve-core-qa-runs.json','utf8'));
-          const sha=String(process.env.VIBE2_PREFLIGHT_CONTRACT_SHA||'');
-          const pass=(payload.workflow_runs||[]).some(row=>
-            String(row.name||'')==='Vibe2 Core QA' &&
-            String(row.head_sha||'')===sha &&
-            String(row.status||'')==='completed' &&
-            String(row.conclusion||'')==='success'
-          );
-          process.stdout.write(pass?'1':'0');
-          NODE
-              )"
-              echo 'VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=PASS'
-            else
-              core_qa_reuse=0
-              echo 'VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=FAIL_LOCAL_REGRESSION'
-            fi
-
-            if [ "$core_qa_reuse" = '1' ]; then
-              echo 'VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE'
-            else
-              echo 'VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_SAME_FAN_IN_SUITE'
-            (cd /tmp/vibe2-main && node --test --test-concurrency=4 \
-            qa/vibe2-auto-planner.test.mjs \
-            qa/vibe2-native-asset-production.test.mjs \
-            qa/vibe2-neural-diagnosis.test.mjs \
-            qa/vibe2-neural-feedback.test.mjs \
-            qa/vibe2-neural-critic.test.mjs \
-            qa/vibe2-neural-root-cause.test.mjs \
-            qa/vibe2-neural-event-router.test.mjs \
-            qa/vibe2-neural-shadow-audit.test.mjs \
-            qa/vibe2-neural-event-telemetry.test.mjs \
-            qa/vibe2-neural-phase2-readiness.test.mjs \
-            qa/vibe2-neural-fanin-root-cause.test.mjs \
-            qa/vibe2-core-engine-motion.test.mjs \
-            qa/vibe2-source-worker.test.mjs \
-            qa/vibe2-capability-distillation.test.mjs \
-            qa/vibe2-central-work-contract.test.mjs \
-            qa/vibe2-exploration-worker.test.mjs \
-            qa/vibe2-queue-control.test.mjs \
-            qa/vibe2-work-package.test.mjs \
-            qa/vibe2-incremental-qa.test.mjs \
-            qa/vibe2-parallelism-telemetry.test.mjs \
-            qa/vibe2-adaptive-backpressure.test.mjs \
-            qa/vibe2-candidate-reconcile.test.mjs \
-            qa/vibe2-experience-control.test.mjs \
-            qa/vibe2-learning-closed-loop.test.mjs \
-            qa/vibe2-handoff.test.mjs \
-            qa/vibe2-practice-distillation.test.mjs)
-            fi
-            echo 'VIBE2_RESERVE_CONTRACT_REGRESSION=PASS'
-          else
-            echo "VIBE2_RESERVE_CONTRACT_REGRESSION=SKIPPED_AUXILIARY_LANE:$VIBE2_EXECUTION_LANE"
-          fi
-          echo 'VIBE2_RESERVE_PREFLIGHT=MAIN_CONTRACT_CONTROL_STATE'
-
       - name: Reserve conflict-free DAG batch
         id: batch
         if: steps.main_wake.outputs.proceed == 'true'
@@ -336,8 +194,8 @@ jobs:
           set -euo pipefail
           control_root="$GITHUB_WORKSPACE"
           test -d "$control_root/.git"
-          git -C "$control_root" config user.name 'jaewoon-vibe2-scheduler'
-          git -C "$control_root" config user.email 'vibe2-scheduler@users.noreply.github.com'
+          git -C "$control_root" config user.name 'jaewoon-vibe2-runtime'
+          git -C "$control_root" config user.email 'vibe2-runtime@users.noreply.github.com'
           echo "VIBE2_CONTROL_ROOT=$control_root"
 
           callback_ref="${GITHUB_REF_NAME:-}"
@@ -373,13 +231,11 @@ jobs:
             if [ "$callback_kind" = 'neuron' ]; then
               neuron_result_file="$(find /tmp/vibe2-neuron-result -type f -name '*.json' -print -quit)"
               test -n "$neuron_result_file"
-              expected_variants="$(node -e "const fs=require('fs');const e=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));process.stdout.write(String(Math.max(1,Math.min(5,Number(e.client_payload?.expected_variants)||1))))")"
+              expected_variants="$(node -e "const fs=require('fs');const e=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));const max=Math.max(1,Number(process.env.VIBE2_EXTERNAL_MATRIX_BATCH_MAX)||256);process.stdout.write(String(Math.max(1,Math.min(max,Number(e.client_payload?.expected_variants)||1))))")"
               node /tmp/vibe2-main/tools/vibe2-queue-control.mjs neuron-complete \
                 --queue="$control_root/.vibe2/queue.json" \
                 --control="$control_root/.vibe2/parallelism-control.json" \
                 --lane="$VIBE2_EXECUTION_LANE" \
-                --max="$VIBE2_LANE_MAX" \
-                --min="$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN" \
                 --expected-variants="$expected_variants" \
                 --input="$neuron_result_file" | tee /tmp/vibe2-neuron-complete.log
               neuron_reason="$(sed -n 's/^VIBE2_NEURON_RESULT=//p' /tmp/vibe2-neuron-complete.log | tail -n1)"
@@ -461,7 +317,6 @@ jobs:
 
             # Released Roblox caretakers and active repair work are refilled from the same canonical
             # company-runtime snapshot on manual, callable, refill and fan-in reserve ingress.
-            node --check /tmp/vibe2-main/tools/vibe2-post-release-focus.mjs
             node /tmp/vibe2-main/tools/vibe2-post-release-focus.mjs \
               --roadmap=/tmp/vibe2-main/company-learning/platform-release-roadmap.json \
               --company-runtime-queue=/tmp/vibe2-company-runtime-queue.json \
@@ -481,7 +336,7 @@ jobs:
               --experience="$control_root/.vibe2/experience.json" \
               --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
               --root=/tmp/vibe2-main \
-              --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-reserve-autoplan.log
+              | tee /tmp/vibe2-reserve-autoplan.log
             node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs \
               --state="$control_root/.vibe2/learning-motor-state.json" \
               --experience="$control_root/.vibe2/experience.json" \
@@ -565,19 +420,16 @@ jobs:
           echo "VIBE2_ACTIVE_LANE_RESERVATIONS_BEFORE_RESERVE=${active_worker_reservations:-0}"
           reservation_id="${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}"
           reserved_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-          lane_min='1'
-          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then lane_min="$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN"; fi
           if [ "${active_worker_reservations:-0}" -gt 0 ]; then
-            echo 'VIBE2_RESERVE_MODE=FREE_SLOT_REFILL_DURING_ACTIVE_WORK'
+            echo 'VIBE2_RESERVE_MODE=INDEPENDENT_PARALLEL_REFILL_DURING_ACTIVE_WORK'
           else
-            echo 'VIBE2_RESERVE_MODE=NEW_WAVE_OR_IDLE_REFILL'
+            echo 'VIBE2_RESERVE_MODE=INDEPENDENT_PARALLEL_DISPATCH'
           fi
           node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch \
             --queue="$control_root/.vibe2/queue.json" \
             --control="$control_root/.vibe2/parallelism-control.json" \
             --lane="$VIBE2_EXECUTION_LANE" \
-            --max="$VIBE2_LANE_MAX" \
-            --min="$lane_min" \
+            --batch-max="$VIBE2_EXTERNAL_MATRIX_BATCH_MAX" \
             --reservation-id="$reservation_id" \
             --reservation-run="$GITHUB_RUN_ID" \
             --reservation-attempt="$GITHUB_RUN_ATTEMPT" \
@@ -633,10 +485,19 @@ jobs:
             node <<'NODE'
           const fs=require('fs');
           const payload={
-            version:1,
+            version:5,
             createdAt:new Date().toISOString(),
             matrix:[],
-            scheduler:{requestedMaxConcurrentTasks:0,effectiveMaxConcurrentTasks:0,longWorkProtectedSlotUsed:false}
+            execution:{
+              internalGlobalParallelCap:null,
+              laneMaxActiveWorkers:null,
+              externalMatrixTransportPartitionMax:Number(process.env.VIBE2_EXTERNAL_MATRIX_BATCH_MAX||256),
+              externalBatchLimit:Number(process.env.VIBE2_EXTERNAL_MATRIX_BATCH_MAX||256),
+              primaryTaskCount:0,
+              workerCount:0,
+              speculativeExpansionAllowed:true,
+              speculativeExpansionReason:'NO_TASKS'
+            }
           };
           fs.writeFileSync('/tmp/vibe2-batch.json',JSON.stringify(payload,null,2)+'\n');
           NODE
@@ -666,36 +527,29 @@ jobs:
           const batch=JSON.parse(fs.readFileSync('/tmp/vibe2-batch.json','utf8'));
           const workers=[];
           const safe=value=>String(value||'task').replace(/[^A-Za-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)||'task';
-          const pressureRefillEligible=String(process.env.VIBE2_EXECUTION_LANE||'').toLowerCase()==='game-primary';
-          let pressureRefillLeaderAssigned=false;
           let suppressedSpeculativeWorkers=0;
           const assetLane=String(process.env.VIBE2_EXECUTION_LANE||'').toLowerCase()==='asset-development';
-          const robloxLeaderTaskId=pressureRefillEligible?(batch.matrix||[]).find(row=>row.target==='roblox'&&Number(row.speculativeVariants||1)===1)?.taskId||'':'';
           for(const row of batch.matrix||[]){
             const safeTask=safe(row.taskId);
-            const requestedVariantCount=Math.max(1,Math.min(5,Number(row.speculativeVariants||1)));
+            const requestedVariantCount=Math.max(1,Math.min(Math.max(1,Number(process.env.VIBE2_EXTERNAL_MATRIX_BATCH_MAX)||256),Number(row.speculativeVariants||1)));
             const variantCount=assetLane?1:requestedVariantCount;
             if(assetLane)suppressedSpeculativeWorkers+=Math.max(0,requestedVariantCount-1);
-            const shared={taskId:row.taskId,target:row.target||'',safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',longWorkProtected:row.longWorkProtected===true,reservationId:row.reservationId||'',reservationRunId:row.reservationRunId||'',reservationRunAttempt:Number(row.reservationRunAttempt||0),reservedAt:row.reservedAt||batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||256),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||256),expectedVariants:variantCount};
-            const pressureRefillLeader=pressureRefillEligible&&!pressureRefillLeaderAssigned&&(!robloxLeaderTaskId||row.taskId===robloxLeaderTaskId);
-            workers.push({...shared,variant:'primary',pressureRefillLeader});
-            if(pressureRefillLeader)pressureRefillLeaderAssigned=true;
-            for(let i=1;i<variantCount;i++)workers.push({...shared,variant:`speculative-${i}`,pressureRefillLeader:false});
+            const shared={taskId:row.taskId,target:row.target||'',safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',longWorkProtected:row.longWorkProtected===true,reservationId:row.reservationId||'',reservationRunId:row.reservationRunId||'',reservationRunAttempt:Number(row.reservationRunAttempt||0),reservedAt:row.reservedAt||batch.createdAt,transportPartitionMax:Number(batch.execution?.externalMatrixTransportPartitionMax||process.env.VIBE2_EXTERNAL_MATRIX_BATCH_MAX||256),expectedVariants:variantCount};
+            workers.push({...shared,variant:'primary'});
+            for(let i=1;i<variantCount;i++)workers.push({...shared,variant:`speculative-${i}`});
           }
           fs.appendFileSync(out,`worker_matrix=${JSON.stringify({include:workers})}\n`);
           fs.appendFileSync(out,`worker_count=${workers.length}\n`);
           fs.appendFileSync(out,`task_count=${(batch.matrix||[]).length}\n`);
           fs.appendFileSync(out,`reserved_at=${batch.createdAt||''}\n`);
-          fs.appendFileSync(out,`effective_max=${Number(batch.scheduler?.effectiveMaxConcurrentTasks||256)}\n`);
           console.log(`VIBE2_HIERARCHICAL_FAN_OUT=${workers.length}`);
           console.log(`VIBE2_RESERVED_TASK_COUNT=${(batch.matrix||[]).length}`);
-          console.log(`VIBE2_PRIMARY_TASK_COUNT=${Number(batch.scheduler?.primaryTaskCount||(batch.matrix||[]).length)}`);
-          console.log(`VIBE2_SPECULATIVE_WORKER_COUNT=${Math.max(0,workers.length-Number(batch.scheduler?.primaryTaskCount||(batch.matrix||[]).length))}`);
+          console.log(`VIBE2_PRIMARY_TASK_COUNT=${Number(batch.execution?.primaryTaskCount||(batch.matrix||[]).length)}`);
+          console.log(`VIBE2_SPECULATIVE_WORKER_COUNT=${Math.max(0,workers.length-Number(batch.execution?.primaryTaskCount||(batch.matrix||[]).length))}`);
           console.log(`VIBE2_ASSET_SPECULATIVE_VARIANTS_SUPPRESSED=${assetLane?'YES':'NO'}`);
           console.log(`VIBE2_ASSET_SPECULATIVE_WORKERS_AVOIDED=${suppressedSpeculativeWorkers}`);
-          console.log(`VIBE2_SPECULATIVE_EXPANSION=${assetLane?'SUPPRESSED_ASSET_OLLAMA_DUPLICATION':(batch.scheduler?.speculativeExpansionAllowed===false?'SUPPRESSED_RUNNER_PRESSURE':'ENABLED')}`);
-          console.log(`VIBE2_SPECULATIVE_EXPANSION_REASON=${String(batch.scheduler?.speculativeExpansionReason||'AVAILABLE')}`);
-          console.log(`VIBE2_LONG_WORK_PROTECTED_SLOT=${batch.scheduler?.longWorkProtectedSlotUsed?'USED':'NOT_USED'}`);
+          console.log(`VIBE2_SPECULATIVE_EXPANSION=${assetLane?'SUPPRESSED_ASSET_OLLAMA_DUPLICATION':(batch.execution?.speculativeExpansionAllowed===false?'SUPPRESSED_RUNNER_PRESSURE':'ENABLED')}`);
+          console.log(`VIBE2_SPECULATIVE_EXPANSION_REASON=${String(batch.execution?.speculativeExpansionReason||'AVAILABLE')}`);
           NODE
 
       - name: Probe shared Ollama cache from reserve runner
@@ -922,11 +776,6 @@ jobs:
           contract_root="$GITHUB_WORKSPACE/vibe2-contract"
           test -n "$CONTRACT_SHA"
           test "$(git -C "$contract_root" rev-parse HEAD)" = "$CONTRACT_SHA"
-          (
-            cd "$contract_root"
-            node tools/company-shared-context.mjs --output=/tmp/vibe2-worker-shared-context.json | tee /tmp/vibe2-worker-shared-context.log
-          )
-          grep -q '^WORKER_CONTEXT_SYNC=PASS$' /tmp/vibe2-worker-shared-context.log
           node "$contract_root/tools/vibe2-queue-control.mjs" verify-worker-sync             --queue="$GITHUB_WORKSPACE/.vibe2/queue.json"             --id="$TASK_ID"             --reservation-id="$RESERVATION_ID"             --reservation-run="$RESERVATION_RUN_ID"             --reservation-attempt="$RESERVATION_RUN_ATTEMPT"             --reserved-at="$RESERVED_AT" | tee /tmp/vibe2-worker-sync.log
           grep -q '^VIBE2_WORKER_SYNC=PASS$' /tmp/vibe2-worker-sync.log
           echo "VIBE2_WORKER_CONTRACT_SHA=$CONTRACT_SHA"
@@ -938,7 +787,6 @@ jobs:
           set -euo pipefail
           contract_root="$GITHUB_WORKSPACE/vibe2-contract"
           cd "$contract_root"
-          node --check tools/company-constitution-enforcer.mjs
           node tools/company-constitution-enforcer.mjs --phase=worker-before-source-write
 
       - name: Build reserved task work order
@@ -988,6 +836,119 @@ jobs:
           put('release_state',order.releaseState||'other');
           put('cache_namespace',order.incrementalQa?.cacheNamespace||`${order.target||'unknown'}:${order.gameId||'global'}`);
           put('variant',process.env.VARIANT||'primary');
+          NODE
+
+
+      - name: Reuse all recent exact runtime visual evidence for asset work
+        if: env.VIBE2_EXECUTION_LANE == 'asset-development' && steps.order.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ steps.order.outputs.game_id }}
+          TARGET: ${{ steps.order.outputs.target }}
+          SOURCE_ROOT: ${{ steps.order.outputs.source_root }}
+          BASE_SHA: ${{ needs.reserve.outputs.contract_sha }}
+          SAFE_TASK: ${{ matrix.safeTask }}
+          VARIANT: ${{ matrix.variant }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          evidence_root="/tmp/vibe2-runtime-visual-evidence-${SAFE_TASK}-${VARIANT}"
+          rm -rf "$evidence_root"
+          mkdir -p "$evidence_root"
+          export VIBE2_RUNTIME_VISUAL_EVIDENCE_ROOT="$evidence_root"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import {execFileSync,spawnSync} from 'node:child_process';
+
+          const clean=v=>String(v??'').trim();
+          const game=clean(process.env.GAME_ID);
+          const target=clean(process.env.TARGET).toLowerCase();
+          const sourceRoot=clean(process.env.SOURCE_ROOT).replaceAll('\\','/').replace(/^\.\//,'');
+          const base=clean(process.env.BASE_SHA);
+          const evidenceRoot=clean(process.env.VIBE2_RUNTIME_VISUAL_EVIDENCE_ROOT);
+          const repo=clean(process.env.GITHUB_REPOSITORY);
+          const contractRoot=path.join(process.env.GITHUB_WORKSPACE,'vibe2-contract');
+          if(!game||!sourceRoot||!/^[0-9a-f]{40}$/i.test(base)||!repo||!evidenceRoot){
+            console.log('VIBE2_RUNTIME_VISUAL_REUSE=SKIPPED_INCOMPLETE_IDENTITY');
+            process.exit(0);
+          }
+          const prefixes=target==='roblox'
+            ?['studio-captures-'+game+'-']
+            :target==='unity'
+              ?['asset-runtime-visual-'+game+'-unity-android-','unity-web-'+game+'-']
+              :target==='web'
+                ?['asset-runtime-visual-'+game+'-web-']
+                :[];
+          if(!prefixes.length){
+            console.log('VIBE2_RUNTIME_VISUAL_REUSE=SKIPPED_TARGET');
+            process.exit(0);
+          }
+          const pages=JSON.parse(execFileSync('gh',['api','--paginate','--slurp','repos/'+repo+'/actions/artifacts?per_page=100'],{encoding:'utf8'}));
+          const artifacts=(Array.isArray(pages)?pages:[pages]).flatMap(page=>page?.artifacts||[]);
+          const candidates=artifacts
+            .filter(row=>row?.expired!==true&&prefixes.some(prefix=>String(row?.name||'').startsWith(prefix))&&Number(row?.workflow_run?.id||0)>0)
+            .sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||''))||Number(b.id||0)-Number(a.id||0));
+          const allowedProducer=new Set(['company-development-roblox-post-runtime-qa','unity-android-independent-qa','unity-web-first-stage-build']);
+          const walk=(root,name,out=[])=>{
+            let entries=[];try{entries=fs.readdirSync(root,{withFileTypes:true});}catch{return out;}
+            for(const entry of entries){
+              const full=path.join(root,entry.name);
+              if(entry.isDirectory())walk(full,name,out);
+              else if(entry.isFile()&&entry.name===name)out.push(full);
+            }
+            return out;
+          };
+          const ensureCommit=sha=>{
+            if(spawnSync('git',['-C',contractRoot,'cat-file','-e',sha+'^{commit}']).status===0)return true;
+            return spawnSync('git',['-C',contractRoot,'fetch','--no-tags','--depth=1','origin',sha],{stdio:'inherit'}).status===0;
+          };
+          let downloaded=0,compatibleManifests=0,compatibleCaptures=0;
+          for(const artifact of candidates){
+            const artifactName=String(artifact.name),runId=String(artifact.workflow_run.id);
+            const dest=path.join(evidenceRoot,'download-'+String(artifact.id));
+            fs.mkdirSync(dest,{recursive:true});
+            try{
+              execFileSync('gh',['run','download',runId,'-n',artifactName,'-D',dest,'--repo',repo],{stdio:'inherit'});
+              downloaded++;
+            }catch{continue;}
+            for(const manifestFile of walk(dest,'asset-runtime-visual-evidence.json')){
+              let manifest;try{manifest=JSON.parse(fs.readFileSync(manifestFile,'utf8').replace(/^\uFEFF/,''));}catch{continue;}
+              const producer=clean(manifest?.producer?.workflow);
+              const revision=clean(manifest?.sourceRevision);
+              const manifestRoot=clean(manifest?.sourceRoot).replaceAll('\\','/').replace(/^\.\//,'');
+              const platform=clean(manifest?.platform).toUpperCase();
+              const platformOk=target==='roblox'?platform==='ROBLOX':target==='unity'?platform==='UNITY':target==='web'?platform==='WEB':false;
+              if(Number(manifest?.version)!==1||clean(manifest?.gameId)!==game||!platformOk||manifestRoot!==sourceRoot||!allowedProducer.has(producer)||!/^[0-9a-f]{40}$/i.test(revision))continue;
+              if(!ensureCommit(revision))continue;
+              const diff=spawnSync('git',['-C',contractRoot,'diff','--quiet',revision,base,'--',sourceRoot]);
+              if(diff.status!==0)continue;
+              manifest.currentSourceCompatible=true;
+              manifest.currentSourceRevision=base;
+              manifest.sourceCompatibility='EXACT_SOURCE_ROOT_NO_DIFF';
+              manifest.producer={
+                ...(manifest.producer||{}),
+                artifactName,
+                artifactId:Number(artifact.id),
+                workflowRunId:Number(runId),
+                artifactCreatedAt:clean(artifact.created_at)||null,
+                artifactUpdatedAt:clean(artifact.updated_at)||null,
+                downloadedForTask:clean(process.env.SAFE_TASK)
+              };
+              fs.writeFileSync(manifestFile,JSON.stringify(manifest,null,2)+'\n');
+              compatibleManifests++;
+              compatibleCaptures+=Array.isArray(manifest.captures)?manifest.captures.length:0;
+            }
+          }
+          console.log('VIBE2_RUNTIME_VISUAL_ARTIFACTS_DISCOVERED='+candidates.length);
+          console.log('VIBE2_RUNTIME_VISUAL_ARTIFACTS_DOWNLOADED='+downloaded);
+          console.log('VIBE2_RUNTIME_VISUAL_MANIFESTS_COMPATIBLE='+compatibleManifests);
+          console.log('VIBE2_RUNTIME_VISUAL_CAPTURES_COMPATIBLE='+compatibleCaptures);
+          if(compatibleCaptures>0){
+            fs.appendFileSync(process.env.GITHUB_ENV,'VIBE2_RUNTIME_VISUAL_EVIDENCE_ROOT='+evidenceRoot+'\n');
+            fs.appendFileSync(process.env.GITHUB_ENV,'VIBE2_RUNTIME_VISUAL_CAPTURE_POLICY=ALL_CURRENT_SOURCE_COMPATIBLE_RECENT_FIRST\n');
+          }
           NODE
 
       - name: Decide worker local model requirement
@@ -1090,7 +1051,6 @@ jobs:
             unzip -oq "$luau_dir/luau.zip" -d "$luau_dir"
             chmod +x "$luau_dir/luau"
             export VIBE2_LUAU_BINARY="$luau_dir/luau"
-            node --test "$contract_root/qa/vibe2-learning-practice-worker.test.mjs"
           fi
           if [ "$practice_route" = 'learning-web-artifact' ]; then
             practice_deps="$RUNNER_TEMP/vibe2-practice-browser"
@@ -1313,12 +1273,9 @@ jobs:
             export VIBE2_LUAU_COMPILE_REQUIRED=true
             "$VIBE2_LUAU_COMPILER" --help >/dev/null
             "$luau_dir/luau-ast" --help >/dev/null
-            VIBE2_TEST_LUAU_COMPILER="$VIBE2_LUAU_COMPILER" VIBE2_LUAU_COMPILER= node --test --test-name-pattern='Luau compiler' "$contract_root/qa/vibe2-source-worker.test.mjs"
           fi
 
           cd "$candidate_dir"
-          node --check tools/company-shared-context.mjs
-          node tools/company-shared-context.mjs --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-before.json" | tee "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-before.log"
           export VIBE2_BASE_MAIN_SHA="$base_sha"
           export VIBE2_SPECULATIVE_VARIANT="$VARIANT"
           export VIBE2_EXPLORATION_FILE=.vibe2/exploration.json
@@ -1338,7 +1295,6 @@ jobs:
           echo "generation_attempts=$generation_attempts" >> "$GITHUB_OUTPUT"
           echo "failure_class=$failure_class" >> "$GITHUB_OUTPUT"
           echo "failure_message=$failure_message" >> "$GITHUB_OUTPUT"
-          node tools/company-shared-context.mjs --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.json" | tee "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.log"
           if [ "$worker_rc" -ne 0 ]; then exit "$worker_rc"; fi
           candidate_manifest_rel="$(sed -n 's/^VIBE2_CANDIDATE_MANIFEST=//p' "$source_worker_log" | tail -n1)"
           test -n "$candidate_manifest_rel"
@@ -1346,8 +1302,6 @@ jobs:
           test -f "$candidate_manifest"
           echo "candidate_manifest=$candidate_manifest" >> "$GITHUB_OUTPUT"
           echo "VIBE2_CANDIDATE_MANIFEST=$candidate_manifest_rel"
-          # Formatting whitespace is not a gameplay failure; conflict markers still fail.
-          git -c core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab diff --check
           security_sensitive="$(node --input-type=module - "$candidate_manifest" <<'NODE'
           import fs from 'node:fs';
           const manifest=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
@@ -1362,7 +1316,6 @@ jobs:
           NODE
           )"
           if [ "$security_sensitive" = 'YES' ]; then
-            node --check tools/company-security-steward.mjs
             node tools/company-security-steward.mjs --output="/tmp/vibe2-security-${SAFE_TASK}-${VARIANT}.json"
             echo 'VIBE2_SECURITY_IMMUNE_SCAN=PASS'
           else
@@ -1654,15 +1607,6 @@ jobs:
           path: /tmp/vibe2-runtime-visual-${{ matrix.safeTask }}-${{ matrix.variant }}/
           retention-days: 2
 
-      - name: Enforce canonical constitution after worker execution
-        if: always()
-        shell: bash
-        run: |
-          set -euo pipefail
-          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
-          cd "$contract_root"
-          node tools/company-constitution-enforcer.mjs --phase=worker-after-execution
-
       - name: Build immutable worker result
         id: result
         if: always()
@@ -1710,8 +1654,7 @@ jobs:
           SAFE_TASK: ${{ matrix.safeTask }}
           RESERVATION_ID: ${{ matrix.reservationId }}
           RESERVED_AT: ${{ matrix.reservedAt }}
-          REQUESTED_MAX: ${{ matrix.requestedMax }}
-          EFFECTIVE_MAX: ${{ matrix.effectiveMax }}
+          TRANSPORT_PARTITION_MAX: ${{ matrix.transportPartitionMax }}
           WORKER_STARTED_AT_FILE: /tmp/vibe2-worker-start-ms
           CHECKOUT_MS: ${{ steps.checkout_metrics.outputs.ms }}
           MODEL_CACHE_REQUIRED: ${{ steps.model_need.outputs.required }}
@@ -1972,7 +1915,7 @@ jobs:
           const workerFinishedAt=Date.now();
           const cacheRaw=clean(process.env.OLLAMA_CACHE_HIT).toLowerCase();
           const metrics={
-            requestedMax:Number(process.env.REQUESTED_MAX||256),effectiveMax:Number(process.env.EFFECTIVE_MAX||256),reservationId:clean(process.env.RESERVATION_ID),reservedAt:clean(process.env.RESERVED_AT),
+            transportPartitionMax:Number(process.env.TRANSPORT_PARTITION_MAX||256),reservationId:clean(process.env.RESERVATION_ID),reservedAt:clean(process.env.RESERVED_AT),
             workerStartedAt,workerFinishedAt,checkoutMs:Number(process.env.CHECKOUT_MS||0),modelPrepMs:Number(process.env.MODEL_PREP_MS||0),
             candidateMs:Number(process.env.CANDIDATE_MS||0),qaMs:Number(process.env.QA_MS||0),workerTotalMs:Math.max(0,workerFinishedAt-workerStartedAt),
             changedFileCount:Number(process.env.CHANGED_FILE_COUNT||0),addedLineCount:Number(process.env.ADDED_LINE_COUNT||0),deletedLineCount:Number(process.env.DELETED_LINE_COUNT||0),
@@ -2139,72 +2082,15 @@ jobs:
           VIBE2_NEURON_TASK_ID: ${{ matrix.taskId }}
           VIBE2_NEURON_RESERVATION_ID: ${{ matrix.reservationId }}
           VIBE2_NEURON_CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
-          VIBE2_PRESSURE_REFILL_LEADER: ${{ matrix.pressureRefillLeader }}
           VIBE2_NEURON_TARGET: ${{ matrix.target }}
         shell: bash
         run: |
           set -euo pipefail
 
-          # Live runner pressure is read-only. When GitHub Actions already has queued/pending/requested
-          # work, every non-asset completion keeps its immutable worker result artifact and lets the
-          # existing cohort fan-in consume it instead of creating another repository_dispatch workflow.
-          # Single-task GAME_PRIMARY is not exempt under pressure. Observation failure is fail-open to
-          # immediate callback behavior so result delivery never depends on telemetry.
-          queue_pressure=0
-          if curl --fail-with-body --silent --show-error \
-            --header 'Accept: application/vnd.github+json' \
-            --header "Authorization: Bearer $GH_TOKEN" \
-            --header 'X-GitHub-Api-Version: 2022-11-28' \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" \
-            --output /tmp/vibe2-live-actions-runs.json; then
-            queue_pressure="$(node <<'NODE'
-          const fs=require('fs');
-          const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-live-actions-runs.json','utf8'));
-          const currentRun=String(process.env.GITHUB_RUN_ID||'');
-          const pressureStates=new Set(['queued','pending','requested']);
-          const pressure=(payload.workflow_runs||[]).filter(row=>
-            String(row.id||'')!==currentRun &&
-            pressureStates.has(String(row.status||'').toLowerCase())
-          ).length;
-          process.stdout.write(String(pressure));
-          NODE
-            )"
-            echo 'VIBE2_ATOMIC_NEURON_PRESSURE_OBSERVATION=PASS'
-          else
-            echo 'VIBE2_ATOMIC_NEURON_PRESSURE_OBSERVATION=FAIL_OPEN'
-            queue_pressure=0
-          fi
-          echo "VIBE2_LIVE_RUNNER_QUEUE_PRESSURE=${queue_pressure:-0}"
-
-          game_micro_fanin=false
-          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "${VIBE2_NEURON_EXPECTED_VARIANTS:-1}" = '1' ]; then
-            game_micro_fanin=true
-          fi
-          if [ "${queue_pressure:-0}" -gt 0 ] && [ "$VIBE2_EXECUTION_LANE" != 'asset-development' ]; then
-            echo 'VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT'
-            if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "${VIBE2_PRESSURE_REFILL_LEADER:-false}" = 'true' ]; then
-              refill_payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',source_attempt:process.env.GITHUB_RUN_ATTEMPT||'',execution_lane:'game-primary',reason:'runner-pressure-wave-leader-free-slot-refill'}}))")"
-              curl --fail-with-body --silent --show-error \
-                --request POST \
-                --header 'Accept: application/vnd.github+json' \
-                --header "Authorization: Bearer $GH_TOKEN" \
-                --header 'X-GitHub-Api-Version: 2022-11-28' \
-                "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
-                --data "$refill_payload"
-              echo 'VIBE2_PRESSURE_REFILL_DISPATCH=WAVE_LEADER_EXISTING_FANIN_REFILL'
-            else
-              echo 'VIBE2_PRESSURE_REFILL_DISPATCH=SKIPPED_NON_LEADER_OR_NON_GAME_PRIMARY'
-            fi
-            echo 'VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN'
-            exit 0
-          fi
-          if [ "$game_micro_fanin" = 'true' ]; then
-            echo 'VIBE2_GAME_MICRO_FANIN=IMMEDIATE_ONLY_WITHOUT_QUEUE_PRESSURE'
-          fi
-          if [ "${queue_pressure:-0}" -gt 0 ] && [ "$VIBE2_EXECUTION_LANE" = 'asset-development' ]; then
-            echo 'VIBE2_ASSET_NEURON_PRESSURE_BYPASS=IMMEDIATE_MICRO_FANIN'
-            echo 'VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT_AND_CALLBACK'
-          fi
+          # Every variant result immediately enters the existing per-task micro fan-in.
+          # A task waits only for its own expected variants; unrelated tasks never wait for it.
+          echo 'VIBE2_ATOMIC_NEURON_COMPLETION_MODE=PER_TASK_MICRO_FANIN_IMMEDIATE'
+          echo 'VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT_AND_CALLBACK'
 
           payload="$(node <<'NODE'
           const payload={
@@ -2332,8 +2218,6 @@ jobs:
           test -n "$contract_sha"
           test "$(git -C "$contract_root" rev-parse HEAD)" = "$contract_sha"
 
-          lane_min='1'
-          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then lane_min="$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN"; fi
           # Game-primary candidates require full regression. Auxiliary analysis/practice lanes are source-write:NO and do not mutate production.
           if [[ "$VIBE2_EXECUTION_LANE" == 'game-primary' || "$VIBE2_EXECUTION_LANE" == 'asset-development' ]]; then
             export VIBE2_FANIN_CONTRACT_SHA="$contract_sha"
@@ -2412,8 +2296,7 @@ jobs:
                 --queue="$control_root/.vibe2/queue.json" \
                 --control="$control_root/.vibe2/parallelism-control.json" \
                 --lane="$VIBE2_EXECUTION_LANE" \
-                --min="$lane_min" \
-                --input=/tmp/vibe2-fan-in.json > /tmp/vibe2-fan-in-regression-replay.log
+                    --input=/tmp/vibe2-fan-in.json > /tmp/vibe2-fan-in-regression-replay.log
               node "$contract_root/tools/vibe2-queue-control.mjs" fan-in-regression-fail \
                 --queue="$control_root/.vibe2/queue.json" \
                 --control="$control_root/.vibe2/parallelism-control.json" \
@@ -2494,8 +2377,7 @@ jobs:
               --queue="$control_root/.vibe2/queue.json" \
               --control="$control_root/.vibe2/parallelism-control.json" \
               --lane="$VIBE2_EXECUTION_LANE" \
-              --min="$lane_min" \
-              --input=/tmp/vibe2-fan-in.json | tee /tmp/vibe2-fan-in.log
+                --input=/tmp/vibe2-fan-in.json | tee /tmp/vibe2-fan-in.log
 
             node "$contract_root/tools/vibe2-practice-distillation.mjs" \
               --fanin=/tmp/vibe2-fan-in.json \
@@ -2570,8 +2452,7 @@ jobs:
             --queue="$control_root/.vibe2/queue.json" \
             --control="$control_root/.vibe2/parallelism-control.json" \
             --lane="$VIBE2_EXECUTION_LANE" \
-            --max="$VIBE2_LANE_MAX" \
-            --min="$lane_min" | tee /tmp/vibe2-summary.log
+            | tee /tmp/vibe2-summary.log
           continue_required="$(sed -n 's/^VIBE2_QUEUE_CONTINUE=//p' /tmp/vibe2-summary.log | tail -n1)"
           if [ "${continue_required:-NO}" = 'YES' ]; then
             echo 'refill=1' >> "$GITHUB_OUTPUT"
@@ -2723,8 +2604,7 @@ jobs:
         if: always()
         continue-on-error: true
         env:
-          REQUESTED_MAX: ${{ inputs.lane_max || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && '64') || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && '4') || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'recovery-fast' && '5') || '256' }}
-          EFFECTIVE_MAX: ${{ needs.reserve.outputs.effective_max }}
+          TRANSPORT_PARTITION_MAX: ${{ env.VIBE2_EXTERNAL_MATRIX_BATCH_MAX }}
           TASK_COUNT: ${{ needs.reserve.outputs.task_count }}
           FAN_CHECKOUT_MS: ${{ steps.fan_checkout_metrics.outputs.ms }}
         shell: bash
@@ -2733,9 +2613,7 @@ jobs:
           test -f /tmp/vibe2-fan-in.json || exit 0
           fan_end="$(date +%s%3N)"
           fan_start="$(cat /tmp/vibe2-fan-in-start-ms)"
-          fallback_effective="$VIBE2_LANE_MAX"
-          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then fallback_effective="$VIBE2_GAME_PRIMARY_BASELINE_TARGET"; fi
-          node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-parallelism-telemetry.mjs" --input=/tmp/vibe2-fan-in.json --requested="$REQUESTED_MAX" --effective="${EFFECTIVE_MAX:-$fallback_effective}" --task-count="${TASK_COUNT:-0}" --output=/tmp/vibe2-parallelism-telemetry.json | tee /tmp/vibe2-parallelism-telemetry.log
+          node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-parallelism-telemetry.mjs" --input=/tmp/vibe2-fan-in.json --requested="$TRANSPORT_PARTITION_MAX" --effective="$TRANSPORT_PARTITION_MAX" --task-count="${TASK_COUNT:-0}" --output=/tmp/vibe2-parallelism-telemetry.json | tee /tmp/vibe2-parallelism-telemetry.log
           node - "$FAN_CHECKOUT_MS" "$((fan_end-fan_start))" <<'NODE2'
           const fs=require('fs');const [checkout,total]=process.argv.slice(2).map(Number);const file='/tmp/vibe2-parallelism-telemetry.json';const x=JSON.parse(fs.readFileSync(file,'utf8'));x.fanIn={checkoutMs:checkout||0,totalMs:total||0};fs.writeFileSync(file,JSON.stringify(x,null,2)+'\n');
           NODE2

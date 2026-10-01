@@ -2691,6 +2691,7 @@ jobs:
           path: |
             ${{ runner.temp }}/studio-captures
             ${{ runner.temp }}/company-roblox-studio-mcp-runtime.json
+            ${{ runner.temp }}/asset-runtime-visual-evidence.json
           if-no-files-found: warn
           retention-days: 7
 

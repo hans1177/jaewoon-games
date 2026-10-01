@@ -250,8 +250,18 @@ jobs:
         run: |
           node qa/external-mobile-free-game-playtest-workflow.test.mjs
           node qa/vibe2-google-play-catalog-coverage.test.mjs
-      - name: Validate horror escape room release gates
-        run: node --test qa/horror-escape-room-release.test.mjs
+      - name: Validate horror escape room release gates when horror scope changed
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$BASE_SHA" || true
+          if git diff --name-only "$BASE_SHA" "$HEAD_SHA" --             roblox-games/horror-escape-room             web-games/horror-escape-room             qa/horror-escape-room-release.test.mjs             game-catalog.json | grep -q .; then
+            node --test qa/horror-escape-room-release.test.mjs
+          else
+            echo 'SKIP unrelated horror-escape-room release gate'
+          fi
 
       - name: Validate changed Roblox source synchronization
         run: |

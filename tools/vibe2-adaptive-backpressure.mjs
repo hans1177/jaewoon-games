@@ -1,7 +1,7 @@
 // 파일명: tools/vibe2-adaptive-backpressure.mjs
 // 역할: 정책상 무제한 병렬을 유지하면서 외부 GitHub matrix 배치 용량 안에서 텔레메트리 기반 압력 조절만 수행한다.
 
-export const ADAPTIVE_PARALLELISM_STEPS = Object.freeze([4, 8, 16, 20, 30, 32, 64, 128, 256]);
+export const ADAPTIVE_PARALLELISM_STEPS = Object.freeze([4, 8, 16, 32, 64, 128, 256]);
 export const DEFAULT_ADAPTIVE_MAX = 256;
 export const DEFAULT_ADAPTIVE_TARGET = 256;
 export const DEFAULT_ADAPTIVE_MIN = 4;
@@ -205,11 +205,11 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
   if (next < configuredFloor) next = configuredFloor;
   if (originalCurrent < configuredFloor && next === configuredFloor) {
     decision = 'UP';
-    reason = `OWNER_MINIMUM_WAVE_${configuredFloor}`;
+    reason = `ADVISORY_MINIMUM_SIGNAL_${configuredFloor}`;
   } else if (originalCurrent === configuredFloor && next === configuredFloor && strongPressure) {
     decision = 'HOLD';
     const pressureReason = reasons.length ? reasons.join('+') : level;
-    reason = `OWNER_MINIMUM_WAVE_${configuredFloor}:${pressureReason}`;
+    reason = `ADVISORY_MINIMUM_SIGNAL_${configuredFloor}:${pressureReason}`;
   }
 
   return createParallelismControl({

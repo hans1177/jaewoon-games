@@ -109,8 +109,8 @@ function workerExecutionPolicyProjection(policy={}){
       dedupeRequired:orchestration?.operatingModel?.dedupeRequired===true,
       assistantRole:{
         mayCreateExecutionWorker:role.mayCreateExecutionWorker===true,
-        mayMutateWaveQueue:role.mayMutateWaveQueue===true,
-        mayReorderWave:role.mayReorderWave===true,
+        mayMutateExecutionQueue:role.mayMutateExecutionQueue===true,
+        mayReorderIndependentTasks:role.mayReorderIndependentTasks===true,
         mayMutateLocksOrPolicy:role.mayMutateLocksOrPolicy===true,
         mayAutoPromoteLearningOrTuning:role.mayAutoPromoteLearningOrTuning===true,
         mayExpandNeuralAuthority:role.mayExpandNeuralAuthority===true
@@ -120,7 +120,7 @@ function workerExecutionPolicyProjection(policy={}){
         neuralExecutionAuthority:boundary.neuralExecutionAuthority===true,
         workerCreationAuthority:boundary.workerCreationAuthority===true,
         queueMutationAuthority:boundary.queueMutationAuthority===true,
-        waveReorderAuthority:boundary.waveReorderAuthority===true,
+        taskReorderAuthority:boundary.taskReorderAuthority===true,
         lockPolicyMutationAuthority:boundary.lockPolicyMutationAuthority===true,
         automaticLearningTuningPromotionAuthority:boundary.automaticLearningTuningPromotionAuthority===true
       },
@@ -182,16 +182,16 @@ function policyValidationErrors(policy={}){
   if(clean(orchestration.sourceOfTruth)!==CANONICAL_VIBE_POLICY_PATH)errors.push('ASSISTANT_SOURCE_OF_TRUTH');
   if(orchestration.blockerOnly!==false)errors.push('BLOCKER_ONLY');
   if(orchestration?.operatingModel?.dedupeRequired!==true)errors.push('DEDUPE_REQUIRED');
-  if(clean(boundary.executionAuthority)!=='EXISTING_WAVE_SCHEDULER_ONLY')errors.push('EXECUTION_AUTHORITY');
+  if(clean(boundary.executionAuthority)!=='DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES')errors.push('EXECUTION_AUTHORITY');
   if(boundary.neuralExecutionAuthority!==false)errors.push('NEURAL_EXECUTION_AUTHORITY');
   if(boundary.workerCreationAuthority!==false)errors.push('WORKER_CREATION_AUTHORITY');
   if(boundary.queueMutationAuthority!==false)errors.push('QUEUE_MUTATION_AUTHORITY');
-  if(boundary.waveReorderAuthority!==false)errors.push('WAVE_REORDER_AUTHORITY');
+  if(boundary.taskReorderAuthority!==false)errors.push('TASK_REORDER_AUTHORITY');
   if(boundary.lockPolicyMutationAuthority!==false)errors.push('LOCK_POLICY_AUTHORITY');
   if(boundary.automaticLearningTuningPromotionAuthority!==false)errors.push('AUTO_LEARNING_AUTHORITY');
   if(role.mayCreateExecutionWorker!==false)errors.push('ASSISTANT_WORKER_CREATION');
-  if(role.mayMutateWaveQueue!==false)errors.push('ASSISTANT_QUEUE_MUTATION');
-  if(role.mayReorderWave!==false)errors.push('ASSISTANT_WAVE_REORDER');
+  if(role.mayMutateExecutionQueue!==false)errors.push('ASSISTANT_QUEUE_MUTATION');
+  if(role.mayReorderIndependentTasks!==false)errors.push('ASSISTANT_TASK_REORDER');
   if(role.mayMutateLocksOrPolicy!==false)errors.push('ASSISTANT_LOCK_POLICY_MUTATION');
   if(role.mayAutoPromoteLearningOrTuning!==false)errors.push('ASSISTANT_AUTO_LEARNING');
   if(role.mayExpandNeuralAuthority!==false)errors.push('ASSISTANT_NEURAL_AUTHORITY_EXPANSION');
@@ -323,7 +323,7 @@ export function compileVibeCentralWorkContract({
   const systemArchitecture=clean(plan?.target||task?.target).toLowerCase()==='system'&&task?.systemSteward===true&&clean(task?.department).toLowerCase()==='system-architecture';
   const protectedSemantics=uniq(systemArchitecture?[
     'CENTRAL_POLICY_AUTHORITY_BOUNDARY','SECURITY_GATES','QUALITY_AND_EVIDENCE_GATES','VERIFIED_LEARNING',
-    'EXISTING_PUBLIC_AND_RUNTIME_CONTRACTS','EXISTING_SCHEDULER_AUTHORITY',...(task?.protectedSemantics||[])
+    'EXISTING_PUBLIC_AND_RUNTIME_CONTRACTS','EXISTING_RESERVATION_AND_GATE_AUTHORITY',...(task?.protectedSemantics||[])
   ]:[
     'GAME_IDENTITY','SAVE_KEY_AND_SAVE_MEANING','CORE_LOOP','PROGRESSION','MOBILE_INPUT','EXISTING_VALID_FEATURES',
     ...(supervisionContract?.protectedSemantics||[]),...(presentationQuality?.preserve||[]),...(task?.protectedSemantics||[])
@@ -423,7 +423,7 @@ export function compileVibeCentralWorkContract({
         neuralExecutionAuthority:boundary.neuralExecutionAuthority===true,
         workerCreationAuthority:boundary.workerCreationAuthority===true,
         queueMutationAuthority:boundary.queueMutationAuthority===true,
-        waveReorderAuthority:boundary.waveReorderAuthority===true,
+        taskReorderAuthority:boundary.taskReorderAuthority===true,
         lockPolicyMutationAuthority:boundary.lockPolicyMutationAuthority===true,
         automaticLearningTuningPromotionAuthority:boundary.automaticLearningTuningPromotionAuthority===true
       },
@@ -514,7 +514,7 @@ export function compiledWorkContractGuidance(contract={}){
     failure.signatures?.length?`failure-evidence=${failure.signatures.join(' | ')}`:'',
     'Read and modify the existing responsible system directly. Do not create a wrapper, shadow pipeline, validation-only behavior, or unrelated rewrite.',
     'Preserve already-passed stages. Repair the exact failure stage, then revalidate it immediately.',
-    'This contract does not grant worker creation, queue mutation, wave reorder, lock/policy mutation, or automatic learning/promotion authority.',
+    'This contract does not grant worker creation, queue mutation, global execution reorder, lock/policy mutation, or automatic learning/promotion authority.',
     contract.learning?.traceOnlyUntilSupervisorPass===true?'Supervised candidate is TRACE_ONLY. Reusable learning remains blocked until supervisor PASS.':'',
     'The central roadmap must stay valid, and its worker execution-policy projection fingerprint must still match before source generation and again before candidate output is written. Full document SHA remains evidence but unrelated roadmap progress metadata does not invalidate an active worker.'
   ].filter(Boolean).join('\n');

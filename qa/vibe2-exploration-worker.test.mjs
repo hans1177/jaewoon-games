@@ -363,18 +363,19 @@ test('performance sanity is read only, requires exploration evidence, and budget
   assert.ok(oversizedGrowth.checks.some(row=>row.name==='single-file-growth-budget'&&!row.pass));
 });
 
-test('long functional package owner gets the protected slot before short work',()=>{
+test('long functional work does not create a protected global slot',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:1,tasks:[
     {id:'short-critical',gameId:'short',target:'web',goal:'short',sourceRoot:'web-games/short',responsibleFiles:['a.js'],status:'queued',priority:'critical',releaseState:'development-confirmed',packageId:'short-wp',packageRole:'implementation-owner',packageWorkUnits:1},
     {id:'long-owner',gameId:'long',target:'web',goal:'long',sourceRoot:'web-games/long',responsibleFiles:['b.js'],status:'queued',priority:'normal',releaseState:'development-confirmed',packageId:'long-wp',packageRole:'implementation-owner',packageWorkUnits:6,packageLongWorkProtected:true}
   ]});
   const selected=selectVibeQueueBatch(queue,{maxConcurrentTasks:1});
-  assert.equal(selected.selected[0].id,'long-owner');
-  assert.equal(selected.longWorkProtectedSlotUsed,true);
-  assert.equal(selected.longWorkOwnerTaskId,'long-owner');
+  assert.deepEqual(selected.selected.map(task=>task.id).sort(),['long-owner','short-critical']);
+  assert.equal(selected.internalGlobalParallelCap,null);
+  assert.equal(Object.hasOwn(selected,'longWorkProtectedSlotUsed'),false);
+  assert.equal(Object.hasOwn(selected,'longWorkOwnerTaskId'),false);
 });
 
-test('protected slot skips a conflicting long owner and selects the next eligible long owner',()=>{
+test('conflicting long owner is deferred while all other nonconflicting work remains eligible',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:1,tasks:[
     {id:'active-qa',gameId:'conflict',target:'web',goal:'qa wait',sourceRoot:'web-games/conflict',responsibleFiles:['a.js'],status:'running',blocker:'candidate-awaiting-qa-and-deployment'},
     {id:'long-conflict',gameId:'conflict',target:'web',goal:'blocked long',sourceRoot:'web-games/conflict',responsibleFiles:['a.js'],status:'queued',priority:'normal',releaseState:'development-confirmed',packageId:'long-conflict-wp',packageRole:'implementation-owner',packageWorkUnits:6,packageLongWorkProtected:true},
@@ -382,13 +383,12 @@ test('protected slot skips a conflicting long owner and selects the next eligibl
     {id:'short-critical',gameId:'short',target:'web',goal:'short',sourceRoot:'web-games/short',responsibleFiles:['c.js'],status:'queued',priority:'critical',releaseState:'development-confirmed',packageId:'short-wp',packageRole:'implementation-owner',packageWorkUnits:1}
   ]});
   const selected=selectVibeQueueBatch(queue,{maxConcurrentTasks:1});
-  assert.equal(selected.selected[0].id,'long-eligible');
-  assert.equal(selected.longWorkProtectedSlotUsed,true);
-  assert.equal(selected.longWorkOwnerTaskId,'long-eligible');
+  assert.deepEqual(selected.selected.map(task=>task.id).sort(),['long-eligible','short-critical']);
+  assert.equal(selected.internalGlobalParallelCap,null);
   assert.equal(selected.deferredConflicts.filter(row=>row.task.id==='long-conflict').length,1);
 });
 
-test('released QA waiting long owner does not keep the protected worker slot occupied',()=>{
+test('released QA waiting work does not consume general direct-execution capacity',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:1,tasks:[
     {id:'long-awaiting-qa',gameId:'old',target:'web',goal:'old long',sourceRoot:'web-games/old',responsibleFiles:['a.js'],status:'running',blocker:'candidate-awaiting-qa-and-deployment',packageId:'old-wp',packageRole:'implementation-owner',packageWorkUnits:6,packageLongWorkProtected:true},
     {id:'long-next',gameId:'next',target:'web',goal:'next long',sourceRoot:'web-games/next',responsibleFiles:['b.js'],status:'queued',priority:'normal',releaseState:'development-confirmed',packageId:'next-wp',packageRole:'implementation-owner',packageWorkUnits:6,packageLongWorkProtected:true},
@@ -396,12 +396,11 @@ test('released QA waiting long owner does not keep the protected worker slot occ
   ]});
   const selected=selectVibeQueueBatch(queue,{maxConcurrentTasks:1});
   assert.equal(selected.capacityRunning.length,0);
-  assert.equal(selected.selected[0].id,'long-next');
-  assert.equal(selected.longWorkProtectedSlotUsed,true);
-  assert.equal(selected.longWorkOwnerTaskId,'long-next');
+  assert.deepEqual(selected.selected.map(task=>task.id).sort(),['long-next','short-critical']);
+  assert.equal(selected.internalGlobalParallelCap,null);
 });
 
-test('scheduler flow starts eligible long work, keeps conflicts, and dispatches next work after finish',()=>{
+test('direct reservation starts all independent work while preserving responsible-file conflicts',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:1,tasks:[
     {id:'active-qa',gameId:'conflict',target:'web',goal:'qa wait',sourceRoot:'web-games/conflict',responsibleFiles:['a.js'],status:'running',blocker:'candidate-awaiting-qa-and-deployment',packageId:'old-wp',packageRole:'implementation-owner',packageWorkUnits:6,packageLongWorkProtected:true},
     {id:'long-conflict',gameId:'conflict',target:'web',goal:'blocked long',sourceRoot:'web-games/conflict',responsibleFiles:['a.js'],status:'queued',priority:'normal',releaseState:'development-confirmed',packageId:'long-conflict-wp',packageRole:'implementation-owner',packageWorkUnits:6,packageLongWorkProtected:true},
@@ -410,16 +409,15 @@ test('scheduler flow starts eligible long work, keeps conflicts, and dispatches 
   ]});
   const started=beginVibeQueueBatch(queue,{maxConcurrentTasks:1});
   assert.equal(started.started,true);
-  assert.deepEqual(started.tasks.map(task=>task.id),['long-safe']);
-  assert.equal(started.selection.longWorkProtectedSlotUsed,true);
-  assert.equal(started.selection.longWorkOwnerTaskId,'long-safe');
+  assert.deepEqual(started.tasks.map(task=>task.id).sort(),['long-safe','short-critical']);
+  assert.equal(started.selection.internalGlobalParallelCap,null);
   assert.equal(started.selection.deferredConflicts.filter(row=>row.task.id==='long-conflict').length,1);
 
   const finished=finishVibeQueueTask(started.queue,{taskId:'long-safe',outcome:'PASS'});
   assert.equal(finished.updated,true);
   assert.equal(finished.queue.tasks.find(task=>task.id==='long-safe').status,'verified');
-  assert.equal(finished.next.selected[0].id,'short-critical');
-  assert.equal(finished.dispatchNext,true);
+  assert.equal(finished.queue.tasks.find(task=>task.id==='short-critical').status,'running');
+  assert.equal(finished.dispatchNext,false);
   assert.ok(finished.next.deferredConflicts.some(row=>row.task.id==='long-conflict'));
 });
 
@@ -517,9 +515,10 @@ test('fan in review skips retrying failures instead of blocking queue persistenc
   assert.equal(result.queue.tasks[0].status,'queued');
 });
 
-test('central runtime keeps exploration reuse long slot and six separated roles enabled',()=>{
+test('central runtime keeps exploration reuse and separated roles without a long-work global slot',()=>{
   assert.equal(runtime.workManagement.reusableWorkerContext,true);
-  assert.equal(runtime.continuous.longWorkProtectedSlots,1);
+  assert.equal(runtime.continuous.executionContract.internalGlobalParallelCap,null);
+  assert.equal(Object.hasOwn(runtime.continuous,'longWorkProtectedSlots'),false);
   assert.equal(runtime.coordination.sameFileParallelWrite,false);
   assert.equal(runtime.coordination.sharedPreparationSinglePass,true);
   assert.equal(runtime.workers.exploration.configured,true);

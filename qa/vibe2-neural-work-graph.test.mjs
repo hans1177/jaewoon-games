@@ -46,12 +46,12 @@ test('work graph materializes neural contract fields without granting execution 
   assert.equal(graph.authority.executionAllowed,false);
   assert.equal(graph.authority.workerCreationAllowed,false);
   assert.equal(graph.authority.queueMutationAllowed,false);
-  assert.equal(graph.authority.waveReorderAllowed,false);
+  assert.equal(graph.authority.directReservationReorderAllowed,false);
   assert.equal(graph.authority.lockAcquisitionAllowed,false);
   assert.equal(graph.authority.policyMutationAllowed,false);
   assert.equal(graph.authority.automaticLearningAllowed,false);
   assert.equal(graph.authority.authorityPromotionAllowed,false);
-  assert.equal(graph.currentWaveSchedulerRemainsAuthoritative,true);
+  assert.equal(graph.currentDirectQueueReservationRemainsAuthoritative,true);
   assert.ok(graph.nodes.some(row=>row.nodeClass==='GOAL'&&row.neuronType==='INTENT'));
   assert.ok(graph.nodes.some(row=>row.nodeClass==='FACT'&&row.neuronType==='CAUSAL'));
   assert.ok(graph.nodes.some(row=>row.nodeClass==='ACTION'&&row.neuronType==='ACTION'));
@@ -121,7 +121,7 @@ test('graph evidence is compact durable shadow telemetry with all authority bits
   assert.equal(payload.executionAllowed,false);
   assert.equal(payload.workerCreationAllowed,false);
   assert.equal(payload.queueMutationAllowed,false);
-  assert.equal(payload.waveReorderAllowed,false);
+  assert.equal(payload.directReservationReorderAllowed,false);
   assert.equal(payload.lockAcquisitionAllowed,false);
   assert.equal(payload.policyMutationAllowed,false);
   assert.equal(payload.automaticLearningAllowed,false);
@@ -163,7 +163,7 @@ test('same input produces deterministic graph state',()=>{
 });
 
 
-test('gated work graph exposes only existing-scheduler execution bits',()=>{
+test('gated work graph exposes only direct-reservation execution bits',()=>{
   const graph=buildNeuralWorkGraph({
     event:{id:'gated-graph|run-1|WORKER_RESULT',type:'WORKER_RESULT'},
     diagnosis,
@@ -176,7 +176,7 @@ test('gated work graph exposes only existing-scheduler execution bits',()=>{
       fireAllowed:true,
       workerCreationAllowed:true,
       queueMutationAllowed:true,
-      waveReorderAllowed:true,
+      directReservationReorderAllowed:true,
       automaticTuningAllowed:true
     }
   });
@@ -184,7 +184,7 @@ test('gated work graph exposes only existing-scheduler execution bits',()=>{
   assert.equal(graph.authority.executionAllowed,true);
   assert.equal(graph.authority.workerCreationAllowed,true);
   assert.equal(graph.authority.queueMutationAllowed,true);
-  assert.equal(graph.authority.waveReorderAllowed,true);
+  assert.equal(graph.authority.directReservationReorderAllowed,true);
   assert.equal(graph.authority.automaticTuningAllowed,true);
   assert.equal(graph.authority.policyMutationAllowed,false);
   assert.equal(graph.authority.automaticLearningAllowed,false);
