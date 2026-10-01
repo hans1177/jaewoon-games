@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1l6ewep",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-post-release-focus-b0dce53053629c70",
+      "gameId": "daechung-rpg",
+      "files": [
+        "roblox-games/daechung-rpg/server/Game.server.luau",
+        "roblox-games/daechung-rpg/client/Game.client.luau",
+        "roblox-games/daechung-rpg/shared/GameConfig.luau"
+      ],
+      "baseSha": "64f06f1e64124352ebd457126a337f155f6e57c4",
+      "runId": "36863061006",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-01T12:41:01.754Z",
+      "expiresAt": "2026-10-01T13:26:01.754Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-post-release-focus-b0dce53053629c70"
+      ]
+    }
+  ]
 }
