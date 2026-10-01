@@ -193,6 +193,72 @@ test('per-game Roblox technical persistence ignores stale source results instead
   assert.equal(outcome.queue.items[0].robloxFoundationF0Passed,false);
 });
 
+test('late batch reconciliation never rewinds a game that already advanced past the same exact F0',()=>{
+  const sourceRevision='1'.repeat(40);
+  const artifactIdentity='sha256:'+'2'.repeat(64);
+  const f0Evidence={pass:true,sourceRevision,artifactIdentity,artifactRunId:91};
+  const queue={items:[{
+    gameId:'advanced',
+    robloxSourceCommit:sourceRevision,
+    robloxBuildOrPackagePassed:true,
+    robloxBuildSourceRevision:sourceRevision,
+    robloxBuildArtifactIdentity:artifactIdentity,
+    robloxBuildPreflightPassed:true,
+    robloxFoundationF0Passed:true,
+    robloxFoundationF0Evidence:f0Evidence,
+    currentStep:'ROBLOX_FINAL_REVIEW_REVALIDATION',
+    canonicalState:'ROBLOX_RUNTIME_ACCEPTANCE_PASSED',
+    robloxRuntimePassed:true,
+    robloxIndependentQaPassed:true,
+    robloxRegressionPassed:true,
+    marker:'advanced-state'
+  }]};
+  const result={
+    gameId:'advanced',pass:true,sourceRevision,artifactIdentity,preflightPass:true,f0Pass:true,
+    preflightEvidence:{pass:true,sourceRevision,artifactIdentity},f0Evidence,
+  };
+  const outcome=applyRobloxTechnicalResults({
+    queue,
+    results:[result],
+    expected:[{gameId:'advanced',sourceRevision,secondaryOwnerFocus:false}],
+    stamp:'2026-10-01T00:00:00.000Z',
+  });
+  const item=outcome.queue.items[0];
+  assert.equal(outcome.ignoredCount,1);
+  assert.equal(item.currentStep,'ROBLOX_FINAL_REVIEW_REVALIDATION');
+  assert.equal(item.canonicalState,'ROBLOX_RUNTIME_ACCEPTANCE_PASSED');
+  assert.equal(item.robloxRuntimePassed,true);
+  assert.equal(item.robloxIndependentQaPassed,true);
+  assert.equal(item.robloxRegressionPassed,true);
+  assert.equal(item.marker,'advanced-state');
+});
+
+test('missing batch artifact cannot overwrite an F0 result already persisted by its worker',()=>{
+  const sourceRevision='3'.repeat(40);
+  const artifactIdentity='sha256:'+'4'.repeat(64);
+  const queue={items:[{
+    gameId:'persisted',
+    robloxSourceCommit:sourceRevision,
+    robloxBuildOrPackagePassed:true,
+    robloxBuildSourceRevision:sourceRevision,
+    robloxBuildArtifactIdentity:artifactIdentity,
+    robloxFoundationF0Passed:true,
+    robloxFoundationF0Evidence:{sourceRevision,artifactIdentity},
+    currentStep:'VIBE_INTERNAL_PLAY',
+  }]};
+  const outcome=applyRobloxTechnicalResults({
+    queue,
+    results:[],
+    expected:[{gameId:'persisted',sourceRevision,secondaryOwnerFocus:false}],
+    stamp:'2026-10-01T00:00:00.000Z',
+  });
+  assert.equal(outcome.ignoredCount,1);
+  assert.equal(outcome.failCount,0);
+  assert.equal(outcome.queue.items[0].robloxBuildOrPackagePassed,true);
+  assert.equal(outcome.queue.items[0].robloxFoundationF0Passed,true);
+  assert.equal(outcome.queue.items[0].currentStep,'VIBE_INTERNAL_PLAY');
+});
+
 test('persistent Roblox design requires save evidence in generated source',()=>{
   assert.equal(requiresPersistentSave(baseline),true);
 });
