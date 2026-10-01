@@ -22575,10 +22575,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T18:07:44.046Z",
+      "updatedAt": "2026-10-01T18:14:34.385Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -23014,7 +23014,7 @@
       "robloxInternalVibePlayEvidence": {
         "version": 2,
         "gameId": "survival",
-        "studioHarnessVersion": 12,
+        "studioHarnessVersion": 15,
         "authority": "roblox-official-studio-mcp-runtime",
         "pass": false,
         "actualPlay": false,
@@ -23191,8 +23191,8 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-10-01T15:39:18.617Z",
-        "workflowRunId": 36885188651,
+        "testedAt": "2026-10-01T18:14:34.385Z",
+        "workflowRunId": 36896295029,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -23298,8 +23298,8 @@
           "GAME_START"
         ],
         "robloxFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
-        "testedAt": "2026-10-01T15:39:18.617Z",
-        "workflowRunId": 36885188651,
+        "testedAt": "2026-10-01T18:14:34.385Z",
+        "workflowRunId": 36896295029,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxQualityBuildUpLastPassedAt": "2026-09-28T13:55:43.285Z",
@@ -23573,7 +23573,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T18:10:05.444Z",
+  "updatedAt": "2026-10-01T18:14:34.385Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
