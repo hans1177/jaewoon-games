@@ -112,6 +112,11 @@ test('verified local Studio runtime failure becomes reusable failure lesson but 
       actions:[{id:'move',type:'key',dispatched:true,ok:true}],
       checkpoints:[{id:'gui',name:'ui-visible-elements',required:true,pass:false}],
       errors:[{type:'studio-console-error',actionId:null}],
+      qualityFailureKinds:['adaptive-ui-blocking-overlay','adaptive-world-safety'],
+      qualityFailureDetails:[
+        {id:'adaptive-ui-blocking-overlay',repairSurface:'MOBILE_UI',priority:'CRITICAL'},
+        {id:'adaptive-world-safety',repairSurface:'WORLD_GEOMETRY',priority:'CRITICAL'}
+      ],
       learningSignals:['ui','debugging'],
       workflowRunId:333,testedAt:'2026-09-25T08:10:00.000Z'
     }
@@ -120,6 +125,11 @@ test('verified local Studio runtime failure becomes reusable failure lesson but 
   assert.equal(extracted.records.length,1);
   assert.equal(extracted.records[0].outcome,'FAIL');
   assert.match(extracted.records[0].failureCause,/studio-console-error/);
+  assert.match(extracted.records[0].failureCause,/scenario:adaptive-ui-blocking-overlay/);
+  assert.match(extracted.records[0].failureCause,/repair-surface:MOBILE_UI/);
+  assert.ok(extracted.records[0].avoidPatterns.includes('verified-studio-failed-scenario:adaptive-ui-blocking-overlay'));
+  assert.ok(extracted.records[0].avoidPatterns.includes('verified-studio-repair-surface:mobile-ui'));
+  assert.ok(extracted.records[0].evidence.includes('roblox-studio-repair-surface:WORLD_GEOMETRY'));
   assert.ok(extracted.records[0].avoidPatterns.length>0);
 
   const infra=structuredClone(base);
