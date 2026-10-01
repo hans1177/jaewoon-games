@@ -2719,13 +2719,15 @@ test('zero-floor Studio abort routes exact artifact to WORLD_GEOMETRY repair',()
 });
 
 
-test('active Studio runs survive new requests and all games share the Studio host slot',()=>{
+test('active Studio runs survive new requests while stale non-Studio scans are cancelled',()=>{
   assert.match(workflow,/group: roblox-studio-shared-host/);
   assert.match(workflow,/select\(\.status == "in_progress"\)/);
   assert.match(workflow,/ROBLOX_OBSOLETE_RUN_ONLY_WAITING_FOR_RUNNER=/);
-  const preserve=workflow.indexOf('ROBLOX_ACTIVE_STUDIO_RUN_PRESERVED=');
+  const preserve=workflow.indexOf('ROBLOX_PENDING_STUDIO_RUN_PRESERVED=');
+  const staleActive=workflow.indexOf('ROBLOX_STALE_FOUNDATION_ACTIVE_NON_STUDIO_CANCEL_REQUESTED=');
   const cancel=workflow.indexOf('actions/runs/$run_id/cancel');
   assert.ok(preserve>0&&preserve<cancel);
+  assert.ok(staleActive>0&&staleActive<cancel);
   assert.match(workflow,/const states=new Set\(\['queued','pending','requested','in_progress'\]\)/);
 });
 
