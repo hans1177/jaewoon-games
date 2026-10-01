@@ -2,13 +2,15 @@ name: Horror Owner System Publish
 # Asset import uses the existing authenticated account session; place publishing uses its API key.
 on:
   push:
-    branches: [main]
+    branches: [main, 'chatgpt/horror-manor-*']
     paths:
       - '.github/workflows/horror-owner-system-publish.yml'
+      - 'assets/roblox/midnight-manor/build.py'
       - 'assets/roblox/midnight-manor/generated/manor-lobby.glb'
       - 'assets/roblox/midnight-manor/generated/import-bounds.json'
       - 'roblox-games/horror-escape-room/server/ManorLobby.luau'
       - 'roblox-games/horror-escape-room/client/ManorLobby.client.luau'
+      - 'qa/horror-manor.test.mjs'
 permissions:
   contents: read
 concurrency:
@@ -17,7 +19,7 @@ concurrency:
 jobs:
   import-build-publish:
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
-    timeout-minutes: 25
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,6 +27,22 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Rebuild canonical Blender manor
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $command=Get-Command blender -ErrorAction SilentlyContinue
+          $blender=if($command){$command.Source}else{$null}
+          if(-not $blender){
+            $blender=Get-ChildItem 'C:\Program Files\Blender Foundation' -Filter blender.exe -Recurse -ErrorAction SilentlyContinue |
+              Sort-Object FullName -Descending | Select-Object -ExpandProperty FullName -First 1
+          }
+          if(-not $blender){throw 'BLENDER_NOT_FOUND'}
+          Write-Host "MANOR_BLENDER=$blender"
+          & $blender --background --python assets/roblox/midnight-manor/build.py -- --render
+          if($LASTEXITCODE -ne 0){throw 'MANOR_BLENDER_BUILD_FAILED'}
+          if(-not(Test-Path assets/roblox/midnight-manor/generated/manor-lobby.glb)){throw 'MANOR_GLB_MISSING'}
+          if(-not(Test-Path assets/roblox/midnight-manor/generated/review/butler-front.png)){throw 'MANOR_NPC_REVIEW_MISSING'}
       - name: Validate manor release contract
         shell: pwsh
         run: node --test qa/horror-manor.test.mjs
@@ -60,6 +78,29 @@ jobs:
           & $rojo build roblox-games/horror-escape-room/default.project.json -o $place
           if($LASTEXITCODE -ne 0){throw 'MANOR_BUILD_FAILED'}
           "MANOR_PLACE=$place" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+      - name: Open rebuilt place in authenticated Roblox Studio
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $out=Join-Path $env:RUNNER_TEMP 'midnight-manor-studio-review'
+          New-Item -ItemType Directory -Force -Path $out | Out-Null
+          "MANOR_REVIEW_OUT=$out" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          $studio=Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Roblox/Versions') -Directory |
+            Sort-Object LastWriteTime -Descending |
+            ForEach-Object {Join-Path $_.FullName 'RobloxStudioBeta.exe'} |
+            Where-Object {Test-Path $_} | Select-Object -First 1
+          if(-not $studio){throw 'STUDIO_NOT_FOUND'}
+          $mcp=Join-Path (Split-Path $studio) 'StudioMCP.exe'
+          if(-not(Test-Path $mcp)){throw 'STUDIO_MCP_NOT_FOUND'}
+          $env:MANOR_MCP_EXE=$mcp
+          $review=Start-Process $studio -ArgumentList "`"$env:MANOR_PLACE`"" -PassThru
+          try{
+            Start-Sleep -Seconds 18
+            node tools/horror-manor-studio-review.mjs
+            if($LASTEXITCODE -ne 0){throw 'MANOR_STUDIO_REVIEW_FAILED'}
+          }finally{
+            if($review -and -not $review.HasExited){Stop-Process -Id $review.Id -Force -ErrorAction SilentlyContinue}
+          }
       - name: Publish verified manor
         if: github.ref == 'refs/heads/main'
         env:
@@ -81,3 +122,7 @@ jobs:
             roblox-games/horror-escape-room/shared/ManorAssets.luau
             assets/roblox/midnight-manor/generated/native-import-check.json
             assets/roblox/midnight-manor/generated/publication.json
+            assets/roblox/midnight-manor/generated/build-evidence.json
+            assets/roblox/midnight-manor/generated/import-bounds.json
+            assets/roblox/midnight-manor/generated/review/**
+            ${{ runner.temp }}/midnight-manor-studio-review/**
