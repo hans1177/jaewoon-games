@@ -126,16 +126,6 @@ jobs:
       stranded_review_run: ${{ steps.stranded_review.outputs.source_run }}
       model_cache_hit: ${{ steps.ollama_cache_probe.outputs.cache-hit }}
     steps:
-      - name: Checkout Vibe2 control line
-        uses: actions/checkout@v4
-        with:
-          ref: vibe2-unreal-core
-          fetch-depth: 1
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
       - name: Drop stale reserve wake before reserve work
         id: main_wake
         env:
@@ -172,6 +162,18 @@ jobs:
             echo "VIBE2_RESERVE_WAKE_FRESHNESS=BYPASS_NON_RESERVE_WAKE"
           fi
           echo "proceed=$proceed" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout Vibe2 control line
+        if: steps.main_wake.outputs.proceed == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: vibe2-unreal-core
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        if: steps.main_wake.outputs.proceed == 'true'
+        with:
+          node-version: '22'
 
       - name: Download atomic neuron completion result
         if: github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-neuron-complete'
