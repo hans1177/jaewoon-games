@@ -508,11 +508,23 @@ export class JaewoonAISquad {
     for (const member of Array.isArray(members) ? members : []) this.add(member);
   }
 
-  add({ id, ai = null, role = JaewoonCommonAI.Role.MELEE, metadata = {} } = {}) {
+  add({ id, ai = null, role = JaewoonCommonAI.Role.MELEE, metadata = {}, identity = null, personality = null, emotion = '' } = {}) {
     const memberId = String(id || '');
     if (!memberId) throw new Error('AI squad member id required');
-    const controller = ai instanceof JaewoonCommonAI ? ai : new JaewoonCommonAI({ role, identity: metadata.identity, personality: metadata.personality, emotion: metadata.emotion });
-    this.members.set(memberId, { id: memberId, ai: controller, role, metadata: { ...metadata } });
+    const resolvedIdentity = identity && typeof identity === 'object' ? identity : (metadata.identity || {});
+    const resolvedPersonality = personality && typeof personality === 'object'
+      ? personality
+      : (resolvedIdentity?.traits && typeof resolvedIdentity.traits === 'object' ? resolvedIdentity.traits : (metadata.personality || {}));
+    const resolvedEmotion = String(emotion || metadata.emotion || 'calm');
+    const controller = ai instanceof JaewoonCommonAI
+      ? ai
+      : new JaewoonCommonAI({ role, identity: resolvedIdentity, personality: resolvedPersonality, emotion: resolvedEmotion });
+    this.members.set(memberId, {
+      id: memberId,
+      ai: controller,
+      role,
+      metadata: { ...metadata, identity: resolvedIdentity, personality: resolvedPersonality, emotion: resolvedEmotion }
+    });
     return this.member(memberId);
   }
 
