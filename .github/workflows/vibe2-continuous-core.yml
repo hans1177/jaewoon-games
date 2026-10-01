@@ -1579,12 +1579,12 @@ jobs:
           fi
 
           if [ "$published" != 1 ]; then
-            mapfile -t carrier_branches < <(
+            mapfile -t carrier_rows < <(
               git ls-remote --heads origin 'refs/heads/vibe2/candidate/OWNER-FULL-REBUILD-*' \
-                | awk '{sub(/^refs\/heads\//,"",$2); print $2}' \
-                | sort
+                | awk '{sha=$1; sub(/^refs\/heads\//,"",$2); print sha "\t" $2}' \
+                | sort -k2
             )
-            carrier_count="${#carrier_branches[@]}"
+            carrier_count="${#carrier_rows[@]}"
             echo "VIBE2_CANDIDATE_CARRIER_POOL=$carrier_count"
             if [ "$carrier_count" -gt 0 ]; then
               seed_hex="$(printf '%s' "$TASK_ID|$VARIANT|$GITHUB_RUN_ID|$GITHUB_RUN_ATTEMPT" | sha256sum | cut -c1-7)"
@@ -1592,52 +1592,41 @@ jobs:
               carrier_try=0
               while [ "$carrier_try" -lt 16 ] && [ "$carrier_try" -lt "$carrier_count" ]; do
                 carrier_index=$(((seed_dec + carrier_try) % carrier_count))
-                carrier_branch="${carrier_branches[$carrier_index]}"
-                carrier_dir="/tmp/vibe2-carrier-$SAFE_TASK-$VARIANT-$GITHUB_RUN_ID-$carrier_try"
-                rm -rf "$carrier_dir"
-                git -C "$contract_root" worktree prune
-                if ! git -C "$contract_root" fetch --depth=1 origin "refs/heads/$carrier_branch" --quiet; then
+                IFS=$'\t' read -r carrier_old_sha carrier_branch <<< "${carrier_rows[$carrier_index]}"
+                if [ -z "$carrier_old_sha" ] || [ -z "$carrier_branch" ]; then
                   carrier_try=$((carrier_try+1))
                   continue
                 fi
-                carrier_parent="$(git -C "$contract_root" rev-parse FETCH_HEAD)"
-                git -C "$contract_root" worktree add --detach "$carrier_dir" "$carrier_parent" >/dev/null
-                rm -rf "$carrier_dir/$SOURCE_ROOT" "$carrier_dir/.vibe2/candidates"
-                mkdir -p "$(dirname "$carrier_dir/$SOURCE_ROOT")" "$carrier_dir/.vibe2/candidates"
-                cp -a "$candidate_dir/$SOURCE_ROOT" "$carrier_dir/$SOURCE_ROOT"
-                candidate_manifest_dir="$(dirname "$candidate_manifest_rel")"
-                mkdir -p "$carrier_dir/$candidate_manifest_dir"
-                cp -a "$candidate_dir/$candidate_manifest_dir/." "$carrier_dir/$candidate_manifest_dir/"
-                CARRIER_MANIFEST="$carrier_dir/$candidate_manifest_rel" CARRIER_BRANCH="$carrier_branch" node <<'NODE'
+
+                CARRIER_MANIFEST="$candidate_manifest" CARRIER_BRANCH="$carrier_branch" node <<'NODE'
           const fs=require('fs');
           const file=process.env.CARRIER_MANIFEST;
           const row=JSON.parse(fs.readFileSync(file,'utf8'));
           row.branch=process.env.CARRIER_BRANCH;
           row.mode='isolated-candidate-carrier-source-write';
-          row.transport={version:1,mode:'REUSED_EXISTING_CANDIDATE_BRANCH',sourceRun:String(process.env.GITHUB_RUN_ID||''),sourceAttempt:String(process.env.GITHUB_RUN_ATTEMPT||'')};
+          row.transport={
+            version:2,
+            mode:'REUSED_EXISTING_CANDIDATE_BRANCH_FORCE_WITH_LEASE',
+            sourceRun:String(process.env.GITHUB_RUN_ID||''),
+            sourceAttempt:String(process.env.GITHUB_RUN_ATTEMPT||'')
+          };
           fs.writeFileSync(file,JSON.stringify(row,null,2)+'\n');
           NODE
-                git -C "$carrier_dir" config user.name 'jaewoon-vibe2-worker'
-                git -C "$carrier_dir" config user.email 'vibe2-worker@users.noreply.github.com'
-                git -C "$carrier_dir" add "$SOURCE_ROOT" .vibe2/candidates
-                if git -C "$carrier_dir" diff --cached --quiet; then
-                  git -C "$contract_root" worktree remove --force "$carrier_dir" >/dev/null 2>&1 || true
-                  carrier_try=$((carrier_try+1))
-                  continue
-                fi
-                git -C "$carrier_dir" commit -m "vibe2: carrier $TASK_ID $VARIANT" >/dev/null
-                carrier_sha="$(git -C "$carrier_dir" rev-parse HEAD)"
-                if git -C "$carrier_dir" push origin "HEAD:refs/heads/$carrier_branch"; then
+                git add "$candidate_manifest_rel"
+                git commit --amend --no-edit >/dev/null
+                candidate_sha="$(git rev-parse HEAD)"
+                if git push \
+                  --force-with-lease="refs/heads/$carrier_branch:$carrier_old_sha" \
+                  origin "HEAD:refs/heads/$carrier_branch"; then
                   candidate_branch="$carrier_branch"
-                  candidate_sha="$carrier_sha"
                   published=1
-                  echo "VIBE2_CANDIDATE_TRANSPORT=REUSED_EXISTING_BRANCH:$carrier_branch"
-                  git -C "$contract_root" worktree remove --force "$carrier_dir" >/dev/null 2>&1 || true
+                  echo "VIBE2_CANDIDATE_TRANSPORT=REUSED_EXISTING_BRANCH_FORCE_WITH_LEASE:$carrier_branch"
                   break
                 fi
-                git -C "$contract_root" worktree remove --force "$carrier_dir" >/dev/null 2>&1 || true
+                echo "VIBE2_CANDIDATE_CARRIER_COLLISION=$carrier_branch"
                 carrier_try=$((carrier_try+1))
               done
+            fi
             fi
           fi
 
