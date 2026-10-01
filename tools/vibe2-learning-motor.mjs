@@ -2446,7 +2446,15 @@ export function applyVerifiedGraphicsEvolutionOutcomes(stateInput={},queueInput=
   return{state,added,positive,negative,repeatedOwnerInsufficient};
 }
 
+function learningStateSemanticSnapshot(input={}){
+  const value=JSON.parse(JSON.stringify(input&&typeof input==='object'?input:{}));
+  delete value.updatedAt;
+  if(value.codingConstitution&&typeof value.codingConstitution==='object')delete value.codingConstitution.lastBuiltAt;
+  return JSON.stringify(value);
+}
+
 export function refreshLearningMotor({stateInput={},experienceInput={},codePatternsInput={},companyQueueInput={},queueInput={},roadmapInput={}}={}){
+  const priorStateSemantic=learningStateSemanticSnapshot(stateInput);
   const specializedExperience=mergeVerifiedSpecializedQueueExperienceMemory(experienceInput,queueInput);
   const studioExperience=mergeVerifiedRobloxStudioPlayExperienceMemory(specializedExperience.memory,companyQueueInput);
   const studioExtracted=collectVerifiedRobloxStudioPlayExperience(companyQueueInput);
@@ -2462,12 +2470,18 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
   const constitution=buildCodingConstitution(graphicsApplied.state);
   graphicsApplied.state.codingConstitution=constitution;
   graphicsApplied.state.updatedAt=new Date().toISOString();
+  const stateChanged=learningStateSemanticSnapshot(graphicsApplied.state)!==priorStateSemantic;
+  if(!stateChanged){
+    graphicsApplied.state.updatedAt=clean(stateInput?.updatedAt)||null;
+    graphicsApplied.state.codingConstitution.lastBuiltAt=clean(stateInput?.codingConstitution?.lastBuiltAt)||null;
+  }
   const benchmark=buildBenchmarkLadder(graphicsApplied.state,studioExperience.memory,companyQueueInput);
   const idlePractice=buildIdlePracticeQueue(graphicsApplied.state,benchmark);
   const tournament=enrichQueueForCandidateTournaments(queueInput,graphicsApplied.state);
   const practice=injectIdlePracticeTask(tournament.queue,idlePractice);
   return {
     state:graphicsApplied.state,
+    stateChanged,
     addedExperience:(applied.added||0)+(studioApplied.added||0),
     addedRobloxStudioVerifiedOutcomes:studioApplied.added||0,
     addedSpecializedVerifiedOutcomes:specializedApplied.added||0,
@@ -2521,13 +2535,15 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const roadmapFile=clean(a.roadmap)||'company-learning/platform-release-roadmap.json';
   const codePatternsFile=clean(a['code-patterns'])||'.vibe2/code-pattern-library.json';
   const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),codePatternsInput:readJson(codePatternsFile,{patterns:[]}),companyQueueInput:readJson(companyQueueFile,{items:[]}),queueInput:queueFile?readJson(queueFile,{tasks:[]}):{tasks:[]},roadmapInput:readJson(roadmapFile,{})});
-  writeJson(stateFile,result.state);
+  if(result.stateChanged) writeJson(stateFile,result.state);
+  else console.log('VIBE2_LEARNING_STATE_WRITE=SKIPPED_NO_SUBSTANTIVE_CHANGE');
   if(result.experienceChanged) writeJson(experienceFile,result.experience);
   if(queueFile&&(result.tournamentTasksChanged>0||result.idlePracticeQueueChanged)) writeJson(queueFile,result.queue);
   if(clean(a.benchmark)) writeJson(a.benchmark,result.benchmark);
   if(clean(a.practice)) writeJson(a.practice,result.idlePractice);
   if(clean(a.handoff)) writeJson(a.handoff,result.handoffs);
   console.log(`VIBE2_LEARNING_MOTOR=PASS`);
+  console.log(`VIBE2_LEARNING_STATE_CHANGED=${result.stateChanged?'YES':'NO'}`);
   console.log(`VIBE2_MASTERY_NEW_EXPERIENCE=${result.addedExperience}`);
   console.log(`VIBE2_SPECIALIZED_EXPERIENCE_PERSISTED=${result.specializedExperiencePersisted||0}`);
   console.log(`VIBE2_ROBLOX_STUDIO_EXPERIENCE_PERSISTED=${result.studioExperiencePersisted||0}`);
