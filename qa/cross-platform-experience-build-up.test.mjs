@@ -11,6 +11,7 @@ import {
 const policy=JSON.parse(fs.readFileSync('company-learning/cross-platform-experience-build-up.json','utf8'));
 const planner=fs.readFileSync('tools/vibe2-auto-planner.mjs','utf8');
 const buildUpSource=fs.readFileSync('tools/company-build-up-directive.mjs','utf8');
+const sourceWorker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
 
 test('cross-platform build-up covers all major player-facing surfaces',()=>{
   assert.equal(policy.status,'ACTIVE_EXECUTABLE_CONTRACT');
@@ -106,4 +107,13 @@ test('platform-native guidance gives Roblox extra attention without cloning Web 
   assert.match(buildUpSource,/사용자가 꺼둔 효과음을 임의로 되살리지 않는다/);
   assert.match(buildUpSource,/Unity WebGL과 앱은 같은 gameplay\/UI 책임 소스를 공유/);
   assert.match(buildUpSource,/정상 플레이 배율에서 체감되지 않는 미세 bob\/회전/);
+});
+
+test('Roblox perceptible v3 work bypasses shallow deterministic cosmetic presentation patches',()=>{
+  assert.match(sourceWorker,/perceptibleV3/);
+  assert.match(sourceWorker,/&&\s*!perceptibleV3/);
+  assert.match(sourceWorker,/experienceBuildUp=version:/);
+  assert.match(sourceWorker,/experienceSurfaces=/);
+  assert.match(sourceWorker,/experienceRequirements=/);
+  assert.match(sourceWorker,/Do not close a player-facing quality gap with source markers, asset binding, style constants/);
 });
