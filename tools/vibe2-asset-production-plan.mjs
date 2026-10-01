@@ -815,22 +815,47 @@ function createConceptFitContract({task={},requestedConcept={},binding={}}={}){
       ...(role==='ANIMATION'?['MOTION_PERSONALITY_WEIGHT_AND_RHYTHM']:[]),
       ...(['BACKGROUND','PROP','ENVIRONMENT'].includes(role)?['BIOME_ARCHITECTURE_AND_PROP_DENSITY_LANGUAGE']:[])
     ]),
-    fullReplacementHardGate:'NO_MAJOR_CONCEPT_CONTRADICTION',
-    majorMismatchExamples:freezeList([
-      'REALISM_LEVEL_CONTRADICTS_GAME_STYLE',
-      'ERA_OR_TECHNOLOGY_BREAKS_WORLD_LANGUAGE',
-      'SILHOUETTE_OR_PROPORTION_BREAKS_FACTION_SPECIES_OR_ROLE_LANGUAGE',
-      'MATERIAL_OR_PALETTE_BREAKS_WORLD_VISUAL_DNA',
-      'MOTION_PERSONALITY_BREAKS_CHARACTER_WEIGHT_OR_COMBAT_FEEL',
-      'UI_GRAMMAR_BREAKS_EXISTING_INTERFACE_LANGUAGE'
+    referenceMode:'ADVISORY_TRANSFORM_TARGET',
+    conceptMismatchIsAutomaticReject:false,
+    mismatchSignals:freezeList([
+      'REALISM_LEVEL_DIFFERS_FROM_GAME_STYLE',
+      'ERA_OR_TECHNOLOGY_DIFFERS_FROM_WORLD_LANGUAGE',
+      'SILHOUETTE_OR_PROPORTION_DIFFERS_FROM_FACTION_SPECIES_OR_ROLE_LANGUAGE',
+      'MATERIAL_OR_PALETTE_DIFFERS_FROM_WORLD_VISUAL_DNA',
+      'MOTION_PERSONALITY_DIFFERS_FROM_CHARACTER_WEIGHT_OR_COMBAT_FEEL',
+      'UI_GRAMMAR_DIFFERS_FROM_EXISTING_INTERFACE_LANGUAGE'
     ]),
+    adaptationClasses:freezeList(['DIRECT_FIT','TRANSFORMABLE_FIT','DONOR_ONLY','REAUTHOR_MORE_EFFICIENT']),
     mismatchHandling:freeze({
-      fullReplacementBlocked:true,
+      applyInCandidateContextBeforeFinalDecision:true,
+      transformableMismatchMayBecomeFinalAsset:true,
       compatiblePartDonorAllowed:true,
-      donorAxesMustIndividuallyPassConceptFit:true,
-      recolorAloneCannotRepairStructuralStyleMismatch:true,
-      materialSwapAloneCannotRepairEraOrSilhouetteMismatch:true,
-      currentGameContextCapturePreferred:true
+      donorAxesUseConceptAsReferenceNotHardGate:true,
+      currentGameContextCapturePreferred:true,
+      compareBeforeAndAfterTransformation:true,
+      stopTransformingWhenNewAuthoringIsLowerCostOrHigherQuality:true
+    }),
+    transformationLadder:freezeList([
+      'PALETTE_VALUE_CONTRAST_GRADE',
+      'MATERIAL_SHADER_SURFACE_REMAP',
+      'ORNAMENT_DECAL_TRIM_ADD_REMOVE',
+      'SILHOUETTE_AND_PROPORTION_STYLIZATION',
+      'ERA_TECHNOLOGY_DETAIL_REDESIGN',
+      'RIG_SOCKET_CONTACT_ADAPTATION',
+      'MOTION_POSE_WEIGHT_RHYTHM_ADAPTATION',
+      'UI_SHAPE_ICON_TYPOGRAPHY_ADAPTATION',
+      'PLATFORM_NATIVE_LOD_AND_READABILITY'
+    ]),
+    transformationRules:freeze({
+      smallestEffectiveChangeFirst:true,
+      preserveUsefulHighQualityStructure:true,
+      preserveGameplayFunctionAndHitSemantics:true,
+      recolorMayBeEnoughForPaletteOnlyMismatch:true,
+      structuralMismatchRequiresStructuralEditNotOnlyRecolor:true,
+      eraMismatchMayBeReworkedByRemovingReplacingTechnologySpecificDetails:true,
+      silhouetteMismatchMayBeReworkedByProportionPartAndAccessoryChanges:true,
+      motionMismatchMayBeReworkedWithoutChangingGameplayTimingAuthority:true,
+      uiMismatchMayBeReworkedWithoutChangingGameplayRules:true
     }),
     comparisonContext:freeze({
       sameCameraLightingDistanceAction:true,
@@ -854,9 +879,10 @@ function createPostDownloadInternalComparison({matched=[],target='',binding={},c
     .sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id));
   const internalRows=internal.map(asset=>assetApplyFirstCandidate(asset,target,binding))
     .sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id));
-  const downloaded=externalRows.filter(row=>row.ready&&row.path);
-  const comparisonReady=downloaded.filter(row=>row.sourceHash);
-  const pending=externalRows.filter(row=>!row.ready);
+  const downloadedAssetIds=new Set(acquired.filter(asset=>asset.downloaded!==false&&Boolean(asset.path||asset.robloxAssetId||Object.keys(asset.platformVariants||{}).length)).map(asset=>asset.id));
+  const downloaded=externalRows.filter(row=>downloadedAssetIds.has(row.id));
+  const comparisonReady=downloaded.filter(row=>row.ready&&row.sourceHash);
+  const pending=externalRows.filter(row=>!downloadedAssetIds.has(row.id));
   const unhashed=downloaded.filter(row=>!row.sourceHash);
   const required=externalRows.length>0&&internalRows.length>0;
   const status=!required?'NOT_REQUIRED'
@@ -875,15 +901,18 @@ function createPostDownloadInternalComparison({matched=[],target='',binding={},c
     hardGates:freezeList(['LICENSE_AND_PROVENANCE','SOURCE_HASH','TARGET_PLATFORM_IMPORT','NO_RUNTIME_ERROR','MOBILE_PERFORMANCE_BUDGET']),
     qualityAxes:freezeList(['GAME_STYLE_FIT','CONCEPT_AND_WORLD_COHERENCE','SILHOUETTE_AND_READABILITY','MATERIAL_AND_SURFACE_DETAIL','PROPORTION_AND_SCALE','RIG_CONTACT_OR_INTERACTION','MOTION_AND_SECONDARY_MOTION','DETAIL_BY_DISTANCE']),
     conceptFit,
-    conceptFitHardGate:true,
-    conceptMismatchBlocksFullReplacement:true,
+    conceptFitReferenceOnly:true,
+    conceptMismatchBlocksFullReplacement:false,
+    conceptTransformationPreferredWhenFeasible:true,
     conceptCompatibleDonorUseAllowed:true,
+    testApplyBeforeConceptDecision:true,
     sameConditionsRequired:true,
     sameCameraLightingDistanceActionRequired:true,
     actualRuntimePixelsRequiredForVisualWinner:true,
     noPreDownloadWinner:true,
-    externalFullReplacementRule:'MUST_PASS_CONCEPT_HARD_GATE_AND_IMPROVE_AT_LEAST_ONE_CORE_QUALITY_AXIS_WITHOUT_REGRESSING_ANY_PROTECTED_CORE_AXIS',
-    mixedResultRule:'KEEP_INTERNAL_BASE_AND_USE_EXTERNAL_ONLY_AS_PROVEN_PART_RIG_MATERIAL_MOTION_OR_DETAIL_DONOR',
+    externalFullReplacementRule:'AFTER_OPTIONAL_CONCEPT_TRANSFORMATION_MUST_IMPROVE_AT_LEAST_ONE_CORE_QUALITY_AXIS_WITHOUT_REGRESSING_ANY_PROTECTED_CORE_AXIS',
+    transformableMismatchRule:'TEST_APPLY_THEN_TRANSFORM_TOWARD_GAME_CONCEPT_AND_RECOMPARE_BEFORE_REJECTING',
+    mixedResultRule:'KEEP_BEST_BASE_AND_RECOMPOSE_PROVEN_PART_RIG_MATERIAL_MOTION_OR_DETAIL_DONORS',
     comparableQualityRule:'KEEP_INTERNAL_ASSET',
     bothFailRule:'DERIVE_TARGETED_REPAIR_THEN_NEW_AUTHORING_LAST',
     internalTieBreakWhenQualityComparable:true,
@@ -994,7 +1023,8 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
       selectedAssetId:null,
       sourcePreferenceOnlyAfterQualityPass:true,
       postDownloadInternalComparisonRequired:postDownloadComparison.required,
-      conceptFitHardGate:true
+      conceptFitReferenceOnly:true,
+      conceptTransformationAllowed:true
     }),
     conceptFit,
     postDownloadComparison,
@@ -1996,7 +2026,7 @@ export function assetProductionGuidance(plan={}){
     lines.push(`- type=${row.type}; reuse=${reuse}; external=${external}; direct=${direct}; order=${(row.decisionOrder||[]).join('>')}`);
     if(row.postDownloadComparison?.required){
       const cmp=row.postDownloadComparison;
-      lines.push(`다운로드 후 내부자산 비교=${cmp.status}; external=${cmp.externalCandidateIds.join('|')||'none'}; internal=${cmp.internalBaselineCandidateIds.join('|')||'none'}. 외부 다운로드본은 sourceHash·라이선스·타깃 플랫폼 import를 통과한 뒤 내부 기준 자산과 같은 카메라·조명·거리·행동으로 A/B 비교한다. 외부가 conceptFit 하드 게이트를 통과하고 핵심 품질축 하나 이상을 개선하면서 보호 품질축을 후퇴시키지 않을 때만 전체 교체 후보가 된다. 실사도·시대/기술·실루엣·재질·팔레트·모션 성격·UI 문법이 현재 Style Bible/Game Visual DNA와 충돌하면 전체 교체를 금지하고, 컨셉 적합도가 개별 검증된 축만 도너로 사용한다. 혼합 결과면 내부 베이스를 유지하고 외부는 이긴 파츠/리그/재질/모션/디테일 축의 도너로만 사용한다. 동급이면 내부자산을 유지하고, 둘 다 부족하면 부분 파생 수정 후 신규 제작을 마지막에 사용한다.`);
+      lines.push(`다운로드 후 내부자산 비교=${cmp.status}; external=${cmp.externalCandidateIds.join('|')||'none'}; internal=${cmp.internalBaselineCandidateIds.join('|')||'none'}. 외부 다운로드본은 sourceHash·라이선스·타깃 플랫폼 import를 통과한 뒤 내부 기준 자산과 같은 카메라·조명·거리·행동으로 A/B 비교한다. 컨셉은 강제 탈락 게이트가 아니라 변형 목표다. 외부 다운로드본이 현재 Style Bible/Game Visual DNA와 달라도 후보 브랜치/테스트 장면에 먼저 적용해 보고, 차이가 변형 가능한지 판단한다. 가능하면 팔레트·명도→재질/셰이더→장식→실루엣/비율→시대·기술 디테일→리그/접촉→모션 성격→UI 문법→LOD 순으로 필요한 축만 수정한 뒤 같은 조건으로 재비교한다. 변형 후 핵심 품질축 하나 이상을 개선하면서 보호 품질축을 후퇴시키지 않으면 전체 자산으로 채택할 수 있다. 전체가 안 맞아도 좋은 파츠/리그/재질/모션/디테일은 도너로 재조합할 수 있다. 동급이면 내부자산을 유지하고, 둘 다 부족하면 부분 파생 수정 후 신규 제작을 마지막에 사용한다.`);
     }
     if(row.type==='animation')lines.push(`모션 품질 비교 필수=${(row.qualitySelection?.requiredChecks||[]).join(',')}; 품질 미달 후보를 적용하지 말고 비교 결과와 선택 이유를 남긴다.`);
     if(row.motionReusePlan){
