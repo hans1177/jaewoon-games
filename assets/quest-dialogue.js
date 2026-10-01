@@ -38,6 +38,7 @@ export class JaewoonQuestDialogue {
     this.ensureExtendedState(state);
     if (candidate?.candidateOnly !== true) return { ok: false, reason: 'ACTOR_QUEST_CANDIDATE_REQUIRED' };
     if (candidate?.acceptanceCompletionRewardPersistentMutation !== 'engine-only') return { ok: false, reason: 'ENGINE_AUTHORITY_CONTRACT_REQUIRED' };
+    if (candidate?.existingDeclaredGameplayCapabilitiesOnly !== true) return { ok: false, reason: 'DECLARED_GAMEPLAY_CAPABILITY_CONTRACT_REQUIRED' };
     const proposerId = String(candidate.giverOrOrigin || '').trim();
     const causeEventIds = Array.isArray(candidate.causeEventIds) ? candidate.causeEventIds.map(String).map(value => value.trim()).filter(Boolean) : [];
     const personalStake = String(candidate.personalStake || '').trim();
@@ -47,11 +48,15 @@ export class JaewoonQuestDialogue {
     const id = String(engineProposal.id || '').trim();
     const whyNow = String(engineProposal.whyNow || '').trim();
     const objectives = Array.isArray(engineProposal.objectives) ? engineProposal.objectives : [];
+    const allowedObjectiveVerbs = Array.isArray(engineProposal.allowedObjectiveVerbs)
+      ? engineProposal.allowedObjectiveVerbs.map(String).map(value => value.trim()).filter(Boolean)
+      : [];
     if (!proposerId) return { ok: false, reason: 'PROPOSER_ID_REQUIRED' };
     if (!causeEventIds.length && !personalStake) return { ok: false, reason: 'ACTOR_QUEST_CAUSE_REQUIRED' };
     if (!id) return { ok: false, reason: 'ENGINE_PROPOSAL_ID_REQUIRED' };
     if (!whyNow) return { ok: false, reason: 'ENGINE_WHY_NOW_REQUIRED' };
     if (!objectives.length) return { ok: false, reason: 'ENGINE_OBJECTIVES_REQUIRED' };
+    if (primaryVerb && !allowedObjectiveVerbs.includes(primaryVerb)) return { ok: false, reason: 'ENGINE_OBJECTIVE_VERB_NOT_DECLARED' };
 
     const signature = [
       proposerId,
@@ -90,6 +95,7 @@ export class JaewoonQuestDialogue {
         ...(clone(engineProposal.meta) || {}),
         actorCandidateSignature: signature,
         actorCandidatePrimaryVerb: primaryVerb || null,
+        actorCandidateAllowedObjectiveVerbs: allowedObjectiveVerbs,
         actorCandidateBranches: branches,
         actorCandidateCauseEventIds: causeEventIds,
         actorCandidateOnly: true,
