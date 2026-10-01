@@ -22,7 +22,6 @@ on:
       - 'tools/company-upper-platform-admission.mjs'
       - 'company-asset-library.json'
       - 'company-learning/platform-release-roadmap.json'
-      - 'roblox-games/**'
       - 'tools/company-development-roblox-build-preflight.mjs'
       - 'tools/company-development-roblox-runtime-smoke.luau'
   workflow_call:
@@ -45,7 +44,7 @@ permissions:
 concurrency:
   group: roblox-native-exact-${{ inputs.game_id || (github.event_name == 'push' && 'batch-push') || github.run_id }}
   # Only main-push batch planners are disposable. Exact-game and manual runs keep active execution.
-  cancel-in-progress: ${{ github.event_name == 'push' }}
+  cancel-in-progress: false
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
