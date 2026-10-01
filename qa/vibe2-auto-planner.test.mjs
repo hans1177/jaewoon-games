@@ -3787,5 +3787,7 @@ test('real cozy-island Web source produces both code BUILD_UP and graphics repla
   assert.ok(graphicsBuildUp.completionCriteria.includes('GRAPHICS_REPLACEMENT_REAL_SOURCE_OR_BINDING_DELTA'));
   assert.ok(graphicsBuildUp.evidence.includes('adaptive-graphics-replacement:v1'));
   assert.ok(graphicsBuildUp.evidence.includes('studio-quality-next-cycle-required:YES'));
-  assert.ok(graphicsBuildUp.responsibleFiles.some(file=>file===sourceRoot+'/index.html'||file===sourceRoot+'/style.css'||file===sourceRoot+'/game.js'));
+  assert.ok(graphicsBuildUp.responsibleFiles.length>0);
+  assert.ok(graphicsBuildUp.responsibleFiles.every(file=>file.startsWith(sourceRoot+'/')));
+  assert.ok(graphicsBuildUp.responsibleFiles.some(file=>/\.(?:html?|css|js|mjs)$/i.test(file)));
 });
