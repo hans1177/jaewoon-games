@@ -116,6 +116,28 @@ function walkSource(root){
   return rows.slice(0,300);
 }
 
+function measureSourceData(root){
+  if(!root||!fs.existsSync(root))return{totalBytes:0,largestFileBytes:0,fileCount:0};
+  let totalBytes=0,largestFileBytes=0,fileCount=0;
+  const stack=[root],skip=new Set(['node_modules','.git','Library','Temp','Logs','Binaries','Intermediate','Saved','DerivedDataCache']);
+  while(stack.length&&fileCount<20000){
+    const current=stack.pop();
+    let entries=[];try{entries=fs.readdirSync(current,{withFileTypes:true});}catch{continue;}
+    for(const entry of entries){
+      if(skip.has(entry.name))continue;
+      const full=path.join(current,entry.name);
+      if(entry.isDirectory()){stack.push(full);continue;}
+      if(!entry.isFile())continue;
+      let bytes=0;try{bytes=fs.statSync(full).size;}catch{}
+      totalBytes+=Math.max(0,Number(bytes)||0);
+      largestFileBytes=Math.max(largestFileBytes,Math.max(0,Number(bytes)||0));
+      fileCount+=1;
+      if(fileCount>=20000)break;
+    }
+  }
+  return{totalBytes,largestFileBytes,fileCount};
+}
+
 function tokenCount(text,re){return (String(text).match(re)||[]).length;}
 
 const CONTROL_FLOW_SYMBOLS=new Set(['if','for','while','switch','catch','with']);
@@ -214,6 +236,7 @@ function decideNextVibeAction({previousEffectiveness={},previousOutcome='',focus
 
 export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
   const absolute=path.resolve(repoRoot,sourceRoot);
+  const capacityMeasure=measureSourceData(absolute);
   const files=walkSource(absolute);
   const rows=files.map(file=>{
     let buffer=Buffer.alloc(0);try{buffer=fs.readFileSync(file);}catch{}
@@ -266,8 +289,9 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
     sourceRoot:posix(sourceRoot),
     sourceTreeFingerprint:files.length?fingerprint.digest('hex'):sha('missing:'+sourceRoot),
     fileCount:files.length,
-    sourceBytes:rows.reduce((sum,row)=>sum+Number(row.bytes||0),0),
-    largestFileBytes:rows.reduce((max,row)=>Math.max(max,Number(row.bytes||0)),0),
+    dataFileCount:capacityMeasure.fileCount,
+    sourceBytes:capacityMeasure.totalBytes,
+    largestFileBytes:capacityMeasure.largestFileBytes,
     topFiles,
     sourceAnchors:Object.freeze(sourceAnchors),
     signals,
@@ -305,6 +329,7 @@ export function inspectGameSources({repoRoot=process.cwd(),sourceRoots=[]}={}){
     sourceRoots:Object.freeze(roots),
     sourceTreeFingerprint:combinedFingerprint,
     fileCount:parts.reduce((n,part)=>n+Number(part.fileCount||0),0),
+    dataFileCount:parts.reduce((n,part)=>n+Number(part.dataFileCount||0),0),
     sourceBytes:parts.reduce((n,part)=>n+Number(part.sourceBytes||0),0),
     largestFileBytes:parts.reduce((n,part)=>Math.max(n,Number(part.largestFileBytes||0)),0),
     topFiles:Object.freeze(topFiles),
