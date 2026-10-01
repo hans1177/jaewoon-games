@@ -134,7 +134,8 @@ test('game-primary control work uses available latest capacity while push/manual
   assert.match(core.slice(core.indexOf('\n  fan_in:'),core.indexOf('\n    steps:',core.indexOf('\n  fan_in:'))),/\n    runs-on: ubuntu-latest/);
   assert.match(core,/\n  model_cache:[\s\S]{0,360}?if: needs\.reserve\.outputs\.worker_count != '0' && needs\.reserve\.outputs\.model_cache_hit != 'true' && \(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) != 'asset-development'/);
   assert.match(core,/\n  model_cache:[\s\S]{0,520}?\n    runs-on: \$\{\{ \(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-latest' \}\}/);
-  assert.match(core,/Probe shared Ollama cache from reserve runner[\s\S]{0,180}?env\.VIBE2_EXECUTION_LANE != 'asset-development'/);
+  assert.match(core,/Probe dedicated Vibe2 model cache[\s\S]{0,220}?env\.VIBE2_EXECUTION_LANE != 'asset-development'/);
+  assert.match(core,/Probe canonical Ollama runtime cache[\s\S]{0,220}?env\.VIBE2_EXECUTION_LANE != 'asset-development'/);
   assert.match(core,/Record asset no-model cache bypass/);
   assert.match(core,/VIBE2_MODEL_CACHE_RESERVE_PROBE=SKIPPED_ASSET_LANE/);
   assert.match(core,/VIBE2_MODEL_CACHE_WARMUP_DECISION=SKIP_ASSET_WORKER_LOCAL_DECISION/);
@@ -244,7 +245,7 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.equal(runtime.continuous.auxiliaryLaneFanIn.recoveryFastCausalGameRefillAllowed,true);
   assert.equal(runtime.continuous.auxiliaryLaneFanIn.recoveryFastCausalGameRefillPressureGuardRequired,true);
   assert.equal(runtime.continuous.auxiliaryLaneFanIn.recoveryFastCausalGameRefillQueuePressureThreshold,4);
-  assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'LANE_SCOPED_STATELESS_REFILL_COALESCING');
+  assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'RUN_UNIQUE_OPTIMISTIC_SHARED_QUEUE_WRITE');
   assert.equal(runtime.continuous.atomicNeuronStream.globalFanInRefillSingletonForbidden,true);
   assert.equal(runtime.continuous.atomicNeuronStream.pressureCoalescingIndependentFreeSlotRefillPreserved,false);
   assert.equal(runtime.continuous.callbackCoalescing.capacityRefillMayProceedWhileResultCoalesced,false);
