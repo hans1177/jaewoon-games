@@ -1650,6 +1650,17 @@ test('commercial adaptive Studio contract expands automatically from launch core
   assert.match(contract.adaptiveCoverage.contractHash,/^sha256:[0-9a-f]{64}$/);
 });
 
+test('worker automation and save rejoin do not invent companion or retry requirements',()=>{
+  const contract=deriveStudioActualPlayContract({
+    launchCore:['resident hiring and worker automation'],
+    releaseGates:['save/rejoin']
+  });
+  assert.equal(contract.adaptiveCoverage.signals.companion,false);
+  assert.equal(contract.adaptiveCoverage.signals.retry,false);
+  assert.equal(contract.adaptiveCoverage.signals.save,true);
+  assert.equal(contract.adaptiveCoverage.signals.npc,true);
+});
+
 test('verified Studio product failures outrank generic MCP infrastructure noise for repair routing',()=>{
   const broken=runtime();
   broken.runtimeVerified=false;
