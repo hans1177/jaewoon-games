@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {pathToFileURL} from 'node:url';
 
 const cliValue=(name,fallback='')=>{
   const prefix=name+'=';
@@ -159,6 +160,7 @@ if(process.argv.includes('--technical')){
   process.exit(0);
 }
 
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
 const queuePath=process.argv[2]||'development-queue.json';
 const root=process.argv[3]||'/tmp/roblox-runtime-batch';
 const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
@@ -259,3 +261,4 @@ console.log('ROBLOX_REGRESSION_PASS=NO');
 console.log('ROBLOX_FINAL_REVIEW_PASS=NO');
 console.log('ROBLOX_RELEASE_CLAIM=NO');
 console.log('ROBLOX_RUNTIME_SECURITY_HOLD_POLICY=AUTH_OR_LOCAL_PROFILE');
+}
