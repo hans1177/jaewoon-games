@@ -642,8 +642,8 @@ function decisionFor(selector={},target='',binding={},manifest={}){
   const donorCandidates=freezeList(candidateRows.filter(row=>row.sourceHash&&row.donorCapabilities.length).sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
   const decisionOrder=unique([
     'COMPARE_TARGET_GAME_QUALITY',
-    sameGameCandidates.length?'REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET':'',
     companyCandidates.length?'REUSE_VERIFIED_COMPANY_ASSET':'',
+    sameGameCandidates.length?'REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET':'',
     repositoryCandidates.length?'REUSE_LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET':'',
     externalCandidates.length?'ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET':'',
     directAuthoring.length?'VIBE_DIRECT_AUTHOR':'',
