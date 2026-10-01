@@ -1240,7 +1240,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
     `directiveId=${clean(d.directiveId)} generation=${Number(d.generation||0)} developmentDepth=${Number(d.developmentDepth||1)} escalationStage=${clean(d.escalationStage)} primaryFocus=${clean(d.primaryFocus)}`,
     `gameIdentity=${clean(d?.gameIdentityAndNonNegotiables?.identity)}`,
-    `gameDNA=anchors:${dnaAnchors.join(' > ')||'CURRENT_GAME_IDENTITY'}; systems:${dnaSystems.join(' | ')||'CURRENT_SIGNATURE_SYSTEMS'}; coreFun:${clean(dna?.coreFun)||clean(d?.gameIdentityAndNonNegotiables?.coreFun)||'CURRENT_CORE_FUN'}; progression:${clean(dna?.progressionDirection)||'CURRENT_PROGRESSION'}`,
+    `gameDNA=anchors:${dnaAnchors.join(' > ')||'CURRENT_GAME_IDENTITY'}; systems:${dnaSystems.join(' | ')||'CURRENT_SIGNATURE_SYSTEMS'}; playerFantasy:${clean(dna?.playerFantasy)||'CURRENT_PLAYER_FANTASY'}; coreFun:${clean(dna?.coreFun)||clean(d?.gameIdentityAndNonNegotiables?.coreFun)||'CURRENT_CORE_FUN'}; progression:${clean(dna?.progressionDirection)||'CURRENT_PROGRESSION'}; visualDirection:${clean(dna?.presentationIdentity?.visualDirection)||'CURRENT_VISUAL_DIRECTION'}; mobileUx:${clean(dna?.presentationIdentity?.mobileUx)||'CURRENT_MOBILE_UX'}`,
     `playChain=${playChainStages.join(' | ')||'ENTRY_CONTEXT[VERIFY] > PLAYER_INTENT[VERIFY] > INPUT[VERIFY] > AUTHORITY_CHECK[VERIFY] > STATE_CHANGE[VERIFY] > FEEDBACK[VERIFY] > NEXT_CHOICE[VERIFY]'}`,
     `playChainPriority=${chainPriority.join(',')||'VERIFY_COMPLETE_CHAIN'} exactReplayRequired:${playChain?.exactReplayRequired===true}`,
     `detailCheckpoints=${detailPriorities.join(',')||'GAME_SPECIFIC_READABILITY_AND_CAUSALITY'}`,
