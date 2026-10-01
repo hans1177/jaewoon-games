@@ -1602,23 +1602,33 @@ test('asset candidates enter the same regression review and release gates as gam
   assert.ok(workflow.includes('if '+sharedCondition+' && [ "$expected_variants"'));
 });
 
-test('stranded asset review resumes only original completed-run evidence without regenerating source',()=>{
-  const start=workflow.indexOf('      - name: Resume stranded asset candidate review');
+test('completed worker results batch into early fan-in without per-worker dispatch or partial-task leakage',()=>{
+  const start=workflow.indexOf('      - name: Resume completed candidate review from immutable worker results');
   const block=workflow.slice(start,workflow.indexOf('\n  model_cache:',start));
-  const script=block.match(/node <<'NODE' > \/tmp\/vibe2-stranded-review-runs.txt\n([\s\S]*?)\n          NODE/)[1].replace(/^          /gm,'');
+  const script=block.match(/node <<'NODE' > \/tmp\/vibe2-stranded-review-runs\.tsv\n([\s\S]*?)\n          NODE/)[1].replace(/^          /gm,'');
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-stranded-'));
   fs.mkdirSync(path.join(root,'.vibe2'));
-  const asset={assetProductionLane:true,status:'running',blocker:'candidate-awaiting-qa-and-deployment',reservationRunId:'123',evidence:[]};
-  fs.writeFileSync(path.join(root,'.vibe2/queue.json'),JSON.stringify({tasks:[asset,{...asset},{...asset,assetProductionLane:false,reservationRunId:'124'},{...asset,reservationRunId:'125',evidence:['role-result:review:PASS']},{...asset,status:'verified',reservationRunId:'126'}]}));
+  const released={assetProductionLane:false,status:'running',blocker:'slot-released-awaiting-fan-in',reservationRunId:'123',evidence:[]};
+  const partial={...released,blocker:null,reservationRunId:'124'};
+  const reviewed={...released,reservationRunId:'125',evidence:['role-result:review:PASS']};
+  fs.writeFileSync(path.join(root,'.vibe2/queue.json'),JSON.stringify({tasks:[released,{...released},{...released,reservationRunId:'126',assetProductionLane:true},partial,reviewed]}));
   try{
-    const result=spawnSync(process.execPath,['-e',script],{cwd:root,encoding:'utf8'});
+    const result=spawnSync(process.execPath,['-e',script],{cwd:root,encoding:'utf8',env:{...process.env,VIBE2_EXECUTION_LANE:'game-primary'}});
     assert.equal(result.status,0,result.stderr);
-    assert.equal(result.stdout,'123');
-    assert.ok(block.includes('if [ "$status" = \'completed\' ]; then'));
+    assert.equal(result.stdout,'123\tEARLY_SLOT');
+    assert.match(block,/in_progress\|completed/);
+    assert.match(block,/VIBE2_COMPLETED_RESULT_REVIEW_RESUME/);
     assert.match(workflow,/run-id: \$\{\{ needs\.reserve\.outputs\.stranded_review_run \}\}/);
+    assert.match(workflow,/VIBE2_BATCH_EARLY_FAN_IN_ELIGIBLE/);
+    assert.match(workflow,/VIBE2_BATCH_EARLY_FAN_IN_RESULT_COUNT/);
+    assert.match(workflow,/\.filter\(row=>eligible\.has\(String\(row\.taskId\|\|''\)\)\)/);
+    assert.doesNotMatch(block,/vibe2-neuron-complete|repository_dispatch/);
+    assert.equal(runtime.continuous.callbackCoalescing.slotReleasedEarlyFanInBatchReview,true);
+    assert.equal(runtime.continuous.callbackCoalescing.earlyFanInSourceRunMayBeInProgress,true);
+    assert.equal(runtime.continuous.callbackCoalescing.earlyFanInFiltersToReleasedTaskIds,true);
+    assert.equal(runtime.continuous.callbackCoalescing.earlyFanInPerWorkerDispatchRequired,false);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
-
 
 test('candidate promotion preserves the conflict-marker gate without rejecting formatting whitespace',()=>{
   const release=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');

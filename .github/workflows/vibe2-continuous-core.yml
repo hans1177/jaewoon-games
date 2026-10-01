@@ -916,7 +916,7 @@ jobs:
           echo 'VIBE2_MODEL_CACHE_RESERVE_PROBE=SKIPPED_ASSET_LANE'
           echo 'VIBE2_MODEL_CACHE_WARMUP_DECISION=SKIP_ASSET_WORKER_LOCAL_DECISION'
 
-      - name: Resume stranded asset candidate review from completed immutable results
+      - name: Resume completed candidate review from immutable worker results
         id: stranded_review
         continue-on-error: true
         if: steps.main_wake.outputs.proceed != 'false' && (env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development')
@@ -925,29 +925,40 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node <<'NODE' > /tmp/vibe2-stranded-review-runs.txt
+          node <<'NODE' > /tmp/vibe2-stranded-review-runs.tsv
           const fs=require('fs');
           const queue=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
-          const runs=new Set();
+          const lane=String(process.env.VIBE2_EXECUTION_LANE||'game-primary').toLowerCase();
+          const runs=new Map();
           for(const task of queue.tasks||[]){
-            if(task.assetProductionLane!==true || task.status!=='running' || task.blocker!=='candidate-awaiting-qa-and-deployment')continue;
-            if((task.evidence||[]).includes('role-result:review:PASS'))continue;
+            if(task.status!=='running'||(task.evidence||[]).includes('role-result:review:PASS'))continue;
             const run=String(task.reservationRunId||'');
-            if(/^\d+$/.test(run))runs.add(run);
+            if(!/^\d+$/.test(run))continue;
+            const blocker=String(task.blocker||'');
+            const asset=task.assetProductionLane===true||(task.evidence||[]).includes('asset-production-parallel:v1');
+            if(lane==='asset-development'?!asset:asset)continue;
+            const slotReleased=/slot-released.*fan-in/i.test(blocker);
+            const legacyAssetReady=asset&&blocker==='candidate-awaiting-qa-and-deployment';
+            if(!slotReleased&&!legacyAssetReady)continue;
+            const mode=slotReleased?'EARLY_SLOT':'LEGACY_ASSET';
+            if(!runs.has(run)||mode==='EARLY_SLOT')runs.set(run,mode);
           }
-          process.stdout.write([...runs].slice(0,3).join('\n'));
+          for(const [run,mode] of [...runs.entries()].slice(0,3))process.stdout.write(run+'\t'+mode+'\n');
           NODE
-          while IFS= read -r source_run || [ -n "$source_run" ]; do
+          while IFS=$'\t' read -r source_run review_mode || [ -n "$source_run" ]; do
             [ -n "$source_run" ] || continue
-            status="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$source_run" --jq '.status')"
-            if [ "$status" = 'completed' ]; then
-              available="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$source_run/artifacts?per_page=100" --jq '[.artifacts[] | select(.expired == false and (.name | startswith("vibe2-result-")))] | length')"
-              [ "$available" -gt 0 ] || continue
-              echo "source_run=$source_run" >> "$GITHUB_OUTPUT"
-              echo "VIBE2_STRANDED_ASSET_REVIEW_RESUME=$source_run"
-              break
+            status="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$source_run" --jq '.status' 2>/dev/null || true)"
+            if [ "$review_mode" = 'EARLY_SLOT' ]; then
+              case "$status" in in_progress|completed) ;; *) continue ;; esac
+            elif [ "$status" != 'completed' ]; then
+              continue
             fi
-          done < /tmp/vibe2-stranded-review-runs.txt
+            available="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$source_run/artifacts?per_page=100" --jq '[.artifacts[] | select(.expired == false and (.name | startswith("vibe2-result-")))] | length' 2>/dev/null || echo 0)"
+            [ "${available:-0}" -gt 0 ] || continue
+            echo "source_run=$source_run" >> "$GITHUB_OUTPUT"
+            echo "VIBE2_COMPLETED_RESULT_REVIEW_RESUME=$review_mode:$source_run:$status"
+            break
+          done < /tmp/vibe2-stranded-review-runs.tsv
 
   model_cache:
     needs: reserve
@@ -2489,7 +2500,7 @@ jobs:
           github-token: ${{ github.token }}
           run-id: ${{ github.event.client_payload.source_run }}
 
-      - name: Download stranded asset results for existing full review
+      - name: Download completed results for batched early or stranded review
         if: needs.reserve.outputs.stranded_review_run != ''
         uses: actions/download-artifact@v4
         with:
@@ -2500,16 +2511,32 @@ jobs:
           run-id: ${{ needs.reserve.outputs.stranded_review_run }}
 
       - name: Aggregate immutable results
+        env:
+          STRANDED_REVIEW_RUN: ${{ needs.reserve.outputs.stranded_review_run }}
         shell: bash
         run: |
           set -euo pipefail
           node <<'NODE'
           const fs=require('fs'),path=require('path');
-          const dirs=['/tmp/vibe2-results','/tmp/vibe2-stranded-results'].filter(dir=>fs.existsSync(dir));
-          const results=dirs.flatMap(dir=>fs.readdirSync(dir).filter(f=>f.endsWith('.json')).sort().map(f=>JSON.parse(fs.readFileSync(path.join(dir,f),'utf8'))));
           const queue=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
+          const read=dir=>fs.existsSync(dir)
+            ?fs.readdirSync(dir).filter(f=>f.endsWith('.json')).sort().map(f=>JSON.parse(fs.readFileSync(path.join(dir,f),'utf8')))
+            :[];
+          const current=read('/tmp/vibe2-results');
+          const sourceRun=String(process.env.STRANDED_REVIEW_RUN||'');
+          const eligible=new Set((queue.tasks||[]).filter(task=>{
+            if(String(task.status||'')!=='running'||String(task.reservationRunId||'')!==sourceRun)return false;
+            if((task.evidence||[]).includes('role-result:review:PASS'))return false;
+            const blocker=String(task.blocker||'');
+            return /slot-released.*fan-in/i.test(blocker)
+              ||(task.assetProductionLane===true&&blocker==='candidate-awaiting-qa-and-deployment');
+          }).map(task=>String(task.id||'')).filter(Boolean));
+          const resumed=read('/tmp/vibe2-stranded-results').filter(row=>eligible.has(String(row.taskId||'')));
+          const results=[...current,...resumed];
           fs.writeFileSync('/tmp/vibe2-fan-in.json',JSON.stringify({version:3,results,tasks:queue.tasks||[]},null,2)+'\n');
           console.log(`VIBE2_FAN_IN_RESULT_COUNT=${results.length}`);
+          console.log(`VIBE2_BATCH_EARLY_FAN_IN_ELIGIBLE=${eligible.size}`);
+          console.log(`VIBE2_BATCH_EARLY_FAN_IN_RESULT_COUNT=${resumed.length}`);
           NODE
 
       - name: Merge outcomes run regression and package review
