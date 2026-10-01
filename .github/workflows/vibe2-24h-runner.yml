@@ -77,9 +77,6 @@ permissions:
 env:
   VIBE2_PRIORITY_POLICY: owner-release-development
   VIBE2_AUTO_DEPLOY_VERIFIED_ONLY: 'true'
-  VIBE2_MAX_CONCURRENT_GAME_TASKS: '9007199254740991'
-  VIBE2_GAME_PRIMARY_BASELINE_TARGET: '256'
-  VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '30'
   VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'
   VIBE2_WORK_ORDER_OUTPUT_CONTRACT: explicit-cli-first
   VIBE2_24H_LEARNING_PROVIDER: 'LOCAL_OLLAMA'
@@ -89,8 +86,8 @@ env:
   VIBE2_LEARNING_LANE_MAX: '1'
   VIBE2_ASSET_DEVELOPMENT_MAX: '64'
 
-# Scheduler invocations may overlap. Shared control-state writes use optimistic retry;
-# independent game/recovery work must never wait behind an orchestration-wide singleton.
+# Independent reserve invocations may overlap. Shared control-state writes use optimistic retry;
+# independent game/recovery/neural work never waits behind an orchestration-wide singleton.
 
 jobs:
   plan:
@@ -126,7 +123,7 @@ jobs:
           node -e "const fs=require('fs'); for (const file of ['.vibe2/queue.json','.vibe2/parallelism-control.json']) JSON.parse(fs.readFileSync(file,'utf8')); console.log('VIBE2_CONTROL_STATE_JSON=VALID')"
           echo "VIBE2_PRIORITY_POLICY=$VIBE2_PRIORITY_POLICY"
           echo "VIBE2_AUTO_DEPLOY_VERIFIED_ONLY=$VIBE2_AUTO_DEPLOY_VERIFIED_ONLY"
-          echo "VIBE2_MAX_CONCURRENT_GAME_TASKS=$VIBE2_MAX_CONCURRENT_GAME_TASKS"
+          echo 'VIBE2_INTERNAL_GLOBAL_PARALLEL_CAP=NONE'
           echo 'VIBE2_PARALLELISM_POLICY=UNBOUNDED_BY_POLICY'
           echo "VIBE2_EXTERNAL_MATRIX_BATCH_MAX=$VIBE2_EXTERNAL_MATRIX_BATCH_MAX"
           echo "VIBE2_WORK_ORDER_OUTPUT_CONTRACT=$VIBE2_WORK_ORDER_OUTPUT_CONTRACT"
@@ -346,7 +343,7 @@ jobs:
               --roblox-distillation=/tmp/vibe3-roblox-distillation-ledger.json \
               --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
               --root=/tmp/vibe2-main \
-              --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-autoplan.log
+              | tee /tmp/vibe2-autoplan.log
             node /tmp/vibe2-main/tools/company-department-portfolio-control.mjs \
               --catalog=/tmp/vibe2-marketing-catalog.json \
               --development-queue=/tmp/vibe2-company-runtime-queue.json \
@@ -374,9 +371,7 @@ jobs:
           const file = '.vibe2/queue.json';
           const beforeText = fs.readFileSync(file, 'utf8');
           const before = JSON.parse(beforeText);
-          const configured = Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS);
-          const maxConcurrentTasks = Number.isFinite(configured) && configured > 0 ? Math.floor(configured) : 256;
-          const normalized = createVibeContinuousQueue({ ...before, maxConcurrentTasks });
+          const normalized = createVibeContinuousQueue(before);
           const afterText = `${JSON.stringify(normalized, null, 2)}\n`;
           if (beforeText !== afterText) {
             fs.writeFileSync(file, afterText, 'utf8');
@@ -504,11 +499,6 @@ jobs:
           const assetQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='ASSET_DEVELOPMENT').length;
           const learningQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='LEARNING_IDLE').length;
           const recoveryQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='RECOVERY_FAST').length;
-          const control=JSON.parse(fs.readFileSync('.vibe2/parallelism-control.json','utf8'));
-          const configuredMax=Math.max(1,Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||Number.MAX_SAFE_INTEGER));
-          const baselineTarget=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_BASELINE_TARGET||256));
-          const adaptiveMin=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_ADAPTIVE_MIN||30));
-          const controlTarget=Math.max(adaptiveMin,Number(control.currentMax||baselineTarget));
           const executionIdle=activeGame===0?'YES':'NO';
           const assetMax=Math.max(1,Number(process.env.VIBE2_ASSET_DEVELOPMENT_MAX||64));
           const assetRefillReady=Math.max(0,assetMax-activeAsset)>0?'YES':'NO';
@@ -523,7 +513,6 @@ jobs:
             'recovery_fast_queued='+recoveryQueued+'\n');
           console.log('VIBE2_24H_ACTIVE_GAME_WORKER_RESERVATIONS='+activeGame);
           console.log('VIBE2_24H_GAME_PRIMARY_INTERNAL_CAP=NONE');
-          console.log('VIBE2_24H_ADAPTIVE_RECOMMENDED_MAX='+controlTarget);
           console.log('VIBE2_24H_EXTERNAL_MATRIX_TRANSPORT_PARTITION='+process.env.VIBE2_EXTERNAL_MATRIX_BATCH_MAX);
           console.log('VIBE2_24H_GAME_PRIMARY_QUEUED='+gameQueued);
           console.log('VIBE2_ASSET_DEVELOPMENT_QUEUED='+assetQueued);
@@ -651,7 +640,6 @@ jobs:
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: recovery-fast
-      lane_max: '9007199254740991'
     permissions:
       contents: write
       actions: write
@@ -662,7 +650,6 @@ jobs:
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: game-primary
-      lane_max: '9007199254740991'
     permissions:
       contents: write
       actions: write
@@ -673,7 +660,6 @@ jobs:
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: asset-development
-      lane_max: '64'
     permissions:
       contents: write
       actions: write
@@ -685,7 +671,6 @@ jobs:
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: learning-idle
-      lane_max: '1'
     permissions:
       contents: write
       actions: write

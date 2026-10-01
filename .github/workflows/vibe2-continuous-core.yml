@@ -8,10 +8,6 @@ on:
         required: false
         type: string
         default: game-primary
-      lane_max:
-        required: false
-        type: string
-        default: ''
   workflow_dispatch:
     inputs:
       execution_lane:
@@ -23,10 +19,6 @@ on:
           - asset-development
           - learning-idle
           - control-fast
-      lane_max:
-        required: false
-        type: string
-        default: ''
   repository_dispatch:
     types: [vibe2-neuron-complete, vibe2-fanin-refill]
   schedule:
@@ -77,10 +69,9 @@ env:
   VIBE2_LOCAL_MODEL: qwen3:1.7b
   VIBE2_MODEL_MAX_PREDICT: '3072'
   VIBE2_MODEL_TIMEOUT_MS: '240000'
-  VIBE2_MAX_CONCURRENT_GAME_TASKS: '9007199254740991'
   VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'
-  VIBE2_GAME_PRIMARY_BASELINE_TARGET: '256'
-  VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '30'
+  VIBE2_LEARNING_LANE_MAX: '1'
+  VIBE2_ASSET_DEVELOPMENT_MAX: '64'
   OLLAMA_HOST: 127.0.0.1:11434
   VIBE2_GAME_DEVELOPMENT_OWNER: VIBE2_VIBE3
   VIBE2_GAME_SOURCE_PROVIDER: LOCAL_OLLAMA
@@ -90,7 +81,6 @@ env:
   VIBE2_OPENAI_PAID_API_ALLOWED: 'false'
   VIBE2_SHARED_CONTEXT_REQUIRED: 'true'
   VIBE2_EXECUTION_LANE: ${{ inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary' }}
-  VIBE2_LANE_MAX: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && '1' || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && '64') || '9007199254740991' }}
 
 jobs:
   reserve:
@@ -104,7 +94,6 @@ jobs:
       worker_count: ${{ steps.batch.outputs.worker_count }}
       task_count: ${{ steps.batch.outputs.task_count }}
       reserved_at: ${{ steps.batch.outputs.reserved_at }}
-      effective_max: ${{ steps.batch.outputs.effective_max }}
       contract_sha: ${{ steps.contract.outputs.sha }}
       task_review_required: ${{ steps.batch.outputs.task_review_required }}
       stranded_review_run: ${{ steps.stranded_review.outputs.source_run }}
@@ -205,8 +194,8 @@ jobs:
           set -euo pipefail
           control_root="$GITHUB_WORKSPACE"
           test -d "$control_root/.git"
-          git -C "$control_root" config user.name 'jaewoon-vibe2-scheduler'
-          git -C "$control_root" config user.email 'vibe2-scheduler@users.noreply.github.com'
+          git -C "$control_root" config user.name 'jaewoon-vibe2-runtime'
+          git -C "$control_root" config user.email 'vibe2-runtime@users.noreply.github.com'
           echo "VIBE2_CONTROL_ROOT=$control_root"
 
           callback_ref="${GITHUB_REF_NAME:-}"
@@ -247,8 +236,6 @@ jobs:
                 --queue="$control_root/.vibe2/queue.json" \
                 --control="$control_root/.vibe2/parallelism-control.json" \
                 --lane="$VIBE2_EXECUTION_LANE" \
-                --max="$VIBE2_LANE_MAX" \
-                --min="$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN" \
                 --expected-variants="$expected_variants" \
                 --input="$neuron_result_file" | tee /tmp/vibe2-neuron-complete.log
               neuron_reason="$(sed -n 's/^VIBE2_NEURON_RESULT=//p' /tmp/vibe2-neuron-complete.log | tail -n1)"
@@ -349,7 +336,7 @@ jobs:
               --experience="$control_root/.vibe2/experience.json" \
               --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
               --root=/tmp/vibe2-main \
-              --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-reserve-autoplan.log
+              | tee /tmp/vibe2-reserve-autoplan.log
             node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs \
               --state="$control_root/.vibe2/learning-motor-state.json" \
               --experience="$control_root/.vibe2/experience.json" \
@@ -433,8 +420,6 @@ jobs:
           echo "VIBE2_ACTIVE_LANE_RESERVATIONS_BEFORE_RESERVE=${active_worker_reservations:-0}"
           reservation_id="${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}"
           reserved_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-          lane_min='1'
-          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then lane_min="$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN"; fi
           if [ "${active_worker_reservations:-0}" -gt 0 ]; then
             echo 'VIBE2_RESERVE_MODE=INDEPENDENT_PARALLEL_REFILL_DURING_ACTIVE_WORK'
           else
@@ -444,9 +429,7 @@ jobs:
             --queue="$control_root/.vibe2/queue.json" \
             --control="$control_root/.vibe2/parallelism-control.json" \
             --lane="$VIBE2_EXECUTION_LANE" \
-            --max="$VIBE2_LANE_MAX" \
             --batch-max="$VIBE2_EXTERNAL_MATRIX_BATCH_MAX" \
-            --min="$lane_min" \
             --reservation-id="$reservation_id" \
             --reservation-run="$GITHUB_RUN_ID" \
             --reservation-attempt="$GITHUB_RUN_ATTEMPT" \
@@ -502,10 +485,19 @@ jobs:
             node <<'NODE'
           const fs=require('fs');
           const payload={
-            version:1,
+            version:5,
             createdAt:new Date().toISOString(),
             matrix:[],
-            scheduler:{requestedMaxConcurrentTasks:0,effectiveMaxConcurrentTasks:0,longWorkProtectedSlotUsed:false}
+            execution:{
+              internalGlobalParallelCap:null,
+              laneMaxActiveWorkers:null,
+              externalMatrixTransportPartitionMax:Number(process.env.VIBE2_EXTERNAL_MATRIX_BATCH_MAX||256),
+              externalBatchLimit:Number(process.env.VIBE2_EXTERNAL_MATRIX_BATCH_MAX||256),
+              primaryTaskCount:0,
+              workerCount:0,
+              speculativeExpansionAllowed:true,
+              speculativeExpansionReason:'NO_TASKS'
+            }
           };
           fs.writeFileSync('/tmp/vibe2-batch.json',JSON.stringify(payload,null,2)+'\n');
           NODE
@@ -542,7 +534,7 @@ jobs:
             const requestedVariantCount=Math.max(1,Math.min(Math.max(1,Number(process.env.VIBE2_EXTERNAL_MATRIX_BATCH_MAX)||256),Number(row.speculativeVariants||1)));
             const variantCount=assetLane?1:requestedVariantCount;
             if(assetLane)suppressedSpeculativeWorkers+=Math.max(0,requestedVariantCount-1);
-            const shared={taskId:row.taskId,target:row.target||'',safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',longWorkProtected:row.longWorkProtected===true,reservationId:row.reservationId||'',reservationRunId:row.reservationRunId||'',reservationRunAttempt:Number(row.reservationRunAttempt||0),reservedAt:row.reservedAt||batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||256),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||256),expectedVariants:variantCount};
+            const shared={taskId:row.taskId,target:row.target||'',safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',longWorkProtected:row.longWorkProtected===true,reservationId:row.reservationId||'',reservationRunId:row.reservationRunId||'',reservationRunAttempt:Number(row.reservationRunAttempt||0),reservedAt:row.reservedAt||batch.createdAt,transportPartitionMax:Number(batch.execution?.externalMatrixTransportPartitionMax||process.env.VIBE2_EXTERNAL_MATRIX_BATCH_MAX||256),expectedVariants:variantCount};
             workers.push({...shared,variant:'primary'});
             for(let i=1;i<variantCount;i++)workers.push({...shared,variant:`speculative-${i}`});
           }
@@ -550,16 +542,14 @@ jobs:
           fs.appendFileSync(out,`worker_count=${workers.length}\n`);
           fs.appendFileSync(out,`task_count=${(batch.matrix||[]).length}\n`);
           fs.appendFileSync(out,`reserved_at=${batch.createdAt||''}\n`);
-          fs.appendFileSync(out,`effective_max=${Number(batch.scheduler?.effectiveMaxConcurrentTasks||256)}\n`);
           console.log(`VIBE2_HIERARCHICAL_FAN_OUT=${workers.length}`);
           console.log(`VIBE2_RESERVED_TASK_COUNT=${(batch.matrix||[]).length}`);
-          console.log(`VIBE2_PRIMARY_TASK_COUNT=${Number(batch.scheduler?.primaryTaskCount||(batch.matrix||[]).length)}`);
-          console.log(`VIBE2_SPECULATIVE_WORKER_COUNT=${Math.max(0,workers.length-Number(batch.scheduler?.primaryTaskCount||(batch.matrix||[]).length))}`);
+          console.log(`VIBE2_PRIMARY_TASK_COUNT=${Number(batch.execution?.primaryTaskCount||(batch.matrix||[]).length)}`);
+          console.log(`VIBE2_SPECULATIVE_WORKER_COUNT=${Math.max(0,workers.length-Number(batch.execution?.primaryTaskCount||(batch.matrix||[]).length))}`);
           console.log(`VIBE2_ASSET_SPECULATIVE_VARIANTS_SUPPRESSED=${assetLane?'YES':'NO'}`);
           console.log(`VIBE2_ASSET_SPECULATIVE_WORKERS_AVOIDED=${suppressedSpeculativeWorkers}`);
-          console.log(`VIBE2_SPECULATIVE_EXPANSION=${assetLane?'SUPPRESSED_ASSET_OLLAMA_DUPLICATION':(batch.scheduler?.speculativeExpansionAllowed===false?'SUPPRESSED_RUNNER_PRESSURE':'ENABLED')}`);
-          console.log(`VIBE2_SPECULATIVE_EXPANSION_REASON=${String(batch.scheduler?.speculativeExpansionReason||'AVAILABLE')}`);
-          console.log(`VIBE2_LONG_WORK_PROTECTED_SLOT=${batch.scheduler?.longWorkProtectedSlotUsed?'USED':'NOT_USED'}`);
+          console.log(`VIBE2_SPECULATIVE_EXPANSION=${assetLane?'SUPPRESSED_ASSET_OLLAMA_DUPLICATION':(batch.execution?.speculativeExpansionAllowed===false?'SUPPRESSED_RUNNER_PRESSURE':'ENABLED')}`);
+          console.log(`VIBE2_SPECULATIVE_EXPANSION_REASON=${String(batch.execution?.speculativeExpansionReason||'AVAILABLE')}`);
           NODE
 
       - name: Probe shared Ollama cache from reserve runner
@@ -1664,8 +1654,7 @@ jobs:
           SAFE_TASK: ${{ matrix.safeTask }}
           RESERVATION_ID: ${{ matrix.reservationId }}
           RESERVED_AT: ${{ matrix.reservedAt }}
-          REQUESTED_MAX: ${{ matrix.requestedMax }}
-          EFFECTIVE_MAX: ${{ matrix.effectiveMax }}
+          TRANSPORT_PARTITION_MAX: ${{ matrix.transportPartitionMax }}
           WORKER_STARTED_AT_FILE: /tmp/vibe2-worker-start-ms
           CHECKOUT_MS: ${{ steps.checkout_metrics.outputs.ms }}
           MODEL_CACHE_REQUIRED: ${{ steps.model_need.outputs.required }}
@@ -1926,7 +1915,7 @@ jobs:
           const workerFinishedAt=Date.now();
           const cacheRaw=clean(process.env.OLLAMA_CACHE_HIT).toLowerCase();
           const metrics={
-            requestedMax:Number(process.env.REQUESTED_MAX||256),effectiveMax:Number(process.env.EFFECTIVE_MAX||256),reservationId:clean(process.env.RESERVATION_ID),reservedAt:clean(process.env.RESERVED_AT),
+            transportPartitionMax:Number(process.env.TRANSPORT_PARTITION_MAX||256),reservationId:clean(process.env.RESERVATION_ID),reservedAt:clean(process.env.RESERVED_AT),
             workerStartedAt,workerFinishedAt,checkoutMs:Number(process.env.CHECKOUT_MS||0),modelPrepMs:Number(process.env.MODEL_PREP_MS||0),
             candidateMs:Number(process.env.CANDIDATE_MS||0),qaMs:Number(process.env.QA_MS||0),workerTotalMs:Math.max(0,workerFinishedAt-workerStartedAt),
             changedFileCount:Number(process.env.CHANGED_FILE_COUNT||0),addedLineCount:Number(process.env.ADDED_LINE_COUNT||0),deletedLineCount:Number(process.env.DELETED_LINE_COUNT||0),
@@ -2229,8 +2218,6 @@ jobs:
           test -n "$contract_sha"
           test "$(git -C "$contract_root" rev-parse HEAD)" = "$contract_sha"
 
-          lane_min='1'
-          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then lane_min="$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN"; fi
           # Game-primary candidates require full regression. Auxiliary analysis/practice lanes are source-write:NO and do not mutate production.
           if [[ "$VIBE2_EXECUTION_LANE" == 'game-primary' || "$VIBE2_EXECUTION_LANE" == 'asset-development' ]]; then
             export VIBE2_FANIN_CONTRACT_SHA="$contract_sha"
@@ -2309,8 +2296,7 @@ jobs:
                 --queue="$control_root/.vibe2/queue.json" \
                 --control="$control_root/.vibe2/parallelism-control.json" \
                 --lane="$VIBE2_EXECUTION_LANE" \
-                --min="$lane_min" \
-                --input=/tmp/vibe2-fan-in.json > /tmp/vibe2-fan-in-regression-replay.log
+                    --input=/tmp/vibe2-fan-in.json > /tmp/vibe2-fan-in-regression-replay.log
               node "$contract_root/tools/vibe2-queue-control.mjs" fan-in-regression-fail \
                 --queue="$control_root/.vibe2/queue.json" \
                 --control="$control_root/.vibe2/parallelism-control.json" \
@@ -2391,8 +2377,7 @@ jobs:
               --queue="$control_root/.vibe2/queue.json" \
               --control="$control_root/.vibe2/parallelism-control.json" \
               --lane="$VIBE2_EXECUTION_LANE" \
-              --min="$lane_min" \
-              --input=/tmp/vibe2-fan-in.json | tee /tmp/vibe2-fan-in.log
+                --input=/tmp/vibe2-fan-in.json | tee /tmp/vibe2-fan-in.log
 
             node "$contract_root/tools/vibe2-practice-distillation.mjs" \
               --fanin=/tmp/vibe2-fan-in.json \
@@ -2467,8 +2452,7 @@ jobs:
             --queue="$control_root/.vibe2/queue.json" \
             --control="$control_root/.vibe2/parallelism-control.json" \
             --lane="$VIBE2_EXECUTION_LANE" \
-            --max="$VIBE2_LANE_MAX" \
-            --min="$lane_min" | tee /tmp/vibe2-summary.log
+            | tee /tmp/vibe2-summary.log
           continue_required="$(sed -n 's/^VIBE2_QUEUE_CONTINUE=//p' /tmp/vibe2-summary.log | tail -n1)"
           if [ "${continue_required:-NO}" = 'YES' ]; then
             echo 'refill=1' >> "$GITHUB_OUTPUT"
@@ -2620,8 +2604,7 @@ jobs:
         if: always()
         continue-on-error: true
         env:
-          REQUESTED_MAX: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && '1' || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && '64') || '9007199254740991' }}
-          EFFECTIVE_MAX: ${{ needs.reserve.outputs.effective_max }}
+          TRANSPORT_PARTITION_MAX: ${{ env.VIBE2_EXTERNAL_MATRIX_BATCH_MAX }}
           TASK_COUNT: ${{ needs.reserve.outputs.task_count }}
           FAN_CHECKOUT_MS: ${{ steps.fan_checkout_metrics.outputs.ms }}
         shell: bash
@@ -2630,9 +2613,7 @@ jobs:
           test -f /tmp/vibe2-fan-in.json || exit 0
           fan_end="$(date +%s%3N)"
           fan_start="$(cat /tmp/vibe2-fan-in-start-ms)"
-          fallback_effective="$VIBE2_LANE_MAX"
-          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then fallback_effective="$VIBE2_GAME_PRIMARY_BASELINE_TARGET"; fi
-          node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-parallelism-telemetry.mjs" --input=/tmp/vibe2-fan-in.json --requested="$REQUESTED_MAX" --effective="${EFFECTIVE_MAX:-$fallback_effective}" --task-count="${TASK_COUNT:-0}" --output=/tmp/vibe2-parallelism-telemetry.json | tee /tmp/vibe2-parallelism-telemetry.log
+          node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-parallelism-telemetry.mjs" --input=/tmp/vibe2-fan-in.json --requested="$TRANSPORT_PARTITION_MAX" --effective="$TRANSPORT_PARTITION_MAX" --task-count="${TASK_COUNT:-0}" --output=/tmp/vibe2-parallelism-telemetry.json | tee /tmp/vibe2-parallelism-telemetry.log
           node - "$FAN_CHECKOUT_MS" "$((fan_end-fan_start))" <<'NODE2'
           const fs=require('fs');const [checkout,total]=process.argv.slice(2).map(Number);const file='/tmp/vibe2-parallelism-telemetry.json';const x=JSON.parse(fs.readFileSync(file,'utf8'));x.fanIn={checkoutMs:checkout||0,totalMs:total||0};fs.writeFileSync(file,JSON.stringify(x,null,2)+'\n');
           NODE2
