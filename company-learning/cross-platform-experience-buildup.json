@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "authority": "MACHINE_EXECUTION_CONTRACT",
+  "id": "CROSS_PLATFORM_EXPERIENCE_BUILDUP_V1",
+  "appliesTo": [
+    "WEB",
+    "ROBLOX",
+    "UNITY"
+  ],
+  "qualityProfile": "HIGH_END_PERCEPTUAL_BUILDUP",
+  "purpose": "Continuously raise player-perceived quality instead of treating feature presence or source binding as completion.",
+  "rules": {
+    "presenceOnlyPassForbidden": true,
+    "markerOnlyPassForbidden": true,
+    "gameplayAuthorityMustRemainUnchanged": true,
+    "beforeAfterRuntimeEvidenceRequiredForPromotion": true,
+    "weakestAxisFirst": true,
+    "focusedRepairPreferred": true,
+    "fullRegressionAfterFocusedRepair": true,
+    "repeatUntilTargetOrExplicitOwnerException": true
+  },
+  "loop": [
+    "BASELINE_CAPTURE",
+    "WEAKEST_AXIS_DIAGNOSIS",
+    "FOCUSED_BUILDUP",
+    "RUNTIME_REPLAY",
+    "BEFORE_AFTER_COMPARE",
+    "REGRESSION_CHECK",
+    "REPEAT_UNTIL_TARGET"
+  ],
+  "axes": {
+    "MOTION": {
+      "weight": 14,
+      "description": "Locomotion, idle, turn, attack, hit, death and weight transfer feel visibly authored rather than root-only or micro-bob."
+    },
+    "COMBAT_FEEL": {
+      "weight": 12,
+      "description": "Anticipation, impact, recoil, hit readability and action feedback are immediately perceptible without changing combat authority."
+    },
+    "UI_HUD": {
+      "weight": 11,
+      "description": "Hierarchy, readability, touch targets, safe areas, overlap, state feedback and screen density remain commercial-quality."
+    },
+    "INVENTORY_EQUIPMENT": {
+      "weight": 9,
+      "description": "Acquisition, inventory, equip/unequip and equipped-state feedback are discoverable and visibly confirm state changes."
+    },
+    "AUDIO_MUSIC": {
+      "weight": 10,
+      "description": "At least one active runtime audio layer exists and music/SFX state supports gameplay context without masking important cues."
+    },
+    "VFX": {
+      "weight": 8,
+      "description": "Telegraphs, impacts and signature events use readable intensity hierarchy and never obscure required play information."
+    },
+    "CAMERA": {
+      "weight": 8,
+      "description": "Follow, framing, impact response and focus hierarchy feel responsive while preserving mobile readability and telegraphs."
+    },
+    "WORLD_ART_LIGHTING": {
+      "weight": 10,
+      "description": "World materials, lighting, landmarks, atmosphere and environment dressing communicate region identity and gameplay risk."
+    },
+    "ONBOARDING_READABILITY": {
+      "weight": 6,
+      "description": "The first playable state communicates objective and next action without a blocking tutorial wall."
+    },
+    "MOBILE_INPUT": {
+      "weight": 7,
+      "description": "Primary actions remain touchable, responsive and safe-area aware with no hidden or undersized essential control."
+    },
+    "PERFORMANCE_STABILITY": {
+      "weight": 5,
+      "description": "Presentation buildup stays within runtime memory/scene complexity budgets and does not regress stability."
+    }
+  },
+  "platformProfiles": {
+    "ROBLOX": {
+      "minimumOverallScore": 82,
+      "minimumRequiredAxisScore": 66,
+      "actualRuntimeRequired": true,
+      "evidence": "OFFICIAL_STUDIO_MCP",
+      "emphasis": [
+        "MOTION",
+        "COMBAT_FEEL",
+        "UI_HUD",
+        "AUDIO_MUSIC",
+        "CAMERA",
+        "WORLD_ART_LIGHTING"
+      ],
+      "notes": [
+        "Animator/Motor6D presence alone is insufficient; actual movement/action or active AnimationTrack evidence is required.",
+        "Sound instances alone are insufficient; at least one runtime-playing sound is required for commercial audio acceptance.",
+        "Inventory/equipment games must show a discoverable surface and an observed state-changing action when such an action is exercised."
+      ]
+    },
+    "WEB": {
+      "minimumOverallScore": 78,
+      "minimumRequiredAxisScore": 62,
+      "actualRuntimeRequired": true,
+      "evidence": "REAL_BROWSER_INPUT_PLUS_BEFORE_AFTER_CAPTURE",
+      "emphasis": [
+        "UI_HUD",
+        "MOBILE_INPUT",
+        "MOTION",
+        "COMBAT_FEEL",
+        "AUDIO_MUSIC"
+      ],
+      "notes": [
+        "Canvas/CSS source markers cannot replace real browser-visible change."
+      ]
+    },
+    "UNITY": {
+      "minimumOverallScore": 80,
+      "minimumRequiredAxisScore": 64,
+      "actualRuntimeRequired": true,
+      "evidence": "UNITY_WEB_OR_NATIVE_RUNTIME",
+      "emphasis": [
+        "MOTION",
+        "UI_HUD",
+        "AUDIO_MUSIC",
+        "WORLD_ART_LIGHTING",
+        "PERFORMANCE_STABILITY"
+      ],
+      "notes": [
+        "Unity Web development-floor evidence is compatibility/runtime evidence; native promotion still requires native runtime proof."
+      ]
+    }
+  }
+}
