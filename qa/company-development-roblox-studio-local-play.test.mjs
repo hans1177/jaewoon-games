@@ -36,7 +36,7 @@ const artifact='sha256:'+'b'.repeat(64);
 
 test('Studio commercial probe ignores zero-size platform controls',()=>{
   assert.match(helper,/local measurable=row\.width>=1 and row\.height>=1/);
-  assert.match(helper,/if measurable then[\s\S]*gui\.undersizedTouchButtons/);
+  assert.match(helper,/if measurable and not internalQa then[\s\S]*gui\.undersizedTouchButtons/);
 });
 
 test('Studio world probe excludes Terrain extents and approaches prompts within activation distance',()=>{
