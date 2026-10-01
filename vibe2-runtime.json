@@ -747,12 +747,14 @@
       "mode": "PARALLEL_RESERVE_OPTIMISTIC_SHARED_QUEUE_WRITE",
       "crossLaneGlobalReserveLock": false,
       "sameLaneReserveSerialization": false,
-      "statelessRefillCoalescing": "RUN_UNIQUE_OPTIMISTIC_SHARED_QUEUE_WRITE",
+      "statelessRefillCoalescing": "ONE_RUNNING_AND_LATEST_PENDING_PER_LANE",
       "sharedQueueWriteRetryAttempts": null,
       "sharedQueueWriteRetryPolicy": "UNBOUNDED_WITH_CAPPED_BACKOFF",
       "gamePrimaryExternalBoundary": 256,
       "reserveJobsParallel": true,
-      "serializationScope": "ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY"
+      "serializationScope": "ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY",
+      "statelessRefillCoalescingScope": "FANIN_REFILL_RESERVE_JOB_ONLY",
+      "workerCohortsRemainParallel": true
     },
     "assetDevelopmentControlRunnerPool": {
       "authority": "company-learning/platform-release-roadmap.json#changeRecord.assetArmControlPlaneIsolation20260927",

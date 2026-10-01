@@ -1414,7 +1414,7 @@
         ],
         "crossLaneGlobalReserveLock": false,
         "sameLaneReserveSerialization": false,
-        "statelessRefillCoalescing": "RUN_UNIQUE_OPTIMISTIC_SHARED_QUEUE_WRITE",
+        "statelessRefillCoalescing": "ONE_RUNNING_AND_LATEST_PENDING_PER_LANE",
         "sharedQueue": "vibe2-unreal-core:.vibe2/queue.json",
         "conflictResolution": "FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UNBOUNDED_WITH_CAPPED_BACKOFF_ON_ACTUAL_WRITE_CONFLICT",
         "workerDirectControlWrite": false,
@@ -1428,7 +1428,9 @@
           "gamePrimaryExternalBoundaryObserved": 256
         },
         "reserveJobsParallel": true,
-        "serializationScope": "ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY"
+        "serializationScope": "ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY",
+        "statelessRefillCoalescingScope": "FANIN_REFILL_RESERVE_JOB_ONLY",
+        "workerCohortsRemainParallel": true
       },
       "learningIdlePressureGate": {
         "version": 1,
