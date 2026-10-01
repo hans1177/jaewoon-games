@@ -1,8 +1,8 @@
 {
-  "version": 518,
+  "version": 519,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
-  "recordedAt": "2026-10-01",
+  "recordedAt": "2026-10-02",
   "priority": [
     "ROBLOX",
     "UNITY"
@@ -6443,7 +6443,10 @@
       "homepageWebPlayable": true,
       "hasWebArchive": true,
       "releasePromotionImplicit": false,
-      "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
+      "selectedPlatformMayBeInferredByExistingClassificationPolicy": true,
+      "reconcileExistingCatalogGamesEveryStatusSync": true,
+      "existingCanonicalIndexEnablesWebPlay": true,
+      "missingCanonicalIndexDoesNotCreateVisibleTitleOnlyCard": true
     }
   },
   "updatedAt": "2026-10-01T04:34:00.000Z",
@@ -6559,7 +6562,7 @@
         },
         {
           "id": "IN_DEVELOPMENT",
-          "source": "ALL_ACTIVE_NON_RELEASED_GAMES",
+          "source": "ACTIVE_GAMES_WITH_AT_LEAST_ONE_RUNNABLE_TARGET",
           "label": "개발 중"
         }
       ],
@@ -6648,7 +6651,7 @@
         "staleSharedRobloxTargetMayNotActivate": true,
         "playableWebCompanionActionEnabled": true,
         "playableWebCompanionActionLabel": "웹 플레이",
-        "playableWebCompanionSource": "COMPANY_RUNTIME_GAME_CATALOG",
+        "playableWebCompanionSource": "ACTUAL_CANONICAL_WEB_ENTRY",
         "playableWebCompanionRequiresPlayableAndArchive": true,
         "playableWebCompanionRequiresExistingCanonicalIndex": true,
         "playableWebCompanionMayBeDirectLaunchFallback": true,
@@ -6657,7 +6660,9 @@
         "releasedExperienceLabels": [
           "로비 체험",
           "본게임 가능"
-        ]
+        ],
+        "cardVisibilityRequiresRunnableTarget": true,
+        "titleOnlyCardExposureForbidden": true
       },
       "recentUpdates": {
         "enabled": true,
@@ -6707,11 +6712,14 @@
     ],
     "ownerWebUpload": {
       "triggerRoot": "web-games/**",
-      "changedGameIdsOnly": true,
+      "changedGameIdsOnly": false,
       "ingestViaExistingStatusSync": true,
       "autoRegisterNewWebGameAs": "DESIGN_ONLY_WEB_PUBLISHED",
       "preserveExistingIdentity": true,
-      "publishAfterRuntimeSyncAndHomepageQa": true
+      "publishAfterRuntimeSyncAndHomepageQa": true,
+      "reconcileExistingCatalogGamesEveryStatusSync": true,
+      "existingCanonicalIndexEnablesWebPlay": true,
+      "missingCanonicalIndexHidesTitleOnlyCard": true
     },
     "executionPipeline": {
       "mode": "TWO_STAGE_MANAGER_THEN_DIRECTOR_REVIEW_AND_PUBLISH",
@@ -6746,7 +6754,7 @@
       "ROBLOX",
       "UNITY"
     ],
-    "showWebPlay": false,
+    "showWebPlay": true,
     "showUnityWeb": true,
     "showInternalReleaseState": true,
     "showPublicReleaseState": true,
@@ -6858,7 +6866,7 @@
         "unityWebLegacyBuildCompatibility": true,
         "playableWebCompanionButtonEnabled": true,
         "playableWebCompanionButtonLabel": "웹 플레이",
-        "playableWebCompanionSource": "COMPANY_RUNTIME_GAME_CATALOG",
+        "playableWebCompanionSource": "ACTUAL_CANONICAL_WEB_ENTRY",
         "playableWebCompanionRequiresPlayableAndArchive": true,
         "playableWebCompanionRequiresExistingCanonicalIndex": true,
         "runtimeCatalogMirrorsToHomepageOnEverySuccessfulNonPrSync": true,
@@ -6866,7 +6874,11 @@
         "runtimeCatalogMirrorMode": "RECONCILE_RUNTIME_STATE_ON_CANONICAL_MAIN_REGISTRY",
         "rawRuntimeCatalogDirectCopyForbidden": true,
         "actualGameFileSourceMetadataPreserved": true,
-        "canonicalNormalizationRequiredBeforeHomepagePublication": true
+        "canonicalNormalizationRequiredBeforeHomepagePublication": true,
+        "playableWebCompanionAvailability": "ALL_VISIBLE_GAME_CARDS_WHEN_WEB_GAMES_GAME_ID_INDEX_EXISTS",
+        "playableWebCompanionMissingEntryState": "HIDE_CARD_WHEN_NO_OTHER_RUNNABLE_TARGET",
+        "cardVisibilityRequiresRunnableTarget": true,
+        "titleOnlyCardExposureForbidden": true
       },
       "autoClassification": {
         "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
@@ -8573,6 +8585,16 @@
         "generationLimit": null,
         "newIdeaRequiredEveryCycle": true
       }
+    },
+    "homepageRunnableOnlyExposure20261002": {
+      "id": "HOMEPAGE_RUNNABLE_ONLY_EXPOSURE_2026-10-02",
+      "authority": "OWNER_DIRECTIVE_2026-10-02",
+      "summary": "Existing homepage game cards are visible only when at least one runnable target exists; canonical web-games/<gameId>/index.html is reconciled on every status sync and enables Web play.",
+      "centralPolicyFirst": true,
+      "newPipelineCreated": false,
+      "existingStatusSyncReused": true,
+      "titleOnlyCardExposureForbidden": true,
+      "actualCanonicalWebEntryEnablesHomepagePlay": true
     }
   },
   "vibeExecutionLaneContract": {
