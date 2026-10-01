@@ -1725,36 +1725,72 @@ export function verifiedExternalLearningBlockFromPrompt(prompt=''){
 export function compactVerifiedExternalLearningBlockFromPrompt(prompt=''){
   const block=verifiedExternalLearningBlockFromPrompt(prompt);
   if(!block)return'';
-  const lines=block.split('\n');
-  const applyCount=lines.filter(line=>line.startsWith('APPLY=')).length;
+  if(Buffer.byteLength(block,'utf8')<=18000)return block;
+  const itemPattern=/\[EXTERNAL_LEARNING ([^\]]+)\]\n([\s\S]*?)\n\[END_EXTERNAL_LEARNING \1\]/g;
+  const items=[...block.matchAll(itemPattern)];
+  if(!items.length)return block;
+  const dispositionCount=[...block.matchAll(/^DISPOSITION=/gm)].length;
+  const applyCount=[...block.matchAll(/^APPLY=/gm)].length;
   const compactText=(value,maxBytes)=>{
-    const raw=String(value??''),limit=Math.max(24,Number(maxBytes)||24);
+    const raw=String(value??'').replace(/\s+/g,' ').trim();
+    const limit=Math.max(24,Number(maxBytes)||24);
     if(Buffer.byteLength(raw,'utf8')<=limit)return raw;
-    const chars=[...raw],marker='…';
-    let low=0,high=chars.length,best=marker;
+    const marker=limit>=48?' ...[COMPACTED_DUPLICATE_DETAIL]... ':'…';
+    const chars=[...raw];
+    let low=0,high=chars.length,best=marker.trim();
     while(low<=high){
-      const keep=Math.floor((low+high)/2),head=Math.ceil(keep*.7),tail=Math.floor(keep*.3);
+      const keep=Math.floor((low+high)/2),head=Math.ceil(keep/2),tail=Math.floor(keep/2);
       const candidate=chars.slice(0,head).join('')+marker+chars.slice(chars.length-tail).join('');
       if(Buffer.byteLength(candidate,'utf8')<=limit){best=candidate;low=keep+1;}else high=keep-1;
     }
     return best;
   };
-  const shortened=lines.map(line=>{
-    if(!line.startsWith('DISPOSITION='))return line;
-    const match=/^DISPOSITION=([^:;]+):([^;]+);/.exec(line);
-    return match?'DISPOSITION='+match[1]+':'+match[2]+';':line;
-  });
-  const fixedRows=shortened.filter(line=>!line.startsWith('APPLY='));
-  const fixedBytes=Buffer.byteLength(fixedRows.join('\n'),'utf8')+Math.max(0,lines.length-1);
-  const targetBytes=16000;
-  const available=Math.max(0,targetBytes-fixedBytes);
-  const applyBudget=applyCount?Math.max(24,Math.min(512,Math.floor(available/applyCount)-Buffer.byteLength('APPLY=','utf8'))):0;
-  return shortened.map(line=>{
-    if(line.startsWith('APPLY='))return 'APPLY='+compactText(line.slice('APPLY='.length),applyBudget);
-    if(line.startsWith('sourcePromptScope='))return 'sourcePromptScope=APPLIED_GAME_SOURCE_ONLY; validation stays in QA';
-    if(line.startsWith('HARD SOURCE-WORKER RULE:'))return 'HARD SOURCE-WORKER RULE: apply source principles only; preserve authority and do not copy proprietary expression.';
-    return line;
-  }).join('\n');
+  const prefixEnd=items[0].index;
+  const suffixStart=items.at(-1).index+items.at(-1)[0].length;
+  const prefix=block.slice(0,prefixEnd).trimEnd();
+  const suffix=block.slice(suffixStart).trimStart();
+  const render=(applyBudget,dispositionExtraBudget)=>[
+    prefix,
+    ...items.map(match=>{
+      const id=match[1],body=match[2],lines=body.split('\n'),out=[];
+      for(let i=0;i<lines.length;){
+        const line=lines[i];
+        if(line.startsWith('DISPOSITION=')){
+          const bodyText=line.slice('DISPOSITION='.length);
+          const segments=bodyText.split(';');
+          const identity=segments.shift()||'';
+          const extras=segments.filter(value=>/^DOMAINS=|^GENRE_MOOD=/.test(value)).join(';');
+          const base='DISPOSITION='+identity+';';
+          out.push(extras&&dispositionExtraBudget>=48?base+compactText(extras,dispositionExtraBudget):base);
+          i+=1;
+          continue;
+        }
+        if(line.startsWith('APPLY=')){
+          let payload=line.slice('APPLY='.length);
+          i+=1;
+          while(i<lines.length&&!lines[i].startsWith('DISPOSITION=')&&!lines[i].startsWith('APPLY=')){
+            payload+='\n'+lines[i];
+            i+=1;
+          }
+          out.push('APPLY='+compactText(payload,applyBudget));
+          continue;
+        }
+        i+=1;
+      }
+      return ['[EXTERNAL_LEARNING '+id+']',...out,'[END_EXTERNAL_LEARNING '+id+']'].join('\n');
+    }),
+    suffix
+  ].filter(Boolean).join('\n');
+  const first=render(
+    Math.max(96,Math.min(640,Math.floor(9000/Math.max(1,applyCount)))),
+    Math.max(48,Math.min(220,Math.floor(4000/Math.max(1,dispositionCount))))
+  );
+  if(Buffer.byteLength(first,'utf8')<=16000)return first;
+  for(const budget of [128,96,72,56,40,24]){
+    const compact=render(budget,0);
+    if(Buffer.byteLength(compact,'utf8')<=16000)return compact;
+  }
+  return render(24,0);
 }
 export function assertVerifiedExternalLearningPromptCoverage(prompt='',contract={}){
   const required=contract?.required===true;
