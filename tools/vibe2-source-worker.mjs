@@ -2374,6 +2374,10 @@ export function recoverFocusedReplaceOnly(raw,spec={}){
 }
 export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2,previousOutput='',sourceRoot='',systemAtomicPairRequired=false,multiFilePairRequired=false,studioInitial=false,robloxGraphicsInitial=false,robloxFullGraphicsPackageActive=false,oversizedInitial=false}={}){
   const rawPrompt=String(prompt??'');
+  const rawGoalLine=rawPrompt.split('\n').find(value=>value.startsWith('Goal:'))||'';
+  const compactGoalLine=rawGoalLine
+    ?'Goal: '+boundedPromptText(rawGoalLine.slice(rawGoalLine.indexOf(':')+1).trimStart(),COMPACT_DIRECTIVE_LINE_BYTES)
+    :'';
   const studioExpansion=/\[STUDIO[_ ]QUALITY[_ ]EVOLUTION\]/i.test(rawPrompt);
   const allowedLine=rawPrompt.split('\n').find(line=>line.trimStart().startsWith('Allowed edit paths:'))||'';
   const allowedPaths=allowedLine
@@ -2433,7 +2437,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
     const criticalPrefix=[
       'You are the Vibe2 game source worker. Return exactly one raw VIBE2_FULL_FILE envelope. Do not return JSON.',
       rawPrompt.split('\n').find(line=>line.startsWith('Engine:'))||'',
-      rawPrompt.split('\n').find(line=>line.startsWith('Goal:'))||'',
+      compactGoalLine,
       verifiedExternalLearningBlockFromPrompt(rawPrompt),
       buildUpDirectiveBlockFromPrompt(rawPrompt,{compact:true,responsiblePaths:exactResponsible}),
       allowedLine,
@@ -2498,7 +2502,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         const compactRetryPrefix=(oversizedInitial||invalidPath||timeoutFailure||presentationDelta||robloxFullGraphicsPackageRecovery||studioQualityDelta||(studioExpansion&&editMatchFailure))?[
           'You are the Vibe2 game source worker. Return JSON only.',
           rawPrompt.split('\n').find(line=>line.startsWith('Engine:'))||'',
-          rawPrompt.split('\n').find(line=>line.startsWith('Goal:'))||'',
+          compactGoalLine,
           verifiedExternalLearningBlockFromPrompt(rawPrompt),
           buildUpDirectiveBlockFromPrompt(rawPrompt,{compact:true,responsiblePaths:exactResponsible}),
           allowedLine,
