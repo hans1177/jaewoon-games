@@ -55,7 +55,7 @@ test('general game recovery neural execution has no internal global cap',()=>{
 test('control runners stay separated without becoming a general scheduling cap',()=>{
   const pool=runtime.continuous.gamePrimaryControlRunnerPool;
   assert.equal(pool.reserve,'ubuntu-slim');
-  assert.equal(pool.fanIn,'ubuntu-24.04-arm');
+  assert.equal(pool.fanIn,'ubuntu-latest');
   assert.equal(pool.worker,'ubuntu-latest');
   assert.equal(pool.modelCache,'ubuntu-latest');
   assert.equal(pool.queueReservationAndStateFanInOnly,true);
@@ -63,12 +63,12 @@ test('control runners stay separated without becoming a general scheduling cap',
 
   const architecturePool=architecture.neuralWorkGraphTopology.currentIndependentExecution.vibeGameControlRunnerPool;
   assert.equal(architecturePool.reserve,'ubuntu-slim');
-  assert.equal(architecturePool.fanIn,'ubuntu-24.04-arm');
+  assert.equal(architecturePool.fanIn,'ubuntu-latest');
   assert.equal(architecturePool.worker,'ubuntu-latest');
   assert.equal(architecturePool.modelCache,'ubuntu-latest');
 
   assert.match(core,/runs-on: \$\{\{ \(github\.event_name == 'repository_dispatch'/);
-  assert.match(core,/\n  fan_in:[\s\S]*?\n    runs-on: ubuntu-24\.04-arm/);
+  assert.match(core,/\n  fan_in:[\s\S]*?\n    runs-on: ubuntu-latest/);
 });
 
 test('director fallback and main push reuse direct canonical reservation without new work authority',()=>{

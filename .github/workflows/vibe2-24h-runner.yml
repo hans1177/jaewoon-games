@@ -151,6 +151,15 @@ jobs:
             git worktree add --detach /tmp/vibe2-main origin/main >/dev/null
             control_root="$PWD"
 
+            (
+              cd /tmp/vibe2-main
+              node --check tools/company-shared-context.mjs
+              node --check tools/company-constitution-enforcer.mjs
+              node --test qa/company-shared-context.test.mjs
+              node tools/company-shared-context.mjs --output=/tmp/vibe2-shared-context-before-plan.json | tee /tmp/vibe2-shared-context-before-plan.log
+              node tools/company-constitution-enforcer.mjs --phase=24h-planner | tee /tmp/vibe2-constitution-enforcer.log
+            )
+
             # Repair canonical queue/parallelism state without rerunning repository QA.
             node /tmp/vibe2-main/tools/vibe2-system-steward.mjs \
               --queue="$control_root/.vibe2/queue.json" \
@@ -683,3 +692,37 @@ jobs:
     permissions:
       contents: write
       actions: write
+
+
+  refill:
+    needs: [plan, recovery_fast, continuous, asset_development, learning_idle, game_study]
+    if: ${{ always() }}
+    runs-on: ubuntu-slim
+    timeout-minutes: 2
+    steps:
+      - name: Dispatch next direct execution cycle unconditionally
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          body='{"ref":"main"}'
+          attempt=0
+          echo 'VIBE2_24H_REFILL_RETRY_POLICY=UNTIL_JOB_TIMEOUT'
+          while true; do
+            attempt=$((attempt+1))
+            code="$(curl --silent --show-error --output /tmp/vibe2-refill-body.txt --write-out '%{http_code}' \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-24h-runner.yml/dispatches" \
+              --data "$body" || true)"
+            if [ "$code" = '204' ]; then
+              echo 'VIBE2_24H_REFILL=DISPATCHED'
+              exit 0
+            fi
+            echo "VIBE2_24H_REFILL_ATTEMPT=$attempt HTTP=$code"
+            cat /tmp/vibe2-refill-body.txt || true
+            sleep 10
+          done

@@ -1844,7 +1844,7 @@
       "vibeGameControlRunnerPool": {
         "source": "company-learning/platform-release-roadmap.json#changeRecord.lightweightGameIngressRunnerRelief20260927",
         "reserve": "ubuntu-slim",
-        "fanIn": "ubuntu-24.04-arm",
+        "fanIn": "ubuntu-latest",
         "worker": "ubuntu-latest",
         "modelCache": "ubuntu-latest",
         "lightweightReserveSeparatedFromArmFanIn": true,
