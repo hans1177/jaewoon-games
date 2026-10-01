@@ -55,10 +55,10 @@ const AUTONOMOUS_CONTENT_EXPANSION_DEFAULT=Object.freeze({
   autonomy:Object.freeze({decisionOwner:'VIBE'}),
   dataCapacityBudget:Object.freeze({
     limits:Object.freeze({
-      savePersistedDataBytes:3*1024*1024,
-      webDownloadBytes:120*1024*1024,
+      savePersistedDataBytes:2*1024*1024,
+      webDownloadBytes:100*1024*1024,
       singleFileBytes:25*1024*1024,
-      mobileMemoryTargetBytes:350*1024*1024,
+      mobileMemoryTargetBytes:300*1024*1024,
       mobileMinimumFps:30
     }),
     warningRatio:0.8,
