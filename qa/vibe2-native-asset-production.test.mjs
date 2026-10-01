@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {assetProductionGuidance,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb} from '../tools/vibe2-asset-production-plan.mjs';
+import {assetProductionGuidance,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,evaluatePostDownloadInternalComparison,inspectVibeSourceGlb} from '../tools/vibe2-asset-production-plan.mjs';
 import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
@@ -806,6 +806,130 @@ test('downloaded external asset keeps external provenance and must compare again
     assert.match(assetProductionGuidance(plan),/팔레트·명도→재질\/셰이더→장식→실루엣\/비율/);
     assert.match(assetProductionGuidance(plan),/동급이면 내부자산을 유지/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+
+test('post-download scoring keeps internal on regressions and supports safe hybrid adoption',()=>{
+  const plan=buildVibeAssetProductionPlan({
+    task:{gameId:'compare-score',goal:'UI 그래픽 개선'},
+    target:'unity',
+    manifest:{version:1,assets:[
+      {id:'internal-ui',path:'unity-games/compare-score/Assets/UI/internal.png',types:['ui'],tags:['UI'],license:'project-original',sourceHash:'internal-v1'},
+      {id:'external-ui',path:'downloads/external-ui.png',types:['ui'],tags:['UI'],license:'CC0',source:'CC0-pack',sourceUrl:'https://example.invalid/ui',downloaded:true,sourceHash:'external-v1',acquiredExternal:true,acquisitionOrigin:'EXTERNAL_ACQUIRED',platforms:['unity']}
+    ]},
+    presetCatalog:{version:1,presets:[]}
+  });
+  const row=plan.decisions.find(item=>item.type==='ui');
+  const contract=row.postDownloadComparison;
+  assert.equal(contract.status,'READY_FOR_SAME_CONDITION_COMPARISON');
+  assert.equal(contract.evidenceProtocol.minimumDistinctRenderedViews,3);
+  assert.equal(contract.evidenceProtocol.blindSourceTierDuringVisualScoring,true);
+  assert.equal(contract.scorecard.minimumExternalImprovementPoints,8);
+  assert.equal(contract.adoptionPolicy.maximumAllowedRegressionPerAxis,1.5);
+
+  const gates=Object.fromEntries(contract.hardGates.map(name=>[name,true]));
+  const internal={axisScores:{
+    GAME_STYLE_FIT:7.5,CONCEPT_AND_WORLD_COHERENCE:7,SILHOUETTE_AND_READABILITY:7.5,
+    MATERIAL_AND_SURFACE_DETAIL:7,PROPORTION_AND_SCALE:7,RIG_CONTACT_OR_INTERACTION:7,
+    MOTION_AND_SECONDARY_MOTION:7,DETAIL_BY_DISTANCE:7,TARGET_RUNTIME_PERFORMANCE:8
+  }};
+  const evidence={actualRenderedPixels:true,distinctRenderedViews:4,runtimePerformanceMeasured:true};
+
+  const strong=evaluatePostDownloadInternalComparison({contract,internal,external:{
+    assetId:'external-ui',hardGates:gates,axisScores:{
+      GAME_STYLE_FIT:9,CONCEPT_AND_WORLD_COHERENCE:8.5,SILHOUETTE_AND_READABILITY:9,
+      MATERIAL_AND_SURFACE_DETAIL:9,PROPORTION_AND_SCALE:8.5,RIG_CONTACT_OR_INTERACTION:8.5,
+      MOTION_AND_SECONDARY_MOTION:8.5,DETAIL_BY_DISTANCE:9,TARGET_RUNTIME_PERFORMANCE:9
+    },evidence,confidence:'HIGH'
+  }});
+  assert.equal(strong.decision,'ADOPT_EXTERNAL');
+  assert.ok(strong.delta>=8);
+
+  const flashyButSlow=evaluatePostDownloadInternalComparison({contract,internal,external:{
+    hardGates:gates,axisScores:{
+      GAME_STYLE_FIT:10,CONCEPT_AND_WORLD_COHERENCE:10,SILHOUETTE_AND_READABILITY:10,
+      MATERIAL_AND_SURFACE_DETAIL:10,PROPORTION_AND_SCALE:9,RIG_CONTACT_OR_INTERACTION:9,
+      MOTION_AND_SECONDARY_MOTION:9,DETAIL_BY_DISTANCE:10,TARGET_RUNTIME_PERFORMANCE:5
+    },evidence
+  }});
+  assert.equal(flashyButSlow.decision,'KEEP_INTERNAL');
+  assert.ok(flashyButSlow.rejectedRegressions.includes('TARGET_RUNTIME_PERFORMANCE'));
+
+  const hybrid=evaluatePostDownloadInternalComparison({contract,internal,external:{
+    hardGates:gates,axisScores:{
+      GAME_STYLE_FIT:8,CONCEPT_AND_WORLD_COHERENCE:7.5,SILHOUETTE_AND_READABILITY:8.5,
+      MATERIAL_AND_SURFACE_DETAIL:9.5,PROPORTION_AND_SCALE:7,RIG_CONTACT_OR_INTERACTION:7,
+      MOTION_AND_SECONDARY_MOTION:7,DETAIL_BY_DISTANCE:8,TARGET_RUNTIME_PERFORMANCE:6.4
+    },evidence,partialAdoptionComponents:['MATERIAL','TEXTURE'],hybridIsolationVerified:true,hybridLicenseCompatible:true
+  }});
+  assert.equal(hybrid.decision,'HYBRIDIZE_ALLOWED_COMPONENTS');
+  assert.deepEqual(hybrid.partialAdoptionComponents,['MATERIAL','TEXTURE']);
+
+  const incomplete=evaluatePostDownloadInternalComparison({contract,internal,external:{
+    hardGates:gates,axisScores:{
+      GAME_STYLE_FIT:9,CONCEPT_AND_WORLD_COHERENCE:9,SILHOUETTE_AND_READABILITY:9,
+      MATERIAL_AND_SURFACE_DETAIL:9,PROPORTION_AND_SCALE:9,RIG_CONTACT_OR_INTERACTION:9,
+      MOTION_AND_SECONDARY_MOTION:9,DETAIL_BY_DISTANCE:9,TARGET_RUNTIME_PERFORMANCE:9
+    },evidence:{actualRenderedPixels:true,distinctRenderedViews:1,runtimePerformanceMeasured:false}
+  }});
+  assert.equal(incomplete.decision,'REVIEW_REQUIRED');
+
+  const gateFail=evaluatePostDownloadInternalComparison({contract,internal,external:{
+    hardGates:{...gates,SOURCE_HASH:false},
+    axisScores:{
+      GAME_STYLE_FIT:10,CONCEPT_AND_WORLD_COHERENCE:10,SILHOUETTE_AND_READABILITY:10,
+      MATERIAL_AND_SURFACE_DETAIL:10,PROPORTION_AND_SCALE:10,RIG_CONTACT_OR_INTERACTION:10,
+      MOTION_AND_SECONDARY_MOTION:10,DETAIL_BY_DISTANCE:10,TARGET_RUNTIME_PERFORMANCE:10
+    },evidence
+  }});
+  assert.equal(gateFail.decision,'KEEP_INTERNAL');
+  assert.equal(gateFail.reason,'EXTERNAL_HARD_GATE_FAILED');
+});
+
+test('post-download comparison result becomes provisional production decision only',()=>{
+  const plan=buildVibeAssetProductionPlan({
+    task:{
+      gameId:'compare-flow',goal:'UI 그래픽 개선',
+      assetDownloadedComparisons:{
+        ui:{
+          internal:{axisScores:{
+            GAME_STYLE_FIT:7,CONCEPT_AND_WORLD_COHERENCE:7,SILHOUETTE_AND_READABILITY:7,
+            MATERIAL_AND_SURFACE_DETAIL:7,PROPORTION_AND_SCALE:7,RIG_CONTACT_OR_INTERACTION:7,
+            MOTION_AND_SECONDARY_MOTION:7,DETAIL_BY_DISTANCE:7,TARGET_RUNTIME_PERFORMANCE:7
+          }},
+          external:{
+            assetId:'external-ui',
+            hardGates:{
+              LICENSE_AND_PROVENANCE:true,SOURCE_HASH:true,TARGET_PLATFORM_IMPORT:true,
+              NO_RUNTIME_ERROR:true,MOBILE_PERFORMANCE_BUDGET:true
+            },
+            axisScores:{
+              GAME_STYLE_FIT:9,CONCEPT_AND_WORLD_COHERENCE:9,SILHOUETTE_AND_READABILITY:9,
+              MATERIAL_AND_SURFACE_DETAIL:9,PROPORTION_AND_SCALE:9,RIG_CONTACT_OR_INTERACTION:9,
+              MOTION_AND_SECONDARY_MOTION:9,DETAIL_BY_DISTANCE:9,TARGET_RUNTIME_PERFORMANCE:9
+            },
+            evidence:{actualRenderedPixels:true,distinctRenderedViews:4,runtimePerformanceMeasured:true},confidence:'HIGH'
+          }
+        }
+      }
+    },
+    target:'unity',
+    manifest:{version:1,assets:[
+      {id:'internal-ui',path:'unity-games/compare-flow/Assets/UI/internal.png',types:['ui'],tags:['UI'],license:'project-original',sourceHash:'internal-v1'},
+      {id:'external-ui',path:'downloads/external-ui.png',types:['ui'],tags:['UI'],license:'CC0',source:'CC0-pack',sourceUrl:'https://example.invalid/ui',downloaded:true,sourceHash:'external-v1',acquiredExternal:true,acquisitionOrigin:'EXTERNAL_ACQUIRED',platforms:['unity']}
+    ]},
+    presetCatalog:{version:1,presets:[]}
+  });
+  const row=plan.decisions.find(item=>item.type==='ui');
+  assert.equal(row.postDownloadComparisonEvaluation.decision,'ADOPT_EXTERNAL');
+  assert.equal(row.qualitySelection.selectionState,'ADOPT_EXTERNAL');
+  assert.equal(row.qualitySelection.provisionalExternalAssetId,'external-ui');
+  assert.equal(row.qualitySelection.selectedAssetId,null);
+  assert.equal(row.qualitySelection.finalRuntimeVerificationStillRequired,true);
+  assert.equal(row.postDownloadComparisonEvaluation.runtimeVerified,false);
+  const guidance=assetProductionGuidance(plan);
+  assert.match(guidance,/다운로드 비교 임시판정=ADOPT_EXTERNAL/);
+  assert.match(guidance,/동일 런타임 재캡처 전 VERIFIED 승격 금지/);
 });
 
 test('runtime visual evidence manifest auto-binds only current-source-compatible captures',()=>{
