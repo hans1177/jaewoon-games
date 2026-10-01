@@ -180,7 +180,33 @@
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false,
-    "studioQualityFailure": null
+    "studioQualityFailure": {
+      "sourceRevision": "1d5938ed3471d9221bc283a580f4a28e07ead33a",
+      "artifactIdentity": "sha256:2e83865ec0acb0b0742011cb5b79b42e275d2a72eabfcabc44c95c220c65a0ac",
+      "authority": "roblox-official-studio-mcp-product-quality-failure",
+      "workflowRunId": 36896295029,
+      "testedAt": "2026-10-01T17:36:29.173Z",
+      "repairSurfaces": [
+        "MAP_ROUTEABILITY",
+        "ROBLOX_OBSERVED_INTERACTION"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "adaptive-map-route-coverage",
+          "repairSurface": "MAP_ROUTEABILITY",
+          "priority": "CRITICAL",
+          "hint": "Repair unreachable/stuck/dead-zone routes discovered during Studio corner-direction traversal.",
+          "observed": "{\"routeAttemptCount\":1,\"routePassCount\":0,\"routeRequired\":1,\"routes\":[{\"id\":\"map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode14.ProximityPrompt\",\"ok\":false,\"initialOk\":false,\"recoveredByInteraction\":false,\"moved\":0,\"fall\":0,\"floorBelow\":true}]}"
+        },
+        {
+          "id": "observed-action-5da7fe907db2cf155849",
+          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
+          "priority": "HIGH",
+          "hint": "Replay the exact observed action and verify its real state change after repair.",
+          "observed": "{\"id\":\"observed-action-5da7fe907db2cf155849\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode14.ProximityPrompt\",\"targetIdentity\":\"map-route-Workspace.CozyConquestWorld.ManualGatherForest.WoodNode14.ProximityPrompt\",\"actionType\":\"mcp-map-route-audit\",\"effectRequired\":false,\"recoveredByInteraction\":false,\"attempts\":1}"
+        }
+      ]
+    }
   },
   "qualityGapMap": [
     {
