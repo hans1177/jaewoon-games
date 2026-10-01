@@ -1979,7 +1979,9 @@ test('central document has a bounded current-policy budget and archives historic
   assert.equal(policy.historicalExecutionLogsAuthority,'GIT_HISTORY');
   assert.equal(policy.structuredArchiveAuthority,'COMPANY_RECORDS');
   assert.equal(policy.softTargetUtf8Bytes,1080000);
+  assert.equal(policy.softTargetEnforced,true);
   assert.equal(policy.minimumHeadroomBytes,20000);
+  assert.equal(policy.candidateCommand,'node tools/company-records-governance.mjs --central-candidates');
   assert.equal(policy.archiveBeforeExpansion,true);
   assert.equal(policy.archiveRecordRequiredBeforeDeletion,true);
   assert.equal(policy.referencedChangeRecordKeysAutoProtected,true);
