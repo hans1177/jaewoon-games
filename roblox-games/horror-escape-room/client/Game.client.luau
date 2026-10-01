@@ -2658,7 +2658,7 @@ end
 
 p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
  local value=tostring(p:GetAttribute("FeedbackEvent")or"")
- if value:find("^INFECT:")then setMotionImpulse("INFECT",.72);warningSfx.TimePosition=0;warningSfx:Play();chaseTint.BackgroundTransparency=.72
+ if value:find("^INFECT:")then setMotionImpulse("INFECT",.72);warningSfx.TimePosition=0;warningSfx:Play();chaseTint.BackgroundTransparency=.72;showMapContentToast("감염 완료 · 몬스터로 전환",Color3.fromRGB(218,86,96),1.8)
  elseif value:find("^PURIFY")then setMotionImpulse("PURIFY",.3);rescueSfx.TimePosition=0;rescueSfx:Play();chaseTint.BackgroundTransparency=.9
  elseif value:find("^ABILITY:")then
   setMotionImpulse("ABILITY",.48);warningSfx.TimePosition=0;warningSfx:Play()
