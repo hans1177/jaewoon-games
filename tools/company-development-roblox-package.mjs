@@ -59,23 +59,39 @@ export function validateRobloxArtifactScriptInventory({artifactPath='',expected=
   return Object.freeze(actual);
 }
 
-export function validateRobloxArtifactLightingMigrationGuard({artifactPath=''}={}){
+export function validateRobloxArtifactLightingMigrationGuard({artifactPath='',projectPath=''}={}){
   const artifact=path.resolve(clean(artifactPath));
   if(!fs.existsSync(artifact))throw new Error(`Roblox artifact missing: ${artifact}`);
+  const projectFile=clean(projectPath)?path.resolve(clean(projectPath)):'';
+  const project=projectFile&&fs.existsSync(projectFile)?readJson(projectFile):null;
+  const sourceProperties=project?.tree?.Lighting?.$properties||{};
+  const technology=clean(sourceProperties.Technology)||'Voxel';
+  const profiles={
+    Voxel:{token:1,lightingStyle:'Soft',lightingStyleToken:1,prioritizeLightingQuality:false},
+    ShadowMap:{token:3,lightingStyle:'Soft',lightingStyleToken:1,prioritizeLightingQuality:true},
+    Future:{token:4,lightingStyle:'Realistic',lightingStyleToken:0,prioritizeLightingQuality:true},
+  };
+  const profile=profiles[technology];
+  if(!profile)throw new Error('ROBLOX_LIGHTING_SOURCE_TECHNOLOGY_UNSUPPORTED:'+technology);
+  const lightingStyle=clean(sourceProperties.LightingStyle)||profile.lightingStyle;
+  const lightingStyleToken=lightingStyle==='Realistic'?0:lightingStyle==='Soft'?1:null;
+  if(lightingStyleToken===null)throw new Error('ROBLOX_LIGHTING_SOURCE_STYLE_UNSUPPORTED:'+lightingStyle);
+  const prioritizeLightingQuality=sourceProperties.PrioritizeLightingQuality??profile.prioritizeLightingQuality;
+  const expectsRetro=clean(project?.tree?.Lighting?.CompatibilityToneMap?.$properties?.TonemapperPreset)==='Retro';
   const xml=fs.readFileSync(artifact,'utf8');
   const checks={
-    technologyVoxel:/<token\s+name="Technology">\s*1\s*<\/token>/i.test(xml),
-    lightingStyleSoft:/<token\s+name="LightingStyle">\s*1\s*<\/token>/i.test(xml),
-    prioritizeLightingQualityFalse:/<bool\s+name="PrioritizeLightingQuality">\s*false\s*<\/bool>/i.test(xml),
-    compatibilityToneMap:/<Item\s+class="ColorGradingEffect"(?:\s|>)[\s\S]*?<string\s+name="Name">\s*CompatibilityToneMap\s*<\/string>[\s\S]*?<token\s+name="TonemapperPreset">\s*1\s*<\/token>/i.test(xml),
+    supportedTechnology:new RegExp(`<token\\s+name="Technology">\\s*${profile.token}\\s*<\\/token>`,'i').test(xml),
+    lightingStyle:new RegExp(`<token\\s+name="LightingStyle">\\s*${lightingStyleToken}\\s*<\\/token>`,'i').test(xml),
+    prioritizeLightingQuality:new RegExp(`<bool\\s+name="PrioritizeLightingQuality">\\s*${prioritizeLightingQuality?'true':'false'}\\s*<\\/bool>`,'i').test(xml),
+    compatibilityToneMap:!expectsRetro||/<Item\s+class="ColorGradingEffect"(?:\s|>)[\s\S]*?<string\s+name="Name">\s*CompatibilityToneMap\s*<\/string>[\s\S]*?<token\s+name="TonemapperPreset">\s*1\s*<\/token>/i.test(xml),
   };
   const missing=[];
-  if(!checks.technologyVoxel)missing.push('ROBLOX_LIGHTING_TECHNOLOGY_VOXEL_REQUIRED');
-  if(!checks.lightingStyleSoft)missing.push('ROBLOX_LIGHTING_STYLE_SOFT_REQUIRED');
-  if(!checks.prioritizeLightingQualityFalse)missing.push('ROBLOX_LIGHTING_QUALITY_PRIORITY_FALSE_REQUIRED');
+  if(!checks.supportedTechnology)missing.push('ROBLOX_LIGHTING_SUPPORTED_TECHNOLOGY_REQUIRED');
+  if(!checks.lightingStyle)missing.push('ROBLOX_LIGHTING_STYLE_SERIALIZATION_REQUIRED');
+  if(!checks.prioritizeLightingQuality)missing.push('ROBLOX_LIGHTING_QUALITY_PRIORITY_SERIALIZATION_REQUIRED');
   if(!checks.compatibilityToneMap)missing.push('ROBLOX_LIGHTING_RETRO_TONEMAP_REQUIRED');
   if(missing.length)throw new Error('ROBLOX_LIGHTING_MIGRATION_GUARD_FAILED:'+missing.join(','));
-  return Object.freeze({pass:true,...checks});
+  return Object.freeze({pass:true,technology,lightingStyle,prioritizeLightingQuality,expectsRetro,...checks});
 }
 
 export function createRobloxBuildEvidence({gameId='',sourcePath='',sourceRevision='',artifactPath='',artifactSha256='',sourceValidationPassed=false,saveRequired=false}={}){
@@ -186,10 +202,10 @@ export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',source
     const stat=fs.statSync(artifact);
     if(!stat.isFile()||stat.size<=0)throw new Error('Rojo package artifact missing or empty');
     const actualScripts=validateRobloxArtifactScriptInventory({artifactPath:artifact,expected:expectedScripts});
-    const lightingGuard=validateRobloxArtifactLightingMigrationGuard({artifactPath:artifact});
+    const lightingGuard=validateRobloxArtifactLightingMigrationGuard({artifactPath:artifact,projectPath:path.join(root,'default.project.json')});
     const sha256=crypto.createHash('sha256').update(fs.readFileSync(artifact)).digest('hex');
     console.log(`ROBLOX_BUILD_SCRIPT_INVENTORY=PASS:${actualScripts.Script}/${actualScripts.LocalScript}/${actualScripts.ModuleScript}`);
-    console.log(`ROBLOX_BUILD_LIGHTING_MIGRATION_GUARD=PASS:technologyVoxel=${lightingGuard.technologyVoxel}:lightingStyleSoft=${lightingGuard.lightingStyleSoft}:retroToneMap=${lightingGuard.compatibilityToneMap}`);
+    console.log(`ROBLOX_BUILD_LIGHTING_MIGRATION_GUARD=PASS:technology=${lightingGuard.technology}:lightingStyle=${lightingGuard.lightingStyle}:retroRequired=${lightingGuard.expectsRetro}:retroToneMap=${lightingGuard.compatibilityToneMap}`);
     return createRobloxBuildEvidence({
       gameId:id,
       sourcePath:relativeSource,
