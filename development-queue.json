@@ -20545,10 +20545,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T00:24:05.661Z",
+      "updatedAt": "2026-10-01T00:24:45.168Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -21550,7 +21550,7 @@
       "unityCandidateBranch": "development/unity-tech-seed-idle-growth-rpg-crystal-bloom-36773180555",
       "unitySourceCommit": "3aebc33f093c8668ed6d3b55dc7c469bc7ce687a",
       "unityBuildRunId": 36791156188,
-      "unityRuntimeSmokeRunId": 36792560852,
+      "unityRuntimeSmokeRunId": 36795766432,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityInternalReleaseReady": false,
@@ -21559,7 +21559,7 @@
       "unityPublicReleaseReady": false,
       "unityPublicRelease": false,
       "executionEvidence": {
-        "version": 3,
+        "version": 4,
         "platform": "UNITY",
         "sourceRevision": "3aebc33f093c8668ed6d3b55dc7c469bc7ce687a",
         "sourceRootTreeSha": "d18e2b11621eca1afadd94cdd25573f3ee7e045f",
@@ -21570,11 +21570,17 @@
         "independentQaPassed": false,
         "multiplayerPassed": true,
         "regressionPassed": false,
+        "rawStageResults": {
+          "runtime": false,
+          "independentQa": false,
+          "regression": false
+        },
+        "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": true,
         "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
         "failureStage": "F1_SERVER_BOOT",
-        "failureSignature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee"
+        "failureSignature": "54a968f2f5824ce65c933b4bd7188cfc35292ed4e0c02930174eb16c0c7312f3"
       },
       "resumeStage": "F1_SERVER_BOOT",
       "failureCount": 1,
@@ -21985,13 +21991,13 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-09-30T23:46:25.025Z"
+        "verifiedAt": "2026-10-01T00:24:45.168Z"
       },
       "unityF9ReleaseRegressionPassed": false,
       "unityF9ReleaseRegressionPassedAt": null,
       "unityCanonicalPublishPending": false,
       "unityExecutionEvidence": {
-        "version": 3,
+        "version": 4,
         "platform": "UNITY",
         "sourceRevision": "3aebc33f093c8668ed6d3b55dc7c469bc7ce687a",
         "sourceRootTreeSha": "d18e2b11621eca1afadd94cdd25573f3ee7e045f",
@@ -22002,12 +22008,19 @@
         "independentQaPassed": false,
         "multiplayerPassed": true,
         "regressionPassed": false,
+        "rawStageResults": {
+          "runtime": false,
+          "independentQa": false,
+          "regression": false
+        },
+        "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": true,
         "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
         "failureStage": "F1_SERVER_BOOT",
-        "failureSignature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee"
-      }
+        "failureSignature": "54a968f2f5824ce65c933b4bd7188cfc35292ed4e0c02930174eb16c0c7312f3"
+      },
+      "unityCanonicalEvidenceBound": false
     },
     {
       "gameId": "seed-puzzle-chromatic-cascade",
@@ -27720,7 +27733,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T00:24:05.661Z",
+  "updatedAt": "2026-10-01T00:24:47.627Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
