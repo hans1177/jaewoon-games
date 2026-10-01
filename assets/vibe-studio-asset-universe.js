@@ -713,7 +713,7 @@ export function createAssetDetailReviewPlan({customization={},styles=['CARTOON',
 
 export function createAssetRuntimeVisualReviewPlan({
   sourceRevision='',platforms=[],requiredSurfaces=[],requiredViews=['GAME_CAMERA'],captures=[],
-  expectedSubjects=[],visualGoals=[],editableTargets=[]
+  expectedSubjects=[],visualGoals=[],editableTargets=[],evidenceRoot='',evidenceProvenance=[]
 }={}){
   const allowedPlatforms=new Set(['ROBLOX','UNITY','WEB']);
   const surfacePlatform=Object.freeze({
@@ -766,7 +766,9 @@ export function createAssetRuntimeVisualReviewPlan({
     normalizedCaptures.push(Object.freeze({
       id,platform,surface,view,sceneId:text(capture.sceneId),
       imageRef:text(capture.imageRef||capture.artifactRef),artifactHash:text(capture.artifactHash),
-      sourceRevision:text(capture.sourceRevision),viewport:Object.freeze({width:Number(viewport.width)||0,height:Number(viewport.height)||0}),
+      sourceRevision:text(capture.sourceRevision),captureSourceRevision:text(capture.captureSourceRevision||capture.sourceRevision),
+      sourceCompatibility:text(capture.sourceCompatibility),producer:Object.freeze({...capture.producer}),
+      viewport:Object.freeze({width:Number(viewport.width)||0,height:Number(viewport.height)||0}),
       ready:captureIssues.length===0
     }));
   }
@@ -784,6 +786,7 @@ export function createAssetRuntimeVisualReviewPlan({
     status:issues.length||missingCaptures.length?'CAPTURES_REQUIRED':'READY_FOR_PIXEL_INSPECTION',
     sourceRevision:revision,platforms:freezeList(targetPlatforms),requiredSurfaces:freezeList(surfaces),requiredViews:freezeList(views),
     captures:freezeList(normalizedCaptures),expectedSubjects:freezeList(subjects),
+    evidenceRoot:text(evidenceRoot)||null,evidenceProvenance:freezeList(Array.isArray(evidenceProvenance)?evidenceProvenance.map(row=>Object.freeze({...row})):[]),
     visualGoals:freezeList(uniq(Array.isArray(visualGoals)?visualGoals:[])),editableTargets:freezeList(uniq(Array.isArray(editableTargets)?editableTargets:[])),
     issues:freezeList(issues),missingCaptures:freezeList(missingCaptures),
     pixelInspectionRequired:true,pixelInspectionPerformed:false,
