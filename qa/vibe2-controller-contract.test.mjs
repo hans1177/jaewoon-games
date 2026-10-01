@@ -609,6 +609,7 @@ test('reserve preflight uses the pinned main contract and blocks broken GAME_PRI
   assert(preflight.includes('VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE'));
   assert(preflight.includes('VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_SAME_FAN_IN_SUITE'));
   assert(preflight.includes('node --test --test-concurrency=4'));
+  assert(preflight.includes('contract_regression_passed=true'));
   assert(preflight.includes('VIBE2_RESERVE_CONTRACT_REGRESSION=PASS'));
   const regression=runtime.continuous.reserveContractRegressionPreflight;
   assert.equal(regression.enabled,true);
@@ -712,8 +713,10 @@ test('complete single-task callbacks reuse full regression and release review wi
   assert.match(ready,/task_review_required=true/);
 });
 
-test('fan-in reuses only successful exact-commit engine regression and retains all candidate gates',()=>{
+test('fan-in reuses reserve or successful exact-commit engine regression and retains all candidate gates',()=>{
   const fanIn=workflow.slice(workflow.indexOf('  fan_in:'));
+  assert.match(fanIn,/VIBE2_RESERVE_CONTRACT_REGRESSION_PASSED/);
+  assert.match(fanIn,/VIBE2_FAN_IN_REGRESSION_SOURCE=RESERVE_EXACT_SHA_REGRESSION_REUSE/);
   assert.match(fanIn,/VIBE2_FAN_IN_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE/);
   assert.match(fanIn,/VIBE2_FAN_IN_REGRESSION_SOURCE=LOCAL_FULL_REGRESSION/);
   assert.match(fanIn,/String\(row.head_sha\|\|''\)===sha/);
