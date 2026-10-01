@@ -425,11 +425,26 @@ for(const game of Array.isArray(catalog.games)?catalog.games:[]){
     rows.push({gameId:id,name:clean(game.name),engine:'unreal',target:'fortnite-uefn',projectPath:unrealRoot,lifecycleState:gameLifecycleState(game),existing:true,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null,developmentValidation:latestDevelopmentValidationStatus(id,repoRoot)});
   }
 
-  const root=webRootFromCatalog(game),developmentWebEligible=state==='development-confirmed',publishedWebEligible=game.homepageWebPlayable===true;
+  const explicitWebRoot=webRootFromCatalog(game);
+  const recentOwnerWebRoot=id&&game.ownerDirectWebUpload===true&&fs.existsSync(path.join(repoRoot,`web-games/${id}`))?`web-games/${id}`:null;
+  const root=explicitWebRoot||recentOwnerWebRoot;
+  const developmentWebEligible=state==='development-confirmed',publishedWebEligible=game.homepageWebPlayable===true;
+  const ownerRecentWebPriority=Boolean(
+    developmentWebEligible
+    &&recentOwnerWebRoot
+    &&game.webDevelopmentResetRequired===true
+    &&game.homepageWebPlayable!==true
+  );
   if(!id||!root||game.hasWebArchive!==true||(!developmentWebEligible&&!publishedWebEligible))continue;
   if(rows.some(r=>r.gameId===id&&r.engine==='web'))continue;
   const exists=fs.existsSync(path.join(repoRoot,root));
-  rows.push({gameId:id,name:clean(game.name),engine:'web',target:'web',projectPath:root,lifecycleState:gameLifecycleState(game),existing:exists,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null,developmentValidation:latestDevelopmentValidationStatus(id,repoRoot)});
+  rows.push({
+    gameId:id,name:clean(game.name),engine:'web',target:'web',projectPath:root,lifecycleState:gameLifecycleState(game),existing:exists,
+    releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null,developmentValidation:latestDevelopmentValidationStatus(id,repoRoot),
+    ownerRecentWebPriority,
+    ownerRecentWebPriorityReason:ownerRecentWebPriority?'RECENT_OWNER_WEB_SOURCE_AWAITING_FIRST_PLAYABLE_DEPLOY':null,
+    ownerWebSourceRevision:clean(game.ownerWebSourceRevision)
+  });
 }
 const ownerPolicy=centralPresentationPolicy(repoRoot)||{};
 return rows.filter(project=>!ownerDevelopmentHeld(ownerPolicy,project.gameId,project.engine));
@@ -448,6 +463,7 @@ function focusedCaretakerProject(project={},repoRoot=process.cwd()){
   return policy.ownerIds.has(clean(project.gameId))||(policy.includeAllReleaseConfirmed&&clean(project.releaseState).toLowerCase()==='release-confirmed');
 }
 function projectSort(a,b){
+  const recentWeb=(b.ownerRecentWebPriority===true?1:0)-(a.ownerRecentWebPriority===true?1:0);if(recentWeb)return recentWeb;
   const focus=(b.ownerFocusedCaretaker===true?1:0)-(a.ownerFocusedCaretaker===true?1:0);if(focus)return focus;
   const bottleneck=bottleneckRank(a)-bottleneckRank(b);if(bottleneck)return bottleneck;
   const engine=(ENGINE_RANK[a.engine]??9)-(ENGINE_RANK[b.engine]??9);if(engine)return engine;
@@ -569,7 +585,7 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
   const supervised=supervisedWebBuildRequired(project,goal);
   const adaptation=project.firstStageUnityWeb===true?'':platformAdaptationInstruction(project.engine);
   const adaptedGoal=adaptation?goal+adaptation:goal;
-  const focused=project.ownerFocusedCaretaker===true,unlimitedRepair=focused||project.engine==='roblox';
+  const focused=project.ownerFocusedCaretaker===true,recentOwnerWeb=project.ownerRecentWebPriority===true,unlimitedRepair=focused||recentOwnerWeb||project.engine==='roblox';
   const portfolioValueScore=project.engine==='roblox'
     ? Math.min(100,(project.queueRobloxQualityBuildUpRequired?35:0)
       +(project.queueRobloxInternalReleaseReady?20:0)
@@ -578,15 +594,15 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
       +(project.genre&&project.subgenre?5:0))
     : 0;
   const plannedTask={
-    id,gameId:project.gameId,target:project.engine,department:'development',type:'implementation',goal:adaptedGoal,responsibleFiles,dependencies:[],priority:focused?'critical':priority,
-    releaseState:project.releaseState,portfolioValueScore,status:'queued',retries:0,maxRetries:unlimitedRepair?null:2,retryPolicy:unlimitedRepair?'UNLIMITED_CAUSAL_REPAIR':undefined,ownerDirective:focused,requiresOwnerDecision:false,protectedChange:false,
+    id,gameId:project.gameId,target:project.engine,department:'development',type:'implementation',goal:adaptedGoal,responsibleFiles,dependencies:[],priority:recentOwnerWeb?'owner-immediate':focused?'critical':priority,
+    releaseState:project.releaseState,portfolioValueScore,status:'queued',retries:0,maxRetries:unlimitedRepair?null:2,retryPolicy:unlimitedRepair?'UNLIMITED_CAUSAL_REPAIR':undefined,ownerDirective:focused||recentOwnerWeb,requiresOwnerDecision:false,protectedChange:false,
     paidResourceRequired:false,sourceRoot:posix(project.projectPath),estimatedRisk,speculativeEligible:estimatedRisk==='high',
     productionMode:supervised?'SUPERVISED_VIBE_COAUTHORING':'AUTONOMOUS_VIBE',
     supervisionApproved:false,
     supervisionContract:supervised?supervisedWebBuildContract():null,
     packageLongWorkProtected:focused||undefined,packageRole:focused?'implementation-owner':undefined,
     focusedCaretaker:focused||undefined,caretakerStickyOwnership:focused||undefined,
-    evidence:[`central-policy:${CANONICAL_POLICY_PATH}`,`vibe2-auto-planner:${project.source}`,`release-state:${project.releaseState}`,`source-root:${posix(project.projectPath)}`,...(focused?['focused-caretaker:yes','focused-caretaker-role:implementation-owner']:[]),...baselineEvidence,...extraEvidence,...(adaptation?[`platform-adaptation:${project.engine==='roblox'?'SOCIAL_FAST_SESSION':'DEEP_IMMERSIVE_SESSION'}`]:[]),...(supervised?['supervised-web-build:required','automatic-promotion:blocked-until-supervised-approval']:[])]
+    evidence:[`central-policy:${CANONICAL_POLICY_PATH}`,`vibe2-auto-planner:${project.source}`,`release-state:${project.releaseState}`,`source-root:${posix(project.projectPath)}`,...(focused?['focused-caretaker:yes','focused-caretaker-role:implementation-owner']:[]),...(recentOwnerWeb?['owner-recent-web-priority:until-first-playable-deploy','owner-recent-web-source-revision:'+clean(project.ownerWebSourceRevision)]:[]),...baselineEvidence,...extraEvidence,...(adaptation?[`platform-adaptation:${project.engine==='roblox'?'SOCIAL_FAST_SESSION':'DEEP_IMMERSIVE_SESSION'}`]:[]),...(supervised?['supervised-web-build:required','automatic-promotion:blocked-until-supervised-approval']:[])]
   };
   plannedTask.neuralDiagnosis=buildNeuralDiagnosis({task:plannedTask,project});
   const runtimeNeural=compileRuntimeNeuralEvent(project,plannedTask.neuralDiagnosis);
