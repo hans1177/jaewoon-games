@@ -4730,10 +4730,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "REPAIR_REQUIRED",
-      "canonicalState": "REPAIR_REQUIRED",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T13:25:20.461Z",
+      "updatedAt": "2026-10-01T13:44:16.269Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -6037,7 +6037,7 @@
       "unityCandidateBranch": "development/unity-tech-village-dungeons-36794831239",
       "unitySourceCommit": "d72216eef80f68ee91d0b608f1d2373e3a91223e",
       "unityBuildRunId": 36796761382,
-      "unityRuntimeSmokeRunId": 36864101662,
+      "unityRuntimeSmokeRunId": 36870511852,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityInternalReleaseReady": false,
@@ -6496,7 +6496,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-01T12:49:47.060Z"
+        "verifiedAt": "2026-10-01T13:44:16.269Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -27391,7 +27391,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T13:44:12.446Z",
+  "updatedAt": "2026-10-01T13:44:18.839Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
