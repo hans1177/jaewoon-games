@@ -125,7 +125,7 @@ test('active independent work no longer blocks autonomous planning when slots re
   assert.equal(result.queue.tasks.filter(t=>['queued','running'].includes(t.status)).length<=4,true);
 });
 
-test('active 20-worker wave does not block plan-only development backlog expansion',()=>{
+test('active independent work does not cap plan-only development expansion',()=>{
   const root=tempRepo();
   const running=Array.from({length:20},(_,i)=>({
     id:`active-wave-${i}`,gameId:`active-${i}`,sourceRoot:`web-games/active-${i}`,responsibleFiles:['index.html'],
@@ -137,13 +137,16 @@ test('active 20-worker wave does not block plan-only development backlog expansi
   });
   assert.equal(result.planned,true);
   assert.equal(result.planningBacklog.current,20);
-  assert.equal(result.planningBacklog.capacity,40);
-  assert.equal(result.planningBacklog.executionWaveMax,20);
-  assert.equal(result.planningBacklog.persistentQueueMax,256);
+  assert.equal(result.planningBacklog.target,null);
+  assert.equal(result.planningBacklog.limitMode,'UNBOUNDED_ELIGIBLE_WORK');
+  assert.equal(result.planningBacklog.internalGlobalParallelCap,null);
+  assert.equal(Object.hasOwn(result.planningBacklog,'capacity'),false);
+  assert.equal(Object.hasOwn(result.planningBacklog,'executionWaveMax'),false);
+  assert.equal(Object.hasOwn(result.planningBacklog,'persistentQueueMax'),false);
   assert.ok(result.tasks.length>=1);
   assert.ok(result.tasks.every(task=>task.status==='queued'));
   assert.ok(result.tasks.every(task=>task.reservationRunId==null));
-  assert.equal(result.queue.maxConcurrentTasks,256);
+  assert.equal(result.queue.maxConcurrentTasks,null);
 });
 
 test('release-wait candidates do not consume runnable development planning backlog capacity',()=>{
@@ -160,7 +163,9 @@ test('release-wait candidates do not consume runnable development planning backl
   assert.equal(result.planned,true);
   assert.equal(result.planningBacklog.current,0);
   assert.equal(result.planningBacklog.releaseWaitExcluded,60);
-  assert.equal(result.planningBacklog.capacity,60);
+  assert.equal(result.planningBacklog.target,null);
+  assert.equal(result.planningBacklog.limitMode,'UNBOUNDED_ELIGIBLE_WORK');
+  assert.equal(Object.hasOwn(result.planningBacklog,'capacity'),false);
 });
 
 test('supervised review wait also stays outside runnable planning backlog',()=>{
@@ -178,9 +183,11 @@ test('supervised review wait also stays outside runnable planning backlog',()=>{
   assert.equal(result.planned,true);
   assert.equal(result.planningBacklog.current,0);
   assert.equal(result.planningBacklog.releaseWaitExcluded,60);
-  assert.equal(result.planningBacklog.capacity,60);
+  assert.equal(result.planningBacklog.target,null);
+  assert.equal(result.planningBacklog.limitMode,'UNBOUNDED_ELIGIBLE_WORK');
+  assert.equal(Object.hasOwn(result.planningBacklog,'capacity'),false);
 });
-test('planning backlog target stops plan expansion without changing persistent queue max',()=>{
+test('legacy planning backlog target input does not cap direct plan expansion',()=>{
   const root=tempRepo();
   const queued=Array.from({length:60},(_,i)=>({
     id:`planned-${i}`,gameId:'dev-web',sourceRoot:`web-games/dev-web-planned-${i}`,responsibleFiles:['index.html'],
@@ -190,10 +197,12 @@ test('planning backlog target stops plan expansion without changing persistent q
     status,catalog,queue:{maxConcurrentTasks:256,tasks:queued},repoRoot:root,
     maxConcurrentTasks:20,queueMaxConcurrentTasks:256,planningBacklogTarget:60,planningBacklogMinimum:40
   });
-  assert.equal(result.planned,false);
-  assert.equal(result.reason,'DEVELOPMENT_BACKLOG_TARGET_REACHED');
+  assert.equal(result.planned,true);
+  assert.notEqual(result.reason,'DEVELOPMENT_BACKLOG_TARGET_REACHED');
   assert.equal(result.planningBacklog.current,60);
-  assert.equal(result.queue.maxConcurrentTasks,256);
+  assert.equal(result.planningBacklog.target,null);
+  assert.equal(result.planningBacklog.limitMode,'UNBOUNDED_ELIGIBLE_WORK');
+  assert.equal(result.queue.maxConcurrentTasks,null);
 });
 
 test('queued low-value micro diagnostics are consolidated so holistic studio build-up can enter before generic presentation polish',()=>{
@@ -231,7 +240,7 @@ test('queued low-value micro diagnostics are consolidated so holistic studio bui
   assert.ok(result.tasks.some(row=>row.studioQualityEvolution?.existingHolisticBackfillRequired===true));
 });
 
-test('effective wave cap does not overwrite persistent external queue max',()=>{
+test('legacy execution cap inputs do not create a persistent internal queue cap',()=>{
   const root=tempRepo();
   const result=planVibe2AutonomousTasks({
     status,catalog,
@@ -240,8 +249,9 @@ test('effective wave cap does not overwrite persistent external queue max',()=>{
     maxConcurrentTasks:20,
     queueMaxConcurrentTasks:256
   });
-  assert.equal(result.queue.maxConcurrentTasks,256);
-  assert.equal(result.queue.tasks.filter(t=>['queued','running'].includes(t.status)).length<=20,true);
+  assert.equal(result.queue.maxConcurrentTasks,null);
+  assert.equal(result.planningBacklog.internalGlobalParallelCap,null);
+  assert.equal(Object.hasOwn(result.planningBacklog,'executionWaveMax'),false);
 });
 
 test('owner directive keeps priority while independent free slots continue refilling',()=>{
@@ -2064,7 +2074,8 @@ test('verified company-runtime failure mutates an existing task even when planne
     planningBacklogMinimum:0
   });
   assert.equal(result.planned,false);
-  assert.equal(result.reason,'DEVELOPMENT_BACKLOG_TARGET_REACHED');
+  assert.equal(result.reason,'CAUSAL_REPLAN_REQUIRED');
+  assert.equal(result.planningBacklog.limitMode,'UNBOUNDED_ELIGIBLE_WORK');
   assert.equal(result.runtimeNeuralEvents.length,1);
   assert.equal(result.runtimeNeuralMutations.filter(row=>row.mutated).length,1);
   const repaired=result.queue.tasks.find(row=>row.id===existingTask.id);
@@ -2126,7 +2137,8 @@ test('company-runtime runtime result ingress is observed even when planner creat
     planningBacklogMinimum:0
   });
   assert.equal(result.planned,false);
-  assert.equal(result.reason,'DEVELOPMENT_BACKLOG_TARGET_REACHED');
+  assert.equal(result.reason,'AWAITING_INDEPENDENT_CAUSAL_SIGNAL');
+  assert.equal(result.planningBacklog.limitMode,'UNBOUNDED_ELIGIBLE_WORK');
   assert.equal(result.tasks.length,0);
   assert.equal(result.queue.tasks.length,1);
   assert.equal(result.queue.tasks[0].id,existingTask.id);
@@ -2781,7 +2793,7 @@ test('Roblox queue projection uses Roblox design genre instead of generic catalo
 });
 
 
-test('backlog gate binds queued existing game work to platform-lane-specific BUILD_UP directives',()=>{
+test('direct planner binds queued existing game work to platform-lane-specific BUILD_UP directives without backlog gating',()=>{
   const root=tempRepo();
   const gameId='backlog-build-up';
   for(const [dir,file,body] of [
@@ -2816,11 +2828,11 @@ test('backlog gate binds queued existing game work to platform-lane-specific BUI
     queue:{maxConcurrentTasks:20,tasks:queued},
     repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:2,planningBacklogMinimum:0
   });
-  assert.equal(result.planned,false);
-  assert.equal(result.reason,'DEVELOPMENT_BACKLOG_TARGET_REACHED');
+  assert.equal(result.planned,true);
+  assert.notEqual(result.reason,'DEVELOPMENT_BACKLOG_TARGET_REACHED');
   assert.equal(result.buildUpDirectiveBackfillCount,2);
-  const rows=result.queue.tasks.filter(row=>row.gameId===gameId);
-  assert.equal(rows.length,2);
+  const rows=queued.map(item=>result.queue.tasks.find(row=>row.id===item.id));
+  assert.ok(rows.every(Boolean));
   assert.equal(new Set(rows.map(row=>row.buildUpDirectiveId)).size,2);
   assert.equal(rows[0].buildUpGeneration,1);
   assert.equal(rows[1].buildUpGeneration,1);
@@ -2896,7 +2908,7 @@ test('queued game work without verified design stays DESIGN_PENDING and cannot c
     repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:1,planningBacklogMinimum:0
   });
   assert.equal(result.planned,false);
-  assert.equal(result.reason,'DEVELOPMENT_BACKLOG_TARGET_REACHED');
+  assert.equal(result.reason,'AWAITING_INDEPENDENT_CAUSAL_SIGNAL');
   assert.equal(result.buildUpDirectiveBackfillCount,0);
   const row=result.queue.tasks[0];
   assert.equal(row.buildUpDirectiveId,null);
@@ -2936,7 +2948,7 @@ test('queued legacy BUILD_UP directive is migrated in place to autonomous conten
     repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:1,planningBacklogMinimum:0
   });
   assert.equal(result.planned,false);
-  assert.equal(result.reason,'DEVELOPMENT_BACKLOG_TARGET_REACHED');
+  assert.equal(result.reason,'AWAITING_INDEPENDENT_CAUSAL_SIGNAL');
   assert.equal(result.buildUpDirectiveBackfillCount,1);
   const migrated=result.queue.tasks.find(row=>row.id===legacy.id);
   assert.ok(migrated);
@@ -3114,7 +3126,7 @@ test('BUILD_UP backlog synchronization never rewrites already running work',()=>
     repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:1,planningBacklogMinimum:0
   });
   assert.equal(result.planned,false);
-  assert.equal(result.reason,'DEVELOPMENT_BACKLOG_TARGET_REACHED');
+  assert.equal(result.reason,'AWAITING_INDEPENDENT_CAUSAL_SIGNAL');
   assert.equal(result.buildUpDirectiveBackfillCount,0);
   assert.equal(result.queue.tasks[0].buildUpDirectiveId,null);
   assert.equal(result.queue.tasks[0].buildUpDirective,null);
@@ -3655,7 +3667,7 @@ test('owner game is excluded until explicit scope handoff then existing source r
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('queued rebuild and released caretaker receive lobby binding before backlog-cap early return',()=>{
+test('queued rebuild and released caretaker receive lobby binding before no-new-work return',()=>{
   const root=tempRepo();
   try{
     const gameId='new-rpg';
@@ -3665,7 +3677,7 @@ test('queued rebuild and released caretaker receive lobby binding before backlog
     const catalog={games:[{id:gameId,name:'새 RPG',productionClass:'DEVELOPMENT_CONFIRMED'}]};
     const tasks=['second-platform-gate-rebuild:required','post-release-focused:yes','internal-playtest-co-development:yes'].map((e,i)=>({id:'task-'+i,gameId,target:'roblox',department:'development',type:'implementation',goal:'existing work',status:'queued',responsibleFiles:['roblox-games/new-rpg/server/Game.server.luau'],evidence:[e]}));
     const first=planVibe2AutonomousTasks({repoRoot:root,catalog,queue:{tasks},maxConcurrentTasks:1,planningBacklogTarget:1});
-    assert.equal(first.reason,'DEVELOPMENT_BACKLOG_TARGET_REACHED');
+    assert.equal(first.reason,'AWAITING_INDEPENDENT_CAUSAL_SIGNAL');
     for(const id of ['task-0','task-1']){
       const task=first.queue.tasks.find(t=>t.id===id);
       assert.match(task.goal,/WORLD_LOBBY_FIRST/);assert.match(task.goal,/모험가 거점/);
