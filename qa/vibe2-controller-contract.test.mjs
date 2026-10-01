@@ -1182,6 +1182,17 @@ test('fan-in workflow persists verified supervised review learning before releas
   assert.match(workflow,/--batch-review=\/tmp\/vibe2-package-review\.json/);
   assert.match(workflow,/\.vibe2\/experience\.json/);
 });
+test('fan-in defers candidate release dispatch while the GitHub runner queue is pressured',()=>{
+  const start=workflow.indexOf('- name: Dispatch reviewed winner candidates to release gate');
+  const end=workflow.indexOf('- name: Dispatch verified system architecture candidates',start);
+  assert.ok(start>=0&&end>start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/VIBE2_RELEASE_DISPATCH_QUEUE_PRESSURE=/);
+  assert.match(block,/VIBE2_RELEASE_DISPATCH_QUEUE_THRESHOLD/);
+  assert.match(block,/VIBE2_RELEASE_DISPATCH=DEFERRED_TO_24H_RECOVERY_RUNNER_PRESSURE/);
+  assert.match(block,/actions\/workflows\/vibe2-candidate-release\.yml\/dispatches/);
+});
+
 test('worker result exposes exact candidate identity for fan-in review',()=>{
   const start=workflow.indexOf('- name: Build immutable worker result');
   const end=workflow.indexOf('- name: Upload worker result for fan-in');
