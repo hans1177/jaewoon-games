@@ -511,12 +511,29 @@ local function grantXP(p,amount)
  end
 end
 -- Save schema v3 preserves every earlier key and adds level-cap, relic and boss-companion progression.
+local SAVE_SCHEMA_VERSION=3
+local SAVE_MAX_ATTEMPTS=3
 local SAVE={"Gold","XP","Level","WeaponTier","ArmorTier","RelicId","QuestPortal","QuestKills","QuestNeed","RoomCode","ClassId","AdvancementId","SecondAdvancementId","MasteryXP","MasteryLevel","UnlockedCompanions","CompanionUnlockCount"}
+local saveReady={}
+local saveSurface=RS:FindFirstChild("SavePersistence")
+if not saveSurface then
+ saveSurface=Instance.new("Folder")
+ saveSurface.Name="SavePersistence"
+ saveSurface.Parent=RS
+end
+saveSurface:SetAttribute("Enabled",C.SaveEnabled==true)
+saveSurface:SetAttribute("SchemaVersion",SAVE_SCHEMA_VERSION)
+saveSurface:SetAttribute("StoreAvailable",store~=nil)
+saveSurface:SetAttribute("Authority","SERVER")
+
+local function setSaveState(p,state)
+ if p and p.Parent then p:SetAttribute("SaveState",state)end
+end
 local function init(p)
  p:SetAttribute("Gold",100);p:SetAttribute("XP",0);p:SetAttribute("Level",1);p:SetAttribute("WeaponTier",1);p:SetAttribute("ArmorTier",1);p:SetAttribute("RelicId",C.RelicDefault or"NONE")
  p:SetAttribute("ClassId","NONE");p:SetAttribute("AdvancementId","");p:SetAttribute("SecondAdvancementId","");p:SetAttribute("ClassName","직업 미선택")
  p:SetAttribute("MasteryXP",0);p:SetAttribute("MasteryLevel",0);p:SetAttribute("UnlockedCompanions","");p:SetAttribute("CompanionUnlockCount",0)
-p:SetAttribute("AdvancementTrialActive",false);p:SetAttribute("AdvancementTrialProgress",0);p:SetAttribute("AdvancementTrialPassed",false);p:SetAttribute("RespecReady",false)
+ p:SetAttribute("AdvancementTrialActive",false);p:SetAttribute("AdvancementTrialProgress",0);p:SetAttribute("AdvancementTrialPassed",false);p:SetAttribute("RespecReady",false)
  p:SetAttribute("RuneElement",1);p:SetAttribute("SoulCharge",0);p:SetAttribute("BackstabUntil",0);p:SetAttribute("EvasionUntil",0);p:SetAttribute("GuardUntil",0);p:SetAttribute("OverloadCount",0)
  p:SetAttribute("Guard",C.GuardMax);p:SetAttribute("Blocking",false);p:SetAttribute("BlockStartedAt",0);p:SetAttribute("ParryRearmUntil",0);p:SetAttribute("GuardBrokenUntil",0);p:SetAttribute("ParryCount",0);p:SetAttribute("CurrentRunSeed",0)
  p:SetAttribute("CurrentZone",0);p:SetAttribute("InCombat",false);p:SetAttribute("QuestPortal",0);p:SetAttribute("QuestKills",0);p:SetAttribute("QuestNeed",0)
@@ -526,15 +543,51 @@ p:SetAttribute("AdvancementTrialActive",false);p:SetAttribute("AdvancementTrialP
 end
 local function load(p)
  init(p)
- if not store then setStats(p,true);return end
- local ok,d=pcall(function()return store:GetAsync("p:"..p.UserId)end)
- if ok and typeof(d)=="table"then for _,k in ipairs(SAVE)do if d[k]~=nil then p:SetAttribute(k,d[k])end end end
+ saveReady[p]=false
+ if C.SaveEnabled~=true then setSaveState(p,"DISABLED");setStats(p,true);return end
+ if not store then setSaveState(p,"STORE_UNAVAILABLE");setStats(p,true);return end
+ setSaveState(p,"LOADING")
+ local data=nil
+ local readOk=false
+ local lastError=nil
+ for attempt=1,SAVE_MAX_ATTEMPTS do
+  local ok,result=pcall(function()return store:GetAsync("p:"..p.UserId)end)
+  if ok then data=result;readOk=true;break end
+  lastError=result
+  if attempt<SAVE_MAX_ATTEMPTS then task.wait(.2*attempt)end
+ end
+ if not readOk then
+  setSaveState(p,"LOAD_FAILED")
+  warn("Player save load failed",p.UserId,lastError)
+  setStats(p,true)
+  return
+ end
+ if typeof(data)=="table"then
+  for _,k in ipairs(SAVE)do if data[k]~=nil then p:SetAttribute(k,data[k])end end
+ end
+ saveReady[p]=true
+ setSaveState(p,"READY")
  setStats(p,true)
 end
 local function save(p)
- if not store then return end
- local d={};for _,k in ipairs(SAVE)do d[k]=p:GetAttribute(k)end
- pcall(function()store:SetAsync("p:"..p.UserId,d)end)
+ if C.SaveEnabled~=true or not store or saveReady[p]~=true then return false end
+ local data={};for _,k in ipairs(SAVE)do data[k]=p:GetAttribute(k)end
+ setSaveState(p,"SAVING")
+ local lastError=nil
+ for attempt=1,SAVE_MAX_ATTEMPTS do
+  local ok,err=pcall(function()
+   store:UpdateAsync("p:"..p.UserId,function()return data end)
+  end)
+  if ok then
+   setSaveState(p,"SAVED")
+   return true
+  end
+  lastError=err
+  if attempt<SAVE_MAX_ATTEMPTS then task.wait(.2*attempt)end
+ end
+ setSaveState(p,"SAVE_FAILED")
+ warn("Player save write failed",p.UserId,lastError)
+ return false
 end
 task.spawn(function()
  if C.SaveEnabled~=true or foundationSeen.SAVE_ROUNDTRIP or not store then return end
@@ -547,7 +600,10 @@ task.spawn(function()
  end)
  if ok and readBack==token then
   pcall(function()store:RemoveAsync(probeKey)end)
+  saveSurface:SetAttribute("RoundtripVerified",true)
   foundationCheckpoint("SAVE_ROUNDTRIP",nil,{roundtrip=true})
+ else
+  saveSurface:SetAttribute("RoundtripVerified",false)
  end
 end)
 local function updatePartyCount(p)
@@ -1391,7 +1447,7 @@ local function bindPlayer(p)
 end
 Players.PlayerAdded:Connect(bindPlayer)
 for _,p in ipairs(Players:GetPlayers())do bindPlayer(p)end
-Players.PlayerRemoving:Connect(function(p)save(p);clearPlayerCompanions(p);parties[p]=nil;clickTimes[p]=nil;lastRequest[p]=nil;lastBlockRequest[p]=nil;lastCombat[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil end)
+Players.PlayerRemoving:Connect(function(p)save(p);saveReady[p]=nil;clearPlayerCompanions(p);parties[p]=nil;clickTimes[p]=nil;lastRequest[p]=nil;lastBlockRequest[p]=nil;lastCombat[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
 foundationRemote.OnServerEvent:Connect(function(p,name)
