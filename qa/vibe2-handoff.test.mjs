@@ -139,8 +139,8 @@ test('repository handoff is generated entirely from machine state', () => {
   assert.equal(snapshot.nextWorkerContinuation.objective, 'CONTINUE_DIRECT_INDEPENDENT_TASK_EXECUTION_WITHOUT_WAVE_SCHEDULING_OR_GENERAL_INTERNAL_CONCURRENCY_CAP');
   assert.match(snapshot.nextWorkerContinuation.freshnessRule, /FETCH_FRESH_MAIN_HEAD/);
   assert.ok(snapshot.nextWorkerContinuation.verifiedState.includes('GENERAL_GAME_RECOVERY_NEURAL_INTERNAL_GLOBAL_CAP_NULL'));
-  assert.ok(snapshot.nextWorkerContinuation.priorities.some((value) => value.startsWith('P1_CAPTURE_LIVE_VERIFIED_RUNTIME_FAIL_REQUEUE:')));
-  assert.ok(snapshot.nextWorkerContinuation.priorities.some((value) => value.startsWith('P2_VERIFIED_THROUGHPUT_OPTIMIZATION:')));
+  assert.ok(snapshot.nextWorkerContinuation.priorities.includes('P1_REMOVE_GENERAL_RESERVATION_CAP_AND_SCHEDULING_SHELLS_FROM_QUEUE_AND_WORKFLOWS'));
+  assert.ok(snapshot.nextWorkerContinuation.priorities.includes('P2_UPDATE_QA_TO_ASSERT_DIRECT_INDEPENDENT_EXECUTION_AND_SPECIAL_LANE_LIMITS_ONLY'));
   assert.equal(snapshot.nextWorkerContinuation.priorities.some((value) => value.startsWith('P0_FIX_')),false);
   assert.ok(snapshot.nextWorkerContinuation.hardConstraints.includes('NO_GENERAL_GAME_RECOVERY_NEURAL_INTERNAL_GLOBAL_CAP'));
   assert.ok(snapshot.nextWorkerContinuation.hardConstraints.includes('MATRIX_256_IS_TRANSPORT_PARTITION_ONLY'));
@@ -221,7 +221,7 @@ test('machine-state E2E reserves only game-primary work, builds worker order, fa
     const gameId = index === 0 ? 'daechung-rpg' : `e2e-${n}`;
     const sourceRoot = index === 0 ? 'web-games/daechung-rpg' : `web-games/e2e-${n}`;
     const analysisOnly = index === 0;
-    return { id:`e2e-${n}`, gameId, target:'web', department:analysisOnly?'qa':'development', type:analysisOnly?'qa':'implementation', goal:analysisOnly?'inspect existing web source':'existing web text maintenance', responsibleFiles:analysisOnly?[]:[`${sourceRoot}/index.html`], dependencies:[], priority:'normal', releaseState:'development-confirmed', status:'queued', retries:0, maxRetries:2, ownerDirective:false, requiresOwnerDecision:false, protectedChange:false, paidResourceRequired:false, sourceRoot, estimatedRisk:'low', speculativeEligible:false, evidence:[] };
+    return { id:`e2e-${n}`, gameId, target:'web', department:analysisOnly?'qa':'development', type:analysisOnly?'qa':'implementation', executionLane:analysisOnly?'control-fast':'game-primary', goal:analysisOnly?'inspect existing web source':'existing web text maintenance', responsibleFiles:analysisOnly?[]:[`${sourceRoot}/index.html`], dependencies:[], priority:'normal', releaseState:'development-confirmed', status:'queued', retries:0, maxRetries:2, ownerDirective:false, requiresOwnerDecision:false, protectedChange:false, paidResourceRequired:false, sourceRoot, estimatedRisk:'low', speculativeEligible:false, evidence:[] };
   });
   fs.writeFileSync(queueFile, JSON.stringify(directQueue(tasks), null, 2));
   fs.writeFileSync(controlFile, JSON.stringify({ version:4, currentMax:32, healthyStreak:0, pressureStreak:0, lastDecision:'INIT', lastReason:'CANONICAL_STEP_32', lastRunId:null, lastUpdatedAt:null, lastTelemetry:null }, null, 2));
