@@ -1594,16 +1594,16 @@ export async function observeAssetRuntimeCaptures({order={},cwd=process.cwd(),mo
 
     const captureFindings=[];
     for(const [index,finding] of parsed.findings.entries()){
-      const id=clean(finding?.id),severity=clean(finding?.severity).toUpperCase(),category=clean(finding?.category).toUpperCase();
+      const sourceFindingId=clean(finding?.id),id=clean(capture.id)+':'+sourceFindingId,severity=clean(finding?.severity).toUpperCase(),category=clean(finding?.category).toUpperCase();
       const targetIds=unique((Array.isArray(finding?.targetIds)?finding.targetIds:[]).map(clean).filter(Boolean));
-      if(!id||findingIds.has(id))throw new Error('RUNTIME_VISUAL_FINDING_ID_REQUIRED_OR_DUPLICATED:'+capture.id+':'+index);
+      if(!sourceFindingId||findingIds.has(id))throw new Error('RUNTIME_VISUAL_FINDING_ID_REQUIRED_OR_DUPLICATED:'+capture.id+':'+index);
       if(!allowedSeverity.has(severity)||!allowedCategories.has(category))throw new Error('RUNTIME_VISUAL_FINDING_CLASS_REQUIRED:'+id);
       if(!normalizedRegion(finding.regionNormalized)||!targetIds.length||targetIds.some(target=>!editableIds.has(target)))throw new Error('RUNTIME_VISUAL_FINDING_TARGET_REQUIRED:'+id);
       if(!clean(finding.observed)||!clean(finding.requestedChange))throw new Error('RUNTIME_VISUAL_FINDING_DESCRIPTION_REQUIRED:'+id);
       if(category==='MISSING_OBJECT'&&(targetIds.some(target=>!lists.missingSubjects.includes(target))||!targetIds.some(target=>requiredIds.has(target))))throw new Error('RUNTIME_VISUAL_MISSING_OBJECT_NOT_PROVEN:'+id);
       findingIds.add(id);
       const normalized=Object.freeze({
-        id,severity,category,regionNormalized:Object.freeze([...finding.regionNormalized]),targetIds:Object.freeze(targetIds),
+        id,sourceFindingId,severity,category,regionNormalized:Object.freeze([...finding.regionNormalized]),targetIds:Object.freeze(targetIds),
         observed:clean(finding.observed),requestedChange:clean(finding.requestedChange)
       });
       captureFindings.push(normalized);
