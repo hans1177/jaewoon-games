@@ -1725,7 +1725,7 @@ export function verifiedExternalLearningBlockFromPrompt(prompt=''){
 export function compactVerifiedExternalLearningBlockFromPrompt(prompt=''){
   const block=verifiedExternalLearningBlockFromPrompt(prompt);
   if(!block)return'';
-  const itemPattern=/\[EXTERNAL_LEARNING ([^\]]+)\]\n([\s\S]*?)\n\[END_EXTERNAL_LEARNING \\1\]/g;
+  const itemPattern=/\[EXTERNAL_LEARNING ([^\]]+)\]\n([\s\S]*?)\n\[END_EXTERNAL_LEARNING \1\]/g;
   const items=[...block.matchAll(itemPattern)];
   if(!items.length)return block;
   const dispositionCount=[...block.matchAll(/^DISPOSITION=/gm)].length;
