@@ -924,7 +924,7 @@ test('workflow retries only with the installed official StudioMCP binary and cla
   assert.match(studioMcpBlock,/stderrHint=STUDIO_TOOL_PROVIDER_TIMEOUT/);
   assert.match(studioMcpBlock,/stderrHint=MCP_SERVER_NOT_ENABLED/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_TOOL_PROVIDER_TIMEOUT=attempt=/);
-  assert.match(studioMcpBlock,/tool provider timed out after 3 connections to the same Studio session/);
+  assert.match(studioMcpBlock,/tool provider remained unavailable after exact-session reconnects/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_STUDIO_LOG_MATCH_COUNT=/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_STUDIO_ATTACHMENT_PENDING=attempt=/);
   assert.match(studioMcpBlock,/\$studioAttachmentFailureObserved = \$true/);
@@ -1074,8 +1074,10 @@ test('automatic Roblox foundation work keeps only newest same-identity run befor
 
 test('Studio MCP recovery blocks explicit disabled state but probes missing or unknown setting through official tool handshake',()=>{
   const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
-  assert.match(studioMcpBlock,/\$maxSessionAttempts = 3/);
+  assert.match(studioMcpBlock,/\$attempt = 0/);
+  assert.match(studioMcpBlock,/while \(\$true\)/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SESSION_ATTEMPT=/);
+  assert.doesNotMatch(studioMcpBlock,/\$maxSessionAttempts/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RECONNECT_SAME_PROCESS=/);
   assert.doesNotMatch(studioMcpBlock,/ROBLOX_STUDIO_MCP_STUDIO_RELAUNCHED=/);
   assert.match(studioMcpBlock,/--tool-attempts=12/);
@@ -2394,7 +2396,7 @@ test('Studio retry preserves a verified product failure instead of letting later
   assert.match(block,/ROBLOX_STUDIO_MCP_PRODUCT_FAILURE_PRESERVED=YES/);
   assert.match(block,/\^studio-product-/);
   const productThrow=block.indexOf('official Roblox Studio product failure preserved for repair');
-  const timeoutThrow=block.indexOf('official Roblox Studio MCP tool provider timed out after 3 connections to the same Studio session');
+  const timeoutThrow=block.indexOf('official Roblox Studio MCP tool provider remained unavailable after exact-session reconnects');
   assert.ok(productThrow>=0&&timeoutThrow>productThrow);
   const preservedAt=block.indexOf('ROBLOX_STUDIO_MCP_PRODUCT_FAILURE_PRESERVED=YES');
   const restartAt=block.indexOf('ROBLOX_STUDIO_MCP_RECONNECT_SAME_PROCESS=',preservedAt);
