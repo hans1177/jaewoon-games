@@ -34,7 +34,7 @@ test('validator classification evidence routes responsibility to validator in sh
   assert.equal(d.actionRecommendation.restartFromBeginning,false);
 });
 
-test('supervised work has a hard inhibitor but diagnosis cannot cancel or reprioritize the wave',()=>{
+test('supervised work has a hard inhibitor but diagnosis cannot bypass direct reservation authority',()=>{
   const d=buildNeuralDiagnosis({task:{
     goal:'major supervised web repair',
     supervisionContract:{required:true},
@@ -43,7 +43,7 @@ test('supervised work has a hard inhibitor but diagnosis cannot cancel or reprio
   }});
   assert.ok(d.inhibitors.includes('SUPERVISOR_PASS_REQUIRED_BUT_MISSING'));
   assert.equal(d.actionRecommendation.blocked,true);
-  assert.equal(d.waveControl.currentWaveSchedulerRemainsAuthoritative,true);
+  assert.equal(d.directReservationControl.currentDirectQueueReservationRemainsAuthoritative,true);
   assert.equal(d.bottleneck.advisoryOnly,true);
 });
 
