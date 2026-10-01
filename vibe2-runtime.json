@@ -311,7 +311,9 @@
       "fanInRefillBypassesSlimPressure": true,
       "heavyGameExecutionUnchanged": true,
       "queueReservationAndStateFanInOnly": true,
-      "ingressControl": "ubuntu-slim"
+      "ingressControl": "ubuntu-slim",
+      "lightweightReserveSeparatedFromFanIn": true,
+      "fanInRefillBypassesArmPressure": true
     },
     "slotRefillTrigger": "vibe2-neuron-complete",
     "slotRefillBranchPrefix": "vibe2/refill/",
@@ -490,7 +492,8 @@
         "runnerPressureSource": "GITHUB_ACTIONS_RECENT_RUN_STATUS_QUEUED_PENDING_REQUESTED",
         "pressureObservationFailureDefersLearning": true,
         "minimumActiveWorkersUnderPressure": 0,
-        "productionMayNotWaitForLearningReserve": true
+        "productionMayNotWaitForLearningReserve": true,
+        "dispatchDeferredWhenRunnerPressure": true
       },
       "RELEASE_WAIT": {
         "consumesGamePrimarySlot": false,
@@ -508,7 +511,8 @@
       "recoveryFastCausalGameRefillTarget": "GAME_PRIMARY",
       "recoveryFastCausalGameRefillPressureGuardRequired": true,
       "recoveryFastCausalGameRefillQueuePressureThreshold": 4,
-      "recoveryFastCausalGameRefillDeferredStatePreserved": true
+      "recoveryFastCausalGameRefillDeferredStatePreserved": true,
+      "recoveryFastCausalGameRefillDefersUnderRunnerPressure": true
     },
     "executionTopology": "ATOMIC_NEURON_STREAM",
     "perWorkerCompletionSignalEnabled": true,
