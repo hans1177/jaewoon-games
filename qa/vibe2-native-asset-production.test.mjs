@@ -1274,4 +1274,10 @@ test('low-quality asset rescue preserves strong axes and escalates to full autho
   for(const axis of ['SILHOUETTE','PROPORTION','ANATOMY','FACE_HANDS_FEET','MATERIAL','RIG','SOCKET','MOTION','LOD'])assert.ok(base.qualityAxes.includes(axis),axis);
   assert.equal(base.fullReauthorTrigger,'CORE_IDENTITY_OR_STRUCTURAL_QUALITY_STILL_BLOCKED_AFTER_TARGETED_DERIVATION');
   assert.equal(base.sourceAssetMayRemainAsPartialDonorAfterReplacement,true);
+  assert.equal(base.visualQualityNotImpliedByVerification,true);
+  assert.ok(base.detailInvestmentPolicy.prioritySignals.includes('SCREEN_SPACE_OCCUPANCY'));
+  assert.ok(base.detailInvestmentPolicy.prioritySignals.includes('INTERACTION_FREQUENCY'));
+  assert.equal(base.detailInvestmentPolicy.polygonOrTextureCountAloneIsNotQuality,true);
+  assert.equal(plan.applyFirstSummary.visualVerificationAndVisualQualitySeparated,true);
+  assert.ok(plan.applyFirstSummary.detailInvestmentPriority.includes('CAMERA_PROXIMITY'));
 });
