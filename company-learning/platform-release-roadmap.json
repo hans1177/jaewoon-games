@@ -8605,7 +8605,20 @@
         "qa/vibe2-continuous-release-dispatch.test.mjs",
         "company-learning/company-architecture-map.json",
         "company-learning/company-log-map.json"
-      ]
+      ],
+      "postDeployment": {
+        "perpetualBuildUp": true,
+        "generationLimit": null,
+        "immediateNextGenerationAfterCloudflareMainPass": true,
+        "newIdeaRequiredEveryCycle": true,
+        "sameIdeaRepeatWithoutNewEvidenceForbidden": true,
+        "capacityBoundariesOnly": [
+          "SAVE_AND_PERSISTED_DATA_BUDGET",
+          "CONTENT_AND_BUNDLE_SIZE_BUDGET",
+          "MEMORY_BUDGET",
+          "MOBILE_FRAME_AND_RUNTIME_PERFORMANCE_BUDGET"
+        ]
+      }
     }
   },
   "vibeExecutionLaneContract": {
@@ -25682,7 +25695,17 @@
         "generationFanInRequiredBeforeNextDirective": true,
         "anyActiveTaskKeepsSameDirectiveGeneration": true,
         "anyFailedTaskKeepsDepthAndTriggersCausalRepair": true,
-        "allRequiredGenerationTasksMustBeVerifiedBeforeEscalation": true
+        "allRequiredGenerationTasksMustBeVerifiedBeforeEscalation": true,
+        "generationLimit": null,
+        "perpetualAfterDeployment": true,
+        "everyDeployedWebCycleCreatesNextDirective": true,
+        "ideaRegeneratedEveryCycle": true,
+        "onlyCapacityBoundaries": [
+          "SAVE_AND_PERSISTED_DATA_BUDGET",
+          "CONTENT_AND_BUNDLE_SIZE_BUDGET",
+          "MEMORY_BUDGET",
+          "MOBILE_FRAME_AND_RUNTIME_PERFORMANCE_BUDGET"
+        ]
       },
       "platformHandoff": {
         "sharedCommonGoal": true,
@@ -26156,7 +26179,41 @@
       "studioWindowsMax": 1,
       "multiplayerAcceptance": "STATIC_CODE_CONTRACT",
       "runtimeVerifiedOnlyWhenObserved": true
-    }
+    },
+    "webPostDeploymentPerpetualBuildUp": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-02",
+      "enabled": true,
+      "playableWebMustDeployBeforeNextCycle": true,
+      "deploymentSuccessNextAction": "IMMEDIATE_NEXT_BUILD_UP_GENERATION",
+      "deploymentFailureNextAction": "RETRY_SAME_VERIFIED_CANDIDATE_UNTIL_DEPLOYED",
+      "generationLimit": null,
+      "terminalCompletionStateForbidden": true,
+      "everyDeployedCycleGeneratesNewIdea": true,
+      "ideaGenerator": "tools/company-build-up-directive.mjs",
+      "ideaInputs": [
+        "LATEST_VERIFIED_DESIGN",
+        "CURRENT_DEPLOYED_GAME_SOURCE",
+        "PREVIOUS_BUILD_UP_RESULT",
+        "LATEST_RUNTIME_AND_QA_EVIDENCE",
+        "CURRENT_HIGHEST_VALUE_GAPS"
+      ],
+      "repeatedIdeaWithoutNewEvidenceForbidden": true,
+      "onlyCapacityBoundaries": [
+        "SAVE_AND_PERSISTED_DATA_BUDGET",
+        "CONTENT_AND_BUNDLE_SIZE_BUDGET",
+        "MEMORY_BUDGET",
+        "MOBILE_FRAME_AND_RUNTIME_PERFORMANCE_BUDGET"
+      ],
+      "capacityBoundaryAction": "OPTIMIZE_OR_RESTRUCTURE_WITHOUT_CHANGING_PROTECTED_GAME_MEANING",
+      "protectedGameMeaningStillPreserved": true,
+      "saveSchemaAndMeaningStillPreserved": true,
+      "balanceEconomyAndNetworkAuthorityStillPreserved": true
+    },
+    "playableWebDeploymentMustCompleteBeforeWebNextCycle": true,
+    "webDeploymentSuccessImmediatelyResumesPerpetualBuildUp": true,
+    "webDeploymentFailurePausesOnlyThatWebLaneUntilSameCandidateDeploys": true,
+    "publicationOutcomeMayNotPauseEvolutionExceptMandatoryPlayableWebDeployment": true
   },
   "robloxNativeCodingQualityContract": {
     "version": 3,
