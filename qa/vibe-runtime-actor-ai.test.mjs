@@ -209,10 +209,13 @@ test('common AI memory is bounded idempotent and relationships remain directiona
   assert.equal(ai.remember({id:'e1',type:'help'}),true);
   assert.equal(ai.remember({id:'e1',type:'help'}),false);
   ai.remember({id:'e2',type:'talk'});ai.remember({id:'e3',type:'fight'});ai.remember({id:'e4',type:'rescue'});ai.remember({id:'e5',type:'gift'});
-  ai.setRelationship('player',{trust:30,respect:10,stage:'working-trust'});
+  ai.setRelationship('player',{trust:30,respect:10,dependence:12,stage:'working-trust'});
+  const changed=ai.applyRelationshipEvent('player',{id:'rel-dependence-1',type:'shared-danger',actorId:'player'},{dependence:-5});
   const mind=ai.snapshotMind();
   assert.equal(mind.memory.length,4);
   assert.equal(ai.relationshipWith('player').trust,30);
+  assert.equal(changed.applied,true);
+  assert.equal(ai.relationshipWith('player').dependence,7);
   assert.equal(mind.gameplayAuthority,false);
 });
 
@@ -370,6 +373,9 @@ test('common ai applies one causal source event once and feeds it into the next 
   assert.equal(next.causalContext.sourceEventId,'evt-help-1');
   assert.equal(next.causalContext.sourceEventType,'help');
   assert.equal(next.causalContext.judgmentEvidence.sourceEventId,'evt-help-1');
+  assert.equal(next.causalContext.actorPlayerModel.actorId,'player');
+  assert.ok(next.causalContext.actorPlayerModel.patterns.helpful>=1);
+  assert.equal(next.causalContext.actorPlayerModel.perspectiveSpecific,true);
   assert.ok(next.causalContext.dialogueActs.length>0);
   assert.equal(next.causalContext.questCandidate.candidateOnly,true);
   assert.equal(next.causalContext.persistentMutationRequiresEngineValidation,true);
