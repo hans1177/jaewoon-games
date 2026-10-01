@@ -2059,26 +2059,43 @@ jobs:
           " > /tmp/roblox-older-studio-run-ids
           while read -r run_id; do
             [ -n "$run_id" ] || continue
-            if [ "$CURRENT_TRIGGER_CHANGED" != 'true' ]; then
-              run_event="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id" --jq '.event' 2>/dev/null || true)"
-              run_head="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id" --jq '.head_sha' 2>/dev/null || true)"
-              if [ "$run_event" = 'push' ] && [[ "$run_head" =~ ^[0-9a-f]{40}$ ]]; then
-                exact_trigger="$(gh api "repos/$GITHUB_REPOSITORY/commits/$run_head" --jq '[.files[]?.filename] | any(. == "roblox-games/.company-runtime-trigger")' 2>/dev/null || echo false)"
-                if [ "$exact_trigger" = 'true' ]; then
-                  echo "ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_EXACT_TRIGGER=$run_id"
+            run_event="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id" --jq '.event' 2>/dev/null || true)"
+            run_head="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id" --jq '.head_sha' 2>/dev/null || true)"
+            older_exact_trigger=false
+            older_trigger_game=''
+            if [ "$run_event" = 'push' ] && [[ "$run_head" =~ ^[0-9a-f]{40}$ ]]; then
+              older_exact_trigger="$(gh api "repos/$GITHUB_REPOSITORY/commits/$run_head" --jq '[.files[]?.filename] | any(. == "roblox-games/.company-runtime-trigger")' 2>/dev/null || echo false)"
+              if [ "$older_exact_trigger" = 'true' ]; then
+                older_trigger_game="$(
+                  gh api "repos/$GITHUB_REPOSITORY/contents/roblox-games/.company-runtime-trigger?ref=$run_head" --jq '.content' 2>/dev/null |
+                    tr -d '\n' | base64 --decode 2>/dev/null |
+                    sed -n 's/^gameId:[[:space:]]*//p' | head -n1 | xargs || true
+                )"
+                if [ "$CURRENT_TRIGGER_CHANGED" != 'true' ]; then
+                  echo "ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_EXACT_TRIGGER=$run_id:$older_trigger_game"
                   continue
                 fi
+                case ",$planned_games," in
+                  *",$older_trigger_game,"*) ;;
+                  *)
+                    echo "ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_UNRELATED_EXACT_TRIGGER=$run_id:$older_trigger_game"
+                    continue
+                    ;;
+                esac
               fi
             fi
-            jobs_json="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" 2>/dev/null || echo '{"jobs":[]}')"
-            decision="$(printf '%s' "$jobs_json" | PLANNED_GAMES="$planned_games" node -e "
+            jobs_json="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" 2>/dev/null || echo '{"jobs":[]}' )"
+            decision="$(printf '%s' "$jobs_json" | PLANNED_GAMES="$planned_games" OWNER_EXACT="$CURRENT_TRIGGER_CHANGED" OLDER_EXACT="$older_exact_trigger" node -e "
               let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
                 const jobs=(JSON.parse(s).jobs||[]),prefix='Official Studio MCP actual play ';
                 const planned=new Set(String(process.env.PLANNED_GAMES||'').split(',').filter(Boolean));
+                const ownerExact=String(process.env.OWNER_EXACT||'').toLowerCase()==='true';
+                const olderExact=String(process.env.OLDER_EXACT||'').toLowerCase()==='true';
                 const studio=jobs.filter(j=>String(j.name||'').startsWith(prefix));
                 if(studio.some(j=>String(j.status||'').toLowerCase()==='in_progress'))return process.stdout.write('PRESERVE_ACTIVE');
                 const waiting=studio.filter(j=>['queued','pending','requested','waiting'].includes(String(j.status||'').toLowerCase()));
                 if(!waiting.length)return process.stdout.write('NONE');
+                if(ownerExact&&!olderExact)return process.stdout.write('CANCEL');
                 const games=waiting.map(j=>String(j.name||'').slice(prefix.length));
                 process.stdout.write(games.every(g=>planned.has(g))?'CANCEL':'PRESERVE_UNRELATED');
               });
