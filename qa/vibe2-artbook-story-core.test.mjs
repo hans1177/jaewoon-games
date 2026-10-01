@@ -108,6 +108,7 @@ test('runtime actor quest candidate enters only through existing quest engine va
     id:'mira-mentor-1',
     title:'사라진 스승의 흔적',
     whyNow:'fresh mentor clue was just observed',
+    allowedObjectiveVerbs:['investigate'],
     objectives:[{id:'inspect-watchtower',type:'counter',target:1}],
     requirements:{flags:{}},
     consequence:{thread:'mentor'}
@@ -123,6 +124,7 @@ test('runtime actor quest candidate enters only through existing quest engine va
   const duplicate=q.registerActorQuestCandidate(state,candidate,{
     id:'different-id-must-not-duplicate',
     whyNow:'same causal proposal',
+    allowedObjectiveVerbs:['investigate'],
     objectives:[{id:'other',target:1}]
   });
   assert.equal(duplicate.ok,true);
@@ -137,8 +139,17 @@ test('runtime actor quest candidate enters only through existing quest engine va
   assert.equal(state.quests['quest-mira-mentor-1'].status,'active');
   assert.deepEqual(state.quests['quest-mira-mentor-1'].rewards,[{type:'gold',amount:50}]);
 
+  const undeclared=q.registerActorQuestCandidate(state,candidate,{
+    id:'undeclared-verb',
+    whyNow:'engine did not declare investigate',
+    allowedObjectiveVerbs:['talk'],
+    objectives:[{id:'x',target:1}]
+  });
+  assert.equal(undeclared.ok,false);
+  assert.equal(undeclared.reason,'ENGINE_OBJECTIVE_VERB_NOT_DECLARED');
+
   const invalid=q.registerActorQuestCandidate(state,{...candidate,candidateOnly:false},{
-    id:'invalid',whyNow:'invalid',objectives:[{id:'x',target:1}]
+    id:'invalid',whyNow:'invalid',allowedObjectiveVerbs:['investigate'],objectives:[{id:'x',target:1}]
   });
   assert.equal(invalid.ok,false);
   assert.equal(invalid.reason,'ACTOR_QUEST_CANDIDATE_REQUIRED');
