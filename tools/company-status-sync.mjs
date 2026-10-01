@@ -593,7 +593,8 @@ export function runCompanyStatusSync({filesystem=fs}={}){
   console.log(`COMPANY_RUNTIME_CATALOG_ADDED=${runtimeCatalogAdded.join(',')||'NONE'}`);
   console.log(`COMPANY_OWNER_WEB_ADDED=${ownerWebIngest.added.join(',')||'NONE'}`);
   console.log(`COMPANY_OWNER_WEB_UPDATED=${ownerWebIngest.updated.join(',')||'NONE'}`);
-  console.log(`COMPANY_OWNER_WEB_DISABLED=${ownerWebIngest.disabled.join(',')||'NONE'}`);\n  console.log(`COMPANY_ACTUAL_WEB_PLAYABLE_RECONCILED=${actualWebPlayableReconciled.join(',')||'NONE'}`);
+  console.log(`COMPANY_OWNER_WEB_DISABLED=${ownerWebIngest.disabled.join(',')||'NONE'}`);
+  console.log(`COMPANY_ACTUAL_WEB_PLAYABLE_RECONCILED=${actualWebPlayableReconciled.join(',')||'NONE'}`);
   console.log(`COMPANY_PRIMARY_PLATFORM=${company.policy?.primaryPlatform||'unknown'}`);
   console.log(`PRODUCTION_CLASS_RELEASE_CONFIRMED=${classResult.state.releaseConfirmedGameIds.join(',')||'none'}`);
   console.log(`PRODUCTION_CLASS_DEVELOPMENT_CONFIRMED=${classResult.state.developmentConfirmedGameIds.join(',')||'none'}`);
