@@ -217,10 +217,16 @@ export class JaewoonCommonAI {
       emotion: this.emotion,
       causalContext: this.causalContext ? Object.freeze({
         sourceEventId: this.causalContext.sourceEventId,
+        sourceEventType: this.causalContext.sourceEventType,
         relationshipTargetId: this.causalContext.relationshipTargetId,
         attentionTargetId: this.causalContext.attentionTargetId,
+        judgmentEvidence: this.causalContext.judgmentEvidence || null,
         actionPreferences: Object.freeze([...(this.causalContext.actionPreferences || [])]),
-        dialogueActs: Object.freeze([...(this.causalContext.dialogueActs || [])])
+        dialogueActs: Object.freeze([...(this.causalContext.dialogueActs || [])]),
+        eventCandidate: this.causalContext.eventCandidate || null,
+        questCandidate: this.causalContext.questCandidate || null,
+        persistentMutationRequiresEngineValidation: true,
+        gameplayAuthority: false
       }) : null,
       gameplayAuthority: false
     };
@@ -260,6 +266,8 @@ export class JaewoonCommonAI {
       id: eventId,
       type: eventType,
       sourceEventId: eventId,
+      sourceActionId: String(event.actionId || ''),
+      sourceActionType: String(event.actionType || event.action || ''),
       actor: String(event.actorId || event.actor || ''),
       target: relationshipTargetId,
       observerId: String(this.identity.id || this.identity.name || ''),
@@ -285,6 +293,7 @@ export class JaewoonCommonAI {
       sourceEventType: eventType,
       relationshipTargetId,
       attentionTargetId: String(next.attentionTargetId || relationshipTargetId || event.objectId || ''),
+      judgmentEvidence: next.judgmentEvidence || memoryCandidate || null,
       actionPreferences: Object.freeze(Array.isArray(next.actionPreferences) ? [...next.actionPreferences] : []),
       dialogueActs: Object.freeze(Array.isArray(next.dialogueActs) ? [...next.dialogueActs] : []),
       eventCandidate: next.eventCandidate || null,
