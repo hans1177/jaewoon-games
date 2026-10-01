@@ -394,16 +394,16 @@ export function reserveNextVibeTask(queueInput, { maxConcurrentTasks = null, res
   return { reserved: started.started, task: started.task || null, queue: started.queue, selection, recovered: recovered.recovered };
 }
 
-export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, reservation = {}, lane = 'game-primary', speculativeExpansionAllowed = true, speculativeExpansionReason = 'AVAILABLE', policy = readJson(CANONICAL_RESERVATION_POLICY) } = {}) {
+export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, batchLimit = EXTERNAL_MATRIX_BATCH_MAX, reservation = {}, lane = 'game-primary', speculativeExpansionAllowed = true, speculativeExpansionReason = 'AVAILABLE', policy = readJson(CANONICAL_RESERVATION_POLICY) } = {}) {
   const recovered = recoverRunnableInfrastructureState(queueInput);
   const queue=synchronizeOwnerDevelopmentHolds(recovered.queue,policy);
   const laneMode=clean(lane||'game-primary').toLowerCase();
-  const started = beginVibeQueueBatch(queue, { maxConcurrentTasks, reservation, lane:laneMode });
+  const started = beginVibeQueueBatch(queue, { maxConcurrentTasks, batchLimit, reservation, lane:laneMode });
   let tasks = started.tasks || [];
   const reservedTaskOrder = tasks.map((task) => task.id);
   const workerBudget = Math.max(
     tasks.length,
-    Math.floor(Number(started.selection?.effectiveMaxConcurrentTasks ?? maxConcurrentTasks ?? queue.maxConcurrentTasks) || tasks.length || 1)
+    Math.floor(Number(batchLimit)||EXTERNAL_MATRIX_BATCH_MAX)
   );
   const speculativeVariants = new Map(tasks.map((task) => [task.id, 1]));
   const speculativePriority = (task) => {
@@ -420,7 +420,7 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, re
     .sort((a,b)=>a.priority-b.priority||a.index-b.index)
     .map(row=>row.task);
   let spareWorkerSlots = speculativeExpansionAllowed===true?Math.max(0, workerBudget - tasks.length):0;
-  for (let round = 0; round < 2 && spareWorkerSlots > 0; round += 1) {
+  while (spareWorkerSlots > 0 && speculativeEligible.length) {
     for (const task of speculativeEligible) {
       if (spareWorkerSlots <= 0) break;
       speculativeVariants.set(task.id, (speculativeVariants.get(task.id) || 1) + 1);
@@ -826,7 +826,7 @@ export function recordVibeNeuronResult(queueInput, rowInput = {}, { expectedVari
   let queue = createVibeContinuousQueue(queueInput);
   const taskId = clean(rowInput?.taskId);
   const variant = clean(rowInput?.variant) || 'primary';
-  const expected = Math.max(1, Math.min(5, Math.floor(Number(expectedVariants) || 1)));
+  const expected = Math.max(1, Math.min(EXTERNAL_MATRIX_BATCH_MAX, Math.floor(Number(expectedVariants) || 1)));
   const task = queue.tasks.find((item) => item.id === taskId);
   if (!task) return { updated:false, ready:false, slotReleased:false, stale:true, reason:'TASK_NOT_FOUND', taskId, variant, expectedVariants:expected, resultCount:0, queue };
   const rowReservationId = resultReservationId(rowInput);
@@ -891,8 +891,12 @@ export function runQueueCommand(args = {}) {
         ));
     });
   const queueStateRecovered=queueFileMissing||queueFileBlank;
-  let queue = createVibeContinuousQueue(queueStateRecovered?{...rawQueue,maxConcurrentTasks:EXTERNAL_MATRIX_BATCH_MAX}:rawQueue);
-  if(queueStateRecovered)writeJson(file,queue);
+  const canonicalPolicy=readJson(CANONICAL_RESERVATION_POLICY,{});
+  let queue = createVibeContinuousQueue(queueStateRecovered?{...rawQueue,maxConcurrentTasks:DEFAULT_MAX_CONCURRENT_TASKS}:rawQueue);
+  const legacyGlobalParallelCapMigrationNeeded=canonicalPolicy?.developmentSpeedExecution?.internalArtificialConcurrencyCapsForbidden===true
+    &&Number(queue.maxConcurrentTasks)===EXTERNAL_MATRIX_BATCH_MAX;
+  if(legacyGlobalParallelCapMigrationNeeded)queue=createVibeContinuousQueue({...queue,maxConcurrentTasks:DEFAULT_MAX_CONCURRENT_TASKS});
+  if(queueStateRecovered||legacyGlobalParallelCapMigrationNeeded)writeJson(file,queue);
   const command = clean(args.command).toLowerCase();
   const transientLockRecovery=['reserve','reserve-batch','neuron-complete'].includes(command)?recoverTransientWorkLockBlocks(queue):{recovered:0,queue};
   queue=transientLockRecovery.queue;
@@ -947,11 +951,13 @@ export function runQueueCommand(args = {}) {
     const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_MIN;
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
     const reservationMaxConcurrentTasks=configuredMaxConcurrentTasks;
+    const externalBatchLimit=optionalMaxConcurrent(args['batch-max']) ?? EXTERNAL_MATRIX_BATCH_MAX;
     const speculativeExpansion=executionLane==='game-primary'
       ?speculativeExpansionPolicy(adaptiveControl)
       :Object.freeze({allowed:true,reason:'AUXILIARY_LANE_UNCHANGED',primaryCoveragePreserved:true});
     const reserved = reserveVibeTaskBatch(queue, {
       maxConcurrentTasks: reservationMaxConcurrentTasks,
+      batchLimit: externalBatchLimit,
       reservation: reservationFromArgs(args),
       lane:executionLane,
       speculativeExpansionAllowed:speculativeExpansion.allowed,
@@ -970,6 +976,10 @@ export function runQueueCommand(args = {}) {
           configuredMaxConcurrentTasks,
           adaptiveMaxConcurrentTasks,
           reservationMaxConcurrentTasks,
+          externalBatchLimit,
+          globalInternalParallelCap:null,
+          batchTruncated:reserved.selection?.batchTruncated===true,
+          remainingRunnableAfterBatchLimit:Number(reserved.selection?.remainingRunnableAfterBatchLimit||0),
           speculativeExpansionAllowed:reserved.speculativeExpansionAllowed===true,
           speculativeExpansionReason:reserved.speculativeExpansionReason||speculativeExpansion.reason,
           primaryTaskCount:reserved.primaryTaskCount||0,
@@ -991,7 +1001,7 @@ export function runQueueCommand(args = {}) {
         }
       });
     }
-    result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, speculativeExpansion, schemaMigrated:atomicSchemaMigrationNeeded, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane }) };
+    result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, externalBatchLimit, globalInternalParallelCap:null, adaptiveControl, speculativeExpansion, schemaMigrated:atomicSchemaMigrationNeeded||legacyGlobalParallelCapMigrationNeeded, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane }) };
   } else if (command === 'release-slot') {
     const released = releaseVibeTaskExecutionSlot(queue, { taskId: clean(args.id), evidence: list(args.evidence), blocker: clean(args.blocker) });
     queue = released.queue;
