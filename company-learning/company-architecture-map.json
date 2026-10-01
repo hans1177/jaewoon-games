@@ -1,5 +1,5 @@
 {
-  "version": 301,
+  "version": 302,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4401,7 +4401,7 @@
       ]
     }
   },
-  "updatedAt": "2026-09-28",
+  "updatedAt": "2026-10-02",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -4503,7 +4503,20 @@
     "centralContract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.nativeGameFoundationValidationStack",
     "newDepartmentCreated": false,
     "executionOwner": "EXISTING_GAME_TESTER_AND_QA_CAPABILITY",
-    "ticketState": "vibe2-unreal-core:.vibe2/tester-debug-tickets.json"
+    "ticketState": "vibe2-unreal-core:.vibe2/tester-debug-tickets.json",
+    "unityAdapterBinding": {
+      "centralContract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.nativeGameFoundationValidationStack.unityAdapter",
+      "runtimeCollector": "tools/unity-apk-runtime-smoke.sh",
+      "evidenceCompiler": "tools/company-development-unity-evidence.mjs",
+      "orchestration": ".github/workflows/company-development-unity-runtime.yml",
+      "independentQa": ".github/workflows/unity-android-independent-qa.yml",
+      "f9FanIn": ".github/workflows/unity-android-regression.yml",
+      "executionMode": "ONE_EXACT_APK_RUNTIME_SESSION_REUSED_ACROSS_APPLICABLE_F1_F8_FLOORS",
+      "f9RuntimeReplay": false,
+      "duplicatePerFloorRuntimeVerifierForbidden": true,
+      "exactCandidateBindingRequired": true,
+      "policyAuthority": false
+    }
   },
   "systemAiEvolutionTopology": {
     "version": 1,
