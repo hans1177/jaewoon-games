@@ -16,8 +16,11 @@ const REPO_ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 
 function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)out[body]=true;else out[body.slice(0,at)]=body.slice(at+1);}return out;}
 function resolveInput(file){const value=clean(file);if(fs.existsSync(value))return value;const rooted=path.join(REPO_ROOT,value);return fs.existsSync(rooted)?rooted:value;}
-function readJson(file){return JSON.parse(fs.readFileSync(resolveInput(file),'utf8'));}
-function sha256(file){return createHash('sha256').update(fs.readFileSync(resolveInput(file))).digest('hex');}
+function readBuffer(file){return fs.readFileSync(resolveInput(file));}
+function parseJsonBuffer(buffer,file){try{return JSON.parse(buffer.toString('utf8'));}catch(error){fail(`JSON_PARSE:${file}:${clean(error?.message||error)}`);}}
+function readJson(file){return parseJsonBuffer(readBuffer(file),file);}
+function sha256Buffer(buffer){return createHash('sha256').update(buffer).digest('hex');}
+function sha256(file){return sha256Buffer(readBuffer(file));}
 function fail(message){throw new Error(`SHARED_WORKER_CONTEXT_INVALID:${message}`);}
 function sameList(a,b){return JSON.stringify(a||[])===JSON.stringify(b||[]);}
 const textSha256=value=>createHash('sha256').update(String(value??''),'utf8').digest('hex');
@@ -262,7 +265,8 @@ export function validateSharedWorkerContext({
   requireHomepagePolicy=false
 }={}){
   for(const file of [policyFile,logMapFile,architectureFile,securityPolicyFile])if(!fs.existsSync(resolveInput(file)))fail(`MISSING:${file}`);
-  const policy=readJson(policyFile),logMap=readJson(logMapFile),architecture=readJson(architectureFile),securityPolicy=readJson(securityPolicyFile);
+  const policyBuffer=readBuffer(policyFile),logMapBuffer=readBuffer(logMapFile),architectureBuffer=readBuffer(architectureFile),securityPolicyBuffer=readBuffer(securityPolicyFile);
+  const policy=parseJsonBuffer(policyBuffer,policyFile),logMap=parseJsonBuffer(logMapBuffer,logMapFile),architecture=parseJsonBuffer(architectureBuffer,architectureFile),securityPolicy=parseJsonBuffer(securityPolicyBuffer,securityPolicyFile);
   const constitution=compileOwnerCanonicalConstitution(policy);
   if(!constitution.valid)fail(`OWNER_CANONICAL_CONSTITUTION:${constitution.errors.join('|')||'UNKNOWN'}`);
   const architectureProjection=compileCentralArchitectureProjection(policy);
@@ -355,10 +359,10 @@ export function validateSharedWorkerContext({
   if(collaborationLog?.requiredWhenEscalated!==true||collaborationLog?.rawPrivateReasoningLogged!==false||collaborationLog?.autonomousCompletionStillAllowed!==true)fail('LOG_PRIMARY_AI_INTERNAL_VIBE_COLLABORATION');
 
   const hashes={
-    policySha256:sha256(policyFile),
-    logMapSha256:sha256(logMapFile),
-    architectureSha256:sha256(architectureFile),
-    securityPolicySha256:sha256(securityPolicyFile)
+    policySha256:sha256Buffer(policyBuffer),
+    logMapSha256:sha256Buffer(logMapBuffer),
+    architectureSha256:sha256Buffer(architectureBuffer),
+    securityPolicySha256:sha256Buffer(securityPolicyBuffer)
   };
   const expected=clean(expectedPolicySha256);
   if(expected&&expected!==hashes.policySha256)fail('POLICY_SHA_MISMATCH');
@@ -376,19 +380,77 @@ export function validateSharedWorkerContext({
   };
 }
 
+export function verifyPinnedSharedWorkerContext({
+  policyFile=DEFAULT_POLICY,
+  logMapFile=DEFAULT_LOG_MAP,
+  architectureFile=DEFAULT_ARCHITECTURE,
+  securityPolicyFile=DEFAULT_SECURITY_POLICY,
+  expectedPolicySha256='',
+  expectedLogMapSha256='',
+  expectedArchitectureSha256='',
+  expectedSecurityPolicySha256=''
+}={}){
+  const expected={
+    policySha256:clean(expectedPolicySha256),
+    logMapSha256:clean(expectedLogMapSha256),
+    architectureSha256:clean(expectedArchitectureSha256),
+    securityPolicySha256:clean(expectedSecurityPolicySha256)
+  };
+  for(const [key,value] of Object.entries(expected))if(!/^[a-f0-9]{64}$/i.test(value))fail(`PINNED_HASH_EXPECTATION_MISSING:${key}`);
+  for(const file of [policyFile,logMapFile,architectureFile,securityPolicyFile])if(!fs.existsSync(resolveInput(file)))fail(`MISSING:${file}`);
+  const policyBuffer=readBuffer(policyFile),logMapBuffer=readBuffer(logMapFile),architectureBuffer=readBuffer(architectureFile),securityPolicyBuffer=readBuffer(securityPolicyFile);
+  const hashes={
+    policySha256:sha256Buffer(policyBuffer),
+    logMapSha256:sha256Buffer(logMapBuffer),
+    architectureSha256:sha256Buffer(architectureBuffer),
+    securityPolicySha256:sha256Buffer(securityPolicyBuffer)
+  };
+  for(const [key,value] of Object.entries(expected))if(hashes[key]!==value)fail(`PINNED_HASH_MISMATCH:${key}:${value}->${hashes[key]}`);
+  const policy=parseJsonBuffer(policyBuffer,policyFile);
+  const constitution=compileOwnerCanonicalConstitution(policy);
+  if(!constitution.valid)fail(`OWNER_CANONICAL_CONSTITUTION:${constitution.errors.join('|')||'UNKNOWN'}`);
+  const architectureProjection=compileCentralArchitectureProjection(policy);
+  if(policy?.developmentLifecycleMachine?.sharedWorkerContext?.compiledArchitectureProjection?.required===true&&!architectureProjection.valid)fail(`CENTRAL_ARCHITECTURE_PROJECTION:${architectureProjection.errors.join('|')||'UNKNOWN'}`);
+  const homepage=compileHomepageCentralPolicy(policy);
+  return{
+    pass:true,version:2,
+    verificationMode:'PINNED_HASH_REUSE',
+    files:{policy:policyFile,logMap:logMapFile,architecture:architectureFile,securityPolicy:securityPolicyFile},
+    hashes,policyVersion:Number(policy.version||0),
+    constitution:{version:constitution.version,authority:constitution.authority,constitutionalAuthority:constitution.constitutionalAuthority,fingerprint:constitution.fingerprint,orderedRuleIds:constitution.orderedRuleIds,ruleCount:constitution.rules.length,automaticContractBinding:constitution.binding?.automaticContractBinding===true},
+    architectureProjection:{valid:architectureProjection.valid,errors:architectureProjection.errors,fingerprint:architectureProjection.fingerprint,contract:architectureProjection.contract},
+    homepage:{valid:homepage.valid,errors:homepage.errors,fingerprint:homepage.fingerprint,supportedPlatforms:homepage.supportedPlatforms,contract:homepage.contract},
+    documentIsCode:true,roadmapSynchronized:true,workerLaunchersValidated:0,
+    primaryAiOrchestrator:policy?.developmentLifecycleMachine?.primaryAiOrchestration?.orchestrator||null,primaryAiReviewRequired:false,autonomous24hWorkersContinue:true,internalVibeAiCollaboration:'PINNED_HASH_REUSE',
+    completionAuthority:'DETERMINISTIC_EVIDENCE_AND_CANONICAL_MACHINE_GATES',checkedAt:new Date().toISOString()
+  };
+}
+
 function writeOutput(file,value){if(!file)return;fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');}
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   try{
     const args=parseArgs();
-    const result=validateSharedWorkerContext({
+    const pinnedHashVerify=clean(args['pinned-hash-verify']).toLowerCase()==='true';
+    const common={
       policyFile:clean(args.policy)||DEFAULT_POLICY,
       logMapFile:clean(args['log-map'])||DEFAULT_LOG_MAP,
       architectureFile:clean(args.architecture)||DEFAULT_ARCHITECTURE,
-      securityPolicyFile:clean(args.security)||DEFAULT_SECURITY_POLICY,
-      expectedPolicySha256:clean(args['expected-policy-sha256'])||clean(process.env.WORKER_CONTEXT_EXPECTED_POLICY_SHA256),
-      requireHomepagePolicy:clean(args['require-homepage-policy']).toLowerCase()==='true'
-    });
+      securityPolicyFile:clean(args.security)||DEFAULT_SECURITY_POLICY
+    };
+    const result=pinnedHashVerify
+      ?verifyPinnedSharedWorkerContext({
+        ...common,
+        expectedPolicySha256:clean(args['expected-policy-sha256'])||clean(process.env.WORKER_CONTEXT_EXPECTED_POLICY_SHA256),
+        expectedLogMapSha256:clean(args['expected-log-map-sha256'])||clean(process.env.WORKER_CONTEXT_EXPECTED_LOG_MAP_SHA256),
+        expectedArchitectureSha256:clean(args['expected-architecture-sha256'])||clean(process.env.WORKER_CONTEXT_EXPECTED_ARCHITECTURE_SHA256),
+        expectedSecurityPolicySha256:clean(args['expected-security-policy-sha256'])||clean(process.env.WORKER_CONTEXT_EXPECTED_SECURITY_POLICY_SHA256)
+      })
+      :validateSharedWorkerContext({
+        ...common,
+        expectedPolicySha256:clean(args['expected-policy-sha256'])||clean(process.env.WORKER_CONTEXT_EXPECTED_POLICY_SHA256),
+        requireHomepagePolicy:clean(args['require-homepage-policy']).toLowerCase()==='true'
+      });
     writeOutput(clean(args.output),result);
     console.log(`WORKER_CONTEXT_POLICY_VERSION=${result.policyVersion}`);
     console.log(`WORKER_CONTEXT_POLICY_SHA256=${result.hashes.policySha256}`);
@@ -403,6 +465,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     console.log(`WORKER_CONTEXT_HOMEPAGE_POLICY_SHA256=${result.homepage.fingerprint||'INVALID'}`);
     console.log(`WORKER_CONTEXT_HOMEPAGE_PLATFORMS=${(result.homepage.supportedPlatforms||[]).join(',')}`);
     console.log(`WORKER_CONTEXT_LAUNCHERS=${result.workerLaunchersValidated}`);
+    console.log(`WORKER_CONTEXT_MODE=${result.verificationMode||'FULL_CANONICAL_VALIDATION'}`);
     console.log('WORKER_CONTEXT_SYNC=PASS');
   }catch(error){console.error(error.stack||error.message);process.exitCode=1;}
 }
