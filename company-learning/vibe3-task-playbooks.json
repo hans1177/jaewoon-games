@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "generation": "V3-PUMP",
   "generatedFrom": "VERIFIED_MEMORY_PLUS_LOCKED_BASE_CHECKLISTS",
   "taskTypes": {
@@ -63,7 +63,9 @@
         "rights-gate-before-derivative",
         "never-overwrite-original",
         "generate-3-to-5-derived-variants",
-        "score-style-silhouette-quality-animation-mobile-performance"
+        "score-style-silhouette-quality-animation-mobile-performance",
+        "connect-graphics-to-motion-ui-inventory-vfx-camera-and-audio-state-language",
+        "before-after-runtime-difference-must-be-visible-at-normal-gameplay-scale"
       ],
       "reuse": [],
       "avoid": [],
@@ -158,12 +160,17 @@
       "taskType": "presentation",
       "checklist": [
         "read-central-living-motion-and-audio-contracts",
+        "audit-motion-ui-inventory-audio-vfx-camera-world-and-mobile-as-one-player-experience",
+        "rank-weakest-three-player-facing-tracks-before-decorative-extras",
         "preserve-gameplay-save-progression-hit-semantics",
+        "preserve-owner-intentionally-disabled-audio-categories",
         "modify-existing-responsible-presentation-system-directly",
         "avoid-wrapper-shadow-presentation-pipeline",
-        "implement-only-current-presentation-pass",
-        "run-presentation-static-qa",
-        "require-runtime-mobile-qa-before-completion"
+        "presence-or-marker-alone-never-passes-player-facing-quality",
+        "implement-current-highest-value-experience-gaps",
+        "capture-before-after-under-same-scene-input-and-state",
+        "require-runtime-mobile-qa-before-completion",
+        "repeat-build-up-until-critical-player-facing-gaps-close"
       ],
       "reuse": [],
       "avoid": [
@@ -171,7 +178,11 @@
         "save-semantic-drift",
         "animation-state-pop",
         "unbounded-effects",
-        "input-obscuring-camera"
+        "input-obscuring-camera",
+        "micro-polish-that-is-not-perceptible-in-normal-play",
+        "single-loop-music-across-distinct-gameplay-contexts",
+        "inventory-ui-disconnected-from-authoritative-equipment-state",
+        "root-only-character-motion-presented-as-animation-quality"
       ],
       "authority": "verified-task-playbook"
     },
@@ -196,11 +207,15 @@
       "taskType": "audio",
       "checklist": [
         "reuse-existing-audio-owner",
+        "preserve-owner-intentionally-disabled-audio-categories",
         "initialize-audio-through-platform-native-lifecycle",
         "preserve-mute-and-volume-controls",
         "bind-impact-sound-to-existing-impact-event",
+        "use-region-state-combat-music-transitions-when-multiple-contexts-exist",
         "use-smooth-state-transition-or-crossfade",
-        "handle-app-background-resume-without-duplicate-playback",
+        "use-spatial-rolloff-for-world-sounds-when-platform-and-game-require-it",
+        "handle-app-background-resume-or-respawn-without-duplicate-playback",
+        "verify-audio-against-animation-vfx-camera-impact-timing",
         "run-mobile-speaker-and-transition-qa"
       ],
       "reuse": [],
@@ -220,7 +235,7 @@
     "hourlyCanonicalRefresh": true
   },
   "directNativePlatformContext": {
-    "version": 1,
+    "version": 2,
     "commonCoreDesign": "design-revised.json#content",
     "platformProfiles": {
       "ROBLOX": "design-revised.json#content.platformProfiles.ROBLOX",
@@ -237,6 +252,49 @@
       "UNITY"
     ],
     "upperPlatformStartAction": "START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT",
-    "unityWebReleaseStage": false
+    "unityWebReleaseStage": false,
+    "experienceBuildUp": {
+      "version": 1,
+      "authority": "tools/company-build-up-directive.mjs#EXPERIENCE_BUILD_UP_TRACKS",
+      "commonTracks": [
+        "MOTION_AND_ACTING",
+        "COMBAT_AND_PRIMARY_ACTION_FEEL",
+        "UI_HUD_AND_MENU",
+        "INVENTORY_AND_EQUIPMENT",
+        "AUDIO_MUSIC_AND_FEEDBACK",
+        "VFX_CAMERA_AND_IMPACT_SYNC",
+        "WORLD_VISUAL_COHESION",
+        "MOBILE_TOUCH_AND_ACCESSIBILITY",
+        "PERFORMANCE_AND_RUNTIME_STABILITY"
+      ],
+      "loop": [
+        "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
+        "RANK_WEAKEST_APPLICABLE_TRACKS",
+        "IMPLEMENT_EXISTING_RESPONSIBLE_SYSTEMS_DIRECTLY",
+        "REPLAY_REAL_INPUTS_AND_CAPTURE_SAME_SCENE_BEFORE_AFTER",
+        "VERIFY_PLAYER_FACING_EFFECT_AND_NO_SEMANTIC_REGRESSION",
+        "PROMOTE_VERIFIED_BASELINE_OR_REPEAT"
+      ],
+      "presenceOnlyPassForbidden": true,
+      "weakestTrackBatchSize": 3,
+      "ownerDisabledAudioCategoriesPreserved": true,
+      "platformAttention": {
+        "WEB": "STANDARD",
+        "UNITY": "HIGH",
+        "ROBLOX": "EXTRA"
+      },
+      "robloxExtra": {
+        "officialStudioMcpBeforeAfterRequired": true,
+        "mobileRuntimeEvidenceRequired": true,
+        "rootOnlyMotionCannotPass": true,
+        "articulatedActorJointMotionRequired": true,
+        "touchFirstUiRequired": true,
+        "inventoryEquipFeedbackRequiredWhenApplicable": true,
+        "soundServiceSoundGroupLifecycleRequiredWhenAudioApplicable": true,
+        "spatialRolloffRequiredForWorldAudioWhenApplicable": true,
+        "bgmRegionStateCombatTransitionRequiredWhenMultipleContextsExist": true,
+        "vfxCameraAudioMustShareAuthoritativeImpactEvent": true
+      }
+    }
   }
 }

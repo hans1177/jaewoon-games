@@ -15,6 +15,7 @@ on:
       - 'tools/company-system-ai-external-learning-feed.mjs'
       - 'tools/vibe2-external-ai-distillation.mjs'
       - 'tools/vibe2-auto-planner.mjs'
+      - 'tools/company-build-up-directive.mjs'
       - 'tools/company-growth-marketing-planner.mjs'
       - 'tools/company-growth-marketing-qa.mjs'
       - 'tools/company-growth-marketing-decision.mjs'
@@ -281,6 +282,8 @@ jobs:
               node tools/company-constitution-enforcer.mjs --phase=24h-planner | tee /tmp/vibe2-constitution-enforcer.log
               node --check tools/vibe2-learning-motor.mjs
               node --check tools/vibe2-auto-planner.mjs
+              node --check tools/company-build-up-directive.mjs
+              node --check qa/company-build-up-experience-quality.test.mjs
               node --check tools/vibe2-continuous-runner.mjs
               node --check tools/vibe2-asset-production-plan.mjs
               node --check assets/vibe-studio-asset-universe.js
@@ -297,6 +300,7 @@ jobs:
               else
                 node --test qa/vibe2-learning-motor.test.mjs
                 node --test qa/vibe2-auto-planner.test.mjs
+                node --test qa/company-build-up-experience-quality.test.mjs
                 node --test qa/vibe2-native-asset-production.test.mjs
                 node --test qa/vibe2-source-worker.test.mjs
                 node --test qa/vibe2-capability-distillation.test.mjs

@@ -39,12 +39,13 @@ const DESIGNLESS_SAFE_BUILD_UP_FOCI=Object.freeze(['PRESENTATION','USABILITY','S
 const DESIGNLESS_SAFE_BUILD_UP_DOMAINS=Object.freeze({
   PRESENTATION:Object.freeze([
     'CHARACTER_VISUALS','ENEMY_VISUALS','WEAPONS_AND_EQUIPMENT','BUILDINGS_AND_PROPS','ENVIRONMENT','TERRAIN','MATERIALS','PALETTE',
-    'LIGHTING','ANIMATION','SECONDARY_MOTION','VFX','CAMERA','UI_HUD','AUDIO_VISUAL_TIMING','ENVIRONMENTAL_MOTION',
-    'UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','MOBILE_UX','PERFORMANCE_BUDGET'
+    'LIGHTING','ANIMATION','SECONDARY_MOTION','VFX','CAMERA','UI_HUD','AUDIO_MUSIC_SFX','AUDIO_VISUAL_TIMING','ENVIRONMENTAL_MOTION',
+    'INVENTORY_USABILITY','EQUIPMENT_LOADOUT','MENU_FLOW','CONVENIENCE','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY',
+    'GAME_FEEL','MOBILE_UX','PERFORMANCE_BUDGET'
   ]),
   USABILITY:Object.freeze([
     'INPUT','MOBILE_UX','ACCESSIBILITY','SETTINGS_ACCESSIBILITY','MENU_FLOW','CONVENIENCE','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY',
-    'FEEDBACK_CLARITY','FIRST_10_MINUTES','SESSION_FLOW','ERROR_RECOVERY','PERFORMANCE_BUDGET'
+    'FEEDBACK_CLARITY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','AUDIO_MUSIC_SFX','FIRST_10_MINUTES','SESSION_FLOW','ERROR_RECOVERY','PERFORMANCE_BUDGET'
   ]),
   STABILITY:Object.freeze([
     'RUNTIME_STABILITY','ERROR_RECOVERY','SAVE_AND_RECOVERY','SAVE_COMPLETENESS','RECONNECT_RECOVERY',
@@ -55,8 +56,73 @@ const DESIGNLESS_SAFE_BUILD_UP_DOMAINS=Object.freeze({
 export const VISUAL_DOMAINS=Object.freeze([
   'CHARACTER','ENEMY_CREATURE','WEAPON_EQUIPMENT','BUILDING_PROP','ENVIRONMENT_TERRAIN',
   'MATERIAL_SURFACE','PALETTE','LIGHTING','ANIMATION','SECONDARY_MOTION','VFX','CAMERA',
-  'UI_HUD','AUDIO_VISUAL_SYNC','ENVIRONMENTAL_MOTION','SCENE_DENSITY','LANDMARK_READABILITY'
+  'UI_HUD','INVENTORY_EQUIPMENT_UI','AUDIO_MUSIC','AUDIO_VISUAL_SYNC',
+  'ENVIRONMENTAL_MOTION','SCENE_DENSITY','LANDMARK_READABILITY'
 ]);
+
+export const EXPERIENCE_BUILD_UP_TRACKS=Object.freeze([
+  'MOTION_AND_ACTING',
+  'COMBAT_AND_PRIMARY_ACTION_FEEL',
+  'UI_HUD_AND_MENU',
+  'INVENTORY_AND_EQUIPMENT',
+  'AUDIO_MUSIC_AND_FEEDBACK',
+  'VFX_CAMERA_AND_IMPACT_SYNC',
+  'WORLD_VISUAL_COHESION',
+  'MOBILE_TOUCH_AND_ACCESSIBILITY',
+  'PERFORMANCE_AND_RUNTIME_STABILITY'
+]);
+
+export const PLATFORM_EXPERIENCE_PROFILES=Object.freeze({
+  COMMON:Object.freeze({
+    attention:'STANDARD',
+    presenceOnlyPassForbidden:true,
+    weakestTrackBatchSize:3,
+    beforeAfterSameSceneRequired:true,
+    repeatedBuildUpUntilCriticalGapsClosed:true
+  }),
+  WEB:Object.freeze({
+    attention:'STANDARD',
+    runtimeSurface:'BROWSER_TOUCH_RUNTIME',
+    requirements:Object.freeze([
+      'REAL_POINTER_OR_TOUCH_INPUT',
+      'DOM_OR_CANVAS_RENDERED_DELTA',
+      'MOBILE_SAFE_AREA_AND_SCROLL_FLOW',
+      'WEB_AUDIO_STATE_TRANSITION_WHEN_AUDIO_APPLICABLE',
+      'FRAME_AND_MEMORY_BUDGET'
+    ])
+  }),
+  UNITY:Object.freeze({
+    attention:'HIGH',
+    runtimeSurface:'UNITY_EDITOR_AND_ANDROID_RUNTIME',
+    requirements:Object.freeze([
+      'ANIMATOR_OR_EQUIVALENT_STATEFUL_MOTION',
+      'CANVAS_SAFE_AREA_AND_MENU_STACK',
+      'INVENTORY_EQUIP_FLOW_WHEN_APPLICABLE',
+      'AUDIOMIXER_OR_EQUIVALENT_MIX_CONTROL_WHEN_AUDIO_APPLICABLE',
+      'ANDROID_TOUCH_RUNTIME_EVIDENCE',
+      'FRAME_MEMORY_AND_THERMAL_BUDGET'
+    ])
+  }),
+  ROBLOX:Object.freeze({
+    attention:'EXTRA',
+    runtimeSurface:'OFFICIAL_ROBLOX_STUDIO_MCP',
+    requirements:Object.freeze([
+      'ARTICULATED_ACTOR_MOTION_WITH_ANIMATOR_MOTOR6D_OR_BONES',
+      'ROOT_ONLY_MOTION_CANNOT_PASS',
+      'IDLE_WALK_JOG_RUN_START_STOP_TURN_JUMP_LAND_HIT_DEATH_COVERAGE_WHEN_APPLICABLE',
+      'ANTICIPATION_IMPACT_RECOVERY_FOR_PRIMARY_ACTIONS',
+      'TOUCH_FIRST_UI_WITH_MINIMUM_44PX_EQUIVALENT_TARGETS',
+      'INVENTORY_COMPARE_EQUIP_UNEQUIP_REPLACE_FEEDBACK_WHEN_APPLICABLE',
+      'SOUNDSERVICE_SOUNDGROUP_MIXING_AND_SPATIAL_ROLLOFF_WHEN_AUDIO_APPLICABLE',
+      'REGION_OR_STATE_BGM_TRANSITION_WHEN_MULTIPLE_CONTEXTS_EXIST',
+      'VFX_CAMERA_AUDIO_SHARE_AUTHORITATIVE_IMPACT_EVENT',
+      'OFFICIAL_STUDIO_MCP_BEFORE_AFTER_RUNTIME_CAPTURE'
+    ]),
+    ownerDisabledAudioCategoriesMustRemainDisabled:true,
+    nativeRuntimeEvidenceRequired:true,
+    mobileRuntimeEvidenceRequired:true
+  })
+});
 
 const AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH='company-learning/vibe-autonomous-content-expansion-policy.json';
 const AUTONOMOUS_CONTENT_EXPANSION_DEFAULT=Object.freeze({
@@ -271,9 +337,13 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
     ai:tokenCount(joined,/state.?machine|aggro|target|pathfind|navmesh|steer|behavior|enemy.?ai/gi),
     save:tokenCount(joined,/datastore|playerprefs|save|load|serialize|persist/gi),
     multiplayer:tokenCount(joined,/remoteevent|serverrpc|clientrpc|network|multiplayer|playeradded|netcode/gi),
-    animation:tokenCount(joined,/animator|animation|tween|heartbeat|renderstepped|lerp|slerp|coroutine|transform\.rotate/gi),
+    animation:tokenCount(joined,/animator|animation|animationtrack|loadanimation|blend.?tree|tween|heartbeat|renderstepped|lerp|slerp|coroutine|motor6d|bone\b|transform\.rotate/gi),
+    motionStates:tokenCount(joined,/\bidle\b|\bwalk\b|\bjog\b|\brun\b|start|stop|turn|jump|land|attack|hit.?reaction|death|anticipation|impact|recovery/gi),
+    gameFeel:tokenCount(joined,/hit.?stop|recoil|anticipation|impact|recovery|screen.?shake|camera.?kick|weapon.?trail|attack.?windup|attack.?follow.?through/gi),
     vfx:tokenCount(joined,/particle|trail|vfx|effect|flash|shake|afterimage/gi),
     camera:tokenCount(joined,/camera|fieldofview|fov|cinemachine/gi),
+    audio:tokenCount(joined,/soundservice|soundgroup|sound\b|audio\b|music|bgm|sfx|audioclip|audiosource|audiomixer|webaudio|audiocontext/gi),
+    audioDynamics:tokenCount(joined,/crossfade|fade.?in|fade.?out|duck|soundgroup|audiomixer|rolloff|spatial|ambient|region.?music|battle.?music|combat.?music|music.?state|bgm.?state/gi),
     ui:tokenCount(joined,/screenui|screengui|canvas|button|hud|label|uitoolkit|ongui/gi),
     uiFlow:tokenCount(joined,/menu|panel|modal|popup|tab|scroll|backbutton|closebutton|navigation|screen.?stack|page.?stack/gi),
     entryFlow:tokenCount(joined,/main.?menu|lobby|entry.?hub|start.?game|play.?button|session.?ready|first.?play/gi),
@@ -299,7 +369,7 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
   const topFiles=rows.map(row=>({
     file:row.file,
     score:
-      tokenCount(row.text,/attack|damage|combat|enemy|player|progress|quest|save|ui|camera|animation|particle|map|region|terrain|landmark|inventory|equip|item|menu|settings|interact|prompt|session|checkpoint|craft/gi)
+      tokenCount(row.text,/attack|damage|combat|enemy|player|progress|quest|save|ui|camera|animation|motion|particle|vfx|sound|audio|music|bgm|sfx|map|region|terrain|landmark|inventory|equip|item|menu|settings|interact|prompt|session|checkpoint|craft/gi)
   })).sort((a,b)=>b.score-a.score||a.file.localeCompare(b.file)).slice(0,12);
   const sourceAnchors=rows.flatMap(row=>row.sourceAnchors||[]).sort((a,b)=>Number(b.score||0)-Number(a.score||0)||a.file.localeCompare(b.file)||Number(a.line||0)-Number(b.line||0)).slice(0,48);
   return Object.freeze({
@@ -316,8 +386,12 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
       files.length===0?'CURRENT_SOURCE_MISSING_OR_UNREADABLE':'CURRENT_SOURCE_FILES='+files.length,
       signals.primitive>8?'PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH':null,
       signals.animation<2?'MOTION_IMPLEMENTATION_SPARSE':null,
+      signals.motionStates<5?'MOTION_STATE_COVERAGE_SPARSE':null,
+      signals.gameFeel<3?'GAME_FEEL_SPARSE':null,
       signals.vfx<2?'VFX_IMPLEMENTATION_SPARSE':null,
       signals.camera<1?'CAMERA_LANGUAGE_SPARSE':null,
+      signals.audio<2?'AUDIO_IMPLEMENTATION_SPARSE':null,
+      signals.audio>0&&signals.audioDynamics<2?'AUDIO_STATE_TRANSITION_SPARSE':null,
       signals.progression<4?'PROGRESSION_IMPLEMENTATION_SPARSE':null,
       signals.ai<2?'AI_BEHAVIOR_DEPTH_SPARSE':null,
       signals.map<3?'WORLD_MAP_IMPLEMENTATION_SPARSE':null,
@@ -382,8 +456,8 @@ function focusFromSignals({signals=[],source={}}={}){
   if(/crash|runtime|error|softlock|save|desync|broken|exception/.test(text))return'STABILITY';
   if(/combat|core.?fun|interaction|enemy|boss|gameplay|feel|decision/.test(text))return'CORE_FUN';
   if(/progress|reward|unlock|quest|goal|economy|content/.test(text))return'PROGRESSION';
-  if(/mobile|touch|input|ui|hud|readability|navigation|accessib/.test(text))return'USABILITY';
-  if(/visual|graphic|render|animation|vfx|camera|lighting|material|silhouette|environment|placeholder/.test(text))return'PRESENTATION';
+  if(/mobile|touch|input|ui|hud|inventory|equipment|equip|menu|readability|navigation|accessib/.test(text))return'USABILITY';
+  if(/visual|graphic|render|animation|motion|vfx|camera|lighting|material|silhouette|environment|placeholder|audio|music|bgm|sfx|sound|game.?feel/.test(text))return'PRESENTATION';
   const s=source?.signals||{};
   if(Number(s.ai||0)<2||Number(s.combat||0)<5)return'CORE_FUN';
   if(Number(s.progression||0)<4)return'PROGRESSION';
@@ -438,10 +512,15 @@ function domainState(domain,{design={},source={}}={}){
   if(domain==='MID_LATE_GAME_DEPTH'&&!hasProgression)return no('approved design has no multi-stage progression direction');
 
   const weakByDomain={
-    ANIMATION:Number(s.animation||0)<2,
-    SECONDARY_MOTION:Number(s.animation||0)<2,
+    ANIMATION:Number(s.animation||0)<2||Number(s.motionStates||0)<5,
+    SECONDARY_MOTION:Number(s.animation||0)<2||Number(s.motionStates||0)<4,
+    GAME_FEEL:Number(s.gameFeel||0)<3,
     VFX:Number(s.vfx||0)<2,
     CAMERA:Number(s.camera||0)<1,
+    AUDIO_MUSIC_SFX:Number(s.audio||0)<2||(Number(s.audio||0)>0&&Number(s.audioDynamics||0)<2),
+    AUDIO_VISUAL_TIMING:Number(s.audio||0)<1||Number(s.vfx||0)<1||Number(s.feedback||0)<2,
+    UI_HUD:Number(s.ui||0)<4,
+    LIGHTING:Number(s.lighting||0)<2,
     PROGRESSION:Number(s.progression||0)<4,
     ENEMY_AI:Number(s.ai||0)<2,
     ERROR_RECOVERY:Number(s.errorRecovery||0)<2,
@@ -524,8 +603,8 @@ function buildAllDomainDirectives({states=[],design={},focus='CORE_FUN',depthInf
   const focusDomains={
     CORE_FUN:new Set(['CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_ACTIONS','PLAYER_AGENCY','ANTI_GRIND','ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS','CONTENT_VARIETY','CONTENT_DENSITY','SESSION_FLOW','FIRST_10_MINUTES']),
     PROGRESSION:new Set(['PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','ECONOMY','INVENTORY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','CRAFTING','SYSTEM_CONNECTION','MID_LATE_GAME_DEPTH','CONTENT_DISCOVERY','MAP_EXPANSION','REGIONS']),
-    PRESENTATION:new Set(['CHARACTER_VISUALS','ENEMY_VISUALS','WEAPONS_AND_EQUIPMENT','BUILDINGS_AND_PROPS','ENVIRONMENT','TERRAIN','MATERIALS','PALETTE','LIGHTING','ANIMATION','SECONDARY_MOTION','VFX','CAMERA','UI_HUD','UI_DESIGN_SYSTEM','AUDIO_VISUAL_TIMING','ENVIRONMENTAL_MOTION','LANDMARKS','WORLD_DENSITY']),
-    USABILITY:new Set(['INPUT','MOBILE_UX','ACCESSIBILITY','SETTINGS_ACCESSIBILITY','MENU_FLOW','CONVENIENCE','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','INTERACTION_DISCOVERABILITY','WORLD_NAVIGATION','TUTORIAL_ONBOARDING','TRAVERSAL','UI_HUD','GOALS','GAME_FEEL']),
+    PRESENTATION:new Set(['CHARACTER_VISUALS','ENEMY_VISUALS','WEAPONS_AND_EQUIPMENT','BUILDINGS_AND_PROPS','ENVIRONMENT','TERRAIN','MATERIALS','PALETTE','LIGHTING','ANIMATION','SECONDARY_MOTION','GAME_FEEL','VFX','CAMERA','UI_HUD','MENU_FLOW','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','AUDIO_MUSIC_SFX','AUDIO_VISUAL_TIMING','ENVIRONMENTAL_MOTION','LANDMARKS','WORLD_DENSITY']),
+    USABILITY:new Set(['INPUT','MOBILE_UX','ACCESSIBILITY','SETTINGS_ACCESSIBILITY','MENU_FLOW','CONVENIENCE','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','INTERACTION_DISCOVERABILITY','WORLD_NAVIGATION','TUTORIAL_ONBOARDING','TRAVERSAL','UI_HUD','GOALS','GAME_FEEL','AUDIO_MUSIC_SFX']),
     STABILITY:new Set(['SAVE_AND_RECOVERY','SAVE_COMPLETENESS','RECONNECT_RECOVERY','MULTIPLAYER_AND_SYNC','FAILURE_RESPAWN_CHECKPOINTS','PERFORMANCE','PERFORMANCE_BUDGET','RUNTIME_STABILITY','ERROR_RECOVERY'])
   };
   const instructions={
@@ -649,7 +728,9 @@ function buildVisualDirective({gameId,design,source,focus}){
       VFX:`일반 타격·강한 타격·위험 예고·상태이상·보상 VFX의 형태와 타이밍을 분리하고 실제 impact 이벤트에 동기화한다.`,
       CAMERA:`기본 시야와 모바일 가독성을 보존하면서 핵심행동·강공격·보스/시그니처 순간에 강도가 다른 짧은 카메라 반응을 준다.`,
       UI_HUD:`${identity}의 핵심 목표·자원·위험·다음 선택이 한눈에 보이게 하고 게임 세계관과 맞는 패널/아이콘/피드백 언어를 사용한다.`,
-      AUDIO_VISUAL_SYNC:`damage/VFX/animation/camera/audio가 같은 impact 순간을 공유하게 하며 소리만 먼저/늦게 나오는 불일치를 제거한다.`,
+      INVENTORY_EQUIPMENT_UI:`인벤토리와 장비 UI는 획득→비교→장착/교체→현재 장착 표시→실제 외형/행동 반영까지 같은 상태를 사용하고 모바일에서도 한 손 조작과 스크롤/닫기/선택 유지가 명확해야 한다.`,
+      AUDIO_MUSIC:`BGM·환경음·행동 피드백은 현재 지역/상태/전투 강도와 연결하고, 소리가 의도적으로 비활성화된 카테고리는 되살리지 않는다. 여러 음악 맥락이 있으면 같은 한 곡 단순 반복 대신 전환·크로스페이드·믹스 변화로 상태가 들리게 한다.`,
+      AUDIO_VISUAL_SYNC:`damage/VFX/animation/camera/audio가 같은 authoritative impact 순간을 공유하게 하며 소리만 먼저/늦게 나오는 불일치를 제거한다.`,
       ENVIRONMENTAL_MOTION:`정적인 배경을 피하고 식생·빛·파티클·기계/건축 요소 중 세계에 맞는 미세 움직임을 지속시킨다.`,
       SCENE_DENSITY:`빈 공간과 반복 오브젝트 밀도를 실제 플레이 동선 기준으로 조정하고 중요 영역에는 의미 있는 시각 정보가 있게 한다.`,
       LANDMARK_READABILITY:`플레이어가 지도 없이도 방향과 지역 역할을 기억할 수 있는 실루엣이 다른 랜드마크를 유지·강화한다.`
@@ -660,10 +741,136 @@ function buildVisualDirective({gameId,design,source,focus}){
       'MARKER_CONFIG_ATOM_ONLY_FORBIDDEN',
       'COLOR_ONLY_NOT_FULL_IDENTITY_UPGRADE',
       'PRIMARY_PLACEHOLDER_PRIMITIVE_CANNOT_CLOSE_VISUAL_BUILD_UP',
-      'BEFORE_AFTER_COMPARISON_REQUIRED'
+      'UI_INVENTORY_AUDIO_MOTION_PRESENCE_ALONE_CANNOT_CLOSE_BUILD_UP',
+      'BEFORE_AFTER_COMPARISON_REQUIRED',
+      'SAME_SCENE_RUNTIME_REOBSERVATION_REQUIRED'
     ],
     focus
   };
+}
+
+function buildExperienceBuildupContract({platform='COMMON',design={},source={},focus='CORE_FUN'}={}){
+  const requested=clean(platform).toUpperCase();
+  const platformKey=requested==='UNITY_WEB'?'WEB':requested==='UNITY_APP'?'UNITY':requested==='ROBLOX'?'ROBLOX':requested==='UNITY'?'UNITY':requested==='WEB'?'WEB':'COMMON';
+  const profile=PLATFORM_EXPERIENCE_PROFILES[platformKey]||PLATFORM_EXPERIENCE_PROFILES.COMMON;
+  const signals=source?.signals||{};
+  const trackStatus={
+    MOTION_AND_ACTING:Number(signals.animation||0)>=2&&Number(signals.motionStates||0)>=5?'PRESENT':'WEAK_OR_MISSING',
+    COMBAT_AND_PRIMARY_ACTION_FEEL:Number(signals.gameFeel||0)>=3?'PRESENT':'WEAK_OR_MISSING',
+    UI_HUD_AND_MENU:Number(signals.ui||0)>=4&&Number(signals.uiFlow||0)>=2?'PRESENT':'WEAK_OR_MISSING',
+    INVENTORY_AND_EQUIPMENT:Number(signals.inventory||0)>0
+      ?(Number(signals.inventory||0)>=5&&Number(signals.equipment||0)>=2?'PRESENT':'WEAK_OR_MISSING')
+      :'NOT_APPLICABLE_UNTIL_GAME_HAS_INVENTORY',
+    AUDIO_MUSIC_AND_FEEDBACK:Number(signals.audio||0)>=2&&Number(signals.audioDynamics||0)>=2?'PRESENT':'WEAK_OR_MISSING',
+    VFX_CAMERA_AND_IMPACT_SYNC:Number(signals.vfx||0)>=2&&Number(signals.camera||0)>=1&&Number(signals.feedback||0)>=2?'PRESENT':'WEAK_OR_MISSING',
+    WORLD_VISUAL_COHESION:Number(signals.map||0)>=3&&Number(signals.lighting||0)>=2?'PRESENT':'WEAK_OR_MISSING',
+    MOBILE_TOUCH_AND_ACCESSIBILITY:Number(signals.input||0)>=3&&Number(signals.settings||0)>=1?'PRESENT':'WEAK_OR_MISSING',
+    PERFORMANCE_AND_RUNTIME_STABILITY:Number(signals.performance||0)>=2&&Number(signals.errorRecovery||0)>=2?'PRESENT':'WEAK_OR_MISSING'
+  };
+  const priorityOrder=platformKey==='ROBLOX'
+    ?[
+      'MOTION_AND_ACTING',
+      'AUDIO_MUSIC_AND_FEEDBACK',
+      'COMBAT_AND_PRIMARY_ACTION_FEEL',
+      'UI_HUD_AND_MENU',
+      'INVENTORY_AND_EQUIPMENT',
+      'VFX_CAMERA_AND_IMPACT_SYNC',
+      'WORLD_VISUAL_COHESION',
+      'MOBILE_TOUCH_AND_ACCESSIBILITY',
+      'PERFORMANCE_AND_RUNTIME_STABILITY'
+    ]
+    :EXPERIENCE_BUILD_UP_TRACKS;
+  const weakest=priorityOrder
+    .filter(track=>trackStatus[track]==='WEAK_OR_MISSING')
+    .slice(0,Math.max(1,Number(profile.weakestTrackBatchSize||PLATFORM_EXPERIENCE_PROFILES.COMMON.weakestTrackBatchSize||3)));
+  const commonRules=Object.freeze([
+    'AUDIT_ALL_APPLICABLE_PLAYER_FACING_TRACKS_EVERY_GENERATION',
+    'RANK_AND_BUILD_THE_WEAKEST_THREE_BEFORE_ADDING_DECORATIVE_EXTRAS',
+    'PRESENCE_OR_MARKER_ONLY_CANNOT_PASS_QUALITY',
+    'IMPLEMENT_IN_THE_EXISTING_RESPONSIBLE_SYSTEM_NOT_A_SHADOW_WRAPPER',
+    'COMPARE_BEFORE_AFTER_UNDER_THE_SAME_SCENE_INPUT_AND_STATE',
+    'VERIFY_INPUT_TO_STATE_TO_MOTION_UI_AUDIO_VFX_CAMERA_FEEDBACK_CAUSALITY',
+    'PRESERVE_GAMEPLAY_BALANCE_SAVE_ECONOMY_AND_NETWORK_AUTHORITY',
+    'OWNER_INTENTIONALLY_DISABLED_AUDIO_CATEGORIES_MUST_REMAIN_DISABLED',
+    'REPEAT_BUILD_UP_UNTIL_NO_CRITICAL_PLAYER_FACING_TRACK_GAP_REMAINS'
+  ]);
+  const robloxExtra=platformKey==='ROBLOX'?Object.freeze({
+    priority:'EXTRA_ATTENTION',
+    motion:Object.freeze({
+      articulatedActorsRequireJointMotion:true,
+      animatorMotor6dOrBonesRequiredWhenApplicable:true,
+      rootOnlyLocomotionCannotPass:true,
+      requiredStateIntent:Object.freeze(['IDLE','WALK','JOG','RUN','START','STOP','TURN','JUMP','LAND','ATTACK_ANTICIPATION','IMPACT','RECOVERY','HIT_REACTION','DEATH']),
+      blendAndSpeedSyncRequired:true,
+      weightShiftAndSecondaryMotionRequired:true,
+      ikOrProceduralGroundingPreferred:true
+    }),
+    uiAndInventory:Object.freeze({
+      touchFirst:true,
+      minimumTouchTargetPxEquivalent:44,
+      safeAreaRequired:true,
+      modalStackBackCloseScrollSelectionPersistenceRequired:true,
+      inventoryFlowWhenApplicable:Object.freeze(['ACQUIRE','COMPARE','SELECT','EQUIP','UNEQUIP_OR_REPLACE','CURRENT_EQUIPPED_INDICATOR','WORLD_OR_CHARACTER_FEEDBACK'])
+    }),
+    audio:Object.freeze({
+      ownerDisabledCategoriesPreserved:true,
+      soundServiceLifecycleRequired:true,
+      soundGroupMixingPreferred:true,
+      spatialWorldAudioUsesRolloffWhenApplicable:true,
+      bgmRegionStateCombatTransitionsRequiredWhenMultipleContextsExist:true,
+      duplicatePlaybackOnRespawnOrResumeForbidden:true,
+      singleLoopAcrossDistinctContextsCannotClaimMusicBuildUp:true
+    }),
+    runtimeEvidence:Object.freeze({
+      officialStudioMcpRequired:true,
+      actualInputRequired:true,
+      beforeAfterCaptureRequired:true,
+      mobileViewportRequired:true,
+      runtimeStateObservationRequired:true,
+      sourceMarkersAloneCannotPass:true
+    })
+  }):null;
+  const webExtra=platformKey==='WEB'?Object.freeze({
+    runtimeEvidence:'REAL_BROWSER_TOUCH_AND_RENDER_DELTA',
+    audio:'WEBAUDIO_OR_NATIVE_MEDIA_STATE_TRANSITION_WHEN_APPLICABLE',
+    ui:'SAFE_AREA_SCROLL_MODAL_AND_TOUCH_FLOW',
+    motion:'VISIBLE_FRAME_DELTA_NOT_ONLY_INTERNAL_STATE'
+  }):null;
+  const unityExtra=platformKey==='UNITY'?Object.freeze({
+    runtimeEvidence:'UNITY_EDITOR_PLUS_ANDROID_WHEN_MOBILE_TARGET',
+    motion:'ANIMATOR_BLENDTREE_OR_EQUIVALENT_WITH_STATE_TRANSITIONS',
+    audio:'AUDIOMIXER_OR_EQUIVALENT_MIX_AND_SPATIALIZATION_WHEN_APPLICABLE',
+    ui:'CANVAS_SAFE_AREA_MENU_STACK_AND_INVENTORY_FLOW',
+    performance:'MOBILE_FRAME_MEMORY_THERMAL_BUDGET'
+  }):null;
+  return Object.freeze({
+    version:1,
+    status:'ACTIVE_EXECUTABLE_BUILD_UP_CONTRACT',
+    platform:platformKey,
+    focus,
+    attention:profile.attention||PLATFORM_EXPERIENCE_PROFILES.COMMON.attention,
+    tracks:Object.freeze(EXPERIENCE_BUILD_UP_TRACKS.map(track=>Object.freeze({track,status:trackStatus[track]}))),
+    priorityOrder:Object.freeze([...priorityOrder]),
+    weakestTracks:Object.freeze(weakest),
+    loop:Object.freeze([
+      'OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW',
+      'RANK_WEAKEST_APPLICABLE_TRACKS',
+      'IMPLEMENT_EXISTING_RESPONSIBLE_SYSTEMS_DIRECTLY',
+      'REPLAY_REAL_INPUTS_AND_CAPTURE_SAME_SCENE_BEFORE_AFTER',
+      'VERIFY_PLAYER_FACING_EFFECT_AND_NO_SEMANTIC_REGRESSION',
+      'PROMOTE_VERIFIED_BASELINE_OR_REPEAT'
+    ]),
+    commonRules,
+    platformProfile:profile,
+    robloxExtra,
+    webExtra,
+    unityExtra,
+    ownerLocks:Object.freeze({
+      gameplayBalanceSaveEconomyNetworkMeaningPreserved:true,
+      intentionallyDisabledAudioCategoriesPreserved:true
+    }),
+    designIdentity:clean(design.identity)||null
+  });
 }
 
 const AUTONOMOUS_EXPANSION_THEMES=Object.freeze([
@@ -950,9 +1157,9 @@ function buildAutonomousContentExpansion({
 }
 
 function platformDirectives({identity,goal}){
-  const web=`${identity}: 동일 공통 목표 "${goal}"를 현재 canonical Web 경로에 구현하고 브라우저 터치/카메라/렌더 비용을 맞춘다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.`;
-  const roblox=`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 다른 플랫폼 구현을 그대로 복사하지 않는다.`;
-  const unity=`${identity}: 동일 공통 목표 "${goal}"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.`;
+  const web=`${identity}: 동일 공통 목표 "${goal}"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.`;
+  const roblox=`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.`;
+  const unity=`${identity}: 동일 공통 목표 "${goal}"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.`;
   const fortnite=`${identity}: 동일 공통 목표 "${goal}"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.`;
   return{
     WEB:web,
@@ -1009,6 +1216,7 @@ export function directivePrompt(d={}){
     domainPriority,
     'VISUAL:',
     visual,
+    `EXPERIENCE_BUILD_UP: ${JSON.stringify(d.experienceBuildUpContract||{})}`,
     `UX_INPUT: ${d.uxInputDirectives.join(' | ')}`,
     d.robloxNativeExecution?`ROBLOX_NATIVE_RESPONSIBLE_FILES: ${(d.robloxNativeExecution.responsibleFiles||[]).join(' | ')||'CURRENT_ALLOWED_ROBLOX_FILES'}`:'',
     d.robloxNativeExecution?`ROBLOX_NATIVE_SERVER_CLIENT: ${(d.robloxNativeExecution.serverClientResponsibility||[]).map(row=>row.file+':'+row.symbol+':'+row.role).join(' | ')}`:'',
@@ -1217,6 +1425,10 @@ export function buildGameSpecificBuildUpDirective({
     'EXISTING_APPLICABLE_GAP_CANNOT_BE_SILENTLY_SKIPPED',
     'FIRST_10_MINUTES_AND_SESSION_FLOW_REVIEWED',
     'MAP_INVENTORY_UI_CONVENIENCE_AND_SYSTEM_CONNECTION_REVIEWED_WHEN_APPLICABLE',
+    'MOTION_UI_INVENTORY_AUDIO_VFX_CAMERA_WORLD_MOBILE_PERFORMANCE_TRACKS_REVIEWED',
+    'PRESENCE_ONLY_OR_MARKER_ONLY_CANNOT_CLOSE_PLAYER_FACING_QUALITY',
+    'SAME_SCENE_BEFORE_AFTER_RUNTIME_REOBSERVATION_REQUIRED_FOR_EXPERIENCE_BUILD_UP',
+    'ROBLOX_EXPERIENCE_BUILD_UP_USES_EXTRA_NATIVE_STUDIO_ATTENTION',
     'AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP',
     'CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE',
     'EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP',
@@ -1239,6 +1451,8 @@ export function buildGameSpecificBuildUpDirective({
     'NO_NEW_CORE_RULE_BALANCE_ECONOMY_PROGRESSION_QUEST_OR_SAVE_MEANING',
     'NO_PROTECTED_SAVE_BALANCE_ECONOMY_NETWORK_SEMANTIC_REGRESSION',
     'DESIGNLESS_SAFE_FOCUS_ONLY_PRESENTATION_USABILITY_STABILITY',
+    'EXISTING_PLAYER_FACING_MOTION_UI_INVENTORY_AUDIO_VFX_CAMERA_QUALITY_REVIEWED_WHEN_APPLICABLE',
+    'OWNER_DISABLED_AUDIO_CATEGORIES_PRESERVED',
     'EXISTING_RELEVANT_INCREMENTAL_QA_PASSES'
   ]:acceptance;
   const nextCandidates=safeDesignlessMode
@@ -1291,6 +1505,7 @@ export function buildGameSpecificBuildUpDirective({
     progressionContentWorldDirectives:effectiveProgression,
     autonomousContentExpansion,
     visualBuildUpDirective:buildVisualDirective({gameId:id,design,source,focus}),
+    experienceBuildUpContract:buildExperienceBuildupContract({platform,design,source,focus}),
     uxInputDirectives:ux,
     platformAdaptationDirectives:platformDirectives({identity,goal}),
     robloxNativeExecution,
@@ -1310,6 +1525,9 @@ export function buildGameSpecificBuildUpDirective({
       allDomainsConsidered:true,
       domainCount:BUILD_UP_DOMAINS.length,
       visualDomainCount:VISUAL_DOMAINS.length,
+      experienceTrackCount:EXPERIENCE_BUILD_UP_TRACKS.length,
+      experienceBuildUpPlatform:clean(platform).toUpperCase()||'COMMON',
+      robloxExtraExperienceAttention:clean(platform).toUpperCase()==='ROBLOX',
       allowedStates:['PASS','GAP','NOT_APPLICABLE'],
       holisticCoreDomains:HOLISTIC_CORE_DOMAINS,
       holisticGaps:states.filter(x=>HOLISTIC_CORE_DOMAINS.includes(x.domain)&&x.state==='GAP').map(x=>x.domain),
