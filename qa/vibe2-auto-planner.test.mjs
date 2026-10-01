@@ -3478,7 +3478,7 @@ test('presentation BUILD_UP uses adaptive 1-60 replacement across models VFX mot
   assert.match(task.goal,/같은 카드\/그리드\/탭 템플릿/);
 });
 
-test('Roblox presentation ownership includes gameplay client before QA camera and palette modules',()=>{
+test('Roblox asset presentation ownership is isolated from gameplay source for parallel build-up',()=>{
   const root=tempRepo();
   const gameId='presentation-client-owner';
   const dir=path.join(root,'roblox-games',gameId);
@@ -3494,10 +3494,13 @@ test('Roblox presentation ownership includes gameplay client before QA camera an
   const project={gameId,name:'Presentation Client Owner',engine:'roblox',target:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`};
   const task=findStudioContinuousImprovementTask(project,root,{tasks:[]},'PRESENTATION');
   assert.ok(task);
-  assert.ok(task.responsibleFiles.includes(`roblox-games/${gameId}/client/Game.client.luau`));
+  assert.equal(task.assetProductionLane,true);
+  assert.deepEqual([...task.responsibleFiles],[`roblox-games/${gameId}/client/Presentation.client.luau`]);
+  assert.ok(task.evidence.includes('asset-presentation-owner:ISOLATED_CLIENT_SCRIPT'));
+  assert.equal(task.responsibleFiles.includes(`roblox-games/${gameId}/client/Game.client.luau`),false);
 });
 
-test('queued Roblox presentation task repairs stale QA-only ownership before reserve',()=>{
+test('queued Roblox presentation task repairs stale gameplay ownership before reserve',()=>{
   const root=tempRepo();
   const gameId='queued-presentation-owner';
   const dir=path.join(root,'roblox-games',gameId);
@@ -3509,8 +3512,9 @@ test('queued Roblox presentation task repairs stale QA-only ownership before res
   const project={gameId,name:'Queued Presentation Owner',engine:'roblox',target:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`};
   const generated=findStudioContinuousImprovementTask(project,root,{tasks:[]},'PRESENTATION');
   const queued={...generated,status:'queued',responsibleFiles:[
-    `roblox-games/${gameId}/shared/QACamera.luau`,
-    `roblox-games/${gameId}/shared/VisualStyle.luau`
+    `roblox-games/${gameId}/client/Game.client.luau`,
+    `roblox-games/${gameId}/server/Game.server.luau`,
+    `roblox-games/${gameId}/shared/GameConfig.luau`
   ]};
   const result=planVibe2AutonomousTasks({
     status:{projects:[{gameId,ownerDecision:'PASS',target:'roblox',projectPath:`roblox-games/${gameId}`,progress:80}]},
@@ -3518,9 +3522,24 @@ test('queued Roblox presentation task repairs stale QA-only ownership before res
     repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:1,planningBacklogMinimum:0
   });
   const repaired=result.queue.tasks.find(row=>row.id===queued.id);
+  const isolatedPath=`roblox-games/${gameId}/client/Presentation.client.luau`;
   assert.equal(repaired.status,'queued');
-  assert.ok(repaired.responsibleFiles.includes(`roblox-games/${gameId}/client/Game.client.luau`));
+  assert.deepEqual([...repaired.responsibleFiles],[isolatedPath]);
   assert.ok(repaired.evidence.includes('studio-presentation-client-responsibility:REPAIRED'));
+  assert.ok(repaired.evidence.includes('asset-presentation-owner:ISOLATED_CLIENT_SCRIPT'));
+
+  const activeGameplay={
+    id:`${gameId}-roblox-second-gate-rebuild-v1`,gameId,target:'roblox',department:'development',type:'implementation',
+    sourceRoot:`roblox-games/${gameId}`,responsibleFiles:[
+      `roblox-games/${gameId}/client/Game.client.luau`,
+      `roblox-games/${gameId}/server/Game.server.luau`,
+      `roblox-games/${gameId}/shared/GameConfig.luau`
+    ],
+    goal:'active gameplay rebuild',releaseState:'development-confirmed',status:'running',retries:0,reservationRunId:'active-run'
+  };
+  const batch=selectVibeQueueBatch(createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[repaired,activeGameplay]}),{maxConcurrentTasks:20,lane:'asset-development'});
+  assert.equal(batch.selected.some(row=>row.id===queued.id),true);
+  assert.equal(batch.deferredConflicts.some(row=>row.id===queued.id),false);
 });
 
 test('studio PRESENTATION focus receives the same adaptive replacement contract inside existing BUILD_UP',()=>{
