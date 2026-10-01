@@ -810,10 +810,7 @@ export function beginVibeQueueBatch(queueInput, { maxConcurrentTasks = null, res
   const selection=freeze({
     ...rawSelection,
     selected:freezeList(selectedForBatch),
-    externalBatchLimit:Number.isFinite(requestedBatchLimit)&&requestedBatchLimit>0?appliedBatchLimit:null,
-    selectedBeforeBatchLimit:rawSelection.selected.length,
-    batchTruncated:selectedForBatch.length<rawSelection.selected.length,
-    remainingRunnableAfterBatchLimit:Math.max(0,rawSelection.selected.length-selectedForBatch.length)
+    externalBatchLimit:Number.isFinite(requestedBatchLimit)&&requestedBatchLimit>0?appliedBatchLimit:null
   });
   if (!selection.selected.length) return freeze({ started: false, tasks: freeze([]), queue, selection });
   const selectedOrder = selection.selected.map((task) => task.id);
