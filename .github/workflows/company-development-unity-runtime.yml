@@ -93,7 +93,8 @@ env:
 
 concurrency:
   group: unity-native-exact-${{ inputs.game_id || (github.event_name == 'push' && 'batch-push') || github.run_id }}
-  cancel-in-progress: false
+  # Only main-push batch planners are disposable. Exact-game and manual runs keep active execution.
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 jobs:
   publication-repair:
