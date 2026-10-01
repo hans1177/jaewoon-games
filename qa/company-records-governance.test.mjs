@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import {validateCompanyRecord,scanCompanyRecords,extractChangeRecordReferences,planCentralDocumentArchive,inspectCentralDocument} from '../tools/company-records-governance.mjs';
+import {validateCompanyRecord,scanCompanyRecords,extractChangeRecordReferences,planCentralDocumentArchive,inspectCentralDocument,discoverCentralArchiveCandidates} from '../tools/company-records-governance.mjs';
 
 const root=process.cwd();
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
@@ -152,4 +152,20 @@ test('current central policy stays within hard retention limit and keeps every r
   assert.ok(report.utf8Bytes<=report.maxUtf8Bytes);
   assert.deepEqual(report.missingProtectedChangeRecords,[]);
   assert.ok(report.headroomBytes>=0);
+});
+
+
+test('central candidate discovery reports historical-shaped nested state but never mutates it',()=>{
+  const roadmap={
+    centralDocumentRetention:{historicalArchiveSelectors:[]},
+    currentPolicy:{enabled:true},
+    workerState:{
+      latestRun:{id:123,details:'x'.repeat(700)},
+      currentContract:{enabled:true,details:'y'.repeat(700)}
+    }
+  };
+  const rows=discoverCentralArchiveCandidates({roadmap,minBytes:100,limit:10});
+  assert.ok(rows.some(row=>row.path==='workerState.latestRun'));
+  assert.ok(!rows.some(row=>row.path==='workerState.currentContract'));
+  assert.equal(roadmap.workerState.latestRun.id,123);
 });
