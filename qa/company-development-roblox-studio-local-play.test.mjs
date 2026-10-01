@@ -22,6 +22,7 @@ import {
   runStudioMultiplayerAudit,
   runOfficialStudioMcpPlay,
   stopOwnedStudioMultiplayerTests,
+  validateStudioPlaceArtifactPreOpen,
   evaluateStudioSaveRejoin
 } from '../tools/company-development-roblox-studio-local-play.mjs';
 
@@ -831,6 +832,24 @@ test('Studio fails closed before gameplay QA when Play is blocked after Studio b
   assert.match(helper,/repairSurface:'STUDIO_PROJECT_OPEN'/);
   assert.match(helper,/type:'studio-product-pre-play-blocker'/);
   assert.match(helper,/do not auto-click it/);
+});
+
+test('Studio pre-open modal gate rejects missing or Compatibility lighting before launching Studio',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'studio-place-gate-'));
+  try{
+    const good=path.join(dir,'good.rbxlx');
+    fs.writeFileSync(good,'<roblox><Item class="Lighting"><Properties><token name="Technology">1</token></Properties></Item></roblox>');
+    assert.equal(validateStudioPlaceArtifactPreOpen({placeFile:good}).pass,true);
+    const missing=path.join(dir,'missing.rbxlx');
+    fs.writeFileSync(missing,'<roblox><Item class="Lighting"><Properties></Properties></Item></roblox>');
+    assert.throws(()=>validateStudioPlaceArtifactPreOpen({placeFile:missing}),/MISSING_TECHNOLOGY/);
+    const compatibility=path.join(dir,'compatibility.rbxlx');
+    fs.writeFileSync(compatibility,'<roblox><Item class="Lighting"><Properties><token name="Technology">2</token></Properties></Item></roblox>');
+    assert.throws(()=>validateStudioPlaceArtifactPreOpen({placeFile:compatibility}),/COMPATIBILITY/);
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+  const gateAt=workflow.indexOf("--mode=validate-place");
+  const launchAt=workflow.indexOf('Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH');
+  assert.ok(gateAt>0&&launchAt>gateAt);
 });
 
 test('Studio MCP waits for a connected Studio after tool inventory becomes ready',()=>{
