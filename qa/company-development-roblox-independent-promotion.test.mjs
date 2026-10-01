@@ -37,6 +37,26 @@ test('shared-model preflight remains a per-game evidence stage without adding a 
   assert.ok(workflow.includes('result.preflightEvidence?.artifactIdentity===result.artifactIdentity'));
 });
 
+test('each Roblox technical worker persists and dispatches its F0 result before batch reconciliation',()=>{
+  const workerAt=workflow.indexOf('\n  technical-worker:');
+  const immediateAt=workflow.indexOf('Persist this exact Roblox technical result immediately and dispatch F0 QA',workerAt);
+  const batchAt=workflow.indexOf('\n  technical-persist:',workerAt);
+  assert.ok(workerAt>0&&immediateAt>workerAt&&batchAt>immediateAt);
+  const workerBlock=workflow.slice(workerAt,batchAt);
+  assert.match(workerBlock,/ROBLOX_TECHNICAL_WORKER_PERSIST_ATTEMPT=/);
+  assert.match(workerBlock,/company-development-roblox-runtime-persist\.mjs/);
+  assert.match(workerBlock,/--technical/);
+  assert.match(workerBlock,/ROBLOX_TECHNICAL_WORKER_PERSIST_CONFLICT_RETRY=/);
+  assert.match(workerBlock,/ROBLOX_F0_IMMEDIATE_QA_DISPATCH=/);
+  assert.match(workerBlock,/company-development-roblox-post-runtime-qa\.yml[\s\S]*?-f game_id="\$GAME_ID" -f run_studio=true/);
+
+  const batchBlock=workflow.slice(batchAt);
+  assert.match(batchBlock,/Persist exact Roblox build package evidence/);
+  assert.match(batchBlock,/company-development-roblox-runtime-persist\.mjs/);
+  assert.match(batchBlock,/--technical --queue=development-queue\.json --root=\/tmp\/roblox-technical-batch\/results/);
+  assert.match(batchBlock,/ROBLOX_TECHNICAL_PERSIST_CONFLICT_RETRY=/);
+});
+
 test('preflight or F0 recovery uses continuation while fused F0 success routes directly to local Studio QA',()=>{
   assert.ok(workflow.includes('let packagePending=0,preflightReady=0,f0Ready=0,externalBlocked=0;'));
   assert.ok(workflow.includes("const f0Passed=secondaryOwnerFocus?false:item.robloxFoundationF0Passed===true;"));
