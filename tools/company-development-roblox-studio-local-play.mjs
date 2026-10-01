@@ -14,7 +14,7 @@ const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,'
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(path.resolve(file)),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const stableSha256=value=>crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
-export const ROBLOX_STUDIO_HARNESS_VERSION=16;
+export const ROBLOX_STUDIO_HARNESS_VERSION=17;
 
 export function assertCurrentStudioWorkflowHead({
   workflowSha=clean(process.env.GITHUB_SHA),
@@ -1357,7 +1357,10 @@ function studioActualPlayRuntimeProbeSource(){
     'for _,d in ipairs(ReplicatedStorage:GetDescendants()) do if d:IsA("RemoteEvent") or d:IsA("RemoteFunction") then remoteCount=remoteCount+1;if #remoteRows<80 then table.insert(remoteRows,{name=d.Name,className=d.ClassName}) end end end',
     'local soundCount=0',
     'local playingSoundCount=0',
-    'for _,rootInst in ipairs({Workspace,SoundService}) do for _,d in ipairs(rootInst:GetDescendants()) do if d:IsA("Sound") then soundCount=soundCount+1;if d.IsPlaying then playingSoundCount=playingSoundCount+1 end end end end',
+    'local soundGroupCount=0',
+    'local soundRows={}',
+    'for _,d in ipairs(SoundService:GetDescendants()) do if d:IsA("SoundGroup") then soundGroupCount=soundGroupCount+1 end end',
+    'for _,rootInst in ipairs({Workspace,SoundService}) do for _,d in ipairs(rootInst:GetDescendants()) do if d:IsA("Sound") then soundCount=soundCount+1;if d.IsPlaying then playingSoundCount=playingSoundCount+1 end;if #soundRows<80 then table.insert(soundRows,{name=d.Name,isPlaying=d.IsPlaying,volume=d.Volume,soundGroup=d.SoundGroup and d.SoundGroup.Name or "",looped=d.Looped,playbackSpeed=d.PlaybackSpeed,parent=d.Parent and d.Parent.Name or ""}) end end end end',
     'local category={quest=0,reward=0,economy=0,inventory=0,combat=0,progression=0,save=0,retry=0,npc=0,companion=0,item=0,environment=0,effects=0}',
     'local systemSignals=0',
     'for _,rootInst in ipairs({ReplicatedStorage,Workspace,pg}) do',
@@ -1385,7 +1388,7 @@ function studioActualPlayRuntimeProbeSource(){
     'local descendantCount=#Workspace:GetDescendants()',
     'local memoryMb=0',
     'pcall(function() memoryMb=Stats:GetTotalMemoryUsageMb() end)',
-    'local payload={runtime={actualPlayerCount=#playerList,players=playerRows,remoteCount=remoteCount,remotes=remoteRows,progression=progressionRows,inventory=inventoryRows,inventoryCount=inventoryCount,systemSignals=systemSignals,categories=category,descendantCount=descendantCount,memoryMb=memoryMb,soundCount=soundCount,playingSoundCount=playingSoundCount}}',
+    'local payload={runtime={actualPlayerCount=#playerList,players=playerRows,remoteCount=remoteCount,remotes=remoteRows,progression=progressionRows,inventory=inventoryRows,inventoryCount=inventoryCount,systemSignals=systemSignals,categories=category,descendantCount=descendantCount,memoryMb=memoryMb,soundCount=soundCount,playingSoundCount=playingSoundCount,soundGroupCount=soundGroupCount,sounds=soundRows}}',
     'return "ROBLOX_STUDIO_ACTUAL_PLAY_RUNTIME="..HttpService:JSONEncode(payload)'
   ].join('\n');
 }
@@ -1736,6 +1739,14 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const npcSurfaceCount=entityRows(world.npcs).length+Number(categories.npc||0);
   const companionSurfaceCount=entityRows(world.companions).length+Number(categories.companion||0);
   const itemSurfaceCount=entityRows(world.items).length+Number(categories.item||0)+Number(categories.inventory||0);
+  const playerAnimationTrackCount=Number(client?.player?.animationTrackCount||0);
+  const playerMotorCount=Number(client?.player?.motorCount||0);
+  const playingSoundCount=Number(runtime.playingSoundCount||0);
+  const soundGroupCount=Number(runtime.soundGroupCount||0);
+  const soundCount=Number(runtime.soundCount||0);
+  const multiSoundMixOrganized=soundCount<3||soundGroupCount>0;
+  const perceptibleMotionPass=player.animatorPresent===true&&playerMotorCount>0&&playerAnimationTrackCount>0&&displacement>=0.1;
+  const perceptibleAudioPass=soundCount>0&&playingSoundCount>0&&multiSoundMixOrganized;
   const rows=[
     {id:'character-camera-ready',pass:player.characterPresent===true&&player.humanoidPresent===true&&player.rootPresent===true&&client?.camera?.present===true},
     {id:'adaptive-start-playability',pass:startPlayabilityPass},
@@ -1770,8 +1781,8 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'adaptive-combat-surface',pass:!signals.combat||(combatSurfaceCount>0&&mobRigAnimationPass&&(!soak||(mobRows.length>0&&(timelineMobDynamic||mobMotion.dynamic||primaryActionFeedbackChanged||combatEffects>0))))},
     {id:'adaptive-combat-action-effect',pass:!signals.combat||combatActions.length===0||combatEffects>0},
     {id:'adaptive-mob-animation-ai',pass:!signals.combat||modelMobs.length===0||(animatedMobCount===modelMobs.length&&(!soak||timelineMobDynamic||mobMotion.dynamic||primaryActionFeedbackChanged))},
-    {id:'adaptive-motion-surface',pass:!signals.motion||(player.animatorPresent===true&&displacement>=0.1)},
-    {id:'adaptive-audio-surface',pass:!signals.audio||Number(runtime.soundCount||0)>0},
+    {id:'adaptive-motion-surface',pass:!signals.motion||perceptibleMotionPass},
+    {id:'adaptive-audio-surface',pass:!signals.audio||perceptibleAudioPass},
     {id:'adaptive-npc-surface',pass:!signals.npc||npcSurfaceCount>0},
     {id:'adaptive-companion-ai-surface',pass:!signals.companion||(companionSurfaceCount>0&&(entityRows(world.companions).length===0||!soak||timelineCompanionDynamic||companionMotion.dynamic))},
     {id:'adaptive-item-surface',pass:!signals.items||itemSurfaceCount>0},
@@ -1843,7 +1854,8 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     ftue:{declared:signals.onboarding===true,pass:onboardingClarityPass,visibleTextCount:visibleTexts.length,visibleButtonCount:visibleButtons},
     uiCommercial:{offscreenButtons:Number(ui.offscreenButtons||0),undersizedTouchButtons:Number(ui.undersizedTouchButtons||0),suboptimalTouchButtons:Number(ui.suboptimalTouchButtons||0),textOverflowButtons:Number(ui.textOverflowButtons||0),overlapPairs:Number(ui.overlapPairs||0),largeOverlayCount:Number(ui.largeOverlayCount||0),largeBlockingOverlayCount:Number(ui.largeBlockingOverlayCount||0),largestOverlayCoverage:Number(ui.largestOverlayCoverage||0)},
     startPlayability:{initialDead,finalDead,initialHealth:Number.isFinite(initialHealth)?initialHealth:null,finalHealth:Number.isFinite(finalHealth)?finalHealth:null,startGateVisible:Boolean(initialStartLikeButton),startGateActionOk:startGateAction?.ok===true,startGateEffectObserved},
-    surfaces:{interactionSurfaceCount,progressionSurfaceCount,combatSurfaceCount,npcSurfaceCount,companionSurfaceCount,itemSurfaceCount,remoteCount:Number(runtime.remoteCount||0),soundCount:Number(runtime.soundCount||0),effectCount:Number(world.effectCount||0),promptCount:Number(world.proximityPromptCount||0),inventoryCount:Number(runtime.inventoryCount||0),currentActualPlayerCount,maxActualPlayerCount,multiplayerStateTransition,multiplayerActualSessionPass},
+    surfaces:{interactionSurfaceCount,progressionSurfaceCount,combatSurfaceCount,npcSurfaceCount,companionSurfaceCount,itemSurfaceCount,remoteCount:Number(runtime.remoteCount||0),soundCount,playingSoundCount,soundGroupCount,multiSoundMixOrganized,effectCount:Number(world.effectCount||0),promptCount:Number(world.proximityPromptCount||0),inventoryCount:Number(runtime.inventoryCount||0),currentActualPlayerCount,maxActualPlayerCount,multiplayerStateTransition,multiplayerActualSessionPass},
+    perceptibility:{motion:{pass:perceptibleMotionPass,animatorPresent:player.animatorPresent===true,motorCount:playerMotorCount,playingAnimationTrackCount:playerAnimationTrackCount,displacement},audio:{pass:perceptibleAudioPass,soundCount,playingSoundCount,soundGroupCount,multiSoundMixOrganized}},
     performance:{memoryMb:Number(runtime.memoryMb||0),descendantCount:Number(runtime.descendantCount||0)},
     worldAudit:{floorSamples,floorHits,floorCoveragePass,routeSamples,routeSuccess,routeCoveragePass,spawnThreatDistance,spawnOverlapSafe},
     characterAndAi:{mobRigAnimationPass,humanoidMobCount:humanoidMobRows.length,cameraOccluded:client?.camera?.occluded===true,cameraDistance:Number(client?.camera?.distance||0)}
@@ -1868,8 +1880,8 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     'adaptive-remote-surface':['SERVER_CLIENT_BOUNDARY','CRITICAL','Restore server-authoritative RemoteEvent/RemoteFunction surface and validation path.'],
     'adaptive-combat-surface':['COMBAT_AI','CRITICAL','Repair combat targets, damage/state transitions, enemy liveness, attack feedback, and F9 AI movement.'],
     'adaptive-combat-action-effect':['ACTION_IMPLEMENTATION','CRITICAL','Studio reached a live combat target and dispatched attack input, but no damage/AI/target/player/UI feedback change was observed. Repair hit detection, attack binding, server authority, and feedback timing.'],
-    'adaptive-motion-surface':['CHARACTER_MOTION','HIGH','Repair Animator/Motor6D rig behavior and verify movement/action animation response.'],
-    'adaptive-audio-surface':['AUDIO','MEDIUM','Restore required gameplay/BGM/SFX surface and ensure runtime audio feedback exists.'],
+    'adaptive-motion-surface':['CHARACTER_MOTION','CRITICAL','Animator/Motor6D presence alone is insufficient. Restore real playing AnimationTrack response during actual movement/action, keep articulated joints active, and verify the visible motion at normal play scale.'],
+    'adaptive-audio-surface':['AUDIO','HIGH','Sound objects alone are insufficient. Ensure intended audio is actually playing in Studio; organize multi-sound games with SoundGroup mixing, preserve owner mute/SFX intent, and verify BGM/ambience or allowed event audio in the live state.'],
     'adaptive-npc-surface':['NPC','HIGH','Restore required NPC actors, interaction affordances, dialogue/shop/quest links, and runtime state.'],
     'adaptive-companion-ai-surface':['COMPANION_AI','CRITICAL','Repair companion spawn/follow/target/attack/recovery behavior and F9 liveness.'],
     'adaptive-item-surface':['ITEM_INVENTORY','HIGH','Restore item/tool/inventory/equipment surface and verify acquisition/equip state.'],
@@ -1901,6 +1913,8 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     if(id==='adaptive-combat-surface')return{combatSurfaceCount,mobCount:mobRows.length,humanoidMobCount:humanoidMobRows.length,mobRigAnimationPass,mobMotion:metrics.mobMotion,timelineMobDynamic,combatActionCount:combatActions.length,combatEffectCount:combatEffects};
     if(id==='adaptive-combat-action-effect')return{combatActionCount:combatActions.length,combatEffectCount:combatEffects,actions:combatActions.slice(0,8).map(row=>({id:row.id,type:row.type,effectObserved:row.effectObserved===true,effect:row.effect||null}))};
     if(id==='adaptive-companion-ai-surface')return{companionSurfaceCount,companionCount:entityRows(world.companions).length,companionMotion:metrics.companionMotion,timelineCompanionDynamic};
+    if(id==='adaptive-motion-surface')return metrics.perceptibility.motion;
+    if(id==='adaptive-audio-surface')return metrics.perceptibility.audio;
     if(id==='adaptive-progression-surface'||id==='adaptive-quest-loop-surface'||id==='adaptive-reward-loop-surface')return{progressionSurfaceCount,progressChanged,timelineProgressChanged};
     if(id==='adaptive-item-surface')return{itemSurfaceCount,inventoryCount:Number(runtime.inventoryCount||0),inventoryChanged:inventoryDelta};
     if(id==='adaptive-performance-budget')return metrics.performance;
