@@ -302,6 +302,7 @@ function normalizeTask(input = {}, index = 0) {
     executionLane: inferExecutionLane({...input,evidence:inputEvidence}),
     goal: clean(input.goal),
     responsibleFiles: freezeList(input.responsibleFiles || []),
+    retainedResponsibleFileLocks: freezeList(input.retainedResponsibleFileLocks || []),
     dependencies: freezeList(input.dependencies || []),
     priority,
     portfolioValueScore: clampInt(input.portfolioValueScore || 0, 0, 100),
@@ -451,7 +452,9 @@ function scoreTask(task, index) {
 }
 function fileLocks(task) {
   const root = posix(task.sourceRoot);
-  return new Set((task.responsibleFiles || []).map(posix).filter(Boolean).map((file) => root && !file.startsWith(`${root}/`) ? `${root}/${file}` : file));
+  const current=(task.responsibleFiles || []).map(posix).filter(Boolean).map((file) => root && !file.startsWith(`${root}/`) ? `${root}/${file}` : file);
+  const retained=(task.retainedResponsibleFileLocks || []).map(posix).filter(Boolean);
+  return new Set([...current,...retained]);
 }
 function lockConflict(a, b) {
   const aFiles = fileLocks(a), bFiles = fileLocks(b);
