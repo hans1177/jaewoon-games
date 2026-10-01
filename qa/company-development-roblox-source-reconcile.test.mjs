@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {applyRobloxStudioAssetBindingToExistingSource,compileRobloxSource,projectJsonForGame} from '../tools/company-development-roblox-bootstrap.mjs';
+import {applyRobloxStudioAssetBindingToExistingSource,applyVerifiedExternalLearningToExistingRobloxSource,compileRobloxSource,projectJsonForGame} from '../tools/company-development-roblox-bootstrap.mjs';
 import {eligibleForRobloxSourceReconciliation,evaluateExistingRobloxSources,hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {createRobloxVibe3LearningContext,verifiedExternalBlackBoxPlaybookContract} from '../tools/vibe3-roblox-learning-context.mjs';
 
@@ -657,6 +657,32 @@ test('visual learning rebind does not require or inspect Roblox server source',(
     assert.match(client,/PointLight/);
     assert.match(client,/VerifiedLearningSkillImpact/);
     assert.match(client,/FieldOfView/);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('verified learning rebind injects a dedicated GameConfig require when the client did not already use Config',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-learning-client-no-config-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeLegacyStudioUnboundTree(root);
+    const clientFile=path.join(root,'client','Game.client.luau');
+    fs.writeFileSync(clientFile,[
+      '-- existing client without GameConfig require',
+      'local ReplicatedStorage = game:GetService("ReplicatedStorage")',
+      'local remotes = ReplicatedStorage:WaitForChild("CustomRemotes")',
+      'local root = Instance.new("Frame")',
+      'root.Name = "Root"',
+      'root.Parent = Instance.new("ScreenGui")'
+    ].join('\n')+'\n');
+    const applied=applyVerifiedExternalLearningToExistingRobloxSource({root,learning:verifiedLearning});
+    assert.equal(applied.changed,true);
+    const client=fs.readFileSync(clientFile,'utf8');
+    assert.match(client,/local VerifiedExternalLearningConfig = require\(game:GetService\("ReplicatedStorage"\):WaitForChild\("Shared"\):WaitForChild\("GameConfig"\)\)/);
+    assert.match(client,/local remotes = ReplicatedStorage:WaitForChild\("CustomRemotes"\)/);
+    assert.match(client,/VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN/);
+    assert.match(client,/VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/);
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
   }
