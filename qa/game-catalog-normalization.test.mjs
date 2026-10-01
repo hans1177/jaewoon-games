@@ -132,6 +132,9 @@ assert.equal(ingestPolicy.enabled,true);
 assert.equal(ingestPolicy.root,'web-games');
 assert.equal(ingestPolicy.requiredEntryFile,'index.html');
 assert.equal(ingestPolicy.missingCatalogAction,'CREATE_DESIGN_ONLY_WEB_PUBLISHED_RECORD');
+assert.equal(ingestPolicy.reconcileExistingCatalogGamesEveryStatusSync,true);
+assert.equal(ingestPolicy.existingCanonicalIndexEnablesWebPlay,true);
+assert.equal(ingestPolicy.missingCanonicalIndexDoesNotCreateVisibleTitleOnlyCard,true);
 
 {
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'owner-web-ingest-'));
@@ -162,6 +165,11 @@ assert.equal(ingestPolicy.missingCatalogAction,'CREATE_DESIGN_ONLY_WEB_PUBLISHED
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 }
 
+assert.match(sync,/const actualWebPlayableReconciled=\[\]/);
+assert.match(sync,/web-games\/\$\{id\}\/index\.html/);
+assert.match(sync,/game\.hasWebArchive=true/);
+assert.match(sync,/game\.homepageWebPlayable=true/);
+assert.match(sync,/COMPANY_ACTUAL_WEB_PLAYABLE_RECONCILED/);
 assert.match(sync,/normalizeCatalog\(catalog\)/);
 assert.match(sync,/validateNormalizedCatalog\(catalog\)/);
 assert.match(homepage,/const canonicalOf=row=>/);

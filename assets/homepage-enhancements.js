@@ -118,6 +118,7 @@ function developmentRows(catalog,status){
   return (Array.isArray(catalog?.games)?catalog.games:[])
     .filter(game=>activeLifecycle(game)&&['DESIGN_ONLY','DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(productionClassOf(game)))
     .map(game=>bindVerifiedUnityBuild(game,status))
+    .filter(hasRunnableHomepageTarget)
     .sort((a,b)=>{
       const sa=scoreState(a),sb=scoreState(b);
       if(sa.score!==null||sb.score!==null){
@@ -265,6 +266,10 @@ function internalReleaseLinks(game){
     web:links.web
   };
 }
+function hasRunnableHomepageTarget(game){
+  const links=internalReleaseLinks(game);
+  return Boolean(links.roblox||links.unity||links.unityWeb||links.web);
+}
 function hasInternalRelease(game){
   const exposure=exposureOf(gameIdOf(game));
   return (exposure?.platforms||[]).some(p=>['ROBLOX','UNITY'].includes(normalizePlatform(p?.platform))&&p?.internalReleaseReady===true&&p?.releaseReadiness?.homepageReady===true&&Boolean(p.internalUrl||p.publicUrl));
@@ -280,6 +285,7 @@ function recentModificationRows(catalog){
   const generic=/^Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다\.$|^TARGET_PLATFORM_TECHNICAL_VALIDATION$/;
   return (Array.isArray(catalog?.games)?catalog.games:[])
     .filter(activeLifecycle)
+    .filter(hasRunnableHomepageTarget)
     .map(game=>{
       const work=String(latestWork(game)||'').trim();
       const updated=String(runtimeInfo(game).updatedAt||homepageOf(game).updatedAt||'').trim();
