@@ -255,6 +255,11 @@ function normalizeBuildUpDirective(input=null){
   try{return freeze(JSON.parse(JSON.stringify(input)));}
   catch{return null;}
 }
+function normalizeGraphicsReplacementContract(input=null){
+  if(!input||typeof input!=='object'||Array.isArray(input))return null;
+  try{return freeze(JSON.parse(JSON.stringify(input)));}
+  catch{return null;}
+}
 function normalizeTask(input = {}, index = 0) {
   const rawStatus=clean(input.status).toLowerCase();
   const status = rawStatus==='done' ? 'verified' : VIBE_QUEUE_STATUSES.includes(rawStatus) ? rawStatus : 'queued';
@@ -299,6 +304,8 @@ function normalizeTask(input = {}, index = 0) {
     department: clean(input.department) || null,
     type: clean(input.type) || 'implementation',
     assetProductionLane: input.assetProductionLane===true || inputEvidence.includes('asset-production-parallel:v1'),
+    presentationPass: clean(input.presentationPass).toUpperCase() || null,
+    graphicsReplacementContract: normalizeGraphicsReplacementContract(input.graphicsReplacementContract),
     executionLane: inferExecutionLane({...input,evidence:inputEvidence}),
     goal: clean(input.goal),
     responsibleFiles: freezeList(input.responsibleFiles || []),

@@ -3952,3 +3952,67 @@ test('actual fantasy-survival Web source emits code and graphics BUILD_UP work',
     new Set(['PRESENTATION','USABILITY','STABILITY'])
   );
 });
+test('queued Web assessment with PRESENTATION generation is repaired into graphics BUILD_UP',()=>{
+  const root=tempRepo();
+  const gameId='web-presentation-carrier';
+  const webRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(webRoot,{recursive:true});
+  fs.writeFileSync(
+    path.join(webRoot,'index.html'),
+    '<!doctype html><html><body data-spatial-dimension="2.5d"><canvas id="game"></canvas><button data-gameplay-action="gather">채집</button><script>const canvas=document.querySelector("#game");const ctx=canvas.getContext("2d");function render(){ctx.fillRect(0,0,32,32);requestAnimationFrame(render)}render();</script></body></html>',
+    'utf8'
+  );
+  writeStudioDesign(root,gameId,{identity:'실제 Web 표현을 가진 생존 액션 게임'});
+  const catalog={games:[{
+    id:gameId,name:'Web Presentation Carrier',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',
+    hasWebArchive:true,homepageWebPlayable:false,webPath:`/web-games/${gameId}/`
+  }]};
+
+  const first=planVibe2AutonomousTask({
+    status:{projects:[]},catalog,queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4
+  });
+  assert.equal(first.planned,true);
+  assert.equal(first.task.id,`${gameId}-existing-web-assessment-v1`);
+  assert.ok(first.task.buildUpDirective?.directiveId,'assessment must bind the BUILD_UP generation immediately');
+
+  fs.rmSync(path.join(root,'design',gameId),{recursive:true,force:true});
+  const legacyDirectiveId=`${gameId}-build-up-g1-legacy-presentation`;
+  const stale={
+    ...first.task,
+    status:'queued',
+    presentationPass:null,
+    graphicsReplacementContract:null,
+    buildUpDirectiveId:legacyDirectiveId,
+    buildUpGeneration:1,
+    buildUpDirective:{
+      directiveId:legacyDirectiveId,
+      gameId,
+      generation:1,
+      primaryFocus:'PRESENTATION',
+      autonomousContentExpansion:{version:1}
+    },
+    evidence:(first.task.evidence||[]).filter(value=>
+      value!=='presentation-pass:ASSET_ADAPTATION'
+      &&value!=='presentation-quality-pipeline:v1'
+      &&value!=='adaptive-graphics-replacement:v1'
+    )
+  };
+  const second=planVibe2AutonomousTasks({
+    status:{projects:[]},catalog,
+    queue:{maxConcurrentTasks:4,tasks:[stale]},
+    repoRoot:root,maxConcurrentTasks:4,queueMaxConcurrentTasks:4,
+    planningBacklogTarget:1,planningBacklogMinimum:0
+  });
+  const repaired=second.queue.tasks.find(row=>row.id===stale.id);
+  assert.ok(repaired);
+  assert.equal(repaired.buildUpDirective?.primaryFocus,'PRESENTATION');
+  assert.equal(repaired.presentationPass,'ASSET_ADAPTATION');
+  assert.equal(repaired.graphicsReplacementContract?.executionBoundary,'EXISTING_PRESENTATION_OR_BUILD_UP_ONLY');
+  assert.equal(repaired.graphicsReplacementContract?.implementation?.actualSourceOrBindingDeltaRequired,true);
+  assert.equal(repaired.graphicsReplacementContract?.implementation?.zeroActualReplacementCannotPass,true);
+  assert.ok(repaired.evidence.includes('presentation-quality-pipeline:v1'));
+  assert.ok(repaired.evidence.includes('presentation-pass:ASSET_ADAPTATION'));
+  assert.ok(repaired.evidence.includes('adaptive-graphics-replacement:v1'));
+  assert.ok(repaired.evidence.includes('build-up-pre-reserve-binding:CHECKED'));
+  assert.match(repaired.goal,/ADAPTIVE_GRAPHICS_REPLACEMENT_CONTRACT/);
+});
