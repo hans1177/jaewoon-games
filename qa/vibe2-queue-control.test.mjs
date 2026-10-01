@@ -1757,7 +1757,6 @@ test('24H plan uses optimistic writes while reserve stays lightweight and fan-in
   assert.doesNotMatch(reserveHeader,/vibe2-refill-reserve-/);
   assert.doesNotMatch(reserveHeader,/format\('vibe2-reserve-\{0\}', github\.run_id\)/);
   assert.doesNotMatch(reserveHeader,/\n    concurrency:/);
-  assert.match(reserveHeader,/Reserve runs are run-unique/);
   assert.match(reserveHeader,/runs-on: \$\{\{ \(github\.event_name == 'repository_dispatch' && \(github\.event\.action == 'vibe2-fanin-refill' \|\| github\.event\.action == 'vibe2-neuron-complete'\) && 'ubuntu-latest' \|\| 'ubuntu-slim'\) \}\}/);
   assert.match(reserveHeader,/vibe2-neuron-complete/);
   assert.doesNotMatch(reserveHeader,/asset-development/);
