@@ -177,7 +177,12 @@ test('director fallback wake reuses the canonical game-primary core without crea
   assert.equal(policyFallback.mainPushWakePolicyUnchanged,true);
   assert.equal(policyFallback.responsibleFileConflictProtectionPreserved,true);
 
-  assert.match(director,/\n      - Vibe2 Continuous Core\n    types: \[completed\]/);
+  assert.doesNotMatch(director,/\n      - Vibe2 Continuous Core\n/);
+  assert.equal(fallback.vibe2CoreCompletionWakeDisabled,true);
+  assert.equal(fallback.completionWakeSource,'DIRECTOR_SCHEDULE_AND_NON_VIBE_CORE_EVENTS');
+  assert.equal(architectureFallback.vibe2CoreCompletionWakeDisabled,true);
+  assert.equal(policyFallback.vibe2CoreCompletionWakeDisabled,true);
+  assert.equal(policyFallback.workflowRunWakeSource,'REMOVED_VIBE2_CONTINUOUS_CORE_COMPLETION');
   assert.match(director,/DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=DISPATCHED/);
   assert.match(director,/DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=SKIPPED_ACTIVE_CORE/);
   assert.match(director,/actions\/workflows\/vibe2-continuous-core\.yml\/dispatches/);
