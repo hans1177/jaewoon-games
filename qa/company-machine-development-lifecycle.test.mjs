@@ -198,11 +198,10 @@ assert.match(feeder,/packageRole:'implementation-owner'/);
 assert.match(feeder,/NO_NEW_SOURCE_CYCLE/);
 assert.match(runner,/vibe2-post-release-focus\.mjs/);
 assert.match(runner,/company-runtime:development-queue\.json|origin\/company-runtime:development-queue\.json/);
-assert.match(queue,/postReleaseFocusedSlots: null/);
-assert.match(queue,/postReleaseFocusedSlotsScaleWithEligibleGames: true/);
-assert.match(queue,/postReleaseCaretakerMode: 'per-game-persistent'/);
+assert.doesNotMatch(queue,/postReleaseFocusedSlots|postReleaseFocusedSlotsScaleWithEligibleGames|postReleaseFocusedTaskId|postReleaseCaretakerMode/);
 assert.match(queue,/isPostReleaseFocused/);
-assert.match(queue,/postReleaseFocusedTaskId/);
+assert.match(queue,/fixedLaneWorkerLimit/);
+assert.match(queue,/internalGlobalParallelCap:null/);
 
 assert.equal(Object.hasOwn(lifecycle,'webFirstImplementation'),false);
 assert.equal(roadmap.webCompanion.role,'UNITY_WEB_FULL_DEVELOPMENT_QA_LOOP_COMPATIBILITY_ALIAS');
