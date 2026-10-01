@@ -247,7 +247,7 @@ export function createVibeMonsterEcologyMind(monster={}){
     temperament:cleanText(monster.temperament||'territorial'),
     territory:cleanText(monster.territory),
     groupRole:cleanText(monster.groupRole||'member'),
-    ecology:Object.freeze(['rest','patrol','forage-or-hunt-presentation','investigate','avoid-danger','territory-response','follow-group','protect-group','return-home']),
+    ecology:Object.freeze(['rest','patrol','forage-or-hunt-presentation','investigate','avoid-danger','territory-response','follow-group','protect-group','return-to-den']),
     tactical:Object.freeze(['pressure','wait','flank','retreat','guard','reposition','bait','support-ally']),
     memory:Object.freeze(['recent-damage-source','intruder-location','ally-loss','failed-approach','safe-route']),
     livingActivity:createVibeLivingActivityFrame({
