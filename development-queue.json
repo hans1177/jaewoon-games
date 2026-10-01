@@ -6655,10 +6655,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T00:35:50.781Z",
+      "updatedAt": "2026-10-01T00:38:10.692Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -7791,7 +7791,7 @@
       "unityCandidateBranch": "development/unity-tech-amusement-tycoon-36774290498",
       "unitySourceCommit": "e521068400ed4ffa48301811a35e57ad93f44397",
       "unityBuildRunId": 36777483297,
-      "unityRuntimeSmokeRunId": 36780120404,
+      "unityRuntimeSmokeRunId": 36796956422,
       "unityIndependentQaRunId": 36788904424,
       "unityRegressionRunId": 36789066493,
       "unityInternalReleaseReady": false,
@@ -7812,9 +7812,9 @@
         "multiplayerPassed": true,
         "regressionPassed": false,
         "rawStageResults": {
-          "runtime": true,
-          "independentQa": true,
-          "regression": true
+          "runtime": false,
+          "independentQa": false,
+          "regression": false
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
@@ -8295,7 +8295,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-01T00:13:57.442Z"
+        "verifiedAt": "2026-10-01T00:38:10.692Z"
       },
       "unityF9ReleaseRegressionPassed": false,
       "unityF9ReleaseRegressionPassedAt": null,
@@ -8313,9 +8313,9 @@
         "multiplayerPassed": true,
         "regressionPassed": false,
         "rawStageResults": {
-          "runtime": true,
-          "independentQa": true,
-          "regression": true
+          "runtime": false,
+          "independentQa": false,
+          "regression": false
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
@@ -27821,7 +27821,7 @@
       "unityCanonicalEvidenceBound": false
     }
   ],
-  "updatedAt": "2026-10-01T00:36:12.526Z",
+  "updatedAt": "2026-10-01T00:38:12.157Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
