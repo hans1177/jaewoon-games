@@ -21053,10 +21053,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T18:26:51.656Z",
+      "updatedAt": "2026-10-01T19:34:14.445Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -21461,7 +21461,7 @@
       "robloxInternalVibePlayEvidence": {
         "version": 2,
         "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-        "studioHarnessVersion": 15,
+        "studioHarnessVersion": 16,
         "authority": "roblox-official-studio-mcp-runtime",
         "pass": false,
         "actualPlay": false,
@@ -21644,8 +21644,8 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-10-01T18:10:05.444Z",
-        "workflowRunId": 36896295029,
+        "testedAt": "2026-10-01T19:34:14.445Z",
+        "workflowRunId": 36908677455,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -21732,8 +21732,8 @@
           "WORLD_GEOMETRY"
         ],
         "robloxFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
-        "testedAt": "2026-10-01T18:10:05.444Z",
-        "workflowRunId": 36896295029,
+        "testedAt": "2026-10-01T19:34:14.445Z",
+        "workflowRunId": 36908677455,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxNativeFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
@@ -23085,7 +23085,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T19:30:18.156Z",
+  "updatedAt": "2026-10-01T19:34:14.445Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
