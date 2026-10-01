@@ -6,7 +6,7 @@ The manor, NPC silhouettes and articulated gag props are original geometry.
 Coordinates: metres/studs, Y up, front courtyard towards positive Z.
 """
 from pathlib import Path
-import copy, hashlib, json, math, shutil, struct, tarfile
+import copy, hashlib, json, math, os, shutil, struct, tarfile
 import numpy as np
 
 ROOT = Path(__file__).resolve().parent
@@ -981,7 +981,13 @@ def render_export():
     light('Hearth',(0,4,-38),1000,(1,.32,.08),5)
     d=bpy.data.cameras.new('ReviewCamera');o=bpy.data.objects.new('ReviewCamera',d);collection.objects.link(o)
     bpy.context.scene.camera=o;d.lens=23
-    sc=bpy.context.scene;sc.render.engine='CYCLES';sc.cycles.samples=16;sc.cycles.use_denoising=True
+    sc=bpy.context.scene
+    fast_review=str(os.environ.get('GITHUB_REF','')).startswith('refs/heads/chatgpt/')
+    sc.render.engine='BLENDER_EEVEE_NEXT' if fast_review else 'CYCLES'
+    if sc.render.engine=='CYCLES':
+        sc.cycles.samples=16;sc.cycles.use_denoising=True
+    else:
+        sc.render.image_settings.file_format='PNG'
     sc.render.resolution_x=1200;sc.render.resolution_y=780;sc.render.resolution_percentage=100
     sc.view_settings.view_transform='AgX';sc.view_settings.look='AgX - Medium High Contrast';sc.view_settings.exposure=.8
     for name,pos,target in [('interior',(-2,10,-6),(0,8,-27)),('butler',(0,8,-5),(5,6,-9))]:
@@ -1007,7 +1013,12 @@ def render_export():
         npc_light('NPCRim',(0,8,-5),1550,(.75,.82,1),4)
         cam_data=bpy.data.cameras.new('NPCReviewCamera');cam=bpy.data.objects.new('NPCReviewCamera',cam_data);npc_collection.objects.link(cam)
         bpy.context.scene.camera=cam;cam_data.lens=58
-        sc=bpy.context.scene;sc.render.engine='CYCLES';sc.cycles.samples=20;sc.cycles.use_denoising=True
+        sc=bpy.context.scene
+        sc.render.engine='BLENDER_EEVEE_NEXT' if fast_review else 'CYCLES'
+        if sc.render.engine=='CYCLES':
+            sc.cycles.samples=20;sc.cycles.use_denoising=True
+        else:
+            sc.render.image_settings.file_format='PNG'
         sc.render.resolution_x=720;sc.render.resolution_y=900;sc.render.resolution_percentage=100
         sc.view_settings.view_transform='AgX';sc.view_settings.look='AgX - Medium High Contrast';sc.view_settings.exposure=.7
         files=[]
@@ -1020,7 +1031,7 @@ def render_export():
             name=kind+'-'+view+'.png';sc.render.filepath=str(review/name);bpy.ops.render.render(write_still=True);files.append(name)
         npc_reviews[kind]=files
     (review/'evidence.json').write_text(json.dumps({
-      'renderer':'Blender '+bpy.app.version_string+' Cycles',
+      'renderer':'Blender '+bpy.app.version_string+' '+('EEVEE_NEXT_BRANCH_REVIEW' if fast_review else 'CYCLES_MAIN_REVIEW'),
       'input':'generated/manor-lobby.glb',
       'sha256':hashlib.sha256((OUT/'manor-lobby.glb').read_bytes()).hexdigest(),
       'method':'Import exported manor and each exported NPC GLB into empty scenes, then render',
