@@ -1,5 +1,5 @@
 {
-  "version": 512,
+  "version": 513,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-01",
@@ -8443,13 +8443,14 @@
     "fanInRefillRunnerPressureBypass20260927": {
       "id": "FAN_IN_REFILL_RUNNER_PRESSURE_BYPASS_2026-09-27",
       "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
-      "status": "ACTIVE_COMPATIBILITY_RECORD",
-      "objective": "KEEP_NORMAL_RESERVE_ON_SLIM_AND_ROUTE_FAN_IN_REFILL_RESERVATION_TO_FIXED_ARM_CAPACITY_WITHOUT_CHANGING_HEAVY_GAME_EXECUTION",
+      "status": "SUPERSEDED_BY_RUNNER_BACKPRESSURE_2026_10_01",
+      "objective": "HISTORICAL_RUNNER_ROUTING_RECORD_SUPERSEDED_BY_CURRENT_QUEUE_PRESSURE_RELIEF",
       "runnerRouting": {
         "defaultReserve": "ubuntu-slim",
-        "fanInRefillReserve": "ubuntu-24.04-arm"
+        "fanInRefillReserve": "ubuntu-latest",
+        "fanIn": "ubuntu-latest"
       },
-      "sourceOfTruth": "CURRENT_RUNNER_POOL_AND_VIBE2_CONTINUOUS_CORE",
+      "sourceOfTruth": "company-learning/platform-release-roadmap.json#changeRecord.runnerBackpressureBottleneckRelief20261001",
       "historicalExecutionEvidenceArchived": true
     },
     "runnerBackpressureBottleneckRelief20261001": {
@@ -8505,7 +8506,27 @@
         "tools/vibe2-central-work-contract.mjs",
         "vibe2-runtime.json"
       ],
-      "implementationState": "IMPLEMENTED_MAIN"
+      "implementationState": "IMPLEMENTED_MAIN",
+      "runnerRouting": {
+        "gamePrimaryDefaultReserve": "ubuntu-slim",
+        "repositoryDispatchReserve": "ubuntu-latest",
+        "gamePrimaryFanIn": "ubuntu-latest",
+        "gamePrimaryWorker": "ubuntu-latest",
+        "gamePrimaryModelCache": "ubuntu-latest",
+        "constrainedArmFanInRemoved": true
+      },
+      "learning": {
+        "underRunnerPressure": "DEFER_ALL_LEARNING_WORKER_LAUNCH",
+        "minimumActiveWorkersUnderPressure": 0,
+        "pressureObservationFailure": "DEFER"
+      },
+      "recoveryFast": {
+        "queueStateRepairAlwaysPersists": true,
+        "immediateGameRefillBelowQueuePressureThreshold": true,
+        "gameRefillAtOrAboveQueuePressureThreshold": "DEFER_TO_24H_SAFETY_NET",
+        "queuePressureThreshold": 4,
+        "recoveredTaskStatePreserved": true
+      }
     }
   },
   "vibeExecutionLaneContract": {
