@@ -397,6 +397,7 @@ jobs:
           state_write='NO'
           neuron_refill=0
           state_attempt=0
+          company_runtime_snapshot_sha=''
           echo 'VIBE2_CONTROL_OPTIMISTIC_RETRY_POLICY=UNBOUNDED'
           while [ "$state_persisted" != 1 ]; do
             state_attempt=$((state_attempt+1))
@@ -479,19 +480,27 @@ jobs:
               --neural-readiness=/tmp/vibe2-neural-expansion-readiness.json | tee /tmp/vibe2-reserve-steward.log
             echo 'VIBE2_RESERVE_STEWARD=PASS'
 
-            # Every non-neuron reserve ingress must synchronize from the current company runtime
-            # before planning or reserving. Otherwise an empty/stale control queue can remain idle
-            # until a later fan-in callback even though company-runtime already has actionable work.
-            git -C "$control_root" fetch origin company-runtime --quiet
-            git -C "$control_root" show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json
-            for runtime_design_path in design game-seed-state.json; do
-              if git -C "$control_root" cat-file -e "origin/company-runtime:$runtime_design_path" 2>/dev/null; then
-                rm -rf "/tmp/vibe2-main/$runtime_design_path"
-                git -C "$control_root" archive "origin/company-runtime" "$runtime_design_path" | tar -x -C /tmp/vibe2-main
-              fi
-            done
+            # Pin company-runtime once per reserve ingress. A push conflict retries against the latest
+            # control queue, but it must not refetch/re-extract the same external runtime snapshot.
+            # Planner/steward/learning still rerun on every attempt against the freshly reset control state.
+            if [ "$state_attempt" -eq 1 ] || [ ! -s /tmp/vibe2-company-runtime-queue.json ]; then
+              git -C "$control_root" fetch origin company-runtime --quiet
+              company_runtime_snapshot_sha="$(git -C "$control_root" rev-parse origin/company-runtime)"
+              git -C "$control_root" show "$company_runtime_snapshot_sha:development-queue.json" > /tmp/vibe2-company-runtime-queue.json
+              for runtime_design_path in design game-seed-state.json; do
+                if git -C "$control_root" cat-file -e "$company_runtime_snapshot_sha:$runtime_design_path" 2>/dev/null; then
+                  rm -rf "/tmp/vibe2-main/$runtime_design_path"
+                  git -C "$control_root" archive "$company_runtime_snapshot_sha" "$runtime_design_path" | tar -x -C /tmp/vibe2-main
+                fi
+              done
+              echo "VIBE2_RESERVE_RUNTIME_SNAPSHOT=PINNED_FIRST_ATTEMPT:$company_runtime_snapshot_sha"
+            else
+              test -n "$company_runtime_snapshot_sha"
+              test -s /tmp/vibe2-company-runtime-queue.json
+              echo "VIBE2_RESERVE_RUNTIME_SNAPSHOT=REUSED_RETRY:$state_attempt:$company_runtime_snapshot_sha"
+            fi
             echo 'VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state.json'
-            echo "VIBE2_RESERVE_RUNTIME_SYNC_SOURCE=company-runtime:$callback_kind"
+            echo "VIBE2_RESERVE_RUNTIME_SYNC_SOURCE=company-runtime:$company_runtime_snapshot_sha:$callback_kind"
 
             # Released Roblox caretakers and active repair work are refilled from the same canonical
             # company-runtime snapshot on manual, callable, refill and fan-in reserve ingress.
