@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "Assets/Scripts/GameCore.cs",
+      "find": "                if (Player.gold < 0)",
+      "replace": "                if (Player.gold < 0)\n                {\n                    Player.gold = 0;\n                }\n                if (Player.experience < 0)\n                {\n                    Player.experience = 0;\n                }\n                if (Player.mainQuestStep < 0)\n                {\n                    Player.mainQuestStep = 0;\n                }\n                if (Player.baseMaxHp <= 0)\n                {\n                    Player.baseMaxHp = 100;\n                }\n                if (Player.baseAttack <= 0)\n                {\n                    Player.baseAttack = 3;\n                }\n                if (!Enum.IsDefined(typeof(JobType), Player.job))\n                {\n                    Player.job = JobType.None;\n                }\n                if (Player.ownedWeapons == null)\n                {\n                    Player.ownedWeapons = new List<string>();\n                }\n                if (Player.ownedArmors == null)\n                {\n                    Player.ownedArmors = new List<string>();\n                }\n                if (Player.completedHiddenQuests == null)\n                {\n                    Player.completedHiddenQuests = new List<string>();\n                }\n                if (string.IsNullOrEmpty(Player.currentRegionId) || !GameCatalog.Regions.ContainsKey(Player.currentRegionId))\n                {\n                    Player.currentRegionId = \"town\";\n                }"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
