@@ -813,43 +813,55 @@ def build():
         curtain=[[-2,0,0],[2,0,0],[2,22,0],[7,25,0],[10,26,0],[7,28,0],[1,26,0],[-1,31,0],[-3,30,0]]
         s.node('ForegroundBranch'+str(side),s.mesh('ForegroundBranch',curtain,[list(range(len(curtain)))],foreground),(side*43,0,35),scale=[side*.65,.85,1])
     # 가족 초상화: 반복되는 빈 얼굴 대신 종별 특징을 그린 내부 제작 질감.
-    from PIL import Image, ImageDraw
-    from io import BytesIO
+    # 가족 초상화: Blender 내장 numpy만 사용한다. 외부 Pillow 의존성 없이 내장 텍스처를 만든다.
+    def paint_rect(img,x0,y0,x1,y1,color):
+        x0=max(0,int(x0));y0=max(0,int(y0));x1=min(img.shape[1],int(x1));y1=min(img.shape[0],int(y1))
+        if x1>x0 and y1>y0:img[y0:y1,x0:x1,:3]=np.array(color,dtype=np.float32)/255
+    def paint_ellipse(img,cx,cy,rx,ry,color):
+        yy,xx=np.ogrid[:img.shape[0],:img.shape[1]]
+        mask=((xx-cx)/max(rx,1))**2+((yy-cy)/max(ry,1))**2<=1
+        img[mask,:3]=np.array(color,dtype=np.float32)/255
+    def paint_line(img,x0,y0,x1,y1,width,color):
+        steps=max(abs(int(x1-x0)),abs(int(y1-y0)),1)
+        for t in np.linspace(0,1,steps+1):
+            x=x0+(x1-x0)*t;y=y0+(y1-y0)*t
+            paint_ellipse(img,x,y,width,width,color)
+
     for i in range(12):
         x=([-24,-17,-10,10,17,24])[i%6];y=9 if i<6 else 16
-        im=Image.new('RGBA',(256,320),(23,29,32,255));d=ImageDraw.Draw(im)
+        pixels=np.ones((320,256,4),dtype=np.float32)
+        pixels[:,:,:3]=np.array((23,29,32),dtype=np.float32)/255
         coat=[(41,54,54),(67,34,47),(31,50,69),(74,60,41)][i%4]
         skin=[(171,166,143),(147,165,154),(168,147,142),(126,148,145)][i%4]
-        d.ellipse((24,17,232,312),fill=(43,48,46),outline=(82,74,56),width=3)
-        d.polygon([(42,305),(60,238),(93,215),(159,215),(196,244),(218,305)],fill=coat)
-        d.polygon([(91,221),(128,269),(165,221),(147,207),(108,207)],fill=(167,155,124))
-        width=38+(i%3)*9
-        d.ellipse((128-width,75,128+width,229),fill=skin)
-        d.polygon([(128-width,129),(121,158),(128-width+8,203),(105,180)],fill=tuple(int(v*.72)for v in skin))
-        d.ellipse((97,134,122,150),fill=(216,202,167));d.ellipse((138,134,163,150),fill=(216,202,167))
-        for ex in [111,149]:d.ellipse((ex-4,135,ex+4,149),fill=(35,25,26))
-        d.line([(126,146),(119,177),(132,180)],fill=(75,81,70),width=3)
-        d.line([(110,199),(146,199)],fill=(94,39,42),width=4)
+        # 낡은 타원 캔버스, 상체, 얼굴, 목.
+        paint_ellipse(pixels,128,164,103,148,(43,48,46))
+        paint_rect(pixels,55,236,202,310,coat)
+        paint_ellipse(pixels,128,154,43+(i%3)*5,76,skin)
+        paint_rect(pixels,113,211,143,242,skin)
+        # 역할별 머리 실루엣을 서로 다르게 한다.
         if i%4==0:
-            d.polygon([(85,112),(102,62),(128,92),(157,64),(174,115),(151,100),(127,112),(103,99)],fill=(17,24,25))
-            d.polygon([(107,200),(115,200),(111,211)],fill=(218,208,176))
-            d.polygon([(141,200),(149,200),(145,211)],fill=(218,208,176))
+            paint_ellipse(pixels,128,97,48,38,(17,24,25))
+            for dx in [-32,-18,0,18,32]:paint_line(pixels,128+dx*.45,72,128+dx,112,4,(17,24,25))
         elif i%4==1:
-            d.ellipse((76,57,181,125),fill=(16,25,30));d.rectangle((76,104,90,247),fill=(16,25,30));d.rectangle((170,104,185,257),fill=(16,25,30))
-            d.line([(129,70),(154,105)],fill=(57,73,77),width=3)
+            paint_ellipse(pixels,128,91,58,34,(16,25,30))
+            paint_rect(pixels,72,91,88,240,(16,25,30));paint_rect(pixels,168,91,185,246,(16,25,30))
         elif i%4==2:
-            d.polygon([(76,114),(63,65),(103,95),(154,95),(192,66),(181,128)],fill=(103,104,88))
-            d.polygon([(122,165),(153,187),(119,191)],fill=(73,76,64))
-            d.line([(83,111),(104,123)],fill=(17,27,26),width=7)
+            paint_ellipse(pixels,128,101,55,31,(72,70,62))
+            paint_line(pixels,88,92,72,61,6,(103,104,88));paint_line(pixels,168,92,187,62,6,(103,104,88))
         else:
-            d.rectangle((89,57,171,104),fill=(25,30,32));d.ellipse((72,93,187,113),fill=(17,23,25))
-            d.rectangle((91,87,170,94),fill=(109,67,53))
-            d.arc((92,128,128,159),0,360,fill=(170,148,85),width=3);d.arc((133,128,169,159),0,360,fill=(170,148,85),width=3)
-        d.line([(30,286),(224,286)],fill=(126,106,66),width=2)
-        for k in range(10):d.line([(83+k*9,297),(87+k*9,297)],fill=(177,154,105),width=2)
+            paint_rect(pixels,90,58,170,100,(25,30,32));paint_ellipse(pixels,130,102,61,14,(17,23,25))
+            paint_rect(pixels,91,86,171,94,(109,67,53))
+        # 눈/홍채/코/입. 작은 화면에서도 가족별 표정이 읽히게 대비를 남긴다.
+        for ex in [108,148]:
+            paint_ellipse(pixels,ex,143,13,8,(216,202,167))
+            paint_ellipse(pixels,ex,144,4,6,(35,25,26))
+        paint_line(pixels,128,148,120,178,2,(75,81,70))
+        paint_line(pixels,120,178,132,181,2,(75,81,70))
+        paint_line(pixels,111,200,146,200,3,(94,39,42))
+        paint_line(pixels,35,286,220,286,2,(126,106,66))
+        for k in range(10):paint_line(pixels,84+k*9,297,88+k*9,297,1,(177,154,105))
         image=bpy.data.images.new('FamilyPortrait'+str(i+1),width=256,height=320)
-        array=np.array(im,dtype=np.float32)[::-1]/255
-        image.pixels.foreach_set(array.ravel());image.pack()
+        image.pixels.foreach_set(pixels[::-1].ravel());image.pack()
         mat=bpy.data.materials.new('FamilyPortraitPaint'+str(i+1));mat.use_nodes=True
         tex=mat.node_tree.nodes.new('ShaderNodeTexImage');tex.image=image
         bs=mat.node_tree.nodes.get('Principled BSDF');bs.inputs['Roughness'].default_value=.91
