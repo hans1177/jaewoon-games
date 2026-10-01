@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {assetProductionGuidance,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,inspectVibeSourceGlb} from '../tools/vibe2-asset-production-plan.mjs';
+import {assetProductionGuidance,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb} from '../tools/vibe2-asset-production-plan.mjs';
 import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
@@ -191,7 +191,10 @@ test('motion planning reuses company clips per state and does not invent coverag
     assert.equal(motion.companyCandidates[0].rigType,'R15');
     assert.equal(motion.decisionOrder[0],'COMPARE_TARGET_GAME_QUALITY');
     assert.equal(motion.qualitySelection.selectedAssetId,null);
-    assert.equal(motion.qualitySelection.selectionState,'TARGET_GAME_REVIEW_REQUIRED');
+    assert.equal(motion.qualitySelection.selectionState,'DOWNLOAD_REQUIRED_BEFORE_INTERNAL_COMPARISON');
+    assert.equal(motion.postDownloadComparison.required,true);
+    assert.deepEqual(motion.postDownloadComparison.internalBaselineCandidateIds,['owned-motion']);
+    assert.deepEqual(motion.postDownloadComparison.pendingDownloadCandidateIds,['external-motion']);
     assert.ok(motion.qualitySelection.compareCandidateIds.includes('external-motion'));
     assert.ok(!motion.qualitySelection.compareCandidateIds.includes('reference-motion'));
     const guidance=assetProductionGuidance(plan);
@@ -750,6 +753,94 @@ test('native asset plan prefers verified company library then repository then ex
     assert.equal(plan.summary.externalCandidateTypes>0,true);
   }finally{
     fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
+
+test('downloaded external asset keeps external provenance and must compare against internal assets before selection',()=>{
+  const root=tempRoot();
+  try{
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+      version:1,
+      assets:[{
+        id:'company-ui',category:'UI',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,
+        path:'unity-games/shared/ui/company.png',license:'company-owned',platforms:['unity'],sourceHash:'company-ui-v1'
+      }]
+    },null,2));
+    const manifest={version:1,assets:[{
+      id:'downloaded-external-ui',
+      path:'unity-games/demo/Assets/UI/external.png',
+      types:['ui'],tags:['UI'],license:'CC0',platforms:['unity'],
+      source:'External Pack',sourceUrl:'https://example.invalid/ui-pack',
+      downloaded:true,sourceHash:'external-ui-v1'
+    }]};
+    const plan=buildVibeAssetProductionPlan({
+      task:{gameId:'demo',goal:'UI 그래픽 개선'},target:'unity',repoRoot:root,
+      manifest,presetCatalog:{version:1,presets:[]}
+    });
+    const row=plan.decisions.find(item=>item.type==='ui');
+    assert.ok(row);
+    assert.equal(row.repositoryCandidates.some(item=>item.id==='downloaded-external-ui'),true);
+    const acquired=row.repositoryCandidates.find(item=>item.id==='downloaded-external-ui');
+    assert.equal(acquired.acquiredExternal,true);
+    assert.equal(acquired.acquisitionOrigin,'EXTERNAL_ACQUIRED');
+    assert.equal(row.postDownloadComparison.required,true);
+    assert.equal(row.postDownloadComparison.status,'READY_FOR_SAME_CONDITION_COMPARISON');
+    assert.deepEqual(row.postDownloadComparison.downloadedExternalCandidateIds,['downloaded-external-ui']);
+    assert.deepEqual(row.postDownloadComparison.internalBaselineCandidateIds,['company-ui']);
+    assert.equal(row.applyFirst.preferredCandidateId,null);
+    assert.equal(row.qualitySelection.postDownloadInternalComparisonRequired,true);
+    assert.equal(row.qualitySelection.selectionState,'READY_FOR_SAME_CONDITION_COMPARISON');
+    assert.ok(row.decisionOrder.includes('POST_DOWNLOAD_COMPARE_EXTERNAL_TO_INTERNAL'));
+    assert.equal(row.postDownloadComparison.internalTieBreakWhenQualityComparable,true);
+    assert.equal(row.postDownloadComparison.conceptFitReferenceOnly,true);
+    assert.equal(row.postDownloadComparison.conceptMismatchBlocksFullReplacement,false);
+    assert.equal(row.postDownloadComparison.conceptTransformationPreferredWhenFeasible,true);
+    assert.equal(row.conceptFit.referenceMode,'ADVISORY_TRANSFORM_TARGET');
+    assert.equal(row.conceptFit.conceptMismatchIsAutomaticReject,false);
+    assert.equal(row.conceptFit.mismatchHandling.applyInCandidateContextBeforeFinalDecision,true);
+    assert.ok(row.conceptFit.transformationLadder.includes('SILHOUETTE_AND_PROPORTION_STYLIZATION'));
+    assert.ok(row.conceptFit.transformationLadder.includes('MOTION_POSE_WEIGHT_RHYTHM_ADAPTATION'));
+    assert.match(assetProductionGuidance(plan),/다운로드 후 내부자산 비교=READY_FOR_SAME_CONDITION_COMPARISON/);
+    assert.match(assetProductionGuidance(plan),/컨셉은 강제 탈락 게이트가 아니라 변형 목표/);
+    assert.match(assetProductionGuidance(plan),/팔레트·명도→재질\/셰이더→장식→실루엣\/비율/);
+    assert.match(assetProductionGuidance(plan),/동급이면 내부자산을 유지/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('runtime visual evidence manifest auto-binds only current-source-compatible captures',()=>{
+  const root=tempRoot(),evidence=fs.mkdtempSync(path.join(os.tmpdir(),'runtime-visual-evidence-'));
+  const prior=process.env.VIBE2_RUNTIME_VISUAL_EVIDENCE_ROOT;
+  try{
+    const sourceRevision='1234567890abcdef1234567890abcdef12345678';
+    const folder=path.join(evidence,'roblox-demo');fs.mkdirSync(folder,{recursive:true});
+    const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=','base64');
+    fs.writeFileSync(path.join(folder,'game.png'),png);
+    fs.writeFileSync(path.join(folder,'asset-runtime-visual-evidence.json'),JSON.stringify({
+      version:1,gameId:'demo',platform:'ROBLOX',surface:'ROBLOX_STUDIO',sourceRoot:'roblox-games/demo',
+      sourceRevision:'abcdefabcdefabcdefabcdefabcdefabcdefabcd',
+      currentSourceRevision:sourceRevision,currentSourceCompatible:true,sceneId:'spawn',
+      producer:{workflow:'roblox-studio',workflowRunId:'77'},
+      captures:[{id:'game',imageRef:'game.png',view:'GAME_CAMERA',viewport:{width:1280,height:720}}],
+      expectedSubjects:[{id:'hero',required:true,mustBeVisibleIn:['GAME_CAMERA']}],
+      visualGoals:['mobile readability'],editableTargets:['hero']
+    },null,2));
+    process.env.VIBE2_RUNTIME_VISUAL_EVIDENCE_ROOT=evidence;
+    process.env.VIBE2_BASE_MAIN_SHA=sourceRevision;
+    const discovered=discoverRuntimeVisualEvidence({task:{gameId:'demo',sourceRoot:'roblox-games/demo'},target:'roblox'});
+    assert.ok(discovered);
+    assert.equal(discovered.automaticallyBoundExistingRuntimeEvidence,true);
+    assert.equal(discovered.captures[0].sourceCompatibility,'EXACT_SOURCE_ROOT_NO_DIFF');
+    const plan=buildVibeAssetProductionPlan({
+      task:{gameId:'demo',sourceRoot:'roblox-games/demo',goal:'디테일 개선'},target:'roblox',repoRoot:root,
+      manifest:{assets:[]},presetCatalog:{presets:[]}
+    });
+    assert.equal(plan.runtimeVisualReview.status,'READY_FOR_PIXEL_INSPECTION');
+    assert.equal(plan.runtimeVisualReview.evidenceProvenance[0].sourceCompatibility,'EXACT_SOURCE_ROOT_NO_DIFF');
+  }finally{
+    if(prior===undefined)delete process.env.VIBE2_RUNTIME_VISUAL_EVIDENCE_ROOT;else process.env.VIBE2_RUNTIME_VISUAL_EVIDENCE_ROOT=prior;
+    delete process.env.VIBE2_BASE_MAIN_SHA;
+    fs.rmSync(root,{recursive:true,force:true});fs.rmSync(evidence,{recursive:true,force:true});
   }
 });
 
