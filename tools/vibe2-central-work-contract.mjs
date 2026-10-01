@@ -182,7 +182,7 @@ function policyValidationErrors(policy={}){
   if(clean(orchestration.sourceOfTruth)!==CANONICAL_VIBE_POLICY_PATH)errors.push('ASSISTANT_SOURCE_OF_TRUTH');
   if(orchestration.blockerOnly!==false)errors.push('BLOCKER_ONLY');
   if(orchestration?.operatingModel?.dedupeRequired!==true)errors.push('DEDUPE_REQUIRED');
-  if(clean(boundary.executionAuthority)!=='EXISTING_DAG_RESERVATION_AND_REQUIRED_GATES_ONLY')errors.push('EXECUTION_AUTHORITY');
+  if(clean(boundary.executionAuthority)!=='DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES')errors.push('EXECUTION_AUTHORITY');
   if(boundary.neuralExecutionAuthority!==false)errors.push('NEURAL_EXECUTION_AUTHORITY');
   if(boundary.workerCreationAuthority!==false)errors.push('WORKER_CREATION_AUTHORITY');
   if(boundary.queueMutationAuthority!==false)errors.push('QUEUE_MUTATION_AUTHORITY');
