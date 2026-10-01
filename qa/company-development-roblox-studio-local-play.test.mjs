@@ -1406,6 +1406,11 @@ test('Studio MCP setting diagnostic CLI is part of the helper contract',()=>{
 test('declared Studio actual-play contract requires core progression UI action effect visual sanity and design binding',()=>{
   const contract=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/launch-mvp.json','utf8')).studioActualPlayContract;
   assert.equal(contract.required,true);
+  assert.deepEqual(contract.entryButtonTexts,['저택 들어가기','출정']);
+  assert.equal(contract.selectionButtonText,'인간으로 준비');
+  assert.equal(contract.startButtonText,'1인 플레이 · 빈자리는 AI');
+  assert.equal(contract.primaryActionButtonText,'대시');
+  assert.ok(contract.afterStartWaitMs>=4000);
   for(const id of ['role-selection-interaction','round-running','logical-population-eight','hud-visible','action-ui-visible','design-runtime-binding','interaction-surface-present','world-geometry-present','primary-action-input','primary-action-effect','visual-capture-sane'])assert.ok(contract.requiredScenarios.includes(id),id);
   const png=Buffer.alloc(4096);Buffer.from('89504e470d0a1a0a','hex').copy(png,0);png.writeUInt32BE(640,16);png.writeUInt32BE(360,20);
   const image={type:'image',mimeType:'image/png',data:png.toString('base64')};
@@ -2014,19 +2019,20 @@ test('missing local character aborts before movement and routes to exact-source 
   assert.ok(applied.item.robloxQualityBuildUpEvidence.repairSurfaces.includes('CHARACTER_BOOT'));
 });
 
-test('Studio startup probe explicitly checks dead spawn, start buttons, and blocking overlays before normal QA',()=>{
+test('Studio startup probe follows declared entry steps, exact start action, and blocking-overlay gates before normal QA',()=>{
+  assert.equal(ROBLOX_STUDIO_HARNESS_VERSION,16);
   assert.match(helper,/ROBLOX_STUDIO_DEAD_CHARACTER_ABORT:INITIAL_CHARACTER_NOT_PLAYABLE/);
   assert.match(helper,/initial-character-playable/);
+  assert.match(helper,/const entryButtonTexts=launchStringList\(actualPlayContract\.entryButtonTexts\)/);
+  assert.match(helper,/entry-action-\$\{entryIndex\+1\}-dispatched/);
+  assert.match(helper,/ENTRY_ACTION_NOT_VISIBLE/);
+  assert.match(helper,/ROLE_SELECTION_NOT_VISIBLE/);
+  assert.match(helper,/const exactStartText=clean\(actualPlayContract\.startButtonText\)/);
+  assert.match(helper,/START_ACTION_NOT_VISIBLE/);
+  assert.match(helper,/afterStartWaitMs/);
   assert.match(helper,/ui-start-gate/);
-  // Real Studio evidence: the entry label was "게임 시작", so combat ran behind the entry screen.
-  const startBlock=helper.slice(helper.indexOf('const startTarget=entityRows'),helper.indexOf('if(startTarget){'));
-  const startMatcher=startBlock.match(/&&\/(\^.*)\/i\.test\(clean\(row\?\.text\)\)/)?.[1];
-  assert.ok(startMatcher);
-  const matchesStart=new RegExp(startMatcher,'i');
-  for(const label of ['게임 시작','게임 플레이','Game Start','Play','시작'])assert.equal(matchesStart.test(label),true,label);
-  for(const label of ['게임 종료','다시 시작할까요?','공격','게임 초기화'])assert.equal(matchesStart.test(label),false,label);
+  // 명시 startButtonText가 없는 기존 게임은 기존 자동 start/play 탐색을 그대로 사용한다.
   assert.match(helper,/start\|play\|begin\|continue\|ready\|시작\|플레이\|계속\|준비/);
-  assert.match(helper,/startGateProbe=await collectStudioActualPlayProbe/);
   assert.match(helper,/clean\(row\?\.text\)!==primaryTextBeforeStart/);
   assert.match(helper,/largeOverlayCount/);
   assert.match(helper,/largeBlockingOverlayCount/);
