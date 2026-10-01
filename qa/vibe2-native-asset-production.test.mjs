@@ -1164,3 +1164,78 @@ test('runtime visual defects flow from asset planning into the source worker pro
   assert.match(prompt,/quest-board/);
   assert.match(prompt,/runtime re-observation is required/);
 });
+
+
+test('usable same-game asset is applied before new authoring and weak regions derive later',()=>{
+  const sameGame={
+    id:'existing-wolf',path:'roblox-games/apply-first-demo/assets/wolf.glb',types:['enemy'],
+    tags:['wolf','enemy'],license:'project-original',platforms:['roblox'],
+    sameGameExistingRoblox:true,sourceHash:'wolf-v1',robloxAssetId:'123456'
+  };
+  const company={
+    id:'company-wolf',path:'assets/roblox/wolf.glb',types:['enemy'],
+    tags:['wolf','enemy'],license:'project-original',platforms:['roblox'],
+    companyVerified:true,sourceHash:'company-wolf-v1'
+  };
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',
+    manifest:{assets:[sameGame,company]},
+    presetCatalog:{version:1,presets:[{id:'wolf',name:'Wolf',genre:'survival',keywords:['wolf'],actorAssets:['existing-wolf','company-wolf'],effectAssets:[],toolCandidates:[],platformProfiles:{roblox:{},unity:{},webValidation:{}}}]},
+    task:{gameId:'apply-first-demo',goal:'wolf enemy 그래픽을 실제 게임에 적용하고 더 디테일하게'}
+  });
+  const enemy=plan.decisions.find(row=>row.type==='enemy');
+  assert.ok(enemy);
+  assert.equal(enemy.applyFirst.enabled,true);
+  assert.equal(enemy.applyFirst.candidates[0].id,'existing-wolf');
+  assert.equal(enemy.applyFirst.candidates[0].mode,'PATCH_EXISTING_GAME_BINDING');
+  assert.equal(enemy.applyFirst.deriveBeforeReplace,true);
+  assert.equal(plan.applyFirstSummary.existingAssetApplicationBeforeNewAuthoring,true);
+  assert.equal(plan.applyFirstSummary.newAuthoringOnlyAfterReusableCandidateFailure,true);
+  assert.match(assetProductionGuidance(plan),/APPLY USABLE ASSETS FIRST/);
+  const prompt=buildPrompt(
+    {target:'roblox',goal:'기존 사용 가능 자산부터 적용',assetProduction:plan},
+    {files:[{path:'client/Game.client.luau',content:'return true',editable:true}]},
+    ['client/Game.client.luau']
+  );
+  assert.match(prompt,/APPLY USABLE ASSETS FIRST BEGIN/);
+  assert.match(prompt,/PATCH_EXISTING_GAME_BINDING/);
+  assert.match(prompt,/derived variant only for weak regions/);
+});
+
+test('precision production continues from inspection through authoring and application',()=>{
+  const asset={
+    id:'hero-body',family:'CHARACTER',types:['character'],tags:['character'],
+    license:'project-original',sourceHash:'hero-v1',
+    customization:{controls:{jaw:{kind:'MORPH',axis:'FACE',target:'Jaw',min:0,max:1}}}
+  };
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',manifest:{assets:[asset]},presetCatalog:{presets:[]},
+    task:{
+      gameId:'precision-demo',goal:'캐릭터와 마을을 정밀하게 실제 제작해서 적용',
+      assetCustomization:{recipes:[{id:'hero',family:'CHARACTER',baseAssetId:'hero-body',previousParameters:{jaw:.2},editableParameters:['jaw'],parameters:{jaw:.35}}]},
+      mapReconstruction:{seed:'precision-demo',sketch:{
+        sourceId:'map',sourceHash:'map-v1',metersPerUnit:1,
+        nodes:[{id:'START',role:'spawn'},{id:'HUB',role:'landmark'},{id:'EXIT',role:'transition'}],
+        edges:[{from:'START',to:'HUB'},{from:'HUB',to:'EXIT'}],
+        districts:[{id:'hub',anchorNodeId:'HUB',function:'village',landmark:'hall'}]
+      }}
+    }
+  });
+  assert.equal(plan.precisionProduction.mode,'INSPECT_REPAIR_AUTHOR_APPLY_REINSPECT');
+  assert.equal(plan.precisionProduction.automaticAdvance,true);
+  assert.equal(plan.precisionProduction.continuation.stopAfterInspection,false);
+  assert.equal(plan.precisionProduction.continuation.stopAfterRepairPlan,false);
+  assert.equal(plan.precisionProduction.continuation.stopAfterAuthoring,false);
+  assert.equal(plan.precisionProduction.application.directExistingResponsibilityBinding,true);
+  assert.equal(plan.mapDetailReconstruction.productionChain.reportOnlyCompletionForbidden,true);
+  assert.ok(plan.mapDetailReconstruction.regions[0].layers.some(row=>row.productionAction==='CREATE_EDITABLE_NATIVE_ASSET'));
+  assert.match(assetProductionGuidance(plan),/PRECISION PRODUCTION CHAIN/);
+  const prompt=buildPrompt(
+    {target:'roblox',goal:'검사부터 제작 적용까지 진행',assetProduction:plan},
+    {files:[{path:'client/Game.client.luau',content:'return true',editable:true}]},
+    ['client/Game.client.luau']
+  );
+  assert.match(prompt,/PRECISION PRODUCTION CHAIN BEGIN/);
+  assert.match(prompt,/INSPECT -> DEFINE_REPAIR -> AUTHOR -> APPLY/);
+  assert.match(prompt,/GAME_CAMERA silhouette\/function/);
+});
