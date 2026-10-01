@@ -35,6 +35,23 @@ export const HOLISTIC_CORE_DOMAINS=Object.freeze([
   'ANTI_GRIND','CONTENT_DISCOVERY','PERFORMANCE_BUDGET','RUNTIME_STABILITY'
 ]);
 
+const DESIGNLESS_SAFE_BUILD_UP_FOCI=Object.freeze(['PRESENTATION','USABILITY','STABILITY']);
+const DESIGNLESS_SAFE_BUILD_UP_DOMAINS=Object.freeze({
+  PRESENTATION:Object.freeze([
+    'CHARACTER_VISUALS','ENEMY_VISUALS','WEAPONS_AND_EQUIPMENT','BUILDINGS_AND_PROPS','ENVIRONMENT','TERRAIN','MATERIALS','PALETTE',
+    'LIGHTING','ANIMATION','SECONDARY_MOTION','VFX','CAMERA','UI_HUD','AUDIO_VISUAL_TIMING','ENVIRONMENTAL_MOTION',
+    'UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','MOBILE_UX','PERFORMANCE_BUDGET'
+  ]),
+  USABILITY:Object.freeze([
+    'INPUT','MOBILE_UX','ACCESSIBILITY','SETTINGS_ACCESSIBILITY','MENU_FLOW','CONVENIENCE','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY',
+    'FEEDBACK_CLARITY','FIRST_10_MINUTES','SESSION_FLOW','ERROR_RECOVERY','PERFORMANCE_BUDGET'
+  ]),
+  STABILITY:Object.freeze([
+    'RUNTIME_STABILITY','ERROR_RECOVERY','SAVE_AND_RECOVERY','SAVE_COMPLETENESS','RECONNECT_RECOVERY',
+    'FAILURE_RESPAWN_CHECKPOINTS','SESSION_FLOW','PERFORMANCE','PERFORMANCE_BUDGET'
+  ])
+});
+
 export const VISUAL_DOMAINS=Object.freeze([
   'CHARACTER','ENEMY_CREATURE','WEAPON_EQUIPMENT','BUILDING_PROP','ENVIRONMENT_TERRAIN',
   'MATERIAL_SURFACE','PALETTE','LIGHTING','ANIMATION','SECONDARY_MOTION','VFX','CAMERA',
@@ -1006,7 +1023,8 @@ export function directivePrompt(d={}){
 
 export function buildGameSpecificBuildUpDirective({
   gameId='',gameName='',platform='COMMON',designRecord={},sourceObservation=null,repoRoot=process.cwd(),sourceRoot='',
-  previousDirective=null,previousDirectiveOutcome='',runtimeEvidence={},qualitySignals=[],responsibleFiles=[]
+  previousDirective=null,previousDirectiveOutcome='',runtimeEvidence={},qualitySignals=[],responsibleFiles=[],
+  requestedFocus='',safeDesignlessMode=false
 }={}){
   const id=clean(gameId);if(!id)throw new Error('BUILD_UP_GAME_ID_REQUIRED');
   const design=extractDesignContext(designRecord||{});
@@ -1019,7 +1037,9 @@ export function buildGameSpecificBuildUpDirective({
     clean(runtimeEvidence?.playtestFinding),
     clean(runtimeEvidence?.qualityGap)
   ]);
-  const preferred=focusFromSignals({signals,source});
+  const requested=clean(requestedFocus).toUpperCase();
+  if(safeDesignlessMode&&!DESIGNLESS_SAFE_BUILD_UP_FOCI.includes(requested))throw new Error('BUILD_UP_DESIGNLESS_SAFE_FOCUS_REQUIRED');
+  const preferred=safeDesignlessMode?requested:focusFromSignals({signals,source});
   const generation=Math.max(1,Number(previousDirective?.generation||0)+1);
   const rawDepthInfo=escalationDepthInfo({previousDirective,previousOutcome:previousDirectiveOutcome,currentSourceTreeFingerprint:source.sourceTreeFingerprint});
   const previousEffectiveness=classifyPreviousEffectiveness({previousDirective,previousOutcome:previousDirectiveOutcome,depthInfo:rawDepthInfo,runtimeEvidence});
@@ -1037,7 +1057,9 @@ export function buildGameSpecificBuildUpDirective({
   const priorFocus=clean(previousDirective?.primaryFocus).toUpperCase();
   const previousEffectClass=clean(previousEffectiveness?.classification).toUpperCase();
   const keepPriorFocus=Boolean(previousDirective&&priorFocus&&['NO_MEANINGFUL_EFFECT','PARTIAL_EFFECT','REGRESSION','UNKNOWN_RUNTIME_EFFECT'].includes(previousEffectClass));
-  const focus=keepPriorFocus?priorFocus:previousDirective&&!depthInfo.advanceAllowed&&priorFocus?priorFocus:nextFocus({preferred,previous:previousDirective||{}});
+  const focus=safeDesignlessMode
+    ?requested
+    :keepPriorFocus?priorFocus:previousDirective&&!depthInfo.advanceAllowed&&priorFocus?priorFocus:nextFocus({preferred,previous:previousDirective||{}});
   const anchor=primaryDesignAnchor(design),secondary=secondaryDesignAnchor(design);
   const identity=design.identity||clean(gameName)||id;
   const goalByFocus={
@@ -1049,8 +1071,12 @@ export function buildGameSpecificBuildUpDirective({
   };
   const goal=goalByFocus[focus]||goalByFocus.CORE_FUN;
   const previousFingerprint=clean(previousDirective?.directiveFingerprint);
-  const fingerprint=sha(JSON.stringify({id,generation,focus,goal,source:source.sourceTreeFingerprint,design,previousDirectiveOutcome:clean(previousDirectiveOutcome),previousEffectiveness,qualitySignals:signals,runtimeEvidence}));
-  const states=BUILD_UP_DOMAINS.map(domain=>domainState(domain,{design,source}));
+  const fingerprint=sha(JSON.stringify({id,generation,focus,goal,source:source.sourceTreeFingerprint,design,previousDirectiveOutcome:clean(previousDirectiveOutcome),previousEffectiveness,qualitySignals:signals,runtimeEvidence,safeDesignlessMode}));
+  const baseStates=BUILD_UP_DOMAINS.map(domain=>domainState(domain,{design,source}));
+  const designlessAllowedDomains=new Set(safeDesignlessMode?(DESIGNLESS_SAFE_BUILD_UP_DOMAINS[focus]||[]):BUILD_UP_DOMAINS);
+  const states=safeDesignlessMode
+    ?baseStates.map(row=>designlessAllowedDomains.has(row.domain)?row:{domain:row.domain,state:'NOT_APPLICABLE',reason:'designless source-safe BUILD_UP cannot expand gameplay/progression semantics'})
+    :baseStates;
   const gaps=states.filter(x=>x.state==='GAP');
   const allDomainImplementationDirectives=buildAllDomainDirectives({states,design,focus,depthInfo});
   const topFiles=uniq([...(responsibleFiles||[]),...(source?.topFiles||[]).map(x=>x.file)]).slice(0,16);
@@ -1100,9 +1126,58 @@ export function buildGameSpecificBuildUpDirective({
     actualPlayRule:'after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair'
   });
   const nextActionDecision=decideNextVibeAction({previousEffectiveness,previousOutcome:previousDirectiveOutcome,focus});
-  const autonomousContentExpansion=buildAutonomousContentExpansion({
+  const autonomousContentExpansionBase=buildAutonomousContentExpansion({
     repoRoot,source,states,focus,previousDirective,previousEffectiveness,nextActionDecision,platform,runtimeEvidence
   });
+  const safeTheme='SOURCE_SAFE_'+focus+'_QUALITY';
+  const previousSafeExpansion=previousDirective?.autonomousContentExpansion||{};
+  const safeThemeIds=autonomousContentExpansionBase.themeCoverageLedger?.requiredThemes||[];
+  const safeCounts=Object.fromEntries(safeThemeIds.map(theme=>[theme,Math.max(0,Number(previousSafeExpansion?.themeCoverageLedger?.counts?.[theme]||0))]));
+  const safeMissing=safeThemeIds.filter(theme=>Number(safeCounts[theme]||0)===0);
+  const autonomousContentExpansion=safeDesignlessMode?Object.freeze({
+    ...autonomousContentExpansionBase,
+    executionMode:clean(nextActionDecision?.action).toUpperCase()==='CAUSAL_REPAIR'?'CAUSAL_REPAIR_SOURCE_SAFE_NO_DESIGN':'SOURCE_SAFE_QUALITY_BUILD_UP_NO_DESIGN',
+    designlessSafeMode:true,
+    selectedTheme:safeTheme,
+    themeDepth:clean(previousSafeExpansion?.selectedTheme)===safeTheme?Math.max(1,Number(previousSafeExpansion?.themeDepth||1)+1):1,
+    selectedThemeReason:'No verified/minimum design exists; only source-observed '+focus+' quality may evolve until design becomes available.',
+    themeCoverageLedger:Object.freeze({
+      version:1,
+      counts:Object.freeze(safeCounts),
+      sequence:Object.freeze(Array.isArray(previousSafeExpansion?.themeCoverageLedger?.sequence)?[...previousSafeExpansion.themeCoverageLedger.sequence]:[]),
+      requiredThemes:Object.freeze([...safeThemeIds]),
+      distinctCovered:safeThemeIds.filter(theme=>Number(safeCounts[theme]||0)>0).length,
+      totalThemes:safeThemeIds.length,
+      breadthCycleComplete:safeMissing.length===0,
+      missingThemes:Object.freeze([...safeMissing]),
+      leastCoveredThemes:Object.freeze([...safeMissing]),
+      selectionPolicy:'DESIGNLESS_SAFE_MODE_DOES_NOT_ADVANCE_CONTENT_BREADTH_COVERAGE'
+    }),
+    scoredThemes:Object.freeze([]),
+    coherentContentBundle:Object.freeze(
+      focus==='PRESENTATION'
+        ?['EXISTING_RENDER_BINDING_QUALITY','EXISTING_CHARACTER_ENEMY_ENVIRONMENT_READABILITY','EXISTING_MOTION_VFX_CAMERA_UI_COHERENCE']
+        :focus==='USABILITY'
+          ?['EXISTING_TOUCH_INPUT_AND_CONTROL_REACHABILITY','EXISTING_HUD_MENU_INFORMATION_FLOW','EXISTING_MOBILE_FEEDBACK_AND_ACCESSIBILITY']
+          :['EXISTING_RUNTIME_STATE_RECOVERY','EXISTING_SAVE_RESTORE_INVARIANTS','EXISTING_PERFORMANCE_AND_ERROR_RECOVERY']
+    ),
+    existingCompletenessReview:Object.freeze({
+      requiredEveryBuildUp:true,
+      mode:'SOURCE_SAFE_EXISTING_SYSTEM_QUALITY_ONLY_UNTIL_DESIGN_AVAILABLE',
+      dimensions:Object.freeze([...(DESIGNLESS_SAFE_BUILD_UP_DOMAINS[focus]||[])])
+    }),
+    derivedRuleEvolution:Object.freeze({
+      allowed:false,
+      rule:'NO_NEW_GAMEPLAY_PROGRESSION_ECONOMY_QUEST_OR_WORLD_RULE_WITHOUT_VERIFIED_OR_MINIMUM_DESIGN',
+      examples:Object.freeze([]),
+      protected:Object.freeze(['CORE_RULES','BALANCE','ECONOMY','SAVE_MEANING','PROGRESSION','QUEST_MEANING','NETWORK_AUTHORITY'])
+    }),
+    completionAcceptance:Object.freeze([
+      'REAL_GAME_SOURCE_DELTA_REQUIRED','SOURCE_OBSERVED_SAFE_QUALITY_EFFECT_REQUIRED',
+      'NO_NEW_GAMEPLAY_OR_PROGRESSION_SEMANTIC_WITHOUT_DESIGN','EXISTING_RELEVANT_INCREMENTAL_QA_PASSES',
+      'DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP'
+    ])
+  }):autonomousContentExpansionBase;
   const systemNames=design.signatureSystems.map(x=>x.name).filter(Boolean);
   const gameplay=[
     `우선 책임 소스 앵커 ${exactAnchorLabel}에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.`,
@@ -1147,12 +1222,33 @@ export function buildGameSpecificBuildUpDirective({
     'EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP',
     'WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT'
   ];
-  const nextCandidates=uniq([
-    focus==='CORE_FUN'?'CONNECT_CORE_FUN_TO_PROGRESSION_AND_CONTENT_VARIETY':'DEEPEN_CORE_FUN_DECISION_DENSITY',
-    focus==='PRESENTATION'?'CONNECT_VISUAL_LANGUAGE_TO_GAMEPLAY_TELEGRAPH_AND_WORLD_IDENTITY':'RAISE_VISUAL_ACTING_MOTION_AND_ENVIRONMENT_COHERENCE',
-    'CLOSE_NEXT_HIGHEST_VALUE_GAP_FROM_RUNTIME_OR_PLAYTEST',
-    'OPTIMIZE_MOBILE_FRAME_INPUT_RENDER_OR_STATE_BOTTLENECK_WHEN_VERIFIED'
-  ]);
+  const safeGameplay=[
+    '현재 소스에 이미 존재하는 행동·상태·화면 연결만 읽고 수정한다. 새 핵심 규칙·밸런스·경제·퀘스트·진행 의미를 추측해 만들지 않는다.',
+    'wrapper나 우회 경로를 추가하지 말고 이번 안전 품질축의 기존 책임 함수/렌더/UI/상태 복구 경로를 직접 수정한다.',
+    '변경 전후를 실제 브라우저/관련 QA에서 비교하고 기존 저장·진행·전투·권한 의미가 그대로인지 확인한다.'
+  ];
+  const safeProgression=[
+    '검증된 또는 최소 디자인이 생기기 전에는 새 목표·보상·해금·지역·퀘스트·경제·게임 규칙을 추가하지 않는다.',
+    '기존 콘텐츠의 가독성·입력·표현·안정성만 개선하고 게임 의미를 확장하지 않는다.'
+  ];
+  const effectiveGameplay=safeDesignlessMode?safeGameplay:gameplay;
+  const effectiveProgression=safeDesignlessMode?safeProgression:progression;
+  const effectiveAcceptance=safeDesignlessMode?[
+    'CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM',
+    'BEFORE_AFTER_OR_VERIFIED_BASELINE_COMPARISON',
+    'NO_NEW_CORE_RULE_BALANCE_ECONOMY_PROGRESSION_QUEST_OR_SAVE_MEANING',
+    'NO_PROTECTED_SAVE_BALANCE_ECONOMY_NETWORK_SEMANTIC_REGRESSION',
+    'DESIGNLESS_SAFE_FOCUS_ONLY_PRESENTATION_USABILITY_STABILITY',
+    'EXISTING_RELEVANT_INCREMENTAL_QA_PASSES'
+  ]:acceptance;
+  const nextCandidates=safeDesignlessMode
+    ?uniq(['CONTINUE_SOURCE_SAFE_'+focus+'_QUALITY','REQUEST_MINIMUM_OR_VERIFIED_DESIGN_FOR_GAMEPLAY_EXPANSION','OPTIMIZE_MOBILE_FRAME_INPUT_RENDER_OR_STATE_BOTTLENECK_WHEN_VERIFIED'])
+    :uniq([
+      focus==='CORE_FUN'?'CONNECT_CORE_FUN_TO_PROGRESSION_AND_CONTENT_VARIETY':'DEEPEN_CORE_FUN_DECISION_DENSITY',
+      focus==='PRESENTATION'?'CONNECT_VISUAL_LANGUAGE_TO_GAMEPLAY_TELEGRAPH_AND_WORLD_IDENTITY':'RAISE_VISUAL_ACTING_MOTION_AND_ENVIRONMENT_COHERENCE',
+      'CLOSE_NEXT_HIGHEST_VALUE_GAP_FROM_RUNTIME_OR_PLAYTEST',
+      'OPTIMIZE_MOBILE_FRAME_INPUT_RENDER_OR_STATE_BOTTLENECK_WHEN_VERIFIED'
+    ]);
   return Object.freeze({
     version:2,
     directiveId:`${id}-build-up-g${generation}-${fingerprint.slice(0,12)}`,
@@ -1166,6 +1262,7 @@ export function buildGameSpecificBuildUpDirective({
     escalationStage:depthInfo.escalationStage,
     escalationMode:depthInfo.escalationMode,
     previousDirectiveOutcome:depthInfo.previousOutcome,
+    designContextMode:safeDesignlessMode?'SOURCE_SAFE_NO_DESIGN':'APPROVED_OR_MINIMUM_DESIGN',
     platform:clean(platform).toUpperCase()||'COMMON',
     sourceRoot:posix(sourceRoot),
     sourceTreeFingerprint:source.sourceTreeFingerprint,
@@ -1187,9 +1284,11 @@ export function buildGameSpecificBuildUpDirective({
     detectedGaps:gaps,
     primaryFocus:focus,
     thisLoopPrimaryGoal:goal,
-    primaryGoalReason:depthInfo.escalationMode==='VERIFIED_STATUS_WITHOUT_GAME_SOURCE_DELTA_RETRY'?`직전 루프가 verified 상태를 기록했지만 실제 게임 source tree가 바뀌지 않았다. ${focus} 목표를 완료로 계산하지 않고 "${anchor}" 책임 소스 ${exactAnchorLabel}에서 실제 플레이 가치 변화가 생기는 구현으로 다시 지시한다.`:`현재 검증 신호와 소스에서 ${focus}를 우선한다. 게임 고유 앵커는 "${anchor}", 현재 책임 소스는 ${exactAnchorLabel}이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.`,
-    gameplayImplementationDirectives:gameplay,
-    progressionContentWorldDirectives:progression,
+    primaryGoalReason:safeDesignlessMode
+      ?`검증된/최소 디자인이 아직 없어 ${focus}만 기존 실제 소스에서 안전하게 개선한다. 새 게임 규칙·진행·밸런스 의미는 만들지 않으며 책임 소스 ${exactAnchorLabel}의 전후 품질 차이만 검증한다.`
+      :depthInfo.escalationMode==='VERIFIED_STATUS_WITHOUT_GAME_SOURCE_DELTA_RETRY'?`직전 루프가 verified 상태를 기록했지만 실제 게임 source tree가 바뀌지 않았다. ${focus} 목표를 완료로 계산하지 않고 "${anchor}" 책임 소스 ${exactAnchorLabel}에서 실제 플레이 가치 변화가 생기는 구현으로 다시 지시한다.`:`현재 검증 신호와 소스에서 ${focus}를 우선한다. 게임 고유 앵커는 "${anchor}", 현재 책임 소스는 ${exactAnchorLabel}이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.`,
+    gameplayImplementationDirectives:effectiveGameplay,
+    progressionContentWorldDirectives:effectiveProgression,
     autonomousContentExpansion,
     visualBuildUpDirective:buildVisualDirective({gameId:id,design,source,focus}),
     uxInputDirectives:ux,
@@ -1204,7 +1303,7 @@ export function buildGameSpecificBuildUpDirective({
     responsibleSystemsAndFiles:{files:topFiles,sourceAnchors:sourceResponsibilities,selectionRule:'DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST',exactSourceAnchorRequired:true,currentAndIntendedBehaviorRequiredPerPrimaryAnchor:true},
     effectivenessMeasurement:{expectedPlayerEffect:expectedEffect,previousGeneration:previousEffectiveness,baseline:{sourceTreeFingerprint:source.sourceTreeFingerprint,runtimeObserved:runtimeEvidence?.runtimeObserved===true,runtimePassed:runtimeEvidence?.runtimePassed===true,failureStage:clean(runtimeEvidence?.failureStage)||null,failureSignature:clean(runtimeEvidence?.failureSignature)||null},requiredPostChangeEvidence:['CHANGED_GAME_FILES','POST_CHANGE_SOURCE_TREE_FINGERPRINT','RELEVANT_QA_OR_RUNTIME_RESULT','OBSERVED_PLAYER_VALUE_EFFECT'],sourceDeltaAloneDoesNotProvePlayerValueImprovement:true},
     nextActionDecision,
-    acceptanceEvidence:acceptance,
+    acceptanceEvidence:effectiveAcceptance,
     nextEscalationCandidates:nextCandidates,
     loopEscalation:{automatic:true,nextGeneration:generation+1,currentDevelopmentDepth:depthInfo.developmentDepth,nextDevelopmentDepth:depthInfo.advanceAllowed?depthInfo.developmentDepth+1:depthInfo.developmentDepth,escalationStage:depthInfo.escalationStage,escalationMode:depthInfo.escalationMode,sourceChangedSincePrevious:depthInfo.sourceChangedSincePrevious,verifiedEvolution:depthInfo.verifiedEvolution,reuseSameGoalWithoutNewEvidence:false,completedGoalBecomesBaseline:depthInfo.verifiedEvolution},
     coverage:{
