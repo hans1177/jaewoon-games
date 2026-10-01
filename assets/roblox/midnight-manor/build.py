@@ -404,12 +404,16 @@ def npc(s,kind,pos):
       },
     }
     q=profiles[kind];h=q['h'];w=q['w']
-    for mat,rough,metal in [(q['skin'],.56,0),(q['coat'],.86,0),(q['vest'],.78,0),(q['hair'],.68,0),(q['accent'],.75,0)]:
+    trousers=s.material(kind+'Trousers',(.025,.028,.034) if kind!='Archivist' else (.055,.062,.054))
+    leather=s.material(kind+'Leather',(.050,.026,.018) if kind!='Undertaker' else (.032,.020,.018))
+    glove=s.material('ButlerGlove',(.60,.59,.55)) if kind=='Butler' else q['skin']
+    for mat,rough,metal in [(q['skin'],.56,0),(q['coat'],.86,0),(q['vest'],.78,0),(q['hair'],.68,0),(q['accent'],.75,0),(trousers,.82,0),(leather,.38,0),(glove,.62,0)]:
         if mat.use_nodes:
             bs=mat.node_tree.nodes.get('Principled BSDF')
             if bs:
                 bs.inputs['Roughness'].default_value=rough
                 bs.inputs['Metallic'].default_value=metal
+    trousers['manorFinish']='Fabric';leather['manorFinish']='SmoothPlastic';glove['manorFinish']='Fabric' if kind=='Butler' else 'SmoothPlastic'
     p=s.node(kind,pos=pos)
     p.rotation_euler.y=q['lean']
 
@@ -420,11 +424,11 @@ def npc(s,kind,pos):
         s.loft(kind+'_Leg'+str(side),(sx,0,0),[
           (.62,w*.18,w*.20),(h*.13,w*.17,w*.18),(h*.23,w*.205,w*.22),
           (h*.33,w*.24,w*.255),(h*.405,w*.22,w*.24)
-        ],q['coat'],sides=24,parent=p)
+        ],trousers,sides=24,parent=p)
         shoe=s.loft(kind+'_Shoe'+str(side),(sx,.08,.14),[
           (0,w*.26,w*.48,0,.18,.05),(0.24,w*.29,w*.57,0,.26,.08),
           (.48,w*.255,w*.52,0,.20,.05),(.60,w*.20,w*.40,0,.08,0)
-        ],c['black'],sides=24,parent=p)
+        ],leather,sides=24,parent=p)
         shoe.rotation_euler.x=.06 if kind=='Butler' else -.03
 
     # 흉곽/허리/골반을 한 연속 몸통으로 잡아 primitive 겹침 이음새를 제거한다.
@@ -444,6 +448,12 @@ def npc(s,kind,pos):
     s.prism(kind+'_Waistcoat',(0,h*.435,.515),[
       (-w*.36,0),(w*.36,0),(w*.34,h*.17),(w*.14,h*.23),(0,h*.18),(-w*.14,h*.23),(-w*.34,h*.17)
     ],.11,q['vest'],parent=p)
+    s.loft(kind+'_Belt',(0,h*.425,.035),[
+      (-h*.022,w*.57,w*.39),(0,w*.58,w*.40),(h*.022,w*.57,w*.39)
+    ],leather,sides=28,parent=p)
+    s.prism(kind+'_BeltBuckle',(0,h*.425,.445),[
+      (-w*.10,-h*.025),(w*.10,-h*.025),(w*.10,h*.025),(-w*.10,h*.025)
+    ],.055,c['brass'],parent=p)
     for i in range(4):
         s.loft(kind+'_Button'+str(i),(0,h*.60-i*h*.034,.61),[
           (-.045,.075,.035),(0,.085,.045),(.045,.075,.035)
@@ -472,12 +482,12 @@ def npc(s,kind,pos):
         ],c['ivory'],sides=20,parent=arm)
         s.loft(kind+'_Hand'+str(side),(0,-h*.385,.07),[
           (-h*.045,w*.14,w*.15),(0,w*.165,w*.17),(h*.045,w*.14,w*.15)
-        ],q['skin'],sides=22,parent=arm)
+        ],glove,sides=22,parent=arm)
         for finger in range(4):
             fx=(finger-1.5)*w*.065
-            finger_obj=s.capsule(kind+'_Finger'+str(side)+'_'+str(finger),(fx,-h*.46,.13),h*.105,w*.027,w*.030,q['skin'],parent=arm,taper=.68)
+            finger_obj=s.capsule(kind+'_Finger'+str(side)+'_'+str(finger),(fx,-h*.46,.13),h*.105,w*.027,w*.030,glove,parent=arm,taper=.68)
             finger_obj.rotation_euler.x=.05+(finger%2)*.025
-        thumb=s.capsule(kind+'_Thumb'+str(side),(side*w*.13,-h*.415,.14),h*.10,w*.035,w*.038,q['skin'],parent=arm,taper=.70)
+        thumb=s.capsule(kind+'_Thumb'+str(side),(side*w*.13,-h*.415,.14),h*.10,w*.035,w*.038,glove,parent=arm,taper=.70)
         thumb.rotation_euler.z=side*.32
 
     # 코트 자락도 사각 박스 대신 불규칙 윤곽과 벌어진 뒷자락을 갖는다.
@@ -489,6 +499,11 @@ def npc(s,kind,pos):
         ]
         tail=s.prism(kind+'_CoatTail'+str(side),(0,h*.43,-.14),outline,.17,q['coat'],parent=p)
         tail.rotation_euler.x=side*.02
+        if kind=='Undertaker':
+            lining=s.prism('Undertaker_CoatLining'+str(side),(0,h*.425,-.035),[
+              (0,0),(side*w*.29,.01),(side*w*.31,-h*tail_len*.72),(side*w*.08,-h*tail_len*.84)
+            ],.035,q['accent'],parent=p)
+            lining.rotation_euler.x=side*.018
 
     # 목/머리: 얼굴은 2천+ 정점 연속 곡면으로 직접 조형한다.
     s.loft(kind+'_Neck',(0,h*.735,-.02),[
