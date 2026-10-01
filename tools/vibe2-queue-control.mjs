@@ -978,8 +978,6 @@ export function runQueueCommand(args = {}) {
           reservationMaxConcurrentTasks,
           externalBatchLimit,
           globalInternalParallelCap:null,
-          batchTruncated:reserved.selection?.batchTruncated===true,
-          remainingRunnableAfterBatchLimit:Number(reserved.selection?.remainingRunnableAfterBatchLimit||0),
           speculativeExpansionAllowed:reserved.speculativeExpansionAllowed===true,
           speculativeExpansionReason:reserved.speculativeExpansionReason||speculativeExpansion.reason,
           primaryTaskCount:reserved.primaryTaskCount||0,
