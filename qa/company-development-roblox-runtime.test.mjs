@@ -876,6 +876,7 @@ test('line-defense existing visible Studio binding is accepted during F0 foundat
     });
     const client=fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8');
     const server=fs.readFileSync(path.join(root,'server','Game.server.luau'),'utf8');
+    const project=JSON.parse(fs.readFileSync(path.join(root,'default.project.json'),'utf8'));
     assert.equal(result.foundationRepairApplied,true);
     assert.equal(result.gameplayAuthorityChanged,false);
     assert.match(client,/StudioAssetBindingVersion/);
@@ -883,6 +884,11 @@ test('line-defense existing visible Studio binding is accepted during F0 foundat
     assert.match(client,/FRAME_PANEL/);
     assert.match(server,/native-foundation-sentinel-v1/);
     assert.match(server,/RuntimeFoundationReport/);
+    assert.equal(project.tree.Lighting.$properties.Technology,'Voxel');
+    assert.equal(project.tree.Lighting.$properties.LightingStyle,'Soft');
+    assert.equal(project.tree.Lighting.$properties.PrioritizeLightingQuality,false);
+    assert.equal(project.tree.Lighting.CompatibilityToneMap.$properties.TonemapperPreset,'Retro');
+    assert.ok(result.changedFiles.some(file=>file.endsWith('default.project.json')));
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
   }
