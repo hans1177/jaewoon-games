@@ -106,6 +106,60 @@ jobs:
           assert len(doc.get('skins',[]))>=1
           print('HUMANOID_MOTION_GLTF_OK', {'animations':len(names),'skins':len(doc.get('skins',[])),'bones':evidence['boneCount']})
           PY
+      - name: Register verified-built humanoid motion derivative as runtime-pending asset
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          evidence_path=Path('assets/roblox/world-ghosts/native/mesh/bride-motion-v2/evidence.json')
+          artifact_path=Path('assets/roblox/world-ghosts/native/mesh/bride-motion-v2/bride-motion-v2.glb')
+          assert evidence_path.is_file() and artifact_path.is_file()
+          evidence=json.loads(evidence_path.read_text(encoding='utf-8'))
+          assert evidence['staticMotionQa']['staticMotionQaPass'] is True
+          assert evidence['productionVerified'] is False
+          library_path=Path('company-asset-library.json')
+          library=json.loads(library_path.read_text(encoding='utf-8'))
+          assets=library.setdefault('assets',[])
+          asset_id='shared-humanoid-foundation-motion-bride-v2'
+          row={
+            'id':asset_id,
+            'title':'공용 휴머노이드 고퀄 기본 모션 V2',
+            'category':'MOTION',
+            'family':'MOTION',
+            'platform':'SHARED_NATIVE_SOURCE',
+            'platformTargets':['UNITY','ROBLOX'],
+            'status':'REPO_ASSET',
+            'path':'/assets/roblox/world-ghosts/native/mesh/bride-motion-v2/bride-motion-v2.glb',
+            'license':'project-original-derivative',
+            'sourceAssetId':'roblox-world-ghost-gwisin-bride',
+            'sourceAssetPath':'assets/roblox/world-ghosts/native/mesh/bride.glb',
+            'sourceSha256':evidence['sourceSha256'],
+            'derivedSha256':evidence['derivedSha256'],
+            'sourceOriginalPreserved':True,
+            'motionCount':evidence['foundationMotionCount'],
+            'motionStates':evidence['foundationMotions'],
+            'staticMotionQaState':'PASS',
+            'staticMotionQa':evidence['staticMotionQa'],
+            'runtimeVerificationState':'STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING',
+            'productionVerified':False,
+            'verifiedCompanyReusable':False,
+            'robloxStudioVerified':False,
+            'unityRuntimeVerified':False,
+            'gameplayAuthorityChanged':False,
+            'sourceFiles':[
+              'assets/roblox/world-ghosts/refine-humanoid-motion.py',
+              'assets/roblox/world-ghosts/native/mesh/bride.glb',
+              'assets/roblox/world-ghosts/native/mesh/bride-motion-v2/bride-motion-v2.glb',
+              'assets/roblox/world-ghosts/native/mesh/bride-motion-v2/evidence.json'
+            ],
+            'note':'기존 스킨드 GLB 원본을 보존하고 직접 키포즈/전환/접지/체중이동/2차모션을 다시 제작한 파생 모션. Blender 정적 수치 QA만 통과한 상태이며 Roblox Studio/Unity 실제 런타임 검증 전.'
+          }
+          index=next((i for i,item in enumerate(assets) if item.get('id')==asset_id),None)
+          if index is None: assets.append(row)
+          else: assets[index]=row
+          library_path.write_text(json.dumps(library,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print('HUMANOID_MOTION_LIBRARY_REGISTERED',asset_id)
+          PY
       - name: Validate spider GLB and 12 motions
         run: |
           python3 - <<'PY'
@@ -146,7 +200,8 @@ jobs:
             assets/roblox/world-ghosts/native/spider/spider.png \
             assets/roblox/world-ghosts/native/spider/evidence.json \
             assets/roblox/world-ghosts/native/mesh/bride-motion-v2/bride-motion-v2.glb \
-            assets/roblox/world-ghosts/native/mesh/bride-motion-v2/evidence.json
+            assets/roblox/world-ghosts/native/mesh/bride-motion-v2/evidence.json \
+            company-asset-library.json
           if git diff --cached --quiet; then
             echo "Authored asset artifacts already current"
             exit 0
