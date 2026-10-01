@@ -1,11 +1,11 @@
 {
-  "version": 1,
+  "version": 2,
   "gameId": "monster-adventure",
   "state": "FAIL",
   "pass": false,
   "validated": false,
   "target": "UNITY_ANDROID_TECHNICAL_VALIDATION",
-  "checkedAt": "2026-09-30T23:39:13.210Z",
+  "checkedAt": "2026-10-01T00:29:10.973Z",
   "sourceBinding": {
     "upstreamBuildRunId": 36777792645,
     "sourceCommit": "92c76090d928b7724e18a0fd980f1f173a4581ba",
@@ -16,21 +16,30 @@
   "realEvidence": {
     "runtimeSmoke": true,
     "independentQa": true,
+    "evidenceMode": "ANDROID_PLATFORM_BLACK_BOX",
     "metricSamples": 0,
-    "actionObserved": false,
+    "platformMetricsPass": false,
+    "seedRuntimeRequired": false,
+    "seedSignalsPass": true,
+    "actionObserved": true,
     "saveObserved": true,
     "pauseResumeObserved": true
   },
   "coverage": {
     "ANDROID_FPS_FRAME_STABILITY": {
       "state": "FAIL",
+      "provider": null,
       "sampleCount": 0,
+      "totalFramesRendered": 0,
+      "jankyFrames": 0,
+      "jankyFrameRatePct": null,
       "minFps": null,
       "avgFps": null,
-      "scope": "ANDROID_16_EMULATOR_TECHNICAL_PROTOTYPE"
+      "scope": "ANDROID_16_EMULATOR_TECHNICAL_VALIDATION"
     },
     "MEMORY_HEAT_LOADING": {
       "state": "FAIL",
+      "provider": null,
       "maxAllocatedMemoryBytes": null,
       "loading": "PASS",
       "heat": "EMULATOR_ONLY_NOT_PHYSICAL_DEVICE",
@@ -49,14 +58,15 @@
       "reason": "No external VFX assets; prototype uses lightweight immediate-mode validation visuals."
     },
     "ASPECT_RATIO_TOUCH": {
-      "state": "FAIL",
+      "state": "PASS",
       "evidence": "Android emulator black-box taps/swipes plus in-app action log."
     },
     "SAVE_LOAD_UPDATE_COMPATIBILITY": {
       "state": "PASS_WITH_LIMITATION",
       "updateInstallPassed": true,
-      "saveSignalObserved": true,
-      "limitation": "Update installation and save writes are observed; cross-version migration schema is not exercised by this first technical prototype."
+      "saveSignalRequired": false,
+      "saveSignalObserved": null,
+      "limitation": "Same-signed update installation is observed; the existing game save schema is not inferred from black-box Android evidence."
     },
     "APP_PAUSE_RESUME": {
       "state": "PASS",
