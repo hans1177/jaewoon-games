@@ -196,9 +196,9 @@ test('successful APK build is retained even when the legacy child runtime gate f
   assert.doesNotMatch(workflowSource,/CLOUD_UNITY_BUILD_FAILED=/);
 });
 
-test('canonical Unity runtime QA and regression use native ARM64 Android 16 instead of x86_64 translation',()=>{
+test('Unity F1-F8 use native ARM64 Android 16 once and F9 reuses that evidence without another runtime',()=>{
   assert.match(cloudBuildSource,/architectures': \['arm64-v8a'\]/);
-  for(const source of [runtimeWorkflowSource, independentQaSource, regressionSource]){
+  for(const source of [runtimeWorkflowSource, independentQaSource]){
     assert.match(source,/runs-on: ubuntu-24\.04-arm/);
     assert.match(source,/ANDROID_SERIAL: 127\.0\.0\.1:5555/);
     assert.match(source,/redroid\/redroid:16\.0\.0_64only-latest/);
@@ -216,7 +216,10 @@ test('canonical Unity runtime QA and regression use native ARM64 Android 16 inst
   assert.doesNotMatch(runtimeWorkflowSource,/binder_devices=\(\)/);
   assert.doesNotMatch(runtimeWorkflowSource,/\$\{binder_devices\[@\]\}/);
   assert.match(runtimeWorkflowSource,/UNITY_ANDROID_ASHMEM_6_17_COMPAT=READY/);
-  assert.match(regressionSource,/unity-apk-runtime-smoke\.sh/);
+  assert.match(regressionSource,/runs-on: ubuntu-latest/);
+  assert.doesNotMatch(regressionSource,/unity-apk-runtime-smoke\.sh/);
+  assert.doesNotMatch(regressionSource,/redroid\/redroid/);
+  assert.match(regressionSource,/UNITY_F9_RUNTIME_REPLAY=NO/);
   assert.match(runtimeSmokeSource,/ANDROID_RUNTIME_ABI_MISMATCH/);
   assert.match(runtimeSmokeSource,/runtimeAbiCompatible/);
 });
@@ -330,6 +333,11 @@ test('runtime smoke launches the exact APK activity and fails fast on missing or
   assert.match(runtimeSmokeSource,/JAEWOON_TECH_ACTION/);
   assert.match(runtimeSmokeSource,/JAEWOON_TECH_SAVE/);
   assert.match(runtimeSmokeSource,/JAEWOON_TECH_METRIC/);
+  assert.match(runtimeSmokeSource,/ONE_EXACT_RUNTIME_SESSION_F1_THROUGH_F8/);
+  assert.match(runtimeSmokeSource,/screen-before-input\.png/);
+  assert.match(runtimeSmokeSource,/screen-after-input\.png/);
+  assert.match(runtimeSmokeSource,/UNITY_FOUNDATION_F1_F8_SINGLE_RUNTIME=/);
+  assert.match(runtimeSmokeSource,/UNITY_F9_RUNTIME_REPLAY=NO/);
 });
 
 test('non-seed Unity games bind Android platform metrics without pretending seed-only logs exist',()=>{
@@ -341,8 +349,8 @@ test('non-seed Unity games bind Android platform metrics without pretending seed
   const sha='a'.repeat(64), commit='b'.repeat(40), tree='c'.repeat(40);
   const build=path.join(root,'build.json'), runtime=path.join(root,'runtime.json'), independent=path.join(root,'independent.json'), output=path.join(root,'evidence.json');
   fs.writeFileSync(build,JSON.stringify({sha256:sha,sourceCommit:commit,sourceTreeSha:tree,runId:17}));
-  fs.writeFileSync(runtime,JSON.stringify({state:'PASS',runtime:'PASS',qaPassEligibleRuntimeEvidence:true,apkSha256:sha,buildSourceCommit:commit,sourceTreeSha:tree,gameplayInputDelivered:true,updateInstallPassed:true,developmentSeedRuntime:{required:false,pass:true},androidPerformance:{provider:'ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO',graphicsFrameStatsObserved:true,totalFramesRendered:120,jankyFrames:3,jankyFrameRatePct:2.5,memoryTotalPssBytes:67108864,sampleCount:2,pass:true}}));
-  fs.writeFileSync(independent,JSON.stringify({state:'PASS',independentQa:'PASS',independent:true,apkSha256:sha,buildSourceCommit:commit,sourceTreeSha:tree,checks:{backgroundResume:'PASS'}}));
+  fs.writeFileSync(runtime,JSON.stringify({state:'PASS',runtime:'PASS',qaPassEligibleRuntimeEvidence:true,apkSha256:sha,buildSourceCommit:commit,sourceTreeSha:tree,gameplayInputDelivered:true,updateInstallPassed:true,developmentSeedRuntime:{required:false,pass:true},blackBoxFoundation:{version:1,mode:'ONE_EXACT_RUNTIME_SESSION_F1_THROUGH_F8',singleRuntimeSession:true,runtimeReplayForF9Required:false,foundationPass:true,visualDeltaObserved:true,foregroundActivityObserved:true,floors:{F1:{state:'PASS'},F2:{state:'PASS'},F3:{state:'PASS'},F4:{state:'PASS'},F5:{state:'PASS'},F6:{state:'PASS'},F7:{state:'DEFER_TO_MULTIPLAYER_APPLICABILITY'},F8:{state:'PASS'}}},androidPerformance:{provider:'ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO',graphicsFrameStatsObserved:true,totalFramesRendered:120,jankyFrames:3,jankyFrameRatePct:2.5,memoryTotalPssBytes:67108864,sampleCount:2,pass:true}}));
+  fs.writeFileSync(independent,JSON.stringify({state:'PASS',independentQa:'PASS',independent:true,apkSha256:sha,buildSourceCommit:commit,sourceTreeSha:tree,checks:{processLaunch:'PASS',rapidInputStress:'PASS',backgroundResume:'PASS',processAliveAfterStress:'PASS',fatalCrashScan:'PASS',screenshotCaptured:'PASS'}}));
   const args=[evidenceTool,'--game-id=existing-game',`--build-info=${build}`,`--runtime=${runtime}`,`--independent=${independent}`,`--project=${project}`,`--output=${output}`];
   const pass=spawnSync(process.execPath,args,{encoding:'utf8'});
   assert.equal(pass.status,0,pass.stderr||pass.stdout);
@@ -382,13 +390,17 @@ test('Unity runtime captures platform graphics and memory metrics for every APK'
   assert.match(runtimeSmokeSource,/qaPassEligibleRuntimeEvidence[^\n]*platform_metrics_pass/);
 });
 
-test('exact artifact regression binds upstream APK SHA and source revision',()=>{
+test('F9 exact artifact regression binds prior runtime evidence without replaying F1-F8',()=>{
   assert.match(regressionSource,/Download exact upstream prerelease assets/);
   assert.match(regressionSource,/unity-release-artifact-transport\.mjs/);
   assert.doesNotMatch(regressionSource,/actions\/download-artifact@v4[\s\S]*run-id:/);
   assert.match(regressionSource,/actual.*expected/s);
   assert.match(regressionSource,/SOURCE_REVISION/);
-  assert.match(regressionSource,/unity-apk-runtime-smoke\.sh/);
+  assert.match(regressionSource,/runtime_run_id/);
+  assert.match(regressionSource,/independent_run_id/);
+  assert.match(regressionSource,/ONE_EXACT_RUNTIME_SESSION_F1_THROUGH_F8/);
+  assert.doesNotMatch(regressionSource,/unity-apk-runtime-smoke\.sh/);
+  assert.match(regressionSource,/runtimeReplayPerformed.*False/s);
   assert.match(regressionSource,/regressionPassed.*True/s);
   assert.match(regressionSource,/exactArtifactRegression.*True/s);
 });
@@ -483,12 +495,12 @@ test('Unity runtime has no retired validation-cycle dependency',()=>{
 });
 
 
-test('independent Unity QA dispatches exact artifact regression after PASS',()=>{
-  assert.match(independentQaSource,/permissions:[\s\S]*actions:\s*write/);
-  assert.match(independentQaSource,/name: Dispatch exact artifact regression/);
-  assert.match(independentQaSource,/gh workflow run unity-android-regression\.yml/);
-  assert.match(independentQaSource,/-f run_id="\$\{\{ steps\.upstream\.outputs\.run_id \}\}"/);
-  assert.match(independentQaSource,/UNITY_ANDROID_REGRESSION_DISPATCHED=/);
+test('independent Unity QA does not launch a duplicate F9 regression run',()=>{
+  assert.doesNotMatch(independentQaSource,/gh workflow run unity-android-regression\.yml/);
+  assert.match(independentQaSource,/UNITY_ANDROID_REGRESSION_DISPATCH_OWNER=PARENT_EXACT_CANDIDATE/);
+  assert.match(independentQaSource,/UNITY_DUPLICATE_F9_RUNTIME_DISPATCH=NO/);
+  assert.match(workflowSource,/runtime_run_id/);
+  assert.match(workflowSource,/independent_run_id/);
 });
 
 
@@ -658,6 +670,10 @@ test('Unity runs exact F0-F9, deploys the F9 artifact, and starts the next cycle
   assert.match(workflow,/PLATFORM_NEXT_EVOLUTION_CYCLE_DISPATCHED=UNITY:/);
   assert.match(workflow,/UNITY_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO/);
   assert.match(workflow,/unity-f0-f9-verified,unity-f9-pass,unity-f9-nonterminal/);
+  assert.match(workflow,/singleRuntimeSessionF1ThroughF8:true/);
+  assert.match(workflow,/f9RuntimeReplayRequired:false/);
+  assert.match(workflow,/F0_TO_F8_EVIDENCE_FAN_IN_NO_RUNTIME_REPLAY/);
+  assert.match(workflow,/UNITY_F9_RUNTIME_REPLAY=NO/);
 });
 
 // 정상 배포·재시도 두 경로 모두 이전 완주를 보존하고 동일 빌드는 한 번만 기록한다.
