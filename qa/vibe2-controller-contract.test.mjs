@@ -413,7 +413,9 @@ test('worker prepares the model and read-only exploration before acquiring the s
   assert.ok(budget>exploration);
   assert.ok(lock>budget);
   assert.ok(candidate>lock);
-  assert.ok(workerPart.includes('node tools/company-shared-context.mjs --output=/tmp/vibe2-worker-shared-context.json'));
+  assert.ok(workerPart.includes('node tools/company-shared-context.mjs'));
+  assert.ok(workerPart.includes('--pinned-hash-verify=true'));
+  assert.ok(workerPart.includes('--output=/tmp/vibe2-worker-shared-context.json'));
   assert.ok(workerPart.includes('verify-worker-sync'));
   assert.ok(workerPart.includes('--reservation-id="$RESERVATION_ID"'));
   assert.ok(workerPart.includes('--reservation-run="$RESERVATION_RUN_ID"'));
