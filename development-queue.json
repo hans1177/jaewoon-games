@@ -18081,10 +18081,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "REPAIR_REQUIRED",
-      "canonicalState": "REPAIR_REQUIRED",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T16:30:24.011Z",
+      "updatedAt": "2026-10-01T16:40:13.582Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -18937,7 +18937,7 @@
       "unityCandidateBranch": "development/unity-tech-seed-casual-realm-weaver-36773180555",
       "unitySourceCommit": "de506fdbc81793b769e3bbbb5095eb023b83e4d2",
       "unityBuildRunId": 36775430664,
-      "unityRuntimeSmokeRunId": 36883948765,
+      "unityRuntimeSmokeRunId": 36893372226,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityF0ThroughF9Evidence": {
@@ -18992,7 +18992,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-01T15:28:19.289Z"
+        "verifiedAt": "2026-10-01T16:40:13.582Z"
       },
       "unityF9ReleaseRegressionPassed": false,
       "unityF9ReleaseRegressionPassedAt": null,
@@ -25760,7 +25760,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T16:40:10.869Z",
+  "updatedAt": "2026-10-01T16:40:16.033Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
