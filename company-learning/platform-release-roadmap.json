@@ -8619,6 +8619,19 @@
           "MOBILE_FRAME_AND_RUNTIME_PERFORMANCE_BUDGET"
         ]
       }
+    },
+    "recentOwnerWebInternalPriority20261002": {
+      "id": "RECENT_OWNER_WEB_INTERNAL_PRIORITY_2026-10-02",
+      "authority": "OWNER_DIRECTIVE_2026-10-02",
+      "objective": "PRIORITIZE_RECENT_OWNER_WEB_WORK_ONLY_AGAINST_OTHER_EQUIVALENT_WEB_WORK_WITHOUT_RAISING_WEB_ABOVE_EXISTING_GLOBAL_PRIORITY",
+      "scope": "WEB_ONLY",
+      "globalPriorityChanged": false,
+      "recentWorkSignal": "ownerDirectWebUpload && webDevelopmentResetRequired && web-games/<gameId> exists && homepageWebPlayable != true",
+      "firstPlayableDeployClearsSpecialPriority": true,
+      "implementationBindings": [
+        "tools/vibe2-auto-planner.mjs",
+        "qa/vibe2-auto-planner.test.mjs"
+      ]
     }
   },
   "vibeExecutionLaneContract": {
@@ -26213,7 +26226,29 @@
     "playableWebDeploymentMustCompleteBeforeWebNextCycle": true,
     "webDeploymentSuccessImmediatelyResumesPerpetualBuildUp": true,
     "webDeploymentFailurePausesOnlyThatWebLaneUntilSameCandidateDeploys": true,
-    "publicationOutcomeMayNotPauseEvolutionExceptMandatoryPlayableWebDeployment": true
+    "publicationOutcomeMayNotPauseEvolutionExceptMandatoryPlayableWebDeployment": true,
+    "webInternalPriority": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-02",
+      "scope": "WEB_ONLY",
+      "globalPlatformPriorityUnchanged": true,
+      "mayNotOutrankNonWebWorkSolelyBecauseRecent": true,
+      "orderWithinEquivalentWebPriority": [
+        "RECENT_OWNER_WEB_WORK_AWAITING_FIRST_PLAYABLE_DEPLOY",
+        "OTHER_WEB_WORK"
+      ],
+      "recentOwnerWebEligibility": [
+        "DEVELOPMENT_CONFIRMED",
+        "OWNER_DIRECT_WEB_UPLOAD_TRUE",
+        "WEB_DEVELOPMENT_RESET_REQUIRED_TRUE",
+        "WEB_GAMES_SOURCE_EXISTS",
+        "HOMEPAGE_WEB_PLAYABLE_NOT_TRUE"
+      ],
+      "recentPriorityEndsWhen": "FIRST_PLAYABLE_MAIN_DEPLOY_AND_STATUS_SYNC_SETS_HOMEPAGE_WEB_PLAYABLE_TRUE",
+      "postDeployPriority": "RETURN_TO_EXISTING_NORMAL_WEB_PRIORITY",
+      "existingRepairAndReleaseSeverityOrderPreserved": true,
+      "nativeAndOtherPlatformPriorityUnaffected": true
+    }
   },
   "robloxNativeCodingQualityContract": {
     "version": 3,
