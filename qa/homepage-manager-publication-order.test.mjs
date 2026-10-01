@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const workflow=fs.readFileSync('.github/workflows/homepage-manager.yml','utf8');
+const statusSyncWorkflow=fs.readFileSync('.github/workflows/company-status-sync.yml','utf8');
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const manager=fs.readFileSync('tools/homepage-manager.mjs','utf8');
@@ -65,6 +66,16 @@ test('Director reviews and publishes the exact Homepage Manager candidate in one
   assert.match(director,/git push origin --delete "\$branch"/);
   assert.doesNotMatch(workflow,/\\n  publish-after-director:/);
 });
+
+test('homepage publication explicitly refreshes the company-runtime catalog used by the live worker',()=>{
+  const director=section('  director-supervision:');
+  assert.match(workflow,/actions: write/);
+  assert.match(director,/gh workflow run company-status-sync\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
+  assert.match(director,/HOMEPAGE_RUNTIME_STATUS_SYNC=DISPATCHED/);
+  assert.match(statusSyncWorkflow,/workflow_dispatch:/);
+  assert.match(statusSyncWorkflow,/\.github\/workflows\/homepage-manager\.yml/);
+});
+
 
 test('homepage workflow heredoc delimiters stay at the YAML block indentation',()=>{
   assert.doesNotMatch(workflow,/^ {12}NODE$/m);
