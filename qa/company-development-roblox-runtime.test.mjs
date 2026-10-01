@@ -242,6 +242,11 @@ test('co-op and competitive profiles require actual synchronized gameplay source
 test('Rojo project maps shared server and client source roots',()=>{
   const project=projectJsonForGame('test-game');
   assert.equal(project.name,'test-game');
+  assert.equal(project.tree.Lighting.$properties.Technology,'Voxel');
+  assert.equal(project.tree.Lighting.$properties.LightingStyle,'Soft');
+  assert.equal(project.tree.Lighting.$properties.PrioritizeLightingQuality,false);
+  assert.equal(project.tree.Lighting.CompatibilityToneMap.$className,'ColorGradingEffect');
+  assert.equal(project.tree.Lighting.CompatibilityToneMap.$properties.TonemapperPreset,'Retro');
   assert.equal(project.tree.ReplicatedStorage.Shared.$path,'shared');
   assert.equal(project.tree.ServerScriptService.GameServer.$path,'server');
   assert.equal(project.tree.StarterPlayer.StarterPlayerScripts.GameClient.$path,'client');
