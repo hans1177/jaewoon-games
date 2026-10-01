@@ -2739,7 +2739,8 @@ test('batch cleanup preserves manually requested exact-game Studio verification 
     {id:2,event:'workflow_dispatch',display_title:'Roblox runtime foundation QA · scan',status:'queued',head_sha:'old'},
     {id:3,event:'push',display_title:'Roblox runtime foundation QA · scan',status:'queued',head_sha:'old'},
     {id:4,event:'push',display_title:'Roblox runtime foundation QA · scan',status:'in_progress',head_sha:'current'},
-    {id:5,event:'workflow_dispatch',display_title:'Roblox runtime foundation QA · daechung-rpg',status:'in_progress',head_sha:'old'}
+    {id:5,event:'workflow_dispatch',display_title:'Roblox runtime foundation QA · daechung-rpg',status:'in_progress',head_sha:'old'},
+    {id:100,event:'push',display_title:'Roblox runtime foundation QA · scan',status:'queued',head_sha:'newer'}
   ];
   const result=spawnSync(process.execPath,['-e',"let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{"+script],{
     input:JSON.stringify({workflow_runs:runs}),encoding:'utf8',
@@ -2747,6 +2748,7 @@ test('batch cleanup preserves manually requested exact-game Studio verification 
   });
   assert.equal(result.status,0,result.stderr);
   assert.deepEqual(result.stdout.trim().split(/\s+/),['2','3']);
+  assert.match(script,/runId>=currentRunId/);
 });
 
 
