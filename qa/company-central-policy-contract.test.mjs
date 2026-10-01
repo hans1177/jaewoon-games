@@ -239,7 +239,8 @@ test('Unity Web gates upper-platform development without deployment or release',
   assert.equal(directive.ai?.audioDepartment?.unityWebRole,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
   assert.equal(directive.rules?.includes('unity-web-is-required-predevelopment-floor-for-new-roblox-unity-upper-platform-entry-from-the-same-canonical-unity-project'),true);
   assert.equal(directive.rules?.includes('unity-web-is-optional-validation-surface-from-the-same-canonical-unity-project'),false);
-  assert.equal(directive.homepageTesting?.surface,'UNITY_WEB_DEVELOPMENT_TEST_SURFACE_NO_RELEASE_AUTHORITY');
+  assert.equal(roadmap.unityWebFirstStage?.homepageTestLinkEnabled,true);
+  assert.equal(roadmap.unityWebFirstStage?.homepageTestLinkIsNotDeploymentOrRelease,true);
   assert.equal(architecture.concurrentPlatformDevelopment?.admissionAuthority,'UPPER_PLATFORM_DEVELOPMENT_READY');
   assert.equal(architecture.concurrentPlatformDevelopment?.unityWeb,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
   assert.deepEqual(architecture.concurrentPlatformDevelopment?.unityWebDevelopmentLane?.developmentFlow,expectedFlow);
