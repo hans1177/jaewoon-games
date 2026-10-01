@@ -9436,7 +9436,7 @@
       }
     },
     "customizableDetailedAssetProduction20261001": {
-      "ownerIntent": "고품질 공통 원형·외부 GLB·실제 엔진 캡처를 활용해 모든 시각 자산을 커마 방식으로 제작하고, 부분 디테일·연속 모션·런타임 픽셀 검수까지 같은 GRAPHICS_PRODUCTION 작업에서 반복 개선",
+      "ownerIntent": "공통 원형·GLB·실제 엔진 캡처 기반 자산 제작을 부분 디테일·모션·픽셀 검수까지 같은 GRAPHICS_PRODUCTION에서 반복 개선",
       "responsiblePolicy": "assetProductionParallelContract.companyGraphicsLibrary24h.composableBaseMaterialLibrary.customization",
       "implementation": [
         "assets/vibe-studio-asset-universe.js",
@@ -9445,7 +9445,7 @@
         "tools/vibe2-source-worker.mjs",
         "assets/vibe-environment-director.js"
       ],
-      "scope": "AUTHORING_STYLE_MEASUREMENT_NATIVE_SYNC_PIXEL_IMAGE_MAP_GLB_MOTION_DETAIL_AND_RUNTIME_PIXEL_REVIEW",
+      "scope": "AUTHORING_CUSTOMIZATION_MOTION_AND_RUNTIME_PIXEL_REVIEW",
       "actualNewModelsOrNativeRuntimePassClaimed": false,
       "centralDocumentationImpact": {
         "architectureTopologyChanged": false,
@@ -9453,11 +9453,6 @@
         "securityAuthorityChanged": false,
         "schedulerChanged": false,
         "existingAssetLicenseAndRuntimePromotionGuardsPreserved": true
-      },
-      "currentEvolution": {
-        "localizedDetail": "SAME_SOURCE_CAMERA_LIGHTING_ACTION_CAPTURE_LOCAL_REPAIR_WITH_PARAMETER_AND_IDENTITY_LOCKS",
-        "measuredMotion": "HAND_WEAPON_ATTACHMENT_CLOTH_PENETRATION_GAZE_EXPRESSION_AND_MOVING_SUPPORT_CONTACT",
-        "runtimePixelReview": "CURRENT_SOURCE_REVISION_ROBLOX_STUDIO_UNITY_EDITOR_ANDROID_APK_WEB_CAPTURE_PIXELS_TO_EXISTING_RESPONSIBILITY_REPAIR"
       }
     }
   },
@@ -19981,24 +19976,9 @@
             "runtimePixelReview": {
               "enabled": true,
               "planner": "assets/vibe-studio-asset-universe.js::createAssetRuntimeVisualReviewPlan",
-              "productionBinding": "tools/vibe2-asset-production-plan.mjs::buildVibeAssetProductionPlan",
               "visionWorker": "tools/vibe2-source-worker.mjs::observeAssetRuntimeCaptures",
-              "supportedSurfaces": [
-                "ROBLOX_STUDIO",
-                "UNITY_EDITOR",
-                "UNITY_ANDROID_APK",
-                "WEB_BROWSER"
-              ],
-              "evidenceContract": "CURRENT_SOURCE_REVISION_REPOSITORY_LOCAL_IMAGE_SHA256_NORMALIZED_REGION",
-              "missingObjectRule": "REQUIRED_EXPECTED_SUBJECT_ONLY_UNCERTAIN_NEVER_ADDS_OBJECT",
-              "repairScope": "EXISTING_RESPONSIBLE_SOURCE_AND_ASSET_ONLY",
-              "protectedSemantics": [
-                "GAMEPLAY",
-                "BALANCE",
-                "SAVE",
-                "NETWORK_AUTHORITY"
-              ],
-              "recaptureRule": "SAME_SURFACE_AND_VIEW_REQUIRED_AFTER_REPAIR",
+              "surfaces": "ROBLOX_STUDIO|UNITY_EDITOR|UNITY_ANDROID_APK|WEB_BROWSER",
+              "contract": "CURRENT_SOURCE_REVISION+LOCAL_IMAGE_SHA256+NORMALIZED_REGION; REQUIRED_EXPECTED_SUBJECT_ONLY; UNCERTAIN_NEVER_ADD; EXISTING_RESPONSIBILITY_ONLY; PRESERVE_GAMEPLAY_BALANCE_SAVE_NETWORK; SAME_SURFACE_VIEW_RECAPTURE",
               "retryBlock": "RUNTIME VISUAL REVIEW",
               "engineCaptureProductionImplemented": false,
               "pixelReviewPassIsNotRuntimeOrReleasePass": true,
