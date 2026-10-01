@@ -323,13 +323,14 @@ function buildFocus(catalog,status){
   const allRows=[...internalReleaseRows(catalog,status),...developmentRows(catalog,status)];
   const seen=new Set();
   const rows=allRows.filter(row=>{const id=gameIdOf(row);if(!id||seen.has(id))return false;seen.add(id);return true;});
-  const row=rows.find(item=>gameIdOf(item)===FEATURED_GAME_ID&&hasInternalRelease(item))||rows.find(hasInternalRelease)||rows[0];
+  const row=rows.find(item=>gameIdOf(item)===FEATURED_GAME_ID&&hasRunnableHomepageTarget(item))||rows[0];
   if(!row)return;
-  const game=mergeGame(row),released=hasInternalRelease(game),links=internalReleaseLinks(game);
-  const native=released?(links.roblox||links.unity||''):'';
+  const game=mergeGame(row),links=internalReleaseLinks(game);
+  const direct=links.roblox||links.unity||links.unityWeb||links.web||'';
+  const actionLabel=links.roblox||links.unity?'게임 입장':links.unityWeb?'Unity Web 플레이':'웹 플레이';
   hero.className='hero homeFocus';
   hero.style.setProperty('--focus-bg',`url('${String(game.image).replaceAll("'","%27")}')`);
-  hero.innerHTML=`<div class="homeFocusInner"><h1>${esc(game.name)}</h1><p>${esc(game.description)}</p>${native?`<a class="homeFocusBtn" href="${esc(native)}">출시 게임 입장</a>`:'<a class="homeFocusBtn" href="#gameHub">개발 상태 보기</a>'}</div>`;
+  hero.innerHTML=`<div class="homeFocusInner"><h1>${esc(game.name)}</h1><p>${esc(game.description)}</p>${direct?`<a class="homeFocusBtn" href="${esc(direct)}">${esc(actionLabel)}</a>`:'<a class="homeFocusBtn" href="#gameHub">게임 보기</a>'}</div>`;
 }
 function buildCard(row){
   const game=mergeGame(row),links=internalReleaseLinks(game),exposure=exposureOf(gameIdOf(game));
@@ -365,7 +366,7 @@ function buildShelf(hub,id,title,description,rows){
   wrapper.id=id;
   wrapper.className='homeGameShelf';
   wrapper.setAttribute('aria-label',title);
-  wrapper.innerHTML=`<div class="gameShelfGrid">${rows.length?rows.map(row=>buildCard(row)).join(''):`<div class="shelfEmpty">${id==='homePlatformAvailableGameCenter'?'출시 기준을 확인한 게임이 아직 없어.':'현재 개발 중인 게임이 없어.'}</div>`}</div>`;
+  wrapper.innerHTML=`<div class="gameShelfHead"><div><h2>${esc(title)}</h2><p>${esc(description)}</p></div><span class="gameShelfCount">${rows.length}개</span></div><div class="gameShelfGrid">${rows.length?rows.map(row=>buildCard(row)).join(''):`<div class="shelfEmpty">${id==='homePlatformAvailableGameCenter'?'출시 기준을 확인한 게임이 아직 없어.':'현재 실행 가능한 개발 게임이 없어.'}</div>`}</div>`;
   hub.appendChild(wrapper);
 }
 function buildRecentUpdates(catalog){

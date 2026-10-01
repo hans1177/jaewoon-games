@@ -115,13 +115,12 @@ test('homepage preserves target history but releases only the confirmed lobby',(
   }
 });
 
-test('homepage fallback exposes only the owner-confirmed release before runtime sync',()=>{
+test('homepage fallback stays neutral until current runtime data renders',()=>{
   const index=fs.readFileSync('index.html','utf8');
   const fallback=index.split('id="homeInternalReleaseFallback"')[1].split('</section>')[0];
-  assert.match(fallback,/data-game-id="horror-escape-room"/);
-  assert.doesNotMatch(fallback,/data-game-id="(?:cozy-island|daechung-rpg)"/);
-  assert.match(fallback,/로비 체험/);
-  assert.match(fallback,/98222620265768/);
+  assert.match(fallback,/data-runtime-fallback="loading"/);
+  assert.match(fallback,/실행 가능한 게임을 불러오는 중/);
+  assert.doesNotMatch(fallback,/data-game-id=|roblox\.com\/games\//);
   assert.match(index,/id="metricPlayable"/);
   assert.match(index,/id="metricDevelopment"/);
   assert.match(homepage,/homeInternalReleaseFallback/);
@@ -386,9 +385,11 @@ test('sample hero and cards stay free of duplicate operational badges and added 
   const shelf=(runtime.split('function buildShelf(hub,id,title,description,rows){')[1]||'').split('function buildRecentUpdates')[0]||'';
   assert.doesNotMatch(focus,/homeFocusMeta|statusLabel|genreState|playState/);
   assert.doesNotMatch(card,/foldBadges|foldBadge|statusLabel|gameStatus|releasedCard|developmentCard|data-release-state/);
-  assert.doesNotMatch(shelf,/gameShelfHead|gameShelfCount|releasedShelf|developmentShelf/);
+  assert.match(shelf,/gameShelfHead/);
+  assert.match(shelf,/gameShelfCount/);
+  assert.match(shelf,/\$\{esc\(title\)\}/);
+  assert.match(shelf,/\$\{esc\(description\)\}/);
   assert.doesNotMatch(runtime,/\.releasedShelf|\.developmentShelf|\.gameStatus|\.developmentCard|\.releasedCard/);
-  assert.doesNotMatch(index,/homeInternalReleaseFallback[^]*gameShelfHead/);
   assert.doesNotMatch(index,/releaseNav|releasedCount|developmentCount/);
   assert.doesNotMatch(runtime,/releasedCount|developmentCount/);
   assert.match(card,/<h3>\$\{esc\(game\.name\)\}<\/h3>/);
@@ -406,7 +407,9 @@ test('featured hero is explicit and ChatGPT launcher is app-first with safe fall
   const index=fs.readFileSync('index.html','utf8');
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.match(runtime,/const FEATURED_GAME_ID='daechung-rpg'/);
-  assert.match(runtime,/rows\.find\(item=>gameIdOf\(item\)===FEATURED_GAME_ID&&hasInternalRelease\(item\)\)\|\|rows\.find\(hasInternalRelease\)\|\|rows\[0\]/);
+  assert.match(runtime,/rows\.find\(item=>gameIdOf\(item\)===FEATURED_GAME_ID&&hasRunnableHomepageTarget\(item\)\)\|\|rows\[0\]/);
+  assert.match(runtime,/const direct=links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|''/);
+  assert.match(runtime,/const actionLabel=links\.roblox\|\|links\.unity\?'게임 입장':links\.unityWeb\?'Unity Web 플레이':'웹 플레이'/);
   assert.match(index,/package=com\.openai\.chatgpt/);
   assert.match(index,/\/command\.html\?from=chatgpt-shortcut/);
   assert.match(index,/function openChatGpt\(\)/);
