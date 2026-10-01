@@ -1,35 +1,10 @@
 {
-  "version": 6,
-  "gameId": "horror-escape-room",
-  "gameName": "심야 술래잡기",
+  "version": 1,
+  "gameId": "card-grid-duel",
   "platform": "ROBLOX",
-  "policyDocument": "company-learning/platform-release-roadmap.json",
-  "stage": "TARGET_PLATFORM_SOURCE_BIND",
-  "sourcePath": "roblox-games/horror-escape-room",
-  "sourceValidationPassed": true,
-  "runtimePassed": false,
-  "independentQaPassed": false,
-  "regressionPassed": false,
-  "releaseClaim": false,
-  "existingSourcePreserved": true,
-  "gameplayAuthorityChanged": false,
-  "serverSourceChanged": false,
-  "foundationRepairApplied": false,
-  "generatedFiles": [
-    "shared/GameConfig.luau",
-    "client/Game.client.luau"
-  ],
-  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
-  "modelUsed": false,
-  "modelAttempts": 0,
-  "modelContractFailures": [],
+  "sourcePath": "roblox-games/card-grid-duel",
   "vibe3LearningApplied": true,
-  "recombinationRecipeId": "recombine_b7e484ceee9efa46",
   "verifiedExternalLearningAppliedToExistingSource": true,
-  "verifiedExternalLearningFirst": true,
-  "verifiedExternalLearningCoveragePct": 100,
-  "verifiedExternalLearningRetrievedCount": 7,
-  "verifiedExternalLearningAppliedCount": 7,
   "verifiedExternalLearningIds": [
     "external-black-box-block-blast-run-30",
     "external-black-box-cavern-cravers-run-47",
@@ -54,162 +29,10 @@
     "MOTION_AND_TRANSITIONS",
     "CONTEXTUAL_ONBOARDING"
   ],
-  "studioAssetBinding": {
-    "version": 3,
-    "bindingVersion": 2,
-    "applied": true,
-    "source": "company-asset-library.json#baseMaterialLibrary",
-    "libraryVersion": 25,
-    "atomState": "PREPARED_SEMANTIC_ATOM_LIBRARY",
-    "selectedAtomCount": 46,
-    "families": {
-      "UI": [
-        "FRAME_PANEL",
-        "BUTTON_PRIMARY",
-        "BAR_HEALTH"
-      ],
-      "ENVIRONMENT": [
-        "TREE_TRUNK_THICK",
-        "TREE_CROWN_ROUND",
-        "ROCK_MEDIUM",
-        "ROAD_DIRT"
-      ],
-      "BUILDING": [
-        "FOUNDATION_RECT",
-        "WALL_SOLID",
-        "DOOR_SINGLE",
-        "ROOF_GABLE"
-      ],
-      "PROP": [
-        "CHEST",
-        "CRATE",
-        "LAMP"
-      ],
-      "MATERIAL": [
-        "WOOD",
-        "STONE",
-        "METAL"
-      ],
-      "AUDIO": [
-        "ENV_WIND",
-        "ENV_WATER",
-        "UI_CONFIRM"
-      ],
-      "VFX": [
-        "IMPACT_FLASH",
-        "TRAIL_SHORT",
-        "SHAPE_BURST"
-      ],
-      "SKILL": [
-        "CAST_HAND",
-        "TELEGRAPH_CIRCLE",
-        "IMPACT_SMALL"
-      ],
-      "WEAPON": [
-        "BLADE_LONG",
-        "GUARD_CROSS",
-        "GRIP_LONG"
-      ],
-      "CHARACTER": [
-        "TORSO_CLOTH",
-        "SHOULDER_LIGHT",
-        "BACK_CAPE"
-      ],
-      "CREATURE": [
-        "HEAD_CANINE",
-        "JAW_LONG",
-        "CLAW"
-      ],
-      "MOTION": [
-        "IDLE_RELAXED",
-        "WALK",
-        "JOG",
-        "RUN",
-        "START",
-        "STOP",
-        "TURN_90",
-        "JUMP_START",
-        "LAND",
-        "HIT_FRONT",
-        "DEATH_FRONT"
-      ]
-    },
-    "universalAssetFirst": {
-      "required": true,
-      "allFamilies": [
-        "CHARACTER",
-        "CREATURE",
-        "BUILDING",
-        "ENVIRONMENT",
-        "WEAPON",
-        "SKILL",
-        "MATERIAL",
-        "AUDIO",
-        "VFX",
-        "UI",
-        "MOTION",
-        "PROP"
-      ],
-      "allFamiliesEvaluated": true,
-      "missingFamilies": [],
-      "familyResultRequired": "APPLIED_OR_EXPLICIT_NOT_APPLICABLE",
-      "actualSourceBindingRequired": true,
-      "markerOnlyApplicationForbidden": true,
-      "mapEnvironmentBuildingPropRequired": true
-    },
-    "recipeId": "NORMAL_VARIANT",
-    "motionQuality": {
-      "contract": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",
-      "motionAtoms": [
-        "IDLE_RELAXED",
-        "WALK",
-        "JOG",
-        "RUN",
-        "START",
-        "STOP",
-        "TURN_90",
-        "JUMP_START",
-        "LAND",
-        "HIT_FRONT",
-        "DEATH_FRONT"
-      ],
-      "libraryFirst": true,
-      "semanticAtomsAreNotAnimationClips": true,
-      "nativeAnimationClipRuntimeVerificationRequired": true,
-      "actorClasses": [
-        "PLAYER",
-        "HUMANOID_NPC",
-        "CREATURE"
-      ],
-      "articulatedRigRequired": true,
-      "animatorRequired": true,
-      "blendAndSpeedSyncRequired": true,
-      "ikAndProceduralCorrectionPreferred": true,
-      "mannequinHardFailure": "CHARACTER_MOTION_MANNEQUIN"
-    },
-    "productionVerified": false,
-    "runtimeVerificationRequired": true,
-    "verifiedPromotionAllowed": false,
-    "gameplayAuthority": false
-  },
-  "studioAssetBindingApplied": true,
-  "studioAssetRuntimeVerified": false,
-  "studioAssetPromotionEligible": false,
-  "implementationNotes": [
-    "existing Roblox gameplay source preserved",
-    "company library Studio asset binding updated in existing config and client presentation",
-    "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
-  ],
-  "buildUpDirectiveId": "horror-escape-room-build-up-g1-1f6cb7c28a20",
-  "buildUpGeneration": 1,
-  "buildUpGoal": "인간 4명과 몬스터 4명이 시작하고, 잡힌 인간이 몬스터로 전환돼 판세가 계속 뒤집히는 8인 감염 추격전.의 4대4 AI 충원와 감염 전환가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
-  "buildUpDirectiveFingerprint": "1f6cb7c28a206ce461b0c15982c3bc24a47a60a30e1faffb33246592a6f8c25f",
-  "buildUpDirectiveConsumed": true,
-  "buildUpDirectiveCompletionClaim": false,
-  "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-09-30T09:43:06.151Z",
+  "verifiedExternalLearningRetrievedCount": 7,
+  "verifiedExternalLearningAppliedCount": 7,
   "semanticMappingVersion": 1,
-  "semanticMappingFingerprint": "jm4zab",
+  "semanticMappingFingerprint": "341kf9",
   "semanticVariant": "OBJECTIVE_GOAL",
   "coreKind": "OBJECTIVE",
   "gameSpecificSemanticMappings": [
@@ -769,5 +592,5 @@
   "verifiedExternalValidationOnlyPrincipleCount": 14,
   "verifiedExternalLearningGameDevelopmentAppliedCount": 9,
   "serverTouchedByVerifiedExternalLearningSweep": false,
-  "verifiedExternalLearningSweepAt": "2026-10-01T13:59:27.445Z"
+  "verifiedExternalLearningSweepAt": "2026-10-01T13:59:27.433Z"
 }

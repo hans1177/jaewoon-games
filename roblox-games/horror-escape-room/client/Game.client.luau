@@ -399,11 +399,11 @@ local verifiedLearningContext = C.VerifiedExternalLearning or C.LearningContext 
 local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples or {}
 local verifiedLearningAxes = verifiedLearningContext.ApplyAxes or {}
 local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 6
-local verifiedLearningRoot = lobbyVignetteTop
-local verifiedLearningSemanticVariant = "SURVIVAL_RISK"
+local verifiedLearningRoot = loadingLayer
+local verifiedLearningSemanticVariant = "OBJECTIVE_GOAL"
 local verifiedLearningSemanticDomain = "CORE_GAMEPLAY_FEEL"
-local verifiedLearningSemanticColor = Color3.fromRGB(255, 112, 112)
-local verifiedLearningSemanticMood = "TENSE_WILDERNESS"
+local verifiedLearningSemanticColor = Color3.fromRGB(255, 220, 124)
+local verifiedLearningSemanticMood = "READABLE_EXPLORATION"
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningNativeBindingVersion", VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedLearningPrinciples)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningAxisCount", #verifiedLearningAxes)
@@ -422,8 +422,8 @@ if not verifiedLearningColorGrade then
   verifiedLearningColorGrade.Name = "VerifiedLearningColorGrade"
   verifiedLearningColorGrade.Parent = verifiedLearningLighting
 end
-verifiedLearningColorGrade.Saturation = 0.06
-verifiedLearningColorGrade.Contrast = 0.04
+verifiedLearningColorGrade.Saturation = 0.07
+verifiedLearningColorGrade.Contrast = 0.05
 verifiedLearningColorGrade.Brightness = 0.01
 verifiedLearningColorGrade:SetAttribute("VerifiedLearningSemanticMood", verifiedLearningSemanticMood)
 if verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
@@ -635,17 +635,17 @@ end)
 end
 
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_BEGIN
-lobbyVignetteTop:SetAttribute("VerifiedExternalLearningCoveragePct", verifiedExternalLearningContext.CoveragePct or 0)
-lobbyVignetteTop:SetAttribute("VerifiedExternalLearningContentComplete", verifiedExternalLearningContext.ContentComplete == true)
-lobbyVignetteTop:SetAttribute("VerifiedExternalLearningCount", #verifiedExternalLearningIds)
-lobbyVignetteTop:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedExternalLearningPrinciples)
-lobbyVignetteTop:SetAttribute("VerifiedExternalLearningFingerprint", verifiedExternalLearningContext.MemoryFingerprint or "")
-lobbyVignetteTop:SetAttribute("VerifiedExternalGameDevelopmentPrincipleCount", #verifiedExternalGameDevelopmentPrinciples)
-lobbyVignetteTop:SetAttribute("VerifiedExternalLearningSemanticMappingVersion", verifiedExternalLearningContext.SemanticMappingVersion or 0)
-lobbyVignetteTop:SetAttribute("VerifiedExternalLearningSemanticMappingFingerprint", verifiedExternalLearningContext.SemanticMappingFingerprint or "")
-lobbyVignetteTop:SetAttribute("VerifiedExternalLearningDispositionCount", #verifiedExternalLearningDispositions)
-lobbyVignetteTop:SetAttribute("VerifiedExternalLearningMappingCount", #verifiedExternalLearningMappings)
-lobbyVignetteTop:SetAttribute("VerifiedLearningSemanticVariant", verifiedExternalLearningContext.SemanticVariant or "")
+loadingLayer:SetAttribute("VerifiedExternalLearningCoveragePct", verifiedExternalLearningContext.CoveragePct or 0)
+loadingLayer:SetAttribute("VerifiedExternalLearningContentComplete", verifiedExternalLearningContext.ContentComplete == true)
+loadingLayer:SetAttribute("VerifiedExternalLearningCount", #verifiedExternalLearningIds)
+loadingLayer:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedExternalLearningPrinciples)
+loadingLayer:SetAttribute("VerifiedExternalLearningFingerprint", verifiedExternalLearningContext.MemoryFingerprint or "")
+loadingLayer:SetAttribute("VerifiedExternalGameDevelopmentPrincipleCount", #verifiedExternalGameDevelopmentPrinciples)
+loadingLayer:SetAttribute("VerifiedExternalLearningSemanticMappingVersion", verifiedExternalLearningContext.SemanticMappingVersion or 0)
+loadingLayer:SetAttribute("VerifiedExternalLearningSemanticMappingFingerprint", verifiedExternalLearningContext.SemanticMappingFingerprint or "")
+loadingLayer:SetAttribute("VerifiedExternalLearningDispositionCount", #verifiedExternalLearningDispositions)
+loadingLayer:SetAttribute("VerifiedExternalLearningMappingCount", #verifiedExternalLearningMappings)
+loadingLayer:SetAttribute("VerifiedLearningSemanticVariant", verifiedExternalLearningContext.SemanticVariant or "")
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_END
 
 if hasStudioAssetAtom("FRAME_PANEL") then
