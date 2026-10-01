@@ -11772,10 +11772,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T14:52:36.760Z",
+      "updatedAt": "2026-10-01T15:30:39.860Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -12041,7 +12041,7 @@
       "robloxInternalVibePlayEvidence": {
         "version": 2,
         "gameId": "cozy-island",
-        "studioHarnessVersion": 9,
+        "studioHarnessVersion": 12,
         "authority": "roblox-official-studio-mcp-runtime",
         "pass": false,
         "actualPlay": true,
@@ -12168,6 +12168,12 @@
           {
             "id": "prompt-ProximityPrompt",
             "type": "mcp-world-interaction",
+            "dispatched": true,
+            "ok": true
+          },
+          {
+            "id": "ui-discovered-TextButton",
+            "type": "mcp-ui-exploration",
             "dispatched": true,
             "ok": true
           },
@@ -12429,7 +12435,7 @@
             "id": "scenario-adaptive-system-transaction-effect",
             "name": "scenario-adaptive-system-transaction-effect",
             "required": true,
-            "pass": true
+            "pass": false
           },
           {
             "id": "scenario-adaptive-travel-effect",
@@ -12603,12 +12609,6 @@
             "id": "scenario-observed-action-2e4e2ff2958630bc2c9e",
             "name": "scenario-observed-action-2e4e2ff2958630bc2c9e",
             "required": true,
-            "pass": true
-          },
-          {
-            "id": "scenario-observed-action-b4a378bc999b601bc3a3",
-            "name": "scenario-observed-action-b4a378bc999b601bc3a3",
-            "required": true,
             "pass": false
           },
           {
@@ -12624,14 +12624,14 @@
             "pass": true
           },
           {
-            "id": "scenario-observed-action-b44707afa0efc7f8fa15",
-            "name": "scenario-observed-action-b44707afa0efc7f8fa15",
+            "id": "scenario-observed-action-ba70933adab1e2e60a5f",
+            "name": "scenario-observed-action-ba70933adab1e2e60a5f",
             "required": true,
             "pass": true
           },
           {
-            "id": "scenario-observed-action-ba70933adab1e2e60a5f",
-            "name": "scenario-observed-action-ba70933adab1e2e60a5f",
+            "id": "scenario-observed-action-b44707afa0efc7f8fa15",
+            "name": "scenario-observed-action-b44707afa0efc7f8fa15",
             "required": true,
             "pass": true
           },
@@ -12692,14 +12692,14 @@
           "characterMotionRuntimeRequired": false,
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
-          "scenarioFailureCount": 3,
-          "primaryActionDisplacement": 14.267156864055073,
-          "primaryActionVelocity": 0.000025989390679641922,
+          "scenarioFailureCount": 4,
+          "primaryActionDisplacement": 28.18498995072313,
+          "primaryActionVelocity": 0.00002600073403816632,
           "primaryActionFeedbackChanged": false,
           "commercialAudit": {
             "auditProfile": "F9_SOAK",
-            "timelineProbeCount": 22,
-            "routePlanningProbeCount": 10,
+            "timelineProbeCount": 23,
+            "routePlanningProbeCount": 11,
             "lightweightProbeCount": 12,
             "progressChanged": false,
             "inventoryChanged": false,
@@ -12734,7 +12734,7 @@
               "multiplayerActualSessionPass": false
             },
             "performance": {
-              "memoryMb": 2924.703125,
+              "memoryMb": 2855.14453125,
               "descendantCount": 1864
             },
             "multiplayer": {
@@ -12788,7 +12788,6 @@
           "actual-play-pre-action-client-probe",
           "initial-character-spawned",
           "initial-ui-playability",
-          "mcp-input-dispatched",
           "ROBLOX_STUDIO_RUNTIME"
         ],
         "rawSourceIncluded": false,
@@ -12848,7 +12847,7 @@
           },
           {
             "id": "adaptive-system-transaction-effect",
-            "pass": true
+            "pass": false
           },
           {
             "id": "adaptive-travel-effect",
@@ -12965,10 +12964,6 @@
           },
           {
             "id": "observed-action-2e4e2ff2958630bc2c9e",
-            "pass": true
-          },
-          {
-            "id": "observed-action-b4a378bc999b601bc3a3",
             "pass": false
           },
           {
@@ -12980,11 +12975,11 @@
             "pass": true
           },
           {
-            "id": "observed-action-b44707afa0efc7f8fa15",
+            "id": "observed-action-ba70933adab1e2e60a5f",
             "pass": true
           },
           {
-            "id": "observed-action-ba70933adab1e2e60a5f",
+            "id": "observed-action-b44707afa0efc7f8fa15",
             "pass": true
           },
           {
@@ -13003,8 +12998,9 @@
         "scenarioCoveragePass": false,
         "qualityFailureKinds": [
           "adaptive-map-route-coverage",
+          "adaptive-system-transaction-effect",
           "observed-action-c44dd2cc2f66a76ba1ed",
-          "observed-action-b4a378bc999b601bc3a3"
+          "observed-action-2e4e2ff2958630bc2c9e"
         ],
         "qualityFailureDetails": [
           {
@@ -13028,6 +13024,34 @@
             }
           },
           {
+            "id": "adaptive-system-transaction-effect",
+            "repairSurface": "SYSTEM_TRANSACTION",
+            "priority": "CRITICAL",
+            "hint": "One or more discovered shop/craft/equip/upgrade actions accepted input without changing inventory, currency/progression, feedback, or relevant UI state. Repair each transaction chain independently.",
+            "observed": {
+              "systemActionCount": 1,
+              "systemEffectCount": 0,
+              "actions": [
+                {
+                  "id": "prompt-ProximityPrompt",
+                  "semantic": "UPGRADE",
+                  "effectObserved": false,
+                  "effect": {
+                    "moved": 63.00156420017927,
+                    "progress": false,
+                    "inventory": false,
+                    "feedback": false,
+                    "health": true,
+                    "ui": false,
+                    "round": false,
+                    "map": false,
+                    "effectObserved": true
+                  }
+                }
+              ]
+            }
+          },
+          {
             "id": "observed-action-c44dd2cc2f66a76ba1ed",
             "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
             "priority": "HIGH",
@@ -13045,17 +13069,17 @@
             }
           },
           {
-            "id": "observed-action-b4a378bc999b601bc3a3",
+            "id": "observed-action-2e4e2ff2958630bc2c9e",
             "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
             "priority": "HIGH",
             "hint": "Replay the exact observed action and verify its real state change after repair.",
             "observed": {
-              "id": "observed-action-b4a378bc999b601bc3a3",
+              "id": "observed-action-2e4e2ff2958630bc2c9e",
               "pass": false,
               "required": true,
               "generatedFrom": "OFFICIAL_STUDIO_OBSERVED_ACTION",
               "actionId": "prompt-ProximityPrompt",
-              "targetIdentity": "Workspace.CozyConquestWorld.HomeNPCs.Chief.ProximityPrompt",
+              "targetIdentity": "Workspace.CozyConquestWorld.HomeNPCs.Captain.ProximityPrompt",
               "actionType": "mcp-world-interaction",
               "effectRequired": true,
               "attempts": 1
@@ -13069,8 +13093,8 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-10-01T14:48:48.730Z",
-        "workflowRunId": 36878049746,
+        "testedAt": "2026-10-01T15:30:39.860Z",
+        "workflowRunId": 36882693362,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -13367,8 +13391,9 @@
         "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
         "qualityFailureKinds": [
           "adaptive-map-route-coverage",
+          "adaptive-system-transaction-effect",
           "observed-action-c44dd2cc2f66a76ba1ed",
-          "observed-action-b4a378bc999b601bc3a3"
+          "observed-action-2e4e2ff2958630bc2c9e"
         ],
         "qualityFailureDetails": [
           {
@@ -13392,6 +13417,34 @@
             }
           },
           {
+            "id": "adaptive-system-transaction-effect",
+            "repairSurface": "SYSTEM_TRANSACTION",
+            "priority": "CRITICAL",
+            "hint": "One or more discovered shop/craft/equip/upgrade actions accepted input without changing inventory, currency/progression, feedback, or relevant UI state. Repair each transaction chain independently.",
+            "observed": {
+              "systemActionCount": 1,
+              "systemEffectCount": 0,
+              "actions": [
+                {
+                  "id": "prompt-ProximityPrompt",
+                  "semantic": "UPGRADE",
+                  "effectObserved": false,
+                  "effect": {
+                    "moved": 63.00156420017927,
+                    "progress": false,
+                    "inventory": false,
+                    "feedback": false,
+                    "health": true,
+                    "ui": false,
+                    "round": false,
+                    "map": false,
+                    "effectObserved": true
+                  }
+                }
+              ]
+            }
+          },
+          {
             "id": "observed-action-c44dd2cc2f66a76ba1ed",
             "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
             "priority": "HIGH",
@@ -13409,17 +13462,17 @@
             }
           },
           {
-            "id": "observed-action-b4a378bc999b601bc3a3",
+            "id": "observed-action-2e4e2ff2958630bc2c9e",
             "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
             "priority": "HIGH",
             "hint": "Replay the exact observed action and verify its real state change after repair.",
             "observed": {
-              "id": "observed-action-b4a378bc999b601bc3a3",
+              "id": "observed-action-2e4e2ff2958630bc2c9e",
               "pass": false,
               "required": true,
               "generatedFrom": "OFFICIAL_STUDIO_OBSERVED_ACTION",
               "actionId": "prompt-ProximityPrompt",
-              "targetIdentity": "Workspace.CozyConquestWorld.HomeNPCs.Chief.ProximityPrompt",
+              "targetIdentity": "Workspace.CozyConquestWorld.HomeNPCs.Captain.ProximityPrompt",
               "actionType": "mcp-world-interaction",
               "effectRequired": true,
               "attempts": 1
@@ -13428,11 +13481,12 @@
         ],
         "repairSurfaces": [
           "MAP_ROUTEABILITY",
+          "SYSTEM_TRANSACTION",
           "ROBLOX_OBSERVED_INTERACTION"
         ],
         "robloxFailureClass": "ROBLOX_STUDIO_RUNTIME",
-        "testedAt": "2026-10-01T14:48:48.730Z",
-        "workflowRunId": 36878049746,
+        "testedAt": "2026-10-01T15:30:39.860Z",
+        "workflowRunId": 36882693362,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxQualityBuildUpLastPassedAt": "2026-09-28T19:43:44.738Z",
@@ -28047,7 +28101,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T15:30:23.900Z",
+  "updatedAt": "2026-10-01T15:30:39.860Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
