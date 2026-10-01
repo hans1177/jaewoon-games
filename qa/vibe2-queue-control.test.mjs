@@ -1615,7 +1615,7 @@ test('continuous core rebases refill wakes to latest main and always ingests neu
   const block=workflow.slice(start,end);
   assert.match(block,/VIBE2_DISPATCH_ACTION: \$\{\{ github\.event\.action \|\| '' \}\}/);
   assert.match(block,/vibe2-fanin-refill/);
-  assert.match(block,/VIBE2_FANIN_WAKE_REBASED_TO_LATEST/);
+  assert.match(block,/VIBE2_FANIN_WAKE_STALE_DROPPED/);
   assert.match(block,/VIBE2_RESERVE_WAKE_EVENT_SHA/);
   assert.match(block,/VIBE2_RESERVE_WAKE_LATEST_SHA/);
   assert.match(block,/vibe2-neuron-complete/);
@@ -1627,7 +1627,7 @@ test('continuous core rebases refill wakes to latest main and always ingests neu
     const gh=path.join(temp,'gh'),output=path.join(temp,'output');
     fs.writeFileSync(gh,'#!/bin/sh\nprintf "%s\\n" "$TEST_LATEST_MAIN"\n',{mode:0o755});
     for(const [event,action,eventSha,latestSha,expected,marker] of [
-      ['repository_dispatch','vibe2-fanin-refill','old-owner-main','new-owner-main','true','VIBE2_FANIN_WAKE_REBASED_TO_LATEST'],
+      ['repository_dispatch','vibe2-fanin-refill','old-owner-main','new-owner-main','false','VIBE2_FANIN_WAKE_STALE_DROPPED'],
       ['push','','old-owner-main','new-owner-main','false','VIBE2_MAIN_PUSH_WAKE_STALE_DROPPED'],
       ['repository_dispatch','vibe2-fanin-refill','same-main','same-main','true','VIBE2_RESERVE_WAKE_FRESH'],
       ['repository_dispatch','vibe2-neuron-complete','old-owner-main','new-owner-main','true','NEURON_CALLBACK_ALWAYS_INGEST']
