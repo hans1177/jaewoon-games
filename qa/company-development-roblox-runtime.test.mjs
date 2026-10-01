@@ -246,7 +246,7 @@ test('Rojo project maps shared server and client source roots',()=>{
   assert.equal(project.tree.Lighting.$properties.LightingStyle,'Soft');
   assert.equal(project.tree.Lighting.$properties.PrioritizeLightingQuality,false);
   assert.equal(project.tree.Lighting.CompatibilityToneMap.$className,'ColorGradingEffect');
-  assert.equal(project.tree.Lighting.CompatibilityToneMap,undefined);
+  assert.equal(project.tree.Lighting.CompatibilityToneMap.$properties.TonemapperPreset,'Retro');
   assert.equal(project.tree.ReplicatedStorage.Shared.$path,'shared');
   assert.equal(project.tree.ServerScriptService.GameServer.$path,'server');
   assert.equal(project.tree.StarterPlayer.StarterPlayerScripts.GameClient.$path,'client');
@@ -888,7 +888,7 @@ test('line-defense existing visible Studio binding is accepted during F0 foundat
     assert.equal(project.tree.Lighting.$properties.LightingStyle,'Soft');
     assert.equal(project.tree.Lighting.$properties.PrioritizeLightingQuality,false);
     assert.equal(project.tree.Lighting.CompatibilityToneMap,undefined);
-    assert.ok(result.changedFiles.some(file=>file.endsWith('default.project.json')));
+    assert.equal(result.changedFiles.some(file=>file.endsWith('default.project.json')),false);
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
   }
