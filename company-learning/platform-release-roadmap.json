@@ -1,5 +1,5 @@
 {
-  "version": 506,
+  "version": 507,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -12526,7 +12526,7 @@
       "backwardCompatibleLazyStateExpansionRequired": true
     },
     "runtimeActorIntelligence": {
-      "version": 1,
+      "version": 2,
       "authority": "OWNER_DIRECTIVE_2026-10-01",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "objective": "LIVING_GAME_ACTORS_WITH_DISTINCT_IDENTITY_PERSONALITY_MEMORY_RELATIONSHIP_DIALOGUE_TACTICS_ECOLOGY_AND_EMBODIED_BEHAVIOR_WITHOUT_TRANSFERRING_GAMEPLAY_AUTHORITY_TO_AI",
@@ -13077,6 +13077,310 @@
           "AI_AUTHORITY_VIOLATION"
         ],
         "rawGeneratedDialogueOrAiDecisionCannotDirectlyBecomeCanonicalMastery": true
+      },
+      "companionSelfhood": {
+        "objective": "COMPANION_IS_AN_INDEPENDENT_PERSON_WITH_A_PRIVATE_WORLDVIEW_SELF_IMAGE_LIFE_DIRECTION_RELATIONSHIP_HISTORY_AND_CAPACITY_TO_INITIATE_CHANGE_NOT_A_PLAYER_FOLLOWER_WITH_RANDOM_LINES",
+        "selfLayers": {
+          "identity": [
+            "NAME_AND_SELF_LABEL",
+            "BACKGROUND",
+            "ORIGIN",
+            "ROLE",
+            "BELONGING",
+            "RESPONSIBILITIES",
+            "REPUTATION_AS_THEY_BELIEVE_IT"
+          ],
+          "worldview": [
+            "WHAT_THE_WORLD_IS_LIKE",
+            "WHAT_PEOPLE_ARE_LIKE",
+            "WHAT_IS_FAIR",
+            "WHAT_IS_DANGEROUS",
+            "WHAT_IS_WORTH_SACRIFICING_FOR",
+            "WHAT_COUNTS_AS_SUCCESS"
+          ],
+          "values": [
+            "CARE",
+            "FREEDOM",
+            "ORDER",
+            "LOYALTY",
+            "TRUTH",
+            "POWER",
+            "CRAFT",
+            "FAMILY",
+            "BELONGING",
+            "JUSTICE",
+            "SURVIVAL",
+            "CURIOSITY"
+          ],
+          "selfImage": [
+            "WHO_I_THINK_I_AM",
+            "WHO_I_FEAR_I_AM",
+            "WHO_I_WANT_TO_BECOME",
+            "WHAT_I_REFUSE_TO_BECOME"
+          ],
+          "lifeProject": [
+            "CURRENT_LONG_TERM_AIM",
+            "PERSONAL_CRAFT_OR_DUTY",
+            "RELATIONSHIP_AIM",
+            "UNRESOLVED_PERSONAL_PROBLEM",
+            "FUTURE_IMAGE"
+          ],
+          "contradictions": [
+            "VALUE_VS_DESIRE",
+            "LOYALTY_VS_SELF_PRESERVATION",
+            "PRIDE_VS_INSECURITY",
+            "CARE_VS_ANGER",
+            "DUTY_VS_FREEDOM"
+          ],
+          "agency": [
+            "MAY_START_CONVERSATION",
+            "MAY_DISAGREE",
+            "MAY_DELAY_NONCRITICAL_REQUEST",
+            "MAY_SUGGEST_AN_ALTERNATIVE",
+            "MAY_PURSUE_PERSONAL_TASK_WHEN_GAME_RULES_ALLOW",
+            "MAY_CHOOSE_SILENCE",
+            "MAY_REPAIR_RELATIONSHIP",
+            "MAY_SET_A_BOUNDARY"
+          ]
+        },
+        "motivationHierarchy": {
+          "layers": [
+            "SURVIVAL_AND_IMMEDIATE_NEED",
+            "CURRENT_DUTY",
+            "RELATIONSHIP_NEED",
+            "PERSONAL_GOAL",
+            "IDENTITY_PROTECTION",
+            "SELF_ACTUALIZATION"
+          ],
+          "selfActualizationExamples": [
+            "BECOME_RELIABLE",
+            "MASTER_A_CRAFT",
+            "PROTECT_A_COMMUNITY",
+            "PROVE_SELF_WORTH",
+            "OVERCOME_A_FEAR",
+            "REPAIR_A_PAST_WRONG",
+            "FIND_BELONGING",
+            "GAIN_AUTONOMY",
+            "UNDERSTAND_THE_WORLD",
+            "CREATE_A_LEGACY"
+          ],
+          "multipleActiveMotivesAllowed": true,
+          "motivesMayConflict": true,
+          "conflictMustProduceHESITATION_PRIORITY_SHIFT_OR_SUBTEXT_NOT_RANDOM_BEHAVIOR": true,
+          "persistentGoalChangeRequiresMeaningfulEvent": true
+        },
+        "subjectiveInnerState": {
+          "components": [
+            "CURRENT_CONCERN",
+            "CURRENT_HOPE",
+            "CURRENT_FEAR",
+            "UNSAID_FEELING",
+            "INTERPRETATION_OF_RECENT_EVENT",
+            "CURRENT_VIEW_OF_PLAYER",
+            "CURRENT_VIEW_OF_SELF"
+          ],
+          "use": "DRIVES_INTENT_SUBTEXT_SILENCE_ATTENTION_GESTURE_AND_LINE_SELECTION",
+          "notAChainOfThought": true,
+          "longFreeformHiddenReasoningNotRequired": true,
+          "conciseStructuredInnerStatePreferred": true,
+          "mayRemainUnspoken": true,
+          "playerMustNotAutomaticallyKnowPrivateInnerState": true
+        },
+        "relationshipFormation": {
+          "directional": true,
+          "dimensions": [
+            "TRUST",
+            "FAMILIARITY",
+            "RESPECT",
+            "AFFECTION",
+            "TENSION",
+            "FEAR",
+            "DEBT",
+            "RIVALRY",
+            "PROTECTIVENESS",
+            "DEPENDENCE",
+            "BOUNDARY_COMFORT"
+          ],
+          "stages": [
+            "STRANGER",
+            "ACQUAINTANCE",
+            "WORKING_TRUST",
+            "PERSONAL_TRUST",
+            "CLOSE_BOND",
+            "STRAINED",
+            "RIVAL",
+            "HOSTILE_WHEN_GAME_ALLOWS"
+          ],
+          "causes": [
+            "HELP",
+            "HARM",
+            "KEEP_PROMISE",
+            "BREAK_PROMISE",
+            "RESCUE",
+            "ABANDON",
+            "LISTEN",
+            "DISMISS",
+            "SHARE_RISK",
+            "SHARE_SUCCESS",
+            "GIVE_SPACE",
+            "CROSS_BOUNDARY",
+            "DEFEND_VALUES",
+            "BETRAY_CONFIDENCE",
+            "REPEATED_ROUTINE_TOGETHER"
+          ],
+          "repeatedSmallEventsMayAccumulate": true,
+          "majorEventMayCauseLargerButBoundedShift": true,
+          "oneMinorEventMustNotRewriteEntireBond": true,
+          "relationshipHistoryMustAffectSpeechInitiativePersonalSpaceAndCooperation": true,
+          "relationshipDoesNotDirectlyModifyProtectedCombatStats": true
+        },
+        "conversationHumanity": {
+          "lineSelection": [
+            "CURRENT_INTENT",
+            "SUBTEXT",
+            "RELATIONSHIP_STAGE",
+            "RECENT_SHARED_MEMORY",
+            "CURRENT_ACTIVITY",
+            "EMOTION",
+            "ATTENTION_TARGET",
+            "PRIVATE_BOUNDARY",
+            "WHAT_HAS_ALREADY_BEEN_SAID",
+            "WHAT_SHOULD_REMAIN_UNSAID"
+          ],
+          "speechActs": [
+            "INFORM",
+            "ASK",
+            "WARN",
+            "TEASE",
+            "REASSURE",
+            "DISAGREE",
+            "APOLOGIZE",
+            "THANK",
+            "CONFIDE",
+            "DEFLECT",
+            "CHALLENGE",
+            "NEGOTIATE",
+            "REMEMBER",
+            "NOTICE",
+            "CHANGE_TOPIC",
+            "END_CONVERSATION",
+            "CHOOSE_SILENCE"
+          ],
+          "naturalFeatures": [
+            "HESITATION",
+            "SELF_CORRECTION",
+            "SHORT_REPLY",
+            "INTERRUPTION_WHEN_CONTEXT_ALLOWS",
+            "CALLBACK",
+            "UNFINISHED_SENTENCE_WHEN_EMOTIONAL",
+            "SUBTEXT",
+            "TOPIC_AVOIDANCE",
+            "DIFFERENT_WORDING_FOR_DIFFERENT_RELATIONSHIPS"
+          ],
+          "noExpositionDumpByDefault": true,
+          "noConstantQuips": true,
+          "noEveryEventCommentary": true,
+          "noRandomCatchphraseSpam": true,
+          "repeatedExactLineSuppression": true,
+          "topicCooldownRequired": true,
+          "importantLineMayBeRememberedAndReferencedLater": true
+        },
+        "personalArc": {
+          "loop": [
+            "EXPERIENCE",
+            "INTERPRET",
+            "FEEL",
+            "UPDATE_PRIORITY_OR_BELIEF_IF_JUSTIFIED",
+            "CHOOSE_NEXT_PERSONAL_INTENTION",
+            "ACT_WHEN_GAME_ALLOWS",
+            "REFLECT"
+          ],
+          "axes": [
+            "SELF_CONFIDENCE",
+            "BELIEF",
+            "RESPONSIBILITY",
+            "BELONGING",
+            "AUTONOMY",
+            "AMBITION",
+            "FORGIVENESS",
+            "RESENTMENT",
+            "FEAR",
+            "TRUST"
+          ],
+          "growthMustFollowExperience": true,
+          "levelNumberAloneCannotCausePersonalityGrowth": true,
+          "mayRegressAfterFailure": true,
+          "mayHoldContradictoryBeliefsDuringTransition": true,
+          "majorCompanionShouldHaveAtLeastOneUnresolvedPersonalThread": true
+        },
+        "playerRelationshipWithoutServitude": {
+          "playerIsImportantButNotUniversalCenter": true,
+          "companionMayHaveFriendsRivalsDutiesAndInterestsUnrelatedToPlayer": true,
+          "companionCanDisagreeWithoutSabotagingCoreGameplay": true,
+          "explicitPlayerOrderIsConstraintWhenSupportedByGameRule": true,
+          "orderExecutionStyleMayReflectPersonality": true,
+          "companionMaySuggestRestRetreatAlternativeRouteOrDifferentTarget": true,
+          "companionCannotInventNewAuthorityToRefuseMandatoryGameRules": true
+        },
+        "embodiedHumanity": {
+          "channels": [
+            "GAZE",
+            "HEAD_TURN",
+            "TORSO_ORIENTATION",
+            "PERSONAL_DISTANCE",
+            "PACE",
+            "GESTURE",
+            "IDLE_VARIANT",
+            "PAUSE_BEFORE_REPLY",
+            "LOOK_AWAY",
+            "LOOK_BACK",
+            "WEIGHT_SHIFT",
+            "EQUIPMENT_HANDLING"
+          ],
+          "speechAndBodyShouldShareSameIntent": true,
+          "emotionalStateMayBiasMotionStyleWithoutChangingAuthoritativeMovementStats": true,
+          "repeatedIdenticalGestureForEveryLineForbidden": true,
+          "silenceMayStillHaveEmbodiedReaction": true
+        },
+        "sharedLife": {
+          "sharedExperiencesCanCreate": [
+            "PRIVATE_JOKE",
+            "CALLBACK",
+            "SHARED_FEAR",
+            "RITUAL",
+            "HABIT",
+            "TRUST_SHORTCUT",
+            "ARGUMENT_TOPIC",
+            "PLACE_MEMORY",
+            "VICTORY_MEMORY",
+            "LOSS_MEMORY"
+          ],
+          "sharedExperienceInterpretationMayDifferPerActor": true,
+          "twoActorsMayRememberSameEventDifferently": true,
+          "playerMayDiscoverCompanionPerspectiveLater": true
+        },
+        "autonomySafety": {
+          "offscreenAiMayProposeIntentButEngineResolvesWorldEffects": true,
+          "aiMayNotInventCompletedQuestLootDamageDeathTeleportOrWorldMutation": true,
+          "personalArcWritesPersistentStateOnlyThroughExistingEngineSaveApi": true,
+          "companionPersonalityNeverOwnsNetworkAuthority": true,
+          "deterministicFallbackMustPreserveCoreGameplay": true
+        },
+        "authoringMinimumForNamedCompanion": [
+          "ONE_CLEAR_WORLDVIEW",
+          "THREE_OR_MORE_STABLE_VALUES_OR_BOUNDARIES",
+          "ONE_PERSONAL_LONG_TERM_GOAL",
+          "ONE_SELF_IMAGE_TENSION",
+          "ONE_UNRESOLVED_PERSONAL_THREAD",
+          "DISTINCT_SPEECH_PROFILE",
+          "RELATIONSHIP_STAGE_RULES",
+          "MEMORY_SOURCE_EVENT_POLICY",
+          "COMBAT_OR_SUPPORT_STYLE",
+          "PERSONAL_SPACE_STYLE",
+          "EMOTION_TO_BODY_LANGUAGE_MAPPING",
+          "INITIATIVE_RULES",
+          "SILENCE_RULES"
+        ]
       }
     }
   },
