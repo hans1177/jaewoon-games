@@ -1737,6 +1737,36 @@ test('responsible file boundary rejects unrelated model path', async () => {
   await assert.rejects(runVibe2SourceWorker({ cwd, responseFile }), /책임 파일 범위 밖 수정 금지/);
 });
 
+test('Unity bootstrap validates against canonical scaffold when the project root exists but responsible files do not', async()=>{
+  const cwd=tempRoot();
+  const root='unity-games/partial-unity';
+  const core='Assets/Scripts/GameCore.cs';
+  const runtime='Assets/Scripts/RuntimeBootstrap.cs';
+  write(path.join(cwd,root,'Packages/manifest.json'),'{"dependencies":{}}\n');
+  const workOrder=order({
+    target:'unity',
+    root,
+    responsibleFiles:[root+'/'+core,root+'/'+runtime],
+    taskId:'unity-partial-root-bootstrap'
+  });
+  workOrder.gameId='partial-unity';
+  workOrder.selectedTask={evidence:['source-root-bootstrap-required','unity-web-source-root-bootstrap-required']};
+  workOrder.workerPolicy={directMainWrite:false,sourceRootBootstrapAllowed:true};
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  const responseFile=path.join(cwd,'pair.json');
+  write(responseFile,JSON.stringify({edits:[
+    {path:core,find:'// Vibe가 승인 설계의 실제 상태/규칙/세이브 책임으로 교체한다.',replace:'        public int RuntimeState = 1;'},
+    {path:runtime,find:'            var go = new GameObject("RuntimeBootstrap");',replace:'            var go = new GameObject("RuntimeBootstrap");\n            go.AddComponent<GameCore>();'}
+  ],newFiles:[]}));
+  const result=await runVibe2SourceWorker({cwd,responseFile});
+  assert.equal(result.sourceRootBootstrap,true);
+  assert.equal(result.generation.attempts,1);
+  assert.equal(fs.existsSync(path.join(cwd,root,core)),false);
+  assert.equal(fs.existsSync(path.join(cwd,root,runtime)),false);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates',result.taskId,'files',core),'utf8'),/RuntimeState = 1/);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates',result.taskId,'files',runtime),'utf8'),/AddComponent<GameCore>/);
+});
+
 test('Unity bootstrap pair recovery preserves the exact counterpart and completes the missing file atomically', async()=>{
   const cwd=tempRoot();
   const root='unity-games/missing-unity';

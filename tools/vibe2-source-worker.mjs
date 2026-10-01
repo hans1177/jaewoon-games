@@ -3599,11 +3599,18 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const bootstrapHtml='<!doctype html><html><head><meta charset="utf-8"><title>Approved Web Bootstrap</title></head><body><main id="game"></main><script></script></body></html>';
   const unityBootstrapFiles=bootstrap&&target==='unity'?unityWebBootstrapScaffold(sourceRootRelative):null;
   const focusedContext=sourceRootExists&&focusedWebRepair&&!preferBoundedContext?focusedSymbolContext(sourceRoot,target,responsibleFiles,exploration):null;
-  const context=!sourceRootExists&&bootstrap
-    ?(target==='unity'
-      ?{files:responsibleFiles.map(relative=>({path:relative,content:unityBootstrapFiles[relative],truncated:false,editable:true})),bytes:responsibleFiles.reduce((n,relative)=>n+Buffer.byteLength(unityBootstrapFiles[relative]||'','utf8'),0),mode:'UNITY_WEB_BOOTSTRAP_SHELL',focusedSymbolCount:0,exactSourceWindows:false,fullFileFallback:false}
-      :{files:[{path:'index.html',content:bootstrapHtml,truncated:false,editable:true}],bytes:Buffer.byteLength(bootstrapHtml,'utf8'),mode:'BOOTSTRAP_SHELL',focusedSymbolCount:0,exactSourceWindows:false,fullFileFallback:false})
-    :(focusedContext||{
+  const unityBootstrapContext=bootstrap&&target==='unity'
+    ?{files:responsibleFiles.map(relative=>{
+        const live=path.join(sourceRoot,relative);
+        const content=fs.existsSync(live)&&fs.statSync(live).isFile()?fs.readFileSync(live,'utf8'):unityBootstrapFiles[relative];
+        return{path:relative,content,truncated:false,editable:true};
+      }),mode:'UNITY_WEB_BOOTSTRAP_SHELL',focusedSymbolCount:0,exactSourceWindows:false,fullFileFallback:false}
+    :null;
+  if(unityBootstrapContext)unityBootstrapContext.bytes=unityBootstrapContext.files.reduce((n,file)=>n+Buffer.byteLength(file.content||'','utf8'),0);
+  const context=unityBootstrapContext
+    ||(!sourceRootExists&&bootstrap
+      ?{files:[{path:'index.html',content:bootstrapHtml,truncated:false,editable:true}],bytes:Buffer.byteLength(bootstrapHtml,'utf8'),mode:'BOOTSTRAP_SHELL',focusedSymbolCount:0,exactSourceWindows:false,fullFileFallback:false}
+      :(focusedContext||{
       ...readContext(
         sourceRoot,
         target,
@@ -3616,7 +3623,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       focusedSymbolCount:0,
       exactSourceWindows:false,
       fullFileFallback:focusedWebRepair
-    });
+    }));
   if(!context.files.length)throw new Error('worker context 파일 없음');
   const fullWebTarget=allowFullRewrite?fullWebGenerationTarget(order):null;
   const verifiedExternalLearningContract=buildVerifiedExternalLearningPromptContract(order);
@@ -3798,7 +3805,23 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     error.vibe2GenerationFailureClass='DETERMINISTIC_ROBLOX_BUILDUP';
     throw error;
   }
-  if(!generated)generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot,focusedWebRepair,exploration,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator,candidateVariant,systemAtomicPairRequired:systemCausalPairRequired,multiFilePairRequired:bootstrap&&target==='unity',verifiedExternalLearningContract});
+  if(!generated){
+    let generationSourceRoot=sourceRoot,generationBootstrapRoot='';
+    if(bootstrap&&target==='unity'){
+      generationBootstrapRoot=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-unity-bootstrap-validation-'));
+      for(const file of context.files){
+        const targetFile=path.join(generationBootstrapRoot,file.path);
+        fs.mkdirSync(path.dirname(targetFile),{recursive:true});
+        fs.writeFileSync(targetFile,file.content,'utf8');
+      }
+      generationSourceRoot=generationBootstrapRoot;
+    }
+    try{
+      generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot:generationSourceRoot,focusedWebRepair,exploration,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator,candidateVariant,systemAtomicPairRequired:systemCausalPairRequired,multiFilePairRequired:bootstrap&&target==='unity',verifiedExternalLearningContract});
+    }finally{
+      if(generationBootstrapRoot)fs.rmSync(generationBootstrapRoot,{recursive:true,force:true});
+    }
+  }
   const candidate=generated.candidate;
   const semanticDiffEnforcement=generated.candidateValidation||candidateValidator(candidate);
   const presentationCandidateDelta=semanticDiffEnforcement?.presentationDelta||evaluatePresentationCandidateDelta({candidate,sourceRoot,contract:order?.presentationQuality||{}});
