@@ -786,17 +786,28 @@ export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId=''
   const beforeProject=fs.readFileSync(projectFile,'utf8');
   const project=JSON.parse(beforeProject.replace(/^\uFEFF/,''));
   if(!project.tree||project.tree.$className!=='DataModel')throw new Error('EXISTING_ROBLOX_PROJECT_DATAMODEL_REQUIRED');
+  const existingLighting=project.tree.Lighting&&typeof project.tree.Lighting==='object'?project.tree.Lighting:{};
+  const existingLightingProperties=existingLighting.$properties&&typeof existingLighting.$properties==='object'?existingLighting.$properties:{};
+  const currentTechnology=clean(existingLightingProperties.Technology);
+  const supportedTechnology=['Voxel','ShadowMap','Future'].includes(currentTechnology)?currentTechnology:null;
+  const migratedFromCompatibility=!supportedTechnology;
+  const lightingProfile=supportedTechnology==='Future'
+    ?{Technology:'Future',LightingStyle:clean(existingLightingProperties.LightingStyle)||'Realistic',PrioritizeLightingQuality:existingLightingProperties.PrioritizeLightingQuality??true}
+    :supportedTechnology==='ShadowMap'
+      ?{Technology:'ShadowMap',LightingStyle:clean(existingLightingProperties.LightingStyle)||'Soft',PrioritizeLightingQuality:existingLightingProperties.PrioritizeLightingQuality??true}
+      :{Technology:'Voxel',LightingStyle:clean(existingLightingProperties.LightingStyle)||'Soft',PrioritizeLightingQuality:existingLightingProperties.PrioritizeLightingQuality??false};
   project.tree.Lighting={
-    $properties:{
-      Technology:'Voxel',
-      LightingStyle:'Soft',
-      PrioritizeLightingQuality:false,
-    },
-    CompatibilityToneMap:{
-      $className:'ColorGradingEffect',
-      $properties:{TonemapperPreset:'Retro'},
-    },
+    ...existingLighting,
+    $properties:{...existingLightingProperties,...lightingProfile},
   };
+  if(migratedFromCompatibility){
+    const existingTone=existingLighting.CompatibilityToneMap&&typeof existingLighting.CompatibilityToneMap==='object'?existingLighting.CompatibilityToneMap:{};
+    project.tree.Lighting.CompatibilityToneMap={
+      ...existingTone,
+      $className:'ColorGradingEffect',
+      $properties:{...(existingTone.$properties||{}),TonemapperPreset:'Retro'},
+    };
+  }
   const afterProject=`${JSON.stringify(project,null,2)}\n`;
   let afterConfig=replaceOrInsertStudioAssetConfig(beforeConfig,studioAssets);
   let afterClient=bindExistingClientStudioAssets(beforeClient);
