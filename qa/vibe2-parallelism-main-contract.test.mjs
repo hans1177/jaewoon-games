@@ -328,6 +328,13 @@ test('stale main push wake exits before expensive reserve work without cancellin
   assert.equal(evidence.staleWakeGameWorkerFanoutForbidden,true);
 
   assert.match(core,/Drop stale reserve wake before reserve work/);
+  const reserveStart=core.indexOf('\n  reserve:');
+  const staleWakeStep=core.indexOf('- name: Drop stale reserve wake before reserve work',reserveStart);
+  const reserveCheckout=core.indexOf('- name: Checkout Vibe2 control line',reserveStart);
+  const reserveNodeSetup=core.indexOf('- uses: actions/setup-node@v4',reserveStart);
+  assert.ok(reserveStart>=0&&staleWakeStep>reserveStart&&reserveCheckout>staleWakeStep&&reserveNodeSetup>reserveCheckout);
+  assert.match(core.slice(reserveCheckout,reserveNodeSetup),/if: steps\.main_wake\.outputs\.proceed == 'true'/);
+  assert.match(core.slice(reserveNodeSetup,core.indexOf('\n      - name:',reserveNodeSetup)),/if: steps\.main_wake\.outputs\.proceed == 'true'/);
   assert.match(core,/VIBE2_MAIN_PUSH_WAKE_STALE_DROPPED=/);
   assert.match(core,/VIBE2_FANIN_WAKE_STALE_DROPPED=/);
   assert.match(core,/VIBE2_RESERVE_WAKE_FRESHNESS=NEURON_CALLBACK_ALWAYS_INGEST/);
