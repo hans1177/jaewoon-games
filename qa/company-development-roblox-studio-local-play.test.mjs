@@ -2832,19 +2832,22 @@ test('batch cleanup preserves manually requested exact-game Studio verification 
   assert.ok(start>=0&&end>start);
   const script=workflow.slice(start,end);
   const runs=[
-    {id:1,event:'workflow_dispatch',display_title:'Roblox runtime foundation QA · daechung-rpg',status:'queued',head_sha:'old'},
-    {id:2,event:'workflow_dispatch',display_title:'Roblox runtime foundation QA · scan',status:'queued',head_sha:'old'},
-    {id:3,event:'push',display_title:'Roblox runtime foundation QA · scan',status:'queued',head_sha:'old'},
-    {id:4,event:'push',display_title:'Roblox runtime foundation QA · scan',status:'in_progress',head_sha:'current'},
-    {id:5,event:'workflow_dispatch',display_title:'Roblox runtime foundation QA · daechung-rpg',status:'in_progress',head_sha:'old'},
-    {id:100,event:'push',display_title:'Roblox runtime foundation QA · scan',status:'queued',head_sha:'newer'}
+    {id:1,event:'workflow_dispatch',display_title:'Roblox runtime foundation QA · daechung-rpg',status:'queued',head_sha:'old',actor:{login:'hans1177'}},
+    {id:2,event:'workflow_dispatch',display_title:'Roblox runtime foundation QA · scan',status:'queued',head_sha:'old',actor:{login:'github-actions[bot]'}},
+    {id:3,event:'push',display_title:'Roblox runtime foundation QA · scan',status:'queued',head_sha:'old',actor:{login:'hans1177'}},
+    {id:4,event:'push',display_title:'Roblox runtime foundation QA · scan',status:'in_progress',head_sha:'current',actor:{login:'hans1177'}},
+    {id:5,event:'workflow_dispatch',display_title:'Roblox runtime foundation QA · daechung-rpg',status:'in_progress',head_sha:'old',actor:{login:'hans1177'}},
+    {id:6,event:'workflow_dispatch',display_title:'Roblox runtime foundation QA · cozy-island',status:'queued',head_sha:'old',actor:{login:'github-actions[bot]'}},
+    {id:100,event:'push',display_title:'Roblox runtime foundation QA · scan',status:'queued',head_sha:'newer',actor:{login:'hans1177'}}
   ];
   const result=spawnSync(process.execPath,['-e',"let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{"+script],{
     input:JSON.stringify({workflow_runs:runs}),encoding:'utf8',
     env:{...process.env,CURRENT_RUN_ID:'99',CURRENT_SHA:'current'}
   });
   assert.equal(result.status,0,result.stderr);
-  assert.deepEqual(result.stdout.trim().split(/\s+/),['2','3']);
+  assert.deepEqual(result.stdout.trim().split(/\s+/),['2','3','6']);
+  assert.match(script,/manualExactDispatch=r\.event==='workflow_dispatch'/);
+  assert.match(script,/actor!==\'github-actions\[bot\]\'/);
   assert.match(script,/runId>=currentRunId/);
 });
 
@@ -2987,7 +2990,10 @@ test('Studio planner removes only superseded pending automatic runs for the exac
  assert.match(plan,/ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_CANCELLED=/);
  assert.match(plan,/ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_ACTIVE=/);
  assert.match(plan,/ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_UNRELATED=/);
- assert.match(plan,/r\.event==='workflow_dispatch'&&title!==prefix\+'scan'/);
+ assert.match(plan,/const manualExactDispatch=r\.event==='workflow_dispatch'/);
+ assert.match(plan,/actor!==\'github-actions\[bot\]\'/);
+ assert.match(plan,/if\(manualExactDispatch\)continue/);
+ assert.doesNotMatch(plan,/if\(r\.event==='workflow_dispatch'&&title!==prefix\+'scan'\)continue/);
  assert.match(plan,/games\.every\(g=>planned\.has\(g\)\)\?'CANCEL':'PRESERVE_UNRELATED'/);
 });
 

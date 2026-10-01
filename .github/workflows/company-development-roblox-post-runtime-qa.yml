@@ -100,7 +100,9 @@ jobs:
                 if(Number.isFinite(runId)&&Number.isFinite(currentRunId)&&currentRunId>0&&runId>=currentRunId)continue;
                 if(!title.startsWith(prefix))continue;
                 // 오너가 요청한 단일 게임 재검사는 자동 일괄 검사보다 우선 보존한다.
-                if(r.event==='workflow_dispatch'&&title!==prefix+'scan')continue;
+                const actor=String(r.actor?.login||r.triggering_actor?.login||'').trim().toLowerCase();
+                const manualExactDispatch=r.event==='workflow_dispatch'&&title!==prefix+'scan'&&actor!=='github-actions[bot]';
+                if(manualExactDispatch)continue;
                 if(String(r.head_sha||'')===String(process.env.CURRENT_SHA||''))continue;
                 process.stdout.write(String(r.id)+'\n');
               }
@@ -2012,7 +2014,9 @@ jobs:
                 if(!states.has(String(r.status||'').toLowerCase()))continue;
                 const title=String(r.display_title||'');
                 if(!title.startsWith(prefix))continue;
-                if(r.event==='workflow_dispatch'&&title!==prefix+'scan')continue;
+                const actor=String(r.actor?.login||r.triggering_actor?.login||'').trim().toLowerCase();
+                const manualExactDispatch=r.event==='workflow_dispatch'&&title!==prefix+'scan'&&actor!=='github-actions[bot]';
+                if(manualExactDispatch)continue;
                 process.stdout.write(String(r.id)+'\n');
               }
             });
