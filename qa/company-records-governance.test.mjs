@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import {validateCompanyRecord,scanCompanyRecords,extractChangeRecordReferences,planCentralDocumentArchive,inspectCentralDocument,discoverCentralArchiveCandidates} from '../tools/company-records-governance.mjs';
+import {validateCompanyRecord,scanCompanyRecords,extractChangeRecordReferences,classifyCentralChangeRecordRetention,planCentralDocumentArchive,inspectCentralDocument,discoverCentralArchiveCandidates} from '../tools/company-records-governance.mjs';
 
 const root=process.cwd();
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
@@ -120,6 +120,17 @@ test('central policy reference scanner protects direct and optional changeRecord
   assert.deepEqual(refs,['alphaRule','betaRule','deltaRule','gammaRule']);
 });
 
+test('central change record archival requires semantic retirement and never relies on an unreferenced name alone',()=>{
+  const active=classifyCentralChangeRecordRetention('oldLookingName',{status:'ACTIVE_COMPATIBILITY_RECORD',authority:'company-learning/platform-release-roadmap.json#developmentSpeedExecution'});
+  const pending=classifyCentralChangeRecordRetention('historicalLookingName',{status:'CODE_UPDATED_PENDING_QA_AND_LIVE'});
+  const retired=classifyCentralChangeRecordRetention('plainName',{status:'SUPERSEDED',historical:true});
+  assert.equal(active.archiveEligible,false);
+  assert.equal(active.policyMeaning,true);
+  assert.equal(pending.archiveEligible,false);
+  assert.equal(retired.archiveEligible,true);
+  assert.equal(retired.reason,'EXPLICIT_HISTORICAL_OR_RETIRED_RECORD');
+});
+
 test('central archive plan removes explicit history before unreferenced compatibility records',()=>{
   const roadmap={
     centralDocumentRetention:{
@@ -132,7 +143,8 @@ test('central archive plan removes explicit history before unreferenced compatib
     changeRecord:{
       protectedRule:{enabled:true,note:'x'.repeat(220)},
       pinnedRule:{enabled:true,note:'p'.repeat(220)},
-      oldRule:{enabled:true,note:'o'.repeat(420)}
+      activeCompatibility:{status:'ACTIVE_COMPATIBILITY_RECORD',authority:'company-learning/platform-release-roadmap.json#developmentSpeedExecution',note:'a'.repeat(180)},
+      oldRule:{status:'SUPERSEDED',historical:true,note:'o'.repeat(420)}
     },
     history:{largeRun:{events:Array.from({length:20},(_,i)=>({i,text:'h'.repeat(40)}))}}
   };
@@ -141,8 +153,11 @@ test('central archive plan removes explicit history before unreferenced compatib
   assert.ok(plan.archivedPaths.includes('history.largeRun'));
   assert.equal(plan.roadmap.changeRecord[protectedKey].enabled,true);
   assert.equal(plan.roadmap.changeRecord[pinnedKey].enabled,true);
+  assert.equal(plan.roadmap.changeRecord.activeCompatibility.status,'ACTIVE_COMPATIBILITY_RECORD');
   assert.ok(!plan.archivedPaths.includes('change'+'Record.'+protectedKey));
   assert.ok(!plan.archivedPaths.includes('change'+'Record.'+pinnedKey));
+  assert.ok(!plan.archivedPaths.includes('changeRecord.activeCompatibility'));
+  assert.ok(plan.archivedPaths.includes('changeRecord.oldRule'));
   assert.equal(plan.hardLimitSatisfied,true);
 });
 
