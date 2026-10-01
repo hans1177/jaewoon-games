@@ -14,7 +14,7 @@ const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,'
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(path.resolve(file)),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const stableSha256=value=>crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
-export const ROBLOX_STUDIO_HARNESS_VERSION=13;
+export const ROBLOX_STUDIO_HARNESS_VERSION=14;
 
 export function assertCurrentStudioWorkflowHead({
   workflowSha=clean(process.env.GITHUB_SHA),
@@ -3006,7 +3006,21 @@ export async function runOfficialStudioMcpPlay({
       const multiplayerDeclared=actualPlayContract?.adaptiveCoverage?.signals?.multiplayer===true;
       // 한 창 검사는 추가 클라이언트를 만들지 않으며 멀티 실증을 주장하지 않는다.
       if(multiplayerDeclared&&singleWindow){
-        multiplayerAuditSummary={pass:false,skipped:true,reason:'OWNER_SINGLE_WINDOW_ONLY',verificationScope:'STATIC_CODE_CONTRACT',codeContractPassed:scenarioMetrics.multiplayerSourceContractPassed===true,sourceRevision:clean(runtimeIdentity.sourceRevision),artifactIdentity:clean(runtimeIdentity.artifactIdentity)};
+        const exactStaticMultiplayer=multiplayerSourceEvidence&&typeof multiplayerSourceEvidence==='object'?multiplayerSourceEvidence:{};
+        multiplayerAuditSummary={
+          version:Number(exactStaticMultiplayer.version||2),
+          gameId:clean(exactStaticMultiplayer.gameId),
+          authority:clean(exactStaticMultiplayer.authority),
+          pass:false,
+          skipped:true,
+          reason:'OWNER_SINGLE_WINDOW_ONLY',
+          verificationScope:'STATIC_CODE_CONTRACT',
+          codeContractPassed:scenarioMetrics.multiplayerSourceContractPassed===true,
+          runtimeTwoClientExecutionRequired:false,
+          checks:exactStaticMultiplayer.checks&&typeof exactStaticMultiplayer.checks==='object'?{...exactStaticMultiplayer.checks}:{},
+          sourceRevision:clean(runtimeIdentity.sourceRevision),
+          artifactIdentity:clean(runtimeIdentity.artifactIdentity)
+        };
         checkpoint('multiplayer-source-contract',multiplayerAuditSummary.codeContractPassed);
         console.log('ROBLOX_STUDIO_MULTIPLAYER_RUNTIME=SKIPPED_OWNER_SINGLE_WINDOW_ONLY');
         console.log('ROBLOX_STUDIO_MULTIPLAYER_SOURCE_CONTRACT='+(multiplayerAuditSummary.codeContractPassed?'PASS':'FAIL'));
@@ -3510,19 +3524,29 @@ export function createLocalStudioPlayEvidence({
     observed:row?.observed&&typeof row.observed==='object'?row.observed:{}
   })).filter(row=>row.id).slice(0,48);
   const staticMultiplayer=runtime?.multiplayerAuditSummary?.verificationScope==='STATIC_CODE_CONTRACT';
-  const staticMultiplayerExact=!staticMultiplayer||(
-    runtime?.multiplayerAuditSummary?.codeContractPassed===true
+  const staticMultiplayerCheckKeys=['playerRoster','participantCount','authoritativeBroadcast','clientReceive','twoParticipantCapablePath'];
+  const runtimeStaticMultiplayerExact=Boolean(
+    staticMultiplayer
+    &&runtime?.multiplayerAuditSummary?.authority==='roblox-static-two-client-source-contract'
+    &&runtime?.multiplayerAuditSummary?.gameId===clean(item?.gameId)
+    &&runtime?.multiplayerAuditSummary?.codeContractPassed===true
+    &&runtime?.multiplayerAuditSummary?.runtimeTwoClientExecutionRequired===false
+    &&staticMultiplayerCheckKeys.every(key=>runtime?.multiplayerAuditSummary?.checks?.[key]===true)
     &&runtime?.multiplayerAuditSummary?.sourceRevision===sourceRevision
     &&runtime?.multiplayerAuditSummary?.artifactIdentity===artifactIdentity
+  );
+  const persistedStaticMultiplayerExact=Boolean(
+    staticMultiplayer
     &&item?.robloxMultiplayerQaEvidence?.authority==='roblox-static-two-client-source-contract'
     &&item?.robloxMultiplayerQaEvidence?.passed===true
     &&clean(item?.gameId)!==''&&item?.robloxMultiplayerQaEvidence?.gameId===item.gameId
     &&item?.robloxMultiplayerQaEvidence?.codeContractPassed===true
     &&item?.robloxMultiplayerQaEvidence?.runtimeTwoClientExecutionRequired===false
-    &&['playerRoster','participantCount','authoritativeBroadcast','clientReceive','twoParticipantCapablePath'].every(key=>item?.robloxMultiplayerQaEvidence?.checks?.[key]===true)
+    &&staticMultiplayerCheckKeys.every(key=>item?.robloxMultiplayerQaEvidence?.checks?.[key]===true)
     &&item?.robloxMultiplayerQaEvidence?.sourceRevision===sourceRevision
     &&item?.robloxMultiplayerQaEvidence?.artifactIdentity===artifactIdentity
   );
+  const staticMultiplayerExact=!staticMultiplayer||runtimeStaticMultiplayerExact||persistedStaticMultiplayerExact;
   const pass=basePass&&scenarioContractPass&&staticMultiplayerExact;
   const productFailureObserved=Boolean(
     qualityFailureKinds.length>0
@@ -3644,6 +3668,8 @@ export function createLocalStudioPlayEvidence({
           performance:runtime?.metrics?.performance&&typeof runtime.metrics.performance==='object'?runtime.metrics.performance:{},
           multiplayer:runtime?.multiplayerAuditSummary?{
             version:Number(runtime.multiplayerAuditSummary.version||0),
+            gameId:clean(runtime.multiplayerAuditSummary.gameId),
+            authority:clean(runtime.multiplayerAuditSummary.authority),
             sessionHash:clean(runtime.multiplayerAuditSummary.sessionHash),
             pass:runtime.multiplayerAuditSummary.pass===true,
             bothClientsStatePass:runtime.multiplayerAuditSummary.bothClientsStatePass===true,
@@ -3652,6 +3678,8 @@ export function createLocalStudioPlayEvidence({
             verificationScope:clean(runtime.multiplayerAuditSummary.verificationScope),
             skipped:runtime.multiplayerAuditSummary.skipped===true,
             codeContractPassed:staticMultiplayerExact&&runtime.multiplayerAuditSummary.codeContractPassed===true,
+            runtimeTwoClientExecutionRequired:runtime.multiplayerAuditSummary.runtimeTwoClientExecutionRequired===true,
+            checks:runtime.multiplayerAuditSummary.checks&&typeof runtime.multiplayerAuditSummary.checks==='object'?{...runtime.multiplayerAuditSummary.checks}:{},
             sourceRevision:clean(runtime.multiplayerAuditSummary.sourceRevision),
             artifactIdentity:clean(runtime.multiplayerAuditSummary.artifactIdentity),
             sameUserRejoinVerified:false
@@ -3767,6 +3795,35 @@ export function applyLocalStudioPlayResult({queue={},gameId='',runtime={},expect
   }else{
     result.evidence.commercialRegressionDetected=false;
     result.evidence.commercialRegressionDetails=[];
+  }
+
+  const runtimeStaticMultiplayer=runtime?.multiplayerAuditSummary&&typeof runtime.multiplayerAuditSummary==='object'
+    ?runtime.multiplayerAuditSummary:null;
+  const runtimeStaticMultiplayerCheckKeys=['playerRoster','participantCount','authoritativeBroadcast','clientReceive','twoParticipantCapablePath'];
+  const exactRuntimeStaticMultiplayer=Boolean(
+    runtimeStaticMultiplayer?.verificationScope==='STATIC_CODE_CONTRACT'
+    &&runtimeStaticMultiplayer?.authority==='roblox-static-two-client-source-contract'
+    &&runtimeStaticMultiplayer?.gameId===clean(item?.gameId)
+    &&runtimeStaticMultiplayer?.codeContractPassed===true
+    &&runtimeStaticMultiplayer?.runtimeTwoClientExecutionRequired===false
+    &&runtimeStaticMultiplayerCheckKeys.every(key=>runtimeStaticMultiplayer?.checks?.[key]===true)
+    &&runtimeStaticMultiplayer?.sourceRevision===clean(result.evidence.sourceRevision)
+    &&runtimeStaticMultiplayer?.artifactIdentity===clean(result.evidence.artifactIdentity)
+  );
+  if(exactRuntimeStaticMultiplayer){
+    item.robloxMultiplayerQaEvidence={
+      version:Number(runtimeStaticMultiplayer.version||2),
+      gameId:clean(item.gameId),
+      sourceRevision:clean(result.evidence.sourceRevision),
+      artifactIdentity:clean(result.evidence.artifactIdentity),
+      candidateVersionNumber:Number(result.evidence.versionNumber||0),
+      passed:true,
+      codeContractPassed:true,
+      checks:{...runtimeStaticMultiplayer.checks},
+      runtimeTwoClientExecutionRequired:false,
+      authority:'roblox-static-two-client-source-contract',
+      verifiedAt:result.evidence.testedAt
+    };
   }
 
   item.robloxInternalVibePlayEvidence=result.evidence;
