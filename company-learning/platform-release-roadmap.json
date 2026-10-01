@@ -938,7 +938,14 @@
       "webRequiredDeploymentCheck": "Cloudflare Pages",
       "sourceBoundaryProofRequired": true,
       "unrelatedRepositoryWideExternalCheckCannotBlockGameRelease": true,
-      "qualityOrEvidenceGateWeakeningForbidden": true
+      "qualityOrEvidenceGateWeakeningForbidden": true,
+      "webDeploymentEligibility": "WEB_F0_F9_PLAYABLE_VERIFIED_AND_STATIC_SAVE_QA_PASS",
+      "webNativeHomepageReadinessRequired": false,
+      "webDeploymentMandatoryWhenPlayable": true,
+      "webCloudflarePreviewRequired": true,
+      "webMainCloudflareDeploymentRequiredBeforeTaskPass": true,
+      "webDeploymentFailureAction": "RETRY_SAME_VERIFIED_CANDIDATE_UNTIL_DEPLOYED",
+      "webDeploymentFailureMayAdvanceBuildUp": false
     },
     "freeAiCapacityMustBeMaximized": true,
     "internalArtificialConcurrencyCapsForbidden": true,
@@ -6225,7 +6232,9 @@
       "productionClassPromotionRequired": false,
       "shelf": "homeWebGameCenter",
       "label": "웹게임",
-      "directPlayRequired": true
+      "directPlayRequired": true,
+      "nativeHomepageReadinessRequiredForWebDeployment": false,
+      "playableVerifiedWebMustDeploy": true
     },
     "robloxDeploymentHistory": {
       "includeWhen": [
@@ -6989,7 +6998,20 @@
       "canonicalNormalizationRequiredBeforePublication": true,
       "normalizationOwner": "tools/company-status-sync.mjs + tools/game-catalog-normalization.mjs"
     },
-    "releaseClassificationSource": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.internalRelease.lobbyGate"
+    "releaseClassificationSource": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.internalRelease.lobbyGate",
+    "playableWebAutoDeployment": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-02",
+      "enabled": true,
+      "eligibility": "WEB_F0_F9_PLAYABLE_VERIFIED_AND_STATIC_SAVE_QA_PASS",
+      "nativeHomepageReadinessRequired": false,
+      "deploymentTarget": "CLOUDFLARE_PAGES",
+      "reviewedPrRequired": true,
+      "previewDeploymentRequired": true,
+      "mainDeploymentRequiredBeforeTaskPass": true,
+      "failureAction": "RETRY_SAME_VERIFIED_CANDIDATE",
+      "failureBlocksNextBuildUp": true
+    }
   },
   "longHorizonVision": {
     "version": 2,
@@ -8563,6 +8585,27 @@
         "company-learning/company-architecture-map.json"
       ],
       "implementationState": "IMPLEMENTED_MAIN"
+    },
+    "playableWebMandatoryDeployment20261002": {
+      "id": "PLAYABLE_WEB_MANDATORY_DEPLOYMENT_2026-10-02",
+      "authority": "OWNER_DIRECTIVE_2026-10-02",
+      "objective": "DEPLOY_EVERY_VERIFIED_PLAYABLE_WEB_GAME_WITHOUT_WAITING_FOR_ROBLOX_OR_UNITY_HOMEPAGE_READINESS",
+      "playableAuthority": "WEB_F0_F9_VERIFIED_PLUS_STATIC_AND_SAVE_QA",
+      "nativeHomepageReadinessRequired": false,
+      "cloudflarePreviewRequired": true,
+      "reviewedPrMergeRequired": true,
+      "cloudflareMainRequiredBeforeVibePass": true,
+      "deploymentFailureAction": "RETRY_SAME_VERIFIED_CANDIDATE_UNTIL_DEPLOYED",
+      "nextBuildUpBeforeDeploymentSuccessForbidden": true,
+      "gameplayQualityGateWeakened": false,
+      "saveCompatibilityGateWeakened": false,
+      "securityGateWeakened": false,
+      "implementationBindings": [
+        ".github/workflows/vibe2-candidate-release.yml",
+        "qa/vibe2-continuous-release-dispatch.test.mjs",
+        "company-learning/company-architecture-map.json",
+        "company-learning/company-log-map.json"
+      ]
     }
   },
   "vibeExecutionLaneContract": {
