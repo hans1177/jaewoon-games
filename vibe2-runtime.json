@@ -754,7 +754,11 @@
       "reserveJobsParallel": true,
       "serializationScope": "ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY",
       "statelessRefillCoalescingScope": "FANIN_REFILL_RESERVE_JOB_ONLY",
-      "workerCohortsRemainParallel": true
+      "workerCohortsRemainParallel": true,
+      "staleFanInRefillWakeAction": "DROP_BEFORE_CONTRACT_PREFLIGHT_WHEN_EVENT_HEAD_IS_NOT_CURRENT_MAIN",
+      "staleFanInRefillMayWriteControlState": false,
+      "staleFanInRefillMayStartWorker": false,
+      "staleFanInRefillRecovery": "LATEST_MAIN_PUSH_OR_FIVE_MINUTE_24H_SAFETY_NET"
     },
     "assetDevelopmentControlRunnerPool": {
       "authority": "company-learning/platform-release-roadmap.json#changeRecord.assetArmControlPlaneIsolation20260927",
