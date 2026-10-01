@@ -16,8 +16,26 @@ export function createVibeRuntimeAIContract({purpose='npc',contextKeys=[]}={}){c
 export function createVibeLivingActorContract(actor={}){const roleText=String(actor.role||'');const purpose=/boss|보스/.test(roleText)?'boss':/elite|정예/.test(roleText)?'elite':/rare|레어/.test(roleText)?'rare-monster':/enemy|mob|monster|적|몹|몬스터/.test(roleText)?'monster':'npc';return Object.freeze({base:createVibeRuntimeAIContract({purpose,contextKeys:LIVING_CONTEXT}),identity:Object.freeze({id:actor.id||actor.name||'actor',role:actor.role||purpose,personality:Object.freeze(actor.personality||{}),values:freezeList(actor.values),habits:freezeList(actor.habits),faction:actor.faction||'',occupation:actor.occupation||'',home:actor.home||''}),mind:Object.freeze({goals:freezeList(actor.goals),needs:freezeList(actor.needs),knowledgeScope:'only-observed-or-provided-state',memoryScope:'bounded-personal-runtime-memory',uncertaintyRequired:true,mayChangeMind:true}),variation:Object.freeze({sameStimulusMayProduceDifferentSuggestion:true,avoid:Object.freeze(['single-global-personality','identical-reaction-table','perfect-information','omniscient-coordination','constant-randomness'])}),engineAuthority:true})}
 export function createVibeLivingDecisionFrame({actor={},worldState={},perception={},memory=[]}={}){return Object.freeze({actor:createVibeLivingActorContract(actor).identity,perception:Object.freeze(perception),memory:Object.freeze(memory.slice(-12)),world:Object.freeze({location:worldState.location||'',time:worldState.time||'',weather:worldState.weather||'',localEvents:freezeList(worldState.localEvents)}),decisionQuestions:Object.freeze(['what-do-i-want-now','what-do-i-know-not-know','what-changed','who-do-i-trust-or-fear','what-would-this-individual-do']),forbiddenOutput:Object.freeze(['damage-value','hp-change','reward-write','save-write','forced-combat-result'])})}
 export function createVibeSocialMemoryPolicy({maxEvents=20}={}){return Object.freeze({maxEvents:Math.max(5,Math.min(40,maxEvents)),remember:Object.freeze(['help','harm','trade','promise','betrayal','rescue','shared-danger','private-joke','embarrassment','argument','gift','loss','victory','repeated-habit','witnessed-major-event']),layers:Object.freeze(['recent-episodic','relationship-summary','long-term-important']),compressOldMemories:true,forgetMinorEvents:true,noGlobalTelepathy:true,relationshipIsPerspectiveSpecific:true,persistentWrite:'engine-controlled-only'})}
-export function createVibeEnemyTacticalMind(enemy={}){return Object.freeze({identity:createVibeLivingActorContract({...enemy,role:enemy.role||'enemy'}),consider:Object.freeze(['distance','cover','ally-position','recent-damage-source','escape-route','objective','terrain','target-behavior','own-role','observed-player-habit']),maySuggest:Object.freeze(['pressure','wait','flank','retreat','guard','investigate','reposition','support-ally','change-attention','bait']),mustNot:Object.freeze(['alter-stats','ignore-collision','know-hidden-player-state','guarantee-hit','change-cooldown'])})}
-export function createVibeNPCDailyMind(npc={}){return Object.freeze({identity:createVibeLivingActorContract({...npc,role:npc.role||'npc'}),activitySources:Object.freeze(['occupation','time','location','need','relationship','local-event','weather','recent-player-contact','private-goal']),activities:Object.freeze(['work','travel','rest','eat','observe','talk','trade','visit','avoid-danger','investigate','help','return-home','pursue-personal-goal']),rule:'context-driven-not-fixed-loop-only'})}
+export function createVibeEnemyTacticalMind(enemy={}){
+    return Object.freeze({
+      identity:createVibeLivingActorContract({...enemy,role:enemy.role||'enemy'}),
+      qualityDNA:createVibeActorQualityDNA({role:enemy.role||'enemy',named:enemy.named===true}),
+      ecology:createVibeMonsterEcologyMind(enemy),
+      consider:Object.freeze(['distance','cover','ally-position','recent-damage-source','escape-route','objective','terrain','target-behavior','own-role','observed-player-habit','territory','ally-loss','uncertainty']),
+      maySuggest:Object.freeze(['pressure','wait','flank','retreat','guard','investigate','reposition','support-ally','change-attention','bait']),
+      mustNot:Object.freeze(['alter-stats','ignore-collision','know-hidden-player-state','guarantee-hit','change-cooldown'])
+    });
+  }
+export function createVibeNPCDailyMind(npc={}){
+    return Object.freeze({
+      identity:createVibeLivingActorContract({...npc,role:npc.role||'npc'}),
+      qualityDNA:createVibeActorQualityDNA({role:npc.role||'npc',named:npc.named!==false}),
+      life:createVibeAutonomousLifePlan({actor:{...npc,role:npc.role||'npc'},needs:npc.needs,duties:npc.duties,personalGoals:npc.personalGoals||npc.goals}),
+      activitySources:Object.freeze(['occupation','time','location','need','relationship','local-event','weather','recent-player-contact','private-goal']),
+      activities:Object.freeze(['work','travel','rest','eat','observe','talk','trade','visit','avoid-danger','investigate','help','return-home','pursue-personal-goal']),
+      rule:'context-driven-not-fixed-loop-only'
+    });
+  }
 export function createVibeCrowdDiversityPolicy({population=10}={}){return Object.freeze({population,personalityAxes:Object.freeze(['caution','curiosity','sociability','loyalty','greed','aggression','patience']),behaviorAxes:Object.freeze(['route-preference','attention-span','social-distance','risk-tolerance','routine-strength']),limits:Object.freeze({noPerFrameAI:true,eventDrivenDecisions:true,nearPlayerPriority:true,backgroundActorsUseDeterministicSimulation:true})})}
 export function createVibeCompanionPersonalityDNA(c={}){
   const traits=Object.freeze({
@@ -827,14 +845,223 @@ export function planVibeLivingActorDirector({actor={},player={},world={},relatio
       sourceEventCausalityRequired:true,
       privatePerspective:true,
       independentLifeAllowed:true,
-      playerNotUniversalCenter:true,
-      actorMayMaintainPlayerIndependentGoals:true,
-      actorMayMaintainRelationshipsUnrelatedToPlayer:true,
       remoteAiOptional:true,
       deterministicFallbackRequired:true
     })
   });
 }
+export function createVibeCausalEvent({
+  id='',type='',actorId='',targetId='',objectId='',location='',witnesses=[],facts={},authority='engine'
+}={}){
+  const eventId=cleanText(id);
+  return Object.freeze({
+    id:eventId,
+    type:cleanText(type),
+    actorId:cleanText(actorId),
+    targetId:cleanText(targetId),
+    objectId:cleanText(objectId),
+    location:cleanText(location),
+    witnesses:stableList(witnesses),
+    facts:Object.freeze(facts&&typeof facts==='object'?{...facts}:{}),
+    authority:authority==='engine'?'engine':'reported',
+    valid:Boolean(eventId&&type),
+    relationshipMutationEligible:Boolean(eventId&&type),
+    rule:'relationship-or-memory-change-requires-source-event'
+  });
+}
+
+export function createVibeCausalInterpretation({actor={},event={},relationship={},knowledge={},emotion='calm'}={}){
+  const personality=createVibeCompanionPersonalityDNA(actor);
+  const causalEvent=createVibeCausalEvent(event);
+  const witnessed=causalEvent.witnesses.includes(actor.id||actor.name)||knowledge.observed===true||knowledge.reported===true;
+  const certainty=Math.max(0,Math.min(1,Number(knowledge.confidence??(witnessed?1:0))));
+  return Object.freeze({
+    actor:actor.id||actor.name||'actor',
+    event:causalEvent,
+    perceived:witnessed,
+    certainty,
+    attribution:cleanText(knowledge.attribution||'unknown'),
+    personalityBias:Object.freeze({
+      empathy:personality.traits.empathy,
+      loyalty:personality.traits.loyalty,
+      pride:personality.traits.pride,
+      vengefulness:personality.traits.vengefulness,
+      caution:personality.traits.caution
+    }),
+    relationship:createVibeRelationshipState(relationship),
+    emotion:cleanText(emotion),
+    questions:Object.freeze([
+      'what-facts-did-i-actually-observe',
+      'who-do-i-think-caused-this',
+      'was-it-intentional-necessary-accidental-or-unknown',
+      'which-value-or-goal-does-this-affect',
+      'how-certain-am-i',
+      'should-this-change-memory-relationship-or-next-intent'
+    ]),
+    extremePermanentShiftAllowed:certainty>=0.75&&causalEvent.valid,
+    laterEvidenceMayCorrectInterpretation:true,
+    noHiddenFactAccess:true
+  });
+}
+
+export function createVibePlayerJudgment({actor={},events=[],relationship={},previous={}}={}){
+  const axes=['trustworthiness','kindness','reliability','danger','selfishness','courage','competence','respectForBoundaries','loyalty','predictability'];
+  const base=Object.fromEntries(axes.map(axis=>[axis,clampAxis(previous[axis]||0)]));
+  const sourced=events.slice(-24).filter(event=>event&&event.id&&event.type);
+  return Object.freeze({
+    actor:actor.id||actor.name||'actor',
+    relationship:createVibeRelationshipState(relationship),
+    dimensions:Object.freeze(base),
+    sourceEventIds:Object.freeze(sourced.map(event=>event.id)),
+    updateRule:'derive-small-bounded-axis-deltas-from-causal-events-and-this-actors-interpretation',
+    oneGlobalGoodEvilScoreForbidden:true,
+    mixedFeelingsAllowed:true,
+    factionSpecificReputationAllowed:true,
+    otherActorsMayJudgeDifferently:true,
+    directPlayerLabelForbidden:true
+  });
+}
+
+export function createVibeAutonomousLifePlan({actor={},world={},needs=[],duties=[],personalGoals=[],relationships={},recentEvents=[]}={}){
+  const living=createVibeLivingActorContract(actor);
+  const role=String(actor.role||'npc').toLowerCase();
+  const activities=/boss/.test(role)
+    ?['guard-objective','observe-intrusion','command-minions','prepare-declared-zone','taunt-or-warn','rest-between-pressure']
+    :/enemy|monster|elite|mob/.test(role)
+      ?['patrol-territory','forage','rest','follow-group','investigate-sound','avoid-danger','return-to-den','contest-territory']
+      :/companion|ally/.test(role)
+        ?['maintain-equipment','scout','rest','talk-to-npc','practice','help-local-npc','follow-personal-thread','observe-player','prepare-next-trip']
+        :['work','travel','rest','eat','visit','socialize','repair-object','prepare-event','pursue-personal-task','return-home'];
+  return Object.freeze({
+    actor:living.identity,
+    world:Object.freeze(world),
+    needs:stableList(needs),
+    duties:stableList(duties),
+    personalGoals:stableList(personalGoals),
+    relationships:Object.freeze(relationships&&typeof relationships==='object'?{...relationships}:{}),
+    recentEvents:Object.freeze(recentEvents.slice(-12)),
+    activities:Object.freeze(activities),
+    loop:Object.freeze(['assess-need-duty-goal','select-contextual-activity','travel-or-prepare','perform-declared-activity','react-to-interruption','update-memory-or-thread','rest-or-switch-goal']),
+    offscreen:Object.freeze({
+      lowFrequencyIntentSimulation:true,
+      authoritativeWorldEffectsEngineOnly:true,
+      instantOffscreenQuestLootKillTeleportForbidden:true,
+      resumeFromRecordedIntent:true
+    }),
+    scheduleIsPreferenceNotRigidClock:true,
+    playerAbsenceDoesNotErasePersonalLife:true,
+    gameplayAuthority:false
+  });
+}
+
+export function createVibeGuidanceIntent({
+  actor={},playerState={},objective={},recentFailures=[],knownFacts=[],relationship={},world={}
+}={}){
+  const personality=createVibeCompanionPersonalityDNA(actor);
+  const failureCount=recentFailures.slice(-8).length;
+  return Object.freeze({
+    actor:personality.id,
+    guidanceTypes:Object.freeze(['progress-hint','danger-warning','resource-shortage','build-or-equipment-gap','route-hint','combat-tactic','quest-reminder','missed-interaction','recovery-suggestion','social-or-story-hint']),
+    inputs:Object.freeze({
+      playerState:Object.freeze(playerState),
+      objective:Object.freeze(objective),
+      recentFailures:Object.freeze(recentFailures.slice(-8)),
+      knownFacts:Object.freeze(knownFacts.slice(-20)),
+      world:Object.freeze(world)
+    }),
+    relationship:createVibeRelationshipState(relationship),
+    style:Object.freeze({
+      directness:personality.speech.directness,
+      verbosity:personality.speech.verbosity,
+      formality:personality.speech.formality,
+      humor:personality.speech.humor
+    }),
+    hintDirectness:failureCount>=3?'more-direct':failureCount>=1?'moderate':'light',
+    onlyKnownInformation:true,
+    successfulPlayerGetsLessHandholding:true,
+    adviceMayBeBiasedByActorKnowledge:true,
+    exactHintRepeatSuppression:true,
+    hintCooldownRequired:true,
+    spoilerWithoutKnowledgePathForbidden:true,
+    criticalProgressBlockMayOverrideNormalSilence:true
+  });
+}
+
+export function createVibeLanguageRegister({actor={},gameProfile={},relationship={},emotion='calm'}={}){
+  const personality=createVibeCompanionPersonalityDNA(actor);
+  const requested=String(actor.profanityLevel||gameProfile.profanityLevel||'NONE').toUpperCase();
+  const familyFriendly=gameProfile.familyFriendly===true||gameProfile.childFriendly===true;
+  const profanityLevel=familyFriendly?(requested==='NONE'?'NONE':'MILD'):(['NONE','MILD','STRONG'].includes(requested)?requested:'NONE');
+  return Object.freeze({
+    actor:personality.id,
+    formality:personality.speech.formality,
+    directness:personality.speech.directness,
+    humor:personality.speech.humor,
+    vocabulary:stableList(actor.vocabulary),
+    verbalHabits:personality.speech.verbalHabits,
+    relationship:createVibeRelationshipState(relationship),
+    emotion:cleanText(emotion),
+    slang:cleanText(actor.slangStyle),
+    profanityLevel,
+    profanityFrequencyBudget:Math.max(0,Math.min(5,Number(actor.profanityFrequencyBudget??1))),
+    profanityMustFitCharacterAndContext:true,
+    profanityIsNotIdentitySubstitute:true,
+    dehumanizingProtectedClassSlursForbidden:true,
+    sexualOrGraphicAbuseNotRequired:true,
+    relationshipMayShiftRegister:true
+  });
+}
+
+export function createVibeActorEventCandidate({actor={},causeEvents=[],world={},motive='',goal='',urgency='normal'}={}){
+  const causalIds=causeEvents.filter(event=>event&&event.id).map(event=>event.id);
+  return Object.freeze({
+    actorId:actor.id||actor.name||'actor',
+    sourceCauseEventIds:Object.freeze(causalIds),
+    motive:cleanText(motive),
+    goal:cleanText(goal),
+    world:Object.freeze(world),
+    urgency:cleanText(urgency||'normal'),
+    candidateOnly:true,
+    engineValidationRequired:true,
+    mayUseOnlyDeclaredGameplayCapabilities:true,
+    mayNotInventRewardDamageSpawnCurrencyOrQuestCompletion:true
+  });
+}
+
+export function createVibeActorQuestCandidate({actor={},causeEvents=[],personalStake='',worldStake='',primaryVerb='',branches=[]}={}){
+  return Object.freeze({
+    giverOrOrigin:actor.id||actor.name||'actor',
+    causeEventIds:Object.freeze(causeEvents.filter(event=>event&&event.id).map(event=>event.id)),
+    personalStake:cleanText(personalStake),
+    worldStake:cleanText(worldStake),
+    primaryVerb:cleanText(primaryVerb),
+    optionalBranches:stableList(branches),
+    origin:'actor-personal-goal-relationship-or-world-cause',
+    candidateOnly:true,
+    acceptanceCompletionRewardPersistentMutation:'engine-only',
+    duplicateSignatureSuppressionRequired:true,
+    spamCooldownRequired:true,
+    existingDeclaredGameplayCapabilitiesOnly:true
+  });
+}
+
+export function createVibeReactionContinuity({event={},interpretation={},emotionBefore='calm',emotionAfter='calm',intent='',outcome={}}={}){
+  return Object.freeze({
+    sequence:Object.freeze(['event','perception','interpretation','emotion','attention','speech-or-silence','body-reaction','intent','engine-action','outcome','memory']),
+    event:createVibeCausalEvent(event),
+    interpretation:Object.freeze(interpretation),
+    emotionBefore:cleanText(emotionBefore),
+    emotionAfter:cleanText(emotionAfter),
+    intent:cleanText(intent),
+    outcome:Object.freeze(outcome),
+    instantMoodFlipRequiresCause:true,
+    habituationAllowed:true,
+    interruptionAllowed:true,
+    laterReconsiderationAllowed:true,
+    unresolvedEmotionMayCarryForward:true
+  });
+}
+
 export function createVibeConversationFrame({speaker={},listener={},relationship={},world={},memory=[],history=[]}={}){return Object.freeze({base:createVibeRuntimeAIContract({purpose:'dialogue',contextKeys:SOCIAL_CONTEXT}),speaker:createVibeCompanionPersonalityDNA(speaker),listener:Object.freeze({id:listener.id||listener.name||'player',recentTone:listener.recentTone||'',recentAction:listener.recentAction||''}),relationship:createVibeRelationshipState(relationship),world:Object.freeze(world),memory:Object.freeze(memory.slice(-12)),history:Object.freeze(history.slice(-8)),questions:Object.freeze(['would-this-person-speak-now','what-do-they-care-about','what-memory-matters','does-silence-fit-better']),output:Object.freeze(['speech-act','utterance','emotion','body-language','attention','confidence'])})}
 export function createVibeHumorContract({companion={},relationship={},context={}}={}){return Object.freeze({style:createVibeCompanionPersonalityDNA(companion).speech.humor,allowedSources:Object.freeze(['shared-memory','current-situation','self-deprecation-if-fit','gentle-teasing-if-fit','world-observation','callback']),forbid:Object.freeze(['constant-quips','same-catchphrase-spam','joke-after-every-action','out-of-character-meme-speak']),context:Object.freeze(context),relationship:createVibeRelationshipState(relationship)})}
 export function createVibeCompanionInitiativeContract({companion={},situation={}}={}){return Object.freeze({identity:createVibeCompanionPersonalityDNA(companion),mayInitiate:Object.freeze(['comment-on-world','ask-player-question','warn','offer-help','suggest-rest','notice-object','react-to-npc','continue-old-topic','bring-up-shared-memory','disagree','apologize','celebrate','choose-silence']),situation:Object.freeze(situation),limits:Object.freeze(['no-commentary-on-every-event','cooldown-between-noncritical-lines','silence-is-valid'])})}
@@ -922,4 +1149,4 @@ export function scoreVibeAIRuntimeRisk({frequency='event',latencySensitive=false
 export function createVibeAIContextBudget({purpose='npc',mobile=true}={}){const c=classifyVibeAIUse(purpose);if(!c.allowed)return Object.freeze({purpose,blocked:true,maxInputChars:0,maxHistoryTurns:0});const base=purpose==='dialogue'?1400:purpose==='quest'?1100:900;return Object.freeze({purpose,blocked:false,maxInputChars:mobile?base:Math.round(base*1.5),maxHistoryTurns:purpose==='dialogue'?8:6,sendOnlyRelevantState:true,exclude:Object.freeze(['full-save','secrets','source-code','unrelated-player-data','hidden-authoritative-state'])})}
 export function validateVibeAIAction(action={}){const forbidden=['damage','hp','reward','drop','inventory','save','progression','spawnCount','combatResult','cooldown','collisionResult','questCompletion','questReward','statGrowth'];const touched=forbidden.filter(k=>action[k]!==undefined);return Object.freeze({safe:!touched.length,touched:Object.freeze(touched),decision:touched.length?'reject-and-use-engine-rule':'allow-as-suggestion'})}
 export function assertVibeAIAbsoluteBoundary({scope='',purpose=''}={}){const c=classifyVibeAIUse(purpose),safe=scope==='game-runtime'&&c.allowed;return Object.freeze({safe,rule:'AI_GAME_RUNTIME_ONLY',decision:safe?'allow-runtime-ai':'block-ai'})}
-if(typeof window!=='undefined')Object.assign(window,{createJaewoonVibeCausalEventFrame:createVibeCausalEventFrame,createJaewoonVibeActorEventAppraisal:createVibeActorEventAppraisal,createJaewoonVibeActorPlayerModel:createVibeActorPlayerModel,createJaewoonVibeProfanityVoiceProfile:createVibeProfanityVoiceProfile,createJaewoonVibeGameplayGuidanceFrame:createVibeGameplayGuidanceFrame,createJaewoonVibeAutonomousContentCandidate:createVibeAutonomousContentCandidate,createJaewoonVibeIndividualActivityPlan:createVibeIndividualActivityPlan,planJaewoonVibeLivingActorDirector:planVibeLivingActorDirector,createJaewoonVibeActorWorldAnchors:createVibeActorWorldAnchors,createJaewoonVibeActorActivityStack:createVibeActorActivityStack,createJaewoonVibeLivingActivityFrame:createVibeLivingActivityFrame,createJaewoonVibeOffscreenActorSimulation:createVibeOffscreenActorSimulation,createJaewoonVibeEmergentContentCandidate:createVibeEmergentContentCandidate,createJaewoonVibeProgressHelperIntent:createVibeProgressHelperIntent,createJaewoonVibeSpeechRegister:createVibeSpeechRegister,createJaewoonVibeGameplayMentorContract:createVibeGameplayMentorContract,createJaewoonVibeAutonomousQuestCandidate:createVibeAutonomousQuestCandidate,createJaewoonVibeAutonomousEventCandidate:createVibeAutonomousEventCandidate,planJaewoonVibeAutonomousActorInitiative:planVibeAutonomousActorInitiative,createJaewoonVibeActorQualityDNA:createVibeActorQualityDNA,createJaewoonVibeCompanionSelfhoodDNA:createVibeCompanionSelfhoodDNA,createJaewoonVibeCompanionMotivationFrame:createVibeCompanionMotivationFrame,createJaewoonVibeCompanionInnerState:createVibeCompanionInnerState,createJaewoonVibeCompanionRelationshipFrame:createVibeCompanionRelationshipFrame,createJaewoonVibeCompanionDialogueIntent:createVibeCompanionDialogueIntent,createJaewoonVibeCompanionPersonalArc:createVibeCompanionPersonalArc,createJaewoonVibeMonsterEcologyMind:createVibeMonsterEcologyMind,classifyJaewoonVibeAIUse:classifyVibeAIUse,createJaewoonVibeRuntimeAIContract:createVibeRuntimeAIContract,createJaewoonVibeLivingActorContract:createVibeLivingActorContract,createJaewoonVibeLivingDecisionFrame:createVibeLivingDecisionFrame,createJaewoonVibeSocialMemoryPolicy:createVibeSocialMemoryPolicy,createJaewoonVibeEnemyTacticalMind:createVibeEnemyTacticalMind,createJaewoonVibeNPCDailyMind:createVibeNPCDailyMind,createJaewoonVibeCrowdDiversityPolicy:createVibeCrowdDiversityPolicy,createJaewoonVibeCompanionPersonalityDNA:createVibeCompanionPersonalityDNA,createJaewoonVibeRelationshipState:createVibeRelationshipState,createJaewoonVibeConversationFrame:createVibeConversationFrame,createJaewoonVibeHumorContract:createVibeHumorContract,createJaewoonVibeCompanionInitiativeContract:createVibeCompanionInitiativeContract,createJaewoonVibeCompanionEmbodiedReaction:createVibeCompanionEmbodiedReaction,createJaewoonVibeCompanionSharedExperience:createVibeCompanionSharedExperience,createJaewoonVibeSocialInteractionDiversityGate:createVibeSocialInteractionDiversityGate,planJaewoonVibeCompanionSocialDirector:planVibeCompanionSocialDirector,createJaewoonVibeActorSelfModel:createVibeActorSelfModel,createJaewoonVibeActorPersonalArc:createVibeActorPersonalArc,createJaewoonVibeActorAutonomyContract:createVibeActorAutonomyContract,createJaewoonVibeActorSubjectiveWorldModel:createVibeActorSubjectiveWorldModel,createJaewoonVibeActorGrowthReflection:createVibeActorGrowthReflection,createJaewoonVibeActorParallelStory:createVibeActorParallelStory,createJaewoonVibeRivalProtagonistContract:createVibeRivalProtagonistContract,createJaewoonVibeActorIdentityDiversityGate:createVibeActorIdentityDiversityGate,planJaewoonVibeIndependentActorDirector:planVibeIndependentActorDirector,createJaewoonVibeQuestRuntimeContract:createVibeQuestRuntimeContract,planJaewoonVibeRuntimeQuestDirector:planVibeRuntimeQuestDirector,createJaewoonVibeAIDirectorPlan:createVibeAIDirectorPlan,createJaewoonVibeAIContextBudget:createVibeAIContextBudget,validateJaewoonVibeAIAction:validateVibeAIAction,assertJaewoonVibeAIAbsoluteBoundary:assertVibeAIAbsoluteBoundary});
+if(typeof window!=='undefined')Object.assign(window,{createJaewoonVibeCausalEventFrame:createVibeCausalEventFrame,createJaewoonVibeActorEventAppraisal:createVibeActorEventAppraisal,createJaewoonVibeActorPlayerModel:createVibeActorPlayerModel,createJaewoonVibeProfanityVoiceProfile:createVibeProfanityVoiceProfile,createJaewoonVibeGameplayGuidanceFrame:createVibeGameplayGuidanceFrame,createJaewoonVibeAutonomousContentCandidate:createVibeAutonomousContentCandidate,createJaewoonVibeIndividualActivityPlan:createVibeIndividualActivityPlan,planJaewoonVibeLivingActorDirector:planVibeLivingActorDirector,createJaewoonVibeActorWorldAnchors:createVibeActorWorldAnchors,createJaewoonVibeActorActivityStack:createVibeActorActivityStack,createJaewoonVibeLivingActivityFrame:createVibeLivingActivityFrame,createJaewoonVibeOffscreenActorSimulation:createVibeOffscreenActorSimulation,createJaewoonVibeEmergentContentCandidate:createVibeEmergentContentCandidate,createJaewoonVibeProgressHelperIntent:createVibeProgressHelperIntent,createJaewoonVibeSpeechRegister:createVibeSpeechRegister,createJaewoonVibeGameplayMentorContract:createVibeGameplayMentorContract,createJaewoonVibeAutonomousQuestCandidate:createVibeAutonomousQuestCandidate,createJaewoonVibeAutonomousEventCandidate:createVibeAutonomousEventCandidate,planJaewoonVibeAutonomousActorInitiative:planVibeAutonomousActorInitiative,createJaewoonVibeActorQualityDNA:createVibeActorQualityDNA,createJaewoonVibeCausalEvent:createVibeCausalEvent,createJaewoonVibeCausalInterpretation:createVibeCausalInterpretation,createJaewoonVibePlayerJudgment:createVibePlayerJudgment,createJaewoonVibeAutonomousLifePlan:createVibeAutonomousLifePlan,createJaewoonVibeGuidanceIntent:createVibeGuidanceIntent,createJaewoonVibeLanguageRegister:createVibeLanguageRegister,createJaewoonVibeActorEventCandidate:createVibeActorEventCandidate,createJaewoonVibeActorQuestCandidate:createVibeActorQuestCandidate,createJaewoonVibeReactionContinuity:createVibeReactionContinuity,createJaewoonVibeCompanionSelfhoodDNA:createVibeCompanionSelfhoodDNA,createJaewoonVibeCompanionMotivationFrame:createVibeCompanionMotivationFrame,createJaewoonVibeCompanionInnerState:createVibeCompanionInnerState,createJaewoonVibeCompanionRelationshipFrame:createVibeCompanionRelationshipFrame,createJaewoonVibeCompanionDialogueIntent:createVibeCompanionDialogueIntent,createJaewoonVibeCompanionPersonalArc:createVibeCompanionPersonalArc,createJaewoonVibeMonsterEcologyMind:createVibeMonsterEcologyMind,classifyJaewoonVibeAIUse:classifyVibeAIUse,createJaewoonVibeRuntimeAIContract:createVibeRuntimeAIContract,createJaewoonVibeLivingActorContract:createVibeLivingActorContract,createJaewoonVibeLivingDecisionFrame:createVibeLivingDecisionFrame,createJaewoonVibeSocialMemoryPolicy:createVibeSocialMemoryPolicy,createJaewoonVibeEnemyTacticalMind:createVibeEnemyTacticalMind,createJaewoonVibeNPCDailyMind:createVibeNPCDailyMind,createJaewoonVibeCrowdDiversityPolicy:createVibeCrowdDiversityPolicy,createJaewoonVibeCompanionPersonalityDNA:createVibeCompanionPersonalityDNA,createJaewoonVibeRelationshipState:createVibeRelationshipState,createJaewoonVibeConversationFrame:createVibeConversationFrame,createJaewoonVibeHumorContract:createVibeHumorContract,createJaewoonVibeCompanionInitiativeContract:createVibeCompanionInitiativeContract,createJaewoonVibeCompanionEmbodiedReaction:createVibeCompanionEmbodiedReaction,createJaewoonVibeCompanionSharedExperience:createVibeCompanionSharedExperience,createJaewoonVibeSocialInteractionDiversityGate:createVibeSocialInteractionDiversityGate,planJaewoonVibeCompanionSocialDirector:planVibeCompanionSocialDirector,createJaewoonVibeActorSelfModel:createVibeActorSelfModel,createJaewoonVibeActorPersonalArc:createVibeActorPersonalArc,createJaewoonVibeActorAutonomyContract:createVibeActorAutonomyContract,createJaewoonVibeActorSubjectiveWorldModel:createVibeActorSubjectiveWorldModel,createJaewoonVibeActorGrowthReflection:createVibeActorGrowthReflection,createJaewoonVibeActorParallelStory:createVibeActorParallelStory,createJaewoonVibeRivalProtagonistContract:createVibeRivalProtagonistContract,createJaewoonVibeActorIdentityDiversityGate:createVibeActorIdentityDiversityGate,planJaewoonVibeIndependentActorDirector:planVibeIndependentActorDirector,createJaewoonVibeQuestRuntimeContract:createVibeQuestRuntimeContract,planJaewoonVibeRuntimeQuestDirector:planVibeRuntimeQuestDirector,createJaewoonVibeAIDirectorPlan:createVibeAIDirectorPlan,createJaewoonVibeAIContextBudget:createVibeAIContextBudget,validateJaewoonVibeAIAction:validateVibeAIAction,assertJaewoonVibeAIAbsoluteBoundary:assertVibeAIAbsoluteBoundary});
