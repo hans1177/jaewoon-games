@@ -97,7 +97,7 @@ test('stale published Roblox version preserves the exact failed stage and retrie
 });
 
 
-test('exact Roblox foundation QA keeps active runs independent while deduplicating pending work',()=>{
+test('exact Roblox foundation QA keeps active runs independent while merging unrelated runtime writes optimistically',()=>{
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
   assert.match(workflow,/run-name: Roblox runtime foundation QA · \$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
@@ -108,7 +108,9 @@ test('exact Roblox foundation QA keeps active runs independent while deduplicati
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_EXACT_DEDUPED=/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_SCAN_DEDUPED_NEWER=/);
   assert.match(workflow,/strategy:[\s\S]{0,180}fail-fast: false[\s\S]{0,180}matrix:/);
-  assert.match(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(workflow,/ROBLOX_FOUNDATION_PERSIST_OPTIMISTIC_ATTEMPT=\$attempt\/5/);
+  assert.match(workflow,/SAME_GAME_ATOMIC_STATE/);
+  assert.doesNotMatch(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
 });
 
 test('F7 multiplayer checks the exact Roblox source contract before F9',()=>{
@@ -130,9 +132,15 @@ test('shared fallback QA only probes the one current candidate and marks older d
 });
 
 
-test('foundation runtime write contention defers only the stale write and keeps unrelated Studio play available',()=>{
-  assert.match(workflow,/ROBLOX_FOUNDATION_RUNTIME_WRITE_CONFLICT=DEFERRED_TO_NEXT_CYCLE/);
-  assert.match(workflow,/if ! git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"; then[\s\S]*git rebase --abort \|\| true[\s\S]*exit 0/);
+test('foundation runtime write contention merges unrelated games and revalidates only same-game conflicts',()=>{
+  assert.match(workflow,/ROBLOX_FOUNDATION_PERSIST_SAME_FIELD_CONFLICT_COUNT=/);
+  assert.match(workflow,/EXACT_SOURCE_REVISION/);
+  assert.match(workflow,/EXACT_ARTIFACT_IDENTITY/);
+  assert.match(workflow,/EXACT_CANDIDATE_VERSION/);
+  assert.match(workflow,/SAME_GAME_ATOMIC_STATE/);
+  assert.match(workflow,/ROBLOX_FOUNDATION_CONFLICT_REVALIDATION_DISPATCHED=\$id/);
+  assert.match(workflow,/ROBLOX_FOUNDATION_DOWNSTREAM_CONFLICT_FILTER_COUNT=/);
+  assert.doesNotMatch(workflow,/ROBLOX_FOUNDATION_RUNTIME_WRITE_CONFLICT=DEFERRED_TO_NEXT_CYCLE/);
 });
 
 
@@ -347,14 +355,15 @@ test('runtime-state persistence defines its local F0 candidate resolver in the s
 });
 
 
-test('runtime QA collapses F9 fanout to one scan for all ready games',()=>{
+test('runtime QA dispatches every F9-ready game independently while deduping exact active reviews',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
-  const start=workflow.indexOf('Dispatch one F9 scan for all runtime-accepted candidates');
+  const start=workflow.indexOf('Dispatch exact F9 review for every runtime-accepted candidate');
   const end=workflow.indexOf('Dispatch exact Studio MCP follow-up',start);
   const block=workflow.slice(start,end);
   assert.ok(start>0&&end>start);
-  assert.match(block,/company-development-roblox-final-review-revalidation\.yml --repo "\$GITHUB_REPOSITORY" --ref main\n/);
-  assert.match(block,/ROBLOX_F9_SCAN_DISPATCHED=candidates=/);
-  assert.doesNotMatch(block,/-f game_id=/);
-  assert.doesNotMatch(block,/while read -r id/);
+  assert.match(block,/company-development-roblox-final-review-revalidation\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
+  assert.match(block,/ROBLOX_F9_EXACT_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.match(block,/ROBLOX_F9_EXACT_DISPATCHED=\$id/);
+  assert.match(block,/while read -r id/);
+  assert.doesNotMatch(block,/ROBLOX_F9_SCAN_DISPATCHED=/);
 });
