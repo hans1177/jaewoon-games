@@ -526,9 +526,9 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
   const roleMatches=roleTokens.filter(token=>tags.some(tag=>tag.includes(token)||token.includes(tag))).length;
   const compatibilityScore=
     (lane==='A_SAME_GAME_BOUND'?50:lane==='B_NATIVE_READY'?40:lane==='C_MINIMAL_ADAPT'?25:0)
-    +(asset.productionVerified===true?20:0)
-    +(asset.companyVerified===true?8:0)
-    +Math.min(12,roleMatches*4)
+    +(asset.productionVerified===true?8:0)
+    +(asset.companyVerified===true?4:0)
+    +Math.min(20,roleMatches*6)
     +(asset.sourceHash?5:0)
     +(asset.retargetable===true?5:0);
   const qualityAxes=/character|player|npc/i.test(requestedType)
@@ -590,7 +590,16 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
     derivedRepairAxes:freezeList(qualityAxes),
     fullReauthorTrigger:'CORE_IDENTITY_OR_STRUCTURAL_QUALITY_STILL_BLOCKED_AFTER_TARGETED_DERIVATION',
     randomDetailInflationForbidden:true,
-    sourceAssetMayRemainAsPartialDonorAfterReplacement:true
+    sourceAssetMayRemainAsPartialDonorAfterReplacement:true,
+    visualQualityNotImpliedByVerification:true,
+    detailInvestmentPolicy:Object.freeze({
+      prioritySignals:Object.freeze(['SCREEN_SPACE_OCCUPANCY','PLAYER_DWELL_TIME','INTERACTION_FREQUENCY','HERO_BOSS_SIGNATURE_ROLE','CAMERA_PROXIMITY','GAMEPLAY_READABILITY','REPEATED_VISIBILITY']),
+      highPriority:Object.freeze(['PLAYER_OR_HERO','PRIMARY_ENEMY_OR_BOSS','SIGNATURE_WEAPON_OR_TOOL','KEY_LANDMARK_OR_HUB','FREQUENT_INTERACTION_UI']),
+      lowPriorityMayUseSimplifiedDetail:true,
+      distantOrRareAssetMayUseLODAndMaterialSimplification:true,
+      importantAssetMayNotBeKeptLowDetailBecauseItIsAlreadyVerified:true,
+      polygonOrTextureCountAloneIsNotQuality:true
+    })
   });
 }
 function decisionFor(selector={},target='',binding={},manifest={}){
@@ -1115,7 +1124,9 @@ export function buildVibeAssetProductionPlan({
       sequence:freezeList(['APPLY_USABLE_EXISTING_FIRST','OBSERVE_IN_GAME','DERIVE_WEAK_PARTS_ONLY','REAPPLY','NEW_AUTHORING_LAST']),
       existingAssetApplicationBeforeNewAuthoring:true,
       qualityGateStillRequired:true,
-      newAuthoringOnlyAfterReusableCandidateFailure:true
+      newAuthoringOnlyAfterReusableCandidateFailure:true,
+      visualVerificationAndVisualQualitySeparated:true,
+      detailInvestmentPriority:freezeList(['SCREEN_SPACE_OCCUPANCY','PLAYER_DWELL_TIME','INTERACTION_FREQUENCY','HERO_BOSS_SIGNATURE_ROLE','CAMERA_PROXIMITY','GAMEPLAY_READABILITY'])
     }),
     generatedAssetOutputContract:GENERATED_ASSET_OUTPUT_CONTRACT,
     baseMaterialLoadout,
