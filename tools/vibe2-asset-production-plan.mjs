@@ -64,18 +64,16 @@ function runtimeVisualTargetPlatform(target=''){
   const value=clean(target).toUpperCase();
   return value==='ROBLOX'?'ROBLOX':value==='UNITY'?'UNITY':value==='WEB'?'WEB':'';
 }
-function runtimeVisualManifestFiles(root,max=32){
+function runtimeVisualManifestFiles(root){
   const out=[],stack=[root];
-  while(stack.length&&out.length<max){
+  while(stack.length){
     const current=stack.pop();
     let entries=[];
     try{entries=fs.readdirSync(current,{withFileTypes:true});}catch{continue;}
     for(const entry of entries.sort((a,b)=>a.name.localeCompare(b.name))){
       const full=path.join(current,entry.name);
-      if(entry.isDirectory()){
-        if(stack.length<128)stack.push(full);
-      }else if(entry.isFile()&&entry.name==='asset-runtime-visual-evidence.json')out.push(full);
-      if(out.length>=max)break;
+      if(entry.isDirectory())stack.push(full);
+      else if(entry.isFile()&&entry.name==='asset-runtime-visual-evidence.json')out.push(full);
     }
   }
   return out;
@@ -92,9 +90,14 @@ export function discoverRuntimeVisualEvidence({task={},target='',evidenceRoot=pr
   if(!gameId||!platform||!/^[0-9a-f]{40}$/i.test(currentSourceRevision))return null;
   const captures=[],expectedSubjects=[],visualGoals=[],editableTargets=['SCENE'],evidenceProvenance=[];
   const seenCaptureIds=new Set(),seenSubjectIds=new Set();
-  for(const file of runtimeVisualManifestFiles(root)){
-    let manifest;
-    try{manifest=JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));}catch{continue;}
+  const manifests=runtimeVisualManifestFiles(root).map(file=>{
+    try{
+      const manifest=JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
+      const producer=manifest?.producer&&typeof manifest.producer==='object'?manifest.producer:{};
+      return{file,manifest,recency:clean(producer.artifactCreatedAt||producer.artifactUpdatedAt||manifest.createdAt||'')};
+    }catch{return null;}
+  }).filter(Boolean).sort((a,b)=>b.recency.localeCompare(a.recency)||a.file.localeCompare(b.file));
+  for(const {file,manifest,recency} of manifests){
     const manifestSourceRoot=clean(manifest.sourceRoot).replaceAll('\\','/').replace(/^\.\//,'');
     if(Number(manifest.version)!==1||clean(manifest.gameId)!==gameId||clean(manifest.platform).toUpperCase()!==platform)continue;
     if(manifest.currentSourceCompatible!==true||clean(manifest.currentSourceRevision)!==currentSourceRevision)continue;
@@ -125,6 +128,7 @@ export function discoverRuntimeVisualEvidence({task={},target='',evidenceRoot=pr
         captureSourceRevision:clean(manifest.sourceRevision),
         sourceCompatibility:'EXACT_SOURCE_ROOT_NO_DIFF',
         viewport:{width:Number(viewport.width),height:Number(viewport.height)},
+        capturedAt:recency||null,
         producer:{...producer,manifest:path.relative(root,file).replaceAll('\\','/')}
       });
     }
@@ -137,7 +141,7 @@ export function discoverRuntimeVisualEvidence({task={},target='',evidenceRoot=pr
     editableTargets.push(...(Array.isArray(manifest.editableTargets)?manifest.editableTargets:[]));
     evidenceProvenance.push({
       platform,surface,sourceRevision:clean(manifest.sourceRevision),currentSourceRevision,
-      sourceCompatibility:'EXACT_SOURCE_ROOT_NO_DIFF',producer:{...producer},
+      sourceCompatibility:'EXACT_SOURCE_ROOT_NO_DIFF',producer:{...producer},capturedAt:recency||null,
       manifest:path.relative(root,file).replaceAll('\\','/')
     });
   }
@@ -153,6 +157,8 @@ export function discoverRuntimeVisualEvidence({task={},target='',evidenceRoot=pr
     editableTargets:freezeList(unique(editableTargets)),
     evidenceRoot:root,
     evidenceProvenance:freezeList(evidenceProvenance),
+    captureSelection:'ALL_CURRENT_SOURCE_COMPATIBLE_RECENT_FIRST',
+    allCompatibleCapturesIncluded:true,
     automaticallyBoundExistingRuntimeEvidence:true
   });
 }
