@@ -10,6 +10,7 @@ import { planAssetApplication } from '../assets/asset-selector.js';
 import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant,auditMotionContinuityTrace} from '../assets/vibe-motion-director.js';
 import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
+import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison} from '../assets/vibe-visual-quality-gate.js';
 
 const clean=value=>String(value??'').trim();
 const freeze=value=>Object.freeze(value);
@@ -885,6 +886,33 @@ export function buildVibeAssetProductionPlan({
       limits:{...task.motionContinuityTrace.limits,...traceAsset?.motionQA?.limits}
     }),assetId:clean(task.motionContinuityTrace.assetId)
   }:null;
+  const runtimeVisualEvidence=task.runtimeVisualEvidence&&typeof task.runtimeVisualEvidence==='object'?task.runtimeVisualEvidence:null;
+  const runtimeVisualAudit=runtimeVisualEvidence?auditVibeRuntimeVisualEvidence(runtimeVisualEvidence):null;
+  const runtimeBeforeAfterAudit=runtimeVisualEvidence?.visualRegression?auditVibeRuntimeBeforeAfterComparison(runtimeVisualEvidence.visualRegression):null;
+  const runtimeVisualRepair=runtimeVisualAudit&&!runtimeVisualAudit.pass?freeze({
+    status:'RUNTIME_VISUAL_REPAIR_REQUIRED',
+    sourceRevision:clean(task.sourceRevision||runtimeVisualEvidence?.sourceRevision||runtimeVisualEvidence?.candidateRevision)||null,
+    candidateRevision:clean(runtimeVisualEvidence?.candidateRevision)||null,
+    defects:freezeList(runtimeVisualAudit.repairTargets||[]),
+    reasons:freezeList(runtimeVisualAudit.reasons||[]),
+    interfaceMissing:freezeList(runtimeVisualAudit.interfaceCoverage?.missing||[]),
+    sceneObjectsMissing:freezeList(runtimeVisualAudit.sceneObjectCoverage?.missing||[]),
+    beforeAfter:runtimeBeforeAfterAudit,
+    preserve:freezeList(['GAMEPLAY_VALUES','SAVE_MEANING','MULTIPLAYER_AUTHORITY','HIT_TIMING','QUEST_AND_PROGRESS_RULES','UNRELATED_VISUAL_SYSTEMS']),
+    repairMode:'AFFECTED_VISUAL_RESPONSIBILITY_ONLY',
+    sameCaptureConditionsRequired:true,
+    recaptureAfterMutation:true,
+    runtimeReobservationRequiredToClose:true,
+    declarationOnlyClosureForbidden:true
+  }):null;
+  const engineMeasurementCapture=freeze({
+    required:Boolean(motionContinuityAudit||runtimeVisualRepair),
+    status:task.engineMeasurementCapture&&typeof task.engineMeasurementCapture==='object'?'BOUND':'CAPTURE_REQUIRED_WHEN_RELEVANT',
+    evidence:task.engineMeasurementCapture&&typeof task.engineMeasurementCapture==='object'?freeze({...task.engineMeasurementCapture}):null,
+    automaticCaptureClaimed:task.engineMeasurementCapture?.automatic===true,
+    missingCaptureRemainsUnverified:true,
+    sourceAndCaptureHashBindingRequired:true
+  });
   return freeze({
     version:1,
     kind:'vibe2-asset-production-plan',
@@ -914,6 +942,9 @@ export function buildVibeAssetProductionPlan({
       platforms:task.assetDetailReview?.platforms||(['unity','web'].includes(resolvedTarget)?['UNITY','WEB']:[resolvedTarget.toUpperCase()])
     }):null,
     motionContinuityAudit,
+    runtimeVisualAudit,
+    runtimeVisualRepair,
+    engineMeasurementCapture,
     sourceGlbReconstruction:freezeList((Array.isArray(task.sourceGlbs)?task.sourceGlbs:[]).map(source=>inspectVibeSourceGlb({repoRoot,source}))),
     mapDetailReconstruction:task.mapReconstruction?createVibeMapDetailReconstruction({
       sketch:task.mapReconstruction.sketch||{},assets:[...universeRepositoryAssets,...(companyRegistry?.assets||[])],
@@ -1354,6 +1385,7 @@ export function assetProductionGuidance(plan={}){
     plan.generatedAssetOutputContract?`[GENERATED NATIVE ASSET CONTRACT] ${JSON.stringify(plan.generatedAssetOutputContract)}. Roblox/Unity에서 기존 자산이 목표 품질을 못 채우면 Blender/Python 또는 엔진 네이티브 authoring으로 실제 원본 자산을 만든다. 생성 소스 레시피와 원본/파생 파일, 동일 조건 미리보기, evidence.json, 회사 자산 장부 등록을 남긴다. GLB/이미지 파일이 생겼다는 사실만으로 VERIFIED 처리하지 말고 대상 native 런타임에서 실제 바인딩·표현·성능 검증 뒤 승격한다.`:'',
     plan.detailReview?`[STYLE COMPARISON AND LOCAL REPAIR] ${JSON.stringify(plan.detailReview)}. 같은 원형·카메라·조명·동작·표본 시점으로 카툰/실사/다크를 비교한다. repairs의 현재 소스/캡처 근거가 있는 부위·프레임·editableParameters만 수정하고 previousParameters와 잠긴 특징은 유지한다. 수정 뒤 동일 조건 재촬영으로 재검토하며 캡처 등록이나 파라미터 변경만으로 문제를 닫지 않는다.`:'',
     plan.motionContinuityAudit?`[MEASURED CONTINUOUS MOTION] ${JSON.stringify(plan.motionContinuityAudit)}. 루트·접촉점·손/무기 목표점=월드 미터, 관절=루트 로컬 미터, 지지물 접촉=동일 supportId의 로컬 미터, 회전/시선 오차=라디안, 표정=0~1 가중치다. violations의 region/frameRange/normalizedTimeRange에서 발 고정·손/무기 접촉·의상 관통·시선 추적·표정 튐을 수정한다. attachments는 active와 effectorWorldPosition/targetWorldPosition, penetrations는 depthMeters, gaze는 tracking과 forwardWorld/targetDirectionWorld, expressions는 morph별 가중치를 모든 프레임에 계측한다. 레지스트리 motionQA.requiredDetailChannels/limits를 작업 입력이 약화할 수 없다. 현재 소스 해시와 클립 전체 표본 및 선언된 채널이 없으면 UNVERIFIED다. 판정 시점·클립 길이·게임 이동 권한을 바꾸지 말고 재측정한다. unmeasuredGroups는 미검수이며 수치 PASS는 전체 시각 품질이나 런타임 승격 PASS가 아니다.`:'',
+    plan.runtimeVisualRepair?`[RUNTIME VISUAL REPAIR LOOP] ${JSON.stringify(plan.runtimeVisualRepair)}. defects만 실제 책임 파일에서 수정한다. INTERFACE는 요구된 HUD/MENU/MINIMAP/INTERACTION 표면만, SCENE_OBJECT는 선언된 필수 오브젝트 바인딩만 보완한다. ENVIRONMENT/COHESION/PRESENTATION은 같은 카메라·조명·상태를 유지한 before/after 캡처로 다시 확인한다. 게임 규칙·저장·멀티 권한·판정 타이밍은 수정하지 않는다. 같은 결함은 실제 런타임 재관찰 전에는 닫지 않는다.`:'',
     ...(plan.sourceGlbReconstruction||[]).map(source=>`[BASIC GLB TO DETAILED ASSET] ${JSON.stringify(source)}. 기본 GLB의 실제 원형·부품·재질·리그·애니메이션을 재사용하고 약한 형태를 재조형한다. 해부학/구조 접합/의복 겹침/눈꺼풀·입술·손발/문·창·지붕/목재·금속·돌·천의 마감과 사용 흔적을 자산 종류에 맞게 풍부하게 만든다. 단순 subdivide나 노이즈·색 변경으로 완성 처리하지 않는다. 원본은 보존하고 실제 DCC에서 파생본을 만든 뒤 morph/socket/리타겟 연결과 Unity/Web GLB·네이티브 변형을 등록한다. 메시·리깅·텍스처 제작 도구가 없으면 AUTHORING_REQUIRED를 유지한다.`),
     plan.mapDetailReconstruction?`[BASIC MAP TO DETAILED WORLD] ${JSON.stringify(plan.mapDetailReconstruction)}. 내비게이션 수준의 기본 지도에서 길·교차로·구역·랜드마크를 읽고 연결 관계를 먼저 보존한다. 지형/배수→대지/건물/골목→식생→기능성 소품→접합/표면/생활 흔적→주변 동작 순서로 재구성한다. 소품을 균일하게 뿌리거나 안개로 가리지 말고 상업/주거/산업/숲 같은 구역 기능과 사용 원인에 따라 디테일을 배치한다. 도로 폭·문 접근·상호작용 영역·필수 시야·모바일 이동을 지키고 원본 동선 겹침과 실제 경로 보행으로 검수한다.`:'',
     plan.imageAssetCreation?.enabled?`[IMAGE-TO-ASSET CREATION] ${JSON.stringify(plan.imageAssetCreation)}. 이미지 한 장만 있어도 먼저 실제 픽셀을 관찰한다. 보이는 실루엣·비율·재질 경계·색·시그니처·미세 마감을 추출하고, 뒷면·가려진 접합부·관절·동작은 창작 설계로 구분한다. 정면 복사판이나 이미지 평면으로 최종 모델을 대신하지 않는다. 공통 GLB 원형/부품 재사용→디테일 조형→의상 맞춤→리깅/표정/동작→Unity/Web 파생으로 이어간다. UI/아이콘/배경에도 적용하고 원본과 같은 카메라·중립 조명·실게임 화면에서 비교한다. 픽셀 접근이나 실제 제작 도구가 없으면 필요한 제작 단계로 남기며 완성 처리하지 않는다.`:'',
