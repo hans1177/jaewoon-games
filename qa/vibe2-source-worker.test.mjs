@@ -5212,6 +5212,44 @@ test('oversized initial JSON prompt caps editable context while preserving allow
   assert.ok(Buffer.byteLength(studio,'utf8')<36000);
 });
 
+test('oversized compact learning stays below source-generation budget even with many short principles',()=>{
+  const id='external-many-short-principles';
+  const principleCount=180;
+  const rows=[];
+  for(let index=0;index<principleCount;index++){
+    rows.push('DISPOSITION=p'+index+':APPLIED_GAME_SOURCE;GAME=demo;TARGET=unity;DOMAINS=MOBILE_INPUT|UI_STATE;GENRE_MOOD=demo');
+    rows.push('APPLY=id=p'+index+';scope=mobile;lesson=keep action '+index+' visible near the active control;apply=bind feedback '+index+' to the current state');
+  }
+  const learning=[
+    '[VERIFIED EXTERNAL BLACK-BOX LEARNING BEGIN]',
+    'dispositions='+principleCount+'/'+principleCount+'; sourcePrinciples='+principleCount+'; validationOnly=0; truncation=FORBIDDEN',
+    'sourcePromptScope=ALL_DISPOSED_APPLICATION_PRINCIPLES; nonSourceAvoidanceAndUsePolicy=RETAINED_IN_VERIFIED_MEMORY_AND_QA',
+    'HARD SOURCE-WORKER RULE: implement every source principle without widening authority.',
+    '[EXTERNAL_LEARNING '+id+']',
+    ...rows,
+    '[END_EXTERNAL_LEARNING '+id+']',
+    '[VERIFIED EXTERNAL BLACK-BOX LEARNING END]'
+  ].join('\n');
+  const file='Assets/Scripts/GameCore.cs';
+  const prompt=[
+    'You are the Vibe2 game source worker. Return JSON only.',
+    'Engine: unity',
+    'Goal: improve the connected implementation',
+    'Allowed edit paths: '+file,
+    learning,
+    '=== FILE '+file+' [EDITABLE] ===',
+    ('public sealed class GameCore { public int Value = 1; }\n').repeat(900)
+  ].join('\n');
+  assert.ok(Buffer.byteLength(prompt,'utf8')>36000);
+  const compactLearning=compactVerifiedExternalLearningBlockFromPrompt(prompt);
+  assert.ok(Buffer.byteLength(compactLearning,'utf8')<16000);
+  assertVerifiedExternalLearningPromptCoverage(compactLearning,{required:true,ids:[id]});
+  const compact=buildGenerationRetryPrompt(prompt,{responsibleFiles:[file],attempt:1,oversizedInitial:true});
+  assert.ok(Buffer.byteLength(compact,'utf8')<36000);
+  assert.ok(Buffer.byteLength(compact,'utf8')<Buffer.byteLength(prompt,'utf8'));
+  assertVerifiedExternalLearningPromptCoverage(compact,{required:true,ids:[id]});
+});
+
 test('oversized initial prompt compacts verified external learning without dropping learning ids or dispositions',()=>{
   const id='external-oversized-demo';
   const rows=Array.from({length:12},(_,index)=>[
