@@ -21,6 +21,7 @@ on:
       - 'tools/company-department-portfolio-control.mjs'
       - '.github/workflows/company-growth-marketing-runtime.yml'
       - 'tools/vibe2-continuous-runner.mjs'
+      - 'tools/company-shared-context.mjs'
       - 'tools/vibe2-asset-production-plan.mjs'
       - 'assets/vibe-studio-asset-universe.js'
       - 'tools/vibe2-source-worker.mjs'
@@ -149,12 +150,6 @@ jobs:
             git worktree prune
             git worktree add --detach /tmp/vibe2-main origin/main >/dev/null
             control_root="$PWD"
-
-            # Synchronize canonical worker context from the pinned latest-main contract before planning.
-            (
-              cd /tmp/vibe2-main
-              node tools/company-shared-context.mjs --output=/tmp/vibe2-24h-shared-context.json
-            )
 
             # Repair canonical queue/parallelism state without rerunning repository QA.
             node /tmp/vibe2-main/tools/vibe2-system-steward.mjs \
