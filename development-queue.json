@@ -13313,10 +13313,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T17:59:44.571Z",
+      "updatedAt": "2026-10-01T18:02:14.405Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -14662,7 +14662,7 @@
       "unityCandidateBranch": "development/unity-tech-fantasy-survival-36773180555",
       "unitySourceCommit": "a68e86025e2a8f309b29e4ed3645064ca8a633f9",
       "unityBuildRunId": 36775590969,
-      "unityRuntimeSmokeRunId": 36873427215,
+      "unityRuntimeSmokeRunId": 36903588335,
       "unityIndependentQaRunId": 36779727853,
       "unityRegressionRunId": 36780140458,
       "unityInternalReleaseReady": false,
@@ -14679,20 +14679,20 @@
         "buildOrPackagePassed": true,
         "artifactIdentity": "sha256:a0f1e9384cc5e536fa18e4a91e6255142d5d6dd287001e401852892bccdbe29f",
         "runtimePassed": false,
-        "independentQaPassed": true,
+        "independentQaPassed": false,
         "multiplayerPassed": false,
-        "regressionPassed": true,
+        "regressionPassed": false,
         "rawStageResults": {
           "runtime": false,
-          "independentQa": false,
-          "regression": false
+          "independentQa": true,
+          "regression": true
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": true,
-        "lastSuccessfulStage": "F9_RELEASE_REGRESSION",
-        "failureStage": null,
-        "failureSignature": null
+        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
+        "failureStage": "F1_SERVER_BOOT",
+        "failureSignature": "19d1e41f1db65ef1c3fcbe0ade1c40f453eb7749d0207b0c5b54fe2fa8e4c3b6"
       },
       "resumeStage": "F1_SERVER_BOOT",
       "failureCount": 1,
@@ -14982,7 +14982,7 @@
           }
         },
         "multiplayerRequired": true,
-        "verifiedAt": "2026-10-01T14:06:43.683Z"
+        "verifiedAt": "2026-10-01T18:02:14.405Z"
       },
       "unityF9ReleaseRegressionPassed": false,
       "unityF9ReleaseRegressionPassedAt": null,
@@ -15001,8 +15001,8 @@
         "regressionPassed": false,
         "rawStageResults": {
           "runtime": false,
-          "independentQa": false,
-          "regression": false
+          "independentQa": true,
+          "regression": true
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
@@ -24206,7 +24206,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T18:02:06.200Z",
+  "updatedAt": "2026-10-01T18:02:17.472Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",

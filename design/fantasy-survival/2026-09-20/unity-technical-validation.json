@@ -5,19 +5,19 @@
   "pass": false,
   "validated": false,
   "target": "UNITY_ANDROID_TECHNICAL_VALIDATION",
-  "checkedAt": "2026-10-01T00:33:49.107Z",
+  "checkedAt": "2026-10-01T18:02:14.317Z",
   "sourceBinding": {
     "upstreamBuildRunId": 36775590969,
     "sourceCommit": "a68e86025e2a8f309b29e4ed3645064ca8a633f9",
     "sourceTreeSha": "033a7c02674494763dcd26e7700fe7b15b3c815f",
     "apkSha256": "a0f1e9384cc5e536fa18e4a91e6255142d5d6dd287001e401852892bccdbe29f",
-    "sameBinding": true
+    "sameBinding": false
   },
   "realEvidence": {
-    "runtimeSmoke": true,
+    "runtimeSmoke": false,
     "independentQa": true,
     "evidenceMode": "ANDROID_PLATFORM_BLACK_BOX",
-    "metricSamples": 0,
+    "metricSamples": 1,
     "platformMetricsPass": false,
     "seedRuntimeRequired": false,
     "seedSignalsPass": true,
@@ -28,19 +28,19 @@
   "coverage": {
     "ANDROID_FPS_FRAME_STABILITY": {
       "state": "FAIL",
-      "provider": null,
-      "sampleCount": 0,
+      "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
+      "sampleCount": 1,
       "totalFramesRendered": 0,
       "jankyFrames": 0,
-      "jankyFrameRatePct": null,
+      "jankyFrameRatePct": 0,
       "minFps": null,
       "avgFps": null,
       "scope": "ANDROID_16_EMULATOR_TECHNICAL_VALIDATION"
     },
     "MEMORY_HEAT_LOADING": {
       "state": "FAIL",
-      "provider": null,
-      "maxAllocatedMemoryBytes": null,
+      "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
+      "maxAllocatedMemoryBytes": 220945408,
       "loading": "PASS",
       "heat": "EMULATOR_ONLY_NOT_PHYSICAL_DEVICE",
       "limitation": "Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern."
@@ -58,7 +58,7 @@
       "reason": "No external VFX assets; prototype uses lightweight immediate-mode validation visuals."
     },
     "ASPECT_RATIO_TOUCH": {
-      "state": "PASS",
+      "state": "FAIL",
       "evidence": "Android emulator black-box taps/swipes plus in-app action log."
     },
     "SAVE_LOAD_UPDATE_COMPATIBILITY": {
