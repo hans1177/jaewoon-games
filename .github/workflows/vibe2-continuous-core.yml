@@ -118,6 +118,7 @@ jobs:
       reserved_at: ${{ steps.batch.outputs.reserved_at }}
       effective_max: ${{ steps.batch.outputs.effective_max }}
       contract_sha: ${{ steps.contract.outputs.sha }}
+      contract_regression_passed: ${{ steps.preflight.outputs.contract_regression_passed }}
       shared_policy_sha256: ${{ steps.shared_context.outputs.policy_sha256 }}
       shared_log_map_sha256: ${{ steps.shared_context.outputs.log_map_sha256 }}
       shared_architecture_sha256: ${{ steps.shared_context.outputs.architecture_sha256 }}
@@ -240,12 +241,14 @@ jobs:
           NODE
 
       - name: Fast scheduler preflight
+        id: preflight
         if: steps.main_wake.outputs.proceed == 'true' && (github.event_name != 'repository_dispatch' || github.event.action != 'vibe2-neuron-complete')
         env:
           GH_TOKEN: ${{ github.token }}
           VIBE2_PREFLIGHT_CONTRACT_SHA: ${{ steps.contract.outputs.sha }}
         shell: bash
         run: |
+          echo 'contract_regression_passed=false' >> "$GITHUB_OUTPUT"
           set -euo pipefail
           control_root="$GITHUB_WORKSPACE"
           for file in \
@@ -354,6 +357,7 @@ jobs:
             qa/vibe2-handoff.test.mjs \
             qa/vibe2-practice-distillation.test.mjs)
             fi
+            echo 'contract_regression_passed=true' >> "$GITHUB_OUTPUT"
             echo 'VIBE2_RESERVE_CONTRACT_REGRESSION=PASS'
           else
             echo "VIBE2_RESERVE_CONTRACT_REGRESSION=SKIPPED_AUXILIARY_LANE:$VIBE2_EXECUTION_LANE"
@@ -2354,6 +2358,7 @@ jobs:
         id: persist
         env:
           GH_TOKEN: ${{ github.token }}
+          VIBE2_RESERVE_CONTRACT_REGRESSION_PASSED: ${{ needs.reserve.outputs.contract_regression_passed }}
         shell: bash
         run: |
           set -euo pipefail
@@ -2373,7 +2378,12 @@ jobs:
           if [[ "$VIBE2_EXECUTION_LANE" == 'game-primary' || "$VIBE2_EXECUTION_LANE" == 'asset-development' ]]; then
             export VIBE2_FANIN_CONTRACT_SHA="$contract_sha"
             core_qa_reuse=0
-            if curl --fail-with-body --silent --show-error \
+            reserve_regression_reuse=0
+            if [ "${VIBE2_RESERVE_CONTRACT_REGRESSION_PASSED:-false}" = 'true' ] && [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then
+              reserve_regression_reuse=1
+              echo 'VIBE2_FAN_IN_REGRESSION_SOURCE=RESERVE_EXACT_SHA_REGRESSION_REUSE'
+            fi
+            if [ "$reserve_regression_reuse" != '1' ] && curl --fail-with-body --silent --show-error \
               --header 'Accept: application/vnd.github+json' \
               --header "Authorization: Bearer $GH_TOKEN" \
               --header 'X-GitHub-Api-Version: 2022-11-28' \
@@ -2398,7 +2408,9 @@ jobs:
               echo 'VIBE2_FANIN_CORE_QA_REUSE_OBSERVATION=FAIL_LOCAL_REGRESSION'
             fi
 
-            if [ "$core_qa_reuse" = '1' ]; then
+            if [ "$reserve_regression_reuse" = '1' ]; then
+              regression_rc=0
+            elif [ "$core_qa_reuse" = '1' ]; then
               regression_rc=0
               echo 'VIBE2_FAN_IN_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE'
             else
