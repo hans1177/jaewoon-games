@@ -3784,4 +3784,12 @@ test('actual fantasy-survival Web source emits code and graphics BUILD_UP work',
 
   assert.equal(code.buildUpDirectiveId,presentation.buildUpDirectiveId,'code and graphics work must share the same BUILD_UP generation');
   assert.equal(code.buildUpGeneration,presentation.buildUpGeneration);
+  assert.equal(presentation.buildUpDirective?.designContextMode,'SOURCE_SAFE_NO_DESIGN');
+  assert.equal(presentation.buildUpDirective?.autonomousContentExpansion?.designlessSafeMode,true);
+  assert.equal(presentation.buildUpDirective?.autonomousContentExpansion?.derivedRuleEvolution?.allowed,false);
+  assert.ok((presentation.evidence||[]).includes('build-up-designless-gameplay-expansion:FORBIDDEN'));
+  assert.deepEqual(
+    new Set(tasks.map(row=>row.studioQualityEvolution?.focusPillar)),
+    new Set(['PRESENTATION','USABILITY','STABILITY'])
+  );
 });
