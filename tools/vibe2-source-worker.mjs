@@ -3983,11 +3983,15 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     writableScopeExpansionAllowed:false,
     learningAuthorityExpanded:false
   };
+  const executionSurface=target==='unity'
+    ?(order?.selectedTask?.firstStageUnityWeb===true?'UNITY_WEB':'UNITY_NATIVE')
+    :target.toUpperCase();
   const manifest={
     version:7,
     taskId:order.taskId,
     gameId:order.gameId||null,
     target,
+    executionSurface,
     sourceRoot:sourceRootRelative,
     sourceRootBootstrap:bootstrap,
     releaseState:clean(order.releaseState)||'other',
