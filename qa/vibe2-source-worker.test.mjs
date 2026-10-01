@@ -3794,10 +3794,20 @@ test('focused replace-only compacts build-up directive without losing exact goal
     'acceptance=ACTUAL_RENDERED_CHANGE_REQUIRED',
     '[GAME SPECIFIC BUILD UP DIRECTIVE END]'
   ].join('\n');
+  const codingContract=[
+    '[CODING EXECUTION CONTRACT BEGIN]',
+    'mode=CAUSAL_IMPLEMENTATION; target=unity; selectedStage=FEEDBACK; repairSurface=VFX_FEEDBACK; primaryScenario=adaptive-effects-surface',
+    'hypothesis1=PRIMARY_RESPONSIBILITY_BREAK: repair Render before widening scope | proof=REPLAY_SCENARIO:adaptive-effects-surface,PRIMARY_STATE_OR_BEHAVIOR_DELTA',
+    'changeBudget=files:1-3; maxSystems:2; wrappers=FORBIDDEN; duplicateArchitecture=FORBIDDEN; unrelatedMutation=FORBIDDEN',
+    'verificationLadder=PREPATCH_CAUSE:REQUIRED>SYNTAX_OR_COMPILE:REQUIRED>FOCUSED_CHECKS:REQUIRED>SAME_SCENARIO:REQUIRED>DEPENDENT_REGRESSION:REQUIRED>FULL_REGRESSION:REQUIRED',
+    'retryPolicy=repeat:2; mode:FOCUSED_REPAIR; sameFailureNeedsNewHypothesis:true; unchangedApproachForbidden:false',
+    '[CODING EXECUTION CONTRACT END]'
+  ].join('\n');
   const prompt=[
     'Engine: unity',
     'Goal: improve visible attack anticipation',
     directive,
+    codingContract,
     'Allowed edit paths: Assets/Scripts/Player.cs',
     '=== FILE Assets/Scripts/Player.cs [EDITABLE] ===',
     'class Player { int Speed() { return 1; } }'
@@ -3812,6 +3822,10 @@ test('focused replace-only compacts build-up directive without losing exact goal
   assert.match(focused.prompt,/gameDna=identity:정원 방어 전투/);
   assert.match(focused.prompt,/playChain=selectedStage:PLAYER_ACTION/);
   assert.match(focused.prompt,/microIteration=primaryRepairSurface:MOBILE_UI/);
+  assert.match(focused.prompt,/\[CODING EXECUTION CONTRACT BEGIN\]/);
+  assert.match(focused.prompt,/sameFailureNeedsNewHypothesis:true/);
+  assert.match(focused.prompt,/verificationLadder=PREPATCH_CAUSE:REQUIRED/);
+  assert.match(focused.prompt,/\[CODING EXECUTION CONTRACT END\]/);
   assert.match(focused.prompt,/sourceAnchors=Assets\/Scripts\/Player\.cs/);
   assert.match(focused.prompt,/expectedPlayerEffect=공격 전조를 즉시 구분/);
   assert.match(focused.prompt,/ACTUAL_RENDERED_CHANGE_REQUIRED/);
