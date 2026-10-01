@@ -1,5 +1,26 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1r9gyav",
+      "worker": "vibe2",
+      "taskId": "survival-unity-web-base-implementation-v1",
+      "gameId": "survival",
+      "files": [
+        "unity-games/survival/Assets/Scripts/GameCore.cs",
+        "unity-games/survival/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "81d6923e2dbdf276c8940929f18ebcd8516dd82a",
+      "runId": "36936426652",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-01T22:41:57.777Z",
+      "expiresAt": "2026-10-01T23:26:57.777Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:survival-unity-web-base-implementation-v1"
+      ]
+    }
+  ]
 }
