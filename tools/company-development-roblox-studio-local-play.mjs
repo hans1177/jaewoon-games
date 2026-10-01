@@ -3029,12 +3029,30 @@ export async function runOfficialStudioMcpPlay({
         captureQuality
       },
       characterMotionRuntime,
+      runtimeIdentity:{gameId:clean(runtimeIdentity.gameId),sourceRevision:clean(runtimeIdentity.sourceRevision),artifactIdentity:clean(runtimeIdentity.artifactIdentity)},
       captureFiles:[...beforeImages,...afterImages].map(({path,sha256,bytes,mimeType})=>({path,sha256,bytes,mimeType})),
       rawSourceIncluded:false,
       rawGameplayValuesIncluded:false,
       rawViewportIncluded:false
     };
-    if(output)writeJson(output,result);
+    if(output){
+      const outputDir=path.dirname(path.resolve(output));
+      const rows=[
+        ...beforeImages.map((image,index)=>({image,frame:finalBeforeQuality.frames[index],phase:'before'})),
+        ...afterImages.map((image,index)=>({image,frame:finalAfterQuality.frames[index],phase:'after'}))
+      ].filter(row=>row.image?.path&&row.image?.sha256&&Number(row.frame?.width)>0&&Number(row.frame?.height)>0);
+      if(rows.length&&/^[0-9a-f]{40}$/i.test(clean(runtimeIdentity.sourceRevision))&&clean(runtimeIdentity.gameId)){
+        const manifest={
+          version:1,gameId:clean(runtimeIdentity.gameId),sourceRevision:clean(runtimeIdentity.sourceRevision),sourceRoot:'roblox-games/'+clean(runtimeIdentity.gameId),
+          platform:'ROBLOX',surface:'ROBLOX_STUDIO',sceneId:'studio-'+auditMode.toLowerCase(),
+          captures:rows.map((row,index)=>({id:'studio-'+row.phase+'-'+(index+1),view:'GAME_CAMERA',imageRef:path.relative(outputDir,row.image.path).replaceAll('\\','/'),artifactHash:row.image.sha256,viewport:{width:Number(row.frame.width),height:Number(row.frame.height)}})),
+          editableTargets:['SCENE'],visualGoals:['game camera composition','asset detail readability','mobile visual clarity'],producer:{workflow:'company-development-roblox-post-runtime-qa',kind:'official-studio-mcp-runtime'}
+        };
+        writeJson(path.join(outputDir,'asset-runtime-visual-evidence.json'),manifest);
+        result.runtimeVisualEvidenceManifest='asset-runtime-visual-evidence.json';
+      }
+      writeJson(output,result);
+    }
     return result;
   }catch(error){
     let signature=clean(error?.message||error).slice(0,500);
