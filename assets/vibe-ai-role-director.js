@@ -827,6 +827,9 @@ export function planVibeLivingActorDirector({actor={},player={},world={},relatio
       sourceEventCausalityRequired:true,
       privatePerspective:true,
       independentLifeAllowed:true,
+      playerNotUniversalCenter:true,
+      actorMayMaintainPlayerIndependentGoals:true,
+      actorMayMaintainRelationshipsUnrelatedToPlayer:true,
       remoteAiOptional:true,
       deterministicFallbackRequired:true
     })
