@@ -263,26 +263,39 @@ export function createVibeMonsterEcologyMind(monster={}){
 }
 
 
-export function createVibeSpeechRegister({actor={},relationship={},emotion='calm',gameLanguagePolicy={}}={}){
+export function createVibeSpeechRegister({
+  actor={},relationship={},emotion='calm',gameLanguagePolicy={},contentRating='TEEN'
+}={}){
   const personality=createVibeCompanionPersonalityDNA(actor);
   const rel=createVibeRelationshipState(relationship);
-  const allowed=stableList(gameLanguagePolicy.allowedProfanityLevels||['NONE','MILD']);
-  const requested=String(actor.profanityLevel||actor.speech?.profanityLevel||'NONE').toUpperCase();
+  const rating=cleanText(contentRating||gameLanguagePolicy.contentRating||'TEEN').toUpperCase();
+  const ratingAllowed=rating==='MATURE'?['NONE','MILD','STRONG']:['NONE','MILD'];
+  const policyAllowed=stableList(gameLanguagePolicy.allowedProfanityLevels||ratingAllowed).map(level=>cleanText(level).toUpperCase());
+  const allowed=policyAllowed.filter(level=>ratingAllowed.includes(level));
+  const requested=cleanText(actor.profanityLevel||actor.profanity||actor.speech?.profanityLevel||actor.speech?.profanity||'NONE').toUpperCase();
   const profanityLevel=allowed.includes(requested)?requested:(allowed.includes('MILD')?'MILD':'NONE');
   return Object.freeze({
+    actor:personality.id,
     formality:personality.speech.formality,
     directness:personality.speech.directness,
     verbosity:personality.speech.verbosity,
     humor:personality.speech.humor,
     slangLevel:String(actor.slangLevel||actor.speech?.slangLevel||'LOW').toUpperCase(),
     profanityLevel,
+    profanity:profanityLevel,
+    contentRating:rating,
     emotion:cleanText(emotion||'calm'),
+    relationship:rel,
     relationshipStage:rel.stage,
     relationshipSpeechShift:true,
     allowedContexts:Object.freeze(['pain','shock','anger','fear','frustration','rough-humor','trusted-intimacy']),
     forbid:Object.freeze(['random-profanity-filler','same-register-for-all-actors','protected-class-slur','default-harassment']),
+    profanityMustMatchPersonalityAndSituation:true,
+    slurOrIdentityTargetingNotPartOfPersonalitySystem:true,
+    constantProfanitySpamForbidden:true,
     localizationMaySoften:true,
-    strongProfanityRequiresExplicitGameLanguagePolicy:true
+    strongProfanityRequiresExplicitGameLanguagePolicy:true,
+    silenceAllowed:true
   });
 }
 
@@ -614,29 +627,6 @@ export function createVibeProgressHelperIntent({actor={},playerObservation={},ga
     noRepeatedTipSpam:true,
     recentTipIds:Object.freeze(recentTips.slice(-8).map(x=>cleanText(x.id||x))),
     gameplayAuthority:false
-  });
-}
-
-export function createVibeSpeechRegister({actor={},contentRating='TEEN',relationship={},emotion='calm'}={}){
-  const profile=createVibeCompanionPersonalityDNA(actor),rating=cleanText(contentRating||'TEEN').toUpperCase();
-  const requested=cleanText(actor.profanity||actor.speech?.profanity||'NONE').toUpperCase();
-  const allowedByRating=rating==='MATURE'?['NONE','MILD','STRONG']:['NONE','MILD'];
-  const profanity=allowedByRating.includes(requested)?requested:'NONE';
-  return Object.freeze({
-    actor:profile.id,
-    formality:profile.speech.formality,
-    directness:profile.speech.directness,
-    verbosity:profile.speech.verbosity,
-    humor:profile.speech.humor,
-    profanity,
-    contentRating:rating,
-    emotion:cleanText(emotion),
-    relationship:createVibeRelationshipState(relationship),
-    profanityMustMatchPersonalityAndSituation:true,
-    slurOrIdentityTargetingNotPartOfPersonalitySystem:true,
-    constantProfanitySpamForbidden:true,
-    relationshipSpeechShift:true,
-    silenceAllowed:true
   });
 }
 
