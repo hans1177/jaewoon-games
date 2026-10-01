@@ -34,11 +34,6 @@ on:
       - '.github/workflows/company-development-roblox-release-promotion.yml'
       - 'tools/company-development-roblox-runtime-foundation.mjs'
       - 'tools/company-development-roblox-studio-local-play.mjs'
-      - 'qa/fixtures/company-roblox-studio-local-play-scenario.json'
-      - 'qa/company-tester-debug-intake.test.mjs'
-      - 'qa/company-development-roblox-studio-local-play.test.mjs'
-      - 'qa/company-development-roblox-headless-fast-mvp.test.mjs'
-      - 'qa/company-development-roblox-runtime-foundation.test.mjs'
       - 'company-learning/platform-release-roadmap.json'
       - 'company-learning/canonical-learning-pipeline.json'
       - 'roblox-games/.company-runtime-trigger'
@@ -259,7 +254,7 @@ jobs:
           echo "ROBLOX_OPEN_CLOUD_TRANSIENT_RETRY_MODE=IN_SCAN_BOUNDED"
           cat /tmp/roblox-open-cloud-transient-retry-ids
 
-      - name: Run deterministic foundation protocol QA
+      - name: Run responsibility-local foundation protocol QA
         if: ${{ inputs.retry_open_cloud_only != true }}
         working-directory: main
         shell: bash
@@ -267,10 +262,9 @@ jobs:
           set -euo pipefail
           node --test \
             qa/company-development-roblox-runtime-foundation.test.mjs \
-            qa/company-development-roblox-headless-fast-mvp.test.mjs \
-            qa/company-development-roblox-studio-local-play.test.mjs \
             qa/company-tester-debug-intake.test.mjs
-          echo 'ROBLOX_FOUNDATION_DETERMINISTIC_QA=PASS'
+          echo 'ROBLOX_FOUNDATION_LOCAL_QA=PASS'
+          echo 'ROBLOX_FOUNDATION_DUPLICATE_F0_STUDIO_CONTRACT_QA=SKIPPED_CANONICAL_CI'
 
       - name: Probe exact Roblox Open Cloud engine execution
         if: ${{ inputs.retry_open_cloud_only == true }}
