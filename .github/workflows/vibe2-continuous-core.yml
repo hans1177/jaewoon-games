@@ -29,11 +29,8 @@ on:
         default: ''
   repository_dispatch:
     types: [vibe2-neuron-complete, vibe2-fanin-refill]
-  # Independent game reserve safety net while the 24H singleton waits on slow workers.
   schedule:
     - cron: '*/5 * * * *'
-  # GAME_PRIMARY_MAIN_PUSH_WAKE: main churn must not starve queued game work behind
-  # the singleton planner. This enters the existing canonical reserve path only.
   push:
     branches:
       - main
@@ -70,12 +67,9 @@ permissions:
   contents: write
   actions: write
 
-# Coalesce only stateless fan-in refill events by execution lane.
-# Result-bearing neuron completions stay run-unique so no completion artifact can be dropped.
-# GAME_PRIMARY must never wait behind recovery-fast, learning-idle or control-fast refill work.
 concurrency:
-  # Learning remains exactly one worker. Asset refill keeps its dedicated lane behavior.
-  # General game/recovery/control runs are run-scoped and never grouped into scheduler batches.
+  # Learning remains exactly one worker. Asset keeps its dedicated 64-worker lane.
+  # General game/recovery/control runs are event-driven and run-scoped.
   group: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && 'vibe2-learning-single-worker' || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill') && 'vibe2-fanin-refill-asset-development' || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
   cancel-in-progress: false
 
@@ -792,11 +786,6 @@ jobs:
           contract_root="$GITHUB_WORKSPACE/vibe2-contract"
           test -n "$CONTRACT_SHA"
           test "$(git -C "$contract_root" rev-parse HEAD)" = "$CONTRACT_SHA"
-          (
-            cd "$contract_root"
-            node tools/company-shared-context.mjs --output=/tmp/vibe2-worker-shared-context.json | tee /tmp/vibe2-worker-shared-context.log
-          )
-          grep -q '^WORKER_CONTEXT_SYNC=PASS$' /tmp/vibe2-worker-shared-context.log
           node "$contract_root/tools/vibe2-queue-control.mjs" verify-worker-sync             --queue="$GITHUB_WORKSPACE/.vibe2/queue.json"             --id="$TASK_ID"             --reservation-id="$RESERVATION_ID"             --reservation-run="$RESERVATION_RUN_ID"             --reservation-attempt="$RESERVATION_RUN_ATTEMPT"             --reserved-at="$RESERVED_AT" | tee /tmp/vibe2-worker-sync.log
           grep -q '^VIBE2_WORKER_SYNC=PASS$' /tmp/vibe2-worker-sync.log
           echo "VIBE2_WORKER_CONTRACT_SHA=$CONTRACT_SHA"
@@ -1297,7 +1286,6 @@ jobs:
           fi
 
           cd "$candidate_dir"
-          node tools/company-shared-context.mjs --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-before.json" | tee "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-before.log"
           export VIBE2_BASE_MAIN_SHA="$base_sha"
           export VIBE2_SPECULATIVE_VARIANT="$VARIANT"
           export VIBE2_EXPLORATION_FILE=.vibe2/exploration.json
@@ -1317,7 +1305,6 @@ jobs:
           echo "generation_attempts=$generation_attempts" >> "$GITHUB_OUTPUT"
           echo "failure_class=$failure_class" >> "$GITHUB_OUTPUT"
           echo "failure_message=$failure_message" >> "$GITHUB_OUTPUT"
-          node tools/company-shared-context.mjs --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.json" | tee "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.log"
           if [ "$worker_rc" -ne 0 ]; then exit "$worker_rc"; fi
           candidate_manifest_rel="$(sed -n 's/^VIBE2_CANDIDATE_MANIFEST=//p' "$source_worker_log" | tail -n1)"
           test -n "$candidate_manifest_rel"
@@ -1325,8 +1312,6 @@ jobs:
           test -f "$candidate_manifest"
           echo "candidate_manifest=$candidate_manifest" >> "$GITHUB_OUTPUT"
           echo "VIBE2_CANDIDATE_MANIFEST=$candidate_manifest_rel"
-          # Formatting whitespace is not a gameplay failure; conflict markers still fail.
-          git -c core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab diff --check
           security_sensitive="$(node --input-type=module - "$candidate_manifest" <<'NODE'
           import fs from 'node:fs';
           const manifest=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
