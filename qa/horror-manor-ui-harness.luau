@@ -2,7 +2,15 @@
 -- 실제 클라이언트 코드를 삽입해 메뉴·모바일 배치·느린 접속의 상태 전환을 검증한다.
 local function signal()
  local callbacks={}
- return {Connect=function(_,fn)table.insert(callbacks,fn)end,Fire=function(_,...)for _,fn in ipairs(callbacks)do fn(...)end end}
+ return {
+  Connect=function(_,fn)table.insert(callbacks,{fn=fn,once=false})end,
+  Once=function(_,fn)table.insert(callbacks,{fn=fn,once=true})end,
+  Fire=function(_,...)
+   local keep={}
+   for _,entry in ipairs(callbacks)do entry.fn(...);if not entry.once then table.insert(keep,entry)end end
+   callbacks=keep
+  end
+ }
 end
 local all={}
 local methods={}
@@ -17,7 +25,7 @@ function methods:GetPropertyChangedSignal(key)
  self.PropertySignals[key]=self.PropertySignals[key]or signal();return self.PropertySignals[key]
 end
 Instance={new=function(class)
- local values={ClassName=class,Activated=signal(),AttributeChanged=signal(),PropertySignals={},Visible=true,Enabled=true,Active=true,CanvasPosition={X=0,Y=0}}
+ local values={ClassName=class,Activated=signal(),MouseEnter=signal(),MouseLeave=signal(),AttributeChanged=signal(),PropertySignals={},Visible=true,Enabled=true,Active=true,GroupTransparency=0,CanvasPosition={X=0,Y=0}}
  local o=setmetatable({}, {__index=function(_,k)return methods[k]or values[k]end,__newindex=function(_,k,v)
   local changed=values[k]~=v;values[k]=v
   if changed and values.PropertySignals[k]then values.PropertySignals[k]:Fire()end
@@ -31,10 +39,15 @@ UDim2={new=function(...)return {...}end,fromOffset=function(x,y)return {0,x,0,y}
 Vector2={new=function(x,y)return {X=x,Y=y}end,zero={X=0,Y=0}}
 Vector3={new=function(...)return {...}end}
 CFrame={lookAt=function(...)return {...}end}
+TweenInfo={new=function(...)return {...}end}
 Color3={fromRGB=function(...)return {...}end,new=function(...)return {...}end}
 local deferred={}
 task={spawn=function(fn)fn()end,defer=function(fn)table.insert(deferred,fn)end,delay=function()end,wait=function()end}
 local function flush()while #deferred>0 do local queue=deferred;deferred={};for _,fn in ipairs(queue)do fn()end end end
+local TweenService={Create=function(_,object,_,goal)
+ local completed=signal()
+ return {Completed=completed,Play=function()for key,value in pairs(goal)do object[key]=value end;task.defer(function()completed:Fire()end)end}
+end}
 local attrs={LobbyClientReady=true,PersonalLobbyOwner=7,RoundState="ROOM_BROWSER",MonsterForm="DRACULA",LobbyAppearance="SURVIVOR",Coins=100,MonsterXP=0}
 local changes={}
 local p=Instance.new("Player");p.UserId=7;p.DisplayName="Tester";p.PlayerGui=Instance.new("PlayerGui")
@@ -51,9 +64,9 @@ function remote:FireServer(action,value)table.insert(self.sent,{action,value})en
 local C={RemoteName="GameEvent",Actions=setmetatable({}, {__index=function(_,k)return k end}),Maps={{Id="SCHOOL",Name="학교"}},GhostCatalog={{Id="BRIDE",Name="처녀귀신",Origin="한국"}},MonsterForms={{Id="DRACULA",Name="드라큘라",UnlockXP=0}},Cosmetics={{Id="DEFAULT",Name="기본",Price=0}}}
 local RS={Shared={GameConfig="CONFIG",ManorAssets="ASSETS",MonsterStories="STORIES"},WaitForChild=function()return remote end}
 local Lighting={FindFirstChildOfClass=function()return nil end}
-local services={Players={LocalPlayer=p},ReplicatedStorage=RS,Lighting=Lighting,RunService={RenderStepped=signal(),Heartbeat=signal()}}
+local services={Players={LocalPlayer=p},ReplicatedStorage=RS,Lighting=Lighting,TweenService=TweenService,RunService={RenderStepped=signal(),Heartbeat=signal()}}
 game={GetService=function(_,name)return services[name]end}
-workspace={CurrentCamera={},GetAttribute=function(_,key)return key=="PhysicalLobbyReady"end,GetAttributeChangedSignal=function()return signal()end}
+workspace={CurrentCamera={ViewportSize=Vector2.new(390,760)},GetAttribute=function(_,key)return key=="PhysicalLobbyReady"end,GetAttributeChangedSignal=function()return signal()end}
 local function require(id)
  if id=="CONFIG"then return C elseif id=="ASSETS"then return {IconsId=1} elseif id=="PLAYER_MODULE"then return {GetControls=function()return controls end}else return {}end
 end
@@ -83,6 +96,7 @@ local function bounds(o,width,height)
  return{x=parent.x+parent.w*pos[1]+pos[2]-w*anchor.X,y=parent.y+parent.h*pos[3]+pos[4]-h*anchor.Y,w=w,h=h}
 end
 for _,viewport in ipairs({{320,520},{390,760},{740,274},{844,320},{1024,640}})do
+ workspace.CurrentCamera.ViewportSize=Vector2.new(viewport[1],viewport[2]);services.RunService.RenderStepped:Fire();flush()
  local head=bounds(named.ManorNameplate,viewport[1],viewport[2]);local commands=bounds(named.ManorCommands,viewport[1],viewport[2])
  assert(head.x+head.w<=commands.x,"Mobile header and controls overlap")
  assert(commands.y+commands.h<=64,"Controls obscure gameplay")
@@ -96,11 +110,14 @@ assert(named.NotebookShade.Visible==true,"Open menu does not intercept backgroun
 click("×");assert(named.NotebookShade.Visible==false,"Closed menu blocks movement")
 open("CODE")
 local input=assert(find(""));for _,o in ipairs(all)do if o.Name=="InvitationCode"and alive(o)then input=o end end
-input.Text=" 123456 "
+input.Text=" a1b2c3 "
+input:GetPropertyChangedSignal("Text"):Fire();flush()
 p:SetAttribute("Coins",99);p:SetAttribute("TimeLeft",3);flush()
-assert(alive(input)and input.Text==" 123456 ","Attribute refresh reset code input or keyboard focus")
-click("참가");sent("JOIN_ROOM_CODE");assert(remote.sent[#remote.sent][2]==" 123456 ")
-click("출정 메뉴로");open("CODE");assert(find(" 123456 "),"Reopening code entry lost its draft")
+assert(alive(input)and input.Text=="A1B2C3","Code card did not sanitize/preserve the six-character draft")
+for i=1,6 do local cell=named["CodeCell"..i]or find(string.sub("A1B2C3",i,i));assert(cell,"Missing invitation code cell "..i)end
+click("예약 카드로 참가");sent("JOIN_ROOM_CODE");assert(remote.sent[#remote.sent][2]=="A1B2C3")
+click("출정 메뉴로");open("CODE");local reopened;for _,o in ipairs(all)do if o.Name=="InvitationCode"and alive(o)then reopened=o end end
+assert(reopened and reopened.Text=="A1B2C3","Reopening code entry lost its draft")
 open("BOOK");click("◇ 처녀귀신   0/3");assert(find("처녀귀신"))
 local storyBody=find("처녀귀신").Parent:FindFirstChildOfClass("ScrollingFrame");storyBody.CanvasPosition=Vector2.new(0,85)
 p:SetAttribute("Coins",98);flush();assert(find("처녀귀신")and find("한국 · 기록 0/3"),"Unseen ghost story was reset or unlocked")
