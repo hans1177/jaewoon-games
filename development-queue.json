@@ -17452,10 +17452,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "REPAIR_REQUIRED",
-      "canonicalState": "REPAIR_REQUIRED",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T13:35:46.878Z",
+      "updatedAt": "2026-10-01T13:45:00.822Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -18087,7 +18087,7 @@
       "unityCandidateBranch": "development/unity-tech-seed-action-survival-rogu-echoes-of-the-lost-star-36773180555",
       "unitySourceCommit": "3d6828a8d5630f47b94a720cf8489224af780c4f",
       "unityBuildRunId": 36791015481,
-      "unityRuntimeSmokeRunId": 36860932560,
+      "unityRuntimeSmokeRunId": 36870378339,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityInternalReleaseReady": false,
@@ -18418,7 +18418,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-01T12:23:02.077Z"
+        "verifiedAt": "2026-10-01T13:45:00.822Z"
       },
       "unityF9ReleaseRegressionPassed": false,
       "unityF9ReleaseRegressionPassedAt": null,
@@ -27391,7 +27391,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T13:44:36.534Z",
+  "updatedAt": "2026-10-01T13:45:02.971Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
