@@ -347,14 +347,15 @@ test('runtime-state persistence defines its local F0 candidate resolver in the s
 });
 
 
-test('runtime QA collapses F9 fanout to one scan for all ready games',()=>{
+test('runtime QA dispatches every F9-ready game independently while deduping exact active reviews',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
-  const start=workflow.indexOf('Dispatch one F9 scan for all runtime-accepted candidates');
+  const start=workflow.indexOf('Dispatch exact F9 review for every runtime-accepted candidate');
   const end=workflow.indexOf('Dispatch exact Studio MCP follow-up',start);
   const block=workflow.slice(start,end);
   assert.ok(start>0&&end>start);
-  assert.match(block,/company-development-roblox-final-review-revalidation\.yml --repo "\$GITHUB_REPOSITORY" --ref main\n/);
-  assert.match(block,/ROBLOX_F9_SCAN_DISPATCHED=candidates=/);
-  assert.doesNotMatch(block,/-f game_id=/);
-  assert.doesNotMatch(block,/while read -r id/);
+  assert.match(block,/company-development-roblox-final-review-revalidation\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
+  assert.match(block,/ROBLOX_F9_EXACT_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.match(block,/ROBLOX_F9_EXACT_DISPATCHED=\$id/);
+  assert.match(block,/while read -r id/);
+  assert.doesNotMatch(block,/ROBLOX_F9_SCAN_DISPATCHED=/);
 });
