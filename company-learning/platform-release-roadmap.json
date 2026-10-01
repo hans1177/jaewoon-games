@@ -1,5 +1,5 @@
 {
-  "version": 517,
+  "version": 518,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-01",
@@ -8561,6 +8561,15 @@
         "roblox": true,
         "unity": true,
         "reason": "RAPID_MAIN_CHURN_MUST_NOT_KEEP_OBSOLETE_NATIVE_BATCH_PLANNERS_ALIVE"
+      },
+      "reserveConcurrency": {
+        "mode": "RUN_UNIQUE_OPTIMISTIC_SHARED_QUEUE_WRITE",
+        "topLevelFanInRefillLaneSerialization": false,
+        "reserveJobLaneSerialization": false,
+        "sameLaneReserveSerialization": false,
+        "sharedQueueConflictResolution": "FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UNBOUNDED_WITH_CAPPED_BACKOFF",
+        "directWorkerControlWrite": false,
+        "qaGateWeakening": false
       }
     },
     "gameControlRunnerRelief20261001": {
