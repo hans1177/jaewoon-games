@@ -264,6 +264,33 @@ test('web candidate release blocks inline script syntax and generic storage-cont
 });
 
 
+test('Unity candidate release routes WebGL and native execution surfaces independently',()=>{
+  assert.match(releaseWorkflow,/execution_surface: \$\{\{ steps\.gate\.outputs\.execution_surface \}\}/);
+  assert.match(releaseWorkflow,/const executionSurface=String\(m\.executionSurface\|\|''\)\.trim\(\)\.toUpperCase\(\)/);
+  assert.match(releaseWorkflow,/target==='unity' && !\['UNITY_WEB','UNITY_NATIVE'\]\.includes\(executionSurface\)/);
+  assert.match(releaseWorkflow,/decision=target==='unity'&&executionSurface==='UNITY_WEB'\?'unity-web':target/);
+
+  const webStart=releaseWorkflow.indexOf('  unity-web-build:');
+  const nativeStart=releaseWorkflow.indexOf('\n  unity-build:',webStart);
+  const robloxStart=releaseWorkflow.indexOf('\n  roblox-package:',nativeStart);
+  assert.ok(webStart>=0&&nativeStart>webStart&&robloxStart>nativeStart);
+  const web=releaseWorkflow.slice(webStart,nativeStart);
+  const native=releaseWorkflow.slice(nativeStart,robloxStart);
+  assert.match(web,/needs\.inspect\.outputs\.decision == 'unity-web'/);
+  assert.match(web,/unity-web-first-stage-build\.yml/);
+  assert.match(web,/-f source_commit="\$CANDIDATE_SHA"/);
+  assert.match(web,/-f base_main_sha="\$BASE_SHA"/);
+  assert.match(web,/-f publish_to_main=true/);
+  assert.match(web,/-f vibe2_task_id="\$TASK_ID"/);
+  assert.match(web,/VIBE2_CANDIDATE_EXECUTION_SURFACE=UNITY_WEB/);
+  assert.doesNotMatch(web,/unity-hybrid-android-build\.yml|APK QA/);
+
+  assert.match(native,/needs\.inspect\.outputs\.decision == 'unity'/);
+  assert.match(native,/Dispatch candidate APK QA/);
+  assert.match(native,/unity-hybrid-android-build\.yml/);
+  assert.doesNotMatch(native,/unity-web-first-stage-build\.yml/);
+});
+
 test('Unity dispatch failure recovery emits QUEUE_UPDATED without undefined result state',()=>{
   const start=releaseWorkflow.indexOf('  unity-build:');
   const end=releaseWorkflow.indexOf('\n  roblox-package:',start);
