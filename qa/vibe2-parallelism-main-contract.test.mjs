@@ -271,9 +271,12 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   const reserveOutputs=core.indexOf('    outputs:',reserveStart);
   assert.ok(reserveStart>=0&&reserveOutputs>reserveStart);
   const reserveHeader=core.slice(reserveStart,reserveOutputs);
-  assert.match(reserveHeader,/github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-refill-reserve-\{0\}', inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) \|\| format\('vibe2-reserve-\{0\}', github\.run_id\)/);
-  assert.match(reserveHeader,/cancel-in-progress: false/);
-  assert.equal(reserve.statelessRefillCoalescing,'ONE_RUNNING_AND_LATEST_PENDING_PER_LANE');
+  assert.doesNotMatch(reserveHeader,/vibe2-refill-reserve-/);
+  assert.doesNotMatch(reserveHeader,/format\('vibe2-reserve-/);
+  assert.doesNotMatch(reserveHeader,/\n    concurrency:/);
+  assert.doesNotMatch(reserveHeader,/cancel-in-progress:/);
+  assert.match(reserveHeader,/do not serialize reserve jobs/);
+  assert.equal(reserve.statelessRefillCoalescing,'RUN_UNIQUE_OPTIMISTIC_SHARED_QUEUE_WRITE');
   assert.equal(runtime.continuous.reserveConcurrency.statelessRefillCoalescing,reserve.statelessRefillCoalescing);
   const workerHeader=core.slice(core.indexOf('\n  worker:'),core.indexOf('\n    steps:',core.indexOf('\n  worker:')));
   assert.ok(workerHeader.length>0);
