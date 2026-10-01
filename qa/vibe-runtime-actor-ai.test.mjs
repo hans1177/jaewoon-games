@@ -1,0 +1,260 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+
+import {
+  createVibeActorQualityDNA,
+  createVibeCompanionPersonalityDNA,
+  createVibeCompanionSelfhoodDNA,
+  createVibeCompanionMotivationFrame,
+  createVibeCompanionInnerState,
+  createVibeCompanionRelationshipFrame,
+  createVibeCompanionDialogueIntent,
+  createVibeCompanionPersonalArc,
+  createVibeCausalEvent,
+  createVibeCausalInterpretation,
+  createVibePlayerJudgment,
+  createVibeAutonomousLifePlan,
+  createVibeGuidanceIntent,
+  createVibeLanguageRegister,
+  createVibeActorEventCandidate,
+  createVibeActorQuestCandidate,
+  createVibeReactionContinuity,
+  createVibeMonsterEcologyMind,
+  planVibeCompanionSocialDirector,
+  validateVibeAIAction
+} from '../assets/vibe-ai-role-director.js';
+import {JaewoonCommonAI} from '../assets/common-ai.js';
+import {createAIPartyConfig,createDefaultAIEntries} from '../assets/ai-party.js';
+import {deriveGameplaySketch,buildVibePatchPlan,analyzeExistingGameSource} from '../tools/company-vibe2-gameplay-intelligence.mjs';
+
+const companion={
+  id:'mira',
+  role:'companion',
+  temperament:'dry',
+  values:['loyalty','freedom','craft'],
+  boundaries:['do-not-lie-to-me'],
+  traits:{courage:55,caution:10,empathy:45,curiosity:30,independence:60,protectiveness:50},
+  worldview:{worldBelief:'people reveal themselves under pressure',peopleBelief:'trust must be earned'},
+  selfImage:'competent scout',
+  fearedSelf:'a burden',
+  desiredSelf:'someone others can rely on without losing freedom',
+  longTermGoal:'map the old frontier',
+  personalDuty:'keep the party alive on the road',
+  unresolvedThread:'find out why her mentor disappeared',
+  contradictions:['freedom-vs-loyalty'],
+  formality:'casual',
+  directness:'high',
+  humor:'dry',
+  verbalHabits:['short observations'],
+  profanityLevel:'MILD'
+};
+
+test('named companion has selfhood worldview life project and quality floor beyond random dialogue',()=>{
+  const quality=createVibeActorQualityDNA({role:'companion',named:true});
+  const personality=createVibeCompanionPersonalityDNA(companion);
+  const selfhood=createVibeCompanionSelfhoodDNA(companion);
+  assert.equal(quality.profile,'COMPANION');
+  for(const axis of ['WORLDVIEW','SELF_IMAGE','LIFE_PROJECT','RELATIONSHIP','MEMORY','INITIATIVE']) assert.ok(quality.required.includes(axis),axis);
+  assert.equal(personality.worldview.worldBelief,'people reveal themselves under pressure');
+  assert.equal(personality.selfhood.longTermGoal,'map the old frontier');
+  assert.equal(selfhood.lifeProject.unresolvedThread,'find out why her mentor disappeared');
+  assert.ok(selfhood.agency.includes('disagree'));
+  assert.match(selfhood.rule,/player-is-important-but-not-the-center/);
+});
+
+test('companion inner state is structured private state rather than exposed freeform chain of thought',()=>{
+  const inner=createVibeCompanionInnerState({
+    companion,
+    situation:{currentConcern:'the bridge looks unstable',currentHope:'find another route',unsaidFeeling:'does not want to admit fear',viewOfPlayer:'reliable under pressure'},
+    relationship:{trust:45,respect:30},
+    memory:[{id:'e1',type:'rescue'}],
+    emotion:'alert'
+  });
+  assert.equal(inner.currentConcern,'the bridge looks unstable');
+  assert.equal(inner.privacy.playerDoesNotAutomaticallyKnow,true);
+  assert.equal(inner.privacy.longFreeformReasoningNotRequired,true);
+  assert.ok(inner.use.includes('subtext'));
+  assert.ok(inner.motivation.hierarchy.includes('self-actualization'));
+});
+
+test('causal relationship reasoning requires a source event and information path',()=>{
+  const event=createVibeCausalEvent({id:'evt-rescue-1',type:'rescue',actorId:'player',targetId:'mira',witnesses:['mira']});
+  const seen=createVibeCausalInterpretation({actor:companion,event,knowledge:{observed:true,confidence:.95,attribution:'direct-cause'},relationship:{trust:20}});
+  const unseen=createVibeCausalInterpretation({actor:{...companion,id:'other'},event,knowledge:{observed:false,reported:false,confidence:0},relationship:{}});
+  assert.equal(event.relationshipMutationEligible,true);
+  assert.equal(seen.perceived,true);
+  assert.equal(seen.extremePermanentShiftAllowed,true);
+  assert.equal(unseen.perceived,false);
+  assert.equal(unseen.extremePermanentShiftAllowed,false);
+  assert.equal(unseen.noHiddenFactAccess,true);
+});
+
+test('player judgment is actor-specific multi-axis belief not one global morality score',()=>{
+  const judgment=createVibePlayerJudgment({actor:companion,events:[{id:'a',type:'help'},{id:'b',type:'abandon'}],previous:{trustworthiness:20,danger:-5}});
+  assert.equal(judgment.dimensions.trustworthiness,20);
+  assert.deepEqual(judgment.sourceEventIds,['a','b']);
+  assert.equal(judgment.oneGlobalGoodEvilScoreForbidden,true);
+  assert.equal(judgment.otherActorsMayJudgeDifferently,true);
+});
+
+test('relationship frame is directional causal and cannot directly change combat stats',()=>{
+  const frame=createVibeCompanionRelationshipFrame({
+    companion,other:{id:'player'},relationship:{trust:35,affection:10,boundaryComfort:25,stage:'working-trust'},
+    events:[{id:'promise-1',type:'keep-promise',actor:'player',target:'mira',weight:1}]
+  });
+  assert.equal(frame.perspectiveSpecific,true);
+  assert.equal(frame.state.directional,true);
+  assert.equal(frame.causes[0].id,'promise-1');
+  assert.ok(frame.affects.includes('personal-space'));
+  assert.ok(frame.protected.includes('damage'));
+});
+
+test('dialogue and guidance vary by relationship knowledge failure history and silence rules',()=>{
+  const inner=createVibeCompanionInnerState({companion,situation:{currentConcern:'player keeps entering poison fog'},relationship:{trust:30},emotion:'concerned'});
+  const dialogue=createVibeCompanionDialogueIntent({companion,relationship:{trust:30},innerState:inner,recentLines:['same','same'],activity:'travel',attentionTarget:'poison-fog'});
+  const light=createVibeGuidanceIntent({actor:companion,recentFailures:[],knownFacts:['fog damages exposed actors']});
+  const direct=createVibeGuidanceIntent({actor:companion,recentFailures:[1,2,3],knownFacts:['fog damages exposed actors']});
+  assert.ok(dialogue.allowedSpeechActs.includes('silence'));
+  assert.equal(dialogue.repetition.exactRepeatForbidden,true);
+  assert.equal(light.hintDirectness,'light');
+  assert.equal(direct.hintDirectness,'more-direct');
+  assert.equal(direct.onlyKnownInformation,true);
+  assert.equal(direct.spoilerWithoutKnowledgePathForbidden,true);
+});
+
+test('language register can allow characterful profanity without turning it into random filler',()=>{
+  const normal=createVibeLanguageRegister({actor:{...companion,profanityLevel:'STRONG',profanityFrequencyBudget:2},gameProfile:{familyFriendly:false},relationship:{trust:20}});
+  const family=createVibeLanguageRegister({actor:{...companion,profanityLevel:'STRONG'},gameProfile:{familyFriendly:true}});
+  assert.equal(normal.profanityLevel,'STRONG');
+  assert.equal(normal.profanityMustFitCharacterAndContext,true);
+  assert.equal(normal.profanityIsNotIdentitySubstitute,true);
+  assert.equal(family.profanityLevel,'MILD');
+  assert.equal(normal.dehumanizingProtectedClassSlursForbidden,true);
+});
+
+test('autonomous life lets NPC companion monster and boss keep personal activity without player presence',()=>{
+  const npc=createVibeAutonomousLifePlan({actor:{id:'smith',role:'npc'},duties:['repair-tools'],personalGoals:['restore-workshop']});
+  const comp=createVibeAutonomousLifePlan({actor:companion,personalGoals:['map-frontier']});
+  const monster=createVibeAutonomousLifePlan({actor:{id:'wolf',role:'monster'},personalGoals:['defend-den']});
+  const boss=createVibeAutonomousLifePlan({actor:{id:'warden',role:'boss'},duties:['guard-objective']});
+  assert.ok(npc.activities.includes('work'));
+  assert.ok(comp.activities.includes('follow-personal-thread'));
+  assert.ok(monster.activities.includes('patrol-territory'));
+  assert.ok(boss.activities.includes('command-minions'));
+  assert.equal(comp.playerAbsenceDoesNotErasePersonalLife,true);
+  assert.equal(boss.offscreen.authoritativeWorldEffectsEngineOnly,true);
+});
+
+test('actor-generated events and quests are proposals only and never own rewards or completion',()=>{
+  const cause=[{id:'mentor-clue',type:'discovery'}];
+  const event=createVibeActorEventCandidate({actor:companion,causeEvents:cause,motive:'find mentor',goal:'visit old watchtower'});
+  const quest=createVibeActorQuestCandidate({actor:companion,causeEvents:cause,personalStake:'mentor mystery',worldStake:'old frontier',primaryVerb:'investigate',branches:['go-now','ask-locals-first']});
+  assert.equal(event.candidateOnly,true);
+  assert.equal(event.engineValidationRequired,true);
+  assert.equal(event.mayNotInventRewardDamageSpawnCurrencyOrQuestCompletion,true);
+  assert.equal(quest.candidateOnly,true);
+  assert.equal(quest.acceptanceCompletionRewardPersistentMutation,'engine-only');
+  assert.deepEqual(quest.causeEventIds,['mentor-clue']);
+});
+
+test('reaction continuity keeps event perception interpretation body intent and memory causally ordered',()=>{
+  const reaction=createVibeReactionContinuity({event:{id:'hit-1',type:'ally-hurt'},interpretation:{meaning:'threat'},emotionBefore:'calm',emotionAfter:'anger',intent:'protect'});
+  assert.deepEqual([...reaction.sequence],['event','perception','interpretation','emotion','attention','speech-or-silence','body-reaction','intent','engine-action','outcome','memory']);
+  assert.equal(reaction.instantMoodFlipRequiresCause,true);
+  assert.equal(reaction.laterReconsiderationAllowed,true);
+});
+
+test('monster ecology keeps species behavior and individual temperament separate from raw stats',()=>{
+  const mind=createVibeMonsterEcologyMind({id:'rare-wolf',role:'elite',species:'wolf',temperament:'cautious-territorial',territory:'north-ridge',groupRole:'scout'});
+  assert.equal(mind.species,'wolf');
+  assert.equal(mind.temperament,'cautious-territorial');
+  assert.ok(mind.ecology.includes('return-to-den'));
+  assert.ok(mind.tactical.includes('flank'));
+  assert.match(mind.rule,/individual-temperament/);
+});
+
+test('social director combines selfhood relationship inner state dialogue initiative and embodiment',()=>{
+  const director=planVibeCompanionSocialDirector({
+    companion,player:{id:'player'},relationship:{trust:40,respect:20,stage:'working-trust'},
+    world:{emotion:'alert',activity:'travel',attentionTarget:'bridge',currentConcern:'unsafe bridge'},
+    memory:[{id:'shared-1',type:'shared-danger'}],history:[{speechAct:'warn',topic:'bridge'}]
+  });
+  assert.equal(director.version,3);
+  assert.equal(director.qualityDNA.profile,'COMPANION');
+  assert.equal(director.selfhood.lifeProject.longTermGoal,'map the old frontier');
+  assert.equal(director.policy.playerNotUniversalCenter,true);
+  assert.equal(director.policy.privateInnerState,true);
+  assert.ok(director.dialogueIntent.allowedSpeechActs.includes('disagree'));
+});
+
+test('common local AI personality changes allowed tactical preference but never gameplay authority',()=>{
+  const cautious=new JaewoonCommonAI({personality:{caution:.9,courage:-.4,aggression:-.3}});
+  const bold=new JaewoonCommonAI({personality:{caution:-.4,courage:.8,aggression:.8}});
+  const enemy={id:'player',distance:2,threat:1,hpRatio:.8};
+  const cautiousDecision=cautious.decide({entityKind:'monster',hpRatio:.32,danger:.4,enemies:[enemy],canRetreat:true});
+  const boldDecision=bold.decide({entityKind:'monster',hpRatio:.32,danger:.4,enemies:[enemy],canRetreat:true});
+  assert.equal(cautiousDecision.state,JaewoonCommonAI.State.RETREAT);
+  assert.equal(boldDecision.state,JaewoonCommonAI.State.ATTACK);
+  assert.equal(cautiousDecision.gameplayAuthority,false);
+  assert.equal(boldDecision.gameplayAuthority,false);
+});
+
+test('common AI memory is bounded idempotent and relationships remain directional state',()=>{
+  const ai=new JaewoonCommonAI({memoryLimit:4});
+  assert.equal(ai.remember({id:'e1',type:'help'}),true);
+  assert.equal(ai.remember({id:'e1',type:'help'}),false);
+  ai.remember({id:'e2',type:'talk'});ai.remember({id:'e3',type:'fight'});ai.remember({id:'e4',type:'rescue'});ai.remember({id:'e5',type:'gift'});
+  ai.setRelationship('player',{trust:30,respect:10,stage:'working-trust'});
+  const mind=ai.snapshotMind();
+  assert.equal(mind.memory.length,4);
+  assert.equal(ai.relationshipWith('player').trust,30);
+  assert.equal(mind.gameplayAuthority,false);
+});
+
+test('default AI party entries receive stable role archetype identity rather than anonymous bots',()=>{
+  const config=createAIPartyConfig({humanPlayers:1,aiCount:3,roles:['tank','ranged','healer']});
+  const entries=createDefaultAIEntries(config);
+  assert.equal(entries.length,3);
+  assert.equal(entries[0].identity.qualityProfile,'COMPANION');
+  assert.ok(entries[0].identity.values.length>=2);
+  assert.ok(entries[0].identity.stableSeed);
+  assert.equal(entries[0].personalityStableAcrossDecisions,true);
+  assert.equal(entries[0].gameplayAuthority,false);
+});
+
+test('Vibe gameplay plan automatically requests causal living actor implementation for companion NPC monster scope',()=>{
+  const inventory=[
+    {id:'npc',path:'world.npc',label:'NPC villager dialogue companion ally'},
+    {id:'combat',path:'combat.enemy',label:'monster boss enemy combat'},
+    {id:'quest',path:'story.quest',label:'quest relationship memory'}
+  ];
+  const sketch=deriveGameplaySketch({gameId:'living-ai',genre:'RPG',baseline:{content:{coreLoop:['explore','talk','fight']}},inventory});
+  const source=analyzeExistingGameSource('<main data-npc="smith"><script>let hp=10;function talk(){return true}</script></main>');
+  const plan=buildVibePatchPlan({gameplaySketch:sketch,sourceAnalysis:source,inventory});
+  const ids=plan.tasks.map(row=>row.id);
+  assert.equal(sketch.actors.runtimeActorIntelligenceRequired,true);
+  assert.equal(sketch.actors.companionIntelligenceRequired,true);
+  assert.equal(sketch.actors.monsterIntelligenceRequired,true);
+  for(const id of [
+    'BIND_RUNTIME_ACTOR_AI_QUALITY_DNA',
+    'IMPLEMENT_CAUSAL_ACTOR_RELATIONSHIP_GRAPH',
+    'IMPLEMENT_ACTOR_SPECIFIC_PLAYER_MODEL',
+    'IMPLEMENT_INDIVIDUAL_ACTOR_ACTIVITY_SIMULATION',
+    'IMPLEMENT_COMPANION_SELFHOOD_WORLDVIEW_AND_SELF_ACTUALIZATION',
+    'IMPLEMENT_IN_CHARACTER_GAMEPLAY_MENTOR_BARKS',
+    'IMPLEMENT_AUTONOMOUS_PERSONAL_EVENT_AND_QUEST_PROPOSALS',
+    'BIND_AI_QUEST_PROPOSALS_TO_EXISTING_QUEST_ENGINE',
+    'IMPLEMENT_MONSTER_TEMPERAMENT_TACTICS_AND_ECOLOGY',
+    'IMPLEMENT_BOSS_RARE_MONSTER_LIVING_ACTIVITY'
+  ]) assert.ok(ids.includes(id),id);
+  assert.ok(plan.verificationOrder.includes('RUNTIME_ACTOR_AI_CAUSALITY_WHEN_APPLICABLE'));
+  assert.ok(plan.verificationOrder.includes('PERSONAL_QUEST_PROPOSAL_ENGINE_AUTHORITY_WHEN_APPLICABLE'));
+});
+
+test('AI action validator rejects attempts to own protected gameplay state',()=>{
+  assert.equal(validateVibeAIAction({intent:'warn'}).safe,true);
+  const bad=validateVibeAIAction({intent:'attack',damage:999,reward:100});
+  assert.equal(bad.safe,false);
+  assert.ok(bad.touched.includes('damage'));
+  assert.ok(bad.touched.includes('reward'));
+});
