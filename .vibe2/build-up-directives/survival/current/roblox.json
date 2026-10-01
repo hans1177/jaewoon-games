@@ -244,18 +244,34 @@
       "sourceRevision": "165f9e2394e51293fcfb61451ad42305ed26d123",
       "artifactIdentity": "sha256:2798acec104dc7c0539f36d4897220ac66a685da5729a85bd6c7402a8b308ece",
       "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 36908677455,
-      "testedAt": "2026-10-01T19:38:08.203Z",
+      "workflowRunId": 36919854592,
+      "testedAt": "2026-10-01T21:20:26.290Z",
       "repairSurfaces": [
-        "GAME_START"
+        "CHARACTER_BOOT",
+        "GAME_START",
+        "CORE_GAMEPLAY_LOOP"
       ],
       "qualityFailureDetails": [
+        {
+          "id": "character-camera-ready",
+          "repairSurface": "CHARACTER_BOOT",
+          "priority": "CRITICAL",
+          "hint": "Repair character spawn, Humanoid/root, and camera binding before gameplay starts.",
+          "observed": "{\"interactionSurfaceCount\":0,\"progressionSurfaceCount\":2,\"combatSurfaceCount\":0,\"npcSurfaceCount\":0,\"companionSurfaceCount\":0,\"itemSurfaceCount\":0,\"remoteCount\":14,\"soundCount\":0,\"effectCount\":0,\"promptCount\":0,\"inventoryCount\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":false,\"multiplayerActualSessionPass\":false}"
+        },
         {
           "id": "adaptive-start-playability",
           "repairSurface": "GAME_START",
           "priority": "CRITICAL",
-          "hint": "Studio started with a dead/unplayable character. Restore healthy spawn/respawn/start state before normal gameplay QA.",
-          "observed": "{\"characterPresent\":true,\"humanoidPresent\":true,\"health\":0,\"maxHealth\":100,\"humanoidState\":\"Enum.HumanoidStateType.Dead\"}"
+          "hint": "Repair initial character health/state and start/continue flow so Studio reaches a healthy controllable character and gameplay state.",
+          "observed": "{\"initialDead\":false,\"finalDead\":true,\"initialHealth\":100,\"finalHealth\":0,\"startGateVisible\":false,\"startGateActionOk\":false,\"startGateEffectObserved\":true}"
+        },
+        {
+          "id": "adaptive-gameplay-loop-cadence",
+          "repairSurface": "CORE_GAMEPLAY_LOOP",
+          "priority": "CRITICAL",
+          "hint": "Actual-play samples show no meaningful action-feedback-progression/AI change across an active gameplay loop. Reduce dead time or restore the broken loop transition.",
+          "observed": "{\"activeLoopExpected\":true,\"activeLoopObserved\":false,\"activeTimelineTransitions\":3,\"idleTimelineTransitions\":1,\"semanticEffectCount\":0,\"timelineProgressChanged\":false,\"timelineMobDynamic\":false,\"timelineCompanionDynamic\":false}"
         }
       ]
     }
