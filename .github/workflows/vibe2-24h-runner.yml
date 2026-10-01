@@ -90,6 +90,7 @@ env:
   VIBE2_LEARNING_CONCURRENT_WITH_PRODUCTION: 'true'
   VIBE2_LEARNING_LANE_MAX: '4'
   VIBE2_ASSET_DEVELOPMENT_MAX: '64'
+  VIBE2_RUNNER_PRESSURE_DISPATCH_THRESHOLD: '4'
 
 # Keep one continuous scheduler chain. v9 releases the stale v8 scheduler epoch
 # while keeping the canonical scheduler and moving only its lightweight plan onto the ARM control pool.
@@ -148,6 +149,34 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          pressure_threshold="${VIBE2_RUNNER_PRESSURE_DISPATCH_THRESHOLD:-4}"
+          pressure_body="$(mktemp)"
+          pressure_code="$(curl --silent --show-error --output "$pressure_body" --write-out '%{http_code}' \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" || true)"
+          if [ "$pressure_code" != '200' ]; then
+            rm -f "$pressure_body"
+            echo "VIBE2_PREPLAN_RUNNER_PRESSURE=UNKNOWN_HTTP_$pressure_code"
+            echo 'VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DEFER_PRESSURE_UNKNOWN'
+            exit 0
+          fi
+          pressure_count="$(CURRENT_RUN_ID="$GITHUB_RUN_ID" node - "$pressure_body" <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const current=String(process.env.CURRENT_RUN_ID||'');
+          const states=new Set(['queued','pending','requested']);
+          const count=(payload.workflow_runs||[]).filter(row=>String(row.id||'')!==current&&states.has(String(row.status||'').toLowerCase())).length;
+          process.stdout.write(String(count));
+          NODE
+          )"
+          rm -f "$pressure_body"
+          echo "VIBE2_PREPLAN_RUNNER_PRESSURE=$pressure_count"
+          if [ "$pressure_count" -ge "$pressure_threshold" ]; then
+            echo "VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DEFER_RUNNER_PRESSURE_THRESHOLD_$pressure_threshold"
+            exit 0
+          fi
           state="$(node <<'NODE'
           const fs=require('fs');
           const q=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
@@ -612,6 +641,7 @@ jobs:
 
           runner_pressure='YES'
           pressure_count='unknown'
+          pressure_threshold="${VIBE2_RUNNER_PRESSURE_DISPATCH_THRESHOLD:-4}"
           if curl --fail-with-body --silent --show-error \
             --header 'Accept: application/vnd.github+json' \
             --header "Authorization: Bearer $GH_TOKEN" \
@@ -630,7 +660,7 @@ jobs:
           process.stdout.write(String(count));
           NODE
             )" && [[ "$pressure_count" =~ ^[0-9]+$ ]]; then
-              if [ "$pressure_count" -eq 0 ]; then runner_pressure='NO'; fi
+              if [ "$pressure_count" -lt "$pressure_threshold" ]; then runner_pressure='NO'; fi
               echo 'VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=PASS'
             else
               pressure_count='unknown'
@@ -641,6 +671,7 @@ jobs:
           fi
           echo "runner_pressure=$runner_pressure" >> "$GITHUB_OUTPUT"
           echo "VIBE2_24H_RUNNER_QUEUE_PRESSURE=${pressure_count}"
+          echo "VIBE2_24H_RUNNER_PRESSURE_THRESHOLD=${pressure_threshold}"
           if [ "$runner_pressure" = 'YES' ]; then
             echo 'VIBE2_24H_LEARNING_IDLE_DEFERRED=RUNNER_PRESSURE'
           else
@@ -712,9 +743,14 @@ jobs:
       - name: Recover reviewed winners stranded before release dispatch
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          VIBE2_RUNNER_PRESSURE: ${{ steps.queue_state.outputs.runner_pressure }}
         shell: bash
         run: |
           set -euo pipefail
+          if [ "${VIBE2_RUNNER_PRESSURE:-YES}" = 'YES' ]; then
+            echo 'VIBE2_RELEASE_RECOVERY=DEFERRED_RUNNER_PRESSURE'
+            exit 0
+          fi
           git config user.name 'jaewoon-vibe2-release-recovery'
           git config user.email 'vibe2-release-recovery@users.noreply.github.com'
 
@@ -826,7 +862,7 @@ jobs:
 
   recovery_fast:
     needs: plan
-    if: ${{ needs.plan.outputs.recovery_fast_queued != '0' }}
+    if: ${{ needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.recovery_fast_queued != '0' }}
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: recovery-fast
@@ -837,7 +873,7 @@ jobs:
 
   continuous:
     needs: plan
-    if: ${{ needs.plan.outputs.game_refill_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0' }}
+    if: ${{ needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.game_refill_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0' }}
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: game-primary
@@ -848,7 +884,7 @@ jobs:
 
   asset_development:
     needs: plan
-    if: ${{ needs.plan.outputs.asset_development_refill_ready == 'YES' && (needs.plan.outputs.asset_development_queued != '0' || needs.plan.outputs.asset_development_active != '0') }}
+    if: ${{ needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.asset_development_refill_ready == 'YES' && (needs.plan.outputs.asset_development_queued != '0' || needs.plan.outputs.asset_development_active != '0') }}
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: asset-development
@@ -859,8 +895,8 @@ jobs:
 
   learning_idle:
     needs: plan
-    # Reserve exactly one learning worker, including when production is idle.
-    if: ${{ needs.plan.outputs.learning_idle_queued != '0' }}
+    # Reserve exactly one learning worker only while the GitHub runner queue is below the pressure threshold.
+    if: ${{ needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.learning_idle_queued != '0' }}
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: learning-idle
@@ -871,7 +907,7 @@ jobs:
 
   game_study:
     needs: [plan, continuous, asset_development, learning_idle]
-    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.asset_development_queued == '0' && needs.plan.outputs.asset_development_active == '0' && needs.plan.outputs.learning_idle_queued == '0' }}
+    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.asset_development_queued == '0' && needs.plan.outputs.asset_development_active == '0' && needs.plan.outputs.learning_idle_queued == '0' }}
     uses: hans1177/jaewoon-games/.github/workflows/vibe2-game-study-continuous.yml@vibe2-unreal-core
     permissions:
       contents: write
@@ -883,11 +919,46 @@ jobs:
     runs-on: ubuntu-slim
     timeout-minutes: 2
     steps:
-      - name: Dispatch next cycle unconditionally
+      - name: Dispatch next cycle when runner queue is healthy
         env:
           GH_TOKEN: ${{ github.token }}
+          VIBE2_RUNNER_PRESSURE: ${{ needs.plan.outputs.runner_pressure }}
         run: |
           set -euo pipefail
+          if [ "${VIBE2_RUNNER_PRESSURE:-YES}" = 'YES' ]; then
+            echo 'VIBE2_24H_REFILL=DEFERRED_TO_SCHEDULE_RUNNER_PRESSURE'
+            exit 0
+          fi
+          active_body="$(mktemp)"
+          active_code="$(curl --silent --show-error --output "$active_body" --write-out '%{http_code}' \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" || true)"
+          if [ "$active_code" = '200' ]; then
+            other_scheduler="$(CURRENT_RUN_ID="$GITHUB_RUN_ID" node - "$active_body" <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const current=String(process.env.CURRENT_RUN_ID||'');
+          const active=new Set(['queued','pending','requested','in_progress']);
+          const count=(payload.workflow_runs||[]).filter(row=>
+            String(row.id||'')!==current &&
+            String(row.path||'')==='.github/workflows/vibe2-24h-runner.yml' &&
+            active.has(String(row.status||'').toLowerCase())
+          ).length;
+          process.stdout.write(String(count));
+          NODE
+            )"
+            rm -f "$active_body"
+            if [ "${other_scheduler:-0}" -gt 0 ]; then
+              echo "VIBE2_24H_REFILL=SKIPPED_EXISTING_SCHEDULER:${other_scheduler}"
+              exit 0
+            fi
+          else
+            rm -f "$active_body"
+            echo "VIBE2_24H_REFILL=DEFERRED_ACTIVE_SCHEDULER_CHECK_HTTP_$active_code"
+            exit 0
+          fi
           body='{"ref":"main"}'
           for attempt in 1 2 3; do
             code="$(curl --silent --show-error --output /tmp/vibe2-refill-body.txt --write-out '%{http_code}' \
