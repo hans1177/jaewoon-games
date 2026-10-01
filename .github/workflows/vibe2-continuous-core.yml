@@ -2383,7 +2383,9 @@ jobs:
               reserve_regression_reuse=1
               echo 'VIBE2_FAN_IN_REGRESSION_SOURCE=RESERVE_EXACT_SHA_REGRESSION_REUSE'
             fi
-            if [ "$reserve_regression_reuse" != '1' ] && curl --fail-with-body --silent --show-error \
+            if [ "$reserve_regression_reuse" = '1' ]; then
+              echo 'VIBE2_FANIN_CORE_QA_REUSE_OBSERVATION=SKIPPED_RESERVE_EXACT_SHA_PASS'
+            elif curl --fail-with-body --silent --show-error \
               --header 'Accept: application/vnd.github+json' \
               --header "Authorization: Bearer $GH_TOKEN" \
               --header 'X-GitHub-Api-Version: 2022-11-28' \
