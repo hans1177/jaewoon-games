@@ -2678,6 +2678,7 @@ jobs:
             set +e
             (cd "$contract_root" && node --test --test-concurrency=4 \
             qa/vibe2-auto-planner.test.mjs \
+            qa/company-build-up-experience-quality.test.mjs \
             qa/vibe2-native-asset-production.test.mjs \
             qa/vibe2-neural-diagnosis.test.mjs \
             qa/vibe2-neural-feedback.test.mjs \
