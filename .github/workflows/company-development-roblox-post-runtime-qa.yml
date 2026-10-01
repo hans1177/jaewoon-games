@@ -1544,6 +1544,7 @@ jobs:
               sourceRevision:String(item.robloxSourceCommit||''),
               artifactIdentity:String(item.robloxBuildArtifactIdentity||''),
               candidateVersionNumber:Number(candidate.versionNumber||0),
+              beforeUpdatedAt:String(before.updatedAt||''),
               updatedAt:String(item.updatedAt||stamp),
               fields,
             });
@@ -1620,8 +1621,21 @@ jobs:
               continue;
             }
 
+            const fieldEntries=Object.entries(delta.fields||{});
+            const allAlreadyAfter=fieldEntries.every(([key,change])=>{
+              const currentPresent=Object.prototype.hasOwnProperty.call(item,key);
+              return currentPresent===change.afterPresent
+                &&(!currentPresent||equal(item[key],change.after));
+            });
+            if(allAlreadyAfter)continue;
+
+            if(String(item.updatedAt||'')!==String(delta.beforeUpdatedAt||'')){
+              conflicts.push({gameId:delta.gameId,field:'SAME_GAME_ATOMIC_STATE'});
+              continue;
+            }
+
             let conflictField='';
-            for(const [key,change] of Object.entries(delta.fields||{})){
+            for(const [key,change] of fieldEntries){
               const currentPresent=Object.prototype.hasOwnProperty.call(item,key);
               const alreadyAfter=
                 currentPresent===change.afterPresent
