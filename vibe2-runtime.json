@@ -557,7 +557,9 @@
       "fanInRefillConcurrencyScope": "LANE_SCOPED_STATELESS_REFILL_COALESCING",
       "globalFanInRefillSingletonForbidden": true,
       "sameLaneFanInRefillSerialization": false,
-      "pressureCoalescingIndependentFreeSlotRefillPreserved": true
+      "pressureCoalescingIndependentFreeSlotRefillPreserved": false,
+      "pressureCoalescingDefersNewWorkflowCreation": true,
+      "pressureThreshold": 4
     },
     "signalLiveness": {
       "runState": "ALWAYS_RUNNING",
