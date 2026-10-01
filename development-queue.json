@@ -4846,10 +4846,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T00:50:41.858Z",
+      "updatedAt": "2026-10-01T00:57:42.949Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -6145,10 +6145,10 @@
       "ownerWebEditPropagationPending": true,
       "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:06:01.391Z",
       "platformAdapter": "tools/company-development-unity-platform.mjs",
-      "unityCandidateBranch": null,
-      "unitySourceCommit": null,
-      "unityBuildRunId": null,
-      "unityRuntimeSmokeRunId": null,
+      "unityCandidateBranch": "development/unity-tech-village-dungeons-36794831239",
+      "unitySourceCommit": "d72216eef80f68ee91d0b608f1d2373e3a91223e",
+      "unityBuildRunId": 36796761382,
+      "unityRuntimeSmokeRunId": 36798481749,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityInternalReleaseReady": false,
@@ -6157,21 +6157,30 @@
       "unityPublicReleaseReady": false,
       "unityPublicRelease": false,
       "executionEvidence": {
-        "version": 1,
+        "version": 4,
         "platform": "UNITY",
-        "sourceRevision": null,
-        "sourceFingerprint": null,
-        "buildOrPackagePassed": false,
-        "artifactIdentity": null,
+        "sourceRevision": "d72216eef80f68ee91d0b608f1d2373e3a91223e",
+        "sourceRootTreeSha": "d98d1d415aefb45c58699f10966ee7eb18d0a476",
+        "sourceFingerprint": "6e6a3a7c6446a062ea1b3ad0740eac7a15acdccd8dec6813515d86d81be1bfc3",
+        "buildOrPackagePassed": true,
+        "artifactIdentity": "sha256:90bc5bc75e0054b02d92365687fc4f977c82a9f150125156fa17e5939d93dbfe",
         "runtimePassed": false,
-        "independentQaPassed": true,
-        "regressionPassed": true,
-        "exactRevision": false,
-        "lastSuccessfulStage": "F9_RELEASE_REGRESSION",
-        "failureStage": null,
-        "failureSignature": null
+        "independentQaPassed": false,
+        "multiplayerPassed": true,
+        "regressionPassed": false,
+        "rawStageResults": {
+          "runtime": false,
+          "independentQa": false,
+          "regression": false
+        },
+        "canonicalEvidenceBound": false,
+        "f0ToF9Passed": false,
+        "exactRevision": true,
+        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
+        "failureStage": "F1_SERVER_BOOT",
+        "failureSignature": "2b2442097907ed5f3fd1ea363411c07f18180e3123b86b61ecab02c463f66bfd"
       },
-      "resumeStage": "SINGLE_BUILD_OR_PACKAGE",
+      "resumeStage": "F1_SERVER_BOOT",
       "failureCount": 1,
       "contractCanaryPassed": false,
       "robloxInternalPlaytestPassed": false,
@@ -6590,6 +6599,88 @@
         "previousSourceRevision": "4a9e1125507d5fa6d6bdcfb31f030fcf66453397",
         "newSourceRevision": "cc303fdadcbd7cd3c72ec5cb236198491b7787a1",
         "invalidatedAt": "2026-09-30T08:32:01.150Z"
+      },
+      "unityF0ThroughF9Evidence": {
+        "version": 1,
+        "platform": "UNITY",
+        "sourceRevision": "d72216eef80f68ee91d0b608f1d2373e3a91223e",
+        "artifactIdentity": "sha256:90bc5bc75e0054b02d92365687fc4f977c82a9f150125156fa17e5939d93dbfe",
+        "sourceRootTreeSha": "d98d1d415aefb45c58699f10966ee7eb18d0a476",
+        "evidenceMode": "EXISTING_EXACT_APK_RUNTIME_QA_REGRESSION_WITH_PLATFORM_APPLICABILITY",
+        "floors": {
+          "F0": {
+            "state": "PASS",
+            "authority": "IMMUTABLE_APK_BUILD_AND_SOURCE_BINDING"
+          },
+          "F1": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_RUNTIME_SESSION"
+          },
+          "F2": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_RUNTIME_SESSION"
+          },
+          "F3": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_RUNTIME_SESSION"
+          },
+          "F4": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_RUNTIME_SESSION"
+          },
+          "F5": {
+            "state": "FAIL",
+            "authority": "INDEPENDENT_ANDROID_QA_TOUCH_INPUT_SCREEN_RUNTIME"
+          },
+          "F6": {
+            "state": "FAIL",
+            "authority": "INDEPENDENT_ANDROID_QA_AND_EXACT_RUNTIME_STATE_EVIDENCE"
+          },
+          "F7": {
+            "state": "NOT_APPLICABLE",
+            "authority": "VERIFIED_DESIGN_SINGLE_PLAYER",
+            "participantCount": 0,
+            "authoritativeSync": false
+          },
+          "F8": {
+            "state": "FAIL",
+            "authority": "EXACT_RUNTIME_PLUS_INDEPENDENT_QA"
+          },
+          "F9": {
+            "state": "FAIL",
+            "authority": "EXACT_ARTIFACT_REGRESSION_FAN_IN"
+          }
+        },
+        "multiplayerRequired": false,
+        "verifiedAt": "2026-10-01T00:57:42.949Z"
+      },
+      "unityCanonicalEvidenceBound": false,
+      "unityF9ReleaseRegressionPassed": false,
+      "unityF9ReleaseRegressionPassedAt": null,
+      "unityCanonicalPublishPending": false,
+      "unityExecutionEvidence": {
+        "version": 4,
+        "platform": "UNITY",
+        "sourceRevision": "d72216eef80f68ee91d0b608f1d2373e3a91223e",
+        "sourceRootTreeSha": "d98d1d415aefb45c58699f10966ee7eb18d0a476",
+        "sourceFingerprint": "6e6a3a7c6446a062ea1b3ad0740eac7a15acdccd8dec6813515d86d81be1bfc3",
+        "buildOrPackagePassed": true,
+        "artifactIdentity": "sha256:90bc5bc75e0054b02d92365687fc4f977c82a9f150125156fa17e5939d93dbfe",
+        "runtimePassed": false,
+        "independentQaPassed": false,
+        "multiplayerPassed": true,
+        "regressionPassed": false,
+        "rawStageResults": {
+          "runtime": false,
+          "independentQa": false,
+          "regression": false
+        },
+        "canonicalEvidenceBound": false,
+        "f0ToF9Passed": false,
+        "exactRevision": true,
+        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
+        "failureStage": "F1_SERVER_BOOT",
+        "failureSignature": "2b2442097907ed5f3fd1ea363411c07f18180e3123b86b61ecab02c463f66bfd"
       }
     },
     {
@@ -27834,7 +27925,7 @@
       "unityCanonicalEvidenceBound": false
     }
   ],
-  "updatedAt": "2026-10-01T00:57:25.247Z",
+  "updatedAt": "2026-10-01T00:57:44.271Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
