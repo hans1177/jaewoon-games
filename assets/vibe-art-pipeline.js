@@ -316,6 +316,8 @@ export function createVibeArtPipeline({ request = '', target = 'auto', style = n
   if (needsArt) steps.push('허용 에셋은 원본을 보존한 채 V3 변형 후보를 최소 3개 독립 생성하고 각각 별도 derived 경로에 저장');
   if (needsArt) steps.push('변형 후보를 스타일 일관성·실루엣 가독성·시각 품질·애니메이션 준비도·모바일 성능으로 실제 화면 비교 후 1개만 채택');
   if (needsArt) steps.push('모든 Unity/Roblox 네이티브 게임은 회사 라이브러리를 먼저 조회하고, 같은 게임/회사 검증 자산 → 라이선스 검증 기존 저장소 → 라이선스 검증 외부 에셋·모션 → 리타겟/클린업 → 신규 제작 순서로 부족한 부분을 채운다');
+  if (needsArt) steps.push('사용 가능한 target-compatible 자산은 신규 제작보다 먼저 실제 게임 책임 위치에 적용한다. 같은 게임에 이미 바인딩된 자산은 품질이 비슷하면 통합비용이 가장 낮은 후보로 우선하고, 실제 게임 카메라에서 부족한 부위만 파생 재제작한다');
+  if (needsArt) steps.push('기존 자산 전체를 버리고 다시 만드는 대신 실루엣/구조/재질/리그/접촉/LOD 중 약한 책임만 파생본으로 재authoring하고 원본은 불변으로 유지한다');
   if (needsArt) steps.push('외부 에셋·모션은 다운로드만으로 회사 자산이 되지 않는다. 출처·라이선스·변형 이력을 보존하고 플랫폼 네이티브 적용과 실제 런타임·모바일 QA를 통과한 뒤에만 승격한다');
   if (needsArt) steps.push('Studio Asset Universe에서 CHARACTER/CREATURE/BUILDING/ENVIRONMENT/WEAPON/SKILL/MATERIAL/AUDIO/VFX/UI/MOTION/PROP 전체 Coverage를 스캔하고 실제 게임 수요·Style Lock·플랫폼 기준의 최대 gap부터 채운다');
   if (needsArt) steps.push('모든 Vibe 네이티브 업그레이드는 12개 에셋 계열을 전부 평가하고, 기존 게임에 존재하는 계열은 실제 책임 소스에 APPLIED로 바인딩한다. 배경·지형·건물·마을·학교·상점·랜드마크·소품은 ENVIRONMENT/BUILDING/PROP 실제 에셋 사용을 요구하며 마커/색상/단일 primitive만으로 완료 처리하지 않는다');
