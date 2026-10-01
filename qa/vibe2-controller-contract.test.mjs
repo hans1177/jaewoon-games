@@ -331,34 +331,37 @@ test('controller pins each isolated candidate to the reserve-time main contract 
   assert(!workflow.includes('vibe2-queue-control.mjs pass'));
 });
 
-test('candidate publication prefers unique refs and falls back to reusable carrier branches',()=>{
-  const refCreate=workflow.indexOf('"https://api.github.com/repos/$GITHUB_REPOSITORY/git/refs"');
-  const uniquePush=workflow.indexOf('git push origin "HEAD:$candidate_branch"');
-  const carrierPool=workflow.indexOf("git ls-remote --heads origin 'refs/heads/vibe2/candidate/OWNER-FULL-REBUILD-*'");
-  const carrierPush=workflow.indexOf('origin "HEAD:refs/heads/$carrier_branch"');
-  assert.ok(refCreate>=0&&uniquePush>refCreate);
-  assert.ok(carrierPool>uniquePush&&carrierPush>carrierPool);
-  assert(workflow.includes('force-with-lease="refs/heads/$carrier_branch:$carrier_old_sha"'));
-  assert(workflow.includes('--arg sha "$base_sha"'));
-  assert(workflow.includes('--arg ref "refs/heads/$candidate_branch"'));
-  assert(workflow.includes('VIBE2_CANDIDATE_TRANSPORT=REUSED_EXISTING_BRANCH_FORCE_WITH_LEASE'));
-  assert(workflow.includes('candidate transport failed after unique-ref and reusable-carrier attempts'));
-  assert(!workflow.includes('workflow: write'));
+test('candidate publication rebases transport onto latest main only when responsible source is stable',()=>{
+  const releaseWorkflow=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
+  assert.doesNotMatch(workflow,/OWNER-FULL-REBUILD-/);
+  assert.doesNotMatch(workflow,/REUSED_EXISTING_CANDIDATE_BRANCH/);
+  assert.doesNotMatch(workflow,/\/git\/refs"/);
+  assert.match(workflow,/git -C "\$contract_root" fetch --depth=1 --no-tags origin main --quiet/);
+  assert.match(workflow,/transport_base_sha="\$\(git -C "\$contract_root" rev-parse FETCH_HEAD\)"/);
+  assert.match(workflow,/diff --name-only "\$base_sha" "\$transport_base_sha" -- "\$SOURCE_ROOT"/);
+  assert.match(workflow,/failure_class=CANDIDATE_SOURCE_DRIFT/);
+  assert.match(workflow,/worktree add --detach "\$transport_dir" "\$transport_base_sha"/);
+  assert.match(workflow,/row\.transportBaseSha=String\(process\.env\.TRANSPORT_BASE_SHA\|\|''\)/);
+  assert.match(workflow,/push origin "HEAD:refs\/heads\/\$candidate_branch"/);
+  assert.match(workflow,/VIBE2_CANDIDATE_TRANSPORT=LATEST_MAIN_SOURCE_STABLE/);
+  assert.match(releaseWorkflow,/transport_base_sha: \$\{\{ steps\.gate\.outputs\.transport_base_sha \}\}/);
+  assert.match(releaseWorkflow,/const transportBase=String\(m\.transportBaseSha\|\|base\)\.trim\(\)/);
+  assert.match(releaseWorkflow,/git diff --name-only "\$transport_base_sha" "\$candidate_sha" -- "\$source_root"/);
+  assert.match(releaseWorkflow,/diff --check "\$transport_base_sha" "\$candidate_sha"/);
   const publication=runtime.workers.textSource.candidatePublication;
   assert.equal(publication.localBranchBase,'RESERVE_TIME_PINNED_MAIN_SHA');
-  assert.equal(publication.remoteRefCreation,'PREFER_UNIQUE_PRECREATE_FALLBACK_REUSE_EXISTING_BRANCH');
-  assert.equal(publication.reusableCarrierFallback,true);
-  assert.equal(publication.reusableCarrierPrefix,'vibe2/candidate/OWNER-FULL-REBUILD-');
-  assert.equal(publication.reusableCarrierMaxAttempts,16);
-  assert.equal(publication.carrierCommitParent,'RESERVE_TIME_PINNED_MAIN_SHA');
-  assert.equal(publication.carrierManifestTransportMode,'REUSED_EXISTING_CANDIDATE_BRANCH_FORCE_WITH_LEASE');
+  assert.equal(publication.remoteRefCreation,'DIRECT_BRANCH_PUSH_FROM_LATEST_MAIN_SOURCE_STABLE_TRANSPORT');
+  assert.equal(publication.transportBase,'LATEST_MAIN_SHA_AFTER_RESPONSIBLE_SOURCE_STABILITY_CHECK');
+  assert.equal(publication.sourceDriftAction,'FAIL_CLOSED_REPLAN_EXACT_TASK');
+  assert.equal(publication.sourceDriftFailureClass,'CANDIDATE_SOURCE_DRIFT');
   assert.equal(publication.candidateIdentityBase,'RESERVE_TIME_PINNED_MAIN_SHA');
+  assert.equal(publication.transportManifestShaRequired,true);
   assert.equal(publication.commitPushScope,'TASK_APPROVED_SOURCE_AND_CANDIDATE_ARTIFACT_DIFF_ONLY');
   assert.equal(publication.untouchedBaseWorkflowWriteAuthorityRequired,false);
   assert.equal(publication.failureClass,'CANDIDATE_BRANCH_PUBLISH');
   assert.equal(publication.telemetryStage,'CANDIDATE_PUBLICATION');
   assert.equal(publication.excludedFromSourceGenerationFailureRate,true);
-  assert.equal(publication.remoteRefCleanupOnPushFailure,true);
+  assert.equal(publication.remoteRefCleanupOnPushFailure,false);
 });
 
 test('reserve probes model cache lookup-only and skips the dedicated warmup runner on hit',()=>{
