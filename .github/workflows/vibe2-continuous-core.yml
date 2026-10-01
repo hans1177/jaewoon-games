@@ -103,11 +103,8 @@ jobs:
     # while ubuntu-latest game workers were actively running. Push/manual reserve stays on slim.
     runs-on: ${{ (github.event_name == 'repository_dispatch' && (github.event.action == 'vibe2-fanin-refill' || github.event.action == 'vibe2-neuron-complete') && 'ubuntu-latest' || 'ubuntu-slim') }}
     timeout-minutes: 7
-    # Only stateless fan-in refill reserve jobs coalesce per lane. This keeps at most one running
-    # and one latest pending reserve wake per lane while worker cohorts remain fully parallel.
-    concurrency:
-      group: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-refill-reserve-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || format('vibe2-reserve-{0}', github.run_id) }}
-      cancel-in-progress: false
+    # Reserve runs are run-unique. Shared queue writes use optimistic fetch/reset/replan/push retry,
+    # so fan-in refill wakes must not serialize by lane or occupy a single pending concurrency slot.
     outputs:
       worker_matrix: ${{ steps.batch.outputs.worker_matrix }}
       worker_count: ${{ steps.batch.outputs.worker_count }}

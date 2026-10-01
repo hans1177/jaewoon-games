@@ -1646,7 +1646,7 @@ test('continuous core rebases refill wakes to latest main and always ingests neu
     assert.match(contract,/if \[ "\$dispatch_type" = 'vibe2-neuron-complete' \]/);
     assert.match(contract,/git fetch --depth=1 --no-tags origin main --quiet/);
     assert.match(contract,/contract_sha="\$\(git rev-parse FETCH_HEAD\)"/);
-    assert.match(workflow,/vibe2-refill-reserve-\{0\}/);
+    assert.doesNotMatch(workflow,/vibe2-refill-reserve-/);
   }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
 
@@ -1754,11 +1754,10 @@ test('24H plan uses optimistic writes while reserve stays lightweight and fan-in
   const reserveSteps=core.indexOf('\n    steps:',reserveStart);
   assert.ok(reserveStart>=0&&reserveSteps>reserveStart);
   const reserveHeader=core.slice(reserveStart,reserveSteps);
-  assert.match(reserveHeader,/vibe2-refill-reserve-/);
-  assert.match(reserveHeader,/format\('vibe2-reserve-\{0\}', github\.run_id\)/);
-  assert.match(reserveHeader,/concurrency:/);
-  assert.match(reserveHeader,/cancel-in-progress: false/);
-  assert.match(reserveHeader,/Only stateless fan-in refill reserve jobs coalesce per lane/);
+  assert.doesNotMatch(reserveHeader,/vibe2-refill-reserve-/);
+  assert.doesNotMatch(reserveHeader,/format\('vibe2-reserve-\{0\}', github\.run_id\)/);
+  assert.doesNotMatch(reserveHeader,/\n    concurrency:/);
+  assert.match(reserveHeader,/Reserve runs are run-unique/);
   assert.match(reserveHeader,/runs-on: \$\{\{ \(github\.event_name == 'repository_dispatch' && \(github\.event\.action == 'vibe2-fanin-refill' \|\| github\.event\.action == 'vibe2-neuron-complete'\) && 'ubuntu-latest' \|\| 'ubuntu-slim'\) \}\}/);
   assert.match(reserveHeader,/vibe2-neuron-complete/);
   assert.doesNotMatch(reserveHeader,/asset-development/);
