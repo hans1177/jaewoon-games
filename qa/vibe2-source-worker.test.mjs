@@ -5336,6 +5336,36 @@ test('large JSON prompts compact at 36KB and retry-only observation blocks stay 
   assert.match(workerSource,/VIBE2_RETRY_OBSERVATION_COMPACTED/);
 });
 
+test('oversized initial compaction falls back to exact responsible files instead of growing the prompt',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'unity-games/demo');
+  write(path.join(root,'Assets/Scripts/GameCore.cs'),'public sealed class GameCore { public int State = 1; }\n');
+  write(path.join(root,'Assets/Scripts/RuntimeBootstrap.cs'),'public sealed class RuntimeBootstrap { public int Boot = 1; }\n');
+  const prompt=[
+    'You are the Vibe2 game source worker. Return JSON only.',
+    'Engine: unity',
+    'Goal: implement the approved Unity Web gameplay baseline',
+    'OVERSIZED_PLANNING_CONTEXT='+('duplicate planning detail '.repeat(14000)),
+    'Allowed edit paths: Assets/Scripts/GameCore.cs, Assets/Scripts/RuntimeBootstrap.cs'
+  ].join('\n');
+  const compact=buildGenerationRetryPrompt(prompt,{
+    allowFullRewrite:false,
+    responsibleFiles:['Assets/Scripts/GameCore.cs','Assets/Scripts/RuntimeBootstrap.cs'],
+    sourceRoot:root,
+    attempt:1,
+    multiFilePairRequired:true,
+    oversizedInitial:true
+  });
+  assert.ok(Buffer.byteLength(prompt,'utf8')>36000);
+  assert.ok(Buffer.byteLength(compact,'utf8')<36000);
+  assert.ok(Buffer.byteLength(compact,'utf8')<Buffer.byteLength(prompt,'utf8'));
+  assert.match(compact,/UNITY WEB BOOTSTRAP PAIR CONTRACT/);
+  assert.match(compact,/=== FILE Assets\/Scripts\/GameCore\.cs \[EDITABLE\] ===/);
+  assert.match(compact,/public sealed class GameCore/);
+  assert.match(compact,/=== FILE Assets\/Scripts\/RuntimeBootstrap\.cs \[EDITABLE\] ===/);
+  assert.match(compact,/public sealed class RuntimeBootstrap/);
+  assert.doesNotMatch(compact,/duplicate planning detail duplicate planning detail duplicate planning detail/);
+});
+
 test('oversized standard JSON edit starts with bounded writable context instead of spending the first request on a guaranteed timeout',async(t)=>{
   const cwd=tempRoot(),root='web-games/demo',relative='index.html',requests=[];
   const source='<!doctype html>\n<button id="play">Play</button>\n<script>\n'+('const historicalObservation = "unchanged";\n'.repeat(3500))+'</script>\n';

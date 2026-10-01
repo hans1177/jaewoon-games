@@ -2674,7 +2674,70 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
     :fullWebFinal
       ?`FINAL FULL-WEB RETRY: produce one complete playable index.html replacement of at least ${fullWebTargetMin} UTF-8 bytes and no more than ${fullWebTargetMax} bytes. Include direct mobile input, substantial executable game logic, a real update/render or equivalent state-transition loop, progression, explicit win/loss/result state, restart, responsive layout, and persistent-capable state. Do not stop early. Finish with </html> and the required end marker.`
       :'';
-  return retryBase+'\n\n'+correction+(finalInstruction?'\n'+finalInstruction:'');
+  let result=retryBase+'\n\n'+correction+(finalInstruction?'\n'+finalInstruction:'');
+  if(oversizedInitial&&Buffer.byteLength(result,'utf8')>MAX_INITIAL_JSON_PROMPT_BYTES){
+    const learning=compactVerifiedExternalLearningBlockFromPrompt(rawPrompt);
+    const compactDirective=buildUpDirectiveBlockFromPrompt(rawPrompt,{compact:true,responsiblePaths:exactResponsible});
+    const directivePrefixes=['[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]','directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=','preserve=','acceptance=','[GAME SPECIFIC BUILD UP DIRECTIVE END]'];
+    const directive=compactDirective.split('\n')
+      .filter(line=>directivePrefixes.some(prefix=>line===prefix||line.startsWith(prefix)))
+      .map(line=>boundedPromptText(line,900))
+      .join('\n');
+    const sourceSections=[];
+    const rawLines=rawPrompt.split('\n');
+    for(let i=0;i<rawLines.length;i++){
+      const header=rawLines[i].replace(/\r$/,'');
+      if(!header.startsWith('=== FILE '))continue;
+      const sectionPath=header
+        .replace(/^=== FILE\s+/,'')
+        .replace(/\s+\[[^\]]+\].*$/,'')
+        .replace(/\s+===$/,'')
+        .trim();
+      if(!header.includes('[EDITABLE]')&&!exactResponsible.includes(sectionPath))continue;
+      const body=[];
+      for(i+=1;i<rawLines.length;i++){
+        if(rawLines[i].replace(/\r$/,'').startsWith('=== FILE ')){i-=1;break;}
+        body.push(rawLines[i]);
+      }
+      sourceSections.push({path:sectionPath,header,content:body.join('\n')});
+    }
+    for(const relative of exactResponsible){
+      if(sourceSections.some(row=>row.path===relative))continue;
+      if(!clean(sourceRoot))continue;
+      try{
+        const root=path.resolve(sourceRoot),file=path.resolve(root,relative);
+        if(file.startsWith(root+path.sep)&&fs.existsSync(file)&&fs.statSync(file).isFile()){
+          sourceSections.push({path:relative,header:'=== FILE '+relative+' [EDITABLE] ===',content:fs.readFileSync(file,'utf8')});
+        }
+      }catch{}
+    }
+    const orderedSections=exactResponsible.length
+      ?exactResponsible.map(relative=>sourceSections.find(row=>row.path===relative)).filter(Boolean)
+      :sourceSections;
+    const sectionLimit=(systemAtomicPairRequired||multiFilePairRequired)?Math.max(2,exactResponsible.length):3;
+    const boundedSections=orderedSections.slice(0,sectionLimit).map(row=>{
+      const excerpt=boundedLargeExcerpt(row.content,900);
+      return row.header+'\n'+excerpt.content;
+    });
+    result=[
+      'You are the Vibe2 game source worker. Return JSON only.',
+      rawPrompt.split('\n').find(line=>line.startsWith('Engine:'))||'',
+      compactGoalLine,
+      learning,
+      directive,
+      allowedLine,
+      'INITIAL BOUNDED SOURCE REQUEST: oversized planning context was removed. Exact writable source and verified learning remain authoritative.',
+      'Preserve gameplay values, save meaning and existing behavior unless the work order explicitly authorizes a protected change.',
+      'Every edits[].path MUST be one exact path from Allowed edit paths.',
+      'Every edits[].find MUST be copied character-for-character from one provided EDITABLE FILE block and occur exactly once.',
+      multiFilePairRequired?'UNITY WEB BOOTSTRAP PAIR CONTRACT: return at least one exact edits[] entry for EACH Allowed edit path. GameCore.cs and RuntimeBootstrap.cs must both change in the same candidate. Do not use newFiles or replaceFiles.':'',
+      systemAtomicPairRequired?'SYSTEM ATOMIC PAIR CONTRACT: change both the responsible system source and causal regression test in one candidate.':'',
+      ...boundedSections,
+      'Return one strict JSON object only. Use double quotes for every key and string. No markdown, comments, placeholders, trailing commas, or extra prose.'
+    ].filter(Boolean).join('\n\n');
+    console.log('VIBE2_INITIAL_JSON_PROMPT_FALLBACK_BYTES='+Buffer.byteLength(result,'utf8'));
+  }
+  return result;
 }
 function responseFileForAttempt(responseFile,responseFiles=[],attempt=1){
   const rows=Array.isArray(responseFiles)?responseFiles.map(clean).filter(Boolean):[];
