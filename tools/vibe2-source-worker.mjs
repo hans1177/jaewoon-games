@@ -1662,6 +1662,13 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
     'Repair only the measured regions and listed editableParameters against the exact sourceHash and previousParameters. Preserve lockedParameters, identityAnchors, untouched parameter values, gameplay event times, clip duration and root authority. Missing measurements remain UNVERIFIED; unmeasuredGroups are not inspected. Re-measure and recapture after authoring; do not mark findings closed from declarations or a numeric trace PASS.',
     '[ASSET DETAIL REPAIR END]'
   ].join('\n'):'';
+  const runtimeVisualRepair=order.assetProduction?.runtimeVisualRepair;
+  const runtimeVisualRepairBlock=runtimeVisualRepair?[
+    '[RUNTIME VISUAL REPAIR BEGIN]',
+    JSON.stringify(runtimeVisualRepair),
+    'Repair only defects listed in defects and only inside the current responsible visual files. INTERFACE means only declared HUD/MENU/MINIMAP/INTERACTION presentation. SCENE_OBJECT means only declared required object binding/presentation. Preserve gameplay values, save meaning, multiplayer authority, hit timing, quest/progression rules and unrelated visual systems. Re-capture the same runtime role with the same camera, lighting and state after mutation. Do not close a defect from source markers, declarations, generated files, or a model claim; runtime re-observation is required.',
+    '[RUNTIME VISUAL REPAIR END]'
+  ].join('\n'):'';
   let goal=String(order.goal??'');
   const originalLearning=learningGuidance(order.unifiedLearning||{});
   if(learningContract.block&&(originalLearning||goal.includes(VERIFIED_LEARNING_MOTOR_BEGIN))){
@@ -1686,6 +1693,7 @@ explorationGuidance(exploration),
 presentationWorkerGuidance(order),
 universalAssetWorkerGuidance(order),
 assetDetailBlock,
+runtimeVisualRepairBlock,
 order.imageAssetObservation?.required?'[IMAGE ASSET OBSERVATION BEGIN]\n'+JSON.stringify(order.imageAssetObservation)+'\nVisible observations are proposals from actual pixels. Hidden geometry and motion are creative proposals. Implement editable native assets, then compare close-up/full-turnaround/game-camera/action frames to the source; no placeholder or declaration-only completion.\n[IMAGE ASSET OBSERVATION END]':'',
 studioQualityWorkerGuidance(order),
 gameSpecificBuildUpDirectiveGuidance(order,responsibleFiles),
