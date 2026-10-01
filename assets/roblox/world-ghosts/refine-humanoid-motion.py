@@ -33,10 +33,6 @@ CLIPS = {
     'hero_start_hq': 0.75,
     'hero_stop_hq': 0.66,
     'hero_turn_90_hq': 0.78,
-    'hero_walk_back_hq': 1.12,
-    'hero_crouch_idle_hq': 3.20,
-    'hero_crouch_walk_hq': 1.18,
-    'hero_jump_air_hq': 0.82,
 }
 REQUIRED_BONES = {
     'Hips','Spine','Chest','Head',
@@ -53,7 +49,7 @@ SECONDARY_QA_BONES = tuple(
     + [f'Hem{i}' for i in range(8)]
     + [f'Tie{i}' for i in range(3)]
 )
-LOOP_CLIPS = ('hero_idle_hq','hero_walk_hq','hero_run_hq','hero_walk_back_hq','hero_crouch_idle_hq','hero_crouch_walk_hq','hero_jump_air_hq')
+LOOP_CLIPS = ('hero_idle_hq','hero_walk_hq','hero_run_hq')
 QA_THRESHOLDS = {
     'loopRotationMaxRad': 0.015,
     'loopLocationMax': 0.004,
@@ -64,11 +60,6 @@ QA_THRESHOLDS = {
     'leftRightPhaseErrorRad': 0.020,
     'footContactLateralVerticalDriftNormalizedMax': 0.035,
     'secondaryRotationRangeMinRad': 0.010,
-    'mobileMotionCountMax': 40,
-    'mobileMaxFramesPerClip': 120,
-    'mobileKeyedPoseEstimateMax': 220000,
-    'addedCoreRotationRangeMinRad': 0.003,
-    'addedLegRotationRangeMinRad': 0.015,
     'primaryJointRotationRangeMinRad': {
         'Hips': 0.045,
         'Spine': 0.025,
@@ -141,7 +132,7 @@ bone_names = {bone.name for bone in RIG.pose.bones}
 missing = sorted(REQUIRED_BONES - bone_names)
 assert not missing, 'SOURCE_STANDARD_BONES_MISSING:' + ','.join(missing)
 
-# 기존 GLB의 액션과 원본 바이너리는 그대로 보존한다. 파생본에는 새 공용 모션만 굽는다.
+# 기존 GLB의 액션은 원본 파일에 그대로 남아 있다. 파생본에는 새 공용 모션만 굽는다.
 if RIG.animation_data:
     RIG.animation_data.action = None
 for action in list(bpy.data.actions):
@@ -149,7 +140,7 @@ for action in list(bpy.data.actions):
 
 SCENE = bpy.context.scene
 SCENE.render.fps = FPS
-RIG['MotionDerivative'] = 'HERO_FOUNDATION_HQ_V2'
+RIG['MotionDerivative'] = 'HERO_FOUNDATION_HQ_V1'
 RIG['SourceSha256'] = source_hash
 RIG['ProductionVerified'] = False
 
@@ -387,85 +378,6 @@ def turn_pose(t):
     apply_secondary(t, drive=0.8, turn=turn, braking=settle)
 
 
-def backward_gait_pose(t):
-    body_y = phase_curve(t, [(0.00,-1.0),(0.15,-0.22),(0.30,0.58),(0.50,-0.84),(0.66,-0.10),(0.82,0.64),(1.00,-1.0)])
-    yaw = phase_curve(t, [(0.00,-1.0),(0.24,0.08),(0.50,1.0),(0.76,-0.05),(1.00,-1.0)])
-    loc('Hips', 0.0, 0.0, 0.026 * body_y)
-    rot('Hips', -0.020, yaw * 0.070, yaw * 0.028)
-    rot('Spine', -0.018, -yaw * 0.045, -yaw * 0.020)
-    rot('Chest', -0.010, -yaw * 0.035, yaw * 0.026)
-    rot('Head', 0.025, yaw * 0.018, -yaw * 0.012)
-    for side, sign in [('L', -1), ('R', 1)]:
-        p = (t + (0.5 if side == 'R' else 0.0)) % 1.0
-        thigh = phase_curve(p, [(0.00,-0.82),(0.16,-0.52),(0.34,0.30),(0.52,0.70),(0.70,0.34),(0.86,-0.48),(1.00,-0.82)])
-        knee = phase_curve(p, [(0.00,0.10),(0.18,0.04),(0.38,0.14),(0.56,0.62),(0.72,0.82),(0.88,0.30),(1.00,0.10)])
-        foot = phase_curve(p, [(0.00,0.16),(0.18,0.07),(0.38,-0.08),(0.58,0.18),(0.76,0.30),(0.90,0.18),(1.00,0.16)])
-        arm = phase_curve(p, [(0.00,0.72),(0.24,0.26),(0.50,-0.68),(0.76,-0.22),(1.00,0.72)])
-        rot('Thigh' + side, thigh * 0.32, 0.0, -sign * yaw * 0.018)
-        rot('Shin' + side, knee * 0.42, 0.0, 0.0)
-        rot('Foot' + side, foot * 0.38, 0.0, sign * 0.009)
-        rot('UpperArm' + side, arm * 0.24, sign * 0.026, -sign * 0.030)
-        rot('Forearm' + side, -0.10 - max(0.0, -arm) * 0.10, sign * 0.012, 0.0)
-    detail_face_and_hands(t, moving=0.62, alert=0.28)
-    apply_secondary(t, drive=0.92, turn=yaw * 0.24, braking=0.10)
-
-
-def crouch_idle_pose(t):
-    weight=curve(t,[(0,-0.08),(0.20,-0.02),(0.46,0.09),(0.72,0.04),(1,-0.08)])
-    breathe=curve(t,[(0,0),(0.28,0.60),(0.56,1),(0.80,0.34),(1,0)])
-    loc('Hips',weight*0.012,0,-0.185+breathe*0.010)
-    rot('Hips',0.125,weight*0.035,weight*0.026)
-    rot('Spine',0.085+breathe*0.012,-weight*0.026,-weight*0.024)
-    rot('Chest',0.050-breathe*0.010,-weight*0.018,weight*0.032)
-    rot('Head',-0.095+breathe*0.010,weight*0.018,-weight*0.018)
-    for side,sign in [('L',-1),('R',1)]:
-        rot('Thigh'+side,0.50+sign*weight*0.018,0,-sign*0.025)
-        rot('Shin'+side,0.76+max(0,-sign*weight)*0.022)
-        rot('Foot'+side,-0.27,0,sign*0.012)
-        rot('UpperArm'+side,0.07+sign*weight*0.014,sign*0.025,-sign*0.030)
-        rot('Forearm'+side,-0.18,sign*0.012,0)
-    detail_face_and_hands(t,moving=0.12,alert=0.40)
-    apply_secondary(t,drive=0.46,turn=weight*0.50)
-
-
-def crouch_walk_pose(t):
-    body=phase_curve(t,[(0,-1),(0.18,-0.18),(0.34,0.52),(0.5,-0.86),(0.68,-0.08),(0.84,0.58),(1,-1)])
-    yaw=phase_curve(t,[(0,-1),(0.24,0.06),(0.5,1),(0.76,-0.04),(1,-1)])
-    loc('Hips',0,0,-0.185+0.020*body)
-    rot('Hips',0.14,yaw*0.060,yaw*0.028)
-    rot('Spine',0.10,-yaw*0.038,-yaw*0.022)
-    rot('Chest',0.055,-yaw*0.030,yaw*0.026)
-    rot('Head',-0.105,yaw*0.018,-yaw*0.014)
-    for side,sign in [('L',-1),('R',1)]:
-        p=(t+(0.5 if side=='R' else 0))%1
-        thigh=phase_curve(p,[(0,0.76),(0.18,0.48),(0.38,-0.34),(0.54,-0.66),(0.72,-0.28),(0.88,0.50),(1,0.76)])
-        knee=phase_curve(p,[(0,0.12),(0.2,0.04),(0.42,0.16),(0.58,0.58),(0.74,0.76),(0.88,0.32),(1,0.12)])
-        foot=phase_curve(p,[(0,-0.10),(0.2,-0.02),(0.42,0.10),(0.6,-0.16),(0.78,-0.24),(0.9,-0.12),(1,-0.10)])
-        arm=phase_curve(p,[(0,-0.72),(0.24,-0.24),(0.5,0.70),(0.76,0.22),(1,-0.72)])
-        rot('Thigh'+side,0.42+thigh*0.25,0,-sign*yaw*0.018)
-        rot('Shin'+side,0.62+knee*0.26)
-        rot('Foot'+side,-0.24+foot*0.28,0,sign*0.010)
-        rot('UpperArm'+side,arm*0.20,sign*0.025,-sign*0.030)
-        rot('Forearm'+side,-0.16-max(0,-arm)*0.08,sign*0.010,0)
-    detail_face_and_hands(t,moving=0.58,alert=0.46)
-    apply_secondary(t,drive=0.82,turn=yaw*0.22)
-
-
-def jump_air_pose(t):
-    a=curve(t,[(0,-0.08),(0.3,0.10),(0.62,0.04),(1,-0.08)])
-    loc('Hips',a*0.008,0,0.0)
-    rot('Hips',0.055,a*0.035,a*0.028)
-    rot('Spine',0.035,-a*0.024,-a*0.018)
-    rot('Chest',-0.015,-a*0.020,a*0.022)
-    rot('Head',-0.025,a*0.015,-a*0.012)
-    rot('ThighL',0.28+a*0.04,0,-0.025);rot('ShinL',0.52);rot('FootL',-0.20)
-    rot('ThighR',0.18-a*0.03,0,0.022);rot('ShinR',0.42);rot('FootR',-0.16)
-    rot('UpperArmL',-0.20+a*0.03,-0.02,0.035);rot('UpperArmR',-0.12-a*0.03,0.02,-0.035)
-    rot('ForearmL',-0.24);rot('ForearmR',-0.20)
-    detail_face_and_hands(t,moving=0.36,alert=0.50)
-    apply_secondary(t,drive=0.92,turn=a*0.22)
-
-
 def animate(name, normalized_time):
     reset_pose()
     t = clamp01(normalized_time)
@@ -475,14 +387,6 @@ def animate(name, normalized_time):
         gait_pose(t, running=False)
     elif name == 'hero_run_hq':
         gait_pose(t, running=True)
-    elif name == 'hero_walk_back_hq':
-        backward_gait_pose(t)
-    elif name == 'hero_crouch_idle_hq':
-        crouch_idle_pose(t)
-    elif name == 'hero_crouch_walk_hq':
-        crouch_walk_pose(t)
-    elif name == 'hero_jump_air_hq':
-        jump_air_pose(t)
     elif name == 'hero_start_hq':
         start_pose(t)
         # 시작 끝은 걷기 첫 접지 포즈와 직접 이어져야 한다.
@@ -609,7 +513,7 @@ transition_metrics={
 }
 
 phase_metrics={}
-for clip_name in ('hero_walk_hq','hero_run_hq','hero_walk_back_hq','hero_crouch_walk_hq'):
+for clip_name in ('hero_walk_hq','hero_run_hq'):
     left0=sampled_snapshot(clip_name,0.0)['ThighL']['r'][0]
     right_half=sampled_snapshot(clip_name,0.5)['ThighR']['r'][0]
     phase_metrics[clip_name]=abs(left0-right_half)
@@ -629,16 +533,6 @@ foot_contact_metrics={
 primary_activity={
     clip_name:{bone:rotation_activity(clip_name,bone) for bone in QA_THRESHOLDS['primaryJointRotationRangeMinRad']}
     for clip_name in ('hero_walk_hq','hero_run_hq')
-}
-added_activity={
-    clip_name:{
-        'Hips':rotation_activity(clip_name,'Hips'),
-        'Spine':rotation_activity(clip_name,'Spine'),
-        'Chest':rotation_activity(clip_name,'Chest'),
-        'ThighL':rotation_activity(clip_name,'ThighL'),
-        'ThighR':rotation_activity(clip_name,'ThighR'),
-    }
-    for clip_name in ('hero_walk_back_hq','hero_crouch_idle_hq','hero_crouch_walk_hq','hero_jump_air_hq')
 }
 secondary_candidates=[bone for bone in SECONDARY_QA_BONES if bone in RIG.pose.bones]
 secondary_activity=max(
@@ -679,28 +573,8 @@ for clip_name,rows in primary_activity.items():
     for bone,minimum in QA_THRESHOLDS['primaryJointRotationRangeMinRad'].items():
         if rows[bone]<minimum:
             qa_failures.append(f'PRIMARY_JOINT_ACTIVITY:{clip_name}:{bone}')
-for clip_name,row in added_activity.items():
-    for bone in ('Hips','Spine','Chest'):
-        if row[bone]<QA_THRESHOLDS['addedCoreRotationRangeMinRad']:
-            qa_failures.append(f'ADDED_CORE_ACTIVITY:{clip_name}:{bone}')
-    for bone in ('ThighL','ThighR'):
-        if row[bone]<QA_THRESHOLDS['addedLegRotationRangeMinRad']:
-            qa_failures.append(f'ADDED_LEG_ACTIVITY:{clip_name}:{bone}')
 if secondary_activity<QA_THRESHOLDS['secondaryRotationRangeMinRad']:
     qa_failures.append('SECONDARY_MOTION_ACTIVITY')
-
-mobile_motion_budget={
-    'motionCount':len(CLIPS),
-    'maxFramesPerClip':max(round(duration*FPS)+1 for duration in CLIPS.values()),
-    'keyedPoseEstimate':sum((round(duration*FPS)+1)*(len(RIG.pose.bones)-1) for duration in CLIPS.values()),
-}
-mobile_motion_budget['pass']=(
-    mobile_motion_budget['motionCount']<=QA_THRESHOLDS['mobileMotionCountMax']
-    and mobile_motion_budget['maxFramesPerClip']<=QA_THRESHOLDS['mobileMaxFramesPerClip']
-    and mobile_motion_budget['keyedPoseEstimate']<=QA_THRESHOLDS['mobileKeyedPoseEstimateMax']
-)
-if not mobile_motion_budget['pass']:
-    qa_failures.append('MOBILE_ANIMATION_BUDGET')
 
 qa_metrics={
     'thresholds':QA_THRESHOLDS,
@@ -709,9 +583,7 @@ qa_metrics={
     'leftRightPhaseErrorRad':phase_metrics,
     'footContactLateralVerticalDriftNormalized':foot_contact_metrics,
     'primaryJointRotationRangeRad':primary_activity,
-    'addedJointRotationRangeRad':added_activity,
     'secondaryRotationRangeMaxRad':secondary_activity,
-    'mobileMotionBudget':mobile_motion_budget,
     'root':root_metrics,
     'maxEulerRad':max_euler,
     'allSamplesFinite':all_finite,
