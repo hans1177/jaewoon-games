@@ -792,12 +792,13 @@ local function groundedRootTarget(p,pos)
   hit=workspace:Raycast(Vector3.new(pos.X,pos.Y+20,pos.Z),Vector3.new(0,-44,0),params)
  end
  local groundY=hit and hit.Position.Y or(lobbyDestination and .65 or .5)
- local standingOffset=(tonumber(h.HipHeight)or 0)+(r.Size.Y*.5)
+ local standingOffset=math.max(1,tonumber(h.HipHeight)or 0)+(r.Size.Y*.5)
  if h.RigType==Enum.HumanoidRigType.R6 then
   local leg=c:FindFirstChild("Left Leg")or c:FindFirstChild("Right Leg")
   standingOffset+=leg and leg.Size.Y or 2
  end
- local targetY=groundY+standingOffset
+ local targetY=groundY+standingOffset+.03
+ if lobbyDestination then targetY=math.clamp(targetY,2.8,5.2)end
  return Vector3.new(pos.X,targetY,pos.Z)
 end
 local function teleport(p,pos,lookAtPos)
@@ -3015,6 +3016,13 @@ local function onCharacter(p)
   task.delay(.15,function()
    if p.Parent==Players and p.Character==c and state=="RUNNING"then validateCharacterFoundation(p,c)end
   end)
+ elseif role=="SPECTATING"then
+  local destination,look,spawn=personalSpawn(p)
+  p.RespawnLocation=spawn
+  h.PlatformStand=false;h.Sit=false;h.AutoRotate=true;r.Anchored=false
+  teleport(p,destination,look)
+  p:SetAttribute("RoundState","SPECTATING")
+  p:SetAttribute("Spectating",true)
  elseif role=="ELIMINATED"then
   r.Anchored=true
  else
@@ -3029,8 +3037,8 @@ Players.PlayerAdded:Connect(function(p)
  if state~="RUNNING"and lobbySpawnLocation and lobbySpawnLocation.Parent then p.RespawnLocation=lobbySpawnLocation end
  p:SetAttribute("RoomFeedback","")
  adoptReservedRoomFromPlayer(p)
- local shouldReshard=roomServer and(#Players:GetPlayers()>roomMaxPlayers()or state=="RUNNING")
- if shouldReshard then
+ local overflow=roomServer and #Players:GetPlayers()>roomMaxPlayers()
+ if overflow then
   p:SetAttribute("Role","WAITING");p:SetAttribute("RoundState","ROOM_CONNECTING");p:SetAttribute("Spectating",false)
   roomFeedback(p,"MATCHING","새 경기방으로 이동 중")
   local selectedMap=roomSelectedMapId
@@ -3042,6 +3050,13 @@ Players.PlayerAdded:Connect(function(p)
    end
   end)
   return
+ end
+ if roomServer and state=="RUNNING"then
+  p:SetAttribute("Role","SPECTATING")
+  p:SetAttribute("RoundState","SPECTATING")
+  p:SetAttribute("Spectating",true)
+  p:SetAttribute("TimeLeft",timeLeft)
+  roomFeedback(p,"SPECTATING","다음 라운드부터 참가")
  end
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
