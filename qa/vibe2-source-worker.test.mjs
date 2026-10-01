@@ -4041,6 +4041,10 @@ test('verified APK learning preserves game-source and QA-only dispositions throu
   assert.match(contract.block,/APPLY=id=persistent-contextual-action-controls/);
   assert.doesNotMatch(contract.block,/APPLY=id=semantic-gameplay-input-plus-survival/);
   assert.match(contract.block,/DISPOSITION=semantic-gameplay-input-plus-survival:VALIDATION_ONLY/);
+  assert.match(contract.block,/sourcePromptScope=ALL_DISPOSED_APPLICATION_PRINCIPLES/);
+  assert.doesNotMatch(contract.block,/\nAVOID=/);
+  assert.doesNotMatch(contract.block,/\nALLOWED=/);
+  assert.doesNotMatch(contract.block,/\nFORBIDDEN=/);
   const context={files:[{path:'index.html',content:'<button id="play">Play</button>',editable:true,truncated:false}],bytes:38};
   const initial=buildPrompt(order,context,['index.html'],{verifiedExternalLearningContract:contract});
   assert.equal(verifiedExternalLearningBlockFromPrompt(initial),contract.block);
