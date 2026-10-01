@@ -76,7 +76,17 @@ export function createAIPartyConfig({ request = '', humanPlayers = 1, aiCount = 
     fillEmptySlotsWithAi: Boolean(fillEmptySlots && bots > 0),
     mixedHumanAi: humans > 0 && bots > 0,
     localDecision: Object.freeze({ enabled: bots > 0, intervalMs: 350, fallbackOffline: true }),
-    serverAuthority: Object.freeze({ movement: false, combat: false, rewards: false, save: false }),
+    serverAuthority: Object.freeze({
+      movement: false,
+      combat: false,
+      rewards: false,
+      save: false,
+      spawn: false,
+      network: false,
+      progression: false,
+      quest: false,
+      gameRules: false,
+    }),
   });
 }
 
