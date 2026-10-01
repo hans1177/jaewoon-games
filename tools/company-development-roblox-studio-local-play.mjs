@@ -3749,6 +3749,7 @@ export function createLocalStudioPlayEvidence({
           timelineCompanionDynamic:runtime?.metrics?.timelineCompanionDynamic===true,
           uiCommercial:runtime?.metrics?.uiCommercial&&typeof runtime.metrics.uiCommercial==='object'?runtime.metrics.uiCommercial:{},
           surfaces:runtime?.metrics?.surfaces&&typeof runtime.metrics.surfaces==='object'?runtime.metrics.surfaces:{},
+          perceptibility:runtime?.metrics?.perceptibility&&typeof runtime.metrics.perceptibility==='object'?runtime.metrics.perceptibility:{},
           performance:runtime?.metrics?.performance&&typeof runtime.metrics.performance==='object'?runtime.metrics.performance:{},
           multiplayer:runtime?.multiplayerAuditSummary?{
             version:Number(runtime.multiplayerAuditSummary.version||0),
@@ -3834,6 +3835,21 @@ function commercialBaselineRegressions(priorEvidence={},nextEvidence={}){
         priority:'CRITICAL',
         hint:'Previously verified Studio capability disappeared from the new source. Restore it or update the explicit product contract if removal was intentional.',
         observed:{previous:oldValue,current:newValue}
+      });
+    }
+  }
+  const priorPerceptibility=prior?.perceptibility&&typeof prior.perceptibility==='object'?prior.perceptibility:{};
+  const nextPerceptibility=next?.perceptibility&&typeof next.perceptibility==='object'?next.perceptibility:{};
+  for(const [key,repairSurface] of [['motion','CHARACTER_MOTION'],['audio','AUDIO']]){
+    const oldPass=priorPerceptibility?.[key]?.pass===true;
+    const newPass=nextPerceptibility?.[key]?.pass===true;
+    if(oldPass&&!newPass){
+      regressions.push({
+        id:'commercial-regression-perceptibility-'+key,
+        repairSurface,
+        priority:'CRITICAL',
+        hint:'Previously verified perceptible '+key+' runtime behavior regressed even though the underlying objects may still exist. Restore the live player-facing response.',
+        observed:{previous:priorPerceptibility?.[key]||{},current:nextPerceptibility?.[key]||{}}
       });
     }
   }
