@@ -800,6 +800,8 @@ test('Roblox F0-F9 orchestration dispatches exact games without cross-game fan-i
   assert.match(post,/beforeUpdatedAt:String\(before\.updatedAt\|\|''\)/);
   assert.match(foundationPersist,/SAME_GAME_ATOMIC_STATE/);
   assert.match(foundationPersist,/ROBLOX_FOUNDATION_DOWNSTREAM_CONFLICT_FILTER_COUNT=/);
+  assert.match(foundationPersist,/ROBLOX_FOUNDATION_CONFLICT_REVALIDATION_DISPATCHED=\$id/);
+  assert.match(foundationPersist,/company-development-roblox-post-runtime-qa\.yml[\s\S]*?-f game_id="\$id"/);
   assert.doesNotMatch(foundationPersist,/git rebase/);
   assert.doesNotMatch(foundationPersist,/DEFERRED_TO_NEXT_CYCLE/);
 
