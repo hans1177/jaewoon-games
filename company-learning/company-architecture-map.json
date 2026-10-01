@@ -1265,7 +1265,14 @@
         "gateActiveCancellationForbidden": true,
         "pendingGatePolicy": "KEEP_ACTIVE_AND_ONLY_NEWEST_PENDING_GATE",
         "superviseWaitsForRunnerDrainAndGamePrimaryGate": true,
-        "responsibleFileConflictProtectionPreserved": true
+        "responsibleFileConflictProtectionPreserved": true,
+        "vibe2CoreCompletionWakeDisabled": true,
+        "wakeSource": "DIRECTOR_SCHEDULE_AND_NON_VIBE_CORE_EVENTS",
+        "continuitySources": [
+          "VIBE2_COHORT_FAN_IN_REFILL",
+          "VIBE2_24H_FIVE_MINUTE_SAFETY_NET",
+          "RECOVERY_FAST_CAUSAL_RETURN"
+        ]
       },
       "innerReservation": ".github/workflows/vibe2-continuous-core.yml::reserve-batch",
       "vibeGameControlRunnerPool": {
