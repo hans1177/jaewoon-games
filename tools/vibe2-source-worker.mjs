@@ -1228,10 +1228,23 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
   const contentBundle=(expansion?.coherentContentBundle||[]).map(clean).filter(Boolean).slice(0,10);
   const antiCloneAxes=(expansion?.antiCloneContract?.distinctionAxes||[]).map(clean).filter(Boolean);
   const continuityQuestions=(expansion?.continuityAndCausality?.questions||[]).map(clean).filter(Boolean);
+  const dna=d?.gameDevelopmentDNA||{};
+  const dnaAnchors=(dna?.identityAnchors||[]).map(clean).filter(Boolean).slice(0,8);
+  const dnaSystems=(dna?.signatureSystems||[]).map(row=>[clean(row?.name),clean(row?.playerChoice)].filter(Boolean).join(':')).filter(Boolean).slice(0,6);
+  const detailPriorities=(dna?.detailPriorities||[]).map(clean).filter(Boolean).slice(0,8);
+  const repairSurfaces=(dna?.runtimeRepairSurfaces||[]).map(clean).filter(Boolean).slice(0,12);
+  const playChain=d?.playChainRepairPlan||{};
+  const playChainStages=(playChain?.stages||[]).map(row=>`${clean(row?.id)}[${clean(row?.state)||'VERIFY'}]=${clean(row?.objective)}`).filter(Boolean).slice(0,7);
+  const chainPriority=(playChain?.repairPriorityStages||[]).map(clean).filter(Boolean).slice(0,7);
   return[
     '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
     `directiveId=${clean(d.directiveId)} generation=${Number(d.generation||0)} developmentDepth=${Number(d.developmentDepth||1)} escalationStage=${clean(d.escalationStage)} primaryFocus=${clean(d.primaryFocus)}`,
     `gameIdentity=${clean(d?.gameIdentityAndNonNegotiables?.identity)}`,
+    `gameDNA=anchors:${dnaAnchors.join(' > ')||'CURRENT_GAME_IDENTITY'}; systems:${dnaSystems.join(' | ')||'CURRENT_SIGNATURE_SYSTEMS'}; coreFun:${clean(dna?.coreFun)||clean(d?.gameIdentityAndNonNegotiables?.coreFun)||'CURRENT_CORE_FUN'}; progression:${clean(dna?.progressionDirection)||'CURRENT_PROGRESSION'}`,
+    `playChain=${playChainStages.join(' | ')||'ENTRY_CONTEXT[VERIFY] > PLAYER_INTENT[VERIFY] > INPUT[VERIFY] > AUTHORITY_CHECK[VERIFY] > STATE_CHANGE[VERIFY] > FEEDBACK[VERIFY] > NEXT_CHOICE[VERIFY]'}`,
+    `playChainPriority=${chainPriority.join(',')||'VERIFY_COMPLETE_CHAIN'} exactReplayRequired:${playChain?.exactReplayRequired===true}`,
+    `detailCheckpoints=${detailPriorities.join(',')||'GAME_SPECIFIC_READABILITY_AND_CAUSALITY'}`,
+    `runtimeRepairSurfaces=${repairSurfaces.join(',')||'NONE_OBSERVED'}`,
     `primaryGoal=${clean(d.thisLoopPrimaryGoal)}`,
     `implementationUnit=${clean(ownedAnchors[0]?.intendedBehavior)||clean(d.thisLoopPrimaryGoal)}; observableResult=${clean(ownedAnchors[0]?.observableAcceptance)||clean(d?.effectivenessMeasurement?.expectedPlayerEffect)}`,
     'Complete one coherent player action-to-state-to-feedback/result chain inside this goal. Include every required dependency and atomic file pair. Defer unrelated expansion, not required connected improvements or acceptance gates.',
@@ -1276,10 +1289,10 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const block=raw.slice(start,finish+end.length);
   if(!compact&&!responsiblePaths.length)return block;
   const keepPrefixes=focusedRobloxVisual?[
-    'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','gameDNA=','playChain=','playChainPriority=','detailCheckpoints=','runtimeRepairSurfaces=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'visual=','platform=','preserve=','acceptance='
   ]:[
-    'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','gameDNA=','playChain=','playChainPriority=','detailCheckpoints=','runtimeRepairSurfaces=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'nextVibeAction=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
     ...(focusedPresentation?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
