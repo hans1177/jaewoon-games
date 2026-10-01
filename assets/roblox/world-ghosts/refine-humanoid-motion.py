@@ -53,7 +53,7 @@ SECONDARY_QA_BONES = tuple(
     + [f'Hem{i}' for i in range(8)]
     + [f'Tie{i}' for i in range(3)]
 )
-LOOP_CLIPS = ('hero_idle_hq','hero_walk_hq','hero_run_hq')
+LOOP_CLIPS = ('hero_idle_hq','hero_walk_hq','hero_run_hq','hero_walk_back_hq','hero_crouch_idle_hq','hero_crouch_walk_hq','hero_jump_air_hq')
 QA_THRESHOLDS = {
     'loopRotationMaxRad': 0.015,
     'loopLocationMax': 0.004,
@@ -64,6 +64,9 @@ QA_THRESHOLDS = {
     'leftRightPhaseErrorRad': 0.020,
     'footContactLateralVerticalDriftNormalizedMax': 0.035,
     'secondaryRotationRangeMinRad': 0.010,
+    'mobileMotionCountMax': 40,
+    'mobileMaxFramesPerClip': 120,
+    'mobileKeyedPoseEstimateMax': 220000,
     'primaryJointRotationRangeMinRad': {
         'Hips': 0.045,
         'Spine': 0.025,
