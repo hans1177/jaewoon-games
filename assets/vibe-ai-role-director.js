@@ -1001,6 +1001,7 @@ export function planVibeCausalActorLoop({event={},observers=[],world={},player={
     const actorId=cleanText(actor.id||actor.name||'actor');
     const relationship=row.relationship||{};
     const memory=Array.isArray(row.memory)?row.memory:[];
+    const duplicateSourceEvent=Boolean(sourceEvent.id&&memory.some(item=>cleanText(item?.sourceEventId||item?.id)===sourceEvent.id));
     const emotionBefore=cleanText(row.emotion||'calm');
     const knowledge=row.knowledge&&typeof row.knowledge==='object'?row.knowledge:{};
     const interpretation=createVibeCausalInterpretation({actor,event:sourceEvent,relationship,knowledge,emotion:emotionBefore});
@@ -1009,7 +1010,7 @@ export function planVibeCausalActorLoop({event={},observers=[],world={},player={
     const targeted=sourceEvent.targetIds.includes(actorId);
     const repeatCount=memory.filter(item=>cleanText(item?.type).toLowerCase()===sourceType).length;
     const magnitude=Math.min(5,Math.max(0,Math.abs(Number(sourceEvent.magnitude??1))));
-    const salience=interpretation.perceived
+    const salience=interpretation.perceived&&!duplicateSourceEvent
       ? Math.max(0,Math.min(1,.3+(targeted ? .3 : 0)+((positive||negative) ? .15 : (discovery ? .1 : 0))+Math.min(.15,magnitude*.03)+Math.min(.1,repeatCount*.02)))
       : 0;
     const relationTargetId=sourceEvent.actorId===actorId
@@ -1024,7 +1025,7 @@ export function planVibeCausalActorLoop({event={},observers=[],world={},player={
     const repeatFactor=Math.min(1.5,1+repeatCount*.08);
     const baseStrength=Math.max(1,Math.min(12,Math.round((3+salience*5)*interpretation.certainty*repeatFactor)));
     const delta={};
-    if(interpretation.perceived&&relationTargetId&&relationTargetId!==actorId){
+    if(interpretation.perceived&&!duplicateSourceEvent&&relationTargetId&&relationTargetId!==actorId){
       if(positive){
         delta.trust=Math.min(20,Math.max(1,Math.round(baseStrength*(.7+.3*loyalty))));
         delta.respect=Math.min(20,Math.max(1,Math.round(baseStrength*(.45+.35*courage))));
@@ -1043,7 +1044,7 @@ export function planVibeCausalActorLoop({event={},observers=[],world={},player={
       }
     }
     let emotionAfter=emotionBefore;
-    if(interpretation.perceived){
+    if(interpretation.perceived&&!duplicateSourceEvent){
       if(positive)emotionAfter=targeted?'relief':empathy>=.55?'warm':'calm';
       else if(negative)emotionAfter=(/threat|attack|harm|hurt/.test(sourceType)&&caution>courage+.1)?'fear':(vengeance+pride>=1.05?'anger':'alert');
       else if(discovery)emotionAfter=traits.curiosity>=0?'curious':'alert';
@@ -1056,7 +1057,7 @@ export function planVibeCausalActorLoop({event={},observers=[],world={},player={
           ? Object.freeze({primary:/betray|abandon|break-promise/.test(sourceType)?'disloyal':/threat|attack|harm|hurt/.test(sourceType)?'threatening':'harmful',valence:'negative'})
           : Object.freeze({primary:discovery?'interesting':'unknown',valence:'uncertain'})
       : Object.freeze({primary:'unknown',valence:'unobserved'});
-    const memoryCandidate=interpretation.perceived&&sourceEvent.valid?Object.freeze({
+    const memoryCandidate=interpretation.perceived&&!duplicateSourceEvent&&sourceEvent.valid?Object.freeze({
       id:sourceEvent.id,
       type:sourceEvent.type,
       sourceEventId:sourceEvent.id,
@@ -1077,20 +1078,20 @@ export function planVibeCausalActorLoop({event={},observers=[],world={},player={
       relationshipEffect:Object.freeze({...delta}),
       authoritative:false
     }):null;
-    const actionPreferences=interpretation.perceived
+    const actionPreferences=interpretation.perceived&&!duplicateSourceEvent
       ? positive
         ? ['cooperate-with-source','support-target','approach-source']
         : negative
           ? [emotionAfter==='fear'?'avoid-source':'challenge-source','watch-source',targeted?'protect-boundary':'protect-target']
           : discovery?['investigate-cause','observe-source']:['observe-source']
       : [];
-    const dialogueActs=interpretation.perceived
+    const dialogueActs=interpretation.perceived&&!duplicateSourceEvent
       ? positive?['thank','acknowledge','reassure','remember']
         : negative?['warn','disagree','challenge','choose-silence']
           : discovery?['notice','ask','speculate-carefully','choose-silence']:['notice','choose-silence']
       : [];
     const personalStake=cleanText(actor.unresolvedThread||actor.longTermGoal||actor.futureGoal||actor.personalDuty);
-    const allowQuest=row.allowQuestProposal===true&&interpretation.perceived&&sourceEvent.valid&&Boolean(personalStake);
+    const allowQuest=row.allowQuestProposal===true&&interpretation.perceived&&!duplicateSourceEvent&&sourceEvent.valid&&Boolean(personalStake);
     const questCandidate=allowQuest?createVibeActorQuestCandidate({
       actor,
       causeEvents:[sourceEvent],
@@ -1099,7 +1100,7 @@ export function planVibeCausalActorLoop({event={},observers=[],world={},player={
       primaryVerb:cleanText(row.questVerb||sourceEvent.facts?.questVerb||'investigate'),
       branches:Array.isArray(row.questBranches)?row.questBranches:[]
     }):null;
-    const allowEvent=row.allowEventProposal===true&&interpretation.perceived&&sourceEvent.valid;
+    const allowEvent=row.allowEventProposal===true&&interpretation.perceived&&!duplicateSourceEvent&&sourceEvent.valid;
     const eventCandidate=allowEvent?createVibeActorEventCandidate({
       actor,
       causeEvents:[sourceEvent],
@@ -1112,6 +1113,8 @@ export function planVibeCausalActorLoop({event={},observers=[],world={},player={
       actorId,
       sourceEvent,
       perceived:interpretation.perceived,
+      duplicateSourceEvent,
+      causalMutationSuppressed:duplicateSourceEvent,
       interpretation,
       appraisal,
       memoryCandidate,
