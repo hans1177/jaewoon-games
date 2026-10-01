@@ -1,5 +1,26 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1sgv4a",
+      "worker": "vibe2",
+      "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-unity-web-base-implementation-v1",
+      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+      "files": [
+        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Scripts/GameCore.cs",
+        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "3dfd0d9c9c238fc74c6dd8a0633e08641b068693",
+      "runId": "36904266795",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-01T18:08:12.005Z",
+      "expiresAt": "2026-10-01T18:53:12.005Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-story-complete-rpg-chronicles-of-eldoria-unity-web-base-implementation-v1"
+      ]
+    }
+  ]
 }
