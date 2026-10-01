@@ -1,5 +1,5 @@
 {
-  "version": 514,
+  "version": 515,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-01",
@@ -8479,7 +8479,14 @@
         "preplanDispatchUnderPressure": "DEFER",
         "laneLaunchUnderPressure": "DEFER",
         "refillUnderPressure": "DEFER_TO_FIVE_MINUTE_SAFETY_NET",
-        "duplicateSchedulerDispatch": "SKIP_WHEN_ANOTHER_24H_RUN_IS_ACTIVE"
+        "duplicateSchedulerDispatch": "SKIP_WHEN_ANOTHER_24H_RUN_IS_ACTIVE",
+        "exactShaCoreQaReuseAt24hPlanner": true,
+        "coreQaReuseRequiresSuccessfulCompletedExactMainSha": true,
+        "coreQaReuseObservationFailure": "RUN_TARGETED_QA",
+        "centralSharedContextValidationStillDirect": true,
+        "constitutionEnforcementStillDirect": true,
+        "plannerSpecificTestsStillDirect": true,
+        "qualityGateWeakening": false
       },
       "release": {
         "dispatchQueueThreshold": 4,
