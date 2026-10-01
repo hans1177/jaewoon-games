@@ -953,17 +953,16 @@ jobs:
           contract_root="$GITHUB_WORKSPACE/vibe2-contract"
           test -n "$CONTRACT_SHA"
           test "$(git -C "$contract_root" rev-parse HEAD)" = "$CONTRACT_SHA"
-          (
-            cd "$contract_root"
-            node tools/company-shared-context.mjs \
-              --pinned-hash-verify=true \
-              --expected-policy-sha256="$WORKER_CONTEXT_EXPECTED_POLICY_SHA256" \
-              --expected-log-map-sha256="$WORKER_CONTEXT_EXPECTED_LOG_MAP_SHA256" \
-              --expected-architecture-sha256="$WORKER_CONTEXT_EXPECTED_ARCHITECTURE_SHA256" \
-              --expected-security-policy-sha256="$WORKER_CONTEXT_EXPECTED_SECURITY_POLICY_SHA256" \
-              --output=/tmp/vibe2-worker-shared-context.json | tee /tmp/vibe2-worker-shared-context.log
-          )
-          grep -q '^WORKER_CONTEXT_SYNC=PASS$' /tmp/vibe2-worker-shared-context.log
+          policy_sha="$(sha256sum "$contract_root/company-learning/platform-release-roadmap.json" | cut -d' ' -f1)"
+          log_map_sha="$(sha256sum "$contract_root/company-learning/company-log-map.json" | cut -d' ' -f1)"
+          architecture_sha="$(sha256sum "$contract_root/company-learning/company-architecture-map.json" | cut -d' ' -f1)"
+          security_sha="$(sha256sum "$contract_root/company-learning/security-immune-system.json" | cut -d' ' -f1)"
+          test "$policy_sha" = "$WORKER_CONTEXT_EXPECTED_POLICY_SHA256"
+          test "$log_map_sha" = "$WORKER_CONTEXT_EXPECTED_LOG_MAP_SHA256"
+          test "$architecture_sha" = "$WORKER_CONTEXT_EXPECTED_ARCHITECTURE_SHA256"
+          test "$security_sha" = "$WORKER_CONTEXT_EXPECTED_SECURITY_POLICY_SHA256"
+          echo 'WORKER_CONTEXT_MODE=PINNED_SHA_ONLY'
+          echo 'WORKER_CONTEXT_SYNC=PASS'
           node "$contract_root/tools/vibe2-queue-control.mjs" verify-worker-sync             --queue="$GITHUB_WORKSPACE/.vibe2/queue.json"             --id="$TASK_ID"             --reservation-id="$RESERVATION_ID"             --reservation-run="$RESERVATION_RUN_ID"             --reservation-attempt="$RESERVATION_RUN_ATTEMPT"             --reserved-at="$RESERVED_AT" | tee /tmp/vibe2-worker-sync.log
           grep -q '^VIBE2_WORKER_SYNC=PASS$' /tmp/vibe2-worker-sync.log
           echo "VIBE2_WORKER_CONTRACT_SHA=$CONTRACT_SHA"
