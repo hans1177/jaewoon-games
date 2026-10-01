@@ -236,18 +236,11 @@ jobs:
           echo "INDEPENDENT_SOURCE_COMMIT=$BUILD_SOURCE_COMMIT"
           echo "INDEPENDENT_SOURCE_TREE=$BUILD_SOURCE_TREE"
 
-      - name: Dispatch exact artifact regression
+      - name: Leave F9 regression fan-in to the parent exact-candidate flow
         if: success()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
         run: |
-          set -euo pipefail
-          gh workflow run unity-android-regression.yml \
-            --repo "$GITHUB_REPOSITORY" \
-            --ref main \
-            -f run_id="${{ steps.upstream.outputs.run_id }}"
-          echo "UNITY_ANDROID_REGRESSION_DISPATCHED=${{ steps.upstream.outputs.run_id }}"
+          echo "UNITY_ANDROID_REGRESSION_DISPATCH_OWNER=PARENT_EXACT_CANDIDATE"
+          echo "UNITY_DUPLICATE_F9_RUNTIME_DISPATCH=NO"
 
       - name: Upload independent Unity QA evidence
         if: always()
