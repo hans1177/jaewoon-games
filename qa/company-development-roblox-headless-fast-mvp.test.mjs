@@ -133,9 +133,10 @@ test('F0 checkout and validation fan out across the full external-capacity matri
   assert.match(workflow,/ROBLOX_F0_CHECKOUT_MODE=PER_GAME_MATRIX_PARALLEL/);
   assert.match(header,/run-name: Roblox F0 · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
   assert.doesNotMatch(header,/^concurrency:\s*$/m);
-  assert.match(workflow,/ROBLOX_F0_PRIVATE_HANDOFF=DEDUPED_ACTIVE_RUNTIME:/);
-  assert.match(workflow,/ROBLOX_F0_PRIVATE_HANDOFF_DISPATCH_COUNT=/);
-  assert.match(workflow,/company-development-roblox-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
+  assert.match(workflow,/ROBLOX_F0_STUDIO_QA_HANDOFF=DEDUPED_ACTIVE:/);
+  assert.match(workflow,/ROBLOX_F0_STUDIO_QA_DISPATCH_COUNT=/);
+  assert.match(workflow,/company-development-roblox-post-runtime-qa\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id" -f run_studio=true/);
+  assert.doesNotMatch(workflow,/gh workflow run company-development-roblox-runtime\.yml/);
   assert.doesNotMatch(workflow,/gh workflow run company-development-roblox-release-promotion\.yml/);
 });
 
@@ -160,7 +161,7 @@ test('F0 accepts approved non-combat action loops without inventing combat marke
 test('F0 persistence does not serialize the whole job and reapplies evidence after runtime write conflicts',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
   const start=workflow.indexOf('\n  persist:\n');
-  const end=workflow.indexOf('\n      - name: Dispatch exact Roblox runtime private-candidate handoff',start);
+  const end=workflow.indexOf('\n      - name: Dispatch exact Roblox Studio QA directly after F0',start);
   const block=workflow.slice(start,end);
   assert.ok(start>=0&&end>start);
   assert.doesNotMatch(block,/group:\s*company-runtime-writer/);
@@ -192,19 +193,26 @@ test('F0 planner dedupes duplicate dispatches while validation matrix remains pa
 });
 
 
-test('F0 hands exact game ids back to Roblox runtime instead of racing the private deployment workflow',()=>{
+test('F0 hands exact game ids directly to Studio QA without an empty Roblox runtime re-entry',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
-  assert.match(workflow,/name: Dispatch exact Roblox runtime private-candidate handoff/);
-  assert.match(workflow,/ROBLOX_F0_PRIVATE_HANDOFF=EXACT_RUNTIME:/);
-  assert.match(workflow,/ROBLOX_F0_PRIVATE_HANDOFF=DEDUPED_ACTIVE_RUNTIME:/);
-  assert.match(workflow,/actions\/workflows\/company-development-roblox-runtime\.yml\/runs\?per_page=100/);
+  assert.match(workflow,/name: Dispatch exact Roblox Studio QA directly after F0/);
+  assert.match(workflow,/ROBLOX_F0_STUDIO_QA_HANDOFF=DISPATCHED:/);
+  assert.match(workflow,/ROBLOX_F0_STUDIO_QA_HANDOFF=DEDUPED_ACTIVE:/);
+  assert.match(workflow,/actions\/workflows\/company-development-roblox-post-runtime-qa\.yml\/runs\?per_page=100/);
+  assert.match(workflow,/company-development-roblox-post-runtime-qa\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id" -f run_studio=true/);
+  assert.doesNotMatch(workflow,/gh workflow run company-development-roblox-runtime\.yml/);
   assert.doesNotMatch(workflow,/gh workflow run company-development-roblox-release-promotion\.yml/);
 });
 
 
-test('F0 exact-runtime handoff preserves the single shared fallback guard',()=>{
+test('F0 local Studio QA handoff does not wait for a Roblox publication target',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
-  assert.match(workflow,/let sharedFallbackUsed=false/);
-  assert.match(workflow,/ROBLOX_F0_SHARED_FALLBACK_DEFERRED=/);
-  assert.match(workflow,/bootstrapState\|\|''\)\.toUpperCase\(\)==='CREATED_PRIVATE_UNPUBLISHED'/);
+  const start=workflow.indexOf('Dispatch exact Roblox Studio QA directly after F0');
+  assert.ok(start>0);
+  const block=workflow.slice(start);
+  assert.match(block,/ROBLOX_F0_STUDIO_QA_TARGET_DEPENDENCY=NONE_LOCAL_EXACT_ARTIFACT/);
+  assert.doesNotMatch(block,/sharedFallbackUsed/);
+  assert.doesNotMatch(block,/robloxPublicationTarget/);
+  assert.doesNotMatch(block,/robloxInternalReleaseEvidence/);
+  assert.doesNotMatch(block,/robloxReleaseEvidence/);
 });
