@@ -260,8 +260,20 @@ export class JaewoonCommonAI {
     const event = packet.sourceEvent || packet.event || {};
     const eventId = String(event.id || event.eventId || '');
     const eventType = String(event.type || '');
+    const eventActorId = String(event.actorId || event.actor || '');
+    const eventLocation = String(event.location || '');
+    const eventTick = event.tick ?? event.time ?? null;
+    const eventObservability = String(event.observability || '');
+    const contractComplete = event.contractComplete === true || Boolean(eventId && eventType && eventActorId && eventLocation && eventTick !== null && eventObservability);
     if (!eventId || !eventType) return Object.freeze({ applied: false, reason: 'source_event_required', gameplayAuthority: false });
-    if (packet.perceived === false) return Object.freeze({ applied: false, reason: 'no_information_path', gameplayAuthority: false });
+    if (!contractComplete) return Object.freeze({ applied: false, reason: 'source_event_contract_incomplete', gameplayAuthority: false });
+    const observerId = String(this.identity.id || this.identity.name || '');
+    const witnessIds = Array.isArray(event.witnesses)
+      ? event.witnesses.map(row => String(typeof row === 'string' ? row : row?.actorId || row?.id || row?.name || '')).filter(Boolean)
+      : [];
+    const informationPath = String(packet.informationPath || packet.interpretation?.informationPath || '');
+    const hasInformationPath = packet.perceived === true && (witnessIds.includes(observerId) || (informationPath && informationPath !== 'none'));
+    if (!hasInformationPath) return Object.freeze({ applied: false, reason: 'no_information_path', gameplayAuthority: false });
     const rememberedSourceEvent = this.memory.some(row => String(row?.sourceEventId || row?.id || '') === eventId);
     const relationshipSourceEvent = [...this.relationships.values()].some(state => Array.isArray(state?.causeEventIds) && state.causeEventIds.includes(eventId));
     if (this.causalEventIds.has(eventId) || rememberedSourceEvent || relationshipSourceEvent) return Object.freeze({ applied: false, reason: 'duplicate_event', state: this.snapshotMind(), gameplayAuthority: false });
