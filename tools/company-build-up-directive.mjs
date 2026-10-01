@@ -309,10 +309,14 @@ export function extractDesignContext(record={}){
   })).filter(x=>x.name||x.purpose||x.playerChoice).slice(0,12);
   return Object.freeze({
     identity:clean(d?.identity),
+    playerFantasy:clean(d?.playerFantasy),
     coreFun:clean(d?.coreFun),
     coreLoop:uniq(d?.coreLoop).slice(0,10),
     signatureSystems:systems,
     progressionDirection:clean(d?.progressionDirection),
+    visualDirection:clean(d?.visualDirection),
+    mobileUx:clean(d?.mobileUx),
+    marketTargetDirection:clean(d?.marketTargetDirection),
     multiplayerMode:clean(d?.multiplayerMode),
     platformProfiles:d?.platformProfiles&&typeof d.platformProfiles==='object'?d.platformProfiles:{}
   });
@@ -389,12 +393,20 @@ function buildGameDevelopmentDNA({design={},source={},focus='CORE_FUN',runtimeEv
   return Object.freeze({
     version:1,
     identityAnchors:Object.freeze(identityAnchors),
+    playerFantasy:clean(design.playerFantasy)||null,
     coreFun:clean(design.coreFun)||null,
     loopRhythm:Object.freeze((design.coreLoop||[]).map(clean).filter(Boolean).slice(0,8)),
     signatureSystems:Object.freeze((design.signatureSystems||[]).map(row=>Object.freeze({
       name:clean(row?.name)||null,purpose:clean(row?.purpose)||null,playerChoice:clean(row?.playerChoice)||null
     })).slice(0,8)),
     progressionDirection:clean(design.progressionDirection)||null,
+    presentationIdentity:Object.freeze({
+      visualDirection:clean(design.visualDirection)||null,
+      mobileUx:clean(design.mobileUx)||null,
+      marketTargetDirection:clean(design.marketTargetDirection)||null,
+      preserveStyleAcrossIterations:true,
+      genericStyleReplacementForbidden:true
+    }),
     multiplayerMode:clean(design.multiplayerMode)||null,
     runtimeRepairSurfaces:Object.freeze(surfaces),
     detailPriorities:Object.freeze(detailPriorities),
