@@ -26133,8 +26133,8 @@
     "webInternalPriority": {
       "scope": "WEB_ONLY",
       "globalPlatformPriorityUnchanged": true,
-      "recentOwnerWebEligibility": "ownerDirectWebUpload&&webDevelopmentResetRequired&&sourceExists&&!homepageWebPlayable",
-      "recentPriorityEndsWhen": "homepageWebPlayable"
+      "recentOwnerWebEligibility": "ownerDirect&&resetRequired&&sourceExists&&!playable",
+      "recentPriorityEndsWhen": "playable"
     }
   },
   "robloxNativeCodingQualityContract": {
