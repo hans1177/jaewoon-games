@@ -22087,10 +22087,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "VIBE_INTERNAL_PLAY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T18:58:38.600Z",
+      "updatedAt": "2026-10-01T19:38:08.203Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -22526,7 +22526,7 @@
       "robloxInternalVibePlayEvidence": {
         "version": 2,
         "gameId": "survival",
-        "studioHarnessVersion": 15,
+        "studioHarnessVersion": 16,
         "authority": "roblox-official-studio-mcp-runtime",
         "pass": false,
         "actualPlay": false,
@@ -22703,8 +22703,8 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-10-01T18:14:34.385Z",
-        "workflowRunId": 36896295029,
+        "testedAt": "2026-10-01T19:38:08.203Z",
+        "workflowRunId": 36908677455,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -22810,8 +22810,8 @@
           "GAME_START"
         ],
         "robloxFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
-        "testedAt": "2026-10-01T18:14:34.385Z",
-        "workflowRunId": 36896295029,
+        "testedAt": "2026-10-01T19:38:08.203Z",
+        "workflowRunId": 36908677455,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxQualityBuildUpLastPassedAt": "2026-09-28T13:55:43.285Z",
@@ -23085,7 +23085,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T19:34:14.445Z",
+  "updatedAt": "2026-10-01T19:38:08.203Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
