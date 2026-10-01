@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import http from 'node:http';
+import net from 'node:net';
 import path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { once } from 'node:events';
@@ -76,13 +77,15 @@ function findChrome(){
 
 function delay(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
 
-async function waitForFile(file,timeoutMs=20000){
-  const end=Date.now()+timeoutMs;
-  while(Date.now()<end){
-    if(fs.existsSync(file))return;
-    await delay(50);
-  }
-  throw new Error('CHROME_DEVTOOLS_PORT_TIMEOUT');
+async function allocateLocalPort(){
+  const probe=net.createServer();
+  probe.listen(0,'127.0.0.1');
+  await once(probe,'listening');
+  const value=probe.address();
+  assert.ok(value&&typeof value==='object'&&Number(value.port)>0,'browser smoke debug port allocation failed');
+  const port=Number(value.port);
+  await new Promise((resolve,reject)=>probe.close(error=>error?reject(error):resolve()));
+  return port;
 }
 
 async function waitForPageTarget(port,timeoutMs=10000){
@@ -187,6 +190,7 @@ class CdpClient{
 
 const chrome=findChrome();
 const profile=fs.mkdtempSync('/tmp/vibe2-web-smoke-');
+const debugPort=await allocateLocalPort();
 const chromeProc=spawn(chrome,[
   '--headless=new',
   '--no-sandbox',
@@ -196,7 +200,7 @@ const chromeProc=spawn(chrome,[
   '--no-first-run',
   '--no-default-browser-check',
   '--remote-allow-origins=*',
-  '--remote-debugging-port=0',
+  `--remote-debugging-port=${debugPort}`,
   `--user-data-dir=${profile}`,
   'about:blank'
 ],{stdio:['ignore','ignore','pipe']});
@@ -206,13 +210,7 @@ chromeProc.stderr?.on('data',chunk=>{chromeStderr+=String(chunk)});
 
 let cdp;
 try{
-  const activePortFile=path.join(profile,'DevToolsActivePort');
-  await waitForFile(activePortFile);
-  const [debugPortRaw]=fs.readFileSync(activePortFile,'utf8').trim().split(/\r?\n/);
-  const debugPort=Number(debugPortRaw);
-  assert.ok(Number.isInteger(debugPort)&&debugPort>0,'Chrome DevTools port invalid');
-
-  const target=await waitForPageTarget(debugPort);
+  const target=await waitForPageTarget(debugPort,45000);
   cdp=new CdpClient(target.webSocketDebuggerUrl);
   await cdp.connect();
   await cdp.send('Page.enable');
