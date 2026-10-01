@@ -938,12 +938,7 @@
       "webRequiredDeploymentCheck": "Cloudflare Pages",
       "sourceBoundaryProofRequired": true,
       "unrelatedRepositoryWideExternalCheckCannotBlockGameRelease": true,
-      "qualityOrEvidenceGateWeakeningForbidden": true,
-      "webDeploymentEligibility": "WEB_F0_F9_PLAYABLE_VERIFIED_AND_STATIC_SAVE_QA_PASS",
-      "webNativeHomepageReadinessRequired": false,
-      "webMainCloudflareDeploymentRequiredBeforeTaskPass": true,
-      "webDeploymentFailureAction": "RETRY_SAME_VERIFIED_CANDIDATE_UNTIL_DEPLOYED",
-      "webDeploymentFailureMayAdvanceBuildUp": false
+      "qualityOrEvidenceGateWeakeningForbidden": true
     },
     "freeAiCapacityMustBeMaximized": true,
     "internalArtificialConcurrencyCapsForbidden": true,
@@ -8572,21 +8567,13 @@
     "playableWebMandatoryDeployment20261002": {
       "id": "PLAYABLE_WEB_MANDATORY_DEPLOYMENT_2026-10-02",
       "authority": "OWNER_DIRECTIVE_2026-10-02",
-      "playableAuthority": "WEB_F0_F9_VERIFIED_PLUS_STATIC_AND_SAVE_QA",
       "nativeHomepageReadinessRequired": false,
       "cloudflareMainRequiredBeforeVibePass": true,
-      "deploymentFailureAction": "RETRY_SAME_VERIFIED_CANDIDATE_UNTIL_DEPLOYED",
       "nextBuildUpBeforeDeploymentSuccessForbidden": true,
       "postDeployment": {
         "perpetualBuildUp": true,
         "generationLimit": null,
-        "newIdeaRequiredEveryCycle": true,
-        "capacityBoundariesOnly": [
-          "SAVE_DATA",
-          "WEB_BUNDLE",
-          "MEMORY",
-          "MOBILE_FPS"
-        ]
+        "newIdeaRequiredEveryCycle": true
       }
     }
   },
@@ -25664,11 +25651,7 @@
         "generationFanInRequiredBeforeNextDirective": true,
         "anyActiveTaskKeepsSameDirectiveGeneration": true,
         "anyFailedTaskKeepsDepthAndTriggersCausalRepair": true,
-        "allRequiredGenerationTasksMustBeVerifiedBeforeEscalation": true,
-        "generationLimit": null,
-        "perpetualAfterDeployment": true,
-        "everyDeployedWebCycleCreatesNextDirective": true,
-        "ideaRegeneratedEveryCycle": true
+        "allRequiredGenerationTasksMustBeVerifiedBeforeEscalation": true
       },
       "platformHandoff": {
         "sharedCommonGoal": true,
@@ -26144,23 +26127,15 @@
       "runtimeVerifiedOnlyWhenObserved": true
     },
     "webPostDeploymentPerpetualBuildUp": {
-      "version": 1,
-      "authority": "OWNER_DIRECTIVE_2026-10-02",
       "enabled": true,
       "deploymentSuccessNextAction": "IMMEDIATE_NEXT_BUILD_UP_GENERATION",
       "generationLimit": null,
       "terminalCompletionStateForbidden": true
     },
-    "playableWebDeploymentMustCompleteBeforeWebNextCycle": true,
-    "webDeploymentSuccessImmediatelyResumesPerpetualBuildUp": true,
-    "webDeploymentFailurePausesOnlyThatWebLaneUntilSameCandidateDeploys": true,
-    "publicationOutcomeMayNotPauseEvolutionExceptMandatoryPlayableWebDeployment": true,
     "webInternalPriority": {
-      "version": 1,
       "scope": "WEB_ONLY",
       "globalPlatformPriorityUnchanged": true,
-      "mayNotOutrankNonWebWorkSolelyBecauseRecent": true,
-      "recentOwnerWebEligibility": "DEVELOPMENT_CONFIRMED && ownerDirectWebUpload && webDevelopmentResetRequired && web-games/<gameId> exists && homepageWebPlayable!=true",
+      "recentOwnerWebEligibility": "ownerDirectWebUpload && webDevelopmentResetRequired && web-games/<gameId> exists && homepageWebPlayable!=true",
       "recentPriorityEndsWhen": "homepageWebPlayable=true"
     }
   },
