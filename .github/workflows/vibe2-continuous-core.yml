@@ -1191,15 +1191,9 @@ jobs:
           set -euo pipefail
           contract_root="$GITHUB_WORKSPACE/vibe2-contract"
           command -v ollama >/dev/null
-          nohup ollama serve > "/tmp/ollama-practice-${SAFE_TASK}-${VARIANT}.log" 2>&1 &
-          for i in $(seq 1 30); do
-            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
-            if [ "$i" = 30 ]; then cat "/tmp/ollama-practice-${SAFE_TASK}-${VARIANT}.log" || true; exit 1; fi
-            sleep 2
-          done
-          if ! ollama list | awk 'NR>1 {print $1}' | grep -Fqx "$VIBE2_LOCAL_MODEL"; then
-            ollama pull "$VIBE2_LOCAL_MODEL"
-          fi
+          curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
+          ollama list | awk 'NR>1 {print $1}' | grep -Fqx "$VIBE2_LOCAL_MODEL"
+          echo 'VIBE2_PRACTICE_OLLAMA_RUNTIME=PREPARED_ONCE'
           practice_route="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));process.stdout.write(String(o.executionRoute||''))")"
           if node -e "const o=require('/tmp/vibe2-work-order.json');process.exit(o.selectedTask?.robloxPracticeDrill?0:1)"; then
             luau_dir="$RUNNER_TEMP/vibe2-luau-practice"
@@ -1407,18 +1401,9 @@ jobs:
           else
             echo 'VIBE2_ACTIVE_SOURCE_PROVIDER=LOCAL_OLLAMA'
             command -v ollama >/dev/null
-            nohup ollama serve > "/tmp/ollama-${SAFE_TASK}-${VARIANT}.log" 2>&1 &
-            for i in $(seq 1 30); do
-              curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
-              if [ "$i" = 30 ]; then cat "/tmp/ollama-${SAFE_TASK}-${VARIANT}.log" || true; exit 1; fi
-              sleep 2
-            done
-            if ollama list | awk 'NR>1 {print $1}' | grep -Fqx "$VIBE2_LOCAL_MODEL"; then
-              echo 'VIBE2_LOCAL_MODEL_SOURCE=CACHE'
-            else
-              echo 'VIBE2_LOCAL_MODEL_SOURCE=FALLBACK_PULL'
-              ollama pull "$VIBE2_LOCAL_MODEL"
-            fi
+            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
+            ollama list | awk 'NR>1 {print $1}' | grep -Fqx "$VIBE2_LOCAL_MODEL"
+            echo 'VIBE2_LOCAL_MODEL_SOURCE=PREPARED_ONCE'
           fi
 
           if [ "$TARGET" = 'roblox' ]; then

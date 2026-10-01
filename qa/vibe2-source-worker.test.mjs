@@ -3850,6 +3850,19 @@ test('asset-development Roblox graphics stays on bounded focused retries while g
   assert.match(workflow,/coding-roblox-timeout-recovery-escalated-full-graphics:YES/);
 });
 
+test('worker model runtime is prepared once and downstream source or practice steps do not restart or repull it',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  const workerStart=workflow.indexOf('\n  worker:\n');
+  const fanInStart=workflow.indexOf('\n  fan_in:\n',workerStart);
+  assert.ok(workerStart>=0&&fanInStart>workerStart);
+  const worker=workflow.slice(workerStart,fanInStart);
+  assert.match(worker,/Prepare cached Ollama runtime/);
+  assert.match(worker,/VIBE2_PRACTICE_OLLAMA_RUNTIME=PREPARED_ONCE/);
+  assert.match(worker,/VIBE2_LOCAL_MODEL_SOURCE=PREPARED_ONCE/);
+  assert.doesNotMatch(worker,/nohup ollama serve/);
+  assert.doesNotMatch(worker,/ollama pull "\$VIBE2_LOCAL_MODEL"/);
+});
+
 test('failed source generation still performs post-work shared-context SHA validation before exiting the candidate step',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   const candidateStart=workflow.indexOf('- name: Generate isolated candidate from pinned main contract');
