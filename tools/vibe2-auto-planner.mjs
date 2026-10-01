@@ -2021,7 +2021,9 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     ?taskHistory.filter(item=>clean(item?.buildUpDirective?.directiveId)===latestDirectiveId)
     :[];
   const activeDirectiveTask=[...latestDirectiveTasks].reverse().find(item=>!inactiveDirectiveStatuses.has(clean(item.status).toLowerCase()));
-  if(activeDirectiveTask?.buildUpDirective){
+  if(activeDirectiveTask?.buildUpDirective
+    &&Number(activeDirectiveTask.buildUpDirective.version||0)>=3
+    &&activeDirectiveTask.buildUpDirective.perceptibleExperienceBuildUp?.perceptiblePlayerEffectRequired===true){
     const repairRequired=platformLane==='roblox'&&project.queueRobloxQualityBuildUpRequired===true;
     const directive={
       ...activeDirectiveTask.buildUpDirective,
@@ -2052,6 +2054,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
         ...(taskInput.evidence||[]),
         'game-specific-build-up-directive:v1',
         'game-specific-build-up-directive:v2',
+        'game-specific-build-up-directive:v3',
         'build-up-source-anchor-count:'+String((directive.responsibleSystemsAndFiles?.sourceAnchors||[]).length),
         'build-up-previous-effectiveness:'+clean(directive.effectivenessMeasurement?.previousGeneration?.classification),
         'build-up-next-vibe-action:'+clean(directive.nextActionDecision?.action),
@@ -2063,6 +2066,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
         'build-up-focus:'+directive.primaryFocus,
         'build-up-source-tree:'+directive.sourceTreeFingerprint,
         'build-up-platform-common-goal:YES',
+        'build-up-perceptible-player-effect-required:YES',
       'autonomous-content-expansion-build-up:v1',
       'autonomous-content-expansion-existing-build-up-only:YES',
       'autonomous-content-expansion-platforms:WEB,ROBLOX,UNITY',
@@ -2154,6 +2158,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       ...(taskInput.evidence||[]),
       'game-specific-build-up-directive:v1',
       'game-specific-build-up-directive:v2',
+        'game-specific-build-up-directive:v3',
       'build-up-source-anchor-count:'+String((directive.responsibleSystemsAndFiles?.sourceAnchors||[]).length),
       'build-up-previous-effectiveness:'+clean(directive.effectivenessMeasurement?.previousGeneration?.classification),
       'build-up-next-vibe-action:'+clean(directive.nextActionDecision?.action),
@@ -2165,6 +2170,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       'build-up-every-loop-regenerate:YES',
       'build-up-all-domain-coverage:YES',
       'build-up-platform-common-goal:YES',
+        'build-up-perceptible-player-effect-required:YES',
       sourceSafeNoDesign?'build-up-design-context:SOURCE_SAFE_NO_DESIGN':'build-up-design-context:APPROVED_OR_MINIMUM_DESIGN',
       ...(sourceSafeNoDesign?['build-up-designless-gameplay-expansion:FORBIDDEN']:[]),
       'autonomous-content-expansion-build-up:v1',
@@ -2429,6 +2435,7 @@ function bindSharedBuildUpDirective(taskInput,directive){
     evidence:[...new Set([
       ...(taskInput.evidence||[]),
       'game-specific-build-up-directive:v2',
+        'game-specific-build-up-directive:v3',
       'build-up-shared-generation-exact-object:YES',
       'build-up-source-anchor-count:'+String((directive.responsibleSystemsAndFiles?.sourceAnchors||[]).length),
       'build-up-previous-effectiveness:'+clean(directive.effectivenessMeasurement?.previousGeneration?.classification),
@@ -2439,6 +2446,7 @@ function bindSharedBuildUpDirective(taskInput,directive){
       'build-up-focus:'+directive.primaryFocus,
       'build-up-source-tree:'+directive.sourceTreeFingerprint,
       'build-up-platform-common-goal:YES',
+        'build-up-perceptible-player-effect-required:YES',
       'autonomous-content-expansion-build-up:v1',
       'autonomous-content-expansion-existing-build-up-only:YES',
       'autonomous-content-expansion-platforms:WEB,ROBLOX,UNITY',
