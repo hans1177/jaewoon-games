@@ -26,6 +26,7 @@ export class JaewoonCommonAI {
     this.memoryLimit = Math.max(4, Math.min(24, Number(options.memoryLimit || 12)));
     this.memory = [];
     this.relationships = new Map();
+    this.relationshipEvents = new Set();
     this.lastIntent = '';
     this.intentHoldUntil = 0;
     this.order = JaewoonCommonAI.Order.AUTO;
@@ -242,10 +243,55 @@ export class JaewoonCommonAI {
       tension: axis(state.tension), affection: axis(state.affection), fear: axis(state.fear),
       debt: axis(state.debt), rivalry: axis(state.rivalry), protectiveness: axis(state.protectiveness),
       boundaryComfort: axis(state.boundaryComfort), stage: String(state.stage || 'stranger'),
-      gameplayAuthority: false
+      initialized: true, gameplayAuthority: false
     });
     this.relationships.set(key, next);
     return next;
+  }
+
+  applyRelationshipEvent(id = '', event = {}, deltas = {}) {
+    const key = String(id || ''), eventId = String(event?.id || event?.eventId || '');
+    if (!key || !eventId || !event?.type) return { applied: false, reason: 'source_event_required' };
+    if (this.relationshipEvents.has(eventId)) return { applied: false, reason: 'duplicate_event', state: this.relationshipWith(key) };
+    const current = this.relationshipWith(key) || this.setRelationship(key, {});
+    const axis = value => Math.max(-100, Math.min(100, Math.round(Number(value) || 0)));
+    const fields = ['trust','familiarity','respect','tension','affection','fear','debt','rivalry','protectiveness','boundaryComfort'];
+    const next = { ...current };
+    for (const field of fields) next[field] = axis(Number(current[field] || 0) + Math.max(-20, Math.min(20, Number(deltas[field] || 0))));
+    if (deltas.stage) next.stage = String(deltas.stage);
+    next.lastCauseEventId = eventId;
+    next.lastCauseType = String(event.type);
+    next.initialized = false;
+    next.gameplayAuthority = false;
+    const frozen = Object.freeze(next);
+    this.relationships.set(key, frozen);
+    this.relationshipEvents.add(eventId);
+    this.remember({ id: eventId, type: String(event.type), actor: event.actor || '', target: key, relationshipEffect: { ...deltas } });
+    return { applied: true, state: frozen };
+  }
+
+  inferPlayerModel(playerId = '') {
+    const id = String(playerId || '');
+    const relevant = this.memory.filter(row => !id || String(row.actor || row.target || '') === id);
+    const count = (...types) => relevant.filter(row => types.includes(String(row.type || '').toLowerCase())).length;
+    const evidenceCount = relevant.length;
+    return Object.freeze({
+      actorId: id,
+      patterns: Object.freeze({
+        helpful: count('help','rescue'),
+        promiseKept: count('promise-kept'),
+        promiseBroken: count('promise-broken'),
+        boundaryRespected: count('respect-boundary'),
+        boundaryCrossed: count('cross-boundary'),
+        adviceFollowed: count('followed-advice'),
+        adviceIgnored: count('ignored-advice'),
+        allyAbandoned: count('abandon'),
+        recklessRisk: count('reckless-risk')
+      }),
+      confidence: Math.max(0, Math.min(1, evidenceCount / 12)),
+      perspectiveSpecific: true,
+      globalTruth: false
+    });
   }
 
   snapshotMind() {
@@ -256,6 +302,7 @@ export class JaewoonCommonAI {
       lastIntent: this.lastIntent,
       memory: Object.freeze([...this.memory]),
       relationships: Object.freeze([...this.relationships.entries()].map(([id, state]) => Object.freeze({ id, state }))),
+      relationshipEventIds: Object.freeze([...this.relationshipEvents]),
       gameplayAuthority: false
     });
   }
@@ -335,15 +382,51 @@ export class JaewoonGeminiAI {
     this.cache = new Map();
   }
 
-  async askDialogue({ characterId = '', personality = '', gameContext = '', playerText = '', fallbackSpeech = '...' } = {}) {
+  async askDialogue({
+    characterId = '', personality = '', voiceProfile = {}, relationship = {}, playerModel = {},
+    knowledgeBoundary = '', recentAdvice = [], profanityProfile = {}, gameContext = '', playerText = '', fallbackSpeech = '...'
+  } = {}) {
     const fallback = { ok: false, fallback: true, speech: fallbackSpeech, mood: 'neutral', intent: 'talk' };
-    const cacheKey = `dialogue|${characterId}|${gameContext}|${playerText}`;
+    const cacheKey = `dialogue|${characterId}|${gameContext}|${playerText}|${JSON.stringify(relationship)}`;
     return this.ask({
       purpose: 'dialogue',
-      system: `Character ID: ${String(characterId).slice(0, 80)}\nPersonality: ${String(personality).slice(0, 800)}`,
+      system: [
+        `Character ID: ${String(characterId).slice(0, 80)}`,
+        `Personality: ${String(personality).slice(0, 800)}`,
+        `Voice profile: ${JSON.stringify(voiceProfile).slice(0, 900)}`,
+        `Relationship: ${JSON.stringify(relationship).slice(0, 900)}`,
+        `Actor view of player: ${JSON.stringify(playerModel).slice(0, 900)}`,
+        `Knowledge boundary: ${String(knowledgeBoundary).slice(0, 500)}`,
+        `Recent advice: ${JSON.stringify(recentAdvice).slice(0, 700)}`,
+        `Profanity profile: ${JSON.stringify(profanityProfile).slice(0, 500)}`,
+        'Stay in character. Silence or a short reply is valid. Do not reveal information outside the character knowledge boundary. Do not repeat recent advice unless the player asked again or repeated failure justifies a stronger hint. Do not decide rewards, quest completion, damage, saves, or authoritative game state.'
+      ].join('\n'),
       context: String(gameContext).slice(0, 5000),
       user_text: String(playerText).slice(0, 2000)
     }, cacheKey, fallback);
+  }
+
+  async askGuidance({
+    characterId = '', personality = '', gameContext = '', observedPlayerModel = {}, recentFailures = [],
+    recentAdvice = [], allowedHintSubjects = [], spoilerLevel = 'NUDGE', profanityProfile = {}, fallbackSpeech = ''
+  } = {}) {
+    const fallback = { ok: false, fallback: true, speech: fallbackSpeech, intent: 'silence', hintSubject: '' };
+    return this.ask({
+      purpose: 'dialogue',
+      system: [
+        `Character ID: ${String(characterId).slice(0, 80)}`,
+        `Personality: ${String(personality).slice(0, 800)}`,
+        `Observed player model: ${JSON.stringify(observedPlayerModel).slice(0, 1000)}`,
+        `Recent failures: ${JSON.stringify(recentFailures).slice(0, 1000)}`,
+        `Recent advice: ${JSON.stringify(recentAdvice).slice(0, 800)}`,
+        `Allowed hint subjects: ${JSON.stringify(allowedHintSubjects).slice(0, 800)}`,
+        `Spoiler level: ${String(spoilerLevel)}`,
+        `Profanity profile: ${JSON.stringify(profanityProfile).slice(0, 500)}`,
+        'Return character-specific progress help only from observed or engine-provided information. If no useful new advice exists, choose silence. Do not invent hidden puzzle answers, rewards, stats, spawns, or quest completion.'
+      ].join('\n'),
+      context: String(gameContext).slice(0, 5000),
+      user_text: 'Choose whether to give one useful in-character gameplay hint now.'
+    }, '', fallback);
   }
 
   async askStrategy({ actorId = '', role = '', gameContext = '', allowedActions = [], fallbackAction = 'follow' } = {}) {
