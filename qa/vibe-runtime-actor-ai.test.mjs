@@ -26,7 +26,7 @@ import {
   planVibeCompanionSocialDirector,
   validateVibeAIAction
 } from '../assets/vibe-ai-role-director.js';
-import {JaewoonCommonAI} from '../assets/common-ai.js';
+import {JaewoonCommonAI,JaewoonAISquad} from '../assets/common-ai.js';
 import {createAIPartyConfig,createDefaultAIEntries} from '../assets/ai-party.js';
 import {deriveGameplaySketch,buildVibePatchPlan,analyzeExistingGameSource} from '../tools/company-vibe2-gameplay-intelligence.mjs';
 
@@ -379,6 +379,54 @@ test('common ai applies one causal source event once and feeds it into the next 
 
 test('browser runtime exposes the same causal actor loop instead of a parallel shadow implementation',()=>{
   assert.match(roleDirectorSource,/planJaewoonVibeCausalActorLoop:planVibeCausalActorLoop/);
+});
+
+test('squad routes causal packets only to the named observer and never broadcasts hidden knowledge',()=>{
+  const loop=planVibeCausalActorLoop({
+    event:{
+      id:'evt-squad-1',
+      type:'rescue',
+      actorId:'player',
+      targetId:'mira',
+      location:'bridge',
+      tick:55,
+      witnesses:['mira']
+    },
+    observers:[
+      {
+        actor:companion,
+        relationship:{trust:0},
+        memory:[],
+        emotion:'alert',
+        knowledge:{observed:true,confidence:1,attribution:'direct-cause'}
+      },
+      {
+        actor:{...companion,id:'hidden-observer'},
+        relationship:{trust:0},
+        memory:[],
+        emotion:'calm',
+        knowledge:{observed:false,reported:false}
+      }
+    ]
+  });
+  const miraAi=new JaewoonCommonAI({identity:{id:'mira'}});
+  const hiddenAi=new JaewoonCommonAI({identity:{id:'hidden-observer'}});
+  const squad=new JaewoonAISquad({members:[
+    {id:'mira',ai:miraAi,role:'support'},
+    {id:'hidden-observer',ai:hiddenAi,role:'ranged'}
+  ]});
+  const first=squad.observeCausalPackets(loop.observers);
+  assert.equal(first.length,2);
+  assert.equal(first.find(row=>row.id==='mira').applied,true);
+  assert.equal(first.find(row=>row.id==='hidden-observer').applied,false);
+  assert.equal(first.find(row=>row.id==='hidden-observer').reason,'no_information_path');
+  assert.equal(miraAi.memory.length,1);
+  assert.equal(hiddenAi.memory.length,0);
+  const trustAfter=miraAi.relationshipWith('player').trust;
+  const duplicate=squad.observeCausalPackets(loop.observers);
+  assert.equal(duplicate.find(row=>row.id==='mira').reason,'duplicate_event');
+  assert.equal(miraAi.relationshipWith('player').trust,trustAfter);
+  assert.equal(hiddenAi.memory.length,0);
 });
 
 test('living actor director can consume a source event through the same causal contract',()=>{
