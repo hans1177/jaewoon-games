@@ -63,7 +63,7 @@ export function readUpperPlatformReadiness(repoRoot,gameId){
   let data;
   try{data=JSON.parse(fs.readFileSync(file,'utf8'));}catch{return{pass:false,reason:'READINESS_EVIDENCE_INVALID_JSON'};}
   const currentTree=unitySourceTreeSha256(path.join(repoRoot,'unity-games',gameId));
-  const requiredDomains=['design','code','graphics','webglBuild','actualPlay','qa','portability'];
+  const requiredDomains=['design','code','graphics','webglBuild','actualPlay','qa','portability','experience'];
   if(data.pass!==true||data.state!=='UPPER_PLATFORM_DEVELOPMENT_READY')return{pass:false,reason:'READINESS_NOT_PASS',data,currentTree};
   if(requiredDomains.some(key=>data.criteria?.[key]?.pass!==true))return{pass:false,reason:'READINESS_CRITERIA_INCOMPLETE',data,currentTree};
   if(!currentTree||data.unitySourceTreeSha256!==currentTree)return{pass:false,reason:'READINESS_SOURCE_STALE',data,currentTree};
