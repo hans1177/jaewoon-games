@@ -503,6 +503,43 @@ export class JaewoonAISquad {
   member(id) { return this.members.get(String(id || '')) || null; }
   list() { return Object.freeze([...this.members.values()].map(({ id, role, metadata }) => ({ id, role, metadata: { ...metadata } }))); }
 
+  snapshotMindStates() {
+    return Object.freeze([...this.members.values()].map(member => Object.freeze({
+      id: member.id,
+      role: member.role,
+      mind: member.ai.snapshotMind()
+    })));
+  }
+
+  restoreMindStates(rows = [], { engineValidated = false } = {}) {
+    if (engineValidated !== true) {
+      return Object.freeze({ restored: false, reason: 'engine_validation_required', restoredCount: 0, missingCount: 0, gameplayAuthority: false });
+    }
+    let restoredCount = 0;
+    let missingCount = 0;
+    const results = [];
+    for (const row of Array.isArray(rows) ? rows : []) {
+      const id = String(row?.id || '');
+      const member = this.member(id);
+      if (!member) {
+        missingCount++;
+        results.push(Object.freeze({ id, restored: false, reason: 'squad_member_missing' }));
+        continue;
+      }
+      const result = member.ai.restoreMindState(row?.mind || {}, { engineValidated: true });
+      if (result.restored === true) restoredCount++;
+      results.push(Object.freeze({ id, ...result }));
+    }
+    return Object.freeze({
+      restored: true,
+      restoredCount,
+      missingCount,
+      results: Object.freeze(results),
+      persistentWrite: false,
+      gameplayAuthority: false
+    });
+  }
+
   command(order, targetId = '') {
     const value = String(order || JaewoonCommonAI.Order.AUTO);
     this.shared.focusTargetId = value === JaewoonCommonAI.Order.FOCUS ? String(targetId || '') : this.shared.focusTargetId;
