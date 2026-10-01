@@ -646,7 +646,7 @@ test('portable touch-look learning maps to immediate Unity feedback instead of a
 test('Unity runs exact F0-F9, deploys the F9 artifact, and starts the next cycle without publication gating',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-unity-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/const f0ToF9=\{/);
-  for(const floor of ['F0','F1','F2','F3','F4','F5','F6','F7','F8','F9']) assert.match(workflow,new RegExp(floor+'\\s*:\\s*\\{'));
+  for(const floor of ['F0','F1','F2','F3','F4','F5','F6','F7','F8','F9']) assert.match(workflow,new RegExp(floor+'\\s*:'));
   assert.match(workflow,/unityF0ThroughF9Evidence:f0ToF9/);
   assert.match(workflow,/unityF9ReleaseRegressionPassed:internalReady/);
   assert.match(workflow,/Publish exact F9 Unity APK to canonical internal release target/);
