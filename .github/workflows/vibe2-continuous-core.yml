@@ -1724,9 +1724,18 @@ jobs:
           }
           git -C "$transport_dir" commit -m "vibe2: candidate transport $TASK_ID $VARIANT" >/dev/null
           candidate_sha="$(git -C "$transport_dir" rev-parse HEAD)"
-          if ! git -C "$transport_dir" push origin "HEAD:refs/heads/$candidate_branch"; then
+          candidate_push_ok=0
+          for push_attempt in 1 2 3; do
+            if git -C "$transport_dir" push origin "HEAD:refs/heads/$candidate_branch"; then
+              candidate_push_ok=1
+              break
+            fi
+            echo "VIBE2_CANDIDATE_BRANCH_PUSH_RETRY=$push_attempt:$candidate_branch"
+            sleep $((push_attempt * 2))
+          done
+          if [ "$candidate_push_ok" != 1 ]; then
             echo "failure_class=CANDIDATE_BRANCH_PUBLISH" >> "$GITHUB_OUTPUT"
-            echo "failure_message=latest-main candidate transport branch push failed" >> "$GITHUB_OUTPUT"
+            echo "failure_message=latest-main candidate transport branch push failed after bounded retry" >> "$GITHUB_OUTPUT"
             exit 1
           fi
           git -C "$contract_root" worktree remove --force "$transport_dir" >/dev/null 2>&1 || true

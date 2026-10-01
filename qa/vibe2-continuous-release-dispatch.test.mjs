@@ -159,6 +159,21 @@ test('shallow candidate inspection fetches exact contract and transport bases an
   }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
 
+test('candidate transport retries transient branch push failures without changing transport authority',()=>{
+  const commitAt=workflow.indexOf('git -C "$transport_dir" commit -m "vibe2: candidate transport $TASK_ID $VARIANT"');
+  const cleanupAt=workflow.indexOf('git -C "$contract_root" worktree remove --force "$transport_dir"',commitAt);
+  assert.ok(commitAt>=0&&cleanupAt>commitAt);
+  const section=workflow.slice(commitAt,cleanupAt);
+  assert.match(section,/candidate_push_ok=0/);
+  assert.match(section,/for push_attempt in 1 2 3; do/);
+  assert.match(section,/git -C "\$transport_dir" push origin "HEAD:refs\/heads\/\$candidate_branch"/);
+  assert.match(section,/VIBE2_CANDIDATE_BRANCH_PUSH_RETRY=\$push_attempt:\$candidate_branch/);
+  assert.match(section,/sleep \$\(\(push_attempt \* 2\)\)/);
+  assert.match(section,/if \[ "\$candidate_push_ok" != 1 \]; then/);
+  assert.match(section,/failed after bounded retry/);
+  assert.doesNotMatch(section,/gh api .*git\/refs|POST .*git\/refs/);
+});
+
 test('reviewed winner release dispatch remains structurally intact',()=>{
   assert.equal(count('      - name: Dispatch reviewed winner candidates to release gate'),1);
   assert.equal(count('      - name: Upload generated machine handoff and role review'),1);
