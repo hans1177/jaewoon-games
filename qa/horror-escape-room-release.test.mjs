@@ -6,6 +6,9 @@ import {inspectHeadlessSourceTexts} from '../tools/company-development-roblox-he
 const config=fs.readFileSync('roblox-games/horror-escape-room/shared/GameConfig.luau','utf8');
 const server=fs.readFileSync('roblox-games/horror-escape-room/server/Game.server.luau','utf8');
 const client=fs.readFileSync('roblox-games/horror-escape-room/client/Game.client.luau','utf8');
+const manorServer=fs.readFileSync('roblox-games/horror-escape-room/server/ManorLobby.luau','utf8');
+const manorClient=fs.readFileSync('roblox-games/horror-escape-room/client/ManorLobby.client.luau','utf8');
+const manorAssets=fs.readFileSync('roblox-games/horror-escape-room/shared/ManorAssets.luau','utf8');
 const launch=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/launch-mvp.json','utf8'));
 
 test('8명 4대4 시작과 AI 채움',()=>{
@@ -29,7 +32,7 @@ test('HumanForms는 플레이어와 AI가 공유하는 5개 액티브 전투 스
  for(const id of ['SIGNAL_JAM','OVERLOAD','IMPACT_BAG','CAMERA_FLASH','SHOCK_BATON'])assert.ok(config.includes(id+'={'),id);
  assert.match(config,/HUMAN_ABILITY="HUMAN_ABILITY"/);
  assert.match(server,/local function humanAbility\(p\)/);
- assert.match(server,/local function tryBotHumanAbility\(b,target,distance\)/);
+ assert.match(server,/function BotAI\.tryBotHumanAbility\(b,target,distance\)/);
  assert.match(client,/local humanAbilityButton=makeButton/);
  assert.match(client,/C\.Actions\.HUMAN_ABILITY/);
  assert.match(client,/playHumanAbilityEffect\(snapshot\)/);
@@ -119,11 +122,11 @@ test('상용 로딩과 로비 상태는 서버 정본에 바인딩된다',()=>{
  assert.match(server,/local function syncLobbyState\(phase\)/);
  for(const key of ['LobbyReady','LobbyPhase','LobbyRealPlayers','LobbyAIFill'])assert.ok(server.includes('"'+key+'"'),key);
  assert.match(client,/실제 %d명 · AI %d명 충원 예정/);
- assert.match(client,/roomBrowserPanel\.Visible=browser and not running and not resultCode/);
- assert.match(client,/setupPanel\.Visible=isRoomServer and not running and not resultCode and not spectating/);
- assert.match(client,/ruleCard\.Visible=setupPanel\.Visible and not selectionConfirmed/);
+ assert.match(manorClient,/local visible=.*PhysicalLobbyReady/);
+ assert.match(manorClient,/p:GetAttribute\("RoomServer"\)==true/);
+ assert.match(manorClient,/panelTitle\.Text="출정 대기실"/);
+ assert.match(manorClient,/참가 %d\/%d명/);
 });
-
 
 test('로비 역할 배정은 선호·공정 가중·직전 반복 방지를 사용한다',()=>{
  assert.match(server,/local lastMonsterIds=\{\}/);
@@ -156,15 +159,17 @@ test('로비 상용화 계약은 launch gate에도 고정된다',()=>{
 
 
 test('월드 로비는 밝은 가시성, 전용 BGM, 기괴한 직원과 공포코믹 소품을 유지한다',()=>{
- assert.match(config,/LobbyBackground="rbxassetid:\/\/1843529635"/);
+ assert.match(config,/LobbyBackground="rbxassetid:\/\/"\.\.tostring\(require\(script\.Parent\.ManorAssets\)\.LobbyMusicId\)/);
+ assert.match(manorAssets,/ModelId=[1-9][0-9]+/);
+ assert.match(manorAssets,/LobbyMusicId=[1-9][0-9]+/);
  assert.match(client,/MidnightLobbyBackground/);
- assert.match(client,/Lighting\.Brightness=math\.max\(Lighting\.Brightness,2\.85\)/);
- assert.match(client,/Lighting\.ExposureCompensation=math\.max\(Lighting\.ExposureCompensation,\.22\)/);
- for(const visual of ['ExtraFingerL','BellboyHump','MaidHairCurtain','MaidFingerL'])assert.ok(server.includes(visual),visual);
- for(const prop of ['FrontDeskPhone','LobbyOldRadio','BrokenVendingMachine','UmbrellaStand','CleaningCart','LostAndFoundDoll','WetFloorSign'])assert.ok(server.includes(prop),prop);
- for(const haunt of ['PHONE_GLITCH','VENDING_SHAKE','DOLL_TURN','CART_ROLL','UMBRELLA_TWITCH'])assert.ok(server.includes(haunt)&&client.includes(haunt),haunt);
- assert.match(server,/LobbyArtPass","NOCTURNE_CURSED_HOTEL_V7"/);
- assert.match(server,/LobbyBuildRevision","NOCTURNE_GROTESQUE_COMIC_LOBBY_20260930"/);
+ assert.match(manorClient,/Lighting\.Brightness=2\.5/);
+ assert.match(manorClient,/Lighting\.ExposureCompensation=\.4/);
+ for(const visual of ['Butler_Finger','Undertaker_','Archivist_','LittleGhost_'])assert.ok(manorAssets.includes(visual),visual);
+ for(const prop of ['ClockCase','CoffinLid','FamilyMirror','FamilyPortrait','Wardrobe','HearthFlame'])assert.ok(manorAssets.includes(prop),prop);
+ assert.match(manorServer,/LobbyArtPass","BLENDER_MONSTER_FAMILY_V2"/);
+ assert.match(manorServer,/LobbyBuildRevision","BLENDER_MANOR_20260930"/);
+ assert.match(manorServer,/ManorGag/);
 });
 
 test('세 맵 실내 천장은 직접 상향된 공간감을 유지한다',()=>{
@@ -201,13 +206,13 @@ test('플레이어와 AI 추격 모션은 기존 Animator 위에 레이어로 �
 test('AI는 몰려다니지 않고 분산 교전하며 양 진영 스킬을 실제 사용한다',()=>{
  assert.match(config,/SeparationRadius=12/);
  assert.match(config,/SeparationWeight=7/);
- assert.match(server,/local function botSeparationVector\(b\)/);
- assert.match(server,/local function distributedSurvivorTarget\(b\)/);
- assert.match(server,/local function distributedMonsterTarget\(b\)/);
- assert.match(server,/local function tryBotMonsterAbility\(b,targetPos,distance\)/);
- assert.match(server,/local function tryBotHumanAbility\(b,target,distance\)/);
- assert.match(server,/local function tryBotHumanPurify\(b,target,distance\)/);
- assert.match(server,/local function tryBotHumanDash\(b,direction,distance\)/);
+ assert.match(server,/function BotAI\.botSeparationVector\(b\)/);
+ assert.match(server,/function BotAI\.distributedSurvivorTarget\(b\)/);
+ assert.match(server,/function BotAI\.distributedMonsterTarget\(b\)/);
+ assert.match(server,/function BotAI\.tryBotMonsterAbility\(b,targetPos,distance\)/);
+ assert.match(server,/function BotAI\.tryBotHumanAbility\(b,target,distance\)/);
+ assert.match(server,/function BotAI\.tryBotHumanPurify\(b,target,distance\)/);
+ assert.match(server,/function BotAI\.tryBotHumanDash\(b,direction,distance\)/);
  assert.match(server,/AI_HUMAN_ACTION_EFFECT/);
  assert.match(server,/MONSTER_ABILITY_EFFECT/);
 });
@@ -271,7 +276,7 @@ test('코스메틱은 UI 테마와 칭호 전용이며 전투 수치에 연결�
  for(const forbidden of ['WalkSpeed','Damage','PurifyDistance','Cooldown','DashPower','TagDistance'])assert.ok(!cosmeticBlock.includes(forbidden),forbidden);
  assert.match(client,/resultTitle\.TextColor3=accent/);
  assert.match(client,/selectionStatus\.TextColor3=accent/);
- assert.match(client,/equippedItem\.Title/);
+ assert.match(manorClient,/cosmeticTitle=item\.Title/);
  assert.doesNotMatch(server,/EquippedCosmetic[^\n]{0,120}(WalkSpeed|Damage|PurifyDistance|Cooldown|DashPower|TagDistance)/);
 });
 
@@ -486,12 +491,12 @@ test('1인 방 생성과 방장 시작은 8인 AI 충원 계약을 유지한다'
  assert.match(config,/MinimumParticipants=1/);
  assert.match(config,/Room=\{MaxPlayers=8/);
  for(const action of ['CREATE_ROOM','JOIN_ROOM_CODE','QUICK_JOIN_PUBLIC','QUICK_JOIN_FRIEND','START_ROOM','LEAVE_ROOM'])assert.ok(config.includes(action+'="'+action+'"'),action);
- assert.match(server,/local function createReservedRoom\(p,visibility\)/);
+ assert.match(server,/local function createReservedRoom\(p,visibility,solo\)/);
+ assert.match(server,/roomSolo=solo==true/);
  assert.match(server,/local function startRoomMatch\(p\)/);
  assert.match(server,/#Players:GetPlayers\(\)<math\.max\(1,tonumber\(C\.MinimumParticipants\)or 1\)/);
  assert.match(server,/configure\(h,survivorOrder,monsterOrder,si,mi\)/);
- assert.match(client,/Name="RoomBrowser"/);
- assert.match(client,/1명부터 시작 가능 · 최대 8명 · 빈자리는 AI/);
+ assert.match(manorClient,/1인 플레이 · 빈자리는 AI/);
 });
 
 test('예약 방은 공개 친구만 비공개를 서버가 검증하고 예약 코드를 클라이언트에 노출하지 않는다',()=>{
@@ -518,12 +523,11 @@ test('Studio 방 검증은 TeleportService 대신 로컬 fallback을 사용한�
 
 
 test('예약방 로비는 8칸 슬롯에서 실제 유저와 AI를 구분한다',()=>{
- assert.match(client,/Name="RoomSlots"/);
- assert.match(client,/for i=1,8 do/);
- assert.match(client,/local function refreshRoomSlots\(\)/);
- assert.match(client,/slot\.Text="AI"/);
- assert.match(client,/방장 · /);
- assert.match(client,/roomSlotsPanel\.Visible=roomInfoPanel\.Visible/);
+ assert.match(manorClient,/for i=1,8 do/);
+ assert.match(manorClient,/roomSlots\.Name="ManorRoomSlots"/);
+ assert.match(manorClient,/player\.UserId==hostId and"방장 · "or""/);
+ assert.match(manorClient,/string\.format\("%d · AI",i\)/);
+ assert.match(manorClient,/Players:GetPlayers\(\)/);
 });
 
 test('세계 괴담 도감 UI는 12종 3단계 진행과 조각 계약서를 보여준다',()=>{
@@ -556,11 +560,11 @@ test('투명 스폰은 공중 발판이 되지 않고 로비와 경기장 스폰
 test('에너지 HUD는 로비와 게임에서 현재값과 최대값을 항상 표시한다',()=>{
  assert.match(client,/energyLabel\.Text="에너지 100\/100"/);
  assert.match(client,/energyLabel\.Text=string\.format\("에너지 %d\/%d"/);
- assert.match(client,/energyTrack\.Visible=true/);
- assert.match(client,/energyFill\.Visible=true/);
- assert.match(client,/energyLabel\.Visible=true/);
+ assert.match(client,/energyFill\.Size=UDim2\.fromScale/);
+ assert.match(manorClient,/에너지 %d\/%d/);
+ assert.match(manorClient,/p:GetAttribute\("Energy"\)/);
+ assert.match(manorClient,/p:GetAttribute\("EnergyMax"\)/);
 });
-
 
 test('실제 캐릭터 스폰은 목적 월드 바닥 Raycast와 아바타 높이로 계산한다',()=>{
  assert.match(server,/local function groundedRootTarget\(p,pos\)/);
@@ -573,22 +577,22 @@ test('실제 캐릭터 스폰은 목적 월드 바닥 Raycast와 아바타 높�
 });
 
 test('대기 로비 캐릭터는 경기장 MapReady를 기다리지 않고 로비 바닥에 즉시 스폰한다',()=>{
- const block=server.slice(server.indexOf('local function onCharacter'),server.indexOf('Players.PlayerAdded:Connect'));
- assert.doesNotMatch(block,/#Players:GetPlayers\(\)==1/);
+ const block=server.slice(server.indexOf('local function onCharacter'),server.indexOf('Players.PlayerAdded:Connect(function(p)'));
  assert.match(block,/workspace:GetAttribute\("PhysicalLobbyReady"\)/);
- assert.match(block,/table\.sort\(players/);
- assert.match(block,/teleport\(p,lobbySpawns\[slot\],Vector3\.new\(0,3,210\)\)/);
+ assert.match(block,/local destination,look,spawn=personalSpawn\(p\)/);
+ assert.match(block,/teleport\(p,destination,look\)/);
  assert.match(block,/LobbySpawnGroundedAt/);
  const waitingBranch=block.slice(block.indexOf('if state~="RUNNING"then'),block.indexOf('local readyDeadline'));
  assert.doesNotMatch(waitingBranch,/MapReady/);
 });
 
-
 test('홈페이지와 방 시스템은 하나의 Roblox Place만 사용한다',()=>{
- const homepage=fs.readFileSync('homepage-platform-exposure.json','utf8');
+ const homepage=JSON.parse(fs.readFileSync('homepage-platform-exposure.json','utf8'));
+ const game=homepage.games.find(row=>row.gameId==='horror-escape-room');
+ const roblox=game?.platforms?.find(row=>row.platform==='ROBLOX');
  const place='98222620265768';
- assert.match(homepage,new RegExp('"gameId":\\s*"horror-escape-room"[\\s\\S]{0,1800}"placeId":\\s*"'+place+'"'));
- assert.match(homepage,new RegExp('"internalUrl":\\s*"https://www\\.roblox\\.com/games/'+place+'"'));
+ assert.equal(roblox?.placeId,place);
+ assert.equal(roblox?.internalUrl,'https://www.roblox.com/games/'+place);
  assert.match(server,/ReserveServerAsync\(game\.PlaceId\)/);
  assert.match(server,/TeleportService:TeleportAsync\(game\.PlaceId/);
  assert.doesNotMatch(server,/ReserveServerAsync\((?!game\.PlaceId)/);
