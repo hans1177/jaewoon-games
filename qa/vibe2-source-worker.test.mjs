@@ -4905,6 +4905,46 @@ test('final Roblox control-token failure reaches its corrective prompt once and 
   assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
 });
 
+test('localized asset repair evidence and identity locks survive compact model retries',async(t)=>{
+  const cwd=tempRoot(),root='roblox-games/demo',relative='client/Game.client.luau',requests=[];
+  const source='local status = {Text = "ready"}\nstatus.Text = "ready"\n';
+  write(path.join(cwd,root,relative),source);
+  const work=order({target:'roblox',root,responsibleFiles:[root+'/'+relative],taskId:'asset-detail-retry'});
+  work.goal='[STUDIO_QUALITY_EVOLUTION]\nRepair the existing visual detail.\n'+('Existing approved context. '.repeat(4000));
+  const repair={findingId:'grip-12',recipeId:'dokkaebi',sourceHash:'source-current',region:'rightGrip',normalizedTimeRange:[.3,.4],
+    evidence:{artifactHash:'capture-current',artifactRef:'captures/grip.webm'},
+    recipe:{previousParameters:{gripOffset:.05,hornCount:1,skinColor:[.2,.3,.4]},editableParameters:['gripOffset'],lockedParameters:['hornCount'],identityAnchors:['ONE_HORN']},
+    closed:false};
+  work.assetProduction={detailReview:{status:'LOCAL_REPAIR_REQUIRED',subjects:[{recipeId:'dokkaebi',sourceHash:'source-current'}],repairs:[repair],protectedSemantics:['GAMEPLAY_EVENTS','CLIP_DURATION']},
+    motionContinuityAudit:{verdict:'FAIL',clipId:'swing',sourceHash:'source-current',violations:[{kind:'maxAttachmentOffset',region:'rightGrip',frameRange:[9,12],normalizedTimeRange:[.3,.4]}],runtimeVerified:false}};
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(work));
+  const server=http.createServer((req,res)=>{
+    let body='';req.on('data',chunk=>body+=chunk);req.on('end',()=>{
+      requests.push(JSON.parse(body));
+      if(requests.length===3){res.writeHead(503);res.end('end probe');return;}
+      res.writeHead(200,{'content-type':'application/x-ndjson'});
+      res.end(JSON.stringify(requests.length===1?{error:'prediction aborted'}:{response:JSON.stringify({replace:'<think>invalid</think>'}),done:true})+'\n');
+    });
+  });
+  await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(11434,'127.0.0.1',resolve);});
+  t.after(async()=>{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));fs.rmSync(cwd,{recursive:true,force:true});});
+  await assert.rejects(runVibe2SourceWorker({cwd,applySource:true}),/Ollama HTTP 503/);
+  assert.equal(requests.length,3);
+  const blocks=requests.map(request=>request.prompt.match(/\[ASSET DETAIL REPAIR BEGIN\]\n([^\n]+)\n[\s\S]*?\[ASSET DETAIL REPAIR END\]/));
+  for(const [index,block] of blocks.entries()){
+    assert.ok(block,'missing repair contract on attempt '+index);
+    assert.deepEqual(JSON.parse(block[1]).repairs,[repair]);
+    assert.deepEqual(JSON.parse(block[1]).motionAudit,work.assetProduction.motionContinuityAudit);
+    assert.equal(block[0],blocks[0][0]);
+    assert.match(block[0],/Re-measure and recapture/);
+  }
+  assert.deepEqual(requests[1].format.required,['replace']);
+  assert.match(requests[2].prompt,/SOURCE CONTENT REPAIR/);
+  assert.ok(Buffer.byteLength(requests[1].prompt)<Buffer.byteLength(requests[0].prompt));
+  for(const request of requests.slice(1))assert.equal(request.options.num_ctx,sourcePromptContextWindow(request.prompt,{baseContextWindow:8192,maxPredict:request.options.num_predict}));
+  assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
+});
+
 test('Roblox studio timeout recovery keeps compact source repair after malformed control output',async(t)=>{
   const cwd=tempRoot(),root='roblox-games/demo',relative='client/Game.client.luau',requests=[];
   const source='local status = {Text = "ready"}\nstatus.Text = "ready"\n';

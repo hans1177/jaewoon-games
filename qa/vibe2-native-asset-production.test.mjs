@@ -62,6 +62,20 @@ test('detail and measured motion repair reach the production work order and use 
   assert.equal(measured.motionContinuityAudit.violations[0].region,'foot');
   const guidance=assetProductionGuidance(measured);
   assert.match(guidance,/STYLE COMPARISON AND LOCAL REPAIR/);assert.match(guidance,/MEASURED CONTINUOUS MOTION/);assert.match(guidance,/editableParameters/);assert.match(guidance,/frameRange/);
+  input.manifest.assets[0].motionQA={requiredDetailChannels:{attachments:['grip']},limits:{maxAttachmentOffset:.01}};
+  input.task.motionContinuityTrace.requiredDetailChannels={};
+  input.task.motionContinuityTrace.limits={maxAttachmentOffset:100};
+  const missing=buildVibeAssetProductionPlan(input);
+  assert.equal(missing.motionContinuityAudit.verdict,'UNVERIFIED');
+  assert.ok(missing.motionContinuityAudit.issues.includes('INVALID_DETAIL_SAMPLE:attachments:grip:0'));
+  for(const frame of frames){frame.contacts.foot.worldPosition=[0,0,0];frame.attachments={grip:{active:true,effectorWorldPosition:[.1,0,0],targetWorldPosition:[0,0,0]}};}
+  const contact=buildVibeAssetProductionPlan(input);
+  assert.equal(contact.motionContinuityAudit.assetId,'clip');
+  assert.equal(contact.motionContinuityAudit.verdict,'FAIL');
+  assert.equal(contact.motionContinuityAudit.thresholds.maxAttachmentOffset,.01);
+  assert.equal(contact.motionContinuityAudit.violations[0].region,'grip');
+  const workerPrompt=buildPrompt({target:'web',assetProduction:contact},{files:[]},[]);
+  assert.match(workerPrompt,/ASSET DETAIL REPAIR BEGIN/);assert.match(workerPrompt,/"maxAttachmentOffset"/);
 });
 
 test('navigation sketch preserves actual route topology and expands functional detail layers deterministically',()=>{

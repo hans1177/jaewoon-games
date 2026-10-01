@@ -1,5 +1,5 @@
 {
-  "version": 503,
+  "version": 504,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -7492,7 +7492,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-10-01T09:24:00+09:00",
+  "updatedAt": "2026-10-01T09:31:00+09:00",
   "priorityTiers": [
     {
       "tier": 1,
@@ -9461,6 +9461,21 @@
         "assets/vibe-studio-asset-universe.js",
         "assets/vibe-motion-director.js",
         "tools/vibe2-asset-production-plan.mjs"
+      ],
+      "centralDocumentationImpact": {
+        "architectureTopologyChanged": false,
+        "loggingContractChanged": false,
+        "securityAuthorityChanged": false,
+        "schedulerChanged": false
+      },
+      "actualRenderedArtifactOrRuntimePassClaimed": false
+    },
+    "assetFineMotionAndRetryDetail20261001": {
+      "ownerIntent": "자산 제작 AI를 더 디테일하게: 손·무기 접촉, 의상 관통, 시선·표정, 이동 발판 접촉 실측과 부분 수정 재시도 보존",
+      "implementation": [
+        "assets/vibe-motion-director.js",
+        "tools/vibe2-asset-production-plan.mjs",
+        "tools/vibe2-source-worker.mjs"
       ],
       "centralDocumentationImpact": {
         "architectureTopologyChanged": false,
@@ -19744,11 +19759,63 @@
                   "ROOT_ACCELERATION",
                   "JOINT_SPEED",
                   "WRAPPED_YAW_SPEED",
-                  "CUMULATIVE_PLANTED_CONTACT_DRIFT"
+                  "CUMULATIVE_PLANTED_CONTACT_DRIFT",
+                  "HAND_WEAPON_ATTACHMENT_OFFSET",
+                  "CLOTH_OR_EQUIPMENT_PENETRATION_DEPTH",
+                  "GAZE_TRACKING_ANGLE",
+                  "GAZE_ANGULAR_SPEED",
+                  "FACIAL_MORPH_WEIGHT_RATE"
                 ],
                 "invalidOrMissingSamples": "UNVERIFIED",
                 "violationsReportRegionFrameAndNormalizedTimeRange": true,
-                "tracePassIsNotFullRuntimeOrVisualQualityPass": true
+                "tracePassIsNotFullRuntimeOrVisualQualityPass": true,
+                "detailChannels": {
+                  "attachments": {
+                    "sampleFields": [
+                      "active",
+                      "effectorWorldPosition",
+                      "targetWorldPosition"
+                    ],
+                    "units": "WORLD_METERS_NORMALIZED_BY_CHARACTER_HEIGHT",
+                    "meaning": "MOVING_EFFECTOR_TO_MOVING_TARGET_DISTANCE"
+                  },
+                  "penetrations": {
+                    "sampleFields": [
+                      "depthMeters"
+                    ],
+                    "units": "NON_NEGATIVE_METERS_NORMALIZED_BY_CHARACTER_HEIGHT",
+                    "meaning": "MEASURED_MESH_OR_COLLIDER_OVERLAP_NOT_INFERRED_FROM_MISSING_DATA"
+                  },
+                  "gaze": {
+                    "sampleFields": [
+                      "tracking",
+                      "forwardWorld",
+                      "targetDirectionWorld"
+                    ],
+                    "units": "NONZERO_WORLD_DIRECTIONS_MEASURED_AS_RADIANS_AND_RADIANS_PER_SECOND"
+                  },
+                  "expressions": {
+                    "sampleFields": [
+                      "MORPH_ID_TO_WEIGHT"
+                    ],
+                    "units": "WEIGHTS_0_TO_1_AND_ABSOLUTE_RATE_PER_SECOND"
+                  },
+                  "supportedContacts": {
+                    "sampleFields": [
+                      "supportId",
+                      "supportLocalPosition"
+                    ],
+                    "units": "SAME_SUPPORT_LOCAL_METERS_AFTER_REMOVING_SUPPORT_TRANSLATION_AND_ROTATION",
+                    "supportChangeDuringPlant": "UNVERIFIED",
+                    "reanchorOnlyAfterRelease": true
+                  }
+                },
+                "requiredChannelsAndLimitsAuthority": "REGISTRY_ASSET.motionQA.requiredDetailChannels_AND_limits",
+                "taskCannotWeakenDeclaredRegistryRequirements": true,
+                "declaredAndObservedChannelsMustBePresentAtEverySample": true,
+                "unmeasuredGroupsRemainUninspected": true,
+                "engineMeasurementCaptureRequired": true,
+                "automaticEngineCaptureImplemented": false
               }
             }
           },
@@ -19912,7 +19979,30 @@
             "captureMetadataNotQualityPass": true,
             "existingWorkOrderOnly": true,
             "newQueueOrScheduler": false,
-            "capturesMustMatchCurrentParameterAndIdentitySnapshot": true
+            "capturesMustMatchCurrentParameterAndIdentitySnapshot": true,
+            "retryPreservation": {
+              "implementation": "tools/vibe2-source-worker.mjs::buildPrompt_AND_generateCandidateWithRecovery",
+              "protectedBlock": "ASSET DETAIL REPAIR",
+              "preserved": [
+                "SOURCE_HASH",
+                "CAPTURE_HASH",
+                "REGION",
+                "FRAME_RANGE",
+                "PREVIOUS_PARAMETERS",
+                "EDITABLE_PARAMETERS",
+                "IDENTITY_LOCKS",
+                "PROTECTED_GAMEPLAY_SEMANTICS"
+              ],
+              "appliesTo": [
+                "INITIAL",
+                "COMPRESSED_RETRY",
+                "FOCUSED_REPLACEMENT",
+                "EXPANSION_RETRY"
+              ],
+              "actualTransmittedPromptUsedForContextBudget": true,
+              "newQueueOrScheduler": false,
+              "promptRetentionIsNotRenderedQualityOrRepairCompletionProof": true
+            }
           }
         }
       },

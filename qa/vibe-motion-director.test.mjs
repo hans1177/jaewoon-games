@@ -107,6 +107,94 @@ test('motion trace cannot pass with gaps, stale source, missing joints, invalid 
   for(const change of changes){const input=continuityFixture();change(input);const result=auditMotionContinuityTrace(input);assert.equal(result.verdict,'UNVERIFIED');assert.equal(result.metrics,null);assert.equal(result.blocksVerifiedPromotion,true);}
 });
 
+function detailContinuityFixture(){
+  const input=continuityFixture();
+  input.requiredDetailChannels={attachments:['rightGrip'],penetrations:['coatThigh'],gaze:['eyes'],expressions:['brow'],supportedContacts:['leftFoot']};
+  for(const [index,frame] of input.frames.entries()){
+    frame.attachments={rightGrip:{active:true,effectorWorldPosition:[index*.1,1,0],targetWorldPosition:[index*.1,1,0]}};
+    frame.penetrations={coatThigh:{depthMeters:0}};
+    frame.gaze={eyes:{tracking:true,forwardWorld:[0,0,2],targetDirectionWorld:[0,0,10]}};
+    frame.expressions={brow:.2};
+    frame.contacts.leftFoot={planted:true,worldPosition:[Math.cos(index/30),0,Math.sin(index/30)],supportId:'rotating-deck',supportLocalPosition:[1,0,0]};
+  }
+  return input;
+}
+
+test('detail motion measures moving grip pairs, penetration, gaze and expression changes at exact frames',()=>{
+  const input=detailContinuityFixture(),smooth=auditMotionContinuityTrace(input);
+  assert.equal(smooth.verdict,'PASS');assert.deepEqual(smooth.measurementCoverage.unmeasuredGroups,[]);
+  assert.equal(smooth.metrics.maxAttachmentOffset,0);assert.equal(smooth.metrics.maxPlantedDrift,0);
+  for(let index=10;index<=12;index++)input.frames[index].attachments.rightGrip.effectorWorldPosition[0]+=.08;
+  input.frames[11].attachments.rightGrip.effectorWorldPosition[0]+=.08;
+  input.frames[0].penetrations.coatThigh.depthMeters=.03;
+  input.frames[20].gaze.eyes.forwardWorld=[0,0,-1];
+  input.frames[25].expressions.brow=1;
+  const result=auditMotionContinuityTrace(input);
+  assert.equal(result.verdict,'FAIL');assert.equal(result.runtimeVerified,false);
+  const grip=result.violations.find(row=>row.kind==='maxAttachmentOffset');
+  assert.deepEqual(grip.frameRange,[10,12]);assert.equal(grip.peakFrame,11);assert.ok(Math.abs(grip.value-.08)<1e-9);
+  assert.deepEqual(grip.normalizedTimeRange,[1/3,.4]);
+  const cloth=result.violations.find(row=>row.kind==='maxPenetrationDepth');
+  assert.equal(cloth.value,.015);assert.deepEqual(cloth.frameRange,[0,0]);
+  assert.equal(result.metrics.maxGazeErrorRadians,Math.PI);
+  assert.ok(result.violations.some(row=>row.kind==='maxGazeAngularSpeed'&&row.region==='eyes'));
+  assert.deepEqual(result.violations.find(row=>row.kind==='maxExpressionRate').frameRange,[24,26]);
+  assert.ok(Math.abs(result.metrics.maxExpressionRate-24)<1e-9);
+});
+
+test('moving and rotating support contacts use local anchors and replant only after release',()=>{
+  const input=detailContinuityFixture();
+  assert.equal(auditMotionContinuityTrace(input).verdict,'PASS');
+  input.frames[10].contacts.leftFoot.supportLocalPosition=[1.06,0,0];
+  const slipped=auditMotionContinuityTrace(input);
+  assert.equal(slipped.verdict,'FAIL');assert.ok(Math.abs(slipped.metrics.maxPlantedDrift-.03)<1e-9);
+  input.frames[10].contacts.leftFoot.supportLocalPosition=[1,0,0];
+  input.frames[10].contacts.leftFoot.planted=false;
+  for(let index=11;index<input.frames.length;index++){
+    input.frames[index].contacts.leftFoot.supportId='second-deck';
+    input.frames[index].contacts.leftFoot.supportLocalPosition=[2,0,0];
+  }
+  assert.equal(auditMotionContinuityTrace(input).verdict,'PASS');
+  input.frames[10].contacts.leftFoot.planted=true;
+  assert.ok(auditMotionContinuityTrace(input).issues.includes('PLANTED_SUPPORT_CHANGED:leftFoot:11'));
+});
+
+test('declared detail channels reject absent, invalid, partial or changing measurement sets',()=>{
+  const mutations=[
+    input=>{delete input.frames[0].attachments;},
+    input=>{delete input.frames[13].expressions.brow;},
+    input=>{input.frames[13].expressions.brow=1.1;},
+    input=>{input.frames[13].expressions.extra=0;},
+    input=>{input.frames[13].penetrations.coatThigh.depthMeters=-1;},
+    input=>{input.frames[13].gaze.eyes.forwardWorld=[0,0,0];},
+    input=>{input.frames[13].attachments.rightGrip.targetWorldPosition=[NaN,0,0];},
+    input=>{delete input.frames[13].contacts.leftFoot.supportLocalPosition;},
+    input=>{input.requiredDetailChannels={gaze:'eyes'};},
+    input=>{input.requiredDetailChannels={unknown:[]};},
+    input=>{input.requiredDetailChannels.supportedContacts.push('missingFoot');},
+    input=>{input.frames[13].gaze=[];}
+  ];
+  for(const mutate of mutations){
+    const input=detailContinuityFixture();mutate(input);const result=auditMotionContinuityTrace(input);
+    assert.equal(result.verdict,'UNVERIFIED',String(mutate));assert.equal(result.metrics,null);assert.equal(result.blocksVerifiedPromotion,true);
+  }
+  assert.deepEqual(auditMotionContinuityTrace(continuityFixture()).measurementCoverage.unmeasuredGroups,['attachments','penetrations','gaze','expressions','supportedContacts']);
+});
+
+test('released grips and intentional gaze breaks do not create false contact or tracking defects',()=>{
+  const input=detailContinuityFixture();
+  for(const frame of input.frames){
+    frame.attachments.rightGrip.active=false;frame.attachments.rightGrip.targetWorldPosition=[100,0,0];
+    frame.gaze.eyes.tracking=false;frame.gaze.eyes.targetDirectionWorld=[1,0,0];
+  }
+  assert.equal(auditMotionContinuityTrace(input).verdict,'PASS');
+  input.frames[0].attachments.rightGrip.active=true;
+  input.frames[0].gaze.eyes.tracking=true;
+  const result=auditMotionContinuityTrace(input);
+  assert.equal(result.verdict,'FAIL');
+  for(const kind of ['maxAttachmentOffset','maxGazeErrorRadians'])assert.deepEqual(result.violations.find(row=>row.kind===kind).frameRange,[0,0]);
+});
+
 test('studio review rejects missing, stale, incomplete and single-player evidence',()=>{
   assert.equal(auditRobloxCharacterMotionEvidence(observedMotionFixture()).pass,true);
   for(const mutate of [

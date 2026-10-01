@@ -1653,6 +1653,15 @@ function boundedPromptText(value='',maxBytes=COMPACT_DIRECTIVE_LINE_BYTES){
 export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=false,exploration=null,sourceRootBootstrap=false,focusedWebRepair=false,verifiedExternalLearningContract=null}={}){const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.exactSourceWindow?' [EXACT SOURCE WINDOW:'+String(file.windowLabel||'responsibility')+']':''}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');const fullWebTarget=fullWebGenerationTarget(order);
   // 학습 계약이 보존하는 원문은 목표 설명에 두 번 보내지 않는다.
   const learningContract=verifiedExternalLearningContract||buildVerifiedExternalLearningPromptContract(order);
+  const detailReview=order.assetProduction?.detailReview,motionAudit=order.assetProduction?.motionContinuityAudit;
+  const repairSubjects=new Set((detailReview?.repairs||[]).map(repair=>repair.recipeId));
+  const assetDetailBlock=repairSubjects.size||motionAudit?[
+    '[ASSET DETAIL REPAIR BEGIN]',
+    JSON.stringify({status:detailReview?.status,subjects:(detailReview?.subjects||[]).filter(subject=>repairSubjects.has(subject.recipeId)),
+      repairs:detailReview?.repairs||[],protectedSemantics:detailReview?.protectedSemantics||[],motionAudit}),
+    'Repair only the measured regions and listed editableParameters against the exact sourceHash and previousParameters. Preserve lockedParameters, identityAnchors, untouched parameter values, gameplay event times, clip duration and root authority. Missing measurements remain UNVERIFIED; unmeasuredGroups are not inspected. Re-measure and recapture after authoring; do not mark findings closed from declarations or a numeric trace PASS.',
+    '[ASSET DETAIL REPAIR END]'
+  ].join('\n'):'';
   let goal=String(order.goal??'');
   const originalLearning=learningGuidance(order.unifiedLearning||{});
   if(learningContract.block&&(originalLearning||goal.includes(VERIFIED_LEARNING_MOTOR_BEGIN))){
@@ -1676,6 +1685,7 @@ learningContract.block,
 explorationGuidance(exploration),
 presentationWorkerGuidance(order),
 universalAssetWorkerGuidance(order),
+assetDetailBlock,
 order.imageAssetObservation?.required?'[IMAGE ASSET OBSERVATION BEGIN]\n'+JSON.stringify(order.imageAssetObservation)+'\nVisible observations are proposals from actual pixels. Hidden geometry and motion are creative proposals. Implement editable native assets, then compare close-up/full-turnaround/game-camera/action frames to the source; no placeholder or declaration-only completion.\n[IMAGE ASSET OBSERVATION END]':'',
 studioQualityWorkerGuidance(order),
 gameSpecificBuildUpDirectiveGuidance(order,responsibleFiles),
@@ -2607,7 +2617,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const retryPreviousOutput=allowFullRewrite&&accumulatedFullWeb&&!expansionMode
       ?accumulatedFullWeb.content
       :(allowFullRewrite&&bestFullWebFallbackRaw?bestFullWebFallbackRaw:lastRaw);
-    const attemptPrompt=expansionMode
+    let attemptPrompt=expansionMode
       ?buildFullWebExpansionPrompt(prompt,accumulatedFullWeb,{stage:expansionStages+1,minBytes:minFullRewriteBytes,maxBytes:Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minFullRewriteBytes*2),remainingStages,previousFailure:lastError?.message||'',capabilityTarget:fullWebExpansionStageTarget(accumulatedFullWeb.content,expansionStages+1)})
       :(systemAtomicPairCompletion?.prompt||focusedReplaceOnly?.prompt||(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:retryPreviousOutput,sourceRoot,systemAtomicPairRequired,multiFilePairRequired,robloxFullGraphicsPackageActive:robloxFullGraphicsPackageRecovery}):initialStudioPrompt));
     let maxPredict=expansionMode
@@ -2634,6 +2644,11 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const baseContextWindow=expansionMode
       ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
       :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:(robloxRebuildFocused?JSON_CONTEXT_WINDOW:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))));
+    // 압축·부분 수정·확장 재시도에서도 원본 관찰과 잠금/수정 범위를 보존하고 실제 전송량으로 예산을 잡는다.
+    for(const label of ['IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR']){
+      const block=prompt.match(new RegExp('\\['+label+' BEGIN\\][\\s\\S]*?\\['+label+' END\\]'))?.[0]||'';
+      if(block&&!attemptPrompt.includes(block))attemptPrompt+='\n'+block;
+    }
     const contextWindow=sourcePromptContextWindow(attemptPrompt,{baseContextWindow,maxPredict});
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
     const attemptPromptBytes=Buffer.byteLength(attemptPrompt,'utf8');
@@ -2659,9 +2674,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       }
       // 이번 요청의 무출력 시간 초과를 이전 응답의 출력으로 잘못 기록하지 않는다.
       lastRaw='';
-      const imageObservationBlock=prompt.match(/\[IMAGE ASSET OBSERVATION BEGIN\][\s\S]*?\[IMAGE ASSET OBSERVATION END\]/)?.[0]||'';
-      const groundedPrompt=imageObservationBlock&&!attemptPrompt.includes(imageObservationBlock)?attemptPrompt+'\n'+imageObservationBlock:attemptPrompt;
-      const raw=await requestLocalModel(groundedPrompt,{model,responseFile:fake,maxPredict,timeoutMs,contextWindow,temperature,completionMode,rejectSourceControlTokens:target==='roblox'&&completionMode==='JSON_REPLACE_ONLY'});
+      const raw=await requestLocalModel(attemptPrompt,{model,responseFile:fake,maxPredict,timeoutMs,contextWindow,temperature,completionMode,rejectSourceControlTokens:target==='roblox'&&completionMode==='JSON_REPLACE_ONLY'});
       lastRaw=raw;
       const fullWebClosedHtmlEarlyStop=completionMode==='FULL_WEB'
         && String(raw).trimStart().startsWith(FULL_FILE_PREFIX)

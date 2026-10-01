@@ -1436,12 +1436,16 @@ export function applySemanticGapPreparation({profile={},gapPlan={}}={}){
 
 
 // 실제 시간/좌표 표본에서 연속성 문제를 계산한다. 미적 품질·게임 판정 검증은 별도다.
-export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',clipId='',durationSeconds,characterHeightMeters,frames=[],limits={}}={}){
-  const thresholds={maxSampleGapSeconds:1/15,maxRootAcceleration:80,maxJointSpeed:12,maxYawSpeed:20,maxPlantedDrift:.015,...limits};
+export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',clipId='',durationSeconds,characterHeightMeters,frames=[],limits={},requiredDetailChannels={}}={}){
+  const thresholds={maxSampleGapSeconds:1/15,maxRootAcceleration:80,maxJointSpeed:12,maxYawSpeed:20,maxPlantedDrift:.015,
+    maxAttachmentOffset:.02,maxPenetrationDepth:.005,maxGazeErrorRadians:.26,maxGazeAngularSpeed:20,maxExpressionRate:12,...limits};
   const issues=[],violations=[],metrics={maxRootAcceleration:0,maxJointSpeed:0,maxYawSpeed:0,maxPlantedDrift:0};
   const finite=value=>typeof value==='number'&&Number.isFinite(value);
   const vec=value=>Array.isArray(value)&&value.length===3&&value.every(finite);
+  const record=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
+  const direction=value=>vec(value)&&Number.isFinite(Math.hypot(...value))&&Math.hypot(...value)>0;
   const distance=(a,b)=>Math.hypot(...a.map((value,index)=>value-b[index]));
+  const angle=(a,b)=>Math.acos(Math.max(-1,Math.min(1,a.reduce((sum,value,index)=>sum+value/Math.hypot(...a)*(b[index]/Math.hypot(...b)),0))));
   if(!text(sourceHash)||sourceHash!==expectedSourceHash)issues.push('CURRENT_SOURCE_HASH_REQUIRED');
   if(!text(clipId))issues.push('CLIP_ID_REQUIRED');
   if(!finite(durationSeconds)||durationSeconds<=0||!finite(characterHeightMeters)||characterHeightMeters<=0)issues.push('DURATION_AND_BODY_SCALE_REQUIRED');
@@ -1449,19 +1453,49 @@ export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',
   if(!Array.isArray(frames)||frames.length<3)issues.push('CONTINUOUS_FRAME_SAMPLES_REQUIRED');
   const samples=Array.isArray(frames)?frames:[];
   const jointKeys=Object.keys(samples[0]?.jointPositions||{}),contactKeys=Object.keys(samples[0]?.contacts||{});
+  const groups=['attachments','penetrations','gaze','expressions','supportedContacts'];
+  const declared=record(requiredDetailChannels)?requiredDetailChannels:{};
+  if(!record(requiredDetailChannels)||Object.entries(declared).some(([group,keys])=>!groups.includes(group)||!Array.isArray(keys)||keys.some(key=>typeof key!=='string'||!key.trim())||new Set(keys).size!==keys.length))issues.push('INVALID_DETAIL_CHANNEL_REQUIREMENTS');
+  const channels=Object.fromEntries(groups.map(group=>[group,[...new Set([
+    ...(Array.isArray(declared[group])?declared[group]:[]),
+    ...(group==='supportedContacts'?contactKeys.filter(key=>samples[0].contacts[key]?.supportId!==undefined||samples[0].contacts[key]?.supportLocalPosition!==undefined):Object.keys(samples[0]?.[group]||{}))
+  ])]]));
+  if(channels.attachments.length)metrics.maxAttachmentOffset=0;
+  if(channels.penetrations.length)metrics.maxPenetrationDepth=0;
+  if(channels.gaze.length){metrics.maxGazeErrorRadians=0;metrics.maxGazeAngularSpeed=0;}
+  if(channels.expressions.length)metrics.maxExpressionRate=0;
   if(!jointKeys.length||!contactKeys.length)issues.push('TRACKED_JOINTS_AND_CONTACTS_REQUIRED');
   for(let index=0;index<samples.length;index++){
     const frame=samples[index];
-    if(!frame||!finite(frame.timeSeconds)||!vec(frame.rootPosition)||!finite(frame.rootYawRadians)
+    if(!frame||!finite(frame.timeSeconds)||!vec(frame.rootPosition)||!finite(frame.rootYawRadians)||!record(frame.jointPositions)||!record(frame.contacts)
       ||jointKeys.some(key=>!vec(frame.jointPositions?.[key]))||Object.keys(frame.jointPositions||{}).length!==jointKeys.length
       ||contactKeys.some(key=>typeof frame.contacts?.[key]?.planted!=='boolean'||!vec(frame.contacts?.[key]?.worldPosition))||Object.keys(frame.contacts||{}).length!==contactKeys.length){issues.push('INVALID_FRAME:'+index);continue;}
     if(frame.timeSeconds<0||frame.timeSeconds>durationSeconds)issues.push('FRAME_OUTSIDE_CLIP:'+index);
     if(index&&(frame.timeSeconds<=samples[index-1]?.timeSeconds||frame.timeSeconds-samples[index-1]?.timeSeconds>thresholds.maxSampleGapSeconds+1e-9))issues.push('FRAME_GAP_OR_ORDER:'+index);
+    for(const group of groups.filter(group=>group!=='supportedContacts')){
+      const values=frame[group]??{};
+      if(!record(values)||Object.keys(values).length!==channels[group].length||channels[group].some(key=>!Object.hasOwn(values,key)))issues.push('DETAIL_CHANNEL_SET_MISMATCH:'+group+':'+index);
+      for(const key of channels[group]){
+        const value=values[key];
+        const valid=group==='attachments'?typeof value?.active==='boolean'&&vec(value.effectorWorldPosition)&&vec(value.targetWorldPosition)
+          :group==='penetrations'?finite(value?.depthMeters)&&value.depthMeters>=0
+          :group==='gaze'?typeof value?.tracking==='boolean'&&direction(value.forwardWorld)&&direction(value.targetDirectionWorld)
+          :finite(value)&&value>=0&&value<=1;
+        if(!valid)issues.push('INVALID_DETAIL_SAMPLE:'+group+':'+key+':'+index);
+      }
+    }
+    for(const key of contactKeys){
+      const contact=frame.contacts[key],supported=channels.supportedContacts.includes(key);
+      if(supported?typeof contact.supportId!=='string'||!contact.supportId.trim()||!vec(contact.supportLocalPosition):contact.supportId!==undefined||contact.supportLocalPosition!==undefined)issues.push('INVALID_SUPPORT_SAMPLE:'+key+':'+index);
+      const previous=samples[index-1]?.contacts?.[key];
+      if(supported&&contact.planted&&previous?.planted&&contact.supportId!==previous.supportId)issues.push('PLANTED_SUPPORT_CHANGED:'+key+':'+index);
+    }
   }
+  if(channels.supportedContacts.some(key=>!contactKeys.includes(key)))issues.push('REQUIRED_SUPPORT_CONTACT_MISSING');
   if(samples[0]?.timeSeconds!==0||!finite(samples.at(-1)?.timeSeconds)||Math.abs(samples.at(-1).timeSeconds-durationSeconds)>1e-6)issues.push('FULL_CLIP_BOUNDARIES_REQUIRED');
   if(issues.length)return Object.freeze({verdict:'UNVERIFIED',sourceHash:text(sourceHash),clipId:text(clipId),issues:freezeList(issues),violations:freezeList([]),metrics:null,blocksVerifiedPromotion:true,runtimeVerified:false});
   const anchors=new Map(),openViolations=new Map();let previousVelocity=null,previousDt=null;
-  const report=(kind,index,value,limit,region)=>{
+  const report=(kind,index,value,limit,region,startIndex=Math.max(0,index-1))=>{
     metrics[kind]=Math.max(metrics[kind],value);
     const key=kind+':'+region,open=openViolations.get(key);
     if(value<=limit){openViolations.delete(key);return;}
@@ -1469,11 +1503,27 @@ export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',
       open.frameRange[1]=index;open.normalizedTimeRange[1]=samples[index].timeSeconds/durationSeconds;
       if(value>open.value){open.value=value;open.peakFrame=index;}
     }else{
-      const finding={kind,region,value,limit,peakFrame:index,frameRange:[index-1,index],normalizedTimeRange:[samples[index-1].timeSeconds/durationSeconds,samples[index].timeSeconds/durationSeconds]};
+      const finding={kind,region,value,limit,peakFrame:index,frameRange:[startIndex,index],normalizedTimeRange:[samples[startIndex].timeSeconds/durationSeconds,samples[index].timeSeconds/durationSeconds]};
       violations.push(finding);openViolations.set(key,finding);
     }
   };
-  for(const key of contactKeys)if(samples[0].contacts[key].planted)anchors.set(key,samples[0].contacts[key].worldPosition);
+  // 발판 이동·회전을 제거한 동일 지지물의 로컬 좌표를 계측 측에서 미터로 기록한다.
+  const contactPosition=(frame,key)=>channels.supportedContacts.includes(key)?frame.contacts[key].supportLocalPosition:frame.contacts[key].worldPosition;
+  for(const key of contactKeys)if(samples[0].contacts[key].planted)anchors.set(key,contactPosition(samples[0],key));
+  for(let index=0;index<samples.length;index++){
+    const frame=samples[index],previous=samples[index-1];
+    for(const key of channels.attachments){
+      const value=frame.attachments[key];
+      report('maxAttachmentOffset',index,value.active?distance(value.effectorWorldPosition,value.targetWorldPosition)/characterHeightMeters:0,thresholds.maxAttachmentOffset,key,index);
+    }
+    for(const key of channels.penetrations)report('maxPenetrationDepth',index,frame.penetrations[key].depthMeters/characterHeightMeters,thresholds.maxPenetrationDepth,key,index);
+    for(const key of channels.gaze){
+      const value=frame.gaze[key],before=previous?.gaze[key];
+      report('maxGazeErrorRadians',index,value.tracking?angle(value.forwardWorld,value.targetDirectionWorld):0,thresholds.maxGazeErrorRadians,key,index);
+      if(previous)report('maxGazeAngularSpeed',index,value.tracking&&before.tracking?angle(value.forwardWorld,before.forwardWorld)/(frame.timeSeconds-previous.timeSeconds):0,thresholds.maxGazeAngularSpeed,key);
+    }
+    if(previous)for(const key of channels.expressions)report('maxExpressionRate',index,Math.abs(frame.expressions[key]-previous.expressions[key])/(frame.timeSeconds-previous.timeSeconds),thresholds.maxExpressionRate,key);
+  }
   for(let index=1;index<samples.length;index++){
     const before=samples[index-1],after=samples[index],dt=after.timeSeconds-before.timeSeconds;
     const velocity=after.rootPosition.map((value,axis)=>(value-before.rootPosition[axis])/dt/characterHeightMeters);
@@ -1484,13 +1534,15 @@ export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',
     for(const key of jointKeys)report('maxJointSpeed',index,distance(after.jointPositions[key],before.jointPositions[key])/dt/characterHeightMeters,thresholds.maxJointSpeed,key);
     for(const key of contactKeys){
       const contact=after.contacts[key];
-      if(!contact.planted){anchors.delete(key);continue;}
-      if(!anchors.has(key))anchors.set(key,contact.worldPosition);
-      report('maxPlantedDrift',index,distance(contact.worldPosition,anchors.get(key))/characterHeightMeters,thresholds.maxPlantedDrift,key);
+      if(!contact.planted){anchors.delete(key);openViolations.delete('maxPlantedDrift:'+key);continue;}
+      if(!anchors.has(key))anchors.set(key,contactPosition(after,key));
+      report('maxPlantedDrift',index,distance(contactPosition(after,key),anchors.get(key))/characterHeightMeters,thresholds.maxPlantedDrift,key);
     }
   }
   return Object.freeze({verdict:violations.length?'FAIL':'PASS',sourceHash,clipId,issues:freezeList([]),metrics:Object.freeze(metrics),violations:freezeList(violations),thresholds:Object.freeze(thresholds),
     frameCount:samples.length,coordinateContract:'ROOT_AND_CONTACT_WORLD_METERS_JOINTS_ROOT_LOCAL_METERS_YAW_RADIANS',
+    detailCoordinateContract:'ATTACHMENTS_WORLD_METERS_PENETRATION_METERS_GAZE_WORLD_DIRECTIONS_EXPRESSION_WEIGHTS_0_TO_1_SUPPORT_LOCAL_METERS',
+    measurementCoverage:Object.freeze({channels,requiredDetailChannels:declared,unmeasuredGroups:groups.filter(group=>!channels[group].length)}),
     blocksVerifiedPromotion:violations.length>0,traceChecksOnly:true,runtimeVerified:false});
 }
 
