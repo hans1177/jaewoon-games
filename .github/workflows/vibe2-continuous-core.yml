@@ -2272,7 +2272,7 @@ jobs:
           set -euo pipefail
 
           # Every independent neuron result dispatches its own atomic fan-in immediately.
-          # No wave leader, cohort barrier, or runner-pressure completion suppression is allowed.
+          # No grouped completion barrier or runner-pressure completion suppression is allowed.
           echo 'VIBE2_ATOMIC_NEURON_COMPLETION_MODE=INDEPENDENT_IMMEDIATE_FANIN'
           echo 'VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT_AND_CALLBACK'
 
