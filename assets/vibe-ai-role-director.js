@@ -981,7 +981,7 @@ export function planVibeCausalActorLoop({event={},observers=[],world={},player={
     const repeatCount=memory.filter(item=>cleanText(item?.type).toLowerCase()===sourceType).length;
     const magnitude=Math.min(5,Math.max(0,Math.abs(Number(sourceEvent.magnitude??1))));
     const salience=interpretation.perceived
-      ? Math.max(0,Math.min(1,.3+(targeted?.3:0)+(positive||negative?.15:discovery?.1:0)+Math.min(.15,magnitude*.03)+Math.min(.1,repeatCount*.02)))
+      ? Math.max(0,Math.min(1,.3+(targeted ? .3 : 0)+((positive||negative) ? .15 : (discovery ? .1 : 0))+Math.min(.15,magnitude*.03)+Math.min(.1,repeatCount*.02)))
       : 0;
     const relationTargetId=sourceEvent.actorId===actorId
       ? cleanText(sourceEvent.targetIds[0]||sourceEvent.objectId)
