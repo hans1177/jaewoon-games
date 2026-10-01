@@ -15,4 +15,52 @@ button{font:inherit;color:inherit}.app{width:min(980px,100%);margin:auto}.top{di
 .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.tabs button,.btn{min-height:40px;border:0;border-radius:10px;background:#2a3a52;font-size:11px;font-weight:1000;padding:8px}.tabs button.on,.btn.primary{background:#3b73d1}.btn.warn{background:#b44343}.btn.gold{background:#8f6927}.btn:disabled{opacity:.4}.gridBtns{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.stageBtn{text-align:left}.stageBtn b{display:block;font-size:12px}.stageBtn small{display:block;margin-top:3px;color:#b9c6d7;font-size:9px;line-height:1.35}
 .battleLayout{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:9px}.boardWrap{overflow:auto}.board{display:grid;gap:3px;background:#0a0e14;border:3px solid #34425a;border-radius:12px;padding:4px;min-width:300px;aspect-ratio:1.35/1}.cell{position:relative;min-width:44px;min-height:44px;border:0;border-radius:7px;background:#263044;display:flex;align-items:center;justify-content:center;padding:0}.cell:nth-child(2n){background:#2c374b}.cell.selected{outline:3px solid #ffd25c}.cell.can{box-shadow:inset 0 0 0 3px #65a8ff}.cell.enemyTarget{box-shadow:inset 0 0 0 3px #ff6666}.tile{position:absolute;left:3px;top:2px;font-size:11px;opacity:.9}.piece{position:relative;z-index:2;width:84%;height:84%;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;border:2px solid #ffffff55;font-weight:1000;box-shadow:0 4px 10px #0007}.piece.ally1{background:#2866c3}.piece.ally2{background:#7c4cc9}.piece.enemy{background:#a43f46}.piece .n{font-size:9px;line-height:1.05}.piece .hp{font-size:8px;margin-top:2px}.piece.stun:after{content:"공격불가";position:absolute;inset:auto -10px -13px;background:#e4a62d;color:#171717;border-radius:5px;font-size:7px;padding:1px 3px;white-space:nowrap}
 .side{display:flex;flex-direction:column;gap:8px}.turnBox{padding:9px;border-radius:10px;background:#202a39}.turnBox b{font-size:13px}.turnBox span{display:block;margin-top:3px;font-size:9px;color:#b5c2d3}.unitList{display:grid;grid-template-columns:1fr;gap:5px;max-height:290px;overflow:auto}.unitBtn{border:1px solid #354762;background:#202a39;border-radius:9px;padding:7px;text-align:left}.unitBtn b{font-size:10px}.unitBtn small{display:block;margin-top:2px;color:#b8c5d6;font-size:8px}.unitBtn.on{border-color:#ffd15e;background:#3a3220}
-.log{height:115px;overflow:auto;background:#0c1119;border-radius:8px;padding:7px;font-size:9px;line-height:1.5;color:#bac6d5}.log b{color:#fff}.overlay{position:fixed;inset:0;background:#000c;display:none;align-items:center;justify-content:center;z-index:20;padding:15px}.overlay.show{display:flex}.modal{width:min(94vw,430px
+.log{height:115px;overflow:auto;background:#0c1119;border-radius:8px;padding:7px;font-size:9px;line-height:1.5;color:#bac6d5}.log b{color:#fff}.overlay{position:fixed;inset:0;background:#000c;display:none;align-items:center;justify-content:center;z-index:20;padding:15px}.overlay.show{display:flex}.modal{width:min(94vw,430px);max-height:86vh;overflow:auto;background:#1a2230;border:2px solid #41516b;border-radius:16px;padding:14px}.modal h2{margin:0 0 8px;font-size:18px}.modal p{font-size:11px;line-height:1.6;color:#c2cede}.upgradeRow{display:flex;align-items:center;gap:6px;padding:7px 0;border-bottom:1px solid #ffffff16}.upgradeRow b{font-size:10px}.upgradeRow span{margin-left:auto;font-size:9px;color:#aebbd0}.upgradeRow button{border:0;border-radius:8px;background:#3c6db8;padding:7px 8px;font-size:9px;font-weight:900}.legend{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}.tag{font-size:8px;padding:4px 6px;border-radius:7px;background:#222d3d}.specialInfo{font-size:9px;line-height:1.6;color:#bec9d9}.footBtns{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}
+@media(max-width:760px){body{padding:6px 6px max(12px,env(safe-area-inset-bottom))}.battleLayout{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr;gap:6px}.side .full{grid-column:1/-1}.board{width:100%;min-width:0}.cell{min-width:0;min-height:49px}.piece .n{font-size:8px}.unitList{max-height:190px}.log{height:95px}.tabs button{padding:6px 3px;font-size:10px}}
+</style>
+</head>
+<body>
+<main class="app">
+ <div class="top"><div><h1>카드 워즈</h1><div class="sub">3명이 하는 턴제 보드게임 · 아군 2명 vs 적군 1명</div></div><a class="home" href="/">홈</a></div>
+ <section class="panel row">
+  <span class="stat">열쇠 <b id="keys">0</b></span><span class="stat">다이아 <b id="diamonds">0</b></span><span class="stat">최고 스테이지 <b id="unlocked">1</b></span><span class="stat">골드 <b id="gold">0</b></span><span class="grow"></span><button id="saveReset" class="btn warn">저장 초기화</button>
+ </section>
+ <section class="panel">
+  <div class="tabs"><button id="tabStage" class="on">스테이지</button><button id="tabGacha">뽑기</button><button id="tabUpgrade">업그레이드</button><button id="tabRules">규칙</button></div>
+ </section>
+ <section id="menuPanel" class="panel">
+  <div class="title">스테이지 선택</div>
+  <div id="stageList" class="gridBtns"></div>
+ </section>
+ <section id="gachaPanel" class="panel hidden"></section>
+ <section id="upgradePanel" class="panel hidden"></section>
+ <section id="rulesPanel" class="panel hidden"></section>
+ <section id="battle" class="hidden">
+  <div class="battleLayout">
+   <div class="panel boardWrap"><div id="board" class="board"></div></div>
+   <aside class="side">
+    <div class="turnBox full"><b id="turnTitle">아군 1 차례</b><span id="turnDesc">유닛을 소환하거나 움직이고 공격해.</span></div>
+    <div class="panel"><div class="title">소환</div><div id="unitList" class="unitList"></div></div>
+    <div class="panel"><div class="title">턴</div><button id="endTurn" class="btn primary" style="width:100%">턴 종료</button><button id="leaveBattle" class="btn" style="width:100%;margin-top:6px">스테이지 나가기</button></div>
+    <div class="panel full"><div class="title">전투 기록</div><div id="log" class="log"></div></div>
+   </aside>
+  </div>
+ </section>
+</main>
+<div id="result" class="overlay"><div class="modal"><h2 id="resultTitle"></h2><p id="resultText"></p><button id="resultOk" class="btn primary" style="width:100%">확인</button></div></div>
+<script>
+// ==============================
+// 저장 / 데이터
+// ==============================
+(()=>{'use strict';
+const $=id=>document.getElementById(id), SAVE_KEY='card-wars-v1';
+const baseSave={keys:0,diamonds:0,unlockedStage:1,upgradeUnlocked:false,newFourUnlocked:false,owned:['검사','궁수','마법사','방패병'],upgrades:{}};
+let save=loadSave();
+function loadSave(){try{return {...baseSave,...JSON.parse(localStorage.getItem(SAVE_KEY)||'{}'),upgrades:{...baseSave.upgrades,...(JSON.parse(localStorage.getItem(SAVE_KEY)||'{}').upgrades||{})}}}catch{return structuredClone(baseSave)}}
+function persist(){localStorage.setItem(SAVE_KEY,JSON.stringify(save));renderMeta()}
+const UNIT={
+ '검사':{hp:100,atk:30,range:1,cost:50,type:'단일'},
+ '궁수':{hp:70,atk:25,range:2,cost:50,type:'단일'},
+ '마법사':{hp:60,atk:35,range:2,cost:70,type:'범위',splash:15},
+ '방패병':{hp:150,atk:18,range:1,cost:60,type:'단일',reduce:.30},
+ '창병':{hp:130,atk:60
