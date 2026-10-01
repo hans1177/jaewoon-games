@@ -1273,6 +1273,7 @@ test('precision production continues from inspection through authoring and appli
     }
   });
   assert.equal(plan.precisionProduction.mode,'INSPECT_REPAIR_AUTHOR_APPLY_REINSPECT');
+  assert.equal(plan.precisionProduction.qualityDNA.commonRules.detailLodRequired,true);
   assert.equal(plan.precisionProduction.automaticAdvance,true);
   assert.equal(plan.precisionProduction.continuation.stopAfterInspection,false);
   assert.equal(plan.precisionProduction.continuation.stopAfterRepairPlan,false);
@@ -1287,6 +1288,7 @@ test('precision production continues from inspection through authoring and appli
     ['client/Game.client.luau']
   );
   assert.match(prompt,/PRECISION PRODUCTION CHAIN BEGIN/);
+  assert.match(prompt,/qualityDNA/);
   assert.match(prompt,/INSPECT -> DEFINE_REPAIR -> AUTHOR -> APPLY/);
   assert.match(prompt,/GAME_CAMERA silhouette\/function/);
 });
@@ -1317,9 +1319,41 @@ test('low-quality asset rescue preserves strong axes and escalates to full autho
   assert.equal(base.fullReauthorTrigger,'CORE_IDENTITY_OR_STRUCTURAL_QUALITY_STILL_BLOCKED_AFTER_TARGETED_DERIVATION');
   assert.equal(base.sourceAssetMayRemainAsPartialDonorAfterReplacement,true);
   assert.equal(base.visualQualityNotImpliedByVerification,true);
+  assert.equal(row.qualityDNA.profile,'HERO_CHARACTER');
+  assert.ok(row.qualityDNA.axes.includes('FACE_HANDS_FEET'));
+  assert.equal(row.qualityDNA.minimumFloors.FACE_HANDS_FEET,'HERO_GRADE');
+  assert.equal(row.qualityDNA.donorPolicy.donorMayReplaceOnlyFailedAxes,true);
+  assert.equal(row.qualityDNA.evidence.verificationStatusIsNotVisualQuality,true);
+  assert.equal(row.qualityDNA.rescue.fullReauthorOnlyAfterTargetedRepairFails,true);
+  assert.equal(plan.qualityDNA.commonRules.strongAxesLockedDuringRepair,true);
+  assert.equal(plan.qualityDNA.commonRules.donorAssemblyBeforeFullReauthor,true);
+  assert.ok(plan.qualityDNA.contracts.some(item=>item.type==='character'&&item.qualityDNA.profile==='HERO_CHARACTER'));
   assert.ok(base.detailInvestmentPolicy.prioritySignals.includes('SCREEN_SPACE_OCCUPANCY'));
   assert.ok(base.detailInvestmentPolicy.prioritySignals.includes('INTERACTION_FREQUENCY'));
   assert.equal(base.detailInvestmentPolicy.polygonOrTextureCountAloneIsNotQuality,true);
   assert.equal(plan.applyFirstSummary.visualVerificationAndVisualQualitySeparated,true);
   assert.ok(plan.applyFirstSummary.detailInvestmentPriority.includes('CAMERA_PROXIMITY'));
+});
+
+
+test('quality DNA keeps hero floors higher than background floors without inventing observed scores',()=>{
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',
+    task:{gameId:'quality-dna-demo',goal:'캐릭터 배경 UI 디테일 제작'},
+    manifest:{assets:[]},
+    presetCatalog:{presets:[]}
+  });
+  const character=plan.decisions.find(row=>row.type==='character');
+  const background=plan.decisions.find(row=>row.type==='background');
+  assert.equal(character.qualityDNA.profile,'HERO_CHARACTER');
+  assert.equal(character.qualityDNA.minimumFloors.SILHOUETTE,'HERO_GRADE');
+  assert.equal(background.qualityDNA.profile,'REGION_WORLD');
+  assert.equal(background.qualityDNA.minimumFloors.MACRO_FORM,'GAMEPLAY_READABLE_GRADE');
+  assert.equal(character.qualityDNA.evidence.actualRuntimeCaptureRequiredForVisualClosure,true);
+  assert.equal(character.qualityDNA.evidence.polygonTextureCountIsNotQuality,true);
+  assert.equal(Object.hasOwn(character.qualityDNA,'observedScore'),false);
+  assert.equal(Object.hasOwn(background.qualityDNA,'observedScore'),false);
+  const guidance=assetProductionGuidance(plan);
+  assert.match(guidance,/QUALITY DNA/);
+  assert.match(guidance,/최소 제작 하한/);
 });
