@@ -83,7 +83,10 @@ test('director fallback wake only re-dispatches existing queued GAME_PRIMARY wor
   assert.equal(coalescing.previousRunnerDrainConcurrencyGroup,'director-runner-drain-v1');
   assert.equal(coalescing.runnerDrainEpochAdvancedToBypassLegacyPendingGroup,true);
 
-  assert.match(directorSupervisor,/\n      - Vibe2 Continuous Core\n    types: \[completed\]/);
+  const latestDirector=roadmap.changeRecord?.runnerBackpressureBottleneckRelief20261001?.director||{};
+  assert.equal(latestDirector.vibe2CoreCompletionWakeDisabled,true);
+  assert.equal(fallback.vibe2CoreCompletionWakeDisabled,true);
+  assert.doesNotMatch(directorSupervisor,/\n      - Vibe2 Continuous Core\n/);
   assert.match(directorSupervisor,/game-primary-gate:[\s\S]*?group: director-game-primary-gate-v1[\s\S]*?cancel-in-progress: false/);
   assert.match(directorSupervisor,/DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=DISPATCHED/);
   assert.match(directorSupervisor,/DIRECTOR_GAME_PRIMARY_SCOPED_CORE_ACTIVE=/);
@@ -855,8 +858,14 @@ test('central policy authorizes only gated atomic neural execution and keeps UEF
   assert.equal(gated.sourceCandidateGeneration.invalidPathBoundedRetry,true);
   assert.equal(gated.sourceCandidateGeneration.deterministicRecoveryBeforeAdditionalModelInvocation,true);
   assert.equal(gated.sourceCandidateGeneration.missingPathRecoveryTelemetry,'codingMethod.missingPathRecoveries');
-  assert.equal(gated.sourceCandidateGeneration.latestObservedMissingPathIncident.runId,36057026213);
-  assert.equal(gated.sourceCandidateGeneration.latestObservedMissingPathIncident.affectedRobloxTasks,13);
+  const lineLocator=gated.sourceCandidateGeneration.explicitLineLocatorRecovery;
+  assert.equal(lineLocator?.enabled,true);
+  assert.ok(lineLocator?.acceptedSuffixes?.includes(':<line>'));
+  assert.ok(lineLocator?.acceptedSuffixes?.includes('#L<line>'));
+  assert.equal(lineLocator?.exactResponsibleFileMatchRequired,true);
+  assert.equal(lineLocator?.stripBeforeExtensionValidation,true);
+  assert.equal(lineLocator?.writableScopeExpansionAllowed,false);
+  assert.equal(lineLocator?.unmatchedLocatorFailsClosedAsInvalidPath,true);
   assert.equal(gated.runtimeSynchronization.syncBeforeEveryNonNeuronReserveIngress,true);
   assert.equal(gated.runtimeSynchronization.staleVibeControlStateMayNotOverrideNewerCompanyRuntime,true);
   assert.equal(gated.runtimeSynchronization.lifecycleProjectionMustBeMonotonic,true);
