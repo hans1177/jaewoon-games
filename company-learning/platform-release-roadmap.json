@@ -1,5 +1,5 @@
 {
-  "version": 519,
+  "version": 520,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-02",
@@ -5345,9 +5345,10 @@
           "FORTNITE_UEFN"
         ],
         "activeImmediateImplementation": [
-          "ROBLOX"
+          "ROBLOX",
+          "UNITY"
         ],
-        "unityAdapterRequiredBeforeUnityRuntimeClaim": true,
+        "unityAdapterRequiredBeforeUnityRuntimeClaim": false,
         "fortniteUefnAdapterRequiredBeforeUefnRuntimeClaim": true,
         "webIsValidationSurfaceNotNativeRuntimeEvidence": true
       },
@@ -5821,7 +5822,7 @@
         "reuseExistingRuntimeQaReleaseAndRecoveryPipelines": true,
         "phase1State": "IMPLEMENTED_QA_PASS",
         "phase2State": "IMPLEMENTED_QA_PASS_AWAITING_ACTUAL_RUNTIME_OBSERVATION",
-        "phase3State": "PENDING_PLATFORM_ADAPTERS_NO_FALSE_PASS"
+        "phase3State": "UNITY_ADAPTER_IMPLEMENTED_UEFN_PENDING_NO_FALSE_PASS"
       },
       "runtimeCandidateDeployment": {
         "requiredBeforeActualRuntimeProbe": true,
@@ -5878,7 +5879,7 @@
         "deterministicF9ExactCandidatePromotion": "IMPLEMENTED",
         "testerDebugRecoveryIntegration": "IMPLEMENTED",
         "cozyIslandSourceAndSpawnRepair": "IMPLEMENTED",
-        "unityFoundationAdapter": "PENDING_NO_FALSE_PASS",
+        "unityFoundationAdapter": "IMPLEMENTED_EXACT_ANDROID_BLACK_BOX_SINGLE_RUNTIME_AND_F9_EVIDENCE_FAN_IN",
         "fortniteUefnFoundationAdapter": "PENDING_OWNER_HOLD_NO_FALSE_PASS",
         "robloxF0NativeLanguageCompile": "IMPLEMENTED_PINNED_OFFICIAL_LUAU_0_739",
         "cozyIslandSpawnOrderingRaceRepair": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
@@ -5979,7 +5980,42 @@
         "UNITY"
       ],
       "webAuthority": "UNITY_WEB_ACTUAL_BROWSER_PLAY_AND_EXISTING_BROWSER_QA",
-      "webUsesSameF0ThroughF9FloorSequence": true
+      "webUsesSameF0ThroughF9FloorSequence": true,
+      "unityAdapter": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-10-02",
+        "state": "IMPLEMENTED",
+        "platform": "UNITY",
+        "f0Authority": "UNITY_EDITOR_BUILD_COMPILE_AND_EXACT_SOURCE_ARTIFACT_BINDING",
+        "runtimeAuthority": "EXACT_ANDROID_BLACK_BOX_APK_SESSION",
+        "runtimeSessionFloorScope": [
+          "F1",
+          "F2",
+          "F3",
+          "F4",
+          "F5",
+          "F6",
+          "F8"
+        ],
+        "multiplayerFloor": "F7_DESIGN_AND_MULTIPLAYER_QA_APPLICABILITY",
+        "oneExactRuntimeSessionPerCandidate": true,
+        "duplicatePerFloorRuntimeSessionForbidden": true,
+        "independentQaRole": "CORROBORATE_INPUT_RESUME_CRASH_AND_SCREEN_EVIDENCE_WITHOUT_CREATING_PER_FLOOR_RUNTIME_LOOPS",
+        "f9Mode": "F0_TO_F8_EVIDENCE_FAN_IN_AND_REGRESSION_REVIEW",
+        "f9RuntimeReplayRequired": false,
+        "exactApkIdentityRequiredAcrossRuntimeQaAndF9": true,
+        "failureRoutesToExactFirstFailedFloor": true,
+        "implementationBindings": [
+          "tools/unity-apk-runtime-smoke.sh",
+          "tools/company-development-unity-evidence.mjs",
+          ".github/workflows/unity-android-runtime-smoke.yml",
+          ".github/workflows/unity-android-independent-qa.yml",
+          ".github/workflows/unity-android-regression.yml",
+          ".github/workflows/company-development-unity-runtime.yml"
+        ],
+        "noNewDepartment": true,
+        "reuseExistingRuntimeQaReleaseAndRecoveryPipelines": true
+      }
     },
     "qualityFailureRecoveryPolicySource": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.qualityFirstBuildupShortCircuit",
     "validationEfficiencyOptimization": {
@@ -6449,7 +6485,7 @@
       "missingCanonicalIndexDoesNotCreateVisibleTitleOnlyCard": true
     }
   },
-  "updatedAt": "2026-10-01T04:34:00.000Z",
+  "updatedAt": "2026-10-02",
   "priorityTiers": [
     {
       "tier": 1,
