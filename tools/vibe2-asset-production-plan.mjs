@@ -4,16 +4,64 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { planAssetApplication } from '../assets/asset-selector.js';
-import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile} from '../assets/vibe-motion-director.js';
-import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile} from '../assets/vibe-studio-asset-universe.js';
-import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation} from '../assets/vibe-environment-director.js';
+import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant} from '../assets/vibe-motion-director.js';
+import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization} from '../assets/vibe-studio-asset-universe.js';
+import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 
 const clean=value=>String(value??'').trim();
 const freeze=value=>Object.freeze(value);
 const freezeList=value=>freeze([...(value||[])]);
 const unique=value=>[...new Set((value||[]).map(clean).filter(Boolean))];
+
+// 사용자 기본 GLB의 실제 JSON 청크를 검사한다. 파일 존재나 이름만으로 커마·리깅 가능을 가정하지 않는다.
+export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
+  const relative=clean(source.path),issues=[];
+  if(!relative||path.isAbsolute(relative)||relative.split(/[\\/]/).includes('..')||/^[a-z]+:/i.test(relative))return freeze({status:'SOURCE_GLB_REQUIRED',issues:['REPOSITORY_LOCAL_GLB_PATH_REQUIRED'],sourceMutationPerformed:false});
+  let bytes,document,sourceHash;
+  try{
+    const root=fs.realpathSync(repoRoot),file=fs.realpathSync(path.resolve(root,relative));
+    if(!file.startsWith(root+path.sep))throw new Error('SOURCE_OUTSIDE_REPOSITORY');
+    if(!fs.statSync(file).isFile()||fs.statSync(file).size>256*1024*1024)throw new Error('GLB_SIZE_INVALID');
+    bytes=fs.readFileSync(file);sourceHash=crypto.createHash('sha256').update(bytes).digest('hex');
+    if(bytes.length<20||bytes.readUInt32LE(0)!==0x46546c67||bytes.readUInt32LE(4)!==2||bytes.readUInt32LE(8)!==bytes.length)throw new Error('GLB_HEADER_INVALID');
+    let offset=12,jsonCount=0;
+    while(offset<bytes.length){
+      if(offset+8>bytes.length)throw new Error('GLB_CHUNK_TRUNCATED');
+      const length=bytes.readUInt32LE(offset),type=bytes.readUInt32LE(offset+4);offset+=8;
+      if(length%4!==0||offset+length>bytes.length)throw new Error('GLB_CHUNK_LENGTH_INVALID');
+      if(type===0x4e4f534a){jsonCount++;document=JSON.parse(bytes.subarray(offset,offset+length).toString('utf8'));}
+      else if(!jsonCount)throw new Error('GLB_JSON_MUST_BE_FIRST');
+      offset+=length;
+    }
+    if(jsonCount!==1||document?.asset?.version!=='2.0')throw new Error('GLB_JSON_INVALID');
+    for(const key of ['meshes','materials','skins','animations','buffers','images','extensionsRequired'])if(document[key]!==undefined&&!Array.isArray(document[key]))throw new Error('GLB_COLLECTION_INVALID:'+key);
+    if((document.meshes||[]).some(mesh=>!mesh||!Array.isArray(mesh.primitives)||mesh.primitives.some(primitive=>!primitive||typeof primitive.attributes!=='object'||primitive.attributes===null)))throw new Error('GLB_PRIMITIVE_INVALID');
+    for(const key of ['materials','skins','animations','buffers','images'])if((document[key]||[]).some(row=>!row||typeof row!=='object'))throw new Error('GLB_ENTRY_INVALID:'+key);
+    if(source.sourceHash&&source.sourceHash!==sourceHash)throw new Error('GLB_SOURCE_HASH_MISMATCH');
+  }catch(error){return freeze({status:'SOURCE_GLB_REQUIRED',path:relative,issues:[error.code==='ENOENT'?'GLB_MATERIALIZATION_REQUIRED':error.message],sourceMutationPerformed:false});}
+  const primitives=(document.meshes||[]).flatMap((mesh,meshIndex)=>(mesh.primitives||[]).map((primitive,primitiveIndex)=>({
+    meshIndex,primitiveIndex,name:clean(mesh.name)||`mesh-${meshIndex}`,materialIndex:primitive.material??null,
+    hasNormals:Number.isInteger(primitive.attributes?.NORMAL),hasUv:Number.isInteger(primitive.attributes?.TEXCOORD_0),
+    hasJointWeights:Number.isInteger(primitive.attributes?.JOINTS_0)&&Number.isInteger(primitive.attributes?.WEIGHTS_0),
+    morphTargetCount:Array.isArray(primitive.targets)?primitive.targets.length:0,
+    declaredMorphNames:Array.isArray(mesh.extras?.targetNames)?mesh.extras.targetNames:[]
+  })));
+  if(!primitives.length)issues.push('MESH_AUTHORING_REQUIRED');
+  if([...document.buffers||[],...document.images||[]].some(row=>row.uri&&!String(row.uri).startsWith('data:')))issues.push('EXTERNAL_RESOURCE_MATERIALIZATION_REQUIRED');
+  const inventory={meshCount:(document.meshes||[]).length,primitives,materials:(document.materials||[]).map((material,index)=>({index,name:material.name||`material-${index}`,hasBaseColorTexture:Boolean(material.pbrMetallicRoughness?.baseColorTexture),hasNormalTexture:Boolean(material.normalTexture)})),skins:(document.skins||[]).map((skin,index)=>({index,name:skin.name||`skin-${index}`,jointCount:(skin.joints||[]).length})),animations:(document.animations||[]).map((animation,index)=>({index,name:animation.name||`animation-${index}`,channelCount:(animation.channels||[]).length})),requiredExtensions:document.extensionsRequired||[]};
+  const requiredAuthoring=[];
+  if(primitives.some(row=>!row.hasUv))requiredAuthoring.push('UV_UNWRAP_AND_TEXTURE_AUTHORING');
+  if(primitives.some(row=>!row.hasNormals))requiredAuthoring.push('NORMALS_AND_SMOOTHING_REVIEW');
+  if(!primitives.some(row=>row.morphTargetCount))requiredAuthoring.push('AUTHOR_MORPHS_WHEN_SHAPE_CUSTOMIZATION_NEEDED');
+  if(!inventory.skins.length)requiredAuthoring.push('RIG_WHEN_ARTICULATION_NEEDED');
+  if(!inventory.animations.length)requiredAuthoring.push('AUTHOR_ACTIONS_WHEN_MOTION_NEEDED');
+  return freeze({status:issues.length?'AUTHORING_REQUIRED':'INSPECTED_RECONSTRUCTION_INPUT',path:relative,sourceHash,bytes:bytes.length,issues,inventory,requiredAuthoring,
+    workflow:['PRESERVE_HASHED_ORIGINAL','INSPECT_SILHOUETTE_TOPOLOGY_AND_MATERIAL_BOUNDARIES','REUSE_BASE_AND_REBUILD_WEAK_FORMS','SCULPT_SECONDARY_ANATOMY_OR_CONSTRUCTION','CONFORM_PARTS_CLOTHING_AND_JOINTS','UV_BAKE_MATERIAL_SEPARATION_AND_CAUSAL_WEAR','RIG_MORPHS_EXPRESSIONS_AND_ACTION_POLISH','LOD_PLATFORM_VARIANTS_AND_REFERENCE_COMPARISON'],
+    topologyAndDeformationStillNeedRenderedInspection:true,customizationBindingsMustUseActualNames:true,sourceMutationPerformed:false,generatedAsset:false,runtimeVerified:false});
+}
 
 const ROBLOX_EXISTING_ASSET_TYPE_RULES=Object.freeze([
   {types:['audio'],re:/(?:audio|sound|bgm|music|battle|boss|hit|skill|levelup|victory)/i},
@@ -345,13 +393,13 @@ function baseMaterialRecipeForRequest(request='',templates=[]){
 function buildComposableBaseMaterialLoadout({companyRegistry={},studioUniversePlan=null,decisions=[],gameId='',target='',request=''}={}){
   const configured=companyRegistry?.baseMaterialLibrary?.families||{};
   const productionActive=studioUniversePlan?.baseMaterialRotation?.productionActive||configured;
-  const nativeTarget=['roblox','unity'].includes(clean(target).toLowerCase());
+  const nativeTarget=['roblox','unity','web'].includes(clean(target).toLowerCase());
   const familySet=new Set(nativeTarget?UNIVERSAL_ASSET_FAMILIES:[]);
   for(const row of decisions||[])for(const family of BASE_MATERIAL_FAMILIES_BY_ASSET_TYPE[clean(row?.type).toLowerCase()]||[])familySet.add(family);
   const families={};
   for(const family of familySet){
     const values=Array.isArray(productionActive?.[family])&&productionActive[family].length?productionActive[family]:configured?.[family]||[];
-    families[family]=stableMaterialAtoms(values,`${gameId}|${target}|${family}`,3);
+    families[family]=stableMaterialAtoms(values,`${gameId}|${['unity','web'].includes(clean(target).toLowerCase())?'UNITY_WEB_SHARED':target}|${family}`,3);
   }
   const recipe=baseMaterialRecipeForRequest(request,companyRegistry?.variantRecipeTemplates||[]);
   const visualScope=/(?:PRESENTATION_PASS|GRAPHICS_PRODUCTION|ASSET_ADAPTATION|graphics?|visual|presentation|asset|model|environment|background|terrain|material|lighting|animation|motion|vfx|effect|particle|ui|hud|그래픽|비주얼|연출|에셋|모델|환경|배경|지형|재질|조명|애니|모션|이펙트|효과|파티클|외형|실루엣|스타일)/i.test(clean(request));
@@ -495,6 +543,9 @@ export function buildVibeAssetProductionPlan({
   const resolvedTarget=clean(target||task.target).toLowerCase()||'web';
   const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
   const companyRegistry=companyAssetLibraryRegistry(repoRoot);
+  const currentCustomizationDocument=(companyRegistry?.baseMaterialLibrary?.customization?.documents||[]).find(row=>row.gameId===clean(task.gameId))||null;
+  const sharedCustomizationDocument=task.assetCustomization?.sharedDocument||(!task.assetCustomization?.recipes?.length?currentCustomizationDocument:null);
+  if(sharedCustomizationDocument)task={...task,styleFamily:sharedCustomizationDocument.styleBible?.profileKey,styleBible:sharedCustomizationDocument.styleBible,concept:{...task.concept,styles:[{family:sharedCustomizationDocument.styleBible?.profileKey,weight:1}]},motionStyleModifiers:sharedCustomizationDocument.motionStyle?.modifiers};
   const sameGameRobloxAssets=resolvedTarget==='roblox'?discoverExistingRobloxGameAssets({repoRoot,gameId:task.gameId}):[];
   const manifestWithSameGameAssets={...manifestBase,assets:[...(Array.isArray(manifestBase?.assets)?manifestBase.assets:[]),...sameGameRobloxAssets]};
   const manifestInput=mergeManifestWithCompanyLibrary(manifestWithSameGameAssets,companyRegistry);
@@ -643,10 +694,11 @@ export function buildVibeAssetProductionPlan({
   const referenceImageStudies=freezeList(referenceImages.map((row,index)=>{
     const request=createVibeReferenceImageStudyRequest({
       sourceId:row?.sourceId||row?.id||`reference-${index+1}`,
-      sourceType:row?.sourceType||'ABSTRACTED_MULTI_REFERENCE_ANALYSIS',
+      sourceType:row?.sourceType||((task.imageToAsset||task.mapReconstruction)?'USER_PROVIDED_OR_OWNED_IMAGE':'ABSTRACTED_MULTI_REFERENCE_ANALYSIS'),
       imageRef:row?.imageRef||row?.path||row?.url||'',
+      sourceHash:row?.sourceHash||'',
       rights:row?.rights||{},
-      purpose:row?.purpose||'MAP_STRUCTURE'
+      purpose:row?.purpose||(task.mapReconstruction?'MAP_RECONSTRUCTION':task.imageToAsset?'ASSET_CREATION':'MAP_STRUCTURE')
     });
     const observation=row?.observation?bindVibeReferenceImageObservation({
       request,observation:row.observation,verifiedAgainstSource:row.verifiedAgainstSource===true
@@ -721,7 +773,7 @@ export function buildVibeAssetProductionPlan({
     externalSources:companyRegistry?.externalSources||[],
     activeDemand,
     signalsByKey:universeSignals,
-    platform:resolvedTarget==='roblox'?'ROBLOX':resolvedTarget==='unity'?'UNITY':'UNITY',
+    platform:resolvedTarget.toUpperCase(),
     styleFamily:clean(task.styleFamily||task.style)||requestedConcept.styles?.[0]?.family||'STYLIZED_FANTASY',
     concept:requestedConcept,
     gameId:clean(task.gameId),
@@ -732,11 +784,27 @@ export function buildVibeAssetProductionPlan({
     futureGameDemands:Array.isArray(task.futureGameDemands)?task.futureGameDemands:[],
     usageEvents:Array.isArray(task.assetUsageEvents)?task.assetUsageEvents:[],
     baseMaterialFamilies:companyRegistry?.baseMaterialLibrary?.families||{},
-    baseMaterialUsageByAtom:task.baseMaterialUsageByAtom||{}
+    baseMaterialUsageByAtom:task.baseMaterialUsageByAtom||{},
+    styleBible:task.styleBible||{},
+    customizationRecipes:Array.isArray(task.assetCustomization?.recipes)?task.assetCustomization.recipes:[],
+    customizationContract:companyLibrary?.composableBaseMaterialLibrary?.customization||null
   }):null;
   const baseMaterialLoadout=buildComposableBaseMaterialLoadout({
     companyRegistry,studioUniversePlan,decisions,gameId:clean(task.gameId),target:resolvedTarget,request
   });
+  const motionStyle=deriveMotionStyleVariant({
+    style:studioUniversePlan?.styleBible?.profileKey||requestedConcept.styles?.[0]?.family||'STYLIZED_FANTASY',
+    styles:requestedConcept.styles,modifiers:task.motionStyleModifiers||{}
+  });
+  const assetSynchronization=['unity','web'].includes(resolvedTarget)&&studioUniversePlan?.customization?synchronizeAssetCustomization({
+    document:sharedCustomizationDocument,
+    currentDocument:currentCustomizationDocument,
+    baseRevision:task.assetCustomization?.baseRevision??0,
+    gameId:clean(task.gameId),platform:resolvedTarget,
+    assets:[...universeRepositoryAssets,...(companyRegistry?.assets||[])],
+    customization:studioUniversePlan.customization,styleBible:studioUniversePlan.styleBible,motionStyle,
+    motionBindings:task.assetCustomization?.motionBindings||[]
+  }):null;
   const motionAutoFillPlans=motionAutoGapActive?bootstrapSets.map(profile=>{
     const usage={
       activeGameConsumer:Boolean(profile.archetype&&requestUpper.includes(profile.archetype)),
@@ -786,6 +854,25 @@ export function buildVibeAssetProductionPlan({
     missingTypes:freezeList(selector.missingTypes||[]),
     decisions,
     baseMaterialLoadout,
+    assetCustomization:assetSynchronization?.customization?freeze({...studioUniversePlan.customization,items:assetSynchronization.customization.items,unresolvedCount:assetSynchronization.customization.unresolvedCount}):studioUniversePlan?.customization||null,
+    assetSynchronization,
+    sourceGlbReconstruction:freezeList((Array.isArray(task.sourceGlbs)?task.sourceGlbs:[]).map(source=>inspectVibeSourceGlb({repoRoot,source}))),
+    mapDetailReconstruction:task.mapReconstruction?createVibeMapDetailReconstruction({
+      sketch:task.mapReconstruction.sketch||{},assets:[...universeRepositoryAssets,...(companyRegistry?.assets||[])],
+      styleFamily:assetSynchronization?.document?.styleBible?.profileKey||studioUniversePlan?.styleBible?.profileKey,
+      seed:task.mapReconstruction.seed||clean(task.gameId)
+    }):null,
+    imageAssetCreation:freeze({
+      enabled:referenceImageStudies.some(row=>['ASSET_CREATION','MAP_RECONSTRUCTION'].includes(row.request.purpose)),
+      studies:freezeList(referenceImageStudies.filter(row=>['ASSET_CREATION','MAP_RECONSTRUCTION'].includes(row.request.purpose))),
+      workflow:freezeList(['READ_ACTUAL_IMAGE_PIXELS','EXTRACT_VISIBLE_FORM_MATERIAL_AND_IDENTITY','DESIGN_UNSEEN_VIEWS_AND_ARTICULATION','SELECT_COMPATIBLE_BASE_OR_AUTHOR','CUSTOMIZE_AND_SCULPT_DETAILS','RIG_RETARGET_AND_ACT','COMPARE_REFERENCE_AND_RENDER','UNITY_WEB_VARIANTS_AND_RUNTIME_QA']),
+      minimumQuality:studioUniversePlan?.customization?.minimumQuality||null,
+      singleImageAccepted:true,missingTextBriefAllowed:true,
+      unseenGeometryIsCreativeProposal:true,stillImageDoesNotProveMotion:true,
+      pixelObservationRequired:true,generatedAsset:false,runtimeVerified:false
+    }),
+    styleBible:assetSynchronization?.document?.styleBible||studioUniversePlan?.styleBible||null,
+    motionStyle:assetSynchronization?.document?deriveMotionStyleVariant({style:assetSynchronization.document.motionStyle.profileKey,modifiers:assetSynchronization.document.motionStyle.modifiers}):motionStyle,
     qualityProfile:highEndActive?'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION':'STANDARD_PRESENTATION',
     companyGraphicsLibrary:freeze({
       enabled:companyLibraryActive,
@@ -793,7 +880,7 @@ export function buildVibeAssetProductionPlan({
       scheduler:clean(companyLibrary?.scheduler)||null,
       executionLane:clean(companyLibrary?.executionLane)||null,
       reusableProductionTarget:freeze(companyLibrary?.reusableProductionTarget||companyRegistry?.universalCoverage?.reusableProductionTargets||{}),
-      platformProfile:resolvedTarget==='unity'?'UNITY':resolvedTarget==='roblox'?'ROBLOX':'WEB_REFERENCE_ONLY',
+      platformProfile:resolvedTarget.toUpperCase(),
       baseArchetypes:freezeList(companyLibrary?.characterPreparation?.baseArchetypes||[]),
       modularParts:freezeList(companyLibrary?.characterPreparation?.modularParts||[]),
       weaponPacks:freezeList(unique([...(companyLibrary?.actionMotionLibrary?.weaponPacks||[]),...(companyRegistry?.duelCombatMotion?.weaponFamilies||[])])),
@@ -849,7 +936,7 @@ export function buildVibeAssetProductionPlan({
       preparedArtifactMayNotClaimProductionPass:companyLibrary?.promotionRules?.preparedArtifactMayNotClaimProductionPass===true,
       runtimeVerifiedConsumerRequiredBeforePromotion:companyLibrary?.promotionRules?.runtimeVerifiedConsumerRequiredBeforeCompanyAssetPromotion===true,
       platformSpecificReauthoringRequired:companyLibrary?.promotionRules?.platformSpecificReauthoringRequired===true,
-      mandatoryConsumer:companyLibrary?.consumption?.requiredForEveryNativeGameDevelopment===true&&['unity','roblox'].includes(resolvedTarget),
+      mandatoryConsumer:companyLibrary?.consumption?.requiredForEveryNativeGameDevelopment===true&&['unity','roblox','web'].includes(resolvedTarget),
       lookupBeforeAssetChoice:companyLibrary?.consumption?.lookupBeforeAssetChoice===true,
       externalGapFillBeforeNewAuthoring:companyLibrary?.gapFill?.enabled===true,
       gapFillOrder:freezeList(companyLibrary?.gapFill?.order||[]),
@@ -1206,6 +1293,18 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
+    ...(plan.sourceGlbReconstruction||[]).map(source=>`[BASIC GLB TO DETAILED ASSET] ${JSON.stringify(source)}. 기본 GLB의 실제 원형·부품·재질·리그·애니메이션을 재사용하고 약한 형태를 재조형한다. 해부학/구조 접합/의복 겹침/눈꺼풀·입술·손발/문·창·지붕/목재·금속·돌·천의 마감과 사용 흔적을 자산 종류에 맞게 풍부하게 만든다. 단순 subdivide나 노이즈·색 변경으로 완성 처리하지 않는다. 원본은 보존하고 실제 DCC에서 파생본을 만든 뒤 morph/socket/리타겟 연결과 Unity/Web GLB·네이티브 변형을 등록한다. 메시·리깅·텍스처 제작 도구가 없으면 AUTHORING_REQUIRED를 유지한다.`),
+    plan.mapDetailReconstruction?`[BASIC MAP TO DETAILED WORLD] ${JSON.stringify(plan.mapDetailReconstruction)}. 내비게이션 수준의 기본 지도에서 길·교차로·구역·랜드마크를 읽고 연결 관계를 먼저 보존한다. 지형/배수→대지/건물/골목→식생→기능성 소품→접합/표면/생활 흔적→주변 동작 순서로 재구성한다. 소품을 균일하게 뿌리거나 안개로 가리지 말고 상업/주거/산업/숲 같은 구역 기능과 사용 원인에 따라 디테일을 배치한다. 도로 폭·문 접근·상호작용 영역·필수 시야·모바일 이동을 지키고 원본 동선 겹침과 실제 경로 보행으로 검수한다.`:'',
+    plan.imageAssetCreation?.enabled?`[IMAGE-TO-ASSET CREATION] ${JSON.stringify(plan.imageAssetCreation)}. 이미지 한 장만 있어도 먼저 실제 픽셀을 관찰한다. 보이는 실루엣·비율·재질 경계·색·시그니처·미세 마감을 추출하고, 뒷면·가려진 접합부·관절·동작은 창작 설계로 구분한다. 정면 복사판이나 이미지 평면으로 최종 모델을 대신하지 않는다. 공통 GLB 원형/부품 재사용→디테일 조형→의상 맞춤→리깅/표정/동작→Unity/Web 파생으로 이어간다. UI/아이콘/배경에도 적용하고 원본과 같은 카메라·중립 조명·실게임 화면에서 비교한다. 픽셀 접근이나 실제 제작 도구가 없으면 필요한 제작 단계로 남기며 완성 처리하지 않는다.`:'',
+    plan.assetSynchronization?`[UNITY / WEB SHARED VISUAL DOCUMENT] status=${plan.assetSynchronization.status}; issues=${plan.assetSynchronization.issues.join('|')||'NONE'}; document=${JSON.stringify(plan.assetSynchronization.document)}; applications=${JSON.stringify(plan.assetSynchronization.applications)}; motions=${JSON.stringify(plan.assetSynchronization.motions)}. 같은 gameId/revision/sourceHash의 커마·스타일·UI·아이콘·동작 설정을 기존 자산 저장소와 작업주문으로 공유한다. SYNC_CONFLICT면 재조회하며 부분 적용하지 않는다. 플랫폼 변형이나 연결점이 없으면 AUTHORING_REQUIRED로 제작하고 문서만으로 동기화 완료를 주장하지 않는다.`:'',
+    plan.assetSynchronization?'Unity는 기존 Renderer/SkinnedMeshRenderer/Animator/UI에, 일반 Web은 기존 glTF/렌더러/AnimationMixer 또는 Canvas/DOM/UI 책임 함수에 연결한다. Unity WebGL은 Unity와 같은 C# 프로젝트·프리팹·Animator를 사용한다. 엔진별 morph 축척·재질·리그·LOD는 선언된 platformVariants로 변환한다. 공격 이벤트·클립 길이·저장·권한은 보존하고 같은 정면/측면/후면/동작 프레임·아이콘 크기에서 두 플랫폼을 비교한다.':'',
+    plan.assetCustomization?`[CUSTOMIZABLE ASSET AUTHORING] 제작 순서=${plan.assetCustomization.workflow.join('→')}; 초기 조립 ${plan.assetCustomization.effort.quickAssemblyPercent}%, 디테일·모션 마감 ${plan.assetCustomization.effort.detailAndMotionPercent}%, 화면 비교·런타임 검수 ${plan.assetCustomization.effort.comparisonAndRuntimeQaPercent}%. 작업시간은 계획 비율이며 경과시간이나 부품 수만으로 품질을 통과시키지 않는다.`:'',
+    plan.assetCustomization?`커마 범위=${Object.entries(plan.assetCustomization.axes).map(([family,axes])=>family+':'+axes.join(',')).join('|')}. 실제 모델의 morph/shape key, 관절, material, socket 이름과 허용 범위를 검사한 뒤 연결한다. 원형·골격·부품을 재사용하고 부족한 부분만 조형한다. 잠긴 얼굴·실루엣·고유 특징은 보존한다.`:'',
+    plan.assetCustomization?'외부 GLB는 원본·출처·해시·허용 조건을 보존하고 단위/축/피벗/골격/재질을 정리한 파생본으로 사용한다. 게임 사용·수정 허용과 별도 자산 판매·재배포 허용을 구분한다. Blender로 실제 변형·의상 맞춤·접합부·재질을 제작할 수 없는 worker는 기존 authoring 요청에 필요한 원본과 작업을 남기며 모델을 만들었다고 표시하지 않는다.':'',
+    plan.assetCustomization?`최소 품질=${plan.assetCustomization.minimumQuality?.label||'상급 조형 자산'}; 기준=${plan.assetCustomization.minimumQuality?.referencePath||'게임별 승인 기준 화면'}; 세부 마감=${plan.assetCustomization.detailPasses.join('→')}. 도깨비 기준의 얼굴 골격·눈꺼풀·입술·치아·뿔 뿌리·손발·의복 겹침·봉제·재질 분리 수준을 각 자산에 맞게 적용한다. 배경에는 구조 접합부·모서리·누수·마모·생활 흔적을 적용하며 안개나 어두운 색으로 형태 부족을 가리지 않는다.`:'',
+    plan.styleBible?`실제 스타일 조형 지침=${JSON.stringify(plan.styleBible)}; 실제 모션 변형 지침=${JSON.stringify(plan.motionStyle)}. 이름만 바꾸지 말고 기존 메시·관절 곡선·재질에 적용한다. 준비→중심 이동→접촉→반동→회복→다음 동작 연결을 다듬고 고정된 판정 시점·클립 길이 안에서 표현만 재배분한다.`:'',
+    plan.assetCustomization?'같은 조명·카메라에서 근접/전신 회전/실게임/대표 동작을 비교하고 실패한 부위와 프레임을 지정해 수정한다. 발 미끄러짐·의상 관통·손-무기 접촉·표정·멈춤·회전·중단·사망 전환을 실측한다. 빠진 측정은 UNVERIFIED이며 공통 원형과 모든 파생본에 같은 품질 기준을 적용한다.':'',
+    plan.assetCustomization?`UI·아이콘도 같은 품질 기준과 커마 대상이다. 범위=${plan.assetCustomization.uiAndIconReview.scope.join('|')}; 상태=${plan.assetCustomization.uiAndIconReview.states.join('|')}; 아이콘은 ${plan.assetCustomization.uiAndIconReview.iconPreviewPixels.join('/')}px와 실제 표시 크기에서 밝은/어두운 배경을 비교한다. 테두리·모서리·재질·마모·그림자·눌림/선택/비활성 모션을 스타일에 맞추되 클릭 영역·화면 이동·텍스트 가독성·접근성·게임 기능을 보존한다. 이모지나 기본 아이콘의 색만 바꾸는 것은 최종 제작이 아니다.`:'',
     plan.commercialDistillation?.required?('검증된 상업용 블랙박스 증류 적용=필수; retrieved='+plan.commercialDistillation.retrievedCount+'; applied='+plan.commercialDistillation.appliedCount+'; mode='+plan.commercialDistillation.applicationMode+'; coverage='+plan.commercialDistillation.applicationCoveragePct+'%/required '+plan.commercialDistillation.mandatoryApplicationCoveragePct+'%. 메뉴/UI·그래픽·모션·환경·VFX/카메라/피드백 원리를 내부 자산으로 재저작·재구성하고 실제 런타임 검증 결과로 계속 발전시킨다.'): '',
     plan.commercialDistillation?.required?'상업용 원본 에셋·코드·고유 메뉴/장면/애니메이션의 직접 복제는 금지한다. 관찰·증류한 원리를 게임별 Style Lock과 플랫폼 네이티브 규칙에 맞춰 새로운 내부 자산으로 구현한다.':'',
     '이 계획은 독립 그래픽 작업이 아니다. 모든 에셋 결정은 단일 GRAPHICS_PRODUCTION 루트에 입력되고 같은 루트에서 캐릭터·환경·애니메이션·VFX·조명·UI와 함께 fan-in 된다.',
@@ -1272,6 +1371,9 @@ export function assetProductionGuidance(plan={}){
     '에셋 이유로 게임 규칙, 세이브 의미, 진행, 경제 수치를 바꾸지 않는다.',
     `preset=${clean(plan.presetId)||'none'}; reuseCandidateTypes=${plan.summary?.reuseCandidateTypes||0}; directAuthorableTypes=${plan.summary?.directAuthorableTypes||0}; missingTypes=${(plan.missingTypes||[]).join(',')||'none'}`
   ];
+  for(const item of plan.assetCustomization?.items||[]){
+    lines.push(`커마 제작 대상=${item.id}; family=${item.family}; base=${item.baseAssetId||'미선정'}; state=${item.status}; locked=${item.lockedParameters.join(',')||'없음'}; parameters=${JSON.stringify(item.parameters)}; operations=${JSON.stringify(item.operations)}; remaining=${item.issues.join(',')||'실제 적용·런타임 검증'}. 선언된 연결은 실제 제작 완료나 품질 PASS가 아니다.`);
+  }
   for(const row of (plan.decisions||[]).slice(0,12)){
     const reuse=(row.reuseCandidates||[]).slice(0,4).map(x=>x.robloxAssetId?`${x.id}@roblox-asset-id:${x.robloxAssetId}`:x.path?`${x.id}@${x.path}`:x.id).join('|')||'none';
     const external=(row.externalCandidates||[]).slice(0,4).map(x=>x.id).join('|')||'none';

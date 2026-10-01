@@ -12,7 +12,8 @@
     "gameStyleLockOverridesGenericLook": true,
     "mandatoryConsumerPlatforms": [
       "UNITY",
-      "ROBLOX"
+      "ROBLOX",
+      "WEB"
     ],
     "lookupBeforeNativeAssetChoice": true,
     "existingRepositoryInventoryBeforeExternal": true,
@@ -7310,6 +7311,19 @@
       "saveProgressionEconomyImmutable": true,
       "nativeVariantRequiredPerPlatform": true,
       "actualRuntimeQaRequiredBeforeVerifiedPromotion": true
+    },
+    "customization": {
+      "policySource": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.composableBaseMaterialLibrary.customization",
+      "status": "AUTHORING_CONTRACT_AVAILABLE",
+      "capabilityField": "asset.customization.controls",
+      "referencePath": "assets/roblox/world-ghosts/dokkaebi.png",
+      "referenceSha256": "62b78067eccddaf6e137fac3a2c4d5eaf95e502971070d9c68c2a188fc1bf492",
+      "referenceOnly": true,
+      "productionVerified": false,
+      "newFinishedAssetCount": 0,
+      "synchronizationPolicy": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.composableBaseMaterialLibrary.customization.unityWebSynchronization",
+      "documents": [],
+      "imageToAssetAvailableWithConfiguredVisionModel": true
     }
   },
   "variantRecipeTemplates": [

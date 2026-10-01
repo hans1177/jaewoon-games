@@ -15,17 +15,23 @@ export function createVibeWorldVisualRules(world={}){const dna=createVibeWorldDN
 export function scoreVibeWorldConsistency({elements=[],world={}}={}){const dna=createVibeWorldDNA(world),anchors=[...dna.visualAnchors,...dna.materialAnchors,...Object.values(dna.domains).filter(Boolean)].map(x=>String(x).toLowerCase()),rows=elements.map(e=>{const text=JSON.stringify(e).toLowerCase(),matches=anchors.filter(a=>a&&text.includes(a)).length,score=clamp(35+Math.min(45,matches*10)+(e.reason||e.gameplayReason||e.worldReason?20:0));return Object.freeze({id:e.id||e.name||'element',score,pass:score>=65})});return Object.freeze({score:clamp(rows.reduce((n,x)=>n+x.score,0)/Math.max(1,rows.length)),rows:Object.freeze(rows),pass:rows.every(x=>x.pass)})}
 const REFERENCE_MAP_SOURCE_TYPES=Object.freeze(['USER_PROVIDED_OR_OWNED_IMAGE','PUBLIC_DOMAIN_IMAGE','CLEARLY_LICENSED_REFERENCE','VERIFIED_INTERNAL_GAME_RUNTIME','ABSTRACTED_MULTI_REFERENCE_ANALYSIS']);
 const REFERENCE_STRUCTURE_FIELDS=Object.freeze(['RIDGE_AND_VALLEY_FLOW','ROAD_AND_PATH_GRAPH','OPEN_SPACE_DENSITY','OBSTACLE_CLUSTERING','LANDMARK_HIERARCHY','VEGETATION_DENSITY','URBAN_BLOCK_RHYTHM','CHOKE_AND_RELEASE','SAFE_DANGER_ZONE_RELATION','SIGHTLINE_AND_REVEAL']);
+const REFERENCE_ASSET_FIELDS=Object.freeze(['SILHOUETTE','PROPORTIONS','MATERIAL_REGIONS','PALETTE','CONSTRUCTION_DETAILS','STYLE_LANGUAGE','IDENTITY_ANCHORS','UNSEEN_REGIONS','MOTION_DESIGN']);
 const MAP_DNA_FIELDS=Object.freeze(['BIOME','ELEVATION_STYLE','ROAD_STYLE','LANDMARK_STYLE','DENSITY','COMBAT_OPENNESS','RESOURCE_DISTRIBUTION','DANGER_CURVE','VISUAL_MOOD','SETTLEMENT_PATTERN','WATER_PATTERN','RUIN_LEVEL','ROUTE_BRANCHING','VERTICALITY','TRAVERSAL_LANGUAGE','STORY_CONTEXT']);
-export function createVibeReferenceImageStudyRequest({sourceId='',sourceType='ABSTRACTED_MULTI_REFERENCE_ANALYSIS',imageRef='',rights={},purpose='MAP_STRUCTURE'}={}){
+export function createVibeReferenceImageStudyRequest({sourceId='',sourceType='ABSTRACTED_MULTI_REFERENCE_ANALYSIS',imageRef='',sourceHash='',rights={},purpose='MAP_STRUCTURE'}={}){
   const type=String(sourceType||'').toUpperCase(),id=String(sourceId||'').trim(),ref=String(imageRef||'').trim();
   const sourceAllowed=REFERENCE_MAP_SOURCE_TYPES.includes(type);
   const rightsVerified=type==='USER_PROVIDED_OR_OWNED_IMAGE'||type==='PUBLIC_DOMAIN_IMAGE'||type==='VERIFIED_INTERNAL_GAME_RUNTIME'||(type==='CLEARLY_LICENSED_REFERENCE'&&rights.licenseVerified===true)||(type==='ABSTRACTED_MULTI_REFERENCE_ANALYSIS'&&rights.sourceSetVerified===true);
-  const ready=Boolean(id&&sourceAllowed&&rightsVerified);
+  const assetCreation=['ASSET_CREATION','MAP_RECONSTRUCTION'].includes(String(purpose).toUpperCase());
+  const mapReconstruction=String(purpose).toUpperCase()==='MAP_RECONSTRUCTION';
+  const ready=Boolean(id&&sourceAllowed&&rightsVerified&&(!assetCreation||ref));
   return Object.freeze({
     sourceId:id||null,sourceType:type,imageRef:ref||null,purpose:String(purpose||'MAP_STRUCTURE').toUpperCase(),
-    ready,blockedReason:ready?null:!id?'SOURCE_ID_REQUIRED':!sourceAllowed?'SOURCE_TYPE_NOT_ALLOWED':'RIGHTS_OR_PROVENANCE_NOT_VERIFIED',
-    requestedFields:REFERENCE_STRUCTURE_FIELDS,
-    observationMode:'STRUCTURAL_ONLY',
+    sourceHash:String(sourceHash||'').trim()||null,
+    ready,blockedReason:ready?null:!id?'SOURCE_ID_REQUIRED':assetCreation&&!ref?'IMAGE_REF_REQUIRED':!sourceAllowed?'SOURCE_TYPE_NOT_ALLOWED':'RIGHTS_OR_PROVENANCE_NOT_VERIFIED',
+    requestedFields:mapReconstruction?Object.freeze([...REFERENCE_ASSET_FIELDS,...REFERENCE_STRUCTURE_FIELDS]):assetCreation?REFERENCE_ASSET_FIELDS:REFERENCE_STRUCTURE_FIELDS,
+    observationMode:assetCreation?'VISIBLE_ASSET_FEATURES_WITH_SEPARATE_CREATIVE_COMPLETION':'STRUCTURAL_ONLY',
+    pixelObservationRequired:assetCreation,
+    unseenGeometryAndMotionAreDesignProposals:assetCreation,
     rawImagePersistentLearningAllowed:false,
     directMapLayoutCopyAllowed:false,
     directLandmarkCopyAllowed:false,
@@ -41,11 +47,16 @@ export function bindVibeReferenceImageObservation({request={},observation={},ver
     URBAN_BLOCK_RHYTHM:'urbanBlockRhythm',CHOKE_AND_RELEASE:'chokeRelease',SAFE_DANGER_ZONE_RELATION:'safeDangerRelation',
     SIGHTLINE_AND_REVEAL:'sightlineReveal'
   };
-  for(const [key,target] of Object.entries(map))if(requested.has(key)&&observation[key]!=null)features[target]=String(observation[key]).trim();
-  const observationCount=Object.values(features).filter(Boolean).length,sourceBound=Boolean(request?.sourceId),valid=Boolean(request?.ready&&sourceBound&&observationCount>=3);
+  const assetCreation=['ASSET_CREATION','MAP_RECONSTRUCTION'].includes(request.purpose);
+  if(assetCreation)for(const key of REFERENCE_ASSET_FIELDS)map[key]=key;
+  for(const [key,target] of Object.entries(map))if(requested.has(key)&&typeof observation[key]==='string')features[target]=observation[key].trim();
+  const sourceBound=Boolean(request?.sourceId)&&(!assetCreation||(observation.sourceId===request.sourceId&&observation.imageRef===request.imageRef&&Boolean(request.sourceHash)&&observation.sourceHash===request.sourceHash));
+  const observationCount=Object.values(features).filter(Boolean).length,valid=Boolean(request?.ready&&sourceBound&&(assetCreation?REFERENCE_ASSET_FIELDS.every(key=>features[key]):observationCount>=3));
   return Object.freeze({
     sourceId:request.sourceId||null,sourceType:request.sourceType||null,valid,verifiedAgainstSource:valid&&verifiedAgainstSource===true,
     observationCount,features:Object.freeze(features),
+    sourceHash:request.sourceHash||null,imageRef:request.imageRef||null,
+    creativeCompletion:assetCreation?Object.freeze({unseenRegions:features.UNSEEN_REGIONS||'',motionDesign:features.MOTION_DESIGN||'',observedGeometry:false,observedAnimation:false}):null,
     usableForGenerationProposal:valid,
     positiveLearningEligible:valid&&verifiedAgainstSource===true,
     rawImageStored:false,directLayoutCopyAllowed:false,directLandmarkCopyAllowed:false,
@@ -190,6 +201,47 @@ export function createVibeReferenceMapAbstraction({sourceType='ABSTRACTED_MULTI_
 export function createVibeMapDNA({map={},region={},concept={},reference={}}={}){const ref=reference.features||reference,values={BIOME:map.biome||region.biome||'',ELEVATION_STYLE:map.elevationStyle||ref.ridgeValleyFlow||'adaptive',ROAD_STYLE:map.roadStyle||ref.roadPathGraph||'gameplay-led',LANDMARK_STYLE:map.landmarkStyle||ref.landmarkHierarchy||region.landmark||'region-identity',DENSITY:map.density||ref.openSpaceDensity||'adaptive',COMBAT_OPENNESS:map.combatOpenness||'mixed',RESOURCE_DISTRIBUTION:map.resourceDistribution||'world-causal',DANGER_CURVE:map.dangerCurve||ref.safeDangerRelation||'progressive',VISUAL_MOOD:map.visualMood||concept.mood||'',SETTLEMENT_PATTERN:map.settlementPattern||ref.urbanBlockRhythm||'contextual',WATER_PATTERN:map.waterPattern||'',RUIN_LEVEL:map.ruinLevel||'contextual',ROUTE_BRANCHING:map.routeBranching||ref.chokeRelease||'branch-with-return',VERTICALITY:map.verticality||'adaptive',TRAVERSAL_LANGUAGE:map.traversalLanguage||'gameplay-readable',STORY_CONTEXT:map.storyContext||region.history||''};return Object.freeze({name:map.name||'map',fields:Object.freeze(values),fieldNames:MAP_DNA_FIELDS,protected:Object.freeze(['collision','navigation','spawn-points','wave-path','objective-position','quest-requirements','save-meaning','balance'])})}
 export function createVibeRouteGraph({mapDna={},nodes=[],edges=[]}={}){const safeNodes=(nodes.length?nodes:[{id:'START',role:'spawn'},{id:'LANDMARK',role:'landmark'},{id:'OBJECTIVE',role:'objective'},{id:'EXIT',role:'transition'}]).map((n,i)=>Object.freeze({id:String(n.id||'NODE_'+i),role:String(n.role||'route'),required:n.required!==false}));const ids=new Set(safeNodes.map(n=>n.id)),startNode=safeNodes.find(n=>/spawn|start|entry/i.test(n.role))||safeNodes[0],defaultEdges=[{from:'START',to:'LANDMARK',kind:'main'},{from:'LANDMARK',to:'OBJECTIVE',kind:'main'},{from:'OBJECTIVE',to:'EXIT',kind:'main'},{from:'START',to:'OBJECTIVE',kind:'alternate'}],safeEdges=(edges.length?edges:defaultEdges).filter(e=>ids.has(String(e.from))&&ids.has(String(e.to))).map(e=>Object.freeze({from:String(e.from),to:String(e.to),kind:String(e.kind||'route'),oneWay:e.oneWay===true}));const required=safeNodes.filter(n=>n.required).map(n=>n.id),reachable=new Set(startNode?[startNode.id]:[]);let changed=true;while(changed){changed=false;for(const e of safeEdges){if(reachable.has(e.from)&&!reachable.has(e.to)){reachable.add(e.to);changed=true}if(!e.oneWay&&reachable.has(e.to)&&!reachable.has(e.from)){reachable.add(e.from);changed=true}}}const unreachable=required.filter(id=>!reachable.has(id));return Object.freeze({startNodeId:startNode?.id||null,nodes:Object.freeze(safeNodes),edges:Object.freeze(safeEdges),unreachable:Object.freeze(unreachable),pass:unreachable.length===0,rules:Object.freeze(['main-objective-connectivity','alternate-route-when-genre-allows','shortcut-loop-support','choke-open-rhythm','terrain-aware-width-slope-curvature'])})}
 export function createVibeWorldStreamingPlan({mobile=true,initialPlayableRadius=1,activeChunkBudget=null,lodDistances=null}={}){const budget=activeChunkBudget??(mobile?9:25);return Object.freeze({perceivedSeamlessStreamingTarget:true,literalZeroLoadingClaim:false,initialPlayableZonePrewarm:true,initialPlayableRadius:Math.max(1,Number(initialPlayableRadius)||1),activeChunkBudget:Math.max(4,Number(budget)||9),lodDistances:Object.freeze(lodDistances||{near:1,mid:2,far:4}),objectPoolingPreferred:true,backgroundGenerationBudgeted:true,criticalGameplayStateBeforePresentationChunk:true,unloadMayNotDiscardSaveOrAuthoritativeWorldState:true,mobileBudget:Boolean(mobile)})}
+// 단순 지도에서 읽은 동선을 보존하고 구역별 세부 자산 요구를 만드는 기존 월드 제작 입력.
+export function createVibeMapDetailReconstruction({sketch={},assets=[],styleFamily='STYLIZED_FANTASY',seed='map'}={}){
+  const issues=[],nodes=Array.isArray(sketch.nodes)?sketch.nodes:[],edges=Array.isArray(sketch.edges)?sketch.edges:[];
+  const ids=new Set(nodes.map(node=>node?.id));
+  if(!nodes.length||ids.size!==nodes.length||nodes.some(node=>!node?.id))issues.push('ROUTE_NODES_REQUIRED_OR_DUPLICATED');
+  if(!edges.length||edges.some(edge=>!edge||!ids.has(edge.from)||!ids.has(edge.to)||edge.from===edge.to))issues.push('ROUTE_EDGES_REQUIRED_OR_INVALID');
+  const routes=createVibeRouteGraph({nodes,edges});
+  if(!routes.pass)issues.push('UNREACHABLE_REQUIRED_ROUTE:'+routes.unreachable.join('|'));
+  const districts=Array.isArray(sketch.districts)?sketch.districts:[];
+  if(!districts.length)issues.push('DISTRICT_INTERPRETATION_REQUIRED');
+  if(districts.some(row=>!row?.id||!ids.has(row.anchorNodeId)||!row.function)||new Set(districts.map(row=>row?.id)).size!==districts.length)issues.push('DISTRICT_ANCHOR_OR_FUNCTION_REQUIRED');
+  const layerRules=[
+    ['TERRAIN','ENVIRONMENT','elevation drainage ground strata and traversable shoulders'],
+    ['STRUCTURE','BUILDING','plot roof facade doorway window supports joints and back-side construction'],
+    ['VEGETATION','ENVIRONMENT','species clusters age variation root-soil contact and canopy gaps'],
+    ['FUNCTIONAL_PROPS','PROP','district-specific work storage seating signs tools and human use'],
+    ['SURFACE_HISTORY','MATERIAL','edge wear runoff cracks mud repair patches and contact dirt'],
+    ['AMBIENT_LIFE','VFX','wind cloth leaves water light and restrained background movement']
+  ];
+  let hash=2166136261;for(const char of String(seed)){hash^=char.charCodeAt(0);hash=Math.imul(hash,16777619);}hash>>>=0;
+  const regions=districts.filter(row=>row?.id&&ids.has(row.anchorNodeId)).map((district,index)=>({
+    id:district.id,anchorNodeId:district.anchorNodeId,function:district.function,
+    landmark:district.landmark||null,styleFamily,
+    layers:layerRules.map(([layer,family,detail],layerIndex)=>{
+      const candidates=assets.filter(asset=>String(asset.family||asset.category).toUpperCase()===family&&(asset.sourceHash||asset.contentHash||asset.sha256)&&Array.isArray(asset.mapDetailRoles)&&asset.mapDetailRoles.includes(layer)&&(!asset.districtFunctions?.length||asset.districtFunctions.includes(district.function)));
+      const selected=candidates.length?candidates[(hash+index*7+layerIndex*3)%candidates.length]:null;
+      return{layer,family,detail,cause:district.function,assetId:selected?.id||null,sourceHash:selected?.sourceHash||selected?.contentHash||selected?.sha256||null,status:selected?'REUSE_CANDIDATE':'AUTHORING_REQUIRED',runtimeVerified:false};
+    }),
+    placementRules:['PRESERVE_ROAD_INTERSECTIONS_AND_ONE_WAY_LINKS','BUILDING_ENTRANCES_FACE_ACCESS_ROUTE','KEEP_LANDMARK_SIGHTLINE','CLUSTER_BY_FUNCTION_NOT_UNIFORM_SCATTER','KEEP_NAVIGATION_AND_INTERACTION_CLEARANCE','WEAR_FOLLOWS_WATER_CONTACT_AND_USAGE'],
+    detailScale:['PRIMARY_MASSES_FROM_GAME_CAMERA','SECONDARY_CONSTRUCTION_AT_MID_RANGE','TERTIARY_SURFACE_AT_CLOSEUP']
+  }));
+  return Object.freeze({
+    version:1,status:issues.length?'MAP_INTERPRETATION_REQUIRED':'DETAIL_AUTHORING_PLAN',issues:Object.freeze(issues),seed:String(seed),styleFamily,
+    sourceId:sketch.sourceId||null,sourceHash:sketch.sourceHash||null,
+    topology:issues.length?null:routes,regions:Object.freeze(issues.length?[]:regions),
+    spatialScale:typeof sketch.metersPerUnit==='number'&&Number.isFinite(sketch.metersPerUnit)&&sketch.metersPerUnit>0?{metersPerUnit:sketch.metersPerUnit,measured:false}:{status:'SCALE_AUTHORING_REQUIRED',measured:false},
+    preserve:Object.freeze(['ROUTE_CONNECTIVITY','JUNCTION_ORDER','LANDMARK_ANCHORS','SPAWN_OBJECTIVE_AND_INTERACTION_AREAS','COLLISION_AND_SAVE_MEANING']),
+    comparison:Object.freeze(['SOURCE_MAP_ROUTE_OVERLAY','TOP_DOWN_GENERATED_LAYOUT','EYE_LEVEL_ROUTE_WALKTHROUGH','LANDMARK_SIGHTLINES','CLOSEUP_MATERIAL_CONSTRUCTION','UNITY_WEB_SAME_SEED_AND_MOBILE_LOD']),
+    unseenArchitectureIsCreativeProposal:true,assetCountIsNotDetailQuality:true,sourceMutationPerformed:false,runtimeVerified:false
+  });
+}
 export function createVibeAdaptiveWorldGenerationPlan({map={},region={},concept={},reference={},referenceImage=null,mobile=true,nodes=[],edges=[],genre='ADAPTIVE',learningEvents=[]}={}){const imageRequest=referenceImage?createVibeReferenceImageStudyRequest(referenceImage):null,bound=imageRequest&&referenceImage?.observation?bindVibeReferenceImageObservation({request:imageRequest,observation:referenceImage.observation,verifiedAgainstSource:referenceImage.verifiedAgainstSource===true}):null,referenceInput=bound?.valid?{sourceId:bound.sourceId,sourceType:bound.sourceType,features:bound.features,verifiedAgainstSource:bound.verifiedAgainstSource}:reference,abstraction=createVibeReferenceMapAbstraction(referenceInput),dna=createVibeMapDNA({map,region,concept,reference:abstraction}),routes=createVibeRouteGraph({mapDna:dna,nodes,edges}),streaming=createVibeWorldStreamingPlan({mobile}),genreGrammar=createVibeGenreWorldGrammar({genre}),learning=summarizeVibeVerifiedWorldLearning({events:learningEvents}),patternDistillation=distillVibeVerifiedWorldPatterns({events:learningEvents});return Object.freeze({version:4,referenceImageStudy:imageRequest?Object.freeze({request:imageRequest,observation:bound}):null,reference:abstraction,mapDna:dna,routes,streaming,genreGrammar,learning,patternDistillation,generationOrder:Object.freeze(['concept-world-lock','reference-image-study-request','reference-abstraction','map-dna','macro-terrain-region-landmark','route-graph-shortcuts','zone-placement','mid-scale-paths','biome-props-nav-clearance','initial-zone-prewarm','nearby-chunk-streaming-lod','reachability-mobile-cohesion-qa']),policy:Object.freeze({deterministicSeedSupported:true,directReferenceLayoutCopyForbidden:true,rawReferencePersistentLearningForbidden:true,gameplayRuleMutation:false,saveMeaningMutation:false,multiplayerAuthorityMutation:false,mobileFirst:Boolean(mobile)})})}
 
 export function createVibeMapComposition({map={},region={},mobile=true}={}){return Object.freeze({name:map.name||'map',region:region.name||'',type:map.type||map.gameplay||'exploration',layoutRules:Object.freeze(['gameplay-route-before-decoration','landmark-visible-from-decision-point','resources-have-world-source','danger-has-visual-warning','dense-detail-away-from-critical-action']),mobileBudget:Object.freeze({maxSimultaneousLandmarks:mobile?2:4,foregroundDensity:mobile?'low':'medium'})})}

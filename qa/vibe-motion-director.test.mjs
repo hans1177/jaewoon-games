@@ -1,3 +1,4 @@
+// 파일명: qa/vibe-motion-director.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -286,6 +287,18 @@ test('style derivation exaggerates presentation while preserving gameplay semant
   assert.equal(variant.preserve.gameplaySpeed,true);
   assert.equal(variant.preserve.hitboxSemantics,true);
   assert.equal(variant.preserve.contactMarkerSync,true);
+});
+
+test('style defaults reach the composed motion and cannot disable gameplay preservation',()=>{
+  const cartoon=createMotionDirectorPlan({styleFamily:'CARTOON'}).composition.styleVariant;
+  const dark=createMotionDirectorPlan({styleFamily:'DARK_FANTASY'}).composition.styleVariant;
+  assert.notDeepEqual(cartoon.modifiers,dark.modifiers);
+  const mixed=createMotionDirectorPlan({styleFamily:'CARTOON',styles:[{family:'CARTOON',weight:.6},{family:'DARK_FANTASY',weight:.4}]}).composition.styleVariant;
+  assert.equal(mixed.profileKey,'TOON_NOIR');
+  assert.equal(deriveMotionStyleVariant({preserve:{damage:false,contactMarkerSync:false}}).preserve.damage,true);
+  assert.equal(deriveMotionStyleVariant({preserve:{damage:false,contactMarkerSync:false}}).preserve.contactMarkerSync,true);
+  assert.equal(mixed.application.generatedClip,false);
+  assert.equal(mixed.application.preserveAuthoredImpactAndClipDuration,true);
 });
 
 test('motion mutation blocks gameplay mutation and allows presentation mutation',()=>{
@@ -577,10 +590,12 @@ test('transition director scores smooth transitions and hard-fails event desync'
 test('automatic contact QA blocks promotion when foot or attack contact drifts',()=>{
   const pass=auditMotionContact({
     footSlideNormalized:0.01,
+    footPlantDriftNormalized:0.01,
     handWeaponOffsetNormalized:0.01,
     attackContactOffsetNormalized:0.02,
     pairContactOffsetNormalized:0.02,
-    impactEventNormalizedTimeOffset:0.01
+    impactEventNormalizedTimeOffset:0.01,
+    groundPenetration:false,meshIntersection:false
   });
   assert.equal(pass.pass,true);
   assert.equal(pass.blocksVerifiedPromotion,false);
@@ -592,6 +607,25 @@ test('automatic contact QA blocks promotion when foot or attack contact drifts',
   assert.ok(fail.failures.includes('FOOT_SLIDE_DISTANCE'));
   assert.ok(fail.failures.includes('ATTACK_CONTACT_OFFSET'));
   assert.equal(fail.blocksVerifiedPromotion,true);
+});
+
+test('contact and transition review cannot turn missing or invalid measurements into a pass',()=>{
+  assert.equal(auditMotionContact().verdict,'UNVERIFIED');
+  assert.equal(auditMotionContact().score,null);
+  assert.equal(evaluateMotionTransition().verdict,'UNVERIFIED');
+  const measured={footSlideNormalized:0,footPlantDriftNormalized:0,handWeaponOffsetNormalized:0,
+    attackContactOffsetNormalized:0,pairContactOffsetNormalized:0,impactEventNormalizedTimeOffset:0,
+    groundPenetration:false,meshIntersection:false};
+  assert.equal(auditMotionContact(measured).pass,true);
+  for(const value of [undefined,null,NaN,Infinity,-1,'0']){
+    assert.equal(auditMotionContact({...measured,footSlideNormalized:value}).blocksVerifiedPromotion,true);
+  }
+  assert.equal(auditMotionContact({...measured,thresholds:{footSlideNormalizedMax:Infinity}}).pass,false);
+  const noWeapon={...measured};delete noWeapon.handWeaponOffsetNormalized;
+  assert.equal(auditMotionContact({...noWeapon,notApplicable:{handWeaponOffsetNormalized:'비무장 동작'}}).pass,true);
+  assert.equal(auditMotionContact({...measured,footSlideNormalized:.2,notApplicable:{footSlideNormalized:'측정 무시'}}).pass,false);
+  const everythingAbsent=Object.fromEntries(Object.keys(measured).map(key=>[key,'해당 없음']));
+  assert.equal(auditMotionContact({notApplicable:everythingAbsent}).pass,false);
 });
 
 test('gameplay event binding requests missing motion grammar without owning gameplay',()=>{
@@ -747,8 +781,9 @@ test('full motion director plan exposes advanced quality and learning systems',(
   for(const system of ['TRANSITION_DIRECTOR','AUTOMATIC_CONTACT_QA','GAMEPLAY_EVENT_MOTION_BINDING','PROCEDURAL_MOTION_LAYER','GROUP_MOTION_DIRECTOR','MULTI_ACTOR_MOTION','EMOTION_INTENT_LAYER','MOTION_LOD','MOTION_LINEAGE','RUNTIME_MOTION_LEARNING']){
     assert.ok(plan.systems.includes(system));
   }
-  assert.equal(plan.transition.verdict,'PASS');
-  assert.equal(plan.contactQa.pass,true);
+  assert.equal(plan.transition.verdict,'UNVERIFIED');
+  assert.equal(plan.contactQa.pass,false);
+  assert.equal(plan.contactQa.blocksVerifiedPromotion,true);
   assert.equal(plan.gameplayEventBinding.complete,true);
   assert.equal(plan.emotionIntent.intent,'ALERT');
   assert.equal(plan.motionLod.tier,'NEAR');

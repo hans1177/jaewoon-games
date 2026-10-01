@@ -1,5 +1,9 @@
+// 파일명: assets/vibe-motion-director.js
 // 역할: GRAPHICS_PRODUCTION 내부에서 모션 부품을 조합·선택·변형·검증한다.
 // 주의: 데미지/히트박스/쿨다운/콤보 판정/이동 권한은 게임플레이 시스템 소유다.
+
+// 임포트: 자산과 모션이 같은 스타일 원본을 사용한다.
+import {ASSET_STYLE_PROFILES,createStyleBible} from './vibe-studio-asset-universe.js';
 
 const freezeList = value => Object.freeze([...(Array.isArray(value) ? value : [])]);
 const text = value => String(value ?? '').trim();
@@ -982,28 +986,40 @@ export function createPairMotionContract({id='',family='GRAB',attackerMotion='',
   });
 }
 
-export function deriveMotionStyleVariant({parentId='',style='CARTOON',modifiers={},preserve={}}={}){
+export function deriveMotionStyleVariant({parentId='',style='CARTOON',styles=[],modifiers={},preserve={}}={}){
   const normalizedStyle=upper(style);
+  const profileKey=createStyleBible({styleFamily:normalizedStyle,styles}).profileKey;
+  const defaults=ASSET_STYLE_PROFILES[profileKey]?.motion||{};
   const safeModifiers={
-    poseExaggeration:clamp(modifiers.poseExaggeration??1,0.5,2),
-    anticipationScale:clamp(modifiers.anticipationScale??1,0.5,2),
-    overshootScale:clamp(modifiers.overshootScale??1,0,2),
-    squashStretch:clamp(modifiers.squashStretch??0,0,1),
-    secondaryMotion:clamp(modifiers.secondaryMotion??1,0,2),
-    recoveryPresentation:clamp(modifiers.recoveryPresentation??1,0.5,2)
+    poseExaggeration:clamp(modifiers.poseExaggeration??defaults.poseExaggeration??1,0.5,2),
+    anticipationScale:clamp(modifiers.anticipationScale??defaults.anticipationScale??1,0.5,2),
+    overshootScale:clamp(modifiers.overshootScale??defaults.overshootScale??1,0,2),
+    squashStretch:clamp(modifiers.squashStretch??defaults.squashStretch??0,0,1),
+    secondaryMotion:clamp(modifiers.secondaryMotion??defaults.secondaryMotion??1,0,2),
+    recoveryPresentation:clamp(modifiers.recoveryPresentation??defaults.recoveryPresentation??1,0.5,2)
   };
   return Object.freeze({
     parentId:text(parentId),
     style:normalizedStyle,
+    profileKey,
     modifiers:Object.freeze(safeModifiers),
     preserve:Object.freeze({
+      ...preserve,
       gameplaySpeed:true,
       hitboxSemantics:true,
       damage:true,
       cooldown:true,
       authoritativeRootMovement:true,
-      contactMarkerSync:true,
-      ...preserve
+      contactMarkerSync:true
+    }),
+    application:Object.freeze({
+      actualJointCurvesRequired:true,rigSpecificRetargetRequired:true,
+      anatomyAndJointLimitsRequired:true,adjacentClothingAndPropContactRequired:true,
+      gazeHeadWeightActionFollowThroughOrder:true,
+      preserveAuthoredImpactAndClipDuration:true,
+      phaseScalingMeansPoseAndCurveRedistributionWithinLockedEvents:true,
+      unsupportedSquashUsesPoseOnly:true,
+      generatedClip:false
     }),
     originalImmutable:true,
     runtimeVerificationRequired:true
@@ -1424,6 +1440,8 @@ export function evaluateMotionTransition({
   to={},
   metrics={}
 }={}){
+  const required=['poseDiscontinuity','rootVelocityDelta','angularVelocityDelta','footContactBreak','handContactBreak','contactMarkerOffset','blendDurationPenalty','silhouettePop'];
+  const missing=required.filter(key=>typeof metrics[key]!=='number'||!Number.isFinite(metrics[key])||metrics[key]<0||metrics[key]>100);
   const pose=Math.max(0,100-Number(metrics.poseDiscontinuity||0));
   const root=Math.max(0,100-Number(metrics.rootVelocityDelta||0));
   const angular=Math.max(0,100-Number(metrics.angularVelocityDelta||0));
@@ -1438,30 +1456,25 @@ export function evaluateMotionTransition({
   if(Number(metrics.footContactBreak||0)>=80)hardFailures.push('FOOT_CONTACT_SNAP');
   if(metrics.pairAlignmentBreak===true)hardFailures.push('PAIR_ALIGNMENT_BREAK');
   if(metrics.gameplayEventDesync===true)hardFailures.push('GAMEPLAY_EVENT_DESYNC');
-  const score=Math.round((pose+root+angular+foot+hand+marker+blend+silhouette)/8);
-  const verdict=hardFailures.length?'FAIL':score>=85?'PASS':score>=70?'WARN':'FAIL';
+  const score=missing.length?null:Math.round((pose+root+angular+foot+hand+marker+blend+silhouette)/8);
+  const verdict=hardFailures.length?'FAIL':missing.length?'UNVERIFIED':score>=85?'PASS':score>=70?'WARN':'FAIL';
   return Object.freeze({
     fromId:text(from.id||from.MOTION_ID),
     toId:text(to.id||to.MOTION_ID),
     score,
     verdict,
+    missingMeasurements:freezeList(missing),
+    blocksVerifiedPromotion:verdict!=='PASS',
     hardFailures:Object.freeze(hardFailures),
     metrics:Object.freeze({pose,root,angular,foot,hand,marker,blend,silhouette}),
     gameplayWindowAuthority:false
   });
 }
 
-export function auditMotionContact({
-  footSlideNormalized=0,
-  footPlantDriftNormalized=0,
-  handWeaponOffsetNormalized=0,
-  attackContactOffsetNormalized=0,
-  pairContactOffsetNormalized=0,
-  impactEventNormalizedTimeOffset=0,
-  groundPenetration=false,
-  meshIntersection=false,
-  thresholds={}
-}={}){
+export function auditMotionContact(input={}){
+  const {footSlideNormalized,footPlantDriftNormalized,handWeaponOffsetNormalized,
+    attackContactOffsetNormalized,pairContactOffsetNormalized,impactEventNormalizedTimeOffset,
+    groundPenetration,meshIntersection,thresholds={},notApplicable={}}=input;
   const limits={
     footSlideNormalizedMax:Number(thresholds.footSlideNormalizedMax??0.035),
     handWeaponNormalizedMax:Number(thresholds.handWeaponNormalizedMax??0.04),
@@ -1470,6 +1483,15 @@ export function auditMotionContact({
     impactEventNormalizedTimeMax:Number(thresholds.impactEventNormalizedTimeMax??0.04)
   };
   const failures=[];
+  const numeric=['footSlideNormalized','footPlantDriftNormalized','handWeaponOffsetNormalized','attackContactOffsetNormalized','pairContactOffsetNormalized','impactEventNormalizedTimeOffset'];
+  const required=[...numeric,'groundPenetration','meshIntersection'];
+  // 해당 없음은 몸 구조·동작에 따른 이유가 있어야 하며, 제공된 실패 측정을 숨길 수 없다.
+  const exempt=required.filter(key=>input[key]===undefined&&typeof notApplicable[key]==='string'&&text(notApplicable[key]));
+  const missing=required.filter(key=>!exempt.includes(key)&&(numeric.includes(key)
+    ?typeof input[key]!=='number'||!Number.isFinite(input[key])||input[key]<0
+    :typeof input[key]!=='boolean'));
+  const invalidLimits=Object.entries(limits).filter(([,value])=>!Number.isFinite(value)||value<0).map(([key])=>key);
+  failures.push(...invalidLimits.map(key=>'INVALID_THRESHOLD:'+key));
   if(Number(footSlideNormalized)>limits.footSlideNormalizedMax)failures.push('FOOT_SLIDE_DISTANCE');
   if(Number(footPlantDriftNormalized)>limits.footSlideNormalizedMax)failures.push('FOOT_PLANT_DRIFT');
   if(Number(handWeaponOffsetNormalized)>limits.handWeaponNormalizedMax)failures.push('HAND_WEAPON_OFFSET');
@@ -1478,13 +1500,19 @@ export function auditMotionContact({
   if(Number(impactEventNormalizedTimeOffset)>limits.impactEventNormalizedTimeMax)failures.push('IMPACT_EVENT_OFFSET');
   if(groundPenetration===true)failures.push('GROUND_PENETRATION');
   if(meshIntersection===true)failures.push('MESH_INTERSECTION');
-  const score=Math.max(0,100-failures.length*18);
+  const observedCount=required.length-missing.length-exempt.length;
+  if(!observedCount)missing.push('ACTUAL_CONTACT_OBSERVATION_REQUIRED');
+  const score=missing.length?null:Math.max(0,100-failures.length*18);
+  const pass=failures.length===0&&missing.length===0;
   return Object.freeze({
-    pass:failures.length===0,
+    pass,
+    verdict:failures.length?'FAIL':missing.length?'UNVERIFIED':'PASS',
     score,
+    missingMeasurements:freezeList(missing),
+    notApplicable:Object.freeze(Object.fromEntries(exempt.map(key=>[key,text(notApplicable[key])]))),
     failures:Object.freeze(failures),
     limits:Object.freeze(limits),
-    blocksVerifiedPromotion:failures.length>0
+    blocksVerifiedPromotion:!pass
   });
 }
 
@@ -2006,7 +2034,7 @@ export function createMotionDirectorPlan({
   platform='UNITY',bodyPlan='HUMANOID',rigProfile='HUMANOID',styleFamily='STYLIZED_FANTASY',
   motionCandidates=[],context={},layers={},skill={},pair=null,reaction={},recentMotionIds=[],
   transition=null,contactQa=null,gameplayEvent=null,procedural=null,group=null,multiActor=null,
-  emotion=null,lod=null,lineage=null,runtimeSignals=[],robloxCharacterMotion=null,combat=null
+  emotion=null,lod=null,lineage=null,runtimeSignals=[],robloxCharacterMotion=null,combat=null,styles=[],styleModifiers={}
 }={}){
   const selector=selectContextMotion({
     candidates:motionCandidates,
@@ -2014,7 +2042,7 @@ export function createMotionDirectorPlan({
     recentMotionIds
   });
   const selectedDNA=selector.selected?.dna||selector.selected||{BODY_PLAN:bodyPlan,RIG_PROFILE:rigProfile,STYLE_FAMILY:styleFamily,PLATFORM_VARIANT:platform};
-  const composition=composeMotionStack({layers,dna:selectedDNA,styleVariant:{style:upper(styleFamily)}});
+  const composition=composeMotionStack({layers,dna:selectedDNA,styleVariant:deriveMotionStyleVariant({parentId:selectedDNA.MOTION_ID||selectedDNA.id,style:styleFamily,styles,modifiers:styleModifiers})});
   return Object.freeze({
     version:2,
     target:MOTION_DIRECTOR_TARGET,
@@ -2023,6 +2051,16 @@ export function createMotionDirectorPlan({
     motionDNA:createMotionDNA(selectedDNA),
     selector,
     composition,
+    continuity:Object.freeze({
+      startFromCurrentPoseAndVelocity:true,footPhaseAndContactAwareLocomotion:true,
+      turnStartStopAndInterruptedRecoveryRequired:true,poseVelocityContinuityAtEveryTransition:true,
+      idleLifeChannels:freezeList(['BREATHING','GAZE','BLINK','WEIGHT_SHIFT','HAND_TENSION']),
+      secondaryMotionOrder:freezeList(['BODY_ACCELERATION','HEAD_AND_LIMBS','HAIR_CLOTH_STRAPS_EQUIPMENT','DAMPED_SETTLE']),
+      compatibleAdditiveMasksRequired:true,styleProfile:composition.styleVariant?.profileKey||deriveMotionStyleVariant({style:styleFamily,styles}).profileKey,
+      authoritativeActionWindowsAndRootMovementImmutable:true,
+      measuredTransitionQa:transition?evaluateMotionTransition(transition).verdict:'UNVERIFIED',
+      runtimeVerified:false
+    }),
     skillSequence:buildSkillMotionSequence(skill),
     reaction:createReactionMatch(reaction),
     pairMotion:pair?createPairMotionContract(pair):null,

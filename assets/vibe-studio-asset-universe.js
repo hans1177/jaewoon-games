@@ -1,3 +1,4 @@
+// 파일명: assets/vibe-studio-asset-universe.js
 // GRAPHICS_PRODUCTION internal module.
 // Unifies asset semantics, compatibility, coverage, identity and 24H gap-fill planning.
 // It never promotes prepared assets without native runtime verification.
@@ -238,22 +239,265 @@ export function createAssetDNA(input={}){
   return Object.freeze(dna);
 }
 
+// 스타일: 조형·표면·연기를 함께 정의하며 실제 메시/클립 적용 전에는 제작 지침이다.
+export const ASSET_STYLE_PROFILES=Object.freeze({
+  CARTOON:Object.freeze({shapeLanguage:'BOLD_ROUNDED_PRIMARY_FORMS_WITH_CONTROLLED_ASYMMETRY',characterProportion:'EXPRESSIVE_HEAD_HANDS_AND_CLEAR_BODY_MASSES',materialLanguage:'CLEAN_VALUE_GROUPS_BROAD_HIGHLIGHTS_SPARSE_MICRODETAIL',lightingLanguage:'SOFT_KEY_CLEAR_CONTACT_SHADOW_AND_READABLE_FILL',animationExaggeration:'STRONG_KEY_POSES_ELASTIC_FOLLOW_THROUGH',buildingLanguage:'CHUNKY_BEVELS_CLEAR_MODULE_JOINTS_AND_PLAYFUL_ROOFLINES',motion:Object.freeze({poseExaggeration:1.35,anticipationScale:1.2,overshootScale:1.25,squashStretch:.15,secondaryMotion:1.2,recoveryPresentation:1.1})}),
+  DARK_FANTASY:Object.freeze({shapeLanguage:'WEIGHTED_ANGULAR_MASSES_WITH_PURPOSEFUL_ASYMMETRY',characterProportion:'GROUNDED_ANATOMY_WITH_ONE_DISTURBING_SIGNATURE',materialLanguage:'LAYERED_ROUGHNESS_EDGE_WEAR_CAVITY_GRIME_AND_MATERIAL_SEPARATION',lightingLanguage:'DIRECTIONAL_KEY_CONTROLLED_FILL_PRESERVE_DARK_SILHOUETTE',animationExaggeration:'RESTRAINED_INTENT_HEAVY_CONTACT_AND_DELAYED_SETTLE',buildingLanguage:'LOAD_BEARING_FORMS_WEATHERED_JOINTS_AND_LOCALIZED_DECAY',motion:Object.freeze({poseExaggeration:.95,anticipationScale:1.15,overshootScale:.8,squashStretch:0,secondaryMotion:.8,recoveryPresentation:1.2})}),
+  TOON_NOIR:Object.freeze({shapeLanguage:'BOLD_CARTOON_MASSES_WITH_UNSETTLING_ASYMMETRIC_DETAIL',characterProportion:'READABLE_EXAGGERATION_WITH_LOCKED_UNIQUE_FACE_AND_POSTURE',materialLanguage:'SIMPLIFIED_VALUE_GROUPS_WITH_FOCUSED_WEAR_AND_RICH_HERO_SURFACES',lightingLanguage:'GRAPHIC_LIGHT_SHADOW_GROUPS_WITH_VISIBLE_FACES_AND_CONTACT',animationExaggeration:'HELD_STARES_SHARP_POSE_CHANGES_WEIGHTED_FOLLOW_THROUGH',buildingLanguage:'CROOKED_BUT_SUPPORTED_MODULES_WITH_LOCAL_STORY_TRACES',motion:Object.freeze({poseExaggeration:1.25,anticipationScale:1.3,overshootScale:1.05,squashStretch:.06,secondaryMotion:1.1,recoveryPresentation:1.2})}),
+  ANIME_OR_CEL_SHADED:Object.freeze({shapeLanguage:'CLEAN_TAPERED_FORMS_AND_PRECISE_SILHOUETTE',materialLanguage:'CONTROLLED_CEL_BANDS_AND_AUTHORED_HIGHLIGHT_SHAPES',animationExaggeration:'STRONG_LINE_OF_ACTION_HELD_POSES_AND_CRISP_BREAKDOWNS',motion:Object.freeze({poseExaggeration:1.2,anticipationScale:1.15,overshootScale:1.05,squashStretch:.03,secondaryMotion:1.15,recoveryPresentation:1})}),
+  STYLIZED_REALISM:Object.freeze({shapeLanguage:'BELIEVABLE_ANATOMY_WITH_SELECTIVE_SHAPE_SIMPLIFICATION',materialLanguage:'PHYSICAL_MATERIAL_SEPARATION_WITH_AUTHORED_WEAR',animationExaggeration:'OBSERVED_WEIGHT_TRANSFER_AND_SUBTLE_SECONDARY_ACTING',motion:Object.freeze({poseExaggeration:1,anticipationScale:1,overshootScale:1,squashStretch:0,secondaryMotion:1,recoveryPresentation:1})}),
+  REALISTIC:Object.freeze({shapeLanguage:'ANATOMICALLY_PLAUSIBLE_PLANES_JOINTS_AND_FUNCTIONAL_CONSTRUCTION',materialLanguage:'PHYSICAL_SCALE_PBR_WITH_MICROSURFACE_AND_CAUSE_BASED_WEAR',lightingLanguage:'PHYSICAL_LIGHT_RESPONSE_WITH_CONTROLLED_EXPOSURE_AND_READABLE_CONTACT',characterProportion:'ANATOMICAL_WITH_INDIVIDUAL_ASYMMETRY',animationExaggeration:'SUBTLE_GAZE_BREATHING_BALANCE_INERTIA_AND_CONTACT_NO_CARTOON_SQUASH',motion:Object.freeze({poseExaggeration:1,anticipationScale:1,overshootScale:.65,squashStretch:0,secondaryMotion:.85,recoveryPresentation:1})}),
+  LOW_POLY:Object.freeze({shapeLanguage:'PURPOSEFUL_FACETED_PLANES_AND_SPECIES_SPECIFIC_MASSES',materialLanguage:'BROAD_MATTE_VALUE_GROUPS_WITH_SPARSE_SURFACE_ACCENTS',animationExaggeration:'CLEAR_JOINT_POSES_AND_GROUNDED_CONTACT',motion:Object.freeze({poseExaggeration:1.1,anticipationScale:1.1,overshootScale:1,squashStretch:0,secondaryMotion:.8,recoveryPresentation:1})})
+});
+
 export function createStyleBible(input={}){
+  const family=upper(input.styleFamily||'STYLIZED_FANTASY');
+  const styles=(input.styles||[]).filter(row=>typeof row==='string'||Number(row.weight??1)>0).map(row=>upper(typeof row==='string'?row:row.family));
+  const mixedToon=styles.includes('CARTOON')&&styles.some(style=>['DARK_FANTASY','HORROR','NOIR','GOTHIC'].includes(style));
+  const profileKey=upper(input.profileKey)||(mixedToon||family==='DARK_CARTOON'?'TOON_NOIR':['HORROR','GOTHIC','NOIR'].includes(family)?'DARK_FANTASY':family);
+  const defaults=ASSET_STYLE_PROFILES[profileKey]||{};
   const bible={
-    styleFamily:upper(input.styleFamily||'STYLIZED_FANTASY'),
-    shapeLanguage:text(input.shapeLanguage||'CLEAR_READABLE_PRIMARY_FORMS'),
-    characterProportion:text(input.characterProportion||'GAME_SPECIFIC'),
+    styleFamily:family,
+    profileKey,
+    shapeLanguage:text(input.shapeLanguage||defaults.shapeLanguage||'CLEAR_READABLE_PRIMARY_FORMS'),
+    characterProportion:text(input.characterProportion||defaults.characterProportion||'GAME_SPECIFIC'),
     silhouetteRule:text(input.silhouetteRule||'READABLE_AT_GAME_CAMERA_DISTANCE'),
     paletteContrast:text(input.paletteContrast||'ROLE_AND_REGION_SEPARATION'),
-    materialLanguage:text(input.materialLanguage||'COHESIVE_WITH_STYLE_FAMILY'),
-    lightingLanguage:text(input.lightingLanguage||'SUPPORT_GAMEPLAY_READABILITY'),
+    materialLanguage:text(input.materialLanguage||defaults.materialLanguage||'COHESIVE_WITH_STYLE_FAMILY'),
+    lightingLanguage:text(input.lightingLanguage||defaults.lightingLanguage||'SUPPORT_GAMEPLAY_READABILITY'),
     vfxShapeLanguage:text(input.vfxShapeLanguage||'MATCH_STYLE_AND_DAMAGE_ROLE'),
-    animationExaggeration:text(input.animationExaggeration||'STYLE_LOCK_DEPENDENT'),
+    animationExaggeration:text(input.animationExaggeration||defaults.animationExaggeration||'STYLE_LOCK_DEPENDENT'),
     uiLanguage:text(input.uiLanguage||'MATCH_SHAPE_PALETTE_AND_READABILITY'),
-    buildingLanguage:text(input.buildingLanguage||'MATCH_WORLD_THEME_AND_CONSTRUCTION_LOGIC'),
+    buildingLanguage:text(input.buildingLanguage||defaults.buildingLanguage||'MATCH_WORLD_THEME_AND_CONSTRUCTION_LOGIC'),
     creatureLanguage:text(input.creatureLanguage||'BODY_PLAN_AND_SPECIES_IDENTITY_FIRST')
   };
   return Object.freeze(bible);
+}
+
+// 커마 제작: 모델별로 선언된 범위와 연결점만 사용한다. 이 계획은 실제 편집·검증 결과가 아니다.
+export const ASSET_CUSTOMIZATION_AXES=Object.freeze(Object.fromEntries(Object.entries({
+  CHARACTER:['FACE','BODY_PROPORTION','HAIR','EXPRESSION','CLOTHING','ACCESSORY','SURFACE_WEAR'],
+  CREATURE:['BODY_PLAN','HEAD','LIMB_PROPORTION','HORN_TEETH_CLAW','SKIN','SIGNATURE_ORGAN','SURFACE_WEAR'],
+  BUILDING:['WALL','DOOR','WINDOW','ROOF','ROOM_LAYOUT','JOINT_DETAIL','LOCAL_DAMAGE','SURFACE_WEAR'],
+  ENVIRONMENT:['TERRAIN_PROFILE','ROCK_FORM','TREE_BRANCH','FOLIAGE_DENSITY','GROUND_COVER','WETNESS','LANDMARK'],
+  WEAPON:['BLADE_HEAD','HANDLE','GUARD','ORNAMENT','MATERIAL','SURFACE_WEAR'],
+  PROP:['STRUCTURE','PROPORTION','ATTACHMENT','MATERIAL','LOCAL_DAMAGE','SURFACE_WEAR'],
+  MATERIAL:['BASE_COLOR','ROUGHNESS','METALLIC','NORMAL_DETAIL','CAVITY_GRIME','EDGE_WEAR','WETNESS'],
+  UI:['SHAPE','BORDER','MATERIAL','ICON','CONTRAST','TYPOGRAPHY','LAYOUT_VISUAL','STATE_VARIANT','FEEDBACK_MOTION'],
+  VFX:['SHAPE','PALETTE','DENSITY','TRAIL','IMPACT','DISSIPATION'],
+  SKILL:['CAST_POSE','PROJECTILE_VISUAL','IMPACT_VISUAL','RECOVERY_POSE'],
+  MOTION:['POSE','GAZE','WEIGHT_TRANSFER','STRIDE_PRESENTATION','FOLLOW_THROUGH','RECOVERY_PRESENTATION']
+}).map(([family,axes])=>[family,freezeList(axes)])));
+
+export function createAssetCustomizationPlan({assets=[],recipes=[],styleBible={},contract={},platform='UNITY'}={}){
+  const byId=new Map(assets.filter(row=>text(row.id)).map(row=>[text(row.id),row]));
+  const items=recipes.map((recipe,index)=>{
+    const family=upper(recipe.family),base=byId.get(text(recipe.baseAssetId));
+    const capabilities=base?.customization||{};
+    const controls=capabilities.controls||{};
+    const issues=[],operations=[];
+    if(!ASSET_CUSTOMIZATION_AXES[family])issues.push('UNSUPPORTED_VISUAL_FAMILY');
+    if(!base)issues.push('BASE_ASSET_REQUIRED');
+    const baseFamily=upper(base?.family||base?.category||base?.dna?.FAMILY);
+    if(baseFamily&&baseFamily!==family)issues.push('BASE_FAMILY_MISMATCH');
+    const revision=text(base?.sourceHash||base?.contentHash||base?.sha256);
+    if(!revision)issues.push('SOURCE_HASH_REQUIRED');
+    const locked=uniq(recipe.lockedParameters);
+    const parameters={...(recipe.parameters||{})};
+    for(const key of locked){
+      if(!Object.hasOwn(recipe.previousParameters||{},key))issues.push('LOCKED_VALUE_MISSING:'+key);
+      else parameters[key]=recipe.previousParameters[key];
+    }
+    if(!Object.keys(controls).length)issues.push('AUTHOR_CUSTOMIZATION_BINDINGS');
+    for(const [key,value] of Object.entries(parameters)){
+      const control=Object.hasOwn(controls,key)?controls[key]:null;
+      if(!control||!ASSET_CUSTOMIZATION_AXES[family]?.includes(upper(control.axis))){issues.push('UNSUPPORTED_CONTROL:'+key);continue;}
+      const kind=upper(control.kind),target=text(control.target);
+      if(!['MORPH','BONE_PROPORTION','MATERIAL_SCALAR','COLOR','CHOICE','PART','MODULE','PRESENTATION_SCALAR'].includes(kind)||!target){issues.push('INVALID_BINDING:'+key);continue;}
+      if(kind==='PART'||kind==='MODULE'){
+        const part=byId.get(text(value));
+        if(!Array.isArray(control.choices)||!control.choices.includes(value)||!part){issues.push('INCOMPATIBLE_PART:'+key);continue;}
+        // 빈 호환 태그를 확인 근거로 삼지 않고 실제 연결점 선언을 요구한다.
+        if(!(part.customization?.compatibleBaseIds||[]).includes(base.id)||!(part.customization?.sockets||[]).includes(target)){
+          issues.push('PART_SOCKET_BINDING_REQUIRED:'+key);continue;
+        }
+        const partHash=text(part.sourceHash||part.contentHash||part.sha256);
+        if(!partHash){issues.push('PART_SOURCE_HASH_REQUIRED:'+key);continue;}
+        operations.push(Object.freeze({key,axis:upper(control.axis),kind,target,value,sourceHash:partHash}));
+      }else if(kind==='COLOR'){
+        if(!Array.isArray(value)||![3,4].includes(value.length)||value.some(channel=>typeof channel!=='number'||!Number.isFinite(channel)||channel<0||channel>1)){
+          issues.push('COLOR_RANGE_INVALID:'+key);continue;
+        }
+        operations.push(Object.freeze({key,axis:upper(control.axis),kind,target,value:freezeList(value)}));
+      }else if(kind==='CHOICE'){
+        if(typeof value!=='string'||!Array.isArray(control.choices)||!control.choices.includes(value)){issues.push('UNSUPPORTED_CHOICE:'+key);continue;}
+        operations.push(Object.freeze({key,axis:upper(control.axis),kind,target,value}));
+      }else{
+        if(typeof value!=='number'||!Number.isFinite(value)||!Number.isFinite(control.min)||!Number.isFinite(control.max)||control.min>control.max||value<control.min||value>control.max){
+          issues.push('CONTROL_RANGE_INVALID:'+key);continue;
+        }
+        if(kind==='BONE_PROPORTION'&&capabilities.retargetRequired!==true){issues.push('RETARGET_BINDING_REQUIRED:'+key);continue;}
+        operations.push(Object.freeze({key,axis:upper(control.axis),kind,target,value}));
+      }
+    }
+    return Object.freeze({
+      id:text(recipe.id)||`${family.toLowerCase()||'asset'}-${index+1}`,family,
+      subfamily:upper(recipe.subfamily),
+      baseAssetId:text(recipe.baseAssetId)||null,sourceHash:revision||null,
+      status:issues.length?'AUTHORING_REQUIRED':'DECLARED_BINDINGS_READY',
+      axes:ASSET_CUSTOMIZATION_AXES[family]||freezeList([]),
+      parameters:Object.freeze(parameters),lockedParameters:freezeList(locked),
+      operations:freezeList(issues.length?[]:operations),issues:freezeList(issues),
+      identityAnchors:freezeList(recipe.identityAnchors||[]),
+      authoringRequirements:freezeList(['INSPECT_ACTUAL_MESH_RIG_MORPHS_AND_SOCKETS','PRESERVE_SOURCE_AND_EDIT_DERIVATIVE','CONFORM_ADJACENT_PARTS_AND_CLOTHING','RECHECK_CONTACT_CLIPPING_AND_GAMEPLAY_BOUNDS']),
+      runtimeVerified:false,sourceMutationPerformed:false
+    });
+  });
+  return Object.freeze({
+    version:1,status:'AUTHORING_PLAN_NOT_RUNTIME_PROOF',platform:upper(platform),
+    families:freezeList(Object.keys(ASSET_CUSTOMIZATION_AXES)),axes:ASSET_CUSTOMIZATION_AXES,
+    styleBible,items:freezeList(items),
+    unresolvedCount:items.filter(row=>row.issues.length).length,
+    workflow:freezeList(contract.workflow||['INSPECT_REUSE_AND_LICENSED_EXTERNAL_GLB','NORMALIZE_SCALE_RIG_MATERIALS_AND_SOCKETS','QUICK_BASE_ASSEMBLY','LOCK_IDENTITY_AND_CUSTOMIZE','SCULPT_SEAMS_MATERIALS_AND_CAUSAL_WEAR','POLISH_ACTING_CONTACT_AND_TRANSITIONS','COMPARE_CLOSEUP_AND_GAME_CAMERA','NATIVE_MOBILE_QA']),
+    detailPasses:freezeList(['PRIMARY_SILHOUETTE','SECONDARY_ANATOMY_AND_CONSTRUCTION','SEAMS_JOINTS_AND_CLOTHING_FIT','CAUSE_BASED_WEAR_GRIME_AND_DAMAGE','MATERIAL_LIGHT_RESPONSE','EXPRESSION_GAZE_FINGERS_AND_SECONDARY_MOTION']),
+    externalSourceRequirements:freezeList(['SOURCE_URL_AND_CONTENT_HASH','LICENSE_EVIDENCE','COMMERCIAL_USE_AND_MODIFICATION_PERMISSION','SEPARATE_RESALE_REDISTRIBUTION_PERMISSION_WHEN_SELLING_ASSETS','TARGET_PLATFORM_IMPORT_AND_RUNTIME_CHECK']),
+    minimumQuality:Object.freeze({...contract.minimumQuality}),
+    uiAndIconReview:Object.freeze({
+      scope:freezeList(['HUD','MENU','PANEL','BUTTON','ICON','INVENTORY','MAP','TOOLTIP','STATUS','CURSOR','TOUCH_CONTROL']),
+      states:freezeList(['NORMAL','PRESSED','DISABLED','SELECTED','FOCUSED']),
+      iconPreviewPixels:freezeList([24,32,48,64]),
+      silhouetteAndMeaningBeforeMicrodetail:true,lightAndDarkBackgroundComparison:true,
+      preserveHitTargetsNavigationAccessibilityAndSaveSemantics:true,
+      styleTranslation:'MATCH_SHAPE_MATERIAL_EDGE_WEAR_AND_MOTION_LANGUAGE_WITH_SCREEN_SCALE_DETAIL',
+      emojiOrGenericPlaceholderIsNotFinalAsset:true
+    }),
+    review: Object.freeze({
+      captures:freezeList(['FACE_OR_SIGNATURE_CLOSEUP','FULL_OBJECT_TURNTABLE','ACTUAL_GAME_CAMERA','REPRESENTATIVE_ACTION_AND_TRANSITIONS']),
+      sameCameraAndLighting:true,frameAddressedFindings:true,missingMeasurements:'UNVERIFIED',
+      prototypeIsNotCompletion:true,elapsedTimeIsNotQualityEvidence:true
+    }),
+    effort: Object.freeze({
+      quickAssemblyPercent:contract.detailedWorkBudget?.quickAssemblyPercent??15,
+      detailAndMotionPercent:contract.detailedWorkBudget?.detailAndMotionPercent??65,
+      comparisonAndRuntimeQaPercent:contract.detailedWorkBudget?.comparisonAndRuntimeQaPercent??20,
+      representativeWorkPlanningMinutes:contract.detailedWorkBudget?.heroAssetOrRepresentativeMotionPlanningMinutes??null,
+      planningOnly:true,elapsedTimeIsNotQualityEvidence:true
+    }),
+    sourceImmutable:true,gameplayAuthority:false,newPipeline:false,runtimeVerified:false
+  });
+}
+
+// Unity와 Web이 교환하는 시각 설정. 엔진 객체나 게임 저장 데이터는 포함하지 않는다.
+// 같은 문서를 각 엔진의 실제 연결점으로 변환하며, 저장/전송은 기존 작업·자산 저장소가 담당한다.
+export function synchronizeAssetCustomization({document=null,currentDocument=null,baseRevision=0,gameId='',platform='WEB',assets=[],customization=null,styleBible={},motionStyle={},motionBindings=[]}={}){
+  const issues=[],targetPlatform=upper(platform)==='UNITY_WEB'?'UNITY':upper(platform);
+  const stable=value=>JSON.stringify(value,(_,entry)=>entry&&typeof entry==='object'&&!Array.isArray(entry)?Object.fromEntries(Object.keys(entry).sort().map(key=>[key,entry[key]])):entry);
+  const id=text(gameId),importing=document!==null;
+  const byId=new Map(assets.map(asset=>[text(asset.id),asset]));
+  const modifierBounds={poseExaggeration:[.5,2],anticipationScale:[.5,2],overshootScale:[0,2],squashStretch:[0,1],secondaryMotion:[0,2],recoveryPresentation:[.5,2]};
+  if(!['UNITY','WEB'].includes(targetPlatform))issues.push('UNSUPPORTED_SYNC_PLATFORM');
+  if(!id)issues.push('GAME_ID_REQUIRED');
+  if(!importing&&baseRevision!==(currentDocument?.revision??0))issues.push('BASE_REVISION_CONFLICT');
+  const candidate=document||{
+    schemaVersion:1,gameId:id,revision:baseRevision+1,baseRevision,
+    styleBible,motionStyle:{profileKey:motionStyle.profileKey,modifiers:motionStyle.modifiers},
+    recipes:(customization?.items||[]).map(item=>({
+      id:item.id,family:item.family,subfamily:item.subfamily,baseAssetId:item.baseAssetId,sourceHash:item.sourceHash,
+      parameters:Object.entries(item.parameters).map(([key,value])=>({key,value})),
+      lockedParameters:[...item.lockedParameters],identityAnchors:[...item.identityAnchors]
+    })),
+    motionBindings
+  };
+  if(Object.keys(candidate).some(key=>!['schemaVersion','gameId','revision','baseRevision','styleBible','motionStyle','recipes','motionBindings'].includes(key)))issues.push('NON_VISUAL_DOCUMENT_FIELD');
+  const bibleKeys=Object.keys(createStyleBible());
+  if(candidate.styleBible&&Object.entries(candidate.styleBible).some(([key,value])=>!bibleKeys.includes(key)||typeof value!=='string'))issues.push('INVALID_STYLE_FIELD');
+  if(candidate.motionStyle&&(Object.keys(candidate.motionStyle).some(key=>!['profileKey','modifiers'].includes(key))||Object.keys(candidate.motionStyle.modifiers||{}).some(key=>!Object.hasOwn(modifierBounds,key))))issues.push('NON_VISUAL_MOTION_FIELD');
+  if(candidate.schemaVersion!==1)issues.push('UNSUPPORTED_SCHEMA_VERSION');
+  if(candidate.gameId!==id||(currentDocument&&currentDocument.gameId!==id))issues.push('GAME_ID_MISMATCH');
+  if(!Number.isSafeInteger(candidate.revision)||candidate.revision<1||!Number.isSafeInteger(candidate.baseRevision)||candidate.baseRevision<0||candidate.baseRevision!==candidate.revision-1)issues.push('INVALID_REVISION');
+  if(currentDocument){
+    if(candidate.revision<currentDocument.revision)issues.push('STALE_REVISION');
+    else if(candidate.revision===currentDocument.revision&&stable(candidate)!==stable(currentDocument))issues.push('REVISION_CONTENT_CONFLICT');
+    else if(candidate.revision>currentDocument.revision&&candidate.baseRevision!==currentDocument.revision)issues.push('BASE_REVISION_CONFLICT');
+  }
+  if(!candidate.styleBible||typeof candidate.styleBible.profileKey!=='string'||!candidate.styleBible.profileKey)issues.push('STYLE_BIBLE_REQUIRED');
+  if(candidate.motionStyle?.profileKey!==candidate.styleBible?.profileKey)issues.push('STYLE_MOTION_PROFILE_MISMATCH');
+  for(const [key,[min,max]] of Object.entries(modifierBounds)){
+    const value=candidate.motionStyle?.modifiers?.[key];
+    if(typeof value!=='number'||!Number.isFinite(value)||value<min||value>max)issues.push('INVALID_MOTION_MODIFIER:'+key);
+  }
+  const recipeIds=new Set(),recipes=[];
+  if(!Array.isArray(candidate.recipes))issues.push('RECIPES_REQUIRED');
+  for(const row of Array.isArray(candidate.recipes)?candidate.recipes:[]){
+    if(!row||!text(row.id)||recipeIds.has(row.id)){issues.push('INVALID_OR_DUPLICATE_RECIPE');continue;}
+    recipeIds.add(row.id);
+    const base=byId.get(row.baseAssetId),sourceHash=text(base?.sourceHash||base?.contentHash||base?.sha256);
+    if(!sourceHash||sourceHash!==row.sourceHash)issues.push('SOURCE_HASH_MISMATCH:'+row.id);
+    const values=Array.isArray(row.parameters)?row.parameters:[];
+    if(!Array.isArray(row.parameters)||values.some(entry=>!entry||!text(entry.key))||new Set(values.map(entry=>entry?.key)).size!==values.length){issues.push('INVALID_PARAMETERS:'+row.id);continue;}
+    const parameters=Object.fromEntries(values.map(entry=>[entry.key,entry.value]));
+    if(!Array.isArray(row.lockedParameters)||!Array.isArray(row.identityAnchors)){issues.push('IDENTITY_LOCKS_REQUIRED:'+row.id);continue;}
+    const previous=currentDocument?.recipes?.find(entry=>entry.id===row.id);
+    for(const key of previous?.lockedParameters||[]){
+      if(!row.lockedParameters.includes(key)||stable(parameters[key])!==stable(previous.parameters.find(entry=>entry.key===key)?.value))issues.push('LOCKED_VALUE_CONFLICT:'+row.id+':'+key);
+    }
+    if(previous&&(previous.baseAssetId!==row.baseAssetId||stable(previous.identityAnchors)!==stable(row.identityAnchors)))issues.push('IDENTITY_CONFLICT:'+row.id);
+    recipes.push({...row,parameters,previousParameters:parameters});
+  }
+  // 한 플랫폼에서 잠긴 항목을 삭제한 문서도 조용히 다른 플랫폼에 적용하지 않는다.
+  for(const row of currentDocument?.recipes||[])if(row.lockedParameters?.length&&!recipeIds.has(row.id))issues.push('LOCKED_RECIPE_REMOVED:'+row.id);
+  const plan=createAssetCustomizationPlan({assets,recipes,styleBible:candidate.styleBible,platform:targetPlatform});
+  const applications=[];
+  for(const item of plan.items){
+    issues.push(...item.issues.map(issue=>item.id+':'+issue));
+    const asset=byId.get(item.baseAssetId),variant=asset?.platformVariants?.[targetPlatform];
+    if(!variant?.path||!variant?.contentHash||variant?.derivedFromHash!==item.sourceHash){issues.push('PLATFORM_VARIANT_REQUIRED:'+item.id+':'+targetPlatform);continue;}
+    const operations=[];
+    for(const operation of item.operations){
+      const binding=variant.bindings?.[operation.key];
+      if(!binding?.target||binding.kind!==operation.kind){issues.push('PLATFORM_BINDING_REQUIRED:'+item.id+':'+operation.key);continue;}
+      let value=operation.value;
+      // 값을 임의 축척하지 않는다. 예: Web morph 0..1 / Unity blendshape 0..100은 선언된 scale로만 변환한다.
+      if(typeof value==='number'){
+        if(typeof binding.scale!=='number'||!Number.isFinite(binding.scale)||binding.scale===0){issues.push('PLATFORM_SCALE_REQUIRED:'+item.id+':'+operation.key);continue;}
+        value*=binding.scale;
+        if(!Number.isFinite(value)){issues.push('PLATFORM_VALUE_INVALID:'+item.id+':'+operation.key);continue;}
+      }
+      let part=null;
+      if(['PART','MODULE'].includes(operation.kind)){
+        part=byId.get(operation.value)?.platformVariants?.[targetPlatform];
+        if(!part?.path||!part?.contentHash||part.derivedFromHash!==operation.sourceHash){issues.push('PLATFORM_PART_REQUIRED:'+item.id+':'+operation.key);continue;}
+      }
+      operations.push({...operation,target:binding.target,value,...(part?{partPath:part.path,partContentHash:part.contentHash}:{})});
+    }
+    applications.push({recipeId:item.id,assetId:item.baseAssetId,path:variant.path,contentHash:variant.contentHash,operations});
+  }
+  const motions=[],states=new Set();
+  if(!Array.isArray(candidate.motionBindings))issues.push('MOTION_BINDINGS_REQUIRED');
+  for(const motion of Array.isArray(candidate.motionBindings)?candidate.motionBindings:[]){
+    if(motion&&Object.keys(motion).some(key=>!['state','assetId','sourceHash','clip','durationSeconds','events'].includes(key)))issues.push('NON_VISUAL_MOTION_BINDING_FIELD');
+    if(Array.isArray(motion?.events)&&motion.events.some(event=>event&&Object.keys(event).some(key=>!['id','normalizedTime'].includes(key))))issues.push('NON_VISUAL_MOTION_EVENT_FIELD');
+    if(!motion||!text(motion.state)||states.has(motion.state)||!text(motion.clip)||typeof motion.durationSeconds!=='number'||!Number.isFinite(motion.durationSeconds)||motion.durationSeconds<=0||!Array.isArray(motion.events)||motion.events.some(event=>!event||!text(event.id)||typeof event.normalizedTime!=='number'||!Number.isFinite(event.normalizedTime)||event.normalizedTime<0||event.normalizedTime>1)){
+      issues.push('INVALID_MOTION_BINDING');continue;
+    }
+    states.add(motion.state);
+    const asset=byId.get(motion.assetId),variant=asset?.platformVariants?.[targetPlatform],clip=variant?.clips?.[motion.clip];
+    const sourceHash=text(asset?.sourceHash||asset?.contentHash||asset?.sha256);
+    if(!sourceHash||sourceHash!==motion.sourceHash||variant?.derivedFromHash!==sourceHash||!variant?.path||!variant?.contentHash||!clip?.name){issues.push('MOTION_VARIANT_REQUIRED:'+motion.state);continue;}
+    if(clip.durationSeconds!==motion.durationSeconds||stable(clip.events)!==stable(motion.events)){issues.push('MOTION_TIMING_MISMATCH:'+motion.state);continue;}
+    motions.push({...motion,path:variant.path,contentHash:variant.contentHash,clip:clip.name});
+  }
+  const schemaConflict=issues.some(issue=>!/(?:PLATFORM_|MOTION_VARIANT_REQUIRED|MOTION_TIMING_MISMATCH)/.test(issue));
+  return Object.freeze({
+    version:1,status:issues.length?(schemaConflict?'SYNC_CONFLICT':'AUTHORING_REQUIRED'):'READY_FOR_PLATFORM_APPLICATION',
+    platform:targetPlatform,issues:freezeList(issues),
+    document:schemaConflict?null:JSON.parse(JSON.stringify(candidate)),
+    customization:schemaConflict?null:plan,
+    // 전체 문서가 유효할 때만 적용 목록을 전달한다. 부분 적용은 상태를 갈라놓는다.
+    applications:freezeList(issues.length?[]:applications),motions:freezeList(issues.length?[]:motions),
+    transport:'EXISTING_ASSET_REGISTRY_AND_WORK_ORDER',atomicApplicationRequired:true,
+    gameplayAuthority:false,sourceMutationPerformed:false,runtimeVerified:false
+  });
 }
 
 function normalizeConceptWeights(rows=[]){
@@ -313,7 +557,7 @@ export function createGameVisualDNA({
   buildingLanguage='',motionLanguage='',vfxLanguage='',audioLanguage='',uiLanguage='',narrativePresentationLanguage=''
 }={}){
   const conceptProfile=concept.weightedStyles?concept:createConceptProfile(concept);
-  const bible=createStyleBible({styleFamily:conceptProfile.dominantStyle,...styleBible});
+  const bible=createStyleBible({styleFamily:conceptProfile.dominantStyle,styles:conceptProfile.weightedStyles,...styleBible});
   const fingerprint=[
     text(gameId)||'GAME',
     conceptProfile.weightedStyles.map(row=>row.family+':'+row.weight).join(','),
@@ -939,7 +1183,8 @@ export function createAssetLineage({
 export function createStudioAssetUniversePlan({
   assets=[],repositoryAssets=[],externalSources=[],activeDemand={},signalsByKey={},platform='UNITY',
   styleFamily='STYLIZED_FANTASY',styleBible={},concept={},gameId='',worldDna={},languages={},
-  requirements=[],usageByAsset={},futureGameDemands=[],usageEvents=[],baseMaterialFamilies={},baseMaterialUsageByAtom={}
+  requirements=[],usageByAsset={},futureGameDemands=[],usageEvents=[],baseMaterialFamilies={},baseMaterialUsageByAtom={},
+  customizationRecipes=[],customizationContract=null
 }={}){
   const conceptProfile=createConceptProfile({...concept,styleFamily:concept.styleFamily||styleFamily});
   const resolvedStyle=conceptProfile.dominantStyle||upper(styleFamily);
@@ -948,7 +1193,7 @@ export function createStudioAssetUniversePlan({
   const gapFill=buildAutonomousAssetGapFillPlan({
     coverageReport:coverage,verifiedAssets:verified,repositoryAssets,externalSources,signalsByKey
   });
-  const resolvedBible=createStyleBible({styleFamily:resolvedStyle,...styleBible});
+  const resolvedBible=createStyleBible({styleFamily:resolvedStyle,styles:conceptProfile.weightedStyles,...styleBible});
   const conceptCoherence=evaluateConceptCoherence({concept:conceptProfile,styleBible:resolvedBible,lockedStyle:styleFamily});
   const visualDna=createGameVisualDNA({gameId,concept:conceptProfile,styleBible:resolvedBible,worldDna,...languages});
   const inferredRequirements=requirements.length?requirements:Object.entries(activeDemand).flatMap(([family,subs])=>Object.entries(subs||{}).filter(([,count])=>Number(count)>0).map(([subfamily])=>({family,subfamily,required:true})));
@@ -965,6 +1210,11 @@ export function createStudioAssetUniversePlan({
     conceptAxes:CONCEPT_AXES,
     styleFamilies:ASSET_STYLE_FAMILIES,
     styleBible:resolvedBible,
+    customization:customizationContract?.enabled===true?createAssetCustomizationPlan({
+      assets:[...repositoryAssets,...assets],
+      recipes:customizationRecipes.length?customizationRecipes:uniq(inferredRequirements.map(row=>upper(row.family))).filter(family=>ASSET_CUSTOMIZATION_AXES[family]).map(family=>({family,baseAssetId:loadout.selections.find(row=>row.family===family)?.assetId})),
+      styleBible:resolvedBible,contract:customizationContract,platform
+    }):null,
     conceptCoherence,
     gameVisualDna:visualDna,
     loadout,

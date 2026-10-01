@@ -1,13 +1,100 @@
+// 파일명: qa/vibe2-native-asset-production.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {assetProductionGuidance,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets} from '../tools/vibe2-asset-production-plan.mjs';
+import {assetProductionGuidance,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,inspectVibeSourceGlb} from '../tools/vibe2-asset-production-plan.mjs';
+import {observeAssetReferenceImages,buildPrompt} from '../tools/vibe2-source-worker.mjs';
+import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource} from '../tools/company-development-roblox-bootstrap.mjs';
+
+test('Web fully consumes the same visual loadout as Unity and imports a shared customization document',()=>{
+  const asset={id:'icon',family:'UI',types:['ui'],license:'project-original',sourceHash:'icon-v1',customization:{controls:{color:{kind:'COLOR',axis:'MATERIAL',target:'Fill'}}},platformVariants:{
+    WEB:{path:'icon.svg',contentHash:'web-v1',derivedFromHash:'icon-v1',bindings:{color:{kind:'COLOR',target:'fill'}}},
+    UNITY:{path:'Icon.prefab',contentHash:'unity-v1',derivedFromHash:'icon-v1',bindings:{color:{kind:'COLOR',target:'Image.color'}}}
+  }};
+  const common={manifest:{assets:[asset]},presetCatalog:{presets:[]}};
+  const web=buildVibeAssetProductionPlan({...common,target:'web',task:{gameId:'shared-game',goal:'UI 아이콘 커마',styleFamily:'CARTOON',assetCustomization:{recipes:[{family:'UI',baseAssetId:'icon',parameters:{color:[.2,.4,.6]}}]}}});
+  assert.equal(web.assetSynchronization.status,'READY_FOR_PLATFORM_APPLICATION');
+  const unity=buildVibeAssetProductionPlan({...common,target:'unity',task:{gameId:'shared-game',goal:'UI 아이콘 커마',assetCustomization:{sharedDocument:web.assetSynchronization.document}}});
+  assert.equal(unity.assetSynchronization.status,'READY_FOR_PLATFORM_APPLICATION');
+  assert.deepEqual(web.baseMaterialLoadout.families,unity.baseMaterialLoadout.families);
+  assert.deepEqual(web.styleBible,unity.styleBible);
+  assert.equal(web.companyGraphicsLibrary.platformProfile,'WEB');
+  assert.equal(web.baseMaterialLoadout.universalAssetFirst.required,true);
+  assert.match(assetProductionGuidance(unity),/UNITY \/ WEB SHARED VISUAL DOCUMENT/);
+});
+
+test('image-only asset input delivers actual pixels and binds observations to the image hash',async()=>{
+  const request=createVibeReferenceImageStudyRequest({sourceId:'dokkaebi',sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',imageRef:'assets/roblox/world-ghosts/dokkaebi.png',purpose:'ASSET_CREATION'});
+  let calls=0;
+  const order={assetProduction:{imageAssetCreation:{enabled:true,studies:[{request}]}}};
+  const observed=await observeAssetReferenceImages({order,model:'fixture-vision',requestModel:async(prompt,options)=>{
+    calls++;assert.match(prompt,/attached image pixels/);assert.ok(Buffer.from(options.images[0],'base64').length>1000);
+    return JSON.stringify(Object.fromEntries(request.requestedFields.map(key=>[key,key==='UNSEEN_REGIONS'?'Back detail is a creative proposal':'fixture visible observation'])));
+  }});
+  assert.equal(calls,1);assert.equal(observed.observations[0].pixelInputDelivered,true);
+  assert.equal(observed.observations[0].sourceHash,'62b78067eccddaf6e137fac3a2c4d5eaf95e502971070d9c68c2a188fc1bf492');
+  assert.equal(observed.observations[0].verifiedAgainstSource,false);
+  assert.equal(observed.observations[0].generatedAsset,false);
+  assert.ok(!JSON.stringify(observed).includes('iVBOR'));
+  const prompt=buildPrompt({...order,target:'web',imageAssetObservation:observed},{files:[{path:'index.html',content:'<main></main>',editable:true}]},['index.html']);
+  assert.match(prompt,/IMAGE ASSET OBSERVATION BEGIN/);
+  await assert.rejects(observeAssetReferenceImages({order,model:''}),/VISION_MODEL_REQUIRED/);
+  const bad={assetProduction:{imageAssetCreation:{enabled:true,studies:[{request:{...request,imageRef:'../outside.png'}}]}}};
+  await assert.rejects(observeAssetReferenceImages({order:bad,model:'fixture'}),/LOCAL_REFERENCE_REQUIRED/);
+  await assert.rejects(observeAssetReferenceImages({order,model:'fixture',requestModel:async()=>'{}'}),/OBSERVATION_INCOMPLETE/);
+});
+
+test('navigation sketch preserves actual route topology and expands functional detail layers deterministically',()=>{
+  const sketch={nodes:[{id:'entry',role:'spawn'},{id:'market',role:'landmark'},{id:'exit',role:'transition'}],edges:[{from:'entry',to:'market'},{from:'market',to:'exit',oneWay:true}],districts:[{id:'market-block',anchorNodeId:'market',function:'MARKET'}]};
+  const assets=[{id:'shop',family:'BUILDING',sourceHash:'shop-v1',mapDetailRoles:['STRUCTURE'],districtFunctions:['MARKET']}];
+  const a=createVibeMapDetailReconstruction({sketch,assets,seed:'same',styleFamily:'DARK_FANTASY'});
+  assert.equal(a.status,'DETAIL_AUTHORING_PLAN');assert.equal(a.topology.edges[1].oneWay,true);
+  assert.equal(a.regions[0].layers.length,6);assert.equal(a.regions[0].layers[1].assetId,'shop');
+  assert.deepEqual(a,createVibeMapDetailReconstruction({sketch,assets,seed:'same',styleFamily:'DARK_FANTASY'}));
+  assert.equal(a.spatialScale.status,'SCALE_AUTHORING_REQUIRED');assert.equal(a.runtimeVerified,false);
+  const bad=createVibeMapDetailReconstruction({sketch:{...sketch,edges:[{from:'entry',to:'market'}]}});
+  assert.equal(bad.status,'MAP_INTERPRETATION_REQUIRED');assert.deepEqual(bad.regions,[]);
+  const empty=createVibeMapDetailReconstruction();assert.equal(empty.topology,null);
+});
+
+test('source GLB inventory uses real binary structure and leaves absent morphs or rigging for authoring',()=>{
+  const source=inspectVibeSourceGlb({source:{path:'assets/roblox/world-ghosts/native/mesh/bride.glb'}});
+  assert.equal(source.status,'INSPECTED_RECONSTRUCTION_INPUT');
+  assert.ok(source.inventory.meshCount>0);assert.ok(source.inventory.animations.length>0);
+  assert.ok(source.requiredAuthoring.includes('AUTHOR_MORPHS_WHEN_SHAPE_CUSTOMIZATION_NEEDED'));
+  assert.equal(source.generatedAsset,false);
+  assert.equal(inspectVibeSourceGlb({source:{path:'../outside.glb'}}).status,'SOURCE_GLB_REQUIRED');
+  const wrong=inspectVibeSourceGlb({source:{path:'assets/roblox/world-ghosts/native/mesh/bride.glb',sourceHash:'wrong'}});
+  assert.ok(wrong.issues.includes('GLB_SOURCE_HASH_MISMATCH'));
+  const plan=buildVibeAssetProductionPlan({target:'unity',task:{gameId:'reconstruct',goal:'디테일',sourceGlbs:[{path:'assets/roblox/world-ghosts/native/mesh/bride.glb'}],imageToAsset:true,referenceImages:[{sourceId:'ref',sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',path:'assets/roblox/world-ghosts/dokkaebi.png'}],mapReconstruction:{sketch:{}}}});
+  assert.equal(plan.sourceGlbReconstruction[0].sourceHash,source.sourceHash);
+  const guidance=assetProductionGuidance(plan);
+  for(const term of ['BASIC GLB TO DETAILED ASSET','IMAGE-TO-ASSET CREATION','BASIC MAP TO DETAILED WORLD'])assert.ok(guidance.includes(term));
+});
+
+test('customization and detailed style instructions reach the existing asset work order input',()=>{
+  const plan=buildVibeAssetProductionPlan({target:'roblox',task:{
+    gameId:'customization-review',goal:'다크 카툰 캐릭터 배경 UI 아이콘 모션',
+    concept:{styles:[{family:'CARTOON',weight:.6},{family:'DARK_FANTASY',weight:.4}]},
+    assetCustomization:{recipes:[{family:'UI',subfamily:'ICON',baseAssetId:'test-icon',parameters:{tint:[.1,.2,.3]}}]}
+  },manifest:{assets:[{id:'test-icon',family:'UI',types:['ui'],license:'project-original',platforms:['roblox'],sourceHash:'fixture-v1',customization:{controls:{tint:{kind:'COLOR',axis:'MATERIAL',target:'IconFill'}}}}]},presetCatalog:{presets:[]}});
+  assert.equal(plan.styleBible.profileKey,'TOON_NOIR');
+  assert.equal(plan.motionStyle.profileKey,'TOON_NOIR');
+  assert.equal(plan.assetCustomization.items[0].status,'DECLARED_BINDINGS_READY');
+  assert.equal(plan.assetCustomization.items[0].operations[0].target,'IconFill');
+  assert.equal(plan.assetCustomization.runtimeVerified,false);
+  assert.equal(plan.assetCustomization.minimumQuality.referenceRole,'OWNER_SELECTED_VISUAL_QUALITY_FLOOR_NOT_RUNTIME_PROOF');
+  assert.ok(fs.existsSync(plan.assetCustomization.minimumQuality.referencePath));
+  const guidance=assetProductionGuidance(plan);
+  for(const text of ['도깨비','UI·아이콘','24/32/48/64px','Blender','실제 모션 변형 지침','IconFill','UNVERIFIED'])assert.ok(guidance.includes(text),text);
+  assert.equal(plan.assetCustomization.effort.representativeWorkPlanningMinutes,360);
+});
 
 test('motion planning reuses company clips per state and does not invent coverage or runtime proof',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'motion-reuse-'));

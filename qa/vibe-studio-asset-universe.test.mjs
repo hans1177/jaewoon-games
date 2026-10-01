@@ -1,3 +1,4 @@
+// 파일명: qa/vibe-studio-asset-universe.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -29,6 +30,8 @@ import {
   createStudioTestbedPlan,
   summarizeVerifiedAssetUsage,
   createStyleBible,
+  createAssetCustomizationPlan,
+  synchronizeAssetCustomization,
   evaluateStyleBible,
   evaluateAssetIdentity,
   checkClothingLayerCompatibility,
@@ -48,6 +51,106 @@ import {
   createStudioAssetUniversePlan
 } from '../assets/vibe-studio-asset-universe.js';
 import {createVibeCharacterPersona,resolveVibeCharacterBehaviorIntent,createVibePopulationPersonaDiversity} from '../assets/vibe-character-identity-director.js';
+
+function sharedCustomizationFixture(){
+  const assets=[{id:'body',family:'CHARACTER',sourceHash:'body-v1',customization:{controls:{jaw:{axis:'FACE',kind:'MORPH',target:'Jaw',min:0,max:1}}},platformVariants:{
+    WEB:{path:'body.glb',contentHash:'web-v1',derivedFromHash:'body-v1',bindings:{jaw:{kind:'MORPH',target:'Jaw',scale:1}}},
+    UNITY:{path:'Body.prefab',contentHash:'unity-v1',derivedFromHash:'body-v1',bindings:{jaw:{kind:'MORPH',target:'Head/Jaw',scale:100}}}
+  }},{id:'idle',family:'MOTION',sourceHash:'idle-v1',platformVariants:{
+    WEB:{path:'idle.glb',contentHash:'clip-web',derivedFromHash:'idle-v1',clips:{IDLE:{name:'IdleWeb',durationSeconds:2,events:[{id:'contact',normalizedTime:.5}]}}},
+    UNITY:{path:'Idle.anim',contentHash:'clip-unity',derivedFromHash:'idle-v1',clips:{IDLE:{name:'IdleUnity',durationSeconds:2,events:[{id:'contact',normalizedTime:.5}]}}}
+  }}];
+  const styleBible=createStyleBible({styleFamily:'CARTOON'}),motionStyle={profileKey:'CARTOON',modifiers:{poseExaggeration:1.35,anticipationScale:1.2,overshootScale:1.25,squashStretch:.15,secondaryMotion:1.2,recoveryPresentation:1.1}};
+  const customization=createAssetCustomizationPlan({assets,recipes:[{id:'hero',family:'CHARACTER',baseAssetId:'body',parameters:{jaw:.3},lockedParameters:['jaw'],previousParameters:{jaw:.3}}]});
+  const motionBindings=[{state:'IDLE',assetId:'idle',sourceHash:'idle-v1',clip:'IDLE',durationSeconds:2,events:[{id:'contact',normalizedTime:.5}]}];
+  return{assets,customization,styleBible,motionStyle,motionBindings,gameId:'demo',platform:'WEB'};
+}
+
+test('Unity and Web round-trip one visual document with explicit morph scales and matching motion events',()=>{
+  const input=sharedCustomizationFixture(),web=synchronizeAssetCustomization(input);
+  assert.equal(web.status,'READY_FOR_PLATFORM_APPLICATION');
+  const unity=synchronizeAssetCustomization({...input,document:JSON.parse(JSON.stringify(web.document)),platform:'UNITY_WEB'});
+  assert.equal(unity.status,'READY_FOR_PLATFORM_APPLICATION');
+  assert.deepEqual(web.document,unity.document);
+  assert.equal(web.applications[0].operations[0].value,.3);
+  assert.equal(unity.applications[0].operations[0].value,30);
+  assert.equal(unity.motions[0].clip,'IdleUnity');
+  assert.deepEqual(unity.motions[0].events,web.motions[0].events);
+  assert.equal(unity.runtimeVerified,false);
+  assert.equal(input.assets[0].customization.controls.jaw.target,'Jaw');
+});
+
+test('visual synchronization rejects stale revisions, conflicting writes, changed source and locked values atomically',()=>{
+  const input=sharedCustomizationFixture(),first=synchronizeAssetCustomization(input).document;
+  const second={...structuredClone(first),revision:2,baseRevision:1};
+  for(const [document,currentDocument,expected] of [
+    [first,second,'STALE_REVISION'],
+    [{...first,styleBible:{...first.styleBible,paletteContrast:'changed'}},first,'REVISION_CONTENT_CONFLICT'],
+    [{...second,recipes:[{...first.recipes[0],sourceHash:'wrong'}]},first,'SOURCE_HASH_MISMATCH:hero'],
+    [{...second,recipes:[{...first.recipes[0],parameters:[{key:'jaw',value:.8}]}]},first,'LOCKED_VALUE_CONFLICT:hero:jaw'],
+    [{...second,damage:100},first,'NON_VISUAL_DOCUMENT_FIELD']
+  ]){
+    const result=synchronizeAssetCustomization({...input,document,currentDocument});
+    assert.ok(result.issues.includes(expected),JSON.stringify(result.issues));
+    assert.equal(result.document,null);assert.deepEqual(result.applications,[]);assert.deepEqual(result.motions,[]);
+  }
+});
+
+test('missing platform variants and altered clip timing require authoring and never partially apply',()=>{
+  const input=sharedCustomizationFixture(),document=synchronizeAssetCustomization(input).document;
+  delete input.assets[0].platformVariants.UNITY;
+  input.assets[1].platformVariants.UNITY.clips.IDLE.durationSeconds=3;
+  const result=synchronizeAssetCustomization({...input,document,platform:'UNITY'});
+  assert.equal(result.status,'AUTHORING_REQUIRED');
+  assert.ok(result.issues.includes('MOTION_TIMING_MISMATCH:IDLE'));
+  assert.deepEqual(result.document,document);assert.deepEqual(result.applications,[]);assert.deepEqual(result.motions,[]);
+});
+
+test('style families produce different authoring direction while explicit art locks survive',()=>{
+  const cartoon=createStyleBible({styleFamily:'CARTOON'}),dark=createStyleBible({styleFamily:'DARK_FANTASY'});
+  assert.notEqual(cartoon.shapeLanguage,dark.shapeLanguage);
+  assert.notEqual(cartoon.materialLanguage,dark.materialLanguage);
+  const mixed=createStudioAssetUniversePlan({concept:{styles:[{family:'CARTOON',weight:.7},{family:'DARK_FANTASY',weight:.3}]},styleBible:{materialLanguage:'OWNER_LOCKED_MATERIAL'}});
+  assert.equal(mixed.styleBible.profileKey,'TOON_NOIR');
+  assert.equal(mixed.styleBible.materialLanguage,'OWNER_LOCKED_MATERIAL');
+});
+
+test('customization preserves locked controls and refuses unsupported or incompatible operations',()=>{
+  const assets=[
+    {id:'body',family:'CHARACTER',sourceHash:'source-v1',customization:{controls:{
+      jaw:{axis:'FACE',kind:'MORPH',target:'JawWidth',min:-1,max:1},
+      hair:{axis:'HAIR',kind:'PART',target:'HeadSocket',choices:['hair-a','hair-b']}
+    }}},
+    {id:'hair-a',sourceHash:'hair-v1',customization:{compatibleBaseIds:['body'],sockets:['HeadSocket']}},
+    {id:'hair-b',sourceHash:'hair-v2',customization:{compatibleBaseIds:['other'],sockets:['HeadSocket']}}
+  ];
+  const recipe={family:'CHARACTER',baseAssetId:'body',parameters:{jaw:.8,hair:'hair-a'},previousParameters:{jaw:.2},lockedParameters:['jaw']};
+  const valid=createAssetCustomizationPlan({assets,recipes:[recipe]}).items[0];
+  assert.equal(valid.parameters.jaw,.2);
+  assert.equal(recipe.parameters.jaw,.8);
+  assert.equal(valid.operations.find(row=>row.key==='jaw').value,.2);
+  assert.equal(valid.runtimeVerified,false);
+  assert.equal(valid.sourceMutationPerformed,false);
+  for(const change of [{parameters:{jaw:2}},{parameters:{hp:100}},{parameters:{hair:'hair-b'}},{previousParameters:{}}]){
+    const item=createAssetCustomizationPlan({assets,recipes:[{...recipe,lockedParameters:[],...change,...(change.previousParameters?{lockedParameters:['jaw']}:{})}]}).items[0];
+    assert.equal(item.status,'AUTHORING_REQUIRED');assert.equal(item.operations.length,0);
+  }
+});
+
+test('all visual families include UI and icons with validated color and state controls',()=>{
+  const asset={id:'icon',family:'UI',sourceHash:'icon-v1',customization:{controls:{
+    tint:{axis:'MATERIAL',kind:'COLOR',target:'Fill'},state:{axis:'STATE_VARIANT',kind:'CHOICE',target:'Frame',choices:['normal','selected']}
+  }}};
+  const make=parameters=>createAssetCustomizationPlan({assets:[asset],recipes:[{family:'UI',subfamily:'ICON',baseAssetId:'icon',parameters}]});
+  const plan=make({tint:[.3,.4,.5,1],state:'selected'});
+  assert.equal(plan.items[0].status,'DECLARED_BINDINGS_READY');
+  assert.equal(plan.items[0].operations.length,2);
+  assert.ok(plan.uiAndIconReview.scope.includes('ICON'));
+  assert.ok(plan.families.includes('ENVIRONMENT'));
+  assert.equal(make({tint:[2,0,0]}).items[0].operations.length,0);
+  assert.equal(make({state:'unknown'}).items[0].status,'AUTHORING_REQUIRED');
+  assert.equal(createAssetCustomizationPlan({recipes:[{family:'BUILDING'}]}).items[0].status,'AUTHORING_REQUIRED');
+});
 
 test('studio asset universe exposes broad reusable catalogs',()=>{
   assert.equal(STUDIO_ASSET_UNIVERSE_TARGET,'HIGH_END_STUDIO_ASSET_UNIVERSE');

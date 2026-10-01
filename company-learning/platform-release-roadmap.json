@@ -1,5 +1,5 @@
 {
-  "version": 500,
+  "version": 502,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -7492,7 +7492,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-30T13:43:45.000Z",
+  "updatedAt": "2026-10-01T09:12:00+09:00",
   "priorityTiers": [
     {
       "tier": 1,
@@ -9433,6 +9433,26 @@
         "releasedCycle": "F0_TO_F9_THEN_CANONICAL_SERVER_PUBLISH_THEN_REPEAT",
         "developmentCycle": "F0_TO_F9_THEN_REPEAT_WITHOUT_CANONICAL_SERVER_PUBLISH",
         "externalPublicExposureGateUnchanged": true
+      }
+    },
+    "customizableDetailedAssetProduction20261001": {
+      "ownerIntent": "고품질 공통 원형과 외부 GLB를 활용해 모든 시각 자산을 커마 방식으로 제작하고 도깨비 캐릭터를 최소 디테일 기준으로 사용",
+      "responsiblePolicy": "assetProductionParallelContract.companyGraphicsLibrary24h.composableBaseMaterialLibrary.customization",
+      "implementation": [
+        "assets/vibe-studio-asset-universe.js",
+        "assets/vibe-motion-director.js",
+        "tools/vibe2-asset-production-plan.mjs",
+        "tools/vibe2-source-worker.mjs",
+        "assets/vibe-environment-director.js"
+      ],
+      "scope": "AUTHORING_STYLE_MEASUREMENT_UNITY_WEB_SYNC_PIXEL_IMAGE_MAP_AND_GLB_INPUTS",
+      "actualNewModelsOrNativeRuntimePassClaimed": false,
+      "centralDocumentationImpact": {
+        "architectureTopologyChanged": false,
+        "loggingContractChanged": false,
+        "securityAuthorityChanged": false,
+        "schedulerChanged": false,
+        "existingAssetLicenseAndRuntimePromotionGuardsPreserved": true
       }
     }
   },
@@ -15178,7 +15198,7 @@
       "qualitySecurityEvidenceAndSaveCompatibilityGatesUnchanged": true
     },
     "platformAssetSeparation": {
-      "webRole": "PLAYABLE_GAMEPLAY_AND_ART_DIRECTION_REFERENCE_SURFACE",
+      "webRole": "FULL_VISUAL_ASSET_CONSUMER_WITH_SHARED_CUSTOMIZATION_DOCUMENT",
       "webAssetDirectReuseIntoUnityForbidden": true,
       "webAssetDirectReuseIntoRobloxForbidden": true,
       "unityAssetsMustBeUnityNativeOrExplicitlyUnityCompatible": true,
@@ -15203,7 +15223,11 @@
       "unityAndUnityWebShareUiSourceByDefault": true,
       "unityWebSeparateHtmlCssJsGameplayUiForbidden": true,
       "unityWebPlatformCompatibilityAdaptationAllowedInsideCanonicalUnityProject": true,
-      "genericWebUiMayNotSubstituteForUnityWebglGameplayUi": true
+      "genericWebUiMayNotSubstituteForUnityWebglGameplayUi": true,
+      "unityWebSharedVisualDocumentAllowed": true,
+      "sharedGlbSourceAllowedWithExplicitPlatformVariants": true,
+      "webRendererCodeDirectReuseIntoUnityForbidden": true,
+      "crossPlatformAssetImportRequiresExplicitCompatibility": true
     },
     "webPresentationQuality": {
       "target": "POLISHED_COMMERCIAL_MOBILE_WEB_2D_OR_2_5D",
@@ -19584,6 +19608,259 @@
           "runtimeEvidenceRequiredBeforePromotion": true,
           "positiveMasteryRequiresTargetEngineRuntimeEvidence": true,
           "gameplayBalanceSaveProgressionEconomyAndNetworkAuthorityImmutable": true
+        },
+        "customization": {
+          "version": 1,
+          "enabled": true,
+          "authority": "OWNER_DIRECTIVE_2026-10-01",
+          "implementation": "assets/vibe-studio-asset-universe.js::createAssetCustomizationPlan",
+          "inputBinding": "tools/vibe2-asset-production-plan.mjs::buildVibeAssetProductionPlan",
+          "executionBinding": "tools/vibe2-continuous-runner.mjs::buildVibeContinuousWorkOrder",
+          "scope": "ALL_VISIBLE_ASSET_FAMILIES_WITH_FAMILY_SPECIFIC_CONTROLS",
+          "minimumQuality": {
+            "label": "도깨비 캐릭터 수준 이상의 상급 조형·재질·연기",
+            "referencePath": "assets/roblox/world-ghosts/dokkaebi.png",
+            "referenceSha256": "62b78067eccddaf6e137fac3a2c4d5eaf95e502971070d9c68c2a188fc1bf492",
+            "referenceRole": "OWNER_SELECTED_VISUAL_QUALITY_FLOOR_NOT_RUNTIME_PROOF",
+            "requiredDetails": [
+              "FACIAL_PLANES_EYELIDS_MOUTH_TEETH_AND_ASYMMETRIC_EXPRESSION",
+              "HORN_ROOT_GROWTH_RIDGES_AND_SKIN_TRANSITION",
+              "ARTICULATED_FINGERS_TOES_NAILS_AND_JOINT_FOLDS",
+              "LAYERED_STRAW_HAIR_CLOTH_AND_ROPE_KNOT_CONSTRUCTION",
+              "STITCHES_FRAYED_EDGES_AND_CAUSE_BASED_WEAR",
+              "DISTINCT_WOOD_METAL_CLOTH_SKIN_AND_ROUGHNESS_RESPONSE",
+              "FULL_FRONT_SIDE_BACK_AND_GAME_CAMERA_COHERENCE",
+              "WEIGHT_CONTACT_TRANSITION_AND_SECONDARY_ACTING"
+            ],
+            "appliesToEveryDerivative": true,
+            "environmentEquivalent": "CONSTRUCTION_JOINTS_EDGE_PROFILE_LAYERED_MATERIALS_CAUSE_BASED_DECAY_AND_ENVIRONMENTAL_STORY",
+            "styleSpecificDetailTranslationRequired": true,
+            "genericPrimitiveAssemblyCannotMeetFloor": true,
+            "colorOnlyOrFogOnlyPolishCannotMeetFloor": true,
+            "qualityFloorRequiresActualRenderedComparison": true,
+            "referenceImageIsNotCompleted3DAsset": true,
+            "uiIconEquivalent": "STYLE_MATCHED_SHAPE_EDGE_MATERIAL_WEAR_STATE_MOTION_WITH_SMALL_SIZE_LEGIBILITY"
+          },
+          "workflow": [
+            "INSPECT_REUSE_AND_LICENSED_EXTERNAL_GLB",
+            "NORMALIZE_SCALE_RIG_MATERIALS_AND_SOCKETS",
+            "QUICK_BASE_ASSEMBLY",
+            "LOCK_IDENTITY_AND_CUSTOMIZE",
+            "SCULPT_SEAMS_MATERIALS_AND_CAUSAL_WEAR",
+            "POLISH_ACTING_CONTACT_AND_TRANSITIONS",
+            "COMPARE_CLOSEUP_AND_GAME_CAMERA",
+            "NATIVE_MOBILE_QA"
+          ],
+          "defaultProduction": "REUSABLE_QUALITY_BASE_PLUS_COMPATIBLE_PARTS_AND_PER_ASSET_RECIPE",
+          "recipeInput": "task.assetCustomization.recipes",
+          "modelCapabilityInput": "asset.customization.controls",
+          "unsupportedControlAction": "AUTHORING_REQUIRED_NO_SILENT_FAKE_VARIATION",
+          "styleProfileSource": "assets/vibe-studio-asset-universe.js::ASSET_STYLE_PROFILES",
+          "motionStyleBinding": "assets/vibe-motion-director.js::deriveMotionStyleVariant",
+          "sourceHashAndLockedParametersRequired": true,
+          "externalModelImportMustInspectActualTopologyRigAndMorphs": true,
+          "commercialUseModificationAndAssetResaleRightsCheckedSeparately": true,
+          "preserveSourceAndEditDerivative": true,
+          "adjacentPartsClothingAndRigMustConformAfterBodyChange": true,
+          "detailedWorkBudget": {
+            "quickAssemblyPercent": 15,
+            "detailAndMotionPercent": 65,
+            "comparisonAndRuntimeQaPercent": 20,
+            "heroAssetOrRepresentativeMotionPlanningMinutes": 360,
+            "planningOnly": true,
+            "notTimeoutOrCompletionProof": true
+          },
+          "motionQuality": {
+            "actualJointCurvesRequired": true,
+            "rigSpecificRetargetRequired": true,
+            "preserveImpactClipDurationAndGameplayAuthority": true,
+            "phaseScalingWithinLockedEventsOnly": true,
+            "representativeActionIncludesEntryContactRecoveryAndInterrupt": true,
+            "missingInvalidOrNonFiniteMeasurements": "UNVERIFIED",
+            "notApplicableRequiresAnatomicalOrActionReason": true,
+            "motionScope": [
+              "IDLE",
+              "WALK",
+              "RUN",
+              "TURN",
+              "START",
+              "STOP",
+              "JUMP",
+              "LAND",
+              "ATTACK",
+              "SKILL",
+              "GUARD",
+              "DODGE",
+              "HIT",
+              "DEATH",
+              "FACIAL_ACTING",
+              "INTERACTION",
+              "UI_STATE_MOTION"
+            ],
+            "secondaryParts": [
+              "GAZE",
+              "HEAD",
+              "FINGERS",
+              "HAIR",
+              "CLOTHING",
+              "EQUIPMENT",
+              "TAIL_OR_WINGS_WHEN_PRESENT"
+            ],
+            "continuousMovement": {
+              "implementation": "assets/vibe-motion-director.js::createMotionDirectorPlan.continuity",
+              "preserveCurrentPoseVelocityAndFootPhase": true,
+              "interruptAndRecoveryRequired": true,
+              "bodyHairClothEquipmentDampedFollowThrough": true,
+              "styles": [
+                "CARTOON",
+                "REALISTIC",
+                "DARK_FANTASY",
+                "TOON_NOIR"
+              ],
+              "sameSourceAndActionComparativeReview": true,
+              "missingTransitionMeasurements": "UNVERIFIED"
+            }
+          },
+          "existingGraphicsProductionOnly": true,
+          "newQueueOrPipeline": false,
+          "schedulerAndParallelismUnchanged": true,
+          "newReleaseGate": false,
+          "runtimeVerificationRequiredBeforeAssetPromotion": true,
+          "explicitVisualScope": [
+            "CHARACTERS",
+            "CREATURES",
+            "CLOTHING",
+            "WEAPONS",
+            "ITEMS",
+            "BUILDINGS",
+            "INTERIORS",
+            "TERRAIN",
+            "FOLIAGE",
+            "PROPS",
+            "MATERIALS",
+            "VFX",
+            "SKILL_PRESENTATION",
+            "MOTION",
+            "HUD",
+            "MENUS",
+            "PANELS",
+            "BUTTONS",
+            "ICONS",
+            "INVENTORY",
+            "MAP",
+            "TOOLTIPS",
+            "STATUS",
+            "TOUCH_CONTROLS"
+          ],
+          "uiIconQuality": {
+            "sameQualityFloor": true,
+            "actualDisplaySizeReview": true,
+            "iconPreviewPixels": [
+              24,
+              32,
+              48,
+              64
+            ],
+            "requiredStates": [
+              "NORMAL",
+              "PRESSED",
+              "DISABLED",
+              "SELECTED",
+              "FOCUSED"
+            ],
+            "lightAndDarkBackgroundReview": true,
+            "preserveHitTargetsNavigationAndAccessibility": true,
+            "microdetailMayNotDestroyMeaningOrReadability": true
+          },
+          "workerPromptBinding": "tools/vibe2-source-worker.mjs::universalAssetWorkerGuidance",
+          "unityWebSynchronization": {
+            "enabled": true,
+            "implementation": "assets/vibe-studio-asset-universe.js::synchronizeAssetCustomization",
+            "documentInput": "task.assetCustomization.sharedDocument",
+            "registryStorage": "company-asset-library.json#baseMaterialLibrary.customization.documents",
+            "platformVariantInput": "asset.platformVariants.UNITY|WEB",
+            "platforms": [
+              "UNITY",
+              "UNITY_WEB",
+              "WEB"
+            ],
+            "sameUnityProjectForUnityWebGL": true,
+            "sharedFields": [
+              "ASSET_ID",
+              "SOURCE_HASH",
+              "REVISION",
+              "STYLE_BIBLE",
+              "CUSTOMIZATION_PARAMETERS",
+              "IDENTITY_LOCKS",
+              "MOTION_STYLE",
+              "MOTION_STATE_CLIP_DURATION_AND_CONTACT_MARKERS"
+            ],
+            "webIsFullAssetConsumer": true,
+            "sameGameSemanticAtomSelectionAcrossUnityWeb": true,
+            "rejectStaleConflictingRevisionOrSourceHash": true,
+            "atomicApplication": true,
+            "missingNativeBinding": "AUTHORING_REQUIRED",
+            "nativeShaderRigLodAndValueScalesExplicit": true,
+            "existingRegistryAndWorkOrderOnly": true,
+            "newRealtimeServiceCreated": false,
+            "runtimeVerificationPerPlatformRequired": true
+          },
+          "imageToAsset": {
+            "enabled": true,
+            "input": "task.imageToAsset + task.referenceImages",
+            "implementation": [
+              "assets/vibe-environment-director.js::createVibeReferenceImageStudyRequest",
+              "assets/vibe-environment-director.js::bindVibeReferenceImageObservation",
+              "tools/vibe2-source-worker.mjs::observeAssetReferenceImages"
+            ],
+            "singleImageSufficientForCreativeBrief": true,
+            "pixelModelConfiguration": "VIBE2_VISION_MODEL",
+            "provider": "EXISTING_LOCAL_OLLAMA_MULTIMODAL",
+            "defaultTextModelMayNotPretendToSeeImages": true,
+            "localReferenceMaterializationRequired": true,
+            "observationBoundToImageContentHash": true,
+            "unseenGeometryAndMotionAreCreativeProposals": true,
+            "sameDokkaebiQualityFloor": true,
+            "actualMeshTextureRigAndClipAuthoringStillRequired": true,
+            "generatedArtifactAndRuntimePassNeverInferredFromObservation": true
+          },
+          "mapDetailReconstruction": {
+            "enabled": true,
+            "input": "task.mapReconstruction.sketch OR referenceImages purpose MAP_RECONSTRUCTION",
+            "implementation": "assets/vibe-environment-director.js::createVibeMapDetailReconstruction",
+            "minimumInput": "NAVIGATION_LEVEL_ROADS_JUNCTIONS_DISTRICTS_AND_LANDMARKS",
+            "preserveTopologyAndGameplayClearance": true,
+            "detailLayers": [
+              "TERRAIN",
+              "STRUCTURE",
+              "VEGETATION",
+              "FUNCTIONAL_PROPS",
+              "SURFACE_HISTORY",
+              "AMBIENT_LIFE"
+            ],
+            "districtFunctionCausesDetail": true,
+            "unknownPhysicalScaleRemainsAuthoringRequired": true,
+            "uniformScatterOrAssetCountDoesNotProveQuality": true
+          },
+          "sourceGlbReconstruction": {
+            "enabled": true,
+            "input": "task.sourceGlbs",
+            "implementation": "tools/vibe2-asset-production-plan.mjs::inspectVibeSourceGlb",
+            "actualBinaryHeaderAndJsonInventoryRequired": true,
+            "sourceContentHashRequired": true,
+            "inspect": [
+              "MESH_PRIMITIVES",
+              "MATERIALS",
+              "UV_NORMALS",
+              "MORPH_TARGETS",
+              "SKINS_JOINTS",
+              "ANIMATION_CHANNELS",
+              "EXTERNAL_RESOURCES"
+            ],
+            "immutableOriginalAndEditableDerivative": true,
+            "noSubdivideNoiseOrHueOnlyCompletion": true,
+            "dccMeshRigTextureAndClipAuthoringRequired": true
+          }
         }
       },
       "executionLane": "ASSET_DEVELOPMENT",
