@@ -96,6 +96,8 @@ jobs:
                 const title=String(r.display_title||'');
                 if(!states.has(String(r.status||'').toLowerCase()))continue;
                 if(String(r.id)===String(process.env.CURRENT_RUN_ID||''))continue;
+                const runId=Number(r.id),currentRunId=Number(process.env.CURRENT_RUN_ID||0);
+                if(Number.isFinite(runId)&&Number.isFinite(currentRunId)&&currentRunId>0&&runId>=currentRunId)continue;
                 if(!title.startsWith(prefix))continue;
                 // 오너가 요청한 단일 게임 재검사는 자동 일괄 검사보다 우선 보존한다.
                 if(r.event==='workflow_dispatch'&&title!==prefix+'scan')continue;
