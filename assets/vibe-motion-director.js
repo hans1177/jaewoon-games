@@ -473,6 +473,35 @@ export function createDuelCombatAuthoringRecipe({
   });
 }
 
+
+export const HERO_STANDARD_RIG_TARGET='HIGH_END_SHARED_HERO_STANDARD_RIG';
+
+export const HERO_STANDARD_RIG_MOTION_PACK=Object.freeze({
+  locomotion:freezeList([
+    'HERO_IDLE_RELAXED','HERO_IDLE_ALERT','HERO_WALK_FORWARD','HERO_RUN','HERO_SPRINT',
+    'HERO_START','HERO_STOP','HERO_TURN_90','HERO_TURN_180','HERO_BACKWARD'
+  ]),
+  movementAction:freezeList([
+    'HERO_JUMP_START','HERO_JUMP_AIR','HERO_LAND','HERO_DODGE_LEFT',
+    'HERO_DODGE_RIGHT','HERO_DODGE_BACK','HERO_DASH','HERO_CROUCH'
+  ]),
+  combatCore:freezeList([
+    'HERO_ATTACK_1','HERO_ATTACK_2','HERO_ATTACK_3','HERO_ATTACK_4',
+    'HERO_HEAVY_ATTACK_1','HERO_HEAVY_ATTACK_2','HERO_DASH_ATTACK','HERO_AERIAL_ATTACK',
+    'HERO_GUARD','HERO_PARRY','HERO_FINISHER','HERO_SKILL_CAST'
+  ]),
+  reaction:freezeList([
+    'HERO_HIT_FRONT','HERO_HIT_BACK','HERO_HIT_LEFT','HERO_HIT_RIGHT','HERO_STUN','HERO_KNOCKDOWN'
+  ]),
+  recovery:freezeList([
+    'HERO_DEATH_FRONT','HERO_DEATH_BACK','HERO_GET_UP','HERO_SPAWN'
+  ])
+});
+
+export const HERO_SURVIVAL_WEAPON_FAMILIES=freezeList([
+  'ONE_HAND_SWORD','SPEAR','AXE','HAMMER','DAGGER','BOW'
+]);
+
 export const SURVIVAL_PLAYER_MOTION_PACK=Object.freeze({
   locomotion:freezeList([
     'SURVIVAL_IDLE_RELAXED','SURVIVAL_IDLE_WEIGHT_SHIFT','SURVIVAL_WALK_FORWARD','SURVIVAL_WALK_BACK',
@@ -486,13 +515,36 @@ export const SURVIVAL_PLAYER_MOTION_PACK=Object.freeze({
   ]),
   interaction:freezeList([
     'SURVIVAL_PICKUP_GROUND','SURVIVAL_GATHER_LOW','SURVIVAL_INTERACT_FORWARD','SURVIVAL_OPEN_CONTAINER',
-    'SURVIVAL_CARRY_LIGHT','SURVIVAL_PLACE_OBJECT'
+    'SURVIVAL_CARRY_LIGHT','SURVIVAL_PLACE_OBJECT','SURVIVAL_CRAFT','SURVIVAL_EAT','SURVIVAL_DRINK',
+    'SURVIVAL_BANDAGE','SURVIVAL_CARRY_HEAVY','SURVIVAL_PUSH','SURVIVAL_PULL','SURVIVAL_LADDER_CLIMB',
+    'SURVIVAL_SWIM','SURVIVAL_EXHAUSTED_IDLE'
   ]),
   reaction:freezeList([
     'SURVIVAL_HIT_FRONT','SURVIVAL_HIT_BACK','SURVIVAL_HIT_LEFT','SURVIVAL_HIT_RIGHT',
     'SURVIVAL_STAGGER','SURVIVAL_KNOCKDOWN','SURVIVAL_GET_UP'
   ]),
   death:freezeList(['SURVIVAL_DEATH_FRONT','SURVIVAL_DEATH_BACK','SURVIVAL_DEATH_SIDE'])
+});
+
+
+export const MOUNT_RIDER_MOTION_PACKS=Object.freeze({
+  HORSE:Object.freeze({
+    pair:freezeList([
+      'HORSE_MOUNT','HORSE_DISMOUNT','HORSE_RIDER_IDLE','HORSE_WALK','HORSE_RUN','HORSE_SPRINT',
+      'HORSE_TURN_LEFT','HORSE_TURN_RIGHT','HORSE_HARD_STOP','HORSE_JUMP','HORSE_LAND','HORSE_HIT'
+    ]),
+    signature:freezeList(['HORSE_REAR','HORSE_STARTLE'])
+  }),
+  WOLF:Object.freeze({
+    pair:freezeList([
+      'WOLF_MOUNT','WOLF_DISMOUNT','WOLF_RIDER_IDLE','WOLF_WALK','WOLF_RUN','WOLF_SPRINT',
+      'WOLF_TURN_LEFT','WOLF_TURN_RIGHT','WOLF_HARD_STOP','WOLF_JUMP','WOLF_LAND','WOLF_HIT'
+    ]),
+    signature:freezeList(['WOLF_GROWL','WOLF_POUNCE','WOLF_BITE'])
+  }),
+  mountedCombat:freezeList([
+    'MOUNTED_SWORD_ATTACK','MOUNTED_SPEAR_THRUST','MOUNTED_BOW_SHOT'
+  ])
 });
 
 const wildlifePack=pack=>Object.freeze(Object.fromEntries(
@@ -609,6 +661,103 @@ const SURVIVAL_WILDLIFE_SPECIES_MOTION=Object.freeze({
   TURKEY:'GROUND_BIRD',
   CROW:'BIRD'
 });
+
+
+export function createMountRiderMotionProfile({mountType='HORSE',platform='ROBLOX'}={}){
+  const requested=upper(mountType)||'HORSE';
+  const resolved=MOUNT_RIDER_MOTION_PACKS[requested]?requested:'HORSE';
+  const pack=MOUNT_RIDER_MOTION_PACKS[resolved];
+  return Object.freeze({
+    target:'HIGH_END_SHARED_MOUNT_RIDER_PAIR_MOTION',
+    platform:upper(platform),
+    mountType:resolved,
+    groups:Object.freeze({
+      pair:pack.pair,
+      signature:pack.signature,
+      mountedCombat:MOUNT_RIDER_MOTION_PACKS.mountedCombat
+    }),
+    riderContact:Object.freeze({
+      pelvisFollowsMountMass:true,
+      handsMaintainReinOrWeaponContact:true,
+      feetMaintainStirrupOrBodyContact:true,
+      spineCounterMotion:true,
+      headGazeIndependentWithinLimits:true,
+      jumpAndLandingCompressionShared:true,
+      turnLeanAndRecoveryShared:true
+    }),
+    mountMotion:Object.freeze({
+      articulatedGaitRequired:true,
+      plantedFootContactRequired:true,
+      bodyArcTurnRequired:true,
+      accelerationDecelerationRequired:true,
+      hardRootSnapForbidden:true,
+      riderMayNotRemainRigidWhileMountMoves:true
+    }),
+    pairAlignment:Object.freeze({
+      rootOffsetRequired:true,
+      facingRequired:true,
+      contactPointsRequired:true,
+      heightOffsetRequired:true,
+      timingMarkersRequired:true,
+      safeSeparationExitRequired:true
+    }),
+    nativePath:upper(platform)==='ROBLOX'
+      ?Object.freeze({rider:'R15_OR_CUSTOM_RIG_ANIMATOR',mount:'CUSTOM_RIG_ANIMATOR',joints:'MOTOR6D_OR_BONES',contact:'IKCONTROL_WHEN_SUPPORTED'})
+      :Object.freeze({rider:'HUMANOID_OR_GENERIC_ANIMATOR',mount:'GENERIC_ANIMATOR',joints:'RIG_BONES',contact:'ANIMATION_RIGGING_OR_IK'}),
+    gameplayMovementAuthority:false,
+    nativeRuntimeVerificationRequired:true,
+    productionVerified:false
+  });
+}
+
+export function createHeroStandardMotionProfile({
+  platform='ROBLOX',
+  weaponFamily='ONE_HAND_SWORD',
+  includeSurvival=true,
+  mountType=''
+}={}){
+  const weapon=upper(weaponFamily)||'ONE_HAND_SWORD';
+  const resolvedWeapon=HERO_SURVIVAL_WEAPON_FAMILIES.includes(weapon)?weapon:'ONE_HAND_SWORD';
+  const baseMotionIds=freezeList(unique(Object.values(HERO_STANDARD_RIG_MOTION_PACK).flat()));
+  const survivalMotionIds=includeSurvival
+    ?freezeList(unique([
+      ...SURVIVAL_PLAYER_MOTION_PACK.tool,
+      ...SURVIVAL_PLAYER_MOTION_PACK.interaction
+    ]))
+    :freezeList([]);
+  const weaponProfile=createDuelCombatMotionLoadout({weaponFamily:resolvedWeapon,platform});
+  const mountProfile=mountType?createMountRiderMotionProfile({mountType,platform}):null;
+  return Object.freeze({
+    target:HERO_STANDARD_RIG_TARGET,
+    platform:upper(platform),
+    rigProfile:upper(platform)==='ROBLOX'?'R15_OR_COMPATIBLE_CUSTOM_RIG':'HUMANOID_OR_GENERIC',
+    basePack:HERO_STANDARD_RIG_MOTION_PACK,
+    baseMotionIds,
+    baseMotionCount:baseMotionIds.length,
+    survivalMotionIds,
+    weaponFamily:resolvedWeapon,
+    weaponProfile,
+    mountProfile,
+    quality:Object.freeze({
+      fullBodyWeightTransfer:true,
+      plantedFootContact:true,
+      accelerationDeceleration:true,
+      turnFootPlantAndBodyFollow:true,
+      speedSynchronizedLocomotion:true,
+      transitionCrossFade:true,
+      secondaryMotion:true,
+      directionalHitReaction:true,
+      nonMechanicalIdleVariation:true,
+      attackImpactEventSync:true,
+      rootOnlyVisibleMotionForbidden:true
+    }),
+    sharedSourcePolicy:'ONE_SHARED_MOTION_INTENT_AND_REFERENCE_WITH_PLATFORM_NATIVE_RETARGET_VARIANTS',
+    directCrossPlatformBinaryReuseForbidden:true,
+    nativeRuntimeVerificationRequired:true,
+    gameplayAuthority:false,
+    productionVerified:false
+  });
+}
 
 export function createSurvivalPlayerMotionProfile({platform='ROBLOX',tool='AXE'}={}){
   const toolKey=upper(tool)||'AXE';
