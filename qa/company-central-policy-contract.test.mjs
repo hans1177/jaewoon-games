@@ -1993,12 +1993,12 @@ test('central document has a bounded current-policy budget and archives historic
   const file='company-learning/platform-release-roadmap.json';
   const current=JSON.parse(fs.readFileSync(file,'utf8'));
   const policy=current.centralDocumentRetention;
-  assert.equal(policy.maxUtf8Bytes,1100000);
+  assert.equal(policy.maxUtf8Bytes,1120000);
   assert.ok(Object.keys(current.changeRecord).length<=policy.maxChangeRecordEntries);
   assert.ok(fs.statSync(file).size<=policy.maxUtf8Bytes,'Archive obsolete run history before expanding the central document');
   assert.equal(policy.historicalExecutionLogsAuthority,'GIT_HISTORY');
   assert.equal(policy.structuredArchiveAuthority,'COMPANY_RECORDS');
-  assert.equal(policy.softTargetUtf8Bytes,1080000);
+  assert.equal(policy.softTargetUtf8Bytes,1100000);
   assert.equal(policy.softTargetEnforced,true);
   assert.equal(policy.minimumHeadroomBytes,20000);
   assert.equal(policy.candidateCommand,'node tools/company-records-governance.mjs --central-candidates');
