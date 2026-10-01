@@ -1669,6 +1669,13 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
     'Repair only defects listed in defects and only inside the current responsible visual files. INTERFACE means only declared HUD/MENU/MINIMAP/INTERACTION presentation. SCENE_OBJECT means only declared required object binding/presentation. Preserve gameplay values, save meaning, multiplayer authority, hit timing, quest/progression rules and unrelated visual systems. Re-capture the same runtime role with the same camera, lighting and state after mutation. Do not close a defect from source markers, declarations, generated files, or a model claim; runtime re-observation is required.',
     '[RUNTIME VISUAL REPAIR END]'
   ].join('\n'):'';
+  const applyFirst=order.assetProduction?.applyFirstSummary;
+  const applyFirstBlock=applyFirst?.enabled?[
+    '[APPLY USABLE ASSETS FIRST BEGIN]',
+    JSON.stringify({summary:applyFirst,decisions:(order.assetProduction?.decisions||[]).map(row=>({type:row.type,applyFirst:row.applyFirst}))}),
+    'Use target-compatible assets that already have a real path, native variant, or existing same-game binding before starting new authoring. When quality is comparable, prefer the candidate with the lowest integration cost, especially an already-bound same-game asset. Apply it into the existing responsible game system first, inspect it in the actual game camera, and create a derived variant only for weak regions. Preserve the original asset. Do not keep a poor reusable asset merely because it exists; new authoring becomes eligible only after reusable candidates cannot reach the target quality.',
+    '[APPLY USABLE ASSETS FIRST END]'
+  ].join('\n'):'';
   const precisionProduction=order.assetProduction?.precisionProduction;
   const precisionProductionBlock=precisionProduction?[
     '[PRECISION PRODUCTION CHAIN BEGIN]',
@@ -1701,6 +1708,7 @@ presentationWorkerGuidance(order),
 universalAssetWorkerGuidance(order),
 assetDetailBlock,
 runtimeVisualRepairBlock,
+applyFirstBlock,
 precisionProductionBlock,
 order.imageAssetObservation?.required?'[IMAGE ASSET OBSERVATION BEGIN]\n'+JSON.stringify(order.imageAssetObservation)+'\nVisible observations are proposals from actual pixels. Hidden geometry and motion are creative proposals. Implement editable native assets, then compare close-up/full-turnaround/game-camera/action frames to the source; no placeholder or declaration-only completion.\n[IMAGE ASSET OBSERVATION END]':'',
 studioQualityWorkerGuidance(order),
