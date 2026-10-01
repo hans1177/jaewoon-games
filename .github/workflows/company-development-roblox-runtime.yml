@@ -44,7 +44,7 @@ permissions:
 concurrency:
   group: roblox-native-exact-${{ inputs.game_id || (github.event_name == 'push' && 'batch-push') || github.run_id }}
   # Only main-push batch planners are disposable. Exact-game and manual runs keep active execution.
-  cancel-in-progress: false
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
