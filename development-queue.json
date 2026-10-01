@@ -11357,7 +11357,7 @@
       "currentStep": "REPAIR_REQUIRED",
       "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T14:42:59.810Z",
+      "updatedAt": "2026-10-01T14:48:48.730Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -11697,7 +11697,7 @@
             "id": "commercial-combat-action",
             "type": "mcp-combat-action",
             "dispatched": true,
-            "ok": false
+            "ok": true
           },
           {
             "id": "map-route-prompt:나무",
@@ -11750,12 +11750,6 @@
           {
             "id": "prompt-ProximityPrompt",
             "type": "mcp-world-interaction",
-            "dispatched": true,
-            "ok": true
-          },
-          {
-            "id": "ui-discovered-TextButton",
-            "type": "mcp-ui-exploration",
             "dispatched": true,
             "ok": true
           },
@@ -12179,7 +12173,7 @@
             "id": "scenario-observed-action-749f1a8df420364c0ab0",
             "name": "scenario-observed-action-749f1a8df420364c0ab0",
             "required": true,
-            "pass": false
+            "pass": true
           },
           {
             "id": "scenario-observed-action-c44dd2cc2f66a76ba1ed",
@@ -12280,9 +12274,9 @@
           "characterMotionRuntimeRequired": false,
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
-          "scenarioFailureCount": 4,
-          "primaryActionDisplacement": 25.83142909647896,
-          "primaryActionVelocity": 0.000026036169707688606,
+          "scenarioFailureCount": 3,
+          "primaryActionDisplacement": 14.267156864055073,
+          "primaryActionVelocity": 0.000025989390679641922,
           "primaryActionFeedbackChanged": false,
           "commercialAudit": {
             "auditProfile": "F9_SOAK",
@@ -12322,7 +12316,7 @@
               "multiplayerActualSessionPass": false
             },
             "performance": {
-              "memoryMb": 2940.421875,
+              "memoryMb": 2924.703125,
               "descendantCount": 1864
             },
             "multiplayer": {
@@ -12361,6 +12355,7 @@
           "roblox official studio mcp local runtime",
           "mcp-mouse-input",
           "mcp-keyboard-input",
+          "mcp-combat-action",
           "mcp-world-interaction",
           "mcp-ui-exploration",
           "official-studio-mcp-connected",
@@ -12544,7 +12539,7 @@
           },
           {
             "id": "observed-action-749f1a8df420364c0ab0",
-            "pass": false
+            "pass": true
           },
           {
             "id": "observed-action-c44dd2cc2f66a76ba1ed",
@@ -12590,7 +12585,6 @@
         "scenarioCoveragePass": false,
         "qualityFailureKinds": [
           "adaptive-map-route-coverage",
-          "observed-action-749f1a8df420364c0ab0",
           "observed-action-c44dd2cc2f66a76ba1ed",
           "observed-action-b4a378bc999b601bc3a3"
         ],
@@ -12613,23 +12607,6 @@
                   "floorBelow": true
                 }
               ]
-            }
-          },
-          {
-            "id": "observed-action-749f1a8df420364c0ab0",
-            "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
-            "priority": "HIGH",
-            "hint": "Replay the exact observed action and verify its real state change after repair.",
-            "observed": {
-              "id": "observed-action-749f1a8df420364c0ab0",
-              "pass": false,
-              "required": true,
-              "generatedFrom": "OFFICIAL_STUDIO_OBSERVED_ACTION",
-              "actionId": "commercial-combat-action",
-              "targetIdentity": "commercial-combat-action",
-              "actionType": "mcp-combat-action",
-              "effectRequired": true,
-              "attempts": 1
             }
           },
           {
@@ -12674,8 +12651,8 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-10-01T14:42:59.810Z",
-        "workflowRunId": 36875314493,
+        "testedAt": "2026-10-01T14:48:48.730Z",
+        "workflowRunId": 36878049746,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -12972,7 +12949,6 @@
         "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
         "qualityFailureKinds": [
           "adaptive-map-route-coverage",
-          "observed-action-749f1a8df420364c0ab0",
           "observed-action-c44dd2cc2f66a76ba1ed",
           "observed-action-b4a378bc999b601bc3a3"
         ],
@@ -12995,23 +12971,6 @@
                   "floorBelow": true
                 }
               ]
-            }
-          },
-          {
-            "id": "observed-action-749f1a8df420364c0ab0",
-            "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
-            "priority": "HIGH",
-            "hint": "Replay the exact observed action and verify its real state change after repair.",
-            "observed": {
-              "id": "observed-action-749f1a8df420364c0ab0",
-              "pass": false,
-              "required": true,
-              "generatedFrom": "OFFICIAL_STUDIO_OBSERVED_ACTION",
-              "actionId": "commercial-combat-action",
-              "targetIdentity": "commercial-combat-action",
-              "actionType": "mcp-combat-action",
-              "effectRequired": true,
-              "attempts": 1
             }
           },
           {
@@ -13054,8 +13013,8 @@
           "ROBLOX_OBSERVED_INTERACTION"
         ],
         "robloxFailureClass": "ROBLOX_STUDIO_RUNTIME",
-        "testedAt": "2026-10-01T14:42:59.810Z",
-        "workflowRunId": 36875314493,
+        "testedAt": "2026-10-01T14:48:48.730Z",
+        "workflowRunId": 36878049746,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxQualityBuildUpLastPassedAt": "2026-09-28T19:43:44.738Z",
@@ -26798,7 +26757,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T14:45:58.652Z",
+  "updatedAt": "2026-10-01T14:48:48.730Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
