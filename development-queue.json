@@ -8395,7 +8395,7 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T00:13:18.306Z",
+      "updatedAt": "2026-10-01T00:13:36.920Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -9526,8 +9526,8 @@
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-bug-defense-36774290498",
       "unitySourceCommit": "ce1112ea78581b5a2ea212fd55b0141e7b3e1eda",
-      "unityBuildRunId": 36792042416,
-      "unityRuntimeSmokeRunId": 36793826233,
+      "unityBuildRunId": 36793081585,
+      "unityRuntimeSmokeRunId": 36794915746,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityInternalReleaseReady": false,
@@ -9536,22 +9536,28 @@
       "unityPublicReleaseReady": false,
       "unityPublicRelease": false,
       "executionEvidence": {
-        "version": 3,
+        "version": 4,
         "platform": "UNITY",
         "sourceRevision": "ce1112ea78581b5a2ea212fd55b0141e7b3e1eda",
         "sourceRootTreeSha": "e607a1edde76eac8dff375f2e21ddf58306d6154",
         "sourceFingerprint": "d444e3efe6e0744d6d2a10060de50425d09cf4ec508b6b3d13bb82723885c4b3",
         "buildOrPackagePassed": true,
-        "artifactIdentity": "sha256:257e1651cfec81535877ca9b0fcbbeb065b0d01a32c94cc5dc1b2d31d659a9a6",
+        "artifactIdentity": "sha256:0a1ca9bfc20cb53b1e155ac3ba5f8f9a8af6cadd8348270364f15a90aad810ae",
         "runtimePassed": false,
         "independentQaPassed": false,
         "multiplayerPassed": true,
         "regressionPassed": false,
+        "rawStageResults": {
+          "runtime": false,
+          "independentQa": false,
+          "regression": false
+        },
+        "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": true,
         "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
         "failureStage": "F1_SERVER_BOOT",
-        "failureSignature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee"
+        "failureSignature": "a12fdf894cbb45926ae65128b037980cf4b956a55dd4820da3f5be4b0fa68350"
       },
       "resumeStage": "F1_SERVER_BOOT",
       "failureCount": 1,
@@ -9887,7 +9893,7 @@
         "version": 1,
         "platform": "UNITY",
         "sourceRevision": "ce1112ea78581b5a2ea212fd55b0141e7b3e1eda",
-        "artifactIdentity": "sha256:257e1651cfec81535877ca9b0fcbbeb065b0d01a32c94cc5dc1b2d31d659a9a6",
+        "artifactIdentity": "sha256:0a1ca9bfc20cb53b1e155ac3ba5f8f9a8af6cadd8348270364f15a90aad810ae",
         "sourceRootTreeSha": "e607a1edde76eac8dff375f2e21ddf58306d6154",
         "evidenceMode": "EXISTING_EXACT_APK_RUNTIME_QA_REGRESSION_WITH_PLATFORM_APPLICABILITY",
         "floors": {
@@ -9935,29 +9941,36 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-01T00:00:36.213Z"
+        "verifiedAt": "2026-10-01T00:13:36.920Z"
       },
       "unityF9ReleaseRegressionPassed": false,
       "unityF9ReleaseRegressionPassedAt": null,
       "unityCanonicalPublishPending": false,
       "unityExecutionEvidence": {
-        "version": 3,
+        "version": 4,
         "platform": "UNITY",
         "sourceRevision": "ce1112ea78581b5a2ea212fd55b0141e7b3e1eda",
         "sourceRootTreeSha": "e607a1edde76eac8dff375f2e21ddf58306d6154",
         "sourceFingerprint": "d444e3efe6e0744d6d2a10060de50425d09cf4ec508b6b3d13bb82723885c4b3",
         "buildOrPackagePassed": true,
-        "artifactIdentity": "sha256:257e1651cfec81535877ca9b0fcbbeb065b0d01a32c94cc5dc1b2d31d659a9a6",
+        "artifactIdentity": "sha256:0a1ca9bfc20cb53b1e155ac3ba5f8f9a8af6cadd8348270364f15a90aad810ae",
         "runtimePassed": false,
         "independentQaPassed": false,
         "multiplayerPassed": true,
         "regressionPassed": false,
+        "rawStageResults": {
+          "runtime": false,
+          "independentQa": false,
+          "regression": false
+        },
+        "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": true,
         "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
         "failureStage": "F1_SERVER_BOOT",
-        "failureSignature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee"
-      }
+        "failureSignature": "a12fdf894cbb45926ae65128b037980cf4b956a55dd4820da3f5be4b0fa68350"
+      },
+      "unityCanonicalEvidenceBound": false
     },
     {
       "gameId": "line-defense",
@@ -28351,7 +28364,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T00:13:18.306Z",
+  "updatedAt": "2026-10-01T00:13:38.589Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
