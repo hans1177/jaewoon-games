@@ -291,6 +291,98 @@ export const ASSET_CUSTOMIZATION_AXES=Object.freeze(Object.fromEntries(Object.en
 
 export function createAssetCustomizationPlan({assets=[],recipes=[],styleBible={},contract={},platform='UNITY'}={}){
   const byId=new Map(assets.filter(row=>text(row.id)).map(row=>[text(row.id),row]));
+  const familyProduction=Object.freeze({
+    CHARACTER:Object.freeze({
+      construction:Object.freeze(['PRIMARY_SILHOUETTE','BODY_PROPORTIONS','SECONDARY_ANATOMY','FACE_HANDS_FEET','CLOTHING_AND_EQUIPMENT_FIT','DEFORMATION_TOPOLOGY','RIG_AND_SOCKETS','SURFACE_AUTHORING','MOTION_PREP']),
+      detailByDistance:Object.freeze({
+        GAME_CAMERA:Object.freeze(['ROLE_SILHOUETTE','HEAD_BODY_RATIO','EQUIPMENT_READABILITY','PRIMARY_COLOR_MASSES']),
+        MID_RANGE:Object.freeze(['ANATOMY_PLANES','CLOTHING_LAYERS','ARMOR_OVERLAP','HAIR_OR_CREST_GROUPS','SECONDARY_COLOR_BLOCKS']),
+        CLOSEUP:Object.freeze(['EYELIDS_LIPS_JAW','FINGERS_HAND_SHAPE','SEAMS_FASTENERS','MATERIAL_TRANSITIONS','SCARS_MARKS','EDGE_WEAR']),
+        CONTACT:Object.freeze(['HAND_WEAPON_GRIP','FOOT_GROUND','CLOTH_BODY_CLEARANCE','JOINT_FOLDS','SOCKET_ALIGNMENT'])
+      }),
+      authoredOutputs:Object.freeze(['EDITABLE_DCC_SOURCE','GAME_MESH','UV_OR_ATLAS','MATERIAL_SET','RIG','SOCKET_MAP','EXPRESSION_CONTROLS','PLATFORM_VARIANTS'])
+    }),
+    CREATURE:Object.freeze({
+      construction:Object.freeze(['SPECIES_SILHOUETTE','ANATOMICAL_MASS','LIMB_APPENDAGE_STRUCTURE','HEAD_MOUTH_EYES','BODY_PLAN_TOPOLOGY','SPECIES_MATERIALS','BODY_PLAN_RIG','LOCOMOTION_AND_ATTACK_PREP']),
+      detailByDistance:Object.freeze({
+        GAME_CAMERA:Object.freeze(['SPECIES_SILHOUETTE','LOCOSILHOUETTE','DANGER_CUE','SIGNATURE_APPENDAGE']),
+        MID_RANGE:Object.freeze(['MUSCLE_SHELL_FUR_MASS','JOINT_STRUCTURE','HORN_CLAW_TOOTH_GROUPS','PATTERN_REGIONS']),
+        CLOSEUP:Object.freeze(['MOUTH_EYE_STRUCTURE','SKIN_FUR_SHELL_BREAKUP','SCARS_DAMAGE','ROUGHNESS_VARIATION']),
+        CONTACT:Object.freeze(['FOOT_CLAW_GROUND','MOUTH_HIT_REGION','LIMB_ROOT_DEFORMATION','TAIL_WING_APPENDAGE_BASE'])
+      }),
+      authoredOutputs:Object.freeze(['EDITABLE_DCC_SOURCE','SPECIES_GAME_MESH','UV_OR_ATLAS','SPECIES_MATERIAL_SET','BODY_PLAN_RIG','ATTACK_CONTACT_MAP','PLATFORM_VARIANTS'])
+    }),
+    BUILDING:Object.freeze({
+      construction:Object.freeze(['FOOTPRINT_AND_MASSING','FOUNDATION_AND_STRUCTURE','WALL_OPENINGS','DOOR_WINDOW_FRAMES','UPPER_FLOOR_AND_ROOF','INTERIOR_SHELL','FUNCTIONAL_FIXTURES','SURFACE_HISTORY','MODULAR_PLATFORM_VARIANTS']),
+      detailByDistance:Object.freeze({
+        GAME_CAMERA:Object.freeze(['MASSING','ROOFLINE','ENTRANCE_READABILITY','LANDMARK_SHAPE']),
+        MID_RANGE:Object.freeze(['FACADE_BAYS','WINDOW_DOOR_DEPTH','SUPPORTS_BALCONIES','MATERIAL_BLOCKS']),
+        CLOSEUP:Object.freeze(['JOINTS_TRIM_GUTTERS','HINGES_HANDLES','SEAMS_CRACKS','DRAINAGE_STAINS','REPAIR_PATCHES']),
+        CONTACT:Object.freeze(['DOORWAY_CLEARANCE','STAIR_TREADS','HANDLES_SWITCHES','INTERACTION_PROP_ANCHORS','WALL_FLOOR_CONTACT'])
+      }),
+      authoredOutputs:Object.freeze(['EDITABLE_MODULAR_SOURCE','STRUCTURAL_MODULES','INTERIOR_MODULES','MATERIAL_SET','COLLISION_NAV_PROXY','PLATFORM_VARIANTS'])
+    }),
+    ENVIRONMENT:Object.freeze({
+      construction:Object.freeze(['MACRO_TERRAIN','DRAINAGE_AND_WATER','ROUTE_SHOULDERS','VEGETATION_SPECIES_CLUSTERS','ROCK_SOIL_STRATA','LANDMARKS','SET_DRESSING','AMBIENT_MOTION']),
+      detailByDistance:Object.freeze({
+        GAME_CAMERA:Object.freeze(['BIOME_SHAPE_LANGUAGE','LANDMARK_HIERARCHY','ROUTE_READABILITY','MAJOR_COLOR_VALUE_GROUPS']),
+        MID_RANGE:Object.freeze(['VEGETATION_CLUSTERS','ROCK_SOIL_BREAKUP','BANKS_CLIFFS','DISTRICT_BOUNDARIES']),
+        CLOSEUP:Object.freeze(['ROOT_SOIL_CONTACT','EROSION_RUNOFF','LEAF_BRANCH_VARIATION','SURFACE_DEBRIS','PATH_WEAR']),
+        CONTACT:Object.freeze(['FOOTING_CLEARANCE','RESOURCE_INTERACTION_SPACE','GROUND_CONTACT','WATER_EDGE','OBJECT_PLACEMENT_ANCHORS'])
+      }),
+      authoredOutputs:Object.freeze(['EDITABLE_WORLD_SOURCE','TERRAIN_DATA','ENVIRONMENT_KITS','BIOME_MATERIAL_SET','PLACEMENT_RULES','LOD_VARIANTS'])
+    }),
+    WEAPON:Object.freeze({
+      construction:Object.freeze(['PRIMARY_PROFILE','GRIP_AND_HAND_CLEARANCE','FUNCTIONAL_PART_BREAKDOWN','EDGE_AND_TIP_STRUCTURE','MATERIAL_REGION_SPLIT','SOCKET_PIVOT','WEAR_AND_DAMAGE','MOTION_CONTACT_PREP']),
+      detailByDistance:Object.freeze({
+        GAME_CAMERA:Object.freeze(['WEAPON_PROFILE','LENGTH_MASS','SIGNATURE_COLOR']),
+        MID_RANGE:Object.freeze(['GRIP_GUARD_HEAD_OR_BLADE','PART_LAYERING','MATERIAL_REGIONS']),
+        CLOSEUP:Object.freeze(['WRAP_FASTENERS','EDGE_BEVELS','SCRATCHES','ENGRAVING_OR_STYLE_DETAIL']),
+        CONTACT:Object.freeze(['HAND_GRIP','IMPACT_EDGE_OR_HEAD','HOLSTER_SOCKET','TWO_HAND_SECONDARY_GRIP'])
+      }),
+      authoredOutputs:Object.freeze(['EDITABLE_DCC_SOURCE','GAME_MESH','MATERIAL_SET','GRIP_SOCKET_MAP','IMPACT_CONTACT_MAP','PLATFORM_VARIANTS'])
+    }),
+    PROP:Object.freeze({
+      construction:Object.freeze(['FUNCTIONAL_MASS','ASSEMBLY_PARTS','SUPPORT_AND_CONTACT','MATERIAL_REGIONS','FASTENERS','USE_WEAR','INTERACTION_PIVOT','LOD_VARIANTS']),
+      detailByDistance:Object.freeze({
+        GAME_CAMERA:Object.freeze(['FUNCTION_SILHOUETTE','CATEGORY_READABILITY']),
+        MID_RANGE:Object.freeze(['ASSEMBLY_BREAKDOWN','HANDLE_LID_SUPPORT','MATERIAL_BLOCKS']),
+        CLOSEUP:Object.freeze(['HINGES_BOLTS_SEAMS','EDGE_WEAR','DIRT_CONTACT','LABEL_OR_SYMBOL']),
+        CONTACT:Object.freeze(['GRAB_POINT','OPEN_CLOSE_PIVOT','GROUND_WALL_CONTACT','INTERACTION_CLEARANCE'])
+      }),
+      authoredOutputs:Object.freeze(['EDITABLE_DCC_SOURCE','GAME_MESH','MATERIAL_SET','INTERACTION_SOCKET_MAP','COLLISION_PROXY','LOD_VARIANTS'])
+    }),
+    UI:Object.freeze({
+      construction:Object.freeze(['INFORMATION_HIERARCHY','SHAPE_LANGUAGE','COMPONENT_FRAMES','ICON_AUTHORING','TYPOGRAPHY_SPACING','STATE_VARIANTS','TOUCH_FEEDBACK','PLATFORM_LAYOUT_VARIANTS']),
+      detailByDistance:Object.freeze({
+        GAME_CAMERA:Object.freeze(['HUD_PRIORITY','ICON_SILHOUETTE','VALUE_READABILITY','SAFE_AREA']),
+        MID_RANGE:Object.freeze(['PANEL_GROUPING','BUTTON_HIERARCHY','MINIMAP_FRAME','INTERACTION_PROMPT']),
+        CLOSEUP:Object.freeze(['BORDER_EDGE_MATERIAL','STATE_HIGHLIGHT','ICON_INTERNAL_SHAPE','TEXTURE_OR_WEAR']),
+        CONTACT:Object.freeze(['TOUCH_TARGET','PRESSED_STATE','FOCUSED_SELECTED','DISABLED_STATE','DRAG_OR_HOLD_FEEDBACK'])
+      }),
+      authoredOutputs:Object.freeze(['COMPONENT_SOURCE','ICON_SET','STATE_SPRITES_OR_VECTORS','TYPOGRAPHY_TOKENS','LAYOUT_BINDINGS','PLATFORM_VARIANTS'])
+    }),
+    MATERIAL:Object.freeze({
+      construction:Object.freeze(['MATERIAL_IDENTITY','BASE_COLOR_OR_VALUE','ROUGHNESS_SPECULAR','NORMAL_OR_STYLIZED_FORM','EDGE_RESPONSE','WEAR_MASKS','DIRT_WETNESS','PLATFORM_SHADER_VARIANTS']),
+      detailByDistance:Object.freeze({
+        GAME_CAMERA:Object.freeze(['VALUE_GROUP','MATERIAL_CATEGORY']),
+        MID_RANGE:Object.freeze(['ROUGHNESS_BREAKUP','LARGE_SURFACE_VARIATION']),
+        CLOSEUP:Object.freeze(['MICRO_NORMAL','GRAIN_WEAVE_PORES','EDGE_WEAR','SCRATCH_PATCH']),
+        CONTACT:Object.freeze(['CONTACT_DIRT','POLISH_BY_USE','WETNESS_OR_MUD','SEAM_ACCUMULATION'])
+      }),
+      authoredOutputs:Object.freeze(['EDITABLE_MATERIAL_SOURCE','TEXTURE_OR_PARAMETER_SET','MASK_SET','PLATFORM_SHADER_BINDINGS'])
+    })
+  });
+  const defaultProduction=Object.freeze({
+    construction:Object.freeze(['PRIMARY_FORM','SECONDARY_CONSTRUCTION','TERTIARY_DETAIL','MATERIAL_IDENTITY','PLATFORM_BINDING']),
+    detailByDistance:Object.freeze({
+      GAME_CAMERA:Object.freeze(['SILHOUETTE_AND_FUNCTION']),
+      MID_RANGE:Object.freeze(['STRUCTURE_AND_PARTS']),
+      CLOSEUP:Object.freeze(['MATERIAL_AND_CONSTRUCTION_DETAIL']),
+      CONTACT:Object.freeze(['CONTACT_AND_INTERACTION_DETAIL'])
+    }),
+    authoredOutputs:Object.freeze(['EDITABLE_SOURCE','NATIVE_DERIVATIVE','APPLICATION_BINDING'])
+  });
   const items=recipes.map((recipe,index)=>{
     const family=upper(recipe.family),base=byId.get(text(recipe.baseAssetId));
     const capabilities=base?.customization||{};
@@ -326,7 +418,6 @@ export function createAssetCustomizationPlan({assets=[],recipes=[],styleBible={}
       if(kind==='PART'||kind==='MODULE'){
         const part=byId.get(text(value));
         if(!Array.isArray(control.choices)||!control.choices.includes(value)||!part){issues.push('INCOMPATIBLE_PART:'+key);continue;}
-        // 빈 호환 태그를 확인 근거로 삼지 않고 실제 연결점 선언을 요구한다.
         if(!(part.customization?.compatibleBaseIds||[]).includes(base.id)||!(part.customization?.sockets||[]).includes(target)){
           issues.push('PART_SOCKET_BINDING_REQUIRED:'+key);continue;
         }
@@ -349,6 +440,26 @@ export function createAssetCustomizationPlan({assets=[],recipes=[],styleBible={}
         operations.push(Object.freeze({key,axis:upper(control.axis),kind,target,value}));
       }
     }
+    const production=familyProduction[family]||defaultProduction;
+    const localRepairReady=Boolean(base&&revision&&issues.every(issue=>!['BASE_ASSET_REQUIRED','BASE_FAMILY_MISMATCH','SOURCE_HASH_REQUIRED'].includes(issue)));
+    const repairScope=freezeList(scoped?editable:Object.keys(parameters));
+    const application=upper(platform)==='ROBLOX'
+      ?freezeList(['BUILD_OR_REBUILD_DERIVED_NATIVE_ASSET','IMPORT_TO_EXISTING_ROBLOX_GAME_ASSET_PATH','BIND_MESH_MATERIAL_RIG_ATTACHMENTS_OR_UI_TO_EXISTING_RESPONSIBILITY','PRESERVE_COLLISION_HITBOX_SAVE_AND_REMOTE_AUTHORITY','USE_MOBILE_LOD_AND_TEXTURE_BUDGET'])
+      :upper(platform)==='UNITY'
+        ?freezeList(['BUILD_OR_REBUILD_DERIVED_NATIVE_ASSET','IMPORT_TO_EXISTING_UNITY_PROJECT','BIND_MESH_RENDERER_SKINNED_MESH_ANIMATOR_MATERIAL_PREFAB_OR_UI_TO_EXISTING_RESPONSIBILITY','PRESERVE_COLLIDER_GAMEPLAY_SAVE_AND_NETCODE_AUTHORITY','USE_LOD_GROUP_AND_MOBILE_TEXTURE_MATERIAL_BUDGET'])
+        :freezeList(['BUILD_DERIVED_ASSET','BIND_TO_EXISTING_RENDERER_AND_UI_RESPONSIBILITY','PRESERVE_GAMEPLAY_AND_SAVE_MEANING']);
+    const chain=Object.freeze({
+      sequence:freezeList(['INSPECT','DEFINE_REPAIR','AUTHOR','APPLY','REINSPECT']),
+      automaticAdvance:true,
+      noManualPromptRequiredBetweenStages:true,
+      inspect:Object.freeze({sourceAssetId:text(recipe.baseAssetId)||null,sourceHash:revision||null,issues:freezeList(issues),actualMeshRigMaterialSocketInspectionRequired:true}),
+      repair:Object.freeze({mode:localRepairReady?'LOCAL_REPAIR_OR_DETAIL_BUILD':'STRUCTURAL_AUTHORING_REQUIRED',editableParameters:repairScope,lockedParameters:freezeList(locked),identityAnchors:freezeList(recipe.identityAnchors||[]),preserveUnrelatedValues:true}),
+      author:Object.freeze({construction:production.construction,detailByDistance:production.detailByDistance,outputs:production.authoredOutputs,editableSourceRequired:true,randomDetailScatterForbidden:true,causeBasedDetailRequired:true}),
+      apply:Object.freeze({platform:upper(platform),steps:application,directExistingResponsibilityBinding:true,shadowBindingForbidden:true}),
+      reinspect:Object.freeze({sameCameraLightingState:true,actualRuntimeObservationRequired:true,failedRegionOnlyReentersRepair:true,declarationOnlyCompletionForbidden:true}),
+      stopOnlyWhen:Object.freeze(['MISSING_REQUIRED_AUTHORING_TOOL','RIGHTS_OR_LICENSE_BLOCK','CANONICAL_POLICY_BLOCK','RESPONSIBLE_SOURCE_UNAVAILABLE']),
+      exactStageResumeAfterFailure:true
+    });
     return Object.freeze({
       id:text(recipe.id)||`${family.toLowerCase()||'asset'}-${index+1}`,family,
       subfamily:upper(recipe.subfamily),
@@ -361,34 +472,58 @@ export function createAssetCustomizationPlan({assets=[],recipes=[],styleBible={}
       editOperations:freezeList(issues.length?[]:operations.filter(operation=>JSON.stringify(operation.value)!==JSON.stringify(previous[operation.key]))),
       operations:freezeList(issues.length?[]:operations),issues:freezeList(issues),
       identityAnchors:freezeList(recipe.identityAnchors||[]),
-      authoringRequirements:freezeList(['INSPECT_ACTUAL_MESH_RIG_MORPHS_AND_SOCKETS','PRESERVE_SOURCE_AND_EDIT_DERIVATIVE','CONFORM_ADJACENT_PARTS_AND_CLOTHING','RECHECK_CONTACT_CLIPPING_AND_GAMEPLAY_BOUNDS']),
+      precisionProduction:production,
+      productionChain:chain,
+      authoringRequirements:freezeList(['INSPECT_ACTUAL_MESH_RIG_MORPHS_AND_SOCKETS','PRESERVE_SOURCE_AND_EDIT_DERIVATIVE','CONFORM_ADJACENT_PARTS_AND_CLOTHING','BUILD_GAME_CAMERA_TO_CONTACT_DETAIL_LAYERS','AUTHOR_CAUSAL_MATERIAL_WEAR_AND_CONSTRUCTION','RECHECK_CONTACT_CLIPPING_AND_GAMEPLAY_BOUNDS','BUILD_NATIVE_VARIANT_AND_BIND_EXISTING_RESPONSIBILITY']),
       runtimeVerified:false,sourceMutationPerformed:false
     });
   });
   return Object.freeze({
-    version:1,status:'AUTHORING_PLAN_NOT_RUNTIME_PROOF',platform:upper(platform),
+    version:2,status:'AUTHORING_PLAN_NOT_RUNTIME_PROOF',platform:upper(platform),
     families:freezeList(Object.keys(ASSET_CUSTOMIZATION_AXES)),axes:ASSET_CUSTOMIZATION_AXES,
     styleBible,items:freezeList(items),
     unresolvedCount:items.filter(row=>row.issues.length).length,
-    workflow:freezeList(contract.workflow||['INSPECT_REUSE_AND_LICENSED_EXTERNAL_GLB','NORMALIZE_SCALE_RIG_MATERIALS_AND_SOCKETS','QUICK_BASE_ASSEMBLY','LOCK_IDENTITY_AND_CUSTOMIZE','SCULPT_SEAMS_MATERIALS_AND_CAUSAL_WEAR','POLISH_ACTING_CONTACT_AND_TRANSITIONS','COMPARE_CLOSEUP_AND_GAME_CAMERA','NATIVE_MOBILE_QA']),
-    detailPasses:freezeList(['PRIMARY_SILHOUETTE','SECONDARY_ANATOMY_AND_CONSTRUCTION','SEAMS_JOINTS_AND_CLOTHING_FIT','CAUSE_BASED_WEAR_GRIME_AND_DAMAGE','MATERIAL_LIGHT_RESPONSE','EXPRESSION_GAZE_FINGERS_AND_SECONDARY_MOTION']),
+    automaticProductionChain:Object.freeze({
+      sequence:freezeList(['INSPECT','DEFINE_REPAIR','AUTHOR','APPLY','REINSPECT']),
+      automaticAdvance:true,
+      reportOnlyInspectionForbidden:true,
+      reportOnlyRepairPlanForbidden:true,
+      authoringMustProduceEditableSourceAndNativeDerivative:true,
+      applicationMustBindExistingGameResponsibility:true,
+      applyReturnsToRuntimeInspection:true,
+      failedRegionLoopsWithoutRebuildingUnaffectedScope:true,
+      exactStageResumeAfterFailure:true,
+      newPipeline:false
+    }),
+    workflow:freezeList(contract.workflow||['INSPECT_REUSE_AND_LICENSED_EXTERNAL_GLB','NORMALIZE_SCALE_RIG_MATERIALS_AND_SOCKETS','DEFINE_EXACT_REPAIR_SCOPE','AUTHOR_PRIMARY_SECONDARY_TERTIARY_AND_CONTACT_DETAIL','AUTHOR_MATERIAL_RIG_MOTION_OR_UI_STATES','BUILD_NATIVE_PLATFORM_VARIANT','APPLY_TO_EXISTING_GAME_RESPONSIBILITY','REINSPECT_SAME_RUNTIME_VIEW']),
+    detailPasses:freezeList(['PRIMARY_SILHOUETTE','SECONDARY_ANATOMY_AND_CONSTRUCTION','TERTIARY_FUNCTIONAL_DETAIL','CONTACT_AND_INTERACTION_DETAIL','SEAMS_JOINTS_AND_CLOTHING_FIT','CAUSE_BASED_WEAR_GRIME_AND_DAMAGE','MATERIAL_LIGHT_RESPONSE','EXPRESSION_GAZE_FINGERS_AND_SECONDARY_MOTION']),
+    detailResolutionLadder:Object.freeze({
+      GAME_CAMERA:'SILHOUETTE_ROLE_AND_FUNCTION_FIRST',
+      MID_RANGE:'STRUCTURE_PARTS_AND_SECONDARY_FORMS',
+      CLOSEUP:'MATERIAL_CONSTRUCTION_AND_IDENTITY_DETAIL',
+      CONTACT:'JOINT_GRIP_DOOR_HANDLE_FOOTING_AND_INTERACTION_DETAIL'
+    }),
+    causalDetailRules:freezeList(['DETAIL_FOLLOWS_FUNCTION','WEAR_FOLLOWS_CONTACT_AND_USE','DIRT_FOLLOWS_GROUND_WATER_AND_HAND_CONTACT','DAMAGE_FOLLOWS_IMPACT_EXPOSURE','FASTENERS_EXIST_WHERE_PARTS_JOIN','PROPS_EXIST_BECAUSE_DISTRICT_OR_ACTOR_USES_THEM','RANDOM_NOISE_IS_NOT_DETAIL']),
     externalSourceRequirements:freezeList(['SOURCE_URL_AND_CONTENT_HASH','LICENSE_EVIDENCE','COMMERCIAL_USE_AND_MODIFICATION_PERMISSION','SEPARATE_RESALE_REDISTRIBUTION_PERMISSION_WHEN_SELLING_ASSETS','TARGET_PLATFORM_IMPORT_AND_RUNTIME_CHECK']),
     minimumQuality:Object.freeze({...contract.minimumQuality}),
     uiAndIconReview:Object.freeze({
-      scope:freezeList(['HUD','MENU','PANEL','BUTTON','ICON','INVENTORY','MAP','TOOLTIP','STATUS','CURSOR','TOUCH_CONTROL']),
-      states:freezeList(['NORMAL','PRESSED','DISABLED','SELECTED','FOCUSED']),
+      scope:freezeList(['HUD','MENU','PANEL','BUTTON','ICON','INVENTORY','MAP','MINIMAP','INTERACTION','TOOLTIP','STATUS','CURSOR','TOUCH_CONTROL']),
+      states:freezeList(['NORMAL','PRESSED','DISABLED','SELECTED','FOCUSED','HOVER_WHEN_SUPPORTED','HOLD_OR_PROGRESS_WHEN_USED']),
       iconPreviewPixels:freezeList([24,32,48,64]),
+      authoringPasses:freezeList(['SEMANTIC_SILHOUETTE','PRIMARY_SHAPE','SECONDARY_SYMBOL_DETAIL','EDGE_MATERIAL_AND_DEPTH','STATE_VARIANTS','SMALL_SIZE_SIMPLIFICATION','LIGHT_DARK_BACKGROUND_VARIANTS']),
+      minimapAuthoring:freezeList(['WORLD_TO_MAP_SYMBOL_LANGUAGE','PLAYER_ALLY_ENEMY_OBJECTIVE_PRIORITY','LANDMARK_AND_ROUTE_READABILITY','ZOOM_LEVEL_DETAIL_REDUCTION','EDGE_CLAMP_AND_OFFSCREEN_DIRECTION','TOUCH_SAFE_EXPAND_COLLAPSE_STATE']),
+      interactionAuthoring:freezeList(['PROMPT_ICON','ACTION_LABEL','HOLD_PROGRESS','DISABLED_OR_BLOCKED_REASON','WORLD_ANCHOR_OR_SCREEN_EDGE_PLACEMENT','TOUCH_TARGET']),
       silhouetteAndMeaningBeforeMicrodetail:true,lightAndDarkBackgroundComparison:true,
       preserveHitTargetsNavigationAccessibilityAndSaveSemantics:true,
       styleTranslation:'MATCH_SHAPE_MATERIAL_EDGE_WEAR_AND_MOTION_LANGUAGE_WITH_SCREEN_SCALE_DETAIL',
       emojiOrGenericPlaceholderIsNotFinalAsset:true
     }),
-    review: Object.freeze({
+    review:Object.freeze({
       captures:freezeList(['FACE_OR_SIGNATURE_CLOSEUP','FULL_OBJECT_TURNTABLE','ACTUAL_GAME_CAMERA','REPRESENTATIVE_ACTION_AND_TRANSITIONS']),
       sameCameraAndLighting:true,frameAddressedFindings:true,missingMeasurements:'UNVERIFIED',
       prototypeIsNotCompletion:true,elapsedTimeIsNotQualityEvidence:true
     }),
-    effort: Object.freeze({
+    effort:Object.freeze({
       quickAssemblyPercent:contract.detailedWorkBudget?.quickAssemblyPercent??15,
       detailAndMotionPercent:contract.detailedWorkBudget?.detailAndMotionPercent??65,
       comparisonAndRuntimeQaPercent:contract.detailedWorkBudget?.comparisonAndRuntimeQaPercent??20,
@@ -398,7 +533,6 @@ export function createAssetCustomizationPlan({assets=[],recipes=[],styleBible={}
     sourceImmutable:true,gameplayAuthority:false,newPipeline:false,runtimeVerified:false
   });
 }
-
 // Unity와 Web이 교환하는 시각 설정. 엔진 객체나 게임 저장 데이터는 포함하지 않는다.
 // 같은 문서를 각 엔진의 실제 연결점으로 변환하며, 저장/전송은 기존 작업·자산 저장소가 담당한다.
 export function synchronizeAssetCustomization({document=null,currentDocument=null,baseRevision=0,gameId='',platform='WEB',assets=[],customization=null,styleBible={},motionStyle={},motionBindings=[]}={}){
