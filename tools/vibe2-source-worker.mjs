@@ -1532,7 +1532,8 @@ export async function observeAssetRuntimeCaptures({order={},cwd=process.cwd(),mo
   if(!review?.enabled)return{required:false,status:'NOT_REQUIRED',captures:[],repairs:[],runtimeVerified:false};
   if(review.status!=='READY_FOR_PIXEL_INSPECTION')throw new Error('RUNTIME_VISUAL_CAPTURES_REQUIRED:'+clean(review.status));
   if(!model)throw new Error('RUNTIME_VISUAL_VISION_MODEL_REQUIRED:VIBE2_VISION_MODEL');
-  const root=fs.realpathSync(cwd),results=[],repairs=[],findingIds=new Set();
+  const requestedEvidenceRoot=clean(review.evidenceRoot);
+  const root=fs.realpathSync(requestedEvidenceRoot||cwd),results=[],repairs=[],findingIds=new Set();
   const allowedCategories=new Set(['MISSING_OBJECT','WEAK_DETAIL','CLIPPING_OR_OVERLAP','READABILITY','STYLE_OR_MATERIAL','COMPOSITION']);
   const allowedSeverity=new Set(['BLOCKER','HIGH','MEDIUM','LOW']);
   const expectedIds=new Set((review.expectedSubjects||[]).map(subject=>clean(subject.id)).filter(Boolean));
@@ -1546,7 +1547,7 @@ export async function observeAssetRuntimeCaptures({order={},cwd=process.cwd(),mo
     if(!ref||path.isAbsolute(ref)||ref.split(/[\\/]/).includes('..')||/^[a-z]+:/i.test(ref))throw new Error('RUNTIME_VISUAL_LOCAL_CAPTURE_REQUIRED:'+clean(capture.id));
     let file;
     try{file=fs.realpathSync(path.resolve(root,ref));}catch{throw new Error('RUNTIME_VISUAL_CAPTURE_MATERIALIZATION_REQUIRED:'+clean(capture.id));}
-    if(!file.startsWith(root+path.sep))throw new Error('RUNTIME_VISUAL_CAPTURE_OUTSIDE_REPOSITORY');
+    if(file!==root&&!file.startsWith(root+path.sep))throw new Error('RUNTIME_VISUAL_CAPTURE_OUTSIDE_EVIDENCE_ROOT');
     const stat=fs.statSync(file);
     if(!stat.isFile()||stat.size===0||stat.size>20*1024*1024)throw new Error('RUNTIME_VISUAL_INVALID_CAPTURE_SIZE');
     const bytes=fs.readFileSync(file),png=bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])),jpeg=bytes[0]===255&&bytes[1]===216&&bytes[2]===255,webp=bytes.subarray(0,4).toString()==='RIFF'&&bytes.subarray(8,12).toString()==='WEBP';
