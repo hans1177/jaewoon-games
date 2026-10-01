@@ -14,7 +14,7 @@ const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,'
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(path.resolve(file)),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const stableSha256=value=>crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
-export const ROBLOX_STUDIO_HARNESS_VERSION=14;
+export const ROBLOX_STUDIO_HARNESS_VERSION=15;
 
 export function assertCurrentStudioWorkflowHead({
   workflowSha=clean(process.env.GITHUB_SHA),
@@ -1610,8 +1610,16 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const descendantGrowth=Number.isFinite(descendantsMin)&&Number.isFinite(descendantsMax)?Math.max(0,descendantsMax-descendantsMin):0;
   const soak=clean(auditProfile).toUpperCase()==='F9_SOAK';
   const routeActions=(actions||[]).filter(row=>row?.type==='mcp-map-route-audit'&&row?.dispatched===true);
-  const routePassCount=routeActions.filter(row=>row?.ok===true).length;
   const routeRequired=soak?Math.min(2,routeActions.length):Math.min(1,routeActions.length);
+  const successfulInteractionTargets=new Set(
+    (actions||[])
+      .filter(row=>row?.type==='mcp-world-interaction'&&row?.dispatched===true&&row?.ok===true&&clean(row?.targetIdentity))
+      .map(row=>clean(row.targetIdentity))
+  );
+  const routeTargetIdentity=row=>{
+    const actionId=clean(row?.id);
+    return actionId.startsWith('map-route-')?actionId.slice('map-route-'.length):clean(row?.targetIdentity);
+  };
   const modelMobs=entityRows(world.mobs).filter(row=>clean(row?.kind)==='HumanoidModel');
   const animatedMobCount=modelMobs.filter(row=>row?.animatorPresent===true&&Number(row?.motorCount||0)>0).length;
   const spawnThreatDistance=Number(world.minSpawnThreatDistance??-1);
@@ -1704,6 +1712,13 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const routeSamples=Number(world.routeSampleCount||0),routeSuccess=Number(world.routeSuccessCount||0);
   const floorCoveragePass=floorSamples===0||floorHits>=Math.max(1,Math.ceil(floorSamples*0.44));
   const routeCoveragePass=routeSamples===0||routeSuccess>=Math.max(1,Math.ceil(routeSamples*0.5));
+  const routeRecoveredByInteraction=row=>Boolean(
+    row?.ok!==true
+    &&row?.floorBelow===true
+    &&routeCoveragePass
+    &&successfulInteractionTargets.has(routeTargetIdentity(row))
+  );
+  const routePassCount=routeActions.filter(row=>row?.ok===true||routeRecoveredByInteraction(row)).length;
   const spawnOverlapSafe=spawnThreatDistance<0||spawnThreatDistance>=2.5;
   const worldSafetyPass=
     world.boundsFinite===true
@@ -1788,9 +1803,10 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     const id='observed-action-'+stableSha256({type:action.type,targetIdentity}).slice(0,20);
     if(!discoveredPatterns.has(id)&&discoveredPatterns.size>=64){discoveredPatternOverflow=true;continue;}
     const effectRequired=action.type!=='mcp-map-route-audit';
-    const pass=action.dispatched===true&&action.ok===true&&(!effectRequired||action.effectObserved===true);
+    const recoveredByInteraction=action.type==='mcp-map-route-audit'&&routeRecoveredByInteraction(action);
+    const pass=action.dispatched===true&&(action.ok===true||recoveredByInteraction)&&(!effectRequired||action.effectObserved===true);
     const previous=discoveredPatterns.get(id);
-    discoveredPatterns.set(id,{id,pass:pass&&previous?.pass!==false,required:true,generatedFrom:'OFFICIAL_STUDIO_OBSERVED_ACTION',actionId:actionId.slice(0,160),targetIdentity:targetIdentity.slice(0,240),actionType:action.type,effectRequired,attempts:Number(previous?.attempts||0)+1});
+    discoveredPatterns.set(id,{id,pass:pass&&previous?.pass!==false,required:true,generatedFrom:'OFFICIAL_STUDIO_OBSERVED_ACTION',actionId:actionId.slice(0,160),targetIdentity:targetIdentity.slice(0,240),actionType:action.type,effectRequired,recoveredByInteraction,attempts:Number(previous?.attempts||0)+1});
   }
   const scenarios=rows.filter(row=>requiredIds.size===0||requiredIds.has(row.id)).map(row=>({...row,required:true}));
   scenarios.push(...discoveredPatterns.values());
@@ -1879,7 +1895,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     if(id==='adaptive-ftue-clarity')return{declared:signals.onboarding===true,visibleButtonCount:visibleButtons,visibleTextCount:visibleTexts.length,visibleTexts:visibleTexts.slice(0,12),pass:onboardingClarityPass};
     if(id==='adaptive-ui-commercial-quality'||id==='adaptive-ui-blocking-overlay')return metrics.uiCommercial;
     if(id==='adaptive-world-safety')return{boundsFinite:world.boundsFinite===true,collidablePartCount:Number(world.collidablePartCount||0),floorBelowPlayer:world.floorBelowPlayer===true,floorSamples,floorHits,floorCoveragePass,routeSamples,routeSuccess,routeCoveragePass,spawnThreatDistance,spawnOverlapSafe};
-    if(id==='adaptive-map-route-coverage')return{routeAttemptCount:routeActions.length,routePassCount,routeRequired,routes:routeActions.slice(0,8).map(row=>({id:row.id,ok:row.ok===true,moved:Number(row.moved||0),fall:Number(row.fall||0),floorBelow:row.floorBelow===true}))};
+    if(id==='adaptive-map-route-coverage')return{routeAttemptCount:routeActions.length,routePassCount,routeRequired,routes:routeActions.slice(0,8).map(row=>({id:row.id,ok:row.ok===true||routeRecoveredByInteraction(row),initialOk:row.ok===true,recoveredByInteraction:routeRecoveredByInteraction(row),moved:Number(row.moved||0),fall:Number(row.fall||0),floorBelow:row.floorBelow===true}))};
     if(id==='adaptive-spawn-safety')return{spawnLocationCount:Number(world.spawnLocationCount||0),minSpawnThreatDistance:spawnThreatDistance};
     if(id==='adaptive-mob-animation-ai')return{modelMobCount:modelMobs.length,animatedMobCount,mobMotion:metrics.mobMotion,timelineMobDynamic};
     if(id==='adaptive-combat-surface')return{combatSurfaceCount,mobCount:mobRows.length,humanoidMobCount:humanoidMobRows.length,mobRigAnimationPass,mobMotion:metrics.mobMotion,timelineMobDynamic,combatActionCount:combatActions.length,combatEffectCount:combatEffects};

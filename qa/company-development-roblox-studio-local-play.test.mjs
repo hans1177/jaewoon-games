@@ -2881,6 +2881,48 @@ test('Studio generates separate observed-action patterns so one working button c
   assert.equal(retry.scenarios.find(row=>row.id===failed.id).pass,false);
 });
 
+test('Studio exact prompt reach recovers only the matching failed route audit',()=>{
+  const target='Workspace.CozyConquestWorld.ManualGatherForest.WoodNode8.ProximityPrompt';
+  const contract={
+    required:true,
+    requiredScenarios:['adaptive-map-route-coverage'],
+    adaptiveCoverage:{signals:{map:true}}
+  };
+  const clientProbe={
+    world:{
+      collidablePartCount:24,
+      floorBelowPlayer:true,
+      floorSampleCount:9,
+      floorHitCount:9,
+      routeSampleCount:16,
+      routeSuccessCount:16
+    }
+  };
+  const route={id:'map-route-'+target,type:'mcp-map-route-audit',dispatched:true,ok:false,moved:0,fall:0,floorBelow:true};
+  const exact={
+    id:'prompt-ProximityPrompt',
+    type:'mcp-world-interaction',
+    targetIdentity:target,
+    semantic:'GENERAL',
+    dispatched:true,
+    ok:true,
+    effectObserved:true
+  };
+  const recovered=evaluateStudioActualPlayContract({contract,clientProbe,actions:[route,exact]});
+  assert.equal(recovered.scenarios.find(row=>row.id==='adaptive-map-route-coverage').pass,true);
+  assert.equal(recovered.qualityFailureKinds.includes('adaptive-map-route-coverage'),false);
+  const recoveredPattern=recovered.scenarios.find(row=>row.generatedFrom==='OFFICIAL_STUDIO_OBSERVED_ACTION'&&row.actionId===route.id);
+  assert.equal(recoveredPattern.pass,true);
+  assert.equal(recoveredPattern.recoveredByInteraction,true);
+
+  const other={...exact,targetIdentity:'Workspace.Other.ProximityPrompt'};
+  const blocked=evaluateStudioActualPlayContract({contract,clientProbe,actions:[route,other]});
+  assert.equal(blocked.scenarios.find(row=>row.id==='adaptive-map-route-coverage').pass,false);
+  const blockedPattern=blocked.scenarios.find(row=>row.generatedFrom==='OFFICIAL_STUDIO_OBSERVED_ACTION'&&row.actionId===route.id);
+  assert.equal(blockedPattern.pass,false);
+  assert.equal(blockedPattern.recoveredByInteraction,false);
+});
+
 test('Studio required pattern without an executed evaluator remains a failure',()=>{
   const result=evaluateStudioActualPlayContract({contract:{required:true,requiredScenarios:['new-pattern-with-no-executor']}});
   assert.deepEqual(result.scenarios,[{id:'new-pattern-with-no-executor',pass:false,required:true,reason:'REQUIRED_SCENARIO_NOT_EXECUTED'}]);
