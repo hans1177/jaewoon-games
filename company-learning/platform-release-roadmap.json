@@ -1,5 +1,5 @@
 {
-  "version": 515,
+  "version": 516,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -1379,7 +1379,7 @@
     "globalBarrierUsed": false,
     "groupLeaderRefillUsed": false,
     "developmentCheckDeduplication": {
-      "version": 2,
+      "version": 3,
       "authority": "OWNER_DIRECTIVE_2026-10-01",
       "status": "ACTIVE",
       "objective": "REMOVE_NONDEVELOPMENT_AND_DUPLICATE_CHECKS_FROM_HOT_DEVELOPMENT_PATH",
@@ -1411,7 +1411,10 @@
         "NEURAL_EXPANSION_READINESS_QA_IN_24H_PLANNER",
         "UNCONSUMED_SHARED_CONTEXT_BEFORE_AFTER_PLAN_SNAPSHOTS",
         "PREPLAN_GAME_PRIMARY_DUPLICATE_DISPATCH",
-        "UNCONDITIONAL_24H_SELF_REFILL_SCHEDULER"
+        "UNCONDITIONAL_24H_SELF_REFILL_SCHEDULER",
+        "UNCONSUMED_WORKER_SHARED_CONTEXT_BEFORE_AFTER_SNAPSHOTS",
+        "WORKER_SHARED_CONTEXT_SYNC_DUPLICATE_OF_RESERVATION_IDENTITY_CHECK",
+        "GIT_DIFF_CHECK_DUPLICATE_OF_INCREMENTAL_QA_CONFLICT_MARKER_VALIDATION"
       ],
       "ciOwnership": {
         "syntaxAndUnitContracts": "PULL_REQUEST_AND_MAIN_CI",
@@ -1431,7 +1434,9 @@
       "neuralExpansionReadinessOwner": "DEDICATED_CI_AND_EXPLICIT_SELF_ARCHITECTURE_REVIEW_NOT_GAME_DEVELOPMENT_HOT_PATH",
       "sharedContextRule": "GENERATE_ONLY_WHEN_A_CONSUMER_REQUIRES_IT",
       "hotPathSelfSchedulingLoopForbidden": true,
-      "prePlanDuplicateDispatchForbidden": true
+      "prePlanDuplicateDispatchForbidden": true,
+      "workerSynchronizationAuthority": "PINNED_CONTRACT_SHA_PLUS_VERIFY_WORKER_SYNC",
+      "conflictMarkerAuthority": "VIBE2_INCREMENTAL_QA"
     },
     "minimumNecessaryProcedureEnforcement": "NO_DUPLICATE_CHECKS_ON_HOT_PATH_REUSE_VALID_EVIDENCE",
     "executionDispatchModel": "EVENT_DRIVEN_DIRECT_TASK_INGRESS",
