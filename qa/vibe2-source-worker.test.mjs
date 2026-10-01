@@ -3839,16 +3839,14 @@ test('asset-development Roblox graphics stays on bounded focused retries while g
   assert.match(workflow,/coding-roblox-timeout-recovery-escalated-full-graphics:YES/);
 });
 
-test('failed source generation still performs post-work shared-context validation before exiting the candidate step',()=>{
+test('source worker does not run unconsumed shared-context snapshots around candidate generation',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
-  const after='node tools/company-shared-context.mjs --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.json"';
-  const failureExit='if [ "$worker_rc" -ne 0 ]; then exit "$worker_rc"; fi';
-  const afterAt=workflow.indexOf(after);
-  const exitAt=workflow.indexOf(failureExit);
-  assert.ok(afterAt>=0);
-  assert.ok(exitAt>=0);
-  assert.ok(afterAt<exitAt);
-  assert.equal(workflow.indexOf(after,afterAt+1),-1);
+  assert.doesNotMatch(workflow,/vibe2-worker-shared-context/);
+  assert.doesNotMatch(workflow,/vibe2-shared-context-\$\{SAFE_TASK\}-\$\{VARIANT\}-(?:before|after)/);
+  assert.doesNotMatch(workflow,/git -c core\.whitespace=.*diff --check/);
+  assert.match(workflow,/verify-worker-sync/);
+  assert.match(workflow,/if \[ "\$worker_rc" -ne 0 \]; then exit "\$worker_rc"; fi/);
+  assert.match(workflow,/Run impact-first incremental QA role/);
 });
 
 test('focused replace Ollama requests keep canonical budget and enforce one-key schema',()=>{
