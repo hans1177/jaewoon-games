@@ -5181,6 +5181,29 @@ test('oversized Roblox rebuild starts with owned source and complete learning in
   assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
 });
 
+test('oversized initial JSON prompt caps editable context while preserving allowed scope',()=>{
+  const files=Array.from({length:12},(_,index)=>`Assets/Scripts/Part${index}.cs`);
+  const sections=files.map((file,index)=>[
+    `=== FILE ${file} [EDITABLE] ===`,
+    (`public sealed class Part${index} { public int Value = ${index}; }\n`).repeat(180)
+  ].join('\n'));
+  const prompt=[
+    'You are the Vibe2 game source worker. Return JSON only.',
+    'Engine: unity',
+    'Goal: improve the connected implementation',
+    'Allowed edit paths: '+files.join(', '),
+    ...sections
+  ].join('\n');
+  const compact=buildGenerationRetryPrompt(prompt,{responsibleFiles:files,attempt:1,oversizedInitial:true});
+  assert.equal((compact.match(/^=== FILE /gm)||[]).length,3);
+  assert.match(compact,/Allowed edit paths: .*Part11\.cs/);
+  assert.ok(Buffer.byteLength(compact,'utf8')<36000);
+
+  const studio=buildGenerationRetryPrompt('[STUDIO QUALITY EVOLUTION]\n'+prompt,{responsibleFiles:files,attempt:1,studioInitial:true});
+  assert.equal((studio.match(/^=== FILE /gm)||[]).length,4);
+  assert.ok(Buffer.byteLength(studio,'utf8')<36000);
+});
+
 test('large JSON prompts compact at 36KB and retry-only observation blocks stay bounded',()=>{
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(workerSource,/const MAX_INITIAL_JSON_PROMPT_BYTES=36000;/);
