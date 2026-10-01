@@ -2507,7 +2507,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         if(header.includes('[EDITABLE]')||exactResponsible.includes(sectionPath)){
           if(attempt>=3||timeoutFailure||studioInitial||robloxGraphicsInitial||oversizedInitial){
             const body=section.split('\n').slice(1).join('\n');
-            const excerpt=boundedLargeExcerpt(body,robloxGraphicsInitial?3200:(studioInitial?2500:5000));
+            const excerpt=boundedLargeExcerpt(body,robloxGraphicsInitial?3200:(studioInitial?1500:5000));
             section=header+'\n'+excerpt.content;
           }
           editable.push(section);
