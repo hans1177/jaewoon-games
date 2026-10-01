@@ -19,8 +19,8 @@ test('runtime playable-cycle evidence creates game-runtime hypothesis without tu
   assert.ok(d.hypotheses.some(x=>x.id==='runtime-gameplay-cycle'));
   assert.ok(d.facts.every(x=>x.verified===true));
   assert.equal(d.facts.some(x=>x.value.includes('runtime-gameplay-cycle')),false);
-  assert.equal(d.waveControl.mayReorderWave,false);
-  assert.equal(d.waveControl.mayCreateWorker,false);
+  assert.equal(d.directReservationControl.mayReorderDirectReservations,false);
+  assert.equal(d.directReservationControl.mayCreateWorker,false);
 });
 
 test('validator classification evidence routes responsibility to validator in shadow mode',()=>{
@@ -93,8 +93,8 @@ test('current deterministic diagnostic responsibility outranks stale historical 
   assert.equal(d.hypotheses[0].diagnosticFile,'index.js');
   assert.equal(d.hypotheses[0].verified,false);
   assert.equal(d.learning.eligible,false);
-  assert.equal(d.waveControl.mayReorderWave,false);
-  assert.equal(d.waveControl.mayCreateWorker,false);
+  assert.equal(d.directReservationControl.mayReorderDirectReservations,false);
+  assert.equal(d.directReservationControl.mayCreateWorker,false);
 });
 
 test('ambiguous current diagnostic does not override weighted shadow responsibility',()=>{
