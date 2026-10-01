@@ -64,10 +64,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-10-01T15:34:17.128Z",
+      "updatedAt": "2026-10-01T16:02:45.685Z",
       "robloxSourceCommit": "caf107a8a2415fafa179b1e076d93704506398c9",
       "robloxSourceBootstrapPassedAt": "2026-10-01T12:53:24.940Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -290,7 +290,7 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
       "robloxFailureStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
+      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_PLAY_CHECKPOINT_FAILED",
       "routingBlockers": [
         "roblox-studio-mcp-play-repair-required"
       ],
@@ -328,15 +328,15 @@
       "robloxInternalVibePlayEvidence": {
         "version": 2,
         "gameId": "daechung-rpg",
-        "studioHarnessVersion": 12,
+        "studioHarnessVersion": 13,
         "authority": "roblox-official-studio-mcp-runtime",
         "pass": false,
         "actualPlay": true,
-        "runtimeVerified": false,
-        "learningReusable": true,
+        "runtimeVerified": true,
+        "learningReusable": false,
         "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
         "infrastructureFailure": false,
-        "failureClass": "STUDIO_PRODUCT_QUALITY_FAILURE",
+        "failureClass": "STUDIO_MCP_LOCAL_PLAY_FAILED",
         "robloxFailureClass": "ROBLOX_STUDIO_RUNTIME",
         "actualPlayEligibility": "PRIVATE_INTERNAL_CANDIDATE_EXACT",
         "studioMcpServerEnablementRequired": false,
@@ -411,7 +411,7 @@
             "ok": false
           },
           {
-            "id": "map-route-prompt:마을 이장",
+            "id": "map-route-Workspace.DaechungRPGWorld.Village.VillageChief.ProximityPrompt",
             "type": "mcp-map-route-audit",
             "dispatched": true,
             "ok": true
@@ -423,13 +423,13 @@
             "ok": true
           },
           {
-            "id": "map-route-prompt:무기상인",
+            "id": "map-route-Workspace.DaechungRPGWorld.Village.WeaponMerchant.ProximityPrompt",
             "type": "mcp-map-route-audit",
             "dispatched": true,
             "ok": true
           },
           {
-            "id": "map-route-prompt:방어구상인",
+            "id": "map-route-Workspace.DaechungRPGWorld.Village.ArmorMerchant.ProximityPrompt",
             "type": "mcp-map-route-audit",
             "dispatched": true,
             "ok": true
@@ -671,6 +671,12 @@
             "pass": true
           },
           {
+            "id": "actual-play-post-keyboard-client-probe",
+            "name": "actual-play-post-keyboard-client-probe",
+            "required": true,
+            "pass": true
+          },
+          {
             "id": "commercial-prompt-exploration",
             "name": "commercial-prompt-exploration",
             "required": true,
@@ -770,7 +776,7 @@
             "id": "scenario-adaptive-system-transaction-effect",
             "name": "scenario-adaptive-system-transaction-effect",
             "required": true,
-            "pass": false
+            "pass": true
           },
           {
             "id": "scenario-adaptive-travel-effect",
@@ -824,7 +830,7 @@
             "id": "scenario-adaptive-motion-surface",
             "name": "scenario-adaptive-motion-surface",
             "required": true,
-            "pass": false
+            "pass": true
           },
           {
             "id": "scenario-adaptive-audio-surface",
@@ -929,8 +935,8 @@
             "pass": true
           },
           {
-            "id": "scenario-observed-action-fd8c41f32e7566b9260a",
-            "name": "scenario-observed-action-fd8c41f32e7566b9260a",
+            "id": "scenario-observed-action-ab91f3b5c50ae062e8b7",
+            "name": "scenario-observed-action-ab91f3b5c50ae062e8b7",
             "required": true,
             "pass": true
           },
@@ -941,14 +947,14 @@
             "pass": true
           },
           {
-            "id": "scenario-observed-action-d887b7ecfd0db2438691",
-            "name": "scenario-observed-action-d887b7ecfd0db2438691",
+            "id": "scenario-observed-action-c90bb21e5cd440d3dbe2",
+            "name": "scenario-observed-action-c90bb21e5cd440d3dbe2",
             "required": true,
             "pass": true
           },
           {
-            "id": "scenario-observed-action-5b2efe5c427215aa13df",
-            "name": "scenario-observed-action-5b2efe5c427215aa13df",
+            "id": "scenario-observed-action-0d42cf87f58f5b9391d1",
+            "name": "scenario-observed-action-0d42cf87f58f5b9391d1",
             "required": true,
             "pass": true
           },
@@ -956,13 +962,13 @@
             "id": "scenario-observed-action-ce7a335281c15e497552",
             "name": "scenario-observed-action-ce7a335281c15e497552",
             "required": true,
-            "pass": false
+            "pass": true
           },
           {
             "id": "scenario-observed-action-7a30d05dfc5fe9edfc16",
             "name": "scenario-observed-action-7a30d05dfc5fe9edfc16",
             "required": true,
-            "pass": false
+            "pass": true
           },
           {
             "id": "scenario-observed-action-00f7121873e36beeaa1c",
@@ -1015,16 +1021,16 @@
           "characterMotionRuntimeRequired": false,
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
-          "scenarioFailureCount": 4,
-          "primaryActionDisplacement": 1.547451050363139e-7,
-          "primaryActionVelocity": 0.00001299680977081523,
+          "scenarioFailureCount": 0,
+          "primaryActionDisplacement": 2.1321034558012144,
+          "primaryActionVelocity": 0.052748374645909896,
           "primaryActionFeedbackChanged": false,
           "commercialAudit": {
             "auditProfile": "F9_SOAK",
-            "timelineProbeCount": 42,
+            "timelineProbeCount": 32,
             "routePlanningProbeCount": 13,
-            "lightweightProbeCount": 29,
-            "progressChanged": false,
+            "lightweightProbeCount": 19,
+            "progressChanged": true,
             "inventoryChanged": false,
             "timelineProgressChanged": true,
             "timelineMobDynamic": false,
@@ -1057,7 +1063,7 @@
               "multiplayerActualSessionPass": false
             },
             "performance": {
-              "memoryMb": 2678.6953125,
+              "memoryMb": 2754.5625,
               "descendantCount": 4512
             },
             "multiplayer": {
@@ -1168,7 +1174,7 @@
           },
           {
             "id": "adaptive-system-transaction-effect",
-            "pass": false
+            "pass": true
           },
           {
             "id": "adaptive-travel-effect",
@@ -1204,7 +1210,7 @@
           },
           {
             "id": "adaptive-motion-surface",
-            "pass": false
+            "pass": true
           },
           {
             "id": "adaptive-audio-surface",
@@ -1276,7 +1282,7 @@
             "pass": true
           },
           {
-            "id": "observed-action-fd8c41f32e7566b9260a",
+            "id": "observed-action-ab91f3b5c50ae062e8b7",
             "pass": true
           },
           {
@@ -1284,20 +1290,20 @@
             "pass": true
           },
           {
-            "id": "observed-action-d887b7ecfd0db2438691",
+            "id": "observed-action-c90bb21e5cd440d3dbe2",
             "pass": true
           },
           {
-            "id": "observed-action-5b2efe5c427215aa13df",
+            "id": "observed-action-0d42cf87f58f5b9391d1",
             "pass": true
           },
           {
             "id": "observed-action-ce7a335281c15e497552",
-            "pass": false
+            "pass": true
           },
           {
             "id": "observed-action-7a30d05dfc5fe9edfc16",
-            "pass": false
+            "pass": true
           },
           {
             "id": "observed-action-00f7121873e36beeaa1c",
@@ -1308,109 +1314,18 @@
             "pass": true
           }
         ],
-        "scenarioCoveragePass": false,
-        "qualityFailureKinds": [
-          "adaptive-system-transaction-effect",
-          "adaptive-motion-surface",
-          "observed-action-ce7a335281c15e497552",
-          "observed-action-7a30d05dfc5fe9edfc16"
-        ],
-        "qualityFailureDetails": [
-          {
-            "id": "adaptive-system-transaction-effect",
-            "repairSurface": "SYSTEM_TRANSACTION",
-            "priority": "CRITICAL",
-            "hint": "One or more discovered shop/craft/equip/upgrade actions accepted input without changing inventory, currency/progression, feedback, or relevant UI state. Repair each transaction chain independently.",
-            "observed": {
-              "systemActionCount": 1,
-              "systemEffectCount": 0,
-              "actions": [
-                {
-                  "id": "prompt-ProximityPrompt",
-                  "semantic": "SHOP",
-                  "effectObserved": false,
-                  "effect": {
-                    "moved": 35.393311634526235,
-                    "progress": false,
-                    "inventory": false,
-                    "feedback": false,
-                    "health": false,
-                    "ui": false,
-                    "round": false,
-                    "map": false,
-                    "effectObserved": true
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "id": "adaptive-motion-surface",
-            "repairSurface": "CHARACTER_MOTION",
-            "priority": "HIGH",
-            "hint": "Repair Animator/Motor6D rig behavior and verify movement/action animation response.",
-            "observed": {
-              "interactionSurfaceCount": 36,
-              "progressionSurfaceCount": 83,
-              "combatSurfaceCount": 201,
-              "npcSurfaceCount": 27,
-              "companionSurfaceCount": 2,
-              "itemSurfaceCount": 11,
-              "remoteCount": 17,
-              "soundCount": 0,
-              "effectCount": 31,
-              "promptCount": 18,
-              "inventoryCount": 0,
-              "currentActualPlayerCount": 1,
-              "maxActualPlayerCount": 1,
-              "multiplayerStateTransition": false,
-              "multiplayerActualSessionPass": false
-            }
-          },
-          {
-            "id": "observed-action-ce7a335281c15e497552",
-            "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
-            "priority": "HIGH",
-            "hint": "Replay the exact observed action and verify its real state change after repair.",
-            "observed": {
-              "id": "observed-action-ce7a335281c15e497552",
-              "pass": false,
-              "required": true,
-              "generatedFrom": "OFFICIAL_STUDIO_OBSERVED_ACTION",
-              "actionId": "prompt-ProximityPrompt",
-              "targetIdentity": "Workspace.DaechungRPGWorld.Village.VillageChief.ProximityPrompt",
-              "actionType": "mcp-world-interaction",
-              "effectRequired": true,
-              "attempts": 1
-            }
-          },
-          {
-            "id": "observed-action-7a30d05dfc5fe9edfc16",
-            "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
-            "priority": "HIGH",
-            "hint": "Replay the exact observed action and verify its real state change after repair.",
-            "observed": {
-              "id": "observed-action-7a30d05dfc5fe9edfc16",
-              "pass": false,
-              "required": true,
-              "generatedFrom": "OFFICIAL_STUDIO_OBSERVED_ACTION",
-              "actionId": "prompt-ProximityPrompt",
-              "targetIdentity": "Workspace.DaechungRPGWorld.Village.WeaponMerchant.ProximityPrompt",
-              "actionType": "mcp-world-interaction",
-              "effectRequired": true,
-              "attempts": 1
-            }
-          }
-        ],
+        "scenarioCoveragePass": true,
+        "qualityFailureKinds": [],
+        "qualityFailureDetails": [],
         "functionalChainEvidence": {
           "inputDispatched": true,
-          "runtimeVerified": false,
+          "runtimeVerified": true,
           "screenChanged": true,
-          "authoritativeStateChangeObserved": false,
+          "authoritativeStateChangeObserved": true,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-10-01T15:24:52.660Z",
-        "workflowRunId": 36882677961,
+        "testedAt": "2026-10-01T16:02:45.685Z",
+        "workflowRunId": 36887668450,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -1720,108 +1635,13 @@
         "artifactIdentity": "sha256:fc2c92e482f47e15e9ae7db9dd7fab2861b633fbe87d53b14bde0d291c711f6a",
         "versionNumber": 36864811737,
         "failureStage": "VIBE_INTERNAL_PLAY",
-        "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
-        "qualityFailureKinds": [
-          "adaptive-system-transaction-effect",
-          "adaptive-motion-surface",
-          "observed-action-ce7a335281c15e497552",
-          "observed-action-7a30d05dfc5fe9edfc16"
-        ],
-        "qualityFailureDetails": [
-          {
-            "id": "adaptive-system-transaction-effect",
-            "repairSurface": "SYSTEM_TRANSACTION",
-            "priority": "CRITICAL",
-            "hint": "One or more discovered shop/craft/equip/upgrade actions accepted input without changing inventory, currency/progression, feedback, or relevant UI state. Repair each transaction chain independently.",
-            "observed": {
-              "systemActionCount": 1,
-              "systemEffectCount": 0,
-              "actions": [
-                {
-                  "id": "prompt-ProximityPrompt",
-                  "semantic": "SHOP",
-                  "effectObserved": false,
-                  "effect": {
-                    "moved": 35.393311634526235,
-                    "progress": false,
-                    "inventory": false,
-                    "feedback": false,
-                    "health": false,
-                    "ui": false,
-                    "round": false,
-                    "map": false,
-                    "effectObserved": true
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "id": "adaptive-motion-surface",
-            "repairSurface": "CHARACTER_MOTION",
-            "priority": "HIGH",
-            "hint": "Repair Animator/Motor6D rig behavior and verify movement/action animation response.",
-            "observed": {
-              "interactionSurfaceCount": 36,
-              "progressionSurfaceCount": 83,
-              "combatSurfaceCount": 201,
-              "npcSurfaceCount": 27,
-              "companionSurfaceCount": 2,
-              "itemSurfaceCount": 11,
-              "remoteCount": 17,
-              "soundCount": 0,
-              "effectCount": 31,
-              "promptCount": 18,
-              "inventoryCount": 0,
-              "currentActualPlayerCount": 1,
-              "maxActualPlayerCount": 1,
-              "multiplayerStateTransition": false,
-              "multiplayerActualSessionPass": false
-            }
-          },
-          {
-            "id": "observed-action-ce7a335281c15e497552",
-            "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
-            "priority": "HIGH",
-            "hint": "Replay the exact observed action and verify its real state change after repair.",
-            "observed": {
-              "id": "observed-action-ce7a335281c15e497552",
-              "pass": false,
-              "required": true,
-              "generatedFrom": "OFFICIAL_STUDIO_OBSERVED_ACTION",
-              "actionId": "prompt-ProximityPrompt",
-              "targetIdentity": "Workspace.DaechungRPGWorld.Village.VillageChief.ProximityPrompt",
-              "actionType": "mcp-world-interaction",
-              "effectRequired": true,
-              "attempts": 1
-            }
-          },
-          {
-            "id": "observed-action-7a30d05dfc5fe9edfc16",
-            "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
-            "priority": "HIGH",
-            "hint": "Replay the exact observed action and verify its real state change after repair.",
-            "observed": {
-              "id": "observed-action-7a30d05dfc5fe9edfc16",
-              "pass": false,
-              "required": true,
-              "generatedFrom": "OFFICIAL_STUDIO_OBSERVED_ACTION",
-              "actionId": "prompt-ProximityPrompt",
-              "targetIdentity": "Workspace.DaechungRPGWorld.Village.WeaponMerchant.ProximityPrompt",
-              "actionType": "mcp-world-interaction",
-              "effectRequired": true,
-              "attempts": 1
-            }
-          }
-        ],
-        "repairSurfaces": [
-          "SYSTEM_TRANSACTION",
-          "CHARACTER_MOTION",
-          "ROBLOX_OBSERVED_INTERACTION"
-        ],
+        "failureSignature": "ROBLOX_STUDIO_MCP_PLAY_CHECKPOINT_FAILED",
+        "qualityFailureKinds": [],
+        "qualityFailureDetails": [],
+        "repairSurfaces": [],
         "robloxFailureClass": "ROBLOX_STUDIO_RUNTIME",
-        "testedAt": "2026-10-01T15:24:52.660Z",
-        "workflowRunId": 36882677961,
+        "testedAt": "2026-10-01T16:02:45.685Z",
+        "workflowRunId": 36887668450,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxQualityBuildUpLastPassedAt": "2026-09-28T19:49:57.015Z",
@@ -26648,7 +26468,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T16:01:26.489Z",
+  "updatedAt": "2026-10-01T16:02:45.685Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
