@@ -1,5 +1,5 @@
 {
-  "version": 505,
+  "version": 506,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -1350,6 +1350,14 @@
       "failedGameEvidencePreserved": true,
       "cancellationNoiseMayNotTriggerHeavyControlWork": true,
       "qualityOrEvidenceGateWeakeningForbidden": true
+    },
+    "ownerDirective20261001ParallelPreservation": {
+      "learningIdleFixedWorkers": 1,
+      "assetDevelopmentLaneMax": 64,
+      "assetDevelopmentSpeculativeVariantsPerTask": 1,
+      "durableHandoffRequired": true,
+      "independentNonoverlappingGameAndNeuralWorkParallelByDefault": true,
+      "serializationAllowedOnlyForResponsibleFileConflictDependencyExactDuplicateOrAtomicSharedStateWrite": true
     }
   },
   "phases": [
@@ -2905,7 +2913,13 @@
       "postReleaseLogicalRunnerPerProject": 1,
       "preserveExistingGlobalProtectedSlotCapacity": true,
       "learningMustContinue": true,
-      "gameAndRuntimeSettingsMayNotBeChangedByStateProjection": true
+      "gameAndRuntimeSettingsMayNotBeChangedByStateProjection": true,
+      "ownerDirective20261001HandoffPreservation": {
+        "enabled": true,
+        "continueExactCheckpoint": true,
+        "sourceRevisionResponsibleFilesQaFailureAndNextActionRequired": true,
+        "handoffMayNotSerializeIndependentWork": true
+      }
     },
     "platformPriorityInvariant": {
       "source": "platformPriorityInvariant",
@@ -7492,7 +7506,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-10-01T10:07:00+09:00",
+  "updatedAt": "2026-10-01T23:00:00+09:00",
   "priorityTiers": [
     {
       "tier": 1,
@@ -9576,7 +9590,13 @@
       "pressureObservationFailureAction": "KEEP_ONE_LEARNING_WORKER",
       "minimumActiveWorkersUnderPressure": 1,
       "productionMayNotWaitForLearningReserve": true,
-      "schedulerEpoch": "vibe2-24h-cycle-singleton-v6"
+      "schedulerEpoch": "vibe2-24h-cycle-singleton-v6",
+      "ownerDirective20261001Preservation": {
+        "maxActiveWorkers": 1,
+        "fixedWorkerSlots": 1,
+        "workflowConcurrencyGroupPreserved": true,
+        "mayMutateGameParallelismControl": false
+      }
     },
     "releaseWait": {
       "taskClass": "RELEASE_WAIT",
@@ -15183,7 +15203,14 @@
       "assetDevelopmentSourceWorkerBuildUpDirectiveSyntaxGuard": true,
       "assetDevelopmentModelCachePersistOnMiss": true,
       "assetDevelopmentWorkerModelRepullAfterSharedCacheHitForbidden": true,
-      "assetDevelopmentCacheGeneration": 5
+      "assetDevelopmentCacheGeneration": 5,
+      "ownerDirective20261001Preservation": {
+        "assetDevelopmentLaneMax": 64,
+        "assetDevelopmentSpeculativeVariantsPerTask": 1,
+        "dedicatedRunnerAndExistingQueuePreserved": true,
+        "distinctAssetTaskParallelismPreserved": true,
+        "sameResponsibleFileParallelForbidden": true
+      }
     },
     "failureHandling": {
       "state": "ASSET_REPAIR_REQUIRED",
@@ -19977,12 +20004,47 @@
               "enabled": true,
               "planner": "assets/vibe-studio-asset-universe.js::createAssetRuntimeVisualReviewPlan",
               "visionWorker": "tools/vibe2-source-worker.mjs::observeAssetRuntimeCaptures",
-              "surfaces": "ROBLOX_STUDIO|UNITY_EDITOR|UNITY_ANDROID_APK|WEB_BROWSER",
+              "surfaces": "ROBLOX_STUDIO|UNITY_EDITOR|UNITY_ANDROID_APK|UNITY_WEB_BROWSER|WEB_BROWSER",
               "contract": "CURRENT_SOURCE_REVISION+LOCAL_IMAGE_SHA256+NORMALIZED_REGION; REQUIRED_EXPECTED_SUBJECT_ONLY; UNCERTAIN_NEVER_ADD; EXISTING_RESPONSIBILITY_ONLY; PRESERVE_GAMEPLAY_BALANCE_SAVE_NETWORK; SAME_SURFACE_VIEW_RECAPTURE",
               "retryBlock": "RUNTIME VISUAL REVIEW",
-              "engineCaptureProductionImplemented": false,
+              "engineCaptureProductionImplemented": true,
               "pixelReviewPassIsNotRuntimeOrReleasePass": true,
-              "newQueueOrScheduler": false
+              "newQueueOrScheduler": false,
+              "captureProductionSources": [
+                "company-development-roblox-post-runtime-qa",
+                "unity-android-independent-qa",
+                "unity-web-first-stage-build"
+              ],
+              "evidenceReuse": "ALL_NONEXPIRED_RECENT_ARTIFACTS; ALL_CURRENT_SOURCE_COMPATIBLE_CAPTURES; RECENT_FIRST; SOURCE_ROOT_DIFF_MUST_BE_EMPTY; LOCAL_IMAGE_SHA256_RECHECK; ROBLOX_BEFORE_AFTER_PLUS_UNITY_ANDROID_PLUS_UNITY_WEB; EXT_VS_INTERNAL:SAME_CAMERA_LIGHTING_DISTANCE_POSE,SOURCE_BLIND,3+RENDER_VIEWS,REAL_MOBILE_PERF,14_DIMENSION_FAMILY_PROFILE,RAW_EXTERNAL_COPY_FORBIDDEN,EXTRACT_ADVANTAGES_REAUTHOR_INTERNAL,SAME_CONDITION_RECAPTURE",
+              "captureSelection": "ALL_CURRENT_SOURCE_COMPATIBLE_RECENT_FIRST",
+              "latestOnlySingleCaptureForbidden": true,
+              "allCompatibleCapturesFromSelectedRecentArtifactsRequired": true,
+              "externalInternalComparison": {
+                "version": 1,
+                "dimensions": [
+                  "SILHOUETTE",
+                  "MATERIAL_TEXTURE",
+                  "COLOR_VALUE_LIGHTING",
+                  "ANIMATION",
+                  "CHARACTER_PERSONALITY",
+                  "MONSTER_SPECIES_IDENTITY",
+                  "WEAPON_DETAIL",
+                  "ENVIRONMENT_DENSITY",
+                  "ARCHITECTURAL_DETAIL",
+                  "UI_READABILITY",
+                  "MOBILE_SCREEN_QUALITY",
+                  "WORLD_LORE_FIT",
+                  "EXISTING_STYLE_CONSISTENCY",
+                  "PERFORMANCE_COST"
+                ],
+                "familySpecificProfilesRequired": true,
+                "totalScoreOnlyDecisionForbidden": true,
+                "externalDirectCopyForbidden": true,
+                "externalWinAction": "EXTRACT_PROVEN_ADVANTAGES_AND_REAUTHOR_INTERNAL",
+                "internalWinAction": "KEEP_INTERNAL_EXTERNAL_REFERENCE_ONLY",
+                "sameConditionBeforeAfterRecaptureRequired": true,
+                "gameplayBalanceSaveNetworkAuthorityImmutable": true
+              }
             }
           }
         }
