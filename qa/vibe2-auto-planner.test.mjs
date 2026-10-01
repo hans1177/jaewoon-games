@@ -294,6 +294,68 @@ test('development-confirmed Web enters Vibe planning before homepage publication
   assert.doesNotMatch(result.task.goal,/FULL_WEB_GAME_REBUILD/);
 });
 
+test('recent owner Web work is prioritized only inside the Web lane until first playable deployment',()=>{
+  const root=tempRepo();
+  const recentId='z-recent-owner-web';
+  const olderId='a-older-web';
+  for(const gameId of [recentId,olderId]){
+    const dir=path.join(root,'web-games',gameId);
+    fs.mkdirSync(dir,{recursive:true});
+    fs.writeFileSync(path.join(dir,'index.html'),'<!doctype html><html><body data-spatial-dimension="2.5d"><canvas id="game"></canvas><button>Play</button></body></html>','utf8');
+    writeStudioDesign(root,gameId);
+  }
+  const recent={
+    id:recentId,name:'Recent Owner Web',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',
+    hasWebArchive:true,homepageWebPlayable:false,webPath:null,
+    ownerDirectWebUpload:true,webDevelopmentResetRequired:true,ownerWebSourceRevision:'rev-recent'
+  };
+  const older={
+    id:olderId,name:'Older Web',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',
+    hasWebArchive:true,homepageWebPlayable:false,webPath:`/web-games/${olderId}/`
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},catalog:{games:[older,recent]},queue:{maxConcurrentTasks:1,tasks:[]},
+    repoRoot:root,maxConcurrentTasks:1,queueMaxConcurrentTasks:1,planningBacklogTarget:1,planningBacklogMinimum:0
+  });
+  assert.equal(result.planned,true);
+  assert.equal(result.task.gameId,recentId);
+  assert.equal(result.task.target,'web');
+  assert.ok(result.task.evidence.includes('web-internal-priority:recent-owner-work'));
+  assert.ok(result.task.evidence.includes('web-internal-priority-scope:WEB_ONLY'));
+  assert.equal(result.task.evidence.includes('focused-caretaker:yes'),false);
+
+  const projects=collectProjects({projects:[]},{games:[older,recent]},root,{items:[]});
+  const recentProject=projects.find(row=>row.gameId===recentId&&row.engine==='web');
+  assert.ok(recentProject);
+  assert.equal(recentProject.projectPath,`web-games/${recentId}`);
+  assert.equal(recentProject.ownerRecentWebPriority,true);
+
+  const deployedProjects=collectProjects({projects:[]},{games:[older,{...recent,homepageWebPlayable:true,webPath:`/web-games/${recentId}/`}]},root,{items:[]});
+  const deployed=deployedProjects.find(row=>row.gameId===recentId&&row.engine==='web');
+  assert.ok(deployed);
+  assert.equal(deployed.ownerRecentWebPriority,false);
+});
+
+test('recent Web hint does not outrank an existing higher Web release priority',()=>{
+  const root=tempRepo();
+  for(const gameId of ['recent-dev-web','release-priority-web']){
+    const dir=path.join(root,'web-games',gameId);
+    fs.mkdirSync(dir,{recursive:true});
+    fs.writeFileSync(path.join(dir,'index.html'),'<!doctype html><html><body data-spatial-dimension="2.5d"><canvas id="game"></canvas><button>Play</button></body></html>','utf8');
+    writeStudioDesign(root,gameId);
+  }
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[
+      {id:'recent-dev-web',name:'Recent Dev',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',hasWebArchive:true,homepageWebPlayable:false,webPath:null,ownerDirectWebUpload:true,webDevelopmentResetRequired:true,ownerWebSourceRevision:'recent'},
+      {id:'release-priority-web',name:'Release Web',productionClass:'RELEASE_CONFIRMED',lifecycleState:'ACTIVE',hasWebArchive:true,homepageWebPlayable:true,webPath:'/web-games/release-priority-web/'}
+    ]},
+    queue:{maxConcurrentTasks:1,tasks:[]},repoRoot:root,maxConcurrentTasks:1,queueMaxConcurrentTasks:1,planningBacklogTarget:1,planningBacklogMinimum:0
+  });
+  assert.equal(result.planned,true);
+  assert.equal(result.task.gameId,'release-priority-web');
+});
+
 test('canonical development queue bootstraps missing Web source roots instead of dropping active games',()=>{
   const root=tempRepo();
   const gameId='missing-web-base';
