@@ -112,4 +112,51 @@ function renderGacha(){
 function renderUpgrades(){
  if(!save.upgradeUnlocked){$('upgradePanel').innerHTML='<div class="title">업그레이드</div><div class="muted">2스테이지를 클리어하면 해금돼.</div>';return}
  $('upgradePanel').innerHTML='<div class="title">업그레이드</div><div class="muted">최대 3회 · 첫 비용 50골드 · 다음 비용은 1.3배 · HP/공격력 ×1.25</div><div id="upgradeRows"></div>';
- $('upgradeRows').innerHTML=save.owned.filter(n=>UNIT[n]).map(n=>{const lv=save.upgrades[n]||0,cost=Math.round(50*Math.pow
+ $('upgradeRows').innerHTML=save.owned.filter(n=>UNIT[n]).map(n=>{const lv=save.upgrades[n]||0,cost=Math.round(50*Math.pow(1.3,lv));return `<div class="upgradeRow"><b>${n} · 강화 ${lv}/3</b><span>비용 ${cost}골드</span><button data-up="${n}" ${lv>=3?'disabled':''}>강화</button></div>`}).join('');
+ $('upgradeRows').querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>{const n=b.dataset.up,lv=save.upgrades[n]||0;if(lv>=3)return;const cost=Math.round(50*Math.pow(1.3,lv));if(!game||game.gold<cost){showResult('강화 불가','업그레이드는 스테이지 전투 중 보유 골드로 진행해. 골드가 부족해.');return}game.gold-=cost;save.upgrades[n]=lv+1;persist();renderUpgrades();renderBattle()});
+}
+function renderRules(){
+ $('rulesPanel').innerHTML=`<div class="title">기본 규칙</div><div class="specialInfo">• 맵은 1~3스테이지 5×5, 4스테이지 7×5.<br>• 1명은 적군, 2명은 아군을 움직이는 로컬 턴제 방식.<br>• 유닛은 기본 1칸 이동. 사거리 안의 적을 눌러 공격.<br>• 아군 1 → 아군 2 → 적군 순서로 반복.<br>• 망치병은 공격을 지정한 뒤 다음 자기 차례에 80 피해.<br>• 4스테이지에는 랜덤 특수 발판 5개.<br>• 방패 고블린은 받는 피해 40% 감소.<br>• 돌격 오크는 적군 턴마다 40% 확률로 왼쪽 끝까지 돌진. 닿은 아군은 55 피해 + 1턴 공격 불가.</div>`;
+}
+
+// ==============================
+// 전투 생성
+// ==============================
+function startStage(stageNo){
+ const s=STAGE[stageNo]; game={stageNo,s,gold:s.gold,turn:'ally1',turnNo:1,enemyTurnCount:0,pieces:[],tiles:[],log:[],spawnOwner:1,finished:false};selected=null;summonChoice=null;
+ if(stageNo===4)makeSpecialTiles();
+ const slots=[];for(let y=0;y<s.h;y++)for(let x=Math.max(0,s.w-2);x<s.w;x++)slots.push({x,y});
+ s.enemies.slice(0,s.enemyMax).forEach((name,i)=>{const p=slots[i%slots.length];spawnPiece(name,'enemy',p.x,p.y)});
+ $('battle').classList.remove('hidden');['menuPanel','gachaPanel','upgradePanel','rulesPanel'].forEach(id=>$(id).classList.add('hidden'));addLog(`${stageNo}스테이지 시작 · ${s.name}`);renderBattle();
+}
+function makeSpecialTiles(){
+ const s=STAGE[4],candidates=[];for(let y=0;y<s.h;y++)for(let x=1;x<s.w-2;x++)candidates.push({x,y});shuffle(candidates);for(let i=0;i<5;i++){game.tiles.push({...candidates[i],type:TILE_TYPES[i%TILE_TYPES.length],used:false})}
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function unitStats(name){
+ const b=UNIT[name],lv=save.upgrades[name]||0,m=Math.pow(1.25,lv);return {...b,hp:Math.round(b.hp*m),atk:Math.round(b.atk*m)};
+}
+function spawnPiece(name,team,x,y){
+ const b=team==='enemy'?ENEMY[name]:unitStats(name);const owner=team==='enemy'?'enemy':team;
+ game.pieces.push({id:crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2),name,team:owner,x,y,hp:b.hp,maxHp:b.hp,atk:b.atk,range:b.range||1,moved:false,attacked:false,reduce:b.reduce||0,splash:b.splash||0,hammer:b.hammer||false,hammerTarget:null,golem:!!b.golem,boar:!!b.boar,poison:!!b.poison,charger:!!b.charger,guardian:!!b.guardian,poisonTurns:0,attackLock:0});
+}
+function pieceAt(x,y){return game.pieces.find(p=>p.hp>0&&p.x===x&&p.y===y)}
+function ownTeam(){return game.turn==='enemy'?'enemy':game.turn}
+function canControl(p){return p&&p.team===ownTeam()}
+function alive(team){return game.pieces.filter(p=>p.hp>0&&(team?teamMatch(p,team):true))}
+function teamMatch(p,team){return team==='ally'?p.team!=='enemy':p.team===team}
+function allies(){return alive('ally')}
+function enemies(){return alive('enemy')}
+function dist(a,b){return Math.abs(a.x-b.x)+Math.abs(a.y-b.y)}
+function inside(x,y){return x>=0&&y>=0&&x<game.s.w&&y<game.s.h}
+
+// ==============================
+// 렌더
+// ==============================
+function renderBattle(){
+ renderMeta(); if(!game)return;
+ const labels={ally1:'아군 1',ally2:'아군 2',enemy:'적군'};$('turnTitle').textContent=`${labels[game.turn]} 차례 · ${game.turnNo}턴`;
+ $('turnDesc').textContent=game.turn==='enemy'?'적군 유닛을 움직이고 공격해.':'왼쪽 두 열에 유닛을 소환하거나 내 유닛을 움직여.';
+ $('board').style.gridTemplateColumns=`repeat(${game.s.w},1fr)`;$('board').style.gridTemplateRows=`repeat(${game.s.h},1fr)`;$('board').innerHTML='';
+ for(let y=0;y<game.s.h;y++)for(let x=0;x<game.s.w;x++){
+  const c=document.createElement('button');c.className='cell';c.dataset.x=x;c.dataset.y=y;const tile=game.tiles.find(t=>t.x===x&&t.y===y&&!t.used);if(tile){const 
