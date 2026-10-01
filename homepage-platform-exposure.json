@@ -2,7 +2,7 @@
   "version": 3,
   "authority": "company-runtime",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
-  "centralPolicyFingerprint": "6eca97429e773ed4910e0e585e3cd5c7be54641a755cb26a3a2e7072246dbe99",
+  "centralPolicyFingerprint": "9d54efb3ea99678e20642221d15c558ac166f90a990931de5766957c7acd9c8b",
   "centralPolicyVersion": 8,
   "publicSafe": true,
   "internalCompanySurface": true,
@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": true,
-  "generatedAt": "2026-10-01T18:08:56.187Z",
+  "generatedAt": "2026-10-01T18:20:29.182Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -634,7 +634,7 @@
     },
     {
       "gameId": "horror-escape-room",
-      "gameName": "심야 대탈출",
+      "gameName": "심야 감염전 [4대4]",
       "authority": "company-runtime",
       "internalCompanySurface": true,
       "externalPublicReleaseState": "INTERNAL_ONLY",
@@ -1673,12 +1673,13 @@
               "exactRuntime": false,
               "lobby": false,
               "movement": false,
-              "noRuntimeErrors": true
+              "noRuntimeErrors": false
             },
             "blockers": [
               "exactRuntime",
               "lobby",
-              "movement"
+              "movement",
+              "noRuntimeErrors"
             ],
             "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
             "artifactIdentity": "sha256:27eac451197d7647d0217f4c7eef45869ee21f36864d68753ef535e04bbf9b33",
@@ -1746,7 +1747,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T18:04:14.870Z"
+      "updatedAt": "2026-10-01T18:10:05.444Z"
     },
     {
       "gameId": "survival",
@@ -1868,7 +1869,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T18:07:44.046Z"
+      "updatedAt": "2026-10-01T18:20:26.427Z"
     },
     {
       "gameId": "village-dungeons",
