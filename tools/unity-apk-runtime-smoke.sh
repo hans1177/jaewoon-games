@@ -138,6 +138,11 @@ center_x=$((screen_w / 2))
 primary_y=$((screen_h * 68 / 100))
 secondary_y=$((screen_h * 84 / 100))
 
+# One exact Android runtime session supplies the Unity F1-F8 black-box evidence.
+# Capture the frame immediately before gameplay input so later floors can reuse
+# the same session instead of launching a verifier per floor.
+adb exec-out screencap -p > "$out_dir/screen-before-input.png" 2>/dev/null || true
+
 if [[ "$boot_observed" == "true" || "$seed_technical" != "true" ]]; then
   gameplay_input_delivered=true
   adb shell input tap "$center_x" "$primary_y" || true
@@ -148,6 +153,8 @@ if [[ "$boot_observed" == "true" || "$seed_technical" != "true" ]]; then
   sleep 1
   adb shell input tap "$center_x" "$secondary_y" || true
 fi
+
+adb exec-out screencap -p > "$out_dir/screen-after-input.png" 2>/dev/null || true
 
 if [[ "$seed_technical" == "true" && "$gameplay_input_delivered" == "true" ]]; then
   for _ in $(seq 1 15); do
@@ -172,12 +179,20 @@ fi
 
 pid="$(adb shell pidof "$package" 2>/dev/null | tr -d '\r' | head -n 1 || true)"
 adb shell dumpsys activity activities > "$out_dir/activity.txt" 2>&1 || true
+foreground_observed=false
+if grep -Eq "mResumedActivity.*${package}|topResumedActivity.*${package}|ResumedActivity.*${package}" "$out_dir/activity.txt"; then
+  foreground_observed=true
+fi
 adb shell dumpsys package "$package" > "$out_dir/package.txt" 2>&1 || true
 adb shell dumpsys gfxinfo "$package" > "$out_dir/gfxinfo.txt" 2>&1 || true
 adb shell dumpsys SurfaceFlinger --latency > "$out_dir/surfaceflinger-latency.txt" 2>&1 || true
 adb shell dumpsys meminfo "$package" > "$out_dir/meminfo.txt" 2>&1 || true
 adb logcat -d > "$out_dir/logcat.txt" 2>&1 || true
-adb exec-out screencap -p > "$out_dir/screenshot.png" 2>/dev/null || true
+if [[ -s "$out_dir/screen-after-input.png" ]]; then
+  cp "$out_dir/screen-after-input.png" "$out_dir/screenshot.png"
+else
+  adb exec-out screencap -p > "$out_dir/screenshot.png" 2>/dev/null || true
+fi
 
 read -r rendered_frames janky_frames total_pss_kb < <(python3 - "$out_dir/gfxinfo.txt" "$out_dir/surfaceflinger-latency.txt" "$out_dir/meminfo.txt" <<'PY'
 import pathlib,re,sys
@@ -235,17 +250,49 @@ if [[ "$runtime_pass" == "true" && "$seed_signals_pass" == "true" ]]; then
   fi
 fi
 
-python3 - "$out_dir/evidence.json" "$apk" "$package" "$pid" "$runtime_pass" "$fatal" "$update_pass" "$launch_command_pass" "$seed_technical" "$boot_observed" "$action_observed" "$save_observed" "$metric_observed" "$runtime_ready_timeout" "$gameplay_input_delivered" "$launch_activity" "$launch_component" "$process_observed_after_launch" "$process_exited_before_runtime_ready" "$launch_process_missing" "$runtime_abi_compatible" "$device_api" "$device_abis" "$rendered_frames" "$janky_frames" "$total_pss_kb" "$platform_metrics_pass" <<'PY'
-import json,sys,datetime,pathlib
+python3 - "$out_dir/evidence.json" "$apk" "$package" "$pid" "$runtime_pass" "$fatal" "$update_pass" "$launch_command_pass" "$seed_technical" "$boot_observed" "$action_observed" "$save_observed" "$metric_observed" "$runtime_ready_timeout" "$gameplay_input_delivered" "$launch_activity" "$launch_component" "$process_observed_after_launch" "$process_exited_before_runtime_ready" "$launch_process_missing" "$runtime_abi_compatible" "$device_api" "$device_abis" "$rendered_frames" "$janky_frames" "$total_pss_kb" "$platform_metrics_pass" "$foreground_observed" <<'PY'
+import hashlib,json,sys,datetime,pathlib
 (out,apk,package,pid,runtime_pass,fatal,update_pass,launch_command_pass,
  seed_technical,boot_observed,action_observed,save_observed,metric_observed,
  runtime_ready_timeout,gameplay_input_delivered,launch_activity,launch_component,
  process_observed_after_launch,process_exited_before_runtime_ready,launch_process_missing,
  runtime_abi_compatible,device_api,device_abis,rendered_frames,janky_frames,total_pss_kb,
- platform_metrics_pass)=sys.argv[1:]
+ platform_metrics_pass,foreground_observed)=sys.argv[1:]
 flag=lambda value:value.lower()=='true'
 seed_ok=(not flag(seed_technical)) or all(map(flag,[boot_observed,action_observed,save_observed,metric_observed]))
 frames=int(rendered_frames); janky=int(janky_frames); pss_kb=int(total_pss_kb)
+evidence_dir=pathlib.Path(out).parent
+before_screen=evidence_dir/'screen-before-input.png'
+after_screen=evidence_dir/'screen-after-input.png'
+def screen_info(file):
+    if not file.exists() or file.stat().st_size <= 0:
+        return (0,None)
+    payload=file.read_bytes()
+    return (len(payload),hashlib.sha256(payload).hexdigest())
+before_bytes,before_sha=screen_info(before_screen)
+after_bytes,after_sha=screen_info(after_screen)
+visual_delta=bool(before_sha and after_sha and before_sha!=after_sha)
+runtime_alive=flag(runtime_pass) and bool(pid.strip()) and fatal!='1'
+f1=runtime_alive and flag(launch_command_pass) and flag(process_observed_after_launch)
+f2=f1 and flag(foreground_observed) and frames>0 and before_bytes>0
+interaction_observed=flag(action_observed) if flag(seed_technical) else (flag(gameplay_input_delivered) and visual_delta)
+f3=f2 and interaction_observed
+f4=f3 and flag(gameplay_input_delivered) and bool(pid.strip())
+f5=f4 and after_bytes>0
+f6=f5 and flag(update_pass) and ((not flag(seed_technical)) or flag(save_observed))
+f8=f6 and interaction_observed
+foundation_pass=all([f1,f2,f3,f4,f5,f6,f8])
+floor=lambda passed,authority,signals:{'state':'PASS' if passed else 'FAIL','authority':authority,'signals':signals}
+foundation_floors={
+  'F1':floor(f1,'EXACT_ANDROID_BLACK_BOX_SESSION',['EXACT_ACTIVITY_LAUNCH','PROCESS_ALIVE','NO_FATAL_RUNTIME_ERROR']),
+  'F2':floor(f2,'EXACT_ANDROID_BLACK_BOX_SESSION',['FOREGROUND_ACTIVITY','RENDERED_FRAME','PRE_INPUT_SCREEN_CAPTURE']),
+  'F3':floor(f3,'EXACT_ANDROID_BLACK_BOX_SESSION',['PLAYABLE_SUBJECT_OR_INTERACTION_EQUIVALENT','INPUT_RESPONSE_OBSERVED']),
+  'F4':floor(f4,'EXACT_ANDROID_BLACK_BOX_SESSION',['CONTROLLED_INPUT_DELIVERED','VISIBLE_RUNTIME_STATE_DELTA','PROCESS_ALIVE_AFTER_INPUT']),
+  'F5':floor(f5,'EXACT_ANDROID_BLACK_BOX_SESSION',['TOUCH_INPUT_PATH','VISIBLE_INPUT_RESPONSE','POST_INPUT_SCREEN_CAPTURE']),
+  'F6':floor(f6,'EXACT_ANDROID_BLACK_BOX_SESSION',['UPDATE_INSTALL','SAVE_SIGNAL_WHEN_REQUIRED','RUNTIME_ERROR_BOUNDARY']),
+  'F7':{'state':'DEFER_TO_MULTIPLAYER_APPLICABILITY','authority':'DESIGN_AND_MULTIPLAYER_QA_EVIDENCE','signals':[]},
+  'F8':floor(f8,'EXACT_ANDROID_BLACK_BOX_SESSION',['GAMEPLAY_INTERACTION_RESPONSE','CORE_ACTION_OR_VISIBLE_STATE_TRANSITION'])
+}
 data={
   'version':6,
   'target':'unity-android',
@@ -278,6 +325,21 @@ data={
     'metricObserved':flag(metric_observed),
     'pass':seed_ok,
   },
+  'blackBoxFoundation':{
+    'version':1,
+    'mode':'ONE_EXACT_RUNTIME_SESSION_F1_THROUGH_F8',
+    'singleRuntimeSession':True,
+    'runtimeReplayForF9Required':False,
+    'foregroundActivityObserved':flag(foreground_observed),
+    'preInputScreenBytes':before_bytes,
+    'postInputScreenBytes':after_bytes,
+    'preInputScreenSha256':before_sha,
+    'postInputScreenSha256':after_sha,
+    'visualDeltaObserved':visual_delta,
+    'interactionObserved':interaction_observed,
+    'foundationPass':foundation_pass,
+    'floors':foundation_floors,
+  },
   'androidPerformance':{
     'provider':'ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO',
     'graphicsFrameStatsObserved':frames>0,
@@ -308,13 +370,17 @@ data={
     'activity/package/logcat/screenshot evidence captured even on runtime failure'
   ],
   'artifacts':{
-    'installLog':'install.log','updateInstallLog':'update-install.log','launchLog':'launch.log','launchComponent':'launch-component.txt','logcat':'logcat.txt','packageFatalScan':'package-fatal-scan.txt','screenshot':'screenshot.png','activity':'activity.txt','packageDump':'package.txt','gfxInfo':'gfxinfo.txt','surfaceFlingerLatency':'surfaceflinger-latency.txt','memInfo':'meminfo.txt','apkBadging':'apk-badging.txt','deviceApi':'device-api.txt','deviceAbis':'device-abis.txt'
+    'installLog':'install.log','updateInstallLog':'update-install.log','launchLog':'launch.log','launchComponent':'launch-component.txt','logcat':'logcat.txt','packageFatalScan':'package-fatal-scan.txt','screenshot':'screenshot.png','screenBeforeInput':'screen-before-input.png','screenAfterInput':'screen-after-input.png','activity':'activity.txt','packageDump':'package.txt','gfxInfo':'gfxinfo.txt','surfaceFlingerLatency':'surfaceflinger-latency.txt','memInfo':'meminfo.txt','apkBadging':'apk-badging.txt','deviceApi':'device-api.txt','deviceAbis':'device-abis.txt'
   }
 }
 pathlib.Path(out).write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 PY
 
 cat "$out_dir/evidence.json"
+foundation_pass="$(python3 -c 'import json,sys; print(str(bool(json.load(open(sys.argv[1],encoding="utf-8")).get("blackBoxFoundation",{}).get("foundationPass"))).lower())' "$out_dir/evidence.json")"
+echo "UNITY_FOUNDATION_F1_F8_SINGLE_RUNTIME=${foundation_pass^^}"
+echo 'UNITY_F9_RUNTIME_REPLAY=NO'
+[[ "$foundation_pass" == "true" ]] || { echo "[JAEWOON_BUILD_ERROR:UNITY_FOUNDATION_F1_F8_FAILED] one exact runtime session did not satisfy all required Unity black-box foundation floors" >&2; exit 22; }
 [[ "$launch_command_pass" == "true" ]] || { cat "$out_dir/launch.log" >&2 || true; echo "[JAEWOON_BUILD_ERROR:APK_LAUNCH_COMMAND_FAILED] exact activity launch failed for $launch_component status=$launch_status" >&2; exit 10; }
 if [[ "$launch_process_missing" == "true" ]]; then
   tail -n 250 "$out_dir/logcat.txt" >&2 || true
