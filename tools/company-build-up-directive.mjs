@@ -766,9 +766,21 @@ function buildExperienceBuildupContract({platform='COMMON',design={},source={},f
     MOBILE_TOUCH_AND_ACCESSIBILITY:Number(signals.input||0)>=3&&Number(signals.settings||0)>=1?'PRESENT':'WEAK_OR_MISSING',
     PERFORMANCE_AND_RUNTIME_STABILITY:Number(signals.performance||0)>=2&&Number(signals.errorRecovery||0)>=2?'PRESENT':'WEAK_OR_MISSING'
   };
-  const weakest=Object.entries(trackStatus)
-    .filter(([,state])=>state==='WEAK_OR_MISSING')
-    .map(([track])=>track)
+  const priorityOrder=platformKey==='ROBLOX'
+    ?[
+      'MOTION_AND_ACTING',
+      'AUDIO_MUSIC_AND_FEEDBACK',
+      'COMBAT_AND_PRIMARY_ACTION_FEEL',
+      'UI_HUD_AND_MENU',
+      'INVENTORY_AND_EQUIPMENT',
+      'VFX_CAMERA_AND_IMPACT_SYNC',
+      'WORLD_VISUAL_COHESION',
+      'MOBILE_TOUCH_AND_ACCESSIBILITY',
+      'PERFORMANCE_AND_RUNTIME_STABILITY'
+    ]
+    :EXPERIENCE_BUILD_UP_TRACKS;
+  const weakest=priorityOrder
+    .filter(track=>trackStatus[track]==='WEAK_OR_MISSING')
     .slice(0,Math.max(1,Number(profile.weakestTrackBatchSize||PLATFORM_EXPERIENCE_PROFILES.COMMON.weakestTrackBatchSize||3)));
   const commonRules=Object.freeze([
     'AUDIT_ALL_APPLICABLE_PLAYER_FACING_TRACKS_EVERY_GENERATION',
@@ -837,6 +849,7 @@ function buildExperienceBuildupContract({platform='COMMON',design={},source={},f
     focus,
     attention:profile.attention||PLATFORM_EXPERIENCE_PROFILES.COMMON.attention,
     tracks:Object.freeze(EXPERIENCE_BUILD_UP_TRACKS.map(track=>Object.freeze({track,status:trackStatus[track]}))),
+    priorityOrder:Object.freeze([...priorityOrder]),
     weakestTracks:Object.freeze(weakest),
     loop:Object.freeze([
       'OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW',
