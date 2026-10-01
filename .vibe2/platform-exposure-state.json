@@ -3,7 +3,7 @@
   "kind": "platform-exposure-state",
   "authority": "OWNER_DIRECTIVE_2026-09-25",
   "policy": "PERPETUAL_INTERNAL_BUILDUP_WITH_FAIL_CLOSED_EXTERNAL_PUBLIC_HARD_GATE",
-  "updatedAt": "2026-10-01T14:19:35.825Z",
+  "updatedAt": "2026-10-01T14:35:45.193Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -89,14 +89,12 @@
               "design": true,
               "publication": true,
               "exactRuntime": false,
-              "lobby": false,
+              "lobby": true,
               "movement": true,
-              "noRuntimeErrors": false
+              "noRuntimeErrors": true
             },
             "blockers": [
-              "exactRuntime",
-              "lobby",
-              "noRuntimeErrors"
+              "exactRuntime"
             ],
             "sourceRevision": "15d9ebb42466049456bb2e215e5bfa08ae5f8f57",
             "artifactIdentity": "sha256:5da5b0060f238775c6cff0da1967faf3c236a61d3fd75dadf8dd5b302e9c3548",
@@ -532,14 +530,12 @@
               "design": true,
               "publication": true,
               "exactRuntime": false,
-              "lobby": false,
+              "lobby": true,
               "movement": true,
-              "noRuntimeErrors": false
+              "noRuntimeErrors": true
             },
             "blockers": [
-              "exactRuntime",
-              "lobby",
-              "noRuntimeErrors"
+              "exactRuntime"
             ],
             "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
             "artifactIdentity": "sha256:979513fcc1e8220add6098a6dfaf682d401fcad9a0e2214d03283a44772f3d31",
