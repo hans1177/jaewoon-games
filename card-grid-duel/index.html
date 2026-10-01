@@ -790,7 +790,7 @@ $('#nextStage').onclick=()=>{
   state.summonUsed=false;
   state.winner='';
   state.stageTookDamage=false;
-  if(next===2)state.gold.BLUE=250;
+  if(next===2||next===3)state.gold.BLUE=250;
   state.gold.RED=0;
   state.summons={BLUE:0,RED:0};
   state.units=[];
