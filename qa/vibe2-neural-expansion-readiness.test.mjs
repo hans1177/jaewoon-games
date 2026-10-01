@@ -88,7 +88,7 @@ test('parallel readiness remains fail closed when one lane fails',async()=>{
 });
 
 
-test('parallel readiness keeps explicit lower concurrency caps without weakening gates',async()=>{
+test('parallel readiness ignores legacy lower-cap requests and runs all independent checks',async()=>{
   let active=0,maxActive=0;
   const result=await evaluateNeuralExpansionReadinessParallel({
     root:process.cwd(),
@@ -101,8 +101,10 @@ test('parallel readiness keeps explicit lower concurrency caps without weakening
       return{pass:true,missing:[],error:null};
     }
   });
-  assert.equal(result.parallelLaneCount,2);
-  assert.ok(maxActive<=2);
+  const expected=Object.keys(NEURAL_EXPANSION_READINESS_CHECKS).length;
+  assert.equal(result.parallelLaneCount,expected);
+  assert.equal(maxActive,expected);
+  assert.equal(result.internalParallelCap,null);
   assert.equal(result.pass,true);
   assert.equal(result.neuralExecutionAuthorityExpansionAllowed,false);
   assert.equal(result.queueMutationAuthorityExpanded,false);
