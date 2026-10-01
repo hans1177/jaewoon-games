@@ -478,6 +478,10 @@ jobs:
           console.log('ROBLOX_FOUNDATION_REQUESTED_GAME_ID='+(requested||'ALL_PENDING'));
           const queuePath='../runtime/development-queue.json';
           const q=JSON.parse(fs.readFileSync(queuePath,'utf8'));
+          const beforeById=new Map((q.items||[]).map(item=>[
+            String(item?.gameId||''),
+            JSON.parse(JSON.stringify(item)),
+          ]));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const serverDiagnosticEnabled=String(process.env.SERVER_DIAGNOSTIC_ENABLED||'').toLowerCase()==='true';
           const sharedTarget=roadmap?.roblox?.deploymentControl?.ownerPinnedPublicationTarget||{};
@@ -1512,10 +1516,45 @@ jobs:
             item.updatedAt=stamp;changed=true;
           }
 
+          const equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+          const patches=[];
+          for(const item of q.items||[]){
+            const gameId=String(item?.gameId||'');
+            const before=beforeById.get(gameId);
+            if(!before)continue;
+            const fields={};
+            const keys=new Set([...Object.keys(before),...Object.keys(item)]);
+            keys.delete('gameId');
+            keys.delete('updatedAt');
+            for(const key of [...keys].sort()){
+              const beforePresent=Object.prototype.hasOwnProperty.call(before,key);
+              const afterPresent=Object.prototype.hasOwnProperty.call(item,key);
+              if(beforePresent===afterPresent&&(!beforePresent||equal(before[key],item[key])))continue;
+              fields[key]={
+                beforePresent,
+                ...(beforePresent?{before:before[key]}:{}),
+                afterPresent,
+                ...(afterPresent?{after:item[key]}:{}),
+              };
+            }
+            if(!Object.keys(fields).length)continue;
+            const candidate=candidateForItem(item);
+            patches.push({
+              gameId,
+              sourceRevision:String(item.robloxSourceCommit||''),
+              artifactIdentity:String(item.robloxBuildArtifactIdentity||''),
+              candidateVersionNumber:Number(candidate.versionNumber||0),
+              beforeUpdatedAt:String(before.updatedAt||''),
+              updatedAt:String(item.updatedAt||stamp),
+              fields,
+            });
+          }
+          fs.writeFileSync('/tmp/roblox-foundation-runtime-patch.json',JSON.stringify({version:1,generatedAt:stamp,patches},null,2)+'\n');
           if(changed){
             q.updatedAt=stamp;
             fs.writeFileSync(queuePath,JSON.stringify(q,null,2)+'\n');
           }
+          console.log(`ROBLOX_FOUNDATION_RUNTIME_PATCH_COUNT=${patches.length}`);
           console.log(`ROBLOX_FOUNDATION_CANDIDATES=${candidates.length}`);
           console.log(`ROBLOX_FOUNDATION_RUNTIME_PASS=${passed}`);
           console.log(`ROBLOX_FOUNDATION_RUNTIME_PENDING=${pending}`);
@@ -1532,44 +1571,219 @@ jobs:
 
       - name: Persist runtime tester and QA evidence
         working-directory: runtime
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_STUDIO: ${{ inputs.run_studio || false }}
+          RETRY_OPEN_CLOUD_ONLY: ${{ inputs.retry_open_cloud_only || false }}
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'jaewoon-roblox-tester-qa'
           git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json
-          git diff --cached --check
-          if git diff --cached --quiet; then
-            echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=NO'
-            exit 0
-          fi
-          git commit -m 'runtime: persist Roblox foundation tester QA [skip ci]'
-          pushed=0
-          for attempt in 1 2 3; do
-            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+          patch_file=/tmp/roblox-foundation-runtime-patch.json
+          test -f "$patch_file"
+          persisted=0
+          : > /tmp/roblox-foundation-persist-same-field-conflicts
+          for attempt in 1 2 3 4 5; do
+            echo "ROBLOX_FOUNDATION_PERSIST_OPTIMISTIC_ATTEMPT=$attempt/5"
             git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
-            if ! git rebase "origin/$COMPANY_RUNTIME_BRANCH"; then
-              git rebase --abort || true
-              echo 'ROBLOX_FOUNDATION_RUNTIME_WRITE_CONFLICT=DEFERRED_TO_NEXT_CYCLE'
-              exit 0
+            git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            PATCH_FILE="$patch_file" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const patch=JSON.parse(fs.readFileSync(process.env.PATCH_FILE,'utf8'));
+          const queuePath='development-queue.json';
+          const queue=JSON.parse(fs.readFileSync(queuePath,'utf8'));
+          const equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+          const conflicts=[];
+          let applied=0;
+
+          const currentCandidateVersion=item=>{
+            const candidate=item?.robloxRuntimeCandidateEvidence||{};
+            if(candidate.published===true&&Number(candidate.versionNumber||0)>0)return Number(candidate.versionNumber);
+            return Number(item?.robloxFoundationF0Evidence?.artifactRunId||item?.robloxHeadlessFastMvpEvidence?.artifactRunId||0);
+          };
+
+          for(const delta of patch.patches||[]){
+            const item=(queue.items||[]).find(row=>String(row?.gameId||'')===String(delta.gameId||''));
+            if(!item){
+              conflicts.push({gameId:delta.gameId,field:'GAME_ID_MISSING'});
+              continue;
+            }
+            const sourceRevision=String(delta.sourceRevision||'');
+            const artifactIdentity=String(delta.artifactIdentity||'');
+            const candidateVersionNumber=Number(delta.candidateVersionNumber||0);
+            if(sourceRevision&&String(item.robloxSourceCommit||'')!==sourceRevision){
+              conflicts.push({gameId:delta.gameId,field:'EXACT_SOURCE_REVISION'});
+              continue;
+            }
+            if(artifactIdentity&&String(item.robloxBuildArtifactIdentity||'')!==artifactIdentity){
+              conflicts.push({gameId:delta.gameId,field:'EXACT_ARTIFACT_IDENTITY'});
+              continue;
+            }
+            if(candidateVersionNumber>0&&currentCandidateVersion(item)!==candidateVersionNumber){
+              conflicts.push({gameId:delta.gameId,field:'EXACT_CANDIDATE_VERSION'});
+              continue;
+            }
+
+            const fieldEntries=Object.entries(delta.fields||{});
+            const allAlreadyAfter=fieldEntries.every(([key,change])=>{
+              const currentPresent=Object.prototype.hasOwnProperty.call(item,key);
+              return currentPresent===change.afterPresent
+                &&(!currentPresent||equal(item[key],change.after));
+            });
+            if(allAlreadyAfter)continue;
+
+            if(String(item.updatedAt||'')!==String(delta.beforeUpdatedAt||'')){
+              conflicts.push({gameId:delta.gameId,field:'SAME_GAME_ATOMIC_STATE'});
+              continue;
+            }
+
+            let conflictField='';
+            for(const [key,change] of fieldEntries){
+              const currentPresent=Object.prototype.hasOwnProperty.call(item,key);
+              const alreadyAfter=
+                currentPresent===change.afterPresent
+                &&(!currentPresent||equal(item[key],change.after));
+              if(alreadyAfter)continue;
+              const matchesBefore=
+                currentPresent===change.beforePresent
+                &&(!currentPresent||equal(item[key],change.before));
+              if(!matchesBefore){
+                conflictField=key;
+                break;
+              }
+            }
+            if(conflictField){
+              conflicts.push({gameId:delta.gameId,field:conflictField});
+              continue;
+            }
+
+            for(const [key,change] of Object.entries(delta.fields||{})){
+              if(change.afterPresent)item[key]=change.after;
+              else delete item[key];
+            }
+            const currentUpdated=Date.parse(String(item.updatedAt||''))||0;
+            const patchUpdated=Date.parse(String(delta.updatedAt||''))||0;
+            if(patchUpdated>currentUpdated)item.updatedAt=delta.updatedAt;
+            applied++;
+          }
+
+          if(applied>0){
+            const generatedAt=String(patch.generatedAt||new Date().toISOString());
+            const currentQueueUpdated=Date.parse(String(queue.updatedAt||''))||0;
+            const patchUpdated=Date.parse(generatedAt)||0;
+            if(patchUpdated>currentQueueUpdated)queue.updatedAt=generatedAt;
+            fs.writeFileSync(queuePath,JSON.stringify(queue,null,2)+'\n');
+          }
+          fs.writeFileSync('/tmp/roblox-foundation-persist-same-field-conflicts',conflicts.map(row=>row.gameId+'|'+row.field).join('\n')+(conflicts.length?'\n':''));
+          console.log('ROBLOX_FOUNDATION_PERSIST_PATCH_APPLIED='+applied);
+          console.log('ROBLOX_FOUNDATION_PERSIST_SAME_FIELD_CONFLICT_COUNT='+conflicts.length);
+          for(const row of conflicts)console.log('ROBLOX_FOUNDATION_PERSIST_SAME_FIELD_CONFLICT='+row.gameId+':'+row.field);
+          NODE
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              persisted=1
+              echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=NO_CHANGE_OR_ALREADY_MERGED'
+              break
             fi
+            git commit -m 'runtime: persist Roblox foundation tester QA [skip ci]'
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              persisted=1
+              echo "ROBLOX_FOUNDATION_PERSIST_WRITE=PUSHED:$attempt"
+              break
+            fi
+            echo "ROBLOX_FOUNDATION_PERSIST_CONFLICT_RETRY=$attempt"
             sleep $((attempt*2))
           done
-          test "$pushed" = '1'
-          echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=YES'
+          test "$persisted" = '1'
 
-      - name: Dispatch one F9 scan for all runtime-accepted candidates
+          if [ -s /tmp/roblox-foundation-persist-same-field-conflicts ]; then
+            echo 'ROBLOX_FOUNDATION_PERSIST_REVALIDATION_REQUIRED=YES'
+            cat /tmp/roblox-foundation-persist-same-field-conflicts
+          else
+            echo 'ROBLOX_FOUNDATION_PERSIST_REVALIDATION_REQUIRED=NO'
+          fi
+
+          node <<'NODE'
+          const fs=require('fs');
+          const conflictPath='/tmp/roblox-foundation-persist-same-field-conflicts';
+          const conflicts=new Set(
+            fs.existsSync(conflictPath)
+              ?fs.readFileSync(conflictPath,'utf8').split(/\r?\n/).map(line=>line.split('|')[0].trim()).filter(Boolean)
+              :[]
+          );
+          for(const path of ['/tmp/roblox-f9-ids','/tmp/roblox-studio-followup-ids']){
+            if(!fs.existsSync(path))continue;
+            const ids=[...new Set(fs.readFileSync(path,'utf8').split(/\r?\n/).map(value=>value.trim()).filter(Boolean))]
+              .filter(id=>!conflicts.has(id))
+              .sort();
+            fs.writeFileSync(path,ids.join('\n')+(ids.length?'\n':''));
+          }
+          console.log('ROBLOX_FOUNDATION_DOWNSTREAM_CONFLICT_FILTER_COUNT='+conflicts.size);
+          NODE
+
+          if [ -s /tmp/roblox-foundation-persist-same-field-conflicts ]; then
+            cut -d'|' -f1 /tmp/roblox-foundation-persist-same-field-conflicts | sort -u > /tmp/roblox-foundation-revalidation-ids
+            while read -r id; do
+              [ -n "$id" ] || continue
+              args=(workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id")
+              if [ "$RUN_STUDIO" = 'true' ]; then args+=(-f run_studio=true); fi
+              if [ "$RETRY_OPEN_CLOUD_ONLY" = 'true' ]; then args+=(-f retry_open_cloud_only=true); fi
+              gh "${args[@]}"
+              echo "ROBLOX_FOUNDATION_CONFLICT_REVALIDATION_DISPATCHED=$id"
+            done < /tmp/roblox-foundation-revalidation-ids
+          else
+            echo 'ROBLOX_FOUNDATION_CONFLICT_REVALIDATION_DISPATCHED=NONE'
+          fi
+          echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=YES_OR_ALREADY_MERGED'
+
+      - name: Dispatch exact F9 review for every runtime-accepted candidate
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
           test -f /tmp/roblox-f9-ids || exit 0
+          sort -u /tmp/roblox-f9-ids -o /tmp/roblox-f9-ids
           candidate_count="$(wc -l < /tmp/roblox-f9-ids | tr -d '[:space:]')"
           candidate_count="${candidate_count:-0}"
           [ "$candidate_count" -gt 0 ] || exit 0
-          gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$GITHUB_REPOSITORY" --ref main
-          echo "ROBLOX_F9_SCAN_DISPATCHED=candidates=$candidate_count"
+
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-final-review-revalidation.yml/runs?per_page=100" > /tmp/roblox-f9-active-runs.json
+          node <<'NODE' > /tmp/roblox-f9-active-ids
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-f9-active-runs.json','utf8'));
+          const states=new Set(['queued','pending','in_progress','requested']);
+          const prefix='Roblox F9 · ';
+          const ids=new Set();
+          for(const run of payload.workflow_runs||[]){
+            if(!states.has(String(run.status||'').toLowerCase()))continue;
+            const title=String(run.display_title||'');
+            if(!title.startsWith(prefix))continue;
+            const id=title.slice(prefix.length).trim();
+            if(id&&id!=='scan')ids.add(id);
+          }
+          for(const id of [...ids].sort())console.log(id);
+          NODE
+
+          dispatch_count=0
+          deduped_count=0
+          while read -r id; do
+            [ -n "$id" ] || continue
+            if grep -Fxq "$id" /tmp/roblox-f9-active-ids; then
+              deduped_count=$((deduped_count+1))
+              echo "ROBLOX_F9_EXACT_DISPATCH=DEDUPED_ACTIVE:$id"
+              continue
+            fi
+            gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+            printf '%s\n' "$id" >> /tmp/roblox-f9-active-ids
+            dispatch_count=$((dispatch_count+1))
+            echo "ROBLOX_F9_EXACT_DISPATCHED=$id"
+          done < /tmp/roblox-f9-ids
+          echo "ROBLOX_F9_EXACT_CANDIDATE_COUNT=$candidate_count"
+          echo "ROBLOX_F9_EXACT_DISPATCH_COUNT=$dispatch_count"
+          echo "ROBLOX_F9_EXACT_DEDUPED_COUNT=$deduped_count"
 
       - name: Dispatch exact Studio MCP follow-up after new runtime foundation evidence
         if: ${{ inputs.run_studio == true && inputs.retry_open_cloud_only != true }}
