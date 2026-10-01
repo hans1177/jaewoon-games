@@ -205,6 +205,8 @@ export class JaewoonCommonAI {
   action(state, reason, target = null) {
     const intent = String(state || '');
     this.lastIntent = intent;
+    const causalRelationshipTargetId = String(this.causalContext?.relationshipTargetId || '');
+    const actorPlayerModel = causalRelationshipTargetId ? this.inferPlayerModel(causalRelationshipTargetId) : null;
     return {
       state, reason, targetId: String(target?.id || ''), target: target || null,
       personalityIntent: Object.freeze({
@@ -221,6 +223,7 @@ export class JaewoonCommonAI {
         relationshipTargetId: this.causalContext.relationshipTargetId,
         attentionTargetId: this.causalContext.attentionTargetId,
         judgmentEvidence: this.causalContext.judgmentEvidence || null,
+        actorPlayerModel,
         actionPreferences: Object.freeze([...(this.causalContext.actionPreferences || [])]),
         dialogueActs: Object.freeze([...(this.causalContext.dialogueActs || [])]),
         eventCandidate: this.causalContext.eventCandidate || null,
@@ -332,7 +335,7 @@ export class JaewoonCommonAI {
       trust: axis(state.trust), familiarity: axis(state.familiarity), respect: axis(state.respect),
       tension: axis(state.tension), affection: axis(state.affection), fear: axis(state.fear),
       debt: axis(state.debt), rivalry: axis(state.rivalry), protectiveness: axis(state.protectiveness),
-      boundaryComfort: axis(state.boundaryComfort), stage: String(state.stage || 'stranger'),
+      dependence: axis(state.dependence), boundaryComfort: axis(state.boundaryComfort), stage: String(state.stage || 'stranger'),
       initialized: true, gameplayAuthority: false
     });
     this.relationships.set(key, next);
@@ -345,7 +348,7 @@ export class JaewoonCommonAI {
     if (this.relationshipEvents.has(eventId)) return { applied: false, reason: 'duplicate_event', state: this.relationshipWith(key) };
     const current = this.relationshipWith(key) || this.setRelationship(key, {});
     const axis = value => Math.max(-100, Math.min(100, Math.round(Number(value) || 0)));
-    const fields = ['trust','familiarity','respect','tension','affection','fear','debt','rivalry','protectiveness','boundaryComfort'];
+    const fields = ['trust','familiarity','respect','tension','affection','fear','debt','rivalry','protectiveness','dependence','boundaryComfort'];
     const next = { ...current };
     for (const field of fields) next[field] = axis(Number(current[field] || 0) + Math.max(-20, Math.min(20, Number(deltas[field] || 0))));
     if (deltas.stage) next.stage = String(deltas.stage);
