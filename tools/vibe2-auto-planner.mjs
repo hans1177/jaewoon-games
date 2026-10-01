@@ -2460,8 +2460,13 @@ function bindSharedBuildUpDirective(taskInput,directive){
 function hasCurrentAutonomousContentExpansionDirective(directive={}){
   const expansion=directive?.autonomousContentExpansion;
   const ledger=expansion?.themeCoverageLedger;
+  const experience=directive?.perceptibleExperienceBuildUp;
   return Boolean(
     clean(directive?.directiveId)
+    &&Number(directive?.version||0)>=3
+    &&experience?.perceptiblePlayerEffectRequired===true
+    &&experience?.existenceOnlyPassForbidden===true
+    &&experience?.bindOnlyPassForbidden===true
     &&Number(expansion?.version||0)>=2
     &&clean(expansion?.executionBoundary).toUpperCase()==='EXISTING_BUILD_UP_ONLY'
     &&expansion?.autonomousDecisionOwner==='VIBE'
@@ -2518,12 +2523,12 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
         candidate={...candidate,evidence:[...new Set([...(candidate.evidence||[]),'build-up-directive-backfill:queued-existing-work'])]};
       }
       rebound+=1;changed+=1;
-      freshness=currentDirectiveNeedsContractMigration?'RECONCILED_LEGACY_DIRECTIVE_TO_ACTIVE_AUTONOMOUS_GENERATION':'RECONCILED_TO_ACTIVE_GENERATION';
+      freshness=currentDirectiveNeedsContractMigration?'RECONCILED_LEGACY_DIRECTIVE_TO_ACTIVE_V3_GENERATION':'RECONCILED_TO_ACTIVE_GENERATION';
     }else if(currentDirectiveNeedsContractMigration){
       const verifiedDesign=latestVerifiedDesign(repoRoot,gameId);
       if(!verifiedDesign){
         designPending+=1;
-        freshness='LEGACY_AUTONOMOUS_EXPANSION_MIGRATION_DESIGN_PENDING';
+        freshness='LEGACY_BUILD_UP_V3_MIGRATION_DESIGN_PENDING';
         candidate={...item,evidence:[...new Set([...(item.evidence||[]),'build-up-directive-contract-migration:DESIGN_PENDING'])]};
       }else{
         const legacyGeneration=Math.max(1,currentGeneration||1);
@@ -2549,15 +2554,15 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
           candidate=bindSharedBuildUpDirective(item,refreshed.buildUpDirective);
           candidate={...candidate,evidence:[...new Set([
             ...(candidate.evidence||[]),...(refreshed.evidence||[]),
-            'build-up-directive-contract-migration:AUTONOMOUS_CONTENT_EXPANSION_V2',
+            'build-up-directive-contract-migration:PERCEPTIBLE_EXPERIENCE_V3',
             'build-up-directive-contract-migration-generation:PRESERVED'
           ])]};
           canonicalByScope.set(scope,refreshed.buildUpDirective);
           rebound+=1;changed+=1;
-          freshness='MIGRATED_LEGACY_DIRECTIVE_TO_AUTONOMOUS_CONTENT_EXPANSION_SAME_GENERATION';
+          freshness='MIGRATED_LEGACY_DIRECTIVE_TO_PERCEPTIBLE_EXPERIENCE_V3_SAME_GENERATION';
         }else{
           designPending+=1;
-          freshness='LEGACY_AUTONOMOUS_EXPANSION_MIGRATION_FAILED';
+          freshness='LEGACY_BUILD_UP_V3_MIGRATION_FAILED';
         }
       }
     }else if(!currentId){
