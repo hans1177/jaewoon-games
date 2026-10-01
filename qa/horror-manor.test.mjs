@@ -13,6 +13,18 @@ const ui=read('roblox-games/horror-escape-room/client/ManorLobby.client.luau');
 const oldUI=read('roblox-games/horror-escape-room/client/Game.client.luau');
 const config=read('roblox-games/horror-escape-room/shared/GameConfig.luau');
 const manorBuild=read(root+'/build.py');
+test('selected lobby map stays server-authoritative through room and round',()=>{
+ assert.match(ui,/send\(C\.Actions\.SELECT_MAP,map\.Id\)/);
+ assert.match(ui,/p:GetAttribute\("SelectedLobbyMap"\)/);
+ assert.match(server,/local selectedMap=mapById\(p:GetAttribute\("SelectedLobbyMap"\)or"SCHOOL"\)/);
+ assert.match(server,/roomSelectedMapId=selectedMap\.Id/);
+ assert.match(server,/selectedMapId=tostring\(record\.mapId or"SCHOOL"\)/);
+ assert.match(server,/roomSelectedMapId=mapById\(teleportData\.selectedMapId\)\.Id/);
+ assert.match(server,/local map=mapById\(roomSelectedMapId\)/);
+ assert.match(server,/workspace:SetAttribute\("CurrentMapId",map\.Id\)/);
+ assert.match(server,/workspace:SetAttribute\("CurrentMapName",map\.Name\)/);
+});
+
 test('downloaded assets retain original bytes and CC0 license',()=>{
  const manifest=JSON.parse(read(root+'/asset-manifest.json'));
  assert.equal(manifest.models.length,231);
