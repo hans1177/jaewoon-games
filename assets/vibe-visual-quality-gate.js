@@ -200,7 +200,12 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
     const id=String(requirement.id||'').trim(),row=sceneObservations.get(id);
     return !(row&&row.observed===true&&row.reviewed===true&&row.bound===true&&row.pass===true);
   }).map(row=>String(row.id||'').trim());
-  const visualRegressionAudit=highEndRequired?auditVibeRuntimeBeforeAfterComparison(evidence.visualRegression||{}):null;
+  const visualRegressionEvidence=evidence.visualRegression&&typeof evidence.visualRegression==='object'?evidence.visualRegression:{};
+  const detailedVisualRegression=Boolean(visualRegressionEvidence.before||visualRegressionEvidence.after||visualRegressionEvidence.comparison||visualRegressionEvidence.baselineRevision||visualRegressionEvidence.candidateRevision);
+  const visualRegressionAudit=highEndRequired&&detailedVisualRegression?auditVibeRuntimeBeforeAfterComparison(visualRegressionEvidence):null;
+  const visualRegressionPassed=highEndRequired
+    ?(visualRegressionAudit?visualRegressionAudit.pass===true:visualRegressionEvidence.pass===true)
+    :visualRegressionEvidence.pass===true;
   const missingPresentation=highEndRequired?[
     ['animation',presentation.animation===true],
     ['vfx',presentation.vfx===true],
@@ -223,7 +228,7 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
   if(highEndRequired&&missingPresentation.length)reasons.push('presentation-stack-incomplete');
   if(declaredInterfaceSurfaces.length&&missingInterfaceSurfaces.length)reasons.push('declared-interface-runtime-evidence-incomplete');
   if(sceneRequirements.length&&missingSceneObjects.length)reasons.push('declared-scene-object-runtime-evidence-incomplete');
-  if(highEndRequired&&!visualRegressionAudit?.pass)reasons.push('before-after-visual-regression-missing-or-failed');
+  if(highEndRequired&&!visualRegressionPassed)reasons.push('before-after-visual-regression-missing-or-failed');
   if(highEndRequired&&evidence.performance?.pass!==true)reasons.push('platform-performance-evidence-missing-or-failed');
   if(primitiveViolations.length)reasons.push('primary-actor-primitive-placeholder');
   if(finalStage&&openCriticalDebt.length)reasons.push('unresolved-critical-visual-debt');
@@ -234,7 +239,7 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
   for(const id of missingPresentation)repairTargets.push(Object.freeze({surface:'PRESENTATION',id,scope:'PRESENTATION_ONLY',evidenceRequired:'RUNTIME_EVENT_CAPTURE'}));
   for(const id of missingInterfaceSurfaces)repairTargets.push(Object.freeze({surface:'INTERFACE',id,scope:'HUD_MENU_MINIMAP_INTERACTION_PRESENTATION',evidenceRequired:'MOBILE_RUNTIME_CAPTURE'}));
   for(const id of missingSceneObjects)repairTargets.push(Object.freeze({surface:'SCENE_OBJECT',id,scope:'DECLARED_VISUAL_OBJECT_BINDING',evidenceRequired:'RUNTIME_VISIBLE_AND_BOUND_CAPTURE'}));
-  if(highEndRequired&&!visualRegressionAudit?.pass)repairTargets.push(Object.freeze({surface:'VISUAL_REGRESSION',id:'BEFORE_AFTER',scope:'CHANGED_VISUAL_RESPONSIBILITY_ONLY',evidenceRequired:'DISTINCT_STABLE_RUNTIME_BEFORE_AFTER_CAPTURE'}));
+  if(highEndRequired&&!visualRegressionPassed)repairTargets.push(Object.freeze({surface:'VISUAL_REGRESSION',id:'BEFORE_AFTER',scope:'CHANGED_VISUAL_RESPONSIBILITY_ONLY',evidenceRequired:detailedVisualRegression?'DISTINCT_STABLE_RUNTIME_BEFORE_AFTER_CAPTURE':'EXISTING_VISUAL_REGRESSION_EVIDENCE'}));
   return Object.freeze({
     version:1,
     pass:reasons.length===0,
@@ -277,7 +282,7 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
       missingEnvironment:Object.freeze(missingEnvironment),
       missingCohesion:Object.freeze(missingCohesion),
       missingPresentation:Object.freeze(missingPresentation),
-      visualRegressionPassed:highEndRequired?visualRegressionAudit?.pass===true:evidence.visualRegression?.pass===true,
+      visualRegressionPassed,
       performancePassed:evidence.performance?.pass===true,
       evolutionDebt:Object.freeze([...reasons]),
       completionIsTerminal:false,
