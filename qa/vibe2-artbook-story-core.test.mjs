@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { gameplayEvidenceSnippets, buildFallbackSeed, expandCompactSeed, validExpandedDraft } from '../tools/vibe2-artbook-story-core.mjs';
 import { JaewoonQuestDialogue } from '../assets/quest-dialogue.js';
+import { createVibeActorQuestCandidate } from '../assets/vibe-ai-role-director.js';
 
 test('minified gameplay source becomes bounded gameplay snippets instead of whole technical line',()=>{
   const source=`<canvas id="game"></canvas><script>ctx.imageSmoothingEnabled=true;function resize(){canvas.width=devicePixelRatio*innerWidth} let day=1; function bossSpawn(){ if(day===6) spawnBoss('거미 여왕') } function eat(){food+=5} function survive(){health=Math.max(0,health-1)}</script>`;
@@ -91,6 +92,57 @@ test('quest dialogue extended state preserves causal memories relationships fact
   assert.equal(restored.clues['clue-1'].revealed,true);
 });
 
+
+test('runtime actor quest candidate enters only through existing quest engine validation',()=>{
+  const q=new JaewoonQuestDialogue();
+  const state=q.createState();
+  const candidate=createVibeActorQuestCandidate({
+    actor:{id:'mira'},
+    causeEvents:[{id:'evt-mentor-clue',type:'discovery'}],
+    personalStake:'find missing mentor',
+    worldStake:'old frontier',
+    primaryVerb:'investigate',
+    branches:['ask-locals-first','visit-watchtower']
+  });
+  const registered=q.registerActorQuestCandidate(state,candidate,{
+    id:'mira-mentor-1',
+    title:'사라진 스승의 흔적',
+    whyNow:'fresh mentor clue was just observed',
+    objectives:[{id:'inspect-watchtower',type:'counter',target:1}],
+    requirements:{flags:{}},
+    consequence:{thread:'mentor'}
+  });
+  assert.equal(registered.ok,true);
+  assert.equal(registered.duplicate,false);
+  assert.equal(registered.proposal.sourceEventId,'evt-mentor-clue');
+  assert.equal(registered.proposal.rewardAuthority,'engine-only');
+  assert.equal(registered.proposal.completionAuthority,'engine-only');
+  assert.equal(registered.proposal.meta.engineValidatedProposal,true);
+  assert.equal(registered.proposal.meta.actorCandidatePrimaryVerb,'investigate');
+
+  const duplicate=q.registerActorQuestCandidate(state,candidate,{
+    id:'different-id-must-not-duplicate',
+    whyNow:'same causal proposal',
+    objectives:[{id:'other',target:1}]
+  });
+  assert.equal(duplicate.ok,true);
+  assert.equal(duplicate.duplicate,true);
+  assert.equal(duplicate.proposal.id,'mira-mentor-1');
+
+  const accepted=q.acceptQuestProposal(state,'mira-mentor-1',{
+    id:'quest-mira-mentor-1',
+    rewards:[{type:'gold',amount:50}]
+  });
+  assert.equal(accepted.ok,true);
+  assert.equal(state.quests['quest-mira-mentor-1'].status,'active');
+  assert.deepEqual(state.quests['quest-mira-mentor-1'].rewards,[{type:'gold',amount:50}]);
+
+  const invalid=q.registerActorQuestCandidate(state,{...candidate,candidateOnly:false},{
+    id:'invalid',whyNow:'invalid',objectives:[{id:'x',target:1}]
+  });
+  assert.equal(invalid.ok,false);
+  assert.equal(invalid.reason,'ACTOR_QUEST_CANDIDATE_REQUIRED');
+});
 
 test('story transitions require causal evidence, preserve order, and dedupe source events',()=>{
   const q=new JaewoonQuestDialogue();
