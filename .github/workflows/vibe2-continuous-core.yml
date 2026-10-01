@@ -990,6 +990,119 @@ jobs:
           put('variant',process.env.VARIANT||'primary');
           NODE
 
+
+      - name: Reuse all recent exact runtime visual evidence for asset work
+        if: env.VIBE2_EXECUTION_LANE == 'asset-development' && steps.order.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ steps.order.outputs.game_id }}
+          TARGET: ${{ steps.order.outputs.target }}
+          SOURCE_ROOT: ${{ steps.order.outputs.source_root }}
+          BASE_SHA: ${{ needs.reserve.outputs.contract_sha }}
+          SAFE_TASK: ${{ matrix.safeTask }}
+          VARIANT: ${{ matrix.variant }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          evidence_root="/tmp/vibe2-runtime-visual-evidence-${SAFE_TASK}-${VARIANT}"
+          rm -rf "$evidence_root"
+          mkdir -p "$evidence_root"
+          export VIBE2_RUNTIME_VISUAL_EVIDENCE_ROOT="$evidence_root"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import {execFileSync,spawnSync} from 'node:child_process';
+
+          const clean=v=>String(v??'').trim();
+          const game=clean(process.env.GAME_ID);
+          const target=clean(process.env.TARGET).toLowerCase();
+          const sourceRoot=clean(process.env.SOURCE_ROOT).replaceAll('\\','/').replace(/^\.\//,'');
+          const base=clean(process.env.BASE_SHA);
+          const evidenceRoot=clean(process.env.VIBE2_RUNTIME_VISUAL_EVIDENCE_ROOT);
+          const repo=clean(process.env.GITHUB_REPOSITORY);
+          const contractRoot=path.join(process.env.GITHUB_WORKSPACE,'vibe2-contract');
+          if(!game||!sourceRoot||!/^[0-9a-f]{40}$/i.test(base)||!repo||!evidenceRoot){
+            console.log('VIBE2_RUNTIME_VISUAL_REUSE=SKIPPED_INCOMPLETE_IDENTITY');
+            process.exit(0);
+          }
+          const prefixes=target==='roblox'
+            ?['studio-captures-'+game+'-']
+            :target==='unity'
+              ?['asset-runtime-visual-'+game+'-unity-android-','unity-web-'+game+'-']
+              :target==='web'
+                ?['asset-runtime-visual-'+game+'-web-']
+                :[];
+          if(!prefixes.length){
+            console.log('VIBE2_RUNTIME_VISUAL_REUSE=SKIPPED_TARGET');
+            process.exit(0);
+          }
+          const pages=JSON.parse(execFileSync('gh',['api','--paginate','--slurp','repos/'+repo+'/actions/artifacts?per_page=100'],{encoding:'utf8'}));
+          const artifacts=(Array.isArray(pages)?pages:[pages]).flatMap(page=>page?.artifacts||[]);
+          const candidates=artifacts
+            .filter(row=>row?.expired!==true&&prefixes.some(prefix=>String(row?.name||'').startsWith(prefix))&&Number(row?.workflow_run?.id||0)>0)
+            .sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||''))||Number(b.id||0)-Number(a.id||0));
+          const allowedProducer=new Set(['company-development-roblox-post-runtime-qa','unity-android-independent-qa','unity-web-first-stage-build']);
+          const walk=(root,name,out=[])=>{
+            let entries=[];try{entries=fs.readdirSync(root,{withFileTypes:true});}catch{return out;}
+            for(const entry of entries){
+              const full=path.join(root,entry.name);
+              if(entry.isDirectory())walk(full,name,out);
+              else if(entry.isFile()&&entry.name===name)out.push(full);
+            }
+            return out;
+          };
+          const ensureCommit=sha=>{
+            if(spawnSync('git',['-C',contractRoot,'cat-file','-e',sha+'^{commit}']).status===0)return true;
+            return spawnSync('git',['-C',contractRoot,'fetch','--no-tags','--depth=1','origin',sha],{stdio:'inherit'}).status===0;
+          };
+          let downloaded=0,compatibleManifests=0,compatibleCaptures=0;
+          for(const artifact of candidates){
+            const artifactName=String(artifact.name),runId=String(artifact.workflow_run.id);
+            const dest=path.join(evidenceRoot,'download-'+String(artifact.id));
+            fs.mkdirSync(dest,{recursive:true});
+            try{
+              execFileSync('gh',['run','download',runId,'-n',artifactName,'-D',dest,'--repo',repo],{stdio:'inherit'});
+              downloaded++;
+            }catch{continue;}
+            for(const manifestFile of walk(dest,'asset-runtime-visual-evidence.json')){
+              let manifest;try{manifest=JSON.parse(fs.readFileSync(manifestFile,'utf8').replace(/^\uFEFF/,''));}catch{continue;}
+              const producer=clean(manifest?.producer?.workflow);
+              const revision=clean(manifest?.sourceRevision);
+              const manifestRoot=clean(manifest?.sourceRoot).replaceAll('\\','/').replace(/^\.\//,'');
+              const platform=clean(manifest?.platform).toUpperCase();
+              const platformOk=target==='roblox'?platform==='ROBLOX':target==='unity'?platform==='UNITY':target==='web'?platform==='WEB':false;
+              if(Number(manifest?.version)!==1||clean(manifest?.gameId)!==game||!platformOk||manifestRoot!==sourceRoot||!allowedProducer.has(producer)||!/^[0-9a-f]{40}$/i.test(revision))continue;
+              if(!ensureCommit(revision))continue;
+              const diff=spawnSync('git',['-C',contractRoot,'diff','--quiet',revision,base,'--',sourceRoot]);
+              if(diff.status!==0)continue;
+              manifest.currentSourceCompatible=true;
+              manifest.currentSourceRevision=base;
+              manifest.sourceCompatibility='EXACT_SOURCE_ROOT_NO_DIFF';
+              manifest.producer={
+                ...(manifest.producer||{}),
+                artifactName,
+                artifactId:Number(artifact.id),
+                workflowRunId:Number(runId),
+                artifactCreatedAt:clean(artifact.created_at)||null,
+                artifactUpdatedAt:clean(artifact.updated_at)||null,
+                downloadedForTask:clean(process.env.SAFE_TASK)
+              };
+              fs.writeFileSync(manifestFile,JSON.stringify(manifest,null,2)+'\n');
+              compatibleManifests++;
+              compatibleCaptures+=Array.isArray(manifest.captures)?manifest.captures.length:0;
+            }
+          }
+          console.log('VIBE2_RUNTIME_VISUAL_ARTIFACTS_DISCOVERED='+candidates.length);
+          console.log('VIBE2_RUNTIME_VISUAL_ARTIFACTS_DOWNLOADED='+downloaded);
+          console.log('VIBE2_RUNTIME_VISUAL_MANIFESTS_COMPATIBLE='+compatibleManifests);
+          console.log('VIBE2_RUNTIME_VISUAL_CAPTURES_COMPATIBLE='+compatibleCaptures);
+          if(compatibleCaptures>0){
+            fs.appendFileSync(process.env.GITHUB_ENV,'VIBE2_RUNTIME_VISUAL_EVIDENCE_ROOT='+evidenceRoot+'\n');
+            fs.appendFileSync(process.env.GITHUB_ENV,'VIBE2_RUNTIME_VISUAL_CAPTURE_POLICY=ALL_CURRENT_SOURCE_COMPATIBLE_RECENT_FIRST\n');
+          }
+          NODE
+
       - name: Decide worker local model requirement
         id: model_need
         env:
