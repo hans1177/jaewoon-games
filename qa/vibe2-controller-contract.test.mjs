@@ -1615,7 +1615,7 @@ test('completed worker results batch into early fan-in without per-worker dispat
   try{
     const result=spawnSync(process.execPath,['-e',script],{cwd:root,encoding:'utf8',env:{...process.env,VIBE2_EXECUTION_LANE:'game-primary'}});
     assert.equal(result.status,0,result.stderr);
-    assert.equal(result.stdout,'123\tEARLY_SLOT');
+    assert.equal(result.stdout.trim(),'123\tEARLY_SLOT');
     assert.match(block,/in_progress\|completed/);
     assert.match(block,/VIBE2_COMPLETED_RESULT_REVIEW_RESUME/);
     assert.match(workflow,/run-id: \$\{\{ needs\.reserve\.outputs\.stranded_review_run \}\}/);
@@ -1627,6 +1627,7 @@ test('completed worker results batch into early fan-in without per-worker dispat
     assert.equal(runtime.continuous.callbackCoalescing.earlyFanInSourceRunMayBeInProgress,true);
     assert.equal(runtime.continuous.callbackCoalescing.earlyFanInFiltersToReleasedTaskIds,true);
     assert.equal(runtime.continuous.callbackCoalescing.earlyFanInPerWorkerDispatchRequired,false);
+    assert.equal(runtime.continuous.callbackCoalescing.earlyFanInConsumer,'CENTRAL_RESERVE_BATCH_FAN_IN');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 

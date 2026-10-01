@@ -675,6 +675,7 @@
       "earlyFanInSourceRunMayBeInProgress": true,
       "earlyFanInFiltersToReleasedTaskIds": true,
       "earlyFanInPerWorkerDispatchRequired": false,
+      "earlyFanInConsumer": "CENTRAL_RESERVE_BATCH_FAN_IN",
       "robloxPublishRechecksLatestSourceAndF9OnEveryAttempt": true,
       "trigger": "GAME_PRIMARY_ALWAYS_OR_AUXILIARY_LIVE_RUNNER_QUEUE_PRESSURE_GT_0",
       "action": "GAME_PRIMARY_ALWAYS_KEEP_IMMUTABLE_WORKER_ARTIFACT_AND_DEFER_TO_COHORT_FAN_IN",
