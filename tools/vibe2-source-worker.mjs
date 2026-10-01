@@ -2507,13 +2507,19 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         if(header.includes('[EDITABLE]')||exactResponsible.includes(sectionPath)){
           if(attempt>=3||timeoutFailure||studioInitial||robloxGraphicsInitial||oversizedInitial){
             const body=section.split('\n').slice(1).join('\n');
-            const excerpt=boundedLargeExcerpt(body,robloxGraphicsInitial?3200:(studioInitial?1500:5000));
+            const excerptBytes=robloxGraphicsInitial?3200:(studioInitial?1500:(oversizedInitial?3500:5000));
+            const excerpt=boundedLargeExcerpt(body,excerptBytes);
             section=header+'\n'+excerpt.content;
           }
           editable.push(section);
         }
       }
       if(editable.length){
+        const atomicRequired=systemAtomicPairRequired||multiFilePairRequired;
+        const editableLimit=atomicRequired
+          ?Math.max(2,exactResponsible.length)
+          :(studioInitial||robloxGraphicsInitial?4:(oversizedInitial?3:editable.length));
+        const boundedEditable=editable.slice(0,editableLimit);
         const compactRetryPrefix=(oversizedInitial||invalidPath||timeoutFailure||presentationDelta||robloxFullGraphicsPackageRecovery||studioQualityDelta||(studioExpansion&&editMatchFailure))?[
           'You are the Vibe2 game source worker. Return JSON only.',
           rawPrompt.split('\n').find(line=>line.startsWith('Engine:'))||'',
@@ -2537,7 +2543,10 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
           previousRobloxGraphicsCandidate?'---END_PREVIOUS_ROBLOX_GRAPHICS_CANDIDATE---':'',
           'Do not expand unrelated code.'
         ].filter(Boolean).join('\n'):prefix;
-        retryBase=[compactRetryPrefix,...editable].join('\n\n');
+        retryBase=[compactRetryPrefix,...boundedEditable].join('\n\n');
+        if(editable.length>boundedEditable.length){
+          console.log(`VIBE2_COMPACT_EDITABLE_CONTEXT=${editable.length}->${boundedEditable.length}:attempt=${attempt}`);
+        }
       }
     }
   }
