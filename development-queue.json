@@ -5304,10 +5304,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "ROBLOX_FINAL_REVIEW_REVALIDATION",
-      "canonicalState": "ROBLOX_RUNTIME_ACCEPTANCE_PASSED",
+      "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
+      "canonicalState": "F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T21:40:49.056Z",
+      "updatedAt": "2026-10-01T21:41:55.712Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -5565,7 +5565,7 @@
       "robloxRegressionPassed": true,
       "robloxRegressionPassedAt": "2026-10-01T15:56:27.717Z",
       "robloxFinalReviewPassed": true,
-      "robloxFinalReviewPassedAt": "2026-10-01T20:19:51.008Z",
+      "robloxFinalReviewPassedAt": "2026-10-01T21:41:55.712Z",
       "robloxF9ReleaseRegressionPassed": true,
       "robloxF9ReleaseRegressionEvidence": {
         "version": 1,
@@ -5599,7 +5599,7 @@
           "qa/vibe3-roblox-platform.test.mjs"
         ],
         "authority": "deterministic-f9-exact-runtime-candidate-review",
-        "verifiedAt": "2026-10-01T20:19:51.008Z"
+        "verifiedAt": "2026-10-01T21:41:55.712Z"
       },
       "robloxPostRuntimeQaEvidence": {
         "version": 6,
@@ -5646,11 +5646,9 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "F9_RELEASE_REGRESSION",
-      "robloxFailureStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
-      "robloxFailureSignature": "ROBLOX_FINAL_REVIEW_PENDING",
-      "routingBlockers": [
-        "roblox-final-review-pending"
-      ],
+      "robloxFailureStage": null,
+      "robloxFailureSignature": null,
+      "routingBlockers": [],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -6907,7 +6905,7 @@
         "canonicalPublishRequired": false,
         "canonicalPublishCompleted": false,
         "authority": "roblox-f9-verified-prepublish-gate",
-        "verifiedAt": "2026-10-01T20:19:51.008Z"
+        "verifiedAt": "2026-10-01T21:41:55.712Z"
       },
       "robloxInternalReleasePublished": false,
       "robloxPromotionBlockers": [],
@@ -25670,7 +25668,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T21:41:45.982Z",
+  "updatedAt": "2026-10-01T21:41:55.712Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
