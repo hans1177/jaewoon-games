@@ -567,12 +567,13 @@
       "cohortFanInConsumesCoalescedResults": true,
       "coalescedCompletionIsNotFailure": true,
       "logicalPerTaskVariantJoinStillRequiredWhenCoalesced": true,
-      "fanInRefillConcurrencyScope": "LANE_SCOPED_STATELESS_REFILL_COALESCING",
+      "fanInRefillConcurrencyScope": "RUN_UNIQUE_OPTIMISTIC_SHARED_QUEUE_WRITE",
       "globalFanInRefillSingletonForbidden": true,
       "sameLaneFanInRefillSerialization": false,
       "pressureCoalescingIndependentFreeSlotRefillPreserved": false,
       "pressureCoalescingDefersNewWorkflowCreation": true,
-      "pressureThreshold": 4
+      "pressureThreshold": 4,
+      "topLevelFanInRefillLaneSerialization": false
     },
     "signalLiveness": {
       "runState": "ALWAYS_RUNNING",
@@ -744,7 +745,7 @@
       "mode": "PARALLEL_RESERVE_OPTIMISTIC_SHARED_QUEUE_WRITE",
       "crossLaneGlobalReserveLock": false,
       "sameLaneReserveSerialization": false,
-      "statelessRefillCoalescing": "ONE_RUNNING_AND_LATEST_PENDING_PER_LANE",
+      "statelessRefillCoalescing": "RUN_UNIQUE_OPTIMISTIC_SHARED_QUEUE_WRITE",
       "sharedQueueWriteRetryAttempts": null,
       "sharedQueueWriteRetryPolicy": "UNBOUNDED_WITH_CAPPED_BACKOFF",
       "gamePrimaryExternalBoundary": 256,
