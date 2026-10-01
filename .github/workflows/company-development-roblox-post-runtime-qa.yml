@@ -1816,7 +1816,7 @@ jobs:
           echo "ROBLOX_F9_EXACT_DEDUPED_COUNT=$deduped_count"
 
       - name: Dispatch exact Studio MCP follow-up after new runtime foundation evidence
-        if: ${{ inputs.run_studio == true && inputs.retry_open_cloud_only != true }}
+        if: ${{ inputs.retry_open_cloud_only != true && (inputs.run_studio == true || (github.event_name == 'push' && (contains(toJSON(github.event.head_commit.modified), 'tools/company-development-roblox-studio-local-play.mjs') || contains(toJSON(github.event.head_commit.added), 'tools/company-development-roblox-studio-local-play.mjs') || contains(toJSON(github.event.head_commit.removed), 'tools/company-development-roblox-studio-local-play.mjs') || contains(toJSON(github.event.head_commit.modified), '.github/workflows/company-development-roblox-post-runtime-qa.yml') || contains(toJSON(github.event.head_commit.added), '.github/workflows/company-development-roblox-post-runtime-qa.yml') || contains(toJSON(github.event.head_commit.removed), '.github/workflows/company-development-roblox-post-runtime-qa.yml'))) }}
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
