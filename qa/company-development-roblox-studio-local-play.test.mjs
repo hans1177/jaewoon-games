@@ -25,6 +25,7 @@ import {
   validateStudioPlaceArtifactPreOpen,
   evaluateStudioSaveRejoin,
   deriveExactStaticMultiplayerEvidence,
+  keyboardArgs,
   ROBLOX_STUDIO_HARNESS_VERSION
 } from '../tools/company-development-roblox-studio-local-play.mjs';
 
@@ -49,6 +50,42 @@ test('Studio world probe excludes Terrain extents and approaches prompts within 
   assert.match(helper,/const promptDistance=\[px,py,pz,rx,ry,rz\]\.every\(Number\.isFinite\)\?Math\.hypot/);
   assert.match(helper,/const inRange=Number\.isFinite\(promptDistance\)&&promptDistance<=activationDistance\+1\.5/);
   assert.match(helper,/ok:navOk&&inputOk&&inRange/);
+});
+
+test('Studio keyboard input holds official MCP keys for Prompt and movement duration',()=>{
+  const schema={
+    type:'object',
+    properties:{
+      studio_id:{type:'string'},
+      datamodel_type:{type:'string',enum:['Client']},
+      actions:{
+        type:'array',
+        items:{
+          type:'object',
+          properties:{
+            action:{type:'string',enum:['keyDown','keyUp','keyPress','textInput','wait']},
+            key_code:{type:'string',enum:['A','D','E','Space','W']},
+            wait_time_ms:{type:'number'}
+          },
+          required:['action']
+        }
+      }
+    },
+    required:['studio_id','datamodel_type','actions']
+  };
+  const args=keyboardArgs(schema,'studio-1','E',280);
+  assert.equal(args.studio_id,'studio-1');
+  assert.equal(args.datamodel_type,'Client');
+  assert.deepEqual(args.actions,[
+    {action:'keyDown',key_code:'E'},
+    {action:'wait',wait_time_ms:280},
+    {action:'keyUp',key_code:'E'}
+  ]);
+});
+
+test('Studio captures real movement after keyboard exercise when no primary action is declared',()=>{
+  assert.match(helper,/if\(actualPlayContract\?\.required===true&&!clean\(actualPlayContract\.primaryActionButtonText\)\)\{/);
+  assert.match(helper,/checkpoint\('actual-play-post-keyboard-client-probe',postActionClientProbe!=null\)/);
 });
 
 test('Roblox failure classifier does not mistake generic asset load text for DataStore failure',()=>{

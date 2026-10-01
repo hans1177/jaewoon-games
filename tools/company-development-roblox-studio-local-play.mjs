@@ -14,7 +14,7 @@ const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,'
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(path.resolve(file)),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const stableSha256=value=>crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
-export const ROBLOX_STUDIO_HARNESS_VERSION=12;
+export const ROBLOX_STUDIO_HARNESS_VERSION=13;
 
 export function assertCurrentStudioWorkflowHead({
   workflowSha=clean(process.env.GITHUB_SHA),
@@ -915,30 +915,54 @@ function startStopArgs(schema,studioId,start){
   }
   return fillRequired(args,schema);
 }
-function keyboardItem(schema,key,durationMs=120){
+function keyboardItem(schema,key,durationMs=120,actionKind='press'){
   const props=schemaProps(schema),item={};
+  const kind=clean(actionKind).toLowerCase();
+  const waitMs=Math.max(50,Number(durationMs)||120);
   for(const [name,def] of Object.entries(props)){
-    if(/key.?code|^key$|keyboard.?key/i.test(name)){item[name]=key;continue;}
-    if(/action|type|event|operation/i.test(name)){
-      if(Array.isArray(def.enum)){
-        item[name]=enumValue(def,['key_press','keypress','press','tap','key_down']);
-      }else if(def.type==='string')item[name]='press';
+    if(/key.?code|^key$|keyboard.?key/i.test(name)){
+      if(kind!=='wait'){
+        item[name]=Array.isArray(def.enum)?enumValue(def,[clean(key).toLowerCase()]):key;
+      }
       continue;
     }
-    if(/duration.*ms|milliseconds|delay.*ms|wait.*ms/i.test(name))item[name]=Math.max(50,Number(durationMs)||120);
-    else if(/duration|delay|wait/i.test(name)&&['number','integer'].includes(def.type))item[name]=Math.max(0.05,(Number(durationMs)||120)/1000);
+    if(/action|type|event|operation/i.test(name)){
+      const patterns=kind==='down'?['keydown','key_down','down']
+        :kind==='up'?['keyup','key_up','up']
+        :kind==='wait'?['wait','delay']
+        :['keypress','key_press','press','tap'];
+      if(Array.isArray(def.enum))item[name]=enumValue(def,patterns);
+      else if(def.type==='string')item[name]=kind==='down'?'keyDown':kind==='up'?'keyUp':kind==='wait'?'wait':'press';
+      continue;
+    }
+    if(kind==='wait'||kind==='press'){
+      if(/duration.*ms|milliseconds|delay.*ms|wait.*ms/i.test(name))item[name]=waitMs;
+      else if(/duration|delay|wait/i.test(name)&&['number','integer'].includes(def.type))item[name]=Math.max(0.05,waitMs/1000);
+    }
   }
   return fillRequired(item,schema);
 }
-function keyboardArgs(schema,studioId,key,durationMs=120){
+export function keyboardArgs(schema,studioId,key,durationMs=120){
   const args={};setStudioId(args,schema,studioId);
   const props=schemaProps(schema);
   const actionsKey=Object.keys(props).find(k=>/actions|events|inputs/i.test(k)&&props[k]?.type==='array');
   if(actionsKey){
     const itemSchema=props[actionsKey]?.items||{};
-    args[actionsKey]=[keyboardItem(itemSchema,key,durationMs)];
+    const itemProps=schemaProps(itemSchema);
+    const actionEntry=Object.entries(itemProps).find(([name])=>/action|type|event|operation/i.test(name));
+    const actionValues=Array.isArray(actionEntry?.[1]?.enum)
+      ?actionEntry[1].enum.map(value=>clean(value).toLowerCase().replace(/[^a-z0-9]/g,''))
+      :[];
+    const supportsHeldInput=actionValues.includes('keydown')&&actionValues.includes('keyup')&&actionValues.includes('wait');
+    args[actionsKey]=supportsHeldInput
+      ?[
+        keyboardItem(itemSchema,key,durationMs,'down'),
+        keyboardItem(itemSchema,key,durationMs,'wait'),
+        keyboardItem(itemSchema,key,durationMs,'up')
+      ]
+      :[keyboardItem(itemSchema,key,durationMs,'press')];
   }else{
-    const built=keyboardItem(schema,key,durationMs);
+    const built=keyboardItem(schema,key,durationMs,'press');
     for(const [k,v] of Object.entries(built))if(!/studio.*id/i.test(k))args[k]=v;
   }
   return fillRequired(args,schema);
@@ -2686,6 +2710,10 @@ export async function runOfficialStudioMcpPlay({
     }
     const keyboardActions=actions.filter(x=>x.type==='mcp-keyboard-input');
     checkpoint('mcp-input-dispatched',keyboardActions.length===4&&keyboardActions.every(x=>x.ok));
+    if(actualPlayContract?.required===true&&!clean(actualPlayContract.primaryActionButtonText)){
+      postActionClientProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client',{planRoutes:false});
+      checkpoint('actual-play-post-keyboard-client-probe',postActionClientProbe!=null);
+    }
 
     if(actualPlayContract?.required===true){
       const promptRows=entityRows(initialClientProbe?.world?.prompts).filter(row=>row?.enabled!==false);
