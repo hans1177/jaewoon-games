@@ -47,6 +47,14 @@ h1{font-size:22px;margin:0}
 #endTurn{background:#4169e1;color:#fff}#cancel{background:#2b3549;color:#fff}
 #authBox{margin-bottom:10px}
 .hidden{display:none!important}
+#restScreen{text-align:center;padding:18px}
+#restScreen h2{margin:0 0 8px;font-size:24px}
+#restScreen .keys{font-size:18px;color:#ffd978;font-weight:1000;margin:10px 0}
+#restScreen .restActions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+#restScreen .restActions button{min-height:48px;border:0;border-radius:11px;padding:0 16px;font-weight:1000;color:#fff;background:#4169e1}
+#restScreen .restActions .draw{background:#8b691e}
+#drawResult{min-height:42px;margin:10px 0;color:#d8e4ff;font-weight:800}
+#unlockedList{font-size:12px;color:#b7c6e4;line-height:1.5}
 @media(max-width:520px){
   .wrap{padding-left:7px;padding-right:7px}.board{gap:3px;padding:4px}.unit{inset:2px}.portrait{width:38px;height:41px}.unit b{font-size:9px}.unit small{font-size:8px}.login{grid-template-columns:1fr}
   .hand{grid-template-columns:repeat(2,minmax(0,1fr))}.card{min-height:136px}.card .art{height:76px}
@@ -72,7 +80,19 @@ h1{font-size:22px;margin:0}
     </div>
   </div>
 
-  <div class="panel">
+  <div id="restScreen" class="panel hidden">
+    <h2>스테이지 클리어</h2>
+    <div id="restText">잠시 쉬어가.</div>
+    <div class="keys">열쇠 <span id="keyCount">0</span>개</div>
+    <div id="drawResult"></div>
+    <div id="unlockedList">추가 아군: 없음</div>
+    <div class="restActions">
+      <button id="drawAlly" class="draw">열쇠 1개로 아군 뽑기</button>
+      <button id="nextStage">2스테이지 시작</button>
+    </div>
+  </div>
+
+  <div id="battlePanel" class="panel">
     <div class="statusRow">
       <span id="players">파랑 VS 빨강</span>
       <b id="turn">대기</b>
@@ -95,14 +115,20 @@ h1{font-size:22px;margin:0}
 import { JaewoonMultiplayerClient } from '/multiplayer/multiplayer-client.js';
 
 const GAME_ID='card-grid-duel', SIZE=5, START_GOLD=200;
-const MAX_SUMMONS={BLUE:10,RED:6};
+const STAGES={
+  1:{blueMax:10,redMax:6,redPool:['GOBLIN','SKELETON_ARCHER','SKELETON_MAGE','ORC']},
+  2:{blueMax:12,redMax:8,redPool:['SKELETON_SOLDIER','SKELETON_ARCHER','SKELETON_MAGE','ORC','SLIME']}
+};
+const GACHA_POOL=['LANCER','CROSSBOW','HAMMER'];
 const UNIT_SPRITE='/card-grid-duel/units.webp';
 const SPRITE_POS={
   SWORDSMAN:[0,0],ARCHER:[1,0],MAGE:[2,0],GUARDIAN:[3,0],
   GOBLIN:[0,1],SKELETON_ARCHER:[1,1],SKELETON_MAGE:[2,1],ORC:[3,1]
 };
+function hasSprite(id){return !!SPRITE_POS[id]}
 function spriteStyle(id){
-  const p=SPRITE_POS[id]||[0,0];
+  const p=SPRITE_POS[id];
+  if(!p)return '';
   const x=(p[0]/3)*100;
   const y=p[1]*100;
   return 'background-image:url("'+UNIT_SPRITE+'");background-position:'+x+'% '+y+'%;';
@@ -112,15 +138,22 @@ const CARDS={
     SWORDSMAN:{name:'검사',icon:'⚔️',hp:100,atk:30,range:1,cost:50,reward:30,desc:'기본 근접'},
     ARCHER:{name:'궁수',icon:'🏹',hp:70,atk:25,range:2,cost:50,reward:30,desc:'최대 2칸 원거리 공격'},
     MAGE:{name:'마법사',icon:'🔮',hp:60,atk:35,range:2,cost:70,reward:40,splash:15,desc:'주변 15 피해'},
-    GUARDIAN:{name:'방패병',icon:'🛡️',hp:150,atk:18,range:1,cost:60,reward:50,reduce:.3,desc:'피해 30% 감소'}
+    GUARDIAN:{name:'방패병',icon:'🛡️',hp:150,atk:18,range:1,cost:60,reward:50,reduce:.3,desc:'피해 30% 감소'},
+    LANCER:{name:'창병',icon:'🔱',hp:200,atk:60,range:1,cost:80,reward:60,desc:'검사의 체력·공격력 2배'},
+    CROSSBOW:{name:'쇠뇌병',icon:'🎯',hp:60,atk:55,range:2,cost:70,reward:55,desc:'궁수보다 체력 10↓ 공격력 30↑ · 2칸'},
+    HAMMER:{name:'망치병',icon:'🔨',hp:120,atk:55,range:1,cost:60,reward:50,charge:true,desc:'공격 전 1턴 충전 필요 · 피해 55'}
   },
   RED:{
-    GOBLIN:{name:'고블린',icon:'👺',hp:80,atk:25,range:1,cost:50,reward:30,desc:'처치 보상 30골드'},
+    GOBLIN:{name:'고블린',icon:'👺',hp:80,atk:25,range:1,cost:0,reward:30,desc:'처치 보상 30골드'},
     SKELETON_ARCHER:{name:'해골 궁수',icon:'☠️🏹',hp:65,atk:23,range:2,cost:50,reward:40,desc:'처치 보상 40골드'},
     SKELETON_MAGE:{name:'해골 법사',icon:'💀🔮',hp:75,atk:30,range:2,cost:70,reward:50,freeze:.3,desc:'처치 보상 50골드 · 30% 봉인'},
-    ORC:{name:'오크',icon:'👹',hp:140,atk:32,range:1,cost:60,reward:60,desc:'처치 보상 60골드'}
+    ORC:{name:'오크',icon:'👹',hp:140,atk:32,range:1,cost:0,reward:60,desc:'처치 보상 60골드'},
+    SKELETON_SOLDIER:{name:'해골 병사',icon:'💀⚔️',hp:80,atk:20,range:1,cost:0,reward:30,desc:'2스테이지 근접 적'},
+    SLIME:{name:'슬라임',icon:'🟢',hp:70,atk:25,range:1,cost:0,reward:35,split:true,desc:'죽으면 작은 슬라임 2마리로 분열'},
+    SMALL_SLIME:{name:'작은 슬라임',icon:'🟩',hp:20,atk:5,range:1,cost:0,reward:10,desc:'슬라임 분열체'}
   }
 };
+const BASE_BLUE_IDS=['SWORDSMAN','ARCHER','MAGE','GUARDIAN'];
 const IDS={BLUE:Object.keys(CARDS.BLUE),RED:Object.keys(CARDS.RED)};
 const $=s=>document.querySelector(s), notice=$('#notice'),board=$('#board'),hand=$('#hand'),turnEl=$('#turn'),playersEl=$('#players'),deckInfo=$('#deckInfo'),modeInfo=$('#modeInfo');
 const client=new JaewoonMultiplayerClient();
@@ -133,12 +166,16 @@ function moveDist(a,b){return Math.abs(a.r-b.r)+Math.abs(a.c-b.c)}
 function attackDist(a,b){return Math.abs(a.r-b.r)+Math.abs(a.c-b.c)}
 function newState(){
   state={
-    version:2,
+    version:3,
+    stage:1,
+    phase:'BATTLE',
     turn:1,
     current:'BLUE',
     summonUsed:false,
     winner:'',
-    gold:{BLUE:START_GOLD,RED:START_GOLD},
+    keys:0,
+    unlocked:[],
+    gold:{BLUE:START_GOLD,RED:0},
     summons:{BLUE:0,RED:0},
     units:[]
   };
@@ -147,12 +184,24 @@ function newState(){
 function card(s,id){return CARDS[s][id]}
 function at(r,c){return state?.units.find(u=>u.r===r&&u.c===c)}
 function byId(id){return state?.units.find(u=>u.id===id)}
-function canAct(){return state&&!state.winner&&state.current===side}
+function canAct(){return state&&!state.winner&&state.phase==='BATTLE'&&state.current===side}
 function snapshot(){return JSON.parse(JSON.stringify(state))}
 function setState(next){state=JSON.parse(JSON.stringify(next));selectedUnit=null;selectedCard='';render()}
 function livingCount(s){return state.units.filter(u=>u.side===s).length}
-function minCost(s){return Math.min(...IDS[s].map(id=>card(s,id).cost))}
-function canSummonMore(s){return state.summons[s]<MAX_SUMMONS[s]&&state.gold[s]>=minCost(s)}
+function stageConfig(){return STAGES[state?.stage||1]||STAGES[1]}
+function maxSummons(s){const cfg=stageConfig();return s==='BLUE'?cfg.blueMax:cfg.redMax}
+function bluePool(){return [...BASE_BLUE_IDS,...(state?.unlocked||[])]}
+function redPool(){return stageConfig().redPool}
+function minCost(s){
+  if(s==='RED')return 0;
+  const pool=bluePool();
+  return Math.min(...pool.map(id=>card('BLUE',id).cost))
+}
+function canSummonMore(s){
+  if(state.summons[s]>=maxSummons(s))return false;
+  if(s==='RED')return true;
+  return state.gold.BLUE>=minCost('BLUE')
+}
 function applyDamage(target,amount,attackerSide){
   if(target.hp<=0)return false;
   const d=card(target.side,target.card);
@@ -160,31 +209,98 @@ function applyDamage(target,amount,attackerSide){
   const before=target.hp;
   target.hp-=hit;
   if(before>0&&target.hp<=0){
-    state.gold[attackerSide]+=d.reward||30;
+    if(attackerSide==='BLUE')state.gold.BLUE+=d.reward||30;
+    if(d.split)target.splitPending=true;
     return true
   }
   return false
 }
-function removeDead(){state.units=state.units.filter(u=>u.hp>0)}
+function isInside(r,c){return r>=1&&r<=SIZE&&c>=1&&c<=SIZE}
+function splitSecondSpot(dead){
+  const dirs=[
+    {r:dead.r,c:dead.c-1},
+    {r:dead.r+1,c:dead.c},
+    {r:dead.r-1,c:dead.c},
+    {r:dead.r,c:dead.c+1},
+    {r:dead.r+1,c:dead.c-1},
+    {r:dead.r+1,c:dead.c+1},
+    {r:dead.r-1,c:dead.c-1},
+    {r:dead.r-1,c:dead.c+1}
+  ];
+  for(const p of dirs)if(isInside(p.r,p.c)&&!at(p.r,p.c))return p;
+
+  for(const p of dirs){
+    if(!isInside(p.r,p.c))continue;
+    const blocker=at(p.r,p.c);
+    if(blocker&&blocker.side==='BLUE'){
+      const dr=Math.sign(blocker.r-dead.r),dc=Math.sign(blocker.c-dead.c);
+      const behind={r:blocker.r+dr,c:blocker.c+dc};
+      if(isInside(behind.r,behind.c)&&!at(behind.r,behind.c))return behind
+    }
+  }
+
+  for(let r=1;r<=SIZE;r++)for(let c=1;c<=SIZE;c++)if(!at(r,c))return {r,c};
+  return null
+}
+function spawnSmallSlime(r,c){
+  if(!isInside(r,c)||at(r,c))return false;
+  const d=card('RED','SMALL_SLIME');
+  state.units.push({id:crypto.randomUUID(),side:'RED',card:'SMALL_SLIME',hp:d.hp,r,c,moved:false,attacked:false,freeze:0,frozenNow:false,hammerReady:false});
+  return true
+}
+function removeDeadAndSplit(){
+  const deadSlimes=state.units.filter(u=>u.hp<=0&&u.splitPending);
+  state.units=state.units.filter(u=>u.hp>0);
+  for(const dead of deadSlimes){
+    spawnSmallSlime(dead.r,dead.c);
+    const second=splitSecondSpot(dead);
+    if(second)spawnSmallSlime(second.r,second.c)
+  }
+}
 function exhausted(s){
-  return livingCount(s)===0 && (!canSummonMore(s) || state.summons[s]>=MAX_SUMMONS[s]);
+  return livingCount(s)===0 && state.summons[s]>=maxSummons(s);
+}
+function clearStageOne(){
+  state.phase='REST';
+  state.keys+=2;
+  state.current='BLUE';
+  selectedUnit=null;
+  selectedCard='';
+  msg('1스테이지 클리어 · 열쇠 2개 획득')
 }
 function checkWin(){
-  if(exhausted('BLUE'))state.winner='RED';
-  else if(exhausted('RED'))state.winner='BLUE'
+  if(exhausted('BLUE')){state.winner='RED';return}
+  if(exhausted('RED')){
+    if(state.stage===1){clearStageOne();return}
+    state.winner='BLUE'
+  }
 }
-function startTurn(s){state.current=s;state.turn++;state.summonUsed=false;for(const u of state.units.filter(x=>x.side===s)){u.moved=false;u.attacked=false;u.frozenNow=(u.freeze||0)>0;if(u.frozenNow)u.freeze--}}
+function startTurn(s){
+  state.current=s;
+  state.turn++;
+  state.summonUsed=false;
+  for(const u of state.units.filter(x=>x.side===s)){
+    u.moved=false;
+    u.attacked=false;
+    u.frozenNow=(u.freeze||0)>0;
+    if(u.frozenNow)u.freeze--
+  }
+}
 function processAction(actor,p){
   if(!state||state.winner||actor!==state.current)return false;
 
   if(p.type==='summon'){
     if(state.summonUsed)return false;
-    if(state.summons[actor]>=MAX_SUMMONS[actor])return false;
+    if(state.summons[actor]>=maxSummons(actor))return false;
     const id=String(p.card||'');
     const d=card(actor,id);
-    if(!d||state.gold[actor]<d.cost||p.r!==homeRow(actor)||at(p.r,p.c))return false;
-
-    state.gold[actor]-=d.cost;
+    if(!d||p.r!==homeRow(actor)||at(p.r,p.c))return false;
+    if(actor==='BLUE'){
+      if(!bluePool().includes(id)||state.gold.BLUE<d.cost)return false;
+      state.gold.BLUE-=d.cost;
+    }else{
+      if(!redPool().includes(id))return false;
+    }
     state.summons[actor]++;
     state.units.push({
       id:crypto.randomUUID(),
@@ -196,7 +312,8 @@ function processAction(actor,p){
       moved:false,
       attacked:false,
       freeze:0,
-      frozenNow:false
+      frozenNow:false,
+      hammerReady:false
     });
     state.summonUsed=true;
   }else if(p.type==='move'){
@@ -209,6 +326,14 @@ function processAction(actor,p){
 
     const d=card(actor,a.card);
     if(attackDist(a,t)>d.range)return false;
+
+    if(d.charge&&!a.hammerReady){
+      a.hammerReady=true;
+      a.attacked=true;
+      msg('망치병이 공격을 준비했어. 다음 턴에 공격 가능');
+      state.version++;
+      return true
+    }
 
     const tr=t.r,tc=t.c,tid=t.id;
     applyDamage(t,d.atk,actor);
@@ -224,7 +349,8 @@ function processAction(actor,p){
     const alive=byId(tid);
     if(alive&&alive.hp>0&&d.freeze&&Math.random()<d.freeze)alive.freeze=Math.max(alive.freeze||0,1);
     a.attacked=true;
-    removeDead();
+    if(d.charge)a.hammerReady=false;
+    removeDeadAndSplit();
     checkWin();
   }else if(p.type==='end'){
     startTurn(other(actor));
@@ -246,9 +372,20 @@ function act(payload){
     msg('그 행동은 지금 할 수 없어.')
   }
 }
+function portraitHtml(id,d){
+  return hasSprite(id)
+    ? '<span class="portrait" style="'+spriteStyle(id)+'"></span>'
+    : '<span class="portrait" style="display:flex;align-items:center;justify-content:center;background:#24324a;font-size:24px">'+d.icon+'</span>'
+}
+function artHtml(id,d){
+  return hasSprite(id)
+    ? '<div class="art" style="'+spriteStyle(id)+'"></div>'
+    : '<div class="art" style="display:flex;align-items:center;justify-content:center;font-size:38px">'+d.icon+'</div>'
+}
 function unitText(u){
   const d=card(u.side,u.card);
-  return '<div class="unit '+(u.side==='BLUE'?'blue':'red')+'"><span class="portrait" style="'+spriteStyle(u.card)+'"></span><b>'+d.name+'</b><small>'+u.hp+'/'+d.hp+' · 공'+d.atk+' 사'+d.range+(u.frozenNow?' · 봉인':'')+'</small><span class="hp"><i style="width:'+Math.max(0,u.hp/d.hp*100)+'%"></i></span></div>'
+  const charge=u.card==='HAMMER'?(u.hammerReady?' · 충전완료':' · 충전필요'):'';
+  return '<div class="unit '+(u.side==='BLUE'?'blue':'red')+'">'+portraitHtml(u.card,d)+'<b>'+d.name+'</b><small>'+u.hp+'/'+d.hp+' · 공'+d.atk+' 사'+d.range+charge+(u.frozenNow?' · 봉인':'')+'</small><span class="hp"><i style="width:'+Math.max(0,u.hp/d.hp*100)+'%"></i></span></div>'
 }
 function render(){
   board.innerHTML='';
@@ -263,17 +400,19 @@ function render(){
 
   hand.innerHTML='';
   if(state){
-    for(const id of IDS[side]){
+    const pool=side==='BLUE'?bluePool():redPool();
+    for(const id of pool){
       const d=card(side,id),b=document.createElement('button');
-      const blocked=state.summonUsed||state.summons[side]>=MAX_SUMMONS[side]||state.gold[side]<d.cost;
+      const blocked=state.phase!=='BATTLE'||state.summonUsed||state.summons[side]>=maxSummons(side)||(side==='BLUE'&&state.gold.BLUE<d.cost);
       b.className='card'+(id===selectedCard?' sel':'');
       b.disabled=blocked;
-      b.innerHTML='<div class="art" style="'+spriteStyle(id)+'"></div><b>'+d.name+'</b><p>HP '+d.hp+' · 공격 '+d.atk+' · 사거리 '+d.range+'<br><span class="cost">'+d.cost+'골드</span> · '+d.desc+'</p>';
+      b.innerHTML=artHtml(id,d)+'<b>'+d.name+'</b><p>HP '+d.hp+' · 공격 '+d.atk+' · 사거리 '+d.range+'<br><span class="cost">'+(side==='BLUE'?d.cost+'골드':'적 유닛')+'</span> · '+d.desc+'</p>';
       b.onclick=()=>{
         if(!canAct())return msg('지금은 상대 턴이야.');
+        if(state.phase!=='BATTLE')return msg('지금은 쉬는 시간야.');
         if(state.summonUsed)return msg('이번 턴에는 이미 소환했어.');
-        if(state.summons[side]>=MAX_SUMMONS[side])return msg('소환 가능 수를 모두 사용했어.');
-        if(state.gold[side]<d.cost)return msg('골드가 부족해.');
+        if(state.summons[side]>=maxSummons(side))return msg('소환 가능 수를 모두 사용했어.');
+        if(side==='BLUE'&&state.gold.BLUE<d.cost)return msg('골드가 부족해.');
         selectedCard=id;selectedUnit=null;
         msg(d.name+' 선택 · 자기 진영 첫 줄 빈칸을 눌러');
         render()
@@ -282,10 +421,29 @@ function render(){
     }
   }
 
-  if(!state){turnEl.textContent='대기';deckInfo.textContent='골드 -';return}
+  if(!state){
+    turnEl.textContent='대기';
+    deckInfo.textContent='골드 -';
+    $('#restScreen').classList.add('hidden');
+    $('#battlePanel').classList.remove('hidden');
+    return
+  }
 
-  turnEl.textContent=state.winner?(state.winner===side?'승리':'패배'):(state.current===side?'내 턴':'상대 턴')+' · '+state.turn;
-  deckInfo.textContent='골드 '+state.gold[side]+' · 내 소환 '+state.summons[side]+'/'+MAX_SUMMONS[side]+' · 상대 소환 '+state.summons[other(side)]+'/'+MAX_SUMMONS[other(side)];
+  const resting=state.phase==='REST';
+  $('#restScreen').classList.toggle('hidden',!resting);
+  $('#battlePanel').classList.toggle('hidden',resting);
+  $('.bottom').classList.toggle('hidden',resting);
+
+  if(resting){
+    $('#keyCount').textContent=state.keys||0;
+    $('#restText').textContent=state.stage+'스테이지 완료 · 다음 전투 전에 아군을 뽑을 수 있어.';
+    $('#unlockedList').textContent='추가 아군: '+((state.unlocked||[]).map(id=>card('BLUE',id).name).join(', ')||'없음');
+    $('#drawAlly').disabled=(state.keys||0)<=0;
+    return
+  }
+
+  turnEl.textContent=state.winner?(state.winner===side?'승리':'패배'):'스테이지 '+state.stage+' · '+(state.current===side?'내 턴':'상대 턴')+' · '+state.turn;
+  deckInfo.textContent='골드 '+state.gold.BLUE+' · 내 소환 '+state.summons[side]+'/'+maxSummons(side)+' · 상대 소환 '+state.summons[other(side)]+'/'+maxSummons(other(side));
   modeInfo.textContent=mode==='practice'?'연습전':mode==='online'?'온라인 1대1':'대기';
 
   if(state.winner)msg(state.winner===side?'승리!':'패배')
@@ -312,8 +470,9 @@ function cellTap(r,c,u){
   else act({type:'move',unit:selectedUnit,r,c})
 }
 function affordableCards(s){
-  if(state.summons[s]>=MAX_SUMMONS[s])return [];
-  return IDS[s].filter(id=>card(s,id).cost<=state.gold[s])
+  if(state.summons[s]>=maxSummons(s))return [];
+  if(s==='RED')return redPool();
+  return bluePool().filter(id=>card('BLUE',id).cost<=state.gold.BLUE)
 }
 function aiTurn(){
   if(mode!=='practice'||!state||state.current!=='RED'||state.winner||aiThinking)return;
@@ -346,9 +505,10 @@ function aiTurn(){
     }
   }
 
-  if(!state.winner)processAction('RED',{type:'end'});
+  if(!state.winner&&state.phase==='BATTLE')processAction('RED',{type:'end'});
   aiThinking=false;
-  render()
+  render();
+  broadcast()
 }
 
 $('#practiceBtn').onclick=()=>{
@@ -359,6 +519,37 @@ $('#practiceBtn').onclick=()=>{
 };
 $('#endTurn').onclick=()=>act({type:'end'});
 $('#cancel').onclick=()=>{selectedUnit=null;selectedCard='';msg('선택 취소');render()};
+
+$('#drawAlly').onclick=()=>{
+  if(!state||state.phase!=='REST'||state.keys<=0)return;
+  const id=GACHA_POOL[Math.floor(Math.random()*GACHA_POOL.length)];
+  state.keys--;
+  const duplicate=state.unlocked.includes(id);
+  if(!duplicate)state.unlocked.push(id);
+  $('#drawResult').textContent=(duplicate?'중복! ':'새 아군! ')+card('BLUE',id).name;
+  state.version++;
+  broadcast();
+  render()
+};
+$('#nextStage').onclick=()=>{
+  if(!state||state.phase!=='REST')return;
+  state.stage=2;
+  state.phase='BATTLE';
+  state.turn=1;
+  state.current='BLUE';
+  state.summonUsed=false;
+  state.winner='';
+  state.gold.RED=0;
+  state.summons={BLUE:0,RED:0};
+  state.units=[];
+  selectedUnit=null;
+  selectedCard='';
+  $('#drawResult').textContent='';
+  msg('2스테이지 시작 · 적 8마리 / 아군 12마리');
+  state.version++;
+  broadcast();
+  render()
+};
 
 function setAuth(on){
   $('#matchBtn').classList.toggle('hidden',!on);
