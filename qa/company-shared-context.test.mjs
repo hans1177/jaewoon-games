@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { validateSharedWorkerContext } from '../tools/company-shared-context.mjs';
+import { validateSharedWorkerContext, verifyPinnedSharedWorkerContext } from '../tools/company-shared-context.mjs';
 
 function root(){return fs.mkdtempSync(path.join(os.tmpdir(),'company-shared-context-'));}
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');}
@@ -75,6 +75,30 @@ test('shared context blocks architecture launcher registry drift',()=>{
   const cwd=root(),f=fixtures();f.archJson.workerSynchronization.launcherWorkflows=['.github/workflows/other.yml'];setup(cwd,f);const previous=process.cwd();process.chdir(cwd);
   try{assert.throws(()=>validateSharedWorkerContext(),/ARCHITECTURE_LAUNCHER_REGISTRY/);}
   finally{process.chdir(previous);fs.rmSync(cwd,{recursive:true,force:true});}
+});
+
+test('pinned hash reuse keeps the validated cohort exact and fails closed on document drift',()=>{
+  const cwd=root(),f=fixtures();setup(cwd,f);const previous=process.cwd();process.chdir(cwd);
+  try{
+    const full=validateSharedWorkerContext();
+    const pinned=verifyPinnedSharedWorkerContext({
+      expectedPolicySha256:full.hashes.policySha256,
+      expectedLogMapSha256:full.hashes.logMapSha256,
+      expectedArchitectureSha256:full.hashes.architectureSha256,
+      expectedSecurityPolicySha256:full.hashes.securityPolicySha256
+    });
+    assert.equal(pinned.pass,true);
+    assert.equal(pinned.verificationMode,'PINNED_HASH_REUSE');
+    assert.deepEqual(pinned.hashes,full.hashes);
+    f.logJson.extraDrift=true;
+    writeJson(path.join(cwd,f.log),f.logJson);
+    assert.throws(()=>verifyPinnedSharedWorkerContext({
+      expectedPolicySha256:full.hashes.policySha256,
+      expectedLogMapSha256:full.hashes.logMapSha256,
+      expectedArchitectureSha256:full.hashes.architectureSha256,
+      expectedSecurityPolicySha256:full.hashes.securityPolicySha256
+    }),/PINNED_HASH_MISMATCH:logMapSha256/);
+  }finally{process.chdir(previous);fs.rmSync(cwd,{recursive:true,force:true});}
 });
 
 test('expected roadmap hash mismatch is fail closed',()=>{
