@@ -260,27 +260,60 @@ if not nativeFoundationRemote then
   nativeFoundationRemote.Name = "RuntimeFoundationReport"
   nativeFoundationRemote.Parent = ReplicatedStorage
 end
+local survivalGround = workspace:FindFirstChild("SurvivalGround")
+if survivalGround and not survivalGround:IsA("BasePart") then survivalGround:Destroy(); survivalGround = nil end
+if not survivalGround then
+  survivalGround = Instance.new("Part")
+  survivalGround.Name = "SurvivalGround"
+  survivalGround.Parent = workspace
+end
+survivalGround.Size = Vector3.new(280, 2, 280)
+survivalGround.Position = Vector3.new(0, 0, 0)
+survivalGround.Anchored = true
+survivalGround.CanCollide = true
+survivalGround.CanQuery = true
+survivalGround.Material = Enum.Material.Grass
+survivalGround.Color = Color3.fromRGB(72, 105, 66)
+survivalGround.TopSurface = Enum.SurfaceType.Smooth
+
 local nativeFoundationSpawn = workspace:FindFirstChild("NativeFoundationSpawn")
 if not nativeFoundationSpawn then
   nativeFoundationSpawn = Instance.new("SpawnLocation")
   nativeFoundationSpawn.Name = "NativeFoundationSpawn"
-  nativeFoundationSpawn.Size = Vector3.new(8, 1, 8)
-  nativeFoundationSpawn.Position = Vector3.new(0, 3, 0)
-  nativeFoundationSpawn.Neutral = true
   nativeFoundationSpawn.Parent = workspace
 end
+nativeFoundationSpawn.Size = Vector3.new(8, 1, 8)
+nativeFoundationSpawn.Position = Vector3.new(0, 3, 0)
+nativeFoundationSpawn.Anchored = true
+nativeFoundationSpawn.CanCollide = false
+nativeFoundationSpawn.CanTouch = false
+nativeFoundationSpawn.CanQuery = false
+nativeFoundationSpawn.Neutral = true
+
 local function bindNativeFoundationCharacter(character)
   local humanoid = character:WaitForChild("Humanoid")
   local rootPart = character:WaitForChild("HumanoidRootPart")
   rootPart.Anchored = false
+  rootPart.AssemblyLinearVelocity = Vector3.zero
+  rootPart.AssemblyAngularVelocity = Vector3.zero
   humanoid.PlatformStand = false
-  local groundHit = workspace:Raycast(rootPart.Position, Vector3.new(0, -10, 0))
+  humanoid.Sit = false
+  humanoid.AutoRotate = true
+  if rootPart.Position.Y < 2 then rootPart.CFrame = CFrame.new(0, 4, 0) end
+  local params = RaycastParams.new()
+  params.FilterType = Enum.RaycastFilterType.Exclude
+  params.FilterDescendantsInstances = {character}
+  local groundHit = workspace:Raycast(rootPart.Position + Vector3.new(0, 4, 0), Vector3.new(0, -16, 0), params)
   character:SetAttribute("GROUND_CONTACT", groundHit ~= nil)
   character:SetAttribute("MOVEMENT_CONFIRMED", true)
 end
 local function bindNativeFoundationPlayer(player)
+  player.RespawnLocation = nativeFoundationSpawn
   if player.Character then task.defer(bindNativeFoundationCharacter, player.Character) end
-  player.CharacterAdded:Connect(bindNativeFoundationCharacter)
+  player.CharacterAdded:Connect(function(character)
+    player.RespawnLocation = nativeFoundationSpawn
+    bindNativeFoundationCharacter(character)
+  end)
 end
 Players.PlayerAdded:Connect(bindNativeFoundationPlayer)
 for _, nativeFoundationPlayer in ipairs(Players:GetPlayers()) do
