@@ -1,0 +1,25 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "        if(!started) StartGameplay();",
+      "replace": "        if(!started) StartGameplay();\n        if (player != null && started)"
+    },
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "            var p=enemy.transform.position;",
+      "replace": "            var p=enemy.transform.position;\n            var p=player.transform.position;"
+    },
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "        if(progress >= level * 4) level++;",
+      "replace": "        if(progress >= level * 4) level++;\n        if(!started) StartGameplay();"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
