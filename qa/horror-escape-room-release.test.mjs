@@ -148,6 +148,20 @@ test('로비 선택 완료는 서버 승인 속성만 신뢰한다',()=>{
  assert.match(client,/Size=UDim2\.new\(\.44,0,0,36\)/);
 });
 
+test('Studio 실플레이 계약은 현재 저택 로비의 실제 입력 순서를 그대로 따른다',()=>{
+ const flow=launch.studioActualPlayContract;
+ assert.deepEqual(flow.entryButtonTexts,['저택 들어가기','출정']);
+ assert.equal(flow.selectionButtonText,'인간으로 준비');
+ assert.equal(flow.startButtonText,'1인 플레이 · 빈자리는 AI');
+ assert.equal(flow.primaryActionButtonText,'대시');
+ assert.ok(flow.afterStartWaitMs>=4000);
+ assert.match(manorClient,/button\(card,"저택 들어가기"/);
+ assert.match(manorClient,/button\(commands,"출정"/);
+ assert.match(manorClient,/button\(body,"인간으로 준비"/);
+ assert.match(manorClient,/button\(body,"1인 플레이 · 빈자리는 AI"/);
+ assert.doesNotMatch(flow.selectionButtonText,/인간 선호/);
+});
+
 
 test('로비 상용화 계약은 launch gate에도 고정된다',()=>{
  for(const gate of [
