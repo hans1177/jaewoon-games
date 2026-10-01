@@ -787,6 +787,20 @@ test('Roblox F0-F9 orchestration dispatches exact games without cross-game fan-i
   assert.match(f9Dispatch,/ROBLOX_F9_EXACT_DISPATCH=DEDUPED_ACTIVE:/);
   assert.doesNotMatch(f9Dispatch,/--ref main\s*$/m);
 
+  const foundationPersist=post.slice(
+    post.indexOf('Persist runtime tester and QA evidence'),
+    post.indexOf('Dispatch exact F9 review for every runtime-accepted candidate')
+  );
+  assert.match(post,/ROBLOX_FOUNDATION_RUNTIME_PATCH_COUNT=/);
+  assert.match(foundationPersist,/ROBLOX_FOUNDATION_PERSIST_OPTIMISTIC_ATTEMPT=\$attempt\/5/);
+  assert.match(foundationPersist,/ROBLOX_FOUNDATION_PERSIST_SAME_FIELD_CONFLICT=/);
+  assert.match(foundationPersist,/EXACT_SOURCE_REVISION/);
+  assert.match(foundationPersist,/EXACT_ARTIFACT_IDENTITY/);
+  assert.match(foundationPersist,/EXACT_CANDIDATE_VERSION/);
+  assert.match(foundationPersist,/ROBLOX_FOUNDATION_DOWNSTREAM_CONFLICT_FILTER_COUNT=/);
+  assert.doesNotMatch(foundationPersist,/git rebase/);
+  assert.doesNotMatch(foundationPersist,/DEFERRED_TO_NEXT_CYCLE/);
+
   const studio=post.slice(post.indexOf('  studio-mcp-auto-play:'),post.indexOf('\n  studio-mcp-evidence:',post.indexOf('  studio-mcp-auto-play:')));
   assert.match(studio,/group: roblox-studio-shared-host/);
   assert.match(studio,/max-parallel:\s*1/);
