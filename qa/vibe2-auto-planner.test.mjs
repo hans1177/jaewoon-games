@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort } from '../tools/vibe2-auto-planner.mjs';
 import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 
@@ -3744,3 +3745,49 @@ test('queued rebuild and released caretaker receive lobby binding before backlog
     assert.equal(again.queue.tasks.find(t=>t.id==='task-0').goal,first.queue.tasks.find(t=>t.id==='task-0').goal);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('real ant-simulator Web BUILD_UP binds code work and graphics replacement to live source',()=>{
+  const realRepoRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+  const realCatalog=JSON.parse(fs.readFileSync(path.join(realRepoRoot,'game-catalog.json'),'utf8'));
+  const realGame=(realCatalog.games||[]).find(game=>game.id==='ant-simulator');
+  assert.ok(realGame,'ant-simulator must exist in the real catalog');
+  assert.equal(realGame.productionClass,'DEVELOPMENT_CONFIRMED');
+  assert.equal(fs.existsSync(path.join(realRepoRoot,'web-games/ant-simulator/index.html')),true);
+
+  const projects=collectProjects({projects:[]},{games:[realGame]},realRepoRoot,{items:[]});
+  const project=projects.find(row=>row.gameId==='ant-simulator'&&row.engine==='web');
+  assert.ok(project,'real ant-simulator Web project must be discoverable');
+  assert.equal(project.projectPath,'web-games/ant-simulator');
+
+  const codePlan=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[realGame]},
+    queue:{maxConcurrentTasks:8,tasks:[]},
+    repoRoot:realRepoRoot,
+    maxConcurrentTasks:8,
+    queueMaxConcurrentTasks:8,
+    planningBacklogTarget:8,
+    planningBacklogMinimum:0
+  });
+  assert.equal(codePlan.planned,true);
+  const codeTask=codePlan.tasks.find(row=>row.gameId==='ant-simulator'&&row.target==='web');
+  assert.ok(codeTask,'real ant-simulator must create Web implementation work');
+  assert.ok(codeTask.responsibleFiles.includes('web-games/ant-simulator/index.html'));
+  assert.match(codeTask.goal,/EXISTING_WEB_ASSESS_AND_IMPLEMENT/);
+
+  const graphicsTask=findStudioContinuousImprovementTask(project,realRepoRoot,{tasks:[]},'PRESENTATION');
+  assert.ok(graphicsTask,'real ant-simulator must create Web presentation BUILD_UP work');
+  assert.equal(graphicsTask.target,'web');
+  assert.equal(graphicsTask.assetProductionLane,true);
+  assert.ok(graphicsTask.responsibleFiles.includes('web-games/ant-simulator/index.html'));
+  assert.ok(graphicsTask.buildUpDirective?.directiveId);
+  assert.equal(graphicsTask.buildUpDirective?.platform,'WEB');
+  assert.equal(graphicsTask.graphicsReplacementContract?.platform,'WEB');
+  assert.equal(graphicsTask.graphicsReplacementContract?.adaptiveCount?.minimumActual,1);
+  assert.equal(graphicsTask.graphicsReplacementContract?.adaptiveCount?.maximumActual,60);
+  assert.equal(graphicsTask.graphicsReplacementContract?.implementation?.actualSourceOrBindingDeltaRequired,true);
+  assert.equal(graphicsTask.graphicsReplacementContract?.implementation?.zeroActualReplacementCannotPass,true);
+  assert.ok(graphicsTask.evidence.includes('adaptive-graphics-replacement:v1'));
+  assert.ok(graphicsTask.evidence.includes('graphics-pass-real-asset-binding-runtime-required'));
+});
+
