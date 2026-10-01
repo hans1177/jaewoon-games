@@ -1,5 +1,5 @@
 {
-  "version": 154,
+  "version": 155,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -475,7 +475,7 @@
     "continuousEvolutionEvidenceAllowedAfterInternalAndPublicRelease": true,
     "standaloneReleaseAuthority": false
   },
-  "updatedAt": "2026-09-28",
+  "updatedAt": "2026-10-02",
   "graphicsProductionEvidenceContract": {
     "version": 5,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -2961,5 +2961,22 @@
     ],
     "globalPriorityChanged": false,
     "firstPlayableDeployClearsSpecialPriority": true
+  },
+  "unityFoundationEvidenceContract": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.nativeGameFoundationValidationStack.unityAdapter",
+    "requiredMarkers": [
+      "UNITY_FOUNDATION_F1_F8_SINGLE_RUNTIME",
+      "UNITY_RUNTIME_EXACT_FAILURE_FLOOR",
+      "UNITY_F9_RUNTIME_REPLAY=NO",
+      "UNITY_F9_EVIDENCE_FANIN",
+      "UNITY_EXACT_ARTIFACT_REGRESSION=PASS"
+    ],
+    "oneExactRuntimeSessionPerCandidate": true,
+    "perFloorRuntimeRerunForbidden": true,
+    "f9RuntimeReplayForbidden": true,
+    "exactArtifactIdentityRequired": true,
+    "failureStageMustBeFirstFailedFloor": true,
+    "rawLogAloneCannotProvePass": true
   }
 }
