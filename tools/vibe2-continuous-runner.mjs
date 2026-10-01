@@ -484,8 +484,34 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const resolved = resolveTask(normalizedQueue, taskId);
   const base = {
     version:6, generatedAt:new Date().toISOString(), run:false, reason:null, mode:'vibe2-parallel-work-order',
-    machineHandoff:freeze({ used:Boolean(handoff?.kind), kind:handoff?.kind || null, sourceOfTruth:handoff?.sourceOfTruth || null, consistency:handoff?.consistency || {ok:true,errors:[]}, currentPersistentMax:Number(handoff?.parallelism?.currentPersistentMax || runtime?.continuous?.maxConcurrentGameTasks || 20), lastDecision:handoff?.parallelism?.lastDecision || null, ownerDirectiveOpenCount:Number(handoff?.workState?.ownerDirectiveOpenCount || 0), reusableContextCount:Number(handoff?.workState?.reusableContexts?.length || 0) }),
-    scheduler:freeze({ hierarchicalParallelism:true, dag:true, shardAware:true, workStealing:true, sourceRootLock:true, eventDriven:true, dynamicBackpressure:true, longWorkProtectedSlot:true, roleSeparated:true }),
+    machineHandoff:freeze({
+      used:Boolean(handoff?.kind),
+      kind:handoff?.kind || null,
+      sourceOfTruth:handoff?.sourceOfTruth || null,
+      consistency:handoff?.consistency || {ok:true,errors:[]},
+      internalGlobalParallelCap:null,
+      externalMatrixTransportPartitionMax:Number(handoff?.parallelism?.externalMatrixTransportPartitionMax || runtime?.continuous?.externalMatrixTransportPartitionMax || 256),
+      pressureAdvisoryTarget:Number(handoff?.parallelism?.pressureAdvisoryTarget || 0) || null,
+      lastDecision:handoff?.parallelism?.lastDecision || null,
+      ownerDirectiveOpenCount:Number(handoff?.workState?.ownerDirectiveOpenCount || 0),
+      reusableContextCount:Number(handoff?.workState?.reusableContexts?.length || 0)
+    }),
+    execution:freeze({
+      mode:'INDEPENDENT_TASK_EVENT_DRIVEN',
+      dag:true,
+      workStealing:true,
+      sourceRootLock:false,
+      gameWideLock:false,
+      responsibleFileConflictExclusive:true,
+      internalGlobalParallelCap:null,
+      externalMatrixTransportPartitionMax:Number(runtime?.continuous?.externalMatrixTransportPartitionMax || 256),
+      learningIdleFixedWorkers:1,
+      assetDevelopmentLaneMax:64,
+      assetDevelopmentSpeculativeVariantsPerTask:1,
+      eventDriven:true,
+      pressureTelemetryRole:'OPTIONAL_SPECULATION_ONLY',
+      roleSeparated:true
+    }),
     safety:freeze({
       directMainWrite:false,
       existingWebMaintenanceAllowed:runtime?.safety?.existingWebMaintenanceAllowed === true,
@@ -930,7 +956,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   console.log(`VIBE2_CONTINUOUS_REASON=${order.reason}`);
   console.log(`VIBE2_MACHINE_HANDOFF=${order.machineHandoff?.used?'USED':'NOT_USED'}`);
   console.log(`VIBE2_MACHINE_STATE=${order.machineHandoff?.consistency?.ok?'CONSISTENT':'INCONSISTENT'}`);
-  console.log(`VIBE2_MACHINE_PERSISTENT_MAX=${order.machineHandoff?.currentPersistentMax||0}`);
+  console.log('VIBE2_MACHINE_INTERNAL_GLOBAL_PARALLEL_CAP=NONE');
+  console.log(`VIBE2_MACHINE_EXTERNAL_MATRIX_TRANSPORT_PARTITION=${order.machineHandoff?.externalMatrixTransportPartitionMax||256}`);
   if (order.designIntelligence) {
     console.log(`VIBE2_DESIGN_INTELLIGENCE=ENABLED`);
     console.log(`VIBE2_DESIGN_IMPLEMENTATION_GATE=${order.designIntelligence.implementationGate.allowed?'PASS':'BLOCKED'}`);
