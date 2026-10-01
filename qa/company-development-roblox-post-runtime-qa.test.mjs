@@ -70,7 +70,7 @@ test('foundation workflow edits self-trigger exact current game revalidation',()
   assert.ok(workflow.includes("TRIGGER_CHANGED: ${{ github.event_name == 'push' && (contains(toJSON(github.event.head_commit.modified), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.added), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.removed), 'roblox-games/.company-runtime-trigger')) }}"));
   assert.doesNotMatch(workflow,/TRIGGER_CHANGED: .*github\.event\.commits/);
   assert.match(workflow,/process\.env\.EVENT_NAME==='push'&&String\(process\.env\.TRIGGER_CHANGED\|\|''\)\.toLowerCase\(\)==='true'/);
-  assert.match(workflow,/\$env:EVENT_NAME -eq 'push' -and \$env:TRIGGER_CHANGED -eq 'true'/);
+  assert.match(workflow,/\[ "\$EVENT_NAME" = 'push' \] && \[ "\$TRIGGER_CHANGED" = 'true' \]/);
   assert.match(workflow,/roblox-games\/\.company-runtime-trigger/);
   assert.match(workflow,/ROBLOX_FOUNDATION_REQUESTED_GAME_ID=/);
   assert.match(workflow,/ROBLOX_FOUNDATION_REQUESTED_GAME_ID_INVALID/);
@@ -144,7 +144,7 @@ test('foundation runtime write contention merges unrelated games and revalidates
 });
 
 
-test('post-runtime QA deduplicates heavy scans without blocking local Studio planning',()=>{
+test('post-runtime QA deduplicates heavy scans while Studio planning avoids the shared Windows host',()=>{
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
   assert.match(workflow,/run-name: Roblox runtime foundation QA · \$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
@@ -159,7 +159,10 @@ test('post-runtime QA deduplicates heavy scans without blocking local Studio pla
   const studioPlan=workflow.slice(studioPlanAt,studioAutoPlayAt);
   assert.doesNotMatch(studioPlan,/\n\s+needs:\s+dedupe(?:\s|$)/);
   assert.match(studioPlan,/concurrency:\n\s+group: roblox-studio-mcp-plan-/);
-  assert.match(studioPlan,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
+  assert.match(studioPlan,/runs-on: ubuntu-slim/);
+  assert.match(studioPlan,/ROBLOX_STUDIO_MCP_PLAN_RUNNER=HOSTED_CONTROL/);
+  assert.match(studioPlan,/ROBLOX_STUDIO_SHARED_HOST_CONSUMED_BY_PLANNER=NO/);
+  assert.doesNotMatch(studioPlan,/roblox-studio-authenticated/);
 });
 
 

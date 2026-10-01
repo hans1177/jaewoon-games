@@ -988,13 +988,15 @@ test('Assistant log readiness is advisory and official required-tool handshake r
   assert.match(studioMcpBlock,/--tool-attempts=12/);
 });
 
-test('Studio MCP planner stays independent from hosted foundation capacity while accepting foundation-pass artifacts',()=>{
+test('Studio MCP planner stays independent and does not consume the authenticated Studio host',()=>{
   const central=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
   const studioPlanBlock=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
-  assert.match(studioPlanBlock,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
-  assert.match(studioPlanBlock,/shell: powershell/);
-  assert.match(studioPlanBlock,/ROBLOX_STUDIO_MCP_PLAN_RUNNER=LOCAL_STUDIO_HOST/);
+  assert.match(studioPlanBlock,/runs-on: ubuntu-slim/);
+  assert.match(studioPlanBlock,/shell: bash/);
+  assert.match(studioPlanBlock,/ROBLOX_STUDIO_MCP_PLAN_RUNNER=HOSTED_CONTROL/);
+  assert.match(studioPlanBlock,/ROBLOX_STUDIO_SHARED_HOST_CONSUMED_BY_PLANNER=NO/);
+  assert.doesNotMatch(studioPlanBlock,/roblox-studio-authenticated/);
   assert.doesNotMatch(studioPlanBlock,/needs: runtime-foundation-qa/);
   assert.doesNotMatch(studioPlanBlock,/needs\.runtime-foundation-qa/);
   assert.doesNotMatch(studioPlanBlock,/needs: dedupe/);
@@ -1002,6 +1004,8 @@ test('Studio MCP planner stays independent from hosted foundation capacity while
   assert.doesNotMatch(studioPlanBlock,/if:\s*needs\.dedupe\.outputs\.run/);
   assert.equal(central.robloxNativeCodingQualityContract.actualPlayFeedback.portfolioWideFoundationJobWaitForbidden,true);
   assert.equal(architecture.robloxNativeCodingQualityTopology.studioPlannerDependsOnPortfolioFoundationJob,false);
+  assert.equal(architecture.robloxNativeCodingQualityTopology.studioPlannerRunsOnHostedControlRunner,true);
+  assert.equal(architecture.robloxNativeCodingQualityTopology.studioActualPlayRunsOnAuthenticatedSelfHostedRunner,true);
   assert.match(workflow,/studio-mcp-auto-play:[\s\S]*needs: studio-local-plan[\s\S]*if: always\(\) && needs\.studio-local-plan\.result == 'success' && needs\.studio-local-plan\.outputs\.count != '0'/);
   assert.match(workflow,/event_type = 'vibe2-fanin-refill'/);
   assert.match(workflow,/reason = 'roblox-official-studio-mcp-actual-play'/);
@@ -2802,7 +2806,7 @@ test('manual single-game diagnosis preserves product failures and still rejects 
    assert.equal(planLocalStudioCandidates({...options,queue:{items:[changed]},recheckProductFailure:true}).include.length,0);
  }
  assert.ok(workflow.includes("RECHECK_PRODUCT_FAILURE: ${{ github.event_name == 'workflow_dispatch' && inputs.run_studio == true && inputs.game_id != '' }}"));
- assert.ok(workflow.includes('"--recheck-product-failure=$env:RECHECK_PRODUCT_FAILURE"'));
+ assert.ok(workflow.includes('"--recheck-product-failure=$RECHECK_PRODUCT_FAILURE"'));
 });
 
 test('newer exact infrastructure failures resume without clearing product repair evidence',()=>{

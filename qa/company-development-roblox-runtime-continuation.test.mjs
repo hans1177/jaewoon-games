@@ -22,7 +22,9 @@ test('Roblox native path is package -> shared preflight -> F0 -> local Studio te
   assert.ok(preflight.includes('company-development-roblox-headless-fast-mvp.yml'));
   assert.ok(headless.includes('Roblox F0 Source Preflight'));
   assert.ok(headless.includes('company-development-roblox-headless-fast-mvp.mjs'));
-  assert.ok(headless.includes('company-development-roblox-runtime.yml'));
+  assert.ok(headless.includes('company-development-roblox-post-runtime-qa.yml'));
+  assert.ok(headless.includes('ROBLOX_F0_STUDIO_QA_HANDOFF=DISPATCHED:'));
+  assert.ok(!headless.includes('gh workflow run company-development-roblox-runtime.yml'));
   assert.ok(runtime.includes('company-development-roblox-post-runtime-qa.yml'));
   assert.ok(runtime.includes('ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED'));
   assert.ok(postRuntime.includes('roblox-local-f0-pre-f9-artifact'));
