@@ -994,9 +994,9 @@ function buildAutonomousContentExpansion({
 }
 
 function platformDirectives({identity,goal}){
-  const web=`${identity}: 동일 공통 목표 "${goal}"를 현재 canonical Web 경로에 구현하고 브라우저 터치/카메라/렌더 비용을 맞춘다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.`;
-  const roblox=`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 다른 플랫폼 구현을 그대로 복사하지 않는다.`;
-  const unity=`${identity}: 동일 공통 목표 "${goal}"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.`;
+  const web=`${identity}: 동일 공통 목표 "${goal}"를 canonical Web 런타임에 구현한다. 실제 터치 입력→게임 상태→렌더/모션/UI/인벤/오디오 피드백을 한 흐름으로 검증하고, 정상 플레이 배율에서 체감되지 않는 미세 bob/회전이나 파일 로드만으로 품질 완료를 주장하지 않는다. Canvas/DOM/WebGL/WebAudio는 현재 책임 코드에서 직접 개선하고 모바일 safe-area·스크롤·포인터 수명·프레임 비용을 함께 확인한다. Unity WebGL이 canonical Web인 게임은 같은 unity-games 소스를 사용하며 복제 코드베이스를 만들지 않는다.`;
+  const roblox=`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 가장 엄격하게 본다. articulated PLAYER/NPC/CREATURE는 Animator/AnimationTrack·Motor6D/Bone 등 실제 관절 모션과 blend/speed sync를 사용하고 root-only CFrame·whole-model bob·weld-only 마네킹으로 모션 PASS를 만들지 않는다. HUD/메뉴/인벤/장비는 모바일 safe-area·스크롤·뒤로가기·장착 표시와 authoritative 상태를 실제 입력으로 확인한다. 오디오는 현재 owner 의도를 보존하면서 SoundService/SoundGroup 중심의 음악/SFX/UI/환경 믹스, 상태형 BGM 전환·ducking·공간음을 적용하며 사용자가 꺼둔 효과음을 임의로 되살리지 않는다. VFX/카메라/Lighting/Atmosphere/ColorCorrection/Bloom은 전투 전조와 모바일 가독성을 가리지 않게 제한한다. 최종 체감 증거는 공식 Roblox Studio MCP 실제 입력·캡처·상태 변화로 확인하고 asset binding이나 source marker만으로 완료 처리하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.`;
+  const unity=`${identity}: 동일 공통 목표 "${goal}"를 canonical Unity 프로젝트에 구현한다. Animator/AnimationClip/BlendTree 또는 동등한 native rig, Canvas/uGUI 또는 UI Toolkit, authoritative 인벤/장비 상태, AudioMixer/상태 전환/공간음, native lighting/material/post-processing을 모바일 성능 예산 안에서 사용한다. Unity WebGL과 앱은 같은 gameplay/UI 책임 소스를 공유하고 실제 입력→상태→표현의 before/after 체감 차이를 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.`;
   const fortnite=`${identity}: 동일 공통 목표 "${goal}"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.`;
   return{
     WEB:web,
