@@ -1081,7 +1081,7 @@ test('automatic Roblox foundation work keeps only newest same-identity run befor
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_EXACT_DEDUPED=/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_SCAN_DEDUPED_NEWER=/);
   const studioPlanBlock=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
-  assert.match(studioPlanBlock,/concurrency:\n\s+group: roblox-studio-mcp-plan-\$\{\{ inputs\.game_id \|\| github\.sha \}\}/);
+  assert.match(studioPlanBlock,/concurrency:\n\s+group: roblox-studio-mcp-plan-\$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
   assert.match(studioPlanBlock,/cancel-in-progress: true/);
   assert.doesNotMatch(studioPlanBlock,/needs: dedupe/);
   assert.doesNotMatch(studioPlanBlock,/needs\.dedupe/);
