@@ -36,17 +36,21 @@ h1{font-size:22px;margin:0}
 .hp{position:absolute;left:5px;right:5px;bottom:4px;height:5px;background:#311;border-radius:99px;overflow:hidden}
 .hp i{display:block;height:100%;background:#4bdd72}
 .statusRow{display:flex;justify-content:space-between;gap:8px;margin:9px 0;font-size:12px;color:#b7c6e4}
-.hand{display:flex;gap:7px;overflow-x:auto;padding:4px 0 8px}
-.card{flex:0 0 126px;min-height:154px;border:2px solid #334563;border-radius:12px;background:#202d45;color:#fff;padding:7px;text-align:left}
+.hand{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;padding:4px 0 8px}
+.card{min-width:0;min-height:154px;border:2px solid #334563;border-radius:12px;background:#202d45;color:#fff;padding:7px;text-align:left}
 .card.sel{border-color:#ffd86b;background:#3a382e}
+.card:disabled{opacity:.42}
 .card .art{height:68px;border-radius:8px;background:linear-gradient(145deg,#364866,#1a2438);display:flex;align-items:center;justify-content:center;font-size:38px;margin-bottom:6px}
-.card b{font-size:13px}.card p{font-size:10px;line-height:1.35;margin:4px 0 0;color:#c5d1e9}
+.card b{font-size:13px}.card p{font-size:10px;line-height:1.35;margin:4px 0 0;color:#c5d1e9}.cost{color:#ffd978;font-weight:1000}
 .bottom{position:fixed;left:0;right:0;bottom:0;background:#0d1422e8;backdrop-filter:blur(8px);border-top:1px solid #283653;padding:8px max(10px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));display:flex;gap:8px;justify-content:center}
 .bottom button{width:min(46%,260px);min-height:52px;border:0;border-radius:12px;font-weight:1000}
 #endTurn{background:#4169e1;color:#fff}#cancel{background:#2b3549;color:#fff}
 #authBox{margin-bottom:10px}
 .hidden{display:none!important}
-@media(max-width:520px){.wrap{padding-left:7px;padding-right:7px}.board{gap:3px;padding:4px}.unit{inset:2px}.portrait{font-size:21px}.unit b{font-size:9px}.unit small{font-size:8px}.login{grid-template-columns:1fr}.card{flex-basis:112px;min-height:145px}}
+@media(max-width:520px){
+  .wrap{padding-left:7px;padding-right:7px}.board{gap:3px;padding:4px}.unit{inset:2px}.portrait{font-size:21px}.unit b{font-size:9px}.unit small{font-size:8px}.login{grid-template-columns:1fr}
+  .hand{grid-template-columns:repeat(2,minmax(0,1fr))}.card{min-height:136px}.card .art{height:54px;font-size:32px}
+}
 </style>
 </head>
 <body>
@@ -75,7 +79,7 @@ h1{font-size:22px;margin:0}
     </div>
     <div class="boardWrap"><div id="board" class="board"></div></div>
     <div class="statusRow">
-      <span id="deckInfo">덱 -</span>
+      <span id="deckInfo">골드 -</span>
       <span id="modeInfo">대기</span>
     </div>
     <div id="hand" class="hand"></div>
@@ -90,132 +94,313 @@ h1{font-size:22px;margin:0}
 <script type="module">
 import { JaewoonMultiplayerClient } from '/multiplayer/multiplayer-client.js';
 
-const GAME_ID='card-grid-duel', SIZE=5, MAX_HAND=5;
+const GAME_ID='card-grid-duel', SIZE=5, START_GOLD=200;
+const MAX_SUMMONS={BLUE:10,RED:6};
 const CARDS={
   BLUE:{
-    SWORDSMAN:{name:'검사',icon:'⚔️',hp:100,atk:30,range:1,desc:'기본 근접'},
-    ARCHER:{name:'궁수',icon:'🏹',hp:70,atk:25,range:2,desc:'원거리'},
-    GUARDIAN:{name:'방패병',icon:'🛡️',hp:150,atk:18,range:1,reduce:.3,desc:'피해 30% 감소'},
-    MAGE:{name:'마법사',icon:'🔮',hp:60,atk:35,range:2,splash:15,desc:'주변 15 피해'}
+    SWORDSMAN:{name:'검사',icon:'⚔️',hp:100,atk:30,range:1,cost:50,reward:30,desc:'기본 근접'},
+    ARCHER:{name:'궁수',icon:'🏹',hp:70,atk:25,range:2,cost:50,reward:30,desc:'최대 2칸 원거리 공격'},
+    MAGE:{name:'마법사',icon:'🔮',hp:60,atk:35,range:2,cost:70,reward:40,splash:15,desc:'주변 15 피해'},
+    GUARDIAN:{name:'방패병',icon:'🛡️',hp:150,atk:18,range:1,cost:60,reward:50,reduce:.3,desc:'피해 30% 감소'}
   },
   RED:{
-    GOBLIN:{name:'고블린',icon:'👺',hp:80,atk:25,range:1,desc:'기본 근접'},
-    ORC:{name:'오크',icon:'👹',hp:140,atk:32,range:1,desc:'높은 체력'},
-    SKELETON_ARCHER:{name:'해골 궁수',icon:'☠️',hp:65,atk:23,range:2,desc:'원거리'},
-    SKELETON_MAGE:{name:'해골 법사',icon:'💀',hp:75,atk:30,range:2,freeze:.3,desc:'30% 봉인'}
+    GOBLIN:{name:'고블린',icon:'👺',hp:80,atk:25,range:1,cost:50,reward:30,desc:'처치 보상 30골드'},
+    SKELETON_ARCHER:{name:'해골 궁수',icon:'☠️🏹',hp:65,atk:23,range:2,cost:50,reward:40,desc:'처치 보상 40골드'},
+    SKELETON_MAGE:{name:'해골 법사',icon:'💀🔮',hp:75,atk:30,range:2,cost:70,reward:50,freeze:.3,desc:'처치 보상 50골드 · 30% 봉인'},
+    ORC:{name:'오크',icon:'👹',hp:140,atk:32,range:1,cost:60,reward:60,desc:'처치 보상 60골드'}
   }
 };
 const IDS={BLUE:Object.keys(CARDS.BLUE),RED:Object.keys(CARDS.RED)};
 const $=s=>document.querySelector(s), notice=$('#notice'),board=$('#board'),hand=$('#hand'),turnEl=$('#turn'),playersEl=$('#players'),deckInfo=$('#deckInfo'),modeInfo=$('#modeInfo');
 const client=new JaewoonMultiplayerClient();
-let state=null,side='BLUE',selectedUnit=null,selectedCard=-1,mode='idle',aiThinking=false,networkIds=new Set(),myNetworkId='',leaderId='',initializedRoom=false;
+let state=null,side='BLUE',selectedUnit=null,selectedCard='',mode='idle',aiThinking=false,networkIds=new Set(),myNetworkId='',leaderId='',initializedRoom=false;
 
 function msg(t){notice.textContent=t}
 function other(s){return s==='BLUE'?'RED':'BLUE'}
 function homeRow(s){return s==='BLUE'?5:1}
-function dist(a,b){return Math.abs(a.r-b.r)+Math.abs(a.c-b.c)}
-function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function makeDeck(s){return shuffle([...IDS[s],...IDS[s]])}
-function draw(s){if(state.hand[s].length<MAX_HAND&&state.deck[s].length)state.hand[s].push(state.deck[s].shift())}
+function moveDist(a,b){return Math.abs(a.r-b.r)+Math.abs(a.c-b.c)}
+function attackDist(a,b){return Math.abs(a.r-b.r)+Math.abs(a.c-b.c)}
 function newState(){
-  const st={version:1,turn:1,current:'BLUE',summonUsed:false,winner:'',deck:{BLUE:makeDeck('BLUE'),RED:makeDeck('RED')},hand:{BLUE:[],RED:[]},units:[]};
-  state=st;for(let i=0;i<4;i++){draw('BLUE');draw('RED')}return st
+  state={
+    version:2,
+    turn:1,
+    current:'BLUE',
+    summonUsed:false,
+    winner:'',
+    gold:{BLUE:START_GOLD,RED:START_GOLD},
+    summons:{BLUE:0,RED:0},
+    units:[]
+  };
+  return state
 }
 function card(s,id){return CARDS[s][id]}
 function at(r,c){return state?.units.find(u=>u.r===r&&u.c===c)}
 function byId(id){return state?.units.find(u=>u.id===id)}
 function canAct(){return state&&!state.winner&&state.current===side}
 function snapshot(){return JSON.parse(JSON.stringify(state))}
-function setState(next){state=JSON.parse(JSON.stringify(next));selectedUnit=null;selectedCard=-1;render()}
-function killDead(){state.units=state.units.filter(u=>u.hp>0)}
-function applyDamage(u,n){const d=card(u.side,u.card);const hit=Math.max(1,Math.round(n*(1-(d.reduce||0))));u.hp-=hit}
-function exhausted(s){return !state.units.some(u=>u.side===s)&&state.hand[s].length===0&&state.deck[s].length===0}
-function checkWin(){if(exhausted('BLUE'))state.winner='RED';else if(exhausted('RED'))state.winner='BLUE'}
-function startTurn(s,doDraw=true){state.current=s;state.turn++;state.summonUsed=false;if(doDraw)draw(s);for(const u of state.units.filter(x=>x.side===s)){u.moved=false;u.attacked=false;u.frozenNow=(u.freeze||0)>0;if(u.frozenNow)u.freeze--}}
+function setState(next){state=JSON.parse(JSON.stringify(next));selectedUnit=null;selectedCard='';render()}
+function livingCount(s){return state.units.filter(u=>u.side===s).length}
+function minCost(s){return Math.min(...IDS[s].map(id=>card(s,id).cost))}
+function canSummonMore(s){return state.summons[s]<MAX_SUMMONS[s]&&state.gold[s]>=minCost(s)}
+function applyDamage(target,amount,attackerSide){
+  if(target.hp<=0)return false;
+  const d=card(target.side,target.card);
+  const hit=Math.max(1,Math.round(amount*(1-(d.reduce||0))));
+  const before=target.hp;
+  target.hp-=hit;
+  if(before>0&&target.hp<=0){
+    state.gold[attackerSide]+=d.reward||30;
+    return true
+  }
+  return false
+}
+function removeDead(){state.units=state.units.filter(u=>u.hp>0)}
+function exhausted(s){
+  return livingCount(s)===0 && (!canSummonMore(s) || state.summons[s]>=MAX_SUMMONS[s]);
+}
+function checkWin(){
+  if(exhausted('BLUE'))state.winner='RED';
+  else if(exhausted('RED'))state.winner='BLUE'
+}
+function startTurn(s){state.current=s;state.turn++;state.summonUsed=false;for(const u of state.units.filter(x=>x.side===s)){u.moved=false;u.attacked=false;u.frozenNow=(u.freeze||0)>0;if(u.frozenNow)u.freeze--}}
 function processAction(actor,p){
   if(!state||state.winner||actor!==state.current)return false;
+
   if(p.type==='summon'){
     if(state.summonUsed)return false;
-    const id=state.hand[actor][p.index];if(!id||p.r!==homeRow(actor)||at(p.r,p.c))return false;
-    state.hand[actor].splice(p.index,1);const d=card(actor,id);
-    state.units.push({id:crypto.randomUUID(),side:actor,card:id,hp:d.hp,r:p.r,c:p.c,moved:false,attacked:false,freeze:0,frozenNow:false});
+    if(state.summons[actor]>=MAX_SUMMONS[actor])return false;
+    const id=String(p.card||'');
+    const d=card(actor,id);
+    if(!d||state.gold[actor]<d.cost||p.r!==homeRow(actor)||at(p.r,p.c))return false;
+
+    state.gold[actor]-=d.cost;
+    state.summons[actor]++;
+    state.units.push({
+      id:crypto.randomUUID(),
+      side:actor,
+      card:id,
+      hp:d.hp,
+      r:p.r,
+      c:p.c,
+      moved:false,
+      attacked:false,
+      freeze:0,
+      frozenNow:false
+    });
     state.summonUsed=true;
   }else if(p.type==='move'){
-    const u=byId(p.unit);if(!u||u.side!==actor||u.moved||u.frozenNow||at(p.r,p.c)||dist(u,{r:p.r,c:p.c})!==1)return false;
+    const u=byId(p.unit);
+    if(!u||u.side!==actor||u.moved||u.frozenNow||at(p.r,p.c)||moveDist(u,{r:p.r,c:p.c})!==1)return false;
     u.r=p.r;u.c=p.c;u.moved=true;
   }else if(p.type==='attack'){
-    const a=byId(p.unit),t=byId(p.target);if(!a||!t||a.side!==actor||t.side===actor||a.attacked||a.frozenNow)return false;
-    const d=card(actor,a.card);if(dist(a,t)>d.range)return false;
-    const tr=t.r,tc=t.c,tid=t.id;applyDamage(t,d.atk);
-    if(d.splash){for(const u of state.units){if(u.side!==actor&&u.id!==tid&&Math.abs(u.r-tr)+Math.abs(u.c-tc)<=1)applyDamage(u,d.splash)}}
-    const alive=byId(tid);if(alive&&d.freeze&&Math.random()<d.freeze)alive.freeze=Math.max(alive.freeze||0,1);
-    a.attacked=true;killDead();checkWin();
+    const a=byId(p.unit),t=byId(p.target);
+    if(!a||!t||a.side!==actor||t.side===actor||a.attacked||a.frozenNow)return false;
+
+    const d=card(actor,a.card);
+    if(attackDist(a,t)>d.range)return false;
+
+    const tr=t.r,tc=t.c,tid=t.id;
+    applyDamage(t,d.atk,actor);
+
+    if(d.splash){
+      for(const u of [...state.units]){
+        if(u.side!==actor&&u.id!==tid&&Math.abs(u.r-tr)+Math.abs(u.c-tc)<=1){
+          applyDamage(u,d.splash,actor)
+        }
+      }
+    }
+
+    const alive=byId(tid);
+    if(alive&&alive.hp>0&&d.freeze&&Math.random()<d.freeze)alive.freeze=Math.max(alive.freeze||0,1);
+    a.attacked=true;
+    removeDead();
+    checkWin();
   }else if(p.type==='end'){
-    startTurn(other(actor),true);
+    startTurn(other(actor));
+    checkWin();
   }else return false;
-  state.version++;return true
+
+  state.version++;
+  return true
 }
 function broadcast(){if(mode==='online'&&client.isRoomConnected()&&state)client.sendState({gameId:GAME_ID,canonical:true,state:snapshot()})}
 function act(payload){
   if(!canAct()){msg('지금은 상대 턴이야.');return}
   if(mode==='online'&&myNetworkId!==leaderId){client.sendEvent({gameId:GAME_ID,kind:'action',actor:side,payload});return}
-  if(processAction(side,payload)){broadcast();render();if(mode==='practice'&&state.current==='RED')setTimeout(aiTurn,420)}
+  if(processAction(side,payload)){
+    broadcast();
+    render();
+    if(mode==='practice'&&state.current==='RED')setTimeout(aiTurn,420)
+  }else{
+    msg('그 행동은 지금 할 수 없어.')
+  }
 }
-function unitText(u){const d=card(u.side,u.card);return '<div class="unit '+(u.side==='BLUE'?'blue':'red')+'"><span class="portrait">'+d.icon+'</span><b>'+d.name+'</b><small>'+u.hp+'/'+d.hp+' · 공'+d.atk+' 사'+d.range+(u.frozenNow?' · 봉인':'')+'</small><span class="hp"><i style="width:'+Math.max(0,u.hp/d.hp*100)+'%"></i></span></div>'}
+function unitText(u){
+  const d=card(u.side,u.card);
+  return '<div class="unit '+(u.side==='BLUE'?'blue':'red')+'"><span class="portrait">'+d.icon+'</span><b>'+d.name+'</b><small>'+u.hp+'/'+d.hp+' · 공'+d.atk+' 사'+d.range+(u.frozenNow?' · 봉인':'')+'</small><span class="hp"><i style="width:'+Math.max(0,u.hp/d.hp*100)+'%"></i></span></div>'
+}
 function render(){
   board.innerHTML='';
   for(let r=1;r<=SIZE;r++)for(let c=1;c<=SIZE;c++){
-    const b=document.createElement('button');b.className='cell '+(r===1?'homeRed ':'')+(r===5?'homeBlue ':'');const u=state?at(r,c):null;
+    const b=document.createElement('button');
+    b.className='cell '+(r===1?'homeRed ':'')+(r===5?'homeBlue ':'');
+    const u=state?at(r,c):null;
     if(u){b.innerHTML=unitText(u);if(u.id===selectedUnit)b.classList.add('sel')}
-    b.addEventListener('click',()=>cellTap(r,c,u));board.appendChild(b)
+    b.addEventListener('click',()=>cellTap(r,c,u));
+    board.appendChild(b)
   }
+
   hand.innerHTML='';
-  const myHand=state?.hand?.[side]||[];
-  myHand.forEach((id,i)=>{const d=card(side,id),b=document.createElement('button');b.className='card'+(i===selectedCard?' sel':'');b.innerHTML='<div class="art">'+d.icon+'</div><b>'+d.name+'</b><p>HP '+d.hp+' · 공격 '+d.atk+' · 사거리 '+d.range+'<br>'+d.desc+'</p>';b.onclick=()=>{if(!canAct())return msg('지금은 상대 턴이야.');if(state.summonUsed)return msg('이번 턴에는 이미 소환했어.');selectedCard=i;selectedUnit=null;msg(d.name+' 선택 · 자기 진영 첫 줄 빈칸을 눌러');render()};hand.appendChild(b)});
-  if(!state){turnEl.textContent='대기';deckInfo.textContent='덱 -';return}
+  if(state){
+    for(const id of IDS[side]){
+      const d=card(side,id),b=document.createElement('button');
+      const blocked=state.summonUsed||state.summons[side]>=MAX_SUMMONS[side]||state.gold[side]<d.cost;
+      b.className='card'+(id===selectedCard?' sel':'');
+      b.disabled=blocked;
+      b.innerHTML='<div class="art">'+d.icon+'</div><b>'+d.name+'</b><p>HP '+d.hp+' · 공격 '+d.atk+' · 사거리 '+d.range+'<br><span class="cost">'+d.cost+'골드</span> · '+d.desc+'</p>';
+      b.onclick=()=>{
+        if(!canAct())return msg('지금은 상대 턴이야.');
+        if(state.summonUsed)return msg('이번 턴에는 이미 소환했어.');
+        if(state.summons[side]>=MAX_SUMMONS[side])return msg('소환 가능 수를 모두 사용했어.');
+        if(state.gold[side]<d.cost)return msg('골드가 부족해.');
+        selectedCard=id;selectedUnit=null;
+        msg(d.name+' 선택 · 자기 진영 첫 줄 빈칸을 눌러');
+        render()
+      };
+      hand.appendChild(b)
+    }
+  }
+
+  if(!state){turnEl.textContent='대기';deckInfo.textContent='골드 -';return}
+
   turnEl.textContent=state.winner?(state.winner===side?'승리':'패배'):(state.current===side?'내 턴':'상대 턴')+' · '+state.turn;
-  deckInfo.textContent='내 덱 '+state.deck[side].length+' · 상대 덱 '+state.deck[other(side)].length+' · 상대 손패 '+state.hand[other(side)].length;
+  deckInfo.textContent='골드 '+state.gold[side]+' · 내 소환 '+state.summons[side]+'/'+MAX_SUMMONS[side]+' · 상대 소환 '+state.summons[other(side)]+'/'+MAX_SUMMONS[other(side)];
   modeInfo.textContent=mode==='practice'?'연습전':mode==='online'?'온라인 1대1':'대기';
-  if(state.winner)msg(state.winner===side?'승리!':'패배');
+
+  if(state.winner)msg(state.winner===side?'승리!':'패배')
 }
 function cellTap(r,c,u){
   if(!canAct())return msg('지금은 상대 턴이야.');
-  if(selectedCard>=0){if(r!==homeRow(side)||u)return msg('자기 진영 첫 줄의 빈칸을 눌러.');act({type:'summon',index:selectedCard,r,c});selectedCard=-1;return}
-  if(u&&u.side===side){selectedUnit=u.id;msg(card(side,u.card).name+' 선택');return render()}
-  if(!selectedUnit)return msg('먼저 내 유닛이나 카드를 선택해.');
-  if(u)act({type:'attack',unit:selectedUnit,target:u.id});else act({type:'move',unit:selectedUnit,r,c});
+
+  if(selectedCard){
+    if(r!==homeRow(side)||u)return msg('자기 진영 첫 줄의 빈칸을 눌러.');
+    const id=selectedCard;
+    selectedCard='';
+    act({type:'summon',card:id,r,c});
+    return
+  }
+
+  if(u&&u.side===side){
+    selectedUnit=u.id;
+    msg(card(side,u.card).name+' 선택');
+    return render()
+  }
+
+  if(!selectedUnit)return msg('먼저 내 유닛이나 소환할 종류를 선택해.');
+  if(u)act({type:'attack',unit:selectedUnit,target:u.id});
+  else act({type:'move',unit:selectedUnit,r,c})
+}
+function affordableCards(s){
+  if(state.summons[s]>=MAX_SUMMONS[s])return [];
+  return IDS[s].filter(id=>card(s,id).cost<=state.gold[s])
 }
 function aiTurn(){
-  if(mode!=='practice'||!state||state.current!=='RED'||state.winner||aiThinking)return;aiThinking=true;
-  const free=[];for(let c=1;c<=5;c++)if(!at(1,c))free.push(c);
-  if(!state.summonUsed&&state.hand.RED.length&&free.length)processAction('RED',{type:'summon',index:0,r:1,c:free[Math.floor(Math.random()*free.length)]});
+  if(mode!=='practice'||!state||state.current!=='RED'||state.winner||aiThinking)return;
+  aiThinking=true;
+
+  const free=[];
+  for(let c=1;c<=5;c++)if(!at(1,c))free.push(c);
+  const options=affordableCards('RED');
+
+  if(!state.summonUsed&&free.length&&options.length){
+    const id=options[Math.floor(Math.random()*options.length)];
+    processAction('RED',{type:'summon',card:id,r:1,c:free[Math.floor(Math.random()*free.length)]})
+  }
+
   for(const u of [...state.units.filter(x=>x.side==='RED')]){
     if(u.frozenNow)continue;
-    const d=card('RED',u.card),targets=state.units.filter(x=>x.side==='BLUE').sort((a,b)=>dist(u,a)-dist(u,b));
-    if(targets[0]&&dist(u,targets[0])<=d.range)processAction('RED',{type:'attack',unit:u.id,target:targets[0].id});
-    else if(targets[0]&&!u.moved){const t=targets[0],opts=[[u.r+1,u.c],[u.r-1,u.c],[u.r,u.c+1],[u.r,u.c-1]].map(([r,c])=>({r,c})).filter(p=>p.r>=1&&p.r<=5&&p.c>=1&&p.c<=5&&!at(p.r,p.c)).sort((a,b)=>dist(a,t)-dist(b,t));if(opts[0])processAction('RED',{type:'move',unit:u.id,...opts[0]})}
+
+    const d=card('RED',u.card);
+    const targets=state.units.filter(x=>x.side==='BLUE').sort((a,b)=>attackDist(u,a)-attackDist(u,b));
+
+    if(targets[0]&&attackDist(u,targets[0])<=d.range){
+      processAction('RED',{type:'attack',unit:u.id,target:targets[0].id})
+    }else if(targets[0]&&!u.moved){
+      const t=targets[0];
+      const moves=[[u.r+1,u.c],[u.r-1,u.c],[u.r,u.c+1],[u.r,u.c-1]]
+        .map(([r,c])=>({r,c}))
+        .filter(p=>p.r>=1&&p.r<=5&&p.c>=1&&p.c<=5&&!at(p.r,p.c))
+        .sort((a,b)=>moveDist(a,t)-moveDist(b,t));
+      if(moves[0])processAction('RED',{type:'move',unit:u.id,...moves[0]})
+    }
   }
-  processAction('RED',{type:'end'});aiThinking=false;render()
+
+  if(!state.winner)processAction('RED',{type:'end'});
+  aiThinking=false;
+  render()
 }
-$('#practiceBtn').onclick=()=>{mode='practice';side='BLUE';newState();playersEl.textContent='나 VS 연습 AI';msg('연습전 시작 · 파랑 선공');render()};
+
+$('#practiceBtn').onclick=()=>{
+  mode='practice';side='BLUE';newState();
+  playersEl.textContent='나 VS 연습 AI';
+  msg('연습전 시작 · 200골드 · 파랑 선공');
+  render()
+};
 $('#endTurn').onclick=()=>act({type:'end'});
-$('#cancel').onclick=()=>{selectedUnit=null;selectedCard=-1;msg('선택 취소');render()};
+$('#cancel').onclick=()=>{selectedUnit=null;selectedCard='';msg('선택 취소');render()};
 
 function setAuth(on){
-  $('#matchBtn').classList.toggle('hidden',!on);$('#logoutBtn').classList.toggle('hidden',!on);$('#loginBtn').classList.toggle('hidden',on);$('#signupBtn').classList.toggle('hidden',on);
+  $('#matchBtn').classList.toggle('hidden',!on);
+  $('#logoutBtn').classList.toggle('hidden',!on);
+  $('#loginBtn').classList.toggle('hidden',on);
+  $('#signupBtn').classList.toggle('hidden',on)
 }
-$('#loginBtn').onclick=async()=>{msg('로그인 중...');const r=await client.login($('#email').value,$('#password').value);if(r.ok){setAuth(true);msg('로그인 완료 · 온라인 매칭 가능')}else msg('로그인 실패')};
-$('#signupBtn').onclick=async()=>{const email=$('#email').value,pw=$('#password').value,nick=(email.split('@')[0]||'player').slice(0,18);msg('가입 중...');const r=await client.signup(email,pw,nick);if(r.ok){setAuth(true);msg('가입 완료 · 온라인 매칭 가능')}else msg('가입 실패')};
+$('#loginBtn').onclick=async()=>{
+  msg('로그인 중...');
+  const r=await client.login($('#email').value,$('#password').value);
+  if(r.ok){setAuth(true);msg('로그인 완료 · 온라인 매칭 가능')}
+  else msg('로그인 실패')
+};
+$('#signupBtn').onclick=async()=>{
+  const email=$('#email').value,pw=$('#password').value,nick=(email.split('@')[0]||'player').slice(0,18);
+  msg('가입 중...');
+  const r=await client.signup(email,pw,nick);
+  if(r.ok){setAuth(true);msg('가입 완료 · 온라인 매칭 가능')}
+  else msg('가입 실패')
+};
 $('#logoutBtn').onclick=()=>{client.logout();setAuth(false);mode='idle';state=null;render();msg('로그아웃됨')};
 $('#matchBtn').onclick=async()=>{msg('상대 찾는 중...');const r=await client.matchPvpForGame(GAME_ID,true);if(!r.ok)msg('매칭 요청 실패')};
 
-function rememberId(id){if(id)networkIds.add(String(id));const all=[...networkIds].sort();leaderId=all[0]||'';if(myNetworkId&&all.length>=2){side=myNetworkId===leaderId?'BLUE':'RED';playersEl.textContent=(side==='BLUE'?'파랑':'빨강')+' 팀 · 온라인 1대1';if(myNetworkId===leaderId&&!initializedRoom){initializedRoom=true;state=newState();broadcast();render();msg('온라인 대전 시작 · 파랑 선공')}}}
+function rememberId(id){
+  if(id)networkIds.add(String(id));
+  const all=[...networkIds].sort();
+  leaderId=all[0]||'';
+
+  if(myNetworkId&&all.length>=2){
+    side=myNetworkId===leaderId?'BLUE':'RED';
+    playersEl.textContent=(side==='BLUE'?'파랑':'빨강')+' 팀 · 온라인 1대1';
+
+    if(myNetworkId===leaderId&&!initializedRoom){
+      initializedRoom=true;
+      state=newState();
+      broadcast();
+      render();
+      msg('온라인 대전 시작 · 각 진영 200골드')
+    }
+  }
+}
 client.on('authenticated',e=>{myNetworkId=String(e.detail?.id||e.detail?.user_id||e.detail?.sub||client.currentUser?.id||'');rememberId(myNetworkId)});
 client.on('websocket_connected',()=>{mode='online';initializedRoom=false;networkIds.clear();rememberId(myNetworkId);client.sendEvent({gameId:GAME_ID,kind:'hello',userId:myNetworkId,nickname:client.currentUser?.nickname||'player'});msg('방 연결됨 · 상대 대기 중')});
 client.on('player_joined',e=>{for(const p of e.detail?.players||[])rememberId(p.userId||p.id);rememberId(e.detail?.userId);client.sendEvent({gameId:GAME_ID,kind:'hello',userId:myNetworkId})});
-client.on('message_received',e=>{const m=e.detail||{};if(m.type==='event'&&m.gameId===GAME_ID&&m.kind==='hello'){rememberId(m.userId);return}
-  if(m.type==='event'&&m.gameId===GAME_ID&&m.kind==='action'&&myNetworkId===leaderId&&state){if(processAction(m.actor,m.payload)){broadcast();render();}return}
-  const incoming=m.type==='state'?m.state:null;if(incoming?.gameId===GAME_ID&&incoming.canonical&&incoming.state){setState(incoming.state)}
+client.on('message_received',e=>{
+  const m=e.detail||{};
+  if(m.type==='event'&&m.gameId===GAME_ID&&m.kind==='hello'){rememberId(m.userId);return}
+  if(m.type==='event'&&m.gameId===GAME_ID&&m.kind==='action'&&myNetworkId===leaderId&&state){
+    if(processAction(m.actor,m.payload)){broadcast();render()}
+    return
+  }
+  const incoming=m.type==='state'?m.state:null;
+  if(incoming?.gameId===GAME_ID&&incoming.canonical&&incoming.state)setState(incoming.state)
 });
 render();
 </script>
