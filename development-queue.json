@@ -11750,10 +11750,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "VIBE_INTERNAL_PLAY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T07:45:17.251Z",
+      "updatedAt": "2026-10-01T07:47:13.779Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -11981,9 +11981,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
       "robloxFailureStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_STUDIO_INTERNAL_VALIDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
       "routingBlockers": [
-        "roblox-studio-internal-validation-pending"
+        "roblox-studio-mcp-play-repair-required"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -12038,12 +12038,12 @@
         "externalGuiAutomation": false,
         "undocumentedStudioCliAutomation": false,
         "studioLaunchTarget": "LOCAL_EXACT_BUILD_ARTIFACT",
-        "sourceRevision": "4e1241b6414dbd2d89cbdd5fd04ecc37b50a4242",
-        "artifactIdentity": "sha256:808a81787999ed8015172ac566f6d0a8d408904b7438aabc207817097da1fb12",
-        "artifactRunId": 36711693417,
+        "sourceRevision": "c0a50b520840502dc806e9fbdecd3779022d5e1d",
+        "artifactIdentity": "sha256:e8f4bd361b5b5b8b98ec68260b66d38e854c2cf848dfc310616e3ac49282a91d",
+        "artifactRunId": 36829706691,
         "universeId": "",
         "placeId": "",
-        "versionNumber": 36711693417,
+        "versionNumber": 36829706691,
         "historicalSharedTargetExactArtifact": true,
         "historicalExactBuildReplay": false,
         "currentSourceArtifactBinding": true,
@@ -12261,6 +12261,12 @@
           {
             "id": "studio-state-readable",
             "name": "studio-state-readable",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "PRE_PLAY_STUDIO_MODAL_GATE",
+            "name": "PRE_PLAY_STUDIO_MODAL_GATE",
             "required": true,
             "pass": true
           },
@@ -12658,7 +12664,7 @@
             "id": "no-release-blocking-runtime-errors",
             "name": "no-release-blocking-runtime-errors",
             "required": true,
-            "pass": true
+            "pass": false
           },
           {
             "id": "final-visual-capture-sane",
@@ -12673,17 +12679,23 @@
             "pass": true
           }
         ],
-        "errors": [],
+        "errors": [
+          {
+            "type": "studio-asset-load-error",
+            "actionId": null,
+            "signature": "Failed to load animation with sanitized ID rbxassetid://114302219876492: Animation failed to load, assetId: https://assetdelivery.roblox.com/v1/asset?id=114302219876492&serverplaceid=0 Failed to load animation with sanitized ID rbxassetid://114302219876492: Animation failed to load, assetId: https://assetdelivery.roblox.com/v1/asset?id=114302219876492&serverplaceid=0 Failed to load animation with sanitized ID rbxassetid://114302219876492: Animation failed to load, assetId: https://assetdelivery."
+          }
+        ],
         "runtimeSummary": {
-          "consoleErrorCount": 0,
+          "consoleErrorCount": 1,
           "consoleWarningCount": 0,
           "distinctFrameChange": true,
           "characterMotionRuntimeRequired": false,
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
-          "scenarioFailureCount": 15,
-          "primaryActionDisplacement": 44.08187122353809,
-          "primaryActionVelocity": 0.000026034587229510825,
+          "scenarioFailureCount": 16,
+          "primaryActionDisplacement": 45.49910619490118,
+          "primaryActionVelocity": 0.00002606907292303546,
           "primaryActionFeedbackChanged": false,
           "commercialAudit": {
             "auditProfile": "F9_SOAK",
@@ -12723,8 +12735,8 @@
               "multiplayerActualSessionPass": false
             },
             "performance": {
-              "memoryMb": 2915.765625,
-              "descendantCount": 1863
+              "memoryMb": 2772.3828125,
+              "descendantCount": 1864
             },
             "multiplayer": {
               "version": 0,
@@ -12736,8 +12748,8 @@
               "verificationScope": "STATIC_CODE_CONTRACT",
               "skipped": true,
               "codeContractPassed": false,
-              "sourceRevision": "4e1241b6414dbd2d89cbdd5fd04ecc37b50a4242",
-              "artifactIdentity": "sha256:808a81787999ed8015172ac566f6d0a8d408904b7438aabc207817097da1fb12",
+              "sourceRevision": "c0a50b520840502dc806e9fbdecd3779022d5e1d",
+              "artifactIdentity": "sha256:e8f4bd361b5b5b8b98ec68260b66d38e854c2cf848dfc310616e3ac49282a91d",
               "sameUserRejoinVerified": false
             },
             "saveRejoin": {
@@ -12768,6 +12780,7 @@
           "official-studio-mcp-connected",
           "local-studio-selected",
           "studio-state-readable",
+          "PRE_PLAY_STUDIO_MODAL_GATE",
           "play-mode-started",
           "actual-play-initial-client-probe",
           "initial-character-playable",
@@ -12778,7 +12791,6 @@
           "initial-ui-playability",
           "mcp-input-dispatched",
           "commercial-prompt-exploration",
-          "commercial-audit-timeline-sampled",
           "ROBLOX_DATASTORE_SAVE_LOAD"
         ],
         "rawSourceIncluded": false,
@@ -12987,7 +12999,7 @@
           },
           {
             "id": "visual-asset-load-integrity",
-            "pass": true
+            "pass": false
           }
         ],
         "scenarioCoveragePass": false,
@@ -13006,7 +13018,8 @@
           "observed-action-28a5d01cabeed379ed6c",
           "observed-action-b44707afa0efc7f8fa15",
           "observed-action-bffcb6fc96faff9b4d69",
-          "observed-action-2f171c50682d6d552850"
+          "observed-action-2f171c50682d6d552850",
+          "visual-asset-load-integrity"
         ],
         "qualityFailureDetails": [
           {
@@ -13040,7 +13053,7 @@
               "routeSamples": 16,
               "routeSuccess": 2,
               "routeCoveragePass": false,
-              "spawnThreatDistance": 63.38007190876447,
+              "spawnThreatDistance": 63.40496645084111,
               "spawnOverlapSafe": true
             }
           },
@@ -13078,7 +13091,7 @@
                   "semantic": "UPGRADE",
                   "effectObserved": false,
                   "effect": {
-                    "moved": 71.0678058856815,
+                    "moved": 70.85216700909474,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -13292,6 +13305,17 @@
               "effectRequired": true,
               "attempts": 1
             }
+          },
+          {
+            "id": "visual-asset-load-integrity",
+            "repairSurface": "VISUAL_ASSET_LOADING",
+            "priority": "HIGH",
+            "hint": "Repair unavailable or unauthorized Roblox mesh, texture, image, or animation assets observed during Studio play.",
+            "observed": {
+              "assetErrors": [
+                "Failed to load animation with sanitized ID rbxassetid://114302219876492: Animation failed to load, assetId: https://assetdelivery.roblox.com/v1/asset?id=114302219876492&serverplaceid=0 Failed to load animation with sanitized ID rbxassetid://114302219876492: Animation failed to load, assetId: https://assetdelivery.roblox.com/v1/asset?id=114302219876492&serverplaceid=0 Failed to load animation with sanitized ID rbxassetid://114302219876492: Animation failed to load, assetId: https://assetdelivery."
+              ]
+            }
           }
         ],
         "functionalChainEvidence": {
@@ -13301,8 +13325,8 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-09-30T13:04:14.808Z",
-        "workflowRunId": 36717577102,
+        "testedAt": "2026-10-01T07:47:13.779Z",
+        "workflowRunId": 36831805465,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -13593,12 +13617,12 @@
       "robloxPromotionBlockers": [],
       "robloxQualityBuildUpRequired": true,
       "robloxQualityFailureClass": "PRODUCT",
-      "robloxQualityBuildUpSourceRevision": "4e1241b6414dbd2d89cbdd5fd04ecc37b50a4242",
+      "robloxQualityBuildUpSourceRevision": "c0a50b520840502dc806e9fbdecd3779022d5e1d",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
-        "sourceRevision": "4e1241b6414dbd2d89cbdd5fd04ecc37b50a4242",
-        "artifactIdentity": "sha256:808a81787999ed8015172ac566f6d0a8d408904b7438aabc207817097da1fb12",
-        "versionNumber": 36711693417,
+        "sourceRevision": "c0a50b520840502dc806e9fbdecd3779022d5e1d",
+        "artifactIdentity": "sha256:e8f4bd361b5b5b8b98ec68260b66d38e854c2cf848dfc310616e3ac49282a91d",
+        "versionNumber": 36829706691,
         "failureStage": "VIBE_INTERNAL_PLAY",
         "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
         "qualityFailureKinds": [
@@ -13616,7 +13640,8 @@
           "observed-action-28a5d01cabeed379ed6c",
           "observed-action-b44707afa0efc7f8fa15",
           "observed-action-bffcb6fc96faff9b4d69",
-          "observed-action-2f171c50682d6d552850"
+          "observed-action-2f171c50682d6d552850",
+          "visual-asset-load-integrity"
         ],
         "qualityFailureDetails": [
           {
@@ -13650,7 +13675,7 @@
               "routeSamples": 16,
               "routeSuccess": 2,
               "routeCoveragePass": false,
-              "spawnThreatDistance": 63.38007190876447,
+              "spawnThreatDistance": 63.40496645084111,
               "spawnOverlapSafe": true
             }
           },
@@ -13688,7 +13713,7 @@
                   "semantic": "UPGRADE",
                   "effectObserved": false,
                   "effect": {
-                    "moved": 71.0678058856815,
+                    "moved": 70.85216700909474,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -13902,6 +13927,17 @@
               "effectRequired": true,
               "attempts": 1
             }
+          },
+          {
+            "id": "visual-asset-load-integrity",
+            "repairSurface": "VISUAL_ASSET_LOADING",
+            "priority": "HIGH",
+            "hint": "Repair unavailable or unauthorized Roblox mesh, texture, image, or animation assets observed during Studio play.",
+            "observed": {
+              "assetErrors": [
+                "Failed to load animation with sanitized ID rbxassetid://114302219876492: Animation failed to load, assetId: https://assetdelivery.roblox.com/v1/asset?id=114302219876492&serverplaceid=0 Failed to load animation with sanitized ID rbxassetid://114302219876492: Animation failed to load, assetId: https://assetdelivery.roblox.com/v1/asset?id=114302219876492&serverplaceid=0 Failed to load animation with sanitized ID rbxassetid://114302219876492: Animation failed to load, assetId: https://assetdelivery."
+              ]
+            }
           }
         ],
         "repairSurfaces": [
@@ -13913,11 +13949,12 @@
           "SAVE_REJOIN",
           "FAILURE_RECOVERY",
           "MULTIPLAYER_SYNC",
-          "ROBLOX_OBSERVED_INTERACTION"
+          "ROBLOX_OBSERVED_INTERACTION",
+          "VISUAL_ASSET_LOADING"
         ],
         "robloxFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
-        "testedAt": "2026-09-30T13:04:14.808Z",
-        "workflowRunId": 36717577102,
+        "testedAt": "2026-10-01T07:47:13.779Z",
+        "workflowRunId": 36831805465,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxQualityBuildUpLastPassedAt": "2026-09-28T19:43:44.738Z",
@@ -27627,7 +27664,7 @@
       "unityCanonicalEvidenceBound": false
     }
   ],
-  "updatedAt": "2026-10-01T07:46:33.360Z",
+  "updatedAt": "2026-10-01T07:47:13.779Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
