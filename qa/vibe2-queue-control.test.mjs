@@ -679,9 +679,9 @@ test('completed worker artifacts release capacity before slow cohort fan-in with
   const queue=createVibeContinuousQueue({
     maxConcurrentTasks:2,
     tasks:[
-      {id:'artifact-task',gameId:'game-a',target:'web',department:'development',type:'implementation',goal:'artifact',status:'running',reservationRunId:'123',reservationId:'123:1',neuronExpectedVariants:2,responsibleFiles:['shared.js']},
+      {id:'artifact-task',gameId:'game-a',target:'web',department:'development',type:'implementation',goal:'artifact',status:'running',sourceRoot:'web-games/shared-lock',reservationRunId:'123',reservationId:'123:1',neuronExpectedVariants:2,responsibleFiles:['shared.js']},
       {id:'other-running',gameId:'game-b',target:'web',department:'development',type:'implementation',goal:'other',status:'running',reservationRunId:'999',reservationId:'999:1',responsibleFiles:['b.js']},
-      {id:'same-lock',gameId:'game-c',target:'web',department:'development',type:'implementation',goal:'same',status:'queued',responsibleFiles:['shared.js']},
+      {id:'same-lock',gameId:'game-c',target:'web',department:'development',type:'implementation',goal:'same',status:'queued',sourceRoot:'web-games/shared-lock',responsibleFiles:['shared.js']},
       {id:'refill',gameId:'game-d',target:'web',department:'development',type:'implementation',goal:'refill',status:'queued',responsibleFiles:['free.js']}
     ]
   });
@@ -1641,7 +1641,7 @@ test('continuous core rebases refill wakes to latest main and always ingests neu
     assert.match(contract,/if \[ "\$dispatch_type" = 'vibe2-neuron-complete' \]/);
     assert.match(contract,/git fetch --depth=1 --no-tags origin main --quiet/);
     assert.match(contract,/contract_sha="\$\(git rev-parse FETCH_HEAD\)"/);
-    assert.match(workflow,/vibe2-refill-reserve-\{0\}/);
+    assert.doesNotMatch(workflow,/vibe2-refill-reserve-\{0\}/);
   }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
 
@@ -1749,10 +1749,11 @@ test('24H plan uses optimistic writes while reserve stays lightweight and fan-in
   const reserveSteps=core.indexOf('\n    steps:',reserveStart);
   assert.ok(reserveStart>=0&&reserveSteps>reserveStart);
   const reserveHeader=core.slice(reserveStart,reserveSteps);
-  assert.match(reserveHeader,/github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-refill-reserve-\{0\}'/);
-  assert.match(reserveHeader,/github\.event\.client_payload\.execution_lane/);
-  assert.match(reserveHeader,/format\('vibe2-reserve-\{0\}', github\.run_id\)/);
-  assert.match(reserveHeader,/cancel-in-progress: false/);
+  assert.doesNotMatch(reserveHeader,/vibe2-refill-reserve-/);
+  assert.doesNotMatch(reserveHeader,/format\('vibe2-reserve-/);
+  assert.doesNotMatch(reserveHeader,/concurrency:/);
+  assert.doesNotMatch(reserveHeader,/cancel-in-progress:/);
+  assert.match(reserveHeader,/do not serialize reserve jobs/);
   assert.match(reserveHeader,/runs-on: \$\{\{ \(github\.event_name == 'repository_dispatch' && \(github\.event\.action == 'vibe2-fanin-refill' \|\| github\.event\.action == 'vibe2-neuron-complete'\) && 'ubuntu-latest' \|\| 'ubuntu-slim'\) \}\}/);
   assert.match(reserveHeader,/vibe2-neuron-complete/);
   assert.doesNotMatch(reserveHeader,/asset-development/);
