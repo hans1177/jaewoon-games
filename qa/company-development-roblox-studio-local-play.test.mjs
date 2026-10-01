@@ -2020,7 +2020,7 @@ test('missing local character aborts before movement and routes to exact-source 
 });
 
 test('Studio startup probe follows declared entry steps, exact start action, and blocking-overlay gates before normal QA',()=>{
-  assert.equal(ROBLOX_STUDIO_HARNESS_VERSION,16);
+  assert.equal(ROBLOX_STUDIO_HARNESS_VERSION,17);
   assert.match(helper,/ROBLOX_STUDIO_DEAD_CHARACTER_ABORT:INITIAL_CHARACTER_NOT_PLAYABLE/);
   assert.match(helper,/initial-character-playable/);
   assert.match(helper,/const entryButtonTexts=launchStringList\(actualPlayContract\.entryButtonTexts\)/);
@@ -2047,6 +2047,71 @@ test('large overlay detection uses actual panel or image opacity and does not tr
   assert.match(block,/BackgroundTransparency<0\.85/);
   assert.match(block,/ImageTransparency<0\.85/);
   assert.doesNotMatch(block,/TextTransparency<0\.85/);
+});
+
+
+test('Roblox perceptible motion requires a playing animation track during actual movement',()=>{
+  const contract=deriveStudioActualPlayContract({launchCore:['player movement animation'],releaseGates:[]});
+  const base={
+    player:{characterPresent:true,humanoidPresent:true,rootPresent:true,rootX:0,rootY:5,rootZ:0,animatorPresent:true,motorCount:6,animationTrackCount:0},
+    camera:{present:true,subjectPresent:true,fieldOfView:70},
+    ui:{visibleButtons:1,visibleObjects:1,offscreenButtons:0,undersizedTouchButtons:0,textOverflowButtons:0,overlapPairs:0,required:{}},
+    world:{boundsFinite:true,collidablePartCount:30,floorBelowPlayer:true,floorSampleCount:9,floorHitCount:9,routeSampleCount:0,routeSuccessCount:0,minSpawnThreatDistance:-1,proximityPromptCount:0,clickDetectorCount:0,mobs:[],npcs:[],companions:[],items:[],environmentModels:1,effectCount:0},
+    runtime:{remoteCount:1,progression:[],inventory:[],inventoryCount:0,systemSignals:1,descendantCount:100,memoryMb:100,soundCount:0,playingSoundCount:0,soundGroupCount:0,categories:{}},
+    workspace:{},lighting:{brightness:1.2}
+  };
+  const result=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:base,
+    preActionClientProbe:base,
+    postActionClientProbe:{...base,player:{...base.player,rootX:2}},
+    clientProbe:{...base,player:{...base.player,rootX:2}},
+    serverProbe:{runtime:base.runtime,world:base.world,workspace:{}},
+    actions:[{id:'keyboard-w',type:'mcp-keyboard-input',dispatched:true,ok:true}],
+    beforeImages:[],afterImages:[]
+  });
+  assert.equal(result.scenarios.find(row=>row.id==='adaptive-motion-surface')?.pass,false);
+  assert.equal(result.metrics.perceptibility.motion.playingAnimationTrackCount,0);
+
+  const animated={...base,player:{...base.player,rootX:2,animationTrackCount:1}};
+  const passed=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:base,
+    preActionClientProbe:base,
+    postActionClientProbe:animated,
+    clientProbe:animated,
+    serverProbe:{runtime:base.runtime,world:base.world,workspace:{}},
+    actions:[{id:'keyboard-w',type:'mcp-keyboard-input',dispatched:true,ok:true}],
+    beforeImages:[],afterImages:[]
+  });
+  assert.equal(passed.scenarios.find(row=>row.id==='adaptive-motion-surface')?.pass,true);
+});
+
+test('Roblox audio quality requires live playback and SoundGroup organization for multi-sound games',()=>{
+  const contract=deriveStudioActualPlayContract({launchCore:['BGM music audio'],releaseGates:[]});
+  const probe={
+    player:{characterPresent:true,humanoidPresent:true,rootPresent:true,rootX:0,rootY:4,rootZ:0,animatorPresent:true,motorCount:6,animationTrackCount:1},
+    camera:{present:true,subjectPresent:true,fieldOfView:70},
+    ui:{visibleButtons:1,visibleObjects:1,offscreenButtons:0,undersizedTouchButtons:0,textOverflowButtons:0,overlapPairs:0,required:{}},
+    world:{boundsFinite:true,collidablePartCount:20,floorBelowPlayer:true,floorSampleCount:9,floorHitCount:9,routeSampleCount:0,routeSuccessCount:0,minSpawnThreatDistance:-1,proximityPromptCount:0,clickDetectorCount:0,mobs:[],npcs:[],companions:[],items:[],environmentModels:1,effectCount:0},
+    runtime:{remoteCount:1,progression:[],inventory:[],inventoryCount:0,systemSignals:1,descendantCount:80,memoryMb:90,soundCount:4,playingSoundCount:0,soundGroupCount:0,categories:{}},
+    workspace:{},lighting:{brightness:1}
+  };
+  const fail=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:probe,preActionClientProbe:probe,postActionClientProbe:probe,
+    clientProbe:probe,serverProbe:{runtime:probe.runtime,world:probe.world,workspace:{}},
+    actions:[],beforeImages:[],afterImages:[]
+  });
+  assert.equal(fail.scenarios.find(row=>row.id==='adaptive-audio-surface')?.pass,false);
+  assert.equal(fail.metrics.perceptibility.audio.multiSoundMixOrganized,false);
+
+  const runtime={...probe.runtime,playingSoundCount:1,soundGroupCount:3};
+  const passProbe={...probe,runtime};
+  const pass=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:passProbe,preActionClientProbe:passProbe,postActionClientProbe:passProbe,
+    clientProbe:passProbe,serverProbe:{runtime,world:probe.world,workspace:{}},
+    actions:[],beforeImages:[],afterImages:[]
+  });
+  assert.equal(pass.scenarios.find(row=>row.id==='adaptive-audio-surface')?.pass,true);
+  assert.equal(pass.metrics.perceptibility.audio.soundGroupCount,3);
 });
 
 test('commercial Studio evaluator records progression and AI movement deltas',()=>{
