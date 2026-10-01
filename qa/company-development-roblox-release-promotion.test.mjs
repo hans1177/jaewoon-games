@@ -97,6 +97,14 @@ test('pre-F9 publish is isolated to validation target and canonical publish requ
   assert.match(candidate,/ROBLOX_CANONICAL_GAME_TARGET_MUTATED=NO/);
 });
 
+test('final server publication independently rejects development games even if manually dispatched',()=>{
+  assert.match(workflow,/evaluateInternalRelease\(item,'ROBLOX',roadmap\)\.ready/);
+  assert.match(workflow,/skip_reason','development-game-server-publication-forbidden'/);
+  assert.match(workflow,/ROBLOX_SERVER_PUBLICATION=SKIPPED_DEVELOPMENT/);
+  assert.match(workflow,/ROBLOX_PUBLISH_STAGE_FINAL_ONLY/);
+  assert.doesNotMatch(workflow,/options:[\s\S]{0,120}- validation/);
+});
+
 test('existing post-runtime QA requires actual F1-F8 sentinel evidence on the exact candidate',()=>{
   const runtime=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   assert.match(runtime,/Roblox Runtime Foundation QA/);
