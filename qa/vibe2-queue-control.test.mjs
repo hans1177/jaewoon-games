@@ -323,18 +323,17 @@ test('game-primary has no internal global cap while each GitHub matrix stays a t
   assert.equal(batch.scheduler.persistentMaxConcurrentTasks,DEFAULT_MAX_CONCURRENT_TASKS);
   assert.equal(batch.scheduler.externalBatchLimit,EXTERNAL_MATRIX_BATCH_MAX);
   assert.equal(batch.scheduler.globalInternalParallelCap,null);
-  assert.equal(batch.scheduler.batchTruncated,true);
-  assert.equal(batch.scheduler.remainingRunnableAfterBatchLimit,44);
   assert.equal(reserved.tasks.length,EXTERNAL_MATRIX_BATCH_MAX);
   assert.equal(reserved.summary.effectiveMaxConcurrentTasks,DEFAULT_MAX_CONCURRENT_TASKS);
 });
 
-test('continuous core has no active wave leader or pressure-cohort completion gate',()=>{
+test('continuous core uses direct task events without scheduler continuation shell',()=>{
   assert.doesNotMatch(continuousWorkflow,/WAVE_LEADER|wave-leader|NEXT_EXTERNAL_MATRIX_WINDOW|NEW_WAVE_OR_IDLE_REFILL/);
   assert.doesNotMatch(continuousWorkflow,/VIBE2_PRESSURE_REFILL_LEADER/);
-  assert.match(continuousWorkflow,/VIBE2_ATOMIC_NEURON_COMPLETION_MODE=INDEPENDENT_IMMEDIATE_FANIN/);
-  assert.match(continuousWorkflow,/Continue independent parallel reservation/);
-  assert.match(continuousWorkflow,/VIBE2_INDEPENDENT_PARALLEL_RESERVATION_CONTINUE=DISPATCHED/);
+  assert.match(continuousWorkflow,/VIBE2_ATOMIC_NEURON_COMPLETION_MODE=PER_TASK_MICRO_FANIN_IMMEDIATE/);
+  assert.doesNotMatch(continuousWorkflow,/Continue independent parallel reservation/);
+  assert.doesNotMatch(continuousWorkflow,/more_runnable=/);
+  assert.doesNotMatch(continuousWorkflow,/VIBE2_INDEPENDENT_PARALLEL_RESERVATION_CONTINUE/);
 });
 
 test('auxiliary fan-in never mutates game-primary adaptive control',()=>{
@@ -1378,29 +1377,18 @@ test('exact Web base source generation failure can recover once', () => {
 });
 
 
-test('continuous reserve reuses exact-sha Core QA or fail-closes on the same fan-in regression before worker start', () => {
+test('continuous reserve does not rerun repository syntax or unit suites before worker start', () => {
   const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
-  const start=workflow.indexOf('- name: Fast scheduler preflight');
   const reserveAt=workflow.indexOf('- name: Reserve conflict-free DAG batch');
-  assert.ok(start>0);
-  assert.ok(reserveAt>start);
-  const preflightBlock=workflow.slice(start,reserveAt);
-  assert.match(preflightBlock,/node --check "\/tmp\/vibe2-main\/\$file"/);
-  assert.match(preflightBlock,/vibe2-handoff\.mjs --check/);
-  assert.match(preflightBlock,/VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=PASS/);
-  assert.match(preflightBlock,/VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=FAIL_LOCAL_REGRESSION/);
-  assert.match(preflightBlock,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE/);
-  assert.match(preflightBlock,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_SAME_FAN_IN_SUITE/);
-  assert.match(preflightBlock,/node --test --test-concurrency=4/);
-  assert.match(preflightBlock,/VIBE2_RESERVE_CONTRACT_REGRESSION=PASS/);
-  const runtime=JSON.parse(fs.readFileSync('vibe2-runtime.json','utf8'));
-  const regression=runtime.continuous.reserveContractRegressionPreflight;
-  assert.equal(regression.enabled,true);
-  assert.equal(regression.exactContractShaRequired,true);
-  assert.equal(regression.reuseSuccessfulCoreQaForExactSha,true);
-  assert.equal(regression.fallback,'LOCAL_SAME_FAN_IN_CORE_REGRESSION');
-  assert.equal(regression.blocksReservationOnFailure,true);
-  assert.equal(regression.gameWorkerStartBeforePass,false);
+  assert.ok(reserveAt>0);
+  assert.doesNotMatch(workflow,/Fast scheduler preflight/);
+  assert.doesNotMatch(workflow,/VIBE2_RESERVE_CONTRACT_REGRESSION/);
+  assert.doesNotMatch(workflow,/VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION/);
+  assert.doesNotMatch(workflow,/node --check/);
+  assert.equal((workflow.match(/node --test/g)||[]).length,1);
+  assert.match(workflow,/Run impact-first incremental QA role/);
+  assert.match(workflow,/Run read-only performance sanity role/);
+  assert.match(workflow,/Merge outcomes run regression and package review/);
 });
 
 test('atomic neuron variants micro-fan-in one task and release capacity without waiting for the cohort',()=>{
@@ -1677,6 +1665,13 @@ test('24H orchestration and reserve jobs stay parallel while shared writes use o
   const core=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 
   assert.doesNotMatch(runner,/vibe2-24h-cycle-singleton/);
+
+  assert.doesNotMatch(runner,/node --check/);
+  assert.doesNotMatch(runner,/node --test/);
+  assert.doesNotMatch(runner,/Dispatch queued GAME_PRIMARY work before full planning/);
+  assert.doesNotMatch(runner,/Dispatch next cycle unconditionally/);
+  assert.doesNotMatch(runner,/vibe2-handoff-before-plan|vibe2-handoff-before-attempt/);
+  assert.match(runner,/vibe2-handoff-after-plan/);
 
   const planStart=runner.indexOf('\n  plan:');
   const recoveryStart=runner.indexOf('\n  recovery_fast:',planStart);
