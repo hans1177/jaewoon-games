@@ -897,19 +897,18 @@
       "directMainWrite": false,
       "candidatePublication": {
         "localBranchBase": "RESERVE_TIME_PINNED_MAIN_SHA",
-        "remoteRefCreation": "PREFER_UNIQUE_PRECREATE_FALLBACK_REUSE_EXISTING_BRANCH",
-        "reusableCarrierFallback": true,
-        "reusableCarrierPrefix": "vibe2/candidate/OWNER-FULL-REBUILD-",
-        "reusableCarrierMaxAttempts": 16,
-        "carrierCommitParent": "RESERVE_TIME_PINNED_MAIN_SHA",
-        "carrierManifestTransportMode": "REUSED_EXISTING_CANDIDATE_BRANCH_FORCE_WITH_LEASE",
+        "remoteRefCreation": "DIRECT_BRANCH_PUSH_FROM_LATEST_MAIN_SOURCE_STABLE_TRANSPORT",
+        "transportBase": "LATEST_MAIN_SHA_AFTER_RESPONSIBLE_SOURCE_STABILITY_CHECK",
+        "sourceDriftAction": "FAIL_CLOSED_REPLAN_EXACT_TASK",
+        "sourceDriftFailureClass": "CANDIDATE_SOURCE_DRIFT",
         "candidateIdentityBase": "RESERVE_TIME_PINNED_MAIN_SHA",
+        "transportManifestShaRequired": true,
         "commitPushScope": "TASK_APPROVED_SOURCE_AND_CANDIDATE_ARTIFACT_DIFF_ONLY",
         "untouchedBaseWorkflowWriteAuthorityRequired": false,
         "failureClass": "CANDIDATE_BRANCH_PUBLISH",
         "telemetryStage": "CANDIDATE_PUBLICATION",
         "excludedFromSourceGenerationFailureRate": true,
-        "remoteRefCleanupOnPushFailure": true
+        "remoteRefCleanupOnPushFailure": false
       },
       "freeCapacityScaling": "UNBOUNDED_BY_POLICY_ONE_WORKER_PER_INDEPENDENT_TASK",
       "modelLoadOptimization": {
