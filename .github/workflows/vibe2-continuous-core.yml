@@ -3009,7 +3009,12 @@ jobs:
             done
             if [ "$dispatched" != 1 ]; then
               echo "PLATFORM_PUBLISH_OR_DEPLOY_DISPATCH_REPAIR_REQUIRED=${target:-unknown}:${game_id:-unknown}:${task_id}" >&2
-              echo "PLATFORM_PUBLISH_DISPATCH_FAILURE_BLOCKS_NEXT_EVOLUTION=NO"
+              if [ "$target" = web ]; then
+                echo "PLATFORM_PUBLISH_DISPATCH_FAILURE_BLOCKS_NEXT_EVOLUTION=YES:WEB:${task_id}"
+                echo "WEB_SAME_VERIFIED_CANDIDATE_DISPATCH_RETRY_REQUIRED=${candidate_branch}"
+              else
+                echo "PLATFORM_PUBLISH_DISPATCH_FAILURE_BLOCKS_NEXT_EVOLUTION=NO"
+              fi
             fi
           done < /tmp/vibe2-release-candidates.tsv
 
