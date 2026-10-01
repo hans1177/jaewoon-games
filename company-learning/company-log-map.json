@@ -403,7 +403,7 @@
     "audioDepartmentRequired": true
   },
   "unityWebGameDevelopmentEvidence": {
-    "version": 3,
+    "version": 4,
     "role": "UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR",
     "policySource": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebDevelopmentLane",
     "nativeGateAuthority": true,
@@ -422,8 +422,23 @@
       "UNITY_WEB_FLOOR_IDS",
       "UNITY_WEB_FLOOR_BOOTSTRAP_IDS",
       "UNITY_WEB_BOOTSTRAP_GENERATED_ID",
-      "UNITY_WEB_CANONICAL_SOURCE=SAME_UNITY_PROJECT"
-    ]
+      "UNITY_WEB_CANONICAL_SOURCE=SAME_UNITY_PROJECT",
+      "VIBE2_CANDIDATE_EXECUTION_SURFACE=UNITY_WEB",
+      "VIBE2_UNITY_WEB_RELEASE_DISPATCHED=YES",
+      "UNITY_WEB_CLOUDFLARE_PREVIEW",
+      "UNITY_WEB_CLOUDFLARE_MAIN",
+      "VIBE2_UNITY_WEB_TASK_FINAL_PASS"
+    ],
+    "candidateManifestExecutionSurface": "UNITY_WEB",
+    "nativeUnityExecutionSurface": "UNITY_NATIVE",
+    "candidateReleaseGate": ".github/workflows/vibe2-candidate-release.yml",
+    "runtimeWorkflow": ".github/workflows/unity-web-first-stage-build.yml",
+    "reviewedPromotionRoots": [
+      "unity-games/<gameId>/",
+      "web-games/<gameId>/"
+    ],
+    "cloudflarePreviewRequired": true,
+    "cloudflareMainDeploymentRequiredBeforeVibePass": true
   },
   "highEndVisualEvidenceContract": {
     "version": 2,
