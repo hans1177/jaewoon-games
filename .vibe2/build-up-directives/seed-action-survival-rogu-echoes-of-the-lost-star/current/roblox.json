@@ -235,18 +235,42 @@
       "sourceRevision": "d0821e5d7caa024b0ac4ecd900171635cace38ab",
       "artifactIdentity": "sha256:d17f18714c4e602ff8315128ce71e27650d6db6e25a2110dd245bfabd501ca0b",
       "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 36908677455,
-      "testedAt": "2026-10-01T19:14:15.786Z",
+      "workflowRunId": 36919854592,
+      "testedAt": "2026-10-01T20:47:43.750Z",
       "repairSurfaces": [
-        "GAME_START"
+        "CHARACTER_BOOT",
+        "GAME_START",
+        "CORE_GAMEPLAY_LOOP",
+        "CHARACTER_RESPAWN"
       ],
       "qualityFailureDetails": [
+        {
+          "id": "character-camera-ready",
+          "repairSurface": "CHARACTER_BOOT",
+          "priority": "CRITICAL",
+          "hint": "Repair character spawn, Humanoid/root, and camera binding before gameplay starts.",
+          "observed": "{\"interactionSurfaceCount\":0,\"progressionSurfaceCount\":2,\"combatSurfaceCount\":0,\"npcSurfaceCount\":0,\"companionSurfaceCount\":0,\"itemSurfaceCount\":0,\"remoteCount\":14,\"soundCount\":0,\"effectCount\":0,\"promptCount\":0,\"inventoryCount\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":false,\"multiplayerActualSessionPass\":false}"
+        },
         {
           "id": "adaptive-start-playability",
           "repairSurface": "GAME_START",
           "priority": "CRITICAL",
-          "hint": "Studio started with a dead/unplayable character. Restore healthy spawn/respawn/start state before normal gameplay QA.",
-          "observed": "{\"characterPresent\":true,\"humanoidPresent\":true,\"health\":0,\"maxHealth\":100,\"humanoidState\":\"Enum.HumanoidStateType.Dead\"}"
+          "hint": "Repair initial character health/state and start/continue flow so Studio reaches a healthy controllable character and gameplay state.",
+          "observed": "{\"initialDead\":false,\"finalDead\":true,\"initialHealth\":100,\"finalHealth\":0,\"startGateVisible\":false,\"startGateActionOk\":false,\"startGateEffectObserved\":true}"
+        },
+        {
+          "id": "adaptive-gameplay-loop-cadence",
+          "repairSurface": "CORE_GAMEPLAY_LOOP",
+          "priority": "CRITICAL",
+          "hint": "Actual-play samples show no meaningful action-feedback-progression/AI change across an active gameplay loop. Reduce dead time or restore the broken loop transition.",
+          "observed": "{\"activeLoopExpected\":true,\"activeLoopObserved\":false,\"activeTimelineTransitions\":4,\"idleTimelineTransitions\":0,\"semanticEffectCount\":0,\"timelineProgressChanged\":false,\"timelineMobDynamic\":false,\"timelineCompanionDynamic\":false}"
+        },
+        {
+          "id": "adaptive-death-respawn-recovery",
+          "repairSurface": "CHARACTER_RESPAWN",
+          "priority": "CRITICAL",
+          "hint": "A real death was observed during Studio play but the character did not return to a healthy playable state.",
+          "observed": "{\"deathObserved\":true,\"respawnObserved\":false}"
         }
       ]
     }
