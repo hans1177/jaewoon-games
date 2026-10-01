@@ -11036,8 +11036,8 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "status": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "targetPlatform": "ROBLOX",
+      "selectedPlatform": "UNITY",
+      "targetPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -11092,10 +11092,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T17:07:58.066Z",
+      "updatedAt": "2026-10-01T17:10:29.897Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -12608,7 +12608,7 @@
       "unityCandidateBranch": "development/unity-tech-cozy-island-36831315548",
       "unitySourceCommit": "4432b8b37953480242da03ee8cb093e08adafac4",
       "unityBuildRunId": 36832968944,
-      "unityRuntimeSmokeRunId": 36894090143,
+      "unityRuntimeSmokeRunId": 36897098657,
       "unityIndependentQaRunId": 36272387104,
       "unityRegressionRunId": 36272500664,
       "unityInternalReleaseReady": false,
@@ -13079,7 +13079,7 @@
           }
         },
         "multiplayerRequired": true,
-        "verifiedAt": "2026-10-01T16:45:58.714Z"
+        "verifiedAt": "2026-10-01T17:10:29.897Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -25313,7 +25313,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T17:09:13.427Z",
+  "updatedAt": "2026-10-01T17:10:31.848Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
