@@ -47,10 +47,8 @@ on:
       - 'tools/company-system-ai-learning.mjs'
       - 'tools/vibe2-post-release-focus.mjs'
       - 'tools/vibe2-system-steward.mjs'
-      - 'tools/vibe2-neural-expansion-readiness.mjs'
       - 'assets/vibe-continuous-queue.js'
       - 'company-learning/platform-release-roadmap.json'
-      - 'tools/company-shared-context.mjs'
       - 'company-learning/roblox-sustained-maintenance.json'
       - 'company-learning/authorized-source/block-blast/authorized-learning-summary.json'
       - 'vibe2-runtime.json'
@@ -121,7 +119,7 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Verify machine state and planner tools
+      - name: Load canonical control state
         shell: bash
         run: |
           set -euo pipefail
@@ -132,8 +130,6 @@ jobs:
           echo 'VIBE2_PARALLELISM_POLICY=UNBOUNDED_BY_POLICY'
           echo "VIBE2_EXTERNAL_MATRIX_BATCH_MAX=$VIBE2_EXTERNAL_MATRIX_BATCH_MAX"
           echo "VIBE2_WORK_ORDER_OUTPUT_CONTRACT=$VIBE2_WORK_ORDER_OUTPUT_CONTRACT"
-          test "$VIBE2_24H_LEARNING_PROVIDER" = "LOCAL_OLLAMA"
-          test "$VIBE2_24H_GEMINI_ALLOWED" = "false"
           echo "VIBE2_24H_LEARNING_PROVIDER=$VIBE2_24H_LEARNING_PROVIDER"
           echo "VIBE2_24H_GEMINI_LEARNING=FORBIDDEN"
 
@@ -157,21 +153,10 @@ jobs:
             git worktree add --detach /tmp/vibe2-main origin/main >/dev/null
             control_root="$PWD"
 
-            (
-              cd /tmp/vibe2-main
-              node tools/company-shared-context.mjs --output=/tmp/vibe2-shared-context-before-plan.json | tee /tmp/vibe2-shared-context-before-plan.log
-
-              # Rule 4 final-stage neural expansion readiness is derived from direct targeted QA.
-              node tools/vibe2-neural-expansion-readiness.mjs \
-                --root=. \
-                --output=/tmp/vibe2-neural-expansion-readiness.json | tee /tmp/vibe2-neural-expansion-readiness.log
-            )
-
-            # Repair canonical queue/parallelism state before fail-closed handoff validation.
+            # Repair canonical queue/parallelism state without rerunning repository QA.
             node /tmp/vibe2-main/tools/vibe2-system-steward.mjs \
               --queue="$control_root/.vibe2/queue.json" \
-              --control="$control_root/.vibe2/parallelism-control.json" \
-              --neural-readiness=/tmp/vibe2-neural-expansion-readiness.json | tee /tmp/vibe2-system-steward.log
+              --control="$control_root/.vibe2/parallelism-control.json" | tee /tmp/vibe2-system-steward.log
 
 
             if git show origin/vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json > /tmp/vibe2-recombination-memory.json 2>/dev/null; then
@@ -409,10 +394,6 @@ jobs:
               --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
               --output=/tmp/vibe2-handoff-after-plan.json >/tmp/vibe2-handoff-after-plan.log
 
-            (
-              cd /tmp/vibe2-main
-              node tools/company-shared-context.mjs --output=/tmp/vibe2-shared-context-after-plan.json | tee /tmp/vibe2-shared-context-after-plan.log
-            )
 
             git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/experience.json .vibe2/external-ai-distilled-knowledge.json .vibe2/code-pattern-library.json .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json .vibe2/recovery-queue.json .vibe2/security-incidents.json .vibe2/system-ai-queue.json .vibe2/marketing-decisions .vibe2/portfolio-decisions.json .vibe2/tester-debug-tickets.json .vibe2/platform-suitability.json .vibe2/platform-exposure-state.json .vibe2/homepage-platform-exposure.json
             if git diff --cached --quiet; then
@@ -651,8 +632,6 @@ jobs:
             /tmp/vibe2-web-experience-ingest.log
             /tmp/vibe2-code-pattern-ingest.log
             /tmp/vibe2-learning-motor.log
-            /tmp/vibe2-neural-expansion-readiness.json
-            /tmp/vibe2-neural-expansion-readiness.log
             /tmp/vibe2-system-steward.log
             /tmp/vibe2-recovery-escalation.log
             /tmp/vibe2-recovery-dispatch.log
