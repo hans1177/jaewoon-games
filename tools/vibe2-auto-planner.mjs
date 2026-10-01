@@ -2125,7 +2125,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       'build-up-all-domain-coverage:YES',
       'build-up-platform-common-goal:YES',
       sourceSafeNoDesign?'build-up-design-context:SOURCE_SAFE_NO_DESIGN':'build-up-design-context:APPROVED_OR_MINIMUM_DESIGN',
-      sourceSafeNoDesign?'build-up-designless-gameplay-expansion:FORBIDDEN':'',
+      ...(sourceSafeNoDesign?['build-up-designless-gameplay-expansion:FORBIDDEN']:[]),
       'autonomous-content-expansion-build-up:v1',
       'autonomous-content-expansion-existing-build-up-only:YES',
       'autonomous-content-expansion-platforms:WEB,ROBLOX,UNITY',
