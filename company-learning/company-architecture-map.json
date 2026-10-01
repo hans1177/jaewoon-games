@@ -856,7 +856,7 @@
         "controller": ".vibe2/parallelism-control.json",
         "algorithm": "tools/vibe2-adaptive-backpressure.mjs",
         "reserve": "tools/vibe2-queue-control.mjs::reserve-batch",
-        "fanIn": "healthy queue: neuron-complete lightweight ingress -> single refill after per-task micro fan-in; live runner queue pressure: immutable worker result -> existing cohort fan-in without spawning another callback workflow",
+        "fanIn": "neuron-complete lightweight ingress -> per-task micro fan-in -> immediate independent refill",
         "telemetry": "tools/vibe2-parallelism-telemetry.mjs",
         "entryPaths": [
           ".github/workflows/vibe2-24h-runner.yml",
@@ -880,7 +880,6 @@
         "pressureMayDownshiftBelow20": false,
         "healthySaturationMayUpshiftAbove20": true,
         "matrixFanOutUsesCurrentAdaptiveTarget": false,
-        "telemetryEffectiveMaxUsesCurrentAdaptiveTarget": false,
         "authorityChange": "NONE",
         "completionEvent": "vibe2-neuron-complete",
         "taskMicroFanIn": true,
@@ -888,7 +887,6 @@
         "atomicCompletionIngress": "INDEPENDENT_IMMEDIATE_CALLBACK",
         "pendingVariantCallbackRunsHeavyReserve": false,
         "taskMicroFanInDispatchesSingleRefill": true,
-        "cohortFanInRole": "REGRESSION_RELEASE_AUDIT_ONLY",
         "workerDirectControlWrite": false,
         "capacityRefill": "INDEPENDENT_RESERVATION_CONTINUES_WHILE_PRIOR_WORKERS_RUN",
         "telemetryDenominator": "CONFIGURED_EXTERNAL_PROVIDER_BOUNDARY",
@@ -905,7 +903,6 @@
         "primaryReservationCountUnaffected": true,
         "taskMicroFanInPreservedDuringSuppression": true,
         "speculativeExpansionRestoresAutomaticallyWhenPressureClears": true,
-        "newSchedulerCreated": false,
         "liveRunnerPressureObservation": "READ_ONLY_GITHUB_ACTIONS_RECENT_RUN_STATUS",
         "liveRunnerPressureStatuses": [
           "QUEUED",
@@ -920,7 +917,6 @@
         "callbackCoalescingCapacityRefillDirectControlWrite": false,
         "independentFreeSlotRefillPreservedUnderPressure": true,
         "newWorkflowForCallbackCoalescing": false,
-        "newSchedulerForCallbackCoalescing": false,
         "adaptiveRole": "TELEMETRY_AND_SPECULATIVE_SUPPRESSION_ONLY",
         "primaryReservationLimit": "CONFIGURED_EXTERNAL_PROVIDER_BOUNDARY",
         "pressureMayDownshiftPrimaryReservations": false,
@@ -932,7 +928,8 @@
         "integrationFanInRole": "REGRESSION_RELEASE_AUDIT_ONLY",
         "independentCompletionFanIn": true,
         "externalMatrixTransportPartitionMax": 256,
-        "internalGlobalCap": null
+        "internalGlobalParallelCap": null,
+        "independentCompletionRefillImmediate": true
       },
       "bottleneckFirstRuntimeCheckpoint": {
         "version": 1,
@@ -985,8 +982,8 @@
         "authorityChange": "NONE",
         "sourcePr": 2013
       },
-      "scheduler": "UNCHANGED_AND_AUTHORITATIVE",
-      "taskReorderAuthority": "NONE"
+      "taskReorderAuthority": "NONE",
+      "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES"
     },
     "phase2Shadow": {
       "eventRouter": "tools/vibe2-neural-event-router.mjs",

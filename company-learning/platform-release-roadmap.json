@@ -8544,7 +8544,6 @@
       "atomicCompletionIngress": "PERSIST_RESULT_ONLY_UNTIL_TASK_MICRO_FANIN_COMPLETE",
       "pendingVariantCallbackRunsHeavyReserve": false,
       "taskMicroFanInDispatchesSingleRefill": true,
-      "cohortFanInRole": "REGRESSION_RELEASE_AUDIT_PLUS_PRESSURE_COALESCED_RESULT_INGRESS",
       "taskLocalExplorationRequired": true,
       "sourceWriteOnlyOnCandidateBranch": true,
       "directMainGameSourceWriteForbidden": true,
@@ -8565,7 +8564,6 @@
       "liveRunnerQueuePressureSignal": "GITHUB_ACTIONS_RECENT_RUN_STATUS_QUEUED_PENDING_REQUESTED",
       "atomicCompletionCallbackPolicy": "IMMEDIATE_WHEN_RUNNER_QUEUE_HEALTHY; COALESCE_IMMUTABLE_RESULT_TO_EXISTING_COHORT_FAN_IN_WHEN_LIVE_RUNNER_QUEUE_PRESSURE_EXISTS",
       "singleGameTaskImmediateCompletionRequired": true,
-      "singleGameTaskFullReviewBeforeCohortCompletion": true,
       "singleGameTaskReviewUsesExistingRegressionAndReleaseGates": true,
       "fanInMayReuseSuccessfulExactCommitCoreRegression": true,
       "idleLearningRequiresEmptyDevelopmentAssetAndRecoveryQueues": false,
@@ -8574,24 +8572,27 @@
       "strandedAssetReviewResumesImmutableWorkerResults": true,
       "robloxPublishRechecksLatestSourceAndF9OnEveryAttempt": true,
       "coalescedResultArtifactRequired": true,
-      "coalescedResultConsumedByExistingCohortFanIn": true,
       "coalescedResultMayNotBeDroppedOrTreatedAsFailure": true,
       "coalescingDoesNotChangeQaReleaseOrSecurityAuthority": true,
       "coalescingDoesNotGrantWorkerControlBranchWrite": true,
-      "coalescingCreatesNoNewWorkflowOrScheduler": true,
       "automaticImmediateCallbackRecoveryWhenPressureClears": true,
       "taskMicroFanInImmediateDispatchMayCoalesceUnderLiveRunnerPressure": true,
-      "logicalPerTaskVariantJoinStillRequiredWhenCoalesced": true
+      "logicalPerTaskVariantJoinStillRequiredWhenCoalesced": true,
+      "taskMicroFanInRole": "PER_TASK_RESULT_JOIN_AND_IMMEDIATE_REFILL",
+      "independentTaskReviewDoesNotWaitForUnrelatedCompletion": true,
+      "directRefillUsesExistingWorkflow": true,
+      "internalGlobalParallelCap": null,
+      "externalMatrixTransportPartitionMax": 256
     },
     "planningBacklog": {
       "developmentBacklogMinimum": 40,
       "developmentBacklogTarget": 60,
       "persistentPoolHardMax": 256,
-      "queuedPlanningMayContinueWhileGamePrimaryWaveActive": true,
       "queuedTasksHaveNoReservationUntilFanInReserve": true,
       "releaseAwaitingTasksExcludedFromRunnableBacklogCapacity": true,
       "sameSourceResponsibilityConflictStillForbidden": true,
-      "activeWorkMayNotBlockIndependentFreeSlotReserveOrPlanExpansion": true
+      "activeWorkMayNotBlockIndependentFreeSlotReserveOrPlanExpansion": true,
+      "queuedPlanningMayContinueWhileGamePrimaryWorkActive": true
     },
     "recoveryFast": {
       "taskClass": "RECOVERY_FAST",
@@ -8663,7 +8664,6 @@
     "implementationEvidence": {
       "planner": "025ed9344bcd13b02aa08cced094ae5c5970743f",
       "runtime": "7b630039f8e05f50c01a146ba1d3e545d04c062c",
-      "scheduler": "6a86921a8019a43dc982dd43b35b16b09958f6d0",
       "reserve": "777f47f74b3c205aa5ab09b2fb75ea959fc41c12",
       "tests": [
         "3a1fa935388e015c4d7e565cffff159e6b469071",
@@ -8672,14 +8672,15 @@
       "explicitClassification": "cd6ff18b7bfbae5130058dfa1778ad646c556538",
       "classificationTest": "038dc4cea33a6430f4f98238322c8e4cd7c6858a",
       "gameRepairRetryCorrection": "164cd4ca18a7af58982ba49fb51e9c1c825111f9",
-      "generalizedLaneScheduler": "ec3e866637fbfff63850e228e3e9d5bef90644a7",
       "auxiliaryReservationAndAdaptiveIsolation": "094c59ed998a5e0b9e6004913d3849eff11b1880",
       "laneAwareContinuousCore": "79d3e4015acf87fbc77fd9b858e31fd890a25ebb",
       "gameLearningDispatchSplit": "e9a743838786a070406354be6dedc0936b81073c",
       "recoveryFastWorkflow": "24e6f8bbff009d9c0eb8e6488ee159f186275985",
       "laneControllerContract": "910d0be3da4e7b3d9b265c9a5f03ab22e65d0fe5",
       "recoveryFastContractTests": "ed322f01ab5eecb9ae6ae54e5234fc5d40e71aeb",
-      "coreQaTriggerCoverage": "b57f4afaadd36ff1cc3b7954e269ea28087282d7"
+      "coreQaTriggerCoverage": "b57f4afaadd36ff1cc3b7954e269ea28087282d7",
+      "executionBinding": "6a86921a8019a43dc982dd43b35b16b09958f6d0",
+      "directLaneExecution": "ec3e866637fbfff63850e228e3e9d5bef90644a7"
     },
     "remainingLaneWork": [
       "OBSERVE_NATURAL_LIVE_LEARNING_IDLE_RUN_WHEN_GAME_PRIMARY_QUEUE_IS_EMPTY",
@@ -8711,14 +8712,15 @@
       }
     },
     "liveVerification": {
-      "effectiveExecutionWaveMax": 20,
       "planningBacklogTarget": 60,
       "planningBacklogCurrentBefore": 18,
       "planningBacklogAfter": 18,
       "activeWorkerReservations": 16,
-      "waveReady": "NO",
       "releaseWaitExcluded": 0,
-      "interpretation": "PLANNER_EXECUTES_DURING_ACTIVE_WAVE_BUT_DOES_NOT_INVENT_CONFLICTING_OR_NONINDEPENDENT_WORK"
+      "interpretation": "PLANNER_EXECUTES_DURING_ACTIVE_WAVE_BUT_DOES_NOT_INVENT_CONFLICTING_OR_NONINDEPENDENT_WORK",
+      "internalGlobalParallelCap": null,
+      "externalMatrixTransportPartitionMax": 256,
+      "directExecutionContract": "ACTIVE"
     },
     "ownerPreservationDesignLane": {
       "version": 1,
@@ -8733,7 +8735,7 @@
       "requiredOwnerRebuildMode": "PRESERVATION_PRESENTATION_UPGRADE",
       "strictDesignGateUnchanged": true,
       "developmentPromotionGateUnchanged": true,
-      "purpose": "ALLOW_ONE_EXISTING_GAME_PRESERVATION_DESIGN_PILOT_TO_ADVANCE_WITHOUT_CONSUMING_OR_DELAYING_THE_20_WAVE_GAME_PRIMARY_IMPLEMENTATION_LANE"
+      "purpose": "ALLOW_ONE_EXISTING_GAME_PRESERVATION_DESIGN_PILOT_TO_ADVANCE_WITHOUT_CONSUMING_OR_DELAYING_INDEPENDENT_GAME_PRIMARY_IMPLEMENTATION"
     },
     "ownerPreservationDesignContract": {
       "version": 1,
@@ -9118,7 +9120,7 @@
       "verifiedEvidenceRequiredForPositiveLearning": true,
       "taskLocalExplorationPreserved": true,
       "fanInOnlyRefillPreserved": true,
-      "gamePrimaryWave20Preserved": true
+      "generalInternalGlobalCapForbidden": true
     },
     "implementationOrder": [
       "DOCUMENT_CENTRAL_CONTRACT",
@@ -9146,9 +9148,7 @@
       "planningBacklogSeparation": "025ed9344bcd13b02aa08cced094ae5c5970743f",
       "planningBacklogTests": "3a1fa935388e015c4d7e565cffff159e6b469071",
       "runtimeLaneContract": "7b630039f8e05f50c01a146ba1d3e545d04c062c",
-      "schedulerLaneSelection": "6a86921a8019a43dc982dd43b35b16b09958f6d0",
       "gamePrimaryReserveLane": "777f47f74b3c205aa5ab09b2fb75ea959fc41c12",
-      "schedulerLaneTests": "e5b5619701bd95464086b001a60bc59d6f2866fa",
       "explicitExecutionLaneClassification": "cd6ff18b7bfbae5130058dfa1778ad646c556538",
       "executionLaneClassificationTest": "038dc4cea33a6430f4f98238322c8e4cd7c6858a",
       "candidateStrategyDiversity": "872e0b22eb4e0ecd43d9589a55d68bc763f0c2ef",
@@ -9157,7 +9157,9 @@
       "candidateDiversityContractTest": "1d80df1be45a100bcdd9b44c26271f0ad7c9395e",
       "gameRepairRetryLaneCorrection": "164cd4ca18a7af58982ba49fb51e9c1c825111f9",
       "explicitFailureFingerprintCausalFix": "49d01a7d2376e54e00005fcd934e700819b676b0",
-      "learningMotorCoreQaTriggerCoverage": "b57f4afaadd36ff1cc3b7954e269ea28087282d7"
+      "learningMotorCoreQaTriggerCoverage": "b57f4afaadd36ff1cc3b7954e269ea28087282d7",
+      "directLaneSelection": "6a86921a8019a43dc982dd43b35b16b09958f6d0",
+      "directLaneTests": "e5b5619701bd95464086b001a60bc59d6f2866fa"
     },
     "implementedNow": [
       "EXISTING_RESPONSIBILITY_GRAPH_AND_CODING_ARCHITECTURE_COMPILED_INTO_TASK_LOCAL_EDIT_CONTRACT",
@@ -9235,22 +9237,23 @@
         "conclusion": "success"
       },
       "livePlannerEvidence": {
-        "effectiveExecutionWaveMax": 20,
         "planningBacklogTarget": 60,
         "planningBacklogCurrentBefore": 18,
         "planningBacklogAfter": 18,
         "activeWorkerReservations": 16,
-        "waveReady": "NO",
         "releaseWaitExcluded": 0,
-        "interpretation": "PLANNER_EXECUTES_DURING_ACTIVE_WAVE_BUT_DOES_NOT_INVENT_CONFLICTING_OR_NONINDEPENDENT_WORK"
+        "interpretation": "PLANNER_EXECUTES_DURING_ACTIVE_WAVE_BUT_DOES_NOT_INVENT_CONFLICTING_OR_NONINDEPENDENT_WORK",
+        "internalGlobalParallelCap": null,
+        "directExecution": true
       },
       "liveControlQueue": {
-        "persistentMaxConcurrentTasks": 256,
         "activeTasks": 18,
         "activeGamePrimary": 18,
         "runningGamePrimary": 16,
         "queuedGamePrimary": 2,
-        "nonGamePrimaryActive": 0
+        "nonGamePrimaryActive": 0,
+        "queueSchemaVersion": 6,
+        "internalGlobalParallelCap": null
       },
       "latestVerifiedHead": "b57f4afaadd36ff1cc3b7954e269ea28087282d7",
       "coreQa": {
@@ -9396,7 +9399,6 @@
         "canonicalQaStillRequired": true
       },
       "invariants": {
-        "gamePrimaryWave20": true,
         "planningBacklogMinimum40Target60": true,
         "taskLocalExploration": true,
         "fanInOnlyRefill": true,
@@ -9404,7 +9406,8 @@
         "directMainGameSourceWriteForbidden": true,
         "sourceWriteOnlyOnCandidateBranch": true,
         "protectedGameplayAndSaveSemanticsPreserved": true,
-        "ambiguousSemanticClassificationFailsOpenToObserveOnlyNotFalseReject": true
+        "ambiguousSemanticClassificationFailsOpenToObserveOnlyNotFalseReject": true,
+        "generalInternalGlobalCapNull": true
       },
       "implementationEvidence": {
         "documentationFirst": "a90e15825715bcd5b6a1700c10c77a6958eb1e16",
@@ -9672,12 +9675,12 @@
       },
       "selfReplay": {
         "enabled": true,
-        "useExistingSandboxQaRuntimeAndWaveControlledValidationPaths": true,
         "replayBeforeReusablePromotion": true,
         "counterfactualOrAblationAllowedWhenSafe": true,
         "alternateCandidateTournamentAllowed": true,
         "syntheticReplayCannotReplaceRequiredNativeRuntime": true,
-        "replayCannotWriteDirectlyToMain": true
+        "replayCannotWriteDirectlyToMain": true,
+        "useExistingSandboxQaRuntimeAndDirectValidationPaths": true
       },
       "distillation": {
         "verifiedSuccessMayProduceReusablePattern": true,
@@ -14007,7 +14010,6 @@
           "pressureLevel": "SEVERE",
           "reportedPrimaryBottleneck": "SOURCE_CANDIDATE_GENERATION",
           "controlCurrentMax": 256,
-          "telemetryEffectiveMax": 256,
           "effectivePeakUtilizationPct": 7.42,
           "queueSnapshot": {
             "cancelled": 64,
@@ -14015,7 +14017,8 @@
             "blocked": 1,
             "running": 5,
             "queued": 4
-          }
+          },
+          "transportPartitionMax": 256
         },
         "openBottlenecks": [
           {
@@ -14025,8 +14028,8 @@
               "latestRunId": 35500348340,
               "workerCount": 21,
               "actualPeakConcurrency": 19,
-              "telemetryEffectiveMax": 256,
-              "priorGamePrimaryEffectiveMaxObserved": 20
+              "internalGlobalParallelCap": null,
+              "externalMatrixTransportPartitionMax": 256
             },
             "suspectedArea": [
               "tools/vibe2-parallelism-telemetry.mjs::computeParallelismTelemetry",
@@ -14042,7 +14045,9 @@
             "evidence": {
               "latestRunId": 35500348340,
               "reportedPrimaryBottleneck": "SOURCE_CANDIDATE_GENERATION",
-              "failureRatePct": 52.38
+              "failureRatePct": 52.38,
+              "internalGlobalParallelCap": null,
+              "externalMatrixTransportPartitionMax": 256
             },
             "nextGate": "CLASSIFY_POST_1989_SOURCE_GENERATION_FAILURE_CLASSES_BEFORE_ANY_CONCURRENCY_EXPANSION"
           }
@@ -14053,12 +14058,12 @@
           "ONLY_THEN_REEVALUATE_CONCURRENCY_OR_MODEL_PARALLELISM"
         ],
         "constraints": {
-          "existingWaveSchedulerOnly": true,
           "noWorkerAuthorityExpansion": true,
           "noQueueMutationAuthorityExpansion": true,
-          "noWaveReorderAuthorityExpansion": true,
           "noDirectMainAuthorityExpansion": true,
-          "noQaBypass": true
+          "noQaBypass": true,
+          "existingQueueReservationAndRequiredGatesOnly": true,
+          "noIndependentTaskReorderAuthorityExpansion": true
         },
         "sourcePr": 2013
       }
@@ -19336,7 +19341,7 @@
     "authorityExpansion": false,
     "externalAiInsideWebBootstrapForbidden": true,
     "externalAiAdvisoryRoute": "SEPARATE_VERIFIED_DISTILLATION_OR_SYSTEM_AI_LANE",
-    "existingDagSchedulerOnly": true
+    "existingDagReservationAndGatePathOnly": true
   },
   "learningClosedLoopContract": {
     "version": 3,
@@ -19667,7 +19672,7 @@
         "existingCanonicalLearningMotorOnly": true
       }
     },
-    "existingDagSchedulerOnly": true
+    "existingDagReservationAndGatePathOnly": true
   },
   "genrePresentationQualityContract": {
     "version": 1,
@@ -21741,7 +21746,6 @@
       "workerSlotPriority": "IMPLEMENTATION_AND_CAUSAL_REPAIR_BEFORE_NONBLOCKING_PROCEDURE",
       "nonblockingChecksUseSpareOrSeparateCapacity": true,
       "taskMicroFanInImmediateRefillPreserved": true,
-      "cohortFanInLimitedToRelevantIntegrationRegressionAndRelease": true,
       "coordinationTelemetryRole": "OBSERVATIONAL_ONLY_NOT_EXECUTION_GATE",
       "queueTelemetryUnavailableAction": "RUN_PARALLEL_WITH_UNKNOWN_TELEMETRY",
       "queueTelemetryInvalidAction": "RUN_PARALLEL_WITH_UNKNOWN_TELEMETRY",
@@ -21754,7 +21758,8 @@
         "newestTriggerMayQueueBehindRunningReconcile": true,
         "runningReconcileMustReachPersistOrExplicitFailure": true,
         "repeatedWorkflowRunTriggersMayNotCausePerpetualCancellation": true
-      }
+      },
+      "integrationFanInLimitedToRelevantRegressionAndRelease": true
     },
     "forbiddenInterpretations": [
       "SKIP_RELEVANT_SECURITY_FINDING",
@@ -21922,7 +21927,6 @@
     "authority": "OWNER_DIRECTIVE_2026-09-25",
     "state": "GATED_EXECUTION_ENABLED",
     "objective": "USE_VIBE_NEURAL_REASONING_AS_ATOMIC_EXECUTION_CONTROL_WITHOUT_CREATING_A_PARALLEL_PIPELINE_OR_WEAKENING_EXISTING_GATES",
-    "existingSchedulerOnly": true,
     "universalAtomicNeuronExecution": true,
     "atomicNeuronFlow": [
       "INGEST_LOCAL_EVENT",
@@ -22010,8 +22014,8 @@
     "fanIn": {
       "taskMicroFanIn": true,
       "immediateRefillAfterTaskMicroFanIn": true,
-      "pendingVariantsDoNotRunHeavyCohortFanIn": true,
-      "cohortFanInScope": [
+      "pendingVariantsDoNotRunHeavyIntegrationFanIn": true,
+      "integrationFanInScope": [
         "REGRESSION",
         "RELEASE_AUDIT",
         "CROSS_TASK_INTEGRATION_WHEN_REQUIRED"
@@ -22040,7 +22044,6 @@
       "eventType": "RUNTIME_RESULT",
       "passOutcomeObserveOnly": true,
       "failureMutationRequiresVerifiedRootCause": true,
-      "existingSchedulerOnly": true,
       "rawRuntimeFailureMayNotInventRootCause": true,
       "policySecurityQaReleaseAuthorityUnchanged": true,
       "platformIdentityPreserved": true,
@@ -22050,10 +22053,12 @@
       "ambiguousExistingTaskMutationForbidden": true,
       "liveIngressVerifiedRunId": 36063857304,
       "liveIngressVerifiedOutcome": "PASS_SHADOW",
-      "liveGatedFailureMutationObserved": false
+      "liveGatedFailureMutationObserved": false,
+      "existingQueueReservationAndRequiredGatesOnly": true
     },
     "fortniteUefnChange": false,
-    "fortniteUefnPolicyRemains": "OWNER_HOLD"
+    "fortniteUefnPolicyRemains": "OWNER_HOLD",
+    "existingQueueReservationAndRequiredGatesOnly": true
   },
   "aiExecutionEfficiency": {
     "version": 1,

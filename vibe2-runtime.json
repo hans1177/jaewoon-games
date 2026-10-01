@@ -579,7 +579,6 @@
       "refillExecutionLane": "GAME_PRIMARY",
       "refillTarget": "LATEST_MAIN_EXISTING_CONTINUOUS_CORE",
       "sameFailedContractRedispatchForbidden": true,
-      "newSchedulerCreated": false,
       "qaBypass": false,
       "originalRegressionFailurePreserved": true,
       "markers": [
@@ -602,7 +601,6 @@
     },
     "assetDevelopmentControlRunnerPool": {
       "authority": "company-learning/platform-release-roadmap.json#changeRecord.assetArmControlPlaneIsolation20260927",
-      "schedulerPlan": "ubuntu-24.04-arm",
       "reserve": "ubuntu-slim",
       "modelCache": "ubuntu-24.04-arm",
       "worker": "ubuntu-24.04-arm",
@@ -610,7 +608,8 @@
       "cacheKey": "vibe2-ollama-v4-${runner.os}-${runner.arch}-qwen3-1.7b",
       "architectureAwareCache": true,
       "gamePrimaryWorkerUnchanged": "ubuntu-latest",
-      "canonicalQueueUnchanged": true
+      "canonicalQueueUnchanged": true,
+      "planRunner": "ubuntu-24.04-arm"
     },
     "reservationContractPinning": {
       "enabled": true,
@@ -1195,7 +1194,6 @@
   },
   "workPackages": {
     "enabled": true,
-    "scheduler": "feature-boundary-work-package",
     "minWorkUnitsPerPackage": 6,
     "minTasksPerPackage": 2,
     "substantialSingleTaskWorkUnits": 6,
@@ -1342,7 +1340,8 @@
     "studioSmallTaskAction": "merge-into-coherent-studio-package-or-defer",
     "maxTasksPerPackageMeaning": "NO_INTERNAL_CAP; RESPONSIBLE_FILE_CONFLICT_AND_CURRENT_EXTERNAL_EXECUTION_WINDOW_ONLY",
     "internalPackageCountCap": null,
-    "internalTaskCountPerPackageCap": null
+    "internalTaskCountPerPackageCap": null,
+    "executionStrategy": "feature-boundary-work-package"
   },
   "learningMotor": {
     "enabled": true,
@@ -1484,9 +1483,9 @@
       "logicalRunnerPerReleasedProject": 1,
       "activeTaskMaxPerProject": 1,
       "sharedProtectedRunnerSlots": 1,
-      "scheduler": ".github/workflows/vibe2-24h-runner.yml",
       "worker": ".github/workflows/vibe2-continuous-core.yml",
-      "continuousRefill": true
+      "continuousRefill": true,
+      "executionWorkflow": ".github/workflows/vibe2-24h-runner.yml"
     },
     "learningContinuity": {
       "continuous": true,
