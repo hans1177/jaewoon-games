@@ -2,7 +2,7 @@
   "version": 3,
   "publicSafe": true,
   "internalCompanySurface": true,
-  "updatedAt": "2026-10-01T18:09:34.619Z",
+  "updatedAt": "2026-10-01T18:19:53.536Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -3108,12 +3108,13 @@
               "exactRuntime": false,
               "lobby": false,
               "movement": false,
-              "noRuntimeErrors": true
+              "noRuntimeErrors": false
             },
             "blockers": [
               "exactRuntime",
               "lobby",
-              "movement"
+              "movement",
+              "noRuntimeErrors"
             ],
             "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
             "artifactIdentity": "sha256:27eac451197d7647d0217f4c7eef45869ee21f36864d68753ef535e04bbf9b33",
