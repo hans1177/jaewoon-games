@@ -103,7 +103,7 @@ test('failed source generation preserves terminal attempt count in fallback rece
   }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
 
-test('shallow candidate inspection fetches the exact base and still detects out-of-bound changes',()=>{
+test('shallow candidate inspection fetches exact contract and transport bases and detects out-of-bound changes',()=>{
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'candidate-shallow-'));
   const upstream=path.join(temp,'upstream');
   const checkout=path.join(temp,'checkout');
@@ -119,28 +119,43 @@ test('shallow candidate inspection fetches the exact base and still detects out-
     const base=git(upstream,'rev-parse','HEAD');
     fs.writeFileSync(path.join(upstream,'unrelated.txt'),'main update\n');
     git(upstream,'add','.'); git(upstream,'commit','-m','main advance');
-    git(upstream,'checkout','-b','vibe2/candidate/demo',base);
+    const transportBase=git(upstream,'rev-parse','HEAD');
+    git(upstream,'checkout','-b','vibe2/candidate/demo',transportBase);
     fs.writeFileSync(path.join(upstream,'roblox-games/demo/source.lua'),'return 2\n');
     fs.writeFileSync(path.join(upstream,'outside.txt'),'must reject\n');
     git(upstream,'add','.'); git(upstream,'commit','-m','candidate');
     git(temp,'clone','--no-tags','--depth=1','--branch','vibe2/candidate/demo',`file://${upstream}`,checkout);
     assert.throws(()=>git(checkout,'cat-file','-e',`${base}^{commit}`));
+    assert.throws(()=>git(checkout,'cat-file','-e',`${transportBase}^{commit}`));
     const fetchMain=releaseWorkflow.match(/^          git fetch --no-tags --depth=1 origin \+refs\/heads\/main:refs\/remotes\/origin\/main --quiet$/m)?.[0].trim();
     assert.ok(fetchMain);
     execFileSync('bash',['-e','-c',fetchMain],{cwd:checkout,stdio:'pipe'});
-    const start=releaseWorkflow.indexOf('          reject()');
-    const end=releaseWorkflow.indexOf('          already_promoted=false',start);
-    const fetchBase=releaseWorkflow.slice(start,end).replace(/^ {10}/gm,'');
+    const fetchStart=releaseWorkflow.indexOf('          reject()');
+    const fetchEnd=releaseWorkflow.indexOf('          already_promoted=false',fetchStart);
+    const fetchBases=releaseWorkflow.slice(fetchStart,fetchEnd).replace(/^ {10}/gm,'');
     const output=path.join(temp,'output');
-    const run=sha=>execFileSync('bash',['-e','-c',fetchBase],{cwd:checkout,env:{...process.env,base_sha:sha,GITHUB_OUTPUT:output},stdio:'pipe'});
-    run(base);
+    const run=(baseSha,transportSha)=>execFileSync('bash',['-e','-c',fetchBases],{
+      cwd:checkout,
+      env:{...process.env,base_sha:baseSha,transport_base_sha:transportSha,GITHUB_OUTPUT:output},
+      stdio:'pipe'
+    });
+    run(base,transportBase);
     assert.equal(git(checkout,'rev-parse',`${base}^{commit}`),base);
+    assert.equal(git(checkout,'rev-parse',`${transportBase}^{commit}`),transportBase);
     assert.equal(git(checkout,'diff','--name-only',base,'origin/main','--','roblox-games/demo'),'');
-    assert.deepEqual(git(checkout,'diff','--name-only',base,'HEAD').split('\n'),['outside.txt','roblox-games/demo/source.lua']);
-    run('--all');
+    assert.deepEqual(git(checkout,'diff','--name-only',transportBase,'HEAD').split('\n'),['outside.txt','roblox-games/demo/source.lua']);
+    fs.writeFileSync(output,'');
+    run('--all',transportBase);
     assert.match(fs.readFileSync(output,'utf8'),/reason=base-main-sha-invalid/);
-    run('f'.repeat(40));
+    fs.writeFileSync(output,'');
+    run(base,'--all');
+    assert.match(fs.readFileSync(output,'utf8'),/reason=transport-base-sha-invalid/);
+    fs.writeFileSync(output,'');
+    run('f'.repeat(40),transportBase);
     assert.match(fs.readFileSync(output,'utf8'),/reason=base-main-sha-missing/);
+    fs.writeFileSync(output,'');
+    run(base,'e'.repeat(40));
+    assert.match(fs.readFileSync(output,'utf8'),/reason=transport-base-sha-missing/);
   }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
 
