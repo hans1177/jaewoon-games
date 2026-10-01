@@ -195,12 +195,12 @@ function Manor:Gag(p,requested)
  if not rr or(rr.Position-room.origin).Magnitude>90 then return end
  if os.clock()-(room.lastGag or -20)<5 then return end
  room.lastGag=os.clock();room.busy=true;room.gag=requested or(room.gag%4+1)
- local prefix=room.gag==1 and"Butler_Skull"or room.gag==2 and"ArmorHelmet"or room.gag==3 and"CoffinLid"or"Tea"
+ local prefix=room.gag==1 and"ButlerHead"or room.gag==2 and"ArmorHelmet"or room.gag==3 and"CoffinLid"or"Tea"
  local pieces=namedParts(room.scene,prefix)
  -- The head's face meshes travel together; an invisible assembly root is unnecessary.
  if room.gag==1 then
   pieces={}
-  for _,name in ipairs({"Butler_Skull","Butler_Nose","Butler_Eye","Butler_Brow","Butler_Mouth"})do
+  for _,name in ipairs({"ButlerHead","Butler_Nose","Butler_Sclera","Butler_Iris","Butler_Pupil","Butler_UpperLid","Butler_Brow","Butler_UpperLip","Butler_LowerLip","Butler_Moustache","Butler_Hair"})do
    for _,part0 in ipairs(namedParts(room.scene,name))do table.insert(pieces,part0)end
   end
  end
