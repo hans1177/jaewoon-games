@@ -64,6 +64,11 @@ jobs:
           set -euo pipefail
           node tools/company-records-governance.mjs --scan
 
+      - name: Validate central policy retention
+        run: |
+          set -euo pipefail
+          node tools/company-records-governance.mjs --central-report
+
       - name: Scheduled records hygiene summary
         if: github.event_name == 'schedule'
         run: |
