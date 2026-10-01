@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 
 import {
   createVibeActorQualityDNA,
@@ -28,6 +29,8 @@ import {
 import {JaewoonCommonAI} from '../assets/common-ai.js';
 import {createAIPartyConfig,createDefaultAIEntries} from '../assets/ai-party.js';
 import {deriveGameplaySketch,buildVibePatchPlan,analyzeExistingGameSource} from '../tools/company-vibe2-gameplay-intelligence.mjs';
+
+const roleDirectorSource=fs.readFileSync(new URL('../assets/vibe-ai-role-director.js',import.meta.url),'utf8');
 
 const companion={
   id:'mira',
@@ -299,9 +302,14 @@ test('causal actor loop carries action event observer interpretation memory emot
   });
   assert.deepEqual([...loop.canonicalSequence],['action','event','observer','interpretation','memory','emotion','relationship','next-judgment','dialogue','action-preference','quest-candidate','engine-validation']);
   assert.equal(loop.sourceEvent.contractComplete,true);
+  assert.equal(loop.sourceEvent.actionId,'act-rescue-1');
+  assert.equal(loop.sourceEvent.actionType,'rescue');
+  assert.equal(loop.sourceAction.id,'act-rescue-1');
   const mira=loop.observers[0],hidden=loop.observers[1];
   assert.equal(mira.perceived,true);
   assert.equal(mira.memoryCandidate.sourceEventId,'evt-rescue-chain');
+  assert.equal(mira.memoryCandidate.sourceActionId,'act-rescue-1');
+  assert.equal(mira.memoryCandidate.sourceActionType,'rescue');
   assert.equal(mira.emotionAfter,'relief');
   assert.ok(mira.relationshipDelta.trust>0);
   assert.ok(mira.next.actionPreferences.includes('cooperate-with-source'));
@@ -331,7 +339,9 @@ test('common ai applies one causal source event once and feeds it into the next 
       relationship:{trust:0},
       memory:[],
       emotion:'calm',
-      knowledge:{observed:true,confidence:1,attribution:'direct-cause'}
+      knowledge:{observed:true,confidence:1,attribution:'direct-cause'},
+      allowQuestProposal:true,
+      questVerb:'investigate'
     }]
   });
   const ai=new JaewoonCommonAI({
@@ -345,6 +355,10 @@ test('common ai applies one causal source event once and feeds it into the next 
   assert.equal(ai.memory.length,1);
   assert.ok(ai.relationshipWith('player').trust>0);
   assert.equal(ai.causalContext.sourceEventId,'evt-help-1');
+  assert.equal(ai.causalContext.judgmentEvidence.sourceEventId,'evt-help-1');
+  assert.ok(ai.causalContext.dialogueActs.length>0);
+  assert.equal(ai.causalContext.questCandidate.candidateOnly,true);
+  assert.equal(ai.causalContext.questCandidate.acceptanceCompletionRewardPersistentMutation,'engine-only');
   const trustAfter=ai.relationshipWith('player').trust;
   const duplicate=ai.observeCausalEvent(packet);
   assert.equal(duplicate.applied,false);
@@ -354,7 +368,17 @@ test('common ai applies one causal source event once and feeds it into the next 
   assert.equal(next.state,JaewoonCommonAI.State.INTERACT);
   assert.equal(next.reason,'causal_social_followup');
   assert.equal(next.causalContext.sourceEventId,'evt-help-1');
+  assert.equal(next.causalContext.sourceEventType,'help');
+  assert.equal(next.causalContext.judgmentEvidence.sourceEventId,'evt-help-1');
+  assert.ok(next.causalContext.dialogueActs.length>0);
+  assert.equal(next.causalContext.questCandidate.candidateOnly,true);
+  assert.equal(next.causalContext.persistentMutationRequiresEngineValidation,true);
+  assert.equal(next.causalContext.gameplayAuthority,false);
   assert.equal(next.gameplayAuthority,false);
+});
+
+test('browser runtime exposes the same causal actor loop instead of a parallel shadow implementation',()=>{
+  assert.match(roleDirectorSource,/planJaewoonVibeCausalActorLoop:planVibeCausalActorLoop/);
 });
 
 test('living actor director can consume a source event through the same causal contract',()=>{
