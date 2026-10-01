@@ -1725,16 +1725,67 @@ export function verifiedExternalLearningBlockFromPrompt(prompt=''){
 export function compactVerifiedExternalLearningBlockFromPrompt(prompt=''){
   const block=verifiedExternalLearningBlockFromPrompt(prompt);
   if(!block)return'';
-  const lines=block.split('\n');
-  const applyCount=lines.filter(line=>line.startsWith('APPLY=')).length;
-  const dispositionCount=lines.filter(line=>line.startsWith('DISPOSITION=')).length;
-  const applyBudget=Math.max(192,Math.min(640,Math.floor(9000/Math.max(1,applyCount))));
-  const dispositionBudget=Math.max(160,Math.min(420,Math.floor(5000/Math.max(1,dispositionCount))));
-  return lines.map(line=>{
-    if(line.startsWith('APPLY='))return 'APPLY='+boundedPromptText(line.slice('APPLY='.length),applyBudget);
-    if(line.startsWith('DISPOSITION='))return boundedPromptText(line,dispositionBudget);
-    return line;
-  }).join('\n');
+  const itemPattern=/\[EXTERNAL_LEARNING ([^\]]+)\]\n([\s\S]*?)\n\[END_EXTERNAL_LEARNING \\1\]/g;
+  const items=[...block.matchAll(itemPattern)];
+  if(!items.length)return block;
+  const dispositionCount=[...block.matchAll(/^DISPOSITION=/gm)].length;
+  const applyCount=[...block.matchAll(/^APPLY=/gm)].length;
+  const compactText=(value,maxBytes)=>{
+    const raw=String(value??'').replace(/\s+/g,' ').trim();
+    const limit=Math.max(48,Number(maxBytes)||48);
+    if(Buffer.byteLength(raw,'utf8')<=limit)return raw;
+    const marker=' …[COMPACT]… ';
+    const chars=[...raw];
+    let low=0,high=chars.length,best=marker.trim();
+    while(low<=high){
+      const keep=Math.floor((low+high)/2),head=Math.ceil(keep/2),tail=Math.floor(keep/2);
+      const candidate=chars.slice(0,head).join('')+marker+chars.slice(chars.length-tail).join('');
+      if(Buffer.byteLength(candidate,'utf8')<=limit){best=candidate;low=keep+1;}else high=keep-1;
+    }
+    return best;
+  };
+  const prefixEnd=items[0].index;
+  const suffixStart=items.at(-1).index+items.at(-1)[0].length;
+  const prefix=block.slice(0,prefixEnd).trimEnd();
+  const suffix=block.slice(suffixStart).trimStart();
+  const render=(applyBudget,dispositionExtraBudget)=>[
+    prefix,
+    ...items.map(match=>{
+      const id=match[1],body=match[2],lines=body.split('\n'),out=[];
+      for(let i=0;i<lines.length;){
+        const line=lines[i];
+        if(line.startsWith('DISPOSITION=')){
+          const bodyText=line.slice('DISPOSITION='.length);
+          const segments=bodyText.split(';');
+          const identity=segments.shift()||'';
+          const extras=segments.filter(value=>/^DOMAINS=|^GENRE_MOOD=/.test(value)).join(';');
+          const base='DISPOSITION='+identity+';';
+          const remaining=Math.max(0,dispositionExtraBudget);
+          out.push(extras&&remaining>=48?base+compactText(extras,remaining):base);
+          i+=1;
+          continue;
+        }
+        if(line.startsWith('APPLY=')){
+          let payload=line.slice('APPLY='.length);
+          i+=1;
+          while(i<lines.length&&!lines[i].startsWith('DISPOSITION=')&&!lines[i].startsWith('APPLY=')){
+            payload+='\n'+lines[i];
+            i+=1;
+          }
+          out.push('APPLY='+compactText(payload,applyBudget));
+          continue;
+        }
+        i+=1;
+      }
+      return ['[EXTERNAL_LEARNING '+id+']',...out,'[END_EXTERNAL_LEARNING '+id+']'].join('\n');
+    }),
+    suffix
+  ].filter(Boolean).join('\n');
+  const applyBudget=Math.max(96,Math.min(640,Math.floor(9000/Math.max(1,applyCount))));
+  const dispositionExtraBudget=Math.max(48,Math.min(220,Math.floor(4000/Math.max(1,dispositionCount))));
+  const first=render(applyBudget,dispositionExtraBudget);
+  if(Buffer.byteLength(first,'utf8')<=18000)return first;
+  return render(Math.max(64,Math.min(128,Math.floor(6500/Math.max(1,applyCount)))),0);
 }
 export function assertVerifiedExternalLearningPromptCoverage(prompt='',contract={}){
   const required=contract?.required===true;

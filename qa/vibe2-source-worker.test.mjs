@@ -5249,6 +5249,47 @@ test('oversized initial prompt compacts verified external learning without dropp
 });
 
 
+test('oversized multiline verified learning compacts every applied principle below initial prompt budget',()=>{
+  const id='external-multiline-oversized';
+  const rows=[];
+  for(let index=0;index<80;index++){
+    rows.push(`DISPOSITION=principle-${index}:APPLIED_GAME_SOURCE;GAME=demo;TARGET=unity;DOMAINS=GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT|MOBILE_INPUT;GENRE_MOOD=cohesive-action`);
+    rows.push('APPLY=id=principle-'+index+';lesson='+('preserve exact gameplay intent and mobile feedback '.repeat(45))+'\n'+('continued implementation detail '.repeat(45)));
+  }
+  const learning=[
+    '[VERIFIED EXTERNAL BLACK-BOX LEARNING BEGIN]',
+    'dispositions=80/80; sourcePrinciples=80; validationOnly=0; truncation=FORBIDDEN',
+    'sourcePromptScope=ALL_DISPOSED_APPLICATION_PRINCIPLES; nonSourceAvoidanceAndUsePolicy=RETAINED_IN_VERIFIED_MEMORY_AND_QA',
+    'HARD SOURCE-WORKER RULE: preserve verified application intent.',
+    `[EXTERNAL_LEARNING ${id}]`,
+    ...rows,
+    `[END_EXTERNAL_LEARNING ${id}]`,
+    '[VERIFIED EXTERNAL BLACK-BOX LEARNING END]'
+  ].join('\n');
+  const file='Assets/Scripts/GameCore.cs';
+  const prompt=[
+    'You are the Vibe2 game source worker. Return JSON only.',
+    'Engine: unity',
+    'Goal: improve the connected implementation',
+    learning,
+    'Allowed edit paths: '+file,
+    `=== FILE ${file} [EDITABLE] ===`,
+    ('public sealed class GameCore { public int Value = 1; }\n').repeat(700)
+  ].join('\n');
+  assert.ok(Buffer.byteLength(prompt,'utf8')>150000);
+  const compactLearning=compactVerifiedExternalLearningBlockFromPrompt(prompt);
+  assert.ok(Buffer.byteLength(compactLearning,'utf8')<20000);
+  assertVerifiedExternalLearningPromptCoverage(compactLearning,{required:true,ids:[id]});
+  assert.match(compactLearning,/DISPOSITION=principle-0:APPLIED_GAME_SOURCE;/);
+  assert.match(compactLearning,/DISPOSITION=principle-79:APPLIED_GAME_SOURCE;/);
+  assert.match(compactLearning,/APPLY=id=principle-0/);
+  assert.match(compactLearning,/APPLY=id=principle-79/);
+  const compact=buildGenerationRetryPrompt(prompt,{responsibleFiles:[file],attempt:1,oversizedInitial:true});
+  assert.ok(Buffer.byteLength(compact,'utf8')<36000);
+  assert.ok(Buffer.byteLength(compact,'utf8')<Buffer.byteLength(prompt,'utf8'));
+  assertVerifiedExternalLearningPromptCoverage(compact,{required:true,ids:[id]});
+});
+
 test('large JSON prompts compact at 36KB and retry-only observation blocks stay bounded',()=>{
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(workerSource,/const MAX_INITIAL_JSON_PROMPT_BYTES=36000;/);
