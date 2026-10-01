@@ -258,7 +258,9 @@ function removeDeadAndSplit(){
   }
 }
 function exhausted(s){
-  return livingCount(s)===0 && state.summons[s]>=maxSummons(s);
+  if(livingCount(s)!==0)return false;
+  if(s==='RED')return state.summons.RED>=maxSummons('RED');
+  return state.summons.BLUE>=maxSummons('BLUE')||!canSummonMore('BLUE');
 }
 function clearStageOne(){
   state.phase='REST';
@@ -522,6 +524,7 @@ $('#cancel').onclick=()=>{selectedUnit=null;selectedCard='';msg('선택 취소')
 
 $('#drawAlly').onclick=()=>{
   if(!state||state.phase!=='REST'||state.keys<=0)return;
+  if(side!=='BLUE')return msg('파랑 팀의 휴식 선택을 기다리는 중');
   const id=GACHA_POOL[Math.floor(Math.random()*GACHA_POOL.length)];
   state.keys--;
   const duplicate=state.unlocked.includes(id);
@@ -533,6 +536,7 @@ $('#drawAlly').onclick=()=>{
 };
 $('#nextStage').onclick=()=>{
   if(!state||state.phase!=='REST')return;
+  if(side!=='BLUE')return msg('파랑 팀의 다음 스테이지 시작을 기다리는 중');
   state.stage=2;
   state.phase='BATTLE';
   state.turn=1;
