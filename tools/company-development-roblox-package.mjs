@@ -99,7 +99,7 @@ export function normalizeRobloxArtifactLightingSerialization({artifactPath='',pr
   const project=readJson(projectFile);
   const profile=robloxLightingSerializationProfile(project);
   let xml=fs.readFileSync(artifact,'utf8');
-  const lightingStart=xml.search(/<Item\\s+class="Lighting"(?:\\s|>)/i);
+  const lightingStart=xml.search(/<Item\s+class="Lighting"(?:\s|>)/i);
   if(lightingStart<0)throw new Error('ROBLOX_LIGHTING_ITEM_REQUIRED');
   const propertiesStart=xml.indexOf('<Properties>',lightingStart);
   const propertiesClose=xml.indexOf('</Properties>',propertiesStart);
@@ -112,7 +112,7 @@ export function normalizeRobloxArtifactLightingSerialization({artifactPath='',pr
   xml=xml.slice(0,propertiesStart)+lightingProperties+xml.slice(propertiesEnd);
 
   if(profile.expectsRetro){
-    const toneName=/<string\\s+name="Name">\\s*CompatibilityToneMap\\s*<\\/string>/i;
+    const toneName=/<string\s+name="Name">\s*CompatibilityToneMap\s*<\/string>/i;
     const match=toneName.exec(xml);
     if(!match)throw new Error('ROBLOX_LIGHTING_RETRO_TONEMAP_INSTANCE_REQUIRED');
     const toneNameAt=match.index;
