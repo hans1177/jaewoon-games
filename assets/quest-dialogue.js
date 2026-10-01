@@ -378,15 +378,21 @@ export class JaewoonQuestDialogue {
     return true;
   }
 
-  adjustRelationship(state, fromNpcId, toId, delta = {}) {
+  adjustRelationship(state, fromNpcId, toId, delta = {}, sourceEvent = '') {
     this.ensureExtendedState(state);
     const from = String(fromNpcId || '').trim(), to = String(toId || '').trim();
+    const eventId = String(sourceEvent || delta.sourceEvent || delta.eventId || '').trim();
     if (!from || !to) throw new Error('relationship ids are required');
+    if (!eventId) throw new Error('relationship source event is required');
     const key = `${from}->${to}`;
-    const current = state.relationships[key] || { trust: 0, affinity: 0, fear: 0, respect: 0, debt: 0, betrayal: 0 };
+    const current = state.relationships[key] || { trust: 0, affinity: 0, fear: 0, respect: 0, debt: 0, betrayal: 0, events: [] };
+    current.events ||= [];
+    if (current.events.includes(eventId)) return clone(current);
     for (const axis of ['trust','affinity','fear','respect','debt','betrayal']) {
       current[axis] = Math.max(-100, Math.min(100, int(current[axis], 0) + int(delta[axis], 0)));
     }
+    current.events.push(eventId);
+    current.lastCauseEventId = eventId;
     state.relationships[key] = current;
     return clone(current);
   }
