@@ -5407,3 +5407,36 @@ test('Luau focused anchors follow the named responsibility instead of unrelated 
   }
   assert.equal(fs.readFileSync(path.join(root,relative),'utf8'),source);
 });
+
+test('Luau focused anchors fall back to directive line hints when the symbolic label is not a real function name',()=>{
+  const root=tempRoot(),relative='client/Game.client.luau';
+  const source=[
+    'local function helper()',
+    '  local s=Instance.new("Sound");s.Parent=game.SoundService',
+    'end',
+    '',
+    'local function renderQuestHud()',
+    '  local panel=Instance.new("Frame")',
+    '  panel.BackgroundColor3=Color3.fromRGB(20,20,20)',
+    '  panel.Visible=true',
+    'end'
+  ].join('\n');
+  write(path.join(root,relative),source);
+  const prompt=[
+    'Engine: roblox',
+    'Goal: improve the quest HUD presentation',
+    'Allowed edit paths: '+relative,
+    '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
+    'sourceAnchors=roblox-games/demo/'+relative+':7 SYSTEM QuestHudPresentation CURRENT=flat INTENDED=readable ACCEPT=visible',
+    '[GAME SPECIFIC BUILD UP DIRECTIVE END]',
+    '',
+    '=== FILE '+relative+' [EDITABLE] ===',
+    'local function helper()',
+    '  local s=Instance.new("Sound");s.Parent=game.SoundService',
+    'end'
+  ].join('\n');
+  const focused=buildFocusedReplaceOnlyPrompt(prompt,{sourceRoot:root,responsibleFiles:[relative],preferredTargets:[]});
+  assert.equal(focused.spec.find,'  panel.BackgroundColor3=Color3.fromRGB(20,20,20)');
+  assert.ok(focused.spec.context.includes('local function renderQuestHud()'));
+});
+
