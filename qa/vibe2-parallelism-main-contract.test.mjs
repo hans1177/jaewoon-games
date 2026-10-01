@@ -106,30 +106,32 @@ test('maximum parallelism is default and source-root locks are permanently disab
   assert.match(core,/VIBE2_RESERVE_CONTRACT_REGRESSION=PASS/);
 });
 
-test('lightweight reserve uses slim while fan-in stays on ARM and heavy execution stays on ubuntu-latest',()=>{
+test('game-primary control work uses available latest capacity while push/manual reserve remains slim',()=>{
   const pool=runtime.continuous?.gamePrimaryControlRunnerPool||{};
   const architecturePool=architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool||{};
 
   assert.equal(pool.reserve,'ubuntu-slim');
-  assert.equal(pool.fanIn,'ubuntu-24.04-arm');
+  assert.equal(pool.fanInRefillReserve,'ubuntu-latest');
+  assert.equal(pool.fanIn,'ubuntu-latest');
   assert.equal(pool.worker,'ubuntu-latest');
   assert.equal(pool.modelCache,'ubuntu-latest');
-  assert.equal(pool.lightweightReserveSeparatedFromArmFanIn,true);
+  assert.equal(pool.lightweightReserveSeparatedFromArmFanIn,false);
   assert.equal(pool.queueReservationAndStateFanInOnly,true);
   assert.equal(pool.heavyGameExecutionUnchanged,true);
 
   assert.equal(architecturePool.reserve,'ubuntu-slim');
-  assert.equal(architecturePool.fanIn,'ubuntu-24.04-arm');
+  assert.equal(architecturePool.fanIn,'ubuntu-latest');
   assert.equal(architecturePool.worker,'ubuntu-latest');
   assert.equal(architecturePool.modelCache,'ubuntu-latest');
-  assert.equal(architecturePool.lightweightReserveSeparatedFromArmFanIn,true);
+  assert.equal(architecturePool.lightweightReserveSeparatedFromArmFanIn,false);
   assert.equal(architecturePool.queueReservationAndStateFanInOnly,true);
   assert.equal(architecturePool.heavyGameExecutionUnchanged,true);
   assert.equal(roadmap.changeRecord?.fanInRefillRunnerPressureBypass20260927?.runnerRouting?.defaultReserve,'ubuntu-slim');
-  assert.equal(roadmap.changeRecord?.fanInRefillRunnerPressureBypass20260927?.runnerRouting?.fanInRefillReserve,'ubuntu-24.04-arm');
+  assert.equal(roadmap.changeRecord?.fanInRefillRunnerPressureBypass20260927?.runnerRouting?.fanInRefillReserve,'ubuntu-latest');
+  assert.equal(roadmap.changeRecord?.runnerBackpressureBottleneckRelief20261001?.runnerRouting?.gamePrimaryFanIn,'ubuntu-latest');
 
-  assert.match(core,/\n  reserve:\n(?:    #[^\n]*\n)*    runs-on: \$\{\{ \(github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-slim'\) \}\}/);
-  assert.match(core.slice(core.indexOf('\n  fan_in:'),core.indexOf('\n    steps:',core.indexOf('\n  fan_in:'))),/\n    runs-on: ubuntu-24\.04-arm/);
+  assert.match(core,/\n  reserve:\n(?:    #[^\n]*\n)*    runs-on: \$\{\{ \(github\.event_name == 'repository_dispatch' && \(github\.event\.action == 'vibe2-fanin-refill' \|\| github\.event\.action == 'vibe2-neuron-complete'\) && 'ubuntu-latest' \|\| 'ubuntu-slim'\) \}\}/);
+  assert.match(core.slice(core.indexOf('\n  fan_in:'),core.indexOf('\n    steps:',core.indexOf('\n  fan_in:'))),/\n    runs-on: ubuntu-latest/);
   assert.match(core,/\n  model_cache:[\s\S]{0,360}?if: needs\.reserve\.outputs\.worker_count != '0' && needs\.reserve\.outputs\.model_cache_hit != 'true' && \(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) != 'asset-development'/);
   assert.match(core,/\n  model_cache:[\s\S]{0,520}?\n    runs-on: \$\{\{ \(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-latest' \}\}/);
   assert.match(core,/Probe shared Ollama cache from reserve runner[\s\S]{0,180}?env\.VIBE2_EXECUTION_LANE != 'asset-development'/);
@@ -231,22 +233,20 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.equal(runtime.continuous.reserveConcurrency.serializationScope,'ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY');
   assert.equal(runtime.continuous.reserveConcurrency.gamePrimaryExternalBoundary,256);
   assert.equal(learning.liveRunnerPressureGateImplemented,true);
-  assert.equal(learning.minimumActiveWorkersUnderPressure,1);
+  assert.equal(learning.minimumActiveWorkersUnderPressure,0);
+  assert.equal(learning.pressureObservationFailureDefersLearning,true);
   assert.equal(learning.productionMayNotWaitForLearningReserve,true);
   assert.equal(runtime.continuous.auxiliaryLaneFanIn.recoveryFastCausalGameRefillAllowed,true);
+  assert.equal(runtime.continuous.auxiliaryLaneFanIn.recoveryFastCausalGameRefillPressureGuardRequired,true);
+  assert.equal(runtime.continuous.auxiliaryLaneFanIn.recoveryFastCausalGameRefillQueuePressureThreshold,4);
   assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'LANE_SCOPED_STATELESS_REFILL_COALESCING');
   assert.equal(runtime.continuous.atomicNeuronStream.globalFanInRefillSingletonForbidden,true);
-  assert.equal(runtime.continuous.atomicNeuronStream.pressureCoalescingIndependentFreeSlotRefillPreserved,true);
-  assert.equal(runtime.continuous.callbackCoalescing.capacityRefillMayProceedWhileResultCoalesced,true);
-  assert.equal(runtime.continuous.callbackCoalescing.pressureCapacityRefill.maxSignalsPerWave,1);
-  assert.match(core,/VIBE2_PRESSURE_REFILL_DISPATCH=WAVE_LEADER_EXISTING_FANIN_REFILL/);
-  assert.match(core,/const robloxLeaderTaskId=pressureRefillEligible/);
-  assert.match(core,/row\.target==='roblox'&&Number\(row\.speculativeVariants\|\|1\)===1/);
-  assert.match(core,/VIBE2_NEURON_TARGET: \$\{\{ matrix\.target \}\}/);
-  assert.match(core,/VIBE2_GAME_PRESSURE_MICRO_FANIN=EVERY_COMPLETE_SINGLE_TASK/);
-  assert.match(core,/\[ "\$game_micro_fanin" != 'true' \]/);
-
-  assert.match(core,/runner-pressure-wave-leader-free-slot-refill/);
+  assert.equal(runtime.continuous.atomicNeuronStream.pressureCoalescingIndependentFreeSlotRefillPreserved,false);
+  assert.equal(runtime.continuous.callbackCoalescing.capacityRefillMayProceedWhileResultCoalesced,false);
+  assert.equal(runtime.continuous.callbackCoalescing.pressureCapacityRefill.maxSignalsPerWave,0);
+  assert.match(core,/VIBE2_PRESSURE_REFILL_DISPATCH=SKIPPED_DEFER_TO_COHORT_FANIN/);
+  assert.match(core,/VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN/);
+  assert.doesNotMatch(core,/robloxLeaderTaskId|runner-pressure-wave-leader-free-slot-refill|VIBE2_ASSET_NEURON_PRESSURE_BYPASS/);
   assert.match(core,/VIBE2_CONTROL_OPTIMISTIC_RETRY_POLICY=UNBOUNDED/);
   assert.match(core,/VIBE2_CONTROL_OPTIMISTIC_RETRY_BACKOFF_SECONDS=/);
   assert.doesNotMatch(core,/for state_attempt in 1 2 3 4 5/);
