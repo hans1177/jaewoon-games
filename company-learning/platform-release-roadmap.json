@@ -12966,7 +12966,7 @@
       "mode": "MERGED_MAIN_GATED_EXECUTION_WITH_SHADOW_FALLBACK",
       "mainCommit": "92e2628e5b1ace38587121126663064783d5ade2",
       "activated": true,
-      "executionAuthority": "EXISTING_DAG_SCHEDULER_WITH_GATED_NEURAL_CONTROL",
+      "executionAuthority": "EXISTING_DAG_RESERVATION_WITH_GATED_NEURAL_CONTROL",
       "neuralExecutionAuthority": true,
       "neuralWorkerCreationAuthority": "EXISTING_QUEUED_TASK_DISPATCH_ONLY",
       "neuralQueueMutationAuthority": "REQUEUE_REPRIORITIZE_REFILL_ONLY",
@@ -13721,7 +13721,7 @@
       "mayReorderIndependentTasks": false
     },
     "executionBoundary": {
-      "executionAuthority": "EXISTING_DAG_SCHEDULER_ONLY",
+      "executionAuthority": "EXISTING_DAG_RESERVATION_AND_REQUIRED_GATES_ONLY",
       "neuralExecutionAuthority": false,
       "workerCreationAuthority": false,
       "queueMutationAuthority": false,
