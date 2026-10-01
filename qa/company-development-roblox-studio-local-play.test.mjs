@@ -1743,6 +1743,13 @@ test('worker automation, save rejoin, and map rerolls do not invent companion or
   assert.equal(contract.adaptiveCoverage.signals.npc,true);
 });
 
+test('Studio runtime category scan does not treat generic reset names as retry flow',()=>{
+  assert.doesNotMatch(helper,/string\.find\(n,"reset"\)/);
+  assert.match(helper,/string\.find\(n,"roundreset"\)/);
+  assert.match(helper,/string\.find\(n,"runreset"\)/);
+  assert.match(helper,/string\.find\(n,"gamereset"\)/);
+});
+
 test('verified Studio product failures outrank generic MCP infrastructure noise for repair routing',()=>{
   const broken=runtime();
   broken.runtimeVerified=false;

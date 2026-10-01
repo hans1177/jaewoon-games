@@ -14,7 +14,7 @@ const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,'
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(path.resolve(file)),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const stableSha256=value=>crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
-export const ROBLOX_STUDIO_HARNESS_VERSION=10;
+export const ROBLOX_STUDIO_HARNESS_VERSION=11;
 
 export function assertCurrentStudioWorkflowHead({
   workflowSha=clean(process.env.GITHUB_SHA),
@@ -1346,7 +1346,7 @@ function studioActualPlayRuntimeProbeSource(){
     '   if string.find(n,"attack") or string.find(n,"skill") or string.find(n,"combat") or string.find(n,"damage") or string.find(n,"enemy") or string.find(n,"monster") or string.find(n,"boss") or string.find(n,"mob") then category.combat=category.combat+1;matched=true end',
     '   if string.find(n,"level") or string.find(n,"wave") or string.find(n,"round") or string.find(n,"portal") or string.find(n,"progress") or string.find(n,"unlock") or string.find(n,"mastery") or string.find(n,"stage") then category.progression=category.progression+1;matched=true end',
     '   if string.find(n,"save") or string.find(n,"load") or string.find(n,"datastore") or string.find(n,"persist") then category.save=category.save+1;matched=true end',
-    '   if string.find(n,"retry") or string.find(n,"restart") or string.find(n,"respawn") or string.find(n,"reset") or string.find(n,"newrun") then category.retry=category.retry+1;matched=true end',
+    '   if string.find(n,"retry") or string.find(n,"restart") or string.find(n,"respawn") or string.find(n,"newrun") or string.find(n,"roundreset") or string.find(n,"runreset") or string.find(n,"gamereset") then category.retry=category.retry+1;matched=true end',
     '   if string.find(n,"npc") or string.find(n,"merchant") or string.find(n,"chief") or string.find(n,"healer") or string.find(n,"resident") or string.find(n,"worker") or string.find(n,"villager") or string.find(n,"trainer") or string.find(n,"master") then category.npc=category.npc+1;matched=true end',
     '   if string.find(n,"companion") or string.find(n,"follower") or string.find(n,"pet") or string.find(n,"summon") then category.companion=category.companion+1;matched=true end',
     '   if string.find(n,"item") or string.find(n,"loot") or string.find(n,"drop") or string.find(n,"weapon") or string.find(n,"armor") or string.find(n,"relic") or string.find(n,"resource") or string.find(n,"material") then category.item=category.item+1;matched=true end',
