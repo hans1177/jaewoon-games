@@ -674,15 +674,15 @@ local function trialInstruction(classId)
 end
 local function startAdvancementTrial(p)
  local classId=tostring(p:GetAttribute("ClassId")or"NONE")
- if not classDef(classId)then msg(p,"직업을 먼저 선택해.")return end
- if n(p,"Level",1)<C.AdvancementLevel then msg(p,"전직은 Lv."..C.AdvancementLevel.."부터 가능")return end
+ if not classDef(classId)then msg(p,"직업을 먼저 선택해.");feedback(p,"ADVANCEMENT_NEEDS_CLASS")return end
+ if n(p,"Level",1)<C.AdvancementLevel then msg(p,"전직은 Lv."..C.AdvancementLevel.."부터 가능");feedback(p,"ADVANCEMENT_LEVEL_LOCKED")return end
  if tostring(p:GetAttribute("AdvancementId")or"")~=""then
-  if n(p,"Gold",0)<C.AdvancementSwitchCost then msg(p,"재전직 비용 "..C.AdvancementSwitchCost.."골드 필요")return end
-  p:SetAttribute("RespecReady",true);msg(p,"재전직 준비 완료 · A/B 중 선택하면 "..C.AdvancementSwitchCost.."골드 사용");return
+  if n(p,"Gold",0)<C.AdvancementSwitchCost then msg(p,"재전직 비용 "..C.AdvancementSwitchCost.."골드 필요");feedback(p,"ADVANCEMENT_RESPEC_GOLD_SHORT")return end
+  p:SetAttribute("RespecReady",true);msg(p,"재전직 준비 완료 · A/B 중 선택하면 "..C.AdvancementSwitchCost.."골드 사용");feedback(p,"ADVANCEMENT_RESPEC_READY");return
  end
- if p:GetAttribute("AdvancementTrialPassed")==true then msg(p,"전직 시험 완료 · 화면에서 A/B 전직을 선택해.")return end
+ if p:GetAttribute("AdvancementTrialPassed")==true then msg(p,"전직 시험 완료 · 화면에서 A/B 전직을 선택해.");feedback(p,"ADVANCEMENT_READY")return end
  p:SetAttribute("AdvancementTrialActive",true);p:SetAttribute("AdvancementTrialProgress",0);p:SetAttribute("SoulCharge",0)
- msg(p,trialInstruction(classId))
+ msg(p,trialInstruction(classId));feedback(p,"ADVANCEMENT_TRIAL_START")
 end
 local function advanceTrial(p,amount)
  if p:GetAttribute("AdvancementTrialActive")~=true or p:GetAttribute("AdvancementTrialPassed")==true then return end
@@ -728,23 +728,23 @@ local function makeVillage()
  prompt(chief,"마을 이장","퀘스트 받기").Triggered:Connect(function(p)
   local level=n(p,"Level",1);local id=math.clamp(math.floor((level-1)/3)+1,1,5);local need=5+id
   p:SetAttribute("QuestPortal",id);p:SetAttribute("QuestKills",0);p:SetAttribute("QuestNeed",need)
-  msg(p,string.format("%s 몬스터 %d마리 처치",C.Portals[id].Name,need))
+  msg(p,string.format("%s 몬스터 %d마리 처치",C.Portals[id].Name,need));feedback(p,"QUEST_ACCEPT")
  end)
 
  local weapon=humanoidFigure(f,"WeaponMerchant",Vector3.new(22,6,8),Color3.fromRGB(85,92,112),Color3.fromRGB(170,120,65),.95);label(weapon,"무기상인",Color3.fromRGB(255,215,140),28)
  prompt(weapon,"무기상인","다음 무기 구매").Triggered:Connect(function(p)
-  local tier=n(p,"WeaponTier",1);if tier>=5 then msg(p,"최고급 무기 보유")return end
-  local cost=C.WeaponPrices[tier+1];if n(p,"Gold",0)<cost then msg(p,"무기 구매 골드 부족 · "..cost)return end
-  p:SetAttribute("Gold",n(p,"Gold",0)-cost);p:SetAttribute("WeaponTier",tier+1);setStats(p,false);msg(p,"무기 "..(tier+1).."단계 구매")
+  local tier=n(p,"WeaponTier",1);if tier>=5 then msg(p,"최고급 무기 보유");feedback(p,"WEAPON_MAX")return end
+  local cost=C.WeaponPrices[tier+1];if n(p,"Gold",0)<cost then msg(p,"무기 구매 골드 부족 · "..cost);feedback(p,"WEAPON_GOLD_SHORT")return end
+  p:SetAttribute("Gold",n(p,"Gold",0)-cost);p:SetAttribute("WeaponTier",tier+1);setStats(p,false);msg(p,"무기 "..(tier+1).."단계 구매");feedback(p,"WEAPON_UPGRADE")
  end)
  local armor=humanoidFigure(f,"ArmorMerchant",Vector3.new(22,6,-10),Color3.fromRGB(92,112,102),Color3.fromRGB(80,91,77),.95);label(armor,"방어구상인",Color3.fromRGB(180,235,190),28)
  prompt(armor,"방어구상인","다음 방어구 구매").Triggered:Connect(function(p)
-  local tier=n(p,"ArmorTier",1);if tier>=5 then msg(p,"최고급 방어구 보유")return end
-  local cost=C.ArmorPrices[tier+1];if n(p,"Gold",0)<cost then msg(p,"방어구 구매 골드 부족 · "..cost)return end
-  p:SetAttribute("Gold",n(p,"Gold",0)-cost);p:SetAttribute("ArmorTier",tier+1);setStats(p,true);msg(p,"방어구 "..(tier+1).."단계 구매")
+  local tier=n(p,"ArmorTier",1);if tier>=5 then msg(p,"최고급 방어구 보유");feedback(p,"ARMOR_MAX")return end
+  local cost=C.ArmorPrices[tier+1];if n(p,"Gold",0)<cost then msg(p,"방어구 구매 골드 부족 · "..cost);feedback(p,"ARMOR_GOLD_SHORT")return end
+  p:SetAttribute("Gold",n(p,"Gold",0)-cost);p:SetAttribute("ArmorTier",tier+1);setStats(p,true);msg(p,"방어구 "..(tier+1).."단계 구매");feedback(p,"ARMOR_UPGRADE")
  end)
  local healer=humanoidFigure(f,"VillageHealer",Vector3.new(-18,6,-10),Color3.fromRGB(208,221,235),Color3.fromRGB(116,169,193),.95);label(healer,"치유사",Color3.fromRGB(180,232,255),28)
- prompt(healer,"치유사","회복").Triggered:Connect(function(p)local h=hum(p);if h then h.Health=h.MaxHealth;msg(p,"체력 완전 회복")end end)
+ prompt(healer,"치유사","회복").Triggered:Connect(function(p)local h=hum(p);if h then h.Health=h.MaxHealth;msg(p,"체력 완전 회복");feedback(p,"VILLAGE_HEAL")end end)
  local master=humanoidFigure(f,"AdvancementMaster",Vector3.new(-24,6,14),Color3.fromRGB(112,88,145),Color3.fromRGB(67,56,82),.95);label(master,"전직 교관",Color3.fromRGB(225,196,255),30)
  prompt(master,"전직 교관","전직 시험").Triggered:Connect(startAdvancementTrial)
 
@@ -1191,10 +1191,19 @@ local function killEnemy(p,e,contribution)
 end
 local function playerAttack(p,skill)
  local classId=tostring(p:GetAttribute("ClassId")or"NONE");local cd=classDef(classId)
- if not cd then msg(p,"먼저 시작 직업을 선택해.")return end
- local zone=n(p,"CurrentZone",0);if zone==0 then msg(p,"포탈을 타고 사냥터로 이동해")return end
- local r=root(p);if not r then return end;local range=skill and(classId=="RUNE"and 28 or classId=="SOUL"and 26 or 20)or 15
- local e=nearestEnemy(r.Position,zone,range);if not e then msg(p,"사거리 안에 몬스터가 없어")return end
+ if not cd then msg(p,"먼저 시작 직업을 선택해.");feedback(p,"ATTACK_NEEDS_CLASS")return end
+ local r=root(p);if not r then return end
+ local zone=n(p,"CurrentZone",0)
+ if zone==0 then
+  for _,z in ipairs(C.Portals)do
+   if math.abs(r.Position.X-z.Center.X)<=215 and math.abs(r.Position.Z-z.Center.Z)<=215 then
+    zone=z.Id;p:SetAttribute("CurrentZone",zone);break
+   end
+  end
+ end
+ if zone==0 then msg(p,"포탈을 타고 사냥터로 이동해");feedback(p,"ATTACK_NEEDS_ZONE")return end
+ local range=skill and(classId=="RUNE"and 28 or classId=="SOUL"and 26 or 20)or 15
+ local e=nearestEnemy(r.Position,zone,range);if not e then msg(p,"사거리 안에 몬스터가 없어");feedback(p,"ATTACK_NO_TARGET")return end
  local now=os.clock();local adv=tostring(p:GetAttribute("AdvancementId")or"");local damage=n(p,"AttackPower",10)*(skill and cd.SkillMult or 1)
  local backstab=classId=="SHADOW"and n(p,"BackstabUntil",0)>now
  if classId=="BREAKER"then
