@@ -155,6 +155,14 @@ test('post-runtime QA deduplicates heavy scans without blocking local Studio pla
 });
 
 
+test('shared Roblox Studio host remains intentionally serialized while non-Studio QA may run per game',()=>{
+  const studioAt=workflow.indexOf('\n  studio-mcp-auto-play:');
+  assert.ok(studioAt>0);
+  const studioBlock=workflow.slice(studioAt,workflow.length);
+  assert.match(studioBlock,/concurrency:\n\s+group: roblox-studio-shared-host\n\s+cancel-in-progress: false/);
+  assert.match(studioBlock,/strategy:[\s\S]{0,180}fail-fast: false[\s\S]{0,180}max-parallel: 1/);
+});
+
 test('Studio MCP actual play passes each game launch contract into the official helper',()=>{
   assert.match(workflow,/--actual-play-contract=main\/roblox-games\/\$\{\{ matrix\.gameId \}\}\/launch-mvp\.json/);
 });
