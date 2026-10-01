@@ -603,8 +603,10 @@ export function createVibeGraphicsProduction({
     }):null;
     return Object.freeze({request,observation});
   }));
-  const requiredInterfaceSurfaces=Object.freeze(unique((interfaceRequirements||[]).map(row=>typeof row==='string'?row:row?.surface||row?.id).map(value=>String(value||'').trim().toUpperCase())));
-  const sceneRequirements=Object.freeze((sceneObjectRequirements||[]).map(row=>typeof row==='string'?Object.freeze({id:row,required:true}):Object.freeze({...row})).filter(row=>clean(row?.id)));
+  const interfaceSource=(interfaceRequirements||[]).length?interfaceRequirements:(game?.interfaceRequirements||game?.uiRequirements||[]);
+  const requiredInterfaceSurfaces=Object.freeze(unique((interfaceSource||[]).map(row=>typeof row==='string'?row:row?.surface||row?.id).map(value=>String(value||'').trim().toUpperCase()).filter(value=>['HUD','MENU','MINIMAP','INTERACTION'].includes(value))));
+  const sceneSource=(sceneObjectRequirements||[]).length?sceneObjectRequirements:(world?.requiredObjects||game?.requiredSceneObjects||[]);
+  const sceneRequirements=Object.freeze((sceneSource||[]).map(row=>typeof row==='string'?Object.freeze({id:row,required:true}):Object.freeze({...row})).filter(row=>clean(row?.id)));
   const runtimeEvidenceBase=runtimeEvidence&&typeof runtimeEvidence==='object'?runtimeEvidence:{};
   const runtimeEvidenceBound=(Object.keys(runtimeEvidenceBase).length||requiredInterfaceSurfaces.length||sceneRequirements.length||runtimeBeforeAfterEvidence)?{
     ...runtimeEvidenceBase,
