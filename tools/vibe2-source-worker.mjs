@@ -1721,6 +1721,21 @@ export function verifiedExternalLearningBlockFromPrompt(prompt=''){
   if(end<0)throw new Error('VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_BLOCK_TRUNCATED');
   return raw.slice(start,end+VERIFIED_EXTERNAL_LEARNING_END.length);
 }
+
+export function compactVerifiedExternalLearningBlockFromPrompt(prompt=''){
+  const block=verifiedExternalLearningBlockFromPrompt(prompt);
+  if(!block)return'';
+  const lines=block.split('\n');
+  const applyCount=lines.filter(line=>line.startsWith('APPLY=')).length;
+  const dispositionCount=lines.filter(line=>line.startsWith('DISPOSITION=')).length;
+  const applyBudget=Math.max(192,Math.min(640,Math.floor(9000/Math.max(1,applyCount))));
+  const dispositionBudget=Math.max(160,Math.min(420,Math.floor(5000/Math.max(1,dispositionCount))));
+  return lines.map(line=>{
+    if(line.startsWith('APPLY='))return 'APPLY='+boundedPromptText(line.slice('APPLY='.length),applyBudget);
+    if(line.startsWith('DISPOSITION='))return boundedPromptText(line,dispositionBudget);
+    return line;
+  }).join('\n');
+}
 export function assertVerifiedExternalLearningPromptCoverage(prompt='',contract={}){
   const required=contract?.required===true;
   const expectedIds=unique((contract?.ids||[]).map(clean).filter(Boolean));
@@ -2524,7 +2539,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
           'You are the Vibe2 game source worker. Return JSON only.',
           rawPrompt.split('\n').find(line=>line.startsWith('Engine:'))||'',
           compactGoalLine,
-          verifiedExternalLearningBlockFromPrompt(rawPrompt),
+          compactVerifiedExternalLearningBlockFromPrompt(rawPrompt),
           buildUpDirectiveBlockFromPrompt(rawPrompt,{compact:true,responsiblePaths:exactResponsible}),
           allowedLine,
           'Preserve gameplay values, save meaning and existing behavior unless the work order explicitly authorizes a protected change.',
@@ -2704,7 +2719,13 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   const initialStudioPrompt=oversizedStandardInitial
     ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,multiFilePairRequired,oversizedInitial:true})
     :specializedInitialPrompt;
-  if(oversizedStandardInitial)console.log(`VIBE2_INITIAL_JSON_PROMPT_COMPACTED=${Buffer.byteLength(prompt,'utf8')}->${Buffer.byteLength(initialStudioPrompt,'utf8')}`);
+  if(oversizedStandardInitial){
+    const originalBytes=Buffer.byteLength(prompt,'utf8');
+    const compactBytes=Buffer.byteLength(initialStudioPrompt,'utf8');
+    console.log(`VIBE2_INITIAL_JSON_PROMPT_COMPACTED=${originalBytes}->${compactBytes}`);
+    if(compactBytes>=originalBytes)throw new Error(`INITIAL_PROMPT_COMPACTION_REGRESSION:${originalBytes}->${compactBytes}`);
+    if(compactBytes>MAX_INITIAL_JSON_PROMPT_BYTES)throw new Error(`INITIAL_PROMPT_COMPACTION_BUDGET_EXCEEDED:${compactBytes}>${MAX_INITIAL_JSON_PROMPT_BYTES}`);
+  }
   // 과대한 재구축·출시 후 집중 개선 주문은 기존 책임 앵커 경로로 바로 시작한다.
   // 연결 패키지/원자적 파일 쌍은 기존 경로를 유지하고 최종 후보 검증도 그대로 적용한다.
   const robloxRebuildFocused=target==='roblox'&&!allowFullRewrite&&!studioExpansion&&!robloxGraphicsInitial
