@@ -64,10 +64,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "REPAIR_REQUIRED",
-      "canonicalState": "REPAIR_REQUIRED",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-10-01T14:28:14.202Z",
+      "updatedAt": "2026-10-01T14:28:58.011Z",
       "robloxSourceCommit": "caf107a8a2415fafa179b1e076d93704506398c9",
       "robloxSourceBootstrapPassedAt": "2026-10-01T12:53:24.940Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -1836,7 +1836,7 @@
       "unityCandidateBranch": "development/unity-tech-daechung-rpg-36859359319",
       "unitySourceCommit": "dcb0c574594500da5c1eba3830e956dacd6aab6c",
       "unityBuildRunId": 36861804899,
-      "unityRuntimeSmokeRunId": 36868078440,
+      "unityRuntimeSmokeRunId": 36876172032,
       "unityIndependentQaRunId": 36272561183,
       "unityRegressionRunId": 36272695244,
       "unityInternalReleaseReady": false,
@@ -2440,7 +2440,7 @@
           }
         },
         "multiplayerRequired": true,
-        "verifiedAt": "2026-10-01T13:23:22.628Z"
+        "verifiedAt": "2026-10-01T14:28:58.011Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -27222,7 +27222,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T14:28:52.149Z",
+  "updatedAt": "2026-10-01T14:28:59.585Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
