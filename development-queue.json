@@ -3251,10 +3251,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
-      "canonicalState": "F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T18:34:47.999Z",
+      "updatedAt": "2026-10-01T18:52:33.324Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -3739,7 +3739,7 @@
       "robloxInternalVibePlayEvidence": {
         "version": 2,
         "gameId": "village-dungeons",
-        "studioHarnessVersion": 15,
+        "studioHarnessVersion": 16,
         "authority": "roblox-official-studio-mcp-runtime",
         "pass": false,
         "actualPlay": true,
@@ -4331,8 +4331,8 @@
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
           "scenarioFailureCount": 3,
-          "primaryActionDisplacement": 1.8842684465290096,
-          "primaryActionVelocity": 0.12627217173836633,
+          "primaryActionDisplacement": 1.884167159205726,
+          "primaryActionVelocity": 0.2617360651506621,
           "primaryActionFeedbackChanged": false,
           "commercialAudit": {
             "auditProfile": "F9_SOAK",
@@ -4372,7 +4372,7 @@
               "multiplayerActualSessionPass": false
             },
             "performance": {
-              "memoryMb": 2382.19140625,
+              "memoryMb": 2639.45703125,
               "descendantCount": 317
             },
             "multiplayer": null,
@@ -4630,7 +4630,7 @@
                   "semantic": "EQUIP",
                   "effectObserved": false,
                   "effect": {
-                    "moved": 3.5652192309498787e-10,
+                    "moved": 2.1464074961841106e-10,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -4688,8 +4688,8 @@
           "authoritativeStateChangeObserved": true,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-10-01T17:11:26.611Z",
-        "workflowRunId": 36896295029,
+        "testedAt": "2026-10-01T18:52:33.324Z",
+        "workflowRunId": 36908677455,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -4801,7 +4801,7 @@
                   "semantic": "EQUIP",
                   "effectObserved": false,
                   "effect": {
-                    "moved": 3.5652192309498787e-10,
+                    "moved": 2.1464074961841106e-10,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -4857,8 +4857,8 @@
           "ROBLOX_OBSERVED_INTERACTION"
         ],
         "robloxFailureClass": "ROBLOX_STUDIO_RUNTIME",
-        "testedAt": "2026-10-01T17:11:26.611Z",
-        "workflowRunId": 36896295029,
+        "testedAt": "2026-10-01T18:52:33.324Z",
+        "workflowRunId": 36908677455,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxNativeFailureClass": "ROBLOX_STUDIO_RUNTIME",
@@ -22409,7 +22409,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T18:48:11.182Z",
+  "updatedAt": "2026-10-01T18:52:33.324Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
