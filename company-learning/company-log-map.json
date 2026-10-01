@@ -2201,7 +2201,7 @@
     "regressionStillRequired": true
   },
   "nativeExactGameWorkflowConcurrencyEvidence": {
-    "version": 1,
+    "version": 2,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "source": "company-learning/platform-release-roadmap.json#changeRecord.nativeExactGameWorkflowConcurrency20260927",
     "concurrencyGroups": [
@@ -2221,7 +2221,12 @@
     "pushBatchRunIdentity": "batch-push",
     "nonPushEmptyBatchRunIdentity": "github.run_id",
     "pushBatchCoalesced": true,
-    "manualEmptyBatchRunScoped": true
+    "manualEmptyBatchRunScoped": true,
+    "cancelInProgressMeaning": "EXACT_GAME_ACTIVE_EXECUTION_PRESERVED",
+    "exactGameCancelInProgress": false,
+    "pushBatchCancelInProgress": true,
+    "manualEmptyBatchCancelInProgress": false,
+    "pushBatchLatestWins": true
   },
   "lightweightGameIngressRunnerReliefEvidence": {
     "version": 3,
