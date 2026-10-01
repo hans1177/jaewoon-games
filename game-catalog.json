@@ -132,7 +132,7 @@
         "homepage": {
           "featured": true,
           "category": "development-confirmed",
-          "displayMode": "",
+          "displayMode": "WEB_PUBLISHED",
           "artbookPath": "",
           "stage": "개발확정 · Roblox + Unity 앱 동시개발",
           "recentWork": "3종 개미 종족 선택, 병정/일개미 클래스, 종족별 AI 개미 10마리와 AI 여왕, 대형 오픈월드, 곤충 5종, 거미·바퀴벌레 선공, 실시간 방 멀티 구현",
@@ -167,7 +167,9 @@
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
-      ]
+      ],
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "daechung-rpg",
@@ -179,7 +181,7 @@
         "전투"
       ],
       "image": "assets/roblox-thumbnails/daechung-rpg.svg",
-      "webPath": null,
+      "webPath": "/web-games/daechung-rpg/",
       "hasWebArchive": true,
       "featured": true,
       "unityProjectPath": "unity-games/daechung-rpg",
@@ -187,7 +189,7 @@
       "selectedPlatform": "ROBLOX",
       "homepagePublicationApproved": false,
       "publishTestBuildWhenReady": true,
-      "homepageWebPlayable": false,
+      "homepageWebPlayable": true,
       "homepageArtbookPath": "/artbook-viewer.html?game=daechung-rpg",
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
@@ -260,9 +262,9 @@
         },
         "sources": {
           "web": {
-            "path": "",
+            "path": "/web-games/daechung-rpg/",
             "archive": true,
-            "playable": false,
+            "playable": true,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -348,7 +350,8 @@
       "marketingThumbnail": "assets/roblox-thumbnails/daechung-rpg.svg",
       "productionTier": 2,
       "homepageOfficialCard": false,
-      "homepageTestCandidate": false
+      "homepageTestCandidate": false,
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "horror-escape-room",
@@ -360,10 +363,10 @@
         "비대칭 멀티"
       ],
       "image": "assets/roblox-thumbnails/horror-escape-room.svg",
-      "webPath": null,
-      "hasWebArchive": false,
+      "webPath": "/web-games/horror-escape-room/",
+      "hasWebArchive": true,
       "featured": true,
-      "homepageWebPlayable": false,
+      "homepageWebPlayable": true,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
@@ -461,10 +464,10 @@
         },
         "sources": {
           "web": {
-            "path": "",
-            "archive": false,
-            "playable": false,
-            "purpose": ""
+            "path": "/web-games/horror-escape-room/",
+            "archive": true,
+            "playable": true,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": ""
@@ -496,7 +499,7 @@
         "homepage": {
           "featured": true,
           "category": "development-confirmed",
-          "displayMode": "",
+          "displayMode": "WEB_PUBLISHED",
           "artbookPath": "",
           "stage": "개발확정 · Roblox + Unity 앱 동시개발",
           "recentWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
@@ -530,7 +533,9 @@
       "marketingThumbnail": "assets/roblox-thumbnails/horror-escape-room.svg",
       "productionTier": 2,
       "homepageOfficialCard": false,
-      "homepageTestCandidate": false
+      "homepageTestCandidate": false,
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "village-dungeons",
@@ -543,10 +548,10 @@
         "퀘스트"
       ],
       "image": "assets/roblox-thumbnails/village-dungeons.svg",
-      "webPath": null,
+      "webPath": "/web-games/village-dungeons/",
       "hasWebArchive": true,
       "featured": true,
-      "homepageWebPlayable": false,
+      "homepageWebPlayable": true,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
@@ -617,9 +622,9 @@
         },
         "sources": {
           "web": {
-            "path": "",
+            "path": "/web-games/village-dungeons/",
             "archive": true,
-            "playable": false,
+            "playable": true,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -652,7 +657,7 @@
         "homepage": {
           "featured": true,
           "category": "development-confirmed",
-          "displayMode": "",
+          "displayMode": "WEB_PUBLISHED",
           "artbookPath": "",
           "stage": "개발확정 · Roblox + Unity 앱 동시개발",
           "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
@@ -696,7 +701,9 @@
       "marketingThumbnail": "assets/roblox-thumbnails/village-dungeons.svg",
       "productionTier": 2,
       "homepageOfficialCard": false,
-      "homepageTestCandidate": false
+      "homepageTestCandidate": false,
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "amusement-tycoon",
@@ -709,10 +716,10 @@
         "건설"
       ],
       "image": "assets/page-bg-v4.webp",
-      "webPath": null,
+      "webPath": "/web-games/amusement-tycoon/",
       "hasWebArchive": true,
       "featured": true,
-      "homepageWebPlayable": false,
+      "homepageWebPlayable": true,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
@@ -783,9 +790,9 @@
         },
         "sources": {
           "web": {
-            "path": "",
+            "path": "/web-games/amusement-tycoon/",
             "archive": true,
-            "playable": false,
+            "playable": true,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -818,7 +825,7 @@
         "homepage": {
           "featured": true,
           "category": "development-confirmed",
-          "displayMode": "",
+          "displayMode": "WEB_PUBLISHED",
           "artbookPath": "",
           "stage": "개발확정 · Roblox + Unity 앱 동시개발",
           "recentWork": "손님 생각 말풍선, 낮·저녁·밤 하루 결산, 벤치 휴식, 놀이기구 고장·수리공, 10~100G 입장료 설정 추가 및 기존 자유배치·길·대기줄·청소·업그레이드 유지",
@@ -861,7 +868,9 @@
       "updatedAt": "2026-10-01T18:22:30.169Z",
       "productionTier": 2,
       "homepageOfficialCard": false,
-      "homepageTestCandidate": false
+      "homepageTestCandidate": false,
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "bug-defense",
@@ -873,10 +882,10 @@
         "곤충"
       ],
       "image": "assets/insect-war-v2.webp",
-      "webPath": null,
+      "webPath": "/web-games/bug-defense/",
       "hasWebArchive": true,
       "featured": true,
-      "homepageWebPlayable": false,
+      "homepageWebPlayable": true,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
@@ -946,9 +955,9 @@
         },
         "sources": {
           "web": {
-            "path": "",
+            "path": "/web-games/bug-defense/",
             "archive": true,
-            "playable": false,
+            "playable": true,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -981,7 +990,7 @@
         "homepage": {
           "featured": true,
           "category": "development-confirmed",
-          "displayMode": "",
+          "displayMode": "WEB_PUBLISHED",
           "artbookPath": "",
           "stage": "개발확정 · Roblox + Unity 앱 동시개발",
           "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
@@ -1023,7 +1032,9 @@
       "updatedAt": "2026-10-01T18:22:30.169Z",
       "productionTier": 2,
       "homepageOfficialCard": false,
-      "homepageTestCandidate": false
+      "homepageTestCandidate": false,
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "line-defense",
@@ -1035,10 +1046,10 @@
         "자동전투"
       ],
       "image": "assets/page-bg-v2.webp",
-      "webPath": null,
+      "webPath": "/web-games/line-defense/",
       "hasWebArchive": true,
       "featured": true,
-      "homepageWebPlayable": false,
+      "homepageWebPlayable": true,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
@@ -1107,9 +1118,9 @@
         },
         "sources": {
           "web": {
-            "path": "",
+            "path": "/web-games/line-defense/",
             "archive": true,
-            "playable": false,
+            "playable": true,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -1142,7 +1153,7 @@
         "homepage": {
           "featured": true,
           "category": "development-confirmed",
-          "displayMode": "",
+          "displayMode": "WEB_PUBLISHED",
           "artbookPath": "",
           "stage": "개발확정 · Roblox + Unity 앱 동시개발",
           "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
@@ -1184,7 +1195,9 @@
       "updatedAt": "2026-10-01T18:22:30.169Z",
       "productionTier": 2,
       "homepageOfficialCard": false,
-      "homepageTestCandidate": false
+      "homepageTestCandidate": false,
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "cozy-island",
@@ -1196,10 +1209,10 @@
         "낚시"
       ],
       "image": "assets/roblox-thumbnails/cozy-island.svg",
-      "webPath": null,
+      "webPath": "/web-games/cozy-island/",
       "hasWebArchive": true,
       "featured": false,
-      "homepageWebPlayable": false,
+      "homepageWebPlayable": true,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
@@ -1304,7 +1317,7 @@
         "homepage": {
           "featured": false,
           "category": "development-confirmed",
-          "displayMode": "",
+          "displayMode": "WEB_PUBLISHED",
           "artbookPath": "",
           "stage": "개발확정 · Roblox + Unity 앱 동시개발",
           "recentWork": "동화풍 주민·동물 아트 재구성 · 5거점 정복 특징 중심 Roblox 제목 적용",
@@ -1349,7 +1362,9 @@
       },
       "productionTier": 2,
       "homepageOfficialCard": false,
-      "homepageTestCandidate": false
+      "homepageTestCandidate": false,
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "fantasy-survival",
@@ -1362,9 +1377,9 @@
         "보드"
       ],
       "image": "",
-      "webPath": null,
+      "webPath": "/web-games/fantasy-survival/",
       "hasWebArchive": true,
-      "homepageWebPlayable": false,
+      "homepageWebPlayable": true,
       "homepageOfficialCard": false,
       "homepageTestCandidate": false,
       "homepageDisplayMode": "WEB_PUBLISHED",
@@ -1438,10 +1453,10 @@
         },
         "sources": {
           "web": {
-            "path": "",
+            "path": "/web-games/fantasy-survival/",
             "archive": true,
-            "playable": false,
-            "purpose": ""
+            "playable": true,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": ""
@@ -1516,7 +1531,8 @@
       },
       "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
       "updatedAt": "2026-10-01T18:22:30.169Z",
-      "productionTier": 2
+      "productionTier": 2,
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "monster-adventure",
@@ -1528,10 +1544,10 @@
         "모험"
       ],
       "image": "assets/fantasy-rpg-v2.webp",
-      "webPath": null,
-      "hasWebArchive": false,
+      "webPath": "/web-games/monster-adventure/",
+      "hasWebArchive": true,
       "featured": false,
-      "homepageWebPlayable": false,
+      "homepageWebPlayable": true,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
@@ -1601,10 +1617,10 @@
         },
         "sources": {
           "web": {
-            "path": "",
-            "archive": false,
-            "playable": false,
-            "purpose": ""
+            "path": "/web-games/monster-adventure/",
+            "archive": true,
+            "playable": true,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
             "projectPath": ""
@@ -1636,7 +1652,7 @@
         "homepage": {
           "featured": false,
           "category": "development-confirmed",
-          "displayMode": "",
+          "displayMode": "WEB_PUBLISHED",
           "artbookPath": "",
           "stage": "개발확정 · Roblox + Unity 앱 동시개발",
           "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
@@ -1678,7 +1694,9 @@
       "updatedAt": "2026-10-01T18:22:30.169Z",
       "productionTier": 2,
       "homepageOfficialCard": false,
-      "homepageTestCandidate": false
+      "homepageTestCandidate": false,
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -1689,11 +1707,11 @@
         "생존 로그라이트"
       ],
       "image": "assets/homepage-covers/lost-star.svg",
-      "webPath": null,
+      "webPath": "/web-games/seed-action-survival-rogu-echoes-of-the-lost-star/",
       "hasWebArchive": true,
       "featured": false,
       "selectedPlatform": "UNITY",
-      "homepageWebPlayable": false,
+      "homepageWebPlayable": true,
       "homepageArtbookPath": "/artbook-viewer.html?game=seed-action-survival-rogu-echoes-of-the-lost-star",
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
@@ -1762,9 +1780,9 @@
         },
         "sources": {
           "web": {
-            "path": "",
+            "path": "/web-games/seed-action-survival-rogu-echoes-of-the-lost-star/",
             "archive": true,
-            "playable": false,
+            "playable": true,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -1797,7 +1815,7 @@
         "homepage": {
           "featured": false,
           "category": "development-confirmed",
-          "displayMode": "",
+          "displayMode": "WEB_PUBLISHED",
           "artbookPath": "/artbook-viewer.html?game=seed-action-survival-rogu-echoes-of-the-lost-star",
           "stage": "개발확정 · Roblox + Unity 앱 동시개발",
           "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
@@ -1837,7 +1855,9 @@
       "updatedAt": "2026-10-01T18:22:30.169Z",
       "productionTier": 2,
       "homepageOfficialCard": false,
-      "homepageTestCandidate": false
+      "homepageTestCandidate": false,
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "seed-casual-realm-weaver",
@@ -1848,11 +1868,11 @@
         "모바일"
       ],
       "image": "assets/homepage-covers/realm-weaver.svg",
-      "webPath": null,
+      "webPath": "/web-games/seed-casual-realm-weaver/",
       "hasWebArchive": true,
       "featured": false,
       "selectedPlatform": "UNITY",
-      "homepageWebPlayable": false,
+      "homepageWebPlayable": true,
       "homepageArtbookPath": "/artbook-viewer.html?game=seed-casual-realm-weaver",
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
@@ -1921,9 +1941,9 @@
         },
         "sources": {
           "web": {
-            "path": "",
+            "path": "/web-games/seed-casual-realm-weaver/",
             "archive": true,
-            "playable": false,
+            "playable": true,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -1956,7 +1976,7 @@
         "homepage": {
           "featured": false,
           "category": "development-confirmed",
-          "displayMode": "",
+          "displayMode": "WEB_PUBLISHED",
           "artbookPath": "/artbook-viewer.html?game=seed-casual-realm-weaver",
           "stage": "개발확정 · Roblox + Unity 앱 동시개발",
           "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
@@ -1996,7 +2016,9 @@
       "updatedAt": "2026-10-01T18:22:30.169Z",
       "productionTier": 2,
       "homepageOfficialCard": false,
-      "homepageTestCandidate": false
+      "homepageTestCandidate": false,
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "seed-idle-growth-rpg-crystal-bloom",
@@ -2007,11 +2029,11 @@
         "RPG"
       ],
       "image": "assets/card-rpg-v2.webp",
-      "webPath": null,
+      "webPath": "/web-games/seed-idle-growth-rpg-crystal-bloom/",
       "hasWebArchive": true,
       "featured": false,
       "selectedPlatform": "UNITY",
-      "homepageWebPlayable": false,
+      "homepageWebPlayable": true,
       "homepageArtbookPath": "/artbook-viewer.html?game=seed-idle-growth-rpg-crystal-bloom",
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
@@ -2080,9 +2102,9 @@
         },
         "sources": {
           "web": {
-            "path": "",
+            "path": "/web-games/seed-idle-growth-rpg-crystal-bloom/",
             "archive": true,
-            "playable": false,
+            "playable": true,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -2115,7 +2137,7 @@
         "homepage": {
           "featured": false,
           "category": "development-confirmed",
-          "displayMode": "",
+          "displayMode": "WEB_PUBLISHED",
           "artbookPath": "/artbook-viewer.html?game=seed-idle-growth-rpg-crystal-bloom",
           "stage": "개발확정 · Roblox + Unity 앱 동시개발",
           "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
@@ -2155,7 +2177,9 @@
       "updatedAt": "2026-10-01T18:22:30.169Z",
       "productionTier": 2,
       "homepageOfficialCard": false,
-      "homepageTestCandidate": false
+      "homepageTestCandidate": false,
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "seed-puzzle-chromatic-cascade",
@@ -2166,11 +2190,11 @@
         "모바일"
       ],
       "image": "assets/homepage-covers/chromatic-cascade.svg",
-      "webPath": null,
+      "webPath": "/web-games/seed-puzzle-chromatic-cascade/",
       "hasWebArchive": true,
       "featured": false,
       "selectedPlatform": "UNITY",
-      "homepageWebPlayable": false,
+      "homepageWebPlayable": true,
       "homepageArtbookPath": "/artbook-viewer.html?game=seed-puzzle-chromatic-cascade",
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
@@ -2239,9 +2263,9 @@
         },
         "sources": {
           "web": {
-            "path": "",
+            "path": "/web-games/seed-puzzle-chromatic-cascade/",
             "archive": true,
-            "playable": false,
+            "playable": true,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -2274,7 +2298,7 @@
         "homepage": {
           "featured": false,
           "category": "development-confirmed",
-          "displayMode": "",
+          "displayMode": "WEB_PUBLISHED",
           "artbookPath": "/artbook-viewer.html?game=seed-puzzle-chromatic-cascade",
           "stage": "개발확정 · Roblox + Unity 앱 동시개발",
           "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
@@ -2314,7 +2338,9 @@
       "updatedAt": "2026-10-01T18:22:30.169Z",
       "productionTier": 2,
       "homepageOfficialCard": false,
-      "homepageTestCandidate": false
+      "homepageTestCandidate": false,
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "seed-single-defense-strat-celestial-bastion",
@@ -2325,11 +2351,11 @@
         "전략"
       ],
       "image": "assets/crystal-v2.webp",
-      "webPath": null,
+      "webPath": "/web-games/seed-single-defense-strat-celestial-bastion/",
       "hasWebArchive": true,
       "featured": false,
       "selectedPlatform": "UNITY",
-      "homepageWebPlayable": false,
+      "homepageWebPlayable": true,
       "homepageArtbookPath": "/artbook-viewer.html?game=seed-single-defense-strat-celestial-bastion",
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
@@ -2398,9 +2424,9 @@
         },
         "sources": {
           "web": {
-            "path": "",
+            "path": "/web-games/seed-single-defense-strat-celestial-bastion/",
             "archive": true,
-            "playable": false,
+            "playable": true,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -2479,7 +2505,8 @@
       "updatedAt": "2026-10-01T18:22:30.169Z",
       "productionTier": 2,
       "homepageOfficialCard": false,
-      "homepageTestCandidate": false
+      "homepageTestCandidate": false,
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -2490,11 +2517,11 @@
         "RPG"
       ],
       "image": "assets/homepage-covers/eldoria.svg",
-      "webPath": null,
+      "webPath": "/web-games/seed-story-complete-rpg-chronicles-of-eldoria/",
       "hasWebArchive": true,
       "featured": false,
       "selectedPlatform": "UNITY",
-      "homepageWebPlayable": false,
+      "homepageWebPlayable": true,
       "homepageArtbookPath": "/artbook-viewer.html?game=seed-story-complete-rpg-chronicles-of-eldoria",
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
@@ -2563,9 +2590,9 @@
         },
         "sources": {
           "web": {
-            "path": "",
+            "path": "/web-games/seed-story-complete-rpg-chronicles-of-eldoria/",
             "archive": true,
-            "playable": false,
+            "playable": true,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -2598,7 +2625,7 @@
         "homepage": {
           "featured": false,
           "category": "development-confirmed",
-          "displayMode": "",
+          "displayMode": "WEB_PUBLISHED",
           "artbookPath": "/artbook-viewer.html?game=seed-story-complete-rpg-chronicles-of-eldoria",
           "stage": "개발확정 · Roblox + Unity 앱 동시개발",
           "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
@@ -2638,7 +2665,9 @@
       "updatedAt": "2026-10-01T18:22:30.169Z",
       "productionTier": 2,
       "homepageOfficialCard": false,
-      "homepageTestCandidate": false
+      "homepageTestCandidate": false,
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "survival",
@@ -2649,11 +2678,11 @@
         "채집"
       ],
       "image": "assets/title-survival.svg",
-      "webPath": null,
+      "webPath": "/web-games/survival/",
       "hasWebArchive": true,
       "featured": false,
       "selectedPlatform": "UNITY",
-      "homepageWebPlayable": false,
+      "homepageWebPlayable": true,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
@@ -2721,9 +2750,9 @@
         },
         "sources": {
           "web": {
-            "path": "",
+            "path": "/web-games/survival/",
             "archive": true,
-            "playable": false,
+            "playable": true,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -2756,7 +2785,7 @@
         "homepage": {
           "featured": false,
           "category": "development-confirmed",
-          "displayMode": "",
+          "displayMode": "WEB_PUBLISHED",
           "artbookPath": "",
           "stage": "개발확정 · Roblox + Unity 앱 동시개발",
           "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
@@ -2796,7 +2825,9 @@
       "updatedAt": "2026-10-01T18:22:30.169Z",
       "productionTier": 2,
       "homepageOfficialCard": false,
-      "homepageTestCandidate": false
+      "homepageTestCandidate": false,
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "crystal-defense",
@@ -2808,9 +2839,9 @@
       ],
       "image": "assets/crystal-v2.webp",
       "webPath": "/web-games/crystal-defense/",
-      "hasWebArchive": false,
+      "hasWebArchive": true,
       "featured": true,
-      "homepageWebPlayable": false,
+      "homepageWebPlayable": true,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
@@ -2879,8 +2910,8 @@
         "sources": {
           "web": {
             "path": "/web-games/crystal-defense/",
-            "archive": false,
-            "playable": false,
+            "archive": true,
+            "playable": true,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -2913,7 +2944,7 @@
         "homepage": {
           "featured": true,
           "category": "design-only",
-          "displayMode": "",
+          "displayMode": "WEB_PUBLISHED",
           "artbookPath": "",
           "stage": "기획 · 아트북/컨셉/설계 최적화",
           "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
@@ -2951,7 +2982,9 @@
       "homepageOfficialCard": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
-      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW"
+      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW",
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "insect-survival",
@@ -3072,7 +3105,7 @@
         "homepage": {
           "featured": true,
           "category": "design-only",
-          "displayMode": "",
+          "displayMode": "WEB_PUBLISHED",
           "artbookPath": "",
           "stage": "기획 · 아트북/컨셉/설계 최적화",
           "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
@@ -3101,7 +3134,9 @@
           }
         }
       },
-      "catalogOrder": 19
+      "catalogOrder": 19,
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "chess-battle",
@@ -3113,9 +3148,9 @@
       ],
       "image": "assets/mock.webp",
       "webPath": "/web-games/chess-battle/",
-      "hasWebArchive": false,
+      "hasWebArchive": true,
       "featured": false,
-      "homepageWebPlayable": false,
+      "homepageWebPlayable": true,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
@@ -3184,8 +3219,8 @@
         "sources": {
           "web": {
             "path": "/web-games/chess-battle/",
-            "archive": false,
-            "playable": false,
+            "archive": true,
+            "playable": true,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -3218,7 +3253,7 @@
         "homepage": {
           "featured": false,
           "category": "design-only",
-          "displayMode": "",
+          "displayMode": "WEB_PUBLISHED",
           "artbookPath": "",
           "stage": "기획 · 아트북/컨셉/설계 최적화",
           "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
@@ -3256,7 +3291,9 @@
       "homepageOfficialCard": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
-      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW"
+      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW",
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "egg-heist",
@@ -3268,9 +3305,9 @@
       ],
       "image": "assets/portal.webp",
       "webPath": "/web-games/egg-heist/",
-      "hasWebArchive": false,
+      "hasWebArchive": true,
       "featured": false,
-      "homepageWebPlayable": false,
+      "homepageWebPlayable": true,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
@@ -3339,8 +3376,8 @@
         "sources": {
           "web": {
             "path": "/web-games/egg-heist/",
-            "archive": false,
-            "playable": false,
+            "archive": true,
+            "playable": true,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -3373,7 +3410,7 @@
         "homepage": {
           "featured": false,
           "category": "design-only",
-          "displayMode": "",
+          "displayMode": "WEB_PUBLISHED",
           "artbookPath": "",
           "stage": "개발확정 · Web 전체분량 검증 → Roblox",
           "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
@@ -3411,7 +3448,9 @@
       "homepageOfficialCard": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
-      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW"
+      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW",
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "human-go",
@@ -3571,9 +3610,9 @@
       ],
       "image": "assets/page-bg-v3.webp",
       "webPath": "/web-games/island-village/",
-      "hasWebArchive": false,
+      "hasWebArchive": true,
       "featured": false,
-      "homepageWebPlayable": false,
+      "homepageWebPlayable": true,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
@@ -3644,8 +3683,8 @@
         "sources": {
           "web": {
             "path": "/web-games/island-village/",
-            "archive": false,
-            "playable": false,
+            "archive": true,
+            "playable": true,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -3678,7 +3717,7 @@
         "homepage": {
           "featured": false,
           "category": "design-only",
-          "displayMode": "",
+          "displayMode": "WEB_PUBLISHED",
           "artbookPath": "",
           "stage": "개발확정 · Web 전체분량 검증 → Roblox",
           "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
@@ -3717,7 +3756,9 @@
       "homepageOfficialCard": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
-      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW"
+      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW",
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "survival2",
@@ -3729,9 +3770,9 @@
       ],
       "image": "assets/page-bg-v3.webp",
       "webPath": "/web-games/survival2/",
-      "hasWebArchive": false,
+      "hasWebArchive": true,
       "featured": false,
-      "homepageWebPlayable": false,
+      "homepageWebPlayable": true,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
@@ -3800,8 +3841,8 @@
         "sources": {
           "web": {
             "path": "/web-games/survival2/",
-            "archive": false,
-            "playable": false,
+            "archive": true,
+            "playable": true,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -3834,7 +3875,7 @@
         "homepage": {
           "featured": false,
           "category": "design-only",
-          "displayMode": "",
+          "displayMode": "WEB_PUBLISHED",
           "artbookPath": "",
           "stage": "기획 · 아트북/컨셉/설계 최적화",
           "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
@@ -3872,7 +3913,9 @@
       "homepageOfficialCard": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
-      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW"
+      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW",
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "territory-war",
@@ -3884,9 +3927,9 @@
       ],
       "image": "assets/page-bg-v2.webp",
       "webPath": "/web-games/territory-war/",
-      "hasWebArchive": false,
+      "hasWebArchive": true,
       "featured": false,
-      "homepageWebPlayable": false,
+      "homepageWebPlayable": true,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
@@ -3955,8 +3998,8 @@
         "sources": {
           "web": {
             "path": "/web-games/territory-war/",
-            "archive": false,
-            "playable": false,
+            "archive": true,
+            "playable": true,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
           },
           "unity": {
@@ -3989,7 +4032,7 @@
         "homepage": {
           "featured": false,
           "category": "design-only",
-          "displayMode": "",
+          "displayMode": "WEB_PUBLISHED",
           "artbookPath": "",
           "stage": "기획 · 아트북/컨셉/설계 최적화",
           "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
@@ -4027,7 +4070,9 @@
       "homepageOfficialCard": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
-      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW"
+      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW",
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "zombie-survival",
@@ -4149,7 +4194,7 @@
         "homepage": {
           "featured": false,
           "category": "design-only",
-          "displayMode": "",
+          "displayMode": "WEB_PUBLISHED",
           "artbookPath": "",
           "stage": "기획 · 아트북/컨셉/설계 최적화",
           "recentWork": "30일 선택형 생존, 체력·식량·물자·방어·동료 상태, 랜덤 사건, 자동 저장 구현",
@@ -4180,7 +4225,9 @@
         }
       },
       "catalogOrder": 26,
-      "selectedPlatform": "UNITY"
+      "selectedPlatform": "UNITY",
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "seed-roblox-roleplay-life-avat-brookhaven-rp",
@@ -4292,7 +4339,8 @@
     "ownerWebAdded": 0,
     "ownerWebUpdated": 0,
     "ownerWebDisabled": 0,
-    "runtimeCatalogAdded": 0
+    "runtimeCatalogAdded": 0,
+    "actualWebPlayableReconciled": 25
   },
   "catalogSchemaVersion": 2,
   "normalization": {
