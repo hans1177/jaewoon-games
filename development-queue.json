@@ -12176,10 +12176,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
-      "canonicalState": "F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T18:31:21.547Z",
+      "updatedAt": "2026-10-01T18:32:14.356Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -13523,7 +13523,7 @@
       "unityCandidateBranch": "development/unity-tech-fantasy-survival-36773180555",
       "unitySourceCommit": "a68e86025e2a8f309b29e4ed3645064ca8a633f9",
       "unityBuildRunId": 36775590969,
-      "unityRuntimeSmokeRunId": 36903588335,
+      "unityRuntimeSmokeRunId": 36907282112,
       "unityIndependentQaRunId": 36779727853,
       "unityRegressionRunId": 36780140458,
       "unityInternalReleaseReady": false,
@@ -13545,15 +13545,15 @@
         "regressionPassed": false,
         "rawStageResults": {
           "runtime": false,
-          "independentQa": true,
-          "regression": true
+          "independentQa": false,
+          "regression": false
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": true,
-        "lastSuccessfulStage": "F9_RELEASE_REGRESSION",
-        "failureStage": null,
-        "failureSignature": null
+        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
+        "failureStage": "F1_SERVER_BOOT",
+        "failureSignature": "19d1e41f1db65ef1c3fcbe0ade1c40f453eb7749d0207b0c5b54fe2fa8e4c3b6"
       },
       "resumeStage": "F1_SERVER_BOOT",
       "failureCount": 1,
@@ -13843,7 +13843,7 @@
           }
         },
         "multiplayerRequired": true,
-        "verifiedAt": "2026-10-01T18:02:14.405Z"
+        "verifiedAt": "2026-10-01T18:32:14.356Z"
       },
       "unityF9ReleaseRegressionPassed": false,
       "unityF9ReleaseRegressionPassedAt": null,
@@ -13862,8 +13862,8 @@
         "regressionPassed": false,
         "rawStageResults": {
           "runtime": false,
-          "independentQa": true,
-          "regression": true
+          "independentQa": false,
+          "regression": false
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
@@ -22434,7 +22434,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T18:31:21.547Z",
+  "updatedAt": "2026-10-01T18:32:17.894Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
