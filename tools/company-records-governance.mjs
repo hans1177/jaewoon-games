@@ -206,6 +206,36 @@ export function findProtectedCentralChangeRecordKeys({roots=CENTRAL_SCAN_ROOTS}=
     [...refs.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([key,files])=>[key,Object.freeze(uniq(files).sort())])
   ));
 }
+
+export function discoverCentralArchiveCandidates({roadmap=null,minBytes=512,limit=20}={}){
+  const current=roadmap||readCentralRoadmap();
+  const retention=current.centralDocumentRetention||{};
+  const alreadyArchived=new Set(Array.isArray(retention.historicalArchiveSelectors)?retention.historicalArchiveSelectors:[]);
+  const protectedPrefixes=[
+    'centralDocumentRetention',
+    'changeRecord',
+    'narrativeStorytellingContract.runtimeActorIntelligence'
+  ];
+  const pattern=/(?:history|historical|incident|verification|implementationEvidence|observation|diagnostic|telemetry|audit|latest(?:Run|Qa|Evidence|Observation|Diagnostic))/i;
+  const rows=[];
+  const walk=(value,parts=[])=>{
+    if(!value||typeof value!=='object')return;
+    for(const [key,next] of Object.entries(value)){
+      if(!next||typeof next!=='object')continue;
+      const pathKey=[...parts,key].join('.');
+      if(protectedPrefixes.some(prefix=>pathKey===prefix||pathKey.startsWith(prefix+'.')))continue;
+      const size=utf8Bytes(JSON.stringify(next));
+      if(size>=minBytes&&pattern.test(key)&&!alreadyArchived.has(pathKey)){
+        rows.push(Object.freeze({path:pathKey,utf8Bytes:size,key,reason:'HISTORICAL_SHAPE_REVIEW_REQUIRED'}));
+      }
+      walk(next,[...parts,key]);
+    }
+  };
+  walk(current,[]);
+  rows.sort((a,b)=>b.utf8Bytes-a.utf8Bytes||a.path.localeCompare(b.path));
+  return Object.freeze(rows.slice(0,Math.max(1,Number(limit)||20)));
+}
+
 export function inspectCentralDocument({roadmap=null,protectedReferences=null}={}){
   const current=roadmap||readCentralRoadmap();
   const retention=current.centralDocumentRetention||{};
@@ -219,6 +249,8 @@ export function inspectCentralDocument({roadmap=null,protectedReferences=null}={
   const latestArchive=clean(retention.latestArchiveRecord);
   const errors=[];
   if(size>maxUtf8Bytes)errors.push('CENTRAL_POLICY_HARD_LIMIT_EXCEEDED:'+size+'>'+maxUtf8Bytes);
+  if(retention.softTargetEnforced===true&&size>softTargetUtf8Bytes)errors.push('CENTRAL_POLICY_SOFT_TARGET_EXCEEDED:'+size+'>'+softTargetUtf8Bytes);
+  if(Number(retention.minimumHeadroomBytes||0)>0&&(maxUtf8Bytes-size)<Number(retention.minimumHeadroomBytes))errors.push('CENTRAL_POLICY_MINIMUM_HEADROOM_VIOLATION:'+(maxUtf8Bytes-size)+'<'+Number(retention.minimumHeadroomBytes));
   if(missingProtectedChangeRecords.length)errors.push('CENTRAL_POLICY_REFERENCED_CHANGE_RECORD_MISSING:'+missingProtectedChangeRecords.join(','));
   if(latestArchive&&!existsRel(latestArchive))errors.push('CENTRAL_POLICY_ARCHIVE_RECORD_MISSING:'+latestArchive);
   return Object.freeze({
@@ -365,9 +397,17 @@ function main(){
     console.log('CENTRAL_POLICY_HARD_MAX_BYTES='+report.maxUtf8Bytes);
     console.log('CENTRAL_POLICY_HEADROOM_BYTES='+report.headroomBytes);
     console.log('CENTRAL_POLICY_PROTECTED_CHANGE_RECORD_KEYS='+report.protectedChangeRecordKeys.length);
-    if(report.aboveSoftTarget)console.warn('CENTRAL_POLICY_SOFT_TARGET_EXCEEDED=YES');
+    if(report.aboveSoftTarget){
+      console.warn('CENTRAL_POLICY_SOFT_TARGET_EXCEEDED=YES');
+      for(const row of discoverCentralArchiveCandidates({limit:10}))console.warn('CENTRAL_POLICY_ARCHIVE_CANDIDATE='+row.path+':'+row.utf8Bytes);
+    }
     if(report.errors.length){report.errors.forEach(x=>console.error(x));process.exit(1);}
     console.log('CENTRAL_POLICY_RETENTION=PASS');
+    return;
+  }
+  if(args.includes('--central-candidates')){
+    const rows=discoverCentralArchiveCandidates({limit:50});
+    console.log(JSON.stringify(rows,null,2));
     return;
   }
   if(args.includes('--central-plan')){
