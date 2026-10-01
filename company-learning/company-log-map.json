@@ -2948,5 +2948,18 @@
     "warningRecombinationPreferred": true,
     "generationLimit": null,
     "contentCountLimit": null
+  },
+  "webInternalPriorityEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "planner": "tools/vibe2-auto-planner.mjs",
+    "qa": "qa/vibe2-auto-planner.test.mjs",
+    "markers": [
+      "web-internal-priority:recent-owner-work",
+      "web-internal-priority-scope:WEB_ONLY",
+      "owner-recent-web-source-revision"
+    ],
+    "globalPriorityChanged": false,
+    "firstPlayableDeployClearsSpecialPriority": true
   }
 }
