@@ -112,6 +112,12 @@ test('existing post-runtime QA requires actual F1-F8 sentinel evidence on the ex
   assert.doesNotMatch(runtime,/Studio QA \(Disabled\)/);
 });
 
+test('final Roblox server publish serializes duplicate same-game uploads but does not serialize different games',()=>{
+  assert.match(workflow,/concurrency:\n\s+group: roblox-final-publish-\$\{\{ inputs\.game_id \|\| github\.run_id \}\}/);
+  assert.match(workflow,/cancel-in-progress: false/);
+  assert.match(workflow,/select one active private runtime deployment per game/);
+});
+
 test('F9 is nonterminal and dispatches exact artifacts only for released games',()=>{
   const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
   assert.match(finalReview,/Roblox F9 Final Review/);
