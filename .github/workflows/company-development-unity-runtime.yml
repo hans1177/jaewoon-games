@@ -943,6 +943,7 @@ NODE
           BUILD_RUN: ${{ steps.buildref.outputs.run_id }}
           RUNTIME_RUN_NEW: ${{ steps.runtime.outputs.run_id }}
           RUNTIME_RUN_OLD: ${{ matrix.item.unityRuntimeSmokeRunId }}
+          RUNTIME_FAILURE_FLOOR: ${{ steps.runtime.outputs.failure_floor }}
           QA_RUN_NEW: ${{ steps.independent.outputs.run_id }}
           QA_RUN_OLD: ${{ matrix.item.unityIndependentQaRunId }}
           REGRESSION_RUN_NEW: ${{ steps.regression.outputs.run_id }}
@@ -1050,14 +1051,6 @@ NODE
           const multiplayerRequired=Boolean((multiplayerMode||unityMultiplayer)&&!singleMode);
           const mp=currentItem.unityMultiplayerQaEvidence||{};
           const multiplayerPass=!multiplayerRequired||(mp.pass===true&&Number(mp.participantCount||0)>=2&&mp.authoritativeSync===true);
-          let last='CHEAP_PRECHECK',failure=null;
-          if(build)last='F0_SOURCE_INTEGRITY';else failure='F0_SOURCE_INTEGRITY';
-          if(build&&process.env.ARTIFACT_ID)last='F0_SOURCE_INTEGRITY';
-          if(build&&!runtime)failure='F1_SERVER_BOOT';else if(runtime)last='F4_PHYSICS_AND_MOVEMENT';
-          if(runtime&&!qa)failure='F5_INPUT_CAMERA_UI';else if(qa)last='F6_CORE_SERVICES';
-          if(runtime&&qa&&!multiplayerPass)failure='F7_MULTIPLAYER_FOUNDATION';else if(multiplayerPass&&runtime&&qa)last='F7_MULTIPLAYER_FOUNDATION';
-          if(runtime&&qa&&multiplayerPass)last='F8_GAMEPLAY_SYSTEMS';
-          if(runtime&&qa&&multiplayerPass&&!regression)failure='F9_RELEASE_REGRESSION';else if(regression&&multiplayerPass)last='F9_RELEASE_REGRESSION';
           const canonical=process.env.MEETING_STATE||'WAITING_TARGET_PLATFORM_VALIDATION';
           const runtimeRun=Number(process.env.RUNTIME_RUN_NEW||process.env.RUNTIME_RUN_OLD||0)||null;
           const qaRun=Number(process.env.QA_RUN_NEW||process.env.QA_RUN_OLD||0)||null;
@@ -1066,20 +1059,61 @@ NODE
           const artifactIdentity=process.env.ARTIFACT_ID||null;
           const stamp=new Date().toISOString();
           const exactBinding=Boolean(artifactIdentity&&process.env.SOURCE_REVISION&&process.env.SOURCE_TREE_SHA);
+          let technical={};
+          try{technical=JSON.parse(fs.readFileSync(process.env.BASE+'/unity-technical-validation.json','utf8'));}catch{}
+          const adapterFloors=technical?.foundationAdapter?.foundationFloors||{};
+          const adapterPass=id=>adapterFloors?.[id]?.state==='PASS';
+          const runtimeFailureFloor=/^F(?:[1-6]|8)$/.test(String(process.env.RUNTIME_FAILURE_FLOOR||''))?String(process.env.RUNTIME_FAILURE_FLOOR):'';
+          const runtimeOrder=['F1','F2','F3','F4','F5','F6','F8'];
+          const failedRuntimeIndex=runtimeFailureFloor?runtimeOrder.indexOf(runtimeFailureFloor):-1;
+          const runtimeFloorPass=id=>{
+            if(adapterFloors?.[id])return adapterPass(id);
+            const index=runtimeOrder.indexOf(id);
+            if(failedRuntimeIndex>=0)return index>=0&&index<failedRuntimeIndex;
+            if(['F1','F2','F3','F4'].includes(id))return rawRuntime;
+            if(['F5','F6','F8'].includes(id))return rawRuntime&&rawQa;
+            return false;
+          };
+          const f0Pass=adapterFloors.F0?adapterPass('F0'):(build&&exactBinding);
+          const f1Pass=runtimeFloorPass('F1');
+          const f2Pass=runtimeFloorPass('F2');
+          const f3Pass=runtimeFloorPass('F3');
+          const f4Pass=runtimeFloorPass('F4');
+          const f5Pass=runtimeFloorPass('F5');
+          const f6Pass=runtimeFloorPass('F6');
+          const f7Pass=multiplayerPass;
+          const f8Pass=runtimeFloorPass('F8');
+          const f9Pass=f0Pass&&f1Pass&&f2Pass&&f3Pass&&f4Pass&&f5Pass&&f6Pass&&f7Pass&&f8Pass&&regression&&exactBinding&&canonicalEvidenceBound;
+          const stageByFloor={
+            F0:'F0_SOURCE_INTEGRITY',F1:'F1_SERVER_BOOT',F2:'F2_WORLD_FOUNDATION',F3:'F3_CHARACTER_FOUNDATION',
+            F4:'F4_PHYSICS_AND_MOVEMENT',F5:'F5_INPUT_CAMERA_UI',F6:'F6_CORE_SERVICES',
+            F7:'F7_MULTIPLAYER_FOUNDATION',F8:'F8_GAMEPLAY_SYSTEMS',F9:'F9_RELEASE_REGRESSION'
+          };
+          const passByFloor={F0:f0Pass,F1:f1Pass,F2:f2Pass,F3:f3Pass,F4:f4Pass,F5:f5Pass,F6:f6Pass,F7:f7Pass,F8:f8Pass,F9:f9Pass};
+          let last='CHEAP_PRECHECK',failure=null;
+          for(const id of ['F0','F1','F2','F3','F4','F5','F6','F7','F8','F9']){
+            if(passByFloor[id])last=stageByFloor[id];
+            else{failure=stageByFloor[id];break;}
+          }
+          const floor=(id,passed,authority)=>adapterFloors?.[id]
+            ?{...adapterFloors[id],state:passed?'PASS':'FAIL'}
+            :{state:passed?'PASS':'FAIL',authority};
           const f0ToF9={
-            version:1,platform:'UNITY',sourceRevision:process.env.SOURCE_REVISION||null,artifactIdentity,sourceRootTreeSha:process.env.SOURCE_TREE_SHA||null,
-            evidenceMode:'EXISTING_EXACT_APK_RUNTIME_QA_REGRESSION_WITH_PLATFORM_APPLICABILITY',
+            version:2,platform:'UNITY',sourceRevision:process.env.SOURCE_REVISION||null,artifactIdentity,sourceRootTreeSha:process.env.SOURCE_TREE_SHA||null,
+            evidenceMode:'F0_COMPILE_PLUS_ONE_EXACT_ANDROID_BLACK_BOX_RUNTIME_F1_F8_PLUS_F9_EVIDENCE_FAN_IN',
+            singleRuntimeSessionF1ThroughF8:true,
+            f9RuntimeReplayRequired:false,
             floors:{
-              F0:{state:build&&exactBinding?'PASS':'FAIL',authority:'IMMUTABLE_APK_BUILD_AND_SOURCE_BINDING'},
-              F1:{state:runtime?'PASS':'FAIL',authority:'EXACT_ANDROID_RUNTIME_SESSION'},
-              F2:{state:runtime?'PASS_REUSED_EXACT_RUNTIME_SESSION':'FAIL',authority:'EXACT_ANDROID_RUNTIME_SESSION'},
-              F3:{state:runtime?'PASS_REUSED_EXACT_RUNTIME_SESSION':'FAIL',authority:'EXACT_ANDROID_RUNTIME_SESSION'},
-              F4:{state:runtime?'PASS_REUSED_EXACT_RUNTIME_SESSION':'FAIL',authority:'EXACT_ANDROID_RUNTIME_SESSION'},
-              F5:{state:qa?'PASS':'FAIL',authority:'INDEPENDENT_ANDROID_QA_TOUCH_INPUT_SCREEN_RUNTIME'},
-              F6:{state:qa?'PASS':'FAIL',authority:'INDEPENDENT_ANDROID_QA_AND_EXACT_RUNTIME_STATE_EVIDENCE'},
-              F7:{state:multiplayerRequired?(multiplayerPass?'PASS':'FAIL'):'NOT_APPLICABLE',authority:multiplayerRequired?'UNITY_MULTIPLAYER_QA_EVIDENCE':'VERIFIED_DESIGN_SINGLE_PLAYER',participantCount:Number(mp.participantCount||0),authoritativeSync:mp.authoritativeSync===true},
-              F8:{state:runtime&&qa?'PASS':'FAIL',authority:'EXACT_RUNTIME_PLUS_INDEPENDENT_QA'},
-              F9:{state:build&&runtime&&qa&&multiplayerPass&&regression&&exactBinding?'PASS':'FAIL',authority:'EXACT_ARTIFACT_REGRESSION_FAN_IN'}
+              F0:floor('F0',f0Pass,'UNITY_EDITOR_BUILD_COMPILE_AND_EXACT_SOURCE_ARTIFACT_BINDING'),
+              F1:floor('F1',f1Pass,'EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION'),
+              F2:floor('F2',f2Pass,'EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION'),
+              F3:floor('F3',f3Pass,'EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION'),
+              F4:floor('F4',f4Pass,'EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION'),
+              F5:floor('F5',f5Pass,'EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION_PLUS_INDEPENDENT_QA'),
+              F6:floor('F6',f6Pass,'EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION_PLUS_INDEPENDENT_QA'),
+              F7:{state:multiplayerRequired?(f7Pass?'PASS':'FAIL'):'NOT_APPLICABLE',authority:multiplayerRequired?'UNITY_MULTIPLAYER_QA_EVIDENCE':'VERIFIED_DESIGN_SINGLE_PLAYER',participantCount:Number(mp.participantCount||0),authoritativeSync:mp.authoritativeSync===true},
+              F8:floor('F8',f8Pass,'EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION_PLUS_INDEPENDENT_QA'),
+              F9:{state:f9Pass?'PASS':'FAIL',authority:'F0_TO_F8_EVIDENCE_FAN_IN_NO_RUNTIME_REPLAY'}
             },
             multiplayerRequired,
             verifiedAt:stamp
