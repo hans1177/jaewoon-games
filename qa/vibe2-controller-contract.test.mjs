@@ -331,18 +331,27 @@ test('controller pins each isolated candidate to the reserve-time main contract 
   assert(!workflow.includes('vibe2-queue-control.mjs pass'));
 });
 
-test('candidate publication precreates the remote ref at the pinned base before pushing task source',()=>{
-  const refCreate=workflow.indexOf('"https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs"');
-  const push=workflow.indexOf('git push origin "HEAD:$candidate_branch"');
-  assert.ok(refCreate>=0&&push>refCreate);
+test('candidate publication prefers unique refs and falls back to reusable carrier branches',()=>{
+  const refCreate=workflow.indexOf('"https://api.github.com/repos/$GITHUB_REPOSITORY/git/refs"');
+  const uniquePush=workflow.indexOf('git push origin "HEAD:$candidate_branch"');
+  const carrierPool=workflow.indexOf("git ls-remote --heads origin 'refs/heads/vibe2/candidate/OWNER-FULL-REBUILD-*'");
+  const carrierPush=workflow.indexOf('push origin "HEAD:refs/heads/$carrier_branch"');
+  assert.ok(refCreate>=0&&uniquePush>refCreate);
+  assert.ok(carrierPool>uniquePush&&carrierPush>carrierPool);
   assert(workflow.includes('--arg sha "$base_sha"'));
   assert(workflow.includes('--arg ref "refs/heads/$candidate_branch"'));
-  assert(workflow.includes('failure_class=CANDIDATE_BRANCH_PUBLISH'));
-  assert(workflow.includes('"https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/heads/$candidate_branch"'));
+  assert(workflow.includes('VIBE2_CANDIDATE_TRANSPORT=REUSED_EXISTING_BRANCH'));
+  assert(workflow.includes('candidate transport failed after unique-ref and reusable-carrier attempts'));
   assert(!workflow.includes('workflow: write'));
   const publication=runtime.workers.textSource.candidatePublication;
   assert.equal(publication.localBranchBase,'RESERVE_TIME_PINNED_MAIN_SHA');
-  assert.equal(publication.remoteRefCreation,'PRECREATE_AT_PINNED_BASE_VIA_GIT_REFS_API');
+  assert.equal(publication.remoteRefCreation,'PREFER_UNIQUE_PRECREATE_FALLBACK_REUSE_EXISTING_BRANCH');
+  assert.equal(publication.reusableCarrierFallback,true);
+  assert.equal(publication.reusableCarrierPrefix,'vibe2/candidate/OWNER-FULL-REBUILD-');
+  assert.equal(publication.reusableCarrierMaxAttempts,16);
+  assert.equal(publication.carrierCommitParent,'EXISTING_CARRIER_TIP');
+  assert.equal(publication.carrierManifestTransportMode,'REUSED_EXISTING_CANDIDATE_BRANCH');
+  assert.equal(publication.candidateIdentityBase,'RESERVE_TIME_PINNED_MAIN_SHA');
   assert.equal(publication.commitPushScope,'TASK_APPROVED_SOURCE_AND_CANDIDATE_ARTIFACT_DIFF_ONLY');
   assert.equal(publication.untouchedBaseWorkflowWriteAuthorityRequired,false);
   assert.equal(publication.failureClass,'CANDIDATE_BRANCH_PUBLISH');
