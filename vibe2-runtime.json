@@ -22,7 +22,7 @@
     ],
     "machineStateVersions": {
       "runtime": 43,
-      "queue": 5,
+      "queue": 6,
       "parallelism": 4,
       "experience": 3,
       "handoff": 2
@@ -77,7 +77,7 @@
     "primaryAiIsRuntimeGate": false,
     "controlStateRecovery": {
       "enabled": true,
-      "blankOrMissingQueueRecovery": "CANONICAL_EMPTY_V5_THEN_COMPANY_RUNTIME_REPLAN",
+      "blankOrMissingQueueRecovery": "CANONICAL_EMPTY_V6_THEN_COMPANY_RUNTIME_REPLAN",
       "queueRecoveryOwners": [
         "tools/vibe2-system-steward.mjs",
         "tools/vibe2-queue-control.mjs"

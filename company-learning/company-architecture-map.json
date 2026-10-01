@@ -1908,7 +1908,7 @@
         "staleControlQueueMayNotSuppressCanonicalRuntimeWork": true,
         "blankControlQueueRecovery": {
           "enabled": true,
-          "canonicalQueueVersion": 5,
+          "canonicalQueueVersion": 6,
           "preflightOwner": "tools/vibe2-system-steward.mjs",
           "commandFallbackOwner": "tools/vibe2-queue-control.mjs",
           "replanSource": "company-runtime:development-queue.json",
