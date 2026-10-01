@@ -2143,7 +2143,7 @@
     "directRawAiToTraining": false,
     "directRawAiToProduction": false,
     "automaticModelPromotion": false,
-    "actualExecutionAuthority": "EXISTING_DAG_RESERVATION_AND_REQUIRED_GATES_ONLY",
+    "actualExecutionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
     "authorityChange": "NONE",
     "phase1": {
       "state": "MERGED_MAIN",
@@ -2162,7 +2162,7 @@
       "rawModelOutputStored": false,
       "hiddenChainOfThoughtStored": false,
       "ambiguousFailurePromotion": false,
-      "actualExecutionAuthority": "EXISTING_DAG_RESERVATION_AND_REQUIRED_GATES_ONLY",
+      "actualExecutionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
       "authorityChange": "NONE",
       "fanInVerificationBindingRepair": {
         "state": "MERGED_MAIN",
@@ -2213,7 +2213,7 @@
       "mergeIsCapabilityVerification": false,
       "freshTaskQaRequired": true,
       "writableScopeExpansionAllowed": false,
-      "actualExecutionAuthority": "EXISTING_DAG_RESERVATION_AND_REQUIRED_GATES_ONLY",
+      "actualExecutionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
       "authorityChange": "NONE",
       "nextGate": "PHASE_3_IMPLEMENT_APPLICATION_OUTCOME_EVIDENCE_AND_CAPABILITY_LIFECYCLE_WITHOUT_AUTHORITY_EXPANSION",
       "productionObservation": {
@@ -2301,7 +2301,7 @@
         "EXISTING_DAG_EXECUTION_AUTHORITY_ONLY"
       ],
       "authority": {
-        "actualExecutionAuthority": "EXISTING_DAG_RESERVATION_AND_REQUIRED_GATES_ONLY",
+        "actualExecutionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
         "workerCreation": false,
         "queueMutation": false,
         "lockOrPolicyMutation": false,
@@ -2348,7 +2348,7 @@
         "hiddenChainOfThoughtStored": false
       },
       "authority": {
-        "actualExecutionAuthority": "EXISTING_DAG_RESERVATION_AND_REQUIRED_GATES_ONLY",
+        "actualExecutionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
         "workerCreation": false,
         "queueMutation": false,
         "lockOrPolicyMutation": false,
@@ -2484,7 +2484,7 @@
         "BENCHMARK_CONTAMINATION_COUNT"
       ],
       "authority": {
-        "actualExecutionAuthority": "EXISTING_DAG_RESERVATION_AND_REQUIRED_GATES_ONLY",
+        "actualExecutionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
         "workerCreation": false,
         "queueMutation": false,
         "lockOrPolicyMutation": false,
@@ -2548,7 +2548,7 @@
         }
       },
       "authority": {
-        "actualExecutionAuthority": "EXISTING_DAG_RESERVATION_AND_REQUIRED_GATES_ONLY",
+        "actualExecutionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
         "workerCreation": false,
         "queueMutation": false,
         "lockOrPolicyMutation": false,
