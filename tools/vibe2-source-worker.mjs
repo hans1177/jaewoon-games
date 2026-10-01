@@ -347,12 +347,19 @@ function worldLobbySourceWorkRequired(order={}){
   const evidence=[...(order.evidence||[]),...(order.selectedTask?.evidence||[])];
   return evidence.includes('world-lobby-first:v1')||[order.goal,order.originalGoal,order.selectedTask?.goal].some(value=>clean(value).includes('[WORLD_LOBBY_FIRST]'));
 }
+function assetDevelopmentTask(order={}){
+  const selected=order.selectedTask||{};
+  const evidence=[...(order.evidence||[]),...(selected.evidence||[])];
+  return order.assetProductionLane===true
+    ||selected.assetProductionLane===true
+    ||evidence.includes('asset-production-parallel:v1');
+}
 
 export function robloxDeterministicPresentationEligible(order={}){
   return clean(order.target).toLowerCase()==='roblox'
     &&order.presentationQuality?.required===true
     &&clean(order.presentationQuality?.pass).toUpperCase()==='ASSET_ADAPTATION'
-    &&!worldLobbySourceWorkRequired(order);
+    &&(assetDevelopmentTask(order)||!worldLobbySourceWorkRequired(order));
 }
 
 export function deterministicDiagnosticCandidate({exploration={},sourceRoot='',responsibleFiles=[],order={}}={}){

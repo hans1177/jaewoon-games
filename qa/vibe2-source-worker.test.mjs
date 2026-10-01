@@ -4248,6 +4248,21 @@ test('local Roblox visual retry targets gameplay visuals and keeps a bounded bui
 });
 
 
+test('asset-development Roblox presentation keeps its deterministic fast path when a shared goal also carries world-lobby work',()=>{
+  const base={
+    target:'roblox',
+    goal:'[WORLD_LOBBY_FIRST] preserve lobby flow\n[PRESENTATION_PASS:ASSET_ADAPTATION] improve native graphics',
+    presentationQuality:{required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false},
+    selectedTask:{goal:'[WORLD_LOBBY_FIRST] preserve lobby flow',evidence:['world-lobby-first:v1']}
+  };
+  assert.equal(robloxDeterministicPresentationEligible(base),false);
+  assert.equal(robloxDeterministicPresentationEligible({
+    ...base,
+    selectedTask:{...base.selectedTask,assetProductionLane:true,evidence:['world-lobby-first:v1','asset-production-parallel:v1']}
+  }),true);
+});
+
+
 test('deterministic Roblox build-up creates real style and motion edits without a model',()=>{
   const cwd=tempRoot();
   const sourceRoot=path.join(cwd,'roblox-games/demo');
