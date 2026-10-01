@@ -20,7 +20,7 @@ concurrency:
 jobs:
   build-assets:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -63,18 +63,26 @@ jobs:
         run: |
           blender --background --python assets/roblox/world-ghosts/refine-humanoid-motion.py -- \
             --source assets/roblox/world-ghosts/native/mesh/bride.glb \
-            --output assets/roblox/world-ghosts/native/mesh/bride-motion-v2 \
-            --render-dir assets/roblox/world-ghosts/native/mesh/bride-motion-v2/previews
-      - name: Validate humanoid foundation GLB and 6 motions
+            --output assets/roblox/world-ghosts/native/mesh/bride-motion-v3 \
+            --render-dir assets/roblox/world-ghosts/native/mesh/bride-motion-v3/previews
+      - name: Validate humanoid foundation GLB and 17 measured motions
         run: |
           python3 - <<'PY'
           import hashlib, json, struct
           from pathlib import Path
           source=Path('assets/roblox/world-ghosts/native/mesh/bride.glb')
-          root=Path('assets/roblox/world-ghosts/native/mesh/bride-motion-v2')
+          root=Path('assets/roblox/world-ghosts/native/mesh/bride-motion-v3')
           evidence=json.loads((root/'evidence.json').read_text(encoding='utf-8'))
-          expected={'hero_idle_hq','hero_walk_hq','hero_run_hq','hero_start_hq','hero_stop_hq','hero_turn_90_hq'}
-          assert evidence['foundationMotionCount']==6
+          expected={
+            'hero_idle_hq','hero_walk_hq','hero_jog_hq','hero_run_hq','hero_sprint_hq',
+            'hero_start_hq','hero_stop_hq','hero_strafe_left_hq','hero_strafe_right_hq','hero_backward_hq',
+            'hero_turn_45_hq','hero_turn_90_hq','hero_turn_180_hq',
+            'hero_jump_start_hq','hero_jump_air_hq','hero_land_hq','hero_crouch_hq'
+          }
+          assert evidence['foundationMotionCount']==17
+          assert evidence['foundationTargetMotionCount']==40
+          assert evidence['foundationRemainingMotionCount']==23
+          assert evidence['foundationStage']=='BASE_LOCOMOTION_TRAVERSAL_17_OF_40'
           assert set(evidence['foundationMotions'])==expected
           assert evidence['sourceOriginalPreserved'] is True
           assert evidence['gameplayAuthorityChanged'] is False
@@ -86,10 +94,17 @@ jobs:
           assert evidence['staticMotionQa']['root']['rotationMaxRad']<=evidence['staticMotionQa']['thresholds']['rootRotationMaxRad']
           assert evidence['staticMotionQa']['root']['locationMax']<=evidence['staticMotionQa']['thresholds']['rootLocationMax']
           assert evidence['staticMotionQa']['allSamplesFinite'] is True
-          assert len(evidence.get('previewFiles',[]))==6
-          assert evidence.get('previewIsRuntimeProof') is False
+          assert evidence['platformConversionQa']['pass'] is True
+          assert evidence['mobileBudget']['pass'] is True
           assert evidence['sourceSha256']==hashlib.sha256(source.read_bytes()).hexdigest()
-          glb=root/'bride-motion-v2.glb'
+          assert evidence['sourceSha256AfterBuild']==evidence['sourceSha256']
+          assert len(evidence.get('previewFiles',[]))==17
+          assert evidence.get('previewIsRuntimeProof') is False
+          preview_root=root/'previews'
+          assert (preview_root/'source-bind-reference.png').is_file()
+          for name in expected:
+              assert (preview_root/(name+'.png')).is_file(), name
+          glb=root/'bride-motion-v3.glb'
           assert evidence['derivedSha256']==hashlib.sha256(glb.read_bytes()).hexdigest()
           raw=glb.read_bytes()
           magic,version,total=struct.unpack_from('<4sII',raw,0)
@@ -104,42 +119,56 @@ jobs:
           names={row.get('name') for row in doc.get('animations',[])}
           assert names==expected, (names,expected)
           assert len(doc.get('skins',[]))>=1
-          print('HUMANOID_MOTION_GLTF_OK', {'animations':len(names),'skins':len(doc.get('skins',[])),'bones':evidence['boneCount']})
+          print('HUMANOID_MOTION_GLTF_OK',{
+            'animations':len(names),
+            'skins':len(doc.get('skins',[])),
+            'bones':evidence['boneCount'],
+            'staticQa':evidence['staticMotionQa']['staticMotionQaPass'],
+            'platformQa':evidence['platformConversionQa']['pass'],
+            'mobileBudget':evidence['mobileBudget']['pass']
+          })
           PY
-      - name: Register verified-built humanoid motion derivative as runtime-pending asset
+      - name: Register measured humanoid motion derivative as runtime-pending asset
         run: |
           python3 - <<'PY'
           import json
           from pathlib import Path
-          evidence_path=Path('assets/roblox/world-ghosts/native/mesh/bride-motion-v2/evidence.json')
-          artifact_path=Path('assets/roblox/world-ghosts/native/mesh/bride-motion-v2/bride-motion-v2.glb')
+          root=Path('assets/roblox/world-ghosts/native/mesh/bride-motion-v3')
+          evidence_path=root/'evidence.json'
+          artifact_path=root/'bride-motion-v3.glb'
           assert evidence_path.is_file() and artifact_path.is_file()
           evidence=json.loads(evidence_path.read_text(encoding='utf-8'))
           assert evidence['staticMotionQa']['staticMotionQaPass'] is True
+          assert evidence['platformConversionQa']['pass'] is True
+          assert evidence['mobileBudget']['pass'] is True
           assert evidence['productionVerified'] is False
           library_path=Path('company-asset-library.json')
           library=json.loads(library_path.read_text(encoding='utf-8'))
           assets=library.setdefault('assets',[])
-          asset_id='shared-humanoid-foundation-motion-bride-v2'
+          asset_id='shared-humanoid-foundation-motion-bride-v3'
           row={
             'id':asset_id,
-            'title':'공용 휴머노이드 고퀄 기본 모션 V2',
+            'title':'공용 휴머노이드 고퀄 기초 모션 V3 17/40',
             'category':'MOTION',
             'family':'MOTION',
             'platform':'SHARED_NATIVE_SOURCE',
             'platformTargets':['UNITY','ROBLOX'],
             'status':'REPO_ASSET',
-            'path':'/assets/roblox/world-ghosts/native/mesh/bride-motion-v2/bride-motion-v2.glb',
+            'path':'/assets/roblox/world-ghosts/native/mesh/bride-motion-v3/bride-motion-v3.glb',
             'license':'project-original-derivative',
             'sourceAssetId':'roblox-world-ghost-gwisin-bride',
             'sourceAssetPath':'assets/roblox/world-ghosts/native/mesh/bride.glb',
             'sourceSha256':evidence['sourceSha256'],
             'derivedSha256':evidence['derivedSha256'],
             'sourceOriginalPreserved':True,
+            'foundationTargetMotionCount':40,
             'motionCount':evidence['foundationMotionCount'],
+            'remainingMotionCount':evidence['foundationRemainingMotionCount'],
             'motionStates':evidence['foundationMotions'],
-            'staticMotionQaState':'PASS',
+            'staticMotionQaState':'MEASURED_STATIC_QA_PASS',
             'staticMotionQa':evidence['staticMotionQa'],
+            'platformConversionQa':evidence['platformConversionQa'],
+            'mobileBudget':evidence['mobileBudget'],
             'runtimeVerificationState':'STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING',
             'productionVerified':False,
             'verifiedCompanyReusable':False,
@@ -149,10 +178,10 @@ jobs:
             'sourceFiles':[
               'assets/roblox/world-ghosts/refine-humanoid-motion.py',
               'assets/roblox/world-ghosts/native/mesh/bride.glb',
-              'assets/roblox/world-ghosts/native/mesh/bride-motion-v2/bride-motion-v2.glb',
-              'assets/roblox/world-ghosts/native/mesh/bride-motion-v2/evidence.json'
+              'assets/roblox/world-ghosts/native/mesh/bride-motion-v3/bride-motion-v3.glb',
+              'assets/roblox/world-ghosts/native/mesh/bride-motion-v3/evidence.json'
             ],
-            'note':'기존 스킨드 GLB 원본을 보존하고 직접 키포즈/전환/접지/체중이동/2차모션을 다시 제작한 파생 모션. Blender 정적 수치 QA만 통과한 상태이며 Roblox Studio/Unity 실제 런타임 검증 전.'
+            'note':'원본 스킨드 GLB를 보존하고 17개 기초 이동/회전/점프/웅크리기 모션을 직접 재제작. Blender 수치 QA·GLB 구조·모바일 예산만 검증됐으며 Roblox Studio/Unity 네이티브 런타임 검증 전.'
           }
           index=next((i for i,item in enumerate(assets) if item.get('id')==asset_id),None)
           if index is None: assets.append(row)
@@ -199,8 +228,8 @@ jobs:
             assets/roblox/world-ghosts/native/spider/spider.glb \
             assets/roblox/world-ghosts/native/spider/spider.png \
             assets/roblox/world-ghosts/native/spider/evidence.json \
-            assets/roblox/world-ghosts/native/mesh/bride-motion-v2/bride-motion-v2.glb \
-            assets/roblox/world-ghosts/native/mesh/bride-motion-v2/evidence.json \
+            assets/roblox/world-ghosts/native/mesh/bride-motion-v3/bride-motion-v3.glb \
+            assets/roblox/world-ghosts/native/mesh/bride-motion-v3/evidence.json \
             company-asset-library.json
           if git diff --cached --quiet; then
             echo "Authored asset artifacts already current"
