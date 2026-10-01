@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort } from '../tools/vibe2-auto-planner.mjs';
 import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
@@ -336,24 +336,29 @@ test('recent owner Web work is prioritized only inside the Web lane until first 
   assert.equal(deployed.ownerRecentWebPriority,false);
 });
 
-test('recent Web hint does not outrank an existing higher Web release priority',()=>{
-  const root=tempRepo();
-  for(const gameId of ['recent-dev-web','release-priority-web']){
-    const dir=path.join(root,'web-games',gameId);
-    fs.mkdirSync(dir,{recursive:true});
-    fs.writeFileSync(path.join(dir,'index.html'),'<!doctype html><html><body data-spatial-dimension="2.5d"><canvas id="game"></canvas><button>Play</button></body></html>','utf8');
-    writeStudioDesign(root,gameId);
-  }
-  const result=planVibe2AutonomousTasks({
-    status:{projects:[]},
-    catalog:{games:[
-      {id:'recent-dev-web',name:'Recent Dev',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',hasWebArchive:true,homepageWebPlayable:false,webPath:null,ownerDirectWebUpload:true,webDevelopmentResetRequired:true,ownerWebSourceRevision:'recent'},
-      {id:'release-priority-web',name:'Release Web',productionClass:'RELEASE_CONFIRMED',lifecycleState:'ACTIVE',hasWebArchive:true,homepageWebPlayable:true,webPath:'/web-games/release-priority-web/'}
-    ]},
-    queue:{maxConcurrentTasks:1,tasks:[]},repoRoot:root,maxConcurrentTasks:1,queueMaxConcurrentTasks:1,planningBacklogTarget:1,planningBacklogMinimum:0
-  });
-  assert.equal(result.planned,true);
-  assert.equal(result.task.gameId,'release-priority-web');
+test('recent Web hint only reorders equivalent Web projects and never overrides existing priority tiers',()=>{
+  const recent={
+    gameId:'recent-web',engine:'web',releaseState:'development-confirmed',progress:10,
+    ownerRecentWebPriority:true,ownerFocusedCaretaker:false
+  };
+  const olderEquivalent={
+    gameId:'older-web',engine:'web',releaseState:'development-confirmed',progress:99,
+    ownerRecentWebPriority:false,ownerFocusedCaretaker:false
+  };
+  assert.ok(projectSort(recent,olderEquivalent)<0);
+
+  const higherWeb={
+    gameId:'release-web',engine:'web',releaseState:'release-confirmed',progress:1,
+    ownerRecentWebPriority:false,ownerFocusedCaretaker:false
+  };
+  assert.ok(projectSort(recent,higherWeb)>0);
+
+  const native={
+    gameId:'native',engine:'unity',releaseState:'development-confirmed',progress:40,
+    ownerRecentWebPriority:false,ownerFocusedCaretaker:false
+  };
+  const recentOff={...recent,ownerRecentWebPriority:false};
+  assert.equal(Math.sign(projectSort(recent,native)),Math.sign(projectSort(recentOff,native)));
 });
 
 test('canonical development queue bootstraps missing Web source roots instead of dropping active games',()=>{
