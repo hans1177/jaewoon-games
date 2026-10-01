@@ -1,5 +1,5 @@
 {
-  "version": 507,
+  "version": 508,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -1360,15 +1360,21 @@
       "assetDevelopmentSpeculativeVariantsPerTask": 1,
       "durableHandoffRequired": true,
       "independentNonoverlappingGameAndNeuralWorkParallelByDefault": true,
-      "serializationAllowedOnlyForResponsibleFileConflictDependencyExactDuplicateOrAtomicSharedStateWrite": true
+      "serializationAllowedOnlyForResponsibleFileConflictDependencyExactDuplicateOrAtomicSharedStateWrite": true,
+      "topLevelSchedulerSingletonForbidden": true,
+      "reserveJobLaneSerializationForbidden": true
     },
     "waveSchedulingForbidden": true,
     "waveLeaderForbidden": true,
     "cohortBarrierForbiddenForIndependentCompletion": true,
     "completionFanInMode": "PER_INDEPENDENT_NEURON_IMMEDIATE",
-    "externalMatrixBatchMaxMeaning": "GITHUB_MATRIX_TRANSPORT_PARTITION_ONLY_NOT_SCHEDULING_WAVE_OR_GLOBAL_CAP",
+    "externalMatrixBatchMaxMeaning": "GITHUB_MATRIX_TRANSPORT_PARTITION_ONLY_NOT_SCHEDULING_STAGE_NOT_GLOBAL_CAP",
     "independentReservationContinuation": true,
-    "independentReservationContinuationMayRunWhilePriorWorkersActive": true
+    "independentReservationContinuationMayRunWhilePriorWorkersActive": true,
+    "topLevelSchedulerSingletonForbidden": true,
+    "reserveJobLaneSerializationForbidden": true,
+    "sharedStateWriteCoordination": "OPTIMISTIC_RETRY_ATOMIC_WRITE_ONLY",
+    "generalExecutionInternalGlobalCap": null
   },
   "phases": [
     {
@@ -7510,7 +7516,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-10-01T23:20:00+09:00",
+  "updatedAt": "2026-10-01T23:35:00+09:00",
   "priorityTiers": [
     {
       "tier": 1,
