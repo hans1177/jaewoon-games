@@ -1903,6 +1903,25 @@ class McpStdioClient{
   }
 }
 
+export function validateStudioPlaceArtifactPreOpen({placeFile=''}={}){
+  const file=path.resolve(clean(placeFile));
+  if(!file||!fs.existsSync(file))throw new Error('ROBLOX_STUDIO_PRE_PLAY_PLACE_MISSING:'+file);
+  if(path.extname(file).toLowerCase()!=='.rbxlx')throw new Error('ROBLOX_STUDIO_PRE_PLAY_PLACE_XML_REQUIRED:'+path.extname(file));
+  const xml=fs.readFileSync(file,'utf8');
+  const lightingStart=xml.search(/<Item\s+class="Lighting"(?:\s|>)/i);
+  if(lightingStart<0)throw new Error('ROBLOX_STUDIO_PRE_PLAY_LIGHTING_ITEM_MISSING');
+  const propertiesStart=xml.indexOf('<Properties>',lightingStart);
+  const propertiesClose=xml.indexOf('</Properties>',propertiesStart);
+  if(propertiesStart<0||propertiesClose<0)throw new Error('ROBLOX_STUDIO_PRE_PLAY_LIGHTING_PROPERTIES_MISSING');
+  const properties=xml.slice(propertiesStart,propertiesClose+'</Properties>'.length);
+  const technologyMatch=properties.match(/<token\s+name="Technology">\s*([0-9]+)\s*<\/token>/i);
+  if(!technologyMatch)throw new Error('ROBLOX_STUDIO_PRE_PLAY_LIGHTING_MIGRATION_REQUIRED:MISSING_TECHNOLOGY');
+  const technologyToken=Number(technologyMatch[1]);
+  if(technologyToken===2)throw new Error('ROBLOX_STUDIO_PRE_PLAY_LIGHTING_MIGRATION_REQUIRED:COMPATIBILITY');
+  if(![1,3,4].includes(technologyToken))throw new Error('ROBLOX_STUDIO_PRE_PLAY_LIGHTING_TECHNOLOGY_UNSUPPORTED:'+technologyToken);
+  return Object.freeze({pass:true,technologyToken,authority:'roblox-place-pre-open-modal-gate'});
+}
+
 function chooseStudio(listResult,expectedName=''){
   const studios=collectStudios(listResult,[]);
   const unique=[...new Map(studios.map(x=>[x.studioId,x])).values()];
@@ -3660,6 +3679,12 @@ function args(argv=process.argv.slice(2)){
 async function main(){
   const a=args();
   const mode=clean(a.mode);
+  if(mode==='validate-place'){
+    const result=validateStudioPlaceArtifactPreOpen({placeFile:clean(a.place)});
+    if(clean(a.output))writeJson(a.output,result);
+    console.log('ROBLOX_STUDIO_PRE_PLAY_PLACE_GATE=PASS:technology='+result.technologyToken);
+    return;
+  }
   if(mode==='diagnose-setting'){
     const result=detectStudioMcpAssistantSetting({settingsRoot:clean(a['settings-root'])});
     if(clean(a.output))writeJson(a.output,result);
@@ -3781,7 +3806,7 @@ async function main(){
     console.log('RESUME_STAGE='+(applied.item.robloxQualityBuildUpRequired===true?'REPAIR_REQUIRED':'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'));
     return;
   }
-  throw new Error('unsupported --mode; expected diagnose-setting, plan, mcp-run, or persist');
+  throw new Error('unsupported --mode; expected validate-place, diagnose-setting, plan, mcp-run, or persist');
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
