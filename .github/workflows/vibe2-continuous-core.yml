@@ -561,6 +561,59 @@ jobs:
           process.stdout.write(ids.join(','));
           NODE
           )"
+
+          # Cohort fan-in may still be waiting on one slow matrix worker. Reclaim only execution
+          # capacity for tasks whose immutable worker artifacts are already complete; task/file locks
+          # and final fan-in QA remain intact through slot-released-awaiting-fan-in.
+          artifact_probe_tsv=/tmp/vibe2-completed-worker-artifacts.tsv
+          artifact_probe_json=/tmp/vibe2-completed-worker-artifacts.json
+          : > "$artifact_probe_tsv"
+          artifact_probe_failures=0
+          artifact_probe_runs=0
+          if [ -n "$candidate_reservation_runs" ]; then
+            IFS=',' read -r -a artifact_run_ids <<< "$candidate_reservation_runs"
+            for reservation_run_id in "${artifact_run_ids[@]}"; do
+              [ -n "$reservation_run_id" ] || continue
+              if [ "$artifact_probe_runs" -ge 16 ]; then
+                echo 'VIBE2_COMPLETED_WORKER_ARTIFACT_PROBE_LIMIT=16'
+                break
+              fi
+              artifact_probe_runs=$((artifact_probe_runs+1))
+              if artifact_names="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/runs/${reservation_run_id}/artifacts?per_page=100" --jq '.artifacts[].name' 2>/dev/null)"; then
+                while IFS= read -r artifact_name; do
+                  [ -n "$artifact_name" ] || continue
+                  printf '%s\t%s\n' "$reservation_run_id" "$artifact_name" >> "$artifact_probe_tsv"
+                done <<< "$artifact_names"
+              else
+                artifact_probe_failures=$((artifact_probe_failures+1))
+              fi
+            done
+          fi
+          node - "$artifact_probe_tsv" "$artifact_probe_json" <<'NODE'
+          const fs=require('fs');
+          const [input,output]=process.argv.slice(2);
+          const grouped=new Map();
+          for(const line of fs.readFileSync(input,'utf8').split(/\r?\n/).filter(Boolean)){
+            const at=line.indexOf('\t');
+            if(at<1)continue;
+            const runId=line.slice(0,at).trim(),name=line.slice(at+1).trim();
+            if(!runId||!name)continue;
+            if(!grouped.has(runId))grouped.set(runId,new Set());
+            grouped.get(runId).add(name);
+          }
+          const runs=[...grouped.entries()].map(([runId,names])=>({runId,artifactNames:[...names]}));
+          fs.writeFileSync(output,JSON.stringify({version:1,runs},null,2)+'\n');
+          console.log('VIBE2_COMPLETED_WORKER_ARTIFACT_RUNS='+runs.length);
+          NODE
+          node /tmp/vibe2-main/tools/vibe2-queue-control.mjs release-completed-worker-artifacts \
+            --queue="$control_root/.vibe2/queue.json" \
+            --input="$artifact_probe_json" | tee /tmp/vibe2-completed-worker-artifact-release.log
+          if [ "$artifact_probe_failures" -eq 0 ]; then
+            echo 'VIBE2_COMPLETED_WORKER_ARTIFACT_OBSERVATION=PASS'
+          else
+            echo "VIBE2_COMPLETED_WORKER_ARTIFACT_OBSERVATION=PARTIAL_FAIL_OPEN:${artifact_probe_failures}"
+          fi
+
           completed_probe_failures=0
           if [ -n "$candidate_reservation_runs" ]; then
             IFS=',' read -r -a reservation_run_ids <<< "$candidate_reservation_runs"
@@ -691,16 +744,16 @@ jobs:
             echo "VIBE2_SLOT_CALLBACK_CLEANUP=$callback_ref"
           fi
 
-          node <<'NODE'
-          const fs=require('fs');
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { workerArtifactTaskKey } from '/tmp/vibe2-main/tools/vibe2-queue-control.mjs';
           const out=process.env.GITHUB_OUTPUT;
           const batch=JSON.parse(fs.readFileSync('/tmp/vibe2-batch.json','utf8'));
           const workers=[];
-          const safe=value=>String(value||'task').replace(/[^A-Za-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)||'task';
           let suppressedSpeculativeWorkers=0;
           const assetLane=String(process.env.VIBE2_EXECUTION_LANE||'').toLowerCase()==='asset-development';
           for(const row of batch.matrix||[]){
-            const safeTask=safe(row.taskId);
+            const safeTask=workerArtifactTaskKey(row.taskId);
             const requestedVariantCount=Math.max(1,Math.min(5,Number(row.speculativeVariants||1)));
             const variantCount=assetLane?1:requestedVariantCount;
             if(assetLane)suppressedSpeculativeWorkers+=Math.max(0,requestedVariantCount-1);

@@ -32,6 +32,7 @@ const SOURCE_GENERATION_CONTEXT_REPAIR_EVIDENCE = 'repair-retry:vibe2-source-gen
 const STALE_RUNNING_RECOVERY_EVIDENCE = 'recovery:stale-running-reservation-v1';
 const COMPLETED_RESERVATION_RUN_RECOVERY_EVIDENCE = 'recovery:completed-reservation-run-v1';
 const TRANSIENT_WORK_LOCK_RECOVERY_EVIDENCE = 'recovery:transient-work-lock-requeue-v1';
+const WORKER_ARTIFACT_SLOT_RELEASE_EVIDENCE = 'worker-artifact-slot-release:v1';
 const DEFAULT_STALE_RUNNING_MS = 45 * 60 * 1000;
 function readJson(file, fallback = {}) {
   if (!file || !fs.existsSync(file)) return fallback;
@@ -252,6 +253,45 @@ export function recoverCompletedRunningReservations(queueInput, { completedRunId
     recoveredRunIds:[...recoveredRunIds],
     queue:recovered?createVibeContinuousQueue({tasks,maxConcurrentTasks:queue.maxConcurrentTasks}):queue
   };
+}
+
+export function workerArtifactTaskKey(value='task'){
+  return String(value||'task').replace(/[^A-Za-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)||'task';
+}
+
+function expectedWorkerArtifactNames(task={}){
+  const expected=Math.max(1,Math.min(5,Math.floor(Number(task.neuronExpectedVariants)||1)));
+  const safeTask=workerArtifactTaskKey(task.id);
+  return Array.from({length:expected},(_,index)=>`vibe2-result-${safeTask}-${index===0?'primary':`speculative-${index}`}`);
+}
+
+export function releaseCompletedWorkerArtifactSlots(queueInput,{runArtifacts=[]}={}){
+  const queue=createVibeContinuousQueue(queueInput);
+  const byRun=new Map();
+  for(const row of Array.isArray(runArtifacts)?runArtifacts:[]){
+    const runId=clean(row?.runId||row?.id);
+    if(!runId)continue;
+    const names=Array.isArray(row?.artifactNames)?row.artifactNames:Array.isArray(row?.artifacts)?row.artifacts:[];
+    byRun.set(runId,new Set(names.map(clean).filter(Boolean)));
+  }
+  if(!byRun.size)return{released:0,releasedTaskIds:[],queue};
+  let next=queue;
+  const releasedTaskIds=[];
+  for(const task of queue.tasks){
+    const runId=clean(task.reservationRunId);
+    if(task.status!=='running'||clean(task.blocker)||!runId)continue;
+    const names=byRun.get(runId);
+    if(!names)continue;
+    const expected=expectedWorkerArtifactNames(task);
+    if(!expected.every(name=>names.has(name)))continue;
+    const released=releaseVibeTaskExecutionSlot(next,{
+      taskId:task.id,
+      evidence:[WORKER_ARTIFACT_SLOT_RELEASE_EVIDENCE,`worker-artifact-run:${runId}`]
+    });
+    next=released.queue;
+    if(released.released)releasedTaskIds.push(task.id);
+  }
+  return{released:releasedTaskIds.length,releasedTaskIds,queue:next};
 }
 
 export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now(), staleMs = DEFAULT_STALE_RUNNING_MS } = {}) {
@@ -930,6 +970,20 @@ export function runQueueCommand(args = {}) {
       ...recovered,
       summary:summarizeVibeContinuousQueue(queue)
     };
+  } else if (command === 'release-completed-worker-artifacts') {
+    const input=clean(args.input);
+    if(!input)throw new Error('--input artifact index json required');
+    const payload=readJson(input,{});
+    const runArtifacts=Array.isArray(payload)?payload:(Array.isArray(payload.runs)?payload.runs:[]);
+    const released=releaseCompletedWorkerArtifactSlots(queue,{runArtifacts});
+    queue=released.queue;
+    if(released.released)writeJson(file,queue);
+    result={
+      command,
+      updated:released.released>0,
+      ...released,
+      summary:summarizeVibeContinuousQueue(queue)
+    };
   } else if (command === 'reserve') {
     const executionLane=clean(args.lane)||'game-primary';
     const configuredMaxConcurrentTasks=executionLane==='learning-idle'?1:(optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks);
@@ -1109,6 +1163,10 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   if(result.command==='recover-completed-reservations'){
     console.log(`VIBE2_COMPLETED_RESERVATION_RECOVERED=${result.recovered||0}`);
     console.log(`VIBE2_COMPLETED_RESERVATION_RUNS=${(result.recoveredRunIds||[]).join(',')||'NONE'}`);
+  }
+  if(result.command==='release-completed-worker-artifacts'){
+    console.log(`VIBE2_COMPLETED_WORKER_ARTIFACT_SLOTS_RELEASED=${result.released||0}`);
+    console.log(`VIBE2_COMPLETED_WORKER_ARTIFACT_TASKS=${(result.releasedTaskIds||[]).join(',')||'NONE'}`);
   }
   if(result.command==='verify-worker-sync'){
     console.log(`VIBE2_WORKER_SYNC=${result.pass===true?'PASS':'FAIL'}`);

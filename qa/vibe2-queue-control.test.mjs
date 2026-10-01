@@ -14,6 +14,8 @@ import {
   reserveVibeTaskBatch,
   markVibeTaskAwaiting,
   releaseVibeTaskExecutionSlot,
+  releaseCompletedWorkerArtifactSlots,
+  workerArtifactTaskKey,
   settleVibeTask,
   applyVibeFanInResults,
   recordVibeNeuronResult,
@@ -671,6 +673,38 @@ test('completed single worker releases capacity before fan-in without dropping s
   const second=releaseVibeTaskExecutionSlot(released.queue,{taskId:'first'});
   assert.equal(second.released,false);
   assert.equal(second.reason,'ALREADY_RELEASED');
+});
+
+test('completed worker artifacts release capacity before slow cohort fan-in without dropping locks', () => {
+  const queue=createVibeContinuousQueue({
+    maxConcurrentTasks:2,
+    tasks:[
+      {id:'artifact-task',gameId:'game-a',target:'web',department:'development',type:'implementation',goal:'artifact',status:'running',reservationRunId:'123',reservationId:'123:1',neuronExpectedVariants:2,responsibleFiles:['shared.js']},
+      {id:'other-running',gameId:'game-b',target:'web',department:'development',type:'implementation',goal:'other',status:'running',reservationRunId:'999',reservationId:'999:1',responsibleFiles:['b.js']},
+      {id:'same-lock',gameId:'game-c',target:'web',department:'development',type:'implementation',goal:'same',status:'queued',responsibleFiles:['shared.js']},
+      {id:'refill',gameId:'game-d',target:'web',department:'development',type:'implementation',goal:'refill',status:'queued',responsibleFiles:['free.js']}
+    ]
+  });
+  const safe=workerArtifactTaskKey('artifact-task');
+  const partial=releaseCompletedWorkerArtifactSlots(queue,{runArtifacts:[{runId:'123',artifactNames:[`vibe2-result-${safe}-primary`]}]});
+  assert.equal(partial.released,0);
+  const complete=releaseCompletedWorkerArtifactSlots(queue,{runArtifacts:[{runId:'123',artifactNames:[`vibe2-result-${safe}-primary`,`vibe2-result-${safe}-speculative-1`]}]});
+  assert.equal(complete.released,1);
+  assert.deepEqual(complete.releasedTaskIds,['artifact-task']);
+  const task=complete.queue.tasks.find(row=>row.id==='artifact-task');
+  assert.match(task.blocker,/slot-released.*fan-in/);
+  assert.equal(task.reservationRunId,'123');
+  const selection=selectVibeQueueBatch(complete.queue,{maxConcurrentTasks:2});
+  assert.equal(selection.selected.some(row=>row.id==='same-lock'),false);
+  assert.equal(selection.selected.some(row=>row.id==='refill'),true);
+});
+
+test('worker artifact release ignores artifacts from a different reservation run', () => {
+  const queue=createVibeContinuousQueue({tasks:[{id:'artifact-stale',gameId:'g',target:'web',department:'development',type:'implementation',goal:'x',status:'running',reservationRunId:'200',reservationId:'200:1',neuronExpectedVariants:1}]});
+  const safe=workerArtifactTaskKey('artifact-stale');
+  const released=releaseCompletedWorkerArtifactSlots(queue,{runArtifacts:[{runId:'199',artifactNames:[`vibe2-result-${safe}-primary`]}]});
+  assert.equal(released.released,0);
+  assert.equal(released.queue.tasks[0].blocker,null);
 });
 
 test('stale slot-release callback never overwrites a real awaiting-QA blocker', () => {
@@ -1609,6 +1643,19 @@ test('continuous core rebases refill wakes to latest main and always ingests neu
     assert.match(contract,/contract_sha="\$\(git rev-parse FETCH_HEAD\)"/);
     assert.match(workflow,/vibe2-refill-reserve-\{0\}/);
   }finally{fs.rmSync(temp,{recursive:true,force:true});}
+});
+
+test('continuous core reclaims completed worker artifact slots without per-worker dispatch',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  const reserveStart=workflow.indexOf('- name: Reserve conflict-free DAG batch');
+  const fanInStart=workflow.indexOf('\n  fan_in:',reserveStart);
+  assert.ok(reserveStart>=0&&fanInStart>reserveStart);
+  const reserve=workflow.slice(reserveStart,fanInStart);
+  assert.match(reserve,/actions\/runs\/\$\{reservation_run_id\}\/artifacts\?per_page=100/);
+  assert.match(reserve,/release-completed-worker-artifacts/);
+  assert.match(reserve,/VIBE2_COMPLETED_WORKER_ARTIFACT_OBSERVATION=PASS/);
+  assert.match(reserve,/VIBE2_COMPLETED_WORKER_ARTIFACT_PROBE_LIMIT=16/);
+  assert.match(reserve,/workerArtifactTaskKey/);
 });
 
 test('continuous core always coalesces game-primary callbacks and pressure-coalesces auxiliary callbacks',()=>{
