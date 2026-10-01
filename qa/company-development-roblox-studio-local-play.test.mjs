@@ -1033,6 +1033,9 @@ test('Studio MCP planner stays independent and does not consume the authenticate
   assert.doesNotMatch(studioPlanBlock,/needs: dedupe/);
   assert.doesNotMatch(studioPlanBlock,/needs\.dedupe/);
   assert.doesNotMatch(studioPlanBlock,/if:\s*needs\.dedupe\.outputs\.run/);
+  assert.match(studioPlanBlock,/inputs\.run_studio == true/);
+  assert.match(studioPlanBlock,/tools\/company-development-roblox-studio-local-play\.mjs/);
+  assert.match(studioPlanBlock,/\.github\/workflows\/company-development-roblox-post-runtime-qa\.yml/);
   assert.equal(central.robloxNativeCodingQualityContract.actualPlayFeedback.portfolioWideFoundationJobWaitForbidden,true);
   assert.equal(architecture.robloxNativeCodingQualityTopology.studioPlannerDependsOnPortfolioFoundationJob,false);
   assert.equal(architecture.robloxNativeCodingQualityTopology.studioPlannerRunsOnHostedControlRunner,true);
