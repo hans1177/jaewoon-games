@@ -324,7 +324,7 @@ test('stale main push wake exits before expensive reserve work without cancellin
   assert.match(core,/VIBE2_RESERVE_WAKE_FRESHNESS=NEURON_CALLBACK_ALWAYS_INGEST/);
   assert.match(core,/gh api "repos\/\$GITHUB_REPOSITORY\/commits\/main" --jq '\.sha'/);
   assert.match(core,/Prepare latest main machine contract\n\s+id: contract\n\s+if: steps\.main_wake\.outputs\.proceed == 'true'/);
-  assert.match(core,/Fast scheduler preflight\n\s+if: steps\.main_wake\.outputs\.proceed == 'true'/);
+  assert.match(core,/Fast scheduler preflight\n\s+id: preflight\n\s+if: steps\.main_wake\.outputs\.proceed == 'true'/);
   assert.match(core,/Reserve conflict-free DAG batch\n\s+id: batch\n\s+if: steps\.main_wake\.outputs\.proceed == 'true'/);
   assert.match(core,/vibe2-main-push-game-primary-wake/);
   assert.match(core,/cancel-in-progress: false/);
@@ -335,7 +335,7 @@ test('24h runner wakes asset lane when active reservations need recovery even wi
   assert.match(runner,/asset_development_active/);
   assert.match(runner,/asset_development_queued/);
   assert.match(runner,/asset_development_refill_ready/);
-  assert.match(runner,/needs\.plan\.outputs\.asset_development_refill_ready == 'YES' && \(needs\.plan\.outputs\.asset_development_queued != '0' \|\| needs\.plan\.outputs\.asset_development_active != '0'\)/);
+  assert.match(runner,/needs\.plan\.outputs\.runner_pressure != 'YES' && needs\.plan\.outputs\.asset_development_refill_ready == 'YES' && \(needs\.plan\.outputs\.asset_development_queued != '0' \|\| needs\.plan\.outputs\.asset_development_active != '0'\)/);
 });
 
 test('failed worker releases its exact lock after immutable upload while PASS holds until fan-in',()=>{
