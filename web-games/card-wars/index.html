@@ -159,4 +159,50 @@ function renderBattle(){
  $('turnDesc').textContent=game.turn==='enemy'?'적군 유닛을 움직이고 공격해.':'왼쪽 두 열에 유닛을 소환하거나 내 유닛을 움직여.';
  $('board').style.gridTemplateColumns=`repeat(${game.s.w},1fr)`;$('board').style.gridTemplateRows=`repeat(${game.s.h},1fr)`;$('board').innerHTML='';
  for(let y=0;y<game.s.h;y++)for(let x=0;x<game.s.w;x++){
-  const c=document.createElement('button');c.className='cell';c.dataset.x=x;c.dataset.y=y;const tile=game.tiles.find(t=>t.x===x&&t.y===y&&!t.used);if(tile){const 
+  const c=document.createElement('button');c.className='cell';c.dataset.x=x;c.dataset.y=y;const tile=game.tiles.find(t=>t.x===x&&t.y===y&&!t.used);if(tile){const t=document.createElement('span');t.className='tile';t.textContent={가시:'▲',회복:'✚',점프:'➜',균열:'◆'}[tile.type];t.title=tile.type;c.appendChild(t)}
+  const p=pieceAt(x,y);if(p){const d=document.createElement('div');d.className='piece '+p.team+(p.attackLock>0?' stun':'');d.innerHTML=`<span class="n">${p.name}</span><span class="hp">${Math.max(0,p.hp)}/${p.maxHp}</span>`;c.appendChild(d)}
+  if(selected&&selected.id===p?.id)c.classList.add('selected');if(selected&&!p&&dist(selected,{x,y})===1&&!selected.moved)c.classList.add('can');if(selected&&p&&p.team!==selected.team&&dist(selected,p)<=selected.range&&!selected.attacked&&selected.attackLock<=0)c.classList.add('enemyTarget');
+  c.onclick=()=>cellClick(x,y);$('board').appendChild(c)
+ }
+ renderUnits();$('log').innerHTML=game.log.slice(-60).map(t=>`<div>${t}</div>`).join('');$('log').scrollTop=$('log').scrollHeight;
+}
+function renderUnits(){
+ if(!game||game.turn==='enemy'){$('unitList').innerHTML='<div class="muted">적군 차례에는 소환하지 않아.</div>';return}
+ const count=allies().length;$('unitList').innerHTML=save.owned.filter(n=>UNIT[n]).map(n=>{const u=unitStats(n),off=game.gold<u.cost||count>=game.s.allyMax;return `<button class="unitBtn ${summonChoice===n?'on':''}" data-unit="${n}" ${off?'disabled':''}><b>${n} · ${u.cost}G</b><small>HP ${u.hp} · 공격 ${u.atk} · 사거리 ${u.range}${u.hammer?' · 다음 턴 타격':''}</small></button>`}).join('');
+ $('unitList').querySelectorAll('[data-unit]').forEach(b=>b.onclick=()=>{summonChoice=b.dataset.unit;selected=null;renderBattle()});
+}
+
+// ==============================
+// 입력 / 이동 / 공격
+// ==============================
+function cellClick(x,y){
+ if(!game||game.finished)return;const p=pieceAt(x,y);
+ if(game.turn!=='enemy'&&summonChoice&&!p&&x<=1){summonAt(summonChoice,x,y);return}
+ if(p&&canControl(p)){selected=p;summonChoice=null;renderBattle();return}
+ if(!selected)return;
+ if(!p&&dist(selected,{x,y})===1&&!selected.moved){movePiece(selected,x,y);return}
+ if(p&&p.team!==selected.team&&dist(selected,p)<=selected.range&&!selected.attacked&&selected.attackLock<=0){attackPiece(selected,p);return}
+}
+function summonAt(name,x,y){
+ const u=unitStats(name);if(game.gold<u.cost||allies().length>=game.s.allyMax||pieceAt(x,y))return;const team=game.turn;game.gold-=u.cost;spawnPiece(name,team,x,y);addLog(`<b>${team==='ally1'?'아군1':'아군2'}</b> ${name} 소환 (-${u.cost}G)`);summonChoice=null;renderBattle();
+}
+function movePiece(p,x,y){const ox=p.x,oy=p.y;p.x=x;p.y=y;p.moved=true;applyTile(p,ox,oy);selected=p;cleanup();renderBattle()}
+function applyTile(p,fromX,fromY){
+ const t=game.tiles.find(v=>!v.used&&v.x===p.x&&v.y===p.y);if(!t)return;
+ if(t.type==='가시'){damage(null,p,20,true);addLog(`${p.name}이 가시 발판으로 20 피해`)}
+ if(t.type==='회복'){const before=p.hp;p.hp=Math.min(p.maxHp,p.hp+30);addLog(`${p.name} 회복 발판 +${p.hp-before}`)}
+ if(t.type==='균열'){t.used=true;addLog('균열 발판이 사라짐')}
+ if(t.type==='점프'){
+  const dx=Math.sign(p.x-fromX),dy=Math.sign(p.y-fromY),tx=p.x+dx*2,ty=p.y+dy*2;if((dx||dy)&&inside(tx,ty)&&!pieceAt(tx,ty)){p.x=tx;p.y=ty;addLog(`${p.name} 점프 발판으로 2칸 이동`)}
+ }
+}
+function attackPiece(a,t){
+ if(a.hammer){a.hammerTarget=t.id;a.attacked=true;addLog(`${a.name}이 ${t.name}을 공격 예약 · 다음 자기 차례에 80 피해`);renderBattle();return}
+ if(a.boar&&Math.random()<.65){boarRush(a);a.attacked=true;cleanup();renderBattle();return}
+ damage(a,t,a.atk);a.attacked=true;addLog(`${a.name} → ${t.name} ${a.atk} 공격`);
+ if(a.splash>0){game.pieces.filter(p=>p.hp>0&&p.team===t.team&&p.id!==t.id&&dist(p,t)<=1).forEach(p=>damage(a,p,a.splash));addLog(`${a.name} 범위 피해 ${a.splash}`)}
+ if(a.golem&&Math.random()<.40){const target=allies().sort((x,y)=>x.hp-y.hp)[0];if(target){damage(a,target,50,true);addLog(`골렘 특수공격 · 최저 체력 ${target.name}에게 돌 50 피해`)}}
+ if(a.poison&&Math.random()<.40&&t.hp>0){t.poisonTurns=2;addLog(`${t.name} 독 2턴`)}
+ cleanup();renderBattle();
+}
+function damage(a,t,raw,ignoreReduce=false){if(!t||t.hp<=0)return;const amount=Math.max(1,Math.round(raw*(ignoreReduce?1:(1-(t.reduce||0)))));t.hp-=amount;if(t.hp<=0)
