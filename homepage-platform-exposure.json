@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": true,
-  "generatedAt": "2026-10-01T00:13:59.484Z",
+  "generatedAt": "2026-10-01T00:19:42.243Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -139,7 +139,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T00:13:57.442Z"
+      "updatedAt": "2026-10-01T00:19:42.128Z"
     },
     {
       "gameId": "bug-defense",
@@ -259,7 +259,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T00:13:36.920Z"
+      "updatedAt": "2026-10-01T00:19:42.128Z"
     },
     {
       "gameId": "cozy-island",
@@ -387,7 +387,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-09-30T17:44:13.956Z"
+      "updatedAt": "2026-10-01T00:19:42.128Z"
     },
     {
       "gameId": "daechung-rpg",
@@ -515,7 +515,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-09-30T17:44:13.956Z"
+      "updatedAt": "2026-10-01T00:19:42.128Z"
     },
     {
       "gameId": "fantasy-survival",
@@ -560,18 +560,20 @@
             "checks": {
               "design": true,
               "publication": true,
-              "exactRuntime": true,
+              "exactRuntime": false,
               "lobby": false,
               "movement": false,
-              "noRuntimeErrors": true
+              "noRuntimeErrors": false
             },
             "blockers": [
+              "exactRuntime",
               "lobby",
-              "movement"
+              "movement",
+              "noRuntimeErrors"
             ],
             "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
             "artifactIdentity": "sha256:91ce8b13e87151d6c7946e7027f6415a3cf46726a69410bf30069994a43c539f",
-            "verifiedAt": "2026-09-28T23:50:45.923Z"
+            "verifiedAt": null
           },
           "historicalInternalRelease": true,
           "internalReleaseState": "NOT_READY",
@@ -635,7 +637,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T00:04:31.684Z"
+      "updatedAt": "2026-10-01T00:19:42.128Z"
     },
     {
       "gameId": "horror-escape-room",
@@ -752,7 +754,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T00:13:18.306Z"
+      "updatedAt": "2026-10-01T00:19:42.128Z"
     },
     {
       "gameId": "line-defense",
@@ -880,7 +882,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T00:09:25.786Z"
+      "updatedAt": "2026-10-01T00:19:42.128Z"
     },
     {
       "gameId": "monster-adventure",
@@ -1000,7 +1002,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T00:13:18.306Z"
+      "updatedAt": "2026-10-01T00:19:42.128Z"
     },
     {
       "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -1122,7 +1124,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T00:11:55.884Z"
+      "updatedAt": "2026-10-01T00:19:42.128Z"
     },
     {
       "gameId": "seed-casual-realm-weaver",
@@ -1242,7 +1244,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T00:13:18.306Z"
+      "updatedAt": "2026-10-01T00:19:42.128Z"
     },
     {
       "gameId": "seed-idle-growth-rpg-crystal-bloom",
@@ -1370,7 +1372,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T00:13:18.306Z"
+      "updatedAt": "2026-10-01T00:19:42.128Z"
     },
     {
       "gameId": "seed-puzzle-chromatic-cascade",
@@ -1423,18 +1425,20 @@
             "checks": {
               "design": true,
               "publication": true,
-              "exactRuntime": true,
+              "exactRuntime": false,
               "lobby": false,
               "movement": false,
-              "noRuntimeErrors": true
+              "noRuntimeErrors": false
             },
             "blockers": [
+              "exactRuntime",
               "lobby",
-              "movement"
+              "movement",
+              "noRuntimeErrors"
             ],
             "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
             "artifactIdentity": "sha256:0560d32a2e19d01cdf431b58b4faa16aca09a2f99c2574def82320086cebdd8c",
-            "verifiedAt": "2026-09-28T22:11:55.106Z"
+            "verifiedAt": null
           },
           "historicalInternalRelease": true,
           "internalReleaseState": "NOT_READY",
@@ -1498,7 +1502,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T00:03:55.960Z"
+      "updatedAt": "2026-10-01T00:19:42.128Z"
     },
     {
       "gameId": "seed-single-defense-strat-celestial-bastion",
@@ -1618,7 +1622,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T00:13:18.306Z"
+      "updatedAt": "2026-10-01T00:19:42.128Z"
     },
     {
       "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -1738,7 +1742,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T00:13:18.306Z"
+      "updatedAt": "2026-10-01T00:19:42.128Z"
     },
     {
       "gameId": "survival",
@@ -1858,7 +1862,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-01T00:13:18.306Z"
+      "updatedAt": "2026-10-01T00:19:42.128Z"
     },
     {
       "gameId": "village-dungeons",
@@ -1986,7 +1990,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-09-30T17:44:13.956Z"
+      "updatedAt": "2026-10-01T00:19:42.128Z"
     }
   ]
 }
