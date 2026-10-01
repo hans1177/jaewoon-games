@@ -191,7 +191,6 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
   const declaredInterfaceSurfaces=[...new Set((Array.isArray(evidence.requiredInterfaceSurfaces)?evidence.requiredInterfaceSurfaces:Object.entries(interfaceCoverage).filter(([,row])=>row&&typeof row==='object'&&row.required===true).map(([key])=>key)).map(value=>String(value||'').trim().toUpperCase()).filter(Boolean))];
   const missingInterfaceSurfaces=declaredInterfaceSurfaces.filter(surface=>{
     const row=interfaceCoverage?.[surface]??interfaceCoverage?.[surface.toLowerCase()];
-    if(row===true)return false;
     return !(row&&typeof row==='object'&&row.pass===true&&row.observed===true&&row.reviewed===true);
   });
   const sceneObjectCoverage=evidence.sceneObjectCoverage&&typeof evidence.sceneObjectCoverage==='object'?evidence.sceneObjectCoverage:{};
@@ -278,7 +277,7 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
       missingEnvironment:Object.freeze(missingEnvironment),
       missingCohesion:Object.freeze(missingCohesion),
       missingPresentation:Object.freeze(missingPresentation),
-      visualRegressionPassed:visualRegressionAudit?.pass===true,
+      visualRegressionPassed:highEndRequired?visualRegressionAudit?.pass===true:evidence.visualRegression?.pass===true,
       performancePassed:evidence.performance?.pass===true,
       evolutionDebt:Object.freeze([...reasons]),
       completionIsTerminal:false,
