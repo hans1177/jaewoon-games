@@ -694,6 +694,7 @@ test('completed worker artifacts release capacity before slow cohort fan-in with
   const task=complete.queue.tasks.find(row=>row.id==='artifact-task');
   assert.match(task.blocker,/slot-released.*fan-in/);
   assert.equal(task.reservationRunId,'123');
+  assert.deepEqual(task.retainedResponsibleFileLocks,['web-games/shared-lock/shared.js']);
   const selection=selectVibeQueueBatch(complete.queue,{maxConcurrentTasks:2});
   assert.equal(selection.selected.some(row=>row.id==='same-lock'),false);
   assert.equal(selection.selected.some(row=>row.id==='refill'),true);
