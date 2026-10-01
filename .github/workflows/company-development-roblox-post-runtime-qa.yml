@@ -1860,7 +1860,7 @@ jobs:
     # Planning is read-only control work. Only actual Studio execution consumes the shared Windows host.
     # A skipped job is never runtime or multiplayer PASS.
     # 계획과 실행은 요청 시점의 동일한 제어 리비전을 사용한다.
-    if: ${{ inputs.retry_open_cloud_only != true && (inputs.run_studio == true || (github.event_name == 'push' && (contains(toJSON(github.event.commits), 'tools/company-development-roblox-studio-local-play.mjs') || contains(toJSON(github.event.commits), '.github/workflows/company-development-roblox-post-runtime-qa.yml') || contains(toJSON(github.event.commits), 'qa/company-development-roblox-studio-local-play.test.mjs')))) }}
+    if: ${{ inputs.retry_open_cloud_only != true && (inputs.run_studio == true || github.event_name == 'push') }}
     name: plan exact local Studio MCP playtests for earliest eligible artifacts
     concurrency:
       group: roblox-studio-mcp-plan-${{ inputs.game_id || github.sha }}
