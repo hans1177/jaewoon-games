@@ -1,0 +1,269 @@
+{
+  "version": 1,
+  "authority": "MACHINE_EXECUTION_CONTRACT_EXTENSION",
+  "status": "ACTIVE_EXECUTABLE_CONTRACT",
+  "sourceOfTruth": "company-learning/cross-platform-experience-build-up.json",
+  "appliesTo": [
+    "WEB",
+    "ROBLOX",
+    "UNITY"
+  ],
+  "objective": "PERCEPTIBLE_PLAYER_FACING_QUALITY_EVOLUTION",
+  "principle": "A bound asset, source marker, or technically present feature is not a completed quality improvement until a player-facing runtime delta is observable and the responsible system passes regression.",
+  "commonCycle": {
+    "mode": "BASELINE_DIAGNOSE_BUILD_REPLAY_COMPARE_REPEAT",
+    "baselineCaptureRequired": true,
+    "weakestApplicableSurfacesPerIteration": {
+      "minimum": 2,
+      "maximum": 4
+    },
+    "directResponsibleSystemEditRequired": true,
+    "wrapperOrShadowPatchForbidden": true,
+    "gameSourceDeltaRequired": true,
+    "runtimeReplayRequired": true,
+    "beforeAfterComparisonRequired": true,
+    "perceptiblePlayerEffectRequired": true,
+    "markerOnlyPassForbidden": true,
+    "existenceOnlyPassForbidden": true,
+    "bindOnlyPassForbidden": true,
+    "preserveCanonicalGameplaySemantics": true,
+    "preserveSaveEconomyBalanceAndNetworkAuthority": true,
+    "continueAfterTechnicalPass": true,
+    "stopOnlyWhen": "NO_HIGH_VALUE_APPLICABLE_PLAYER_FACING_GAP_REMAINS_OR_OWNER_SCOPE_CHANGES"
+  },
+  "surfaces": [
+    {
+      "id": "MOTION_ACTING",
+      "appliesWhen": "players/npcs/creatures animate",
+      "goal": "Readable locomotion, acting, attack, hit and recovery with weight, timing and secondary motion.",
+      "evidence": [
+        "runtime motion capture",
+        "state-to-motion transition",
+        "before/after perceptibility"
+      ]
+    },
+    {
+      "id": "UI_HUD",
+      "appliesWhen": "HUD or menus exist",
+      "goal": "Clear hierarchy, safe-area layout, touchable controls, consistent visual language and state feedback.",
+      "evidence": [
+        "mobile viewport capture",
+        "touch interaction",
+        "modal/back/scroll replay"
+      ]
+    },
+    {
+      "id": "INVENTORY_EQUIPMENT",
+      "appliesWhen": "inventory/equipment exists",
+      "goal": "Fast inspect/equip/unequip/compare/use flow with authoritative equipped state and unmistakable selection feedback.",
+      "evidence": [
+        "inventory open-to-action replay",
+        "equipped marker/state delta",
+        "save/rejoin preservation"
+      ]
+    },
+    {
+      "id": "AUDIO_MUSIC_SFX",
+      "appliesWhen": "audio is allowed by owner/game intent",
+      "goal": "State-adaptive music, readable mix, spatial ambience and event-synced feedback without masking gameplay.",
+      "evidence": [
+        "runtime sound-state observation",
+        "music transition/ducking observation",
+        "mute/volume behavior"
+      ]
+    },
+    {
+      "id": "VFX_TELEGRAPH",
+      "appliesWhen": "combat/skills/interactions use effects",
+      "goal": "Effects strengthen impact and telegraph readability without hiding threats or controls.",
+      "evidence": [
+        "before/after capture",
+        "event-synced effect",
+        "telegraph visibility"
+      ]
+    },
+    {
+      "id": "CAMERA",
+      "appliesWhen": "camera/world follow exists",
+      "goal": "Responsive framing, bounded impact response and readable threat/interaction space.",
+      "evidence": [
+        "movement/attack/hit camera delta",
+        "mobile readability capture"
+      ]
+    },
+    {
+      "id": "LIGHTING_MATERIALS",
+      "appliesWhen": "rendered world exists",
+      "goal": "Region identity, depth, material separation and gameplay readability through native lighting/material systems.",
+      "evidence": [
+        "scene capture",
+        "region/material differentiation",
+        "performance check"
+      ]
+    },
+    {
+      "id": "WORLD_DENSITY_LANDMARKS",
+      "appliesWhen": "explorable world exists",
+      "goal": "Distinct routes, landmarks, props and encounter/resource rhythm instead of empty expansion.",
+      "evidence": [
+        "route capture",
+        "landmark discovery",
+        "density comparison"
+      ]
+    },
+    {
+      "id": "INTERACTION_FEEDBACK",
+      "appliesWhen": "player actions exist",
+      "goal": "Every important input has immediate, spatially or contextually anchored acknowledgement and result feedback.",
+      "evidence": [
+        "input-to-visible-state replay",
+        "failure feedback",
+        "latency/readability observation"
+      ]
+    },
+    {
+      "id": "ONBOARDING_GOALS",
+      "appliesWhen": "new player/session flow exists",
+      "goal": "First-play controls, current goal and next action are visible when needed without blocking play.",
+      "evidence": [
+        "fresh-session replay",
+        "first meaningful action",
+        "goal transition"
+      ]
+    },
+    {
+      "id": "ACCESSIBILITY_SETTINGS",
+      "appliesWhen": "player-facing settings/rapid motion/audio exist",
+      "goal": "Readable text, reduced-motion/volume controls where relevant and no inaccessible critical-only cue.",
+      "evidence": [
+        "settings interaction",
+        "reduced-motion or audio alternative",
+        "contrast/readability observation"
+      ]
+    },
+    {
+      "id": "MOBILE_TOUCH",
+      "appliesWhen": "mobile supported",
+      "goal": "Touch-first controls, safe areas, no overlap, reliable pointer lifecycle and context-sized actions.",
+      "evidence": [
+        "mobile runtime input",
+        "orientation/viewport capture",
+        "lost-pointer recovery when applicable"
+      ]
+    },
+    {
+      "id": "PERFORMANCE_FRAME_PACING",
+      "appliesWhen": "runtime rendering exists",
+      "goal": "Stable frame pacing and bounded presentation cost while keeping high-value feedback.",
+      "evidence": [
+        "frame/runtime budget",
+        "effect density bound",
+        "mobile performance replay"
+      ]
+    },
+    {
+      "id": "SAVE_RECOVERY",
+      "appliesWhen": "persistent state exists",
+      "goal": "Presentation/UI build-up never corrupts or obscures save, restore, reconnect or retry meaning.",
+      "evidence": [
+        "save/rejoin replay",
+        "retry flow",
+        "migration check"
+      ]
+    },
+    {
+      "id": "MULTIPLAYER_FEEDBACK",
+      "appliesWhen": "multiplayer exists",
+      "goal": "Remote players/actions/state changes are legible without client-authority drift.",
+      "evidence": [
+        "two-participant state observation",
+        "replicated feedback",
+        "late/rejoin observation"
+      ]
+    },
+    {
+      "id": "CONTENT_COHERENCE",
+      "appliesWhen": "new or revised content is added",
+      "goal": "New content connects to existing world, progression, rewards and presentation language instead of isolated quantity.",
+      "evidence": [
+        "cause-to-consequence chain",
+        "system connection",
+        "non-clone distinction"
+      ]
+    },
+    {
+      "id": "GAME_FEEL_TIMING",
+      "appliesWhen": "primary interactions exist",
+      "goal": "Anticipation, action, impact, recoil/recovery and response timing are clearly felt while gameplay authority stays unchanged.",
+      "evidence": [
+        "event timeline replay",
+        "impact perceptibility",
+        "no gameplay semantic mutation"
+      ]
+    },
+    {
+      "id": "VISUAL_IDENTITY",
+      "appliesWhen": "player-facing art exists",
+      "goal": "Characters, enemies, equipment, environment and UI share an intentional game-specific visual language.",
+      "evidence": [
+        "cross-surface capture",
+        "style consistency",
+        "silhouette/readability comparison"
+      ]
+    }
+  ],
+  "platformProfiles": {
+    "WEB": {
+      "strictness": "HIGH",
+      "runtime": "REAL_BROWSER_TOUCH_AND_RENDER",
+      "requirements": [
+        "DOM/canvas/WebGL presentation must be driven by real gameplay state rather than demo-only animation.",
+        "Motion must be perceptible at normal play scale; tiny whole-sprite bob/rotation alone cannot close a motion gap when articulated or layered motion is feasible.",
+        "Inventory and menus must be touch-usable, scroll-safe and persist authoritative state.",
+        "WebAudio/HTMLAudio build-up must respect owner mute/SFX intent and prove state transitions instead of merely loading an audio file.",
+        "Responsive mobile capture and actual input replay are required."
+      ]
+    },
+    "UNITY": {
+      "strictness": "HIGH",
+      "runtime": "UNITY_NATIVE_OR_WEBGL_FROM_CANONICAL_UNITY_PROJECT",
+      "requirements": [
+        "Use Animator/AnimationClip/BlendTree or equivalent native rig motion when actors are articulated.",
+        "Use Canvas/uGUI or UI Toolkit with authoritative inventory/equipment state and mobile input.",
+        "Use AudioMixer/state transitions/spatial audio where applicable and preserve user volume/mute behavior.",
+        "Use native lighting/material/post-processing within mobile performance budgets.",
+        "Unity WebGL and app must share canonical Unity gameplay/UI source rather than diverging clones."
+      ]
+    },
+    "ROBLOX": {
+      "strictness": "STRICTEST",
+      "runtime": "OFFICIAL_ROBLOX_STUDIO_MCP_ACTUAL_PLAY",
+      "requirements": [
+        "Articulated PLAYER/HUMANOID_NPC/CREATURE motion must use real joints/rig animation: Animator/AnimationTrack, Motor6D/Bone transforms or equivalent native articulation. Root-only CFrame movement, whole-model bobbing, or weld-only mannequins cannot close motion quality.",
+        "Locomotion must cover idle/walk/jog/run plus start/stop/turn; applicable actors also cover jump/land, attack/skill, hit and death with cross-fade/blend and playback-speed synchronization.",
+        "Secondary/procedural motion should add torso/weapon/appendage follow-through; IKControl or grounded correction is preferred when it materially improves contact/readability.",
+        "Roblox UI must be touch-first, safe-area aware, state-driven, and verify menu/back/scroll/modal behavior in Studio. Inventory/equipment must show authoritative equipped state and preserve it through save/rejoin when persistent.",
+        "Roblox audio requires SoundService/SoundGroup-oriented mix discipline where applicable: separate music/SFX/UI/ambience intent, state-adaptive BGM transitions, bounded ducking, positional sound for world sources, and no re-enabling effects the owner intentionally disabled.",
+        "VFX/particles/highlights/beams must be event-bound and telegraph-safe; camera shake/FOV/lighting effects are presentation-only and bounded on mobile.",
+        "Lighting/Atmosphere/ColorCorrection/Bloom/material changes must improve scene readability and region identity without hiding hazards or exceeding mobile budget.",
+        "A Roblox quality PASS requires actual Studio input plus captured runtime evidence. Static source markers, semantic asset atoms, or successful binding alone cannot prove perceptible quality.",
+        "For every high-value player-facing surface changed, Studio replay must demonstrate the visible/audible state transition and the relevant regression path."
+      ],
+      "hardFailures": [
+        "CHARACTER_MOTION_MANNEQUIN",
+        "PLAYER_FACING_DELTA_NOT_OBSERVED",
+        "ROBLOX_TOUCH_INPUT_BLOCKED",
+        "INVENTORY_STATE_NOT_AUTHORITATIVE",
+        "AUDIO_STATE_TRANSITION_NOT_OBSERVED",
+        "VFX_TELEGRAPH_OBSCURED",
+        "PRESENTATION_ONLY_BINDING_WITHOUT_RUNTIME_EFFECT"
+      ]
+    }
+  },
+  "priorityPolicy": {
+    "robloxExtraAttention": true,
+    "rule": "When the same game has WEB, ROBLOX and UNITY build-up work, share the game goal and acceptance intent, but let each platform use native implementation. Roblox receives the strictest motion/audio/UI runtime evidence because superficial binding is a recurring quality risk.",
+    "noCrossPlatformCodeCopy": true,
+    "commonGameMeaningNativePresentation": true
+  }
+}
