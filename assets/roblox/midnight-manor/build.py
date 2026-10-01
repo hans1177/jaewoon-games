@@ -222,6 +222,29 @@ class Scene:
         obj['continuousPathSurface']=True
         return obj
 
+    def lens(self,name,pos,size,mat,parent=None,sides=32,rings=12):
+        """눈/유리용 얇은 타원 렌즈. 박스/평면 카드 대신 자체 곡면을 쓴다."""
+        rx,ry,rz=(size[0]/2,size[1]/2,size[2]/2)
+        verts=[]
+        for j in range(rings+1):
+            b=math.pi*j/rings
+            for i in range(sides):
+                a=math.tau*i/sides
+                x=math.sin(b)*math.cos(a)*rx
+                y=math.cos(b)*ry
+                z=math.sin(b)*math.sin(a)*rz
+                verts.append((x,y,z))
+        faces=[]
+        for j in range(rings):
+            for i in range(sides):
+                a=j*sides+i;n=j*sides+(i+1)%sides
+                faces.append((a,n,n+sides,a+sides))
+        data=self.mesh(name,verts,faces,mat)
+        for face in data.polygons:face.use_smooth=True
+        obj=self.node(name,data,pos,parent=parent)
+        obj['continuousLensSurface']=True
+        return obj
+
     def sculpted_face(self,name,pos,size,mat,profile,parent=None):
         """역할별 얼굴 골격을 한 연속 표면에서 직접 조형한다.
 
@@ -256,10 +279,15 @@ class Scene:
                     # 얼굴의 앞면 깊이. 코는 별도 팁 메시와 자연스럽게 이어질 정도만 베이스를 세운다.
                     depth=0.0
                     depth+=profile.get('nose_bridge',.18)*gauss(nx,yn,0,.16,.12,.28)
+                    depth+=profile.get('nose_tip',.10)*gauss(nx,yn,0,-.01,.105,.12)
+                    depth+=profile.get('nose_wing',.028)*(gauss(nx,yn,-.13,-.05,.075,.08)+gauss(nx,yn,.13,-.05,.075,.08))
                     depth+=profile.get('cheek',.08)*(gauss(nx,yn,-.40,.02,.18,.22)+gauss(nx,yn,.40,.02,.18,.22))
                     depth-=profile.get('eye_socket',.10)*(gauss(nx,yn,-.27,.22,.15,.13)+gauss(nx,yn,.27,.22,.15,.13))
                     depth+=profile.get('brow',.06)*(gauss(nx,yn,-.27,.37,.18,.11)+gauss(nx,yn,.27,.37,.18,.11))
                     depth+=profile.get('muzzle',.035)*gauss(nx,yn,0,-.23,.30,.16)
+                    depth-=profile.get('philtrum',.018)*gauss(nx,yn,0,-.16,.055,.08)
+                    depth+=profile.get('upper_lip',.020)*gauss(nx,yn,0,-.27,.19,.055)
+                    depth+=profile.get('lower_lip',.018)*gauss(nx,yn,0,-.34,.18,.055)
                     depth+=profile.get('chin',.055)*gauss(nx,yn,0,-.58,.26,.17)
                     depth-=profile.get('temple_hollow',.035)*(gauss(nx,yn,-.58,.32,.18,.26)+gauss(nx,yn,.58,.32,.18,.26))
                     # 비대칭은 얼굴 전체를 찌그러뜨리지 않고 입가/광대에만 극소량 적용한다.
@@ -464,19 +492,24 @@ def npc(s,kind,pos):
           [w*.18,w*.17,w*.205,w*.24,w*.22],
           [w*.20,w*.18,w*.22,w*.255,w*.24],
           trousers,sides=26,parent=p)
-        shoe=s.loft(kind+'_Shoe'+str(side),(sx,.08,.14),[
-          (0,w*.26,w*.48,0,.18,.05),(0.24,w*.29,w*.57,0,.26,.08),
-          (.48,w*.255,w*.52,0,.20,.05),(.60,w*.20,w*.40,0,.08,0)
-        ],leather,sides=24,parent=p)
-        shoe.rotation_euler.x=.06 if kind=='Butler' else -.03
+        shoe=s.loft(kind+'_Shoe'+str(side),(sx,.05,.10),[
+          (-.02,w*.205,w*.22,0,.08,.04),
+          (.10,w*.235,w*.27,0,.16,.08),
+          (.22,w*.25,w*.32,0,.26,.11),
+          (.34,w*.235,w*.34,0,.34,.10),
+          (.45,w*.185,w*.27,0,.37,.06)
+        ],leather,sides=28,parent=p)
+        shoe.rotation_euler.x=.025 if kind=='Butler' else -.015
 
     # 흉곽/허리/골반을 한 연속 몸통으로 잡아 primitive 겹침 이음새를 제거한다.
     torso_sections=[
-      (h*.39,w*.54,w*.36,0,-.03,0),
-      (h*.46,w*.59,w*.38,0,0,.02),
-      (h*.55,w*.65,w*.40,0,.01,.03),
-      (h*.65,w*.73,w*.43,0,.00,.02),
-      (h*.705,w*.64,w*.38,0,-.01,0),
+      (h*.385,w*.53,w*.35,0,-.025,0),
+      (h*.43,w*.55,w*.36,0,-.005,.015),
+      (h*.49,w*.50,w*.35,0,.005,.025),
+      (h*.555,w*.61,w*.39,0,.015,.045),
+      (h*.625,w*.70,w*.43,0,.010,.060),
+      (h*.675,w*.76,w*.42,0,-.005,.035),
+      (h*.715,w*.58,w*.34,0,-.015,.010),
     ]
     s.loft(kind+'_CoatTorso',(0,0,0),torso_sections,q['coat'],sides=30,parent=p)
 
@@ -537,13 +570,20 @@ def npc(s,kind,pos):
         s.loft(kind+'_Hand'+str(side),hand_center,[
           (-h*.045,w*.14,w*.15),(0,w*.165,w*.17),(h*.045,w*.14,w*.15)
         ],glove,sides=22,parent=p)
+        finger_lengths=[.052,.061,.058,.047]
         for finger in range(4):
-            fx=hand_center[0]+(finger-1.5)*w*.065
-            finger_obj=s.capsule(kind+'_Finger'+str(side)+'_'+str(finger),(fx,hand_center[1]-h*.075,hand_center[2]+.06),h*.105,w*.027,w*.030,glove,parent=p,taper=.68)
-            finger_obj.rotation_euler.x=.05+(finger%2)*.025
-            finger_obj.rotation_euler.z=side*(.025*(finger-1.5))
-        thumb=s.capsule(kind+'_Thumb'+str(side),(hand_center[0]+side*w*.13,hand_center[1]-h*.025,hand_center[2]+.055),h*.10,w*.035,w*.038,glove,parent=p,taper=.70)
-        thumb.rotation_euler.z=side*.32
+            fx=hand_center[0]+(finger-1.5)*w*.060
+            length=h*finger_lengths[finger]
+            start=(fx,hand_center[1]-h*.040,hand_center[2]+.060)
+            mid=(fx+side*(finger-1.5)*w*.004,hand_center[1]-h*.040-length*.52,hand_center[2]+.072)
+            tip=(fx+side*(finger-1.5)*w*.006,hand_center[1]-h*.040-length,hand_center[2]+.048)
+            s.curve_tube(kind+'_Finger'+str(side)+'_'+str(finger),[start,mid,tip],
+              [w*.031,w*.029,w*.022],[w*.034,w*.031,w*.023],glove,sides=18,parent=p)
+        thumb_start=(hand_center[0]+side*w*.105,hand_center[1]-h*.010,hand_center[2]+.040)
+        thumb_mid=(hand_center[0]+side*w*.155,hand_center[1]-h*.045,hand_center[2]+.075)
+        thumb_tip=(hand_center[0]+side*w*.170,hand_center[1]-h*.080,hand_center[2]+.055)
+        s.curve_tube(kind+'_Thumb'+str(side),[thumb_start,thumb_mid,thumb_tip],
+          [w*.038,w*.033,w*.025],[w*.040,w*.035,w*.026],glove,sides=18,parent=p)
 
     # 코트 자락도 사각 박스 대신 불규칙 윤곽과 벌어진 뒷자락을 갖는다.
     tail_len=.35 if kind=='Butler' else .40 if kind=='Undertaker' else .23
@@ -566,51 +606,56 @@ def npc(s,kind,pos):
     ],q['skin'],sides=28,parent=p)
     hx,hy,hz=q['head'];head_y=h*.865
     face_profiles={
-      'Butler':dict(role='Butler',jaw=.78,temple=.96,cheek_width=.03,nose_bridge=.24,cheek=.085,eye_socket=.13,brow=.075,muzzle=.030,chin=.075,temple_hollow=.050,asymmetry=.008),
-      'Undertaker':dict(role='Undertaker',jaw=1.08,temple=1.04,cheek_width=.075,nose_bridge=.15,cheek=.12,eye_socket=.16,brow=.045,muzzle=.050,chin=.045,temple_hollow=.025,asymmetry=-.012),
-      'Archivist':dict(role='Archivist',jaw=.82,temple=.91,cheek_width=.015,nose_bridge=.17,cheek=.060,eye_socket=.15,brow=.035,muzzle=.028,chin=.060,temple_hollow=.070,asymmetry=.014),
+      'Butler':dict(role='Butler',jaw=.76,temple=.95,cheek_width=.025,nose_bridge=.26,nose_tip=.15,nose_wing=.022,cheek=.080,eye_socket=.14,brow=.075,muzzle=.026,philtrum=.020,upper_lip=.018,lower_lip=.016,chin=.080,temple_hollow=.055,asymmetry=.008),
+      'Undertaker':dict(role='Undertaker',jaw=1.08,temple=1.04,cheek_width=.075,nose_bridge=.14,nose_tip=.090,nose_wing=.042,cheek=.115,eye_socket=.17,brow=.050,muzzle=.045,philtrum=.016,upper_lip=.026,lower_lip=.024,chin=.048,temple_hollow=.028,asymmetry=-.012),
+      'Archivist':dict(role='Archivist',jaw=.80,temple=.89,cheek_width=.012,nose_bridge=.18,nose_tip=.085,nose_wing=.018,cheek=.055,eye_socket=.16,brow=.035,muzzle=.024,philtrum=.022,upper_lip=.015,lower_lip=.014,chin=.064,temple_hollow=.075,asymmetry=.014),
     }
     head_size=(w*.98*hx,h*.225*hy,w*.92*hz)
     head=s.sculpted_face(kind+'Head',(0,head_y,0),head_size,q['skin'],face_profiles[kind],parent=p)
     face_front=head_size[2]*.5
 
     # 코는 실제 얼굴 전면에서 시작해 콧대-콧방울-끝이 앞으로 이어진다.
-    nose=s.loft(kind+'_Nose',(0,head_y+h*.005,face_front*.92),[
-      (-h*.04,w*.075,w*.075,0,.01,.035),
-      (0,w*.072,w*.085,0,.12,.075),
-      (h*.052,w*.060,w*.060,0,.24,.045),
-    ],q['skin'],sides=28,parent=p)
-    nose.rotation_euler.x=-.05 if kind=='Butler' else .015
+    nose_forward=(.24 if kind=='Butler' else .15 if kind=='Undertaker' else .13)*w
+    s.curve_tube(kind+'_Nose',[
+      (0,head_y+h*.070,face_front*.79),
+      (0,head_y+h*.030,face_front*.90+nose_forward*.18),
+      (0,head_y-h*.005,face_front*.96+nose_forward*.62),
+      (0,head_y-h*.022,face_front+.035+nose_forward),
+    ],[w*.050,w*.058,w*.064,w*.055],[w*.055,w*.062,w*.067,w*.058],q['skin'],sides=24,parent=p)
 
     # 눈은 얇은 렌즈형 곡면 + 홍채/동공, 눈꺼풀/눈썹은 윤곽 패널.
     for side in [-1,1]:
         ex=side*w*.205
-        s.loft(kind+'_Sclera'+str(side),(ex,head_y+h*.026,face_front+.025),[
-          (-h*.018,w*.095,w*.035),(0,w*.115,w*.050),(h*.018,w*.095,w*.035)
-        ],c['ivory'],sides=20,parent=p)
-        s.loft(kind+'_Iris'+str(side),(ex,head_y+h*.026,face_front+.073),[
-          (-h*.012,w*.040,w*.014),(0,w*.046,w*.018),(h*.012,w*.040,w*.014)
-        ],q['eye'],sides=18,parent=p)
-        s.loft(kind+'_Pupil'+str(side),(ex,head_y+h*.026,face_front+.096),[
-          (-h*.008,w*.017,w*.008),(0,w*.020,w*.010),(h*.008,w*.017,w*.008)
-        ],c['black'],sides=16,parent=p)
-        lid=s.prism(kind+'_UpperLid'+str(side),(ex,head_y+h*.045,face_front+.083),[
-          (-w*.115,0),(w*.115,0),(w*.085,h*.017),(-w*.075,h*.018)
-        ],.025,q['skin'],parent=p)
-        lid.rotation_euler.z=side*(-.03 if kind=='Butler' else .04 if kind=='Undertaker' else .01)
-        brow=s.prism(kind+'_Brow'+str(side),(ex,head_y+h*.085,face_front+.075),[
-          (-w*.13,0),(w*.13,side*h*.006),(w*.10,h*.020),(-w*.11,h*.018)
-        ],.035,q['hair'],parent=p)
-        brow.rotation_euler.z=side*(.08 if kind=='Undertaker' else -.04 if kind=='Butler' else .02)
+        s.lens(kind+'_Sclera'+str(side),(ex,head_y+h*.026,face_front+.022),(w*.245,h*.072,w*.090),c['ivory'],parent=p,sides=30,rings=10)
+        s.lens(kind+'_Iris'+str(side),(ex,head_y+h*.026,face_front+.068),(w*.092,h*.052,w*.026),q['eye'],parent=p,sides=24,rings=8)
+        s.lens(kind+'_Pupil'+str(side),(ex,head_y+h*.026,face_front+.088),(w*.038,h*.038,w*.016),c['black'],parent=p,sides=20,rings=6)
+        lid_y=head_y+h*.055
+        s.curve_tube(kind+'_UpperLid'+str(side),[
+          (ex-side*w*.112,lid_y-h*.004,face_front+.079),
+          (ex,lid_y+h*.014,face_front+.091),
+          (ex+side*w*.112,lid_y-h*.006,face_front+.078)
+        ],[w*.016,w*.018,w*.014],[w*.012,w*.014,w*.011],q['skin'],sides=18,parent=p)
+        brow_y=head_y+h*.098
+        brow_tilt=(.018 if kind=='Undertaker' else -.008 if kind=='Butler' else .004)*h
+        s.curve_tube(kind+'_Brow'+str(side),[
+          (ex-side*w*.13,brow_y-brow_tilt,face_front+.070),
+          (ex,brow_y+h*.010,face_front+.080),
+          (ex+side*w*.13,brow_y+brow_tilt,face_front+.066)
+        ],[w*.024,w*.028,w*.020],[w*.016,w*.018,w*.014],q['hair'],sides=18,parent=p)
 
     # 입/귀도 별도 윤곽을 사용한다.
     lip=s.material(kind+'Lip',(.22,.10,.11))
-    s.prism(kind+'_UpperLip',(0,head_y-h*.045,face_front+.045),[
-      (-w*.16,0),(-w*.04,h*.012),(0,h*.004),(w*.04,h*.012),(w*.16,0),(0,-h*.010)
-    ],.032,q['accent'] if kind=='Undertaker' else lip,parent=p)
-    s.prism(kind+'_LowerLip',(0,head_y-h*.064,face_front+.049),[
-      (-w*.14,0),(0,-h*.012),(w*.14,0),(0,h*.010)
-    ],.034,lip,parent=p)
+    mouth_y=head_y-h*.055
+    s.curve_tube(kind+'_UpperLip',[
+      (-w*.145,mouth_y,face_front+.055),
+      (0,mouth_y+h*.006,face_front+.064),
+      (w*.145,mouth_y,face_front+.055)
+    ],[w*.020,w*.024,w*.020],[w*.014,w*.017,w*.014],q['accent'] if kind=='Undertaker' else lip,sides=18,parent=p)
+    s.curve_tube(kind+'_LowerLip',[
+      (-w*.125,mouth_y-h*.020,face_front+.055),
+      (0,mouth_y-h*.028,face_front+.064),
+      (w*.125,mouth_y-h*.020,face_front+.055)
+    ],[w*.019,w*.023,w*.019],[w*.014,w*.017,w*.014],lip,sides=18,parent=p)
     for side in [-1,1]:
         ear=s.loft(kind+'_Ear'+str(side),(side*w*.45,head_y+.005,-.01),[
           (-h*.045,w*.045,w*.055),(0,w*.065,w*.075),(h*.045,w*.045,w*.055)
@@ -627,13 +672,14 @@ def npc(s,kind,pos):
               (-w*.07,h*.055),(w*.07,h*.045),(w*.055,-h*.045),(-w*.045,-h*.06)
             ],.10,q['hair'],parent=p)
             lock.rotation_euler.z=-side*.08
-            moustache=s.prism('Butler_Moustache'+str(side),(side*w*.105,head_y-h*.033,face_front+.060),[
-              (-w*.105,h*.010),(w*.105,0),(w*.075,-h*.025),(-w*.04,-h*.015)
-            ],.025,q['hair'],parent=p)
-            moustache.rotation_euler.z=side*.12
-        s.prism('Butler_BowTie',(0,h*.735,.66),[
-          (-w*.38,0),(-w*.07,h*.055),(0,0),(w*.07,h*.055),(w*.38,0),(w*.08,-h*.05),(0,0),(-w*.08,-h*.05)
-        ],.13,q['accent'],parent=p)
+            s.curve_tube('Butler_Moustache'+str(side),[
+              (side*w*.018,head_y-h*.036,face_front+.071),
+              (side*w*.095,head_y-h*.038,face_front+.075),
+              (side*w*.190,head_y-h*.052,face_front+.068)
+            ],[w*.020,w*.025,w*.014],[w*.013,w*.015,w*.010],q['hair'],sides=16,parent=p)
+        s.prism('Butler_BowTie',(0,h*.728,.63),[
+          (-w*.24,0),(-w*.055,h*.040),(0,0),(w*.055,h*.040),(w*.24,0),(w*.060,-h*.036),(0,0),(-w*.060,-h*.036)
+        ],.10,q['accent'],parent=p)
         s.lathe('Butler_Tray',(w*.80,h*.34,.70),w*.58,w*.58,.10,c['brass'],parent=p)
         s.lathe('Butler_Candle',(w*.80,h*.415,.70),.13,.11,h*.12,c['ivory'],parent=p)
         s.loft('Butler_CandleFlame',(w*.80,h*.485,.70),[
@@ -1105,9 +1151,10 @@ def render_export():
         sc.render.resolution_x=720;sc.render.resolution_y=900;sc.render.resolution_percentage=100
         sc.view_settings.view_transform='AgX';sc.view_settings.look='AgX - Medium High Contrast';sc.view_settings.exposure=.7
         files=[]
+        head_target={'butler':9.25,'undertaker':8.15,'archivist':7.55}[kind]
         for view,pos,target in [
-            ('front',(0,7.6,7.8),(0,7.55,0)),
-            ('three-quarter',(5.3,7.4,6.4),(0,7.35,0)),
+            ('front',(0,head_target,7.4),(0,head_target,0)),
+            ('three-quarter',(4.8,head_target-.10,6.4),(0,head_target-.08,0)),
             ('full-body',(0,5.8,18.5),(0,5.1,0)),
         ]:
             cam.location=xyz(pos);cam.rotation_euler=(Vector(xyz(target))-cam.location).to_track_quat('-Z','Y').to_euler()
