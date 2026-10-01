@@ -695,6 +695,34 @@ jobs:
               ?multiplayerSourceContractFor(item)
               :{passed:multiplayer.known===true,checks:{},authority:'not-applicable'};
             const staticMultiplayerCodePass=multiplayer.required===true&&multiplayerSourceContract.passed===true;
+            if(staticMultiplayerCodePass){
+              const exactStaticMultiplayerEvidence={
+                version:2,
+                gameId:item.gameId,
+                sourceRevision,
+                artifactIdentity,
+                candidateVersionNumber:Number(candidate.versionNumber),
+                passed:true,
+                codeContractPassed:true,
+                checks:multiplayerSourceContract.checks,
+                runtimeTwoClientExecutionRequired:false,
+                authority:'roblox-static-two-client-source-contract',
+                verifiedAt:stamp,
+              };
+              const priorStatic=item.robloxMultiplayerQaEvidence||{};
+              const exactStaticAlreadyBound=
+                priorStatic.passed===true
+                &&priorStatic.codeContractPassed===true
+                &&priorStatic.authority==='roblox-static-two-client-source-contract'
+                &&priorStatic.sourceRevision===sourceRevision
+                &&priorStatic.artifactIdentity===artifactIdentity
+                &&['playerRoster','participantCount','authoritativeBroadcast','clientReceive','twoParticipantCapablePath'].every(key=>priorStatic.checks?.[key]===true);
+              item.robloxMultiplayerQaPassed=true;
+              item.robloxMultiplayerQaPassedAt=exactStaticAlreadyBound?(item.robloxMultiplayerQaPassedAt||stamp):stamp;
+              item.robloxMultiplayerQaEvidence=exactStaticMultiplayerEvidence;
+              if(!exactStaticAlreadyBound)changed=true;
+              console.log('ROBLOX_F7_MULTIPLAYER_CODE_CONTRACT_PREBOUND='+item.gameId+':source='+sourceRevision);
+            }
             let studioPlay=item.robloxInternalVibePlayEvidence||{};
             const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
             const priorStudio=item.robloxStudioAssetRuntimeBindingEvidence||{};
