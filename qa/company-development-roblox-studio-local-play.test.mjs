@@ -1669,9 +1669,9 @@ test('commercial adaptive Studio contract expands automatically from launch core
   assert.match(contract.adaptiveCoverage.contractHash,/^sha256:[0-9a-f]{64}$/);
 });
 
-test('worker automation and save rejoin do not invent companion or retry requirements',()=>{
+test('worker automation, save rejoin, and map rerolls do not invent companion or retry requirements',()=>{
   const contract=deriveStudioActualPlayContract({
-    launchCore:['resident hiring and worker automation'],
+    launchCore:['resident hiring and worker automation','seeded room layout rerolls each new empty run'],
     releaseGates:['save/rejoin']
   });
   assert.equal(contract.adaptiveCoverage.signals.companion,false);
