@@ -109,7 +109,7 @@ test('mixed direct worker failure stages stay classified instead of falling back
   assert.equal(t.pass,false);
 });
 
-test('source candidate failures are reported as the real saturated-wave bottleneck',()=>{
+test('source candidate failures are reported as the real saturated execution bottleneck',()=>{
   const results=Array.from({length:20},(_,i)=>row(i,{
     start:1000+i*5,end:5000+i*5,outcome:'FAIL',runId:'125',
     blocker:'source-candidate-generation-failed'
@@ -156,7 +156,7 @@ test('candidate branch publication failures are infrastructure stage instead of 
 test('blocked work order is not counted as source generation failure even with stale candidate metadata',()=>{
   const results=[row(1,{
     outcome:'BLOCKED',
-    blocker:'MACHINE_STATE_INCONSISTENT:QUEUE_MAX_DIVERGED',
+    blocker:'MACHINE_STATE_INCONSISTENT:QUEUE_LEGACY_GENERAL_CAP_PRESENT',
     candidateFailure:{class:'OTHER',message:'stale metadata'},
     evidence:['source-generation-failure:OTHER']
   })];
@@ -211,21 +211,21 @@ test('workload telemetry measures completed features actual change volume rework
   assert.equal(t.workload.actualChangeMetricsKnown,true);
 });
 
-test('adaptive controller honors configured game-primary floor 30 under saturated runner pressure',()=>{
+test('pressure controller changes advisory signal without creating a primary reservation floor',()=>{
   const telemetry=computeParallelismTelemetry({results:Array.from({length:32},(_,i)=>row(i,{start:1000+i*5000,end:4000+i*5000,runId:'200'})),requestedMax:32,effectiveMax:32,taskCount:32});
-  const next=decideAdaptiveBackpressure(createParallelismControl({currentMax:32}),telemetry,{now:'2026-09-15T10:00:00.000Z',minimumMax:30});
-  assert.equal(next.currentMax,30);
+  const next=decideAdaptiveBackpressure(createParallelismControl({currentMax:32}),telemetry,{now:'2026-09-15T10:00:00.000Z'});
+  assert.equal(next.currentMax,16);
   assert.equal(next.lastDecision,'DOWN');
   assert.equal(next.lastRunId,'200');
   assert.match(next.lastReason,/RUNNER_CAPACITY/);
 });
 
-test('same actions run cannot downshift persistent cap twice',()=>{
+test('same actions run cannot downshift advisory signal twice',()=>{
   const telemetry=computeParallelismTelemetry({results:Array.from({length:32},(_,i)=>row(i,{start:1000+i*5000,end:4000+i*5000,runId:'201'})),requestedMax:32,effectiveMax:32,taskCount:32});
   const first=decideAdaptiveBackpressure(createParallelismControl({currentMax:32}),telemetry,{now:'2026-09-15T10:00:00.000Z'});
   const duplicate=decideAdaptiveBackpressure(first,telemetry,{now:'2026-09-15T10:00:30.000Z'});
-  assert.equal(first.currentMax,30);
-  assert.equal(duplicate.currentMax,30);
+  assert.equal(first.currentMax,16);
+  assert.equal(duplicate.currentMax,16);
   assert.equal(duplicate.healthyStreak,first.healthyStreak);
   assert.equal(duplicate.pressureStreak,first.pressureStreak);
   assert.equal(duplicate.lastDecision,'HOLD');
@@ -233,7 +233,7 @@ test('same actions run cannot downshift persistent cap twice',()=>{
   assert.equal(duplicate.lastRunId,'201');
 });
 
-test('run-local queue backpressure prevents a second persistent downshift',()=>{
+test('run-local queue pressure prevents a second advisory downshift',()=>{
   const telemetry=computeParallelismTelemetry({results:Array.from({length:20},(_,i)=>row(i,{start:1000+i*5000,end:4000+i*5000,runId:'202'})),requestedMax:32,effectiveMax:20,taskCount:20});
   const next=decideAdaptiveBackpressure(createParallelismControl({currentMax:32}),telemetry,{now:'2026-09-15T10:01:00.000Z'});
   assert.equal(next.currentMax,32);
@@ -241,27 +241,27 @@ test('run-local queue backpressure prevents a second persistent downshift',()=>{
   assert.equal(next.lastReason,'RUN_LOCAL_BACKPRESSURE_ACTIVE');
 });
 
-test('low workload never teaches the controller to reduce capacity',()=>{
+test('low workload never teaches the advisory controller to reduce its signal',()=>{
   const telemetry=computeParallelismTelemetry({results:Array.from({length:5},(_,i)=>row(i,{start:1000+i*5000,end:4000+i*5000,runId:'203'})),requestedMax:32,effectiveMax:32,taskCount:5});
   const next=decideAdaptiveBackpressure(createParallelismControl({currentMax:32}),telemetry,{now:'2026-09-15T10:02:00.000Z'});
   assert.equal(next.currentMax,32);
   assert.equal(next.lastReason,'LOW_LOAD');
 });
 
-test('healthy saturated runs step through the exact 30 stage before 32',()=>{
+test('healthy saturated runs raise advisory signal without changing primary eligibility',()=>{
   const healthy1=computeParallelismTelemetry({results:Array.from({length:20},(_,i)=>row(i,{start:1000+i*5,end:5000+i*5,runId:'204'})),requestedMax:20,effectiveMax:20,taskCount:20});
   const healthy2=computeParallelismTelemetry({results:Array.from({length:32},(_,i)=>row(i,{start:1000+i*5,end:5000+i*5,runId:'205'})),requestedMax:32,effectiveMax:32,taskCount:32});
   const first=decideAdaptiveBackpressure(createParallelismControl({currentMax:20}),healthy1,{now:'2026-09-15T10:03:00.000Z'});
-  assert.equal(first.currentMax,30);
+  assert.equal(first.currentMax,32);
   assert.equal(first.healthyStreak,0);
   assert.equal(first.lastDecision,'UP');
   const second=decideAdaptiveBackpressure(first,healthy2,{now:'2026-09-15T10:04:00.000Z'});
-  assert.equal(second.currentMax,32);
+  assert.equal(second.currentMax,64);
   assert.equal(second.lastDecision,'UP');
   assert.equal(second.lastRunId,'205');
 });
 
-test('version 1 control state migrates without losing its cap',()=>{
+test('version 1 control state migrates without losing its advisory signal',()=>{
   const migrated=createParallelismControl({version:1,currentMax:16,healthyStreak:1});
   assert.equal(migrated.version,4);
   assert.equal(migrated.currentMax,16);
@@ -269,33 +269,34 @@ test('version 1 control state migrates without losing its cap',()=>{
   assert.equal(migrated.lastRunId,null);
 });
 
-test('queue command reads adaptive cap and duplicate fan-in keeps exactly one next-run step',()=>{
+test('queue command exposes advisory pressure without making it a general reservation cap',()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-adaptive-'));
   const queueFile=path.join(dir,'queue.json');
   const controlFile=path.join(dir,'control.json');
   const batchFile=path.join(dir,'batch.json');
   const fanFile=path.join(dir,'fan.json');
   const tasks=Array.from({length:32},(_,i)=>({id:`q-${i}`,gameId:`g-${i}`,target:'web',department:'development',type:'implementation',sourceRoot:`web-games/g-${i}`,goal:'work',status:'queued',responsibleFiles:[`f-${i}.js`]}));
-  fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:32,tasks},null,2));
+  fs.writeFileSync(queueFile,JSON.stringify({version:5,maxConcurrentTasks:4,tasks},null,2));
   fs.writeFileSync(controlFile,JSON.stringify({version:4,currentMax:32},null,2));
-  const reserved=runQueueCommand({command:'reserve-batch',queue:queueFile,control:controlFile,max:'32',output:batchFile});
+  const reserved=runQueueCommand({command:'reserve-batch',queue:queueFile,control:controlFile,max:'4',output:batchFile});
   assert.equal(reserved.tasks.length,32);
-  assert.equal(reserved.adaptiveMaxConcurrentTasks,32);
+  assert.equal(reserved.pressureAdvisoryTarget,32);
+  assert.equal(reserved.internalGlobalParallelCap,null);
   const batch=JSON.parse(fs.readFileSync(batchFile,'utf8'));
-  assert.equal(batch.scheduler.configuredMaxConcurrentTasks,32);
-  assert.equal(batch.scheduler.adaptiveMaxConcurrentTasks,32);
+  assert.equal(batch.execution.pressureAdvisoryTarget,32);
+  assert.equal(batch.execution.internalGlobalParallelCap,null);
   const results=reserved.tasks.map((task,i)=>({taskId:task.id,variant:'primary',outcome:'PASS',blocker:'candidate-awaiting-qa-and-deployment',evidence:['actions-run:300'],metrics:{requestedMax:32,effectiveMax:32,reservedAt:1000,workerStartedAt:1000+i*5000,workerFinishedAt:4000+i*5000,checkoutMs:100,candidateMs:1000,qaMs:200,workerTotalMs:3000,ollamaCacheHit:true}}));
   fs.writeFileSync(fanFile,JSON.stringify({results},null,2));
   const first=runQueueCommand({command:'fan-in',queue:queueFile,control:controlFile,input:fanFile});
   assert.equal(first.previousAdaptiveControl.currentMax,32);
-  assert.equal(first.adaptiveControl.currentMax,30);
+  assert.equal(first.adaptiveControl.currentMax,16);
   assert.equal(first.adaptiveControl.lastRunId,'300');
   const duplicate=runQueueCommand({command:'fan-in',queue:queueFile,control:controlFile,input:fanFile});
-  assert.equal(duplicate.previousAdaptiveControl.currentMax,30);
-  assert.equal(duplicate.adaptiveControl.currentMax,30);
+  assert.equal(duplicate.previousAdaptiveControl.currentMax,16);
+  assert.equal(duplicate.adaptiveControl.currentMax,16);
   assert.equal(duplicate.adaptiveControl.lastReason,'DUPLICATE_RUN');
-  assert.equal(JSON.parse(fs.readFileSync(controlFile,'utf8')).currentMax,30);
-  assert.equal(adaptiveRequestedMax(duplicate.adaptiveControl,32),30);
+  assert.equal(JSON.parse(fs.readFileSync(controlFile,'utf8')).currentMax,16);
+  assert.equal(adaptiveRequestedMax(duplicate.adaptiveControl,32),16);
 });
 
 // 코드 수정률은 후보 생성, 검증 통과, 측정 누락을 구분한다.
