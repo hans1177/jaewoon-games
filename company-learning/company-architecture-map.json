@@ -6879,5 +6879,43 @@
         "nextCycleRoute": "vibe2-fanin-refill"
       }
     }
+  },
+  "playableWebMandatoryDeployment": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.playableWebMandatoryDeployment20261002",
+    "releaseGate": ".github/workflows/vibe2-candidate-release.yml#web-release",
+    "eligibility": "WEB_F0_F9_PLAYABLE_VERIFIED_AND_STATIC_SAVE_QA_PASS",
+    "nativeHomepageReadinessRequired": false,
+    "flow": [
+      "WEB_F0_F9_VERIFIED",
+      "STATIC_AND_SAVE_QA",
+      "REVIEWED_SOURCE_PR",
+      "CLOUDFLARE_PREVIEW_PASS",
+      "PR_MERGE",
+      "CLOUDFLARE_MAIN_PASS",
+      "VIBE_TASK_PASS",
+      "STATUS_SYNC_WEB_PUBLISHED",
+      "IMMEDIATE_NEXT_BUILD_UP_GENERATION"
+    ],
+    "deploymentFailureBlocksWebEvolution": true,
+    "sameVerifiedCandidateRetryRequired": true,
+    "terminalStateForbidden": true,
+    "postDeploymentPerpetualBuildUp": true,
+    "homepageAutoIngest": "tools/game-catalog-normalization.mjs#ingestOwnerWebGameIds"
+  },
+  "perpetualBuildUpDataCapacityBudget": {
+    "version": 1,
+    "source": "company-learning/vibe-autonomous-content-expansion-policy.json#dataCapacityBudget",
+    "savePersistedDataBytes": 2097152,
+    "webDownloadBytes": 104857600,
+    "singleFileBytes": 26214400,
+    "mobileMemoryTargetBytes": 314572800,
+    "mobileMinimumFps": 30,
+    "warningRatio": 0.8,
+    "contentCountLimit": null,
+    "buildUpGenerationLimit": null,
+    "warningStrategy": "REUSE_RECOMBINATION_COMPRESSION_STREAMING_POOLING_AND_EXISTING_SYSTEM_DEPTH",
+    "exceededStrategy": "CAUSAL_CAPACITY_REPAIR_THEN_CONTINUE_PERPETUAL_BUILD_UP",
+    "protectedStateDeletionForbidden": true
   }
 }
