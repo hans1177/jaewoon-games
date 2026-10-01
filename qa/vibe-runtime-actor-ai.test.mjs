@@ -223,6 +223,7 @@ test('default AI party entries receive stable role archetype identity rather tha
   const config=createAIPartyConfig({humanPlayers:1,aiCount:3,roles:['tank','ranged','healer']});
   const entries=createDefaultAIEntries(config);
   assert.equal(entries.length,3);
+  for(const field of ['movement','combat','rewards','save','spawn','network','progression','quest','gameRules']) assert.equal(config.serverAuthority[field],false,field);
   assert.equal(entries[0].identity.qualityProfile,'COMPANION');
   assert.ok(entries[0].identity.values.length>=2);
   assert.ok(entries[0].identity.stableSeed);
