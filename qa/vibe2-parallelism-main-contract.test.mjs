@@ -337,6 +337,10 @@ test('stale main push wake exits before expensive reserve work without cancellin
   assert.match(core,/Reserve conflict-free DAG batch\n\s+id: batch\n\s+if: steps\.main_wake\.outputs\.proceed == 'true'/);
   assert.match(core,/vibe2-main-push-game-primary-wake/);
   assert.match(core,/cancel-in-progress: false/);
+  assert.match(director,/\.github\/workflows\/vibe2-continuous-core\.yml/);
+  assert.match(director,/vibe2-runtime\.json/);
+  assert.match(director,/company-learning\/company-architecture-map\.json/);
+  assert.match(director,/VIBE2_STALE_UNSTARTED_FANIN_REFILL/);
 });
 
 
