@@ -8,8 +8,8 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "status": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "targetPlatform": "ROBLOX",
+      "selectedPlatform": "UNITY",
+      "targetPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -64,10 +64,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
-      "canonicalState": "F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-10-01T18:30:25.260Z",
+      "updatedAt": "2026-10-01T18:31:17.844Z",
       "robloxSourceCommit": "caf107a8a2415fafa179b1e076d93704506398c9",
       "robloxSourceBootstrapPassedAt": "2026-10-01T12:53:24.940Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -1676,7 +1676,7 @@
       "unityCandidateBranch": "development/unity-tech-daechung-rpg-36859359319",
       "unitySourceCommit": "dcb0c574594500da5c1eba3830e956dacd6aab6c",
       "unityBuildRunId": 36861804899,
-      "unityRuntimeSmokeRunId": 36903596010,
+      "unityRuntimeSmokeRunId": 36907213302,
       "unityIndependentQaRunId": 36272561183,
       "unityRegressionRunId": 36272695244,
       "unityInternalReleaseReady": false,
@@ -1704,9 +1704,9 @@
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": true,
-        "lastSuccessfulStage": "F9_RELEASE_REGRESSION",
-        "failureStage": null,
-        "failureSignature": null
+        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
+        "failureStage": "F1_SERVER_BOOT",
+        "failureSignature": "0868e0111a4f323f50f79a8e7dd2b67608df925c8ff30f4ab0d3e2324b8f49b0"
       },
       "resumeStage": "F1_SERVER_BOOT",
       "failureCount": 1,
@@ -2071,7 +2071,7 @@
           }
         },
         "multiplayerRequired": true,
-        "verifiedAt": "2026-10-01T18:02:03.959Z"
+        "verifiedAt": "2026-10-01T18:31:17.844Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -22436,7 +22436,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T18:30:25.260Z",
+  "updatedAt": "2026-10-01T18:31:20.934Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
