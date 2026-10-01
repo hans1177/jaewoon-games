@@ -25,6 +25,7 @@ on:
       - 'roblox-games/**'
       - 'tools/company-development-roblox-build-preflight.mjs'
       - 'tools/company-development-roblox-runtime-smoke.luau'
+      - 'tools/company-development-roblox-runtime-persist.mjs'
   workflow_call:
     inputs:
       game_id:
