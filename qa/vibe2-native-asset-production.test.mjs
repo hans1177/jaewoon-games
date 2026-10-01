@@ -793,7 +793,17 @@ test('downloaded external asset keeps external provenance and must compare again
     assert.equal(row.qualitySelection.selectionState,'READY_FOR_SAME_CONDITION_COMPARISON');
     assert.ok(row.decisionOrder.includes('POST_DOWNLOAD_COMPARE_EXTERNAL_TO_INTERNAL'));
     assert.equal(row.postDownloadComparison.internalTieBreakWhenQualityComparable,true);
+    assert.equal(row.postDownloadComparison.conceptFitReferenceOnly,true);
+    assert.equal(row.postDownloadComparison.conceptMismatchBlocksFullReplacement,false);
+    assert.equal(row.postDownloadComparison.conceptTransformationPreferredWhenFeasible,true);
+    assert.equal(row.conceptFit.referenceMode,'ADVISORY_TRANSFORM_TARGET');
+    assert.equal(row.conceptFit.conceptMismatchIsAutomaticReject,false);
+    assert.equal(row.conceptFit.mismatchHandling.applyInCandidateContextBeforeFinalDecision,true);
+    assert.ok(row.conceptFit.transformationLadder.includes('SILHOUETTE_AND_PROPORTION_STYLIZATION'));
+    assert.ok(row.conceptFit.transformationLadder.includes('MOTION_POSE_WEIGHT_RHYTHM_ADAPTATION'));
     assert.match(assetProductionGuidance(plan),/다운로드 후 내부자산 비교=READY_FOR_SAME_CONDITION_COMPARISON/);
+    assert.match(assetProductionGuidance(plan),/컨셉은 강제 탈락 게이트가 아니라 변형 목표/);
+    assert.match(assetProductionGuidance(plan),/팔레트·명도→재질\/셰이더→장식→실루엣\/비율/);
     assert.match(assetProductionGuidance(plan),/동급이면 내부자산을 유지/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
