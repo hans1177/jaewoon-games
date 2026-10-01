@@ -338,9 +338,10 @@ test('candidate publication prefers unique refs and falls back to reusable carri
   const carrierPush=workflow.indexOf('push origin "HEAD:refs/heads/$carrier_branch"');
   assert.ok(refCreate>=0&&uniquePush>refCreate);
   assert.ok(carrierPool>uniquePush&&carrierPush>carrierPool);
+  assert(workflow.includes('force-with-lease="refs/heads/$carrier_branch:$carrier_old_sha"'));
   assert(workflow.includes('--arg sha "$base_sha"'));
   assert(workflow.includes('--arg ref "refs/heads/$candidate_branch"'));
-  assert(workflow.includes('VIBE2_CANDIDATE_TRANSPORT=REUSED_EXISTING_BRANCH'));
+  assert(workflow.includes('VIBE2_CANDIDATE_TRANSPORT=REUSED_EXISTING_BRANCH_FORCE_WITH_LEASE'));
   assert(workflow.includes('candidate transport failed after unique-ref and reusable-carrier attempts'));
   assert(!workflow.includes('workflow: write'));
   const publication=runtime.workers.textSource.candidatePublication;
@@ -349,8 +350,8 @@ test('candidate publication prefers unique refs and falls back to reusable carri
   assert.equal(publication.reusableCarrierFallback,true);
   assert.equal(publication.reusableCarrierPrefix,'vibe2/candidate/OWNER-FULL-REBUILD-');
   assert.equal(publication.reusableCarrierMaxAttempts,16);
-  assert.equal(publication.carrierCommitParent,'EXISTING_CARRIER_TIP');
-  assert.equal(publication.carrierManifestTransportMode,'REUSED_EXISTING_CANDIDATE_BRANCH');
+  assert.equal(publication.carrierCommitParent,'RESERVE_TIME_PINNED_MAIN_SHA');
+  assert.equal(publication.carrierManifestTransportMode,'REUSED_EXISTING_CANDIDATE_BRANCH_FORCE_WITH_LEASE');
   assert.equal(publication.candidateIdentityBase,'RESERVE_TIME_PINNED_MAIN_SHA');
   assert.equal(publication.commitPushScope,'TASK_APPROVED_SOURCE_AND_CANDIDATE_ARTIFACT_DIFF_ONLY');
   assert.equal(publication.untouchedBaseWorkflowWriteAuthorityRequired,false);
