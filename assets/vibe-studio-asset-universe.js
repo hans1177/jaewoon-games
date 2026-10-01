@@ -577,6 +577,89 @@ export function createAssetDetailReviewPlan({customization={},styles=['CARTOON',
   });
 }
 
+
+// 실제 엔진 캡처를 현재 소스 리비전에 묶어 픽셀 검수 대상으로 만든다.
+// 이 단계는 캡처 메타데이터를 검증할 뿐이며, 실제 픽셀 판독은 source worker의 vision 단계가 담당한다.
+export function createAssetRuntimeVisualReviewPlan({
+  sourceRevision='',platforms=[],requiredSurfaces=[],requiredViews=['GAME_CAMERA'],captures=[],
+  expectedSubjects=[],visualGoals=[],editableTargets=[]
+}={}){
+  const allowedPlatforms=new Set(['ROBLOX','UNITY','WEB']);
+  const surfacePlatform=Object.freeze({
+    ROBLOX_STUDIO:'ROBLOX',
+    UNITY_EDITOR:'UNITY',
+    UNITY_ANDROID_APK:'UNITY',
+    WEB_BROWSER:'WEB'
+  });
+  const revision=text(sourceRevision),issues=[];
+  const targetPlatforms=uniq((platforms||[]).map(upper));
+  if(!revision)issues.push('SOURCE_REVISION_REQUIRED');
+  if(!targetPlatforms.length||targetPlatforms.some(platform=>!allowedPlatforms.has(platform)))issues.push('SUPPORTED_RUNTIME_REVIEW_PLATFORMS_REQUIRED');
+  const defaultSurface={ROBLOX:'ROBLOX_STUDIO',UNITY:'UNITY_ANDROID_APK',WEB:'WEB_BROWSER'};
+  const surfaces=uniq((requiredSurfaces?.length?requiredSurfaces:targetPlatforms.map(platform=>defaultSurface[platform])).map(upper));
+  if(!surfaces.length||surfaces.some(surface=>!surfacePlatform[surface]||!targetPlatforms.includes(surfacePlatform[surface])))issues.push('SUPPORTED_RUNTIME_REVIEW_SURFACES_REQUIRED');
+  const views=uniq((requiredViews||[]).map(upper));
+  if(!views.length)issues.push('RUNTIME_REVIEW_VIEWS_REQUIRED');
+
+  const subjectIds=new Set(),subjects=[];
+  for(const [index,row] of (Array.isArray(expectedSubjects)?expectedSubjects:[]).entries()){
+    const source=typeof row==='string'?{id:row}:row||{},id=text(source.id||source.assetId||source.name);
+    if(!id||subjectIds.has(id)){issues.push('EXPECTED_SUBJECT_ID_REQUIRED_OR_DUPLICATED:'+index);continue;}
+    subjectIds.add(id);
+    const mustBeVisibleIn=uniq((Array.isArray(source.mustBeVisibleIn)&&source.mustBeVisibleIn.length?source.mustBeVisibleIn:views).map(upper));
+    if(mustBeVisibleIn.some(view=>!views.includes(view)))issues.push('EXPECTED_SUBJECT_VIEW_OUTSIDE_CONTRACT:'+id);
+    subjects.push(Object.freeze({
+      id,label:text(source.label||source.name||id),role:upper(source.role||'SCENE_OBJECT'),
+      required:source.required!==false,mustBeVisibleIn:freezeList(mustBeVisibleIn),
+      identityAnchors:freezeList(uniq(source.identityAnchors||[]))
+    }));
+  }
+
+  const captureIds=new Set(),normalizedCaptures=[];
+  for(const [index,row] of (Array.isArray(captures)?captures:[]).entries()){
+    const capture=row||{},platform=upper(capture.platform),surface=upper(capture.surface||defaultSurface[platform]),view=upper(capture.view||capture.cameraRole);
+    const id=text(capture.id)||['capture',platform||'unknown',surface||'unknown',view||index+1].join('-').toLowerCase();
+    const viewport=capture.viewport||{},captureIssues=[];
+    if(captureIds.has(id))captureIssues.push('CAPTURE_ID_DUPLICATED');
+    captureIds.add(id);
+    if(!allowedPlatforms.has(platform)||!targetPlatforms.includes(platform))captureIssues.push('CAPTURE_PLATFORM_OUTSIDE_CONTRACT');
+    if(!surfacePlatform[surface]||surfacePlatform[surface]!==platform||!surfaces.includes(surface))captureIssues.push('CAPTURE_SURFACE_OUTSIDE_CONTRACT');
+    if(!view||!views.includes(view))captureIssues.push('CAPTURE_VIEW_OUTSIDE_CONTRACT');
+    if(!text(capture.imageRef||capture.artifactRef))captureIssues.push('CAPTURE_IMAGE_REF_REQUIRED');
+    if(text(capture.sourceRevision)!==revision)captureIssues.push('CAPTURE_SOURCE_REVISION_MISMATCH');
+    if(!text(capture.sceneId))captureIssues.push('CAPTURE_SCENE_ID_REQUIRED');
+    if(!Number.isSafeInteger(viewport.width)||viewport.width<=0||!Number.isSafeInteger(viewport.height)||viewport.height<=0)captureIssues.push('CAPTURE_VIEWPORT_REQUIRED');
+    if(captureIssues.length)issues.push(...captureIssues.map(reason=>reason+':'+id));
+    normalizedCaptures.push(Object.freeze({
+      id,platform,surface,view,sceneId:text(capture.sceneId),
+      imageRef:text(capture.imageRef||capture.artifactRef),artifactHash:text(capture.artifactHash),
+      sourceRevision:text(capture.sourceRevision),viewport:Object.freeze({width:Number(viewport.width)||0,height:Number(viewport.height)||0}),
+      ready:captureIssues.length===0
+    }));
+  }
+
+  const missingCaptures=[];
+  for(const surface of surfaces)for(const view of views){
+    const platform=surfacePlatform[surface];
+    if(!normalizedCaptures.some(capture=>capture.ready&&capture.platform===platform&&capture.surface===surface&&capture.view===view)){
+      missingCaptures.push(Object.freeze({platform,surface,view}));
+    }
+  }
+  if(!normalizedCaptures.length)issues.push('RUNTIME_CAPTURE_REQUIRED');
+  return Object.freeze({
+    version:1,enabled:true,
+    status:issues.length||missingCaptures.length?'CAPTURES_REQUIRED':'READY_FOR_PIXEL_INSPECTION',
+    sourceRevision:revision,platforms:freezeList(targetPlatforms),requiredSurfaces:freezeList(surfaces),requiredViews:freezeList(views),
+    captures:freezeList(normalizedCaptures),expectedSubjects:freezeList(subjects),
+    visualGoals:freezeList(uniq(visualGoals||[])),editableTargets:freezeList(uniq(editableTargets||[])),
+    issues:freezeList(issues),missingCaptures:freezeList(missingCaptures),
+    pixelInspectionRequired:true,pixelInspectionPerformed:false,
+    protectedSemantics:freezeList(['GAMEPLAY_RULES','BALANCE','HITBOXES','DAMAGE','COOLDOWNS','PROGRESSION','ECONOMY','SAVE_MEANING','NETWORK_AUTHORITY']),
+    nextAction:issues.length||missingCaptures.length?'CAPTURE_CURRENT_RUNTIME_SURFACES':'INSPECT_ACTUAL_PIXELS_AND_RETURN_LOCAL_REPAIRS',
+    sourceMutationPerformed:false,runtimeVerified:false
+  });
+}
+
 function normalizeConceptWeights(rows=[]){
   const cleanRows=(rows||[]).map((row,index)=>({
     family:upper(row.family||row.styleFamily||row.id||row.name),
