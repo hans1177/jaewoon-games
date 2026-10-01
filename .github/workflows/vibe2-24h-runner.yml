@@ -224,6 +224,8 @@ jobs:
           fi
 
       - name: Plan from latest main and persist control queue
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -242,6 +244,33 @@ jobs:
             git worktree prune
             git worktree add --detach /tmp/vibe2-main origin/main >/dev/null
             control_root="$PWD"
+            main_sha="$(git -C /tmp/vibe2-main rev-parse HEAD)"
+            core_qa_reuse=0
+            if curl --fail-with-body --silent --show-error \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${main_sha}&per_page=100" \
+              --output /tmp/vibe2-24h-core-qa-runs.json; then
+              core_qa_reuse="$(MAIN_SHA="$main_sha" node <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-24h-core-qa-runs.json','utf8'));
+          const sha=String(process.env.MAIN_SHA||'');
+          const pass=(payload.workflow_runs||[]).some(row=>
+            String(row.name||'')==='Vibe2 Core QA' &&
+            String(row.head_sha||'')===sha &&
+            String(row.status||'')==='completed' &&
+            String(row.conclusion||'')==='success'
+          );
+          process.stdout.write(pass?'1':'0');
+          NODE
+              )"
+              echo "VIBE2_24H_CORE_QA_REUSE_OBSERVATION=PASS:$core_qa_reuse:$main_sha"
+            else
+              core_qa_reuse=0
+              echo "VIBE2_24H_CORE_QA_REUSE_OBSERVATION=FAIL_RUN_TARGETED_QA:$main_sha"
+            fi
+            export VIBE2_24H_CORE_QA_REUSE="$core_qa_reuse"
 
             (
               cd /tmp/vibe2-main
@@ -263,17 +292,22 @@ jobs:
               node --check tools/company-development-web-gameplay-validation.mjs
               node --check tools/vibe2-practice-distillation.mjs
               node --check tools/vibe2-design-intelligence.mjs
-              node --test qa/vibe2-learning-motor.test.mjs
-              node --test qa/vibe2-auto-planner.test.mjs
-              node --test qa/vibe2-native-asset-production.test.mjs
+              if [ "${VIBE2_24H_CORE_QA_REUSE:-0}" = '1' ]; then
+                echo 'VIBE2_24H_DUPLICATE_CORE_TESTS=SKIPPED_EXACT_SHA_CORE_QA_PASS'
+              else
+                node --test qa/vibe2-learning-motor.test.mjs
+                node --test qa/vibe2-auto-planner.test.mjs
+                node --test qa/vibe2-native-asset-production.test.mjs
+                node --test qa/vibe2-source-worker.test.mjs
+                node --test qa/vibe2-capability-distillation.test.mjs
+                node --test qa/vibe2-incremental-qa.test.mjs
+                node --test qa/vibe2-practice-distillation.test.mjs
+                node --test qa/vibe2-design-intelligence.test.mjs
+              fi
+              # 24H-only planner dependencies remain directly tested even when Core QA is reusable.
               node --test qa/vibe-studio-asset-universe.test.mjs
-              node --test qa/vibe2-source-worker.test.mjs
-              node --test qa/vibe2-capability-distillation.test.mjs
               node --test qa/vibe3-roblox-distillation.test.mjs
-              node --test qa/vibe2-incremental-qa.test.mjs
               node --test qa/company-development-web-runtime.test.mjs
-              node --test qa/vibe2-practice-distillation.test.mjs
-              node --test qa/vibe2-design-intelligence.test.mjs
 
               # Rule 4 final-stage neural expansion readiness is derived from direct targeted QA.
               node --check tools/vibe2-neural-expansion-readiness.mjs
