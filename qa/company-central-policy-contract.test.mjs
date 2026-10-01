@@ -1219,6 +1219,17 @@ test('Roblox remote runtime QA stays off game-primary ubuntu-latest capacity',()
   assert.equal(projection?.previousRunner,'ubuntu-slim');
   assert.equal(projection?.localStudioExecutionMoved,false);
   assert.equal(projection?.gamePrimaryUbuntuLatestCapacityProtected,true);
+  assert.equal(projection?.pushWakeFilter?.qaOnlyWake,false);
+  const workflowHead=workflow.slice(0,workflow.indexOf('\njobs:\n'));
+  assert.doesNotMatch(workflowHead,/['"]qa\//);
+  const localQaAt=remoteQa.indexOf('Run responsibility-local foundation protocol QA');
+  assert.ok(localQaAt>0);
+  const localQaEnd=remoteQa.indexOf('\n      - name:',localQaAt+20);
+  const localQa=remoteQa.slice(localQaAt,localQaEnd);
+  assert.match(localQa,/company-development-roblox-runtime-foundation\.test\.mjs/);
+  assert.match(localQa,/company-tester-debug-intake\.test\.mjs/);
+  assert.doesNotMatch(localQa,/company-development-roblox-studio-local-play\.test\.mjs/);
+  assert.doesNotMatch(localQa,/company-development-roblox-headless-fast-mvp\.test\.mjs/);
   const isolation=roadmap.changeRecord?.robloxPostRuntimeQaRunnerIsolation20260927;
   assert.equal(isolation?.dedupeRunner,'ubuntu-24.04');
   assert.equal(isolation?.runtimeFoundationQaRunner,'ubuntu-24.04');
