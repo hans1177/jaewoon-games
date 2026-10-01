@@ -99,6 +99,14 @@ test('Studio route audit does not invent failure when every remote anchor is alr
   assert.doesNotMatch(helper,/if\(routeRows\.length>0&&routeIndex===0\)/);
 });
 
+test('Studio route audit keeps duplicate-named prompts distinct and skips already reached waypoints',()=>{
+  assert.match(helper,/const routeIdentity=row=>\[/);
+  assert.match(helper,/!visitedRoutes\.has\(routeIdentity\(row\)\)/);
+  assert.match(helper,/const beforeWaypointDistance=Math\.hypot/);
+  assert.match(helper,/beforeWaypointDistance<=6/);
+  assert.match(helper,/routeIdentity\(row\)===routeId/);
+});
+
 test('Studio owned-source scan still works when launch contract file is absent',()=>{
   assert.match(helper,/const root=path\.dirname\(path\.resolve\(contract\)\);/);
   assert.match(helper,/if\(!fs\.existsSync\(root\)\)return'';/);

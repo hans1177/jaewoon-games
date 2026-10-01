@@ -2749,13 +2749,17 @@ export async function runOfficialStudioMcpPlay({
         actions.push({id:'commercial-combat-action',type:'mcp-combat-action',dispatched:true,ok:navOk&&attackOk,effectObserved:generic.effectObserved||mobDelta.healthChanged>0||mobDelta.stateChanged>0||mobDelta.targetChanged>0,effect:{...generic,mobDelta}});
       }
       const routeLimit=auditMode==='F9_SOAK'?4:2;
+      const routeIdentity=row=>[
+        clean(row?.kind),clean(row?.name),
+        Number(row?.x||0).toFixed(2),Number(row?.z||0).toFixed(2)
+      ].join(':');
       const visitedRoutes=new Set();
       let previousRouteProbe=initialClientProbe;
       for(let routeIndex=0;routeIndex<routeLimit;routeIndex++){
         const routeRows=entityRows(previousRouteProbe?.world?.routes);
         const root=previousRouteProbe?.player||{};
         const candidate=routeRows.find(row=>row?.pass===true
-          &&!visitedRoutes.has(clean(row.kind)+':'+clean(row.name))
+          &&!visitedRoutes.has(routeIdentity(row))
           &&Math.hypot(Number(row.x||0)-Number(root.rootX||0),Number(row.z||0)-Number(root.rootZ||0))>8);
         if(!candidate){
           const unresolvedRemoteRoute=routeRows.some(row=>row?.pass!==true
@@ -2765,7 +2769,7 @@ export async function runOfficialStudioMcpPlay({
           }
           break;
         }
-        const routeId=clean(candidate.kind)+':'+clean(candidate.name);
+        const routeId=routeIdentity(candidate);
         visitedRoutes.add(routeId);
         let navOk=true,probe=previousRouteProbe,fall=0,reached=false,waypointCount=0;
         let routeCandidate=candidate;
@@ -2776,6 +2780,14 @@ export async function runOfficialStudioMcpPlay({
             break;
           }
           for(const waypoint of waypoints){
+            const beforeWaypointDistance=Math.hypot(
+              Number(probe?.player?.rootX)-Number(waypoint.x),
+              Number(probe?.player?.rootZ)-Number(waypoint.z)
+            );
+            if(Number.isFinite(beforeWaypointDistance)&&beforeWaypointDistance<=6){
+              waypointCount++;
+              continue;
+            }
             try{
               const navResult=await client.call('character_navigation',characterNavigationArgs(navigationTool.inputSchema||{},studioId,waypoint));
               if(navResult?.isError===true){navOk=false;break;}
@@ -2803,7 +2815,7 @@ export async function runOfficialStudioMcpPlay({
           if(reached||!navOk)break;
           if(Number(routeCandidate.waypointCount||0)<=waypoints.length){navOk=false;break;}
           routeCandidate=entityRows(probe?.world?.routes).find(row=>row?.pass===true
-            &&clean(row.kind)+':'+clean(row.name)===routeId);
+            &&routeIdentity(row)===routeId);
           if(!routeCandidate)navOk=false;
         }
         const moved=pointDistance(previousRouteProbe?.player||{},probe?.player||{});
