@@ -133,7 +133,7 @@ bone_names = {bone.name for bone in RIG.pose.bones}
 missing = sorted(REQUIRED_BONES - bone_names)
 assert not missing, 'SOURCE_STANDARD_BONES_MISSING:' + ','.join(missing)
 
-# 기존 GLB의 액션은 원본 파일에 그대로 남아 있다. 파생본에는 새 공용 모션만 굽는다.
+# 기존 GLB의 액션과 원본 바이너리는 그대로 보존한다. 파생본에는 새 공용 모션만 굽는다.
 if RIG.animation_data:
     RIG.animation_data.action = None
 for action in list(bpy.data.actions):
