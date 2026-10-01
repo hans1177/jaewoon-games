@@ -493,13 +493,11 @@
       "sourceRevision": "caf107a8a2415fafa179b1e076d93704506398c9",
       "artifactIdentity": "sha256:fc2c92e482f47e15e9ae7db9dd7fab2861b633fbe87d53b14bde0d291c711f6a",
       "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 36875314493,
-      "testedAt": "2026-10-01T14:28:14.202Z",
+      "workflowRunId": 36882677961,
+      "testedAt": "2026-10-01T15:24:52.660Z",
       "repairSurfaces": [
         "SYSTEM_TRANSACTION",
-        "QUEST_LOOP",
-        "FAILURE_RECOVERY",
-        "MULTIPLAYER_SYNC",
+        "CHARACTER_MOTION",
         "ROBLOX_OBSERVED_INTERACTION"
       ],
       "qualityFailureDetails": [
@@ -508,35 +506,14 @@
           "repairSurface": "SYSTEM_TRANSACTION",
           "priority": "CRITICAL",
           "hint": "One or more discovered shop/craft/equip/upgrade actions accepted input without changing inventory, currency/progression, feedback, or relevant UI state. Repair each transaction chain independently.",
-          "observed": "{\"systemActionCount\":3,\"systemEffectCount\":2,\"actions\":[{\"id\":\"prompt-ProximityPrompt\",\"semantic\":\"SHOP\",\"effectObserved\":false,\"effect\":{\"moved\":41.69847402401138,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":true}},{\"id\":\"prompt-ProximityPrompt\",\"semantic\":\"UPGRADE\",\"effectObserved\":true,\"effect\":{\"moved\":24.99795059564624,\"progress\":false,\"inventory\":false,\"feedback\":true,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":true}},{\"id\":\"prompt-ProximityPrompt\",\"semantic\":\"SHOP\",\"effectObserved\":true,\"effect\":{\"moved\":47.97397676008598,\"progress\":false,\"inventory\":false,\"feedback\":true,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":true}}]}"
+          "observed": "{\"systemActionCount\":1,\"systemEffectCount\":0,\"actions\":[{\"id\":\"prompt-ProximityPrompt\",\"semantic\":\"SHOP\",\"effectObserved\":false,\"effect\":{\"moved\":35.393311634526235,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":true}}]}"
         },
         {
-          "id": "adaptive-quest-state-transition",
-          "repairSurface": "QUEST_LOOP",
-          "priority": "CRITICAL",
-          "hint": "Quest interaction did not advance quest/UI/progression state. Repair accept-progress-complete transitions and softlock handling.",
-          "observed": "{\"questActionCount\":1,\"questEffectCount\":0,\"timelineProgressChanged\":false}"
-        },
-        {
-          "id": "adaptive-retry-loop-surface",
-          "repairSurface": "FAILURE_RECOVERY",
+          "id": "adaptive-motion-surface",
+          "repairSurface": "CHARACTER_MOTION",
           "priority": "HIGH",
-          "hint": "Repair death/failure/restart/respawn flow and remove softlocks after retry.",
-          "observed": "{\"interactionSurfaceCount\":37,\"progressionSurfaceCount\":83,\"combatSurfaceCount\":201,\"npcSurfaceCount\":27,\"companionSurfaceCount\":2,\"itemSurfaceCount\":11,\"remoteCount\":17,\"soundCount\":0,\"effectCount\":31,\"promptCount\":18,\"inventoryCount\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":false,\"multiplayerActualSessionPass\":false}"
-        },
-        {
-          "id": "adaptive-multiplayer-sync-surface",
-          "repairSurface": "MULTIPLAYER_SYNC",
-          "priority": "CRITICAL",
-          "hint": "The game declares multiplayer/co-op behavior but Studio found no credible replicated player/team state plus server Remote surface. Restore actual 2+ player synchronization evidence before release.",
-          "observed": "{\"declaredMultiplayer\":true,\"auditProfile\":\"F9_SOAK\",\"multiplayerRuntimeSurface\":true,\"multiplayerActualSessionPass\":false,\"multiplayerSignals\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":false,\"remoteCount\":17}"
-        },
-        {
-          "id": "observed-action-749f1a8df420364c0ab0",
-          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
-          "priority": "HIGH",
-          "hint": "Replay the exact observed action and verify its real state change after repair.",
-          "observed": "{\"id\":\"observed-action-749f1a8df420364c0ab0\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"commercial-combat-action\",\"targetIdentity\":\"commercial-combat-action\",\"actionType\":\"mcp-combat-action\",\"effectRequired\":true,\"attempts\":1}"
+          "hint": "Repair Animator/Motor6D rig behavior and verify movement/action animation response.",
+          "observed": "{\"interactionSurfaceCount\":36,\"progressionSurfaceCount\":83,\"combatSurfaceCount\":201,\"npcSurfaceCount\":27,\"companionSurfaceCount\":2,\"itemSurfaceCount\":11,\"remoteCount\":17,\"soundCount\":0,\"effectCount\":31,\"promptCount\":18,\"inventoryCount\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":false,\"multiplayerActualSessionPass\":false}"
         },
         {
           "id": "observed-action-ce7a335281c15e497552",
@@ -551,13 +528,6 @@
           "priority": "HIGH",
           "hint": "Replay the exact observed action and verify its real state change after repair.",
           "observed": "{\"id\":\"observed-action-7a30d05dfc5fe9edfc16\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"prompt-ProximityPrompt\",\"targetIdentity\":\"Workspace.DaechungRPGWorld.Village.WeaponMerchant.ProximityPrompt\",\"actionType\":\"mcp-world-interaction\",\"effectRequired\":true,\"attempts\":1}"
-        },
-        {
-          "id": "observed-action-8f10652c04dfc34d013c",
-          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
-          "priority": "HIGH",
-          "hint": "Replay the exact observed action and verify its real state change after repair.",
-          "observed": "{\"id\":\"observed-action-8f10652c04dfc34d013c\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"prompt-ProximityPrompt\",\"targetIdentity\":\"Workspace.DaechungRPGWorld.Village.VillageHealer.ProximityPrompt\",\"actionType\":\"mcp-world-interaction\",\"effectRequired\":true,\"attempts\":1}"
         }
       ]
     }
