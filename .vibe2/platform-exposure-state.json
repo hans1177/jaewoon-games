@@ -3,7 +3,7 @@
   "kind": "platform-exposure-state",
   "authority": "OWNER_DIRECTIVE_2026-09-25",
   "policy": "PERPETUAL_INTERNAL_BUILDUP_WITH_FAIL_CLOSED_EXTERNAL_PUBLIC_HARD_GATE",
-  "updatedAt": "2026-10-01T01:21:20.349Z",
+  "updatedAt": "2026-10-01T02:02:52.251Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -1200,7 +1200,7 @@
             "artifactIdentity": "sha256:aa8f5298a4962b860d3a3f371eb0b37479f989c87d72a7c58eb6f9128d06ee42",
             "verifiedAt": "2026-09-28T23:56:21.030Z"
           },
-          "internalReleasePublished": true,
+          "internalReleasePublished": false,
           "internalPlaytestPassed": false,
           "externalExposureAllowed": false,
           "externalExposureState": "INTERNAL_ONLY",
@@ -1244,7 +1244,7 @@
             ],
             "candidateVersionNumber": 0
           },
-          "perpetualBuildupActive": true,
+          "perpetualBuildupActive": false,
           "testerTickets": {
             "openBlocking": [
               "bug-b447353575095cf75c68"
@@ -1258,7 +1258,7 @@
             "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
             "publicDiscoveryAllowed": false
           },
-          "rebuildRequired": true
+          "rebuildRequired": false
         },
         {
           "platform": "UNITY",
