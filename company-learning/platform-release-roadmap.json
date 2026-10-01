@@ -1,5 +1,5 @@
 {
-  "version": 513,
+  "version": 514,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -9113,6 +9113,43 @@
         "schedulerChanged": false,
         "existingAssetLicenseAndRuntimePromotionGuardsPreserved": true
       }
+    },
+    "robloxSourcePlanWakeAndRunnerIsolation20260927": {
+      "id": "ROBLOX_SOURCE_PLAN_WAKE_AND_RUNNER_ISOLATION_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "WAKE_ROBLOX_SOURCE_PLAN_IMMEDIATELY_ON_FIXED_2404_CONTROL_CAPACITY_WITHOUT_ARM_QUEUE_DEPENDENCY_OR_HEAVY_GAME_CAPACITY_CONTENTION",
+      "observedEvidence": {
+        "directorDrainRunId": 36290168197,
+        "directorDrainSucceededOnFixed2404": true,
+        "robloxBatchSourcePlanStillQueuedOnSlimAfterDrain": true,
+        "sourcePlanContractIncludedRoadmapWithoutPushWake": true,
+        "staleBatchWouldOtherwiseNeed_TO_RUN_BEFORE_REDISPATCH": true
+      },
+      "sourcePlanRunner": "ubuntu-24.04",
+      "previousSourcePlanRunner": "ubuntu-slim",
+      "technicalPlanRunnerUnchanged": "ubuntu-24.04",
+      "heavyExecutionRunnerUnchanged": "ubuntu-latest",
+      "sourcePlanContractPushWakeRequired": true,
+      "sourcePlanContractPaths": [
+        ".github/workflows/company-development-roblox-runtime.yml",
+        "tools/company-development-roblox-bootstrap.mjs",
+        "tools/company-development-roblox-source-reconcile.mjs",
+        "tools/company-selected-platform-router.mjs",
+        "tools/company-upper-platform-admission.mjs",
+        "company-asset-library.json",
+        "company-learning/platform-release-roadmap.json"
+      ],
+      "staleBatchFreshnessGuardPreserved": true,
+      "exactSourceBindingPreserved": true,
+      "currentArtifactBindingRequired": true,
+      "activeGameCancellationForbidden": true,
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "sourcePlanExactGameRunner": "ubuntu-24.04",
+      "sourcePlanBatchRunner": "ubuntu-24.04",
+      "runnerRoutingReason": "FIXED_2404_CONTROL_POOL_AVOIDS_ARM_INGRESS_QUEUE_BOTTLENECK_WHILE_HEAVY_GAME_WORK_REMAINS_ON_UBUNTU_LATEST",
+      "exactGameParallelismPreserved": true,
+      "batchFreshnessGuardPreserved": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -26333,7 +26370,7 @@
     "scope": "CURRENT_RULES_AND_EXECUTABLE_CONTRACTS",
     "historicalExecutionLogsAuthority": "GIT_HISTORY",
     "archivedChangeRecordCommit": "5d1d838246fd81723f29fce36b49e8146d0dfb2c",
-    "archivedUnreferencedChangeRecords": 88,
+    "archivedUnreferencedChangeRecords": 87,
     "currentOwnerRulesMustRemain": true,
     "f0ThroughF9MustRemain": true,
     "publicationApprovalMustRemain": true,
