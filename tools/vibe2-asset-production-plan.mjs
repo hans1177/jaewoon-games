@@ -17,6 +17,104 @@ const freeze=value=>Object.freeze(value);
 const freezeList=value=>freeze([...(value||[])]);
 const unique=value=>[...new Set((value||[]).map(clean).filter(Boolean))];
 
+
+function runtimeVisualTargetPlatform(target=''){
+  const value=clean(target).toUpperCase();
+  return value==='ROBLOX'?'ROBLOX':value==='UNITY'?'UNITY':value==='WEB'?'WEB':'';
+}
+function runtimeVisualManifestFiles(root,max=32){
+  const out=[],stack=[root];
+  while(stack.length&&out.length<max){
+    const current=stack.pop();
+    let entries=[];
+    try{entries=fs.readdirSync(current,{withFileTypes:true});}catch{continue;}
+    for(const entry of entries.sort((a,b)=>a.name.localeCompare(b.name))){
+      const full=path.join(current,entry.name);
+      if(entry.isDirectory()){
+        if(stack.length<128)stack.push(full);
+      }else if(entry.isFile()&&entry.name==='asset-runtime-visual-evidence.json')out.push(full);
+      if(out.length>=max)break;
+    }
+  }
+  return out;
+}
+export function discoverRuntimeVisualEvidence({task={},target='',evidenceRoot=process.env.VIBE2_RUNTIME_VISUAL_EVIDENCE_ROOT||''}={}){
+  const requestedRoot=clean(evidenceRoot);
+  if(!requestedRoot)return null;
+  let root;
+  try{root=fs.realpathSync(requestedRoot);}catch{return null;}
+  if(!fs.statSync(root).isDirectory())return null;
+  const gameId=clean(task.gameId),sourceRoot=clean(task.sourceRoot).replaceAll('\\','/').replace(/^\.\//,'');
+  const platform=runtimeVisualTargetPlatform(target||task.target);
+  const currentSourceRevision=clean(task.sourceRevision||process.env.VIBE2_BASE_MAIN_SHA||process.env.GITHUB_SHA);
+  if(!gameId||!platform||!/^[0-9a-f]{40}$/i.test(currentSourceRevision))return null;
+  const captures=[],expectedSubjects=[],visualGoals=[],editableTargets=['SCENE'],evidenceProvenance=[];
+  const seenCaptureIds=new Set(),seenSubjectIds=new Set();
+  for(const file of runtimeVisualManifestFiles(root)){
+    let manifest;
+    try{manifest=JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));}catch{continue;}
+    const manifestSourceRoot=clean(manifest.sourceRoot).replaceAll('\\','/').replace(/^\.\//,'');
+    if(Number(manifest.version)!==1||clean(manifest.gameId)!==gameId||clean(manifest.platform).toUpperCase()!==platform)continue;
+    if(manifest.currentSourceCompatible!==true||clean(manifest.currentSourceRevision)!==currentSourceRevision)continue;
+    if(sourceRoot&&manifestSourceRoot!==sourceRoot)continue;
+    const manifestDir=path.dirname(file),surface=clean(manifest.surface).toUpperCase(),sceneId=clean(manifest.sceneId)||'runtime';
+    if(!surface)continue;
+    const producer=manifest.producer&&typeof manifest.producer==='object'?manifest.producer:{};
+    let accepted=0;
+    for(const [index,row] of (Array.isArray(manifest.captures)?manifest.captures:[]).entries()){
+      const ref=clean(row?.imageRef),view=clean(row?.view||'GAME_CAMERA').toUpperCase();
+      if(!ref||path.isAbsolute(ref)||ref.split(/[\\/]/).includes('..')||!view)continue;
+      let image;
+      try{image=fs.realpathSync(path.resolve(manifestDir,ref));}catch{continue;}
+      if(image!==root&&!image.startsWith(root+path.sep))continue;
+      let stat;try{stat=fs.statSync(image);}catch{continue;}
+      if(!stat.isFile()||stat.size<=0||stat.size>20*1024*1024)continue;
+      const viewport=row.viewport||{};
+      if(!Number.isSafeInteger(viewport.width)||viewport.width<=0||!Number.isSafeInteger(viewport.height)||viewport.height<=0)continue;
+      const baseId=clean(row.id)||[surface.toLowerCase(),view.toLowerCase(),index+1].join('-');
+      const id=[clean(producer.workflowRunId||producer.runId||path.basename(path.dirname(file))),baseId].filter(Boolean).join(':');
+      if(seenCaptureIds.has(id))continue;
+      seenCaptureIds.add(id);accepted++;
+      captures.push({
+        id,platform,surface,view,sceneId:clean(row.sceneId)||sceneId,
+        imageRef:path.relative(root,image).replaceAll('\\','/'),
+        artifactHash:clean(row.artifactHash||row.sha256),
+        sourceRevision:currentSourceRevision,
+        captureSourceRevision:clean(manifest.sourceRevision),
+        sourceCompatibility:'EXACT_SOURCE_ROOT_NO_DIFF',
+        viewport:{width:Number(viewport.width),height:Number(viewport.height)},
+        producer:{...producer,manifest:path.relative(root,file).replaceAll('\\','/')}
+      });
+    }
+    if(!accepted)continue;
+    for(const subject of Array.isArray(manifest.expectedSubjects)?manifest.expectedSubjects:[]){
+      const id=clean(subject?.id||subject?.assetId||subject?.name);
+      if(id&&!seenSubjectIds.has(id)){seenSubjectIds.add(id);expectedSubjects.push({...subject,id});}
+    }
+    visualGoals.push(...(Array.isArray(manifest.visualGoals)?manifest.visualGoals:[]));
+    editableTargets.push(...(Array.isArray(manifest.editableTargets)?manifest.editableTargets:[]));
+    evidenceProvenance.push({
+      platform,surface,sourceRevision:clean(manifest.sourceRevision),currentSourceRevision,
+      sourceCompatibility:'EXACT_SOURCE_ROOT_NO_DIFF',producer:{...producer},
+      manifest:path.relative(root,file).replaceAll('\\','/')
+    });
+  }
+  if(!captures.length)return null;
+  return freeze({
+    sourceRevision:currentSourceRevision,
+    platforms:freezeList([platform]),
+    requiredSurfaces:freezeList(unique(captures.map(row=>row.surface))),
+    requiredViews:freezeList(unique(captures.map(row=>row.view))),
+    captures:freezeList(captures),
+    expectedSubjects:freezeList(expectedSubjects),
+    visualGoals:freezeList(unique(visualGoals)),
+    editableTargets:freezeList(unique(editableTargets)),
+    evidenceRoot:root,
+    evidenceProvenance:freezeList(evidenceProvenance),
+    automaticallyBoundExistingRuntimeEvidence:true
+  });
+}
+
 // 사용자 기본 GLB의 실제 JSON 청크를 검사한다. 파일 존재나 이름만으로 커마·리깅 가능을 가정하지 않는다.
 export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
   const relative=clean(source.path),issues=[];
@@ -376,6 +474,8 @@ function matchedForType(selector={},type='',manifest={},target=''){
       source:clean(row.source||asset.source)||null,
       sourceUrl:clean(asset.sourceUrl)||null,
       downloaded:asset.downloaded!==false,
+      acquiredExternal:Boolean(asset.companyVerified!==true&&asset.sameGameExistingRoblox!==true&&clean(asset.sourceUrl||asset.externalSourceUrl||asset.acquiredFrom)),
+      acquisitionOrigin:asset.companyVerified===true?'COMPANY_INTERNAL':asset.sameGameExistingRoblox===true?'SAME_GAME':clean(asset.sourceUrl||asset.externalSourceUrl||asset.acquiredFrom)?'EXTERNAL_ACQUIRED':'REPOSITORY_INTERNAL',
       animated:adaptationBaseOnly?false:row.animated===true,
       motionMode:adaptationBaseOnly?null:clean(row.motionMode)||null,
       motionStates:freezeList(unique([...(Array.isArray(asset.states)?asset.states:[]),...(Array.isArray(asset.animations)?asset.animations:[])].filter(value=>typeof value==='string').map(value=>clean(value).toLowerCase()))),
@@ -638,6 +738,8 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
     path:asset.path||variant?.path||null,
     robloxAssetId:asset.robloxAssetId||null,
     sourceHash:asset.sourceHash||null,
+    acquiredExternal:asset.acquiredExternal===true,
+    acquisitionOrigin:asset.acquisitionOrigin||null,
     productionVerified:asset.productionVerified===true,
     ready:Boolean(hasNativeReference&&asset.downloaded!==false&&lane!=='D_AUTHORING_REQUIRED'),
     adaptationAllowed:true,
@@ -678,6 +780,53 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
     })
   });
 }
+
+function createPostDownloadInternalComparison({matched=[],target='',binding={}}={}){
+  const internal=matched.filter(asset=>asset.acquiredExternal!==true&&[
+    'VERIFIED_COMPANY_ASSET','SAME_GAME_EXISTING_ROBLOX_ASSET','LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET'
+  ].includes(asset.sourceTier));
+  const acquired=matched.filter(asset=>asset.acquiredExternal===true);
+  const externalRows=acquired.map(asset=>assetApplyFirstCandidate(asset,target,binding))
+    .sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id));
+  const internalRows=internal.map(asset=>assetApplyFirstCandidate(asset,target,binding))
+    .sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id));
+  const downloaded=externalRows.filter(row=>row.ready&&row.path);
+  const comparisonReady=downloaded.filter(row=>row.sourceHash);
+  const pending=externalRows.filter(row=>!row.ready);
+  const unhashed=downloaded.filter(row=>!row.sourceHash);
+  const required=externalRows.length>0&&internalRows.length>0;
+  const status=!required?'NOT_REQUIRED'
+    :pending.length?'DOWNLOAD_REQUIRED_BEFORE_INTERNAL_COMPARISON'
+    :unhashed.length?'DOWNLOADED_EXTERNAL_SOURCE_HASH_REQUIRED'
+    :'READY_FOR_SAME_CONDITION_COMPARISON';
+  return freeze({
+    required,status,
+    externalCandidateIds:freezeList(externalRows.map(row=>row.id)),
+    downloadedExternalCandidateIds:freezeList(downloaded.map(row=>row.id)),
+    comparisonReadyExternalCandidateIds:freezeList(comparisonReady.map(row=>row.id)),
+    pendingDownloadCandidateIds:freezeList(pending.map(row=>row.id)),
+    unhashedDownloadedCandidateIds:freezeList(unhashed.map(row=>row.id)),
+    internalBaselineCandidateIds:freezeList(internalRows.slice(0,6).map(row=>row.id)),
+    comparisonViews:freezeList(['GAME_CAMERA','MID_RANGE','CLOSEUP','CONTACT']),
+    hardGates:freezeList(['LICENSE_AND_PROVENANCE','SOURCE_HASH','TARGET_PLATFORM_IMPORT','NO_RUNTIME_ERROR','MOBILE_PERFORMANCE_BUDGET']),
+    qualityAxes:freezeList(['GAME_STYLE_FIT','SILHOUETTE_AND_READABILITY','MATERIAL_AND_SURFACE_DETAIL','PROPORTION_AND_SCALE','RIG_CONTACT_OR_INTERACTION','MOTION_AND_SECONDARY_MOTION','DETAIL_BY_DISTANCE']),
+    sameConditionsRequired:true,
+    sameCameraLightingDistanceActionRequired:true,
+    actualRuntimePixelsRequiredForVisualWinner:true,
+    noPreDownloadWinner:true,
+    externalFullReplacementRule:'MUST_IMPROVE_AT_LEAST_ONE_CORE_QUALITY_AXIS_WITHOUT_REGRESSING_ANY_PROTECTED_CORE_AXIS',
+    mixedResultRule:'KEEP_INTERNAL_BASE_AND_USE_EXTERNAL_ONLY_AS_PROVEN_PART_RIG_MATERIAL_MOTION_OR_DETAIL_DONOR',
+    comparableQualityRule:'KEEP_INTERNAL_ASSET',
+    bothFailRule:'DERIVE_TARGETED_REPAIR_THEN_NEW_AUTHORING_LAST',
+    internalTieBreakWhenQualityComparable:true,
+    licenseOrRuntimeFailureDisqualifiesExternal:true,
+    sourcePreferenceAppliedOnlyAfterQualityComparison:true,
+    selectedAssetId:null,
+    runtimeVerified:false,
+    gameplayAuthority:false
+  });
+}
+
 function decisionFor(selector={},target='',binding={},manifest={}){
   const type=clean(binding.type);
   const qualityDNA=qualityDnaForType(type);
@@ -691,12 +840,15 @@ function decisionFor(selector={},target='',binding={},manifest={}){
   const candidateRows=freezeList([...reuseCandidates,...externalCandidates].map(asset=>assetApplyFirstCandidate(asset,target,binding)));
   const applyFirstCandidates=freezeList(candidateRows.filter(row=>row.ready).sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
   const donorCandidates=freezeList(candidateRows.filter(row=>row.sourceHash&&row.donorCapabilities.length).sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
+  const postDownloadComparison=createPostDownloadInternalComparison({matched,target,binding});
+  const preferredCandidateId=postDownloadComparison.required?null:(applyFirstCandidates[0]?.id||null);
   const decisionOrder=unique([
     'COMPARE_TARGET_GAME_QUALITY',
     companyCandidates.length?'REUSE_VERIFIED_COMPANY_ASSET':'',
     sameGameCandidates.length?'REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET':'',
     repositoryCandidates.length?'REUSE_LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET':'',
     externalCandidates.length?'ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET':'',
+    postDownloadComparison.required?'POST_DOWNLOAD_COMPARE_EXTERNAL_TO_INTERNAL':'',
     directAuthoring.length?'VIBE_DIRECT_AUTHOR':'',
     'AUTHORING_GENERATOR_REQUEST'
   ]);
@@ -727,7 +879,7 @@ function decisionFor(selector={},target='',binding={},manifest={}){
     applyFirst:freeze({
       enabled:applyFirstCandidates.length>0,
       candidates:applyFirstCandidates,
-      preferredCandidateId:applyFirstCandidates[0]?.id||null,
+      preferredCandidateId,
       candidateLadder:freezeList(applyFirstCandidates.map((row,index)=>freeze({order:index+1,id:row.id,lane:row.lane,mode:row.mode,compatibilityScore:row.compatibilityScore,productionVerified:row.productionVerified}))),
       donorCandidates:freezeList(donorCandidates.map(row=>freeze({id:row.id,lane:row.lane,sourceTier:row.sourceTier,qualityAxes:row.qualityAxes,donorCapabilities:row.donorCapabilities,sourceHash:row.sourceHash}))),
       lanes:freezeList(['A_SAME_GAME_BOUND','B_NATIVE_READY','C_MINIMAL_ADAPT','D_AUTHORING_REQUIRED']),
@@ -769,10 +921,12 @@ function decisionFor(selector={},target='',binding={},manifest={}){
       requiredChecks:freezeList(type==='animation'
         ?['GAME_STYLE_FIT','RIG_AND_JOINT_COMPATIBILITY','FOOT_SLIDING_AND_CONTACT','TRANSITION_AND_INTERRUPT','ACTUAL_CLIP_PLAYBACK','MULTIPLAYER_SYNC']
         :['GAME_STYLE_FIT','SILHOUETTE_AND_READABILITY','MATERIAL_AND_SCALE_COHERENCE','TARGET_RUNTIME_AND_MOBILE_PERFORMANCE']),
-      selectionState:'TARGET_GAME_REVIEW_REQUIRED',
+      selectionState:postDownloadComparison.required?postDownloadComparison.status:'TARGET_GAME_REVIEW_REQUIRED',
       selectedAssetId:null,
-      sourcePreferenceOnlyAfterQualityPass:true
+      sourcePreferenceOnlyAfterQualityPass:true,
+      postDownloadInternalComparisonRequired:postDownloadComparison.required
     }),
+    postDownloadComparison,
     motionReusePlan,
     generatorFallback:freeze({
       route:'AUTHORING_GENERATOR_REQUEST',
@@ -1092,6 +1246,8 @@ export function buildVibeAssetProductionPlan({
     });
   }):[];
   const prioritizedMotionAutoFillPlans=[...motionAutoFillPlans].sort((a,b)=>b.topPriority-a.topPriority||b.missingSlots-a.missingSlots||a.id.localeCompare(b.id));
+  const autoRuntimeVisualReview=task.assetRuntimeVisualReview?null:discoverRuntimeVisualEvidence({task,target:resolvedTarget});
+  const runtimeVisualReviewInput=task.assetRuntimeVisualReview||autoRuntimeVisualReview;
   const traceAsset=task.motionContinuityTrace?[...universeRepositoryAssets,...(companyRegistry?.assets||[])].find(asset=>asset.id===task.motionContinuityTrace.assetId):null;
   const motionContinuityAudit=task.motionContinuityTrace?{
     ...auditMotionContinuityTrace({...task.motionContinuityTrace,
@@ -1130,10 +1286,10 @@ export function buildVibeAssetProductionPlan({
   const assetCustomization=assetSynchronization?.customization
     ?freeze({...studioUniversePlan.customization,items:assetSynchronization.customization.items,unresolvedCount:assetSynchronization.customization.unresolvedCount})
     :studioUniversePlan?.customization||null;
-  const runtimeVisualReview=task.assetRuntimeVisualReview?createAssetRuntimeVisualReviewPlan({
-    ...task.assetRuntimeVisualReview,
-    sourceRevision:task.assetRuntimeVisualReview.sourceRevision||task.sourceRevision||'',
-    platforms:task.assetRuntimeVisualReview.platforms||[resolvedTarget.toUpperCase()]
+  const runtimeVisualReview=runtimeVisualReviewInput?createAssetRuntimeVisualReviewPlan({
+    ...runtimeVisualReviewInput,
+    sourceRevision:runtimeVisualReviewInput.sourceRevision||task.sourceRevision||'',
+    platforms:runtimeVisualReviewInput.platforms||[resolvedTarget.toUpperCase()]
   }):null;
   const mapDetailReconstruction=task.mapReconstruction?createVibeMapDetailReconstruction({
     sketch:task.mapReconstruction.sketch||{},assets:[...universeRepositoryAssets,...(companyRegistry?.assets||[])],
@@ -1767,6 +1923,10 @@ export function assetProductionGuidance(plan={}){
     const external=(row.externalCandidates||[]).slice(0,4).map(x=>x.id).join('|')||'none';
     const direct=(row.directAuthoring||[]).join('|')||'none';
     lines.push(`- type=${row.type}; reuse=${reuse}; external=${external}; direct=${direct}; order=${(row.decisionOrder||[]).join('>')}`);
+    if(row.postDownloadComparison?.required){
+      const cmp=row.postDownloadComparison;
+      lines.push(`다운로드 후 내부자산 비교=${cmp.status}; external=${cmp.externalCandidateIds.join('|')||'none'}; internal=${cmp.internalBaselineCandidateIds.join('|')||'none'}. 외부 다운로드본은 sourceHash·라이선스·타깃 플랫폼 import를 통과한 뒤 내부 기준 자산과 같은 카메라·조명·거리·행동으로 A/B 비교한다. 외부가 핵심 품질축 하나 이상을 개선하면서 보호 품질축을 후퇴시키지 않을 때만 전체 교체 후보가 된다. 혼합 결과면 내부 베이스를 유지하고 외부는 이긴 파츠/리그/재질/모션/디테일 축의 도너로만 사용한다. 동급이면 내부자산을 유지하고, 둘 다 부족하면 부분 파생 수정 후 신규 제작을 마지막에 사용한다.`);
+    }
     if(row.type==='animation')lines.push(`모션 품질 비교 필수=${(row.qualitySelection?.requiredChecks||[]).join(',')}; 품질 미달 후보를 적용하지 말고 비교 결과와 선택 이유를 남긴다.`);
     if(row.motionReusePlan){
       const studio=row.motionReusePlan.studioProduction;
