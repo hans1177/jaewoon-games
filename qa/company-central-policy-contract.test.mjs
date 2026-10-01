@@ -907,7 +907,7 @@ test('central policy authorizes only gated atomic neural execution and keeps UEF
   assert.equal(roadmap.neuralDevelopmentBrain.currentExecutionMode,'ATOMIC_NEURON_DAG_WITH_GATED_NEURAL_CONTROL_AND_SHADOW_FALLBACK');
   assert.equal(roadmap.neuralDevelopmentBrain.phase2.mode,'GATED_EVENT_ROUTER_WITH_SHADOW_FALLBACK');
   assert.equal(roadmap.neuralDevelopmentBrain.phase2.shadowAuthorityScope,'OBSERVE_COMPARE_AUDIT_ONLY');
-  assert.equal(roadmap.neuralDevelopmentBrain.phase2.currentGatedAuthority.mode,'GATED_EXISTING_SCHEDULER_ONLY');
+  assert.equal(roadmap.neuralDevelopmentBrain.phase2.currentGatedAuthority.mode,'GATED_EXISTING_QUEUE_AND_RUNTIME_RESULT_AUTHORITY_ONLY');
   assert.equal(roadmap.neuralDevelopmentBrain.phase2.currentGatedAuthority.fireAllowedForVerifiedGatedActions,true);
   assert.equal(roadmap.neuralDevelopmentBrain.phase2.currentGatedAuthority.policyMutationAllowed,false);
   assert.equal(roadmap.neuralDevelopmentBrain.phase2.eventBindings.runtimeResult.eventType,'RUNTIME_RESULT');
@@ -915,15 +915,15 @@ test('central policy authorizes only gated atomic neural execution and keeps UEF
   assert.equal(roadmap.neuralDevelopmentBrain.activation.neuralExecutionAuthority,true);
   assert.equal(roadmap.neuralDevelopmentBrain.activation.neuralQueueMutationAuthority,'REQUEUE_REPRIORITIZE_REFILL_ONLY');
   assert.equal(roadmap.neuralDevelopmentBrain.currentIndependentExecution.phase2NeuralExecutionAuthority,true);
-  assert.equal(roadmap.neuralDevelopmentBrain.currentIndependentExecution.neuralAuthorityScope,'GATED_EXISTING_SCHEDULER_ONLY');
+  assert.equal(roadmap.neuralDevelopmentBrain.currentIndependentExecution.neuralAuthorityScope,'GATED_EXISTING_QUEUE_AND_RUNTIME_RESULT_AUTHORITY_ONLY');
   assert.equal(roadmap.neuralDevelopmentBrain.currentIndependentExecution.runtimeResultIngress,true);
 
   const workGraph=roadmap.neuralDevelopmentBrain.phase2WorkGraphImplementation;
-  assert.equal(workGraph.state,'GATED_EXISTING_SCHEDULER_ACTIVE_WITH_SHADOW_FALLBACK');
+  assert.equal(workGraph.state,'GATED_EXISTING_QUEUE_RESERVATION_ACTIVE_WITH_SHADOW_FALLBACK');
   assert.equal(workGraph.workGraphMayFireAction,true);
   assert.equal(workGraph.workerCreationAuthority,'GATED_EXISTING_QUEUED_TASK_DISPATCH_ONLY');
   assert.equal(workGraph.queueMutationAuthority,'GATED_REQUEUE_REPRIORITIZE_REFILL_ONLY');
-  assert.equal(workGraph.taskReorderAuthority,'GATED_CONFLICT_FREE_EXISTING_TASKS_ONLY');
+  assert.equal(workGraph.independentTaskReorderAuthority,'GATED_CONFLICT_FREE_EXISTING_TASKS_ONLY');
   assert.equal(workGraph.lockAuthority,'NONE');
   assert.equal(workGraph.policyMutationAuthority,'NONE');
   assert.equal(workGraph.shadowFallbackPreserved,true);
@@ -953,9 +953,9 @@ test('central policy authorizes only gated atomic neural execution and keeps UEF
   assert.equal(arch.runtimeResultIngress.enabled,true);
   assert.equal(arch.runtimeResultIngress.passOutcomeObserveOnly,true);
   assert.equal(arch.runtimeResultIngress.failureMutationRequiresVerifiedRootCause,true);
-  assert.equal(architecture.neuralWorkGraphTopology.liveShadowRepairLoop.neuralExecutionAuthority,'GATED_EXISTING_SCHEDULER_ONLY');
-  assert.equal(architecture.neuralWorkGraphTopology.activation.eventRoutingExecutionAuthority,'GATED_EXISTING_SCHEDULER_ONLY');
-  assert.equal(architecture.neuralWorkGraphTopology.currentIndependentExecution.authorityChange,'GATED_REQUEUE_REPRIORITIZE_REFILL_AND_VERIFIED_TUNING');
+  assert.equal(architecture.neuralWorkGraphTopology.liveShadowRepairLoop.neuralExecutionAuthority,'GATED_EXISTING_QUEUE_AND_RUNTIME_RESULT_AUTHORITY_ONLY');
+  assert.equal(architecture.neuralWorkGraphTopology.activation.eventRoutingExecutionAuthority,'GATED_EXISTING_QUEUE_AND_RUNTIME_RESULT_AUTHORITY_ONLY');
+  assert.equal(architecture.neuralWorkGraphTopology.currentIndependentExecution.authorityChange,'GATED_REQUEUE_REPRIORITIZE_REFILL_AND_OPTIONAL_SPECULATION_TUNING');
   assert.equal(architecture.neuralWorkGraphTopology.currentIndependentExecution.reserveIngressRuntimeSync.required,true);
   assert.equal(architecture.neuralWorkGraphTopology.currentIndependentExecution.reserveIngressRuntimeSync.appliesToEveryNonNeuronReserveIngress,true);
   assert.equal(architecture.neuralWorkGraphTopology.currentIndependentExecution.projectLifecycleMonotonicity.downstreamMachineEvidencePreventsBackwardProjection,true);
@@ -1680,7 +1680,8 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.match(vibeContinuousCore,/assetLane\?1:requestedVariantCount/);
   assert.match(vibeContinuousCore,/VIBE2_ASSET_SPECULATIVE_VARIANTS_SUPPRESSED=/);
   assert.match(vibeContinuousCore,/VIBE2_ASSET_SPECULATIVE_WORKERS_AVOIDED=/);
-  assert.match(vibeContinuousCore,/github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && '64'/);
+  assert.match(vibeContinuousCore,/VIBE2_ASSET_DEVELOPMENT_MAX: '64'/);
+  assert.doesNotMatch(vibeContinuousCore,/lane_max:|VIBE2_LANE_MAX/);
   assert.match(vibeContinuousCore,/VIBE2_FAN_IN_OPTIMISTIC_RETRY_UNBOUNDED=YES/);
   assert.match(vibeContinuousCore,/VIBE2_FAN_IN_REGRESSION_OPTIMISTIC_RETRY_UNBOUNDED=YES/);
   assert.doesNotMatch(vibeContinuousCore,/for attempt in 1 2 3 4 5; do/);

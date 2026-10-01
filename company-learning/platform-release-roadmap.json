@@ -12339,7 +12339,7 @@
       "legacyUnidentifiedReadinessEvidenceCannotSatisfyQualityMetrics": true
     },
     "phase2WorkGraphImplementation": {
-      "state": "GATED_EXISTING_SCHEDULER_ACTIVE_WITH_SHADOW_FALLBACK",
+      "state": "GATED_EXISTING_QUEUE_RESERVATION_ACTIVE_WITH_SHADOW_FALLBACK",
       "source": "tools/vibe2-neural-work-graph.mjs",
       "routerBinding": "tools/vibe2-neural-event-router.mjs",
       "fanInSummaryBinding": "tools/vibe2-fan-in-review.mjs",
@@ -12382,7 +12382,7 @@
       "policyMutationAuthority": "NONE",
       "automaticLearningAuthority": "NONE",
       "authorityPromotionAuthority": "NONE",
-      "authorityChange": "GATED_EXISTING_SCHEDULER_ONLY",
+      "authorityChange": "NONE",
       "nextGate": "CAPTURE_LIVE_RUNTIME_RESULT_AND_TASK_MICRO_FANIN_EVIDENCE_THEN_OPTIMIZE_VERIFIED_THROUGHPUT",
       "productionVerification": {
         "runId": 35503376196,
@@ -12408,8 +12408,9 @@
       "shadowFallbackPreserved": true,
       "gatedExecutionPolicyRef": "neuralGatedExecution",
       "runtimeResultIngress": "company-runtime:development-queue.json#executionEvidence->RUNTIME_RESULT",
-      "taskReorderAuthority": "GATED_CONFLICT_FREE_EXISTING_TASKS_ONLY",
-      "schedulerRemainsAuthoritative": true
+      "independentTaskReorderAuthority": "GATED_CONFLICT_FREE_EXISTING_TASKS_ONLY",
+      "executionAuthority": "GATED_EXISTING_QUEUE_AND_RUNTIME_RESULT_AUTHORITY_ONLY",
+      "queueReservationAndRequiredGatesRemainAuthoritative": true
     },
     "changeRecord": {
       "id": "NEURAL_DEVELOPMENT_BRAIN_TARGET_ARCHITECTURE_V1_2026-09-20",
@@ -12940,17 +12941,17 @@
       },
       "shadowAuthorityScope": "OBSERVE_COMPARE_AUDIT_ONLY",
       "currentGatedAuthority": {
-        "mode": "GATED_EXISTING_SCHEDULER_ONLY",
+        "mode": "GATED_EXISTING_QUEUE_AND_RUNTIME_RESULT_AUTHORITY_ONLY",
         "fireAllowedForVerifiedGatedActions": true,
         "workerCreation": "EXISTING_QUEUED_TASK_DISPATCH_ONLY",
         "queueMutation": "REQUEUE_REPRIORITIZE_REFILL_ONLY",
-        "waveReorder": "CONFLICT_FREE_EXISTING_TASKS_ONLY",
         "lockAcquisitionAllowed": false,
         "policyMutationAllowed": false,
         "automaticLearningAllowed": false,
         "automaticPromotionAllowed": false,
         "successfulResultMutationAllowed": false,
-        "unverifiedRootCauseMutationAllowed": false
+        "unverifiedRootCauseMutationAllowed": false,
+        "independentTaskReorder": "CONFLICT_FREE_EXISTING_TASKS_ONLY"
       }
     },
     "activation": {

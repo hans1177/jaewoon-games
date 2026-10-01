@@ -150,6 +150,12 @@ jobs:
             git worktree add --detach /tmp/vibe2-main origin/main >/dev/null
             control_root="$PWD"
 
+            # Synchronize canonical worker context from the pinned latest-main contract before planning.
+            (
+              cd /tmp/vibe2-main
+              node tools/company-shared-context.mjs --output=/tmp/vibe2-24h-shared-context.json
+            )
+
             # Repair canonical queue/parallelism state without rerunning repository QA.
             node /tmp/vibe2-main/tools/vibe2-system-steward.mjs \
               --queue="$control_root/.vibe2/queue.json" \
