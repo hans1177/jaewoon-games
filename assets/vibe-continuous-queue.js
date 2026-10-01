@@ -244,7 +244,7 @@ function normalizeSupervisionReview(input=null){
 }
 function normalizeNeuronResults(input = []) {
   const rows = Array.isArray(input) ? input : [];
-  return freeze(rows.slice(0, 5).map((row) => {
+  return freeze(rows.map((row) => {
     try { return freeze(JSON.parse(JSON.stringify(row && typeof row === 'object' ? row : {}))); }
     catch { return freeze({}); }
   }));
@@ -326,7 +326,7 @@ function normalizeTask(input = {}, index = 0) {
     reservationRunId: clean(input.reservationRunId) || null,
     reservationRunAttempt: clampInt(input.reservationRunAttempt || 0, 0, 1000000),
     reservedAt: clean(input.reservedAt) || null,
-    neuronExpectedVariants: clampInt(input.neuronExpectedVariants || 0, 0, 5),
+    neuronExpectedVariants: clampInt(input.neuronExpectedVariants || 0, 0, EXTERNAL_MATRIX_BATCH_MAX),
     neuronResults: normalizeNeuronResults(input.neuronResults),
     runtimeEvidenceCandidate,
     buildUpDirective: normalizeBuildUpDirective(input.buildUpDirective),
@@ -799,9 +799,22 @@ export function beginVibeQueueTask(queueInput, taskId, { maxConcurrentTasks = nu
   return freeze({ started: true, task: nextQueue.tasks.find((task) => task.id === id), queue: nextQueue, resumed: false });
 }
 
-export function beginVibeQueueBatch(queueInput, { maxConcurrentTasks = null, reservation = {}, lane = 'all' } = {}) {
+export function beginVibeQueueBatch(queueInput, { maxConcurrentTasks = null, reservation = {}, lane = 'all', batchLimit = null } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
-  const selection = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane });
+  const rawSelection = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane });
+  const requestedBatchLimit=Number(batchLimit);
+  const appliedBatchLimit=Number.isFinite(requestedBatchLimit)&&requestedBatchLimit>0
+    ?Math.max(1,Math.floor(requestedBatchLimit))
+    :rawSelection.selected.length;
+  const selectedForBatch=rawSelection.selected.slice(0,appliedBatchLimit);
+  const selection=freeze({
+    ...rawSelection,
+    selected:freezeList(selectedForBatch),
+    externalBatchLimit:Number.isFinite(requestedBatchLimit)&&requestedBatchLimit>0?appliedBatchLimit:null,
+    selectedBeforeBatchLimit:rawSelection.selected.length,
+    batchTruncated:selectedForBatch.length<rawSelection.selected.length,
+    remainingRunnableAfterBatchLimit:Math.max(0,rawSelection.selected.length-selectedForBatch.length)
+  });
   if (!selection.selected.length) return freeze({ started: false, tasks: freeze([]), queue, selection });
   const selectedOrder = selection.selected.map((task) => task.id);
   const ids = new Set(selectedOrder);
