@@ -304,7 +304,7 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
 });
 
 
-test('stale main push wake exits before expensive reserve work without cancelling active game workers',()=>{
+test('stale main push wake rebases to latest main before expensive reserve work without cancelling active game workers',()=>{
   const wake=runtime.continuous.mainPushGamePrimaryWake||{};
   const architectureWake=architecture.neuralWorkGraphTopology?.currentWaveExecution?.mainPushGamePrimaryWake||{};
   const policyWake=roadmap.changeRecord?.mainPushWakeFreshnessGate20260927||{};
@@ -345,7 +345,7 @@ test('stale main push wake exits before expensive reserve work without cancellin
   assert.ok(reserveStart>=0&&staleWakeStep>reserveStart&&reserveCheckout>staleWakeStep&&reserveNodeSetup>reserveCheckout);
   assert.match(core.slice(reserveCheckout,reserveNodeSetup),/if: steps\.main_wake\.outputs\.proceed == 'true'/);
   assert.match(core.slice(reserveNodeSetup,core.indexOf('\n      - name:',reserveNodeSetup)),/if: steps\.main_wake\.outputs\.proceed == 'true'/);
-  assert.match(core,/VIBE2_MAIN_PUSH_WAKE_STALE_DROPPED=/);
+  assert.match(core,/VIBE2_MAIN_PUSH_WAKE_REBASED_TO_LATEST=/);
   assert.match(core,/VIBE2_FANIN_WAKE_STALE_DROPPED=/);
   assert.match(core,/VIBE2_RESERVE_WAKE_FRESHNESS=NEURON_CALLBACK_ALWAYS_INGEST/);
   assert.match(core,/gh api "repos\/\$GITHUB_REPOSITORY\/commits\/main" --jq '\.sha'/);
