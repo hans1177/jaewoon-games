@@ -1,5 +1,5 @@
 {
-  "version": 511,
+  "version": 512,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -1377,7 +1377,51 @@
     "generalExecutionInternalGlobalCap": null,
     "schedulingModel": "INDEPENDENT_TASK_EVENT_DRIVEN",
     "globalBarrierUsed": false,
-    "groupLeaderRefillUsed": false
+    "groupLeaderRefillUsed": false,
+    "developmentCheckDeduplication": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-01",
+      "status": "ACTIVE",
+      "objective": "REMOVE_NONDEVELOPMENT_AND_DUPLICATE_CHECKS_FROM_HOT_DEVELOPMENT_PATH",
+      "hotPathDuplicateStaticSyntaxChecksForbidden": true,
+      "hotPathDuplicateUnitSuitesForbidden": true,
+      "reserveFullRegressionForbidden": true,
+      "plannerFullRegressionForbidden": true,
+      "repeatedHandoffValidationSameStateForbidden": true,
+      "repeatedConstitutionValidationSameImmutableContractForbidden": true,
+      "exactShaSuccessfulCiEvidenceReusable": true,
+      "checksThatRemain": [
+        "QUEUE_AND_RESERVATION_IDENTITY",
+        "RESPONSIBLE_FILE_CONFLICT",
+        "ACTUAL_DEPENDENCY",
+        "CENTRAL_POLICY_FRESHNESS_WHEN_SOURCE_WRITE_OCCURS",
+        "CANDIDATE_CHANGED_SCOPE_INCREMENTAL_QA",
+        "RELEVANT_PERFORMANCE_SANITY",
+        "REQUIRED_RUNTIME_VISUAL_OR_PLATFORM_RUNTIME_QA",
+        "FAN_IN_INTEGRATION_REGRESSION_ONCE",
+        "SECURITY_AND_RELEASE_HARD_GATES",
+        "FINAL_HANDOFF_GENERATION"
+      ],
+      "checksRemovedFromHotPath": [
+        "REPEATED_NODE_CHECK_BEFORE_DIRECT_NODE_EXECUTION",
+        "REPEATED_REPOSITORY_UNIT_TESTS_IN_24H_PLANNER",
+        "RESERVE_TIME_COPY_OF_CORE_QA_SUITE",
+        "PRE_RESERVE_HANDOFF_VALIDATION_DUPLICATED_BY_POST_RESERVE_AND_FANIN_HANDOFF",
+        "POST_WORKER_CONSTITUTION_RECHECK_WHEN_PREWRITE_CONSTITUTION_AND_CANDIDATE_QA_ALREADY_COVER_SCOPE"
+      ],
+      "ciOwnership": {
+        "syntaxAndUnitContracts": "PULL_REQUEST_AND_MAIN_CI",
+        "candidateScopeQa": "VIBE2_INCREMENTAL_QA",
+        "integrationRegression": "FAN_IN_ONCE",
+        "runtimeEvidence": "TARGET_RUNTIME_QA",
+        "securityRelease": "EXISTING_HARD_GATES"
+      },
+      "qualityGateWeakeningForbidden": true,
+      "securityGateWeakeningForbidden": true,
+      "releaseGateWeakeningForbidden": true,
+      "gameplayBalanceSaveProgressionNetworkAuthorityImmutable": true
+    },
+    "minimumNecessaryProcedureEnforcement": "NO_DUPLICATE_CHECKS_ON_HOT_PATH_REUSE_VALID_EVIDENCE"
   },
   "phases": [
     {
@@ -7519,7 +7563,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-10-01T23:55:00+09:00",
+  "updatedAt": "2026-10-01T13:10:00+09:00",
   "priorityTiers": [
     {
       "tier": 1,
