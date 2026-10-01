@@ -79,8 +79,14 @@ test('quest dialogue extended state preserves causal memories relationships fact
   q.setFact(state,'saw-mark',true,'evt-1');
   assert.equal(q.addMemory(state,'yeonhwa',{eventId:'evt-1',type:'WITNESSED_EVENT',factId:'saw-mark'}),true);
   assert.equal(q.addMemory(state,'yeonhwa',{eventId:'evt-1',type:'WITNESSED_EVENT'}),false);
-  const relation=q.adjustRelationship(state,'yeonhwa','player',{trust:15,respect:10});
+  assert.throws(()=>q.adjustRelationship(state,'yeonhwa','player',{trust:15,respect:10}),/relationship source event is required/);
+  const relation=q.adjustRelationship(state,'yeonhwa','player',{trust:15,respect:10},'evt-rel-1');
   assert.equal(relation.trust,15);
+  assert.deepEqual(relation.events,['evt-rel-1']);
+  const duplicateRelation=q.adjustRelationship(state,'yeonhwa','player',{trust:90,respect:90},'evt-rel-1');
+  assert.equal(duplicateRelation.trust,15);
+  assert.equal(duplicateRelation.respect,10);
+  assert.deepEqual(duplicateRelation.events,['evt-rel-1']);
   q.revealClue(state,{id:'clue-1',threadId:'THREAD-01',sourceEvent:'evt-1',payoffId:'reveal-1'});
   const def=q.createQuestDefinition({id:'q2',requirements:{facts:{'saw-mark':true},clues:['clue-1']},objectives:[{id:'talk',target:1}]});
   assert.equal(q.canStartQuest(state,def),true);
