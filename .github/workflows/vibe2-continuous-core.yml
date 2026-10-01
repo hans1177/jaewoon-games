@@ -1575,92 +1575,80 @@ jobs:
           git commit -m "vibe2: candidate ${TASK_ID} ${VARIANT}"
           candidate_sha="$(git rev-parse HEAD)"
 
-          # Prefer the unique candidate ref. If GitHub blocks new refs for this integration,
-          # reuse an existing legacy candidate branch as a source-only transport slot.
-          candidate_ref_payload="$(jq -nc --arg ref "refs/heads/$candidate_branch" --arg sha "$base_sha" '{ref:$ref,sha:$sha}')"
-          ref_create_code="$(curl --silent --show-error \
-            --request POST \
-            --header 'Accept: application/vnd.github+json' \
-            --header "Authorization: Bearer $GH_TOKEN" \
-            --header 'X-GitHub-Api-Version: 2022-11-28' \
-            --output /tmp/vibe2-candidate-ref-create.json \
-            --write-out '%{http_code}' \
-            "https://api.github.com/repos/$GITHUB_REPOSITORY/git/refs" \
-            --data "$candidate_ref_payload" || true)"
-          published=0
-          if [ "$ref_create_code" = '201' ]; then
-            if git push origin "HEAD:$candidate_branch"; then
-              published=1
-              echo 'VIBE2_CANDIDATE_TRANSPORT=UNIQUE_BRANCH'
-            else
-              curl --silent --show-error --request DELETE \
-                --header 'Accept: application/vnd.github+json' \
-                --header "Authorization: Bearer $GH_TOKEN" \
-                --header 'X-GitHub-Api-Version: 2022-11-28' \
-                "https://api.github.com/repos/$GITHUB_REPOSITORY/git/refs/heads/$candidate_branch" >/dev/null 2>&1 || true
-            fi
-          else
-            echo "VIBE2_CANDIDATE_REF_CREATE_HTTP=$ref_create_code"
-            cat /tmp/vibe2-candidate-ref-create.json || true
-          fi
-
-          if [ "$published" != 1 ]; then
-            mapfile -t carrier_rows < <(
-              git ls-remote --heads origin 'refs/heads/vibe2/candidate/OWNER-FULL-REBUILD-*' \
-                | awk '{sha=$1; sub(/^refs\/heads\//,"",$2); print sha "\t" $2}' \
-                | sort -k2
-            )
-            carrier_count="${#carrier_rows[@]}"
-            echo "VIBE2_CANDIDATE_CARRIER_POOL=$carrier_count"
-            if [ "$carrier_count" -gt 0 ]; then
-              seed_hex="$(printf '%s' "$TASK_ID|$VARIANT|$GITHUB_RUN_ID|$GITHUB_RUN_ATTEMPT" | sha256sum | cut -c1-7)"
-              seed_dec=$((16#$seed_hex))
-              carrier_try=0
-              while [ "$carrier_try" -lt 16 ] && [ "$carrier_try" -lt "$carrier_count" ]; do
-                carrier_index=$(((seed_dec + carrier_try) % carrier_count))
-                IFS=$'\t' read -r carrier_old_sha carrier_branch <<< "${carrier_rows[$carrier_index]}"
-                if [ -z "$carrier_old_sha" ] || [ -z "$carrier_branch" ]; then
-                  carrier_try=$((carrier_try+1))
-                  continue
-                fi
-
-                CARRIER_MANIFEST="$candidate_manifest" CARRIER_BRANCH="$carrier_branch" node <<'NODE'
-          const fs=require('fs');
-          const file=process.env.CARRIER_MANIFEST;
-          const row=JSON.parse(fs.readFileSync(file,'utf8'));
-          row.branch=process.env.CARRIER_BRANCH;
-          row.mode='isolated-candidate-carrier-source-write';
-          row.transport={
-            version:2,
-            mode:'REUSED_EXISTING_CANDIDATE_BRANCH_FORCE_WITH_LEASE',
-            sourceRun:String(process.env.GITHUB_RUN_ID||''),
-            sourceAttempt:String(process.env.GITHUB_RUN_ATTEMPT||'')
-          };
-          fs.writeFileSync(file,JSON.stringify(row,null,2)+'\n');
-          NODE
-                git add "$candidate_manifest_rel"
-                git commit --amend --no-edit >/dev/null
-                candidate_sha="$(git rev-parse HEAD)"
-                if git push \
-                  --force-with-lease="refs/heads/$carrier_branch:$carrier_old_sha" \
-                  origin "HEAD:refs/heads/$carrier_branch"; then
-                  candidate_branch="$carrier_branch"
-                  published=1
-                  echo "VIBE2_CANDIDATE_TRANSPORT=REUSED_EXISTING_BRANCH_FORCE_WITH_LEASE:$carrier_branch"
-                  break
-                fi
-                echo "VIBE2_CANDIDATE_CARRIER_COLLISION=$carrier_branch"
-                carrier_try=$((carrier_try+1))
-              done
-            fi
-          fi
-
-          if [ "$published" != 1 ]; then
-            echo "failure_class=CANDIDATE_BRANCH_PUBLISH" >> "$GITHUB_OUTPUT"
-            echo "failure_message=candidate transport failed after unique-ref and reusable-carrier attempts" >> "$GITHUB_OUTPUT"
+          # Publish from the latest main transport base, while preserving the reserve-time
+          # source contract. If the responsible source changed since reserve, fail closed and replan.
+          # This makes the new remote branch introduce only the candidate source/manifest diff;
+          # already-existing workflow history stays on main and does not require workflow-write authority.
+          generated_candidate_sha="$candidate_sha"
+          git -C "$contract_root" fetch --depth=1 --no-tags origin main --quiet
+          transport_base_sha="$(git -C "$contract_root" rev-parse FETCH_HEAD)"
+          test -n "$transport_base_sha"
+          if [ -n "$(git -C "$contract_root" diff --name-only "$base_sha" "$transport_base_sha" -- "$SOURCE_ROOT")" ]; then
+            echo "failure_class=CANDIDATE_SOURCE_DRIFT" >> "$GITHUB_OUTPUT"
+            echo "failure_message=responsible source changed on main after reserve; exact replan required" >> "$GITHUB_OUTPUT"
+            echo "VIBE2_CANDIDATE_TRANSPORT=REPLAN_SOURCE_DRIFT:$base_sha:$transport_base_sha"
             exit 1
           fi
 
+          transport_dir="/tmp/vibe2-transport-$SAFE_TASK-$VARIANT-$GITHUB_RUN_ID"
+          rm -rf "$transport_dir"
+          git -C "$contract_root" worktree prune
+          git -C "$contract_root" worktree add --detach "$transport_dir" "$transport_base_sha" >/dev/null
+
+          if [ "$candidate_target" = 'system' ]; then
+            for file in "${system_files[@]}"; do
+              mkdir -p "$transport_dir/$(dirname "$file")"
+              if [ -e "$candidate_dir/$file" ]; then
+                cp -a "$candidate_dir/$file" "$transport_dir/$file"
+              else
+                rm -f "$transport_dir/$file"
+              fi
+            done
+          else
+            rm -rf "$transport_dir/$SOURCE_ROOT"
+            mkdir -p "$(dirname "$transport_dir/$SOURCE_ROOT")"
+            cp -a "$candidate_dir/$SOURCE_ROOT" "$transport_dir/$SOURCE_ROOT"
+          fi
+
+          candidate_manifest_dir="$(dirname "$candidate_manifest_rel")"
+          rm -rf "$transport_dir/$candidate_manifest_dir"
+          mkdir -p "$transport_dir/$candidate_manifest_dir"
+          cp -a "$candidate_dir/$candidate_manifest_dir/." "$transport_dir/$candidate_manifest_dir/"
+          TRANSPORT_MANIFEST="$transport_dir/$candidate_manifest_rel" \
+          TRANSPORT_BASE_SHA="$transport_base_sha" \
+          GENERATED_CANDIDATE_SHA="$generated_candidate_sha" \
+          node <<'NODE'
+          const fs=require('fs');
+          const file=process.env.TRANSPORT_MANIFEST;
+          const row=JSON.parse(fs.readFileSync(file,'utf8'));
+          row.transportBaseSha=String(process.env.TRANSPORT_BASE_SHA||'');
+          row.generatedCandidateSha=String(process.env.GENERATED_CANDIDATE_SHA||'');
+          row.transportMode='LATEST_MAIN_SOURCE_STABLE';
+          fs.writeFileSync(file,JSON.stringify(row,null,2)+'\n');
+          NODE
+
+          git -C "$transport_dir" config user.name 'jaewoon-vibe2-worker'
+          git -C "$transport_dir" config user.email 'vibe2-worker@users.noreply.github.com'
+          if [ "$candidate_target" = 'system' ]; then
+            git -C "$transport_dir" add -- "${system_files[@]}" "$candidate_manifest_dir"
+          else
+            git -C "$transport_dir" add "$SOURCE_ROOT" "$candidate_manifest_dir"
+          fi
+          git -C "$transport_dir" diff --cached --quiet && {
+            echo "failure_class=CANDIDATE_BRANCH_PUBLISH" >> "$GITHUB_OUTPUT"
+            echo "failure_message=transport candidate has no source diff" >> "$GITHUB_OUTPUT"
+            exit 1
+          }
+          git -C "$transport_dir" commit -m "vibe2: candidate transport $TASK_ID $VARIANT" >/dev/null
+          candidate_sha="$(git -C "$transport_dir" rev-parse HEAD)"
+          if ! git -C "$transport_dir" push origin "HEAD:refs/heads/$candidate_branch"; then
+            echo "failure_class=CANDIDATE_BRANCH_PUBLISH" >> "$GITHUB_OUTPUT"
+            echo "failure_message=latest-main candidate transport branch push failed" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+          git -C "$contract_root" worktree remove --force "$transport_dir" >/dev/null 2>&1 || true
+          echo "VIBE2_CANDIDATE_TRANSPORT=LATEST_MAIN_SOURCE_STABLE:$transport_base_sha"
+          echo "VIBE2_CANDIDATE_GENERATED_SHA=$generated_candidate_sha"
           echo "candidate_branch=$candidate_branch" >> "$GITHUB_OUTPUT"
           echo "candidate_sha=$candidate_sha" >> "$GITHUB_OUTPUT"
           echo "VIBE2_CANDIDATE_BRANCH=$candidate_branch"
