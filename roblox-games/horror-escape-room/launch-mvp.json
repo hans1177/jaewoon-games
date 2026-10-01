@@ -175,12 +175,12 @@
     "coreInfectionRule": "EXPLICIT_SERVER_AUTHORITATIVE_INFECT_ATTACK_ONLY"
   },
   "studioActualPlayContract": {
-    "version": 2,
+    "version": 3,
     "required": true,
     "source": "APPROVED_LAUNCH_AND_DESIGN_RUNTIME_SEMANTICS",
-    "selectionButtonText": "인간 선호",
+    "selectionButtonText": "인간으로 준비",
     "primaryActionButtonText": "대시",
-    "afterSelectionWaitMs": 350,
+    "afterSelectionWaitMs": 500,
     "postActionWaitMs": 350,
     "requiredScenarios": [
       "character-camera-ready",
@@ -231,11 +231,18 @@
     },
     "failureAction": "REPAIR_REQUIRED",
     "notes": [
-      "Official Studio MCP input must drive the existing UI/action path; direct gameplay mutation is not evidence.",
+      "Official Studio MCP input follows the current visible lobby flow: 저택 들어가기 → 출정 → 인간으로 준비 → 1인 플레이 · 빈자리는 AI.",
+      "The scenario must observe the role-specific action surface after the Studio solo-room fallback starts the round; direct gameplay mutation is not evidence.",
       "Client and server execute_luau calls are read-only observation probes.",
-      "Console runtime errors remain release-blocking and are persisted separately from MCP infrastructure failures.",
-      "After role preference input, the MCP scenario polls for the role-specific action surface before generic movement so the solo-round grace window cannot hide the action control."
-    ]
+      "Console runtime errors remain release-blocking and are persisted separately from MCP infrastructure failures."
+    ],
+    "entryButtonTexts": [
+      "저택 들어가기",
+      "출정"
+    ],
+    "startButtonText": "1인 플레이 · 빈자리는 AI",
+    "afterEntryWaitMs": 350,
+    "afterStartWaitMs": 4200
   },
   "contentRoadmap": {
     "path": "roblox-games/horror-escape-room/CONTENT_ROADMAP.md",
