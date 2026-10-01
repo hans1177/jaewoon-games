@@ -11602,8 +11602,8 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "status": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "targetPlatform": "ROBLOX",
+      "selectedPlatform": "UNITY",
+      "targetPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -11658,10 +11658,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "VIBE_INTERNAL_PLAY",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T12:16:42.281Z",
+      "updatedAt": "2026-10-01T12:20:14.644Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -13464,7 +13464,7 @@
       "unityCandidateBranch": "development/unity-tech-cozy-island-36831315548",
       "unitySourceCommit": "4432b8b37953480242da03ee8cb093e08adafac4",
       "unityBuildRunId": 36832968944,
-      "unityRuntimeSmokeRunId": 36856646061,
+      "unityRuntimeSmokeRunId": 36860837165,
       "unityIndependentQaRunId": 36272387104,
       "unityRegressionRunId": 36272500664,
       "unityInternalReleaseReady": false,
@@ -14215,7 +14215,7 @@
           }
         },
         "multiplayerRequired": true,
-        "verifiedAt": "2026-10-01T11:40:51.421Z"
+        "verifiedAt": "2026-10-01T12:20:14.644Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -27650,7 +27650,7 @@
       "unityCanonicalEvidenceBound": false
     }
   ],
-  "updatedAt": "2026-10-01T12:18:50.986Z",
+  "updatedAt": "2026-10-01T12:20:17.059Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
