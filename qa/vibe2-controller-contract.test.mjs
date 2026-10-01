@@ -522,12 +522,13 @@ test('controller runs content-hash incremental QA per worker and one parallel fu
   assert.equal(runtime.qaOptimization.fanInTestConcurrency,4);
 });
 
-test('core QA preserves the active same-ref regression and coalesces only pending duplicates',()=>{
-  assert.match(coreQaWorkflow,/concurrency:\n(?:\s+#.*\n)*\s+group: vibe2-core-qa-\$\{\{ github\.ref \}\}\n\s+cancel-in-progress: false/);
+test('core QA cancels superseded main regressions while preserving non-main active runs',()=>{
+  assert.match(coreQaWorkflow,/concurrency:\n(?:\s+#.*\n)*\s+group: vibe2-core-qa-\$\{\{ github\.ref \}\}\n\s+cancel-in-progress: \$\{\{ github\.event_name == 'push' && github\.ref == 'refs\/heads\/main' \}\}/);
   const regression=runtime.continuous.reserveContractRegressionPreflight;
   assert.equal(regression.coreQaActiveCompletion.concurrencyGroup,'vibe2-core-qa-${{ github.ref }}');
-  assert.equal(regression.coreQaActiveCompletion.cancelInProgress,false);
-  assert.equal(regression.coreQaActiveCompletion.pendingPolicy,'KEEP_ONLY_LATEST_PENDING_SAME_REF');
+  assert.equal(regression.coreQaActiveCompletion.mainPushCancelsSupersededInProgress,true);
+  assert.equal(regression.coreQaActiveCompletion.nonMainCancelsInProgress,false);
+  assert.equal(regression.coreQaActiveCompletion.pendingPolicy,'MAIN_LATEST_SHA_ONLY_NON_MAIN_LATEST_PENDING_SAME_REF');
   assert.equal(regression.coreQaActiveCompletion.runner,'ubuntu-slim');
 });
 
@@ -819,11 +820,12 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert.equal(runtime.continuous.callbackCoalescing.fallbackConsumer,'EXISTING_COHORT_FAN_IN');
   assert.equal(runtime.continuous.callbackCoalescing.resultLossForbidden,true);
   assert.equal(runtime.continuous.callbackCoalescing.workerDirectControlWrite,false);
-  assert.equal(runtime.continuous.callbackCoalescing.capacityRefillMayProceedWhileResultCoalesced,true);
-  assert.equal(runtime.continuous.callbackCoalescing.pressureCapacityRefill.enabled,true);
-  assert.equal(runtime.continuous.callbackCoalescing.pressureCapacityRefill.scope,'GAME_PRIMARY_PRIMARY_VARIANT_WAVE_LEADER_ONLY');
-  assert.equal(runtime.continuous.callbackCoalescing.pressureCapacityRefill.maxSignalsPerWave,1);
+  assert.equal(runtime.continuous.callbackCoalescing.capacityRefillMayProceedWhileResultCoalesced,false);
+  assert.equal(runtime.continuous.callbackCoalescing.pressureCapacityRefill.enabled,false);
+  assert.equal(runtime.continuous.callbackCoalescing.pressureCapacityRefill.scope,'DISABLED_UNDER_RUNNER_PRESSURE_DEFER_TO_COHORT_FAN_IN');
+  assert.equal(runtime.continuous.callbackCoalescing.pressureCapacityRefill.maxSignalsPerWave,0);
   assert.equal(runtime.continuous.callbackCoalescing.pressureCapacityRefill.resultConsumption,false);
+  assert.equal(runtime.continuous.callbackCoalescing.runnerPressureDispatchThreshold,4);
   assert.equal(runtime.continuous.reserveContractRegressionPreflight.enabled,true);
   assert.equal(runtime.continuous.reserveContractRegressionPreflight.executionLane,'GAME_PRIMARY');
   assert.equal(runtime.continuous.reserveContractRegressionPreflight.reuseSuccessfulCoreQaForExactSha,true);
@@ -834,12 +836,21 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert(workflow.includes('VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_SAME_FAN_IN_SUITE'));
   assert(workflow.includes('VIBE2_RESERVE_CONTRACT_REGRESSION=PASS'));
   assert.equal(runtime.continuous.atomicNeuronStream.liveRunnerQueuePressureCoalescing,true);
-  assert.equal(runtime.continuous.atomicNeuronStream.pressureCoalescingIndependentFreeSlotRefillPreserved,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.pressureCoalescingIndependentFreeSlotRefillPreserved,false);
+  assert.equal(runtime.continuous.atomicNeuronStream.pressureCoalescingDefersNewWorkflowCreation,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.pressureThreshold,4);
   const pressurePolicy=roadmap.changeRecord.runnerPressureCallbackCoalescing20260926;
-  assert.equal(pressurePolicy.coalescingMayNotBlockIndependentFreeSlotRefill,true);
-  assert.equal(pressurePolicy.pressureCapacityRefill.enabled,true);
-  assert.equal(pressurePolicy.pressureCapacityRefill.maxSignalsPerWave,1);
+  assert.equal(pressurePolicy.coalescingMayNotBlockIndependentFreeSlotRefill,false);
+  assert.equal(pressurePolicy.independentFreeSlotRefillResumesBelowPressureThreshold,true);
+  assert.equal(pressurePolicy.pressureCapacityRefill.enabled,false);
+  assert.equal(pressurePolicy.pressureCapacityRefill.maxSignalsPerWave,0);
   assert.equal(pressurePolicy.pressureCapacityRefill.resultRemainsCohortFanInOwned,true);
+  const bottleneckPolicy=roadmap.changeRecord.runnerBackpressureBottleneckRelief20261001;
+  assert.equal(bottleneckPolicy.queuePressureThreshold,4);
+  assert.equal(bottleneckPolicy.release.nativeReleaseDispatchBatchMax,2);
+  assert.equal(bottleneckPolicy.release.reviewedWinnerRecoveryBatchMax,2);
+  assert.equal(bottleneckPolicy.regression.reserveExactShaPassReusableAtFanIn,true);
+  assert.equal(bottleneckPolicy.coreQa.mainPushCancelsSupersededInProgress,true);
   assert.equal(runtime.continuous.atomicNeuronStream.cohortFanInConsumesCoalescedResults,true);
   assert.equal(runtime.continuous.atomicNeuronStream.coalescedCompletionIsNotFailure,true);
   assert.equal(runtime.continuous.fanInRefillTrigger,'repository-dispatch-fallback');
