@@ -335,7 +335,7 @@ test('candidate publication prefers unique refs and falls back to reusable carri
   const refCreate=workflow.indexOf('"https://api.github.com/repos/$GITHUB_REPOSITORY/git/refs"');
   const uniquePush=workflow.indexOf('git push origin "HEAD:$candidate_branch"');
   const carrierPool=workflow.indexOf("git ls-remote --heads origin 'refs/heads/vibe2/candidate/OWNER-FULL-REBUILD-*'");
-  const carrierPush=workflow.indexOf('push origin "HEAD:refs/heads/$carrier_branch"');
+  const carrierPush=workflow.indexOf('origin "HEAD:refs/heads/$carrier_branch"');
   assert.ok(refCreate>=0&&uniquePush>refCreate);
   assert.ok(carrierPool>uniquePush&&carrierPush>carrierPool);
   assert(workflow.includes('force-with-lease="refs/heads/$carrier_branch:$carrier_old_sha"'));
