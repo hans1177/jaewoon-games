@@ -7380,7 +7380,9 @@
       "coding_negative_34qbuh",
       "coding_negative_a08nch",
       "coding_negative_1xk4vtz",
-      "coding_negative_1grc5bi"
+      "coding_negative_1grc5bi",
+      "coding_negative_1fbq7w0",
+      "coding_negative_1wgy8t"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -19001,7 +19003,7 @@
         "verifiedApplications": 15,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 61,
-        "verifiedFailures": 1814,
+        "verifiedFailures": 1816,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 2,
@@ -19015,13 +19017,13 @@
         "contextModes": {
           "STANDARD_CONTEXT": {
             "verifiedApplications": 15,
-            "verifiedFailures": 444,
+            "verifiedFailures": 446,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 61,
             "totalContextBytes": 252705,
             "lastEvidence": "coding_xha32n",
-            "lastFailureEvidence": "coding_negative_1grc5bi",
-            "lastUpdatedAt": "2026-10-01T04:13:46.452Z"
+            "lastFailureEvidence": "coding_negative_1wgy8t",
+            "lastUpdatedAt": "2026-10-01T04:52:43.495Z"
           },
           "UNITY_WEB_BOOTSTRAP_SHELL": {
             "verifiedApplications": 0,
@@ -19540,7 +19542,7 @@
             "verifiedApplications": 1,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 4,
-            "verifiedFailures": 18,
+            "verifiedFailures": 19,
             "games": {
               "bug-defense": 1
             },
@@ -19548,19 +19550,19 @@
               "unity": 1
             },
             "failureGames": {
-              "bug-defense": 18
+              "bug-defense": 19
             },
             "failureTargets": {
-              "unity": 18
+              "unity": 19
             },
             "failureClasses": {
               "STUDIO_QUALITY_DELTA": 10,
-              "NO_OP": 6,
+              "NO_OP": 7,
               "TIMEOUT": 2
             },
             "lastEvidence": "coding_xha32n",
-            "lastFailureEvidence": "coding_negative_12q5z83",
-            "lastUpdatedAt": "2026-10-01T04:13:46.445Z"
+            "lastFailureEvidence": "coding_negative_1wgy8t",
+            "lastUpdatedAt": "2026-10-01T04:52:43.495Z"
           },
           "unity|AUTHORITATIVE_TARGET_ENGINE_QA_MISSING|FOCUSED_MARKER_NOT_PASS|FOCUSED_QA_NOT_PASS|NO_OP|OTHER|PRESENTATION_PATCH_DELTA|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 2,
@@ -19700,21 +19702,21 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 13,
+            "verifiedFailures": 14,
             "games": {},
             "targets": {},
             "failureGames": {
-              "cozy-island": 13
+              "cozy-island": 14
             },
             "failureTargets": {
-              "roblox": 13
+              "roblox": 14
             },
             "failureClasses": {
-              "NO_OP": 13
+              "NO_OP": 14
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_3e3wcq",
-            "lastUpdatedAt": "2026-10-01T03:30:52.271Z"
+            "lastFailureEvidence": "coding_negative_1fbq7w0",
+            "lastUpdatedAt": "2026-10-01T04:52:43.472Z"
           },
           "roblox|INVALID_PATH|NO_OP|OTHER|ROBLOX_STRUCTURAL_CONTINUITY|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -19881,8 +19883,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_xha32n",
-        "lastFailureEvidence": "coding_negative_1grc5bi",
-        "lastUpdatedAt": "2026-10-01T04:13:46.452Z"
+        "lastFailureEvidence": "coding_negative_1wgy8t",
+        "lastUpdatedAt": "2026-10-01T04:52:43.495Z"
       }
     }
   },
@@ -22635,7 +22637,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-10-01T04:52:23.701Z",
+    "lastBuiltAt": "2026-10-01T04:52:43.578Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -31112,5 +31114,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-10-01T04:52:23.701Z"
+  "updatedAt": "2026-10-01T04:52:43.578Z"
 }
