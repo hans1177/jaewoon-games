@@ -382,7 +382,7 @@ test('verified product-quality failure routes first buildup generation directly 
   assert.equal(directive.effectivenessMeasurement.previousGeneration.classification,'REGRESSION');
   assert.equal(directive.nextActionDecision.action,'CAUSAL_REPAIR');
   assert.match(directive.nextActionDecision.reason,/failure|regression/i);
-  assert.equal(directive.gameDna.identity,'품질 실패 첫 세대');
+  assert.equal(directive.gameDna.identity,'곤충의 생태 상성과 서식지 배치가 핵심인 정원 방어 게임');
   assert.equal(directive.gameDna.genericizationForbidden,true);
   assert.equal(directive.playChainContract.primaryFailure.repairSurface,'MOBILE_UI');
   assert.equal(directive.playChainContract.selectedStage,'PLAYER_ACTION');
