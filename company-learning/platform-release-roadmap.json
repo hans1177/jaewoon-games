@@ -3312,7 +3312,7 @@
         "runtimePassFabricationForbidden": true,
         "verifiedLearningDeletionForbidden": true,
         "humanOrSecretBoundActionsRemainInhibited": true,
-        "executionUsesExistingScheduler": true,
+        "executionUsesExistingDirectQueueReservation": true,
         "systemStewardProtectedLane": "RECOVERY_FAST",
         "producer": "tools/vibe2-self-architecture-evolution.mjs",
         "steward": "tools/vibe2-system-steward.mjs",
@@ -13324,7 +13324,7 @@
       "sameSourceRootRemainsLockedDuringReview": true,
       "reasonForSameRootLock": "PREVENT_CONCURRENT_MUTATION_OF_THE_EXACT_GAME_BEING_REVIEWED",
       "persistentQueueMayContinueRefill": true,
-      "executionWaveMaxPreserved": true,
+      "internalGlobalParallelCap": null,
       "noGlobalPauseForSupervisor": true,
       "implementationCommits": {
         "queueStatePersistenceAndSlotRelease": "09de5825cc0c123fe22fe68a909a9d9e5ddca456",
@@ -13620,8 +13620,8 @@
     "migrationPlan": [
       {
         "phase": 1,
-        "id": "HYBRID_NEURAL_DIAGNOSIS_WAVE_EXECUTION",
-        "executionPrimary": "EXISTING_WAVE_ENGINE",
+        "id": "NEURAL_DIAGNOSIS_DIRECT_QUEUE_RESERVATION",
+        "executionPrimary": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
         "add": [
           "FACT_HYPOTHESIS_GRAPH",
           "CAUSAL_DIAGNOSIS",
@@ -13632,15 +13632,14 @@
         "exitCriteria": [
           "NEURAL_DIAGNOSIS_MATCHES_VERIFIED_ROOT_CAUSE_RELIABLY",
           "NO_AUTHORITY_OR_SAVE_SEMANTIC_REGRESSION",
-          "CURRENT_WAVE_THROUGHPUT_NOT_REDUCED"
+          "CURRENT_DIRECT_EXECUTION_THROUGHPUT_NOT_REDUCED"
         ]
       },
       {
         "phase": 2,
-        "id": "EVENT_DRIVEN_NEURAL_ROUTING_WITH_WAVE_FALLBACK",
+        "id": "EVENT_DRIVEN_NEURAL_ROUTING_WITH_DIRECT_RESERVATION_FALLBACK",
         "executionPrimary": "NEURAL_EVENT_ROUTER",
-        "waveRole": "CAPACITY_BATCH_AND_RECOVERY_FALLBACK",
-        "add": [
+                "add": [
           "EVENT_TRIGGERED_ACTION_FIRING",
           "DYNAMIC_WORKER_ROLE_CREATION",
           "DEPENDENCY_AND_RESOURCE_INHIBITION"
@@ -13655,30 +13654,28 @@
         "phase": 3,
         "id": "ASYNC_NEURAL_WORK_GRAPH_PRIMARY",
         "executionPrimary": "NEURAL_WORK_GRAPH",
-        "waveRole": "OPTIONAL_BATCH_OPTIMIZATION",
-        "add": [
+                "add": [
           "CONTINUOUS_ASYNC_NODE_FIRING",
           "PORTFOLIO_WIDE_BOTTLENECK_BACKPROPAGATION",
           "SELF_FORMING_TASK_SUBGRAPHS"
         ],
         "exitCriteria": [
-          "NEURAL_GRAPH_OUTPERFORMS_WAVE_SCHEDULING_ON_VERIFIED_LEAD_TIME_AND_FIRST_PASS_RATE",
+          "NEURAL_GRAPH_OUTPERFORMS_LEGACY_BATCH_DISPATCH_ON_VERIFIED_LEAD_TIME_AND_FIRST_PASS_RATE",
           "DETERMINISTIC_REPLAY_AND_AUDITABILITY_PASS",
           "SUPERVISOR_AND_SECURITY_GATES_REMAIN_FAIL_CLOSED"
         ]
       },
       {
         "phase": 4,
-        "id": "WAVE_AS_SPECIAL_SYNCHRONIZATION_PATTERN_ONLY",
+        "id": "EXPLICIT_SYNCHRONIZATION_FOR_TRUE_CONFLICTS_ONLY",
         "executionPrimary": "FULL_EVENT_DRIVEN_NEURAL_WORK_GRAPH",
-        "waveRole": "EXPLICIT_BARRIER_CANARY_OR_BATCH_ONLY",
-        "irreversibleWaveRemovalForbidden": true,
+        "synchronizationRole": "RESPONSIBLE_FILE_CONFLICT_ACTUAL_DEPENDENCY_EXACT_DUPLICATE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY",
         "rollbackPathRequired": true
       }
     ],
     "transitionSafety": {
       "noBigBangRewrite": true,
-      "existingWaveEnginePreservedUntilPhase3EvidencePasses": true,
+      "directQueueReservationPreservedAcrossMigration": true,
       "qualityGateWeakeningForbidden": true,
       "saveAndGameplaySemanticProtectionRequired": true,
       "everyPhaseMustHaveRollbackPath": true,
@@ -13776,7 +13773,7 @@
       "queueReservationAndRequiredGatesRemainAuthoritative": true
     },
     "phase1Implementation": {
-      "mode": "HYBRID_NEURAL_DIAGNOSIS_WAVE_EXECUTION",
+      "mode": "NEURAL_DIAGNOSIS_WITH_DIRECT_QUEUE_RESERVATION",
       "authority": "DIAGNOSIS_ONLY_NO_EXECUTION_AUTHORITY",
       "diagnosis": "tools/vibe2-neural-diagnosis.mjs",
       "plannerBinding": "tools/vibe2-auto-planner.mjs",
@@ -13797,7 +13794,7 @@
         "HARD_INHIBITORS",
         "EXACT_FAILURE_STAGE_ACTION_RECOMMENDATION"
       ],
-      "waveSchedulerRemainsAuthoritative": true,
+      "directQueueReservationRemainsAuthoritative": true,
       "neuralMayReorderWave": false,
       "neuralMayCreateWorker": false,
       "reusableLearningFromShadowDiagnosis": false,
@@ -13959,7 +13956,7 @@
         "securityReviewRequired": true,
         "centralPolicyExplicitPromotionRequired": true,
         "automaticPromotionFromAccuracyForbidden": true,
-        "currentWaveSchedulerRemainsAuthoritative": true,
+        "currentDirectQueueReservationRemainsAuthoritative": true,
         "shadowVsWaveAuditRequired": true,
         "shadowAuditCannotSelfPromote": true,
         "shadowTelemetryRequired": true,
@@ -14507,13 +14504,13 @@
       "automationMustFailClosedWhenAssistantRuntimeIsUnavailable": true
     },
     "priorityRule": "ROADMAP_PRIORITY_AND_DOCUMENTED_NEXT_GATE_FIRST; BLOCKER_HELP_IS_ONE_TRIGGER_NOT_THE_PRIMARY_MODEL",
-    "successDefinition": "ASSISTANTS_CONTINUOUSLY_ADVANCE_DOCUMENTED_ROADMAP_WORK_WITHOUT_BYPASSING_EXISTING_DAG_EXECUTION_OR_CENTRAL_SECURITY_AUTHORITY",
+    "successDefinition": "ASSISTANTS_CONTINUOUSLY_ADVANCE_DOCUMENTED_ROADMAP_WORK_WITHOUT_BYPASSING_DIRECT_QUEUE_RESERVATION_OR_CENTRAL_SECURITY_AUTHORITY",
     "implementationState": {
       "state": "MERGED_MAIN",
       "sourcePr": 1859,
       "mergedCommit": "2b9f8a587e78d12d1484fe5db2ef38180b0989d6",
       "authorityChange": "NONE",
-      "executionAuthority": "EXISTING_DAG_SCHEDULER_ONLY",
+      "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
       "neuralExecutionAuthority": false,
       "syncedMainHead": "2b9f8a587e78d12d1484fe5db2ef38180b0989d6",
       "nextGate": "VERIFY_POST_1877_PRODUCTION_LIVE_MAIN_FRESHNESS_EVIDENCE_AND_KEEP_AUTHORITY_UNCHANGED",
@@ -14565,7 +14562,7 @@
           "companySecurityImmuneSystem": "PASS"
         },
         "authority": {
-          "executionAuthority": "EXISTING_DAG_SCHEDULER_ONLY",
+          "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
           "neuralExecutionAuthority": false,
           "workerCreationAuthority": false,
           "queueMutationAuthority": false,
@@ -14594,7 +14591,7 @@
             "fetchOrParseFailureAction": "FAIL_CLOSED"
           },
           "authority": {
-            "executionAuthority": "EXISTING_DAG_SCHEDULER_ONLY",
+            "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
             "workerCreationAuthority": false,
             "queueMutationAuthority": false,
             "waveReorderAuthority": false,
@@ -14657,7 +14654,7 @@
           "writableScopeExpansionAllowed": false
         },
         "authority": {
-          "executionAuthority": "EXISTING_DAG_SCHEDULER_ONLY",
+          "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
           "workerCreationAuthority": false,
           "queueMutationAuthority": false,
           "waveReorderAuthority": false,
@@ -14717,7 +14714,7 @@
           "tools/vibe2-parallelism-telemetry.mjs"
         ],
         "authority": {
-          "executionAuthority": "EXISTING_DAG_SCHEDULER_ONLY",
+          "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
           "workerCreationAuthority": false,
           "queueMutationAuthority": false,
           "waveReorderAuthority": false,
@@ -20084,7 +20081,7 @@
       "weatherTextOrSpecAloneCannotPass": true,
       "failedWeatherScopeRoutesTo": "ASSET_REPAIR_REQUIRED"
     },
-    "executionAuthority": "EXISTING_DAG_SCHEDULER_ONLY",
+    "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
     "authorityExpansion": false
   },
   "webValidationBottleneckAdapterContract": {
