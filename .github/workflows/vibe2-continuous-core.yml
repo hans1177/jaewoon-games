@@ -88,6 +88,7 @@ env:
   VIBE2_GAME_PRIMARY_BASELINE_TARGET: '256'
   VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '30'
   VIBE2_RELEASE_DISPATCH_QUEUE_THRESHOLD: '4'
+  VIBE2_NATIVE_RELEASE_DISPATCH_BATCH_MAX: '2'
   OLLAMA_HOST: 127.0.0.1:11434
   VIBE2_GAME_DEVELOPMENT_OWNER: VIBE2_VIBE3
   VIBE2_GAME_SOURCE_PROVIDER: LOCAL_OLLAMA
@@ -2691,9 +2692,18 @@ jobs:
           NODE
           count="$(wc -l < /tmp/vibe2-release-candidates.tsv | tr -d ' ')"
           echo "VIBE2_RELEASE_CANDIDATE_COUNT=${count:-0}"
+          native_dispatch_count=0
+          native_dispatch_max="${VIBE2_NATIVE_RELEASE_DISPATCH_BATCH_MAX:-2}"
           while IFS='|' read -r task_id candidate_branch target game_id evidence_only; do
             [ -n "$task_id" ] || continue
             [ -n "$candidate_branch" ] || continue
+            if [ "$target" != web ]; then
+              if [ "$native_dispatch_count" -ge "$native_dispatch_max" ]; then
+                echo "VIBE2_NATIVE_RELEASE_DISPATCH=DEFERRED_BATCH_LIMIT:${target:-unknown}:${game_id:-unknown}:$task_id"
+                continue
+              fi
+              native_dispatch_count=$((native_dispatch_count+1))
+            fi
             if [ "$target" = web ]; then
               echo "PLATFORM_F9_VERIFIED=web:${game_id:-unknown}:$task_id"
             else
