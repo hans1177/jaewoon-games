@@ -349,7 +349,8 @@ export class JaewoonCommonAI {
     const key = String(id || ''), eventId = String(event?.id || event?.eventId || '');
     if (!key || !eventId || !event?.type) return { applied: false, reason: 'source_event_required' };
     const existing = this.relationshipWith(key);
-    if (this.relationshipEvents.has(eventId) || existing?.causeEventIds?.includes(eventId)) return { applied: false, reason: 'duplicate_event', state: existing };
+    const rememberedSourceEvent = this.memory.some(row => String(row?.sourceEventId || row?.id || '') === eventId);
+    if (this.relationshipEvents.has(eventId) || existing?.causeEventIds?.includes(eventId) || rememberedSourceEvent) return { applied: false, reason: 'duplicate_event', state: existing };
     const current = existing || this.setRelationship(key, {});
     const axis = value => Math.max(-100, Math.min(100, Math.round(Number(value) || 0)));
     const fields = ['trust','familiarity','respect','tension','affection','fear','debt','rivalry','protectiveness','dependence','boundaryComfort'];
