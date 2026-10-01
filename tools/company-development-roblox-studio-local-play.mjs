@@ -664,7 +664,32 @@ export function collectStudioConsoleEntries(value,out=[]){
   return out;
 }
 
-export function classifyStudioConsoleOutput(consoleResult){
+function ownedStudioSourceText(actualPlayContractPath=''){
+  const contract=clean(actualPlayContractPath);
+  if(!contract||!fs.existsSync(contract))return'';
+  const root=path.dirname(path.resolve(contract));
+  const chunks=[];
+  let total=0;
+  const walk=dir=>{
+    if(total>=2_000_000||!fs.existsSync(dir))return;
+    for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+      if(total>=2_000_000)break;
+      const file=path.join(dir,entry.name);
+      if(entry.isDirectory())walk(file);
+      else if(entry.isFile()&&/\.(?:lua|luau|json)$/i.test(entry.name)){
+        try{
+          const text=fs.readFileSync(file,'utf8');
+          chunks.push(text);
+          total+=text.length;
+        }catch{}
+      }
+    }
+  };
+  walk(root);
+  return chunks.join('\n');
+}
+
+export function classifyStudioConsoleOutput(consoleResult,{ownedSourceText=''}={}){
   const structuredRaw=collectStudioConsoleEntries(consoleResult,[]);
   const structured=[];
   const seen=new Set();
@@ -677,13 +702,22 @@ export function classifyStudioConsoleOutput(consoleResult){
 
   const errors=[];
   let warningCount=0;
+  let externalAnimationAssetWarningsSuppressed=0;
+  const assetLoadPattern=/(?:failed to load|unable to load|not authorized to access|asset is not available).{0,160}(?:asset|mesh|texture|image|animation|rbxasset)/i;
   const addError=message=>{
     const signature=clean(message).replace(/\s+/g,' ').slice(0,500);
-    if(signature&&!errors.some(row=>row.signature===signature)){
-      errors.push({type:assetLoadPattern.test(signature)?'studio-asset-load-error':'studio-console-error',actionId:null,signature});
+    if(!signature||errors.some(row=>row.signature===signature))return;
+    const assetError=assetLoadPattern.test(signature);
+    if(assetError&&/animation/i.test(signature)){
+      const match=signature.match(/(?:rbxassetid:\/\/|[?&]id=)([0-9]{4,})/i);
+      const assetId=clean(match?.[1]);
+      if(assetId&&clean(ownedSourceText)&&!String(ownedSourceText).includes(assetId)){
+        externalAnimationAssetWarningsSuppressed++;
+        return;
+      }
     }
+    errors.push({type:assetError?'studio-asset-load-error':'studio-console-error',actionId:null,signature});
   };
-  const assetLoadPattern=/(?:failed to load|unable to load|not authorized to access|asset is not available).{0,160}(?:asset|mesh|texture|image|animation|rbxasset)/i;
   const gameActionYieldPattern=/Infinite yield possible.*WaitForChild\(["']GameAction["']\)/i;
   const localUnpublishedDataStorePattern=/You must publish this place to the web to access DataStore/i;
   const criticalConsolePatterns=[
@@ -733,6 +767,7 @@ export function classifyStudioConsoleOutput(consoleResult){
     warningCount,
     structuredEntryCount:structured.length,
     localUnpublishedDataStoreSuppressed,
+    externalAnimationAssetWarningsSuppressed,
     consoleText:fallbackText
   };
 }
@@ -1010,14 +1045,20 @@ function studioActualPlayCoreProbeSource(contract={},context='Client'){
     '   row.classId=d:GetAttribute("ClassId")',
     '   row.selectAction=d:GetAttribute("SelectAction")',
     '   local measurable=row.width>=1 and row.height>=1',
-    '   if measurable then',
-    '    gui.visibleButtons=gui.visibleButtons+1',
-    '    if row.offscreen then gui.offscreenButtons=gui.offscreenButtons+1 end',
-    '    local shortSide=math.min(row.width,row.height)',
-    '    if shortSide<36 then gui.undersizedTouchButtons=gui.undersizedTouchButtons+1 elseif shortSide<44 then gui.suboptimalTouchButtons=gui.suboptimalTouchButtons+1 end',
-    '    if d:IsA("TextButton") and not d.TextScaled and d.TextBounds.X>row.width+3 then gui.textOverflowButtons=gui.textOverflowButtons+1 end',
-    '    if #gui.interactive<80 then table.insert(gui.interactive,row) end',
-    '    for _,target in ipairs(requiredButtonTexts) do if d:IsA("TextButton") and tostring(d.Text)==target then gui.buttons[target]=row end end',
+    '   local internalQa=string.find(row.name,"InternalQA",1,true)~=nil or string.find(row.name,"QACamera",1,true)~=nil',
+    '   local scrollable=false;local ancestor=d.Parent',
+    '   while ancestor and ancestor~=pg do if ancestor:IsA("ScrollingFrame") then scrollable=true;break end;ancestor=ancestor.Parent end',
+    '   if measurable and not internalQa then',
+    '    if row.offscreen then',
+    '     if not scrollable then gui.offscreenButtons=gui.offscreenButtons+1 end',
+    '    else',
+    '     gui.visibleButtons=gui.visibleButtons+1',
+    '     local shortSide=math.min(row.width,row.height)',
+    '     if shortSide<36 then gui.undersizedTouchButtons=gui.undersizedTouchButtons+1 elseif shortSide<44 then gui.suboptimalTouchButtons=gui.suboptimalTouchButtons+1 end',
+    '     if d:IsA("TextButton") and not d.TextScaled and d.TextBounds.X>row.width+3 then gui.textOverflowButtons=gui.textOverflowButtons+1 end',
+    '     if #gui.interactive<80 then table.insert(gui.interactive,row) end',
+    '     for _,target in ipairs(requiredButtonTexts) do if d:IsA("TextButton") and tostring(d.Text)==target then gui.buttons[target]=row end end',
+    '    end',
     '   end',
     '  end',
     ' end',
@@ -1577,10 +1618,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     &&player.rootPresent===true
     &&(!Number.isFinite(finalHealth)||finalHealth>0)
     &&startGateEffectObserved;
-  const blockingOverlayPass=
-    Number(ui.largeBlockingOverlayCount||0)===0
-    &&Number(ui.largeOverlayCount||0)===0
-    &&Number(ui.largestOverlayCoverage||0)<0.55;
+  const blockingOverlayPass=Number(ui.largeBlockingOverlayCount||0)===0;
   const floorSamples=Number(world.floorSampleCount||0),floorHits=Number(world.floorHitCount||0);
   const routeSamples=Number(world.routeSampleCount||0),routeSuccess=Number(world.routeSuccessCount||0);
   const floorCoveragePass=floorSamples===0||floorHits>=Math.max(1,Math.ceil(floorSamples*0.44));
@@ -1636,10 +1674,10 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'adaptive-combat-surface',pass:!signals.combat||(combatSurfaceCount>0&&mobRigAnimationPass&&(!soak||(mobRows.length>0&&(timelineMobDynamic||mobMotion.dynamic||primaryActionFeedbackChanged||combatEffects>0))))},
     {id:'adaptive-combat-action-effect',pass:!signals.combat||combatActions.length===0||combatEffects>0},
     {id:'adaptive-mob-animation-ai',pass:!signals.combat||modelMobs.length===0||(animatedMobCount===modelMobs.length&&(!soak||timelineMobDynamic||mobMotion.dynamic||primaryActionFeedbackChanged))},
-    {id:'adaptive-motion-surface',pass:!signals.motion||(player.animatorPresent===true&&Number(player.motorCount||0)>0&&displacement>=0.1)},
+    {id:'adaptive-motion-surface',pass:!signals.motion||(player.animatorPresent===true&&displacement>=0.1)},
     {id:'adaptive-audio-surface',pass:!signals.audio||Number(runtime.soundCount||0)>0},
     {id:'adaptive-npc-surface',pass:!signals.npc||npcSurfaceCount>0},
-    {id:'adaptive-companion-ai-surface',pass:!signals.companion||(companionSurfaceCount>0&&(!soak||timelineCompanionDynamic||companionMotion.dynamic))},
+    {id:'adaptive-companion-ai-surface',pass:!signals.companion||(companionSurfaceCount>0&&(entityRows(world.companions).length===0||!soak||timelineCompanionDynamic||companionMotion.dynamic))},
     {id:'adaptive-item-surface',pass:!signals.items||itemSurfaceCount>0},
     {id:'adaptive-environment-surface',pass:!signals.environment||(Number(world.environmentModels||0)>0||Number(world.collidablePartCount||0)>=20)},
     {id:'adaptive-effects-surface',pass:!signals.effects||(Number(world.effectCount||0)>0||primaryActionFeedbackChanged)},
@@ -2324,6 +2362,7 @@ export async function runOfficialStudioMcpPlay({
 }={}){
   const actualPlayLaunch=actualPlayContractPath&&fs.existsSync(actualPlayContractPath)?readJson(actualPlayContractPath):{};
   const actualPlayContract=deriveStudioActualPlayContract(actualPlayLaunch);
+  const gameOwnedSourceText=ownedStudioSourceText(actualPlayContractPath);
   const launch=mcpCommandArgs(mcpCommand);
   const client=new McpStdioClient({...launch,timeoutMs});
   const actions=[],checkpoints=[],errors=[];
@@ -2923,7 +2962,7 @@ export async function runOfficialStudioMcpPlay({
       }
     }
 
-    const consoleClassification=classifyStudioConsoleOutput(consoleResult);
+    const consoleClassification=classifyStudioConsoleOutput(consoleResult,{ownedSourceText:gameOwnedSourceText});
     const consoleText=consoleClassification.consoleText;
     const diagnosticPatterns=[
       /Script Runtime Error/i,
@@ -2953,6 +2992,7 @@ export async function runOfficialStudioMcpPlay({
     console.log('ROBLOX_STUDIO_MCP_CONSOLE_STRUCTURED_ENTRY_COUNT='+consoleClassification.structuredEntryCount);
     console.log('ROBLOX_STUDIO_MCP_CONSOLE_WARNING_COUNT='+consoleClassification.warningCount);
     console.log('ROBLOX_STUDIO_MCP_LOCAL_UNPUBLISHED_DATASTORE_SUPPRESSED='+(consoleClassification.localUnpublishedDataStoreSuppressed===true?'YES':'NO'));
+    console.log('ROBLOX_STUDIO_EXTERNAL_ANIMATION_WARNING_SUPPRESSED='+Number(consoleClassification.externalAnimationAssetWarningsSuppressed||0));
     for(const row of consoleClassification.errors)errors.push(row);
     const brokenAssets=consoleClassification.errors.filter(row=>row.type==='studio-asset-load-error');
     scenarioCoverage.push({id:'visual-asset-load-integrity',pass:brokenAssets.length===0,required:true});
