@@ -303,7 +303,7 @@ root:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))
 root.Name = "Root"
 root.AnchorPoint = Vector2.new(0.5, 1)
 root.Position = UDim2.fromScale(0.5, 0.98)
-root.Size = UDim2.new(1, -24, 0, 360)
+root.Size = UDim2.new(1, -24, 0.46, 0)
 root.BackgroundTransparency = 0.15
 root.BackgroundColor3 = Color3.fromRGB(18, 28, 48)
 root.Parent = gui
