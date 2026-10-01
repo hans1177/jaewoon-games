@@ -38,7 +38,7 @@ function evidenceSet({events=30,feedback=20,root=10}={}){
     actionKind:'REQUEST_EVIDENCE',
     wouldFireWithoutPhase2Authority:false,
     inhibitors:['ROOT_CAUSE_NOT_VERIFIED','PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED'],
-    fireAllowed:false,workerCreationAllowed:false,queueMutationAllowed:false,waveReorderAllowed:false
+    fireAllowed:false,workerCreationAllowed:false,queueMutationAllowed:false,directReservationReorderAllowed:false
   }));
   for(let i=0;i<feedback;i++)rows.push(enc('neural-shadow-feedback:',{
     sampleId:`feedback-${i}`,
@@ -220,7 +220,7 @@ test('legacy unidentified feedback events and audit volume cannot qualify Phase2
     actionKind:'REQUEST_EVIDENCE',
     wouldFireWithoutPhase2Authority:false,
     inhibitors:['PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED'],
-    fireAllowed:false,workerCreationAllowed:false,queueMutationAllowed:false,waveReorderAllowed:false
+    fireAllowed:false,workerCreationAllowed:false,queueMutationAllowed:false,directReservationReorderAllowed:false
   }));
   for(let i=0;i<20;i++)evidence.push(enc('neural-shadow-feedback:',{
     predictedResponsibility:'GAME_RUNTIME',
@@ -254,7 +254,7 @@ test('any unauthorized shadow fire blocks review eligibility',()=>{
     fireAllowed:true,
     workerCreationAllowed:false,
     queueMutationAllowed:false,
-    waveReorderAllowed:false
+    directReservationReorderAllowed:false
   }));
   const result=evaluatePhase2Readiness({evidence,shadowAudit:{sampleCount:10,distinctSampleIds:10}});
   assert.equal(result.reviewEligible,false);
@@ -287,7 +287,7 @@ test('conflicting readiness sample identities block explicit review across feedb
       actionKind:'REQUEST_EVIDENCE',
       wouldFireWithoutPhase2Authority:false,
       inhibitors:['PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED'],
-      fireAllowed:false,workerCreationAllowed:false,queueMutationAllowed:false,waveReorderAllowed:false
+      fireAllowed:false,workerCreationAllowed:false,queueMutationAllowed:false,directReservationReorderAllowed:false
     }),
     enc('neural-event-shadow:',{
       eventId:'event-conflict',
@@ -295,7 +295,7 @@ test('conflicting readiness sample identities block explicit review across feedb
       actionKind:'REQUEST_EVIDENCE',
       wouldFireWithoutPhase2Authority:false,
       inhibitors:['PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED'],
-      fireAllowed:false,workerCreationAllowed:false,queueMutationAllowed:false,waveReorderAllowed:false
+      fireAllowed:false,workerCreationAllowed:false,queueMutationAllowed:false,directReservationReorderAllowed:false
     })
   );
   const result=evaluatePhase2Readiness({
