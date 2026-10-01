@@ -383,6 +383,47 @@ test('common ai applies one causal source event once and feeds it into the next 
   assert.equal(next.gameplayAuthority,false);
 });
 
+test('reconstructed actor state suppresses a source event already present in memory or relationship history',()=>{
+  const packet=planVibeCausalActorLoop({
+    event:{
+      id:'evt-restored-1',
+      type:'help',
+      actorId:'player',
+      targetId:'mira',
+      location:'camp',
+      tick:61,
+      witnesses:['mira']
+    },
+    observers:[{
+      actor:companion,
+      relationship:{trust:12},
+      memory:[],
+      emotion:'calm',
+      knowledge:{observed:true,confidence:1,attribution:'direct-cause'}
+    }]
+  }).observers[0];
+
+  const restoredFromMemory=new JaewoonCommonAI({identity:{id:'mira'}});
+  restoredFromMemory.remember({id:'evt-restored-1',sourceEventId:'evt-restored-1',type:'help',actor:'player'});
+  restoredFromMemory.setRelationship('player',{trust:12});
+  const memoryDuplicate=restoredFromMemory.observeCausalEvent(packet);
+  assert.equal(memoryDuplicate.applied,false);
+  assert.equal(memoryDuplicate.reason,'duplicate_event');
+  assert.equal(restoredFromMemory.relationshipWith('player').trust,12);
+
+  const restoredFromRelationship=new JaewoonCommonAI({identity:{id:'mira'}});
+  restoredFromRelationship.setRelationship('player',{trust:12,causeEventIds:['evt-restored-1']});
+  const relationDuplicate=restoredFromRelationship.observeCausalEvent(packet);
+  assert.equal(relationDuplicate.applied,false);
+  assert.equal(relationDuplicate.reason,'duplicate_event');
+  assert.equal(restoredFromRelationship.relationshipWith('player').trust,12);
+
+  const directDuplicate=restoredFromMemory.applyRelationshipEvent('player',{id:'evt-restored-1',type:'help',actorId:'player'},{trust:10});
+  assert.equal(directDuplicate.applied,false);
+  assert.equal(directDuplicate.reason,'duplicate_event');
+  assert.equal(restoredFromMemory.relationshipWith('player').trust,12);
+});
+
 test('browser runtime exposes the same causal actor loop instead of a parallel shadow implementation',()=>{
   assert.match(roleDirectorSource,/planJaewoonVibeCausalActorLoop:planVibeCausalActorLoop/);
 });
@@ -433,6 +474,45 @@ test('squad routes causal packets only to the named observer and never broadcast
   assert.equal(duplicate.find(row=>row.id==='mira').reason,'duplicate_event');
   assert.equal(miraAi.relationshipWith('player').trust,trustAfter);
   assert.equal(hiddenAi.memory.length,0);
+});
+
+test('living actor director does not project the same source event twice when memory already contains it',()=>{
+  const priorMemory=[{
+    id:'evt-director-duplicate-1',
+    sourceEventId:'evt-director-duplicate-1',
+    type:'rescue',
+    actor:'player',
+    target:'player',
+    observerId:'mira',
+    emotionAfter:'relief'
+  }];
+  const director=planVibeLivingActorDirector({
+    actor:companion,
+    player:{id:'player'},
+    world:{location:'frontier-gate',emotion:'calm'},
+    relationship:{trust:30,respect:5},
+    memory:priorMemory,
+    causalEvent:{
+      id:'evt-director-duplicate-1',
+      type:'rescue',
+      actorId:'player',
+      targetId:'mira',
+      location:'frontier-gate',
+      tick:62,
+      witnesses:['mira']
+    },
+    causalKnowledge:{observed:true,confidence:1,attribution:'direct-cause'},
+    allowQuestProposal:true
+  });
+  assert.equal(director.causal.duplicateSourceEvent,true);
+  assert.equal(director.causal.causalMutationSuppressed,true);
+  assert.equal(director.causal.memoryCandidate,null);
+  assert.deepEqual(director.causal.relationshipDelta,{});
+  assert.deepEqual([...director.causal.next.actionPreferences],[]);
+  assert.equal(director.causal.next.questCandidate,null);
+  assert.equal(director.projectedState.memory.length,1);
+  assert.equal(director.projectedState.relationshipToPlayer.trust,30);
+  assert.equal(director.projectedState.persisted,false);
 });
 
 test('living actor director projects causal memory emotion relationship and player model into the next context without persisting it',()=>{
