@@ -47,14 +47,23 @@ test('NPC source uses continuous-surface role-specific geometry instead of primi
  const start=manorBuild.indexOf('def npc(s,kind,pos):');const stop=manorBuild.indexOf('\ndef build():',start);assert.ok(start>=0&&stop>start);
  const npcSource=manorBuild.slice(start,stop);
  assert.match(manorBuild,/def loft\(self,name,pos,sections/);assert.match(manorBuild,/def prism\(self,name,pos,outline/);assert.match(manorBuild,/def capsule\(self,name,pos,height/);
+ assert.match(manorBuild,/def curve_tube\(self,name,points,radii,depths/);
  assert.match(manorBuild,/def sculpted_face\(self,name,pos,size,mat,profile/);
  assert.match(manorBuild,/sides=56;rings=36/);
  for(const name of ['ButlerHead','UndertakerHead','ArchivistHead'])assert.match(npcSource,new RegExp("kind\\+'Head'|"+name));
  assert.doesNotMatch(npcSource,/s\.ellipsoid\(kind\+'_Head'/);
  assert.doesNotMatch(npcSource,/s\.box\(kind\+'_CoatTail'/);
  assert.match(npcSource,/s\.sculpted_face\(kind\+'Head'/);
+ assert.match(npcSource,/s\.curve_tube\(kind\+'_Leg'/);
+ assert.match(npcSource,/s\.curve_tube\(kind\+'_Arm'/);
  assert.match(npcSource,/face_profiles=\{/);
  assert.match(manorBuild,/DIRECT_PROCEDURAL_ROLE_SPECIFIC_CONTINUOUS_SURFACE_V4/);
+});
+test('Blender review renderer is compatible across supported Eevee identifiers',()=>{
+ assert.match(manorBuild,/BLENDER_EEVEE_NEXT/);
+ assert.match(manorBuild,/BLENDER_EEVEE/);
+ assert.match(manorBuild,/BLENDER_WORKBENCH/);
+ assert.match(manorBuild,/select_review_engine\(scene,fast\)/);
 });
 test('manor GLB is self-contained and all geometry buffers are in bounds',()=>{
  const b=fs.readFileSync(root+'/generated/manor-lobby.glb');assert.equal(b.readUInt32LE(8),b.length);assert.ok(b.length<20*1024*1024);
