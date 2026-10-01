@@ -299,7 +299,12 @@ namespace JaewoonGames.DaechungRpg
                 {
                     Player.level = 1;
                 }
-                if (Player.gold < 0)
+public void Save()
+{
+    var data = new GameSaveData { player = Player };
+    PlayerPrefs.SetString(SaveKey, JsonUtility.ToJson(data));
+    PlayerPrefs.Save();
+}
                 {
                     Player.gold = 0;
                 }
