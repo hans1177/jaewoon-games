@@ -39,12 +39,12 @@ const DESIGNLESS_SAFE_BUILD_UP_FOCI=Object.freeze(['PRESENTATION','USABILITY','S
 const DESIGNLESS_SAFE_BUILD_UP_DOMAINS=Object.freeze({
   PRESENTATION:Object.freeze([
     'CHARACTER_VISUALS','ENEMY_VISUALS','WEAPONS_AND_EQUIPMENT','BUILDINGS_AND_PROPS','ENVIRONMENT','TERRAIN','MATERIALS','PALETTE',
-    'LIGHTING','ANIMATION','SECONDARY_MOTION','VFX','CAMERA','UI_HUD','AUDIO_VISUAL_TIMING','ENVIRONMENTAL_MOTION',
+    'LIGHTING','ANIMATION','SECONDARY_MOTION','VFX','CAMERA','UI_HUD','AUDIO_MUSIC_SFX','AUDIO_VISUAL_TIMING','ENVIRONMENTAL_MOTION',
     'UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','MOBILE_UX','PERFORMANCE_BUDGET'
   ]),
   USABILITY:Object.freeze([
     'INPUT','MOBILE_UX','ACCESSIBILITY','SETTINGS_ACCESSIBILITY','MENU_FLOW','CONVENIENCE','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY',
-    'FEEDBACK_CLARITY','FIRST_10_MINUTES','SESSION_FLOW','ERROR_RECOVERY','PERFORMANCE_BUDGET'
+    'INVENTORY_USABILITY','EQUIPMENT_LOADOUT','FEEDBACK_CLARITY','FIRST_10_MINUTES','SESSION_FLOW','ERROR_RECOVERY','PERFORMANCE_BUDGET'
   ]),
   STABILITY:Object.freeze([
     'RUNTIME_STABILITY','ERROR_RECOVERY','SAVE_AND_RECOVERY','SAVE_COMPLETENESS','RECONNECT_RECOVERY',
@@ -57,6 +57,50 @@ export const VISUAL_DOMAINS=Object.freeze([
   'MATERIAL_SURFACE','PALETTE','LIGHTING','ANIMATION','SECONDARY_MOTION','VFX','CAMERA',
   'UI_HUD','AUDIO_VISUAL_SYNC','ENVIRONMENTAL_MOTION','SCENE_DENSITY','LANDMARK_READABILITY'
 ]);
+
+export const EXPERIENCE_BUILD_UP_POLICY_PATH='company-learning/cross-platform-experience-build-up.json';
+function experienceBuildUpPolicy(repoRoot=process.cwd()){
+  const file=path.resolve(repoRoot,EXPERIENCE_BUILD_UP_POLICY_PATH);
+  const policy=readJson(file,null);
+  if(!policy||policy.status!=='ACTIVE_EXECUTABLE_CONTRACT'||!Array.isArray(policy.surfaces)||!policy.platformProfiles){
+    throw new Error('EXPERIENCE_BUILD_UP_POLICY_INVALID');
+  }
+  return policy;
+}
+function normalizeBuildUpPlatform(value=''){
+  const raw=clean(value).toUpperCase().replaceAll('-','_');
+  if(raw==='ROBLOX')return'ROBLOX';
+  if(['UNITY','UNITY_APP','UNITY_NATIVE'].includes(raw))return'UNITY';
+  if(['WEB','UNITY_WEB','UNITY_WEBGL'].includes(raw))return raw.startsWith('UNITY_')?'UNITY':'WEB';
+  return'WEB';
+}
+export function buildPerceptibleExperienceDirective({platform='WEB',repoRoot=process.cwd()}={}){
+  const policy=experienceBuildUpPolicy(repoRoot);
+  const normalized=normalizeBuildUpPlatform(platform);
+  const profile=policy.platformProfiles?.[normalized]||policy.platformProfiles.WEB;
+  const surfaces=policy.surfaces.map(row=>Object.freeze({
+    id:clean(row.id),
+    appliesWhen:clean(row.appliesWhen),
+    goal:clean(row.goal),
+    evidence:Object.freeze([...(row.evidence||[]).map(clean).filter(Boolean)])
+  }));
+  return Object.freeze({
+    version:Number(policy.version||1),
+    policyPath:EXPERIENCE_BUILD_UP_POLICY_PATH,
+    objective:clean(policy.objective),
+    platform:normalized,
+    strictness:clean(profile?.strictness),
+    runtime:clean(profile?.runtime),
+    commonCycle:Object.freeze({...policy.commonCycle}),
+    applicableSurfaceReview:Object.freeze(surfaces),
+    platformRequirements:Object.freeze([...(profile?.requirements||[]).map(clean).filter(Boolean)]),
+    hardFailures:Object.freeze([...(profile?.hardFailures||[]).map(clean).filter(Boolean)]),
+    robloxExtraAttention:policy.priorityPolicy?.robloxExtraAttention===true,
+    existenceOnlyPassForbidden:policy.commonCycle?.existenceOnlyPassForbidden===true,
+    bindOnlyPassForbidden:policy.commonCycle?.bindOnlyPassForbidden===true,
+    perceptiblePlayerEffectRequired:policy.commonCycle?.perceptiblePlayerEffectRequired===true
+  });
+}
 
 const AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH='company-learning/vibe-autonomous-content-expansion-policy.json';
 const AUTONOMOUS_CONTENT_EXPANSION_DEFAULT=Object.freeze({
@@ -975,6 +1019,9 @@ export function directivePrompt(d={}){
   const expansionBundle=(expansion.coherentContentBundle||[]).map(row=>`- ${row}`).join('\n');
   const continuityQuestions=(expansion.continuityAndCausality?.questions||[]).join(',');
   const platformGuidance=d.platformAdaptationDirectives?.[clean(d.platform).toUpperCase()]||d.platformAdaptationDirectives?.WEB||'';
+  const experience=d.perceptibleExperienceBuildUp||{};
+  const experienceSurfaces=(experience.applicableSurfaceReview||[]).map(row=>'- '+row.id+': '+row.goal+' | EVIDENCE='+(row.evidence||[]).join(',')).join('\n');
+  const experienceRequirements=(experience.platformRequirements||[]).map(row=>'- '+row).join('\n');
   return[
     '[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]',
     `id=${d.directiveId}; generation=${d.generation}; depth=${d.developmentDepth}; stage=${d.escalationStage}; focus=${d.primaryFocus}`,
@@ -1001,6 +1048,12 @@ export function directivePrompt(d={}){
     `CONTINUITY_CAUSALITY: required=${expansion.continuityAndCausality?.required===true}; questions=${continuityQuestions}`,
     `DERIVED_RULE_EVOLUTION: ${expansion.derivedRuleEvolution?.rule||'PRESERVE_CANONICAL_RULES'}`,
     `PLATFORM_NATIVE_GUIDANCE: ${platformGuidance}`,
+    `EXPERIENCE_BUILD_UP: platform=${experience.platform||clean(d.platform).toUpperCase()}; strictness=${experience.strictness||'HIGH'}; runtime=${experience.runtime||'RUNTIME_REQUIRED'}; perceptiblePlayerEffectRequired=${experience.perceptiblePlayerEffectRequired===true}; existenceOnlyPassForbidden=${experience.existenceOnlyPassForbidden===true}; bindOnlyPassForbidden=${experience.bindOnlyPassForbidden===true}`,
+    'EXPERIENCE_SURFACE_MATRIX:',
+    experienceSurfaces||'- NO_SURFACE_POLICY',
+    'PLATFORM_EXPERIENCE_REQUIREMENTS:',
+    experienceRequirements||'- FOLLOW_COMMON_RUNTIME_BEFORE_AFTER_REQUIREMENTS',
+    `PLATFORM_EXPERIENCE_HARD_FAILURES: ${(experience.hardFailures||[]).join(',')||'NONE'}`,
     `GAMEPLAY: ${d.gameplayImplementationDirectives.join(' | ')}`,
     `PROGRESSION_WORLD: ${d.progressionContentWorldDirectives.join(' | ')}`,
     'HOLISTIC_CORE_DOMAIN_STATUS:',
@@ -1220,7 +1273,10 @@ export function buildGameSpecificBuildUpDirective({
     'AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP',
     'CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE',
     'EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP',
-    'WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT'
+    'WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT',
+    'PERCEPTIBLE_PLAYER_FACING_DELTA_REQUIRED_FOR_PLAYER_FACING_QUALITY_CLAIMS',
+    'SOURCE_MARKER_ASSET_BINDING_OR_FEATURE_EXISTENCE_ALONE_CANNOT_CLOSE_QUALITY_GAP',
+    'MOTION_UI_INVENTORY_AUDIO_VFX_CAMERA_LIGHTING_REVIEWED_WHEN_APPLICABLE'
   ];
   const safeGameplay=[
     '현재 소스에 이미 존재하는 행동·상태·화면 연결만 읽고 수정한다. 새 핵심 규칙·밸런스·경제·퀘스트·진행 의미를 추측해 만들지 않는다.',
@@ -1250,7 +1306,7 @@ export function buildGameSpecificBuildUpDirective({
       'OPTIMIZE_MOBILE_FRAME_INPUT_RENDER_OR_STATE_BOTTLENECK_WHEN_VERIFIED'
     ]);
   return Object.freeze({
-    version:2,
+    version:3,
     directiveId:`${id}-build-up-g${generation}-${fingerprint.slice(0,12)}`,
     directiveFingerprint:fingerprint,
     previousDirectiveFingerprint:previousFingerprint||null,
@@ -1293,6 +1349,7 @@ export function buildGameSpecificBuildUpDirective({
     visualBuildUpDirective:buildVisualDirective({gameId:id,design,source,focus}),
     uxInputDirectives:ux,
     platformAdaptationDirectives:platformDirectives({identity,goal}),
+    perceptibleExperienceBuildUp:buildPerceptibleExperienceDirective({platform,repoRoot}),
     robloxNativeExecution,
     preserveConstraints:[
       '기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.',
