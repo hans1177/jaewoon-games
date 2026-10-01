@@ -1951,7 +1951,13 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   const verified=designContextOverride||latestVerifiedDesign(repoRoot,project.gameId);
   const minimum=verified?null:latestMinimumDesign(repoRoot,project.gameId);
   const designContext=verified||minimum;
-  if(!designContext){
+  const requestedFocus=clean(taskInput?.studioQualityEvolution?.focusPillar).toUpperCase();
+  const sourceSafeNoDesign=Boolean(
+    !designContext
+    &&clean(project.engine).toLowerCase()==='web'
+    &&['PRESENTATION','USABILITY','STABILITY'].includes(requestedFocus)
+  );
+  if(!designContext&&!sourceSafeNoDesign){
     return{
       ...taskInput,
       evidence:[...new Set([...(taskInput.evidence||[]),'build-up-directive:DESIGN_PENDING','build-up-directive:auto-design-enrollment-required'])]
@@ -2074,7 +2080,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     gameId:project.gameId,
     gameName:project.name||project.gameId,
     platform:buildUpPlatformToken(project,platformLane),
-    designRecord:designContext.record,
+    designRecord:designContext?.record||{content:{identity:project.name||project.gameId}},
     sourceObservation,
     repoRoot,
     sourceRoot:sourceRoots.join('|'),
@@ -2082,7 +2088,9 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     previousDirectiveOutcome,
     runtimeEvidence,
     qualitySignals,
-    responsibleFiles:(taskInput?.responsibleFiles||[]).map(posix).filter(Boolean)
+    responsibleFiles:(taskInput?.responsibleFiles||[]).map(posix).filter(Boolean),
+    requestedFocus:sourceSafeNoDesign?requestedFocus:'',
+    safeDesignlessMode:sourceSafeNoDesign
   });
   return{
     ...taskInput,
@@ -2116,6 +2124,8 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       'build-up-every-loop-regenerate:YES',
       'build-up-all-domain-coverage:YES',
       'build-up-platform-common-goal:YES',
+      sourceSafeNoDesign?'build-up-design-context:SOURCE_SAFE_NO_DESIGN':'build-up-design-context:APPROVED_OR_MINIMUM_DESIGN',
+      ...(sourceSafeNoDesign?['build-up-designless-gameplay-expansion:FORBIDDEN']:[]),
       'autonomous-content-expansion-build-up:v1',
       'autonomous-content-expansion-existing-build-up-only:YES',
       'autonomous-content-expansion-platforms:WEB,ROBLOX,UNITY',
@@ -2503,7 +2513,13 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
       }
     }else if(!currentId){
       const verifiedDesign=latestVerifiedDesign(repoRoot,gameId);
-      if(!verifiedDesign){
+      const safeWebFocus=clean(item?.studioQualityEvolution?.focusPillar).toUpperCase();
+      const sourceSafeNoDesign=Boolean(
+        !verifiedDesign
+        &&clean(project.engine).toLowerCase()==='web'
+        &&['PRESENTATION','USABILITY','STABILITY'].includes(safeWebFocus)
+      );
+      if(!verifiedDesign&&!sourceSafeNoDesign){
         designPending+=1;
         freshness='DESIGN_PENDING';
         candidate={...item,buildUpStatus:'DESIGN_PENDING',evidence:[...new Set([...(item.evidence||[]),'build-up-directive:DESIGN_PENDING','build-up-directive:auto-design-enrollment-required'])]};
@@ -2512,7 +2528,7 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
         if(clean(candidate?.buildUpDirective?.directiveId)){
           attached+=1;changed+=1;
           canonicalByScope.set(scope,candidate.buildUpDirective);
-          freshness='CURRENT_OR_RECONCILED';
+          freshness=sourceSafeNoDesign?'CURRENT_SOURCE_SAFE_NO_DESIGN':'CURRENT_OR_RECONCILED';
           candidate={...candidate,evidence:[...new Set([...(candidate.evidence||[]),'build-up-directive-backfill:queued-existing-work'])]};
         }else{
           designPending+=1;
