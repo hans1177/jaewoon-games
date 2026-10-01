@@ -350,6 +350,81 @@ function secondaryDesignAnchor(design={}){
   return clean(system?.name)||clean(system?.playerChoice)||clean(design.progressionDirection)||design.coreLoop?.[0]||'핵심 루프';
 }
 
+const BUILD_UP_PRIORITY_WEIGHT=Object.freeze({CRITICAL:4,HIGH:3,MEDIUM:2,LOW:1});
+function normalizedStudioQualityFailures(runtimeEvidence={}){
+  const direct=Array.isArray(runtimeEvidence?.qualityFailureDetails)?runtimeEvidence.qualityFailureDetails:[];
+  const nested=Array.isArray(runtimeEvidence?.studioQualityFailure?.qualityFailureDetails)?runtimeEvidence.studioQualityFailure.qualityFailureDetails:[];
+  return [...direct,...nested].map(row=>Object.freeze({
+    id:clean(row?.id),
+    repairSurface:clean(row?.repairSurface)||'ROBLOX_PRODUCT_QUALITY',
+    priority:clean(row?.priority).toUpperCase()||'HIGH',
+    hint:clean(row?.hint),
+    observed:row?.observed&&typeof row.observed==='object'?row.observed:{}
+  })).filter(row=>row.id).sort((a,b)=>
+    Number(BUILD_UP_PRIORITY_WEIGHT[b.priority]||0)-Number(BUILD_UP_PRIORITY_WEIGHT[a.priority]||0)
+    ||a.id.localeCompare(b.id)
+  );
+}
+function buildPlayChainContract({design={},runtimeEvidence={},focus='CORE_FUN',expectedEffect='',sourceResponsibilities=[]}={}){
+  const failures=normalizedStudioQualityFailures(runtimeEvidence);
+  const primaryFailure=failures[0]||null;
+  const chain=Object.freeze([
+    Object.freeze({stage:'ENTRY_ORIENTATION',goal:clean(design.coreLoop?.[0])||'player reaches a readable playable state'}),
+    Object.freeze({stage:'PLAYER_ACTION',goal:clean(design.coreFun)||primaryDesignAnchor(design)}),
+    Object.freeze({stage:'AUTHORITY_AND_CONDITION',goal:'validate the existing action preconditions and server authority when applicable'}),
+    Object.freeze({stage:'STATE_CHANGE',goal:'produce the intended authoritative game-state transition'}),
+    Object.freeze({stage:'FEEDBACK',goal:clean(expectedEffect)||'make the result immediately legible to the player'}),
+    Object.freeze({stage:'RESULT_OR_REWARD',goal:clean(design.progressionDirection)||secondaryDesignAnchor(design)}),
+    Object.freeze({stage:'NEXT_CHOICE',goal:clean(design.coreLoop?.[1])||'expose the next meaningful player choice'}),
+    Object.freeze({stage:'RECOVERY_RETRY',goal:'failure, retry, respawn or re-entry returns to a valid playable state without changing protected rules'})
+  ]);
+  const focusStageBySurface={
+    GAME_START:'ENTRY_ORIENTATION',CHARACTER_BOOT:'ENTRY_ORIENTATION',FTUE_ONBOARDING:'ENTRY_ORIENTATION',
+    MOBILE_UI:'PLAYER_ACTION',INTERACTION_CHAIN:'PLAYER_ACTION',ACTION_IMPLEMENTATION:'PLAYER_ACTION',
+    SERVER_CLIENT_BOUNDARY:'AUTHORITY_AND_CONDITION',MULTIPLAYER_SYNC:'AUTHORITY_AND_CONDITION',
+    SYSTEM_TRANSACTION:'STATE_CHANGE',QUEST_LOOP:'STATE_CHANGE',COMBAT_AI:'STATE_CHANGE',SAVE_REJOIN:'STATE_CHANGE',
+    VFX_FEEDBACK:'FEEDBACK',AUDIO:'FEEDBACK',CAMERA:'FEEDBACK',CHARACTER_MOTION:'FEEDBACK',VISUAL_RUNTIME:'FEEDBACK',
+    REWARD_LOOP:'RESULT_OR_REWARD',PROGRESSION:'RESULT_OR_REWARD',ECONOMY:'RESULT_OR_REWARD',
+    WORLD_TRAVEL:'NEXT_CHOICE',MAP_ROUTEABILITY:'NEXT_CHOICE',WORLD_GEOMETRY:'NEXT_CHOICE',
+    FAILURE_RECOVERY:'RECOVERY_RETRY',CHARACTER_RESPAWN:'RECOVERY_RETRY'
+  };
+  const selectedStage=focusStageBySurface[clean(primaryFailure?.repairSurface).toUpperCase()]||(
+    focus==='STABILITY'?'RECOVERY_RETRY':focus==='PROGRESSION'?'RESULT_OR_REWARD':focus==='USABILITY'?'PLAYER_ACTION':focus==='PRESENTATION'?'FEEDBACK':'STATE_CHANGE'
+  );
+  return Object.freeze({
+    version:1,
+    sequence:chain,
+    selectedStage,
+    primaryFailure,
+    observedFailures:Object.freeze(failures.slice(0,8)),
+    responsibleAnchors:Object.freeze(sourceResponsibilities.slice(0,4).map(row=>Object.freeze({
+      file:row.file,symbol:row.symbol||'UNKNOWN',acceptance:row.observableAcceptance
+    }))),
+    repairRule:'repair the earliest broken stage that causally prevents later stages; keep the full action-to-next-choice chain connected',
+    successRule:'the selected stage and every downstream stage affected by the repair must show an observable runtime or play-state effect; source delta alone is insufficient'
+  });
+}
+function buildGameDna({design={},identity='',anchor='',secondary=''}={}){
+  return Object.freeze({
+    version:1,
+    source:'APPROVED_DESIGN_AND_EXISTING_GAME_ONLY',
+    identity:clean(identity),
+    coreFun:clean(design.coreFun)||clean(anchor),
+    coreLoop:Object.freeze((design.coreLoop||[]).slice(0,8)),
+    signatureChoices:Object.freeze((design.signatureSystems||[]).slice(0,8).map(system=>Object.freeze({
+      name:clean(system.name),purpose:clean(system.purpose),playerChoice:clean(system.playerChoice)
+    }))),
+    progressionDirection:clean(design.progressionDirection)||null,
+    multiplayerMode:clean(design.multiplayerMode)||null,
+    primaryIdentityAnchor:clean(anchor),
+    secondaryIdentityAnchor:clean(secondary),
+    genericizationForbidden:true,
+    crossGameStyleCopyForbidden:true,
+    unknownStyleMustRemainUnknown:true,
+    preserve:Object.freeze(['CORE_IDENTITY','SIGNATURE_PLAYER_CHOICES','APPROVED_PROGRESS_FLOW','SAVE_MEANING','NETWORK_AUTHORITY'])
+  });
+}
+
 function domainState(domain,{design={},source={}}={}){
   const s=source?.signals||{};
   const relevantByText=qualitySignalText([
@@ -965,6 +1040,19 @@ export function buildGameSpecificBuildUpDirective({
     whyThisAnchor:`${row.file}::${row.symbol||'UNKNOWN'}이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨`,
     observableAcceptance:`${row.file}에 실제 source delta가 있고 관련 QA/runtime에서 ${focus} 상태 변화와 expected player effect가 관찰되어야 함`
   }));
+  const gameDna=buildGameDna({design,identity,anchor,secondary});
+  const playChainContract=buildPlayChainContract({design,runtimeEvidence,focus,expectedEffect,sourceResponsibilities});
+  const microIterationContract=Object.freeze({
+    version:1,
+    primaryRepairSurface:clean(playChainContract.primaryFailure?.repairSurface)||null,
+    primaryScenario:clean(playChainContract.primaryFailure?.id)||null,
+    selectedPlayChainStage:playChainContract.selectedStage,
+    preferredResponsibleFileCount:Object.freeze([1,3]),
+    unrelatedExpansionDeferred:true,
+    connectedDependenciesRequired:true,
+    exactStudioRecheckRequired:clean(platform).toUpperCase()==='ROBLOX',
+    completionRule:'one coherent player-facing repair must close its selected play-chain stage and preserve connected downstream behavior before moving to an unrelated gap'
+  });
   const robloxNativeExecution=Object.freeze({
     version:1,
     required:true,
@@ -1071,6 +1159,9 @@ export function buildGameSpecificBuildUpDirective({
     sourceRoot:posix(sourceRoot),
     sourceTreeFingerprint:source.sourceTreeFingerprint,
     designFingerprint:sha(JSON.stringify(design)),
+    gameDna,
+    playChainContract,
+    microIterationContract,
     gameIdentityAndNonNegotiables:{
       identity,
       coreFun:design.coreFun,
