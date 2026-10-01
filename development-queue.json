@@ -67,7 +67,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-10-01T12:38:36.156Z",
+      "updatedAt": "2026-10-01T12:39:52.522Z",
       "robloxSourceCommit": "6dee743c5806ce9b93517e99e114e209ce64bd29",
       "robloxSourceBootstrapPassedAt": "2026-10-01T12:16:42.281Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -77,7 +77,7 @@
       "robloxBuildSourceRevision": "6dee743c5806ce9b93517e99e114e209ce64bd29",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-01T12:38:36.156Z",
+      "robloxBuildFailedAt": "2026-10-01T12:39:52.522Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -4757,7 +4757,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T12:38:51.500Z",
+      "updatedAt": "2026-10-01T12:39:52.522Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -4769,10 +4769,10 @@
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
+      "robloxBuildSourceRevision": "64f06f1e64124352ebd457126a337f155f6e57c4",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": null,
+      "robloxBuildFailedAt": "2026-10-01T12:39:52.522Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -4815,9 +4815,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
+      "robloxFailureSignature": "roblox-build-package-failed",
       "routingBlockers": [
-        "roblox-build-package-pending"
+        "roblox-build-package:roblox-build-package-failed"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -27480,7 +27480,7 @@
       "unityCanonicalEvidenceBound": false
     }
   ],
-  "updatedAt": "2026-10-01T12:39:07.371Z",
+  "updatedAt": "2026-10-01T12:39:52.522Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
