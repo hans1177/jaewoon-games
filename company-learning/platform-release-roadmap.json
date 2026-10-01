@@ -8565,8 +8565,6 @@
       "implementationState": "IMPLEMENTED_MAIN"
     },
     "playableWebMandatoryDeployment20261002": {
-      "id": "PLAYABLE_WEB_MANDATORY_DEPLOYMENT_2026-10-02",
-      "authority": "OWNER_DIRECTIVE_2026-10-02",
       "nativeHomepageReadinessRequired": false,
       "cloudflareMainRequiredBeforeVibePass": true,
       "nextBuildUpBeforeDeploymentSuccessForbidden": true,
@@ -26135,8 +26133,8 @@
     "webInternalPriority": {
       "scope": "WEB_ONLY",
       "globalPlatformPriorityUnchanged": true,
-      "recentOwnerWebEligibility": "ownerDirectWebUpload && webDevelopmentResetRequired && web-games/<gameId> exists && homepageWebPlayable!=true",
-      "recentPriorityEndsWhen": "homepageWebPlayable=true"
+      "recentOwnerWebEligibility": "ownerDirectWebUpload&&webDevelopmentResetRequired&&sourceExists&&!homepageWebPlayable",
+      "recentPriorityEndsWhen": "homepageWebPlayable"
     }
   },
   "robloxNativeCodingQualityContract": {
