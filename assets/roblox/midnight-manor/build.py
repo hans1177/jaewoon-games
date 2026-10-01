@@ -259,57 +259,145 @@ def palette(s):
       'roof':(.045,.07,.095),'brass':(.34,.25,.14),'bone':(.69,.67,.51),'ivory':(.79,.72,.54),
       'black':(.022,.026,.031),'amber':(1,.52,.13),'red':(.12,.012,.027),'glass':(.13,.26,.28)}.items()}
 
-# NPC: 기존 글비를 정규화해 재사용하고, 역할별 얼굴·복장·소품을 직접 구성한다.
+# NPC: 각 역할을 별도 얼굴/체형/의상/소품으로 직접 제작한다.
+# 동일 bride head/몸체 재탕은 사용하지 않는다. 모바일 실루엣과 근접 얼굴 판독을 동시에 목표로 한다.
 def npc(s,kind,pos):
-    if kind=='Undertaker':
-        p=s.prop('bride','bride','Undertaker',pos,8.3,rot=-.20)
-        c=palette(s)
-        # 기존 장식 선택에서 사용하는 모자는 의상실 진열대에도 유지한다.
-        s.lathe('UndertakerHatBrim',(3.2,5,0),1.1,1.1,.15,c['black'],parent=p)
-        s.lathe('UndertakerHat',(3.2,5.8,0),.7,.6,1.5,c['black'],parent=p)
-        s.lathe('UndertakerHatRibbon',(3.2,5.35,0),.72,.72,.22,c['red'],parent=p)
-        return p
-    c=palette(s);p=s.node(kind,pos=pos)
-    h=10.7 if kind=='Butler' else 7.5
-    w=1.9 if kind=='Butler' else 2.9
+    c=palette(s)
+    profiles={
+      'Butler':{
+        'h':10.9,'w':1.78,'lean':-.035,'skin':s.material('ButlerSkin',(.58,.53,.47)),
+        'coat':s.material('ButlerCoat',(.025,.032,.038)),'vest':s.material('ButlerVest',(.075,.085,.09)),
+        'accent':s.material('ButlerWine',(.22,.025,.05)),'hair':s.material('ButlerHair',(.025,.022,.024)),
+        'eye':s.material('ButlerIris',(.075,.09,.075)),'jaw':1.02,'nose':1.14,'head':(.86,1.12,.88),
+      },
+      'Undertaker':{
+        'h':9.65,'w':2.06,'lean':.095,'skin':s.material('UndertakerSkin',(.47,.49,.47)),
+        'coat':s.material('UndertakerCoat',(.018,.022,.028)),'vest':s.material('UndertakerVest',(.055,.042,.05)),
+        'accent':s.material('UndertakerWine',(.28,.018,.045)),'hair':s.material('UndertakerHair',(.018,.021,.024)),
+        'eye':s.material('UndertakerIris',(.11,.075,.065)),'jaw':.91,'nose':1.02,'head':(.92,1.04,.94),
+      },
+      'Archivist':{
+        'h':8.85,'w':1.72,'lean':.13,'skin':s.material('ArchivistSkin',(.54,.50,.43)),
+        'coat':s.material('ArchivistCoat',(.06,.105,.10)),'vest':s.material('ArchivistVest',(.105,.075,.055)),
+        'accent':s.material('ArchivistInk',(.075,.055,.095)),'hair':s.material('ArchivistHair',(.085,.075,.065)),
+        'eye':s.material('ArchivistIris',(.095,.12,.11)),'jaw':.86,'nose':.96,'head':(.80,1.08,.84),
+      },
+    }
+    q=profiles[kind];h=q['h'];w=q['w']
+    p=s.node(kind,pos=pos)
+    p.rotation_euler.y=q['lean']
+
+    # 하체: 허벅지/종아리/신발을 분리해 막대기 실루엣을 피한다.
+    stance=.32 if kind=='Butler' else .38 if kind=='Undertaker' else .29
     for side in [-1,1]:
-        s.lathe(kind+'_Leg'+str(side),(side*w*.24,h*.23,0),.23,.20,h*.4,c['black'],parent=p)
-        s.ellipsoid(kind+'_Shoe'+str(side),(side*w*.24,.4,.4),(.75,.7,1.7),c['black'],parent=p)
-    rings=[(h*.36,w*.57,.66),(h*.44,w*.56,.66),(h*.55,w*.39,.52),(h*.64,w*.48,.61),(h*.71,w*.63,.64),(h*.735,w*.35,.47)]
-    verts=[];faces=[]
-    for y,rx,rz in rings:
-        for i in range(32):
-            a=i*math.tau/32;verts.append((math.cos(a)*rx,y,math.sin(a)*rz))
-    for j in range(len(rings)-1):
-        for i in range(32):faces.append((j*32+i,j*32+(i+1)%32,(j+1)*32+(i+1)%32,(j+1)*32+i))
-    data=s.mesh(kind+'_Tailcoat',verts,faces,c['black'] if kind=='Butler' else c['teal'])
-    for poly in data.polygons:poly.use_smooth=True
-    s.node(kind+'_Coat',data,parent=p)
-    s.ellipsoid(kind+'_Shoulders',(0,h*.69,0),(w*1.3,.8,1.1),c['black'],parent=p)
-    s.box(kind+'_Shirt',(0,h*.64,.63),(.62,1.85,.12),c['ivory'],parent=p)
+        sx=side*w*stance
+        thigh=s.ellipsoid(kind+'_Thigh'+str(side),(sx,h*.28,0),(w*.42,h*.31,w*.46),q['coat'],parent=p)
+        shin=s.ellipsoid(kind+'_Shin'+str(side),(sx,h*.105,.03),(w*.33,h*.24,w*.38),c['black'],parent=p)
+        shoe=s.ellipsoid(kind+'_Shoe'+str(side),(sx,.34,.33),(w*.56,.62,1.52 if kind!='Archivist' else 1.28),c['black'],parent=p)
+        shoe.rotation_euler.x=.08 if kind=='Butler' else -.04
+
+    # 몸통: 셔츠/조끼/코트/라펠을 실제 레이어로 분리한다.
+    s.ellipsoid(kind+'_Pelvis',(0,h*.405,0),(w*1.18,h*.18,w*.78),q['coat'],parent=p)
+    s.ellipsoid(kind+'_Ribcage',(0,h*.585,0),(w*1.42,h*.34,w*.82),q['coat'],parent=p)
+    s.box(kind+'_ShirtFront',(0,h*.59,.48),(w*.58,h*.245,.16),c['ivory'],parent=p)
+    s.box(kind+'_Waistcoat',(0,h*.545,.58),(w*.74,h*.19,.13),q['vest'],parent=p)
+    for i in range(4):
+        s.ellipsoid(kind+'_Button'+str(i),(0,h*.615-i*h*.035,.69),(.13,.13,.075),c['brass'],parent=p)
     for side in [-1,1]:
-        lapel=s.box(kind+'_Lapel'+str(side),(side*.45,h*.65,.65),(.38,1.7,.13),c['teal'],parent=p,lean=-side*.23)
-        s.ellipsoid(kind+'_Sleeve'+str(side),(side*w*.62,h*.57,0),(.55,h*.26,.65),c['black'],parent=p)
-        s.lathe(kind+'_Cuff'+str(side),(side*w*.65,h*.37,0),.29,.29,.32,c['ivory'],parent=p)
-        s.ellipsoid(kind+'_Glove'+str(side),(side*w*.65,h*.32,.08),(.52,.84,.45),c['bone'],parent=p)
-        for finger in range(4):s.lathe(kind+'_Finger'+str(side)+str(finger),(side*w*.65-.18+finger*.12,h*.265,.14),.055,.038,.62,c['bone'],parent=p)
-    for i in range(4):s.ellipsoid(kind+'_Button'+str(i),(0,h*.68-i*.43,.66),(.12,.12,.07),c['brass'],parent=p)
-    s.box(kind+'_BowTie',(0,h*.735,.83),(.9,.22,.17),c['red'],parent=p)
-    s.lathe(kind+'_Neck',(0,h*.78,0),.23,.20,h*.1,c['bone'],parent=p)
-    hp=(0,h*.80,0) if kind=='Butler' else (2.2,3.75,.5)
-    head=s.prop('bridehead','head',kind+'Head',hp,2.5,stretch=(.86,1.10,.90))
-    head.parent=p
-    for o in head.children:o.name=kind+'_Skull'+o.name.split('_')[-1]
-    # 잘 정돈된 옆머리·수염이 기존 얼굴 원형에 집사/기록관의 성격을 만든다.
+        lapel=s.box(kind+'_Lapel'+str(side),(side*w*.245,h*.635,.64),(w*.30,h*.245,.11),q['coat'],parent=p,lean=-side*.19)
+        # 어깨와 팔을 별도 볼륨으로 만들어 정면/측면 모두 읽히게 한다.
+        s.ellipsoid(kind+'_Shoulder'+str(side),(side*w*.69,h*.665,.01),(w*.46,h*.105,w*.54),q['coat'],parent=p)
+        arm=s.node(kind+'_ArmRig'+str(side),pos=(side*w*.70,h*.55,.02),parent=p)
+        arm.rotation_euler.y=(.08 if kind=='Butler' else -.16 if kind=='Undertaker' else -.24)*side
+        arm.rotation_euler.x=.06 if kind=='Butler' else .11
+        s.ellipsoid(kind+'_UpperArm'+str(side),(0,0,0),(w*.42,h*.25,w*.45),q['coat'],parent=arm)
+        s.ellipsoid(kind+'_Forearm'+str(side),(0,-h*.18,.04),(w*.34,h*.22,w*.36),q['vest'] if kind=='Archivist' else q['coat'],parent=arm)
+        s.lathe(kind+'_Cuff'+str(side),(0,-h*.30,.05),w*.18,w*.18,h*.035,c['ivory'],parent=arm)
+        hand=s.ellipsoid(kind+'_Hand'+str(side),(0,-h*.35,.10),(w*.31,h*.09,w*.32),q['skin'],parent=arm)
+        for finger in range(4):
+            fx=(finger-1.5)*w*.072
+            s.lathe(kind+'_Finger'+str(side)+'_'+str(finger),(fx,-h*.405,.17),w*.033,w*.024,h*.095,q['skin'],parent=arm)
+        s.lathe(kind+'_Thumb'+str(side),(side*w*.12,-h*.37,.19),w*.035,w*.027,h*.09,q['skin'],parent=arm)
+
+    # 코트 테일은 캐릭터마다 길이/폭이 다르다.
+    tail_len=.33 if kind=='Butler' else .38 if kind=='Undertaker' else .21
     for side in [-1,1]:
-        s.ellipsoid(kind+'_SkullHair'+str(side),(side*.61,2.27,-.06),(.47,.75,1.0),c['black'],parent=head)
-        s.ellipsoid(kind+'_MouthWhisker'+str(side),(side*.20,.80,.65),(.43,.10,.14),c['black'],parent=head)
+        tail=s.box(kind+'_CoatTail'+str(side),(side*w*.23,h*(.39-tail_len*.45),-.18),(w*.52,h*tail_len,.20),q['coat'],parent=p,lean=side*(.12 if kind!='Archivist' else .05))
+        tail.rotation_euler.x=.035*side
+
+    # 목과 얼굴. 세 NPC 모두 서로 다른 비율과 골격을 직접 구성한다.
+    s.lathe(kind+'_Neck',(0,h*.755,0),w*.17,w*.15,h*.095,q['skin'],parent=p)
+    hx,hy,hz=q['head']
+    head_y=h*.865
+    s.ellipsoid(kind+'_Head',(0,head_y,0),(w*hx,h*.175*hy,w*hz),q['skin'],parent=p)
+    # 광대/턱 볼륨
+    s.ellipsoid(kind+'_CheekL',(-w*.22,head_y-.04,.30),(w*.27,h*.055,w*.24),q['skin'],parent=p)
+    s.ellipsoid(kind+'_CheekR',(w*.22,head_y-.04,.30),(w*.27,h*.055,w*.24),q['skin'],parent=p)
+    s.ellipsoid(kind+'_Jaw',(0,head_y-h*.062,.15),(w*.58*q['jaw'],h*.075,w*.55),q['skin'],parent=p)
+    # 코
+    nose=s.ellipsoid(kind+'_Nose',(0,head_y+.008,.58),(w*.16*q['nose'],h*.062,w*.20*q['nose']),q['skin'],parent=p)
+    nose.rotation_euler.x=-.10 if kind=='Butler' else .02
+    # 눈/홍채/눈꺼풀/눈썹
+    for side in [-1,1]:
+        ex=side*w*.205
+        s.ellipsoid(kind+'_Sclera'+str(side),(ex,head_y+h*.028,.55),(w*.20,h*.045,w*.10),c['ivory'],parent=p)
+        s.ellipsoid(kind+'_Iris'+str(side),(ex,head_y+h*.028,.605),(w*.075,h*.027,w*.035),q['eye'],parent=p)
+        s.ellipsoid(kind+'_Pupil'+str(side),(ex,head_y+h*.028,.625),(w*.032,h*.015,w*.018),c['black'],parent=p)
+        lid=s.box(kind+'_UpperLid'+str(side),(ex,head_y+h*.054,.603),(w*.22,h*.018,.026),q['skin'],parent=p,lean=-side*.03)
+        brow=s.box(kind+'_Brow'+str(side),(ex,head_y+h*.082,.615),(w*.24,h*.023,.035),q['hair'],parent=p,lean=side*(.08 if kind=='Undertaker' else -.04 if kind=='Butler' else .02))
+    # 입술/인중/귀
+    s.ellipsoid(kind+'_UpperLip',(0,head_y-h*.045,.61),(w*.31,h*.022,.045),q['accent'] if kind=='Undertaker' else s.material(kind+'Lip',(.22,.10,.11)),parent=p)
+    s.ellipsoid(kind+'_LowerLip',(0,head_y-h*.061,.615),(w*.27,h*.018,.042),s.material(kind+'Lip',(.22,.10,.11)),parent=p)
+    for side in [-1,1]:
+        s.ellipsoid(kind+'_Ear'+str(side),(side*w*.46,head_y+.005,.02),(w*.15,h*.075,w*.10),q['skin'],parent=p)
+
+    # 역할별 헤어/수염/표정 실루엣.
     if kind=='Butler':
-        s.lathe('Butler_Tray',(w*.65,h*.32+.40,.62),.9,.9,.10,c['brass'],parent=p)
-        s.lathe('Butler_Candle',(w*.65,h*.32+.95,.62),.14,.14,1,c['ivory'],parent=p)
+        s.ellipsoid('Butler_HairCrown',(0,head_y+h*.095,-.03),(w*.83,h*.095,w*.73),q['hair'],parent=p)
+        for side in [-1,1]:
+            s.ellipsoid('Butler_HairSide'+str(side),(side*w*.34,head_y+h*.055,-.03),(w*.28,h*.11,w*.38),q['hair'],parent=p)
+            s.ellipsoid('Butler_Moustache'+str(side),(side*w*.12,head_y-h*.035,.64),(w*.22,h*.022,.045),q['hair'],parent=p)
+        s.ellipsoid('Butler_EyeBagL',(-w*.20,head_y+h*.006,.59),(w*.20,h*.018,.025),q['vest'],parent=p)
+        s.ellipsoid('Butler_EyeBagR',(w*.20,head_y+h*.006,.59),(w*.20,h*.018,.025),q['vest'],parent=p)
+        s.box('Butler_BowTie',(0,h*.735,.78),(w*.88,h*.035,.16),q['accent'],parent=p)
+        s.lathe('Butler_Tray',(w*.78,h*.335,.72),w*.56,w*.56,.10,c['brass'],parent=p)
+        s.lathe('Butler_Candle',(w*.78,h*.405,.72),.13,.11,h*.12,c['ivory'],parent=p)
+        s.ellipsoid('Butler_CandleFlame',(w*.78,h*.48,.72),(.20,.55,.18),c['amber'],parent=p)
+    elif kind=='Undertaker':
+        # 큰 챙 모자와 뒤로 처진 코트가 실루엣을 결정한다.
+        s.ellipsoid('Undertaker_HairBack',(0,head_y+h*.03,-.16),(w*.88,h*.18,w*.86),q['hair'],parent=p)
+        s.lathe('Undertaker_HatBrim',(0,head_y+h*.135,0),w*.78,w*.78,h*.025,c['black'],parent=p)
+        s.lathe('Undertaker_HatCrown',(0,head_y+h*.205,-.02),w*.46,w*.38,h*.16,c['black'],parent=p)
+        s.lathe('Undertaker_HatRibbon',(0,head_y+h*.155,.02),w*.48,w*.48,h*.025,q['accent'],parent=p)
+        s.ellipsoid('Undertaker_CheekShadowL',(-w*.26,head_y-h*.02,.53),(w*.20,h*.06,.025),q['vest'],parent=p)
+        s.ellipsoid('Undertaker_CheekShadowR',(w*.26,head_y-h*.02,.53),(w*.20,h*.06,.025),q['vest'],parent=p)
+        s.box('Undertaker_Ledger',(w*.62,h*.43,.66),(w*.72,h*.18,.18),q['accent'],parent=p)
+        s.box('Undertaker_LedgerBand',(w*.62,h*.43,.77),(w*.14,h*.19,.025),c['brass'],parent=p)
+        # 삽 손잡이/날
+        s.lathe('Undertaker_SpadeHandle',(-w*.70,h*.37,-.12),.055,.055,h*.55,s.material('DarkWood',(.10,.045,.025)),parent=p)
+        s.box('Undertaker_SpadeBlade',(-w*.70,h*.09,-.10),(w*.38,h*.10,w*.48),c['stone'],parent=p)
     else:
-        s.box('Archivist_Ledger',(0,3.5,.90),(2.1,2.4,.3),c['red'],parent=p)
-        s.box('Archivist_LedgerLabel',(0,3.5,1.07),(1.4,1.4,.07),c['ivory'],parent=p)
+        # 기록관: 듬성한 머리, 안경, 잉크 묻은 손, 장부/펜/열쇠.
+        s.ellipsoid('Archivist_HairBack',(0,head_y+h*.075,-.10),(w*.72,h*.105,w*.68),q['hair'],parent=p)
+        for side in [-1,1]:
+            s.ellipsoid('Archivist_HairWisp'+str(side),(side*w*.30,head_y+h*.11,.02),(w*.17,h*.11,w*.22),q['hair'],parent=p)
+            s.ellipsoid('Archivist_GlassLens'+str(side),(side*w*.205,head_y+h*.03,.64),(w*.235,h*.06,.025),c['glass'],parent=p)
+            s.lathe('Archivist_GlassRim'+str(side),(side*w*.205,head_y+h*.03,.655),w*.135,w*.135,.025,c['brass'],parent=p)
+        s.box('Archivist_GlassBridge',(0,head_y+h*.03,.66),(w*.16,h*.018,.025),c['brass'],parent=p)
+        s.ellipsoid('Archivist_InkStainL',(-w*.71,h*.20,.18),(w*.13,h*.05,w*.14),q['accent'],parent=p)
+        s.box('Archivist_Ledger',(w*.54,h*.40,.71),(w*.82,h*.24,.20),q['accent'],parent=p)
+        s.box('Archivist_LedgerLabel',(w*.54,h*.40,.825),(w*.50,h*.12,.025),c['ivory'],parent=p)
+        s.lathe('Archivist_Pen',(w*.15,h*.46,.86),.025,.015,h*.18,c['brass'],parent=p)
+        s.lathe('Archivist_KeyStem',(-w*.55,h*.32,.58),.025,.025,h*.13,c['brass'],parent=p)
+        s.ellipsoid('Archivist_KeyBow',(-w*.55,h*.40,.58),(w*.16,h*.08,.035),c['brass'],parent=p)
+
+    # 역할별 기본 포즈: 정자세 마네킹 금지.
+    if kind=='Butler':
+        p.rotation_euler.z=math.radians(-1.5)
+    elif kind=='Undertaker':
+        p.rotation_euler.z=math.radians(2.5)
+    else:
+        p.rotation_euler.z=math.radians(-3.0)
     return p
 
 def build():
@@ -566,7 +654,7 @@ def build():
     bpy.ops.wm.save_as_mainfile(filepath=str(OUT/'manor.blend'),compress=True)
     for kind in ['Butler','Undertaker','Archivist']:
         p=Scene();npc(p,kind,(0,0,0));results.append(p.write(OUT/(kind.lower()+'.glb')))
-    (OUT/'build-evidence.json').write_text(json.dumps({'generator':'Blender '+bpy.app.version_string+' / build.py','normalization':{'up':'Y','forward':'+Z','origin':'GROUND_CENTER','units':'STUD','textures':'EMBEDDED','interactionPrefixesPreserved':True},'reusedOriginals':['Kenney CC0 furniture','Kenney CC0 graveyard architecture','world-ghosts/native/mesh/bride.glb'],'actualRobloxPlayTest':False,'originalHotelAssetsUsed':False,'style':'괴물 가족의 살아 있는 저택','layers':['foreground','walkable_3d','portrait_relief','midground','background'],'modifiedCC0Props':['bookcaseClosed','chairCushion','coffin','character-ghost','tableRound'],'bounds':{'width':hi.x-lo.x,'height':hi.z-lo.z,'depth':hi.y-lo.y},'models':results},ensure_ascii=False,indent=2)+'\n')
+    (OUT/'build-evidence.json').write_text(json.dumps({'generator':'Blender '+bpy.app.version_string+' / build.py','normalization':{'up':'Y','forward':'+Z','origin':'GROUND_CENTER','units':'STUD','textures':'EMBEDDED','interactionPrefixesPreserved':True},'reusedOriginals':['Kenney CC0 furniture','Kenney CC0 graveyard architecture'],'actualRobloxPlayTest':False,'originalHotelAssetsUsed':False,'style':'괴물 가족의 살아 있는 저택','layers':['foreground','walkable_3d','portrait_relief','midground','background'],'modifiedCC0Props':['bookcaseClosed','chairCushion','coffin','character-ghost','tableRound'],'npcGeometry':'DIRECT_PROCEDURAL_ROLE_SPECIFIC_V3','bounds':{'width':hi.x-lo.x,'height':hi.z-lo.z,'depth':hi.y-lo.y},'models':results},ensure_ascii=False,indent=2)+'\n')
     print(json.dumps(results,indent=2))
     import sys
     if '--render' in sys.argv:render_export()
@@ -602,6 +690,47 @@ def render_export():
     for name,pos,target in [('interior',(-2,10,-6),(0,8,-27)),('butler',(0,8,-5),(5,6,-9))]:
         o.location=xyz(pos);o.rotation_euler=(Vector(xyz(target))-o.location).to_track_quat('-Z','Y').to_euler()
         sc.render.filepath=str(review/(name+'.png'));bpy.ops.render.render(write_still=True)
-    (review/'evidence.json').write_text(json.dumps({'renderer':'Blender '+bpy.app.version_string+' Cycles','input':'generated/manor-lobby.glb','sha256':hashlib.sha256((OUT/'manor-lobby.glb').read_bytes()).hexdigest(),'method':'Import exported GLB into empty scene, then render','actualRobloxPlayTest':False},indent=2)+'\n')
+
+    # NPC 별 실제 export GLB를 다시 불러 정면/3/4/전신을 검수한다.
+    npc_reviews={}
+    for kind in ['butler','undertaker','archivist']:
+        bpy.ops.wm.read_factory_settings(use_empty=True)
+        bpy.ops.import_scene.gltf(filepath=str(OUT/(kind+'.glb')))
+        npc_world=bpy.data.worlds.new('NPCReviewWorld_'+kind);npc_world.use_nodes=True
+        npc_world.node_tree.nodes['Background'].inputs[0].default_value=(.028,.03,.036,1)
+        npc_world.node_tree.nodes['Background'].inputs[1].default_value=.42
+        bpy.context.scene.world=npc_world
+        npc_collection=bpy.context.scene.collection
+        def npc_light(name,pos,energy,color,size):
+            data=bpy.data.lights.new(name,'AREA');data.energy=energy;data.color=color;data.size=size
+            obj=bpy.data.objects.new(name,data);npc_collection.objects.link(obj);obj.location=xyz(pos)
+            obj.rotation_euler=(Vector(xyz((0,5,0)))-obj.location).to_track_quat('-Z','Y').to_euler()
+        npc_light('NPCKey',(-4,8,6),2100,(1,.72,.48),5)
+        npc_light('NPCFill',(4,6,4),1250,(.45,.62,1),4)
+        npc_light('NPCRim',(0,8,-5),1550,(.75,.82,1),4)
+        cam_data=bpy.data.cameras.new('NPCReviewCamera');cam=bpy.data.objects.new('NPCReviewCamera',cam_data);npc_collection.objects.link(cam)
+        bpy.context.scene.camera=cam;cam_data.lens=58
+        sc=bpy.context.scene;sc.render.engine='CYCLES';sc.cycles.samples=20;sc.cycles.use_denoising=True
+        sc.render.resolution_x=720;sc.render.resolution_y=900;sc.render.resolution_percentage=100
+        sc.view_settings.view_transform='AgX';sc.view_settings.look='AgX - Medium High Contrast';sc.view_settings.exposure=.7
+        files=[]
+        for view,pos,target in [
+            ('front',(0,5.2,14),(0,5.2,0)),
+            ('three-quarter',(7.8,5.6,10.5),(0,5.0,0)),
+            ('full-body',(0,6.1,18),(0,5.0,0)),
+        ]:
+            cam.location=xyz(pos);cam.rotation_euler=(Vector(xyz(target))-cam.location).to_track_quat('-Z','Y').to_euler()
+            name=kind+'-'+view+'.png';sc.render.filepath=str(review/name);bpy.ops.render.render(write_still=True);files.append(name)
+        npc_reviews[kind]=files
+    (review/'evidence.json').write_text(json.dumps({
+      'renderer':'Blender '+bpy.app.version_string+' Cycles',
+      'input':'generated/manor-lobby.glb',
+      'sha256':hashlib.sha256((OUT/'manor-lobby.glb').read_bytes()).hexdigest(),
+      'method':'Import exported manor and each exported NPC GLB into empty scenes, then render',
+      'npcReviewFiles':npc_reviews,
+      'npcRoleSpecificGeometry':True,
+      'sharedBrideHeadUsedForNPCs':False,
+      'actualRobloxPlayTest':False
+    },indent=2)+'\n')
 
 if __name__=='__main__':build()
