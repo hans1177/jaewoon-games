@@ -64,10 +64,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
-      "canonicalState": "F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION",
+      "currentStep": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "canonicalState": "ROBLOX_RUNTIME_ACCEPTANCE_PASSED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-10-01T21:37:34.059Z",
+      "updatedAt": "2026-10-01T21:40:49.056Z",
       "robloxSourceCommit": "caf107a8a2415fafa179b1e076d93704506398c9",
       "robloxSourceBootstrapPassedAt": "2026-10-01T21:37:10.374Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -369,9 +369,11 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "F9_RELEASE_REGRESSION",
-      "robloxFailureStage": null,
-      "robloxFailureSignature": null,
-      "routingBlockers": [],
+      "robloxFailureStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "robloxFailureSignature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "routingBlockers": [
+        "roblox-final-review-pending"
+      ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -1756,13 +1758,13 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-01T20:18:26.331Z"
+        "verifiedAt": "2026-10-01T21:40:49.056Z"
       },
       "robloxRuntimeEvidenceReuse": {
         "sourceRevision": "caf107a8a2415fafa179b1e076d93704506398c9",
         "artifactIdentity": "sha256:fc2c92e482f47e15e9ae7db9dd7fab2861b633fbe87d53b14bde0d291c711f6a",
         "candidateVersionNumber": 36864811737,
-        "reusedAt": "2026-10-01T20:18:26.331Z",
+        "reusedAt": "2026-10-01T21:40:49.056Z",
         "reusedServerBootEvidence": false,
         "reusedStudioInternalEvidence": true,
         "reason": "EXACT_SOURCE_ARTIFACT_VERSION_STUDIO_INTERNAL_EVIDENCE_ALREADY_VERIFIED"
@@ -5302,10 +5304,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
-      "canonicalState": "F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION",
+      "currentStep": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "canonicalState": "ROBLOX_RUNTIME_ACCEPTANCE_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T21:37:34.059Z",
+      "updatedAt": "2026-10-01T21:40:49.056Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -5644,9 +5646,11 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "F9_RELEASE_REGRESSION",
-      "robloxFailureStage": null,
-      "robloxFailureSignature": null,
-      "routingBlockers": [],
+      "robloxFailureStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "robloxFailureSignature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "routingBlockers": [
+        "roblox-final-review-pending"
+      ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -6962,7 +6966,7 @@
         "sourceRevision": "165f9e2394e51293fcfb61451ad42305ed26d123",
         "artifactIdentity": "sha256:d691735bc0d264243b074be0d5120d93a9c6b5a1ef13c8dba5c1e29cec6846b1",
         "candidateVersionNumber": 36884290818,
-        "reusedAt": "2026-10-01T20:18:26.331Z",
+        "reusedAt": "2026-10-01T21:40:49.056Z",
         "reusedServerBootEvidence": false,
         "reusedStudioInternalEvidence": true,
         "reason": "EXACT_SOURCE_ARTIFACT_VERSION_STUDIO_INTERNAL_EVIDENCE_ALREADY_VERIFIED"
@@ -10057,10 +10061,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "canonicalState": "ROBLOX_INTERNAL_STUDIO_VALIDATION_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T21:40:33.792Z",
+      "updatedAt": "2026-10-01T21:40:49.056Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -10259,8 +10263,19 @@
       "robloxRuntimeCandidateEvidence": null,
       "robloxRuntimeFoundationPassed": false,
       "robloxRuntimeFoundationEvidence": null,
-      "robloxStudioAssetRuntimeBindingPassed": false,
-      "robloxStudioAssetRuntimeBindingEvidence": null,
+      "robloxStudioAssetRuntimeBindingPassed": true,
+      "robloxStudioAssetRuntimeBindingEvidence": {
+        "version": 2,
+        "gameId": "cozy-island",
+        "sourceRevision": "1d5938ed3471d9221bc283a580f4a28e07ead33a",
+        "artifactIdentity": "sha256:2e83865ec0acb0b0742011cb5b79b42e275d2a72eabfcabc44c95c220c65a0ac",
+        "candidateVersionNumber": 36864145547,
+        "localStudioRuntime": true,
+        "officialStudioMcp": true,
+        "marker": "ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS",
+        "authority": "roblox-studio-local-exact-build-asset-binding",
+        "verifiedAt": "2026-10-01T21:40:49.056Z"
+      },
       "robloxRuntimePassed": false,
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
@@ -10270,15 +10285,51 @@
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
       "robloxMultiplayerQaPassed": true,
-      "robloxIndependentQaPassed": false,
-      "robloxIndependentQaPassedAt": null,
-      "robloxRegressionPassed": false,
-      "robloxRegressionPassedAt": null,
+      "robloxIndependentQaPassed": true,
+      "robloxIndependentQaPassedAt": "2026-10-01T21:40:49.056Z",
+      "robloxRegressionPassed": true,
+      "robloxRegressionPassedAt": "2026-10-01T21:40:49.056Z",
       "robloxFinalReviewPassed": false,
       "robloxFinalReviewPassedAt": null,
       "robloxF9ReleaseRegressionPassed": false,
       "robloxF9ReleaseRegressionEvidence": null,
-      "robloxPostRuntimeQaEvidence": null,
+      "robloxPostRuntimeQaEvidence": {
+        "version": 6,
+        "gameId": "cozy-island",
+        "sourceRevision": "1d5938ed3471d9221bc283a580f4a28e07ead33a",
+        "artifactIdentity": "sha256:2e83865ec0acb0b0742011cb5b79b42e275d2a72eabfcabc44c95c220c65a0ac",
+        "artifactRunId": 36864145547,
+        "candidateVersionNumber": 36864145547,
+        "exactRevision": true,
+        "independentQaPassed": true,
+        "regressionPassed": true,
+        "actualRuntimeEvidence": false,
+        "localStudioRuntimeEvidence": true,
+        "internalStudioValidationOnly": true,
+        "externalServerBootRequired": false,
+        "officialStudioMcpActualPlayPassed": true,
+        "multiplayerMode": "COOP",
+        "multiplayerRequired": true,
+        "multiplayerApplicabilityKnown": true,
+        "multiplayerValidationPassed": true,
+        "f7Status": "PASS_CODE_CONTRACT",
+        "studioAssetBindingRequired": true,
+        "studioAssetRuntimeBindingPassed": true,
+        "studioAssetRuntimeBindingEvidence": {
+          "version": 2,
+          "gameId": "cozy-island",
+          "sourceRevision": "1d5938ed3471d9221bc283a580f4a28e07ead33a",
+          "artifactIdentity": "sha256:2e83865ec0acb0b0742011cb5b79b42e275d2a72eabfcabc44c95c220c65a0ac",
+          "candidateVersionNumber": 36864145547,
+          "localStudioRuntime": true,
+          "officialStudioMcp": true,
+          "marker": "ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS",
+          "authority": "roblox-studio-local-exact-build-asset-binding",
+          "verifiedAt": "2026-10-01T21:40:49.056Z"
+        },
+        "authority": "roblox-internal-studio-single-session-qa",
+        "verifiedAt": "2026-10-01T21:40:49.056Z"
+      },
       "robloxInternalReleaseReady": false,
       "robloxInternalReleaseAt": null,
       "robloxInternalReleaseEvidence": null,
@@ -10286,10 +10337,12 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureStage": null,
-      "robloxFailureSignature": null,
-      "routingBlockers": [],
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_REGRESSION",
+      "robloxFailureStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "robloxFailureSignature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "routingBlockers": [
+        "roblox-final-review-pending"
+      ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -11546,9 +11599,9 @@
         "buildOrPackagePassed": true,
         "artifactIdentity": "sha256:67acb032f5adaf5115c55cc99909f34c6727f442042d83e0475b881b470f9c51",
         "runtimePassed": false,
-        "independentQaPassed": false,
+        "independentQaPassed": true,
         "multiplayerPassed": false,
-        "regressionPassed": false,
+        "regressionPassed": true,
         "rawStageResults": {
           "runtime": false,
           "independentQa": false,
@@ -11558,8 +11611,8 @@
         "f0ToF9Passed": false,
         "exactRevision": true,
         "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
-        "failureStage": "F1_SERVER_BOOT",
-        "failureSignature": "97d8233bdd541a516564c9abf205f7f62a9fb10fe95096d491bcb687eae6b111"
+        "failureStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+        "failureSignature": "ROBLOX_FINAL_REVIEW_PENDING"
       },
       "resumeStage": "F1_SERVER_BOOT",
       "failureCount": 1,
@@ -11576,7 +11629,7 @@
       "robloxPublicReleaseBlockers": [
         "roblox-public-release-awaiting-real-server-boot"
       ],
-      "robloxF9PendingInParallel": false,
+      "robloxF9PendingInParallel": true,
       "robloxF9FailureSignature": null,
       "robloxF9Blockers": [],
       "robloxParallelMultiplayerValidationPending": false,
@@ -11609,7 +11662,7 @@
         "bootstrapState": "PUBLISHED_PRIVATE"
       },
       "robloxCanonicalPublishPending": true,
-      "robloxMultiplayerQaPassedAt": "2026-10-01T13:29:44.676Z",
+      "robloxMultiplayerQaPassedAt": "2026-10-01T21:40:49.056Z",
       "robloxMultiplayerQaEvidence": {
         "version": 2,
         "gameId": "cozy-island",
@@ -11627,7 +11680,7 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-01T20:39:16.216Z"
+        "verifiedAt": "2026-10-01T21:40:49.056Z"
       },
       "robloxRuntimeEvidenceReuse": {
         "sourceRevision": "f1edcf85599d6e73120ae474dc867f222b9318d4",
@@ -12036,10 +12089,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
-      "canonicalState": "F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION",
+      "currentStep": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "canonicalState": "ROBLOX_RUNTIME_ACCEPTANCE_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T21:37:34.059Z",
+      "updatedAt": "2026-10-01T21:40:49.056Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -12203,7 +12256,9 @@
         "verifiedAt": "2026-10-01T15:56:27.717Z"
       },
       "robloxRuntimePassed": false,
-      "routingBlockers": [],
+      "routingBlockers": [
+        "roblox-final-review-pending"
+      ],
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "861b8f30962b38f30953215b72a10e314f71d250",
       "robloxBuildArtifactIdentity": "sha256:33037e61da6f8fedd43c60e330b3eb06ed470aa75290e825124257d71049b386",
@@ -12480,8 +12535,8 @@
       "robloxInternalReleaseReady": false,
       "robloxInternalReleaseAt": null,
       "robloxLastSuccessfulStage": "F9_RELEASE_REGRESSION",
-      "robloxFailureStage": null,
-      "robloxFailureSignature": null,
+      "robloxFailureStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "robloxFailureSignature": "ROBLOX_FINAL_REVIEW_PENDING",
       "robloxMultiplayerQaPassed": true,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -13473,14 +13528,14 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-01T20:18:26.331Z"
+        "verifiedAt": "2026-10-01T21:40:49.056Z"
       },
       "robloxF9PendingInParallel": false,
       "robloxRuntimeEvidenceReuse": {
         "sourceRevision": "861b8f30962b38f30953215b72a10e314f71d250",
         "artifactIdentity": "sha256:33037e61da6f8fedd43c60e330b3eb06ed470aa75290e825124257d71049b386",
         "candidateVersionNumber": 36869461926,
-        "reusedAt": "2026-10-01T20:18:26.331Z",
+        "reusedAt": "2026-10-01T21:40:49.056Z",
         "reusedServerBootEvidence": false,
         "reusedStudioInternalEvidence": true,
         "reason": "EXACT_SOURCE_ARTIFACT_VERSION_STUDIO_INTERNAL_EVIDENCE_ALREADY_VERIFIED"
@@ -25584,7 +25639,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T21:40:36.703Z",
+  "updatedAt": "2026-10-01T21:40:49.056Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
