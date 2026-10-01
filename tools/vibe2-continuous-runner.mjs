@@ -310,7 +310,7 @@ function presentationQualityGuidance(contract = {}) {
     '실제 대상 플랫폼 플레이 화면에 컨셉에 맞는 배경/환경, 임시 primitive가 아닌 캐릭터·몬스터 표현, 상태 기반 idle/move/attack/hit/death, gameplay event에 연결된 VFX·카메라, 모바일 터치/프레임 근거가 있어야 PASS다.',
     '마커·설명문·정적 CSS 장식만 추가하거나 컨셉 불일치 배경/모형 몹을 남긴 상태는 presentation 완료로 인정하지 않는다.',
     `atomic-neuron=${contract.atomicNeuron?.mode||'NONE'}; max-variants=${contract.atomicNeuron?.maxVariants||1}; task-micro-fanin=required`,
-    '후보는 격리 브랜치에서 생성하고 같은 task 안에서 micro-fan-in으로 하나만 선택한다. 전역 wave 완료를 기다리지 않는다.',
+    '후보는 격리 브랜치에서 생성하고 같은 task 안에서 micro-fan-in으로 하나만 선택한다. 전역 배치 완료를 기다리지 않는다.',
     '기존 책임 시스템을 직접 수정하고 wrapper/shadow 표현 파이프라인을 만들지 않는다.',
     '표현 품질 수정은 게임 밸런스·저장·진행·판정·네트워크 권한을 바꾸지 않는다.',
     '정적 QA 통과만으로 완료가 아니며 실제 runtime/mobile 검증이 최종 근거다.'
@@ -919,7 +919,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
       centralPolicyMismatchAction:compiledWorkContract.freshness?.mismatchAction||null,
       sourceRootBootstrapAllowed,
       roleSeparation:true, sameFileParallelWrite:false,
-      neuralDiagnosisMode:'PHASE1_SHADOW_ADVISORY', neuralDiagnosisMayReorderWave:false, neuralDiagnosisMayCreateWorker:false,
+      neuralDiagnosisMode:'PHASE1_SHADOW_ADVISORY', neuralDiagnosisMayReorderDirectReservations:false, neuralDiagnosisMayCreateWorker:false,
       speculativeParallelism:tournament.candidateCount>1, speculativeVariants:tournament.candidateCount
     })
   });
