@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {collectRobloxSourceScriptInventory,createRobloxBuildEvidence,resolvePackageSourceValidation,ROBLOX_PACKAGE_TOOL,validateRobloxArtifactScriptInventory} from '../tools/company-development-roblox-package.mjs';
+import {collectRobloxSourceScriptInventory,createRobloxBuildEvidence,resolvePackageSourceValidation,ROBLOX_PACKAGE_TOOL,validateRobloxArtifactLightingMigrationGuard,validateRobloxArtifactScriptInventory} from '../tools/company-development-roblox-package.mjs';
 
 test('Roblox package evidence proves build only and never invents later validation',()=>{
   const evidence=createRobloxBuildEvidence({
@@ -80,6 +80,21 @@ test('Roblox package rejects artifacts missing mapped Luau script classes',()=>{
     const complete=path.join(root,'complete.rbxlx');
     fs.writeFileSync(complete,'<roblox><Item class="Script"></Item><Item class="LocalScript"></Item><Item class="ModuleScript"></Item></roblox>');
     assert.deepEqual(validateRobloxArtifactScriptInventory({artifactPath:complete,expected}),{Script:1,LocalScript:1,ModuleScript:1,total:3});
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
+test('Roblox package rejects a place artifact that can reopen as deprecated Compatibility lighting',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-lighting-guard-'));
+  try{
+    const good=path.join(root,'good.rbxlx');
+    fs.writeFileSync(good,'<roblox><Item class="Lighting"><Properties><token name="Technology">1</token><token name="LightingStyle">1</token><bool name="PrioritizeLightingQuality">false</bool></Properties><Item class="ColorGradingEffect"><Properties><string name="Name">CompatibilityToneMap</string><token name="TonemapperPreset">1</token></Properties></Item></Item></roblox>');
+    assert.equal(validateRobloxArtifactLightingMigrationGuard({artifactPath:good}).pass,true);
+
+    const bad=path.join(root,'bad.rbxlx');
+    fs.writeFileSync(bad,'<roblox><Item class="Lighting"><Properties><token name="LightingStyle">1</token><bool name="PrioritizeLightingQuality">false</bool></Properties></Item></roblox>');
+    assert.throws(()=>validateRobloxArtifactLightingMigrationGuard({artifactPath:bad}),/ROBLOX_LIGHTING_TECHNOLOGY_VOXEL_REQUIRED/);
   }finally{
     fs.rmSync(root,{recursive:true,force:true});
   }
