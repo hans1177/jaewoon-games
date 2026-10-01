@@ -191,6 +191,71 @@ class Scene:
         ]
         return self.loft(name,pos,sections,mat,sides=24,parent=parent)
 
+    def sculpted_face(self,name,pos,size,mat,profile,parent=None):
+        """역할별 얼굴 골격을 한 연속 표면에서 직접 조형한다.
+
+        56방향 x 35단면의 곡면에 턱·광대·안와·눈썹뼈·콧대·인중·턱끝 변위를
+        부드럽게 섞는다. 동일 머리 메시 복제나 primitive 얼굴 조립을 사용하지 않는다.
+        """
+        sides=56;rings=36
+        rx,ry,rz=(size[0]/2,size[1]/2,size[2]/2)
+        verts=[(0,-ry,0)]
+        def gauss(x,y,cx,cy,sx,sy):
+            return math.exp(-(((x-cx)/sx)**2+((y-cy)/sy)**2)*.5)
+        for j in range(1,rings):
+            lat=-math.pi/2+math.pi*j/rings
+            cl=math.cos(lat);yn=math.sin(lat)
+            for i in range(sides):
+                a=math.tau*i/sides
+                ca,sa=math.cos(a),math.sin(a)
+                xn=cl*ca
+                front=max(0.0,sa)**3
+                # 하악·관자·광대 폭을 역할별로 따로 만든다.
+                jaw_t=max(0.0,min(1.0,(-yn-.03)/.78))
+                temple_t=max(0.0,min(1.0,(yn-.28)/.55))
+                cheek_band=math.exp(-((yn-.02)/.28)**2)
+                width_scale=1+(profile.get('jaw',1)-1)*jaw_t
+                width_scale*=1+(profile.get('temple',1)-1)*temple_t
+                width_scale*=1+profile.get('cheek_width',.04)*cheek_band
+                x=xn*rx*width_scale
+                y=yn*ry
+                z=cl*sa*rz
+                if front>0:
+                    nx=x/max(rx,.001)
+                    # 얼굴의 앞면 깊이. 코는 별도 팁 메시와 자연스럽게 이어질 정도만 베이스를 세운다.
+                    depth=0.0
+                    depth+=profile.get('nose_bridge',.18)*gauss(nx,yn,0,.16,.12,.28)
+                    depth+=profile.get('cheek',.08)*(gauss(nx,yn,-.40,.02,.18,.22)+gauss(nx,yn,.40,.02,.18,.22))
+                    depth-=profile.get('eye_socket',.10)*(gauss(nx,yn,-.27,.22,.15,.13)+gauss(nx,yn,.27,.22,.15,.13))
+                    depth+=profile.get('brow',.06)*(gauss(nx,yn,-.27,.37,.18,.11)+gauss(nx,yn,.27,.37,.18,.11))
+                    depth+=profile.get('muzzle',.035)*gauss(nx,yn,0,-.23,.30,.16)
+                    depth+=profile.get('chin',.055)*gauss(nx,yn,0,-.58,.26,.17)
+                    depth-=profile.get('temple_hollow',.035)*(gauss(nx,yn,-.58,.32,.18,.26)+gauss(nx,yn,.58,.32,.18,.26))
+                    # 비대칭은 얼굴 전체를 찌그러뜨리지 않고 입가/광대에만 극소량 적용한다.
+                    asym=profile.get('asymmetry',0)
+                    depth+=asym*gauss(nx,yn,.34,-.12,.22,.23)
+                    z+=rz*front*depth
+                verts.append((x,y,z))
+        top=len(verts);verts.append((0,ry,0))
+        faces=[]
+        first=1
+        for i in range(sides):
+            faces.append((0,first+(i+1)%sides,first+i))
+        for j in range(rings-2):
+            a0=1+j*sides;b0=a0+sides
+            for i in range(sides):
+                n=(i+1)%sides
+                faces.append((a0+i,a0+n,b0+n,b0+i))
+        last=1+(rings-2)*sides
+        for i in range(sides):
+            faces.append((last+i,last+(i+1)%sides,top))
+        data=self.mesh(name,verts,faces,mat)
+        for face in data.polygons:face.use_smooth=True
+        obj=self.node(name,data,pos,parent=parent)
+        obj['roleSpecificFace']=profile.get('role',name)
+        obj['faceTopology']='SCULPTED_CONTINUOUS_56x36_V1'
+        return obj
+
     def prop(self,pack,key,name,pos,height,rot=0,stretch=(1,1,1),tilt=0):
         path=(ROOT.parent/'world-ghosts'/'native'/'mesh'/'bride.glb') if pack in ['bride','bridehead'] else SOURCE/pack/(key+'.glb')
         if path not in self.cache:
@@ -321,24 +386,30 @@ def npc(s,kind,pos):
     profiles={
       'Butler':{
         'h':10.9,'w':1.78,'lean':-.035,'skin':s.material('ButlerSkin',(.58,.53,.47)),
-        'coat':s.material('ButlerCoat',(.025,.032,.038)),'vest':s.material('ButlerVest',(.075,.085,.09)),
+        'coat':s.material('ButlerCoat',(.038,.045,.055)),'vest':s.material('ButlerVest',(.075,.085,.09)),
         'accent':s.material('ButlerWine',(.22,.025,.05)),'hair':s.material('ButlerHair',(.025,.022,.024)),
         'eye':s.material('ButlerIris',(.075,.09,.075)),'jaw':1.02,'nose':1.16,'head':(.86,1.12,.88),
       },
       'Undertaker':{
         'h':9.65,'w':2.06,'lean':.095,'skin':s.material('UndertakerSkin',(.47,.49,.47)),
-        'coat':s.material('UndertakerCoat',(.018,.022,.028)),'vest':s.material('UndertakerVest',(.055,.042,.05)),
+        'coat':s.material('UndertakerCoat',(.028,.031,.038)),'vest':s.material('UndertakerVest',(.055,.042,.05)),
         'accent':s.material('UndertakerWine',(.28,.018,.045)),'hair':s.material('UndertakerHair',(.018,.021,.024)),
         'eye':s.material('UndertakerIris',(.11,.075,.065)),'jaw':.94,'nose':1.00,'head':(.94,1.04,.96),
       },
       'Archivist':{
         'h':8.85,'w':1.72,'lean':.13,'skin':s.material('ArchivistSkin',(.54,.50,.43)),
-        'coat':s.material('ArchivistCoat',(.06,.105,.10)),'vest':s.material('ArchivistVest',(.105,.075,.055)),
+        'coat':s.material('ArchivistCoat',(.070,.118,.105)),'vest':s.material('ArchivistVest',(.105,.075,.055)),
         'accent':s.material('ArchivistInk',(.075,.055,.095)),'hair':s.material('ArchivistHair',(.085,.075,.065)),
         'eye':s.material('ArchivistIris',(.095,.12,.11)),'jaw':.82,'nose':.94,'head':(.80,1.10,.84),
       },
     }
     q=profiles[kind];h=q['h'];w=q['w']
+    for mat,rough,metal in [(q['skin'],.56,0),(q['coat'],.86,0),(q['vest'],.78,0),(q['hair'],.68,0),(q['accent'],.75,0)]:
+        if mat.use_nodes:
+            bs=mat.node_tree.nodes.get('Principled BSDF')
+            if bs:
+                bs.inputs['Roughness'].default_value=rough
+                bs.inputs['Metallic'].default_value=metal
     p=s.node(kind,pos=pos)
     p.rotation_euler.y=q['lean']
 
@@ -419,22 +490,18 @@ def npc(s,kind,pos):
         tail=s.prism(kind+'_CoatTail'+str(side),(0,h*.43,-.14),outline,.17,q['coat'],parent=p)
         tail.rotation_euler.x=side*.02
 
-    # 목/머리는 다중 단면으로 한 덩어리에서 이마-광대-턱-후두부가 이어진다.
+    # 목/머리: 얼굴은 2천+ 정점 연속 곡면으로 직접 조형한다.
     s.loft(kind+'_Neck',(0,h*.735,-.02),[
       (0,w*.17,w*.16),(h*.055,w*.16,w*.15),(h*.095,w*.145,w*.145)
-    ],q['skin'],sides=24,parent=p)
+    ],q['skin'],sides=28,parent=p)
     hx,hy,hz=q['head'];head_y=h*.865
-    jaw=w*.43*q['jaw'];cheek=w*.47;temple=w*.405*hx
-    head_sections=[
-      (-h*.095,jaw,w*.34*hz,0,-.03,.03,.02),
-      (-h*.055,w*.44*q['jaw'],w*.40*hz,0,.00,.055,.02),
-      (0,cheek,w*.43*hz,0,.01,.085,.025),
-      (h*.045,w*.46*hx,w*.42*hz,0,.00,.065,.025),
-      (h*.09,temple,w*.39*hz,0,-.01,.035,.03),
-      (h*.13,w*.31*hx,w*.31*hz,0,-.05,.01,.035),
-    ]
-    head=s.loft(kind+'Head',(0,head_y,0),head_sections,q['skin'],sides=36,parent=p)
-    head['roleSpecificFace']=kind
+    face_profiles={
+      'Butler':dict(role='Butler',jaw=.78,temple=.96,cheek_width=.03,nose_bridge=.24,cheek=.085,eye_socket=.13,brow=.075,muzzle=.030,chin=.075,temple_hollow=.050,asymmetry=.008),
+      'Undertaker':dict(role='Undertaker',jaw=1.08,temple=1.04,cheek_width=.075,nose_bridge=.15,cheek=.12,eye_socket=.16,brow=.045,muzzle=.050,chin=.045,temple_hollow=.025,asymmetry=-.012),
+      'Archivist':dict(role='Archivist',jaw=.82,temple=.91,cheek_width=.015,nose_bridge=.17,cheek=.060,eye_socket=.15,brow=.035,muzzle=.028,chin=.060,temple_hollow=.070,asymmetry=.014),
+    }
+    head_size=(w*.98*hx,h*.225*hy,w*.92*hz)
+    head=s.sculpted_face(kind+'Head',(0,head_y,0),head_size,q['skin'],face_profiles[kind],parent=p)
 
     # 코는 콧대-콧방울-끝이 이어지는 작은 전용 loft다.
     nose=s.loft(kind+'_Nose',(0,head_y+h*.005,.42),[
