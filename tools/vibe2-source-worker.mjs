@@ -1698,14 +1698,15 @@ export function buildVerifiedExternalLearningPromptContract(order={}){
       blocks.push(`DISPOSITION=${item.id}:${item.disposition};GAME=${gameId};TARGET=${target};DOMAINS=${item.domains.join('|')||'NONE'};GENRE_MOOD=${item.genreMood}`);
       if(item.disposition==='APPLIED_GAME_SOURCE')blocks.push(`APPLY=${item.raw}`);
     }
-    for(const value of row.distilledAvoidancePrinciples||[])blocks.push(`AVOID=${clean(value)}`);
-    for(const value of row.distilledLearningUseAllowed||[])blocks.push(`ALLOWED=${clean(value)}`);
-    for(const value of row.distilledLearningUseForbidden||[])blocks.push(`FORBIDDEN=${clean(value)}`);
+    // Avoidance/allowed/forbidden memory remains in the verified playbook and QA layers.
+    // Source generation receives every explicitly disposed application principle, but does not
+    // repeatedly carry non-source policy prose that the classifier never maps to game source.
     blocks.push(`[END_EXTERNAL_LEARNING ${id}]`);
   }
   const block=[
     VERIFIED_EXTERNAL_LEARNING_BEGIN,
     `dispositions=${semantic.rows.length}/${semantic.rows.length}; sourcePrinciples=${semantic.sourceRows.length}; validationOnly=${semantic.validationRows.length}; truncation=FORBIDDEN`,
+    'sourcePromptScope=ALL_DISPOSED_APPLICATION_PRINCIPLES; nonSourceAvoidanceAndUsePolicy=RETAINED_IN_VERIFIED_MEMORY_AND_QA',
     'HARD SOURCE-WORKER RULE: implement APPLIED_GAME_SOURCE principles in the affected game-specific executable source. VALIDATION_ONLY belongs to QA/Android runtime checks; NOT_APPLICABLE does not mutate this game. Do not copy external assets or proprietary expression.',
     ...blocks,
     VERIFIED_EXTERNAL_LEARNING_END
