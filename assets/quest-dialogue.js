@@ -29,7 +29,97 @@ export class JaewoonQuestDialogue {
     state.facts ||= {};
     state.factions ||= {};
     state.factionRelationships ||= {};
+    state.questProposals ||= {};
     return state;
+  }
+
+  registerQuestProposal(state, proposal = {}) {
+    this.ensureExtendedState(state);
+    const id = String(proposal.id || '').trim();
+    const proposerId = String(proposal.proposerId || '').trim();
+    const cause = String(proposal.cause || '').trim();
+    const whyNow = String(proposal.whyNow || '').trim();
+    const actorGoal = String(proposal.actorGoal || '').trim();
+    const sourceEventId = String(proposal.sourceEventId || '').trim();
+    const objectives = Array.isArray(proposal.objectives) ? proposal.objectives : [];
+    if (!id) return { ok: false, reason: 'PROPOSAL_ID_REQUIRED' };
+    if (!proposerId) return { ok: false, reason: 'PROPOSER_ID_REQUIRED' };
+    if (!cause || !whyNow || !actorGoal) return { ok: false, reason: 'CAUSAL_PERSONAL_CONTEXT_REQUIRED' };
+    if (!objectives.length) return { ok: false, reason: 'OBJECTIVES_REQUIRED' };
+    if (state.questProposals[id]) return { ok: true, duplicate: true, proposal: clone(state.questProposals[id]) };
+    state.questProposals[id] = {
+      id,
+      proposerId,
+      class: String(proposal.class || 'PERSONAL_SIDE').toUpperCase(),
+      title: String(proposal.title || id),
+      status: 'proposed',
+      cause,
+      whyNow,
+      actorGoal,
+      sourceEventId: sourceEventId || null,
+      proposalLineIntent: String(proposal.proposalLineIntent || 'ask-for-help-in-character'),
+      objectives: clone(objectives) || [],
+      requirements: clone(proposal.requirements) || {},
+      consequence: clone(proposal.consequence) || {},
+      stake: String(proposal.stake || ''),
+      meta: clone(proposal.meta) || {},
+      generatedByRuntimeActorAI: true,
+      rewardAuthority: 'engine-only',
+      completionAuthority: 'engine-only',
+      progressionAuthority: 'engine-only',
+      playerAcceptanceRequired: proposal.playerAcceptanceRequired !== false,
+    };
+    return { ok: true, duplicate: false, proposal: clone(state.questProposals[id]) };
+  }
+
+  acceptQuestProposal(state, proposalId, engineDefinition = {}) {
+    this.ensureExtendedState(state);
+    const id = String(proposalId || '').trim();
+    const proposal = state.questProposals[id];
+    if (!proposal || proposal.status !== 'proposed') return { ok: false, reason: 'QUEST_PROPOSAL_NOT_AVAILABLE' };
+    const definition = this.createQuestDefinition({
+      id: String(engineDefinition.id || proposal.id),
+      title: String(engineDefinition.title || proposal.title),
+      class: String(engineDefinition.class || proposal.class),
+      cause: proposal.cause,
+      consequence: clone(engineDefinition.consequence ?? proposal.consequence) || {},
+      requirements: clone(engineDefinition.requirements ?? proposal.requirements) || {},
+      objectives: clone(engineDefinition.objectives ?? proposal.objectives) || [],
+      rewards: clone(engineDefinition.rewards) || [],
+      meta: {
+        ...(clone(proposal.meta) || {}),
+        ...(clone(engineDefinition.meta) || {}),
+        proposerId: proposal.proposerId,
+        sourceEventId: proposal.sourceEventId,
+        whyNow: proposal.whyNow,
+        actorGoal: proposal.actorGoal,
+        generatedFromQuestProposal: proposal.id,
+      }
+    });
+    if (!definition.id) return { ok: false, reason: 'ENGINE_QUEST_ID_REQUIRED' };
+    if (!this.canStartQuest(state, definition)) return { ok: false, reason: 'QUEST_PREREQUISITE_FAILED' };
+    if (!this.startQuest(state, definition)) return { ok: false, reason: 'QUEST_START_REJECTED' };
+    proposal.status = 'accepted';
+    proposal.acceptedQuestId = definition.id;
+    return { ok: true, questId: definition.id, proposal: clone(proposal) };
+  }
+
+  declineQuestProposal(state, proposalId, sourceEvent = '') {
+    this.ensureExtendedState(state);
+    const id = String(proposalId || '').trim();
+    const proposal = state.questProposals[id];
+    if (!proposal || proposal.status !== 'proposed') return { ok: false, reason: 'QUEST_PROPOSAL_NOT_AVAILABLE' };
+    proposal.status = 'declined';
+    proposal.declineSourceEvent = String(sourceEvent || '').trim() || null;
+    return { ok: true, proposal: clone(proposal) };
+  }
+
+  listQuestProposals(state, { proposerId = '', status = '' } = {}) {
+    this.ensureExtendedState(state);
+    return Object.values(state.questProposals)
+      .filter((row) => !proposerId || String(row.proposerId) === String(proposerId))
+      .filter((row) => !status || String(row.status) === String(status))
+      .map(clone);
   }
 
   startQuest(state, definition = {}) {
