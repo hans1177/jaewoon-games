@@ -2915,6 +2915,17 @@ test('Studio planning excludes owner-held games in batch and explicit rechecks w
  assert.equal(planLocalStudioCandidates({queue:{items:[candidate]},roadmap:released}).include.length,1);
 });
 
+test('Studio planner removes only superseded pending automatic runs for the exact planned games',()=>{
+ const plan=workflow.slice(workflow.indexOf('  studio-local-plan:'),workflow.indexOf('  studio-mcp-auto-play:'));
+ assert.match(plan,/Cancel superseded pending Studio runs selected by this exact plan/);
+ assert.match(plan,/PLANNED_MATRIX: \$\{\{ steps\.plan\.outputs\.matrix \}\}/);
+ assert.match(plan,/ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_CANCELLED=/);
+ assert.match(plan,/ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_ACTIVE=/);
+ assert.match(plan,/ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_UNRELATED=/);
+ assert.match(plan,/r\.event==='workflow_dispatch'&&title!==prefix\+'scan'/);
+ assert.match(plan,/games\.every\(g=>planned\.has\(g\)\)\?'CANCEL':'PRESERVE_UNRELATED'/);
+});
+
 test('Studio serializes play without replacing pending games or blocking parallel build jobs',()=>{
  const play=workflow.slice(workflow.indexOf('  studio-mcp-auto-play:'));
  assert.match(play,/concurrency:\n      group: roblox-studio-shared-host\n      cancel-in-progress: false\n      queue: max/);

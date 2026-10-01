@@ -1985,6 +1985,65 @@ jobs:
           console.log('ROBLOX_STUDIO_SHARED_HOST_CONSUMED_BY_PLANNER=NO');
           NODE
 
+      - name: Cancel superseded pending Studio runs selected by this exact plan
+        if: steps.plan.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PLANNED_MATRIX: ${{ steps.plan.outputs.matrix }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          planned_games="$(node -e "const m=JSON.parse(process.env.PLANNED_MATRIX||'{\"include\":[]}');process.stdout.write((m.include||[]).map(x=>String(x.gameId||'').trim()).filter(Boolean).join(','))")"
+          [ -n "$planned_games" ] || exit 0
+          payload="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-post-runtime-qa.yml/runs?per_page=100")"
+          printf '%s' "$payload" | CURRENT_RUN_ID="$GITHUB_RUN_ID" node -e "
+            let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
+              const j=JSON.parse(s),states=new Set(['queued','pending','requested','waiting','in_progress']);
+              const prefix='Roblox runtime foundation QA · ';
+              for(const r of j.workflow_runs||[]){
+                if(String(r.id)===String(process.env.CURRENT_RUN_ID||''))continue;
+                const runId=Number(r.id),currentRunId=Number(process.env.CURRENT_RUN_ID||0);
+                if(!Number.isFinite(runId)||!Number.isFinite(currentRunId)||runId>=currentRunId)continue;
+                if(!states.has(String(r.status||'').toLowerCase()))continue;
+                const title=String(r.display_title||'');
+                if(!title.startsWith(prefix))continue;
+                if(r.event==='workflow_dispatch'&&title!==prefix+'scan')continue;
+                process.stdout.write(String(r.id)+'\n');
+              }
+            });
+          " > /tmp/roblox-older-studio-run-ids
+          while read -r run_id; do
+            [ -n "$run_id" ] || continue
+            jobs_json="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" 2>/dev/null || echo '{"jobs":[]}')"
+            decision="$(printf '%s' "$jobs_json" | PLANNED_GAMES="$planned_games" node -e "
+              let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
+                const jobs=(JSON.parse(s).jobs||[]),prefix='Official Studio MCP actual play ';
+                const planned=new Set(String(process.env.PLANNED_GAMES||'').split(',').filter(Boolean));
+                const studio=jobs.filter(j=>String(j.name||'').startsWith(prefix));
+                if(studio.some(j=>String(j.status||'').toLowerCase()==='in_progress'))return process.stdout.write('PRESERVE_ACTIVE');
+                const waiting=studio.filter(j=>['queued','pending','requested','waiting'].includes(String(j.status||'').toLowerCase()));
+                if(!waiting.length)return process.stdout.write('NONE');
+                const games=waiting.map(j=>String(j.name||'').slice(prefix.length));
+                process.stdout.write(games.every(g=>planned.has(g))?'CANCEL':'PRESERVE_UNRELATED');
+              });
+            ")"
+            if [ "$decision" = 'PRESERVE_ACTIVE' ]; then
+              echo "ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_ACTIVE=$run_id"
+              continue
+            fi
+            if [ "$decision" = 'PRESERVE_UNRELATED' ]; then
+              echo "ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_UNRELATED=$run_id"
+              continue
+            fi
+            [ "$decision" = 'CANCEL' ] || continue
+            gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/cancel" >/dev/null 2>&1 || true
+            run_status="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id" --jq '.status' 2>/dev/null || true)"
+            if [[ "$run_status" =~ ^(queued|pending|requested|waiting)$ ]]; then
+              gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/force-cancel" >/dev/null 2>&1 || true
+            fi
+            echo "ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_CANCELLED=$run_id"
+          done < /tmp/roblox-older-studio-run-ids
+
   studio-mcp-auto-play:
     name: Official Studio MCP actual play ${{ matrix.gameId }}
     concurrency:
