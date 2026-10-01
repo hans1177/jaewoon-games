@@ -535,7 +535,7 @@ test('perpetual BUILD_UP carries exact data budgets without content or generatio
     sourceObservation:{
       sourceRoot:'web-games/data-budget-normal',
       sourceTreeFingerprint:'7'.repeat(64),
-      fileCount:4,dataFileCount:4,sourceBytes:10*1024*1024,largestFileBytes:3*1024*1024,
+      fileCount:4,dataFileCount:4,sourceBytes:10*1024*1024,largestFileBytes:2*1024*1024,
       topFiles:[],sourceAnchors:[],
       signals:{combat:3,progression:3,ai:2,save:2,multiplayer:0,animation:2,vfx:2,camera:1,ui:2,uiFlow:2,input:2,map:3,landmark:1,interaction:2,inventory:1,equipment:1,settings:1,feedback:2,session:2,content:5,choice:2,connection:1,performance:3,lighting:1,primitive:1,todo:0,errorRecovery:2},
       observations:['CURRENT_SOURCE_FILES=4']
