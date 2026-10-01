@@ -8588,13 +8588,6 @@
           "MOBILE_FPS"
         ]
       }
-    },
-    "recentOwnerWebInternalPriority20261002": {
-      "id": "RECENT_OWNER_WEB_INTERNAL_PRIORITY_2026-10-02",
-      "authority": "OWNER_DIRECTIVE_2026-10-02",
-      "scope": "WEB_ONLY",
-      "globalPriorityChanged": false,
-      "firstPlayableDeployClearsSpecialPriority": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -26155,12 +26148,8 @@
       "authority": "OWNER_DIRECTIVE_2026-10-02",
       "enabled": true,
       "deploymentSuccessNextAction": "IMMEDIATE_NEXT_BUILD_UP_GENERATION",
-      "deploymentFailureNextAction": "RETRY_SAME_VERIFIED_CANDIDATE_UNTIL_DEPLOYED",
       "generationLimit": null,
-      "terminalCompletionStateForbidden": true,
-      "everyDeployedCycleGeneratesNewIdea": true,
-      "repeatedIdeaWithoutNewEvidenceForbidden": true,
-      "capacityBoundaryAction": "OPTIMIZE_OR_RECOMBINE_WITHOUT_CHANGING_PROTECTED_GAME_MEANING"
+      "terminalCompletionStateForbidden": true
     },
     "playableWebDeploymentMustCompleteBeforeWebNextCycle": true,
     "webDeploymentSuccessImmediatelyResumesPerpetualBuildUp": true,
@@ -26168,13 +26157,11 @@
     "publicationOutcomeMayNotPauseEvolutionExceptMandatoryPlayableWebDeployment": true,
     "webInternalPriority": {
       "version": 1,
-      "authority": "OWNER_DIRECTIVE_2026-10-02",
       "scope": "WEB_ONLY",
       "globalPlatformPriorityUnchanged": true,
       "mayNotOutrankNonWebWorkSolelyBecauseRecent": true,
       "recentOwnerWebEligibility": "DEVELOPMENT_CONFIRMED && ownerDirectWebUpload && webDevelopmentResetRequired && web-games/<gameId> exists && homepageWebPlayable!=true",
-      "recentPriorityEndsWhen": "homepageWebPlayable=true",
-      "postDeployPriority": "RETURN_TO_EXISTING_NORMAL_WEB_PRIORITY"
+      "recentPriorityEndsWhen": "homepageWebPlayable=true"
     }
   },
   "robloxNativeCodingQualityContract": {
