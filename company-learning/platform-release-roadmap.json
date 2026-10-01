@@ -1,5 +1,5 @@
 {
-  "version": 504,
+  "version": 505,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -7492,7 +7492,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-10-01T09:31:00+09:00",
+  "updatedAt": "2026-10-01T10:07:00+09:00",
   "priorityTiers": [
     {
       "tier": 1,
@@ -9474,6 +9474,21 @@
       "ownerIntent": "자산 제작 AI를 더 디테일하게: 손·무기 접촉, 의상 관통, 시선·표정, 이동 발판 접촉 실측과 부분 수정 재시도 보존",
       "implementation": [
         "assets/vibe-motion-director.js",
+        "tools/vibe2-asset-production-plan.mjs",
+        "tools/vibe2-source-worker.mjs"
+      ],
+      "centralDocumentationImpact": {
+        "architectureTopologyChanged": false,
+        "loggingContractChanged": false,
+        "securityAuthorityChanged": false,
+        "schedulerChanged": false
+      },
+      "actualRenderedArtifactOrRuntimePassClaimed": false
+    },
+    "assetRuntimePixelReviewLoop20261001": {
+      "ownerIntent": "자산 제작 AI가 Roblox Studio·Unity Editor/Android APK·Web의 실제 캡처 픽셀을 보고 누락 오브젝트와 약한 디테일을 기존 개발 작업으로 되돌려 보완",
+      "implementation": [
+        "assets/vibe-studio-asset-universe.js",
         "tools/vibe2-asset-production-plan.mjs",
         "tools/vibe2-source-worker.mjs"
       ],
@@ -20002,6 +20017,43 @@
               "actualTransmittedPromptUsedForContextBudget": true,
               "newQueueOrScheduler": false,
               "promptRetentionIsNotRenderedQualityOrRepairCompletionProof": true
+            },
+            "runtimePixelReview": {
+              "enabled": true,
+              "planner": "assets/vibe-studio-asset-universe.js::createAssetRuntimeVisualReviewPlan",
+              "productionBinding": "tools/vibe2-asset-production-plan.mjs::buildVibeAssetProductionPlan",
+              "visionWorker": "tools/vibe2-source-worker.mjs::observeAssetRuntimeCaptures",
+              "supportedSurfaces": [
+                "ROBLOX_STUDIO",
+                "UNITY_EDITOR",
+                "UNITY_ANDROID_APK",
+                "WEB_BROWSER"
+              ],
+              "currentSourceRevisionRequired": true,
+              "repositoryLocalPngJpegWebpPixelsRequired": true,
+              "actualCaptureSha256BoundToFinding": true,
+              "requiredExpectedSubjectMayBecomeMissingFinding": true,
+              "occludedOffCameraBlurredOrAmbiguousMustRemainUncertain": true,
+              "uncertainEvidenceMayCreateMissingObject": false,
+              "uncontractedGameplayObjectCreationForbidden": true,
+              "findingsRequireNormalizedPixelRegionAndExistingEditableTarget": true,
+              "existingResponsibleSourceAndAssetScopeOnly": true,
+              "gameplayBalanceSaveAndNetworkAuthorityImmutable": true,
+              "sameSurfaceAndViewRecaptureRequiredAfterRepair": true,
+              "retryPreservation": {
+                "protectedBlock": "RUNTIME VISUAL REVIEW",
+                "appliesTo": [
+                  "INITIAL",
+                  "COMPRESSED_RETRY",
+                  "FOCUSED_REPLACEMENT",
+                  "EXPANSION_RETRY"
+                ],
+                "sourceRevisionCaptureHashFindingsAndProtectionPreserved": true
+              },
+              "captureIngestionAutomaticWhenCurrentLocalCaptureProvided": true,
+              "engineCaptureProductionImplemented": false,
+              "pixelReviewPassIsNotRuntimeOrReleasePass": true,
+              "newQueueOrScheduler": false
             }
           }
         }
