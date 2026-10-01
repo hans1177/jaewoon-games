@@ -254,6 +254,7 @@ export function buildRuntimeValidationPlan({gameplaySketch={},sourceAnalysis={}}
     replayRegression:{required:true,contract:'REPLAY_SAME_SEED_AND_INPUT_SEQUENCE_OR_EQUIVALENT_SCENARIO_AND_COMPARE_CRITICAL_STATE_TRANSITIONS',randomizedGameRequiresReplaySeedContract:sourceAnalysis.capabilities?.randomness===true},
     softlock:{required:true,contract:'NO_NON_TERMINAL_STATE_MAY_REMOVE_ALL_MEANINGFUL_PROGRESS_ACTIONS_WITHOUT_A_REAL_RETRY_OR_EXIT_PATH'},
     saveRestore:{required:hasSave,protectedKeys:uniq(sourceAnalysis.storageKeys||[]),readKeys:uniq(sourceAnalysis.storageReads||[]),writeKeys:uniq(sourceAnalysis.storageWrites||[]),contract:'SAVE_THEN_RELOAD_OR_REENTER_MUST_RESTORE_MEANINGFUL_PROGRESS_WITHOUT_CHANGING_EXISTING_KEY_MEANING'},
+    actorMindSaveRestore:{required:hasSave&&needsLivingActors,contract:'EXISTING_SAVE_AUTHORITY_RESTORES_BOUNDED_ACTOR_MEMORY_EMOTION_AND_DIRECTIONAL_RELATIONSHIPS_THROUGH_ENGINE_VALIDATED_SNAPSHOT; ACTOR_IDENTITY_MUST_MATCH; TRANSIENT_INTENT_REPLAY_FORBIDDEN_BY_DEFAULT; DUPLICATE_SOURCE_EVENT_MUST_NOT_REAPPLY_AFTER_RELOAD; NO_PARALLEL_SAVE_KEY_OR_AUTHORITY'},
     economy:{required:needsEconomy,contract:'RESOURCE_SOURCES_SINKS_COSTS_AND_REWARDS_MUST_CHANGE_THROUGH_REAL_PLAY_WITHOUT_FREE_OR_NEGATIVE_EXPLOIT_LOOPS'},
     difficulty:{required:true,contract:'PROGRESSION_MUST_NOT_CREATE_IMMEDIATE_UNAVOIDABLE_FAILURE_OR_ZERO_PRESSURE_STALL_ACROSS_OBSERVED_STAGES'},
     performance:{required:true,contract:'MOBILE_RUNTIME_MUST_REMAIN_RESPONSIVE_DURING_ACTIVE_GAMEPLAY_WITH_BOUNDED_ERROR_AND_FRAME_STALL_EVIDENCE'},
@@ -268,7 +269,7 @@ export function runtimeValidationBlockers({plan={},evidence={}}={}){
   const blockers=[];
   const checks=[
     ['longGoal','LONG_GOAL_PLAY_FAILED'],['replayRegression','REPLAY_SAME_SEED_MISMATCH'],['softlock','SOFTLOCK_PROGRESS_PATH_FAILED'],
-    ['saveRestore','SAVE_RESTORE_FAILED'],['economy','ECONOMY_RUNTIME_FAILED'],['difficulty','DIFFICULTY_RUNTIME_FAILED'],
+    ['saveRestore','SAVE_RESTORE_FAILED'],['actorMindSaveRestore','ACTOR_MIND_SAVE_RESTORE_FAILED'],['economy','ECONOMY_RUNTIME_FAILED'],['difficulty','DIFFICULTY_RUNTIME_FAILED'],
     ['performance','PERFORMANCE_RUNTIME_FAILED'],['mobile','MOBILE_RUNTIME_FAILED'],['strategyOutcomes','STRATEGY_OUTCOME_DIVERGENCE_FAILED'],['contentDepth','FINAL_CONTENT_DEPTH_FAILED'],['livingActorCausality','LIVING_ACTOR_CAUSALITY_FAILED'],
   ];
   for(const [key,code] of checks){
