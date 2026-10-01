@@ -5170,6 +5170,14 @@ test('oversized Roblox rebuild starts with owned source and complete learning in
   assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
 });
 
+test('large JSON prompts compact at 36KB and retry-only observation blocks stay bounded',()=>{
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(workerSource,/const MAX_INITIAL_JSON_PROMPT_BYTES=36000;/);
+  assert.match(workerSource,/const RETRY_OBSERVATION_CHUNK_BYTES=1600;/);
+  assert.match(workerSource,/retry\?boundedLargeExcerpt\(block,RETRY_OBSERVATION_CHUNK_BYTES\)\.content:block/);
+  assert.match(workerSource,/VIBE2_RETRY_OBSERVATION_COMPACTED/);
+});
+
 test('oversized standard JSON edit starts with bounded writable context instead of spending the first request on a guaranteed timeout',async(t)=>{
   const cwd=tempRoot(),root='web-games/demo',relative='index.html',requests=[];
   const source='<!doctype html>\n<button id="play">Play</button>\n<script>\n'+('const historicalObservation = "unchanged";\n'.repeat(3500))+'</script>\n';
