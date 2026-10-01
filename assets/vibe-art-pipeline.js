@@ -362,7 +362,7 @@ export function createVibeArtPipeline({ request = '', target = 'auto', style = n
   const web = target === 'web' || /웹|브라우저|html|javascript/i.test(prompt);
   const implementation = godot ? ['Node3D/CharacterBody3D','MeshInstance3D 또는 적절한 2.5D Billboard/Quad','AnimationTree/AnimationPlayer','GPUParticles3D','AudioStreamPlayer3D'] : web ? ['WebGL/Three/Babylon 또는 Canvas 2.5D 등각·원근 렌더러','깊이 정렬 캐릭터/월드 레이어','전경·중경·후경 parallax','접지 그림자·높이·깊이 대응 VFX','Web Audio API','2D UI 오버레이'] : ['플랫폼 네이티브 3D/2.5D 월드 렌더러','리그/애니메이터','깊이 대응 VFX·조명·카메라','2D UI 오버레이','오디오 이벤트'];
   return Object.freeze({
-    version: 13,
+    version: 12,
     generation:'V3',
     target: godot ? 'godot' : web ? 'web' : target,
     quality: Object.freeze({ art: artLevel, animation: animationLevel, vfx: vfxLevel, audio: audioLevel }),
