@@ -1189,6 +1189,13 @@ test('usable same-game asset is applied before new authoring and weak regions de
   assert.equal(enemy.applyFirst.candidates[0].id,'existing-wolf');
   assert.equal(enemy.applyFirst.candidates[0].mode,'PATCH_EXISTING_GAME_BINDING');
   assert.equal(enemy.applyFirst.deriveBeforeReplace,true);
+  assert.equal(enemy.applyFirst.qualityRescue.axisBased,true);
+  assert.equal(enemy.applyFirst.qualityRescue.donorRecompositionAllowed,true);
+  assert.ok(enemy.applyFirst.donorCandidates.some(row=>row.id==='company-wolf'));
+  assert.ok(enemy.applyFirst.candidates[0].qualityAxes.includes('SPECIES_SILHOUETTE'));
+  assert.ok(enemy.applyFirst.candidates[0].qualityAxes.includes('SURFACE_MATERIAL'));
+  assert.ok(enemy.applyFirst.candidates[0].rescueLadder.includes('RECOMPOSE_COMPATIBLE_PART_DONORS'));
+  assert.equal(enemy.applyFirst.candidates[0].randomDetailInflationForbidden,true);
   assert.equal(plan.applyFirstSummary.existingAssetApplicationBeforeNewAuthoring,true);
   assert.equal(plan.applyFirstSummary.newAuthoringOnlyAfterReusableCandidateFailure,true);
   assert.match(assetProductionGuidance(plan),/APPLY USABLE ASSETS FIRST/);
@@ -1199,7 +1206,9 @@ test('usable same-game asset is applied before new authoring and weak regions de
   );
   assert.match(prompt,/APPLY USABLE ASSETS FIRST BEGIN/);
   assert.match(prompt,/PATCH_EXISTING_GAME_BINDING/);
-  assert.match(prompt,/derived variant only for weak regions/);
+  assert.match(prompt,/Keep strong axes and rebuild only failed axes/);
+  assert.match(prompt,/donate parts, rig structure, material language, sockets, motion/);
+  assert.match(prompt,/Random clutter, texture noise/);
 });
 
 test('precision production continues from inspection through authoring and application',()=>{
@@ -1238,4 +1247,31 @@ test('precision production continues from inspection through authoring and appli
   assert.match(prompt,/PRECISION PRODUCTION CHAIN BEGIN/);
   assert.match(prompt,/INSPECT -> DEFINE_REPAIR -> AUTHOR -> APPLY/);
   assert.match(prompt,/GAME_CAMERA silhouette\/function/);
+});
+
+
+test('low-quality asset rescue preserves strong axes and escalates to full authoring only after targeted derivation',()=>{
+  const manifest={assets:[
+    {id:'base-hero',path:'roblox-games/rescue-demo/assets/hero.glb',types:['character'],tags:['character','hero'],license:'project-original',platforms:['roblox'],sameGameExistingRoblox:true,sourceHash:'hero-base',robloxAssetId:'111',rigType:'R15',retargetable:true},
+    {id:'donor-hero',path:'assets/roblox/hero-donor.glb',types:['character'],tags:['character','hero'],license:'project-original',platforms:['roblox'],companyVerified:true,sourceHash:'hero-donor',rigType:'R15',retargetable:true,
+      platformVariants:{ROBLOX:{path:'assets/roblox/hero-donor.glb'}}}
+  ]};
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',manifest,
+    presetCatalog:{version:1,presets:[{id:'hero',name:'Hero',genre:'rpg',keywords:['hero','character'],actorAssets:['base-hero','donor-hero'],effectAssets:[],toolCandidates:[],platformProfiles:{roblox:{},unity:{},webValidation:{}}}]},
+    task:{gameId:'rescue-demo',goal:'hero character 저퀄 자산을 디테일하게 보강해서 적용'}
+  });
+  const row=plan.decisions.find(item=>item.type==='character');
+  assert.ok(row);
+  assert.equal(row.applyFirst.enabled,true);
+  assert.equal(row.applyFirst.qualityRescue.fullAssetReplacementNotDefault,true);
+  assert.equal(row.applyFirst.qualityRescue.preserveStrongAxes,true);
+  assert.equal(row.applyFirst.failedCandidateCanRemainAsReusablePartDonor,true);
+  assert.ok(row.applyFirst.candidateLadder.length>=1);
+  assert.ok(row.applyFirst.donorCandidates.some(item=>item.id==='donor-hero'));
+  const base=row.applyFirst.candidates.find(item=>item.id==='base-hero');
+  assert.ok(base);
+  for(const axis of ['SILHOUETTE','PROPORTION','ANATOMY','FACE_HANDS_FEET','MATERIAL','RIG','SOCKET','MOTION','LOD'])assert.ok(base.qualityAxes.includes(axis),axis);
+  assert.equal(base.fullReauthorTrigger,'CORE_IDENTITY_OR_STRUCTURAL_QUALITY_STILL_BLOCKED_AFTER_TARGETED_DERIVATION');
+  assert.equal(base.sourceAssetMayRemainAsPartialDonorAfterReplacement,true);
 });
