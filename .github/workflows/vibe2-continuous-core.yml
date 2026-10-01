@@ -144,11 +144,11 @@ jobs:
             echo "VIBE2_RESERVE_WAKE_EVENT_SHA=$GITHUB_SHA"
             echo "VIBE2_RESERVE_WAKE_LATEST_SHA=$latest_main"
             if [[ "$GITHUB_SHA" != "$latest_main" ]]; then
-              proceed=false
               if [[ "${GITHUB_EVENT_NAME:-}" == 'repository_dispatch' ]]; then
+                proceed=false
                 echo "VIBE2_FANIN_WAKE_STALE_DROPPED=$GITHUB_SHA:$latest_main"
               else
-                echo "VIBE2_MAIN_PUSH_WAKE_STALE_DROPPED=$GITHUB_SHA:$latest_main"
+                echo "VIBE2_MAIN_PUSH_WAKE_REBASED_TO_LATEST=$GITHUB_SHA:$latest_main"
               fi
             else
               echo "VIBE2_RESERVE_WAKE_FRESH=$GITHUB_SHA"
