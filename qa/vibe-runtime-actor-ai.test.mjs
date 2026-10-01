@@ -261,10 +261,17 @@ test('Vibe gameplay plan automatically requests causal living actor implementati
 
 test('AI action validator rejects attempts to own protected gameplay state',()=>{
   assert.equal(validateVibeAIAction({intent:'warn'}).safe,true);
-  const bad=validateVibeAIAction({intent:'attack',damage:999,reward:100});
+  const bad=validateVibeAIAction({
+    intent:'attack',
+    damage:999,
+    reward:100,
+    spawn:{enemy:'boss'},
+    networkAuthority:'client',
+    gameRules:{wave:99},
+    questRegistration:{id:'fake'}
+  });
   assert.equal(bad.safe,false);
-  assert.ok(bad.touched.includes('damage'));
-  assert.ok(bad.touched.includes('reward'));
+  for(const field of ['damage','reward','spawn','networkAuthority','gameRules','questRegistration']) assert.ok(bad.touched.includes(field),field);
 });
 
 
