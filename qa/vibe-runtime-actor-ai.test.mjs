@@ -230,6 +230,21 @@ test('default AI party entries receive stable role archetype identity rather tha
   assert.equal(entries[0].gameplayAuthority,false);
 });
 
+test('AI party entries bind stable authored identity and role traits into squad controllers',()=>{
+  const config=createAIPartyConfig({humanPlayers:1,aiCount:3,roles:['tank','ranged','healer']});
+  const entries=createDefaultAIEntries(config);
+  const squad=new JaewoonAISquad({members:entries});
+  const tank=squad.member(entries[0].id);
+  const ranged=squad.member(entries[1].id);
+  assert.equal(tank.ai.identity.id,entries[0].identity.id);
+  assert.equal(tank.ai.identity.stableSeed,entries[0].identity.stableSeed);
+  assert.equal(tank.ai.personality.courage,entries[0].identity.traits.courage);
+  assert.equal(tank.ai.personality.protectiveness,entries[0].identity.traits.protectiveness);
+  assert.equal(ranged.ai.personality.caution,entries[1].identity.traits.caution);
+  assert.equal(squad.list()[0].metadata.identity.qualityProfile,'COMPANION');
+  assert.equal(tank.ai.snapshotMind().gameplayAuthority,false);
+});
+
 test('Vibe gameplay plan automatically requests causal living actor implementation for companion NPC monster scope',()=>{
   const inventory=[
     {id:'npc',path:'world.npc',label:'NPC villager dialogue companion ally'},
