@@ -228,6 +228,23 @@ export function loadCentralPolicySnapshot({repoRoot=process.cwd(),policyPath=CAN
   };
 }
 
+function remoteBranchHeadSha({repoRoot=process.cwd(),ref='origin/main'}={}){
+  const resolvedRef=clean(ref)||'origin/main';
+  try{
+    const gitRoot=clean(execFileSync('git',['-C',repoRoot,'rev-parse','--show-toplevel'],{encoding:'utf8',stdio:['ignore','pipe','pipe']}));
+    if(!gitRoot)throw new Error('GIT_ROOT_MISSING');
+    const slash=resolvedRef.indexOf('/');
+    if(slash<=0||slash===resolvedRef.length-1)throw new Error('LIVE_REF_MUST_BE_REMOTE_BRANCH');
+    const remote=resolvedRef.slice(0,slash);
+    const branch=resolvedRef.slice(slash+1);
+    const output=clean(execFileSync('git',['-C',gitRoot,'ls-remote','--heads',remote,`refs/heads/${branch}`],{encoding:'utf8',stdio:['ignore','pipe','pipe'],timeout:30000,maxBuffer:1024*1024}));
+    const sha=clean(output.split(/\s+/)[0]);
+    return /^[a-f0-9]{40}$/i.test(sha)?sha:null;
+  }catch{
+    return null;
+  }
+}
+
 export function loadCentralPolicySnapshotFromGitRef({repoRoot=process.cwd(),policyPath=CANONICAL_VIBE_POLICY_PATH,required=false,ref='origin/main',fetchRemote=true}={}){
   const resolvedRef=clean(ref)||'origin/main';
   try{
@@ -533,13 +550,21 @@ export function assertCompiledWorkContractFresh({cwd=process.cwd(),contract={},p
   }
   let liveMain=null;
   if(contract?.freshness?.liveMainRequired===true){
-    liveMain=loadCentralPolicySnapshotFromGitRef({
-      repoRoot:cwd,
-      policyPath,
-      required:true,
-      ref:contract?.freshness?.liveMainRef||'origin/main',
-      fetchRemote:contract?.freshness?.liveMainRefreshBeforeCheck!==false
-    });
+    const liveRef=contract?.freshness?.liveMainRef||'origin/main';
+    const reservedMainSha=clean(contract?.workRequest?.mainSha);
+    const remoteHead=remoteBranchHeadSha({repoRoot:cwd,ref:liveRef});
+    if(remoteHead&&reservedMainSha&&remoteHead===reservedMainSha){
+      liveMain={...current,source:'REMOTE_HEAD_PINNED_MATCH',ref:liveRef,headSha:remoteHead};
+    }else{
+      liveMain=loadCentralPolicySnapshotFromGitRef({
+        repoRoot:cwd,
+        policyPath,
+        required:true,
+        ref:liveRef,
+        fetchRemote:contract?.freshness?.liveMainRefreshBeforeCheck!==false
+      });
+      if(remoteHead)liveMain.headSha=remoteHead;
+    }
     if(!liveMain.valid)throw new Error(`CENTRAL_POLICY_LIVE_INVALID:${phase}:${liveMain.errors.join('|')||'UNKNOWN'}`);
     if(liveMain.executionFingerprint!==contract.policy.executionFingerprint){
       throw new Error(`CENTRAL_POLICY_STALE:${phase}:${contract.policy.executionFingerprint}->${liveMain.executionFingerprint}`);
@@ -548,6 +573,7 @@ export function assertCompiledWorkContractFresh({cwd=process.cwd(),contract={},p
   return{
     status:'PASS',phase,fresh:true,path:current.path,version:current.version,
     fingerprint:current.fingerprint,executionFingerprint:current.executionFingerprint,syncMode:current.syncMode,
-    liveMainRef:liveMain?.ref||null,liveMainVersion:liveMain?.version||null,liveMainFingerprint:liveMain?.fingerprint||null,liveMainExecutionFingerprint:liveMain?.executionFingerprint||null
+    liveMainRef:liveMain?.ref||null,liveMainVersion:liveMain?.version||null,liveMainFingerprint:liveMain?.fingerprint||null,liveMainExecutionFingerprint:liveMain?.executionFingerprint||null,
+    liveMainSource:liveMain?.source||null,liveMainHeadSha:liveMain?.headSha||null
   };
 }
