@@ -23,7 +23,8 @@ import {
   runOfficialStudioMcpPlay,
   stopOwnedStudioMultiplayerTests,
   validateStudioPlaceArtifactPreOpen,
-  evaluateStudioSaveRejoin
+  evaluateStudioSaveRejoin,
+  ROBLOX_STUDIO_HARNESS_VERSION
 } from '../tools/company-development-roblox-studio-local-play.mjs';
 
 const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
@@ -119,6 +120,7 @@ function item(){
 
 function runtime(){
   return {
+    studioHarnessVersion:ROBLOX_STUDIO_HARNESS_VERSION,
     authority:'roblox-official-studio-mcp-runtime',
     runtimeVerified:true,
     capabilities:{
@@ -1554,6 +1556,25 @@ test('verified Studio product-quality failure enters canonical buildup repair an
   assert.equal(applied.item.robloxQualityBuildUpEvidence?.authority,'roblox-official-studio-mcp-product-quality-failure');
   assert.equal(applied.item.robloxQualityBuildUpEvidence?.failureStage,'VIBE_INTERNAL_PLAY');
   assert.equal(planLocalStudioCandidates({queue:applied.queue,roadmap:roadmap()}).include.length,0);
+});
+
+test('Studio harness upgrade rechecks same-source product evidence once',()=>{
+  const candidate=item();
+  candidate.robloxQualityBuildUpRequired=true;
+  candidate.robloxQualityFailureClass='PRODUCT';
+  candidate.robloxQualityBuildUpSourceRevision=source;
+  candidate.robloxInternalVibePlayEvidence={
+    studioHarnessVersion:ROBLOX_STUDIO_HARNESS_VERSION-1,
+    sourceRevision:source,
+    artifactIdentity:artifact,
+    artifactRunId:777,
+    universeId:'123',
+    placeId:'456',
+    versionNumber:9,
+    infrastructureFailure:false
+  };
+  const plan=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()});
+  assert.deepEqual(plan.include.map(row=>row.gameId),['g1']);
 });
 
 test('Studio infrastructure failure does not fabricate a product-quality buildup requirement',()=>{
