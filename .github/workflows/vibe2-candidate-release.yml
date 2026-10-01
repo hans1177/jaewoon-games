@@ -43,6 +43,7 @@ jobs:
       target: ${{ steps.gate.outputs.target }}
       source_root: ${{ steps.gate.outputs.source_root }}
       base_sha: ${{ steps.gate.outputs.base_sha }}
+      transport_base_sha: ${{ steps.gate.outputs.transport_base_sha }}
       release_state: ${{ steps.gate.outputs.release_state }}
       production_class: ${{ steps.gate.outputs.production_class }}
       request_file: ${{ steps.gate.outputs.request_file }}
@@ -104,13 +105,14 @@ jobs:
           const target=String(m.target||'').trim().toLowerCase();
           const root=String(m.sourceRoot||'').replaceAll('\\','/').replace(/^\.\//,'').replace(/\/$/,'');
           const base=String(m.baseMainSha||'').trim();
+          const transportBase=String(m.transportBaseSha||base).trim();
           const origin=String(m.origin||'VIBE2_NATIVE').trim().toUpperCase();
           const row=(catalog.games||[]).find(g=>String(g.id||'')===game);
           const productionClass=String(row?.productionClass||'').trim().toUpperCase();
           const legacyState=String(row?.homepageCategory||'other').toLowerCase();
           const state=productionClass==='RELEASE_CONFIRMED'?'release-confirmed':productionClass==='DEVELOPMENT_CONFIRMED'?'development-confirmed':legacyState;
           let decision='reject', reason='unknown';
-          if(!task||!game||!base) reason='manifest-required-field-missing';
+          if(!task||!game||!base||!transportBase) reason='manifest-required-field-missing';
           else if(!['roblox','web','unity'].includes(target)) reason='target-auto-release-not-configured';
           else if(target==='roblox' && root!==`roblox-games/${game}`) reason='roblox-source-root-mismatch';
           else if(target==='web' && root!==`web-games/${game}`) reason='web-source-root-mismatch';
@@ -118,7 +120,7 @@ jobs:
           else if(!['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(productionClass)) reason='current-production-class-not-auto-deployable';
           else { decision=target; reason='candidate-authorized'; }
           put('candidate_decision',decision); put('candidate_reason',reason); put('task_id',task); put('game_id',game);
-          put('target',target); put('source_root',root); put('base_sha',base); put('release_state',state); put('production_class',productionClass); put('origin',origin);
+          put('target',target); put('source_root',root); put('base_sha',base); put('transport_base_sha',transportBase); put('release_state',state); put('production_class',productionClass); put('origin',origin);
           put('request_file',target==='unity'?`.build-requests/unity/${game}.json`:'');
           NODE
 
@@ -132,6 +134,7 @@ jobs:
           task_id="$(sed -n 's/^task_id=//p' "$GITHUB_OUTPUT" | tail -n1)"
           source_root="$(sed -n 's/^source_root=//p' "$GITHUB_OUTPUT" | tail -n1)"
           base_sha="$(sed -n 's/^base_sha=//p' "$GITHUB_OUTPUT" | tail -n1)"
+          transport_base_sha="$(sed -n 's/^transport_base_sha=//p' "$GITHUB_OUTPUT" | tail -n1)"
           game_id="$(sed -n 's/^game_id=//p' "$GITHUB_OUTPUT" | tail -n1)"
           production_class="$(sed -n 's/^production_class=//p' "$GITHUB_OUTPUT" | tail -n1)"
           candidate_origin="$(sed -n 's/^origin=//p' "$GITHUB_OUTPUT" | tail -n1)"
@@ -192,11 +195,16 @@ jobs:
           fi
           reject() { echo 'decision=reject' >> "$GITHUB_OUTPUT"; echo "reason=$1" >> "$GITHUB_OUTPUT"; exit 0; }
           [[ "$base_sha" =~ ^[0-9a-fA-F]{40}$ ]] || reject base-main-sha-invalid
-          # Tree comparisons need this exact snapshot, not every branch and tag's history.
+          [[ "$transport_base_sha" =~ ^[0-9a-fA-F]{40}$ ]] || reject transport-base-sha-invalid
+          # Tree comparisons need the exact contract and transport snapshots.
           if ! git cat-file -e "${base_sha}^{commit}" 2>/dev/null; then
             git fetch --no-tags --depth=1 origin "$base_sha" --quiet || reject base-main-sha-missing
           fi
           git cat-file -e "${base_sha}^{commit}" 2>/dev/null || reject base-main-sha-missing
+          if ! git cat-file -e "${transport_base_sha}^{commit}" 2>/dev/null; then
+            git fetch --no-tags --depth=1 origin "$transport_base_sha" --quiet || reject transport-base-sha-missing
+          fi
+          git cat-file -e "${transport_base_sha}^{commit}" 2>/dev/null || reject transport-base-sha-missing
           already_promoted=false
           if [ -n "$(git diff --name-only "$base_sha" origin/main -- "$source_root")" ]; then
             if git diff --quiet "$candidate_sha" origin/main -- "$source_root"; then
@@ -207,10 +215,10 @@ jobs:
             fi
           fi
           echo "already_promoted=$already_promoted" >> "$GITHUB_OUTPUT"
-          mapfile -t source_changed < <(git diff --name-only "$base_sha" "$candidate_sha" -- "$source_root")
+          mapfile -t source_changed < <(git diff --name-only "$transport_base_sha" "$candidate_sha" -- "$source_root")
           [ "${#source_changed[@]}" -gt 0 ] || reject no-source-change
-          git -c core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab diff --check "$base_sha" "$candidate_sha" || reject candidate-diff-check-failed
-          mapfile -t changed < <(git diff --name-only "$base_sha" "$candidate_sha")
+          git -c core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab diff --check "$transport_base_sha" "$candidate_sha" || reject candidate-diff-check-failed
+          mapfile -t changed < <(git diff --name-only "$transport_base_sha" "$candidate_sha")
           for file in "${changed[@]}"; do
             case "$file" in "$source_root"/*|.vibe2/candidates/*) ;; *) reject candidate-path-outside-boundary ;; esac
           done
