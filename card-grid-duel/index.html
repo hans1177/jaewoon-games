@@ -315,7 +315,7 @@ function resolveHammerHits(s){
     const target=byId(hammer.hammerTarget);
     hammer.hammerTarget='';
     if(!target||target.hp<=0)continue;
-    applyDamage(target,55,s);
+    applyDamage(target,scaledStat('HAMMER','atk'),s);
     removeDeadAndSplit();
     checkWin();
     if(state.winner||state.phase!=='BATTLE')break
