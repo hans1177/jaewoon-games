@@ -212,7 +212,14 @@ test('Vibe candidate evidence binds all four canonical document hashes',()=>{
   assert.match(workflow,/shared-context-architecture:/);
   assert.match(workflow,/shared-context-security:/);
   assert.match(workflow,/Compile central shared context once for worker cohort/);
-  assert.match(workflow,/--pinned-hash-verify=true/);
+  const workerSyncStart=workflow.indexOf('- name: Synchronize worker with Vibe before work');
+  const workerSyncEnd=workflow.indexOf('\n      - name:',workerSyncStart+1);
+  assert.ok(workerSyncStart>=0&&workerSyncEnd>workerSyncStart);
+  const workerSync=workflow.slice(workerSyncStart,workerSyncEnd);
+  assert.match(workerSync,/sha256sum/);
+  assert.match(workerSync,/WORKER_CONTEXT_MODE=PINNED_SHA_ONLY/);
+  assert.doesNotMatch(workerSync,/company-shared-context\.mjs/);
+  assert.doesNotMatch(workerSync,/--pinned-hash-verify=true/);
   assert.match(workflow,/WORKER_CONTEXT_EXPECTED_POLICY_SHA256/);
   assert.deepEqual(logMap.workerContextLogContract.canonicalDocumentHashesRequired,[
     'policySha256','logMapSha256','architectureSha256','securityPolicySha256'
