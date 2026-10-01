@@ -727,7 +727,9 @@ function buildVisualDirective({gameId,design,source,focus}){
       VFX:`일반 타격·강한 타격·위험 예고·상태이상·보상 VFX의 형태와 타이밍을 분리하고 실제 impact 이벤트에 동기화한다.`,
       CAMERA:`기본 시야와 모바일 가독성을 보존하면서 핵심행동·강공격·보스/시그니처 순간에 강도가 다른 짧은 카메라 반응을 준다.`,
       UI_HUD:`${identity}의 핵심 목표·자원·위험·다음 선택이 한눈에 보이게 하고 게임 세계관과 맞는 패널/아이콘/피드백 언어를 사용한다.`,
-      AUDIO_VISUAL_SYNC:`damage/VFX/animation/camera/audio가 같은 impact 순간을 공유하게 하며 소리만 먼저/늦게 나오는 불일치를 제거한다.`,
+      INVENTORY_EQUIPMENT_UI:`인벤토리와 장비 UI는 획득→비교→장착/교체→현재 장착 표시→실제 외형/행동 반영까지 같은 상태를 사용하고 모바일에서도 한 손 조작과 스크롤/닫기/선택 유지가 명확해야 한다.`,
+      AUDIO_MUSIC:`BGM·환경음·행동 피드백은 현재 지역/상태/전투 강도와 연결하고, 소리가 의도적으로 비활성화된 카테고리는 되살리지 않는다. 여러 음악 맥락이 있으면 같은 한 곡 단순 반복 대신 전환·크로스페이드·믹스 변화로 상태가 들리게 한다.`,
+      AUDIO_VISUAL_SYNC:`damage/VFX/animation/camera/audio가 같은 authoritative impact 순간을 공유하게 하며 소리만 먼저/늦게 나오는 불일치를 제거한다.`,
       ENVIRONMENTAL_MOTION:`정적인 배경을 피하고 식생·빛·파티클·기계/건축 요소 중 세계에 맞는 미세 움직임을 지속시킨다.`,
       SCENE_DENSITY:`빈 공간과 반복 오브젝트 밀도를 실제 플레이 동선 기준으로 조정하고 중요 영역에는 의미 있는 시각 정보가 있게 한다.`,
       LANDMARK_READABILITY:`플레이어가 지도 없이도 방향과 지역 역할을 기억할 수 있는 실루엣이 다른 랜드마크를 유지·강화한다.`
@@ -738,10 +740,123 @@ function buildVisualDirective({gameId,design,source,focus}){
       'MARKER_CONFIG_ATOM_ONLY_FORBIDDEN',
       'COLOR_ONLY_NOT_FULL_IDENTITY_UPGRADE',
       'PRIMARY_PLACEHOLDER_PRIMITIVE_CANNOT_CLOSE_VISUAL_BUILD_UP',
-      'BEFORE_AFTER_COMPARISON_REQUIRED'
+      'UI_INVENTORY_AUDIO_MOTION_PRESENCE_ALONE_CANNOT_CLOSE_BUILD_UP',
+      'BEFORE_AFTER_COMPARISON_REQUIRED',
+      'SAME_SCENE_RUNTIME_REOBSERVATION_REQUIRED'
     ],
     focus
   };
+}
+
+function buildExperienceBuildupContract({platform='COMMON',design={},source={},focus='CORE_FUN'}={}){
+  const requested=clean(platform).toUpperCase();
+  const platformKey=requested==='UNITY_WEB'?'WEB':requested==='UNITY_APP'?'UNITY':requested==='ROBLOX'?'ROBLOX':requested==='UNITY'?'UNITY':requested==='WEB'?'WEB':'COMMON';
+  const profile=PLATFORM_EXPERIENCE_PROFILES[platformKey]||PLATFORM_EXPERIENCE_PROFILES.COMMON;
+  const signals=source?.signals||{};
+  const trackStatus={
+    MOTION_AND_ACTING:Number(signals.animation||0)>=2&&Number(signals.motionStates||0)>=5?'PRESENT':'WEAK_OR_MISSING',
+    COMBAT_AND_PRIMARY_ACTION_FEEL:Number(signals.gameFeel||0)>=3?'PRESENT':'WEAK_OR_MISSING',
+    UI_HUD_AND_MENU:Number(signals.ui||0)>=4&&Number(signals.uiFlow||0)>=2?'PRESENT':'WEAK_OR_MISSING',
+    INVENTORY_AND_EQUIPMENT:Number(signals.inventory||0)>0
+      ?(Number(signals.inventory||0)>=5&&Number(signals.equipment||0)>=2?'PRESENT':'WEAK_OR_MISSING')
+      :'NOT_APPLICABLE_UNTIL_GAME_HAS_INVENTORY',
+    AUDIO_MUSIC_AND_FEEDBACK:Number(signals.audio||0)>=2&&Number(signals.audioDynamics||0)>=2?'PRESENT':'WEAK_OR_MISSING',
+    VFX_CAMERA_AND_IMPACT_SYNC:Number(signals.vfx||0)>=2&&Number(signals.camera||0)>=1&&Number(signals.feedback||0)>=2?'PRESENT':'WEAK_OR_MISSING',
+    WORLD_VISUAL_COHESION:Number(signals.map||0)>=3&&Number(signals.lighting||0)>=2?'PRESENT':'WEAK_OR_MISSING',
+    MOBILE_TOUCH_AND_ACCESSIBILITY:Number(signals.input||0)>=3&&Number(signals.settings||0)>=1?'PRESENT':'WEAK_OR_MISSING',
+    PERFORMANCE_AND_RUNTIME_STABILITY:Number(signals.performance||0)>=2&&Number(signals.errorRecovery||0)>=2?'PRESENT':'WEAK_OR_MISSING'
+  };
+  const weakest=Object.entries(trackStatus)
+    .filter(([,state])=>state==='WEAK_OR_MISSING')
+    .map(([track])=>track)
+    .slice(0,Math.max(1,Number(profile.weakestTrackBatchSize||PLATFORM_EXPERIENCE_PROFILES.COMMON.weakestTrackBatchSize||3)));
+  const commonRules=Object.freeze([
+    'AUDIT_ALL_APPLICABLE_PLAYER_FACING_TRACKS_EVERY_GENERATION',
+    'RANK_AND_BUILD_THE_WEAKEST_THREE_BEFORE_ADDING_DECORATIVE_EXTRAS',
+    'PRESENCE_OR_MARKER_ONLY_CANNOT_PASS_QUALITY',
+    'IMPLEMENT_IN_THE_EXISTING_RESPONSIBLE_SYSTEM_NOT_A_SHADOW_WRAPPER',
+    'COMPARE_BEFORE_AFTER_UNDER_THE_SAME_SCENE_INPUT_AND_STATE',
+    'VERIFY_INPUT_TO_STATE_TO_MOTION_UI_AUDIO_VFX_CAMERA_FEEDBACK_CAUSALITY',
+    'PRESERVE_GAMEPLAY_BALANCE_SAVE_ECONOMY_AND_NETWORK_AUTHORITY',
+    'OWNER_INTENTIONALLY_DISABLED_AUDIO_CATEGORIES_MUST_REMAIN_DISABLED',
+    'REPEAT_BUILD_UP_UNTIL_NO_CRITICAL_PLAYER_FACING_TRACK_GAP_REMAINS'
+  ]);
+  const robloxExtra=platformKey==='ROBLOX'?Object.freeze({
+    priority:'EXTRA_ATTENTION',
+    motion:Object.freeze({
+      articulatedActorsRequireJointMotion:true,
+      animatorMotor6dOrBonesRequiredWhenApplicable:true,
+      rootOnlyLocomotionCannotPass:true,
+      requiredStateIntent:Object.freeze(['IDLE','WALK','JOG','RUN','START','STOP','TURN','JUMP','LAND','ATTACK_ANTICIPATION','IMPACT','RECOVERY','HIT_REACTION','DEATH']),
+      blendAndSpeedSyncRequired:true,
+      weightShiftAndSecondaryMotionRequired:true,
+      ikOrProceduralGroundingPreferred:true
+    }),
+    uiAndInventory:Object.freeze({
+      touchFirst:true,
+      minimumTouchTargetPxEquivalent:44,
+      safeAreaRequired:true,
+      modalStackBackCloseScrollSelectionPersistenceRequired:true,
+      inventoryFlowWhenApplicable:Object.freeze(['ACQUIRE','COMPARE','SELECT','EQUIP','UNEQUIP_OR_REPLACE','CURRENT_EQUIPPED_INDICATOR','WORLD_OR_CHARACTER_FEEDBACK'])
+    }),
+    audio:Object.freeze({
+      ownerDisabledCategoriesPreserved:true,
+      soundServiceLifecycleRequired:true,
+      soundGroupMixingPreferred:true,
+      spatialWorldAudioUsesRolloffWhenApplicable:true,
+      bgmRegionStateCombatTransitionsRequiredWhenMultipleContextsExist:true,
+      duplicatePlaybackOnRespawnOrResumeForbidden:true,
+      singleLoopAcrossDistinctContextsCannotClaimMusicBuildUp:true
+    }),
+    runtimeEvidence:Object.freeze({
+      officialStudioMcpRequired:true,
+      actualInputRequired:true,
+      beforeAfterCaptureRequired:true,
+      mobileViewportRequired:true,
+      runtimeStateObservationRequired:true,
+      sourceMarkersAloneCannotPass:true
+    })
+  }):null;
+  const webExtra=platformKey==='WEB'?Object.freeze({
+    runtimeEvidence:'REAL_BROWSER_TOUCH_AND_RENDER_DELTA',
+    audio:'WEBAUDIO_OR_NATIVE_MEDIA_STATE_TRANSITION_WHEN_APPLICABLE',
+    ui:'SAFE_AREA_SCROLL_MODAL_AND_TOUCH_FLOW',
+    motion:'VISIBLE_FRAME_DELTA_NOT_ONLY_INTERNAL_STATE'
+  }):null;
+  const unityExtra=platformKey==='UNITY'?Object.freeze({
+    runtimeEvidence:'UNITY_EDITOR_PLUS_ANDROID_WHEN_MOBILE_TARGET',
+    motion:'ANIMATOR_BLENDTREE_OR_EQUIVALENT_WITH_STATE_TRANSITIONS',
+    audio:'AUDIOMIXER_OR_EQUIVALENT_MIX_AND_SPATIALIZATION_WHEN_APPLICABLE',
+    ui:'CANVAS_SAFE_AREA_MENU_STACK_AND_INVENTORY_FLOW',
+    performance:'MOBILE_FRAME_MEMORY_THERMAL_BUDGET'
+  }):null;
+  return Object.freeze({
+    version:1,
+    status:'ACTIVE_EXECUTABLE_BUILD_UP_CONTRACT',
+    platform:platformKey,
+    focus,
+    attention:profile.attention||PLATFORM_EXPERIENCE_PROFILES.COMMON.attention,
+    tracks:Object.freeze(EXPERIENCE_BUILD_UP_TRACKS.map(track=>Object.freeze({track,status:trackStatus[track]}))),
+    weakestTracks:Object.freeze(weakest),
+    loop:Object.freeze([
+      'OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW',
+      'RANK_WEAKEST_APPLICABLE_TRACKS',
+      'IMPLEMENT_EXISTING_RESPONSIBLE_SYSTEMS_DIRECTLY',
+      'REPLAY_REAL_INPUTS_AND_CAPTURE_SAME_SCENE_BEFORE_AFTER',
+      'VERIFY_PLAYER_FACING_EFFECT_AND_NO_SEMANTIC_REGRESSION',
+      'PROMOTE_VERIFIED_BASELINE_OR_REPEAT'
+    ]),
+    commonRules,
+    platformProfile:profile,
+    robloxExtra,
+    webExtra,
+    unityExtra,
+    ownerLocks:Object.freeze({
+      gameplayBalanceSaveEconomyNetworkMeaningPreserved:true,
+      intentionallyDisabledAudioCategoriesPreserved:true
+    }),
+    designIdentity:clean(design.identity)||null
+  });
 }
 
 const AUTONOMOUS_EXPANSION_THEMES=Object.freeze([
@@ -1028,9 +1143,9 @@ function buildAutonomousContentExpansion({
 }
 
 function platformDirectives({identity,goal}){
-  const web=`${identity}: 동일 공통 목표 "${goal}"를 현재 canonical Web 경로에 구현하고 브라우저 터치/카메라/렌더 비용을 맞춘다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.`;
-  const roblox=`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 다른 플랫폼 구현을 그대로 복사하지 않는다.`;
-  const unity=`${identity}: 동일 공통 목표 "${goal}"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.`;
+  const web=`${identity}: 동일 공통 목표 "${goal}"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.`;
+  const roblox=`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.`;
+  const unity=`${identity}: 동일 공통 목표 "${goal}"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.`;
   const fortnite=`${identity}: 동일 공통 목표 "${goal}"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.`;
   return{
     WEB:web,
