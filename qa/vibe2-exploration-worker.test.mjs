@@ -155,7 +155,23 @@ test('exploration compiles responsibility graph coding architecture and semantic
     originalGoal:'모바일 pointer 입력으로 위치를 선택해 tower placement가 실제 world state에 반영되도록 고친다',
     goal:'모바일 pointer placement input failure를 수정한다',
     source:{root:'web-games/contract-demo',responsibleFiles:['web-games/contract-demo/index.html'],ignoredPaths:[]},
-    selectedTask:{evidence:['runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING'],lastOutcome:'FAIL'},
+    selectedTask:{
+      evidence:['runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING'],
+      lastOutcome:'FAIL',
+      buildUpDirective:{
+        playChainContract:{
+          selectedStage:'PLAYER_ACTION',
+          primaryFailure:{id:'adaptive-semantic-interaction-effect',repairSurface:'INTERACTION_CHAIN',priority:'CRITICAL'}
+        },
+        microIterationContract:{
+          selectedPlayChainStage:'PLAYER_ACTION',
+          primaryRepairSurface:'INTERACTION_CHAIN',
+          primaryScenario:'adaptive-semantic-interaction-effect',
+          preferredResponsibleFileCount:[1,3],
+          exactStudioRecheckRequired:false
+        }
+      }
+    },
     workPackage:{id:'contract-wp',sharedContext:{diagnosticEvidence:['MOBILE_PLACEMENT_INPUT_MISSING']}},
     unifiedLearning:{failureFingerprint:'web|MOBILE_PLACEMENT_INPUT_MISSING|MOBILE_INPUT|PLACEMENT',failureLocalMemory:[
       {id:'verified-local',verified:true,reusable:true,failureCause:'runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING',reusablePatterns:['trace pointer input to placement state'],avoidPatterns:['do not rewrite economy']},
@@ -185,12 +201,26 @@ test('exploration compiles responsibility graph coding architecture and semantic
   assert.equal(result.editContract.patchRecipe.qaBypassAllowed,false);
   assert.ok(result.editContract.codingArchitecture.invariantIds.includes('INPUT_TO_STATE_CAUSALITY'));
   assert.equal(result.editContract.writableScopeExpansionAllowed,false);
+  assert.equal(result.editContract.codingExecutionContract.mode,'CAUSAL_IMPLEMENTATION');
+  assert.equal(result.editContract.codingExecutionContract.selectedPlayChainStage,'PLAYER_ACTION');
+  assert.equal(result.editContract.codingExecutionContract.primaryRepairSurface,'INTERACTION_CHAIN');
+  assert.equal(result.editContract.codingExecutionContract.primaryScenario,'adaptive-semantic-interaction-effect');
+  assert.equal(result.editContract.codingExecutionContract.changeBudget.preferredResponsibleFileCountMax,3);
+  assert.equal(result.editContract.codingExecutionContract.changeBudget.wrapperShadowOverrideAllowed,false);
+  assert.equal(result.editContract.codingExecutionContract.retryPolicy.sameFailureRequiresDifferentHypothesis,true);
+  assert.ok(result.editContract.codingExecutionContract.hypothesisLadder.length>=3);
+  assert.ok(result.editContract.codingExecutionContract.verificationLadder.some(row=>row.id==='SAME_SCENARIO'&&row.required===true));
   const guidance=explorationGuidance(result);
   assert.ok(guidance.includes('[COMPILED EDIT CONTRACT]'));
   assert.ok(guidance.includes('주 책임 심볼='));
   assert.ok(guidance.includes('Semantic diff 허용 시스템='));
   assert.ok(guidance.includes('[PATCH RECIPE] mode=VERIFIED_FAILURE_LOCAL_RECIPE'));
   assert.ok(guidance.includes('verified reuse=trace pointer input to placement state'));
+  assert.ok(guidance.includes('[CODING EXECUTION CONTRACT BEGIN]'));
+  assert.ok(guidance.includes('selectedStage=PLAYER_ACTION'));
+  assert.ok(guidance.includes('repairSurface=INTERACTION_CHAIN'));
+  assert.ok(guidance.includes('sameFailureNeedsNewHypothesis=true'));
+  assert.ok(guidance.includes('[CODING EXECUTION CONTRACT END]'));
 });
 
 test('exploration downgrades repeated overconfident responsibility and adds matched hotspot focused QA without widening scope',()=>{
