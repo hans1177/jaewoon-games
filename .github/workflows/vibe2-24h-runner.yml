@@ -91,11 +91,8 @@ env:
   VIBE2_LEARNING_LANE_MAX: '1'
   VIBE2_ASSET_DEVELOPMENT_MAX: '64'
 
-# Keep one continuous scheduler chain. v9 releases the stale v8 scheduler epoch
-# while keeping the canonical scheduler and moving only its lightweight plan onto the ARM control pool.
-concurrency:
-  group: vibe2-24h-cycle-singleton-v9
-  cancel-in-progress: false
+# Scheduler invocations may overlap. Shared control-state writes use optimistic retry;
+# independent game/recovery work must never wait behind an orchestration-wide singleton.
 
 jobs:
   plan:
