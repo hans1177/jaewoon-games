@@ -1096,6 +1096,11 @@ test('Studio push trigger scopes exact revalidation from the actual before-to-he
   assert.match(studioPlanBlock,/git diff --quiet "\$PUSH_BEFORE" HEAD -- roblox-games\/\.company-runtime-trigger/);
   assert.match(studioPlanBlock,/ROBLOX_STUDIO_TRIGGER_CHANGED=\$trigger_changed/);
   assert.match(studioPlanBlock,/ROBLOX_STUDIO_REQUESTED_GAME_ID=\$\{requested:-ALL_PENDING\}/);
+  assert.match(studioPlanBlock,/ROBLOX_STUDIO_GENERIC_SCAN_DEFERRED_FOR_EXISTING_STUDIO_RUN=/);
+  assert.match(studioPlanBlock,/existing_studio_run=''/);
+  assert.match(studioPlanBlock,/CURRENT_RUN_ID="\$GITHUB_RUN_ID"/);
+  assert.match(studioPlanBlock,/startswith\("Official Studio MCP actual play "\)/);
+  assert.match(studioPlanBlock,/echo "trigger_changed=\$trigger_changed" >> "\$GITHUB_OUTPUT"/);
   assert.doesNotMatch(studioPlanBlock,/github\.event\.head_commit\.(?:modified|added|removed)/);
 });
 
@@ -3032,6 +3037,10 @@ test('Studio planner removes only superseded pending automatic runs for the exac
  assert.match(plan,/ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_CANCELLED=/);
  assert.match(plan,/ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_ACTIVE=/);
  assert.match(plan,/ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_UNRELATED=/);
+ assert.match(plan,/ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_EXACT_TRIGGER=/);
+ assert.match(plan,/CURRENT_TRIGGER_CHANGED: \$\{\{ steps\.plan\.outputs\.trigger_changed \}\}/);
+ assert.match(plan,/commits\/\$run_head/);
+ assert.match(plan,/roblox-games\/\.company-runtime-trigger/);
  assert.match(plan,/const manualExactDispatch=r\.event==='workflow_dispatch'/);
  assert.match(plan,/actor!==\'github-actions\[bot\]\'/);
  assert.match(plan,/if\(manualExactDispatch\)continue/);

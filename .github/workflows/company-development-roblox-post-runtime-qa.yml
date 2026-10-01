@@ -1950,6 +1950,7 @@ jobs:
           RECHECK_PRODUCT_FAILURE: ${{ github.event_name == 'workflow_dispatch' && inputs.run_studio == true && inputs.game_id != '' }}
           PUSH_BEFORE: ${{ github.event.before || '' }}
           CANDIDATE_CONTEXT: ${{ inputs.candidate_context }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -1971,15 +1972,49 @@ jobs:
           fi
           echo "ROBLOX_STUDIO_TRIGGER_CHANGED=$trigger_changed"
           echo "ROBLOX_STUDIO_REQUESTED_GAME_ID=${requested:-ALL_PENDING}"
+          echo "trigger_changed=$trigger_changed" >> "$GITHUB_OUTPUT"
+
+          existing_studio_run=''
+          if [ -z "$requested" ] && [ "$trigger_changed" != 'true' ] && [ -z "$CANDIDATE_CONTEXT" ]; then
+            payload="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-post-runtime-qa.yml/runs?per_page=100")"
+            printf '%s' "$payload" | CURRENT_RUN_ID="$GITHUB_RUN_ID" node -e "
+              let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
+                const j=JSON.parse(s),states=new Set(['queued','pending','requested','waiting','in_progress']);
+                const prefix='Roblox runtime foundation QA · ';
+                const current=Number(process.env.CURRENT_RUN_ID||0);
+                for(const r of j.workflow_runs||[]){
+                  const id=Number(r.id);
+                  if(!Number.isFinite(id)||id>=current)continue;
+                  if(!states.has(String(r.status||'').toLowerCase()))continue;
+                  if(!String(r.display_title||'').startsWith(prefix))continue;
+                  process.stdout.write(String(id)+'\n');
+                }
+              });
+            " > /tmp/roblox-existing-studio-run-ids
+            while read -r run_id; do
+              [ -n "$run_id" ] || continue
+              studio_jobs="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" --jq '[.jobs[] | select(.name | startswith("Official Studio MCP actual play ")) | select(.status == "queued" or .status == "pending" or .status == "requested" or .status == "waiting" or .status == "in_progress")] | length' 2>/dev/null || echo 0)"
+              if [ "$studio_jobs" != '0' ]; then
+                existing_studio_run="$run_id"
+                break
+              fi
+            done < /tmp/roblox-existing-studio-run-ids
+          fi
+
           plan_output="$RUNNER_TEMP/roblox-studio-mcp-matrix.json"
-          node tools/company-development-roblox-studio-local-play.mjs \
-            --mode=plan \
-            --queue=../runtime/development-queue.json \
-            --roadmap=company-learning/platform-release-roadmap.json \
-            --repo-root=. \
-            "--game-id=$requested" \
-            "--recheck-product-failure=$RECHECK_PRODUCT_FAILURE" \
-            "--output=$plan_output"
+          if [ -n "$existing_studio_run" ]; then
+            printf '%s\n' '{"include":[]}' > "$plan_output"
+            echo "ROBLOX_STUDIO_GENERIC_SCAN_DEFERRED_FOR_EXISTING_STUDIO_RUN=$existing_studio_run"
+          else
+            node tools/company-development-roblox-studio-local-play.mjs \
+              --mode=plan \
+              --queue=../runtime/development-queue.json \
+              --roadmap=company-learning/platform-release-roadmap.json \
+              --repo-root=. \
+              "--game-id=$requested" \
+              "--recheck-product-failure=$RECHECK_PRODUCT_FAILURE" \
+              "--output=$plan_output"
+          fi
           PLAN_OUTPUT="$plan_output" node <<'NODE'
           const fs=require('fs');
           const plan=JSON.parse(fs.readFileSync(process.env.PLAN_OUTPUT,'utf8'));
@@ -1997,6 +2032,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           PLANNED_MATRIX: ${{ steps.plan.outputs.matrix }}
+          CURRENT_TRIGGER_CHANGED: ${{ steps.plan.outputs.trigger_changed }}
         shell: bash
         run: |
           set -euo pipefail
@@ -2023,6 +2059,17 @@ jobs:
           " > /tmp/roblox-older-studio-run-ids
           while read -r run_id; do
             [ -n "$run_id" ] || continue
+            if [ "$CURRENT_TRIGGER_CHANGED" != 'true' ]; then
+              run_event="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id" --jq '.event' 2>/dev/null || true)"
+              run_head="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id" --jq '.head_sha' 2>/dev/null || true)"
+              if [ "$run_event" = 'push' ] && [[ "$run_head" =~ ^[0-9a-f]{40}$ ]]; then
+                exact_trigger="$(gh api "repos/$GITHUB_REPOSITORY/commits/$run_head" --jq '[.files[]?.filename] | any(. == "roblox-games/.company-runtime-trigger")' 2>/dev/null || echo false)"
+                if [ "$exact_trigger" = 'true' ]; then
+                  echo "ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_EXACT_TRIGGER=$run_id"
+                  continue
+                fi
+              fi
+            fi
             jobs_json="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" 2>/dev/null || echo '{"jobs":[]}')"
             decision="$(printf '%s' "$jobs_json" | PLANNED_GAMES="$planned_games" node -e "
               let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
