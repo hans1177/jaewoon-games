@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": " p:GetAttributeChangedSignal(k):Connect(render)",
+      "replace": "p:GetAttributeChangedSignal(\"FeedbackEvent\"):Connect(function()\n    local value = tostring(p:GetAttribute(\"FeedbackEvent\") or \"\")\n    if value:find(\"^RESOURCE:\") then\n        resourceSfx.TimePosition = 0;\n        resourceSfx:Play();\n        flash(Color3.fromRGB(120,220,120))\n    elseif value:find(\"^BUILD:\") then\n        buildSfx.TimePosition = 0;\n        buildSfx:Play();\n        flash(Color3.fromRGB(240,200,110))\n    elseif value:find(\"^HIT:\") then\n        hitSfx.TimePosition = 0;\n        hitSfx:Play();\n        flash(Color3.fromRGB(235,110,90))\n    end\nend)"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
