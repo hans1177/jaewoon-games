@@ -41,11 +41,47 @@ for(const dir of ['Assets','Packages','ProjectSettings']){
 }
 const seedSignalsPass=!seedRuntimeRequired||(metricMatches.length>0&&actionObserved&&saveObserved);
 const requiredRuntimeSignals=platformMetricsPass&&seedSignalsPass&&actionObserved&&saveObserved&&pauseObserved;
-const pass=runtimePass&&independentPass&&sameBinding&&requiredRuntimeSignals&&/^[0-9a-f]{64}$/.test(sha)&&/^[0-9a-f]{40}$/.test(sourceCommit)&&/^[0-9a-f]{40}$/.test(sourceTreeSha);
+const blackBox=runtime?.blackBoxFoundation||{};
+const runtimeFloors=blackBox?.floors||{};
+const floorPass=id=>runtimeFloors?.[id]?.state==='PASS';
+const independentChecks=independent?.checks||{};
+const independentInputPass=independentChecks.processLaunch==='PASS'&&independentChecks.rapidInputStress==='PASS'&&independentChecks.processAliveAfterStress==='PASS'&&independentChecks.fatalCrashScan==='PASS'&&independentChecks.screenshotCaptured==='PASS';
+const independentServicePass=independentChecks.backgroundResume==='PASS';
+const blackBoxContractPass=
+  blackBox.version===1
+  &&blackBox.mode==='ONE_EXACT_RUNTIME_SESSION_F1_THROUGH_F8'
+  &&blackBox.singleRuntimeSession===true
+  &&blackBox.runtimeReplayForF9Required===false
+  &&blackBox.foundationPass===true
+  &&['F1','F2','F3','F4','F5','F6','F8'].every(floorPass);
+const f0Pass=sameBinding&&/^[0-9a-f]{64}$/.test(sha)&&/^[0-9a-f]{40}$/.test(sourceCommit)&&/^[0-9a-f]{40}$/.test(sourceTreeSha);
+const foundationFloors={
+  F0:{state:f0Pass?'PASS':'FAIL',authority:'UNITY_EDITOR_BUILD_COMPILE_AND_EXACT_SOURCE_ARTIFACT_BINDING'},
+  F1:{...(runtimeFloors.F1||{}),state:floorPass('F1')?'PASS':'FAIL'},
+  F2:{...(runtimeFloors.F2||{}),state:floorPass('F2')?'PASS':'FAIL'},
+  F3:{...(runtimeFloors.F3||{}),state:floorPass('F3')?'PASS':'FAIL'},
+  F4:{...(runtimeFloors.F4||{}),state:floorPass('F4')?'PASS':'FAIL'},
+  F5:{...(runtimeFloors.F5||{}),state:floorPass('F5')&&independentInputPass?'PASS':'FAIL',independentQaCorroborated:independentInputPass},
+  F6:{...(runtimeFloors.F6||{}),state:floorPass('F6')&&independentServicePass?'PASS':'FAIL',independentQaCorroborated:independentServicePass},
+  F7:{state:'DEFER_TO_MULTIPLAYER_APPLICABILITY',authority:'DESIGN_AND_MULTIPLAYER_QA_EVIDENCE'},
+  F8:{...(runtimeFloors.F8||{}),state:floorPass('F8')&&independentInputPass?'PASS':'FAIL',independentQaCorroborated:independentInputPass}
+};
+const blackBoxFoundationPass=f0Pass&&blackBoxContractPass&&foundationFloors.F5.state==='PASS'&&foundationFloors.F6.state==='PASS'&&foundationFloors.F8.state==='PASS';
+const pass=runtimePass&&independentPass&&sameBinding&&requiredRuntimeSignals&&blackBoxFoundationPass;
 const evidence={
   version:2,gameId,state:pass?'PASS':'FAIL',pass,validated:pass,target:'UNITY_ANDROID_TECHNICAL_VALIDATION',checkedAt:new Date().toISOString(),
   sourceBinding:{upstreamBuildRunId:Number(build.runId||runtime.upstreamBuildRunId||0),sourceCommit,sourceTreeSha,apkSha256:sha,sameBinding},
-  realEvidence:{runtimeSmoke:runtimePass,independentQa:independentPass,evidenceMode:seedRuntimeRequired?'SEED_IN_APP_PLUS_ANDROID_PLATFORM':'ANDROID_PLATFORM_BLACK_BOX',metricSamples:Number(platformPerformance.sampleCount||0)+metricMatches.length,platformMetricsPass,seedRuntimeRequired,seedSignalsPass,actionObserved,saveObserved,pauseResumeObserved:pauseObserved},
+  foundationAdapter:{
+    version:1,
+    platform:'UNITY',
+    mode:'F0_COMPILE_PLUS_ONE_EXACT_BLACK_BOX_RUNTIME_F1_F8_PLUS_F9_EVIDENCE_FAN_IN',
+    f1ThroughF8SingleRuntimeSession:true,
+    f9RuntimeReplayRequired:false,
+    blackBoxContractPass,
+    blackBoxFoundationPass,
+    foundationFloors
+  },
+  realEvidence:{runtimeSmoke:runtimePass,independentQa:independentPass,evidenceMode:seedRuntimeRequired?'SEED_IN_APP_PLUS_ANDROID_PLATFORM':'ANDROID_PLATFORM_BLACK_BOX',metricSamples:Number(platformPerformance.sampleCount||0)+metricMatches.length,platformMetricsPass,seedRuntimeRequired,seedSignalsPass,actionObserved,saveObserved,pauseResumeObserved:pauseObserved,visualDeltaObserved:blackBox.visualDeltaObserved===true,foregroundActivityObserved:blackBox.foregroundActivityObserved===true},
   coverage:{
     ANDROID_FPS_FRAME_STABILITY:{state:platformMetricsPass?'PASS':'FAIL',provider:platformPerformance.provider||null,sampleCount:Number(platformPerformance.sampleCount||0)+fpsSamples.length,totalFramesRendered:Number(platformPerformance.totalFramesRendered||0),jankyFrames:Number(platformPerformance.jankyFrames||0),jankyFrameRatePct:Number.isFinite(Number(platformPerformance.jankyFrameRatePct))?Number(platformPerformance.jankyFrameRatePct):null,minFps:fpsMinimum,avgFps:fpsAverage,scope:'ANDROID_16_EMULATOR_TECHNICAL_VALIDATION'},
     MEMORY_HEAT_LOADING:{state:platformMetricsPass&&runtimePass?'PASS_WITH_LIMITATION':'FAIL',provider:platformPerformance.provider||null,maxAllocatedMemoryBytes:memoryMax,loading:'PASS',heat:'EMULATOR_ONLY_NOT_PHYSICAL_DEVICE',limitation:'Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern.'},
@@ -69,4 +105,6 @@ console.log(`UNITY_RUNTIME_EVIDENCE_MODE=${evidence.realEvidence.evidenceMode}`)
 console.log(`UNITY_METRIC_SAMPLES=${evidence.realEvidence.metricSamples}`);
 console.log(`UNITY_PLATFORM_METRICS=${platformMetricsPass?'PASS':'FAIL'}`);
 console.log(`UNITY_BINDING_MATCH=${sameBinding}`);
+console.log(`UNITY_FOUNDATION_F1_F8_SINGLE_RUNTIME=${blackBoxFoundationPass?'PASS':'FAIL'}`);
+console.log('UNITY_F9_RUNTIME_REPLAY=NO');
 if(!pass)process.exitCode=2;
