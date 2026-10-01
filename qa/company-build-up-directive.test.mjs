@@ -23,6 +23,9 @@ function design(){
         {name:'포식 관계',purpose:'적 조합에 따라 정답이 달라진다',playerChoice:'현재 웨이브에 맞는 포식자를 선택'}
       ],
       progressionDirection:'새 곤충과 진화를 해금해 더 복잡한 웨이브 조합을 상대한다',
+      visualDirection:'선명한 곤충 실루엣과 자연 서식지 대비가 있는 스타일라이즈드 정원',
+      mobileUx:'엄지 조작에서 웨이브 정보와 배치 대상이 겹치지 않는 터치 우선 HUD',
+      marketTargetDirection:'global strategy players',
       multiplayerMode:'SINGLE',
       platformProfiles:{
         ROBLOX:{platform:'ROBLOX'},
@@ -122,6 +125,9 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.equal(directive.gameDevelopmentDNA.version,1);
   assert.ok(directive.gameDevelopmentDNA.identityAnchors.some(value=>/곤충|정원/.test(value)));
   assert.ok(directive.gameDevelopmentDNA.signatureSystems.some(row=>row.name==='서식지 상성'));
+  assert.match(directive.gameDevelopmentDNA.presentationIdentity.visualDirection,/곤충 실루엣|정원/);
+  assert.match(directive.gameDevelopmentDNA.presentationIdentity.mobileUx,/터치|HUD/);
+  assert.equal(directive.gameDevelopmentDNA.presentationIdentity.genericStyleReplacementForbidden,true);
   assert.equal(directive.playChainRepairPlan.version,1);
   assert.equal(directive.playChainRepairPlan.stages.length,7);
   assert.deepEqual(directive.playChainRepairPlan.stages.map(row=>row.id),['ENTRY_CONTEXT','PLAYER_INTENT','INPUT','AUTHORITY_CHECK','STATE_CHANGE','FEEDBACK','NEXT_CHOICE']);
