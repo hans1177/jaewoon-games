@@ -124,11 +124,14 @@ test('central change record archival requires semantic retirement and never reli
   const active=classifyCentralChangeRecordRetention('oldLookingName',{status:'ACTIVE_COMPATIBILITY_RECORD',authority:'company-learning/platform-release-roadmap.json#developmentSpeedExecution'});
   const pending=classifyCentralChangeRecordRetention('historicalLookingName',{status:'CODE_UPDATED_PENDING_QA_AND_LIVE'});
   const retired=classifyCentralChangeRecordRetention('plainName',{status:'SUPERSEDED',historical:true});
+  const retiredOwner=classifyCentralChangeRecordRetention('ownerRule',{status:'SUPERSEDED',historical:true,authority:'OWNER_DIRECTIVE_2026-09-01'});
   assert.equal(active.archiveEligible,false);
   assert.equal(active.policyMeaning,true);
   assert.equal(pending.archiveEligible,false);
   assert.equal(retired.archiveEligible,true);
   assert.equal(retired.reason,'EXPLICIT_HISTORICAL_OR_RETIRED_RECORD');
+  assert.equal(retiredOwner.archiveEligible,true);
+  assert.equal(retiredOwner.policyMeaning,false);
 });
 
 test('central archive plan removes explicit history before unreferenced compatibility records',()=>{
