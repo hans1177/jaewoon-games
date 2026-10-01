@@ -294,14 +294,14 @@
     "entryWorkflow": ".github/workflows/vibe2-24h-runner.yml",
     "workerWorkflow": ".github/workflows/vibe2-continuous-core.yml",
     "gamePrimaryControlRunnerPool": {
-      "authority": "company-learning/platform-release-roadmap.json#changeRecord.lightweightGameIngressRunnerRelief20260927",
+      "authority": "company-learning/platform-release-roadmap.json#changeRecord.runnerBackpressureBottleneckRelief20261001",
       "reserve": "ubuntu-slim",
       "reserveDefault": "ubuntu-slim",
-      "fanInRefillReserve": "ubuntu-24.04-arm",
-      "fanIn": "ubuntu-24.04-arm",
+      "fanInRefillReserve": "ubuntu-latest",
+      "fanIn": "ubuntu-latest",
       "worker": "ubuntu-latest",
       "modelCache": "ubuntu-latest",
-      "lightweightReserveSeparatedFromArmFanIn": true,
+      "lightweightReserveSeparatedFromArmFanIn": false,
       "fanInRefillBypassesSlimPressure": true,
       "heavyGameExecutionUnchanged": true,
       "queueReservationAndStateFanInOnly": true,
@@ -482,8 +482,8 @@
         "priorityMayYieldToGamePrimaryWithoutTerminatingLearning": true,
         "liveRunnerPressureGateImplemented": true,
         "runnerPressureSource": "GITHUB_ACTIONS_RECENT_RUN_STATUS_QUEUED_PENDING_REQUESTED",
-        "pressureObservationFailureDefersLearning": false,
-        "minimumActiveWorkersUnderPressure": 1,
+        "pressureObservationFailureDefersLearning": true,
+        "minimumActiveWorkersUnderPressure": 0,
         "productionMayNotWaitForLearningReserve": true
       },
       "RELEASE_WAIT": {
@@ -499,7 +499,10 @@
       "gameRefillDispatchAllowed": false,
       "practiceDistillationAllowed": true,
       "recoveryFastCausalGameRefillAllowed": true,
-      "recoveryFastCausalGameRefillTarget": "GAME_PRIMARY"
+      "recoveryFastCausalGameRefillTarget": "GAME_PRIMARY",
+      "recoveryFastCausalGameRefillPressureGuardRequired": true,
+      "recoveryFastCausalGameRefillQueuePressureThreshold": 4,
+      "recoveryFastCausalGameRefillDeferredStatePreserved": true
     },
     "executionTopology": "ATOMIC_NEURON_STREAM",
     "perWorkerCompletionSignalEnabled": true,
