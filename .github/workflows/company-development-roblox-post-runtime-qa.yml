@@ -2856,8 +2856,22 @@ jobs:
           }
           Write-Host "ROBLOX_STUDIO_OWNERSHIP_RESTORED_COUNT=$($launchFamily.Count)"
           # Rediscover the exact writable Place instead of trusting a launcher PID that may have exited.
+          # 정상 소유 프로세스를 실제 종료한 뒤에는 연속 두 번 비어 있으면 즉시 슬롯을 반환한다.
+          # 소유 프로세스를 한 번도 찾지 못한 예외 경로만 기존 15회 탐색을 유지한다.
+          $ownedObserved = $false
+          $emptyOwnedProbes = 0
           for ($closeProbe = 0; $closeProbe -lt 15; $closeProbe++) {
             $ownedRecords = @(Get-CimInstance Win32_Process -Filter "Name = 'RobloxStudioBeta.exe'" -ErrorAction Stop | Where-Object { $_.CreationDate.ToUniversalTime() -ge $launchStarted.AddSeconds(-2) -and (([string]$_.CommandLine -match $exactPlacePattern) -or ($launchFamily.ContainsKey([string]$_.ProcessId) -and [math]::Abs(($_.CreationDate.ToUniversalTime() - [DateTime]::Parse($launchFamily[[string]$_.ProcessId].createdAt).ToUniversalTime()).TotalMilliseconds) -le 10)) })
+            if ($ownedRecords.Count -gt 0) {
+              $ownedObserved = $true
+              $emptyOwnedProbes = 0
+            } elseif ($ownedObserved) {
+              $emptyOwnedProbes++
+              if ($emptyOwnedProbes -ge 2) {
+                Write-Host "ROBLOX_STUDIO_CLOSE_STABLE_EMPTY=YES:probes=$emptyOwnedProbes"
+                break
+              }
+            }
             foreach ($record in $ownedRecords) {
               $ownedStudio = Get-Process -Id ([int]$record.ProcessId) -ErrorAction SilentlyContinue
               if (-not $ownedStudio -or $ownedStudio.ProcessName -ne 'RobloxStudioBeta') { continue }
