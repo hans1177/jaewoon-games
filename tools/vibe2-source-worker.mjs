@@ -359,7 +359,11 @@ function assetDevelopmentTask(order={}){
 }
 
 export function robloxDeterministicPresentationEligible(order={}){
+  const perceptible=order?.selectedTask?.buildUpDirective?.perceptibleExperienceBuildUp||order?.buildUpDirective?.perceptibleExperienceBuildUp||null;
+  const perceptibleV3=Number(order?.selectedTask?.buildUpDirective?.version||order?.buildUpDirective?.version||0)>=3
+    &&perceptible?.perceptiblePlayerEffectRequired===true;
   return clean(order.target).toLowerCase()==='roblox'
+    &&!perceptibleV3
     &&order.presentationQuality?.required===true
     &&clean(order.presentationQuality?.pass).toUpperCase()==='ASSET_ADAPTATION'
     &&(assetDevelopmentTask(order)||!worldLobbySourceWorkRequired(order));
@@ -1238,6 +1242,10 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
   const contentBundle=(expansion?.coherentContentBundle||[]).map(clean).filter(Boolean).slice(0,10);
   const antiCloneAxes=(expansion?.antiCloneContract?.distinctionAxes||[]).map(clean).filter(Boolean);
   const continuityQuestions=(expansion?.continuityAndCausality?.questions||[]).map(clean).filter(Boolean);
+  const experience=d?.perceptibleExperienceBuildUp||{};
+  const experienceSurfaces=(experience?.applicableSurfaceReview||[]).map(row=>`${clean(row?.id)}=${clean(row?.goal)}; evidence=${(row?.evidence||[]).map(clean).filter(Boolean).join(',')}`).filter(Boolean);
+  const experienceRequirements=(experience?.platformRequirements||[]).map(clean).filter(Boolean);
+  const experienceHardFailures=(experience?.hardFailures||[]).map(clean).filter(Boolean);
   return[
     '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
     `directiveId=${clean(d.directiveId)} generation=${Number(d.generation||0)} developmentDepth=${Number(d.developmentDepth||1)} escalationStage=${clean(d.escalationStage)} primaryFocus=${clean(d.primaryFocus)}`,
@@ -1266,6 +1274,11 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     `visual=${visual.join(' | ')}`,
     `uxInput=${(d.uxInputDirectives||[]).map(clean).filter(Boolean).join(' | ')}`,
     platformKey&&d?.platformAdaptationDirectives?.[platformKey]?`platform=${clean(d.platformAdaptationDirectives[platformKey])}`:'',
+    `experienceBuildUp=version:${Number(experience?.version||0)} platform:${clean(experience?.platform)||platformKey||target} strictness:${clean(experience?.strictness)||'HIGH'} runtime:${clean(experience?.runtime)||'RUNTIME_REQUIRED'} perceptiblePlayerEffectRequired:${experience?.perceptiblePlayerEffectRequired===true} existenceOnlyPassForbidden:${experience?.existenceOnlyPassForbidden===true} bindOnlyPassForbidden:${experience?.bindOnlyPassForbidden===true}`,
+    `experienceSurfaces=${experienceSurfaces.join(' | ')}`,
+    `experienceRequirements=${experienceRequirements.join(' | ')}`,
+    `experienceHardFailures=${experienceHardFailures.join(',')||'NONE'}`,
+    experience?.perceptiblePlayerEffectRequired===true?'experienceRule=Do not close a player-facing quality gap with source markers, asset binding, style constants, comments, or technically present but barely perceptible motion/audio/UI. Make the changed surface clearly observable at normal play scale, preserve gameplay authority, and leave runtime replay evidence for the next gate.':'',
     `preserve=${(d.preserveConstraints||[]).map(clean).filter(Boolean).join(' | ')}`,
     `acceptance=${(d.acceptanceEvidence||[]).map(clean).filter(Boolean).join(' | ')}`,
     'The first coherent edit should target one of the exact sourceAnchors when it is inside Allowed edit paths. Do not invent a wrapper or unrelated helper while the anchored responsibility remains unchanged.',
