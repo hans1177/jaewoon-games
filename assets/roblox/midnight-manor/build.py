@@ -379,8 +379,8 @@ class Scene:
     def batch_static(self):
         # 장식의 수는 유지하고 같은 재질의 고정 소품만 병합한다. 움직이는 노드는 보존한다.
         keep=('Butler','Archivist','Undertaker','CoffinLid','CoffinHand','ArmorHelmet','LittleGhost',
-              'TeaCup','Tea','Chandelier','Mirror','FamilyPortrait','PortraitCanvas','HearthFlame',
-              'ManorSideWall','FacadeWing','BackWall','HallFloor','Courtyard','CrookedRoof','Clock','EntryDoor')
+              'TeaCup','Tea','ChandelierFlame','MirrorPupil','FamilyPortrait','PortraitCanvas','HearthFlame',
+              'ManorSideWall','FacadeWing','BackWall','HallFloor','Courtyard','CrookedRoof','ClockPendulum','EntryDoor')
         groups={}
         bpy.context.view_layer.update()
         for o in list(self.collection.objects):
