@@ -3744,3 +3744,50 @@ test('queued rebuild and released caretaker receive lobby binding before backlog
     assert.equal(again.queue.tasks.find(t=>t.id==='task-0').goal,first.queue.tasks.find(t=>t.id==='task-0').goal);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+test('real cozy-island Web source produces both code BUILD_UP and graphics replacement work',()=>{
+  const repoRoot=path.resolve(process.cwd());
+  const sourceRoot='web-games/cozy-island';
+  assert.equal(fs.existsSync(path.join(repoRoot,sourceRoot,'index.html')),true);
+  assert.equal(fs.existsSync(path.join(repoRoot,sourceRoot,'style.css')),true);
+  assert.equal(fs.existsSync(path.join(repoRoot,sourceRoot,'game.js')),true);
+
+  const project={
+    gameId:'cozy-island',
+    name:'포근섬: 작은 왕국 키우기',
+    engine:'web',
+    target:'web',
+    projectPath:sourceRoot,
+    lifecycleState:'ACTIVE',
+    releaseState:'development-confirmed',
+    existing:true,
+    source:'real-main-game-regression'
+  };
+  const queue=createVibeContinuousQueue({tasks:[],maxConcurrentTasks:256});
+
+  const codeBuildUp=findStudioContinuousImprovementTask(project,repoRoot,queue,'USABILITY');
+  assert.ok(codeBuildUp);
+  assert.equal(codeBuildUp.target,'web');
+  assert.equal(codeBuildUp.sourceRoot,sourceRoot);
+  assert.ok(codeBuildUp.responsibleFiles.length>0);
+  assert.ok(codeBuildUp.responsibleFiles.every(file=>file.startsWith(sourceRoot+'/')));
+  assert.equal(codeBuildUp.studioQualityEvolution?.nextCycleRequired,true);
+  assert.equal(codeBuildUp.maxRetries,null);
+  assert.equal(codeBuildUp.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
+  assert.ok(codeBuildUp.evidence.includes('studio-quality-next-cycle-required:YES'));
+
+  const graphicsBuildUp=findStudioContinuousImprovementTask(project,repoRoot,queue,'PRESENTATION');
+  assert.ok(graphicsBuildUp);
+  assert.equal(graphicsBuildUp.target,'web');
+  assert.equal(graphicsBuildUp.sourceRoot,sourceRoot);
+  assert.equal(graphicsBuildUp.assetProductionLane,true);
+  assert.equal(graphicsBuildUp.studioQualityEvolution?.nextCycleRequired,true);
+  assert.ok(graphicsBuildUp.graphicsReplacementContract);
+  assert.equal(graphicsBuildUp.graphicsReplacementContract.implementation.actualSourceOrBindingDeltaRequired,true);
+  assert.equal(graphicsBuildUp.graphicsReplacementContract.implementation.zeroActualReplacementCannotPass,true);
+  assert.ok(graphicsBuildUp.completionCriteria.includes('GRAPHICS_REPLACEMENT_REAL_SOURCE_OR_BINDING_DELTA'));
+  assert.ok(graphicsBuildUp.evidence.includes('adaptive-graphics-replacement:v1'));
+  assert.ok(graphicsBuildUp.evidence.includes('studio-quality-next-cycle-required:YES'));
+  assert.ok(graphicsBuildUp.responsibleFiles.length>0);
+  assert.ok(graphicsBuildUp.responsibleFiles.every(file=>file.startsWith(sourceRoot+'/')));
+  assert.ok(graphicsBuildUp.responsibleFiles.some(file=>/\.(?:html?|css|js|mjs)$/i.test(file)));
+});
