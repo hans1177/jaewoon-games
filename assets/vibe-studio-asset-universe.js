@@ -592,13 +592,15 @@ export function createAssetRuntimeVisualReviewPlan({
     WEB_BROWSER:'WEB'
   });
   const revision=text(sourceRevision),issues=[];
-  const targetPlatforms=uniq((platforms||[]).map(upper));
+  const platformInput=Array.isArray(platforms)?platforms:[],surfaceInput=Array.isArray(requiredSurfaces)?requiredSurfaces:[],viewInput=Array.isArray(requiredViews)?requiredViews:[];
+  if(!Array.isArray(platforms)||!Array.isArray(requiredSurfaces)||!Array.isArray(requiredViews))issues.push('RUNTIME_REVIEW_ARRAY_CONTRACT_REQUIRED');
+  const targetPlatforms=uniq(platformInput.map(upper));
   if(!revision)issues.push('SOURCE_REVISION_REQUIRED');
   if(!targetPlatforms.length||targetPlatforms.some(platform=>!allowedPlatforms.has(platform)))issues.push('SUPPORTED_RUNTIME_REVIEW_PLATFORMS_REQUIRED');
   const defaultSurface={ROBLOX:'ROBLOX_STUDIO',UNITY:'UNITY_ANDROID_APK',WEB:'WEB_BROWSER'};
-  const surfaces=uniq((requiredSurfaces?.length?requiredSurfaces:targetPlatforms.map(platform=>defaultSurface[platform])).map(upper));
+  const surfaces=uniq((surfaceInput.length?surfaceInput:targetPlatforms.map(platform=>defaultSurface[platform])).map(upper));
   if(!surfaces.length||surfaces.some(surface=>!surfacePlatform[surface]||!targetPlatforms.includes(surfacePlatform[surface])))issues.push('SUPPORTED_RUNTIME_REVIEW_SURFACES_REQUIRED');
-  const views=uniq((requiredViews||[]).map(upper));
+  const views=uniq(viewInput.map(upper));
   if(!views.length)issues.push('RUNTIME_REVIEW_VIEWS_REQUIRED');
 
   const subjectIds=new Set(),subjects=[];
@@ -611,7 +613,7 @@ export function createAssetRuntimeVisualReviewPlan({
     subjects.push(Object.freeze({
       id,label:text(source.label||source.name||id),role:upper(source.role||'SCENE_OBJECT'),
       required:source.required!==false,mustBeVisibleIn:freezeList(mustBeVisibleIn),
-      identityAnchors:freezeList(uniq(source.identityAnchors||[]))
+      identityAnchors:freezeList(uniq(Array.isArray(source.identityAnchors)?source.identityAnchors:[]))
     }));
   }
 
@@ -651,7 +653,7 @@ export function createAssetRuntimeVisualReviewPlan({
     status:issues.length||missingCaptures.length?'CAPTURES_REQUIRED':'READY_FOR_PIXEL_INSPECTION',
     sourceRevision:revision,platforms:freezeList(targetPlatforms),requiredSurfaces:freezeList(surfaces),requiredViews:freezeList(views),
     captures:freezeList(normalizedCaptures),expectedSubjects:freezeList(subjects),
-    visualGoals:freezeList(uniq(visualGoals||[])),editableTargets:freezeList(uniq(editableTargets||[])),
+    visualGoals:freezeList(uniq(Array.isArray(visualGoals)?visualGoals:[])),editableTargets:freezeList(uniq(Array.isArray(editableTargets)?editableTargets:[])),
     issues:freezeList(issues),missingCaptures:freezeList(missingCaptures),
     pixelInspectionRequired:true,pixelInspectionPerformed:false,
     protectedSemantics:freezeList(['GAMEPLAY_RULES','BALANCE','HITBOXES','DAMAGE','COOLDOWNS','PROGRESSION','ECONOMY','SAVE_MEANING','NETWORK_AUTHORITY']),
