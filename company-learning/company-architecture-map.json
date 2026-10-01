@@ -850,7 +850,60 @@
         "authorityChange": "NONE",
         "mergedCommit": "d28e404fbe785dad8c80cdce2636d7e74f26ebe4"
       },
-      "selfAdaptiveGamePrimaryConcurrency": {
+      "bottleneckFirstRuntimeCheckpoint": {
+        "version": 1,
+        "state": "POST_2017_PRIORITY_2_SOURCE_FAILURE_REPAIR",
+        "sourceRoadmap": "company-learning/platform-release-roadmap.json#assistantRoadmapOrchestration.implementationState.vibeBottleneckCentralCheckpoint",
+        "completedRepairPrs": [
+          1983,
+          1984,
+          1989
+        ],
+        "latestRuntime": {
+          "runId": 35500348340,
+          "workerCount": 21,
+          "actualPeakConcurrency": 19,
+          "failureRatePct": 52.38,
+          "pressureLevel": "SEVERE",
+          "reportedPrimaryBottleneck": "SOURCE_CANDIDATE_GENERATION",
+          "telemetryEffectiveMax": 256,
+          "controlCurrentMax": 256
+        },
+        "openTelemetryInvariant": {
+          "id": "GAME_PRIMARY_EFFECTIVE_MAX_DENOMINATOR_MISMATCH",
+          "state": "RESOLVED_BY_OWNER_UNBOUNDED_DIRECTIVE_AND_PR_2020",
+          "expectedMeaning": "EFFECTIVE_MAX_MUST_REFLECT_THE_EXECUTION_CAP_THAT_CAN_ACTUALLY_CONSTRAIN_GAME_PRIMARY_WORKERS_FOR_THE_OBSERVED_WAVE",
+          "doNotInferLowLoadFromUnrelatedGlobalMax": true,
+          "responsibleSystems": [
+            "tools/vibe2-parallelism-telemetry.mjs",
+            "tools/vibe2-queue-control.mjs",
+            ".vibe2/parallelism-control.json"
+          ]
+        },
+        "post1989SourceGenerationFailureAudit": {
+          "completedProductionRuns": 9,
+          "finalSourceGenerationFailures": 42,
+          "reportedFinalClasses": {
+            "OTHER": 42
+          },
+          "verifiedRecurringSignature": "FOCUSED_REPLACE_PLACEHOLDER",
+          "rootCause": "COPYABLE_PLACEHOLDER_LITERAL_IN_FOCUSED_REPLACE_PROMPT_PLUS_OTHER_FALLTHROUGH_CLASSIFICATION",
+          "responsibleSystem": "tools/vibe2-source-worker.mjs",
+          "repairBranch": "assistant/p0-source-placeholder-2017",
+          "retryBudgetIncreased": false,
+          "timeoutIncreased": false,
+          "workerCountIncreased": false,
+          "qaBypassAllowed": false,
+          "authorityChange": "NONE"
+        },
+        "nextRuntimeGate": "VERIFY_FOCUSED_REPLACE_PLACEHOLDER_REPAIR_IN_PRODUCTION_THEN_CONTINUE_POST_1989_FAILURE_CLASSIFICATION",
+        "executionAuthority": "EXISTING_DAG_SCHEDULER_ONLY",
+        "authorityChange": "NONE",
+        "sourcePr": 2013
+      },
+      "taskReorderAuthority": "NONE",
+      "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
+      "directGamePrimaryExecution": {
         "state": "ATOMIC_NEURON_STREAM_IMPLEMENTED_PENDING_MERGE",
         "sourcePr": 1994,
         "controller": ".vibe2/parallelism-control.json",
@@ -929,61 +982,12 @@
         "independentCompletionFanIn": true,
         "externalMatrixTransportPartitionMax": 256,
         "internalGlobalParallelCap": null,
-        "independentCompletionRefillImmediate": true
-      },
-      "bottleneckFirstRuntimeCheckpoint": {
-        "version": 1,
-        "state": "POST_2017_PRIORITY_2_SOURCE_FAILURE_REPAIR",
-        "sourceRoadmap": "company-learning/platform-release-roadmap.json#assistantRoadmapOrchestration.implementationState.vibeBottleneckCentralCheckpoint",
-        "completedRepairPrs": [
-          1983,
-          1984,
-          1989
-        ],
-        "latestRuntime": {
-          "runId": 35500348340,
-          "workerCount": 21,
-          "actualPeakConcurrency": 19,
-          "failureRatePct": 52.38,
-          "pressureLevel": "SEVERE",
-          "reportedPrimaryBottleneck": "SOURCE_CANDIDATE_GENERATION",
-          "telemetryEffectiveMax": 256,
-          "controlCurrentMax": 256
-        },
-        "openTelemetryInvariant": {
-          "id": "GAME_PRIMARY_EFFECTIVE_MAX_DENOMINATOR_MISMATCH",
-          "state": "RESOLVED_BY_OWNER_UNBOUNDED_DIRECTIVE_AND_PR_2020",
-          "expectedMeaning": "EFFECTIVE_MAX_MUST_REFLECT_THE_EXECUTION_CAP_THAT_CAN_ACTUALLY_CONSTRAIN_GAME_PRIMARY_WORKERS_FOR_THE_OBSERVED_WAVE",
-          "doNotInferLowLoadFromUnrelatedGlobalMax": true,
-          "responsibleSystems": [
-            "tools/vibe2-parallelism-telemetry.mjs",
-            "tools/vibe2-queue-control.mjs",
-            ".vibe2/parallelism-control.json"
-          ]
-        },
-        "post1989SourceGenerationFailureAudit": {
-          "completedProductionRuns": 9,
-          "finalSourceGenerationFailures": 42,
-          "reportedFinalClasses": {
-            "OTHER": 42
-          },
-          "verifiedRecurringSignature": "FOCUSED_REPLACE_PLACEHOLDER",
-          "rootCause": "COPYABLE_PLACEHOLDER_LITERAL_IN_FOCUSED_REPLACE_PROMPT_PLUS_OTHER_FALLTHROUGH_CLASSIFICATION",
-          "responsibleSystem": "tools/vibe2-source-worker.mjs",
-          "repairBranch": "assistant/p0-source-placeholder-2017",
-          "retryBudgetIncreased": false,
-          "timeoutIncreased": false,
-          "workerCountIncreased": false,
-          "qaBypassAllowed": false,
-          "authorityChange": "NONE"
-        },
-        "nextRuntimeGate": "VERIFY_FOCUSED_REPLACE_PLACEHOLDER_REPAIR_IN_PRODUCTION_THEN_CONTINUE_POST_1989_FAILURE_CLASSIFICATION",
-        "executionAuthority": "EXISTING_DAG_SCHEDULER_ONLY",
-        "authorityChange": "NONE",
-        "sourcePr": 2013
-      },
-      "taskReorderAuthority": "NONE",
-      "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES"
+        "independentCompletionRefillImmediate": true,
+        "mode": "INDEPENDENT_TASK_EVENT_DRIVEN",
+        "pressureTelemetryRole": "OPTIONAL_SPECULATION_ONLY",
+        "primaryTaskEligibilityUnaffectedByPressure": true,
+        "sharedStateWriteCoordination": "OPTIMISTIC_RETRY_ATOMIC_WRITE_ONLY"
+      }
     },
     "phase2Shadow": {
       "eventRouter": "tools/vibe2-neural-event-router.mjs",

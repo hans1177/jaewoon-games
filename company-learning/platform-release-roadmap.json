@@ -8534,11 +8534,6 @@
     "principle": "GAME_PRIMARY_IS_CONTINUOUS_ATOMIC_NEURON_CIRCULATION; AUXILIARY_LANES_RETURN_CAUSAL_EVIDENCE_WITHOUT_STOPPING_THE_MAIN_ARTERY",
     "gamePrimary": {
       "taskClass": "DEVELOPMENT_IMPLEMENTATION",
-      "activeWorkerBaselineTarget": 30,
-      "activeWorkerAdaptiveMinimum": 30,
-      "activeWorkerInternalCap": null,
-      "externalProviderBoundary": 256,
-      "capacityAwareFreeSlotRefill": true,
       "reserveIndependentFreeSlotsDuringActiveWork": true,
       "taskMicroFanInRequired": true,
       "atomicCompletionIngress": "PERSIST_RESULT_ONLY_UNTIL_TASK_MICRO_FANIN_COMPLETE",
@@ -8547,8 +8542,6 @@
       "taskLocalExplorationRequired": true,
       "sourceWriteOnlyOnCandidateBranch": true,
       "directMainGameSourceWriteForbidden": true,
-      "adaptiveConcurrencyRole": "TELEMETRY_ONLY",
-      "actualReservationLimit": "CONFIGURED_EXTERNAL_PROVIDER_BOUNDARY",
       "speculativeVariantsUseSpareCapacityOnly": true,
       "speculativeVariantsMayBeSuppressedOnRunnerPressure": true,
       "speculativeSuppressionSignals": [
@@ -8560,10 +8553,7 @@
       "speculativeSuppressionPrimaryTaskReductionForbidden": true,
       "speculativeSuppressionTaskMicroFanInPreserved": true,
       "speculativeSuppressionAutomaticRecovery": true,
-      "liveRunnerQueuePressureCoalescing": true,
-      "liveRunnerQueuePressureSignal": "GITHUB_ACTIONS_RECENT_RUN_STATUS_QUEUED_PENDING_REQUESTED",
-      "atomicCompletionCallbackPolicy": "IMMEDIATE_WHEN_RUNNER_QUEUE_HEALTHY; COALESCE_IMMUTABLE_RESULT_TO_EXISTING_COHORT_FAN_IN_WHEN_LIVE_RUNNER_QUEUE_PRESSURE_EXISTS",
-      "singleGameTaskImmediateCompletionRequired": true,
+      "atomicCompletionCallbackPolicy": "IMMEDIATE_PER_TASK_MICRO_FANIN",
       "singleGameTaskReviewUsesExistingRegressionAndReleaseGates": true,
       "fanInMayReuseSuccessfulExactCommitCoreRegression": true,
       "idleLearningRequiresEmptyDevelopmentAssetAndRecoveryQueues": false,
@@ -8571,18 +8561,16 @@
       "assetCandidatesRequireExistingFullReviewAndReleaseGate": true,
       "strandedAssetReviewResumesImmutableWorkerResults": true,
       "robloxPublishRechecksLatestSourceAndF9OnEveryAttempt": true,
-      "coalescedResultArtifactRequired": true,
-      "coalescedResultMayNotBeDroppedOrTreatedAsFailure": true,
-      "coalescingDoesNotChangeQaReleaseOrSecurityAuthority": true,
-      "coalescingDoesNotGrantWorkerControlBranchWrite": true,
-      "automaticImmediateCallbackRecoveryWhenPressureClears": true,
-      "taskMicroFanInImmediateDispatchMayCoalesceUnderLiveRunnerPressure": true,
-      "logicalPerTaskVariantJoinStillRequiredWhenCoalesced": true,
       "taskMicroFanInRole": "PER_TASK_RESULT_JOIN_AND_IMMEDIATE_REFILL",
       "independentTaskReviewDoesNotWaitForUnrelatedCompletion": true,
       "directRefillUsesExistingWorkflow": true,
       "internalGlobalParallelCap": null,
-      "externalMatrixTransportPartitionMax": 256
+      "externalMatrixTransportPartitionMax": 256,
+      "externalMatrixTransportPartitionMeaning": "GITHUB_MATRIX_TRANSPORT_PARTITION_ONLY",
+      "independentReservationWhileOtherWorkersActive": true,
+      "pressureTelemetryRole": "OPTIONAL_SPECULATION_AND_LEARNING_SIGNAL_ONLY",
+      "primaryTaskEligibilityMayNotBeReducedByPressure": true,
+      "sharedStateWriteCoordination": "OPTIMISTIC_RETRY_ATOMIC_WRITE_ONLY"
     },
     "planningBacklog": {
       "developmentBacklogMinimum": 40,
@@ -21943,7 +21931,7 @@
       "IMMEDIATE_FREE_SLOT_REFILL",
       "CHANGE_RETRY_STRATEGY_AFTER_FAILURE",
       "REEVALUATE_DEPENDENCY_AND_LOCK_STATE",
-      "TUNE_GAME_PRIMARY_CONCURRENCY_FROM_VERIFIED_THROUGHPUT"
+      "TUNE_OPTIONAL_SPECULATION_FROM_VERIFIED_PRESSURE"
     ],
     "forbiddenAuthorities": [
       "CENTRAL_POLICY_MUTATION",
@@ -22058,7 +22046,11 @@
     },
     "fortniteUefnChange": false,
     "fortniteUefnPolicyRemains": "OWNER_HOLD",
-    "existingQueueReservationAndRequiredGatesOnly": true
+    "existingQueueReservationAndRequiredGatesOnly": true,
+    "internalGlobalParallelCap": null,
+    "externalMatrixTransportPartitionMax": 256,
+    "pressureMayTuneOptionalSpeculationOnly": true,
+    "pressureMayNotReducePrimaryTaskEligibility": true
   },
   "aiExecutionEfficiency": {
     "version": 1,
