@@ -3057,7 +3057,7 @@ export function runVibe2AutoPlanner({
     robloxDistillationLedger,
     robloxPlaybooks
   });
-  const normalizedBefore=createVibeContinuousQueue(queueBefore);  const normalizedBefore=createVibeContinuousQueue(queueBefore);
+  const normalizedBefore=createVibeContinuousQueue(queueBefore);
   const queueSynchronized=JSON.stringify(normalizedBefore.tasks)!==JSON.stringify(result.queue?.tasks||[]);
   const directiveRoot=path.join(path.dirname(path.resolve(resolvedQueueFile)),'build-up-directives');
   const directiveWrites=[];
