@@ -438,6 +438,36 @@ export class JaewoonAISquad {
     return this.shared.objective;
   }
 
+  observeCausalPackets(packets = []) {
+    const rows = [];
+    for (const packet of Array.isArray(packets) ? packets : []) {
+      const observerId = String(
+        packet?.actorId
+        || packet?.interpretation?.actor
+        || packet?.memoryCandidate?.observerId
+        || ''
+      );
+      if (!observerId) {
+        rows.push(Object.freeze({ id: '', applied: false, reason: 'observer_identity_required', gameplayAuthority: false }));
+        continue;
+      }
+      const member = this.member(observerId);
+      if (!member) {
+        rows.push(Object.freeze({ id: observerId, applied: false, reason: 'observer_not_in_squad', gameplayAuthority: false }));
+        continue;
+      }
+      const result = member.ai.observeCausalEvent(packet);
+      rows.push(Object.freeze({
+        id: observerId,
+        applied: result.applied === true,
+        reason: String(result.reason || (result.applied === true ? 'applied' : 'not_applied')),
+        result,
+        gameplayAuthority: false
+      }));
+    }
+    return Object.freeze(rows);
+  }
+
   decide(context = {}, now = Date.now()) {
     const current = Number(now) || Date.now();
     if (current - this.lastDecisionAt < this.decisionIntervalMs) return [];
