@@ -204,7 +204,6 @@ test('reserve batch persists control state only through the explicit Vibe2 contr
     'fetch origin vibe2-unreal-core --quiet',
     'reset --hard origin/vibe2-unreal-core',
     'fetch origin company-runtime --quiet',
-    'show origin/company-runtime:development-queue.json',
     'diff --quiet -- "${state_paths[@]}"',
     'add "${state_paths[@]}"',
     'commit -m "vibe2: repair state and reserve parallel DAG batch [skip ci]"',
@@ -214,6 +213,15 @@ test('reserve batch persists control state only through the explicit Vibe2 contr
   }
 
   assert.doesNotMatch(reserve,/(?:^|\n)\s*git (?:fetch origin vibe2-unreal-core|reset --hard origin\/vibe2-unreal-core|fetch origin company-runtime|show origin\/company-runtime:development-queue\.json|diff --quiet -- "\$\{state_paths\[@\]\}"|add "\$\{state_paths\[@\]\}"|commit -m "vibe2: repair state and reserve parallel DAG batch|push origin HEAD:vibe2-unreal-core)/);
+  assert.match(reserve,/company_runtime_snapshot_sha=''/);
+  assert.match(reserve,/if \[ "\$state_attempt" -eq 1 \] \|\| \[ ! -s \/tmp\/vibe2-company-runtime-queue\.json \]; then/);
+  assert.ok(reserve.includes('company_runtime_snapshot_sha="$(git -C "$control_root" rev-parse origin/company-runtime)"'));
+  assert.ok(reserve.includes('git -C "$control_root" show "$company_runtime_snapshot_sha:development-queue.json" > /tmp/vibe2-company-runtime-queue.json'));
+  assert.match(reserve,/VIBE2_RESERVE_RUNTIME_SNAPSHOT=PINNED_FIRST_ATTEMPT/);
+  assert.match(reserve,/VIBE2_RESERVE_RUNTIME_SNAPSHOT=REUSED_RETRY/);
+  const snapshotBranch=reserve.indexOf('if [ "$state_attempt" -eq 1 ] || [ ! -s /tmp/vibe2-company-runtime-queue.json ]; then');
+  const planner=reserve.indexOf('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs');
+  assert.ok(snapshotBranch>=0&&planner>snapshotBranch);
 });
 
 test('reserve scheduling runs same-lane reserves in parallel and learning still defers before production under runner pressure',()=>{
