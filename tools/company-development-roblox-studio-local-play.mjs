@@ -3454,11 +3454,14 @@ export function createLocalStudioPlayEvidence({
     ...checkpoints.filter(row=>row.pass!==true).map(row=>row.name||row.id),
     ...actions.filter(row=>row.ok!==true).map(row=>row.type||row.id)
   ].join(' ');
+  const assetLoadFailure=errors.find(row=>clean(row?.type)==='studio-asset-load-error')||null;
+  const characterMotionFailure=errors.some(row=>clean(row?.type)==='character-motion-quality-error'||/ROBLOX_CHARACTER_MOTION_MANNEQUIN/i.test(clean(row?.signature)));
   const robloxFailureClass=pass?null
+    :assetLoadFailure?(/animation/i.test(clean(assetLoadFailure?.signature))?'ROBLOX_CHARACTER_RIG_ANIMATION':'ROBLOX_STUDIO_RUNTIME')
     :/DataStore|GetDataStore|SetAsync|UpdateAsync|save-rejoin|save persistence|SaveStatus|SAVE_FAILED|LOAD_FAILED|studio-save-rejoin/i.test(nativeFailureText)?'ROBLOX_DATASTORE_SAVE_LOAD'
     :/RemoteEvent|RemoteFunction|OnServer|FireServer|InvokeServer|remote/i.test(nativeFailureText)?'ROBLOX_REMOTE_EVENT_OR_FUNCTION'
     :/touch|input|keyboard|mouse|button/i.test(nativeFailureText)?'ROBLOX_TOUCH_INPUT'
-    :/ROBLOX_CHARACTER_MOTION_MANNEQUIN|character-motion-quality|joint|animator|animation/i.test(nativeFailureText)?'ROBLOX_CHARACTER_MOTION_MANNEQUIN'
+    :characterMotionFailure?'ROBLOX_CHARACTER_MOTION_MANNEQUIN'
     :/character|humanoid|respawn|spawn/i.test(nativeFailureText)?'ROBLOX_CHARACTER_RESPAWN_STATE'
     :/gui|ui|screen|viewport/i.test(nativeFailureText)?'ROBLOX_UI_STATE'
     :/replic|sync|multiplayer|join|rejoin|late.?join/i.test(nativeFailureText)?'ROBLOX_MULTIPLAYER_SYNC'

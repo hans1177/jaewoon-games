@@ -302,6 +302,23 @@ test('Studio evidence maps observed failures into Roblox-native failure classes'
   assert.ok(result.evidence.learningSignals.includes('ROBLOX_REMOTE_EVENT_OR_FUNCTION'));
 });
 
+test('Studio asset loading remains distinct from character motion mannequin failures',()=>{
+  const candidate=item();
+  const assetBroken=runtime();
+  assetBroken.runtimeVerified=false;
+  assetBroken.errors=[{type:'studio-asset-load-error',signature:'Failed to load animation with sanitized ID rbxassetid://123456789'}];
+  assetBroken.checkpoints=assetBroken.checkpoints.map(row=>row.id==='no-release-blocking-runtime-errors'?{...row,pass:false}:row);
+  const assetResult=createLocalStudioPlayEvidence({item:candidate,runtime:assetBroken,expected,workflowRunId:100,studioStepSucceeded:false});
+  assert.equal(assetResult.evidence.robloxFailureClass,'ROBLOX_CHARACTER_RIG_ANIMATION');
+
+  const motionBroken=runtime();
+  motionBroken.runtimeVerified=false;
+  motionBroken.errors=[{type:'character-motion-quality-error',signature:'ROBLOX_CHARACTER_MOTION_MANNEQUIN:NO_JOINT_ACTIVITY'}];
+  motionBroken.checkpoints=motionBroken.checkpoints.map(row=>row.id==='no-release-blocking-runtime-errors'?{...row,pass:false}:row);
+  const motionResult=createLocalStudioPlayEvidence({item:candidate,runtime:motionBroken,expected,workflowRunId:101,studioStepSucceeded:false});
+  assert.equal(motionResult.evidence.robloxFailureClass,'ROBLOX_CHARACTER_MOTION_MANNEQUIN');
+});
+
 test('planner excludes only explicit disabled games rather than using currentStep as the post-release play authority',()=>{
   const foundation=item();
   foundation.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION';
