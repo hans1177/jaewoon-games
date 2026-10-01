@@ -34,6 +34,23 @@ const cozyServer=fs.readFileSync('roblox-games/cozy-island/server/Game.server.lu
 const source='a'.repeat(40);
 const artifact='sha256:'+'b'.repeat(64);
 
+test('Studio commercial probe ignores zero-size platform controls',()=>{
+  assert.match(helper,/local measurable=row\.width>=1 and row\.height>=1/);
+  assert.match(helper,/if measurable then[\s\S]*gui\.undersizedTouchButtons/);
+});
+
+test('Studio world probe excludes Terrain extents and approaches prompts within activation distance',()=>{
+  assert.match(helper,/d:IsA\("BasePart"\) and not d:IsA\("Terrain"\)/);
+  assert.match(helper,/row\.maxDistance/);
+  assert.match(helper,/const promptApproachTarget=/);
+  assert.match(helper,/Number\(prompt\?\.maxDistance\|\|10\)\*\.55/);
+});
+
+test('Roblox failure classifier does not mistake generic asset load text for DataStore failure',()=>{
+  assert.match(helper,/save-rejoin\|save persistence\|SaveStatus\|SAVE_FAILED\|LOAD_FAILED\|studio-save-rejoin/);
+  assert.doesNotMatch(helper,/DataStore\|GetDataStore\|SetAsync\|UpdateAsync\|save\|load/);
+});
+
 function roadmap(){
   return {
     roblox:{studioExecution:{
