@@ -211,6 +211,9 @@ test('Vibe candidate evidence binds all four canonical document hashes',()=>{
   assert.match(workflow,/shared-context-log-map:/);
   assert.match(workflow,/shared-context-architecture:/);
   assert.match(workflow,/shared-context-security:/);
+  assert.match(workflow,/Compile central shared context once for worker cohort/);
+  assert.match(workflow,/--pinned-hash-verify=true/);
+  assert.match(workflow,/WORKER_CONTEXT_EXPECTED_POLICY_SHA256/);
   assert.deepEqual(logMap.workerContextLogContract.canonicalDocumentHashesRequired,[
     'policySha256','logMapSha256','architectureSha256','securityPolicySha256'
   ]);
@@ -334,7 +337,10 @@ test('pinned worker ignores unrelated live roadmap progress but detects executio
     livePolicyRef:'origin/main'
   });
   assert.equal(contract.freshness.liveMainRequired,true);
-  assert.equal(assertCompiledWorkContractFresh({cwd:worker,contract,phase:'PRE_SOURCE_GENERATION'}).liveMainVersion,196);
+  const initialFreshness=assertCompiledWorkContractFresh({cwd:worker,contract,phase:'PRE_SOURCE_GENERATION'});
+  assert.equal(initialFreshness.liveMainVersion,196);
+  assert.equal(initialFreshness.liveMainSource,'REMOTE_HEAD_PINNED_MATCH');
+  assert.equal(initialFreshness.liveMainHeadSha,contract.workRequest.mainSha);
 
   writePolicy(seed,197);
   git(seed,'add',CANONICAL_VIBE_POLICY_PATH);
