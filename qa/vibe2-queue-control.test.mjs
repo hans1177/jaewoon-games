@@ -1610,6 +1610,20 @@ test('continuous core rebases refill wakes to latest main and always ingests neu
   }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
 
+test('continuous core coalesces every worker callback to cohort fan-in while runner queue is pressured',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  const start=workflow.indexOf('- name: Dispatch or coalesce atomic neuron completion');
+  const end=workflow.indexOf('\n  fan_in:',start);
+  assert.ok(start>=0&&end>start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/if \[ "\$\{queue_pressure:-0\}" -gt 0 \]; then/);
+  assert.match(block,/VIBE2_PRESSURE_REFILL_DISPATCH=SKIPPED_DEFER_TO_COHORT_FANIN/);
+  assert.match(block,/VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN/);
+  assert.doesNotMatch(block,/VIBE2_ASSET_NEURON_PRESSURE_BYPASS/);
+  assert.doesNotMatch(block,/VIBE2_PRESSURE_REFILL_LEADER/);
+  assert.doesNotMatch(block,/runner-pressure-wave-leader-free-slot-refill/);
+});
+
 test('continuous core keeps pending neuron callbacks light and blocks broken contracts before reserve',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   assert.match(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=RESULT_RECORDED_PENDING/);
