@@ -523,6 +523,67 @@ test('squad routes causal packets only to the named observer and never broadcast
   assert.equal(hiddenAi.memory.length,0);
 });
 
+test('squad mind snapshots restore per-member causal memory without creating cross-member knowledge',()=>{
+  const sourceMira=new JaewoonCommonAI({identity:{id:'mira'}});
+  const sourceHidden=new JaewoonCommonAI({identity:{id:'hidden-observer'}});
+  const sourceSquad=new JaewoonAISquad({members:[
+    {id:'mira',ai:sourceMira,role:'support'},
+    {id:'hidden-observer',ai:sourceHidden,role:'ranged'}
+  ]});
+  const loop=planVibeCausalActorLoop({
+    event:{
+      id:'evt-squad-restore-1',
+      type:'help',
+      actorId:'player',
+      targetId:'mira',
+      location:'camp',
+      tick:71,
+      witnesses:['mira']
+    },
+    observers:[
+      {
+        actor:companion,
+        relationship:{trust:0},
+        memory:[],
+        emotion:'calm',
+        knowledge:{observed:true,confidence:1,attribution:'direct-cause'}
+      },
+      {
+        actor:{...companion,id:'hidden-observer'},
+        relationship:{trust:0},
+        memory:[],
+        emotion:'calm',
+        knowledge:{observed:false,reported:false}
+      }
+    ]
+  });
+  sourceSquad.observeCausalPackets(loop.observers);
+  const minds=sourceSquad.snapshotMindStates();
+
+  const restoredMira=new JaewoonCommonAI({identity:{id:'mira'}});
+  const restoredHidden=new JaewoonCommonAI({identity:{id:'hidden-observer'}});
+  const restoredSquad=new JaewoonAISquad({members:[
+    {id:'mira',ai:restoredMira,role:'support'},
+    {id:'hidden-observer',ai:restoredHidden,role:'ranged'}
+  ]});
+  const denied=restoredSquad.restoreMindStates(minds);
+  assert.equal(denied.restored,false);
+  const restored=restoredSquad.restoreMindStates(minds,{engineValidated:true});
+  assert.equal(restored.restored,true);
+  assert.equal(restored.restoredCount,2);
+  assert.equal(restored.missingCount,0);
+  assert.equal(restoredMira.memory.length,1);
+  assert.equal(restoredHidden.memory.length,0);
+  assert.ok(restoredMira.relationshipWith('player').trust>0);
+  assert.equal(restoredHidden.relationshipWith('player'),null);
+
+  const duplicate=restoredSquad.observeCausalPackets(loop.observers);
+  assert.equal(duplicate.find(row=>row.id==='mira').reason,'duplicate_event');
+  assert.equal(duplicate.find(row=>row.id==='hidden-observer').reason,'no_information_path');
+  assert.equal(restoredMira.memory.length,1);
+  assert.equal(restoredHidden.memory.length,0);
+});
+
 test('living actor director does not project the same source event twice when memory already contains it',()=>{
   const priorMemory=[{
     id:'evt-director-duplicate-1',
