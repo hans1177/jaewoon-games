@@ -1894,6 +1894,61 @@ test('asset production tasks use the dedicated asset-development lane and never 
 });
 
 
+test('queued asset work claims overlapping files before non-release game-primary without blocking disjoint work',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[
+    {
+      id:'asset-visual',gameId:'same-game',target:'roblox',department:'development',type:'implementation',
+      goal:'presentation asset adaptation',status:'queued',priority:'critical',
+      sourceRoot:'roblox-games/same-game',responsibleFiles:['client/Game.client.luau'],
+      assetProductionLane:true,evidence:['asset-production-parallel:v1']
+    },
+    {
+      id:'game-conflict',gameId:'same-game',target:'roblox',department:'development',type:'implementation',
+      goal:'gameplay client repair',status:'queued',priority:'critical',
+      sourceRoot:'roblox-games/same-game',responsibleFiles:['client/Game.client.luau']
+    },
+    {
+      id:'game-disjoint',gameId:'same-game',target:'roblox',department:'development',type:'implementation',
+      goal:'server repair',status:'queued',priority:'critical',
+      sourceRoot:'roblox-games/same-game',responsibleFiles:['server/Game.server.luau']
+    }
+  ]});
+  const gameBatch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4,lane:'game-primary',reservation:{id:'game:1',runId:'game-run',runAttempt:1,reservedAt:'2026-10-01T09:00:00Z'}});
+  assert.deepEqual(gameBatch.tasks.map(task=>task.id),['game-disjoint']);
+  const deferred=gameBatch.selection.deferredConflicts.find(row=>row.task.id==='game-conflict');
+  assert.ok(deferred);
+  assert.equal(deferred.reason,'queued-asset-reservation-priority');
+  assert.equal(deferred.conflictTaskId,'asset-visual');
+  assert.equal(deferred.conflictExecutionLane,'ASSET_DEVELOPMENT');
+
+  const assetBatch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:64,lane:'asset-development',reservation:{id:'asset:1',runId:'asset-run',runAttempt:1,reservedAt:'2026-10-01T09:00:00Z'}});
+  assert.deepEqual(assetBatch.tasks.map(task=>task.id),['asset-visual']);
+});
+
+test('owner and release-confirmed game-primary keep precedence over queued asset claims',()=>{
+  for(const elevated of [
+    {id:'owner-game',ownerDirective:true,releaseState:'development-confirmed'},
+    {id:'release-game',ownerDirective:false,releaseState:'release-confirmed'}
+  ]){
+    const queue=createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[
+      {
+        id:'asset-visual',gameId:'same-game',target:'roblox',department:'development',type:'implementation',
+        goal:'presentation asset adaptation',status:'queued',priority:'critical',
+        sourceRoot:'roblox-games/same-game',responsibleFiles:['client/Game.client.luau'],
+        assetProductionLane:true,evidence:['asset-production-parallel:v1']
+      },
+      {
+        ...elevated,gameId:'same-game',target:'roblox',department:'development',type:'implementation',
+        goal:'elevated gameplay repair',status:'queued',priority:'critical',
+        sourceRoot:'roblox-games/same-game',responsibleFiles:['client/Game.client.luau']
+      }
+    ]});
+    const batch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:2,lane:'game-primary'});
+    assert.deepEqual(batch.tasks.map(task=>task.id),[elevated.id]);
+    assert.equal(batch.selection.deferredConflicts.some(row=>row.task.id===elevated.id&&row.reason==='queued-asset-reservation-priority'),false);
+  }
+});
+
 test('asset-development preserves Unity floor alongside Roblox work',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:64,tasks:[
     {
