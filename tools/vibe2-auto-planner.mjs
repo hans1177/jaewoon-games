@@ -447,7 +447,24 @@ for(const game of Array.isArray(catalog.games)?catalog.games:[]){
   });
 }
 const ownerPolicy=centralPresentationPolicy(repoRoot)||{};
-return rows.filter(project=>!ownerDevelopmentHeld(ownerPolicy,project.gameId,project.engine));
+const enrichedRows=rows.map(project=>{
+  const game=byId.get(clean(project.gameId))||{};
+  if(!ownerResumableCatalogGame(game))return project;
+  return{
+    ...project,
+    ownerResumableBuildUp:true,
+    ownerResumableBuildUpReason:clean(game.developmentHandling)||clean(game.lifecycleReason)||'OWNER_DIRECT_EXISTING_GAME'
+  };
+});
+return enrichedRows.filter(project=>!ownerDevelopmentHeld(ownerPolicy,project.gameId,project.engine));
+}
+function ownerResumableCatalogGame(game={}){
+  const handling=clean(game.developmentHandling).toUpperCase();
+  const lifecycleReason=clean(game.lifecycleReason).toUpperCase();
+  const productionState=stateFromCatalog(game);
+  return lifecycleAllowsDevelopment(game)
+    &&['development-confirmed','release-confirmed'].includes(productionState)
+    &&(game.ownerDirectWebUpload===true||handling.startsWith('OWNER_DIRECT')||lifecycleReason.startsWith('OWNER_DIRECT'));
 }
 function focusedCaretakerPolicy(repoRoot=process.cwd()){
   const policy=centralPresentationPolicy(repoRoot)?.developmentLifecycleMachine?.focusedDevelopmentCaretakers||{};
@@ -464,6 +481,7 @@ function focusedCaretakerProject(project={},repoRoot=process.cwd()){
 }
 export function projectSort(a,b){
   const focus=(b.ownerFocusedCaretaker===true?1:0)-(a.ownerFocusedCaretaker===true?1:0);if(focus)return focus;
+  const ownerResume=(b.ownerResumableBuildUp===true?1:0)-(a.ownerResumableBuildUp===true?1:0);if(ownerResume)return ownerResume;
   const bottleneck=bottleneckRank(a)-bottleneckRank(b);if(bottleneck)return bottleneck;
   const engine=(ENGINE_RANK[a.engine]??9)-(ENGINE_RANK[b.engine]??9);if(engine)return engine;
   const release=(RELEASE_RANK[a.releaseState]??9)-(RELEASE_RANK[b.releaseState]??9);if(release)return release;
@@ -588,7 +606,7 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
   const supervised=supervisedWebBuildRequired(project,goal);
   const adaptation=project.firstStageUnityWeb===true?'':platformAdaptationInstruction(project.engine);
   const adaptedGoal=adaptation?goal+adaptation:goal;
-  const focused=project.ownerFocusedCaretaker===true,recentOwnerWeb=project.ownerRecentWebPriority===true,unlimitedRepair=focused||project.engine==='roblox';
+  const focused=project.ownerFocusedCaretaker===true,ownerResume=project.ownerResumableBuildUp===true,recentOwnerWeb=project.ownerRecentWebPriority===true,unlimitedRepair=focused||ownerResume||project.engine==='roblox';
   const portfolioValueScore=project.engine==='roblox'
     ? Math.min(100,(project.queueRobloxQualityBuildUpRequired?35:0)
       +(project.queueRobloxInternalReleaseReady?20:0)
@@ -597,15 +615,15 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
       +(project.genre&&project.subgenre?5:0))
     : 0;
   const plannedTask={
-    id,gameId:project.gameId,target:project.engine,department:'development',type:'implementation',goal:adaptedGoal,responsibleFiles,dependencies:[],priority:focused?'critical':priority,
+    id,gameId:project.gameId,target:project.engine,department:'development',type:'implementation',goal:adaptedGoal,responsibleFiles,dependencies:[],priority:focused?'critical':(ownerResume&&!['critical','owner-immediate'].includes(clean(priority).toLowerCase())?'high':priority),
     releaseState:project.releaseState,portfolioValueScore,status:'queued',retries:0,maxRetries:unlimitedRepair?null:2,retryPolicy:unlimitedRepair?'UNLIMITED_CAUSAL_REPAIR':undefined,ownerDirective:focused,requiresOwnerDecision:false,protectedChange:false,
     paidResourceRequired:false,sourceRoot:posix(project.projectPath),estimatedRisk,speculativeEligible:estimatedRisk==='high',
     productionMode:supervised?'SUPERVISED_VIBE_COAUTHORING':'AUTONOMOUS_VIBE',
     supervisionApproved:false,
     supervisionContract:supervised?supervisedWebBuildContract():null,
-    packageLongWorkProtected:focused||undefined,packageRole:focused?'implementation-owner':undefined,
-    focusedCaretaker:focused||undefined,caretakerStickyOwnership:focused||undefined,
-    evidence:[`central-policy:${CANONICAL_POLICY_PATH}`,`vibe2-auto-planner:${project.source}`,`release-state:${project.releaseState}`,`source-root:${posix(project.projectPath)}`,...(focused?['focused-caretaker:yes','focused-caretaker-role:implementation-owner']:[]),...(recentOwnerWeb?['web-internal-priority:recent-owner-work','web-internal-priority-scope:WEB_ONLY','owner-recent-web-source-revision:'+clean(project.ownerWebSourceRevision)]:[]),...baselineEvidence,...extraEvidence,...(adaptation?[`platform-adaptation:${project.engine==='roblox'?'SOCIAL_FAST_SESSION':'DEEP_IMMERSIVE_SESSION'}`]:[]),...(supervised?['supervised-web-build:required','automatic-promotion:blocked-until-supervised-approval']:[])]
+    packageLongWorkProtected:(focused||ownerResume)||undefined,packageRole:focused?'implementation-owner':ownerResume?'owner-resumable-build-up':undefined,
+    focusedCaretaker:focused||undefined,caretakerStickyOwnership:focused||undefined,ownerResumableBuildUp:ownerResume||undefined,
+    evidence:[`central-policy:${CANONICAL_POLICY_PATH}`,`vibe2-auto-planner:${project.source}`,`release-state:${project.releaseState}`,`source-root:${posix(project.projectPath)}`,...(focused?['focused-caretaker:yes','focused-caretaker-role:implementation-owner']:[]),...(ownerResume?['owner-resumable-build-up:YES','owner-resumable-build-up-source:catalog-owner-direct','owner-resumable-build-up-perpetual:YES']:[]),...(recentOwnerWeb?['web-internal-priority:recent-owner-work','web-internal-priority-scope:WEB_ONLY','owner-recent-web-source-revision:'+clean(project.ownerWebSourceRevision)]:[]),...baselineEvidence,...extraEvidence,...(adaptation?[`platform-adaptation:${project.engine==='roblox'?'SOCIAL_FAST_SESSION':'DEEP_IMMERSIVE_SESSION'}`]:[]),...(supervised?['supervised-web-build:required','automatic-promotion:blocked-until-supervised-approval']:[])]
   };
   plannedTask.neuralDiagnosis=buildNeuralDiagnosis({task:plannedTask,project});
   const runtimeNeural=compileRuntimeNeuralEvent(project,plannedTask.neuralDiagnosis);
@@ -2952,7 +2970,17 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   const runtimeNeuralIngress=applyRuntimeNeuralEventsToQueue(queue,runtimeNeuralEvents);
   queue=runtimeNeuralIngress.queue;
   const developmentPool=developmentPlanningPool(queue);
-  const capacity=Math.max(0,backlogTarget-developmentPool.length);
+  const ownerResumableProjects=allProjects
+    .filter(project=>project.ownerResumableBuildUp===true&&isAutonomousProductionTarget(project,repoRoot))
+    .sort(projectSort);
+  const activeOwnerResumableLaneKeys=new Set(developmentPool.map(item=>clean(item.gameId)+'|'+studioQualityTaskLane(item)));
+  const ownerResumableMissingLaneKeys=new Set(ownerResumableProjects
+    .map(project=>clean(project.gameId)+'|'+studioQualityLane(project))
+    .filter(key=>!activeOwnerResumableLaneKeys.has(key)));
+  const normalCapacity=Math.max(0,backlogTarget-developmentPool.length);
+  const persistentCapacity=Math.max(0,persistentQueueMax-developmentPool.length);
+  const ownerResumableSeedCapacity=Math.min(ownerResumableMissingLaneKeys.size,persistentCapacity);
+  const capacity=Math.max(normalCapacity,ownerResumableSeedCapacity);
   const planningBacklog={
     target:backlogTarget,
     supersededLegacyMicroTasks:microSupersede.count,
@@ -2962,6 +2990,11 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     running:developmentPool.filter(item=>clean(item.status).toLowerCase()==='running').length,
     releaseWaitExcluded:active.filter(item=>isDevelopmentImplementation(item)&&isReleaseWait(item)).length,
     capacity,
+    normalCapacity,
+    persistentCapacity,
+    ownerResumableMissingLaneCount:ownerResumableMissingLaneKeys.size,
+    ownerResumableSeedCapacity,
+    ownerResumableTargetBypass:normalCapacity===0&&ownerResumableSeedCapacity>0,
     executionWaveMax,
     persistentQueueMax
   };
@@ -2973,7 +3006,9 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   let sequence=0;
   for(const project of projects){
     if(planned.length>=capacity)break;
-    const remaining=Math.max(1,capacity-planned.length);
+    const ownerResumableLaneKey=clean(project.gameId)+'|'+studioQualityLane(project);
+    const ownerResumableSeedRequired=ownerResumableMissingLaneKeys.has(ownerResumableLaneKey);
+    const remaining=ownerResumableSeedRequired?1:Math.max(1,capacity-planned.length);
     let packageTasks=selectPackageCandidates(findSafeTasks(project,repoRoot,queue).map(candidate=>applyWorldLobbyFirst(candidate,project,repoRoot)),queue,remaining,policy);
     if(!packageTasks.length)continue;
     packageTasks=packageTasks.map(candidate=>applyTransformativeRecombination(candidate,recombinationMemory));
@@ -2992,6 +3027,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     queue=createVibeContinuousQueue({tasks:[...queue.tasks,...acceptedTasks],maxConcurrentTasks:queue.maxConcurrentTasks});
     planned.push(...acceptedTasks);
     packages.push({...pkg,tasks:acceptedTasks});
+    if(ownerResumableSeedRequired)ownerResumableMissingLaneKeys.delete(ownerResumableLaneKey);
   }
   const workloadTelemetry=computeWorkloadTelemetry(queue,packages);
   const quantityTargetMet=workloadTelemetry.plannedFeaturePackageCount>=policy.targetFeaturePackagesPerCycle||workloadTelemetry.plannedRelatedImprovementCount>=policy.minRelatedImprovementsPerPackage;

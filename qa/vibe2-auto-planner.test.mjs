@@ -3791,6 +3791,112 @@ test('real cozy-island Web source produces both code BUILD_UP and graphics repla
   assert.ok(graphicsBuildUp.responsibleFiles.every(file=>file.startsWith(sourceRoot+'/')));
   assert.ok(graphicsBuildUp.responsibleFiles.some(file=>/\.(?:html?|css|js|mjs)$/i.test(file)));
 });
+
+test('owner-direct unfinished games bypass a full normal backlog and keep generating BUILD_UP generations',()=>{
+  const repoRoot=path.resolve(process.cwd());
+  const catalog=JSON.parse(fs.readFileSync(path.join(repoRoot,'game-catalog.json'),'utf8'));
+  const sourceRevision='e3ff6bb1a0ccd6eb8398da4431d413c28974267d';
+  const artifactIdentity='sha256:'+'1'.repeat(64);
+  const developmentQueue={items:[{
+    gameId:'horror-escape-room',
+    gameName:'심야 대탈출',
+    status:'ACTIVE',
+    productionClass:'DEVELOPMENT_CONFIRMED',
+    selectedPlatform:'ROBLOX',
+    targetPlatform:'ROBLOX',
+    concurrentTargetPlatforms:['ROBLOX','UNITY'],
+    robloxProjectPath:'roblox-games/horror-escape-room',
+    unityProjectPath:'unity-games/horror-escape-room',
+    targetSourcePaths:{ROBLOX:'roblox-games/horror-escape-room',UNITY:'unity-games/horror-escape-room'},
+    robloxBuildOrPackagePassed:true,
+    robloxSourceCommit:sourceRevision,
+    robloxBuildArtifactIdentity:artifactIdentity,
+    robloxQualityBuildUpRequired:true,
+    robloxQualityBuildUpSourceRevision:sourceRevision,
+    robloxQualityBuildUpEvidence:{
+      sourceRevision,
+      artifactIdentity,
+      authority:'roblox-official-studio-mcp-product-quality-failure',
+      qualityFailureKinds:['observed-runtime-quality-gap'],
+      repairSurfaces:['PRESENTATION'],
+      qualityFailureDetails:[]
+    },
+    currentStep:'VIBE_INTERNAL_PLAY',
+    canonicalState:'F0_SOURCE_PREFLIGHT_PASSED',
+    routingBlockers:['roblox-studio-internal-validation-pending']
+  }]};
+  const projects=collectProjects({},catalog,repoRoot,developmentQueue);
+  const robloxProject=projects.find(project=>project.gameId==='horror-escape-room'&&project.engine==='roblox');
+  assert.ok(robloxProject);
+  assert.equal(robloxProject.ownerResumableBuildUp,true);
+
+  const emptyQueue=createVibeContinuousQueue({tasks:[],maxConcurrentTasks:256});
+  const first=findStudioContinuousImprovementTask(robloxProject,repoRoot,emptyQueue,'PRESENTATION');
+  assert.ok(first);
+  assert.equal(first.maxRetries,null);
+  assert.equal(first.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
+  assert.equal(first.studioQualityEvolution?.nextCycleRequired,true);
+  assert.ok(first.evidence.includes('owner-resumable-build-up:YES'));
+  assert.ok(first.evidence.includes('owner-resumable-build-up-perpetual:YES'));
+
+  const verifiedQueue=createVibeContinuousQueue({tasks:[{...first,status:'verified'}],maxConcurrentTasks:256});
+  const next=findStudioContinuousImprovementTask(robloxProject,repoRoot,verifiedQueue,'PRESENTATION');
+  assert.ok(next);
+  assert.notEqual(next.id,first.id);
+  assert.ok(next.id.endsWith('-v2'));
+  assert.equal(next.studioQualityEvolution?.nextCycleRequired,true);
+
+  const occupied={
+    id:'generic-backlog-slot-v1',
+    gameId:'generic-game',
+    target:'roblox',
+    department:'development',
+    type:'implementation',
+    goal:'generic queued work',
+    responsibleFiles:['roblox-games/generic-game/server/Game.server.luau'],
+    dependencies:[],
+    priority:'normal',
+    releaseState:'development-confirmed',
+    status:'queued',
+    retries:0,
+    maxRetries:null,
+    retryPolicy:'UNLIMITED_CAUSAL_REPAIR',
+    ownerDirective:false,
+    requiresOwnerDecision:false,
+    protectedChange:false,
+    paidResourceRequired:false,
+    sourceRoot:'roblox-games/generic-game',
+    estimatedRisk:'low',
+    speculativeEligible:false,
+    evidence:['central-policy:company-learning/platform-release-roadmap.json']
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog,
+    developmentQueue,
+    queue:createVibeContinuousQueue({tasks:[occupied],maxConcurrentTasks:256}),
+    repoRoot,
+    maxConcurrentTasks:20,
+    queueMaxConcurrentTasks:256,
+    planningBacklogTarget:1,
+    planningBacklogMinimum:1,
+    workPackagePolicy:{
+      minWorkUnitsPerPackage:1,
+      substantialSingleTaskWorkUnits:1,
+      minRelatedImprovementsPerPackage:1,
+      targetFeaturePackagesPerCycle:1,
+      targetWorkUnitsPerCycle:1
+    }
+  });
+  assert.equal(result.planned,true);
+  assert.equal(result.planningBacklog.ownerResumableTargetBypass,true);
+  const resumed=result.tasks.find(task=>task.gameId==='horror-escape-room');
+  assert.ok(resumed);
+  assert.equal(resumed.maxRetries,null);
+  assert.equal(resumed.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
+  assert.ok(resumed.evidence.includes('owner-resumable-build-up:YES'));
+});
+
 test('actual fantasy-survival Web source emits code and graphics BUILD_UP work',()=>{
   const root=path.resolve(process.cwd());
   const sourceFile=path.join(root,'web-games','fantasy-survival','index.html');
