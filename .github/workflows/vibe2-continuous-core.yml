@@ -1439,15 +1439,15 @@ jobs:
             local phase="$1"
             local output="$2"
             local policy_sha log_map_sha architecture_sha security_sha
-            policy_sha="$(sha256sum company-learning/platform-release-roadmap.json | cut -d\' \' -f1)"
-            log_map_sha="$(sha256sum company-learning/company-log-map.json | cut -d\' \' -f1)"
-            architecture_sha="$(sha256sum company-learning/company-architecture-map.json | cut -d\' \' -f1)"
-            security_sha="$(sha256sum company-learning/security-immune-system.json | cut -d\' \' -f1)"
+            policy_sha="$(sha256sum company-learning/platform-release-roadmap.json | cut -d' ' -f1)"
+            log_map_sha="$(sha256sum company-learning/company-log-map.json | cut -d' ' -f1)"
+            architecture_sha="$(sha256sum company-learning/company-architecture-map.json | cut -d' ' -f1)"
+            security_sha="$(sha256sum company-learning/security-immune-system.json | cut -d' ' -f1)"
             test "$policy_sha" = "$WORKER_CONTEXT_EXPECTED_POLICY_SHA256"
             test "$log_map_sha" = "$WORKER_CONTEXT_EXPECTED_LOG_MAP_SHA256"
             test "$architecture_sha" = "$WORKER_CONTEXT_EXPECTED_ARCHITECTURE_SHA256"
             test "$security_sha" = "$WORKER_CONTEXT_EXPECTED_SECURITY_POLICY_SHA256"
-            PHASE="$phase" OUTPUT="$output" POLICY_SHA="$policy_sha" LOG_MAP_SHA="$log_map_sha" ARCHITECTURE_SHA="$architecture_sha" SECURITY_SHA="$security_sha" node <<\'NODE\'
+            PHASE="$phase" OUTPUT="$output" POLICY_SHA="$policy_sha" LOG_MAP_SHA="$log_map_sha" ARCHITECTURE_SHA="$architecture_sha" SECURITY_SHA="$security_sha" node <<'NODE'
           const fs=require('fs');
           const result={
             pass:true,
@@ -1462,7 +1462,7 @@ jobs:
             },
             checkedAt:new Date().toISOString()
           };
-          fs.writeFileSync(process.env.OUTPUT,JSON.stringify(result,null,2)+'\\n');
+          fs.writeFileSync(process.env.OUTPUT,JSON.stringify(result,null,2)+'\n');
           NODE
             echo "VIBE2_CANDIDATE_SHARED_CONTEXT_SHA_ONLY=$phase"
           }
