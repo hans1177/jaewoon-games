@@ -1012,7 +1012,7 @@ def render_export():
         npc_light('NPCFill',(4,6,4),1250,(.45,.62,1),4)
         npc_light('NPCRim',(0,8,-5),1550,(.75,.82,1),4)
         cam_data=bpy.data.cameras.new('NPCReviewCamera');cam=bpy.data.objects.new('NPCReviewCamera',cam_data);npc_collection.objects.link(cam)
-        bpy.context.scene.camera=cam;cam_data.lens=58
+        bpy.context.scene.camera=cam;cam_data.lens=64
         sc=bpy.context.scene
         sc.render.engine='BLENDER_EEVEE_NEXT' if fast_review else 'CYCLES'
         if sc.render.engine=='CYCLES':
@@ -1023,9 +1023,9 @@ def render_export():
         sc.view_settings.view_transform='AgX';sc.view_settings.look='AgX - Medium High Contrast';sc.view_settings.exposure=.7
         files=[]
         for view,pos,target in [
-            ('front',(0,5.2,14),(0,5.2,0)),
-            ('three-quarter',(7.8,5.6,10.5),(0,5.0,0)),
-            ('full-body',(0,6.1,18),(0,5.0,0)),
+            ('front',(0,7.6,7.8),(0,7.55,0)),
+            ('three-quarter',(5.3,7.4,6.4),(0,7.35,0)),
+            ('full-body',(0,5.8,18.5),(0,5.1,0)),
         ]:
             cam.location=xyz(pos);cam.rotation_euler=(Vector(xyz(target))-cam.location).to_track_quat('-Z','Y').to_euler()
             name=kind+'-'+view+'.png';sc.render.filepath=str(review/name);bpy.ops.render.render(write_still=True);files.append(name)
