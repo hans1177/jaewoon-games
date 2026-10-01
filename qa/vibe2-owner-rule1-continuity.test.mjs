@@ -38,19 +38,21 @@ test('verified task completion is stored as checkpoint evidence rather than done
   assert.ok(task.evidence.includes('signal-continuity:NEXT_CAUSAL_INPUT'));
 });
 
-test('empty queue and failed subjobs still flow into unconditional next-cycle refill',()=>{
+test('empty queue and failed subjobs keep pressure-aware next-cycle continuity',()=>{
   assert.match(runner,/refill:\s*\n\s*needs: \[plan, recovery_fast, continuous, asset_development, learning_idle, game_study\]/);
   assert.match(runner,/if: \$\{\{ always\(\) \}\}/);
-  assert.match(runner,/Dispatch next cycle unconditionally/);
+  assert.match(runner,/Dispatch next cycle when runner queue is healthy/);
+  assert.match(runner,/VIBE2_24H_REFILL=DEFERRED_TO_SCHEDULE_RUNNER_PRESSURE/);
+  assert.match(runner,/VIBE2_24H_REFILL=SKIPPED_EXISTING_SCHEDULER/);
   assert.match(runner,/actions\/workflows\/vibe2-24h-runner\.yml\/dispatches/);
   assert.match(runner,/VIBE2_24H_REFILL=DISPATCHED/);
   assert.doesNotMatch(runner,/VIBE2_24H_DONE/);
 });
 
 
-test('24h scheduler wake signals collapse into one continuous chain while refill remains unconditional',()=>{
-  assert.match(runner,/group: vibe2-24h-cycle-singleton/);
+test('24h scheduler wake signals collapse into one singleton chain with pressure-aware refill',()=>{
+  assert.match(runner,/group: vibe2-24h-cycle-singleton-v9/);
   assert.match(runner,/cancel-in-progress:\s*false/);
   assert.doesNotMatch(runner,/group: vibe2-24h-cycle-\$\{\{ github\.run_id \}\}/);
-  assert.match(runner,/if: \$\{\{ always\(\) \}\}[\s\S]*actions\/workflows\/vibe2-24h-runner\.yml\/dispatches/);
+  assert.match(runner,/if: \$\{\{ always\(\) \}\}[\s\S]*VIBE2_24H_REFILL=DEFERRED_TO_SCHEDULE_RUNNER_PRESSURE[\s\S]*actions\/workflows\/vibe2-24h-runner\.yml\/dispatches/);
 });
