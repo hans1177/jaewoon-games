@@ -6917,5 +6917,15 @@
     "warningStrategy": "REUSE_RECOMBINATION_COMPRESSION_STREAMING_POOLING_AND_EXISTING_SYSTEM_DEPTH",
     "exceededStrategy": "CAUSAL_CAPACITY_REPAIR_THEN_CONTINUE_PERPETUAL_BUILD_UP",
     "protectedStateDeletionForbidden": true
+  },
+  "webInternalPriority": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.webInternalPriority",
+    "scope": "WEB_ONLY",
+    "globalPlatformPriorityUnchanged": true,
+    "recentOwnerWorkSignal": "ownerDirectWebUpload && webDevelopmentResetRequired && web-games/<gameId> exists && homepageWebPlayable != true",
+    "selectionEffect": "RECENT_OWNER_WEB_FIRST_ONLY_AMONG_EQUIVALENT_WEB_PROJECTS",
+    "firstPlayableDeployClearsPriority": true,
+    "postDeploy": "RETURN_TO_EXISTING_NORMAL_WEB_PRIORITY"
   }
 }
