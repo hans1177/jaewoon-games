@@ -37,26 +37,26 @@ local function button(parent,text,fn,color)
  x.Parent=parent;corner(x,5);x.Activated:Connect(fn);return x
 end
 -- 화면 구성 · 작은 명패와 접히는 가족 수첩. 이동 중 중앙 시야는 비운다.
-local header=Instance.new("Frame");header.Name="ManorNameplate";header.Size=UDim2.new(1,-174,0,46);header.Position=UDim2.fromOffset(10,6)
+local header=Instance.new("Frame");header.Name="ManorNameplate";header.Size=UDim2.new(1,-184,0,52);header.Position=UDim2.fromOffset(10,6)
 header.BackgroundColor3=wood;header.BackgroundTransparency=.06;header.Parent=gui;corner(header,1)
-local headerLimit=Instance.new("UISizeConstraint");headerLimit.MaxSize=Vector2.new(206,46);headerLimit.Parent=header
+local headerLimit=Instance.new("UISizeConstraint");headerLimit.MaxSize=Vector2.new(216,52);headerLimit.Parent=header
 local title=label(header,"MIDNIGHT ESCAPE",22,15);title.Position=UDim2.fromOffset(10,2);title.AutoLocalize=false
 local status=label(header,"괴물 가족의 저택",18,10);status.Position=UDim2.fromOffset(10,25)
 local commands=Instance.new("Frame");commands.Name="ManorCommands";commands.AnchorPoint=Vector2.new(1,0)
-commands.Position=UDim2.new(1,-10,0,6);commands.Size=UDim2.fromOffset(144,44);commands.BackgroundTransparency=1;commands.Parent=gui
-local nav=Instance.new("Frame");nav.Name="FamilyNotebook";nav.AnchorPoint=Vector2.new(1,0);nav.Position=UDim2.new(1,-10,0,58)
+commands.Position=UDim2.new(1,-10,0,6);commands.Size=UDim2.fromOffset(152,52);commands.BackgroundTransparency=1;commands.Parent=gui
+local nav=Instance.new("Frame");nav.Name="FamilyNotebook";nav.AnchorPoint=Vector2.new(1,0);nav.Position=UDim2.new(1,-10,0,66)
 nav.Size=UDim2.new(1,-20,0,64);nav.BackgroundColor3=Color3.fromRGB(38,22,25);nav.BackgroundTransparency=.02;nav.Visible=false;nav.Parent=gui;corner(nav,1)
 local max=Instance.new("UISizeConstraint");max.MaxSize=Vector2.new(360,60);max.Parent=nav
 local grid=Instance.new("UIGridLayout");grid.CellSize=UDim2.new(1/5,-4,1,0);grid.CellPadding=UDim2.fromOffset(5,0);grid.Parent=nav
 local shade=Instance.new("Frame");shade.Name="NotebookShade";shade.Size=UDim2.fromScale(1,1)
 shade.BackgroundColor3=ink;shade.BackgroundTransparency=.4;shade.Active=true;shade.Visible=false;shade.ZIndex=10;shade.Parent=gui
-local panel=Instance.new("Frame");panel.Name="NotebookPage";panel.AnchorPoint=Vector2.new(.5,0);panel.Position=UDim2.new(.5,0,0,60)
-panel.Size=UDim2.new(1,-28,1,-72);panel.BackgroundColor3=Color3.fromRGB(40,24,28);panel.Visible=false;panel.ZIndex=11;panel.Parent=gui;corner(panel,2)
+local panel=Instance.new("Frame");panel.Name="NotebookPage";panel.AnchorPoint=Vector2.new(.5,0);panel.Position=UDim2.new(.5,0,0,68)
+panel.Size=UDim2.new(1,-28,1,-80);panel.BackgroundColor3=Color3.fromRGB(40,24,28);panel.Visible=false;panel.ZIndex=11;panel.Parent=gui;corner(panel,2)
 panel:GetPropertyChangedSignal("Visible"):Connect(function()shade.Visible=panel.Visible end)
 local limit=Instance.new("UISizeConstraint");limit.MaxSize=Vector2.new(460,550);limit.Parent=panel
 local panelTitle=label(panel,"",38,20);panelTitle.Position=UDim2.fromOffset(14,8);panelTitle.Size=UDim2.new(1,-85,0,38)
-local close=button(panel,"×",function()activeMenu=nil;activeStory=nil;panel.Visible=false end);close.Size=UDim2.fromOffset(44,44);close.Position=UDim2.new(1,-52,0,6)
-local body=Instance.new("ScrollingFrame");body.Position=UDim2.fromOffset(12,56);body.Size=UDim2.new(1,-20,1,-68)
+local close=button(panel,"×",function()activeMenu=nil;activeStory=nil;panel.Visible=false end);close.Size=UDim2.fromOffset(52,52);close.Position=UDim2.new(1,-60,0,6)
+local body=Instance.new("ScrollingFrame");body.Position=UDim2.fromOffset(12,66);body.Size=UDim2.new(1,-20,1,-78)
 body.BackgroundTransparency=1;body.BorderSizePixel=0;body.ScrollBarThickness=3;body.AutomaticCanvasSize=Enum.AutomaticSize.Y;body.CanvasSize=UDim2.new();body.Parent=panel
 local layout=Instance.new("UIListLayout");layout.Padding=UDim.new(0,8);layout.SortOrder=Enum.SortOrder.LayoutOrder;layout.Parent=body
 local function clear()for _,x in ipairs(body:GetChildren())do if x~=layout then x:Destroy()end end end
@@ -193,12 +193,12 @@ open=function(key)
  end
 end
 local depart=button(commands,"출정",function()open("PLAY")end,Color3.fromRGB(81,42,47))
-depart.Size=UDim2.fromOffset(64,44)
+depart.Size=UDim2.fromOffset(68,52)
 local notebook=button(commands,"수첩",function()
  notebookOpen=not notebookOpen;nav.Visible=notebookOpen
  if notebookOpen then activeMenu=nil;panel.Visible=false end
 end)
-notebook.Size=UDim2.fromOffset(74,44);notebook.Position=UDim2.fromOffset(70,0)
+notebook.Size=UDim2.fromOffset(78,52);notebook.Position=UDim2.fromOffset(74,0)
 -- 무료 Lucide 아이콘: 원본 ISC/MIT 라이선스를 모델 폴더에 보관.
 for index,entry in ipairs({{"PLAY","현관"},{"BOOK","도감"},{"DRESS","옷장"},{"EVENT","초대장"},{"RECORD","기록"}})do
  local item=button(nav,"",function()if activeMenu==entry[1]and panel.Visible then activeMenu=nil;panel.Visible=false else open(entry[1])end end,entry[1]=="PLAY"and Color3.fromRGB(85,58,52)or ink)
