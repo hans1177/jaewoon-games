@@ -1,5 +1,5 @@
 {
-  "version": 513,
+  "version": 514,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-01",
@@ -7713,11 +7713,11 @@
     "directorGamePrimaryFallbackWake20260927": {
       "id": "DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE_2026-09-27",
       "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
-      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "status": "SUPERSEDED_WAKE_SOURCE_BY_RUNNER_BACKPRESSURE_2026_10_01",
       "objective": "BREAK_MAIN_PUSH_PENDING_REPLACEMENT_STARVATION_BY_REUSING_THE_EXISTING_DIRECTOR_GATE_TO_WAKE_ONLY_ALREADY_QUEUED_GAME_PRIMARY_WORK",
       "workflow": ".github/workflows/director-supervisor.yml",
-      "trigger": "QUEUED_GAME_PRIMARY_AND_NO_ACTIVE_NON_PUSH_VIBE_CORE",
-      "workflowRunWakeSource": "VIBE2_CONTINUOUS_CORE_COMPLETED",
+      "trigger": "WHEN_DIRECTOR_RUNS_FOR_NON_VIBE_CORE_EVENT_OR_SCHEDULE_AND_QUEUED_GAME_PRIMARY_HAS_NO_ACTIVE_NON_PUSH_CORE",
+      "workflowRunWakeSource": "REMOVED_VIBE2_CONTINUOUS_CORE_COMPLETION",
       "cancelledWorkflowRunWakeSuppressed": true,
       "dispatchTarget": ".github/workflows/vibe2-continuous-core.yml",
       "dispatchEvent": "WORKFLOW_DISPATCH",
@@ -7740,7 +7740,13 @@
       "sharedStateOptimisticRetryUnchanged": true,
       "responsibleFileConflictProtectionPreserved": true,
       "independentGameParallelismPreserved": true,
-      "qualitySecurityReleaseGatesUnchanged": true
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "vibe2CoreCompletionWakeDisabled": true,
+      "continuitySources": [
+        "VIBE2_COHORT_FAN_IN_REFILL",
+        "VIBE2_24H_FIVE_MINUTE_SAFETY_NET",
+        "RECOVERY_FAST_CAUSAL_RETURN"
+      ]
     },
     "activeNativeRunDedupeCoverage20260927": {
       "id": "ACTIVE_NATIVE_RUN_DEDUPE_COVERAGE_2026-09-27",
@@ -8526,6 +8532,13 @@
         "gameRefillAtOrAboveQueuePressureThreshold": "DEFER_TO_24H_SAFETY_NET",
         "queuePressureThreshold": 4,
         "recoveredTaskStatePreserved": true
+      },
+      "director": {
+        "vibe2CoreCompletionWakeDisabled": true,
+        "reason": "FAN_IN_AND_24H_SAFETY_NET_ALREADY_OWN_CONTINUITY; DIRECTOR_CORE_COMPLETION_WAKE_MULTIPLIED_CONTROL_PLANE_RUNS",
+        "activeGateCancellationForbidden": true,
+        "activeSupervisionCancellationForbidden": true,
+        "fallbackStillAvailableOnNonVibeCoreDirectorTriggers": true
       }
     }
   },
