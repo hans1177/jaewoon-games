@@ -8563,6 +8563,16 @@
         "company-learning/company-architecture-map.json"
       ],
       "implementationState": "IMPLEMENTED_MAIN"
+    },
+    "playableWebMandatoryDeployment20261002": {
+      "nativeHomepageReadinessRequired": false,
+      "cloudflareMainRequiredBeforeVibePass": true,
+      "nextBuildUpBeforeDeploymentSuccessForbidden": true,
+      "postDeployment": {
+        "perpetualBuildUp": true,
+        "generationLimit": null,
+        "newIdeaRequiredEveryCycle": true
+      }
     }
   },
   "vibeExecutionLaneContract": {
@@ -26113,6 +26123,18 @@
       "studioWindowsMax": 1,
       "multiplayerAcceptance": "STATIC_CODE_CONTRACT",
       "runtimeVerifiedOnlyWhenObserved": true
+    },
+    "webPostDeploymentPerpetualBuildUp": {
+      "enabled": true,
+      "deploymentSuccessNextAction": "IMMEDIATE_NEXT_BUILD_UP_GENERATION",
+      "generationLimit": null,
+      "terminalCompletionStateForbidden": true
+    },
+    "webInternalPriority": {
+      "scope": "WEB_ONLY",
+      "globalPlatformPriorityUnchanged": true,
+      "recentOwnerWebEligibility": "ownerDirect&&resetRequired&&sourceExists&&!playable",
+      "recentPriorityEndsWhen": "playable"
     }
   },
   "robloxNativeCodingQualityContract": {
@@ -26500,7 +26522,7 @@
   },
   "centralDocumentRetention": {
     "version": 2,
-    "maxUtf8Bytes": 1100000,
+    "maxUtf8Bytes": 1120000,
     "maxChangeRecordEntries": 64,
     "scope": "CURRENT_RULES_AND_EXECUTABLE_CONTRACTS",
     "historicalExecutionLogsAuthority": "GIT_HISTORY",
@@ -26511,7 +26533,7 @@
     "publicationApprovalMustRemain": true,
     "repeatedRunLogsInCentralDocumentForbidden": true,
     "enforcement": "qa/company-central-policy-contract.test.mjs",
-    "softTargetUtf8Bytes": 1080000,
+    "softTargetUtf8Bytes": 1100000,
     "minimumHeadroomBytes": 20000,
     "structuredArchiveAuthority": "COMPANY_RECORDS",
     "archiveRecordRoot": "company-records/operations",

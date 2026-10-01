@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort } from '../tools/vibe2-auto-planner.mjs';
 import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
@@ -292,6 +292,73 @@ test('development-confirmed Web enters Vibe planning before homepage publication
   assert.ok(result.task.evidence.includes('existing-web-assessment-required'));
   assert.match(result.task.goal,/EXISTING_WEB_ASSESS_AND_IMPLEMENT/);
   assert.doesNotMatch(result.task.goal,/FULL_WEB_GAME_REBUILD/);
+});
+
+test('recent owner Web work is prioritized only inside the Web lane until first playable deployment',()=>{
+  const root=tempRepo();
+  const recentId='z-recent-owner-web';
+  const olderId='a-older-web';
+  for(const gameId of [recentId,olderId]){
+    const dir=path.join(root,'web-games',gameId);
+    fs.mkdirSync(dir,{recursive:true});
+    fs.writeFileSync(path.join(dir,'index.html'),'<!doctype html><html><body data-spatial-dimension="2.5d"><canvas id="game"></canvas><button>Play</button></body></html>','utf8');
+    writeStudioDesign(root,gameId);
+  }
+  const recent={
+    id:recentId,name:'Recent Owner Web',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',
+    hasWebArchive:true,homepageWebPlayable:false,webPath:null,
+    ownerDirectWebUpload:true,webDevelopmentResetRequired:true,ownerWebSourceRevision:'rev-recent'
+  };
+  const older={
+    id:olderId,name:'Older Web',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',
+    hasWebArchive:true,homepageWebPlayable:false,webPath:`/web-games/${olderId}/`
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},catalog:{games:[older,recent]},queue:{maxConcurrentTasks:1,tasks:[]},
+    repoRoot:root,maxConcurrentTasks:1,queueMaxConcurrentTasks:1,planningBacklogTarget:1,planningBacklogMinimum:0
+  });
+  assert.equal(result.planned,true);
+  assert.equal(result.task.gameId,recentId);
+  assert.equal(result.task.target,'web');
+  assert.ok(result.task.evidence.includes('web-internal-priority:recent-owner-work'));
+  assert.ok(result.task.evidence.includes('web-internal-priority-scope:WEB_ONLY'));
+  assert.equal(result.task.evidence.includes('focused-caretaker:yes'),false);
+
+  const projects=collectProjects({projects:[]},{games:[older,recent]},root,{items:[]});
+  const recentProject=projects.find(row=>row.gameId===recentId&&row.engine==='web');
+  assert.ok(recentProject);
+  assert.equal(recentProject.projectPath,`web-games/${recentId}`);
+  assert.equal(recentProject.ownerRecentWebPriority,true);
+
+  const deployedProjects=collectProjects({projects:[]},{games:[older,{...recent,homepageWebPlayable:true,webPath:`/web-games/${recentId}/`}]},root,{items:[]});
+  const deployed=deployedProjects.find(row=>row.gameId===recentId&&row.engine==='web');
+  assert.ok(deployed);
+  assert.equal(deployed.ownerRecentWebPriority,false);
+});
+
+test('recent Web hint only reorders equivalent Web projects and never overrides existing priority tiers',()=>{
+  const recent={
+    gameId:'recent-web',engine:'web',releaseState:'development-confirmed',progress:10,
+    ownerRecentWebPriority:true,ownerFocusedCaretaker:false
+  };
+  const olderEquivalent={
+    gameId:'older-web',engine:'web',releaseState:'development-confirmed',progress:99,
+    ownerRecentWebPriority:false,ownerFocusedCaretaker:false
+  };
+  assert.ok(projectSort(recent,olderEquivalent)<0);
+
+  const higherWeb={
+    gameId:'release-web',engine:'web',releaseState:'release-confirmed',progress:1,
+    ownerRecentWebPriority:false,ownerFocusedCaretaker:false
+  };
+  assert.ok(projectSort(recent,higherWeb)>0);
+
+  const native={
+    gameId:'native',engine:'unity',releaseState:'development-confirmed',progress:40,
+    ownerRecentWebPriority:false,ownerFocusedCaretaker:false
+  };
+  const recentOff={...recent,ownerRecentWebPriority:false};
+  assert.equal(Math.sign(projectSort(recent,native)),Math.sign(projectSort(recentOff,native)));
 });
 
 test('canonical development queue bootstraps missing Web source roots instead of dropping active games',()=>{

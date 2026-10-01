@@ -1287,7 +1287,6 @@
         "ingressControl": "ubuntu-slim",
         "coreQaRunner": "ubuntu-slim",
         "coreQaConcurrencyMode": "MAIN_LATEST_SHA_ONLY_NON_MAIN_ACTIVE_PRESERVED",
-        "coreQaCancelInProgress": false,
         "coreQaBrowserSmokeRunner": "ubuntu-24.04",
         "coreQaBrowserSmokeSeparateJob": true,
         "coreQaBrowserSmokeReason": "CHROME_REQUIRED; KEEP DETERMINISTIC CORE REGRESSION ON UBUNTU_SLIM",
@@ -3636,7 +3635,19 @@
       "developmentAdmissionAuthority": true,
       "upperPlatformReadinessGate": "UPPER_PLATFORM_DEVELOPMENT_READY",
       "newUpperPlatformEntryBlocking": true,
-      "existingNativeDevelopmentGrandfathered": true
+      "existingNativeDevelopmentGrandfathered": true,
+      "candidateManifestExecutionSurface": "UNITY_WEB",
+      "nativeUnityExecutionSurface": "UNITY_NATIVE",
+      "candidateReleaseGate": ".github/workflows/vibe2-candidate-release.yml",
+      "candidateReleaseRouting": "UNITY_WEB_TO_UNITY_WEB_FIRST_STAGE_BUILD__UNITY_NATIVE_TO_ANDROID_NATIVE_GATE",
+      "reviewedPromotionRoots": [
+        "unity-games/<gameId>/",
+        "web-games/<gameId>/"
+      ],
+      "reviewedPromotionMustBindExactCandidateUnitySource": true,
+      "cloudflarePreviewRequiredBeforeMerge": true,
+      "cloudflareMainDeploymentRequiredBeforeVibePass": true,
+      "vibePassAfterReviewedMergeAndCloudflareMainOnly": true
     },
     "admissionAuthority": "UPPER_PLATFORM_DEVELOPMENT_READY",
     "strictDesignScoreAdmissionAuthority": false,
@@ -6868,5 +6879,53 @@
         "nextCycleRoute": "vibe2-fanin-refill"
       }
     }
+  },
+  "playableWebMandatoryDeployment": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.playableWebMandatoryDeployment20261002",
+    "releaseGate": ".github/workflows/vibe2-candidate-release.yml#web-release",
+    "eligibility": "WEB_F0_F9_PLAYABLE_VERIFIED_AND_STATIC_SAVE_QA_PASS",
+    "nativeHomepageReadinessRequired": false,
+    "flow": [
+      "WEB_F0_F9_VERIFIED",
+      "STATIC_AND_SAVE_QA",
+      "REVIEWED_SOURCE_PR",
+      "CLOUDFLARE_PREVIEW_PASS",
+      "PR_MERGE",
+      "CLOUDFLARE_MAIN_PASS",
+      "VIBE_TASK_PASS",
+      "STATUS_SYNC_WEB_PUBLISHED",
+      "IMMEDIATE_NEXT_BUILD_UP_GENERATION"
+    ],
+    "deploymentFailureBlocksWebEvolution": true,
+    "sameVerifiedCandidateRetryRequired": true,
+    "terminalStateForbidden": true,
+    "postDeploymentPerpetualBuildUp": true,
+    "homepageAutoIngest": "tools/game-catalog-normalization.mjs#ingestOwnerWebGameIds"
+  },
+  "perpetualBuildUpDataCapacityBudget": {
+    "version": 1,
+    "source": "company-learning/vibe-autonomous-content-expansion-policy.json#dataCapacityBudget",
+    "savePersistedDataBytes": 2097152,
+    "webDownloadBytes": 104857600,
+    "singleFileBytes": 26214400,
+    "mobileMemoryTargetBytes": 314572800,
+    "mobileMinimumFps": 30,
+    "warningRatio": 0.8,
+    "contentCountLimit": null,
+    "buildUpGenerationLimit": null,
+    "warningStrategy": "REUSE_RECOMBINATION_COMPRESSION_STREAMING_POOLING_AND_EXISTING_SYSTEM_DEPTH",
+    "exceededStrategy": "CAUSAL_CAPACITY_REPAIR_THEN_CONTINUE_PERPETUAL_BUILD_UP",
+    "protectedStateDeletionForbidden": true
+  },
+  "webInternalPriority": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.webInternalPriority",
+    "scope": "WEB_ONLY",
+    "globalPlatformPriorityUnchanged": true,
+    "recentOwnerWorkSignal": "ownerDirectWebUpload && webDevelopmentResetRequired && web-games/<gameId> exists && homepageWebPlayable != true",
+    "selectionEffect": "RECENT_OWNER_WEB_FIRST_ONLY_AMONG_EQUIVALENT_WEB_PROJECTS",
+    "firstPlayableDeployClearsPriority": true,
+    "postDeploy": "RETURN_TO_EXISTING_NORMAL_WEB_PRIORITY"
   }
 }
