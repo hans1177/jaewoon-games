@@ -2848,13 +2848,13 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-10-01T12:59:06.586Z",
-      "robloxSourceCommit": "553ccd56ac90ac9fbb4b13bc2bfe9524ebce71ad",
-      "robloxSourceBootstrapPassedAt": "2026-09-30T16:48:36.464Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-01T12:59:06.586Z",
+      "updatedAt": "2026-10-01T13:01:21.237Z",
+      "robloxSourceCommit": "d0821e5d7caa024b0ac4ecd900171635cace38ab",
+      "robloxSourceBootstrapPassedAt": "2026-10-01T13:01:21.237Z",
+      "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -2902,11 +2902,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-verified-external-learning-required",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "routingBlockers": [
-        "roblox-source-bootstrap:existing-source-verified-external-learning-required:ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED"
+        "roblox-build-package-revalidation-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -2917,7 +2917,7 @@
         "capturedAt": "2026-09-25T07:09:56.124Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxExactRevisionPassed": true,
+      "robloxExactRevisionPassed": false,
       "robloxSharedTargetCurrent": false,
       "robloxFastMvpSupersededBy": null,
       "robloxPublicationTarget": {
@@ -4362,8 +4362,8 @@
       "robloxHeadlessPassedAt": null,
       "robloxEvidenceInvalidatedBySourceChange": {
         "previousSourceRevision": "553ccd56ac90ac9fbb4b13bc2bfe9524ebce71ad",
-        "newSourceRevision": "553ccd56ac90ac9fbb4b13bc2bfe9524ebce71ad",
-        "invalidatedAt": "2026-09-30T16:48:36.464Z"
+        "newSourceRevision": "d0821e5d7caa024b0ac4ecd900171635cace38ab",
+        "invalidatedAt": "2026-10-01T13:01:21.237Z"
       },
       "robloxMetadataOnlySourceRecoveryEvidence": {
         "version": 1,
@@ -6783,8 +6783,8 @@
       },
       "robloxProjectPath": "roblox-games/amusement-tycoon",
       "unityProjectPath": "unity-games/amusement-tycoon",
-      "targetSourcePath": "unity-games/amusement-tycoon",
-      "sourcePath": "unity-games/amusement-tycoon",
+      "targetSourcePath": "roblox-games/amusement-tycoon",
+      "sourcePath": "roblox-games/amusement-tycoon",
       "designBaselineSource": "design/amusement-tycoon/2026-09-19/design-revised.json",
       "designDate": "2026-09-19",
       "minimumDesignContract": {
@@ -6824,10 +6824,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T12:59:06.586Z",
+      "updatedAt": "2026-10-01T13:01:21.237Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -6865,9 +6865,9 @@
       },
       "ownerWebEditPropagationPending": true,
       "ownerWebEditPropagationUpdatedAt": "2026-09-25T04:11:54.053Z",
-      "robloxSourceCommit": "01702f065c45b4f3d63a62d000f054349aaa26f3",
-      "robloxSourceBootstrapPassedAt": "2026-09-30T14:38:18.655Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-01T12:59:06.586Z",
+      "robloxSourceCommit": "d0821e5d7caa024b0ac4ecd900171635cace38ab",
+      "robloxSourceBootstrapPassedAt": "2026-10-01T13:01:21.237Z",
+      "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -6915,11 +6915,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-verified-external-learning-required",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "routingBlockers": [
-        "roblox-source-bootstrap:existing-source-verified-external-learning-required:ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED"
+        "roblox-build-package-revalidation-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -6930,7 +6930,7 @@
         "capturedAt": "2026-09-25T04:26:19.832Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxExactRevisionPassed": true,
+      "robloxExactRevisionPassed": false,
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -8408,9 +8408,9 @@
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
       "robloxEvidenceInvalidatedBySourceChange": {
-        "previousSourceRevision": "4e1f9388308304748a063803980e2b9a47324dde",
-        "newSourceRevision": "4e1f9388308304748a063803980e2b9a47324dde",
-        "invalidatedAt": "2026-09-30T14:19:36.668Z"
+        "previousSourceRevision": "01702f065c45b4f3d63a62d000f054349aaa26f3",
+        "newSourceRevision": "d0821e5d7caa024b0ac4ecd900171635cace38ab",
+        "invalidatedAt": "2026-10-01T13:01:21.237Z"
       },
       "unityF0ThroughF9Evidence": {
         "version": 1,
@@ -8517,8 +8517,8 @@
       },
       "robloxProjectPath": "roblox-games/bug-defense",
       "unityProjectPath": "unity-games/bug-defense",
-      "targetSourcePath": "unity-games/bug-defense",
-      "sourcePath": "unity-games/bug-defense",
+      "targetSourcePath": "roblox-games/bug-defense",
+      "sourcePath": "roblox-games/bug-defense",
       "designBaselineSource": "design/bug-defense/2026-09-19/design-revised.json",
       "designDate": "2026-09-19",
       "minimumDesignContract": {
@@ -8558,18 +8558,18 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T12:59:06.586Z",
+      "updatedAt": "2026-10-01T13:01:21.237Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "robloxSourceCommit": "43371b5c0bd919305394db0b688fc496ba6ddc89",
-      "robloxSourceBootstrapPassedAt": "2026-09-30T14:38:18.655Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-01T12:59:06.586Z",
+      "robloxSourceCommit": "d0821e5d7caa024b0ac4ecd900171635cace38ab",
+      "robloxSourceBootstrapPassedAt": "2026-10-01T13:01:21.237Z",
+      "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -8617,11 +8617,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-verified-external-learning-required",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "routingBlockers": [
-        "roblox-source-bootstrap:existing-source-verified-external-learning-required:ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED"
+        "roblox-build-package-revalidation-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -8632,7 +8632,7 @@
         "capturedAt": "2026-09-25T04:26:19.832Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxExactRevisionPassed": true,
+      "robloxExactRevisionPassed": false,
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -10051,9 +10051,9 @@
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
       "robloxEvidenceInvalidatedBySourceChange": {
-        "previousSourceRevision": "4e1f9388308304748a063803980e2b9a47324dde",
-        "newSourceRevision": "4e1f9388308304748a063803980e2b9a47324dde",
-        "invalidatedAt": "2026-09-30T14:19:36.668Z"
+        "previousSourceRevision": "43371b5c0bd919305394db0b688fc496ba6ddc89",
+        "newSourceRevision": "d0821e5d7caa024b0ac4ecd900171635cace38ab",
+        "invalidatedAt": "2026-10-01T13:01:21.237Z"
       },
       "unityF0ThroughF9Evidence": {
         "version": 1,
@@ -10160,8 +10160,8 @@
       },
       "robloxProjectPath": "roblox-games/line-defense",
       "unityProjectPath": "unity-games/line-defense",
-      "targetSourcePath": "unity-games/line-defense",
-      "sourcePath": "unity-games/line-defense",
+      "targetSourcePath": "roblox-games/line-defense",
+      "sourcePath": "roblox-games/line-defense",
       "designBaselineSource": "design/line-defense/2026-09-19/design-revised.json",
       "designDate": "2026-09-19",
       "minimumDesignContract": {
@@ -10201,18 +10201,18 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T12:59:06.586Z",
+      "updatedAt": "2026-10-01T13:01:21.237Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "robloxSourceCommit": "6a2bfa55ea59e257b044d045d2466769b9a3587c",
-      "robloxSourceBootstrapPassedAt": "2026-10-01T01:44:00.101Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-01T12:59:06.586Z",
+      "robloxSourceCommit": "d0821e5d7caa024b0ac4ecd900171635cace38ab",
+      "robloxSourceBootstrapPassedAt": "2026-10-01T13:01:21.237Z",
+      "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxStudioAssetBindingApplied": true,
@@ -10358,7 +10358,7 @@
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-source-bootstrap:existing-source-verified-external-learning-required:ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED"
+        "roblox-build-package-revalidation-pending"
       ],
       "robloxBuildOrPackagePassed": false,
       "robloxBuildSourceRevision": null,
@@ -10396,9 +10396,9 @@
       "robloxPostRuntimeQaEvidence": null,
       "robloxInternalReleaseReady": false,
       "robloxInternalReleaseAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-verified-external-learning-required",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -10414,7 +10414,7 @@
         "capturedAt": "2026-09-25T04:26:19.832Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxExactRevisionPassed": true,
+      "robloxExactRevisionPassed": false,
       "robloxSharedTargetCurrent": true,
       "robloxFastMvpSupersededBy": null,
       "robloxPublicationTarget": {
@@ -11763,7 +11763,15 @@
         "failureStage": "F1_SERVER_BOOT",
         "failureSignature": "45f68e8906e8d7a8b4da23cf335a9224872381de91ebadd2e743778050084d4a"
       },
-      "unityCanonicalEvidenceBound": false
+      "unityCanonicalEvidenceBound": false,
+      "robloxHeadlessPassedAt": null,
+      "robloxFastMvpPublished": false,
+      "robloxFastMvpPublishedAt": null,
+      "robloxEvidenceInvalidatedBySourceChange": {
+        "previousSourceRevision": "6a2bfa55ea59e257b044d045d2466769b9a3587c",
+        "newSourceRevision": "d0821e5d7caa024b0ac4ecd900171635cace38ab",
+        "invalidatedAt": "2026-10-01T13:01:21.237Z"
+      }
     },
     {
       "gameId": "cozy-island",
@@ -16291,8 +16299,8 @@
       },
       "robloxProjectPath": "roblox-games/monster-adventure",
       "unityProjectPath": "unity-games/monster-adventure",
-      "targetSourcePath": "unity-games/monster-adventure",
-      "sourcePath": "unity-games/monster-adventure",
+      "targetSourcePath": "roblox-games/monster-adventure",
+      "sourcePath": "roblox-games/monster-adventure",
       "designBaselineSource": "design/monster-adventure/2026-09-19/design-revised.json",
       "designDate": "2026-09-19",
       "minimumDesignContract": {
@@ -16332,18 +16340,18 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T13:01:01.132Z",
+      "updatedAt": "2026-10-01T13:01:21.237Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "robloxSourceCommit": "25b27aee5e3cd9f698870d6bbc4710fa56dfcd07",
-      "robloxSourceBootstrapPassedAt": "2026-09-30T23:43:41.380Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-01T12:59:06.586Z",
+      "robloxSourceCommit": "d0821e5d7caa024b0ac4ecd900171635cace38ab",
+      "robloxSourceBootstrapPassedAt": "2026-10-01T13:01:21.237Z",
+      "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -16391,11 +16399,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-verified-external-learning-required",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "routingBlockers": [
-        "roblox-source-bootstrap:existing-source-verified-external-learning-required:ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED"
+        "roblox-build-package-revalidation-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -16406,7 +16414,7 @@
         "capturedAt": "2026-09-25T04:26:19.832Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxExactRevisionPassed": true,
+      "robloxExactRevisionPassed": false,
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -17593,9 +17601,9 @@
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
       "robloxEvidenceInvalidatedBySourceChange": {
-        "previousSourceRevision": "d16adbfc1286b57e20c4166ec870dc48a95adb1a",
-        "newSourceRevision": "57230549403637f422766febf83c3976af84d8b6",
-        "invalidatedAt": "2026-09-28T13:07:41.596Z"
+        "previousSourceRevision": "25b27aee5e3cd9f698870d6bbc4710fa56dfcd07",
+        "newSourceRevision": "d0821e5d7caa024b0ac4ecd900171635cace38ab",
+        "invalidatedAt": "2026-10-01T13:01:21.237Z"
       },
       "robloxQualityBuildUpLastPassedAt": "2026-09-28T14:05:27.463Z",
       "robloxF9PendingInParallel": false,
@@ -17879,8 +17887,8 @@
       },
       "robloxProjectPath": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
       "unityProjectPath": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-      "targetSourcePath": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-      "sourcePath": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+      "targetSourcePath": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+      "sourcePath": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
       "designBaselineSource": "design/seed-action-survival-rogu-echoes-of-the-lost-star/2026-09-19/design-revised.json",
       "designDate": "2026-09-19",
       "minimumDesignContract": {
@@ -17920,27 +17928,27 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T12:52:42.461Z",
+      "updatedAt": "2026-10-01T13:01:21.237Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "robloxSourceCommit": "9417366ac6e5bf5cb83ebe8b09de1ff13fe41382",
-      "robloxSourceBootstrapPassedAt": "2026-10-01T12:16:42.281Z",
+      "robloxSourceCommit": "d0821e5d7caa024b0ac4ecd900171635cace38ab",
+      "robloxSourceBootstrapPassedAt": "2026-10-01T13:01:21.237Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
-      "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "9417366ac6e5bf5cb83ebe8b09de1ff13fe41382",
-      "robloxBuildArtifactIdentity": "sha256:d07c2a484b41000b0339df1a55cbc42b0aae51baa1628cdb5e40780eac5046d7",
-      "robloxBuildPassedAt": "2026-10-01T00:00:14.731Z",
+      "robloxBuildOrPackagePassed": false,
+      "robloxBuildSourceRevision": null,
+      "robloxBuildArtifactIdentity": null,
+      "robloxBuildPassedAt": null,
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-01T00:00:14.731Z",
+      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
@@ -17991,71 +17999,10 @@
         "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
-      "robloxFoundationF0Passed": true,
-      "robloxFoundationF0PassedAt": "2026-10-01T00:00:14.731Z",
-      "robloxFoundationF0Evidence": {
-        "version": 3,
-        "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-        "platform": "ROBLOX",
-        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-09-30T23:52:38.337Z",
-        "sourcePath": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-        "sourceRevision": "9417366ac6e5bf5cb83ebe8b09de1ff13fe41382",
-        "artifactIdentity": "sha256:d07c2a484b41000b0339df1a55cbc42b0aae51baa1628cdb5e40780eac5046d7",
-        "rebuiltArtifactIdentity": "sha256:d07c2a484b41000b0339df1a55cbc42b0aae51baa1628cdb5e40780eac5046d7",
-        "artifactRunId": 36790211594,
-        "nativeLanguageCompilePassed": true,
-        "nativeCompilerVersion": "0.739",
-        "playMode": "SINGLE",
-        "saveExists": true,
-        "multiplayerApplicable": false,
-        "sourcePreflightPassed": true,
-        "f0SourceIntegrityPassed": true,
-        "sourceStartupMarkersPassed": true,
-        "gameStartPassed": false,
-        "serverBootPassed": false,
-        "worldFoundationPassed": false,
-        "characterFoundationPassed": false,
-        "physicsAndMovementPassed": false,
-        "runtimeFoundationPassed": false,
-        "actualRuntimeEvidence": false,
-        "internalReleaseReady": false,
-        "serverClientBoundaryPreflightPassed": true,
-        "remoteSecurityPreflightPassed": true,
-        "mobileControlUiPreflightPassed": true,
-        "coreProgressionMarkersPassed": true,
-        "combatOrRoundMarkersPassed": true,
-        "datastoreContractPassed": true,
-        "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": true,
-        "exactRevision": true,
-        "checks": {
-          "exactSourceRevision": true,
-          "nativeLanguageCompilePassed": true,
-          "exactArtifact": true,
-          "projectContract": true,
-          "robloxPolicy": true,
-          "duplicateDeclarationGuard": true,
-          "sourceStartupMarkers": true,
-          "foundationSentinelContract": true,
-          "characterPhysicsGuard": true,
-          "mobileFirst": true,
-          "serverClientBoundary": true,
-          "remoteSecurity": true,
-          "coreProgression": true,
-          "combatOrRound": true,
-          "saveRejoin": true,
-          "multiplayerSync": true,
-          "sessionEndRestart": true,
-          "errorGuards": true,
-          "f0SourceIntegrity": true
-        },
-        "pass": true,
-        "state": "PASS",
-        "blockers": [],
-        "authority": "roblox-headless-source-preflight-f0"
-      },
-      "robloxHeadlessFastMvpPassed": true,
+      "robloxFoundationF0Passed": false,
+      "robloxFoundationF0PassedAt": null,
+      "robloxFoundationF0Evidence": null,
+      "robloxHeadlessFastMvpPassed": false,
       "robloxHeadlessFastMvpEvidence": {
         "version": 3,
         "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -18149,11 +18096,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "routingBlockers": [
-        "roblox-studio-mcp-play-repair-required"
+        "roblox-build-package-revalidation-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -18164,7 +18111,7 @@
         "capturedAt": "2026-09-25T04:26:19.832Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxExactRevisionPassed": true,
+      "robloxExactRevisionPassed": false,
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -18646,9 +18593,9 @@
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
       "robloxEvidenceInvalidatedBySourceChange": {
-        "previousSourceRevision": "d16adbfc1286b57e20c4166ec870dc48a95adb1a",
-        "newSourceRevision": "9e4c7e159ededc3d675f4c7bd33c607777742eec",
-        "invalidatedAt": "2026-09-28T11:57:21.208Z"
+        "previousSourceRevision": "9417366ac6e5bf5cb83ebe8b09de1ff13fe41382",
+        "newSourceRevision": "d0821e5d7caa024b0ac4ecd900171635cace38ab",
+        "invalidatedAt": "2026-10-01T13:01:21.237Z"
       },
       "robloxQualityBuildUpLastPassedAt": "2026-09-28T12:43:56.562Z",
       "robloxF9PendingInParallel": false,
@@ -27820,7 +27767,7 @@
       "unityCanonicalEvidenceBound": false
     }
   ],
-  "updatedAt": "2026-10-01T13:01:13.101Z",
+  "updatedAt": "2026-10-01T13:01:21.237Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
