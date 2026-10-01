@@ -28,7 +28,7 @@ import {
 } from '../assets/vibe-ai-role-director.js';
 import {JaewoonCommonAI,JaewoonAISquad} from '../assets/common-ai.js';
 import {createAIPartyConfig,createDefaultAIEntries} from '../assets/ai-party.js';
-import {deriveGameplaySketch,buildVibePatchPlan,analyzeExistingGameSource} from '../tools/company-vibe2-gameplay-intelligence.mjs';
+import {deriveGameplaySketch,buildVibePatchPlan,analyzeExistingGameSource,buildRuntimeValidationPlan,runtimeValidationBlockers} from '../tools/company-vibe2-gameplay-intelligence.mjs';
 
 const roleDirectorSource=fs.readFileSync(new URL('../assets/vibe-ai-role-director.js',import.meta.url),'utf8');
 
@@ -281,6 +281,31 @@ test('save-enabled living actor plans reuse the existing save authority for boun
   assert.match(task.reason,/existing save owner/i);
   assert.match(task.reason,/do not create a parallel save authority/i);
   assert.ok(plan.verificationOrder.includes('ACTOR_MIND_SAVE_RESTORE_WHEN_APPLICABLE'));
+});
+
+test('save-enabled living actor runtime validation blocks release without mind restore evidence',()=>{
+  const inventory=[
+    {id:'npc',path:'world.npc',label:'NPC companion relationship memory'}
+  ];
+  const sketch=deriveGameplaySketch({gameId:'saved-runtime-ai',genre:'RPG',baseline:{content:{coreLoop:['talk']}},inventory});
+  const source=analyzeExistingGameSource(`<main data-npc="smith"><script>
+    const state=JSON.parse(localStorage.getItem('save')||'{}');
+    localStorage.setItem('save',JSON.stringify(state));
+    let hp=10;
+  </script></main>`);
+  const plan=buildRuntimeValidationPlan({gameplaySketch:sketch,sourceAnalysis:source});
+  assert.equal(plan.actorMindSaveRestore.required,true);
+  assert.match(plan.actorMindSaveRestore.contract,/ACTOR_IDENTITY_MUST_MATCH/);
+  assert.match(plan.actorMindSaveRestore.contract,/DUPLICATE_SOURCE_EVENT_MUST_NOT_REAPPLY_AFTER_RELOAD/);
+
+  const evidence=Object.fromEntries(Object.entries(plan).filter(([,value])=>value&&typeof value==='object'&&'required' in value).map(([key,value])=>[key,{pass:value.required!==true}]));
+  evidence.actorMindSaveRestore={pass:false};
+  const blockers=runtimeValidationBlockers({plan,evidence});
+  assert.ok(blockers.includes('ACTOR_MIND_SAVE_RESTORE_FAILED'));
+
+  evidence.actorMindSaveRestore={pass:true};
+  const cleared=runtimeValidationBlockers({plan,evidence});
+  assert.ok(!cleared.includes('ACTOR_MIND_SAVE_RESTORE_FAILED'));
 });
 
 test('AI action validator rejects attempts to own protected gameplay state',()=>{
