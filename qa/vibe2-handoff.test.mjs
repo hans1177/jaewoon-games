@@ -11,6 +11,35 @@ import { runVibe2AutoPlanner } from '../tools/vibe2-auto-planner.mjs';
 import { runVibeContinuousRunner } from '../tools/vibe2-continuous-runner.mjs';
 import { runQueueCommand } from '../tools/vibe2-queue-control.mjs';
 
+const directQueue=(tasks=[])=>({
+  version:6,
+  mode:'independent-dag-direct-reservation-queue',
+  maxConcurrentTasks:null,
+  ownerDirectivePreemptsAutonomy:true,
+  releaseStatePriority:['release-confirmed','development-confirmed','reviewing','other'],
+  execution:{
+    dagDependencies:true,
+    workStealing:true,
+    sourceRootExclusive:false,
+    gameWideLockForbidden:true,
+    sameGameNonOverlappingPackagesParallel:true,
+    responsibleFileExclusive:true,
+    exactDuplicateSuppression:true,
+    atomicSharedStateWriteMode:'OPTIMISTIC_RETRY',
+    atomicNeuronCompletion:true,
+    taskMicroFanIn:true,
+    independentEligibleTaskStart:'IMMEDIATE',
+    internalGlobalParallelCap:null,
+    externalMatrixTransportPartitionMax:256,
+    learningIdleFixedWorkers:1,
+    assetDevelopmentLaneMax:64,
+    assetDevelopmentSpeculativeVariantsPerTask:1
+  },
+  defaultMaxRetries:null,
+  defaultRetryPolicy:'UNLIMITED_CAUSAL_REPAIR',
+  tasks
+});
+
 test('machine handoff summarizes queue and adaptive state deterministically', () => {
   const runtime = {
     version: 7,
@@ -21,18 +50,15 @@ test('machine handoff summarizes queue and adaptive state deterministically', ()
       splitRule: 'split-by-implementation-phase-not-artificial-file-count',
       handoffReadOrder: ['vibe2-runtime.json', '.vibe2/queue.json']
     },
-    continuous: { maxConcurrentGameTasks: 20 },
-    adaptiveBackpressure: { steps: [20, 16, 12, 8, 4] }
+    continuous: { externalMatrixTransportPartitionMax:256, executionContract:{internalGlobalParallelCap:null,externalMatrixTransportPartitionMax:256,learningIdleFixedWorkers:1,assetDevelopmentLaneMax:64,assetDevelopmentSpeculativeVariantsPerTask:1,sharedStateWriteCoordination:'OPTIMISTIC_RETRY_ATOMIC_WRITE_ONLY'} },
+    adaptiveBackpressure: { mode:'TELEMETRY_AND_OPTIONAL_SPECULATION_SIGNAL_ONLY' }
   };
-  const queue = {
-    version: 5,
-    tasks: [
-      { id: 'b', status: 'queued', priority: 'normal', responsibleFiles: ['b.js'] },
-      { id: 'a', status: 'queued', priority: 'high', ownerDirective: true, responsibleFiles: ['a.js'] },
-      { id: 'c', status: 'running', priority: 'high', sourceRoot: 'unity-games/c', blocker: 'awaiting-qa' },
-      { id: 'd', status: 'failed', priority: 'low' }
-    ]
-  };
+  const queue = directQueue([
+    { id: 'b', status: 'queued', priority: 'normal', responsibleFiles: ['b.js'] },
+    { id: 'a', status: 'queued', priority: 'high', ownerDirective: true, responsibleFiles: ['a.js'] },
+    { id: 'c', status: 'running', priority: 'high', sourceRoot: 'unity-games/c', blocker: 'awaiting-qa' },
+    { id: 'd', status: 'failed', priority: 'low' }
+  ]);
   const parallelism = {
     version: 2,
     currentMax: 16,
@@ -64,8 +90,11 @@ test('machine handoff summarizes queue and adaptive state deterministically', ()
   assert.equal(first.workState.runningCount, 1);
   assert.equal(first.workState.failedCount, 1);
   assert.equal(first.workState.queuedPreview[0].id, 'a');
-  assert.equal(first.parallelism.currentPersistentMax, 16);
-  assert.deepEqual(first.parallelism.steps, [20, 16, 12, 8, 4]);
+  assert.equal(first.parallelism.internalGlobalParallelCap, null);
+  assert.equal(first.parallelism.externalMatrixTransportPartitionMax, 256);
+  assert.equal(first.parallelism.pressureAdvisoryTarget, 16);
+  assert.equal(first.parallelism.learningIdleFixedWorkers, 1);
+  assert.equal(first.parallelism.assetDevelopmentLaneMax, 64);
   assert.equal(first.experience.recordCount, 1);
   assert.equal(first.projectLifecycle.projectCount, 1);
   assert.equal(first.projectLifecycle.projects[0].PROJECT_PHASE, 'WEB_BASE_IMPLEMENTATION');
@@ -97,22 +126,26 @@ test('repository handoff is generated entirely from machine state', () => {
   assert.equal(snapshot.kind, 'vibe2-machine-handoff');
   assert.equal(repositoryRuntime.documentation?.machineStateVersions?.runtime, repositoryRuntime.version);
   assert.equal(snapshot.generatedFrom.runtimeVersion, repositoryRuntime.version);
-  assert.equal(snapshot.generatedFrom.queueVersion, 5);
+  assert.equal(snapshot.generatedFrom.queueVersion, 6);
   assert.equal(snapshot.generatedFrom.parallelismVersion, 4);
   assert.equal(snapshot.generatedFrom.experienceVersion, 3);
   assert.equal(snapshot.workPolicy.humanMaintainedHandoff, false);
-  assert.equal(snapshot.parallelism.configuredMax, 256);
-  assert.deepEqual(snapshot.parallelism.steps, [4, 8, 16, 20, 30, 32, 64, 128, 256]);
-  assert.equal(snapshot.nextWorkerContinuation.objective, 'CONTINUE_SELF_EVOLVING_ATOMIC_NEURON_SCHEDULER_TOWARD_VERIFIED_EVENT_DRIVEN_DAG_WITH_TRUTHFUL_TELEMETRY');
+  assert.equal(snapshot.parallelism.internalGlobalParallelCap, null);
+  assert.equal(snapshot.parallelism.externalMatrixTransportPartitionMax, 256);
+  assert.equal(snapshot.parallelism.learningIdleFixedWorkers, 1);
+  assert.equal(snapshot.parallelism.assetDevelopmentLaneMax, 64);
+  assert.equal(snapshot.parallelism.assetDevelopmentSpeculativeVariantsPerTask, 1);
+  assert.equal(snapshot.parallelism.pressureAdvisoryRole, 'OPTIONAL_SPECULATION_ONLY');
+  assert.equal(snapshot.nextWorkerContinuation.objective, 'CONTINUE_DIRECT_INDEPENDENT_TASK_EXECUTION_WITHOUT_WAVE_SCHEDULING_OR_GENERAL_INTERNAL_CONCURRENCY_CAP');
   assert.match(snapshot.nextWorkerContinuation.freshnessRule, /FETCH_FRESH_MAIN_HEAD/);
-  assert.ok(snapshot.nextWorkerContinuation.verifiedState.includes('FIXED_GLOBAL_WAVE_BARRIER_FALSE'));
+  assert.ok(snapshot.nextWorkerContinuation.verifiedState.includes('GENERAL_GAME_RECOVERY_NEURAL_INTERNAL_GLOBAL_CAP_NULL'));
   assert.ok(snapshot.nextWorkerContinuation.priorities.some((value) => value.startsWith('P1_CAPTURE_LIVE_VERIFIED_RUNTIME_FAIL_REQUEUE:')));
   assert.ok(snapshot.nextWorkerContinuation.priorities.some((value) => value.startsWith('P2_VERIFIED_THROUGHPUT_OPTIMIZATION:')));
   assert.equal(snapshot.nextWorkerContinuation.priorities.some((value) => value.startsWith('P0_FIX_')),false);
-  assert.ok(snapshot.nextWorkerContinuation.hardConstraints.includes('SOURCE_ROOT_AND_GAME_WIDE_DEVELOPMENT_LOCKS_MUST_NEVER_BE_REINTRODUCED'));
-  assert.ok(snapshot.nextWorkerContinuation.hardConstraints.includes('ONLY_OVERLAPPING_RESPONSIBLE_FILE_WRITES_OR_BRIEF_ATOMIC_SHARED_STATE_MUTATIONS_MAY_SERIALIZE'));
-  assert.ok(snapshot.nextWorkerContinuation.hardConstraints.includes('GAME_PRIMARY_REQUESTS_256_BY_DEFAULT; VERIFIED_EXTERNAL_PRESSURE_MAY_DOWNSHIFT_TO_30; RECOVER_TO_256_WHEN_PRESSURE_CLEARS'));
-  assert.ok(snapshot.nextWorkerContinuation.successEvidence.includes('FINAL_VARIANT_REPORTS_TASK_MICRO_FANIN_COMPLETE_AND_SLOT_RELEASE'));
+  assert.ok(snapshot.nextWorkerContinuation.hardConstraints.includes('NO_GENERAL_GAME_RECOVERY_NEURAL_INTERNAL_GLOBAL_CAP'));
+  assert.ok(snapshot.nextWorkerContinuation.hardConstraints.includes('MATRIX_256_IS_TRANSPORT_PARTITION_ONLY'));
+  assert.ok(snapshot.nextWorkerContinuation.hardConstraints.includes('SERIALIZE_ONLY_RESPONSIBLE_FILE_CONFLICT_ACTUAL_DEPENDENCY_EXACT_DUPLICATE_OR_ATOMIC_SHARED_STATE_WRITE'));
+  assert.ok(snapshot.nextWorkerContinuation.successEvidence.includes('TASK_MICRO_FANIN_CAN_TRIGGER_NEXT_ELIGIBLE_TASK_WITHOUT_UNRELATED_COMPLETION_BARRIER'));
   assert.ok(snapshot.workState.taskCount > 0);
 });
 
@@ -142,7 +175,8 @@ test('consistency gate rejects an unlisted Vibe2 markdown file and divergent ada
   const consistency = validateVibe2MachineState({ runtime, queue, parallelism, experience, repoRoot: tempRoot });
   assert.equal(consistency.ok, false);
   assert.equal(consistency.errors.some((x) => x.startsWith('UNLISTED_VIBE2_MARKDOWN:')), true);
-  assert.equal(consistency.errors.includes('PERSISTENT_MAX_OUTSIDE_STEPS'), true);
+  assert.equal(consistency.errors.includes('QUEUE_SCHEMA_BEFORE_DIRECT_EXECUTION_V6'), true);
+  assert.equal(consistency.errors.includes('QUEUE_LEGACY_GENERAL_CAP_PRESENT'), true);
 });
 
 test('planner and worker work-order consume generated machine handoff instead of manual context', () => {
@@ -152,21 +186,25 @@ test('planner and worker work-order consume generated machine handoff instead of
   const experienceFile = path.join(tempRoot, 'experience.json');
   const statusFile = path.join(tempRoot, 'status.json');
   const catalogFile = path.join(tempRoot, 'catalog.json');
-  fs.writeFileSync(queueFile, JSON.stringify({ version:5, maxConcurrentTasks:256, tasks:[] }));
+  fs.writeFileSync(queueFile, JSON.stringify(directQueue([])));
   fs.writeFileSync(controlFile, JSON.stringify({ version:4, currentMax:8, healthyStreak:0, pressureStreak:0 }));
   fs.writeFileSync(experienceFile, JSON.stringify({ version:3, records:[] }));
   fs.writeFileSync(statusFile, JSON.stringify({ projects:[] }));
   fs.writeFileSync(catalogFile, JSON.stringify({ games:[] }));
-  const planned = runVibe2AutoPlanner({ runtimeFile:'vibe2-runtime.json', queueFile, controlFile, experienceFile, statusFile, catalogFile, repoRoot:tempRoot, maxConcurrentTasks:256 });
+  const planned = runVibe2AutoPlanner({ runtimeFile:'vibe2-runtime.json', queueFile, controlFile, experienceFile, statusFile, catalogFile, repoRoot:tempRoot });
   assert.equal(planned.machineHandoff.used, true);
   assert.equal(planned.machineHandoff.consistency.ok, true);
-  assert.equal(planned.effectivePlannerMax, 8);
+  assert.equal(planned.machineHandoff.internalGlobalParallelCap, null);
+  assert.equal(planned.machineHandoff.externalMatrixTransportPartitionMax, 256);
+  assert.equal(planned.machineHandoff.pressureAdvisoryTarget, 8);
 
   const outputFile = path.join(tempRoot, 'work-order.json');
   const order = runVibeContinuousRunner({ runtimeFile:'vibe2-runtime.json', queueFile, controlFile, experienceFile, outputFile });
   assert.equal(order.machineHandoff.used, true);
   assert.equal(order.machineHandoff.consistency.ok, true);
-  assert.equal(order.machineHandoff.currentPersistentMax, 8);
+  assert.equal(order.machineHandoff.internalGlobalParallelCap, null);
+  assert.equal(order.machineHandoff.externalMatrixTransportPartitionMax, 256);
+  assert.equal(order.machineHandoff.pressureAdvisoryTarget, 8);
 });
 
 test('machine-state E2E reserves only game-primary work, builds worker order, fans in pressure, and leaves auxiliary work separate', () => {
@@ -185,7 +223,7 @@ test('machine-state E2E reserves only game-primary work, builds worker order, fa
     const analysisOnly = index === 0;
     return { id:`e2e-${n}`, gameId, target:'web', department:analysisOnly?'qa':'development', type:analysisOnly?'qa':'implementation', goal:analysisOnly?'inspect existing web source':'existing web text maintenance', responsibleFiles:analysisOnly?[]:[`${sourceRoot}/index.html`], dependencies:[], priority:'normal', releaseState:'development-confirmed', status:'queued', retries:0, maxRetries:2, ownerDirective:false, requiresOwnerDecision:false, protectedChange:false, paidResourceRequired:false, sourceRoot, estimatedRisk:'low', speculativeEligible:false, evidence:[] };
   });
-  fs.writeFileSync(queueFile, JSON.stringify({ version:5, mode:'hierarchical-dag-sharded-work-stealing-queue', maxConcurrentTasks:256, tasks }, null, 2));
+  fs.writeFileSync(queueFile, JSON.stringify(directQueue(tasks), null, 2));
   fs.writeFileSync(controlFile, JSON.stringify({ version:4, currentMax:32, healthyStreak:0, pressureStreak:0, lastDecision:'INIT', lastReason:'CANONICAL_STEP_32', lastRunId:null, lastUpdatedAt:null, lastTelemetry:null }, null, 2));
   fs.writeFileSync(experienceFile, JSON.stringify({ version:3, records:[] }, null, 2));
   fs.writeFileSync(playbooksFile, JSON.stringify({
@@ -211,7 +249,9 @@ test('machine-state E2E reserves only game-primary work, builds worker order, fa
   assert.equal(order.executionRoute, 'text-source-worker');
   assert.equal(order.machineHandoff.used, true);
   assert.equal(order.machineHandoff.consistency.ok, true);
-  assert.equal(order.machineHandoff.currentPersistentMax, 32);
+  assert.equal(order.machineHandoff.internalGlobalParallelCap, null);
+  assert.equal(order.machineHandoff.externalMatrixTransportPartitionMax, 256);
+  assert.equal(order.machineHandoff.pressureAdvisoryTarget, 32);
   assert.notEqual(order.reason?.startsWith('MACHINE_STATE_INCONSISTENT'), true);
 
   const now = Date.now();
@@ -221,12 +261,13 @@ test('machine-state E2E reserves only game-primary work, builds worker order, fa
   }));
   fs.writeFileSync(resultFile, JSON.stringify({ version:1, results:rows }, null, 2));
   const fanIn = runQueueCommand({ command:'fan-in', queue:queueFile, control:controlFile, input:resultFile });
-  assert.equal(fanIn.adaptiveControl.currentMax, 30);
+  assert.equal(fanIn.adaptiveControl.currentMax, 16);
   assert.equal(fanIn.adaptiveControl.lastDecision, 'DOWN');
 
   const after = generateVibe2Handoff({ runtimeFile:'vibe2-runtime.json', queueFile, controlFile, experienceFile });
   assert.equal(after.consistency.ok, true);
-  assert.equal(after.parallelism.currentPersistentMax, 30);
+  assert.equal(after.parallelism.pressureAdvisoryTarget, 16);
+  assert.equal(after.parallelism.internalGlobalParallelCap, null);
   assert.equal(after.workState.queuedCount, 1);
   assert.equal(after.workState.blockedCount, 30);
   assert.ok(after.workState.queuedPreview.some(task=>task.id==='e2e-01'));
@@ -243,15 +284,15 @@ test('generated handoff treats blank queue as recoverable fallback instead of JS
   const runtime={
     version:22,
     documentation:{
-      machineStateVersions:{runtime:22,queue:5,parallelism:4,experience:3,handoff:2},
+      machineStateVersions:{runtime:22,queue:6,parallelism:4,experience:3,handoff:2},
       runtimeState:{queue:'queue.json',parallelism:'parallelism.json',experience:'experience.json',projectLifecycle:'lifecycle.json'},
       humanDocuments:[],humanDocumentLimit:0,manualHandoffDocumentsAllowed:false,legacyHumanDocumentsRemoved:[]
     },
     workManagement:{humanMaintainedHandoff:false,handoffMode:'generated-from-machine-state',machineContextRequired:true,handoffConsumers:['planner','reserve','worker','fan-in']},
     sources:{queue:'queue.json',parallelism:'parallelism.json',experience:'experience.json',projectLifecycleState:'lifecycle.json'},
-    adaptiveBackpressure:{stateFile:'parallelism.json',steps:[4,8,16,20,32,64,128,256]},
-    parallelismTelemetry:{backpressureSteps:[4,8,16,20,32,64,128,256]},
-    continuous:{maxConcurrentGameTasks:256,entryWorkflow:'.github/workflows/vibe2-24h-runner.yml',workerWorkflow:'.github/workflows/vibe2-continuous-core.yml'},
+    adaptiveBackpressure:{stateFile:'parallelism.json',mode:'TELEMETRY_AND_OPTIONAL_SPECULATION_SIGNAL_ONLY'},
+    parallelismTelemetry:{internalGlobalParallelCap:null,externalMatrixTransportPartitionMax:256},
+    continuous:{externalMatrixTransportPartitionMax:256,executionContract:{internalGlobalParallelCap:null,externalMatrixTransportPartitionMax:256,learningIdleFixedWorkers:1,assetDevelopmentLaneMax:64,assetDevelopmentSpeculativeVariantsPerTask:1,sharedStateWriteCoordination:'OPTIMISTIC_RETRY_ATOMIC_WRITE_ONLY'},entryWorkflow:'.github/workflows/vibe2-24h-runner.yml',workerWorkflow:'.github/workflows/vibe2-continuous-core.yml'},
     projectLifecycle:{requiredFields:[]}
   };
   fs.writeFileSync(runtimeFile,JSON.stringify(runtime),'utf8');
