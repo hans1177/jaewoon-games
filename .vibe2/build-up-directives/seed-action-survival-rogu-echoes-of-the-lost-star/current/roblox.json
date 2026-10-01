@@ -231,7 +231,25 @@
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false,
-    "studioQualityFailure": null
+    "studioQualityFailure": {
+      "sourceRevision": "d0821e5d7caa024b0ac4ecd900171635cace38ab",
+      "artifactIdentity": "sha256:d17f18714c4e602ff8315128ce71e27650d6db6e25a2110dd245bfabd501ca0b",
+      "authority": "roblox-official-studio-mcp-product-quality-failure",
+      "workflowRunId": 36866407466,
+      "testedAt": "2026-10-01T13:35:46.878Z",
+      "repairSurfaces": [
+        "WORLD_GEOMETRY"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "adaptive-world-safety",
+          "repairSurface": "WORLD_GEOMETRY",
+          "priority": "CRITICAL",
+          "hint": "Spawned character has no walkable floor; restore the world floor and spawn collision before further Studio QA.",
+          "observed": "{\"floorBelowPlayer\":false,\"floorSampleCount\":9,\"floorHitCount\":0,\"collidablePartCount\":4}"
+        }
+      ]
+    }
   },
   "qualityGapMap": [
     {
