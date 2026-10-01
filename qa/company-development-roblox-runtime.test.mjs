@@ -677,7 +677,7 @@ test('exact Roblox dispatch stays per-game while batch runs and runtime writers 
   assert.equal(execution.crossGameWorkflowSerializationForbidden,true);
   assert.equal(execution.exactGameDuplicateWorkflowSerializationAllowed,true);
   assert.equal(execution.internalSameWorkflowGameMatrixParallelismPreserved,true);
-  assert.match(workflow,/concurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n(?:\s+#.*\n)*\s+cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
+  assert.match(workflow,/concurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n(?:\s+#.*\n)*\s+cancel-in-progress: false/);
   assert.doesNotMatch(workflow,/max-parallel:/);
   for(const job of ['source-plan','source-bootstrap','technical-plan','technical-persist']){
     const header=`  ${job}:\n`;
@@ -887,7 +887,7 @@ test('line-defense existing visible Studio binding is accepted during F0 foundat
     assert.equal(project.tree.Lighting.$properties.Technology,'Voxel');
     assert.equal(project.tree.Lighting.$properties.LightingStyle,'Soft');
     assert.equal(project.tree.Lighting.$properties.PrioritizeLightingQuality,false);
-    assert.equal(project.tree.Lighting.CompatibilityToneMap.$properties.TonemapperPreset,'Retro');
+    assert.equal(project.tree.Lighting.CompatibilityToneMap,undefined);
     assert.ok(result.changedFiles.some(file=>file.endsWith('default.project.json')));
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
