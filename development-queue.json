@@ -18258,10 +18258,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T19:40:04.046Z",
+      "updatedAt": "2026-10-01T20:55:42.898Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -18666,7 +18666,7 @@
       "robloxInternalVibePlayEvidence": {
         "version": 2,
         "gameId": "seed-idle-growth-rpg-crystal-bloom",
-        "studioHarnessVersion": 16,
+        "studioHarnessVersion": 17,
         "authority": "roblox-official-studio-mcp-runtime",
         "pass": false,
         "actualPlay": true,
@@ -19109,7 +19109,7 @@
         "runtimeSummary": {
           "consoleErrorCount": 0,
           "consoleWarningCount": 0,
-          "distinctFrameChange": true,
+          "distinctFrameChange": false,
           "characterMotionRuntimeRequired": false,
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
@@ -19155,7 +19155,7 @@
               "multiplayerActualSessionPass": false
             },
             "performance": {
-              "memoryMb": 2678.54296875,
+              "memoryMb": 2676.73828125,
               "descendantCount": 85
             },
             "multiplayer": null,
@@ -19453,12 +19453,12 @@
         "functionalChainEvidence": {
           "inputDispatched": true,
           "runtimeVerified": false,
-          "screenChanged": true,
+          "screenChanged": false,
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-10-01T19:22:28.596Z",
-        "workflowRunId": 36908677455,
+        "testedAt": "2026-10-01T20:55:42.898Z",
+        "workflowRunId": 36919854592,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -19603,8 +19603,8 @@
           "CHARACTER_RESPAWN"
         ],
         "robloxFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
-        "testedAt": "2026-10-01T19:22:28.596Z",
-        "workflowRunId": 36908677455,
+        "testedAt": "2026-10-01T20:55:42.898Z",
+        "workflowRunId": 36919854592,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxNativeFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
@@ -24275,7 +24275,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-01T20:51:30.709Z",
+  "updatedAt": "2026-10-01T20:55:42.898Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
