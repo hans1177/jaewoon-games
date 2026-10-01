@@ -529,14 +529,14 @@
     }
   },
   "dataCapacityBudget": {
-    "version": 1,
+    "version": 2,
     "authority": "OWNER_DIRECTIVE_2026-10-02",
     "purpose": "KEEP_PERPETUAL_BUILD_UP_RUNNING_BY_SWITCHING_FROM_RAW_DATA_GROWTH_TO_REUSE_RECOMBINATION_OPTIMIZATION_WHEN_CAPACITY_PRESSURE_RISES",
     "limits": {
-      "savePersistedDataBytes": 2097152,
-      "webDownloadBytes": 104857600,
+      "savePersistedDataBytes": 3145728,
+      "webDownloadBytes": 125829120,
       "singleFileBytes": 26214400,
-      "mobileMemoryTargetBytes": 314572800,
+      "mobileMemoryTargetBytes": 367001600,
       "mobileMinimumFps": 30
     },
     "warningRatio": 0.8,
