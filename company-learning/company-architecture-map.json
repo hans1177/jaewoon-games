@@ -375,7 +375,7 @@
     "deterministicVerificationBeforePrimaryAiReview": true,
     "primaryAiReworkOrAccept": true,
     "independentTaskParallelism": true,
-    "maxExternalExecutionWave": 32,
+    "externalMatrixTransportPartitionMax": 256,
     "recruitmentPolicy": "EXPAND_DISJOINT_FREE_WORKERS_AROUND_HIGHEST_IMPACT_BOTTLENECK",
     "gameSourceWriteMode": "EXPLICIT_RESPONSIBLE_FILES_ISOLATED_CANDIDATE_BRANCH_ONLY",
     "gameplayFeatureCandidateAllowed": true,
@@ -805,7 +805,7 @@
         "mismatchFailure": "CENTRAL_POLICY_STALE",
         "productionReproductionRun": 35487156349,
         "authorityChange": "GATED_REQUEUE_REPRIORITIZE_REFILL_AND_VERIFIED_TUNING",
-        "executionAuthority": "EXISTING_DAG_SCHEDULER_ONLY",
+        "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
         "executionPolicyProjection": "WORKER_EXECUTION_POLICY_V1",
         "fullDocumentShaRecorded": true,
         "unrelatedRoadmapProgressInvalidatesActiveWorker": false,
@@ -846,7 +846,7 @@
         "canonicalQaRequired": true,
         "fullRegressionRequired": true,
         "writableScopeExpansionAllowed": false,
-        "executionAuthority": "EXISTING_DAG_SCHEDULER_ONLY",
+        "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
         "authorityChange": "NONE",
         "mergedCommit": "d28e404fbe785dad8c80cdce2636d7e74f26ebe4"
       },
@@ -872,7 +872,7 @@
         "openTelemetryInvariant": {
           "id": "GAME_PRIMARY_EFFECTIVE_MAX_DENOMINATOR_MISMATCH",
           "state": "RESOLVED_BY_OWNER_UNBOUNDED_DIRECTIVE_AND_PR_2020",
-          "expectedMeaning": "EFFECTIVE_MAX_MUST_REFLECT_THE_EXECUTION_CAP_THAT_CAN_ACTUALLY_CONSTRAIN_GAME_PRIMARY_WORKERS_FOR_THE_OBSERVED_WAVE",
+          "expectedMeaning": "EFFECTIVE_MAX_MUST_REFLECT_ONLY_REAL_EXTERNAL_TRANSPORT_CAPACITY_FOR_THE_OBSERVED_DIRECT_EXECUTION_WINDOW",
           "doNotInferLowLoadFromUnrelatedGlobalMax": true,
           "responsibleSystems": [
             "tools/vibe2-parallelism-telemetry.mjs",
@@ -897,7 +897,7 @@
           "authorityChange": "NONE"
         },
         "nextRuntimeGate": "VERIFY_FOCUSED_REPLACE_PLACEHOLDER_REPAIR_IN_PRODUCTION_THEN_CONTINUE_POST_1989_FAILURE_CLASSIFICATION",
-        "executionAuthority": "EXISTING_DAG_SCHEDULER_ONLY",
+        "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
         "authorityChange": "NONE",
         "sourcePr": 2013
       },
@@ -1009,7 +1009,7 @@
       "fanIn": "tools/vibe2-fan-in-review.mjs",
       "evidencePrefix": "neural-event-shadow:",
       "actionEvidencePrefix": "neural-event-shadow-action:",
-      "comparisonTarget": "CURRENT_DAG_SCHEDULER_OUTCOME",
+      "comparisonTarget": "CURRENT_DIRECT_QUEUE_RESERVATION_OUTCOME",
       "executionAuthority": "NONE",
       "workerCreationAuthority": "NONE",
       "queueMutationAuthority": "NONE",
@@ -1105,7 +1105,7 @@
       "version": 2,
       "authority": "company-learning/platform-release-roadmap.json#neuralGatedExecution",
       "state": "ENABLED",
-      "principle": "EVERY_ACTIONABLE_VIBE_DOMAIN_COMPILES_TO_AN_ATOMIC_NEURON_TRANSACTION_WHILE_EXISTING_SCHEDULER_QA_SECURITY_AND_RELEASE_GATES_REMAIN_AUTHORITATIVE",
+      "principle": "EVERY_ACTIONABLE_VIBE_DOMAIN_COMPILES_TO_AN_ATOMIC_NEURON_TRANSACTION_WHILE_DIRECT_QUEUE_RESERVATION_QA_SECURITY_AND_RELEASE_GATES_REMAIN_AUTHORITATIVE",
       "router": "tools/vibe2-neural-event-router.mjs",
       "workGraph": "tools/vibe2-neural-work-graph.mjs",
       "queueControl": "tools/vibe2-queue-control.mjs",
@@ -1220,7 +1220,7 @@
         "GATED_EVENT_ROUTER_WITH_SHADOW_FALLBACK",
         "NEURAL_WORK_GRAPH_PROJECTION",
         "HARD_INHIBITOR",
-        "CURRENT_WAVE_EXECUTION",
+        "CURRENT_DIRECT_QUEUE_RESERVATION_EXECUTION",
         "RUNTIME_DIFF_EVIDENCE",
         "RESPONSIBLE_SYSTEM_REPAIR"
       ],
@@ -1228,7 +1228,7 @@
       "firstRuntimeEvidenceCommit": "3e949b0ddf09463f4d7941c73682a08de766bb71",
       "observedPredictionContradiction": "VALIDATOR_PREDICTION_VS_SOURCE_GENERATION_BLOCKER",
       "authorityOnContradiction": "REQUEST_EVIDENCE_ONLY",
-      "executionAuthority": "EXISTING_DAG_SCHEDULER_ONLY",
+      "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
       "neuralExecutionAuthority": "GATED_EXISTING_QUEUE_AND_RUNTIME_RESULT_AUTHORITY_ONLY",
       "activeRepairPRs": [],
       "bottleneckRepresentation": "PRIMARY_PLUS_SECONDARY_EVIDENCE_RANKED",
@@ -1334,7 +1334,7 @@
           "interpretation": "LEGACY_V1_SAMPLE_ONLY_EVENT_ID_COLLISIONS_REMAIN_AUDITABLE; V2_NORMALIZED_EVENT_IDENTITY, WAVE_AUDIT, PER_TASK_EVIDENCE, AND AUTHORITY_BITS REMAIN CLEAN"
         },
         "authoritySafety": {
-          "executionAuthority": "EXISTING_DAG_SCHEDULER_ONLY",
+          "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
           "neuralExecutionAuthority": false,
           "neuralWorkerCreationAuthority": false,
           "neuralQueueMutationAuthority": false,
@@ -1533,7 +1533,7 @@
             "companySecurityImmuneSystem": "PASS"
           },
           "authority": {
-            "executionAuthority": "EXISTING_DAG_SCHEDULER_ONLY",
+            "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
             "neuralExecutionAuthority": false,
             "workerCreationAuthority": false,
             "queueMutationAuthority": false,
@@ -1719,7 +1719,7 @@
           "companySecurityImmuneSystem": "PASS"
         },
         "authority": {
-          "executionAuthority": "EXISTING_DAG_SCHEDULER_ONLY",
+          "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
           "neuralExecutionAuthority": false,
           "workerCreationAuthority": false,
           "queueMutationAuthority": false,
@@ -2056,7 +2056,7 @@
       "selector": "assets/vibe-continuous-queue.js::selectVibeQueueBatch",
       "reservation": "assets/vibe-continuous-queue.js::beginVibeQueueBatch",
       "matrixCompiler": "tools/vibe2-queue-control.mjs::reserveVibeTaskBatch",
-      "orderContract": "SCHEDULER_SCORE_ORDER_PRESERVED_END_TO_END",
+      "orderContract": "DIRECT_RESERVATION_SCORE_ORDER_PRESERVED_END_TO_END",
       "persistentQueueOrderMayOverrideSelection": false,
       "matrixMayResortSelectedTasks": false,
       "liveEvidence": {
@@ -2092,7 +2092,7 @@
       "failClosedWhenExternalAssistantUnavailable": true
     },
     "executionBoundary": {
-      "actualExecutionAuthority": "EXISTING_DAG_SCHEDULER_ONLY",
+      "actualExecutionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
       "neuralExecutionAuthority": "NONE",
       "workerCreation": false,
       "queueMutation": false,
@@ -2111,7 +2111,7 @@
       "sourcePr": 1859,
       "mergedCommit": "2b9f8a587e78d12d1484fe5db2ef38180b0989d6",
       "authorityChange": "NONE",
-      "actualExecutionAuthority": "EXISTING_DAG_SCHEDULER_ONLY",
+      "actualExecutionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
       "neuralExecutionAuthority": "NONE",
       "syncedMainHead": "2b9f8a587e78d12d1484fe5db2ef38180b0989d6"
     }
@@ -2594,7 +2594,7 @@
   "assetProductionParallelism": {
     "version": 8,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract",
-    "executionAuthority": "EXISTING_DAG_SCHEDULER_WITH_ATOMIC_COMPLETION_CALLBACK",
+    "executionAuthority": "DIRECT_QUEUE_RESERVATION_WITH_ATOMIC_COMPLETION_CALLBACK",
     "codeAndAssetWorkMayRunConcurrently": true,
     "isolatedResponsibilitiesRequired": true,
     "sameResponsibleFileParallelForbidden": true,
@@ -3143,7 +3143,7 @@
     ],
     "presentationOnlyDefault": true,
     "gameplayMutationWithoutApprovedDesign": false,
-    "executionAuthority": "EXISTING_DAG_SCHEDULER_ONLY",
+    "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
     "authorityExpansion": false
   },
   "securityRecoveryTopology": {
@@ -3232,7 +3232,7 @@
     ],
     "externalAiRawOutputAuthority": "NONE",
     "productionPassAuthority": "CANONICAL_QA_AND_REVIEW_ONLY",
-    "executionAuthority": "EXISTING_DAG_SCHEDULER_ONLY",
+    "executionAuthority": "DIRECT_QUEUE_RESERVATION_AND_REQUIRED_GATES",
     "authorityExpansion": false,
     "specializedGameDevelopmentMastery": {
       "source": "company-learning/platform-release-roadmap.json#learningClosedLoopContract.specializedGameDevelopmentMastery",
@@ -5287,7 +5287,7 @@
         "sameResponsibleFileConflictStillSerializes": true,
         "ownerExplicitP0Preserved": true,
         "gamePrimaryAdaptiveFloor": 30,
-        "externalProviderBoundary": 256,
+        "externalMatrixTransportPartitionMax": 256,
         "holisticWorkPackageExpansion": "EXPAND_EXISTING_TASK_SCOPE_TO_CONFIGURED_MINIMUM_WITHOUT_NEW_PIPELINE_OR_PROTECTED_RULE_CHANGE",
         "queuedGenericPolishDeferral": "KEEP_QUEUED_BUT_DEPRIORITIZE_AND_IGNORE_AS_PLANNER_CONFLICT_FOR_ELIGIBLE_HOLISTIC_CANDIDATE",
         "runningGenericPolishPreserved": true,
@@ -5508,7 +5508,7 @@
     "sourceWorkerMatrixParallel": true,
     "technicalWorkerMatrixParallel": true,
     "maxParallelInternalCap": null,
-    "externalProviderBoundary": 256,
+    "externalMatrixTransportPartitionMax": 256,
     "sameGameIndependentWorkParallel": true,
     "responsibleFileConflictOnlySerialization": true,
     "sharedStateWriteSerialization": "ATOMIC_OPTIMISTIC_RETRY_ONLY",
