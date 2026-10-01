@@ -60,8 +60,9 @@ export const VISUAL_DOMAINS=Object.freeze([
 
 export const EXPERIENCE_BUILD_UP_POLICY_PATH='company-learning/cross-platform-experience-build-up.json';
 function experienceBuildUpPolicy(repoRoot=process.cwd()){
-  const file=path.resolve(repoRoot,EXPERIENCE_BUILD_UP_POLICY_PATH);
-  const policy=readJson(file,null);
+  const requested=path.resolve(repoRoot,EXPERIENCE_BUILD_UP_POLICY_PATH);
+  const canonical=path.resolve(process.cwd(),EXPERIENCE_BUILD_UP_POLICY_PATH);
+  const policy=readJson(requested,null)||readJson(canonical,null);
   if(!policy||policy.status!=='ACTIVE_EXECUTABLE_CONTRACT'||!Array.isArray(policy.surfaces)||!policy.platformProfiles){
     throw new Error('EXPERIENCE_BUILD_UP_POLICY_INVALID');
   }
