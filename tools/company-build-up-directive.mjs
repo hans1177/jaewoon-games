@@ -336,9 +336,13 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
     ai:tokenCount(joined,/state.?machine|aggro|target|pathfind|navmesh|steer|behavior|enemy.?ai/gi),
     save:tokenCount(joined,/datastore|playerprefs|save|load|serialize|persist/gi),
     multiplayer:tokenCount(joined,/remoteevent|serverrpc|clientrpc|network|multiplayer|playeradded|netcode/gi),
-    animation:tokenCount(joined,/animator|animation|tween|heartbeat|renderstepped|lerp|slerp|coroutine|transform\.rotate/gi),
+    animation:tokenCount(joined,/animator|animation|animationtrack|loadanimation|blend.?tree|tween|heartbeat|renderstepped|lerp|slerp|coroutine|motor6d|bone\b|transform\.rotate/gi),
+    motionStates:tokenCount(joined,/\bidle\b|\bwalk\b|\bjog\b|\brun\b|start|stop|turn|jump|land|attack|hit.?reaction|death|anticipation|impact|recovery/gi),
+    gameFeel:tokenCount(joined,/hit.?stop|recoil|anticipation|impact|recovery|screen.?shake|camera.?kick|weapon.?trail|attack.?windup|attack.?follow.?through/gi),
     vfx:tokenCount(joined,/particle|trail|vfx|effect|flash|shake|afterimage/gi),
     camera:tokenCount(joined,/camera|fieldofview|fov|cinemachine/gi),
+    audio:tokenCount(joined,/soundservice|soundgroup|sound\b|audio\b|music|bgm|sfx|audioclip|audiosource|audiomixer|webaudio|audiocontext/gi),
+    audioDynamics:tokenCount(joined,/crossfade|fade.?in|fade.?out|duck|soundgroup|audiomixer|rolloff|spatial|ambient|region.?music|battle.?music|combat.?music|music.?state|bgm.?state/gi),
     ui:tokenCount(joined,/screenui|screengui|canvas|button|hud|label|uitoolkit|ongui/gi),
     uiFlow:tokenCount(joined,/menu|panel|modal|popup|tab|scroll|backbutton|closebutton|navigation|screen.?stack|page.?stack/gi),
     entryFlow:tokenCount(joined,/main.?menu|lobby|entry.?hub|start.?game|play.?button|session.?ready|first.?play/gi),
@@ -364,7 +368,7 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
   const topFiles=rows.map(row=>({
     file:row.file,
     score:
-      tokenCount(row.text,/attack|damage|combat|enemy|player|progress|quest|save|ui|camera|animation|particle|map|region|terrain|landmark|inventory|equip|item|menu|settings|interact|prompt|session|checkpoint|craft/gi)
+      tokenCount(row.text,/attack|damage|combat|enemy|player|progress|quest|save|ui|camera|animation|motion|particle|vfx|sound|audio|music|bgm|sfx|map|region|terrain|landmark|inventory|equip|item|menu|settings|interact|prompt|session|checkpoint|craft/gi)
   })).sort((a,b)=>b.score-a.score||a.file.localeCompare(b.file)).slice(0,12);
   const sourceAnchors=rows.flatMap(row=>row.sourceAnchors||[]).sort((a,b)=>Number(b.score||0)-Number(a.score||0)||a.file.localeCompare(b.file)||Number(a.line||0)-Number(b.line||0)).slice(0,48);
   return Object.freeze({
@@ -381,8 +385,12 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
       files.length===0?'CURRENT_SOURCE_MISSING_OR_UNREADABLE':'CURRENT_SOURCE_FILES='+files.length,
       signals.primitive>8?'PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH':null,
       signals.animation<2?'MOTION_IMPLEMENTATION_SPARSE':null,
+      signals.motionStates<5?'MOTION_STATE_COVERAGE_SPARSE':null,
+      signals.gameFeel<3?'GAME_FEEL_SPARSE':null,
       signals.vfx<2?'VFX_IMPLEMENTATION_SPARSE':null,
       signals.camera<1?'CAMERA_LANGUAGE_SPARSE':null,
+      signals.audio<2?'AUDIO_IMPLEMENTATION_SPARSE':null,
+      signals.audio>0&&signals.audioDynamics<2?'AUDIO_STATE_TRANSITION_SPARSE':null,
       signals.progression<4?'PROGRESSION_IMPLEMENTATION_SPARSE':null,
       signals.ai<2?'AI_BEHAVIOR_DEPTH_SPARSE':null,
       signals.map<3?'WORLD_MAP_IMPLEMENTATION_SPARSE':null,
@@ -447,8 +455,8 @@ function focusFromSignals({signals=[],source={}}={}){
   if(/crash|runtime|error|softlock|save|desync|broken|exception/.test(text))return'STABILITY';
   if(/combat|core.?fun|interaction|enemy|boss|gameplay|feel|decision/.test(text))return'CORE_FUN';
   if(/progress|reward|unlock|quest|goal|economy|content/.test(text))return'PROGRESSION';
-  if(/mobile|touch|input|ui|hud|readability|navigation|accessib/.test(text))return'USABILITY';
-  if(/visual|graphic|render|animation|vfx|camera|lighting|material|silhouette|environment|placeholder/.test(text))return'PRESENTATION';
+  if(/mobile|touch|input|ui|hud|inventory|equipment|equip|menu|readability|navigation|accessib/.test(text))return'USABILITY';
+  if(/visual|graphic|render|animation|motion|vfx|camera|lighting|material|silhouette|environment|placeholder|audio|music|bgm|sfx|sound|game.?feel/.test(text))return'PRESENTATION';
   const s=source?.signals||{};
   if(Number(s.ai||0)<2||Number(s.combat||0)<5)return'CORE_FUN';
   if(Number(s.progression||0)<4)return'PROGRESSION';
@@ -503,10 +511,15 @@ function domainState(domain,{design={},source={}}={}){
   if(domain==='MID_LATE_GAME_DEPTH'&&!hasProgression)return no('approved design has no multi-stage progression direction');
 
   const weakByDomain={
-    ANIMATION:Number(s.animation||0)<2,
-    SECONDARY_MOTION:Number(s.animation||0)<2,
+    ANIMATION:Number(s.animation||0)<2||Number(s.motionStates||0)<5,
+    SECONDARY_MOTION:Number(s.animation||0)<2||Number(s.motionStates||0)<4,
+    GAME_FEEL:Number(s.gameFeel||0)<3,
     VFX:Number(s.vfx||0)<2,
     CAMERA:Number(s.camera||0)<1,
+    AUDIO_MUSIC_SFX:Number(s.audio||0)<2||(Number(s.audio||0)>0&&Number(s.audioDynamics||0)<2),
+    AUDIO_VISUAL_TIMING:Number(s.audio||0)<1||Number(s.vfx||0)<1||Number(s.feedback||0)<2,
+    UI_HUD:Number(s.ui||0)<4,
+    LIGHTING:Number(s.lighting||0)<2,
     PROGRESSION:Number(s.progression||0)<4,
     ENEMY_AI:Number(s.ai||0)<2,
     ERROR_RECOVERY:Number(s.errorRecovery||0)<2,
@@ -589,8 +602,8 @@ function buildAllDomainDirectives({states=[],design={},focus='CORE_FUN',depthInf
   const focusDomains={
     CORE_FUN:new Set(['CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_ACTIONS','PLAYER_AGENCY','ANTI_GRIND','ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS','CONTENT_VARIETY','CONTENT_DENSITY','SESSION_FLOW','FIRST_10_MINUTES']),
     PROGRESSION:new Set(['PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','ECONOMY','INVENTORY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','CRAFTING','SYSTEM_CONNECTION','MID_LATE_GAME_DEPTH','CONTENT_DISCOVERY','MAP_EXPANSION','REGIONS']),
-    PRESENTATION:new Set(['CHARACTER_VISUALS','ENEMY_VISUALS','WEAPONS_AND_EQUIPMENT','BUILDINGS_AND_PROPS','ENVIRONMENT','TERRAIN','MATERIALS','PALETTE','LIGHTING','ANIMATION','SECONDARY_MOTION','VFX','CAMERA','UI_HUD','UI_DESIGN_SYSTEM','AUDIO_VISUAL_TIMING','ENVIRONMENTAL_MOTION','LANDMARKS','WORLD_DENSITY']),
-    USABILITY:new Set(['INPUT','MOBILE_UX','ACCESSIBILITY','SETTINGS_ACCESSIBILITY','MENU_FLOW','CONVENIENCE','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','INTERACTION_DISCOVERABILITY','WORLD_NAVIGATION','TUTORIAL_ONBOARDING','TRAVERSAL','UI_HUD','GOALS','GAME_FEEL']),
+    PRESENTATION:new Set(['CHARACTER_VISUALS','ENEMY_VISUALS','WEAPONS_AND_EQUIPMENT','BUILDINGS_AND_PROPS','ENVIRONMENT','TERRAIN','MATERIALS','PALETTE','LIGHTING','ANIMATION','SECONDARY_MOTION','GAME_FEEL','VFX','CAMERA','UI_HUD','MENU_FLOW','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','AUDIO_MUSIC_SFX','AUDIO_VISUAL_TIMING','ENVIRONMENTAL_MOTION','LANDMARKS','WORLD_DENSITY']),
+    USABILITY:new Set(['INPUT','MOBILE_UX','ACCESSIBILITY','SETTINGS_ACCESSIBILITY','MENU_FLOW','CONVENIENCE','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','INTERACTION_DISCOVERABILITY','WORLD_NAVIGATION','TUTORIAL_ONBOARDING','TRAVERSAL','UI_HUD','GOALS','GAME_FEEL','AUDIO_MUSIC_SFX']),
     STABILITY:new Set(['SAVE_AND_RECOVERY','SAVE_COMPLETENESS','RECONNECT_RECOVERY','MULTIPLAYER_AND_SYNC','FAILURE_RESPAWN_CHECKPOINTS','PERFORMANCE','PERFORMANCE_BUDGET','RUNTIME_STABILITY','ERROR_RECOVERY'])
   };
   const instructions={
