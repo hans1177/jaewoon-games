@@ -35,6 +35,7 @@ CLIPS = {
     'hero_turn_90_hq': 0.78,
     'hero_walk_back_hq': 1.12,
     'hero_crouch_idle_hq': 3.20,
+    'hero_crouch_walk_hq': 1.18,
 }
 REQUIRED_BONES = {
     'Hips','Spine','Chest','Head',
@@ -421,6 +422,29 @@ def crouch_idle_pose(t):
     apply_secondary(t,drive=0.46,turn=weight*0.50)
 
 
+def crouch_walk_pose(t):
+    body=phase_curve(t,[(0,-1),(0.18,-0.18),(0.34,0.52),(0.5,-0.86),(0.68,-0.08),(0.84,0.58),(1,-1)])
+    yaw=phase_curve(t,[(0,-1),(0.24,0.06),(0.5,1),(0.76,-0.04),(1,-1)])
+    loc('Hips',0,0,-0.185+0.020*body)
+    rot('Hips',0.14,yaw*0.060,yaw*0.028)
+    rot('Spine',0.10,-yaw*0.038,-yaw*0.022)
+    rot('Chest',0.055,-yaw*0.030,yaw*0.026)
+    rot('Head',-0.105,yaw*0.018,-yaw*0.014)
+    for side,sign in [('L',-1),('R',1)]:
+        p=(t+(0.5 if side=='R' else 0))%1
+        thigh=phase_curve(p,[(0,0.76),(0.18,0.48),(0.38,-0.34),(0.54,-0.66),(0.72,-0.28),(0.88,0.50),(1,0.76)])
+        knee=phase_curve(p,[(0,0.12),(0.2,0.04),(0.42,0.16),(0.58,0.58),(0.74,0.76),(0.88,0.32),(1,0.12)])
+        foot=phase_curve(p,[(0,-0.10),(0.2,-0.02),(0.42,0.10),(0.6,-0.16),(0.78,-0.24),(0.9,-0.12),(1,-0.10)])
+        arm=phase_curve(p,[(0,-0.72),(0.24,-0.24),(0.5,0.70),(0.76,0.22),(1,-0.72)])
+        rot('Thigh'+side,0.42+thigh*0.25,0,-sign*yaw*0.018)
+        rot('Shin'+side,0.62+knee*0.26)
+        rot('Foot'+side,-0.24+foot*0.28,0,sign*0.010)
+        rot('UpperArm'+side,arm*0.20,sign*0.025,-sign*0.030)
+        rot('Forearm'+side,-0.16-max(0,-arm)*0.08,sign*0.010,0)
+    detail_face_and_hands(t,moving=0.58,alert=0.46)
+    apply_secondary(t,drive=0.82,turn=yaw*0.22)
+
+
 def animate(name, normalized_time):
     reset_pose()
     t = clamp01(normalized_time)
@@ -434,6 +458,8 @@ def animate(name, normalized_time):
         backward_gait_pose(t)
     elif name == 'hero_crouch_idle_hq':
         crouch_idle_pose(t)
+    elif name == 'hero_crouch_walk_hq':
+        crouch_walk_pose(t)
     elif name == 'hero_start_hq':
         start_pose(t)
         # 시작 끝은 걷기 첫 접지 포즈와 직접 이어져야 한다.
