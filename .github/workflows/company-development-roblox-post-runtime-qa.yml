@@ -1863,7 +1863,7 @@ jobs:
     if: ${{ inputs.retry_open_cloud_only != true && (inputs.run_studio == true || github.event_name == 'push') }}
     name: plan exact local Studio MCP playtests for earliest eligible artifacts
     concurrency:
-      group: roblox-studio-mcp-plan-${{ inputs.game_id || github.sha }}
+      group: roblox-studio-mcp-plan-${{ inputs.game_id || 'scan' }}
       cancel-in-progress: true
     runs-on: ubuntu-slim
     timeout-minutes: 5
