@@ -149,13 +149,24 @@ export function validateVibe2MachineState({ runtime = {}, queue = {}, parallelis
   }
   add(clean(adaptive.stateFile) !== clean(state.parallelism), 'ADAPTIVE_STATE_FILE_DIVERGED');
 
-  const steps = Array.isArray(adaptive.steps) ? adaptive.steps.map(Number) : [];
-  const telemetrySteps = Array.isArray(runtime.parallelismTelemetry?.backpressureSteps) ? runtime.parallelismTelemetry.backpressureSteps.map(Number) : [];
-  add(!sameJson(steps, telemetrySteps), 'ADAPTIVE_STEPS_DIVERGED');
-  const configuredMax = Number(continuous.maxConcurrentGameTasks || 0);
-  add(Number(queue.maxConcurrentTasks || configuredMax) !== configuredMax, 'QUEUE_MAX_DIVERGED');
-  add(!steps.includes(Number(parallelism.currentMax || configuredMax)), 'PERSISTENT_MAX_OUTSIDE_STEPS');
-  add(Number(parallelism.currentMax || configuredMax) > configuredMax, 'PERSISTENT_MAX_ABOVE_CONFIGURED');
+  const runtimeExecution=continuous.executionContract||{};
+  const queueExecution=queue.execution||{};
+  const runtimeTransport=Number(continuous.externalMatrixTransportPartitionMax||runtimeExecution.externalMatrixTransportPartitionMax||0);
+  add(Number(queue.version||0)<6,'QUEUE_SCHEMA_BEFORE_DIRECT_EXECUTION_V6');
+  add(queue.maxConcurrentTasks!==null,'QUEUE_LEGACY_GENERAL_CAP_PRESENT');
+  add(runtimeExecution.internalGlobalParallelCap!==null,'RUNTIME_INTERNAL_GLOBAL_CAP_PRESENT');
+  add(queueExecution.internalGlobalParallelCap!==null,'QUEUE_INTERNAL_GLOBAL_CAP_PRESENT');
+  add(runtimeTransport!==256,'RUNTIME_TRANSPORT_PARTITION_DIVERGED');
+  add(Number(queueExecution.externalMatrixTransportPartitionMax||0)!==runtimeTransport,'QUEUE_TRANSPORT_PARTITION_DIVERGED');
+  add(Number(runtimeExecution.learningIdleFixedWorkers||0)!==1,'RUNTIME_LEARNING_LANE_NOT_FIXED_ONE');
+  add(Number(queueExecution.learningIdleFixedWorkers||0)!==1,'QUEUE_LEARNING_LANE_NOT_FIXED_ONE');
+  add(Number(runtimeExecution.assetDevelopmentLaneMax||0)!==64,'RUNTIME_ASSET_LANE_NOT_64');
+  add(Number(queueExecution.assetDevelopmentLaneMax||0)!==64,'QUEUE_ASSET_LANE_NOT_64');
+  add(Number(runtimeExecution.assetDevelopmentSpeculativeVariantsPerTask||0)!==1,'RUNTIME_ASSET_SPECULATION_NOT_ONE');
+  add(Number(queueExecution.assetDevelopmentSpeculativeVariantsPerTask||0)!==1,'QUEUE_ASSET_SPECULATION_NOT_ONE');
+  add(clean(runtimeExecution.sharedStateWriteCoordination)!=='OPTIMISTIC_RETRY_ATOMIC_WRITE_ONLY','RUNTIME_SHARED_STATE_WRITE_MODE');
+  add(clean(queueExecution.atomicSharedStateWriteMode)!=='OPTIMISTIC_RETRY','QUEUE_SHARED_STATE_WRITE_MODE');
+  add(clean(adaptive.mode)!=='TELEMETRY_AND_OPTIONAL_SPECULATION_SIGNAL_ONLY','PRESSURE_CONTROL_ROLE_DIVERGED');
 
   if (repoRoot && fs.existsSync(repoRoot)) {
     for (const file of humanDocs) add(!fs.existsSync(path.join(repoRoot, file)), `HUMAN_DOCUMENT_MISSING:${file}`);
@@ -249,9 +260,13 @@ export function buildVibe2Handoff({
       reusableContexts: reusable.slice(-40).map(reusableContext)
     },
     parallelism: {
-      configuredMax: Number(runtime.continuous?.maxConcurrentGameTasks || runtime.continuous?.externalMatrixBatchMax || 256),
-      currentPersistentMax: Number(parallelism.currentMax || runtime.continuous?.maxConcurrentGameTasks || runtime.continuous?.externalMatrixBatchMax || 256),
-      steps: Array.isArray(adaptive.steps) ? adaptive.steps : [256, 128, 64, 32, 16, 8, 4],
+      internalGlobalParallelCap: null,
+      externalMatrixTransportPartitionMax: Number(runtime.continuous?.externalMatrixTransportPartitionMax || runtime.continuous?.executionContract?.externalMatrixTransportPartitionMax || 256),
+      learningIdleFixedWorkers: Number(runtime.continuous?.executionContract?.learningIdleFixedWorkers || 1),
+      assetDevelopmentLaneMax: Number(runtime.continuous?.executionContract?.assetDevelopmentLaneMax || 64),
+      assetDevelopmentSpeculativeVariantsPerTask: Number(runtime.continuous?.executionContract?.assetDevelopmentSpeculativeVariantsPerTask || 1),
+      pressureAdvisoryTarget: Number(parallelism.currentMax || 0) || null,
+      pressureAdvisoryRole: 'OPTIONAL_SPECULATION_ONLY',
       healthyStreak: Number(parallelism.healthyStreak || 0),
       pressureStreak: Number(parallelism.pressureStreak || 0),
       lastDecision: clean(parallelism.lastDecision) || null,
