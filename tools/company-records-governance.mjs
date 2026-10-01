@@ -176,7 +176,7 @@ function deletePathValue(root,dotted=''){
 }
 export function extractChangeRecordReferences(text=''){
   const refs=new Set(),source=String(text||'');
-  for(const match of source.matchAll(/changeRecord(?:\?\.)?\.([A-Za-z0-9_]+)/g))refs.add(match[1]);
+  for(const match of source.matchAll(/changeRecord(?:\?\.|\.)([A-Za-z0-9_]+)/g))refs.add(match[1]);
   for(const match of source.matchAll(/changeRecord\[['"]([^'"]+)['"]\]/g))refs.add(match[1]);
   return [...refs].sort();
 }
