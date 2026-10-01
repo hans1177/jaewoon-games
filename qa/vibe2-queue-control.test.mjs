@@ -1615,7 +1615,7 @@ test('continuous core fan-in replays immutable results on latest runtime head in
 test('continuous core rebases refill wakes to latest main and always ingests neuron completion callbacks',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   const start=workflow.indexOf('- name: Drop stale reserve wake before reserve work');
-  const end=workflow.indexOf('- name: Download atomic neuron completion result',start);
+  const end=workflow.indexOf('\n      - name:',start+1);
   assert.ok(start>=0&&end>start);
   const block=workflow.slice(start,end);
   assert.match(block,/VIBE2_DISPATCH_ACTION: \$\{\{ github\.event\.action \|\| '' \}\}/);
