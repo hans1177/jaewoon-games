@@ -972,20 +972,9 @@
       "minifiedLongLineAnchorFallback": true,
       "focusedAnchorContextRadiusChars": 1400,
       "baselineSuccessRatePercent": 25,
-      "latestDiagnosticRun": 35476177742,
       "latestDiagnosticSuccessRatePercent": 80,
-      "latestDiagnosticFailureClasses": {
-        "MALFORMED_OUTPUT": 4
-      },
       "diagnosticRunIsClean20Wave": true,
-      "currentEvaluationRun": 35476818311,
       "clean20WaveRequiredForEffectivenessDecision": false,
-      "sourceCommit": "f9fab12ef9f26a7c2dad425bf4f611d493954fa3",
-      "testCommits": [
-        "7aec400eb5e46e01978c683585e35f8f383c145e",
-        "a8260bdb4c716934ca491c7c08dea478b75637de"
-      ],
-      "workflowTelemetryCommit": "d897e86d13cf228bb1bdcfff9592c36cc6e60497",
       "causalFastPathTriggers": [
         "EDIT_MATCH",
         "TIMEOUT",
@@ -995,8 +984,6 @@
       "causalFastPathMode": "WORKER_PINNED_REPLACE_ONLY",
       "firstAttemptPinnedAnchorDisabledReason": "GOAL_RELEVANCE_NOT_PROVEN_FOR_GENERIC_ANCHOR_SELECTION",
       "qualityProtection": "DO_NOT_FORCE_UNRELATED_ANCHOR_BEFORE_CAUSAL_FAILURE",
-      "editMatchFastEscalationSourceCommit": "03d8c27e8bbf3ec9759f9d8bd4758b22d7a78c03",
-      "editMatchFastEscalationTestCommit": "a8b318df4433036bb0607b79d1802de992338e16",
       "firstAttemptSafetyCommit": "8903d637486725e6501e1d0231e49fa2ddd87447",
       "contractRegressionCommit": "b6ef7e4fbcfd010d7f373ef66e81a437dbf4943a",
       "schedulerRegressionCommit": "52b4329d444b42a267954233168d562d636e10c4",
@@ -1026,24 +1013,6 @@
       "malformedFastEscalationScope": "FOCUSED_WEB_REPAIR_ONLY",
       "malformedFastEscalationSourceCommit": "4921eae839561c45bea38de7b6fcd46a7d75e23a",
       "malformedFastEscalationTestCommit": "35a23af193bfdeb14c05d567132cf40891ec87e8",
-      "malformedFastEscalationCiRuns": {
-        "vibe2CoreQa": {
-          "runId": 35478191978,
-          "conclusion": "success"
-        },
-        "vibeQa": {
-          "runId": 35478191970,
-          "conclusion": "success"
-        },
-        "integratedRegression": {
-          "runId": 35478191977,
-          "conclusion": "success"
-        },
-        "companyEvolutionQa": {
-          "runId": 35478191975,
-          "conclusion": "success"
-        }
-      },
       "robloxZeroOutputTimeoutFocusedRecoveryStickyWithinAttemptBudget": true,
       "robloxZeroOutputTimeoutFocusedRecoveryRule": "AFTER_FIRST_ZERO_OUTPUT_TIMEOUT_KEEP_REMAINING_EXISTING_ATTEMPTS_ON_PINNED_FOCUSED_REPLACE_BUDGET_INSTEAD_OF_RETURNING_TO_240S_FULL_PACKAGE_GENERATION",
       "robloxZeroOutputTimeoutFocusedRecoveryBudget": {
@@ -1059,7 +1028,27 @@
       "exactResponsibleLineLocatorNormalization": true,
       "lineLocatorNormalizationRule": "STRIP_TRAILING_LINE_OR_LINE_COLUMN_SUFFIX_ONLY_WHEN_STRIPPED_PATH_EXACTLY_MATCHES_EXISTING_RESPONSIBLE_FILE",
       "lineLocatorNormalizationWritableScopeExpansion": false,
-      "lineLocatorNormalizationInvalidUnknownPathStillRejected": true
+      "lineLocatorNormalizationInvalidUnknownPathStillRejected": true,
+      "focusedTimeoutPolicyResync": {
+        "state": "CI_VERIFIED_LIVE_PENDING_STALE_SCHEDULER_EPOCH_RELEASE",
+        "authorityChange": "NONE",
+        "executionScopeChange": "NONE",
+        "qaBypassAllowed": false,
+        "workerCountIncrease": false,
+        "retryBudgetIncrease": false,
+        "corrections": [
+          "ZERO_OUTPUT_TIMEOUT_ESCALATES_TO_EXISTING_WORKER_PINNED_FOCUSED_REPLACE_RECOVERY",
+          "FOCUSED_REPLACE_USES_CANONICAL_90000MS_384_TOKEN_8192_CONTEXT_BUDGET",
+          "POST_WORK_SHARED_CONTEXT_REVALIDATION_RUNS_BEFORE_FAILED_SOURCE_WORKER_EXIT",
+          "FAILED_SOURCE_GENERATION_EVIDENCE_MUST_NOT_REPORT_SHARED_CONTEXT_MISSING_WHEN_VALIDATION_RAN"
+        ],
+        "sourceFiles": [
+          "tools/vibe2-source-worker.mjs",
+          ".github/workflows/vibe2-continuous-core.yml",
+          "qa/vibe2-source-worker.test.mjs"
+        ],
+        "nextGate": "CI_PASS_THEN_VERIFY_NEXT_PRODUCTION_WAVE_REDUCES_ZERO_OUTPUT_TIMEOUT_TAIL_AND_SHARED_CONTEXT_MISSING_FALSE_EVIDENCE"
+      }
     },
     "codingEfficiencyMustNotDependOnShorterWorkerTimeBudget": true,
     "strategyQualityMayNotTradeAwayQaOrEvidence": true,
@@ -2036,7 +2025,38 @@
       "externalPublicReleaseGate": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
       "canonicalRepublishRule": "EVERY_WEB_ROBLOX_UNITY_VERIFIED_F0_TO_F9_CYCLE_DISPATCHES_EXACT_F9_PUBLICATION_AND_IMMEDIATELY_STARTS_NEXT_CYCLE",
       "publicationOutcomeBlocksNextCycle": false,
-      "internalOrExternalExposureStateBlocksNextCycle": false
+      "internalOrExternalExposureStateBlocksNextCycle": false,
+      "historicalDeploymentRecovery": {
+        "enabled": true,
+        "registry": "company-learning/roblox-sustained-maintenance.json",
+        "protectedSlotSharedWithCurrentPostReleaseFocus": true,
+        "maxActiveHistoricalMaintenanceTasks": null,
+        "eligibility": [
+          "actual-studio-runtime-pass",
+          "post-runtime-independent-qa-pass",
+          "regression-pass",
+          "historical-publication-target-observed",
+          "source-root-present"
+        ],
+        "currentReleaseClaimRequired": false,
+        "currentReleaseClaimMustNotBeInvented": true,
+        "maintenanceTaskReleaseState": "development-confirmed",
+        "taskFlag": "historicalDeploymentRecovery",
+        "automaticRepublish": false,
+        "republishRoute": "EXISTING_ROBLOX_RELEASE_PROMOTION_PIPELINE",
+        "currentSourceChangeRequires": [
+          "TARGET_PLATFORM_RUNTIME",
+          "TARGET_PLATFORM_INDEPENDENT_QA",
+          "TARGET_PLATFORM_REGRESSION",
+          "RELEASE_PROMOTION"
+        ],
+        "publicationTargetEvidenceMayBeHistorical": true,
+        "publicationTargetDoesNotProveCurrentRelease": true,
+        "assetStates": {
+          "HISTORICAL_PUBLICATION_TARGET_VERIFIED": "MAINTENANCE_ELIGIBLE",
+          "HISTORICAL_RUNTIME_VALIDATED_PUBLICATION_TARGET_UNCONFIRMED": "PRESERVE_ONLY"
+        }
+      }
     },
     "executionBindings": {
       "webValidationProducer": ".github/workflows/company-development-confirmed-runtime.yml",
@@ -3863,27 +3883,6 @@
         "mismatchAction": "INHIBIT_WORKER_REPLAN_OR_REQUEUE_EXACT_STAGE",
         "workerPreflightBinding": "tools/vibe2-queue-control.mjs::verifyVibeWorkerSynchronization",
         "workflowBinding": ".github/workflows/vibe2-continuous-core.yml"
-      },
-      "changeRecord": {
-        "id": "ROADMAP_ALL_WORKERS_SYNC_2026-09-19",
-        "documentedAt": "2026-09-19",
-        "rule": "DOCUMENT_EQUALS_CODE",
-        "summary": "All canonical worker launcher workflows must validate the same roadmap-first shared context before executing worker work.",
-        "codeBindings": [
-          "tools/company-shared-context.mjs",
-          "qa/company-shared-context.test.mjs",
-          ".github/workflows/vibe2-continuous-core.yml",
-          ".github/workflows/vibe2-24h-runner.yml",
-          ".github/workflows/company-system-ai-workers.yml",
-          ".github/workflows/company-security-immune.yml",
-          ".github/workflows/artbook-free-department-bots.yml",
-          ".github/workflows/company-development-confirmed-runtime.yml",
-          ".github/workflows/company-development-unity-runtime.yml",
-          ".github/workflows/company-development-roblox-runtime.yml",
-          ".github/workflows/company-seed-design-runtime.yml",
-          ".github/workflows/director-supervisor.yml",
-          ".github/workflows/homepage-manager.yml"
-        ]
       },
       "liveMainFreshness": {
         "required": true,
@@ -6476,7 +6475,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-10-01T04:18:00.000Z",
+  "updatedAt": "2026-10-01T04:25:00.000Z",
   "priorityTiers": [
     {
       "tier": 1,
@@ -9064,72 +9063,6 @@
       "ARCHITECTURE_DRIFT_DETECTOR",
       "CANONICAL_CODING_CONSTITUTION_PROMOTION"
     ],
-    "qaEvidence": {
-      "latestVerifiedHead": "e1b9c4061ff472fc3dcac032ca1fb6d35b9877fa",
-      "vibeQa": {
-        "runId": 35438149030,
-        "conclusion": "success"
-      },
-      "integratedRegression": {
-        "runId": 35438149014,
-        "conclusion": "success"
-      },
-      "coreQa": {
-        "runId": 35438149010,
-        "conclusion": "success"
-      },
-      "staleContractRepairs": [
-        "planner backlog fixtures use catalog-authorized game identity",
-        "machine handoff auxiliary-lane assertion uses existing queuedPreview schema",
-        "adaptive queue fixture explicitly declares development implementation lane"
-      ]
-    },
-    "verification": {
-      "verifiedMainHead": "094c59ed998a5e0b9e6004913d3849eff11b1880",
-      "vibe2CoreQa": {
-        "runId": 35438303132,
-        "conclusion": "success"
-      },
-      "vibeQa": {
-        "runId": 35438742454,
-        "conclusion": "success"
-      },
-      "integratedRegression": {
-        "runId": 35438742434,
-        "conclusion": "success"
-      },
-      "centralPolicyContract": {
-        "runId": 35438303123,
-        "conclusion": "success"
-      },
-      "live24hRunner": {
-        "runId": 35438303278,
-        "conclusion": "success"
-      },
-      "livePlannerEvidence": {
-        "effectiveExecutionWaveMax": 20,
-        "planningBacklogTarget": 60,
-        "planningBacklogCurrentBefore": 18,
-        "planningBacklogAfter": 18,
-        "activeWorkerReservations": 16,
-        "waveReady": "NO",
-        "releaseWaitExcluded": 0,
-        "interpretation": "PLANNER_EXECUTES_DURING_ACTIVE_WAVE_BUT_DOES_NOT_INVENT_CONFLICTING_OR_NONINDEPENDENT_WORK"
-      },
-      "liveControlQueue": {
-        "persistentMaxConcurrentTasks": 256,
-        "activeTasks": 18,
-        "activeGamePrimary": 18,
-        "runningGamePrimary": 16,
-        "queuedGamePrimary": 2,
-        "nonGamePrimaryActive": 0
-      },
-      "latestVerifiedHead": "b57f4afaadd36ff1cc3b7954e269ea28087282d7",
-      "coreQa": {
-        "runId": 35438742444,
-        "conclusion": "success"
-      }
-    },
     "phase2": {
       "id": "FAILURE_LOCAL_MEMORY_AND_PATCH_RECIPE",
       "state": "VERIFIED",
@@ -13577,37 +13510,6 @@
         "path": "design/bug-defense/2026-09-19/design-revised.json",
         "strictDesignScore": 94.6
       },
-      "rejectedCandidate": {
-        "branch": "vibe2/candidate/bug-defense-web-runtime-repair-v1-primary-35476177742-1",
-        "candidateSha": "b90fe9c4045635244c320698b90ba869af72b947",
-        "candidateSourceBlob": "9716ae95462eb60c1706bfce059a70f0d08531f0",
-        "mainSourceBlob": "9716ae95462eb60c1706bfce059a70f0d08531f0",
-        "decision": "REVISE",
-        "reason": "CANDIDATE_SOURCE_UNCHANGED_AND_STILL_VALIDATION_HARNESS",
-        "verifiedFindings": [
-          "RESPONSIBLE_SOURCE_BLOB_IDENTICAL_TO_MAIN",
-          "SCOPE_CONTROL_AND_SESSION_PHASE_TEST_HARNESS_REMAINS",
-          "NO_POINTER_OR_TOUCH_PLACEMENT",
-          "NO_REAL_SPATIAL_ENEMY_LOOP",
-          "NO_REACHABLE_WIN_OR_LOSS",
-          "DUPLICATE_SCOPE_HANDLERS"
-        ]
-      },
-      "negativeLearning": {
-        "experienceId": "supervised_bug-defense_35476177742_revise",
-        "runtimeBranchCommit": "1d4bc3b5d1eed59af5c889a7529235255815dd1a",
-        "state": "VERIFIED_NEGATIVE_EXPERIENCE_RECORDED"
-      },
-      "requeue": {
-        "runtimeBranchCommit": "a5d59bef297d7c6cbd09cba00e223fd3a5ac4cdd",
-        "taskId": "bug-defense-web-runtime-repair-v1",
-        "productionMode": "SUPERVISED_VIBE_COAUTHORING",
-        "priority": "critical",
-        "ownerDirective": false,
-        "automaticPromotionAllowed": false,
-        "supervisionApproved": false,
-        "state": "QUEUED"
-      },
       "nextCandidateRequirements": [
         "REAL_WAVE_PREVIEW",
         "REAL_POINTER_TOUCH_SPATIAL_PLACEMENT",
@@ -14041,49 +13943,6 @@
       "shadowFallbackPreserved": true,
       "gatedExecutionPolicyRef": "neuralGatedExecution",
       "runtimeResultIngress": "company-runtime:development-queue.json#executionEvidence->RUNTIME_RESULT"
-    },
-    "changeRecord": {
-      "id": "NEURAL_DEVELOPMENT_BRAIN_TARGET_ARCHITECTURE_V1_2026-09-20",
-      "documentedAt": "2026-09-20",
-      "summary": "Vibe evolves from wave-primary execution toward an event-driven neural work graph. Waves remain the safe execution engine during migration and end as an optional synchronization pattern only.",
-      "architectureMap": "company-learning/company-architecture-map.json",
-      "phase1ImplementationCommitState": "MERGED_MAIN_SHADOW_ACTIVE",
-      "phase1Bindings": [
-        "tools/vibe2-neural-diagnosis.mjs",
-        "tools/vibe2-auto-planner.mjs",
-        "tools/vibe2-continuous-runner.mjs",
-        "qa/vibe2-neural-diagnosis.test.mjs",
-        ".github/workflows/vibe2-core-qa.yml",
-        ".github/workflows/vibe2-continuous-core.yml"
-      ],
-      "phase1CalibrationState": "MERGED_MAIN_SHADOW_ACTIVE",
-      "phase1CalibrationBindings": [
-        "tools/vibe2-neural-feedback.mjs",
-        "tools/vibe2-queue-control.mjs",
-        ".github/workflows/vibe2-continuous-core.yml",
-        "qa/vibe2-neural-feedback.test.mjs",
-        "qa/vibe2-queue-control.test.mjs"
-      ],
-      "postMergeHardening": {
-        "state": "MERGED_MAIN",
-        "sourcePr": 1806,
-        "sourceBranch": "assistant/neural-shadow-hardening-main-v1",
-        "shadowHardeningCommit": "37266037d7b2fc58073876c374259f197c9e0006",
-        "consolidatedSupportPrs": [
-          1795,
-          1797,
-          1801,
-          1803
-        ],
-        "securityFollowupPr": 1808,
-        "securityLearningHoldCommit": "ce00d4d3b2ffcf1ba6c263ac7b2b359c5b28ec79",
-        "authorityChange": "NONE",
-        "currentSecurityFollowupPr": 1826,
-        "currentSecurityFollowupState": "MERGED_MAIN",
-        "currentSecurityFollowupCommit": "775ebdc691d300af4d82618c1919e3efe3a94bb3",
-        "readinessHardeningPr": 1825,
-        "readinessHardeningCommit": "22001a9afce546e93d9a4b1e05f522b65f57fc1d"
-      }
     },
     "phase1Implementation": {
       "mode": "HYBRID_NEURAL_DIAGNOSIS_WAVE_EXECUTION",
@@ -14562,6 +14421,26 @@
         "automaticPromotionAllowed": false,
         "successfulResultMutationAllowed": false,
         "unverifiedRootCauseMutationAllowed": false
+      },
+      "telemetry": {
+        "module": "tools/vibe2-neural-event-telemetry.mjs",
+        "queueBinding": "tools/vibe2-queue-control.mjs",
+        "qa": "qa/vibe2-neural-event-telemetry.test.mjs",
+        "metrics": [
+          "TOTAL_SHADOW_EVENTS",
+          "EVENT_TYPE_COUNTS",
+          "PROPOSED_ACTION_COUNTS",
+          "INHIBITOR_COUNTS",
+          "HYPOTHETICAL_FIRE_COUNT",
+          "HYPOTHETICAL_FIRE_RATE",
+          "UNAUTHORIZED_FIRE_COUNT",
+          "SAFETY_INVARIANT_PASS"
+        ],
+        "safetyInvariant": "UNAUTHORIZED_FIRE_COUNT_MUST_EQUAL_ZERO",
+        "winnerSelectionAllowed": false,
+        "automaticTuningAllowed": false,
+        "automaticLearningAllowed": false,
+        "phase2AuthorityReady": false
       }
     },
     "activation": {
@@ -20540,7 +20419,132 @@
       "verifiedFailureMayTeachAvoidPattern": true,
       "rawReferenceOrRawGeneratedContentMayNotDirectlyIncreaseMastery": true,
       "crossPlatformTransferOnlyForAbstractTechnique": true,
-      "nativeRuntimeEvidenceStillRequiredForPlatformSpecificClaims": true
+      "nativeRuntimeEvidenceStillRequiredForPlatformSpecificClaims": true,
+      "verifiedQueueEvidenceIngress": {
+        "enabled": true,
+        "implementation": "tools/vibe2-learning-motor.mjs",
+        "source": "EXISTING_VIBE_QUEUE_TASK_EVIDENCE",
+        "terminalStatusesForPositive": [
+          "VERIFIED",
+          "DONE"
+        ],
+        "terminalStatusesForNegative": [
+          "FAILED",
+          "VERIFIED",
+          "DONE"
+        ],
+        "acceptedPositiveEvidence": [
+          "VERIFIED_GAME_VISUAL_DNA_COMPATIBILITY_PASS",
+          "VERIFIED_WORLD_ROUTE_NAVIGATION_PASS",
+          "VERIFIED_STREAMING_MOBILE_BUDGET_PASS",
+          "VERIFIED_NARRATIVE_GAMEPLAY_CAUSALITY_PASS",
+          "VERIFIED_QUEST_GRAPH_PASS",
+          "VERIFIED_CHARACTER_PERSONA_VOICE_MEMORY_PASS",
+          "VERIFIED_WORLD_NARRATIVE_STATE_PASS"
+        ],
+        "acceptedNegativeEvidence": [
+          "VERIFIED_CONCEPT_CONFLICT",
+          "VERIFIED_NAVIGATION_REACHABILITY_FAILURE",
+          "VERIFIED_STREAMING_HITCH",
+          "VERIFIED_MOBILE_WORLD_BUDGET_FAILURE",
+          "VERIFIED_KNOWLEDGE_LEAK",
+          "VERIFIED_PAYOFF_MISS",
+          "VERIFIED_VOICE_COLLAPSE",
+          "VERIFIED_QUEST_REPETITION",
+          "VERIFIED_RELATIONSHIP_INCONSISTENCY",
+          "VERIFIED_WORLD_STATE_CONTRADICTION",
+          "VERIFIED_STORY_SOFTLOCK",
+          "VERIFIED_FACTION_RELATIONSHIP_INCONSISTENCY",
+          "VERIFIED_STORY_TRANSITION_CAUSALITY_FAILURE"
+        ],
+        "infrastructureFailureMustNotPenalizeMastery": true,
+        "oneTaskOutcomeCreatesAtMostOnePositiveAndOneNegativeSyntheticExperience": true,
+        "syntheticExperienceMustRemainTraceableToTaskAndRunEvidence": true,
+        "existingSeenExperienceDedupeRequired": true,
+        "rawTelemetryOrPreparedSemanticMayNotEnterPositiveMastery": true,
+        "existingCanonicalLearningMotorOnly": true,
+        "authorityExpansion": false,
+        "persistAcceptedSyntheticExperienceToCanonicalExperienceMemory": true,
+        "canonicalExperienceStore": ".vibe2/experience.json",
+        "sameCycleRetrievalAndHandoffUseMergedExperienceMemory": true,
+        "duplicatePersistenceMustUseOutcomeIdEvidenceToken": true,
+        "repeatedIndependentVerificationMayReinforceConfidenceOncePerDistinctOutcomeId": true,
+        "persistenceMayNotCreatePositiveMasteryWithoutVerifiedEvidence": true,
+        "producerContract": {
+          "enabled": true,
+          "requestCompiler": "tools/vibe2-source-worker.mjs",
+          "focusedQa": "tools/vibe2-incremental-qa.mjs",
+          "finalProducer": "tools/vibe2-fan-in-review.mjs",
+          "markerOnlyPassForbidden": true,
+          "requestIsNotPassEvidence": true,
+          "focusedQaIsNotFinalPass": true,
+          "webPositiveRequires": [
+            "SPECIALIZED_FOCUSED_QA_PASS",
+            "FAN_IN_REVIEW_PASS",
+            "FULL_REGRESSION_PASS"
+          ],
+          "nativePositiveRequires": [
+            "SPECIALIZED_FOCUSED_QA_PASS",
+            "FAN_IN_REVIEW_PASS",
+            "FULL_REGRESSION_PASS",
+            "AUTHORITATIVE_TARGET_ENGINE_QA_PASS"
+          ],
+          "negativeRequiresExplicitFocusedOrRuntimeFailure": true,
+          "finalVerifiedMarkerMayOnlyBeEmittedByFanInAfterAllRequiredEvidence": true,
+          "targetEngineQaEvidencePatterns": [
+            "roblox-verification-run:",
+            "unity-verification-run:"
+          ],
+          "authorityExpansion": false,
+          "finalMarkerMustBeExactEvidenceToken": true,
+          "focusedQaTraceCannotSatisfyFinalMarker": true,
+          "fanInProvenanceRequiredForPositiveIngress": true,
+          "ingressDefenseInDepthNativeQaRecheckRequired": true,
+          "nativeTargetProofMustSurviveFanInToCanonicalIngress": true,
+          "uefnPositiveBlockedUntilAuthoritativeExecutorEvidenceContractExists": true,
+          "negativeMarkerAloneForbidden": true,
+          "negativeFailureProvenanceRequiredAtCanonicalIngress": true,
+          "focusedStaticNotVerifiedIsNotRuntimeFailure": true,
+          "nativeTwoStageFanInReview": true,
+          "preNativeFanInMayApproveGameCandidateButMustNotEmitNativePositiveMarkerWithoutEngineQa": true,
+          "postNativeFinalReviewImplementation": "tools/vibe2-fan-in-review.mjs",
+          "postNativeFinalReviewTriggers": [
+            ".github/workflows/vibe2-roblox-candidate-result.yml",
+            ".github/workflows/vibe2-unity-candidate-result.yml"
+          ],
+          "postNativeFinalReviewInput": "PERSISTED_CONTROL_QUEUE_EVIDENCE_PLUS_AUTHORITATIVE_TARGET_ENGINE_QA",
+          "postNativeFinalReviewMustPreserveTaskStatusAndReleaseDecision": true,
+          "candidateResultWorkflowMayInvokeFanInReviewButMayNotMintVerifiedMarkerItself": true,
+          "postNativeFinalReviewRequiresExistingPreNativeRegressionAndReviewPass": true,
+          "postNativeFinalReviewRequiresFocusedQaPassTraceForEachMarker": true,
+          "postNativeFinalReviewNoopWhenNoSpecializedRequestOrFocusedPass": true,
+          "specializedLearningFailureMustNotConvertEngineQaPassIntoGameReleaseFailure": true
+        },
+        "finalMarkerMustBeExactEvidenceToken": true,
+        "prefixedOrSuffixedFocusedQaTokenCannotMatchFinalMarker": true,
+        "positiveProvenanceRequired": [
+          "specialized-final-verification:PASS",
+          "specialized-final-authority:FAN_IN_AFTER_FULL_REGRESSION"
+        ],
+        "positiveWithoutFanInProvenanceMustBeIgnored": true,
+        "focusedQaTraceTokenIsNeverCanonicalVerifiedMarker": true,
+        "nativePositiveRequiresAuthoritativeTargetEngineQa": true,
+        "nativeTargetProofMustBeRecheckedAtCanonicalIngress": true,
+        "nativeTargetProofMustBeTraceableInSyntheticExperience": true,
+        "webPositiveDoesNotRequireNativeEngineQa": true,
+        "uefnPositiveBlockedUntilAuthoritativeExecutorEvidenceContractExists": true,
+        "nonGamePositiveAndNegativeSpecializedMasteryForbidden": true,
+        "negativeVerifiedFailureProvenanceRequired": true,
+        "negativeMarkerAloneMustNotPenalizeMastery": true,
+        "negativeProvenanceTokens": {
+          "verification": "specialized-negative-verification:FAIL",
+          "allowedAuthorities": [
+            "specialized-negative-authority:FOCUSED_QA",
+            "specialized-negative-authority:RUNTIME_QA",
+            "specialized-negative-authority:FAN_IN_RUNTIME_FAILURE"
+          ]
+        }
+      }
     },
     "worldAndConceptLearning": {
       "enabled": true,
@@ -23300,7 +23304,132 @@
           "crossGameTransformativeAdaptationRequired": true,
           "rawCrossGameCopyForbidden": true
         },
-        "latestImplementationRevision": "172705b2741ef7beb19ad7e76ea7b613233cd6dd"
+        "latestImplementationRevision": "172705b2741ef7beb19ad7e76ea7b613233cd6dd",
+        "runtimeHardening": {
+          "serializedReservationMutation": true,
+          "optimisticBranchCollisionRecompute": true,
+          "branchCollisionAttemptsPerRun": 8,
+          "latestVerifiedReserveRun": 612,
+          "latestVerifiedReserveRunId": 35803294553,
+          "latestVerifiedReserveResult": "RESERVE_SUCCESS_AFTER_2_COLLISIONS_ON_ATTEMPT_3",
+          "bottleneckObservedQueueDepth": 267,
+          "bottleneckRecommendedBatch": 19,
+          "actualDisjointReserved": 2,
+          "staleQaClaimRequiresVerifiedPolicyImplementationAgreement": true,
+          "unverifiedStaleQaRoutesToUnknownCausalDiagnosis": true,
+          "liveBottleneckMetrics": [
+            "PENDING_WORKFLOW_RUNS",
+            "RESERVATION_WAIT_MS",
+            "FAN_IN_WAIT_MS"
+          ],
+          "liveBottleneckWorkflowRevision": "1c90f8242d7f78f257c39cba5dcfd3184f58e689",
+          "failureClassifierRevision": "6a7959814875d7471f8d5a288491d59679d840e2",
+          "hardeningTestRevision": "f2c7dc0fca00a0046a50160680c92a895c80d3d8",
+          "latestSecurityBindingRevision": "1e8a348db3be6284c2d36df3a097765647d425c4",
+          "incrementalLiveVerification": "PENDING_NEXT_NATURAL_SYSTEM_AI_WORKER_RUN",
+          "exactDuplicateRecoveryCoalescing": true,
+          "duplicateRepairCheckpointFields": [
+            "SOURCE_MUTATION_BASELINE",
+            "KNOWN_GOOD_REVISION"
+          ],
+          "duplicateRepairCoalescingRevision": "9ab01df47287ae1ae836e71b9d7be843db8ff867",
+          "duplicateRepairCheckpointRevision": "24d941a8e5bf75a37ea54b35cbd351b5daae5bad",
+          "duplicateRepairTestRevision": "a45a0cdd1f4b74daa0a69460f160d3d2a077acd8",
+          "duplicateRepairLiveVerification": "PENDING_NEXT_RESERVE_CYCLE",
+          "sharedCanaryWaitIsDependencyStateNotFailure": true,
+          "sharedCanaryWaitRecursiveEscalationForbidden": true,
+          "supersededDuplicateRecursiveEscalationForbidden": true,
+          "canaryWaitRecoveryRecursionRevision": "1c2275c3cd6e725dcef00ecdfee80dd125f756ca",
+          "canaryWaitRecoveryRecursionTestRevision": "17fef35122561283b3c16d29b8cf07a37dc3e82d",
+          "canaryWaitRecoveryRecursionLiveVerification": "PENDING_NEXT_RECOVERY_ESCALATION_CYCLE",
+          "reservationWaitMeasuresRunnableQueuedOnly": true,
+          "canaryDependencyWaitExcludedFromReservationWait": true,
+          "unresolvedDependenciesExcludedFromReservationWait": true,
+          "runnableReservationWaitMetricRevision": "01dea7dfd2948f0a86a48eeedaecccf5516d8051",
+          "runnableReservationWaitMetricTestRevision": "eb55d7a130b819c6fd7863b947bb779bc91c2378",
+          "runnableReservationWaitLiveVerification": "PENDING_NEXT_SYSTEM_AI_RESERVE_RUN",
+          "stableRepairWorkIdentityExported": true,
+          "stableRepairWorkIdentityRevision": "e006f1038dd8b32f260494ce2c947ffc287b7d9d",
+          "supersededRepairDependenciesRewiredToCanonical": true,
+          "supersededRepairBlockerRewiredToCanonical": true,
+          "supersededRepairDependencyRewireRevision": "d011af3f7ecf290962ef12f0e3b0ac4e06fcd21e",
+          "supersededRepairDependencyRewireTestRevision": "94b8bbd05b355c7308d1a81cf0a4d337badc30b9",
+          "supersededRepairDependencyRewireLiveVerification": "PENDING_NEXT_RESERVE_CYCLE",
+          "producerSideRecoveryRepairReuse": true,
+          "producerSideRecoveryRepairReuseBinding": "tools/company-recovery-dispatch.mjs",
+          "producerSideRecoveryRepairIdentity": "tools/company-system-ai-queue.mjs::systemAiRepairWorkIdentity",
+          "producerSideRecoveryRepairReuseRevision": "a7de3b2499d4fb09e168c1945d6001bcf247f5a0",
+          "producerSideRecoveryRepairReuseTestRevision": "9f935448af466295dc53d1e4c90ebe3201370c8f",
+          "producerSideRecoveryRepairRule": "REUSE_NONTERMINAL_EXACT_REPAIR_IDENTITY_PRESERVE_DISTINCT_CHECKPOINT",
+          "producerSideRecoveryRepairLiveVerification": "PENDING_NEXT_RECOVERY_DISPATCH_AND_RESERVE_CYCLE",
+          "historicalSupersededMappingLoadedFromQueueEvidence": true,
+          "historicalSupersededDependenciesRewiredToCanonical": true,
+          "historicalSupersededBlockersRewiredToCanonical": true,
+          "historicalSupersededDependencyRepairRevision": "f6d3ad0892d869add873a5aaadb8dff832c53747",
+          "historicalSupersededDependencyRepairTestRevision": "3c418b6e80e5eda2cb55f88856426913764cab6c",
+          "historicalSupersededDependencyRepairLiveVerification": "VERIFIED_RUNTIME_RUN_35806215679_REWIRED_16_ORPHAN_0",
+          "queueReconciliationBeforeStandardReserve": true,
+          "queueReconciliationBeforeTargetedReserve": true,
+          "queueReconciliationBeforeSecurityReserve": true,
+          "allReservePathQueueReconciliationRevision": "6a1663bd2a4683ae3c4f104c99c29801c273297a",
+          "allReservePathQueueReconciliationTests": [
+            "170dff04a67d5b6d302135296b480d303845ed89",
+            "7d50a0f64075d67467389f18a8ac30a386e7ce81"
+          ],
+          "allReservePathQueueReconciliationLiveVerification": "PENDING_NEXT_RESERVE_CYCLE",
+          "workflowWaitCauseActions": {
+            "pendingRuns": "REDUCE_SCHEDULER_PENDING_RUN_WAIT",
+            "runnableReservationWait": "PRIORITIZE_LONG_WAIT_RUNNABLE_WORK",
+            "fanInWait": "REDUCE_FAN_IN_WAIT",
+            "supervisorReviewWait": "PRIORITIZE_PRIMARY_AI_SUPERVISOR_REVIEW"
+          },
+          "workflowWaitCauseClassificationRevision": "6a05859ccf52528c43b333f05d680b09eeba6768",
+          "realFanInWaitUsesGithubJobGraph": true,
+          "supervisorReviewWaitSeparatedFromFanIn": true,
+          "reservationWaitUsesRunnableDependencyReadyTimestamp": true,
+          "preciseWaitSensorRevision": "d3db69b57e4754ada7a6c68f8069008c0a4ac608",
+          "preciseWaitWorkflowRevision": "68550bced736074602c5df848af92ba5c8724e7c",
+          "preciseWaitTests": [
+            "5b2bdcf809f3d10aa7607ebaebde97bb97ac2878",
+            "2095f85bb419149c14168a135d72aa456de7747c"
+          ],
+          "preciseWaitLiveVerification": "PENDING_NEXT_SYSTEM_AI_RESERVE_RUN",
+          "genericSystemAiFailuresMayNotCrossResponsibleFileScope": true,
+          "sharedInfrastructureFailureMayCrossResponsibleFileScope": true,
+          "crossScopeCanaryDependenciesRemovedBeforeReserve": true,
+          "crossScopeCanaryBlockerRemovedBeforeReserve": true,
+          "responsibilityScopedRecoveryCohortRevision": "599a575779e96093841aa2c81fbbac5cc1fbad03",
+          "crossScopeCanaryReconciliationRevision": "16a40328b8d05c4416cad1672606ad38cb489a18",
+          "crossScopeCanaryReconciliationTests": [
+            "2a7ab4957c5c670ca03ea689a384fa0aab471147",
+            "c556915ea3022ef8002dec8acba9b2bb95e78e7d"
+          ],
+          "crossScopeCanaryLiveVerification": "PENDING_NEXT_SYSTEM_AI_RESERVE_RUN",
+          "pushEventMode": "QA_ONLY_NO_RESERVATION",
+          "pushQaRunsCoalesced": true,
+          "pushQaReserveLockSeparated": true,
+          "executionReservationEvents": [
+            "repository_dispatch",
+            "schedule",
+            "workflow_dispatch",
+            "workflow_call"
+          ],
+          "pendingRunMetricExcludesPushQa": true,
+          "pushQaOnlyRevision": "2b9181069b4c09cf5e53c25e4baa3841ea8d5d2d",
+          "pushQaReserveLockIsolationRevision": "9eece1f69e1c30bb89688f1662d2ec3f306c9a0c",
+          "systemAiInternalWorkerCap": null,
+          "systemAiMatrixTransportCeiling": 256,
+          "systemAiWorkerStrategyMaxParallel": null,
+          "gameWorkerInternalCap": null,
+          "gameWorkerConfiguredProviderBoundary": 256,
+          "gameWorkerAdaptiveCurrentMaxBinding": "ADVISORY_ONLY",
+          "disjointWorkerExecutionDefault": "PARALLEL_MAXIMIZE_AVAILABLE_PROVIDER_CAPACITY",
+          "serializedSections": [
+            "SHARED_QUEUE_RESERVATION_MUTATION",
+            "CONTROL_STATE_WRITE",
+            "FAN_IN_MERGE"
+          ]
+        }
       }
     }
   },
@@ -26515,14 +26644,11 @@
       "developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.developmentBottleneckFocus.currentIncident",
       "developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.developmentBottleneckFocus.incidentHistory",
       "neuralDevelopmentBrain.liveShadowObservation",
-      "aiExecutionEfficiency.systemAiEvolution.implementationPlan.runtimeHardening",
-      "learningClosedLoopContract.specializedGameDevelopmentMastery.verifiedQueueEvidenceIngress",
       "vibeCodingMethodSelfImprovement.fullCodingAbsorptionAndCapabilityDistillation.implementationPhase4.implementationEvidence",
       "vibeCodingMethodSelfImprovement.implementationEvidence",
       "vibeCodingMethodSelfImprovement.fullCodingAbsorptionAndCapabilityDistillation.implementationPhase2.productionObservation",
       "vibeExecutionLaneContract.implementationEvidence",
       "developmentLifecycleMachine.nativeGameFoundationValidationStack.cozyIslandIncident",
-      "developmentLifecycleMachine.postReleaseFocusedDevelopment.historicalDeploymentRecovery",
       "vibeCodingMethodSelfImprovement.fullCodingAbsorptionAndCapabilityDistillation.implementationPhase3.runtimeVerification",
       "developmentLifecycleMachine.nativeGameFoundationValidationStack.verification.designAndImplementationEvidence",
       "vibeCodingMethodSelfImprovement.stagedSourceSynthesis.implementationEvidence",
@@ -26530,19 +26656,33 @@
       "vibeCodingMethodSelfImprovement.phase2.implementationEvidence",
       "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.corruptedRepairIncident",
       "supervisedWebGameProduction.firstPilot.assistantCandidate.runtimeValidation.history",
-      "neuralDevelopmentBrain.phase2.telemetry",
       "vibeCodingMethodSelfImprovement.phase4.implementationEvidence",
       "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.post1989SourceGenerationFailureAudit",
       "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.verifiedEffectivenessWave",
-      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.focusedTimeoutPolicyResync",
       "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.latestRelevantQa",
       "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.latestProductionBottleneckEvidence",
-      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.ciRevalidationRuns"
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.ciRevalidationRuns",
+      "neuralDevelopmentBrain.changeRecord",
+      "developmentLifecycleMachine.sharedWorkerContext.changeRecord",
+      "supervisedWebGameProduction.firstPilot.rejectedCandidate",
+      "vibeCodingMethodSelfImprovement.verification",
+      "vibeCodingMethodSelfImprovement.qaEvidence",
+      "supervisedWebGameProduction.firstPilot.requeue",
+      "supervisedWebGameProduction.firstPilot.negativeLearning",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.malformedFastEscalationCiRuns",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.latestDiagnosticFailureClasses",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.latestDiagnosticRun",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.currentEvaluationRun",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.testCommits",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.sourceCommit",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.workflowTelemetryCommit",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.editMatchFastEscalationSourceCommit",
+      "developmentSpeedExecution.sourceCandidateGenerationBottleneckMitigation.editMatchFastEscalationTestCommit"
     ],
     "latestArchiveRecord": "company-records/operations/2026/2026-10-01/company/central-policy-archive--central-policy-archive-20261001-ai-v3.json",
     "latestArchiveRecordId": "central-policy-archive-20261001-ai-v3",
     "latestArchiveSourceRevision": "d1557c5034aad62560b76b73b4518e1e29c17a04",
-    "latestArchiveAt": "2026-10-01T04:05:00.000Z",
-    "latestArchivePathCount": 26
+    "latestArchiveAt": "2026-10-01T04:25:00.000Z",
+    "latestArchivePathCount": 37
   }
 }
