@@ -505,11 +505,11 @@ def npc(s,kind,pos):
         s.loft('Undertaker_HairBack',(0,head_y+h*.04,-.13),[
           (-h*.055,w*.38,w*.38),(h*.03,w*.44,w*.42),(h*.10,w*.32,w*.34)
         ],q['hair'],sides=28,parent=p)
-        s.lathe('Undertaker_HatBrim',(0,head_y+h*.145,0),w*.82,w*.82,h*.025,c['black'],sides=36,parent=p)
-        s.loft('Undertaker_HatCrown',(0,head_y+h*.15,-.03),[
+        s.lathe('UndertakerHatBrim',(0,head_y+h*.145,0),w*.82,w*.82,h*.025,c['black'],sides=36,parent=p)
+        s.loft('UndertakerHat',(0,head_y+h*.15,-.03),[
           (0,w*.46,w*.42),(h*.12,w*.43,w*.39),(h*.22,w*.34,w*.33)
         ],c['black'],sides=32,parent=p)
-        s.lathe('Undertaker_HatRibbon',(0,head_y+h*.175,.02),w*.47,w*.47,h*.026,q['accent'],sides=32,parent=p)
+        s.lathe('UndertakerHatRibbon',(0,head_y+h*.175,.02),w*.47,w*.47,h*.026,q['accent'],sides=32,parent=p)
         for side in [-1,1]:
             s.prism('Undertaker_CheekShadow'+str(side),(side*w*.24,head_y-h*.018,.47),[
               (-w*.09,h*.025),(w*.10,h*.015),(w*.08,-h*.04),(-w*.05,-h*.05)
