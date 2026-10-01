@@ -662,18 +662,20 @@
       "taskFailure": false,
       "resultLossForbidden": true,
       "workerDirectControlWrite": false,
-      "capacityRefillMayProceedWhileResultCoalesced": true,
+      "capacityRefillMayProceedWhileResultCoalesced": false,
       "pressureCapacityRefill": {
-        "enabled": true,
-        "scope": "GAME_PRIMARY_PRIMARY_VARIANT_WAVE_LEADER_ONLY",
+        "enabled": false,
+        "scope": "DISABLED_UNDER_RUNNER_PRESSURE_DEFER_TO_COHORT_FAN_IN",
         "event": "vibe2-fanin-refill",
-        "maxSignalsPerWave": 1,
+        "maxSignalsPerWave": 0,
         "resultConsumption": false,
         "resultRemainsCohortFanInOwned": true,
         "workerDirectControlWrite": false,
-        "newWorkflowCreated": false
+        "newWorkflowCreated": false,
+        "purpose": "PREVENT_NEW_RUN_CREATION_WHILE_RUNNER_QUEUE_IS_PRESSURED"
       },
-      "immediateDispatchResumesWhenPressureClears": true
+      "immediateDispatchResumesWhenPressureClears": true,
+      "runnerPressureDispatchThreshold": 4
     },
     "reserveContractRegressionPreflight": {
       "enabled": true,
@@ -683,8 +685,10 @@
       "coreQaActiveCompletion": {
         "concurrencyGroup": "vibe2-core-qa-${{ github.ref }}",
         "cancelInProgress": false,
-        "pendingPolicy": "KEEP_ONLY_LATEST_PENDING_SAME_REF",
-        "runner": "ubuntu-slim"
+        "pendingPolicy": "MAIN_LATEST_SHA_ONLY_NON_MAIN_LATEST_PENDING_SAME_REF",
+        "runner": "ubuntu-slim",
+        "mainPushCancelsSupersededInProgress": true,
+        "nonMainCancelsInProgress": false
       },
       "fallback": "LOCAL_SAME_FAN_IN_CORE_REGRESSION",
       "observationFailureAction": "RUN_LOCAL_REGRESSION",
@@ -692,7 +696,13 @@
       "gameWorkerStartBeforePass": false,
       "neuronCompletionCallbackExcluded": true,
       "newWorkflowCreated": false,
-      "newSchedulerCreated": false
+      "newSchedulerCreated": false,
+      "fanInMayReuseReserveExactShaPass": true,
+      "fanInReuseOrder": [
+        "RESERVE_EXACT_SHA_REGRESSION",
+        "EXACT_SHA_CORE_QA",
+        "LOCAL_FULL_REGRESSION"
+      ]
     },
     "fanInRegressionFailureRecovery": {
       "enabled": true,
@@ -737,7 +747,12 @@
       "architectureAwareCache": true,
       "gamePrimaryWorkerUnchanged": "ubuntu-latest",
       "canonicalQueueUnchanged": true
-    }
+    },
+    "runnerPressureDispatchThreshold": 4,
+    "releaseDispatchQueueThreshold": 4,
+    "nativeReleaseDispatchBatchMax": 2,
+    "releaseRecoveryBatchMax": 2,
+    "schedulerDispatchBackpressure": true
   },
   "adaptiveBackpressure": {
     "enabled": true,
