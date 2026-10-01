@@ -435,27 +435,41 @@ test('squad routes causal packets only to the named observer and never broadcast
   assert.equal(hiddenAi.memory.length,0);
 });
 
-test('living actor director can consume a source event through the same causal contract',()=>{
+test('living actor director projects causal memory emotion relationship and player model into the next context without persisting it',()=>{
   const director=planVibeLivingActorDirector({
     actor:companion,
     player:{id:'player'},
-    world:{location:'frontier-gate'},
-    relationship:{trust:20},
+    world:{location:'frontier-gate',emotion:'alert'},
+    relationship:{trust:20,respect:5},
     memory:[],
     causalEvent:{
-      id:'evt-warning-1',
-      type:'threat',
-      actorId:'raider',
+      id:'evt-rescue-director-1',
+      type:'rescue',
+      actorId:'player',
       targetId:'mira',
+      actionId:'act-rescue-director-1',
+      actionType:'rescue',
       location:'frontier-gate',
       tick:41,
       witnesses:['mira']
     },
     causalKnowledge:{observed:true,confidence:.9,attribution:'direct-cause'}
   });
-  assert.equal(director.version,2);
-  assert.equal(director.causal.sourceEvent.id,'evt-warning-1');
+  assert.equal(director.version,3);
+  assert.equal(director.causal.sourceEvent.id,'evt-rescue-director-1');
   assert.equal(director.causal.perceived,true);
   assert.ok(director.causal.next.actionPreferences.length>0);
+  assert.equal(director.projectedState.sourceEventId,'evt-rescue-director-1');
+  assert.equal(director.projectedState.memory.length,1);
+  assert.equal(director.projectedState.memory[0].sourceActionId,'act-rescue-director-1');
+  assert.equal(director.projectedState.emotion,'relief');
+  assert.ok(director.projectedState.relationshipToPlayer.trust>20);
+  assert.ok(director.relationship.state.trust>20);
+  assert.ok(director.social.relationship.trust>20);
+  assert.ok(director.playerModel.patterns.helpsOthers>=1);
+  assert.equal(director.projectedState.persistentMutationRequiresEngineValidation,true);
+  assert.equal(director.projectedState.persisted,false);
+  assert.equal(director.projectedState.gameplayAuthority,false);
+  assert.equal(director.policy.projectedCausalStateIsNotPersistence,true);
   assert.equal(director.policy.engineAuthoritative,true);
 });
