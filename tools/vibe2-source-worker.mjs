@@ -1188,6 +1188,12 @@ function presentationWorkerGuidance(order = {}) {
     'Unity와 Roblox는 정체성은 공유하되 표현 자산을 플랫폼에 맞게 재가공한다. 한 플랫폼의 시각 구현을 다른 플랫폼에 억지 복사하지 않는다.',
     'FBX/PNG/WebP/OGG 등 실제 binary authoring이 필요한 경우 가짜 바이트나 텍스트 파일을 만들지 말고 검증된 기존 에셋 재사용 또는 AUTHORING_GENERATOR_REQUEST 경로를 사용한다.',
     'Web 오디오는 첫 사용자 입력 이후 활성화하고 mute/volume과 resume 중복재생 방지를 유지한다.',
+    '[CROSS PLATFORM EXPERIENCE BUILDUP] Web/Roblox/Unity 공통 체감 품질 축은 MOTION, COMBAT_FEEL, UI_HUD, INVENTORY_EQUIPMENT, AUDIO_MUSIC, VFX, CAMERA, WORLD_ART_LIGHTING, ONBOARDING_READABILITY, MOBILE_INPUT, PERFORMANCE_STABILITY이다.',
+    '기능/에셋/사운드 인스턴스가 존재한다는 이유만으로 완료하지 않는다. BASELINE_CAPTURE → WEAKEST_AXIS_DIAGNOSIS → FOCUSED_BUILDUP → RUNTIME_REPLAY → BEFORE_AFTER_COMPARE → REGRESSION_CHECK → REPEAT_UNTIL_TARGET 순서로 가장 약한 축부터 반복 개선한다.',
+    'Roblox는 특히 모션·전투감·UI/HUD·음악/오디오·카메라·월드/조명을 실제 Studio 플레이에서 확인한다. Animator/Motor6D나 Sound가 존재하는 것만으로 PASS하지 않고 실제 AnimationTrack/가시적 움직임과 재생 중 오디오가 보여야 한다.',
+    '인벤/장비가 있는 게임은 획득→인벤 표시→장착/해제→장착중 표시→전투/외형 반영의 한 체인을 끊김 없이 완성한다. UI 꾸미기만 하고 상태 변화가 없는 경우 실패다.',
+    '음악은 게임 콘셉트와 상태를 따라 탐험/긴장/전투/보스/승리/휴식이 필요한 범위에서 구분하고, 중요한 경고·피격·스킬 소리를 BGM이 가리지 않게 한다.',
+
     '모션·VFX·카메라는 모바일 터치와 위험 가독성을 방해하지 않는다.'
   ].join('\n');
 }
