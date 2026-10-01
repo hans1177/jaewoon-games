@@ -109,7 +109,7 @@ export function evaluateNeuralDiagnosisFeedback({
     rootCauseVerified:false,
     learningEligible:false,
     authorityPromotionEligible:false,
-    waveControlChangeAllowed:false,
+    directReservationControlChangeAllowed:false,
     eventRoutingAuthorityAllowed:false,
     verifiedBy:'IMMUTABLE_WORKER_RESULT'
   };
