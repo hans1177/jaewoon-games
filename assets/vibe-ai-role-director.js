@@ -811,7 +811,6 @@ export function planVibeLivingActorDirector({
   importance='foreground',gameRating='GENERAL',causalEvent=null,causalKnowledge={},allowEventProposal=false,allowQuestProposal=false
 }={}){
   const role=actor.role||'npc';
-  const playerModel=createVibeActorPlayerModel({actor,observations:memory});
   const companion=/companion|ally/.test(cleanText(role).toLowerCase());
   const monster=/boss|rare|elite|monster|enemy|mob/.test(cleanText(role).toLowerCase());
   const causal=causalEvent?planVibeCausalActorLoop({
@@ -828,18 +827,55 @@ export function planVibeLivingActorDirector({
       allowQuestProposal
     }]
   }).observers[0]:null;
+
+  const effectiveMemory=causal?.memoryCandidate
+    ? Object.freeze([...memory,causal.memoryCandidate].slice(-24))
+    : Object.freeze([...memory].slice(-24));
+  const baseRelationship=createVibeRelationshipState(relationship);
+  const playerId=cleanText(player.id||player.name||'player');
+  const causalAffectsPlayer=Boolean(causal?.perceived&&cleanText(causal.relationshipTargetId)===playerId);
+  const relationFields=['trust','familiarity','respect','tension','affection','fear','debt','rivalry','protectiveness','dependence','boundaryComfort'];
+  const projectedRelationship=causalAffectsPlayer
+    ? createVibeRelationshipState(Object.fromEntries([
+        ...Object.entries(baseRelationship),
+        ...relationFields.map(field=>[field,clampAxis(Number(baseRelationship[field]||0)+Number(causal.relationshipDelta?.[field]||0))])
+      ]))
+    : baseRelationship;
+  const effectiveEmotion=causal?.perceived?cleanText(causal.emotionAfter||actor.emotion||world.emotion||'calm'):cleanText(actor.emotion||world.emotion||'calm');
+  const effectiveWorld=Object.freeze({
+    ...world,
+    emotion:effectiveEmotion,
+    attentionTarget:cleanText(causal?.next?.attentionTargetId||world.attentionTarget)
+  });
+  const playerModel=createVibeActorPlayerModel({actor,observations:effectiveMemory});
+  const relationshipFrame=createVibeCompanionRelationshipFrame({
+    companion:actor,
+    other:player,
+    relationship:projectedRelationship,
+    events:effectiveMemory
+  });
+
   return Object.freeze({
-    version:2,
+    version:3,
     qualityDNA:createVibeActorQualityDNA({role,named:actor.named!==false}),
     actor:createVibeLivingActorContract(actor),
     selfhood:companion?createVibeCompanionSelfhoodDNA(actor):createVibeActorSelfModel(actor),
-    activity:createVibeIndividualActivityPlan({actor,world,importance}),
+    activity:createVibeIndividualActivityPlan({actor,world:effectiveWorld,importance}),
     playerModel,
-    relationship:createVibeCompanionRelationshipFrame({companion:actor,other:player,relationship,events:memory}),
-    guidance:createVibeGameplayGuidanceFrame({actor,playerModel,world,recentFailures,recentAdvice,gameRating}),
-    social:companion?planVibeCompanionSocialDirector({companion:actor,player,relationship,world,memory,history}):null,
-    ecology:monster?createVibeMonsterEcologyMind(actor):null,
+    relationship:relationshipFrame,
+    guidance:createVibeGameplayGuidanceFrame({actor,playerModel,world:effectiveWorld,recentFailures,recentAdvice,gameRating}),
+    social:companion?planVibeCompanionSocialDirector({companion:actor,player,relationship:projectedRelationship,world:effectiveWorld,memory:effectiveMemory,history}):null,
+    ecology:monster?createVibeMonsterEcologyMind({...actor,emotion:effectiveEmotion}):null,
     causal,
+    projectedState:Object.freeze({
+      memory:effectiveMemory,
+      emotion:effectiveEmotion,
+      relationshipToPlayer:projectedRelationship,
+      sourceEventId:cleanText(causal?.sourceEvent?.id),
+      persistentMutationRequiresEngineValidation:Boolean(causal?.persistentMutationRequiresEngineValidation),
+      persisted:false,
+      gameplayAuthority:false
+    }),
     autonomousContent:Object.freeze({
       enabled:true,
       sources:Object.freeze(['personal-goal','personal-duty','unresolved-memory','relationship-tension','promise','debt','faction-goal','discovered-world-event','territory','resource-need','place-memory','player-pattern']),
@@ -853,6 +889,7 @@ export function planVibeLivingActorDirector({
       sourceEventCausalityRequired:true,
       privatePerspective:true,
       independentLifeAllowed:true,
+      projectedCausalStateIsNotPersistence:true,
       remoteAiOptional:true,
       deterministicFallbackRequired:true
     })
