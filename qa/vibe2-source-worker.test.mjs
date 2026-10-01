@@ -1701,6 +1701,28 @@ test('candidate manifest persists design intelligence requirements and starts ev
   }
 });
 
+test('Unity candidate manifest distinguishes WebGL and native execution surfaces', async () => {
+  for (const [firstStageUnityWeb, expected] of [[true, 'UNITY_WEB'], [false, 'UNITY_NATIVE']]) {
+    const cwd=tempRoot();
+    const relative='Assets/Player.cs';
+    const responseFile=path.join(cwd, firstStageUnityWeb?'unity-web.json':'unity-native.json');
+    const workOrder=order({
+      target:'unity',
+      root:'unity-games/demo',
+      responsibleFiles:[`unity-games/demo/${relative}`],
+      taskId:firstStageUnityWeb?'unity-web-surface':'unity-native-surface'
+    });
+    workOrder.selectedTask={id:workOrder.taskId,gameId:'demo',target:'unity',firstStageUnityWeb};
+    write(path.join(cwd,'unity-games/demo',relative),'class Player { int Speed() { return 1; } }\n');
+    write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+    write(responseFile,JSON.stringify({edits:[{path:relative,find:'return 1;',replace:'return 2;'}],newFiles:[]}));
+    const result=await runVibe2SourceWorker({cwd,responseFile});
+    assert.equal(result.executionSurface,expected);
+    const persisted=JSON.parse(fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'manifest.json'),'utf8'));
+    assert.equal(persisted.executionSurface,expected);
+  }
+});
+
 test('Codex game source write override is rejected before generation', async () => {
   const cwd = tempRoot();
   const responseFile = path.join(cwd, 'model.json');
