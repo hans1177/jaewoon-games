@@ -12,6 +12,7 @@ const policy=JSON.parse(fs.readFileSync('company-learning/cross-platform-experie
 const planner=fs.readFileSync('tools/vibe2-auto-planner.mjs','utf8');
 const buildUpSource=fs.readFileSync('tools/company-build-up-directive.mjs','utf8');
 const sourceWorker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+const fantasyLaunch=JSON.parse(fs.readFileSync('roblox-games/fantasy-survival/launch-mvp.json','utf8'));
 
 test('cross-platform build-up covers all major player-facing surfaces',()=>{
   assert.equal(policy.status,'ACTIVE_EXECUTABLE_CONTRACT');
@@ -129,4 +130,26 @@ test('queued legacy BUILD_UP work is upgraded to v3 before reservation, includin
   assert.match(planner,/MIGRATED_LEGACY_DIRECTIVE_TO_PERCEPTIBLE_EXPERIENCE_V3_SAME_GENERATION/);
   assert.match(planner,/sourceSafeNoDesign=Boolean[\s\S]*project\.engine[\s\S]*PRESENTATION[\s\S]*USABILITY[\s\S]*STABILITY/);
   assert.match(planner,/PERCEPTIBLE_EXPERIENCE_V3_CONTRACT_BACKFILL/);
+});
+
+
+test('Magic Forest Roblox explicitly opts into motion inventory crafting music and presentation actual-play gates',()=>{
+  const launchText=[...(fantasyLaunch.launchCore||[]),...(fantasyLaunch.releaseGates||[])].join('\n');
+  assert.match(launchText,/inventory equipment/i);
+  assert.match(launchText,/crafting/i);
+  assert.match(launchText,/BGM music/i);
+  assert.match(launchText,/articulated/i);
+  assert.match(launchText,/VFX/i);
+  assert.match(launchText,/lighting/i);
+  assert.match(launchText,/multiplayer/i);
+  assert.match(launchText,/save.*rejoin/i);
+  assert.equal(fantasyLaunch.evidencePolicy.audioFeedbackPassRequired,true);
+  assert.equal(fantasyLaunch.studioActualPlayContract.required,true);
+  for(const id of [
+    'adaptive-motion-surface','adaptive-audio-surface','adaptive-item-surface',
+    'adaptive-system-transaction-effect','adaptive-ui-commercial-quality',
+    'adaptive-effects-surface','adaptive-camera-quality','adaptive-save-rejoin-persistence',
+    'adaptive-multiplayer-sync-surface'
+  ])assert.ok(fantasyLaunch.studioActualPlayContract.requiredScenarios.includes(id),id);
+  assert.ok(fantasyLaunch.studioActualPlayContract.notes.some(row=>/effect sounds.*must not re-enable/i.test(row)));
 });
