@@ -1212,6 +1212,9 @@ test('Roblox remote runtime QA stays off game-primary ubuntu-latest capacity',()
   assert.match(workflow,/dedupe:[\s\S]*?runs-on:\s*ubuntu-24\.04/);
   const projection=architecture.robloxRuntimeFoundationRunnerIsolation;
   assert.equal(projection?.runtimeFoundationQa,'ubuntu-24.04');
+  assert.equal(projection?.studioLocalPlan,'ubuntu-slim');
+  assert.equal(projection?.studioMcpAutoPlay,'self-hosted:Windows:X64:roblox-studio-authenticated');
+  assert.equal(projection?.studioPlanningMovedOffSharedHost,true);
   assert.equal(projection?.dedupeRunner,'ubuntu-24.04');
   assert.equal(projection?.previousRunner,'ubuntu-slim');
   assert.equal(projection?.localStudioExecutionMoved,false);
