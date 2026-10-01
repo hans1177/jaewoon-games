@@ -720,6 +720,7 @@ export function createAssetRuntimeVisualReviewPlan({
     ROBLOX_STUDIO:'ROBLOX',
     UNITY_EDITOR:'UNITY',
     UNITY_ANDROID_APK:'UNITY',
+    UNITY_WEB_BROWSER:'UNITY',
     WEB_BROWSER:'WEB'
   });
   const revision=text(sourceRevision),issues=[];
