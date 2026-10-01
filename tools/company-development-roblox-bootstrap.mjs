@@ -777,11 +777,27 @@ export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId=''
   const configFile=path.join(root,'shared','GameConfig.luau');
   const clientFile=path.join(root,'client','Game.client.luau');
   const serverFile=path.join(root,'server','Game.server.luau');
-  for(const file of [configFile,clientFile])if(!fs.existsSync(file))throw new Error('EXISTING_ROBLOX_SOURCE_FILE_MISSING:'+path.basename(file));
+  const projectFile=path.join(root,'default.project.json');
+  for(const file of [configFile,clientFile,projectFile])if(!fs.existsSync(file))throw new Error('EXISTING_ROBLOX_SOURCE_FILE_MISSING:'+path.basename(file));
   if(foundationRepair===true&&!fs.existsSync(serverFile))throw new Error('EXISTING_ROBLOX_SOURCE_FILE_MISSING:'+path.basename(serverFile));
   const beforeConfig=fs.readFileSync(configFile,'utf8');
   const beforeClient=fs.readFileSync(clientFile,'utf8');
   const beforeServer=foundationRepair===true?fs.readFileSync(serverFile,'utf8'):'';
+  const beforeProject=fs.readFileSync(projectFile,'utf8');
+  const project=JSON.parse(beforeProject.replace(/^\uFEFF/,''));
+  if(!project.tree||project.tree.$className!=='DataModel')throw new Error('EXISTING_ROBLOX_PROJECT_DATAMODEL_REQUIRED');
+  project.tree.Lighting={
+    $properties:{
+      Technology:'Voxel',
+      LightingStyle:'Soft',
+      PrioritizeLightingQuality:false,
+    },
+    CompatibilityToneMap:{
+      $className:'ColorGradingEffect',
+      $properties:{TonemapperPreset:'Retro'},
+    },
+  };
+  const afterProject=`${JSON.stringify(project,null,2)}\n`;
   let afterConfig=replaceOrInsertStudioAssetConfig(beforeConfig,studioAssets);
   let afterClient=bindExistingClientStudioAssets(beforeClient);
   let afterServer=beforeServer;
@@ -891,8 +907,10 @@ task.defer(reportNativeFoundationReady)
 
   fs.writeFileSync(configFile,afterConfig,'utf8');
   fs.writeFileSync(clientFile,afterClient,'utf8');
+  if(afterProject!==beforeProject)fs.writeFileSync(projectFile,afterProject,'utf8');
   if(foundationRepair===true&&afterServer!==beforeServer)fs.writeFileSync(serverFile,afterServer,'utf8');
   const changedFiles=[configFile,clientFile];
+  if(afterProject!==beforeProject)changedFiles.push(projectFile);
   if(foundationRepair===true&&afterServer!==beforeServer)changedFiles.push(serverFile);
   return Object.freeze({
     existingSourcePreserved:true,
