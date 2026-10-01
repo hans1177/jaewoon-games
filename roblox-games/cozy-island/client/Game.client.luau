@@ -688,7 +688,22 @@ local function render()
 end
 
 for _,k in ipairs({"Wood","Food","Coins","Iron","Horses","Stone","Gold","Sulfur","Residents","WoodWorkers","Farmers","BarracksLevel","Troops","CapturedBases","CapturedIslands","NextBaseIndex","BattleProgress","LastActivity","InBattle"})do
- p:GetAttributeChangedSignal(k):Connect(render)
+p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
+    local value = tostring(p:GetAttribute("FeedbackEvent") or "")
+    if value:find("^RESOURCE:") then
+        resourceSfx.TimePosition = 0;
+        resourceSfx:Play();
+        flash(Color3.fromRGB(120,220,120))
+    elseif value:find("^BUILD:") then
+        buildSfx.TimePosition = 0;
+        buildSfx:Play();
+        flash(Color3.fromRGB(240,200,110))
+    elseif value:find("^HIT:") then
+        hitSfx.TimePosition = 0;
+        hitSfx:Play();
+        flash(Color3.fromRGB(235,110,90))
+    end
+end)
 end
 
 p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
