@@ -1227,10 +1227,19 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
   const contentBundle=(expansion?.coherentContentBundle||[]).map(clean).filter(Boolean).slice(0,10);
   const antiCloneAxes=(expansion?.antiCloneContract?.distinctionAxes||[]).map(clean).filter(Boolean);
   const continuityQuestions=(expansion?.continuityAndCausality?.questions||[]).map(clean).filter(Boolean);
+  const dna=d?.gameDna||{};
+  const playChain=d?.playChainContract||{};
+  const micro=d?.microIterationContract||{};
+  const playChainSequence=(playChain?.sequence||[]).map(row=>clean(row?.stage)).filter(Boolean);
+  const primaryFailure=playChain?.primaryFailure||{};
+  const dnaChoices=(dna?.signatureChoices||[]).map(row=>[clean(row?.name),clean(row?.playerChoice)].filter(Boolean).join(':')).filter(Boolean);
   return[
     '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
     `directiveId=${clean(d.directiveId)} generation=${Number(d.generation||0)} developmentDepth=${Number(d.developmentDepth||1)} escalationStage=${clean(d.escalationStage)} primaryFocus=${clean(d.primaryFocus)}`,
     `gameIdentity=${clean(d?.gameIdentityAndNonNegotiables?.identity)}`,
+    `gameDna=identity:${clean(dna?.identity)||clean(d?.gameIdentityAndNonNegotiables?.identity)} coreFun:${clean(dna?.coreFun)||'UNKNOWN'} signatures:${dnaChoices.join(',')||'NONE'} progression:${clean(dna?.progressionDirection)||'UNKNOWN'} genericizationForbidden:${dna?.genericizationForbidden===true}`,
+    `playChain=selectedStage:${clean(playChain?.selectedStage)||'STATE_CHANGE'} sequence:${playChainSequence.join('>')||'ENTRY_ORIENTATION>PLAYER_ACTION>STATE_CHANGE>FEEDBACK>NEXT_CHOICE>RECOVERY_RETRY'} primaryFailure:${clean(primaryFailure?.id)||'NONE'} repairSurface:${clean(primaryFailure?.repairSurface)||'NONE'} priority:${clean(primaryFailure?.priority)||'NONE'}`,
+    `microIteration=primaryRepairSurface:${clean(micro?.primaryRepairSurface)||'NONE'} primaryScenario:${clean(micro?.primaryScenario)||'NONE'} selectedStage:${clean(micro?.selectedPlayChainStage)||clean(playChain?.selectedStage)||'STATE_CHANGE'} preferredResponsibleFiles:${Array.isArray(micro?.preferredResponsibleFileCount)?micro.preferredResponsibleFileCount.join('-'):'1-3'} unrelatedExpansionDeferred:${micro?.unrelatedExpansionDeferred!==false} studioRecheckRequired:${micro?.exactStudioRecheckRequired===true}`,
     `primaryGoal=${clean(d.thisLoopPrimaryGoal)}`,
     `implementationUnit=${clean(ownedAnchors[0]?.intendedBehavior)||clean(d.thisLoopPrimaryGoal)}; observableResult=${clean(ownedAnchors[0]?.observableAcceptance)||clean(d?.effectivenessMeasurement?.expectedPlayerEffect)}`,
     'Complete one coherent player action-to-state-to-feedback/result chain inside this goal. Include every required dependency and atomic file pair. Defer unrelated expansion, not required connected improvements or acceptance gates.',
@@ -1275,10 +1284,10 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const block=raw.slice(start,finish+end.length);
   if(!compact&&!responsiblePaths.length)return block;
   const keepPrefixes=focusedRobloxVisual?[
-    'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','gameDna=','playChain=','microIteration=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'visual=','platform=','preserve=','acceptance='
   ]:[
-    'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','gameDna=','playChain=','microIteration=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'nextVibeAction=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
     ...(focusedPresentation?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
