@@ -3770,18 +3770,22 @@ test('real cozy-island Web source produces both code BUILD_UP and graphics repla
   assert.equal(codeBuildUp.sourceRoot,sourceRoot);
   assert.ok(codeBuildUp.responsibleFiles.length>0);
   assert.ok(codeBuildUp.responsibleFiles.every(file=>file.startsWith(sourceRoot+'/')));
-  assert.ok(codeBuildUp.buildUpDirective?.directiveId);
-  assert.equal(codeBuildUp.buildUpDirective?.buildUpMustContinue??codeBuildUp.buildUpDirective?.autonomousContentExpansion?.dataCapacityBudget?.buildUpMustContinue,true);
+  assert.equal(codeBuildUp.studioQualityEvolution?.nextCycleRequired,true);
+  assert.equal(codeBuildUp.maxRetries,null);
+  assert.equal(codeBuildUp.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
+  assert.ok(codeBuildUp.evidence.includes('studio-quality-next-cycle-required:YES'));
 
-  const graphicsBuildUp=findWebPresentationQualityTask(project,repoRoot,queue);
+  const graphicsBuildUp=findStudioContinuousImprovementTask(project,repoRoot,queue,'PRESENTATION');
   assert.ok(graphicsBuildUp);
   assert.equal(graphicsBuildUp.target,'web');
   assert.equal(graphicsBuildUp.sourceRoot,sourceRoot);
   assert.equal(graphicsBuildUp.assetProductionLane,true);
+  assert.equal(graphicsBuildUp.studioQualityEvolution?.nextCycleRequired,true);
   assert.ok(graphicsBuildUp.graphicsReplacementContract);
   assert.equal(graphicsBuildUp.graphicsReplacementContract.implementation.actualSourceOrBindingDeltaRequired,true);
   assert.equal(graphicsBuildUp.graphicsReplacementContract.implementation.zeroActualReplacementCannotPass,true);
   assert.ok(graphicsBuildUp.completionCriteria.includes('GRAPHICS_REPLACEMENT_REAL_SOURCE_OR_BINDING_DELTA'));
   assert.ok(graphicsBuildUp.evidence.includes('adaptive-graphics-replacement:v1'));
+  assert.ok(graphicsBuildUp.evidence.includes('studio-quality-next-cycle-required:YES'));
   assert.ok(graphicsBuildUp.responsibleFiles.some(file=>file===sourceRoot+'/index.html'||file===sourceRoot+'/style.css'||file===sourceRoot+'/game.js'));
 });
