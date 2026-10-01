@@ -2770,6 +2770,8 @@ test('active Studio runs survive new requests while stale non-Studio scans are c
   assert.ok(preserve>0&&preserve<cancel);
   assert.ok(staleActive>0&&staleActive<cancel);
   assert.match(workflow,/const states=new Set\(\['queued','pending','requested','in_progress'\]\)/);
+  assert.match(workflow,/studio_planners=.*plan exact local Studio MCP playtests for earliest eligible artifacts/);
+  assert.match(workflow,/ROBLOX_PENDING_STUDIO_PLANNER_PRESERVED=/);
 });
 
 test('batch cleanup preserves manually requested exact-game Studio verification across main changes',()=>{

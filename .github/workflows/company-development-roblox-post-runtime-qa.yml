@@ -116,6 +116,11 @@ jobs:
                 echo "ROBLOX_PENDING_STUDIO_RUN_PRESERVED=$run_id"
                 continue
               fi
+              studio_planners="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" --jq '[.jobs[] | select(.name == "plan exact local Studio MCP playtests for earliest eligible artifacts") | select(.status == "queued" or .status == "pending" or .status == "requested" or .status == "waiting" or .status == "in_progress")] | length' 2>/dev/null || echo 1)"
+              if [ "$studio_planners" != '0' ]; then
+                echo "ROBLOX_PENDING_STUDIO_PLANNER_PRESERVED=$run_id"
+                continue
+              fi
             fi
             if [ "$run_status" = 'in_progress' ]; then
               active_jobs="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" --jq '[.jobs[] | select(.status == "in_progress")] | length' 2>/dev/null || echo 0)"
