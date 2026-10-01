@@ -463,11 +463,14 @@ function focusedCaretakerProject(project={},repoRoot=process.cwd()){
   return policy.ownerIds.has(clean(project.gameId))||(policy.includeAllReleaseConfirmed&&clean(project.releaseState).toLowerCase()==='release-confirmed');
 }
 function projectSort(a,b){
-  const recentWeb=(b.ownerRecentWebPriority===true?1:0)-(a.ownerRecentWebPriority===true?1:0);if(recentWeb)return recentWeb;
   const focus=(b.ownerFocusedCaretaker===true?1:0)-(a.ownerFocusedCaretaker===true?1:0);if(focus)return focus;
   const bottleneck=bottleneckRank(a)-bottleneckRank(b);if(bottleneck)return bottleneck;
   const engine=(ENGINE_RANK[a.engine]??9)-(ENGINE_RANK[b.engine]??9);if(engine)return engine;
   const release=(RELEASE_RANK[a.releaseState]??9)-(RELEASE_RANK[b.releaseState]??9);if(release)return release;
+  if(a.engine==='web'&&b.engine==='web'){
+    const recentWeb=(b.ownerRecentWebPriority===true?1:0)-(a.ownerRecentWebPriority===true?1:0);
+    if(recentWeb)return recentWeb;
+  }
   return Number(b.progress||0)-Number(a.progress||0)||a.gameId.localeCompare(b.gameId);
 }
 function centralPresentationPolicy(repoRoot=process.cwd()){
@@ -585,7 +588,7 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
   const supervised=supervisedWebBuildRequired(project,goal);
   const adaptation=project.firstStageUnityWeb===true?'':platformAdaptationInstruction(project.engine);
   const adaptedGoal=adaptation?goal+adaptation:goal;
-  const focused=project.ownerFocusedCaretaker===true,recentOwnerWeb=project.ownerRecentWebPriority===true,unlimitedRepair=focused||recentOwnerWeb||project.engine==='roblox';
+  const focused=project.ownerFocusedCaretaker===true,recentOwnerWeb=project.ownerRecentWebPriority===true,unlimitedRepair=focused||project.engine==='roblox';
   const portfolioValueScore=project.engine==='roblox'
     ? Math.min(100,(project.queueRobloxQualityBuildUpRequired?35:0)
       +(project.queueRobloxInternalReleaseReady?20:0)
@@ -594,15 +597,15 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
       +(project.genre&&project.subgenre?5:0))
     : 0;
   const plannedTask={
-    id,gameId:project.gameId,target:project.engine,department:'development',type:'implementation',goal:adaptedGoal,responsibleFiles,dependencies:[],priority:recentOwnerWeb?'owner-immediate':focused?'critical':priority,
-    releaseState:project.releaseState,portfolioValueScore,status:'queued',retries:0,maxRetries:unlimitedRepair?null:2,retryPolicy:unlimitedRepair?'UNLIMITED_CAUSAL_REPAIR':undefined,ownerDirective:focused||recentOwnerWeb,requiresOwnerDecision:false,protectedChange:false,
+    id,gameId:project.gameId,target:project.engine,department:'development',type:'implementation',goal:adaptedGoal,responsibleFiles,dependencies:[],priority:focused?'critical':priority,
+    releaseState:project.releaseState,portfolioValueScore,status:'queued',retries:0,maxRetries:unlimitedRepair?null:2,retryPolicy:unlimitedRepair?'UNLIMITED_CAUSAL_REPAIR':undefined,ownerDirective:focused,requiresOwnerDecision:false,protectedChange:false,
     paidResourceRequired:false,sourceRoot:posix(project.projectPath),estimatedRisk,speculativeEligible:estimatedRisk==='high',
     productionMode:supervised?'SUPERVISED_VIBE_COAUTHORING':'AUTONOMOUS_VIBE',
     supervisionApproved:false,
     supervisionContract:supervised?supervisedWebBuildContract():null,
     packageLongWorkProtected:focused||undefined,packageRole:focused?'implementation-owner':undefined,
     focusedCaretaker:focused||undefined,caretakerStickyOwnership:focused||undefined,
-    evidence:[`central-policy:${CANONICAL_POLICY_PATH}`,`vibe2-auto-planner:${project.source}`,`release-state:${project.releaseState}`,`source-root:${posix(project.projectPath)}`,...(focused?['focused-caretaker:yes','focused-caretaker-role:implementation-owner']:[]),...(recentOwnerWeb?['owner-recent-web-priority:until-first-playable-deploy','owner-recent-web-source-revision:'+clean(project.ownerWebSourceRevision)]:[]),...baselineEvidence,...extraEvidence,...(adaptation?[`platform-adaptation:${project.engine==='roblox'?'SOCIAL_FAST_SESSION':'DEEP_IMMERSIVE_SESSION'}`]:[]),...(supervised?['supervised-web-build:required','automatic-promotion:blocked-until-supervised-approval']:[])]
+    evidence:[`central-policy:${CANONICAL_POLICY_PATH}`,`vibe2-auto-planner:${project.source}`,`release-state:${project.releaseState}`,`source-root:${posix(project.projectPath)}`,...(focused?['focused-caretaker:yes','focused-caretaker-role:implementation-owner']:[]),...(recentOwnerWeb?['web-internal-priority:recent-owner-work','web-internal-priority-scope:WEB_ONLY','owner-recent-web-source-revision:'+clean(project.ownerWebSourceRevision)]:[]),...baselineEvidence,...extraEvidence,...(adaptation?[`platform-adaptation:${project.engine==='roblox'?'SOCIAL_FAST_SESSION':'DEEP_IMMERSIVE_SESSION'}`]:[]),...(supervised?['supervised-web-build:required','automatic-promotion:blocked-until-supervised-approval']:[])]
   };
   plannedTask.neuralDiagnosis=buildNeuralDiagnosis({task:plannedTask,project});
   const runtimeNeural=compileRuntimeNeuralEvent(project,plannedTask.neuralDiagnosis);
