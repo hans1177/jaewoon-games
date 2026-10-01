@@ -983,7 +983,14 @@ function findWebAssessmentTask(project,repoRoot,queue){
   }
   const id=`${project.gameId}-existing-web-assessment-v1`;if(hasTask(queue,id))return null;
   const goal=`[EXISTING_WEB_ASSESS_AND_IMPLEMENT]\n게임: ${project.name||project.gameId}\n기존 Web 소스를 먼저 읽고 승인 설계와 비교하며 게임별 아트 방향과 Style Lock도 함께 확정한다. exploration의 EXISTING_WEB_STRATEGY가 KEEP_AND_CONTINUE면 현재 구조를 보존하며 필요한 개발만 이어가고, PARTIAL_REPAIR면 문제 책임 영역만 수정하고, MAJOR_REWORK면 쓸 수 있는 시스템·세이브·핵심 루프를 보존한 채 큰 결함을 재구성한다. FULL_REBUILD는 exploration이 실제 게임성 신호와 승인 scope 근거가 부족하다고 판정한 경우에만 허용한다. 파일 존재 여부나 프로토타입 문구 하나만으로 전체 재구축을 결정하지 않는다. KEEP 여부와 무관하게 Web에서 플레이어·몬스터·배경·모션 표현을 실제 컨셉과 대조하고, 임시 도형/모형 몹/무맥락 배경을 완성 상태로 인정하지 않는다. 액션·전투 게임은 idle/move/attack/hit/death와 공격·피격·사망 애니메이션이 실제 상태에 연결돼야 하며 이 Web 표현 기준이 런타임에서 성립한 뒤에만 Roblox/Unity/UEFN 이관 대상으로 본다. 검증된 학습은 새 코드·새 에셋 표현으로 재조합하고 기존 게임 정체성과 승인 설계를 유지한다.`;
-  const out=task(id,project,goal,[relative],'owner-immediate','medium',['owner-directive:webgame-first','web-stage:WEB_BASE_IMPLEMENTATION','existing-web-assessment-required','strategy-decision:EXPLORATION','prototype-marker-alone-cannot-force-rebuild']);out.ownerDirective=true;out.speculativeEligible=false;return out;
+  let out=task(id,project,goal,[relative],'owner-immediate','medium',['owner-directive:webgame-first','web-stage:WEB_BASE_IMPLEMENTATION','existing-web-assessment-required','strategy-decision:EXPLORATION','prototype-marker-alone-cannot-force-rebuild']);
+  out.ownerDirective=true;
+  out.speculativeEligible=false;
+  out=attachGameSpecificBuildUpDirective(out,project,repoRoot,queue);
+  if(clean(out?.buildUpDirective?.primaryFocus).toUpperCase()==='PRESENTATION'){
+    out=applyAdaptiveGraphicsReplacementContract(out,project,'ASSET_ADAPTATION');
+  }
+  return out;
 }
 function findUnityWebFirstStageTask(project,repoRoot,queue){
   if(project.firstStageUnityWeb!==true||project.releaseState!=='development-confirmed')return null;
@@ -1277,7 +1284,20 @@ function adaptiveGraphicsReplacementSupported(project={}){
 function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_ADAPTATION'){
   if(!taskInput)return taskInput;
   if(!adaptiveGraphicsReplacementSupported(project))return taskInput;
-  const contract=buildAdaptiveGraphicsReplacementContract(project,pass);
+  const normalizedPass=clean(pass).toUpperCase()||'ASSET_ADAPTATION';
+  const existingEvidence=new Set((taskInput.evidence||[]).map(clean));
+  if(taskInput.graphicsReplacementContract&&existingEvidence.includes('adaptive-graphics-replacement:v1')){
+    return{
+      ...taskInput,
+      presentationPass:normalizedPass,
+      evidence:[...new Set([
+        ...(taskInput.evidence||[]),
+        'presentation-quality-pipeline:v1',
+        'presentation-pass:'+normalizedPass
+      ])]
+    };
+  }
+  const contract=buildAdaptiveGraphicsReplacementContract(project,normalizedPass);
   const guidance=[
     '',
     '[ADAPTIVE_GRAPHICS_REPLACEMENT_CONTRACT]',
@@ -1301,6 +1321,7 @@ function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_
   return{
     ...taskInput,
     goal:clean(taskInput.goal)+guidance,
+    presentationPass:normalizedPass,
     graphicsReplacementContract:contract,
     completionCriteria:[...new Set([
       ...(taskInput.completionCriteria||[]),
@@ -1323,6 +1344,8 @@ function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_
     ])],
     evidence:[...new Set([
       ...(taskInput.evidence||[]),
+      'presentation-quality-pipeline:v1',
+      'presentation-pass:'+normalizedPass,
       'adaptive-graphics-replacement:v1',
       'adaptive-graphics-replacement-range:1-60',
       'adaptive-graphics-replacement-platforms:WEB,ROBLOX,UNITY',
@@ -2594,6 +2617,28 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
         changed+=1;
       }
     }
+    const candidateEvidence=(candidate?.evidence||[]).map(clean);
+    const webPresentationBuildUpCarrier=lane==='web'
+      &&clean(candidate?.buildUpDirective?.primaryFocus).toUpperCase()==='PRESENTATION'
+      &&candidateEvidence.some(value=>
+        value==='existing-web-assessment-required'
+        ||value==='existing-web-continuation'
+        ||value==='full-web-game-rebuild'
+        ||value==='web-stage:WEB_BASE_IMPLEMENTATION'
+      );
+    const webPresentationContractIncomplete=webPresentationBuildUpCarrier&&(
+      !candidate?.graphicsReplacementContract
+      ||clean(candidate?.presentationPass).toUpperCase()!=='ASSET_ADAPTATION'
+      ||!candidateEvidence.includes('presentation-pass:ASSET_ADAPTATION')
+    );
+    if(webPresentationContractIncomplete){
+      candidate=applyAdaptiveGraphicsReplacementContract(candidate,project,'ASSET_ADAPTATION');
+      changed+=1;
+      freshness=freshness==='CURRENT_NO_NEWER_GENERATION'
+        ?'CURRENT_PRESENTATION_CONTRACT_REPAIRED'
+        :freshness;
+    }
+
     const checkedCandidate={
       ...candidate,
       evidence:[...new Set([
