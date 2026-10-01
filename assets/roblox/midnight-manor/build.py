@@ -191,6 +191,37 @@ class Scene:
         ]
         return self.loft(name,pos,sections,mat,sides=24,parent=parent)
 
+    def curve_tube(self,name,points,radii,depths,mat,sides=28,parent=None):
+        """굽은 팔/다리/손잡이를 위한 경로 기반 연속 곡면."""
+        assert len(points)>=2 and len(points)==len(radii)==len(depths)
+        sides=max(18,sides);verts=[]
+        vectors=[Vector(p) for p in points]
+        previous_u=None
+        for j,center in enumerate(vectors):
+            if j==0:tangent=(vectors[1]-center).normalized()
+            elif j==len(vectors)-1:tangent=(center-vectors[j-1]).normalized()
+            else:tangent=(vectors[j+1]-vectors[j-1]).normalized()
+            ref=Vector((0,0,1)) if abs(tangent.z)<.88 else Vector((1,0,0))
+            u=tangent.cross(ref)
+            if u.length<.001:u=tangent.cross(Vector((0,1,0)))
+            u.normalize()
+            if previous_u is not None and u.dot(previous_u)<0:u=-u
+            v=tangent.cross(u).normalized();previous_u=u
+            for i in range(sides):
+                a=math.tau*i/sides
+                p=center+u*(math.cos(a)*radii[j])+v*(math.sin(a)*depths[j])
+                verts.append(tuple(p))
+        faces=[list(reversed(range(sides))),list(range((len(points)-1)*sides,len(points)*sides))]
+        for j in range(len(points)-1):
+            a0=j*sides;b0=(j+1)*sides
+            for i in range(sides):
+                n=(i+1)%sides;faces.append((a0+i,a0+n,b0+n,b0+i))
+        data=self.mesh(name,verts,faces,mat)
+        for face in data.polygons:face.use_smooth=True
+        obj=self.node(name,data,parent=parent)
+        obj['continuousPathSurface']=True
+        return obj
+
     def sculpted_face(self,name,pos,size,mat,profile,parent=None):
         """역할별 얼굴 골격을 한 연속 표면에서 직접 조형한다.
 
