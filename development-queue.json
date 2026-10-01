@@ -6746,10 +6746,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T00:57:57.188Z",
+      "updatedAt": "2026-10-01T01:01:39.879Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -7882,7 +7882,7 @@
       "unityCandidateBranch": "development/unity-tech-amusement-tycoon-36774290498",
       "unitySourceCommit": "e521068400ed4ffa48301811a35e57ad93f44397",
       "unityBuildRunId": 36777483297,
-      "unityRuntimeSmokeRunId": 36796956422,
+      "unityRuntimeSmokeRunId": 36798810558,
       "unityIndependentQaRunId": 36788904424,
       "unityRegressionRunId": 36789066493,
       "unityInternalReleaseReady": false,
@@ -8386,7 +8386,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-01T00:38:10.692Z"
+        "verifiedAt": "2026-10-01T01:01:39.879Z"
       },
       "unityF9ReleaseRegressionPassed": false,
       "unityF9ReleaseRegressionPassedAt": null,
@@ -27925,7 +27925,7 @@
       "unityCanonicalEvidenceBound": false
     }
   ],
-  "updatedAt": "2026-10-01T00:59:26.331Z",
+  "updatedAt": "2026-10-01T01:01:41.421Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
