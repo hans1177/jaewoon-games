@@ -36,6 +36,7 @@ CLIPS = {
     'hero_walk_back_hq': 1.12,
     'hero_crouch_idle_hq': 3.20,
     'hero_crouch_walk_hq': 1.18,
+    'hero_jump_air_hq': 0.82,
 }
 REQUIRED_BONES = {
     'Hips','Spine','Chest','Head',
@@ -445,6 +446,21 @@ def crouch_walk_pose(t):
     apply_secondary(t,drive=0.82,turn=yaw*0.22)
 
 
+def jump_air_pose(t):
+    a=curve(t,[(0,-0.08),(0.3,0.10),(0.62,0.04),(1,-0.08)])
+    loc('Hips',a*0.008,0,0.0)
+    rot('Hips',0.055,a*0.035,a*0.028)
+    rot('Spine',0.035,-a*0.024,-a*0.018)
+    rot('Chest',-0.015,-a*0.020,a*0.022)
+    rot('Head',-0.025,a*0.015,-a*0.012)
+    rot('ThighL',0.28+a*0.04,0,-0.025);rot('ShinL',0.52);rot('FootL',-0.20)
+    rot('ThighR',0.18-a*0.03,0,0.022);rot('ShinR',0.42);rot('FootR',-0.16)
+    rot('UpperArmL',-0.20+a*0.03,-0.02,0.035);rot('UpperArmR',-0.12-a*0.03,0.02,-0.035)
+    rot('ForearmL',-0.24);rot('ForearmR',-0.20)
+    detail_face_and_hands(t,moving=0.36,alert=0.50)
+    apply_secondary(t,drive=0.92,turn=a*0.22)
+
+
 def animate(name, normalized_time):
     reset_pose()
     t = clamp01(normalized_time)
@@ -460,6 +476,8 @@ def animate(name, normalized_time):
         crouch_idle_pose(t)
     elif name == 'hero_crouch_walk_hq':
         crouch_walk_pose(t)
+    elif name == 'hero_jump_air_hq':
+        jump_air_pose(t)
     elif name == 'hero_start_hq':
         start_pose(t)
         # 시작 끝은 걷기 첫 접지 포즈와 직접 이어져야 한다.
