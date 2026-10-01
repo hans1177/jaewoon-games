@@ -7,6 +7,7 @@ import {
   BUILD_UP_DOMAINS,
   HOLISTIC_CORE_DOMAINS,
   VISUAL_DOMAINS,
+  EXPERIENCE_BUILD_UP_SURFACES,
   buildGameSpecificBuildUpDirective,
   directivePrompt,
   inspectGameSources
@@ -69,7 +70,7 @@ test('game-specific directive covers the whole game and all visual domains',()=>
     responsibleFiles:['roblox-games/bug-defense/server/Game.server.luau']
   });
   assert.equal(directive.gameId,'bug-defense');
-  assert.equal(directive.version,2);
+  assert.equal(directive.version,3);
   assert.equal(directive.generation,1);
   assert.equal(directive.coverage.allDomainsConsidered,true);
   assert.equal(directive.qualityGapMap.length,BUILD_UP_DOMAINS.length);
@@ -81,6 +82,14 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.equal(directive.developmentDepth,1);
   assert.equal(directive.escalationStage,'FOUNDATION_COMPLETENESS');
   assert.deepEqual(Object.keys(directive.visualBuildUpDirective.domains),[...VISUAL_DOMAINS]);
+  assert.equal(directive.experienceBuildUp.contractPath,'company-learning/experience-build-up-contract.json');
+  assert.equal(directive.experienceBuildUp.auditAllApplicableEveryGeneration,true);
+  assert.ok(directive.experienceBuildUp.activeBundle.length>=4);
+  assert.ok(directive.experienceBuildUp.coverageLedger.allApplicableAudited);
+  assert.deepEqual([...EXPERIENCE_BUILD_UP_SURFACES],[
+    'MOTION_ACTING','UI_HUD_MENU','INVENTORY_EQUIPMENT','AUDIO_MUSIC_SFX','CAMERA_VFX_FEEDBACK',
+    'WORLD_LIGHTING_MATERIALS','INPUT_MOBILE','ONBOARDING_SESSION','PERFORMANCE_STABILITY','EVENT_COHERENCE'
+  ]);
   assert.match(directive.thisLoopPrimaryGoal,/곤충|서식지|포식|정원/);
   assert.match(directive.primaryGoalReason,/게임 고유 앵커/);
   assert.ok(directive.gameplayImplementationDirectives.some(x=>/서식지 상성/.test(x)));
@@ -105,6 +114,10 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.equal(directive.autonomousContentExpansion.themeCoverageLedger.totalThemes,7);
   assert.ok(directive.autonomousContentExpansion.coherentContentBundle.length>=6);
   assert.equal(directive.robloxNativeExecution.required,true);
+  assert.equal(directive.robloxNativeExecution.version,2);
+  assert.ok(directive.robloxNativeExecution.activePerceptualSurfaces.length>=4);
+  assert.match(directive.robloxNativeExecution.perceptualMotionRule,/root-only|whole-model wobble/i);
+  assert.match(directive.robloxNativeExecution.eventCoherenceRule,/authoritative state/);
   assert.ok(directive.robloxNativeExecution.responsibleFiles.some(file=>/roblox-games\/bug-defense/.test(file)));
   assert.ok(directive.robloxNativeExecution.sourceSymbolsOrStateAnchors.some(row=>row.symbol==='attack'));
   assert.ok(directive.robloxNativeExecution.serverClientResponsibility.some(row=>row.role==='SERVER_AUTHORITY'));
@@ -130,6 +143,10 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.match(directivePrompt(directive),/ANTI_CLONE:/);
   assert.match(directivePrompt(directive),/CONTINUITY_CAUSALITY:/);
   assert.match(directivePrompt(directive),/DERIVED_RULE_EVOLUTION:/);
+  assert.match(directivePrompt(directive),/EXPERIENCE_BUILD_UP:/);
+  assert.match(directivePrompt(directive),/ACTIVE_PERCEPTUAL_SURFACES:/);
+  assert.match(directivePrompt(directive),/PERCEPTUAL_ACCEPTANCE:/);
+  assert.match(directivePrompt(directive),/PLATFORM_EXPERIENCE_PROFILE:/);
 });
 
 test('holistic build-up marks sparse map inventory UI session and convenience systems as explicit gaps',()=>{
@@ -613,4 +630,82 @@ test('each approved loop and signature choice reaches the shared implementation 
     assert.match(prompt,/공통 점수 증가만으로/);
     assert.match(prompt,/실측하지 못하면 미확인/);
   }
+});
+
+
+test('Roblox build-up activates a broader perceptual bundle and forbids root-only motion as high quality',()=>{
+  const sourceObservation={
+    sourceRoot:'roblox-games/quality-demo',
+    sourceTreeFingerprint:'a'.repeat(64),
+    fileCount:5,
+    topFiles:[{file:'roblox-games/quality-demo/client/Game.client.luau',score:30}],
+    sourceAnchors:[{file:'roblox-games/quality-demo/client/Game.client.luau',line:1,kind:'FUNCTION',symbol:'renderHud',context:'function renderHud()',score:30}],
+    signals:{
+      combat:8,progression:4,ai:2,save:1,multiplayer:1,animation:6,audio:5,vfx:5,camera:4,ui:7,uiFlow:4,entryFlow:2,loadingFlow:1,input:7,
+      map:5,landmark:2,interaction:5,inventory:4,equipment:3,settings:2,feedback:4,session:3,content:8,choice:2,connection:3,performance:4,lighting:3,primitive:2,todo:0,errorRecovery:2
+    },
+    observations:['CURRENT_SOURCE_FILES=5']
+  };
+  const directive=buildGameSpecificBuildUpDirective({
+    gameId:'quality-demo',platform:'ROBLOX',gameName:'품질 데모',designRecord:design(),sourceObservation
+  });
+  assert.equal(directive.experienceBuildUp.platform,'ROBLOX');
+  assert.equal(directive.experienceBuildUp.priorityWeight,2);
+  assert.equal(directive.experienceBuildUp.minimumActiveSurfaces,6);
+  assert.equal(directive.experienceBuildUp.activeBundle.length,6);
+  assert.equal(directive.experienceBuildUp.strictPerceptualQuality,true);
+  assert.equal(directive.experienceBuildUp.rules.normalPlayScalePerceptibleDeltaRequired,true);
+  assert.equal(directive.experienceBuildUp.rules.sourceDeltaAloneCannotCloseSurface,true);
+  assert.equal(directive.robloxNativeExecution.perceptualBuildUpRequired,true);
+  assert.ok(directive.robloxNativeExecution.sourceInspectionChecklist.includes('ARTICULATED_MOTION_AND_ANIMATOR'));
+  assert.ok(directive.robloxNativeExecution.sourceInspectionChecklist.includes('INVENTORY_EQUIPMENT_STATE'));
+  assert.ok(directive.robloxNativeExecution.sourceInspectionChecklist.includes('AUDIO_MUSIC_SFX_LIFECYCLE'));
+  assert.ok(directive.robloxNativeExecution.codeQualityChecks.includes('NO_ROOT_ONLY_MOTION_CLAIM_FOR_ARTICULATED_ACTOR'));
+  assert.ok(directive.acceptanceEvidence.includes('NORMAL_PLAY_SCALE_PERCEPTIBLE_DELTA_REQUIRED'));
+  assert.ok(directive.acceptanceEvidence.includes('MICRO_AMPLITUDE_OR_MARKER_ONLY_CHANGE_CANNOT_CLOSE_QUALITY_GAP'));
+});
+
+test('experience surfaces rotate so UI inventory audio motion and world quality cannot starve',()=>{
+  const sourceObservation={
+    sourceRoot:'roblox-games/rotation-demo',
+    sourceTreeFingerprint:'b'.repeat(64),
+    fileCount:6,topFiles:[],sourceAnchors:[],
+    signals:{
+      combat:6,progression:5,ai:2,save:2,multiplayer:0,animation:5,audio:5,vfx:5,camera:5,ui:6,uiFlow:5,entryFlow:2,loadingFlow:1,input:5,
+      map:5,landmark:2,interaction:4,inventory:4,equipment:4,settings:2,feedback:4,session:4,content:8,choice:2,connection:3,performance:4,lighting:4,primitive:2,todo:0,errorRecovery:2
+    },
+    observations:['CURRENT_SOURCE_FILES=6']
+  };
+  let previous=null;
+  const touched=new Set();
+  for(let generation=0;generation<2;generation+=1){
+    const directive=buildGameSpecificBuildUpDirective({
+      gameId:'rotation-demo',platform:'ROBLOX',designRecord:design(),
+      sourceObservation:{...sourceObservation,sourceTreeFingerprint:String(generation+1).repeat(64)},
+      previousDirective:previous,
+      previousDirectiveOutcome:previous?'verified':'',
+      runtimeEvidence:previous?{runtimeObserved:true,runtimePassed:true}:{}
+    });
+    for(const row of directive.experienceBuildUp.activeBundle)touched.add(row.id);
+    previous=directive;
+  }
+  for(const surface of ['MOTION_ACTING','UI_HUD_MENU','INVENTORY_EQUIPMENT','AUDIO_MUSIC_SFX','CAMERA_VFX_FEEDBACK','WORLD_LIGHTING_MATERIALS','INPUT_MOBILE','ONBOARDING_SESSION','PERFORMANCE_STABILITY','EVENT_COHERENCE']){
+    assert.ok(touched.has(surface),surface);
+  }
+  assert.equal(previous.experienceBuildUp.coverageLedger.untouchedTooLong.length,0);
+});
+
+test('intentional audio disable remains a protected choice while music/audio state is still audited',()=>{
+  const directive=buildGameSpecificBuildUpDirective({
+    gameId:'quiet-game',platform:'WEB',designRecord:design(),
+    sourceObservation:{
+      sourceRoot:'web-games/quiet-game',sourceTreeFingerprint:'c'.repeat(64),fileCount:2,topFiles:[],sourceAnchors:[],
+      signals:{combat:2,progression:2,ai:1,save:1,multiplayer:0,animation:2,audio:2,vfx:1,camera:1,ui:2,uiFlow:1,entryFlow:1,loadingFlow:0,input:2,map:1,landmark:0,interaction:1,inventory:0,equipment:0,settings:1,feedback:1,session:1,content:2,choice:1,connection:0,performance:1,lighting:1,primitive:1,todo:0,errorRecovery:1},
+      observations:['CURRENT_SOURCE_FILES=2']
+    }
+  });
+  assert.equal(directive.experienceBuildUp.rules.intentionallyDisabledAudioMustRemainDisabled,true);
+  const audio=directive.experienceBuildUp.surfaces.find(row=>row.id==='AUDIO_MUSIC_SFX');
+  assert.equal(audio.applicable,true);
+  assert.match(audio.goal,/강제로 되살리지 않는다/);
 });
