@@ -2526,7 +2526,13 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
       freshness=currentDirectiveNeedsContractMigration?'RECONCILED_LEGACY_DIRECTIVE_TO_ACTIVE_V3_GENERATION':'RECONCILED_TO_ACTIVE_GENERATION';
     }else if(currentDirectiveNeedsContractMigration){
       const verifiedDesign=latestVerifiedDesign(repoRoot,gameId);
-      if(!verifiedDesign){
+      const migrationFocus=clean(item?.studioQualityEvolution?.focusPillar||item?.buildUpDirective?.primaryFocus).toUpperCase();
+      const sourceSafeNoDesign=Boolean(
+        !verifiedDesign
+        &&clean(project.engine).toLowerCase()==='web'
+        &&['PRESENTATION','USABILITY','STABILITY'].includes(migrationFocus)
+      );
+      if(!verifiedDesign&&!sourceSafeNoDesign){
         designPending+=1;
         freshness='LEGACY_BUILD_UP_V3_MIGRATION_DESIGN_PENDING';
         candidate={...item,evidence:[...new Set([...(item.evidence||[]),'build-up-directive-contract-migration:DESIGN_PENDING'])]};
@@ -2543,7 +2549,7 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
           ...item,
           id:item.id+'-legacy-contract-baseline',
           status:'superseded',
-          blocker:'superseded-by:AUTONOMOUS_CONTENT_EXPANSION_CONTRACT_BACKFILL',
+          blocker:'superseded-by:PERCEPTIBLE_EXPERIENCE_V3_CONTRACT_BACKFILL',
           buildUpDirective:{...item.buildUpDirective,generation:syntheticPreviousGeneration},
           buildUpGeneration:syntheticPreviousGeneration
         };
