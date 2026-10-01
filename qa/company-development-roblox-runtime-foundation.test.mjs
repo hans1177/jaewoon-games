@@ -769,3 +769,61 @@ test('F9 fan-in reads a shallow Vibe queue and fetches each exact source revisio
  assert.match(fanin,/if ! git -C main cat-file -e "\$source_revision\^\{commit\}" 2>\/dev\/null; then/);
  assert.match(fanin,/git -C main fetch --no-tags --depth=1 origin "\$source_revision" --quiet/);
 });
+
+test('Roblox F0-F9 orchestration dispatches exact games without cross-game fan-in while preserving required serialization',()=>{
+  const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const post=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  const f9=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+  const release=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+
+  assert.match(runtime,/ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED/);
+  assert.match(runtime,/ROBLOX_ONLY_FINAL_F9_SERVER_PUBLISH=YES/);
+
+  const f9Dispatch=post.slice(
+    post.indexOf('Dispatch exact F9 review for every runtime-accepted candidate'),
+    post.indexOf('Dispatch exact Studio MCP follow-up after new runtime foundation evidence')
+  );
+  assert.match(f9Dispatch,/company-development-roblox-final-review-revalidation\.yml[\s\S]*?-f game_id="\$id"/);
+  assert.match(f9Dispatch,/ROBLOX_F9_EXACT_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.doesNotMatch(f9Dispatch,/--ref main\s*$/m);
+
+  const foundationPersist=post.slice(
+    post.indexOf('Persist runtime tester and QA evidence'),
+    post.indexOf('Dispatch exact F9 review for every runtime-accepted candidate')
+  );
+  assert.match(post,/ROBLOX_FOUNDATION_RUNTIME_PATCH_COUNT=/);
+  assert.match(foundationPersist,/ROBLOX_FOUNDATION_PERSIST_OPTIMISTIC_ATTEMPT=\$attempt\/5/);
+  assert.match(foundationPersist,/ROBLOX_FOUNDATION_PERSIST_SAME_FIELD_CONFLICT=/);
+  assert.match(foundationPersist,/EXACT_SOURCE_REVISION/);
+  assert.match(foundationPersist,/EXACT_ARTIFACT_IDENTITY/);
+  assert.match(foundationPersist,/EXACT_CANDIDATE_VERSION/);
+  assert.match(post,/beforeUpdatedAt:String\(before\.updatedAt\|\|''\)/);
+  assert.match(foundationPersist,/SAME_GAME_ATOMIC_STATE/);
+  assert.match(foundationPersist,/ROBLOX_FOUNDATION_DOWNSTREAM_CONFLICT_FILTER_COUNT=/);
+  assert.match(foundationPersist,/ROBLOX_FOUNDATION_CONFLICT_REVALIDATION_DISPATCHED=\$id/);
+  assert.match(foundationPersist,/company-development-roblox-post-runtime-qa\.yml[\s\S]*?-f game_id="\$id"/);
+  assert.doesNotMatch(foundationPersist,/git rebase/);
+  assert.doesNotMatch(foundationPersist,/DEFERRED_TO_NEXT_CYCLE/);
+
+  const studio=post.slice(post.indexOf('  studio-mcp-auto-play:'),post.indexOf('\n  studio-mcp-evidence:',post.indexOf('  studio-mcp-auto-play:')));
+  assert.match(studio,/group: roblox-studio-shared-host/);
+  assert.match(studio,/max-parallel:\s*1/);
+
+  const publishAt=f9.indexOf('Dispatch exact F9-verified artifact to canonical Roblox game target');
+  const continueAt=f9.indexOf('Immediately continue each successfully persisted Roblox F9 game');
+  const fanInAt=f9.indexOf('Fan verified F9 runtime proof into waiting Vibe Roblox tasks');
+  assert.ok(publishAt>=0&&continueAt>publishAt&&fanInAt>continueAt);
+  const continueBlock=f9.slice(continueAt,fanInAt);
+  assert.match(continueBlock,/company-development-confirmed-runtime\.yml[\s\S]*?-f game_id="\$id"/);
+  assert.match(continueBlock,/trigger_source=ROBLOX_F9_PER_GAME_CONTINUATION/);
+  assert.match(continueBlock,/roblox-f9-persist-same-field-conflicts/);
+  assert.match(continueBlock,/ROBLOX_F9_NEXT_CYCLE_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.match(continueBlock,/ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO/);
+
+  const releaseHeader=release.slice(0,release.indexOf('\njobs:\n'));
+  assert.doesNotMatch(releaseHeader,/concurrency:/);
+  assert.match(release,/retry_window_seconds=900/);
+  assert.match(release,/ROBLOX_PUBLISH_SERVER_BUSY_ATTEMPT=/);
+  assert.match(release,/company-development-roblox-final-review-revalidation\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$GAME_ID"/);
+});
+
