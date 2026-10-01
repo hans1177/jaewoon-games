@@ -2680,7 +2680,9 @@ export async function runOfficialStudioMcpPlay({
           &&!visitedRoutes.has(clean(row.kind)+':'+clean(row.name))
           &&Math.hypot(Number(row.x||0)-Number(root.rootX||0),Number(row.z||0)-Number(root.rootZ||0))>8);
         if(!candidate){
-          if(routeRows.length>0&&routeIndex===0){
+          const unresolvedRemoteRoute=routeRows.some(row=>row?.pass!==true
+            &&Math.hypot(Number(row.x||0)-Number(root.rootX||0),Number(row.z||0)-Number(root.rootZ||0))>8);
+          if(unresolvedRemoteRoute&&routeIndex===0){
             actions.push({id:'map-route-unreachable',type:'mcp-map-route-audit',dispatched:true,ok:false,reason:'no-reachable-anchor'});
           }
           break;
