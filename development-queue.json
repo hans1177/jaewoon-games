@@ -10032,10 +10032,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-10-01T00:50:41.858Z",
+      "updatedAt": "2026-10-01T00:57:22.605Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -11383,7 +11383,7 @@
       "unityCandidateBranch": "development/unity-tech-line-defense-36773180555",
       "unitySourceCommit": "ba85f3d2e63513dc9653097957e5ab4036f57302",
       "unityBuildRunId": 36792717064,
-      "unityRuntimeSmokeRunId": 36794560038,
+      "unityRuntimeSmokeRunId": 36798340545,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityInternalReleaseReady": false,
@@ -11392,7 +11392,7 @@
       "unityPublicReleaseReady": false,
       "unityPublicRelease": false,
       "executionEvidence": {
-        "version": 3,
+        "version": 4,
         "platform": "UNITY",
         "sourceRevision": "ba85f3d2e63513dc9653097957e5ab4036f57302",
         "sourceRootTreeSha": "6099dbbf6bcb1f03bf7c5514614fef9389d73366",
@@ -11403,11 +11403,17 @@
         "independentQaPassed": false,
         "multiplayerPassed": true,
         "regressionPassed": false,
+        "rawStageResults": {
+          "runtime": false,
+          "independentQa": false,
+          "regression": false
+        },
+        "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": true,
         "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
         "failureStage": "F1_SERVER_BOOT",
-        "failureSignature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee"
+        "failureSignature": "45f68e8906e8d7a8b4da23cf335a9224872381de91ebadd2e743778050084d4a"
       },
       "resumeStage": "F1_SERVER_BOOT",
       "failureCount": 1,
@@ -11857,13 +11863,13 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-01T00:09:25.786Z"
+        "verifiedAt": "2026-10-01T00:57:22.605Z"
       },
       "unityF9ReleaseRegressionPassed": false,
       "unityF9ReleaseRegressionPassedAt": null,
       "unityCanonicalPublishPending": false,
       "unityExecutionEvidence": {
-        "version": 3,
+        "version": 4,
         "platform": "UNITY",
         "sourceRevision": "ba85f3d2e63513dc9653097957e5ab4036f57302",
         "sourceRootTreeSha": "6099dbbf6bcb1f03bf7c5514614fef9389d73366",
@@ -11874,12 +11880,19 @@
         "independentQaPassed": false,
         "multiplayerPassed": true,
         "regressionPassed": false,
+        "rawStageResults": {
+          "runtime": false,
+          "independentQa": false,
+          "regression": false
+        },
+        "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": true,
         "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
         "failureStage": "F1_SERVER_BOOT",
-        "failureSignature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee"
-      }
+        "failureSignature": "45f68e8906e8d7a8b4da23cf335a9224872381de91ebadd2e743778050084d4a"
+      },
+      "unityCanonicalEvidenceBound": false
     },
     {
       "gameId": "cozy-island",
@@ -27821,7 +27834,7 @@
       "unityCanonicalEvidenceBound": false
     }
   ],
-  "updatedAt": "2026-10-01T00:55:53.155Z",
+  "updatedAt": "2026-10-01T00:57:25.247Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
