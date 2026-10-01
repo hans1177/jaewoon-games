@@ -42,7 +42,7 @@ test('one failed prerequisite keeps neural expansion pending without blocking or
 });
 
 
-test('parallel readiness uses bounded concurrency and fans in through the ordered final gate',async()=>{
+test('parallel readiness uses all independent lanes by default and fans in through the ordered final gate',async()=>{
   let active=0,maxActive=0;
   const result=await evaluateNeuralExpansionReadinessParallel({
     root:process.cwd(),
@@ -56,11 +56,12 @@ test('parallel readiness uses bounded concurrency and fans in through the ordere
     }
   });
   assert.equal(result.pass,true);
-  assert.equal(result.evaluationMode,'PARALLEL_BOUNDED_INDEPENDENT_QA_ORDERED_FINAL_GATE');
-  assert.equal(result.parallelLaneCount,NEURAL_EXPANSION_MAX_PARALLEL_CHECKS);
-  assert.equal(result.maxParallelChecks,NEURAL_EXPANSION_MAX_PARALLEL_CHECKS);
-  assert.ok(maxActive>1);
-  assert.ok(maxActive<=NEURAL_EXPANSION_MAX_PARALLEL_CHECKS);
+  assert.equal(result.evaluationMode,'PARALLEL_UNCAPPED_INDEPENDENT_QA_ORDERED_FINAL_GATE');
+  assert.equal(NEURAL_EXPANSION_MAX_PARALLEL_CHECKS,Number.MAX_SAFE_INTEGER);
+  assert.equal(result.parallelLaneCount,Object.keys(NEURAL_EXPANSION_READINESS_CHECKS).length);
+  assert.equal(result.maxParallelChecks,Object.keys(NEURAL_EXPANSION_READINESS_CHECKS).length);
+  assert.equal(result.internalParallelCap,null);
+  assert.equal(maxActive,Object.keys(NEURAL_EXPANSION_READINESS_CHECKS).length);
   assert.equal(result.rule4QaPass,true);
   assert.equal(result.bottleneckQaPass,true);
   assert.equal(result.orderedRuleGatePass,true);
