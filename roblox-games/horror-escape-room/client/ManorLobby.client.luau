@@ -481,7 +481,7 @@ visibility=function()
  end
 end
 p.AttributeChanged:Connect(visibility);workspace:GetAttributeChangedSignal("PhysicalLobbyReady"):Connect(visibility);visibility()
--- 실제 입장 위치가 보이는 실내 메인 카메라. 입장 후에는 기본 카메라/터치 조작을 쓴다.
+-- 앞마당 스폰과 현관 정면축을 사람 눈높이에서 보여준다. 입장 후에는 기본 카메라/터치 조작을 쓴다.
 RunService.RenderStepped:Connect(function()
  applyManorLayout()
  if not gui.Enabled or entered then return end
@@ -489,7 +489,7 @@ RunService.RenderStepped:Connect(function()
  if x and z and camera then
   mainCameraActive=true
   camera.CameraType=Enum.CameraType.Scriptable
-  camera.CFrame=CFrame.lookAt(Vector3.new(x,12,z+54),Vector3.new(x,9,z-4))
+  camera.CFrame=CFrame.lookAt(Vector3.new(x,7.2,z+76),Vector3.new(x,6.2,z+2))
   if controls then controls:Disable()end
  end
 end)
