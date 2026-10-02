@@ -3160,6 +3160,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          git fetch --no-tags origin main
+          git reset --hard origin/main
+          echo "base_main_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           git -C ../runtime fetch --no-tags origin company-runtime
           git -C ../runtime reset --hard origin/company-runtime
           node --input-type=module <<'NODE'
@@ -3238,10 +3241,15 @@ jobs:
         working-directory: main
         env:
           GH_TOKEN: ${{ github.token }}
+          BASE_MAIN_SHA: ${{ steps.asset_promotion.outputs.base_main_sha }}
         shell: bash
         run: |
           set -euo pipefail
           git fetch --no-tags origin main
+          if [ -n "$(git diff --name-only "$BASE_MAIN_SHA" origin/main -- company-asset-library.json)" ]; then
+            echo 'ROBLOX_VERIFIED_COMPANY_ASSET_PROMOTION=DEFERRED_LIBRARY_CHANGED'
+            exit 0
+          fi
           git config user.name 'jaewoon-asset-runtime-promotion'
           git config user.email 'actions@users.noreply.github.com'
           git add company-asset-library.json
@@ -3266,6 +3274,7 @@ jobs:
             echo 'ROBLOX_VERIFIED_COMPANY_ASSET_PROMOTION=REVIEWED_PR_ATTEMPTED'
           fi
           echo 'ROBLOX_VERIFIED_COMPANY_ASSET_PROMOTION_RELEASE_AUTHORITY=NONE'
+
   studio-reboot-recovery:
     name: recover interrupted Studio session from company-runtime checkpoint
     needs: [studio-local-plan, studio-mcp-auto-play]
