@@ -14,7 +14,9 @@ Manor.__index=Manor
 
 local function part(parent,name,pos,size,ground)
  local p=Instance.new("Part");p.Name=name;p.Position=pos;p.Size=size;p.Anchored=true
- p.Transparency=1;p.CanCollide=true;p.CanTouch=false;p.CanQuery=true
+ p.Transparency=1;p.CanCollide=true;p.CanTouch=false
+ -- 카메라/시야 raycast는 투명 충돌벽에 막히지 않는다. 실제 지면만 query 대상으로 둔다.
+ p.CanQuery=ground==true
  p:SetAttribute("WalkableGround",ground==true);p.Parent=parent;return p
 end
 local function namedParts(model,prefix)
@@ -58,7 +60,8 @@ function Manor.new(remote,selectMap)
  for _,d in ipairs(template:GetDescendants())do
   if d:IsA("LuaSourceContainer")or d:IsA("RemoteEvent")or d:IsA("RemoteFunction")or d:IsA("Tool")or d:IsA("JointInstance")or d:IsA("WeldConstraint")then d:Destroy()
   elseif d:IsA("BasePart")then
-   d.Anchored=true;d.CanCollide=false;d.CanTouch=false
+   -- 수입 GLB는 100% 시각 레이어다. 이동 충돌은 아래의 단순 서버 충돌체만 담당한다.
+   d.Anchored=true;d.CanCollide=false;d.CanTouch=false;d.CanQuery=false
    local finish=Assets.Finishes and(Assets.Finishes[d.Name]or(d.Parent and Assets.Finishes[d.Parent.Name]))
    if finish then d.Material=Enum.Material[finish]end
   end
@@ -131,6 +134,9 @@ function Manor:Get(p)
   part(folder,"PorchStepGround",origin+Vector3.new(0,.16+step*.28,8.8-step*.95),Vector3.new(width,.30,2.0),true)
  end
  part(folder,"PorchPlinthGround",origin+Vector3.new(0,.72,4.9),Vector3.new(20.5,1.0,9.8),true)
+ -- 포치→현관문→그랜드홀 사이를 한 장의 연속 보행면으로 보강한다.
+ -- 시각 문턱/지붕/벽 메시와 무관하게 캐릭터가 걸어서 반드시 진입할 수 있어야 한다.
+ part(folder,"EntranceWalkwayGround",origin+Vector3.new(0,.18,-5.0),Vector3.new(18,.34,28),true)
  for _,x in ipairs({-8.6,-7.6,7.6,8.6})do
   local z=math.abs(x)>8 and 8.2 or 3.2
   part(folder,"PorchColumnBoundary",origin+Vector3.new(x,6.7,z),Vector3.new(1.25,11.4,1.25),false)
@@ -279,11 +285,13 @@ function Manor:Get(p)
   part(folder,"WingFurnitureBoundary",origin+Vector3.new(spec[1],spec[2],spec[3]),Vector3.new(spec[4],spec[5],spec[6]),false)
  end
  for _,mesh in ipairs(scene:GetDescendants())do
-  if mesh:IsA("BasePart")and (mesh.Name:match("^HearthFlame")or mesh.Name:match("^ChandelierFlame"))then
-   mesh.Material=Enum.Material.Neon;mesh.Color=Color3.fromRGB(255,185,99)
-  elseif mesh:IsA("BasePart")and(mesh.Name:match("^OuterWingWall")or mesh.Name:match("^WingBackWall")or mesh.Name:match("^LockedGuestDoor")or mesh.Name:match("^GrandStair")or mesh.Name:match("^BalconyWalk")or mesh.Name=="SecondFloorGallery"or mesh.Name=="LeftWingFloor"or mesh.Name=="RightWingFloor"or mesh.Name:match("^BackWall")or mesh.Name=="HallFloor"or mesh.Name=="Courtyard"or mesh.Name=="CrookedRoof")then
-   -- 카메라도 실제 불투명 벽/바닥과 충돌한다. 장식 전체의 볼록 충돌체는 만들지 않는다.
-   mesh.CanCollide=true;mesh.CanQuery=true
+  if mesh:IsA("BasePart")then
+   -- 시각 메시 충돌/쿼리를 다시 켜지 않는다. CrookedRoof/BackWall 같은 큰 MeshPart의
+   -- convex collision hull이 현관·2층 동선을 덮는 문제를 원천 차단한다.
+   mesh.CanCollide=false;mesh.CanTouch=false;mesh.CanQuery=false
+   if mesh.Name:match("^HearthFlame")or mesh.Name:match("^ChandelierFlame")then
+    mesh.Material=Enum.Material.Neon;mesh.Color=Color3.fromRGB(255,185,99)
+   end
   end
  end
  -- 양쪽 경첩을 중심으로 열리는 현관문. 문짝은 사람을 밀거나 가두지 않는다.
@@ -577,7 +585,7 @@ function Manor:Recover(p)
  local r=p.Character and p.Character:FindFirstChild("HumanoidRootPart")
  if not r then return nil end
  local localPos=r.Position-room.origin
- local nearDoor=math.abs(localPos.X)<13 and localPos.Z> -19 and localPos.Z<14
+ local nearDoor=math.abs(localPos.X)<18 and localPos.Z> -24 and localPos.Z<24
  if room.doorOpen~=nearDoor then
   room.doorOpen=nearDoor
   for _,door in ipairs(room.doors)do
