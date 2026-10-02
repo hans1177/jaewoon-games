@@ -347,7 +347,8 @@ test('successful Roblox package flow auto-dispatches shared preflight then F0 wi
   assert.ok(workflow.includes('ROBLOX_ACTIVE_CONTINUATION_IDS='));
   assert.ok(workflow.includes('ROBLOX_GLOBAL_PACKAGE_BARRIER=DISABLED'));
   assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DEDUPED_COUNT='));
-  assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=DEDUPED_ACTIVE:'));
+  assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=DEDUPED_CURRENT_MAIN:'));
+  assert.match(workflow,/String\(run\.head_sha\|\|''\)!==currentSha/);
   assert.doesNotMatch(workflow,/\$package_pending" == '0'.*ROBLOX_POST_PACKAGE_CONTINUATION/s);
   assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main'));
   assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES'));
@@ -699,7 +700,8 @@ test('Roblox batch scheduler ignores unrelated main churn and redispatches only 
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/name: Reject superseded batch scheduler/);
   assert.match(workflow,/if \[ -n "\$REQUESTED_GAME_ID" \]; then/);
-  assert.match(workflow,/ROBLOX_RUNTIME_EXACT_DEDUPED_ACTIVE=/);
+  assert.match(workflow,/ROBLOX_RUNTIME_EXACT_DEDUPED_CURRENT_MAIN=/);
+  assert.match(workflow,/String\(r\.head_sha\|\|''\)===currentSha/);
   assert.match(workflow,/ROBLOX_BATCH_FRESHNESS=CURRENT:/);
   assert.match(workflow,/ROBLOX_SOURCE_PLAN_CONTRACT_PATHS:/);
   assert.match(workflow,/git diff --quiet "\$GITHUB_SHA" "\$current_main" -- "\$\{contract_paths\[@\]\}"/);
@@ -1037,7 +1039,7 @@ test('Roblox continuation dispatch is per-game and does not wait behind one glob
   assert.match(workflow,/roblox-continuation-ready-ids/);
   assert.match(workflow,/Roblox shared preflight · /);
   assert.match(workflow,/company-development-roblox-runtime-continuation\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
-  assert.match(workflow,/ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.match(workflow,/ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=DEDUPED_CURRENT_MAIN:/);
   assert.doesNotMatch(workflow,/&& "\$active_continuations" == '0'/);
   assert.doesNotMatch(workflow,/ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=SKIP_ACTIVE/);
 });
@@ -1058,7 +1060,7 @@ test('Roblox runtime collapses duplicate exact-game and batch planners with same
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/run-name: Roblox runtime · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
   assert.match(workflow,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
-  assert.match(workflow,/ROBLOX_RUNTIME_EXACT_DEDUPED_ACTIVE=/);
+  assert.match(workflow,/ROBLOX_RUNTIME_EXACT_DEDUPED_CURRENT_MAIN=/);
   assert.match(workflow,/ROBLOX_RUNTIME_BATCH_DEDUPED_NEWER_ACTIVE=/);
   assert.match(workflow,/process\.stdout\.write\(String\(ids\[ids\.length-1\]\)\)/);
   assert.match(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n(?:\s+#.*\n)*\s+cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
