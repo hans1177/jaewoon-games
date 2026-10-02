@@ -2469,33 +2469,30 @@ local function playCelebrationEmote(player,celebration)
 end
 
 local function stageResultCeremony(winner,celebrationPlayers)
- local cameraPos=Vector3.new(0,7.2,32)
- local focusPos=Vector3.new(0,3.8,12)
- local slots={-7.5,-2.5,2.5,7.5}
  local entries={}
  for _,player in ipairs(celebrationPlayers)do table.insert(entries,{player=player})end
  for _,b in ipairs(bots)do
   if winner=="DRAW"or b.role==winner then table.insert(entries,{bot=b})end
  end
  while #entries>4 do table.remove(entries)end
- workspace:SetAttribute("CelebrationCameraPosition",cameraPos)
- workspace:SetAttribute("CelebrationFocusPosition",focusPos)
- workspace:SetAttribute("CelebrationStagedCount",#entries)
 
- for i,row in ipairs(entries)do
-  local x=slots[i]or 0
-  local pos=Vector3.new(x,3,12)
+ -- 실제 캐릭터 위치는 건드리지 않는다. 결과 연출 때문에 경기 종료 직전에 순간이동/튕김처럼 보이지 않게 한다.
+ local anchor=nil
+ for _,row in ipairs(entries)do
   if row.player then
-   teleport(row.player,pos,cameraPos)
+   local rr=root(row.player)
+   if rr and not anchor then anchor=rr.Position end
    speed(row.player,0)
-  elseif row.bot and row.bot.part and row.bot.part.Parent then
-   local grounded=Vector3.new(pos.X,row.bot.part.Position.Y,pos.Z)
-   setBotCFrame(row.bot,CFrame.lookAt(grounded,Vector3.new(cameraPos.X,grounded.Y,cameraPos.Z)))
+  elseif row.bot and row.bot.part and row.bot.part.Parent and not anchor then
+   anchor=row.bot.part.Position
   end
  end
+ anchor=anchor or Vector3.new(0,3,0)
+ workspace:SetAttribute("CelebrationFocusPosition",anchor+Vector3.new(0,2,0))
+ workspace:SetAttribute("CelebrationCameraPosition",anchor+Vector3.new(0,5.2,12))
+ workspace:SetAttribute("CelebrationStagedCount",#entries)
  return entries
 end
-
 local function animateCelebratingBots(winner,duration,entries)
  local bases={}
  for _,row in ipairs(entries or{})do
@@ -2573,21 +2570,25 @@ local function endRound(winner)
  end
  clearBots();monster=nil;monsterBot=nil;workspace:SetAttribute("HumanCount",0);workspace:SetAttribute("MonsterCount",0)
  workspace:SetAttribute("CelebrationWinnerTeam","");workspace:SetAttribute("CelebrationName","");workspace:SetAttribute("CelebrationCaption","");workspace:SetAttribute("CelebrationAIWinners",0);workspace:SetAttribute("CelebrationStagedCount",0)
+
+ -- RESULT_RETURN_SAME_SERVER: 결과 화면 뒤 같은 place 재접속 없이 현재 서버의 개인 저택으로 바로 복귀한다.
+ local completedRoomCode=roomCode
+ local wasRoomServer=roomServer
  local players=Players:GetPlayers();table.sort(players,function(a,b)return a.UserId<b.UserId end)
  state="WAITING"
- for i,p in ipairs(players)do
+ for _,p in ipairs(players)do
   p:SetAttribute("RoundState","ROOM_BROWSER")
   p:SetAttribute("Role","WAITING");applyRoleVisual(p,"WAITING")
   if manorLobby then manorLobby:Dress(p)end
   teleport(p,personalSpawn(p))
-  if roomServer and not studioRoomFallback and not localSoloSession then leaveReservedRoom(p)end
  end
- if localSoloSession then
-  localSoloSession=false;roomServer=false;roomCode="";roomHostUserId=0;roomHostName="";roomVisibility="PUBLIC";roomSolo=false;roomStartRequested=false
-  workspace:SetAttribute("RoomStartRequested",false);syncLobbyState("ROOM_BROWSER")
- elseif studioRoomFallback then
-  roomServer=false;roomCode="";roomSolo=false
+ if wasRoomServer and completedRoomCode~=""and completedRoomCode~="SOLO"and not studioRoomFallback then
+  removeRoomDirectoryEntry(completedRoomCode)
  end
+ localSoloSession=false;roomServer=false;roomCode="";roomHostUserId=0;roomHostName="";roomVisibility="PUBLIC"
+ roomSolo=false;roomStartRequested=false;roomExpectedCount=1;roomFirstJoinAt=0
+ workspace:SetAttribute("RoomStartRequested",false)
+ syncRoomState();syncLobbyState("ROOM_BROWSER")
  if refreshPhysicalLobby then refreshPhysicalLobby()end
 end
 local purifyCooldown={}
@@ -2803,6 +2804,10 @@ local function ability(p)
   end
   p:SetAttribute("AbilityFeedback",(profile.Name or infectedAbility)..":"..stamp)
   p:SetAttribute("FeedbackEvent","ABILITY:"..infectedAbility..":"..stamp)
+  remote:FireAllClients("MONSTER_ABILITY_EFFECT",{
+   Ability=infectedAbility,Effect=profile.Effect or infectedAbility,Origin=r.Position,Target=nil,
+   Look=r.CFrame.LookVector,UserId=p.UserId,Stamp=stamp,Infected=true,
+  })
   return
  end
 
@@ -2912,7 +2917,11 @@ local function infectAttack(p)
  if not spendEnergy(p,C.Energy and C.Energy.InfectAttackCost or 30,"INFECT")then return end
  infectAttackCooldown[p]=now;p:SetAttribute("InfectReadyAt",workspace:GetServerTimeNow()+cd)
  local hit=targetPlayer and infectPlayer(targetPlayer,p)or infectBot(targetBot,p)
- if hit then p:SetAttribute("FeedbackEvent","INFECT_ATTACK_HIT:"..tostring(math.floor(now*1000)))end
+ if hit then
+  local stamp=tostring(math.floor(now*1000))
+  p:SetAttribute("FeedbackEvent","INFECT_ATTACK_HIT:"..stamp)
+  remote:FireAllClients("MONSTER_ATTACK_EFFECT",{Origin=r.Position,Look=r.CFrame.LookVector,UserId=p.UserId,Stamp=stamp})
+ end
 end
 
 local function nextMonster(p)
@@ -3963,7 +3972,10 @@ RunService.Heartbeat:Connect(function(dt)
      if bestEntry and visible and bd<=infectRange and os.clock()>=(b.infectAttackReadyAt or 0)and(b.energy or 0)>=infectCost then
       b.energy=math.max(0,(b.energy or 0)-infectCost);b.infectAttackReadyAt=os.clock()+attackCd
       BotAI.callout(b,"지금 붙는다.")
-      if bestEntry.p then infectPlayer(bestEntry.p,nil)elseif bestEntry.b then infectBot(bestEntry.b,nil)end
+      local hit=bestEntry.p and infectPlayer(bestEntry.p,nil)or(bestEntry.b and infectBot(bestEntry.b,nil))
+      if hit then
+       remote:FireAllClients("MONSTER_ATTACK_EFFECT",{Origin=b.part.Position,Look=b.part.CFrame.LookVector,UserId=0,Stamp=tostring(math.floor(os.clock()*1000))})
+      end
      elseif bestEntry and visible and BotAI.tryBotMonsterAbility(b,bestPos,bd)then
       BotAI.callout(b,"능력 쓴다. 같이 압박해.")
      else
