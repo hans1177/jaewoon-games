@@ -31,16 +31,23 @@ end
 do
 local function bootstrapLobbyCharacter(player,character)
  if workspace:GetAttribute("LobbyPhase")=="RUNNING"or workspace:GetAttribute("RoomState")=="RUNNING"then return end
+ lobbyBootstrapSpawn.Enabled=true
  player.RespawnLocation=lobbyBootstrapSpawn
  task.defer(function()
   local rootPart=character and character:WaitForChild("HumanoidRootPart",5)
   local humanoid=character and character:WaitForChild("Humanoid",5)
   if not rootPart or not humanoid or not character.Parent then return end
   if workspace:GetAttribute("LobbyPhase")=="RUNNING"or workspace:GetAttribute("RoomState")=="RUNNING"then return end
+  -- FIRST_FRAME_GROUND_SNAP_V2: 엔진이 첫 생성 위치를 정한 직후 저택 준비를 기다리지 않고 앞마당으로 고정한다.
+  local bootstrapTarget=Vector3.new(0,3.7,330)
+  local bootstrapLook=Vector3.new(0,3.7,268)
+  character:PivotTo(CFrame.lookAt(bootstrapTarget,bootstrapLook))
   rootPart.Anchored=false
   rootPart.AssemblyLinearVelocity=Vector3.zero
   rootPart.AssemblyAngularVelocity=Vector3.zero
   humanoid.PlatformStand=false;humanoid.Sit=false;humanoid.AutoRotate=true
+  player:SetAttribute("BootstrapGroundSnapAt",workspace:GetServerTimeNow())
+  player:SetAttribute("BootstrapGroundSnapY",rootPart.Position.Y)
  end)
 end
 local function bindBootstrapLobbySpawn(player)
@@ -1489,6 +1496,7 @@ local function makeArena(map)
  foundationSpawn.CanCollide=false
  foundationSpawn.CanTouch=false
  foundationSpawn.CanQuery=false
+ foundationSpawn.Enabled=false
  foundationSpawn.Parent=f
  for k,v in pairs(Style.Lighting)do Lighting[k]=v end
  local grade=Lighting:FindFirstChild("MidnightColorGrade")or Instance.new("ColorCorrectionEffect")
@@ -1868,7 +1876,7 @@ makeFallbackArena=function(map,reason)
  local old=workspace:FindFirstChild("MidnightArena");if old then old:Destroy()end
  local nextArena=workspace:FindFirstChild("MidnightArenaNext");if nextArena then nextArena:Destroy()end
  local f=Instance.new("Folder");f.Name="MidnightArena";f.Parent=workspace
- foundationSpawn=Instance.new("SpawnLocation");foundationSpawn.Name="FoundationSpawn";foundationSpawn.Size=Vector3.new(10,1,10);foundationSpawn.Position=Vector3.new(survivorSpawns[1].X,.55,survivorSpawns[1].Z);foundationSpawn.Anchored=true;foundationSpawn.Neutral=true;foundationSpawn.Transparency=1;foundationSpawn.CanCollide=false;foundationSpawn.CanTouch=false;foundationSpawn.CanQuery=false;foundationSpawn.Parent=f
+ foundationSpawn=Instance.new("SpawnLocation");foundationSpawn.Name="FoundationSpawn";foundationSpawn.Size=Vector3.new(10,1,10);foundationSpawn.Position=Vector3.new(survivorSpawns[1].X,.55,survivorSpawns[1].Z);foundationSpawn.Anchored=true;foundationSpawn.Neutral=true;foundationSpawn.Transparency=1;foundationSpawn.CanCollide=false;foundationSpawn.CanTouch=false;foundationSpawn.CanQuery=false;foundationSpawn.Enabled=false;foundationSpawn.Parent=f
  Lighting.Brightness=2.05;Lighting.ClockTime=.35;Lighting.FogEnd=270
  Lighting.Ambient=Color3.fromRGB(72,78,90);Lighting.OutdoorAmbient=Color3.fromRGB(58,64,76)
  local mainFloor=arenaPart(f,"Floor",Vector3.new(160,1,160),Vector3.new(0,0,0),Style.Floor,Enum.Material.Concrete);mainFloor:SetAttribute("WalkableGround",true)
@@ -2498,6 +2506,10 @@ local function startRound()
  escapedPlayers={};workspace:SetAttribute("EscapeUnlocked",false);workspace:SetAttribute("SurvivorEscapeTriggered",false)
  local survivorOrder=shuffledSpawns(survivorSpawns)
  local monsterOrder=shuffledSpawns(monsterSpawns)
+ -- 경기 중에는 arena spawn 하나만 활성화해 Roblox의 중립 SpawnLocation 랜덤 선택을 막는다.
+ lobbyBootstrapSpawn.Enabled=false
+ if foundationSpawn and foundationSpawn.Parent then foundationSpawn.Enabled=true end
+ workspace:SetAttribute("EngineSpawnPhase","ARENA_ONLY")
  local si,mi=1,1
  for _,p in ipairs(h)do
   p:SetAttribute("CurrentMap",map.Name);p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
@@ -2641,7 +2653,11 @@ local function endRound(winner)
  local wasRoomServer=roomServer
  local players=Players:GetPlayers();table.sort(players,function(a,b)return a.UserId<b.UserId end)
  state="WAITING"
+ if foundationSpawn and foundationSpawn.Parent then foundationSpawn.Enabled=false end
+ lobbyBootstrapSpawn.Enabled=true
+ workspace:SetAttribute("EngineSpawnPhase","LOBBY_ONLY")
  for _,p in ipairs(players)do
+  p.RespawnLocation=lobbyBootstrapSpawn
   p:SetAttribute("RoundState","ROOM_BROWSER")
   p:SetAttribute("Role","WAITING");applyRoleVisual(p,"WAITING")
   if manorLobby then manorLobby:Dress(p)end
@@ -3214,8 +3230,8 @@ local function onCharacter(p)
   setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
   p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
   p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
-  local destination,look,spawn=personalSpawn(p)
-  p.RespawnLocation=spawn
+  local destination,look=personalSpawn(p)
+  p.RespawnLocation=lobbyBootstrapSpawn
   teleport(p,destination,look)
   applyRoleVisual(p,"WAITING")
   for _,d in ipairs(c:GetDescendants())do if d:IsA("BasePart")then d.CollisionGroup="ManorAvatar"end end
@@ -3242,8 +3258,8 @@ local function onCharacter(p)
    if p.Parent==Players and p.Character==c and state=="RUNNING"then validateCharacterFoundation(p,c)end
   end)
  elseif role=="SPECTATING"then
-  local destination,look,spawn=personalSpawn(p)
-  p.RespawnLocation=spawn
+  local destination,look=personalSpawn(p)
+  p.RespawnLocation=lobbyBootstrapSpawn
   h.PlatformStand=false;h.Sit=false;h.AutoRotate=true;r.Anchored=false
   teleport(p,destination,look)
   p:SetAttribute("RoundState","SPECTATING")
