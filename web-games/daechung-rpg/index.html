@@ -311,7 +311,25 @@ function attackNow(){
  const ax=p.x+p.dir*30;fx.push({x:ax,y:p.y,t:.18,d:p.dir});
  for(const m of mons){if(m.dead)continue;if(Math.hypot(m.x-ax,m.y-p.y)<62+m.r){m.hp-=currentAtk();m.hit=.12;m.x+=p.dir*13;sfx(p.weapon==='철 도끼'||p.weapon==='철 망치'?'axeHit':p.weapon==='철 쌍검'||p.weapon==='낡은 쌍절곤'?'dualHit':'swordHit');if(m.hp<=0)kill(m)}}
 }
-function kill(m){
+function kill(m)
+{
+ m.dead=true;
+m.animState='dead';
+m.animTick=0;
+m.animFrame=0;
+m.deathAge=0;
+sfx(deathSoundFor(m));
+p.xp+=m.xp;
+p.g+=m.g;
+ let item=['slime','blue','slimeKing','caveSlime','giantCaveSlime'].includes(m.type)?'슬라임 젤리':m.type==='boar'?'멧돼지 고기':['wolf','redwolf','tiger','panther'].includes(m.type)?'늑대 가죽':m.type==='orc'?'오크 이빨':'균열 조각';
+if(m.type==='hiddenEnemy')item=null;
+if(item)drops.push({x:m.x,y:m.y,item,t:12});
+ if(zone==='f1'&&q===1&&m.type==='slime'){window.sk=(window.sk||0)+1;if(window.sk>=5){q=2;sfx('questComplete');toastMsg('완료! 촌장에게 돌아가 보상받기')}}else if(zone==='f1'&&q===3&&m.type==='slimeKing'){q=4;sfx('questComplete');toastMsg('완료! 촌장에게 돌아가 보상받기')}
+ if(m.type==='giantCaveSlime'){guardianDead=true;sfx('chestUnlock');toastMsg('거대 동굴슬라임 처치! 보물상자가 열렸다')}
+ if(m.type==='hiddenEnemy'){hq=2;ownedWeapons['낡은 쌍절곤']=true;sfx('questComplete');toastMsg('히든 퀘스트 완료! 낡은 쌍절곤 획득')}
+ while(p.xp>=p.nxp){p.xp-=p.nxp;p.lv++;p.nxp=p.lv*100;p.baseHp+=15;p.hp=maxHp();p.bonusAtk+=2;sfx('levelUp');toastMsg(`레벨 ${p.lv}! 다음 필요 EXP ${p.nxp}`)}
+ const z=m.z,base=m.baseType;if(z!=='cave'&&base!=='hiddenEnemy')setTimeout(()=>{if(!run||zone!==z)return;const spec=F[z]?.m.find(v=>v[9]===base);if(spec)spawn(spec,480+Math.random()*1200,120+Math.random()*960,z)},2600);hud()
+}
  m.dead=true;m.animState='dead';m.animTick=0;m.animFrame=0;m.deathAge=0;sfx(deathSoundFor(m));p.xp+=m.xp;p.g+=m.g;
  let item=['slime','blue','slimeKing','caveSlime','giantCaveSlime'].includes(m.type)?'슬라임 젤리':m.type==='boar'?'멧돼지 고기':['wolf','redwolf','tiger','panther'].includes(m.type)?'늑대 가죽':m.type==='orc'?'오크 이빨':'균열 조각';if(m.type==='hiddenEnemy')item=null;if(item)drops.push({x:m.x,y:m.y,item,t:12});
  if(zone==='f1'&&q===1&&m.type==='slime'){window.sk=(window.sk||0)+1;if(window.sk>=5){q=2;sfx('questComplete');toastMsg('완료! 촌장에게 돌아가 보상받기')}}else if(zone==='f1'&&q===3&&m.type==='slimeKing'){q=4;sfx('questComplete');toastMsg('완료! 촌장에게 돌아가 보상받기')}
