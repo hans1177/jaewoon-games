@@ -17,6 +17,17 @@ local Lighting=game:GetService("Lighting")
 local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
+local GhostSkinFactory=nil
+local GhostSkinMotion=nil
+do
+ local folder=RS:FindFirstChild("WorldGhostSkins")
+ if folder then
+  local okFactory,factory=pcall(function()return require(folder:WaitForChild("GhostSkinFactory"))end)
+  local okMotion,motion=pcall(function()return require(folder:WaitForChild("GhostSkinMotion"))end)
+  if okFactory then GhostSkinFactory=factory end
+  if okMotion then GhostSkinMotion=motion end
+ end
+end
 -- 번역: 화면/월드 안내/상호작용은 Roblox 기본 현지화 경로를 공통 사용한다.
 do
  local translations=Instance.new("LocalizationTable")
@@ -696,7 +707,7 @@ local hud=Instance.new("Frame")
 hud.Name="MidnightTopHUD"
 hud.AnchorPoint=Vector2.new(.5,0)
 hud.Position=UDim2.new(.5,0,0,8)
-hud.Size=UDim2.fromOffset(326,78)
+hud.Size=UDim2.fromOffset(342,102)
 hud.BackgroundColor3=Color3.fromRGB(12,12,13)
 hud.BackgroundTransparency=.18
 hud.ZIndex=10
@@ -736,19 +747,32 @@ roundify(roundLine,6)
 
 local objectiveLine=Instance.new("TextLabel")
 objectiveLine.Name="ObjectiveProgress"
-objectiveLine.Size=UDim2.new(1,-16,0,15)
-objectiveLine.Position=UDim2.fromOffset(8,44)
+objectiveLine.Size=UDim2.new(1,-16,0,24)
+objectiveLine.Position=UDim2.fromOffset(8,43)
 objectiveLine.BackgroundTransparency=1
-objectiveLine.TextColor3=Color3.fromRGB(211,204,191)
-objectiveLine.TextSize=10
+objectiveLine.TextColor3=Color3.fromRGB(230,218,190)
+objectiveLine.TextSize=11
+objectiveLine.TextWrapped=true
 objectiveLine.Font=Enum.Font.GothamBold
 objectiveLine.TextXAlignment=Enum.TextXAlignment.Left
 objectiveLine.Parent=hud
 
+local skillGuideLine=Instance.new("TextLabel")
+skillGuideLine.Name="SkillGuide"
+skillGuideLine.Size=UDim2.new(1,-16,0,22)
+skillGuideLine.Position=UDim2.fromOffset(8,65)
+skillGuideLine.BackgroundTransparency=1
+skillGuideLine.TextColor3=Color3.fromRGB(169,205,218)
+skillGuideLine.TextSize=9
+skillGuideLine.TextWrapped=true
+skillGuideLine.Font=Enum.Font.Gotham
+skillGuideLine.TextXAlignment=Enum.TextXAlignment.Left
+skillGuideLine.Parent=hud
+
 local energyTrack=Instance.new("Frame")
 energyTrack.Name="EnergyTrack"
 energyTrack.Size=UDim2.new(1,-86,0,8)
-energyTrack.Position=UDim2.fromOffset(8,65)
+energyTrack.Position=UDim2.fromOffset(8,89)
 energyTrack.BackgroundColor3=Color3.fromRGB(48,43,40)
 energyTrack.BorderSizePixel=0
 energyTrack.ZIndex=11
@@ -767,7 +791,7 @@ roundify(energyFill,5)
 local energyLabel=Instance.new("TextLabel")
 energyLabel.Name="EnergyLabel"
 energyLabel.Size=UDim2.fromOffset(72,14)
-energyLabel.Position=UDim2.new(1,-78,0,60)
+energyLabel.Position=UDim2.new(1,-78,0,84)
 energyLabel.BackgroundTransparency=1
 energyLabel.TextColor3=Color3.fromRGB(204,190,163)
 energyLabel.TextSize=10
@@ -991,9 +1015,63 @@ ghostCatalogItem=function(id)
  for _,item in ipairs(C.GhostCatalog or{})do if item.Id==id then return item end end
  return nil
 end
+local internalGhostSkinByCatalogId={
+ YUREI="yurei",NOPPERABO="nopperabo",CHEONNYEO_GWISHIN="gwisin-bride",KRASUE="krasue",
+ BANSHEE="banshee",JIANGSHI="jiangshi",CHUREL="churel",WHITE_LADY="la-sayona",
+ DULLAHAN="dullahan",LA_LLORONA="la-llorona",PONTIANAK="pontianak",BLACK_SHUCK="barghest",
+}
+
+local function tryInternalGhostSighting(trigger,id)
+ if not GhostSkinFactory then return false end
+ local skinId=internalGhostSkinByCatalogId[id]
+ if not skinId then return false end
+ local character=p.Character
+ local root=character and character:FindFirstChild("HumanoidRootPart")
+ local pos=trigger.Position+Vector3.new(0,.55,0)
+ local look=Vector3.new(0,0,-1)
+ if root then
+  local delta=root.Position-pos
+  local flat=Vector3.new(delta.X,0,delta.Z)
+  if flat.Magnitude>.1 then look=flat.Unit end
+ end
+ local ok,model=pcall(function()
+  return GhostSkinFactory.Create(skinId,{quality="far",parent=workspace,pivot=CFrame.lookAt(pos,pos+look),anchored=true})
+ end)
+ if not ok or not model then return false end
+ model.Name="LocalInternalGhostSighting_"..skinId
+ model:SetAttribute("SourceAssetLibrary","roblox-world-ghost-skins-v1")
+ local binding=nil
+ if GhostSkinMotion then
+  local boundOk,bound=pcall(function()return GhostSkinMotion.Bind(model)end)
+  if boundOk then binding=bound end
+ end
+ task.spawn(function()
+  local started=os.clock()
+  while model.Parent and os.clock()-started<1.35 do
+   if binding then pcall(function()binding.step(os.clock()-started,"idle")end)end
+   task.wait(1/30)
+  end
+  if model.Parent then
+   for _,part in ipairs(model:GetDescendants())do
+    if part:IsA("BasePart")and part.Transparency<1 then
+     TweenService:Create(part,TweenInfo.new(.28),{Transparency=1}):Play()
+    end
+   end
+   task.wait(.3)
+  end
+  if binding then pcall(function()binding.destroy()end)end
+  if model.Parent then model:Destroy()end
+ end)
+ return true
+end
+
 local function playGhostSighting(trigger)
  local id=tostring(trigger:GetAttribute("GhostId")or"")
  local item=ghostCatalogItem(id);if not item then return end
+ if tryInternalGhostSighting(trigger,id)then
+  localText(trigger.Position+Vector3.new(0,7,0),item.Name.." · "..item.Origin,Color3.fromRGB(224,215,255),1.5)
+  return
+ end
  local base=trigger.Position+Vector3.new(0,2.8,0)
  local color=item.Color or Color3.fromRGB(210,218,228)
  local parts={}
@@ -1901,6 +1979,10 @@ local function currentHumanAbilityName()
  local id,profile=currentHumanAbilityProfile()
  return profile and profile.Name or tostring(id or"인간 스킬")
 end
+local function currentHumanAbilityDescription()
+ local _,profile=currentHumanAbilityProfile()
+ return profile and tostring(profile.Description or"")or""
+end
 local function currentAbilityName()
  if p:GetAttribute("Infected")==true then
   local hf=currentHumanFormInfo()
@@ -1910,6 +1992,16 @@ local function currentAbilityName()
  local mf=currentMonsterFormInfo()
  local profile=C.MonsterAbilities and C.MonsterAbilities[mf.Ability]
  return profile and profile.Name or(C.MonsterAbilityLabels and C.MonsterAbilityLabels[mf.Ability])or mf.Name or"괴물 스킬"
+end
+local function currentAbilityDescription()
+ if p:GetAttribute("Infected")==true then
+  local hf=currentHumanFormInfo()
+  local profile=C.InfectedAbilities and C.InfectedAbilities[hf.InfectedAbility]
+  return profile and tostring(profile.Description or"")or""
+ end
+ local mf=currentMonsterFormInfo()
+ local profile=C.MonsterAbilities and C.MonsterAbilities[mf.Ability]
+ return profile and tostring(profile.Description or"")or""
 end
 
 -- 라운드 행동 버튼: 역할에 따라 딱 필요한 버튼만 노출
@@ -2225,11 +2317,13 @@ end
 
 local function playResultCeremony(resultCode)
  ceremonySerial+=1
+ local serial=ceremonySerial
  local winner=resultCode=="SURVIVOR"and"SURVIVOR"or resultCode=="MONSTER"and"MONSTER"or"DRAW"
  local ceremonyName=tostring(p:GetAttribute("CelebrationName")or"")
  local ceremonyCaption=tostring(p:GetAttribute("CelebrationCaption")or"")
  ceremonyStage.Visible=false
- ceremonyJoke.Text=(ceremonyName~=""and ceremonyName or"결과").." · "..(ceremonyCaption~=""and ceremonyCaption or"라운드 종료")
+ resultDetail.Visible=false
+ ceremonyJoke.Text="시레머니 · "..(ceremonyName~=""and ceremonyName or"결과").." · "..(ceremonyCaption~=""and ceremonyCaption or"라운드 종료")
  if winner=="SURVIVOR"then
   ceremonyJoke.TextColor3=Color3.fromRGB(166,223,236)
   setMotionImpulse("CELEBRATE_HUMAN",1.2)
@@ -2241,6 +2335,15 @@ local function playResultCeremony(resultCode)
   setMotionImpulse("CELEBRATE_DRAW",1.0)
  end
  startResultCeremonyCamera(latestCeremonyStage)
+ task.delay(2.15,function()
+  if ceremonySerial~=serial or not tostring(p:GetAttribute("RoundState")or""):find("^RESULT_")then return end
+  resultDetail.Visible=true
+  ceremonyJoke.Text="보상 정산 완료 · 잠시 뒤 내 저택으로 돌아가"
+ end)
+ task.delay(6.15,function()
+  if ceremonySerial~=serial or not tostring(p:GetAttribute("RoundState")or""):find("^RESULT_")then return end
+  ceremonyJoke.Text="내 저택으로 돌아가는 중…"
+ end)
 end
 
 -- 진행 중 서버 입장자는 다음 라운드까지 관전임을 명확히 보여준다.
@@ -2297,15 +2400,22 @@ local function render()
  local hc=p:GetAttribute("HumanCount")or workspace:GetAttribute("HumanCount")or 0
  local mc=p:GetAttribute("MonsterCount")or workspace:GetAttribute("MonsterCount")or 0
  roleLine.Text=string.format("%s · 인간 %d : 몬스터 %d",roleText,hc,mc)
+ local objectivesDone=tonumber(p:GetAttribute("ObjectivesDone"))or 0
+ local objectivesTotal=math.max(1,tonumber(p:GetAttribute("ObjectivesTotal"))or tonumber(C.ObjectiveCount)or 4)
+ local exitOpen=workspace:GetAttribute("EscapeUnlocked")==true
  if role=="MONSTER"then
-  objectiveLine.Text=p:GetAttribute("Infected")==true and("감염 전환 · "..currentAbilityName().." 사용 가능")or("몬스터 목표 · 감염 공격 + "..currentAbilityName())
+  objectiveLine.Text=string.format("목표 · 인간 전부 감염  |  인간 단말 %d/%d",objectivesDone,objectivesTotal)
+  skillGuideLine.Text="스킬 · "..currentAbilityName().." · "..currentAbilityDescription()
  elseif role=="SURVIVOR"then
   local hf=currentHumanFormInfo()
-  objectiveLine.Text=string.format("%s · %s · 정화/대시/%s로 교전",hf.Name or"인간",hf.Tool or"도구",currentHumanAbilityName())
+  objectiveLine.Text=exitOpen and"목표 · 비상 출구가 열렸어 → 남쪽 출구로 탈출"or string.format("목표 · 단말 가동 %d/%d → 비상 출구 개방",objectivesDone,objectivesTotal)
+  skillGuideLine.Text="스킬 · "..currentHumanAbilityName().." · "..currentHumanAbilityDescription()
  elseif role=="ELIMINATED"then
-  objectiveLine.Text="정화되어 이번 라운드에서 탈락"
+  objectiveLine.Text="이번 판 탈락 · 팀 결과를 기다리는 중"
+  skillGuideLine.Text="관전 중"
  else
   objectiveLine.Text="다음 라운드 준비"
+  skillGuideLine.Text=""
  end
  local resultCode=round:match("^RESULT_(.+)$")
  if not resultCode then stopResultCeremonyCamera()end
@@ -2467,7 +2577,11 @@ p:GetAttributeChangedSignal("MapContentFeedback"):Connect(function()
  local kind,a,b=string.match(raw,"^([^:]+):?([^:]*):?(.+)$")
  if kind=="UTILITY"then showMapContentToast(tostring(b or"맵 장치").." 가동",Color3.fromRGB(155,220,255),2)
  elseif kind=="UTILITY_COOLDOWN"then showMapContentToast(tostring(a or"장치").." · "..tostring(b or"0").."초 후 재사용",Color3.fromRGB(188,202,218),1.7)
- elseif kind=="CORE"then showMapContentToast("중앙 에너지 코어 확보 · +"..tostring(b or"50"),Color3.fromRGB(113,214,255),2.2)end
+ elseif kind=="CORE"then showMapContentToast("중앙 에너지 코어 확보 · +"..tostring(b or"50"),Color3.fromRGB(113,214,255),2.2)
+ elseif kind=="OBJECTIVE"then
+  local done=tonumber(a)or 0;local total=tonumber(b)or tonumber(C.ObjectiveCount)or 4
+  showMapContentToast(done>=total and"단말 완료 · 비상 출구가 열렸어!"or string.format("단말 가동 %d/%d",done,total),Color3.fromRGB(255,218,140),2.1)
+ elseif kind=="ESCAPED"then showMapContentToast("탈출 성공 · 시레머니로 이동",Color3.fromRGB(155,230,184),2.1)end
 end)
 
 p:GetAttributeChangedSignal("CosmeticFeedback"):Connect(function()
