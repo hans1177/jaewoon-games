@@ -635,46 +635,62 @@ def npc(s,kind,pos):
       (0,head_y-h*.022,face_front+.035+nose_forward),
     ],[w*.050,w*.058,w*.064,w*.055],[w*.055,w*.062,w*.067,w*.058],q['skin'],sides=24,parent=p)
 
-    # 눈은 얇은 렌즈형 곡면 + 홍채/동공, 눈꺼풀/눈썹은 윤곽 패널.
+    # 눈은 역할별 비율과 처짐을 따로 잡아 얼굴 표면 안쪽에 붙인다.
+    eye_profile={
+      'Butler':dict(spacing=.184,width=.172,height=.029,depth=.046,y=.019,droop=.010,brow=.067,tilt=-.006),
+      'Undertaker':dict(spacing=.198,width=.166,height=.028,depth=.044,y=.020,droop=.004,brow=.072,tilt=.012),
+      'Archivist':dict(spacing=.178,width=.168,height=.027,depth=.043,y=.019,droop=.012,brow=.066,tilt=.003),
+    }[kind]
     for side in [-1,1]:
-        eye_spacing=.185 if kind=='Butler' else .205 if kind=='Undertaker' else .175
-        ex=side*w*eye_spacing
-        eye_y=head_y+h*.020
-        s.lens(kind+'_Sclera'+str(side),(ex,eye_y,face_front+.018),(w*.205,h*.034,w*.056),c['ivory'],parent=p,sides=30,rings=10)
-        s.lens(kind+'_Iris'+str(side),(ex,eye_y,face_front+.048),(w*.064,h*.028,w*.018),q['eye'],parent=p,sides=24,rings=8)
-        s.lens(kind+'_Pupil'+str(side),(ex,eye_y,face_front+.062),(w*.025,h*.022,w*.010),c['black'],parent=p,sides=20,rings=6)
-        lid_y=head_y+h*.041
+        ex=side*w*eye_profile['spacing'];eye_y=head_y+h*eye_profile['y']
+        ew=w*eye_profile['width'];eh=h*eye_profile['height'];ed=w*eye_profile['depth']
+        s.lens(kind+'_Sclera'+str(side),(ex,eye_y,face_front+.010),(ew,eh,ed),c['ivory'],parent=p,sides=28,rings=10)
+        s.lens(kind+'_Iris'+str(side),(ex,eye_y-h*.001,face_front+.032),(w*.050,h*.023,w*.015),q['eye'],parent=p,sides=22,rings=8)
+        s.lens(kind+'_Pupil'+str(side),(ex,eye_y-h*.001,face_front+.042),(w*.018,h*.017,w*.008),c['black'],parent=p,sides=18,rings=6)
+        lid_half=ew*.48;lid_y=eye_y+eh*.38
         s.curve_tube(kind+'_UpperLid'+str(side),[
-          (ex-side*w*.096,lid_y-h*.003,face_front+.052),
-          (ex,lid_y+h*.008,face_front+.060),
-          (ex+side*w*.096,lid_y-h*.004,face_front+.051)
-        ],[w*.012,w*.014,w*.011],[w*.009,w*.011,w*.009],q['skin'],sides=18,parent=p)
-        brow_y=head_y+h*.072
-        brow_tilt=(.018 if kind=='Undertaker' else -.008 if kind=='Butler' else .004)*h
+          (ex-side*lid_half,lid_y-h*.003,face_front+.039),
+          (ex,lid_y+h*(.004-eye_profile['droop']*.35),face_front+.045),
+          (ex+side*lid_half,lid_y-h*.004,face_front+.038)
+        ],[w*.008,w*.010,w*.007],[w*.006,w*.008,w*.005],q['skin'],sides=16,parent=p)
+        lower_y=eye_y-eh*.38
+        s.curve_tube(kind+'_LowerLid'+str(side),[
+          (ex-side*lid_half*.90,lower_y+h*.002,face_front+.037),
+          (ex,lower_y-h*.003,face_front+.041),
+          (ex+side*lid_half*.90,lower_y+h*.002,face_front+.036)
+        ],[w*.006,w*.007,w*.005],[w*.005,w*.006,w*.004],q['skin'],sides=16,parent=p)
+        brow_y=head_y+h*eye_profile['brow'];brow_tilt=eye_profile['tilt']*h
         s.curve_tube(kind+'_Brow'+str(side),[
-          (ex-side*w*.105,brow_y-brow_tilt,face_front+.052),
-          (ex,brow_y+h*.006,face_front+.058),
-          (ex+side*w*.105,brow_y+brow_tilt,face_front+.050)
-        ],[w*.017,w*.020,w*.015],[w*.012,w*.013,w*.010],q['hair'],sides=18,parent=p)
+          (ex-side*w*.095,brow_y-brow_tilt,face_front+.039),
+          (ex,brow_y+h*.004,face_front+.044),
+          (ex+side*w*.095,brow_y+brow_tilt,face_front+.038)
+        ],[w*.010,w*.013,w*.008],[w*.007,w*.009,w*.006],q['hair'],sides=16,parent=p)
 
-    # 입/귀도 별도 윤곽을 사용한다.
+    # 입과 귀도 역할별 비율로 얼굴에 밀착시킨다.
     lip=s.material(kind+'Lip',(.22,.10,.11))
     mouth_y=head_y-h*.055
+    mouth_half={'Butler':.098,'Undertaker':.108,'Archivist':.092}[kind]*w
     s.curve_tube(kind+'_UpperLip',[
-      (-w*.105,mouth_y,face_front+.044),
-      (0,mouth_y+h*.004,face_front+.050),
-      (w*.105,mouth_y,face_front+.044)
-    ],[w*.014,w*.017,w*.014],[w*.010,w*.012,w*.010],q['accent'] if kind=='Undertaker' else lip,sides=18,parent=p)
+      (-mouth_half,mouth_y,face_front+.032),
+      (0,mouth_y+h*.003,face_front+.037),
+      (mouth_half,mouth_y,face_front+.032)
+    ],[w*.009,w*.011,w*.009],[w*.006,w*.008,w*.006],q['accent'] if kind=='Undertaker' else lip,sides=16,parent=p)
     s.curve_tube(kind+'_LowerLip',[
-      (-w*.095,mouth_y-h*.016,face_front+.044),
-      (0,mouth_y-h*.021,face_front+.050),
-      (w*.095,mouth_y-h*.016,face_front+.044)
-    ],[w*.013,w*.016,w*.013],[w*.010,w*.012,w*.010],lip,sides=18,parent=p)
+      (-mouth_half*.88,mouth_y-h*.013,face_front+.032),
+      (0,mouth_y-h*.017,face_front+.038),
+      (mouth_half*.88,mouth_y-h*.013,face_front+.032)
+    ],[w*.008,w*.010,w*.008],[w*.006,w*.008,w*.006],lip,sides=16,parent=p)
+    ear_profile={
+      'Butler':(.405,.035,.045,.034),
+      'Undertaker':(.418,.040,.050,.038),
+      'Archivist':(.400,.033,.043,.032),
+    }[kind]
     for side in [-1,1]:
-        ear=s.loft(kind+'_Ear'+str(side),(side*w*.45,head_y+.005,-.01),[
-          (-h*.045,w*.045,w*.055),(0,w*.065,w*.075),(h*.045,w*.045,w*.055)
+        ear_x,ear_rx,ear_rz,ear_h=ear_profile
+        ear=s.loft(kind+'_Ear'+str(side),(side*w*ear_x,head_y+.002,-.012),[
+          (-h*ear_h,w*ear_rx,w*ear_rz),(0,w*(ear_rx+.010),w*(ear_rz+.015)),(h*ear_h,w*ear_rx,w*ear_rz)
         ],q['skin'],sides=18,parent=p)
-        ear.rotation_euler.y=side*.18
+        ear.rotation_euler.y=side*.14
 
     # 역할별 헤어/수염/소품. 실루엣만 봐도 세 NPC가 구분되게 한다.
     if kind=='Butler':
