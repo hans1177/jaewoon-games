@@ -5785,7 +5785,14 @@
     "interruptedSessionRequeuesExactArtifact": true,
     "interruptedSessionIsGameFailure": false,
     "recurringWatchdog": false,
-    "startupMode": "USER_STARTUP_WSCRIPT_HIDDEN_RUN_CMD"
+    "startupMode": "USER_STARTUP_WSCRIPT_HIDDEN_RUN_CMD",
+    "runnerHostBootstrapMode": "USER_STARTUP_VBS_ONLY",
+    "additionalRunnerControlLayerForbidden": true,
+    "migrationLayerForbidden": true,
+    "portablePwshBootstrapForbidden": true,
+    "runnerStateFileForbidden": true,
+    "scheduledTaskOrServiceForbidden": true,
+    "pollingRunnerSupervisorForbidden": true
   },
   "nativeChildDispatchDedupeTopology": {
     "version": 1,
