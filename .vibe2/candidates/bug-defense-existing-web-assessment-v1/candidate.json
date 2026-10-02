@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "<title>곤충 디펜스</title>",
+      "replace": "window.GAME_CONFIG={\"id\":\"bug-defense\",\"name\":\"곤충 디펜스\",\"mode\":\"bug-defense\",\"hp\":100,\"res\":24,\"desc\":\"곤충 병종과 서식 환경의 상성을 읽고 방어탑을 배치·강화해 30웨이브를 버티는 디펜스\",\"validationScopes\":[{\"id\":\"scope-corefun-f9eac87035\",\"path\":\"coreFun\",\"label\":\"wave defense readability\"},{\"id\":\"scope-coreloop-0-f96e139c08\",\"path\":\"coreLoop[0]\",\"label\":\"Read the incoming insect wave and its threat pattern.\"},{\"id\":\"scope-coreloop-1-e0fc69d258\",\"path\":\"coreLoop[1]\",\"label\":\"Place or adjust defenders and spend limited resources on the highest-value counter.\"},{\"id\":\"scope-coreloop-2-87f31deaff\",\"path\":\"coreLoop[2]\",\"label\":\"Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision.\"},{\"id\":\"scope-mobileux-bb5af6ed38\",\"path\":\"mobileUx\",\"label\":\"mobile\"}]}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
