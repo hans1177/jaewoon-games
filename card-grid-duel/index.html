@@ -318,7 +318,7 @@ function newState(){
 }
 function card(s,id){return CARDS[s][id]}
 function upgradeLevel(id){return Math.max(0,Math.min(3,Number(state?.upgrades?.[id]||0)))}
-function upgradeCost(id){return Math.round(50*Math.pow(1.3,upgradeLevel(id)))}
+function upgradeCost(id){return [60,100,150][upgradeLevel(id)]||0}
 function scaledStat(id,key){
   const base=card('BLUE',id)?.[key]||0;
   return Math.round(base*Math.pow(1.25,upgradeLevel(id)))
@@ -846,8 +846,8 @@ function updateUpgradeInfo(){
   const cost=upgradeCost(id);
   $('#upgradeInfo').textContent=lv>=3
     ? card('BLUE',id).name+' · 최대 3강 완료'
-    : card('BLUE',id).name+' · '+lv+'강 → '+(lv+1)+'강 · 비용 '+cost+'골드 · 체력/공격 1.25배';
-  $('#upgradeAlly').disabled=lv>=3||state.gold.BLUE<cost
+    : card('BLUE',id).name+' · '+lv+'강 → '+(lv+1)+'강 · 비용 '+cost+'다이아 · 체력/공격 1.25배';
+  $('#upgradeAlly').disabled=lv>=3||diamondWallet()<cost
 }
 $('#upgradeSelect').onchange=updateUpgradeInfo;
 $('#upgradeAlly').onclick=()=>{
@@ -856,9 +856,11 @@ $('#upgradeAlly').onclick=()=>{
   const lv=upgradeLevel(id);
   if(lv>=3)return msg('이미 최대 3강이야.');
   const cost=upgradeCost(id);
-  if(state.gold.BLUE<cost)return msg('골드가 부족해.');
-  state.gold.BLUE-=cost;
-  dailyEvent('spendGold',cost);
+  const diamonds=diamondWallet();
+  if(diamonds<cost)return msg('다이아가 부족해.');
+  const nextDiamonds=diamonds-cost;
+  setDiamondWallet(nextDiamonds);
+  state.diamonds=nextDiamonds;
   dailyEvent('upgrade',1);
   state.upgrades[id]=lv+1;
   msg(card('BLUE',id).name+' '+(lv+1)+'강 완료');
