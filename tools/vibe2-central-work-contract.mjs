@@ -161,12 +161,13 @@ function policyValidationErrors(policy={}){
   if(shared.documentationChangeRequiresImplementationImpactReview!==true)errors.push('DOCUMENTATION_CHANGE_IMPLEMENTATION_IMPACT_REVIEW');
   if(shared.postCentralDocumentWriteSharedContextResyncRequired!==true)errors.push('POST_DOCUMENT_WRITE_SHARED_CONTEXT_RESYNC');
   if(centralDocumentation?.synchronization?.beforeWorkLoadAndValidateCanonicalSet!==true)errors.push('CENTRAL_DOCUMENTATION_BEFORE_WORK_SYNC');
-  if(centralDocumentation?.synchronization?.afterWorkReloadAndValidateCanonicalSet!==true)errors.push('CENTRAL_DOCUMENTATION_AFTER_WORK_SYNC');
+  if(centralDocumentation?.synchronization?.afterWorkReloadAndValidateCanonicalSet!==false)errors.push('CENTRAL_DOCUMENTATION_DUPLICATE_AFTER_WORK_SYNC');
   if(centralDocumentation?.synchronization?.vibeWorkerPreflightRequired!==true)errors.push('CENTRAL_DOCUMENTATION_VIBE_PREFLIGHT');
   if(centralDocumentation?.synchronization?.currentMainPolicyShaBindingRequired!==true)errors.push('CENTRAL_DOCUMENTATION_MAIN_BINDING');
   if(centralDocumentation?.synchronization?.documentHashesBoundToExecutionEvidence!==true)errors.push('CENTRAL_DOCUMENTATION_HASH_EVIDENCE');
   if(shared.beforeWorkRequired!==true)errors.push('BEFORE_WORK_SYNC');
-  if(shared.afterWorkRequired!==true)errors.push('AFTER_WORK_SYNC');
+  if(shared.singlePreWorkValidationPerExactWorkUnit!==true||shared.repeatedFullValidationWithinExactWorkUnitForbidden!==true)errors.push('SINGLE_PREFLIGHT_CONTEXT_REUSE');
+  if(shared.afterWorkRequired!==false)errors.push('DUPLICATE_AFTER_WORK_SYNC');
   if(shared.staleContextMayNotStartWork!==true)errors.push('STALE_START_BLOCK');
   if(shared.staleContextMayNotCompleteWork!==true)errors.push('STALE_COMPLETION_BLOCK');
   if(clean(shared.syncMode)!=='ROADMAP_FIRST_FAIL_CLOSED')errors.push('SYNC_MODE');
