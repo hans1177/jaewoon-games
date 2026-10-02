@@ -493,6 +493,35 @@
       "targetPlatformReady": true
     },
     {
+      "id": "RUNTIME-cozy-island",
+      "slug": "cozy-island",
+      "name": "포근섬",
+      "sourcePath": "roblox-games/cozy-island",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/cozy-island",
+        "UNITY": "unity-games/cozy-island"
+      },
+      "developmentFocus": {
+        "total": 0
+      },
+      "runtimeSynthesized": true,
+      "lifecycleState": "ACTIVE",
+      "targetPlatformReady": true,
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "targetEngine": "roblox-unity-native",
+      "approvedDesignScopeMustBeFullyImplemented": true,
+      "strictDesignScoreRequiredForAdmission": false,
+      "strictDesignReviewRunsInParallel": true
+    },
+    {
       "id": "RUNTIME-horror-escape-room",
       "slug": "horror-escape-room",
       "name": "심야 술래잡기",
@@ -545,7 +574,7 @@
     },
     "counts": {
       "releaseConfirmed": 0,
-      "developmentConfirmed": 5,
+      "developmentConfirmed": 6,
       "designOnly": 8
     },
     "releaseConfirmedGameIds": [],
@@ -554,6 +583,7 @@
       "P0004",
       "P0006",
       "P0009",
+      "RUNTIME-cozy-island",
       "RUNTIME-horror-escape-room"
     ],
     "designOnlyGameIds": [
@@ -580,6 +610,7 @@
         "P0101",
         "P0102",
         "P0103",
+        "RUNTIME-cozy-island",
         "RUNTIME-horror-escape-room"
       ],
       "paused": [],
@@ -589,11 +620,11 @@
     },
     "pipeline": {
       "target": 60,
-      "count": 13,
+      "count": 14,
       "activeDevelopmentWipMax": null,
       "capacityOnly": true,
       "noArtificialGlobalGameCountCap": true,
-      "deficit": 47
+      "deficit": 46
     },
     "ranking": [
       {
@@ -704,8 +735,8 @@
       {
         "rank": 8,
         "rawEvidenceRank": 8,
-        "gameId": "RUNTIME-horror-escape-room",
-        "slug": "horror-escape-room",
+        "gameId": "RUNTIME-cozy-island",
+        "slug": "cozy-island",
         "lifecycleState": "ACTIVE",
         "productionClass": "DEVELOPMENT_CONFIRMED",
         "gameplayFamily": "UNCLASSIFIED",
@@ -719,6 +750,21 @@
       {
         "rank": 9,
         "rawEvidenceRank": 9,
+        "gameId": "RUNTIME-horror-escape-room",
+        "slug": "horror-escape-room",
+        "lifecycleState": "ACTIVE",
+        "productionClass": "DEVELOPMENT_CONFIRMED",
+        "gameplayFamily": "UNCLASSIFIED",
+        "evidenceScore": 6,
+        "developmentFocus": 0,
+        "artbookBaselineRank": 0,
+        "targetPlatform": "ROBLOX",
+        "targetPlatformReady": true,
+        "sourceReady": true
+      },
+      {
+        "rank": 10,
+        "rawEvidenceRank": 10,
         "gameId": "P0101",
         "slug": "chess-battle",
         "lifecycleState": "ACTIVE",
@@ -732,8 +778,8 @@
         "sourceReady": true
       },
       {
-        "rank": 10,
-        "rawEvidenceRank": 10,
+        "rank": 11,
+        "rawEvidenceRank": 11,
         "gameId": "P0102",
         "slug": "survival2",
         "lifecycleState": "ACTIVE",

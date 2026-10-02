@@ -177,7 +177,7 @@
       },
       "counts": {
         "releaseConfirmed": 0,
-        "developmentConfirmed": 5,
+        "developmentConfirmed": 6,
         "designOnly": 8
       },
       "releaseConfirmedGameIds": [],
@@ -186,6 +186,7 @@
         "P0004",
         "P0006",
         "P0009",
+        "RUNTIME-cozy-island",
         "RUNTIME-horror-escape-room"
       ],
       "designOnlyGameIds": [
@@ -212,6 +213,7 @@
           "P0101",
           "P0102",
           "P0103",
+          "RUNTIME-cozy-island",
           "RUNTIME-horror-escape-room"
         ],
         "paused": [],
@@ -221,11 +223,11 @@
       },
       "pipeline": {
         "target": 60,
-        "count": 13,
+        "count": 14,
         "activeDevelopmentWipMax": null,
         "capacityOnly": true,
         "noArtificialGlobalGameCountCap": true,
-        "deficit": 47
+        "deficit": 46
       },
       "ranking": [
         {
@@ -336,8 +338,8 @@
         {
           "rank": 8,
           "rawEvidenceRank": 8,
-          "gameId": "RUNTIME-horror-escape-room",
-          "slug": "horror-escape-room",
+          "gameId": "RUNTIME-cozy-island",
+          "slug": "cozy-island",
           "lifecycleState": "ACTIVE",
           "productionClass": "DEVELOPMENT_CONFIRMED",
           "gameplayFamily": "UNCLASSIFIED",
@@ -351,6 +353,21 @@
         {
           "rank": 9,
           "rawEvidenceRank": 9,
+          "gameId": "RUNTIME-horror-escape-room",
+          "slug": "horror-escape-room",
+          "lifecycleState": "ACTIVE",
+          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "gameplayFamily": "UNCLASSIFIED",
+          "evidenceScore": 6,
+          "developmentFocus": 0,
+          "artbookBaselineRank": 0,
+          "targetPlatform": "ROBLOX",
+          "targetPlatformReady": true,
+          "sourceReady": true
+        },
+        {
+          "rank": 10,
+          "rawEvidenceRank": 10,
           "gameId": "P0101",
           "slug": "chess-battle",
           "lifecycleState": "ACTIVE",
@@ -364,8 +381,8 @@
           "sourceReady": true
         },
         {
-          "rank": 10,
-          "rawEvidenceRank": 10,
+          "rank": 11,
+          "rawEvidenceRank": 11,
           "gameId": "P0102",
           "slug": "survival2",
           "lifecycleState": "ACTIVE",
