@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "window.GAME_CONFIG={id:'seed-casual-realm-weaver',name:'세계의 직조자',mode:'realm',desc:'마나로 숲·물길·마을을 창조하고 세계 안정도와 인구 목표를 달성하는 캐주얼 세계 창조 게임.',towerPositionInputRequired: true}",
+      "replace": "window.GAME_CONFIG={id:'seed-casual-realm-weaver',name:'세계의 직조자',mode:'realm',desc:'마나로 숲·물길·마을을 창조하고 세계 안정도와 인구 목표를 달성하는 캐주얼 세계 창조 게임.',towerPositionInputRequired: true,primaryGoal:'세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.'}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
