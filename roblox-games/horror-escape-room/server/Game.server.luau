@@ -59,6 +59,58 @@ bootstrapGround.Name="ManorBootstrapGround";bootstrapGround.Size=Vector3.new(84,
 bootstrapGround.Position=Vector3.new(0,-.15,330);bootstrapGround.Anchored=true;bootstrapGround.Transparency=1;bootstrapGround.Parent=workspace
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
+local CombatAssets=require(Shared:WaitForChild("CombatAssets"))
+
+-- 작성된 스킨드 GLB는 서버에서 한 번만 불러 ReplicatedStorage 템플릿으로 공유한다.
+-- 게임 권한/피격판정/이동은 기존 캐릭터가 계속 담당하고 이 모델은 100% 시각 레이어다.
+local combatVisualTemplates=RS:FindFirstChild("CombatVisualTemplates")
+if not combatVisualTemplates then
+ combatVisualTemplates=Instance.new("Folder")
+ combatVisualTemplates.Name="CombatVisualTemplates"
+ combatVisualTemplates.Parent=RS
+end
+local function loadAuthoredCombatVisual()
+ local old=combatVisualTemplates:FindFirstChild("AuthoredHumanoidGhost")
+ if old then old:Destroy()end
+ local assetId=math.floor(tonumber(CombatAssets.HumanoidModelId)or 0)
+ workspace:SetAttribute("CombatAuthoredAssetId",assetId)
+ workspace:SetAttribute("CombatAuthoredAssetsReady",false)
+ if assetId<=0 then
+  workspace:SetAttribute("CombatAuthoredAssetState","FALLBACK_PENDING_IMPORT")
+  return
+ end
+ local ok,template=pcall(AssetService.LoadAssetAsync,AssetService,assetId)
+ if not ok or not template then
+  workspace:SetAttribute("CombatAuthoredAssetState","LOAD_FAILED")
+  return
+ end
+ for _,d in ipairs(template:GetDescendants())do
+  if d:IsA("LuaSourceContainer")or d:IsA("RemoteEvent")or d:IsA("RemoteFunction")or d:IsA("Tool")then
+   d:Destroy()
+  elseif d:IsA("BasePart")then
+   d.Anchored=true;d.CanCollide=false;d.CanTouch=false;d.CanQuery=false;d.CastShadow=true
+  end
+ end
+ local visible=0
+ for _,d in ipairs(template:GetDescendants())do
+  if d:IsA("BasePart")and d.Transparency<1 then visible+=1 end
+ end
+ if visible==0 then
+  template:Destroy()
+  workspace:SetAttribute("CombatAuthoredAssetState","EMPTY_MODEL")
+  return
+ end
+ template.Name="AuthoredHumanoidGhost"
+ template:SetAttribute("SourceAssetLibrary","roblox-world-ghost-authored-glb")
+ template:SetAttribute("SourceAssetId",assetId)
+ template:SetAttribute("SourceSha256",tostring(CombatAssets.HumanoidSourceSha256 or""))
+ template:SetAttribute("VisualOnly",true)
+ template.Parent=combatVisualTemplates
+ workspace:SetAttribute("CombatAuthoredAssetsReady",true)
+ workspace:SetAttribute("CombatAuthoredAssetState","READY")
+end
+task.spawn(loadAuthoredCombatVisual)
+
 local manorLobby=nil
 local ManorLobby=require(script.Parent:WaitForChild("ManorLobby"))
 local Style=require(Shared:WaitForChild("VisualStyle"))
@@ -2007,8 +2059,8 @@ local function createBotAvatar(role,pos)
   accessory("AIJacketStripe",torso,Vector3.new(.24,1.8,1.12),Vector3.new(0,.1,-.58),Color3.fromRGB(91,205,220),Enum.Material.Neon)
  end
 
- local hi=Instance.new("Highlight");hi.Name="AIRoleHighlight";hi.FillTransparency=role=="MONSTER"and .82 or .94;hi.OutlineTransparency=.48
- hi.DepthMode=Enum.HighlightDepthMode.Occluded
+ local hi=Instance.new("Highlight");hi.Name="AIRoleHighlight";hi.FillTransparency=1;hi.OutlineTransparency=1
+ hi.DepthMode=Enum.HighlightDepthMode.Occluded;hi.Enabled=false;hi:SetAttribute("CombatDebugOnly",true)
  hi.FillColor=role=="MONSTER"and Color3.fromRGB(120,42,58)or Color3.fromRGB(75,143,169)
  hi.OutlineColor=role=="MONSTER"and Color3.fromRGB(225,86,103)or Color3.fromRGB(142,213,235)
  hi.Parent=model
@@ -2295,14 +2347,14 @@ local function applyRoleVisual(p,r)
  clearRoleVisual(p);local c=p.Character;if not c then return end
  -- 로비 외형 선택은 실제 경기의 진영/능력치와 분리한다.
  if state~="RUNNING"and r=="WAITING"then r=p:GetAttribute("LobbyAppearance")or"SURVIVOR"end
- local hi=Instance.new("Highlight");hi.Name="RoleHighlight";hi.FillTransparency=.86;hi.OutlineTransparency=.42;hi.DepthMode=Enum.HighlightDepthMode.Occluded;hi.Parent=c
+ local hi=Instance.new("Highlight");hi.Name="RoleHighlight";hi.FillTransparency=1;hi.OutlineTransparency=1;hi.DepthMode=Enum.HighlightDepthMode.Occluded;hi.Enabled=false;hi:SetAttribute("CombatDebugOnly",true);hi.Parent=c
  if r=="MONSTER"then
   local currentForm=form(p);local mf=Style.Monsters[currentForm.Id]or Style.Monsters.DRACULA;hi.FillColor=mf.Color;hi.OutlineColor=mf.Accent
   applyMonsterPalette(c,currentForm.Id)
   applyClassicCostume(c,currentForm.Id)
   local head=c:FindFirstChild("Head")or root(p)
   if head then
-   local g=Instance.new("BillboardGui");g.Name="RoleVisual";g.Size=UDim2.fromOffset(150,34);g.StudsOffset=Vector3.new(0,3.8,0);g.AlwaysOnTop=false;g.MaxDistance=32;g.Parent=head
+   local g=Instance.new("BillboardGui");g.Name="RoleVisual";g.Size=UDim2.fromOffset(150,34);g.StudsOffset=Vector3.new(0,3.8,0);g.AlwaysOnTop=false;g.MaxDistance=18;g.Parent=head
    local t=Instance.new("TextLabel");t.Size=UDim2.fromScale(1,1);t.BackgroundTransparency=1;t.TextScaled=true;t.Text=mf.Label;t.TextColor3=mf.Accent;t.TextStrokeTransparency=.25;t.Parent=g
   end
  else hi.FillColor=Style.Survivor;hi.OutlineColor=Color3.fromRGB(166,205,219)end
@@ -2387,7 +2439,7 @@ local function infectBot(b,sourcePlayer)
  if b.model and b.model.Parent then
   b.model.Name="AI_MONSTER_"..monsterId
   for _,d in ipairs(b.model:GetDescendants())do if d:IsA("BasePart")and d~=b.part and d:GetAttribute("MonsterCostume")~=true then d.Color=monsterStyle.Color;d.Material=Enum.Material.Fabric end end
-  local hi=b.model:FindFirstChild("AIRoleHighlight");if hi and hi:IsA("Highlight")then hi.FillTransparency=.72;hi.FillColor=monsterStyle.Color;hi.OutlineColor=monsterStyle.Accent end
+  local hi=b.model:FindFirstChild("AIRoleHighlight");if hi and hi:IsA("Highlight")then hi.Enabled=false;hi.FillTransparency=1;hi.OutlineTransparency=1;hi.FillColor=monsterStyle.Color;hi.OutlineColor=monsterStyle.Accent end
  else
   b.part.Color=monsterStyle.Color;b.part.Material=Enum.Material.Fabric
  end
