@@ -75,3 +75,37 @@ test('canonical machine roadmap owns the execution contract',()=>{
   assert.equal(roadmap.developmentSpeedExecution.sameArtifactRequiredAcrossRuntimeIndependentQaAndRegression,true);
   assert.equal(roadmap.developmentSpeedExecution.cronRole,'WATCHDOG_AND_RECOVERY_ONLY');
 });
+
+
+test('non-development CI fan-out stays impact-scoped and does not duplicate runtime metadata work',()=>{
+  const status=fs.readFileSync('.github/workflows/company-status-sync.yml','utf8');
+  const homepage=fs.readFileSync('.github/workflows/homepage-manager.yml','utf8');
+  const vibe=fs.readFileSync('.github/workflows/vibe-qa.yml','utf8');
+  const evolution=fs.readFileSync('.github/workflows/company-evolution-qa.yml','utf8');
+  const central=fs.readFileSync('.github/workflows/company-central-policy-contract-qa.yml','utf8');
+
+  assert.match(status,/Company DEVELOPMENT_CONFIRMED Roblox Final Review Revalidation/);
+  assert.match(status,/Company DEVELOPMENT_CONFIRMED Roblox Release Promotion/);
+  assert.doesNotMatch(status,/Company DEVELOPMENT_CONFIRMED Roblox Runtime\n/);
+  assert.doesNotMatch(status,/Company DEVELOPMENT_CONFIRMED Roblox Runtime Continuation/);
+  assert.doesNotMatch(status,/Company DEVELOPMENT_CONFIRMED Roblox Post-Runtime QA/);
+  assert.doesNotMatch(status,/Company DEVELOPMENT_CONFIRMED Roblox Multiplayer QA/);
+
+  assert.match(homepage,/workflow_run:\n\s+workflows:\n\s+- Company Status Sync/);
+  assert.doesNotMatch(homepage,/workflows:\n(?:\s+- .*\n)*\s+- Company DEVELOPMENT_CONFIRMED Runtime/);
+
+  assert.doesNotMatch(vibe,/'assets\/\*\*'/);
+  assert.match(vibe,/'assets\/vibe-\*\.js'/);
+  assert.match(vibe,/'assets\/asset-manifest\.json'/);
+
+  assert.doesNotMatch(evolution,/'tools\/company-\*\.mjs'/);
+  assert.doesNotMatch(evolution,/'qa\/company-\*\.test\.mjs'/);
+  assert.match(evolution,/'tools\/company-release-production-cycle\.mjs'/);
+  assert.match(evolution,/'qa\/company-system-ai-evolution\.test\.mjs'/);
+
+  assert.match(central,/Resolve impact-scoped central contract work/);
+  assert.match(central,/CENTRAL_POLICY_STUDIO_QA=/);
+  assert.match(central,/CENTRAL_POLICY_POST_RUNTIME_QA=/);
+  assert.match(central,/CENTRAL_POLICY_STUDIO_CONTRACT=REUSED_UNCHANGED/);
+  assert.match(central,/CENTRAL_POLICY_POST_RUNTIME_CONTRACT=REUSED_UNCHANGED/);
+});
