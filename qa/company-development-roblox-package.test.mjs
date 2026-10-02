@@ -158,6 +158,18 @@ test('Roblox package toolchain is pinned to the verified Rojo Linux artifact',()
   assert.equal(ROBLOX_PACKAGE_TOOL.linuxX64AssetSha256,'22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073');
 });
 
+test('Roblox technical result preserves superseded freshness instead of recording a package failure',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const start=workflow.indexOf('      - name: Record Roblox technical package result');
+  const end=workflow.indexOf('      - name: Upload immutable Roblox package checkpoint',start);
+  assert.ok(start>=0&&end>start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/SUPERSEDED: \$\{\{ steps\.freshness\.outputs\.superseded \}\}/);
+  assert.match(block,/SUPERSEDE_REASON: \$\{\{ steps\.freshness\.outputs\.reason \}\}/);
+  assert.match(block,/const superseded=String\(process\.env\.SUPERSEDED\|\|''\)\.toLowerCase\(\)==='true'/);
+  assert.match(block,/failure:superseded\?'roblox-technical-superseded'/);
+});
+
 test('canonical Roblox workflow contains build package checkpoint and keeps full review pending',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/technical-plan:/);
