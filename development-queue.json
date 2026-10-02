@@ -94,7 +94,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-02T04:54:33.951Z",
+      "updatedAt": "2026-10-02T04:55:55.965Z",
       "robloxSourceCommit": "b953d4fb6e4121fe7fb62a23eace4ea7c3871f85",
       "robloxSourceBootstrapPassedAt": "2026-10-02T03:03:09.588Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -339,7 +339,7 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-02T04:00:27.652Z"
+        "verifiedAt": "2026-10-02T04:55:55.965Z"
       },
       "robloxMultiplayerQaPassedAt": "2026-10-02T03:07:19.868Z",
       "robloxStudioRuntimeSession": {
@@ -575,7 +575,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-02T04:55:48.937Z",
+      "updatedAt": "2026-10-02T04:55:55.965Z",
       "robloxSourceCommit": "3078ffbe9473110bdbfedc86674955d11d358d39",
       "robloxSourceBootstrapPassedAt": "2026-10-02T04:33:52.073Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -779,7 +779,7 @@
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
-      "robloxMultiplayerQaPassed": false,
+      "robloxMultiplayerQaPassed": true,
       "robloxIndependentQaPassed": false,
       "robloxIndependentQaPassedAt": null,
       "robloxRegressionPassed": false,
@@ -806,9 +806,9 @@
       "robloxMultiplayerQaEvidence": {
         "version": 2,
         "gameId": "horror-escape-room",
-        "sourceRevision": "3464cb15c0e14b3c4edcdc7eb2f1b4fcdfbb4bcb",
-        "artifactIdentity": "sha256:4c5c5cac965bec46929e046a838a12ce26fd9fce7db3fd258a2db71b74c8fd72",
-        "candidateVersionNumber": 36959637015,
+        "sourceRevision": "3078ffbe9473110bdbfedc86674955d11d358d39",
+        "artifactIdentity": "sha256:b5e249c0efdacde3a27f98c8bb60298e5ce1511ec27562e8857afb89ee72fb93",
+        "candidateVersionNumber": 36964644360,
         "passed": true,
         "codeContractPassed": true,
         "checks": {
@@ -820,9 +820,9 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-02T03:22:58.346Z"
+        "verifiedAt": "2026-10-02T04:55:55.965Z"
       },
-      "robloxMultiplayerQaPassedAt": "2026-10-02T03:22:58.346Z",
+      "robloxMultiplayerQaPassedAt": "2026-10-02T04:55:55.965Z",
       "robloxStudioRuntimeSession": {
         "version": 1,
         "sessionId": "36961339568:horror-escape-room:36961212185:36961212185",
@@ -974,7 +974,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-10-02T04:55:50.519Z",
+  "updatedAt": "2026-10-02T04:55:55.965Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
