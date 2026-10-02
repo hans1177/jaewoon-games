@@ -874,8 +874,6 @@ def build():
     s.lathe('CentralTowerCrown',(0,46,-36),15,11,13,c['roof'],sides=8)
     s.box('LeaningChimney',(31,38,-42),(5,24,5),c['stone'],lean=2.4)
     s.box('ChimneyCap',(33,50,-42),(7,1.1,7),c['black'])
-    s.lathe('LeftTurret',(-57,27,-48),7,5.5,25,c['plum'],sides=10)
-    s.lathe('LeftTurretRoof',(-58,48,-48),9,0,17,c['roof'],sides=10)
     s.lathe('RightTurret',(57,27,-48),7,5.5,25,c['plum'],sides=10)
     s.lathe('RightTurretRoof',(58,48,-48),9,0,17,c['roof'],sides=10)
 
@@ -1272,7 +1270,7 @@ def build():
             ],[.045,.018],[.040,.015],dead_plant_mat,sides=12)
 
     # 마른 나무: 박스 기둥 대신 굽은 연속 곡면 줄기/가지.
-    for t,(x,z,h) in enumerate([(-65,49,15),(65,52,17),(-61,19,14),(62,16,16),(-44,66,13),(43,67,15)]):
+    for t,(x,z,h) in enumerate([(-65,49,15),(65,52,17),(-61,19,14),(62,16,16),(-44,66,13),(39,75,15)]):
         lean=(-1 if t%2 else 1)
         trunk=[
           (x,.25,z),
@@ -1291,7 +1289,7 @@ def build():
             tip=(base[0]+side*h*reach*.58,base[1]+h*.17,base[2]+zoff*h*.30)
             s.curve_tube('DeadTreeBranch'+str(t)+'_'+str(i),[base,mid,tip],
               [.22,.15,.055],[.20,.14,.050],c['wood'],sides=18)
-    for i,(x,z) in enumerate([(-69,33),(-63,28),(-59,39),(69,29),(63,35),(58,40),(-47,58),(48,59)]):
+    for i,(x,z) in enumerate([(-69,33),(-63,28),(-59,39),(69,29),(63,35),(58,40),(-47,58),(39,58)]):
         s.box('Gravestone'+str(i),(x,1.7,z),(2.3,3.4,.65),c['stone'],lean=(-.16+i*.04))
         s.box('GraveBase'+str(i),(x,.35,z),(3.3,.55,1.7),c['stone'])
     # 주택 노후화 디테일: 벽면 석재 코너와 일부 깨진 유리/빗물 얼룩.
@@ -1314,10 +1312,34 @@ def build():
         s.box('DormerFace'+str(side),(side*19,29,-6.8),(6,6,.3),c['plum'])
         s.box('DormerLight'+str(side),(side*19,29,-6.5),(2,3,.1),c['amber'])
     for i in range(9):s.box('RoofRib'+str(i),(-32+i*8,22.5,-22),(.25,.6,46),c['black'])
+    # 현관 포치: 계단-기단-4기둥-난간-박공지붕 순서로 건축적으로 읽히게 한다.
+    for step in range(5):
+        width=22-step*1.4
+        s.box('PorchStep'+str(step),(0,.16+step*.28,8.8-step*.95),(width,.30,2.0),c['stone'])
+    s.box('PorchPlinth',(0,.72,4.9),(20.5,1.0,9.8),c['stone'])
     for side in [-1,1]:
-        s.lathe('PorchColumn'+str(side),(side*7,6.5,5),.55,.45,12,c['stone'])
-        s.lathe('PorchCapital'+str(side),(side*7,12.5,5),.9,.9,.6,c['brass'])
-    s.box('PorchCanopy',(0,13.2,2),(17,1,12),c['roof'])
+        for depth,zp in enumerate([3.2,8.2]):
+            x=side*(7.6 if depth==0 else 8.6)
+            s.lathe('PorchColumn'+str(side)+'_'+str(depth),(x,6.7,zp),.62,.48,11.4,c['stone'],sides=28)
+            s.lathe('PorchBase'+str(side)+'_'+str(depth),(x,1.05,zp),.86,.72,.72,c['stone'],sides=28)
+            s.lathe('PorchCapital'+str(side)+'_'+str(depth),(x,12.5,zp),.98,.78,.72,c['brass'],sides=28)
+    for side in [-1,1]:
+        s.curve_tube('PorchRail'+str(side),[
+          (side*9.0,3.0,3.2),(side*9.0,3.0,8.0)
+        ],[.12,.12],[.10,.10],c['brass'],sides=16)
+        for zbal in [4.0,5.3,6.6,7.9]:
+            s.lathe('PorchBaluster'+str(side)+str(zbal),(side*9.0,2.15,zbal),.08,.06,1.7,c['brass'],sides=14)
+    porchRoof=[(-10.5,0,-5.2),(10.5,0,-5.2),(10.5,0,5.2),(-10.5,0,5.2),(0,3.4,-5.2),(0,3.4,5.2)]
+    s.node('PorchCanopy',s.mesh('PorchCanopy',porchRoof,[
+      [0,1,4],[3,5,2],[0,4,5,3],[1,2,5,4],[0,3,2,1]
+    ],c['roof']),(0,13.0,5.4))
+    s.curve_tube('PorchGableTrim',[
+      (-10.0,13.05,.2),(0,16.2,.2),(10.0,13.05,.2)
+    ],[.18,.14,.18],[.14,.11,.14],c['brass'],sides=18)
+    for side in [-1,1]:
+        s.lathe('PorchLanternPost'+str(side),(side*5.6,4.5,9.8),.12,.09,5.6,c['black'],sides=16)
+        s.ellipsoid('PorchLanternGlass'+str(side),(side*5.6,7.75,9.8),(.78,1.15,.78),c['glass'])
+        s.ellipsoid('PorchLanternFlame'+str(side),(side*5.6,7.75,9.8),(.16,.42,.16),c['amber'])
     for i in range(18):
         x=(-1 if i%2 else 1)*(9+(i*7)%21);z=(i*11)%40
         s.box('LeafCard'+str(i),(x,.24,z),(.5,.015,.9),c['wood'],rot=i*.71)
