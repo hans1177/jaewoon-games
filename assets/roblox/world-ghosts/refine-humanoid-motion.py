@@ -340,12 +340,12 @@ def gait_pose(t, pace='walk'):
         p = (t + (0.5 if side_name == 'R' else 0.0)) % 1.0
         stance = cfg['stance']
         thigh = phase_curve(p, [
-            (0.00,0.76),(stance * 0.45,0.75),(stance,0.68),
+            (0.00,0.72),(stance * 0.50,0.72),(stance,0.72),
             (min(0.48, stance + 0.14),0.08),(0.56,-0.82),
-            (0.72,-0.42),(0.88,0.38),(1.00,0.76)
+            (0.72,-0.42),(0.88,0.38),(1.00,0.72)
         ]) * cfg['reverse']
         knee = phase_curve(p, [
-            (0.00,0.10),(stance * 0.55,0.08),(stance,0.12),
+            (0.00,0.10),(stance * 0.55,0.10),(stance,0.10),
             (min(0.50, stance + 0.16),0.48),(0.66,0.96),
             (0.82,0.44),(0.92,0.18),(1.00,0.10)
         ])
@@ -627,7 +627,6 @@ for clip_name, duration in CLIPS.items():
 # 실제 관절 샘플 기반 QA. 이름만 있는 모션은 통과시키지 않는다.
 def sampled_snapshot(clip_name, t):
     animate(clip_name, t)
-    bpy.context.view_layer.update()
     return pose_snapshot()
 
 
