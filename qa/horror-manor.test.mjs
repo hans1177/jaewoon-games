@@ -99,7 +99,12 @@ test('personal manor spawn stays on the front-yard ground layer',()=>{
  assert.match(server,/local rayLength=lobbyDestination and math\.max\(16,pos\.Y\+12\)or 18/);
  assert.doesNotMatch(server,/rayTop=lobbyDestination and 30/);
  assert.match(server,/lobbySpawnLocation\.Position=Vector3\.new\(0,\.4,330\)/);
- assert.match(lobby,/PersonalSpawn";spawn\.Position=origin\+Vector3\.new\(0,\.55,60\)/);
+ assert.match(lobby,/local spawn=Instance\.new\("Part"\);spawn\.Name="PersonalSpawn";spawn\.Position=origin\+Vector3\.new\(0,\.55,60\)/);
+ assert.match(lobby,/SpawnMarkerOnly/);
+ assert.doesNotMatch(lobby,/local spawn=Instance\.new\("SpawnLocation"\);spawn\.Name="PersonalSpawn"/);
+ assert.doesNotMatch(lobby,/p\.RespawnLocation=spawn/);
+ assert.match(server,/FIRST_FRAME_GROUND_SNAP_V2/);
+ assert.match(server,/character:PivotTo\(CFrame\.lookAt\(bootstrapTarget,bootstrapLook\)\)/);
  assert.match(ui,/camera\.CFrame=CFrame\.lookAt\(Vector3\.new\(x,7\.2,z\+76\),Vector3\.new\(x,6\.2,z\+2\)\)/);
  assert.match(manorBuild,/ArrivalCourtOuter/);
  assert.match(manorBuild,/ArrivalCourtInner/);
