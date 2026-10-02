@@ -56,12 +56,15 @@ function saveImage(result,name){
 function mouseClickArgs(def,studioId,x,y){
  const props=def?.inputSchema?.properties||{};
  const args={};if(props.studio_id)args.studio_id=studioId;
+ if(props.datamodel_type)args.datamodel_type='Client';
  if(props.actions){
   const itemProps=props.actions?.items?.properties||{};
-  const actionKey=['type','action','kind'].find(k=>itemProps[k])||'type';
+  const actionKey=['action','type','kind'].find(k=>itemProps[k])||'action';
   const enums=itemProps[actionKey]?.enum||[];
-  const click=enums.find(v=>String(v).toLowerCase().includes('click'))||'click';
+  const click=enums.find(v=>String(v).toLowerCase()==='mousebuttonclick')
+   ||enums.find(v=>String(v).toLowerCase().includes('click'))||'mouseButtonClick';
   const action={[actionKey]:click};
+  if(itemProps.mouse_button)action.mouse_button='left';
   if(itemProps.x&&itemProps.y){action.x=Math.round(x);action.y=Math.round(y);}
   else if(itemProps.position)action.position={x:Math.round(x),y:Math.round(y)};
   else if(itemProps.coordinates)action.coordinates={x:Math.round(x),y:Math.round(y)};
@@ -127,10 +130,17 @@ try{
  for(const name of required)if(!names.has(name))throw Error('STUDIO_MCP_TOOL_MISSING:'+name);
  console.log('MANOR_MCP_TOOLS='+[...names].join(','));
 
- const studios=await call('list_roblox_studios',{});
+ let studios=null;let studioId=null;
+ for(let attempt=1;attempt<=20;attempt++){
+  studios=await call('list_roblox_studios',{});
+  fs.writeFileSync(path.join(output,'mcp-studios-attempt-'+String(attempt).padStart(2,'0')+'.json'),JSON.stringify(studios,null,2));
+  const parsed=parsedText(studios);
+  studioId=studioIdFrom(studios)||studioIdFrom(parsed);
+  if(studioId)break;
+  await sleep(1500);
+ }
  fs.writeFileSync(path.join(output,'mcp-studios.json'),JSON.stringify(studios,null,2));
- const studioId=studioIdFrom(studios)||studioIdFrom(parsedText(studios));
- if(!studioId)throw Error('STUDIO_ID_NOT_RESOLVED');
+ if(!studioId)throw Error('STUDIO_ID_NOT_RESOLVED_AFTER_WAIT:'+textContent(studios));
  console.log('MANOR_STUDIO_ID='+studioId);
 
  const editState=await call('get_studio_state',{studio_id:studioId});
@@ -149,7 +159,7 @@ try{
  if(Number(beforeData.enterW)<48||Number(beforeData.enterH)<48)throw Error('STUDIO_ENTER_BUTTON_TOUCH_TARGET_TOO_SMALL:'+JSON.stringify(beforeData));
  if(!(Number(beforeData.enterX)>=0&&Number(beforeData.enterY)>=0))throw Error('STUDIO_ENTER_BUTTON_COORDINATE_INVALID');
 
- const preShot=await call('screen_capture',{studio_id:studioId});
+ const preShot=await call('screen_capture',{studio_id:studioId,capture_id:'manor-before-enter'});
  saveImage(preShot,'studio-before-enter');
  const mouseDef=toolDef(catalog,'user_mouse_input');
  const clickArgs=mouseClickArgs(mouseDef,studioId,beforeData.enterX,beforeData.enterY);
@@ -165,7 +175,7 @@ try{
  if(afterData.departVisible!==true)throw Error('STUDIO_DEPART_BUTTON_NOT_VISIBLE:'+JSON.stringify(afterData));
  if(!String(afterData.cameraType).includes('Custom'))throw Error('STUDIO_CAMERA_NOT_CUSTOM:'+JSON.stringify(afterData));
 
- const postShot=await call('screen_capture',{studio_id:studioId});
+ const postShot=await call('screen_capture',{studio_id:studioId,capture_id:'manor-after-enter'});
  if(!saveImage(postShot,'studio-after-enter'))fs.writeFileSync(path.join(output,'studio-after-enter.json'),JSON.stringify(postShot,null,2));
 
  const consoleResult=await call('get_console_output',{studio_id:studioId});
