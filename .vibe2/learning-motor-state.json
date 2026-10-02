@@ -2736,14 +2736,6 @@
       "coding_2re7zx"
     ],
     "seenNegativeOutcomeIds": [
-      "coding_negative_c0xz5o",
-      "coding_negative_j709hj",
-      "coding_negative_13nbu24",
-      "coding_negative_q0lbc0",
-      "coding_negative_5hr36q",
-      "coding_negative_15w2d8q",
-      "coding_negative_1ghl3hl",
-      "coding_negative_msl3qm",
       "coding_negative_2mh32h",
       "coding_negative_1ohg1y5",
       "coding_negative_7rmmox",
@@ -7735,7 +7727,15 @@
       "coding_negative_1b7yhsf",
       "coding_negative_czepze",
       "coding_negative_1w524ch",
-      "coding_negative_yy4ygv"
+      "coding_negative_yy4ygv",
+      "coding_negative_1i1p8hr",
+      "coding_negative_1rpmsac",
+      "coding_negative_1ga7lie",
+      "coding_negative_1lps97o",
+      "coding_negative_siphzb",
+      "coding_negative_hw2t3",
+      "coding_negative_4it7oa",
+      "coding_negative_ffxrvv"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -19667,7 +19667,7 @@
         "verifiedApplications": 42,
         "firstCandidatePasses": 10,
         "totalGenerationAttempts": 107,
-        "verifiedFailures": 3023,
+        "verifiedFailures": 3031,
         "games": {
           "fantasy-survival": 5,
           "bug-defense": 3,
@@ -19685,13 +19685,13 @@
         "contextModes": {
           "STANDARD_CONTEXT": {
             "verifiedApplications": 42,
-            "verifiedFailures": 818,
+            "verifiedFailures": 826,
             "firstCandidatePasses": 10,
             "totalGenerationAttempts": 107,
             "totalContextBytes": 698196,
             "lastEvidence": "coding_2re7zx",
-            "lastFailureEvidence": "coding_negative_yy4ygv",
-            "lastUpdatedAt": "2026-10-02T02:05:53.070Z"
+            "lastFailureEvidence": "coding_negative_ffxrvv",
+            "lastUpdatedAt": "2026-10-02T02:08:49.058Z"
           },
           "UNITY_WEB_BOOTSTRAP_SHELL": {
             "verifiedApplications": 0,
@@ -19966,7 +19966,7 @@
             "verifiedApplications": 24,
             "firstCandidatePasses": 9,
             "totalGenerationAttempts": 51,
-            "verifiedFailures": 280,
+            "verifiedFailures": 285,
             "games": {
               "fantasy-survival": 5,
               "seed-action-survival-rogu-echoes-of-the-lost-star": 3,
@@ -19978,24 +19978,24 @@
               "unity": 24
             },
             "failureGames": {
-              "fantasy-survival": 101,
-              "seed-idle-growth-rpg-crystal-bloom": 81,
-              "seed-action-survival-rogu-echoes-of-the-lost-star": 72,
-              "amusement-tycoon": 14,
-              "seed-puzzle-chromatic-cascade": 12
+              "fantasy-survival": 102,
+              "seed-idle-growth-rpg-crystal-bloom": 82,
+              "seed-action-survival-rogu-echoes-of-the-lost-star": 73,
+              "amusement-tycoon": 15,
+              "seed-puzzle-chromatic-cascade": 13
             },
             "failureTargets": {
-              "unity": 280
+              "unity": 285
             },
             "failureClasses": {
               "MALFORMED_OUTPUT": 2,
-              "STUDIO_QUALITY_DELTA": 98,
-              "TIMEOUT": 166,
+              "STUDIO_QUALITY_DELTA": 100,
+              "TIMEOUT": 169,
               "NO_OP": 14
             },
             "lastEvidence": "coding_2re7zx",
-            "lastFailureEvidence": "coding_negative_gcgocv",
-            "lastUpdatedAt": "2026-10-02T00:30:48.533Z"
+            "lastFailureEvidence": "coding_negative_4it7oa",
+            "lastUpdatedAt": "2026-10-02T02:08:49.056Z"
           },
           "roblox|NO_OP|OTHER|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -20144,25 +20144,25 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 63,
+            "verifiedFailures": 64,
             "games": {},
             "targets": {},
             "failureGames": {
               "bug-defense": 33,
-              "survival": 30
+              "survival": 31
             },
             "failureTargets": {
-              "unity": 63
+              "unity": 64
             },
             "failureClasses": {
               "STUDIO_QUALITY_DELTA": 28,
-              "TIMEOUT": 32,
+              "TIMEOUT": 33,
               "NO_OP": 2,
               "EDIT_MATCH": 1
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1b9no0q",
-            "lastUpdatedAt": "2026-10-02T00:30:48.535Z"
+            "lastFailureEvidence": "coding_negative_ffxrvv",
+            "lastUpdatedAt": "2026-10-02T02:08:49.058Z"
           },
           "unity|NO_OP|OTHER|PRESENTATION_DELTA|PRESENTATION_PATCH_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -20234,7 +20234,7 @@
             "verifiedApplications": 2,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 8,
-            "verifiedFailures": 61,
+            "verifiedFailures": 62,
             "games": {
               "bug-defense": 2
             },
@@ -20242,19 +20242,19 @@
               "unity": 2
             },
             "failureGames": {
-              "bug-defense": 61
+              "bug-defense": 62
             },
             "failureTargets": {
-              "unity": 61
+              "unity": 62
             },
             "failureClasses": {
-              "STUDIO_QUALITY_DELTA": 18,
+              "STUDIO_QUALITY_DELTA": 19,
               "NO_OP": 8,
               "TIMEOUT": 35
             },
             "lastEvidence": "coding_7ruirm",
-            "lastFailureEvidence": "coding_negative_1n1rpxf",
-            "lastUpdatedAt": "2026-10-02T00:30:48.528Z"
+            "lastFailureEvidence": "coding_negative_1ga7lie",
+            "lastUpdatedAt": "2026-10-02T02:08:49.053Z"
           },
           "unity|AUTHORITATIVE_TARGET_ENGINE_QA_MISSING|FOCUSED_MARKER_NOT_PASS|FOCUSED_QA_NOT_PASS|NO_OP|OTHER|PRESENTATION_PATCH_DELTA|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 2,
@@ -20654,7 +20654,7 @@
             "verifiedApplications": 3,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 6,
-            "verifiedFailures": 14,
+            "verifiedFailures": 15,
             "games": {
               "line-defense": 3
             },
@@ -20662,18 +20662,18 @@
               "unity": 3
             },
             "failureGames": {
-              "line-defense": 14
+              "line-defense": 15
             },
             "failureTargets": {
-              "unity": 14
+              "unity": 15
             },
             "failureClasses": {
-              "STUDIO_QUALITY_DELTA": 9,
+              "STUDIO_QUALITY_DELTA": 10,
               "TIMEOUT": 5
             },
             "lastEvidence": "coding_vybsoh",
-            "lastFailureEvidence": "coding_negative_8hgmhx",
-            "lastUpdatedAt": "2026-10-02T00:30:48.529Z"
+            "lastFailureEvidence": "coding_negative_1lps97o",
+            "lastUpdatedAt": "2026-10-02T02:08:49.053Z"
           },
           "web|CANDIDATE_BRANCH_PUBLISH|NO_OP|OTHER|PRESENTATION_PATCH_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -20698,8 +20698,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_2re7zx",
-        "lastFailureEvidence": "coding_negative_yy4ygv",
-        "lastUpdatedAt": "2026-10-02T02:05:53.070Z"
+        "lastFailureEvidence": "coding_negative_ffxrvv",
+        "lastUpdatedAt": "2026-10-02T02:08:49.058Z"
       }
     }
   },
@@ -23460,7 +23460,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-10-02T02:05:53.129Z",
+    "lastBuiltAt": "2026-10-02T02:08:49.131Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -32376,5 +32376,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-10-02T02:05:53.129Z"
+  "updatedAt": "2026-10-02T02:08:49.131Z"
 }
