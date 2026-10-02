@@ -449,7 +449,7 @@ test('security workflow keeps patch scanning always-on but runs full contract QA
   assert.match(securityWorkflow,/Resolve impact-scoped security contract work/);
   assert.match(securityWorkflow,/SECURITY_PATCH_SCAN_ALWAYS=YES/);
   assert.match(securityWorkflow,/contract_changed=NO/);
-  assert.match(securityWorkflow,/if: steps\.scope\.outputs\.contract_changed == 'YES'/);
+  assert.match(securityWorkflow,/if: \$\{\{ steps\.scope\.outputs\.contract_changed == 'YES' \}\}/);
   assert.match(securityWorkflow,/Verify immune-system contracts only when security authority changed/);
   assert.match(securityWorkflow,/Scan changed attack surface/);
   assert.doesNotMatch(securityWorkflow,/name: Verify immune-system contracts\n\s+run:/);
