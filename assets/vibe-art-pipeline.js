@@ -296,6 +296,141 @@ export function selectVibeAssetVariant({plan,results=[],minScore=0.72}={}) {
   return Object.freeze({version:1,ready:blocked.length===0&&Boolean(winner),winner,evaluations:Object.freeze(evaluations),blockedReasons:Object.freeze(blocked),selectionRule:'rights-first-then-style-silhouette-quality-animation-performance',originalImmutable:true,authority:'deterministic-art-variant-tournament'});
 }
 
+function safeDccRelative(value='') {
+  const raw=clean(value).replaceAll('\\','/').replace(/^\.\//,'');
+  if(!raw||raw.startsWith('/')||/^[A-Za-z]:\//.test(raw)||raw.split('/').includes('..')||/^[a-z]+:/i.test(raw))return null;
+  return raw;
+}
+function dccOutputContract(recipe={}) {
+  const outputs=recipe?.outputs&&typeof recipe.outputs==='object'?recipe.outputs:{};
+  return Object.freeze({
+    editableSource:safeDccRelative(outputs.editableSource),
+    nativeArtifact:safeDccRelative(outputs.nativeArtifact),
+    preview:safeDccRelative(outputs.preview),
+    evidence:safeDccRelative(outputs.evidence)
+  });
+}
+export function validateVibeNativeDccAuthoringRecipe({recipe={},allowedOutputRoot=''}={}) {
+  const scriptPath=safeDccRelative(recipe.scriptPath);
+  const outputs=dccOutputContract(recipe);
+  const allowed=safeDccRelative(allowedOutputRoot);
+  const issues=[];
+  if(clean(recipe.executor).toUpperCase()!=='BLENDER_PYTHON')issues.push('BLENDER_PYTHON_EXECUTOR_REQUIRED');
+  if(!scriptPath||!scriptPath.toLowerCase().endsWith('.py'))issues.push('REPOSITORY_LOCAL_PYTHON_RECIPE_REQUIRED');
+  if(!outputs.editableSource||!outputs.editableSource.toLowerCase().endsWith('.blend'))issues.push('EDITABLE_BLEND_OUTPUT_REQUIRED');
+  if(!outputs.nativeArtifact||!outputs.nativeArtifact.toLowerCase().endsWith('.glb'))issues.push('GLB_OUTPUT_REQUIRED');
+  if(!outputs.preview||!outputs.preview.toLowerCase().endsWith('.png'))issues.push('PNG_PREVIEW_REQUIRED');
+  if(!outputs.evidence||!outputs.evidence.toLowerCase().endsWith('.json'))issues.push('EVIDENCE_JSON_REQUIRED');
+  const outputPaths=Object.values(outputs).filter(Boolean);
+  if(new Set(outputPaths).size!==outputPaths.length)issues.push('DISTINCT_OUTPUT_PATHS_REQUIRED');
+  if(allowed&&outputPaths.some(value=>value!==allowed&&!value.startsWith(allowed+'/')))issues.push('OUTPUT_OUTSIDE_APPROVED_SOURCE_ROOT');
+  const rights=classifyLicense(recipe.license);
+  if(!rights.recognizedContentLicense||!rights.commercialUseAllowed||!rights.derivativesAllowedByLicense)issues.push('COMMERCIAL_MODIFIABLE_LICENSE_REQUIRED');
+  if(!clean(recipe.id))issues.push('ASSET_ID_REQUIRED');
+  if(!clean(recipe.family))issues.push('ASSET_FAMILY_REQUIRED');
+  return Object.freeze({
+    version:1,valid:issues.length===0,issues:Object.freeze(issues),scriptPath,outputs,
+    assetId:clean(recipe.id)||null,family:clean(recipe.family).toUpperCase()||null,
+    license:clean(recipe.license)||null,allowedOutputRoot:allowed||null,
+    originalImmutable:true,gameplayAuthority:false
+  });
+}
+export async function executeVibeNativeDccAuthoringRecipe({
+  repoRoot='',
+  allowedOutputRoot='',
+  recipe={},
+  blenderBinary='',
+  processRunner=null
+}={}) {
+  if(typeof process==='undefined'||!process?.versions?.node)throw new Error('DCC_NODE_EXECUTOR_REQUIRED');
+  const validation=validateVibeNativeDccAuthoringRecipe({recipe,allowedOutputRoot});
+  if(!validation.valid)return Object.freeze({version:1,pass:false,status:'DCC_AUTHORING_RECIPE_INVALID',validation,runtimeVerified:false,companyPromotionEligible:false});
+  const [{default:fs},{default:path},cryptoModule,childProcess]=await Promise.all([
+    import('node:fs'),import('node:path'),import('node:crypto'),import('node:child_process')
+  ]);
+  const root=path.resolve(clean(repoRoot)||process.cwd());
+  const resolveInside=relative=>{
+    const resolved=path.resolve(root,relative);
+    if(resolved!==root&&!resolved.startsWith(root+path.sep))throw new Error('DCC_PATH_ESCAPE:'+relative);
+    return resolved;
+  };
+  const script=resolveInside(validation.scriptPath);
+  if(!fs.existsSync(script)||!fs.statSync(script).isFile())throw new Error('DCC_RECIPE_SCRIPT_MISSING:'+validation.scriptPath);
+  const outputEntries=Object.entries(validation.outputs).map(([kind,relative])=>({kind,relative,absolute:resolveInside(relative)}));
+  for(const row of outputEntries)fs.mkdirSync(path.dirname(row.absolute),{recursive:true});
+  const binary=clean(blenderBinary)||clean(process.env.VIBE2_BLENDER_BINARY)||'blender';
+  const env={
+    ...process.env,
+    VIBE_DCC_ASSET_ID:validation.assetId,
+    VIBE_DCC_FAMILY:validation.family,
+    VIBE_DCC_EDITABLE_SOURCE:resolveInside(validation.outputs.editableSource),
+    VIBE_DCC_NATIVE_ARTIFACT:resolveInside(validation.outputs.nativeArtifact),
+    VIBE_DCC_PREVIEW_RENDER:resolveInside(validation.outputs.preview),
+    VIBE_DCC_EVIDENCE_JSON:resolveInside(validation.outputs.evidence)
+  };
+  const args=['--background','--factory-startup','--python',script,'--',...(Array.isArray(recipe.args)?recipe.args.map(value=>String(value)):[])];
+  const runner=processRunner||((exe,argv,options)=>childProcess.execFileSync(exe,argv,options));
+  runner(binary,args,{cwd:root,env,stdio:'pipe',timeout:Math.max(60000,Math.min(900000,Number(recipe.timeoutMs||360000)))});
+  const sha256=file=>cryptoModule.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+  const requireFile=(row,minBytes=1)=>{
+    if(!fs.existsSync(row.absolute)||!fs.statSync(row.absolute).isFile())throw new Error('DCC_OUTPUT_MISSING:'+row.relative);
+    const bytes=fs.statSync(row.absolute).size;
+    if(bytes<minBytes)throw new Error('DCC_OUTPUT_EMPTY:'+row.relative);
+    return bytes;
+  };
+  const editable=outputEntries.find(row=>row.kind==='editableSource');
+  const native=outputEntries.find(row=>row.kind==='nativeArtifact');
+  const preview=outputEntries.find(row=>row.kind==='preview');
+  const evidence=outputEntries.find(row=>row.kind==='evidence');
+  requireFile(editable,7);requireFile(native,12);requireFile(preview,8);
+  const blendHead=fs.readFileSync(editable.absolute).subarray(0,7).toString('ascii');
+  if(blendHead!=='BLENDER')throw new Error('DCC_BLEND_SIGNATURE_INVALID:'+editable.relative);
+  const glbHead=fs.readFileSync(native.absolute).subarray(0,4).toString('ascii');
+  if(glbHead!=='glTF')throw new Error('DCC_GLB_SIGNATURE_INVALID:'+native.relative);
+  const pngHead=fs.readFileSync(preview.absolute).subarray(0,8).toString('hex');
+  if(pngHead!=='89504e470d0a1a0a')throw new Error('DCC_PREVIEW_SIGNATURE_INVALID:'+preview.relative);
+  const scriptHash=sha256(script);
+  const outputs=[editable,native,preview].map(row=>Object.freeze({
+    kind:row.kind,path:row.relative,bytes:fs.statSync(row.absolute).size,sha256:sha256(row.absolute)
+  }));
+  const sourceHash=outputs.find(row=>row.kind==='editableSource').sha256;
+  const artifactHash=outputs.find(row=>row.kind==='nativeArtifact').sha256;
+  const previewHash=outputs.find(row=>row.kind==='preview').sha256;
+  const payload={
+    version:1,status:'DCC_ARTIFACT_AUTHORED_RUNTIME_REQUIRED',assetId:validation.assetId,family:validation.family,
+    platform:clean(recipe.platform).toUpperCase()||null,executor:'BLENDER_PYTHON',blenderBinary:binary,
+    recipePath:validation.scriptPath,recipeSha256:scriptHash,license:validation.license,
+    parentAssetId:clean(recipe.parentAssetId)||null,parentSourceHash:clean(recipe.parentSourceHash)||null,
+    outputs,sourceHash,artifactHash,previewHash,generatedAt:new Date().toISOString(),
+    runtimeVerified:false,companyPromotionEligible:false,gameplayAuthority:false
+  };
+  fs.writeFileSync(evidence.absolute,JSON.stringify(payload,null,2)+'\n','utf8');
+  const evidenceHash=sha256(evidence.absolute);
+  const allOutputs=Object.freeze([...outputs,Object.freeze({kind:'evidence',path:evidence.relative,bytes:fs.statSync(evidence.absolute).size,sha256:evidenceHash})]);
+  const promotionCandidate=Object.freeze({
+    id:validation.assetId,family:validation.family,platform:clean(recipe.platform).toUpperCase()||null,
+    path:validation.outputs.nativeArtifact,license:validation.license,sourceHash,artifactHash,
+    preview:validation.outputs.preview,previewHash,evidence:validation.outputs.evidence,evidenceHash,
+    productionVerified:false,verifiedCompanyReusable:false,runtimeVerificationState:'AUTHORING_COMPLETE_RUNTIME_PENDING'
+  });
+  return Object.freeze({
+    version:1,pass:true,status:'DCC_ARTIFACT_AUTHORED_RUNTIME_REQUIRED',validation,outputs:allOutputs,
+    promotionCandidate,runtimeVerified:false,companyPromotionEligible:false,authoringRequestIsNotCompletion:true
+  });
+}
+export async function executeVibeNativeDccAuthoringRecipes(options={}) {
+  const recipes=Array.isArray(options.recipes)?options.recipes:[];
+  if(!recipes.length)return Object.freeze({version:1,pass:false,status:'DCC_AUTHORING_RECIPE_REQUIRED',results:Object.freeze([]),promotionCandidates:Object.freeze([]),outputs:Object.freeze([]),runtimeVerified:false});
+  const results=[];
+  for(const recipe of recipes)results.push(await executeVibeNativeDccAuthoringRecipe({...options,recipe}));
+  const pass=results.every(row=>row.pass===true);
+  return Object.freeze({
+    version:1,pass,status:pass?'DCC_ARTIFACT_AUTHORED_RUNTIME_REQUIRED':'DCC_AUTHORING_REPAIR_REQUIRED',
+    results:Object.freeze(results),promotionCandidates:Object.freeze(results.flatMap(row=>row.promotionCandidate?[row.promotionCandidate]:[])),
+    outputs:Object.freeze(results.flatMap(row=>row.outputs||[])),runtimeVerified:false,companyPromotionEligible:false
+  });
+}
+
 export function createVibeArtPipeline({ request = '', target = 'auto', style = null, quality = 'auto' } = {}) {
   const prompt = clean(request);
   if (!prompt) throw new Error('art pipeline request required');
