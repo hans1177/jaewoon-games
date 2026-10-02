@@ -803,7 +803,18 @@ def build():
     s.box('Runner',(0,.48,-25),(12,.08,61),c['red'])
     # 중앙 홀 외피와 좌우 날개. 중앙 시야를 막는 대형 빈 박스가 아니라 방 단위로 깊이를 나눈다.
     for side in [-1,1]:
-        s.box('ManorSideWall'+str(side),(side*54,13,-29),(1.5,26,72),c['plum'],lean=side*.65)
+        # 중앙 홀↔좌우 날개는 통짜 벽이 아니라 세 개의 실제 통로로 연결한다.
+        wall_segments=[(-61.5,7),(-43.5,13),(-22.5,13),(-.5,15)]
+        for seg,(z0,length) in enumerate(wall_segments):
+            s.box('ManorSideWall'+str(side)+'_'+str(seg),(side*54,13,z0),(1.5,26,length),c['plum'],lean=side*.35)
+        # 각 통로에 석재 문설주와 뾰족 아치 프레임을 둔다. 이동 폭은 8stud 이상 유지.
+        for gate,z0 in enumerate([-54,-33,-12]):
+            for jamb in [-1,1]:
+                s.box('WingArchJamb'+str(side)+'_'+str(gate)+'_'+str(jamb),(side*53.65,5.0,z0+jamb*4.35),(1.0,10,.65),c['stone'])
+            arch=[[-4.7,0,0],[4.7,0,0],[4.0,2.0,0],[0,5.0,0],[-4.0,2.0,0]]
+            archObj=s.node('WingArch'+str(side)+'_'+str(gate),s.mesh('WingArch'+str(side)+'_'+str(gate),arch,[[0,1,2,3,4]],c['stone']),(side*53.58,9.6,z0))
+            archObj.rotation_euler.y=math.pi/2
+            s.box('WingThreshold'+str(side)+'_'+str(gate),(side*54,.28,z0),(5.5,.18,8.0),c['stone'])
         s.box('FacadeWing'+str(side),(side*43,13,-2),(34,26,2),c['plum'],lean=side*.5)
         s.box('OuterWingWall'+str(side),(side*75,11,-31),(1.2,22,64),c['plum'],lean=side*.35)
         s.box('WingBackWall'+str(side),(side*58,11,-63),(35,22,1.2),c['plum'])
@@ -818,6 +829,13 @@ def build():
                 s.box('WindowCross'+str(x)+str(y),(x,y,-.12),(5,.25,.14),c['black'])
         s.box('EntryPillar'+str(side),(side*8.5,7.5,-2),(1.8,15,4),c['stone'],lean=-side*.45)
     s.box('BackWall',(0,13,-65),(110,26,1.5),c['plum'])
+    for x in [-42,-28,-14,0,14,28,42]:
+        s.box('CeilingBeamX'+str(x),(x,24.0,-31),(0.55,.70,64),c['wood'])
+    for z0 in [-58,-46,-34,-22,-10]:
+        s.box('CeilingBeamZ'+str(z0),(0,23.85,z0),(104,.55,.60),c['wood'])
+    for side in [-1,1]:
+        s.box('UpperWallMoulding'+str(side),(side*52.9,20.8,-31),(.35,.65,64),c['brass'])
+    s.box('BackUpperMoulding',(0,20.8,-64.1),(106,.65,.35),c['brass'])
     s.box('EntryLintel',(0,15,-2),(20,3.5,4),c['wood'])
     s.box('EntryThreshold',(0,.40,-2),(18,.4,6),c['stone'])
 
