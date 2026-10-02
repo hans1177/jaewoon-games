@@ -1025,11 +1025,13 @@ export function createStudioTestbedPlan({assetIds=[],platform='UNITY',mobile=tru
 export function evaluateCompanyAssetPromotion({asset={},consumer={},runtimeEvidence={}}={}){
   const id=text(asset?.id),family=upper(asset?.family||asset?.category),platform=upper(runtimeEvidence?.platform||consumer?.platform||asset?.platformVariant||asset?.platform);
   const license=text(asset?.license);
-  const sourceHash=text(asset?.sourceHash||asset?.derivedSha256||asset?.sourceSha256||asset?.contentHash||asset?.sha256);
+  const sourceHash=text(asset?.sourceHash||asset?.sourceSha256||asset?.contentHash||asset?.sha256);
   const artifactHash=text(asset?.artifactHash||asset?.derivedSha256||asset?.contentHash||asset?.sha256);
   const artifactPath=text(asset?.path||runtimeEvidence?.artifactPath);
   const consumerGameId=text(consumer?.gameId||runtimeEvidence?.gameId);
   const runtimeAssetId=text(runtimeEvidence?.assetId);
+  const runtimeSourceHash=text(runtimeEvidence?.sourceHash);
+  const runtimeArtifactHash=text(runtimeEvidence?.artifactHash);
   const blockers=[];
   if(!id)blockers.push('ASSET_ID_REQUIRED');
   if(!STUDIO_ASSET_FAMILIES.includes(family))blockers.push('SUPPORTED_ASSET_FAMILY_REQUIRED');
@@ -1043,9 +1045,11 @@ export function evaluateCompanyAssetPromotion({asset={},consumer={},runtimeEvide
   if(runtimeEvidence?.mobilePerformancePass!==true)blockers.push('MOBILE_PERFORMANCE_PASS_REQUIRED');
   if(runtimeEvidence?.regressionPass!==true)blockers.push('REGRESSION_PASS_REQUIRED');
   if(runtimeEvidence?.licenseProvenancePass!==true)blockers.push('LICENSE_PROVENANCE_PASS_REQUIRED');
-  if(runtimeAssetId&&runtimeAssetId!==id)blockers.push('RUNTIME_ASSET_ID_MISMATCH');
-  if(runtimeEvidence?.sourceHash&&text(runtimeEvidence.sourceHash)!==sourceHash)blockers.push('RUNTIME_SOURCE_HASH_MISMATCH');
-  if(runtimeEvidence?.artifactHash&&artifactHash&&text(runtimeEvidence.artifactHash)!==artifactHash)blockers.push('RUNTIME_ARTIFACT_HASH_MISMATCH');
+  if(!runtimeAssetId)blockers.push('RUNTIME_ASSET_ID_REQUIRED');
+  else if(runtimeAssetId!==id)blockers.push('RUNTIME_ASSET_ID_MISMATCH');
+  if(!runtimeSourceHash&&!runtimeArtifactHash)blockers.push('RUNTIME_ASSET_HASH_REQUIRED');
+  if(runtimeSourceHash&&runtimeSourceHash!==sourceHash)blockers.push('RUNTIME_SOURCE_HASH_MISMATCH');
+  if(runtimeArtifactHash&&artifactHash&&runtimeArtifactHash!==artifactHash)blockers.push('RUNTIME_ARTIFACT_HASH_MISMATCH');
   const eligible=blockers.length===0;
   return Object.freeze({
     version:1,eligible,blockers:Object.freeze(blockers),assetId:id||null,family:family||null,platform:platform||null,consumerGameId:consumerGameId||null,
