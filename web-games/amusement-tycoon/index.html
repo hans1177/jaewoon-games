@@ -511,6 +511,13 @@ function renderInfo(){
   var b=state.buildings.find(function(x){return x.id===selectedId;});
   if(!b){panel.classList.remove("on");return;}
   var d=BUILD_DEFS[b.type],rt=runtime[b.id]||{queue:[],active:[]},lv=b.level||0;
+  var line="길 연결 "+(buildingConnected(b) ? "정상" : "끊김");
+  if(d.cap)line+=" · 수용 "+capacity(b)＋"명 · 대기 "+rt.queue.length＋"명 · 이용 "+d.time＋"초";
+  if(d.kind===
+  var panel=document.getElementById("info"),actions=document.getElementById("infoActions");
+  var b=state.buildings.find(function(x){return x.id===selectedId;});
+  if(!b){panel.classList.remove("on");return;}
+  var d=BUILD_DEFS[b.type],rt=runtime[b.id]||{queue:[],active:[]},lv=b.level||0;
   var line="길 연결 "+(buildingConnected(b)?"정상":"끊김");
   if(d.cap)line+=" · 수용 "+capacity(b)+"명 · 대기 "+rt.queue.length+"명 · 이용 "+d.time+"초";
   if(d.kind==="food"||d.kind==="ride")line+=" · 업그레이드 "+lv+"/3";

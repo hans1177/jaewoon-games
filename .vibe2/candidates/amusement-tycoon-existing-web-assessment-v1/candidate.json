@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function renderInfo(){",
+      "replace": "function renderInfo(){\n  var panel=document.getElementById(\"info\"),actions=document.getElementById(\"infoActions\");\n  var b=state.buildings.find(function(x){return x.id===selectedId;});\n  if(!b){panel.classList.remove(\"on\");return;}\n  var d=BUILD_DEFS[b.type],rt=runtime[b.id]||{queue:[],active:[]},lv=b.level||0;\n  var line=\"길 연결 \"+(buildingConnected(b) ? \"정상\" : \"끊김\");\n  if(d.cap)line+=\" · 수용 \"+capacity(b)＋\"명 · 대기 \"+rt.queue.length＋\"명 · 이용 \"+d.time＋\"초\";\n  if(d.kind==="
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
