@@ -858,10 +858,13 @@ def build():
     s.lathe('RightTurret',(57,27,-48),7,5.5,25,c['plum'],sides=10)
     s.lathe('RightTurretRoof',(58,48,-48),9,0,17,c['roof'],sides=10)
 
-    # 큰 계단과 2층 난간 복도. 실제 보행면은 얇은 연속 계단으로 구성한다.
+    # 큰 계단: 각 단의 윗면 높이가 정확히 이어지는 12단 솔리드 구조.
+    stair_rise=.82;stair_tread=1.36
     for i in range(12):
-        step_y=.42+i*.78;step_z=-43-i*1.30
-        s.box('GrandStair'+str(i),(0,step_y,step_z),(28,step_y*.16+1.2,1.55),c['wood'])
+        top_y=stair_rise*(i+1)
+        step_z=-40.0-i*stair_tread
+        s.box('GrandStair'+str(i),(0,top_y*.5,step_z),(30,top_y,stair_tread+.08),c['wood'])
+        s.box('GrandStairRunner'+str(i),(0,top_y+.025,step_z),(9.5,.05,stair_tread*.92),c['red'])
     s.box('SecondFloorGallery',(0,10.2,-55),(92,.55,19),c['wood'])
     for side in [-1,1]:
         s.box('BalconyWalk'+str(side),(side*43,10.2,-31),(15,.55,48),c['wood'])
@@ -969,10 +972,22 @@ def build():
     s.lathe('ArmorTorso',(-16,4,-11),1.2,.8,3.4,c['stone'])
     s.ellipsoid('ArmorHelmet',(-16,6.4,-11),(2,2.2,1.8),c['brass'])
     for side in [-1,1]:s.box('ArmorArm'+str(side),(-16+side*1.6,4,-11),(.5,3,.65),c['stone'],lean=-side*.4)
-    s.lathe('ChandelierStem',(0,19,-24),.12,.12,5,c['black'])
-    s.lathe('ChandelierRing',(0,16.5,-24),3.5,3.5,.35,c['brass'],sides=12)
+    s.lathe('ChandelierStem',(0,19.5,-24),.11,.11,6,c['black'],sides=20)
+    s.lathe('ChandelierRingOuter',(0,16.7,-24),3.6,3.6,.28,c['brass'],sides=32)
+    s.lathe('ChandelierRingInner',(0,16.9,-24),2.25,2.25,.18,c['brass'],sides=28)
     for i in range(8):
-        a=i*math.pi/4;s.lathe('ChandelierCandle'+str(i),(math.cos(a)*3,17.4,-24+math.sin(a)*3),.15,.12,1.3,c['ivory'])
+        a=i*math.pi/4
+        x=math.cos(a)*3.15;z=-24+math.sin(a)*3.15
+        midx=math.cos(a)*2.55;midz=-24+math.sin(a)*2.55
+        s.curve_tube('ChandelierArm'+str(i),[(0,16.85,-24),(midx,16.25,midz),(x,17.0,z)],
+          [.10,.085,.075],[.10,.085,.075],c['brass'],sides=18)
+        s.lathe('ChandelierCup'+str(i),(x,17.05,z),.28,.18,.26,c['brass'],sides=20)
+        s.lathe('ChandelierCandle'+str(i),(x,17.65,z),.12,.10,1.05,c['ivory'],sides=18)
+        s.loft('ChandelierFlame'+str(i),(x,18.38,z),[
+          (-.20,.07,.06),(0,.10,.075),(.22,.025,.020)
+        ],c['amber'],sides=16)
+        dropx=math.cos(a)*2.9;dropz=-24+math.sin(a)*2.9
+        s.ellipsoid('ChandelierDrop'+str(i),(dropx,15.95,dropz),(.18,.52,.14),c['glass'])
     # Portraits and stage reward relics; the owner-specific module controls their visibility.
     for i in range(12):
         x=([-40,-26,-12,12,26,40])[i%6];z=-63.7;y=9 if i<6 else 16
