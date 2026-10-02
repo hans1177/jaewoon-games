@@ -9,6 +9,9 @@ const client=fs.readFileSync('roblox-games/horror-escape-room/client/Game.client
 const manorServer=fs.readFileSync('roblox-games/horror-escape-room/server/ManorLobby.luau','utf8');
 const manorClient=fs.readFileSync('roblox-games/horror-escape-room/client/ManorLobby.client.luau','utf8');
 const manorAssets=fs.readFileSync('roblox-games/horror-escape-room/shared/ManorAssets.luau','utf8');
+const combatAssets=fs.readFileSync('roblox-games/horror-escape-room/shared/CombatAssets.luau','utf8');
+const combatAssetTool=fs.readFileSync('tools/horror-combat-assets.mjs','utf8');
+const combatAssetWorkflow=fs.readFileSync('.github/workflows/horror-combat-assets.yml','utf8');
 const project=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/default.project.json','utf8'));
 const launch=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/launch-mvp.json','utf8'));
 
@@ -509,10 +512,12 @@ test('세레머니 콘셉트는 생존 완료와 사냥 완료 중심이며 구�
  assert.doesNotMatch(config,/Emote="dance/);
 });
 
-test('적 실루엣과 이름표는 벽을 뚫고 보이지 않는다',()=>{
- assert.match(server,/AIRoleHighlight";hi\.FillTransparency=.*?hi\.DepthMode=Enum\.HighlightDepthMode\.Occluded/s);
- assert.match(server,/RoleHighlight";hi\.FillTransparency=.*?hi\.DepthMode=Enum\.HighlightDepthMode\.Occluded/s);
- assert.match(server,/g\.AlwaysOnTop=false;g\.MaxDistance=32/);
+test('전투 캐릭터 디버그 외곽선은 실제 플레이 화면에서 비활성화된다',()=>{
+ assert.match(server,/AIRoleHighlight";hi\.FillTransparency=1;hi\.OutlineTransparency=1/);
+ assert.match(server,/AIRoleHighlight"[\s\S]{0,260}hi\.Enabled=false/);
+ assert.match(server,/RoleHighlight";hi\.FillTransparency=1;hi\.OutlineTransparency=1;hi\.DepthMode=Enum\.HighlightDepthMode\.Occluded;hi\.Enabled=false/);
+ assert.match(server,/CombatDebugOnly/);
+ assert.match(server,/g\.AlwaysOnTop=false;g\.MaxDistance=18/);
  assert.doesNotMatch(server,/RoleVisual"[\s\S]{0,220}AlwaysOnTop=true/);
 });
 
@@ -555,6 +560,13 @@ test('스킬은 이름뿐 아니라 용도와 범위를 HUD에서 설명한다',
  assert.match(client,/쿨 %d초 · %dE/);
  assert.match(client,/currentHumanAbilityDescription\(\)/);
  assert.match(client,/currentAbilityDescription\(\)/);
+ assert.match(client,/combatActionStatus\.Name="CombatActionStatus"/);
+ assert.match(client,/local serverRoundRunning=roomState=="RUNNING"or lobbyPhase=="RUNNING"/);
+ assert.match(client,/local inMatch=running or spectating or serverRoundRunning/);
+ assert.match(client,/hud\.Visible=inMatch/);
+ assert.match(client,/actionDock\.Visible=inMatch/);
+ assert.match(client,/전투 상태 동기화 중 · HUD 유지/);
+ assert.match(client,/관전 중 · 다음 라운드에 전투 스킬 활성화/);
 });
 
 test('내부 세계 귀신 자산은 실제 런타임 목격 연출에 연결되고 실패 시 fallback한다',()=>{
@@ -573,22 +585,34 @@ test('내부 세계 귀신 자산은 실제 런타임 목격 연출에 연결되
  assert.match(client,/LocalGhostSightingBody/);
 });
 
-test('내부 귀신 스킨과 모션은 실제 전투 몬스터에도 연결된다',()=>{
- assert.match(client,/local combatSkinByMonster=\{/);
- for(const pair of ['DRACULA="strigoi"','FRANKENSTEIN="draugr"','WEREWOLF="barghest"','MUMMY="pocong"','GRIM_REAPER="hei-wuchang"'])assert.ok(client.includes(pair),pair);
- assert.match(client,/local function ensureCombatSkin\(source,rootPart,skinId\)/);
- assert.match(client,/local sourcePlayer=Players:GetPlayerFromCharacter\(source\)/);
- assert.match(client,/local quality=sourcePlayer and"near"or"mid"/);
+test('실제 스킨드 GLB가 전투 비주얼 1순위이고 절차형 박스 스킨은 fallback 전용이다',()=>{
+ assert.match(combatAssets,/HumanoidModelId=\d+/);
+ assert.match(combatAssets,/AssetSource="assets\/roblox\/world-ghosts\/native\/mesh\/bride\.glb"/);
+ assert.match(combatAssetTool,/assets\/roblox\/world-ghosts\/native\/mesh\/bride\.glb/);
+ assert.match(combatAssetTool,/assetType:'Model'/);
+ assert.match(combatAssetTool,/asset-permissions-api\/v1\/assets\/permissions/);
+ assert.match(combatAssetWorkflow,/name: Horror Authored Combat Assets/);
+ assert.match(server,/local CombatAssets=require\(Shared:WaitForChild\("CombatAssets"\)\)/);
+ assert.match(server,/CombatVisualTemplates/);
+ assert.match(server,/AssetService\.LoadAssetAsync,AssetService,assetId/);
+ assert.match(server,/CombatAuthoredAssetsReady/);
+ assert.match(server,/SourceAssetLibrary","roblox-world-ghost-authored-glb"/);
+ assert.match(client,/local function authoredCombatTemplate\(\)/);
+ assert.match(client,/local function bindAuthoredCombatMotion\(model\)/);
+ assert.match(client,/d:IsA\("Bone"\)/);
+ assert.match(client,/RuntimeQuality","AUTHORED_SKINNED_MESH"/);
+ assert.match(client,/ProceduralFallback",false/);
+ assert.match(client,/local function ensureCombatSkin\(source,rootPart,skinId,formId\)/);
+ assert.match(client,/row\.authored~=wantAuthored/);
  assert.match(client,/GhostSkinFactory\.Create\(skinId,\{quality=quality/);
  assert.match(client,/GhostSkinMotion\.Bind\(model\)/);
- assert.match(client,/RuntimeQuality",quality/);
+ assert.match(client,/ProceduralFallback",true/);
  assert.match(client,/state="attack"/);
  assert.match(client,/state="chase"/);
  assert.match(client,/state="walk"/);
- assert.match(client,/CFrame\.new\(0,\.08\*pulse,-\.95\*pulse\)/);
- assert.match(client,/CFrame\.Angles\(math\.rad\(-8\)/);
+ assert.match(client,/CFrame\.new\(0,\.08\*pulse,-\.72\*pulse\)/);
+ assert.match(client,/CFrame\.Angles\(math\.rad\(-6\)/);
  assert.match(client,/SourceAssetLibrary","roblox-world-ghost-skins-v1"/);
- assert.doesNotMatch(client,/quality=touchEnabled and"far"or"mid"/);
 });
 
 test('감염 스킬과 감염 공격은 화면 효과와 공격 모션 이벤트를 보낸다',()=>{

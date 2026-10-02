@@ -1048,13 +1048,112 @@ local combatSkinByInfected={
 }
 local combatSkins={}
 local combatSkinClock=0
+local authoredPalettes={
+ DRACULA={skin=Color3.fromRGB(197,184,181),cloth=Color3.fromRGB(32,18,29),accent=Color3.fromRGB(139,25,50),metal=Color3.fromRGB(177,126,67)},
+ FRANKENSTEIN={skin=Color3.fromRGB(122,151,116),cloth=Color3.fromRGB(39,47,45),accent=Color3.fromRGB(95,211,184),metal=Color3.fromRGB(117,130,129)},
+ WEREWOLF={skin=Color3.fromRGB(113,83,62),cloth=Color3.fromRGB(52,36,28),accent=Color3.fromRGB(220,137,66),metal=Color3.fromRGB(114,91,70)},
+ MUMMY={skin=Color3.fromRGB(176,166,138),cloth=Color3.fromRGB(204,194,159),accent=Color3.fromRGB(96,179,173),metal=Color3.fromRGB(164,133,76)},
+ GRIM_REAPER={skin=Color3.fromRGB(69,67,77),cloth=Color3.fromRGB(20,17,28),accent=Color3.fromRGB(139,80,202),metal=Color3.fromRGB(130,128,142)},
+ INFECTED={skin=Color3.fromRGB(151,169,143),cloth=Color3.fromRGB(34,47,42),accent=Color3.fromRGB(105,235,163),metal=Color3.fromRGB(104,124,113)},
+}
 
+local function combatFormIdForPlayer(player)
+ if player:GetAttribute("Role")~="MONSTER"then return nil end
+ if player:GetAttribute("Infected")==true then return"INFECTED"end
+ return tostring(player:GetAttribute("MonsterForm")or"DRACULA")
+end
 local function combatSkinIdForPlayer(player)
  if player:GetAttribute("Role")~="MONSTER"then return nil end
  if player:GetAttribute("Infected")==true then
   return combatSkinByInfected[tostring(player:GetAttribute("HumanForm")or"BROADCAST")]or"pocong"
  end
  return combatSkinByMonster[tostring(player:GetAttribute("MonsterForm")or"DRACULA")]or"strigoi"
+end
+local function authoredCombatTemplate()
+ local folder=RS:FindFirstChild("CombatVisualTemplates")
+ local template=folder and folder:FindFirstChild("AuthoredHumanoidGhost")
+ if template and template:IsA("Model")then return template end
+ return nil
+end
+local function styleAuthoredCombatModel(model,formId)
+ local palette=authoredPalettes[formId]or authoredPalettes.DRACULA
+ model:SetAttribute("MonsterForm",formId)
+ for _,d in ipairs(model:GetDescendants())do
+  if d:IsA("BasePart")and d.Transparency<1 then
+   local name=string.lower(d.Name)
+   if string.find(name,"hair",1,true)or string.find(name,"pupil",1,true)or string.find(name,"lash",1,true)then
+    d.Color=palette.cloth
+   elseif string.find(name,"cinnabar",1,true)or string.find(name,"lip",1,true)or string.find(name,"iris",1,true)or string.find(name,"red",1,true)then
+    d.Color=palette.accent
+   elseif string.find(name,"brass",1,true)or string.find(name,"gold",1,true)or string.find(name,"jade",1,true)or string.find(name,"pendant",1,true)then
+    d.Color=palette.metal
+   elseif string.find(name,"silk",1,true)or string.find(name,"ivory",1,true)or string.find(name,"skirt",1,true)or string.find(name,"jeogori",1,true)or string.find(name,"cloth",1,true)then
+    d.Color=palette.cloth
+   elseif string.find(name,"skin",1,true)or string.find(name,"porcelain",1,true)or string.find(name,"face",1,true)or string.find(name,"ear",1,true)or string.find(name,"nose",1,true)or string.find(name,"palm",1,true)then
+    d.Color=palette.skin
+   end
+  end
+ end
+end
+local function bindAuthoredCombatMotion(model)
+ local bones={}
+ local base={}
+ for _,d in ipairs(model:GetDescendants())do
+  if d:IsA("Bone")then bones[d.Name]=d;base[d]=d.Transform end
+ end
+ local function resetBone(name)
+  local bone=bones[name]
+  if bone then bone.Transform=base[bone]or CFrame.new()end
+ end
+ local function pose(name,cf)
+  local bone=bones[name]
+  if bone then bone.Transform=(base[bone]or CFrame.new())*cf end
+ end
+ local important={"Hips","Spine","Chest","Head","UpperArmL","UpperArmR","ForearmL","ForearmR","HandL","HandR","ThighL","ThighR","ShinL","ShinR","FootL","FootR","Jaw","LidL","LidR"}
+ local function reset()
+  for _,name in ipairs(important)do resetBone(name)end
+  for name in pairs(bones)do
+   if string.sub(name,1,4)=="Hair"or string.sub(name,1,3)=="Hem"or string.sub(name,1,3)=="Tie"then resetBone(name)end
+  end
+ end
+ local function step(time,state)
+  reset()
+  local t=tonumber(time)or 0
+  local phase=t*(state=="chase"and 13 or state=="walk"and 8.5 or 2.1)
+  local breath=math.sin(t*2.2)
+  pose("Spine",CFrame.Angles(math.rad(breath*1.8),0,math.rad(math.sin(t*1.45)*1.2)))
+  pose("Chest",CFrame.Angles(math.rad(-breath*1.2),0,math.rad(-math.sin(t*1.45)*.8)))
+  pose("Head",CFrame.Angles(math.rad(-2+breath*.7),math.rad(math.sin(t*.8)*2),math.rad(math.sin(t*1.15)*2.2)))
+  if state=="walk"or state=="chase"then
+   local amp=state=="chase"and 33 or 18
+   local knee=state=="chase"and 24 or 13
+   pose("ThighL",CFrame.Angles(math.rad(math.sin(phase)*amp),0,0))
+   pose("ThighR",CFrame.Angles(math.rad(-math.sin(phase)*amp),0,0))
+   pose("ShinL",CFrame.Angles(math.rad(math.max(0,-math.sin(phase))*knee),0,0))
+   pose("ShinR",CFrame.Angles(math.rad(math.max(0,math.sin(phase))*knee),0,0))
+   pose("UpperArmL",CFrame.Angles(math.rad(-math.sin(phase)*amp*.62),0,math.rad(-5)))
+   pose("UpperArmR",CFrame.Angles(math.rad(math.sin(phase)*amp*.62),0,math.rad(5)))
+   pose("Chest",CFrame.Angles(math.rad(state=="chase"and 8 or 3),0,math.rad(math.sin(phase)*2.4)))
+  elseif state=="attack"then
+   local u=math.clamp(t/.7,0,1)
+   local hit=math.sin(u*math.pi)
+   pose("Spine",CFrame.Angles(math.rad(-15*hit),0,math.rad(8*hit)))
+   pose("Chest",CFrame.Angles(math.rad(-10*hit),0,math.rad(-7*hit)))
+   pose("Head",CFrame.Angles(math.rad(9*hit),0,math.rad(-9*hit)))
+   pose("UpperArmL",CFrame.Angles(math.rad(-78*hit),math.rad(-8),math.rad(-14)))
+   pose("UpperArmR",CFrame.Angles(math.rad(-92*hit),math.rad(9),math.rad(14)))
+   pose("ForearmL",CFrame.Angles(math.rad(-28*hit),0,0))
+   pose("ForearmR",CFrame.Angles(math.rad(-36*hit),0,0))
+   pose("Jaw",CFrame.new(0,-.035*hit,0)*CFrame.Angles(math.rad(9*hit),0,0))
+  end
+  for name in pairs(bones)do
+   local hairIndex=tonumber(string.match(name,"^Hair(%d+)_"))
+   if hairIndex then
+    pose(name,CFrame.Angles(math.rad(math.sin(t*3.1-hairIndex*.18)*3.8),math.rad(math.sin(t*2.2+hairIndex*.11)*2.1),0))
+   end
+  end
+ end
+ return{step=step,reset=reset,destroy=reset,kind="AUTHORED_BONE_MOTION"}
 end
 local function restoreCombatSkinSource(row)
  for part,value in pairs(row.hiddenParts or{})do
@@ -1082,25 +1181,58 @@ local function hideCombatSkinSource(row)
   end
  end
 end
-local function ensureCombatSkin(source,rootPart,skinId)
- if not source or not rootPart or not skinId or not loadGhostSkinModules()then return nil end
+local function ensureCombatSkin(source,rootPart,skinId,formId)
+ if not source or not rootPart or not skinId then return nil end
+ local template=authoredCombatTemplate()
+ local wantAuthored=template~=nil
  local row=combatSkins[source]
- if row and(row.skinId~=skinId or not row.model or not row.model.Parent)then destroyCombatSkin(source);row=nil end
+ if row and(row.skinId~=skinId or row.formId~=formId or row.authored~=wantAuthored or not row.model or not row.model.Parent)then
+  destroyCombatSkin(source);row=nil
+ end
  if not row then
-  -- 실제 플레이어 몬스터는 모바일에서도 near를 유지한다. AI만 mid로 낮춰 화면 품질과 부하를 분리한다.
-  local sourcePlayer=Players:GetPlayerFromCharacter(source)
-  local quality=sourcePlayer and"near"or"mid"
-  local ok,model=pcall(function()
-   return GhostSkinFactory.Create(skinId,{quality=quality,parent=workspace,anchored=true,pivot=CFrame.new()})
-  end)
-  if not ok or not model then return nil end
-  local bindOk,motion=pcall(function()return GhostSkinMotion.Bind(model)end)
-  if not bindOk or not motion then model:Destroy();return nil end
-  model.Name="CombatGhostSkin_"..skinId
-  model:SetAttribute("SourceAssetLibrary","roblox-world-ghost-skins-v1")
-  model:SetAttribute("CombatSkin",true)
-  model:SetAttribute("RuntimeQuality",quality)
-  row={source=source,root=rootPart,skinId=skinId,quality=quality,model=model,motion=motion,createdAt=os.clock(),lastPos=rootPart.Position,hiddenParts={},hiddenHighlights={},attackStart=0,attackUntil=0}
+  local model=nil
+  local motion=nil
+  local authored=false
+  local quality=""
+  local pivotToBottom=0
+  if template then
+   local ok,clone=pcall(function()return template:Clone()end)
+   if ok and clone then
+    model=clone;model.Name="CombatAuthoredGhost_"..tostring(formId)
+    model.Parent=workspace
+    local _,size=model:GetBoundingBox()
+    if size.Y>.1 then pcall(function()model:ScaleTo(model:GetScale()*(6.15/size.Y))end)end
+    local boxCf,scaledSize=model:GetBoundingBox()
+    local pivot=model:GetPivot()
+    pivotToBottom=math.max(0,pivot.Position.Y-(boxCf.Position.Y-scaledSize.Y*.5))
+    styleAuthoredCombatModel(model,formId)
+    motion=bindAuthoredCombatMotion(model)
+    model:SetAttribute("SourceAssetLibrary","roblox-world-ghost-authored-glb")
+    model:SetAttribute("CombatSkin",true)
+    model:SetAttribute("RuntimeQuality","AUTHORED_SKINNED_MESH")
+    model:SetAttribute("ProceduralFallback",false)
+    authored=true;quality="AUTHORED_SKINNED_MESH"
+   end
+  end
+  if not model then
+   if not loadGhostSkinModules()then return nil end
+   local sourcePlayer=Players:GetPlayerFromCharacter(source)
+   quality=sourcePlayer and"near"or"mid"
+   local ok,created=pcall(function()
+    return GhostSkinFactory.Create(skinId,{quality=quality,parent=workspace,anchored=true,pivot=CFrame.new()})
+   end)
+   if not ok or not created then return nil end
+   model=created
+   local bindOk,bound=pcall(function()return GhostSkinMotion.Bind(model)end)
+   if not bindOk or not bound then model:Destroy();return nil end
+   motion=bound
+   model.Name="CombatGhostFallback_"..skinId
+   model:SetAttribute("SourceAssetLibrary","roblox-world-ghost-skins-v1")
+   model:SetAttribute("CombatSkin",true)
+   model:SetAttribute("RuntimeQuality",quality)
+   model:SetAttribute("ProceduralFallback",true)
+  end
+  row={source=source,root=rootPart,skinId=skinId,formId=formId,quality=quality,authored=authored,model=model,motion=motion,pivotToBottom=pivotToBottom,createdAt=os.clock(),lastPos=rootPart.Position,hiddenParts={},hiddenHighlights={},attackStart=0,attackUntil=0}
   combatSkins[source]=row
  end
  row.root=rootPart
@@ -1110,14 +1242,16 @@ end
 local function refreshCombatSkins()
  local active={}
  local round=tostring(p:GetAttribute("RoundState")or"")
- local show=round=="RUNNING"or round:match("^RESULT_")~=nil
- if show then loadGhostSkinModules()end
- if show and GhostSkinFactory and GhostSkinMotion then
+ local roomState=tostring(p:GetAttribute("RoomState")or workspace:GetAttribute("RoomState")or"")
+ local show=round=="RUNNING"or round:match("^RESULT_")~=nil or roomState=="RUNNING"
+ if show then task.defer(loadGhostSkinModules)end
+ if show then
   for _,player in ipairs(Players:GetPlayers())do
    local source=player.Character
    local rr=source and source:FindFirstChild("HumanoidRootPart")
    local skinId=combatSkinIdForPlayer(player)
-   if source and rr and skinId then active[source]=true;ensureCombatSkin(source,rr,skinId)end
+   local formId=combatFormIdForPlayer(player)
+   if source and rr and skinId and formId then active[source]=true;ensureCombatSkin(source,rr,skinId,formId)end
   end
   local arena=workspace:FindFirstChild("MidnightArena")
   if arena then
@@ -1126,7 +1260,7 @@ local function refreshCombatSkins()
      local formId=source.Name:match("^AI_MONSTER_(.+)$")
      local rr=formId and(source:FindFirstChild("HumanoidRootPart")or source.PrimaryPart)or nil
      local skinId=formId and combatSkinByMonster[formId]or nil
-     if rr and skinId then active[source]=true;ensureCombatSkin(source,rr,skinId)end
+     if rr and skinId then active[source]=true;ensureCombatSkin(source,rr,skinId,formId)end
     end
    end
   end
@@ -1152,13 +1286,13 @@ end
 
 RunService.RenderStepped:Connect(function(dt)
  combatSkinClock+=dt
- if combatSkinClock>=.3 then combatSkinClock=0;refreshCombatSkins()end
+ if combatSkinClock>=.2 then combatSkinClock=0;refreshCombatSkins()end
  local now=os.clock()
  for _,row in pairs(combatSkins)do
   local rr=row.root
   if rr and rr.Parent and row.model and row.model.Parent then
    local h=row.source:FindFirstChildOfClass("Humanoid")
-   local groundOffset=(h and tonumber(h.HipHeight)or 2)+.9
+   local groundOffset=(h and tonumber(h.HipHeight)or 2)+(rr.Size.Y*.5)
    local last=row.lastPos or rr.Position
    local velocity=(rr.Position-last).Magnitude/math.max(dt,1/120)
    row.lastPos=rr.Position
@@ -1167,18 +1301,17 @@ RunService.RenderStepped:Connect(function(dt)
    elseif velocity>11 then state="chase";time=now-row.createdAt
    elseif velocity>1 then state="walk";time=now-row.createdAt
    else state="idle";time=now-row.createdAt end
-
-   -- 내부 모션 관절에 전투 실루엣 이동을 더해 실제 추격/공격이 정지 인형처럼 보이지 않게 한다.
    local pose=CFrame.new()
    if state=="attack"then
     local pulse=math.sin(math.clamp(time/.58,0,1)*math.pi)
-    pose=CFrame.new(0,.08*pulse,-.95*pulse)*CFrame.Angles(math.rad(-14*pulse),0,0)
+    pose=CFrame.new(0,.08*pulse,-.72*pulse)*CFrame.Angles(math.rad(-10*pulse),0,0)
    elseif state=="chase"then
-    pose=CFrame.new(0,math.sin(now*13)*.075,0)*CFrame.Angles(math.rad(-8),0,math.rad(math.sin(now*6)*2.5))
+    pose=CFrame.new(0,math.sin(now*13)*.055,0)*CFrame.Angles(math.rad(-6),0,math.rad(math.sin(now*6)*2))
    elseif state=="walk"then
-    pose=CFrame.new(0,math.sin(now*9)*.045,0)*CFrame.Angles(math.rad(-3),0,math.rad(math.sin(now*4.5)*1.5))
+    pose=CFrame.new(0,math.sin(now*9)*.035,0)*CFrame.Angles(math.rad(-2),0,math.rad(math.sin(now*4.5)*1.2))
    end
-   row.model:PivotTo(rr.CFrame*CFrame.new(0,-groundOffset,0)*pose)
+   local visualOffset=-groundOffset+(row.authored and(row.pivotToBottom or 0)or 0)
+   row.model:PivotTo(rr.CFrame*CFrame.new(0,visualOffset,0)*pose)
    pcall(function()row.motion.step(time,state)end)
    hideCombatSkinSource(row)
   end
@@ -2196,6 +2329,23 @@ actionDock.BackgroundTransparency=1
 actionDock.ZIndex=30
 actionDock.Parent=gui
 
+local combatActionStatus=Instance.new("TextLabel")
+combatActionStatus.Name="CombatActionStatus"
+combatActionStatus.AnchorPoint=Vector2.new(.5,1)
+combatActionStatus.Position=UDim2.new(.5,0,0,-6)
+combatActionStatus.Size=UDim2.fromOffset(318,28)
+combatActionStatus.BackgroundColor3=Color3.fromRGB(23,27,34)
+combatActionStatus.BackgroundTransparency=.12
+combatActionStatus.TextColor3=Color3.fromRGB(234,224,204)
+combatActionStatus.TextSize=12
+combatActionStatus.Font=Enum.Font.GothamBold
+combatActionStatus.Text="전투 HUD 동기화 중"
+combatActionStatus.TextWrapped=true
+combatActionStatus.ZIndex=34
+combatActionStatus.Visible=false
+combatActionStatus.Parent=actionDock
+roundify(combatActionStatus,9);outline(combatActionStatus,.5)
+
 local rescueButton=makeButton(actionDock,"정화 공격",Color3.fromRGB(75,91,94))
 rescueButton.Size=UDim2.fromOffset(92,72);rescueButton.Position=UDim2.fromOffset(0,6);rescueButton.ZIndex=31
 rescueButton.Activated:Connect(function()setMotionImpulse("PURIFY",.34);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.PURIFY)end)
@@ -2587,7 +2737,12 @@ end
 local function render()
  local role=p:GetAttribute("Role")or"WAITING"
  local round=p:GetAttribute("RoundState")or"WAITING"
- local running=round=="RUNNING"
+ local roomState=tostring(p:GetAttribute("RoomState")or workspace:GetAttribute("RoomState")or"BROWSER")
+ local lobbyPhase=tostring(p:GetAttribute("LobbyPhase")or workspace:GetAttribute("LobbyPhase")or round)
+ local serverRoundRunning=roomState=="RUNNING"or lobbyPhase=="RUNNING"
+ local running=round=="RUNNING"or(serverRoundRunning and(role=="SURVIVOR"or role=="MONSTER"))
+ local spectating=round=="SPECTATING"or role=="SPECTATING"or(role=="ELIMINATED"and serverRoundRunning)
+ local inMatch=running or spectating or serverRoundRunning
  local frozen=false
  local mapName=p:GetAttribute("CurrentMap")or"맵 준비"
  local eventName=p:GetAttribute("CurrentMapEvent")or""
@@ -2595,7 +2750,7 @@ local function render()
  local mapId=tostring(workspace:GetAttribute("CurrentMapId")or"SCHOOL")
  drawMiniMap(mapId)
  miniTitle.Text="지도 · "..mapName
- mapPanel.Visible=running
+ mapPanel.Visible=inMatch
 
  mapLine.Text=mapName..(eventName~=""and(" · "..eventName)or"")
  local roleText=role=="MONSTER"and"몬스터"or role=="SURVIVOR"and"인간"or role=="ELIMINATED"and"탈락"or role=="SPECTATING"and"관전"or"대기"
@@ -2622,7 +2777,6 @@ local function render()
  roundLine.Text=running and(string.format("%d초",seconds))or round=="SPECTATING"and"관전"or resultCode and"결과"or round
 
  local realPlayers=tonumber(p:GetAttribute("LobbyRealPlayers"))or #Players:GetPlayers()
- local lobbyPhase=tostring(p:GetAttribute("LobbyPhase")or round)
  local phaseText=lobbyPhase=="INTERMISSION"and("곧 시작 · "..seconds.."초")or lobbyPhase=="RUNNING"and"게임 중"or lobbyPhase=="RESULT"and"결과"or lobbyPhase=="LOADING"and"준비 중"or"대기"
  if p:GetAttribute("RoomServer")==true then
   lobbyStatus.Text=string.format("곧 시작 · %d명",realPlayers)
@@ -2637,25 +2791,31 @@ local function render()
  loreStatus.Text=string.format("세계 괴담 %d/%d 완성 · 조각 %d · 계약서 %d · %s",tonumber(p:GetAttribute("GhostCompleted"))or 0,tonumber(p:GetAttribute("GhostTotal"))or #(C.GhostCatalog or{}),tonumber(p:GetAttribute("GhostFragments"))or 0,tonumber(p:GetAttribute("GhostContracts"))or 0,tostring(p:GetAttribute("GhostTitle")or"괴담 견습생"))
 
  local selectionConfirmed=p:GetAttribute("LobbySelectionConfirmed")==true
- local spectating=round=="SPECTATING"
  local isRoomServer=p:GetAttribute("RoomServer")==true
- local roomState=tostring(p:GetAttribute("RoomState")or"BROWSER")
  local browser=not isRoomServer
  local lobbyWaiting=not running and not resultCode and not spectating
  -- PersonalManorUI owns all lobby graphics and navigation.
- hud.Visible=running
+ hud.Visible=inMatch
  roomBrowserPanel.Visible=false
  roomInfoPanel.Visible=false
  roomSlotsPanel.Visible=false
  setupPanel.Visible=false
- if browser then worldCodePanel.Visible=worldCodePanel.Visible and not running and not resultCode end
+ if browser then worldCodePanel.Visible=worldCodePanel.Visible and not inMatch and not resultCode end
  ruleCard.Visible=false
- actionDock.Visible=running
- energyTrack.Visible=running
- energyFill.Visible=running
- energyLabel.Visible=running
- mapPanel.Visible=running
+ actionDock.Visible=inMatch
+ energyTrack.Visible=inMatch
+ energyFill.Visible=inMatch
+ energyLabel.Visible=inMatch
+ mapPanel.Visible=inMatch
  spectatorPanel.Visible=spectating
+ combatActionStatus.Visible=inMatch and not running
+ if spectating then
+  combatActionStatus.Text="관전 중 · 다음 라운드에 전투 스킬 활성화"
+ elseif serverRoundRunning and not running then
+  combatActionStatus.Text="전투 상태 동기화 중 · HUD 유지"
+ else
+  combatActionStatus.Text=""
+ end
  resultPanel.Visible=resultCode~=nil
  roomStartButton.Visible=false
  roomLeaveButton.Visible=false
@@ -2678,6 +2838,7 @@ local function render()
   local roleLabel=lastRole=="SURVIVOR"and"인간"or lastRole=="MONSTER"and"몬스터"or"관전"
   resultDetail.Text=string.format("최종 진영 %s · 총 +%d 코인\n참가 %d + 승리 %d + 기여 %d · 보유 %d",roleLabel,reward,baseReward,winBonus,contribution,coins)
  end
+ combatActionStatus.Visible=inMatch and not running
  rescueButton.Visible=running and role=="SURVIVOR"
  dashButton.Visible=running and role=="SURVIVOR"
  humanAbilityButton.Visible=running and role=="SURVIVOR"
