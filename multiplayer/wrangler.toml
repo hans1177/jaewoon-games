@@ -17,3 +17,15 @@ class_name = "GameRoom"
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["Matchmaker", "GameRoom"]
+
+[previews.vars]
+ALLOWED_ORIGIN = "https://jaewoon-games.pages.dev"
+SUPABASE_URL = "https://njpexgqvituaxrjpnqsi.supabase.co"
+
+[[previews.durable_objects.bindings]]
+name = "MATCHMAKER"
+class_name = "Matchmaker"
+
+[[previews.durable_objects.bindings]]
+name = "ROOMS"
+class_name = "GameRoom"
