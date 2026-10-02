@@ -3157,15 +3157,26 @@ jobs:
               evidence.sourceRevision===sourceRevision
               &&evidence.artifactIdentity===artifactIdentity
               &&Number(evidence.versionNumber||0)===Number(row?.versionNumber||0);
-            if(exactEvidence){
+            const exactInfrastructurePending=Boolean(
+              exactEvidence
+              &&evidence.infrastructureFailure===true
+              &&String(evidence.failureClass||'')==='STUDIO_MCP_INFRASTRUCTURE_PENDING'
+            );
+            if(exactEvidence&&!exactInfrastructurePending){
               console.error('ROBLOX_STUDIO_REBOOT_RECOVERY_EVIDENCE_PRESENT='+gameId+':pass='+(evidence.pass===true)+':infra='+(evidence.infrastructureFailure===true));
               continue;
+            }
+            if(exactInfrastructurePending){
+              console.error('ROBLOX_STUDIO_INFRASTRUCTURE_RETRY_REQUIRED='+gameId+':same-exact-candidate=YES');
             }
             if(item.robloxStudioLocalPlayRepairRequired===true||item.robloxQualityBuildUpRequired===true){
               console.error('ROBLOX_STUDIO_REBOOT_RECOVERY_PRODUCT_REPAIR_OWNS='+gameId);
               continue;
             }
-            if(!['QUEUED_FOR_STUDIO','INTERRUPTED_RETRY_QUEUED'].includes(String(session.status||''))){
+            const retryableSessionStates=exactInfrastructurePending
+              ?['QUEUED_FOR_STUDIO','INTERRUPTED_RETRY_QUEUED','COMPLETED_INFRASTRUCTURE_PENDING']
+              :['QUEUED_FOR_STUDIO','INTERRUPTED_RETRY_QUEUED'];
+            if(!retryableSessionStates.includes(String(session.status||''))){
               console.error('ROBLOX_STUDIO_REBOOT_RECOVERY_SESSION_TERMINAL='+gameId+':'+String(session.status||''));
               continue;
             }
