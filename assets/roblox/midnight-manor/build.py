@@ -1606,6 +1606,11 @@ def build():
     # 정원 중앙 진입로와 분수/부서진 동상.
     for i,z in enumerate(range(8,71,5)):
         s.box('PathStone'+str(i),(math.sin(i*.9)*.35,.18,z),(12.5,.26,4.2),c['stone'],rot=math.sin(i*.7)*.035)
+    # 플레이어는 이 도착 원형석 중앙에 선다. 앞마당 스폰과 저택 현관축을 시각적으로 한 구조로 묶는다.
+    s.lathe('ArrivalCourtOuter',(0,.20,60),9.8,9.8,.16,c['stone'],sides=64)
+    s.lathe('ArrivalCourtInner',(0,.30,60),7.2,7.2,.07,c['plum'],sides=64)
+    arrival_bat=[(-3.2,0),(-2.2,.95),(-1.1,.28),(0,1.12),(1.1,.28),(2.2,.95),(3.2,0),(1.55,-.52),(0,-1.18),(-1.55,-.52)]
+    s.prism('ArrivalCourtCrest',(0,.37,60),arrival_bat,.055,c['brass'])
     s.lathe('FountainBasin',(0,.55,39),7.4,7.0,1.1,c['stone'],sides=48)
     s.lathe('FountainPool',(0,1.15,39),5.8,5.8,.18,c['glass'],sides=48)
     s.lathe('FountainStem',(0,3.2,39),.85,.62,4.7,c['stone'],sides=32)
