@@ -453,7 +453,9 @@ function Manor:Recover(p)
 end
 function Manor:Remove(p)
  local r=self.rooms[p];if not r then return end
+ p:SetAttribute("VisitedManorOwnerUserId",0);p:SetAttribute("VisitedManorOwnerName","")
  for _,connection in ipairs(r.connections or{})do connection:Disconnect()end
  self.slots[r.index]=nil;self.rooms[p]=nil;self.rankingRequests[p]=nil;r.folder:Destroy()
+ self:RefreshVisitorCounts()
 end
 return Manor
