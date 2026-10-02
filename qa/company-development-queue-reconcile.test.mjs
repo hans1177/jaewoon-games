@@ -352,8 +352,8 @@ test('queue reconcile preserves exact Roblox F9 continuous-evolution checkpoint 
     write(root,'development-queue.json',{items:[{
       gameId:'f9-monotonic',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
       selectedPlatform:'ROBLOX',
-      currentStep:'POST_F9_CONTINUOUS_EVOLUTION',
-      canonicalState:'F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION',
+      currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION',
+      canonicalState:'PRIVATE_RUNTIME_CANDIDATE_DEPLOYED',
       concurrentTargetPlatforms:['ROBLOX','UNITY'],
       platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME',
       minimumDesignContract:{pass:true,source},
@@ -378,10 +378,17 @@ test('queue reconcile preserves exact Roblox F9 continuous-evolution checkpoint 
       robloxF9ReleaseRegressionEvidence:{
         sourceRevision:revision,artifactIdentity:artifact,candidateVersionNumber:2
       },
-      robloxCanonicalPublishPending:true,
+      robloxInternalReleasePublished:true,
+      robloxInternalReleaseReady:true,
+      robloxInternalReleaseEvidence:{
+        published:true,sourceRevision:revision,artifactIdentity:artifact,
+        versionNumber:33,universeId:'10767445741',placeId:'116850096561713'
+      },
+      robloxCanonicalPublishPending:false,
       robloxCanonicalPublishQueue:[{
         cycleId:revision+':'+artifact,sourceRevision:revision,artifactIdentity:artifact,
-        finalReviewPassed:true,f9ReleaseRegressionPassed:true,status:'PENDING'
+        finalReviewPassed:true,f9ReleaseRegressionPassed:true,status:'PUBLISHED',
+        versionNumber:33,universeId:'10767445741',placeId:'116850096561713'
       }]
     }]});
     reconcileDevelopmentQueue({root});
@@ -392,7 +399,9 @@ test('queue reconcile preserves exact Roblox F9 continuous-evolution checkpoint 
     assert.equal(item.robloxF9ReleaseRegressionPassed,true);
     assert.equal(item.robloxRuntimeFoundationPassed,false);
     assert.equal(item.robloxRuntimePassed,false);
-    assert.equal(item.robloxCanonicalPublishPending,true);
+    assert.equal(item.robloxCanonicalPublishPending,false);
+    assert.equal(item.robloxInternalReleasePublished,true);
+    assert.equal(item.robloxInternalReleaseEvidence.versionNumber,33);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
