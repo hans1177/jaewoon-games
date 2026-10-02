@@ -433,8 +433,14 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const uniqueDccTypes=unique(dccTypes);
   const uniqueNativeTextTypes=unique(nativeTextTypes);
   const explicitRecipeRows=Array.isArray(task?.assetAuthoring?.recipes)?task.assetAuthoring.recipes:Array.isArray(task?.authoringRecipes)?task.authoringRecipes:[];
+  const selectedCandidateIds=new Set(decisions.flatMap(row=>[
+    ...(row?.reuseCandidates||[]),
+    ...(row?.externalCandidates||[])
+  ]).filter(asset=>asset?.adaptationBaseOnly!==true).map(asset=>clean(asset?.id)).filter(Boolean));
   const manifestAssets=Array.isArray(manifest?.assets)?manifest.assets:[];
-  const registryRecipeRows=manifestAssets.flatMap(asset=>(Array.isArray(asset?.authoringRecipes)?asset.authoringRecipes:[]).map(recipe=>({recipe,asset})));
+  const registryRecipeRows=manifestAssets
+    .filter(asset=>selectedCandidateIds.has(clean(asset?.id)))
+    .flatMap(asset=>(Array.isArray(asset?.authoringRecipes)?asset.authoringRecipes:[]).map(recipe=>({recipe,asset})));
   const normalizedExplicit=explicitRecipeRows.map(recipe=>normalizeNativeDccAuthoringRecipe(recipe,{id:'task-explicit'},target,uniqueDccTypes));
   const normalizedRegistry=registryRecipeRows.map(({recipe,asset})=>normalizeNativeDccAuthoringRecipe(recipe,asset,target,uniqueDccTypes));
   const executionRecipes=freezeList([...normalizedExplicit,...normalizedRegistry]
