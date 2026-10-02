@@ -329,6 +329,7 @@ GAIT_PROFILES = {
     'backward': {'thigh':0.38,'knee':0.46,'foot':0.46,'arm':0.30,'lean':-0.060,'drop':0.032,'secondary':0.98,'alert':0.34,'direction':-0.88,'stance':0.31,'sway':0.009},
 }
 GAIT_CONTACT_TARGET_CACHE = {}
+GAIT_CORRECTED_POSE_CACHE = {}
 
 
 def gait_pose(t, pace='walk'):
@@ -412,6 +413,13 @@ def _pose_world_position(name):
 
 def apply_gait_contact_correction(pace, t):
     # 접지 중 지지발 원점을 X/Z로 고정한다. Root와 게임 이동 권한은 건드리지 않고 다리 관절만 보정한다.
+    pose_cache_key = (pace, round(float(t), 6))
+    cached_pose = GAIT_CORRECTED_POSE_CACHE.get(pose_cache_key)
+    if cached_pose is not None:
+        apply_snapshot(cached_pose)
+        bpy.context.view_layer.update()
+        return
+
     cfg = GAIT_PROFILES[pace]
     stance = cfg['stance']
     release = 0.06
@@ -422,18 +430,21 @@ def apply_gait_contact_correction(pace, t):
         side, start = 'R', 0.5
         weight = 1.0 if t <= 0.5 + stance else 1.0 - smoothstep((t - (0.5 + stance)) / release)
     else:
-        return
-    if weight <= 1e-6:
+        GAIT_CORRECTED_POSE_CACHE[pose_cache_key] = pose_snapshot()
         return
 
-    cache_key = (pace, side)
-    target = GAIT_CONTACT_TARGET_CACHE.get(cache_key)
+    if weight <= 1e-6:
+        GAIT_CORRECTED_POSE_CACHE[pose_cache_key] = pose_snapshot()
+        return
+
+    contact_cache_key = (pace, side)
+    target = GAIT_CONTACT_TARGET_CACHE.get(contact_cache_key)
     if target is None:
         current_pose = pose_snapshot()
         reset_pose()
         gait_pose(start, pace)
         target = _pose_world_position('Foot' + side).copy()
-        GAIT_CONTACT_TARGET_CACHE[cache_key] = target.copy()
+        GAIT_CONTACT_TARGET_CACHE[contact_cache_key] = target.copy()
         apply_snapshot(current_pose)
         bpy.context.view_layer.update()
 
@@ -473,6 +484,8 @@ def apply_gait_contact_correction(pace, t):
             delta = jx * yx + jz * yz
             delta = max(-limit, min(limit, delta))
             RIG.pose.bones[bone_name].rotation_euler[axis] += delta
+
+    GAIT_CORRECTED_POSE_CACHE[pose_cache_key] = pose_snapshot()
 
 def strafe_pose(t, direction):
     shift = phase_curve(t, [(0.00,-0.82),(0.20,-0.24),(0.38,0.64),(0.50,0.86),(0.72,-0.08),(1.00,-0.82)])
