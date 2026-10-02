@@ -15,8 +15,8 @@
   "projects": [
     {
       "gameId": "daechung-rpg",
-      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
-      "PLATFORM": "UNITY",
+      "PROJECT_PHASE": "TARGET_PLATFORM_RUNTIME",
+      "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
@@ -37,9 +37,13 @@
         "CONTENT_STRUCTURE": null,
         "BALANCE_INTENT": null
       },
-      "ROBLOX_HANDOFF": null,
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
       "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": false,
+        "eligibleAfterRelease": true,
         "assigned": false,
         "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
@@ -71,12 +75,12 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
+      "NEXT_MACHINE_ACTION": "RUN_TARGET_PLATFORM_RUNTIME"
     },
     {
       "gameId": "horror-escape-room",
-      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
-      "PLATFORM": "UNITY",
+      "PROJECT_PHASE": "TARGET_PLATFORM_RUNTIME",
+      "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
@@ -97,9 +101,13 @@
         "CONTENT_STRUCTURE": null,
         "BALANCE_INTENT": null
       },
-      "ROBLOX_HANDOFF": null,
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
       "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": false,
+        "eligibleAfterRelease": true,
         "assigned": false,
         "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
@@ -120,57 +128,60 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
+      "NEXT_MACHINE_ACTION": "RUN_TARGET_PLATFORM_RUNTIME"
     },
     {
       "gameId": "cozy-island",
-      "PROJECT_PHASE": "POST_RELEASE_FOCUSED_DEVELOPMENT",
+      "PROJECT_PHASE": "TARGET_PLATFORM_SOURCE_BIND",
       "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
-        "requiredForNewPlatformLifecycle": true,
-        "requiredForThisMaintenanceCycle": true,
-        "state": "NOT_BOUND_IN_CURRENT_COMPANY_QUEUE_SNAPSHOT",
-        "verified": false,
-        "sourcePath": null,
+        "required": true,
+        "state": "PENDING",
+        "sourcePath": "roblox-games/cozy-island",
         "evidencePath": null,
-        "currentCompanyWebBaselineBound": false,
-        "historicalDeploymentRecovery": false,
-        "reason": "CURRENT_COMPANY_WEB_BASELINE_NOT_PRESENT_IN_QUEUE_SNAPSHOT"
+        "sourceIndexSha256": null,
+        "designBaselineSha256": null,
+        "validationSchemaVersion": null,
+        "strictScore": null,
+        "promotionRevalidationPassed": false,
+        "CORE_LOOP": null,
+        "STATE_MODEL": null,
+        "PROGRESSION_MODEL": null,
+        "UI_FLOW": null,
+        "INPUT_INTENT": null,
+        "SAVE_MEANING": null,
+        "CONTENT_STRUCTURE": null,
+        "BALANCE_INTENT": null
       },
       "ROBLOX_HANDOFF": {
         "required": true,
         "ready": false,
-        "currentWebHandoffClaim": false,
-        "webEvidenceSubstitutesRobloxQa": false,
-        "reason": "CURRENT_COMPANY_WEB_HANDOFF_NOT_PRESENT_IN_QUEUE_SNAPSHOT"
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
       },
       "POST_RELEASE_FOCUS_RUNNER": {
         "eligibleAfterRelease": true,
-        "assigned": true,
-        "state": "ASSIGNED",
-        "queueTaskId": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
-        "queueStatus": "queued",
+        "assigned": false,
+        "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
         "activeTaskMaxPerProject": 1,
         "sharedProtectedRunnerSlots": 1,
         "scheduler": "vibe2-24h-runner",
         "worker": "vibe2-continuous-core",
-        "continuousRefill": true,
-        "historicalDeploymentRecovery": false
+        "continuousRefill": true
       },
       "LEARNING_CONTEXT": {
         "authority": "VERIFIED_PLUS_TRANSFORMATIVE_RECOMBINATION_CONTEXT",
         "verifiedSemanticExperienceIds": [],
         "canonicalDistillation": "vibe2-learning-runtime:company-learning/distillation-status.json",
         "transformativeRecombination": "vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json",
-        "recombinationRecipeId": "recombine_15140be67dd46ddd",
+        "webBaselinePortableToRoblox": true,
         "rawSourceCopyAllowed": false,
         "rawAssetCopyAllowed": false,
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "EXECUTE_POST_RELEASE_FOCUSED_GAP"
+      "NEXT_MACHINE_ACTION": "COMPLETE_VERIFIED_WEB_TO_ROBLOX_HANDOFF_CONTEXT"
     }
   ],
   "handoffs": [],
