@@ -1046,6 +1046,19 @@ def build():
         s.curve_tube('RainPipe'+str(side),[
           (side*52.5,23.8,.10),(side*52.5,12.0,.10),(side*52.7,3.0,.35),(side*53.2,.55,1.4)
         ],[.13,.13,.12,.10],[.11,.11,.10,.08],c['black'],sides=16)
+        s.curve_tube('WingGutter'+str(side),[
+          (side*74.0,23.3,-3),(side*74.0,23.3,-31),(side*74.0,23.3,-61)
+        ],[.14,.14,.14],[.11,.11,.11],c['black'],sides=18)
+        for index,zpipe in enumerate([-5,-59]):
+            s.curve_tube('WingRainPipe'+str(side)+'_'+str(index),[
+              (side*74.0,23.1,zpipe),(side*74.1,13.0,zpipe),(side*73.8,3.0,zpipe),(side*73.2,.55,zpipe+1.0)
+            ],[.12,.12,.11,.09],[.10,.10,.09,.07],c['black'],sides=16)
+        for zchip in [-10,-26,-44,-57]:
+            s.box('WingStoneWeathering'+str(side)+str(zchip),(side*74.42,2.2,zchip),(.12,2.8,2.6),c['stone'],lean=-side*.06)
+
+    s.curve_tube('CentralRoofRidge',[(-7,42,-62),(-7,44,-35),(-7,42,-7)],[.17,.20,.17],[.14,.16,.14],c['black'],sides=18)
+    for zfinial in [-55,-35,-15]:
+        s.lathe('RoofFinial'+str(zfinial),(-7,44.9,zfinial),.22,.035,2.0,c['brass'],sides=18)
 
     # 큰 계단: 각 단의 윗면 높이가 정확히 이어지는 12단 솔리드 구조.
     stair_rise=.82;stair_tread=1.36
@@ -1087,6 +1100,59 @@ def build():
           (x-4.15,9.7,z+.10),(x-2.8,11.1,z+.10),(x,13.25,z+.10),
           (x+2.8,11.1,z+.10),(x+4.15,9.7,z+.10)
         ],[.22,.20,.18,.20,.22],[.18,.17,.15,.17,.18],c['wood'],sides=18)
+
+    # 방마다 천장·벽·가구 언어를 다르게 잡아 좌우 날개가 복제 방처럼 보이지 않게 한다.
+    room_accent={
+      'ArchiveRoom':s.material('ArchiveRoomWine',(.13,.030,.050)),
+      'LibraryRoom':s.material('LibraryRoomGreen',(.035,.090,.065)),
+      'ParlorRoom':s.material('ParlorRoomPlum',(.145,.060,.095)),
+      'MortuaryRoom':s.material('MortuaryRoomInk',(.040,.045,.055)),
+      'WardrobeRoom':s.material('WardrobeRoomWine',(.18,.045,.065)),
+      'LoungeRoom':s.material('LoungeRoomTeal',(.045,.105,.095)),
+    }
+    for x,z,name in room_specs:
+        outer=1 if x>0 else -1
+        wall_x=x+outer*15.2
+        for panel in [-5.5,0,5.5]:
+            s.box(name+'WallPanel'+str(panel),(wall_x,5.2,z+panel),(1.0,8.6,4.8),room_accent[name])
+            s.box(name+'WallPanelTrim'+str(panel),(wall_x-outer*.58,5.2,z+panel),(.18,9.1,5.2),c['brass'])
+        for beam in [-6.3,0,6.3]:
+            s.box(name+'CeilingBeam'+str(beam),(x,12.8,z+beam),(31,.42,.52),c['wood'])
+        s.lathe(name+'CeilingRose',(x,12.48,z),1.45,.95,.28,c['brass'],sides=24)
+
+        if name=='ArchiveRoom':
+            s.prop('furniture','bookcaseClosed',name+'TallArchive',(x+outer*11,.4,z-4.8),8,stretch=(.78,1.12,1))
+            s.prop('furniture','desk',name+'Desk',(x+outer*6,.4,z+3.8),3,rot=math.pi/2 if outer<0 else -math.pi/2)
+            s.prop('furniture','books',name+'LedgerStack',(x+outer*5.6,3.45,z+3.8),.9,rot=.18)
+            for i in range(5):
+                s.box(name+'IndexDrawer'+str(i),(x+outer*11.7,2.0+i*.82,z+4.5),(2.8,.62,3.4),c['wood'])
+                s.box(name+'IndexLabel'+str(i),(x+outer*10.22,2.0+i*.82,z+4.5),(.08,.24,1.3),c['brass'])
+        elif name=='LibraryRoom':
+            for dz in [-5.2,4.8]:
+                s.prop('furniture','bookcaseClosed',name+'Bookcase'+str(dz),(x+outer*11,.4,z+dz),7.5,stretch=(.75,1.08,1))
+            s.prop('furniture','chairCushion',name+'ReadingChair',(x+outer*4.5,.4,z+2.0),4,rot=-outer*math.pi/2,stretch=(1.15,1.1,1.05))
+            s.prop('furniture','tableRound',name+'ReadingTable',(x+outer*5.0,.4,z-2.0),2.4)
+        elif name=='ParlorRoom':
+            s.prop('furniture','loungeSofa',name+'Sofa',(x+outer*9,.4,z),3.4,rot=-outer*math.pi/2,stretch=(1.10,1,1))
+            s.prop('furniture','tableRound',name+'TeaTable',(x+outer*4.5,.4,z),2.6)
+            for dz in [-4.2,4.2]:
+                s.prop('furniture','chairCushion',name+'Chair'+str(dz),(x+outer*5.0,.4,z+dz),3.4,rot=math.pi if dz<0 else 0)
+        elif name=='MortuaryRoom':
+            s.prop('graveyard','coffin',name+'DisplayCoffin',(x+outer*8.5,.5,z),5.0,rot=0,stretch=(1.0,.85,1))
+            for dz in [-5.0,5.0]:
+                s.prop('graveyard','urn-round',name+'Urn'+str(dz),(x+outer*11,.4,z+dz),2.6)
+            s.prop('graveyard','candle-multiple',name+'Candles',(x+outer*5.0,1.2,z+4.2),1.8)
+        elif name=='WardrobeRoom':
+            s.prop('furniture','bookcaseClosedDoors',name+'WardrobeA',(x+outer*11,.4,z-4.8),8.5,stretch=(.90,1.05,1))
+            s.prop('furniture','bookcaseClosedDoors',name+'WardrobeB',(x+outer*11,.4,z+4.8),8.5,stretch=(.90,1.05,1))
+            s.prop('furniture','coatRackStanding',name+'CoatRack',(x+outer*5.0,.4,z),6.5)
+            for i in range(5):
+                s.lathe(name+'FabricRoll'+str(i),(x+outer*(7.0+i*.55),1.3,z+2.8),.24,.22,2.2,c['red'] if i%2 else c['teal'],sides=18)
+        else:
+            s.prop('furniture','loungeSofa',name+'Sofa',(x+outer*9,.4,z-1.5),3.5,rot=-outer*math.pi/2,stretch=(1.15,1,1))
+            s.prop('furniture','tableRound',name+'Table',(x+outer*4.5,.4,z+1.6),2.7)
+            s.prop('furniture','chairCushion',name+'Chair',(x+outer*5.2,.4,z-4.3),3.2,rot=-outer*math.pi/2)
+
     # 왼쪽 날개 출정용 실제 벽지도. 서버 승인된 SelectedLobbyMap만 선택 표시를 바꾼다.
     s.box('WallMapFrame',(-74.15,7,-31),(.70,13,27),c['wood'])
     s.box('WallMapPaper',(-73.75,7,-31),(.16,11.4,24.8),s.material('map_parchment',(.47,.40,.28)))
@@ -1319,6 +1385,10 @@ def build():
         s.box('CollectionPlaque_'+name,(x,1.38,z+2.73),(4.8,.95,.18),c['brass'])
         for side in [-1,1]:
             s.lathe('CollectionPost_'+name+str(side),(x+side*3.3,2.0,z-2.1),.12,.10,3.0,c['black'],sides=16)
+    # 현관↔정원 전시의 중심축은 비워두고 가장자리 표식만 추가한다.
+    for i,(x,z) in enumerate([(-8.8,17),(8.8,17),(-9.5,48),(9.5,48),(-10.0,63),(10.0,63)]):
+        s.lathe('ApproachWaystone'+str(i),(x,1.0,z),.55,.42,1.8,c['stone'],sides=20)
+        s.lathe('ApproachWaystoneCap'+str(i),(x,2.05,z),.72,.50,.32,c['brass'],sides=20)
     s.curve_tube('CollectionGardenRailLeft',[(-35,2.5,31),(-35,2.5,40)],[.10,.10],[.08,.08],c['black'],sides=16)
     s.curve_tube('CollectionGardenRailRight',[(35,2.5,31),(35,2.5,40)],[.10,.10],[.08,.08],c['black'],sides=16)
 
@@ -1707,6 +1777,22 @@ def build():
     for i in range(4):
         s.lathe('ThreadSpool'+str(i),(20+i*.48,3.75,-25),.16,.16,.65,c['red'] if i%2 else c['teal'])
         s.lathe('ThreadCap'+str(i),(20+i*.48,4.08,-25),.21,.21,.10,c['ivory'])
+    # NPC 주변 생활 흔적. 상호작용이나 보상 없이 역할만 공간에서 더 읽히게 한다.
+    s.box('ButlerServiceConsole',(8.7,2.0,-12.2),(5.6,3.6,1.7),c['wood'])
+    s.lathe('ButlerServiceBell',(7.8,4.05,-11.7),.32,.22,.34,c['brass'],sides=20)
+    for i in range(3):
+        s.box('ButlerFoldedLinen'+str(i),(9.3,3.95+i*.18,-11.7),(1.9,.14,1.2),c['ivory'])
+    s.box('ArchivistIndexCabinet',(-26.4,2.7,-30.0),(5.3,5.0,2.0),c['wood'])
+    for row in range(4):
+        for col in [-1,0,1]:
+            s.box('ArchivistIndexDrawer'+str(row)+str(col),(-26.0+col*1.25,1.4+row*.90,-28.92),(1.05,.65,.12),c['wood'])
+            s.box('ArchivistIndexTag'+str(row)+str(col),(-26.0+col*1.25,1.4+row*.90,-28.82),(.40,.18,.05),c['brass'])
+    s.box('UndertakerMeasureRack',(25.6,3.2,-22.8),(5.0,5.8,1.1),c['wood'])
+    for i in range(5):
+        s.lathe('UndertakerClothRoll'+str(i),(24.0+i*.75,1.75,-22.05),.28,.25,2.7,c['red'] if i%2 else c['black'],sides=18)
+        s.curve_tube('UndertakerTape'+str(i),[
+          (24.0+i*.75,3.0,-21.95),(24.1+i*.75,3.9,-21.90),(23.9+i*.75,4.6,-21.95)
+        ],[.035,.030,.022],[.028,.024,.018],c['ivory'],sides=14)
     # 샹들리에의 실제 곡선 팔과 촛농.
     for i in range(8):
         a=i*math.pi/4
