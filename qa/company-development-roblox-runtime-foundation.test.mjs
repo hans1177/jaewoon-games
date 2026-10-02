@@ -393,7 +393,7 @@ test('F9 final review requires exact Studio asset runtime proof when a binding w
  assert.match(workflow,/&&studioAssetRuntimeBindingExact===true/);
 });
 
-test('F9 limits canonical publish to released games and immediately reopens the Vibe loop for every verified game',()=>{
+test('F9 canonical private publish uses exact F9 identity and immediately reopens the next evolution cycle',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
  const dispatchAt=workflow.indexOf('Dispatch exact F9-verified artifact to canonical Roblox game target');
  const fanInAt=workflow.indexOf('Fan verified F9 runtime proof into waiting Vibe Roblox tasks');
@@ -401,22 +401,20 @@ test('F9 limits canonical publish to released games and immediately reopens the 
  assert.match(workflow,/robloxF9VerifiedPrepublishEvidence/);
  assert.match(workflow,/robloxCanonicalPublishQueue/);
  assert.match(workflow,/status:'PENDING'/);
+ assert.match(workflow,/const serverPublishEligible=[\s\S]*?item\.robloxFinalReviewPassed===true[\s\S]*?item\.robloxF9ReleaseRegressionPassed===true[\s\S]*?candidate\.sourceRevision===sourceRevision[\s\S]*?candidate\.artifactIdentity===artifactIdentity/);
  assert.match(workflow,/item\.robloxInternalReleaseReady=serverPublishEligible/);
  assert.match(workflow,/if\(serverPublishEligible&&!publishQueue/);
- assert.match(workflow,/evaluateInternalRelease/);
+ assert.doesNotMatch(workflow,/evaluateInternalRelease/);
  assert.match(workflow,/item\.currentStep='POST_F9_CONTINUOUS_EVOLUTION'/);
  assert.match(workflow,/ROBLOX_F9_CANONICAL_PUBLISH_DISPATCHED=/);
- assert.match(workflow,/\['PENDING','RETRY_REQUIRED'\]/);
- assert.match(workflow,/candidate-awaiting-roblox-runtime-qa/);
- assert.match(workflow,/roblox-runtime-await-game:/);
- assert.match(workflow,/studioRequired&&item\.robloxStudioAssetRuntimeBindingPassed!==true/);
- assert.match(workflow,/verification-conclusion:success/);
- assert.match(workflow,/target-engine-qa-ref:roblox-f9-/);
- assert.match(workflow,/vibe2-queue-control\.mjs" pass/);
+ const dispatch=workflow.slice(dispatchAt,workflow.indexOf('Immediately continue each successfully persisted Roblox F9 game',dispatchAt));
+ assert.match(dispatch,/item\.robloxFinalReviewPassed!==true\|\|item\.robloxF9ReleaseRegressionPassed!==true/);
+ assert.doesNotMatch(dispatch,/evaluateInternalRelease/);
+ assert.match(workflow,/ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO/);
  assert.match(workflow,/event_type:"vibe2-fanin-refill"/);
  assert.match(workflow,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=\$settled_count/);
- assert.doesNotMatch(workflow.slice(fanInAt),/robloxInternalReleaseReady!==true/);
 });
+
 
 test('post-runtime Open Cloud engine probes use bounded external API concurrency and stronger throttling retry',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
@@ -447,33 +445,62 @@ test('post-runtime scan persists successful sibling probes before surfacing pers
  assert.ok(stateWriteAt>0&&studioDispatchAt>stateWriteAt&&failGateAt>studioDispatchAt);
 });
 
-test('post-runtime Studio followup delegates exact-engine preboot eligibility to the canonical planner',()=>{
+
+test('exact engine preboot continues internal F9 without making Studio a gate',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
- assert.match(workflow,/const queueStudioFollowupIfEligible=item=>\{[\s\S]*?planLocalStudioCandidates\(/);
- assert.doesNotMatch(workflow,/queueStudioFollowupIfEligible=item=>\{\s*if\(item\?\.robloxRuntimeFoundationPassed!==true\)return;/);
- assert.match(workflow,/ROBLOX_FOUNDATION_AWAITING_REAL_SERVER_BOOT=[\s\S]*?queueStudioFollowupIfEligible\(item\);[\s\S]*?continue;/);
+ const start=workflow.indexOf('if(exactEnginePrebootFromProbe){');
+ const end=workflow.indexOf('}else{',start);
+ assert.ok(start>0&&end>start);
+ const block=workflow.slice(start,end);
+ assert.match(workflow,/item\.robloxRuntimeFoundationPassed=false;[\s\S]{0,900}if\(exactEnginePrebootFromProbe\)\{/);
+ assert.match(workflow,/item\.robloxRuntimePassed=false;[\s\S]{0,900}if\(exactEnginePrebootFromProbe\)\{/);
+ assert.match(block,/internalRuntimeObservationDeferred:true/);
+ assert.match(block,/externalServerBootRequired:false/);
+ assert.match(block,/officialStudioMcpActualPlayPassed:exactStudioInternalValidation/);
+ assert.match(block,/item\.robloxInternalReleaseReady=true/);
+ assert.match(block,/item\.robloxF9PendingInParallel=true/);
+ assert.match(block,/f9Ids\.push\(item\.gameId\)/);
+ assert.doesNotMatch(block,/queueStudioFollowupIfEligible\(item\)/);
 });
 
-test('exact engine preboot enters Studio followup even when the runtime sentinel already matches the candidate version',()=>{
+
+test('exact engine preboot with matching sentinel continues F9 while real server boot stays pending',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ const start=workflow.indexOf('if(exactEngineVersionAwaitingRealServerBoot){');
+ const end=workflow.indexOf('}else{',start);
+ assert.ok(start>0&&end>start);
+ const block=workflow.slice(start,end);
  assert.match(workflow,/const exactEngineVersionAwaitingRealServerBoot=[\s\S]*?engineProbe\?\.serverBootObserved!==true/);
- assert.match(workflow,/result\.exactVersion!==true[\s\S]*?\|\|\(result\.runtimeFoundationPassed!==true&&exactEngineVersionAwaitingRealServerBoot\)/);
- assert.match(workflow,/exactVersion:result\.exactVersion===true/);
- assert.match(workflow,/authority:exactEngineVersionAwaitingRealServerBoot[\s\S]*?'exact-engine-version-awaiting-real-server-boot'/);
- assert.match(workflow,/if\(exactEngineVersionAwaitingRealServerBoot\)[\s\S]*?queueStudioFollowupIfEligible\(item\);[\s\S]*?continue;/);
+ assert.match(block,/item\.robloxRuntimeFoundationInternalReleaseException=true/);
+ assert.match(block,/item\.robloxPublicReleaseRuntimeObservationPending=true/);
+ assert.match(block,/internalRuntimeObservationDeferred:true/);
+ assert.match(block,/externalServerBootRequired:false/);
+ assert.match(block,/officialStudioMcpActualPlayPassed:exactStudioInternalValidation/);
+ assert.match(workflow,/item\.robloxRuntimePassed=false;[\s\S]{0,1800}if\(exactEngineVersionAwaitingRealServerBoot\)\{/);
+ assert.match(block,/f9Ids\.push\(item\.gameId\)/);
+ assert.doesNotMatch(block,/queueStudioFollowupIfEligible\(item\)/);
 });
 
-test('runtime sentinel 404 still hands exact Open Cloud engine evidence to canonical Studio planning',()=>{
+
+test('runtime sentinel 404 uses exact Open Cloud engine evidence for nonblocking internal F9 continuation',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ const start=workflow.indexOf('if(exactEnginePrebootFromProbe){');
+ const end=workflow.indexOf('}else{',start);
+ assert.ok(start>0&&end>start);
+ const block=workflow.slice(start,end);
  assert.match(workflow,/if\(\/HTTP_404\/\.test\(message\)\)[\s\S]*?const exactEnginePrebootFromProbe=/);
- assert.match(workflow,/exactEnginePrebootFromProbe[\s\S]*?authority:'exact-engine-version-awaiting-real-server-boot'/);
- assert.match(workflow,/exactEnginePrebootFromProbe[\s\S]*?queueStudioFollowupIfEligible\(item\)/);
- assert.match(workflow,/ROBLOX_FOUNDATION_EXACT_ENGINE_PREBOOT_STUDIO_FOLLOWUP=/);
- assert.match(workflow,/observedVersionNumber:null/);
- assert.match(workflow,/item\.robloxRuntimeFoundationPassed=false/);
+ assert.match(block,/authority:'exact-engine-version-awaiting-real-server-boot'/);
+ assert.match(block,/observedVersionNumber:null/);
+ assert.match(block,/serverBootObserved:false/);
+ assert.match(workflow,/item\.robloxRuntimeFoundationPassed=false;[\s\S]{0,900}if\(exactEnginePrebootFromProbe\)\{/);
+ assert.match(workflow,/item\.robloxRuntimePassed=false;[\s\S]{0,900}if\(exactEnginePrebootFromProbe\)\{/);
+ assert.match(block,/internalRuntimeObservationDeferred:true/);
+ assert.match(block,/ROBLOX_INTERNAL_FLOW_PASS_EXTERNAL_SERVER_BOOT_PENDING=/);
+ assert.doesNotMatch(block,/STUDIO_FOLLOWUP|queueStudioFollowupIfEligible/);
 });
 
-test('central policy makes external server observation diagnostic only while Studio drives internal validation',()=>{
+
+test('central policy makes real server observation and Studio nonblocking for internal F0-F9 continuation',()=>{
  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
  const policy=roadmap.developmentLifecycleMachine?.robloxStudioUsage?.runtimeFoundationBoundary||{};
@@ -484,22 +511,36 @@ test('central policy makes external server observation diagnostic only while Stu
  assert.equal(policy.internalQaBlocking,false);
  assert.equal(policy.internalRegressionBlocking,false);
  assert.equal(policy.internalReleaseBlocking,false);
- assert.equal(policy.externalPublicReleaseBlocking,false);
  assert.equal(policy.observationRetry,'OPTIONAL_MANUAL_DIAGNOSTIC_ONLY');
  assert.equal(policy.externalServerObservationRequiredForInternalDevelopment,false);
- assert.equal(policy.externalServerObservationRequiredForPublicRelease,false);
- assert.equal(policy.ownerApprovalIsExternalPublicationAuthority,true);
  assert.equal(topology.role,'OPTIONAL_MANUAL_DIAGNOSTIC_ONLY');
  assert.equal(topology.observationRetry,'MANUAL_WHEN_NEEDED');
- assert.equal(topology.externalPublicReleaseBlocking,false);
- assert.equal(topology.externalPublicReleaseRemainsBlockedUntilRealServerBoot,false);
- assert.equal(topology.studioPlannerEligibility,'EXACT_PRIVATE_RUNTIME_CANDIDATE');
+ assert.equal(topology.sameGameIndependentDevelopmentContinues,true);
+ assert.equal(topology.studioActualPlayMayNotSetRuntimeFoundationPass,true);
  assert.equal(stack.governingPrinciples.robloxExternalServerBootRequiredBeforeInternalRelease,false);
  assert.equal(stack.governingPrinciples.oneExactInternalRuntimeSessionMaySatisfyMultipleApplicableFloors,true);
  assert.equal(stack.releaseGate.runtimeFoundationRequiredForInternalRelease,false);
  assert.equal(stack.releaseGate.internalRuntimeValidationRequiredForInternalRelease,true);
- assert.equal(stack.releaseGate.externalServerBootRequiredForPublicReleaseReady,false);
 });
+
+test('F9 consumes exact deferred engine evidence without requiring Studio actual play',()=>{
+ const f9=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+ const start=f9.indexOf('const internalRuntimeObservationDeferred=');
+ const end=f9.indexOf('const internalRuntimeFindingDeferred=',start);
+ assert.ok(start>0&&end>start);
+ const block=f9.slice(start,end);
+ assert.match(block,/runtime\.authority==='exact-engine-version-awaiting-real-server-boot'/);
+ assert.match(block,/runtime\.exactEngineVersion===true/);
+ assert.match(block,/runtime\.engineExecuted===true/);
+ assert.match(block,/runtime\.serverBootObserved!==true/);
+ assert.match(block,/post\.internalRuntimeObservationDeferred===true/);
+ assert.match(block,/post\.exactEngineExecutionEvidence===true/);
+ assert.match(block,/post\.externalServerBootRequired===false/);
+ assert.match(block,/post\.independentQaPassed===true/);
+ assert.match(block,/post\.regressionPassed===true/);
+ assert.doesNotMatch(block,/studioPlay\.|officialStudioMcp|actualPlay/);
+});
+
 
 test('runtime QA automatically validates the private candidate through Open Cloud while Studio stays deferred',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
@@ -823,7 +864,8 @@ test('Roblox F0-F9 orchestration dispatches exact games without cross-game fan-i
   assert.match(continueBlock,/company-development-confirmed-runtime\.yml[\s\S]*?-f game_id="\$id"/);
   assert.match(continueBlock,/trigger_source=ROBLOX_F9_PER_GAME_CONTINUATION/);
   assert.match(continueBlock,/roblox-f9-persist-same-field-conflicts/);
-  assert.match(continueBlock,/ROBLOX_F9_NEXT_CYCLE_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.match(continueBlock,/ROBLOX_F9_NEXT_CYCLE_DISPATCH=DEDUPED_CURRENT_MAIN:/);
+  assert.match(continueBlock,/String\(run\.head_sha\|\|''\)===currentSha/);
   assert.match(continueBlock,/ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO/);
 
   const releaseHeader=release.slice(0,release.indexOf('\njobs:\n'));

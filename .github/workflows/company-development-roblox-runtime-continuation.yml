@@ -366,10 +366,12 @@ jobs:
           const fs=require('fs');
           const payload=JSON.parse(fs.readFileSync('/tmp/roblox-f0-active-runs.json','utf8'));
           const activeStates=new Set(['queued','pending','in_progress','requested']);
+          const currentSha=String(process.env.GITHUB_SHA||'').trim();
           const prefix='Roblox F0 · ';
           const ids=new Set();
           for(const run of payload.workflow_runs||[]){
             if(!activeStates.has(String(run.status||'').toLowerCase()))continue;
+            if(String(run.head_sha||'')!==currentSha)continue;
             const title=String(run.display_title||'');
             if(!title.startsWith(prefix))continue;
             const id=title.slice(prefix.length).trim();
@@ -383,7 +385,7 @@ jobs:
             [ -n "$id" ] || continue
             if grep -Fxq "$id" /tmp/roblox-f0-active-ids; then
               deduped_count=$((deduped_count+1))
-              echo "ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCH=DEDUPED_ACTIVE:$id"
+              echo "ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCH=DEDUPED_CURRENT_MAIN:$id:$GITHUB_SHA"
               continue
             fi
             gh workflow run company-development-roblox-headless-fast-mvp.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"

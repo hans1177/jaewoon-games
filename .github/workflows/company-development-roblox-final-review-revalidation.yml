@@ -159,8 +159,6 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {ingestTesterDebug} from './tools/company-tester-debug-intake.mjs';
-          import {evaluateInternalRelease} from './tools/company-platform-exposure-control.mjs';
-          const releasePolicy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           const queuePath='../runtime/development-queue.json';
@@ -233,15 +231,15 @@ jobs:
               &&runtime.sourceRevision===sourceRevision
               &&runtime.artifactIdentity===artifactIdentity
               &&Number(runtime.candidateVersionNumber||runtime.expectedVersionNumber)===Number(candidate.versionNumber)
-              &&studioPlay.pass===true
-              &&studioPlay.actualPlay===true
-              &&studioPlay.runtimeVerified===true
-              &&studioPlay.officialStudioMcp===true
-              &&studioPlay.localPlaceFile===true
-              &&studioPlay.sourceRevision===sourceRevision
-              &&studioPlay.artifactIdentity===artifactIdentity
-              &&Number(studioPlay.versionNumber)===Number(candidate.versionNumber)
-              &&Number(studioPlay.runtimeSummary?.consoleErrorCount||0)===0;
+              &&post.internalRuntimeObservationDeferred===true
+              &&post.exactEngineExecutionEvidence===true
+              &&post.externalServerBootRequired===false
+              &&post.publicReleaseRuntimeObservationPending===true
+              &&post.independentQaPassed===true
+              &&post.regressionPassed===true
+              &&post.sourceRevision===sourceRevision
+              &&post.artifactIdentity===artifactIdentity
+              &&Number(post.candidateVersionNumber)===Number(candidate.versionNumber);
             const internalRuntimeFindingDeferred=
               item.robloxRuntimeFailureExternalReleaseOnly===true
               &&item.robloxInternalQaContinuationAllowed===true
@@ -403,8 +401,16 @@ jobs:
               authority:'deterministic-f9-exact-runtime-candidate-review',
               verifiedAt:stamp,
             };
-            const releaseReadiness=evaluateInternalRelease(item,'ROBLOX',releasePolicy);
-            const serverPublishEligible=releaseReadiness.ready;
+            const serverPublishEligible=
+              item.robloxFinalReviewPassed===true
+              &&item.robloxF9ReleaseRegressionPassed===true
+              &&candidate.published===true
+              &&candidate.releaseClaim===false
+              &&candidate.sourceRevision===sourceRevision
+              &&candidate.artifactIdentity===artifactIdentity
+              &&Number(candidate.versionNumber)>0
+              &&/^[1-9][0-9]*$/.test(String(candidate.universeId||''))
+              &&/^[1-9][0-9]*$/.test(String(candidate.placeId||''));
             item.robloxInternalReleaseReady=serverPublishEligible;
             item.robloxInternalReleasePublished=false;
             item.robloxInternalReleaseAt=null;
@@ -677,13 +683,11 @@ jobs:
           git -C runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
           mapfile -t rows < <(REQUESTED_GAME_ID="$REQUESTED_GAME_ID" node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import {evaluateInternalRelease} from './main/tools/company-platform-exposure-control.mjs';
-          const releasePolicy=JSON.parse(fs.readFileSync('main/company-learning/platform-release-roadmap.json','utf8'));
           const q=JSON.parse(fs.readFileSync('runtime/development-queue.json','utf8'));
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           for(const item of q.items||[]){
             if(requested&&item.gameId!==requested)continue;
-            if(!evaluateInternalRelease(item,'ROBLOX',releasePolicy).ready)continue;
+            if(item.robloxFinalReviewPassed!==true||item.robloxF9ReleaseRegressionPassed!==true)continue;
             for(const row of item.robloxCanonicalPublishQueue||[]){
               if(!['PENDING','RETRY_REQUIRED'].includes(String(row?.status||'')))continue;
               if(row.finalReviewPassed!==true||row.f9ReleaseRegressionPassed!==true)continue;
@@ -762,20 +766,22 @@ jobs:
           deduped_count=0
           while read -r id; do
             [ -n "$id" ] || continue
-            active="$(GAME_ID="$id" node - <<'NODE'
+            active="$(GAME_ID="$id" CURRENT_SHA="$GITHUB_SHA" node - <<'NODE'
           const fs=require('fs');
           const payload=JSON.parse(fs.readFileSync('/tmp/roblox-development-active-runs.json','utf8'));
           const states=new Set(['queued','pending','in_progress','requested']);
           const prefix='DEVELOPMENT cycle | '+String(process.env.GAME_ID||'')+' | ';
+          const currentSha=String(process.env.CURRENT_SHA||'').trim();
           process.stdout.write(String((payload.workflow_runs||[]).filter(run=>
             states.has(String(run.status||'').toLowerCase())
+            &&String(run.head_sha||'')===currentSha
             &&String(run.display_title||'').startsWith(prefix)
           ).length));
           NODE
             )"
             if [ "$active" -gt 0 ]; then
               deduped_count=$((deduped_count+1))
-              echo "ROBLOX_F9_NEXT_CYCLE_DISPATCH=DEDUPED_ACTIVE:$id"
+              echo "ROBLOX_F9_NEXT_CYCLE_DISPATCH=DEDUPED_CURRENT_MAIN:$id:$GITHUB_SHA"
               continue
             fi
             gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main \

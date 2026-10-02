@@ -154,7 +154,8 @@ test('Roblox continuation serializes only the same preflight identity and dispat
   assert.match(header,/run-name: Roblox shared preflight · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
   assert.match(header,/concurrency:\n\s+group: roblox-shared-preflight-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n\s+cancel-in-progress: false/);
   assert.match(workflow,/actions\/workflows\/company-development-roblox-headless-fast-mvp\.yml\/runs\?per_page=100/);
-  assert.match(workflow,/ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.match(workflow,/ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCH=DEDUPED_CURRENT_MAIN:/);
+  assert.match(workflow,/String\(run\.head_sha\|\|''\)!==currentSha/);
   assert.match(workflow,/gh workflow run company-development-roblox-headless-fast-mvp\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
   assert.match(workflow,/ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCH_COUNT=/);
   assert.doesNotMatch(workflow,/ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=YES:BATCH/);
@@ -170,7 +171,7 @@ test('shared preflight continuation keeps exact game targeting with same-game-on
   assert.match(workflow,/if\(requested&&item\.gameId!==requested\)continue/);
   assert.match(workflow,/if\(requested&&item\.gameId!==requested\)return false/);
   assert.match(workflow,/company-development-roblox-headless-fast-mvp\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
-  assert.match(workflow,/ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.match(workflow,/ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCH=DEDUPED_CURRENT_MAIN:/);
 });
 
 
