@@ -2026,34 +2026,34 @@ end
 local actionDock=Instance.new("Frame")
 actionDock.Name="RoundActions"
 actionDock.AnchorPoint=Vector2.new(.5,1)
-actionDock.Position=UDim2.new(.5,0,1,-18)
-actionDock.Size=UDim2.fromOffset(308,72)
+actionDock.Position=UDim2.new(.5,0,1,-20)
+actionDock.Size=UDim2.fromOffset(338,86)
 actionDock.BackgroundTransparency=1
-actionDock.ZIndex=10
+actionDock.ZIndex=30
 actionDock.Parent=gui
 
 local rescueButton=makeButton(actionDock,"정화 공격",Color3.fromRGB(75,91,94))
-rescueButton.Size=UDim2.fromOffset(96,64);rescueButton.Position=UDim2.fromOffset(2,4);rescueButton.ZIndex=11
+rescueButton.Size=UDim2.fromOffset(92,72);rescueButton.Position=UDim2.fromOffset(0,6);rescueButton.ZIndex=31
 rescueButton.Activated:Connect(function()setMotionImpulse("PURIFY",.34);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.PURIFY)end)
 
 local dashButton=makeButton(actionDock,"대시",Color3.fromRGB(87,78,66))
-dashButton.Size=UDim2.fromOffset(96,64);dashButton.Position=UDim2.fromOffset(106,4);dashButton.ZIndex=11
+dashButton.Size=UDim2.fromOffset(92,72);dashButton.Position=UDim2.fromOffset(98,6);dashButton.ZIndex=31
 dashButton.Activated:Connect(function()setMotionImpulse("DASH",.38);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.DASH)end)
 
 local humanAbilityButton=makeButton(actionDock,"인간 스킬",Color3.fromRGB(61,96,105))
-humanAbilityButton.Size=UDim2.fromOffset(96,64);humanAbilityButton.Position=UDim2.fromOffset(210,4);humanAbilityButton.ZIndex=11
-humanAbilityButton.TextScaled=false;humanAbilityButton.TextSize=9;humanAbilityButton.TextWrapped=true
+humanAbilityButton.Size=UDim2.fromOffset(142,76);humanAbilityButton.Position=UDim2.fromOffset(196,4);humanAbilityButton.ZIndex=32
+humanAbilityButton.TextScaled=false;humanAbilityButton.TextSize=11;humanAbilityButton.TextWrapped=true
 humanAbilityButton.Activated:Connect(function()
  setMotionImpulse("ABILITY",.42);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.HUMAN_ABILITY)
 end)
 
 local infectButton=makeButton(actionDock,"감염 공격",Color3.fromRGB(111,45,49))
-infectButton.Size=UDim2.fromOffset(96,64);infectButton.Position=UDim2.fromOffset(55,4);infectButton.ZIndex=11
+infectButton.Size=UDim2.fromOffset(116,72);infectButton.Position=UDim2.fromOffset(42,6);infectButton.ZIndex=31
 infectButton.Activated:Connect(function()setMotionImpulse("INFECT_ATTACK",.34);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.INFECT_ATTACK)end)
 
 local abilityButton=makeButton(actionDock,"괴물 스킬",Color3.fromRGB(72,55,77))
-abilityButton.Size=UDim2.fromOffset(96,64);abilityButton.Position=UDim2.fromOffset(157,4);abilityButton.ZIndex=11
-abilityButton.TextScaled=false;abilityButton.TextSize=9;abilityButton.TextWrapped=true
+abilityButton.Size=UDim2.fromOffset(150,76);abilityButton.Position=UDim2.fromOffset(166,4);abilityButton.ZIndex=32
+abilityButton.TextScaled=false;abilityButton.TextSize=11;abilityButton.TextWrapped=true
 abilityButton.Activated:Connect(function()setMotionImpulse("ABILITY",.44);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.ABILITY)end)
 
 -- 액션 쿨다운과 에너지 비용은 서버 상태 기준으로 표시한다.
@@ -2090,10 +2090,10 @@ RunService.RenderStepped:Connect(function(dt)
  updateCooldownButton(rescueButton,p:GetAttribute("PurifyReadyAt"),"정화 공격","정화",C.Energy and C.Energy.PurifyCost or 35)
  updateCooldownButton(dashButton,p:GetAttribute("DashReadyAt"),"대시","대시",C.Energy and C.Energy.DashCost or 25)
  local _,humanAbilityProfile=currentHumanAbilityProfile()
- updateCooldownButton(humanAbilityButton,p:GetAttribute("HumanAbilityReadyAt"),currentHumanAbilityName(),"스킬",humanAbilityProfile and humanAbilityProfile.Cost or 30,humanAbilityProfile,humanAbilityProfile and humanAbilityProfile.Cooldown or 8)
+ updateCooldownButton(humanAbilityButton,p:GetAttribute("HumanAbilityReadyAt"),"★ "..currentHumanAbilityName(),"스킬",humanAbilityProfile and humanAbilityProfile.Cost or 30,humanAbilityProfile,humanAbilityProfile and humanAbilityProfile.Cooldown or 8)
  updateCooldownButton(infectButton,p:GetAttribute("InfectReadyAt"),"감염 공격","감염",C.Energy and C.Energy.InfectAttackCost or 30)
  local monsterAbilityProfile=currentAbilityProfile()
- updateCooldownButton(abilityButton,p:GetAttribute("AbilityReadyAt"),currentAbilityName(),"스킬",C.Energy and C.Energy.AbilityCost or 45,monsterAbilityProfile,C.MonsterAbilityCooldown or 7)
+ updateCooldownButton(abilityButton,p:GetAttribute("AbilityReadyAt"),"★ "..currentAbilityName(),"스킬",C.Energy and C.Energy.AbilityCost or 45,monsterAbilityProfile,C.MonsterAbilityCooldown or 7)
 
  local now=workspace:GetServerTimeNow()
  local blackout=(tonumber(p:GetAttribute("BlackoutUntil"))or 0)>now
