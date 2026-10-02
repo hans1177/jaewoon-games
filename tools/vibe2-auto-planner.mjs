@@ -3131,6 +3131,9 @@ function comparePersistedBuildUpDirectives(a={},b={}){
   if(aCurrent!==bCurrent)return bCurrent-aCurrent;
   const aGeneration=Number(a?.generation||0),bGeneration=Number(b?.generation||0);
   if(aGeneration!==bGeneration)return bGeneration-aGeneration;
+  const aCommon=buildUpDirectivePersistenceLane(a)==='COMMON'?1:0;
+  const bCommon=buildUpDirectivePersistenceLane(b)==='COMMON'?1:0;
+  if(aCommon!==bCommon)return bCommon-aCommon;
   const aTime=Date.parse(clean(a?.generatedAt))||0,bTime=Date.parse(clean(b?.generatedAt))||0;
   if(aTime!==bTime)return bTime-aTime;
   return clean(b?.directiveId).localeCompare(clean(a?.directiveId));
