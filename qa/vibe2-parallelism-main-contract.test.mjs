@@ -146,6 +146,13 @@ test('game-primary control work uses available latest capacity while push/manual
   assert.match(core,/VIBE2_HERO_ASSET_MODEL_ACTIVE=\$\{\{ steps\.order\.outputs\.hero_model_requested \}\}/);
   assert.match(core,/put\('local_model_cache_slug',selectedModel\.replace\(\/\[\^A-Za-z0-9\._-\]\+\/g,'-'\)\)/);
   assert.match(core,/key: vibe2-ollama-v6-\$\{\{ runner\.os \}\}-\$\{\{ runner\.arch \}\}-\$\{\{ steps\.order\.outputs\.local_model_cache_slug \}\}/);
+  assert.match(core,/Probe dedicated Vibe2 model cache[\s\S]{0,280}?key: vibe2-ollama-v5-\$\{\{ runner\.os \}\}-\$\{\{ runner\.arch \}\}-qwen3-1\.7b/);
+  assert.match(core,/Restore dedicated Vibe2 model cache[\s\S]{0,300}?key: vibe2-ollama-v6-\$\{\{ runner\.os \}\}-\$\{\{ runner\.arch \}\}-\$\{\{ steps\.order\.outputs\.local_model_cache_slug \}\}/);
+  assert.match(core,/put\('dcc_authoring_required',Array\.isArray\(dcc\.requiredTypes\)&&dcc\.requiredTypes\.length\?'true':'false'\)/);
+  assert.match(core,/put\('dcc_recipe_count',Array\.isArray\(dcc\.explicitRecipes\)\?dcc\.explicitRecipes\.length:0\)/);
+  assert.match(core,/Prepare Blender for explicit native asset authoring/);
+  assert.match(core,/executeVibeNativeDccAuthoringRecipes/);
+  assert.match(core,/DCC_ARTIFACT_AUTHORED_RUNTIME_REQUIRED|VIBE2_DCC_AUTHORING_EXECUTED/);
   assert.match(core,/\n  worker:[\s\S]{0,520}?matrix\.target == 'roblox'[\s\S]{0,220}?'ubuntu-latest'[\s\S]{0,220}?'ubuntu-24\.04-arm'/);
   assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentRunnerLabel,'ubuntu-24.04-arm');
   assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentSchedulerPlanRunner,'ubuntu-24.04-arm');
