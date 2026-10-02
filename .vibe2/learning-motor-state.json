@@ -2740,43 +2740,6 @@
       "coding_13xuc1"
     ],
     "seenNegativeOutcomeIds": [
-      "coding_negative_1vb61v9",
-      "coding_negative_95xjo",
-      "coding_negative_17z5rsf",
-      "coding_negative_dm0aj1",
-      "coding_negative_jqag07",
-      "coding_negative_1nyo6zc",
-      "coding_negative_um7bbz",
-      "coding_negative_1oqkh3h",
-      "coding_negative_bmnlue",
-      "coding_negative_1pqirw7",
-      "coding_negative_456b5x",
-      "coding_negative_7q3ag2",
-      "coding_negative_2cnry4",
-      "coding_negative_19kdbxn",
-      "coding_negative_avkfz1",
-      "coding_negative_ej7zlh",
-      "coding_negative_4nar37",
-      "coding_negative_nprils",
-      "coding_negative_16xhmts",
-      "coding_negative_1pzrsn6",
-      "coding_negative_156yh2j",
-      "coding_negative_1fk16mw",
-      "coding_negative_1uyt72i",
-      "coding_negative_nonaqz",
-      "coding_negative_1jf05yh",
-      "coding_negative_1jk82ca",
-      "coding_negative_1omk5ny",
-      "coding_negative_13gbsjn",
-      "coding_negative_pjkx5t",
-      "coding_negative_11ajj3i",
-      "coding_negative_1qz12xj",
-      "coding_negative_12qyzms",
-      "coding_negative_v69gti",
-      "coding_negative_1d6gpb0",
-      "coding_negative_1h9nrqr",
-      "coding_negative_g5jskc",
-      "coding_negative_19pghwr",
       "coding_negative_14ji9s2",
       "coding_negative_5p5f22",
       "coding_negative_1f3znro",
@@ -7739,7 +7702,44 @@
       "coding_negative_1q6ykb1",
       "coding_negative_17atxfb",
       "coding_negative_1bykyb0",
-      "coding_negative_1y2id24"
+      "coding_negative_1y2id24",
+      "coding_negative_1b8oniw",
+      "coding_negative_13pyve1",
+      "coding_negative_1t6l5h7",
+      "coding_negative_151zfvd",
+      "coding_negative_j5zt1z",
+      "coding_negative_1llavsy",
+      "coding_negative_zrd2r1",
+      "coding_negative_1l43khc",
+      "coding_negative_19h28tw",
+      "coding_negative_1808loi",
+      "coding_negative_1qox2ne",
+      "coding_negative_14cydhf",
+      "coding_negative_fvr24d",
+      "coding_negative_xsivck",
+      "coding_negative_p4dzjc",
+      "coding_negative_1qjjqmq",
+      "coding_negative_1y587i0",
+      "coding_negative_1s316dz",
+      "coding_negative_1rszo6d",
+      "coding_negative_115s007",
+      "coding_negative_1omuakg",
+      "coding_negative_58nt0h",
+      "coding_negative_15zn0mq",
+      "coding_negative_1vcdrg1",
+      "coding_negative_15gyybx",
+      "coding_negative_po1rcs",
+      "coding_negative_qemz7g",
+      "coding_negative_f1w01s",
+      "coding_negative_7od2ie",
+      "coding_negative_rd1225",
+      "coding_negative_1g6psee",
+      "coding_negative_1tqyxzv",
+      "coding_negative_170ws79",
+      "coding_negative_126r0kl",
+      "coding_negative_10vsm8x",
+      "coding_negative_1hdyi32",
+      "coding_negative_fmuw5d"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -16243,7 +16243,7 @@
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 65,
+        "verifiedFailures": 66,
         "games": {
           "fantasy-survival": 1
         },
@@ -16943,21 +16943,23 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 1,
+            "verifiedFailures": 2,
             "games": {},
             "targets": {},
             "failureGames": {
-              "line-defense": 1
+              "line-defense": 1,
+              "seed-idle-growth-rpg-crystal-bloom": 1
             },
             "failureTargets": {
-              "roblox": 1
+              "roblox": 2
             },
             "failureClasses": {
-              "TIMEOUT": 1
+              "TIMEOUT": 1,
+              "NO_OP": 1
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1eb6fol",
-            "lastUpdatedAt": "2026-10-02T04:50:33.467Z"
+            "lastFailureEvidence": "coding_negative_fmuw5d",
+            "lastUpdatedAt": "2026-10-02T08:45:20.179Z"
           },
           "roblox|NO_OP|TIMEOUT": {
             "verifiedApplications": 0,
@@ -17008,14 +17010,14 @@
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_1jzef3p",
-        "lastFailureEvidence": "coding_negative_1bykyb0",
-        "lastUpdatedAt": "2026-10-02T07:58:32.302Z"
+        "lastFailureEvidence": "coding_negative_fmuw5d",
+        "lastUpdatedAt": "2026-10-02T08:45:20.179Z"
       },
       "PATH_VERIFIED_ANCHOR_FIRST": {
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 60,
+        "verifiedFailures": 62,
         "games": {
           "fantasy-survival": 1
         },
@@ -17689,25 +17691,27 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 4,
+            "verifiedFailures": 6,
             "games": {},
             "targets": {},
             "failureGames": {
               "seed-puzzle-chromatic-cascade": 1,
               "monster-adventure": 1,
               "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-              "amusement-tycoon": 1
+              "amusement-tycoon": 1,
+              "seed-single-defense-strat-celestial-bastion": 1,
+              "seed-casual-realm-weaver": 1
             },
             "failureTargets": {
-              "roblox": 4
+              "roblox": 6
             },
             "failureClasses": {
-              "NO_OP": 3,
-              "TIMEOUT": 1
+              "NO_OP": 4,
+              "TIMEOUT": 2
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_12k9w76",
-            "lastUpdatedAt": "2026-10-02T07:10:47.691Z"
+            "lastFailureEvidence": "coding_negative_1hdyi32",
+            "lastUpdatedAt": "2026-10-02T08:45:20.179Z"
           },
           "roblox|NO_OP": {
             "verifiedApplications": 0,
@@ -17732,8 +17736,8 @@
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_1t9d22s",
-        "lastFailureEvidence": "coding_negative_12k9w76",
-        "lastUpdatedAt": "2026-10-02T07:10:47.691Z"
+        "lastFailureEvidence": "coding_negative_1hdyi32",
+        "lastUpdatedAt": "2026-10-02T08:45:20.179Z"
       },
       "OBSERVABLE_DELTA_FIRST": {
         "verifiedApplications": 1,
@@ -18359,7 +18363,7 @@
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 56,
+        "verifiedFailures": 57,
         "games": {
           "fantasy-survival": 1
         },
@@ -18892,36 +18896,37 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 3,
+            "verifiedFailures": 4,
             "games": {},
             "targets": {},
             "failureGames": {
               "seed-puzzle-chromatic-cascade": 1,
               "survival": 1,
-              "monster-adventure": 1
+              "monster-adventure": 1,
+              "amusement-tycoon": 1
             },
             "failureTargets": {
-              "roblox": 3
+              "roblox": 4
             },
             "failureClasses": {
-              "NO_OP": 2,
+              "NO_OP": 3,
               "TIMEOUT": 1
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_avtanb",
-            "lastUpdatedAt": "2026-10-02T07:58:32.301Z"
+            "lastFailureEvidence": "coding_negative_10vsm8x",
+            "lastUpdatedAt": "2026-10-02T08:45:20.178Z"
           }
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_4z99t9",
-        "lastFailureEvidence": "coding_negative_avtanb",
-        "lastUpdatedAt": "2026-10-02T07:58:32.301Z"
+        "lastFailureEvidence": "coding_negative_10vsm8x",
+        "lastUpdatedAt": "2026-10-02T08:45:20.178Z"
       },
       "SOURCE_RESCAN_REBIND": {
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 56,
+        "verifiedFailures": 57,
         "games": {
           "fantasy-survival": 1
         },
@@ -19453,34 +19458,35 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 2,
+            "verifiedFailures": 3,
             "games": {},
             "targets": {},
             "failureGames": {
               "seed-puzzle-chromatic-cascade": 1,
-              "survival": 1
+              "survival": 1,
+              "monster-adventure": 1
             },
             "failureTargets": {
-              "roblox": 2
+              "roblox": 3
             },
             "failureClasses": {
-              "TIMEOUT": 2
+              "TIMEOUT": 3
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1q6ykb1",
-            "lastUpdatedAt": "2026-10-02T07:58:32.302Z"
+            "lastFailureEvidence": "coding_negative_1tqyxzv",
+            "lastUpdatedAt": "2026-10-02T08:45:20.178Z"
           }
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_1cxqzik",
-        "lastFailureEvidence": "coding_negative_1q6ykb1",
-        "lastUpdatedAt": "2026-10-02T07:58:32.302Z"
+        "lastFailureEvidence": "coding_negative_1tqyxzv",
+        "lastUpdatedAt": "2026-10-02T08:45:20.178Z"
       },
       "RESPONSIBILITY_SPLIT_FANIN": {
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 52,
+        "verifiedFailures": 54,
         "games": {
           "fantasy-survival": 1
         },
@@ -19987,18 +19993,39 @@
             "lastEvidence": null,
             "lastFailureEvidence": "coding_negative_9nnm1f",
             "lastUpdatedAt": "2026-10-01T23:51:11.514Z"
+          },
+          "roblox|NO_OP|TIMEOUT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 2,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "seed-puzzle-chromatic-cascade": 1,
+              "survival": 1
+            },
+            "failureTargets": {
+              "roblox": 2
+            },
+            "failureClasses": {
+              "NO_OP": 2
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_126r0kl",
+            "lastUpdatedAt": "2026-10-02T08:45:20.178Z"
           }
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_uv4i4v",
-        "lastFailureEvidence": "coding_negative_9nnm1f",
-        "lastUpdatedAt": "2026-10-01T23:51:11.514Z"
+        "lastFailureEvidence": "coding_negative_126r0kl",
+        "lastUpdatedAt": "2026-10-02T08:45:20.178Z"
       },
       "CAUSAL_EVIDENCE_REFRESH_REQUIRED": {
         "verifiedApplications": 46,
         "firstCandidatePasses": 11,
         "totalGenerationAttempts": 114,
-        "verifiedFailures": 3263,
+        "verifiedFailures": 3293,
         "games": {
           "fantasy-survival": 5,
           "bug-defense": 3,
@@ -20016,33 +20043,33 @@
         "contextModes": {
           "STANDARD_CONTEXT": {
             "verifiedApplications": 46,
-            "verifiedFailures": 912,
+            "verifiedFailures": 924,
             "firstCandidatePasses": 11,
             "totalGenerationAttempts": 114,
             "totalContextBytes": 764362,
             "lastEvidence": "coding_13xuc1",
-            "lastFailureEvidence": "coding_negative_m11evu",
-            "lastUpdatedAt": "2026-10-02T07:58:32.300Z"
+            "lastFailureEvidence": "coding_negative_rd1225",
+            "lastUpdatedAt": "2026-10-02T08:45:20.177Z"
           },
           "UNITY_WEB_BOOTSTRAP_SHELL": {
             "verifiedApplications": 0,
-            "verifiedFailures": 227,
+            "verifiedFailures": 233,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
             "totalContextBytes": 0,
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_abxy8l",
-            "lastUpdatedAt": "2026-10-02T07:58:32.282Z"
+            "lastFailureEvidence": "coding_negative_1qjjqmq",
+            "lastUpdatedAt": "2026-10-02T08:45:20.161Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 0,
-            "verifiedFailures": 25,
+            "verifiedFailures": 26,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
             "totalContextBytes": 0,
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_j8ubi3",
-            "lastUpdatedAt": "2026-10-02T07:10:47.669Z"
+            "lastFailureEvidence": "coding_negative_13pyve1",
+            "lastUpdatedAt": "2026-10-02T08:45:20.140Z"
           }
         },
         "failureFingerprints": {
@@ -20208,7 +20235,7 @@
             "verifiedApplications": 4,
             "firstCandidatePasses": 1,
             "totalGenerationAttempts": 12,
-            "verifiedFailures": 313,
+            "verifiedFailures": 314,
             "games": {
               "seed-idle-growth-rpg-crystal-bloom": 1,
               "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
@@ -20220,51 +20247,51 @@
             },
             "failureGames": {
               "amusement-tycoon": 83,
-              "seed-casual-realm-weaver": 114,
+              "seed-casual-realm-weaver": 115,
               "seed-puzzle-chromatic-cascade": 81,
               "seed-idle-growth-rpg-crystal-bloom": 12,
               "seed-action-survival-rogu-echoes-of-the-lost-star": 23
             },
             "failureTargets": {
-              "unity": 313
+              "unity": 314
             },
             "failureClasses": {
               "MALFORMED_OUTPUT": 2,
-              "TIMEOUT": 102,
+              "TIMEOUT": 103,
               "STUDIO_QUALITY_DELTA": 197,
               "NO_OP": 12
             },
             "lastEvidence": "coding_n0pq86",
-            "lastFailureEvidence": "coding_negative_q0gtxq",
-            "lastUpdatedAt": "2026-10-02T07:58:32.290Z"
+            "lastFailureEvidence": "coding_negative_58nt0h",
+            "lastUpdatedAt": "2026-10-02T08:45:20.167Z"
           },
           "unity|EDIT_MATCH|OTHER|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 117,
+            "verifiedFailures": 118,
             "games": {},
             "targets": {},
             "failureGames": {
-              "cozy-island": 117
+              "cozy-island": 118
             },
             "failureTargets": {
-              "unity": 117
+              "unity": 118
             },
             "failureClasses": {
               "EDIT_MATCH": 79,
               "TIMEOUT": 1,
-              "PERFORMANCE_SANITY": 37
+              "PERFORMANCE_SANITY": 38
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_ufdfkq",
-            "lastUpdatedAt": "2026-10-02T07:58:32.275Z"
+            "lastFailureEvidence": "coding_negative_zrd2r1",
+            "lastUpdatedAt": "2026-10-02T08:45:20.154Z"
           },
           "unity|INVALID_PATH|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 2,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 4,
-            "verifiedFailures": 418,
+            "verifiedFailures": 420,
             "games": {
               "bug-defense": 1,
               "survival": 1
@@ -20276,28 +20303,28 @@
               "bug-defense": 10,
               "survival": 74,
               "seed-idle-growth-rpg-crystal-bloom": 1,
-              "seed-story-complete-rpg-chronicles-of-eldoria": 112,
-              "village-dungeons": 112,
+              "seed-story-complete-rpg-chronicles-of-eldoria": 113,
+              "village-dungeons": 113,
               "seed-single-defense-strat-celestial-bastion": 109
             },
             "failureTargets": {
-              "unity": 418
+              "unity": 420
             },
             "failureClasses": {
               "NO_OP": 20,
-              "TIMEOUT": 130,
+              "TIMEOUT": 131,
               "MALFORMED_OUTPUT": 1,
-              "STUDIO_QUALITY_DELTA": 267
+              "STUDIO_QUALITY_DELTA": 268
             },
             "lastEvidence": "coding_hjxctb",
-            "lastFailureEvidence": "coding_negative_e53hwb",
-            "lastUpdatedAt": "2026-10-02T07:58:32.295Z"
+            "lastFailureEvidence": "coding_negative_qemz7g",
+            "lastUpdatedAt": "2026-10-02T08:45:20.172Z"
           },
           "unity|AUTHORITATIVE_TARGET_ENGINE_QA_MISSING|FOCUSED_MARKER_NOT_PASS|FOCUSED_QA_NOT_PASS|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 26,
             "firstCandidatePasses": 10,
             "totalGenerationAttempts": 54,
-            "verifiedFailures": 318,
+            "verifiedFailures": 323,
             "games": {
               "fantasy-survival": 5,
               "seed-action-survival-rogu-echoes-of-the-lost-star": 3,
@@ -20309,24 +20336,24 @@
               "unity": 26
             },
             "failureGames": {
-              "fantasy-survival": 110,
-              "seed-idle-growth-rpg-crystal-bloom": 89,
-              "seed-action-survival-rogu-echoes-of-the-lost-star": 76,
-              "amusement-tycoon": 22,
-              "seed-puzzle-chromatic-cascade": 21
+              "fantasy-survival": 111,
+              "seed-idle-growth-rpg-crystal-bloom": 90,
+              "seed-action-survival-rogu-echoes-of-the-lost-star": 77,
+              "amusement-tycoon": 23,
+              "seed-puzzle-chromatic-cascade": 22
             },
             "failureTargets": {
-              "unity": 318
+              "unity": 323
             },
             "failureClasses": {
               "MALFORMED_OUTPUT": 2,
-              "STUDIO_QUALITY_DELTA": 106,
-              "TIMEOUT": 196,
+              "STUDIO_QUALITY_DELTA": 107,
+              "TIMEOUT": 200,
               "NO_OP": 14
             },
             "lastEvidence": "coding_13xuc1",
-            "lastFailureEvidence": "coding_negative_1hert7i",
-            "lastUpdatedAt": "2026-10-02T07:58:32.292Z"
+            "lastFailureEvidence": "coding_negative_1vcdrg1",
+            "lastUpdatedAt": "2026-10-02T08:45:20.169Z"
           },
           "roblox|NO_OP|OTHER|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -20475,25 +20502,25 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 72,
+            "verifiedFailures": 73,
             "games": {},
             "targets": {},
             "failureGames": {
               "bug-defense": 33,
-              "survival": 39
+              "survival": 40
             },
             "failureTargets": {
-              "unity": 72
+              "unity": 73
             },
             "failureClasses": {
               "STUDIO_QUALITY_DELTA": 28,
-              "TIMEOUT": 41,
+              "TIMEOUT": 42,
               "NO_OP": 2,
               "EDIT_MATCH": 1
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_deia1n",
-            "lastUpdatedAt": "2026-10-02T07:58:32.294Z"
+            "lastFailureEvidence": "coding_negative_po1rcs",
+            "lastUpdatedAt": "2026-10-02T08:45:20.171Z"
           },
           "unity|NO_OP|OTHER|PRESENTATION_DELTA|PRESENTATION_PATCH_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -20565,7 +20592,7 @@
             "verifiedApplications": 2,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 8,
-            "verifiedFailures": 70,
+            "verifiedFailures": 71,
             "games": {
               "bug-defense": 2
             },
@@ -20573,19 +20600,19 @@
               "unity": 2
             },
             "failureGames": {
-              "bug-defense": 70
+              "bug-defense": 71
             },
             "failureTargets": {
-              "unity": 70
+              "unity": 71
             },
             "failureClasses": {
               "STUDIO_QUALITY_DELTA": 21,
               "NO_OP": 8,
-              "TIMEOUT": 41
+              "TIMEOUT": 42
             },
             "lastEvidence": "coding_7ruirm",
-            "lastFailureEvidence": "coding_negative_f5sw2a",
-            "lastUpdatedAt": "2026-10-02T07:58:32.286Z"
+            "lastFailureEvidence": "coding_negative_1rszo6d",
+            "lastUpdatedAt": "2026-10-02T08:45:20.164Z"
           },
           "unity|AUTHORITATIVE_TARGET_ENGINE_QA_MISSING|FOCUSED_MARKER_NOT_PASS|FOCUSED_QA_NOT_PASS|NO_OP|OTHER|PRESENTATION_PATCH_DELTA|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 2,
@@ -20616,24 +20643,24 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 70,
+            "verifiedFailures": 72,
             "games": {},
             "targets": {},
             "failureGames": {
               "seed-action-survival-rogu-echoes-of-the-lost-star": 23,
-              "bug-defense": 24,
-              "village-dungeons": 23
+              "bug-defense": 25,
+              "village-dungeons": 24
             },
             "failureTargets": {
-              "roblox": 70
+              "roblox": 72
             },
             "failureClasses": {
-              "NO_OP": 65,
+              "NO_OP": 67,
               "TIMEOUT": 5
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_m11evu",
-            "lastUpdatedAt": "2026-10-02T07:58:32.300Z"
+            "lastFailureEvidence": "coding_negative_rd1225",
+            "lastUpdatedAt": "2026-10-02T08:45:20.177Z"
           },
           "roblox|CANDIDATE_BRANCH_PUBLISH|MALFORMED_OUTPUT|NO_OP|ROBLOX_STRUCTURAL_CONTINUITY|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -20726,43 +20753,43 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 65,
+            "verifiedFailures": 66,
             "games": {},
             "targets": {},
             "failureGames": {
-              "cozy-island": 65
+              "cozy-island": 66
             },
             "failureTargets": {
-              "roblox": 65
+              "roblox": 66
             },
             "failureClasses": {
-              "NO_OP": 65
+              "NO_OP": 66
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_eoyetz",
-            "lastUpdatedAt": "2026-10-02T07:58:32.255Z"
+            "lastFailureEvidence": "coding_negative_1b8oniw",
+            "lastUpdatedAt": "2026-10-02T08:45:20.134Z"
           },
           "roblox|INVALID_PATH|NO_OP|OTHER|ROBLOX_STRUCTURAL_CONTINUITY|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 60,
+            "verifiedFailures": 61,
             "games": {},
             "targets": {},
             "failureGames": {
-              "fantasy-survival": 60
+              "fantasy-survival": 61
             },
             "failureTargets": {
-              "roblox": 60
+              "roblox": 61
             },
             "failureClasses": {
-              "TIMEOUT": 39,
+              "TIMEOUT": 40,
               "NO_OP": 6,
               "STUDIO_QUALITY_DELTA": 15
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1z12f5o",
-            "lastUpdatedAt": "2026-10-02T07:58:32.273Z"
+            "lastFailureEvidence": "coding_negative_1t6l5h7",
+            "lastUpdatedAt": "2026-10-02T08:45:20.151Z"
           },
           "roblox|EDIT_MATCH|INVALID_PATH|OTHER|ROBLOX_VISUAL_DOMAINS|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -20930,62 +20957,62 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 167,
+            "verifiedFailures": 173,
             "games": {},
             "targets": {},
             "failureGames": {
-              "fantasy-survival": 34,
-              "seed-idle-growth-rpg-crystal-bloom": 34,
-              "monster-adventure": 29,
-              "line-defense": 29,
-              "seed-puzzle-chromatic-cascade": 29,
-              "horror-escape-room": 12
+              "fantasy-survival": 35,
+              "seed-idle-growth-rpg-crystal-bloom": 35,
+              "monster-adventure": 30,
+              "line-defense": 30,
+              "seed-puzzle-chromatic-cascade": 30,
+              "horror-escape-room": 13
             },
             "failureTargets": {
-              "unity": 167
+              "unity": 173
             },
             "failureClasses": {
-              "EDIT_MATCH": 120,
-              "NO_OP": 46,
+              "EDIT_MATCH": 123,
+              "NO_OP": 49,
               "TIMEOUT": 1
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1xqjf8q",
-            "lastUpdatedAt": "2026-10-02T07:58:32.280Z"
+            "lastFailureEvidence": "coding_negative_fvr24d",
+            "lastUpdatedAt": "2026-10-02T08:45:20.158Z"
           },
           "unity|EDIT_MATCH|INVALID_PATH|NO_OP|OTHER|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 190,
+            "verifiedFailures": 196,
             "games": {},
             "targets": {},
             "failureGames": {
-              "amusement-tycoon": 34,
-              "bug-defense": 34,
-              "seed-action-survival-rogu-echoes-of-the-lost-star": 34,
-              "seed-story-complete-rpg-chronicles-of-eldoria": 32,
-              "village-dungeons": 32,
+              "amusement-tycoon": 35,
+              "bug-defense": 35,
+              "seed-action-survival-rogu-echoes-of-the-lost-star": 35,
+              "seed-story-complete-rpg-chronicles-of-eldoria": 33,
+              "village-dungeons": 33,
               "seed-single-defense-strat-celestial-bastion": 8,
-              "survival": 16
+              "survival": 17
             },
             "failureTargets": {
-              "unity": 190
+              "unity": 196
             },
             "failureClasses": {
-              "EDIT_MATCH": 105,
-              "NO_OP": 83,
+              "EDIT_MATCH": 109,
+              "NO_OP": 85,
               "TIMEOUT": 2
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_abxy8l",
-            "lastUpdatedAt": "2026-10-02T07:58:32.282Z"
+            "lastFailureEvidence": "coding_negative_1qjjqmq",
+            "lastUpdatedAt": "2026-10-02T08:45:20.161Z"
           },
           "unity|AUTHORITATIVE_TARGET_ENGINE_QA_MISSING|FOCUSED_MARKER_NOT_PASS|FOCUSED_QA_NOT_PASS|MALFORMED_OUTPUT|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 5,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 10,
-            "verifiedFailures": 21,
+            "verifiedFailures": 22,
             "games": {
               "line-defense": 5
             },
@@ -20993,44 +21020,64 @@
               "unity": 5
             },
             "failureGames": {
-              "line-defense": 21
+              "line-defense": 22
             },
             "failureTargets": {
-              "unity": 21
+              "unity": 22
             },
             "failureClasses": {
-              "STUDIO_QUALITY_DELTA": 13,
+              "STUDIO_QUALITY_DELTA": 14,
               "TIMEOUT": 8
             },
             "lastEvidence": "coding_14fulv1",
-            "lastFailureEvidence": "coding_negative_1wlfj4",
-            "lastUpdatedAt": "2026-10-02T07:58:32.287Z"
+            "lastFailureEvidence": "coding_negative_115s007",
+            "lastUpdatedAt": "2026-10-02T08:45:20.165Z"
           },
           "web|CANDIDATE_BRANCH_PUBLISH|NO_OP|OTHER|PRESENTATION_PATCH_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 16,
+            "verifiedFailures": 17,
             "games": {},
             "targets": {},
             "failureGames": {
-              "cozy-island": 16
+              "cozy-island": 17
             },
             "failureTargets": {
-              "web": 16
+              "web": 17
             },
             "failureClasses": {
-              "NO_OP": 16
+              "NO_OP": 17
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_j8ubi3",
-            "lastUpdatedAt": "2026-10-02T07:10:47.669Z"
+            "lastFailureEvidence": "coding_negative_13pyve1",
+            "lastUpdatedAt": "2026-10-02T08:45:20.140Z"
+          },
+          "unity|CANDIDATE_BRANCH_PUBLISH|OTHER|TIMEOUT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "daechung-rpg": 1
+            },
+            "failureTargets": {
+              "unity": 1
+            },
+            "failureClasses": {
+              "TIMEOUT": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_f1w01s",
+            "lastUpdatedAt": "2026-10-02T08:45:20.175Z"
           }
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_13xuc1",
-        "lastFailureEvidence": "coding_negative_m11evu",
-        "lastUpdatedAt": "2026-10-02T07:58:32.300Z"
+        "lastFailureEvidence": "coding_negative_rd1225",
+        "lastUpdatedAt": "2026-10-02T08:45:20.177Z"
       }
     }
   },
@@ -23791,7 +23838,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-10-02T07:58:32.388Z",
+    "lastBuiltAt": "2026-10-02T08:45:20.261Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -32707,5 +32754,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-10-02T07:58:32.388Z"
+  "updatedAt": "2026-10-02T08:45:20.261Z"
 }
