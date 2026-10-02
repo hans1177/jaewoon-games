@@ -48,7 +48,7 @@ test('personal manor spawn stays on the front-yard ground layer',()=>{
 });
 
 test('personal manor visual model is anchored to authored hall and courtyard coordinates',()=>{
- assert.match(lobby,/d\.IsA\("BasePart"\)and d\.Name==name/);
+ assert.match(lobby,/d:IsA\("BasePart"\)and d\.Name==name/);
  assert.match(lobby,/local hallAnchor=exactVisualPart\("HallFloor"\)/);
  assert.match(lobby,/local courtyardAnchor=exactVisualPart\("Courtyard"\)/);
  assert.match(lobby,/local expectedHall=Vector3\.new\(0,\.1,-29\)/);
