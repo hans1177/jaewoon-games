@@ -4079,6 +4079,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     graphicsReplacementValidation:semanticDiffEnforcement?.graphicsReplacementReport||{required:false,pass:true,reason:'NOT_REQUIRED',groundedCount:0},
     presentationCandidateDelta,
     studioQualityCandidateDelta,
+    studioAssetQualityAxes:semanticDiffEnforcement?.studioAssetQualityAxes||null,
     fullFileRewriteAllowed:allowFullRewrite,
     protectedGameplayMutationAutomatic:false,
     binaryAssetsDirectTextEditForbidden:true,
