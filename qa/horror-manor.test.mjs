@@ -91,14 +91,14 @@ test('lobby actions retain server authority and personal menu ownership',()=>{
  assert.match(ui,/GhostProgress/);assert.match(ui,/i<=stage/);assert.match(ui,/MANOR_RANKING/);
 });
 test('personal manor collection display is driven by existing saved progression only',()=>{
- assert.match(manorBuild,/GhostRelic_YUREI/);
- assert.match(manorBuild,/GhostRelic_BLACK_SHUCK/);
- assert.match(manorBuild,/MapPin_SCHOOL/);
- assert.match(manorBuild,/MapPin_HOSPITAL/);
- assert.match(manorBuild,/MapPin_THEME_PARK/);
- assert.match(manorBuild,/MemoryRelic_SCHOOL/);
- assert.match(manorBuild,/MemoryRelic_HOSPITAL/);
- assert.match(manorBuild,/MemoryRelic_THEME_PARK/);
+ const b=fs.readFileSync(root+'/generated/manor-lobby.glb');
+ const d=JSON.parse(b.toString('utf8',20,20+b.readUInt32LE(12)));
+ const names=new Set(d.nodes.map(n=>n.name));
+ for(const name of [
+  'GhostRelic_YUREI','GhostRelic_BLACK_SHUCK',
+  'MapPin_SCHOOL','MapPin_HOSPITAL','MapPin_THEME_PARK',
+  'MemoryRelic_SCHOOL','MemoryRelic_HOSPITAL','MemoryRelic_THEME_PARK'
+ ])assert.ok(names.has(name),'generated manor is missing '+name);
  assert.match(lobby,/GhostRelic_"\.\.ghost\.Id/);
  assert.match(lobby,/local stage=math\.clamp\(tonumber\(stages\[ghost\.Id\]\)or 0,0,3\)/);
  assert.match(lobby,/SelectedLobbyMap/);
