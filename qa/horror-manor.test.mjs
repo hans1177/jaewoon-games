@@ -152,7 +152,10 @@ test('personal manor exterior has signature housing and collection architecture'
   'ServiceKeyRing','RecordInkPot','RecordQuill','MortuaryScissors','GrandCeilingCoffer','GrandCeilingBoss','GrandCeilingCorbel',
   'HalloweenPumpkinLobe','JackEye','JackMouth','GargoyleBody','GargoyleWing','HalloweenSkull','HalloweenWaxDrip',
   'LivingCurtain','LivingVineTip','LivingBranch','BackdropCloud','BackdropMist','BackdropBat','BackdropChapel','BackdropGrave','PaperMoonHalo',
-  'WindowBatCrest','WindowBatGem','RoofThorn','WingRoofThorn','HallBatMedallion','HallBatGem','GalleryThorn','JackGlowEye','JackGlowMouth'
+  'WindowBatCrest','WindowBatGem','RoofThorn','WingRoofThorn','HallBatMedallion','HallBatGem','GalleryThorn','JackGlowEye','JackGlowMouth',
+  'DoorBatCrest','DoorBatGem','EaveThorn','EaveBracket',
+  'BackdropFencePost','BackdropFenceSpike','BackdropFenceRailA','BackdropPineTrunk','BackdropPineCrown',
+  'ForegroundThornArch','ForegroundThornTwig'
  ])assert.match(manorBuild,new RegExp(token));
  for(const room of ['ArchiveRoom','LibraryRoom','ParlorRoom','MortuaryRoom','WardrobeRoom','LoungeRoom'])assert.match(manorBuild,new RegExp("'"+room+"'"));
  assert.match(manorBuild,/room_accent=\{/);
@@ -237,6 +240,10 @@ test('personal manor exterior has signature housing and collection architecture'
  assert.match(ui,/mesh\.Material=Enum\.Material\.Neon/);
  assert.match(ui,/local glow=\.10\+math\.sin\(now\*1\.35\+phase\)\*\.06/);
  assert.match(ui,/Color3\.fromRGB\(49,24,61\)/);
+ assert.match(ui,/local layer=tonumber\(name:match\("\(%d\+\)\$"\)\)or 0/);
+ assert.match(ui,/local speed=\.050\+layer\*\.010/);
+ assert.match(ui,/local speed=\.060\+layer\*\.012/);
+ assert.match(ui,/local flap=math\.sin\(now\*\(1\.65\+layer\*\.08\)\+phase\)/);
  assert.match(ui,/mesh\.CFrame=row\.home\+Vector3\.new\(math\.sin\(now\*4\.7\+phase\)\*\.018/);
  assert.match(lobby,/for _,prefix in ipairs\(\{"MapMasterpiece_","GallerySet_"\}\)do/);
  assert.doesNotMatch(lobby,/SetAttribute\("GhostCompleted"/);
