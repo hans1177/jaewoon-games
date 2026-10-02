@@ -128,12 +128,16 @@ function Manor:Get(p)
  prompt("CoffinPrompt",Vector3.new(17,3,-14),"누군가의 낮잠",3)
  prompt("TeaPrompt",Vector3.new(-15,4,-18),"막내가 훔친 찻잔",4)
  -- 홀 전체를 비추는 샹들리에와 얼굴 앞의 부드러운 조명. 그림자는 벽난로·샹들리에만 사용한다.
- for _,spec in ipairs({{Vector3.new(0,16,-24),2.1,38,true},{Vector3.new(-21,7,15),1.4,25,false},{Vector3.new(23,7,19),1.4,25,false},{Vector3.new(-19,9,-22),1.7,23,false},{Vector3.new(20,9,-14),1.7,23,false},{Vector3.new(0,3,-38),1.8,20,true},{Vector3.new(5,9,-3),1.65,23,false},{Vector3.new(0,9,9),1.35,26,false}})do
+ for _,spec in ipairs({{Vector3.new(0,16,-24),2.1,38,true},{Vector3.new(-21,7,15),1.4,25,false},{Vector3.new(23,7,19),1.4,25,false},{Vector3.new(-19,9,-22),1.7,23,false},{Vector3.new(20,9,-14),1.7,23,false},{Vector3.new(0,3,-60),1.8,22,true},{Vector3.new(5,9,-3),1.65,23,false},{Vector3.new(0,9,9),1.35,26,false}})do
   local anchor=part(folder,"WarmLight",origin+spec[1],Vector3.one,false);anchor.CanCollide=false
   local light=Instance.new("PointLight");light.Color=Color3.fromRGB(255,217,167);light.Brightness=spec[2];light.Range=spec[3];light.Shadows=spec[4];light.Parent=anchor
  end
  -- 움직이는 장식은 비충돌, 가구의 몸체만 기존 바닥 위에서 이동을 막는다.
- for _,spec in ipairs({{-21,2,-39,13,4,3},{20,2,-38,13,4,3},{24,4,-31,5,8,3},{0,3,-41,13,6,4}})do
+ for _,spec in ipairs({
+  {-33.5,2,-59.5,18,4,3},{33.5,2,-59.5,18,4,3},
+  {24,4,-31,5,8,3},
+  {0,3,-61.2,17,7,4}
+ })do
   part(folder,"FurnitureBoundary",origin+Vector3.new(spec[1],spec[2],spec[3]),Vector3.new(spec[4],spec[5],spec[6]),false)
  end
  for _,mesh in ipairs(scene:GetDescendants())do
