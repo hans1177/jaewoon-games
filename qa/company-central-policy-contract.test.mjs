@@ -2049,6 +2049,13 @@ test('Roblox Studio PC host keeps only Studio visible and resumes exact work aft
   assert.doesNotMatch(runtime,/shell:\s*powershell\s*$/m);
   assert.match(runtime,/WindowStyle Hidden/);
   assert.match(bootstrap,/Install hidden reboot-safe Roblox runner host/);
+  assert.match(bootstrap,/runner-control:/);
+  assert.match(bootstrap,/inspect and repair local Roblox runner registration/);
+  assert.match(bootstrap,/actions\/runners\?per_page=100/);
+  assert.match(bootstrap,/actions\/runners\/\$runner_id\/labels/);
+  assert.match(bootstrap,/needs: runner-control/);
+  assert.match(bootstrap,/runs-on: \[self-hosted, Windows, X64\]/);
+  assert.doesNotMatch(bootstrap,/bootstrap:[\s\S]{0,220}?runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
   assert.doesNotMatch(bootstrap,/shell:\s*powershell\s*$/m);
 });
 
