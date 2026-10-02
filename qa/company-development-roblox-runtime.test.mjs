@@ -1061,7 +1061,7 @@ test('Roblox runtime collapses duplicate exact-game and batch planners with same
   assert.match(workflow,/run-name: Roblox runtime · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
   assert.match(workflow,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
   assert.match(workflow,/ROBLOX_RUNTIME_EXACT_DEDUPED_CURRENT_MAIN=/);
-  assert.match(workflow,/ROBLOX_RUNTIME_BATCH_DEDUPED_NEWER_ACTIVE=/);
+  assert.match(workflow,/ROBLOX_RUNTIME_BATCH_DEDUPED_CURRENT_MAIN=/);
   assert.match(workflow,/process\.stdout\.write\(String\(ids\[ids\.length-1\]\)\)/);
   assert.match(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n(?:\s+#.*\n)*\s+cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
 });
