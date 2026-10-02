@@ -409,7 +409,8 @@ class Scene:
         # 장식의 수는 유지하고 같은 재질의 고정 소품만 병합한다. 움직이는 노드는 보존한다.
         keep=('Butler','Archivist','Undertaker','CoffinLid','CoffinHand','ArmorHelmet','LittleGhost',
               'TeaCup','Tea','ChandelierFlame','MirrorPupil','FamilyPortrait','PortraitCanvas','HearthFlame',
-              'MapPin','GhostRelic_','MemoryRelic','MasterCollectionRelic','ManorCrestSegment',
+              'MapPin','GhostRelic_','RareRelic_','MemoryRelic','MapMasterpiece_','GallerySet_',
+              'FireplaceFeature_','MasterCollectionRelic','ManorCrestSegment',
               'BackWall','HallFloor','Courtyard','CrookedRoof','ClockPendulum','EntryDoor')
         groups={}
         bpy.context.view_layer.update()
@@ -705,6 +706,23 @@ def npc(s,kind,pos):
           (ex,brow_y+h*.004,face_front+.044),
           (ex+side*w*.095,brow_y+brow_tilt,face_front+.038)
         ],[w*.010,w*.013,w*.008],[w*.007,w*.009,w*.006],q['hair'],sides=16,parent=p)
+        # 눈 밑 접힘과 팔자선은 색으로 그리지 않고 얕은 곡면으로 조형해 정면/3/4에서 얼굴 깊이를 유지한다.
+        crease_y=eye_y-h*(.034 if kind=='Undertaker' else .030)
+        s.curve_tube(kind+'_UnderEyeCrease'+str(side),[
+          (ex-side*w*.080,crease_y+h*.004,face_front+.022),
+          (ex,crease_y-h*.005,face_front+.028),
+          (ex+side*w*.072,crease_y+h*.002,face_front+.020)
+        ],[w*.0048,w*.0062,w*.0042],[w*.0038,w*.0050,w*.0035],q['skin'],sides=16,parent=p)
+        cheek_x=side*w*(.105 if kind=='Undertaker' else .092)
+        s.curve_tube(kind+'_Nasolabial'+str(side),[
+          (cheek_x,head_y-h*.020,face_front+.040),
+          (side*w*.120,head_y-h*.070,face_front+.035),
+          (side*w*.090,head_y-h*.108,face_front+.025)
+        ],[w*.0045,w*.0055,w*.0038],[w*.0035,w*.0045,w*.0030],q['skin'],sides=16,parent=p)
+        nostril_x=side*w*(.045 if kind=='Butler' else .052)
+        nostril_y=head_y-h*.024
+        s.ellipsoid(kind+'_Nostril'+str(side),(nostril_x,nostril_y,face_front+.044+nose_forward*.92),
+          (w*.030,h*.008,w*.014),q['hair'])
 
     # 입과 귀도 역할별 비율로 얼굴에 밀착시킨다.
     lip=s.material(kind+'Lip',(.22,.10,.11))
@@ -1153,6 +1171,41 @@ def build():
             s.curve_tube(name,points,[.06]*len(points),[.05]*len(points),mat,sides=18)
 
 
+    # 희귀 괴담 전용 벽면 유리 케이스. 희귀 판정은 서버가 기존 GhostCatalog.Weight로만 읽고,
+    # 여기서는 현재 낮은 등장 가중치 4종의 고유 실루엣만 준비한다. 새 보상/저장값은 만들지 않는다.
+    rare_case_specs=[
+      ('KRASUE',-58.8,'orb'),('WHITE_LADY',-55.1,'veil'),
+      ('PONTIANAK',-51.4,'flower'),('BLACK_SHUCK',-47.7,'collar')
+    ]
+    rare_case_metal=s.material('RareCaseMetal',(.20,.15,.10))
+    for ghost_id,z0,shape in rare_case_specs:
+        s.box('RareCaseBack_'+ghost_id,(-73.7,3.65,z0),(1.05,5.0,3.0),c['wood'])
+        s.box('RareCaseGlass_'+ghost_id,(-73.02,3.65,z0),(.07,4.55,2.55),c['glass'])
+        s.box('RareCaseBase_'+ghost_id,(-73.18,1.15,z0),(.62,.38,3.15),rare_case_metal)
+        if shape=='orb':
+            s.ellipsoid('RareRelic_'+ghost_id+'_Orb',(-72.90,3.55,z0),(1.00,1.00,1.00),relic_mats[1])
+            s.curve_tube('RareRelic_'+ghost_id+'_Vein',[
+              (-72.82,2.45,z0),(-72.72,3.05,z0+.14),(-72.88,3.45,z0-.08)
+            ],[.055,.075,.045],[.045,.060,.035],relic_mats[2],sides=16)
+        elif shape=='veil':
+            s.curve_tube('RareRelic_'+ghost_id+'_Pin',[
+              (-72.90,2.75,z0-.75),(-72.82,3.70,z0),(-72.90,4.55,z0+.75)
+            ],[.055,.10,.055],[.045,.075,.045],relic_mats[0],sides=18)
+            s.ellipsoid('RareRelic_'+ghost_id+'_Pearl',(-72.82,3.70,z0),(.32,.32,.32),relic_mats[2])
+        elif shape=='flower':
+            flower=[]
+            for k in range(12):
+                a=math.tau*k/12;r=.66 if k%2==0 else .30
+                flower.append((math.cos(a)*r,math.sin(a)*r))
+            petal=s.prism('RareRelic_'+ghost_id+'_Flower',(0,0,0),flower,.12,relic_mats[1])
+            petal.location=xyz((-72.90,3.65,z0));petal.rotation_euler.y=math.pi/2
+        else:
+            ring=[]
+            for a in np.linspace(0,math.tau,15):
+                ring.append((-72.90,3.65+math.sin(a)*.70,z0+math.cos(a)*.82))
+            s.curve_tube('RareRelic_'+ghost_id+'_Collar',ring,[.075]*len(ring),[.060]*len(ring),relic_mats[3],sides=18)
+            s.box('RareRelic_'+ghost_id+'_Tag',(-72.78,2.82,z0),(0.18,.66,.52),relic_mats[2])
+
     # 마당의 맵별 기념 전시. 각 지역에서 괴담을 처음 발견하면 해당 유물이 나타난다.
     # 학교: 오래된 종. 폐병원: 십자가 표식. 폐놀이공원: 찢어진 입장권.
     s.loft('MemoryRelic_SCHOOL',(-30,1.95,35),[
@@ -1163,7 +1216,48 @@ def build():
     ticket_outline=[(-2.5,-1.1),(2.15,-1.1),(2.55,-.65),(2.28,-.18),(2.55,.32),(2.22,1.08),(-2.5,1.08),(-2.25,.58),(-2.50,.12),(-2.22,-.42)]
     s.prism('MemoryRelic_THEME_PARK',(45,2.05,54),ticket_outline,.28,s.material('ParkTicketPaint',(.31,.20,.22)))
 
-    # 2층 객실은 잠긴 채 유지하지만 진행도에 따라 왁스 봉인이 하나씩 밝아진다.
+    # 지역 괴담 100% 완료용 대형 기념 전시. 기존 MemoryRelic과 분리해 '발견'과 '완성'을 공간에서 구분한다.
+    s.curve_tube('MapMasterpiece_SCHOOL_BellArch',[
+      (-33.0,2.35,35),(-30.0,5.65,35),(-27.0,2.35,35)
+    ],[.18,.24,.18],[.15,.20,.15],c['brass'],sides=20)
+    s.loft('MapMasterpiece_SCHOOL_Bell',(-30,3.45,35),[
+      (-1.25,.62,.52),(-.65,1.22,.76),(.25,1.55,.92),(1.00,.90,.66)
+    ],s.material('SchoolMasterBronze',(.39,.27,.12)),sides=30)
+    s.prism('MapMasterpiece_HOSPITAL',(30,4.25,35),[
+      (-.70,-2.35),(.70,-2.35),(.70,-.72),(2.05,-.72),(2.05,.72),(.70,.72),
+      (.70,2.35),(-.70,2.35),(-.70,.72),(-2.05,.72),(-2.05,-.72),(-.70,-.72)
+    ],.42,s.material('HospitalMasterEnamel',(.37,.06,.075)))
+    park_wheel=[]
+    for a in np.linspace(0,math.tau,17):
+        park_wheel.append((45+math.cos(a)*2.45,4.15+math.sin(a)*2.45,54))
+    s.curve_tube('MapMasterpiece_THEME_PARK_Wheel',park_wheel,[.13]*len(park_wheel),[.11]*len(park_wheel),c['brass'],sides=18)
+    for i in range(6):
+        a=math.tau*i/6
+        s.curve_tube('MapMasterpiece_THEME_PARK_Spoke'+str(i),[
+          (45,4.15,54),(45+math.cos(a)*2.25,4.15+math.sin(a)*2.25,54)
+        ],[.075,.055],[.065,.045],s.material('ParkMasterIron',(.17,.11,.12)),sides=16)
+
+    # 2층 완성 세트 갤러리. 객실 자체는 계속 잠겨 있고 벽 사이 전시판만 지역 100%에서 드러난다.
+    gallery_specs=[('SCHOOL',-29),('HOSPITAL',0),('THEME_PARK',29)]
+    for index,(map_id,x0) in enumerate(gallery_specs):
+        s.box('GallerySetFrame_'+map_id,(x0,21.2,-63.30),(7.8,4.1,.32),c['wood'])
+        s.box('GallerySetGlass_'+map_id,(x0,21.2,-63.08),(7.15,3.45,.08),c['glass'])
+        if map_id=='SCHOOL':
+            s.loft('GallerySet_'+map_id,(x0,21.15,-62.93),[
+              (-.75,.42,.16),(-.35,.82,.22),(.18,.96,.25),(.65,.50,.18)
+            ],c['brass'],sides=24)
+        elif map_id=='HOSPITAL':
+            s.prism('GallerySet_'+map_id,(x0,21.15,-62.93),[
+              (-.28,-1.15),(.28,-1.15),(.28,-.34),(1.0,-.34),(1.0,.34),(.28,.34),
+              (.28,1.15),(-.28,1.15),(-.28,.34),(-1.0,.34),(-1.0,-.34),(-.28,-.34)
+            ],.10,c['brass'])
+        else:
+            points=[]
+            for a in np.linspace(0,math.tau,13):
+                points.append((x0+math.cos(a)*1.05,21.15+math.sin(a)*1.05,-62.93))
+            s.curve_tube('GallerySet_'+map_id,points,[.06]*len(points),[.05]*len(points),c['brass'],sides=16)
+
+    # 2층 객실은 잠긴 상태를 유지한다.
     # 2층 잠긴 객실문.
     for i,x in enumerate([-36,-22,-8,8,22,36]):
         s.box('LockedGuestDoor'+str(i),(x,15,-63.9),(5.2,8.5,.34),c['wood'])
@@ -1552,6 +1646,13 @@ def build():
     s.curve_tube('MasterCollectionRelicCrest',[
       (-.82,9.42,-60.82),(0,10.12,-60.74),(.82,9.42,-60.82)
     ],[.10,.14,.10],[.08,.11,.08],c['brass'],sides=20)
+    # 전체 완성 전까지는 가장 진척된 괴담 하나를 벽난로 대표 슬롯에 올린다.
+    s.box('FireplaceFeatureFrame',(0,10.55,-61.05),(5.6,3.0,.34),c['wood'])
+    s.box('FireplaceFeatureGlass',(0,10.55,-60.83),(5.0,2.45,.08),c['glass'])
+    feature_outline=[(-1.15,-.82),(1.15,-.82),(1.35,-.25),(.92,.68),(0,1.02),(-.92,.68),(-1.35,-.25)]
+    for idx,(ghost_id,shape,bx,by) in enumerate(relic_slots):
+        medallion=s.prism('FireplaceFeature_'+ghost_id,(0,10.48,-60.66),feature_outline,.09,relic_mats[idx%len(relic_mats)])
+        medallion.rotation_euler.z=(idx%3-1)*.045
     for side in [-1,1]:
         s.ellipsoid('MirrorEye'+str(side),(side*1.9,14.5,-40.98),(1.4,1.1,.1),c['ivory'])
         s.ellipsoid('MirrorPupil'+str(side),(side*1.9,14.5,-40.87),(.42,.8,.08),c['black'])
