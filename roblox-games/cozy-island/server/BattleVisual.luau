@@ -3,8 +3,18 @@ local Active={}
 local BattleVisual={}
 
 local function makePart(parent,name,size,pos,color,material)
- local p=Instance.new("Part");p.Name=name;p.Anchored=true;p.Size=size;p.Position=pos;p.Color=color
- p.Material=material or Enum.Material.SmoothPlastic;p.Parent=parent;return p
+ local p=Instance.new("Part")
+ p.Name=name
+ p.Anchored=true
+ p.CanCollide=false
+ p.CanTouch=false
+ p.CanQuery=false
+ p.Size=size
+ p.Position=pos
+ p.Color=color
+ p.Material=material or Enum.Material.SmoothPlastic
+ p.Parent=parent
+ return p
 end
 
 function BattleVisual.cleanup(player)
@@ -23,8 +33,10 @@ function BattleVisual.start(player,index,troops,config,style)
  local target=region.Pos+Vector3.new(0,region.Size.Y/2+3,0)
  local count=math.clamp(troops,3,12)
  for i=1,count do
-  local soldier=makePart(folder,"병사",Vector3.new(2,4,2),start+Vector3.new((i%4)*3,0,math.floor((i-1)/4)*3),Color3.fromRGB(70,116,165))
-  local goal=target+Vector3.new(((i%4)-2)*3,0,math.floor((i-1)/4)*3)
+  local slot=i-1
+  local formation=Vector3.new(((slot%4)-1.5)*3,0,math.floor(slot/4)*3)
+  local soldier=makePart(folder,"병사",Vector3.new(2,4,2),start+formation,Color3.fromRGB(70,116,165))
+  local goal=target+formation
   TweenService:Create(soldier,TweenInfo.new(1.8,Enum.EasingStyle.Linear),{Position=goal}):Play()
  end
  local defenderColor=index==1 and Color3.fromRGB(120,112,105)
@@ -35,7 +47,9 @@ function BattleVisual.start(player,index,troops,config,style)
  local strength=base.Strength or 20
  local defenders=base.Boss and 9 or math.min(8,math.max(3,math.floor(strength/15)))
  for i=1,defenders do
-  local d=makePart(folder,base.Enemy or"수비병",Vector3.new(base.Boss and 2.8 or 2,base.Boss and 5 or 4,base.Boss and 2.8 or 2),target+Vector3.new((i%4)*4-8,0,-7+math.floor((i-1)/4)*4),defenderColor)
+  local slot=i-1
+  local formation=Vector3.new(((slot%4)-1.5)*4,0,-7+math.floor(slot/4)*4)
+  local d=makePart(folder,base.Enemy or"수비병",Vector3.new(base.Boss and 2.8 or 2,base.Boss and 5 or 4,base.Boss and 2.8 or 2),target+formation,defenderColor)
   d.Material=base.Boss and Enum.Material.Slate or Enum.Material.SmoothPlastic
  end
  if base.Boss then
