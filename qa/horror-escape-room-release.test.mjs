@@ -151,14 +151,14 @@ test('로비 선택 완료는 서버 승인 속성만 신뢰한다',()=>{
 test('Studio 실플레이 계약은 현재 저택 로비의 실제 입력 순서를 그대로 따른다',()=>{
  const flow=launch.studioActualPlayContract;
  assert.deepEqual(flow.entryButtonTexts,['저택 들어가기','출정']);
- assert.equal(flow.selectionButtonText,'인간으로 준비');
- assert.equal(flow.startButtonText,'1인 플레이 · 빈자리는 AI');
+ assert.equal(flow.selectionButtonText,'인간');
+ assert.equal(flow.startButtonText,'혼자 바로 시작');
  assert.equal(flow.primaryActionButtonText,'대시');
  assert.ok(flow.afterStartWaitMs>=4000);
  assert.match(manorClient,/button\(card,"저택 들어가기"/);
  assert.match(manorClient,/button\(commands,"출정"/);
- assert.match(manorClient,/button\(body,"인간으로 준비"/);
- assert.match(manorClient,/button\(body,"1인 플레이 · 빈자리는 AI"/);
+ assert.match(manorClient,/button\(body,"인간"/);
+ assert.match(manorClient,/button\(body,"혼자 바로 시작"/);
  assert.doesNotMatch(flow.selectionButtonText,/인간 선호/);
 });
 
@@ -538,7 +538,9 @@ test('1인 방 생성과 방장 시작은 8인 AI 충원 계약을 유지한다'
  assert.match(server,/local function startRoomMatch\(p\)/);
  assert.match(server,/#Players:GetPlayers\(\)<math\.max\(1,tonumber\(C\.MinimumParticipants\)or 1\)/);
  assert.match(server,/configure\(h,survivorOrder,monsterOrder,si,mi\)/);
- assert.match(manorClient,/1인 플레이 · 빈자리는 AI/);
+ assert.match(manorClient,/혼자 바로 시작/);
+ assert.match(server,/local function startLocalSoloRoom\(p\)/);
+ assert.match(server,/if #Players:GetPlayers\(\)==1 then startLocalSoloRoom\(p\)else createReservedRoom\(p,"PRIVATE",true\)end/);
 });
 
 test('예약 방은 공개 친구만 비공개를 서버가 검증하고 예약 코드를 클라이언트에 노출하지 않는다',()=>{
