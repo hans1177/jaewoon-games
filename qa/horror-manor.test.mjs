@@ -201,6 +201,11 @@ test('personal manor exterior has signature housing and collection architecture'
  assert.match(lobby,/ManorCrestSegment"\.\.i/);
  assert.match(lobby,/local reached=completed>=i\*2/);
  assert.match(lobby,/PorchStepGround/);
+ assert.match(lobby,/EntranceWalkwayGround/);
+ assert.match(lobby,/d\.CanCollide=false;d\.CanTouch=false;d\.CanQuery=false/);
+ assert.match(lobby,/mesh\.CanCollide=false;mesh\.CanTouch=false;mesh\.CanQuery=false/);
+ assert.doesNotMatch(lobby,/mesh\.Name=="CrookedRoof"\)then\s*mesh\.CanCollide=true/);
+ assert.match(lobby,/local nearDoor=math\.abs\(localPos\.X\)<18 and localPos\.Z> -24 and localPos\.Z<24/);
  assert.match(lobby,/MortuaryLoadingPlatformGround/);
  assert.match(lobby,/GreenhouseBoundary/);
  assert.match(lobby,/44\.3,5\.6,69,1,9\.2,17\.5/);
