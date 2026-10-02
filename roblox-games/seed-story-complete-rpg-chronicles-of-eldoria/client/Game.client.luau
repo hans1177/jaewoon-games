@@ -379,5 +379,11 @@ local function reportNativeFoundationReady()
     nativeFoundationRemote:FireServer("CAMERA_READY")
   end
   nativeFoundationRemote:FireServer(nativeTouchEnabled and "INPUT_READY_TOUCH" or "INPUT_READY")
+
+  local humanoid = character:WaitForChild("Humanoid")
+  if nativeFoundationCamera and nativeFoundationCamera.CameraSubject == humanoid then
+    nativeFoundationRemote:FireServer("CAMERA_READY")
+  end
+  nativeFoundationRemote:FireServer(nativeTouchEnabled and "INPUT_READY_TOUCH" or "INPUT_READY")
 end
 task.defer(reportNativeFoundationReady)
