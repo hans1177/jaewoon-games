@@ -387,7 +387,7 @@ test('runtime QA dispatches every F9-ready game independently while deduping exa
   const block=workflow.slice(start,end);
   assert.ok(start>0&&end>start);
   assert.match(block,/company-development-roblox-final-review-revalidation\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
-  assert.match(block,/ROBLOX_F9_EXACT_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.match(block,/ROBLOX_F9_EXACT_DISPATCH=DEDUPED_CURRENT_MAIN:/);
   assert.match(block,/ROBLOX_F9_EXACT_DISPATCHED=\$id/);
   assert.match(block,/while read -r id/);
   assert.doesNotMatch(block,/ROBLOX_F9_SCAN_DISPATCHED=/);
