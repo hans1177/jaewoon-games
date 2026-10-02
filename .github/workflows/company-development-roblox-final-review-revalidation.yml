@@ -233,15 +233,15 @@ jobs:
               &&runtime.sourceRevision===sourceRevision
               &&runtime.artifactIdentity===artifactIdentity
               &&Number(runtime.candidateVersionNumber||runtime.expectedVersionNumber)===Number(candidate.versionNumber)
-              &&studioPlay.pass===true
-              &&studioPlay.actualPlay===true
-              &&studioPlay.runtimeVerified===true
-              &&studioPlay.officialStudioMcp===true
-              &&studioPlay.localPlaceFile===true
-              &&studioPlay.sourceRevision===sourceRevision
-              &&studioPlay.artifactIdentity===artifactIdentity
-              &&Number(studioPlay.versionNumber)===Number(candidate.versionNumber)
-              &&Number(studioPlay.runtimeSummary?.consoleErrorCount||0)===0;
+              &&post.internalRuntimeObservationDeferred===true
+              &&post.exactEngineExecutionEvidence===true
+              &&post.externalServerBootRequired===false
+              &&post.publicReleaseRuntimeObservationPending===true
+              &&post.independentQaPassed===true
+              &&post.regressionPassed===true
+              &&post.sourceRevision===sourceRevision
+              &&post.artifactIdentity===artifactIdentity
+              &&Number(post.candidateVersionNumber)===Number(candidate.versionNumber);
             const internalRuntimeFindingDeferred=
               item.robloxRuntimeFailureExternalReleaseOnly===true
               &&item.robloxInternalQaContinuationAllowed===true
