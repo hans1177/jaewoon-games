@@ -843,6 +843,11 @@ def build():
         s.box('UpperWallMoulding'+str(side),(side*52.9,20.8,-31),(.35,.65,64),c['brass'])
     s.box('BackUpperMoulding',(0,20.8,-64.1),(106,.65,.35),c['brass'])
     s.box('EntryLintel',(0,15,-2),(20,3.5,4),c['wood'])
+    s.curve_tube('EntryGrandArch',[
+      (-9.2,14.2,-1.0),(-6.5,17.2,-1.0),(0,20.7,-1.0),(6.5,17.2,-1.0),(9.2,14.2,-1.0)
+    ],[.42,.38,.32,.38,.42],[.34,.32,.28,.32,.34],c['stone'],sides=22)
+    for side in [-1,1]:
+        s.lathe('EntryArchCapital'+str(side),(side*9.2,13.7,-1.0),.72,.60,.65,c['brass'],sides=20)
     s.box('EntryThreshold',(0,.40,-2),(18,.4,6),c['stone'])
 
     # 현관문은 기존 상호작용 이름을 유지한다.
@@ -871,6 +876,15 @@ def build():
         step_z=-40.0-i*stair_tread
         s.box('GrandStair'+str(i),(0,top_y*.5,step_z),(30,top_y,stair_tread+.08),c['wood'])
         s.box('GrandStairRunner'+str(i),(0,top_y+.025,step_z),(9.5,.05,stair_tread*.92),c['red'])
+    for side in [-1,1]:
+        rail_points=[]
+        for i in range(12):
+            top_y=stair_rise*(i+1)
+            step_z=-40.0-i*stair_tread
+            rail_points.append((side*13.4,top_y+1.25,step_z))
+            if i%2==0:
+                s.lathe('StairBaluster'+str(side)+'_'+str(i),(side*13.4,top_y+.63,step_z),.075,.060,1.25,c['brass'],sides=14)
+        s.curve_tube('GrandStairRail'+str(side),rail_points,[.10]*len(rail_points),[.10]*len(rail_points),c['brass'],sides=18)
     s.box('SecondFloorGallery',(0,10.2,-55),(92,.55,19),c['wood'])
     for side in [-1,1]:
         s.box('BalconyWalk'+str(side),(side*43,10.2,-31),(15,.55,48),c['wood'])
