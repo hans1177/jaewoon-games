@@ -227,9 +227,7 @@ jobs:
           const grandfatherGameIds=roadmap?.directNativeDualPlatformDevelopment?.upperPlatformAdmissionMigration?.grandfatherGameIds||[];
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           if(requested&&!/^[a-z0-9][a-z0-9-]{1,80}$/.test(requested))throw new Error('UPPER_PLATFORM_REQUESTED_GAME_ID_INVALID:'+requested);
-          const ownerExcludedGameIds=new Set(['horror-escape-room']);
           const rows=(q.items||[]).filter(item=>
-            !ownerExcludedGameIds.has(String(item.gameId||''))&&
             (!requested||item.gameId===requested)&&
             String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'&&
             String(item.status||'').toUpperCase()!=='DISABLED'&&

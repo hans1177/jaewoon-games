@@ -5,12 +5,13 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/horror-owner-system-publish.yml'
-      - 'assets/roblox/midnight-manor/generated/manor-lobby.glb'
-      - 'assets/roblox/midnight-manor/generated/import-bounds.json'
-      - 'roblox-games/horror-escape-room/server/ManorLobby.luau'
-      - 'roblox-games/horror-escape-room/client/ManorLobby.client.luau'
+      - 'assets/roblox/midnight-manor/**'
+      - 'roblox-games/horror-escape-room/**'
+      - 'tools/horror-manor-*.mjs'
+      - 'qa/horror-manor.test.mjs'
 permissions:
   contents: read
+  actions: write
 concurrency:
   group: horror-owner-system-publish
   cancel-in-progress: false
@@ -81,3 +82,14 @@ jobs:
             roblox-games/horror-escape-room/shared/ManorAssets.luau
             assets/roblox/midnight-manor/generated/native-import-check.json
             assets/roblox/midnight-manor/generated/publication.json
+      - name: Return horror changes to canonical development flow
+        if: success() && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          gh workflow run company-design-promotion-sync.yml --repo $env:GITHUB_REPOSITORY --ref main
+          if($LASTEXITCODE -ne 0){throw 'HORROR_CANONICAL_FLOW_DISPATCH_FAILED'}
+          Write-Host 'HORROR_CANONICAL_FLOW=DESIGN_PROMOTION_TO_DEVELOPMENT'
+          Write-Host 'HORROR_CANONICAL_FLOW_GAME_ID=horror-escape-room'

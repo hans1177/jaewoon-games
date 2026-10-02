@@ -156,6 +156,17 @@ test('native development trigger ownership avoids duplicate central plus child p
   assert.ok(unityPush.includes('unity-games/**'));
 });
 
+test('owner horror edits automatically re-enter the canonical development flow',()=>{
+  const horror=read('.github/workflows/horror-owner-system-publish.yml');
+  const development=read('.github/workflows/company-development-confirmed-runtime.yml');
+  assert.match(horror,/roblox-games\/horror-escape-room\/\*\*/);
+  assert.match(horror,/assets\/roblox\/midnight-manor\/\*\*/);
+  assert.match(horror,/actions: write/);
+  assert.match(horror,/gh workflow run company-design-promotion-sync\.yml/);
+  assert.match(horror,/HORROR_CANONICAL_FLOW=DESIGN_PROMOTION_TO_DEVELOPMENT/);
+  assert.doesNotMatch(development,/ownerExcludedGameIds[^\n]*horror-escape-room/);
+});
+
 test('platform exposure sync has no workflow-wide lock and Director has no hard-coded stale run ids',()=>{
   const exposure=read('.github/workflows/company-platform-exposure-sync.yml');
   const director=read('.github/workflows/director-supervisor.yml');
