@@ -166,8 +166,17 @@ function recoverExactPrivateRuntimeCheckpoint(item,design){
     &&/^sha256:[a-f0-9]{64}$/i.test(clean(item?.robloxBuildArtifactIdentity));
   const privateDeployPending=upper(item?.robloxFailureStage)==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'
     &&upper(item?.robloxFailureSignature)==='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING';
-  if(exactF0&&privateDeployPending){
-    return{currentStep:'PRIVATE_RUNTIME_CANDIDATE_DEPLOY',canonicalState:'F0_SOURCE_PREFLIGHT_PASSED'};
+  const legacyStudioDeployPending=upper(item?.currentStep)==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'
+    &&upper(item?.robloxFailureStage)==='VIBE_INTERNAL_PLAY'
+    &&upper(item?.robloxFailureSignature)==='ROBLOX_STUDIO_INTERNAL_VALIDATION_PENDING';
+  if(exactF0&&(privateDeployPending||legacyStudioDeployPending)){
+    return{
+      currentStep:'PRIVATE_RUNTIME_CANDIDATE_DEPLOY',
+      canonicalState:'F0_SOURCE_PREFLIGHT_PASSED',
+      robloxFailureStage:'PRIVATE_RUNTIME_CANDIDATE_DEPLOY',
+      robloxFailureSignature:'ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING',
+      routingBlockers:['roblox-runtime-candidate-deploy-pending']
+    };
   }
   return null;
 }
@@ -301,6 +310,11 @@ function normalizeItem(oldItem,{game,seed,design,roadmap,dedicatedRegistry,stamp
     canonicalState:recoveredProgress?.canonicalState||(preserve?(item.canonicalState||'TARGET_PLATFORM_REPAIR_REQUIRED'):'PENDING_DUAL_NATIVE_SOURCE_BIND'),
     enqueuedAt:item.enqueuedAt||stamp
   });
+  if(recoveredProgress?.robloxFailureStage){
+    item.robloxFailureStage=recoveredProgress.robloxFailureStage;
+    item.robloxFailureSignature=recoveredProgress.robloxFailureSignature;
+    item.routingBlockers=[...recoveredProgress.routingBlockers];
+  }
   removeLegacy(item);
   bindSaveContract(item,roadmap);
   restoreDedicatedTargetIdentity(item,{registry:dedicatedRegistry,gameId,stamp});
