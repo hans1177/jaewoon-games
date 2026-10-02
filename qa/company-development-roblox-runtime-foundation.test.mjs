@@ -790,7 +790,7 @@ test('Roblox F0-F9 orchestration dispatches exact games without cross-game fan-i
     post.indexOf('Dispatch exact Studio MCP follow-up after new runtime foundation evidence')
   );
   assert.match(f9Dispatch,/company-development-roblox-final-review-revalidation\.yml[\s\S]*?-f game_id="\$id"/);
-  assert.match(f9Dispatch,/ROBLOX_F9_EXACT_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.match(f9Dispatch,/ROBLOX_F9_EXACT_DISPATCH=DEDUPED_CURRENT_MAIN:/);
   assert.doesNotMatch(f9Dispatch,/--ref main\s*$/m);
 
   const foundationPersist=post.slice(
