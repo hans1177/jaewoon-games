@@ -202,6 +202,9 @@ test('personal manor exterior has signature housing and collection architecture'
  assert.match(lobby,/-69,4,-58\.8,4\.5,8,3\.8/);
  assert.match(lobby,/69,4\.2,-37\.8,4\.5,8\.5,3\.8/);
  assert.match(lobby,/namedParts\(scene,"FireplaceFeature_"\.\.ghost\.Id\)/);
+ assert.match(ui,/mesh\.Name:match\("Flame"\)/);
+ assert.match(ui,/local phase=row\.home\.Position\.X\*\.37\+row\.home\.Position\.Z\*\.19/);
+ assert.match(ui,/mesh\.CFrame=row\.home\+Vector3\.new\(math\.sin\(now\*4\.7\+phase\)\*\.018/);
  assert.match(lobby,/for _,prefix in ipairs\(\{"MapMasterpiece_","GallerySet_"\}\)do/);
  assert.doesNotMatch(lobby,/SetAttribute\("GhostCompleted"/);
  assert.doesNotMatch(lobby,/SetAttribute\("GhostProgress"/);
