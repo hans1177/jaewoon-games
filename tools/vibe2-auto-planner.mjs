@@ -539,7 +539,7 @@ function nextCausalGenerationId(queue,basePrefix){
 }
 function activeTasks(queue){return queue.tasks.filter(item=>['queued','running'].includes(clean(item.status).toLowerCase()));}
 function isDevelopmentImplementation(item={}){return clean(item.department).toLowerCase()==='development'&&clean(item.type).toLowerCase()==='implementation';}
-function isReleaseWait(item={}){return clean(item.status).toLowerCase()==='running'&&/candidate-awaiting-qa-and-deployment|candidate-awaiting-supervised-review|awaiting.*qa|qa.*awaiting|awaiting.*supervised-review|slot-released.*fan-in/i.test(clean(item.blocker));}
+function isReleaseWait(item={}){return clean(item.status).toLowerCase()==='running'&&/candidate-awaiting-runtime-evidence|candidate-awaiting-qa-and-deployment|candidate-awaiting-supervised-review|awaiting.*qa|qa.*awaiting|awaiting.*supervised-review|slot-released.*fan-in/i.test(clean(item.blocker));}
 function developmentPlanningPool(queue){return activeTasks(queue).filter(item=>isDevelopmentImplementation(item)&&!isReleaseWait(item)&&!item.ownerDevelopmentHold);}
 function sameRootResponsibilityConflict(a={},b={}){const aRoot=posix(a.sourceRoot),bRoot=posix(b.sourceRoot);if(!aRoot||!bRoot||aRoot!==bRoot)return false;const aFiles=new Set((a.responsibleFiles||[]).map(posix).filter(Boolean)),bFiles=new Set((b.responsibleFiles||[]).map(posix).filter(Boolean));if(!aFiles.size||!bFiles.size)return false;for(const file of aFiles)if(bFiles.has(file))return true;return false;}
 function plannerConflict(queue,task){
@@ -548,6 +548,14 @@ function plannerConflict(queue,task){
     const deferredGeneric=clean(item.status).toLowerCase()==='queued'
       &&(item?.evidence||[]).map(clean).includes('deferred-behind:EXISTING_GAME_HOLISTIC_BACKFILL');
     if(holistic&&deferredGeneric)return false;
+    const causalRepairRuntimeWait=isReleaseWait(item)
+      &&/candidate-awaiting-runtime-evidence/i.test(clean(item.blocker))
+      &&clean(item.buildUpNextAction).toUpperCase()==='CAUSAL_REPAIR';
+    if(causalRepairRuntimeWait){
+      const retained=(item.retainedResponsibleFileLocks||[]).map(posix).filter(Boolean);
+      if(!retained.length)return false;
+      return sameRootResponsibilityConflict({...item,responsibleFiles:retained},task);
+    }
     return sameRootResponsibilityConflict(item,task);
   });
 }

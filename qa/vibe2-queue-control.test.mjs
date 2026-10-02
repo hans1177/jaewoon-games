@@ -73,6 +73,40 @@ test('legacy Roblox roots cannot reserve overlapping source files in one wave',(
   assert.equal(reserved.matrix[0].taskId,'release-focus');
 });
 
+test('runtime-evidence wait releases ordinary file locks only after CAUSAL_REPAIR routing',()=>{
+  const common={
+    gameId:'repair-game',target:'roblox',department:'development',type:'implementation',
+    sourceRoot:'roblox-games/repair-game',
+    responsibleFiles:['roblox-games/repair-game/client/Game.client.luau']
+  };
+  const waiting={
+    id:'runtime-wait',goal:'await exact runtime evidence',status:'running',
+    blocker:'candidate-awaiting-runtime-evidence',buildUpNextAction:'CAUSAL_REPAIR',...common
+  };
+  const repair={
+    id:'source-repair',goal:'repair failed Studio product path',status:'queued',
+    priority:'critical',retryPolicy:'UNLIMITED_CAUSAL_REPAIR',...common
+  };
+  const released=selectVibeQueueBatch(createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[waiting,repair]}),{
+    lane:'game-primary',maxConcurrentTasks:4
+  });
+  assert.deepEqual(released.selected.map(task=>task.id),['source-repair']);
+  assert.equal(released.deferredConflicts.some(row=>row.task.id==='source-repair'),false);
+
+  const retainedWaiting={
+    ...waiting,
+    retainedResponsibleFileLocks:['roblox-games/repair-game/client/Game.client.luau']
+  };
+  const retained=selectVibeQueueBatch(createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[retainedWaiting,repair]}),{
+    lane:'game-primary',maxConcurrentTasks:4
+  });
+  assert.equal(retained.selected.some(task=>task.id==='source-repair'),false);
+  const conflict=retained.deferredConflicts.find(row=>row.task.id==='source-repair');
+  assert.ok(conflict);
+  assert.equal(conflict.reason,'responsible-file-conflict');
+  assert.equal(conflict.conflictTaskId,'runtime-wait');
+});
+
 test('transient work lock conflicts are requeued without consuming retry budget or poisoning failure learning',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[{
     id:'visual-lock',gameId:'visual-game',target:'roblox',department:'development',type:'implementation',

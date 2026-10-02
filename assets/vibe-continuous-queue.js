@@ -457,10 +457,16 @@ function scoreTask(task, index) {
     - (nonBlockingSupervisionResearch ? 1000 : 0)
     - index / 1000;
 }
+function releasesResponsibleFileLocksForCausalRepair(task={}) {
+  return clean(task.status).toLowerCase()==='running'
+    &&/candidate-awaiting-runtime-evidence/i.test(clean(task.blocker))
+    &&clean(task.buildUpNextAction).toUpperCase()==='CAUSAL_REPAIR';
+}
 function fileLocks(task) {
   const root = posix(task.sourceRoot);
   const current=(task.responsibleFiles || []).map(posix).filter(Boolean).map((file) => root && !file.startsWith(`${root}/`) ? `${root}/${file}` : file);
   const retained=(task.retainedResponsibleFileLocks || []).map(posix).filter(Boolean);
+  if(releasesResponsibleFileLocksForCausalRepair(task))return new Set(retained);
   return new Set([...current,...retained]);
 }
 function lockConflict(a, b) {

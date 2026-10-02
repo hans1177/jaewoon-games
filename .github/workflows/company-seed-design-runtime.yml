@@ -85,6 +85,7 @@ jobs:
     needs: game-primary-gate
     if: needs.game-primary-gate.outputs.defer != 'true'
     runs-on: ubuntu-slim
+    timeout-minutes: 10
     outputs:
       run: ${{ steps.targets.outputs.run }}
       targets: ${{ steps.targets.outputs.targets }}
@@ -96,7 +97,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 0
+          fetch-depth: 1
+          fetch-tags: false
       - name: Load latest company runtime state
         shell: bash
         run: |
