@@ -1065,7 +1065,7 @@ jobs:
   worker:
     needs: [reserve, model_cache]
     if: always() && needs.reserve.outputs.worker_count != '0'
-    # Roblox deterministic asset work does not need the ARM model pool; Unity asset work keeps the ARM lane.
+    # Roblox asset work stays on x64 for the native Luau toolchain; Unity asset work keeps the dedicated ARM lane.
     runs-on: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && matrix.target == 'roblox' && 'ubuntu-latest' || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 'ubuntu-24.04-arm' || 'ubuntu-latest') }}
     timeout-minutes: 22
     strategy:
