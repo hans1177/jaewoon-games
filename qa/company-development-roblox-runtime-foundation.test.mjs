@@ -752,6 +752,9 @@ test('F9 scan dedupe cancels only older queued runs and preserves a newer main s
  assert.match(dedupe,/Number\(r\.id\)>=Number\(process\.env\.CURRENT_RUN_ID\|\|0\)/);
  assert.match(dedupe,/String\(r\.head_sha\|\|''\)===String\(process\.env\.CURRENT_SHA\|\|''\)/);
  assert.match(dedupe,/states\.has\(String\(r\.status\|\|''\)\.toLowerCase\(\)\)/);
+ assert.match(workflow,/CURRENT_CONTROL_SHA: \$\{\{ github\.sha \}\}/);
+ assert.match(workflow,/String\(r\.head_sha\|\|''\)===controlSha/);
+ assert.match(workflow,/ROBLOX_F9_CONTROL_SHA=/);
 });
 
 test('F9 Vibe fan-in shell parses so verified publication never strands the next evolution',()=>{
