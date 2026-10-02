@@ -284,7 +284,31 @@ open=function(key)
    if publicCount==0 then label(body,"지금 이 서버에는 공개된 다른 저택이 없어.",42,13,parchment)end
   end
   label(body,"수집 전시",32,15,brass)
-  label(body,string.format("세계 괴담 완성  %d / %d · 발견한 기록과 현장 유물이 저택에 전시돼.",p:GetAttribute("GhostCompleted")or 0,#C.GhostCatalog),52,13)
+  local stages=progress()
+  local fullMaps=0
+  for _,map in ipairs(C.Maps or{})do
+   local count=0;local full=true
+   for _,ghost in ipairs(C.GhostCatalog or{})do
+    if ghost.Map==map.Id then
+     count+=1
+     if (tonumber(stages[ghost.Id])or 0)<3 then full=false end
+    end
+   end
+   if count>0 and full then fullMaps+=1 end
+  end
+  local rareTotal=0;local rareComplete=0;local featureName="미발견";local featureStage=-1
+  for _,ghost in ipairs(C.GhostCatalog or{})do
+   local stage=math.clamp(tonumber(stages[ghost.Id])or 0,0,3)
+   if stage>featureStage then featureStage=stage;if stage>0 then featureName=ghost.Name end end
+   if (tonumber(ghost.Weight)or math.huge)<=58 then
+    rareTotal+=1;if stage>=3 then rareComplete+=1 end
+   end
+  end
+  ledgerRow(body,"세계 괴담",string.format("%d / %d",p:GetAttribute("GhostCompleted")or 0,#C.GhostCatalog))
+  ledgerRow(body,"지역 완성 전시",string.format("%d / %d",fullMaps,#(C.Maps or{})))
+  ledgerRow(body,"희귀 진열장",string.format("%d / %d",rareComplete,rareTotal))
+  ledgerRow(body,"벽난로 대표 슬롯",featureName)
+  label(body,"발견한 기록은 진열장에, 지역 100% 완료는 마당 대형 전시와 2층 완성 세트에 남아.",48,12,parchment)
   button(body,"괴담 도감 확인",function()open("BOOK")end)
   if visitingId==0 then button(body,"집사에게 인사 · 기묘한 사고",function()send(C.Actions.MANOR_GAG);hidePanel()end)end
  elseif key=="RECORD"then
