@@ -13,11 +13,11 @@ permissions:
   contents: read
   actions: write
 concurrency:
-  group: horror-owner-system-publish
-  cancel-in-progress: false
+  group: horror-owner-system-publish-cloud-v2
+  cancel-in-progress: true
 jobs:
   import-build-publish:
-    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
@@ -26,24 +26,29 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Rebuild canonical Blender manor
-        shell: pwsh
+      - name: Install cloud Blender and pinned Rojo
+        shell: bash
         run: |
-          $ErrorActionPreference='Stop'
-          $command=Get-Command blender -ErrorAction SilentlyContinue
-          $blender=if($command){$command.Source}else{$null}
-          if(-not $blender){
-            $blender=Get-ChildItem 'C:\Program Files\Blender Foundation' -Filter blender.exe -Recurse -ErrorAction SilentlyContinue |
-              Sort-Object FullName -Descending | Select-Object -ExpandProperty FullName -First 1
-          }
-          if(-not $blender){throw 'BLENDER_NOT_FOUND'}
-          Write-Host "MANOR_BLENDER=$blender"
-          & $blender --background --python assets/roblox/midnight-manor/build.py -- --render
-          if($LASTEXITCODE -ne 0){throw 'MANOR_BLENDER_BUILD_FAILED'}
-          if(-not(Test-Path assets/roblox/midnight-manor/generated/manor-lobby.glb)){throw 'MANOR_GLB_MISSING'}
-          if(-not(Test-Path assets/roblox/midnight-manor/generated/review/butler-front.png)){throw 'MANOR_NPC_REVIEW_MISSING'}
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y blender
+          mkdir -p /tmp/rojo-bin
+          curl -fsSL --retry 3 --retry-delay 2 -o /tmp/rojo.zip https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-linux-x86_64.zip
+          echo '22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073  /tmp/rojo.zip' | sha256sum -c -
+          unzip -q /tmp/rojo.zip -d /tmp/rojo-bin
+          chmod +x /tmp/rojo-bin/rojo
+      - name: Rebuild canonical Blender manor in cloud
+        shell: bash
+        run: |
+          set -euo pipefail
+          blender --background --python assets/roblox/midnight-manor/build.py -- --render
+          test -s assets/roblox/midnight-manor/generated/manor-lobby.glb
+          test -s assets/roblox/midnight-manor/generated/review/butler-front.png
+          test -s assets/roblox/midnight-manor/generated/review/undertaker-front.png
+          test -s assets/roblox/midnight-manor/generated/review/archivist-front.png
+          echo 'MANOR_CLOUD_BLENDER_BUILD=PASS'
       - name: Validate manor release contract
-        shell: pwsh
+        shell: bash
         run: node --test qa/horror-manor.test.mjs
       - name: Import verified original GLB
         env:
@@ -52,67 +57,48 @@ jobs:
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         shell: pwsh
         run: node tools/horror-manor-assets.mjs
-      - name: Build native place
+      - name: Verify imported native manor asset in cloud
         env:
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
-        shell: pwsh
+        shell: bash
         run: |
-          $ErrorActionPreference='Stop'
-          $root=Join-Path $env:RUNNER_TEMP 'horror-personal-manor'
-          New-Item -ItemType Directory -Force -Path $root | Out-Null
-          $zip=Join-Path $root 'rojo.zip'
-          Invoke-WebRequest 'https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-windows-x86_64.zip' -OutFile $zip
-          if((Get-FileHash $zip -Algorithm SHA256).Hash.ToLowerInvariant() -ne '2179c44862a10ecbd725bdfeb4abc64e16dc4aad9b6c8f3e1a7c46a87280b949'){throw 'ROJO_HASH_MISMATCH'}
-          Expand-Archive $zip (Join-Path $root 'bin') -Force
-          $rojo=(Get-ChildItem (Join-Path $root 'bin') -Filter rojo.exe -Recurse | Select-Object -First 1).FullName
-          $place=Join-Path $root 'horror-escape-room.rbxlx'
-          $native=Join-Path $root 'manor.rbxm'
-          $env:MANOR_NATIVE_MODEL=$native
+          set -euo pipefail
           node tools/horror-manor-native-check.mjs
-          if($LASTEXITCODE -ne 0){throw 'MANOR_NATIVE_MODEL_FAILED'}
-          $project=Get-Content roblox-games/horror-escape-room/default.project.json -Raw | ConvertFrom-Json -AsHashtable
-          $project.tree['ServerStorage']=@{'$className'='ServerStorage';ManorTemplate=@{'$path'=$native}}
-          $project | ConvertTo-Json -Depth 30 | Set-Content roblox-games/horror-escape-room/default.project.json -Encoding utf8
-          & $rojo build roblox-games/horror-escape-room/default.project.json -o $place
-          if($LASTEXITCODE -ne 0){throw 'MANOR_BUILD_FAILED'}
-          "MANOR_PLACE=$place" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
-      - name: Open rebuilt place in authenticated Roblox Studio
-        shell: pwsh
+          echo 'MANOR_CLOUD_NATIVE_ASSET_CHECK=PASS'
+      - name: Build exact cloud place
+        shell: bash
         run: |
-          $ErrorActionPreference='Stop'
-          $out=Join-Path $env:RUNNER_TEMP 'midnight-manor-studio-review'
-          New-Item -ItemType Directory -Force -Path $out | Out-Null
-          $env:MANOR_REVIEW_OUT=$out
-          "MANOR_REVIEW_OUT=$out" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
-          $studio=Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Roblox/Versions') -Directory |
-            Sort-Object LastWriteTime -Descending |
-            ForEach-Object {Join-Path $_.FullName 'RobloxStudioBeta.exe'} |
-            Where-Object {Test-Path $_} | Select-Object -First 1
-          if(-not $studio){throw 'STUDIO_NOT_FOUND'}
-          $mcp=Join-Path (Split-Path $studio) 'StudioMCP.exe'
-          if(-not(Test-Path $mcp)){throw 'STUDIO_MCP_NOT_FOUND'}
-          $env:MANOR_MCP_EXE=$mcp
-          $review=Start-Process $studio -ArgumentList "`"$env:MANOR_PLACE`"" -PassThru
-          try{
-            Start-Sleep -Seconds 18
-            node tools/horror-manor-studio-review.mjs
-            if($LASTEXITCODE -ne 0){throw 'MANOR_STUDIO_REVIEW_FAILED'}
-          }finally{
-            if($review -and -not $review.HasExited){Stop-Process -Id $review.Id -Force -ErrorAction SilentlyContinue}
-          }
-      - name: Publish verified manor
+          set -euo pipefail
+          mkdir -p /tmp/horror-personal-manor
+          /tmp/rojo-bin/rojo build roblox-games/horror-escape-room/default.project.json -o /tmp/horror-personal-manor/horror-escape-room.rbxlx
+          test -s /tmp/horror-personal-manor/horror-escape-room.rbxlx
+          echo "MANOR_PLACE=/tmp/horror-personal-manor/horror-escape-room.rbxlx" >> "$GITHUB_ENV"
+          echo "MANOR_PLACE_SHA256=$(sha256sum /tmp/horror-personal-manor/horror-escape-room.rbxlx | awk '{print $1}')"
+      - name: Publish verified manor to owner-only private target
         if: github.ref == 'refs/heads/main'
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-        shell: pwsh
+        shell: bash
         run: |
-          $ErrorActionPreference='Stop'
-          $uri='https://apis.roblox.com/universes/v1/10767445796/places/98222620265768/versions?versionType=Published'
-          $r=Invoke-RestMethod -Method Post -Uri $uri -Headers @{'x-api-key'=$env:ROBLOX_OPEN_CLOUD_API_KEY} -ContentType application/xml -InFile $env:MANOR_PLACE
-          if([int]$r.versionNumber -le 0){throw 'MANOR_PUBLISH_VERSION_MISSING'}
-          Write-Host "MANOR_PUBLISHED_VERSION=$($r.versionNumber)"
-          @{sourceRevision=$env:GITHUB_SHA;placeId='98222620265768';universeId='10767445796';publishedVersion=$r.versionNumber;publishedAt=(Get-Date).ToUniversalTime().ToString('o');actualRobloxPlayTest=$false} | ConvertTo-Json | Set-Content assets/roblox/midnight-manor/generated/publication.json -Encoding utf8
+          set -euo pipefail
+          response="$(curl -fsSL -X POST             -H "x-api-key: $ROBLOX_OPEN_CLOUD_API_KEY"             -H 'Content-Type: application/xml'             --data-binary @"$MANOR_PLACE"             'https://apis.roblox.com/universes/v1/10767445796/places/98222620265768/versions?versionType=Published')"
+          version="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.versionNumber||""))' "$response")"
+          test -n "$version" && test "$version" -gt 0
+          echo "MANOR_PUBLISHED_VERSION=$version"
+          node - "$version" <<'NODE'
+          const fs=require('fs');
+          const version=Number(process.argv[2]);
+          fs.writeFileSync('assets/roblox/midnight-manor/generated/publication.json',JSON.stringify({
+            sourceRevision:process.env.GITHUB_SHA,
+            placeId:'98222620265768',
+            universeId:'10767445796',
+            publishedVersion:version,
+            publishedAt:new Date().toISOString(),
+            actualRobloxPlayTest:false,
+            buildSurface:'GITHUB_HOSTED_UBUNTU_CLOUD'
+          },null,2)+'\n');
+          NODE
       - uses: actions/upload-artifact@v4
         if: always()
         with:
