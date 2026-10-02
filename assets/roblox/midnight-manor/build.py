@@ -912,12 +912,26 @@ def build():
         for j,z in enumerate(range(8,67,9)):
             s.box('Hedge'+str(side)+str(j),(side*35,1.3,z),(18,2.6,2.2),s.material('DeadHedge',(.09,.14,.09)))
             s.box('SidePath'+str(side)+str(j),(side*56,.08,z),(11,.12,7),c['stone'])
-    # 마른 나무와 일부 묘비/정원석.
+    # 마른 나무: 박스 기둥 대신 굽은 연속 곡면 줄기/가지.
     for t,(x,z,h) in enumerate([(-65,49,15),(65,52,17),(-61,19,14),(62,16,16),(-44,66,13),(43,67,15)]):
-        s.box('DeadTreeTrunk'+str(t),(x,h*.40,z),(1.3,h*.80,1.2),c['wood'],lean=(-1 if t%2 else 1)*1.5)
-        for i in range(5):
-            side=-1 if i%2 else 1
-            s.box('DeadTreeBranch'+str(t)+'_'+str(i),(x+side*(1.5+i*.35),h*(.44+i*.085),z),(0.55,h*.26,.50),c['wood'],lean=side*(3+i*.4))
+        lean=(-1 if t%2 else 1)
+        trunk=[
+          (x,.25,z),
+          (x+lean*.45,h*.30,z+.15),
+          (x+lean*.85,h*.58,z-.20),
+          (x+lean*1.15,h*.82,z+.10),
+        ]
+        s.curve_tube('DeadTreeTrunk'+str(t),trunk,[.70,.62,.48,.28],[.66,.58,.44,.26],c['wood'],sides=22)
+        branch_specs=[
+          (.42, 1, .34,.22),(.50,-1,.40,-.28),(.59,1,.48,.30),
+          (.66,-1,.42,.25),(.73,1,.36,-.24),(.79,-1,.30,.22)
+        ]
+        for i,(heightFrac,side,reach,zoff) in enumerate(branch_specs):
+            base=(x+lean*(.25+heightFrac*.95),h*heightFrac,z)
+            mid=(base[0]+side*h*reach*.32,base[1]+h*.10,base[2]+zoff*h*.18)
+            tip=(base[0]+side*h*reach*.58,base[1]+h*.17,base[2]+zoff*h*.30)
+            s.curve_tube('DeadTreeBranch'+str(t)+'_'+str(i),[base,mid,tip],
+              [.22,.15,.055],[.20,.14,.050],c['wood'],sides=18)
     for i,(x,z) in enumerate([(-69,33),(-63,28),(-59,39),(69,29),(63,35),(58,40),(-47,58),(48,59)]):
         s.box('Gravestone'+str(i),(x,1.7,z),(2.3,3.4,.65),c['stone'],lean=(-.16+i*.04))
         s.box('GraveBase'+str(i),(x,.35,z),(3.3,.55,1.7),c['stone'])
