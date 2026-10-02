@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "<title>나의 생존기</title>",
+      "replace": "<script>\n    window.GAME_CONFIG = {\n        id: 'survival',\n        name: '나의 생존기',\n        mode: 'survival',\n        hp: 100,\n        desc: '자원을 모으고 도구를 강화하며 위험한 하루를 버텨 생존 목표까지 도달하는 생존 게임.',\n        validationScopes: [\n            { id: 'scope-corefun-3007361096', path: 'coreFun', label: 'readable survival needs' },\n            { id: 'scope-coreloop-0-9b2d4dfbc6', path: 'coreLoop[0]', label: 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.' },\n            { id: 'scope-coreloop-1-6ebe58f496', path: 'coreLoop[1]', label: 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.' },\n            { id: 'scope-coreloop-2-6c927cfa40', path: 'coreLoop[2]', label: 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.' },\n            { id: 'scope-mobileux-d4b46ab266', path: 'mobileUx', label: 'mobile' }\n        ]\n    };\n</script>"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
