@@ -387,7 +387,7 @@ test('central native planner suppresses already-active per-game child dispatches
   assert.match(development,/Fetch queue authority and active native lane identities in parallel/);
   assert.match(development,/active-roblox-native-runs\.json/);
   assert.match(development,/active-unity-native-runs\.json/);
-  assert.match(development,/ROBLOX_NATIVE_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.match(development,/ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN=/);
   assert.match(development,/UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE=/);
   assert.match(development,/roblox_count=/);
   assert.match(development,/unity_count=/);
@@ -733,7 +733,7 @@ test('exact-game native workflow concurrency closes dedupe races without global 
 
   assert.match(roblox,/concurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n(?:\s+#.*\n)*\s+cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
   assert.match(unity,/concurrency:\n\s+group: unity-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n(?:\s+#.*\n)*\s+cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
-  assert.match(central,/ROBLOX_NATIVE_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.match(central,/ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN=/);
   assert.match(central,/UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE=/);
 
   assert.equal(change?.exactGameIdentity,'inputs.game_id');
