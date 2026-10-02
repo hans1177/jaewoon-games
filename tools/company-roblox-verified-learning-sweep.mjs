@@ -36,7 +36,10 @@ for(const gameId of gameIds){
   if(fs.existsSync(evidenceFile)){
     try{evidence=readJson(evidenceFile);}catch{}
   }
-  const nextEvidence={
+  const previousSweepAt=typeof evidence.verifiedExternalLearningSweepAt==='string'
+    ?evidence.verifiedExternalLearningSweepAt
+    :null;
+  let nextEvidence={
     ...evidence,
     vibe3LearningApplied:true,
     verifiedExternalLearningAppliedToExistingSource:true,
@@ -54,15 +57,22 @@ for(const gameId of gameIds){
     verifiedExternalValidationOnlyPrincipleCount:Number(learning.verifiedExternalValidationOnlyPrincipleCount||0),
     verifiedExternalLearningGameDevelopmentAppliedCount:Number(learning.verifiedExternalLearningGameDevelopmentAppliedCount||0),
     serverTouchedByVerifiedExternalLearningSweep:false,
-    verifiedExternalLearningSweepAt:new Date().toISOString()
+    verifiedExternalLearningSweepAt:previousSweepAt
   };
   const beforeEvidence=fs.existsSync(evidenceFile)?fs.readFileSync(evidenceFile,'utf8'):'';
+  const stableEvidence=JSON.stringify(nextEvidence,null,2)+'\n';
+  const evidenceContentChanged=beforeEvidence!==stableEvidence;
+  const sweepChanged=applied.changed||evidenceContentChanged;
+  if(sweepChanged)nextEvidence={...nextEvidence,verifiedExternalLearningSweepAt:new Date().toISOString()};
   const afterEvidence=JSON.stringify(nextEvidence,null,2)+'\n';
-  if(beforeEvidence!==afterEvidence)fs.writeFileSync(evidenceFile,afterEvidence);
+  const evidenceFileChanged=beforeEvidence!==afterEvidence;
+  if(evidenceFileChanged)fs.writeFileSync(evidenceFile,afterEvidence);
+  const changedFiles=[...applied.changedFiles.map(file=>path.relative(process.cwd(),file).replaceAll('\\','/'))];
+  if(evidenceFileChanged)changedFiles.push(path.relative(process.cwd(),evidenceFile).replaceAll('\\','/'));
   results.push({
     gameId,
-    changed:applied.changed||beforeEvidence!==afterEvidence,
-    changedFiles:[...applied.changedFiles.map(file=>path.relative(process.cwd(),file).replaceAll('\\','/')),path.relative(process.cwd(),evidenceFile).replaceAll('\\','/')],
+    changed:sweepChanged,
+    changedFiles,
     serverTouched:false,
     verifiedExternalLearningFingerprint:learning.verifiedExternalLearningFingerprint||null,
     applyAxes:[...(learning.verifiedExternalLearningApplyAxes||[])],
