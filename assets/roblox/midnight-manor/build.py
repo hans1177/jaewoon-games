@@ -408,7 +408,7 @@ class Scene:
         # 장식의 수는 유지하고 같은 재질의 고정 소품만 병합한다. 움직이는 노드는 보존한다.
         keep=('Butler','Archivist','Undertaker','CoffinLid','CoffinHand','ArmorHelmet','LittleGhost',
               'TeaCup','Tea','ChandelierFlame','MirrorPupil','FamilyPortrait','PortraitCanvas','HearthFlame',
-              'MapPin','GhostArchiveBook','MemoryRelic',
+              'MapPin','GhostRelic_','MemoryRelic',
               'BackWall','HallFloor','Courtyard','CrookedRoof','ClockPendulum','EntryDoor')
         groups={}
         bpy.context.view_layer.update()
@@ -933,17 +933,66 @@ def build():
         ],.02,c['ivory'])
         s.lathe('MapPin_'+map_id,(-73.08,8.45,z0),.22,.09,.24,c['brass'],sides=20)
 
-    # 기록관 책장에 저장 진행도를 실물 책으로 보여준다. 12권은 런타임에서 완료 수만큼 공개된다.
-    archive_colors=[
-      s.material('ArchiveWine',(.18,.035,.050)),s.material('ArchivePine',(.040,.12,.085)),
-      s.material('ArchiveOchre',(.22,.14,.055)),s.material('ArchiveInk',(.045,.065,.10))
+    # 기록관의 12개 괴담 전시. 각 괴담마다 단일 고유 실루엣 유물을 하나씩 보존한다.
+    relic_slots=[
+      ('YUREI','fan',-47.5,3.0),('NOPPERABO','mask',-46.0,3.0),
+      ('CHEONNYEO_GWISHIN','hairpin',-44.5,3.0),('KRASUE','orb',-43.0,3.0),
+      ('BANSHEE','bell',-41.5,3.0),('JIANGSHI','talisman',-40.0,3.0),
+      ('CHUREL','anklet',-47.5,5.55),('WHITE_LADY','veilpin',-46.0,5.55),
+      ('DULLAHAN','horseshoe',-44.5,5.55),('LA_LLORONA','locket',-43.0,5.55),
+      ('PONTIANAK','flower',-41.5,5.55),('BLACK_SHUCK','collar',-40.0,5.55),
     ]
-    for i in range(12):
-        row=i//6;col=i%6
-        bx=-47.5+col*1.35;by=3.0+row*2.55
-        hbook=1.75+(i%3)*.12
-        s.box('GhostArchiveBook%02d'%(i+1),(bx,by,-59.15),(1.0,hbook,.72),archive_colors[i%4],lean=(-.05 if i%2 else .035))
-        s.box('GhostArchiveBookBand%02d'%(i+1),(bx,by+hbook*.12,-58.76),(.74,.10,.025),c['brass'])
+    relic_mats=[
+      s.material('RelicBone',(.48,.47,.42)),s.material('RelicWine',(.19,.035,.05)),
+      s.material('RelicBrass',(.34,.25,.14)),s.material('RelicInk',(.035,.045,.055))
+    ]
+    for idx,(ghost_id,shape,bx,by) in enumerate(relic_slots):
+        mat=relic_mats[idx%len(relic_mats)]
+        name='GhostRelic_'+ghost_id
+        if shape=='fan':
+            outline=[(-.58,-.44),(.58,-.44),(.43,.12),(0,.62),(-.43,.12)]
+            s.prism(name,(bx,by,-59.05),outline,.12,mat)
+        elif shape=='mask':
+            s.loft(name,(bx,by,-59.02),[
+              (-.58,.42,.18),(0,.50,.22),(.58,.34,.16)
+            ],mat,sides=24)
+        elif shape=='hairpin':
+            s.curve_tube(name,[(bx,by-.62,-59.05),(bx+.12,by,-59.00),(bx-.06,by+.62,-59.05)],
+              [.08,.11,.055],[.07,.09,.05],mat,sides=18)
+        elif shape=='orb':
+            s.ellipsoid(name,(bx,by,-59.0),(1.0,1.0,.64),mat)
+        elif shape=='bell':
+            s.loft(name,(bx,by,-59.02),[
+              (-.58,.18,.16),(-.20,.36,.22),(.18,.46,.28),(.48,.28,.20)
+            ],mat,sides=22)
+        elif shape=='talisman':
+            outline=[(-.28,-.62),(.28,-.62),(.28,.62),(-.28,.62)]
+            s.prism(name,(bx,by,-59.02),outline,.08,mat)
+        elif shape=='anklet':
+            s.lathe(name,(bx,by,-59.02),.42,.42,.16,mat,sides=28)
+        elif shape=='veilpin':
+            s.curve_tube(name,[(bx-.42,by-.34,-59.03),(bx,by+.44,-59.0),(bx+.42,by-.34,-59.03)],
+              [.055,.09,.055],[.045,.075,.045],mat,sides=18)
+        elif shape=='horseshoe':
+            points=[]
+            for a in np.linspace(math.radians(28),math.radians(332),11):
+                points.append((bx+math.cos(a)*.42,by+math.sin(a)*.52,-59.02))
+            s.curve_tube(name,points,[.07]*len(points),[.06]*len(points),mat,sides=18)
+        elif shape=='locket':
+            s.ellipsoid(name,(bx,by,-59.01),(.82,1.02,.24),mat)
+        elif shape=='flower':
+            outline=[]
+            for k in range(12):
+                a=math.tau*k/12
+                r=.50 if k%2==0 else .22
+                outline.append((math.cos(a)*r,math.sin(a)*r))
+            s.prism(name,(bx,by,-59.02),outline,.10,mat)
+        else:
+            points=[]
+            for a in np.linspace(0,math.tau,13):
+                points.append((bx+math.cos(a)*.47,by+math.sin(a)*.31,-59.02))
+            s.curve_tube(name,points,[.06]*len(points),[.05]*len(points),mat,sides=18)
+
 
     # 마당의 개인 추억 진열물. 각 맵의 괴담을 발견하면 서버가 해당 유물을 공개한다.
     s.box('MemoryRelic_SCHOOL',(-30,1.55,35),(4.8,3.1,.42),c['stone'],lean=-.10)
