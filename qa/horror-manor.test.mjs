@@ -14,7 +14,17 @@ const oldUI=read('roblox-games/horror-escape-room/client/Game.client.luau');
 const config=read('roblox-games/horror-escape-room/shared/GameConfig.luau');
 const manorBuild=read(root+'/build.py');
 const ownerWorkflow=read('.github/workflows/horror-owner-system-publish.yml');
+const manorAssets=read('roblox-games/horror-escape-room/shared/ManorAssets.luau');
 const cloudOwnerBuild=process.env.MANOR_CLOUD_BUILD==='1';
+
+
+test('personal manor stays on the Published Version 77 large-house asset',()=>{
+ assert.match(manorAssets,/검증된 모델 4f4d911a4ef1259ce60588a79550bbbb377e2ace234e82ea51ee60a1e24853b0/);
+ assert.match(manorAssets,/ModelId=89009422966867/);
+ assert.match(manorAssets,/SourceWidth=185\.47802734375/);
+ assert.match(manorAssets,/SourceCenter=Vector3\.new\(6\.072624206542969,20\.9506893157959,-7\.40179443359375\)/);
+ assert.doesNotMatch(manorAssets,/ModelId=110915923417469/);
+});
 
 test('owner manor workflow never publishes canonical Roblox place before F9',()=>{
  assert.match(ownerWorkflow,/name: Horror Owner Asset Verify/);
