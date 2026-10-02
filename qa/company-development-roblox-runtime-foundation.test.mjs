@@ -823,7 +823,8 @@ test('Roblox F0-F9 orchestration dispatches exact games without cross-game fan-i
   assert.match(continueBlock,/company-development-confirmed-runtime\.yml[\s\S]*?-f game_id="\$id"/);
   assert.match(continueBlock,/trigger_source=ROBLOX_F9_PER_GAME_CONTINUATION/);
   assert.match(continueBlock,/roblox-f9-persist-same-field-conflicts/);
-  assert.match(continueBlock,/ROBLOX_F9_NEXT_CYCLE_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.match(continueBlock,/ROBLOX_F9_NEXT_CYCLE_DISPATCH=DEDUPED_CURRENT_MAIN:/);
+  assert.match(continueBlock,/String\(run\.head_sha\|\|''\)===currentSha/);
   assert.match(continueBlock,/ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO/);
 
   const releaseHeader=release.slice(0,release.indexOf('\njobs:\n'));
