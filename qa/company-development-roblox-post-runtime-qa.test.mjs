@@ -42,6 +42,24 @@ test('Studio asset binding promotion waits for exact accepted Roblox runtime',()
   assert.match(workflow,/studioAssetRuntimeBindingPassed/);
 });
 
+test('verified company asset promotion requires exact Studio runtime performance QA and reviewed PR',()=>{
+  assert.match(workflow,/\n  verified-asset-promotion:/);
+  assert.match(workflow,/needs: \[studio-mcp-auto-play\]/);
+  assert.match(workflow,/inputs\.candidate_context == ''/);
+  assert.match(workflow,/promoteVerifiedCompanyAssetsFromRuntimeEvidence/);
+  assert.match(workflow,/plan\.status!=='PENDING_EXACT_NATIVE_RUNTIME'/);
+  assert.match(workflow,/plan\.promotedMainSha!==sourceRevision/);
+  assert.match(workflow,/studio\.currentSourceArtifactBinding===true/);
+  assert.match(workflow,/adaptive-performance-budget/);
+  assert.match(workflow,/item\.robloxIndependentQaPassed!==true/);
+  assert.match(workflow,/item\.robloxRegressionPassed!==true/);
+  assert.match(workflow,/item\.robloxStudioAssetRuntimeBindingPassed===true/);
+  assert.match(workflow,/gh pr create[\s\S]*company-asset-library\.json|company-asset-library\.json[\s\S]*gh pr create/);
+  assert.match(workflow,/gh pr checks "\$pr_url" --watch --fail-fast/);
+  assert.match(workflow,/gh pr merge "\$pr_url"/);
+  assert.match(workflow,/continue-on-error: true[\s\S]{0,220}working-directory: main/);
+  assert.match(workflow,/ROBLOX_VERIFIED_COMPANY_ASSET_PROMOTION_RELEASE_AUTHORITY=NONE/);
+});
 test('missing actual runtime observation remains on the same gate with unlimited causal retry',()=>{
   assert.match(workflow,/robloxRuntimeRetryCount=attempts/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_PENDING/);

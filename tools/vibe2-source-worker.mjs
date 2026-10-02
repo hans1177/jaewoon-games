@@ -437,6 +437,47 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
   });
 }
 
+export function collectNativeAssetRuntimePromotionCandidates({order={},candidate={}}={}){
+  const target=clean(order?.target).toLowerCase();
+  if(!assetDevelopmentTask(order)||!['roblox','unity'].includes(target))return Object.freeze([]);
+  const changedText=[
+    ...(candidate.edits||[]).map(row=>row.replace),
+    ...(candidate.newFiles||[]).map(row=>row.content),
+    ...(candidate.replaceFiles||[]).map(row=>row.content)
+  ].map(value=>String(value??'')).join('\n');
+  if(!changedText.trim())return Object.freeze([]);
+  const decisions=Array.isArray(order?.assetProduction?.decisions)?order.assetProduction.decisions:[];
+  const rows=new Map();
+  const candidatesFor=row=>[
+    ...(Array.isArray(row?.applyFirst?.candidates)?row.applyFirst.candidates:[]),
+    ...(Array.isArray(row?.reuseCandidates)?row.reuseCandidates:[]),
+    ...(Array.isArray(row?.companyCandidates)?row.companyCandidates:[]),
+    ...(Array.isArray(row?.repositoryCandidates)?row.repositoryCandidates:[]),
+    ...(Array.isArray(row?.externalCandidates)?row.externalCandidates:[])
+  ];
+  for(const decision of decisions){
+    for(const asset of candidatesFor(decision)){
+      const id=clean(asset?.id);
+      const family=clean(asset?.family||decision?.qualityDNA?.profile||decision?.type).toUpperCase();
+      const license=clean(asset?.license);
+      const sourceHash=clean(asset?.sourceHash||asset?.sourceSha256||asset?.contentHash||asset?.sha256);
+      const artifactHash=clean(asset?.artifactHash||asset?.derivedSha256||asset?.contentHash||asset?.sha256);
+      const assetPath=posix(asset?.path);
+      const robloxAssetId=clean(asset?.robloxAssetId);
+      if(!id||asset?.productionVerified===true||asset?.verifiedCompanyReusable===true||!license||!sourceHash)continue;
+      const evidence=[];
+      if(robloxAssetId&&new RegExp('rbxassetid:\\/\\/'+robloxAssetId+'\\b','i').test(changedText))evidence.push('ROBLOX_ASSET_ID');
+      if(assetPath&&changedText.includes(assetPath))evidence.push('ASSET_PATH');
+      if(changedText.includes('"'+id+'"')||changedText.includes("'"+id+"'"))evidence.push('ASSET_ID');
+      if(!evidence.length)continue;
+      rows.set(id,Object.freeze({
+        assetId:id,family:family||null,license,path:assetPath||null,robloxAssetId:robloxAssetId||null,sourceHash,artifactHash:artifactHash||null,
+        bindingEvidence:Object.freeze(evidence),candidateSourceBindingVerified:true,runtimeVerificationRequired:true,promotionState:'PENDING_EXACT_NATIVE_RUNTIME'
+      }));
+    }
+  }
+  return Object.freeze([...rows.values()]);
+}
 export function robloxDeterministicPresentationEligible(order={}){
   return clean(order.target).toLowerCase()==='roblox'
     &&order.presentationQuality?.required===true
@@ -4155,6 +4196,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const candidate=generated.candidate;
   const semanticDiffEnforcement=generated.candidateValidation||candidateValidator(candidate);
   const nativeAssetAuthoring=evaluateNativeAssetAuthoringCandidate({order,candidate});
+  const runtimePromotionCandidates=collectNativeAssetRuntimePromotionCandidates({order,candidate});
   const presentationCandidateDelta=semanticDiffEnforcement?.presentationDelta||evaluatePresentationCandidateDelta({candidate,sourceRoot,contract:order?.presentationQuality||{}});
   const studioQualityCandidateDelta=semanticDiffEnforcement?.studioQualityDelta||evaluateStudioQualityCandidateDelta({candidate,sourceRoot,contract:order?.selectedTask?.studioQualityEvolution||order?.workPackage?.sharedContext?.studioQualityEvolution||null});
   const robloxNativeSourceInspection=buildRobloxNativeSourceInspection({order,context,responsibleFiles});
@@ -4306,6 +4348,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     model:effectiveModel,
     modelRouting:{...modelRouting,actualModel:effectiveModel,heroModelApplied:modelRouting.heroRequested===true&&effectiveModel===modelRouting.heroModel},
     nativeAssetAuthoring,
+    runtimePromotionCandidates,
     nativeAssetAuthoringPending:nativeAssetAuthoring.required===true&&(
       (nativeAssetAuthoring.dccRequired===true&&nativeAssetAuthoring.dccAuthored!==true)
       ||(nativeAssetAuthoring.nativeTextRequired===true&&nativeAssetAuthoring.nativeTextAuthored!==true)
@@ -4357,6 +4400,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     console.log(`VIBE2_NATIVE_ASSET_AUTHORING_STATUS=${result.nativeAssetAuthoring?.status||'NOT_REQUIRED'}`);
     console.log(`VIBE2_NATIVE_ASSET_DCC_STATUS=${result.nativeAssetAuthoring?.dccStatus||'NOT_REQUIRED'}`);
     console.log(`VIBE2_NATIVE_ASSET_AUTHORING_PENDING=${result.nativeAssetAuthoringPending===true?'YES':'NO'}`);
+    console.log(`VIBE2_NATIVE_ASSET_RUNTIME_PROMOTION_CANDIDATES=${result.runtimePromotionCandidates?.map(row=>row.assetId).join(',')||'NONE'}`);
     console.log(`VIBE2_CHANGED_FILES=${result.changedFiles.join(',')}`);
     console.log(`VIBE2_CANDIDATE_MANIFEST=${result.candidateManifestPath}`);
     console.log(`VIBE2_GENERATION_ATTEMPTS=${result.generation?.attempts||1}`);
