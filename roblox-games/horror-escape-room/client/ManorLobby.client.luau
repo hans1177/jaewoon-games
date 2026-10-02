@@ -508,6 +508,12 @@ local function npcRole(name)
  elseif string.sub(name,1,9)=="Archivist"then return"ARCHIVIST"end
  return nil
 end
+local function npcHeadPart(name)
+ return name:match("Head")or name:match("Hair")or name:match("Sclera")or name:match("Iris")or name:match("Pupil")
+  or name:match("Lid")or name:match("Brow")or name:match("Nose")or name:match("Lip")or name:match("MouthCorner")
+  or name:match("TempleFold")or name:match("ChinFold")or name:match("Ear")or name:match("Moustache")
+  or name:match("Glass")or name:match("Hat")
+end
 local function rolePhase(role)return role=="BUTLER"and .3 or role=="UNDERTAKER"and 2.1 or 4.2 end
 local function roleMotion(role,now)
  local phase=rolePhase(role)
@@ -532,9 +538,11 @@ local function rebuildLivingScene(room,scene)
    local role=npcRole(name)
    if role then
     local group=npcGroups[role]
-    if not group then group={parts={},sum=Vector3.zero,count=0};npcGroups[role]=group end
-    local row={part=mesh,home=mesh.CFrame,size=mesh.Size,name=name,transparency=mesh.Transparency}
+    if not group then group={parts={},sum=Vector3.zero,count=0,headSum=Vector3.zero,headCount=0};npcGroups[role]=group end
+    local head=npcHeadPart(name)~=nil
+    local row={part=mesh,home=mesh.CFrame,size=mesh.Size,name=name,transparency=mesh.Transparency,head=head}
     table.insert(group.parts,row);group.sum+=mesh.Position;group.count+=1
+    if head then group.headSum+=mesh.Position;group.headCount+=1 end
    elseif name:match("^MirrorPupil")or name:match("^ClockPendulum")or name:match("^LittleGhost")or name:match("Flame")
     or name:match("^LivingCurtain")or name:match("^LivingVineTip")or name:match("^LivingBranch")
     or name:match("^BackdropCloud")or name:match("^BackdropMist")or name:match("^BackdropBat")
@@ -545,7 +553,10 @@ local function rebuildLivingScene(room,scene)
    end
   end
  end
- for _,group in pairs(npcGroups)do group.pivot=group.count>0 and group.sum/group.count or Vector3.zero end
+ for _,group in pairs(npcGroups)do
+  group.pivot=group.count>0 and group.sum/group.count or Vector3.zero
+  group.headPivot=group.headCount>0 and group.headSum/group.headCount or group.pivot
+ end
  if room then
   for _,item in ipairs(room:GetDescendants())do
    if item:IsA("PointLight")then table.insert(livingLights,{light=item,brightness=item.Brightness})end
@@ -571,13 +582,26 @@ RunService.Heartbeat:Connect(function(dt)
   local offset,angles=roleMotion(role,now)
   local transform=CFrame.new(offset)*around(group.pivot,angles)
   local phase=rolePhase(role)
-  local blinkCycle=(now+phase*1.7)%5.6
+  local blinkPeriod=role=="BUTLER"and 5.8 or role=="UNDERTAKER"and 7.1 or 4.6
+  local blinkCycle=(now+phase*1.7)%blinkPeriod
   local blink=blinkCycle<.16 and math.sin(blinkCycle/.16*math.pi)or 0
+  local attention=(now+phase*2.3)%(role=="ARCHIVIST"and 8.5 or 10.8)
+  local lookWeight=attention<2.1 and 1 or .35
+  local targetYaw=0
+  local targetPitch=0
+  if playerRoot and group.headCount>0 then
+   local delta=playerRoot.Position-group.headPivot
+   targetYaw=math.clamp(delta.X*.0014,-.032,.032)*lookWeight
+   targetPitch=math.clamp(delta.Y*.0011,-.018,.018)*lookWeight
+  end
+  local idleYaw=role=="BUTLER"and math.sin(now*.23+phase)*.009 or role=="UNDERTAKER"and math.sin(now*.16+phase)*.006 or math.sin(now*.31+phase)*.014
+  local idlePitch=role=="ARCHIVIST"and (.014+math.sin(now*.38+phase)*.010) or math.sin(now*.21+phase)*.005
+  local headTransform=around(group.headPivot,Vector3.new(idlePitch-targetPitch,idleYaw+targetYaw,math.sin(now*.19+phase)*.004))
   for _,row in ipairs(group.parts)do
    local mesh=row.part
    if mesh.Parent and mesh.Anchored then
-    local cf=transform*row.home
-    -- 눈은 플레이어 쪽으로 아주 작게 따라가고 일정 주기로 눈꺼풀이 닫힌다.
+    local cf=transform*(row.head and headTransform or CFrame.identity)*row.home
+    -- 눈은 머리 움직임 위에서 플레이어를 조금 더 따라가고 역할별 간격으로 깜빡인다.
     if playerRoot and(row.name:match("_Iris")or row.name:match("_Pupil"))then
      local delta=playerRoot.Position-row.home.Position
      cf=cf+Vector3.new(math.clamp(delta.X*.004,-.045,.045),math.clamp(delta.Y*.0025,-.028,.028),0)
@@ -586,13 +610,21 @@ RunService.Heartbeat:Connect(function(dt)
     elseif row.name:match("_LowerLid")then
      cf=cf+Vector3.new(0,blink*.035,0)
     elseif row.name:match("Tray")then
-     cf=cf* CFrame.Angles(0,0,math.sin(now*.72+phase)*.006)
+     cf=cf*CFrame.Angles(math.sin(now*.46+phase)*.003,0,math.sin(now*.72+phase)*.007)
+    elseif row.name:match("PocketWatch")then
+     cf=cf*CFrame.Angles(0,0,math.sin(now*.80+phase)*.012)
     elseif row.name:match("Ledger")then
-     cf=cf* CFrame.Angles(math.sin(now*.61+phase)*.005,0,math.sin(now*.43+phase)*.004)
-    elseif row.name:match("Pen")or row.name:match("Key")then
-     cf=cf* CFrame.Angles(0,0,math.sin(now*1.05+phase)*.010)
+     local pageBeat=role=="ARCHIVIST"and math.max(0,math.sin(now*.32+phase))or 0
+     cf=cf*CFrame.Angles(math.sin(now*.61+phase)*.006+pageBeat*.004,0,math.sin(now*.43+phase)*.004)
+    elseif row.name:match("Pen")then
+     cf=cf*CFrame.Angles(0,0,math.sin(now*(role=="ARCHIVIST"and 1.35 or 1.05)+phase)*.014)
+    elseif row.name:match("Key")then
+     cf=cf*CFrame.Angles(0,0,math.sin(now*.82+phase)*.010)
     elseif row.name:match("Spade")then
-     cf=cf* CFrame.Angles(0,math.sin(now*.38+phase)*.006,0)
+     cf=cf*CFrame.Angles(math.sin(now*.22+phase)*.004,math.sin(now*.38+phase)*.007,0)
+    elseif row.name:match("_Hand")or row.name:match("_Finger")or row.name:match("_Thumb")then
+     local handSpeed=role=="ARCHIVIST"and .76 or role=="BUTLER"and .42 or .28
+     cf=cf*CFrame.Angles(math.sin(now*handSpeed+phase)*.003,0,math.sin(now*(handSpeed*.73)+phase)*.003)
     end
     mesh.CFrame=cf
    end
