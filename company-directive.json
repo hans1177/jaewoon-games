@@ -23,7 +23,10 @@
       "tools/vibe2-auto-planner.mjs",
       "tools/company-selected-platform-router.mjs",
       "assets/homepage-enhancements.js",
-      "_worker.js"
+      "_worker.js",
+      "tools/roblox-runner-hidden.ps1",
+      ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+      ".github/workflows/company-roblox-runner-pwsh-bootstrap.yml"
     ],
     "syncRelevantCanonicalDocumentsOnEveryPolicyChange": true,
     "humanPolicyMirrorRequired": false
@@ -572,7 +575,13 @@
     "robloxStudioUndocumentedCliAutomationAllowed": false,
     "robloxPlayerAutomationAllowed": false,
     "robloxPublishedPlayerBotAllowed": false,
-    "robloxStudioRawGameplayTrainingAllowed": false
+    "robloxStudioRawGameplayTrainingAllowed": false,
+    "robloxStudioPcImpactScope": "ROBLOX_STUDIO_ONLY",
+    "robloxStudioVisibleConsoleAllowed": false,
+    "robloxStudioHiddenRunnerHostRequired": true,
+    "robloxStudioRebootSafeCheckpointRequired": true,
+    "robloxStudioInterruptedHostSessionIsGameFailure": false,
+    "robloxStudioRunnerBootstrap": "tools/roblox-runner-hidden.ps1"
   },
   "classes": {
     "DESIGN_ONLY": {
