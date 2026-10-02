@@ -57,6 +57,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # One-shot operator cleanup: cancel superseded Vibe2 cohort 36946411892, then remove this block after verification.
+          stale_run_id='36946411892'
+          stale_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${stale_run_id}" --jq '.status' 2>/dev/null || echo unknown)"
+          if [ "$stale_status" = 'queued' ] || [ "$stale_status" = 'pending' ] || [ "$stale_status" = 'requested' ] || [ "$stale_status" = 'waiting' ] || [ "$stale_status" = 'in_progress' ]; then
+            gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${stale_run_id}/cancel" >/dev/null 2>&1 \
+              || gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${stale_run_id}/force-cancel" >/dev/null 2>&1 \
+              || true
+            echo "DIRECTOR_ONE_SHOT_STALE_CANCEL=${stale_run_id}:${stale_status}"
+          else
+            echo "DIRECTOR_ONE_SHOT_STALE_CANCEL_SKIPPED=${stale_run_id}:${stale_status}"
+          fi
           : > /tmp/director-run-drain.ndjson
           fetch_runs() {
             local query="$1"
