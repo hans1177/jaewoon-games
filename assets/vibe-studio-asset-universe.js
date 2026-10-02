@@ -1022,6 +1022,97 @@ export function createStudioTestbedPlan({assetIds=[],platform='UNITY',mobile=tru
   });
 }
 
+export function evaluateCompanyAssetPromotion({asset={},consumer={},runtimeEvidence={}}={}){
+  const id=text(asset?.id),family=upper(asset?.family||asset?.category),platform=upper(runtimeEvidence?.platform||consumer?.platform||asset?.platformVariant||asset?.platform);
+  const license=text(asset?.license);
+  const sourceHash=text(asset?.sourceHash||asset?.sourceSha256||asset?.contentHash||asset?.sha256);
+  const artifactHash=text(asset?.artifactHash||asset?.derivedSha256||asset?.contentHash||asset?.sha256);
+  const artifactPath=text(asset?.path||runtimeEvidence?.artifactPath);
+  const consumerGameId=text(consumer?.gameId||runtimeEvidence?.gameId);
+  const runtimeAssetId=text(runtimeEvidence?.assetId);
+  const runtimeSourceHash=text(runtimeEvidence?.sourceHash);
+  const runtimeArtifactHash=text(runtimeEvidence?.artifactHash);
+  const blockers=[];
+  if(!id)blockers.push('ASSET_ID_REQUIRED');
+  if(!STUDIO_ASSET_FAMILIES.includes(family))blockers.push('SUPPORTED_ASSET_FAMILY_REQUIRED');
+  if(!['ROBLOX','UNITY'].includes(platform))blockers.push('NATIVE_PLATFORM_REQUIRED');
+  if(!license||/^unknown$/i.test(license)||/(?:CC-BY-NC|NONCOMMERCIAL|NO-COMMERCIAL|NC\b)/i.test(license))blockers.push('COMMERCIAL_MODIFIABLE_LICENSE_REQUIRED');
+  if(!sourceHash)blockers.push('SOURCE_HASH_REQUIRED');
+  if(!artifactPath)blockers.push('NATIVE_ARTIFACT_OR_SOURCE_PATH_REQUIRED');
+  if(!consumerGameId)blockers.push('RUNTIME_CONSUMER_GAME_REQUIRED');
+  if(runtimeEvidence?.nativeBindingPass!==true)blockers.push('NATIVE_BINDING_PASS_REQUIRED');
+  if(runtimeEvidence?.visualRuntimePass!==true)blockers.push('VISUAL_RUNTIME_PASS_REQUIRED');
+  if(runtimeEvidence?.mobilePerformancePass!==true)blockers.push('MOBILE_PERFORMANCE_PASS_REQUIRED');
+  if(runtimeEvidence?.regressionPass!==true)blockers.push('REGRESSION_PASS_REQUIRED');
+  if(runtimeEvidence?.licenseProvenancePass!==true)blockers.push('LICENSE_PROVENANCE_PASS_REQUIRED');
+  if(!runtimeAssetId)blockers.push('RUNTIME_ASSET_ID_REQUIRED');
+  else if(runtimeAssetId!==id)blockers.push('RUNTIME_ASSET_ID_MISMATCH');
+  if(!runtimeSourceHash&&!runtimeArtifactHash)blockers.push('RUNTIME_ASSET_HASH_REQUIRED');
+  if(runtimeSourceHash&&runtimeSourceHash!==sourceHash)blockers.push('RUNTIME_SOURCE_HASH_MISMATCH');
+  if(runtimeArtifactHash&&artifactHash&&runtimeArtifactHash!==artifactHash)blockers.push('RUNTIME_ARTIFACT_HASH_MISMATCH');
+  const eligible=blockers.length===0;
+  return Object.freeze({
+    version:1,eligible,blockers:Object.freeze(blockers),assetId:id||null,family:family||null,platform:platform||null,consumerGameId:consumerGameId||null,
+    promotion:eligible?Object.freeze({
+      id,family,category:family,platform,status:'VERIFIED_COMPANY_ASSET',path:artifactPath,license,
+      sourceHash,artifactHash:artifactHash||null,productionVerified:true,verifiedCompanyReusable:true,runtimeVerificationState:'VERIFIED_NATIVE_RUNTIME',
+      artReviewState:'RUNTIME_VERIFIED',consumerGameIds:Object.freeze([consumerGameId]),
+      promotionEvidence:Object.freeze({
+        assetId:id,nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true,
+        sourceHash,artifactHash:artifactHash||null,runtimeEvidenceId:text(runtimeEvidence?.id||runtimeEvidence?.runId)||null
+      })
+    }):null,
+    preparedArtifactMayNotSelfPromote:true,
+    runtimeConsumerRequired:true,
+    gameplayAuthority:false
+  });
+}
+
+export function promoteVerifiedCompanyAssetRegistry({registry={},asset={},consumer={},runtimeEvidence={}}={}){
+  const decision=evaluateCompanyAssetPromotion({asset,consumer,runtimeEvidence});
+  if(!decision.eligible)return Object.freeze({updated:false,decision,registry});
+  const existing=Array.isArray(registry?.assets)?registry.assets:[];
+  const nextAsset=decision.promotion;
+  const at=existing.findIndex(row=>text(row?.id)===nextAsset.id);
+  const assets=at>=0
+    ?existing.map((row,index)=>index===at?{...row,...nextAsset,consumerGameIds:uniq([...(row.consumerGameIds||[]),...nextAsset.consumerGameIds])}:row)
+    :[...existing,nextAsset];
+  return Object.freeze({updated:true,decision,registry:{...registry,version:Math.max(1,Number(registry?.version||0)+1),assets}});
+}
+
+export function promoteVerifiedCompanyAssetsFromRuntimeEvidence({registry={},consumer={},runtimeEvidence={}}={}){
+  const explicitIds=uniq([
+    ...(Array.isArray(runtimeEvidence?.assetIds)?runtimeEvidence.assetIds:[]),
+    ...(Array.isArray(runtimeEvidence?.assets)?runtimeEvidence.assets.map(row=>row?.assetId||row?.id):[])
+  ]);
+  if(!explicitIds.length)return Object.freeze({updated:false,promotedAssetIds:Object.freeze([]),decisions:Object.freeze([]),reason:'EXPLICIT_RUNTIME_ASSET_IDS_REQUIRED',registry});
+  const assets=Array.isArray(registry?.assets)?registry.assets:[];
+  const evidenceById=new Map((Array.isArray(runtimeEvidence?.assets)?runtimeEvidence.assets:[]).map(row=>[text(row?.assetId||row?.id),row]));
+  let nextRegistry=registry;
+  const promoted=[],decisions=[];
+  for(const id of explicitIds){
+    const asset=assets.find(row=>text(row?.id)===id);
+    if(!asset){
+      decisions.push(Object.freeze({assetId:id,eligible:false,blockers:Object.freeze(['ASSET_NOT_IN_REGISTRY'])}));
+      continue;
+    }
+    const perAsset={...runtimeEvidence,...(evidenceById.get(id)||{}),assetId:id,assetIds:undefined,assets:undefined};
+    const result=promoteVerifiedCompanyAssetRegistry({registry:nextRegistry,asset,consumer,runtimeEvidence:perAsset});
+    decisions.push(result.decision);
+    if(result.updated){
+      nextRegistry=result.registry;
+      promoted.push(id);
+    }
+  }
+  return Object.freeze({
+    updated:promoted.length>0,
+    promotedAssetIds:Object.freeze(promoted),
+    decisions:Object.freeze(decisions),
+    reason:promoted.length?'EXACT_RUNTIME_ASSET_PROMOTION_APPLIED':'NO_ELIGIBLE_EXACT_RUNTIME_ASSET',
+    registry:nextRegistry
+  });
+}
+
 export function summarizeVerifiedAssetUsage({events=[]}={}){
   const rows=new Map();
   for(const event of events||[]){

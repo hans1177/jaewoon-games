@@ -387,8 +387,8 @@ test('reserve probes model cache lookup-only and skips the dedicated warmup runn
   assert.match(modelBlock,/VIBE2_MODEL_CACHE_WARMUP_JOB=RUN_CACHE_MISS/);
   assert.match(workerBlock,/needs: \[reserve, model_cache\]/);
   assert.match(workerBlock,/if: always\(\) && needs\.reserve\.outputs\.worker_count != '0'/);
-  assert.match(workerBlock,/Restore dedicated Vibe2 model cache/);
-  assert.match(workerBlock,/uses: actions\/cache\/restore@v4/);
+  assert.match(workerBlock,/Restore and persist selected Vibe2 model cache/);
+  assert.match(workerBlock,/uses: actions\/cache@v4/);
   assert.match(workerBlock,/Prepare cached Ollama runtime/);
   assert.equal(runtime.workers.textSource.modelLoadOptimization.reserveCacheProbeLookupOnly,true);
   assert.equal(runtime.workers.textSource.modelLoadOptimization.prewarmCacheProbeLookupOnlyOnHit,true);
@@ -411,7 +411,7 @@ test('worker prepares the model and read-only exploration before acquiring the s
   const constitution=workerPart.indexOf('- name: Enforce canonical constitution before source write');
   const order=workerPart.indexOf('- name: Build reserved task work order');
   const modelNeed=workerPart.indexOf('- name: Decide worker local model requirement');
-  const cache=workerPart.indexOf('- name: Restore dedicated Vibe2 model cache');
+  const cache=workerPart.indexOf('- name: Restore and persist selected Vibe2 model cache');
   const prepare=workerPart.indexOf('- name: Prepare cached Ollama runtime');
   const metrics=workerPart.indexOf('- name: Measure worker Ollama preparation');
   const exploration=workerPart.indexOf('- name: Build task-local exploration handoff');

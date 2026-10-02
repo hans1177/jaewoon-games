@@ -334,6 +334,37 @@ test('internal asset development is not ready when verified commercial distillat
   assert.equal(plan.commercialDistillation.exactRetrievedSetBinding,false);
 });
 
+test('hero asset planning upgrades only hero requests to the stronger local model',()=>{
+  const hero=buildVibeAssetProductionPlan({
+    target:'roblox',
+    task:{gameId:'hero-demo',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] primary boss 보스 외형과 모션을 스튜디오급으로 개선'},
+    manifest:{assets:[]},presetCatalog:{presets:[]}
+  });
+  assert.equal(hero.modelRouting.heroRequested,true);
+  assert.equal(hero.modelRouting.selectedModel,'qwen3:4b-instruct');
+  assert.equal(hero.modelRouting.cacheFamily,'vibe2-ollama-v6');
+  assert.equal(hero.modelRouting.cacheKey,'qwen3-4b-instruct');
+  assert.equal(hero.modelRouting.baselineModel,'qwen3:1.7b');
+  assert.equal(hero.modelRouting.maxAttemptsUnchanged,true);
+  assert.equal(hero.nativeAuthoringExecution.enabled,true);
+  assert.equal(hero.nativeAuthoringExecution.completion.authoringRequestIsNotCompletion,true);
+  assert.ok(hero.nativeAuthoringExecution.dcc.requiredTypes.length>0);
+  assert.equal(hero.nativeAuthoringExecution.dcc.executionRequired,true);
+  assert.equal(hero.nativeAuthoringExecution.dcc.nativeSourceMayNotMaskDccRequirement,true);
+  assert.equal(hero.nativeAuthoringExecution.dcc.executionStatus,'AUTHORING_RECIPE_REQUIRED');
+  const guidance=assetProductionGuidance(hero);
+  assert.match(guidance,/ASSET MODEL ROUTING/);
+  assert.match(guidance,/NATIVE AUTHORING EXECUTION LOOP/);
+
+  const ordinary=buildVibeAssetProductionPlan({
+    target:'roblox',
+    task:{gameId:'ordinary-demo',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 일반 환경 소품 정리'},
+    manifest:{assets:[]},presetCatalog:{presets:[]}
+  });
+  assert.equal(ordinary.modelRouting.heroRequested,false);
+  assert.equal(ordinary.modelRouting.selectedModel,'qwen3:1.7b');
+});
+
 test('native asset production defaults to Roblox and exposes reproducible Blender authoring evidence',()=>{
   const root=tempRoot();
   try{
@@ -370,6 +401,10 @@ test('native asset production defaults to Roblox and exposes reproducible Blende
     assert.equal(plan.generatedAssetOutputContract.previewRenderRequired,true);
     assert.equal(plan.generatedAssetOutputContract.evidenceJsonRequired,true);
     assert.equal(plan.generatedAssetOutputContract.nativeRuntimeVerificationRequiredBeforeVerifiedPromotion,true);
+    assert.equal(plan.generatedAssetOutputContract.exactRuntimeConsumerAssetIdentityRequired,true);
+    assert.equal(plan.generatedAssetOutputContract.promotionMustBindSourceOrDerivedHash,true);
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRequired,true);
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionStatus,'AUTHORING_RECIPE_REQUIRED');
     assert.ok(plan.decisions.every(row=>row.generatorFallback.outputContract===plan.generatedAssetOutputContract));
     assert.match(assetProductionGuidance(plan),/GENERATED NATIVE ASSET CONTRACT/);
 
@@ -379,6 +414,23 @@ test('native asset production defaults to Roblox and exposes reproducible Blende
     assert.equal(unity.targetResolution.explicit,true);
     assert.ok(unity.decisions.some(row=>row.directAuthoring.includes('blender-python-original-mesh-rig-and-glb')));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('native planner preserves an existing Blender recipe as the DCC execution path',()=>{
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',
+    task:{gameId:'blender-recipe-demo',goal:'보스 3D 메시와 모션을 고품질로 다시 제작'},
+    manifest:{assets:[{
+      id:'boss-authoring-base',family:'CREATURE',types:['boss'],license:'project-original',
+      platforms:['roblox'],downloaded:false,sourceHash:'boss-source-v1',
+      sourceFiles:['assets/roblox/demo/build-boss.py','assets/roblox/demo/BOSS.md']
+    }]},
+    presetCatalog:{presets:[]}
+  });
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionRequired,true);
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionStatus,'EXISTING_AUTHORING_RECIPE_AVAILABLE');
+  assert.deepEqual([...plan.nativeAuthoringExecution.dcc.availableExistingRecipes],['assets/roblox/demo/build-boss.py']);
+  assert.equal(plan.nativeAuthoringExecution.dcc.availableExistingRecipeCount,1);
 });
 
 test('web-only assets are never reused directly by Unity or Roblox',()=>{
