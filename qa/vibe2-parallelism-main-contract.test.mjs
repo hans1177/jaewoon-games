@@ -287,8 +287,8 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.doesNotMatch(reserveHeader,/vibe2-refill-reserve-/);
   assert.doesNotMatch(reserveHeader,/format\('vibe2-reserve-\{0\}', github\.run_id\)/);
   assert.doesNotMatch(reserveHeader,/\n    concurrency:/);
-  assert.equal(reserve.statelessRefillCoalescing,'LANE_SCOPED_ONE_RUNNING_ONE_PENDING');
-  assert.equal(runtime.continuous.reserveConcurrency.statelessRefillCoalescing,'LANE_SCOPED_ONE_RUNNING_ONE_PENDING');
+  assert.equal(reserve.statelessRefillCoalescing,'SOURCE_TASK_OR_SOURCE_RUN_SCOPED');
+  assert.equal(runtime.continuous.reserveConcurrency.statelessRefillCoalescing,'SOURCE_TASK_OR_SOURCE_RUN_SCOPED');
   assert.equal(reserve.statelessRefillCoalescingScope,'VIBE2_FANIN_REFILL_ONLY');
   assert.equal(runtime.continuous.reserveConcurrency.statelessRefillCoalescingScope,'VIBE2_FANIN_REFILL_ONLY');
   const workerHeader=core.slice(core.indexOf('\n  worker:'),core.indexOf('\n    steps:',core.indexOf('\n  worker:')));
