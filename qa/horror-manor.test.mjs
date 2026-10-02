@@ -135,22 +135,28 @@ test('personal manor visibility and visiting stay server-authoritative',()=>{
 
 test('personal manor exterior has signature housing and collection architecture',()=>{
  for(const token of [
-  'ManorCrestShield','ArchivistTowerBase','ArchivistTowerUpper','ArchivistTowerRoof',
-  'MortuaryLoadingDoor','CoffinRail','CoffinTrolleyDeck',
-  'MortimerServiceDoor','MortimerServiceCanopy','UmbrellaStand',
-  'CryptFacade','CryptDoorRecess','CryptGateBar','CryptArch','CryptPediment',
-  'GreenhouseFoundation','GreenhouseRoofRib','GreenhouseSideGlass','GreenhouseEndArch','GreenhouseDoor',
+  'ManorCrestShield','ArchivistTowerPlinth','ArchivistTowerBase','ArchivistTowerUpper','ArchivistTowerRoof','ArchivistSpire',
+  'MortuaryLoadingPlinth','MortuaryLoadingDoor','MortuaryPortalArch','MortuaryLoadingCanopy','CoffinRail','CoffinTrolleyDeck',
+  'MortimerServicePlinth','MortimerServiceDoor','MortimerServiceCanopy','MortimerServiceWindow','ServiceWoodRack','UmbrellaStand',
+  'CryptFacade','CryptDoorRecess','CryptGateBar','CryptArch','CryptPediment','CryptRetainingWall','CryptDrain',
+  'GreenhouseFoundation','GreenhouseBrickPlinth','GreenhouseRoofRib','GreenhouseSideGlass','GreenhouseEndArch','GreenhouseDoor','GreenhouseRidge',
+  'PorchStep','PorchPlinth','PorchColumn','PorchGableTrim','PorchLantern',
   'FrontGutter','RainPipe'
  ])assert.match(manorBuild,new RegExp(token));
+ assert.doesNotMatch(manorBuild,/s\.lathe\('LeftTurret'/,'Archivist tower replaces the old duplicate left turret');
+ assert.match(manorBuild,/for step in range\(5\)/);
  assert.match(manorBuild,/for i,outline in enumerate\(crest_shapes\)/);
  assert.match(manorBuild,/s\.prism\('ManorCrestSegment'\+str\(i\+1\)/);
  assert.match(manorBuild,/for name,x,z in \[\('SCHOOL',-30,35\),\('HOSPITAL',30,35\),\('THEME_PARK',45,54\)\]/);
  assert.match(manorBuild,/s\.box\('CollectionPlinth_'\+name/);
  assert.match(lobby,/ManorCrestSegment"\.\.i/);
  assert.match(lobby,/local reached=completed>=i\*2/);
+ assert.match(lobby,/PorchStepGround/);
+ assert.match(lobby,/MortuaryLoadingPlatformGround/);
  assert.match(lobby,/GreenhouseBoundary/);
- assert.match(lobby,/-65,8\.0,-47,13,16,15/);
- assert.match(lobby,/-57,4\.0,69,14,8,1\.8/);
+ assert.match(lobby,/44\.3,5\.6,69,1,9\.2,17\.5/);
+ assert.match(lobby,/57,5\.6,60\.25,25\.5,9\.2,1/);
+ assert.match(lobby,/-62\.2,2\.1,66\.0,1\.2,4\.2,8\.6/);
  assert.doesNotMatch(lobby,/SetAttribute\("GhostCompleted"/);
 });
 
