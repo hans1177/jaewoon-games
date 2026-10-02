@@ -83,9 +83,10 @@ function Manor:Get(p)
   part(folder,"ManorStructureBoundary",origin+Vector3.new(spec[1],spec[2],spec[3]),Vector3.new(spec[4],spec[5],spec[6]),false)
  end
  -- 큰 계단/2층 복도는 실제 WalkableGround로 별도 보장한다.
+ local stairRise=.82;local stairTread=1.36
  for i=0,11 do
-  local stepY=.42+i*.78;local stepZ=-43-i*1.30
-  part(folder,"GrandStairGround",origin+Vector3.new(0,stepY,stepZ),Vector3.new(28,stepY*.16+1.2,1.55),true)
+  local topY=stairRise*(i+1);local stepZ=-40-i*stairTread
+  part(folder,"GrandStairGround",origin+Vector3.new(0,topY*.5,stepZ),Vector3.new(30,topY,stairTread+.08),true)
  end
  part(folder,"SecondFloorGround",origin+Vector3.new(0,10.2,-55),Vector3.new(92,.55,19),true)
  part(folder,"SecondFloorGround",origin+Vector3.new(-43,10.2,-31),Vector3.new(15,.55,48),true)
