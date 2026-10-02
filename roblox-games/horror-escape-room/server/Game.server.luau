@@ -87,30 +87,8 @@ if not combatVisualTemplates then
  combatVisualTemplates.Name="CombatVisualTemplates"
  combatVisualTemplates.Parent=RS
 end
-local function loadAuthoredCombatVisual()
- local old=combatVisualTemplates:FindFirstChild("AuthoredHumanoidGhost")
- if old then old:Destroy()end
- local assetId=math.floor(tonumber(CombatAssets.HumanoidModelId)or 0)
- workspace:SetAttribute("CombatAuthoredAssetId",assetId)
- workspace:SetAttribute("CombatAuthoredAssetsReady",false)
- workspace:SetAttribute("CombatAuthoredAssetLoadAttempts",0)
- if assetId<=0 then
-  workspace:SetAttribute("CombatAuthoredAssetState","MISSING_MODEL_ID")
-  return
- end
- local template=nil
- workspace:SetAttribute("CombatAuthoredAssetState","LOADING")
- for attempt=1,6 do
-  workspace:SetAttribute("CombatAuthoredAssetLoadAttempts",attempt)
-  local ok,result=pcall(AssetService.LoadAssetAsync,AssetService,assetId)
-  if ok and result then template=result;break end
-  workspace:SetAttribute("CombatAuthoredAssetState","RETRY_"..attempt)
-  task.wait(attempt<3 and 1 or 2)
- end
- if not template then
-  workspace:SetAttribute("CombatAuthoredAssetState","LOAD_FAILED_AFTER_RETRY")
-  return
- end
+local function prepareAuthoredCombatVisual(template,assetId,sourceMode)
+ if not template or not template:IsA("Model")then return false end
  for _,d in ipairs(template:GetDescendants())do
   if d:IsA("LuaSourceContainer")or d:IsA("RemoteEvent")or d:IsA("RemoteFunction")or d:IsA("Tool")then
    d:Destroy()
@@ -122,19 +100,59 @@ local function loadAuthoredCombatVisual()
  for _,d in ipairs(template:GetDescendants())do
   if d:IsA("BasePart")and d.Transparency<1 then visible+=1 end
  end
- if visible==0 then
-  template:Destroy()
-  workspace:SetAttribute("CombatAuthoredAssetState","EMPTY_MODEL")
-  return
- end
+ if visible==0 then return false end
  template.Name="AuthoredHumanoidGhost"
  template:SetAttribute("SourceAssetLibrary","roblox-world-ghost-authored-glb")
  template:SetAttribute("SourceAssetId",assetId)
  template:SetAttribute("SourceSha256",tostring(CombatAssets.HumanoidSourceSha256 or""))
  template:SetAttribute("VisualOnly",true)
+ template:SetAttribute("PackagedNativeModel",sourceMode=="PACKAGED_RBXM")
  template.Parent=combatVisualTemplates
  workspace:SetAttribute("CombatAuthoredAssetsReady",true)
- workspace:SetAttribute("CombatAuthoredAssetState","READY")
+ workspace:SetAttribute("CombatAuthoredAssetSource",sourceMode)
+ workspace:SetAttribute("CombatAuthoredAssetState",sourceMode=="PACKAGED_RBXM"and"READY_PACKAGED"or"READY_RUNTIME")
+ return true
+end
+
+local function loadAuthoredCombatVisual()
+ local assetId=math.floor(tonumber(CombatAssets.HumanoidModelId)or 0)
+ workspace:SetAttribute("CombatAuthoredAssetId",assetId)
+ workspace:SetAttribute("CombatAuthoredAssetsReady",false)
+ workspace:SetAttribute("CombatAuthoredAssetLoadAttempts",0)
+ workspace:SetAttribute("CombatAuthoredAssetSource","NONE")
+ if assetId<=0 then
+  workspace:SetAttribute("CombatAuthoredAssetState","MISSING_MODEL_ID")
+  return
+ end
+
+ -- OWNER_DIRECT_PACKAGED_COMBAT_V1:
+ -- owner publish가 검증된 native RBXM을 place 안에 포함한 경우 런타임 외부 다운로드를 전혀 기다리지 않는다.
+ local packaged=combatVisualTemplates:FindFirstChild("AuthoredHumanoidGhost")
+ if packaged then
+  if prepareAuthoredCombatVisual(packaged,assetId,"PACKAGED_RBXM")then
+   return
+  end
+  packaged:Destroy()
+ end
+
+ -- 패키지되지 않은 개발/Studio 경로만 Roblox asset loader를 fallback으로 사용한다.
+ local template=nil
+ workspace:SetAttribute("CombatAuthoredAssetState","LOADING_RUNTIME_FALLBACK")
+ for attempt=1,6 do
+  workspace:SetAttribute("CombatAuthoredAssetLoadAttempts",attempt)
+  local ok,result=pcall(AssetService.LoadAssetAsync,AssetService,assetId)
+  if ok and result then template=result;break end
+  workspace:SetAttribute("CombatAuthoredAssetState","RETRY_"..attempt)
+  task.wait(attempt<3 and 1 or 2)
+ end
+ if not template then
+  workspace:SetAttribute("CombatAuthoredAssetState","LOAD_FAILED_AFTER_RETRY")
+  return
+ end
+ if not prepareAuthoredCombatVisual(template,assetId,"RUNTIME_LOAD")then
+  template:Destroy()
+  workspace:SetAttribute("CombatAuthoredAssetState","EMPTY_MODEL")
+ end
 end
 task.spawn(loadAuthoredCombatVisual)
 

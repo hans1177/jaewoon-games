@@ -9,6 +9,8 @@ on:
       - 'company-learning/platform-release-roadmap.json'
       - 'assets/roblox/midnight-manor/**'
       - 'roblox-games/horror-escape-room/**'
+      - 'assets/roblox/world-ghosts/native/combat-roblox-assets.json'
+      - 'tools/horror-combat-native-check.mjs'
       - 'qa/horror-escape-room-release.test.mjs'
       - 'qa/horror-manor.test.mjs'
 
@@ -75,17 +77,49 @@ jobs:
           unzip -q /tmp/rojo.zip -d /tmp/rojo-bin
           chmod +x /tmp/rojo-bin/rojo
 
-      - name: Build exact current main game package without rebuilding manor
+      - name: Download and verify authored combat native model
+        env:
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+          COMBAT_NATIVE_MODEL: /tmp/horror-combat-native/authored-humanoid-ghost.rbxm
+          COMBAT_NATIVE_EVIDENCE: /tmp/horror-combat-native/native-import-check.json
         shell: bash
         run: |
           set -euo pipefail
-          /tmp/rojo-bin/rojo build roblox-games/horror-escape-room/default.project.json -o /tmp/horror-owner-direct/horror-escape-room.rbxlx
+          mkdir -p /tmp/horror-combat-native
+          node tools/horror-combat-native-check.mjs
+          test -s "$COMBAT_NATIVE_MODEL"
+          test -s "$COMBAT_NATIVE_EVIDENCE"
+          echo 'OWNER_DIRECT_COMBAT_NATIVE_DOWNLOAD=PASS'
+
+      - name: Build exact current main game package with packaged authored combat model
+        shell: bash
+        run: |
+          set -euo pipefail
+          project=roblox-games/horror-escape-room/default.project.json
+          backup=/tmp/horror-owner-direct/default.project.original.json
+          cp "$project" "$backup"
+          trap 'cp "$backup" "$project"' EXIT
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const p='roblox-games/horror-escape-room/default.project.json';
+          const j=JSON.parse(fs.readFileSync(p,'utf8'));
+          j.tree.ReplicatedStorage.CombatVisualTemplates={
+            $className:'Folder',
+            AuthoredHumanoidGhost:{$path:'/tmp/horror-combat-native/authored-humanoid-ghost.rbxm'}
+          };
+          fs.writeFileSync(p,JSON.stringify(j,null,2)+'\n');
+          NODE
+          /tmp/rojo-bin/rojo build "$project" -o /tmp/horror-owner-direct/horror-escape-room.rbxlx
           test -s /tmp/horror-owner-direct/horror-escape-room.rbxlx
+          cp "$backup" "$project"
+          trap - EXIT
           git diff --exit-code
           sha256sum /tmp/horror-owner-direct/horror-escape-room.rbxlx | tee /tmp/horror-owner-direct/package.sha256
           echo "OWNER_DIRECT_PLACE=/tmp/horror-owner-direct/horror-escape-room.rbxlx" >> "$GITHUB_ENV"
           echo "OWNER_DIRECT_PACKAGE_SHA256=$(awk '{print $1}' /tmp/horror-owner-direct/package.sha256)" >> "$GITHUB_ENV"
           echo "OWNER_DIRECT_SOURCE_REVISION=$GITHUB_SHA" >> "$GITHUB_ENV"
+          echo 'OWNER_DIRECT_COMBAT_TEMPLATE_PACKAGED=PASS'
           echo 'OWNER_DIRECT_EXACT_MAIN_BUILD=PASS'
 
       - name: Ensure canonical owner universe remains private
@@ -185,6 +219,7 @@ jobs:
           path: |
             /tmp/horror-owner-direct/package.sha256
             /tmp/horror-owner-direct/publication.json
+            /tmp/horror-combat-native/native-import-check.json
 
       - name: Return horror changes to canonical development flow
         if: success() && github.ref == 'refs/heads/main'
