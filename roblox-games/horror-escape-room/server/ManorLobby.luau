@@ -224,19 +224,26 @@ function Manor:Get(p)
    end
   end)
  end
- -- 홀 전체를 비추는 샹들리에와 얼굴 앞의 부드러운 조명. 그림자는 벽난로·샹들리에만 사용한다.
+ -- 홀/기능실 조명. 방별 색온도를 아주 약하게 달리해 재질과 역할이 읽히되 전투/입력에는 영향이 없다.
  for _,spec in ipairs({
-  {Vector3.new(0,16,-24),2.1,38,true},{Vector3.new(-21,7,15),1.4,25,false},{Vector3.new(23,7,19),1.4,25,false},
-  {Vector3.new(-19,9,-22),1.7,23,false},{Vector3.new(20,9,-14),1.7,23,false},{Vector3.new(0,3,-60),1.8,22,true},
-  {Vector3.new(5,9,-3),1.65,23,false},{Vector3.new(0,9,9),1.35,26,false},
-  {Vector3.new(-58,8,-47),.78,20,false},{Vector3.new(-58,8,-18),.72,19,false},
-  {Vector3.new(58,8,-47),.78,20,false},{Vector3.new(58,8,-18),.72,19,false},
-  {Vector3.new(-70.0,5.0,-56.8),.55,12,false},{Vector3.new(-70.0,5.0,-49.2),.55,12,false}
+  {Vector3.new(0,16,-24),2.1,38,true,Color3.fromRGB(255,217,167)},
+  {Vector3.new(-21,7,15),1.4,25,false,Color3.fromRGB(255,216,174)},{Vector3.new(23,7,19),1.4,25,false,Color3.fromRGB(255,213,168)},
+  {Vector3.new(-19,9,-22),1.7,23,false,Color3.fromRGB(255,215,171)},{Vector3.new(20,9,-14),1.7,23,false,Color3.fromRGB(255,209,160)},
+  {Vector3.new(0,3,-60),1.8,22,true,Color3.fromRGB(255,205,145)},
+  {Vector3.new(5,9,-3),1.65,23,false,Color3.fromRGB(255,219,180)},{Vector3.new(0,9,9),1.35,26,false,Color3.fromRGB(255,216,174)},
+  {Vector3.new(-58,8,-54),.72,16,false,Color3.fromRGB(244,203,154)},
+  {Vector3.new(-58,8,-33),.68,16,false,Color3.fromRGB(223,214,165)},
+  {Vector3.new(-58,8,-12),.66,16,false,Color3.fromRGB(246,195,166)},
+  {Vector3.new(58,8,-54),.70,16,false,Color3.fromRGB(226,190,156)},
+  {Vector3.new(58,8,-33),.72,16,false,Color3.fromRGB(248,188,165)},
+  {Vector3.new(58,8,-12),.66,16,false,Color3.fromRGB(221,211,184)},
+  {Vector3.new(-70.0,5.0,-56.8),.55,12,false,Color3.fromRGB(244,205,158)},
+  {Vector3.new(-70.0,5.0,-49.2),.55,12,false,Color3.fromRGB(244,205,158)}
  })do
-  local anchor=part(folder,"WarmLight",origin+spec[1],Vector3.one,false);anchor.CanCollide=false
-  local light=Instance.new("PointLight");light.Color=Color3.fromRGB(255,217,167);light.Brightness=spec[2];light.Range=spec[3];light.Shadows=spec[4];light.Parent=anchor
+  local anchor=part(folder,"WarmLight",origin+spec[1],Vector3.one,false);anchor.CanCollide=false;anchor.CanQuery=false
+  local light=Instance.new("PointLight");light.Color=spec[5];light.Brightness=spec[2];light.Range=spec[3];light.Shadows=spec[4];light.Parent=anchor
  end
- -- 외부 하우징 조명: 구조 윤곽만 살리고 그림자는 최소화해 모바일 비용을 제한한다.
+ -- 외부 하우징 조명: 따뜻한 생활광 + 차가운 달빛 윤곽만 사용하고 그림자는 끈다.
  for _,spec in ipairs({
   {Vector3.new(-5.6,7.8,9.8),1.15,18,Color3.fromRGB(255,205,143)},
   {Vector3.new(5.6,7.8,9.8),1.15,18,Color3.fromRGB(255,205,143)},
@@ -244,6 +251,10 @@ function Manor:Get(p)
   {Vector3.new(70.5,8.5,-43),.92,16,Color3.fromRGB(221,164,121)},
   {Vector3.new(-57,4.3,65),.78,14,Color3.fromRGB(214,170,104)},
   {Vector3.new(57,7.0,61.5),.55,13,Color3.fromRGB(180,202,192)},
+  {Vector3.new(0,34,-5),.42,24,Color3.fromRGB(169,187,217)},
+  {Vector3.new(-72,18,-31),.36,20,Color3.fromRGB(156,177,211)},
+  {Vector3.new(72,18,-31),.36,20,Color3.fromRGB(156,177,211)},
+  {Vector3.new(0,7,52),.30,22,Color3.fromRGB(172,193,218)}
  })do
   local exterior=part(folder,"ExteriorHouseLight",origin+spec[1],Vector3.one,false);exterior.CanCollide=false;exterior.CanQuery=false
   local light=Instance.new("PointLight");light.Color=spec[4];light.Brightness=spec[2];light.Range=spec[3];light.Shadows=false;light.Parent=exterior
