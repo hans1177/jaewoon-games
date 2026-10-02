@@ -23,9 +23,62 @@ jobs:
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Detect impacted authored asset lanes
+        id: asset_scope
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_ACTION: ${{ github.event.action }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          EVENT_BEFORE_SHA: ${{ github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            echo "motion=true" >> "$GITHUB_OUTPUT"
+            echo "spider=true" >> "$GITHUB_OUTPUT"
+            echo "ASSET_SCOPE motion=true spider=true reason=manual-dispatch"
+            exit 0
+          fi
+          base=""
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            if [[ "$EVENT_ACTION" == "synchronize" && -n "${EVENT_BEFORE_SHA:-}" && ! "$EVENT_BEFORE_SHA" =~ ^0+$ ]]; then
+              base="$EVENT_BEFORE_SHA"
+            else
+              base="${PR_BASE_SHA:-}"
+            fi
+          else
+            base="${EVENT_BEFORE_SHA:-}"
+          fi
+          if [[ -z "$base" || "$base" =~ ^0+$ ]]; then
+            echo "motion=true" >> "$GITHUB_OUTPUT"
+            echo "spider=true" >> "$GITHUB_OUTPUT"
+            echo "ASSET_SCOPE motion=true spider=true reason=no-valid-base"
+            exit 0
+          fi
+          if ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+            git fetch --no-tags --depth=1 origin "$base"
+          fi
+          motion=false
+          spider=false
+          while IFS= read -r changed; do
+            case "$changed" in
+              assets/roblox/world-ghosts/refine-humanoid-motion.py|assets/roblox/world-ghosts/native/mesh/bride.glb)
+                motion=true
+                ;;
+              assets/roblox/world-ghosts/build-spider.py)
+                spider=true
+                ;;
+            esac
+          done < <(git diff --name-only "$base" "$HEAD_SHA")
+          echo "motion=$motion" >> "$GITHUB_OUTPUT"
+          echo "spider=$spider" >> "$GITHUB_OUTPUT"
+          echo "ASSET_SCOPE motion=$motion spider=$spider base=$base head=$HEAD_SHA"
       - name: Install checksum-pinned official asset tools
         shell: bash
         run: |
@@ -51,21 +104,25 @@ jobs:
         env:
           VIBE2_LUAU_BINARY: /tmp/ghost-tools/luau/luau
         run: node --test qa/roblox-world-ghost-skins.test.mjs
-      - name: Install Blender for authored spider mesh
+      - name: Install Blender for authored assets
+        if: steps.asset_scope.outputs.motion == 'true' || steps.asset_scope.outputs.spider == 'true'
         run: |
           sudo apt-get update -y
           sudo apt-get install -y blender python3-numpy libegl1 libgl1 libgl1-mesa-dri
           blender --background --python-expr "import numpy; print('BLENDER_NUMPY_OK', numpy.__version__)"
       - name: Build high-detail spider asset
+        if: steps.asset_scope.outputs.spider == 'true'
         run: |
           blender --background --python assets/roblox/world-ghosts/build-spider.py -- --output assets/roblox/world-ghosts/native/spider --render
       - name: Build high-quality humanoid foundation motion derivative
+        if: steps.asset_scope.outputs.motion == 'true'
         run: |
           blender --background --python assets/roblox/world-ghosts/refine-humanoid-motion.py -- \
             --source assets/roblox/world-ghosts/native/mesh/bride.glb \
             --output assets/roblox/world-ghosts/native/mesh/bride-motion-v3 \
             --render-dir assets/roblox/world-ghosts/native/mesh/bride-motion-v3/previews
       - name: Validate humanoid foundation GLB and 17 measured motions
+        if: steps.asset_scope.outputs.motion == 'true'
         run: |
           python3 - <<'PY'
           import hashlib, json, struct
@@ -129,6 +186,7 @@ jobs:
           })
           PY
       - name: Register measured humanoid motion derivative as runtime-pending asset
+        if: steps.asset_scope.outputs.motion == 'true'
         run: |
           python3 - <<'PY'
           import json
@@ -190,6 +248,7 @@ jobs:
           print('HUMANOID_MOTION_LIBRARY_REGISTERED',asset_id)
           PY
       - name: Validate spider GLB and 12 motions
+        if: steps.asset_scope.outputs.spider == 'true'
         run: |
           python3 - <<'PY'
           import json, struct
@@ -217,9 +276,11 @@ jobs:
           assert len(doc.get('skins',[]))>=1
           print('SPIDER_GLTF_OK', {'animations':len(names),'skins':len(doc.get('skins',[])),'bones':evidence['bones'],'vertices':evidence['vertices'],'triangles':evidence['triangles']})
           PY
-      - name: Commit generated authored assets
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - name: Commit generated authored assets to PR branch
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && (steps.asset_scope.outputs.motion == 'true' || steps.asset_scope.outputs.spider == 'true')
         shell: bash
+        env:
+          HEAD_BRANCH: ${{ github.head_ref }}
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
@@ -236,9 +297,11 @@ jobs:
             exit 0
           fi
           git commit -m "assets: build authored creature and humanoid motion derivatives"
-          git pull --rebase origin main
-          git push origin HEAD:main
+          git fetch --no-tags origin "$HEAD_BRANCH"
+          git rebase "origin/$HEAD_BRANCH"
+          git push origin "HEAD:$HEAD_BRANCH"
       - uses: actions/upload-artifact@v4
+        if: steps.asset_scope.outputs.motion == 'true' || steps.asset_scope.outputs.spider == 'true'
         with:
           name: world-ghosts-native-${{ github.sha }}
           path: assets/roblox/world-ghosts/native/
