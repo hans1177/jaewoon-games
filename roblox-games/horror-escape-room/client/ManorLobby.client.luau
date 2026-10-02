@@ -515,9 +515,10 @@ local function roleMotion(role,now)
   return Vector3.new(0,math.sin(now*.95+phase)*.030,0),Vector3.new(math.sin(now*.42+phase)*.004,math.sin(now*.36+phase)*.010,math.sin(now*.55+phase)*.004)
  elseif role=="UNDERTAKER"then
   return Vector3.new(math.sin(now*.33+phase)*.010,math.sin(now*.68+phase)*.024,0),Vector3.new(math.sin(now*.31+phase)*.008,math.sin(now*.29+phase)*.007,math.sin(now*.41+phase)*.006)
- else
+ elseif role=="ARCHIVIST"then
   return Vector3.new(0,math.sin(now*.82+phase)*.026,0),Vector3.new(math.sin(now*.54+phase)*.012,math.sin(now*.38+phase)*.006,math.sin(now*.46+phase)*.005)
  end
+ return Vector3.zero,Vector3.zero
 end
 local function around(pivot,angles)
  return CFrame.new(pivot)*CFrame.Angles(angles.X,angles.Y,angles.Z)*CFrame.new(-pivot)
