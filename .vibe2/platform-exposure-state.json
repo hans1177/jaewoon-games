@@ -3,7 +3,7 @@
   "kind": "platform-exposure-state",
   "authority": "OWNER_DIRECTIVE_2026-09-25",
   "policy": "PERPETUAL_INTERNAL_BUILDUP_WITH_FAIL_CLOSED_EXTERNAL_PUBLIC_HARD_GATE",
-  "updatedAt": "2026-10-02T14:02:31.190Z",
+  "updatedAt": "2026-10-02T14:09:44.560Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -99,8 +99,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "18141713083918f873f7b25fa0dea966f00f44ab",
-            "artifactIdentity": "sha256:770b048e243116420715883b03834b3dcf07b174c5d6feb8d0a48555316c543b",
+            "sourceRevision": "e2b3b809861bed8c53ccf9e11326d09f8ea9f402",
+            "artifactIdentity": "sha256:8031e52fd5f3275e2fc563567413fb123f0746952daa2fc83f665e9adf4846da",
             "verifiedAt": null
           },
           "internalReleasePublished": false,
@@ -144,7 +144,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
               "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
             ],
-            "candidateVersionNumber": 3
+            "candidateVersionNumber": 4
           },
           "perpetualBuildupActive": false,
           "testerTickets": {
@@ -541,8 +541,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "18141713083918f873f7b25fa0dea966f00f44ab",
-            "artifactIdentity": "sha256:e9447ab4ffdb7e0c765945c8b9300eac5a7388a7366aee55828c454c7e533cf1",
+            "sourceRevision": "63208f3829048797b49a8dec2b2607a1aff9513d",
+            "artifactIdentity": "sha256:2e83865ec0acb0b0742011cb5b79b42e275d2a72eabfcabc44c95c220c65a0ac",
             "verifiedAt": null
           },
           "internalReleasePublished": false,
@@ -555,14 +555,14 @@
             "checks": {
               "technical": false,
               "realServerBoot": false,
-              "exactRuntime": true,
+              "exactRuntime": false,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
               "noBlockingTickets": false,
               "gameCompletion": false,
               "platformAdaptation": false,
               "saveRejoin": false,
-              "multiplayer": true,
+              "multiplayer": false,
               "serverClientAuthority": false,
               "mobileAndPerformance": false,
               "security": false,
@@ -573,12 +573,14 @@
             "blockers": [
               "ROBLOX_PUBLIC_HARD_GATE_TECHNICAL",
               "ROBLOX_PUBLIC_HARD_GATE_REALSERVERBOOT",
+              "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
               "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
               "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
               "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
               "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
               "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
+              "ROBLOX_PUBLIC_HARD_GATE_MULTIPLAYER",
               "ROBLOX_PUBLIC_HARD_GATE_SERVERCLIENTAUTHORITY",
               "ROBLOX_PUBLIC_HARD_GATE_MOBILEANDPERFORMANCE",
               "ROBLOX_PUBLIC_HARD_GATE_SECURITY",
@@ -586,7 +588,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
               "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
             ],
-            "candidateVersionNumber": 3
+            "candidateVersionNumber": 0
           },
           "perpetualBuildupActive": false,
           "testerTickets": {
