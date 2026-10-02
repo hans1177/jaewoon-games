@@ -113,6 +113,39 @@ test('build-up directive persistence keeps platform currents independent and com
   assert.equal(rows[0].compatibilityWinner.directiveId,currentWeb.directiveId);
 });
 
+test('build-up compatibility current prefers COMMON over platform-specific directive in the same generation',()=>{
+  const common={
+    directiveId:'demo-build-up-g2-common',
+    gameId:'demo',
+    generation:2,
+    platform:'COMMON',
+    generatedAt:'2026-09-27T00:30:00Z',
+    autonomousContentExpansion:{
+      version:1,
+      executionBoundary:'EXISTING_BUILD_UP_ONLY',
+      autonomousDecisionOwner:'VIBE'
+    }
+  };
+  const web={
+    directiveId:'demo-build-up-g2-web',
+    gameId:'demo',
+    generation:2,
+    platform:'WEB',
+    generatedAt:'2026-09-27T02:00:00Z',
+    autonomousContentExpansion:{
+      version:1,
+      executionBoundary:'EXISTING_BUILD_UP_ONLY',
+      autonomousDecisionOwner:'VIBE'
+    }
+  };
+  const rows=selectBuildUpDirectivePersistence([web,common]);
+  assert.equal(rows.length,1);
+  const lanes=new Map(rows[0].laneWinners.map(row=>[row.lane,row.directive]));
+  assert.equal(lanes.get('WEB').directiveId,web.directiveId);
+  assert.equal(lanes.get('COMMON').directiveId,common.directiveId);
+  assert.equal(rows[0].compatibilityWinner.directiveId,common.directiveId);
+});
+
 test('active independent work no longer blocks autonomous planning when slots remain',()=>{
   const root=tempRepo();
   const result=planVibe2AutonomousTasks({
