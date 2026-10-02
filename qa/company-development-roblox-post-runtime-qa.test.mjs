@@ -265,6 +265,18 @@ test('Open Cloud runtime stays automatic while Studio requires explicit opt-in',
 });
 
 
+test('F9 dispatch pre-scan ignores active runs from stale main revisions',()=>{
+  const start=workflow.indexOf('Dispatch exact F9 review for every runtime-accepted candidate');
+  const end=workflow.indexOf('Dispatch exact Studio MCP follow-up after new runtime foundation evidence',start);
+  const block=workflow.slice(start,end);
+  assert.ok(start>=0&&end>start);
+  assert.match(block,/const currentSha=String\(process\.env\.GITHUB_SHA\|\|''\)\.trim\(\)/);
+  assert.match(block,/String\(run\.head_sha\|\|''\)!==currentSha/);
+  assert.match(block,/ROBLOX_F9_EXACT_DISPATCH=DEDUPED_CURRENT_MAIN:/);
+  assert.match(block,/ROBLOX_F9_EXACT_DISPATCHED=/);
+});
+
+
 test('exact transient Open Cloud retry is cancelled when source or artifact changed after dispatch',()=>{
   assert.match(workflow,/RETRY_OPEN_CLOUD_ONLY: \$\{\{ inputs\.retry_open_cloud_only \|\| false \}\}/);
   assert.match(workflow,/const retryOpenCloudOnly=String\(process\.env\.RETRY_OPEN_CLOUD_ONLY\|\|''\)\.toLowerCase\(\)==='true'/);
