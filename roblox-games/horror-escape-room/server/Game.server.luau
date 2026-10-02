@@ -3166,7 +3166,19 @@ Players.PlayerRemoving:Connect(function(p)
  local leavingWasHost=roomServer and p.UserId==roomHostUserId
  local rr=root(p)
  local leavingPos=rr and rr.Position or(leavingRole=="MONSTER"and monsterSpawns[1]or survivorSpawns[1])
- save(p);if manorLobby then manorLobby:Remove(p)end;cooldown[p]=nil;dashCooldown[p]=nil;infectAttackCooldown[p]=nil;humanAbilityCooldown[p]=nil;energyStationReady[p]=nil;ghostSeenThisRound[p]=nil;roomActionLast[p]=nil;roomJoinedAt[p]=nil;roomTeleportPending[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil;purifyCooldown[p]=nil
+ save(p)
+ if manorLobby then
+  local visitors=manorLobby:CloseVisitors(p)
+  for _,visitor in ipairs(visitors or{})do
+   if visitor.Parent==Players then
+    local destination,look=manorLobby:GetSpawn(visitor)
+    teleport(visitor,destination,look)
+    manorFeedback(visitor,"RETURNED","저택 주인이 떠나서 내 저택으로 돌아왔어")
+   end
+  end
+  manorLobby:Remove(p)
+ end
+ cooldown[p]=nil;dashCooldown[p]=nil;infectAttackCooldown[p]=nil;humanAbilityCooldown[p]=nil;energyStationReady[p]=nil;ghostSeenThisRound[p]=nil;roomActionLast[p]=nil;roomJoinedAt[p]=nil;roomTeleportPending[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil;purifyCooldown[p]=nil
  task.defer(function()
   if state=="RUNNING"and arena and arena.Parent and(leavingRole=="MONSTER"or leavingRole=="SURVIVOR")then
    bot(leavingRole,leavingPos)
