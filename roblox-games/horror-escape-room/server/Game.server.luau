@@ -919,9 +919,12 @@ end
 task.spawn(function()
  while true do
   task.wait(.5)
-  if manorLobby and state~="RUNNING"then
+  -- RESULT_CEREMONY_NO_MANOR_RECOVERY: 결과/세레머니 중 저택 안전복구가 경기장 캐릭터를 끌어내지 않는다.
+  if manorLobby and state=="WAITING"then
    for _,p in ipairs(Players:GetPlayers())do
-    if not roomTeleportPending[p]and p:GetAttribute("RoundState")~="SPECTATING"then
+    local roundState=tostring(p:GetAttribute("RoundState")or"")
+    local lobbySafe=roundState=="ROOM_BROWSER"or roundState=="WAITING"
+    if lobbySafe and not roomTeleportPending[p]then
      local destination,look=manorLobby:Recover(p)
      if destination then teleport(p,destination,look);p:SetAttribute("LobbySafetyRecoveredAt",workspace:GetServerTimeNow())end
     end
