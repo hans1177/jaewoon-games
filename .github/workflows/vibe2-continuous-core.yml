@@ -1952,15 +1952,6 @@ jobs:
           path: /tmp/vibe2-runtime-visual-${{ matrix.safeTask }}-${{ matrix.variant }}/
           retention-days: 2
 
-      - name: Enforce canonical constitution after worker execution
-        if: always()
-        shell: bash
-        run: |
-          set -euo pipefail
-          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
-          cd "$contract_root"
-          node tools/company-constitution-enforcer.mjs --phase=worker-after-execution
-
       - name: Build immutable worker result
         id: result
         if: always()

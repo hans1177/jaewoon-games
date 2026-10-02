@@ -527,8 +527,9 @@ test('Homepage Manager binds the central homepage policy fingerprint from self-Q
   assert.match(manage,/HOMEPAGE_CENTRAL_POLICY_SYNC=PASS/);
   assert.match(director,/--require-homepage-policy=true/);
   assert.match(director,/test "\$policy_sha" = "\$HOMEPAGE_POLICY_SHA256"/);
-  assert.match(director,/Revalidate central homepage policy before publication/);
-  assert.match(director,/HOMEPAGE_CENTRAL_POLICY_FINAL_SYNC=PASS/);
+  assert.match(director,/Synchronize central roadmap context \(homepage\)/);
+  assert.doesNotMatch(director,/Revalidate central homepage policy before publication/);
+  assert.doesNotMatch(director,/HOMEPAGE_CENTRAL_POLICY_FINAL_SYNC=PASS/);
   assert.doesNotMatch(manage,/git checkout origin\/main -- tools\/company-homepage-platform-exposure-sync\.mjs/);
   assert.match(manager,/compileHomepageCentralPolicy/);
   assert.match(manager,/centralPolicyFingerprint===homepageCentral\.fingerprint/);

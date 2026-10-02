@@ -639,9 +639,6 @@ jobs:
       - name: Fetch current company runtime
         run: git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
 
-      - name: Revalidate shared worker context before Roblox persistence
-        run: node tools/company-shared-context.mjs --output=/tmp/company-shared-context-roblox-persist.json
-
       - name: Persist Roblox source-bind state to company runtime
         id: persist_state
         if: needs.source-plan.outputs.count != '0' || needs.source-plan.outputs.reconciliation_count != '0'

@@ -1,5 +1,5 @@
 {
-  "version": 520,
+  "version": 521,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-02",
@@ -3849,7 +3849,7 @@
         "company-learning/security-immune-system.json"
       ],
       "beforeWorkRequired": true,
-      "afterWorkRequired": true,
+      "afterWorkRequired": false,
       "bindSha256ToExecutionEvidence": true,
       "completionRequiresSharedContextSync": true,
       "runtimeMayNotCreatePolicy": true,
@@ -3932,7 +3932,10 @@
         "workContractMustUseSameFingerprint": true,
         "centralPolicySemanticChangeInvalidatesCompiledProjection": true,
         "manualMirrorSynchronizationRequired": false
-      }
+      },
+      "singlePreWorkValidationPerExactWorkUnit": true,
+      "repeatedFullValidationWithinExactWorkUnitForbidden": true,
+      "completionUsesInitialValidatedContextEvidence": true
     },
     "primaryAiOrchestration": {
       "version": 3,
@@ -6106,7 +6109,9 @@
         "robloxPlayerAutomationForbidden": true,
         "publicServerBotPlayForbidden": true,
         "externalPublicApprovalAuthority": "OWNER_EXPLICIT_DIRECTIVE_ONLY",
-        "externalPublicApprovalMayNotBeInferred": true
+        "externalPublicApprovalMayNotBeInferred": true,
+        "runtimeValidationSurface": "ROBLOX_STUDIO_ACTUAL_PLAY",
+        "studioValidationRequired": true
       },
       "unity": {
         "existingSourceFingerprintReusePreserved": true,
@@ -6116,7 +6121,9 @@
         "existingPublicReleaseStateMayNotBeAutomaticallyDemotedByDevelopmentValidation": true,
         "f9Authority": "EXACT_BUILD_RUNTIME_INDEPENDENT_QA_REGRESSION_FAN_IN",
         "deployAfterF9": true,
-        "deploymentOutcomeBlocksEvolution": false
+        "deploymentOutcomeBlocksEvolution": false,
+        "runtimeValidationSurface": "EXACT_ANDROID_BUILD_BLACK_BOX_RUNTIME",
+        "unityEditorOrStudioValidationRequired": false
       },
       "multiplayer": {
         "floor": "F7",
@@ -6149,8 +6156,12 @@
         "f0ThroughF8Authority": "EXISTING_WEB_INCREMENTAL_QA_BROWSER_RUNTIME_AND_SPECIALIZED_VERIFICATION",
         "f9Authority": "VIBE2_FAN_IN_REVIEW",
         "deployAfterF9": true,
-        "deploymentOutcomeBlocksEvolution": false
-      }
+        "deploymentOutcomeBlocksEvolution": false,
+        "runtimeValidationSurface": "ACTUAL_BROWSER_BLACK_BOX_RUNTIME",
+        "editorOrStudioValidationRequired": false
+      },
+      "nonBuildValidationMode": "SINGLE_PREFLIGHT_PER_EXACT_WORK_UNIT",
+      "securityScanMode": "ONCE_PER_EXACT_CANDIDATE_REUSE_UNTIL_RELEVANT_SECURITY_BOUNDARY_CHANGES"
     },
     "verifiedF0F9PublicationLoop": {
       "version": 2,
@@ -8650,6 +8661,19 @@
       "existingStatusSyncReused": true,
       "titleOnlyCardExposureForbidden": true,
       "actualCanonicalWebEntryEnablesHomepagePlay": true
+    },
+    "developmentValidationMinimization20261002": {
+      "authority": "OWNER_DIRECTIVE_2026-10-02",
+      "scope": "DEVELOPMENT_CODING_BUILDUP_AND_EXACT_CANDIDATE_VALIDATION_ONLY",
+      "policyMutationScope": "ONLY_OWNER_REQUESTED_VALIDATION_MINIMIZATION",
+      "nonBuildValidation": "ONCE_PER_EXACT_WORK_UNIT",
+      "security": "ONCE_PER_EXACT_CANDIDATE_UNLESS_RELEVANT_SECURITY_BOUNDARY_CHANGES",
+      "roblox": "STUDIO_ACTUAL_PLAY",
+      "unity": "EXACT_ANDROID_BUILD_BLACK_BOX_RUNTIME",
+      "web": "ACTUAL_BROWSER_BLACK_BOX_RUNTIME",
+      "codingBuildRuntimeQaPreserved": true,
+      "canonicalPipelinePreserved": true,
+      "wrapperShadowBypassForbidden": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -21440,7 +21464,7 @@
       "centralWorkContractMustEmbedEveryEnabledCanonicalRule": true,
       "workerInstructionMustExposeOrderedCanonicalRules": true,
       "beforeWorkValidationRequired": true,
-      "afterWorkValidationRequired": true,
+      "afterWorkValidationRequired": false,
       "staleConstitutionMayNotStartWork": true,
       "staleConstitutionMayNotCompleteWork": true,
       "missingOrInvalidBindingAction": "FAIL_CLOSED_BLOCK_WORK_AND_REQUEUE_EXACT_FAILURE_STAGE",
@@ -21450,7 +21474,7 @@
       "enforcerRequiredAtPolicyQa": true,
       "enforcerRequiredAt24hPlanner": true,
       "enforcerRequiredBeforeWorkerSourceWrite": true,
-      "enforcerRequiredAfterWorkerExecution": true,
+      "enforcerRequiredAfterWorkerExecution": false,
       "global24hStopOnConstitutionFailureForbidden": true,
       "constitutionViolationAction": "QUARANTINE_OR_REQUEUE_AFFECTED_SCOPE_RECOVER_REPLAN_CONTINUE_GLOBAL_24H",
       "declarativeRuleEnforcementRequired": true,
@@ -21489,7 +21513,9 @@
           "file": ".github/workflows/vibe2-continuous-core.yml",
           "expected": "VIBE2_BASE_MAIN_SHA: ${{ needs.reserve.outputs.contract_sha }}"
         }
-      ]
+      ],
+      "singlePreWorkValidationPerExactWorkUnit": true,
+      "repeatedPostWorkConstitutionValidationForbidden": true
     },
     "ownerExclusiveDevelopment": {
       "version": 1,
@@ -24771,7 +24797,7 @@
     },
     "synchronization": {
       "beforeWorkLoadAndValidateCanonicalSet": true,
-      "afterWorkReloadAndValidateCanonicalSet": true,
+      "afterWorkReloadAndValidateCanonicalSet": false,
       "vibeWorkerPreflightRequired": true,
       "currentMainPolicyShaBindingRequired": true,
       "documentHashesBoundToExecutionEvidence": true,
@@ -24780,7 +24806,9 @@
       "completionRequiresSharedContextSyncPass": true,
       "validator": "tools/company-shared-context.mjs",
       "qa": "qa/company-shared-context.test.mjs",
-      "mismatchAction": "BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE"
+      "mismatchAction": "BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE",
+      "singleCanonicalSetLoadAndValidationPerExactWorkUnit": true,
+      "reuseValidatedDocumentHashesUntilRelevantPolicyOrSourceChange": true
     },
     "stateDocumentation": {
       "policyStoresRulesNotTransientRuntimeState": true,

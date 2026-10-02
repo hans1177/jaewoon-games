@@ -451,7 +451,6 @@ jobs:
             echo "COMPANY_SYSTEM_AI_VERIFY=$cmd"
             timeout 240s bash -lc "$cmd"
           done < /tmp/system-ai-verification-commands.txt
-          node tools/company-shared-context.mjs --output=/tmp/system-ai-context-after.json
           echo 'COMPANY_SYSTEM_AI_VERIFICATION=PASS'
 
       - name: Attach Vibe marketing decision

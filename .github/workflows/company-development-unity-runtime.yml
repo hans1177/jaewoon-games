@@ -994,9 +994,6 @@ jobs:
           mapfile -t models < <(node -e "const d=require('./company-directive.json');for(const m of [...new Set(d.ai?.modelPool||[])])console.log(m)")
           have="$(ollama list | awk 'NR>1{print $1}')"; for model in "${models[@]}";do grep -Fxq "$model"<<<"$have"||ollama pull "$model";done
 
-      - name: Revalidate shared worker context before Unity checkpoint
-        run: node tools/company-shared-context.mjs --output=/tmp/company-shared-context-unity-before-checkpoint.json
-
       - name: Persist exact checkpoint package even when a later stage fails
         id: checkpoint
         if: always()
