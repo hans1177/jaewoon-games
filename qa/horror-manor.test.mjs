@@ -51,6 +51,11 @@ test('NPC source uses continuous-surface role-specific geometry instead of primi
  assert.match(manorBuild,/def curve_tube\(self,name,points,radii,depths/);
  assert.match(manorBuild,/def sculpted_face\(self,name,pos,size,mat,profile/);
  assert.match(manorBuild,/sides=56;rings=36/);
+ assert.match(manorBuild,/sides=max\(20,sides\)/);
+ assert.match(manorBuild,/sides=max\(18,sides\)/);
+ assert.match(manorBuild,/bevel\.segments=2/);
+ assert.doesNotMatch(manorBuild,/round\(sides\*\.(?:70|72)\)/,'Automatic geometry downgrade is forbidden');
+ assert.doesNotMatch(manorBuild,/min\(size\)>=\.12|depth>=\.12/,'Authored micro-detail removal heuristics are forbidden');
  for(const name of ['ButlerHead','UndertakerHead','ArchivistHead'])assert.match(npcSource,new RegExp("kind\\+'Head'|"+name));
  assert.doesNotMatch(npcSource,/s\.ellipsoid\(kind\+'_Head'/);
  assert.doesNotMatch(npcSource,/s\.box\(kind\+'_CoatTail'/);
@@ -282,8 +287,8 @@ test('Blender export keeps exact bounds, materials and independently addressable
   const b=fs.readFileSync(root+'/generated/'+row.file);
   assert.equal(crypto.createHash('sha256').update(b).digest('hex'),row.sha256);
   if(/^(butler|undertaker|archivist)\.glb$/.test(row.file)){
-   assert.ok(row.meshes>=45,row.file+' role mesh layer count too low');
-   assert.ok(row.triangles>=6000,row.file+' face/body detail too low');
+   assert.ok(row.meshes>=75,row.file+' role mesh layer count regressed below high-detail baseline');
+   assert.ok(row.triangles>=15000,row.file+' face/body detail regressed below high-detail baseline');
   }
  }
  const b=fs.readFileSync(root+'/generated/manor-lobby.glb');
@@ -291,10 +296,12 @@ test('Blender export keeps exact bounds, materials and independently addressable
  assert.ok(d.nodes.some(n=>n.name==='Undertaker'));
  assert.ok(!d.nodes.some(n=>n.name?.includes('Icosphere')),'Blender bone display shapes must not enter the runtime asset');
  const triangles=d.meshes.flatMap(m=>m.primitives).reduce((n,p)=>n+d.accessors[p.indices].count/3,0);
- assert.ok(triangles<200000,'Mobile geometry budget exceeded');
+ assert.ok(triangles>=250000,'Presentation geometry regressed below the approved high-detail baseline');
+ console.log('MANOR_PRESENTATION_TRIANGLES='+triangles);
  const bounds=JSON.parse(read(root+'/generated/import-bounds.json'));
  assert.ok(bounds.width>=150,'Expanded manor width is too small: '+bounds.width);assert.ok(bounds.center.every(Number.isFinite));
- assert.ok(d.meshes.length<=350,"Mobile scene mesh budget exceeded");
+ assert.ok(d.meshes.length>=500,"Scene layer density regressed below the approved dark-cartoon-gothic quality baseline");
+ console.log('MANOR_PRESENTATION_MESHES='+d.meshes.length);
  for(const m of d.materials)assert.ok(m.pbrMetallicRoughness?.baseColorTexture,"Every exported material needs an import-safe color texture");
  assert.match(lobby,/Vector3\.new\(0,3,60\)/);
  assert.match(lobby,/Vector3\.new\(5,4,-9\)/);
