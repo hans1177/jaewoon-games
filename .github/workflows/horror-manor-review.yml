@@ -21,6 +21,20 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Install pinned Rojo for this Studio review
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $bin=Join-Path $env:RUNNER_TEMP 'horror-manor-review-rojo'
+          $zip=Join-Path $env:RUNNER_TEMP 'rojo-7.7.0-windows-x86_64.zip'
+          New-Item -ItemType Directory -Force -Path $bin | Out-Null
+          Invoke-WebRequest -UseBasicParsing -Uri 'https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-windows-x86_64.zip' -OutFile $zip
+          $hash=(Get-FileHash -Algorithm SHA256 -LiteralPath $zip).Hash.ToLowerInvariant()
+          if($hash -ne '2179c44862a10ecbd725bdfeb4abc64e16dc4aad9b6c8f3e1a7c46a87280b949'){throw "ROJO_SHA256_MISMATCH:$hash"}
+          Expand-Archive -LiteralPath $zip -DestinationPath $bin -Force
+          $rojo=Join-Path $bin 'rojo.exe'
+          if(-not(Test-Path -LiteralPath $rojo)){throw 'ROJO_EXE_MISSING_AFTER_INSTALL'}
+          "MANOR_REVIEW_ROJO=$rojo" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
       - name: Download the registered native model for transform inspection
         env:
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
@@ -39,8 +53,8 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference='Stop'
-          $rojo=Join-Path $env:RUNNER_TEMP 'horror-personal-manor/bin/rojo.exe'
-          if(-not(Test-Path $rojo)){throw 'PREVIOUS_VERIFIED_ROJO_NOT_FOUND'}
+          $rojo=$env:MANOR_REVIEW_ROJO
+          if(-not $rojo -or -not(Test-Path -LiteralPath $rojo)){throw 'MANOR_REVIEW_ROJO_NOT_READY'}
           $place=Join-Path $env:MANOR_REVIEW_OUT 'midnight-manor-review.rbxlx'
           & $rojo build roblox-games/horror-escape-room/default.project.json -o $place
           if($LASTEXITCODE -ne 0){throw 'REVIEW_BUILD_FAILED'}
