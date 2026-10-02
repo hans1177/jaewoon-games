@@ -127,6 +127,14 @@ test('direct horror edits re-enter the canonical development flow',()=>{
   assert.doesNotMatch(central,/\['horror-escape-room'\]/);
 });
 
+test('unscoped development coordinator dedupes against active push and manual batches',()=>{
+  const development=read('.github/workflows/company-development-confirmed-runtime.yml');
+  assert.match(development,/actions\/workflows\/company-development-confirmed-runtime\.yml\/runs\?per_page=100&page=\$page/);
+  assert.doesNotMatch(development,/company-development-confirmed-runtime\.yml\/runs\?event=workflow_dispatch/);
+  assert.match(development,/DEVELOPMENT_COORDINATOR_SCAN_INCLUDES_PUSH_AND_DISPATCH=YES/);
+  assert.match(development,/DEVELOPMENT_COORDINATOR_ADMISSION=DEDUPED_ACTIVE_BATCH/);
+});
+
 test('native development trigger ownership avoids duplicate central plus child push execution',()=>{
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
   const roblox=read('.github/workflows/company-development-roblox-runtime.yml');

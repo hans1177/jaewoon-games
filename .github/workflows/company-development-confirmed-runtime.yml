@@ -69,7 +69,7 @@ jobs:
 
           pids=()
           for page in 1 2 3; do
-            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-confirmed-runtime.yml/runs?event=workflow_dispatch&per_page=100&page=$page" > "/tmp/development-coordinator-runs-$page.json" &
+            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-confirmed-runtime.yml/runs?per_page=100&page=$page" > "/tmp/development-coordinator-runs-$page.json" &
             pids+=("$!")
           done
           scan_failed=0
@@ -93,6 +93,7 @@ jobs:
             ]
             | min // $current
           ' /tmp/development-coordinator-runs.json)"
+          echo "DEVELOPMENT_COORDINATOR_SCAN_INCLUDES_PUSH_AND_DISPATCH=YES"
           echo "DEVELOPMENT_COORDINATOR_OLDEST_ACTIVE_RUN=$oldest_active_id"
           if [[ "$oldest_active_id" != "$GITHUB_RUN_ID" ]]; then
             echo 'proceed=false' >> "$GITHUB_OUTPUT"
