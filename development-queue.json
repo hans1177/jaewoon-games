@@ -860,8 +860,8 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T01:24:10.538Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -891,28 +891,28 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-02T13:07:44.847Z",
+      "updatedAt": "2026-10-02T13:10:22.043Z",
       "robloxSourceCommit": "e5d27f1bba948e7b0f7313d9853c166eafcf3003",
       "robloxSourceBootstrapPassedAt": "2026-10-02T13:05:25.649Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "a6a6a3eb0497db7ffb6388b181fd655f50f52759",
-      "robloxBuildArtifactIdentity": "sha256:1a12c6efe16ff76794d52b40d5e7d5f3769b51753c69d5d95cc06be74e1f39f6",
-      "robloxBuildPassedAt": "2026-10-02T12:59:11.511Z",
+      "robloxBuildSourceRevision": "e5d27f1bba948e7b0f7313d9853c166eafcf3003",
+      "robloxBuildArtifactIdentity": "sha256:0f88f3c30ab6af1e8e0cee00746d6c0d1f15d630b8f8820be15231e3202cfdb7",
+      "robloxBuildPassedAt": "2026-10-02T13:10:22.043Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-02T12:59:11.511Z",
+      "robloxBuildPreflightPassedAt": "2026-10-02T13:10:22.043Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "horror-escape-room",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-02T12:57:19.486Z",
-        "sourceRevision": "a6a6a3eb0497db7ffb6388b181fd655f50f52759",
-        "artifactIdentity": "sha256:1a12c6efe16ff76794d52b40d5e7d5f3769b51753c69d5d95cc06be74e1f39f6",
+        "checkedAt": "2026-10-02T13:06:55.369Z",
+        "sourceRevision": "e5d27f1bba948e7b0f7313d9853c166eafcf3003",
+        "artifactIdentity": "sha256:0f88f3c30ab6af1e8e0cee00746d6c0d1f15d630b8f8820be15231e3202cfdb7",
         "secondaryOwnerFocus": false,
         "facts": {
           "pass": true,
@@ -931,8 +931,8 @@
           "directRoblox": false,
           "concurrentRoblox": true,
           "build": {
-            "sourceRevision": "a6a6a3eb0497db7ffb6388b181fd655f50f52759",
-            "artifactIdentity": "sha256:1a12c6efe16ff76794d52b40d5e7d5f3769b51753c69d5d95cc06be74e1f39f6",
+            "sourceRevision": "e5d27f1bba948e7b0f7313d9853c166eafcf3003",
+            "artifactIdentity": "sha256:0f88f3c30ab6af1e8e0cee00746d6c0d1f15d630b8f8820be15231e3202cfdb7",
             "webValidationPassed": false,
             "musicValidationPassed": false,
             "nativeWebValidationPassed": false,
@@ -948,7 +948,7 @@
             "model": "llama3.2:1b",
             "decision": "PASS",
             "blockers": [],
-            "note": "No concrete build-stage blocker found in BUILD_EVIDENCE."
+            "note": "BUILD_EVIDENCE contains no concrete build-stage blockers."
           }
         ],
         "blockers": [],
@@ -994,7 +994,7 @@
       "robloxFailureStage": "F0_SOURCE_INTEGRITY",
       "robloxFailureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-f0-source-preflight-failed"
       ],
       "robloxExactRevisionPassed": false,
       "robloxMultiplayerQaEvidence": {
@@ -2378,7 +2378,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-02T13:07:47.012Z",
+  "updatedAt": "2026-10-02T13:10:22.043Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
