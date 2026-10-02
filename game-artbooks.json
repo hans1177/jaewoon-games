@@ -1,5 +1,5 @@
 {
-  "version": 17,
+  "version": 18,
   "updatedAt": "2026-10-02T09:27:00+09:00",
   "policy": {
     "purpose": "현재 유지 중인 게임 아트북의 공개 인덱스. 실제 본문은 artbook-submissions 원본을 읽는다.",
@@ -92,7 +92,11 @@
       "artbookId": "horror-escape-room-2026-10-02-manor-rebuild",
       "status": "completed-artbook",
       "productionApproval": false,
-      "postprocessComplete": false
+      "postprocessComplete": false,
+      "internalDistribution": true,
+      "internalReleaseApproved": true,
+      "publicReleaseApproved": false,
+      "externalExposure": false
     }
   ],
   "artbooks": [
@@ -211,7 +215,12 @@
       "productionApproval": false,
       "createdAt": "2026-10-02",
       "format": "living-revision",
-      "sourceFile": "artbook-submissions/horror-escape-room/2026-10-02/artbook.json"
+      "sourceFile": "artbook-submissions/horror-escape-room/2026-10-02/artbook.json",
+      "internalDistribution": true,
+      "internalReleaseApproved": true,
+      "internalReleaseVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
+      "publicReleaseApproved": false,
+      "externalExposure": false
     }
   ]
 }
