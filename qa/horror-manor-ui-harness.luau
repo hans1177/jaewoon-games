@@ -110,14 +110,14 @@ assert(named.NotebookShade.Visible==true,"Open menu does not intercept backgroun
 click("×");assert(named.NotebookShade.Visible==false,"Closed menu blocks movement")
 open("CODE")
 local input=assert(find(""));for _,o in ipairs(all)do if o.Name=="InvitationCode"and alive(o)then input=o end end
-input.Text=" a1b2c3 "
+input.Text=" 12a34b56 "
 input:GetPropertyChangedSignal("Text"):Fire();flush()
 p:SetAttribute("Coins",99);p:SetAttribute("TimeLeft",3);flush()
-assert(alive(input)and input.Text=="A1B2C3","Code card did not sanitize/preserve the six-character draft")
-for i=1,6 do local cell=named["CodeCell"..i]or find(string.sub("A1B2C3",i,i));assert(cell,"Missing invitation code cell "..i)end
-click("예약 카드로 참가");sent("JOIN_ROOM_CODE");assert(remote.sent[#remote.sent][2]=="A1B2C3")
+assert(alive(input)and input.Text=="123456","Code card did not sanitize/preserve the six-digit draft")
+for i=1,6 do local cell=named["CodeCell"..i]or find(string.sub("123456",i,i));assert(cell,"Missing invitation code cell "..i)end
+click("예약 카드로 참가");sent("JOIN_ROOM_CODE");assert(remote.sent[#remote.sent][2]=="123456")
 click("출정 메뉴로");open("CODE");local reopened;for _,o in ipairs(all)do if o.Name=="InvitationCode"and alive(o)then reopened=o end end
-assert(reopened and reopened.Text=="A1B2C3","Reopening code entry lost its draft")
+assert(reopened and reopened.Text=="123456","Reopening code entry lost its draft")
 open("BOOK");click("◇ 처녀귀신   0/3");assert(find("처녀귀신"))
 local storyBody=find("처녀귀신").Parent:FindFirstChildOfClass("ScrollingFrame");storyBody.CanvasPosition=Vector2.new(0,85)
 p:SetAttribute("Coins",98);flush();assert(find("처녀귀신")and find("한국 · 기록 0/3"),"Unseen ghost story was reset or unlocked")
