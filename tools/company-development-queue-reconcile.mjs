@@ -385,6 +385,28 @@ export function reconcileDevelopmentQueue({root='.'}={}){
   catalog.games ||= [];
   seedState.seeds ||= [];
   queue.items ||= [];
+  const stamp=new Date().toISOString();
+  let ownerDirectSeedRepairs=0;
+  for(const seed of seedState.seeds){
+    const gameId=clean(seed?.gameId);if(!gameId)continue;
+    const game=(catalog.games||[]).find(row=>clean(row?.id)===gameId);
+    const design=latestMinimumDesign(root,gameId);
+    const staleCatalogPause=upper(seed?.status)==='PAUSED'
+      &&upper(seed?.pausedReason)==='NOT_IN_CANONICAL_GAME_CATALOG'
+      &&seed?.ownerDirectDevelopment===true
+      &&upper(seed?.productionClass)==='DEVELOPMENT_CONFIRMED';
+    const canonicalActive=game
+      &&upper(game?.productionClass)==='DEVELOPMENT_CONFIRMED'
+      &&ACTIVE_LIFECYCLE.has(upper(game?.lifecycleState||'ACTIVE'));
+    if(!staleCatalogPause||!canonicalActive||!design)continue;
+    seed.status='ACTIVE';
+    seed.lifecycleState='DEVELOPMENT_CONFIRMED';
+    delete seed.pausedAt;
+    delete seed.pausedReason;
+    seed.updatedAt=stamp;
+    ownerDirectSeedRepairs++;
+  }
+  if(ownerDirectSeedRepairs>0)writeJson(p('game-seed-state.json'),seedState);
   const seeds=activeSeedById(seedState);
   const oldById=new Map();
   let duplicateRemoved=0;
@@ -394,7 +416,6 @@ export function reconcileDevelopmentQueue({root='.'}={}){
     oldById.set(id,row);
   }
 
-  const stamp=new Date().toISOString();
   const next=[],created=[],removed=[],rebound=[],preserved=[];
   const seen=new Set();
 
@@ -440,7 +461,7 @@ export function reconcileDevelopmentQueue({root='.'}={}){
     queue.developmentGameWipMax!==null||
     queue.reconciliationPolicy!=='ACTIVE_SEED_PLUS_MINIMUM_DESIGN_DIRECT_NATIVE';
 
-  const changed=beforeItems!==afterItems||duplicateRemoved>0||metadataChanged||legacyQueueMetadataRemoved;
+  const changed=beforeItems!==afterItems||duplicateRemoved>0||metadataChanged||legacyQueueMetadataRemoved||ownerDirectSeedRepairs>0;
   if(changed){
     queue.items=next;
     queue.routerPolicy=MACHINE_POLICY_SOURCE;
@@ -455,7 +476,7 @@ export function reconcileDevelopmentQueue({root='.'}={}){
   }
 
   return {
-    changed:changed||intake.admitted.length>0,admittedSourceGames:intake.admitted,created,removed,rebound,preserved,duplicateRemoved,
+    changed:changed||intake.admitted.length>0,admittedSourceGames:intake.admitted,created,removed,rebound,preserved,duplicateRemoved,ownerDirectSeedRepairs,
     queueCount:next.length,routerPolicy:MACHINE_POLICY_SOURCE,
     nativeDevelopmentPolicy:'MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT',
     developmentGameWipMax:null,
@@ -474,6 +495,7 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   console.log(`DEVELOPMENT_QUEUE_REMOVED=${result.removed.join(',')||'NONE'}`);
   console.log(`DEVELOPMENT_QUEUE_REBOUND=${result.rebound.join(',')||'NONE'}`);
   console.log(`DEVELOPMENT_QUEUE_DUPLICATES_REMOVED=${result.duplicateRemoved}`);
+  console.log(`DEVELOPMENT_QUEUE_OWNER_DIRECT_SEED_REPAIRS=${result.ownerDirectSeedRepairs||0}`);
   console.log(`DEVELOPMENT_QUEUE_COUNT=${result.queueCount}`);
   console.log(`DEVELOPMENT_QUEUE_ROUTER_POLICY=${result.routerPolicy}`);
   console.log(`DEVELOPMENT_QUEUE_NATIVE_POLICY=${result.nativeDevelopmentPolicy}`);

@@ -178,6 +178,35 @@ test('keeps only active confirmed seeds with valid minimum design and preserves 
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('repairs stale owner-direct catalog pause and restores canonical development queue entry',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'owner-direct-resume-'));
+  try{
+    writePolicy(root);
+    write(root,'game-catalog.json',{games:[{
+      id:'horror-escape-room',name:'Horror',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',selectedPlatform:'ROBLOX',ownerDirectDevelopment:true
+    }]});
+    write(root,'game-seed-state.json',{seeds:[{
+      seedId:'H',gameId:'horror-escape-room',status:'PAUSED',
+      pausedReason:'NOT_IN_CANONICAL_GAME_CATALOG',pausedAt:'2026-10-01T00:00:00Z',
+      productionClass:'DEVELOPMENT_CONFIRMED',ownerDirectDevelopment:true,selectedPlatform:'ROBLOX'
+    }]});
+    const design=writeDesign(root,'horror-escape-room');
+    write(root,'development-queue.json',{items:[]});
+    const result=reconcileDevelopmentQueue({root});
+    const queue=JSON.parse(fs.readFileSync(path.join(root,'development-queue.json'),'utf8'));
+    const state=JSON.parse(fs.readFileSync(path.join(root,'game-seed-state.json'),'utf8'));
+    const seed=state.seeds.find(row=>row.gameId==='horror-escape-room');
+    assert.equal(result.ownerDirectSeedRepairs,1);
+    assert.equal(seed.status,'ACTIVE');
+    assert.equal(Object.hasOwn(seed,'pausedReason'),false);
+    assert.equal(Object.hasOwn(seed,'pausedAt'),false);
+    assert.equal(queue.items.length,1);
+    assert.equal(queue.items[0].gameId,'horror-escape-room');
+    assert.equal(queue.items[0].minimumDesignContract.source,design);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('stale catalog or queue promotion cannot survive DESIGN_ONLY or paused seed state',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'stale-direct-queue-'));
   try{

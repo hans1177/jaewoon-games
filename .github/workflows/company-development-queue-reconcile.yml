@@ -13,6 +13,8 @@ on:
       - '.github/workflows/company-development-queue-reconcile.yml'
       - 'game-catalog.json'
       - 'roblox-games/**/default.project.json'
+      - 'roblox-games/horror-escape-room/**'
+      - 'assets/roblox/midnight-manor/**'
   workflow_run:
     workflows:
       - Company DESIGN_ONLY Promotion Sync
@@ -138,7 +140,7 @@ jobs:
             console.log('UNITY_WEB_ADMISSION_AUTHORITY=NONE');
           NODE
 
-            git add -- development-queue.json game-catalog.json
+            git add -- development-queue.json game-catalog.json game-seed-state.json
             git diff --cached --check
             if git diff --cached --quiet; then
               echo 'DEVELOPMENT_QUEUE_RUNTIME_CHANGE=NO'

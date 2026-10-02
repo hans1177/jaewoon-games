@@ -117,6 +117,16 @@ test('technical release implementation remains subordinate to central evidence g
   assert.equal(release.internalRelease.actualRuntimeFoundationF1ThroughF4Required,true);
   assert.ok(releaseCycle.includes('company-learning/platform-release-roadmap.json'));
 });
+test('direct horror edits re-enter the canonical development flow',()=>{
+  const reconcile=read('.github/workflows/company-development-queue-reconcile.yml');
+  const central=read('.github/workflows/company-development-confirmed-runtime.yml');
+  assert.match(reconcile,/roblox-games\/horror-escape-room\/\*\*/);
+  assert.match(reconcile,/assets\/roblox\/midnight-manor\/\*\*/);
+  assert.match(reconcile,/git add -- development-queue\.json game-catalog\.json game-seed-state\.json/);
+  assert.doesNotMatch(central,/ownerExcludedGameIds/);
+  assert.doesNotMatch(central,/\['horror-escape-room'\]/);
+});
+
 test('native development trigger ownership avoids duplicate central plus child push execution',()=>{
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
   const roblox=read('.github/workflows/company-development-roblox-runtime.yml');
