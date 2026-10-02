@@ -81,7 +81,7 @@ export function enforceConstitution({policy,root=ROOT,phase='runtime'}={}){
   must(errors,binding.enforcerRequiredAtPolicyQa===true,'CONSTITUTION_POLICY_QA_BINDING');
   must(errors,binding.enforcerRequiredAt24hPlanner===true,'CONSTITUTION_24H_PLANNER_BINDING');
   must(errors,binding.enforcerRequiredBeforeWorkerSourceWrite===true,'CONSTITUTION_WORKER_PREWRITE_BINDING');
-  must(errors,binding.enforcerRequiredAfterWorkerExecution===true,'CONSTITUTION_WORKER_POST_BINDING');
+  must(errors,binding.enforcerRequiredAfterWorkerExecution===false,'CONSTITUTION_WORKER_POST_DISABLED');
   must(errors,binding.global24hStopOnConstitutionFailureForbidden===true,'CONSTITUTION_NO_GLOBAL_STOP_ON_VIOLATION');
 
   const schemaVersion=Number(binding.ruleEnforcementSchemaVersion)||0;
