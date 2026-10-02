@@ -762,20 +762,22 @@ jobs:
           deduped_count=0
           while read -r id; do
             [ -n "$id" ] || continue
-            active="$(GAME_ID="$id" node - <<'NODE'
+            active="$(GAME_ID="$id" CURRENT_SHA="$GITHUB_SHA" node - <<'NODE'
           const fs=require('fs');
           const payload=JSON.parse(fs.readFileSync('/tmp/roblox-development-active-runs.json','utf8'));
           const states=new Set(['queued','pending','in_progress','requested']);
           const prefix='DEVELOPMENT cycle | '+String(process.env.GAME_ID||'')+' | ';
+          const currentSha=String(process.env.CURRENT_SHA||'').trim();
           process.stdout.write(String((payload.workflow_runs||[]).filter(run=>
             states.has(String(run.status||'').toLowerCase())
+            &&String(run.head_sha||'')===currentSha
             &&String(run.display_title||'').startsWith(prefix)
           ).length));
           NODE
             )"
             if [ "$active" -gt 0 ]; then
               deduped_count=$((deduped_count+1))
-              echo "ROBLOX_F9_NEXT_CYCLE_DISPATCH=DEDUPED_ACTIVE:$id"
+              echo "ROBLOX_F9_NEXT_CYCLE_DISPATCH=DEDUPED_CURRENT_MAIN:$id:$GITHUB_SHA"
               continue
             fi
             gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main \
