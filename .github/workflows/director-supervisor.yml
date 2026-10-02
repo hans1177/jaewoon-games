@@ -119,6 +119,12 @@ jobs:
             cancel.set(Number(run.id),reason);
           };
 
+          const ownerRequestedStaleRunIds=new Set([34748574272,36794190147,36802981975,36802982062,36803420019]);
+          for(const stale of runs.filter(r=>ownerRequestedStaleRunIds.has(Number(r.id)))){
+            add(stale,'OWNER_STALE_RUN_CLEANUP');
+          }
+
+
           // Platform exposure sync is control-plane state projection, so a newer same-branch run may supersede a stale one.
           const pureControlPlane=new Set([
             '.github/workflows/company-evolution-qa.yml',
@@ -277,7 +283,7 @@ jobs:
             if gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/cancel" >/dev/null 2>&1; then
               cancelled=$((cancelled+1))
               echo "DIRECTOR_RUNNER_DRAIN_CANCELLED=${run_id}:${reason}"
-            elif [[ "$reason" == 'ROBLOX_STALE_LEGACY_OR_BATCH' || "$reason" == 'CONTROL_PLANE_SUPERSEDED' ]] && gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/force-cancel" >/dev/null 2>&1; then
+            elif [[ "$reason" == 'ROBLOX_STALE_LEGACY_OR_BATCH' || "$reason" == 'CONTROL_PLANE_SUPERSEDED' || "$reason" == 'OWNER_STALE_RUN_CLEANUP' ]] && gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/force-cancel" >/dev/null 2>&1; then
               cancelled=$((cancelled+1))
               echo "DIRECTOR_RUNNER_DRAIN_FORCE_CANCELLED=${run_id}:${reason}"
             else
