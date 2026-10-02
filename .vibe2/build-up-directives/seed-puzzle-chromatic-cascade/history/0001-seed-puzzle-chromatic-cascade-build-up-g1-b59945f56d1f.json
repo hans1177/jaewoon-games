@@ -1,0 +1,1969 @@
+{
+  "version": 2,
+  "directiveId": "seed-puzzle-chromatic-cascade-build-up-g1-b59945f56d1f",
+  "directiveFingerprint": "b59945f56d1fab34a32923d57370d9400b96da85d761500ffd96f176f11422ea",
+  "previousDirectiveFingerprint": null,
+  "forbiddenRepeatFingerprint": null,
+  "gameId": "seed-puzzle-chromatic-cascade",
+  "gameName": "색채의 연쇄",
+  "generation": 1,
+  "developmentDepth": 1,
+  "escalationStage": "FOUNDATION_COMPLETENESS",
+  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+  "previousDirectiveOutcome": null,
+  "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
+  "platform": "WEB",
+  "sourceRoot": "web-games/seed-puzzle-chromatic-cascade",
+  "sourceTreeFingerprint": "c70bf731abf8e41bd158045c650b1137a9897119ad1a31687a95ee403692685f",
+  "designFingerprint": "491530ac1f5db9c62af2793e2ee12a69b743f3c5da0750f0b2628d384ed75efb",
+  "gameIdentityAndNonNegotiables": {
+    "identity": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.",
+    "coreFun": "플레이어는 매 턴마다 어떤 색채 노드를 튜닝하여 주파수를 일치시킬지 선택하고, 동기화된 노드들이 연쇄적으로 폭발하며 보드 전체의 장애물을 제거하는 즉각적인 시각적 피드백과 전술적 성취감을 느낍니다.",
+    "coreLoop": [
+      "보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다.",
+      "색채 주파수 튜너를 사용해 인접 노드의 색상을 변경하고 동기화 체인을 형성합니다.",
+      "연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으키고 보상을 획득합니다."
+    ],
+    "signatureSystems": [
+      {
+        "name": "색채 주파수 튜너 (Chromatic Frequency Tuner)",
+        "purpose": "보드 위에 배치된 특정 노드의 색상 주파수를 강제로 변경하여 인접한 다른 색상들과의 동기화 체인을 능동적으로 형성하는 핵심 조작 시스템입니다.",
+        "playerChoice": "플레이어는 제한된 튜닝 횟수 내에서 어떤 노드를 어떤 색상으로 전환해야 가장 길고 강력한 연쇄 동기화 경로를 확보할 수 있을지 전술적으로 결정해야 합니다."
+      },
+      {
+        "name": "연쇄 기폭 장치 (Cascade Detonator)",
+        "purpose": "동기화된 색채 체인을 일시에 폭발시켜 강력한 에너지 파동을 일으키고, 주변의 단단한 장애물을 파괴하며 추가 연쇄 반응을 유도하는 시스템입니다.",
+        "playerChoice": "플레이어는 체인이 형성되었을 때 즉시 기폭할지, 아니면 추가 튜닝을 통해 체인을 더 길게 늘려 한 번에 더 큰 폭발 보너스를 노릴지 선택합니다."
+      }
+    ],
+    "progressionDirection": "플레이어는 스테이지를 클리어하며 튜너의 성능(색상 변환 범위, 충전 속도)을 업그레이드하고, 더 복잡하고 단단한 장애물이 등장하는 상위 구역으로 진입합니다. 단순한 수치 증가가 아닌, 새로운 색상 주파수와 복합 장애물 패턴이 등장하여 퍼즐의 깊이를 더합니다.",
+    "multiplayerMode": "SINGLE",
+    "preserve": [
+      "CORE_IDENTITY",
+      "APPROVED_RULE_SEMANTICS",
+      "BALANCE_VALUES_UNLESS_AUTHORIZED",
+      "ECONOMY_MEANING_UNLESS_AUTHORIZED",
+      "SAVE_MEANING",
+      "NETWORK_AUTHORITY"
+    ]
+  },
+  "currentImplementationFindings": {
+    "sourceObservations": [
+      "CURRENT_SOURCE_FILES=1",
+      "MOTION_IMPLEMENTATION_SPARSE",
+      "MOTION_STATE_COVERAGE_SPARSE",
+      "GAME_FEEL_SPARSE",
+      "VFX_IMPLEMENTATION_SPARSE",
+      "CAMERA_LANGUAGE_SPARSE",
+      "AUDIO_IMPLEMENTATION_SPARSE",
+      "AI_BEHAVIOR_DEPTH_SPARSE",
+      "WORLD_MAP_IMPLEMENTATION_SPARSE",
+      "UI_MENU_FLOW_SPARSE",
+      "INTERACTION_DISCOVERABILITY_SPARSE",
+      "SESSION_FLOW_SPARSE",
+      "SETTINGS_ACCESSIBILITY_SPARSE",
+      "PERFORMANCE_BUDGET_SPARSE"
+    ],
+    "signals": {
+      "combat": 0,
+      "progression": 4,
+      "ai": 0,
+      "save": 0,
+      "multiplayer": 0,
+      "animation": 0,
+      "motionStates": 1,
+      "gameFeel": 0,
+      "vfx": 0,
+      "camera": 0,
+      "audio": 0,
+      "audioDynamics": 0,
+      "ui": 5,
+      "uiFlow": 0,
+      "entryFlow": 0,
+      "loadingFlow": 0,
+      "input": 0,
+      "map": 0,
+      "landmark": 0,
+      "interaction": 0,
+      "inventory": 0,
+      "equipment": 0,
+      "settings": 0,
+      "feedback": 1,
+      "session": 0,
+      "content": 0,
+      "choice": 0,
+      "connection": 1,
+      "performance": 0,
+      "lighting": 0,
+      "primitive": 0,
+      "todo": 0,
+      "errorRecovery": 0
+    },
+    "topFiles": [
+      {
+        "file": "web-games/seed-puzzle-chromatic-cascade/index.html",
+        "score": 1
+      }
+    ],
+    "sourceAnchors": [
+      {
+        "file": "web-games/seed-puzzle-chromatic-cascade/index.html",
+        "line": 1,
+        "kind": "STATE",
+        "symbol": "STATE:chromatic",
+        "context": "<!doctype html><html lang=\"ko\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\"><meta name=\"theme-color\" content=\"#",
+        "score": 18
+      }
+    ]
+  },
+  "previousVersionDelta": {
+    "state": "NO_PREVIOUS_DIRECTIVE"
+  },
+  "playtestRuntimeFindings": {
+    "platform": "WEB",
+    "studioQualityFailure": null,
+    "failureStage": "",
+    "failureSignature": "",
+    "blockers": [],
+    "runtimeObserved": false,
+    "runtimePassed": false,
+    "independentQaPassed": false,
+    "regressionPassed": false
+  },
+  "qualityGapMap": [
+    {
+      "domain": "CORE_FUN",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "COMBAT_OR_PRIMARY_INTERACTION",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "PLAYER_ACTIONS",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "PLAYER_AGENCY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "ANTI_GRIND",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "ENEMY_AI",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "BOSS_AND_SIGNATURE_MOMENTS",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "PROGRESSION",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "GOALS",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "REWARDS",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "UNLOCKS",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "QUESTS",
+      "state": "NOT_APPLICABLE",
+      "reason": "no quest/story objective signal in approved design"
+    },
+    {
+      "domain": "CONTENT_VARIETY",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "CONTENT_DENSITY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "CONTENT_DISCOVERY",
+      "state": "NOT_APPLICABLE",
+      "reason": "approved design and current source do not expose a world/map surface requiring expansion"
+    },
+    {
+      "domain": "MID_LATE_GAME_DEPTH",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "WORLD_MAP_TOPOLOGY",
+      "state": "NOT_APPLICABLE",
+      "reason": "approved design and current source do not expose a world/map surface requiring expansion"
+    },
+    {
+      "domain": "MAP_EXPANSION",
+      "state": "NOT_APPLICABLE",
+      "reason": "approved design and current source do not expose a world/map surface requiring expansion"
+    },
+    {
+      "domain": "REGIONS",
+      "state": "NOT_APPLICABLE",
+      "reason": "approved design and current source do not expose a world/map surface requiring expansion"
+    },
+    {
+      "domain": "WORLD_DENSITY",
+      "state": "NOT_APPLICABLE",
+      "reason": "approved design and current source do not expose a world/map surface requiring expansion"
+    },
+    {
+      "domain": "WORLD_NAVIGATION",
+      "state": "NOT_APPLICABLE",
+      "reason": "approved design and current source do not expose a world/map surface requiring expansion"
+    },
+    {
+      "domain": "LANDMARKS",
+      "state": "NOT_APPLICABLE",
+      "reason": "approved design and current source do not expose a world/map surface requiring expansion"
+    },
+    {
+      "domain": "TRAVERSAL",
+      "state": "NOT_APPLICABLE",
+      "reason": "approved design and current source do not expose a world/map surface requiring expansion"
+    },
+    {
+      "domain": "INTERACTION_DISCOVERABILITY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "ECONOMY",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "INVENTORY",
+      "state": "NOT_APPLICABLE",
+      "reason": "game has no current inventory/item ownership system"
+    },
+    {
+      "domain": "INVENTORY_USABILITY",
+      "state": "NOT_APPLICABLE",
+      "reason": "game has no current inventory/item ownership system"
+    },
+    {
+      "domain": "EQUIPMENT_LOADOUT",
+      "state": "NOT_APPLICABLE",
+      "reason": "game has no current equipment/loadout system"
+    },
+    {
+      "domain": "CRAFTING",
+      "state": "NOT_APPLICABLE",
+      "reason": "no crafting signal in approved design"
+    },
+    {
+      "domain": "SYSTEM_CONNECTION",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "SESSION_FLOW",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "FIRST_10_MINUTES",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "FAILURE_RESPAWN_CHECKPOINTS",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "SAVE_AND_RECOVERY",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "SAVE_COMPLETENESS",
+      "state": "NOT_APPLICABLE",
+      "reason": "game has no persistent save system yet"
+    },
+    {
+      "domain": "RECONNECT_RECOVERY",
+      "state": "NOT_APPLICABLE",
+      "reason": "game has no multiplayer or persistent reconnect state"
+    },
+    {
+      "domain": "MULTIPLAYER_AND_SYNC",
+      "state": "NOT_APPLICABLE",
+      "reason": "approved design and current source do not require multiplayer"
+    },
+    {
+      "domain": "INPUT",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "MOBILE_UX",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "ACCESSIBILITY",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "SETTINGS_ACCESSIBILITY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "MENU_FLOW",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "CONVENIENCE",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "UI_DESIGN_SYSTEM",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "UI_INFORMATION_PRIORITY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "FEEDBACK_CLARITY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "TUTORIAL_ONBOARDING",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "DIFFICULTY_PACING",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "GAME_FEEL",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "SPAWN_ENCOUNTER_DIRECTOR",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "NPC_SOCIAL_BEHAVIOR",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "NARRATIVE_STORY",
+      "state": "NOT_APPLICABLE",
+      "reason": "no narrative or story signal in approved design"
+    },
+    {
+      "domain": "AUDIO_MUSIC_SFX",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "REPLAYABILITY_VARIATION",
+      "state": "NOT_APPLICABLE",
+      "reason": "no explicit replay variation signal in approved design"
+    },
+    {
+      "domain": "CHARACTER_VISUALS",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "ENEMY_VISUALS",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "WEAPONS_AND_EQUIPMENT",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "BUILDINGS_AND_PROPS",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "ENVIRONMENT",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "TERRAIN",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "MATERIALS",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "PALETTE",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "LIGHTING",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "ANIMATION",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "SECONDARY_MOTION",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "VFX",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "CAMERA",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "UI_HUD",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "AUDIO_VISUAL_TIMING",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "ENVIRONMENTAL_MOTION",
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
+    },
+    {
+      "domain": "PERFORMANCE",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "PERFORMANCE_BUDGET",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "RUNTIME_STABILITY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "ERROR_RECOVERY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    }
+  ],
+  "allDomainImplementationDirectives": [
+    {
+      "domain": "CORE_FUN",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
+      "developmentDepth": 1,
+      "directive": "색채 주파수 튜너 (Chromatic Frequency Tuner)가 단순 반복 입력이 아니라 상황을 읽고 선택을 바꾸는 핵심 재미가 되게 한다. 같은 선택의 반복 이득을 줄이고 성공/실패 이유가 즉시 보이게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "COMBAT_OR_PRIMARY_INTERACTION",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
+      "developmentDepth": 1,
+      "directive": "색채 주파수 튜너 (Chromatic Frequency Tuner)의 입력→전조/준비→판정→결과→회복 흐름을 실제 상태 머신에 연결하고 타이밍·거리·위험/보상 중 게임에 맞는 최소 두 축에서 선택 차이를 만든다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "PLAYER_ACTIONS",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
+      "developmentDepth": 1,
+      "directive": "플레이어의 주요 행동마다 사용 조건, 취소/실패 조건, 상태 변화, 쿨다운 또는 후딜, 화면/음향 피드백을 일관되게 연결하고 무의미한 중복 행동은 정리한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "PLAYER_AGENCY",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "핵심 루프에서 최소 두 개 이상의 의미 있는 선택축을 유지하고 하나의 정답 버튼 반복보다 상황·자원·위험에 따라 선택이 달라지게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "ANTI_GRIND",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "같은 행동을 반복해서 숫자만 채우는 구간을 줄이고 반복이 필요하면 새로운 위험·조합·선택·단축 해금 중 하나가 주기적으로 생기게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "ENEMY_AI",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "적 역할이 이동·타깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 색채 주파수 튜너 (Chromatic Frequency Tuner)에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "BOSS_AND_SIGNATURE_MOMENTS",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
+      "developmentDepth": 1,
+      "directive": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 보스/시그니처 순간은 일반 적의 체력만 키운 형태를 금지하고 단계 변화, 공간 압박, 전조, 대응 선택, 보상 연출을 핵심 시스템 연쇄 기폭 장치 (Cascade Detonator)와 연결한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "PROGRESSION",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "플레이어는 스테이지를 클리어하며 튜너의 성능(색상 변환 범위, 충전 속도)을 업그레이드하고, 더 복잡하고 단단한 장애물이 등장하는 상위 구역으로 진입합니다. 단순한 수치 증가가 아닌, 새로운 색상 주파수와 복합 장애물 패턴이 등장하여 퍼즐의 깊이를 더합니다.을 짧은 목표→보상→해금→새 선택→다음 난도로 연결하고 성장 수치만 오르는 대신 플레이 방식이 실제로 넓어지게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "GOALS",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "현재 목표·다음 목표·실패 조건을 플레이 중 확인 가능하게 하고, 목표가 색채 주파수 튜너 (Chromatic Frequency Tuner)와 직접 연결되어 플레이어가 왜 행동하는지 분명하게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "REWARDS",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "보상은 행동 난도·위험·시간·희소성과 연결하고, 획득 순간의 상태 변화와 피드백을 명확히 하며 다음 선택에 실제 영향을 주게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "UNLOCKS",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "해금은 새 시스템/지역/행동/조합 중 의미 있는 선택을 열어야 하며 단순 아이콘 공개나 숫자 증가만으로 해금 완료를 주장하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "QUESTS",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
+      "developmentDepth": 1,
+      "directive": "현재 승인 설계상 no quest/story objective signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+    },
+    {
+      "domain": "CONTENT_VARIETY",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
+      "developmentDepth": 1,
+      "directive": "콘텐츠 변형은 이름/색/수치 복제 대신 행동 규칙·공간·자원·적 조합·진행 조건 중 최소 한 축을 바꾸어 새로운 판단을 만들게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "CONTENT_DENSITY",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "플레이 시간과 이동 거리에 비해 실제 상호작용·조우·보상·발견이 비는 구간을 줄이고 새 콘텐츠가 서로 다른 플레이 결정을 만들게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "CONTENT_DISCOVERY",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
+      "developmentDepth": 1,
+      "directive": "현재 승인 설계상 approved design and current source do not expose a world/map surface requiring expansion. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+    },
+    {
+      "domain": "MID_LATE_GAME_DEPTH",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "중후반은 초반 수치 상승 반복이 아니라 새 지역·적 역할·장비 조합·시스템 연결·전략 전환 중 여러 축에서 플레이 깊이가 실제로 확장되게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "WORLD_MAP_TOPOLOGY",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
+      "developmentDepth": 1,
+      "directive": "현재 승인 설계상 approved design and current source do not expose a world/map surface requiring expansion. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+    },
+    {
+      "domain": "MAP_EXPANSION",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
+      "developmentDepth": 1,
+      "directive": "현재 승인 설계상 approved design and current source do not expose a world/map surface requiring expansion. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+    },
+    {
+      "domain": "REGIONS",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
+      "developmentDepth": 1,
+      "directive": "현재 승인 설계상 approved design and current source do not expose a world/map surface requiring expansion. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+    },
+    {
+      "domain": "WORLD_DENSITY",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
+      "developmentDepth": 1,
+      "directive": "현재 승인 설계상 approved design and current source do not expose a world/map surface requiring expansion. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+    },
+    {
+      "domain": "WORLD_NAVIGATION",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
+      "developmentDepth": 1,
+      "directive": "현재 승인 설계상 approved design and current source do not expose a world/map surface requiring expansion. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+    },
+    {
+      "domain": "LANDMARKS",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
+      "developmentDepth": 1,
+      "directive": "현재 승인 설계상 approved design and current source do not expose a world/map surface requiring expansion. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+    },
+    {
+      "domain": "TRAVERSAL",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
+      "developmentDepth": 1,
+      "directive": "현재 승인 설계상 approved design and current source do not expose a world/map surface requiring expansion. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+    },
+    {
+      "domain": "INTERACTION_DISCOVERABILITY",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "줍기·열기·대화·제작·장착·구매·사용 가능한 대상은 접근 전후에 형태/프롬프트/상태 피드백으로 구별되고 상호작용 실패 이유도 즉시 보이게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "ECONOMY",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "재화의 획득원·사용처·가격 단계·손실/회수 규칙을 플레이어는 스테이지를 클리어하며 튜너의 성능(색상 변환 범위, 충전 속도)을 업그레이드하고, 더 복잡하고 단단한 장애물이 등장하는 상위 구역으로 진입합니다. 단순한 수치 증가가 아닌, 새로운 색상 주파수와 복합 장애물 패턴이 등장하여 퍼즐의 깊이를 더합니다.과 연결하고 무한 축적 또는 의미 없는 구매가 생기지 않게 한다. 승인 없는 기존 수치 변경은 금지한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "INVENTORY",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
+      "developmentDepth": 1,
+      "directive": "현재 승인 설계상 game has no current inventory/item ownership system. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+    },
+    {
+      "domain": "INVENTORY_USABILITY",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
+      "developmentDepth": 1,
+      "directive": "현재 승인 설계상 game has no current inventory/item ownership system. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+    },
+    {
+      "domain": "EQUIPMENT_LOADOUT",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
+      "developmentDepth": 1,
+      "directive": "현재 승인 설계상 game has no current equipment/loadout system. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+    },
+    {
+      "domain": "CRAFTING",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
+      "developmentDepth": 1,
+      "directive": "현재 승인 설계상 no crafting signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+    },
+    {
+      "domain": "SYSTEM_CONNECTION",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "드랍→인벤토리→제작/장착→전투/탐색→보상/해금처럼 현재 게임의 주요 시스템들이 실제 상태를 주고받게 하고 서로 고립된 메뉴 기능을 줄인다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "SESSION_FLOW",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "접속→준비→첫 행동→목표/실패→결과/보상→재시도→다음 선택을 연결한다. 확인된 실패 수리 후 첫 플레이·재도전·적용 가능한 친구 참가·연출 순으로 한 흐름씩 구현·검수한다. 결과는 달성 내용·실제 실패 원인/성공 선택·재도전/다음 단계/로비를 보여주고 서버 확정 보상만 표시한다. 재도전 연타도 한 번만 시작되며 입력·판정·상태·피드백·실패 복귀가 연결되어야 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "FIRST_10_MINUTES",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "첫 10분 안에 이동/기본 입력, 핵심 상호작용, 첫 성공 피드백, 첫 보상 또는 성장, 다음 목표를 실제 플레이로 경험하게 하고 설명문만으로 대체하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "FAILURE_RESPAWN_CHECKPOINTS",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "사망/실패/런 종료 시 기존 손실·보존·체크포인트·리스폰 규칙을 유지하고 빠르게 재시작하게 한다. 실제 기록에 있는 원인만 시각화한다: 퍼즐의 잘못된 연결, 방어의 뚫린 경로, 생존의 사망 원인 등 해당 장르에 맞게 표시하며 근거가 없으면 추측하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "SAVE_AND_RECOVERY",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "기존 저장 키·구조·의미를 보존하고 진행·장비·해금을 재접속 후 복구한다. 불러오기 실패를 신규 사용자로 처리하거나 기본값으로 덮어쓰지 말고 재시도·안전 복귀를 제공한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "SAVE_COMPLETENESS",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
+      "developmentDepth": 1,
+      "directive": "현재 승인 설계상 game has no persistent save system yet. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+    },
+    {
+      "domain": "RECONNECT_RECOVERY",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
+      "developmentDepth": 1,
+      "directive": "현재 승인 설계상 game has no multiplayer or persistent reconnect state. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+    },
+    {
+      "domain": "MULTIPLAYER_AND_SYNC",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
+      "developmentDepth": 1,
+      "directive": "현재 승인 설계상 approved design and current source do not require multiplayer. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+    },
+    {
+      "domain": "INPUT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "핵심 행동마다 터치 우선 입력과 키보드/패드 대체 입력을 동일 게임 상태에 연결하고 중복 입력·길게 누름·드래그·취소 경계를 명확히 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "MOBILE_UX",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "작은 화면에서 핵심 행동 버튼을 크게, 설정·도움말을 접어서 배치하고 HUD·위험 경고가 손가락에 가리지 않게 한다. safe area·스크롤·가로/세로를 검수하고 팝업 닫기 터치가 뒤쪽 이동·공격으로 전달되지 않게 입력을 소비한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "ACCESSIBILITY",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "색만으로 상태를 구분하지 않고 형태/아이콘/텍스트/모션을 함께 쓰며, 중요한 피드백은 크기·대비·지속시간을 확보해 정보 누락을 줄인다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "SETTINGS_ACCESSIBILITY",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "음량·카메라/흔들림·감도·UI 크기/가독성 등 현재 게임에 필요한 설정을 접근 가능한 메뉴에 두고 설정 변경이 즉시 반영·저장되게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "MENU_FLOW",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "색채 주파수 튜너 (Chromatic Frequency Tuner)를 연습하는 로비/허브를 기존 UI에 연결한다. 승인된 장르에 맞게 퍼즐은 작은 연습판, 방어는 적 하나에 배치·회수, 생존은 안전한 채집·제작·장착을 활용한다. 연습은 건너뛸 수 있고 기존 재화·보상·저장에 영향을 주지 않는다. 로딩은 실제 월드·저장·참가 준비 단계와 실패 이유·재시도/안전 복귀를 표시한다. 시작은 준비 확인 후 한 번만 처리하고 스폰·카메라·목표까지 연결한다. 기존 메뉴의 뒤로가기·닫기·스크롤·팝업·선택 유지를 모바일에서 검수하며 중복 화면·가짜 진행률·장식용 버튼을 금지한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "CONVENIENCE",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "반복 조작을 줄일 수 있는 빠른 사용/장착, 제작 가능 표시, 부족 재료 표시, 목표 추적, 비교 정보 등 현재 게임에 맞는 편의 기능을 추가하되 플레이 선택 자체를 자동화하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "UI_DESIGN_SYSTEM",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "HUD와 메뉴가 공통 타이포·패널·아이콘·간격·상태 색/형태 규칙을 공유하고 게임 세계의 아트 언어와 연결되며 기능마다 제각각인 임시 UI를 줄인다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "UI_INFORMATION_PRIORITY",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "현재 목표, 생존/위험, 핵심 자원, 장비/쿨다운, 다음 행동 순으로 실제 플레이 중요도에 맞게 정보 위계를 정하고 작은 화면에서 비핵심 정보가 핵심 HUD를 밀어내지 않게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "FEEDBACK_CLARITY",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "획득·구매·제작·장착·레벨업·퀘스트·실패·사용 불가 등 중요한 상태 변화에 즉시 읽히는 UI/음향/시각 피드백과 실패 이유를 연결한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "TUTORIAL_ONBOARDING",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "색채 주파수 튜너 (Chromatic Frequency Tuner)의 첫 입력·결과·목표를 필요한 순간 한 줄과 실습으로 안내한다. 같은 실패 반복 시 목표 확인→관련 위치→행동 예시의 선택형 힌트를 단계적으로 제공하되 정답 자동 처리·난이도 변경은 금지한다. 설명 닫기는 학습 완료가 아니며 건너뛰기·도움말 다시 열기를 제공한다. 재접속은 초기 설명 대신 현재 목표를 보여준다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "DIFFICULTY_PACING",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "초반 진입, 중반 선택 압박, 후반 숙련 요구가 갑자기 튀지 않게 적/자원/목표/보상의 복잡도를 단계적으로 올리고 실패 원인이 학습 가능한 형태로 보이게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "GAME_FEEL",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "핵심 입력의 반응 지연, anticipation, impact, hit-stop/반동/화면 반응, recovery를 장르와 색채 주파수 튜너 (Chromatic Frequency Tuner)에 맞춰 조정해 버튼 입력과 결과 사이의 손맛을 강화한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "SPAWN_ENCOUNTER_DIRECTOR",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "적·자원·이벤트·조우의 생성 위치/빈도/조합/안전거리/재생성 규칙을 지역 역할과 난이도에 맞추고 불공정한 즉시 피격·과밀·공백을 줄인다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "NPC_SOCIAL_BEHAVIOR",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "NPC가 적용되는 게임이면 idle 순환뿐 아니라 이동 목적, 상호작용 반응, 시간/지역/퀘스트 상태에 따른 행동 변화가 세계 역할과 연결되게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "NARRATIVE_STORY",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
+      "developmentDepth": 1,
+      "directive": "현재 승인 설계상 no narrative or story signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+    },
+    {
+      "domain": "AUDIO_MUSIC_SFX",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "배경음악은 지역/상태/전투 강도 전환과 연결하고, 핵심 행동·위험 전조·피격·보상·UI SFX를 서로 구별해 화면을 보지 않아도 중요한 사건을 인지할 수 있게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "REPLAYABILITY_VARIATION",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
+      "developmentDepth": 1,
+      "directive": "현재 승인 설계상 no explicit replay variation signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+    },
+    {
+      "domain": "CHARACTER_VISUALS",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다. 플레이어/NPC의 역할·등급·장비가 실루엣, 비율, 자세, 재질에서 구별되고 핵심 행동 모션과 연결되게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "ENEMY_VISUALS",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "적 종류와 위험도가 색상만이 아니라 실루엣·크기·이동 리듬·공격 전조·피격/사망 반응으로 구별되게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "WEAPONS_AND_EQUIPMENT",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "무기/장비 외형이 실제 기능·사거리·무게감·공격 궤적·장착 상태와 맞고 플레이어 손/몸에 자연스럽게 연결되게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "BUILDINGS_AND_PROPS",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "건물·상호작용 오브젝트·장식물은 기능과 상태가 형태/배치/재질로 구별되고 플레이 동선과 충돌하지 않게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "ENVIRONMENT",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "전경/중경/배경, 식생/소품, 위험/안전 신호, 환경 스토리텔링을 색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다. 아트 방향 안에서 통일하고 빈 장식면을 줄인다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "TERRAIN",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "지형 높낮이·경계·통로·전투/상호작용 공간이 플레이 기능과 맞고 반복 평면/단일 primitive 위주 구성을 실제 지형 형태로 교체한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "MATERIALS",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "재질은 이름 등록이 아니라 거칠기·광택·마모·투명/발광·빛 반응이 표면 역할과 맞게 실제 렌더에 적용되도록 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "PALETTE",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "팔레트는 지역/진영/위험/보상/상호작용 상태를 구분하면서 전체 게임 정체성을 유지하고 단순 색상 교체만으로 개선 완료를 주장하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "LIGHTING",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "조명은 시간/분위기뿐 아니라 플레이 동선, 적 전조, 상호작용 대상, 랜드마크 가독성을 지원하고 캐릭터 실루엣을 배경에서 분리한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "ANIMATION",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "주요 캐릭터/적 행동을 idle→locomotion→anticipation→impact→recovery→hit/death 상태와 실제 게임 이벤트에 연결하고 정지 모델 판정을 금지한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "SECONDARY_MOTION",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "장비·의상·머리·꼬리·식생·기계 등 적합한 요소에 지연/관성/반동을 추가해 무게감과 생동감을 주되 판정/권한은 바꾸지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "VFX",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "일반 타격, 강공격, 위험 전조, 상태이상, 보상, 보스/시그니처 이벤트의 VFX 형태·강도·지속시간을 분리하고 실제 상태 변화 시점에 동기화한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "CAMERA",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "기본 시야·FOV·추적을 모바일 가독성에 맞추고 강한 타격/대시/보스/탐색 포인트에 짧고 단계적인 카메라 반응을 적용해 멀미와 과도한 흔들림을 피한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "UI_HUD",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "HUD는 현재 목표·체력/위험·핵심 자원·쿨다운/상태·다음 선택의 우선순위를 명확히 하고 게임 아트 언어와 일치하는 패널/아이콘/상태 피드백을 사용한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "AUDIO_VISUAL_TIMING",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "핵심 action의 animation impact, damage/state change, VFX, camera, audio가 같은 사건 타임라인에 맞게 발생하도록 오프셋을 정리한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "ENVIRONMENTAL_MOTION",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
+      "developmentDepth": 1,
+      "directive": "세계에 맞는 바람/식생/물/빛/먼지/기계 등 미세 환경 움직임을 추가해 정적인 무대를 피하되 플레이 정보와 성능을 방해하지 않는다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "PERFORMANCE",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "실제 병목 근거를 기준으로 update/tick 빈도, 객체/파티클 수명, draw/instance 수, GC/할당, 네트워크 빈도, 모바일 열/메모리 비용을 줄인다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "PERFORMANCE_BUDGET",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "맵·에셋·NPC·VFX를 늘릴 때 객체 수명, 동시 NPC/파티클, 업데이트 빈도, 스트리밍/LOD, 메모리·모바일 프레임 예산을 함께 정의하고 초과 시 표현 비용부터 줄인다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "RUNTIME_STABILITY",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "핵심 루프를 반복 실행해도 상태 누수·중복 이벤트·고착·크래시 없이 시작→플레이→실패/성공→재시작/복귀가 유지되게 한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    },
+    {
+      "domain": "ERROR_RECOVERY",
+      "state": "GAP",
+      "priority": "FIX_NOW",
+      "developmentDepth": 1,
+      "directive": "재현된 오류는 숨기지 말고 책임 시스템에서 원인을 제거하고 실패 시 안전한 복구/재시도/사용자 피드백 경로를 제공한다.",
+      "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+    }
+  ],
+  "detectedGaps": [
+    {
+      "domain": "PLAYER_AGENCY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "ANTI_GRIND",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "ENEMY_AI",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "CONTENT_DENSITY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "MID_LATE_GAME_DEPTH",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "INTERACTION_DISCOVERABILITY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "SYSTEM_CONNECTION",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "SESSION_FLOW",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "FIRST_10_MINUTES",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "INPUT",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "MOBILE_UX",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "SETTINGS_ACCESSIBILITY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "MENU_FLOW",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "CONVENIENCE",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "UI_INFORMATION_PRIORITY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "FEEDBACK_CLARITY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "GAME_FEEL",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "AUDIO_MUSIC_SFX",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "LIGHTING",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "ANIMATION",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "SECONDARY_MOTION",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "VFX",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "CAMERA",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "AUDIO_VISUAL_TIMING",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "PERFORMANCE",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "PERFORMANCE_BUDGET",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "RUNTIME_STABILITY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "ERROR_RECOVERY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    }
+  ],
+  "primaryFocus": "CORE_FUN",
+  "thisLoopPrimaryGoal": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 색채 주파수 튜너 (Chromatic Frequency Tuner)를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 CORE_FUN를 우선한다. 게임 고유 앵커는 \"색채 주파수 튜너 (Chromatic Frequency Tuner)\", 현재 책임 소스는 web-games/seed-puzzle-chromatic-cascade/index.html::STATE:chromatic이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "gameplayImplementationDirectives": [
+    "우선 책임 소스 앵커 web-games/seed-puzzle-chromatic-cascade/index.html::STATE:chromatic에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "색채 주파수 튜너 (Chromatic Frequency Tuner)를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
+    "연쇄 기폭 장치 (Cascade Detonator)가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
+    "기획 루프 1 \"보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
+    "기획 루프 2 \"색채 주파수 튜너를 사용해 인접 노드의 색상을 변경하고 동기화 체인을 형성합니다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
+    "기획 루프 3 \"연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으키고 보상을 획득합니다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
+    "고유 시스템 \"색채 주파수 튜너 (Chromatic Frequency Tuner)\": 플레이어 선택 \"플레이어는 제한된 튜닝 횟수 내에서 어떤 노드를 어떤 색상으로 전환해야 가장 길고 강력한 연쇄 동기화 경로를 확보할 수 있을지 전술적으로 결정해야 합니다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
+    "고유 시스템 \"연쇄 기폭 장치 (Cascade Detonator)\": 플레이어 선택 \"플레이어는 체인이 형성되었을 때 즉시 기폭할지, 아니면 추가 튜닝을 통해 체인을 더 길게 늘려 한 번에 더 큰 폭발 보너스를 노릴지 선택합니다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
+    "고유 시스템 색채 주파수 튜너 (Chromatic Frequency Tuner), 연쇄 기폭 장치 (Cascade Detonator) 중 이번 목표와 직접 연결된 시스템을 기존 책임 코드에서 심화한다.",
+    "주요 적/대상/상호작용이 행동·타이밍·카운터플레이 중 최소 두 축에서 구별되게 한다."
+  ],
+  "progressionContentWorldDirectives": [
+    "플레이어는 스테이지를 클리어하며 튜너의 성능(색상 변환 범위, 충전 속도)을 업그레이드하고, 더 복잡하고 단단한 장애물이 등장하는 상위 구역으로 진입합니다. 단순한 수치 증가가 아닌, 새로운 색상 주파수와 복합 장애물 패턴이 등장하여 퍼즐의 깊이를 더합니다.을 현재 루프의 실제 목표·보상·해금·콘텐츠 연결로 구현/심화한다.",
+    "새 콘텐츠는 기존 핵심 루프와 연결되어야 하며 단순 수량 복제나 색/수치만 다른 변형으로 채우지 않는다.",
+    "맵/지역이 있는 게임은 면적만 늘리지 말고 새 지역 역할·연결 경로·잠금/해금·랜드마크·조우/자원 역할·발견 피드백이 구별되도록 확장한다.",
+    "인벤토리/장비/제작/상점/퀘스트가 존재하면 서로 같은 authoritative 상태를 사용해 실제 플레이와 연결하고 고립된 메뉴 기능으로 남기지 않는다.",
+    "초반 10분과 중후반을 각각 점검해 초반 학습·첫 보상과 중후반 전략/콘텐츠 확장이 모두 실제 소스와 플레이 흐름에 존재하게 한다.",
+    "콘텐츠 확장은 배경·지역·몹·아이템·퀘스트·스토리·보상·규칙 중 관련 요소를 서로 연결된 묶음으로 설계하고, 한 요소만 고립해서 개수만 늘리는 업데이트를 피한다.",
+    "이전 세대와 이름·색·수치만 다른 복제 콘텐츠를 추가하지 말고 역할·행동·플레이어 선택·세계 이유·결과/보상·시스템 연결 중 최소 두 축 이상에서 실제 차이를 만든다.",
+    "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다."
+  ],
+  "autonomousContentExpansion": {
+    "version": 2,
+    "policySource": "company-learning/vibe-autonomous-content-expansion-policy.json",
+    "policyStatus": "ACTIVE",
+    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+    "autonomousDecisionOwner": "VIBE",
+    "assistantManualIdeaDependencyForbidden": true,
+    "newWorkflowForbidden": true,
+    "newStageForbidden": true,
+    "ownerPromptPerExpansionForbidden": true,
+    "platformScope": [
+      "WEB",
+      "ROBLOX",
+      "UNITY"
+    ],
+    "requestedPlatform": "WEB",
+    "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
+    "dataCapacityBudget": {
+      "state": "NORMAL",
+      "limits": {
+        "savePersistedDataBytes": 2097152,
+        "webDownloadBytes": 104857600,
+        "singleFileBytes": 26214400,
+        "mobileMemoryTargetBytes": 314572800,
+        "mobileMinimumFps": 30
+      },
+      "warningRatio": 0.8,
+      "measured": {
+        "sourceBytes": 1440,
+        "largestFileBytes": 1440,
+        "savePersistedDataBytes": 0,
+        "mobileMemoryBytes": 0,
+        "mobileFps": 0
+      },
+      "warning": [],
+      "exceeded": [],
+      "strategy": "CONTINUE_HIGHEST_VALUE_COHERENT_BUILD_UP",
+      "generationLimit": null,
+      "contentCountLimit": null,
+      "buildUpMustContinue": true,
+      "protectedStateDeletionForbidden": true
+    },
+    "existingCompletenessReview": {
+      "requiredEveryBuildUp": true,
+      "mode": "CHECK_EXISTING_AND_EXPAND_OR_IMPROVE_WHICHEVER_HAS_HIGHER_PLAYER_VALUE",
+      "dimensions": [
+        "CORE_LOOP_COMPLETENESS",
+        "QUEST_AND_GOAL_FLOW",
+        "WORLD_AND_REGION_FLOW",
+        "MONSTER_ENEMY_ROLE_COVERAGE",
+        "ITEM_EQUIPMENT_REWARD_PURPOSE",
+        "STORY_WORLD_CAUSALITY",
+        "GAMEPLAY_RULE_CONNECTIONS",
+        "PROGRESSION_PACING",
+        "MID_LATE_ENDGAME_DEPTH",
+        "MULTIPLAYER_WHEN_APPLICABLE",
+        "PRESENTATION_AND_FEEDBACK"
+      ],
+      "weakExistingContentMayPreemptNewContent": true
+    },
+    "selectedTheme": "PRESENTATION_WORLD_COHESION",
+    "themeDepth": 1,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=CORE_FUN; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
+    "themeCoverageLedger": {
+      "version": 1,
+      "counts": {
+        "WORLD_ECOLOGY_STORY_CHAIN": 0,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
+        "QUEST_STORY_PROGRESSION_CHAIN": 0,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
+        "MID_LATE_ENDGAME_COMPLETION": 0,
+        "PRESENTATION_WORLD_COHESION": 1
+      },
+      "sequence": [
+        "PRESENTATION_WORLD_COHESION"
+      ],
+      "requiredThemes": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "QUEST_STORY_PROGRESSION_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "MID_LATE_ENDGAME_COMPLETION",
+        "PRESENTATION_WORLD_COHESION"
+      ],
+      "distinctCovered": 1,
+      "totalThemes": 7,
+      "breadthCycleComplete": false,
+      "missingThemes": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "QUEST_STORY_PROGRESSION_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "MID_LATE_ENDGAME_COMPLETION"
+      ],
+      "leastCoveredThemes": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "QUEST_STORY_PROGRESSION_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "MID_LATE_ENDGAME_COMPLETION"
+      ],
+      "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
+    },
+    "scoredThemes": [
+      {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": 73,
+        "gapDomains": [
+          "LIGHTING",
+          "ANIMATION",
+          "VFX",
+          "AUDIO_VISUAL_TIMING"
+        ]
+      },
+      {
+        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "score": 52,
+        "gapDomains": [
+          "ENEMY_AI",
+          "GAME_FEEL"
+        ]
+      },
+      {
+        "theme": "MID_LATE_ENDGAME_COMPLETION",
+        "score": 44,
+        "gapDomains": [
+          "MID_LATE_GAME_DEPTH",
+          "ANTI_GRIND"
+        ]
+      },
+      {
+        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "score": 42,
+        "gapDomains": [
+          "PLAYER_AGENCY",
+          "SYSTEM_CONNECTION"
+        ]
+      },
+      {
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "score": 34,
+        "gapDomains": [
+          "SYSTEM_CONNECTION"
+        ]
+      },
+      {
+        "theme": "QUEST_STORY_PROGRESSION_CHAIN",
+        "score": 24,
+        "gapDomains": []
+      },
+      {
+        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
+        "score": 22,
+        "gapDomains": []
+      }
+    ],
+    "coherentContentBundle": [
+      "BACKGROUND_DEPTH: 전경·중경·후경·지형·랜드마크로 빈 무대 느낌을 줄이고 장소의 기능을 읽게 한다.",
+      "CHARACTER_AND_ENEMY_IDENTITY: 역할과 위험도가 실루엣·자세·모션·재질에서 구별되어야 한다.",
+      "ACTION_TIMELINE: anticipation→impact→recovery와 VFX·카메라·오디오·판정을 같은 사건에 동기화한다.",
+      "ENVIRONMENTAL_MOTION: 식생·물·빛·먼지·기계 등 세계에 맞는 움직임으로 정적인 배경을 줄인다.",
+      "STATE_READABILITY: 위험·보상·상호작용·퀘스트 상태를 UI와 월드 표현에서 같은 언어로 보여준다.",
+      "REGION_COHESION: 배경·몹·아이템·스토리·규칙의 시각적 이유가 같은 지역 정체성을 공유한다.",
+      "PERFORMANCE_BUDGET: 표현을 늘리면서 모바일·플랫폼별 객체·파티클·조명·메모리 비용을 같이 관리한다."
+    ],
+    "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
+    "antiCloneContract": {
+      "compareAgainstExistingContentBeforeAdding": true,
+      "nameColorOrStatOnlyCloneForbidden": true,
+      "repeatedTemplateExpansionForbidden": true,
+      "distinctionAxes": [
+        "ROLE",
+        "BEHAVIOR",
+        "PLAYER_DECISION",
+        "WORLD_REASON",
+        "SOURCE_OR_TRIGGER",
+        "REWARD_OR_CONSEQUENCE",
+        "SYSTEM_CONNECTION",
+        "PRESENTATION"
+      ],
+      "minimumMeaningfulDistinctAxes": 2
+    },
+    "continuityAndCausality": {
+      "required": true,
+      "preserveApprovedIdentity": true,
+      "preserveExistingCanonicalRuleMeaning": true,
+      "preserveProgressionFlow": true,
+      "questions": [
+        "WHY_DOES_THIS_EXIST_IN_THIS_GAME",
+        "WHY_DOES_IT_EXIST_IN_THIS_LOCATION_OR_WORLD_STATE",
+        "WHY_DOES_THE_PLAYER_ENCOUNTER_OR_NEED_IT_NOW",
+        "WHAT_EXISTING_CONTENT_OR_STATE_LEADS_INTO_IT",
+        "WHAT_PLAYER_DECISION_DOES_IT_CHANGE",
+        "WHAT_REWARD_STATE_WORLD_OR_NEXT_GOAL_CHANGES_AFTER_IT",
+        "HOW_DOES_IT_CONNECT_BACK_TO_EXISTING_SYSTEMS"
+      ]
+    },
+    "derivedRuleEvolution": {
+      "allowed": true,
+      "rule": "MAY_ADD_DERIVED_GAMEPLAY_INTERACTION_RULES_WHEN_THEY_REINFORCE_APPROVED_IDENTITY_AND_DO_NOT_CONTRADICT_CANONICAL_RULES_OR_PROTECTED_VALUES",
+      "examples": [
+        "ENVIRONMENTAL_RULE",
+        "ENEMY_RELATIONSHIP_RULE",
+        "BOSS_PHASE_RULE",
+        "ITEM_SYNERGY_RULE",
+        "QUEST_STATE_RULE",
+        "REGION_ACCESS_RULE",
+        "MULTIPLAYER_INTERACTION_RULE"
+      ],
+      "protected": [
+        "EXISTING_CANONICAL_RULE_SEMANTICS",
+        "AUTHORIZED_BALANCE_VALUES",
+        "ECONOMY_MEANING",
+        "SAVE_MEANING",
+        "NETWORK_AUTHORITY"
+      ]
+    },
+    "completionAcceptance": [
+      "REAL_GAME_SOURCE_DELTA_REQUIRED",
+      "PLAYER_FACING_OR_GAMEPLAY_SYSTEM_EFFECT_REQUIRED",
+      "DISTINCT_FROM_EXISTING_CONTENT_BY_MEANING_NOT_ONLY_NAME_OR_STATS",
+      "CONNECTED_TO_EXISTING_GAME_FLOW",
+      "CONTINUITY_AND_CAUSALITY_PRESERVED",
+      "EXISTING_RELEVANT_INCREMENTAL_QA_PASSES",
+      "DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP"
+    ]
+  },
+  "visualBuildUpDirective": {
+    "artDirection": {
+      "identity": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.",
+      "visualPurpose": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 플레이 판단과 색채 주파수 튜너 (Chromatic Frequency Tuner)가 화면만 보고도 구별되도록 시각 언어를 통일한다.",
+      "distinctnessRule": "연쇄 기폭 장치 (Cascade Detonator)와 연결되지 않는 장식 추가보다 실루엣·동작·환경 맥락으로 게임 고유성을 강화한다.",
+      "placeholderDebt": "EVALUATE_AND_REPLACE_WHEN_VISIBLE"
+    },
+    "domains": {
+      "CHARACTER": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다. 플레이어의 역할이 실루엣·장비·자세에서 읽히게 만들고 idle/이동/핵심행동 사이 포즈 차이를 명확히 한다.",
+      "ENEMY_CREATURE": "색채 주파수 튜너 (Chromatic Frequency Tuner)의 상대 역할마다 색만 바꾸지 말고 크기·실루엣·이동 리듬·공격 전조·피격/사망 반응을 다르게 만든다.",
+      "WEAPON_EQUIPMENT": "장비가 실제 기능과 연결되어 손에 쥔 형태, 공격 궤적, impact/recovery, 장착 피드백이 서로 일치하게 만든다.",
+      "BUILDING_PROP": "상호작용 가능한 구조물과 장식물을 형태·배치·상태 변화로 구분하고 플레이 동선을 가리는 무의미한 소품 반복을 피한다.",
+      "ENVIRONMENT_TERRAIN": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 세계 역할을 지역별 지형·랜드마크·전경/중경/후경·높낮이·환경 움직임으로 구분한다.",
+      "MATERIAL_SURFACE": "나무/돌/금속 등 이름 등록만 하지 말고 실제 표면 반응·거칠기·광택·마모·발광을 장면 조명과 맞춘다.",
+      "PALETTE": "위험·안전·보상·상호작용 상태가 게임 팔레트 안에서 즉시 읽히게 하고 단순 색 교체를 정체성 개선으로 계산하지 않는다.",
+      "LIGHTING": "핵심 동선·위험·랜드마크를 조명으로 유도하고 캐릭터와 적 실루엣이 배경에 묻히지 않게 한다.",
+      "ANIMATION": "주요 액션을 ANTICIPATION→ACCELERATION→IMPACT→RECOVERY로 구성하고 idle/walk/run/attack/hit/death 전환을 실제 상태에 연결한다.",
+      "SECONDARY_MOTION": "무기·장비·머리·의상·식생 등 해당 오브젝트에 지연/흔들림을 추가하되 판정과 충돌 권한은 바꾸지 않는다.",
+      "VFX": "일반 타격·강한 타격·위험 예고·상태이상·보상 VFX의 형태와 타이밍을 분리하고 실제 impact 이벤트에 동기화한다.",
+      "CAMERA": "기본 시야와 모바일 가독성을 보존하면서 핵심행동·강공격·보스/시그니처 순간에 강도가 다른 짧은 카메라 반응을 준다.",
+      "UI_HUD": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 핵심 목표·자원·위험·다음 선택이 한눈에 보이게 하고 게임 세계관과 맞는 패널/아이콘/피드백 언어를 사용한다.",
+      "INVENTORY_EQUIPMENT_UI": "인벤토리와 장비 UI는 획득→비교→장착/교체→현재 장착 표시→실제 외형/행동 반영까지 같은 상태를 사용하고 모바일에서도 한 손 조작과 스크롤/닫기/선택 유지가 명확해야 한다.",
+      "AUDIO_MUSIC": "BGM·환경음·행동 피드백은 현재 지역/상태/전투 강도와 연결하고, 소리가 의도적으로 비활성화된 카테고리는 되살리지 않는다. 여러 음악 맥락이 있으면 같은 한 곡 단순 반복 대신 전환·크로스페이드·믹스 변화로 상태가 들리게 한다.",
+      "AUDIO_VISUAL_SYNC": "damage/VFX/animation/camera/audio가 같은 authoritative impact 순간을 공유하게 하며 소리만 먼저/늦게 나오는 불일치를 제거한다.",
+      "ENVIRONMENTAL_MOTION": "정적인 배경을 피하고 식생·빛·파티클·기계/건축 요소 중 세계에 맞는 미세 움직임을 지속시킨다.",
+      "SCENE_DENSITY": "빈 공간과 반복 오브젝트 밀도를 실제 플레이 동선 기준으로 조정하고 중요 영역에는 의미 있는 시각 정보가 있게 한다.",
+      "LANDMARK_READABILITY": "플레이어가 지도 없이도 방향과 지역 역할을 기억할 수 있는 실루엣이 다른 랜드마크를 유지·강화한다."
+    },
+    "requiredActorStates": [
+      "IDLE",
+      "LOCOMOTION",
+      "ATTACK_ANTICIPATION",
+      "IMPACT",
+      "RECOVERY",
+      "HIT_REACTION",
+      "DEATH"
+    ],
+    "completionRules": [
+      "ACTUAL_RENDERED_CHANGE_REQUIRED",
+      "MARKER_CONFIG_ATOM_ONLY_FORBIDDEN",
+      "COLOR_ONLY_NOT_FULL_IDENTITY_UPGRADE",
+      "PRIMARY_PLACEHOLDER_PRIMITIVE_CANNOT_CLOSE_VISUAL_BUILD_UP",
+      "UI_INVENTORY_AUDIO_MOTION_PRESENCE_ALONE_CANNOT_CLOSE_BUILD_UP",
+      "BEFORE_AFTER_COMPARISON_REQUIRED",
+      "SAME_SCENE_RUNTIME_REOBSERVATION_REQUIRED"
+    ],
+    "focus": "CORE_FUN"
+  },
+  "experienceBuildUpContract": {
+    "version": 1,
+    "status": "ACTIVE_EXECUTABLE_BUILD_UP_CONTRACT",
+    "platform": "WEB",
+    "focus": "CORE_FUN",
+    "attention": "STANDARD",
+    "tracks": [
+      {
+        "track": "MOTION_AND_ACTING",
+        "status": "WEAK_OR_MISSING"
+      },
+      {
+        "track": "COMBAT_AND_PRIMARY_ACTION_FEEL",
+        "status": "WEAK_OR_MISSING"
+      },
+      {
+        "track": "UI_HUD_AND_MENU",
+        "status": "WEAK_OR_MISSING"
+      },
+      {
+        "track": "INVENTORY_AND_EQUIPMENT",
+        "status": "NOT_APPLICABLE_UNTIL_GAME_HAS_INVENTORY"
+      },
+      {
+        "track": "AUDIO_MUSIC_AND_FEEDBACK",
+        "status": "WEAK_OR_MISSING"
+      },
+      {
+        "track": "VFX_CAMERA_AND_IMPACT_SYNC",
+        "status": "WEAK_OR_MISSING"
+      },
+      {
+        "track": "WORLD_VISUAL_COHESION",
+        "status": "WEAK_OR_MISSING"
+      },
+      {
+        "track": "MOBILE_TOUCH_AND_ACCESSIBILITY",
+        "status": "WEAK_OR_MISSING"
+      },
+      {
+        "track": "PERFORMANCE_AND_RUNTIME_STABILITY",
+        "status": "WEAK_OR_MISSING"
+      }
+    ],
+    "priorityOrder": [
+      "MOTION_AND_ACTING",
+      "COMBAT_AND_PRIMARY_ACTION_FEEL",
+      "UI_HUD_AND_MENU",
+      "INVENTORY_AND_EQUIPMENT",
+      "AUDIO_MUSIC_AND_FEEDBACK",
+      "VFX_CAMERA_AND_IMPACT_SYNC",
+      "WORLD_VISUAL_COHESION",
+      "MOBILE_TOUCH_AND_ACCESSIBILITY",
+      "PERFORMANCE_AND_RUNTIME_STABILITY"
+    ],
+    "weakestTracks": [
+      "MOTION_AND_ACTING",
+      "COMBAT_AND_PRIMARY_ACTION_FEEL",
+      "UI_HUD_AND_MENU"
+    ],
+    "loop": [
+      "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
+      "RANK_WEAKEST_APPLICABLE_TRACKS",
+      "IMPLEMENT_EXISTING_RESPONSIBLE_SYSTEMS_DIRECTLY",
+      "REPLAY_REAL_INPUTS_AND_CAPTURE_SAME_SCENE_BEFORE_AFTER",
+      "VERIFY_PLAYER_FACING_EFFECT_AND_NO_SEMANTIC_REGRESSION",
+      "PROMOTE_VERIFIED_BASELINE_OR_REPEAT"
+    ],
+    "commonRules": [
+      "AUDIT_ALL_APPLICABLE_PLAYER_FACING_TRACKS_EVERY_GENERATION",
+      "RANK_AND_BUILD_THE_WEAKEST_THREE_BEFORE_ADDING_DECORATIVE_EXTRAS",
+      "PRESENCE_OR_MARKER_ONLY_CANNOT_PASS_QUALITY",
+      "IMPLEMENT_IN_THE_EXISTING_RESPONSIBLE_SYSTEM_NOT_A_SHADOW_WRAPPER",
+      "COMPARE_BEFORE_AFTER_UNDER_THE_SAME_SCENE_INPUT_AND_STATE",
+      "VERIFY_INPUT_TO_STATE_TO_MOTION_UI_AUDIO_VFX_CAMERA_FEEDBACK_CAUSALITY",
+      "PRESERVE_GAMEPLAY_BALANCE_SAVE_ECONOMY_AND_NETWORK_AUTHORITY",
+      "OWNER_INTENTIONALLY_DISABLED_AUDIO_CATEGORIES_MUST_REMAIN_DISABLED",
+      "REPEAT_BUILD_UP_UNTIL_NO_CRITICAL_PLAYER_FACING_TRACK_GAP_REMAINS"
+    ],
+    "platformProfile": {
+      "attention": "STANDARD",
+      "runtimeSurface": "BROWSER_TOUCH_RUNTIME",
+      "requirements": [
+        "REAL_POINTER_OR_TOUCH_INPUT",
+        "DOM_OR_CANVAS_RENDERED_DELTA",
+        "MOBILE_SAFE_AREA_AND_SCROLL_FLOW",
+        "WEB_AUDIO_STATE_TRANSITION_WHEN_AUDIO_APPLICABLE",
+        "FRAME_AND_MEMORY_BUDGET"
+      ]
+    },
+    "robloxExtra": null,
+    "webExtra": {
+      "runtimeEvidence": "REAL_BROWSER_TOUCH_AND_RENDER_DELTA",
+      "audio": "WEBAUDIO_OR_NATIVE_MEDIA_STATE_TRANSITION_WHEN_APPLICABLE",
+      "ui": "SAFE_AREA_SCROLL_MODAL_AND_TOUCH_FLOW",
+      "motion": "VISIBLE_FRAME_DELTA_NOT_ONLY_INTERNAL_STATE"
+    },
+    "unityExtra": null,
+    "ownerLocks": {
+      "gameplayBalanceSaveEconomyNetworkMeaningPreserved": true,
+      "intentionallyDisabledAudioCategoriesPreserved": true
+    },
+    "designIdentity": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다."
+  },
+  "uxInputDirectives": [
+    "핵심 행동, 위험, 현재 목표, 다음 선택을 모바일 화면에서 우선순위가 명확하게 보이게 한다.",
+    "터치 입력은 실제 게임 상태 변화에 연결하고 키보드/검증용 우회 입력이 모바일 PASS를 대신하지 못하게 한다.",
+    "실패/재시도/복귀 시 플레이어가 무엇이 유지되고 무엇이 초기화되는지 즉시 알 수 있게 한다.",
+    "HUD·메뉴·인벤토리·장비·설정은 같은 UI 디자인 언어와 정보 우선순위를 사용하고 뒤로가기/닫기/스크롤/팝업 중첩을 모바일에서 검증한다.",
+    "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
+  ],
+  "platformAdaptationDirectives": {
+    "WEB": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.: 동일 공통 목표 \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 색채 주파수 튜너 (Chromatic Frequency Tuner)를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "ROBLOX": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.: 동일 공통 목표 \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 색채 주파수 튜너 (Chromatic Frequency Tuner)를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
+    "UNITY": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.: 동일 공통 목표 \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 색채 주파수 튜너 (Chromatic Frequency Tuner)를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "FORTNITE_UEFN": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.: 동일 공통 목표 \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 색채 주파수 튜너 (Chromatic Frequency Tuner)를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
+    "UNITY_WEB": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.: 동일 공통 목표 \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 색채 주파수 튜너 (Chromatic Frequency Tuner)를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "UNITY_APP": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.: 동일 공통 목표 \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 색채 주파수 튜너 (Chromatic Frequency Tuner)를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "UNREAL": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.: 동일 공통 목표 \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 색채 주파수 튜너 (Chromatic Frequency Tuner)를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
+    "UEFN": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.: 동일 공통 목표 \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 색채 주파수 튜너 (Chromatic Frequency Tuner)를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
+  },
+  "robloxNativeExecution": {
+    "version": 1,
+    "required": true,
+    "responsibleFiles": [],
+    "sourceSymbolsOrStateAnchors": [
+      {
+        "file": "web-games/seed-puzzle-chromatic-cascade/index.html",
+        "line": 1,
+        "kind": "STATE",
+        "symbol": "STATE:chromatic",
+        "currentBehavior": "<!doctype html><html lang=\"ko\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\"><meta name=\"theme-color\" content=\"#",
+        "intendedBehavior": "CORE_FUN primary goal \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 색채 주파수 튜너 (Chromatic Frequency Tuner)를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 STATE:chromatic의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.에서 색채 주파수 튜너 (Chromatic Frequency Tuner)의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/seed-puzzle-chromatic-cascade/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      }
+    ],
+    "serverClientResponsibility": [
+      {
+        "file": "web-games/seed-puzzle-chromatic-cascade/index.html",
+        "symbol": "STATE:chromatic",
+        "role": "SHARED_MODULE_OR_STATE",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      }
+    ],
+    "expectedPlayerEffect": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.에서 색채 주파수 튜너 (Chromatic Frequency Tuner)의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.",
+    "observableAcceptanceScenario": "input/touch -> local handler -> RemoteEvent/RemoteFunction when required -> server validation -> authoritative state change -> client feedback",
+    "sourceInspectionChecklist": [
+      "SERVER_AUTHORITY",
+      "CLIENT_PRESENTATION",
+      "REMOTE_EVENTS_AND_FUNCTIONS",
+      "TOUCH_INPUT",
+      "CHARACTER_RESPAWN",
+      "DATASTORE_SAVE_LOAD",
+      "UI_STATE",
+      "CORE_STATE_MACHINE",
+      "MULTIPLAYER_SYNC"
+    ],
+    "codeQualityChecks": [
+      "NO_UNBOUNDED_WHILE_LOOP",
+      "NO_LEAKED_CONNECTIONS",
+      "NO_DUPLICATE_REMOTE_PATH",
+      "NO_CLIENT_AUTHORITATIVE_GAMEPLAY_MUTATION",
+      "BOUNDED_DATASTORE_RETRY",
+      "REMOTE_INPUT_VALIDATION",
+      "NO_STALE_CHARACTER_REFERENCE_AFTER_RESPAWN"
+    ],
+    "implementationRule": "read existing Roblox responsibilities first; modify the existing responsible function/module directly; do not translate Unity/Web code literally",
+    "actualPlayRule": "after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair"
+  },
+  "preserveConstraints": [
+    "기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.",
+    "승인 없는 밸런스/경제/보상/드랍/쿨다운/히트 의미 변경 금지.",
+    "멀티플레이 권한과 authoritative state를 프레젠테이션 이유로 클라이언트로 이동하지 않는다.",
+    "wrapper/shadow/temporary override 대신 기존 책임 시스템을 직접 수정한다."
+  ],
+  "responsibleSystemsAndFiles": {
+    "files": [
+      "web-games/seed-puzzle-chromatic-cascade/index.html"
+    ],
+    "sourceAnchors": [
+      {
+        "file": "web-games/seed-puzzle-chromatic-cascade/index.html",
+        "line": 1,
+        "kind": "STATE",
+        "symbol": "STATE:chromatic",
+        "context": "<!doctype html><html lang=\"ko\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\"><meta name=\"theme-color\" content=\"#",
+        "score": 18,
+        "currentBehavior": "<!doctype html><html lang=\"ko\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\"><meta name=\"theme-color\" content=\"#",
+        "intendedBehavior": "CORE_FUN primary goal \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 색채 주파수 튜너 (Chromatic Frequency Tuner)를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 STATE:chromatic의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.에서 색채 주파수 튜너 (Chromatic Frequency Tuner)의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/seed-puzzle-chromatic-cascade/index.html::STATE:chromatic이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/seed-puzzle-chromatic-cascade/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      }
+    ],
+    "selectionRule": "DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST",
+    "exactSourceAnchorRequired": true,
+    "currentAndIntendedBehaviorRequiredPerPrimaryAnchor": true
+  },
+  "effectivenessMeasurement": {
+    "expectedPlayerEffect": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.에서 색채 주파수 튜너 (Chromatic Frequency Tuner)의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.",
+    "previousGeneration": {
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
+      "runtimeObserved": false
+    },
+    "baseline": {
+      "sourceTreeFingerprint": "c70bf731abf8e41bd158045c650b1137a9897119ad1a31687a95ee403692685f",
+      "runtimeObserved": false,
+      "runtimePassed": false,
+      "failureStage": null,
+      "failureSignature": null
+    },
+    "requiredPostChangeEvidence": [
+      "CHANGED_GAME_FILES",
+      "POST_CHANGE_SOURCE_TREE_FINGERPRINT",
+      "RELEVANT_QA_OR_RUNTIME_RESULT",
+      "OBSERVED_PLAYER_VALUE_EFFECT"
+    ],
+    "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
+  },
+  "nextActionDecision": {
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial CORE_FUN build-up has no previous generation effect to compare"
+  },
+  "acceptanceEvidence": [
+    "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
+    "WORKFLOW_QA_HOMEPAGE_ONLY_CHANGE_DOES_NOT_COUNT",
+    "GAMEPLAY_CLAIM_REQUIRES_OBSERVABLE_GAME_STATE_DELTA",
+    "VISUAL_CLAIM_REQUIRES_ACTUAL_RENDERED_DELTA",
+    "BEFORE_AFTER_OR_VERIFIED_BASELINE_COMPARISON",
+    "NO_PROTECTED_SAVE_BALANCE_ECONOMY_NETWORK_SEMANTIC_REGRESSION",
+    "FOUNDATION_ONLY_REPAIR_COUNTS_ONLY_WHEN_FOUNDATION_IS_THIS_DIRECTIVE_PRIMARY_VERIFIED_GAP",
+    "HOLISTIC_CORE_DOMAINS_CLASSIFIED_PASS_GAP_OR_NOT_APPLICABLE",
+    "EXISTING_APPLICABLE_GAP_CANNOT_BE_SILENTLY_SKIPPED",
+    "FIRST_10_MINUTES_AND_SESSION_FLOW_REVIEWED",
+    "MAP_INVENTORY_UI_CONVENIENCE_AND_SYSTEM_CONNECTION_REVIEWED_WHEN_APPLICABLE",
+    "MOTION_UI_INVENTORY_AUDIO_VFX_CAMERA_WORLD_MOBILE_PERFORMANCE_TRACKS_REVIEWED",
+    "PRESENCE_ONLY_OR_MARKER_ONLY_CANNOT_CLOSE_PLAYER_FACING_QUALITY",
+    "SAME_SCENE_BEFORE_AFTER_RUNTIME_REOBSERVATION_REQUIRED_FOR_EXPERIENCE_BUILD_UP",
+    "ROBLOX_EXPERIENCE_BUILD_UP_USES_EXTRA_NATIVE_STUDIO_ATTENTION",
+    "AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP",
+    "CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE",
+    "EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP",
+    "WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT"
+  ],
+  "nextEscalationCandidates": [
+    "CONNECT_CORE_FUN_TO_PROGRESSION_AND_CONTENT_VARIETY",
+    "RAISE_VISUAL_ACTING_MOTION_AND_ENVIRONMENT_COHERENCE",
+    "CLOSE_NEXT_HIGHEST_VALUE_GAP_FROM_RUNTIME_OR_PLAYTEST",
+    "OPTIMIZE_MOBILE_FRAME_INPUT_RENDER_OR_STATE_BOTTLENECK_WHEN_VERIFIED"
+  ],
+  "loopEscalation": {
+    "automatic": true,
+    "nextGeneration": 2,
+    "currentDevelopmentDepth": 1,
+    "nextDevelopmentDepth": 1,
+    "escalationStage": "FOUNDATION_COMPLETENESS",
+    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+    "sourceChangedSincePrevious": false,
+    "verifiedEvolution": false,
+    "reuseSameGoalWithoutNewEvidence": false,
+    "completedGoalBecomesBaseline": false
+  },
+  "coverage": {
+    "allDomainsConsidered": true,
+    "domainCount": 74,
+    "visualDomainCount": 19,
+    "experienceTrackCount": 9,
+    "experienceBuildUpPlatform": "WEB",
+    "robloxExtraExperienceAttention": false,
+    "allowedStates": [
+      "PASS",
+      "GAP",
+      "NOT_APPLICABLE"
+    ],
+    "holisticCoreDomains": [
+      "CORE_FUN",
+      "PLAYER_ACTIONS",
+      "PLAYER_AGENCY",
+      "PROGRESSION",
+      "CONTENT_VARIETY",
+      "CONTENT_DENSITY",
+      "WORLD_MAP_TOPOLOGY",
+      "MAP_EXPANSION",
+      "REGIONS",
+      "WORLD_DENSITY",
+      "WORLD_NAVIGATION",
+      "INTERACTION_DISCOVERABILITY",
+      "INVENTORY",
+      "INVENTORY_USABILITY",
+      "EQUIPMENT_LOADOUT",
+      "SYSTEM_CONNECTION",
+      "SESSION_FLOW",
+      "FIRST_10_MINUTES",
+      "MID_LATE_GAME_DEPTH",
+      "SAVE_COMPLETENESS",
+      "INPUT",
+      "MOBILE_UX",
+      "SETTINGS_ACCESSIBILITY",
+      "MENU_FLOW",
+      "CONVENIENCE",
+      "UI_DESIGN_SYSTEM",
+      "UI_INFORMATION_PRIORITY",
+      "FEEDBACK_CLARITY",
+      "ANTI_GRIND",
+      "CONTENT_DISCOVERY",
+      "PERFORMANCE_BUDGET",
+      "RUNTIME_STABILITY"
+    ],
+    "holisticGaps": [
+      "PLAYER_AGENCY",
+      "ANTI_GRIND",
+      "CONTENT_DENSITY",
+      "MID_LATE_GAME_DEPTH",
+      "INTERACTION_DISCOVERABILITY",
+      "SYSTEM_CONNECTION",
+      "SESSION_FLOW",
+      "FIRST_10_MINUTES",
+      "INPUT",
+      "MOBILE_UX",
+      "SETTINGS_ACCESSIBILITY",
+      "MENU_FLOW",
+      "CONVENIENCE",
+      "UI_INFORMATION_PRIORITY",
+      "FEEDBACK_CLARITY",
+      "PERFORMANCE_BUDGET",
+      "RUNTIME_STABILITY"
+    ],
+    "notApplicable": [
+      "QUESTS",
+      "CONTENT_DISCOVERY",
+      "WORLD_MAP_TOPOLOGY",
+      "MAP_EXPANSION",
+      "REGIONS",
+      "WORLD_DENSITY",
+      "WORLD_NAVIGATION",
+      "LANDMARKS",
+      "TRAVERSAL",
+      "INVENTORY",
+      "INVENTORY_USABILITY",
+      "EQUIPMENT_LOADOUT",
+      "CRAFTING",
+      "SAVE_COMPLETENESS",
+      "RECONNECT_RECOVERY",
+      "MULTIPLAYER_AND_SYNC",
+      "NARRATIVE_STORY",
+      "REPLAYABILITY_VARIATION"
+    ],
+    "silentApplicableGapOmissionForbidden": true
+  },
+  "generatedAt": "2026-10-02T18:31:28.782Z"
+}
