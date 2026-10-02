@@ -776,8 +776,10 @@ test('Roblox F0-F9 orchestration dispatches exact games without cross-game fan-i
   const f9=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
   const release=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
 
-  assert.match(runtime,/ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED/);
-  assert.match(runtime,/ROBLOX_ONLY_FINAL_F9_SERVER_PUBLISH=YES/);
+  assert.match(runtime,/ROBLOX_PRE_F9_VALIDATION_TARGET=PRIVATE_DEDICATED/);
+  assert.match(runtime,/ROBLOX_CANONICAL_GAME_TARGET_MUTATED=NO/);
+  assert.match(runtime,/ROBLOX_STUDIO_REQUIRED_FOR_DEVELOPMENT_CONTINUATION=NO/);
+  assert.match(runtime,/publish_stage=validation/);
 
   const f9Dispatch=post.slice(
     post.indexOf('Dispatch exact F9 review for every runtime-accepted candidate'),
