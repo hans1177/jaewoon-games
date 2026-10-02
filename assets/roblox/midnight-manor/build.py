@@ -924,6 +924,8 @@ def build():
             s.curve_tube('WingArch'+str(side)+'_'+str(gate),arch_points,
               [.30,.28,.24,.28,.30],[.30,.28,.24,.28,.30],c['stone'],sides=20)
             s.box('WingThreshold'+str(side)+'_'+str(gate),(side*54,.28,z0),(5.5,.18,8.0),c['stone'])
+            # 1층 아치 위쪽은 2층 벽으로 닫아 상층이 외부로 뚫려 보이지 않게 한다.
+            s.box('UpperWingWallCap'+str(side)+'_'+str(gate),(side*54,20.0,z0),(1.5,12.0,8.6),c['plum'],lean=side*.18)
         s.box('FacadeWing'+str(side),(side*43,13,-2),(34,26,2),c['plum'],lean=side*.5)
         s.box('OuterWingWall'+str(side),(side*75,11,-31),(1.2,22,64),c['plum'],lean=side*.35)
         s.box('WingBackWall'+str(side),(side*58,11,-63),(35,22,1.2),c['plum'])
@@ -1199,9 +1201,15 @@ def build():
         stringer=[(side*14.35,stair_rise*(i+1)-.08,-40.0-i*stair_tread) for i in range(12)]
         s.curve_tube('GrandStairStringer'+str(side),stringer,[.20]*len(stringer),[.10]*len(stringer),c['wood'],sides=18)
 
-    s.box('SecondFloorGallery',(0,10.2,-55),(92,.55,19),c['wood'])
-    s.box('SecondFloorGalleryApron',(0,9.72,-45.62),(92,1.02,.48),c['wood'])
-    s.box('SecondFloorGalleryBrassLine',(0,10.17,-45.34),(90,.10,.10),c['brass'])
+    # 2층 갤러리는 계단 입구를 실제로 비운 U자형 구조로 만든다.
+    # 기존 통짜 바닥은 계단 위를 덮어 내려오는 길을 막았으므로 rear bridge + 좌우 deck + landing으로 분리한다.
+    s.box('SecondFloorGallery',(0,10.2,-61.75),(92,.55,5.5),c['wood'])
+    for side in [-1,1]:
+        s.box('SecondFloorGallerySide'+str(side),(side*31,10.2,-52.25),(30,.55,13.5),c['wood'])
+        s.box('SecondFloorGalleryApron'+str(side),(side*31,9.72,-45.62),(30,1.02,.48),c['wood'])
+        s.box('SecondFloorGalleryBrassLine'+str(side),(side*31,10.17,-45.34),(29,.10,.10),c['brass'])
+    s.box('SecondFloorStairLanding',(0,10.05,-57.0),(30,.35,4.5),c['wood'])
+    s.box('SecondFloorStairLandingTrim',(0,10.15,-54.82),(29.5,.12,.16),c['brass'])
     for side in [-1,1]:
         s.box('BalconyWalk'+str(side),(side*43,10.2,-31),(15,.55,48),c['wood'])
         side_top=[];side_base=[]
@@ -1213,12 +1221,17 @@ def build():
         for z in [-53,-8]:
             s.lathe('GalleryNewel'+str(side)+str(z),(side*36,11.48,z),.25,.16,2.55,c['wood'],sides=20)
             s.lathe('GalleryNewelCap'+str(side)+str(z),(side*36,12.82,z),.30,.07,.28,c['brass'],sides=20)
-    back_top=[];back_base=[]
-    for x in range(-42,43,4):
-        s.lathe('BackBaluster'+str(x),(x,11.45,-46),.095,.065,2.25,c['wood'],sides=14)
-        back_top.append((x,12.58,-46));back_base.append((x,10.62,-46))
-    s.curve_tube('GalleryRearHandrail',back_top,[.13]*len(back_top),[.10]*len(back_top),c['wood'],sides=18)
-    s.curve_tube('GalleryRearBaseRail',back_base,[.08]*len(back_base),[.065]*len(back_base),c['brass'],sides=16)
+    # 2층 전면 난간도 계단 폭 중앙 32stud를 비워 실제 계단 입구가 시각적으로 읽힌다.
+    for rail_side,xs in [(-1,list(range(-42,-15,4))),(1,list(range(18,43,4)))]:
+        back_top=[];back_base=[]
+        for x in xs:
+            s.lathe('BackBaluster'+str(rail_side)+'_'+str(x),(x,11.45,-46),.095,.065,2.25,c['wood'],sides=14)
+            back_top.append((x,12.58,-46));back_base.append((x,10.62,-46))
+        s.curve_tube('GalleryRearHandrail'+str(rail_side),back_top,[.13]*len(back_top),[.10]*len(back_top),c['wood'],sides=18)
+        s.curve_tube('GalleryRearBaseRail'+str(rail_side),back_base,[.08]*len(back_base),[.065]*len(back_base),c['brass'],sides=16)
+        edge_x=-16 if rail_side<0 else 16
+        s.lathe('GalleryStairNewel'+str(rail_side),(edge_x,11.55,-46),.27,.17,2.7,c['wood'],sides=22)
+        s.lathe('GalleryStairNewelCap'+str(rail_side),(edge_x,12.96,-46),.32,.08,.30,c['brass'],sides=22)
 
     # 그랜드홀 천장 코퍼. 계단/샹들리에 축 위는 비워 시야를 막지 않고 주변 천장만 깊이를 준다.
     for row,z0 in enumerate([-55,-47,-39,-31,-23,-15,-7]):
