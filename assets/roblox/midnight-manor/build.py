@@ -1175,31 +1175,100 @@ def build():
     s.curve_tube('CollectionGardenRailLeft',[(-35,2.5,31),(-35,2.5,40)],[.10,.10],[.08,.08],c['black'],sides=16)
     s.curve_tube('CollectionGardenRailRight',[(35,2.5,31),(35,2.5,40)],[.10,.10],[.08,.08],c['black'],sides=16)
 
-    # 폐쇄된 지하 납골당 입구: 좌측 정원에 잠긴 철문과 내려가는 석계단.
-    for i in range(5):
-        s.box('CryptStep'+str(i),(-57,.18+i*.24,64+i*.85),(11,.35,1.75),c['stone'])
-    s.box('CryptFacade',(-57,4.2,69.0),(14,8.4,1.6),c['stone'])
-    s.prism('CryptDoorBlack',(-57,3.5,68.10),[(-3.6,-3.2),(3.6,-3.2),(3.6,1.6),(0,3.5),(-3.6,1.6)],.24,c['black'])
-    for xbar in [-2.4,-1.2,0,1.2,2.4]:
-        s.box('CryptGateBar'+str(xbar),(-57+xbar,3.6,67.85),(.18,6.8,.18),c['brass'])
-    s.curve_tube('CryptArch',[(-61,5.0,67.7),(-59.5,7.0,67.7),(-57,8.0,67.7),(-54.5,7.0,67.7),(-53,5.0,67.7)],[.24]*5,[.20]*5,c['stone'],sides=20)
-
-    # 후면 폐쇄 온실: 오른쪽 정원 끝의 깨진 유리 프레임. 현재는 전시/확장 공간이며 출입은 막는다.
-    gx,gz=57,69
-    s.box('GreenhouseFoundation',(gx,.32,gz),(24,.55,16),c['stone'])
-    for x in [gx-11,gx-5.5,gx,gx+5.5,gx+11]:
-        s.box('GreenhousePost'+str(x),(x,5.2,gz),(.34,10.4,.34),c['brass'])
-        s.curve_tube('GreenhouseRoofRib'+str(x),[
-          (x,9.9,gz-7.5),(x,12.3,gz-3.5),(x,13.4,gz),(x,12.3,gz+3.5),(x,9.9,gz+7.5)
-        ],[.15]*5,[.12]*5,c['brass'],sides=16)
-    for zpanel in [gz-7.4,gz+7.4]:
-        s.box('GreenhouseGlassEnd'+str(zpanel),(gx,5.2,zpanel),(22,9.6,.12),c['glass'])
+    # 폐쇄된 지하 납골당: 정원 지형에 파묻힌 석재 전면 + 버트레스 + 깊은 철문 + 배수로.
+    crypt_stone=s.material('CryptStone',(.205,.215,.205))
+    # 계단은 아래로 내려갈수록 벽 사이에 깊이 묻힌다.
+    for i in range(6):
+        y=.18+i*.18;z=63.6+i*.78
+        s.box('CryptStep'+str(i),(-57,y,z),(9.6,.32,1.62),crypt_stone)
     for side in [-1,1]:
-        s.box('GreenhouseGlassSide'+str(side),(gx+side*11,5.2,gz),(.12,9.6,14.6),c['glass'])
+        s.box('CryptRetainingWall'+str(side),(-57+side*5.2,2.05,66.0),(1.15,4.1,8.5),crypt_stone,lean=side*.10)
+        s.box('CryptButtress'+str(side),(-57+side*6.2,3.2,69.0),(1.8,6.4,2.3),crypt_stone,lean=side*.16)
+        s.box('CryptButtressCap'+str(side),(-57+side*6.2,6.3,69.0),(2.2,.55,2.7),c['stone'])
+    s.box('CryptFacade',(-57,4.4,69.1),(13.1,8.8,2.0),crypt_stone)
+    s.box('CryptDoorRecess',(-57,3.55,67.95),(8.0,7.1,.70),c['black'])
+    # 문틀은 속 빈 뾰족 아치.
+    s.curve_tube('CryptArch',[
+      (-61.0,4.9,67.45),(-59.7,6.8,67.45),(-57,8.3,67.45),
+      (-54.3,6.8,67.45),(-53.0,4.9,67.45)
+    ],[.34,.31,.27,.31,.34],[.28,.26,.23,.26,.28],crypt_stone,sides=20)
+    for side in [-1,1]:
+        s.box('CryptDoorJamb'+str(side),(-57+side*4.05,3.45,67.45),(.80,6.9,.85),crypt_stone)
+    # 철문은 바/가로띠/중앙 잠금판으로 깊이를 만든다.
+    for i,xbar in enumerate([-2.8,-1.85,-.92,0,.92,1.85,2.8]):
+        s.lathe('CryptGateBar'+str(i),(-57+xbar,3.55,67.55),.075,.065,6.5,c['brass'],sides=14)
+    for ybar in [1.25,3.55,5.75]:
+        s.box('CryptGateBand'+str(ybar),(-57,ybar,67.53),(6.9,.18,.22),c['brass'])
+    s.box('CryptGateLock',(-57,3.45,67.32),(1.45,1.25,.30),c['brass'])
+    s.lathe('CryptGateRing',(-57,3.45,67.10),.50,.50,.11,c['black'],sides=28)
+    # 상부 삼각 페디먼트와 작은 가족 봉인.
+    ped=[(-6.4,0,0),(6.4,0,0),(0,4.2,0)]
+    s.node('CryptPediment',s.mesh('CryptPediment',ped,[[0,1,2]],crypt_stone),(-57,8.65,68.10))
+    s.ellipsoid('CryptSeal',(-57,9.35,67.80),(1.3,1.3,.30),c['brass'])
+    # 빗물이 계단으로 흐르는 홈.
+    for side in [-1,1]:
+        s.curve_tube('CryptDrain'+str(side),[
+          (-57+side*4.3,.22,63.2),(-57+side*4.45,.22,66.0),(-57+side*4.7,.25,69.0)
+        ],[.10,.10,.08],[.07,.07,.06],c['black'],sides=14)
+
+    # 후면 폐쇄 온실: 벽돌 기단 + 다중 베이 철제 프레임 + 아치형 유리 지붕 + 깨진 일부 패널.
+    gx,gz=57,69
+    greenhouse_metal=s.material('GreenhouseMetal',(.12,.10,.085))
+    greenhouse_brick=s.material('GreenhouseBrick',(.23,.16,.13))
+    s.box('GreenhouseFoundation',(gx,.35,gz),(25.5,.70,17.5),c['stone'])
+    s.box('GreenhouseBrickPlinth',(gx,1.15,gz),(24.2,1.5,16.2),greenhouse_brick)
+    # 5개의 구조 베이.
+    bay_x=[gx-11,gx-5.5,gx,gx+5.5,gx+11]
+    for bi,x in enumerate(bay_x):
+        s.box('GreenhousePost'+str(bi),(x,5.55,gz),(.34,8.8,.34),greenhouse_metal)
+        s.curve_tube('GreenhouseRoofRib'+str(bi),[
+          (x,9.85,gz-7.45),(x,11.55,gz-5.0),(x,12.85,gz-2.6),
+          (x,13.35,gz),(x,12.85,gz+2.6),(x,11.55,gz+5.0),(x,9.85,gz+7.45)
+        ],[.14,.13,.12,.11,.12,.13,.14],[.11,.10,.095,.09,.095,.10,.11],greenhouse_metal,sides=16)
+    # 길이 방향 벽체 가로 프레임.
+    for y in [3.0,6.0,9.0]:
+        for side in [-1,1]:
+            s.box('GreenhouseSideRail'+str(side)+str(y),(gx+side*11,y,gz),(.20,.20,14.6),greenhouse_metal)
+    # 전후면 박공지붕 프레임.
+    for zi,zpanel in enumerate([gz-7.45,gz+7.45]):
+        s.box('GreenhouseEndBeam'+str(zi),(gx,9.7,zpanel),(22.2,.32,.24),greenhouse_metal)
+        for x in [gx-11,gx-5.5,gx,gx+5.5,gx+11]:
+            s.box('GreenhouseEndMullion'+str(zi)+str(x),(x,5.2,zpanel),(.24,8.7,.18),greenhouse_metal)
+        s.curve_tube('GreenhouseEndArch'+str(zi),[
+          (gx-11,9.7,zpanel),(gx-7,11.7,zpanel),(gx,13.35,zpanel),
+          (gx+7,11.7,zpanel),(gx+11,9.7,zpanel)
+        ],[.16,.14,.12,.14,.16],[.12,.11,.10,.11,.12],greenhouse_metal,sides=16)
+    # 유리는 베이 단위로 쪼개서 구조가 읽히고 일부 패널은 실제로 비워둔다.
+    for side in [-1,1]:
+        xwall=gx+side*10.82
+        for panel,z0 in enumerate([63.4,66.9,70.4,73.9]):
+            if (side<0 and panel==1) or (side>0 and panel==3):continue
+            s.box('GreenhouseSideGlass'+str(side)+'_'+str(panel),(xwall,5.15,z0),(.08,7.4,3.15),c['glass'])
+    # 깨진 판은 삼각 유리 조각만 남겨 폐쇄된 오래된 온실 느낌을 만든다.
+    broken=[(-1.45,-3.4),(1.45,-3.4),(1.45,.35),(.45,1.75),(-.55,.70),(-1.45,1.20)]
+    s.prism('GreenhouseBrokenGlassA',(gx-10.72,5.15,66.9),broken,.045,c['glass'])
+    broken2=[(-1.35,-3.5),(1.35,-3.5),(1.35,.90),(.30,.25),(-.80,1.40),(-1.35,.55)]
+    s.prism('GreenhouseBrokenGlassB',(gx+10.72,5.15,73.9),broken2,.045,c['glass'])
+    # 중앙 쌍문은 잠겨 있으며 상부 환기창과 능선 장식이 있다.
+    for side in [-1,1]:
+        s.box('GreenhouseDoor'+str(side),(gx+side*2.0,4.6,gz-7.58),(3.75,7.2,.26),greenhouse_metal)
+        s.box('GreenhouseDoorGlass'+str(side),(gx+side*2.0,5.0,gz-7.42),(2.9,5.8,.08),c['glass'])
+    s.box('GreenhouseDoorTransom',(gx,9.0,gz-7.48),(8.4,1.6,.18),c['glass'])
+    s.curve_tube('GreenhouseRidge',[(gx-11,13.35,gz),(gx,13.35,gz),(gx+11,13.35,gz)],[.12,.12,.12],[.10,.10,.10],greenhouse_metal,sides=16)
+    for i,x in enumerate([gx-7.5,gx,gx+7.5]):
+        s.lathe('GreenhouseRoofFinial'+str(i),(x,13.85,gz),.12,.035,1.0,c['brass'],sides=16)
+    # 내부 벤치/죽은 식물은 외부 유리를 통해 실루엣만 읽히게 한다.
     for x in [gx-8,gx-2.7,gx+2.7,gx+8]:
-        s.box('GreenhouseBench'+str(x),(x,1.25,gz),(3.8,1.4,10.5),c['wood'])
+        s.box('GreenhouseBench'+str(x),(x,1.55,gz),(3.5,1.15,10.4),c['wood'])
+    dead_plant_mat=s.material('DeadPlant',(.08,.11,.07))
     for i,(x,z) in enumerate([(51,66),(55,72),(60,65),(64,72)]):
-        s.curve_tube('DeadGreenhousePlant'+str(i),[(x,.8,z),(x+.4,2.2,z-.2),(x-.2,3.6,z+.3)],[.16,.10,.04],[.14,.09,.035],s.material('DeadPlant',(.08,.11,.07)),sides=14)
+        s.curve_tube('DeadGreenhousePlant'+str(i),[
+          (x,.9,z),(x+.35,2.2,z-.2),(x-.10,3.3,z+.25),(x+.25,4.0,z-.10)
+        ],[.14,.10,.055,.025],[.12,.09,.05,.022],dead_plant_mat,sides=14)
+        for side in [-1,1]:
+            s.curve_tube('DeadGreenhouseTwig'+str(i)+str(side),[
+              (x,2.55,z),(x+side*.65,3.05,z+side*.25)
+            ],[.045,.018],[.040,.015],dead_plant_mat,sides=12)
 
     # 마른 나무: 박스 기둥 대신 굽은 연속 곡면 줄기/가지.
     for t,(x,z,h) in enumerate([(-65,49,15),(65,52,17),(-61,19,14),(62,16,16),(-44,66,13),(43,67,15)]):
