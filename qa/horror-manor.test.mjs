@@ -138,8 +138,8 @@ test('personal manor exterior has signature housing and collection architecture'
   'ManorCrestShield','ArchivistTowerBase','ArchivistTowerUpper','ArchivistTowerRoof',
   'MortuaryLoadingDoor','CoffinRail','CoffinTrolleyDeck',
   'MortimerServiceDoor','MortimerServiceCanopy','UmbrellaStand',
-  'CryptFacade','CryptDoorBlack','CryptGateBar','CryptArch',
-  'GreenhouseFoundation','GreenhouseRoofRib','GreenhouseGlassSide',
+  'CryptFacade','CryptDoorRecess','CryptGateBar','CryptArch','CryptPediment',
+  'GreenhouseFoundation','GreenhouseRoofRib','GreenhouseSideGlass','GreenhouseEndArch','GreenhouseDoor',
   'FrontGutter','RainPipe'
  ])assert.match(manorBuild,new RegExp(token));
  assert.match(manorBuild,/for i,outline in enumerate\(crest_shapes\)/);
