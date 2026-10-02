@@ -1,5 +1,5 @@
 {
-  "version": 303,
+  "version": 304,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3897,7 +3897,13 @@
           "MCP_TRANSPORT"
         ],
         "completedMcpSessionRuntimeFailureAction": "PERSIST_GAME_RUNTIME_EVIDENCE_WITHOUT_MCP_SESSION_RESTART",
-        "runtimeFailureMustNotConsumeMcpRecoveryAttempts": true
+        "runtimeFailureMustNotConsumeMcpRecoveryAttempts": true,
+        "infrastructureRetryMode": "UNLIMITED_EXACT_CANDIDATE_REQUEUE",
+        "infrastructureRetryLimit": null,
+        "runnerOfflineAction": "KEEP_EXACT_STUDIO_JOB_QUEUED_UNTIL_AUTHENTICATED_RUNNER_RETURNS",
+        "infrastructureEvidenceDoesNotSuppressRetry": true,
+        "retrySameExactSourceArtifact": true,
+        "noWaitingTerminalState": true
       },
       "actualPlayPlannerEligibility": "EXACT_PRIVATE_RUNTIME_CANDIDATE_PLUS_EXACT_SOURCE_ARTIFACT_BINDING",
       "actualPlayPlannerExclusiveCurrentStepGate": false,
@@ -5787,7 +5793,10 @@
     "interruptedSessionRequeuesExactArtifact": true,
     "interruptedSessionIsGameFailure": false,
     "recurringWatchdog": false,
-    "startupMode": "USER_STARTUP_WSCRIPT_HIDDEN_RUN_CMD"
+    "startupMode": "USER_STARTUP_WSCRIPT_HIDDEN_RUN_CMD",
+    "studioInfrastructureRetryMode": "UNLIMITED_EXACT_CANDIDATE_REQUEUE",
+    "studioRunnerOfflineKeepsExactJobQueued": true,
+    "studioInfrastructureFailureDoesNotStopDevelopment": true
   },
   "nativeChildDispatchDedupeTopology": {
     "version": 1,

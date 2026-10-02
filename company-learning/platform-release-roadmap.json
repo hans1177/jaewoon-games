@@ -1,5 +1,5 @@
 {
-  "version": 521,
+  "version": 522,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-02",
@@ -1416,7 +1416,21 @@
         ],
         "completedMcpSessionRuntimeFailureAction": "PERSIST_GAME_RUNTIME_EVIDENCE_WITHOUT_MCP_SESSION_RESTART",
         "runtimeFailureMustNotConsumeMcpRecoveryAttempts": true,
-        "completedSessionExitContract": "MCP_RUN_EXITS_SUCCESS_AFTER_REQUIRED_TOOLS_AND_STUDIO_SESSION_COMPLETE_EVEN_WHEN_RUNTIME_QA_FAILS"
+        "completedSessionExitContract": "MCP_RUN_EXITS_SUCCESS_AFTER_REQUIRED_TOOLS_AND_STUDIO_SESSION_COMPLETE_EVEN_WHEN_RUNTIME_QA_FAILS",
+        "infrastructureRetryMode": "UNLIMITED_EXACT_CANDIDATE_REQUEUE",
+        "infrastructureRetryLimit": null,
+        "runnerOfflineAction": "KEEP_EXACT_STUDIO_JOB_QUEUED_UNTIL_AUTHENTICATED_RUNNER_RETURNS",
+        "runnerUnavailableAfterStartAction": "PERSIST_INFRASTRUCTURE_PENDING_AND_REQUEUE_SAME_EXACT_CANDIDATE",
+        "infrastructureEvidenceDoesNotSuppressRetry": true,
+        "retrySameExactSourceArtifact": true,
+        "developmentContinuesWhileStudioUnavailable": true,
+        "noWaitingTerminalState": true,
+        "retryStopsOnlyOn": [
+          "EXACT_STUDIO_PASS",
+          "PRODUCT_FAILURE_REPAIR_ROUTE",
+          "SOURCE_OR_ARTIFACT_SUPERSEDED",
+          "OWNER_HOLD_OR_DISABLED"
+        ]
       },
       "runtimeFoundationPassedArtifactAllowedForLocalActualPlay": true,
       "earliestBehaviorFeedbackCheckpoint": "AFTER_EXACT_PRIVATE_RUNTIME_CANDIDATE_AND_EXACT_SOURCE_ARTIFACT_BINDING",
@@ -1554,7 +1568,12 @@
         "interruptedSessionAction": "REQUEUE_SAME_EXACT_SOURCE_ARTIFACT_AFTER_HOST_RETURNS",
         "interruptedSessionIsGameFailure": false,
         "restartFromBlankForbidden": true,
-        "exactSourceArtifactBindingPreservedAcrossHostInterruption": true
+        "exactSourceArtifactBindingPreservedAcrossHostInterruption": true,
+        "runnerOfflineAction": "KEEP_EXACT_STUDIO_JOB_QUEUED",
+        "studioUnavailableAfterJobStartAction": "REQUEUE_SAME_EXACT_SOURCE_ARTIFACT",
+        "infrastructureRetryLimit": null,
+        "infrastructureRetryIsGameFailure": false,
+        "independentDevelopmentContinuesWhileRunnerUnavailable": true
       }
     },
     "headlessValidation": {
@@ -8674,6 +8693,20 @@
       "codingBuildRuntimeQaPreserved": true,
       "canonicalPipelinePreserved": true,
       "wrapperShadowBypassForbidden": true
+    },
+    "robloxStudioUnavailableUnlimitedRetry20261002": {
+      "authority": "OWNER_DIRECTIVE_2026-10-02",
+      "scope": "ROBLOX_STUDIO_LOCAL_INFRASTRUCTURE_ONLY",
+      "runnerOffline": "KEEP_EXACT_JOB_QUEUED_UNTIL_RUNNER_RETURNS",
+      "studioOrMcpUnavailable": "PERSIST_INFRASTRUCTURE_PENDING_AND_REQUEUE_SAME_EXACT_CANDIDATE",
+      "retryLimit": null,
+      "sourceArtifactIdentityMustRemainExact": true,
+      "infrastructureFailureIsGameFailure": false,
+      "productFailureStillUsesExistingRepairRequiredRoute": true,
+      "developmentContinuesWithoutWaitingForStudioInfrastructure": true,
+      "newSchedulerCreated": false,
+      "watchdogCreated": false,
+      "canonicalPipelinePreserved": true
     }
   },
   "vibeExecutionLaneContract": {

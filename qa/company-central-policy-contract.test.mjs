@@ -2033,6 +2033,20 @@ test('Roblox Studio PC host keeps only Studio visible and resumes exact work aft
   assert.equal(host.interruptedSessionIsGameFailure,false);
   assert.equal(host.restartFromBlankForbidden,true);
   assert.equal(host.exactSourceArtifactBindingPreservedAcrossHostInterruption,true);
+  const recovery=roadmap.roblox?.studioExecution?.mcpUnavailableRecovery||{};
+  assert.equal(recovery.infrastructureRetryMode,'UNLIMITED_EXACT_CANDIDATE_REQUEUE');
+  assert.equal(recovery.infrastructureRetryLimit,null);
+  assert.equal(recovery.runnerOfflineAction,'KEEP_EXACT_STUDIO_JOB_QUEUED_UNTIL_AUTHENTICATED_RUNNER_RETURNS');
+  assert.equal(recovery.runnerUnavailableAfterStartAction,'PERSIST_INFRASTRUCTURE_PENDING_AND_REQUEUE_SAME_EXACT_CANDIDATE');
+  assert.equal(recovery.infrastructureEvidenceDoesNotSuppressRetry,true);
+  assert.equal(recovery.retrySameExactSourceArtifact,true);
+  assert.equal(recovery.developmentContinuesWhileStudioUnavailable,true);
+  assert.equal(recovery.noWaitingTerminalState,true);
+  assert.equal(host.runnerOfflineAction,'KEEP_EXACT_STUDIO_JOB_QUEUED');
+  assert.equal(host.studioUnavailableAfterJobStartAction,'REQUEUE_SAME_EXACT_SOURCE_ARTIFACT');
+  assert.equal(host.infrastructureRetryLimit,null);
+  assert.equal(host.infrastructureRetryIsGameFailure,false);
+  assert.equal(host.independentDevelopmentContinuesWhileRunnerUnavailable,true);
 
   const runner=readText('.github/workflows/company-roblox-runner-pwsh-bootstrap.yml');
   const runtime=readText('.github/workflows/company-development-roblox-post-runtime-qa.yml');
@@ -2052,6 +2066,8 @@ test('Roblox Studio PC host keeps only Studio visible and resumes exact work aft
   assert.doesNotMatch(runner,/\n  runner-control:\n/);
   assert.match(runtime,/ROBLOX_STUDIO_REBOOT_CHECKPOINT_RESERVED=/);
   assert.match(runtime,/ROBLOX_STUDIO_REBOOT_REQUEUE=YES:/);
+  assert.match(runtime,/ROBLOX_STUDIO_INFRASTRUCTURE_RETRY_REQUIRED=/);
+  assert.match(runtime,/COMPLETED_INFRASTRUCTURE_PENDING/);
   assert.match(runtime,/ROBLOX_STUDIO_PC_INTERRUPTION_COUNTS_AS_GAME_FAILURE=NO/);
   assert.doesNotMatch(runtime,/shell:\s*powershell\s*$/m);
   assert.match(runtime,/WindowStyle Hidden/);
