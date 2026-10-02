@@ -408,7 +408,7 @@ class Scene:
         # 장식의 수는 유지하고 같은 재질의 고정 소품만 병합한다. 움직이는 노드는 보존한다.
         keep=('Butler','Archivist','Undertaker','CoffinLid','CoffinHand','ArmorHelmet','LittleGhost',
               'TeaCup','Tea','ChandelierFlame','MirrorPupil','FamilyPortrait','PortraitCanvas','HearthFlame',
-              'MapPin','GhostRelic_','MemoryRelic','MasterCollectionRelic',
+              'MapPin','GhostRelic_','MemoryRelic','MasterCollectionRelic','ManorCrestSegment',
               'BackWall','HallFloor','Courtyard','CrookedRoof','ClockPendulum','EntryDoor')
         groups={}
         bpy.context.view_layer.update()
@@ -878,6 +878,70 @@ def build():
     s.lathe('RightTurret',(57,27,-48),7,5.5,25,c['plum'],sides=10)
     s.lathe('RightTurretRoof',(58,48,-48),9,0,17,c['roof'],sides=10)
 
+    # 개인 저택 외부 정체성: 진행도 가문 문장, 기록탑, 장의사 반입구, 집사 서비스 구역.
+    crest_bg=s.material('CrestBlack',(.028,.025,.030))
+    crest_wine=s.material('CrestWine',(.25,.028,.055))
+    s.prism('ManorCrestShield',(0,22.9,-.72),[
+      (-3.2,2.4),(3.2,2.4),(2.85,-.55),(1.55,-3.05),(0,-4.10),(-1.55,-3.05),(-2.85,-.55)
+    ],.24,crest_bg)
+    s.curve_tube('ManorCrestFrame',[
+      (-3.2,25.3,-.54),(3.2,25.3,-.54),(2.85,22.35,-.54),(1.55,19.85,-.54),
+      (0,18.80,-.54),(-1.55,19.85,-.54),(-2.85,22.35,-.54),(-3.2,25.3,-.54)
+    ],[.14]*8,[.11]*8,c['brass'],sides=18)
+    crest_shapes=[
+      [(-2.45,1.55),(-1.55,1.80),(-1.35,-1.00),(-2.15,-1.55)],
+      [(-1.35,1.85),(-.42,2.05),(-.30,-1.55),(-1.10,-1.05)],
+      [(-.30,2.05),(.30,2.05),(.18,-2.55),(-.18,-2.55)],
+      [(.42,2.05),(1.35,1.85),(1.10,-1.05),(.30,-1.55)],
+      [(1.55,1.80),(2.45,1.55),(2.15,-1.55),(1.35,-1.00)],
+      [(-1.55,-1.70),(0,-3.45),(1.55,-1.70),(.65,-1.20),(0,-2.20),(-.65,-1.20)]
+    ]
+    for i,outline in enumerate(crest_shapes):
+        s.prism('ManorCrestSegment'+str(i+1),(0,22.9,-.48),outline,.10,crest_wine)
+
+    # 에드윈 기록탑: 왼쪽 날개 위로 솟은 비뚤어진 기록 전용 탑.
+    s.box('ArchivistTowerBase',(-65,30,-47),(13,17,15),c['plum'],lean=-.55)
+    s.box('ArchivistTowerUpper',(-65.6,42,-47),(10.5,10,11),c['plum'],lean=-.35)
+    s.lathe('ArchivistTowerRoof',(-66,51,-47),7.8,.4,13,c['roof'],sides=8)
+    for y in [29,36,43]:
+        s.box('ArchivistTowerWindowFrame',(-58.35,y,-47),(1.0,5.2,4.2),c['wood'])
+        s.box('ArchivistTowerWindowGlow',(-57.82,y,-47),(.12,4.0,3.1),c['amber'])
+        s.box('ArchivistTowerWindowCross',(-57.70,y,-47),(.10,.28,3.2),c['black'])
+        s.box('ArchivistTowerWindowMullion',(-57.70,y,-47),(.10,4.0,.24),c['black'])
+    for y in [33,39,45]:
+        s.box('ArchivistTowerBookShadow'+str(y),(-57.56,y,-47),(.06,1.3,2.6),c['black'])
+
+    # 장의사 관 반입구: 오른쪽 외벽의 넓은 쌍문과 관 운반 레일.
+    for side in [-1,1]:
+        s.box('MortuaryLoadingDoor'+str(side),(74.18,5.1,-43+side*2.55),(.42,10.2,5.0),c['wood'])
+        s.box('MortuaryDoorBrace'+str(side),(73.92,5.1,-43+side*2.55),(.10,.55,4.2),c['brass'])
+    s.box('MortuaryLoadingLintel',(73.85,11,-43),(.55,2.1,11.0),c['stone'])
+    s.box('MortuaryLoadingCanopy',(68.8,11.8,-43),(10.5,.65,12.5),c['roof'])
+    for zrail in [-45.0,-41.0]:
+        s.curve_tube('CoffinRail'+str(zrail),[(62,.22,zrail),(73,.22,zrail)],[.12,.12],[.10,.10],c['brass'],sides=18)
+    s.box('CoffinTrolleyDeck',(66.5,1.15,-43),(6.5,.40,3.7),c['wood'])
+    for wx in [64.2,68.8]:
+        for wz in [-44.5,-41.5]:
+            wheel=s.lathe('CoffinTrolleyWheel'+str(wx)+str(wz),(wx,.72,wz),.58,.58,.18,c['black'],sides=24);wheel.rotation_euler.x=math.pi/2
+
+    # 모티머 서비스 구역: 왼쪽 후문, 비가림, 장작/우산/쟁반 보관 흔적.
+    s.box('MortimerServiceDoor',(-74.15,4.8,-13),(.40,9.6,5.8),c['wood'])
+    s.box('MortimerServiceCanopy',(-69.8,10.2,-13),(9.0,.55,8.5),c['roof'])
+    s.box('MortimerServiceStep',(-71.0,.45,-13),(7.5,.7,7.0),c['stone'])
+    for i in range(8):
+        x=-68.5+(i%4)*1.05;y=.65+(i//4)*.85
+        s.lathe('ServiceFirewood'+str(i),(x,y,-8.7),.24,.20,1.45,c['wood'],sides=18)
+    s.lathe('UmbrellaStand',(-69.4,1.6,-17.0),.72,.58,3.1,c['brass'],sides=24)
+    for i in range(4):
+        s.curve_tube('ServiceUmbrella'+str(i),[
+          (-69.75+i*.24,.75,-17.0),(-69.70+i*.24,2.4,-17.0),(-69.45+i*.24,3.45,-16.95)
+        ],[.045,.045,.030],[.040,.040,.026],c['black'],sides=14)
+
+    # 지붕 홈통/배수관. 큰 면을 세분화하지 않고 외관 스케일만 읽히게 한다.
+    for side in [-1,1]:
+        s.curve_tube('FrontGutter'+str(side),[(side*5,24.2,.15),(side*53,24.2,.15)],[.16,.16],[.13,.13],c['black'],sides=18)
+        s.curve_tube('RainPipe'+str(side),[(side*52.5,23.8,.10),(side*52.5,3.0,.10),(side*53.2,.55,1.4)],[.14,.14,.12],[.12,.12,.10],c['black'],sides=16)
+
     # 큰 계단: 각 단의 윗면 높이가 정확히 이어지는 12단 솔리드 구조.
     stair_rise=.82;stair_tread=1.36
     for i in range(12):
@@ -1045,6 +1109,41 @@ def build():
         for j,z in enumerate(range(8,67,9)):
             s.box('Hedge'+str(side)+str(j),(side*35,1.3,z),(18,2.6,2.2),s.material('DeadHedge',(.09,.14,.09)))
             s.box('SidePath'+str(side)+str(j),(side*56,.08,z),(11,.12,7),c['stone'])
+    # 수집 정원: 기존 맵 기념 유물을 건축형 전시대에 올린다.
+    for name,x,z in [('SCHOOL',-30,35),('HOSPITAL',30,35),('THEME_PARK',45,54)]:
+        s.box('CollectionPlinth_'+name,(x,.62,z),(7.4,1.15,5.4),c['stone'])
+        s.box('CollectionPlaque_'+name,(x,1.38,z+2.73),(4.8,.95,.18),c['brass'])
+        for side in [-1,1]:
+            s.lathe('CollectionPost_'+name+str(side),(x+side*3.3,2.0,z-2.1),.12,.10,3.0,c['black'],sides=16)
+    s.curve_tube('CollectionGardenRailLeft',[(-35,2.5,31),(-35,2.5,40)],[.10,.10],[.08,.08],c['black'],sides=16)
+    s.curve_tube('CollectionGardenRailRight',[(35,2.5,31),(35,2.5,40)],[.10,.10],[.08,.08],c['black'],sides=16)
+
+    # 폐쇄된 지하 납골당 입구: 좌측 정원에 잠긴 철문과 내려가는 석계단.
+    for i in range(5):
+        s.box('CryptStep'+str(i),(-57,.18+i*.24,64+i*.85),(11,.35,1.75),c['stone'])
+    s.box('CryptFacade',(-57,4.2,69.0),(14,8.4,1.6),c['stone'])
+    s.prism('CryptDoorBlack',(-57,3.5,68.10),[(-3.6,-3.2),(3.6,-3.2),(3.6,1.6),(0,3.5),(-3.6,1.6)],.24,c['black'])
+    for xbar in [-2.4,-1.2,0,1.2,2.4]:
+        s.box('CryptGateBar'+str(xbar),(-57+xbar,3.6,67.85),(.18,6.8,.18),c['brass'])
+    s.curve_tube('CryptArch',[(-61,5.0,67.7),(-59.5,7.0,67.7),(-57,8.0,67.7),(-54.5,7.0,67.7),(-53,5.0,67.7)],[.24]*5,[.20]*5,c['stone'],sides=20)
+
+    # 후면 폐쇄 온실: 오른쪽 정원 끝의 깨진 유리 프레임. 현재는 전시/확장 공간이며 출입은 막는다.
+    gx,gz=57,69
+    s.box('GreenhouseFoundation',(gx,.32,gz),(24,.55,16),c['stone'])
+    for x in [gx-11,gx-5.5,gx,gx+5.5,gx+11]:
+        s.box('GreenhousePost'+str(x),(x,5.2,gz),(.34,10.4,.34),c['brass'])
+        s.curve_tube('GreenhouseRoofRib'+str(x),[
+          (x,9.9,gz-7.5),(x,12.3,gz-3.5),(x,13.4,gz),(x,12.3,gz+3.5),(x,9.9,gz+7.5)
+        ],[.15]*5,[.12]*5,c['brass'],sides=16)
+    for zpanel in [gz-7.4,gz+7.4]:
+        s.box('GreenhouseGlassEnd'+str(zpanel),(gx,5.2,zpanel),(22,9.6,.12),c['glass'])
+    for side in [-1,1]:
+        s.box('GreenhouseGlassSide'+str(side),(gx+side*11,5.2,gz),(.12,9.6,14.6),c['glass'])
+    for x in [gx-8,gx-2.7,gx+2.7,gx+8]:
+        s.box('GreenhouseBench'+str(x),(x,1.25,gz),(3.8,1.4,10.5),c['wood'])
+    for i,(x,z) in enumerate([(51,66),(55,72),(60,65),(64,72)]):
+        s.curve_tube('DeadGreenhousePlant'+str(i),[(x,.8,z),(x+.4,2.2,z-.2),(x-.2,3.6,z+.3)],[.16,.10,.04],[.14,.09,.035],s.material('DeadPlant',(.08,.11,.07)),sides=14)
+
     # 마른 나무: 박스 기둥 대신 굽은 연속 곡면 줄기/가지.
     for t,(x,z,h) in enumerate([(-65,49,15),(65,52,17),(-61,19,14),(62,16,16),(-44,66,13),(43,67,15)]):
         lean=(-1 if t%2 else 1)
@@ -1068,6 +1167,14 @@ def build():
     for i,(x,z) in enumerate([(-69,33),(-63,28),(-59,39),(69,29),(63,35),(58,40),(-47,58),(48,59)]):
         s.box('Gravestone'+str(i),(x,1.7,z),(2.3,3.4,.65),c['stone'],lean=(-.16+i*.04))
         s.box('GraveBase'+str(i),(x,.35,z),(3.3,.55,1.7),c['stone'])
+    # 주택 노후화 디테일: 벽면 석재 코너와 일부 깨진 유리/빗물 얼룩.
+    for side in [-1,1]:
+        for y in range(2,23,4):
+            s.box('FacadeQuoin'+str(side)+str(y),(side*52.7,y,-2.15),(1.6,2.8,1.0),c['stone'],lean=side*.08)
+    for x in [-45,-31,31,45]:
+        s.box('WindowSill'+str(x),(x,3.25,-.10),(6.2,.45,1.0),c['stone'])
+        s.box('RainStain'+str(x),(x,1.8,-.18),(3.1,2.7,.05),s.material('RainStainMat',(.10,.09,.09)))
+
     # Carved trims, imperfect rooflines and pointed arch panels give a western manor silhouette.
     for side in [-1,1]:
         for y in [1,11.5,22.5]:s.box('FacadeCornice'+str(side)+str(y),(side*20,y,-1.35),(25,.6,1.2),c['wood'])
