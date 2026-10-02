@@ -362,7 +362,8 @@ export function robloxDeterministicPresentationEligible(order={}){
   return clean(order.target).toLowerCase()==='roblox'
     &&order.presentationQuality?.required===true
     &&clean(order.presentationQuality?.pass).toUpperCase()==='ASSET_ADAPTATION'
-    &&(assetDevelopmentTask(order)||!worldLobbySourceWorkRequired(order));
+    &&!assetDevelopmentTask(order)
+    &&!worldLobbySourceWorkRequired(order);
 }
 
 export function deterministicDiagnosticCandidate({exploration={},sourceRoot='',responsibleFiles=[],order={}}={}){
@@ -3756,15 +3757,17 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         ...(candidate.newFiles||[]).filter(row=>touchedVisual.includes(clean(row.path))).map(row=>String(row.content||'')),
         ...(candidate.replaceFiles||[]).filter(row=>touchedVisual.includes(clean(row.path))).map(row=>String(row.content||''))
       ].join('\n');
+      const studioHandoff=order?.assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff||{};
+      const studioBindingVersion=Math.max(1,Math.floor(Number(studioHandoff.bindingVersion||2)));
       const required=[
-        /\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*1\b/,
+        new RegExp('\\bSTUDIO_ASSET_BINDING_VERSION\\s*=\\s*'+studioBindingVersion+'\\b'),
         /\bSTUDIO_ASSET_SELECTION\s*=\s*\{/,
         /StudioAssetBindingVersion/,
         /StudioAssetAtoms/,
         /(?:Instance\.new\s*\(|Color3\.(?:fromRGB|new)\s*\(|\.(?:Material|Color|BackgroundColor3|TextureID|MeshId)\s*=)/
       ];
       if(required.some(pattern=>!pattern.test(visualChangeText))){
-        throw new Error('ROBLOX_STUDIO_ASSET_APPLICATION_REQUIRED:VISUAL_OWNER_MUST_CONTAIN_BINDING_SELECTION_RUNTIME_ATTRIBUTES_AND_NATIVE_VISUAL_CHANGE');
+        throw new Error('ROBLOX_STUDIO_ASSET_APPLICATION_REQUIRED:VISUAL_OWNER_MUST_CONTAIN_BINDING_V'+studioBindingVersion+'_SELECTION_RUNTIME_ATTRIBUTES_AND_NATIVE_VISUAL_CHANGE');
       }
     }
     if(bootstrap&&target==='unity'){
