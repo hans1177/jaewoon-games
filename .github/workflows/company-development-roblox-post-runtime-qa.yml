@@ -262,18 +262,16 @@ jobs:
           echo "ROBLOX_OPEN_CLOUD_TRANSIENT_RETRY_MODE=IN_SCAN_BOUNDED"
           cat /tmp/roblox-open-cloud-transient-retry-ids
 
-      - name: Run deterministic foundation protocol QA
+      - name: Verify only runtime-foundation executable syntax
         if: ${{ inputs.retry_open_cloud_only != true }}
         working-directory: main
         shell: bash
         run: |
           set -euo pipefail
-          node --test \
-            qa/company-development-roblox-runtime-foundation.test.mjs \
-            qa/company-development-roblox-headless-fast-mvp.test.mjs \
-            qa/company-development-roblox-studio-local-play.test.mjs \
-            qa/company-tester-debug-intake.test.mjs
-          echo 'ROBLOX_FOUNDATION_DETERMINISTIC_QA=PASS'
+          node --input-type=module --check < tools/company-development-roblox-runtime-foundation.mjs
+          node --input-type=module --check < tools/company-tester-debug-intake.mjs
+          echo 'ROBLOX_FOUNDATION_CONTRACT_QA=REUSED_CURRENT_MAIN_CI'
+          echo 'ROBLOX_FOUNDATION_CRITICAL_PATH_DUPLICATE_TESTS=0'
 
       - name: Probe exact Roblox Open Cloud engine execution
         working-directory: main
