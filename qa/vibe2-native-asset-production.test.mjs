@@ -342,11 +342,16 @@ test('hero asset planning upgrades only hero requests to the stronger local mode
   });
   assert.equal(hero.modelRouting.heroRequested,true);
   assert.equal(hero.modelRouting.selectedModel,'qwen3:4b-instruct');
+  assert.equal(hero.modelRouting.cacheFamily,'vibe2-ollama-v6');
+  assert.equal(hero.modelRouting.cacheKey,'qwen3-4b-instruct');
   assert.equal(hero.modelRouting.baselineModel,'qwen3:1.7b');
   assert.equal(hero.modelRouting.maxAttemptsUnchanged,true);
   assert.equal(hero.nativeAuthoringExecution.enabled,true);
   assert.equal(hero.nativeAuthoringExecution.completion.authoringRequestIsNotCompletion,true);
   assert.ok(hero.nativeAuthoringExecution.dcc.requiredTypes.length>0);
+  assert.equal(hero.nativeAuthoringExecution.dcc.executionRequired,true);
+  assert.equal(hero.nativeAuthoringExecution.dcc.nativeSourceMayNotMaskDccRequirement,true);
+  assert.equal(hero.nativeAuthoringExecution.dcc.executionStatus,'AUTHORING_RECIPE_REQUIRED');
   const guidance=assetProductionGuidance(hero);
   assert.match(guidance,/ASSET MODEL ROUTING/);
   assert.match(guidance,/NATIVE AUTHORING EXECUTION LOOP/);
@@ -396,6 +401,10 @@ test('native asset production defaults to Roblox and exposes reproducible Blende
     assert.equal(plan.generatedAssetOutputContract.previewRenderRequired,true);
     assert.equal(plan.generatedAssetOutputContract.evidenceJsonRequired,true);
     assert.equal(plan.generatedAssetOutputContract.nativeRuntimeVerificationRequiredBeforeVerifiedPromotion,true);
+    assert.equal(plan.generatedAssetOutputContract.exactRuntimeConsumerAssetIdentityRequired,true);
+    assert.equal(plan.generatedAssetOutputContract.promotionMustBindSourceOrDerivedHash,true);
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRequired,true);
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionStatus,'AUTHORING_RECIPE_REQUIRED');
     assert.ok(plan.decisions.every(row=>row.generatorFallback.outputContract===plan.generatedAssetOutputContract));
     assert.match(assetProductionGuidance(plan),/GENERATED NATIVE ASSET CONTRACT/);
 
