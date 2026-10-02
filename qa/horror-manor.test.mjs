@@ -13,6 +13,7 @@ const ui=read('roblox-games/horror-escape-room/client/ManorLobby.client.luau');
 const oldUI=read('roblox-games/horror-escape-room/client/Game.client.luau');
 const config=read('roblox-games/horror-escape-room/shared/GameConfig.luau');
 const studioReview=read('tools/horror-manor-studio-review.mjs');
+const manorNativeCheck=read('tools/horror-manor-native-check.mjs');
 const manorBuild=read(root+'/build.py');
 const ownerWorkflow=read('.github/workflows/horror-owner-system-publish.yml');
 const manorReviewWorkflow=read('.github/workflows/horror-manor-review.yml');
@@ -29,6 +30,9 @@ test('Studio 검증은 고정 버전 Rojo를 직접 설치하고 러너 복구 �
  assert.doesNotMatch(manorReviewWorkflow,/PREVIOUS_VERIFIED_ROJO_NOT_FOUND/);
  assert.match(runnerBootstrapWorkflow,/\.github\/workflows\/horror-manor-review\.yml/);
  assert.match(runnerBootstrapWorkflow,/tools\/horror-manor-studio-review\.mjs/);
+ assert.match(runnerBootstrapWorkflow,/ROBLOX_RUNNER_PATH_DISCOVERY=AUTO_METADATA/);
+ assert.match(runnerBootstrapWorkflow,/ROBLOX_RUNNER_REBOOT_AUTOSTART=HIDDEN_USER_LOGON_STARTUP/);
+ assert.doesNotMatch(runnerBootstrapWorkflow,/\$runnerRoot\s*=\s*'C:\\\\actions-runner'/);
 });
 
 test('공식 Studio 검증은 실제 PersonalGround 접촉을 새 서버 재시작 전후로 확인한다',()=>{
@@ -67,6 +71,12 @@ test('explicit owner-direct route publishes exact current main only to the canon
  assert.match(ownerWorkflow,/versions\?versionType=Published/);
  assert.match(ownerWorkflow,/git diff --exit-code/);
  assert.match(ownerWorkflow,/VERSION_77_MANOR_BINDING_CHANGED/);
+ assert.match(ownerWorkflow,/MANOR_NATIVE_ASSET_ID: '89009422966867'/);
+ assert.match(ownerWorkflow,/ManorTemplate:\{\$path:'\/tmp\/horror-manor-native\/manor-template\.rbxm'\}/);
+ assert.match(ownerWorkflow,/OWNER_DIRECT_VERSION77_MANOR_NATIVE_DOWNLOAD=PASS/);
+ assert.match(ownerWorkflow,/OWNER_DIRECT_MANOR_TEMPLATE_PACKAGED=PASS/);
+ assert.match(manorNativeCheck,/process\.env\.MANOR_NATIVE_ASSET_ID\|\|evidence\.assetId/);
+ assert.match(manorNativeCheck,/process\.env\.MANOR_NATIVE_EVIDENCE/);
  assert.doesNotMatch(ownerWorkflow,/blender --background/);
  assert.doesNotMatch(ownerWorkflow,/horror-manor-assets\.mjs/);
 });
