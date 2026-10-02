@@ -1,6 +1,10 @@
 name: Emergency Cancel Roblox Studio QA
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/emergency-kill-roblox-studio.yml'
 
 permissions:
   actions: write
@@ -11,25 +15,73 @@ jobs:
     runs-on: ubuntu-slim
     timeout-minutes: 3
     steps:
-      - name: Cancel every active Roblox runtime foundation run without closing user Studio
+      - name: Diagnose Studio runner and clear stale Studio queue
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          workflow_id=357224927
-          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$workflow_id/runs?per_page=100" > /tmp/runs.json
+
+          # 러너가 내려갔을 때 같은 self-hosted 러너를 요구하는 복구 작업까지 영구 대기하지 않도록
+          # Ubuntu 제어면에서 낡은 Studio 전용 큐만 정리한다. 실제 사용자 Studio 프로세스는 종료하지 않는다.
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs?status=queued&per_page=100" > /tmp/queued.json
+
           node - <<'NODE' > /tmp/cancel-ids
           const fs=require('fs');
-          const j=JSON.parse(fs.readFileSync('/tmp/runs.json','utf8'));
-          const active=new Set(['queued','pending','requested','in_progress','waiting']);
-          for(const r of j.workflow_runs||[]){
-            if(active.has(String(r.status||'').toLowerCase())) process.stdout.write(String(r.id)+'\n');
+          const j=JSON.parse(fs.readFileSync('/tmp/queued.json','utf8'));
+          const rows=j.workflow_runs||[];
+          const target=new Set([
+            '.github/workflows/horror-owner-system-publish.yml',
+            '.github/workflows/horror-manor-review.yml',
+            '.github/workflows/roblox-skyline-studio-publish-dialog-probe.yml',
+            '.github/workflows/roblox-skyline-studio-ui-probe.yml',
+            '.github/workflows/roblox-skyline-recover-new-target-from-studio-logs.yml',
+            '.github/workflows/company-roblox-runner-pwsh-bootstrap.yml',
+          ]);
+
+          const studio=rows.filter(r=>target.has(String(r.path||'')));
+          const keep=new Set();
+
+          // 복구 bootstrap은 가장 최신 1개만 남긴다.
+          const boot=studio.filter(r=>String(r.path||'').endsWith('company-roblox-runner-pwsh-bootstrap.yml'))
+            .sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)));
+          if(boot[0])keep.add(Number(boot[0].id));
+
+          // Horror 검증은 최신 branch 검증 1개만 남긴다.
+          const horror=studio.filter(r=>String(r.path||'').endsWith('horror-owner-system-publish.yml'))
+            .sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)));
+          if(horror[0])keep.add(Number(horror[0].id));
+
+          for(const r of studio){
+            const id=Number(r.id);
+            if(keep.has(id))continue;
+            process.stdout.write(String(id)+'\n');
           }
+
+          console.error('ROBLOX_STUDIO_QUEUED_TOTAL='+studio.length);
+          console.error('ROBLOX_STUDIO_QUEUE_KEEP='+[...keep].join(','));
           NODE
+
+          cancelled=0
           while read -r run_id; do
             [ -n "$run_id" ] || continue
             gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/cancel" >/dev/null || true
-            echo "EMERGENCY_ROBLOX_STUDIO_RUN_CANCELLED=$run_id"
+            echo "ROBLOX_STUDIO_STALE_RUN_CANCELLED=$run_id"
+            cancelled=$((cancelled+1))
           done < /tmp/cancel-ids
+          echo "ROBLOX_STUDIO_STALE_CANCEL_COUNT=$cancelled"
 
+          # 가능한 권한이면 실제 runner 상태도 남기고, 권한 부족은 큐 정리를 실패시키지 않는다.
+          if gh api "repos/$GITHUB_REPOSITORY/actions/runners?per_page=100" > /tmp/runners.json 2>/tmp/runners.err; then
+            node - <<'NODE'
+          const fs=require('fs');
+          const j=JSON.parse(fs.readFileSync('/tmp/runners.json','utf8'));
+          const rows=j.runners||[];
+          const studio=rows.find(r=>String(r.name||'')==='roblox-studio-local');
+          console.log('ROBLOX_STUDIO_RUNNER_FOUND='+(studio?'YES':'NO'));
+          console.log('ROBLOX_STUDIO_RUNNER_STATUS='+(studio?.status||'UNKNOWN'));
+          console.log('ROBLOX_STUDIO_RUNNER_BUSY='+(studio?.busy===true?'YES':'NO'));
+          NODE
+          else
+            echo 'ROBLOX_STUDIO_RUNNER_STATUS=API_PERMISSION_UNAVAILABLE'
+          fi
