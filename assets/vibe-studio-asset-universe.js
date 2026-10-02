@@ -1049,7 +1049,9 @@ export function evaluateCompanyAssetPromotion({asset={},consumer={},runtimeEvide
       artReviewState:'RUNTIME_VERIFIED',consumerGameIds:Object.freeze([consumerGameId]),
       promotionEvidence:Object.freeze({
         nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true,
-        runtimeEvidenceId:text(runtimeEvidence?.id||runtimeEvidence?.runId)||null
+        runtimeEvidenceId:text(runtimeEvidence?.id||runtimeEvidence?.runId)||null,
+        sourceRevision:text(runtimeEvidence?.sourceRevision)||null,
+        verifiedAt:text(runtimeEvidence?.verifiedAt)||null
       })
     }):null,
     preparedArtifactMayNotSelfPromote:true,
@@ -1067,7 +1069,8 @@ export function promoteVerifiedCompanyAssetRegistry({registry={},asset={},consum
   const assets=at>=0
     ?existing.map((row,index)=>index===at?{...row,...nextAsset,consumerGameIds:uniq([...(row.consumerGameIds||[]),...nextAsset.consumerGameIds])}:row)
     :[...existing,nextAsset];
-  return Object.freeze({updated:true,decision,registry:{...registry,version:Math.max(1,Number(registry?.version||0)),assets}});
+  const verifiedAt=text(runtimeEvidence?.verifiedAt);
+  return Object.freeze({updated:true,decision,registry:{...registry,version:Math.max(1,Number(registry?.version||0)+1),updatedAt:verifiedAt?verifiedAt.slice(0,10):(registry?.updatedAt||null),assets}});
 }
 
 export function summarizeVerifiedAssetUsage({events=[]}={}){
