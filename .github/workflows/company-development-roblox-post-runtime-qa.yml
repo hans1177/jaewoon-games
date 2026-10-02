@@ -983,7 +983,7 @@ jobs:
               continue;
             }
 
-            if(!process.env.ROBLOX_OPEN_CLOUD_API_KEY)throw new Error('ROBLOX_OPEN_CLOUD_API_KEY_REQUIRED_FOR_MANUAL_SERVER_DIAGNOSTIC');
+            if(!process.env.ROBLOX_OPEN_CLOUD_API_KEY)throw new Error('ROBLOX_OPEN_CLOUD_API_KEY_REQUIRED_FOR_RUNTIME_VALIDATION');
             const engineProbe=engineProbeByGame.get(item.gameId);
             if(engineProbe?.persistentFailure===true){
               const infrastructureOnly=transientProbeFailure(engineProbe);
