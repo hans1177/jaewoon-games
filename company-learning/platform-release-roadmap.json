@@ -20100,7 +20100,7 @@
               "planner": "assets/vibe-studio-asset-universe.js::createAssetRuntimeVisualReviewPlan",
               "visionWorker": "tools/vibe2-source-worker.mjs::observeAssetRuntimeCaptures",
               "surfaces": "ROBLOX_STUDIO|UNITY_EDITOR|UNITY_ANDROID_APK|WEB_BROWSER",
-              "contract": "CURRENT_SOURCE_REVISION+LOCAL_IMAGE_SHA256+NORMALIZED_REGION; REQUIRED_EXPECTED_SUBJECT_ONLY; UNCERTAIN_NEVER_ADD; EXISTING_RESPONSIBILITY_ONLY; PRESERVE_GAMEPLAY_BALANCE_SAVE_NETWORK; SAME_SURFACE_VIEW_RECAPTURE",
+              "contract": "CURRENT_SOURCE_REVISION+LOCAL_IMAGE_SHA256+NORMALIZED_REGION; REQUIRED_EXPECTED_SUBJECT_ONLY; UNCERTAIN_NEVER_ADD; PRESERVE_GAMEPLAY_BALANCE_SAVE_NETWORK; SAME_VIEW_RECAPTURE; EXT_COMPARE=BLIND_3VIEW+PERF+DELTA8+AXIS_REGRESSION<=1.5+SAFE_HYBRID",
               "retryBlock": "RUNTIME VISUAL REVIEW",
               "engineCaptureProductionImplemented": false,
               "pixelReviewPassIsNotRuntimeOrReleasePass": true,

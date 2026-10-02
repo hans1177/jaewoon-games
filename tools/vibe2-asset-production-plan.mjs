@@ -899,7 +899,45 @@ function createPostDownloadInternalComparison({matched=[],target='',binding={},c
     internalBaselineCandidateIds:freezeList(internalRows.slice(0,6).map(row=>row.id)),
     comparisonViews:freezeList(['GAME_CAMERA','MID_RANGE','CLOSEUP','CONTACT']),
     hardGates:freezeList(['LICENSE_AND_PROVENANCE','SOURCE_HASH','TARGET_PLATFORM_IMPORT','NO_RUNTIME_ERROR','MOBILE_PERFORMANCE_BUDGET']),
-    qualityAxes:freezeList(['GAME_STYLE_FIT','CONCEPT_AND_WORLD_COHERENCE','SILHOUETTE_AND_READABILITY','MATERIAL_AND_SURFACE_DETAIL','PROPORTION_AND_SCALE','RIG_CONTACT_OR_INTERACTION','MOTION_AND_SECONDARY_MOTION','DETAIL_BY_DISTANCE']),
+    qualityAxes:freezeList(['GAME_STYLE_FIT','CONCEPT_AND_WORLD_COHERENCE','SILHOUETTE_AND_READABILITY','MATERIAL_AND_SURFACE_DETAIL','PROPORTION_AND_SCALE','RIG_CONTACT_OR_INTERACTION','MOTION_AND_SECONDARY_MOTION','DETAIL_BY_DISTANCE','TARGET_RUNTIME_PERFORMANCE']),
+    evidenceProtocol:freeze({
+      minimumDistinctRenderedViews:3,
+      blindSourceTierDuringVisualScoring:true,
+      actualRenderedPixelsRequired:true,
+      sameFrameConditionsRequired:true,
+      sameCameraLightingDistanceActionRequired:true,
+      runtimePerformanceMeasurementRequired:true,
+      singleHeroShotCannotDecideWinner:true,
+      metadataOnlyCannotDecideWinner:true,
+      uncertainObservationCannotIncreaseScore:true
+    }),
+    scorecard:freeze({
+      scale:'0_TO_10_PER_AXIS',
+      weights:freeze({
+        GAME_STYLE_FIT:15,
+        CONCEPT_AND_WORLD_COHERENCE:10,
+        SILHOUETTE_AND_READABILITY:15,
+        MATERIAL_AND_SURFACE_DETAIL:15,
+        PROPORTION_AND_SCALE:10,
+        RIG_CONTACT_OR_INTERACTION:10,
+        MOTION_AND_SECONDARY_MOTION:10,
+        DETAIL_BY_DISTANCE:5,
+        TARGET_RUNTIME_PERFORMANCE:10
+      }),
+      total:100,
+      minimumAxisScore:5,
+      minimumRuntimePerformanceScore:6,
+      maximumAllowedRegressionPerAxis:1.5,
+      minimumExternalImprovementPoints:8,
+      unmeasuredAxisCannotReceivePassingScore:true
+    }),
+    componentDecision:freeze({
+      partialAdoptionAllowed:true,
+      requiresLicenseCompatibility:true,
+      requiresTechnicalIsolation:true,
+      preserveGameplaySemantics:true,
+      preferredOverWholeReplacementWhenOnlySomeAxesImprove:true
+    }),
     conceptFit,
     conceptFitReferenceOnly:true,
     conceptMismatchBlocksFullReplacement:false,
@@ -918,9 +956,98 @@ function createPostDownloadInternalComparison({matched=[],target='',binding={},c
     internalTieBreakWhenQualityComparable:true,
     licenseOrRuntimeFailureDisqualifiesExternal:true,
     sourcePreferenceAppliedOnlyAfterQualityComparison:true,
+    adoptionPolicy:freeze({
+      internalBaselineIsDefaultWinner:true,
+      minimumExternalImprovementPoints:8,
+      maximumAllowedRegressionPerAxis:1.5,
+      equalOrMarginalResultKeepsInternal:true,
+      fillsRequiredMissingCapabilityMayProceedWithoutMargin:true,
+      partialHybridPreferredWhenWholeReplacementRegressesProtectedAxis:true,
+      selectedExternalRequiresSameRuntimeRecaptureBeforeFinalAdoption:true,
+      rollbackToInternalOnRuntimeRegression:true
+    }),
     selectedAssetId:null,
     runtimeVerified:false,
     gameplayAuthority:false
+  });
+}
+
+export function evaluatePostDownloadInternalComparison({contract={},internal={},external={}}={}){
+  if(contract?.required!==true)return freeze({required:false,decision:'KEEP_INTERNAL',reason:'POST_DOWNLOAD_COMPARISON_NOT_REQUIRED'});
+  if(contract.status!=='READY_FOR_SAME_CONDITION_COMPARISON')return freeze({required:true,decision:'REVIEW_REQUIRED',reason:clean(contract.status)||'COMPARISON_NOT_READY'});
+  const gateNames=Array.isArray(contract.hardGates)?contract.hardGates:[];
+  const externalGates=external.hardGates&&typeof external.hardGates==='object'?external.hardGates:{};
+  const failedGates=gateNames.filter(name=>externalGates[name]!==true);
+  if(failedGates.length)return freeze({required:true,decision:'KEEP_INTERNAL',reason:'EXTERNAL_HARD_GATE_FAILED',failedGates:freezeList(failedGates),runtimeVerified:false});
+
+  const weights=contract?.scorecard?.weights||{};
+  const axes=Array.isArray(contract.qualityAxes)?contract.qualityAxes:Object.keys(weights);
+  const score=(source,axis)=>{
+    const value=Number(source?.axisScores?.[axis]);
+    return Number.isFinite(value)?Math.max(0,Math.min(10,value)):null;
+  };
+  const internalScores={},externalScores={},axisDeltas={},missingAxes=[];
+  let internalTotal=0,externalTotal=0;
+  for(const axis of axes){
+    const a=score(internal,axis),b=score(external,axis),weight=Number(weights[axis]||0);
+    internalScores[axis]=a;externalScores[axis]=b;
+    if(a==null||b==null)missingAxes.push(axis);
+    if(a!=null)internalTotal+=a*weight/10;
+    if(b!=null)externalTotal+=b*weight/10;
+    axisDeltas[axis]=a!=null&&b!=null?Number((b-a).toFixed(3)):null;
+  }
+  const evidence=external.evidence&&typeof external.evidence==='object'?external.evidence:{};
+  const minimumViews=Number(contract?.evidenceProtocol?.minimumDistinctRenderedViews||3);
+  const renderedViews=Number(evidence.distinctRenderedViews||0);
+  if(missingAxes.length||renderedViews<minimumViews||evidence.actualRenderedPixels!==true){
+    return freeze({
+      required:true,decision:'REVIEW_REQUIRED',reason:'COMPARISON_EVIDENCE_INCOMPLETE',
+      missingAxes:freezeList(missingAxes),renderedViews,minimumViews,
+      internalScore:Number(internalTotal.toFixed(3)),externalScore:Number(externalTotal.toFixed(3)),runtimeVerified:false
+    });
+  }
+  if(contract?.evidenceProtocol?.runtimePerformanceMeasurementRequired===true&&evidence.runtimePerformanceMeasured!==true){
+    return freeze({
+      required:true,decision:'REVIEW_REQUIRED',reason:'RUNTIME_PERFORMANCE_MEASUREMENT_REQUIRED',
+      internalScore:Number(internalTotal.toFixed(3)),externalScore:Number(externalTotal.toFixed(3)),
+      axisDeltas:freeze({...axisDeltas}),runtimeVerified:false
+    });
+  }
+
+  const defaultMinimum=Number(contract?.scorecard?.minimumAxisScore||5);
+  const runtimeMinimum=Number(contract?.scorecard?.minimumRuntimePerformanceScore||6);
+  const belowMinimum=axes.filter(axis=>Number(externalScores[axis])<(axis==='TARGET_RUNTIME_PERFORMANCE'?runtimeMinimum:defaultMinimum));
+  const maxRegression=Number(contract?.adoptionPolicy?.maximumAllowedRegressionPerAxis??contract?.scorecard?.maximumAllowedRegressionPerAxis??1.5);
+  const regressions=axes.filter(axis=>Number(axisDeltas[axis]) < -maxRegression);
+  const delta=Number((externalTotal-internalTotal).toFixed(3));
+  const requiredImprovement=Number(contract?.adoptionPolicy?.minimumExternalImprovementPoints??contract?.scorecard?.minimumExternalImprovementPoints??8);
+  const fillsRequiredGap=evidence.fillsRequiredMissingCapability===true;
+  const hybridComponents=freezeList((external.partialAdoptionComponents||[]).map(clean).filter(Boolean));
+  let decision='KEEP_INTERNAL',reason='INTERNAL_BASELINE_PREFERRED';
+
+  if(!belowMinimum.length&&!regressions.length&&(delta>=requiredImprovement||fillsRequiredGap)){
+    decision='ADOPT_EXTERNAL';
+    reason=fillsRequiredGap&&delta<requiredImprovement?'FILLS_REQUIRED_MISSING_CAPABILITY':'EXTERNAL_MEANINGFUL_IMPROVEMENT';
+  }else if(hybridComponents.length&&contract?.componentDecision?.partialAdoptionAllowed===true&&external.hybridIsolationVerified===true&&external.hybridLicenseCompatible===true){
+    decision='HYBRIDIZE_ALLOWED_COMPONENTS';
+    reason='PROVEN_COMPONENT_GAIN_WITHOUT_WHOLE_ASSET_REPLACEMENT';
+  }else if(belowMinimum.length){
+    reason='EXTERNAL_AXIS_MINIMUM_NOT_MET';
+  }else if(regressions.length){
+    reason='EXTERNAL_PROTECTED_AXIS_REGRESSION';
+  }else if(delta>0&&delta<requiredImprovement){
+    reason='EXTERNAL_IMPROVEMENT_TOO_SMALL';
+  }
+
+  return freeze({
+    required:true,decision,reason,
+    internalScore:Number(internalTotal.toFixed(3)),externalScore:Number(externalTotal.toFixed(3)),delta,
+    axisScores:freeze({internal:freeze({...internalScores}),external:freeze({...externalScores})}),
+    axisDeltas:freeze({...axisDeltas}),
+    belowMinimum:freezeList(belowMinimum),rejectedRegressions:freezeList(regressions),
+    partialAdoptionComponents:hybridComponents,
+    confidence:clean(external.confidence)||'UNSPECIFIED',
+    runtimeVerified:false
   });
 }
 
@@ -937,8 +1064,19 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
   const candidateRows=freezeList([...reuseCandidates,...externalCandidates].map(asset=>assetApplyFirstCandidate(asset,target,binding)));
   const applyFirstCandidates=freezeList(candidateRows.filter(row=>row.ready).sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
   const donorCandidates=freezeList(candidateRows.filter(row=>row.sourceHash&&row.donorCapabilities.length).sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
-  const conceptFit=createConceptFitContract({task:conceptContext.task||{},requestedConcept:conceptContext.requestedConcept||{},binding});
+  const task=conceptContext.task||{};
+  const conceptFit=createConceptFitContract({task,requestedConcept:conceptContext.requestedConcept||{},binding});
   const postDownloadComparison=createPostDownloadInternalComparison({matched,target,binding,conceptFit});
+  const comparisonMap=task.assetDownloadedComparisons&&typeof task.assetDownloadedComparisons==='object'?task.assetDownloadedComparisons:{};
+  const comparisonKey=Object.keys(comparisonMap).find(name=>clean(name).toLowerCase()===type.toLowerCase());
+  const comparisonInput=comparisonKey?comparisonMap[comparisonKey]:null;
+  const postDownloadComparisonEvaluation=comparisonInput&&postDownloadComparison.required
+    ?evaluatePostDownloadInternalComparison({
+      contract:postDownloadComparison,
+      internal:comparisonInput.internal||{},
+      external:comparisonInput.external||{}
+    })
+    :null;
   const preferredCandidateId=postDownloadComparison.required?null:(applyFirstCandidates[0]?.id||null);
   const decisionOrder=unique([
     'COMPARE_TARGET_GAME_QUALITY',
@@ -1019,15 +1157,19 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
       requiredChecks:freezeList(type==='animation'
         ?['GAME_STYLE_FIT','RIG_AND_JOINT_COMPATIBILITY','FOOT_SLIDING_AND_CONTACT','TRANSITION_AND_INTERRUPT','ACTUAL_CLIP_PLAYBACK','MULTIPLAYER_SYNC']
         :['GAME_STYLE_FIT','SILHOUETTE_AND_READABILITY','MATERIAL_AND_SCALE_COHERENCE','TARGET_RUNTIME_AND_MOBILE_PERFORMANCE']),
-      selectionState:postDownloadComparison.required?postDownloadComparison.status:'TARGET_GAME_REVIEW_REQUIRED',
+      selectionState:postDownloadComparisonEvaluation?.decision||(postDownloadComparison.required?postDownloadComparison.status:'TARGET_GAME_REVIEW_REQUIRED'),
       selectedAssetId:null,
+      provisionalExternalAssetId:postDownloadComparisonEvaluation?.decision==='ADOPT_EXTERNAL'?clean(comparisonInput?.external?.assetId)||null:null,
+      provisionalHybridComponents:postDownloadComparisonEvaluation?.decision==='HYBRIDIZE_ALLOWED_COMPONENTS'?freezeList(postDownloadComparisonEvaluation.partialAdoptionComponents||[]):freezeList([]),
       sourcePreferenceOnlyAfterQualityPass:true,
       postDownloadInternalComparisonRequired:postDownloadComparison.required,
       conceptFitReferenceOnly:true,
-      conceptTransformationAllowed:true
+      conceptTransformationAllowed:true,
+      finalRuntimeVerificationStillRequired:true
     }),
     conceptFit,
     postDownloadComparison,
+    postDownloadComparisonEvaluation,
     motionReusePlan,
     generatorFallback:freeze({
       route:'AUTHORING_GENERATOR_REQUEST',
@@ -2026,7 +2168,8 @@ export function assetProductionGuidance(plan={}){
     lines.push(`- type=${row.type}; reuse=${reuse}; external=${external}; direct=${direct}; order=${(row.decisionOrder||[]).join('>')}`);
     if(row.postDownloadComparison?.required){
       const cmp=row.postDownloadComparison;
-      lines.push(`다운로드 후 내부자산 비교=${cmp.status}; external=${cmp.externalCandidateIds.join('|')||'none'}; internal=${cmp.internalBaselineCandidateIds.join('|')||'none'}. 외부 다운로드본은 sourceHash·라이선스·타깃 플랫폼 import를 통과한 뒤 내부 기준 자산과 같은 카메라·조명·거리·행동으로 A/B 비교한다. 컨셉은 강제 탈락 게이트가 아니라 변형 목표다. 외부 다운로드본이 현재 Style Bible/Game Visual DNA와 달라도 후보 브랜치/테스트 장면에 먼저 적용해 보고, 차이가 변형 가능한지 판단한다. 가능하면 팔레트·명도→재질/셰이더→장식→실루엣/비율→시대·기술 디테일→리그/접촉→모션 성격→UI 문법→LOD 순으로 필요한 축만 수정한 뒤 같은 조건으로 재비교한다. 변형 후 핵심 품질축 하나 이상을 개선하면서 보호 품질축을 후퇴시키지 않으면 전체 자산으로 채택할 수 있다. 전체가 안 맞아도 좋은 파츠/리그/재질/모션/디테일은 도너로 재조합할 수 있다. 동급이면 내부자산을 유지하고, 둘 다 부족하면 부분 파생 수정 후 신규 제작을 마지막에 사용한다.`);
+      lines.push(`다운로드 후 내부자산 비교=${cmp.status}; external=${cmp.externalCandidateIds.join('|')||'none'}; internal=${cmp.internalBaselineCandidateIds.join('|')||'none'}. 외부 다운로드본은 sourceHash·라이선스·타깃 플랫폼 import를 통과한 뒤 출처 등급을 가린 상태에서 내부 기준 자산과 같은 카메라·조명·거리·행동으로 최소 ${cmp.evidenceProtocol.minimumDistinctRenderedViews}개 실제 렌더 뷰와 실제 성능을 A/B 비교한다. 컨셉은 강제 탈락 게이트가 아니라 변형 목표다. 외부 다운로드본이 현재 Style Bible/Game Visual DNA와 달라도 후보 브랜치/테스트 장면에 먼저 적용해 보고, 차이가 변형 가능한지 판단한다. 가능하면 팔레트·명도→재질/셰이더→장식→실루엣/비율→시대·기술 디테일→리그/접촉→모션 성격→UI 문법→LOD 순으로 필요한 축만 수정한 뒤 같은 조건으로 재비교한다. 모든 축은 0~10으로 측정하고 실제 성능 미측정은 자동채택 금지다. 외부는 100점 가중합에서 내부보다 ${cmp.adoptionPolicy.minimumExternalImprovementPoints}점 이상 개선되거나 필수 누락 기능을 해결하면서, 어떤 보호축도 ${cmp.adoptionPolicy.maximumAllowedRegressionPerAxis}점 초과 후퇴하지 않을 때만 전체 채택 후보가 된다. 일부 축만 우수하면 파츠/리그/재질/모션/디테일을 기술적으로 분리 가능한 범위에서 HYBRIDIZE_ALLOWED_COMPONENTS로 재조합한다. 동급·미세개선은 내부자산을 유지하고, 둘 다 부족하면 부분 파생 수정 후 신규 제작을 마지막에 사용한다.`);
+      if(row.postDownloadComparisonEvaluation)lines.push(`다운로드 비교 임시판정=${row.postDownloadComparisonEvaluation.decision}; 이유=${row.postDownloadComparisonEvaluation.reason}; 내부=${row.postDownloadComparisonEvaluation.internalScore??'N/A'}; 외부=${row.postDownloadComparisonEvaluation.externalScore??'N/A'}; Δ=${row.postDownloadComparisonEvaluation.delta??'N/A'}; 퇴보축=${(row.postDownloadComparisonEvaluation.rejectedRegressions||[]).join(',')||'none'}; 부분혼합=${(row.postDownloadComparisonEvaluation.partialAdoptionComponents||[]).join(',')||'none'}. 이 판정은 후보 선택일 뿐 동일 런타임 재캡처 전 VERIFIED 승격 금지다.`);
     }
     if(row.type==='animation')lines.push(`모션 품질 비교 필수=${(row.qualitySelection?.requiredChecks||[]).join(',')}; 품질 미달 후보를 적용하지 말고 비교 결과와 선택 이유를 남긴다.`);
     if(row.motionReusePlan){
