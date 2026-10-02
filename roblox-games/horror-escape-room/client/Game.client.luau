@@ -1993,15 +1993,33 @@ local function currentAbilityName()
  local profile=C.MonsterAbilities and C.MonsterAbilities[mf.Ability]
  return profile and profile.Name or(C.MonsterAbilityLabels and C.MonsterAbilityLabels[mf.Ability])or mf.Name or"괴물 스킬"
 end
-local function currentAbilityDescription()
+local function currentAbilityProfile()
  if p:GetAttribute("Infected")==true then
   local hf=currentHumanFormInfo()
-  local profile=C.InfectedAbilities and C.InfectedAbilities[hf.InfectedAbility]
-  return profile and tostring(profile.Description or"")or""
+  return C.InfectedAbilities and C.InfectedAbilities[hf.InfectedAbility]or nil
  end
  local mf=currentMonsterFormInfo()
- local profile=C.MonsterAbilities and C.MonsterAbilities[mf.Ability]
+ return C.MonsterAbilities and C.MonsterAbilities[mf.Ability]or nil
+end
+local function currentAbilityDescription()
+ local profile=currentAbilityProfile()
  return profile and tostring(profile.Description or"")or""
+end
+local function abilityRangeLabel(profile)
+ if not profile then return "범위 정보 없음" end
+ local radius=tonumber(profile.Radius)or tonumber(profile.Range)
+ if radius then return string.format("범위 %dm",math.floor(radius+.5))end
+ local effectRadius=tonumber(profile.DrainRadius)or tonumber(profile.ShockRadius)
+ if effectRadius then return string.format("효과 %dm",math.floor(effectRadius+.5))end
+ local distance=tonumber(profile.Distance)
+ if distance then return string.format("이동 %dm",math.floor(distance+.5))end
+ local bonus=tonumber(profile.InfectRangeBonus)
+ if bonus then return string.format("감염 +%dm",math.floor(bonus+.5))end
+ return "이동형"
+end
+local function abilityGuideText(name,profile,cost,cooldownSeconds,status)
+ local purpose=profile and tostring(profile.Description or"특수 능력")or"특수 능력"
+ return string.format("%s\n%s · %s\n쿨 %d초 · %dE%s",name,purpose,abilityRangeLabel(profile),math.floor(math.max(0,tonumber(cooldownSeconds)or 0)+.5),math.floor(math.max(0,tonumber(cost)or 0)+.5),status and(" · "..status)or"")
 end
 
 -- 라운드 행동 버튼: 역할에 따라 딱 필요한 버튼만 노출
@@ -2024,6 +2042,7 @@ dashButton.Activated:Connect(function()setMotionImpulse("DASH",.38);actionSfx.Ti
 
 local humanAbilityButton=makeButton(actionDock,"인간 스킬",Color3.fromRGB(61,96,105))
 humanAbilityButton.Size=UDim2.fromOffset(96,50);humanAbilityButton.Position=UDim2.fromOffset(210,4);humanAbilityButton.ZIndex=11
+humanAbilityButton.TextScaled=false;humanAbilityButton.TextSize=9;humanAbilityButton.TextWrapped=true
 humanAbilityButton.Activated:Connect(function()
  setMotionImpulse("ABILITY",.42);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.HUMAN_ABILITY)
 end)
@@ -2034,11 +2053,12 @@ infectButton.Activated:Connect(function()setMotionImpulse("INFECT_ATTACK",.34);a
 
 local abilityButton=makeButton(actionDock,"괴물 스킬",Color3.fromRGB(72,55,77))
 abilityButton.Size=UDim2.fromOffset(96,50);abilityButton.Position=UDim2.fromOffset(157,4);abilityButton.ZIndex=11
+abilityButton.TextScaled=false;abilityButton.TextSize=9;abilityButton.TextWrapped=true
 abilityButton.Activated:Connect(function()setMotionImpulse("ABILITY",.44);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.ABILITY)end)
 
 -- 액션 쿨다운과 에너지 비용은 서버 상태 기준으로 표시한다.
 local cooldownClock=0
-local function updateCooldownButton(button,readyAt,readyText,cooldownText,cost)
+local function updateCooldownButton(button,readyAt,readyText,cooldownText,cost,guideProfile,guideCooldown)
  local left=math.max(0,(tonumber(readyAt)or 0)-workspace:GetServerTimeNow())
  local energy=tonumber(p:GetAttribute("Energy"))or 0
  local need=math.max(0,tonumber(cost)or 0)
@@ -2048,7 +2068,10 @@ local function updateCooldownButton(button,readyAt,readyText,cooldownText,cost)
  button.Active=ready
  button.AutoButtonColor=ready
  button.BackgroundTransparency=ready and 0 or .28
- if not cooldownReady then button.Text=string.format("%s %.1f",cooldownText,left)
+ if guideProfile then
+  local status=not cooldownReady and string.format("%.1f초 남음",left)or not energyReady and"에너지 부족"or"준비"
+  button.Text=abilityGuideText(readyText,guideProfile,need,guideCooldown,status)
+ elseif not cooldownReady then button.Text=string.format("%s %.1f",cooldownText,left)
  elseif not energyReady then button.Text=string.format("%s %dE",cooldownText,need)
  else button.Text=readyText end
 end
@@ -2067,9 +2090,10 @@ RunService.RenderStepped:Connect(function(dt)
  updateCooldownButton(rescueButton,p:GetAttribute("PurifyReadyAt"),"정화 공격","정화",C.Energy and C.Energy.PurifyCost or 35)
  updateCooldownButton(dashButton,p:GetAttribute("DashReadyAt"),"대시","대시",C.Energy and C.Energy.DashCost or 25)
  local _,humanAbilityProfile=currentHumanAbilityProfile()
- updateCooldownButton(humanAbilityButton,p:GetAttribute("HumanAbilityReadyAt"),currentHumanAbilityName(),"스킬",humanAbilityProfile and humanAbilityProfile.Cost or 30)
+ updateCooldownButton(humanAbilityButton,p:GetAttribute("HumanAbilityReadyAt"),currentHumanAbilityName(),"스킬",humanAbilityProfile and humanAbilityProfile.Cost or 30,humanAbilityProfile,humanAbilityProfile and humanAbilityProfile.Cooldown or 8)
  updateCooldownButton(infectButton,p:GetAttribute("InfectReadyAt"),"감염 공격","감염",C.Energy and C.Energy.InfectAttackCost or 30)
- updateCooldownButton(abilityButton,p:GetAttribute("AbilityReadyAt"),currentAbilityName(),"스킬",C.Energy and C.Energy.AbilityCost or 45)
+ local monsterAbilityProfile=currentAbilityProfile()
+ updateCooldownButton(abilityButton,p:GetAttribute("AbilityReadyAt"),currentAbilityName(),"스킬",C.Energy and C.Energy.AbilityCost or 45,monsterAbilityProfile,C.MonsterAbilityCooldown or 7)
 
  local now=workspace:GetServerTimeNow()
  local blackout=(tonumber(p:GetAttribute("BlackoutUntil"))or 0)>now
@@ -2404,12 +2428,13 @@ local function render()
  local objectivesTotal=math.max(1,tonumber(p:GetAttribute("ObjectivesTotal"))or tonumber(C.ObjectiveCount)or 4)
  local exitOpen=workspace:GetAttribute("EscapeUnlocked")==true
  if role=="MONSTER"then
-  objectiveLine.Text=string.format("목표 · 인간 전부 감염  |  인간 단말 %d/%d",objectivesDone,objectivesTotal)
-  skillGuideLine.Text="스킬 · "..currentAbilityName().." · "..currentAbilityDescription()
+  objectiveLine.Text="목표 · 인간 추적 → 감염 → 전멸"
+  local profile=currentAbilityProfile()
+  skillGuideLine.Text=abilityGuideText(currentAbilityName(),profile,C.Energy and C.Energy.AbilityCost or 45,C.MonsterAbilityCooldown or 7)
  elseif role=="SURVIVOR"then
-  local hf=currentHumanFormInfo()
-  objectiveLine.Text=exitOpen and"목표 · 비상 출구가 열렸어 → 남쪽 출구로 탈출"or string.format("목표 · 단말 가동 %d/%d → 비상 출구 개방",objectivesDone,objectivesTotal)
-  skillGuideLine.Text="스킬 · "..currentHumanAbilityName().." · "..currentHumanAbilityDescription()
+  objectiveLine.Text=string.format("목표 · 단말 %d/%d 작동 → 몬스터 정화 → 탈출",objectivesDone,objectivesTotal)
+  local _,profile=currentHumanAbilityProfile()
+  skillGuideLine.Text=abilityGuideText(currentHumanAbilityName(),profile,profile and profile.Cost or 30,profile and profile.Cooldown or 8)
  elseif role=="ELIMINATED"then
   objectiveLine.Text="이번 판 탈락 · 팀 결과를 기다리는 중"
   skillGuideLine.Text="관전 중"
