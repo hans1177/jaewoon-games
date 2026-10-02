@@ -542,13 +542,13 @@ test('기존 4개 단말 목표와 비상구 탈출 루프가 실제 승리조�
 });
 
 test('학습 런타임은 임시 LoadingScreen이 아니라 지속 ScreenGui에 바인딩된다',()=>{
- assert.match(robloxBootstrapTool,/Instance\\.new\\\\\(\\s*\["'\]ScreenGui\["'\]/);
+ assert.match(robloxBootstrapTool,/Instance\.new\(\s*["']ScreenGui["']\s*\)/);
  assert.match(client,/local verifiedLearningRoot = gui/);
  assert.doesNotMatch(client,/local verifiedLearningRoot = loadingLayer/);
- assert.doesNotMatch(client,/loadingLayer:SetAttribute\\\("Verified/);
- assert.match(client,/gui:SetAttribute\\\("VerifiedExternalLearningCoveragePct"/);
- assert.match(client,/gui\\.DisplayOrder=30/);
- assert.match(client,/gui\\.ZIndexBehavior=Enum\\.ZIndexBehavior\\.Global/);
+ assert.doesNotMatch(client,/loadingLayer:SetAttribute\("Verified/);
+ assert.match(client,/gui:SetAttribute\("VerifiedExternalLearningCoveragePct"/);
+ assert.match(client,/gui\.DisplayOrder=30/);
+ assert.match(client,/gui\.ZIndexBehavior=Enum\.ZIndexBehavior\.Global/);
 });
 
 test('스킬은 이름뿐 아니라 용도와 범위를 HUD에서 설명한다',()=>{
