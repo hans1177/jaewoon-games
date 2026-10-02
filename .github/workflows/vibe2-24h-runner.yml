@@ -627,7 +627,6 @@ jobs:
 
             (
               cd /tmp/vibe2-main
-              node tools/company-shared-context.mjs --output=/tmp/vibe2-shared-context-after-plan.json | tee /tmp/vibe2-shared-context-after-plan.log
             )
 
             git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/experience.json .vibe2/external-ai-distilled-knowledge.json .vibe2/code-pattern-library.json .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json .vibe2/recovery-queue.json .vibe2/security-incidents.json .vibe2/system-ai-queue.json .vibe2/marketing-decisions .vibe2/portfolio-decisions.json .vibe2/tester-debug-tickets.json .vibe2/platform-suitability.json .vibe2/platform-exposure-state.json .vibe2/homepage-platform-exposure.json
