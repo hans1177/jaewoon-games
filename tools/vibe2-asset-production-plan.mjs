@@ -438,8 +438,18 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
     ...(row?.externalCandidates||[])
   ]).filter(asset=>asset?.adaptationBaseOnly!==true).map(asset=>clean(asset?.id)).filter(Boolean));
   const manifestAssets=Array.isArray(manifest?.assets)?manifest.assets:[];
+  const requestText=clean(task?.goal||task?.request||task?.gameId).toLowerCase();
+  const genericRecipeTokens=new Set(['asset','model','3d','creature','character','enemy','boss','motion','animation','prop','environment','building','ui','vfx','audio','material']);
+  const recipeAssetRelevant=asset=>{
+    if(selectedCandidateIds.has(clean(asset?.id)))return true;
+    const rawTokens=unique([
+      clean(asset?.id),clean(asset?.title),clean(asset?.name),clean(asset?.family),clean(asset?.category),clean(asset?.subfamily),
+      ...(Array.isArray(asset?.tags)?asset.tags:[])
+    ].flatMap(value=>clean(value).toLowerCase().split(/[^a-z0-9가-힣]+/)).filter(value=>value.length>=2&&!genericRecipeTokens.has(value)));
+    return rawTokens.some(token=>requestText.includes(token));
+  };
   const registryRecipeRows=manifestAssets
-    .filter(asset=>selectedCandidateIds.has(clean(asset?.id)))
+    .filter(asset=>recipeAssetRelevant(asset))
     .flatMap(asset=>(Array.isArray(asset?.authoringRecipes)?asset.authoringRecipes:[]).map(recipe=>({recipe,asset})));
   const normalizedExplicit=explicitRecipeRows.map(recipe=>normalizeNativeDccAuthoringRecipe(recipe,{id:'task-explicit'},target,uniqueDccTypes));
   const normalizedRegistry=registryRecipeRows.map(({recipe,asset})=>normalizeNativeDccAuthoringRecipe(recipe,asset,target,uniqueDccTypes));
