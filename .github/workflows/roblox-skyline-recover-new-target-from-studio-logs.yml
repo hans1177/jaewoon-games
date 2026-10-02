@@ -13,7 +13,7 @@ jobs:
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     steps:
       - name: Recover only the newly-created Skyline Rush target
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
           $cutoff = (Get-Date).AddHours(-2)

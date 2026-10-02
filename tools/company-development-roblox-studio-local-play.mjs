@@ -3916,7 +3916,7 @@ function commercialBaselineRegressions(priorEvidence={},nextEvidence={}){
   return regressions.slice(0,24);
 }
 
-export function applyLocalStudioPlayResult({queue={},gameId='',runtime={},expected={},workflowRunId=0,studioStepSucceeded=true,testedAt}={}){
+export function applyLocalStudioPlayResult({queue={},gameId='',runtime={},expected={},workflowRunId=0,studioStepSucceeded=true,testedAt,studioSessionId=''}={}){
   const item=(queue?.items||[]).find(row=>clean(row?.gameId)===clean(gameId));
   if(!item)throw new Error('ROBLOX_STUDIO_MCP_QUEUE_ITEM_MISSING:'+clean(gameId));
   const priorStudioEvidence=item?.robloxInternalVibePlayEvidence&&typeof item.robloxInternalVibePlayEvidence==='object'
@@ -3974,6 +3974,33 @@ export function applyLocalStudioPlayResult({queue={},gameId='',runtime={},expect
   }
 
   item.robloxInternalVibePlayEvidence=result.evidence;
+
+  const exactStudioSessionId=clean(studioSessionId);
+  const studioSession=item?.robloxStudioRuntimeSession&&typeof item.robloxStudioRuntimeSession==='object'
+    ?item.robloxStudioRuntimeSession:null;
+  const exactStudioSession=Boolean(
+    exactStudioSessionId
+    &&studioSession?.sessionId===exactStudioSessionId
+    &&studioSession?.sourceRevision===clean(expected?.sourceRevision)
+    &&studioSession?.artifactIdentity===clean(expected?.artifactIdentity)
+    &&Number(studioSession?.candidateVersionNumber||0)===Number(expected?.versionNumber||0)
+  );
+  if(exactStudioSession){
+    item.robloxStudioRuntimeSession={
+      ...studioSession,
+      status:currentSourceArtifactBinding
+        ?result.pass?'COMPLETED_PASS':result.evidence.infrastructureFailure===true?'COMPLETED_INFRASTRUCTURE_PENDING':'COMPLETED_PRODUCT_FAILURE'
+        :'STALE_IDENTITY_IGNORED',
+      completedAt:result.evidence.testedAt,
+      workflowRunId:Number(workflowRunId||studioSession.workflowRunId||0),
+      resultPass:result.pass===true,
+      infrastructureFailure:result.evidence.infrastructureFailure===true,
+      currentSourceArtifactBinding,
+      rebootSafeCheckpoint:true,
+      hostStateAuthoritative:false,
+      companyRuntimeAuthoritative:true
+    };
+  }
 
   if(!currentSourceArtifactBinding){
     item.robloxInternalPlaytestPassed=false;
@@ -4172,6 +4199,7 @@ async function main(){
       expected,
       workflowRunId:Number(a['workflow-run-id']||0),
       studioStepSucceeded:bool(a['studio-step-succeeded']),
+      studioSessionId:clean(a['session-id']),
       testedAt:clean(a['tested-at'])||undefined
     });
     writeJson(a.queue,applied.queue);

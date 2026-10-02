@@ -1536,7 +1536,26 @@
       },
       "externalServerBootRequiredForInternalRelease": false,
       "oneExactSessionMaySatisfyApplicableF1ThroughF8": true,
-      "duplicateSessionForSameExactCandidateForbidden": true
+      "duplicateSessionForSameExactCandidateForbidden": true,
+      "runnerHost": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-10-02",
+        "pcImpactScope": "ROBLOX_STUDIO_ONLY",
+        "visibleApplication": "ROBLOX_STUDIO_GUI_ONLY",
+        "consolePolicy": "HIDDEN_CONSOLE_PARENT_NO_VISIBLE_CMD_OR_POWERSHELL",
+        "hiddenChildShellsRequired": true,
+        "persistentBootstrap": "USER_STARTUP_WSCRIPT_HIDDEN_RUN_CMD",
+        "bootstrapImplementation": ".github/workflows/company-roblox-runner-pwsh-bootstrap.yml#hidden-runner-bootstrap",
+        "watchdogRequired": false,
+        "recurringWatchdogForbidden": true,
+        "rebootRecovery": "HIDDEN_LOGON_RUNNER_RESTART",
+        "sessionCheckpointAuthority": "company-runtime:development-queue.json#robloxStudioRuntimeSession",
+        "checkpointBeforeWindowsExecution": true,
+        "interruptedSessionAction": "REQUEUE_SAME_EXACT_SOURCE_ARTIFACT_AFTER_HOST_RETURNS",
+        "interruptedSessionIsGameFailure": false,
+        "restartFromBlankForbidden": true,
+        "exactSourceArtifactBindingPreservedAcrossHostInterruption": true
+      }
     },
     "headlessValidation": {
       "version": 2,
@@ -2910,7 +2929,7 @@
         "scheduler": ".github/workflows/vibe2-24h-runner.yml",
         "worker": ".github/workflows/vibe2-continuous-core.yml",
         "releaseDispatchRecovery": "tools/vibe2-release-dispatch-recovery.mjs",
-        "robloxRunnerSelfHeal": ".github/workflows/roblox-runner-self-heal.yml",
+        "robloxRunnerSelfHeal": ".github/workflows/company-roblox-runner-pwsh-bootstrap.yml#hidden-runner-bootstrap",
         "recoveryQueue": ".vibe2/recovery-queue.json",
         "recoveryQueueTool": "tools/company-recovery-queue.mjs",
         "recoveryLearningTool": "tools/company-recovery-learning.mjs"
@@ -2926,7 +2945,7 @@
         "incrementalQaBottleneck": "REDUCE_PRESSURE_KEEP_INCREMENTAL_FIRST_AND_SINGLE_FAN_IN_REGRESSION",
         "checkoutOrNetworkPressure": "REDUCE_PRESSURE_PRESERVE_QUEUE_AND_RETRY_EXISTING_FETCH_PATH",
         "healthySaturatedRuns": "RECOVER_CONCURRENCY_ONE_STEP_AFTER_HEALTHY_STREAK",
-        "robloxRunnerFailure": "USE_EXISTING_AUTHENTICATED_RUNNER_SELF_HEAL",
+        "robloxRunnerFailure": "REBOOT_SAFE_HIDDEN_LOGON_RUNNER_AND_EXACT_STUDIO_SESSION_REQUEUE",
         "externalModelQuota": "CHECKPOINT_AND_CONTINUE_NON_BLOCKED_VIBE_WORK",
         "waitingForVerifiedSamples": "CONTINUE_SAMPLE_COLLECTION_NOT_FAILURE",
         "staleMachineStateBlockerAfterStateNormalization": "REPAIR_QUEUE_TO_EXTERNAL_WAVE_256_AND_INVALID_V3_PARALLELISM_STEP_BEFORE_STRICT_HANDOFF_CHECK_THEN_REVALIDATE_AND_CLEAR_ONLY_KNOWN_STALE_MACHINE_BLOCKERS",

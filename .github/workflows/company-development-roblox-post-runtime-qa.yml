@@ -2018,7 +2018,12 @@ jobs:
           PLAN_OUTPUT="$plan_output" node <<'NODE'
           const fs=require('fs');
           const plan=JSON.parse(fs.readFileSync(process.env.PLAN_OUTPUT,'utf8'));
-          const include=Array.isArray(plan.include)?plan.include:[];
+          const rawInclude=Array.isArray(plan.include)?plan.include:[];
+          const workflowRunId=String(process.env.GITHUB_RUN_ID||'').trim();
+          const include=rawInclude.map(row=>({
+            ...row,
+            sessionId:[workflowRunId,String(row.gameId||''),Number(row.artifactRunId||0),Number(row.versionNumber||0)].join(':')
+          }));
           if(process.env.CANDIDATE_CONTEXT&&include.length!==1)throw new Error('candidate must schedule exactly one Studio playtest');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'matrix='+JSON.stringify({include})+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'count='+include.length+'\n');
@@ -2117,6 +2122,97 @@ jobs:
             echo "ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_CANCELLED=$run_id"
           done < /tmp/roblox-older-studio-run-ids
 
+      - name: Persist reboot-safe Studio reservations before Windows execution
+        if: steps.plan.outputs.count != '0' && inputs.candidate_context == ''
+        working-directory: runtime
+        env:
+          PLANNED_MATRIX: ${{ steps.plan.outputs.matrix }}
+          CONTROL_REVISION: ${{ inputs.control_revision || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-roblox-studio-session'
+          git config user.email 'actions@users.noreply.github.com'
+          persisted=0
+          for attempt in 1 2 3 4 5; do
+            git fetch --no-tags origin company-runtime
+            git reset --hard origin/company-runtime
+            node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const matrix=JSON.parse(process.env.PLANNED_MATRIX||'{"include":[]}');
+          const rows=Array.isArray(matrix.include)?matrix.include:[];
+          const stamp=new Date().toISOString();
+          let reserved=0,stale=0;
+          for(const row of rows){
+            const gameId=String(row?.gameId||'').trim();
+            const item=(q.items||[]).find(x=>String(x?.gameId||'').trim()===gameId);
+            if(!item){stale++;continue;}
+            const sourceRevision=String(row?.sourceRevision||'').trim();
+            const artifactIdentity=String(row?.artifactIdentity||'').trim();
+            const candidate=item.robloxRuntimeCandidateEvidence||{};
+            const currentVersion=candidate.published===true&&Number(candidate.versionNumber||0)>0
+              ?Number(candidate.versionNumber)
+              :Number(item.robloxFoundationF0Evidence?.artifactRunId||item.robloxHeadlessFastMvpEvidence?.artifactRunId||0);
+            const exact=
+              sourceRevision&&artifactIdentity
+              &&String(item.robloxSourceCommit||'')===sourceRevision
+              &&String(item.robloxBuildArtifactIdentity||'')===artifactIdentity
+              &&Number(row?.versionNumber||0)===currentVersion;
+            if(!exact){
+              stale++;
+              console.log('ROBLOX_STUDIO_REBOOT_CHECKPOINT_STALE_SKIP='+gameId);
+              continue;
+            }
+            const prior=item.robloxStudioRuntimeSession&&typeof item.robloxStudioRuntimeSession==='object'
+              ?item.robloxStudioRuntimeSession:{};
+            item.robloxStudioRuntimeSession={
+              version:1,
+              sessionId:String(row?.sessionId||''),
+              workflowRunId:Number(process.env.GITHUB_RUN_ID||0),
+              workflowRunAttempt:Number(process.env.GITHUB_RUN_ATTEMPT||0),
+              controlRevision:String(process.env.CONTROL_REVISION||''),
+              gameId,
+              sourceRevision,
+              artifactIdentity,
+              artifactRunId:Number(row?.artifactRunId||0),
+              candidateVersionNumber:Number(row?.versionNumber||0),
+              status:'QUEUED_FOR_STUDIO',
+              queuedAt:stamp,
+              interruptionRetryCount:Number(prior.interruptionRetryCount||0),
+              rebootSafeCheckpoint:true,
+              hostStateAuthoritative:false,
+              companyRuntimeAuthoritative:true
+            };
+            item.updatedAt=stamp;
+            reserved++;
+          }
+          if(reserved){
+            q.updatedAt=stamp;
+            fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
+          }
+          console.log('ROBLOX_STUDIO_REBOOT_CHECKPOINT_RESERVED='+reserved);
+          console.log('ROBLOX_STUDIO_REBOOT_CHECKPOINT_STALE='+stale);
+          NODE
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              persisted=1
+              echo 'ROBLOX_STUDIO_REBOOT_CHECKPOINT_WRITE=NO_CHANGE'
+              break
+            fi
+            git commit -m 'runtime: checkpoint reboot-safe Studio sessions [skip ci]'
+            if git push origin HEAD:company-runtime; then
+              persisted=1
+              echo "ROBLOX_STUDIO_REBOOT_CHECKPOINT_WRITE=PUSHED:$attempt"
+              break
+            fi
+            sleep $((attempt*2))
+          done
+          test "$persisted" = 1
+          echo 'ROBLOX_STUDIO_PC_STATE_AUTHORITY=NONE'
+          echo 'ROBLOX_STUDIO_COMPANY_RUNTIME_CHECKPOINT_AUTHORITY=YES'
+
   studio-mcp-auto-play:
     name: Official Studio MCP actual play ${{ matrix.gameId }}
     concurrency:
@@ -2133,7 +2229,7 @@ jobs:
     timeout-minutes: 25
     steps:
       - name: Clear only previous automated evidence files
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
           $sessionId = "${{ github.run_id }}-${{ github.run_attempt }}-" + ([Guid]::NewGuid().ToString('N').Substring(0,8))
@@ -2174,7 +2270,7 @@ jobs:
 
       - name: Bind isolated candidate context without canonical state mutation
         if: inputs.candidate_context != ''
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         env:
           CANDIDATE_REVISION: ${{ inputs.candidate_revision }}
           CANDIDATE_GAME: ${{ inputs.game_id }}
@@ -2185,7 +2281,7 @@ jobs:
 
       - name: Verify official Studio MCP policy and runner
         id: mcp_preflight
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
           & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=check-head "--control-revision=${{ inputs.control_revision || github.sha }}"
@@ -2378,7 +2474,7 @@ jobs:
 
       - name: Rebuild byte-identical exact artifact when GitHub artifact API is unavailable
         if: inputs.candidate_context == '' && steps.mcp_preflight.outputs.setting_blocked != 'true' && steps.artifact_download.outcome != 'success'
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         env:
           GAME_ID: ${{ matrix.gameId }}
           SOURCE_REVISION: ${{ matrix.sourceRevision }}
@@ -2445,7 +2541,7 @@ jobs:
 
       - name: Bind and open exact local Place artifact
         if: steps.mcp_preflight.outputs.setting_blocked != 'true'
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         env:
           EXPECTED_ARTIFACT: ${{ matrix.artifactIdentity }}
         run: |
@@ -2610,7 +2706,7 @@ jobs:
       - name: Run actual local play through official Studio MCP
         id: studio_play
         if: steps.mcp_preflight.outputs.setting_blocked != 'true'
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         continue-on-error: true
         run: |
           $ErrorActionPreference = 'Stop'
@@ -2774,7 +2870,7 @@ jobs:
 
       - name: Finalize Studio session after final capture
         if: always()
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Continue'
           Write-Host 'ROBLOX_STUDIO_POST_CAPTURE_FINALIZE=AUTOMATED'
@@ -2785,7 +2881,7 @@ jobs:
       - name: Persist exact Studio MCP play evidence
         id: persist
         if: always()
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         env:
           GAME_ID: ${{ matrix.gameId }}
           SOURCE_REVISION: ${{ matrix.sourceRevision }}
@@ -2826,6 +2922,7 @@ jobs:
             "--place-id=$env:PLACE_ID",
             "--version-number=$env:VERSION_NUMBER",
             "--workflow-run-id=${{ github.run_id }}",
+            "--session-id=${{ matrix.sessionId }}",
             "--studio-step-succeeded=$env:STUDIO_STEP_SUCCEEDED"
           )
           & node 'main/tools/company-development-roblox-studio-local-play.mjs' @persistArgs
@@ -2911,7 +3008,7 @@ jobs:
 
       - name: Close owned Studio after evidence persistence
         if: always()
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
           if (-not $env:VIBE2_LOCAL_PLACE_FILE -or -not $env:VIBE2_STUDIO_LAUNCH_STARTED) {
@@ -2978,7 +3075,7 @@ jobs:
 
       - name: Refill existing 24H development loop after verified play
         if: inputs.candidate_context == '' && steps.studio_play.outcome == 'success' && steps.persist.outcome == 'success'
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ matrix.gameId }}
@@ -3001,3 +3098,171 @@ jobs:
           } | ConvertTo-Json -Depth 5
           Invoke-RestMethod -Method Post -Uri "https://api.github.com/repos/$env:GITHUB_REPOSITORY/dispatches" -Headers $headers -Body $body -ContentType 'application/json'
           Write-Host "ROBLOX_STUDIO_MCP_VIBE_REFILL_DISPATCHED=$env:GAME_ID"
+
+  studio-reboot-recovery:
+    name: recover interrupted Studio session from company-runtime checkpoint
+    needs: [studio-local-plan, studio-mcp-auto-play]
+    if: always() && inputs.candidate_context == '' && needs.studio-local-plan.result == 'success' && needs.studio-local-plan.outputs.count != '0'
+    runs-on: ubuntu-slim
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          path: runtime
+          fetch-depth: 1
+          fetch-tags: false
+
+      - name: Detect exact Studio sessions interrupted before evidence persistence
+        id: recover
+        env:
+          PLANNED_MATRIX: ${{ needs.studio-local-plan.outputs.matrix }}
+          STUDIO_JOB_RESULT: ${{ needs.studio-mcp-auto-play.result }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git -C runtime fetch --no-tags origin company-runtime
+          git -C runtime reset --hard origin/company-runtime
+          PLANNED_MATRIX="$PLANNED_MATRIX" node <<'NODE' > /tmp/roblox-studio-reboot-retry-ids
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('runtime/development-queue.json','utf8'));
+          const matrix=JSON.parse(process.env.PLANNED_MATRIX||'{"include":[]}');
+          const rows=Array.isArray(matrix.include)?matrix.include:[];
+          for(const row of rows){
+            const gameId=String(row?.gameId||'').trim();
+            const item=(q.items||[]).find(x=>String(x?.gameId||'').trim()===gameId);
+            if(!item)continue;
+            const sourceRevision=String(row?.sourceRevision||'').trim();
+            const artifactIdentity=String(row?.artifactIdentity||'').trim();
+            const candidate=item.robloxRuntimeCandidateEvidence||{};
+            const currentVersion=candidate.published===true&&Number(candidate.versionNumber||0)>0
+              ?Number(candidate.versionNumber)
+              :Number(item.robloxFoundationF0Evidence?.artifactRunId||item.robloxHeadlessFastMvpEvidence?.artifactRunId||0);
+            const exactCurrent=
+              String(item.robloxSourceCommit||'')===sourceRevision
+              &&String(item.robloxBuildArtifactIdentity||'')===artifactIdentity
+              &&Number(row?.versionNumber||0)===currentVersion;
+            if(!exactCurrent){
+              console.error('ROBLOX_STUDIO_REBOOT_RECOVERY_STALE_IDENTITY='+gameId);
+              continue;
+            }
+            const session=item.robloxStudioRuntimeSession||{};
+            if(String(session.sessionId||'')!==String(row?.sessionId||'')){
+              console.error('ROBLOX_STUDIO_REBOOT_RECOVERY_SESSION_SUPERSEDED='+gameId);
+              continue;
+            }
+            const evidence=item.robloxInternalVibePlayEvidence||{};
+            const exactEvidence=
+              evidence.sourceRevision===sourceRevision
+              &&evidence.artifactIdentity===artifactIdentity
+              &&Number(evidence.versionNumber||0)===Number(row?.versionNumber||0);
+            if(exactEvidence){
+              console.error('ROBLOX_STUDIO_REBOOT_RECOVERY_EVIDENCE_PRESENT='+gameId+':pass='+(evidence.pass===true)+':infra='+(evidence.infrastructureFailure===true));
+              continue;
+            }
+            if(item.robloxStudioLocalPlayRepairRequired===true||item.robloxQualityBuildUpRequired===true){
+              console.error('ROBLOX_STUDIO_REBOOT_RECOVERY_PRODUCT_REPAIR_OWNS='+gameId);
+              continue;
+            }
+            if(!['QUEUED_FOR_STUDIO','INTERRUPTED_RETRY_QUEUED'].includes(String(session.status||''))){
+              console.error('ROBLOX_STUDIO_REBOOT_RECOVERY_SESSION_TERMINAL='+gameId+':'+String(session.status||''));
+              continue;
+            }
+            console.log(gameId);
+          }
+          NODE
+          retry_count="$(grep -c . /tmp/roblox-studio-reboot-retry-ids || true)"
+          echo "retry_count=$retry_count" >> "$GITHUB_OUTPUT"
+          echo "ROBLOX_STUDIO_REBOOT_RECOVERY_CANDIDATES=$retry_count"
+          echo "ROBLOX_STUDIO_REBOOT_RECOVERY_SOURCE_JOB_RESULT=${STUDIO_JOB_RESULT:-unknown}"
+
+      - name: Persist interruption state before requeue
+        if: steps.recover.outputs.retry_count != '0'
+        working-directory: runtime
+        env:
+          PLANNED_MATRIX: ${{ needs.studio-local-plan.outputs.matrix }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp /tmp/roblox-studio-reboot-retry-ids /tmp/retry-ids
+          git config user.name 'jaewoon-roblox-studio-session'
+          git config user.email 'actions@users.noreply.github.com'
+          persisted=0
+          for attempt in 1 2 3 4 5; do
+            git fetch --no-tags origin company-runtime
+            git reset --hard origin/company-runtime
+            RETRY_IDS=/tmp/retry-ids node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const ids=new Set(fs.readFileSync(process.env.RETRY_IDS,'utf8').split(/\r?\n/).map(x=>x.trim()).filter(Boolean));
+          const matrix=JSON.parse(process.env.PLANNED_MATRIX||'{"include":[]}');
+          const byId=new Map((matrix.include||[]).map(row=>[String(row.gameId||''),row]));
+          const stamp=new Date().toISOString();
+          let changed=0;
+          for(const item of q.items||[]){
+            if(!ids.has(String(item.gameId||'')))continue;
+            const row=byId.get(String(item.gameId||''));
+            const session=item.robloxStudioRuntimeSession||{};
+            if(!row||String(session.sessionId||'')!==String(row.sessionId||''))continue;
+            item.robloxStudioRuntimeSession={
+              ...session,
+              status:'INTERRUPTED_RETRY_QUEUED',
+              interruptionRetryCount:Number(session.interruptionRetryCount||0)+1,
+              lastInterruptedAt:stamp,
+              lastInterruptedWorkflowRunId:Number(process.env.GITHUB_RUN_ID||0),
+              rebootSafeCheckpoint:true,
+              hostStateAuthoritative:false,
+              companyRuntimeAuthoritative:true
+            };
+            item.updatedAt=stamp;
+            changed++;
+          }
+          if(changed){
+            q.updatedAt=stamp;
+            fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
+          }
+          console.log('ROBLOX_STUDIO_REBOOT_RECOVERY_MARKED='+changed);
+          NODE
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then persisted=1; break; fi
+            git commit -m 'runtime: mark interrupted Studio sessions for retry [skip ci]'
+            if git push origin HEAD:company-runtime; then persisted=1; break; fi
+            sleep $((attempt*2))
+          done
+          test "$persisted" = 1
+
+      - name: Requeue exact interrupted Studio games without duplicating active work
+        if: steps.recover.outputs.retry_count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-post-runtime-qa.yml/runs?per_page=100")"
+          dispatch_count=0
+          deduped_count=0
+          while read -r id; do
+            [ -n "$id" ] || continue
+            active="$(printf '%s' "$payload" | GAME_ID="$id" CURRENT_RUN_ID="$GITHUB_RUN_ID" node -e "
+              let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
+                const j=JSON.parse(s),states=new Set(['queued','pending','requested','waiting','in_progress']);
+                const title='Roblox runtime foundation QA · '+String(process.env.GAME_ID||'');
+                const n=(j.workflow_runs||[]).filter(r=>String(r.id)!==String(process.env.CURRENT_RUN_ID||'')&&states.has(String(r.status||'').toLowerCase())&&String(r.display_title||'')===title).length;
+                process.stdout.write(String(n));
+              });
+            ")"
+            if [ "$active" != '0' ]; then
+              deduped_count=$((deduped_count+1))
+              echo "ROBLOX_STUDIO_REBOOT_REQUEUE=DEDUPED_ACTIVE:$id"
+              continue
+            fi
+            gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id" -f run_studio=true
+            dispatch_count=$((dispatch_count+1))
+            echo "ROBLOX_STUDIO_REBOOT_REQUEUE=YES:$id"
+          done < /tmp/roblox-studio-reboot-retry-ids
+          echo "ROBLOX_STUDIO_REBOOT_REQUEUE_DISPATCH_COUNT=$dispatch_count"
+          echo "ROBLOX_STUDIO_REBOOT_REQUEUE_DEDUPED_COUNT=$deduped_count"
+          echo 'ROBLOX_STUDIO_PC_INTERRUPTION_COUNTS_AS_GAME_FAILURE=NO'
+          echo 'ROBLOX_STUDIO_PC_REBOOT_RESTARTS_FROM_BLANK=NO'
+

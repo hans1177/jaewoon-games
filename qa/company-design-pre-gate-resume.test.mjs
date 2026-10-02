@@ -38,11 +38,11 @@ test('current blocked checkpoint engine remains compatible with targeted resume 
 });
 
 
-test('design runtime coalesces pending engine wakes without cancelling active manual or scheduled cycles',()=>{
+test('design runtime replaces stale push work while preserving manual and scheduled continuation',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
-  assert.match(workflow,/group: company-seed-design-runtime-\$\{\{ github\.event_name == 'push' && 'engine-push' \|\| 'continuation' \}\}/);
-  assert.match(workflow,/cancel-in-progress: false/);
-  assert.doesNotMatch(workflow,/cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
+  assert.match(workflow,/group: company-seed-design-runtime/);
+  assert.match(workflow,/cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
+  assert.doesNotMatch(workflow,/cancel-in-progress: true/);
   assert.match(workflow,/push:[\s\S]*tools\/company-design-cycle\.mjs/);
   assert.match(workflow,/workflow_dispatch:/);
   assert.match(workflow,/schedule:/);

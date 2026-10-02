@@ -29,7 +29,7 @@ jobs:
           GAME_ID: seed-roblox-obby-party-minigam-tower-of-hell
           ARTIFACT_RUN_ID: '35110903876'
           EXPECTED_ARTIFACT: sha256:7d80197d95f3e197ab30b888c71764123125b3d0d840f24ed789bce868eec3cc
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
           $root = Join-Path $env:RUNNER_TEMP 'skyline-studio-publish-dialog-package'
@@ -47,7 +47,7 @@ jobs:
       - name: Open Publish to Roblox As and inspect dialog
         env:
           PLACE_FILE: ${{ steps.package.outputs.place_file }}
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
           Add-Type -AssemblyName UIAutomationClient
