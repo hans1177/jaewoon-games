@@ -188,6 +188,14 @@ test('personal manor exterior has signature housing and collection architecture'
  assert.match(manorBuild,/GrandCeilingCoffer/);
  assert.match(manorBuild,/GrandCeilingBoss/);
  assert.match(manorBuild,/GrandCeilingCorbel/);
+ assert.match(manorBuild,/CeilingBeamX'\+str\(x\),\(x,30\.0,-31\)/);
+ assert.match(manorBuild,/CeilingBeamZ'\+str\(z0\),\(0,29\.85,z0\)/);
+ assert.match(manorBuild,/GrandCeilingCoffer'\+str\(row\)\+'_'\+str\(col\),\(x0,29\.36,z0\)/);
+ assert.match(manorBuild,/roof=\[\[-61,31,-67\],\[61,31,-67\]/);
+ assert.match(manorBuild,/UpperWingWallCap'\+str\(side\)\+'_'\+str\(gate\),\(side\*54,23\.0,z0\),\(1\.5,18\.0,8\.6\)/);
+ assert.match(manorBuild,/name\+'CeilingBeam'\+str\(beam\),\(x,16\.8,z\+beam\)/);
+ assert.doesNotMatch(manorBuild,/CeilingBeamX'\+str\(x\),\(x,24\.0,-31\)/);
+ assert.doesNotMatch(manorBuild,/roof=\[\[-61,25,-67\],\[61,25,-67\]/);
  assert.match(manorBuild,/다크카툰 고딕 스타일 락/);
  assert.match(manorBuild,/'purple':\(\.135,\.050,\.205\)/);
  assert.match(manorBuild,/'pumpkin':\(\.58,\.145,\.018\)/);
