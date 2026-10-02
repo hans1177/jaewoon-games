@@ -1349,6 +1349,169 @@ jobs:
           console.log('ROBLOX_REGRESSION_PASS=NO');
           console.log('ROBLOX_FINAL_REVIEW_PASS=NO');
           NODE
+      - name: Persist successful F0 checkpoint immediately per game
+        if: steps.freshness.outputs.superseded != 'true' && steps.package.outcome == 'success' && steps.fused_preflight.outcome == 'success' && steps.fused_f0.outcome == 'success' && matrix.secondaryOwnerFocus != true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ matrix.gameId }}
+          SOURCE_REVISION: ${{ matrix.sourceRevision }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          safe="$(printf '%s' "$GAME_ID" | tr -cs 'A-Za-z0-9._-' '-' | sed 's/^-*//;s/-*$//')"
+          result="/tmp/roblox-technical/results/${safe}.result.json"
+          test -f "$result"
+          git config user.name 'jaewoon-roblox-development'
+          git config user.email 'actions@users.noreply.github.com'
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+            git checkout -B "roblox-f0-persist-${safe}" "origin/$COMPANY_RUNTIME_BRANCH"
+            GAME_ID="$GAME_ID" RESULT_FILE="$result" node <<'NODE'
+          const fs=require('fs');
+          const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const result=JSON.parse(fs.readFileSync(process.env.RESULT_FILE,'utf8'));
+          const item=(queue.items||[]).find(x=>x.gameId===process.env.GAME_ID);
+          if(!item)throw new Error('queue item missing during per-game F0 persist: '+process.env.GAME_ID);
+          const revision=String(result.sourceRevision||'').trim();
+          const artifact=String(result.artifactIdentity||'').trim();
+          if(String(item.robloxSourceCommit||'').trim()!==revision){
+            console.log('ROBLOX_F0_PER_GAME_STALE_RESULT_IGNORED='+process.env.GAME_ID);
+            process.exit(0);
+          }
+          const alreadyExact=
+            item.robloxFoundationF0Passed===true
+            &&item.robloxBuildOrPackagePassed===true
+            &&item.robloxBuildPreflightPassed===true
+            &&item.robloxBuildSourceRevision===revision
+            &&item.robloxBuildArtifactIdentity===artifact
+            &&item.robloxFoundationF0Evidence?.sourceRevision===revision
+            &&item.robloxFoundationF0Evidence?.artifactIdentity===artifact;
+          if(alreadyExact){
+            console.log('ROBLOX_F0_PER_GAME_ALREADY_CURRENT='+process.env.GAME_ID);
+            process.exit(0);
+          }
+          const preflightExact=result.pass===true
+            &&artifact.startsWith('sha256:')
+            &&result.preflightPass===true
+            &&result.preflightEvidence?.sourceRevision===revision
+            &&result.preflightEvidence?.artifactIdentity===artifact;
+          const f0Exact=preflightExact
+            &&result.f0Pass===true
+            &&result.f0Evidence?.sourceRevision===revision
+            &&result.f0Evidence?.artifactIdentity===artifact;
+          if(!f0Exact)throw new Error('ROBLOX_F0_PER_GAME_RESULT_NOT_EXACT:'+process.env.GAME_ID);
+          const stamp=new Date().toISOString();
+          Object.assign(item,{
+            status:'ACTIVE',
+            currentStep:'PRIVATE_RUNTIME_CANDIDATE_DEPLOY',
+            canonicalState:'F0_SOURCE_PREFLIGHT_PASSED',
+            robloxBuildOrPackagePassed:true,
+            robloxBuildSourceRevision:revision,
+            robloxBuildArtifactIdentity:artifact,
+            robloxBuildPassedAt:stamp,
+            robloxBuildFailedAt:null,
+            robloxBuildPreflightPassed:true,
+            robloxBuildPreflightPassedAt:stamp,
+            robloxBuildPreflightFailedAt:null,
+            robloxBuildPreflightEvidence:result.preflightEvidence,
+            robloxFoundationF0Passed:true,
+            robloxFoundationF0PassedAt:stamp,
+            robloxFoundationF0Evidence:result.f0Evidence,
+            robloxHeadlessFastMvpPassed:true,
+            robloxHeadlessFastMvpEvidence:result.f0Evidence,
+            robloxHeadlessFinalReviewPassed:false,
+            robloxExactRevisionPassed:true,
+            robloxRuntimeCandidateEvidence:null,
+            robloxRuntimeFoundationPassed:false,
+            robloxRuntimeFoundationEvidence:null,
+            robloxRuntimePassed:false,
+            robloxRuntimePassedAt:null,
+            robloxRuntimeFailedAt:null,
+            robloxRuntimeEvidence:null,
+            robloxRuntimeRetryCount:0,
+            robloxServerClientBoundaryPassed:false,
+            robloxDatastoreRejoinPassed:false,
+            robloxMobileControlUiPassed:false,
+            robloxIndependentQaPassed:false,
+            robloxIndependentQaPassedAt:null,
+            robloxRegressionPassed:false,
+            robloxRegressionPassedAt:null,
+            robloxFinalReviewPassed:false,
+            robloxFinalReviewPassedAt:null,
+            robloxF9ReleaseRegressionPassed:false,
+            robloxF9ReleaseRegressionEvidence:null,
+            robloxPostRuntimeQaEvidence:null,
+            robloxInternalReleaseReady:false,
+            robloxInternalReleaseAt:null,
+            robloxLastSuccessfulStage:'F0_SOURCE_PREFLIGHT',
+            robloxFailureStage:'PRIVATE_RUNTIME_CANDIDATE_DEPLOY',
+            robloxFailureSignature:'ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING',
+            routingBlockers:['roblox-runtime-candidate-deploy-pending'],
+            updatedAt:stamp,
+          });
+          queue.updatedAt=stamp;
+          fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
+          console.log('ROBLOX_F0_PER_GAME_CHECKPOINT_READY='+process.env.GAME_ID);
+          NODE
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              echo "ROBLOX_F0_CHECKPOINT_PERSIST=ALREADY_CURRENT:$GAME_ID"
+              break
+            fi
+            git commit -m "runtime: persist Roblox F0 checkpoint ${GAME_ID} [skip ci]"
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              echo "ROBLOX_F0_CHECKPOINT_PERSIST=PASS:$GAME_ID:$attempt"
+              break
+            fi
+            echo "ROBLOX_F0_CHECKPOINT_PERSIST_CONFLICT_RETRY=$GAME_ID:$attempt"
+            sleep 1
+          done
+
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-f0-per-game-dispatch.json
+          ready="$(GAME_ID="$GAME_ID" SOURCE_REVISION="$SOURCE_REVISION" node - <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('/tmp/roblox-f0-per-game-dispatch.json','utf8'));
+          const x=(q.items||[]).find(row=>row.gameId===process.env.GAME_ID);
+          const revision=String(process.env.SOURCE_REVISION||'');
+          const artifact=String(x?.robloxBuildArtifactIdentity||'');
+          const f0=x?.robloxFoundationF0Evidence||{};
+          const ok=x?.robloxFoundationF0Passed===true
+            &&x?.robloxBuildPreflightPassed===true
+            &&x?.robloxBuildOrPackagePassed===true
+            &&x?.robloxBuildSourceRevision===revision
+            &&f0.sourceRevision===revision
+            &&f0.artifactIdentity===artifact
+            &&Number(f0.artifactRunId||0)>0
+            &&String(x?.robloxFailureStage||'').toUpperCase()==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'
+            &&String(x?.robloxFailureSignature||'').toUpperCase()==='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING';
+          process.stdout.write(ok?'yes':'no');
+          NODE
+          )"
+          if [ "$ready" != 'yes' ]; then
+            echo "ROBLOX_F0_PER_GAME_PRIVATE_VALIDATION_DISPATCH=SKIP_NOT_CURRENT:$GAME_ID"
+            exit 0
+          fi
+
+          current_main="$(git rev-parse origin/main)"
+          active="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-release-promotion.yml/runs?per_page=100" | GAME_ID="$GAME_ID" CURRENT_MAIN="$current_main" node -e "
+            let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
+              const j=JSON.parse(s);const states=new Set(['queued','pending','in_progress','requested']);
+              const title='Roblox publish · '+process.env.GAME_ID+' · validation';
+              const found=(j.workflow_runs||[]).some(r=>states.has(String(r.status||'').toLowerCase())&&String(r.display_title||'')===title&&String(r.head_sha||'')===process.env.CURRENT_MAIN);
+              process.stdout.write(found?'yes':'no');
+            });
+          ")"
+          if [ "$active" = 'yes' ]; then
+            echo "ROBLOX_F0_PER_GAME_PRIVATE_VALIDATION_DISPATCH=DEDUPED:$GAME_ID:$current_main"
+          else
+            gh workflow run company-development-roblox-release-promotion.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID" -f publish_stage=validation
+            echo "ROBLOX_F0_PER_GAME_PRIVATE_VALIDATION_DISPATCH=YES:$GAME_ID:$current_main"
+          fi
+
       - name: Upload immutable Roblox package checkpoint
         if: always()
         uses: actions/upload-artifact@v4
@@ -1461,6 +1624,19 @@ jobs:
             const resultSourceRevision=String(result.sourceRevision||'').trim();
             if(boundSourceRevision!==resultSourceRevision){
               console.log(`ROBLOX_PACKAGE_STALE_RESULT_IGNORED=${result.gameId}:${resultSourceRevision||'MISSING'}:${boundSourceRevision||'MISSING'}`);
+              continue;
+            }
+            const alreadyPersistedF0=!secondaryOwnerFocus
+              &&result.pass===true
+              &&item.robloxFoundationF0Passed===true
+              &&item.robloxBuildOrPackagePassed===true
+              &&item.robloxBuildPreflightPassed===true
+              &&item.robloxBuildSourceRevision===result.sourceRevision
+              &&item.robloxBuildArtifactIdentity===result.artifactIdentity
+              &&item.robloxFoundationF0Evidence?.sourceRevision===result.sourceRevision
+              &&item.robloxFoundationF0Evidence?.artifactIdentity===result.artifactIdentity;
+            if(alreadyPersistedF0){
+              console.log(`ROBLOX_PACKAGE_ALREADY_PERSISTED_PER_GAME=${result.gameId}`);
               continue;
             }
             if(secondaryOwnerFocus){
