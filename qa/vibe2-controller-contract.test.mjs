@@ -1496,13 +1496,16 @@ test('recovery-fast control work uses a slim runner and never competes for a gam
   assert.equal(runtime.continuous.executionLanes.RECOVERY_FAST.workerFanoutPerTask,1);
 });
 
-test('fan-in refill wakes coalesce by lane without a global singleton',()=>{
+test('fan-in refill wakes stay parallel per source task without a global or lane singleton',()=>{
   assert.match(workflow,/format\('vibe2-continuous-\{0\}-\{1\}', github\.run_id, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
-  assert.match(workflow,/format\('vibe2-fanin-refill-\{0\}', inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
+  assert.match(workflow,/format\('vibe2-fanin-refill-\{0\}-\{1\}', inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary', github\.event\.client_payload\.source_task \|\| github\.event\.client_payload\.source_run \|\| github\.run_id\)/);
   assert.doesNotMatch(workflow,/vibe2-fanin-refill-singleton/);
-  assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'LANE_SCOPED_STATELESS_WAKE_COALESCING');
-  assert.equal(runtime.continuous.atomicNeuronStream.sameLaneFanInRefillSerialization,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'SOURCE_TASK_SCOPED_PARALLEL_OPTIMISTIC_SHARED_QUEUE_WRITE');
+  assert.equal(runtime.continuous.atomicNeuronStream.sameLaneFanInRefillSerialization,false);
+  assert.equal(runtime.continuous.atomicNeuronStream.pressureCoalescingIndependentFreeSlotRefillPreserved,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.topLevelFanInRefillLaneSerialization,false);
   assert.equal(runtime.continuous.atomicNeuronStream.globalFanInRefillSingletonForbidden,true);
+  assert.equal(runtime.continuous.reserveConcurrency.statelessRefillCoalescing,'SOURCE_TASK_OR_SOURCE_RUN_SCOPED');
   assert.equal(runtime.continuous.reserveConcurrency.sameLaneReserveSerialization,false);
   assert.equal(runtime.continuous.reserveConcurrency.reserveJobsParallel,true);
   assert.equal(runtime.continuous.executionLanes.RECOVERY_FAST.gameWorkerDispatch,'GAME_PRIMARY_ATOMIC_REFILL_EVENT');
