@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end",
+      "replace": "local watched = {\n  \"Score\",\n  \"Coins\",\n  \"Level\",\n  \"Progress\",\n  \"Health\",\n  \"Wave\",\n  \"Position\",\n  \"Objective\",\n  \"Combo\",\n  \"EnemyHealth\",\n  \"PuzzleChain\",\n  \"Towers\",\n  \"BaseHealth\",\n  \"SocialBond\",\n  \"SharedObjective\",\n  \"RoundScore\",\n  \"LastApprovedScope\"\n}\nlocal function render()\n  status.Text = string.format(\"Score %d · Lv %d · Progress %d · HP %d · Wave %d\", player:GetAttribute(\"Score\") or 0, player:GetAttribute(\"Level\") or 1, player:GetAttribute(\"Progress\") or 0, player:GetAttribute(\"Health\") or 100, player:GetAttribute(\"Wave\") or 1)\nend\n\nfor _, name in ipairs(watched) do\n  player:GetAttributeChangedSignal(name):Connect(render)\nend\n\nrender()\n\nif #Config.Actions > 0 then\n  ContextActionService:BindAction(\"VibePrimaryAction\", function(_, inputState)\n    if inputState == Enum.UserInputState.Begin then remote:FireServer(Config.Actions[1].Id) end\n    return Enum.ContextActionResult.Sink\n  end, false, Enum.KeyCode.Space, Enum.KeyCode.ButtonA)\nend\n\n-- native-foundation-sentinel-v1 client readiness\nlocal nativeFoundationInput = game:GetService(\"UserInputService\")\nlocal nativeTouchEnabled = nativeFoundationInput.TouchEnabled\nlocal nativeFoundationRemote = ReplicatedStorage:WaitForChild(\"RuntimeFoundationReport\")\nlocal nativeFoundationCamera = workspace.CurrentCamera\nlocal function reportNativeFoundationReady()\n  local character = player.Character or player.CharacterAdded:Wait()\n  local humanoid = character:WaitForChild(\"Humanoid\")\n  if nativeFoundationCamera and nativeFoundationCamera.CameraSubject == humanoid then\n    nativeFoundationRemote:FireServer(\"CAMERA_READY\")\n  end\n  nativeFoundationRemote:FireServer(nativeTouchEnabled and \"INPUT_READY_TOUCH\" or \"INPUT_READY\")\nend\n\ntask.defer(reportNativeFoundationReady)"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
