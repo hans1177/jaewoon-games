@@ -156,10 +156,10 @@ test('Studio 실플레이 계약은 현재 저택 로비의 실제 입력 순서
  assert.equal(flow.startButtonText,'혼자 바로 시작');
  assert.equal(flow.primaryActionButtonText,'대시');
  assert.ok(flow.afterStartWaitMs>=4000);
- assert.match(manorClient,/button\(card,"저택 들어가기"/);
- assert.match(manorClient,/button\(commands,"출정"/);
- assert.match(manorClient,/button\(body,"인간"/);
- assert.match(manorClient,/button\(body,"혼자 바로 시작"/);
+ assert.match(manorClient,/artbookButton\(card,"저택 들어가기"/);
+ assert.match(manorClient,/button\(commands,"   출정"/);
+ assert.match(manorClient,/artbookButton\(body,"인간"/);
+ assert.match(manorClient,/artbookButton\(body,"혼자 바로 시작"/);
  assert.doesNotMatch(flow.selectionButtonText,/인간 선호/);
 });
 
@@ -238,9 +238,10 @@ test('1인 출정은 같은 서버에서 시작하고 맵 선택만으로 서버
  assert.match(server,/local function startLocalSoloRoom\(p\)/);
  assert.match(server,/localSoloSession=true;roomSolo=true;roomServer=true;roomCode="SOLO"/);
  assert.match(server,/if #Players:GetPlayers\(\)==1 then startLocalSoloRoom\(p\)else createReservedRoom\(p,"PRIVATE",true\)end/);
- assert.match(server,/if roomServer and not studioRoomFallback and not localSoloSession then leaveReservedRoom\(p\)end/);
- assert.match(server,/if localSoloSession then/);
- assert.match(manorClient,/button\(body,"혼자 바로 시작"/);
+ assert.match(server,/RESULT_RETURN_SAME_SERVER/);
+ assert.doesNotMatch(server,/if roomServer and not studioRoomFallback and not localSoloSession then leaveReservedRoom\(p\)end/);
+ assert.match(server,/localSoloSession=false;roomServer=false;roomCode=""/);
+ assert.match(manorClient,/artbookButton\(body,"혼자 바로 시작"/);
  assert.match(manorClient,/label\(body,"1\. 맵 선택"/);
  assert.match(manorClient,/label\(body,"2\. 역할 · "/);
  assert.match(manorClient,/label\(body,"3\. 시작"/);
@@ -541,8 +542,12 @@ test('스킬은 이름뿐 아니라 용도와 범위를 HUD에서 설명한다',
  assert.match(client,/local skillGuideLine=Instance\.new\("TextLabel"\)/);
  assert.match(client,/local function abilityRangeLabel\(profile\)/);
  assert.match(client,/local function abilityGuideText\(name,profile,cost,cooldownSeconds,status\)/);
- assert.match(client,/humanAbilityButton\.TextScaled=false;humanAbilityButton\.TextSize=9;humanAbilityButton\.TextWrapped=true/);
- assert.match(client,/abilityButton\.TextScaled=false;abilityButton\.TextSize=9;abilityButton\.TextWrapped=true/);
+ assert.match(client,/humanAbilityButton\.TextScaled=false;humanAbilityButton\.TextSize=11;humanAbilityButton\.TextWrapped=true/);
+ assert.match(client,/abilityButton\.TextScaled=false;abilityButton\.TextSize=11;abilityButton\.TextWrapped=true/);
+ assert.match(client,/humanAbilityButton\.Size=UDim2\.fromOffset\(142,76\)/);
+ assert.match(client,/abilityButton\.Size=UDim2\.fromOffset\(150,76\)/);
+ assert.match(client,/"★ "\.\.currentHumanAbilityName\(\)/);
+ assert.match(client,/"★ "\.\.currentAbilityName\(\)/);
  assert.match(client,/쿨 %d초 · %dE/);
  assert.match(client,/currentHumanAbilityDescription\(\)/);
  assert.match(client,/currentAbilityDescription\(\)/);
@@ -561,6 +566,29 @@ test('내부 세계 귀신 자산은 실제 런타임 목격 연출에 연결되
  assert.match(client,/LocalGhostSightingBody/);
 });
 
+test('내부 귀신 스킨과 모션은 실제 전투 몬스터에도 연결된다',()=>{
+ assert.match(client,/local combatSkinByMonster=\{/);
+ for(const pair of ['DRACULA="strigoi"','FRANKENSTEIN="draugr"','WEREWOLF="barghest"','MUMMY="pocong"','GRIM_REAPER="hei-wuchang"'])assert.ok(client.includes(pair),pair);
+ assert.match(client,/local function ensureCombatSkin\(source,rootPart,skinId\)/);
+ assert.match(client,/GhostSkinFactory\.Create\(skinId,\{quality=touchEnabled and"far"or"mid"/);
+ assert.match(client,/GhostSkinMotion\.Bind\(model\)/);
+ assert.match(client,/state="attack"/);
+ assert.match(client,/state="chase"/);
+ assert.match(client,/state="walk"/);
+ assert.match(client,/SourceAssetLibrary","roblox-world-ghost-skins-v1"/);
+});
+
+test('감염 스킬과 감염 공격은 화면 효과와 공격 모션 이벤트를 보낸다',()=>{
+ assert.match(server,/Infected=true/);
+ assert.match(server,/FireAllClients\("MONSTER_ABILITY_EFFECT"/);
+ assert.match(server,/FireAllClients\("MONSTER_ATTACK_EFFECT"/);
+ assert.match(client,/snapshot\.Infected==true/);
+ for(const ability of ['FALSE_ALARM','BLACKOUT','RUSH','HUNT_FLASH','BREACH'])assert.ok(client.includes('ability=="'+ability+'"'),ability);
+ assert.match(client,/local function abilityRing\(/);
+ assert.match(client,/local function playMonsterAttackEffect\(snapshot\)/);
+ assert.match(client,/kind=="MONSTER_ATTACK_EFFECT"/);
+});
+
 test('결과는 시레머니 다음 보상 정산 후 저택 복귀 안내로 이어진다',()=>{
  assert.match(config,/ResultSeconds=8/);
  assert.match(client,/resultDetail\.Visible=false/);
@@ -570,7 +598,12 @@ test('결과는 시레머니 다음 보상 정산 후 저택 복귀 안내로 �
  assert.match(client,/내 저택으로 돌아가는 중…/);
  assert.match(client,/총 \+%d 코인/);
  assert.match(server,/teleport\(p,personalSpawn\(p\)\)/);
+ assert.match(server,/RESULT_RETURN_SAME_SERVER/);
+ assert.doesNotMatch(server,/stageResultCeremony[\s\S]{0,1800}teleport\(row\.player,pos,cameraPos\)/);
+ const resultBlock=server.slice(server.indexOf('local function endRound(winner)'),server.indexOf('local purifyCooldown=',server.indexOf('local function endRound(winner)')));
+ assert.doesNotMatch(resultBlock,/leaveReservedRoom\(p\)/);
 });
+
 
 test('초기 세계 괴담 도감은 12종 3단계이며 서버 근접 검증을 사용한다',()=>{
  const catalog=config.slice(config.indexOf('GhostCatalog={'),config.indexOf('GhostTitles={'));
@@ -720,4 +753,15 @@ test('안전 스폰은 상호작용 오브젝트와 분리되고 바닥만 착�
  assert.match(server,/SetAttribute\("WalkableGround",true\)/);
  assert.match(server,/FilterType=Enum\.RaycastFilterType\.Include/);
  assert.match(server,/d:GetAttribute\("WalkableGround"\)==true/);
+});
+
+test('저택 로비 UI는 Version 77 구조 위에서 내부 아이콘 기반 다크카툰 카드로 구성된다',()=>{
+ assert.match(manorAssets,/ModelId=89009422966867/);
+ assert.match(manorClient,/ArtbookStyle","DARK_CARTOON_GOTHIC_HALLOWEEN"/);
+ assert.match(manorClient,/UIAssetSource","INTERNAL_MANOR_ICONS"/);
+ assert.match(manorClient,/local function internalIcon\(/);
+ assert.match(manorClient,/local function artbookButton\(/);
+ assert.match(manorClient,/DarkCartoonWelcomeCard/);
+ for(const text of ['"인간","정화·대시·직업 스킬"','"몬스터","추적·감염·고유 스킬"','"혼자 바로 시작","같은 서버에서 즉시 출정"'])assert.ok(manorClient.includes(text),text);
+ assert.doesNotMatch(manorClient,/local mapGlyph=/);
 });
