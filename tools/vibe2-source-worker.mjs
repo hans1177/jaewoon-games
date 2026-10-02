@@ -365,6 +365,8 @@ export function resolveAssetSourceModel(order={},requestedModel=DEFAULT_MODEL){
   const hero=clean(routing.heroModel)||baseline;
   const heroRequested=routing.heroRequested===true;
   const selected=heroRequested?hero:(clean(routing.selectedModel)||baseline);
+  const cacheFamily=clean(routing.cacheFamily)||'vibe2-ollama-v6';
+  const cacheKey=clean(routing.cacheKey)||selected.toLowerCase().replace(/[^a-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'')||'local-model';
   return Object.freeze({
     required:true,
     heroRequested,
@@ -372,6 +374,8 @@ export function resolveAssetSourceModel(order={},requestedModel=DEFAULT_MODEL){
     requestedModel:requested,
     baselineModel:baseline,
     heroModel:hero,
+    cacheFamily,
+    cacheKey,
     fallbackAllowed:routing.fallbackToBaseline!==false,
     fallbackUsed:false,
     tier:heroRequested?'HERO_STUDIO':'BASELINE',
@@ -403,11 +407,29 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
   const dccRequired=(contract?.dcc?.requiredTypes||[]).length>0;
   const nativeTextRequired=(contract?.nativeText?.requiredTypes||[]).length>0;
   const nativeTextAuthored=nativeSignals>=2;
-  const status=nativeTextAuthored?'NATIVE_SOURCE_AUTHORED_RUNTIME_REQUIRED':dccRequired?'DCC_AUTHORING_EXECUTOR_REQUIRED':nativeTextRequired?'NATIVE_AUTHORING_DELTA_REQUIRED':'AUTHORING_REQUIRED';
+  const dccEvidence=contract?.dcc?.executionEvidence&&typeof contract.dcc.executionEvidence==='object'?contract.dcc.executionEvidence:null;
+  const dccAuthored=Boolean(
+    !dccRequired||(
+      dccEvidence?.executed===true
+      &&clean(dccEvidence?.editableSource)
+      &&clean(dccEvidence?.nativeArtifact)
+      &&clean(dccEvidence?.artifactHash)
+      &&clean(dccEvidence?.preview)
+    )
+  );
+  const dccStatus=!dccRequired?'NOT_REQUIRED':dccAuthored?'DCC_AUTHORED_RUNTIME_REQUIRED':clean(contract?.dcc?.executionStatus)||'DCC_AUTHORING_EXECUTOR_REQUIRED';
+  const nativeTextStatus=!nativeTextRequired?'NOT_REQUIRED':nativeTextAuthored?'NATIVE_SOURCE_AUTHORED_RUNTIME_REQUIRED':'NATIVE_AUTHORING_DELTA_REQUIRED';
+  const status=dccRequired&&!dccAuthored
+    ?(nativeTextAuthored?'NATIVE_SOURCE_AUTHORED_DCC_EXECUTOR_REQUIRED':'DCC_AUTHORING_EXECUTOR_REQUIRED')
+    :nativeTextAuthored?'NATIVE_SOURCE_AUTHORED_RUNTIME_REQUIRED'
+      :nativeTextRequired?'NATIVE_AUTHORING_DELTA_REQUIRED'
+        :'AUTHORING_REQUIRED';
   return Object.freeze({
-    required:true,status,target,nativeSignals,nativeTextAuthored,dccRequired,nativeTextRequired,
+    required:true,status,target,nativeSignals,nativeTextAuthored,dccRequired,dccAuthored,dccStatus,nativeTextRequired,nativeTextStatus,
     requiredDccTypes:Object.freeze([...(contract?.dcc?.requiredTypes||[])]),
     requiredNativeTextTypes:Object.freeze([...(contract?.nativeText?.requiredTypes||[])]),
+    dccExecutionEvidencePresent:Boolean(dccEvidence),
+    nativeSourceMayNotMaskDccRequirement:contract?.dcc?.nativeSourceMayNotMaskDccRequirement!==false,
     authoringRequestIsNotCompletion:true,
     generatedArtifactAloneIsNotRuntimePass:true,
     runtimeVerified:false,
@@ -4284,6 +4306,10 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     model:effectiveModel,
     modelRouting:{...modelRouting,actualModel:effectiveModel,heroModelApplied:modelRouting.heroRequested===true&&effectiveModel===modelRouting.heroModel},
     nativeAssetAuthoring,
+    nativeAssetAuthoringPending:nativeAssetAuthoring.required===true&&(
+      (nativeAssetAuthoring.dccRequired===true&&nativeAssetAuthoring.dccAuthored!==true)
+      ||(nativeAssetAuthoring.nativeTextRequired===true&&nativeAssetAuthoring.nativeTextAuthored!==true)
+    ),
     changedFiles,
     summary:candidate.summary,
     expectedEffect:candidate.expectedEffect,
@@ -4326,8 +4352,11 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     console.log(`VIBE2_TASK_ID=${result.taskId}`);
     console.log(`VIBE2_TARGET=${result.target}`);
     console.log(`VIBE2_SOURCE_MODEL=${result.model}`);
+    console.log(`VIBE2_ASSET_MODEL_CACHE_KEY=${result.modelRouting?.cacheKey||'NONE'}`);
     console.log(`VIBE2_HERO_ASSET_MODEL_APPLIED=${result.modelRouting?.heroModelApplied===true?'YES':'NO'}`);
     console.log(`VIBE2_NATIVE_ASSET_AUTHORING_STATUS=${result.nativeAssetAuthoring?.status||'NOT_REQUIRED'}`);
+    console.log(`VIBE2_NATIVE_ASSET_DCC_STATUS=${result.nativeAssetAuthoring?.dccStatus||'NOT_REQUIRED'}`);
+    console.log(`VIBE2_NATIVE_ASSET_AUTHORING_PENDING=${result.nativeAssetAuthoringPending===true?'YES':'NO'}`);
     console.log(`VIBE2_CHANGED_FILES=${result.changedFiles.join(',')}`);
     console.log(`VIBE2_CANDIDATE_MANIFEST=${result.candidateManifestPath}`);
     console.log(`VIBE2_GENERATION_ATTEMPTS=${result.generation?.attempts||1}`);
