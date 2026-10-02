@@ -2312,7 +2312,16 @@ export function collectVerifiedRobloxStudioPlayExperience(companyQueueInput={}){
     const patterns=verifiedRobloxStudioReusablePatterns(binding);
     const failedCheckpoints=binding.requiredCheckpoints.filter(row=>row?.pass!==true).map(row=>clean(row?.name||row?.id)).filter(Boolean);
     const errorTypes=(Array.isArray(evidence?.errors)?evidence.errors:[]).map(row=>clean(row?.type||row?.name||'runtime-error')).filter(Boolean);
-    const failureCause=uniq([clean(evidence?.robloxFailureClass),...errorTypes,...failedCheckpoints]).join(' | ');
+    const failedScenarios=(Array.isArray(evidence?.qualityFailureKinds)?evidence.qualityFailureKinds:[]).map(clean).filter(Boolean);
+    const repairSurfaces=uniq((Array.isArray(evidence?.qualityFailureDetails)?evidence.qualityFailureDetails:[])
+      .map(row=>clean(row?.repairSurface).toUpperCase()).filter(Boolean));
+    const failureCause=uniq([
+      clean(evidence?.robloxFailureClass),
+      ...errorTypes,
+      ...failedCheckpoints,
+      ...failedScenarios.map(id=>'scenario:'+id),
+      ...repairSurfaces.map(surface=>'repair-surface:'+surface)
+    ]).join(' | ');
     if(binding.pass&&!patterns.length)continue;
     if(binding.verifiedFailure&&!failureCause)continue;
     const runIdentity=clean(evidence?.runId)||clean(evidence?.workflowRunId)||[
@@ -2336,7 +2345,9 @@ export function collectVerifiedRobloxStudioPlayExperience(companyQueueInput={}){
       'roblox-studio-local-outcome-id:'+outcomeId,
       'roblox-native-actual-play-feedback:'+(binding.pass?'PASS':'FAIL'),
       ...(clean(evidence?.robloxFailureClass)?['roblox-native-failure-class:'+clean(evidence.robloxFailureClass)]:[]),
-      ...(clean(evidence?.workflowRunId)?['actions-run:'+clean(evidence.workflowRunId)]:[])
+      ...(clean(evidence?.workflowRunId)?['actions-run:'+clean(evidence.workflowRunId)]:[]),
+      ...failedScenarios.map(id=>'roblox-studio-failed-scenario:'+id),
+      ...repairSurfaces.map(surface=>'roblox-studio-repair-surface:'+surface)
     ];
     records.push({
       id:outcomeId,
@@ -2353,7 +2364,12 @@ export function collectVerifiedRobloxStudioPlayExperience(companyQueueInput={}){
       build:binding.artifactIdentity,
       evidence:baseEvidence,
       reusablePatterns:binding.pass?patterns:[],
-      avoidPatterns:binding.pass?[]:uniq([...patterns,...errorTypes.map(x=>'verified-studio-error:'+lower(x).replace(/[^a-z0-9-]+/g,'-'))]),
+      avoidPatterns:binding.pass?[]:uniq([
+        ...patterns,
+        ...errorTypes.map(x=>'verified-studio-error:'+lower(x).replace(/[^a-z0-9-]+/g,'-')),
+        ...failedScenarios.map(x=>'verified-studio-failed-scenario:'+lower(x).replace(/[^a-z0-9-]+/g,'-')),
+        ...repairSurfaces.map(x=>'verified-studio-repair-surface:'+lower(x).replace(/[^a-z0-9-]+/g,'-'))
+      ]),
       verified:true,
       reusable:true,
       confirmations:1,

@@ -3864,6 +3864,9 @@ test('game-specific BUILD_UP worker guidance carries source current-to-intended 
   assert.match(source,/sourceAnchors=.*CURRENT=/);
   assert.match(source,/INTENDED=/);
   assert.match(source,/ACCEPT=/);
+  assert.match(source,/gameDna=/);
+  assert.match(source,/playChain=/);
+  assert.match(source,/microIteration=/);
   assert.match(source,/expectedPlayerEffect=/);
   assert.match(source,/previousEffectiveness=/);
   assert.match(source,/nextVibeAction=/);
@@ -3885,6 +3888,9 @@ test('focused replace-only compacts build-up directive without losing exact goal
     '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
     'directiveId=demo-g7 generation=7 developmentDepth=4 escalationStage=BUILD_UP primaryFocus=PRESENTATION',
     'gameIdentity=정원 방어 전투',
+    'gameDna=identity:정원 방어 전투 coreFun:서식지 배치 signatures:서식지 상성:어떤 곤충을 배치할지 progression:웨이브 생존 genericizationForbidden:true',
+    'playChain=selectedStage:PLAYER_ACTION sequence:ENTRY_ORIENTATION>PLAYER_ACTION>AUTHORITY_AND_CONDITION>STATE_CHANGE>FEEDBACK>RESULT_OR_REWARD>NEXT_CHOICE>RECOVERY_RETRY primaryFailure:adaptive-ui-blocking-overlay repairSurface:MOBILE_UI priority:CRITICAL',
+    'microIteration=primaryRepairSurface:MOBILE_UI primaryScenario:adaptive-ui-blocking-overlay selectedStage:PLAYER_ACTION preferredResponsibleFiles:1-3 unrelatedExpansionDeferred:true studioRecheckRequired:true',
     'primaryGoal=벌 돌진 전조를 실제 렌더에서 더 분명하게 만든다.',
     'sourceAnchors=Assets/Scripts/Player.cs:12 SYMBOL Render CURRENT=weak INTENDED=clear ACCEPT=visible',
     'expectedPlayerEffect=공격 전조를 즉시 구분',
@@ -3907,10 +3913,20 @@ test('focused replace-only compacts build-up directive without losing exact goal
     'acceptance=ACTUAL_RENDERED_CHANGE_REQUIRED',
     '[GAME SPECIFIC BUILD UP DIRECTIVE END]'
   ].join('\n');
+  const codingContract=[
+    '[CODING EXECUTION CONTRACT BEGIN]',
+    'mode=CAUSAL_IMPLEMENTATION; target=unity; selectedStage=FEEDBACK; repairSurface=VFX_FEEDBACK; primaryScenario=adaptive-effects-surface',
+    'hypothesis1=PRIMARY_RESPONSIBILITY_BREAK: repair Render before widening scope | proof=REPLAY_SCENARIO:adaptive-effects-surface,PRIMARY_STATE_OR_BEHAVIOR_DELTA',
+    'changeBudget=files:1-3; maxSystems:2; wrappers=FORBIDDEN; duplicateArchitecture=FORBIDDEN; unrelatedMutation=FORBIDDEN',
+    'verificationLadder=PREPATCH_CAUSE:REQUIRED>SYNTAX_OR_COMPILE:REQUIRED>FOCUSED_CHECKS:REQUIRED>SAME_SCENARIO:REQUIRED>DEPENDENT_REGRESSION:REQUIRED>FULL_REGRESSION:REQUIRED',
+    'retryPolicy=repeat:2; mode:FOCUSED_REPAIR; sameFailureNeedsNewHypothesis:true; unchangedApproachForbidden:false',
+    '[CODING EXECUTION CONTRACT END]'
+  ].join('\n');
   const prompt=[
     'Engine: unity',
     'Goal: improve visible attack anticipation',
     directive,
+    codingContract,
     'Allowed edit paths: Assets/Scripts/Player.cs',
     '=== FILE Assets/Scripts/Player.cs [EDITABLE] ===',
     'class Player { int Speed() { return 1; } }'
@@ -3922,6 +3938,13 @@ test('focused replace-only compacts build-up directive without losing exact goal
   assert.ok(focused);
   assert.match(focused.prompt,/directiveId=demo-g7/);
   assert.match(focused.prompt,/primaryGoal=벌 돌진 전조/);
+  assert.match(focused.prompt,/gameDna=identity:정원 방어 전투/);
+  assert.match(focused.prompt,/playChain=selectedStage:PLAYER_ACTION/);
+  assert.match(focused.prompt,/microIteration=primaryRepairSurface:MOBILE_UI/);
+  assert.match(focused.prompt,/\[CODING EXECUTION CONTRACT BEGIN\]/);
+  assert.match(focused.prompt,/sameFailureNeedsNewHypothesis:true/);
+  assert.match(focused.prompt,/verificationLadder=PREPATCH_CAUSE:REQUIRED/);
+  assert.match(focused.prompt,/\[CODING EXECUTION CONTRACT END\]/);
   assert.match(focused.prompt,/sourceAnchors=Assets\/Scripts\/Player\.cs/);
   assert.match(focused.prompt,/expectedPlayerEffect=공격 전조를 즉시 구분/);
   assert.match(focused.prompt,/ACTUAL_RENDERED_CHANGE_REQUIRED/);
