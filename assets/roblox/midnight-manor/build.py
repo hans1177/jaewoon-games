@@ -934,6 +934,14 @@ def build():
         s.lathe('MapPin_'+map_id,(-73.08,8.45,z0),.22,.09,.24,c['brass'],sides=20)
 
     # 기록관의 12개 괴담 전시. 각 괴담마다 단일 고유 실루엣 유물을 하나씩 보존한다.
+    # 12칸 유리 진열장. 프레임/선반/유리는 정적 병합 대상이라 런타임 메시 예산을 거의 늘리지 않는다.
+    s.box('ArchiveRelicCabinetBack',(-43.75,4.35,-59.55),(10.6,5.9,.35),c['wood'])
+    s.box('ArchiveRelicCabinetTop',(-43.75,7.45,-59.18),(11.0,.36,.82),c['brass'])
+    s.box('ArchiveRelicCabinetBottom',(-43.75,1.35,-59.18),(11.0,.42,.82),c['brass'])
+    for divider in [-48.25,-46.75,-45.25,-43.75,-42.25,-40.75,-39.25]:
+        s.box('ArchiveRelicDivider'+str(divider),(divider,4.35,-59.16),(.16,5.7,.62),c['wood'])
+    s.box('ArchiveRelicShelf',(-43.75,4.28,-59.15),(10.8,.18,.65),c['wood'])
+    s.box('ArchiveRelicGlass',(-43.75,4.35,-58.78),(10.3,5.65,.08),c['glass'])
     relic_slots=[
       ('YUREI','fan',-47.5,3.0),('NOPPERABO','mask',-46.0,3.0),
       ('CHEONNYEO_GWISHIN','hairpin',-44.5,3.0),('KRASUE','orb',-43.0,3.0),
@@ -994,12 +1002,15 @@ def build():
             s.curve_tube(name,points,[.06]*len(points),[.05]*len(points),mat,sides=18)
 
 
-    # 마당의 개인 추억 진열물. 각 맵의 괴담을 발견하면 서버가 해당 유물을 공개한다.
-    s.box('MemoryRelic_SCHOOL',(-30,1.55,35),(4.8,3.1,.42),c['stone'],lean=-.10)
-    s.box('MemoryRelic_HOSPITAL',(30,1.75,35),(5.2,3.5,.42),c['stone'],lean=.08)
-    s.prism('MemoryRelic_THEME_PARK',(45,2.05,54),[
-      (-2.6,-1.3),(2.6,-1.3),(2.2,1.3),(-2.2,1.3)
-    ],.28,s.material('ParkTicketPaint',(.31,.20,.22)))
+    # 마당의 맵별 기념 전시. 각 지역에서 괴담을 처음 발견하면 해당 유물이 나타난다.
+    # 학교: 오래된 종. 폐병원: 십자가 표식. 폐놀이공원: 찢어진 입장권.
+    s.loft('MemoryRelic_SCHOOL',(-30,1.95,35),[
+      (-1.15,.55,.48),(-.60,1.10,.68),(.15,1.35,.82),(.85,.78,.58)
+    ],s.material('SchoolBellBronze',(.30,.22,.12)),sides=28)
+    hospital_cross=[(-.55,-1.5),(.55,-1.5),(.55,-.52),(1.55,-.52),(1.55,.52),(.55,.52),(.55,1.5),(-.55,1.5),(-.55,.52),(-1.55,.52),(-1.55,-.52),(-.55,-.52)]
+    s.prism('MemoryRelic_HOSPITAL',(30,2.15,35),hospital_cross,.32,s.material('HospitalCrossPaint',(.30,.055,.065)))
+    ticket_outline=[(-2.5,-1.1),(2.15,-1.1),(2.55,-.65),(2.28,-.18),(2.55,.32),(2.22,1.08),(-2.5,1.08),(-2.25,.58),(-2.50,.12),(-2.22,-.42)]
+    s.prism('MemoryRelic_THEME_PARK',(45,2.05,54),ticket_outline,.28,s.material('ParkTicketPaint',(.31,.20,.22)))
 
     # 2층 객실은 잠긴 채 유지하지만 진행도에 따라 왁스 봉인이 하나씩 밝아진다.
     # 2층 잠긴 객실문.
