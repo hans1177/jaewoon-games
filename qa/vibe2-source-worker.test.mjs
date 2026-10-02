@@ -8,7 +8,7 @@ import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
-import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
@@ -71,6 +71,86 @@ function robloxFullGraphicsMotionPatch(accent='70,95,130') {
     'panel.BackgroundColor3 = Color3.fromRGB(' + accent + ')'
   ].join('\n');
 }
+
+test('game context capsule keeps responsibility save style and verified memory through focused retries',()=>{
+  const relative='client/Game.client.luau';
+  const workOrder=order({target:'roblox',root:'roblox-games/demo',responsibleFiles:['roblox-games/demo/'+relative],taskId:'context-capsule'});
+  workOrder.goal='improve the current visual responsibility without changing gameplay';
+  workOrder.assetProduction={qualityProfile:'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION',qualityDNA:{styleProfile:'STYLIZED_DARK'}};
+  workOrder.unifiedLearning={failureFingerprint:'old-failure',playbookReuse:[{id:'verified-playbook-a'}]};
+  const exploration={editContract:{
+    primaryTargets:['renderEnemy'],primarySystems:['PRESENTATION'],dependentSystems:['VFX'],ownedState:['enemyState'],
+    semanticDiffBudget:{saveKeysMustRemainCompatible:['save_v1']},
+    patchRecipe:{failureFingerprint:'enemy-visual-fp',verifiedMemoryIds:['memory-a']}
+  }};
+  const capsule=buildGameContextCapsule({order:workOrder,exploration,responsibleFiles:[relative]});
+  assert.equal(capsule.gameId,'demo');
+  assert.equal(capsule.target,'roblox');
+  assert.deepEqual(capsule.responsibility.primaryTargets,['renderEnemy']);
+  assert.deepEqual(capsule.protected.saveKeys,['save_v1']);
+  assert.equal(capsule.style.styleProfile,'STYLIZED_DARK');
+  assert.deepEqual(capsule.learning.verifiedMemoryIds,['memory-a','verified-playbook-a']);
+
+  const source='local function renderEnemy()\n  panel.BackgroundColor3 = Color3.fromRGB(18,28,48)\nend\n';
+  const prompt=buildPrompt(workOrder,{files:[{path:relative,editable:true,content:source}]},[relative],{exploration});
+  assert.match(prompt,/\[GAME CONTEXT CAPSULE BEGIN\]/);
+  assert.match(prompt,/save_v1/);
+  assert.match(prompt,/\[PRE-SUBMIT SELF REVIEW BEGIN\]/);
+
+  const focused=buildFocusedReplaceOnlyPrompt(prompt,{responsibleFiles:[relative]});
+  assert.ok(focused);
+  assert.match(focused.prompt,/\[GAME CONTEXT CAPSULE BEGIN\]/);
+  assert.match(focused.prompt,/\[PRE-SUBMIT SELF REVIEW BEGIN\]/);
+
+  const retry=buildGenerationRetryPrompt(prompt,{
+    allowFullRewrite:false,error:new Error('STUDIO_QUALITY_DELTA_REQUIRED:BUILD_UP'),
+    responsibleFiles:[relative],attempt:3,failureRepeatCount:2
+  });
+  assert.match(retry,/\[GAME CONTEXT CAPSULE BEGIN\]/);
+  assert.match(retry,/\[PRE-SUBMIT SELF REVIEW BEGIN\]/);
+  assert.match(retry,/\[REPEATED FAILURE STRATEGY SHIFT\]/);
+  assert.match(retry,/repeatCount=2/);
+});
+
+test('candidate self review rejects comment-only game changes and keeps retryable failure class',()=>{
+  const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'self-review'});
+  const bad={edits:[{path:'index.html',find:'const score = 0;',replace:'const score = 0;\n<!-- reviewed -->'}],newFiles:[],replaceFiles:[]};
+  const review=evaluateCandidateSelfReview({candidate:bad,order:workOrder,responsibleFiles:['index.html']});
+  assert.equal(review.required,true);
+  assert.equal(review.pass,false);
+  assert.ok(review.issues.includes('MEANINGFUL_EXECUTABLE_DELTA'));
+  const error=new Error('CANDIDATE_SELF_REVIEW_REQUIRED:'+review.issues.join('|'));
+  assert.equal(generationFailureClass(error),'SELF_REVIEW');
+  assert.equal(shouldRetryGenerationError(error),true);
+
+  const good={edits:[{path:'index.html',find:'const score = 0;',replace:'const score = 1;'}],newFiles:[],replaceFiles:[]};
+  assert.equal(evaluateCandidateSelfReview({candidate:good,order:workOrder,responsibleFiles:['index.html']}).pass,true);
+});
+
+test('repeated self-review failure changes strategy inside the existing retry budget',async()=>{
+  const cwd=tempRoot(),root='web-games/demo',relative='index.html';
+  const source='<script>\nconst score = 0;\n</script>\n';
+  const workOrder=order({target:'web',root,responsibleFiles:[root+'/'+relative],taskId:'repeat-self-review'});
+  const bad1=path.join(cwd,'bad-self-review-1.json');
+  const bad2=path.join(cwd,'bad-self-review-2.json');
+  const good3=path.join(cwd,'good-self-review-3.json');
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  const bad={edits:[{path:relative,find:'const score = 0;',replace:'const score = 0;\n<!-- reviewed -->'}],newFiles:[],replaceFiles:[]};
+  write(bad1,JSON.stringify(bad));
+  write(bad2,JSON.stringify(bad));
+  write(good3,JSON.stringify({replace:'const score = 1;'}));
+
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[bad1,bad2,good3]});
+  assert.equal(result.generation.attempts,3);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.equal(result.generation.repeatedFailureStrategyShifts,1);
+  assert.deepEqual(result.generation.failureHistory,['SELF_REVIEW','SELF_REVIEW']);
+  assert.equal(result.generation.focusedReplaceOnly,true);
+  assert.equal(result.candidateSelfReview.pass,true);
+  const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
+  assert.match(candidate,/const score = 1;/);
+});
 
 test('Roblox source worker inspects native responsibilities before generation',()=>{
   const inspection=buildRobloxNativeSourceInspection({
