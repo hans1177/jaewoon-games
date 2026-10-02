@@ -65,22 +65,14 @@ jobs:
           set -euo pipefail
           git diff --name-only "$BASE_REF" HEAD > /tmp/main-write-guard-files.txt
           guard_changed=NO
-          if grep -Eq '^(tools/main-write-guard\.mjs|qa/main-write-guard\.test\.mjs|\.github/workflows/main-write-guard\.yml)
-
-      - name: Protection status
-        shell: bash
-        run: |
-          echo 'MAIN_DIRECT_WRITE_GUARD=PASS'
-          echo 'PR_ONLY_MERGE_GUARD=ACTIVE_FOR_CHANGED_WORKFLOWS'
-          echo 'ADMIN_PROTECTION_BLOCKER=branch/ruleset protection must still be enforced by repository admin settings'
- /tmp/main-write-guard-files.txt; then
+          if grep -Eq '^(tools/main-write-guard\.mjs|qa/main-write-guard\.test\.mjs|\.github/workflows/main-write-guard\.yml)$' /tmp/main-write-guard-files.txt; then
             guard_changed=YES
           fi
           echo "guard_changed=$guard_changed" >> "$GITHUB_OUTPUT"
           echo "MAIN_WRITE_GUARD_UNIT_QA=$guard_changed"
 
       - name: Unit test deterministic guard only when guard implementation changed
-        if: steps.scope.outputs.guard_changed == 'YES'
+        if: ${{ steps.scope.outputs.guard_changed == 'YES' }}
         run: node --test qa/main-write-guard.test.mjs
 
       - name: Reject new workflow direct writes to main
