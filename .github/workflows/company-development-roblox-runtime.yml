@@ -529,7 +529,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$SOURCE_BRANCH" --title "development: bootstrap Roblox ${GAME_ID}" --body "DEVELOPMENT_CONFIRMED Roblox source candidate. Static source contract: PASS. Roblox runtime/independent QA/regression: NOT YET CLAIMED. Policy: COMPANY_FLOW.md.")"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$SOURCE_BRANCH" --title "development: bootstrap Roblox ${GAME_ID}" --body "DEVELOPMENT_CONFIRMED Roblox source candidate. Static source contract: PASS. Roblox runtime/independent QA/regression: NOT YET CLAIMED. Policy: company-learning/platform-release-roadmap.json.")"
           echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
           attempt=0
           while true; do
