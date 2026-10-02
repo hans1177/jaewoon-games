@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g3-944a0086a7d1",
-  "directiveFingerprint": "944a0086a7d188c58de3e14a0938fca610c9bf6944b1b9022aebe75f646a99b0",
-  "previousDirectiveFingerprint": "cb94fbaa56c4b8974f176d9238570bca4d5570d2631470b532caec35876a3235",
-  "forbiddenRepeatFingerprint": "cb94fbaa56c4b8974f176d9238570bca4d5570d2631470b532caec35876a3235",
+  "directiveId": "daechung-rpg-build-up-g4-e84057921fd8",
+  "directiveFingerprint": "e84057921fd82304816ebbf73147f52a750b0b5c688ea69bab550d72ec3aeaad",
+  "previousDirectiveFingerprint": "944a0086a7d188c58de3e14a0938fca610c9bf6944b1b9022aebe75f646a99b0",
+  "forbiddenRepeatFingerprint": "944a0086a7d188c58de3e14a0938fca610c9bf6944b1b9022aebe75f646a99b0",
   "gameId": "daechung-rpg",
-  "gameName": "대충 RPG",
-  "generation": 3,
+  "gameName": "5포탈 RPG: 던전 파티",
+  "generation": 4,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/daechung-rpg",
-  "sourceTreeFingerprint": "1cf2508f5d8b20616a163ba541619539cb61daa28f36c21c1b4b55a0929d79cf",
+  "sourceTreeFingerprint": "ceb29bb8d463ee15473278186eacf68895ba012665594f81fc9898dbdeda539a",
   "designFingerprint": "96add7fd73d84d9a53459185ddf4457d9058daeb4ceab00aeab0dd18b14ab27a",
   "gameIdentityAndNonNegotiables": {
     "identity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.",
@@ -86,7 +86,7 @@
     ],
     "signals": {
       "combat": 558,
-      "progression": 503,
+      "progression": 504,
       "ai": 58,
       "save": 185,
       "multiplayer": 18,
@@ -97,21 +97,21 @@
       "camera": 91,
       "audio": 38,
       "audioDynamics": 20,
-      "ui": 205,
-      "uiFlow": 177,
+      "ui": 208,
+      "uiFlow": 178,
       "entryFlow": 8,
       "loadingFlow": 0,
       "input": 103,
       "map": 452,
       "landmark": 26,
       "interaction": 104,
-      "inventory": 52,
+      "inventory": 54,
       "equipment": 82,
       "settings": 10,
       "feedback": 133,
       "session": 75,
-      "content": 557,
-      "choice": 111,
+      "content": 567,
+      "choice": 114,
       "connection": 2,
       "performance": 33,
       "lighting": 80,
@@ -134,7 +134,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/shared/RPGMenu.luau",
-        "score": 155
+        "score": 169
       },
       {
         "file": "roblox-games/daechung-rpg/shared/QACamera.luau",
@@ -200,7 +200,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/shared/RPGMenu.luau",
-        "line": 222,
+        "line": 247,
         "kind": "FUNCTION",
         "symbol": "watchTools",
         "context": "local function watchTools()",
@@ -232,7 +232,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/shared/RPGMenu.luau",
-        "line": 8,
+        "line": 11,
         "kind": "FUNCTION",
         "symbol": "make",
         "context": "local function make(class,parent,name,properties)",
@@ -240,7 +240,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/shared/RPGMenu.luau",
-        "line": 79,
+        "line": 84,
         "kind": "FUNCTION",
         "symbol": "selectItem",
         "context": "local function selectItem(row)",
@@ -328,7 +328,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/shared/RPGMenu.luau",
-        "line": 14,
+        "line": 17,
         "kind": "FUNCTION",
         "symbol": "round",
         "context": "local function round(item,radius)",
@@ -456,7 +456,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/shared/RPGMenu.luau",
-        "line": 25,
+        "line": 29,
         "kind": "FUNCTION",
         "symbol": "Menu.install",
         "context": "function Menu.install(config,gui,player,options)",
@@ -496,7 +496,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/shared/RPGMenu.luau",
-        "line": 17,
+        "line": 20,
         "kind": "FUNCTION",
         "symbol": "label",
         "context": "local function label(parent,name,text,size)",
@@ -504,7 +504,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/shared/RPGMenu.luau",
-        "line": 216,
+        "line": 241,
         "kind": "FUNCTION",
         "symbol": "scheduleRefresh",
         "context": "local function scheduleRefresh()",
@@ -547,9 +547,9 @@
   "previousVersionDelta": {
     "previousGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 2,
-    "previousSourceTreeFingerprint": "dacc4345bc1348d8287db934c75db3940a6d51d82286cb07b9c2376a43fbbddf",
-    "currentSourceTreeFingerprint": "1cf2508f5d8b20616a163ba541619539cb61daa28f36c21c1b4b55a0929d79cf",
+    "previousGeneration": 3,
+    "previousSourceTreeFingerprint": "1cf2508f5d8b20616a163ba541619539cb61daa28f36c21c1b4b55a0929d79cf",
+    "currentSourceTreeFingerprint": "ceb29bb8d463ee15473278186eacf68895ba012665594f81fc9898dbdeda539a",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -561,8 +561,8 @@
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
-    "independentQaPassed": true,
-    "regressionPassed": true
+    "independentQaPassed": false,
+    "regressionPassed": false
   },
   "qualityGapMap": [
     {
@@ -1696,7 +1696,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 264541,
+        "sourceBytes": 265411,
         "largestFileBytes": 105650,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1729,8 +1729,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 4,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=6.",
+    "themeDepth": 5,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1740,9 +1740,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 4
+        "PRESENTATION_WORLD_COHESION": 5
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1781,7 +1782,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 182,
+        "score": 164,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -2410,7 +2411,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "1cf2508f5d8b20616a163ba541619539cb61daa28f36c21c1b4b55a0929d79cf",
+      "sourceTreeFingerprint": "ceb29bb8d463ee15473278186eacf68895ba012665594f81fc9898dbdeda539a",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2457,7 +2458,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 4,
+    "nextGeneration": 5,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2522,5 +2523,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-02T14:09:35.787Z"
+  "generatedAt": "2026-10-02T14:15:26.366Z"
 }
