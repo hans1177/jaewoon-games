@@ -2081,10 +2081,11 @@ jobs:
                   continue
                 fi
                 case ",$planned_games," in
-                  *",$older_trigger_game,"*) ;;
+                  *",$older_trigger_game,"*)
+                    echo "ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_OWNER_EXACT_REPLACES_OLDER_EXACT=$run_id:$older_trigger_game"
+                    ;;
                   *)
-                    echo "ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_UNRELATED_EXACT_TRIGGER=$run_id:$older_trigger_game"
-                    continue
+                    echo "ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_OWNER_EXACT_PREEMPTS_UNRELATED_EXACT=$run_id:$older_trigger_game"
                     ;;
                 esac
               fi
@@ -2100,7 +2101,7 @@ jobs:
                 if(studio.some(j=>String(j.status||'').toLowerCase()==='in_progress'))return process.stdout.write('PRESERVE_ACTIVE');
                 const waiting=studio.filter(j=>['queued','pending','requested','waiting'].includes(String(j.status||'').toLowerCase()));
                 if(!waiting.length)return process.stdout.write('NONE');
-                if(ownerExact&&!olderExact)return process.stdout.write('CANCEL');
+                if(ownerExact)return process.stdout.write('CANCEL');
                 const games=waiting.map(j=>String(j.name||'').slice(prefix.length));
                 process.stdout.write(games.every(g=>planned.has(g))?'CANCEL':'PRESERVE_UNRELATED');
               });
