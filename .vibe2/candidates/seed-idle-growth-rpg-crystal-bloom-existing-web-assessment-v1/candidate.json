@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 recovered partial timeout edit",
+  "expectedEffect": "recovered complete edit from bounded timeout output",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "<script src=\"/web-games/_shared/vibe2-final.js\"></script>",
+      "replace": "<script src=\"/web-games/seed-idle-growth-rpg-crystal-bloom/vibe2-final.js\"></script>"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
