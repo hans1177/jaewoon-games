@@ -162,6 +162,29 @@ jobs:
             if(queued.has(String(stale.status||'').toLowerCase()))add(stale,'CENTRAL_DEVELOPMENT_PUSH_SUPERSEDED');
           }
 
+          // Unscoped batch wakes from push/manual/status recovery can target the same exact head.
+          // Preserve the active batch and remove only queued/pending duplicates for that same head.
+          const centralBatchByHead=new Map();
+          for(const run of runs.filter(r=>
+            r.path==='.github/workflows/company-development-confirmed-runtime.yml'
+            &&active.has(String(r.status||'').toLowerCase())
+            &&/^DEVELOPMENT cycle \| batch \|/.test(String(r.display_title||''))
+          )){
+            const key=String(run.head_sha||'');
+            if(!key)continue;
+            if(!centralBatchByHead.has(key))centralBatchByHead.set(key,[]);
+            centralBatchByHead.get(key).push(run);
+          }
+          for(const group of centralBatchByHead.values()){
+            if(group.length<2)continue;
+            const running=group.filter(r=>String(r.status||'').toLowerCase()==='in_progress').sort((a,b)=>Number(a.id)-Number(b.id));
+            const winner=running[0]||[...group].sort((a,b)=>Number(b.id)-Number(a.id))[0];
+            for(const stale of group){
+              if(Number(stale.id)===Number(winner.id))continue;
+              if(queued.has(String(stale.status||'').toLowerCase()))add(stale,'CENTRAL_DEVELOPMENT_BATCH_DUPLICATE_SAME_HEAD');
+            }
+          }
+
           const dedupeByTitle=(path,newestQueuedWins=false)=>{
             const rows=runs.filter(r=>r.path===path&&active.has(String(r.status||'').toLowerCase()));
             const groups=new Map();
