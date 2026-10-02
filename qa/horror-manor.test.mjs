@@ -13,6 +13,7 @@ const lobby=read('roblox-games/horror-escape-room/server/ManorLobby.luau');
 const ui=read('roblox-games/horror-escape-room/client/ManorLobby.client.luau');
 const oldUI=read('roblox-games/horror-escape-room/client/Game.client.luau');
 const config=read('roblox-games/horror-escape-room/shared/GameConfig.luau');
+const studioReview=read('tools/horror-manor-studio-review.mjs');
 const manorBuild=read(root+'/build.py');
 test('selected lobby map stays server-authoritative through room and round',()=>{
  assert.match(ui,/send\(C\.Actions\.SELECT_MAP,map\.Id\)/);
@@ -24,6 +25,15 @@ test('selected lobby map stays server-authoritative through room and round',()=>
  assert.match(server,/local map=mapById\(roomSelectedMapId\)/);
  assert.match(server,/workspace:SetAttribute\("CurrentMapId",map\.Id\)/);
  assert.match(server,/workspace:SetAttribute\("CurrentMapName",map\.Name\)/);
+});
+
+test('existing Studio review proves ground contact before and after play-server restart',()=>{
+ assert.match(studioReview,/captureGroundContact\(studioId,'server-1'\)/);
+ assert.match(studioReview,/captureGroundContact\(studioId,'server-2'\)/);
+ assert.match(studioReview,/personalGround===true/);
+ assert.match(studioReview,/!floor\.includes\('Air'\)/);
+ assert.match(studioReview,/localZ>=52&&localZ<=68/);
+ assert.match(studioReview,/MANOR_NEW_SERVER_GROUND_CONTACT=PASS/);
 });
 
 test('personal manor keeps expanded +60 arrival while spawn authority stays in Game.server',()=>{
