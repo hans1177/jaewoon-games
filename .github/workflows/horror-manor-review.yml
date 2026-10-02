@@ -5,6 +5,9 @@ on:
     paths:
       - '.github/workflows/horror-manor-review.yml'
       - 'tools/horror-manor-studio-review.mjs'
+      - 'tools/horror-manor-native-check.mjs'
+      - 'roblox-games/horror-escape-room/shared/ManorAssets.luau'
+      - 'roblox-games/horror-escape-room/server/ManorLobby.luau'
 permissions:
   contents: read
 concurrency:
