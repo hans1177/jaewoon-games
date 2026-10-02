@@ -1749,7 +1749,7 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
-      "canonicalState": "F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION",
+      "canonicalState": "F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION",
       "enqueuedAt": "2026-10-02T05:12:43.771Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -1779,7 +1779,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T05:12:43.771Z"
       },
-      "updatedAt": "2026-10-02T11:30:54.077Z",
+      "updatedAt": "2026-10-02T11:35:30.286Z",
       "robloxSourceCommit": "63208f3829048797b49a8dec2b2607a1aff9513d",
       "robloxSourceBootstrapPassedAt": "2026-10-02T05:14:01.929Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -2033,7 +2033,7 @@
       "robloxRegressionPassed": true,
       "robloxRegressionPassedAt": "2026-10-02T11:28:02.703Z",
       "robloxFinalReviewPassed": true,
-      "robloxFinalReviewPassedAt": "2026-10-02T10:28:29.977Z",
+      "robloxFinalReviewPassedAt": "2026-10-02T11:35:30.286Z",
       "robloxF9ReleaseRegressionPassed": true,
       "robloxF9ReleaseRegressionEvidence": {
         "version": 1,
@@ -2057,7 +2057,7 @@
           "qa/vibe3-roblox-platform.test.mjs"
         ],
         "authority": "deterministic-f9-exact-runtime-candidate-review",
-        "verifiedAt": "2026-10-02T10:28:29.977Z"
+        "verifiedAt": "2026-10-02T11:35:30.286Z"
       },
       "robloxPostRuntimeQaEvidence": {
         "version": 5,
@@ -2115,8 +2115,8 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "F9_RELEASE_REGRESSION",
-      "robloxFailureStage": "PUBLIC_RELEASE_RUNTIME_OBSERVATION",
-      "robloxFailureSignature": "ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT",
+      "robloxFailureStage": null,
+      "robloxFailureSignature": null,
       "routingBlockers": [],
       "robloxExactRevisionPassed": true,
       "robloxMultiplayerQaEvidence": {
@@ -2253,9 +2253,9 @@
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": true,
-        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
-        "failureStage": "PUBLIC_RELEASE_RUNTIME_OBSERVATION",
-        "failureSignature": "ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT"
+        "lastSuccessfulStage": "F9_RELEASE_REGRESSION",
+        "failureStage": null,
+        "failureSignature": null
       },
       "resumeStage": "F1_SERVER_BOOT",
       "failureCount": 1,
@@ -2279,7 +2279,7 @@
       },
       "robloxValidationPublishRepairRequired": true,
       "robloxValidationPublishRepairAt": "2026-10-02T08:42:37.448Z",
-      "robloxCanonicalPublishPending": true,
+      "robloxCanonicalPublishPending": false,
       "robloxReleaseVersionNumber": null,
       "robloxPublicRelease": false,
       "robloxInternalVibePlayEvidence": null,
@@ -2290,7 +2290,7 @@
       "robloxReleaseStabilityEvidence": null,
       "robloxPublicReleaseFinalEvidence": null,
       "robloxRuntimeLastObservationAttemptAt": "2026-10-02T11:28:02.703Z",
-      "robloxF9PendingInParallel": true,
+      "robloxF9PendingInParallel": false,
       "robloxInternalReleasePublished": false,
       "robloxPublicReleaseBlockers": [
         "roblox-public-release-awaiting-real-server-boot"
@@ -2407,10 +2407,10 @@
         "internalStudioValidationOnly": false,
         "runtimeAcceptancePassed": true,
         "studioAssetRuntimeBindingPassed": true,
-        "canonicalPublishRequired": true,
+        "canonicalPublishRequired": false,
         "canonicalPublishCompleted": false,
         "authority": "roblox-f9-verified-prepublish-gate",
-        "verifiedAt": "2026-10-02T10:28:29.977Z"
+        "verifiedAt": "2026-10-02T11:35:30.286Z"
       },
       "robloxPromotionBlockers": [],
       "robloxPublicReleaseEvidence": null,
@@ -2466,7 +2466,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-02T11:34:44.962Z",
+  "updatedAt": "2026-10-02T11:35:30.286Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
