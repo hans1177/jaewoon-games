@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function draw(){",
+      "replace": "for(const e of enemies){e.hit=Math.max(0,e.hit-dt);const a=Math.atan2(player.y-e.y,player.x-e.x);e.x+=Math.cos(a)*e.speed*dt;e.y+=Math.sin(a)*e.speed*dt;const rr=e.r+player.r;if((e.x-player.x)**2+(e.y-player.y)**2<rr*rr)hurt(e.damage)}\n for(let i=gems.length-1;i>=0;i--){const g=gems[i];const d=Math.hypot(player.x-g.x,player.y-g.y);if(d<player.pickup){const sp=260+(player.pickup-d)*5;g.x+=(player.x-g.x)/Math.max(1,d)*sp*dt;g.y+=(player.y-g.y)/Math.max(1,d)*sp*dt}if(d<player.r+8){gainXp(g.v);gems.splice(i,1)} }\n for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=.96;p.vy*=.96;p.life-=dt;if(p.life<=0)particles.splice(i,1)}updateUi()}\n function updateUi(){ui.wave.textContent=wave;ui.level.textContent=player.level;ui.kills.textContent=kills;ui.time.textContent=`${Math.floor(elapsed/60)}:${String(Math.floor(elapsed%60)).padStart(2,'0')}`;ui.hpText.textContent=`${Math.max(0,Math.ceil(player.hp))} / ${Math.ceil(player.maxHp)}`;ui.hpBar.style.width=(clamp(player.hp/player.maxHp,0,1)*100)+'%';ui.xpText.textContent=`${Math.floor(player.xp)} / ${player.nextXp}`;ui.xpBar.style.width=(clamp(player.xp/player.nextXp,0,1)*100)+'%';ui.dashState.textContent=player.dashCd<=0?'READY':player.dashCd.toFixed(1);if(boss){ui.bossHpText.textContent=`${Math.ceil(boss.hp)} / ${Math.ceil(boss.maxHp)}`;ui.bossHpBar.style.width=(clamp(boss.hp/boss.maxHp,0,1)*100)+'%'}}\n function draw(){ctx.clearRect(0,0,W,H);const grd=ctx.createRadialGradient(player.x,player.y,0,player.x,player.y,Math.max(W,H)*.8);grd.addColorStop(0,'#111f42');grd.addColorStop(.55,'#090f23');grd.addColorStop(1,'#040711');ctx.fillStyle=grd;ctx.fillRect(0,0,W,H);for(const s of stars){ctx.globalAlpha=s.a;ctx.fillStyle='#d8efff';ctx.fillRect(s.x,s.y,s.s,s.s)}ctx.globalAlpha=1;\n ctx.strokeStyle='#4a6da018';ctx.lineWidth=1;const grid=42,ox=(-player.x*.08)%grid,oy=(-player.y*.08)%grid;for(let x=ox;x<W;x+=grid){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}for(let y=oy;y<H;y+=grid){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke())}\n for(const g of gems){ctx.save();ctx.translate(g.x,g.y);ctx.rotate(performance.now()*.002);ctx.fillStyle='#75edff';ctx.shadowColor='#62e6ff';ctx.shadowBlur=12;ctx.beginPath();ctx.moveTo(0,-6);ctx.lineTo(5,0);ctx.lineTo(0,6);ctx.lineTo(-5,0);ctx.closePath();ctx.fill();ctx.restore()}\n for(const b of bullets){ctx.fillStyle='#c9f7ff';ctx.shadowColor='#7feeff';ctx.shadowBlur=11;ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill()}ctx.shadowBlur=0;\n for(const e of enemies){ctx.save();ctx.translate(e.x,e.y);ctx.fillStyle=e.hit?'#fff':e.color;ctx.shadowColor=e.color;ctx.shadowBlur=e.boss?24:12;ctx.beginPath();ctx.arc(0,0,e.r,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='#ffffff55';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,e.r*.55,0,Ma)"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
