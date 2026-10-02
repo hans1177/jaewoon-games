@@ -2977,7 +2977,7 @@ remote.OnServerEvent:Connect(function(p,a,value)
  elseif a==C.Actions.RETURN_MANOR then
   returnToPersonalManor(p)
  elseif a==C.Actions.MANOR_SOLO and state~="RUNNING"and not roomServer then
-  startLocalSoloRoom(p)
+  if #Players:GetPlayers()==1 then startLocalSoloRoom(p)else createReservedRoom(p,"PRIVATE",true)end
  elseif a==C.Actions.MANOR_RANK and state~="RUNNING"and manorLobby then
   task.spawn(function()manorLobby:Rank(p)end)
  elseif a==C.Actions.MANOR_GAG and state~="RUNNING"and manorLobby then
