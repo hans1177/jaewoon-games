@@ -368,7 +368,7 @@ test('personal manor exterior has signature housing and collection architecture'
  assert.match(ui,/BackdropCloud/);assert.match(ui,/BackdropMist/);assert.match(ui,/BackdropBat/);
  assert.match(ui,/ChandelierPearDrop/);assert.match(ui,/PaperMoonHalo/);
  assert.match(ui,/row\.light\.Brightness=row\.brightness\*\(1\+math\.sin/);
- assert.match(ui,/다크카툰 고딕 UI 팔레트/);
+ assert.match(ui,/ArtbookStyle","DARK_CARTOON_GOTHIC_HALLOWEEN"/);
  assert.match(ui,/local purple=Color3\.fromRGB\(61,28,82\)/);
  assert.match(ui,/local function gothicCorners\(parent\)/);
  assert.match(ui,/mark\.Name="GothicCorner"/);
@@ -376,7 +376,7 @@ test('personal manor exterior has signature housing and collection architecture'
  assert.match(ui,/name:match\("\^GargoyleEye"\)/);
  assert.match(ui,/mesh\.Material=Enum\.Material\.Neon/);
  assert.match(ui,/local glow=\.10\+math\.sin\(now\*1\.35\+phase\)\*\.06/);
- assert.match(ui,/Color3\.fromRGB\(49,24,61\)/);
+ assert.match(ui,/local wood=Color3\.fromRGB\(48,27,21\)/);
  assert.match(ui,/local layer=tonumber\(name:match\("\(%d\+\)\$"\)\)or 0/);
  assert.match(ui,/local speed=\.050\+layer\*\.010/);
  assert.match(ui,/local speed=\.060\+layer\*\.012/);
