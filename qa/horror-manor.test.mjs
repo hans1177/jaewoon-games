@@ -225,7 +225,7 @@ test('personal manor exterior has signature housing and collection architecture'
  assert.match(lobby,/-69,4,-58\.8,4\.5,8,3\.8/);
  assert.match(lobby,/69,4\.2,-37\.8,4\.5,8\.5,3\.8/);
  assert.match(lobby,/namedParts\(scene,"FireplaceFeature_"\.\.ghost\.Id\)/);
- assert.match(ui,/mesh\.Name:match\("Flame"\)/);
+ assert.match(ui,/name:match\("Flame"\)/);
  assert.match(ui,/local phase=row\.home\.Position\.X\*\.37\+row\.home\.Position\.Z\*\.19/);
  assert.match(ui,/local function npcRole\(name\)/);
  assert.match(ui,/local function npcHeadPart\(name\)/);
