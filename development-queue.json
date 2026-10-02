@@ -63,8 +63,8 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T01:24:10.538Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -94,28 +94,28 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-02T13:33:39.118Z",
+      "updatedAt": "2026-10-02T13:35:01.074Z",
       "robloxSourceCommit": "81520f39b594e8110b2ea2c1c680e8e26fd40c8e",
       "robloxSourceBootstrapPassedAt": "2026-10-02T13:33:39.118Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "90f7891d85bc93d229d1d4ef9b43e905ea11cd1b",
-      "robloxBuildArtifactIdentity": "sha256:da1b7ab149f06508217156c8653a86881b7c0730bd2027b3d6e9a71749d42066",
-      "robloxBuildPassedAt": "2026-10-02T13:32:08.290Z",
+      "robloxBuildSourceRevision": "81520f39b594e8110b2ea2c1c680e8e26fd40c8e",
+      "robloxBuildArtifactIdentity": "sha256:996856e09abfaf794fe5d9441fc44feba671bf6fce8081477eb2743966c2548c",
+      "robloxBuildPassedAt": "2026-10-02T13:35:01.074Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-02T13:32:08.290Z",
+      "robloxBuildPreflightPassedAt": "2026-10-02T13:35:01.074Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "horror-escape-room",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-02T13:31:44.170Z",
-        "sourceRevision": "90f7891d85bc93d229d1d4ef9b43e905ea11cd1b",
-        "artifactIdentity": "sha256:da1b7ab149f06508217156c8653a86881b7c0730bd2027b3d6e9a71749d42066",
+        "checkedAt": "2026-10-02T13:34:35.047Z",
+        "sourceRevision": "81520f39b594e8110b2ea2c1c680e8e26fd40c8e",
+        "artifactIdentity": "sha256:996856e09abfaf794fe5d9441fc44feba671bf6fce8081477eb2743966c2548c",
         "secondaryOwnerFocus": false,
         "facts": {
           "pass": true,
@@ -131,11 +131,11 @@
           "distinctLeadCount": 1,
           "secondaryOwnerFocus": false,
           "robloxLaneEligible": true,
-          "directRoblox": true,
+          "directRoblox": false,
           "concurrentRoblox": true,
           "build": {
-            "sourceRevision": "90f7891d85bc93d229d1d4ef9b43e905ea11cd1b",
-            "artifactIdentity": "sha256:da1b7ab149f06508217156c8653a86881b7c0730bd2027b3d6e9a71749d42066",
+            "sourceRevision": "81520f39b594e8110b2ea2c1c680e8e26fd40c8e",
+            "artifactIdentity": "sha256:996856e09abfaf794fe5d9441fc44feba671bf6fce8081477eb2743966c2548c",
             "webValidationPassed": false,
             "musicValidationPassed": false,
             "nativeWebValidationPassed": false,
@@ -151,7 +151,7 @@
             "model": "llama3.2:1b",
             "decision": "PASS",
             "blockers": [],
-            "note": "No concrete build-stage blocker found."
+            "note": "No concrete build-stage blockers found."
           }
         ],
         "blockers": [],
@@ -197,7 +197,7 @@
       "robloxFailureStage": "F0_SOURCE_INTEGRITY",
       "robloxFailureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-f0-source-preflight-failed"
       ],
       "robloxExactRevisionPassed": false,
       "robloxMultiplayerQaEvidence": {
@@ -2378,7 +2378,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-02T13:33:39.118Z",
+  "updatedAt": "2026-10-02T13:35:01.074Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
