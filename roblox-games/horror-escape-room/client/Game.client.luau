@@ -109,13 +109,16 @@ gui.Name="MidnightTagHUD"
 gui.ResetOnSpawn=false
 gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
 gui.IgnoreGuiInset=false
+gui.DisplayOrder=30
+gui.ZIndexBehavior=Enum.ZIndexBehavior.Global
 gui.Parent=p:WaitForChild("PlayerGui")
 
 -- 로딩: 클라이언트 핵심 리소스와 서버 맵 준비가 끝날 때까지 로비 진입을 가린다.
 -- 로딩 화면 생성 전용 지역 범위: 생성용 변수가 파일 전체에 누적되지 않는다.
+local loadingLayer
 local loadingFill
 do
-local loadingLayer=Instance.new("Frame")
+loadingLayer=Instance.new("Frame")
 loadingLayer.Name="LoadingScreen"
 loadingLayer.Size=UDim2.fromScale(1,1)
 loadingLayer.BackgroundColor3=Color3.fromRGB(17,20,25)
@@ -429,7 +432,9 @@ local verifiedLearningContext = C.VerifiedExternalLearning or C.LearningContext 
 local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples or {}
 local verifiedLearningAxes = verifiedLearningContext.ApplyAxes or {}
 local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 6
-local verifiedLearningRoot = loadingLayer
+-- Optional presentation learning must never depend on the temporary loading frame.
+-- The old out-of-scope loadingLayer reference stopped the client before combat HUD/skin setup.
+local verifiedLearningRoot = gui
 local verifiedLearningSemanticVariant = "OBJECTIVE_GOAL"
 local verifiedLearningSemanticDomain = "CORE_GAMEPLAY_FEEL"
 local verifiedLearningSemanticColor = Color3.fromRGB(255, 220, 124)
@@ -1057,13 +1062,20 @@ local authoredPalettes={
  INFECTED={skin=Color3.fromRGB(151,169,143),cloth=Color3.fromRGB(34,47,42),accent=Color3.fromRGB(105,235,163),metal=Color3.fromRGB(104,124,113)},
 }
 
+local function combatRoleForPlayer(player)
+ local role=tostring(player:GetAttribute("Role")or"")
+ if role=="MONSTER"then return role end
+ local team=tostring(player:GetAttribute("RoundTeam")or"")
+ if team=="MONSTER"then return team end
+ return role
+end
 local function combatFormIdForPlayer(player)
- if player:GetAttribute("Role")~="MONSTER"then return nil end
+ if combatRoleForPlayer(player)~="MONSTER"then return nil end
  if player:GetAttribute("Infected")==true then return"INFECTED"end
  return tostring(player:GetAttribute("MonsterForm")or"DRACULA")
 end
 local function combatSkinIdForPlayer(player)
- if player:GetAttribute("Role")~="MONSTER"then return nil end
+ if combatRoleForPlayer(player)~="MONSTER"then return nil end
  if player:GetAttribute("Infected")==true then
   return combatSkinByInfected[tostring(player:GetAttribute("HumanForm")or"BROADCAST")]or"pocong"
  end
@@ -1071,26 +1083,42 @@ local function combatSkinIdForPlayer(player)
 end
 local function authoredCombatTemplate()
  local folder=RS:FindFirstChild("CombatVisualTemplates")
- local template=folder and folder:FindFirstChild("AuthoredHumanoidGhost")
- if template and template:IsA("Model")then return template end
+ if not folder then return nil end
+ local root=folder:FindFirstChild("AuthoredHumanoidGhost")
+ if root and root:IsA("Model")and root:FindFirstChildWhichIsA("MeshPart",true)then return root end
+ if root then
+  for _,d in ipairs(root:GetDescendants())do
+   if d:IsA("Model")and d:FindFirstChildWhichIsA("MeshPart",true)then return d end
+  end
+ end
+ for _,d in ipairs(folder:GetDescendants())do
+  if d:IsA("Model")and d:FindFirstChildWhichIsA("MeshPart",true)then return d end
+ end
  return nil
 end
 local function styleAuthoredCombatModel(model,formId)
  local palette=authoredPalettes[formId]or authoredPalettes.DRACULA
  model:SetAttribute("MonsterForm",formId)
  for _,d in ipairs(model:GetDescendants())do
-  if d:IsA("BasePart")and d.Transparency<1 then
-   local name=string.lower(d.Name)
-   if string.find(name,"hair",1,true)or string.find(name,"pupil",1,true)or string.find(name,"lash",1,true)then
-    d.Color=palette.cloth
-   elseif string.find(name,"cinnabar",1,true)or string.find(name,"lip",1,true)or string.find(name,"iris",1,true)or string.find(name,"red",1,true)then
-    d.Color=palette.accent
-   elseif string.find(name,"brass",1,true)or string.find(name,"gold",1,true)or string.find(name,"jade",1,true)or string.find(name,"pendant",1,true)then
-    d.Color=palette.metal
-   elseif string.find(name,"silk",1,true)or string.find(name,"ivory",1,true)or string.find(name,"skirt",1,true)or string.find(name,"jeogori",1,true)or string.find(name,"cloth",1,true)then
-    d.Color=palette.cloth
-   elseif string.find(name,"skin",1,true)or string.find(name,"porcelain",1,true)or string.find(name,"face",1,true)or string.find(name,"ear",1,true)or string.find(name,"nose",1,true)or string.find(name,"palm",1,true)then
-    d.Color=palette.skin
+  if d:IsA("BasePart")then
+   d.Anchored=true
+   d.CanCollide=false
+   d.CanTouch=false
+   d.CanQuery=false
+   d.CastShadow=true
+   if d.Transparency<1 then
+    local name=string.lower(d.Name)
+    if string.find(name,"hair",1,true)or string.find(name,"pupil",1,true)or string.find(name,"lash",1,true)then
+     d.Color=palette.cloth
+    elseif string.find(name,"cinnabar",1,true)or string.find(name,"lip",1,true)or string.find(name,"iris",1,true)or string.find(name,"red",1,true)then
+     d.Color=palette.accent
+    elseif string.find(name,"brass",1,true)or string.find(name,"gold",1,true)or string.find(name,"jade",1,true)or string.find(name,"pendant",1,true)then
+     d.Color=palette.metal
+    elseif string.find(name,"silk",1,true)or string.find(name,"ivory",1,true)or string.find(name,"skirt",1,true)or string.find(name,"jeogori",1,true)or string.find(name,"cloth",1,true)then
+     d.Color=palette.cloth
+    elseif string.find(name,"skin",1,true)or string.find(name,"porcelain",1,true)or string.find(name,"face",1,true)or string.find(name,"ear",1,true)or string.find(name,"nose",1,true)or string.find(name,"palm",1,true)then
+     d.Color=palette.skin
+    end
    end
   end
  end
@@ -2735,7 +2763,9 @@ local function humanName()
 end
 
 local function render()
- local role=p:GetAttribute("Role")or"WAITING"
+ local role=tostring(p:GetAttribute("Role")or"WAITING")
+ local roundTeam=tostring(p:GetAttribute("RoundTeam")or"")
+ if (role=="WAITING"or role=="")and(roundTeam=="SURVIVOR"or roundTeam=="MONSTER")then role=roundTeam end
  local round=p:GetAttribute("RoundState")or"WAITING"
  local roomState=tostring(p:GetAttribute("RoomState")or workspace:GetAttribute("RoomState")or"BROWSER")
  local lobbyPhase=tostring(p:GetAttribute("LobbyPhase")or workspace:GetAttribute("LobbyPhase")or round)
