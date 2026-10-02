@@ -430,10 +430,10 @@ local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples
 local verifiedLearningAxes = verifiedLearningContext.ApplyAxes or {}
 local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 6
 local verifiedLearningRoot = loadingLayer
-local verifiedLearningSemanticVariant = "OBJECTIVE_GOAL"
+local verifiedLearningSemanticVariant = "SURVIVAL_RISK"
 local verifiedLearningSemanticDomain = "CORE_GAMEPLAY_FEEL"
-local verifiedLearningSemanticColor = Color3.fromRGB(255, 220, 124)
-local verifiedLearningSemanticMood = "READABLE_EXPLORATION"
+local verifiedLearningSemanticColor = Color3.fromRGB(255, 112, 112)
+local verifiedLearningSemanticMood = "TENSE_WILDERNESS"
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningNativeBindingVersion", VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedLearningPrinciples)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningAxisCount", #verifiedLearningAxes)
@@ -452,8 +452,8 @@ if not verifiedLearningColorGrade then
   verifiedLearningColorGrade.Name = "VerifiedLearningColorGrade"
   verifiedLearningColorGrade.Parent = verifiedLearningLighting
 end
-verifiedLearningColorGrade.Saturation = 0.07
-verifiedLearningColorGrade.Contrast = 0.05
+verifiedLearningColorGrade.Saturation = 0.06
+verifiedLearningColorGrade.Contrast = 0.04
 verifiedLearningColorGrade.Brightness = 0.01
 verifiedLearningColorGrade:SetAttribute("VerifiedLearningSemanticMood", verifiedLearningSemanticMood)
 if verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
