@@ -1060,28 +1060,50 @@ def build():
     for zfinial in [-55,-35,-15]:
         s.lathe('RoofFinial'+str(zfinial),(-7,44.9,zfinial),.22,.035,2.0,c['brass'],sides=18)
 
-    # 큰 계단: 각 단의 윗면 높이가 정확히 이어지는 12단 솔리드 구조.
+    # 큰 계단: 단차는 유지하고 목재 난간/뉴얼/갤러리 앞판을 실제 저택 계단처럼 한 구조로 묶는다.
     stair_rise=.82;stair_tread=1.36
     for i in range(12):
         top_y=stair_rise*(i+1)
         step_z=-40.0-i*stair_tread
         s.box('GrandStair'+str(i),(0,top_y*.5,step_z),(30,top_y,stair_tread+.08),c['wood'])
         s.box('GrandStairRunner'+str(i),(0,top_y+.025,step_z),(9.5,.05,stair_tread*.92),c['red'])
+        s.box('GrandStairNosing'+str(i),(0,top_y+.055,step_z+stair_tread*.43),(10.2,.045,.09),c['brass'])
     for side in [-1,1]:
-        rail_points=[]
+        handrail=[];base_rail=[]
         for i in range(12):
             top_y=stair_rise*(i+1)
             step_z=-40.0-i*stair_tread
-            rail_points.append((side*13.4,top_y+1.25,step_z))
-            if i%2==0:
-                s.lathe('StairBaluster'+str(side)+'_'+str(i),(side*13.4,top_y+.63,step_z),.075,.060,1.25,c['brass'],sides=14)
-        s.curve_tube('GrandStairRail'+str(side),rail_points,[.10]*len(rail_points),[.10]*len(rail_points),c['brass'],sides=18)
+            handrail.append((side*13.45,top_y+1.62,step_z))
+            base_rail.append((side*13.45,top_y+.26,step_z))
+            s.lathe('StairBaluster'+str(side)+'_'+str(i),(side*13.45,top_y+.82,step_z),.10,.065,1.46,c['wood'],sides=16)
+            if i in [0,11]:
+                s.lathe('GrandStairNewel'+str(side)+'_'+str(i),(side*13.45,top_y+.98,step_z),.28,.18,1.95,c['wood'],sides=22)
+                s.lathe('GrandStairNewelCap'+str(side)+'_'+str(i),(side*13.45,top_y+2.02,step_z),.34,.08,.30,c['brass'],sides=22)
+        s.curve_tube('GrandStairRail'+str(side),handrail,[.15]*len(handrail),[.12]*len(handrail),c['wood'],sides=20)
+        s.curve_tube('GrandStairBaseRail'+str(side),base_rail,[.09]*len(base_rail),[.07]*len(base_rail),c['brass'],sides=16)
+        stringer=[(side*14.35,stair_rise*(i+1)-.08,-40.0-i*stair_tread) for i in range(12)]
+        s.curve_tube('GrandStairStringer'+str(side),stringer,[.20]*len(stringer),[.10]*len(stringer),c['wood'],sides=18)
+
     s.box('SecondFloorGallery',(0,10.2,-55),(92,.55,19),c['wood'])
+    s.box('SecondFloorGalleryApron',(0,9.72,-45.62),(92,1.02,.48),c['wood'])
+    s.box('SecondFloorGalleryBrassLine',(0,10.17,-45.34),(90,.10,.10),c['brass'])
     for side in [-1,1]:
         s.box('BalconyWalk'+str(side),(side*43,10.2,-31),(15,.55,48),c['wood'])
-        for z in range(-53,-7,4):
-            s.lathe('Baluster'+str(side)+str(z),(side*36,11.3,z),.11,.10,2.1,c['brass'],sides=12)
-    for x in range(-42,43,5):s.lathe('BackBaluster'+str(x),(x,11.3,-46),.11,.10,2.1,c['brass'],sides=12)
+        side_top=[];side_base=[]
+        for z in range(-53,-7,3):
+            s.lathe('Baluster'+str(side)+str(z),(side*36,11.45,z),.095,.065,2.25,c['wood'],sides=14)
+            side_top.append((side*36,12.58,z));side_base.append((side*36,10.62,z))
+        s.curve_tube('GallerySideHandrail'+str(side),side_top,[.13]*len(side_top),[.10]*len(side_top),c['wood'],sides=18)
+        s.curve_tube('GallerySideBaseRail'+str(side),side_base,[.08]*len(side_base),[.065]*len(side_base),c['brass'],sides=16)
+        for z in [-53,-8]:
+            s.lathe('GalleryNewel'+str(side)+str(z),(side*36,11.48,z),.25,.16,2.55,c['wood'],sides=20)
+            s.lathe('GalleryNewelCap'+str(side)+str(z),(side*36,12.82,z),.30,.07,.28,c['brass'],sides=20)
+    back_top=[];back_base=[]
+    for x in range(-42,43,4):
+        s.lathe('BackBaluster'+str(x),(x,11.45,-46),.095,.065,2.25,c['wood'],sides=14)
+        back_top.append((x,12.58,-46));back_base.append((x,10.62,-46))
+    s.curve_tube('GalleryRearHandrail',back_top,[.13]*len(back_top),[.10]*len(back_top),c['wood'],sides=18)
+    s.curve_tube('GalleryRearBaseRail',back_base,[.08]*len(back_base),[.065]*len(back_base),c['brass'],sides=16)
 
     # 좌우 날개 방: 기록보관실/서재/응접실/의상실/장례용품실/라운지.
     room_specs=[
@@ -1904,13 +1926,25 @@ def build():
     ],[.05,.08,.05],[.04,.06,.04],c['brass'],sides=16)
     s.lathe('UndertakerScissorLoopA',(23.45,3.75,-24.8),.22,.22,.045,c['brass'],sides=20)
     s.lathe('UndertakerScissorLoopB',(24.75,3.75,-24.8),.22,.22,.045,c['brass'],sides=20)
-    # 샹들리에의 실제 곡선 팔과 촛농.
+    # 샹들리에 천장 접속부/사슬/크리스털 드롭. 기존 곡선 팔과 촛불은 중복 생성하지 않는다.
+    s.lathe('ChandelierCeilingRose',(0,22.55,-24),2.15,1.55,.44,c['wood'],sides=32)
+    s.lathe('ChandelierCanopy',(0,22.08,-24),.82,.48,.72,c['brass'],sides=28)
+    for link in range(5):
+        y=21.45-link*.72
+        points=[]
+        for j in range(13):
+            angle=j*math.pi/6
+            if link%2==0:points.append((math.cos(angle)*.23,y+math.sin(angle)*.38,-24))
+            else:points.append((0,y+math.sin(angle)*.38,-24+math.cos(angle)*.23))
+        s.curve_tube('ChandelierChainLink'+str(link),points,[.040]*len(points),[.032]*len(points),c['black'],sides=12)
+    s.lathe('ChandelierHub',(0,16.55,-24),.62,.38,.95,c['brass'],sides=28)
     for i in range(8):
-        a=i*math.pi/4
-        for step in range(7):
-            t=step/6;r=.8+2.4*t
-            s.ellipsoid('ChandelierArm'+str(i)+'_'+str(step),(math.cos(a)*r,15.7-math.sin(t*math.pi)*.7,-24+math.sin(a)*r),(.3,.3,.3),c['brass'])
-        s.ellipsoid('ChandelierFlame'+str(i),(math.cos(a)*3,18.2,-24+math.sin(a)*3),(.22,.65,.22),c['amber'])
+        angle=i*math.pi/4;r=2.75
+        px=math.cos(angle)*r;pz=-24+math.sin(angle)*r
+        s.loft('ChandelierPearDrop'+str(i),(px,15.55,pz),[
+          (-.34,.06,.05),(-.18,.42,.16),(0,.58,.23),(.24,.22,.12),(.38,.04,.03)
+        ],c['glass'],sides=14)
+
     # 줄·그물은 배경 장식이며 이동과 충돌 판정에는 사용하지 않는다.
     for side in [-1,1]:
         for ring in [2,4,6]:
