@@ -402,20 +402,50 @@ function buildAssetModelRouting({task={},request='',decisions=[],highEndActive=f
     sourceBudgetPolicy:'CENTRAL_BOUNDED_FOCUSED_EXACT_ANCHOR_UNCHANGED'
   });
 }
-function buildNativeAuthoringExecution({target='',task={},decisions=[]}={}){
+function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',requiredTypes=[]){
+  const executor=clean(recipe?.executor||recipe?.engine).toUpperCase();
+  const script=clean(recipe?.script||recipe?.recipe||recipe?.path).replaceAll('\\','/').replace(/^\.\//,'');
+  const id=clean(recipe?.id)||[clean(asset?.id)||'asset',path.basename(script||'recipe')].join(':');
+  const types=unique([...(Array.isArray(recipe?.types)?recipe.types:[]),clean(recipe?.type)].map(value=>clean(value).toLowerCase()).filter(Boolean));
+  const targets=unique([...(Array.isArray(recipe?.targetPlatforms)?recipe.targetPlatforms:[]),clean(recipe?.targetPlatform)].map(value=>clean(value).toLowerCase()).filter(Boolean));
+  const args=freezeList((Array.isArray(recipe?.args)?recipe.args:[]).map(value=>String(value??'')).filter(value=>value.length<=1000));
+  const outputs=freezeList(unique((Array.isArray(recipe?.outputs)?recipe.outputs:[]).map(value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'')).filter(Boolean)));
+  const evidenceJson=clean(recipe?.evidenceJson).replaceAll('\\','/').replace(/^\.\//,'')||null;
+  const preview=clean(recipe?.preview).replaceAll('\\','/').replace(/^\.\//,'')||null;
+  const editableSource=clean(recipe?.editableSource||script).replaceAll('\\','/').replace(/^\.\//,'')||null;
+  const targetName=clean(target).toLowerCase();
+  const typeMatch=!types.length||types.some(type=>requiredTypes.includes(type));
+  const targetMatch=!targets.length||targets.includes(targetName)||targets.includes(targetName.toUpperCase().toLowerCase());
+  const safePath=value=>Boolean(value&&!path.isAbsolute(value)&&!value.split('/').includes('..'));
+  const safe=executor==='BLENDER_PYTHON'&&/\.py$/i.test(script)&&safePath(script)&&outputs.length>0&&outputs.every(safePath)&&(!evidenceJson||safePath(evidenceJson))&&(!preview||safePath(preview));
+  return freeze({
+    id,assetId:clean(asset?.id)||null,executor,script,types:freezeList(types),targetPlatforms:freezeList(targets),args,outputs,evidenceJson,preview,editableSource,
+    typeMatch,targetMatch,safe,runMode:clean(recipe?.runMode||'VERIFY_ONLY').toUpperCase(),
+    runtimeVerificationRequired:true,companyPromotionAllowed:false
+  });
+}
+function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest={}}={}){
   const nativeTarget=['roblox','unity'].includes(clean(target).toLowerCase());
   const needsAuthoring=row=>row?.required!==false&&row?.applyFirst?.enabled!==true;
   const dccTypes=decisions.filter(row=>needsAuthoring(row)&&(row.directAuthoring||[]).some(kind=>NATIVE_DCC_AUTHORING.includes(kind))).map(row=>row.type);
   const nativeTextKinds=clean(target).toLowerCase()==='roblox'?ROBLOX_DIRECT_AUTHORING:clean(target).toLowerCase()==='unity'?UNITY_DIRECT_AUTHORING:[];
   const nativeTextTypes=decisions.filter(row=>needsAuthoring(row)&&(row.directAuthoring||[]).some(kind=>nativeTextKinds.includes(kind))).map(row=>row.type);
-  const explicitRecipes=freezeList(task?.assetAuthoring?.recipes||task?.authoringRecipes||[]);
+  const uniqueDccTypes=unique(dccTypes);
+  const uniqueNativeTextTypes=unique(nativeTextTypes);
+  const explicitRecipeRows=Array.isArray(task?.assetAuthoring?.recipes)?task.assetAuthoring.recipes:Array.isArray(task?.authoringRecipes)?task.authoringRecipes:[];
+  const manifestAssets=Array.isArray(manifest?.assets)?manifest.assets:[];
+  const registryRecipeRows=manifestAssets.flatMap(asset=>(Array.isArray(asset?.authoringRecipes)?asset.authoringRecipes:[]).map(recipe=>({recipe,asset})));
+  const normalizedExplicit=explicitRecipeRows.map(recipe=>normalizeNativeDccAuthoringRecipe(recipe,{id:'task-explicit'},target,uniqueDccTypes));
+  const normalizedRegistry=registryRecipeRows.map(({recipe,asset})=>normalizeNativeDccAuthoringRecipe(recipe,asset,target,uniqueDccTypes));
+  const executionRecipes=freezeList([...normalizedExplicit,...normalizedRegistry]
+    .filter(row=>row.safe&&row.typeMatch&&row.targetMatch)
+    .filter((row,index,rows)=>rows.findIndex(other=>other.id===row.id)===index));
+  const explicitRecipes=freezeList(explicitRecipeRows);
   const availableExistingRecipes=unique(decisions.flatMap(row=>
     [...(row?.reuseCandidates||[]),...(row?.externalCandidates||[])]
       .flatMap(asset=>asset?.sourceFiles||[])
       .filter(file=>/\.py$/i.test(clean(file)))
   ));
-  const uniqueDccTypes=unique(dccTypes);
-  const uniqueNativeTextTypes=unique(nativeTextTypes);
   return freeze({
     version:2,
     enabled:nativeTarget&&(uniqueDccTypes.length>0||uniqueNativeTextTypes.length>0),
@@ -425,12 +455,15 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[]}={}){
       requiredTypes:freezeList(uniqueDccTypes),
       preferredExecutor:'BLENDER_PYTHON',
       executionRequired:uniqueDccTypes.length>0,
-      executionStatus:uniqueDccTypes.length===0?'NOT_REQUIRED':explicitRecipes.length>0?'READY_FOR_EXISTING_AUTHORING_EXECUTOR':availableExistingRecipes.length>0?'EXISTING_AUTHORING_RECIPE_AVAILABLE':'AUTHORING_RECIPE_REQUIRED',
+      executionStatus:uniqueDccTypes.length===0?'NOT_REQUIRED':executionRecipes.length>0?'READY_FOR_EXISTING_AUTHORING_EXECUTOR':availableExistingRecipes.length>0?'EXISTING_AUTHORING_RECIPE_AVAILABLE':'AUTHORING_RECIPE_REQUIRED',
       requiredCapabilities:NATIVE_DCC_AUTHORING,
       explicitRecipes,
+      executionRecipes,
       availableExistingRecipes:freezeList(availableExistingRecipes),
-      executionRequestCount:explicitRecipes.length,
+      executionRequestCount:executionRecipes.length,
       availableExistingRecipeCount:availableExistingRecipes.length,
+      executorInstallationRequired:executionRecipes.length>0,
+      executionPolicy:'DECLARED_REPOSITORY_RECIPE_ONLY_NO_SHELL_EVAL',
       sourceRecipeRequired:true,
       editableSourceArtifactRequired:true,
       exportedNativeArtifactRequired:true,
@@ -1322,7 +1355,7 @@ export function buildVibeAssetProductionPlan({
   const highEnd=highEndVisualContract(repoRoot);
   const highEndActive=highEnd?.status==='ACTIVE_EXECUTABLE_CONTRACT';
   const modelRouting=buildAssetModelRouting({task,request,decisions,highEndActive});
-  const nativeAuthoringExecution=buildNativeAuthoringExecution({target:resolvedTarget,task,decisions});
+  const nativeAuthoringExecution=buildNativeAuthoringExecution({target:resolvedTarget,task,decisions,manifest:manifestInput});
   const companyLibrary=companyGraphicsLibraryContract(repoRoot);
   const companyLibraryActive=companyLibrary?.status==='ACTIVE_EXECUTABLE_CONTRACT';
   const directCount=decisions.filter(row=>row.directAuthoring.length>0).length;
