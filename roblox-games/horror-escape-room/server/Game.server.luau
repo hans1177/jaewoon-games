@@ -9,8 +9,26 @@ local TeleportService=game:GetService("TeleportService")
 local MemoryStoreService=game:GetService("MemoryStoreService")
 local TweenService=game:GetService("TweenService")
 
--- 서버 부팅 첫 프레임부터 실제 로비 좌표에 SpawnLocation을 둔다.
--- 동적 로비 생성 전 Roblox 기본 공중 스폰이 노출되는 것을 막는다.
+-- FIRST_FRAME_SPAWN_SINGLE_PATH_V3:
+-- 엔진 스폰보다 먼저 충돌 가능한 안전 바닥을 만든다. 저택 생성 뒤에도 제거하지 않아
+-- CharacterAdded/로비 생성 타이밍 사이에 캐릭터가 허공으로 떨어지는 경쟁 조건을 없앤다.
+local bootstrapGround=workspace:FindFirstChild("ManorBootstrapGround")
+if not bootstrapGround or not bootstrapGround:IsA("BasePart")then
+ if bootstrapGround then bootstrapGround:Destroy()end
+ bootstrapGround=Instance.new("Part")
+ bootstrapGround.Name="ManorBootstrapGround"
+ bootstrapGround.Size=Vector3.new(84,1,44)
+ bootstrapGround.Position=Vector3.new(0,-.15,330)
+ bootstrapGround.Anchored=true
+ bootstrapGround.Transparency=1
+ bootstrapGround.CanCollide=true
+ bootstrapGround.CanTouch=false
+ bootstrapGround.CanQuery=true
+ bootstrapGround.Parent=workspace
+end
+
+-- 서버 첫 프레임에는 단 하나의 엔진 SpawnLocation만 둔다.
+-- 실제 개인 저택 좌표/경기장 좌표로의 이동은 아래 onCharacter -> teleport 한 경로만 담당한다.
 local lobbyBootstrapSpawn=workspace:FindFirstChild("LobbyBootstrapSpawn")
 if not lobbyBootstrapSpawn or not lobbyBootstrapSpawn:IsA("SpawnLocation")then
  if lobbyBootstrapSpawn then lobbyBootstrapSpawn:Destroy()end
@@ -23,7 +41,7 @@ if not lobbyBootstrapSpawn or not lobbyBootstrapSpawn:IsA("SpawnLocation")then
  lobbyBootstrapSpawn.Transparency=1
  lobbyBootstrapSpawn.CanCollide=false
  lobbyBootstrapSpawn.CanTouch=false
- lobbyBootstrapSpawn.CanQuery=true
+ lobbyBootstrapSpawn.CanQuery=false
  lobbyBootstrapSpawn.Duration=0
  lobbyBootstrapSpawn:SetAttribute("WalkableGround",false)
  lobbyBootstrapSpawn.Parent=workspace
@@ -38,16 +56,13 @@ local function bootstrapLobbyCharacter(player,character)
   local humanoid=character and character:WaitForChild("Humanoid",5)
   if not rootPart or not humanoid or not character.Parent then return end
   if workspace:GetAttribute("LobbyPhase")=="RUNNING"or workspace:GetAttribute("RoomState")=="RUNNING"then return end
-  -- FIRST_FRAME_GROUND_SNAP_V2: 엔진이 첫 생성 위치를 정한 직후 저택 준비를 기다리지 않고 앞마당으로 고정한다.
-  local bootstrapTarget=Vector3.new(0,3.7,330)
-  local bootstrapLook=Vector3.new(0,3.7,268)
-  character:PivotTo(CFrame.lookAt(bootstrapTarget,bootstrapLook))
+  -- 여기서는 위치를 다시 PivotTo 하지 않는다.
+  -- 엔진 bootstrap -> 개인저택 teleport 두 단계만 유지해 이중/삼중 스폰 보정을 제거한다.
   rootPart.Anchored=false
   rootPart.AssemblyLinearVelocity=Vector3.zero
   rootPart.AssemblyAngularVelocity=Vector3.zero
   humanoid.PlatformStand=false;humanoid.Sit=false;humanoid.AutoRotate=true
-  player:SetAttribute("BootstrapGroundSnapAt",workspace:GetServerTimeNow())
-  player:SetAttribute("BootstrapGroundSnapY",rootPart.Position.Y)
+  player:SetAttribute("BootstrapGroundReadyAt",workspace:GetServerTimeNow())
  end)
 end
 local function bindBootstrapLobbySpawn(player)
@@ -60,10 +75,6 @@ end
 Players.PlayerAdded:Connect(bindBootstrapLobbySpawn)
 for _,player in ipairs(Players:GetPlayers())do bindBootstrapLobbySpawn(player)end
 end
-
-local bootstrapGround=Instance.new("Part")
-bootstrapGround.Name="ManorBootstrapGround";bootstrapGround.Size=Vector3.new(84,1,44)
-bootstrapGround.Position=Vector3.new(0,-.15,330);bootstrapGround.Anchored=true;bootstrapGround.Transparency=1;bootstrapGround.Parent=workspace
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
 local CombatAssets=require(Shared:WaitForChild("CombatAssets"))
@@ -975,7 +986,8 @@ makePhysicalLobby=function()
  lobbySpawnLocation.Name="LobbySpawn"
  lobbySpawnLocation.CanCollide=false
  lobbySpawnLocation.Position=Vector3.new(0,.4,330)
- local safety=workspace:FindFirstChild("ManorBootstrapGround");if safety then safety:Destroy()end
+ -- 안전 바닥은 제거하지 않는다. 개인 저택 teleport 직전/재스폰 경쟁에서도 바닥을 보장한다.
+ bootstrapGround:SetAttribute("PersistentBootstrapSafety",true)
  for _,player in ipairs(Players:GetPlayers())do manorLobby:Get(player)end
  refreshPhysicalLobby=function()end
  workspace:SetAttribute("PhysicalLobbyReady",true)

@@ -798,12 +798,18 @@ test('정상 경기장 빌드는 현재 arena 참조를 갱신해 스폰 바닥 
  assert.match(makeArenaBlock,/decorateArenaWithOfficialAssets\(f,map\)[\s\S]{0,240}arena=f[\s\S]{0,120}workspace:SetAttribute\("MapReady",true\)/);
 });
 
-test('첫 캐릭터 프레임부터 앞마당 바닥에 고정하고 엔진 SpawnLocation 경쟁을 제거한다',()=>{
+test('첫 캐릭터 프레임은 안전 바닥을 먼저 만들고 실제 목적지 teleport 한 경로만 사용한다',()=>{
  const bootstrapBlock=server.slice(server.indexOf('local function bootstrapLobbyCharacter'),server.indexOf('local function bindBootstrapLobbySpawn'));
- assert.match(bootstrapBlock,/FIRST_FRAME_GROUND_SNAP_V2/);
- assert.match(bootstrapBlock,/local bootstrapTarget=Vector3\.new\(0,3\.7,330\)/);
- assert.match(bootstrapBlock,/character:PivotTo\(CFrame\.lookAt\(bootstrapTarget,bootstrapLook\)\)/);
- assert.match(bootstrapBlock,/BootstrapGroundSnapAt/);
+ const groundIndex=server.indexOf('local bootstrapGround=workspace:FindFirstChild("ManorBootstrapGround")');
+ const spawnIndex=server.indexOf('local lobbyBootstrapSpawn=workspace:FindFirstChild("LobbyBootstrapSpawn")');
+ assert.ok(groundIndex>=0&&spawnIndex>groundIndex,'bootstrap ground must exist before engine spawn');
+ assert.match(server,/FIRST_FRAME_SPAWN_SINGLE_PATH_V3/);
+ assert.match(server,/bootstrapGround\.CanCollide=true/);
+ assert.match(server,/PersistentBootstrapSafety/);
+ assert.match(bootstrapBlock,/BootstrapGroundReadyAt/);
+ assert.doesNotMatch(bootstrapBlock,/character:PivotTo/);
+ assert.doesNotMatch(bootstrapBlock,/bootstrapTarget/);
+ assert.doesNotMatch(server,/ManorBootstrapGround"\);if safety then safety:Destroy\(\)end/);
  assert.match(server,/foundationSpawn\.Enabled=false/);
  assert.match(server,/lobbyBootstrapSpawn\.Enabled=false/);
  assert.match(server,/foundationSpawn\.Enabled=true/);
