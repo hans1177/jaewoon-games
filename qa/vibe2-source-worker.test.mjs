@@ -8,7 +8,7 @@ import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
-import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
@@ -71,6 +71,39 @@ function robloxFullGraphicsMotionPatch(accent='70,95,130') {
     'panel.BackgroundColor3 = Color3.fromRGB(' + accent + ')'
   ].join('\n');
 }
+
+test('hero asset routing selects stronger local model without changing generation budget',()=>{
+  const workOrder=order({target:'roblox',root:'roblox-games/demo',responsibleFiles:['roblox-games/demo/client/Game.client.luau'],taskId:'hero-model'});
+  workOrder.selectedTask={id:workOrder.taskId,gameId:'demo',target:'roblox',assetProductionLane:true,evidence:['asset-production-parallel:v1']};
+  workOrder.assetProduction={modelRouting:{heroRequested:true,selectedModel:'qwen3:4b-instruct',baselineModel:'qwen3:1.7b',heroModel:'qwen3:4b-instruct',fallbackToBaseline:true,generationBudgetUnchanged:true}};
+  const route=resolveAssetSourceModel(workOrder,'qwen3:1.7b');
+  assert.equal(route.heroRequested,true);
+  assert.equal(route.selectedModel,'qwen3:4b-instruct');
+  assert.equal(route.generationBudgetUnchanged,true);
+  assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'primary'}),4);
+});
+
+test('native asset authoring evidence requires real engine-native source delta and never claims runtime promotion',()=>{
+  const workOrder=order({target:'roblox'});
+  workOrder.assetProduction={nativeAuthoringExecution:{
+    enabled:true,
+    dcc:{requiredTypes:['character']},
+    nativeText:{requiredTypes:['character']}
+  }};
+  const weak=evaluateNativeAssetAuthoringCandidate({order:workOrder,candidate:{edits:[{replace:'-- authoring planned'}]}});
+  assert.equal(weak.runtimeVerified,false);
+  assert.equal(weak.companyPromotionEligible,false);
+  assert.notEqual(weak.status,'NATIVE_SOURCE_AUTHORED_RUNTIME_REQUIRED');
+  const strong=evaluateNativeAssetAuthoringCandidate({order:workOrder,candidate:{edits:[{replace:[
+    'local model = Instance.new("Model")',
+    'local body = Instance.new("MeshPart")',
+    'body.Parent = model',
+    'model:PivotTo(CFrame.new(0,4,0))'
+  ].join('\n')}]}});
+  assert.equal(strong.nativeTextAuthored,true);
+  assert.equal(strong.status,'NATIVE_SOURCE_AUTHORED_RUNTIME_REQUIRED');
+  assert.equal(strong.runtimeVerified,false);
+});
 
 test('game context capsule keeps responsibility save style and verified memory through focused retries',()=>{
   const relative='client/Game.client.luau';

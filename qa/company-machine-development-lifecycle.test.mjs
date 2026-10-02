@@ -326,7 +326,8 @@ assert.match(runner,/vibe2-release-dispatch-recovery\.mjs/);
 assert.match(robloxRunnerHidden,/ROBLOX_RUNNER_VISIBLE_CMD=NO/);
 assert.match(robloxRunnerHidden,/ROBLOX_RUNNER_VISIBLE_POWERSHELL=NO/);
 assert.match(robloxRunnerHidden,/ROBLOX_RUNNER_VISIBLE_APP=ROBLOX_STUDIO_ONLY/);
-assert.match(robloxRunnerHidden,/ROBLOX_RUNNER_REBOOT_AUTOSTART=HIDDEN_USER_STARTUP/);
+assert.match(robloxRunnerHidden,/ROBLOX_RUNNER_REBOOT_AUTOSTART=WINDOWS_SERVICE_WITH_STARTUP_FALLBACK/);
+assert.match(robloxRunnerHidden,/ROBLOX_RUNNER_SERVICE_AUTOSTART=PASS/);
 assert.match(robloxRunnerHidden,/shell\.Run[\s\S]*, 0, False/);
 assert.doesNotMatch(robloxRunnerHidden,/RepetitionInterval|WATCHDOG=YES/);
 
