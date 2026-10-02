@@ -97,6 +97,22 @@ jobs:
               page=$((page+1))
             done
           }
+          # Owner-requested exact stale cleanup. This is the existing Director drain, not a new pipeline.
+          for stale_run_id in 34748574272 36802981975 36802982062 36803420019; do
+            stale_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${stale_run_id}" --jq '.status' 2>/dev/null || true)"
+            case "$stale_status" in
+              queued|pending|requested|waiting|in_progress)
+                if gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${stale_run_id}/cancel" >/dev/null 2>&1; then
+                  echo "DIRECTOR_OWNER_STALE_CANCELLED=${stale_run_id}:$stale_status"
+                elif gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${stale_run_id}/force-cancel" >/dev/null 2>&1; then
+                  echo "DIRECTOR_OWNER_STALE_FORCE_CANCELLED=${stale_run_id}:$stale_status"
+                else
+                  echo "DIRECTOR_OWNER_STALE_CANCEL_FAILED=${stale_run_id}:$stale_status"
+                fi
+                ;;
+            esac
+          done
+
           # Keep one recent mixed page for statuses GitHub may surface outside the targeted filters,
           # then exhaust every documented active-status query so old stale work cannot hide past row 100.
           fetch_runs 'per_page=100'
@@ -118,6 +134,8 @@ jobs:
             if(!run||!active.has(String(run.status||'').toLowerCase()))return;
             cancel.set(Number(run.id),reason);
           };
+
+          // Owner-requested stale cleanup: cancel these historical runs only; do not touch active game work.
 
           // Platform exposure sync is control-plane state projection, so a newer same-branch run may supersede a stale one.
           const pureControlPlane=new Set([
