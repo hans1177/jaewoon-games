@@ -6,7 +6,6 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/company-roblox-runner-pwsh-bootstrap.yml'
-      - 'tools/roblox-runner-hidden.ps1'
   workflow_dispatch:
 
 permissions:
@@ -58,36 +57,149 @@ jobs:
           $pwsh = Join-Path $installRoot 'pwsh.exe'
           if (-not (Test-Path $pwsh)) { throw "Portable pwsh missing after extraction: $pwsh" }
 
-          function Test-WritablePathDirectory([string]$dir) {
-            if (-not $dir -or -not (Test-Path $dir)) { return $false }
-            $probe = Join-Path $dir ".jaewoon-pwsh-probe-$PID.tmp"
-            try {
-              [IO.File]::WriteAllText($probe, 'ok')
-              Remove-Item -Force $probe -ErrorAction SilentlyContinue
-              return $true
-            } catch {
-              Remove-Item -Force $probe -ErrorAction SilentlyContinue
-              return $false
-            }
+          $userPath = [Environment]::GetEnvironmentVariable('Path','User')
+          $parts = @($userPath -split ';' | Where-Object { $_ })
+          if ($parts -notcontains $installRoot) {
+            $newUserPath = (@($installRoot) + $parts | Select-Object -Unique) -join ';'
+            [Environment]::SetEnvironmentVariable('Path',$newUserPath,'User')
           }
+          $env:Path = "$installRoot;$env:Path"
+          $installRoot | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-          $pathDirs = @($env:Path -split ';' | Where-Object { $_ } | Select-Object -Unique)
-          $shimDir = $pathDirs | Where-Object { Test-WritablePathDirectory $_ } | Select-Object -First 1
-          if (-not $shimDir) { throw 'No writable directory already present on the live runner PATH' }
-          $shim = Join-Path $shimDir 'pwsh.cmd'
-          @('@echo off', ('"{0}" %*' -f $pwsh)) | Set-Content -Path $shim -Encoding Ascii
-
-          $resolved = Get-Command pwsh -ErrorAction Stop | Select-Object -First 1
           Write-Host "ROBLOX_RUNNER_PWSH_BOOTSTRAP=PASS"
-          Write-Host "ROBLOX_RUNNER_PWSH_SHIM=$($resolved.Source)"
           Write-Host "ROBLOX_RUNNER_PWSH_PORTABLE=$pwsh"
-          & $pwsh -NoLogo -NoProfile -Command '$PSVersionTable.PSVersion.ToString()'
+          Write-Host 'ROBLOX_RUNNER_PWSH_CMD_SHIM=NO'
+          & $pwsh -NoLogo -NoProfile -NonInteractive -Command '$PSVersionTable.PSVersion.ToString()'
 
       - name: Install hidden reboot-safe Roblox runner host
         shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
-          & .\tools\roblox-runner-hidden.ps1 -RunnerPath 'C:\actions-runner' -ExpectedRunnerName 'roblox-studio-local'
-          if ($LASTEXITCODE -ne 0) { throw 'Hidden Roblox runner setup failed' }
-          Write-Host 'ROBLOX_RUNNER_HIDDEN_BOOTSTRAP=PASS'
+          $runnerRoot = 'C:\actions-runner'
+          $metadataPath = Join-Path $runnerRoot '.runner'
+          $runCmd = Join-Path $runnerRoot 'run.cmd'
+          $listenerExe = [IO.Path]::GetFullPath((Join-Path $runnerRoot 'bin\Runner.Listener.exe'))
+          $workerExe = [IO.Path]::GetFullPath((Join-Path $runnerRoot 'bin\Runner.Worker.exe'))
+          if (-not (Test-Path -LiteralPath $metadataPath)) { throw 'Roblox runner metadata missing' }
+          if (-not (Test-Path -LiteralPath $runCmd)) { throw 'Roblox runner run.cmd missing' }
+          $metadata = Get-Content -LiteralPath $metadataPath -Raw | ConvertFrom-Json
+          if ([string]$metadata.agentName -ne 'roblox-studio-local') { throw "Unexpected Roblox runner: $($metadata.agentName)" }
 
+          function Escape-Vbs([string]$value) { return $value.Replace('"','""') }
+
+          $startupRoot = [Environment]::GetFolderPath('Startup')
+          if (-not $startupRoot) { throw 'Windows Startup folder unavailable' }
+          $launcherPath = Join-Path $runnerRoot '.jaewoon-roblox-runner-hidden.vbs'
+          $startupPath = Join-Path $startupRoot 'Jaewoon-Roblox-Runner.vbs'
+          $migrationPath = Join-Path $runnerRoot '.jaewoon-roblox-runner-hidden-migrate.ps1'
+          $migrationLauncherPath = Join-Path $runnerRoot '.jaewoon-roblox-runner-hidden-migrate.vbs'
+          $statePath = Join-Path $runnerRoot '.jaewoon-roblox-runner-hidden-state.json'
+
+          $launcher = @"
+          Set shell = CreateObject("WScript.Shell")
+          Set svc = GetObject("winmgmts:\\.\root\cimv2")
+          Set running = svc.ExecQuery("SELECT * FROM Win32_Process WHERE Name='Runner.Listener.exe'")
+          If running.Count = 0 Then
+            shell.CurrentDirectory = "$(Escape-Vbs $runnerRoot)"
+            shell.Run Chr(34) & "$(Escape-Vbs $runCmd)" & Chr(34), 0, False
+          End If
+          "@
+          $launcher | Set-Content -LiteralPath $launcherPath -Encoding ASCII
+          $launcher | Set-Content -LiteralPath $startupPath -Encoding ASCII
+
+          $template = @'
+          $ErrorActionPreference = 'Stop'
+          $listenerExe = '__LISTENER__'
+          $workerExe = '__WORKER__'
+          $launcherPath = '__LAUNCHER__'
+          $statePath = '__STATE__'
+
+          function Target-Listener {
+            return @(Get-Process -Name 'Runner.Listener' -ErrorAction SilentlyContinue | Where-Object {
+              try { $_.Path -and ([IO.Path]::GetFullPath($_.Path) -ieq $listenerExe) } catch { $false }
+            })
+          }
+          function Target-Worker {
+            return @(Get-Process -Name 'Runner.Worker' -ErrorAction SilentlyContinue | Where-Object {
+              try { $_.Path -and ([IO.Path]::GetFullPath($_.Path) -ieq $workerExe) } catch { $false }
+            })
+          }
+
+          $deadline = [DateTime]::UtcNow.AddMinutes(45)
+          while ([DateTime]::UtcNow -lt $deadline) {
+            if (@(Target-Worker).Count -eq 0) {
+              foreach ($process in @(Target-Listener)) {
+                Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+              }
+              for ($attempt = 0; $attempt -lt 40 -and @(Target-Listener).Count -gt 0; $attempt++) {
+                Start-Sleep -Milliseconds 100
+              }
+              $wscript = Join-Path $env:SystemRoot 'System32\wscript.exe'
+              $savedTracking = $env:RUNNER_TRACKING_ID
+              $env:RUNNER_TRACKING_ID = ''
+              try {
+                Start-Process -FilePath $wscript -ArgumentList @('//B','//Nologo',('"' + $launcherPath + '"')) -WindowStyle Hidden
+              } finally {
+                $env:RUNNER_TRACKING_ID = $savedTracking
+              }
+              for ($attempt = 0; $attempt -lt 60; $attempt++) {
+                if (@(Target-Listener).Count -gt 0) {
+                  @{
+                    version = 2
+                    mode = 'HIDDEN_CMD_CONSOLE_PARENT'
+                    consoleChildrenVisible = $false
+                    studioGuiVisible = $true
+                    watchdog = $false
+                    migratedAt = [DateTime]::UtcNow.ToString('o')
+                  } | ConvertTo-Json | Set-Content -LiteralPath $statePath -Encoding UTF8
+                  exit 0
+                }
+                Start-Sleep -Milliseconds 250
+              }
+              throw 'Hidden Roblox runner listener did not restart'
+            }
+            Start-Sleep -Milliseconds 250
+          }
+          throw 'Timed out waiting for current Roblox runner worker to become idle'
+          '@
+
+          $migration = $template.
+            Replace('__LISTENER__',$listenerExe.Replace("'","''")).
+            Replace('__WORKER__',$workerExe.Replace("'","''")).
+            Replace('__LAUNCHER__',$launcherPath.Replace("'","''")).
+            Replace('__STATE__',$statePath.Replace("'","''"))
+          $migration | Set-Content -LiteralPath $migrationPath -Encoding UTF8
+
+          $powershellExe = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+          $migrationLauncher = @"
+          Set shell = CreateObject("WScript.Shell")
+          shell.Run Chr(34) & "$(Escape-Vbs $powershellExe)" & Chr(34) & " -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File " & Chr(34) & "$(Escape-Vbs $migrationPath)" & Chr(34), 0, False
+          "@
+          $migrationLauncher | Set-Content -LiteralPath $migrationLauncherPath -Encoding ASCII
+
+          @{
+            version = 2
+            mode = 'HIDDEN_CMD_CONSOLE_PARENT'
+            consoleChildrenVisible = $false
+            studioGuiVisible = $true
+            watchdog = $false
+            migrationPending = $true
+            configuredAt = [DateTime]::UtcNow.ToString('o')
+          } | ConvertTo-Json | Set-Content -LiteralPath $statePath -Encoding UTF8
+
+          $wscript = Join-Path $env:SystemRoot 'System32\wscript.exe'
+          $savedTracking = $env:RUNNER_TRACKING_ID
+          $env:RUNNER_TRACKING_ID = ''
+          try {
+            Start-Process -FilePath $wscript -ArgumentList @('//B','//Nologo',('"' + $migrationLauncherPath + '"')) -WindowStyle Hidden
+          } finally {
+            $env:RUNNER_TRACKING_ID = $savedTracking
+          }
+
+          Write-Host "ROBLOX_RUNNER_STARTUP_LAUNCHER=$startupPath"
+          Write-Host 'ROBLOX_RUNNER_WATCHDOG=NO'
+          Write-Host 'ROBLOX_RUNNER_VISIBLE_CMD=NO'
+          Write-Host 'ROBLOX_RUNNER_VISIBLE_POWERSHELL=NO'
+          Write-Host 'ROBLOX_RUNNER_VISIBLE_APP=ROBLOX_STUDIO_ONLY'
+          Write-Host 'ROBLOX_RUNNER_REBOOT_AUTOSTART=HIDDEN_USER_STARTUP'
+          Write-Host 'ROBLOX_RUNNER_HIDDEN_BOOTSTRAP=PASS'
