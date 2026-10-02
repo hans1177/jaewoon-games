@@ -121,7 +121,7 @@ $('gather').onclick=gatherFood;$('attack').onclick=attack;$('multiBtn').onclick=
 document.querySelectorAll('[data-faction]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-faction]').forEach(x=>x.classList.remove('on'));b.classList.add('on');state.faction=b.dataset.faction});document.querySelectorAll('[data-class]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-class]').forEach(x=>x.classList.remove('on'));b.classList.add('on');state.classId=b.dataset.class});
 async function begin(multiplayer){state.started=true;resetPlayer();$('start').classList.add('hide');updateHud();if(multiplayer){const room=$('startRoom').value;$('roomInput').value=room;await connectRoom(room)}showNotice(factionName(state.faction)+' · '+className(state.classId)+' 시작')}
 $('startOffline').onclick=()=>begin(false);$('startMulti').onclick=()=>begin(true);
-const roomFromUrl=new URL(location.href).searchParams.get('room');if(roomFromUrl&&/^([1-9]|10)$/.test(roomFromUrl)){$('startRoom').value=roomFromUrl;$('roomInput').value=roomFromUrl}
+
 updateHud();
 })();
 </script>
