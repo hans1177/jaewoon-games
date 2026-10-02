@@ -27,6 +27,11 @@ test('Roblox runner self-heals every minute without a visible manual run.cmd win
   assert.match(script, /-RepetitionInterval \(New-TimeSpan -Minutes \$HealthCheckMinutes\)/);
   assert.match(script, /\.jaewoon-roblox-runner-watchdog\.ps1/);
   assert.match(script, /-WindowStyle Hidden/);
+  assert.match(script, /Start-Process -FilePath \$listenerExe -ArgumentList @\('run'\) -WorkingDirectory \$runnerRoot -WindowStyle Hidden/);
+  assert.doesNotMatch(script, /Start-Process -FilePath \$env:ComSpec/);
+  assert.match(script, /New-ScheduledTaskSettingsSet[^\n]*-Hidden/);
+  assert.match(script, /ROBLOX_RUNNER_TASK_HIDDEN=YES/);
+  assert.match(script, /ROBLOX_RUNNER_LAUNCH_MODE=DIRECT_HIDDEN_LISTENER/);
   assert.match(script, /ROBLOX_RUNNER_VISIBLE_CMD_REQUIRED=NO/);
   assert.match(script, /scheduled self-heal will retry automatically/i);
 });

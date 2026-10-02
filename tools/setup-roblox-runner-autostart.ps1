@@ -99,7 +99,6 @@ $escapedRoot = $runnerRoot.Replace("'", "''")
 $watchdogTemplate = @'
 $ErrorActionPreference = 'Stop'
 $runnerRoot = '__RUNNER_ROOT__'
-$runCmd = Join-Path $runnerRoot 'run.cmd'
 $listenerExe = [IO.Path]::GetFullPath((Join-Path $runnerRoot 'bin\Runner.Listener.exe'))
 
 function Get-TargetListener {
@@ -116,8 +115,7 @@ if (@(Get-TargetListener).Count -gt 0) {
   exit 0
 }
 
-$cmdArgument = "/d /s /c `"`"$runCmd`"`""
-Start-Process -FilePath $env:ComSpec -ArgumentList $cmdArgument -WorkingDirectory $runnerRoot -WindowStyle Hidden
+Start-Process -FilePath $listenerExe -ArgumentList @('run') -WorkingDirectory $runnerRoot -WindowStyle Hidden
 Start-Sleep -Seconds 5
 
 if (@(Get-TargetListener).Count -eq 0) {
@@ -133,7 +131,7 @@ $action = New-ScheduledTaskAction -Execute $powershellExe -Argument $actionArgum
 $logonTrigger = New-ScheduledTaskTrigger -AtLogOn -User $identityName
 $healthTrigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1) -RepetitionInterval (New-TimeSpan -Minutes $HealthCheckMinutes) -RepetitionDuration (New-TimeSpan -Days 3650)
 $principal = New-ScheduledTaskPrincipal -UserId $identityName -LogonType Interactive -RunLevel Highest
-$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew -ExecutionTimeLimit (New-TimeSpan -Minutes 2)
+$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew -ExecutionTimeLimit (New-TimeSpan -Minutes 2) -Hidden
 $task = New-ScheduledTask -Action $action -Trigger @($logonTrigger, $healthTrigger) -Principal $principal -Settings $settings
 
 Register-ScheduledTask -TaskName $TaskName -InputObject $task -Force | Out-Null
@@ -158,6 +156,8 @@ Write-Host "ROBLOX_RUNNER_LISTENER_PROCESS_COUNT=$($listener.Count)"
 Write-Host "ROBLOX_RUNNER_SELF_HEAL_INTERVAL_MINUTES=$HealthCheckMinutes"
 Write-Host "ROBLOX_RUNNER_WATCHDOG=$watchdogPath"
 Write-Host 'ROBLOX_RUNNER_VISIBLE_CMD_REQUIRED=NO'
+Write-Host 'ROBLOX_RUNNER_TASK_HIDDEN=YES'
+Write-Host 'ROBLOX_RUNNER_LAUNCH_MODE=DIRECT_HIDDEN_LISTENER'
 Write-Host 'ROBLOX_RUNNER_SERVICE_MODE=NO'
 Write-Host 'ROBLOX_STUDIO_USER_PROFILE_PRESERVED=YES'
 Write-Host 'ROBLOX_RUNNER_AUTOSTART_CONFIGURED=YES'
