@@ -47,26 +47,32 @@ test('personal manor spawn stays on the front-yard ground layer',()=>{
  assert.match(manorBuild,/ArrivalCourtCrest/);
 });
 
-test('personal manor visual model is anchored to authored hall and courtyard coordinates',()=>{
- assert.match(lobby,/d:IsA\("BasePart"\)and d\.Name==name/);
+test('personal manor visual alignment cannot take the lobby down',()=>{
  assert.match(lobby,/local hallAnchor=exactVisualPart\("HallFloor"\)/);
- assert.match(lobby,/local courtyardAnchor=exactVisualPart\("Courtyard"\)/);
- assert.match(lobby,/local expectedHall=Vector3\.new\(0,\.1,-29\)/);
- assert.match(lobby,/local expectedCourtyard=Vector3\.new\(0,-\.2,20\)/);
- assert.match(lobby,/local yaw=math\.atan2\(flatSpan\.X,flatSpan\.Z\)/);
- assert.match(lobby,/MANOR_NATIVE_ARCHITECTURE_ALIGNMENT_FAILED/);
- assert.doesNotMatch(lobby,/CFrame\.new\(Assets\.SourceCenter\)\*bbox:Inverse\(\)\*template:GetPivot\(\)/);
- assert.match(lobby,/ManorVisualAnchorMode","HALL_FLOOR_COURTYARD"/);
+ assert.match(lobby,/local delta=expectedHall-hallAnchor\.Position/);
+ assert.match(lobby,/self\.visualAnchorMode="HALL_FLOOR_TRANSLATION"/);
+ assert.match(lobby,/self\.visualAnchorMode="SOURCE_CENTER_FALLBACK"/);
+ assert.doesNotMatch(lobby,/MANOR_NATIVE_ARCHITECTURE_ALIGNMENT_FAILED/);
+ assert.doesNotMatch(lobby,/MANOR_NATIVE_ARCHITECTURE_ANCHOR_MISSING/);
 });
 
-test('personal manor collision follows the same authored first and second floor coordinates',()=>{
+test('personal manor lobby keeps only the first-floor walkable collision',()=>{
  assert.match(lobby,/part\(folder,"PersonalGround",origin\+Vector3\.new\(0,-\.15,10\),Vector3\.new\(160,1,156\),true\)/);
- assert.match(lobby,/part\(folder,"GrandStairGround"/);
- assert.match(lobby,/part\(folder,"SecondFloorGroundRear"/);
- assert.match(lobby,/part\(folder,"SecondFloorGroundSide"/);
- assert.match(lobby,/part\(folder,"SecondFloorStairLandingGround"/);
- assert.match(lobby,/StairwellRailBoundary/);
- assert.match(lobby,/GalleryFrontRailBoundary/);
+ assert.doesNotMatch(lobby,/part\(folder,"GrandStairGround"/);
+ assert.doesNotMatch(lobby,/part\(folder,"SecondFloorGroundRear"/);
+ assert.doesNotMatch(lobby,/part\(folder,"SecondFloorGroundSide"/);
+ assert.doesNotMatch(lobby,/part\(folder,"SecondFloorStairLandingGround"/);
+ assert.doesNotMatch(lobby,/StairwellRailBoundary/);
+ assert.doesNotMatch(lobby,/GalleryFrontRailBoundary/);
+});
+
+test('scenic backdrop stays behind the manor rear wall',()=>{
+ assert.doesNotMatch(manorBuild,/\[\(-72,far\),\(-58,mid\)\]/);
+ assert.match(manorBuild,/\[\(-104,far\),\(-90,mid\)\]/);
+ assert.doesNotMatch(manorBuild,/BackdropFenceRailA',\(0,3\.0,-63\.5\)/);
+ assert.match(manorBuild,/BackdropFenceRailA',\(0,3\.0,-88\.5\)/);
+ assert.doesNotMatch(manorBuild,/BackdropChapel',\(5,3,-76\)/);
+ assert.match(manorBuild,/BackdropChapel',\(5,3,-108\)/);
 });
 
 test('downloaded assets retain original bytes and CC0 license',()=>{
@@ -266,12 +272,12 @@ test('personal manor exterior has signature housing and collection architecture'
  assert.match(lobby,/EntranceWalkwayGround/);
  assert.match(lobby,/PersonalSpawn";spawn\.Position=origin\+Vector3\.new\(0,\.55,60\)/);
  assert.match(lobby,/return room\.origin\+Vector3\.new\(0,3,60\),room\.origin\+Vector3\.new\(0,5,-2\),room\.spawn/);
- assert.match(lobby,/SecondFloorGroundRear/);
- assert.match(lobby,/SecondFloorGroundSide/);
- assert.match(lobby,/SecondFloorStairLandingGround",origin\+Vector3\.new\(0,10\.05,-57\.0\),Vector3\.new\(32\.5,\.35,4\.5\)/);
- assert.match(lobby,/StairwellRailBoundary/);
- assert.match(lobby,/GalleryFrontRailBoundary",origin\+Vector3\.new\(side\*25\.25,11\.55,-45\.62\),Vector3\.new\(18\.5,2\.8,\.45\)/);
- assert.doesNotMatch(lobby,/SecondFloorGround",origin\+Vector3\.new\(0,10\.2,-55\),Vector3\.new\(92,\.55,19\)/);
+ assert.doesNotMatch(lobby,/SecondFloorGroundRear/);
+ assert.doesNotMatch(lobby,/SecondFloorGroundSide/);
+ assert.doesNotMatch(lobby,/SecondFloorStairLandingGround/);
+ assert.doesNotMatch(lobby,/StairwellRailBoundary/);
+ assert.doesNotMatch(lobby,/GalleryFrontRailBoundary/);
+ assert.doesNotMatch(lobby,/SecondFloorGround",origin\+Vector3\.new\(/);
  assert.match(manorBuild,/UpperWingWallCap/);
  assert.match(manorBuild,/SecondFloorGallerySide/);
  assert.match(manorBuild,/SecondFloorGalleryApron'\+str\(side\),\(side\*25\.25,9\.72,-45\.62\),\(18\.5,1\.02,\.48\)/);

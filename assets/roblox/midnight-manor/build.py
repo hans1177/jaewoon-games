@@ -2013,7 +2013,7 @@ def build():
     # 평면 레이어는 실제 깊이가 다른 위치에 놓여 이동 시 자연스러운 시차가 난다.
     far=s.material('distant_blue',(.14,.23,.31));mid=s.material('distant_teal',(.10,.19,.23))
     moon=s.material('moon_paper',(.69,.78,.70));foreground=s.material('foreground_ink',(.04,.09,.10))
-    for layer,(z,mat) in enumerate([(-72,far),(-58,mid)]):
+    for layer,(z,mat) in enumerate([(-104,far),(-90,mid)]):
         ridge=[[-53,0,0],[53,0,0],[53,17,0],[40,23,0],[29,19,0],[16,27,0],[3,20,0],[-13,28,0],[-32,20,0],[-53,25,0]]
         s.node('BackdropRidge'+str(layer),s.mesh('BackdropRidge'+str(layer),ridge,[list(range(len(ridge)))],mat),(0,0,z))
         for side in [-1,1]:
@@ -2021,34 +2021,34 @@ def build():
             silhouette=[[-1,0,0],[1,0,0],[2,13,0],[7,17,0],[8,23,0],[6,20,0],[1,17,0],[0,27,0],[-3,33,0],[-2,23,0],[-6,20,0],[-8,25,0],[-8,19,0],[-2,14,0]]
             s.node('BackdropTree'+str(layer)+str(side),s.mesh('BackdropTree',silhouette,[list(range(len(silhouette)))],mat),(x,0,z+1))
     disk=[[math.cos(i*math.pi/24)*7,math.sin(i*math.pi/24)*7,0]for i in range(48)]
-    s.node('PaperMoon',s.mesh('PaperMoon',disk,[list(range(48))],moon),(27,41,-70))
+    s.node('PaperMoon',s.mesh('PaperMoon',disk,[list(range(48))],moon),(27,41,-102))
     halo=s.material('moon_halo',(.27,.16,.40))
     for ring in range(3):
         pts=[[math.cos(i*math.pi/24)*(8.5+ring*2.0),math.sin(i*math.pi/24)*(8.5+ring*2.0),0]for i in range(48)]
-        s.node('PaperMoonHalo'+str(ring),s.mesh('PaperMoonHalo'+str(ring),pts,[list(range(48))],halo),(27,41,-70-ring*.08))
+        s.node('PaperMoonHalo'+str(ring),s.mesh('PaperMoonHalo'+str(ring),pts,[list(range(48))],halo),(27,41,-102-ring*.08))
 
     # 멀리 있는 삐뚤어진 묘지/예배당/가로등 실루엣.
     cemetery=s.material('backdrop_cemetery',(.025,.030,.055))
     for i,x0 in enumerate([-48,-34,-18,2,18,39,52]):
         h=3.5+(i%3)*1.7
         stone=[(-1.2,0),(1.2,0),(1.0,h*.62),(0,h),(-1.0,h*.62)]
-        s.prism('BackdropGrave'+str(i),(x0,2.0,-66.5),stone,.08,cemetery,rot=(i-3)*.025)
+        s.prism('BackdropGrave'+str(i),(x0,2.0,-94.5),stone,.08,cemetery,rot=(i-3)*.025)
     chapel=[(-7,0),(7,0),(7,10),(3,10),(0,16),(-3,10),(-7,10)]
-    s.prism('BackdropChapel',(5,3,-76),chapel,.10,cemetery)
-    s.box('BackdropChapelDoor',(5,6.1,-75.88),(2.4,5.2,.08),c['black'])
-    s.curve_tube('BackdropChapelSpire',[(5,18,-75.9),(5,25,-75.9)],[.16,.04],[.12,.03],c['black'],sides=14)
+    s.prism('BackdropChapel',(5,3,-108),chapel,.10,cemetery)
+    s.box('BackdropChapelDoor',(5,6.1,-107.88),(2.4,5.2,.08),c['black'])
+    s.curve_tube('BackdropChapelSpire',[(5,18,-107.9),(5,25,-107.9)],[.16,.04],[.12,.03],c['black'],sides=14)
 
     # 원경 철책/침엽수 레이어. 저택 뒤에 중거리 실루엣을 추가해 평면 배경 느낌을 줄인다.
     fence_mat=s.material('backdrop_fence',(.018,.018,.036))
     for i,x0 in enumerate(range(-54,55,6)):
         top=8.0+(i%3)*.55
-        s.box('BackdropFencePost'+str(i),(x0,top*.5,-63.5),(.18,top,.16),fence_mat,lean=((i%3)-1)*.05)
+        s.box('BackdropFencePost'+str(i),(x0,top*.5,-88.5),(.18,top,.16),fence_mat,lean=((i%3)-1)*.05)
         spike=[(-.20,0),(.20,0),(0,.85)]
-        s.prism('BackdropFenceSpike'+str(i),(x0,top+.38,-63.5),spike,.10,fence_mat)
-    s.box('BackdropFenceRailA',(0,3.0,-63.5),(112,.18,.12),fence_mat)
-    s.box('BackdropFenceRailB',(0,5.4,-63.5),(112,.16,.10),fence_mat)
+        s.prism('BackdropFenceSpike'+str(i),(x0,top+.38,-88.5),spike,.10,fence_mat)
+    s.box('BackdropFenceRailA',(0,3.0,-88.5),(112,.18,.12),fence_mat)
+    s.box('BackdropFenceRailB',(0,5.4,-88.5),(112,.16,.10),fence_mat)
     pine_mat=s.material('backdrop_pine',(.025,.040,.055))
-    for pi,(px,ph,pz) in enumerate([(-52,17,-68),(-43,23,-69),(-27,19,-67),(-12,27,-72),(13,21,-69),(29,26,-71),(47,18,-67),(56,24,-70)]):
+    for pi,(px,ph,pz) in enumerate([(-52,17,-96),(-43,23,-98),(-27,19,-95),(-12,27,-101),(13,21,-97),(29,26,-100),(47,18,-95),(56,24,-99)]):
         trunk_w=.50+(pi%2)*.12
         s.box('BackdropPineTrunk'+str(pi),(px,ph*.34,pz),(trunk_w,ph*.68,.22),pine_mat,lean=((pi%3)-1)*.12)
         for tier in range(4):
