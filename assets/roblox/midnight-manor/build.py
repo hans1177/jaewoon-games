@@ -2284,7 +2284,7 @@ def render_export():
     d=bpy.data.cameras.new('ReviewCamera');o=bpy.data.objects.new('ReviewCamera',d);collection.objects.link(o)
     bpy.context.scene.camera=o;d.lens=23
     sc=bpy.context.scene
-    fast_review=os.environ.get('GITHUB_ACTIONS','').lower()=='true' or str(os.environ.get('GITHUB_REF','')).startswith('refs/heads/chatgpt/')
+    fast_review=str(os.environ.get('GITHUB_REF','')).startswith('refs/heads/chatgpt/')
     def select_review_engine(scene,fast):
         if not fast:
             scene.render.engine='CYCLES'
