@@ -3127,6 +3127,146 @@ jobs:
           Invoke-RestMethod -Method Post -Uri "https://api.github.com/repos/$env:GITHUB_REPOSITORY/dispatches" -Headers $headers -Body $body -ContentType 'application/json'
           Write-Host "ROBLOX_STUDIO_MCP_VIBE_REFILL_DISPATCHED=$env:GAME_ID"
 
+  verified-asset-promotion:
+    name: promote exact runtime-verified company assets
+    needs: [studio-mcp-auto-play]
+    if: always() && inputs.candidate_context == '' && needs.studio-mcp-auto-play.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Checkout current main for company asset promotion
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+          fetch-depth: 0
+          fetch-tags: false
+
+      - name: Checkout latest canonical runtime state
+        uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          path: runtime
+          fetch-depth: 1
+          fetch-tags: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Build exact runtime-verified asset promotions
+        id: asset_promotion
+        working-directory: main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git -C ../runtime fetch --no-tags origin company-runtime
+          git -C ../runtime reset --hard origin/company-runtime
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {promoteVerifiedCompanyAssetsFromRuntimeEvidence} from './assets/vibe-studio-asset-universe.js';
+          const queue=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
+          let registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+          const promoted=[];
+          const reviewed=[];
+          for(const item of queue.items||[]){
+            const plan=item?.robloxAssetRuntimePromotionPlan;
+            if(!plan||plan.status!=='PENDING_EXACT_NATIVE_RUNTIME'||!Array.isArray(plan.candidates)||!plan.candidates.length)continue;
+            const sourceRevision=String(item?.robloxSourceCommit||'').trim();
+            const artifactIdentity=String(item?.robloxBuildArtifactIdentity||'').trim();
+            if(!/^[0-9a-f]{40}$/.test(sourceRevision)||plan.promotedMainSha!==sourceRevision)continue;
+            const studio=item?.robloxInternalVibePlayEvidence||{};
+            const studioBinding=item?.robloxStudioAssetRuntimeBindingEvidence||{};
+            const performancePass=(studio.scenarioCoverage||[]).some(row=>String(row?.id||'')==='adaptive-performance-budget'&&row?.pass===true);
+            const exactStudio=Boolean(
+              item.robloxInternalPlaytestPassed===true
+              &&studio.pass===true
+              &&studio.currentSourceArtifactBinding===true
+              &&String(studio.sourceRevision||'')===sourceRevision
+              &&String(studio.artifactIdentity||'')===artifactIdentity
+            );
+            const exactBinding=Boolean(
+              item.robloxStudioAssetRuntimeBindingPassed===true
+              &&String(studioBinding.sourceRevision||'')===sourceRevision
+              &&String(studioBinding.artifactIdentity||'')===artifactIdentity
+            );
+            if(!exactStudio||!exactBinding||!performancePass||item.robloxIndependentQaPassed!==true||item.robloxRegressionPassed!==true){
+              reviewed.push({gameId:item.gameId,promoted:false,reason:'RUNTIME_GATES_PENDING'});
+              continue;
+            }
+            const existingById=new Map((registry.assets||[]).map(row=>[String(row?.id||''),row]));
+            const pending=plan.candidates.filter(row=>{
+              const asset=existingById.get(String(row?.assetId||''));
+              return asset&&asset.verifiedCompanyReusable!==true&&!/^VERIFIED_COMPANY_/i.test(String(asset.status||''));
+            });
+            if(!pending.length){
+              reviewed.push({gameId:item.gameId,promoted:false,reason:'NO_UNVERIFIED_BOUND_ASSET'});
+              continue;
+            }
+            const evidenceAssets=pending.map(row=>{
+              const asset=existingById.get(String(row.assetId));
+              const registryLicense=String(asset?.license||'').trim();
+              return{
+                assetId:String(row.assetId),
+                sourceHash:String(row.sourceHash||''),
+                artifactHash:String(row.artifactHash||''),
+                nativeBindingPass:row.candidateSourceBindingVerified===true,
+                licenseProvenancePass:Boolean(registryLicense&&registryLicense===String(row.license||'').trim())
+              };
+            });
+            const result=promoteVerifiedCompanyAssetsFromRuntimeEvidence({
+              registry,consumer:{gameId:item.gameId,platform:'ROBLOX'},runtimeEvidence:{
+                id:String(studio.sessionId||studio.workflowRunId||item.robloxInternalPlaytestPassedAt||sourceRevision),
+                platform:'ROBLOX',gameId:item.gameId,assetIds:pending.map(row=>String(row.assetId)),assets:evidenceAssets,
+                nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true
+              }
+            });
+            registry=result.registry;
+            promoted.push(...result.promotedAssetIds.map(assetId=>({gameId:item.gameId,assetId})));
+            reviewed.push({gameId:item.gameId,promoted:result.updated,reason:result.reason,assetIds:[...result.promotedAssetIds]});
+          }
+          if(promoted.length)fs.writeFileSync('company-asset-library.json',JSON.stringify(registry,null,2)+'\n');
+          fs.writeFileSync('/tmp/roblox-verified-asset-promotion.json',JSON.stringify({version:1,promoted,reviewed},null,2)+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'count='+promoted.length+'\n');
+          console.log('ROBLOX_VERIFIED_COMPANY_ASSET_PROMOTION_COUNT='+promoted.length);
+          for(const row of promoted)console.log('ROBLOX_VERIFIED_COMPANY_ASSET_PROMOTION='+row.gameId+':'+row.assetId);
+          NODE
+
+      - name: Promote verified company asset registry through reviewed PR
+        if: steps.asset_promotion.outputs.count != '0'
+        continue-on-error: true
+        working-directory: main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main
+          git reset --hard origin/main -- . ':!company-asset-library.json'
+          git config user.name 'jaewoon-asset-runtime-promotion'
+          git config user.email 'actions@users.noreply.github.com'
+          git add company-asset-library.json
+          git diff --cached --check
+          git diff --cached --quiet && exit 0
+          branch="automation/verified-company-assets-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git checkout -b "$branch"
+          git commit -m 'assets: promote exact runtime-verified company assets'
+          git push origin "HEAD:$branch"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title 'assets: promote runtime-verified company assets' --body 'Exact Roblox source binding + official Studio runtime + mobile performance + independent QA + regression evidence. Direct main write: NO.')"
+          gh pr checks "$pr_url" --watch --fail-fast --interval 10
+          gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
+          echo "ROBLOX_VERIFIED_COMPANY_ASSET_PROMOTION_PR=$pr_url"
+
+      - name: Record nonblocking asset promotion state
+        if: always()
+        shell: bash
+        run: |
+          if [ "${{ steps.asset_promotion.outputs.count || '0' }}" = '0' ]; then
+            echo 'ROBLOX_VERIFIED_COMPANY_ASSET_PROMOTION=NOT_READY_OR_NOT_REQUIRED'
+          else
+            echo 'ROBLOX_VERIFIED_COMPANY_ASSET_PROMOTION=REVIEWED_PR_ATTEMPTED'
+          fi
+          echo 'ROBLOX_VERIFIED_COMPANY_ASSET_PROMOTION_RELEASE_AUTHORITY=NONE'
   studio-reboot-recovery:
     name: recover interrupted Studio session from company-runtime checkpoint
     needs: [studio-local-plan, studio-mcp-auto-play]
