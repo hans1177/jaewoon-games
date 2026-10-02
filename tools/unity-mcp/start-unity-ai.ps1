@@ -49,17 +49,39 @@ function Get-CurrentPowerShellExe {
     throw 'PowerShell executable could not be resolved.'
 }
 
+function Start-NoConsoleProcess([string]$FilePath, [string]$Arguments, [string]$WorkingDirectory = '') {
+    $startInfo = New-Object System.Diagnostics.ProcessStartInfo
+    $startInfo.FileName = $FilePath
+    $startInfo.Arguments = $Arguments
+    if ($WorkingDirectory) { $startInfo.WorkingDirectory = $WorkingDirectory }
+    $startInfo.UseShellExecute = $false
+    $startInfo.CreateNoWindow = $true
+    $startInfo.WindowStyle = [System.Diagnostics.ProcessWindowStyle]::Hidden
+    $process = New-Object System.Diagnostics.Process
+    $process.StartInfo = $startInfo
+    [void]$process.Start()
+    return $process
+}
+
 function Install-LoginAutoStart([string]$PowerShellExe, [string]$StartScript, [string]$Project) {
     $startupDir = [Environment]::GetFolderPath('Startup')
     if (-not $startupDir) { throw 'Windows Startup folder could not be resolved.' }
 
-    $launcherPath = Join-Path $startupDir 'JaewoonCompanyAI.cmd'
+    $legacyLauncherPath = Join-Path $startupDir 'JaewoonCompanyAI.cmd'
+    if (Test-Path $legacyLauncherPath) {
+        Remove-Item $legacyLauncherPath -Force
+        Write-Host "[PASS] Removed visible legacy login launcher: $legacyLauncherPath"
+    }
+
+    $launcherPath = Join-Path $startupDir 'JaewoonCompanyAI.vbs'
+    $commandLine = ('"{0}" -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "{1}" -ProjectPath "{2}"' -f $PowerShellExe,$StartScript,$Project)
+    $escapedCommand = $commandLine.Replace('"','""')
     $content = @"
-@echo off
-"$PowerShellExe" -NoProfile -ExecutionPolicy Bypass -File "$StartScript" -ProjectPath "$Project"
+Set shell = CreateObject("WScript.Shell")
+shell.Run "$escapedCommand", 0, False
 "@
     Write-Utf8NoBom -Path $launcherPath -Text $content
-    Write-Host "[PASS] Windows login auto-start installed: $launcherPath"
+    Write-Host "[PASS] Hidden Windows login auto-start installed: $launcherPath"
 }
 
 function Get-ExistingCompanySupervisor([string]$RepoRoot) {
@@ -116,8 +138,8 @@ function Start-CompanySupervisor([string]$PowerShellExe, [string]$SupervisorScri
         '-ProjectPath', "`"$Project`""
     )
 
-    $process = Start-Process -FilePath $PowerShellExe -ArgumentList $arguments -WindowStyle Hidden -PassThru `
-        -RedirectStandardOutput $outLog -RedirectStandardError $errLog
+    $argumentLine = '-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "' + $SupervisorScript + '" -ProjectPath "' + $Project + '"'
+    $process = Start-NoConsoleProcess -FilePath $PowerShellExe -Arguments $argumentLine -WorkingDirectory $RepoRoot
 
     $companyLog = Join-Path $env:TEMP 'jaewoon-company-ai.log'
     $started = $false
