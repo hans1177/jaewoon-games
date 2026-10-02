@@ -6,10 +6,10 @@ const promotion=fs.readFileSync('.github/workflows/company-design-promotion-sync
 const designRuntime=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
 const source=fs.readFileSync('tools/design-only-promotion-sync.mjs','utf8');
 
-test('active design cycle is preserved while newer push work coalesces pending',()=>{
-  assert.match(designRuntime,/group: company-seed-design-runtime-\$\{\{ github\.event_name == 'push' && 'engine-push' \|\| 'continuation' \}\}/);
-  assert.match(designRuntime,/cancel-in-progress:\s*false/);
-  assert.doesNotMatch(designRuntime,/cancel-in-progress:\s*\$\{\{ github\.event_name == 'push' \}\}/);
+test('canonical design runtime dedupes execution and replaces stale push work',()=>{
+  assert.match(designRuntime,/group:\s*company-seed-design-runtime/);
+  assert.match(designRuntime,/cancel-in-progress:\s*\$\{\{ github\.event_name == 'push' \}\}/);
+  assert.doesNotMatch(designRuntime,/group: company-seed-design-runtime-\$\{\{/);
 });
 
 test('partial design-runtime failure still evaluates each persisted minimum-design-ready game',()=>{
