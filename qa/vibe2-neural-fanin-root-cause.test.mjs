@@ -196,6 +196,46 @@ test('fan-in accepts studio build-up breadth evidence only when the configured d
   assert.ok(result.queue.tasks[0].evidence.includes('studio-quality-implementation-delta:PASS'));
 });
 
+test('asset fan-in blocks hero work unless the requested 4B model actually produced the candidate',()=>{
+  const task={...baseTask(['asset-production-parallel:v1']),target:'roblox',sourceRoot:'roblox-games/demo',assetProductionLane:true};
+  const candidate={...baseResult(),candidateIdentity:{...baseResult().candidateIdentity,target:'roblox',sourceRoot:'roblox-games/demo'},
+    model:'qwen3:1.7b',
+    modelRouting:{heroRequested:true,heroModel:'qwen3:4b-instruct',actualModel:'qwen3:1.7b',heroModelApplied:false,tier:'HERO_STUDIO',generationBudgetUnchanged:true},
+    assetProduction:{modelRouting:{heroRequested:true,heroModel:'qwen3:4b-instruct'}}
+  };
+  const blocked=finalizeVibe2FanInReview({queue:{tasks:[task]},results:[candidate],taskIds:['neural-root-task']});
+  assert.equal(blocked.releaseCandidates.length,0);
+  assert.ok(blocked.reviewed[0].missing.includes('hero-asset-model-not-applied'));
+  assert.ok(blocked.reviewed[0].missing.includes('hero-asset-model-identity'));
+});
+
+test('asset fan-in blocks authoring requests that never produced a native source delta',()=>{
+  const task={...baseTask(['asset-production-parallel:v1']),target:'roblox',sourceRoot:'roblox-games/demo',assetProductionLane:true};
+  const candidate={...baseResult(),candidateIdentity:{...baseResult().candidateIdentity,target:'roblox',sourceRoot:'roblox-games/demo'},
+    model:'qwen3:4b-instruct',
+    modelRouting:{heroRequested:true,heroModel:'qwen3:4b-instruct',actualModel:'qwen3:4b-instruct',heroModelApplied:true,tier:'HERO_STUDIO',generationBudgetUnchanged:true},
+    assetProduction:{modelRouting:{heroRequested:true,heroModel:'qwen3:4b-instruct'},nativeAuthoringExecution:{enabled:true}},
+    nativeAssetAuthoring:{required:true,status:'DCC_AUTHORING_EXECUTOR_REQUIRED'}
+  };
+  const blocked=finalizeVibe2FanInReview({queue:{tasks:[task]},results:[candidate],taskIds:['neural-root-task']});
+  assert.equal(blocked.releaseCandidates.length,0);
+  assert.ok(blocked.reviewed[0].missing.includes('native-asset-authoring-not-executed'));
+});
+
+test('asset fan-in accepts studio model proof and real native source authoring for runtime verification',()=>{
+  const task={...baseTask(['asset-production-parallel:v1']),target:'roblox',sourceRoot:'roblox-games/demo',assetProductionLane:true};
+  const candidate={...baseResult(),candidateIdentity:{...baseResult().candidateIdentity,target:'roblox',sourceRoot:'roblox-games/demo'},
+    model:'qwen3:4b-instruct',
+    modelRouting:{heroRequested:true,heroModel:'qwen3:4b-instruct',actualModel:'qwen3:4b-instruct',heroModelApplied:true,tier:'HERO_STUDIO',generationBudgetUnchanged:true},
+    assetProduction:{modelRouting:{heroRequested:true,heroModel:'qwen3:4b-instruct'},nativeAuthoringExecution:{enabled:true}},
+    nativeAssetAuthoring:{required:true,status:'NATIVE_SOURCE_AUTHORED_RUNTIME_REQUIRED'}
+  };
+  const pass=finalizeVibe2FanInReview({queue:{tasks:[task]},results:[candidate],taskIds:['neural-root-task']});
+  assert.equal(pass.releaseCandidates.length,1);
+  assert.ok(pass.queue.tasks[0].evidence.includes('hero-asset-model:PASS'));
+  assert.ok(pass.queue.tasks[0].evidence.includes('native-asset-authoring:NATIVE_SOURCE_AUTHORED_RUNTIME_REQUIRED'));
+});
+
 test('explicit independently verified root cause remains non-firing on successful CI result',()=>{
   const marker='independent-qa-verified-responsible-system:GAME_RUNTIME';
   const result=finalizeVibe2FanInReview({
