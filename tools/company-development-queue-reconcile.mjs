@@ -431,7 +431,6 @@ export function reconcileDevelopmentQueue({root='.'}={}){
     const design=latestMinimumDesign(root,gameId);
     const staleCatalogPause=upper(seed?.status)==='PAUSED'
       &&upper(seed?.pausedReason)==='NOT_IN_CANONICAL_GAME_CATALOG'
-      &&(seed?.ownerDirectDevelopment===true||seed?.OWNER_DIRECT_DEVELOPMENT===true)
       &&upper(seed?.productionClass)==='DEVELOPMENT_CONFIRMED';
     const canonicalActive=game
       &&upper(game?.productionClass)==='DEVELOPMENT_CONFIRMED'
