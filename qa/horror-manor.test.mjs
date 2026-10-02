@@ -149,7 +149,9 @@ test('personal manor exterior has signature housing and collection architecture'
   'WingGutter','WingRainPipe','WingStoneWeathering','CentralRoofRidge','RoofFinial','ApproachWaystone',
   'ServiceConsoleMortimer','RecordIndexCabinet','MortuaryMeasureRack',
   'BoardedWingWindow','FacadeCrack','FacadeVine','CollectionViewingBenchSeat','CollectionSideRail',
-  'ServiceKeyRing','RecordInkPot','RecordQuill','MortuaryScissors','GrandCeilingCoffer','GrandCeilingBoss','GrandCeilingCorbel'
+  'ServiceKeyRing','RecordInkPot','RecordQuill','MortuaryScissors','GrandCeilingCoffer','GrandCeilingBoss','GrandCeilingCorbel',
+  'HalloweenPumpkinLobe','JackEye','JackMouth','GargoyleBody','GargoyleWing','HalloweenSkull','HalloweenWaxDrip',
+  'LivingCurtain','LivingVineTip','LivingBranch','BackdropCloud','BackdropMist','BackdropBat','BackdropChapel','BackdropGrave','PaperMoonHalo'
  ])assert.match(manorBuild,new RegExp(token));
  for(const room of ['ArchiveRoom','LibraryRoom','ParlorRoom','MortuaryRoom','WardrobeRoom','LoungeRoom'])assert.match(manorBuild,new RegExp("'"+room+"'"));
  assert.match(manorBuild,/room_accent=\{/);
@@ -170,6 +172,10 @@ test('personal manor exterior has signature housing and collection architecture'
  assert.match(manorBuild,/GrandCeilingCoffer/);
  assert.match(manorBuild,/GrandCeilingBoss/);
  assert.match(manorBuild,/GrandCeilingCorbel/);
+ assert.match(manorBuild,/다크카툰 고딕 스타일 락/);
+ assert.match(manorBuild,/'purple':\(\.135,\.050,\.205\)/);
+ assert.match(manorBuild,/'pumpkin':\(\.58,\.145,\.018\)/);
+ assert.match(manorBuild,/or 'Flame' in o\.name/);
  assert.doesNotMatch(manorBuild,/s\.lathe\('LeftTurret'/,'Archivist tower replaces the old duplicate left turret');
  assert.match(manorBuild,/for step in range\(5\)/);
  assert.match(manorBuild,/for i,outline in enumerate\(crest_shapes\)/);
@@ -208,6 +214,17 @@ test('personal manor exterior has signature housing and collection architecture'
  assert.match(lobby,/namedParts\(scene,"FireplaceFeature_"\.\.ghost\.Id\)/);
  assert.match(ui,/mesh\.Name:match\("Flame"\)/);
  assert.match(ui,/local phase=row\.home\.Position\.X\*\.37\+row\.home\.Position\.Z\*\.19/);
+ assert.match(ui,/local function npcRole\(name\)/);
+ assert.match(ui,/role=="BUTLER"/);assert.match(ui,/role=="UNDERTAKER"/);assert.match(ui,/role=="ARCHIVIST"/);
+ assert.match(ui,/local blinkCycle=\(now\+phase\*1\.7\)%5\.6/);
+ assert.match(ui,/row\.name:match\("_Iris"\)or row\.name:match\("_Pupil"\)/);
+ assert.match(ui,/row\.name:match\("_UpperLid"\)/);assert.match(ui,/row\.name:match\("_LowerLid"\)/);
+ assert.match(ui,/row\.name:match\("Tray"\)/);assert.match(ui,/row\.name:match\("Ledger"\)/);
+ assert.match(ui,/VisitedManorOwnerUserId/);assert.match(ui,/PersonalManor_"\.\.ownerId/);
+ assert.match(ui,/LivingCurtain/);assert.match(ui,/LivingVineTip/);assert.match(ui,/LivingBranch/);
+ assert.match(ui,/BackdropCloud/);assert.match(ui,/BackdropMist/);assert.match(ui,/BackdropBat/);
+ assert.match(ui,/ChandelierPearDrop/);assert.match(ui,/PaperMoonHalo/);
+ assert.match(ui,/row\.light\.Brightness=row\.brightness\*\(1\+math\.sin/);
  assert.match(ui,/mesh\.CFrame=row\.home\+Vector3\.new\(math\.sin\(now\*4\.7\+phase\)\*\.018/);
  assert.match(lobby,/for _,prefix in ipairs\(\{"MapMasterpiece_","GallerySet_"\}\)do/);
  assert.doesNotMatch(lobby,/SetAttribute\("GhostCompleted"/);
