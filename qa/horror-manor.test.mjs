@@ -57,6 +57,12 @@ test('NPC source uses continuous-surface role-specific geometry instead of primi
  assert.match(npcSource,/s\.curve_tube\(kind\+'_Leg'/);
  assert.match(npcSource,/s\.curve_tube\(kind\+'_Arm'/);
  assert.match(npcSource,/face_profiles=\{/);
+ assert.match(npcSource,/grip_profiles=\{/);
+ assert.match(npcSource,/MouthCorner/);assert.match(npcSource,/TempleFold/);assert.match(npcSource,/ChinFold/);
+ assert.match(npcSource,/Butler_PocketWatchChain/);assert.match(npcSource,/Butler_ShirtCollar/);
+ assert.match(npcSource,/Undertaker_HighCollar/);assert.match(npcSource,/UndertakerHatDent/);assert.match(npcSource,/Undertaker_LapelPin/);
+ assert.match(npcSource,/Archivist_GlassArm/);assert.match(npcSource,/Archivist_BrowWrinkle/);
+ assert.match(npcSource,/Archivist_LedgerPage/);assert.match(npcSource,/Archivist_LedgerStrap/);
  assert.match(manorBuild,/DIRECT_PROCEDURAL_ROLE_SPECIFIC_CONTINUOUS_SURFACE_V4/);
 });
 test('Blender review renderer is compatible across supported Eevee identifiers',()=>{
@@ -221,11 +227,20 @@ test('personal manor exterior has signature housing and collection architecture'
  assert.match(ui,/mesh\.Name:match\("Flame"\)/);
  assert.match(ui,/local phase=row\.home\.Position\.X\*\.37\+row\.home\.Position\.Z\*\.19/);
  assert.match(ui,/local function npcRole\(name\)/);
+ assert.match(ui,/local function npcHeadPart\(name\)/);
  assert.match(ui,/role=="BUTLER"/);assert.match(ui,/role=="UNDERTAKER"/);assert.match(ui,/role=="ARCHIVIST"/);
+ assert.match(ui,/headSum=Vector3\.zero,headCount=0/);
+ assert.match(ui,/group\.headPivot=group\.headCount>0 and group\.headSum\/group\.headCount or group\.pivot/);
+ assert.match(ui,/local blinkPeriod=role=="BUTLER"and 5\.8 or role=="UNDERTAKER"and 7\.1 or 4\.6/);
+ assert.match(ui,/local attention=\(now\+phase\*2\.3\)%\(role=="ARCHIVIST"and 8\.5 or 10\.8\)/);
+ assert.match(ui,/local headTransform=around\(group\.headPivot/);
  assert.match(ui,/local blinkCycle=\(now\+phase\*1\.7\)%5\.6/);
  assert.match(ui,/row\.name:match\("_Iris"\)or row\.name:match\("_Pupil"\)/);
  assert.match(ui,/row\.name:match\("_UpperLid"\)/);assert.match(ui,/row\.name:match\("_LowerLid"\)/);
  assert.match(ui,/row\.name:match\("Tray"\)/);assert.match(ui,/row\.name:match\("Ledger"\)/);
+ assert.match(ui,/row\.name:match\("PocketWatch"\)/);
+ assert.match(ui,/local pageBeat=role=="ARCHIVIST"/);
+ assert.match(ui,/row\.name:match\("_Hand"\)or row\.name:match\("_Finger"\)or row\.name:match\("_Thumb"\)/);
  assert.match(ui,/VisitedManorOwnerUserId/);assert.match(ui,/PersonalManor_"\.\.ownerId/);
  assert.match(ui,/LivingCurtain/);assert.match(ui,/LivingVineTip/);assert.match(ui,/LivingBranch/);
  assert.match(ui,/BackdropCloud/);assert.match(ui,/BackdropMist/);assert.match(ui,/BackdropBat/);
