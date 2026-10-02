@@ -101,6 +101,8 @@ $ErrorActionPreference = 'Stop'
 $runnerRoot = '__RUNNER_ROOT__'
 $listenerExe = [IO.Path]::GetFullPath((Join-Path $runnerRoot 'bin\Runner.Listener.exe'))
 $workerExe = [IO.Path]::GetFullPath((Join-Path $runnerRoot 'bin\Runner.Worker.exe'))
+$runCmd = [IO.Path]::GetFullPath((Join-Path $runnerRoot 'run.cmd'))
+$hiddenLauncher = [IO.Path]::GetFullPath((Join-Path $runnerRoot '.jaewoon-roblox-runner-hidden.vbs'))
 $restartMarker = Join-Path $runnerRoot '.jaewoon-roblox-runner-hidden-restart.pending'
 
 function Get-TargetListener {
@@ -140,18 +142,14 @@ if ($listener.Count -gt 0) {
   }
 }
 
-$startInfo = New-Object System.Diagnostics.ProcessStartInfo
-$startInfo.FileName = $listenerExe
-$startInfo.Arguments = 'run'
-$startInfo.WorkingDirectory = $runnerRoot
-$startInfo.UseShellExecute = $false
-$startInfo.CreateNoWindow = $true
-$startInfo.WindowStyle = [System.Diagnostics.ProcessWindowStyle]::Hidden
-$startInfo.RedirectStandardOutput = $true
-$startInfo.RedirectStandardError = $true
-$listenerProcess = New-Object System.Diagnostics.Process
-$listenerProcess.StartInfo = $startInfo
-[void]$listenerProcess.Start()
+$escapedRunCmd = $runCmd.Replace('"','""')
+@"
+Set shell = CreateObject("WScript.Shell")
+shell.CurrentDirectory = "$($runnerRoot.Replace('"','""'))"
+shell.Run Chr(34) & "$escapedRunCmd" & Chr(34), 0, False
+"@ | Set-Content -LiteralPath $hiddenLauncher -Encoding ASCII
+$wscript = Join-Path $env:SystemRoot 'System32\wscript.exe'
+Start-Process -FilePath $wscript -ArgumentList @('//B','//Nologo',('"' + $hiddenLauncher + '"')) -WindowStyle Hidden
 Start-Sleep -Seconds 5
 
 if (@(Get-TargetListener).Count -eq 0) {
@@ -197,7 +195,8 @@ Write-Host "ROBLOX_RUNNER_SELF_HEAL_INTERVAL_MINUTES=$HealthCheckMinutes"
 Write-Host "ROBLOX_RUNNER_WATCHDOG=$watchdogPath"
 Write-Host 'ROBLOX_RUNNER_VISIBLE_CMD_REQUIRED=NO'
 Write-Host 'ROBLOX_RUNNER_TASK_HIDDEN=YES'
-Write-Host 'ROBLOX_RUNNER_LAUNCH_MODE=CREATE_NO_WINDOW_LISTENER'
+Write-Host 'ROBLOX_RUNNER_CHILD_CONSOLE_INHERITANCE=HIDDEN_PARENT'
+Write-Host 'ROBLOX_RUNNER_LAUNCH_MODE=HIDDEN_CMD_CONSOLE_HOST'
 Write-Host 'ROBLOX_RUNNER_IDLE_MIGRATION=PENDING_UNTIL_NO_RUNNER_WORKER'
 Write-Host 'ROBLOX_RUNNER_SERVICE_MODE=NO'
 Write-Host 'ROBLOX_STUDIO_USER_PROFILE_PRESERVED=YES'

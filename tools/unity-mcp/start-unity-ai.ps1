@@ -237,8 +237,10 @@ if (Test-Port 8080) {
         '--default-instance', 'daechung-rpg'
     )
 
-    $process = Start-Process -FilePath $uvx -ArgumentList $args -WindowStyle Hidden -PassThru `
-        -RedirectStandardOutput $outLog -RedirectStandardError $errLog
+    $uvxArgs = ($args | ForEach-Object {
+        if ($_ -match '[\s"]') { '"' + ($_ -replace '"','\"') + '"' } else { $_ }
+    }) -join ' '
+    $process = Start-NoConsoleProcess -FilePath $uvx -Arguments $uvxArgs -WorkingDirectory $repoRoot
 
     $ready = $false
     for ($i = 0; $i -lt 20; $i++) {
