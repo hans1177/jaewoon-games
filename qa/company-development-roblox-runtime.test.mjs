@@ -1185,3 +1185,19 @@ test('F0 private validation defers same-source quality repair and resumes for re
   assert.deepEqual(run({robloxRuntimeCandidateEvidence:{published:true,sourceRevision:'new',artifactIdentity:'artifact',versionNumber:1}}).sent,[]);
 });
 
+
+
+test('successful F0 checkpoints persist and dispatch per game before matrix fan-in',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const workerStart=workflow.indexOf('\n  technical-worker:\n');
+  const persistStart=workflow.indexOf('\n  technical-persist:\n',workerStart);
+  assert.ok(workerStart>=0&&persistStart>workerStart);
+  const worker=workflow.slice(workerStart,persistStart);
+  const persist=workflow.slice(persistStart);
+  assert.match(worker,/Persist successful F0 checkpoint immediately per game/);
+  assert.match(worker,/ROBLOX_F0_CHECKPOINT_PERSIST=PASS:/);
+  assert.match(worker,/ROBLOX_F0_PER_GAME_PRIVATE_VALIDATION_DISPATCH=YES:/);
+  assert.match(worker,/company-development-roblox-release-promotion\.yml[\s\S]*publish_stage=validation/);
+  assert.match(persist,/ROBLOX_PACKAGE_ALREADY_PERSISTED_PER_GAME=/);
+  assert.match(workflow,/successfulGamesContinueWithoutWaitingForFailedGameRepair|ROBLOX_OTHER_GAME_PROMOTION_BLOCKED=NO/);
+});
