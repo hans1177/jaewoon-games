@@ -13,7 +13,19 @@ const ui=read('roblox-games/horror-escape-room/client/ManorLobby.client.luau');
 const oldUI=read('roblox-games/horror-escape-room/client/Game.client.luau');
 const config=read('roblox-games/horror-escape-room/shared/GameConfig.luau');
 const manorBuild=read(root+'/build.py');
+const ownerWorkflow=read('.github/workflows/horror-owner-system-publish.yml');
 const cloudOwnerBuild=process.env.MANOR_CLOUD_BUILD==='1';
+
+test('owner manor workflow never publishes canonical Roblox place before F9',()=>{
+ assert.match(ownerWorkflow,/name: Horror Owner Asset Verify/);
+ assert.match(ownerWorkflow,/MANOR_CANONICAL_PUBLISH=DEFER_TO_F9_RELEASE_PROMOTION/);
+ assert.match(ownerWorkflow,/git diff --exit-code -- roblox-games\/horror-escape-room\/shared\/ManorAssets\.luau/);
+ assert.match(ownerWorkflow,/gh workflow run company-design-promotion-sync\.yml/);
+ assert.doesNotMatch(ownerWorkflow,/versions\?versionType=Published/);
+ assert.doesNotMatch(ownerWorkflow,/Publish verified manor to owner-only private target/);
+ assert.doesNotMatch(ownerWorkflow,/roblox-games\/horror-escape-room\/\*\*/);
+});
+
 test('manor UI follows the current artbook and mobile-safe map board',()=>{
  assert.match(ui,/ArtbookId","horror-escape-room-2026-10-02-manor-rebuild"/);
  assert.match(ui,/ArtbookStyle","DARK_CARTOON_GOTHIC_HALLOWEEN"/);
