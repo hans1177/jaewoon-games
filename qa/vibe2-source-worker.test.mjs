@@ -1512,6 +1512,7 @@ test('Roblox Studio backfill rejects config-only candidate and retries until vis
     studioAssetBackfill:true,
     responsibleFiles:workOrder.source.responsibleFiles
   };
+  workOrder.assetProduction={baseMaterialLoadout:{robloxSelectionHandoff:{bindingVersion:2}}};
   workOrder.goal='[ROBLOX_STUDIO_ASSET_BACKFILL] apply selected materials to the real visual owner';
   write(path.join(cwd,'roblox-games/demo/shared/GameConfig.luau'),'return { GameId = "demo" }\n');
   const clientSource=[
@@ -1530,7 +1531,7 @@ test('Roblox Studio backfill rejects config-only candidate and retries until vis
   const bound=[
     'local Players = game:GetService("Players")',
     'local player = Players.LocalPlayer',
-    'local STUDIO_ASSET_BINDING_VERSION = 1',
+    'local STUDIO_ASSET_BINDING_VERSION = 2',
     'local STUDIO_ASSET_SELECTION = {"FRAME_PANEL","BUTTON_PRIMARY","BAR_HEALTH"}',
     'local gui = Instance.new("ScreenGui")',
     'local root = Instance.new("Frame")',
@@ -1547,7 +1548,7 @@ test('Roblox Studio backfill rejects config-only candidate and retries until vis
   assert.equal(result.generation.recoveryUsed,true);
   assert.deepEqual(result.changedFiles,['client/Game.client.luau']);
   const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files/client/Game.client.luau'),'utf8');
-  assert.match(candidate,/STUDIO_ASSET_BINDING_VERSION\s*=\s*1/);
+  assert.match(candidate,/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/);
   assert.match(candidate,/STUDIO_ASSET_SELECTION\s*=\s*\{/);
   assert.match(candidate,/StudioAssetAtoms/);
 });
@@ -4446,7 +4447,7 @@ test('local Roblox visual retry targets gameplay visuals and keeps a bounded bui
 });
 
 
-test('asset-development Roblox presentation keeps its deterministic fast path when a shared goal also carries world-lobby work',()=>{
+test('asset-development Roblox presentation uses the model path even when a shared goal also carries world-lobby work',()=>{
   const base={
     target:'roblox',
     goal:'[WORLD_LOBBY_FIRST] preserve lobby flow\n[PRESENTATION_PASS:ASSET_ADAPTATION] improve native graphics',
@@ -4457,7 +4458,13 @@ test('asset-development Roblox presentation keeps its deterministic fast path wh
   assert.equal(robloxDeterministicPresentationEligible({
     ...base,
     selectedTask:{...base.selectedTask,assetProductionLane:true,evidence:['world-lobby-first:v1','asset-production-parallel:v1']}
-  }),true);
+  }),false);
+  assert.equal(robloxDeterministicPresentationEligible({
+    target:'roblox',
+    goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] improve native graphics',
+    presentationQuality:{required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false},
+    selectedTask:{assetProductionLane:true,evidence:['asset-production-parallel:v1']}
+  }),false);
 });
 
 
@@ -4684,7 +4691,7 @@ test('Roblox deterministic workflow activates only for an explicit deterministic
   assert.match(worker,/if\(!generated&&deterministicRobloxRequired\)/);
 });
 
-test('continuous workflow marks Roblox text source as model-independent',()=>{
+test('continuous workflow keeps eligible deterministic Roblox presentation model-independent',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
   assert.match(workflow,/VIBE2_ROBLOX_DETERMINISTIC_SOURCE: 'true'/);
   assert.match(workflow,/reason='ROBLOX_DETERMINISTIC_SOURCE'/);
