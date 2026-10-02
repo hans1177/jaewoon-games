@@ -178,31 +178,31 @@ test('keeps only active confirmed seeds with valid minimum design and preserves 
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('repairs stale owner-direct catalog pause and restores canonical development queue entry',()=>{
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'owner-direct-resume-'));
+test('repairs stale canonical catalog pause and restores development queue entry',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'canonical-catalog-resume-'));
   try{
     writePolicy(root);
     write(root,'game-catalog.json',{games:[{
-      id:'horror-escape-room',name:'Horror',productionClass:'DEVELOPMENT_CONFIRMED',
-      lifecycleState:'ACTIVE',selectedPlatform:'ROBLOX',ownerDirectDevelopment:true
+      id:'canonical-resume-game',name:'Resume Game',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',selectedPlatform:'ROBLOX'
     }]});
     write(root,'game-seed-state.json',{seeds:[{
-      seedId:'H',gameId:'horror-escape-room',status:'PAUSED',
+      seedId:'R',gameId:'canonical-resume-game',status:'PAUSED',
       pausedReason:'NOT_IN_CANONICAL_GAME_CATALOG',pausedAt:'2026-10-01T00:00:00Z',
-      productionClass:'DEVELOPMENT_CONFIRMED',OWNER_DIRECT_DEVELOPMENT:true,selectedPlatform:'ROBLOX'
+      productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX'
     }]});
-    const design=writeDesign(root,'horror-escape-room');
+    const design=writeDesign(root,'canonical-resume-game');
     write(root,'development-queue.json',{items:[]});
     const result=reconcileDevelopmentQueue({root});
     const queue=JSON.parse(fs.readFileSync(path.join(root,'development-queue.json'),'utf8'));
     const state=JSON.parse(fs.readFileSync(path.join(root,'game-seed-state.json'),'utf8'));
-    const seed=state.seeds.find(row=>row.gameId==='horror-escape-room');
+    const seed=state.seeds.find(row=>row.gameId==='canonical-resume-game');
     assert.equal(result.ownerDirectSeedRepairs,1);
     assert.equal(seed.status,'ACTIVE');
     assert.equal(Object.hasOwn(seed,'pausedReason'),false);
     assert.equal(Object.hasOwn(seed,'pausedAt'),false);
     assert.equal(queue.items.length,1);
-    assert.equal(queue.items[0].gameId,'horror-escape-room');
+    assert.equal(queue.items[0].gameId,'canonical-resume-game');
     assert.equal(queue.items[0].minimumDesignContract.source,design);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
