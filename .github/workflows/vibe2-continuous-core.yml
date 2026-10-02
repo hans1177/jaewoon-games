@@ -1213,6 +1213,10 @@ jobs:
           put('route',order.executionRoute||'');
           const deterministicRoblox=robloxDeterministicPresentationEligible(order);
           put('deterministic_source',deterministicRoblox?'true':'false');
+          const selectedModel=order.assetProduction?.modelRouting?.selectedModel||process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b';
+          const heroModelRequested=order.assetProduction?.modelRouting?.heroRequested===true;
+          put('local_model',selectedModel);
+          put('hero_model_requested',heroModelRequested?'true':'false');
           put('source_root',order.source?.root||'');
           put('work_lock_required',order.compiledWorkContract?.workLock?.requiredBeforeSourceWrite===true?'true':'false');
           put('work_lock_base_sha',order.compiledWorkContract?.workLock?.baseSha||'');
@@ -1253,6 +1257,8 @@ jobs:
             echo 'VIBE2_WORKER_MODEL_CACHE_REQUIRED=NO'
           fi
           echo "VIBE2_WORKER_MODEL_CACHE_REASON=$reason"
+          echo "VIBE2_WORKER_SELECTED_MODEL=${{ steps.order.outputs.local_model }}"
+          echo "VIBE2_WORKER_HERO_MODEL_REQUESTED=${{ steps.order.outputs.hero_model_requested }}"
 
       - name: Restore dedicated Vibe2 model cache
         id: worker_ollama_cache
@@ -1273,7 +1279,7 @@ jobs:
         if: steps.model_need.outputs.required == 'true'
         uses: ./vibe2-contract/.github/actions/prepare-ollama
         with:
-          model: ${{ env.VIBE2_LOCAL_MODEL }}
+          model: ${{ steps.order.outputs.local_model }}
           pull-model: 'true'
 
       - name: Measure worker Ollama preparation
@@ -1481,6 +1487,7 @@ jobs:
           VARIANT: ${{ matrix.variant }}
           CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
           GH_TOKEN: ${{ github.token }}
+          VIBE2_LOCAL_MODEL: ${{ steps.order.outputs.local_model }}
         shell: bash
         run: |
           set -euo pipefail
@@ -1513,6 +1520,8 @@ jobs:
             command -v ollama >/dev/null
             curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
             ollama list | awk 'NR>1 {print $1}' | grep -Fqx "$VIBE2_LOCAL_MODEL"
+            echo "VIBE2_LOCAL_MODEL_ACTIVE=$VIBE2_LOCAL_MODEL"
+            echo "VIBE2_HERO_ASSET_MODEL_ACTIVE=${{ steps.order.outputs.hero_model_requested }}"
             echo 'VIBE2_LOCAL_MODEL_SOURCE=PREPARED_ONCE'
           fi
 
