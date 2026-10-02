@@ -441,6 +441,33 @@ test('private runtime guard uses standard control runner while publish remains o
 });
 
 
+test('pre-F9 validation publish requires exact F0 but never current F9',()=>{
+  const sourceRevision='a'.repeat(40),artifactIdentity='sha256:build';
+  const item={
+    robloxSourceCommit:sourceRevision,
+    robloxBuildSourceRevision:sourceRevision,
+    robloxBuildArtifactIdentity:artifactIdentity,
+    robloxBuildOrPackagePassed:true,
+    robloxBuildPreflightPassed:true,
+    robloxFoundationF0Passed:true,
+    robloxFoundationF0Evidence:{
+      sourcePreflightPassed:true,
+      f0SourceIntegrityPassed:true,
+      sourceRevision,
+      artifactIdentity
+    },
+    robloxFinalReviewPassed:false,
+    robloxF9ReleaseRegressionPassed:false
+  };
+  const candidate={item,sourceRevision,artifactIdentity,sourceTree:'tree',latestSourceTree:'tree',publishStage:'validation'};
+  assert.equal(assertRobloxLatestPublishCandidate(candidate),true);
+  assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxFoundationF0Passed:false}}),/ROBLOX_PUBLISH_CURRENT_F0_REQUIRED/);
+  assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,publishStage:'final'}),/ROBLOX_PUBLISH_CURRENT_F9_REQUIRED/);
+  assert.match(workflow,/PUBLISH_STAGE: \$\{\{ inputs\.publish_stage \|\| 'validation' \}\}/);
+  assert.match(workflow,/publishStage:process\.env\.PUBLISH_STAGE/);
+  assert.match(workflow,/ROBLOX_PUBLISH_LATEST_SOURCE_GATE=PASS:/);
+});
+
 test('upload rejects a superseded source, artifact or revoked quality/F9 evidence',()=>{
   const sourceRevision='a'.repeat(40), artifactIdentity='sha256:build';
   const item={robloxSourceCommit:sourceRevision,robloxBuildSourceRevision:sourceRevision,

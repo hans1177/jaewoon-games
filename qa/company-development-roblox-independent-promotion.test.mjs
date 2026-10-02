@@ -37,24 +37,28 @@ test('shared-model preflight remains a per-game evidence stage without adding a 
   assert.ok(workflow.includes('result.preflightEvidence?.artifactIdentity===result.artifactIdentity'));
 });
 
-test('preflight or F0 recovery uses continuation while fused F0 success routes directly to local Studio QA',()=>{
+
+test('preflight or F0 recovery uses continuation while fused F0 success routes directly to private validation',()=>{
   assert.ok(workflow.includes('let packagePending=0,preflightReady=0,f0Ready=0,externalBlocked=0;'));
   assert.ok(workflow.includes("const f0Passed=secondaryOwnerFocus?false:item.robloxFoundationF0Passed===true;"));
   assert.ok(workflow.includes('f0Ready++;'));
   assert.ok(workflow.includes('ROBLOX_F0_READY_COUNT=$f0_ready'));
   assert.match(workflow,/package_pending.*preflight_ready.*f0_ready/);
   assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml'));
-  assert.ok(workflow.includes('ROBLOX_LOCAL_F0_QA_DISPATCH='));
-  assert.ok(workflow.includes('gh workflow run company-development-roblox-post-runtime-qa.yml'));
-  assert.ok(workflow.includes('ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED'));
-  assert.doesNotMatch(workflow,/publish_stage=validation/);
+  assert.ok(workflow.includes('Route F0-passed artifacts to private runtime validation without Studio'));
+  assert.ok(workflow.includes('gh workflow run company-development-roblox-release-promotion.yml'));
+  assert.ok(workflow.includes('publish_stage=validation'));
+  assert.ok(workflow.includes('ROBLOX_PRE_F9_VALIDATION_TARGET=PRIVATE_DEDICATED'));
+  assert.ok(workflow.includes('ROBLOX_STUDIO_REQUIRED_FOR_DEVELOPMENT_CONTINUATION=NO'));
 });
 
-test('batch F0 local QA dispatch dedupes active exact-game QA without server-publish recovery waits',()=>{
-  assert.ok(workflow.includes('actions/workflows/company-development-roblox-post-runtime-qa.yml/runs?per_page=100'));
-  assert.ok(workflow.includes('ROBLOX_LOCAL_F0_QA_DISPATCH=DEDUPED_ACTIVE:'));
-  assert.ok(workflow.includes('ROBLOX_LOCAL_F0_QA_DISPATCH_COUNT='));
-  assert.ok(workflow.includes('ROBLOX_ONLY_FINAL_F9_SERVER_PUBLISH=YES'));
+
+test('batch F0 private validation dispatch dedupes only current-main exact-game validation work',()=>{
+  assert.ok(workflow.includes('actions/workflows/company-development-roblox-release-promotion.yml/runs?per_page=100'));
+  assert.ok(workflow.includes("if(String(run.head_sha||'')!==currentSha)continue;"));
+  assert.ok(workflow.includes('ROBLOX_PRIVATE_RUNTIME_VALIDATION_DISPATCH=DEDUPED_CURRENT_MAIN:'));
+  assert.ok(workflow.includes('ROBLOX_PRIVATE_RUNTIME_VALIDATION_DISPATCH_COUNT='));
+  assert.ok(workflow.includes('ROBLOX_PRE_F9_VALIDATION_TARGET=PRIVATE_DEDICATED'));
   assert.doesNotMatch(workflow,/batchRecoveryGraceMs/);
   assert.doesNotMatch(workflow,/ROBLOX_PRIVATE_RUNTIME_BATCH_RECOVERY_WAIT_MS=/);
 });

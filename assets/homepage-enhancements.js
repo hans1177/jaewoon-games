@@ -274,10 +274,9 @@ function hasRunnableHomepageTarget(game){
 function hasInternalRelease(game){
   const exposure=exposureOf(gameIdOf(game));
   return (exposure?.platforms||[]).some(p=>{
-    const platform=normalizePlatform(p?.platform);
-    if(!['ROBLOX','UNITY'].includes(platform)||!Boolean(p.internalUrl||p.publicUrl))return false;
+    if(!['ROBLOX','UNITY'].includes(normalizePlatform(p?.platform))||!Boolean(p.internalUrl||p.publicUrl))return false;
     if(p?.internalReleaseReady===true&&p?.releaseReadiness?.homepageReady===true)return true;
-    return platform==='ROBLOX'&&p?.historicalInternalRelease===true;
+    return normalizePlatform(p?.platform)==='ROBLOX'&&p?.historicalInternalRelease===true;
   });
 }
 function internalReleaseRows(catalog,status){

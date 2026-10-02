@@ -51,6 +51,6 @@ test('main write guard skips its own unit suite when only unrelated workflow fil
   assert.match(workflow,/Detect guard implementation change/);
   assert.match(workflow,/guard_changed=NO/);
   assert.match(workflow,/tools\/main-write-guard\\.mjs\|qa\/main-write-guard\\.test\\.mjs\|\\.github\/workflows\/main-write-guard\\.yml/);
-  assert.match(workflow,/if: steps\.scope\.outputs\.guard_changed == 'YES'/);
+  assert.match(workflow,/if: \$\{\{ steps\.scope\.outputs\.guard_changed == 'YES' \}\}/);
   assert.match(workflow,/Reject new workflow direct writes to main/);
 });

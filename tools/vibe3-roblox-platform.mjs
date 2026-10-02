@@ -486,7 +486,7 @@ export function createRobloxRuntimeCandidatePublishPlan({placeFile='',universeId
 }
 
 // Re-evaluate immediately before every upload attempt, never from an old dispatch snapshot.
-export function assertRobloxLatestPublishCandidate({item,sourceRevision,artifactIdentity,sourceTree,latestSourceTree}={}){
+export function assertRobloxLatestPublishCandidate({item,sourceRevision,artifactIdentity,sourceTree,latestSourceTree,publishStage='final'}={}){
   if(!sourceTree || !latestSourceTree || sourceTree!==latestSourceTree)
     throw new Error('ROBLOX_PUBLISH_STALE_SOURCE_TREE');
   if(!item || !sourceRevision || item.robloxSourceCommit!==sourceRevision)
@@ -495,6 +495,16 @@ export function assertRobloxLatestPublishCandidate({item,sourceRevision,artifact
     throw new Error('ROBLOX_PUBLISH_STALE_BUILD_ARTIFACT');
   if(item.robloxQualityBuildUpRequired===true || item.robloxStudioLocalPlayRepairRequired===true)
     throw new Error('ROBLOX_PUBLISH_CURRENT_QUALITY_REPAIR_REQUIRED');
+  const stage=clean(publishStage).toLowerCase()||'final';
+  if(!['validation','final'].includes(stage))throw new Error('ROBLOX_PUBLISH_STAGE_INVALID');
+  if(stage==='validation'){
+    const f0=item.robloxFoundationF0Evidence||{};
+    if(item.robloxFoundationF0Passed!==true || item.robloxBuildPreflightPassed!==true || item.robloxBuildOrPackagePassed!==true ||
+      f0.sourcePreflightPassed!==true || f0.f0SourceIntegrityPassed!==true ||
+      f0.sourceRevision!==sourceRevision || f0.artifactIdentity!==artifactIdentity)
+      throw new Error('ROBLOX_PUBLISH_CURRENT_F0_REQUIRED');
+    return true;
+  }
   const f9=item.robloxF9ReleaseRegressionEvidence||{};
   if(item.robloxF9ReleaseRegressionPassed!==true || item.robloxFinalReviewPassed!==true ||
     f9.sourceRevision!==sourceRevision || f9.artifactIdentity!==artifactIdentity)

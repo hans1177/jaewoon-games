@@ -13,7 +13,7 @@ const postRuntime=fs.readFileSync(new URL('../.github/workflows/company-developm
 const f9=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-final-review-revalidation.yml',import.meta.url),'utf8');
 const directive=JSON.parse(fs.readFileSync(new URL('../company-directive.json',import.meta.url),'utf8'));
 
-test('Roblox native path is package -> shared preflight -> F0 -> local Studio tester QA -> F9 final publish',()=>{
+test('Roblox native path is package -> shared preflight -> F0 -> private validation -> runtime QA -> F9 final publish',()=>{
   assert.ok(preflight.includes('workflow_dispatch:'));
   assert.ok(!preflight.includes('company-development-roblox-package.mjs'));
   assert.ok(preflight.includes('company-development-roblox-build-preflight.mjs'));
@@ -22,14 +22,14 @@ test('Roblox native path is package -> shared preflight -> F0 -> local Studio te
   assert.ok(preflight.includes('company-development-roblox-headless-fast-mvp.yml'));
   assert.ok(headless.includes('Roblox F0 Source Preflight'));
   assert.ok(headless.includes('company-development-roblox-headless-fast-mvp.mjs'));
-  assert.ok(headless.includes('company-development-roblox-post-runtime-qa.yml'));
-  assert.ok(headless.includes('ROBLOX_F0_STUDIO_QA_HANDOFF=DISPATCHED:'));
-  assert.ok(!headless.includes('gh workflow run company-development-roblox-runtime.yml'));
-  assert.ok(runtime.includes('company-development-roblox-post-runtime-qa.yml'));
-  assert.ok(runtime.includes('ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED'));
-  assert.ok(postRuntime.includes('roblox-local-f0-pre-f9-artifact'));
+  assert.ok(headless.includes('company-development-roblox-release-promotion.yml'));
+  assert.ok(headless.includes('publish_stage=validation'));
+  assert.ok(headless.includes('ROBLOX_STUDIO_REQUIRED_FOR_F0_CONTINUATION=NO'));
+  assert.ok(runtime.includes('Route F0-passed artifacts to private runtime validation without Studio'));
+  assert.ok(runtime.includes('publish_stage=validation'));
+  assert.ok(runtime.includes('ROBLOX_PRE_F9_VALIDATION_TARGET=PRIVATE_DEDICATED'));
+  assert.ok(postRuntime.includes('Dispatch exact F9 review'));
   assert.ok(f9.includes('publish_stage=final'));
-  assert.ok(!runtime.includes('publish_stage=validation'));
 });
 
 test('shared preflight requires exact immutable build and one shared model',()=>{
