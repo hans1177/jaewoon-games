@@ -3089,7 +3089,7 @@ test('Studio planner cannot be cancelled by a later generic push before exact-ga
  assert.doesNotMatch(plan,/group: roblox-studio-mcp-plan-\$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
 });
 
-test('newest owner exact Studio request preempts older queued automatic exact runs but preserves active or manual work',()=>{
+test('Studio planner removes only superseded pending automatic runs for the exact planned games',()=>{
  const plan=workflow.slice(workflow.indexOf('  studio-local-plan:'),workflow.indexOf('  studio-mcp-auto-play:'));
  assert.match(plan,/Cancel superseded pending Studio runs selected by this exact plan/);
  assert.match(plan,/PLANNED_MATRIX: \$\{\{ steps\.plan\.outputs\.matrix \}\}/);
@@ -3097,13 +3097,12 @@ test('newest owner exact Studio request preempts older queued automatic exact ru
  assert.match(plan,/ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_ACTIVE=/);
  assert.match(plan,/ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_UNRELATED=/);
  assert.match(plan,/ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_EXACT_TRIGGER=/);
- assert.match(plan,/ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_OWNER_EXACT_PREEMPTS_UNRELATED_EXACT=/);
- assert.match(plan,/ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_OWNER_EXACT_REPLACES_OLDER_EXACT=/);
+ assert.match(plan,/ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_UNRELATED_EXACT_TRIGGER=/);
  assert.ok(plan.includes('contents/roblox-games/.company-runtime-trigger?ref=$run_head'));
  assert.ok(plan.includes('older_trigger_game='));
  assert.ok(plan.includes('OWNER_EXACT="$CURRENT_TRIGGER_CHANGED"'));
  assert.ok(plan.includes('OLDER_EXACT="$older_exact_trigger"'));
- assert.ok(plan.includes("if(ownerExact)return process.stdout.write('CANCEL')"));
+ assert.ok(plan.includes("if(ownerExact&&!olderExact)return process.stdout.write('CANCEL')"));
  assert.match(plan,/CURRENT_TRIGGER_CHANGED: \$\{\{ steps\.plan\.outputs\.trigger_changed \}\}/);
  assert.match(plan,/commits\/\$run_head/);
  assert.match(plan,/roblox-games\/\.company-runtime-trigger/);
@@ -3112,7 +3111,23 @@ test('newest owner exact Studio request preempts older queued automatic exact ru
  assert.match(plan,/if\(manualExactDispatch\)continue/);
  assert.doesNotMatch(plan,/if\(r\.event==='workflow_dispatch'&&title!==prefix\+'scan'\)continue/);
  assert.match(plan,/games\.every\(g=>planned\.has\(g\)\)\?'CANCEL':'PRESERVE_UNRELATED'/);
- assert.doesNotMatch(plan,/PRESERVED_UNRELATED_EXACT_TRIGGER/);
+});
+
+test('explicit owner Studio priority can supersede unrelated waiting exact runs while preserving named games',()=>{
+ const plan=workflow.slice(workflow.indexOf('  studio-local-plan:'),workflow.indexOf('  studio-mcp-auto-play:'));
+ assert.match(plan,/supersedeUnrelatedExactStudio:/);
+ assert.match(plan,/preserveStudioGames:/);
+ assert.match(plan,/ROBLOX_STUDIO_OWNER_PRIORITY_SUPERSEDE_UNRELATED=/);
+ assert.match(plan,/ROBLOX_STUDIO_OWNER_PRIORITY_PRESERVE_GAMES=/);
+ assert.match(plan,/ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_OWNER_PRIORITY=/);
+ assert.match(plan,/ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_OWNER_PRIORITY_CANCEL_REQUESTED=/);
+ assert.ok(plan.includes('PRESERVE_GAMES="$current_preserve_games"'));
+ assert.ok(plan.includes('SUPERSEDE_UNRELATED="$current_supersede_unrelated"'));
+ assert.ok(plan.includes("if(games.some(g=>preserve.has(g)))return process.stdout.write('PRESERVE_PRIORITY')"));
+ assert.ok(plan.includes("if(ownerExact&&supersedeUnrelated)return process.stdout.write('CANCEL')"));
+ const activeCheck=plan.indexOf("return process.stdout.write('PRESERVE_ACTIVE')");
+ const supersedeCheck=plan.indexOf("if(ownerExact&&supersedeUnrelated)return process.stdout.write('CANCEL')");
+ assert.ok(activeCheck>0&&activeCheck<supersedeCheck);
 });
 
 test('Studio serializes play without replacing pending games or blocking parallel build jobs',()=>{
