@@ -884,10 +884,17 @@ def build():
       (58,-54,'MortuaryRoom'),(58,-33,'WardrobeRoom'),(58,-12,'LoungeRoom')
     ]
     for x,z,name in room_specs:
-        s.box(name+'Divider',(x,7,z),(34,14,1),c['plum'])
-        s.box(name+'Door',(x,5,z+.55),(5.6,10,.35),c['wood'])
-        s.lathe(name+'Knob',(x+1.8,5,z+.85),.16,.16,.22,c['brass'],sides=20)
-        for side in [-1,1]:s.box(name+'Sconce'+str(side),(x+side*8,6,z+.7),(1.3,3,.30),c['brass'])
+        # 방 칸막이는 중앙 8stud 통로를 실제로 비운다.
+        s.box(name+'DividerLeft',(x-10.5,7,z),(13,14,1),c['plum'])
+        s.box(name+'DividerRight',(x+10.5,7,z),(13,14,1),c['plum'])
+        s.box(name+'DoorLintel',(x,12,z),(8,4,1),c['plum'])
+        for side in [-1,1]:
+            s.box(name+'DoorJamb'+str(side),(x+side*4.15,5,z+.08),(.62,10,1.15),c['wood'])
+            s.box(name+'Sconce'+str(side),(x+side*8,6,z+.7),(1.3,3,.30),c['brass'])
+        s.curve_tube(name+'DoorArch',[
+          (x-4.15,9.7,z+.10),(x-2.8,11.1,z+.10),(x,13.25,z+.10),
+          (x+2.8,11.1,z+.10),(x+4.15,9.7,z+.10)
+        ],[.22,.20,.18,.20,.22],[.18,.17,.15,.17,.18],c['wood'],sides=18)
     # 2층 잠긴 객실문.
     for i,x in enumerate([-36,-22,-8,8,22,36]):
         s.box('LockedGuestDoor'+str(i),(x,15,-63.9),(5.2,8.5,.34),c['wood'])
