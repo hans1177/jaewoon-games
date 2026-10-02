@@ -1,5 +1,5 @@
 {
-  "version": 522,
+  "version": 523,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-02",
@@ -1282,7 +1282,28 @@
         "canonicalServerPublicationEligibility": "VERIFIED_LOBBY_INTERNAL_RELEASE_OR_EXPLICIT_OWNER_CONFIRMED_RELEASE",
         "developmentGameCanonicalPublicationAllowed": false,
         "developmentGameNextCycleRequiresPublicationDispatch": false,
-        "publicationDispatchRequirementScope": "RELEASED_GAMES_ONLY"
+        "publicationDispatchRequirementScope": "RELEASED_GAMES_ONLY",
+        "ownerDirectCanonicalPublishExceptionRef": "company-learning/platform-release-roadmap.json#roblox.deploymentControl.ownerDirectCanonicalPublishException"
+      },
+      "ownerDirectCanonicalPublishException": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-10-02",
+        "enabled": true,
+        "gameIds": [
+          "horror-escape-room"
+        ],
+        "trigger": "EXPLICIT_OWNER_DIRECT_PUBLISH_INSTRUCTION",
+        "route": ".github/workflows/horror-owner-system-publish.yml",
+        "f9RequiredForOwnerDirectPublish": false,
+        "exactMainSourceRequired": true,
+        "canonicalPrivateTargetOnly": true,
+        "preserveCurrentPrivateVisibility": true,
+        "publicDiscoveryAllowed": false,
+        "releaseClaim": false,
+        "doesNotClaimF9Pass": true,
+        "doesNotReplaceOrSatisfyDevelopmentF0F9": true,
+        "developmentLoopContinuesIndependently": true,
+        "publicationFailureDoesNotBlockDevelopment": true
       }
     },
     "validationMode": "HEADLESS_FAST_MVP",
@@ -6248,7 +6269,8 @@
       "developmentGameNextCycleRequiresPublicationDispatch": false,
       "privateValidationArtifactForF0ToF9Allowed": true,
       "validationArtifactMayReplaceCanonicalServer": false,
-      "homepageClassificationAndPublicationMustUseSameGate": true
+      "homepageClassificationAndPublicationMustUseSameGate": true,
+      "ownerDirectCanonicalPublishExceptionRef": "company-learning/platform-release-roadmap.json#roblox.deploymentControl.ownerDirectCanonicalPublishException"
     },
     "existingRobloxSourceIntake": {
       "authority": "OWNER_DIRECTIVE_2026-09-30",

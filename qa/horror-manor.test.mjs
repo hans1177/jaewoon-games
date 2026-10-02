@@ -14,6 +14,7 @@ const oldUI=read('roblox-games/horror-escape-room/client/Game.client.luau');
 const config=read('roblox-games/horror-escape-room/shared/GameConfig.luau');
 const manorBuild=read(root+'/build.py');
 const ownerWorkflow=read('.github/workflows/horror-owner-system-publish.yml');
+const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
 const manorAssets=read('roblox-games/horror-escape-room/shared/ManorAssets.luau');
 const cloudOwnerBuild=process.env.MANOR_CLOUD_BUILD==='1';
 
@@ -26,14 +27,26 @@ test('personal manor stays on the Published Version 77 large-house asset',()=>{
  assert.doesNotMatch(manorAssets,/ModelId=110915923417469/);
 });
 
-test('owner manor workflow never publishes canonical Roblox place before F9',()=>{
- assert.match(ownerWorkflow,/name: Horror Owner Asset Verify/);
- assert.match(ownerWorkflow,/MANOR_CANONICAL_PUBLISH=DEFER_TO_F9_RELEASE_PROMOTION/);
- assert.match(ownerWorkflow,/git diff --exit-code -- roblox-games\/horror-escape-room\/shared\/ManorAssets\.luau/);
- assert.match(ownerWorkflow,/gh workflow run company-design-promotion-sync\.yml/);
- assert.doesNotMatch(ownerWorkflow,/versions\?versionType=Published/);
- assert.doesNotMatch(ownerWorkflow,/Publish verified manor to owner-only private target/);
- assert.doesNotMatch(ownerWorkflow,/roblox-games\/horror-escape-room\/\*\*/);
+test('explicit owner-direct route publishes exact current main only to the canonical private horror place without claiming F9',()=>{
+ const policy=roadmap?.roblox?.deploymentControl?.ownerDirectCanonicalPublishException;
+ assert.equal(policy?.enabled,true);
+ assert.ok(policy?.gameIds?.includes('horror-escape-room'));
+ assert.equal(policy?.f9RequiredForOwnerDirectPublish,false);
+ assert.equal(policy?.exactMainSourceRequired,true);
+ assert.equal(policy?.canonicalPrivateTargetOnly,true);
+ assert.equal(policy?.publicDiscoveryAllowed,false);
+ assert.equal(policy?.doesNotClaimF9Pass,true);
+ assert.equal(policy?.doesNotReplaceOrSatisfyDevelopmentF0F9,true);
+ assert.match(ownerWorkflow,/name: Horror Owner Direct Publish/);
+ assert.match(ownerWorkflow,/OWNER_DIRECT_CANONICAL_PRIVATE_PUBLISH=PASS/);
+ assert.match(ownerWorkflow,/OWNER_DIRECT_F9_CLAIM=NO/);
+ assert.match(ownerWorkflow,/ROBLOX_UNIVERSE_ID: '10767445796'/);
+ assert.match(ownerWorkflow,/ROBLOX_PLACE_ID: '98222620265768'/);
+ assert.match(ownerWorkflow,/versions\?versionType=Published/);
+ assert.match(ownerWorkflow,/git diff --exit-code/);
+ assert.match(ownerWorkflow,/VERSION_77_MANOR_BINDING_CHANGED/);
+ assert.doesNotMatch(ownerWorkflow,/blender --background/);
+ assert.doesNotMatch(ownerWorkflow,/horror-manor-assets\.mjs/);
 });
 
 test('manor UI follows the current artbook and mobile-safe map board',()=>{
