@@ -173,9 +173,9 @@ function Manor:Get(p)
  })do
   part(folder,"GreenhouseBoundary",origin+Vector3.new(spec[1],spec[2],spec[3]),Vector3.new(spec[4],spec[5],spec[6]),false)
  end
- -- 개인 저택 스폰은 1층 foyer 안쪽으로 고정한다. 2층/옥상/부트스트랩 위치를 절대 스폰으로 쓰지 않는다.
- local spawn=Instance.new("SpawnLocation");spawn.Name="PersonalSpawn";spawn.Position=origin+Vector3.new(0,.55,-12)
- spawn.Size=Vector3.new(12,.2,10);spawn.Anchored=true;spawn.Transparency=1;spawn.CanCollide=false;spawn.CanTouch=false;spawn.CanQuery=false;spawn.Neutral=true;spawn.Duration=0;spawn.Parent=folder
+ -- 개인 저택 스폰은 현관 앞 마당에 고정한다. 저택 내부/2층 walkable 보정의 영향을 받지 않는다.
+ local spawn=Instance.new("SpawnLocation");spawn.Name="PersonalSpawn";spawn.Position=origin+Vector3.new(0,.55,60)
+ spawn.Size=Vector3.new(14,.2,12);spawn.Anchored=true;spawn.Transparency=1;spawn.CanCollide=false;spawn.CanTouch=false;spawn.CanQuery=false;spawn.Neutral=true;spawn.Duration=0;spawn.Parent=folder
  local room={folder=folder,scene=scene,origin=origin,spawn=spawn,index=index,busy=false,gag=0,lastPrompt=0,connections={},lastGhostCompleted=tonumber(p:GetAttribute("GhostCompleted"))or 0,lastRoundState=tostring(p:GetAttribute("RoundState")or"")}
  self.rooms[p]=room
  p:SetAttribute("ManorOriginX",origin.X);p:SetAttribute("ManorOriginZ",origin.Z)
@@ -445,8 +445,8 @@ end
 
 function Manor:GetSpawn(p)
  local room=self:Get(p)
- -- 1층 foyer 고정 스폰. 계단/2층 walkable raycast와 겹치지 않는 좌표다.
- return room.origin+Vector3.new(0,3,-12),room.origin+Vector3.new(0,5,-32),room.spawn
+ -- 현관 앞 마당 고정 스폰. 카메라는 현관문/저택 중앙을 바라본다.
+ return room.origin+Vector3.new(0,3,60),room.origin+Vector3.new(0,5,-2),room.spawn
 end
 
 function Manor:RefreshVisitorCounts()
