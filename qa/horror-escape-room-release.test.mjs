@@ -818,7 +818,8 @@ test('첫 캐릭터 프레임부터 앞마당 바닥에 고정하고 엔진 Spaw
 test('대기 로비 캐릭터는 경기장 MapReady를 기다리지 않고 로비 바닥에 즉시 스폰한다',()=>{
  const block=server.slice(server.indexOf('local function onCharacter'),server.indexOf('Players.PlayerAdded:Connect(function(p)'));
  assert.match(block,/workspace:GetAttribute\("PhysicalLobbyReady"\)/);
- assert.match(block,/local destination,look,spawn=personalSpawn\(p\)/);
+ assert.match(block,/local destination,look=personalSpawn\(p\)/);
+ assert.match(block,/p\.RespawnLocation=lobbyBootstrapSpawn/);
  assert.match(block,/teleport\(p,destination,look\)/);
  assert.match(block,/LobbySpawnGroundedAt/);
  const waitingBranch=block.slice(block.indexOf('if state~="RUNNING"then'),block.indexOf('local readyDeadline'));
