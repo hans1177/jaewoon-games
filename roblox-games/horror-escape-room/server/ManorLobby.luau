@@ -80,6 +80,11 @@ function Manor:Get(p)
   {-75,11,-31,1.2,22,64},{75,11,-31,1.2,22,64},
   {-58,11,-63,35,22,1.2},{58,11,-63,35,22,1.2},
   {0,13,-65,110,26,1.5},
+  {-43,13,-2,34,26,2},{43,13,-2,34,26,2},
+  {-54,13,-61.5,1.5,26,7},{54,13,-61.5,1.5,26,7},
+  {-54,13,-43.5,1.5,26,13},{54,13,-43.5,1.5,26,13},
+  {-54,13,-22.5,1.5,26,13},{54,13,-22.5,1.5,26,13},
+  {-54,13,-.5,1.5,26,15},{54,13,-.5,1.5,26,15},
  })do
   part(folder,"ManorStructureBoundary",origin+Vector3.new(spec[1],spec[2],spec[3]),Vector3.new(spec[4],spec[5],spec[6]),false)
  end
@@ -172,7 +177,7 @@ function Manor:Get(p)
  for _,mesh in ipairs(scene:GetDescendants())do
   if mesh:IsA("BasePart")and (mesh.Name:match("^HearthFlame")or mesh.Name:match("^ChandelierFlame"))then
    mesh.Material=Enum.Material.Neon;mesh.Color=Color3.fromRGB(255,185,99)
-  elseif mesh:IsA("BasePart")and(mesh.Name:match("^ManorSideWall")or mesh.Name:match("^FacadeWing")or mesh.Name:match("^OuterWingWall")or mesh.Name:match("^WingBackWall")or mesh.Name:match("^LockedGuestDoor")or mesh.Name:match("^GrandStair")or mesh.Name:match("^BalconyWalk")or mesh.Name=="SecondFloorGallery"or mesh.Name=="LeftWingFloor"or mesh.Name=="RightWingFloor"or mesh.Name:match("^BackWall")or mesh.Name=="HallFloor"or mesh.Name=="Courtyard"or mesh.Name=="CrookedRoof")then
+  elseif mesh:IsA("BasePart")and(mesh.Name:match("^OuterWingWall")or mesh.Name:match("^WingBackWall")or mesh.Name:match("^LockedGuestDoor")or mesh.Name:match("^GrandStair")or mesh.Name:match("^BalconyWalk")or mesh.Name=="SecondFloorGallery"or mesh.Name=="LeftWingFloor"or mesh.Name=="RightWingFloor"or mesh.Name:match("^BackWall")or mesh.Name=="HallFloor"or mesh.Name=="Courtyard"or mesh.Name=="CrookedRoof")then
    -- 카메라도 실제 불투명 벽/바닥과 충돌한다. 장식 전체의 볼록 충돌체는 만들지 않는다.
    mesh.CanCollide=true;mesh.CanQuery=true
   end
@@ -210,17 +215,10 @@ function Manor:Get(p)
    for _,mesh in ipairs(namedParts(scene,string.format("GhostArchiveBook%02d",i)))do
     mesh.Transparency=i<=completed and 0 or .86;mesh.CanQuery=false
    end
-   for _,mesh in ipairs(namedParts(scene,string.format("GhostArchiveBookBand%02d",i)))do
-    mesh.Transparency=i<=completed and 0 or 1;mesh.CanQuery=false
-   end
   end
 
   for _,map in ipairs(C.Maps or{})do
    local chosen=map.Id==selected
-   for _,mesh in ipairs(namedParts(scene,"MapCard_"..map.Id))do
-    mesh.Transparency=chosen and 0 or .16
-    mesh.Reflectance=chosen and .08 or 0
-   end
    for _,mesh in ipairs(namedParts(scene,"MapPin_"..map.Id))do mesh.Transparency=chosen and 0 or .78 end
 
    local discovered=false;local full=true;local count=0
@@ -239,15 +237,6 @@ function Manor:Get(p)
    end
   end
 
-  local total=math.max(1,#(C.GhostCatalog or{}))
-  for i=0,5 do
-   local threshold=math.ceil((i+1)*total/6)
-   local reached=completed>=threshold
-   for _,mesh in ipairs(namedParts(scene,"GuestDoorSeal"..i))do
-    mesh.Color=reached and Color3.fromRGB(148,58,72)or Color3.fromRGB(66,20,31)
-    mesh.Reflectance=reached and .08 or 0
-   end
-  end
  end
  local function connect(signal,fn)local connection=signal:Connect(fn);table.insert(room.connections,connection);return connection end
  connect(p:GetAttributeChangedSignal("GhostSeenCount"),refreshDisplays)
