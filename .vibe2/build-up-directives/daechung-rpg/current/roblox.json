@@ -1,19 +1,20 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g1-f04a5e67f5d5",
-  "directiveFingerprint": "f04a5e67f5d5b62224d1fdfd67f3d77ce326220627378a6df35b0fea349843b9",
+  "directiveId": "daechung-rpg-build-up-g2-cb94fbaa56c4",
+  "directiveFingerprint": "cb94fbaa56c4b8974f176d9238570bca4d5570d2631470b532caec35876a3235",
   "previousDirectiveFingerprint": "f04a5e67f5d5b62224d1fdfd67f3d77ce326220627378a6df35b0fea349843b9",
   "forbiddenRepeatFingerprint": "f04a5e67f5d5b62224d1fdfd67f3d77ce326220627378a6df35b0fea349843b9",
   "gameId": "daechung-rpg",
-  "gameName": "5포탈 RPG: 던전 파티",
-  "generation": 1,
+  "gameName": "대충 RPG",
+  "generation": 2,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "cancelled",
+  "previousDirectiveOutcome": "running",
+  "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/daechung-rpg",
-  "sourceTreeFingerprint": "9afb73f9a58d389d143398f4d9dd5e97175e0d8413d75e49b59e99e2cc3b0828",
+  "sourceTreeFingerprint": "dacc4345bc1348d8287db934c75db3940a6d51d82286cb07b9c2376a43fbbddf",
   "designFingerprint": "96add7fd73d84d9a53459185ddf4457d9058daeb4ceab00aeab0dd18b14ab27a",
   "gameIdentityAndNonNegotiables": {
     "identity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.",
@@ -79,50 +80,61 @@
   },
   "currentImplementationFindings": {
     "sourceObservations": [
-      "CURRENT_SOURCE_FILES=7",
-      "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH"
+      "CURRENT_SOURCE_FILES=9",
+      "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
+      "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 520,
-      "progression": 339,
-      "ai": 38,
-      "save": 110,
-      "multiplayer": 16,
-      "animation": 20,
-      "vfx": 24,
-      "camera": 59,
-      "ui": 110,
-      "uiFlow": 65,
-      "input": 41,
-      "map": 324,
+      "combat": 558,
+      "progression": 493,
+      "ai": 58,
+      "save": 185,
+      "multiplayer": 18,
+      "animation": 48,
+      "motionStates": 654,
+      "gameFeel": 28,
+      "vfx": 39,
+      "camera": 91,
+      "audio": 38,
+      "audioDynamics": 20,
+      "ui": 205,
+      "uiFlow": 175,
+      "entryFlow": 8,
+      "loadingFlow": 0,
+      "input": 103,
+      "map": 440,
       "landmark": 26,
-      "interaction": 37,
-      "inventory": 14,
-      "equipment": 46,
-      "settings": 3,
-      "feedback": 45,
-      "session": 63,
-      "content": 426,
-      "choice": 58,
+      "interaction": 104,
+      "inventory": 42,
+      "equipment": 82,
+      "settings": 10,
+      "feedback": 133,
+      "session": 75,
+      "content": 552,
+      "choice": 111,
       "connection": 2,
-      "performance": 17,
-      "lighting": 44,
-      "primitive": 9,
+      "performance": 33,
+      "lighting": 80,
+      "primitive": 21,
       "todo": 0,
-      "errorRecovery": 19
+      "errorRecovery": 21
     },
     "topFiles": [
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "score": 378
+        "score": 426
       },
       {
         "file": "roblox-games/daechung-rpg/shared/GameConfig.luau",
-        "score": 114
+        "score": 337
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "score": 94
+        "score": 263
+      },
+      {
+        "file": "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+        "score": 155
       },
       {
         "file": "roblox-games/daechung-rpg/shared/QACamera.luau",
@@ -130,7 +142,11 @@
       },
       {
         "file": "roblox-games/daechung-rpg/launch-mvp.json",
-        "score": 49
+        "score": 50
+      },
+      {
+        "file": "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
+        "score": 13
       },
       {
         "file": "roblox-games/daechung-rpg/default.project.json",
@@ -152,7 +168,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 770,
+        "line": 826,
         "kind": "FUNCTION",
         "symbol": "enemyModel",
         "context": "local function enemyModel(parent,z,pos,boss,enemyDef)",
@@ -160,15 +176,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 515,
-        "kind": "FUNCTION",
-        "symbol": "init",
-        "context": "local function init(p)",
-        "score": 114
-      },
-      {
-        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 640,
+        "line": 696,
         "kind": "FUNCTION",
         "symbol": "makeVillage",
         "context": "local function makeVillage()",
@@ -184,7 +192,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 901,
+        "line": 957,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "context": "local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)",
@@ -192,10 +200,18 @@
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 199,
+        "line": 588,
         "kind": "FUNCTION",
         "symbol": "bindChar",
         "context": "local function bindChar(c)combatTracks={};local h=c:WaitForChild(\"Humanoid\");h.HealthChanged:Connect(render);render()end",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+        "line": 214,
+        "kind": "FUNCTION",
+        "symbol": "watchTools",
+        "context": "local function watchTools()",
         "score": 90
       },
       {
@@ -208,7 +224,39 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 580,
+        "line": 529,
+        "kind": "FUNCTION",
+        "symbol": "setSaveState",
+        "context": "local function setSaveState(p,state)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+        "line": 8,
+        "kind": "FUNCTION",
+        "symbol": "make",
+        "context": "local function make(class,parent,name,properties)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+        "line": 79,
+        "kind": "FUNCTION",
+        "symbol": "selectItem",
+        "context": "local function selectItem(row)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 572,
+        "kind": "FUNCTION",
+        "symbol": "save",
+        "context": "local function save(p)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 636,
         "kind": "FUNCTION",
         "symbol": "unlockBossCompanion",
         "context": "local function unlockBossCompanion(killer,e)",
@@ -216,7 +264,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1113,
+        "line": 1169,
         "kind": "FUNCTION",
         "symbol": "killEnemy",
         "context": "local function killEnemy(p,e,contribution)",
@@ -224,7 +272,15 @@
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 91,
+        "line": 318,
+        "kind": "FUNCTION",
+        "symbol": "playVerifiedLearningActionFeedback",
+        "context": "local function playVerifiedLearningActionFeedback(control)",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+        "line": 461,
         "kind": "FUNCTION",
         "symbol": "playCombatAnimation",
         "context": "local function playCombatAnimation(skillCast)",
@@ -232,7 +288,15 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 775,
+        "line": 532,
+        "kind": "FUNCTION",
+        "symbol": "init",
+        "context": "local function init(p)",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 831,
         "kind": "FUNCTION",
         "symbol": "add",
         "context": "local function add(nm,size,off,col,mat,shape,rot)return attach(rootPart,nm,size,off,col,mat,shape,rot)end",
@@ -240,7 +304,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1086,
+        "line": 1142,
         "kind": "FUNCTION",
         "symbol": "completeQuestIfNeeded",
         "context": "local function completeQuestIfNeeded(p,zone)",
@@ -248,7 +312,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1180,
+        "line": 1245,
         "kind": "FUNCTION",
         "symbol": "bossSpecForCompanion",
         "context": "local function bossSpecForCompanion(def)",
@@ -256,10 +320,18 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1250,
+        "line": 1315,
         "kind": "FUNCTION",
         "symbol": "makeBossCompanionRoster",
         "context": "local function makeBossCompanionRoster()",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+        "line": 14,
+        "kind": "FUNCTION",
+        "symbol": "round",
+        "context": "local function round(item,radius)",
         "score": 66
       },
       {
@@ -272,7 +344,15 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 572,
+        "line": 544,
+        "kind": "FUNCTION",
+        "symbol": "load",
+        "context": "local function load(p)",
+        "score": 58
+      },
+      {
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 628,
         "kind": "FUNCTION",
         "symbol": "unlockCompanion",
         "context": "local function unlockCompanion(p,id)",
@@ -280,7 +360,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1187,
+        "line": 1252,
         "kind": "FUNCTION",
         "symbol": "setCompanionLabel",
         "context": "local function setCompanionLabel(part,text,color)",
@@ -288,7 +368,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1385,
+        "line": 1450,
         "kind": "FUNCTION",
         "symbol": "refreshAppearance",
         "context": "local function refreshAppearance()task.defer(function()task.wait(.05);setStats(p,false);applyPlayerAppearance(p)end)end",
@@ -303,11 +383,35 @@
         "score": 58
       },
       {
+        "file": "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
+        "line": 46,
+        "kind": "FUNCTION",
+        "symbol": "Model.quest",
+        "context": "function Model.quest(attributes, config)",
+        "score": 58
+      },
+      {
+        "file": "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
+        "line": 54,
+        "kind": "FUNCTION",
+        "symbol": "Model.companions",
+        "context": "function Model.companions(attributes, config)",
+        "score": 58
+      },
+      {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 15,
+        "line": 24,
         "kind": "FUNCTION",
         "symbol": "hasStudioAssetAtom",
         "context": "local function hasStudioAssetAtom(atom)",
+        "score": 50
+      },
+      {
+        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+        "line": 395,
+        "kind": "FUNCTION",
+        "symbol": "bindVerifiedLearningControl",
+        "context": "local function bindVerifiedLearningControl(control)",
         "score": 50
       },
       {
@@ -351,32 +455,16 @@
         "score": 50
       },
       {
-        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 568,
+        "file": "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+        "line": 25,
         "kind": "FUNCTION",
-        "symbol": "companionUnlocked",
-        "context": "local function companionUnlocked(p,id)",
-        "score": 50
-      },
-      {
-        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 601,
-        "kind": "FUNCTION",
-        "symbol": "fantasyHouse",
-        "context": "local function fantasyHouse(parent,index,pos,yaw)",
-        "score": 50
-      },
-      {
-        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1066,
-        "kind": "FUNCTION",
-        "symbol": "wakeMeadowRunBossIfReady",
-        "context": "local function wakeMeadowRunBossIfReady()",
+        "symbol": "Menu.install",
+        "context": "function Menu.install(config,gui,player,options)",
         "score": 50
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 57,
+        "line": 67,
         "kind": "FUNCTION",
         "symbol": "corner",
         "context": "local function corner(x,r)local c=Instance.new(\"UICorner\");c.CornerRadius=UDim.new(0,r or 10);c.Parent=x end",
@@ -384,7 +472,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 58,
+        "line": 68,
         "kind": "FUNCTION",
         "symbol": "stroke",
         "context": "local function stroke(x,t)local s=Instance.new(\"UIStroke\");s.Thickness=1.3;s.Transparency=t or .5;s.Parent=x end",
@@ -392,7 +480,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 59,
+        "line": 69,
         "kind": "FUNCTION",
         "symbol": "button",
         "context": "local function button(parent,text,color)",
@@ -400,11 +488,43 @@
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 146,
+        "line": 248,
         "kind": "FUNCTION",
-        "symbol": "zoneName",
-        "context": "local function zoneName(id)",
-        "score": 34
+        "symbol": "syncVerifiedLearningCharacterMotion",
+        "context": "local function syncVerifiedLearningCharacterMotion(character)",
+        "score": 42
+      },
+      {
+        "file": "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+        "line": 17,
+        "kind": "FUNCTION",
+        "symbol": "label",
+        "context": "local function label(parent,name,text,size)",
+        "score": 42
+      },
+      {
+        "file": "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+        "line": 208,
+        "kind": "FUNCTION",
+        "symbol": "scheduleRefresh",
+        "context": "local function scheduleRefresh()",
+        "score": 42
+      },
+      {
+        "file": "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
+        "line": 4,
+        "kind": "FUNCTION",
+        "symbol": "Model.layout",
+        "context": "function Model.layout(width, height)",
+        "score": 42
+      },
+      {
+        "file": "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
+        "line": 10,
+        "kind": "FUNCTION",
+        "symbol": "Model.equipment",
+        "context": "function Model.equipment(attributes, config)",
+        "score": 42
       },
       {
         "file": "roblox-games/daechung-rpg/shared/QACamera.luau",
@@ -421,75 +541,28 @@
         "symbol": "uploadSavedCapture",
         "context": "local function uploadSavedCapture(capture)",
         "score": 34
-      },
-      {
-        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 28,
-        "kind": "FUNCTION",
-        "symbol": "sound",
-        "context": "local function sound(name,id,volume)",
-        "score": 26
-      },
-      {
-        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 106,
-        "kind": "FUNCTION",
-        "symbol": "setBlock",
-        "context": "local function setBlock(on)",
-        "score": 26
-      },
-      {
-        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 150,
-        "kind": "FUNCTION",
-        "symbol": "renderClassPanel",
-        "context": "local function renderClassPanel()",
-        "score": 26
-      },
-      {
-        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 165,
-        "kind": "FUNCTION",
-        "symbol": "render",
-        "context": "local function render()",
-        "score": 26
-      },
-      {
-        "file": "roblox-games/daechung-rpg/shared/QACamera.luau",
-        "line": 47,
-        "kind": "FUNCTION",
-        "symbol": "report",
-        "context": "local function report(label,value)",
-        "score": 26
-      },
-      {
-        "file": "roblox-games/daechung-rpg/shared/QACamera.luau",
-        "line": 51,
-        "kind": "FUNCTION",
-        "symbol": "takeOne",
-        "context": "local function takeOne()",
-        "score": 26
       }
     ]
   },
   "previousVersionDelta": {
     "previousGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": null,
+    "previousGeneration": 1,
     "previousSourceTreeFingerprint": "9afb73f9a58d389d143398f4d9dd5e97175e0d8413d75e49b59e99e2cc3b0828",
-    "currentSourceTreeFingerprint": "9afb73f9a58d389d143398f4d9dd5e97175e0d8413d75e49b59e99e2cc3b0828",
-    "sourceChanged": false,
+    "currentSourceTreeFingerprint": "dacc4345bc1348d8287db934c75db3940a6d51d82286cb07b9c2376a43fbbddf",
+    "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
+    "platform": "ROBLOX",
+    "studioQualityFailure": null,
     "failureStage": "",
     "failureSignature": "",
     "blockers": [],
-    "runtimeObserved": true,
+    "runtimeObserved": false,
     "runtimePassed": false,
-    "independentQaPassed": false,
-    "regressionPassed": false,
-    "studioQualityFailure": null
+    "independentQaPassed": true,
+    "regressionPassed": true
   },
   "qualityGapMap": [
     {
@@ -699,8 +772,8 @@
     },
     {
       "domain": "MENU_FLOW",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "CONVENIENCE",
@@ -1101,7 +1174,7 @@
     {
       "domain": "INVENTORY_USABILITY",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "인벤토리의 획득·스택·정렬·선택·사용·장착·교체·버리기/보존·가득 참 처리를 모바일 터치에서 끊김 없이 연결하고 현재 장착 상태를 명확히 표시한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1110,7 +1183,7 @@
     {
       "domain": "EQUIPMENT_LOADOUT",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "장비/무기 슬롯, 교체, 비교, 장착 표시, 캐릭터 외형/스탯/행동 반영이 같은 authoritative 장착 상태를 사용하도록 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1139,7 +1212,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "접속→첫 행동→핵심 재미→보상→업그레이드/선택→새 목표→실패/성공→저장/종료가 막힘 없이 한 세션으로 이어지고 할 일이 사라지는 공백을 줄인다.",
+      "directive": "접속→준비→첫 행동→목표/실패→결과/보상→재시도→다음 선택을 연결한다. 확인된 실패 수리 후 첫 플레이·재도전·적용 가능한 친구 참가·연출 순으로 한 흐름씩 구현·검수한다. 결과는 달성 내용·실제 실패 원인/성공 선택·재도전/다음 단계/로비를 보여주고 서버 확정 보상만 표시한다. 재도전 연타도 한 번만 시작되며 입력·판정·상태·피드백·실패 복귀가 연결되어야 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1157,7 +1230,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "사망/실패/런 종료 시 손실·보존·체크포인트·리스폰 위치·재시작 시간을 명확히 하고 실패 후 다시 핵심 재미로 돌아가는 시간을 최소화한다.",
+      "directive": "사망/실패/런 종료 시 기존 손실·보존·체크포인트·리스폰 규칙을 유지하고 빠르게 재시작하게 한다. 실제 기록에 있는 원인만 시각화한다: 퍼즐의 잘못된 연결, 방어의 뚫린 경로, 생존의 사망 원인 등 해당 장르에 맞게 표시하며 근거가 없으면 추측하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1166,7 +1239,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "세이브는 기존 키/의미를 보존하면서 진행·장비·해금 등 승인된 상태가 재접속 후 정확히 복구되고 중간 실패 시 안전한 fallback을 갖게 한다.",
+      "directive": "기존 저장 키·구조·의미를 보존하고 진행·장비·해금을 재접속 후 복구한다. 불러오기 실패를 신규 사용자로 처리하거나 기본값으로 덮어쓰지 말고 재시도·안전 복귀를 제공한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1184,7 +1257,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "재접속/late join/일시 네트워크 실패 시 권위 상태를 다시 동기화하고 중복 보상·장비 유실·퀘스트 되감기 없이 안전한 복구 경로를 제공한다.",
+      "directive": "재접속/late join/네트워크 실패 후 권위 상태를 재동기화하고 중복 보상·장비 유실·퀘스트 되감기 없이 복구한다. 복구된 실제 진행·현재 목표·다음 행동을 짧게 안내하며 복구 전 상태를 확정해 표시하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1193,7 +1266,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "멀티가 적용되는 게임이면 authoritative state, 참가/이탈, 핵심 행동 동기화, 재접속/late join, 승패/보상 일관성을 실제 2인 이상 흐름에 맞춘다.",
+      "directive": "멀티가 적용되는 게임만 기존 방 생성·참가·준비·시작·이탈을 서버 판정으로 연결한다. 참가자·준비·기존 모드를 표시하고 대기 중 안전한 공동 연습을 제공한다. 결과 화면에 각자 재도전 의사를 표시하고 기존 참가 규칙으로 인원을 유지하되 이탈자 때문에 무한 대기하지 않게 한다. 방장 이탈·late join·재접속을 기존 규칙으로 복구하고 실제 2인 이상의 행동·목표·승패·보상 일치와 중복 지급 방지를 검수한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1211,7 +1284,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "작은 화면에서 핵심 HUD·조작·위험 경고·선택지가 손가락과 겹치지 않게 하고 safe area, 스크롤, 팝업 닫기, 가로/세로 대응을 실제 플레이 기준으로 정리한다.",
+      "directive": "작은 화면에서 핵심 행동 버튼을 크게, 설정·도움말을 접어서 배치하고 HUD·위험 경고가 손가락에 가리지 않게 한다. safe area·스크롤·가로/세로를 검수하고 팝업 닫기 터치가 뒤쪽 이동·공격으로 전달되지 않게 입력을 소비한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1235,10 +1308,10 @@
     },
     {
       "domain": "MENU_FLOW",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
-      "directive": "인벤토리·장비·제작·상점·퀘스트·설정 등 존재하는 메뉴 사이 전환, 뒤로가기, 닫기, 팝업 중첩, 스크롤, 선택 유지가 모바일에서 예측 가능하게 동작하게 한다.",
+      "directive": "4인 파티 고정를 연습하는 로비/허브를 기존 UI에 연결한다. 승인된 장르에 맞게 퍼즐은 작은 연습판, 방어는 적 하나에 배치·회수, 생존은 안전한 채집·제작·장착을 활용한다. 연습은 건너뛸 수 있고 기존 재화·보상·저장에 영향을 주지 않는다. 로딩은 실제 월드·저장·참가 준비 단계와 실패 이유·재시도/안전 복귀를 표시한다. 시작은 준비 확인 후 한 번만 처리하고 스폰·카메라·목표까지 연결한다. 기존 메뉴의 뒤로가기·닫기·스크롤·팝업·선택 유지를 모바일에서 검수하며 중복 화면·가짜 진행률·장식용 버튼을 금지한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1263,7 +1336,7 @@
     {
       "domain": "UI_INFORMATION_PRIORITY",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "현재 목표, 생존/위험, 핵심 자원, 장비/쿨다운, 다음 행동 순으로 실제 플레이 중요도에 맞게 정보 위계를 정하고 작은 화면에서 비핵심 정보가 핵심 HUD를 밀어내지 않게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1272,7 +1345,7 @@
     {
       "domain": "FEEDBACK_CLARITY",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "획득·구매·제작·장착·레벨업·퀘스트·실패·사용 불가 등 중요한 상태 변화에 즉시 읽히는 UI/음향/시각 피드백과 실패 이유를 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1283,7 +1356,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "첫 플레이에서 4인 파티 고정의 핵심 입력→결과→다음 목표를 실제 행동으로 학습시키고, 설명문만 읽는 튜토리얼보다 단계적 실습·즉시 피드백·도움말 회수를 연결한다.",
+      "directive": "4인 파티 고정의 첫 입력·결과·목표를 필요한 순간 한 줄과 실습으로 안내한다. 같은 실패 반복 시 목표 확인→관련 위치→행동 예시의 선택형 힌트를 단계적으로 제공하되 정답 자동 처리·난이도 변경은 금지한다. 설명 닫기는 학습 완료가 아니며 건너뛰기·도움말 다시 열기를 제공한다. 재접속은 초기 설명 대신 현재 목표를 보여준다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1299,7 +1372,7 @@
     {
       "domain": "GAME_FEEL",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "핵심 입력의 반응 지연, anticipation, impact, hit-stop/반동/화면 반응, recovery를 장르와 4인 파티 고정에 맞춰 조정해 버튼 입력과 결과 사이의 손맛을 강화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1335,7 +1408,7 @@
     {
       "domain": "AUDIO_MUSIC_SFX",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "배경음악은 지역/상태/전투 강도 전환과 연결하고, 핵심 행동·위험 전조·피격·보상·UI SFX를 서로 구별해 화면을 보지 않아도 중요한 사건을 인지할 수 있게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1533,6 +1606,11 @@
   ],
   "detectedGaps": [
     {
+      "domain": "MENU_FLOW",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
       "domain": "CHARACTER_VISUALS",
       "state": "GAP",
       "reason": "placeholder or primitive-heavy implementation remains"
@@ -1560,11 +1638,23 @@
   ],
   "primaryFocus": "PRESENTATION",
   "thisLoopPrimaryGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 PRESENTATION를 우선한다. 게임 고유 앵커는 \"4인 파티 고정\", 현재 책임 소스는 roblox-games/daechung-rpg/server/Game.server.luau::beginEnemyAttack, roblox-games/daechung-rpg/server/Game.server.luau::enemyModel, roblox-games/daechung-rpg/server/Game.server.luau::init, roblox-games/daechung-rpg/server/Game.server.luau::makeVillage, roblox-games/daechung-rpg/server/Game.server.luau::spawnEnemy, roblox-games/daechung-rpg/client/Game.client.luau::bindChar, roblox-games/daechung-rpg/server/Game.server.luau::chooseEnemyAttack, roblox-games/daechung-rpg/server/Game.server.luau::unlockBossCompanion이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 PRESENTATION를 우선한다. 게임 고유 앵커는 \"4인 파티 고정\", 현재 책임 소스는 roblox-games/daechung-rpg/server/Game.server.luau::beginEnemyAttack, roblox-games/daechung-rpg/server/Game.server.luau::enemyModel, roblox-games/daechung-rpg/server/Game.server.luau::makeVillage, roblox-games/daechung-rpg/server/Game.server.luau::spawnEnemy, roblox-games/daechung-rpg/client/Game.client.luau::bindChar, roblox-games/daechung-rpg/server/Game.server.luau::chooseEnemyAttack, roblox-games/daechung-rpg/server/Game.server.luau::setSaveState, roblox-games/daechung-rpg/server/Game.server.luau::save이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 roblox-games/daechung-rpg/server/Game.server.luau::beginEnemyAttack, roblox-games/daechung-rpg/server/Game.server.luau::enemyModel, roblox-games/daechung-rpg/server/Game.server.luau::init, roblox-games/daechung-rpg/server/Game.server.luau::makeVillage, roblox-games/daechung-rpg/server/Game.server.luau::spawnEnemy, roblox-games/daechung-rpg/client/Game.client.luau::bindChar, roblox-games/daechung-rpg/server/Game.server.luau::chooseEnemyAttack, roblox-games/daechung-rpg/server/Game.server.luau::unlockBossCompanion에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 roblox-games/daechung-rpg/server/Game.server.luau::beginEnemyAttack, roblox-games/daechung-rpg/server/Game.server.luau::enemyModel, roblox-games/daechung-rpg/server/Game.server.luau::makeVillage, roblox-games/daechung-rpg/server/Game.server.luau::spawnEnemy, roblox-games/daechung-rpg/client/Game.client.luau::bindChar, roblox-games/daechung-rpg/server/Game.server.luau::chooseEnemyAttack, roblox-games/daechung-rpg/server/Game.server.luau::setSaveState, roblox-games/daechung-rpg/server/Game.server.luau::save에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "4인 파티 고정를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "무한 확장 AI 동료가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
+    "기획 루프 1 \"마을과 지역 스토리를 진행해 새로운 AI 동료와 사건을 발견한다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
+    "기획 루프 2 \"보유 동료 중 4명을 골라 파티를 만들고 각 동료의 장비, AI 성향, 스킬을 세팅한다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
+    "기획 루프 3 \"필드·던전·보스에서 직접 전투하며 파티 조합과 장비가 실제 전투에서 어떻게 맞물리는지 확인한다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
+    "기획 루프 4 \"동료 전용 퀘스트, 숙명 관계, 히든 조건, 보스 포섭을 통해 새로운 동료·합동기·전용장비를 얻고 다른 4인 조합을 시험한다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
+    "고유 시스템 \"4인 파티 고정\": 플레이어 선택 \"파티 슬롯은 항상 4명이며 탱·딜·힐 강제를 없애고 여러 조합이 실전에서 성립하도록 밸런스를 맞춘다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
+    "고유 시스템 \"무한 확장 AI 동료\": 플레이어 선택 \"새 지역·스토리 업데이트마다 동료를 계속 추가할 수 있고 각 동료는 전용 스토리, AI 행동, 스킬과 장비 방향을 가진다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
+    "고유 시스템 \"숙명 관계\": 플레이어 선택 \"특정 동료 조합이 함께 사건을 겪으면 전용 대사, 관계 변화, 합동기 또는 전투 규칙 변화가 열린다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
+    "고유 시스템 \"파티 기억\": 플레이어 선택 \"같은 4인으로 중요한 사건·보스·역전을 겪은 기록이 파티 정체성으로 남고 특수 대사·행동·지원 효과를 연다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
+    "고유 시스템 \"보스·히든 동료\": 플레이어 선택 \"특정 보스를 죽이는 대신 조건을 만족해 포섭하거나 숨겨진 시간·아이템·동료 조합으로 레어 동료를 발견한다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
+    "고유 시스템 \"장비가 AI를 바꿈\": 플레이어 선택 \"장비는 수치뿐 아니라 공격성, 보호 우선, 상태이상 활용 같은 AI 행동 우선순위와 스킬 운용을 바꾼다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
+    "고유 시스템 \"라이벌 AI 파티\": 플레이어 선택 \"다른 AI 4인 파티도 세계에서 성장하고 보스·보물·사건을 경쟁하거나 때로 협력한다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
+    "고유 시스템 \"조합 엔딩\": 플레이어 선택 \"특정 4인 조합으로 주요 스토리를 끝내면 그 조합만의 후일담·비밀 엔딩을 볼 수 있다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
     "고유 시스템 4인 파티 고정, 무한 확장 AI 동료, 숙명 관계, 파티 기억, 보스·히든 동료, 장비가 AI를 바꿈, 라이벌 AI 파티, 조합 엔딩 중 이번 목표와 직접 연결된 시스템을 기존 책임 코드에서 심화한다.",
     "핵심 게임플레이 의미는 보존하면서 이번 품질축에 필요한 연결만 수정한다."
   ],
@@ -1591,11 +1681,35 @@
     "platformScope": [
       "WEB",
       "ROBLOX",
-      "UNITY",
-      "FORTNITE_UEFN"
+      "UNITY"
     ],
     "requestedPlatform": "ROBLOX",
     "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
+    "dataCapacityBudget": {
+      "state": "NORMAL",
+      "limits": {
+        "savePersistedDataBytes": 2097152,
+        "webDownloadBytes": 104857600,
+        "singleFileBytes": 26214400,
+        "mobileMemoryTargetBytes": 314572800,
+        "mobileMinimumFps": 30
+      },
+      "warningRatio": 0.8,
+      "measured": {
+        "sourceBytes": 262794,
+        "largestFileBytes": 105650,
+        "savePersistedDataBytes": 0,
+        "mobileMemoryBytes": 0,
+        "mobileFps": 0
+      },
+      "warning": [],
+      "exceeded": [],
+      "strategy": "CONTINUE_HIGHEST_VALUE_COHERENT_BUILD_UP",
+      "generationLimit": null,
+      "contentCountLimit": null,
+      "buildUpMustContinue": true,
+      "protectedStateDeletionForbidden": true
+    },
     "existingCompletenessReview": {
       "requiredEveryBuildUp": true,
       "mode": "CHECK_EXISTING_AND_EXPAND_OR_IMPROVE_WHICHEVER_HAS_HIGHER_PLAYER_VALUE",
@@ -1615,8 +1729,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 2,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
+    "themeDepth": 3,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1626,9 +1740,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 2
+        "PRESENTATION_WORLD_COHESION": 3
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
@@ -1665,7 +1780,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 218,
+        "score": 200,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1773,7 +1888,8 @@
       "DISTINCT_FROM_EXISTING_CONTENT_BY_MEANING_NOT_ONLY_NAME_OR_STATS",
       "CONNECTED_TO_EXISTING_GAME_FLOW",
       "CONTINUITY_AND_CAUSALITY_PRESERVED",
-      "EXISTING_RELEVANT_INCREMENTAL_QA_PASSES"
+      "EXISTING_RELEVANT_INCREMENTAL_QA_PASSES",
+      "DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP"
     ]
   },
   "visualBuildUpDirective": {
@@ -1797,7 +1913,9 @@
       "VFX": "일반 타격·강한 타격·위험 예고·상태이상·보상 VFX의 형태와 타이밍을 분리하고 실제 impact 이벤트에 동기화한다.",
       "CAMERA": "기본 시야와 모바일 가독성을 보존하면서 핵심행동·강공격·보스/시그니처 순간에 강도가 다른 짧은 카메라 반응을 준다.",
       "UI_HUD": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 핵심 목표·자원·위험·다음 선택이 한눈에 보이게 하고 게임 세계관과 맞는 패널/아이콘/피드백 언어를 사용한다.",
-      "AUDIO_VISUAL_SYNC": "damage/VFX/animation/camera/audio가 같은 impact 순간을 공유하게 하며 소리만 먼저/늦게 나오는 불일치를 제거한다.",
+      "INVENTORY_EQUIPMENT_UI": "인벤토리와 장비 UI는 획득→비교→장착/교체→현재 장착 표시→실제 외형/행동 반영까지 같은 상태를 사용하고 모바일에서도 한 손 조작과 스크롤/닫기/선택 유지가 명확해야 한다.",
+      "AUDIO_MUSIC": "BGM·환경음·행동 피드백은 현재 지역/상태/전투 강도와 연결하고, 소리가 의도적으로 비활성화된 카테고리는 되살리지 않는다. 여러 음악 맥락이 있으면 같은 한 곡 단순 반복 대신 전환·크로스페이드·믹스 변화로 상태가 들리게 한다.",
+      "AUDIO_VISUAL_SYNC": "damage/VFX/animation/camera/audio가 같은 authoritative impact 순간을 공유하게 하며 소리만 먼저/늦게 나오는 불일치를 제거한다.",
       "ENVIRONMENTAL_MOTION": "정적인 배경을 피하고 식생·빛·파티클·기계/건축 요소 중 세계에 맞는 미세 움직임을 지속시킨다.",
       "SCENE_DENSITY": "빈 공간과 반복 오브젝트 밀도를 실제 플레이 동선 기준으로 조정하고 중요 영역에는 의미 있는 시각 정보가 있게 한다.",
       "LANDMARK_READABILITY": "플레이어가 지도 없이도 방향과 지역 역할을 기억할 수 있는 실루엣이 다른 랜드마크를 유지·강화한다."
@@ -1816,9 +1934,172 @@
       "MARKER_CONFIG_ATOM_ONLY_FORBIDDEN",
       "COLOR_ONLY_NOT_FULL_IDENTITY_UPGRADE",
       "PRIMARY_PLACEHOLDER_PRIMITIVE_CANNOT_CLOSE_VISUAL_BUILD_UP",
-      "BEFORE_AFTER_COMPARISON_REQUIRED"
+      "UI_INVENTORY_AUDIO_MOTION_PRESENCE_ALONE_CANNOT_CLOSE_BUILD_UP",
+      "BEFORE_AFTER_COMPARISON_REQUIRED",
+      "SAME_SCENE_RUNTIME_REOBSERVATION_REQUIRED"
     ],
     "focus": "PRESENTATION"
+  },
+  "experienceBuildUpContract": {
+    "version": 1,
+    "status": "ACTIVE_EXECUTABLE_BUILD_UP_CONTRACT",
+    "platform": "ROBLOX",
+    "focus": "PRESENTATION",
+    "attention": "EXTRA",
+    "tracks": [
+      {
+        "track": "MOTION_AND_ACTING",
+        "status": "PRESENT"
+      },
+      {
+        "track": "COMBAT_AND_PRIMARY_ACTION_FEEL",
+        "status": "PRESENT"
+      },
+      {
+        "track": "UI_HUD_AND_MENU",
+        "status": "PRESENT"
+      },
+      {
+        "track": "INVENTORY_AND_EQUIPMENT",
+        "status": "PRESENT"
+      },
+      {
+        "track": "AUDIO_MUSIC_AND_FEEDBACK",
+        "status": "PRESENT"
+      },
+      {
+        "track": "VFX_CAMERA_AND_IMPACT_SYNC",
+        "status": "PRESENT"
+      },
+      {
+        "track": "WORLD_VISUAL_COHESION",
+        "status": "PRESENT"
+      },
+      {
+        "track": "MOBILE_TOUCH_AND_ACCESSIBILITY",
+        "status": "PRESENT"
+      },
+      {
+        "track": "PERFORMANCE_AND_RUNTIME_STABILITY",
+        "status": "PRESENT"
+      }
+    ],
+    "priorityOrder": [
+      "MOTION_AND_ACTING",
+      "AUDIO_MUSIC_AND_FEEDBACK",
+      "COMBAT_AND_PRIMARY_ACTION_FEEL",
+      "UI_HUD_AND_MENU",
+      "INVENTORY_AND_EQUIPMENT",
+      "VFX_CAMERA_AND_IMPACT_SYNC",
+      "WORLD_VISUAL_COHESION",
+      "MOBILE_TOUCH_AND_ACCESSIBILITY",
+      "PERFORMANCE_AND_RUNTIME_STABILITY"
+    ],
+    "weakestTracks": [],
+    "loop": [
+      "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
+      "RANK_WEAKEST_APPLICABLE_TRACKS",
+      "IMPLEMENT_EXISTING_RESPONSIBLE_SYSTEMS_DIRECTLY",
+      "REPLAY_REAL_INPUTS_AND_CAPTURE_SAME_SCENE_BEFORE_AFTER",
+      "VERIFY_PLAYER_FACING_EFFECT_AND_NO_SEMANTIC_REGRESSION",
+      "PROMOTE_VERIFIED_BASELINE_OR_REPEAT"
+    ],
+    "commonRules": [
+      "AUDIT_ALL_APPLICABLE_PLAYER_FACING_TRACKS_EVERY_GENERATION",
+      "RANK_AND_BUILD_THE_WEAKEST_THREE_BEFORE_ADDING_DECORATIVE_EXTRAS",
+      "PRESENCE_OR_MARKER_ONLY_CANNOT_PASS_QUALITY",
+      "IMPLEMENT_IN_THE_EXISTING_RESPONSIBLE_SYSTEM_NOT_A_SHADOW_WRAPPER",
+      "COMPARE_BEFORE_AFTER_UNDER_THE_SAME_SCENE_INPUT_AND_STATE",
+      "VERIFY_INPUT_TO_STATE_TO_MOTION_UI_AUDIO_VFX_CAMERA_FEEDBACK_CAUSALITY",
+      "PRESERVE_GAMEPLAY_BALANCE_SAVE_ECONOMY_AND_NETWORK_AUTHORITY",
+      "OWNER_INTENTIONALLY_DISABLED_AUDIO_CATEGORIES_MUST_REMAIN_DISABLED",
+      "REPEAT_BUILD_UP_UNTIL_NO_CRITICAL_PLAYER_FACING_TRACK_GAP_REMAINS"
+    ],
+    "platformProfile": {
+      "attention": "EXTRA",
+      "runtimeSurface": "OFFICIAL_ROBLOX_STUDIO_MCP",
+      "requirements": [
+        "ARTICULATED_ACTOR_MOTION_WITH_ANIMATOR_MOTOR6D_OR_BONES",
+        "ROOT_ONLY_MOTION_CANNOT_PASS",
+        "IDLE_WALK_JOG_RUN_START_STOP_TURN_JUMP_LAND_HIT_DEATH_COVERAGE_WHEN_APPLICABLE",
+        "ANTICIPATION_IMPACT_RECOVERY_FOR_PRIMARY_ACTIONS",
+        "TOUCH_FIRST_UI_WITH_MINIMUM_44PX_EQUIVALENT_TARGETS",
+        "INVENTORY_COMPARE_EQUIP_UNEQUIP_REPLACE_FEEDBACK_WHEN_APPLICABLE",
+        "SOUNDSERVICE_SOUNDGROUP_MIXING_AND_SPATIAL_ROLLOFF_WHEN_AUDIO_APPLICABLE",
+        "REGION_OR_STATE_BGM_TRANSITION_WHEN_MULTIPLE_CONTEXTS_EXIST",
+        "VFX_CAMERA_AUDIO_SHARE_AUTHORITATIVE_IMPACT_EVENT",
+        "OFFICIAL_STUDIO_MCP_BEFORE_AFTER_RUNTIME_CAPTURE"
+      ],
+      "ownerDisabledAudioCategoriesMustRemainDisabled": true,
+      "nativeRuntimeEvidenceRequired": true,
+      "mobileRuntimeEvidenceRequired": true
+    },
+    "robloxExtra": {
+      "priority": "EXTRA_ATTENTION",
+      "motion": {
+        "articulatedActorsRequireJointMotion": true,
+        "animatorMotor6dOrBonesRequiredWhenApplicable": true,
+        "rootOnlyLocomotionCannotPass": true,
+        "requiredStateIntent": [
+          "IDLE",
+          "WALK",
+          "JOG",
+          "RUN",
+          "START",
+          "STOP",
+          "TURN",
+          "JUMP",
+          "LAND",
+          "ATTACK_ANTICIPATION",
+          "IMPACT",
+          "RECOVERY",
+          "HIT_REACTION",
+          "DEATH"
+        ],
+        "blendAndSpeedSyncRequired": true,
+        "weightShiftAndSecondaryMotionRequired": true,
+        "ikOrProceduralGroundingPreferred": true
+      },
+      "uiAndInventory": {
+        "touchFirst": true,
+        "minimumTouchTargetPxEquivalent": 44,
+        "safeAreaRequired": true,
+        "modalStackBackCloseScrollSelectionPersistenceRequired": true,
+        "inventoryFlowWhenApplicable": [
+          "ACQUIRE",
+          "COMPARE",
+          "SELECT",
+          "EQUIP",
+          "UNEQUIP_OR_REPLACE",
+          "CURRENT_EQUIPPED_INDICATOR",
+          "WORLD_OR_CHARACTER_FEEDBACK"
+        ]
+      },
+      "audio": {
+        "ownerDisabledCategoriesPreserved": true,
+        "soundServiceLifecycleRequired": true,
+        "soundGroupMixingPreferred": true,
+        "spatialWorldAudioUsesRolloffWhenApplicable": true,
+        "bgmRegionStateCombatTransitionsRequiredWhenMultipleContextsExist": true,
+        "duplicatePlaybackOnRespawnOrResumeForbidden": true,
+        "singleLoopAcrossDistinctContextsCannotClaimMusicBuildUp": true
+      },
+      "runtimeEvidence": {
+        "officialStudioMcpRequired": true,
+        "actualInputRequired": true,
+        "beforeAfterCaptureRequired": true,
+        "mobileViewportRequired": true,
+        "runtimeStateObservationRequired": true,
+        "sourceMarkersAloneCannotPass": true
+      }
+    },
+    "webExtra": null,
+    "unityExtra": null,
+    "ownerLocks": {
+      "gameplayBalanceSaveEconomyNetworkMeaningPreserved": true,
+      "intentionallyDisabledAudioCategoriesPreserved": true
+    },
+    "designIdentity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG."
   },
   "uxInputDirectives": [
     "핵심 행동, 위험, 현재 목표, 다음 선택을 모바일 화면에서 우선순위가 명확하게 보이게 한다.",
@@ -1828,12 +2109,12 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 현재 canonical Web 경로에 구현하고 브라우저 터치/카메라/렌더 비용을 맞춘다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "ROBLOX": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "WEB": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "ROBLOX": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
+    "UNITY": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
     "FORTNITE_UEFN": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 현재 canonical Web 경로에 구현하고 브라우저 터치/카메라/렌더 비용을 맞춘다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "UNITY_APP": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "UNITY_WEB": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "UNITY_APP": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
     "UNREAL": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
     "UEFN": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
@@ -1841,13 +2122,15 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/daechung-rpg/server/Game.server.luau",
       "roblox-games/daechung-rpg/client/Game.client.luau",
+      "roblox-games/daechung-rpg/shared/VisualStyle.luau",
+      "roblox-games/daechung-rpg/server/Game.server.luau",
       "roblox-games/daechung-rpg/shared/GameConfig.luau",
+      "roblox-games/daechung-rpg/shared/RPGMenu.luau",
       "roblox-games/daechung-rpg/shared/QACamera.luau",
       "roblox-games/daechung-rpg/launch-mvp.json",
-      "roblox-games/daechung-rpg/default.project.json",
-      "roblox-games/daechung-rpg/shared/VisualStyle.luau"
+      "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
+      "roblox-games/daechung-rpg/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
       {
@@ -1861,7 +2144,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 770,
+        "line": 826,
         "kind": "FUNCTION",
         "symbol": "enemyModel",
         "currentBehavior": "local function enemyModel(parent,z,pos,boss,enemyDef)",
@@ -1870,16 +2153,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 515,
-        "kind": "FUNCTION",
-        "symbol": "init",
-        "currentBehavior": "local function init(p)",
-        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 init의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 640,
+        "line": 696,
         "kind": "FUNCTION",
         "symbol": "makeVillage",
         "currentBehavior": "local function makeVillage()",
@@ -1888,7 +2162,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 901,
+        "line": 957,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "currentBehavior": "local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)",
@@ -1897,7 +2171,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 199,
+        "line": 588,
         "kind": "FUNCTION",
         "symbol": "bindChar",
         "currentBehavior": "local function bindChar(c)combatTracks={};local h=c:WaitForChild(\"Humanoid\");h.HealthChanged:Connect(render);render()end",
@@ -1915,11 +2189,20 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 580,
+        "line": 529,
         "kind": "FUNCTION",
-        "symbol": "unlockBossCompanion",
-        "currentBehavior": "local function unlockBossCompanion(killer,e)",
-        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 unlockBossCompanion의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "symbol": "setSaveState",
+        "currentBehavior": "local function setSaveState(p,state)",
+        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 setSaveState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 572,
+        "kind": "FUNCTION",
+        "symbol": "save",
+        "currentBehavior": "local function save(p)",
+        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 save의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -1933,12 +2216,6 @@
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
         "symbol": "enemyModel",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "symbol": "init",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
@@ -1968,7 +2245,13 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "symbol": "unlockBossCompanion",
+        "symbol": "setSaveState",
+        "role": "SERVER_AUTHORITY",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "symbol": "save",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
@@ -2006,13 +2289,15 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/daechung-rpg/server/Game.server.luau",
       "roblox-games/daechung-rpg/client/Game.client.luau",
+      "roblox-games/daechung-rpg/shared/VisualStyle.luau",
+      "roblox-games/daechung-rpg/server/Game.server.luau",
       "roblox-games/daechung-rpg/shared/GameConfig.luau",
+      "roblox-games/daechung-rpg/shared/RPGMenu.luau",
       "roblox-games/daechung-rpg/shared/QACamera.luau",
       "roblox-games/daechung-rpg/launch-mvp.json",
-      "roblox-games/daechung-rpg/default.project.json",
-      "roblox-games/daechung-rpg/shared/VisualStyle.luau"
+      "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
+      "roblox-games/daechung-rpg/default.project.json"
     ],
     "sourceAnchors": [
       {
@@ -2029,7 +2314,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 770,
+        "line": 826,
         "kind": "FUNCTION",
         "symbol": "enemyModel",
         "context": "local function enemyModel(parent,z,pos,boss,enemyDef)",
@@ -2041,19 +2326,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 515,
-        "kind": "FUNCTION",
-        "symbol": "init",
-        "context": "local function init(p)",
-        "score": 114,
-        "currentBehavior": "local function init(p)",
-        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 init의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/daechung-rpg/server/Game.server.luau::init이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 640,
+        "line": 696,
         "kind": "FUNCTION",
         "symbol": "makeVillage",
         "context": "local function makeVillage()",
@@ -2065,7 +2338,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 901,
+        "line": 957,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "context": "local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)",
@@ -2077,7 +2350,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 199,
+        "line": 588,
         "kind": "FUNCTION",
         "symbol": "bindChar",
         "context": "local function bindChar(c)combatTracks={};local h=c:WaitForChild(\"Humanoid\");h.HealthChanged:Connect(render);render()end",
@@ -2101,14 +2374,26 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 580,
+        "line": 529,
         "kind": "FUNCTION",
-        "symbol": "unlockBossCompanion",
-        "context": "local function unlockBossCompanion(killer,e)",
+        "symbol": "setSaveState",
+        "context": "local function setSaveState(p,state)",
+        "score": 82,
+        "currentBehavior": "local function setSaveState(p,state)",
+        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 setSaveState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/daechung-rpg/server/Game.server.luau::setSaveState이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 572,
+        "kind": "FUNCTION",
+        "symbol": "save",
+        "context": "local function save(p)",
         "score": 74,
-        "currentBehavior": "local function unlockBossCompanion(killer,e)",
-        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 unlockBossCompanion의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/daechung-rpg/server/Game.server.luau::unlockBossCompanion이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "currentBehavior": "local function save(p)",
+        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 save의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/daechung-rpg/server/Game.server.luau::save이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -2119,12 +2404,12 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure",
-      "runtimeObserved": true
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "9afb73f9a58d389d143398f4d9dd5e97175e0d8413d75e49b59e99e2cc3b0828",
+      "sourceTreeFingerprint": "dacc4345bc1348d8287db934c75db3940a6d51d82286cb07b9c2376a43fbbddf",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2139,8 +2424,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2154,10 +2439,14 @@
     "EXISTING_APPLICABLE_GAP_CANNOT_BE_SILENTLY_SKIPPED",
     "FIRST_10_MINUTES_AND_SESSION_FLOW_REVIEWED",
     "MAP_INVENTORY_UI_CONVENIENCE_AND_SYSTEM_CONNECTION_REVIEWED_WHEN_APPLICABLE",
+    "MOTION_UI_INVENTORY_AUDIO_VFX_CAMERA_WORLD_MOBILE_PERFORMANCE_TRACKS_REVIEWED",
+    "PRESENCE_ONLY_OR_MARKER_ONLY_CANNOT_CLOSE_PLAYER_FACING_QUALITY",
+    "SAME_SCENE_BEFORE_AFTER_RUNTIME_REOBSERVATION_REQUIRED_FOR_EXPERIENCE_BUILD_UP",
+    "ROBLOX_EXPERIENCE_BUILD_UP_USES_EXTRA_NATIVE_STUDIO_ATTENTION",
     "AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP",
     "CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE",
     "EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP",
-    "WEB_ROBLOX_UNITY_FORTNITE_UEFN_COMMON_EXPANSION_CONTRACT"
+    "WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT"
   ],
   "nextEscalationCandidates": [
     "DEEPEN_CORE_FUN_DECISION_DENSITY",
@@ -2167,12 +2456,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 2,
+    "nextGeneration": 3,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
     "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": false,
+    "sourceChangedSincePrevious": true,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -2180,7 +2469,10 @@
   "coverage": {
     "allDomainsConsidered": true,
     "domainCount": 74,
-    "visualDomainCount": 17,
+    "visualDomainCount": 19,
+    "experienceTrackCount": 9,
+    "experienceBuildUpPlatform": "ROBLOX",
+    "robloxExtraExperienceAttention": true,
     "allowedStates": [
       "PASS",
       "GAP",
@@ -2220,12 +2512,14 @@
       "PERFORMANCE_BUDGET",
       "RUNTIME_STABILITY"
     ],
-    "holisticGaps": [],
+    "holisticGaps": [
+      "MENU_FLOW"
+    ],
     "notApplicable": [
       "CRAFTING",
       "NPC_SOCIAL_BEHAVIOR"
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-09-27T13:08:44.022Z"
+  "generatedAt": "2026-10-02T13:25:27.679Z"
 }
