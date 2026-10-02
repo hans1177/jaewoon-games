@@ -235,7 +235,7 @@ function Manor:Gag(p,requested)
  -- The head's face meshes travel together; an invisible assembly root is unnecessary.
  if room.gag==1 then
   pieces={}
-  for _,name in ipairs({"ButlerHead","Butler_Nose","Butler_Sclera","Butler_Iris","Butler_Pupil","Butler_UpperLid","Butler_Brow","Butler_UpperLip","Butler_LowerLip","Butler_Moustache","Butler_Hair"})do
+  for _,name in ipairs({"ButlerHead","Butler_Nose","Butler_Sclera","Butler_Iris","Butler_Pupil","Butler_UpperLid","Butler_LowerLid","Butler_Brow","Butler_UpperLip","Butler_LowerLip","Butler_Ear","Butler_Moustache","Butler_Hair"})do
    for _,part0 in ipairs(namedParts(room.scene,name))do table.insert(pieces,part0)end
   end
  end
