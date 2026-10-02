@@ -1,7 +1,7 @@
 # FAST_MVP_INTERNAL_GATE_V2: exact package -> shared preflight -> core headless QA -> private/restricted publish
 # MANUAL_RELEASE_TRIGGER: final primary-three design-art-title sync
 name: Company DEVELOPMENT_CONFIRMED Roblox Private Runtime Candidate Deployment
-run-name: Roblox publish · ${{ inputs.game_id || 'push' }} · ${{ github.event_name == 'workflow_dispatch' && (inputs.publish_stage || 'final') || 'sync-only' }}
+run-name: Roblox publish · ${{ inputs.game_id || 'push' }} · ${{ github.event_name == 'workflow_dispatch' && (inputs.publish_stage || 'validation') || 'sync-only' }}
 
 on:
   push:
@@ -15,11 +15,12 @@ on:
         required: true
         type: string
       publish_stage:
-        description: Final-only publish of the exact F9-passed artifact; pre-F9 validation stays local in Studio
+        description: validation publishes only to the isolated private QA target; final publishes only the exact F9-passed artifact to the canonical game target
         required: false
-        default: final
+        default: validation
         type: choice
         options:
+          - validation
           - final
       publish_cycle_id:
         description: Immutable F9 publish queue cycle id. Required when publish_stage=final.
@@ -52,7 +53,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ inputs.game_id }}
-          PUBLISH_STAGE: ${{ inputs.publish_stage || 'final' }}
+          PUBLISH_STAGE: ${{ inputs.publish_stage || 'validation' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -61,7 +62,7 @@ jobs:
             let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
               const j=JSON.parse(s);
               const states=new Set(['queued','pending','in_progress','requested']);
-              const title='Roblox publish · '+String(process.env.GAME_ID||'')+' · '+String(process.env.PUBLISH_STAGE||'final');
+              const title='Roblox publish · '+String(process.env.GAME_ID||'')+' · '+String(process.env.PUBLISH_STAGE||'validation');
               const ids=(j.workflow_runs||[])
                 .filter(r=>states.has(String(r.status||'').toLowerCase())&&String(r.display_title||'')===title)
                 .map(r=>Number(r.id))
@@ -140,8 +141,8 @@ jobs:
 
           const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
-          const publishStage=String(process.env.PUBLISH_STAGE||'final').trim().toLowerCase();
-          if(publishStage!=='final')throw new Error('ROBLOX_PUBLISH_STAGE_FINAL_ONLY:'+publishStage);
+          const publishStage=String(process.env.PUBLISH_STAGE||'validation').trim().toLowerCase();
+          if(!['validation','final'].includes(publishStage))throw new Error('ROBLOX_PUBLISH_STAGE_INVALID:'+publishStage);
           const pending=(q.items||[]).find(row=>
             row.robloxFoundationF0Passed===true
             &&row.robloxFailureStage==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'
@@ -282,8 +283,8 @@ jobs:
           import fs from 'node:fs';
           const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
           const requestedGameId=String(process.env.REQUESTED_GAME_ID||'').trim();
-          const publishStage=String(process.env.PUBLISH_STAGE||'final').trim().toLowerCase();
-          if(publishStage!=='final')throw new Error('ROBLOX_PUBLISH_STAGE_FINAL_ONLY:'+publishStage);
+          const publishStage=String(process.env.PUBLISH_STAGE||'validation').trim().toLowerCase();
+          if(!['validation','final'].includes(publishStage))throw new Error('ROBLOX_PUBLISH_STAGE_INVALID:'+publishStage);
           const pending=(q.items||[]).find(row=>
             String(row.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'
             &&row.robloxFoundationF0Passed===true
@@ -763,7 +764,7 @@ jobs:
           const item=(q.items||[]).find(row=>row.gameId===process.env.GAME_ID);
           if(!item)throw new Error('retry queue item missing: '+process.env.GAME_ID);
           const stamp=new Date().toISOString();
-          const stage=String(process.env.PUBLISH_STAGE||'final').trim().toLowerCase();
+          const stage=String(process.env.PUBLISH_STAGE||'validation').trim().toLowerCase();
           if(stage==='final'){
             const cycle=String(process.env.PUBLISH_CYCLE_ID||'').trim();
             const queue=Array.isArray(item.robloxCanonicalPublishQueue)?item.robloxCanonicalPublishQueue:[];
@@ -832,8 +833,8 @@ jobs:
           const version=Number(process.env.VERSION_NUMBER);
           const artifactRunId=Number(process.env.ARTIFACT_RUN_ID);
           const releaseRunId=Number(process.env.RELEASE_RUN_ID);
-          const publishStage=String(process.env.PUBLISH_STAGE||'final').trim().toLowerCase();
-          if(publishStage!=='final')throw new Error('invalid publish stage: final only: '+publishStage);
+          const publishStage=String(process.env.PUBLISH_STAGE||'validation').trim().toLowerCase();
+          if(!['validation','final'].includes(publishStage))throw new Error('invalid publish stage: '+publishStage);
           const publishCycleId=String(process.env.PUBLISH_CYCLE_ID||'').trim();
           const publishQueue=Array.isArray(item.robloxCanonicalPublishQueue)?item.robloxCanonicalPublishQueue:[];
           const queuedFinalEntry=publishStage==='final'
