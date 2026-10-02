@@ -3912,6 +3912,360 @@
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
       "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+    },
+    {
+      "id": "shared-humanoid-foundation-motion-bride-v3",
+      "title": "공용 휴머노이드 고퀄 기초 모션 V3 17/40",
+      "category": "MOTION",
+      "family": "MOTION",
+      "platform": "SHARED_NATIVE_SOURCE",
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/native/mesh/bride-motion-v3/bride-motion-v3.glb",
+      "license": "project-original-derivative",
+      "sourceAssetId": "roblox-world-ghost-gwisin-bride",
+      "sourceAssetPath": "assets/roblox/world-ghosts/native/mesh/bride.glb",
+      "sourceSha256": "3bf90c01cf86745251c8b6465a9515b92c652235c93f5fd6143b796d2ef76e8a",
+      "derivedSha256": "15933d09eeb23a0edbd4e43b2bad5bb657e749dc3dd6effbc266ce1228bca555",
+      "sourceOriginalPreserved": true,
+      "foundationTargetMotionCount": 40,
+      "motionCount": 17,
+      "remainingMotionCount": 23,
+      "motionStates": [
+        "hero_idle_hq",
+        "hero_walk_hq",
+        "hero_jog_hq",
+        "hero_run_hq",
+        "hero_sprint_hq",
+        "hero_start_hq",
+        "hero_stop_hq",
+        "hero_strafe_left_hq",
+        "hero_strafe_right_hq",
+        "hero_backward_hq",
+        "hero_turn_45_hq",
+        "hero_turn_90_hq",
+        "hero_turn_180_hq",
+        "hero_jump_start_hq",
+        "hero_jump_air_hq",
+        "hero_land_hq",
+        "hero_crouch_hq"
+      ],
+      "staticMotionQaState": "MEASURED_STATIC_QA_PASS",
+      "staticMotionQa": {
+        "thresholds": {
+          "loopRotationMaxRad": 0.015,
+          "loopLocationMax": 0.004,
+          "transitionRotationMaxRad": 0.025,
+          "speedBlendRotationMaxRad": 0.42,
+          "rootRotationMaxRad": 1e-07,
+          "rootLocationMax": 1e-07,
+          "maxEulerRad": 1.6,
+          "leftRightPhaseErrorRad": 0.02,
+          "footContactLateralVerticalDriftNormalizedMaxByClip": {
+            "hero_walk_hq": 0.035,
+            "hero_jog_hq": 0.045,
+            "hero_run_hq": 0.05,
+            "hero_sprint_hq": 0.06,
+            "hero_backward_hq": 0.045,
+            "hero_strafe_left_hq": 0.075,
+            "hero_strafe_right_hq": 0.075
+          },
+          "secondaryRotationRangeMinRad": 0.01,
+          "primaryJointRotationRangeMinRad": {
+            "Hips": 0.04,
+            "Spine": 0.025,
+            "Chest": 0.025,
+            "Head": 0.025,
+            "UpperArmL": 0.16,
+            "UpperArmR": 0.16,
+            "ThighL": 0.3,
+            "ThighR": 0.3,
+            "ShinL": 0.16,
+            "ShinR": 0.16
+          },
+          "mobileArtifactSizeMaxBytes": 50331648,
+          "mobileJointCountMax": 256
+        },
+        "loop": {
+          "hero_idle_hq": {
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
+          },
+          "hero_walk_hq": {
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
+          },
+          "hero_jog_hq": {
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
+          },
+          "hero_run_hq": {
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
+          },
+          "hero_sprint_hq": {
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
+          },
+          "hero_strafe_left_hq": {
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
+          },
+          "hero_strafe_right_hq": {
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
+          },
+          "hero_backward_hq": {
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
+          },
+          "hero_crouch_hq": {
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
+          }
+        },
+        "transitions": {
+          "startToWalk": {
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
+          },
+          "stopFromWalk": {
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
+          },
+          "stopToIdle": {
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
+          },
+          "turn45FromIdle": {
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
+          },
+          "turn45ToIdle": {
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
+          },
+          "turn90FromIdle": {
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
+          },
+          "turn90ToIdle": {
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
+          },
+          "turn180FromIdle": {
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
+          },
+          "turn180ToIdle": {
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
+          },
+          "jumpStartFromIdle": {
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
+          },
+          "jumpStartToAir": {
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
+          },
+          "airToLand": {
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
+          },
+          "landToIdle": {
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
+          }
+        },
+        "speedBlendRotationMaxRad": {
+          "hero_walk_hq->hero_jog_hq": 0.1624000072479248,
+          "hero_jog_hq->hero_run_hq": 0.15296974778175354,
+          "hero_run_hq->hero_sprint_hq": 0.28536415100097656
+        },
+        "leftRightPhaseErrorRad": {
+          "hero_walk_hq": 0.0,
+          "hero_jog_hq": 0.0,
+          "hero_run_hq": 0.0,
+          "hero_sprint_hq": 0.0,
+          "hero_backward_hq": 0.0
+        },
+        "footContactLateralVerticalDriftNormalized": {
+          "hero_walk_hq": {
+            "left": 0.0,
+            "right": 0.0
+          },
+          "hero_jog_hq": {
+            "left": 0.016935472731521576,
+            "right": 0.01564851518981285
+          },
+          "hero_run_hq": {
+            "left": 0.01722886021038563,
+            "right": 0.014550488811522972
+          },
+          "hero_sprint_hq": {
+            "left": 0.011459081655178975,
+            "right": 0.00919915582617459
+          },
+          "hero_backward_hq": {
+            "left": 0.014595066666153927,
+            "right": 0.013878290369916559
+          },
+          "hero_strafe_left_hq": {
+            "left": 0.013562112527465659,
+            "right": 0.035513401276344385
+          },
+          "hero_strafe_right_hq": {
+            "left": 0.04263071885729609,
+            "right": 0.06881386856194335
+          }
+        },
+        "primaryJointRotationRangeRad": {
+          "hero_walk_hq": {
+            "Hips": 0.09511999785900116,
+            "Spine": 0.06560000032186508,
+            "Chest": 0.0644799992442131,
+            "Head": 0.02727999910712242,
+            "UpperArmL": 0.48000000417232513,
+            "UpperArmR": 0.48000000417232513,
+            "ThighL": 0.5608970820903778,
+            "ThighR": 0.5608970820903778,
+            "ShinL": 0.3800869360566139,
+            "ShinR": 0.3800869360566139
+          },
+          "hero_jog_hq": {
+            "Hips": 0.14959999918937683,
+            "Spine": 0.08799999952316284,
+            "Chest": 0.08448000252246857,
+            "Head": 0.03519999980926514,
+            "UpperArmL": 0.599399983882904,
+            "UpperArmR": 0.599399983882904,
+            "ThighL": 0.7236637473106384,
+            "ThighR": 0.7236637473106384,
+            "ShinL": 0.46419550850987434,
+            "ShinR": 0.46419550850987434
+          },
+          "hero_run_hq": {
+            "Hips": 0.14959999918937683,
+            "Spine": 0.08799999952316284,
+            "Chest": 0.08448000252246857,
+            "Head": 0.03519999980926514,
+            "UpperArmL": 0.7452000081539154,
+            "UpperArmR": 0.7452000081539154,
+            "ThighL": 0.8930318653583527,
+            "ThighR": 0.8930318653583527,
+            "ShinL": 0.6035403236746788,
+            "ShinR": 0.6035403236746788
+          },
+          "hero_sprint_hq": {
+            "Hips": 0.14959999918937683,
+            "Spine": 0.08799999952316284,
+            "Chest": 0.08448000252246857,
+            "Head": 0.03519999980926514,
+            "UpperArmL": 0.9395999908447266,
+            "UpperArmR": 0.9395999908447266,
+            "ThighL": 1.0777970552444458,
+            "ThighR": 1.0777970552444458,
+            "ShinL": 0.9378415942192078,
+            "ShinR": 0.9378415942192078
+          },
+          "hero_strafe_left_hq": {
+            "Hips": 0.17639999836683273,
+            "Spine": 0.1377599984407425,
+            "Chest": 0.09408000111579895,
+            "Head": 0.0965999998152256,
+            "UpperArmL": 0.3035999983549118,
+            "UpperArmR": 0.3035999983549118,
+            "ThighL": 0.36959999799728394,
+            "ThighR": 0.36959999799728394,
+            "ShinL": 0.2334500104188919,
+            "ShinR": 0.23800000548362732
+          },
+          "hero_strafe_right_hq": {
+            "Hips": 0.17639999836683273,
+            "Spine": 0.1377599984407425,
+            "Chest": 0.09408000111579895,
+            "Head": 0.0965999998152256,
+            "UpperArmL": 0.3035999983549118,
+            "UpperArmR": 0.3035999983549118,
+            "ThighL": 0.36959999799728394,
+            "ThighR": 0.36959999799728394,
+            "ShinL": 0.23800000548362732,
+            "ShinR": 0.2334500104188919
+          },
+          "hero_backward_hq": {
+            "Hips": 0.14959999918937683,
+            "Spine": 0.08799999952316284,
+            "Chest": 0.08448000252246857,
+            "Head": 0.03519999980926514,
+            "UpperArmL": 0.4212000072002411,
+            "UpperArmR": 0.4212000072002411,
+            "ThighL": 0.4606812596321106,
+            "ThighR": 0.4606812596321106,
+            "ShinL": 0.3481324762105942,
+            "ShinR": 0.3481324762105942
+          }
+        },
+        "secondaryRotationRangeMaxRadByClip": {
+          "hero_walk_hq": 0.07572021707892418,
+          "hero_jog_hq": 0.0922733023762703,
+          "hero_run_hq": 0.1117372065782547,
+          "hero_sprint_hq": 0.13696818426251411,
+          "hero_strafe_left_hq": 0.08073914051055908,
+          "hero_strafe_right_hq": 0.08073914051055908,
+          "hero_backward_hq": 0.06920497864484787,
+          "hero_turn_180_hq": 0.06774294562637806,
+          "hero_jump_start_hq": 0.07601532712578773,
+          "hero_jump_air_hq": 0.10350432619452477,
+          "hero_land_hq": 0.05862849019467831
+        },
+        "root": {
+          "rotationMaxRad": 0.0,
+          "locationMax": 0.0
+        },
+        "maxEulerRad": 1.0251131057739258,
+        "allSamplesFinite": true,
+        "rigHeight": 3.430000066757202,
+        "failures": [],
+        "staticMotionQaPass": true
+      },
+      "platformConversionQa": {
+        "skinPresent": true,
+        "skinJointCount": 80,
+        "requiredStandardBoneNodesPresent": true,
+        "inverseBindMatricesPresent": true,
+        "allAnimationChannelTargetsValid": true,
+        "rootAuthorityIntrusionFree": true,
+        "sourceOriginalHashStable": true,
+        "pass": true
+      },
+      "mobileBudget": {
+        "artifactSizeBytes": 2621536,
+        "artifactSizeMaxBytes": 50331648,
+        "jointCount": 80,
+        "jointCountMax": 256,
+        "animationCount": 17,
+        "animationChannelCount": 4080,
+        "maxChannelsPerClip": 240,
+        "targetFps": 30,
+        "pass": true
+      },
+      "runtimeVerificationState": "STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "robloxStudioVerified": false,
+      "unityRuntimeVerified": false,
+      "gameplayAuthorityChanged": false,
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/refine-humanoid-motion.py",
+        "assets/roblox/world-ghosts/native/mesh/bride.glb",
+        "assets/roblox/world-ghosts/native/mesh/bride-motion-v3/bride-motion-v3.glb",
+        "assets/roblox/world-ghosts/native/mesh/bride-motion-v3/evidence.json"
+      ],
+      "note": "원본 스킨드 GLB를 보존하고 17개 기초 이동/회전/점프/웅크리기 모션을 직접 재제작. Blender 수치 QA·GLB 구조·모바일 예산만 검증됐으며 Roblox Studio/Unity 네이티브 런타임 검증 전."
     }
   ],
   "research": [
