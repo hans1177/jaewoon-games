@@ -739,7 +739,8 @@ function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
   const text=presentationSourceText(root,changed);
   const fullText=robloxSourceTreeText(root,data,changed);
   const universalRequired=loadout?.universalAssetFirst?.required===true;
-  const bindingVersion=Math.max(1,Math.floor(Number(loadout?.robloxSelectionHandoff?.bindingVersion)||(universalRequired?2:1)));
+  const configuredBindingVersion=Math.floor(Number(loadout?.robloxSelectionHandoff?.bindingVersion)||0);
+  const bindingVersion=configuredBindingVersion>0?configuredBindingVersion:null;
   if(!text.trim())throw new Error('ROBLOX_STUDIO_ASSET_BINDING_SOURCE_REQUIRED');
   const checks=[],issues=[];
   const require=(name,ok)=>{checks.push({name,pass:Boolean(ok)});if(!ok)issues.push(name);};
@@ -761,7 +762,10 @@ function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
     /Color3\.(?:fromRGB|new)\s*\(/i
   ]);
   const familySignals=robloxAssetFamilySignals(fullText);
-  require('ROBLOX_STUDIO_ASSET_BINDING_VERSION',new RegExp('\\bSTUDIO_ASSET_BINDING_VERSION\\s*=\\s*'+bindingVersion+'\\b').test(text));
+  const bindingVersionPass=bindingVersion
+    ?new RegExp('\\bSTUDIO_ASSET_BINDING_VERSION\\s*=\\s*'+bindingVersion+'\\b').test(text)
+    :(universalRequired?/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*2\b/.test(text):/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*[12]\b/.test(text));
+  require('ROBLOX_STUDIO_ASSET_BINDING_VERSION',bindingVersionPass);
   require('ROBLOX_STUDIO_ASSET_SELECTION_MANIFEST',selectedAtoms.length>0);
   require('ROBLOX_SELECTED_ATOM_TRACE',atomBound);
   if(universalRequired)require('ROBLOX_ASSET_FAMILY_STATUS_ALL_12',allFamiliesAccounted);
