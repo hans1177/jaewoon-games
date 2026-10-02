@@ -196,7 +196,7 @@ verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticMappingVersion", veri
 verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticMappingFingerprint", verifiedLearningContext.SemanticMappingFingerprint or "")
 verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticVariant", verifiedLearningSemanticVariant)
 verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticDomain", verifiedLearningSemanticDomain)
-verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticMood", verifiedLearningSemanticMood)
+verifiedLearningColorGrade = Instance.new("ColorCorrectionEffect", verifiedLearningLighting:FindFirstChild("VerifiedLearningColorGrade"))
 verifiedLearningRoot:SetAttribute("VerifiedLearningGameSpecificMappingCount", #(verifiedLearningContext.GameSpecificSemanticMappings or {}))
 
 -- Game-specific color and atmosphere response, authored locally in Roblox.
