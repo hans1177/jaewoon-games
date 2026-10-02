@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-18y6hph",
+      "worker": "vibe2",
+      "taskId": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
+      "gameId": "cozy-island",
+      "files": [
+        "roblox-games/cozy-island/server/Game.server.luau",
+        "roblox-games/cozy-island/client/Game.client.luau",
+        "roblox-games/cozy-island/shared/GameConfig.luau"
+      ],
+      "baseSha": "d3629d7418e7db8c204cf5f926aa1f90e3b9fedd",
+      "runId": "36946411892",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-02T00:32:49.063Z",
+      "expiresAt": "2026-10-02T01:17:49.063Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:cozy-island-post-release-focus-12c1a7e2ae6288fd"
+      ]
+    }
+  ]
 }
