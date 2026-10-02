@@ -235,7 +235,8 @@ test('personal manor exterior has signature housing and collection architecture'
  assert.match(ui,/local blinkPeriod=role=="BUTLER"and 5\.8 or role=="UNDERTAKER"and 7\.1 or 4\.6/);
  assert.match(ui,/local attention=\(now\+phase\*2\.3\)%\(role=="ARCHIVIST"and 8\.5 or 10\.8\)/);
  assert.match(ui,/local headTransform=around\(group\.headPivot/);
- assert.match(ui,/local blinkCycle=\(now\+phase\*1\.7\)%5\.6/);
+ assert.match(ui,/local blinkPeriod=role=="BUTLER"and 5\.8 or role=="UNDERTAKER"and 7\.1 or 4\.6/);
+ assert.match(ui,/local blinkCycle=\(now\+phase\*1\.7\)%blinkPeriod/);
  assert.match(ui,/row\.name:match\("_Iris"\)or row\.name:match\("_Pupil"\)/);
  assert.match(ui,/row\.name:match\("_UpperLid"\)/);assert.match(ui,/row\.name:match\("_LowerLid"\)/);
  assert.match(ui,/row\.name:match\("Tray"\)/);assert.match(ui,/row\.name:match\("Ledger"\)/);
