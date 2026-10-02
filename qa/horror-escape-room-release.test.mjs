@@ -172,7 +172,7 @@ test('로비 상용화 계약은 launch gate에도 고정된다',()=>{
 });
 
 
-test('월드 로비는 밝은 가시성, 전용 BGM, 기괴한 직원과 공포코믹 소품을 유지한다',()=>{
+test('월드 로비는 밝은 가시성, 전용 BGM, 기괴한 직원과 재빌드 대기 상태를 정직하게 유지한다',()=>{
  assert.match(config,/LobbyBackground="rbxassetid:\/\/"\.\.tostring\(require\(script\.Parent\.ManorAssets\)\.LobbyMusicId\)/);
  assert.match(manorAssets,/ModelId=[1-9][0-9]+/);
  assert.match(manorAssets,/LobbyMusicId=[1-9][0-9]+/);
@@ -181,8 +181,9 @@ test('월드 로비는 밝은 가시성, 전용 BGM, 기괴한 직원과 공포�
  assert.match(manorClient,/Lighting\.ExposureCompensation=\.4/);
  for(const visual of ['Butler_Finger','Undertaker_','Archivist_','LittleGhost_'])assert.ok(manorAssets.includes(visual),visual);
  for(const prop of ['ClockCase','CoffinLid','FamilyMirror','FamilyPortrait','Wardrobe','HearthFlame'])assert.ok(manorAssets.includes(prop),prop);
- assert.match(manorServer,/LobbyArtPass","BLENDER_MONSTER_FAMILY_V2"/);
- assert.match(manorServer,/LobbyBuildRevision","BLENDER_MANOR_20260930"/);
+ assert.match(manorServer,/LobbyArtPass","REBUILD_PENDING_STUDIO"/);
+ assert.match(manorServer,/LobbyBuildRevision","BLENDER_MANOR_REBUILD_20261002"/);
+ assert.doesNotMatch(manorServer,/LobbyArtPass","BLENDER_MONSTER_FAMILY_V2"/);
  assert.match(manorServer,/ManorGag/);
 });
 
@@ -539,8 +540,8 @@ test('Studio 방 검증은 TeleportService 대신 로컬 fallback을 사용한�
 test('예약방 로비는 8칸 슬롯에서 실제 유저와 AI를 구분한다',()=>{
  assert.match(manorClient,/for i=1,8 do/);
  assert.match(manorClient,/roomSlots\.Name="ManorRoomSlots"/);
- assert.match(manorClient,/player\.UserId==hostId and"방장 · "or""/);
- assert.match(manorClient,/string\.format\("%d · AI",i\)/);
+ assert.match(manorClient,/ledgerRow\(roomSlots,string\.format\("%02d · %s",i,player\.DisplayName\),player\.UserId==hostId and"방장"or"손님"\)/);
+ assert.match(manorClient,/ledgerRow\(roomSlots,string\.format\("%02d · 빈 객실",i\),"AI 예약"\)/);
  assert.match(manorClient,/Players:GetPlayers\(\)/);
 });
 
