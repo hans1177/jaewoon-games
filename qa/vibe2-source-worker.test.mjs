@@ -3152,6 +3152,22 @@ test('focused no-op retry keeps speculative base budget but grants only targeted
   assert.match(workerSource,/focusedReplaceAnchorCursor\+=1/);
   assert.match(workerSource,/focusedReplaceNoOpCreditUsed=true/);
 });
+
+test('primary focused Roblox recovery consumes the configured fourth attempt without expanding the retry budget',()=>{
+  assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'primary'}),4);
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(workerSource,/focusedPrimaryBudgetRetry=!allowFullRewrite&&focusedReplaceOnly&&!speculativeVariant&&focusedFinalRetryAllowed\(error\)&&attempt<maxAttempts/);
+  assert.match(workerSource,/VIBE2_FOCUSED_PRIMARY_BUDGET_RETRY/);
+  assert.match(workerSource,/hasAnother=.*focusedPrimaryBudgetRetry/);
+});
+
+test('Roblox studio visual-domain failures consume the remaining configured causal recovery attempt',()=>{
+  assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'primary'}),4);
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(workerSource,/studioCausalRecoveryClass=studioExpansion&&\([\s\S]*ROBLOX_VISUAL_DOMAINS[\s\S]*ROBLOX_VISUAL_MOTION/);
+  assert.match(workerSource,/studioCausalRecoveryClass&&attempt>=maxAttempts&&attempt<configuredBaseMaxAttempts/);
+});
+
 test('focused replace recovery salvages a complete replace string from an unfinished outer JSON object',()=>{
   const spec={path:'index.html',find:'<button id="play">Play</button>'};
   const raw='{"replace":"<button id=\\\"play\\\">Continue</button>"\n';
