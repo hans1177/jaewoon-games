@@ -362,7 +362,8 @@ export function robloxDeterministicPresentationEligible(order={}){
   return clean(order.target).toLowerCase()==='roblox'
     &&order.presentationQuality?.required===true
     &&clean(order.presentationQuality?.pass).toUpperCase()==='ASSET_ADAPTATION'
-    &&(assetDevelopmentTask(order)||!worldLobbySourceWorkRequired(order));
+    &&!assetDevelopmentTask(order)
+    &&!worldLobbySourceWorkRequired(order);
 }
 
 export function deterministicDiagnosticCandidate({exploration={},sourceRoot='',responsibleFiles=[],order={}}={}){
@@ -1519,6 +1520,7 @@ function universalAssetWorkerGuidance(order={}) {
   const families=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
   const selected=Object.entries(loadout?.families||{}).map(([family,atoms])=>family+'='+((atoms||[]).map(clean).filter(Boolean).join('|')||'NONE')).join('; ');
   const customization=order?.assetProduction?.assetCustomization;
+  const bindingVersion=Math.max(1,Math.floor(Number(loadout?.robloxSelectionHandoff?.bindingVersion)||2));
   return [
     '[UNIVERSAL ASSET-FIRST UPGRADE CONTRACT]',
     'All 12 asset families MUST be evaluated: '+families.join(','),
@@ -1529,7 +1531,7 @@ function universalAssetWorkerGuidance(order={}) {
     'APPLIED means the selected/verified compatible asset is used by the existing responsible native source, not merely listed in config, comments, attributes, constants, or a manifest.',
     'Primitive-only, color-only, marker-only, or repeated generic-Part changes cannot satisfy a Vibe graphics/presentation upgrade.',
     'Map/world asset use is mandatory: background/terrain/biome plus existing buildings/settlements/landmarks/set dressing/props must use ENVIRONMENT, BUILDING, and PROP assets. Villages, houses, schools, shops, temples, dungeon entrances, trees, rocks, furniture, signs, lights and similar world objects must not remain generic placeholders when they exist in the game.',
-    target==='roblox'?'Roblox evidence: use STUDIO_ASSET_BINDING_VERSION = 2, STUDIO_ASSET_SELECTION = {...}, and STUDIO_ASSET_FAMILY_STATUS = { FAMILY = "APPLIED" or "NOT_APPLICABLE" } for all 12 families. These evidence tables never replace actual Instance/Model/MeshPart/Material/Sound/Particle/UI/Animator binding.':target==='unity'?'Unity evidence must bind selected assets to actual GameObject/Prefab/Renderer/Material/AudioSource/ParticleSystem/Animator/UI ownership; metadata alone cannot pass.':'Web evidence must bind the shared visual document to actual existing model/material/animation/Canvas/DOM/UI owners. Preserve the canonical asset IDs and revision; metadata alone cannot pass.',
+    target==='roblox'?(`Roblox evidence: use STUDIO_ASSET_BINDING_VERSION = ${bindingVersion}, STUDIO_ASSET_SELECTION = {...}, and STUDIO_ASSET_FAMILY_STATUS = { FAMILY = "APPLIED" or "NOT_APPLICABLE" } for all 12 families. These evidence tables never replace actual Instance/Model/MeshPart/Material/Sound/Particle/UI/Animator binding.`):target==='unity'?'Unity evidence must bind selected assets to actual GameObject/Prefab/Renderer/Material/AudioSource/ParticleSystem/Animator/UI ownership; metadata alone cannot pass.':'Web evidence must bind the shared visual document to actual existing model/material/animation/Canvas/DOM/UI owners. Preserve the canonical asset IDs and revision; metadata alone cannot pass.',
     'Do not create a new gameplay system only to satisfy an asset family. Preserve gameplay rules, balance, hitboxes, damage, cooldowns, save meaning, progression, economy, and network authority.',
     'Use the existing responsible functions/files directly; do not create a wrapper or shadow asset pipeline.'
   ].filter(Boolean).join('\n');
@@ -3756,8 +3758,9 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         ...(candidate.newFiles||[]).filter(row=>touchedVisual.includes(clean(row.path))).map(row=>String(row.content||'')),
         ...(candidate.replaceFiles||[]).filter(row=>touchedVisual.includes(clean(row.path))).map(row=>String(row.content||''))
       ].join('\n');
+      const bindingVersion=Math.max(1,Math.floor(Number(order?.assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff?.bindingVersion)||2));
       const required=[
-        /\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*1\b/,
+        new RegExp('\\bSTUDIO_ASSET_BINDING_VERSION\\s*=\\s*'+bindingVersion+'\\b'),
         /\bSTUDIO_ASSET_SELECTION\s*=\s*\{/,
         /StudioAssetBindingVersion/,
         /StudioAssetAtoms/,
