@@ -1,0 +1,25 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "        if(!started) StartGameplay();",
+      "replace": "        if(!started) StartGameplay();\n        if (player != null && started)"
+    },
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "            var p=enemy.transform.position;",
+      "replace": "            var p=enemy.transform.position;\n            var p=player.transform.position;"
+    },
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "    private const string Mode = \"RPG\";",
+      "replace": "    private const string Mode = \"RPG\";\n    private const string GameId = \"seed-story-complete-rpg-chronicles-of-eldoria\";"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
