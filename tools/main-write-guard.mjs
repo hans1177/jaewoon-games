@@ -10,6 +10,7 @@ const DIRECT_MAIN_PATTERNS=[
   /refs\/heads\/main\b[^\n]*(?:\bPATCH\b|\bPOST\b|\bPUT\b)/i,
 ];
 const WORKFLOW_EXT=/\.ya?ml$/i;
+const CENTRAL_POLICY_PATH='company-learning/platform-release-roadmap.json';
 const CENTRAL_ARCHITECTURE_PATH='company-learning/company-architecture-map.json';
 const CENTRAL_CONTEXT_TOKEN='company-shared-context.mjs';
 
@@ -43,14 +44,18 @@ export function scanChangedWorkflowFiles(files=[]){
 export function scanCentralWorkflowGovernance(entries=[],architecture={},readWorkflow=file=>fs.readFileSync(file,'utf8')){
   const violations=[];
   const launchers=new Set(architecture?.workerSynchronization?.launcherWorkflows||[]);
+  const changedPaths=new Set(entries.map(entry=>String(entry?.file||'')));
+  const centralTopologyChange=changedPaths.has(CENTRAL_POLICY_PATH)&&changedPaths.has(CENTRAL_ARCHITECTURE_PATH);
   for(const entry of entries){
     const file=String(entry?.file||'');
     if(!isWorkflowPath(file))continue;
     const status=String(entry?.status||'').trim().toUpperCase();
     const isAdded=status==='A'||status.startsWith('A');
+    if(isAdded&&!centralTopologyChange){
+      violations.push({file,code:'NEW_WORKFLOW_REQUIRES_CENTRAL_POLICY_AND_ARCHITECTURE_CHANGE'});
+    }
     if(isAdded&&!launchers.has(file)){
       violations.push({file,code:'NEW_WORKFLOW_NOT_REGISTERED_IN_CENTRAL_ARCHITECTURE'});
-      continue;
     }
     if(launchers.has(file)){
       let source='';
@@ -81,16 +86,6 @@ function changedEntries(baseRef,headRef){
   });
 }
 
-function changedFiles(baseRef,headRef){
-  let out='';
-  try{
-    out=execFileSync('git',['diff','--name-only',`${baseRef}...${headRef}`],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
-  }catch{
-    out=execFileSync('git',['diff','--name-only',baseRef,headRef],{encoding:'utf8'});
-  }
-  return out.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
-}
-
 function arg(name,fallback=''){
   const value=process.argv.find(item=>item.startsWith(`--${name}=`));
   return value?value.slice(name.length+3):fallback;
@@ -111,7 +106,7 @@ function main(){
     changedWorkflowFiles:files.filter(isWorkflowPath),
     violations,
     adminProtection:'ADMIN_PROTECTION_BLOCKER',
-    rule:'feature branch -> PR -> CI -> merge; workflow direct-write to main forbidden; new workflows must be central-architecture registered; registered launchers must load shared central context',
+    rule:'feature branch -> PR -> CI -> merge; workflow direct-write to main forbidden; new workflows require central policy + architecture update and canonical registration; registered launchers must load shared central context',
   };
   console.log(JSON.stringify(result,null,2));
   if(violations.length)process.exitCode=1;
