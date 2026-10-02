@@ -321,11 +321,11 @@ def idle_pose(t):
 
 def gait_pose(t, pace='walk'):
     profiles = {
-        'walk': {'amp':0.38,'arm':0.30,'lean':0.045,'lift':0.16,'drop':0.028,'secondary':1.05,'alert':0.18,'reverse':1.0},
-        'jog': {'amp':0.47,'arm':0.37,'lean':0.085,'lift':0.20,'drop':0.035,'secondary':1.28,'alert':0.24,'reverse':1.0},
-        'run': {'amp':0.58,'arm':0.46,'lean':0.150,'lift':0.26,'drop':0.045,'secondary':1.55,'alert':0.35,'reverse':1.0},
-        'sprint': {'amp':0.70,'arm':0.58,'lean':0.235,'lift':0.31,'drop':0.055,'secondary':1.90,'alert':0.48,'reverse':1.0},
-        'backward': {'amp':0.34,'arm':0.26,'lean':-0.055,'lift':0.15,'drop':0.030,'secondary':0.96,'alert':0.32,'reverse':-0.88},
+        'walk': {'amp':0.38,'arm':0.30,'lean':0.045,'lift':0.16,'drop':0.028,'secondary':1.05,'alert':0.18,'reverse':1.0,'stance':0.30},
+        'jog': {'amp':0.47,'arm':0.37,'lean':0.085,'lift':0.20,'drop':0.035,'secondary':1.28,'alert':0.24,'reverse':1.0,'stance':0.27},
+        'run': {'amp':0.58,'arm':0.46,'lean':0.150,'lift':0.26,'drop':0.045,'secondary':1.55,'alert':0.35,'reverse':1.0,'stance':0.22},
+        'sprint': {'amp':0.70,'arm':0.58,'lean':0.235,'lift':0.31,'drop':0.055,'secondary':1.90,'alert':0.48,'reverse':1.0,'stance':0.18},
+        'backward': {'amp':0.34,'arm':0.26,'lean':-0.055,'lift':0.15,'drop':0.030,'secondary':0.96,'alert':0.32,'reverse':-0.88,'stance':0.28},
     }
     cfg = profiles[pace]
     body_y = phase_curve(t, [(0.00,-1.0),(0.14,-0.25),(0.28,0.62),(0.50,-0.86),(0.66,-0.12),(0.80,0.72),(1.00,-1.0)])
@@ -338,9 +338,21 @@ def gait_pose(t, pace='walk'):
     rot('Head', -cfg['lean'] * 0.52, yaw * 0.020, -yaw * 0.015)
     for side_name, sign in [('L', -1), ('R', 1)]:
         p = (t + (0.5 if side_name == 'R' else 0.0)) % 1.0
-        thigh = phase_curve(p, [(0.00,0.90),(0.12,0.68),(0.32,-0.35),(0.50,-0.80),(0.68,-0.40),(0.84,0.56),(1.00,0.90)]) * cfg['reverse']
-        knee = phase_curve(p, [(0.00,0.12),(0.12,0.03),(0.34,0.10),(0.52,0.66),(0.70,0.95),(0.84,0.38),(1.00,0.12)])
-        foot = phase_curve(p, [(0.00,-0.08),(0.16,0.02),(0.38,0.12),(0.56,-0.20),(0.76,-0.38),(0.90,-0.12),(1.00,-0.08)]) * cfg['reverse']
+        stance = cfg['stance']
+        thigh = phase_curve(p, [
+            (0.00,0.76),(stance * 0.45,0.75),(stance,0.68),
+            (min(0.48, stance + 0.14),0.08),(0.56,-0.82),
+            (0.72,-0.42),(0.88,0.38),(1.00,0.76)
+        ]) * cfg['reverse']
+        knee = phase_curve(p, [
+            (0.00,0.10),(stance * 0.55,0.08),(stance,0.12),
+            (min(0.50, stance + 0.16),0.48),(0.66,0.96),
+            (0.82,0.44),(0.92,0.18),(1.00,0.10)
+        ])
+        foot = phase_curve(p, [
+            (0.00,-0.18),(stance * 0.35,-0.08),(stance * 0.72,0.10),(stance,0.18),
+            (min(0.54, stance + 0.18),0.06),(0.68,-0.34),(0.84,-0.24),(1.00,-0.18)
+        ]) * cfg['reverse']
         arm = phase_curve(p, [(0.00,-0.84),(0.22,-0.35),(0.50,0.78),(0.75,0.32),(1.00,-0.84)])
         if pace == 'sprint':
             knee += phase_curve(p, [(0.00,0.04),(0.18,0.0),(0.48,0.18),(0.72,0.28),(1.00,0.04)])
@@ -524,6 +536,8 @@ def crouch_pose(t):
 def animate(name, normalized_time):
     reset_pose()
     t = clamp01(normalized_time)
+    if name in LOOP_CLIPS and t >= 1.0 - 1e-9:
+        t = 0.0
     if name == 'hero_idle_hq':
         idle_pose(t)
     elif name == 'hero_walk_hq':
