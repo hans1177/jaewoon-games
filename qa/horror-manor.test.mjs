@@ -250,6 +250,10 @@ test('personal manor exterior has signature housing and collection architecture'
  assert.match(ui,/local purple=Color3\.fromRGB\(61,28,82\)/);
  assert.match(ui,/local function gothicCorners\(parent\)/);
  assert.match(ui,/mark\.Name="GothicCorner"/);
+ assert.match(ui,/name:match\("\^DormerLight"\)/);
+ assert.match(ui,/name:match\("\^ArchivistWindowGlow"\)/);
+ assert.match(ui,/color=mesh\.Color/);
+ assert.match(ui,/row\.color:Lerp\(Color3\.fromRGB\(255,210,142\),\.06\+glow\*\.06\)/);
  assert.match(ui,/name:match\("\^JackGlow"\)/);
  assert.match(ui,/name:match\("\^GargoyleEye"\)/);
  assert.match(ui,/mesh\.Material=Enum\.Material\.Neon/);

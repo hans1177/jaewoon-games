@@ -547,9 +547,10 @@ local function rebuildLivingScene(room,scene)
     or name:match("^LivingCurtain")or name:match("^LivingVineTip")or name:match("^LivingBranch")
     or name:match("^BackdropCloud")or name:match("^BackdropMist")or name:match("^BackdropBat")
     or name:match("^ChandelierDrop")or name:match("^ChandelierPearDrop")or name:match("^PaperMoonHalo")
+    or name:match("^DormerLight")or name:match("^ArchivistWindowGlow")
     or name:match("^JackGlow")or name:match("^GargoyleEye")then
-    if name:match("^JackGlow")or name:match("^GargoyleEye")then mesh.Material=Enum.Material.Neon end
-    table.insert(details,{part=mesh,home=mesh.CFrame,size=mesh.Size,name=name,transparency=mesh.Transparency})
+    if name:match("^DormerLight")or name:match("^ArchivistWindowGlow")or name:match("^JackGlow")or name:match("^GargoyleEye")then mesh.Material=Enum.Material.Neon end
+    table.insert(details,{part=mesh,home=mesh.CFrame,size=mesh.Size,name=name,transparency=mesh.Transparency,color=mesh.Color})
    end
   end
  end
@@ -673,6 +674,12 @@ RunService.Heartbeat:Connect(function(dt)
    elseif name:match("^PaperMoonHalo")then
     local pulse=1+math.sin(now*.35+row.home.Position.Z)*.018
     mesh.Size=Vector3.new(row.size.X*pulse,row.size.Y*pulse,row.size.Z)
+   elseif name:match("^DormerLight")or name:match("^ArchivistWindowGlow")then
+    -- 저택 상부 창은 촛불처럼 아주 느리게 서로 다른 박자로 밝아져 외관 깊이를 살린다.
+    local phase=row.home.Position.X*.11+row.home.Position.Z*.07
+    local glow=.5+.5*math.sin(now*.44+phase)
+    mesh.Transparency=.03+glow*.06
+    mesh.Color=row.color:Lerp(Color3.fromRGB(255,210,142),.06+glow*.06)
    elseif name:match("^JackGlow")then
     local phase=row.home.Position.X*.19+row.home.Position.Z*.13
     local glow=.10+math.sin(now*1.35+phase)*.06
