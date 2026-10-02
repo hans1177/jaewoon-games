@@ -454,6 +454,24 @@ test('post-runtime Studio followup delegates exact-engine preboot eligibility to
  assert.match(workflow,/ROBLOX_FOUNDATION_AWAITING_REAL_SERVER_BOOT=[\s\S]*?queueStudioFollowupIfEligible\(item\);[\s\S]*?continue;/);
 });
 
+test('automatic Studio followup and reboot recovery defer unrelated games while owner exact target is unresolved',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ const follow=workflow.slice(
+   workflow.indexOf('Dispatch exact Studio MCP follow-up after new runtime foundation evidence'),
+   workflow.indexOf('Enforce persistent Open Cloud probe failures after evidence persistence')
+ );
+ const reboot=workflow.slice(workflow.indexOf('Requeue exact interrupted Studio games without duplicating active work'));
+ for(const block of [follow,reboot]){
+   assert.match(block,/main\/roblox-games\/\.company-runtime-trigger/);
+   assert.match(block,/runtime\/development-queue\.json/);
+   assert.match(block,/robloxFoundationF0Passed===true/);
+   assert.match(block,/robloxInternalReleaseReady!==true/);
+   assert.match(block,/\[ "\$owner_priority_active" = 'true' \] && \[ "\$id" != "\$owner_priority_game" \]/);
+ }
+ assert.match(follow,/ROBLOX_STUDIO_MCP_POST_FOUNDATION_DEFERRED_OWNER_EXACT_PRIORITY=/);
+ assert.match(reboot,/ROBLOX_STUDIO_REBOOT_REQUEUE_DEFERRED_OWNER_EXACT_PRIORITY=/);
+});
+
 test('exact engine preboot enters Studio followup even when the runtime sentinel already matches the candidate version',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  assert.match(workflow,/const exactEngineVersionAwaitingRealServerBoot=[\s\S]*?engineProbe\?\.serverBootObserved!==true/);
