@@ -452,8 +452,8 @@ test('exact engine preboot continues internal F9 without making Studio a gate',(
  const end=workflow.indexOf('}else{',start);
  assert.ok(start>0&&end>start);
  const block=workflow.slice(start,end);
- assert.match(block,/item\.robloxRuntimeFoundationPassed=false/);
- assert.match(block,/item\.robloxRuntimePassed=false/);
+ assert.match(workflow,/item\.robloxRuntimeFoundationPassed=false;[\s\S]{0,900}if\(exactEnginePrebootFromProbe\)\{/);
+ assert.match(workflow,/item\.robloxRuntimePassed=false;[\s\S]{0,900}if\(exactEnginePrebootFromProbe\)\{/);
  assert.match(block,/internalRuntimeObservationDeferred:true/);
  assert.match(block,/externalServerBootRequired:false/);
  assert.match(block,/officialStudioMcpActualPlayPassed:exactStudioInternalValidation/);
@@ -476,7 +476,7 @@ test('exact engine preboot with matching sentinel continues F9 while real server
  assert.match(block,/internalRuntimeObservationDeferred:true/);
  assert.match(block,/externalServerBootRequired:false/);
  assert.match(block,/officialStudioMcpActualPlayPassed:exactStudioInternalValidation/);
- assert.match(block,/item\.robloxRuntimePassed=false/);
+ assert.match(workflow,/item\.robloxRuntimePassed=false;[\s\S]{0,1800}if\(exactEngineVersionAwaitingRealServerBoot\)\{/);
  assert.match(block,/f9Ids\.push\(item\.gameId\)/);
  assert.doesNotMatch(block,/queueStudioFollowupIfEligible\(item\)/);
 });
@@ -492,8 +492,8 @@ test('runtime sentinel 404 uses exact Open Cloud engine evidence for nonblocking
  assert.match(block,/authority:'exact-engine-version-awaiting-real-server-boot'/);
  assert.match(block,/observedVersionNumber:null/);
  assert.match(block,/serverBootObserved:false/);
- assert.match(block,/item\.robloxRuntimeFoundationPassed=false/);
- assert.match(block,/item\.robloxRuntimePassed=false/);
+ assert.match(workflow,/item\.robloxRuntimeFoundationPassed=false;[\s\S]{0,900}if\(exactEnginePrebootFromProbe\)\{/);
+ assert.match(workflow,/item\.robloxRuntimePassed=false;[\s\S]{0,900}if\(exactEnginePrebootFromProbe\)\{/);
  assert.match(block,/internalRuntimeObservationDeferred:true/);
  assert.match(block,/ROBLOX_INTERNAL_FLOW_PASS_EXTERNAL_SERVER_BOOT_PENDING=/);
  assert.doesNotMatch(block,/STUDIO_FOLLOWUP|queueStudioFollowupIfEligible/);
