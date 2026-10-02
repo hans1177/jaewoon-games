@@ -1,6 +1,6 @@
 # 파일명: .github/workflows/company-development-roblox-player-blackbox.yml
 name: Company DEVELOPMENT_CONFIRMED Roblox Player Black Box
-run-name: Roblox player blackbox · \${{ inputs.game_id }}
+run-name: Roblox player blackbox · ${{ inputs.game_id }}
 
 on:
   workflow_dispatch:
@@ -23,13 +23,13 @@ jobs:
     runs-on: ubuntu-slim
     timeout-minutes: 8
     outputs:
-      run: \${{ steps.bind.outputs.run }}
-      session_id: \${{ steps.bind.outputs.session_id }}
-      source_revision: \${{ steps.bind.outputs.source_revision }}
-      artifact_identity: \${{ steps.bind.outputs.artifact_identity }}
-      universe_id: \${{ steps.bind.outputs.universe_id }}
-      place_id: \${{ steps.bind.outputs.place_id }}
-      version_number: \${{ steps.bind.outputs.version_number }}
+      run: ${{ steps.bind.outputs.run }}
+      session_id: ${{ steps.bind.outputs.session_id }}
+      source_revision: ${{ steps.bind.outputs.source_revision }}
+      artifact_identity: ${{ steps.bind.outputs.artifact_identity }}
+      universe_id: ${{ steps.bind.outputs.universe_id }}
+      place_id: ${{ steps.bind.outputs.place_id }}
+      version_number: ${{ steps.bind.outputs.version_number }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -47,8 +47,8 @@ jobs:
       - name: Bind exact validation candidate and newest run
         id: bind
         env:
-          GH_TOKEN: \${{ github.token }}
-          GAME_ID: \${{ inputs.game_id }}
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ inputs.game_id }}
         shell: bash
         run: |
           set -euo pipefail
@@ -92,12 +92,12 @@ jobs:
         if: steps.bind.outputs.run == 'true'
         working-directory: runtime
         env:
-          GAME_ID: \${{ inputs.game_id }}
-          SESSION_ID: \${{ steps.bind.outputs.session_id }}
-          SOURCE_REVISION: \${{ steps.bind.outputs.source_revision }}
-          ARTIFACT_IDENTITY: \${{ steps.bind.outputs.artifact_identity }}
-          VERSION_NUMBER: \${{ steps.bind.outputs.version_number }}
-          WORKFLOW_RUN_ID: \${{ github.run_id }}
+          GAME_ID: ${{ inputs.game_id }}
+          SESSION_ID: ${{ steps.bind.outputs.session_id }}
+          SOURCE_REVISION: ${{ steps.bind.outputs.source_revision }}
+          ARTIFACT_IDENTITY: ${{ steps.bind.outputs.artifact_identity }}
+          VERSION_NUMBER: ${{ steps.bind.outputs.version_number }}
+          WORKFLOW_RUN_ID: ${{ github.run_id }}
         shell: bash
         run: |
           set -euo pipefail
@@ -156,13 +156,13 @@ jobs:
       - name: Run exact private Roblox Player session
         shell: powershell
         env:
-          GAME_ID: \${{ inputs.game_id }}
-          SESSION_ID: \${{ needs.prepare.outputs.session_id }}
-          SOURCE_REVISION: \${{ needs.prepare.outputs.source_revision }}
-          ARTIFACT_IDENTITY: \${{ needs.prepare.outputs.artifact_identity }}
-          UNIVERSE_ID: \${{ needs.prepare.outputs.universe_id }}
-          PLACE_ID: \${{ needs.prepare.outputs.place_id }}
-          VERSION_NUMBER: \${{ needs.prepare.outputs.version_number }}
+          GAME_ID: ${{ inputs.game_id }}
+          SESSION_ID: ${{ needs.prepare.outputs.session_id }}
+          SOURCE_REVISION: ${{ needs.prepare.outputs.source_revision }}
+          ARTIFACT_IDENTITY: ${{ needs.prepare.outputs.artifact_identity }}
+          UNIVERSE_ID: ${{ needs.prepare.outputs.universe_id }}
+          PLACE_ID: ${{ needs.prepare.outputs.place_id }}
+          VERSION_NUMBER: ${{ needs.prepare.outputs.version_number }}
         run: |
           $ErrorActionPreference = 'Stop'
           $out = Join-Path $env:RUNNER_TEMP ("roblox-player-blackbox\" + $env:SESSION_ID)
@@ -175,8 +175,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: roblox-player-blackbox-\${{ inputs.game_id }}-\${{ needs.prepare.outputs.session_id }}
-          path: \${{ env.ROBLOX_BLACKBOX_OUTPUT }}
+          name: roblox-player-blackbox-${{ inputs.game_id }}-${{ needs.prepare.outputs.session_id }}
+          path: ${{ env.ROBLOX_BLACKBOX_OUTPUT }}
           if-no-files-found: warn
           retention-days: 2
 
@@ -204,13 +204,13 @@ jobs:
         continue-on-error: true
         uses: actions/download-artifact@v4
         with:
-          name: roblox-player-blackbox-\${{ inputs.game_id }}-\${{ needs.prepare.outputs.session_id }}
+          name: roblox-player-blackbox-${{ inputs.game_id }}-${{ needs.prepare.outputs.session_id }}
           path: blackbox-evidence
 
       - name: Fetch exact source tree
         env:
-          SOURCE_REVISION: \${{ needs.prepare.outputs.source_revision }}
-          GAME_ID: \${{ inputs.game_id }}
+          SOURCE_REVISION: ${{ needs.prepare.outputs.source_revision }}
+          GAME_ID: ${{ inputs.game_id }}
         working-directory: main
         shell: bash
         run: |
@@ -223,14 +223,14 @@ jobs:
       - name: Validate exact Player runtime
         working-directory: main
         env:
-          GAME_ID: \${{ inputs.game_id }}
-          SESSION_ID: \${{ needs.prepare.outputs.session_id }}
-          SOURCE_REVISION: \${{ needs.prepare.outputs.source_revision }}
-          ARTIFACT_IDENTITY: \${{ needs.prepare.outputs.artifact_identity }}
-          UNIVERSE_ID: \${{ needs.prepare.outputs.universe_id }}
-          PLACE_ID: \${{ needs.prepare.outputs.place_id }}
-          VERSION_NUMBER: \${{ needs.prepare.outputs.version_number }}
-          ROBLOX_OPEN_CLOUD_API_KEY: \${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          GAME_ID: ${{ inputs.game_id }}
+          SESSION_ID: ${{ needs.prepare.outputs.session_id }}
+          SOURCE_REVISION: ${{ needs.prepare.outputs.source_revision }}
+          ARTIFACT_IDENTITY: ${{ needs.prepare.outputs.artifact_identity }}
+          UNIVERSE_ID: ${{ needs.prepare.outputs.universe_id }}
+          PLACE_ID: ${{ needs.prepare.outputs.place_id }}
+          VERSION_NUMBER: ${{ needs.prepare.outputs.version_number }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         shell: bash
         run: |
           set -euo pipefail
@@ -317,7 +317,7 @@ jobs:
       - name: Persist result on company-runtime
         working-directory: runtime
         env:
-          GAME_ID: \${{ inputs.game_id }}
+          GAME_ID: ${{ inputs.game_id }}
         shell: bash
         run: |
           set -euo pipefail
@@ -340,28 +340,28 @@ jobs:
 
       - name: Dispatch F9 after exact black-box PASS
         env:
-          GH_TOKEN: \${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
           pass="$(node -e "const x=require('/tmp/roblox-blackbox-finalize.json');process.stdout.write(x.pass?'true':'false')")"
           if [ "$pass" = 'true' ]; then
-            gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="\${{ inputs.game_id }}"
-            echo "ROBLOX_PLAYER_BLACK_BOX_F9_DISPATCH=\${{ inputs.game_id }}"
+            gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="${{ inputs.game_id }}"
+            echo "ROBLOX_PLAYER_BLACK_BOX_F9_DISPATCH=${{ inputs.game_id }}"
           else
             echo 'ROBLOX_PLAYER_BLACK_BOX_F9_DISPATCH=NO'
           fi
 
       - name: Requeue only when the PC session disappeared before evidence
         env:
-          GH_TOKEN: \${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
           retry="$(node -e "const x=require('/tmp/roblox-blackbox-finalize.json');process.stdout.write(x.retryHost?'true':'false')")"
           if [ "$retry" = 'true' ]; then
-            gh workflow run company-development-roblox-player-blackbox.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="\${{ inputs.game_id }}"
-            echo "ROBLOX_PLAYER_BLACK_BOX_REBOOT_REQUEUE=YES:\${{ inputs.game_id }}"
+            gh workflow run company-development-roblox-player-blackbox.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="${{ inputs.game_id }}"
+            echo "ROBLOX_PLAYER_BLACK_BOX_REBOOT_REQUEUE=YES:${{ inputs.game_id }}"
           else
             echo 'ROBLOX_PLAYER_BLACK_BOX_REBOOT_REQUEUE=NO'
           fi
