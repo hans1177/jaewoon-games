@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function attemptCapture(){",
+      "replace": "function winBattle(){const m=activeMon(),e=battle.enemy;save.wins++;if(!save.dex.includes(e.id))save.dex.push(e.id);const levels=gainXp(m,50);persist();showResult('전투 승리!',`${species[e.id].name}을 쓰러뜨렸다! 경험치 +50${levels?` · ${species[m.id].name} ${levels}레벨 상승 (HP +${30*levels}, 공격력 +${30*levels})`:''}`)}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
