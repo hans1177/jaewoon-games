@@ -218,6 +218,33 @@ test('플레이어와 AI 추격 모션은 기존 Animator 위에 레이어로 �
 });
 
 
+test('AI는 시야·기억·예측·협공 판단과 같은 편 멘트를 사용한다',()=>{
+ for(const key of ['VisionRange=78','HearingRange=18','TargetMemorySeconds=4.5','PredictionSeconds=.32','BlockedSightPenalty=52','FlankStrength=.38','TeamCalloutCooldown=3.5','BotCalloutCooldown=8'])assert.ok(config.includes(key),key);
+ assert.match(server,/function BotAI\.targetVisible\(b,targetPos\)/);
+ assert.match(server,/function BotAI\.predictedTargetPosition\(entry,pos,distance\)/);
+ assert.match(server,/function BotAI\.rememberTarget\(b,key,pos\)/);
+ assert.match(server,/function BotAI\.monsterApproachDirection\(b,targetPos,distance,visible\)/);
+ assert.match(server,/function BotAI\.callout\(b,text\)/);
+ assert.match(server,/remote:FireClient\(player,"AI_TEAM_CHAT"/);
+ assert.match(server,/chosen\.visible and changed/);
+ assert.match(server,/b\.lastSeenPos/);
+ assert.match(client,/local function showAITeamChat\(snapshot\)/);
+ assert.match(client,/kind=="AI_TEAM_CHAT"/);
+ assert.match(client,/team~=tostring\(p:GetAttribute\("Role"\)or""\)/);
+});
+
+test('1인 출정은 같은 서버에서 시작하고 맵 선택만으로 서버 이동하지 않는다',()=>{
+ assert.match(server,/local function startLocalSoloRoom\(p\)/);
+ assert.match(server,/localSoloSession=true;roomSolo=true;roomServer=true;roomCode="SOLO"/);
+ assert.match(server,/if #Players:GetPlayers\(\)==1 then startLocalSoloRoom\(p\)else createReservedRoom\(p,"PRIVATE",true\)end/);
+ assert.match(server,/if roomServer and not studioRoomFallback and not localSoloSession then leaveReservedRoom\(p\)end/);
+ assert.match(server,/if localSoloSession then/);
+ assert.match(manorClient,/button\(body,"혼자 바로 시작"/);
+ assert.match(manorClient,/label\(body,"1\. 맵 선택"/);
+ assert.match(manorClient,/label\(body,"2\. 역할 · "/);
+ assert.match(manorClient,/label\(body,"3\. 시작"/);
+});
+
 test('AI는 몰려다니지 않고 분산 교전하며 양 진영 스킬을 실제 사용한다',()=>{
  assert.match(config,/SeparationRadius=15/);
  assert.match(config,/SeparationWeight=10/);
