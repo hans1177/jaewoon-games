@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function claimQuest(id){",
+      "replace": "function claimQuest(id){\n  var q=QUESTS.find(function(x){return x.id===id;});\n  var s=qState(id);\n  if(!q || s.status!==\"active\" || !questDone(q))return;\n  s.status=\"done\";\n  state.gold+=q.gold;\n  addXP(q.xp);\n  save();\n  closeModal();\n  toastMsg(q.gold+'골드, '+q.xp+'경험치 획득');\n  if(state.zone===0)buildTown();\n  updateHUD();\n}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}

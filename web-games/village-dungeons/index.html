@@ -705,6 +705,18 @@ function acceptQuest(id){
 }
 function claimQuest(id){
   var q=QUESTS.find(function(x){return x.id===id;});
+  var s=qState(id);
+  if(!q || s.status!=="active" || !questDone(q))return;
+  s.status="done";
+  state.gold+=q.gold;
+  addXP(q.xp);
+  save();
+  closeModal();
+  toastMsg(q.gold+'골드, '+q.xp+'경험치 획득');
+  if(state.zone===0)buildTown();
+  updateHUD();
+}
+  var q=QUESTS.find(function(x){return x.id===id;});
   var s=qState(id);if(!q||s.status!=="active"||!questDone(q))return;
   s.status="done";state.gold+=q.gold;addXP(q.xp);save();closeModal();toastMsg(q.gold+"골드, "+q.xp+"경험치 획득");if(state.zone===0)buildTown();updateHUD();
 }
