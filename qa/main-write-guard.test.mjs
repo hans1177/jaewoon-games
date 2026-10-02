@@ -46,17 +46,17 @@ test('main write guard falls back to two-point diff when shallow history has no 
 });
 
 
-test('new workflow files must be registered in central architecture',()=>{
+test('new workflow files require the same change to update central policy and architecture',()=>{
   const architecture={workerSynchronization:{launcherWorkflows:['.github/workflows/canonical.yml']}};
   const violations=scanCentralWorkflowGovernance(
     [{status:'A',file:'.github/workflows/random-extra.yml'}],
     architecture,
     ()=> 'name: random\n'
   );
-  assert.deepEqual(violations,[{
-    file:'.github/workflows/random-extra.yml',
-    code:'NEW_WORKFLOW_NOT_REGISTERED_IN_CENTRAL_ARCHITECTURE'
-  }]);
+  assert.deepEqual(violations,[
+    {file:'.github/workflows/random-extra.yml',code:'NEW_WORKFLOW_REQUIRES_CENTRAL_POLICY_AND_ARCHITECTURE_CHANGE'},
+    {file:'.github/workflows/random-extra.yml',code:'NEW_WORKFLOW_NOT_REGISTERED_IN_CENTRAL_ARCHITECTURE'}
+  ]);
 });
 
 test('registered canonical launcher must load shared central context',()=>{
@@ -79,11 +79,15 @@ test('removed human policy mirror cannot return through a canonical launcher',()
   assert.ok(violations.some(x=>x.code==='REMOVED_HUMAN_POLICY_MIRROR_REFERENCE'));
 });
 
-test('new registered launcher using shared context is allowed by workflow governance',()=>{
+test('new registered launcher using shared context is allowed only with central policy and architecture updates',()=>{
   const file='.github/workflows/canonical-new.yml';
   const architecture={workerSynchronization:{launcherWorkflows:[file]}};
   const violations=scanCentralWorkflowGovernance(
-    [{status:'A',file}],
+    [
+      {status:'A',file},
+      {status:'M',file:'company-learning/platform-release-roadmap.json'},
+      {status:'M',file:'company-learning/company-architecture-map.json'}
+    ],
     architecture,
     ()=> 'run: node tools/company-shared-context.mjs\n'
   );
@@ -93,6 +97,7 @@ test('new registered launcher using shared context is allowed by workflow govern
 test('main write guard reads workflow additions with name-status diff',()=>{
   const source=fs.readFileSync(new URL('../tools/main-write-guard.mjs',import.meta.url),'utf8');
   assert.match(source,/git',\['diff','--name-status'/);
+  assert.match(source,/NEW_WORKFLOW_REQUIRES_CENTRAL_POLICY_AND_ARCHITECTURE_CHANGE/);
   assert.match(source,/NEW_WORKFLOW_NOT_REGISTERED_IN_CENTRAL_ARCHITECTURE/);
   assert.match(source,/CANONICAL_LAUNCHER_MISSING_SHARED_CONTEXT/);
 });
