@@ -421,7 +421,7 @@ test('native planner preserves an existing Blender recipe as the DCC execution p
     target:'roblox',
     task:{gameId:'blender-recipe-demo',goal:'보스 3D 메시와 모션을 고품질로 다시 제작'},
     manifest:{assets:[{
-      id:'boss-authoring-base',family:'CREATURE',types:['boss'],license:'project-original',
+      id:'boss-authoring-base',family:'CREATURE',types:['boss'],tags:['boss','보스','3D','메시','모션'],license:'project-original',
       platforms:['roblox'],downloaded:false,sourceHash:'boss-source-v1',
       sourceFiles:['assets/roblox/demo/build-boss.py','assets/roblox/demo/BOSS.md'],
       authoringRecipes:[{
