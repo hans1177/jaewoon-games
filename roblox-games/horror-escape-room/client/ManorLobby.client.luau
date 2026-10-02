@@ -245,22 +245,22 @@ open=function(key)
    if waiting then button(body,"방 나가기 · 저택으로",function()send(C.Actions.LEAVE_ROOM)end)end
   end
   if not inRoom then
-   label(body,"벽걸이 지도 · 황동 핀을 옮기면 실제 출정 맵도 함께 바뀐다",30,12,brass)
+   label(body,"1. 맵 선택",30,15,ivory)
    for _,map in ipairs(C.Maps)do
     local chosen=(p:GetAttribute("SelectedLobbyMap")or"SCHOOL")==map.Id
     mapPostcard(body,map,chosen,function()send(C.Actions.SELECT_MAP,map.Id)end)
    end
   end
   local preference=p:GetAttribute("MonsterPreference")=="MONSTER"and"몬스터"or p:GetAttribute("MonsterPreference")=="SURVIVOR"and"인간"or"자동 배정"
-  label(body,"출정 역할 · "..preference,30,12,brass)
-  button(body,"인간으로 준비",function()send(C.Actions.PREFER_SURVIVOR)end)
-  button(body,"몬스터로 준비",function()send(C.Actions.PREFER_MONSTER)end)
+  label(body,"2. 역할 · "..preference,30,15,ivory)
+  button(body,"인간",function()send(C.Actions.PREFER_SURVIVOR)end)
+  button(body,"몬스터",function()send(C.Actions.PREFER_MONSTER)end)
   if not inRoom then
-   label(body,"출정 방식",26,12,brass)
-   button(body,"1인 플레이 · 빈자리는 AI",function()send(C.Actions.MANOR_SOLO);hidePanel() end,wine)
-   button(body,"대전 참가 · 공개 경기",function()send(C.Actions.QUICK_JOIN_PUBLIC);hidePanel() end,Color3.fromRGB(53,45,58))
-   button(body,"친구 경기 만들기",function()send(C.Actions.CREATE_ROOM,"FRIENDS");hidePanel() end)
-   button(body,"초대 코드로 참가",function()open("CODE")end)
+   label(body,"3. 시작",30,15,ivory)
+   button(body,"혼자 바로 시작",function()send(C.Actions.MANOR_SOLO);hidePanel() end,wine)
+   button(body,"공개방 빠른 참가",function()send(C.Actions.QUICK_JOIN_PUBLIC);hidePanel() end,Color3.fromRGB(53,45,58))
+   button(body,"친구방 만들기",function()send(C.Actions.CREATE_ROOM,"FRIENDS");hidePanel() end)
+   button(body,"초대 코드 입력",function()open("CODE")end)
   end
  elseif key=="CODE"then
   panelTitle.Text="초대장 번호"
@@ -389,7 +389,7 @@ open=function(key)
 end
 depart=button(commands,"출정",function()open("PLAY")end,wine)
 depart.Size=UDim2.fromOffset(68,52)
-notebook=button(commands,"수첩",function()
+notebook=button(commands,"메뉴",function()
  notebookOpen=not notebookOpen;nav.Visible=notebookOpen
  if notebookOpen then activeMenu=nil;panel.Visible=false end
 end)
