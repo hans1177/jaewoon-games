@@ -320,6 +320,7 @@ def idle_pose(t):
 
 
 def gait_pose(t, pace='walk'):
+    # 공용 모션 라이브러리의 휴머노이드 기초 역할을 실제 스킨드 리그에 파생 제작한다.
     profiles = {
         'walk': {'amp':0.38,'arm':0.30,'lean':0.045,'lift':0.16,'drop':0.028,'secondary':1.05,'alert':0.18,'reverse':1.0,'stance':0.30},
         'jog': {'amp':0.47,'arm':0.37,'lean':0.085,'lift':0.20,'drop':0.035,'secondary':1.28,'alert':0.24,'reverse':1.0,'stance':0.27},
