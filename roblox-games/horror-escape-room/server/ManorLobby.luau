@@ -140,6 +140,7 @@ function Manor:Get(p)
  end
  prompt("ButlerPrompt",Vector3.new(5,4,-9),"집사 모티머 · 출정","PLAY")
  prompt("ArchivistPrompt",Vector3.new(-18,4,-27),"목 없는 기록관 · 도감","BOOK")
+ prompt("ArchiveCabinetPrompt",Vector3.new(-44,4.5,-57),"괴담 유물 진열장","BOOK")
  prompt("MerchantPrompt",Vector3.new(20,4,-22),"장의사 · 의상실","DRESS")
  prompt("InvitationPrompt",Vector3.new(-12,4,-18),"막내 유령 · 가족 초대장","EVENT")
  prompt("ArmorPrompt",Vector3.new(-16,4,-11),"졸고 있는 갑옷",2)
@@ -222,6 +223,13 @@ function Manor:Get(p)
     mesh.Reflectance=stage==3 and .08 or 0
     mesh.CanQuery=false;mesh.CanTouch=false;mesh.CanCollide=false
    end
+  end
+
+  local allComplete=(tonumber(p:GetAttribute("GhostCompleted"))or 0)>=#(C.GhostCatalog or{})
+  for _,mesh in ipairs(namedParts(scene,"MasterCollectionRelic"))do
+   mesh.Transparency=allComplete and 0 or .92
+   mesh.Reflectance=allComplete and .10 or 0
+   mesh.CanCollide=false;mesh.CanTouch=false;mesh.CanQuery=false
   end
 
   for _,map in ipairs(C.Maps or{})do
