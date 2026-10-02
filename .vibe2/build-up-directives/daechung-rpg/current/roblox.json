@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g2-cb94fbaa56c4",
-  "directiveFingerprint": "cb94fbaa56c4b8974f176d9238570bca4d5570d2631470b532caec35876a3235",
-  "previousDirectiveFingerprint": "f04a5e67f5d5b62224d1fdfd67f3d77ce326220627378a6df35b0fea349843b9",
-  "forbiddenRepeatFingerprint": "f04a5e67f5d5b62224d1fdfd67f3d77ce326220627378a6df35b0fea349843b9",
+  "directiveId": "daechung-rpg-build-up-g3-944a0086a7d1",
+  "directiveFingerprint": "944a0086a7d188c58de3e14a0938fca610c9bf6944b1b9022aebe75f646a99b0",
+  "previousDirectiveFingerprint": "cb94fbaa56c4b8974f176d9238570bca4d5570d2631470b532caec35876a3235",
+  "forbiddenRepeatFingerprint": "cb94fbaa56c4b8974f176d9238570bca4d5570d2631470b532caec35876a3235",
   "gameId": "daechung-rpg",
   "gameName": "대충 RPG",
-  "generation": 2,
+  "generation": 3,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/daechung-rpg",
-  "sourceTreeFingerprint": "dacc4345bc1348d8287db934c75db3940a6d51d82286cb07b9c2376a43fbbddf",
+  "sourceTreeFingerprint": "1cf2508f5d8b20616a163ba541619539cb61daa28f36c21c1b4b55a0929d79cf",
   "designFingerprint": "96add7fd73d84d9a53459185ddf4457d9058daeb4ceab00aeab0dd18b14ab27a",
   "gameIdentityAndNonNegotiables": {
     "identity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.",
@@ -86,31 +86,31 @@
     ],
     "signals": {
       "combat": 558,
-      "progression": 493,
+      "progression": 503,
       "ai": 58,
       "save": 185,
       "multiplayer": 18,
       "animation": 48,
-      "motionStates": 654,
+      "motionStates": 658,
       "gameFeel": 28,
       "vfx": 39,
       "camera": 91,
       "audio": 38,
       "audioDynamics": 20,
       "ui": 205,
-      "uiFlow": 175,
+      "uiFlow": 177,
       "entryFlow": 8,
       "loadingFlow": 0,
       "input": 103,
-      "map": 440,
+      "map": 452,
       "landmark": 26,
       "interaction": 104,
-      "inventory": 42,
+      "inventory": 52,
       "equipment": 82,
       "settings": 10,
       "feedback": 133,
       "session": 75,
-      "content": 552,
+      "content": 557,
       "choice": 111,
       "connection": 2,
       "performance": 33,
@@ -199,19 +199,19 @@
         "score": 98
       },
       {
+        "file": "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+        "line": 222,
+        "kind": "FUNCTION",
+        "symbol": "watchTools",
+        "context": "local function watchTools()",
+        "score": 98
+      },
+      {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
         "line": 588,
         "kind": "FUNCTION",
         "symbol": "bindChar",
         "context": "local function bindChar(c)combatTracks={};local h=c:WaitForChild(\"Humanoid\");h.HealthChanged:Connect(render);render()end",
-        "score": 90
-      },
-      {
-        "file": "roblox-games/daechung-rpg/shared/RPGMenu.luau",
-        "line": 214,
-        "kind": "FUNCTION",
-        "symbol": "watchTools",
-        "context": "local function watchTools()",
         "score": 90
       },
       {
@@ -504,7 +504,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/shared/RPGMenu.luau",
-        "line": 208,
+        "line": 216,
         "kind": "FUNCTION",
         "symbol": "scheduleRefresh",
         "context": "local function scheduleRefresh()",
@@ -547,9 +547,9 @@
   "previousVersionDelta": {
     "previousGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "9afb73f9a58d389d143398f4d9dd5e97175e0d8413d75e49b59e99e2cc3b0828",
-    "currentSourceTreeFingerprint": "dacc4345bc1348d8287db934c75db3940a6d51d82286cb07b9c2376a43fbbddf",
+    "previousGeneration": 2,
+    "previousSourceTreeFingerprint": "dacc4345bc1348d8287db934c75db3940a6d51d82286cb07b9c2376a43fbbddf",
+    "currentSourceTreeFingerprint": "1cf2508f5d8b20616a163ba541619539cb61daa28f36c21c1b4b55a0929d79cf",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1696,7 +1696,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 262794,
+        "sourceBytes": 264541,
         "largestFileBytes": 105650,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1729,8 +1729,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 3,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
+    "themeDepth": 4,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1740,9 +1740,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 3
+        "PRESENTATION_WORLD_COHESION": 4
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
@@ -1780,7 +1781,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 200,
+        "score": 182,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -2409,7 +2410,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "dacc4345bc1348d8287db934c75db3940a6d51d82286cb07b9c2376a43fbbddf",
+      "sourceTreeFingerprint": "1cf2508f5d8b20616a163ba541619539cb61daa28f36c21c1b4b55a0929d79cf",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2456,7 +2457,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 4,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2521,5 +2522,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-02T13:25:27.679Z"
+  "generatedAt": "2026-10-02T14:09:35.787Z"
 }
