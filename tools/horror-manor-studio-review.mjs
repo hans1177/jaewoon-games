@@ -131,19 +131,7 @@ params.FilterDescendantsInstances={c}
 params.IgnoreWater=true
 local hit=workspace:Raycast(r.Position,Vector3.new(0,-16,0),params)
 local ground=hit and hit.Instance or nil
-local lobby=workspace:FindFirstChild("MidnightLobby")
 local personalGround=ground~=nil and ground.Name=="PersonalGround" and ground:GetAttribute("WalkableGround")==true
-if not personalGround and lobby then
- for _,d in ipairs(lobby:GetDescendants())do
-  if d:IsA("BasePart") and d.Name=="PersonalGround" and d:GetAttribute("WalkableGround")==true then
-   local localPos=d.CFrame:PointToObjectSpace(r.Position)
-   if math.abs(localPos.X)<=d.Size.X*.5 and math.abs(localPos.Z)<=d.Size.Z*.5 then
-    personalGround=true
-    break
-   end
-  end
- end
-end
 local originZ=tonumber(p:GetAttribute("ManorOriginZ"))
 local localZ=originZ and(r.Position.Z-originZ)or nil
 return HttpService:JSONEncode({
