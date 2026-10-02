@@ -860,8 +860,8 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T01:24:10.538Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -891,9 +891,9 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-02T12:28:48.704Z",
-      "robloxSourceCommit": "cf01bfd41d0caa7c78c4d4c1cd7cf831c4d90358",
-      "robloxSourceBootstrapPassedAt": "2026-10-02T12:25:02.016Z",
+      "updatedAt": "2026-10-02T12:30:10.852Z",
+      "robloxSourceCommit": "9c695d49eea4cf58f083bd211d2c6a0df2172c0b",
+      "robloxSourceBootstrapPassedAt": "2026-10-02T12:30:10.852Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -994,7 +994,7 @@
       "robloxFailureStage": "F0_SOURCE_INTEGRITY",
       "robloxFailureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
       "routingBlockers": [
-        "roblox-f0-source-preflight-failed"
+        "roblox-runtime-evidence-pending"
       ],
       "robloxExactRevisionPassed": false,
       "robloxMultiplayerQaEvidence": {
@@ -1457,6 +1457,145 @@
         "f9RuntimeReplay": true,
         "internalStudioValidationOnly": false,
         "authority": "roblox-open-cloud-f9-verified-canonical-publish"
+      },
+      "robloxStudioAssetBindingApplied": true,
+      "robloxStudioAssetBinding": {
+        "version": 3,
+        "bindingVersion": 2,
+        "applied": true,
+        "source": "company-asset-library.json#baseMaterialLibrary",
+        "libraryVersion": 28,
+        "atomState": "PREPARED_SEMANTIC_ATOM_LIBRARY",
+        "selectedAtomCount": 46,
+        "families": {
+          "UI": [
+            "FRAME_PANEL",
+            "BUTTON_PRIMARY",
+            "BAR_HEALTH"
+          ],
+          "ENVIRONMENT": [
+            "TREE_TRUNK_THICK",
+            "TREE_CROWN_ROUND",
+            "ROCK_MEDIUM",
+            "ROAD_DIRT"
+          ],
+          "BUILDING": [
+            "FOUNDATION_RECT",
+            "WALL_SOLID",
+            "DOOR_SINGLE",
+            "ROOF_GABLE"
+          ],
+          "PROP": [
+            "CHEST",
+            "CRATE",
+            "LAMP"
+          ],
+          "MATERIAL": [
+            "WOOD",
+            "STONE",
+            "METAL"
+          ],
+          "AUDIO": [
+            "ENV_WIND",
+            "ENV_WATER",
+            "UI_CONFIRM"
+          ],
+          "VFX": [
+            "IMPACT_FLASH",
+            "TRAIL_SHORT",
+            "SHAPE_BURST"
+          ],
+          "SKILL": [
+            "CAST_HAND",
+            "TELEGRAPH_CIRCLE",
+            "IMPACT_SMALL"
+          ],
+          "WEAPON": [
+            "BLADE_LONG",
+            "GUARD_CROSS",
+            "GRIP_LONG"
+          ],
+          "CHARACTER": [
+            "TORSO_CLOTH",
+            "SHOULDER_LIGHT",
+            "BACK_CAPE"
+          ],
+          "CREATURE": [
+            "HEAD_CANINE",
+            "JAW_LONG",
+            "CLAW"
+          ],
+          "MOTION": [
+            "IDLE_RELAXED",
+            "WALK",
+            "JOG",
+            "RUN",
+            "START",
+            "STOP",
+            "TURN_90",
+            "JUMP_START",
+            "LAND",
+            "HIT_FRONT",
+            "DEATH_FRONT"
+          ]
+        },
+        "universalAssetFirst": {
+          "required": true,
+          "allFamilies": [
+            "CHARACTER",
+            "CREATURE",
+            "BUILDING",
+            "ENVIRONMENT",
+            "WEAPON",
+            "SKILL",
+            "MATERIAL",
+            "AUDIO",
+            "VFX",
+            "UI",
+            "MOTION",
+            "PROP"
+          ],
+          "allFamiliesEvaluated": true,
+          "missingFamilies": [],
+          "familyResultRequired": "APPLIED_OR_EXPLICIT_NOT_APPLICABLE",
+          "actualSourceBindingRequired": true,
+          "markerOnlyApplicationForbidden": true,
+          "mapEnvironmentBuildingPropRequired": true
+        },
+        "recipeId": "NORMAL_VARIANT",
+        "motionQuality": {
+          "contract": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",
+          "motionAtoms": [
+            "IDLE_RELAXED",
+            "WALK",
+            "JOG",
+            "RUN",
+            "START",
+            "STOP",
+            "TURN_90",
+            "JUMP_START",
+            "LAND",
+            "HIT_FRONT",
+            "DEATH_FRONT"
+          ],
+          "libraryFirst": true,
+          "semanticAtomsAreNotAnimationClips": true,
+          "nativeAnimationClipRuntimeVerificationRequired": true,
+          "actorClasses": [
+            "PLAYER",
+            "HUMANOID_NPC",
+            "CREATURE"
+          ],
+          "articulatedRigRequired": true,
+          "animatorRequired": true,
+          "blendAndSpeedSyncRequired": true,
+          "ikAndProceduralCorrectionPreferred": true,
+          "mannequinHardFailure": "CHARACTER_MOTION_MANNEQUIN"
+        },
+        "productionVerified": false,
+        "runtimeVerificationRequired": true,
+        "verifiedPromotionAllowed": false,
+        "gameplayAuthority": false
       }
     },
     {
@@ -2239,7 +2378,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-02T12:28:48.704Z",
+  "updatedAt": "2026-10-02T12:30:10.852Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -2306,5 +2445,6 @@
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
   "executionContractVersion": 1,
-  "robloxTechnicalParallelism": null
+  "robloxTechnicalParallelism": null,
+  "robloxSourceParallelism": null
 }
