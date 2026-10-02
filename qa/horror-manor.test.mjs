@@ -12,12 +12,23 @@ const lobby=read('roblox-games/horror-escape-room/server/ManorLobby.luau');
 const ui=read('roblox-games/horror-escape-room/client/ManorLobby.client.luau');
 const oldUI=read('roblox-games/horror-escape-room/client/Game.client.luau');
 const config=read('roblox-games/horror-escape-room/shared/GameConfig.luau');
+const studioReview=read('tools/horror-manor-studio-review.mjs');
 const manorBuild=read(root+'/build.py');
 const ownerWorkflow=read('.github/workflows/horror-owner-system-publish.yml');
 const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
 const manorAssets=read('roblox-games/horror-escape-room/shared/ManorAssets.luau');
 const cloudOwnerBuild=process.env.MANOR_CLOUD_BUILD==='1';
 
+
+test('공식 Studio 검증은 실제 PersonalGround 접촉을 새 서버 재시작 전후로 확인한다',()=>{
+ assert.match(studioReview,/captureGroundContact\(studioId,'server-1'\)/);
+ assert.match(studioReview,/captureGroundContact\(studioId,'server-2'\)/);
+ assert.match(studioReview,/ground\.Name=="PersonalGround"/);
+ assert.match(studioReview,/ground:GetAttribute\("WalkableGround"\)==true/);
+ assert.match(studioReview,/!floor\.includes\('Air'\)/);
+ assert.match(studioReview,/localZ>=52&&localZ<=68/);
+ assert.match(studioReview,/MANOR_NEW_SERVER_GROUND_CONTACT=PASS/);
+});
 
 test('personal manor stays on the Published Version 77 large-house asset',()=>{
  assert.match(manorAssets,/검증된 모델 4f4d911a4ef1259ce60588a79550bbbb377e2ace234e82ea51ee60a1e24853b0/);
