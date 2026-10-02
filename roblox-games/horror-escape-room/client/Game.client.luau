@@ -19,15 +19,34 @@ local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
 local GhostSkinFactory=nil
 local GhostSkinMotion=nil
-do
- local folder=RS:FindFirstChild("WorldGhostSkins")
- if folder then
-  local okFactory,factory=pcall(function()return require(folder:WaitForChild("GhostSkinFactory"))end)
-  local okMotion,motion=pcall(function()return require(folder:WaitForChild("GhostSkinMotion"))end)
-  if okFactory then GhostSkinFactory=factory end
-  if okMotion then GhostSkinMotion=motion end
+local ghostSkinModulesLoading=false
+local function loadGhostSkinModules()
+ if GhostSkinFactory and GhostSkinMotion then return true end
+ if ghostSkinModulesLoading then
+  local deadline=os.clock()+8
+  repeat task.wait(.05)until(GhostSkinFactory and GhostSkinMotion)or os.clock()>=deadline
+  return GhostSkinFactory~=nil and GhostSkinMotion~=nil
  end
+ ghostSkinModulesLoading=true
+ local folder=RS:FindFirstChild("WorldGhostSkins")or RS:WaitForChild("WorldGhostSkins",10)
+ if folder then
+  local factoryModule=folder:FindFirstChild("GhostSkinFactory")or folder:WaitForChild("GhostSkinFactory",5)
+  local motionModule=folder:FindFirstChild("GhostSkinMotion")or folder:WaitForChild("GhostSkinMotion",5)
+  if factoryModule then
+   local okFactory,factory=pcall(require,factoryModule)
+   if okFactory then GhostSkinFactory=factory end
+  end
+  if motionModule then
+   local okMotion,motion=pcall(require,motionModule)
+   if okMotion then GhostSkinMotion=motion end
+  end
+ end
+ ghostSkinModulesLoading=false
+ local ready=GhostSkinFactory~=nil and GhostSkinMotion~=nil
+ p:SetAttribute("InternalGhostAssetsReady",ready)
+ return ready
 end
+task.defer(loadGhostSkinModules)
 -- 번역: 화면/월드 안내/상호작용은 Roblox 기본 현지화 경로를 공통 사용한다.
 do
  local translations=Instance.new("LocalizationTable")
@@ -1064,12 +1083,15 @@ local function hideCombatSkinSource(row)
  end
 end
 local function ensureCombatSkin(source,rootPart,skinId)
- if not GhostSkinFactory or not GhostSkinMotion or not source or not rootPart or not skinId then return nil end
+ if not source or not rootPart or not skinId or not loadGhostSkinModules()then return nil end
  local row=combatSkins[source]
  if row and(row.skinId~=skinId or not row.model or not row.model.Parent)then destroyCombatSkin(source);row=nil end
  if not row then
+  -- 실제 플레이어 몬스터는 모바일에서도 near를 유지한다. AI만 mid로 낮춰 화면 품질과 부하를 분리한다.
+  local sourcePlayer=Players:GetPlayerFromCharacter(source)
+  local quality=sourcePlayer and"near"or"mid"
   local ok,model=pcall(function()
-   return GhostSkinFactory.Create(skinId,{quality=touchEnabled and"far"or"mid",parent=workspace,anchored=true,pivot=CFrame.new()})
+   return GhostSkinFactory.Create(skinId,{quality=quality,parent=workspace,anchored=true,pivot=CFrame.new()})
   end)
   if not ok or not model then return nil end
   local bindOk,motion=pcall(function()return GhostSkinMotion.Bind(model)end)
@@ -1077,7 +1099,8 @@ local function ensureCombatSkin(source,rootPart,skinId)
   model.Name="CombatGhostSkin_"..skinId
   model:SetAttribute("SourceAssetLibrary","roblox-world-ghost-skins-v1")
   model:SetAttribute("CombatSkin",true)
-  row={source=source,root=rootPart,skinId=skinId,model=model,motion=motion,createdAt=os.clock(),lastPos=rootPart.Position,hiddenParts={},hiddenHighlights={},attackStart=0,attackUntil=0}
+  model:SetAttribute("RuntimeQuality",quality)
+  row={source=source,root=rootPart,skinId=skinId,quality=quality,model=model,motion=motion,createdAt=os.clock(),lastPos=rootPart.Position,hiddenParts={},hiddenHighlights={},attackStart=0,attackUntil=0}
   combatSkins[source]=row
  end
  row.root=rootPart
@@ -1088,6 +1111,7 @@ local function refreshCombatSkins()
  local active={}
  local round=tostring(p:GetAttribute("RoundState")or"")
  local show=round=="RUNNING"or round:match("^RESULT_")~=nil
+ if show then loadGhostSkinModules()end
  if show and GhostSkinFactory and GhostSkinMotion then
   for _,player in ipairs(Players:GetPlayers())do
    local source=player.Character
@@ -1135,7 +1159,6 @@ RunService.RenderStepped:Connect(function(dt)
   if rr and rr.Parent and row.model and row.model.Parent then
    local h=row.source:FindFirstChildOfClass("Humanoid")
    local groundOffset=(h and tonumber(h.HipHeight)or 2)+.9
-   row.model:PivotTo(rr.CFrame*CFrame.new(0,-groundOffset,0))
    local last=row.lastPos or rr.Position
    local velocity=(rr.Position-last).Magnitude/math.max(dt,1/120)
    row.lastPos=rr.Position
@@ -1144,6 +1167,18 @@ RunService.RenderStepped:Connect(function(dt)
    elseif velocity>11 then state="chase";time=now-row.createdAt
    elseif velocity>1 then state="walk";time=now-row.createdAt
    else state="idle";time=now-row.createdAt end
+
+   -- 내부 모션 관절에 전투 실루엣 이동을 더해 실제 추격/공격이 정지 인형처럼 보이지 않게 한다.
+   local pose=CFrame.new()
+   if state=="attack"then
+    local pulse=math.sin(math.clamp(time/.58,0,1)*math.pi)
+    pose=CFrame.new(0,.08*pulse,-.95*pulse)*CFrame.Angles(math.rad(-14*pulse),0,0)
+   elseif state=="chase"then
+    pose=CFrame.new(0,math.sin(now*13)*.075,0)*CFrame.Angles(math.rad(-8),0,math.rad(math.sin(now*6)*2.5))
+   elseif state=="walk"then
+    pose=CFrame.new(0,math.sin(now*9)*.045,0)*CFrame.Angles(math.rad(-3),0,math.rad(math.sin(now*4.5)*1.5))
+   end
+   row.model:PivotTo(rr.CFrame*CFrame.new(0,-groundOffset,0)*pose)
    pcall(function()row.motion.step(time,state)end)
    hideCombatSkinSource(row)
   end
@@ -1151,7 +1186,7 @@ RunService.RenderStepped:Connect(function(dt)
 end)
 
 local function tryInternalGhostSighting(trigger,id)
- if not GhostSkinFactory then return false end
+ if not loadGhostSkinModules()then return false end
  local skinId=internalGhostSkinByCatalogId[id]
  if not skinId then return false end
  local character=p.Character
@@ -1164,7 +1199,7 @@ local function tryInternalGhostSighting(trigger,id)
   if flat.Magnitude>.1 then look=flat.Unit end
  end
  local ok,model=pcall(function()
-  return GhostSkinFactory.Create(skinId,{quality="far",parent=workspace,pivot=CFrame.lookAt(pos,pos+look),anchored=true})
+  return GhostSkinFactory.Create(skinId,{quality=touchEnabled and"mid"or"near",parent=workspace,pivot=CFrame.lookAt(pos,pos+look),anchored=true})
  end)
  if not ok or not model then return false end
  model.Name="LocalInternalGhostSighting_"..skinId
@@ -2248,8 +2283,8 @@ end)
 local resultPanel=Instance.new("Frame")
 resultPanel.Name="RoundResult"
 resultPanel.AnchorPoint=Vector2.new(.5,.5)
-resultPanel.Position=UDim2.fromScale(.5,.17)
-resultPanel.Size=UDim2.fromOffset(340,158)
+resultPanel.Position=UDim2.fromScale(.5,.31)
+resultPanel.Size=UDim2.fromOffset(340,282)
 resultPanel.BackgroundColor3=Color3.fromRGB(13,12,12)
 resultPanel.BackgroundTransparency=.08
 resultPanel.ZIndex=20
@@ -2406,7 +2441,8 @@ end
 local function collectCeremonyNames(winner)
  local names={}
  for _,player in ipairs(Players:GetPlayers())do
-  if tostring(player:GetAttribute("LastRoundRole")or"")==winner then table.insert(names,player.DisplayName)end
+  local lastRole=tostring(player:GetAttribute("LastRoundRole")or"")
+  if winner=="DRAW"or lastRole==winner then table.insert(names,player.DisplayName)end
  end
  while #names<4 do table.insert(names,"팀원 "..tostring(#names+1))end
  while #names>4 do table.remove(names)end
@@ -2474,19 +2510,32 @@ local function playResultCeremony(resultCode)
  local winner=resultCode=="SURVIVOR"and"SURVIVOR"or resultCode=="MONSTER"and"MONSTER"or"DRAW"
  local ceremonyName=tostring(p:GetAttribute("CelebrationName")or"")
  local ceremonyCaption=tostring(p:GetAttribute("CelebrationCaption")or"")
- ceremonyStage.Visible=false
+ ceremonyStage.Visible=true
  resultDetail.Visible=false
  ceremonyJoke.Text="시레머니 · "..(ceremonyName~=""and ceremonyName or"결과").." · "..(ceremonyCaption~=""and ceremonyCaption or"라운드 종료")
+ local ceremonyColor=Color3.fromRGB(198,202,212)
  if winner=="SURVIVOR"then
+  ceremonyColor=Color3.fromRGB(98,205,231)
   ceremonyJoke.TextColor3=Color3.fromRGB(166,223,236)
   setMotionImpulse("CELEBRATE_HUMAN",1.2)
  elseif winner=="MONSTER"then
+  ceremonyColor=Color3.fromRGB(221,71,99)
   ceremonyJoke.TextColor3=Color3.fromRGB(232,121,139)
   setMotionImpulse("CELEBRATE_MONSTER",1.2)
  else
-  ceremonyJoke.TextColor3=Color3.fromRGB(198,202,212)
+  ceremonyJoke.TextColor3=ceremonyColor
   setMotionImpulse("CELEBRATE_DRAW",1.0)
  end
+ local names=collectCeremonyNames(winner)
+ for i,row in ipairs(ceremonyFigures)do
+  ceremonyNames[i].Text=names[i]or("팀원 "..tostring(i))
+  row.body.BackgroundColor3=ceremonyColor
+  row.head.BackgroundColor3=winner=="MONSTER"and Color3.fromRGB(95,50,62)or Color3.fromRGB(210,184,158)
+  row.slot.Position=UDim2.new((i-.5)/4,0,1,18)
+  row.slot.Rotation=(i%2==0)and 5 or-5
+  TweenService:Create(row.slot,TweenInfo.new(.48+i*.055,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Position=UDim2.new((i-.5)/4,0,1,-8),Rotation=0}):Play()
+ end
+ playCeremonyConfetti(ceremonyColor)
  startResultCeremonyCamera(latestCeremonyStage)
  task.delay(2.15,function()
   if ceremonySerial~=serial or not tostring(p:GetAttribute("RoundState")or""):find("^RESULT_")then return end
@@ -2865,6 +2914,37 @@ local function abilityRing(name,pos,color,startDiameter,endDiameter,duration)
  return part
 end
 
+local function abilitySparkBurst(name,pos,color,count,speed,duration)
+ local anchor=abilityVfxPart(name,Vector3.new(.18,.18,.18),CFrame.new(pos),color,Enum.PartType.Ball)
+ anchor.Transparency=1
+ local emitter=Instance.new("ParticleEmitter")
+ emitter.Name=name.."Emitter"
+ emitter.Texture="rbxasset://textures/particles/sparkles_main.dds"
+ emitter.Rate=0
+ emitter.Color=ColorSequence.new(color,Color3.new(1,1,1))
+ emitter.LightEmission=1
+ emitter.Lifetime=NumberRange.new(duration*.55,duration)
+ emitter.Speed=NumberRange.new(speed*.55,speed)
+ emitter.SpreadAngle=Vector2.new(180,180)
+ emitter.Drag=2.5
+ emitter.Acceleration=Vector3.new(0,-8,0)
+ emitter.Size=NumberSequence.new({
+  NumberSequenceKeypoint.new(0,.44),
+  NumberSequenceKeypoint.new(.35,.22),
+  NumberSequenceKeypoint.new(1,0),
+ })
+ emitter.Transparency=NumberSequence.new({
+  NumberSequenceKeypoint.new(0,.02),
+  NumberSequenceKeypoint.new(.7,.18),
+  NumberSequenceKeypoint.new(1,1),
+ })
+ emitter.Parent=anchor
+ emitter:Emit(count)
+ local light=Instance.new("PointLight");light.Color=color;light.Range=14;light.Brightness=4.2;light.Parent=anchor
+ TweenService:Create(light,TweenInfo.new(duration*.7),{Brightness=0,Range=4}):Play()
+ Debris:AddItem(anchor,duration+.2)
+end
+
 local function playMonsterAbilityEffect(snapshot)
  if typeof(snapshot)~="table"then return end
  markCombatSkinAttack(snapshot.UserId,snapshot.Origin,.82)
@@ -2876,6 +2956,8 @@ local function playMonsterAbilityEffect(snapshot)
  local accent=formInfo.AccentColor or color
  if snapshot.Infected==true then
   color=Color3.fromRGB(220,70,112);accent=Color3.fromRGB(144,76,226)
+  abilitySparkBurst("InfectedAbilitySparks",origin+Vector3.new(0,1.3,0),color,22,13,.6)
+  abilityRing("InfectedAbilityHalo",origin+Vector3.new(0,.3,0),accent,1.5,16,.48)
   if ability=="FALSE_ALARM"then
    abilityPulse("FalseAlarmBurst",origin+Vector3.new(0,1.2,0),color,Vector3.new(2,2,2),Vector3.new(16,6,16),.42)
    abilityRing("FalseAlarmRing",origin+Vector3.new(0,.25,0),accent,3,28,.62)
@@ -2895,6 +2977,8 @@ local function playMonsterAbilityEffect(snapshot)
   end
   return
  end
+ abilitySparkBurst("MonsterAbilitySparks",origin+Vector3.new(0,1.35,0),color,24,14,.62)
+ abilityRing("MonsterAbilityHalo",origin+Vector3.new(0,.3,0),accent,1.5,15,.46)
  if ability=="BAT_DASH"then
   abilityPulse("BatDashBurst",origin+Vector3.new(0,1.8,0),color,Vector3.new(1.5,1.5,1.5),Vector3.new(9,5,9),.36)
   abilityRing("BatDashRing",origin+Vector3.new(0,.25,0),accent,2,13,.42)
@@ -2939,6 +3023,7 @@ local function playMonsterAttackEffect(snapshot)
  local look=typeof(snapshot.Look)=="Vector3"and snapshot.Look or Vector3.new(0,0,-1)
  markCombatSkinAttack(snapshot.UserId,origin,.58)
  local blood=Color3.fromRGB(224,60,86)
+ abilitySparkBurst("MonsterAttackSparks",origin+Vector3.new(0,1.4,0),blood,18,12,.42)
  abilityPulse("MonsterAttackBurst",origin+Vector3.new(0,1.45,0),blood,Vector3.new(.8,.8,.8),Vector3.new(5,5,5),.24)
  abilityRing("MonsterAttackRing",origin+Vector3.new(0,.24,0),blood,1.5,7,.28)
  for _,offset in ipairs({-1,-.5,0,.5,1})do abilityStreak("MonsterClaw",origin,look,blood,offset,7,.18,.28)end
@@ -2959,6 +3044,8 @@ local function playHumanAbilityEffect(snapshot)
   SECURITY=Color3.fromRGB(105,186,230),
  }
  local color=palette[formId]or Color3.fromRGB(116,201,220)
+ abilitySparkBurst("HumanAbilitySparks",origin+Vector3.new(0,1.25,0),color,20,12,.52)
+ abilityRing("HumanAbilityHalo",origin+Vector3.new(0,.22,0),color,1.5,13,.4)
  if ability=="SIGNAL_JAM"then
   abilityPulse("SignalJam",origin+Vector3.new(0,1.2,0),color,Vector3.new(1,1,1),Vector3.new(24,4,24),.55)
   abilityRing("SignalJamRing",origin+Vector3.new(0,.2,0),color,3,28,.58)
