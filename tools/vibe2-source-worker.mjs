@@ -4325,6 +4325,9 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     console.log('VIBE2_SOURCE_WORKER=PASS');
     console.log(`VIBE2_TASK_ID=${result.taskId}`);
     console.log(`VIBE2_TARGET=${result.target}`);
+    console.log(`VIBE2_SOURCE_MODEL=${result.model}`);
+    console.log(`VIBE2_HERO_ASSET_MODEL_APPLIED=${result.modelRouting?.heroModelApplied===true?'YES':'NO'}`);
+    console.log(`VIBE2_NATIVE_ASSET_AUTHORING_STATUS=${result.nativeAssetAuthoring?.status||'NOT_REQUIRED'}`);
     console.log(`VIBE2_CHANGED_FILES=${result.changedFiles.join(',')}`);
     console.log(`VIBE2_CANDIDATE_MANIFEST=${result.candidateManifestPath}`);
     console.log(`VIBE2_GENERATION_ATTEMPTS=${result.generation?.attempts||1}`);
