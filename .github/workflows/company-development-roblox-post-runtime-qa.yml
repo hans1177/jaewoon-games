@@ -2043,6 +2043,16 @@ jobs:
           set -euo pipefail
           planned_games="$(node -e "const m=JSON.parse(process.env.PLANNED_MATRIX||'{\"include\":[]}');process.stdout.write((m.include||[]).map(x=>String(x.gameId||'').trim()).filter(Boolean).join(','))")"
           [ -n "$planned_games" ] || exit 0
+          current_supersede_unrelated=false
+          current_preserve_games=''
+          trigger_file='main/roblox-games/.company-runtime-trigger'
+          if [ "$CURRENT_TRIGGER_CHANGED" = 'true' ] && [ -f "$trigger_file" ]; then
+            current_supersede_unrelated="$(sed -n 's/^supersedeUnrelatedExactStudio:[[:space:]]*//p' "$trigger_file" | head -n1 | xargs | tr '[:upper:]' '[:lower:]')"
+            current_preserve_games="$(sed -n 's/^preserveStudioGames:[[:space:]]*//p' "$trigger_file" | head -n1 | xargs | tr -d ' ')"
+          fi
+          [ "$current_supersede_unrelated" = 'true' ] || current_supersede_unrelated=false
+          echo "ROBLOX_STUDIO_OWNER_PRIORITY_SUPERSEDE_UNRELATED=$current_supersede_unrelated"
+          echo "ROBLOX_STUDIO_OWNER_PRIORITY_PRESERVE_GAMES=${current_preserve_games:-NONE}"
           payload="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-post-runtime-qa.yml/runs?per_page=100")"
           printf '%s' "$payload" | CURRENT_RUN_ID="$GITHUB_RUN_ID" node -e "
             let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
@@ -2080,34 +2090,50 @@ jobs:
                   echo "ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_EXACT_TRIGGER=$run_id:$older_trigger_game"
                   continue
                 fi
-                case ",$planned_games," in
+                case ",$current_preserve_games," in
                   *",$older_trigger_game,"*)
-                    echo "ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_OWNER_EXACT_REPLACES_OLDER_EXACT=$run_id:$older_trigger_game"
+                    echo "ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_OWNER_PRIORITY=$run_id:$older_trigger_game"
+                    continue
                     ;;
+                esac
+                case ",$planned_games," in
+                  *",$older_trigger_game,"*) ;;
                   *)
-                    echo "ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_OWNER_EXACT_PREEMPTS_UNRELATED_EXACT=$run_id:$older_trigger_game"
+                    if [ "$current_supersede_unrelated" != 'true' ]; then
+                      echo "ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_UNRELATED_EXACT_TRIGGER=$run_id:$older_trigger_game"
+                      continue
+                    fi
+                    echo "ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_OWNER_PRIORITY_CANCEL_REQUESTED=$run_id:$older_trigger_game"
                     ;;
                 esac
               fi
             fi
             jobs_json="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" 2>/dev/null || echo '{"jobs":[]}' )"
-            decision="$(printf '%s' "$jobs_json" | PLANNED_GAMES="$planned_games" OWNER_EXACT="$CURRENT_TRIGGER_CHANGED" OLDER_EXACT="$older_exact_trigger" node -e "
+            decision="$(printf '%s' "$jobs_json" | PLANNED_GAMES="$planned_games" PRESERVE_GAMES="$current_preserve_games" OWNER_EXACT="$CURRENT_TRIGGER_CHANGED" OLDER_EXACT="$older_exact_trigger" SUPERSEDE_UNRELATED="$current_supersede_unrelated" node -e "
               let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
                 const jobs=(JSON.parse(s).jobs||[]),prefix='Official Studio MCP actual play ';
                 const planned=new Set(String(process.env.PLANNED_GAMES||'').split(',').filter(Boolean));
+                const preserve=new Set(String(process.env.PRESERVE_GAMES||'').split(',').map(x=>x.trim()).filter(Boolean));
                 const ownerExact=String(process.env.OWNER_EXACT||'').toLowerCase()==='true';
                 const olderExact=String(process.env.OLDER_EXACT||'').toLowerCase()==='true';
+                const supersedeUnrelated=String(process.env.SUPERSEDE_UNRELATED||'').toLowerCase()==='true';
                 const studio=jobs.filter(j=>String(j.name||'').startsWith(prefix));
                 if(studio.some(j=>String(j.status||'').toLowerCase()==='in_progress'))return process.stdout.write('PRESERVE_ACTIVE');
                 const waiting=studio.filter(j=>['queued','pending','requested','waiting'].includes(String(j.status||'').toLowerCase()));
                 if(!waiting.length)return process.stdout.write('NONE');
-                if(ownerExact)return process.stdout.write('CANCEL');
                 const games=waiting.map(j=>String(j.name||'').slice(prefix.length));
+                if(games.some(g=>preserve.has(g)))return process.stdout.write('PRESERVE_PRIORITY');
+                if(ownerExact&&supersedeUnrelated)return process.stdout.write('CANCEL');
+                if(ownerExact&&!olderExact)return process.stdout.write('CANCEL');
                 process.stdout.write(games.every(g=>planned.has(g))?'CANCEL':'PRESERVE_UNRELATED');
               });
             ")"
             if [ "$decision" = 'PRESERVE_ACTIVE' ]; then
               echo "ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_ACTIVE=$run_id"
+              continue
+            fi
+            if [ "$decision" = 'PRESERVE_PRIORITY' ]; then
+              echo "ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_OWNER_PRIORITY=$run_id"
               continue
             fi
             if [ "$decision" = 'PRESERVE_UNRELATED' ]; then
