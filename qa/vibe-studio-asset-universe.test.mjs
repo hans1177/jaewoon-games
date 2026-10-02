@@ -330,9 +330,16 @@ test('company asset promotion is impossible without actual native runtime consum
   assert.equal(blocked.promotion,null);
 
   const evidence={
-    id:'studio-run-1',platform:'ROBLOX',gameId:'survival',sourceHash:'wolf-v1',
+    id:'studio-run-1',assetId:'wolf-runtime',platform:'ROBLOX',gameId:'survival',sourceHash:'wolf-v1',
     nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true
   };
+  const hashless=evaluateCompanyAssetPromotion({
+    asset,consumer:{gameId:'survival',platform:'ROBLOX'},
+    runtimeEvidence:{assetId:'wolf-runtime',platform:'ROBLOX',gameId:'survival',nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true}
+  });
+  assert.equal(hashless.eligible,false);
+  assert.ok(hashless.blockers.includes('RUNTIME_ASSET_HASH_REQUIRED'));
+
   const ready=evaluateCompanyAssetPromotion({asset,consumer:{gameId:'survival'},runtimeEvidence:evidence});
   assert.equal(ready.eligible,true);
   assert.equal(ready.promotion.verifiedCompanyReusable,true);
@@ -351,7 +358,7 @@ test('company asset promotion is impossible without actual native runtime consum
     consumer:{gameId:'survival',platform:'ROBLOX'},
     runtimeEvidence:{
       id:'studio-run-2',platform:'ROBLOX',gameId:'survival',assetIds:['wolf-derived'],
-      assets:[{assetId:'wolf-derived',sourceHash:'artifact-v2',artifactHash:'artifact-v2'}],
+      assets:[{assetId:'wolf-derived',sourceHash:'source-v1',artifactHash:'artifact-v2'}],
       nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true
     }
   });
