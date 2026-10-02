@@ -133,6 +133,25 @@ test('personal manor visibility and visiting stay server-authoritative',()=>{
  assert.doesNotMatch(lobby,/SetAttribute\("GhostCompleted"/);
 });
 
+test('personal manor exterior has signature housing and collection architecture',()=>{
+ for(const token of [
+  'ManorCrestShield','ManorCrestSegment1','ManorCrestSegment6',
+  'ArchivistTowerBase','ArchivistTowerUpper','ArchivistTowerRoof',
+  'MortuaryLoadingDoor','CoffinRail','CoffinTrolleyDeck',
+  'MortimerServiceDoor','MortimerServiceCanopy','UmbrellaStand',
+  'CryptFacade','CryptDoorBlack','CryptGateBar','CryptArch',
+  'GreenhouseFoundation','GreenhouseRoofRib','GreenhouseGlassSide',
+  'CollectionPlinth_SCHOOL','CollectionPlinth_HOSPITAL','CollectionPlinth_THEME_PARK',
+  'FrontGutter','RainPipe'
+ ])assert.match(manorBuild,new RegExp(token));
+ assert.match(lobby,/ManorCrestSegment"\.\.i/);
+ assert.match(lobby,/local reached=completed>=i\*2/);
+ assert.match(lobby,/GreenhouseBoundary/);
+ assert.match(lobby,/-65,8\.0,-47,13,16,15/);
+ assert.match(lobby,/-57,4\.0,69,14,8,1\.8/);
+ assert.doesNotMatch(lobby,/SetAttribute\("GhostCompleted"/);
+});
+
 test('replacement lobby music has no old screaming source and is original instrumental',()=>{
  assert.doesNotMatch(config,/1843529635/);assert.match(config,/LobbyMusicId/);
  const m=JSON.parse(read(root+'/generated/music-evidence.json'));assert.equal(m.vocals,false);assert.equal(m.screams,false);assert.equal(m.originalComposition,true);assert.ok(m.durationSeconds>=60);
