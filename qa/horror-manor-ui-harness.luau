@@ -48,7 +48,7 @@ local TweenService={Create=function(_,object,_,goal)
  local completed=signal()
  return {Completed=completed,Play=function()for key,value in pairs(goal)do object[key]=value end;task.defer(function()completed:Fire()end)end}
 end}
-local attrs={LobbyClientReady=true,PersonalLobbyOwner=7,RoundState="ROOM_BROWSER",MonsterForm="DRACULA",LobbyAppearance="SURVIVOR",Coins=100,MonsterXP=0}
+local attrs={LobbyClientReady=true,PersonalLobbyOwner=7,RoundState="ROOM_BROWSER",MonsterForm="DRACULA",LobbyAppearance="SURVIVOR",Coins=100,MonsterXP=0,ManorVisibility="PRIVATE",ManorVisitorCount=0,VisitedManorOwnerUserId=0,VisitedManorOwnerName=""}
 local changes={}
 local p=Instance.new("Player");p.UserId=7;p.DisplayName="Tester";p.PlayerGui=Instance.new("PlayerGui")
 function p:GetAttribute(key)return attrs[key]end
@@ -63,8 +63,12 @@ local remote={OnClientEvent=signal(),sent={}}
 function remote:FireServer(action,value)table.insert(self.sent,{action,value})end
 local C={RemoteName="GameEvent",Actions=setmetatable({}, {__index=function(_,k)return k end}),Maps={{Id="SCHOOL",Name="학교"}},GhostCatalog={{Id="BRIDE",Name="처녀귀신",Origin="한국"}},MonsterForms={{Id="DRACULA",Name="드라큘라",UnlockXP=0}},Cosmetics={{Id="DEFAULT",Name="기본",Price=0}}}
 local RS={Shared={GameConfig="CONFIG",ManorAssets="ASSETS",MonsterStories="STORIES"},WaitForChild=function()return remote end}
+local otherAttrs={ManorVisibility="PUBLIC",RoomServer=false,RoundState="ROOM_BROWSER"}
+local other={UserId=8,DisplayName="PublicOwner",Name="PublicOwner"}
+function other:GetAttribute(key)return otherAttrs[key]end
+local playerList={p,other}
 local Lighting={FindFirstChildOfClass=function()return nil end}
-local services={Players={LocalPlayer=p},ReplicatedStorage=RS,Lighting=Lighting,TweenService=TweenService,RunService={RenderStepped=signal(),Heartbeat=signal()}}
+local services={Players={LocalPlayer=p,GetPlayers=function()return playerList end},ReplicatedStorage=RS,Lighting=Lighting,TweenService=TweenService,RunService={RenderStepped=signal(),Heartbeat=signal()}}
 game={GetService=function(_,name)return services[name]end}
 workspace={CurrentCamera={ViewportSize=Vector2.new(390,760)},GetAttribute=function(_,key)return key=="PhysicalLobbyReady"end,GetAttributeChangedSignal=function()return signal()end}
 local function require(id)
@@ -108,6 +112,18 @@ end
 print("MANOR_MOBILE_LAYOUT_QA=PASS:5")
 assert(named.NotebookShade.Visible==true,"Open menu does not intercept background touches")
 click("×");assert(named.NotebookShade.Visible==false,"Closed menu blocks movement")
+open("EVENT")
+assert(find("내 저택 · 비공개 · 방문자 0명"),"Private manor state missing")
+click("저택 공개하기");sent("SET_MANOR_VISIBILITY");assert(remote.sent[#remote.sent][2]=="PUBLIC")
+p:SetAttribute("ManorVisibility","PUBLIC");flush()
+assert(find("내 저택 · 공개 · 방문자 0명"),"Public manor state did not refresh")
+click("PublicOwner의 저택 방문");sent("VISIT_MANOR");assert(remote.sent[#remote.sent][2]==8)
+p:SetAttribute("VisitedManorOwnerUserId",8);p:SetAttribute("VisitedManorOwnerName","PublicOwner");flush()
+open("PLAY")
+assert(find("PublicOwner의 저택을 방문 중이야.\n방문자는 전시와 공간만 구경할 수 있어."),"Departure did not redirect to visit controls")
+click("내 저택으로 돌아가기");sent("RETURN_MANOR")
+p:SetAttribute("VisitedManorOwnerUserId",0);p:SetAttribute("VisitedManorOwnerName","");flush()
+open("EVENT");click("저택 비공개로 전환");sent("SET_MANOR_VISIBILITY");assert(remote.sent[#remote.sent][2]=="PRIVATE")
 open("CODE")
 local input=assert(find(""));for _,o in ipairs(all)do if o.Name=="InvitationCode"and alive(o)then input=o end end
 input.Text=" 12a34b56 "
