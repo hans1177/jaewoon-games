@@ -6,7 +6,7 @@ The manor, NPC silhouettes and articulated gag props are original geometry.
 Coordinates: metres/studs, Y up, front courtyard towards positive Z.
 """
 from pathlib import Path
-import copy, hashlib, json, math, shutil, struct, tarfile
+import copy, hashlib, json, math, os, shutil, struct, tarfile
 import numpy as np
 
 ROOT = Path(__file__).resolve().parent
@@ -108,7 +108,8 @@ class Scene:
             if p[1]>0:p[0]+=lean
         f=[[0,3,2,1],[4,5,6,7],[0,4,7,3],[1,2,6,5],[0,1,5,4],[3,7,6,2]]
         o=self.node(name,self.mesh(name,v,f,mat),pos,rot,parent=parent)
-        bevel=o.modifiers.new('Carved_edges','BEVEL');bevel.width=min(.085,min(size)*.18);bevel.segments=2
+        # Roblox 모바일 예산: 실루엣을 유지하는 단일 챔퍼로 상자형 건축 부품의 중복 폴리곤을 줄인다.
+        bevel=o.modifiers.new('Carved_edges','BEVEL');bevel.width=min(.085,min(size)*.18);bevel.segments=1
         return o
 
     def lathe(self,name,pos,r0,r1,height,mat,sides=24,parent=None):
@@ -136,6 +137,184 @@ class Scene:
         data=self.mesh(name,v,f,mat)
         for face in data.polygons:face.use_smooth=True
         return self.node(name,data,pos,parent=parent)
+
+
+    def loft(self,name,pos,sections,mat,sides=28,parent=None,rot=0):
+        """여러 타원 단면을 연결하는 연속 곡면. NPC 얼굴/몸/의상용."""
+        sides=max(16,sides);verts=[]
+        for section in sections:
+            y,rx,rz=section[:3]
+            dx=section[3] if len(section)>3 else 0
+            dz=section[4] if len(section)>4 else 0
+            front=section[5] if len(section)>5 else 0
+            back=section[6] if len(section)>6 else 0
+            for i in range(sides):
+                a=math.tau*i/sides
+                sn=math.sin(a);cs=math.cos(a)
+                front_weight=max(0,sn)**4
+                back_weight=max(0,-sn)**4
+                verts.append((dx+cs*rx,y,dz+sn*rz+front*front_weight-back*back_weight))
+        faces=[]
+        rings=len(sections)
+        faces.append(list(reversed(range(sides))))
+        top=[(rings-1)*sides+i for i in range(sides)];faces.append(top)
+        for j in range(rings-1):
+            base=j*sides;next_base=(j+1)*sides
+            for i in range(sides):
+                n=(i+1)%sides
+                faces.append((base+i,base+n,next_base+n,next_base+i))
+        data=self.mesh(name,verts,faces,mat)
+        for face in data.polygons:face.use_smooth=True
+        bevel=None
+        return self.node(name,data,pos,rot,parent=parent)
+
+    def prism(self,name,pos,outline,depth,mat,parent=None,rot=0):
+        """의상 패널/라펠/코트자락용 임의 윤곽 두께 메쉬."""
+        z=depth/2;verts=[(x,y,-z)for x,y in outline]+[(x,y,z)for x,y in outline]
+        n=len(outline)
+        faces=[list(reversed(range(n))),list(range(n,2*n))]
+        faces += [(i,(i+1)%n,(i+1)%n+n,i+n) for i in range(n)]
+        data=self.mesh(name,verts,faces,mat)
+        for face in data.polygons:face.use_smooth=False
+        o=self.node(name,data,pos,rot,parent=parent)
+        bevel=o.modifiers.new('Soft_seam','BEVEL');bevel.width=min(.035,depth*.24);bevel.segments=2
+        return o
+
+    def capsule(self,name,pos,height,radius,depth,mat,parent=None,taper=.82):
+        """세로 관절용 연속 곡면. 구형 파츠를 겹쳐 붙이지 않는다."""
+        half=height/2
+        sections=[
+          (-half, radius*taper, depth*taper, 0, 0, 0, 0),
+          (-half*.72, radius, depth, 0, 0, 0, 0),
+          (0, radius*1.03, depth*1.02, 0, 0, 0, 0),
+          (half*.72, radius, depth, 0, 0, 0, 0),
+          (half, radius*taper, depth*taper, 0, 0, 0, 0),
+        ]
+        return self.loft(name,pos,sections,mat,sides=24,parent=parent)
+
+    def curve_tube(self,name,points,radii,depths,mat,sides=28,parent=None):
+        """굽은 팔/다리/손잡이를 위한 경로 기반 연속 곡면."""
+        assert len(points)>=2 and len(points)==len(radii)==len(depths)
+        sides=max(18,sides);verts=[]
+        vectors=[Vector(p) for p in points]
+        previous_u=None
+        for j,center in enumerate(vectors):
+            if j==0:tangent=(vectors[1]-center).normalized()
+            elif j==len(vectors)-1:tangent=(center-vectors[j-1]).normalized()
+            else:tangent=(vectors[j+1]-vectors[j-1]).normalized()
+            ref=Vector((0,0,1)) if abs(tangent.z)<.88 else Vector((1,0,0))
+            u=tangent.cross(ref)
+            if u.length<.001:u=tangent.cross(Vector((0,1,0)))
+            u.normalize()
+            if previous_u is not None and u.dot(previous_u)<0:u=-u
+            v=tangent.cross(u).normalized();previous_u=u
+            for i in range(sides):
+                a=math.tau*i/sides
+                p=center+u*(math.cos(a)*radii[j])+v*(math.sin(a)*depths[j])
+                verts.append(tuple(p))
+        faces=[list(reversed(range(sides))),list(range((len(points)-1)*sides,len(points)*sides))]
+        for j in range(len(points)-1):
+            a0=j*sides;b0=(j+1)*sides
+            for i in range(sides):
+                n=(i+1)%sides;faces.append((a0+i,a0+n,b0+n,b0+i))
+        data=self.mesh(name,verts,faces,mat)
+        for face in data.polygons:face.use_smooth=True
+        obj=self.node(name,data,parent=parent)
+        obj['continuousPathSurface']=True
+        return obj
+
+    def lens(self,name,pos,size,mat,parent=None,sides=32,rings=12):
+        """눈/유리용 얇은 타원 렌즈. 박스/평면 카드 대신 자체 곡면을 쓴다."""
+        rx,ry,rz=(size[0]/2,size[1]/2,size[2]/2)
+        verts=[]
+        for j in range(rings+1):
+            b=math.pi*j/rings
+            for i in range(sides):
+                a=math.tau*i/sides
+                x=math.sin(b)*math.cos(a)*rx
+                y=math.cos(b)*ry
+                z=math.sin(b)*math.sin(a)*rz
+                verts.append((x,y,z))
+        faces=[]
+        for j in range(rings):
+            for i in range(sides):
+                a=j*sides+i;n=j*sides+(i+1)%sides
+                faces.append((a,n,n+sides,a+sides))
+        data=self.mesh(name,verts,faces,mat)
+        for face in data.polygons:face.use_smooth=True
+        obj=self.node(name,data,pos,parent=parent)
+        obj['continuousLensSurface']=True
+        return obj
+
+    def sculpted_face(self,name,pos,size,mat,profile,parent=None):
+        """역할별 얼굴 골격을 한 연속 표면에서 직접 조형한다.
+
+        56방향 x 35단면의 곡면에 턱·광대·안와·눈썹뼈·콧대·인중·턱끝 변위를
+        부드럽게 섞는다. 동일 머리 메시 복제나 primitive 얼굴 조립을 사용하지 않는다.
+        """
+        sides=56;rings=36
+        rx,ry,rz=(size[0]/2,size[1]/2,size[2]/2)
+        verts=[(0,-ry,0)]
+        def gauss(x,y,cx,cy,sx,sy):
+            return math.exp(-(((x-cx)/sx)**2+((y-cy)/sy)**2)*.5)
+        for j in range(1,rings):
+            lat=-math.pi/2+math.pi*j/rings
+            cl=math.cos(lat);yn=math.sin(lat)
+            for i in range(sides):
+                a=math.tau*i/sides
+                ca,sa=math.cos(a),math.sin(a)
+                xn=cl*ca
+                front=max(0.0,sa)**3
+                # 하악·관자·광대 폭을 역할별로 따로 만든다.
+                jaw_t=max(0.0,min(1.0,(-yn-.03)/.78))
+                temple_t=max(0.0,min(1.0,(yn-.28)/.55))
+                cheek_band=math.exp(-((yn-.02)/.28)**2)
+                width_scale=1+(profile.get('jaw',1)-1)*jaw_t
+                width_scale*=1+(profile.get('temple',1)-1)*temple_t
+                width_scale*=1+profile.get('cheek_width',.04)*cheek_band
+                x=xn*rx*width_scale
+                y=yn*ry
+                z=cl*sa*rz
+                if front>0:
+                    nx=x/max(rx,.001)
+                    # 얼굴의 앞면 깊이. 코는 별도 팁 메시와 자연스럽게 이어질 정도만 베이스를 세운다.
+                    depth=0.0
+                    depth+=profile.get('nose_bridge',.18)*gauss(nx,yn,0,.16,.12,.28)
+                    depth+=profile.get('nose_tip',.10)*gauss(nx,yn,0,-.01,.105,.12)
+                    depth+=profile.get('nose_wing',.028)*(gauss(nx,yn,-.13,-.05,.075,.08)+gauss(nx,yn,.13,-.05,.075,.08))
+                    depth+=profile.get('cheek',.08)*(gauss(nx,yn,-.40,.02,.18,.22)+gauss(nx,yn,.40,.02,.18,.22))
+                    depth-=profile.get('eye_socket',.10)*(gauss(nx,yn,-.27,.22,.15,.13)+gauss(nx,yn,.27,.22,.15,.13))
+                    depth+=profile.get('brow',.06)*(gauss(nx,yn,-.27,.37,.18,.11)+gauss(nx,yn,.27,.37,.18,.11))
+                    depth+=profile.get('muzzle',.035)*gauss(nx,yn,0,-.23,.30,.16)
+                    depth-=profile.get('philtrum',.018)*gauss(nx,yn,0,-.16,.055,.08)
+                    depth+=profile.get('upper_lip',.020)*gauss(nx,yn,0,-.27,.19,.055)
+                    depth+=profile.get('lower_lip',.018)*gauss(nx,yn,0,-.34,.18,.055)
+                    depth+=profile.get('chin',.055)*gauss(nx,yn,0,-.58,.26,.17)
+                    depth-=profile.get('temple_hollow',.035)*(gauss(nx,yn,-.58,.32,.18,.26)+gauss(nx,yn,.58,.32,.18,.26))
+                    # 비대칭은 얼굴 전체를 찌그러뜨리지 않고 입가/광대에만 극소량 적용한다.
+                    asym=profile.get('asymmetry',0)
+                    depth+=asym*gauss(nx,yn,.34,-.12,.22,.23)
+                    z+=rz*front*depth
+                verts.append((x,y,z))
+        top=len(verts);verts.append((0,ry,0))
+        faces=[]
+        first=1
+        for i in range(sides):
+            faces.append((0,first+(i+1)%sides,first+i))
+        for j in range(rings-2):
+            a0=1+j*sides;b0=a0+sides
+            for i in range(sides):
+                n=(i+1)%sides
+                faces.append((a0+i,a0+n,b0+n,b0+i))
+        last=1+(rings-2)*sides
+        for i in range(sides):
+            faces.append((last+i,last+(i+1)%sides,top))
+        data=self.mesh(name,verts,faces,mat)
+        for face in data.polygons:face.use_smooth=True
+        obj=self.node(name,data,pos,parent=parent)
+        obj['roleSpecificFace']=profile.get('role',name)
+        obj['faceTopology']='SCULPTED_CONTINUOUS_56x36_V1'
+        return obj
 
     def prop(self,pack,key,name,pos,height,rot=0,stretch=(1,1,1),tilt=0):
         path=(ROOT.parent/'world-ghosts'/'native'/'mesh'/'bride.glb') if pack in ['bride','bridehead'] else SOURCE/pack/(key+'.glb')
@@ -223,13 +402,15 @@ class Scene:
         bpy.context.view_layer.objects.active=next((o for o in self.collection.objects if o.type=='MESH'),None)
         bpy.ops.export_scene.gltf(filepath=str(path),export_format='GLB',use_selection=True,export_apply=True,export_animations=False,export_cameras=False,export_lights=False,export_yup=True)
         raw=path.read_bytes();n=struct.unpack_from('<I',raw,12)[0];d=json.loads(raw[20:20+n])
-        return {'file':path.name,'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest(),'nodes':len(d['nodes']),'meshes':len(d['meshes'])}
+        triangles=sum(d['accessors'][p['indices']]['count']//3 for m in d.get('meshes',[]) for p in m.get('primitives',[]) if 'indices' in p)
+        return {'file':path.name,'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest(),'nodes':len(d['nodes']),'meshes':len(d['meshes']),'triangles':triangles}
 
     def batch_static(self):
         # 장식의 수는 유지하고 같은 재질의 고정 소품만 병합한다. 움직이는 노드는 보존한다.
         keep=('Butler','Archivist','Undertaker','CoffinLid','CoffinHand','ArmorHelmet','LittleGhost',
-              'TeaCup','Tea','Chandelier','Mirror','FamilyPortrait','PortraitCanvas','HearthFlame',
-              'ManorSideWall','FacadeWing','BackWall','HallFloor','Courtyard','CrookedRoof','Clock','EntryDoor')
+              'TeaCup','Tea','ChandelierFlame','MirrorPupil','FamilyPortrait','PortraitCanvas','HearthFlame',
+              'MapPin','GhostRelic_','MemoryRelic','MasterCollectionRelic','ManorCrestSegment',
+              'BackWall','HallFloor','Courtyard','CrookedRoof','ClockPendulum','EntryDoor')
         groups={}
         bpy.context.view_layer.update()
         for o in list(self.collection.objects):
@@ -266,132 +447,354 @@ def npc(s,kind,pos):
     profiles={
       'Butler':{
         'h':10.9,'w':1.78,'lean':-.035,'skin':s.material('ButlerSkin',(.58,.53,.47)),
-        'coat':s.material('ButlerCoat',(.025,.032,.038)),'vest':s.material('ButlerVest',(.075,.085,.09)),
+        'coat':s.material('ButlerCoat',(.038,.045,.055)),'vest':s.material('ButlerVest',(.075,.085,.09)),
         'accent':s.material('ButlerWine',(.22,.025,.05)),'hair':s.material('ButlerHair',(.025,.022,.024)),
-        'eye':s.material('ButlerIris',(.075,.09,.075)),'jaw':1.02,'nose':1.14,'head':(.86,1.12,.88),
+        'eye':s.material('ButlerIris',(.075,.09,.075)),'jaw':1.02,'nose':1.16,'head':(.72,1.24,.80),
       },
       'Undertaker':{
         'h':9.65,'w':2.06,'lean':.095,'skin':s.material('UndertakerSkin',(.47,.49,.47)),
-        'coat':s.material('UndertakerCoat',(.018,.022,.028)),'vest':s.material('UndertakerVest',(.055,.042,.05)),
+        'coat':s.material('UndertakerCoat',(.028,.031,.038)),'vest':s.material('UndertakerVest',(.055,.042,.05)),
         'accent':s.material('UndertakerWine',(.28,.018,.045)),'hair':s.material('UndertakerHair',(.018,.021,.024)),
-        'eye':s.material('UndertakerIris',(.11,.075,.065)),'jaw':.91,'nose':1.02,'head':(.92,1.04,.94),
+        'eye':s.material('UndertakerIris',(.11,.075,.065)),'jaw':.94,'nose':1.00,'head':(1.00,1.08,1.00),
       },
       'Archivist':{
         'h':8.85,'w':1.72,'lean':.13,'skin':s.material('ArchivistSkin',(.54,.50,.43)),
-        'coat':s.material('ArchivistCoat',(.06,.105,.10)),'vest':s.material('ArchivistVest',(.105,.075,.055)),
+        'coat':s.material('ArchivistCoat',(.070,.118,.105)),'vest':s.material('ArchivistVest',(.105,.075,.055)),
         'accent':s.material('ArchivistInk',(.075,.055,.095)),'hair':s.material('ArchivistHair',(.085,.075,.065)),
-        'eye':s.material('ArchivistIris',(.095,.12,.11)),'jaw':.86,'nose':.96,'head':(.80,1.08,.84),
+        'eye':s.material('ArchivistIris',(.095,.12,.11)),'jaw':.82,'nose':.94,'head':(.70,1.20,.78),
       },
     }
     q=profiles[kind];h=q['h'];w=q['w']
+    trousers=s.material(kind+'Trousers',(.025,.028,.034) if kind!='Archivist' else (.055,.062,.054))
+    leather=s.material(kind+'Leather',(.050,.026,.018) if kind!='Undertaker' else (.032,.020,.018))
+    glove=s.material('ButlerGlove',(.60,.59,.55)) if kind=='Butler' else q['skin']
+    for mat,rough,metal in [(q['skin'],.56,0),(q['coat'],.86,0),(q['vest'],.78,0),(q['hair'],.68,0),(q['accent'],.75,0),(trousers,.82,0),(leather,.38,0),(glove,.62,0)]:
+        if mat.use_nodes:
+            bs=mat.node_tree.nodes.get('Principled BSDF')
+            if bs:
+                bs.inputs['Roughness'].default_value=rough
+                bs.inputs['Metallic'].default_value=metal
+    q['skin']['manorFinish']='SmoothPlastic'
+    q['coat']['manorFinish']='Fabric'
+    q['vest']['manorFinish']='Fabric'
+    q['accent']['manorFinish']='Fabric'
+    q['hair']['manorFinish']='SmoothPlastic'
+    q['eye']['manorFinish']='SmoothPlastic'
+    trousers['manorFinish']='Fabric'
+    leather['manorFinish']='Leather'
+    glove['manorFinish']='Fabric' if kind=='Butler' else 'SmoothPlastic'
     p=s.node(kind,pos=pos)
     p.rotation_euler.y=q['lean']
 
-    # 하체: 허벅지/종아리/신발을 분리해 막대기 실루엣을 피한다.
-    stance=.32 if kind=='Butler' else .38 if kind=='Undertaker' else .29
+    # 하체는 하나의 타원체가 아니라 허벅지-무릎-종아리 단면이 이어지는 연속 곡면이다.
+    stance=.32 if kind=='Butler' else .39 if kind=='Undertaker' else .29
     for side in [-1,1]:
         sx=side*w*stance
-        thigh=s.ellipsoid(kind+'_Thigh'+str(side),(sx,h*.28,0),(w*.42,h*.31,w*.46),q['coat'],parent=p)
-        shin=s.ellipsoid(kind+'_Shin'+str(side),(sx,h*.105,.03),(w*.33,h*.24,w*.38),c['black'],parent=p)
-        shoe=s.ellipsoid(kind+'_Shoe'+str(side),(sx,.34,.33),(w*.56,.62,1.52 if kind!='Archivist' else 1.28),c['black'],parent=p)
-        shoe.rotation_euler.x=.08 if kind=='Butler' else -.04
+        # 무릎을 살짝 굽힌 연속 경로 곡면. 다리 전체가 하나의 메시라 관절 이음새가 없다.
+        leg_points=[
+          (sx,.62,.04),
+          (sx+side*w*.012,h*.13,.02),
+          (sx+side*w*.030,h*.23,0),
+          (sx-side*w*.018,h*.33,-.025),
+          (sx,h*.405,-.035),
+        ]
+        s.curve_tube(kind+'_Leg'+str(side),leg_points,
+          [w*.18,w*.17,w*.205,w*.24,w*.22],
+          [w*.20,w*.18,w*.22,w*.255,w*.24],
+          trousers,sides=26,parent=p)
+        shoe=s.loft(kind+'_Shoe'+str(side),(sx,.05,.10),[
+          (-.02,w*.205,w*.22,0,.08,.04),
+          (.10,w*.235,w*.27,0,.16,.08),
+          (.22,w*.25,w*.32,0,.26,.11),
+          (.34,w*.235,w*.34,0,.34,.10),
+          (.45,w*.185,w*.27,0,.37,.06)
+        ],leather,sides=28,parent=p)
+        shoe.rotation_euler.x=.025 if kind=='Butler' else -.015
 
-    # 몸통: 셔츠/조끼/코트/라펠을 실제 레이어로 분리한다.
-    s.ellipsoid(kind+'_Pelvis',(0,h*.405,0),(w*1.18,h*.18,w*.78),q['coat'],parent=p)
-    s.ellipsoid(kind+'_Ribcage',(0,h*.585,0),(w*1.42,h*.34,w*.82),q['coat'],parent=p)
-    s.box(kind+'_ShirtFront',(0,h*.59,.48),(w*.58,h*.245,.16),c['ivory'],parent=p)
-    s.box(kind+'_Waistcoat',(0,h*.545,.58),(w*.74,h*.19,.13),q['vest'],parent=p)
-    for i in range(4):
-        s.ellipsoid(kind+'_Button'+str(i),(0,h*.615-i*h*.035,.69),(.13,.13,.075),c['brass'],parent=p)
-    for side in [-1,1]:
-        lapel=s.box(kind+'_Lapel'+str(side),(side*w*.245,h*.635,.64),(w*.30,h*.245,.11),q['coat'],parent=p,lean=-side*.19)
-        # 어깨와 팔을 별도 볼륨으로 만들어 정면/측면 모두 읽히게 한다.
-        s.ellipsoid(kind+'_Shoulder'+str(side),(side*w*.69,h*.665,.01),(w*.46,h*.105,w*.54),q['coat'],parent=p)
-        arm=s.node(kind+'_ArmRig'+str(side),pos=(side*w*.70,h*.55,.02),parent=p)
-        arm.rotation_euler.y=(.08 if kind=='Butler' else -.16 if kind=='Undertaker' else -.24)*side
-        arm.rotation_euler.x=.06 if kind=='Butler' else .11
-        s.ellipsoid(kind+'_UpperArm'+str(side),(0,0,0),(w*.42,h*.25,w*.45),q['coat'],parent=arm)
-        s.ellipsoid(kind+'_Forearm'+str(side),(0,-h*.18,.04),(w*.34,h*.22,w*.36),q['vest'] if kind=='Archivist' else q['coat'],parent=arm)
-        s.lathe(kind+'_Cuff'+str(side),(0,-h*.30,.05),w*.18,w*.18,h*.035,c['ivory'],parent=arm)
-        hand=s.ellipsoid(kind+'_Hand'+str(side),(0,-h*.35,.10),(w*.31,h*.09,w*.32),q['skin'],parent=arm)
-        for finger in range(4):
-            fx=(finger-1.5)*w*.072
-            s.lathe(kind+'_Finger'+str(side)+'_'+str(finger),(fx,-h*.405,.17),w*.033,w*.024,h*.095,q['skin'],parent=arm)
-        s.lathe(kind+'_Thumb'+str(side),(side*w*.12,-h*.37,.19),w*.035,w*.027,h*.09,q['skin'],parent=arm)
-
-    # 코트 테일은 캐릭터마다 길이/폭이 다르다.
-    tail_len=.33 if kind=='Butler' else .38 if kind=='Undertaker' else .21
-    for side in [-1,1]:
-        tail=s.box(kind+'_CoatTail'+str(side),(side*w*.23,h*(.39-tail_len*.45),-.18),(w*.52,h*tail_len,.20),q['coat'],parent=p,lean=side*(.12 if kind!='Archivist' else .05))
-        tail.rotation_euler.x=.035*side
-
-    # 목과 얼굴. 세 NPC 모두 서로 다른 비율과 골격을 직접 구성한다.
-    s.lathe(kind+'_Neck',(0,h*.755,0),w*.17,w*.15,h*.095,q['skin'],parent=p)
-    hx,hy,hz=q['head']
-    head_y=h*.865
-    s.ellipsoid(kind+'_Head',(0,head_y,0),(w*hx,h*.175*hy,w*hz),q['skin'],parent=p)
-    # 광대/턱 볼륨
-    s.ellipsoid(kind+'_CheekL',(-w*.22,head_y-.04,.30),(w*.27,h*.055,w*.24),q['skin'],parent=p)
-    s.ellipsoid(kind+'_CheekR',(w*.22,head_y-.04,.30),(w*.27,h*.055,w*.24),q['skin'],parent=p)
-    s.ellipsoid(kind+'_Jaw',(0,head_y-h*.062,.15),(w*.58*q['jaw'],h*.075,w*.55),q['skin'],parent=p)
-    # 코
-    nose=s.ellipsoid(kind+'_Nose',(0,head_y+.008,.58),(w*.16*q['nose'],h*.062,w*.20*q['nose']),q['skin'],parent=p)
-    nose.rotation_euler.x=-.10 if kind=='Butler' else .02
-    # 눈/홍채/눈꺼풀/눈썹
-    for side in [-1,1]:
-        ex=side*w*.205
-        s.ellipsoid(kind+'_Sclera'+str(side),(ex,head_y+h*.028,.55),(w*.20,h*.045,w*.10),c['ivory'],parent=p)
-        s.ellipsoid(kind+'_Iris'+str(side),(ex,head_y+h*.028,.605),(w*.075,h*.027,w*.035),q['eye'],parent=p)
-        s.ellipsoid(kind+'_Pupil'+str(side),(ex,head_y+h*.028,.625),(w*.032,h*.015,w*.018),c['black'],parent=p)
-        lid=s.box(kind+'_UpperLid'+str(side),(ex,head_y+h*.054,.603),(w*.22,h*.018,.026),q['skin'],parent=p,lean=-side*.03)
-        brow=s.box(kind+'_Brow'+str(side),(ex,head_y+h*.082,.615),(w*.24,h*.023,.035),q['hair'],parent=p,lean=side*(.08 if kind=='Undertaker' else -.04 if kind=='Butler' else .02))
-    # 입술/인중/귀
-    s.ellipsoid(kind+'_UpperLip',(0,head_y-h*.045,.61),(w*.31,h*.022,.045),q['accent'] if kind=='Undertaker' else s.material(kind+'Lip',(.22,.10,.11)),parent=p)
-    s.ellipsoid(kind+'_LowerLip',(0,head_y-h*.061,.615),(w*.27,h*.018,.042),s.material(kind+'Lip',(.22,.10,.11)),parent=p)
-    for side in [-1,1]:
-        s.ellipsoid(kind+'_Ear'+str(side),(side*w*.46,head_y+.005,.02),(w*.15,h*.075,w*.10),q['skin'],parent=p)
-
-    # 역할별 헤어/수염/표정 실루엣.
+    # 흉곽/허리/골반을 한 연속 몸통으로 잡아 primitive 겹침 이음새를 제거한다.
     if kind=='Butler':
-        s.ellipsoid('Butler_HairCrown',(0,head_y+h*.095,-.03),(w*.83,h*.095,w*.73),q['hair'],parent=p)
-        for side in [-1,1]:
-            s.ellipsoid('Butler_HairSide'+str(side),(side*w*.34,head_y+h*.055,-.03),(w*.28,h*.11,w*.38),q['hair'],parent=p)
-            s.ellipsoid('Butler_Moustache'+str(side),(side*w*.12,head_y-h*.035,.64),(w*.22,h*.022,.045),q['hair'],parent=p)
-        s.ellipsoid('Butler_EyeBagL',(-w*.20,head_y+h*.006,.59),(w*.20,h*.018,.025),q['vest'],parent=p)
-        s.ellipsoid('Butler_EyeBagR',(w*.20,head_y+h*.006,.59),(w*.20,h*.018,.025),q['vest'],parent=p)
-        s.box('Butler_BowTie',(0,h*.735,.78),(w*.88,h*.035,.16),q['accent'],parent=p)
-        s.lathe('Butler_Tray',(w*.78,h*.335,.72),w*.56,w*.56,.10,c['brass'],parent=p)
-        s.lathe('Butler_Candle',(w*.78,h*.405,.72),.13,.11,h*.12,c['ivory'],parent=p)
-        s.ellipsoid('Butler_CandleFlame',(w*.78,h*.48,.72),(.20,.55,.18),c['amber'],parent=p)
+        torso_sections=[
+          (h*.385,w*.46,w*.31,0,-.025,0),(h*.44,w*.47,w*.32,0,-.010,.015),
+          (h*.50,w*.43,w*.31,0,.005,.025),(h*.565,w*.52,w*.34,0,.010,.040),
+          (h*.625,w*.59,w*.37,0,.006,.050),(h*.675,w*.64,w*.36,0,-.004,.025),
+          (h*.715,w*.47,w*.29,0,-.012,.008),
+        ]
     elif kind=='Undertaker':
-        # 큰 챙 모자와 뒤로 처진 코트가 실루엣을 결정한다.
-        s.ellipsoid('Undertaker_HairBack',(0,head_y+h*.03,-.16),(w*.88,h*.18,w*.86),q['hair'],parent=p)
-        s.lathe('Undertaker_HatBrim',(0,head_y+h*.135,0),w*.78,w*.78,h*.025,c['black'],parent=p)
-        s.lathe('Undertaker_HatCrown',(0,head_y+h*.205,-.02),w*.46,w*.38,h*.16,c['black'],parent=p)
-        s.lathe('Undertaker_HatRibbon',(0,head_y+h*.155,.02),w*.48,w*.48,h*.025,q['accent'],parent=p)
-        s.ellipsoid('Undertaker_CheekShadowL',(-w*.26,head_y-h*.02,.53),(w*.20,h*.06,.025),q['vest'],parent=p)
-        s.ellipsoid('Undertaker_CheekShadowR',(w*.26,head_y-h*.02,.53),(w*.20,h*.06,.025),q['vest'],parent=p)
-        s.box('Undertaker_Ledger',(w*.62,h*.43,.66),(w*.72,h*.18,.18),q['accent'],parent=p)
-        s.box('Undertaker_LedgerBand',(w*.62,h*.43,.77),(w*.14,h*.19,.025),c['brass'],parent=p)
-        # 삽 손잡이/날
-        s.lathe('Undertaker_SpadeHandle',(-w*.70,h*.37,-.12),.055,.055,h*.55,s.material('DarkWood',(.10,.045,.025)),parent=p)
-        s.box('Undertaker_SpadeBlade',(-w*.70,h*.09,-.10),(w*.38,h*.10,w*.48),c['stone'],parent=p)
+        torso_sections=[
+          (h*.385,w*.59,w*.38,0,-.035,0),(h*.44,w*.62,w*.40,0,-.015,.020),
+          (h*.50,w*.58,w*.39,0,.006,.030),(h*.565,w*.67,w*.43,0,.018,.055),
+          (h*.625,w*.76,w*.47,0,.018,.070),(h*.675,w*.82,w*.46,0,.006,.045),
+          (h*.715,w*.66,w*.39,0,-.010,.018),
+        ]
     else:
-        # 기록관: 듬성한 머리, 안경, 잉크 묻은 손, 장부/펜/열쇠.
-        s.ellipsoid('Archivist_HairBack',(0,head_y+h*.075,-.10),(w*.72,h*.105,w*.68),q['hair'],parent=p)
-        for side in [-1,1]:
-            s.ellipsoid('Archivist_HairWisp'+str(side),(side*w*.30,head_y+h*.11,.02),(w*.17,h*.11,w*.22),q['hair'],parent=p)
-            s.ellipsoid('Archivist_GlassLens'+str(side),(side*w*.205,head_y+h*.03,.64),(w*.235,h*.06,.025),c['glass'],parent=p)
-            s.lathe('Archivist_GlassRim'+str(side),(side*w*.205,head_y+h*.03,.655),w*.135,w*.135,.025,c['brass'],parent=p)
-        s.box('Archivist_GlassBridge',(0,head_y+h*.03,.66),(w*.16,h*.018,.025),c['brass'],parent=p)
-        s.ellipsoid('Archivist_InkStainL',(-w*.71,h*.20,.18),(w*.13,h*.05,w*.14),q['accent'],parent=p)
-        s.box('Archivist_Ledger',(w*.54,h*.40,.71),(w*.82,h*.24,.20),q['accent'],parent=p)
-        s.box('Archivist_LedgerLabel',(w*.54,h*.40,.825),(w*.50,h*.12,.025),c['ivory'],parent=p)
-        s.lathe('Archivist_Pen',(w*.15,h*.46,.86),.025,.015,h*.18,c['brass'],parent=p)
-        s.lathe('Archivist_KeyStem',(-w*.55,h*.32,.58),.025,.025,h*.13,c['brass'],parent=p)
-        s.ellipsoid('Archivist_KeyBow',(-w*.55,h*.40,.58),(w*.16,h*.08,.035),c['brass'],parent=p)
+        torso_sections=[
+          (h*.385,w*.45,w*.31,0,-.020,0),(h*.44,w*.46,w*.31,0,-.005,.012),
+          (h*.50,w*.40,w*.29,0,.010,.025),(h*.565,w*.49,w*.33,0,.020,.040),
+          (h*.625,w*.55,w*.35,0,.018,.050),(h*.675,w*.58,w*.34,0,.008,.030),
+          (h*.715,w*.44,w*.27,0,-.005,.010),
+        ]
+    s.loft(kind+'_CoatTorso',(0,0,0),torso_sections,q['coat'],sides=30,parent=p)
 
-    # 역할별 기본 포즈: 정자세 마네킹 금지.
+    # 셔츠와 조끼는 몸 앞에 붙인 박스가 아니라 실제 윤곽을 가진 얇은 의상 외피다.
+    s.prism(kind+'_ShirtFront',(0,h*.475,.405),[
+      (-w*.17,0),(w*.17,0),(w*.155,h*.195),(w*.085,h*.245),(-w*.085,h*.245),(-w*.155,h*.195)
+    ],.085,c['ivory'],parent=p)
+    s.prism(kind+'_Waistcoat',(0,h*.445,.475),[
+      (-w*.27,0),(w*.27,0),(w*.255,h*.15),(w*.105,h*.215),(0,h*.17),(-w*.105,h*.215),(-w*.255,h*.15)
+    ],.085,q['vest'],parent=p)
+    s.prism(kind+'_Belt',(0,h*.425,.405),[
+      (-w*.43,-h*.018),(w*.43,-h*.018),(w*.43,h*.018),(-w*.43,h*.018)
+    ],.055,leather,parent=p)
+    s.prism(kind+'_BeltBuckle',(0,h*.425,.445),[
+      (-w*.060,-h*.020),(w*.060,-h*.020),(w*.060,h*.020),(-w*.060,h*.020)
+    ],.040,c['brass'],parent=p)
+    for i in range(4):
+        s.loft(kind+'_Button'+str(i),(0,h*.60-i*h*.034,.61),[
+          (-.045,.075,.035),(0,.085,.045),(.045,.075,.035)
+        ],c['brass'],sides=18,parent=p)
+
+    # 라펠은 역할별 각도/폭이 다르고 어깨에서 허리까지 실제 패널로 이어진다.
+    lapel_drop=.30 if kind=='Butler' else .34 if kind=='Undertaker' else .25
+    for side in [-1,1]:
+        lapel_outline=[
+          (0,0),(side*w*.18,-h*.045),(side*w*.31,-h*lapel_drop),
+          (side*w*.12,-h*(lapel_drop+.055)),(side*w*.035,-h*.12)
+        ]
+        lapel=s.prism(kind+'_Lapel'+str(side),(side*w*.10,h*.695,.59),lapel_outline,.10,q['coat'],parent=p)
+        lapel.rotation_euler.y=side*.035
+
+        # 팔은 역할/좌우마다 다른 행동 자세를 가진다. 좌우 대칭 마네킹 포즈를 금지한다.
+        shoulder=(side*w*.69,h*.64,.00)
+        if kind=='Butler':
+            if side<0:
+                elbow=(-w*.75,h*.525,.025)
+                wrist=(-w*.66,h*.385,.10)
+            else:
+                elbow=(w*.82,h*.500,.12)
+                wrist=(w*.74,h*.365,.53)
+        elif kind=='Undertaker':
+            if side<0:
+                elbow=(-w*.78,h*.505,-.055)
+                wrist=(-w*.71,h*.315,-.08)
+            else:
+                elbow=(w*.75,h*.535,.14)
+                wrist=(w*.53,h*.435,.48)
+        else:
+            if side<0:
+                elbow=(-w*.70,h*.530,.16)
+                wrist=(-w*.39,h*.455,.48)
+            else:
+                elbow=(w*.72,h*.520,.10)
+                wrist=(w*.50,h*.405,.50)
+        arm_points=[
+          shoulder,
+          (shoulder[0]*.985,h*.595,.018),
+          elbow,
+          ((elbow[0]+wrist[0])*.5,(elbow[1]+wrist[1])*.5,(elbow[2]+wrist[2])*.5),
+          wrist,
+        ]
+        s.curve_tube(kind+'_Arm'+str(side),arm_points,
+          [w*.255,w*.235,w*.205,w*.18,w*.155],
+          [w*.27,w*.245,w*.215,w*.195,w*.18],
+          q['coat'],sides=28,parent=p)
+        s.loft(kind+'_Cuff'+str(side),wrist,[
+          (-h*.016,w*.115,w*.125),(0,w*.125,w*.135),(h*.016,w*.115,w*.125)
+        ],c['ivory'],sides=22,parent=p)
+        hand_center=(wrist[0],wrist[1]-h*.07,wrist[2]+.045)
+        s.loft(kind+'_Hand'+str(side),hand_center,[
+          (-h*.040,w*.115,w*.125),(0,w*.140,w*.145),(h*.040,w*.120,w*.125)
+        ],glove,sides=24,parent=p)
+        finger_lengths=[.036,.043,.041,.033]
+        for finger in range(4):
+            fx=hand_center[0]+(finger-1.5)*w*.048
+            length=h*finger_lengths[finger]
+            start=(fx,hand_center[1]-h*.040,hand_center[2]+.060)
+            mid=(fx+side*(finger-1.5)*w*.004,hand_center[1]-h*.040-length*.52,hand_center[2]+.072)
+            tip=(fx+side*(finger-1.5)*w*.006,hand_center[1]-h*.040-length,hand_center[2]+.048)
+            s.curve_tube(kind+'_Finger'+str(side)+'_'+str(finger),[start,mid,tip],
+              [w*.024,w*.022,w*.017],[w*.026,w*.024,w*.018],glove,sides=18,parent=p)
+        thumb_start=(hand_center[0]+side*w*.085,hand_center[1]-h*.008,hand_center[2]+.036)
+        thumb_mid=(hand_center[0]+side*w*.120,hand_center[1]-h*.036,hand_center[2]+.064)
+        thumb_tip=(hand_center[0]+side*w*.132,hand_center[1]-h*.062,hand_center[2]+.050)
+        s.curve_tube(kind+'_Thumb'+str(side),[thumb_start,thumb_mid,thumb_tip],
+          [w*.030,w*.027,w*.020],[w*.032,w*.029,w*.021],glove,sides=18,parent=p)
+
+    # 역할별 코트 자락. 앞에서 삼각 판처럼 보이지 않게 허리 뒤에서 시작하고 아래로 자연스럽게 벌어진다.
+    if kind=='Butler':
+        tail_len=.36
+        for side in [-1,1]:
+            outline=[
+              (side*w*.03,0),(side*w*.24,-h*.015),(side*w*.30,-h*tail_len*.44),
+              (side*w*.26,-h*tail_len*.83),(side*w*.16,-h*tail_len),(side*w*.055,-h*tail_len*.94)
+            ]
+            tail=s.prism('Butler_CoatTail'+str(side),(0,h*.425,-.34),outline,.11,q['coat'],parent=p)
+            tail.rotation_euler.x=side*.018
+    elif kind=='Undertaker':
+        tail_len=.42
+        for side in [-1,1]:
+            outline=[
+              (side*w*.02,0),(side*w*.33,-h*.020),(side*w*.40,-h*tail_len*.34),
+              (side*w*.43,-h*tail_len*.74),(side*w*.34,-h*tail_len),(side*w*.08,-h*tail_len*.96)
+            ]
+            tail=s.prism('Undertaker_CoatTail'+str(side),(0,h*.435,-.31),outline,.15,q['coat'],parent=p)
+            lining=s.prism('Undertaker_CoatLining'+str(side),(0,h*.430,-.215),[
+              (side*w*.06,-h*.025),(side*w*.27,-h*.045),(side*w*.31,-h*tail_len*.48),
+              (side*w*.28,-h*tail_len*.84),(side*w*.12,-h*tail_len*.90)
+            ],.028,q['accent'],parent=p)
+            lining.rotation_euler.x=side*.012
+    else:
+        tail_len=.245
+        for side in [-1,1]:
+            outline=[
+              (side*w*.02,0),(side*w*.25,-h*.012),(side*w*.28,-h*tail_len*.44),
+              (side*w*.22,-h*tail_len),(side*w*.055,-h*tail_len*.93)
+            ]
+            tail=s.prism('Archivist_CoatTail'+str(side),(0,h*.425,-.29),outline,.095,q['coat'],parent=p)
+            tail.rotation_euler.x=side*.012
+
+    # 목/머리: 얼굴은 2천+ 정점 연속 곡면으로 직접 조형한다.
+    s.loft(kind+'_Neck',(0,h*.735,-.02),[
+      (0,w*.17,w*.16),(h*.055,w*.16,w*.15),(h*.095,w*.145,w*.145)
+    ],q['skin'],sides=28,parent=p)
+    hx,hy,hz=q['head'];head_y=h*.865
+    face_profiles={
+      'Butler':dict(role='Butler',jaw=.76,temple=.95,cheek_width=.025,nose_bridge=.26,nose_tip=.15,nose_wing=.022,cheek=.080,eye_socket=.14,brow=.075,muzzle=.026,philtrum=.020,upper_lip=.018,lower_lip=.016,chin=.080,temple_hollow=.055,asymmetry=.008),
+      'Undertaker':dict(role='Undertaker',jaw=1.08,temple=1.04,cheek_width=.075,nose_bridge=.14,nose_tip=.090,nose_wing=.042,cheek=.115,eye_socket=.17,brow=.050,muzzle=.045,philtrum=.016,upper_lip=.026,lower_lip=.024,chin=.048,temple_hollow=.028,asymmetry=-.012),
+      'Archivist':dict(role='Archivist',jaw=.80,temple=.89,cheek_width=.012,nose_bridge=.18,nose_tip=.085,nose_wing=.018,cheek=.055,eye_socket=.16,brow=.035,muzzle=.024,philtrum=.022,upper_lip=.015,lower_lip=.014,chin=.064,temple_hollow=.075,asymmetry=.014),
+    }
+    head_size=(w*.98*hx,h*.225*hy,w*.92*hz)
+    head=s.sculpted_face(kind+'Head',(0,head_y,0),head_size,q['skin'],face_profiles[kind],parent=p)
+    face_front=head_size[2]*.5
+
+    # 코는 실제 얼굴 전면에서 시작해 콧대-콧방울-끝이 앞으로 이어진다.
+    nose_forward=(.24 if kind=='Butler' else .15 if kind=='Undertaker' else .13)*w
+    s.curve_tube(kind+'_Nose',[
+      (0,head_y+h*.070,face_front*.79),
+      (0,head_y+h*.030,face_front*.90+nose_forward*.18),
+      (0,head_y-h*.005,face_front*.96+nose_forward*.62),
+      (0,head_y-h*.022,face_front+.035+nose_forward),
+    ],[w*.050,w*.058,w*.064,w*.055],[w*.055,w*.062,w*.067,w*.058],q['skin'],sides=24,parent=p)
+
+    # 눈은 역할별 비율과 처짐을 따로 잡아 얼굴 표면 안쪽에 붙인다.
+    eye_profile={
+      'Butler':dict(spacing=.184,width=.172,height=.029,depth=.046,y=.019,droop=.010,brow=.067,tilt=-.006),
+      'Undertaker':dict(spacing=.198,width=.166,height=.028,depth=.044,y=.020,droop=.004,brow=.072,tilt=.012),
+      'Archivist':dict(spacing=.178,width=.168,height=.027,depth=.043,y=.019,droop=.012,brow=.066,tilt=.003),
+    }[kind]
+    for side in [-1,1]:
+        ex=side*w*eye_profile['spacing'];eye_y=head_y+h*eye_profile['y']
+        ew=w*eye_profile['width'];eh=h*eye_profile['height'];ed=w*eye_profile['depth']
+        s.lens(kind+'_Sclera'+str(side),(ex,eye_y,face_front+.010),(ew,eh,ed),c['ivory'],parent=p,sides=28,rings=10)
+        s.lens(kind+'_Iris'+str(side),(ex,eye_y-h*.001,face_front+.032),(w*.050,h*.023,w*.015),q['eye'],parent=p,sides=22,rings=8)
+        s.lens(kind+'_Pupil'+str(side),(ex,eye_y-h*.001,face_front+.042),(w*.018,h*.017,w*.008),c['black'],parent=p,sides=18,rings=6)
+        lid_half=ew*.48;lid_y=eye_y+eh*.38
+        s.curve_tube(kind+'_UpperLid'+str(side),[
+          (ex-side*lid_half,lid_y-h*.003,face_front+.039),
+          (ex,lid_y+h*(.004-eye_profile['droop']*.35),face_front+.045),
+          (ex+side*lid_half,lid_y-h*.004,face_front+.038)
+        ],[w*.008,w*.010,w*.007],[w*.006,w*.008,w*.005],q['skin'],sides=16,parent=p)
+        lower_y=eye_y-eh*.38
+        s.curve_tube(kind+'_LowerLid'+str(side),[
+          (ex-side*lid_half*.90,lower_y+h*.002,face_front+.037),
+          (ex,lower_y-h*.003,face_front+.041),
+          (ex+side*lid_half*.90,lower_y+h*.002,face_front+.036)
+        ],[w*.006,w*.007,w*.005],[w*.005,w*.006,w*.004],q['skin'],sides=16,parent=p)
+        brow_y=head_y+h*eye_profile['brow'];brow_tilt=eye_profile['tilt']*h
+        s.curve_tube(kind+'_Brow'+str(side),[
+          (ex-side*w*.095,brow_y-brow_tilt,face_front+.039),
+          (ex,brow_y+h*.004,face_front+.044),
+          (ex+side*w*.095,brow_y+brow_tilt,face_front+.038)
+        ],[w*.010,w*.013,w*.008],[w*.007,w*.009,w*.006],q['hair'],sides=16,parent=p)
+
+    # 입과 귀도 역할별 비율로 얼굴에 밀착시킨다.
+    lip=s.material(kind+'Lip',(.22,.10,.11))
+    mouth_y=head_y-h*.055
+    mouth_half={'Butler':.098,'Undertaker':.108,'Archivist':.092}[kind]*w
+    s.curve_tube(kind+'_UpperLip',[
+      (-mouth_half,mouth_y,face_front+.032),
+      (0,mouth_y+h*.003,face_front+.037),
+      (mouth_half,mouth_y,face_front+.032)
+    ],[w*.009,w*.011,w*.009],[w*.006,w*.008,w*.006],q['accent'] if kind=='Undertaker' else lip,sides=16,parent=p)
+    s.curve_tube(kind+'_LowerLip',[
+      (-mouth_half*.88,mouth_y-h*.013,face_front+.032),
+      (0,mouth_y-h*.017,face_front+.038),
+      (mouth_half*.88,mouth_y-h*.013,face_front+.032)
+    ],[w*.008,w*.010,w*.008],[w*.006,w*.008,w*.006],lip,sides=16,parent=p)
+    ear_profile={
+      'Butler':(.405,.035,.045,.034),
+      'Undertaker':(.418,.040,.050,.038),
+      'Archivist':(.400,.033,.043,.032),
+    }[kind]
+    for side in [-1,1]:
+        ear_x,ear_rx,ear_rz,ear_h=ear_profile
+        ear=s.loft(kind+'_Ear'+str(side),(side*w*ear_x,head_y+.002,-.012),[
+          (-h*ear_h,w*ear_rx,w*ear_rz),(0,w*(ear_rx+.010),w*(ear_rz+.015)),(h*ear_h,w*ear_rx,w*ear_rz)
+        ],q['skin'],sides=18,parent=p)
+        ear.rotation_euler.y=side*.14
+
+    # 역할별 헤어/수염/소품. 실루엣만 봐도 세 NPC가 구분되게 한다.
+    if kind=='Butler':
+        s.loft('Butler_HairCap',(0,head_y+h*.075,-.055),[
+          (-h*.015,w*.39,w*.34),(h*.04,w*.41,w*.35),(h*.095,w*.30,w*.28)
+        ],q['hair'],sides=30,parent=p)
+        for side in [-1,1]:
+            s.curve_tube('Butler_HairTemple'+str(side),[
+              (side*w*.31,head_y+h*.060,-.02),
+              (side*w*.35,head_y+h*.018,.00),
+              (side*w*.32,head_y-h*.030,.015)
+            ],[w*.045,w*.052,w*.032],[w*.030,w*.035,w*.022],q['hair'],sides=18,parent=p)
+            s.curve_tube('Butler_Moustache'+str(side),[
+              (side*w*.018,head_y-h*.036,face_front+.071),
+              (side*w*.095,head_y-h*.038,face_front+.075),
+              (side*w*.190,head_y-h*.052,face_front+.068)
+            ],[w*.020,w*.025,w*.014],[w*.013,w*.015,w*.010],q['hair'],sides=16,parent=p)
+        s.prism('Butler_BowTie',(0,h*.728,.63),[
+          (-w*.16,0),(-w*.045,h*.030),(0,0),(w*.045,h*.030),(w*.16,0),(w*.050,-h*.028),(0,0),(-w*.050,-h*.028)
+        ],.075,q['accent'],parent=p)
+        s.lathe('Butler_Tray',(w*.74,h*.355,.60),w*.47,w*.47,.075,c['brass'],parent=p)
+        s.lathe('Butler_Candle',(w*.74,h*.420,.60),.095,.080,h*.095,c['ivory'],parent=p)
+        s.loft('Butler_CandleFlame',(w*.74,h*.475,.60),[
+          (-.25,.10,.08),(0,.13,.10),(.30,.03,.025)
+        ],c['amber'],sides=18,parent=p)
+    elif kind=='Undertaker':
+        s.loft('Undertaker_HairBack',(0,head_y+h*.04,-.13),[
+          (-h*.055,w*.38,w*.38),(h*.03,w*.44,w*.42),(h*.10,w*.32,w*.34)
+        ],q['hair'],sides=28,parent=p)
+        s.lathe('UndertakerHatBrim',(0,head_y+h*.145,0),w*.82,w*.82,h*.025,c['black'],sides=36,parent=p)
+        s.loft('UndertakerHat',(0,head_y+h*.15,-.03),[
+          (0,w*.46,w*.42),(h*.12,w*.43,w*.39),(h*.22,w*.34,w*.33)
+        ],c['black'],sides=32,parent=p)
+        s.lathe('UndertakerHatRibbon',(0,head_y+h*.175,.02),w*.47,w*.47,h*.026,q['accent'],sides=32,parent=p)
+        s.box('Undertaker_Ledger',(w*.50,h*.445,.56),(w*.54,h*.145,.14),q['accent'],parent=p)
+        s.box('Undertaker_LedgerBand',(w*.50,h*.445,.645),(w*.090,h*.155,.020),c['brass'],parent=p)
+        s.lathe('Undertaker_SpadeHandle',(-w*.70,h*.37,-.12),.055,.055,h*.55,s.material('DarkWood',(.10,.045,.025)),parent=p)
+        s.prism('Undertaker_SpadeBlade',(-w*.70,h*.07,-.10),[
+          (-w*.20,0),(w*.20,0),(w*.15,h*.13),(0,h*.18),(-w*.15,h*.13)
+        ],.18,c['stone'],parent=p)
+    else:
+        s.loft('Archivist_HairBack',(0,head_y+h*.07,-.09),[
+          (-h*.03,w*.31,w*.31),(h*.035,w*.36,w*.34),(h*.095,w*.24,w*.27)
+        ],q['hair'],sides=26,parent=p)
+        for side in [-1,1]:
+            s.curve_tube('Archivist_HairWisp'+str(side),[
+              (side*w*.25,head_y+h*.105,-.03),
+              (side*w*.30,head_y+h*.145,-.055),
+              (side*w*.26,head_y+h*.175,-.075)
+            ],[w*.022,w*.017,w*.010],[w*.016,w*.012,w*.008],q['hair'],sides=16,parent=p)
+            s.lathe('Archivist_GlassRim'+str(side),(side*w*.205,head_y+h*.03,face_front+.095),w*.105,w*.105,.022,c['brass'],sides=28,parent=p)
+        s.prism('Archivist_GlassBridge',(0,head_y+h*.03,face_front+.110),[
+          (-w*.070,-h*.006),(w*.070,-h*.006),(w*.070,h*.006),(-w*.070,h*.006)
+        ],.020,c['brass'],parent=p)
+        s.prism('Archivist_InkStainL',(-w*.11,h*.43,.615),[
+          (-w*.05,0),(w*.06,h*.01),(w*.04,h*.05),(-w*.045,h*.04)
+        ],.018,q['accent'],parent=p)
+        s.box('Archivist_Ledger',(w*.46,h*.415,.57),(w*.58,h*.18,.14),q['accent'],parent=p)
+        s.box('Archivist_LedgerLabel',(w*.46,h*.415,.652),(w*.32,h*.085,.020),c['ivory'],parent=p)
+        s.lathe('Archivist_Pen',(-w*.23,h*.475,.66),.020,.012,h*.15,c['brass'],parent=p)
+        s.lathe('Archivist_KeyStem',(-w*.55,h*.32,.58),.025,.025,h*.13,c['brass'],parent=p)
+        s.lathe('Archivist_KeyBow',(-w*.55,h*.40,.58),w*.08,w*.08,.025,c['brass'],sides=24,parent=p)
+
+    # 역할별 기본 포즈: 집사 정자세, 장의사 무게중심 뒤, 기록관은 앞으로 굽힌다.
     if kind=='Butler':
         p.rotation_euler.z=math.radians(-1.5)
     elif kind=='Undertaker':
@@ -402,45 +805,501 @@ def npc(s,kind,pos):
 
 def build():
     s=Scene();c=palette(s)
-    s.box('Courtyard',(0,-.2,9),(84,.8,68),s.material('courtyard',(.13,.19,.19)))
-    s.box('HallFloor',(0,.1,-23),(59,.5,40),c['wood'])
-    # Compact footprint, exaggerated height and crooked silhouette.
+    # 대저택 전체 규모: 중앙 2층 그랜드홀 + 좌우 날개 + 정식 정원 플레이 영역.
+    s.box('Courtyard',(0,-.2,20),(156,.8,132),s.material('courtyard',(.12,.17,.17)))
+    s.box('HallFloor',(0,.1,-29),(108,.5,72),c['wood'])
+    s.box('LeftWingFloor',(-58,.1,-30),(36,.48,64),c['wood'])
+    s.box('RightWingFloor',(58,.1,-30),(36,.48,64),c['wood'])
+    s.box('Runner',(0,.48,-25),(12,.08,61),c['red'])
+    # 중앙 홀 외피와 좌우 날개. 중앙 시야를 막는 대형 빈 박스가 아니라 방 단위로 깊이를 나눈다.
     for side in [-1,1]:
-        s.box('ManorSideWall'+str(side),(side*29,11,-23),(1.5,22,40),c['plum'],lean=side*1.0)
-        s.box('FacadeWing'+str(side),(side*20,12,-3),(24,24,2),c['plum'],lean=side*.7)
-        for z in [-37,-23,-9]:
-            s.box('WallRib'+str(side)+str(z),(side*28,10,z),(1.5,20,1),c['wood'])
-        for x in [side*13,side*25]:
-            for y in [7,17]:
-                s.box('WindowFrame'+str(x)+str(y),(x,y,-1.8),(6,8,.8),c['wood'])
-                s.box('WindowGlass'+str(x)+str(y),(x,y,-1.25),(4.7,6.8,.12),c['amber'])
-                s.box('WindowMullion'+str(x)+str(y),(x,y,-1.0),(.28,7,.15),c['black'])
-                s.box('WindowCross'+str(x)+str(y),(x,y,-.9),(5,.25,.2),c['black'])
-        s.box('EntryPillar'+str(side),(side*8.1,7,-2),(1.6,14,4),c['stone'],lean=-side*.7)
-    s.box('BackWall',(0,11,-43),(60,22,1.5),c['plum'])
-    s.box('EntryLintel',(0,14,-2),(18,3,4),c['wood'])
-    s.box('EntryThreshold',(0,.40,-2),(16,.4,6),c['stone'])
+        # 중앙 홀↔좌우 날개는 통짜 벽이 아니라 세 개의 실제 통로로 연결한다.
+        wall_segments=[(-61.5,7),(-43.5,13),(-22.5,13),(-.5,15)]
+        for seg,(z0,length) in enumerate(wall_segments):
+            s.box('ManorSideWall'+str(side)+'_'+str(seg),(side*54,13,z0),(1.5,26,length),c['plum'],lean=side*.35)
+        # 각 통로에 석재 문설주와 뾰족 아치 프레임을 둔다. 이동 폭은 8stud 이상 유지.
+        for gate,z0 in enumerate([-54,-33,-12]):
+            for jamb in [-1,1]:
+                s.box('WingArchJamb'+str(side)+'_'+str(gate)+'_'+str(jamb),(side*53.65,5.0,z0+jamb*4.35),(1.0,10,.65),c['stone'])
+            arch_points=[
+              (side*53.58,9.4,z0-4.15),
+              (side*53.58,11.0,z0-2.85),
+              (side*53.58,13.7,z0),
+              (side*53.58,11.0,z0+2.85),
+              (side*53.58,9.4,z0+4.15),
+            ]
+            s.curve_tube('WingArch'+str(side)+'_'+str(gate),arch_points,
+              [.30,.28,.24,.28,.30],[.30,.28,.24,.28,.30],c['stone'],sides=20)
+            s.box('WingThreshold'+str(side)+'_'+str(gate),(side*54,.28,z0),(5.5,.18,8.0),c['stone'])
+        s.box('FacadeWing'+str(side),(side*43,13,-2),(34,26,2),c['plum'],lean=side*.5)
+        s.box('OuterWingWall'+str(side),(side*75,11,-31),(1.2,22,64),c['plum'],lean=side*.35)
+        s.box('WingBackWall'+str(side),(side*58,11,-63),(35,22,1.2),c['plum'])
+        for z in [-55,-39,-23,-7]:
+            s.box('WallRib'+str(side)+str(z),(side*53.4,11,z),(1.2,22,1),c['wood'])
+        # 1·2층 창을 분리해 외관 비율을 읽을 수 있게 한다.
+        for x in [side*33,side*45,side*61,side*70]:
+            for y in [6.8,17.2]:
+                s.box('WindowFrame'+str(x)+str(y),(x,y,-.8),(6.2,8.4,.75),c['wood'])
+                s.box('WindowGlass'+str(x)+str(y),(x,y,-.35),(4.8,6.8,.12),c['glass'])
+                s.box('WindowMullion'+str(x)+str(y),(x,y,-.15),(.28,7,.12),c['black'])
+                s.box('WindowCross'+str(x)+str(y),(x,y,-.12),(5,.25,.14),c['black'])
+        s.box('EntryPillar'+str(side),(side*8.5,7.5,-2),(1.8,15,4),c['stone'],lean=-side*.45)
+    s.box('BackWall',(0,13,-65),(110,26,1.5),c['plum'])
+    for x in [-42,-28,-14,0,14,28,42]:
+        s.box('CeilingBeamX'+str(x),(x,24.0,-31),(0.55,.70,64),c['wood'])
+    for z0 in [-58,-46,-34,-22,-10]:
+        s.box('CeilingBeamZ'+str(z0),(0,23.85,z0),(104,.55,.60),c['wood'])
+    for side in [-1,1]:
+        s.box('UpperWallMoulding'+str(side),(side*52.9,20.8,-31),(.35,.65,64),c['brass'])
+    s.box('BackUpperMoulding',(0,20.8,-64.1),(106,.65,.35),c['brass'])
+    s.box('EntryLintel',(0,15,-2),(20,3.5,4),c['wood'])
+    s.curve_tube('EntryGrandArch',[
+      (-9.2,14.2,-1.0),(-6.5,17.2,-1.0),(0,20.7,-1.0),(6.5,17.2,-1.0),(9.2,14.2,-1.0)
+    ],[.42,.38,.32,.38,.42],[.34,.32,.28,.32,.34],c['stone'],sides=22)
+    for side in [-1,1]:
+        s.lathe('EntryArchCapital'+str(side),(side*9.2,13.7,-1.0),.72,.60,.65,c['brass'],sides=20)
+    s.box('EntryThreshold',(0,.40,-2),(18,.4,6),c['stone'])
+
+    # 현관문은 기존 상호작용 이름을 유지한다.
     for side in [-1,1]:
         door=s.node('EntryDoor'+str(side),pos=(side*7.2,.5,-2))
         s.box('EntryDoorWood'+str(side),(-side*3.5,5.8,0),(7,11.6,.5),c['wood'],parent=door)
         for y in [2.7,8.6]:s.box('EntryDoorPanel'+str(side)+str(y),(-side*3.5,y,.3),(5.3,4.4,.16),c['teal'],parent=door)
         s.lathe('EntryDoorKnob'+str(side),(-side*6.2,5.4,.5),.22,.22,.4,c['brass'],parent=door)
-    # Asymmetric roof ridge, using custom six-sided prism rather than a hotel box.
-    roof=[[-33,22,-46],[33,22,-46],[33,22,0],[-33,22,0],[-5,39,-46],[-5,36,0]]
+
+    # 중앙부는 2층 높이로 솟고 좌우 지붕은 낮아 실루엣이 단계적으로 읽힌다.
+    roof=[[-61,25,-67],[61,25,-67],[61,25,1],[-61,25,1],[-7,46,-67],[-7,42,1]]
     s.node('CrookedRoof',s.mesh('CrookedRoof',roof,[[0,4,1],[3,2,5],[0,3,5,4],[4,5,2,1],[0,1,2,3]],c['roof']))
-    s.box('LeaningChimney',(20,34,-30),(5,22,5),c['stone'],lean=3)
-    s.box('ChimneyCap',(23,45,-30),(7,1.1,7),c['black'])
-    s.lathe('LeftTurret',(-27,24,-35),6,5,22,c['plum'],sides=8)
-    s.lathe('LeftTurretRoof',(-28,43,-35),8,0,17,c['roof'],sides=8)
-    s.box('Runner',(0,.48,-21),(11,.08,36),c['red'])
-    for z in range(3,35,5):s.box('PathStone'+str(z),(math.sin(z)*.4,.35,z),(10,.32,4),c['stone'],rot=math.sin(z)*.06)
-    for x in [-35,35]:
-        for z in [-28,-8,12,32]:s.prop('graveyard','iron-fence','Fence'+str(x)+str(z),(x,.2,z),5,math.pi/2)
-    for x,z,h in [(-36,30,17),(35,28,20),(-39,-14,24),(37,-32,22)]:
-        s.box('CrookedTreeTrunk'+str(x),(x,h*.4,z),(1.2,h*.8,1.1),c['wood'],lean=2)
-        for i in range(4):
-            sign=1 if i%2 else -1
-            s.box('BareBranch'+str(x)+str(i),(x+sign*2,h*(.35+i*.12),z),(sign*0+0.65,h*.34,.55),c['wood'],lean=sign*4)
+    s.box('CentralTower',(0,29,-36),(28,17,25),c['plum'])
+    s.lathe('CentralTowerCrown',(0,46,-36),15,11,13,c['roof'],sides=8)
+    s.box('LeaningChimney',(31,38,-42),(5,24,5),c['stone'],lean=2.4)
+    s.box('ChimneyCap',(33,50,-42),(7,1.1,7),c['black'])
+    s.lathe('RightTurret',(57,27,-48),7,5.5,25,c['plum'],sides=10)
+    s.lathe('RightTurretRoof',(58,48,-48),9,0,17,c['roof'],sides=10)
+
+    # 개인 저택 외부 정체성: 진행도 가문 문장, 기록탑, 장의사 반입구, 집사 서비스 구역.
+    crest_bg=s.material('CrestBlack',(.028,.025,.030))
+    crest_wine=s.material('CrestWine',(.25,.028,.055))
+    s.prism('ManorCrestShield',(0,22.9,-.72),[
+      (-3.2,2.4),(3.2,2.4),(2.85,-.55),(1.55,-3.05),(0,-4.10),(-1.55,-3.05),(-2.85,-.55)
+    ],.24,crest_bg)
+    s.curve_tube('ManorCrestFrame',[
+      (-3.2,25.3,-.54),(3.2,25.3,-.54),(2.85,22.35,-.54),(1.55,19.85,-.54),
+      (0,18.80,-.54),(-1.55,19.85,-.54),(-2.85,22.35,-.54),(-3.2,25.3,-.54)
+    ],[.14]*8,[.11]*8,c['brass'],sides=18)
+    crest_shapes=[
+      [(-2.45,1.55),(-1.55,1.80),(-1.35,-1.00),(-2.15,-1.55)],
+      [(-1.35,1.85),(-.42,2.05),(-.30,-1.55),(-1.10,-1.05)],
+      [(-.30,2.05),(.30,2.05),(.18,-2.55),(-.18,-2.55)],
+      [(.42,2.05),(1.35,1.85),(1.10,-1.05),(.30,-1.55)],
+      [(1.55,1.80),(2.45,1.55),(2.15,-1.55),(1.35,-1.00)],
+      [(-1.55,-1.70),(0,-3.45),(1.55,-1.70),(.65,-1.20),(0,-2.20),(-.65,-1.20)]
+    ]
+    for i,outline in enumerate(crest_shapes):
+        s.prism('ManorCrestSegment'+str(i+1),(0,22.9,-.48),outline,.10,crest_wine)
+
+    # 에드윈 기록탑: 본관에서 자연스럽게 솟는 석재 기단 + 3단 입면 + 아치창 + 코니스 + 뾰족 지붕.
+    tower_plum=s.material('ArchivistTowerPlum',(.155,.060,.095))
+    tower_stone=s.material('ArchivistTowerStone',(.24,.25,.24))
+    s.box('ArchivistTowerPlinth',(-65,24.8,-47),(15.2,2.4,17.2),tower_stone,lean=-.18)
+    s.box('ArchivistTowerBase',(-65,31.2,-47),(13.8,10.6,15.4),tower_plum,lean=-.42)
+    s.box('ArchivistTowerBelt',(-65.25,36.4,-47),(14.4,.70,16.1),c['stone'],lean=-.20)
+    s.box('ArchivistTowerUpper',(-65.5,42.0,-47),(11.7,10.3,12.6),tower_plum,lean=-.26)
+    for side in [-1,1]:
+        s.box('ArchivistTowerButtress'+str(side),(-58.9,31.5,-47+side*5.6),(1.20,13.0,1.75),tower_stone,lean=-.18)
+        s.box('ArchivistTowerButtressFoot'+str(side),(-58.7,25.4,-47+side*5.6),(1.65,1.8,2.3),tower_stone)
+    # 창은 빛나는 판 하나가 아니라 깊은 창턱/세로창/뾰족 아치로 구성한다.
+    for wi,(y,z0) in enumerate([(29.4,-50.0),(29.4,-44.0),(41.3,-50.0),(41.3,-44.0)]):
+        xface=-57.96
+        s.box('ArchivistWindowRecess'+str(wi),(xface,y,z0),(.52,4.7,3.7),c['black'])
+        s.box('ArchivistWindowGlow'+str(wi),(xface-.08,y,z0),(.10,3.65,2.75),c['amber'])
+        for mullion in [-.72,0,.72]:
+            s.box('ArchivistWindowMullion'+str(wi)+'_'+str(mullion),(xface-.19,y,z0+mullion),(.16,3.8,.12),c['wood'])
+        s.curve_tube('ArchivistWindowArch'+str(wi),[
+          (xface-.25,y+1.75,z0-1.38),(xface-.25,y+2.55,z0-.90),
+          (xface-.25,y+3.15,z0),(xface-.25,y+2.55,z0+.90),(xface-.25,y+1.75,z0+1.38)
+        ],[.12]*5,[.10]*5,c['stone'],sides=16)
+        s.box('ArchivistWindowSill'+str(wi),(xface-.28,y-2.35,z0),(.70,.34,3.35),c['stone'])
+    s.box('ArchivistTowerCornice',(-65.6,47.35,-47),(12.6,.72,13.6),c['stone'],lean=-.12)
+    # 지붕은 단일 원뿔 대신 팔각 드럼 + 갈비뼈 + 첨탑.
+    s.lathe('ArchivistTowerRoofDrum',(-65.8,48.6,-47),6.4,5.7,2.1,c['roof'],sides=8)
+    s.lathe('ArchivistTowerRoof',(-66.0,54.8,-47),7.2,.35,11.2,c['roof'],sides=8)
+    for k in range(8):
+        a=math.tau*k/8
+        ex=-66.0+math.cos(a)*6.7;ez=-47+math.sin(a)*6.7
+        s.curve_tube('ArchivistRoofRib'+str(k),[(ex,49.4,ez),(-66.0,60.0,-47)],[.11,.06],[.09,.05],c['black'],sides=14)
+    s.lathe('ArchivistSpire',(-66.0,61.8,-47),.18,.035,3.7,c['brass'],sides=18)
+    s.ellipsoid('ArchivistSpireFinial',(-66.0,63.75,-47),(.48,.62,.48),c['brass'])
+
+    # 장의사 관 반입구: 본체에서 돌출된 고딕 적재 베이 + 깊은 아치 포털 + 실제 판넬 쌍문.
+    s.box('MortuaryLoadingPlinth',(73.5,.65,-43),(5.0,1.1,15.2),c['stone'])
+    for side in [-1,1]:
+        zdoor=-43+side*3.0
+        s.box('MortuaryPortalJamb'+str(side),(73.05,5.7,-43+side*5.7),(1.65,11.4,1.15),c['stone'])
+        s.box('MortuaryLoadingDoor'+str(side),(73.52,5.05,zdoor),(.46,9.9,5.6),c['wood'])
+        for py in [2.7,7.0]:
+            s.box('MortuaryDoorPanel'+str(side)+str(py),(73.25,py,zdoor),(.16,3.0,4.3),c['plum'])
+        s.box('MortuaryDoorBrace'+str(side),(73.14,5.05,zdoor),(.10,.42,4.9),c['brass'])
+        s.lathe('MortuaryDoorKnob'+str(side),(72.96,5.0,zdoor-side*1.65),.16,.16,.18,c['brass'],sides=18)
+    s.curve_tube('MortuaryPortalArch',[
+      (72.95,10.0,-48.6),(72.95,12.0,-47.1),(72.95,13.5,-43),
+      (72.95,12.0,-38.9),(72.95,10.0,-37.4)
+    ],[.36,.34,.30,.34,.36],[.28,.27,.25,.27,.28],c['stone'],sides=20)
+    s.box('MortuaryLoadingCornice',(72.8,14.0,-43),(1.0,.72,14.8),c['stone'])
+    # 캐노피는 평판이 아니라 박공지붕 단면.
+    canopy=[(-6.2,0,-4.5),(6.2,0,-4.5),(6.2,0,4.5),(-6.2,0,4.5),(0,2.4,-4.5),(0,2.4,4.5)]
+    s.node('MortuaryLoadingCanopy',s.mesh('MortuaryLoadingCanopy',canopy,[
+      [0,1,4],[3,5,2],[0,4,5,3],[1,2,5,4],[0,3,2,1]
+    ],c['roof']),(67.2,11.7,-43))
+    for zrail in [-45.0,-41.0]:
+        s.curve_tube('CoffinRail'+str(zrail),[(61.5,.20,zrail),(72.3,.20,zrail)],[.11,.11],[.09,.09],c['brass'],sides=18)
+    s.box('CoffinTrolleyDeck',(66.5,1.05,-43),(6.2,.34,3.6),c['wood'])
+    s.box('CoffinTrolleyLip',(69.55,1.35,-43),(.34,.80,3.75),c['brass'])
+    for wx in [64.2,68.8]:
+        for wz in [-44.5,-41.5]:
+            wheel=s.lathe('CoffinTrolleyWheel'+str(wx)+str(wz),(wx,.67,wz),.54,.54,.18,c['black'],sides=24)
+            wheel.rotation_euler.x=math.pi/2
+
+    # 모티머 서비스 구역: 후문을 벽에 파묻힌 작은 서비스 포치로 구성한다.
+    s.box('MortimerServicePlinth',(-73.2,.55,-13),(4.0,.9,9.6),c['stone'])
+    s.box('MortimerServiceRecess',(-73.65,5.1,-13),(.70,10.2,7.2),c['black'])
+    s.box('MortimerServiceDoor',(-73.30,5.0,-13),(.38,9.2,5.3),c['wood'])
+    for py in [2.8,6.8]:
+        s.box('MortimerServicePanel'+str(py),(-73.07,py,-13),(.10,2.8,4.1),c['teal'])
+    s.curve_tube('MortimerServiceArch',[
+      (-72.95,9.1,-15.8),(-72.95,10.4,-14.7),(-72.95,11.0,-13),
+      (-72.95,10.4,-11.3),(-72.95,9.1,-10.2)
+    ],[.24,.22,.20,.22,.24],[.19,.18,.17,.18,.19],c['stone'],sides=18)
+    # 박공형 비가림과 작은 벽기둥.
+    serviceRoof=[(-4.6,0,-3.7),(4.6,0,-3.7),(4.6,0,3.7),(-4.6,0,3.7),(0,1.8,-3.7),(0,1.8,3.7)]
+    s.node('MortimerServiceCanopy',s.mesh('MortimerServiceCanopy',serviceRoof,[
+      [0,1,4],[3,5,2],[0,4,5,3],[1,2,5,4],[0,3,2,1]
+    ],c['roof']),(-68.7,9.7,-13))
+    for zpost in [-16.0,-10.0]:
+        s.lathe('MortimerServicePost'+str(zpost),(-69.2,5.0,zpost),.22,.17,8.8,c['stone'],sides=18)
+    # 서비스 창/장작걸이/우산걸이.
+    s.box('MortimerServiceWindow',(-73.30,5.0,-4.8),(.36,4.4,4.2),c['glass'])
+    s.box('MortimerServiceWindowFrame',(-73.08,5.0,-4.8),(.12,4.9,4.8),c['wood'])
+    for i in range(10):
+        x=-68.9+(i%5)*.82;y=.62+(i//5)*.72
+        log=s.lathe('ServiceFirewood'+str(i),(x,y,-8.4),.20,.16,1.30,c['wood'],sides=16)
+        log.rotation_euler.x=math.pi/2
+    s.box('ServiceWoodRack',(-67.25,1.1,-8.4),(5.1,2.2,2.2),c['black'])
+    s.lathe('UmbrellaStand',(-69.2,1.55,-17.0),.62,.50,2.9,c['brass'],sides=24)
+    for i in range(4):
+        s.curve_tube('ServiceUmbrella'+str(i),[
+          (-69.50+i*.20,.72,-17.0),(-69.46+i*.20,2.25,-17.0),(-69.24+i*.20,3.25,-16.95)
+        ],[.040,.040,.026],[.035,.035,.022],c['black'],sides=14)
+
+    # 지붕 홈통/배수관은 코니스와 창 사이에 붙어 외벽 높이를 읽게 한다.
+    for side in [-1,1]:
+        s.curve_tube('FrontGutter'+str(side),[(side*5,24.15,.15),(side*53,24.15,.15)],[.15,.15],[.12,.12],c['black'],sides=18)
+        s.curve_tube('RainPipe'+str(side),[
+          (side*52.5,23.8,.10),(side*52.5,12.0,.10),(side*52.7,3.0,.35),(side*53.2,.55,1.4)
+        ],[.13,.13,.12,.10],[.11,.11,.10,.08],c['black'],sides=16)
+
+    # 큰 계단: 각 단의 윗면 높이가 정확히 이어지는 12단 솔리드 구조.
+    stair_rise=.82;stair_tread=1.36
+    for i in range(12):
+        top_y=stair_rise*(i+1)
+        step_z=-40.0-i*stair_tread
+        s.box('GrandStair'+str(i),(0,top_y*.5,step_z),(30,top_y,stair_tread+.08),c['wood'])
+        s.box('GrandStairRunner'+str(i),(0,top_y+.025,step_z),(9.5,.05,stair_tread*.92),c['red'])
+    for side in [-1,1]:
+        rail_points=[]
+        for i in range(12):
+            top_y=stair_rise*(i+1)
+            step_z=-40.0-i*stair_tread
+            rail_points.append((side*13.4,top_y+1.25,step_z))
+            if i%2==0:
+                s.lathe('StairBaluster'+str(side)+'_'+str(i),(side*13.4,top_y+.63,step_z),.075,.060,1.25,c['brass'],sides=14)
+        s.curve_tube('GrandStairRail'+str(side),rail_points,[.10]*len(rail_points),[.10]*len(rail_points),c['brass'],sides=18)
+    s.box('SecondFloorGallery',(0,10.2,-55),(92,.55,19),c['wood'])
+    for side in [-1,1]:
+        s.box('BalconyWalk'+str(side),(side*43,10.2,-31),(15,.55,48),c['wood'])
+        for z in range(-53,-7,4):
+            s.lathe('Baluster'+str(side)+str(z),(side*36,11.3,z),.11,.10,2.1,c['brass'],sides=12)
+    for x in range(-42,43,5):s.lathe('BackBaluster'+str(x),(x,11.3,-46),.11,.10,2.1,c['brass'],sides=12)
+
+    # 좌우 날개 방: 기록보관실/서재/응접실/의상실/장례용품실/라운지.
+    room_specs=[
+      (-58,-54,'ArchiveRoom'),(-58,-33,'LibraryRoom'),(-58,-12,'ParlorRoom'),
+      (58,-54,'MortuaryRoom'),(58,-33,'WardrobeRoom'),(58,-12,'LoungeRoom')
+    ]
+    for x,z,name in room_specs:
+        # 방 칸막이는 중앙 8stud 통로를 실제로 비운다.
+        s.box(name+'DividerLeft',(x-10.5,7,z),(13,14,1),c['plum'])
+        s.box(name+'DividerRight',(x+10.5,7,z),(13,14,1),c['plum'])
+        s.box(name+'DoorLintel',(x,12,z),(8,4,1),c['plum'])
+        for side in [-1,1]:
+            s.box(name+'DoorJamb'+str(side),(x+side*4.15,5,z+.08),(.62,10,1.15),c['wood'])
+            s.box(name+'Sconce'+str(side),(x+side*8,6,z+.7),(1.3,3,.30),c['brass'])
+        s.curve_tube(name+'DoorArch',[
+          (x-4.15,9.7,z+.10),(x-2.8,11.1,z+.10),(x,13.25,z+.10),
+          (x+2.8,11.1,z+.10),(x+4.15,9.7,z+.10)
+        ],[.22,.20,.18,.20,.22],[.18,.17,.15,.17,.18],c['wood'],sides=18)
+    # 왼쪽 날개 출정용 실제 벽지도. 서버 승인된 SelectedLobbyMap만 선택 표시를 바꾼다.
+    s.box('WallMapFrame',(-74.15,7,-31),(.70,13,27),c['wood'])
+    s.box('WallMapPaper',(-73.75,7,-31),(.16,11.4,24.8),s.material('map_parchment',(.47,.40,.28)))
+    map_cards=[
+      ('SCHOOL',-39,s.material('MapSchoolTint',(.26,.31,.30))),
+      ('HOSPITAL',-31,s.material('MapHospitalTint',(.22,.27,.31))),
+      ('THEME_PARK',-23,s.material('MapParkTint',(.32,.24,.25))),
+    ]
+    for map_id,z0,map_mat in map_cards:
+        s.box('MapCard_'+map_id,(-73.35,6.5,z0),(.14,4.5,6.1),map_mat)
+        s.prism('MapCardLabel_'+map_id,(-73.23,4.75,z0),[
+          (-.02,-2.4),(.02,-2.4),(.02,2.4),(-.02,2.4)
+        ],.02,c['ivory'])
+        s.lathe('MapPin_'+map_id,(-73.08,8.45,z0),.22,.09,.24,c['brass'],sides=20)
+
+    # 기록관의 12개 괴담 전시. 각 괴담마다 단일 고유 실루엣 유물을 하나씩 보존한다.
+    # 12칸 유리 진열장. 프레임/선반/유리는 정적 병합 대상이라 런타임 메시 예산을 거의 늘리지 않는다.
+    s.box('ArchiveRelicCabinetBack',(-43.75,4.35,-59.55),(10.6,5.9,.35),c['wood'])
+    s.box('ArchiveRelicCabinetTop',(-43.75,7.45,-59.18),(11.0,.36,.82),c['brass'])
+    s.box('ArchiveRelicCabinetBottom',(-43.75,1.35,-59.18),(11.0,.42,.82),c['brass'])
+    for divider in [-48.25,-46.75,-45.25,-43.75,-42.25,-40.75,-39.25]:
+        s.box('ArchiveRelicDivider'+str(divider),(divider,4.35,-59.16),(.16,5.7,.62),c['wood'])
+    s.box('ArchiveRelicShelf',(-43.75,4.28,-59.15),(10.8,.18,.65),c['wood'])
+    s.box('ArchiveRelicGlass',(-43.75,4.35,-58.78),(10.3,5.65,.08),c['glass'])
+    relic_slots=[
+      ('YUREI','fan',-47.5,3.0),('NOPPERABO','mask',-46.0,3.0),
+      ('CHEONNYEO_GWISHIN','hairpin',-44.5,3.0),('KRASUE','orb',-43.0,3.0),
+      ('BANSHEE','bell',-41.5,3.0),('JIANGSHI','talisman',-40.0,3.0),
+      ('CHUREL','anklet',-47.5,5.55),('WHITE_LADY','veilpin',-46.0,5.55),
+      ('DULLAHAN','horseshoe',-44.5,5.55),('LA_LLORONA','locket',-43.0,5.55),
+      ('PONTIANAK','flower',-41.5,5.55),('BLACK_SHUCK','collar',-40.0,5.55),
+    ]
+    relic_mats=[
+      s.material('RelicBone',(.48,.47,.42)),s.material('RelicWine',(.19,.035,.05)),
+      s.material('RelicBrass',(.34,.25,.14)),s.material('RelicInk',(.035,.045,.055))
+    ]
+    for idx,(ghost_id,shape,bx,by) in enumerate(relic_slots):
+        mat=relic_mats[idx%len(relic_mats)]
+        name='GhostRelic_'+ghost_id
+        if shape=='fan':
+            outline=[(-.58,-.44),(.58,-.44),(.43,.12),(0,.62),(-.43,.12)]
+            s.prism(name,(bx,by,-59.05),outline,.12,mat)
+        elif shape=='mask':
+            s.loft(name,(bx,by,-59.02),[
+              (-.58,.42,.18),(0,.50,.22),(.58,.34,.16)
+            ],mat,sides=24)
+        elif shape=='hairpin':
+            s.curve_tube(name,[(bx,by-.62,-59.05),(bx+.12,by,-59.00),(bx-.06,by+.62,-59.05)],
+              [.08,.11,.055],[.07,.09,.05],mat,sides=18)
+        elif shape=='orb':
+            s.ellipsoid(name,(bx,by,-59.0),(1.0,1.0,.64),mat)
+        elif shape=='bell':
+            s.loft(name,(bx,by,-59.02),[
+              (-.58,.18,.16),(-.20,.36,.22),(.18,.46,.28),(.48,.28,.20)
+            ],mat,sides=22)
+        elif shape=='talisman':
+            outline=[(-.28,-.62),(.28,-.62),(.28,.62),(-.28,.62)]
+            s.prism(name,(bx,by,-59.02),outline,.08,mat)
+        elif shape=='anklet':
+            s.lathe(name,(bx,by,-59.02),.42,.42,.16,mat,sides=28)
+        elif shape=='veilpin':
+            s.curve_tube(name,[(bx-.42,by-.34,-59.03),(bx,by+.44,-59.0),(bx+.42,by-.34,-59.03)],
+              [.055,.09,.055],[.045,.075,.045],mat,sides=18)
+        elif shape=='horseshoe':
+            points=[]
+            for a in np.linspace(math.radians(28),math.radians(332),11):
+                points.append((bx+math.cos(a)*.42,by+math.sin(a)*.52,-59.02))
+            s.curve_tube(name,points,[.07]*len(points),[.06]*len(points),mat,sides=18)
+        elif shape=='locket':
+            s.ellipsoid(name,(bx,by,-59.01),(.82,1.02,.24),mat)
+        elif shape=='flower':
+            outline=[]
+            for k in range(12):
+                a=math.tau*k/12
+                r=.50 if k%2==0 else .22
+                outline.append((math.cos(a)*r,math.sin(a)*r))
+            s.prism(name,(bx,by,-59.02),outline,.10,mat)
+        else:
+            points=[]
+            for a in np.linspace(0,math.tau,13):
+                points.append((bx+math.cos(a)*.47,by+math.sin(a)*.31,-59.02))
+            s.curve_tube(name,points,[.06]*len(points),[.05]*len(points),mat,sides=18)
+
+
+    # 마당의 맵별 기념 전시. 각 지역에서 괴담을 처음 발견하면 해당 유물이 나타난다.
+    # 학교: 오래된 종. 폐병원: 십자가 표식. 폐놀이공원: 찢어진 입장권.
+    s.loft('MemoryRelic_SCHOOL',(-30,1.95,35),[
+      (-1.15,.55,.48),(-.60,1.10,.68),(.15,1.35,.82),(.85,.78,.58)
+    ],s.material('SchoolBellBronze',(.30,.22,.12)),sides=28)
+    hospital_cross=[(-.55,-1.5),(.55,-1.5),(.55,-.52),(1.55,-.52),(1.55,.52),(.55,.52),(.55,1.5),(-.55,1.5),(-.55,.52),(-1.55,.52),(-1.55,-.52),(-.55,-.52)]
+    s.prism('MemoryRelic_HOSPITAL',(30,2.15,35),hospital_cross,.32,s.material('HospitalCrossPaint',(.30,.055,.065)))
+    ticket_outline=[(-2.5,-1.1),(2.15,-1.1),(2.55,-.65),(2.28,-.18),(2.55,.32),(2.22,1.08),(-2.5,1.08),(-2.25,.58),(-2.50,.12),(-2.22,-.42)]
+    s.prism('MemoryRelic_THEME_PARK',(45,2.05,54),ticket_outline,.28,s.material('ParkTicketPaint',(.31,.20,.22)))
+
+    # 2층 객실은 잠긴 채 유지하지만 진행도에 따라 왁스 봉인이 하나씩 밝아진다.
+    # 2층 잠긴 객실문.
+    for i,x in enumerate([-36,-22,-8,8,22,36]):
+        s.box('LockedGuestDoor'+str(i),(x,15,-63.9),(5.2,8.5,.34),c['wood'])
+        s.lathe('LockedGuestKnob'+str(i),(x+1.7,14.7,-63.55),.13,.13,.18,c['brass'],sides=18)
+        s.lathe('GuestDoorSeal'+str(i),(x,15.4,-63.50),.42,.42,.10,s.material('WaxSealMat',(.28,.025,.045)),sides=28)
+        s.box('GuestDoorNumber'+str(i),(x,18.1,-63.50),(1.5,.72,.08),c['brass'])
+
+    # 정원 중앙 진입로와 분수/부서진 동상.
+    for i,z in enumerate(range(8,71,5)):
+        s.box('PathStone'+str(i),(math.sin(i*.9)*.35,.18,z),(12.5,.26,4.2),c['stone'],rot=math.sin(i*.7)*.035)
+    s.lathe('FountainBasin',(0,.55,39),7.4,7.0,1.1,c['stone'],sides=48)
+    s.lathe('FountainPool',(0,1.15,39),5.8,5.8,.18,c['glass'],sides=48)
+    s.lathe('FountainStem',(0,3.2,39),.85,.62,4.7,c['stone'],sides=32)
+    s.ellipsoid('BrokenStatueTorso',(0,5.7,39),(2.8,4.2,1.7),c['stone'])
+    statue=s.ellipsoid('BrokenStatueHead',(.45,8.0,39.1),(1.4,1.6,1.3),c['stone']);statue.rotation_euler.z=.19
+
+    # 가스등/벤치/폐마차/생울타리/외곽 산책로.
+    for i,(x,z) in enumerate([(-13,54),(13,54),(-20,28),(20,28),(-29,9),(29,9),(-57,34),(57,34)]):
+        s.lathe('GasLampPole'+str(i),(x,3.5,z),.16,.14,7,c['black'],sides=18)
+        s.ellipsoid('GasLampGlass'+str(i),(x,7.4,z),(1.0,1.5,1.0),c['glass'])
+        s.ellipsoid('GasLampFlame'+str(i),(x,7.4,z),(.25,.60,.25),c['amber'])
+    for i,(x,z,rot) in enumerate([(-31,35,0),(31,35,0),(-57,10,math.pi/2),(57,10,math.pi/2)]):
+        s.box('GardenBenchSeat'+str(i),(x,1.6,z),(6,.35,1.5),c['wood'],rot=rot)
+        s.box('GardenBenchBack'+str(i),(x,3.0,z-.55),(6,3.0,.30),c['wood'],rot=rot)
+    s.box('CarriageBody',(46,2.6,47),(8,3.8,4.6),c['wood'],rot=.12)
+    for i,(dx,dz) in enumerate([(-3,-2),(-3,2),(3,-2),(3,2)]):
+        wheel=s.lathe('CarriageWheel'+str(i),(46+dx,1.5,47+dz),1.6,1.6,.22,c['black'],sides=32);wheel.rotation_euler.x=math.pi/2
+    s.box('CarriageShaft',(37,1.7,48),(11,.35,.35),c['wood'],rot=.12)
+    for side in [-1,1]:
+        for j,z in enumerate(range(8,67,9)):
+            s.box('Hedge'+str(side)+str(j),(side*35,1.3,z),(18,2.6,2.2),s.material('DeadHedge',(.09,.14,.09)))
+            s.box('SidePath'+str(side)+str(j),(side*56,.08,z),(11,.12,7),c['stone'])
+    # 수집 정원: 기존 맵 기념 유물을 건축형 전시대에 올린다.
+    for name,x,z in [('SCHOOL',-30,35),('HOSPITAL',30,35),('THEME_PARK',45,54)]:
+        s.box('CollectionPlinth_'+name,(x,.62,z),(7.4,1.15,5.4),c['stone'])
+        s.box('CollectionPlaque_'+name,(x,1.38,z+2.73),(4.8,.95,.18),c['brass'])
+        for side in [-1,1]:
+            s.lathe('CollectionPost_'+name+str(side),(x+side*3.3,2.0,z-2.1),.12,.10,3.0,c['black'],sides=16)
+    s.curve_tube('CollectionGardenRailLeft',[(-35,2.5,31),(-35,2.5,40)],[.10,.10],[.08,.08],c['black'],sides=16)
+    s.curve_tube('CollectionGardenRailRight',[(35,2.5,31),(35,2.5,40)],[.10,.10],[.08,.08],c['black'],sides=16)
+
+    # 폐쇄된 지하 납골당: 정원 지형에 파묻힌 석재 전면 + 버트레스 + 깊은 철문 + 배수로.
+    crypt_stone=s.material('CryptStone',(.205,.215,.205))
+    # 계단은 아래로 내려갈수록 벽 사이에 깊이 묻힌다.
+    for i in range(6):
+        y=.18+i*.18;z=63.6+i*.78
+        s.box('CryptStep'+str(i),(-57,y,z),(9.6,.32,1.62),crypt_stone)
+    for side in [-1,1]:
+        s.box('CryptRetainingWall'+str(side),(-57+side*5.2,2.05,66.0),(1.15,4.1,8.5),crypt_stone,lean=side*.10)
+        s.box('CryptButtress'+str(side),(-57+side*6.2,3.2,69.0),(1.8,6.4,2.3),crypt_stone,lean=side*.16)
+        s.box('CryptButtressCap'+str(side),(-57+side*6.2,6.3,69.0),(2.2,.55,2.7),c['stone'])
+    s.box('CryptFacade',(-57,4.4,69.1),(13.1,8.8,2.0),crypt_stone)
+    s.box('CryptDoorRecess',(-57,3.55,67.95),(8.0,7.1,.70),c['black'])
+    # 문틀은 속 빈 뾰족 아치.
+    s.curve_tube('CryptArch',[
+      (-61.0,4.9,67.45),(-59.7,6.8,67.45),(-57,8.3,67.45),
+      (-54.3,6.8,67.45),(-53.0,4.9,67.45)
+    ],[.34,.31,.27,.31,.34],[.28,.26,.23,.26,.28],crypt_stone,sides=20)
+    for side in [-1,1]:
+        s.box('CryptDoorJamb'+str(side),(-57+side*4.05,3.45,67.45),(.80,6.9,.85),crypt_stone)
+    # 철문은 바/가로띠/중앙 잠금판으로 깊이를 만든다.
+    for i,xbar in enumerate([-2.8,-1.85,-.92,0,.92,1.85,2.8]):
+        s.lathe('CryptGateBar'+str(i),(-57+xbar,3.55,67.55),.075,.065,6.5,c['brass'],sides=14)
+    for ybar in [1.25,3.55,5.75]:
+        s.box('CryptGateBand'+str(ybar),(-57,ybar,67.53),(6.9,.18,.22),c['brass'])
+    s.box('CryptGateLock',(-57,3.45,67.32),(1.45,1.25,.30),c['brass'])
+    s.lathe('CryptGateRing',(-57,3.45,67.10),.50,.50,.11,c['black'],sides=28)
+    # 상부 삼각 페디먼트와 작은 가족 봉인.
+    ped=[(-6.4,0,0),(6.4,0,0),(0,4.2,0)]
+    s.node('CryptPediment',s.mesh('CryptPediment',ped,[[0,1,2]],crypt_stone),(-57,8.65,68.10))
+    s.ellipsoid('CryptSeal',(-57,9.35,67.80),(1.3,1.3,.30),c['brass'])
+    # 빗물이 계단으로 흐르는 홈.
+    for side in [-1,1]:
+        s.curve_tube('CryptDrain'+str(side),[
+          (-57+side*4.3,.22,63.2),(-57+side*4.45,.22,66.0),(-57+side*4.7,.25,69.0)
+        ],[.10,.10,.08],[.07,.07,.06],c['black'],sides=14)
+
+    # 후면 폐쇄 온실: 벽돌 기단 + 다중 베이 철제 프레임 + 아치형 유리 지붕 + 깨진 일부 패널.
+    gx,gz=57,69
+    greenhouse_metal=s.material('GreenhouseMetal',(.12,.10,.085))
+    greenhouse_brick=s.material('GreenhouseBrick',(.23,.16,.13))
+    s.box('GreenhouseFoundation',(gx,.35,gz),(25.5,.70,17.5),c['stone'])
+    s.box('GreenhouseBrickPlinth',(gx,1.15,gz),(24.2,1.5,16.2),greenhouse_brick)
+    # 5개의 구조 베이.
+    bay_x=[gx-11,gx-5.5,gx,gx+5.5,gx+11]
+    for bi,x in enumerate(bay_x):
+        s.box('GreenhousePost'+str(bi),(x,5.55,gz),(.34,8.8,.34),greenhouse_metal)
+        s.curve_tube('GreenhouseRoofRib'+str(bi),[
+          (x,9.85,gz-7.45),(x,11.55,gz-5.0),(x,12.85,gz-2.6),
+          (x,13.35,gz),(x,12.85,gz+2.6),(x,11.55,gz+5.0),(x,9.85,gz+7.45)
+        ],[.14,.13,.12,.11,.12,.13,.14],[.11,.10,.095,.09,.095,.10,.11],greenhouse_metal,sides=16)
+    # 길이 방향 벽체 가로 프레임.
+    for y in [3.0,6.0,9.0]:
+        for side in [-1,1]:
+            s.box('GreenhouseSideRail'+str(side)+str(y),(gx+side*11,y,gz),(.20,.20,14.6),greenhouse_metal)
+    # 전후면 박공지붕 프레임.
+    for zi,zpanel in enumerate([gz-7.45,gz+7.45]):
+        s.box('GreenhouseEndBeam'+str(zi),(gx,9.7,zpanel),(22.2,.32,.24),greenhouse_metal)
+        for x in [gx-11,gx-5.5,gx,gx+5.5,gx+11]:
+            s.box('GreenhouseEndMullion'+str(zi)+str(x),(x,5.2,zpanel),(.24,8.7,.18),greenhouse_metal)
+        s.curve_tube('GreenhouseEndArch'+str(zi),[
+          (gx-11,9.7,zpanel),(gx-7,11.7,zpanel),(gx,13.35,zpanel),
+          (gx+7,11.7,zpanel),(gx+11,9.7,zpanel)
+        ],[.16,.14,.12,.14,.16],[.12,.11,.10,.11,.12],greenhouse_metal,sides=16)
+    # 유리는 베이 단위로 쪼개서 구조가 읽히고 일부 패널은 실제로 비워둔다.
+    for side in [-1,1]:
+        xwall=gx+side*10.82
+        for panel,z0 in enumerate([63.4,66.9,70.4,73.9]):
+            if (side<0 and panel==1) or (side>0 and panel==3):continue
+            s.box('GreenhouseSideGlass'+str(side)+'_'+str(panel),(xwall,5.15,z0),(.08,7.4,3.15),c['glass'])
+    # 깨진 판은 삼각 유리 조각만 남겨 폐쇄된 오래된 온실 느낌을 만든다.
+    broken=[(-1.45,-3.4),(1.45,-3.4),(1.45,.35),(.45,1.75),(-.55,.70),(-1.45,1.20)]
+    s.prism('GreenhouseBrokenGlassA',(gx-10.72,5.15,66.9),broken,.045,c['glass'])
+    broken2=[(-1.35,-3.5),(1.35,-3.5),(1.35,.90),(.30,.25),(-.80,1.40),(-1.35,.55)]
+    s.prism('GreenhouseBrokenGlassB',(gx+10.72,5.15,73.9),broken2,.045,c['glass'])
+    # 중앙 쌍문은 잠겨 있으며 상부 환기창과 능선 장식이 있다.
+    for side in [-1,1]:
+        s.box('GreenhouseDoor'+str(side),(gx+side*2.0,4.6,gz-7.58),(3.75,7.2,.26),greenhouse_metal)
+        s.box('GreenhouseDoorGlass'+str(side),(gx+side*2.0,5.0,gz-7.42),(2.9,5.8,.08),c['glass'])
+    s.box('GreenhouseDoorTransom',(gx,9.0,gz-7.48),(8.4,1.6,.18),c['glass'])
+    s.curve_tube('GreenhouseRidge',[(gx-11,13.35,gz),(gx,13.35,gz),(gx+11,13.35,gz)],[.12,.12,.12],[.10,.10,.10],greenhouse_metal,sides=16)
+    for i,x in enumerate([gx-7.5,gx,gx+7.5]):
+        s.lathe('GreenhouseRoofFinial'+str(i),(x,13.85,gz),.12,.035,1.0,c['brass'],sides=16)
+    # 내부 벤치/죽은 식물은 외부 유리를 통해 실루엣만 읽히게 한다.
+    for x in [gx-8,gx-2.7,gx+2.7,gx+8]:
+        s.box('GreenhouseBench'+str(x),(x,1.55,gz),(3.5,1.15,10.4),c['wood'])
+    dead_plant_mat=s.material('DeadPlant',(.08,.11,.07))
+    for i,(x,z) in enumerate([(51,66),(55,72),(60,65),(64,72)]):
+        s.curve_tube('DeadGreenhousePlant'+str(i),[
+          (x,.9,z),(x+.35,2.2,z-.2),(x-.10,3.3,z+.25),(x+.25,4.0,z-.10)
+        ],[.14,.10,.055,.025],[.12,.09,.05,.022],dead_plant_mat,sides=14)
+        for side in [-1,1]:
+            s.curve_tube('DeadGreenhouseTwig'+str(i)+str(side),[
+              (x,2.55,z),(x+side*.65,3.05,z+side*.25)
+            ],[.045,.018],[.040,.015],dead_plant_mat,sides=12)
+
+    # 마른 나무: 박스 기둥 대신 굽은 연속 곡면 줄기/가지.
+    for t,(x,z,h) in enumerate([(-65,49,15),(65,52,17),(-61,19,14),(62,16,16),(-44,66,13),(39,75,15)]):
+        lean=(-1 if t%2 else 1)
+        trunk=[
+          (x,.25,z),
+          (x+lean*.45,h*.30,z+.15),
+          (x+lean*.85,h*.58,z-.20),
+          (x+lean*1.15,h*.82,z+.10),
+        ]
+        s.curve_tube('DeadTreeTrunk'+str(t),trunk,[.70,.62,.48,.28],[.66,.58,.44,.26],c['wood'],sides=22)
+        branch_specs=[
+          (.42, 1, .34,.22),(.50,-1,.40,-.28),(.59,1,.48,.30),
+          (.66,-1,.42,.25),(.73,1,.36,-.24),(.79,-1,.30,.22)
+        ]
+        for i,(heightFrac,side,reach,zoff) in enumerate(branch_specs):
+            base=(x+lean*(.25+heightFrac*.95),h*heightFrac,z)
+            mid=(base[0]+side*h*reach*.32,base[1]+h*.10,base[2]+zoff*h*.18)
+            tip=(base[0]+side*h*reach*.58,base[1]+h*.17,base[2]+zoff*h*.30)
+            s.curve_tube('DeadTreeBranch'+str(t)+'_'+str(i),[base,mid,tip],
+              [.22,.15,.055],[.20,.14,.050],c['wood'],sides=18)
+    for i,(x,z) in enumerate([(-69,33),(-63,28),(-59,39),(69,29),(63,35),(58,40),(-47,58),(39,58)]):
+        s.box('Gravestone'+str(i),(x,1.7,z),(2.3,3.4,.65),c['stone'],lean=(-.16+i*.04))
+        s.box('GraveBase'+str(i),(x,.35,z),(3.3,.55,1.7),c['stone'])
+    # 주택 노후화 디테일: 벽면 석재 코너와 일부 깨진 유리/빗물 얼룩.
+    for side in [-1,1]:
+        for y in range(2,23,4):
+            s.box('FacadeQuoin'+str(side)+str(y),(side*52.7,y,-2.15),(1.6,2.8,1.0),c['stone'],lean=side*.08)
+    for x in [-45,-31,31,45]:
+        s.box('WindowSill'+str(x),(x,3.25,-.10),(6.2,.45,1.0),c['stone'])
+        s.box('RainStain'+str(x),(x,1.8,-.18),(3.1,2.7,.05),s.material('RainStainMat',(.10,.09,.09)))
+
     # Carved trims, imperfect rooflines and pointed arch panels give a western manor silhouette.
     for side in [-1,1]:
         for y in [1,11.5,22.5]:s.box('FacadeCornice'+str(side)+str(y),(side*20,y,-1.35),(25,.6,1.2),c['wood'])
@@ -453,32 +1312,56 @@ def build():
         s.box('DormerFace'+str(side),(side*19,29,-6.8),(6,6,.3),c['plum'])
         s.box('DormerLight'+str(side),(side*19,29,-6.5),(2,3,.1),c['amber'])
     for i in range(9):s.box('RoofRib'+str(i),(-32+i*8,22.5,-22),(.25,.6,46),c['black'])
+    # 현관 포치: 계단-기단-4기둥-난간-박공지붕 순서로 건축적으로 읽히게 한다.
+    for step in range(5):
+        width=22-step*1.4
+        s.box('PorchStep'+str(step),(0,.16+step*.28,8.8-step*.95),(width,.30,2.0),c['stone'])
+    s.box('PorchPlinth',(0,.72,4.9),(20.5,1.0,9.8),c['stone'])
     for side in [-1,1]:
-        s.lathe('PorchColumn'+str(side),(side*7,6.5,5),.55,.45,12,c['stone'])
-        s.lathe('PorchCapital'+str(side),(side*7,12.5,5),.9,.9,.6,c['brass'])
-    s.box('PorchCanopy',(0,13.2,2),(17,1,12),c['roof'])
+        for depth,zp in enumerate([3.2,8.2]):
+            x=side*(7.6 if depth==0 else 8.6)
+            s.lathe('PorchColumn'+str(side)+'_'+str(depth),(x,6.7,zp),.62,.48,11.4,c['stone'],sides=28)
+            s.lathe('PorchBase'+str(side)+'_'+str(depth),(x,1.05,zp),.86,.72,.72,c['stone'],sides=28)
+            s.lathe('PorchCapital'+str(side)+'_'+str(depth),(x,12.5,zp),.98,.78,.72,c['brass'],sides=28)
+    for side in [-1,1]:
+        s.curve_tube('PorchRail'+str(side),[
+          (side*9.0,3.0,3.2),(side*9.0,3.0,8.0)
+        ],[.12,.12],[.10,.10],c['brass'],sides=16)
+        for zbal in [4.0,5.3,6.6,7.9]:
+            s.lathe('PorchBaluster'+str(side)+str(zbal),(side*9.0,2.15,zbal),.08,.06,1.7,c['brass'],sides=14)
+    porchRoof=[(-10.5,0,-5.2),(10.5,0,-5.2),(10.5,0,5.2),(-10.5,0,5.2),(0,3.4,-5.2),(0,3.4,5.2)]
+    s.node('PorchCanopy',s.mesh('PorchCanopy',porchRoof,[
+      [0,1,4],[3,5,2],[0,4,5,3],[1,2,5,4],[0,3,2,1]
+    ],c['roof']),(0,13.0,5.4))
+    s.curve_tube('PorchGableTrim',[
+      (-10.0,13.05,.2),(0,16.2,.2),(10.0,13.05,.2)
+    ],[.18,.14,.18],[.14,.11,.14],c['brass'],sides=18)
+    for side in [-1,1]:
+        s.lathe('PorchLanternPost'+str(side),(side*5.6,4.5,9.8),.12,.09,5.6,c['black'],sides=16)
+        s.ellipsoid('PorchLanternGlass'+str(side),(side*5.6,7.75,9.8),(.78,1.15,.78),c['glass'])
+        s.ellipsoid('PorchLanternFlame'+str(side),(side*5.6,7.75,9.8),(.16,.42,.16),c['amber'])
     for i in range(18):
         x=(-1 if i%2 else 1)*(9+(i*7)%21);z=(i*11)%40
         s.box('LeafCard'+str(i),(x,.24,z),(.5,.015,.9),c['wood'],rot=i*.71)
     for side in [-1,1]:
-        s.box('InteriorDado'+str(side),(side*28.1,3,-23),(.3,5,37),c['wood'])
-        for z in [-10,-19,-28,-37]:s.box('WallPanel'+str(side)+str(z),(side*27.8,3,z),(.35,4,7),c['teal'])
-    s.box('BackDado',(0,3,-42),(56,5,.6),c['wood'])
+        s.box('InteriorDado'+str(side),(side*53.1,3,-33),(.3,5,58),c['wood'])
+        for z in [-10,-21,-32,-43,-54]:s.box('WallPanel'+str(side)+str(z),(side*52.8,3,z),(.35,4,8.2),c['teal'])
+    s.box('BackDado',(0,3,-64.1),(106,5,.6),c['wood'])
     # 집안의 시간도 살짝 고장났다. 시계추·시곗바늘은 클라이언트가 느리게 움직인다.
-    s.box('ClockCase',(-9,5,-40.3),(3.2,9.2,1.8),c['wood'])
-    s.ellipsoid('ClockFace',(-9,8.6,-39.32),(2.5,2.5,.12),c['ivory'])
-    s.box('ClockMinute',(-9,9.05,-39.2),(.12,.95,.08),c['black'])
-    s.box('ClockHour',(-8.64,8.6,-39.15),(.78,.15,.08),c['black'])
-    s.lathe('ClockPendulumRod',(-9,4.8,-39.15),.055,.055,3.8,c['brass'])
-    s.ellipsoid('ClockPendulum',(-9,3,-39.1),(1.1,1.1,.14),c['brass'])
-    for i in range(9):s.box('FloorPlank'+str(i),(-26+i*6,.365,-23),(.06,.02,36),c['black'])
+    s.box('ClockCase',(-9,5,-61.8),(3.2,9.2,1.8),c['wood'])
+    s.ellipsoid('ClockFace',(-9,8.6,-60.82),(2.5,2.5,.12),c['ivory'])
+    s.box('ClockMinute',(-9,9.05,-60.70),(.12,.95,.08),c['black'])
+    s.box('ClockHour',(-8.64,8.6,-60.65),(.78,.15,.08),c['black'])
+    s.lathe('ClockPendulumRod',(-9,4.8,-60.65),.055,.055,3.8,c['brass'])
+    s.ellipsoid('ClockPendulum',(-9,3,-60.60),(1.1,1.1,.14),c['brass'])
+    for i in range(18):s.box('FloorPlank'+str(i),(-51+i*6,.365,-31),(.055,.02,64),c['black'])
     for i,(x,z) in enumerate([(-22,15),(24,19),(-22,-10),(22,-9)]):s.prop('graveyard','lightpost-single','LampPost'+str(i),(x,0,z),9)
     for i,(x,z) in enumerate([(-21,29),(22,32)]):s.prop('graveyard','bench-damaged','Bench'+str(i),(x,0,z),3,math.pi)
     for i,(x,z) in enumerate([(-30,7),(29,10),(-33,-35),(30,-37)]):s.prop('graveyard','urn-round','Urn'+str(i),(x,.4,z),3)
     for i,(x,z) in enumerate([(-27,22),(28,25),(-29,1),(30,0)]):s.prop('graveyard','rocks','GardenRock'+str(i),(x,0,z),2)
     for i in range(6):
         s.prop('graveyard','candle-multiple','Candle'+str(i),((-1 if i%2 else 1)*23,1.4,-9-(i//2)*12),2.4)
-    for i,x in enumerate([-22,-15,15,22]):s.prop('furniture','bookcaseClosed','Bookcase'+str(i),(x,.4,-39),8,stretch=(.85,1.18,1),tilt=(-1 if i%2 else 1)*.035)
+    for i,x in enumerate([-40,-27,27,40]):s.prop('furniture','bookcaseClosed','Bookcase'+str(i),(x,.4,-59.5),8,stretch=(.85,1.18,1),tilt=(-1 if i%2 else 1)*.035)
     s.prop('furniture','desk','RecordDesk',(-19,.4,-26),3)
     s.prop('furniture','books','OpenRecords',(-18,3.5,-26),.8)
     s.prop('furniture','coatRackStanding','CoatRack',(23,.4,-18),7)
@@ -492,15 +1375,27 @@ def build():
     s.lathe('ArmorTorso',(-16,4,-11),1.2,.8,3.4,c['stone'])
     s.ellipsoid('ArmorHelmet',(-16,6.4,-11),(2,2.2,1.8),c['brass'])
     for side in [-1,1]:s.box('ArmorArm'+str(side),(-16+side*1.6,4,-11),(.5,3,.65),c['stone'],lean=-side*.4)
-    s.lathe('ChandelierStem',(0,19,-24),.12,.12,5,c['black'])
-    s.lathe('ChandelierRing',(0,16.5,-24),3.5,3.5,.35,c['brass'],sides=12)
+    s.lathe('ChandelierStem',(0,19.5,-24),.11,.11,6,c['black'],sides=20)
+    s.lathe('ChandelierRingOuter',(0,16.7,-24),3.6,3.6,.28,c['brass'],sides=32)
+    s.lathe('ChandelierRingInner',(0,16.9,-24),2.25,2.25,.18,c['brass'],sides=28)
     for i in range(8):
-        a=i*math.pi/4;s.lathe('ChandelierCandle'+str(i),(math.cos(a)*3,17.4,-24+math.sin(a)*3),.15,.12,1.3,c['ivory'])
+        a=i*math.pi/4
+        x=math.cos(a)*3.15;z=-24+math.sin(a)*3.15
+        midx=math.cos(a)*2.55;midz=-24+math.sin(a)*2.55
+        s.curve_tube('ChandelierArm'+str(i),[(0,16.85,-24),(midx,16.25,midz),(x,17.0,z)],
+          [.10,.085,.075],[.10,.085,.075],c['brass'],sides=18)
+        s.lathe('ChandelierCup'+str(i),(x,17.05,z),.28,.18,.26,c['brass'],sides=20)
+        s.lathe('ChandelierCandle'+str(i),(x,17.65,z),.12,.10,1.05,c['ivory'],sides=18)
+        s.loft('ChandelierFlame'+str(i),(x,18.38,z),[
+          (-.20,.07,.06),(0,.10,.075),(.22,.025,.020)
+        ],c['amber'],sides=16)
+        dropx=math.cos(a)*2.9;dropz=-24+math.sin(a)*2.9
+        s.ellipsoid('ChandelierDrop'+str(i),(dropx,15.95,dropz),(.18,.52,.14),c['glass'])
     # Portraits and stage reward relics; the owner-specific module controls their visibility.
     for i in range(12):
-        x=([-24,-17,-10,10,17,24])[i%6];z=-41.7;y=9 if i<6 else 16
-        s.box('PortraitFrame'+str(i+1),(x,y,z),(5.2,5.8,.5),c['brass'])
-        s.box('PortraitCanvas'+str(i+1),(x,y,z+.3),(4.4,5,.1),c['black'])
+        x=([-40,-26,-12,12,26,40])[i%6];z=-63.7;y=9 if i<6 else 16
+        s.box('PortraitFrame'+str(i+1),(x,y,z),(6.0,6.6,.5),c['brass'])
+        s.box('PortraitCanvas'+str(i+1),(x,y,z+.3),(5.2,5.8,.1),c['black'])
     npc(s,'Butler',(5,.5,-9));npc(s,'Undertaker',(20,.5,-22));npc(s,'Archivist',(-21,.5,-30))
     # 가족이 사는 집의 흔적. 동일 무료 GLB를 비율/각도만 바꿔 재사용한다.
     s.prop('furniture','tableRound','FamilyTeaTable',(-15,.4,-18),3.2,stretch=(1.45,1,1.2))
@@ -529,50 +1424,62 @@ def build():
         curtain=[[-2,0,0],[2,0,0],[2,22,0],[7,25,0],[10,26,0],[7,28,0],[1,26,0],[-1,31,0],[-3,30,0]]
         s.node('ForegroundBranch'+str(side),s.mesh('ForegroundBranch',curtain,[list(range(len(curtain)))],foreground),(side*43,0,35),scale=[side*.65,.85,1])
     # 가족 초상화: 반복되는 빈 얼굴 대신 종별 특징을 그린 내부 제작 질감.
-    from PIL import Image, ImageDraw
-    from io import BytesIO
+    # 가족 초상화: Blender 내장 numpy만 사용한다. 외부 Pillow 의존성 없이 내장 텍스처를 만든다.
+    def paint_rect(img,x0,y0,x1,y1,color):
+        x0=max(0,int(x0));y0=max(0,int(y0));x1=min(img.shape[1],int(x1));y1=min(img.shape[0],int(y1))
+        if x1>x0 and y1>y0:img[y0:y1,x0:x1,:3]=np.array(color,dtype=np.float32)/255
+    def paint_ellipse(img,cx,cy,rx,ry,color):
+        yy,xx=np.ogrid[:img.shape[0],:img.shape[1]]
+        mask=((xx-cx)/max(rx,1))**2+((yy-cy)/max(ry,1))**2<=1
+        img[mask,:3]=np.array(color,dtype=np.float32)/255
+    def paint_line(img,x0,y0,x1,y1,width,color):
+        steps=max(abs(int(x1-x0)),abs(int(y1-y0)),1)
+        for t in np.linspace(0,1,steps+1):
+            x=x0+(x1-x0)*t;y=y0+(y1-y0)*t
+            paint_ellipse(img,x,y,width,width,color)
+
     for i in range(12):
-        x=([-24,-17,-10,10,17,24])[i%6];y=9 if i<6 else 16
-        im=Image.new('RGBA',(256,320),(23,29,32,255));d=ImageDraw.Draw(im)
+        x=([-40,-26,-12,12,26,40])[i%6];y=9 if i<6 else 16
+        pixels=np.ones((320,256,4),dtype=np.float32)
+        pixels[:,:,:3]=np.array((23,29,32),dtype=np.float32)/255
         coat=[(41,54,54),(67,34,47),(31,50,69),(74,60,41)][i%4]
         skin=[(171,166,143),(147,165,154),(168,147,142),(126,148,145)][i%4]
-        d.ellipse((24,17,232,312),fill=(43,48,46),outline=(82,74,56),width=3)
-        d.polygon([(42,305),(60,238),(93,215),(159,215),(196,244),(218,305)],fill=coat)
-        d.polygon([(91,221),(128,269),(165,221),(147,207),(108,207)],fill=(167,155,124))
-        width=38+(i%3)*9
-        d.ellipse((128-width,75,128+width,229),fill=skin)
-        d.polygon([(128-width,129),(121,158),(128-width+8,203),(105,180)],fill=tuple(int(v*.72)for v in skin))
-        d.ellipse((97,134,122,150),fill=(216,202,167));d.ellipse((138,134,163,150),fill=(216,202,167))
-        for ex in [111,149]:d.ellipse((ex-4,135,ex+4,149),fill=(35,25,26))
-        d.line([(126,146),(119,177),(132,180)],fill=(75,81,70),width=3)
-        d.line([(110,199),(146,199)],fill=(94,39,42),width=4)
+        # 낡은 타원 캔버스, 상체, 얼굴, 목.
+        paint_ellipse(pixels,128,164,103,148,(43,48,46))
+        paint_rect(pixels,55,236,202,310,coat)
+        paint_ellipse(pixels,128,154,43+(i%3)*5,76,skin)
+        paint_rect(pixels,113,211,143,242,skin)
+        # 역할별 머리 실루엣을 서로 다르게 한다.
         if i%4==0:
-            d.polygon([(85,112),(102,62),(128,92),(157,64),(174,115),(151,100),(127,112),(103,99)],fill=(17,24,25))
-            d.polygon([(107,200),(115,200),(111,211)],fill=(218,208,176))
-            d.polygon([(141,200),(149,200),(145,211)],fill=(218,208,176))
+            paint_ellipse(pixels,128,97,48,38,(17,24,25))
+            for dx in [-32,-18,0,18,32]:paint_line(pixels,128+dx*.45,72,128+dx,112,4,(17,24,25))
         elif i%4==1:
-            d.ellipse((76,57,181,125),fill=(16,25,30));d.rectangle((76,104,90,247),fill=(16,25,30));d.rectangle((170,104,185,257),fill=(16,25,30))
-            d.line([(129,70),(154,105)],fill=(57,73,77),width=3)
+            paint_ellipse(pixels,128,91,58,34,(16,25,30))
+            paint_rect(pixels,72,91,88,240,(16,25,30));paint_rect(pixels,168,91,185,246,(16,25,30))
         elif i%4==2:
-            d.polygon([(76,114),(63,65),(103,95),(154,95),(192,66),(181,128)],fill=(103,104,88))
-            d.polygon([(122,165),(153,187),(119,191)],fill=(73,76,64))
-            d.line([(83,111),(104,123)],fill=(17,27,26),width=7)
+            paint_ellipse(pixels,128,101,55,31,(72,70,62))
+            paint_line(pixels,88,92,72,61,6,(103,104,88));paint_line(pixels,168,92,187,62,6,(103,104,88))
         else:
-            d.rectangle((89,57,171,104),fill=(25,30,32));d.ellipse((72,93,187,113),fill=(17,23,25))
-            d.rectangle((91,87,170,94),fill=(109,67,53))
-            d.arc((92,128,128,159),0,360,fill=(170,148,85),width=3);d.arc((133,128,169,159),0,360,fill=(170,148,85),width=3)
-        d.line([(30,286),(224,286)],fill=(126,106,66),width=2)
-        for k in range(10):d.line([(83+k*9,297),(87+k*9,297)],fill=(177,154,105),width=2)
+            paint_rect(pixels,90,58,170,100,(25,30,32));paint_ellipse(pixels,130,102,61,14,(17,23,25))
+            paint_rect(pixels,91,86,171,94,(109,67,53))
+        # 눈/홍채/코/입. 작은 화면에서도 가족별 표정이 읽히게 대비를 남긴다.
+        for ex in [108,148]:
+            paint_ellipse(pixels,ex,143,13,8,(216,202,167))
+            paint_ellipse(pixels,ex,144,4,6,(35,25,26))
+        paint_line(pixels,128,148,120,178,2,(75,81,70))
+        paint_line(pixels,120,178,132,181,2,(75,81,70))
+        paint_line(pixels,111,200,146,200,3,(94,39,42))
+        paint_line(pixels,35,286,220,286,2,(126,106,66))
+        for k in range(10):paint_line(pixels,84+k*9,297,88+k*9,297,1,(177,154,105))
         image=bpy.data.images.new('FamilyPortrait'+str(i+1),width=256,height=320)
-        array=np.array(im,dtype=np.float32)[::-1]/255
-        image.pixels.foreach_set(array.ravel());image.pack()
+        image.pixels.foreach_set(pixels[::-1].ravel());image.pack()
         mat=bpy.data.materials.new('FamilyPortraitPaint'+str(i+1));mat.use_nodes=True
         tex=mat.node_tree.nodes.new('ShaderNodeTexImage');tex.image=image
         bs=mat.node_tree.nodes.get('Principled BSDF');bs.inputs['Roughness'].default_value=.91
         mat.node_tree.links.new(tex.outputs['Color'],bs.inputs['Base Color'])
         data=s.mesh('FamilyPortrait'+str(i+1),[(-2.2,-2.5,0),(2.2,-2.5,0),(2.2,2.5,0),(-2.2,2.5,0)],[(0,1,2,3)],mat)
         for uv,value in zip(data.uv_layers.active.data,[(0,0),(1,0),(1,1),(0,1)]):uv.uv=value
-        s.node('FamilyPortrait'+str(i+1),data,(x,y,-41.26))
+        s.node('FamilyPortrait'+str(i+1),data,(x,y,-63.26))
 
     # 저택 배경도 내부 GLB를 재구성한다. 문·기둥·담장 원형의 출처는 기존 CC0 manifest다.
     for side in [-1,1]:
@@ -580,7 +1487,7 @@ def build():
         s.prop('graveyard','crypt-large-roof','ManorPediment'+str(side),(side*20,21,-4),5.8,stretch=(1.8,1,.6))
         for z in [8,23,38]:
             s.prop('graveyard','stone-wall','GardenWall'+str(side)+str(z),(side*39,0,z),2.2,math.pi/2,stretch=(1.5,1,1))
-        s.prop('graveyard','crypt-door','AncestorsDoor'+str(side),(side*24,.4,-41),9,stretch=(1.05,1,.5))
+        s.prop('graveyard','crypt-door','AncestorsDoor'+str(side),(side*36,.4,-63),9,stretch=(1.05,1,.5))
         for z in [-11,-25,-38]:
             s.box('PanelPillar'+str(side)+str(z),(side*27,10,z),(.8,20,.8),c['wood'])
             s.box('PanelCapital'+str(side)+str(z),(side*26.7,19,z),(1.2,.65,1.4),c['brass'])
@@ -599,14 +1506,21 @@ def build():
                 s.box('ArchiveVolume'+str(row)+str(shelf)+str(k),(bx,y+bh/2,-37.9),(.43,bh,.95),book_colors[(k+row+shelf)%4],lean=.035*(k%2))
                 s.box('BookSpineGold'+str(row)+str(shelf)+str(k),(bx,y+bh*.7,-37.40),(.27,.07,.015),c['brass'])
     # 굽은 벽난로와 중앙 가족 거울. 기존 방의 통로 폭을 유지한다.
-    for x in [-5.8,5.8]:s.box('FireplacePillar'+str(x),(x,4,-40),(1.7,8,3),c['stone'])
-    s.box('FireplaceMantel',(0,8.1,-40),(14,1.1,3.6),c['stone'])
-    s.box('FireplaceBlack',(0,3.8,-42),(10,6.5,.1),c['black'])
+    for x in [-7.2,7.2]:s.box('FireplacePillar'+str(x),(x,4,-61.7),(1.9,8,3.2),c['stone'])
+    s.box('FireplaceMantel',(0,8.1,-61.7),(17,1.1,3.8),c['stone'])
+    s.box('FireplaceBlack',(0,3.8,-63.45),(12.5,6.5,.1),c['black'])
     for i in range(5):
-        s.lathe('FireplaceLog'+str(i),(-3+i*1.5,.9,-40),.36,.36,1.4,c['wood'])
-        s.ellipsoid('HearthFlame'+str(i),(-3+i*1.5,1.8+(i%2)*.6,-39.8),(.75,2.2+(i%2)*1.1,.55),c['amber'])
-    s.ellipsoid('FamilyMirrorFrame',(0,14,-41.5),(11,10,.55),c['brass'])
-    s.ellipsoid('FamilyMirror',(0,14,-41.13),(9.7,8.7,.15),c['glass'])
+        s.lathe('FireplaceLog'+str(i),(-3+i*1.5,.9,-61.4),.36,.36,1.4,c['wood'])
+        s.ellipsoid('HearthFlame'+str(i),(-3+i*1.5,1.8+(i%2)*.6,-61.2),(.75,2.2+(i%2)*1.1,.55),c['amber'])
+    s.ellipsoid('FamilyMirrorFrame',(0,15,-63.2),(13,11.5,.55),c['brass'])
+    s.ellipsoid('FamilyMirror',(0,15,-62.83),(11.6,10.1,.15),c['glass'])
+    # 세계 괴담 12종 완성 기념물. 별도 보상이나 저장키 없이 GhostCompleted=12만 시각화한다.
+    s.loft('MasterCollectionRelic',(0,9.25,-61.15),[
+      (-.62,1.05,.42),(-.20,1.28,.52),(.28,1.36,.58),(.72,1.02,.44)
+    ],s.material('MasterRelicLeather',(.055,.025,.032)),sides=30)
+    s.curve_tube('MasterCollectionRelicCrest',[
+      (-.82,9.42,-60.82),(0,10.12,-60.74),(.82,9.42,-60.82)
+    ],[.10,.14,.10],[.08,.11,.08],c['brass'],sides=20)
     for side in [-1,1]:
         s.ellipsoid('MirrorEye'+str(side),(side*1.9,14.5,-40.98),(1.4,1.1,.1),c['ivory'])
         s.ellipsoid('MirrorPupil'+str(side),(side*1.9,14.5,-40.87),(.42,.8,.08),c['black'])
@@ -654,7 +1568,7 @@ def build():
     bpy.ops.wm.save_as_mainfile(filepath=str(OUT/'manor.blend'),compress=True)
     for kind in ['Butler','Undertaker','Archivist']:
         p=Scene();npc(p,kind,(0,0,0));results.append(p.write(OUT/(kind.lower()+'.glb')))
-    (OUT/'build-evidence.json').write_text(json.dumps({'generator':'Blender '+bpy.app.version_string+' / build.py','normalization':{'up':'Y','forward':'+Z','origin':'GROUND_CENTER','units':'STUD','textures':'EMBEDDED','interactionPrefixesPreserved':True},'reusedOriginals':['Kenney CC0 furniture','Kenney CC0 graveyard architecture'],'actualRobloxPlayTest':False,'originalHotelAssetsUsed':False,'style':'괴물 가족의 살아 있는 저택','layers':['foreground','walkable_3d','portrait_relief','midground','background'],'modifiedCC0Props':['bookcaseClosed','chairCushion','coffin','character-ghost','tableRound'],'npcGeometry':'DIRECT_PROCEDURAL_ROLE_SPECIFIC_V3','bounds':{'width':hi.x-lo.x,'height':hi.z-lo.z,'depth':hi.y-lo.y},'models':results},ensure_ascii=False,indent=2)+'\n')
+    (OUT/'build-evidence.json').write_text(json.dumps({'generator':'Blender '+bpy.app.version_string+' / build.py','normalization':{'up':'Y','forward':'+Z','origin':'GROUND_CENTER','units':'STUD','textures':'EMBEDDED','interactionPrefixesPreserved':True},'reusedOriginals':['Kenney CC0 furniture','Kenney CC0 graveyard architecture'],'actualRobloxPlayTest':False,'originalHotelAssetsUsed':False,'style':'괴물 가족의 고딕 대저택 로비 리빌드','layers':['foreground','walkable_3d','portrait_relief','midground','background'],'modifiedCC0Props':['bookcaseClosed','chairCushion','coffin','character-ghost','tableRound'],'npcGeometry':'DIRECT_PROCEDURAL_ROLE_SPECIFIC_CONTINUOUS_SURFACE_V4','bounds':{'width':hi.x-lo.x,'height':hi.z-lo.z,'depth':hi.y-lo.y},'models':results},ensure_ascii=False,indent=2)+'\n')
     print(json.dumps(results,indent=2))
     import sys
     if '--render' in sys.argv:render_export()
@@ -684,7 +1598,26 @@ def render_export():
     light('Hearth',(0,4,-38),1000,(1,.32,.08),5)
     d=bpy.data.cameras.new('ReviewCamera');o=bpy.data.objects.new('ReviewCamera',d);collection.objects.link(o)
     bpy.context.scene.camera=o;d.lens=23
-    sc=bpy.context.scene;sc.render.engine='CYCLES';sc.cycles.samples=16;sc.cycles.use_denoising=True
+    sc=bpy.context.scene
+    fast_review=str(os.environ.get('GITHUB_REF','')).startswith('refs/heads/chatgpt/')
+    def select_review_engine(scene,fast):
+        if not fast:
+            scene.render.engine='CYCLES'
+            return 'CYCLES'
+        # Blender 4.x/5.x에서 Eevee 식별자가 달라진다. 설치된 엔진을 직접 선택한다.
+        for engine in ('BLENDER_EEVEE_NEXT','BLENDER_EEVEE','BLENDER_WORKBENCH'):
+            try:
+                scene.render.engine=engine
+                return engine
+            except (TypeError,ValueError):
+                continue
+        scene.render.engine='CYCLES'
+        return 'CYCLES'
+    review_engine=select_review_engine(sc,fast_review)
+    if review_engine=='CYCLES':
+        sc.cycles.samples=16;sc.cycles.use_denoising=True
+    else:
+        sc.render.image_settings.file_format='PNG'
     sc.render.resolution_x=1200;sc.render.resolution_y=780;sc.render.resolution_percentage=100
     sc.view_settings.view_transform='AgX';sc.view_settings.look='AgX - Medium High Contrast';sc.view_settings.exposure=.8
     for name,pos,target in [('interior',(-2,10,-6),(0,8,-27)),('butler',(0,8,-5),(5,6,-9))]:
@@ -709,21 +1642,27 @@ def render_export():
         npc_light('NPCFill',(4,6,4),1250,(.45,.62,1),4)
         npc_light('NPCRim',(0,8,-5),1550,(.75,.82,1),4)
         cam_data=bpy.data.cameras.new('NPCReviewCamera');cam=bpy.data.objects.new('NPCReviewCamera',cam_data);npc_collection.objects.link(cam)
-        bpy.context.scene.camera=cam;cam_data.lens=58
-        sc=bpy.context.scene;sc.render.engine='CYCLES';sc.cycles.samples=20;sc.cycles.use_denoising=True
+        bpy.context.scene.camera=cam;cam_data.lens=64
+        sc=bpy.context.scene
+        npc_review_engine=select_review_engine(sc,fast_review)
+        if npc_review_engine=='CYCLES':
+            sc.cycles.samples=20;sc.cycles.use_denoising=True
+        else:
+            sc.render.image_settings.file_format='PNG'
         sc.render.resolution_x=720;sc.render.resolution_y=900;sc.render.resolution_percentage=100
         sc.view_settings.view_transform='AgX';sc.view_settings.look='AgX - Medium High Contrast';sc.view_settings.exposure=.7
         files=[]
+        head_target={'butler':9.25,'undertaker':8.15,'archivist':7.55}[kind]
         for view,pos,target in [
-            ('front',(0,5.2,14),(0,5.2,0)),
-            ('three-quarter',(7.8,5.6,10.5),(0,5.0,0)),
-            ('full-body',(0,6.1,18),(0,5.0,0)),
+            ('front',(0,head_target,7.4),(0,head_target,0)),
+            ('three-quarter',(4.8,head_target-.10,6.4),(0,head_target-.08,0)),
+            ('full-body',(0,5.8,18.5),(0,5.1,0)),
         ]:
             cam.location=xyz(pos);cam.rotation_euler=(Vector(xyz(target))-cam.location).to_track_quat('-Z','Y').to_euler()
             name=kind+'-'+view+'.png';sc.render.filepath=str(review/name);bpy.ops.render.render(write_still=True);files.append(name)
         npc_reviews[kind]=files
     (review/'evidence.json').write_text(json.dumps({
-      'renderer':'Blender '+bpy.app.version_string+' Cycles',
+      'renderer':'Blender '+bpy.app.version_string+' '+(npc_review_engine if fast_review else 'CYCLES'),
       'input':'generated/manor-lobby.glb',
       'sha256':hashlib.sha256((OUT/'manor-lobby.glb').read_bytes()).hexdigest(),
       'method':'Import exported manor and each exported NPC GLB into empty scenes, then render',

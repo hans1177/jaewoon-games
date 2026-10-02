@@ -1,6 +1,6 @@
 {
-  "version": 16,
-  "updatedAt": "2026-09-14T23:29:45.196Z",
+  "version": 18,
+  "updatedAt": "2026-10-02T09:27:00+09:00",
   "policy": {
     "purpose": "현재 유지 중인 게임 아트북의 공개 인덱스. 실제 본문은 artbook-submissions 원본을 읽는다.",
     "sourceOfTruth": "artbook-submissions/<gameId>/<date>/artbook.json",
@@ -85,6 +85,18 @@
       "status": "completed-artbook",
       "productionApproval": false,
       "postprocessComplete": true
+    },
+    {
+      "date": "2026-10-02",
+      "gameId": "horror-escape-room",
+      "artbookId": "horror-escape-room-2026-10-02-manor-rebuild",
+      "status": "completed-artbook",
+      "productionApproval": false,
+      "postprocessComplete": false,
+      "internalDistribution": true,
+      "internalReleaseApproved": true,
+      "publicReleaseApproved": false,
+      "externalExposure": false
     }
   ],
   "artbooks": [
@@ -191,6 +203,24 @@
       "createdAt": "2026-09-11",
       "format": "core-strategy",
       "sourceFile": "artbook-submissions/seed-story-complete-rpg-chronicles-of-eldoria/current.json"
+    },
+    {
+      "id": "horror-escape-room-2026-10-02-manor-rebuild",
+      "gameId": "horror-escape-room",
+      "gameName": "심야 대탈출",
+      "edition": 1,
+      "status": "completed-artbook",
+      "published": false,
+      "homepageVisible": false,
+      "productionApproval": false,
+      "createdAt": "2026-10-02",
+      "format": "living-revision",
+      "sourceFile": "artbook-submissions/horror-escape-room/2026-10-02/artbook.json",
+      "internalDistribution": true,
+      "internalReleaseApproved": true,
+      "internalReleaseVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
+      "publicReleaseApproved": false,
+      "externalExposure": false
     }
   ]
 }
