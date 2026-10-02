@@ -404,13 +404,13 @@ open=function(key)
   table.insert(rankingRows,label(body,"수집가들의 기록을 가져오는 중",48,13))
  end
 end
-depart=button(commands,"출정",function()open("PLAY")end,wine)
-depart.Size=UDim2.fromOffset(68,52)
-notebook=button(commands,"메뉴",function()
+depart=button(commands,"   출정",function()open("PLAY")end,wine)
+depart.Size=UDim2.fromOffset(68,52);internalIcon(depart,0,18,UDim2.fromOffset(7,17),parchment)
+notebook=button(commands,"   메뉴",function()
  notebookOpen=not notebookOpen;nav.Visible=notebookOpen
  if notebookOpen then activeMenu=nil;panel.Visible=false end
 end)
-notebook.Size=UDim2.fromOffset(78,52);notebook.Position=UDim2.fromOffset(74,0)
+notebook.Size=UDim2.fromOffset(78,52);notebook.Position=UDim2.fromOffset(74,0);internalIcon(notebook,1,18,UDim2.fromOffset(7,17),parchment)
 -- 무료 Lucide 아이콘: 원본 ISC/MIT 라이선스를 모델 폴더에 보관.
 for index,entry in ipairs({{"PLAY","지도"},{"BOOK","도감"},{"DRESS","옷장"},{"EVENT","저택"},{"RECORD","기록"}})do
  local item=button(nav,"",function()if activeMenu==entry[1]and panel.Visible then hidePanel()else open(entry[1])end end,entry[1]=="PLAY"and wine or leather);item.Size=UDim2.new(1,0,0,52)
@@ -481,14 +481,14 @@ end
 -- 접속 메인: 입장 버튼을 누르면 기본 카메라/조작으로 정확히 복귀한다.
 local entered=false
 local welcome=Instance.new("Frame");welcome.Name="ManorWelcome";welcome.ZIndex=13;welcome.Active=true;welcome.Size=UDim2.fromScale(1,1);welcome.BackgroundColor3=ink;welcome.BackgroundTransparency=.58;welcome.Parent=gui
-local card=Instance.new("Frame");card.AnchorPoint=Vector2.new(.5,.5);card.Position=UDim2.fromScale(.5,.72);card.Size=UDim2.new(1,-48,0,238);card.BackgroundColor3=parchment;card.BackgroundTransparency=.02;card.Parent=welcome;corner(card,1);gothicCorners(card)
-local cardLimit=Instance.new("UISizeConstraint");cardLimit.MaxSize=Vector2.new(430,238);cardLimit.Parent=card
-local mainTitle=label(card,"MIDNIGHT ESCAPE",54,26);mainTitle.Size=UDim2.new(1,-24,0,54);mainTitle.Position=UDim2.fromOffset(12,14);mainTitle.TextXAlignment=Enum.TextXAlignment.Center;mainTitle.TextColor3=ink;mainTitle.AutoLocalize=false
-local subtitle=label(card,"심야 대탈출 · 괴물 가족의 저택",38,14);subtitle.Position=UDim2.fromOffset(12,65);subtitle.TextXAlignment=Enum.TextXAlignment.Center;subtitle.TextColor3=ink
-local greeting=label(card,"집사가 문을 열어두었어.\n이 집에서는 기이한 일도 일상이야.",54,13);greeting.Position=UDim2.fromOffset(12,105);greeting.TextXAlignment=Enum.TextXAlignment.Center;greeting.TextColor3=ink
-local wax=Instance.new("Frame");wax.Name="WaxSeal";wax.AnchorPoint=Vector2.new(.5,.5);wax.Position=UDim2.new(.5,0,0,161);wax.Size=UDim2.fromOffset(36,36);wax.BackgroundColor3=wine;wax.Parent=card
+local card=Instance.new("Frame");card.Name="DarkCartoonWelcomeCard";card.AnchorPoint=Vector2.new(.5,.5);card.Position=UDim2.fromScale(.5,.72);card.Size=UDim2.new(1,-48,0,260);card.BackgroundColor3=leather;card.BackgroundTransparency=.02;card.Parent=welcome;corner(card,1);gothicCorners(card)
+local cardLimit=Instance.new("UISizeConstraint");cardLimit.MaxSize=Vector2.new(430,260);cardLimit.Parent=card
+local mainTitle=label(card,"MIDNIGHT ESCAPE",50,26);mainTitle.Size=UDim2.new(1,-24,0,50);mainTitle.Position=UDim2.fromOffset(12,10);mainTitle.TextXAlignment=Enum.TextXAlignment.Center;mainTitle.TextColor3=ivory;mainTitle.AutoLocalize=false
+local subtitle=label(card,"심야 대탈출 · 괴물 가족의 저택",34,14);subtitle.Position=UDim2.fromOffset(12,58);subtitle.TextXAlignment=Enum.TextXAlignment.Center;subtitle.TextColor3=brass
+local greeting=label(card,"집사가 문을 열어두었어.\n이 집에서는 기이한 일도 일상이야.",48,13);greeting.Position=UDim2.fromOffset(12,92);greeting.TextXAlignment=Enum.TextXAlignment.Center;greeting.TextColor3=parchment
+local wax=Instance.new("Frame");wax.Name="WaxSeal";wax.AnchorPoint=Vector2.new(.5,.5);wax.Position=UDim2.new(.5,0,0,158);wax.Size=UDim2.fromOffset(38,38);wax.BackgroundColor3=wine;wax.Parent=card
 local waxCorner=Instance.new("UICorner");waxCorner.CornerRadius=UDim.new(1,0);waxCorner.Parent=wax
-local waxMark=label(wax,"M",30,18);waxMark.Size=UDim2.fromScale(1,1);waxMark.TextColor3=Color3.fromRGB(205,155,87);waxMark.TextXAlignment=Enum.TextXAlignment.Center;waxMark.TextYAlignment=Enum.TextYAlignment.Center
+internalIcon(wax,3,24,UDim2.fromOffset(7,7),brass)
 local controls=nil
 local mainCameraActive=false
 local function releaseMainCamera()
@@ -505,11 +505,11 @@ task.spawn(function()
  if module then local ok,value=pcall(require,module);if ok then controls=value:GetControls()end end
 end)
 local visibility
-local enter=button(card,"저택 들어가기",function()
+local enter=artbookButton(card,"저택 들어가기","Version 77 앞마당에서 시작",function()
  entered=true
  releaseMainCamera()
  if visibility then visibility()end
-end,wood);enter.Position=UDim2.fromOffset(18,174);enter.Size=UDim2.new(1,-36,0,52)
+end,wine,3);enter.Position=UDim2.fromOffset(18,184);enter.Size=UDim2.new(1,-36,0,62)
 local oldLighting=nil
 local atmosphere=nil
 local oldAtmosphere=nil
