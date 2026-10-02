@@ -212,8 +212,15 @@ function Manor:Get(p)
    for _,mesh in ipairs(namedParts(scene,"PortraitCanvas"..i))do
     if mesh.Name=="PortraitCanvas"..i then mesh.Color=i<=seen and Color3.fromRGB(255,239,206)or Color3.fromRGB(130,122,119)end
    end
-   for _,mesh in ipairs(namedParts(scene,string.format("GhostArchiveBook%02d",i)))do
-    mesh.Transparency=i<=completed and 0 or .86;mesh.CanQuery=false
+  end
+
+  -- 괴담별 대표 유물은 각 기록의 실제 단계만 따른다. 1·2단계에서는 흐릿하게 드러나고 3단계에서 완전 전시된다.
+  for _,ghost in ipairs(C.GhostCatalog or{})do
+   local stage=math.clamp(tonumber(stages[ghost.Id])or 0,0,3)
+   for _,mesh in ipairs(namedParts(scene,"GhostRelic_"..ghost.Id))do
+    mesh.Transparency=stage==0 and .92 or stage==1 and .56 or stage==2 and .24 or 0
+    mesh.Reflectance=stage==3 and .08 or 0
+    mesh.CanQuery=false;mesh.CanTouch=false;mesh.CanCollide=false
    end
   end
 

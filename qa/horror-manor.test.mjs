@@ -90,6 +90,26 @@ test('lobby actions retain server authority and personal menu ownership',()=>{
  assert.match(server,/owned\[id\]/);assert.match(server,/coins<price/);assert.match(server,/manorLobby:Dress\(p\)/);
  assert.match(ui,/GhostProgress/);assert.match(ui,/i<=stage/);assert.match(ui,/MANOR_RANKING/);
 });
+test('personal manor collection display is driven by existing saved progression only',()=>{
+ assert.match(manorBuild,/GhostRelic_YUREI/);
+ assert.match(manorBuild,/GhostRelic_BLACK_SHUCK/);
+ assert.match(manorBuild,/MapPin_SCHOOL/);
+ assert.match(manorBuild,/MapPin_HOSPITAL/);
+ assert.match(manorBuild,/MapPin_THEME_PARK/);
+ assert.match(manorBuild,/MemoryRelic_SCHOOL/);
+ assert.match(manorBuild,/MemoryRelic_HOSPITAL/);
+ assert.match(manorBuild,/MemoryRelic_THEME_PARK/);
+ assert.match(lobby,/GhostRelic_"\.\.ghost\.Id/);
+ assert.match(lobby,/local stage=math\.clamp\(tonumber\(stages\[ghost\.Id\]\)or 0,0,3\)/);
+ assert.match(lobby,/SelectedLobbyMap/);
+ assert.match(lobby,/self\.selectMap and self\.selectMap\(p,map\.Id\)/);
+ assert.match(server,/local function selectLobbyMap\(p,value\)/);
+ assert.match(server,/pcall\(ManorLobby\.new,remote,selectLobbyMap\)/);
+ assert.match(server,/if a==C\.Actions\.SELECT_MAP then\s*selectLobbyMap\(p,value\)/);
+ assert.doesNotMatch(lobby,/SetAttribute\("GhostProgress"/);
+ assert.doesNotMatch(lobby,/SetAttribute\("GhostCompleted"/);
+});
+
 test('replacement lobby music has no old screaming source and is original instrumental',()=>{
  assert.doesNotMatch(config,/1843529635/);assert.match(config,/LobbyMusicId/);
  const m=JSON.parse(read(root+'/generated/music-evidence.json'));assert.equal(m.vocals,false);assert.equal(m.screams,false);assert.equal(m.originalComposition,true);assert.ok(m.durationSeconds>=60);
