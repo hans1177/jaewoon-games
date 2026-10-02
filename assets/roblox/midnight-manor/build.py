@@ -836,13 +836,25 @@ def build():
         s.box('WingBackWall'+str(side),(side*58,11,-63),(35,22,1.2),c['plum'])
         for z in [-55,-39,-23,-7]:
             s.box('WallRib'+str(side)+str(z),(side*53.4,11,z),(1.2,22,1),c['wood'])
-        # 1·2층 창을 분리해 외관 비율을 읽을 수 있게 한다.
+        # 1·2층 창: 깊은 recess + 석재 jamb/sill + 첨두 아치 + 목재 mullion + 안쪽 커튼 실루엣.
         for x in [side*33,side*45,side*61,side*70]:
             for y in [6.8,17.2]:
-                s.box('WindowFrame'+str(x)+str(y),(x,y,-.8),(6.2,8.4,.75),c['wood'])
-                s.box('WindowGlass'+str(x)+str(y),(x,y,-.35),(4.8,6.8,.12),c['glass'])
-                s.box('WindowMullion'+str(x)+str(y),(x,y,-.15),(.28,7,.12),c['black'])
-                s.box('WindowCross'+str(x)+str(y),(x,y,-.12),(5,.25,.14),c['black'])
+                key=str(x)+str(y)
+                s.box('WindowRecess'+key,(x,y,-.92),(6.7,8.8,.48),c['black'])
+                for jamb in [-1,1]:
+                    s.box('WindowJamb'+key+str(jamb),(x+jamb*2.78,y,-.78),(.62,7.9,.78),c['stone'])
+                s.box('WindowSill'+key,(x,y-4.05,-.72),(6.15,.48,1.0),c['stone'])
+                s.curve_tube('WindowArch'+key,[
+                  (x-2.78,y+3.25,-.68),(x-1.85,y+4.45,-.68),(x,y+5.15,-.68),
+                  (x+1.85,y+4.45,-.68),(x+2.78,y+3.25,-.68)
+                ],[.24,.22,.20,.22,.24],[.20,.18,.17,.18,.20],c['stone'],sides=18)
+                s.box('WindowGlass'+key,(x,y,-.38),(4.85,6.8,.10),c['glass'])
+                s.box('WindowMullion'+key,(x,y,-.20),(.20,6.9,.12),c['black'])
+                s.box('WindowCross'+key,(x,y+.35,-.20),(4.9,.20,.12),c['black'])
+                # 커튼은 양쪽 가장자리에만 보여 창 내부에 깊이를 만든다.
+                curtain=s.material('WindowCurtain',(.16,.035,.055))
+                s.box('WindowCurtainL'+key,(x-1.72,y,-.50),(1.05,6.2,.08),curtain,lean=.12)
+                s.box('WindowCurtainR'+key,(x+1.72,y,-.50),(1.05,6.2,.08),curtain,lean=-.12)
         s.box('EntryPillar'+str(side),(side*8.5,7.5,-2),(1.8,15,4),c['stone'],lean=-side*.45)
     s.box('BackWall',(0,13,-65),(110,26,1.5),c['plum'])
     for x in [-42,-28,-14,0,14,28,42]:
@@ -860,20 +872,39 @@ def build():
         s.lathe('EntryArchCapital'+str(side),(side*9.2,13.7,-1.0),.72,.60,.65,c['brass'],sides=20)
     s.box('EntryThreshold',(0,.40,-2),(18,.4,6),c['stone'])
 
-    # 현관문은 기존 상호작용 이름을 유지한다.
+    # 현관문: 기존 EntryDoor 이름/동작은 유지하고, 깊은 패널·황동 문고리·문패·킥플레이트를 추가한다.
     for side in [-1,1]:
         door=s.node('EntryDoor'+str(side),pos=(side*7.2,.5,-2))
-        s.box('EntryDoorWood'+str(side),(-side*3.5,5.8,0),(7,11.6,.5),c['wood'],parent=door)
-        for y in [2.7,8.6]:s.box('EntryDoorPanel'+str(side)+str(y),(-side*3.5,y,.3),(5.3,4.4,.16),c['teal'],parent=door)
-        s.lathe('EntryDoorKnob'+str(side),(-side*6.2,5.4,.5),.22,.22,.4,c['brass'],parent=door)
+        s.box('EntryDoorWood'+str(side),(-side*3.5,5.8,0),(7,11.6,.62),c['wood'],parent=door)
+        for py in [2.7,8.6]:
+            s.box('EntryDoorPanelFrame'+str(side)+str(py),(-side*3.5,py,.34),(5.55,4.55,.16),c['brass'],parent=door)
+            s.box('EntryDoorPanel'+str(side)+str(py),(-side*3.5,py,.44),(4.85,3.85,.10),c['teal'],parent=door)
+        s.box('EntryDoorKickplate'+str(side),(-side*3.5,.85,.43),(5.0,1.0,.10),c['brass'],parent=door)
+        s.lathe('EntryDoorKnob'+str(side),(-side*6.0,5.2,.58),.24,.20,.42,c['brass'],parent=door,sides=24)
+        s.curve_tube('EntryDoorKnocker'+str(side),[
+          (-side*3.5,6.95,.66),(-side*3.9,6.45,.72),(-side*3.5,5.95,.66),(-side*3.1,6.45,.72),(-side*3.5,6.95,.66)
+        ],[.09]*5,[.07]*5,c['brass'],sides=16,parent=door)
+    s.box('ManorNamePlaque',(0,17.8,-.56),(9.2,1.7,.24),c['wood'])
+    s.box('ManorNamePlaqueInset',(0,17.8,-.40),(7.7,1.0,.08),c['brass'])
 
     # 중앙부는 2층 높이로 솟고 좌우 지붕은 낮아 실루엣이 단계적으로 읽힌다.
     roof=[[-61,25,-67],[61,25,-67],[61,25,1],[-61,25,1],[-7,46,-67],[-7,42,1]]
     s.node('CrookedRoof',s.mesh('CrookedRoof',roof,[[0,4,1],[3,2,5],[0,3,5,4],[4,5,2,1],[0,1,2,3]],c['roof']))
     s.box('CentralTower',(0,29,-36),(28,17,25),c['plum'])
     s.lathe('CentralTowerCrown',(0,46,-36),15,11,13,c['roof'],sides=8)
-    s.box('LeaningChimney',(31,38,-42),(5,24,5),c['stone'],lean=2.4)
-    s.box('ChimneyCap',(33,50,-42),(7,1.1,7),c['black'])
+    # 굴뚝은 기단-샤프트-코니스-캡-연도 순서로 쌓아 큰 박스 느낌을 없앤다.
+    s.box('LeaningChimneyBase',(31,28.4,-42),(7.2,2.0,7.2),c['stone'],lean=.35)
+    s.box('LeaningChimney',(31.7,39.0,-42),(4.8,20.5,4.8),c['stone'],lean=1.25)
+    s.box('ChimneyCornice',(32.9,48.9,-42),(6.0,.75,6.0),c['stone'])
+    s.box('ChimneyCap',(33.1,50.0,-42),(6.8,.65,6.8),c['black'])
+    for side in [-1,1]:
+        s.lathe('ChimneyFlue'+str(side),(33.1+side*1.25,51.2,-42),.62,.54,2.0,c['black'],sides=20)
+        s.lathe('ChimneyPot'+str(side),(33.1+side*1.25,52.65,-42),.78,.56,.90,c['stone'],sides=20)
+    for ci,(x,z,h) in enumerate([(-31,-25,10),(-18,-52,8),(45,-18,9)]):
+        s.box('SecondaryChimneyBase'+str(ci),(x,27.0,z),(4.8,1.4,4.8),c['stone'])
+        s.box('SecondaryChimney'+str(ci),(x,31.0+h*.20,z),(3.1,7.0+h*.18,3.1),c['stone'],lean=(-.35 if ci%2 else .30))
+        s.box('SecondaryChimneyCap'+str(ci),(x,35.0+h*.28,z),(4.1,.52,4.1),c['black'])
+        s.lathe('SecondaryChimneyPot'+str(ci),(x,36.0+h*.28,z),.48,.38,1.25,c['stone'],sides=18)
     s.lathe('RightTurret',(57,27,-48),7,5.5,25,c['plum'],sides=10)
     s.lathe('RightTurretRoof',(58,48,-48),9,0,17,c['roof'],sides=10)
 
