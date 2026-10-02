@@ -35,20 +35,24 @@ jobs:
           $rojo=Join-Path $bin 'rojo.exe'
           if(-not(Test-Path -LiteralPath $rojo)){throw 'ROJO_EXE_MISSING_AFTER_INSTALL'}
           "MANOR_REVIEW_ROJO=$rojo" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
-      - name: Download the registered native model for transform inspection
+      - name: Download and verify exact Published Version 77 manor
         env:
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         shell: pwsh
         run: |
           $ErrorActionPreference='Stop'
           $out=Join-Path $env:RUNNER_TEMP 'midnight-manor-native-review'
           New-Item -ItemType Directory -Force -Path $out | Out-Null
+          $env:MANOR_NATIVE_ASSET_ID='89009422966867'
+          $env:MANOR_NATIVE_MODEL=Join-Path $out 'manor-template.rbxm'
+          $env:MANOR_NATIVE_EVIDENCE=Join-Path $out 'native-import-check.json'
+          node tools/horror-manor-native-check.mjs
+          if($LASTEXITCODE -ne 0){throw 'VERSION77_MANOR_NATIVE_CHECK_FAILED'}
+          if(-not(Test-Path -LiteralPath $env:MANOR_NATIVE_MODEL)){throw 'VERSION77_MANOR_NATIVE_MODEL_MISSING'}
           "MANOR_REVIEW_OUT=$out" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
-          @'
-          const fs=require('fs'),path=require('path');
-          (async()=>{const c=process.env.ROBLOX_ROBLOSECURITY.trim();const r=await fetch('https://assetdelivery.roblox.com/v1/asset/?id=81599595871905',{headers:{cookie:c.includes('.ROBLOSECURITY=')?c:'.ROBLOSECURITY='+c+';'}});if(!r.ok)throw Error('NATIVE_HTTP_'+r.status);fs.writeFileSync(path.join(process.env.RUNNER_TEMP,'midnight-manor-native-review','registered-manor.rbxm'),Buffer.from(await r.arrayBuffer()));})().catch(e=>{console.error(e.message);process.exit(1)});
-          '@ | node
-          if($LASTEXITCODE -ne 0){throw 'NATIVE_DOWNLOAD_FAILED'}
+          "MANOR_REVIEW_MANOR=$($env:MANOR_NATIVE_MODEL)" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          Write-Host 'MANOR_REVIEW_VERSION77_NATIVE=PASS'
       - name: Open this review place and discover official Studio tools
         shell: pwsh
         run: |
@@ -56,8 +60,22 @@ jobs:
           $rojo=$env:MANOR_REVIEW_ROJO
           if(-not $rojo -or -not(Test-Path -LiteralPath $rojo)){throw 'MANOR_REVIEW_ROJO_NOT_READY'}
           $place=Join-Path $env:MANOR_REVIEW_OUT 'midnight-manor-review.rbxlx'
-          & $rojo build roblox-games/horror-escape-room/default.project.json -o $place
+          $project=Join-Path $env:MANOR_REVIEW_OUT 'review.project.json'
+          $env:MANOR_REVIEW_PROJECT=$project
+          @'
+          const fs=require('fs');
+          const source='roblox-games/horror-escape-room/default.project.json';
+          const project=JSON.parse(fs.readFileSync(source,'utf8'));
+          project.tree.ServerStorage={
+            ...(project.tree.ServerStorage||{}),
+            ManorTemplate:{$path:process.env.MANOR_REVIEW_MANOR}
+          };
+          fs.writeFileSync(process.env.MANOR_REVIEW_PROJECT,JSON.stringify(project,null,2)+'\n');
+          '@ | node
+          if($LASTEXITCODE -ne 0){throw 'REVIEW_PROJECT_BIND_FAILED'}
+          & $rojo build $project -o $place
           if($LASTEXITCODE -ne 0){throw 'REVIEW_BUILD_FAILED'}
+          Write-Host 'MANOR_REVIEW_PACKAGED_VERSION77=PASS'
           $studio=Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Roblox/Versions') -Directory | Sort-Object LastWriteTime -Descending | ForEach-Object {Join-Path $_.FullName 'RobloxStudioBeta.exe'} | Where-Object {Test-Path $_} | Select-Object -First 1
           if(-not $studio){throw 'STUDIO_NOT_FOUND'}
           $mcp=Join-Path (Split-Path $studio) 'StudioMCP.exe'
