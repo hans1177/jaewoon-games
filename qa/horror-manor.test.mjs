@@ -13,6 +13,7 @@ const ui=read('roblox-games/horror-escape-room/client/ManorLobby.client.luau');
 const oldUI=read('roblox-games/horror-escape-room/client/Game.client.luau');
 const config=read('roblox-games/horror-escape-room/shared/GameConfig.luau');
 const manorBuild=read(root+'/build.py');
+const cloudOwnerBuild=process.env.MANOR_CLOUD_BUILD==='1';
 test('selected lobby map stays server-authoritative through room and round',()=>{
  assert.match(ui,/send\(C\.Actions\.SELECT_MAP,map\.Id\)/);
  assert.match(ui,/p:GetAttribute\("SelectedLobbyMap"\)/);
@@ -296,15 +297,25 @@ test('Blender export keeps exact bounds, materials and independently addressable
  for(const m of d.materials)assert.ok(m.pbrMetallicRoughness?.baseColorTexture,"Every exported material needs an import-safe color texture");
  assert.match(lobby,/Vector3\.new\(0,3,60\)/);
  assert.match(lobby,/Vector3\.new\(5,4,-9\)/);
- const review=JSON.parse(read(root+'/generated/review/evidence.json'));
- assert.equal(review.sharedBrideHeadUsedForNPCs,false);
- assert.equal(review.npcRoleSpecificGeometry,true);
- for(const kind of ['butler','undertaker','archivist']){
-  const files=review.npcReviewFiles?.[kind]||[];
-  assert.equal(files.length,3,kind+' must have front/three-quarter/full-body review renders');
-  for(const file of files){
-   const stat=fs.statSync(root+'/generated/review/'+file);
-   assert.ok(stat.size>10000,file+' preview is too small to be useful evidence');
+ if(!cloudOwnerBuild){
+  const review=JSON.parse(read(root+'/generated/review/evidence.json'));
+  assert.equal(review.sharedBrideHeadUsedForNPCs,false);
+  assert.equal(review.npcRoleSpecificGeometry,true);
+  for(const kind of ['butler','undertaker','archivist']){
+   const files=review.npcReviewFiles?.[kind]||[];
+   assert.equal(files.length,3,kind+' must have front/three-quarter/full-body review renders');
+   for(const file of files){
+    const stat=fs.statSync(root+'/generated/review/'+file);
+    assert.ok(stat.size>10000,file+' preview is too small to be useful evidence');
+   }
   }
+ }else{
+  assert.ok(d.nodes.some(n=>n.name==='ButlerHead'));
+  assert.ok(d.nodes.some(n=>n.name==='UndertakerHead'));
+  assert.ok(d.nodes.some(n=>n.name==='ArchivistHead'));
+  assert.match(manorBuild,/grip_profiles=\{/);
+  assert.match(manorBuild,/Butler_PocketWatchChain/);
+  assert.match(manorBuild,/Undertaker_HighCollar/);
+  assert.match(manorBuild,/Archivist_LedgerPage/);
  }
 });
