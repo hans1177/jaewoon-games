@@ -2426,15 +2426,12 @@ local function render()
  roleLine.Text=string.format("%s · 인간 %d : 몬스터 %d",roleText,hc,mc)
  local objectivesDone=tonumber(p:GetAttribute("ObjectivesDone"))or 0
  local objectivesTotal=math.max(1,tonumber(p:GetAttribute("ObjectivesTotal"))or tonumber(C.ObjectiveCount)or 4)
- local exitOpen=workspace:GetAttribute("EscapeUnlocked")==true
  if role=="MONSTER"then
   objectiveLine.Text="목표 · 인간 추적 → 감염 → 전멸"
-  local profile=currentAbilityProfile()
-  skillGuideLine.Text=abilityGuideText(currentAbilityName(),profile,C.Energy and C.Energy.AbilityCost or 45,C.MonsterAbilityCooldown or 7)
+  skillGuideLine.Text="스킬 · "..currentAbilityName().." · "..currentAbilityDescription()
  elseif role=="SURVIVOR"then
   objectiveLine.Text=string.format("목표 · 단말 %d/%d 작동 → 몬스터 정화 → 탈출",objectivesDone,objectivesTotal)
-  local _,profile=currentHumanAbilityProfile()
-  skillGuideLine.Text=abilityGuideText(currentHumanAbilityName(),profile,profile and profile.Cost or 30,profile and profile.Cooldown or 8)
+  skillGuideLine.Text="스킬 · "..currentHumanAbilityName().." · "..currentHumanAbilityDescription()
  elseif role=="ELIMINATED"then
   objectiveLine.Text="이번 판 탈락 · 팀 결과를 기다리는 중"
   skillGuideLine.Text="관전 중"
