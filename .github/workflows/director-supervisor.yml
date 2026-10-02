@@ -164,6 +164,22 @@ jobs:
 
           // Unscoped batch wakes from push/manual/status recovery can target the same exact head.
           // Preserve the active batch and remove only queued/pending duplicates for that same head.
+          const activeCentralBatch=runs
+            .filter(r=>
+              r.path==='.github/workflows/company-development-confirmed-runtime.yml'
+              &&String(r.status||'').toLowerCase()==='in_progress'
+              &&/^DEVELOPMENT cycle \| batch \|/.test(String(r.display_title||''))
+            )
+            .sort((a,b)=>Number(a.id)-Number(b.id))[0];
+          if(activeCentralBatch){
+            for(const stale of runs.filter(r=>
+              r.path==='.github/workflows/company-development-confirmed-runtime.yml'
+              &&String(r.event||'')==='workflow_dispatch'
+              &&queued.has(String(r.status||'').toLowerCase())
+              &&/^DEVELOPMENT cycle \| batch \|/.test(String(r.display_title||''))
+            ))add(stale,'CENTRAL_MANUAL_BATCH_SUPERSEDED_BY_ACTIVE_BATCH');
+          }
+
           const centralBatchByHead=new Map();
           for(const run of runs.filter(r=>
             r.path==='.github/workflows/company-development-confirmed-runtime.yml'

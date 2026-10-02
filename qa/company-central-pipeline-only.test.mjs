@@ -212,6 +212,7 @@ test('director drains superseded runner backlog before noncritical supervision',
   assert.match(director,/ROBLOX_STALE_LEGACY_OR_BATCH' \\|\\| "\\$reason" == 'CONTROL_PLANE_SUPERSEDED'/);
   assert.match(director,/CENTRAL_DEVELOPMENT_PUSH_SUPERSEDED/);
   assert.match(director,/CENTRAL_DEVELOPMENT_BATCH_DUPLICATE_SAME_HEAD/);
+  assert.match(director,/CENTRAL_MANUAL_BATCH_SUPERSEDED_BY_ACTIVE_BATCH/);
   assert.match(director,/centralBatchByHead/);
   assert.match(director,/company-development-roblox-runtime\.yml/);
   assert.match(director,/company-development-roblox-release-promotion\.yml/);
