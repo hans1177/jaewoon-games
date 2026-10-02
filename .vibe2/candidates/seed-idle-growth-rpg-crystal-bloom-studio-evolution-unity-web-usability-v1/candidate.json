@@ -1,0 +1,25 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "        if(!started) StartGameplay();",
+      "replace": "        if(!started) StartGameplay();\n        Debug.Log(\"JAEWOON_UNITY_WEB_QA START game=\" + GameId + \" region=field mode=\" + Mode + \" status=PASS\");"
+    },
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "        if (player != null && started)",
+      "replace": "        if (player != null && started)\n        {\n            Debug.Log(\"JAEWOON_UNITY_WEB_QA START game=\" + GameId + \" region=field mode=\" + Mode + \" status=PASS\");\n            LogState();\n        }"
+    },
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "            var p=enemy.transform.position;",
+      "replace": "            var p=enemy.transform.position;\n            Debug.Log(\"JAEWOON_UNITY_WEB_QA CORE_FUN game=\" + GameId + \" mode=\" + Mode + \" status=REPAIR_REQUIRED reason=BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED\");"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
