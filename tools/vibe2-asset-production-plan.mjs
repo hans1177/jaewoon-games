@@ -578,7 +578,7 @@ function matchedForType(selector={},type='',manifest={},target=''){
       companyVerified:asset.companyVerified===true,
       sameGameExistingRoblox:asset.sameGameExistingRoblox===true,
       robloxAssetId:clean(asset.robloxAssetId)||null,
-      sourceHash:clean(asset.sourceHash||asset.derivedSha256||asset.sourceSha256||asset.contentHash||asset.sha256)||null,
+      sourceHash:clean(asset.sourceHash||asset.sourceSha256||asset.contentHash||asset.sha256)||null,
       artifactHash:clean(asset.artifactHash||asset.derivedSha256||asset.contentHash||asset.sha256)||null,
       sourceFiles:freezeList(unique(Array.isArray(asset.sourceFiles)?asset.sourceFiles:[])),
       nativeArtifacts:freezeList(unique(Array.isArray(asset.nativeArtifacts)?asset.nativeArtifacts:[])),
