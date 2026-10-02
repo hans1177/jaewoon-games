@@ -811,9 +811,15 @@ def build():
         for gate,z0 in enumerate([-54,-33,-12]):
             for jamb in [-1,1]:
                 s.box('WingArchJamb'+str(side)+'_'+str(gate)+'_'+str(jamb),(side*53.65,5.0,z0+jamb*4.35),(1.0,10,.65),c['stone'])
-            arch=[[-4.7,0,0],[4.7,0,0],[4.0,2.0,0],[0,5.0,0],[-4.0,2.0,0]]
-            archObj=s.node('WingArch'+str(side)+'_'+str(gate),s.mesh('WingArch'+str(side)+'_'+str(gate),arch,[[0,1,2,3,4]],c['stone']),(side*53.58,9.6,z0))
-            archObj.rotation_euler.y=math.pi/2
+            arch_points=[
+              (side*53.58,9.4,z0-4.15),
+              (side*53.58,11.0,z0-2.85),
+              (side*53.58,13.7,z0),
+              (side*53.58,11.0,z0+2.85),
+              (side*53.58,9.4,z0+4.15),
+            ]
+            s.curve_tube('WingArch'+str(side)+'_'+str(gate),arch_points,
+              [.30,.28,.24,.28,.30],[.30,.28,.24,.28,.30],c['stone'],sides=20)
             s.box('WingThreshold'+str(side)+'_'+str(gate),(side*54,.28,z0),(5.5,.18,8.0),c['stone'])
         s.box('FacadeWing'+str(side),(side*43,13,-2),(34,26,2),c['plum'],lean=side*.5)
         s.box('OuterWingWall'+str(side),(side*75,11,-31),(1.2,22,64),c['plum'],lean=side*.35)
