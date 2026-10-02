@@ -1,5 +1,5 @@
 {
-  "version": 521,
+  "version": 522,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-02",
@@ -22655,7 +22655,10 @@
       "activeGameWorkMayNotDeferIndependentDesignOrQueueReconciliation": true,
       "reconciliationCancellationChurnForbidden": true,
       "optimizationLaneMustRemainLiveDuringDevelopment": true,
-      "unrelatedSecurityQaOrReviewMustNotSerializeBuildUp": true
+      "unrelatedSecurityQaOrReviewMustNotSerializeBuildUp": true,
+      "existingCanonicalPipelineMustBeModifiedInPlace": true,
+      "newShadowQueueWrapperOrControlLayerForbidden": true,
+      "topologyExpansionRequiresOwnerDirectDirective": true
     },
     "hardGateOnlyWhen": [
       "CENTRAL_POLICY_OR_AUTHORITY_MUTATION",
