@@ -1619,6 +1619,19 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.equal(parallel.assetDevelopmentRobloxGeneration.focusedTimeoutMs,120000);
   assert.equal(parallel.assetDevelopmentRobloxGeneration.focusedMaxPredict,768);
   assert.equal(parallel.assetDevelopmentRobloxGeneration.gamePrimaryGenerationPolicyUnchanged,true);
+  assert.equal(parallel.assetDevelopmentHeroModelRouting.enabled,true);
+  assert.equal(parallel.assetDevelopmentHeroModelRouting.provider,'LOCAL_OLLAMA');
+  assert.equal(parallel.assetDevelopmentHeroModelRouting.baselineModel,'qwen3:1.7b');
+  assert.equal(parallel.assetDevelopmentHeroModelRouting.heroModel,'qwen3:4b-instruct');
+  assert.equal(parallel.assetDevelopmentHeroModelRouting.maxAttempts,3);
+  assert.equal(parallel.assetDevelopmentHeroModelRouting.focusedTimeoutMs,120000);
+  assert.equal(parallel.assetDevelopmentHeroModelRouting.focusedMaxPredict,768);
+  assert.equal(parallel.assetDevelopmentHeroModelRouting.focusedContextWindow,8192);
+  assert.equal(parallel.assetDevelopmentHeroModelRouting.generationBudgetUnchanged,true);
+  assert.equal(parallel.assetDevelopmentHeroModelRouting.gamePrimaryGenerationPolicyUnchanged,true);
+  assert.equal(parallel.assetDevelopmentHeroOllamaCacheKey,'vibe2-ollama-v6-${runner.os}-${runner.arch}-qwen3-4b-instruct');
+  assert.equal(parallel.assetDevelopmentPerTaskModelCacheKey,'vibe2-ollama-v6-${runner.os}-${runner.arch}-${model-slug}');
+
   assert.equal(parallel.assetDevelopmentSpeculativeVariantsPerTask,1);
   assert.equal(parallel.assetDevelopmentSpeculativeVariantsSuppressed,true);
   assert.equal(parallel.assetDevelopmentDistinctTaskParallelismPreserved,true);
