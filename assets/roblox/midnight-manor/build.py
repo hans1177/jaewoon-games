@@ -412,7 +412,7 @@ class Scene:
               'MapPin','GhostRelic_','RareRelic_','MemoryRelic','MapMasterpiece_','GallerySet_',
               'FireplaceFeature_','MasterCollectionRelic','ManorCrestSegment',
               'LivingCurtain','LivingVineTip','LivingBranch','BackdropCloud','BackdropMist','BackdropBat',
-              'ChandelierDrop','ChandelierPearDrop','PaperMoonHalo',
+              'ChandelierDrop','ChandelierPearDrop','PaperMoonHalo','JackGlow','GargoyleEye',
               'BackWall','HallFloor','Courtyard','CrookedRoof','ClockPendulum','EntryDoor')
         groups={}
         bpy.context.view_layer.update()
@@ -897,6 +897,13 @@ def build():
                     lead2=s.box('WindowLeadB'+key+str(lattice),(x+lattice,y,-.135),(.08,6.25,.07),c['brass'],rot=-.20)
                     lead2.rotation_euler.x=-.16
                 s.box('WindowDripCap'+key,(x,y+4.35,-.63),(6.9,.30,1.05),c['stone'])
+                # 모든 창에 같은 박쥐 날개형 크레스트를 반복해 저택 자체의 스타일 언어로 만든다.
+                bat_crest=[
+                  (-2.75,0),(-2.05,.55),(-1.35,.15),(-.72,.72),(0,.22),
+                  (.72,.72),(1.35,.15),(2.05,.55),(2.75,0),(1.52,-.18),(0,-.62),(-1.52,-.18)
+                ]
+                s.prism('WindowBatCrest'+key,(x,y+5.18,-.57),bat_crest,.14,c['black'])
+                s.ellipsoid('WindowBatGem'+key,(x,y+5.15,-.45),(.48,.42,.16),c['brass'])
                 for bracket in [-1,1]:
                     s.box('WindowSillBracket'+key+str(bracket),(x+bracket*2.15,y-4.55,-.60),(.48,.95,.78),c['stone'],lean=-bracket*.10)
                 # 커튼은 양쪽 가장자리에만 보여 창 내부에 깊이를 만든다.
@@ -1101,6 +1108,18 @@ def build():
     s.curve_tube('CentralRoofRidge',[(-7,42,-62),(-7,44,-35),(-7,42,-7)],[.17,.20,.17],[.14,.16,.14],c['black'],sides=18)
     for zfinial in [-55,-35,-15]:
         s.lathe('RoofFinial'+str(zfinial),(-7,44.9,zfinial),.22,.035,2.0,c['brass'],sides=18)
+        # 비뚤어진 가시형 꼭지로 멀리서도 다크카툰 실루엣을 강화한다.
+        for side in [-1,1]:
+            thorn=[
+              (-.18,0),(.18,0),(side*.36,.75),(side*.10,1.65),(-side*.18,.82)
+            ]
+            s.prism('RoofThorn'+str(zfinial)+str(side),(-7+side*.42,46.0,zfinial),thorn,.14,c['black'],rot=side*.12)
+    # 날개 지붕에도 작은 가시를 반복해 중앙탑과 같은 문법으로 묶는다.
+    for side in [-1,1]:
+        for z0 in [-49,-31,-13]:
+            s.curve_tube('WingRoofThorn'+str(side)+str(z0),[
+              (side*68,25.0,z0),(side*69.0,27.1,z0-.35),(side*68.35,28.8,z0+.15)
+            ],[.16,.10,.035],[.13,.08,.028],c['black'],sides=14)
 
     # 큰 계단: 단차는 유지하고 목재 난간/뉴얼/갤러리 앞판을 실제 저택 계단처럼 한 구조로 묶는다.
     stair_rise=.82;stair_tread=1.36
@@ -1157,6 +1176,17 @@ def build():
                 s.ellipsoid('GrandCeilingBoss'+str(row)+'_'+str(col),(x0,23.05,z0),(1.0,.18,1.0),c['brass'])
     for x0 in [-45,-30,-15,15,30,45]:
         s.box('GrandCeilingCorbel'+str(x0),(x0,21.85,-63.75),(1.2,2.2,.65),c['wood'],lean=(.10 if x0<0 else -.10))
+
+    # 그랜드홀 벽과 2층 난간에도 같은 박쥐/가시 문양을 반복해 실내외 컨셉을 연결한다.
+    hall_bat=[(-2.1,0),(-1.4,.65),(-.7,.18),(0,.72),(.7,.18),(1.4,.65),(2.1,0),(1.0,-.35),(0,-.75),(-1.0,-.35)]
+    for i,x0 in enumerate([-31,-15,15,31]):
+        s.prism('HallBatMedallion'+str(i),(x0,18.1,-63.16),hall_bat,.12,c['black'])
+        s.ellipsoid('HallBatGem'+str(i),(x0,18.05,-63.02),(.55,.48,.14),c['brass'])
+    for side in [-1,1]:
+        for z0 in [-48,-36,-24,-12]:
+            s.curve_tube('GalleryThorn'+str(side)+str(z0),[
+              (side*36,12.65,z0),(side*36.7,13.65,z0),(side*36.25,14.35,z0)
+            ],[.10,.065,.025],[.08,.05,.020],c['black'],sides=14)
 
     # 좌우 날개 방: 기록보관실/서재/응접실/의상실/장례용품실/라운지.
     room_specs=[
@@ -1762,8 +1792,10 @@ def build():
         ],[ps*.10,ps*.075,ps*.045],[ps*.08,ps*.06,ps*.035],c['moss'],sides=14)
         eye=[(-.20,-.14),(.20,-.14),(0,.18)]
         for side in [-1,1]:
+            s.prism('JackGlowEye'+str(pi)+str(side),(px+side*.27*ps,.88*ps,pz+.455*ps),[(x*ps*.82,y*ps*.82)for x,y in eye],.045,c['amber'])
             s.prism('JackEye'+str(pi)+str(side),(px+side*.27*ps,.88*ps,pz+.49*ps),[(x*ps,y*ps)for x,y in eye],.065,c['black'])
         mouth=[(-.48,.08),(-.28,-.06),(-.10,.06),(.08,-.08),(.28,.07),(.48,-.02),(.38,-.25),(-.38,-.25)]
+        s.prism('JackGlowMouth'+str(pi),(px,.55*ps,pz+.455*ps),[(x*ps*.88,y*ps*.88)for x,y in mouth],.045,c['amber'])
         s.prism('JackMouth'+str(pi),(px,.55*ps,pz+.50*ps),[(x*ps,y*ps)for x,y in mouth],.065,c['black'])
 
     # 포치 가고일은 큰 귀/날개/주황 눈으로 멀리서도 만화 실루엣이 읽힌다.
