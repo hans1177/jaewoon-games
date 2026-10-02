@@ -319,61 +319,160 @@ def idle_pose(t):
     apply_secondary(t, drive=0.55, turn=weight)
 
 
+
+GAIT_PROFILES = {
+    # 속도별 보폭/접지/체공/무릎/상체/팔 스윙을 독립 설계한다.
+    'walk': {'thigh':0.42,'knee':0.50,'foot':0.52,'arm':0.32,'lean':0.038,'drop':0.030,'secondary':1.05,'alert':0.18,'direction':1.0,'stance':0.34,'sway':0.010},
+    'jog': {'thigh':0.52,'knee':0.62,'foot':0.58,'arm':0.40,'lean':0.080,'drop':0.036,'secondary':1.30,'alert':0.24,'direction':1.0,'stance':0.29,'sway':0.012},
+    'run': {'thigh':0.64,'knee':0.76,'foot':0.66,'arm':0.50,'lean':0.145,'drop':0.046,'secondary':1.58,'alert':0.35,'direction':1.0,'stance':0.24,'sway':0.014},
+    'sprint': {'thigh':0.76,'knee':0.92,'foot':0.76,'arm':0.64,'lean':0.225,'drop':0.056,'secondary':1.92,'alert':0.48,'direction':1.0,'stance':0.19,'sway':0.016},
+    'backward': {'thigh':0.38,'knee':0.46,'foot':0.46,'arm':0.30,'lean':-0.060,'drop':0.032,'secondary':0.98,'alert':0.34,'direction':-0.88,'stance':0.31,'sway':0.009},
+}
+GAIT_CONTACT_TARGET_CACHE = {}
+
+
 def gait_pose(t, pace='walk'):
-    profiles = {
-        'walk': {'amp':0.38,'arm':0.30,'lean':0.045,'lift':0.16,'drop':0.028,'secondary':1.05,'alert':0.18,'reverse':1.0,'stance':0.30},
-        'jog': {'amp':0.47,'arm':0.37,'lean':0.085,'lift':0.20,'drop':0.035,'secondary':1.28,'alert':0.24,'reverse':1.0,'stance':0.27},
-        'run': {'amp':0.58,'arm':0.46,'lean':0.150,'lift':0.26,'drop':0.045,'secondary':1.55,'alert':0.35,'reverse':1.0,'stance':0.22},
-        'sprint': {'amp':0.70,'arm':0.58,'lean':0.235,'lift':0.31,'drop':0.055,'secondary':1.90,'alert':0.48,'reverse':1.0,'stance':0.18},
-        'backward': {'amp':0.34,'arm':0.26,'lean':-0.055,'lift':0.15,'drop':0.030,'secondary':0.96,'alert':0.32,'reverse':-0.88,'stance':0.28},
-    }
-    cfg = profiles[pace]
+    cfg = GAIT_PROFILES[pace]
     stance = cfg['stance']
-    # 접지 구간에는 골반 높이 변화 폭을 줄이고, 발이 풀린 뒤에만 상승/하강을 크게 준다.
-    # 발을 고정한 채 골반을 급상승시키는 이전 곡선은 Foot bone 원점이 수직으로 끌려가 접지 드리프트를 만들었다.
-    body_y = phase_curve(t, [
-        (0.00,-0.72),(stance * 0.50,-0.56),(stance,-0.32),(0.40,0.46),
-        (0.50,-0.72),(0.50 + stance * 0.50,-0.56),(0.50 + stance,-0.32),(0.90,0.46),
-        (1.00,-0.72)
+    direction = cfg['direction']
+
+    body_vertical = phase_curve(t, [
+        (0.00,-0.82),(stance * 0.45,0.18),(stance,-0.44),
+        (min(0.46, stance + 0.12),0.42),
+        (0.50,-0.82),(0.50 + stance * 0.45,0.18),(0.50 + stance,-0.44),
+        (min(0.96, 0.50 + stance + 0.12),0.42),(1.00,-0.82)
     ])
-    yaw = phase_curve(t, [
-        (0.00,-0.88),(stance,-0.78),(0.50,0.88),
-        (0.50 + stance,0.78),(1.00,-0.88)
+    pelvis_twist = phase_curve(t, [
+        (0.00,-0.86),(stance * 0.58,-0.34),(stance,0.08),
+        (0.50,0.86),(0.50 + stance * 0.58,0.34),(0.50 + stance,-0.08),(1.00,-0.86)
     ])
-    lateral = phase_curve(t, [(0.00,-0.24),(0.22,0.08),(0.50,0.24),(0.76,-0.06),(1.00,-0.24)])
-    loc('Hips', lateral * (0.010 if pace in ('run','sprint') else 0.006), 0.0, cfg['drop'] * body_y)
-    rot('Hips', cfg['lean'] * 0.30, yaw * 0.085, yaw * 0.030)
-    rot('Spine', cfg['lean'] * 0.30, -yaw * 0.050, -yaw * 0.022)
-    rot('Chest', cfg['lean'] * 0.40, -yaw * 0.048, yaw * 0.025)
-    rot('Head', -cfg['lean'] * 0.52, yaw * 0.020, -yaw * 0.015)
+    support_shift = phase_curve(t, [
+        (0.00,-0.78),(stance * 0.52,-0.96),(stance,-0.20),
+        (0.50,0.78),(0.50 + stance * 0.52,0.96),(0.50 + stance,0.20),(1.00,-0.78)
+    ])
+    drive = phase_curve(t, [
+        (0.00,0.18),(0.16,0.74),(0.32,0.22),(0.50,-0.16),
+        (0.66,-0.72),(0.82,-0.18),(1.00,0.18)
+    ])
+
+    loc('Hips', support_shift * cfg['sway'], 0.0, body_vertical * cfg['drop'])
+    rot('Hips', cfg['lean'] * 0.34, pelvis_twist * 0.090, support_shift * 0.028)
+    rot('Spine', cfg['lean'] * 0.28, -pelvis_twist * 0.054, -support_shift * 0.024)
+    rot('Chest', cfg['lean'] * 0.38, -pelvis_twist * 0.052, support_shift * 0.020)
+    rot('Head', -cfg['lean'] * 0.50, pelvis_twist * 0.018, -support_shift * 0.012)
+
     for side_name, sign in [('L', -1), ('R', 1)]:
         p = (t + (0.5 if side_name == 'R' else 0.0)) % 1.0
         thigh = phase_curve(p, [
-            (0.00,0.72),(stance * 0.50,0.72),(stance,0.72),
-            (min(0.48, stance + 0.14),0.08),(0.56,-0.82),
-            (0.72,-0.42),(0.88,0.38),(1.00,0.72)
-        ]) * cfg['reverse']
+            (0.00,0.68),(stance * 0.42,0.16),(stance,-0.58),
+            (min(0.49, stance + 0.12),-0.74),(0.60,-0.54),
+            (0.74,-0.08),(0.90,0.52),(1.00,0.68)
+        ]) * direction
         knee = phase_curve(p, [
-            (0.00,0.10),(stance * 0.55,0.10),(stance,0.10),
-            (min(0.50, stance + 0.16),0.48),(0.66,0.96),
-            (0.82,0.44),(0.92,0.18),(1.00,0.10)
+            (0.00,0.16),(stance * 0.34,0.50),(stance * 0.72,0.26),(stance,0.12),
+            (min(0.50, stance + 0.12),0.42),(0.62,1.00),
+            (0.78,0.66),(0.91,0.24),(1.00,0.16)
         ])
-        foot = phase_curve(p, [
-            (0.00,-0.18),(stance * 0.35,-0.08),(stance * 0.72,0.10),(stance,0.18),
-            (min(0.54, stance + 0.18),0.06),(0.68,-0.34),(0.84,-0.24),(1.00,-0.18)
-        ]) * cfg['reverse']
-        arm = phase_curve(p, [(0.00,-0.84),(0.22,-0.35),(0.50,0.78),(0.75,0.32),(1.00,-0.84)])
+        heel_toe = phase_curve(p, [
+            (0.00,-0.30),(stance * 0.22,-0.14),(stance * 0.54,0.04),
+            (stance * 0.82,0.24),(stance,0.36),
+            (min(0.52, stance + 0.10),0.10),(0.62,-0.36),
+            (0.80,-0.23),(0.92,-0.20),(1.00,-0.30)
+        ]) * (1.0 if pace != 'backward' else -1.0)
+        arm = phase_curve(p, [
+            (0.00,-0.84),(0.16,-0.64),(0.34,-0.18),(0.52,0.72),
+            (0.68,0.82),(0.84,0.28),(1.00,-0.84)
+        ])
+        elbow_load = phase_curve(p, [
+            (0.00,0.56),(0.20,0.32),(0.48,0.06),(0.68,0.18),(0.84,0.44),(1.00,0.56)
+        ])
         if pace == 'sprint':
-            knee += phase_curve(p, [(0.00,0.04),(0.18,0.0),(0.48,0.18),(0.72,0.28),(1.00,0.04)])
-        rot('Thigh' + side_name, thigh * cfg['amp'], 0.0, -sign * yaw * (0.028 if pace == 'sprint' else 0.020))
-        rot('Shin' + side_name, max(0.0, knee) * cfg['lift'] * 2.7, 0.0, 0.0)
-        rot('Foot' + side_name, foot * (0.60 if pace == 'sprint' else 0.48 if pace in ('jog','run') else 0.42), 0.0, sign * 0.010)
-        rot('UpperArm' + side_name, arm * cfg['arm'], sign * (0.045 if pace == 'sprint' else 0.035), -sign * 0.035)
-        rot('Forearm' + side_name, -0.12 - max(0.0, -arm) * (0.27 if pace == 'sprint' else 0.22 if pace in ('run','jog') else 0.12), sign * 0.015, 0.0)
-        rot('Hand' + side_name, 0.035 + max(0.0, arm) * 0.055, 0.0, -sign * 0.040)
-    detail_face_and_hands(t, moving=0.72 if pace == 'walk' else 0.82 if pace in ('jog','backward') else 1.0, alert=cfg['alert'])
-    apply_secondary(t, drive=cfg['secondary'], turn=yaw * 0.3)
+            knee += phase_curve(p, [
+                (0.00,0.02),(stance,0.0),(0.50,0.10),(0.64,0.22),(0.80,0.08),(1.00,0.02)
+            ])
+            arm += 0.08 * phase_curve(p, [(0.00,-1.0),(0.32,-0.3),(0.62,0.8),(1.00,-1.0)])
 
+        rot('Thigh' + side_name, thigh * cfg['thigh'], -sign * pelvis_twist * 0.018, -sign * support_shift * (0.030 if pace == 'sprint' else 0.022))
+        rot('Shin' + side_name, knee * cfg['knee'], 0.0, 0.0)
+        rot('Foot' + side_name, heel_toe * cfg['foot'], sign * drive * 0.010, sign * support_shift * 0.010)
+        rot('UpperArm' + side_name, arm * cfg['arm'], sign * (0.030 + 0.018 * abs(drive)), -sign * (0.030 + 0.012 * abs(support_shift)))
+        rot('Forearm' + side_name, -0.10 - elbow_load * (0.16 if pace == 'walk' else 0.22 if pace in ('jog','backward') else 0.30 if pace == 'run' else 0.38), sign * 0.014, -sign * drive * 0.010)
+        rot('Hand' + side_name, 0.030 + max(0.0, arm) * 0.050, sign * drive * 0.008, -sign * 0.038)
+
+    detail_face_and_hands(t, moving=0.72 if pace == 'walk' else 0.84 if pace in ('jog','backward') else 1.0, alert=cfg['alert'])
+    apply_secondary(t, drive=cfg['secondary'], turn=pelvis_twist * 0.34)
+
+
+def _pose_world_position(name):
+    bpy.context.view_layer.update()
+    bone = RIG.pose.bones[name]
+    point = RIG.matrix_world @ bone.matrix.translation
+    return Vector((float(point.x), float(point.y), float(point.z)))
+
+
+def apply_gait_contact_correction(pace, t):
+    # 접지 중 지지발 원점을 X/Z로 고정한다. Root와 게임 이동 권한은 건드리지 않고 다리 관절만 보정한다.
+    cfg = GAIT_PROFILES[pace]
+    stance = cfg['stance']
+    release = 0.06
+    if 0.0 <= t <= stance + release:
+        side, start = 'L', 0.0
+        weight = 1.0 if t <= stance else 1.0 - smoothstep((t - stance) / release)
+    elif 0.5 <= t <= 0.5 + stance + release:
+        side, start = 'R', 0.5
+        weight = 1.0 if t <= 0.5 + stance else 1.0 - smoothstep((t - (0.5 + stance)) / release)
+    else:
+        return
+    if weight <= 1e-6:
+        return
+
+    cache_key = (pace, side)
+    target = GAIT_CONTACT_TARGET_CACHE.get(cache_key)
+    if target is None:
+        current_pose = pose_snapshot()
+        reset_pose()
+        gait_pose(start, pace)
+        target = _pose_world_position('Foot' + side).copy()
+        GAIT_CONTACT_TARGET_CACHE[cache_key] = target.copy()
+        apply_snapshot(current_pose)
+        bpy.context.view_layer.update()
+
+    variables = [
+        ('Thigh' + side, 0, 0.085),
+        ('Shin' + side, 0, 0.085),
+        ('Thigh' + side, 2, 0.060),
+    ]
+    epsilon = 0.0035
+    damping = 1e-5
+    for _ in range(5):
+        current = _pose_world_position('Foot' + side)
+        error_x = (target.x - current.x) * weight
+        error_z = (target.z - current.z) * weight
+        if math.hypot(error_x, error_z) <= 2e-5:
+            break
+
+        columns = []
+        for bone_name, axis, _limit in variables:
+            bone = RIG.pose.bones[bone_name]
+            base_value = bone.rotation_euler[axis]
+            bone.rotation_euler[axis] = base_value + epsilon
+            moved = _pose_world_position('Foot' + side)
+            bone.rotation_euler[axis] = base_value
+            columns.append(((moved.x - current.x) / epsilon, (moved.z - current.z) / epsilon))
+
+        aa = damping + sum(x * x for x, _z in columns)
+        ab = sum(x * z for x, z in columns)
+        bb = damping + sum(z * z for _x, z in columns)
+        det = aa * bb - ab * ab
+        if abs(det) < 1e-10:
+            break
+        yx = (bb * error_x - ab * error_z) / det
+        yz = (-ab * error_x + aa * error_z) / det
+
+        for (bone_name, axis, limit), (jx, jz) in zip(variables, columns):
+            delta = jx * yx + jz * yz
+            delta = max(-limit, min(limit, delta))
+            RIG.pose.bones[bone_name].rotation_euler[axis] += delta
 
 def strafe_pose(t, direction):
     shift = phase_curve(t, [(0.00,-0.82),(0.20,-0.24),(0.38,0.64),(0.50,0.86),(0.72,-0.08),(1.00,-0.82)])
@@ -551,12 +650,16 @@ def animate(name, normalized_time):
         idle_pose(t)
     elif name == 'hero_walk_hq':
         gait_pose(t, 'walk')
+        apply_gait_contact_correction('walk', t)
     elif name == 'hero_jog_hq':
         gait_pose(t, 'jog')
+        apply_gait_contact_correction('jog', t)
     elif name == 'hero_run_hq':
         gait_pose(t, 'run')
+        apply_gait_contact_correction('run', t)
     elif name == 'hero_sprint_hq':
         gait_pose(t, 'sprint')
+        apply_gait_contact_correction('sprint', t)
     elif name == 'hero_start_hq':
         start_pose(t)
         if t >= 0.70:
@@ -578,6 +681,7 @@ def animate(name, normalized_time):
         strafe_pose(t, 1)
     elif name == 'hero_backward_hq':
         gait_pose(t, 'backward')
+        apply_gait_contact_correction('backward', t)
     elif name in ('hero_turn_45_hq','hero_turn_90_hq','hero_turn_180_hq'):
         scale = {'hero_turn_45_hq':0.55,'hero_turn_90_hq':1.0,'hero_turn_180_hq':1.55}[name]
         turn_pose(t, scale)
@@ -793,6 +897,11 @@ qa_metrics={
     'failures':qa_failures,
     'staticMotionQaPass':not qa_failures,
 }
+print('MOTION_QA_CONTACT_METRICS:'+json.dumps({
+    'rigHeight':height,
+    'thresholds':QA_THRESHOLDS['footContactLateralVerticalDriftNormalizedMaxByClip'],
+    'footContactLateralVerticalDriftNormalized':foot_contact_metrics,
+},sort_keys=True),flush=True)
 assert not qa_failures, 'MOTION_STATIC_QA_FAILED:'+'|'.join(qa_failures)
 
 # 새 파생 GLB에는 공용 기초 이동·회전·점프·웅크리기 17모션만 포함한다.
