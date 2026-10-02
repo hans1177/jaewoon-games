@@ -1700,6 +1700,10 @@ jobs:
             if(requested&&x.gameId!==requested)continue;
             const revision=String(x.robloxSourceCommit||'').trim();
             const artifact=String(x.robloxBuildArtifactIdentity||'').trim();
+            if(x.robloxQualityBuildUpRequired===true&&String(x.robloxQualityBuildUpSourceRevision||'').trim()===revision){
+              console.error('ROBLOX_PRIVATE_RUNTIME_VALIDATION_DEFERRED_SOURCE_REPAIR='+x.gameId);
+              continue;
+            }
             const f0=x.robloxFoundationF0Evidence||{};
             const exactF0=
               String(x.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'
