@@ -598,3 +598,14 @@ test('shallow Roblox promotion preserves exact candidate, main drift guard and m
     assert.equal(git(checkout,'rev-parse',release+':game'),git(checkout,'rev-parse','origin/main:game'));
   }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
+
+
+test('Roblox F9 refill keeps lane coalescing while exact game context reaches the canonical planner',()=>{
+  assert.ok(workflow.includes("VIBE2_FANIN_SOURCE_TASK: \${{ github.event.client_payload.source_task || '' }}"));
+  assert.ok(workflow.includes("VIBE2_FANIN_REASON: \${{ github.event.client_payload.reason || '' }}"));
+  assert.match(workflow,/VIBE2_ROBLOX_F9_FANIN_WAKE_REBASED_TO_LATEST=/);
+  assert.match(workflow,/roblox-f9-verified-next-evolution/);
+  assert.ok(workflow.includes('--requested-game="$VIBE2_FANIN_SOURCE_TASK"'));
+  assert.ok(workflow.includes("format('vibe2-fanin-refill-{0}'"));
+  assert.match(workflow,/cancel-in-progress: false/);
+});
