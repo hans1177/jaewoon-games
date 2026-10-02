@@ -526,8 +526,8 @@ test('기존 4개 단말 목표와 비상구 탈출 루프가 실제 승리조�
  assert.match(server,/prompt\.Name="EscapePrompt"/);
  assert.match(server,/workspace:SetAttribute\("SurvivorEscapeTriggered",true\)/);
  assert.match(server,/if workspace:GetAttribute\("SurvivorEscapeTriggered"\)==true then endRound\("SURVIVOR"\)/);
- assert.match(client,/목표 · 단말 가동 %d\/%d → 비상 출구 개방/);
- assert.match(client,/목표 · 비상 출구가 열렸어 → 남쪽 출구로 탈출/);
+ assert.match(client,/목표 · 단말 %d\/%d 작동 → 몬스터 정화 → 탈출/);
+ assert.match(client,/목표 · 인간 추적 → 감염 → 전멸/);
 });
 
 test('스킬은 이름뿐 아니라 용도와 범위를 HUD에서 설명한다',()=>{
@@ -539,6 +539,11 @@ test('스킬은 이름뿐 아니라 용도와 범위를 HUD에서 설명한다',
   'Description="8m 안 몬스터를 잠깐 멈춘다"',
  ])assert.ok(config.includes(marker),marker);
  assert.match(client,/local skillGuideLine=Instance\.new\("TextLabel"\)/);
+ assert.match(client,/local function abilityRangeLabel\(profile\)/);
+ assert.match(client,/local function abilityGuideText\(name,profile,cost,cooldownSeconds,status\)/);
+ assert.match(client,/humanAbilityButton\.TextScaled=false;humanAbilityButton\.TextSize=9;humanAbilityButton\.TextWrapped=true/);
+ assert.match(client,/abilityButton\.TextScaled=false;abilityButton\.TextSize=9;abilityButton\.TextWrapped=true/);
+ assert.match(client,/쿨 %d초 · %dE/);
  assert.match(client,/currentHumanAbilityDescription\(\)/);
  assert.match(client,/currentAbilityDescription\(\)/);
 });
