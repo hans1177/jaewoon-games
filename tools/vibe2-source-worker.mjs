@@ -357,6 +357,63 @@ function assetDevelopmentTask(order={}){
     ||selected.assetProductionLane===true
     ||evidence.includes('asset-production-parallel:v1');
 }
+export function resolveAssetSourceModel(order={},requestedModel=DEFAULT_MODEL){
+  const routing=order?.assetProduction?.modelRouting&&typeof order.assetProduction.modelRouting==='object'?order.assetProduction.modelRouting:null;
+  const requested=clean(requestedModel)||DEFAULT_MODEL;
+  if(!assetDevelopmentTask(order)||!routing)return Object.freeze({required:false,heroRequested:false,selectedModel:requested,requestedModel:requested,fallbackUsed:false,tier:'DEFAULT'});
+  const baseline=clean(routing.baselineModel)||DEFAULT_MODEL;
+  const hero=clean(routing.heroModel)||baseline;
+  const heroRequested=routing.heroRequested===true;
+  const selected=heroRequested?hero:(clean(routing.selectedModel)||baseline);
+  return Object.freeze({
+    required:true,
+    heroRequested,
+    selectedModel:selected,
+    requestedModel:requested,
+    baselineModel:baseline,
+    heroModel:hero,
+    fallbackAllowed:routing.fallbackToBaseline!==false,
+    fallbackUsed:false,
+    tier:heroRequested?'HERO_STUDIO':'BASELINE',
+    generationBudgetUnchanged:routing.generationBudgetUnchanged!==false
+  });
+}
+export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}){
+  const contract=order?.assetProduction?.nativeAuthoringExecution;
+  if(!contract?.enabled)return Object.freeze({required:false,status:'NOT_REQUIRED',runtimeVerified:false,companyPromotionEligible:false});
+  const target=clean(order?.target).toLowerCase();
+  const text=[
+    ...(candidate.edits||[]).map(row=>row.replace),
+    ...(candidate.newFiles||[]).map(row=>row.content),
+    ...(candidate.replaceFiles||[]).map(row=>row.content)
+  ].map(value=>String(value??'')).join('\n');
+  const nativeSignals=target==='roblox'
+    ?[
+      /Instance\.new\s*\(\s*["'](?:Model|MeshPart|Part|Attachment|Motor6D|Bone|ParticleEmitter|Trail|Beam)["']/i,
+      /(?:Animator|AnimationTrack|SurfaceAppearance|SpecialMesh|MaterialVariant|Lighting|Atmosphere)/i,
+      /(?:\.Parent\s*=|:PivotTo\s*\(|\.CFrame\s*=|\.Transform\s*=)/i
+    ].filter(re=>re.test(text)).length
+    :target==='unity'
+      ?[
+        /\b(?:GameObject|Mesh|MeshFilter|MeshRenderer|SkinnedMeshRenderer|Material|Animator|ParticleSystem)\b/,
+        /(?:sharedMesh|sharedMaterial|SetTriangles|SetVertices|SetUVs|SetNormals|SetFloat|SetColor)/,
+        /(?:transform\.(?:position|rotation|localScale)|Quaternion|Matrix4x4)/
+      ].filter(re=>re.test(text)).length
+      :0;
+  const dccRequired=(contract?.dcc?.requiredTypes||[]).length>0;
+  const nativeTextRequired=(contract?.nativeText?.requiredTypes||[]).length>0;
+  const nativeTextAuthored=nativeSignals>=2;
+  const status=nativeTextAuthored?'NATIVE_SOURCE_AUTHORED_RUNTIME_REQUIRED':dccRequired?'DCC_AUTHORING_EXECUTOR_REQUIRED':nativeTextRequired?'NATIVE_AUTHORING_DELTA_REQUIRED':'AUTHORING_REQUIRED';
+  return Object.freeze({
+    required:true,status,target,nativeSignals,nativeTextAuthored,dccRequired,nativeTextRequired,
+    requiredDccTypes:Object.freeze([...(contract?.dcc?.requiredTypes||[])]),
+    requiredNativeTextTypes:Object.freeze([...(contract?.nativeText?.requiredTypes||[])]),
+    authoringRequestIsNotCompletion:true,
+    generatedArtifactAloneIsNotRuntimePass:true,
+    runtimeVerified:false,
+    companyPromotionEligible:false
+  });
+}
 
 export function robloxDeterministicPresentationEligible(order={}){
   return clean(order.target).toLowerCase()==='roblox'
@@ -3814,6 +3871,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   assertOwnerDevelopmentAvailable({cwd,order});
   const centralPolicyPreflight=assertCompiledWorkContractFresh({cwd,contract:order?.compiledWorkContract||{},phase:'PRE_SOURCE_GENERATION'});
   const target=clean(order.target).toLowerCase();
+  const modelRouting=resolveAssetSourceModel(order,model);
+  const effectiveModel=modelRouting.selectedModel;
   const developmentAuthority=target==='system'
     ?{owner:'VIBE2_VIBE3',provider:'LOCAL_OLLAMA',model:DEFAULT_MODEL,role:'SYSTEM_ARCHITECTURE_EVOLUTION',...assertSystemArchitectureTask(order.selectedTask||{}),directMainWrite:false}
     :assertGameDevelopmentAuthority();
@@ -4066,13 +4125,14 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       generationSourceRoot=generationBootstrapRoot;
     }
     try{
-      generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot:generationSourceRoot,focusedWebRepair,exploration,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator,candidateVariant,systemAtomicPairRequired:systemCausalPairRequired,multiFilePairRequired:bootstrap&&target==='unity',verifiedExternalLearningContract});
+      generated=await generateCandidateWithRecovery({prompt,model:effectiveModel,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot:generationSourceRoot,focusedWebRepair,exploration,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator,candidateVariant,systemAtomicPairRequired:systemCausalPairRequired,multiFilePairRequired:bootstrap&&target==='unity',verifiedExternalLearningContract});
     }finally{
       if(generationBootstrapRoot)fs.rmSync(generationBootstrapRoot,{recursive:true,force:true});
     }
   }
   const candidate=generated.candidate;
   const semanticDiffEnforcement=generated.candidateValidation||candidateValidator(candidate);
+  const nativeAssetAuthoring=evaluateNativeAssetAuthoringCandidate({order,candidate});
   const presentationCandidateDelta=semanticDiffEnforcement?.presentationDelta||evaluatePresentationCandidateDelta({candidate,sourceRoot,contract:order?.presentationQuality||{}});
   const studioQualityCandidateDelta=semanticDiffEnforcement?.studioQualityDelta||evaluateStudioQualityCandidateDelta({candidate,sourceRoot,contract:order?.selectedTask?.studioQualityEvolution||order?.workPackage?.sharedContext?.studioQualityEvolution||null});
   const robloxNativeSourceInspection=buildRobloxNativeSourceInspection({order,context,responsibleFiles});
@@ -4221,7 +4281,9 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     mode:applySource?'isolated-candidate-branch-source-write':'candidate-snapshot-only',
     branch,
     candidateManifestPath,
-    model,
+    model:effectiveModel,
+    modelRouting:{...modelRouting,actualModel:effectiveModel,heroModelApplied:modelRouting.heroRequested===true&&effectiveModel===modelRouting.heroModel},
+    nativeAssetAuthoring,
     changedFiles,
     summary:candidate.summary,
     expectedEffect:candidate.expectedEffect,
