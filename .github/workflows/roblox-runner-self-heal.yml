@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: read
+  actions: write
 
 concurrency:
   group: roblox-authenticated-runner-self-heal
@@ -23,6 +24,21 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Cancel superseded Vibe2 cohort
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_id='36946411892'
+          status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status')"
+          if [ "$status" = 'queued' ] || [ "$status" = 'pending' ] || [ "$status" = 'requested' ] || [ "$status" = 'waiting' ] || [ "$status" = 'in_progress' ]; then
+            gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/cancel" >/dev/null 2>&1 \
+              || gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/force-cancel" >/dev/null 2>&1
+            echo "ONE_SHOT_STALE_VIBE2_CANCELLED=${run_id}:${status}"
+          else
+            echo "ONE_SHOT_STALE_VIBE2_ALREADY_TERMINAL=${run_id}:${status}"
+          fi
       - uses: actions/checkout@v4
         with:
           ref: main
