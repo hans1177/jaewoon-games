@@ -798,6 +798,23 @@ test('정상 경기장 빌드는 현재 arena 참조를 갱신해 스폰 바닥 
  assert.match(makeArenaBlock,/decorateArenaWithOfficialAssets\(f,map\)[\s\S]{0,240}arena=f[\s\S]{0,120}workspace:SetAttribute\("MapReady",true\)/);
 });
 
+test('첫 캐릭터 프레임부터 앞마당 바닥에 고정하고 엔진 SpawnLocation 경쟁을 제거한다',()=>{
+ const bootstrapBlock=server.slice(server.indexOf('local function bootstrapLobbyCharacter'),server.indexOf('local function bindBootstrapLobbySpawn'));
+ assert.match(bootstrapBlock,/FIRST_FRAME_GROUND_SNAP_V2/);
+ assert.match(bootstrapBlock,/local bootstrapTarget=Vector3\.new\(0,3\.7,330\)/);
+ assert.match(bootstrapBlock,/character:PivotTo\(CFrame\.lookAt\(bootstrapTarget,bootstrapLook\)\)/);
+ assert.match(bootstrapBlock,/BootstrapGroundSnapAt/);
+ assert.match(server,/foundationSpawn\.Enabled=false/);
+ assert.match(server,/lobbyBootstrapSpawn\.Enabled=false/);
+ assert.match(server,/foundationSpawn\.Enabled=true/);
+ assert.match(server,/workspace:SetAttribute\("EngineSpawnPhase","ARENA_ONLY"\)/);
+ assert.match(server,/workspace:SetAttribute\("EngineSpawnPhase","LOBBY_ONLY"\)/);
+ assert.match(manorServer,/local spawn=Instance\.new\("Part"\);spawn\.Name="PersonalSpawn"/);
+ assert.match(manorServer,/SpawnMarkerOnly/);
+ assert.doesNotMatch(manorServer,/local spawn=Instance\.new\("SpawnLocation"\);spawn\.Name="PersonalSpawn"/);
+ assert.doesNotMatch(manorServer,/p\.RespawnLocation=spawn/);
+});
+
 test('대기 로비 캐릭터는 경기장 MapReady를 기다리지 않고 로비 바닥에 즉시 스폰한다',()=>{
  const block=server.slice(server.indexOf('local function onCharacter'),server.indexOf('Players.PlayerAdded:Connect(function(p)'));
  assert.match(block,/workspace:GetAttribute\("PhysicalLobbyReady"\)/);
