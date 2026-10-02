@@ -325,6 +325,94 @@ test('asset-development Roblox graphics starts with bounded focused local-model 
   }
 });
 
+test('asset-development studio quality core survives initial focused and compact retry prompts',()=>{
+  const relative='client/Game.client.luau';
+  const workOrder=order({target:'roblox',root:'roblox-games/demo',responsibleFiles:['roblox-games/demo/'+relative],taskId:'asset-studio-core-prompt'});
+  workOrder.selectedTask={id:workOrder.taskId,gameId:'demo',target:'roblox',assetProductionLane:true,evidence:['asset-production-parallel:v1']};
+  workOrder.presentationQuality={required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false};
+  workOrder.assetProduction={
+    kind:'vibe2-asset-production-plan',
+    qualityProfile:'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION',
+    qualityDNA:{contracts:[{type:'character',qualityDNA:{profile:'HERO_CHARACTER'}}]}
+  };
+  const source=[
+    'local TweenService = game:GetService("TweenService")',
+    'local panel = Instance.new("Frame")',
+    'panel.Position = UDim2.fromScale(0.5,0.5)',
+    'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)'
+  ].join('\n');
+  const prompt=buildPrompt(workOrder,{files:[{path:relative,editable:true,content:source}]},[relative]);
+  assert.match(prompt,/\[STUDIO ASSET QUALITY CORE BEGIN\]/);
+  assert.match(prompt,/at least THREE connected presentation axes/i);
+  assert.match(prompt,/FORM_STRUCTURE, MATERIAL_STYLE, MOTION_CONTACT, WORLD_COMPOSITION, or PRESENTATION_FEEDBACK/);
+
+  const focused=buildFocusedReplaceOnlyPrompt(prompt,{responsibleFiles:[relative]});
+  assert.ok(focused);
+  assert.match(focused.prompt,/\[STUDIO ASSET QUALITY CORE BEGIN\]/);
+  assert.match(focused.prompt,/Runtime capture and before\/after comparison remain required/i);
+
+  const retry=buildGenerationRetryPrompt(prompt,{
+    allowFullRewrite:false,
+    error:new Error('STUDIO_QUALITY_DELTA_REQUIRED:ASSET_AXES:2/3'),
+    responsibleFiles:[relative],
+    attempt:2
+  });
+  assert.match(retry,/\[STUDIO ASSET QUALITY CORE BEGIN\]/);
+  assert.match(retry,/at least THREE connected presentation axes/i);
+});
+
+test('asset-development Roblox candidate retries until three studio quality axes are connected',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  const source=[
+    'local TweenService = game:GetService("TweenService")',
+    'local panel = Instance.new("Frame")',
+    'panel.Position = UDim2.fromScale(0.5,0.5)',
+    'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)'
+  ].join('\n')+'\n';
+  const workOrder=order({target:'roblox',root,responsibleFiles:[root+'/'+relative],taskId:'asset-studio-three-axis'});
+  workOrder.goal='[PRESENTATION_PASS:ASSET_ADAPTATION] improve the existing visible asset presentation without changing gameplay';
+  workOrder.selectedTask={id:workOrder.taskId,gameId:'demo',target:'roblox',assetProductionLane:true,evidence:['asset-production-parallel:v1']};
+  workOrder.presentationQuality={required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false};
+  workOrder.assetProduction={kind:'vibe2-asset-production-plan',qualityProfile:'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION',qualityDNA:{contracts:[]}};
+  const weak=path.join(cwd,'asset-studio-weak.json');
+  const strong=path.join(cwd,'asset-studio-strong.json');
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(weak,JSON.stringify({edits:[{
+    path:relative,
+    find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    replace:[
+      'panel.BackgroundColor3 = Color3.fromRGB(72,92,124)',
+      'TweenService:Create(panel, TweenInfo.new(0.2), {Position = UDim2.fromScale(0.5,0.48)}):Play()'
+    ].join('\n')
+  }]}));
+  write(strong,JSON.stringify({replace:[
+    'local impactVfx = Instance.new("ParticleEmitter")',
+    'impactVfx.Name = "StudioImpactVfx"',
+    'impactVfx.Parent = panel',
+    'panel.BackgroundColor3 = Color3.fromRGB(72,92,124)',
+    'TweenService:Create(panel, TweenInfo.new(0.2), {Position = UDim2.fromScale(0.5,0.48)}):Play()'
+  ].join('\n')}));
+  const previousLane=process.env.VIBE2_EXECUTION_LANE;
+  process.env.VIBE2_EXECUTION_LANE='asset-development';
+  try{
+    const result=await runVibe2SourceWorker({cwd,responseFiles:[weak,strong]});
+    assert.equal(result.generation.attempts,2);
+    assert.equal(result.generation.recoveryUsed,true);
+    assert.equal(result.generation.focusedReplaceOnly,true);
+    assert.equal(result.studioAssetQualityAxes.MATERIAL_STYLE,true);
+    assert.equal(result.studioAssetQualityAxes.MOTION_CONTACT,true);
+    assert.equal(result.studioAssetQualityAxes.PRESENTATION_FEEDBACK,true);
+    const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
+    assert.match(candidate,/StudioImpactVfx/);
+  }finally{
+    if(previousLane===undefined)delete process.env.VIBE2_EXECUTION_LANE;
+    else process.env.VIBE2_EXECUTION_LANE=previousLane;
+  }
+});
+
 test('Roblox full graphics keeps package mode after repeated no-op failures',async()=>{
   const cwd=tempRoot();
   const root='roblox-games/demo';
