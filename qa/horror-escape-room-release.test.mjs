@@ -585,8 +585,9 @@ test('내부 세계 귀신 자산은 실제 런타임 목격 연출에 연결되
  assert.match(client,/LocalGhostSightingBody/);
 });
 
-test('실제 스킨드 GLB가 전투 비주얼 1순위이고 절차형 박스 스킨은 fallback 전용이다',()=>{
- assert.match(combatAssets,/HumanoidModelId=\d+/);
+test('등록된 authored 스킨드 GLB만 전투 비주얼로 쓰고 블록형 procedural fallback은 금지한다',()=>{
+ assert.match(combatAssets,/HumanoidModelId=123358389302774/);
+ assert.match(combatAssets,/HumanoidSourceSha256="3bf90c01cf86745251c8b6465a9515b92c652235c93f5fd6143b796d2ef76e8a"/);
  assert.match(combatAssets,/AssetSource="assets\/roblox\/world-ghosts\/native\/mesh\/bride\.glb"/);
  assert.match(combatAssetTool,/assets\/roblox\/world-ghosts\/native\/mesh\/bride\.glb/);
  assert.match(combatAssetTool,/assetType:'Model'/);
@@ -594,7 +595,10 @@ test('실제 스킨드 GLB가 전투 비주얼 1순위이고 절차형 박스 �
  assert.match(combatAssetWorkflow,/name: Horror Authored Combat Assets/);
  assert.match(server,/local CombatAssets=require\(Shared:WaitForChild\("CombatAssets"\)\)/);
  assert.match(server,/CombatVisualTemplates/);
+ assert.match(server,/workspace:SetAttribute\("CombatAuthoredAssetState","LOADING"\)/);
+ assert.match(server,/for attempt=1,6 do/);
  assert.match(server,/AssetService\.LoadAssetAsync,AssetService,assetId/);
+ assert.match(server,/LOAD_FAILED_AFTER_RETRY/);
  assert.match(server,/CombatAuthoredAssetsReady/);
  assert.match(server,/SourceAssetLibrary","roblox-world-ghost-authored-glb"/);
  assert.match(client,/local function authoredCombatTemplate\(\)/);
@@ -604,15 +608,14 @@ test('실제 스킨드 GLB가 전투 비주얼 1순위이고 절차형 박스 �
  assert.match(client,/ProceduralFallback",false/);
  assert.match(client,/local function ensureCombatSkin\(source,rootPart,skinId,formId\)/);
  assert.match(client,/row\.authored~=wantAuthored/);
- assert.match(client,/GhostSkinFactory\.Create\(skinId,\{quality=quality/);
- assert.match(client,/GhostSkinMotion\.Bind\(model\)/);
- assert.match(client,/ProceduralFallback",true/);
+ assert.match(client,/CombatAuthoredVisualFallback","ORIGINAL_ROLE_COSTUME"/);
+ const combatBlock=client.slice(client.indexOf('local function ensureCombatSkin'),client.indexOf('local function refreshCombatSkins'));
+ assert.doesNotMatch(combatBlock,/GhostSkinFactory\.Create|GhostSkinMotion\.Bind|ProceduralFallback",true|CombatGhostFallback_/);
  assert.match(client,/state="attack"/);
  assert.match(client,/state="chase"/);
  assert.match(client,/state="walk"/);
  assert.match(client,/CFrame\.new\(0,\.08\*pulse,-\.72\*pulse\)/);
  assert.match(client,/CFrame\.Angles\(math\.rad\(-6\)/);
- assert.match(client,/SourceAssetLibrary","roblox-world-ghost-skins-v1"/);
 });
 
 test('감염 스킬과 감염 공격은 화면 효과와 공격 모션 이벤트를 보낸다',()=>{
