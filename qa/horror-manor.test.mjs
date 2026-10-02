@@ -1,4 +1,5 @@
 // 파일명: qa/horror-manor.test.mjs
+// PR4332_SPAWN_AUTHORITY_GUARD: current main Game.server owns every engine RespawnLocation; manor keeps marker-only PersonalSpawn.
 // 블렌더 산출물·개인 로비·기존 기능 회귀 검증.
 import test from 'node:test';
 import assert from 'node:assert/strict';
