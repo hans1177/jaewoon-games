@@ -15,11 +15,12 @@ on:
         required: true
         type: string
       publish_stage:
-        description: Final-only publish of the exact F9-passed artifact; pre-F9 validation stays local in Studio
+        description: Publish the exact artifact either to the isolated pre-F9 validation target or the canonical F9 target
         required: false
-        default: final
+        default: validation
         type: choice
         options:
+          - validation
           - final
       publish_cycle_id:
         description: Immutable F9 publish queue cycle id. Required when publish_stage=final.
@@ -141,7 +142,7 @@ jobs:
           const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           const publishStage=String(process.env.PUBLISH_STAGE||'final').trim().toLowerCase();
-          if(publishStage!=='final')throw new Error('ROBLOX_PUBLISH_STAGE_FINAL_ONLY:'+publishStage);
+          if(!['validation','final'].includes(publishStage))throw new Error('ROBLOX_PUBLISH_STAGE_INVALID:'+publishStage);
           const pending=(q.items||[]).find(row=>
             row.robloxFoundationF0Passed===true
             &&row.robloxFailureStage==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'
@@ -283,7 +284,7 @@ jobs:
           const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
           const requestedGameId=String(process.env.REQUESTED_GAME_ID||'').trim();
           const publishStage=String(process.env.PUBLISH_STAGE||'final').trim().toLowerCase();
-          if(publishStage!=='final')throw new Error('ROBLOX_PUBLISH_STAGE_FINAL_ONLY:'+publishStage);
+          if(!['validation','final'].includes(publishStage))throw new Error('ROBLOX_PUBLISH_STAGE_INVALID:'+publishStage);
           const pending=(q.items||[]).find(row=>
             String(row.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'
             &&row.robloxFoundationF0Passed===true
@@ -380,13 +381,8 @@ jobs:
             &&finalEntry?.f9ReleaseRegressionPassed===true
             &&['PENDING','RETRY_REQUIRED'].includes(String(finalEntry?.status||''))
             &&Number(finalEntry?.validationVersionNumber)>0
-            &&(
-              finalEntry?.internalStudioValidationOnly===true
-              ||(
-                /^[1-9][0-9]*$/.test(String(finalEntry?.validationUniverseId||''))
-                &&/^[1-9][0-9]*$/.test(String(finalEntry?.validationPlaceId||''))
-              )
-            )
+            &&/^[1-9][0-9]*$/.test(String(finalEntry?.validationUniverseId||''))
+            &&/^[1-9][0-9]*$/.test(String(finalEntry?.validationPlaceId||''))
             &&/^[0-9a-f]{40}$/i.test(revision)
             &&/^sha256:[0-9a-f]{64}$/i.test(artifact)
             &&sourceRoot===`roblox-games/${gameId}`
@@ -833,7 +829,7 @@ jobs:
           const artifactRunId=Number(process.env.ARTIFACT_RUN_ID);
           const releaseRunId=Number(process.env.RELEASE_RUN_ID);
           const publishStage=String(process.env.PUBLISH_STAGE||'final').trim().toLowerCase();
-          if(publishStage!=='final')throw new Error('invalid publish stage: final only: '+publishStage);
+          if(!['validation','final'].includes(publishStage))throw new Error('invalid publish stage: '+publishStage);
           const publishCycleId=String(process.env.PUBLISH_CYCLE_ID||'').trim();
           const publishQueue=Array.isArray(item.robloxCanonicalPublishQueue)?item.robloxCanonicalPublishQueue:[];
           const queuedFinalEntry=publishStage==='final'
@@ -872,11 +868,8 @@ jobs:
             const entry=queuedFinalEntry;
             if(Number(entry.validationVersionNumber||0)<=0)throw new Error('queued F9 validation version missing during canonical persist');
             if(
-              entry.internalStudioValidationOnly!==true
-              &&(
-                !/^[1-9][0-9]*$/.test(String(entry.validationUniverseId||''))
-                ||!/^[1-9][0-9]*$/.test(String(entry.validationPlaceId||''))
-              )
+              !/^[1-9][0-9]*$/.test(String(entry.validationUniverseId||''))
+              ||!/^[1-9][0-9]*$/.test(String(entry.validationPlaceId||''))
             )throw new Error('queued F9 validation target missing during canonical persist');
             const canonicalEvidence={
               version:2,gameId:item.gameId,platform:'ROBLOX',cycleId:publishCycleId,
