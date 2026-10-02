@@ -10,11 +10,65 @@ on:
 
 permissions:
   contents: read
+  actions: write
 
 jobs:
+  runner-control:
+    name: inspect and repair local Roblox runner registration
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
+    outputs:
+      registered: ${{ steps.runner.outputs.registered }}
+      online: ${{ steps.runner.outputs.online }}
+      runner_id: ${{ steps.runner.outputs.runner_id }}
+    steps:
+      - name: Inspect registered runner and repair required custom label
+        id: runner
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/runners?per_page=100" > /tmp/roblox-runners.json
+          node <<'NODE' > /tmp/roblox-runner-state
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-runners.json','utf8'));
+          const runner=(payload.runners||[]).find(r=>String(r.name||'')==='roblox-studio-local');
+          if(!runner){
+            console.log('registered=false');
+            console.log('online=false');
+            console.log('runner_id=');
+            console.error('ROBLOX_RUNNER_REGISTRATION=MISSING');
+            process.exit(0);
+          }
+          const labels=(runner.labels||[]).map(x=>String(x.name||'')).filter(Boolean);
+          console.log('registered=true');
+          console.log('online='+(String(runner.status||'').toLowerCase()==='online'?'true':'false'));
+          console.log('runner_id='+String(runner.id||''));
+          console.error('ROBLOX_RUNNER_STATUS='+String(runner.status||'UNKNOWN'));
+          console.error('ROBLOX_RUNNER_BUSY='+(runner.busy===true?'YES':'NO'));
+          console.error('ROBLOX_RUNNER_LABELS='+(labels.join(',')||'NONE'));
+          NODE
+          cat /tmp/roblox-runner-state >> "$GITHUB_OUTPUT"
+          registered="$(sed -n 's/^registered=//p' /tmp/roblox-runner-state)"
+          [ "$registered" = 'true' ] || exit 0
+          runner_id="$(sed -n 's/^runner_id=//p' /tmp/roblox-runner-state)"
+          node <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-runners.json','utf8'));
+          const runner=(payload.runners||[]).find(r=>String(r.name||'')==='roblox-studio-local');
+          const custom=(runner?.labels||[]).filter(x=>String(x.type||'').toLowerCase()==='custom').map(x=>String(x.name||'')).filter(Boolean);
+          if(!custom.includes('roblox-studio-authenticated'))custom.push('roblox-studio-authenticated');
+          fs.writeFileSync('/tmp/roblox-runner-labels.json',JSON.stringify({labels:[...new Set(custom)]}));
+          NODE
+          gh api --method PUT "repos/$GITHUB_REPOSITORY/actions/runners/$runner_id/labels" --input /tmp/roblox-runner-labels.json >/tmp/roblox-runner-label-result.json
+          echo 'ROBLOX_RUNNER_REQUIRED_LABEL=ENSURED'
+
   bootstrap:
     name: bootstrap local Roblox runner PowerShell 7
-    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    needs: runner-control
+    if: needs.runner-control.outputs.registered == 'true'
+    runs-on: [self-hosted, Windows, X64]
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
