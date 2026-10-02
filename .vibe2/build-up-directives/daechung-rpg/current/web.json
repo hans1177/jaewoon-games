@@ -1,19 +1,20 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g1-5bbf160b0f17",
-  "directiveFingerprint": "5bbf160b0f171aaca61d899645c3b22f88cfa6fea756145cd4a35f7db57f7893",
+  "directiveId": "daechung-rpg-build-up-g1-e7c8f53f47a0",
+  "directiveFingerprint": "e7c8f53f47a04efb1c4d87631d058ff57a3666c8d804b0e745468abe8256145b",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "daechung-rpg",
-  "gameName": "대충 RPG",
+  "gameName": "5포탈 RPG: 던전 파티",
   "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
   "previousDirectiveOutcome": null,
+  "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
-  "sourceRoot": "unity-games/daechung-rpg",
-  "sourceTreeFingerprint": "0b49c67d3b2351207d4cc07738409b2ac9fb0e2b745a409802b093eaa1699182",
+  "sourceRoot": "web-games/daechung-rpg",
+  "sourceTreeFingerprint": "e3dd79f7bbc16ad2cfa3acb27354ebd2f1ee223f396463a4be6c69ebf4f0a1c7",
   "designFingerprint": "96add7fd73d84d9a53459185ddf4457d9058daeb4ceab00aeab0dd18b14ab27a",
   "gameIdentityAndNonNegotiables": {
     "identity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.",
@@ -79,440 +80,482 @@
   },
   "currentImplementationFindings": {
     "sourceObservations": [
-      "CURRENT_SOURCE_FILES=4",
-      "VFX_IMPLEMENTATION_SPARSE"
+      "CURRENT_SOURCE_FILES=20",
+      "GAME_FEEL_SPARSE",
+      "CAMERA_LANGUAGE_SPARSE",
+      "AUDIO_STATE_TRANSITION_SPARSE",
+      "UI_MENU_FLOW_SPARSE",
+      "SETTINGS_ACCESSIBILITY_SPARSE"
     ],
     "signals": {
-      "combat": 297,
-      "progression": 137,
-      "ai": 22,
-      "save": 65,
-      "multiplayer": 1,
-      "animation": 12,
-      "vfx": 0,
-      "camera": 18,
-      "ui": 43,
-      "uiFlow": 9,
-      "input": 3,
-      "map": 121,
-      "landmark": 2,
-      "interaction": 3,
-      "inventory": 0,
-      "equipment": 66,
-      "settings": 18,
-      "feedback": 32,
-      "session": 44,
-      "content": 268,
-      "choice": 73,
-      "connection": 0,
+      "combat": 424,
+      "progression": 252,
+      "ai": 57,
+      "save": 55,
+      "multiplayer": 56,
+      "animation": 4,
+      "motionStates": 318,
+      "gameFeel": 0,
+      "vfx": 4,
+      "camera": 0,
+      "audio": 159,
+      "audioDynamics": 0,
+      "ui": 165,
+      "uiFlow": 24,
+      "entryFlow": 0,
+      "loadingFlow": 0,
+      "input": 52,
+      "map": 321,
+      "landmark": 53,
+      "interaction": 28,
+      "inventory": 12,
+      "equipment": 95,
+      "settings": 0,
+      "feedback": 81,
+      "session": 32,
+      "content": 415,
+      "choice": 29,
+      "connection": 12,
       "performance": 14,
-      "lighting": 0,
+      "lighting": 41,
       "primitive": 0,
       "todo": 0,
-      "errorRecovery": 14
+      "errorRecovery": 8
     },
     "topFiles": [
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "score": 267
+        "file": "web-games/daechung-rpg/index.html",
+        "score": 306
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "score": 234
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "score": 167
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "score": 110
+        "file": "web-games/daechung-rpg/unity-web-gameplay-validation.json",
+        "score": 66
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Editor/AndroidTestBuild.cs",
-        "score": 99
+        "file": "web-games/daechung-rpg/patch-v16.js",
+        "score": 15
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-core18.js",
+        "score": 9
+      },
+      {
+        "file": "web-games/daechung-rpg/TemplateData/style.css",
+        "score": 5
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v17.js",
+        "score": 4
+      },
+      {
+        "file": "web-games/daechung-rpg/TemplateData/profiler.js",
+        "score": 4
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v18.js",
+        "score": 3
+      },
+      {
+        "file": "web-games/daechung-rpg/unity-web-build.json",
+        "score": 2
+      },
+      {
+        "file": "web-games/daechung-rpg/TemplateData/fullscreen-button.png",
+        "score": 0
+      },
+      {
+        "file": "web-games/daechung-rpg/TemplateData/MemoryProfiler.png",
+        "score": 0
       }
     ],
     "sourceAnchors": [
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 121,
-        "kind": "METHOD",
-        "symbol": "BuildRegions",
-        "context": "private static IReadOnlyDictionary<string, RegionDefinition> BuildRegions()",
-        "score": 96
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 173,
+        "kind": "FUNCTION",
+        "symbol": "autoQuestCheck",
+        "context": "function autoQuestCheck(){if(q===7&&p.lv>=5){rewardNext(8,'다음: 전직하기');return true}if(q===8&&p.job&&p.job!=='미전직'){rewardNext(9,'다음: 오우거 처치');return true}if(q===11&&allArmorsOwned()",
+        "score": 250
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 208,
-        "kind": "METHOD",
-        "symbol": "GetAttackPower",
-        "context": "public int GetAttackPower()",
-        "score": 96
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 172,
+        "kind": "FUNCTION",
+        "symbol": "allArmorsOwned",
+        "context": "function allArmorsOwned(){return Object.keys(ARMORS).filter(n=>['나무 갑옷','철 갑옷','강철 갑옷'].includes(n)).every(n=>ownedArmors[n])}",
+        "score": 202
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "line": 131,
-        "kind": "METHOD",
-        "symbol": "DrawPlayerStatus",
-        "context": "private void DrawPlayerStatus()",
-        "score": 88
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 171,
+        "kind": "FUNCTION",
+        "symbol": "rewardNext",
+        "context": "function rewardNext(next,msg){p.g+=50;q=next;sfx('questReward');hud();toastMsg('퀘스트 완료! +50골드');if(msg)setTimeout(()=>toastMsg(msg),520)}",
+        "score": 170
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "line": 305,
-        "kind": "METHOD",
-        "symbol": "SpawnFirstEnemyInCurrentRegion",
-        "context": "private void SpawnFirstEnemyInCurrentRegion(bool resetVisual = true, bool announceEncounter = true)",
-        "score": 88
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 177,
+        "kind": "FUNCTION",
+        "symbol": "unlockAfterReaper",
+        "context": "function unlockAfterReaper(){if(postReaper)return;postReaper=true;if(!P.some(a=>a[0]==='f10'))P.push(['f10',520,1040,'10번 포탈','Lv.21~23']);if(!P.some(a=>a[0]==='f11'))P.push(['f11'",
+        "score": 170
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "line": 371,
-        "kind": "METHOD",
-        "symbol": "RewardEnemyDefeat",
-        "context": "private void RewardEnemyDefeat(EnemyDefinition defeated)",
-        "score": 80
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 178,
+        "kind": "FUNCTION",
+        "symbol": "spawnReaper",
+        "context": "function spawnReaper(){if(zone!=='f9'||reaperRef||reaperDefeated)return;const m={n:'사신',lv:20,x:ALTAR.x,y:ALTAR.y-130,hp:3000,mhp:3000,a:66,spd:72,r:48,xp:0,g:0,type:'reaper',baseT",
+        "score": 154
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 278,
-        "kind": "METHOD",
-        "symbol": "Save",
-        "context": "public void Save()",
-        "score": 72
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 442,
+        "kind": "FUNCTION",
+        "symbol": "renderBag",
+        "context": "function renderBag(){let weapons=Object.keys(ownedWeapons).filter(k=>ownedWeapons[k]).map(k=>`<div class=\"slot\"><span><b>${k}</b><br><span class=\"small\">공격 ${WEAPONS[k].damage}${WE",
+        "score": 146
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 268,
-        "kind": "METHOD",
-        "symbol": "SetRegion",
-        "context": "public void SetRegion(string regionId)",
-        "score": 64
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 325,
+        "kind": "FUNCTION",
+        "symbol": "damage",
+        "context": "function damage(v){if(p.inv>0)return;p.hp-=v;p.inv=.65;flash=.15;combatTimer=4;sfx('playerHit');if(p.hp<=0){p.hp=0;run=false;setAggro(false);sfx('playerDeath');const cost=Math.min(",
+        "score": 130
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "line": 314,
-        "kind": "METHOD",
-        "symbol": "CombatExchangeRoutine",
-        "context": "private IEnumerator CombatExchangeRoutine(bool enemyDefeated, bool playerDefeated)",
-        "score": 64
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 334,
+        "kind": "FUNCTION",
+        "symbol": "drawTrainer",
+        "context": "function drawTrainer(t){drawHuman(t.x,t.y,'smith',Math.floor(performance.now()/45)%34,'idle',false);ctx.fillStyle='#17120e';ctx.font='bold 12px sans-serif';ctx.textAlign='center';c",
+        "score": 130
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "line": 275,
-        "kind": "METHOD",
-        "symbol": "MoveTo",
-        "context": "private void MoveTo(string regionId)",
-        "score": 64
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 89,
-        "kind": "CLASS",
-        "symbol": "GameSaveData",
-        "context": "public sealed class GameSaveData",
-        "score": 60
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 157,
-        "kind": "METHOD",
-        "symbol": "Region",
-        "context": "private static RegionDefinition Region(string id, string name, int min, int max, params EnemyDefinition[] enemies)",
-        "score": 56
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 169,
-        "kind": "METHOD",
-        "symbol": "Enemy",
-        "context": "private static EnemyDefinition Enemy(string id, string name, int level, int hp, int attack, float speed, int xp, int gold)",
-        "score": 56
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "line": 361,
-        "kind": "METHOD",
-        "symbol": "SetupCamera",
-        "context": "private static void SetupCamera()",
-        "score": 56
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "line": 143,
-        "kind": "METHOD",
-        "symbol": "DrawRegionControls",
-        "context": "private void DrawRegionControls()",
-        "score": 56
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "line": 176,
-        "kind": "METHOD",
-        "symbol": "DrawCombatControls",
-        "context": "private void DrawCombatControls()",
-        "score": 56
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 191,
-        "kind": "METHOD",
-        "symbol": "Awake",
-        "context": "private void Awake()",
-        "score": 48
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 197,
-        "kind": "METHOD",
-        "symbol": "GetMaxHp",
-        "context": "public int GetMaxHp()",
-        "score": 48
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "line": 122,
-        "kind": "METHOD",
-        "symbol": "PlayCombatExchange",
-        "context": "public void PlayCombatExchange(bool enemyDefeated, bool playerDefeated)",
-        "score": 48
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "line": 335,
-        "kind": "METHOD",
-        "symbol": "AttackEnemy",
-        "context": "private void AttackEnemy()",
-        "score": 48
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 18,
-        "kind": "CLASS",
-        "symbol": "PlayerState",
-        "context": "public sealed class PlayerState",
-        "score": 44
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 185,
-        "kind": "CLASS",
-        "symbol": "GameCore",
-        "context": "public sealed class GameCore : MonoBehaviour",
-        "score": 44
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "line": 9,
-        "kind": "CLASS",
-        "symbol": "RuntimeBootstrap",
-        "context": "public sealed class RuntimeBootstrap : MonoBehaviour",
-        "score": 44
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Editor/AndroidTestBuild.cs",
-        "line": 124,
-        "kind": "METHOD",
-        "symbol": "BuildError",
-        "context": "private static InvalidOperationException BuildError(string code, string message)",
-        "score": 40
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 223,
-        "kind": "METHOD",
-        "symbol": "TryBuyWeapon",
-        "context": "public bool TryBuyWeapon(string weaponId)",
-        "score": 40
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 239,
-        "kind": "METHOD",
-        "symbol": "TryBuyArmor",
-        "context": "public bool TryBuyArmor(string armorId)",
-        "score": 40
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "file": "web-games/daechung-rpg/index.html",
         "line": 256,
-        "kind": "METHOD",
-        "symbol": "TryChangeJob",
-        "context": "public bool TryChangeJob(JobType job)",
-        "score": 40
+        "kind": "FUNCTION",
+        "symbol": "spawnCaveMonster",
+        "context": "function spawnCaveMonster(s,px,py){mons.push({n:s.n,lv:s.lv,x:px,y:py,hp:s.hp,mhp:s.hp,a:s.atk,spd:s.spd,r:s.r,xp:s.xp,g:s.g,type:s.type,baseType:s.type,z:'cave',hit:0,dead:false,s",
+        "score": 114
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 285,
-        "kind": "METHOD",
-        "symbol": "Load",
-        "context": "public void Load()",
-        "score": 40
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 279,
+        "kind": "FUNCTION",
+        "symbol": "buyOrEquipWeapon",
+        "context": "function buyOrEquipWeapon(name){const w=WEAPONS[name];if(!ownedWeapons[name]){if(p.g<w.price){sfx('noGold');toastMsg('골드가 부족하다');return}p.g-=w.price;ownedWeapons[name]=true;sfx('bu",
+        "score": 114
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "line": 72,
-        "kind": "METHOD",
-        "symbol": "Update",
-        "context": "private void Update()",
-        "score": 40
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 327,
+        "kind": "FUNCTION",
+        "symbol": "portals",
+        "context": "function portals(){if(pc>0||zone==='cave')return;if(zone==='town'){for(const a of P)if(Math.hypot(p.x-a[1],p.y-a[2])<42){enter(a[0]);return}}else if(Math.hypot(p.x-135,p.y-600)<42)",
+        "score": 114
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "line": 292,
-        "kind": "METHOD",
-        "symbol": "TravelRoutine",
-        "context": "private IEnumerator TravelRoutine()",
-        "score": 40
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "line": 349,
-        "kind": "METHOD",
-        "symbol": "ResetBattleActors",
-        "context": "private void ResetBattleActors()",
-        "score": 40
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "line": 193,
-        "kind": "METHOD",
-        "symbol": "DrawPrimaryCombatActionButton",
-        "context": "private void DrawPrimaryCombatActionButton()",
-        "score": 40
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "line": 231,
-        "kind": "METHOD",
-        "symbol": "DrawTownControls",
-        "context": "private void DrawTownControls()",
-        "score": 40
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Editor/AndroidTestBuild.cs",
-        "line": 13,
-        "kind": "CLASS",
-        "symbol": "AndroidTestBuild",
-        "context": "public static class AndroidTestBuild",
-        "score": 36
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 37,
-        "kind": "CLASS",
-        "symbol": "EnemyDefinition",
-        "context": "public sealed class EnemyDefinition",
-        "score": 36
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 50,
-        "kind": "CLASS",
-        "symbol": "RegionDefinition",
-        "context": "public sealed class RegionDefinition",
-        "score": 36
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 80,
-        "kind": "CLASS",
-        "symbol": "QuestDefinition",
-        "context": "public sealed class QuestDefinition",
-        "score": 36
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "line": 14,
-        "kind": "CLASS",
-        "symbol": "PrototypeAnimatedVisuals",
-        "context": "public sealed class PrototypeAnimatedVisuals : MonoBehaviour",
-        "score": 36
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Editor/AndroidTestBuild.cs",
-        "line": 19,
-        "kind": "METHOD",
-        "symbol": "Build",
-        "context": "public static void Build()",
-        "score": 32
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Editor/AndroidTestBuild.cs",
-        "line": 73,
-        "kind": "METHOD",
-        "symbol": "BuildWeb",
-        "context": "public static void BuildWeb()",
-        "score": 32
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "line": 139,
-        "kind": "METHOD",
-        "symbol": "LoadAll",
-        "context": "private IEnumerator LoadAll()",
-        "score": 32
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "line": 67,
-        "kind": "METHOD",
-        "symbol": "Update",
-        "context": "private void Update()",
-        "score": 32
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "line": 85,
-        "kind": "METHOD",
-        "symbol": "OnGUI",
-        "context": "private void OnGUI()",
-        "score": 32
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 60,
-        "kind": "CLASS",
-        "symbol": "WeaponDefinition",
-        "context": "public sealed class WeaponDefinition",
-        "score": 28
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 71,
-        "kind": "CLASS",
-        "symbol": "ArmorDefinition",
-        "context": "public sealed class ArmorDefinition",
-        "score": 28
-      },
-      {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "file": "web-games/daechung-rpg/patch-v15.js",
         "line": 95,
-        "kind": "CLASS",
-        "symbol": "GameCatalog",
-        "context": "public static class GameCatalog",
-        "score": 28
+        "kind": "FUNCTION",
+        "symbol": "leaveMultiplayer",
+        "context": "async function leaveMultiplayer(){",
+        "score": 114
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "line": 379,
-        "kind": "CLASS",
-        "symbol": "RemoteManifest",
-        "context": "private sealed class RemoteManifest",
-        "score": 28
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 268,
+        "kind": "FUNCTION",
+        "symbol": "partyRegisterKill",
+        "context": "function partyRegisterKill(m,killerId,xpValue,goldValue){",
+        "score": 114
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "line": 388,
-        "kind": "CLASS",
-        "symbol": "AnimatedActor",
-        "context": "private sealed class AnimatedActor",
-        "score": 28
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 257,
+        "kind": "FUNCTION",
+        "symbol": "spawnHiddenEnemy",
+        "context": "function spawnHiddenEnemy(){if(mons.some(m=>m.type==='hiddenEnemy'&&!m.dead)||hq!==1)return;mons.push({n:'기사단의 마지막 원수',lv:8,x:TOMB.enemyX,y:TOMB.enemyY,hp:300,mhp:300,a:10,spd:58,r",
+        "score": 106
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "line": 390,
-        "kind": "CLASS",
-        "symbol": "Clip",
-        "context": "private sealed class Clip",
-        "score": 28
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 258,
+        "kind": "FUNCTION",
+        "symbol": "nearest",
+        "context": "function nearest(){if(zone!=='town')return null;let b=null,d=80;for(const n of npcs){const v=Math.hypot(n.x-p.x,n.y-p.y);if(v<d){d=v;b=n}}return b}",
+        "score": 106
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 353,
+        "kind": "FUNCTION",
+        "symbol": "weaponDraw",
+        "context": "function weaponDraw(){const swing=p.animState==='attack'?Math.sin(p.animFrame/33*Math.PI):0;ctx.save();ctx.translate(p.x,p.y-10);ctx.scale(p.dir,1);ctx.rotate(-.8+swing*1.55);if(p.",
+        "score": 106
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 259,
+        "kind": "FUNCTION",
+        "symbol": "talkNow",
+        "context": "function talkNow(){",
+        "score": 98
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 278,
+        "kind": "FUNCTION",
+        "symbol": "equipWeapon",
+        "context": "function equipWeapon(name){p.weapon=name;sfx('weaponEquip');toastMsg(`${name} 장착 · 공격 ${Math.floor(currentAtk())}`);hud()}",
+        "score": 98
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 323,
+        "kind": "FUNCTION",
+        "symbol": "fireArrow",
+        "context": "function fireArrow(m){const a=Math.atan2(p.y-m.y,p.x-m.x),speed=p.spd*.6,homing=Math.random()<.30;sfx(homing?'homingArrow':'arrowShoot');arrows.push({x:m.x,y:m.y,vx:Math.cos(a)*spe",
+        "score": 98
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 328,
+        "kind": "FUNCTION",
+        "symbol": "stepAnim",
+        "context": "function stepAnim(e,dt,moving=false){e.animTick=(e.animTick||0)+dt*30;if(e.animState==='attack'){e.animFrame=Math.min(33,Math.floor(e.animTick));if(e.animFrame>=33){e.animState=mov",
+        "score": 98
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 329,
+        "kind": "FUNCTION",
+        "symbol": "aggroSoundFor",
+        "context": "function aggroSoundFor(m){if(['slime','blue','caveSlime'].includes(m.type))return 'slimeAggro';if(['slimeKing','giantCaveSlime','ogre'].includes(m.type))return 'bossAggro';if(['boa",
+        "score": 98
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 355,
+        "kind": "FUNCTION",
+        "symbol": "drawMonsterSprite",
+        "context": "function drawMonsterSprite(m){",
+        "score": 98
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 179,
+        "kind": "FUNCTION",
+        "symbol": "hazard",
+        "context": "function hazard(x,y,r,delay,damage,kind){hazards.push({x,y,r,t:delay,damage,kind,hit:false})}",
+        "score": 98
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 226,
+        "kind": "FUNCTION",
+        "symbol": "hud",
+        "context": "function hud(){",
+        "score": 90
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 280,
+        "kind": "FUNCTION",
+        "symbol": "openArmorShop",
+        "context": "function openArmorShop(){sfx('shopOpen');renderArmorShop();armorShop.style.display='flex'}",
+        "score": 90
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 281,
+        "kind": "FUNCTION",
+        "symbol": "renderArmorShop",
+        "context": "function renderArmorShop(){armorList.innerHTML=Object.entries(ARMORS).map(([name,a])=>{const o=ownedArmors[name],e=p.armor===name,l=e?'착용중':o?'착용':`${a.price}G 구매`;return `<div cla",
+        "score": 90
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 314,
+        "kind": "FUNCTION",
+        "symbol": "kill",
+        "context": "function kill(m){",
+        "score": 90
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 324,
+        "kind": "FUNCTION",
+        "symbol": "updateArrows",
+        "context": "function updateArrows(dt){for(let i=arrows.length-1;i>=0;i--){const a=arrows[i];a.life-=dt;a.flyTick+=dt;if(a.flyTick>.65){a.flyTick=0;sfx('arrowFly')}if(a.homing>0){a.homing-=dt;c",
+        "score": 90
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 330,
+        "kind": "FUNCTION",
+        "symbol": "update",
+        "context": "function update(dt){",
+        "score": 90
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 72,
+        "kind": "FUNCTION",
+        "symbol": "syncMultiPresence",
+        "context": "function syncMultiPresence(){",
+        "score": 90
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 180,
+        "kind": "FUNCTION",
+        "symbol": "bossPattern",
+        "context": "function bossPattern(m,dt){m.specialCd=(m.specialCd==null?3:m.specialCd-dt);if(m.specialCd>0)return;if(m.type==='slimeKing'){hazard(p.x,p.y,135,.9,26,'slime');m.specialCd=6;toastMs",
+        "score": 90
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 239,
+        "kind": "FUNCTION",
+        "symbol": "partyStartIfNeeded",
+        "context": "function partyStartIfNeeded(){",
+        "score": 90
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 330,
+        "kind": "FUNCTION",
+        "symbol": "golemSprite",
+        "context": "function golemSprite(m){ctx.save();ctx.translate(m.x,m.y);shadow(0,8,32);ctx.fillStyle=m.dormant?'#55584f':'#666b5e';ctx.beginPath();ctx.moveTo(-35,18);ctx.lineTo(-29,-28);ctx.line",
+        "score": 90
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 276,
+        "kind": "FUNCTION",
+        "symbol": "openWeaponShop",
+        "context": "function openWeaponShop(){sfx('shopOpen');renderWeaponShop();weaponShop.style.display='flex'}",
+        "score": 82
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 277,
+        "kind": "FUNCTION",
+        "symbol": "renderWeaponShop",
+        "context": "function renderWeaponShop(){weaponList.innerHTML=Object.entries(WEAPONS).filter(([,w])=>!w.hidden).map(([name,w])=>{const o=ownedWeapons[name],e=p.weapon===name,l=e?'장착중':o?'장착':`$",
+        "score": 82
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 282,
+        "kind": "FUNCTION",
+        "symbol": "buyOrEquipArmor",
+        "context": "function buyOrEquipArmor(name){const a=ARMORS[name],old=maxHp();if(!ownedArmors[name]){if(p.g<a.price){sfx('noGold');toastMsg('골드가 부족하다');return}p.g-=a.price;ownedArmors[name]=true",
+        "score": 82
+      },
+      {
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 283,
+        "kind": "FUNCTION",
+        "symbol": "openSellShop",
+        "context": "function openSellShop(){sfx('shopOpen');renderSellShop();sellShop.style.display='flex'}",
+        "score": 82
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 329,
+        "kind": "FUNCTION",
+        "symbol": "crocSprite",
+        "context": "function crocSprite(m){ctx.save();ctx.translate(m.x,m.y);ctx.scale(m.dir||1,1);shadow(0,5,34);ctx.fillStyle='#315d3c';ctx.beginPath();ctx.ellipse(0,0,42,15,0,0,Math.PI*2);ctx.fill(",
+        "score": 82
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 331,
+        "kind": "FUNCTION",
+        "symbol": "reaperSprite",
+        "context": "function reaperSprite(m){const att=m.animState==='attack'?Math.sin((m.animFrame||0)/33*Math.PI):0;ctx.save();ctx.translate(m.x,m.y);ctx.scale((m.dir||1)*1.5,1.5);shadow(0,10,50);ct",
+        "score": 82
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 84,
+        "kind": "FUNCTION",
+        "symbol": "remotePlayerState",
+        "context": "function remotePlayerState(payload){",
+        "score": 74
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 322,
+        "kind": "FUNCTION",
+        "symbol": "riverDraw",
+        "context": "function riverDraw(){ctx.fillStyle='#315f78';ctx.fillRect(70,520,1660,160);ctx.fillStyle='#5d899a';for(let x=100;x<1700;x+=110){ctx.beginPath();ctx.ellipse(x,550+(x%3)*30,45,8,0,0,",
+        "score": 74
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 67,
+        "kind": "FUNCTION",
+        "symbol": "updateMultiStatus",
+        "context": "function updateMultiStatus(extra=''){",
+        "score": 66
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 125,
+        "kind": "FUNCTION",
+        "symbol": "updateMultiplayer",
+        "context": "function updateMultiplayer(dt){",
+        "score": 66
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 181,
+        "kind": "FUNCTION",
+        "symbol": "updateHazards",
+        "context": "function updateHazards(dt){for(let i=hazards.length-1;i>=0;i--){const h=hazards[i];h.t-=dt;if(h.t<=0&&!h.hit){h.hit=true;if(Math.hypot(p.x-h.x,p.y-h.y)<h.r+p.r)damage(h.damage)}if(",
+        "score": 66
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 327,
+        "kind": "FUNCTION",
+        "symbol": "amazonSign",
+        "context": "function amazonSign(){ctx.fillStyle='#4c3424';ctx.fillRect(AMAZON_SIGN.x-7,AMAZON_SIGN.y-5,14,55);ctx.fillStyle='#735030';ctx.fillRect(AMAZON_SIGN.x-70,AMAZON_SIGN.y-50,140,48);ctx",
+        "score": 66
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 164,
+        "kind": "FUNCTION",
+        "symbol": "customSpawn",
+        "context": "function customSpawn(spec,x,y,z){spawn(spec,x,y,z);return mons[mons.length-1]}",
+        "score": 58
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 166,
+        "kind": "FUNCTION",
+        "symbol": "enterAmazon",
+        "context": "function enterAmazon(){WORLD.w=3200;WORLD.h=2200;baseEnter('amazon');mons=[];const c=F.amazon.m[0],g=F.amazon.m[1];[[1035,1110],[1510,760],[1900,1170],[2440,910]].forEach(v=>custom",
+        "score": 58
+      },
+      {
+        "file": "web-games/daechung-rpg/patch-v15.js",
+        "line": 216,
+        "kind": "FUNCTION",
+        "symbol": "aiBuyWeapon",
+        "context": "function aiBuyWeapon(bot){",
+        "score": 58
       }
     ]
   },
@@ -520,12 +563,12 @@
     "state": "NO_PREVIOUS_DIRECTIVE"
   },
   "playtestRuntimeFindings": {
-    "failureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
-    "failureSignature": "ROBLOX_RUNTIME_ACCEPTANCE_PENDING",
-    "blockers": [
-      "roblox-f7-multiplayer-single-check-pending"
-    ],
-    "runtimeObserved": true,
+    "platform": "WEB",
+    "studioQualityFailure": null,
+    "failureStage": "",
+    "failureSignature": "",
+    "blockers": [],
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -658,13 +701,13 @@
     },
     {
       "domain": "INVENTORY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
@@ -678,8 +721,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "SESSION_FLOW",
@@ -703,8 +746,8 @@
     },
     {
       "domain": "SAVE_COMPLETENESS",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "RECONNECT_RECOVERY",
@@ -733,13 +776,13 @@
     },
     {
       "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "MENU_FLOW",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "CONVENIENCE",
@@ -773,8 +816,8 @@
     },
     {
       "domain": "GAME_FEEL",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "SPAWN_ENCOUNTER_DIRECTOR",
@@ -793,8 +836,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
@@ -858,13 +901,13 @@
     },
     {
       "domain": "VFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "CAMERA",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "UI_HUD",
@@ -906,7 +949,7 @@
     {
       "domain": "CORE_FUN",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "4인 파티 고정가 단순 반복 입력이 아니라 상황을 읽고 선택을 바꾸는 핵심 재미가 되게 한다. 같은 선택의 반복 이득을 줄이고 성공/실패 이유가 즉시 보이게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -915,7 +958,7 @@
     {
       "domain": "COMBAT_OR_PRIMARY_INTERACTION",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "4인 파티 고정의 입력→전조/준비→판정→결과→회복 흐름을 실제 상태 머신에 연결하고 타이밍·거리·위험/보상 중 게임에 맞는 최소 두 축에서 선택 차이를 만든다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -924,7 +967,7 @@
     {
       "domain": "PLAYER_ACTIONS",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "플레이어의 주요 행동마다 사용 조건, 취소/실패 조건, 상태 변화, 쿨다운 또는 후딜, 화면/음향 피드백을 일관되게 연결하고 무의미한 중복 행동은 정리한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -933,7 +976,7 @@
     {
       "domain": "PLAYER_AGENCY",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "핵심 루프에서 최소 두 개 이상의 의미 있는 선택축을 유지하고 하나의 정답 버튼 반복보다 상황·자원·위험에 따라 선택이 달라지게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -942,7 +985,7 @@
     {
       "domain": "ANTI_GRIND",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "같은 행동을 반복해서 숫자만 채우는 구간을 줄이고 반복이 필요하면 새로운 위험·조합·선택·단축 해금 중 하나가 주기적으로 생기게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -951,7 +994,7 @@
     {
       "domain": "ENEMY_AI",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "적 역할이 이동·타깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 4인 파티 고정에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -960,7 +1003,7 @@
     {
       "domain": "BOSS_AND_SIGNATURE_MOMENTS",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 보스/시그니처 순간은 일반 적의 체력만 키운 형태를 금지하고 단계 변화, 공간 압박, 전조, 대응 선택, 보상 연출을 핵심 시스템 무한 확장 AI 동료와 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1014,7 +1057,7 @@
     {
       "domain": "CONTENT_VARIETY",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "콘텐츠 변형은 이름/색/수치 복제 대신 행동 규칙·공간·자원·적 조합·진행 조건 중 최소 한 축을 바꾸어 새로운 판단을 만들게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1023,7 +1066,7 @@
     {
       "domain": "CONTENT_DENSITY",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "플레이 시간과 이동 거리에 비해 실제 상호작용·조우·보상·발견이 비는 구간을 줄이고 새 콘텐츠가 서로 다른 플레이 결정을 만들게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1130,8 +1173,8 @@
     },
     {
       "domain": "INVENTORY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "인벤토리는 획득·정렬/표시·장착/사용·교체·버리기/보존 상태를 명확히 하고 실제 캐릭터/전투/진행 상태와 동기화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1139,8 +1182,8 @@
     },
     {
       "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "인벤토리의 획득·스택·정렬·선택·사용·장착·교체·버리기/보존·가득 참 처리를 모바일 터치에서 끊김 없이 연결하고 현재 장착 상태를 명확히 표시한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1166,8 +1209,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "드랍→인벤토리→제작/장착→전투/탐색→보상/해금처럼 현재 게임의 주요 시스템들이 실제 상태를 주고받게 하고 서로 고립된 메뉴 기능을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1176,16 +1219,16 @@
     {
       "domain": "SESSION_FLOW",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
-      "directive": "접속→첫 행동→핵심 재미→보상→업그레이드/선택→새 목표→실패/성공→저장/종료가 막힘 없이 한 세션으로 이어지고 할 일이 사라지는 공백을 줄인다.",
+      "directive": "접속→준비→첫 행동→목표/실패→결과/보상→재시도→다음 선택을 연결한다. 확인된 실패 수리 후 첫 플레이·재도전·적용 가능한 친구 참가·연출 순으로 한 흐름씩 구현·검수한다. 결과는 달성 내용·실제 실패 원인/성공 선택·재도전/다음 단계/로비를 보여주고 서버 확정 보상만 표시한다. 재도전 연타도 한 번만 시작되며 입력·판정·상태·피드백·실패 복귀가 연결되어야 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "FIRST_10_MINUTES",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "첫 10분 안에 이동/기본 입력, 핵심 상호작용, 첫 성공 피드백, 첫 보상 또는 성장, 다음 목표를 실제 플레이로 경험하게 하고 설명문만으로 대체하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1194,25 +1237,25 @@
     {
       "domain": "FAILURE_RESPAWN_CHECKPOINTS",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "사망/실패/런 종료 시 손실·보존·체크포인트·리스폰 위치·재시작 시간을 명확히 하고 실패 후 다시 핵심 재미로 돌아가는 시간을 최소화한다.",
+      "directive": "사망/실패/런 종료 시 기존 손실·보존·체크포인트·리스폰 규칙을 유지하고 빠르게 재시작하게 한다. 실제 기록에 있는 원인만 시각화한다: 퍼즐의 잘못된 연결, 방어의 뚫린 경로, 생존의 사망 원인 등 해당 장르에 맞게 표시하며 근거가 없으면 추측하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "SAVE_AND_RECOVERY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "세이브는 기존 키/의미를 보존하면서 진행·장비·해금 등 승인된 상태가 재접속 후 정확히 복구되고 중간 실패 시 안전한 fallback을 갖게 한다.",
+      "directive": "기존 저장 키·구조·의미를 보존하고 진행·장비·해금을 재접속 후 복구한다. 불러오기 실패를 신규 사용자로 처리하거나 기본값으로 덮어쓰지 말고 재시도·안전 복귀를 제공한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "SAVE_COMPLETENESS",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "현재 게임에서 저장돼야 하는 진행·인벤토리·장비·해금·퀘스트·발견 지역·설정 상태를 기존 save 의미를 깨지 않고 재접속 후 일관되게 복구한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1221,18 +1264,18 @@
     {
       "domain": "RECONNECT_RECOVERY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "재접속/late join/일시 네트워크 실패 시 권위 상태를 다시 동기화하고 중복 보상·장비 유실·퀘스트 되감기 없이 안전한 복구 경로를 제공한다.",
+      "directive": "재접속/late join/네트워크 실패 후 권위 상태를 재동기화하고 중복 보상·장비 유실·퀘스트 되감기 없이 복구한다. 복구된 실제 진행·현재 목표·다음 행동을 짧게 안내하며 복구 전 상태를 확정해 표시하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "MULTIPLAYER_AND_SYNC",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "멀티가 적용되는 게임이면 authoritative state, 참가/이탈, 핵심 행동 동기화, 재접속/late join, 승패/보상 일관성을 실제 2인 이상 흐름에 맞춘다.",
+      "directive": "멀티가 적용되는 게임만 기존 방 생성·참가·준비·시작·이탈을 서버 판정으로 연결한다. 참가자·준비·기존 모드를 표시하고 대기 중 안전한 공동 연습을 제공한다. 결과 화면에 각자 재도전 의사를 표시하고 기존 참가 규칙으로 인원을 유지하되 이탈자 때문에 무한 대기하지 않게 한다. 방장 이탈·late join·재접속을 기존 규칙으로 복구하고 실제 2인 이상의 행동·목표·승패·보상 일치와 중복 지급 방지를 검수한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1250,7 +1293,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "작은 화면에서 핵심 HUD·조작·위험 경고·선택지가 손가락과 겹치지 않게 하고 safe area, 스크롤, 팝업 닫기, 가로/세로 대응을 실제 플레이 기준으로 정리한다.",
+      "directive": "작은 화면에서 핵심 행동 버튼을 크게, 설정·도움말을 접어서 배치하고 HUD·위험 경고가 손가락에 가리지 않게 한다. safe area·스크롤·가로/세로를 검수하고 팝업 닫기 터치가 뒤쪽 이동·공격으로 전달되지 않게 입력을 소비한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1265,8 +1308,8 @@
     },
     {
       "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "음량·카메라/흔들림·감도·UI 크기/가독성 등 현재 게임에 필요한 설정을 접근 가능한 메뉴에 두고 설정 변경이 즉시 반영·저장되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1274,10 +1317,10 @@
     },
     {
       "domain": "MENU_FLOW",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
-      "directive": "인벤토리·장비·제작·상점·퀘스트·설정 등 존재하는 메뉴 사이 전환, 뒤로가기, 닫기, 팝업 중첩, 스크롤, 선택 유지가 모바일에서 예측 가능하게 동작하게 한다.",
+      "directive": "4인 파티 고정를 연습하는 로비/허브를 기존 UI에 연결한다. 승인된 장르에 맞게 퍼즐은 작은 연습판, 방어는 적 하나에 배치·회수, 생존은 안전한 채집·제작·장착을 활용한다. 연습은 건너뛸 수 있고 기존 재화·보상·저장에 영향을 주지 않는다. 로딩은 실제 월드·저장·참가 준비 단계와 실패 이유·재시도/안전 복귀를 표시한다. 시작은 준비 확인 후 한 번만 처리하고 스폰·카메라·목표까지 연결한다. 기존 메뉴의 뒤로가기·닫기·스크롤·팝업·선택 유지를 모바일에서 검수하며 중복 화면·가짜 진행률·장식용 버튼을 금지한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1322,7 +1365,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "첫 플레이에서 4인 파티 고정의 핵심 입력→결과→다음 목표를 실제 행동으로 학습시키고, 설명문만 읽는 튜토리얼보다 단계적 실습·즉시 피드백·도움말 회수를 연결한다.",
+      "directive": "4인 파티 고정의 첫 입력·결과·목표를 필요한 순간 한 줄과 실습으로 안내한다. 같은 실패 반복 시 목표 확인→관련 위치→행동 예시의 선택형 힌트를 단계적으로 제공하되 정답 자동 처리·난이도 변경은 금지한다. 설명 닫기는 학습 완료가 아니며 건너뛰기·도움말 다시 열기를 제공한다. 재접속은 초기 설명 대신 현재 목표를 보여준다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1337,8 +1380,8 @@
     },
     {
       "domain": "GAME_FEEL",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "핵심 입력의 반응 지연, anticipation, impact, hit-stop/반동/화면 반응, recovery를 장르와 4인 파티 고정에 맞춰 조정해 버튼 입력과 결과 사이의 손맛을 강화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1373,8 +1416,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "배경음악은 지역/상태/전투 강도 전환과 연결하고, 핵심 행동·위험 전조·피격·보상·UI SFX를 서로 구별해 화면을 보지 않아도 중요한 사건을 인지할 수 있게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1490,8 +1533,8 @@
     },
     {
       "domain": "VFX",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "일반 타격, 강공격, 위험 전조, 상태이상, 보상, 보스/시그니처 이벤트의 VFX 형태·강도·지속시간을 분리하고 실제 상태 변화 시점에 동기화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1499,8 +1542,8 @@
     },
     {
       "domain": "CAMERA",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "기본 시야·FOV·추적을 모바일 가독성에 맞추고 강한 타격/대시/보스/탐색 포인트에 짧고 단계적인 카메라 반응을 적용해 멀미와 과도한 흔들림을 피한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1536,7 +1579,7 @@
     {
       "domain": "PERFORMANCE",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "실제 병목 근거를 기준으로 update/tick 빈도, 객체/파티클 수명, draw/instance 수, GC/할당, 네트워크 빈도, 모바일 열/메모리 비용을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1545,7 +1588,7 @@
     {
       "domain": "PERFORMANCE_BUDGET",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "맵·에셋·NPC·VFX를 늘릴 때 객체 수명, 동시 NPC/파티클, 업데이트 빈도, 스트리밍/LOD, 메모리·모바일 프레임 예산을 함께 정의하고 초과 시 표현 비용부터 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1554,7 +1597,7 @@
     {
       "domain": "RUNTIME_STABILITY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "핵심 루프를 반복 실행해도 상태 누수·중복 이벤트·고착·크래시 없이 시작→플레이→실패/성공→재시작/복귀가 유지되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1563,7 +1606,7 @@
     {
       "domain": "ERROR_RECOVERY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "재현된 오류는 숨기지 말고 책임 시스템에서 원인을 제거하고 실패 시 안전한 복구/재시도/사용자 피드백 경로를 제공한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1572,40 +1615,52 @@
   ],
   "detectedGaps": [
     {
-      "domain": "INVENTORY",
+      "domain": "SETTINGS_ACCESSIBILITY",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "INVENTORY_USABILITY",
+      "domain": "MENU_FLOW",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "SYSTEM_CONNECTION",
+      "domain": "GAME_FEEL",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "SAVE_COMPLETENESS",
+      "domain": "AUDIO_MUSIC_SFX",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "VFX",
+      "domain": "CAMERA",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     }
   ],
-  "primaryFocus": "STABILITY",
-  "thisLoopPrimaryGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"4인 파티 고정\", 현재 책임 소스는 unity-games/daechung-rpg/Assets/Scripts/GameCore.cs::BuildRegions, unity-games/daechung-rpg/Assets/Scripts/GameCore.cs::GetAttackPower, unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs::DrawPlayerStatus, unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs::SpawnFirstEnemyInCurrentRegion, unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs::RewardEnemyDefeat, unity-games/daechung-rpg/Assets/Scripts/GameCore.cs::Save, unity-games/daechung-rpg/Assets/Scripts/GameCore.cs::SetRegion, unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs::CombatExchangeRoutine이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryFocus": "CORE_FUN",
+  "thisLoopPrimaryGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 CORE_FUN를 우선한다. 게임 고유 앵커는 \"4인 파티 고정\", 현재 책임 소스는 web-games/daechung-rpg/index.html::renderBag, web-games/daechung-rpg/index.html::damage, web-games/daechung-rpg/index.html::spawnCaveMonster, web-games/daechung-rpg/index.html::buyOrEquipWeapon, web-games/daechung-rpg/index.html::portals, web-games/daechung-rpg/index.html::spawnHiddenEnemy, web-games/daechung-rpg/index.html::nearest, web-games/daechung-rpg/index.html::weaponDraw이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 unity-games/daechung-rpg/Assets/Scripts/GameCore.cs::BuildRegions, unity-games/daechung-rpg/Assets/Scripts/GameCore.cs::GetAttackPower, unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs::DrawPlayerStatus, unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs::SpawnFirstEnemyInCurrentRegion, unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs::RewardEnemyDefeat, unity-games/daechung-rpg/Assets/Scripts/GameCore.cs::Save, unity-games/daechung-rpg/Assets/Scripts/GameCore.cs::SetRegion, unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs::CombatExchangeRoutine에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 web-games/daechung-rpg/index.html::renderBag, web-games/daechung-rpg/index.html::damage, web-games/daechung-rpg/index.html::spawnCaveMonster, web-games/daechung-rpg/index.html::buyOrEquipWeapon, web-games/daechung-rpg/index.html::portals, web-games/daechung-rpg/index.html::spawnHiddenEnemy, web-games/daechung-rpg/index.html::nearest, web-games/daechung-rpg/index.html::weaponDraw에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "4인 파티 고정를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "무한 확장 AI 동료가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
+    "기획 루프 1 \"마을과 지역 스토리를 진행해 새로운 AI 동료와 사건을 발견한다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
+    "기획 루프 2 \"보유 동료 중 4명을 골라 파티를 만들고 각 동료의 장비, AI 성향, 스킬을 세팅한다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
+    "기획 루프 3 \"필드·던전·보스에서 직접 전투하며 파티 조합과 장비가 실제 전투에서 어떻게 맞물리는지 확인한다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
+    "기획 루프 4 \"동료 전용 퀘스트, 숙명 관계, 히든 조건, 보스 포섭을 통해 새로운 동료·합동기·전용장비를 얻고 다른 4인 조합을 시험한다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
+    "고유 시스템 \"4인 파티 고정\": 플레이어 선택 \"파티 슬롯은 항상 4명이며 탱·딜·힐 강제를 없애고 여러 조합이 실전에서 성립하도록 밸런스를 맞춘다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
+    "고유 시스템 \"무한 확장 AI 동료\": 플레이어 선택 \"새 지역·스토리 업데이트마다 동료를 계속 추가할 수 있고 각 동료는 전용 스토리, AI 행동, 스킬과 장비 방향을 가진다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
+    "고유 시스템 \"숙명 관계\": 플레이어 선택 \"특정 동료 조합이 함께 사건을 겪으면 전용 대사, 관계 변화, 합동기 또는 전투 규칙 변화가 열린다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
+    "고유 시스템 \"파티 기억\": 플레이어 선택 \"같은 4인으로 중요한 사건·보스·역전을 겪은 기록이 파티 정체성으로 남고 특수 대사·행동·지원 효과를 연다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
+    "고유 시스템 \"보스·히든 동료\": 플레이어 선택 \"특정 보스를 죽이는 대신 조건을 만족해 포섭하거나 숨겨진 시간·아이템·동료 조합으로 레어 동료를 발견한다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
+    "고유 시스템 \"장비가 AI를 바꿈\": 플레이어 선택 \"장비는 수치뿐 아니라 공격성, 보호 우선, 상태이상 활용 같은 AI 행동 우선순위와 스킬 운용을 바꾼다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
+    "고유 시스템 \"라이벌 AI 파티\": 플레이어 선택 \"다른 AI 4인 파티도 세계에서 성장하고 보스·보물·사건을 경쟁하거나 때로 협력한다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
+    "고유 시스템 \"조합 엔딩\": 플레이어 선택 \"특정 4인 조합으로 주요 스토리를 끝내면 그 조합만의 후일담·비밀 엔딩을 볼 수 있다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
     "고유 시스템 4인 파티 고정, 무한 확장 AI 동료, 숙명 관계, 파티 기억, 보스·히든 동료, 장비가 AI를 바꿈, 라이벌 AI 파티, 조합 엔딩 중 이번 목표와 직접 연결된 시스템을 기존 책임 코드에서 심화한다.",
-    "핵심 게임플레이 의미는 보존하면서 이번 품질축에 필요한 연결만 수정한다."
+    "주요 적/대상/상호작용이 행동·타이밍·카운터플레이 중 최소 두 축에서 구별되게 한다."
   ],
   "progressionContentWorldDirectives": [
     "초기 4인 동료 확보 → 지역 스토리와 장비 파밍 → 숙명 관계·전용 퀘스트 → 히든/보스 동료 → 고난도 조합전투 → 라이벌 파티 경쟁 → 조합별 엔딩과 계속 추가되는 새 동료.을 현재 루프의 실제 목표·보상·해금·콘텐츠 연결로 구현/심화한다.",
@@ -1633,7 +1688,32 @@
       "UNITY"
     ],
     "requestedPlatform": "WEB",
-    "executionMode": "CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT",
+    "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
+    "dataCapacityBudget": {
+      "state": "NORMAL",
+      "limits": {
+        "savePersistedDataBytes": 2097152,
+        "webDownloadBytes": 104857600,
+        "singleFileBytes": 26214400,
+        "mobileMemoryTargetBytes": 314572800,
+        "mobileMinimumFps": 30
+      },
+      "warningRatio": 0.8,
+      "measured": {
+        "sourceBytes": 132430,
+        "largestFileBytes": 53416,
+        "savePersistedDataBytes": 0,
+        "mobileMemoryBytes": 0,
+        "mobileFps": 0
+      },
+      "warning": [],
+      "exceeded": [],
+      "strategy": "CONTINUE_HIGHEST_VALUE_COHERENT_BUILD_UP",
+      "generationLimit": null,
+      "contentCountLimit": null,
+      "buildUpMustContinue": true,
+      "protectedStateDeletionForbidden": true
+    },
     "existingCompletenessReview": {
       "requiredEveryBuildUp": true,
       "mode": "CHECK_EXISTING_AND_EXPAND_OR_IMPROVE_WHICHEVER_HAS_HIGHER_PLAYER_VALUE",
@@ -1652,22 +1732,22 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+    "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
     "themeDepth": 1,
-    "selectedThemeReason": "3 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=NONE; previousEffect=REGRESSION; previousCoverage=0; uncoveredBefore=7.",
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=CORE_FUN; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 1,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 1,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
+        "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1683,16 +1763,16 @@
       "breadthCycleComplete": false,
       "missingThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
       "leastCoveredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
@@ -1701,57 +1781,51 @@
     },
     "scoredThemes": [
       {
-        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 56,
-        "gapDomains": [
-          "INVENTORY",
-          "INVENTORY_USABILITY",
-          "SYSTEM_CONNECTION"
-        ]
-      },
-      {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 37,
-        "gapDomains": [
-          "VFX"
-        ]
-      },
-      {
-        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
         "score": 34,
         "gapDomains": [
-          "SYSTEM_CONNECTION"
+          "GAME_FEEL"
         ]
       },
       {
         "theme": "MID_LATE_ENDGAME_COMPLETION",
-        "score": 16,
+        "score": 24,
         "gapDomains": []
       },
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 14,
-        "gapDomains": []
-      },
-      {
-        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 14,
+        "score": 22,
         "gapDomains": []
       },
       {
         "theme": "QUEST_STORY_PROGRESSION_CHAIN",
-        "score": 14,
+        "score": 22,
+        "gapDomains": []
+      },
+      {
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "score": 22,
+        "gapDomains": []
+      },
+      {
+        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "score": 22,
+        "gapDomains": []
+      },
+      {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": 20,
         "gapDomains": []
       }
     ],
     "coherentContentBundle": [
-      "SOURCE_AND_DISCOVERY: 아이템이 어디서 왜 나오는지 지역·몹·퀘스트·제작과 연결한다.",
-      "DISTINCT_USE_CASE: 데미지 숫자만 다른 복제 장비가 아니라 사거리·타이밍·상태·위험·보상·조합 역할이 달라야 한다.",
-      "INVENTORY_AND_EQUIP_FLOW: 획득→비교→장착·사용→교체→피드백이 같은 authoritative 상태를 사용한다.",
-      "CRAFT_OR_UPGRADE_CONNECTION: 재료·레시피·제작·강화 결과가 실제 플레이 선택을 바꾼다.",
-      "PROGRESSION_PURPOSE: 아이템이 특정 지역·적·빌드·퀘스트·해금과 연결되어 성장 경로에 의미를 가진다.",
-      "SYNERGY_AND_TRADEOFF: 장비·스킬·소모품 사이에 조합 또는 선택 비용이 있어 하나의 정답만 반복되지 않게 한다.",
-      "WORLD_PRESENTATION: 외형·이름·설명·획득 연출이 실제 기능과 세계 설정을 일치시킨다."
+      "ENEMY_ROLE_SET: 추격·견제·방어·지원·매복·지역 통제 등 서로 다른 전투 역할을 만든다.",
+      "BEHAVIOR_AND_COUNTERPLAY: 이름·HP·공격력만 다른 적이 아니라 이동·전조·공격·약점·대응 선택이 달라야 한다.",
+      "ENCOUNTER_COMPOSITION: 적 역할 조합과 지형·목표가 만나 새로운 판단을 만들게 한다.",
+      "ELITE_OR_BOSS_SIGNATURE: 보스·엘리트는 페이즈·공간 압박·전조·대응·보상 중 여러 축에서 일반 적과 구별한다.",
+      "ECOLOGICAL_WORLD_REASON: 적이 해당 지역·스토리·자원·세력 관계 안에 존재하는 이유를 연결한다.",
+      "DISTINCT_REWARD_PURPOSE: 처치 보상은 다음 장비·퀘스트·제작·지역 해금 중 실제 목적을 가진다.",
+      "VISUAL_TELEGRAPH: 실루엣·모션·VFX·음향·UI 전조가 행동 규칙과 일치해야 한다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -1811,7 +1885,8 @@
       "DISTINCT_FROM_EXISTING_CONTENT_BY_MEANING_NOT_ONLY_NAME_OR_STATS",
       "CONNECTED_TO_EXISTING_GAME_FLOW",
       "CONTINUITY_AND_CAUSALITY_PRESERVED",
-      "EXISTING_RELEVANT_INCREMENTAL_QA_PASSES"
+      "EXISTING_RELEVANT_INCREMENTAL_QA_PASSES",
+      "DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP"
     ]
   },
   "visualBuildUpDirective": {
@@ -1835,7 +1910,9 @@
       "VFX": "일반 타격·강한 타격·위험 예고·상태이상·보상 VFX의 형태와 타이밍을 분리하고 실제 impact 이벤트에 동기화한다.",
       "CAMERA": "기본 시야와 모바일 가독성을 보존하면서 핵심행동·강공격·보스/시그니처 순간에 강도가 다른 짧은 카메라 반응을 준다.",
       "UI_HUD": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 핵심 목표·자원·위험·다음 선택이 한눈에 보이게 하고 게임 세계관과 맞는 패널/아이콘/피드백 언어를 사용한다.",
-      "AUDIO_VISUAL_SYNC": "damage/VFX/animation/camera/audio가 같은 impact 순간을 공유하게 하며 소리만 먼저/늦게 나오는 불일치를 제거한다.",
+      "INVENTORY_EQUIPMENT_UI": "인벤토리와 장비 UI는 획득→비교→장착/교체→현재 장착 표시→실제 외형/행동 반영까지 같은 상태를 사용하고 모바일에서도 한 손 조작과 스크롤/닫기/선택 유지가 명확해야 한다.",
+      "AUDIO_MUSIC": "BGM·환경음·행동 피드백은 현재 지역/상태/전투 강도와 연결하고, 소리가 의도적으로 비활성화된 카테고리는 되살리지 않는다. 여러 음악 맥락이 있으면 같은 한 곡 단순 반복 대신 전환·크로스페이드·믹스 변화로 상태가 들리게 한다.",
+      "AUDIO_VISUAL_SYNC": "damage/VFX/animation/camera/audio가 같은 authoritative impact 순간을 공유하게 하며 소리만 먼저/늦게 나오는 불일치를 제거한다.",
       "ENVIRONMENTAL_MOTION": "정적인 배경을 피하고 식생·빛·파티클·기계/건축 요소 중 세계에 맞는 미세 움직임을 지속시킨다.",
       "SCENE_DENSITY": "빈 공간과 반복 오브젝트 밀도를 실제 플레이 동선 기준으로 조정하고 중요 영역에는 의미 있는 시각 정보가 있게 한다.",
       "LANDMARK_READABILITY": "플레이어가 지도 없이도 방향과 지역 역할을 기억할 수 있는 실루엣이 다른 랜드마크를 유지·강화한다."
@@ -1854,9 +1931,115 @@
       "MARKER_CONFIG_ATOM_ONLY_FORBIDDEN",
       "COLOR_ONLY_NOT_FULL_IDENTITY_UPGRADE",
       "PRIMARY_PLACEHOLDER_PRIMITIVE_CANNOT_CLOSE_VISUAL_BUILD_UP",
-      "BEFORE_AFTER_COMPARISON_REQUIRED"
+      "UI_INVENTORY_AUDIO_MOTION_PRESENCE_ALONE_CANNOT_CLOSE_BUILD_UP",
+      "BEFORE_AFTER_COMPARISON_REQUIRED",
+      "SAME_SCENE_RUNTIME_REOBSERVATION_REQUIRED"
     ],
-    "focus": "STABILITY"
+    "focus": "CORE_FUN"
+  },
+  "experienceBuildUpContract": {
+    "version": 1,
+    "status": "ACTIVE_EXECUTABLE_BUILD_UP_CONTRACT",
+    "platform": "WEB",
+    "focus": "CORE_FUN",
+    "attention": "STANDARD",
+    "tracks": [
+      {
+        "track": "MOTION_AND_ACTING",
+        "status": "PRESENT"
+      },
+      {
+        "track": "COMBAT_AND_PRIMARY_ACTION_FEEL",
+        "status": "WEAK_OR_MISSING"
+      },
+      {
+        "track": "UI_HUD_AND_MENU",
+        "status": "PRESENT"
+      },
+      {
+        "track": "INVENTORY_AND_EQUIPMENT",
+        "status": "PRESENT"
+      },
+      {
+        "track": "AUDIO_MUSIC_AND_FEEDBACK",
+        "status": "WEAK_OR_MISSING"
+      },
+      {
+        "track": "VFX_CAMERA_AND_IMPACT_SYNC",
+        "status": "WEAK_OR_MISSING"
+      },
+      {
+        "track": "WORLD_VISUAL_COHESION",
+        "status": "PRESENT"
+      },
+      {
+        "track": "MOBILE_TOUCH_AND_ACCESSIBILITY",
+        "status": "WEAK_OR_MISSING"
+      },
+      {
+        "track": "PERFORMANCE_AND_RUNTIME_STABILITY",
+        "status": "PRESENT"
+      }
+    ],
+    "priorityOrder": [
+      "MOTION_AND_ACTING",
+      "COMBAT_AND_PRIMARY_ACTION_FEEL",
+      "UI_HUD_AND_MENU",
+      "INVENTORY_AND_EQUIPMENT",
+      "AUDIO_MUSIC_AND_FEEDBACK",
+      "VFX_CAMERA_AND_IMPACT_SYNC",
+      "WORLD_VISUAL_COHESION",
+      "MOBILE_TOUCH_AND_ACCESSIBILITY",
+      "PERFORMANCE_AND_RUNTIME_STABILITY"
+    ],
+    "weakestTracks": [
+      "COMBAT_AND_PRIMARY_ACTION_FEEL",
+      "AUDIO_MUSIC_AND_FEEDBACK",
+      "VFX_CAMERA_AND_IMPACT_SYNC"
+    ],
+    "loop": [
+      "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
+      "RANK_WEAKEST_APPLICABLE_TRACKS",
+      "IMPLEMENT_EXISTING_RESPONSIBLE_SYSTEMS_DIRECTLY",
+      "REPLAY_REAL_INPUTS_AND_CAPTURE_SAME_SCENE_BEFORE_AFTER",
+      "VERIFY_PLAYER_FACING_EFFECT_AND_NO_SEMANTIC_REGRESSION",
+      "PROMOTE_VERIFIED_BASELINE_OR_REPEAT"
+    ],
+    "commonRules": [
+      "AUDIT_ALL_APPLICABLE_PLAYER_FACING_TRACKS_EVERY_GENERATION",
+      "RANK_AND_BUILD_THE_WEAKEST_THREE_BEFORE_ADDING_DECORATIVE_EXTRAS",
+      "PRESENCE_OR_MARKER_ONLY_CANNOT_PASS_QUALITY",
+      "IMPLEMENT_IN_THE_EXISTING_RESPONSIBLE_SYSTEM_NOT_A_SHADOW_WRAPPER",
+      "COMPARE_BEFORE_AFTER_UNDER_THE_SAME_SCENE_INPUT_AND_STATE",
+      "VERIFY_INPUT_TO_STATE_TO_MOTION_UI_AUDIO_VFX_CAMERA_FEEDBACK_CAUSALITY",
+      "PRESERVE_GAMEPLAY_BALANCE_SAVE_ECONOMY_AND_NETWORK_AUTHORITY",
+      "OWNER_INTENTIONALLY_DISABLED_AUDIO_CATEGORIES_MUST_REMAIN_DISABLED",
+      "REPEAT_BUILD_UP_UNTIL_NO_CRITICAL_PLAYER_FACING_TRACK_GAP_REMAINS"
+    ],
+    "platformProfile": {
+      "attention": "STANDARD",
+      "runtimeSurface": "BROWSER_TOUCH_RUNTIME",
+      "requirements": [
+        "REAL_POINTER_OR_TOUCH_INPUT",
+        "DOM_OR_CANVAS_RENDERED_DELTA",
+        "MOBILE_SAFE_AREA_AND_SCROLL_FLOW",
+        "WEB_AUDIO_STATE_TRANSITION_WHEN_AUDIO_APPLICABLE",
+        "FRAME_AND_MEMORY_BUDGET"
+      ]
+    },
+    "robloxExtra": null,
+    "webExtra": {
+      "runtimeEvidence": "REAL_BROWSER_TOUCH_AND_RENDER_DELTA",
+      "audio": "WEBAUDIO_OR_NATIVE_MEDIA_STATE_TRANSITION_WHEN_APPLICABLE",
+      "ui": "SAFE_AREA_SCROLL_MODAL_AND_TOUCH_FLOW",
+      "motion": "VISIBLE_FRAME_DELTA_NOT_ONLY_INTERNAL_STATE"
+    },
+    "unityExtra": null,
+    "ownerLocks": {
+      "gameplayBalanceSaveEconomyNetworkMeaningPreserved": true,
+      "intentionallyDisabledAudioCategoriesPreserved": true
+    },
+    "designIdentity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG."
   },
   "uxInputDirectives": [
     "핵심 행동, 위험, 현재 목표, 다음 선택을 모바일 화면에서 우선순위가 명확하게 보이게 한다.",
@@ -1866,14 +2049,14 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 현재 canonical Web 경로에 구현하고 브라우저 터치/카메라/렌더 비용을 맞춘다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "ROBLOX": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
-    "FORTNITE_UEFN": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 현재 canonical Web 경로에 구현하고 브라우저 터치/카메라/렌더 비용을 맞춘다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "UNITY_APP": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
-    "UNREAL": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UEFN": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
+    "WEB": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "ROBLOX": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
+    "UNITY": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "FORTNITE_UEFN": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
+    "UNITY_WEB": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "UNITY_APP": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "UNREAL": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
+    "UEFN": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
   "robloxNativeExecution": {
     "version": 1,
@@ -1881,129 +2064,129 @@
     "responsibleFiles": [],
     "sourceSymbolsOrStateAnchors": [
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 121,
-        "kind": "METHOD",
-        "symbol": "BuildRegions",
-        "currentBehavior": "private static IReadOnlyDictionary<string, RegionDefinition> BuildRegions()",
-        "intendedBehavior": "STABILITY primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 BuildRegions의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 442,
+        "kind": "FUNCTION",
+        "symbol": "renderBag",
+        "currentBehavior": "function renderBag(){let weapons=Object.keys(ownedWeapons).filter(k=>ownedWeapons[k]).map(k=>`<div class=\"slot\"><span><b>${k}</b><br><span class=\"small\">공격 ${WEAPONS[k].damage}${WE",
+        "intendedBehavior": "CORE_FUN primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 renderBag의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 208,
-        "kind": "METHOD",
-        "symbol": "GetAttackPower",
-        "currentBehavior": "public int GetAttackPower()",
-        "intendedBehavior": "STABILITY primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 GetAttackPower의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 325,
+        "kind": "FUNCTION",
+        "symbol": "damage",
+        "currentBehavior": "function damage(v){if(p.inv>0)return;p.hp-=v;p.inv=.65;flash=.15;combatTimer=4;sfx('playerHit');if(p.hp<=0){p.hp=0;run=false;setAggro(false);sfx('playerDeath');const cost=Math.min(",
+        "intendedBehavior": "CORE_FUN primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 damage의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "line": 131,
-        "kind": "METHOD",
-        "symbol": "DrawPlayerStatus",
-        "currentBehavior": "private void DrawPlayerStatus()",
-        "intendedBehavior": "STABILITY primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 DrawPlayerStatus의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 256,
+        "kind": "FUNCTION",
+        "symbol": "spawnCaveMonster",
+        "currentBehavior": "function spawnCaveMonster(s,px,py){mons.push({n:s.n,lv:s.lv,x:px,y:py,hp:s.hp,mhp:s.hp,a:s.atk,spd:s.spd,r:s.r,xp:s.xp,g:s.g,type:s.type,baseType:s.type,z:'cave',hit:0,dead:false,s",
+        "intendedBehavior": "CORE_FUN primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 spawnCaveMonster의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "line": 305,
-        "kind": "METHOD",
-        "symbol": "SpawnFirstEnemyInCurrentRegion",
-        "currentBehavior": "private void SpawnFirstEnemyInCurrentRegion(bool resetVisual = true, bool announceEncounter = true)",
-        "intendedBehavior": "STABILITY primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 SpawnFirstEnemyInCurrentRegion의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 279,
+        "kind": "FUNCTION",
+        "symbol": "buyOrEquipWeapon",
+        "currentBehavior": "function buyOrEquipWeapon(name){const w=WEAPONS[name];if(!ownedWeapons[name]){if(p.g<w.price){sfx('noGold');toastMsg('골드가 부족하다');return}p.g-=w.price;ownedWeapons[name]=true;sfx('bu",
+        "intendedBehavior": "CORE_FUN primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 buyOrEquipWeapon의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "line": 371,
-        "kind": "METHOD",
-        "symbol": "RewardEnemyDefeat",
-        "currentBehavior": "private void RewardEnemyDefeat(EnemyDefinition defeated)",
-        "intendedBehavior": "STABILITY primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 RewardEnemyDefeat의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 327,
+        "kind": "FUNCTION",
+        "symbol": "portals",
+        "currentBehavior": "function portals(){if(pc>0||zone==='cave')return;if(zone==='town'){for(const a of P)if(Math.hypot(p.x-a[1],p.y-a[2])<42){enter(a[0]);return}}else if(Math.hypot(p.x-135,p.y-600)<42)",
+        "intendedBehavior": "CORE_FUN primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 portals의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 278,
-        "kind": "METHOD",
-        "symbol": "Save",
-        "currentBehavior": "public void Save()",
-        "intendedBehavior": "STABILITY primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 Save의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 257,
+        "kind": "FUNCTION",
+        "symbol": "spawnHiddenEnemy",
+        "currentBehavior": "function spawnHiddenEnemy(){if(mons.some(m=>m.type==='hiddenEnemy'&&!m.dead)||hq!==1)return;mons.push({n:'기사단의 마지막 원수',lv:8,x:TOMB.enemyX,y:TOMB.enemyY,hp:300,mhp:300,a:10,spd:58,r",
+        "intendedBehavior": "CORE_FUN primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 spawnHiddenEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 268,
-        "kind": "METHOD",
-        "symbol": "SetRegion",
-        "currentBehavior": "public void SetRegion(string regionId)",
-        "intendedBehavior": "STABILITY primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 SetRegion의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 258,
+        "kind": "FUNCTION",
+        "symbol": "nearest",
+        "currentBehavior": "function nearest(){if(zone!=='town')return null;let b=null,d=80;for(const n of npcs){const v=Math.hypot(n.x-p.x,n.y-p.y);if(v<d){d=v;b=n}}return b}",
+        "intendedBehavior": "CORE_FUN primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 nearest의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "line": 314,
-        "kind": "METHOD",
-        "symbol": "CombatExchangeRoutine",
-        "currentBehavior": "private IEnumerator CombatExchangeRoutine(bool enemyDefeated, bool playerDefeated)",
-        "intendedBehavior": "STABILITY primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 CombatExchangeRoutine의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 353,
+        "kind": "FUNCTION",
+        "symbol": "weaponDraw",
+        "currentBehavior": "function weaponDraw(){const swing=p.animState==='attack'?Math.sin(p.animFrame/33*Math.PI):0;ctx.save();ctx.translate(p.x,p.y-10);ctx.scale(p.dir,1);ctx.rotate(-.8+swing*1.55);if(p.",
+        "intendedBehavior": "CORE_FUN primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 weaponDraw의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "symbol": "BuildRegions",
+        "file": "web-games/daechung-rpg/index.html",
+        "symbol": "renderBag",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "symbol": "GetAttackPower",
+        "file": "web-games/daechung-rpg/index.html",
+        "symbol": "damage",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "symbol": "DrawPlayerStatus",
+        "file": "web-games/daechung-rpg/index.html",
+        "symbol": "spawnCaveMonster",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "symbol": "SpawnFirstEnemyInCurrentRegion",
+        "file": "web-games/daechung-rpg/index.html",
+        "symbol": "buyOrEquipWeapon",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "symbol": "RewardEnemyDefeat",
+        "file": "web-games/daechung-rpg/index.html",
+        "symbol": "portals",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "symbol": "Save",
+        "file": "web-games/daechung-rpg/index.html",
+        "symbol": "spawnHiddenEnemy",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "symbol": "SetRegion",
+        "file": "web-games/daechung-rpg/index.html",
+        "symbol": "nearest",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "symbol": "CombatExchangeRoutine",
+        "file": "web-games/daechung-rpg/index.html",
+        "symbol": "weaponDraw",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
     ],
-    "expectedPlayerEffect": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
+    "expectedPlayerEffect": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.",
     "observableAcceptanceScenario": "input/touch -> local handler -> RemoteEvent/RemoteFunction when required -> server validation -> authoritative state change -> client feedback",
     "sourceInspectionChecklist": [
       "SERVER_AUTHORITY",
@@ -2036,107 +2219,115 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-      "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-      "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-      "unity-games/daechung-rpg/Assets/Editor/AndroidTestBuild.cs"
+      "web-games/daechung-rpg/index.html",
+      "web-games/daechung-rpg/patch-v15.js",
+      "web-games/daechung-rpg/unity-web-gameplay-validation.json",
+      "web-games/daechung-rpg/patch-v16.js",
+      "web-games/daechung-rpg/patch-core18.js",
+      "web-games/daechung-rpg/TemplateData/style.css",
+      "web-games/daechung-rpg/patch-v17.js",
+      "web-games/daechung-rpg/TemplateData/profiler.js",
+      "web-games/daechung-rpg/patch-v18.js",
+      "web-games/daechung-rpg/unity-web-build.json",
+      "web-games/daechung-rpg/TemplateData/fullscreen-button.png",
+      "web-games/daechung-rpg/TemplateData/MemoryProfiler.png"
     ],
     "sourceAnchors": [
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 121,
-        "kind": "METHOD",
-        "symbol": "BuildRegions",
-        "context": "private static IReadOnlyDictionary<string, RegionDefinition> BuildRegions()",
-        "score": 96,
-        "currentBehavior": "private static IReadOnlyDictionary<string, RegionDefinition> BuildRegions()",
-        "intendedBehavior": "STABILITY primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 BuildRegions의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs::BuildRegions이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 442,
+        "kind": "FUNCTION",
+        "symbol": "renderBag",
+        "context": "function renderBag(){let weapons=Object.keys(ownedWeapons).filter(k=>ownedWeapons[k]).map(k=>`<div class=\"slot\"><span><b>${k}</b><br><span class=\"small\">공격 ${WEAPONS[k].damage}${WE",
+        "score": 146,
+        "currentBehavior": "function renderBag(){let weapons=Object.keys(ownedWeapons).filter(k=>ownedWeapons[k]).map(k=>`<div class=\"slot\"><span><b>${k}</b><br><span class=\"small\">공격 ${WEAPONS[k].damage}${WE",
+        "intendedBehavior": "CORE_FUN primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 renderBag의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/daechung-rpg/index.html::renderBag이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 208,
-        "kind": "METHOD",
-        "symbol": "GetAttackPower",
-        "context": "public int GetAttackPower()",
-        "score": 96,
-        "currentBehavior": "public int GetAttackPower()",
-        "intendedBehavior": "STABILITY primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 GetAttackPower의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs::GetAttackPower이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 325,
+        "kind": "FUNCTION",
+        "symbol": "damage",
+        "context": "function damage(v){if(p.inv>0)return;p.hp-=v;p.inv=.65;flash=.15;combatTimer=4;sfx('playerHit');if(p.hp<=0){p.hp=0;run=false;setAggro(false);sfx('playerDeath');const cost=Math.min(",
+        "score": 130,
+        "currentBehavior": "function damage(v){if(p.inv>0)return;p.hp-=v;p.inv=.65;flash=.15;combatTimer=4;sfx('playerHit');if(p.hp<=0){p.hp=0;run=false;setAggro(false);sfx('playerDeath');const cost=Math.min(",
+        "intendedBehavior": "CORE_FUN primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 damage의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/daechung-rpg/index.html::damage이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "line": 131,
-        "kind": "METHOD",
-        "symbol": "DrawPlayerStatus",
-        "context": "private void DrawPlayerStatus()",
-        "score": 88,
-        "currentBehavior": "private void DrawPlayerStatus()",
-        "intendedBehavior": "STABILITY primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 DrawPlayerStatus의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs::DrawPlayerStatus이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 256,
+        "kind": "FUNCTION",
+        "symbol": "spawnCaveMonster",
+        "context": "function spawnCaveMonster(s,px,py){mons.push({n:s.n,lv:s.lv,x:px,y:py,hp:s.hp,mhp:s.hp,a:s.atk,spd:s.spd,r:s.r,xp:s.xp,g:s.g,type:s.type,baseType:s.type,z:'cave',hit:0,dead:false,s",
+        "score": 114,
+        "currentBehavior": "function spawnCaveMonster(s,px,py){mons.push({n:s.n,lv:s.lv,x:px,y:py,hp:s.hp,mhp:s.hp,a:s.atk,spd:s.spd,r:s.r,xp:s.xp,g:s.g,type:s.type,baseType:s.type,z:'cave',hit:0,dead:false,s",
+        "intendedBehavior": "CORE_FUN primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 spawnCaveMonster의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/daechung-rpg/index.html::spawnCaveMonster이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "line": 305,
-        "kind": "METHOD",
-        "symbol": "SpawnFirstEnemyInCurrentRegion",
-        "context": "private void SpawnFirstEnemyInCurrentRegion(bool resetVisual = true, bool announceEncounter = true)",
-        "score": 88,
-        "currentBehavior": "private void SpawnFirstEnemyInCurrentRegion(bool resetVisual = true, bool announceEncounter = true)",
-        "intendedBehavior": "STABILITY primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 SpawnFirstEnemyInCurrentRegion의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs::SpawnFirstEnemyInCurrentRegion이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 279,
+        "kind": "FUNCTION",
+        "symbol": "buyOrEquipWeapon",
+        "context": "function buyOrEquipWeapon(name){const w=WEAPONS[name];if(!ownedWeapons[name]){if(p.g<w.price){sfx('noGold');toastMsg('골드가 부족하다');return}p.g-=w.price;ownedWeapons[name]=true;sfx('bu",
+        "score": 114,
+        "currentBehavior": "function buyOrEquipWeapon(name){const w=WEAPONS[name];if(!ownedWeapons[name]){if(p.g<w.price){sfx('noGold');toastMsg('골드가 부족하다');return}p.g-=w.price;ownedWeapons[name]=true;sfx('bu",
+        "intendedBehavior": "CORE_FUN primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 buyOrEquipWeapon의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/daechung-rpg/index.html::buyOrEquipWeapon이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "line": 371,
-        "kind": "METHOD",
-        "symbol": "RewardEnemyDefeat",
-        "context": "private void RewardEnemyDefeat(EnemyDefinition defeated)",
-        "score": 80,
-        "currentBehavior": "private void RewardEnemyDefeat(EnemyDefinition defeated)",
-        "intendedBehavior": "STABILITY primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 RewardEnemyDefeat의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs::RewardEnemyDefeat이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 327,
+        "kind": "FUNCTION",
+        "symbol": "portals",
+        "context": "function portals(){if(pc>0||zone==='cave')return;if(zone==='town'){for(const a of P)if(Math.hypot(p.x-a[1],p.y-a[2])<42){enter(a[0]);return}}else if(Math.hypot(p.x-135,p.y-600)<42)",
+        "score": 114,
+        "currentBehavior": "function portals(){if(pc>0||zone==='cave')return;if(zone==='town'){for(const a of P)if(Math.hypot(p.x-a[1],p.y-a[2])<42){enter(a[0]);return}}else if(Math.hypot(p.x-135,p.y-600)<42)",
+        "intendedBehavior": "CORE_FUN primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 portals의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/daechung-rpg/index.html::portals이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 278,
-        "kind": "METHOD",
-        "symbol": "Save",
-        "context": "public void Save()",
-        "score": 72,
-        "currentBehavior": "public void Save()",
-        "intendedBehavior": "STABILITY primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 Save의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs::Save이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 257,
+        "kind": "FUNCTION",
+        "symbol": "spawnHiddenEnemy",
+        "context": "function spawnHiddenEnemy(){if(mons.some(m=>m.type==='hiddenEnemy'&&!m.dead)||hq!==1)return;mons.push({n:'기사단의 마지막 원수',lv:8,x:TOMB.enemyX,y:TOMB.enemyY,hp:300,mhp:300,a:10,spd:58,r",
+        "score": 106,
+        "currentBehavior": "function spawnHiddenEnemy(){if(mons.some(m=>m.type==='hiddenEnemy'&&!m.dead)||hq!==1)return;mons.push({n:'기사단의 마지막 원수',lv:8,x:TOMB.enemyX,y:TOMB.enemyY,hp:300,mhp:300,a:10,spd:58,r",
+        "intendedBehavior": "CORE_FUN primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 spawnHiddenEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/daechung-rpg/index.html::spawnHiddenEnemy이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "line": 268,
-        "kind": "METHOD",
-        "symbol": "SetRegion",
-        "context": "public void SetRegion(string regionId)",
-        "score": 64,
-        "currentBehavior": "public void SetRegion(string regionId)",
-        "intendedBehavior": "STABILITY primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 SetRegion의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs::SetRegion이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 258,
+        "kind": "FUNCTION",
+        "symbol": "nearest",
+        "context": "function nearest(){if(zone!=='town')return null;let b=null,d=80;for(const n of npcs){const v=Math.hypot(n.x-p.x,n.y-p.y);if(v<d){d=v;b=n}}return b}",
+        "score": 106,
+        "currentBehavior": "function nearest(){if(zone!=='town')return null;let b=null,d=80;for(const n of npcs){const v=Math.hypot(n.x-p.x,n.y-p.y);if(v<d){d=v;b=n}}return b}",
+        "intendedBehavior": "CORE_FUN primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 nearest의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/daechung-rpg/index.html::nearest이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "line": 314,
-        "kind": "METHOD",
-        "symbol": "CombatExchangeRoutine",
-        "context": "private IEnumerator CombatExchangeRoutine(bool enemyDefeated, bool playerDefeated)",
-        "score": 64,
-        "currentBehavior": "private IEnumerator CombatExchangeRoutine(bool enemyDefeated, bool playerDefeated)",
-        "intendedBehavior": "STABILITY primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 CombatExchangeRoutine의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs::CombatExchangeRoutine이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "web-games/daechung-rpg/index.html",
+        "line": 353,
+        "kind": "FUNCTION",
+        "symbol": "weaponDraw",
+        "context": "function weaponDraw(){const swing=p.animState==='attack'?Math.sin(p.animFrame/33*Math.PI):0;ctx.save();ctx.translate(p.x,p.y-10);ctx.scale(p.dir,1);ctx.rotate(-.8+swing*1.55);if(p.",
+        "score": 106,
+        "currentBehavior": "function weaponDraw(){const swing=p.animState==='attack'?Math.sin(p.animFrame/33*Math.PI):0;ctx.save();ctx.translate(p.x,p.y-10);ctx.scale(p.dir,1);ctx.rotate(-.8+swing*1.55);if(p.",
+        "intendedBehavior": "CORE_FUN primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 weaponDraw의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/daechung-rpg/index.html::weaponDraw이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/daechung-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "selectionRule": "DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST",
@@ -2144,18 +2335,18 @@
     "currentAndIntendedBehaviorRequiredPerPrimaryAnchor": true
   },
   "effectivenessMeasurement": {
-    "expectedPlayerEffect": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
+    "expectedPlayerEffect": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "ROBLOX_RUNTIME_ACCEPTANCE_PENDING",
-      "runtimeObserved": true
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "0b49c67d3b2351207d4cc07738409b2ac9fb0e2b745a409802b093eaa1699182",
-      "runtimeObserved": true,
+      "sourceTreeFingerprint": "e3dd79f7bbc16ad2cfa3acb27354ebd2f1ee223f396463a4be6c69ebf4f0a1c7",
+      "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
-      "failureSignature": "ROBLOX_RUNTIME_ACCEPTANCE_PENDING"
+      "failureStage": null,
+      "failureSignature": null
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2166,8 +2357,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "verified failure/regression evidence has higher player value than unrelated build-up"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial CORE_FUN build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2181,13 +2372,17 @@
     "EXISTING_APPLICABLE_GAP_CANNOT_BE_SILENTLY_SKIPPED",
     "FIRST_10_MINUTES_AND_SESSION_FLOW_REVIEWED",
     "MAP_INVENTORY_UI_CONVENIENCE_AND_SYSTEM_CONNECTION_REVIEWED_WHEN_APPLICABLE",
+    "MOTION_UI_INVENTORY_AUDIO_VFX_CAMERA_WORLD_MOBILE_PERFORMANCE_TRACKS_REVIEWED",
+    "PRESENCE_ONLY_OR_MARKER_ONLY_CANNOT_CLOSE_PLAYER_FACING_QUALITY",
+    "SAME_SCENE_BEFORE_AFTER_RUNTIME_REOBSERVATION_REQUIRED_FOR_EXPERIENCE_BUILD_UP",
+    "ROBLOX_EXPERIENCE_BUILD_UP_USES_EXTRA_NATIVE_STUDIO_ATTENTION",
     "AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP",
     "CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE",
     "EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP",
     "WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT"
   ],
   "nextEscalationCandidates": [
-    "DEEPEN_CORE_FUN_DECISION_DENSITY",
+    "CONNECT_CORE_FUN_TO_PROGRESSION_AND_CONTENT_VARIETY",
     "RAISE_VISUAL_ACTING_MOTION_AND_ENVIRONMENT_COHERENCE",
     "CLOSE_NEXT_HIGHEST_VALUE_GAP_FROM_RUNTIME_OR_PLAYTEST",
     "OPTIMIZE_MOBILE_FRAME_INPUT_RENDER_OR_STATE_BOTTLENECK_WHEN_VERIFIED"
@@ -2207,7 +2402,10 @@
   "coverage": {
     "allDomainsConsidered": true,
     "domainCount": 74,
-    "visualDomainCount": 17,
+    "visualDomainCount": 19,
+    "experienceTrackCount": 9,
+    "experienceBuildUpPlatform": "WEB",
+    "robloxExtraExperienceAttention": false,
     "allowedStates": [
       "PASS",
       "GAP",
@@ -2248,10 +2446,8 @@
       "RUNTIME_STABILITY"
     ],
     "holisticGaps": [
-      "INVENTORY",
-      "INVENTORY_USABILITY",
-      "SYSTEM_CONNECTION",
-      "SAVE_COMPLETENESS"
+      "SETTINGS_ACCESSIBILITY",
+      "MENU_FLOW"
     ],
     "notApplicable": [
       "CRAFTING",
@@ -2259,5 +2455,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-09-28T01:06:21.255Z"
+  "generatedAt": "2026-10-02T18:06:43.191Z"
 }
