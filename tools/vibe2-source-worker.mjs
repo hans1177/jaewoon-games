@@ -1548,6 +1548,11 @@ export function buildGameContextCapsule({order={},exploration=null,responsibleFi
     ...(editContract?.patchRecipe?.verifiedMemoryIds||[]),
     ...(order?.unifiedLearning?.playbookReuse||[]).map(row=>clean(row?.id))
   ]).filter(Boolean).slice(0,8);
+  const rawIntentGoal=String(directive?.thisLoopPrimaryGoal||selected?.goal||order?.goal||'');
+  const intentGoal=rawIntentGoal
+    .split(VERIFIED_LEARNING_MOTOR_BEGIN)[0]
+    .split(VERIFIED_EXTERNAL_LEARNING_BEGIN)[0]
+    .trim();
   return Object.freeze({
     version:1,gameId,target,taskId:clean(order?.taskId||selected?.id)||null,
     responsibility:Object.freeze({
@@ -1562,7 +1567,7 @@ export function buildGameContextCapsule({order={},exploration=null,responsibleFi
       preserveProgressionEconomy:true,preserveNetworkAuthority:true,wrapperShadowOverrideForbidden:true
     }),
     intent:Object.freeze({
-      primaryGoal:boundedPromptText(clean(directive?.thisLoopPrimaryGoal||selected?.goal||order?.goal),700),
+      primaryGoal:boundedPromptText(clean(intentGoal),700),
       expectedPlayerEffect:boundedPromptText(clean(directive?.effectivenessMeasurement?.expectedPlayerEffect),400)
     }),
     style:Object.freeze({
