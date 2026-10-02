@@ -54,6 +54,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ inputs.game_id }}
           PUBLISH_STAGE: ${{ inputs.publish_stage || 'validation' }}
+          CURRENT_CONTROL_SHA: ${{ github.sha }}
         shell: bash
         run: |
           set -euo pipefail
@@ -63,14 +64,16 @@ jobs:
               const j=JSON.parse(s);
               const states=new Set(['queued','pending','in_progress','requested']);
               const title='Roblox publish · '+String(process.env.GAME_ID||'')+' · '+String(process.env.PUBLISH_STAGE||'validation');
+              const controlSha=String(process.env.CURRENT_CONTROL_SHA||'').trim();
               const ids=(j.workflow_runs||[])
-                .filter(r=>states.has(String(r.status||'').toLowerCase())&&String(r.display_title||'')===title)
+                .filter(r=>states.has(String(r.status||'').toLowerCase())&&String(r.display_title||'')===title&&String(r.head_sha||'')===controlSha)
                 .map(r=>Number(r.id))
                 .filter(Number.isFinite)
                 .sort((a,b)=>a-b);
               process.stdout.write(ids.length?String(ids[0]):'');
             });
           ")"
+          echo "ROBLOX_PRIVATE_RUNTIME_DEDUPE_CONTROL_SHA=$CURRENT_CONTROL_SHA"
           echo "ROBLOX_PRIVATE_RUNTIME_DEDUPE_WINNER=${winner:-NONE}"
           echo "ROBLOX_PRIVATE_RUNTIME_DEDUPE_CURRENT=$GITHUB_RUN_ID"
           if [ -n "$winner" ] && [ "$winner" != "$GITHUB_RUN_ID" ]; then

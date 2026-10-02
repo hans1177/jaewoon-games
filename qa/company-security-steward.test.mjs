@@ -443,3 +443,14 @@ test('specialized verification security allows only final fan-in to mint canonic
   assert.equal(ingressEvidence.uefnPositiveMustRemainBlockedWithoutAuthoritativeExecutorEvidenceContract,true);
   assert.ok(ingressEvidence.requiredEvidence.includes('TARGET_ENGINE_QA_REFERENCE_WHEN_NATIVE'));
 });
+
+
+test('security workflow keeps patch scanning always-on but runs full contract QA only for security-authority changes',()=>{
+  assert.match(securityWorkflow,/Resolve impact-scoped security contract work/);
+  assert.match(securityWorkflow,/SECURITY_PATCH_SCAN_ALWAYS=YES/);
+  assert.match(securityWorkflow,/contract_changed=NO/);
+  assert.match(securityWorkflow,/if: steps\.scope\.outputs\.contract_changed == 'YES'/);
+  assert.match(securityWorkflow,/Verify immune-system contracts only when security authority changed/);
+  assert.match(securityWorkflow,/Scan changed attack surface/);
+  assert.doesNotMatch(securityWorkflow,/name: Verify immune-system contracts\n\s+run:/);
+});

@@ -288,6 +288,9 @@ test('validation and final publish dedupe same-game stage without workflow-level
   assert.doesNotMatch(workflow.slice(0,jobsAt),/\nconcurrency:/);
   assert.match(workflow,/release-dedupe:/);
   assert.match(workflow,/PUBLISH_STAGE: \$\{\{ inputs\.publish_stage \|\| 'validation' \}\}/);
+  assert.match(workflow,/CURRENT_CONTROL_SHA: \$\{\{ github\.sha \}\}/);
+  assert.match(workflow,/String\(r\.head_sha\|\|''\)===controlSha/);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_DEDUPE_CONTROL_SHA=/);
   assert.match(workflow,/\['validation','final'\]\.includes\(publishStage\)/);
   assert.match(workflow,/const title='Roblox publish · '/);
 });

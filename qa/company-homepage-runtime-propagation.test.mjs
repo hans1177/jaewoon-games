@@ -80,6 +80,40 @@ test('homepage Roblox link prefers the dedicated canonical publication target ov
   assert.match(snap.centralPolicyFingerprint,/^[a-f0-9]{64}$/);
 });
 
+test('homepage preserves a verified dedicated private Roblox deployment while the latest source revalidates',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const snap=buildHomepagePlatformExposure({
+    policy,
+    catalog:{games:[{id:'cozy-island',name:'포근섬'}]},
+    queue:{items:[{
+      gameId:'cozy-island',
+      gameName:'포근섬',
+      robloxProjectPath:'roblox-games/cozy-island',
+      robloxSourceCommit:'a'.repeat(40),
+      robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),
+      robloxRuntimePassed:false,
+      robloxInternalReleaseReady:false,
+      robloxPublicationTarget:{
+        universeId:'10767445741',
+        placeId:'116850096561713',
+        verified:true,
+        dedicated:true,
+        shared:false,
+        internalOnly:true,
+        bootstrapState:'PUBLISHED_PRIVATE'
+      }
+    }]}
+  });
+  const roblox=snap.games[0].platforms.find(row=>row.platform==='ROBLOX');
+  assert.equal(roblox.placeId,'116850096561713');
+  assert.equal(roblox.internalUrl,'https://www.roblox.com/games/116850096561713');
+  assert.equal(roblox.internalReleaseReady,false);
+  assert.equal(roblox.releaseReadiness.homepageReady,false);
+  assert.equal(roblox.historicalInternalRelease,true);
+  assert.equal(roblox.internalReleaseState,'DEPLOYED_REVALIDATING');
+});
+
+
 test('homepage suppresses superseded shared Roblox targets until a dedicated current target exists',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const snap=buildHomepagePlatformExposure({

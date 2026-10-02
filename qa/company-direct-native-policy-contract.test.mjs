@@ -153,6 +153,16 @@ test('architecture and runtime execute Unity Web readiness before new upper-plat
   assert.doesNotMatch(runtime,/company-development-web-bootstrap\.mjs/);
 });
 
+test('Roblox upper-platform dispatch dedupes only active runs from the current main control revision',()=>{
+  assert.match(runtime,/CURRENT_CONTROL_SHA: \$\{\{ github\.sha \}\}/);
+  assert.match(runtime,/const activeIds=\(file,prefix,exactHead=''\)=>/);
+  assert.match(runtime,/if\(exactHead&&String\(run\.head_sha\|\|''\)!==exactHead\)continue/);
+  assert.match(runtime,/const activeRoblox=activeIds\('\/tmp\/active-roblox-native-runs\.json','Roblox runtime · ',currentControlSha\)/);
+  assert.match(runtime,/ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN=/);
+  assert.match(runtime,/ROBLOX_NATIVE_DISPATCH_CURRENT_MAIN_REQUIRED=/);
+});
+
+
 test('active scheduling cannot silently re-enable UEFN or weaken native evidence',()=>{
   assert.deepEqual(roadmap.platformPriorityInvariant.priorityTiers,[['UNITY','ROBLOX']]);
   assert.deepEqual(roadmap.platformPriorityInvariant.schedulingOrder,['UNITY','ROBLOX']);

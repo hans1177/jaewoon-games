@@ -4,7 +4,6 @@ on:
   workflow_run:
     workflows:
       - Company Status Sync
-      - Company DEVELOPMENT_CONFIRMED Runtime
     types: [completed]
   push:
     branches: [main]

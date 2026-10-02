@@ -80,6 +80,7 @@ const platformReleaseLabel=p=>{
   if(p?.internalReleaseReady===true&&p?.releaseReadiness?.homepageReady===true){
     return p.releaseReadiness.experience==='GAMEPLAY'?'출시 · 본게임 가능':'출시 · 로비 체험';
   }
+  if(p?.historicalInternalRelease===true&&Boolean(p?.internalUrl))return'내부 배포 · 최신 검증중';
   return '개발 중';
 };
 const platformExposureMeta=id=>{const row=exposureOf(id);if(!row)return'';return (row.platforms||[]).filter(p=>['ROBLOX','UNITY'].includes(normalizePlatform(p.platform))).map(p=>`${normalizePlatform(p.platform)} ${platformReleaseLabel(p)}`).join(' / ');};
@@ -260,7 +261,7 @@ function internalReleaseLinks(game){
   const state=id=>(exposure?.platforms||[]).find(p=>normalizePlatform(p?.platform)===id)||{};
   const roblox=state('ROBLOX'),unity=state('UNITY');
   return {
-    roblox:roblox.internalReleaseReady===true&&roblox.releaseReadiness?.homepageReady===true?links.roblox:'',
+    roblox:(roblox.internalReleaseReady===true&&roblox.releaseReadiness?.homepageReady===true)||roblox.historicalInternalRelease===true?links.roblox:'',
     unity:unity.internalReleaseReady===true&&unity.releaseReadiness?.homepageReady===true?links.unity:'',
     unityWeb:platformExposure?.unityWebEnabled===true?links.unityWeb:'',
     web:links.web
@@ -272,7 +273,12 @@ function hasRunnableHomepageTarget(game){
 }
 function hasInternalRelease(game){
   const exposure=exposureOf(gameIdOf(game));
-  return (exposure?.platforms||[]).some(p=>['ROBLOX','UNITY'].includes(normalizePlatform(p?.platform))&&p?.internalReleaseReady===true&&p?.releaseReadiness?.homepageReady===true&&Boolean(p.internalUrl||p.publicUrl));
+  return (exposure?.platforms||[]).some(p=>{
+    const platform=normalizePlatform(p?.platform);
+    if(!['ROBLOX','UNITY'].includes(platform)||!Boolean(p.internalUrl||p.publicUrl))return false;
+    if(p?.internalReleaseReady===true&&p?.releaseReadiness?.homepageReady===true)return true;
+    return platform==='ROBLOX'&&p?.historicalInternalRelease===true;
+  });
 }
 function internalReleaseRows(catalog,status){
   return (Array.isArray(catalog?.games)?catalog.games:[])

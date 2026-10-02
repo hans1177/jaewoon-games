@@ -752,6 +752,9 @@ test('F9 scan dedupe cancels only older queued runs and preserves a newer main s
  assert.match(dedupe,/Number\(r\.id\)>=Number\(process\.env\.CURRENT_RUN_ID\|\|0\)/);
  assert.match(dedupe,/String\(r\.head_sha\|\|''\)===String\(process\.env\.CURRENT_SHA\|\|''\)/);
  assert.match(dedupe,/states\.has\(String\(r\.status\|\|''\)\.toLowerCase\(\)\)/);
+ assert.match(workflow,/CURRENT_CONTROL_SHA: \$\{\{ github\.sha \}\}/);
+ assert.match(workflow,/String\(r\.head_sha\|\|''\)===controlSha/);
+ assert.match(workflow,/ROBLOX_F9_CONTROL_SHA=/);
 });
 
 test('F9 Vibe fan-in shell parses so verified publication never strands the next evolution',()=>{
@@ -787,7 +790,7 @@ test('Roblox F0-F9 orchestration dispatches exact games without cross-game fan-i
     post.indexOf('Dispatch exact Studio MCP follow-up after new runtime foundation evidence')
   );
   assert.match(f9Dispatch,/company-development-roblox-final-review-revalidation\.yml[\s\S]*?-f game_id="\$id"/);
-  assert.match(f9Dispatch,/ROBLOX_F9_EXACT_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.match(f9Dispatch,/ROBLOX_F9_EXACT_DISPATCH=DEDUPED_CURRENT_MAIN:/);
   assert.doesNotMatch(f9Dispatch,/--ref main\s*$/m);
 
   const foundationPersist=post.slice(

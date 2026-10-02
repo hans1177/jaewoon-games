@@ -150,6 +150,9 @@ test('post-runtime QA deduplicates heavy scans while Studio planning avoids the 
   assert.ok(jobsAt>0);
   assert.match(workflow,/run-name: Roblox runtime foundation QA · \$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
   assert.match(workflow.slice(0,jobsAt),/\nconcurrency:\n\s+group: roblox-runtime-foundation-\$\{\{ github\.run_id \}\}\n\s+cancel-in-progress: false/);
+  assert.match(workflow,/CURRENT_CONTROL_SHA: \$\{\{ github\.sha \}\}/);
+  assert.match(workflow,/String\(r\.head_sha\|\|''\)===controlSha/);
+  assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_CONTROL_SHA=/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_ACTIVE_WINNER=/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_EXACT_DEDUPED=/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_SCAN_DEDUPED_NEWER=/);
@@ -259,6 +262,18 @@ test('Open Cloud runtime stays automatic while Studio requires explicit opt-in',
   assert.match(foundation,/SERVER_DIAGNOSTIC_ENABLED: true/);
   assert.match(studioPlan,/if: \$\{\{ inputs\.run_studio == true && inputs\.retry_open_cloud_only != true \}\}/);
   assert.doesNotMatch(studioPlan,/github\.event_name == 'push'/);
+});
+
+
+test('F9 dispatch pre-scan ignores active runs from stale main revisions',()=>{
+  const start=workflow.indexOf('Dispatch exact F9 review for every runtime-accepted candidate');
+  const end=workflow.indexOf('Dispatch exact Studio MCP follow-up after new runtime foundation evidence',start);
+  const block=workflow.slice(start,end);
+  assert.ok(start>=0&&end>start);
+  assert.match(block,/const currentSha=String\(process\.env\.GITHUB_SHA\|\|''\)\.trim\(\)/);
+  assert.match(block,/String\(run\.head_sha\|\|''\)!==currentSha/);
+  assert.match(block,/ROBLOX_F9_EXACT_DISPATCH=DEDUPED_CURRENT_MAIN:/);
+  assert.match(block,/ROBLOX_F9_EXACT_DISPATCHED=/);
 });
 
 
@@ -372,7 +387,7 @@ test('runtime QA dispatches every F9-ready game independently while deduping exa
   const block=workflow.slice(start,end);
   assert.ok(start>0&&end>start);
   assert.match(block,/company-development-roblox-final-review-revalidation\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
-  assert.match(block,/ROBLOX_F9_EXACT_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.match(block,/ROBLOX_F9_EXACT_DISPATCH=DEDUPED_CURRENT_MAIN:/);
   assert.match(block,/ROBLOX_F9_EXACT_DISPATCHED=\$id/);
   assert.match(block,/while read -r id/);
   assert.doesNotMatch(block,/ROBLOX_F9_SCAN_DISPATCHED=/);

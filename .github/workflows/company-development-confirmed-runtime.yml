@@ -217,6 +217,7 @@ jobs:
         id: plan
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          CURRENT_CONTROL_SHA: ${{ github.sha }}
         shell: bash
         run: |
           set -euo pipefail
@@ -236,12 +237,13 @@ jobs:
             (platformDevelopmentEligible(item,'ROBLOX')||platformDevelopmentEligible(item,'UNITY'))
           );
           const activeStates=new Set(['queued','pending','in_progress','requested']);
-          const activeIds=(file,prefix)=>{
+          const activeIds=(file,prefix,exactHead='')=>{
             let payload={workflow_runs:[]};
             try{payload=JSON.parse(fs.readFileSync(file,'utf8'));}catch{}
             const ids=new Set();
             for(const run of payload.workflow_runs||[]){
               if(!activeStates.has(String(run.status||'').toLowerCase()))continue;
+              if(exactHead&&String(run.head_sha||'')!==exactHead)continue;
               const title=String(run.display_title||'');
               if(!title.startsWith(prefix))continue;
               const id=title.slice(prefix.length).trim();
@@ -249,7 +251,9 @@ jobs:
             }
             return ids;
           };
-          const activeRoblox=activeIds('/tmp/active-roblox-native-runs.json','Roblox runtime · ');
+          const currentControlSha=String(process.env.CURRENT_CONTROL_SHA||'').trim();
+          if(!/^[a-f0-9]{40}$/i.test(currentControlSha))throw new Error('ROBLOX_CURRENT_CONTROL_SHA_REQUIRED');
+          const activeRoblox=activeIds('/tmp/active-roblox-native-runs.json','Roblox runtime · ',currentControlSha);
           const activeUnity=activeIds('/tmp/active-unity-native-runs.json','Unity runtime · ');
           const activeUnityWebFloor=activeIds('/tmp/active-unity-web-floor-runs.json','Unity Web Floor ');
           const activeUnityWebBootstrap=activeIds('/tmp/active-unity-web-bootstrap-runs.json','Unity Web Floor Bootstrap ');
@@ -258,8 +262,11 @@ jobs:
             const decision=classifyUpperPlatformAdmission(item,{repoRoot:process.cwd(),grandfatherGameIds});
             if(decision.state==='UPPER_PLATFORM'){
               nativeIds.push(item.gameId);
-              if(activeRoblox.has(item.gameId))console.log('ROBLOX_NATIVE_DISPATCH_DEDUPED_ACTIVE='+item.gameId);
-              else robloxIds.push(item.gameId);
+              if(activeRoblox.has(item.gameId))console.log('ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN='+item.gameId+':'+currentControlSha);
+              else {
+                robloxIds.push(item.gameId);
+                console.log('ROBLOX_NATIVE_DISPATCH_CURRENT_MAIN_REQUIRED='+item.gameId+':'+currentControlSha);
+              }
               if(activeUnity.has(item.gameId))console.log('UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE='+item.gameId);
               else unityIds.push(item.gameId);
               if(decision.grandfathered===true)grandfatheredIds.push(item.gameId);

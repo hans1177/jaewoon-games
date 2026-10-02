@@ -506,9 +506,12 @@ test('Unity Web homepage links require a deployable manifest or verified Unity i
   assert.equal(directiveDisplay.actualGameFileSourceMetadataPreserved,true);
   assert.equal(directiveDisplay.canonicalNormalizationRequiredBeforeHomepagePublication,true);
 });
-test('platform availability requires explicit internal release evidence from company-runtime',()=>{
+test('platform availability uses current release evidence or verified historical Roblox internal deployment from company-runtime',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.match(runtime,/roblox\.internalReleaseReady===true&&roblox\.releaseReadiness\?\.homepageReady===true/);
+  assert.match(runtime,/roblox\.historicalInternalRelease===true/);
+  assert.match(runtime,/historicalInternalRelease===true&&Boolean\(p\?\.internalUrl\)/);
+  assert.match(runtime,/내부 배포 · 최신 검증중/);
   assert.match(runtime,/unity\.internalReleaseReady===true&&unity\.releaseReadiness\?\.homepageReady===true/);
   assert.doesNotMatch(runtime,/internalReleaseReady===true\|\|(?:roblox|unity)\.publicRelease===true/);
   assert.match(runtime,/exposureAuthority/);

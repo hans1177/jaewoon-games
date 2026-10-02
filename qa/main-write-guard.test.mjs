@@ -44,3 +44,13 @@ test('main write guard falls back to two-point diff when shallow history has no 
   assert.match(source,/\${baseRef}\.\.\.\${headRef}/);
   assert.match(source,/\['diff','--name-only',baseRef,headRef\]/);
 });
+
+
+test('main write guard skips its own unit suite when only unrelated workflow files changed',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/main-write-guard.yml',import.meta.url),'utf8');
+  assert.match(workflow,/Detect guard implementation change/);
+  assert.match(workflow,/guard_changed=NO/);
+  assert.match(workflow,/tools\/main-write-guard\\.mjs\|qa\/main-write-guard\\.test\\.mjs\|\\.github\/workflows\/main-write-guard\\.yml/);
+  assert.match(workflow,/if: steps\.scope\.outputs\.guard_changed == 'YES'/);
+  assert.match(workflow,/Reject new workflow direct writes to main/);
+});

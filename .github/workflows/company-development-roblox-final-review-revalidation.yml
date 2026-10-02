@@ -68,6 +68,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ inputs.game_id || '' }}
+          CURRENT_CONTROL_SHA: ${{ github.sha }}
         shell: bash
         run: |
           set -euo pipefail
@@ -78,8 +79,9 @@ jobs:
               const states=new Set(['queued','pending','in_progress','requested']);
               const game=String(process.env.GAME_ID||'').trim();
               const title='Roblox F9 · '+(game||'scan');
+              const controlSha=String(process.env.CURRENT_CONTROL_SHA||'').trim();
               const ids=(j.workflow_runs||[])
-                .filter(r=>states.has(String(r.status||'').toLowerCase())&&String(r.display_title||'')===title)
+                .filter(r=>states.has(String(r.status||'').toLowerCase())&&String(r.display_title||'')===title&&String(r.head_sha||'')===controlSha)
                 .map(r=>Number(r.id))
                 .filter(Number.isFinite)
                 .sort((a,b)=>a-b);
@@ -87,6 +89,7 @@ jobs:
               process.stdout.write(String(ids[ids.length-1]));
             });
           ")"
+          echo "ROBLOX_F9_CONTROL_SHA=$CURRENT_CONTROL_SHA"
           echo "ROBLOX_F9_ACTIVE_WINNER=${winner:-NONE}"
           if [ -n "$winner" ] && [ "$winner" != "$GITHUB_RUN_ID" ]; then
             echo 'run=false' >> "$GITHUB_OUTPUT"

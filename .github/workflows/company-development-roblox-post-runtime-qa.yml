@@ -150,6 +150,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ inputs.game_id || '' }}
+          CURRENT_CONTROL_SHA: ${{ github.sha }}
         shell: bash
         run: |
           set -euo pipefail
@@ -160,8 +161,9 @@ jobs:
               const states=new Set(['queued','pending','in_progress','requested']);
               const game=String(process.env.GAME_ID||'').trim();
               const title='Roblox runtime foundation QA · '+(game||'scan');
+              const controlSha=String(process.env.CURRENT_CONTROL_SHA||'').trim();
               const ids=(j.workflow_runs||[])
-                .filter(r=>states.has(String(r.status||'').toLowerCase())&&String(r.display_title||'')===title)
+                .filter(r=>states.has(String(r.status||'').toLowerCase())&&String(r.display_title||'')===title&&String(r.head_sha||'')===controlSha)
                 .map(r=>Number(r.id))
                 .filter(Number.isFinite)
                 .sort((a,b)=>a-b);
@@ -169,6 +171,7 @@ jobs:
               process.stdout.write(String(ids[ids.length-1]));
             });
           ")"
+          echo "ROBLOX_RUNTIME_FOUNDATION_QA_CONTROL_SHA=$CURRENT_CONTROL_SHA"
           echo "ROBLOX_RUNTIME_FOUNDATION_QA_ACTIVE_WINNER=${winner:-NONE}"
           if [ -n "$winner" ] && [ "$winner" != "$GITHUB_RUN_ID" ]; then
             echo 'run=false' >> "$GITHUB_OUTPUT"
@@ -1809,10 +1812,12 @@ jobs:
           const fs=require('fs');
           const payload=JSON.parse(fs.readFileSync('/tmp/roblox-f9-active-runs.json','utf8'));
           const states=new Set(['queued','pending','in_progress','requested']);
+          const currentSha=String(process.env.GITHUB_SHA||'').trim();
           const prefix='Roblox F9 · ';
           const ids=new Set();
           for(const run of payload.workflow_runs||[]){
             if(!states.has(String(run.status||'').toLowerCase()))continue;
+            if(String(run.head_sha||'')!==currentSha)continue;
             const title=String(run.display_title||'');
             if(!title.startsWith(prefix))continue;
             const id=title.slice(prefix.length).trim();
@@ -1827,7 +1832,7 @@ jobs:
             [ -n "$id" ] || continue
             if grep -Fxq "$id" /tmp/roblox-f9-active-ids; then
               deduped_count=$((deduped_count+1))
-              echo "ROBLOX_F9_EXACT_DISPATCH=DEDUPED_ACTIVE:$id"
+              echo "ROBLOX_F9_EXACT_DISPATCH=DEDUPED_CURRENT_MAIN:$id:$GITHUB_SHA"
               continue
             fi
             gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"

@@ -981,7 +981,8 @@ test('F0-passed candidates dispatch exact private validation per game without St
   assert.equal(roadmap.developmentSpeedExecution.successfulStepMustNotBeRepeatedWithoutInvalidatingChange,true);
   assert.match(workflow,/name: Route F0-passed artifacts to private runtime validation without Studio[\s\S]*?if: always\(\)/);
   assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DISPATCH=YES:/);
-  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.match(workflow,/String\(run\.head_sha\|\|''\)!==currentSha/);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DISPATCH=DEDUPED_CURRENT_MAIN:/);
   assert.match(workflow,/gh workflow run company-development-roblox-release-promotion\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id" -f publish_stage=validation/);
   assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_CANDIDATE_COUNT=/);
   assert.match(workflow,/ROBLOX_PRE_F9_VALIDATION_TARGET=PRIVATE_DEDICATED/);
@@ -1102,7 +1103,8 @@ test('pre-F9 private validation stays per-game and dedupes active exact work',()
   assert.match(persist,/group: roblox-private-runtime-dispatch-\$\{\{ inputs\.game_id \|\| github\.run_id \}\}/);
   assert.match(persist,/Route F0-passed artifacts to private runtime validation without Studio/);
   assert.match(persist,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DISPATCH=YES:/);
-  assert.match(persist,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.match(persist,/String\(run\.head_sha\|\|''\)!==currentSha/);
+  assert.match(persist,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DISPATCH=DEDUPED_CURRENT_MAIN:/);
   assert.match(persist,/publish_stage=validation/);
   assert.match(persist,/ROBLOX_STUDIO_REQUIRED_FOR_DEVELOPMENT_CONTINUATION=NO/);
 });
@@ -1113,7 +1115,7 @@ test('F0 private validation handoff has no artificial grace delay',()=>{
   assert.doesNotMatch(workflow,/batchRecoveryGraceMs/);
   assert.doesNotMatch(workflow,/ROBLOX_PRIVATE_RUNTIME_BATCH_RECOVERY_GRACE_DEFERRED=/);
   assert.match(workflow,/Route F0-passed artifacts to private runtime validation without Studio/);
-  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DISPATCH=DEDUPED_CURRENT_MAIN:/);
   assert.match(workflow,/ROBLOX_PRE_F9_VALIDATION_TARGET=PRIVATE_DEDICATED/);
 });
 
