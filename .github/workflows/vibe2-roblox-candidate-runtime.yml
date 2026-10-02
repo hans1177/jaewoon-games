@@ -109,7 +109,7 @@ jobs:
           node-version: '22'
 
       - name: Verify authenticated Studio runner
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
           if ($env:RUNNER_OS -ne 'Windows') { throw 'Roblox Studio runner must be Windows' }
@@ -120,7 +120,7 @@ jobs:
           Write-Host 'VIBE2_ROBLOX_CANDIDATE_RUNNER=roblox-studio-local'
 
       - name: Fetch candidate game source and machine manifest
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
           if ($env:CANDIDATE_REF -notmatch '^vibe2/candidate/OWNER-ROBLOX-OBBY-') { throw "invalid candidate ref: $env:CANDIDATE_REF" }
@@ -161,7 +161,7 @@ jobs:
           Write-Host "VIBE2_ROBLOX_CANDIDATE_REF=$env:CANDIDATE_REF"
 
       - name: Verify Vibe candidate in real Roblox Studio
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
           node tools/vibe2-roblox-skyline-runtime-smoke.mjs `
@@ -173,7 +173,7 @@ jobs:
 
       - name: Replay R5 candidate with physical input and require target-stage improvement
         if: contains(env.CANDIDATE_REF, 'AUTONOMOUS-BALANCE')
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
           $baseline = '.vibe2/runtime-evidence/skyline-r5-baseline.json'
@@ -197,7 +197,7 @@ jobs:
 
       - name: Cleanup Vibe2 Studio sessions
         if: always()
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
           $owned = @(Get-CimInstance Win32_Process -Filter "Name='RobloxStudioBeta.exe'" -ErrorAction SilentlyContinue | Where-Object {
