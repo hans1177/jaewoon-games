@@ -409,6 +409,11 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[]}={}){
   const nativeTextKinds=clean(target).toLowerCase()==='roblox'?ROBLOX_DIRECT_AUTHORING:clean(target).toLowerCase()==='unity'?UNITY_DIRECT_AUTHORING:[];
   const nativeTextTypes=decisions.filter(row=>needsAuthoring(row)&&(row.directAuthoring||[]).some(kind=>nativeTextKinds.includes(kind))).map(row=>row.type);
   const explicitRecipes=freezeList(task?.assetAuthoring?.recipes||task?.authoringRecipes||[]);
+  const availableExistingRecipes=unique(decisions.flatMap(row=>
+    [...(row?.reuseCandidates||[]),...(row?.externalCandidates||[])]
+      .flatMap(asset=>asset?.sourceFiles||[])
+      .filter(file=>/\.py$/i.test(clean(file)))
+  ));
   const uniqueDccTypes=unique(dccTypes);
   const uniqueNativeTextTypes=unique(nativeTextTypes);
   return freeze({
@@ -420,10 +425,12 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[]}={}){
       requiredTypes:freezeList(uniqueDccTypes),
       preferredExecutor:'BLENDER_PYTHON',
       executionRequired:uniqueDccTypes.length>0,
-      executionStatus:uniqueDccTypes.length===0?'NOT_REQUIRED':explicitRecipes.length>0?'READY_FOR_EXISTING_AUTHORING_EXECUTOR':'AUTHORING_RECIPE_REQUIRED',
+      executionStatus:uniqueDccTypes.length===0?'NOT_REQUIRED':explicitRecipes.length>0?'READY_FOR_EXISTING_AUTHORING_EXECUTOR':availableExistingRecipes.length>0?'EXISTING_AUTHORING_RECIPE_AVAILABLE':'AUTHORING_RECIPE_REQUIRED',
       requiredCapabilities:NATIVE_DCC_AUTHORING,
       explicitRecipes,
+      availableExistingRecipes:freezeList(availableExistingRecipes),
       executionRequestCount:explicitRecipes.length,
+      availableExistingRecipeCount:availableExistingRecipes.length,
       sourceRecipeRequired:true,
       editableSourceArtifactRequired:true,
       exportedNativeArtifactRequired:true,
@@ -571,7 +578,10 @@ function matchedForType(selector={},type='',manifest={},target=''){
       companyVerified:asset.companyVerified===true,
       sameGameExistingRoblox:asset.sameGameExistingRoblox===true,
       robloxAssetId:clean(asset.robloxAssetId)||null,
-      sourceHash:clean(asset.sourceHash||asset.contentHash||asset.sha256)||null,
+      sourceHash:clean(asset.sourceHash||asset.derivedSha256||asset.sourceSha256||asset.contentHash||asset.sha256)||null,
+      artifactHash:clean(asset.artifactHash||asset.derivedSha256||asset.contentHash||asset.sha256)||null,
+      sourceFiles:freezeList(unique(Array.isArray(asset.sourceFiles)?asset.sourceFiles:[])),
+      nativeArtifacts:freezeList(unique(Array.isArray(asset.nativeArtifacts)?asset.nativeArtifacts:[])),
       tags:freezeList(unique([...(Array.isArray(asset.tags)?asset.tags:[]),clean(asset.family),clean(asset.category),clean(asset.subfamily)].map(clean).filter(Boolean))),
       family:clean(asset.family||asset.category)||null,
       subfamily:clean(asset.subfamily)||null,
