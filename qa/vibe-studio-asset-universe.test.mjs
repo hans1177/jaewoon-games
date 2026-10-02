@@ -28,6 +28,8 @@ import {
   createCreatureSpeciesBlueprint,
   createPlatformAssetVariantPlan,
   createStudioTestbedPlan,
+  evaluateCompanyAssetPromotion,
+  promoteVerifiedCompanyAssetRegistry,
   summarizeVerifiedAssetUsage,
   createStyleBible,
   createAssetCustomizationPlan,
@@ -314,6 +316,32 @@ test('game visual DNA keeps mixed concept identity stable across asset selection
   assert.equal(loadout.complete,true);
   assert.equal(loadout.selections[0].assetId,'verified-wuxia');
   assert.equal(scoreStudioAssetCandidate({asset:assets[2],gameDna:{...dna,targetPlatform:'UNITY'}}).rejected,true);
+});
+
+test('company asset promotion is impossible without actual native runtime consumer evidence',()=>{
+  const asset={id:'wolf-runtime',family:'CREATURE',platform:'ROBLOX',path:'assets/wolf.glb',license:'project-original',sourceHash:'wolf-v1'};
+  const blocked=evaluateCompanyAssetPromotion({
+    asset,consumer:{gameId:'survival',platform:'ROBLOX'},
+    runtimeEvidence:{platform:'ROBLOX',sourceHash:'wolf-v1',nativeBindingPass:true,visualRuntimePass:true}
+  });
+  assert.equal(blocked.eligible,false);
+  assert.ok(blocked.blockers.includes('MOBILE_PERFORMANCE_PASS_REQUIRED'));
+  assert.equal(blocked.promotion,null);
+
+  const evidence={
+    id:'studio-run-1',platform:'ROBLOX',gameId:'survival',sourceHash:'wolf-v1',
+    nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true
+  };
+  const ready=evaluateCompanyAssetPromotion({asset,consumer:{gameId:'survival'},runtimeEvidence:evidence});
+  assert.equal(ready.eligible,true);
+  assert.equal(ready.promotion.verifiedCompanyReusable,true);
+  assert.equal(ready.promotion.productionVerified,true);
+  assert.equal(ready.promotion.runtimeVerificationState,'VERIFIED_NATIVE_RUNTIME');
+
+  const promoted=promoteVerifiedCompanyAssetRegistry({registry:{version:28,assets:[]},asset,consumer:{gameId:'survival'},runtimeEvidence:evidence});
+  assert.equal(promoted.updated,true);
+  assert.equal(promoted.registry.assets.length,1);
+  assert.equal(promoted.registry.assets[0].status,'VERIFIED_COMPANY_ASSET');
 });
 
 test('future demand creature blueprint platform optimizer testbed and usage feedback stay preparation or verified-evidence bounded',()=>{
