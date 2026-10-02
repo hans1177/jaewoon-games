@@ -490,7 +490,8 @@ test('Unity runtime has no retired validation-cycle dependency',()=>{
   assert.doesNotMatch(workflowSource,/company-development-validation-cycle\.mjs/);
   assert.doesNotMatch(workflowSource,/cycle-status\.json/);
   assert.doesNotMatch(workflowSource,/steps\.meeting\.outputs\.state/);
-  assert.match(workflowSource,/Revalidate shared worker context before Unity checkpoint/);
+  assert.doesNotMatch(workflowSource,/Revalidate shared worker context before Unity checkpoint/);
+  assert.match(workflowSource,/company-shared-context-unity-plan\.json/);
   assert.match(workflowSource,/const canonical=process\.env\.MEETING_STATE\|\|'WAITING_TARGET_PLATFORM_VALIDATION'/);
 });
 
