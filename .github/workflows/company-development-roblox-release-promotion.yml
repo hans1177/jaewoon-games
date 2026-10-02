@@ -121,7 +121,7 @@ jobs:
         working-directory: main
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
-          PUBLISH_STAGE: ${{ inputs.publish_stage || 'final' }}
+          PUBLISH_STAGE: ${{ inputs.publish_stage || 'validation' }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
@@ -270,7 +270,7 @@ jobs:
         working-directory: main
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
-          PUBLISH_STAGE: ${{ inputs.publish_stage || 'final' }}
+          PUBLISH_STAGE: ${{ inputs.publish_stage || 'validation' }}
           PUBLISH_CYCLE_ID: ${{ inputs.publish_cycle_id || '' }}
           OWNER_SECRET_UNIVERSE_ID: ${{ secrets.ROBLOX_UNIVERSE_ID }}
           OWNER_SECRET_PLACE_ID: ${{ secrets.ROBLOX_PLACE_ID }}
