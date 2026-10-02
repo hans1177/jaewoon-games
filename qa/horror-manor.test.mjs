@@ -89,7 +89,7 @@ test('personal manor spawn stays on the front-yard ground layer',()=>{
  assert.match(server,/lobbyBootstrapSpawn\.Position=Vector3\.new\(0,\.55,330\)/);
  assert.match(server,/bootstrapGround\.Position=Vector3\.new\(0,-\.15,330\)/);
  assert.match(server,/return Vector3\.new\(0,3,330\),Vector3\.new\(0,5,268\),lobbyBootstrapSpawn/);
- assert.match(server,/local maxGroundY=lobbyDestination and\(pos\.Y\+1\.5\)or math\.huge/);
+ assert.match(server,/local maxGroundY=lobbyDestination and\(pos\.Y\+1\.5\)or\(pos\.Y\+3\)/);
  assert.match(server,/local lobbyDestination=pos\.Z>=180/);
  assert.match(server,/local target=lobbyDestination and Vector3\.new\(pos\.X,pos\.Y,pos\.Z\)or groundedRootTarget\(p,pos\)/);
  assert.match(server,/local corrected=lobbyDestination and Vector3\.new\(pos\.X,pos\.Y,pos\.Z\)or groundedRootTarget\(p,pos\)/);
