@@ -162,6 +162,7 @@ test('director drains superseded runner backlog before noncritical supervision',
   assert.match(director,/supervise:\n\s+needs: \[runner-drain, game-primary-gate\]/);
   assert.match(director,/actions\/runs\/\$\{run_id\}\/cancel/);
   assert.match(director,/CONTROL_PLANE_SUPERSEDED/);
+  assert.match(director,/ROBLOX_STALE_LEGACY_OR_BATCH' \\|\\| "\\$reason" == 'CONTROL_PLANE_SUPERSEDED'/);
   assert.match(director,/CENTRAL_DEVELOPMENT_PUSH_SUPERSEDED/);
   assert.match(director,/company-development-roblox-runtime\.yml/);
   assert.match(director,/company-development-roblox-release-promotion\.yml/);
