@@ -5,6 +5,7 @@ local RS=game:GetService("ReplicatedStorage")
 local RunService=game:GetService("RunService")
 local TweenService=game:GetService("TweenService")
 local Lighting=game:GetService("Lighting")
+local UserInputService=game:GetService("UserInputService")
 local p=Players.LocalPlayer
 local C=require(RS.Shared.GameConfig)
 local Assets=require(RS.Shared.ManorAssets)
@@ -12,15 +13,18 @@ local Stories=require(RS.Shared.MonsterStories)
 local remote=RS:WaitForChild(C.RemoteName)
 local gui=Instance.new("ScreenGui");gui.Name="PersonalManorUI";gui.ResetOnSpawn=false;gui.DisplayOrder=15;gui.Enabled=false
 gui.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
-gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets;gui.Parent=p:WaitForChild("PlayerGui")
--- 다크카툰 고딕 UI 팔레트: 먹보라/와인 면 + 선명한 황동/상아 대비.
-local ink=Color3.fromRGB(14,10,20)
-local parchment=Color3.fromRGB(216,184,119)
-local ivory=Color3.fromRGB(239,219,170)
-local wood=Color3.fromRGB(42,18,27)
-local leather=Color3.fromRGB(29,12,31)
-local brass=Color3.fromRGB(179,119,45)
-local wine=Color3.fromRGB(92,16,52)
+gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
+gui:SetAttribute("ArtbookId","horror-escape-room-2026-10-02-manor-rebuild")
+gui:SetAttribute("ArtbookStyle","DARK_CARTOON_GOTHIC_HALLOWEEN")
+gui.Parent=p:WaitForChild("PlayerGui")
+-- 아트북 팔레트: #141012 / #4C1826 / #DAC291 / #97713D / #E6D6B0 / #301B15.
+local ink=Color3.fromRGB(20,16,18)
+local parchment=Color3.fromRGB(218,194,145)
+local ivory=Color3.fromRGB(230,214,176)
+local wood=Color3.fromRGB(48,27,21)
+local leather=Color3.fromRGB(35,18,31)
+local brass=Color3.fromRGB(151,113,61)
+local wine=Color3.fromRGB(76,24,38)
 local purple=Color3.fromRGB(61,28,82)
 local ember=Color3.fromRGB(211,72,22)
 local activeMenu=nil
@@ -72,11 +76,23 @@ local function ledgerRow(parent,leftText,rightText)
  local right=label(row,rightText or"",36,12,brass);right.AnchorPoint=Vector2.new(1,0);right.Position=UDim2.new(1,-9,0,3);right.Size=UDim2.new(.34,-8,0,36);right.TextXAlignment=Enum.TextXAlignment.Right
  return row
 end
+local mapDifficultyLabel={BEGINNER="입문",CHASE="추격",ADVANCED="고급"}
+local mapGlyph={SCHOOL="교",HOSPITAL="병",THEME_PARK="원"}
 local function mapPostcard(parent,map,chosen,fn)
- local x=button(parent,(chosen and"◆  "or"◇  ")..map.Name,fn,chosen and wine or Color3.fromRGB(49,24,61))
- x.Name="MapPostcard_"..tostring(map.Id);x.Size=UDim2.new(1,-12,0,66);x.TextXAlignment=Enum.TextXAlignment.Left
- x.Text="      "..x.Text
- local tag=label(x,"벽걸이 지도 · 낡은 현장 사진",18,10,brass);tag.Position=UDim2.new(0,31,1,-22);tag.Size=UDim2.new(1,-42,0,18)
+ local x=button(parent,"",fn,chosen and wine or wood)
+ x.Name="MapPostcard_"..tostring(map.Id);x.Size=UDim2.new(1,-12,0,72)
+ local photo=Instance.new("Frame");photo.Name="FieldPhoto";photo.Position=UDim2.fromOffset(11,10);photo.Size=UDim2.fromOffset(50,50)
+ photo.BackgroundColor3=parchment;photo.BackgroundTransparency=.04;photo.BorderSizePixel=0;photo.Parent=x;frameStroke(photo,1,.28)
+ local glyph=label(photo,mapGlyph[map.Id]or"?",44,22,ink);glyph.Size=UDim2.fromScale(1,1);glyph.TextXAlignment=Enum.TextXAlignment.Center;glyph.TextYAlignment=Enum.TextYAlignment.Center
+ local pin=Instance.new("Frame");pin.Name="BrassPin";pin.AnchorPoint=Vector2.new(.5,.5);pin.Position=UDim2.new(0,57,0,13);pin.Size=UDim2.fromOffset(9,9)
+ pin.BackgroundColor3=brass;pin.BorderSizePixel=0;pin.Parent=x
+ local pinCorner=Instance.new("UICorner");pinCorner.CornerRadius=UDim.new(1,0);pinCorner.Parent=pin
+ local name=label(x,map.Name,24,16,ivory);name.Position=UDim2.fromOffset(70,8);name.Size=UDim2.new(1,-142,0,24)
+ local areas=table.concat(map.Areas or{}," · ")
+ if #areas>26 then areas=string.sub(areas,1,26).."…"end
+ local meta=(mapDifficultyLabel[map.Difficulty]or tostring(map.Difficulty or"")).." · "..areas
+ local tag=label(x,meta,22,10,parchment);tag.Position=UDim2.fromOffset(70,37);tag.Size=UDim2.new(1,-88,0,22)
+ local state=label(x,chosen and"선택됨"or"선택",22,10,chosen and ivory or brass);state.AnchorPoint=Vector2.new(1,0);state.Position=UDim2.new(1,-10,0,9);state.Size=UDim2.fromOffset(54,22);state.TextXAlignment=Enum.TextXAlignment.Right
  return x
 end
 -- 화면 구성 · 황동 명패, 가죽 책갈피, 좌측/하단 장부. 중앙 플레이 시야를 최대한 비운다.
@@ -88,8 +104,11 @@ local status=label(header,"괴물 가족의 저택",22,10,parchment);status.Posi
 local commands=Instance.new("Frame");commands.Name="ManorCommands";commands.AnchorPoint=Vector2.new(1,0)
 commands.Position=UDim2.new(1,-10,0,6);commands.Size=UDim2.fromOffset(162,54);commands.BackgroundTransparency=1;commands.Parent=gui
 
-local nav=Instance.new("Frame");nav.Name="FamilyNotebook";nav.AnchorPoint=Vector2.new(1,0);nav.Position=UDim2.new(1,-10,0,68)
-nav.Size=UDim2.fromOffset(92,304);nav.BackgroundColor3=leather;nav.BackgroundTransparency=.01;nav.Visible=false;nav.Parent=gui;corner(nav,1);gothicCorners(nav)
+local nav=Instance.new("Frame");nav.Name="FamilyNotebook";nav.AnchorPoint=Vector2.new(1,0);nav.Position=UDim2.new(1,-10,0,62)
+nav.Size=UDim2.fromOffset(84,274);nav.BackgroundColor3=leather;nav.BackgroundTransparency=.01;nav.Visible=false;nav.Parent=gui;corner(nav,1);gothicCorners(nav)
+local navItems={}
+local compactMobile=false
+local depart,notebook
 local navPadding=Instance.new("UIPadding");navPadding.PaddingTop=UDim.new(0,7);navPadding.PaddingBottom=UDim.new(0,7);navPadding.PaddingLeft=UDim.new(0,6);navPadding.PaddingRight=UDim.new(0,6);navPadding.Parent=nav
 local navList=Instance.new("UIListLayout");navList.Padding=UDim.new(0,6);navList.SortOrder=Enum.SortOrder.LayoutOrder;navList.Parent=nav
 
@@ -109,7 +128,10 @@ local function hidePanel()
  activeMenu=nil;activeStory=nil
  if not panel.Visible then return end
  local tween=TweenService:Create(panel,TweenInfo.new(.16,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{GroupTransparency=1})
- tween:Play();tween.Completed:Once(function()if panel.GroupTransparency>=.99 then panel.Visible=false end end)
+ tween:Play();tween.Completed:Once(function()
+  if panel.GroupTransparency>=.99 then panel.Visible=false end
+  if gui.Enabled then header.Visible=true;commands.Visible=true end
+ end)
 end
 local close=button(panel,"×",hidePanel);close.Size=UDim2.fromOffset(54,54);close.Position=UDim2.new(1,-62,0,5)
 local body=Instance.new("ScrollingFrame");body.Position=UDim2.fromOffset(25,65);body.Size=UDim2.new(1,-36,1,-78)
@@ -122,17 +144,46 @@ local lastViewport=Vector2.zero
 local function applyManorLayout()
  local camera=workspace.CurrentCamera;local v=camera and camera.ViewportSize or Vector2.new(1280,720)
  if v==lastViewport then return end;lastViewport=v
- local mobile=v.X<760
- if mobile then
-  panel.AnchorPoint=Vector2.new(0,1);panel.Position=UDim2.new(0,8,1,-8)
-  panel.Size=UDim2.new(1,-16,0,math.floor(math.min(430,v.Y*.52)))
-  nav.Position=UDim2.new(1,-8,0,66);nav.Size=UDim2.fromOffset(86,294)
-  header.Size=UDim2.fromOffset(math.min(224,math.max(176,v.X-190)),56)
+ compactMobile=UserInputService.TouchEnabled or v.X<900 or v.Y<600
+ if compactMobile then
+  header.Position=UDim2.fromOffset(8,6);header.Size=UDim2.fromOffset(math.min(218,math.max(188,v.X-160)),48)
+  title.TextSize=14;title.Position=UDim2.fromOffset(10,1);title.Size=UDim2.new(1,-20,0,21)
+  status.TextSize=9;status.Position=UDim2.fromOffset(10,25);status.Size=UDim2.new(1,-20,0,18)
+  commands.Position=UDim2.new(1,-8,0,6);commands.Size=UDim2.fromOffset(132,44)
+  if depart then depart.Size=UDim2.fromOffset(62,42)end
+  if notebook then notebook.Size=UDim2.fromOffset(62,42);notebook.Position=UDim2.fromOffset(68,0)end
+  nav.Position=UDim2.new(1,-8,0,56);nav.Size=UDim2.fromOffset(74,236)
+  navPadding.PaddingTop=UDim.new(0,5);navPadding.PaddingBottom=UDim.new(0,5);navPadding.PaddingLeft=UDim.new(0,5);navPadding.PaddingRight=UDim.new(0,5)
+  navList.Padding=UDim.new(0,4)
+  for _,row in ipairs(navItems)do
+   row.item.Size=UDim2.new(1,0,0,40);row.icon.Size=UDim2.fromOffset(17,17);row.icon.Position=UDim2.new(.5,0,0,3)
+   row.text.TextSize=10;row.text.Position=UDim2.fromOffset(0,22);row.text.Size=UDim2.new(1,0,0,16)
+  end
+  panel.AnchorPoint=Vector2.new(.5,1);panel.Position=UDim2.new(.5,0,1,-8)
+  panel.Size=UDim2.new(1,-16,0,math.floor(math.min(420,v.Y*.64)))
+  local limit=panel:FindFirstChild("MobileWidthLimit")or Instance.new("UISizeConstraint")
+  limit.Name="MobileWidthLimit";limit.MaxSize=Vector2.new(460,430);limit.MinSize=Vector2.new(300,250);limit.Parent=panel
+  panelTitle.TextSize=18;close.Size=UDim2.fromOffset(48,48);close.Position=UDim2.new(1,-55,0,4)
+  body.Position=UDim2.fromOffset(22,60);body.Size=UDim2.new(1,-32,1,-70)
  else
+  header.Position=UDim2.fromOffset(10,6);header.Size=UDim2.fromOffset(238,56)
+  title.TextSize=15;title.Position=UDim2.fromOffset(11,2);title.Size=UDim2.new(1,-12,0,23)
+  status.TextSize=10;status.Position=UDim2.fromOffset(11,30);status.Size=UDim2.new(1,-22,0,22)
+  commands.Position=UDim2.new(1,-10,0,6);commands.Size=UDim2.fromOffset(162,54)
+  if depart then depart.Size=UDim2.fromOffset(68,52)end
+  if notebook then notebook.Size=UDim2.fromOffset(78,52);notebook.Position=UDim2.fromOffset(74,0)end
+  nav.Position=UDim2.new(1,-10,0,68);nav.Size=UDim2.fromOffset(92,304)
+  navPadding.PaddingTop=UDim.new(0,7);navPadding.PaddingBottom=UDim.new(0,7);navPadding.PaddingLeft=UDim.new(0,6);navPadding.PaddingRight=UDim.new(0,6)
+  navList.Padding=UDim.new(0,6)
+  for _,row in ipairs(navItems)do
+   row.item.Size=UDim2.new(1,0,0,52);row.icon.Size=UDim2.fromOffset(24,24);row.icon.Position=UDim2.new(.5,0,0,6)
+   row.text.TextSize=12;row.text.Position=UDim2.fromOffset(0,32);row.text.Size=UDim2.new(1,0,0,24)
+  end
   panel.AnchorPoint=Vector2.new(0,0);panel.Position=UDim2.fromOffset(10,70)
   panel.Size=UDim2.new(0,420,1,-84)
-  nav.Position=UDim2.new(1,-10,0,68);nav.Size=UDim2.fromOffset(92,304)
-  header.Size=UDim2.fromOffset(238,56)
+  local limit=panel:FindFirstChild("MobileWidthLimit");if limit then limit:Destroy()end
+  panelTitle.TextSize=21;close.Size=UDim2.fromOffset(54,54);close.Position=UDim2.new(1,-62,0,5)
+  body.Position=UDim2.fromOffset(25,65);body.Size=UDim2.new(1,-36,1,-78)
  end
 end
 applyManorLayout()
@@ -158,9 +209,9 @@ end
 open=function(key)
  if not gui.Enabled then return end
  if key=="PLAY"and math.floor(tonumber(p:GetAttribute("VisitedManorOwnerUserId"))or 0)>0 then key="EVENT"end
- activeMenu=key;activeStory=nil;rankingRows={};notebookOpen=false;nav.Visible=false;panel.Visible=true;panel.GroupTransparency=1;clear();body.CanvasPosition=Vector2.zero;TweenService:Create(panel,TweenInfo.new(.18,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{GroupTransparency=0}):Play()
+ activeMenu=key;activeStory=nil;rankingRows={};notebookOpen=false;nav.Visible=false;header.Visible=false;commands.Visible=false;panel.Visible=true;panel.GroupTransparency=1;clear();body.CanvasPosition=Vector2.zero;TweenService:Create(panel,TweenInfo.new(.18,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{GroupTransparency=0}):Play()
  if key=="PLAY"then
-  panelTitle.Text="오늘 밤의 출정"
+  panelTitle.Text="출정 지도"
   local inRoom=p:GetAttribute("RoomServer")==true
   local waiting=p:GetAttribute("RoomState")=="ROOM_WAITING"
   if inRoom then
@@ -193,19 +244,23 @@ open=function(key)
    end
    if waiting then button(body,"방 나가기 · 저택으로",function()send(C.Actions.LEAVE_ROOM)end)end
   end
+  if not inRoom then
+   label(body,"벽걸이 지도 · 황동 핀을 옮기면 실제 출정 맵도 함께 바뀐다",30,12,brass)
+   for _,map in ipairs(C.Maps)do
+    local chosen=(p:GetAttribute("SelectedLobbyMap")or"SCHOOL")==map.Id
+    mapPostcard(body,map,chosen,function()send(C.Actions.SELECT_MAP,map.Id)end)
+   end
+  end
   local preference=p:GetAttribute("MonsterPreference")=="MONSTER"and"몬스터"or p:GetAttribute("MonsterPreference")=="SURVIVOR"and"인간"or"자동 배정"
-  label(body,"희망 진영 · "..preference.."   |   혼자서도 AI와 플레이",36,13)
+  label(body,"출정 역할 · "..preference,30,12,brass)
   button(body,"인간으로 준비",function()send(C.Actions.PREFER_SURVIVOR)end)
   button(body,"몬스터로 준비",function()send(C.Actions.PREFER_MONSTER)end)
   if not inRoom then
-  for _,map in ipairs(C.Maps)do
-   local chosen=(p:GetAttribute("SelectedLobbyMap")or"SCHOOL")==map.Id
-   mapPostcard(body,map,chosen,function()send(C.Actions.SELECT_MAP,map.Id)end)
-  end
-  button(body,"1인 플레이 · 빈자리는 AI",function()send(C.Actions.MANOR_SOLO);hidePanel() end,wine)
-  button(body,"대전 참가 · 공개 경기",function()send(C.Actions.QUICK_JOIN_PUBLIC);hidePanel() end,Color3.fromRGB(53,45,58))
-  button(body,"친구 경기 만들기",function()send(C.Actions.CREATE_ROOM,"FRIENDS");hidePanel() end)
-  button(body,"초대 코드로 참가",function()open("CODE")end)
+   label(body,"출정 방식",26,12,brass)
+   button(body,"1인 플레이 · 빈자리는 AI",function()send(C.Actions.MANOR_SOLO);hidePanel() end,wine)
+   button(body,"대전 참가 · 공개 경기",function()send(C.Actions.QUICK_JOIN_PUBLIC);hidePanel() end,Color3.fromRGB(53,45,58))
+   button(body,"친구 경기 만들기",function()send(C.Actions.CREATE_ROOM,"FRIENDS");hidePanel() end)
+   button(body,"초대 코드로 참가",function()open("CODE")end)
   end
  elseif key=="CODE"then
   panelTitle.Text="초대장 번호"
@@ -332,20 +387,22 @@ open=function(key)
   table.insert(rankingRows,label(body,"수집가들의 기록을 가져오는 중",48,13))
  end
 end
-local depart=button(commands,"출정",function()open("PLAY")end,Color3.fromRGB(81,42,47))
+depart=button(commands,"출정",function()open("PLAY")end,wine)
 depart.Size=UDim2.fromOffset(68,52)
-local notebook=button(commands,"수첩",function()
+notebook=button(commands,"수첩",function()
  notebookOpen=not notebookOpen;nav.Visible=notebookOpen
  if notebookOpen then activeMenu=nil;panel.Visible=false end
 end)
 notebook.Size=UDim2.fromOffset(78,52);notebook.Position=UDim2.fromOffset(74,0)
 -- 무료 Lucide 아이콘: 원본 ISC/MIT 라이선스를 모델 폴더에 보관.
-for index,entry in ipairs({{"PLAY","현관"},{"BOOK","도감"},{"DRESS","옷장"},{"EVENT","저택"},{"RECORD","기록"}})do
+for index,entry in ipairs({{"PLAY","지도"},{"BOOK","도감"},{"DRESS","옷장"},{"EVENT","저택"},{"RECORD","기록"}})do
  local item=button(nav,"",function()if activeMenu==entry[1]and panel.Visible then hidePanel()else open(entry[1])end end,entry[1]=="PLAY"and wine or leather);item.Size=UDim2.new(1,0,0,52)
  local icon=Instance.new("ImageLabel");icon.BackgroundTransparency=1;icon.Image="rbxassetid://"..tostring(Assets.IconsId or 0)
  icon.ImageRectOffset=Vector2.new((index-1)*64,0);icon.ImageRectSize=Vector2.new(64,64);icon.Size=UDim2.fromOffset(24,24);icon.AnchorPoint=Vector2.new(.5,0);icon.Position=UDim2.new(.5,0,0,6);icon.Parent=item
  local text=label(item,entry[2],24,12);text.Size=UDim2.new(1,0,0,24);text.Position=UDim2.fromOffset(0,32);text.TextXAlignment=Enum.TextXAlignment.Center
+ table.insert(navItems,{item=item,icon=icon,text=text})
 end
+lastViewport=Vector2.zero;applyManorLayout()
 local toast=label(gui,"",70,14);toast.ZIndex=12;toast.AnchorPoint=Vector2.new(.5,1);toast.Position=UDim2.new(.5,0,1,-92)
 toast.Size=UDim2.new(.66,0,0,62);toast.BackgroundColor3=ink;toast.BackgroundTransparency=.08;toast.Visible=false;corner(toast)
 local toastLimit=Instance.new("UISizeConstraint");toastLimit.MaxSize=Vector2.new(520,70);toastLimit.Parent=toast
@@ -460,10 +517,18 @@ visibility=function()
  if visitId>0 then
   status.Text=string.format("%s의 저택 방문 중 · 보기 전용",tostring(p:GetAttribute("VisitedManorOwnerName")or"다른 플레이어"))
  else
-  status.Text=string.format("괴담 %d/%d · %d 코인 · 에너지 %d/%d · %s",p:GetAttribute("GhostCompleted")or 0,#C.GhostCatalog,p:GetAttribute("Coins")or 0,energy,maxEnergy,cosmeticTitle)
+  if compactMobile then
+   status.Text=string.format("괴담 %d/%d · %d 코인 · E %d/%d",p:GetAttribute("GhostCompleted")or 0,#C.GhostCatalog,p:GetAttribute("Coins")or 0,energy,maxEnergy)
+  else
+   status.Text=string.format("괴담 %d/%d · %d 코인 · 에너지 %d/%d · %s",p:GetAttribute("GhostCompleted")or 0,#C.GhostCatalog,p:GetAttribute("Coins")or 0,energy,maxEnergy,cosmeticTitle)
+  end
  end
  if p:GetAttribute("RoomServer")==true then
-  status.Text=(round=="INTERMISSION"and string.format("출정까지 %d초",p:GetAttribute("TimeLeft")or 0)or string.format("초대 %s · 참가 %d명",p:GetAttribute("RoomCode")or"------",p:GetAttribute("RoomMemberCount")or 1))..string.format(" · 에너지 %d/%d · %s",energy,maxEnergy,cosmeticTitle)
+  if compactMobile then
+   status.Text=(round=="INTERMISSION"and string.format("출정 %d초",p:GetAttribute("TimeLeft")or 0)or string.format("방 %s · %d명",p:GetAttribute("RoomCode")or"------",p:GetAttribute("RoomMemberCount")or 1))..string.format(" · E %d/%d",energy,maxEnergy)
+  else
+   status.Text=(round=="INTERMISSION"and string.format("출정까지 %d초",p:GetAttribute("TimeLeft")or 0)or string.format("초대 %s · 참가 %d명",p:GetAttribute("RoomCode")or"------",p:GetAttribute("RoomMemberCount")or 1))..string.format(" · 에너지 %d/%d · %s",energy,maxEnergy,cosmeticTitle)
+  end
  end
  if visible and not oldLighting then
   oldLighting={ClockTime=Lighting.ClockTime,Brightness=Lighting.Brightness,Ambient=Lighting.Ambient,OutdoorAmbient=Lighting.OutdoorAmbient,FogStart=Lighting.FogStart,FogEnd=Lighting.FogEnd,ExposureCompensation=Lighting.ExposureCompensation,EnvironmentDiffuseScale=Lighting.EnvironmentDiffuseScale,EnvironmentSpecularScale=Lighting.EnvironmentSpecularScale}
