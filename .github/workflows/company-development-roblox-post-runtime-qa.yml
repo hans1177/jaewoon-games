@@ -273,7 +273,6 @@ jobs:
           echo 'ROBLOX_FOUNDATION_DETERMINISTIC_QA=PASS'
 
       - name: Probe exact Roblox Open Cloud engine execution
-        if: ${{ inputs.retry_open_cloud_only == true }}
         working-directory: main
         continue-on-error: true
         env:
@@ -470,7 +469,7 @@ jobs:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
           EVENT_NAME: ${{ github.event_name }}
           PUSH_BEFORE: ${{ github.event.before || '' }}
-          SERVER_DIAGNOSTIC_ENABLED: ${{ inputs.retry_open_cloud_only || false }}
+          SERVER_DIAGNOSTIC_ENABLED: true
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         shell: bash
         run: |
@@ -1882,10 +1881,11 @@ jobs:
           echo 'ROBLOX_OPEN_CLOUD_BLOCKING_PROBE_FAILURE=NO'
 
   studio-local-plan:
+    # Studio is an explicit deferred actual-play lane. It never gates hosted runtime development.
     # Planning is read-only control work. Only actual Studio execution consumes the shared Windows host.
-    # A skipped job is never runtime or multiplayer PASS.
+    # A skipped job is never Studio actual-play PASS.
     # 계획과 실행은 요청 시점의 동일한 제어 리비전을 사용한다.
-    if: ${{ inputs.retry_open_cloud_only != true && (inputs.run_studio == true || github.event_name == 'push') }}
+    if: ${{ inputs.run_studio == true && inputs.retry_open_cloud_only != true }}
     name: plan exact local Studio MCP playtests for earliest eligible artifacts
     concurrency:
       group: roblox-studio-mcp-plan-${{ github.run_id }}
