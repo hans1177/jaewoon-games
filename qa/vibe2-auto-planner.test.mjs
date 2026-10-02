@@ -3864,16 +3864,16 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
   const sourceRevision='e3ff6bb1a0ccd6eb8398da4431d413c28974267d';
   const artifactIdentity='sha256:'+'1'.repeat(64);
   const developmentQueue={items:[{
-    gameId:'horror-escape-room',
-    gameName:'심야 대탈출',
+    gameId:'fantasy-survival',
+    gameName:'마력숲 생존기',
     status:'ACTIVE',
     productionClass:'DEVELOPMENT_CONFIRMED',
     selectedPlatform:'ROBLOX',
     targetPlatform:'ROBLOX',
     concurrentTargetPlatforms:['ROBLOX','UNITY'],
-    robloxProjectPath:'roblox-games/horror-escape-room',
-    unityProjectPath:'unity-games/horror-escape-room',
-    targetSourcePaths:{ROBLOX:'roblox-games/horror-escape-room',UNITY:'unity-games/horror-escape-room'},
+    robloxProjectPath:'roblox-games/fantasy-survival',
+    unityProjectPath:'unity-games/fantasy-survival',
+    targetSourcePaths:{ROBLOX:'roblox-games/fantasy-survival',UNITY:'unity-games/fantasy-survival'},
     robloxBuildOrPackagePassed:true,
     robloxSourceCommit:sourceRevision,
     robloxBuildArtifactIdentity:artifactIdentity,
@@ -3892,7 +3892,7 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
     routingBlockers:['roblox-studio-internal-validation-pending']
   }]};
   const projects=collectProjects({},catalog,repoRoot,developmentQueue);
-  const robloxProject=projects.find(project=>project.gameId==='horror-escape-room'&&project.engine==='roblox');
+  const robloxProject=projects.find(project=>project.gameId==='fantasy-survival'&&project.engine==='roblox');
   assert.ok(robloxProject);
   assert.equal(robloxProject.ownerResumableBuildUp,true);
 
@@ -3956,7 +3956,7 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
   });
   assert.equal(result.planned,true);
   assert.equal(result.planningBacklog.ownerResumableTargetBypass,true);
-  const resumed=result.tasks.find(task=>task.gameId==='horror-escape-room');
+  const resumed=result.tasks.find(task=>task.gameId==='fantasy-survival');
   assert.ok(resumed);
   assert.equal(resumed.maxRetries,null);
   assert.equal(resumed.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
