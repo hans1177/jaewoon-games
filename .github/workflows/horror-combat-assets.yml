@@ -1,0 +1,51 @@
+name: Horror Authored Combat Assets
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/horror-combat-assets.yml'
+      - 'tools/horror-combat-assets.mjs'
+      - 'assets/roblox/world-ghosts/native/mesh/bride.glb'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: horror-authored-combat-assets
+  cancel-in-progress: true
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Import authored skinned combat model
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+        run: node tools/horror-combat-assets.mjs
+      - name: Persist exact combat asset binding
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-horror-combat-assets'
+          git config user.email 'actions@users.noreply.github.com'
+          git add roblox-games/horror-escape-room/shared/CombatAssets.luau assets/roblox/world-ghosts/native/combat-roblox-assets.json
+          if git diff --cached --quiet; then
+            echo 'COMBAT_ASSET_BINDING_ALREADY_CURRENT=YES'
+            exit 0
+          fi
+          git commit -m 'horror: bind authored combat model asset'
+          git fetch --no-tags origin main
+          git rebase origin/main
+          git push origin HEAD:main
+          echo 'COMBAT_ASSET_BINDING_PERSISTED=YES'
