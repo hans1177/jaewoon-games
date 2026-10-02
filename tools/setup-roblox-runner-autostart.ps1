@@ -140,7 +140,18 @@ if ($listener.Count -gt 0) {
   }
 }
 
-Start-Process -FilePath $listenerExe -ArgumentList @('run') -WorkingDirectory $runnerRoot -WindowStyle Hidden
+$startInfo = New-Object System.Diagnostics.ProcessStartInfo
+$startInfo.FileName = $listenerExe
+$startInfo.Arguments = 'run'
+$startInfo.WorkingDirectory = $runnerRoot
+$startInfo.UseShellExecute = $false
+$startInfo.CreateNoWindow = $true
+$startInfo.WindowStyle = [System.Diagnostics.ProcessWindowStyle]::Hidden
+$startInfo.RedirectStandardOutput = $true
+$startInfo.RedirectStandardError = $true
+$listenerProcess = New-Object System.Diagnostics.Process
+$listenerProcess.StartInfo = $startInfo
+[void]$listenerProcess.Start()
 Start-Sleep -Seconds 5
 
 if (@(Get-TargetListener).Count -eq 0) {
@@ -186,7 +197,7 @@ Write-Host "ROBLOX_RUNNER_SELF_HEAL_INTERVAL_MINUTES=$HealthCheckMinutes"
 Write-Host "ROBLOX_RUNNER_WATCHDOG=$watchdogPath"
 Write-Host 'ROBLOX_RUNNER_VISIBLE_CMD_REQUIRED=NO'
 Write-Host 'ROBLOX_RUNNER_TASK_HIDDEN=YES'
-Write-Host 'ROBLOX_RUNNER_LAUNCH_MODE=DIRECT_HIDDEN_LISTENER'
+Write-Host 'ROBLOX_RUNNER_LAUNCH_MODE=CREATE_NO_WINDOW_LISTENER'
 Write-Host 'ROBLOX_RUNNER_IDLE_MIGRATION=PENDING_UNTIL_NO_RUNNER_WORKER'
 Write-Host 'ROBLOX_RUNNER_SERVICE_MODE=NO'
 Write-Host 'ROBLOX_STUDIO_USER_PROFILE_PRESERVED=YES'
