@@ -98,6 +98,22 @@ jobs:
             done
           }
 
+          # One-shot cleanup for pre-dedupe Seed DESIGN runs already replaced by the canonical singleton.
+          for stale_run_id in 36946640682 36947640969; do
+            stale_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${stale_run_id}" --jq '.status' 2>/dev/null || true)"
+            case "$stale_status" in
+              queued|pending|requested|waiting|in_progress)
+                if gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${stale_run_id}/cancel" >/dev/null 2>&1; then
+                  echo "DIRECTOR_SEED_DUPLICATE_CANCELLED=${stale_run_id}:$stale_status"
+                elif gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${stale_run_id}/force-cancel" >/dev/null 2>&1; then
+                  echo "DIRECTOR_SEED_DUPLICATE_FORCE_CANCELLED=${stale_run_id}:$stale_status"
+                else
+                  echo "DIRECTOR_SEED_DUPLICATE_CANCEL_FAILED=${stale_run_id}:$stale_status"
+                fi
+                ;;
+            esac
+          done
+
           # Keep one recent mixed page for statuses GitHub may surface outside the targeted filters,
           # then exhaust every documented active-status query so old stale work cannot hide past row 100.
           fetch_runs 'per_page=100'
