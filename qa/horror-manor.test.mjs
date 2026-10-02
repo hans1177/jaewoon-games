@@ -103,8 +103,10 @@ test('personal manor spawn stays on the front-yard ground layer',()=>{
  assert.match(lobby,/SpawnMarkerOnly/);
  assert.doesNotMatch(lobby,/local spawn=Instance\.new\("SpawnLocation"\);spawn\.Name="PersonalSpawn"/);
  assert.doesNotMatch(lobby,/p\.RespawnLocation=spawn/);
- assert.match(server,/FIRST_FRAME_GROUND_SNAP_V2/);
- assert.match(server,/character:PivotTo\(CFrame\.lookAt\(bootstrapTarget,bootstrapLook\)\)/);
+ assert.match(server,/FIRST_FRAME_SPAWN_SINGLE_PATH_V3/);
+ assert.match(server,/bootstrapGround\.CanCollide=true/);
+ assert.match(server,/PersistentBootstrapSafety/);
+ assert.doesNotMatch(server,/character:PivotTo\(CFrame\.lookAt\(bootstrapTarget,bootstrapLook\)\)/);
  assert.match(ui,/camera\.CFrame=CFrame\.lookAt\(Vector3\.new\(x,7\.2,z\+76\),Vector3\.new\(x,6\.2,z\+2\)\)/);
  assert.match(manorBuild,/ArrivalCourtOuter/);
  assert.match(manorBuild,/ArrivalCourtInner/);
