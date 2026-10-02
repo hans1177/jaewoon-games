@@ -1,5 +1,26 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1jcsh70",
+      "worker": "vibe2",
+      "taskId": "seed-roblox-simulator-tycoon-i-adopt-me-studio-evolution-roblox-presentation-v1",
+      "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
+      "files": [
+        "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau",
+        "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/server/Game.server.luau"
+      ],
+      "baseSha": "2ecfebcfaff62730b67231befa49679cfb69f8b1",
+      "runId": "37054718200",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-02T19:34:24.950Z",
+      "expiresAt": "2026-10-02T20:19:24.950Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-roblox-simulator-tycoon-i-adopt-me-studio-evolution-roblox-presentation-v1"
+      ]
+    }
+  ]
 }
