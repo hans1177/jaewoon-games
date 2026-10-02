@@ -411,11 +411,13 @@ class Scene:
               'TeaCup','Tea','ChandelierFlame','MirrorPupil','FamilyPortrait','PortraitCanvas','HearthFlame',
               'MapPin','GhostRelic_','RareRelic_','MemoryRelic','MapMasterpiece_','GallerySet_',
               'FireplaceFeature_','MasterCollectionRelic','ManorCrestSegment',
+              'LivingCurtain','LivingVineTip','LivingBranch','BackdropCloud','BackdropMist','BackdropBat',
+              'ChandelierDrop','ChandelierPearDrop','PaperMoonHalo',
               'BackWall','HallFloor','Courtyard','CrookedRoof','ClockPendulum','EntryDoor')
         groups={}
         bpy.context.view_layer.update()
         for o in list(self.collection.objects):
-            if o.type!='MESH' or o.name.startswith(keep):continue
+            if o.type!='MESH' or o.name.startswith(keep) or 'Flame' in o.name:continue
             material=o.data.materials[0] if len(o.data.materials)==1 else None
             if not material:continue
             # 재질 복제본도 원본 이미지와 색이 같으면 함께 묶는다.
@@ -436,10 +438,12 @@ class Scene:
             for polygon in combined.data.polygons:polygon.material_index=0
 
 def palette(s):
+    # 다크카툰 고딕 스타일 락: 먹색 외곽선 + 보라/와인 면 + 황동/상아 포인트 + 과장된 주황 촛불.
     return {k:s.material(k,v) for k,v in {
-      'plum':(.18,.075,.115),'wood':(.12,.047,.025),'stone':(.28,.30,.29),'teal':(.055,.14,.12),
-      'roof':(.045,.07,.095),'brass':(.34,.25,.14),'bone':(.69,.67,.51),'ivory':(.79,.72,.54),
-      'black':(.022,.026,.031),'amber':(1,.52,.13),'red':(.12,.012,.027),'glass':(.13,.26,.28)}.items()}
+      'plum':(.235,.050,.145),'wood':(.105,.032,.026),'stone':(.235,.225,.285),'teal':(.040,.115,.105),
+      'roof':(.032,.030,.072),'brass':(.46,.285,.085),'bone':(.73,.68,.50),'ivory':(.86,.72,.43),
+      'black':(.010,.010,.022),'amber':(1,.37,.045),'red':(.19,.008,.038),'glass':(.085,.19,.27),
+      'purple':(.135,.050,.205),'pumpkin':(.58,.145,.018),'moss':(.055,.090,.050)}.items()}
 
 # NPC: 각 역할을 별도 얼굴/체형/의상/소품으로 직접 제작한다.
 # 동일 bride head/몸체 재탕은 사용하지 않는다. 모바일 실루엣과 근접 얼굴 판독을 동시에 목표로 한다.
@@ -1746,6 +1750,62 @@ def build():
         s.lathe('PorchLanternPost'+str(side),(side*5.6,4.5,9.8),.12,.09,5.6,c['black'],sides=16)
         s.ellipsoid('PorchLanternGlass'+str(side),(side*5.6,7.75,9.8),(.78,1.15,.78),c['glass'])
         s.ellipsoid('PorchLanternFlame'+str(side),(side*5.6,7.75,9.8),(.16,.42,.16),c['amber'])
+
+    # 다크카툰 할로윈 잭오랜턴: 세로 로브/줄기/눈/입을 실제 분리 메시로 만든다.
+    pumpkin_specs=[(-7.6,10.8,1.15),(7.3,11.4,.92),(-11.5,17.5,.78),(12.0,18.2,.72),(-18.0,28.0,.82),(18.5,29.0,.76)]
+    for pi,(px,pz,ps) in enumerate(pumpkin_specs):
+        for lobe in range(7):
+            off=(lobe-3)*ps*.16
+            s.ellipsoid('HalloweenPumpkinLobe'+str(pi)+'_'+str(lobe),(px+off,.78*ps,pz),(ps*.82,ps*1.12,ps*.88),c['pumpkin'])
+        s.curve_tube('HalloweenPumpkinStem'+str(pi),[
+          (px,1.27*ps,pz),(px+.08*ps,1.58*ps,pz-.03*ps),(px-.04*ps,1.78*ps,pz+.06*ps)
+        ],[ps*.10,ps*.075,ps*.045],[ps*.08,ps*.06,ps*.035],c['moss'],sides=14)
+        eye=[(-.20,-.14),(.20,-.14),(0,.18)]
+        for side in [-1,1]:
+            s.prism('JackEye'+str(pi)+str(side),(px+side*.27*ps,.88*ps,pz+.49*ps),[(x*ps,y*ps)for x,y in eye],.065,c['black'])
+        mouth=[(-.48,.08),(-.28,-.06),(-.10,.06),(.08,-.08),(.28,.07),(.48,-.02),(.38,-.25),(-.38,-.25)]
+        s.prism('JackMouth'+str(pi),(px,.55*ps,pz+.50*ps),[(x*ps,y*ps)for x,y in mouth],.065,c['black'])
+
+    # 포치 가고일은 큰 귀/날개/주황 눈으로 멀리서도 만화 실루엣이 읽힌다.
+    for side in [-1,1]:
+        gx=side*10.2;gz=5.0
+        s.box('GargoylePedestal'+str(side),(gx,12.95,gz),(2.8,.55,2.8),c['stone'])
+        s.ellipsoid('GargoyleBody'+str(side),(gx,14.1,gz),(2.4,2.8,2.0),c['stone'])
+        s.ellipsoid('GargoyleHead'+str(side),(gx,15.65,gz+.18),(2.15,1.75,1.75),c['stone'])
+        for ear in [-1,1]:
+            s.prism('GargoyleEar'+str(side)+str(ear),(gx+ear*.75,16.25,gz+.20),[(-.35,-.35),(.35,-.35),(ear*.08,.85)],.34,c['stone'])
+        wing=[(0,-.25),(side*1.7,.15),(side*2.5,1.35),(side*1.25,.95),(side*.55,1.55)]
+        s.prism('GargoyleWing'+str(side),(gx,14.5,gz-.70),wing,.30,c['black'])
+        for eyeSide in [-1,1]:
+            s.ellipsoid('GargoyleEye'+str(side)+str(eyeSide),(gx+eyeSide*.42,15.76,gz+1.02),(.22,.20,.12),c['amber'])
+
+    # 살아 있는 저택용 커튼/덩굴 끝. 별도 저비용 메시만 움직이고 큰 건축 메시에는 손대지 않는다.
+    living_fabric=s.material('LivingCurtainWine',(.24,.018,.065))
+    for li,(lx,lz,flip) in enumerate([(-11,-4.4,-1),(11,-4.4,1),(-24,-4.4,-1),(24,-4.4,1)]):
+        s.loft('LivingCurtain'+str(li),(lx,8.0,lz),[
+          (-4.8,1.05,.26),(-1.8,1.20,.34),(1.6,1.00,.28),(4.7,.72,.20)
+        ],living_fabric,sides=18,rot=flip*.05)
+    living_vine=s.material('LivingVineDark',(.04,.07,.035))
+    for vi,(vx,vz,side) in enumerate([(-10.7,2.0,-1),(10.9,2.6,1),(-31,7.0,-1),(31,8.0,1)]):
+        s.curve_tube('LivingVineTip'+str(vi),[
+          (vx,3.0,vz),(vx+side*.35,4.3,vz+.25),(vx-side*.18,5.5,vz+.55)
+        ],[.075,.050,.020],[.055,.040,.015],living_vine,sides=14)
+
+    # 해골/촛농 클러스터는 중앙 동선을 비우고 가장자리에 배치한다.
+    for si,(sx,sz,lean) in enumerate([(-13.8,9.6,-.16),(14.2,9.2,.13),(-22.0,20.5,-.10)]):
+        skull=s.ellipsoid('HalloweenSkull'+str(si),(sx,1.9,sz),(1.55,1.85,1.35),c['bone']);skull.rotation_euler.z=lean
+        for eyeSide in [-1,1]:
+            s.ellipsoid('HalloweenSkullEye'+str(si)+str(eyeSide),(sx+eyeSide*.32,2.08,sz+.63),(.30,.38,.15),c['black'])
+        s.box('HalloweenSkullJaw'+str(si),(sx,1.25,sz+.12),(1.0,.55,.78),c['bone'],lean=lean*.5)
+    for ci,(cx,cz) in enumerate([(-10.5,9.0),(10.3,8.6),(-20.0,24.0),(20.5,24.8)]):
+        for k,hc in enumerate([1.05,1.45,.82]):
+            x=cx+(k-1)*.48
+            s.lathe('HalloweenCandle'+str(ci)+'_'+str(k),(x,.42+hc/2,cz),.18,.16,hc,c['ivory'],sides=16)
+            s.curve_tube('HalloweenWaxDrip'+str(ci)+'_'+str(k),[
+              (x+.12,.80+hc*.48,cz+.16),(x+.14,.62+hc*.30,cz+.17)
+            ],[.045,.025],[.035,.020],c['ivory'],sides=12)
+            s.ellipsoid('HalloweenCandleFlame'+str(ci)+'_'+str(k),(x,.50+hc,cz),(.15,.42,.15),c['amber'])
+
     for i in range(18):
         x=(-1 if i%2 else 1)*(9+(i*7)%21);z=(i*11)%40
         s.box('LeafCard'+str(i),(x,.24,z),(.5,.015,.9),c['wood'],rot=i*.71)
@@ -1825,6 +1885,40 @@ def build():
             s.node('BackdropTree'+str(layer)+str(side),s.mesh('BackdropTree',silhouette,[list(range(len(silhouette)))],mat),(x,0,z+1))
     disk=[[math.cos(i*math.pi/24)*7,math.sin(i*math.pi/24)*7,0]for i in range(48)]
     s.node('PaperMoon',s.mesh('PaperMoon',disk,[list(range(48))],moon),(27,41,-70))
+    halo=s.material('moon_halo',(.27,.16,.40))
+    for ring in range(3):
+        pts=[[math.cos(i*math.pi/24)*(8.5+ring*2.0),math.sin(i*math.pi/24)*(8.5+ring*2.0),0]for i in range(48)]
+        s.node('PaperMoonHalo'+str(ring),s.mesh('PaperMoonHalo'+str(ring),pts,[list(range(48))],halo),(27,41,-70-ring*.08))
+
+    # 멀리 있는 삐뚤어진 묘지/예배당/가로등 실루엣.
+    cemetery=s.material('backdrop_cemetery',(.025,.030,.055))
+    for i,x0 in enumerate([-48,-34,-18,2,18,39,52]):
+        h=3.5+(i%3)*1.7
+        stone=[(-1.2,0),(1.2,0),(1.0,h*.62),(0,h),(-1.0,h*.62)]
+        s.prism('BackdropGrave'+str(i),(x0,2.0,-66.5),stone,.08,cemetery,rot=(i-3)*.025)
+    chapel=[(-7,0),(7,0),(7,10),(3,10),(0,16),(-3,10),(-7,10)]
+    s.prism('BackdropChapel',(5,3,-76),chapel,.10,cemetery)
+    s.box('BackdropChapelDoor',(5,6.1,-75.88),(2.4,5.2,.08),c['black'])
+    s.curve_tube('BackdropChapelSpire',[(5,18,-75.9),(5,25,-75.9)],[.16,.04],[.12,.03],c['black'],sides=14)
+
+    # 이동 가능한 구름/안개/박쥐 레이어. 카메라와 독립적으로 천천히 움직여 배경에 생동감을 준다.
+    cloud_mat=s.material('cartoon_cloud',(.085,.075,.135));mist_mat=s.material('cartoon_mist',(.16,.18,.24))
+    for ci,(cx,cy,cz,scale) in enumerate([(-38,38,-68,1.0),(0,46,-71,1.25),(40,34,-67,.90)]):
+        outline=[(-7,0),(-5,2),(-2,2.8),(0,4.5),(3,3.0),(6,3.2),(8,1.2),(6,-.6),(-5,-.7)]
+        s.prism('BackdropCloud'+str(ci),(cx,cy,cz),[(x*scale,y*scale)for x,y in outline],.08,cloud_mat)
+    for mi,(mx,my,mz,wid) in enumerate([(-25,8,-60,32),(22,12,-65,40),(0,5,-72,54)]):
+        outline=[(-wid/2,0),(-wid*.28,1.4),(-wid*.05,.6),(wid*.16,1.6),(wid/2,.3),(wid*.46,-1.0),(-wid*.2,-.7)]
+        s.prism('BackdropMist'+str(mi),(mx,my,mz),outline,.06,mist_mat)
+    bat_shape=[(-1.0,0),(-.55,.45),(-.18,.14),(0,.42),(.18,.14),(.55,.45),(1.0,0),(.46,-.18),(0,-.42),(-.46,-.18)]
+    for bi,(bx,by,bz,bs) in enumerate([(-32,31,-62,.8),(-23,36,-66,.55),(18,34,-64,.65),(35,39,-69,.72),(7,28,-60,.45)]):
+        s.prism('BackdropBat'+str(bi),(bx,by,bz),[(x*bs,y*bs)for x,y in bat_shape],.06,c['black'])
+
+    # 살아 있는 나뭇가지 4개만 별도 보존한다. 전체 나무를 움직여 충돌/메시 비용을 늘리지 않는다.
+    for bi,(bx,bz,side) in enumerate([(-36,32,-1),(36,34,1),(-42,58,-1),(42,60,1)]):
+        s.curve_tube('LivingBranch'+str(bi),[
+          (bx,7,bz),(bx+side*2.5,10,bz+.5),(bx+side*5.0,12,bz-.6)
+        ],[.22,.14,.045],[.18,.11,.035],c['black'],sides=14)
+
     # 전경은 가장자리만 감싸고 중앙 진입로/터치 시야를 가리지 않는다.
     for side in [-1,1]:
         curtain=[[-2,0,0],[2,0,0],[2,22,0],[7,25,0],[10,26,0],[7,28,0],[1,26,0],[-1,31,0],[-3,30,0]]
