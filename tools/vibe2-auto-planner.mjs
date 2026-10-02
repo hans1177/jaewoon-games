@@ -262,6 +262,18 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     const executionEvidenceMatchesRoblox=!executionPlatform||executionPlatform==='ROBLOX';
     const runtimeObserved=(executionEvidenceMatchesRoblox&&executionRuntimeObserved)||item?.robloxRuntimePassed===true;
     const queueRobloxSourceCommit=clean(item?.robloxSourceCommit||(executionEvidenceMatchesRoblox?executionEvidence.sourceRevision:''));
+    const robloxF9Evidence=item?.robloxF9VerifiedPrepublishEvidence&&typeof item.robloxF9VerifiedPrepublishEvidence==='object'
+      ?item.robloxF9VerifiedPrepublishEvidence:{};
+    const queueRobloxPostF9ContinuousEvolution=Boolean(
+      /^[0-9a-f]{40}$/i.test(queueRobloxSourceCommit)
+      &&item?.robloxFinalReviewPassed===true
+      &&item?.robloxF9ReleaseRegressionPassed===true
+      &&clean(robloxF9Evidence.sourceRevision)===queueRobloxSourceCommit
+      &&robloxF9Evidence.finalReviewPassed===true
+      &&robloxF9Evidence.f9ReleaseRegressionPassed===true
+      &&robloxF9Evidence.runtimeAcceptancePassed===true
+      &&clean(robloxF9Evidence.authority)==='roblox-f9-verified-prepublish-gate'
+    );
     const queueRobloxQualityBuildUpSourceRevision=clean(item?.robloxQualityBuildUpSourceRevision);
     const queueRobloxQualityBuildUpRequired=Boolean(
       item?.robloxQualityBuildUpRequired===true
@@ -298,6 +310,8 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       queueRobloxPublicReleaseFailureSignature:clean(item?.robloxPublicReleaseFailureSignature),
       queueRobloxPublicReleaseRuntimeObservationPending:item?.robloxPublicReleaseRuntimeObservationPending===true,
       queueRobloxSourceCommit,
+      queueRobloxPostF9ContinuousEvolution,
+      queueRobloxF9VerifiedAt:clean(robloxF9Evidence.verifiedAt||item?.robloxFinalReviewPassedAt),
       queueRobloxArtifactIdentity:clean(item?.robloxBuildArtifactIdentity||(executionEvidenceMatchesRoblox?executionEvidence.artifactIdentity:'')),
       queueRobloxRuntimeObserved:runtimeObserved,
       queueRobloxRuntimePassed:item?.robloxRuntimePassed===true||(executionEvidenceMatchesRoblox&&executionEvidence.runtimePassed===true),
@@ -2500,6 +2514,15 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
   const terminalStatuses=new Set(['verified','done','completed','failed','error','rejected','cancelled','superseded']);
   const tasks=[...(queue?.tasks||[])];
   const canonicalByScope=new Map();
+  const sourceObservationByScope=new Map();
+  const sourceObservationFor=(project,scope)=>{
+    if(sourceObservationByScope.has(scope))return sourceObservationByScope.get(scope);
+    const sourceRoots=[posix(project?.projectPath)]
+      .filter(value=>value&&fs.existsSync(sourceFile(repoRoot,value)));
+    const observation=inspectGameSources({repoRoot,sourceRoots});
+    sourceObservationByScope.set(scope,observation);
+    return observation;
+  };
   for(const row of tasks){
     const gameId=clean(row?.gameId),directive=row?.buildUpDirective,lane=studioQualityTaskLane(row),scope=gameId+'|'+lane;
     if(!gameId||!clean(directive?.directiveId)||clean(row?.status).toLowerCase()!=='running'||!hasCurrentAutonomousContentExpansionDirective(directive))continue;
@@ -2525,8 +2548,58 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
     const currentGeneration=Number(item?.buildUpDirective?.generation||item?.buildUpGeneration||0);
     const currentDirectiveNeedsContractMigration=Boolean(currentId&&!hasCurrentAutonomousContentExpansionDirective(item?.buildUpDirective));
     const latestHistoricalGeneration=Number(latestHistorical?.buildUpDirective?.generation||0);
+    const currentSourceTree=lane==='roblox'&&project.queueRobloxPostF9ContinuousEvolution===true
+      ?clean(sourceObservationFor(project,scope)?.sourceTreeFingerprint):'';
+    const postF9SourceRefreshRequired=Boolean(
+      lane==='roblox'
+      &&project.queueRobloxPostF9ContinuousEvolution===true
+      &&currentId
+      &&item?.buildUpDirective
+      &&!mappedCanonical
+      &&currentSourceTree
+      &&clean(item.buildUpDirective.sourceTreeFingerprint)
+      &&clean(item.buildUpDirective.sourceTreeFingerprint)!==currentSourceTree
+    );
     let candidate=item,freshness='CURRENT_NO_NEWER_ACTIVE_GENERATION';
-    if(activeCanonical?.buildUpDirective&&clean(activeCanonical.buildUpDirective.directiveId)!==currentId){
+    if(postF9SourceRefreshRequired){
+      const refreshHistory=tasks.filter((row,rowIndex)=>{
+        if(rowIndex===index)return false;
+        const sameScope=clean(row?.gameId)===gameId&&studioQualityTaskLane(row)===lane;
+        if(!sameScope)return true;
+        const sameDirective=clean(row?.buildUpDirective?.directiveId)===currentId;
+        const status=clean(row?.status).toLowerCase();
+        return !(sameDirective&&!terminalStatuses.has(status));
+      });
+      const syntheticPrevious={
+        ...item,
+        id:item.id+'-post-f9-source-baseline',
+        status:'verified',
+        blocker:null,
+        lastOutcome:'PASS',
+        buildUpDirective:item.buildUpDirective,
+        buildUpGeneration:currentGeneration
+      };
+      const refreshed=attachGameSpecificBuildUpDirective(
+        item,project,repoRoot,{...queue,tasks:[...refreshHistory,syntheticPrevious]}
+      );
+      const refreshedGeneration=Number(refreshed?.buildUpDirective?.generation||0);
+      const refreshedId=clean(refreshed?.buildUpDirective?.directiveId);
+      if(refreshedId&&refreshedId!==currentId&&refreshedGeneration>currentGeneration){
+        candidate=bindSharedBuildUpDirective(item,refreshed.buildUpDirective);
+        candidate={...candidate,evidence:[...new Set([
+          ...(candidate.evidence||[]),...(refreshed.evidence||[]),
+          'roblox-post-f9-source-refresh:YES',
+          'roblox-post-f9-source-revision:'+clean(project.queueRobloxSourceCommit),
+          'build-up-directive-stale-refresh:POST_F9_SOURCE_CHANGE'
+        ])]};
+        canonicalByScope.set(scope,refreshed.buildUpDirective);
+        rebound+=1;changed+=1;
+        freshness='REGENERATED_AFTER_POST_F9_SOURCE_CHANGE';
+      }else{
+        designPending+=1;
+        freshness='POST_F9_SOURCE_CHANGE_REGENERATION_PENDING';
+      }
+    }else if(activeCanonical?.buildUpDirective&&clean(activeCanonical.buildUpDirective.directiveId)!==currentId){
       candidate=bindSharedBuildUpDirective(item,activeCanonical.buildUpDirective);
       canonicalByScope.set(scope,activeCanonical.buildUpDirective);
       if(!currentId){
@@ -2913,7 +2986,7 @@ function supersedeLegacyMicroTasksForStudioQuality(queueInput){
   return{count,queue:count?createVibeContinuousQueue({tasks,maxConcurrentTasks:queue.maxConcurrentTasks}):queue};
 }
 
-export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue={},queue:queueInput={},repoRoot=process.cwd(),maxConcurrentTasks=DEFAULT_MAX_CONCURRENT_TASKS,queueMaxConcurrentTasks=maxConcurrentTasks,planningBacklogTarget=maxConcurrentTasks,planningBacklogMinimum=Math.min(40,Number(planningBacklogTarget)||0),workPackagePolicy={},recombinationMemory={},historicalRegistry={},robloxDistillationLedger={},robloxPlaybooks={}}={}){
+export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue={},queue:queueInput={},repoRoot=process.cwd(),requestedGameId='',maxConcurrentTasks=DEFAULT_MAX_CONCURRENT_TASKS,queueMaxConcurrentTasks=maxConcurrentTasks,planningBacklogTarget=maxConcurrentTasks,planningBacklogMinimum=Math.min(40,Number(planningBacklogTarget)||0),workPackagePolicy={},recombinationMemory={},historicalRegistry={},robloxDistillationLedger={},robloxPlaybooks={}}={}){
   catalog=discoverExistingRobloxGames(catalog,repoRoot).catalog;
   const executionWaveMax=parallelLimit(maxConcurrentTasks);
   const persistentQueueMax=parallelLimit(queueMaxConcurrentTasks);
@@ -3038,17 +3111,29 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   const runtimeNeuralIngress=applyRuntimeNeuralEventsToQueue(queue,runtimeNeuralEvents);
   queue=runtimeNeuralIngress.queue;
   const developmentPool=developmentPlanningPool(queue);
+  const requestedGame=clean(requestedGameId);
+  const postF9RobloxProjects=allProjects
+    .filter(project=>clean(project.engine).toLowerCase()==='roblox'
+      &&project.queueRobloxPostF9ContinuousEvolution===true
+      &&isAutonomousProductionTarget(project,repoRoot))
+    .sort(projectSort);
   const ownerResumableProjects=allProjects
     .filter(project=>project.ownerResumableBuildUp===true&&isAutonomousProductionTarget(project,repoRoot))
     .sort(projectSort);
-  const activeOwnerResumableLaneKeys=new Set(developmentPool.map(item=>clean(item.gameId)+'|'+studioQualityTaskLane(item)));
+  const activeDevelopmentLaneKeys=new Set(developmentPool.map(item=>clean(item.gameId)+'|'+studioQualityTaskLane(item)));
   const ownerResumableMissingLaneKeys=new Set(ownerResumableProjects
     .map(project=>clean(project.gameId)+'|'+studioQualityLane(project))
-    .filter(key=>!activeOwnerResumableLaneKeys.has(key)));
+    .filter(key=>!activeDevelopmentLaneKeys.has(key)));
+  const postF9RobloxMissingLaneKeys=new Set(postF9RobloxProjects
+    .map(project=>clean(project.gameId)+'|'+studioQualityLane(project))
+    .filter(key=>!activeDevelopmentLaneKeys.has(key)));
+  const priorityMissingLaneKeys=new Set([...ownerResumableMissingLaneKeys,...postF9RobloxMissingLaneKeys]);
   const normalCapacity=Math.max(0,backlogTarget-developmentPool.length);
   const persistentCapacity=Math.max(0,persistentQueueMax-developmentPool.length);
+  const prioritySeedCapacity=Math.min(priorityMissingLaneKeys.size,persistentCapacity);
   const ownerResumableSeedCapacity=Math.min(ownerResumableMissingLaneKeys.size,persistentCapacity);
-  const capacity=Math.max(normalCapacity,ownerResumableSeedCapacity);
+  const postF9RobloxSeedCapacity=Math.min(postF9RobloxMissingLaneKeys.size,persistentCapacity);
+  const capacity=Math.max(normalCapacity,prioritySeedCapacity);
   const planningBacklog={
     target:backlogTarget,
     supersededLegacyMicroTasks:microSupersede.count,
@@ -3063,21 +3148,47 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     ownerResumableMissingLaneCount:ownerResumableMissingLaneKeys.size,
     ownerResumableSeedCapacity,
     ownerResumableTargetBypass:normalCapacity===0&&ownerResumableSeedCapacity>0,
+    postF9RobloxMissingLaneCount:postF9RobloxMissingLaneKeys.size,
+    postF9RobloxSeedCapacity,
+    postF9RobloxTargetBypass:normalCapacity===0&&postF9RobloxSeedCapacity>0,
+    requestedGameId:requestedGame||null,
     executionWaveMax,
     persistentQueueMax
   };
   if(!capacity)return{planned:false,count:0,reason:'DEVELOPMENT_BACKLOG_TARGET_REACHED',queue,tasks:[],packages:[],planningBacklog,holisticPriorityDeferralCount:holisticPriorityDeferral.count,buildUpDirectiveBackfillCount:buildUpDirectiveBackfill.changed,runtimeNeuralEvents,runtimeNeuralMutations:runtimeNeuralIngress.applied,workloadTelemetry:computeWorkloadTelemetry(queue,[])};
   const policy=resolveWorkPackagePolicy(workPackagePolicy,queue);
-  const blockedTier1=allProjects.filter(project=>project.releaseState==='release-confirmed'&&project.engine==='unity'&&project.developmentBaseline?.ready!==true),projects=allProjects.filter(project=>isAutonomousProductionTarget(project,repoRoot)).sort(projectSort);
+  const blockedTier1=allProjects.filter(project=>project.releaseState==='release-confirmed'&&project.engine==='unity'&&project.developmentBaseline?.ready!==true);
+  const projects=allProjects.filter(project=>isAutonomousProductionTarget(project,repoRoot)).sort((a,b)=>{
+    const aKey=clean(a.gameId)+'|'+studioQualityLane(a),bKey=clean(b.gameId)+'|'+studioQualityLane(b);
+    const aPost=postF9RobloxMissingLaneKeys.has(aKey)?1:0,bPost=postF9RobloxMissingLaneKeys.has(bKey)?1:0;
+    const aRequested=aPost&&requestedGame&&clean(a.gameId)===requestedGame?1:0;
+    const bRequested=bPost&&requestedGame&&clean(b.gameId)===requestedGame?1:0;
+    if(aRequested!==bRequested)return bRequested-aRequested;
+    if(aPost!==bPost)return bPost-aPost;
+    return projectSort(a,b);
+  });
   if(!projects.length)return{planned:false,count:0,reason:blockedTier1.length?'DEVELOPMENT_BASELINE_REQUIRED':'NO_CONFIRMED_PRODUCTION_PROJECT',queue,tasks:[],packages:[],planningBacklog,holisticPriorityDeferralCount:holisticPriorityDeferral.count,buildUpDirectiveBackfillCount:buildUpDirectiveBackfill.changed,runtimeNeuralEvents,runtimeNeuralMutations:runtimeNeuralIngress.applied,workPackagePolicy:policy,workloadTelemetry:computeWorkloadTelemetry(queue,[]),blockedTier1GameIds:blockedTier1.map(p=>p.gameId)};
   const planned=[],packages=[],deferredSmallPackages=[];
   let sequence=0;
   for(const project of projects){
     if(planned.length>=capacity)break;
-    const ownerResumableLaneKey=clean(project.gameId)+'|'+studioQualityLane(project);
-    const ownerResumableSeedRequired=ownerResumableMissingLaneKeys.has(ownerResumableLaneKey);
-    const remaining=ownerResumableSeedRequired?1:Math.max(1,capacity-planned.length);
+    const priorityLaneKey=clean(project.gameId)+'|'+studioQualityLane(project);
+    const ownerResumableSeedRequired=ownerResumableMissingLaneKeys.has(priorityLaneKey);
+    const postF9RobloxSeedRequired=postF9RobloxMissingLaneKeys.has(priorityLaneKey);
+    const prioritySeedRequired=ownerResumableSeedRequired||postF9RobloxSeedRequired;
+    const remaining=prioritySeedRequired?1:Math.max(1,capacity-planned.length);
     let packageTasks=selectPackageCandidates(findSafeTasks(project,repoRoot,queue).map(candidate=>applyWorldLobbyFirst(candidate,project,repoRoot)),queue,remaining,policy);
+    if(postF9RobloxSeedRequired){
+      packageTasks=packageTasks.map(candidate=>({
+        ...candidate,
+        evidence:[...new Set([
+          ...(candidate.evidence||[]),
+          'roblox-post-f9-continuous-evolution:REQUIRED',
+          'roblox-post-f9-source-revision:'+clean(project.queueRobloxSourceCommit),
+          'roblox-post-f9-requested-game:'+(requestedGame===clean(project.gameId)?'MATCH':'RUNTIME_RECOVERY')
+        ])]
+      }));
+    }
     if(!packageTasks.length)continue;
     packageTasks=packageTasks.map(candidate=>applyTransformativeRecombination(candidate,recombinationMemory));
     packageTasks=packageTasks.map(candidate=>attachRobloxDistilledLearning(candidate,project,{playbooks:robloxPlaybooks,distillation:robloxDistillationLedger}));
@@ -3095,7 +3206,8 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     queue=createVibeContinuousQueue({tasks:[...queue.tasks,...acceptedTasks],maxConcurrentTasks:queue.maxConcurrentTasks});
     planned.push(...acceptedTasks);
     packages.push({...pkg,tasks:acceptedTasks});
-    if(ownerResumableSeedRequired)ownerResumableMissingLaneKeys.delete(ownerResumableLaneKey);
+    if(ownerResumableSeedRequired)ownerResumableMissingLaneKeys.delete(priorityLaneKey);
+    if(postF9RobloxSeedRequired)postF9RobloxMissingLaneKeys.delete(priorityLaneKey);
   }
   const workloadTelemetry=computeWorkloadTelemetry(queue,packages);
   const quantityTargetMet=workloadTelemetry.plannedFeaturePackageCount>=policy.targetFeaturePackagesPerCycle||workloadTelemetry.plannedRelatedImprovementCount>=policy.minRelatedImprovementsPerPackage;
@@ -3168,7 +3280,7 @@ export function selectBuildUpDirectivePersistence(directives=[]){
 
 export function runVibe2AutoPlanner({
   statusFile='.vibe2/main-company-status.json', catalogFile='.vibe2/main-game-catalog.json', developmentQueueFile='', queueFile='', runtimeFile='vibe2-runtime.json',
-  controlFile='', experienceFile='', recombinationFile='', historicalRegistryFile='', robloxDistillationFile='', repoRoot=process.cwd(), maxConcurrentTasks=process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS
+  controlFile='', experienceFile='', recombinationFile='', historicalRegistryFile='', robloxDistillationFile='', repoRoot=process.cwd(), requestedGameId='', maxConcurrentTasks=process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS
 }={}) {
   const runtime=readJson(runtimeFile,{});
   const resolvedQueueFile=clean(queueFile)||clean(runtime.sources?.queue)||'.vibe2/queue.json';
@@ -3187,7 +3299,7 @@ export function runVibe2AutoPlanner({
   const robloxDistillationLedger=readJson(resolvedRobloxDistillationFile,{version:1,records:[]});
   const robloxPlaybooks=readJson(path.join(repoRoot,'company-learning','vibe3-task-playbooks.json'),{});
   const queueBefore=readJson(resolvedQueueFile,{tasks:[]});
-  const result=planVibe2AutonomousTasks({status:readJson(statusFile,{}),catalog:readJson(catalogFile,{}),developmentQueue:readJson(developmentQueueFile,{items:[]}),queue:queueBefore,repoRoot,maxConcurrentTasks:effectivePlannerMax,queueMaxConcurrentTasks:configuredQueueMax,planningBacklogTarget:Number(runtime.continuous?.planningBacklog?.target||60),planningBacklogMinimum:Number(runtime.continuous?.planningBacklog?.minimum||40),workPackagePolicy:runtime.workPackages||{},recombinationMemory,historicalRegistry,robloxDistillationLedger,robloxPlaybooks});
+  const result=planVibe2AutonomousTasks({status:readJson(statusFile,{}),catalog:readJson(catalogFile,{}),developmentQueue:readJson(developmentQueueFile,{items:[]}),queue:queueBefore,repoRoot,requestedGameId,maxConcurrentTasks:effectivePlannerMax,queueMaxConcurrentTasks:configuredQueueMax,planningBacklogTarget:Number(runtime.continuous?.planningBacklog?.target||60),planningBacklogMinimum:Number(runtime.continuous?.planningBacklog?.minimum||40),workPackagePolicy:runtime.workPackages||{},recombinationMemory,historicalRegistry,robloxDistillationLedger,robloxPlaybooks});
   const normalizedBefore=createVibeContinuousQueue(queueBefore);
   const queueSynchronized=JSON.stringify(normalizedBefore.tasks)!==JSON.stringify(result.queue?.tasks||[]);
   const directiveRoot=path.join(path.dirname(path.resolve(resolvedQueueFile)),'build-up-directives');
@@ -3225,7 +3337,7 @@ export function runVibe2AutoPlanner({
   return{...result,queueSynchronized,directiveWrites,machineHandoff,effectivePlannerMax,recombinationContext:{file:posix(resolvedRecombinationFile),recipes:Array.isArray(recombinationMemory?.recipes)?recombinationMemory.recipes.length:0,applied:(result.tasks||[]).filter(task=>(task.evidence||[]).some(value=>clean(value).startsWith('recombination-recipe:'))).length},robloxDistillationContext:{file:posix(resolvedRobloxDistillationFile),records:Array.isArray(robloxDistillationLedger?.records)?robloxDistillationLedger.records.length:0,applied:(result.tasks||[]).filter(task=>(task.evidence||[]).includes('roblox-distilled-context:advisory')).length}};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
-  const args=parseArgs(),result=runVibe2AutoPlanner({statusFile:clean(args.status)||'.vibe2/main-company-status.json',catalogFile:clean(args.catalog)||'.vibe2/main-game-catalog.json',developmentQueueFile:clean(args['development-queue']),queueFile:clean(args.queue),runtimeFile:clean(args.runtime)||'vibe2-runtime.json',controlFile:clean(args.control),experienceFile:clean(args.experience),recombinationFile:clean(args.recombination),historicalRegistryFile:clean(args['historical-registry']),robloxDistillationFile:clean(args['roblox-distillation']),repoRoot:clean(args.root)||process.cwd(),maxConcurrentTasks:clean(args.max)||process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS});
+  const args=parseArgs(),result=runVibe2AutoPlanner({statusFile:clean(args.status)||'.vibe2/main-company-status.json',catalogFile:clean(args.catalog)||'.vibe2/main-game-catalog.json',developmentQueueFile:clean(args['development-queue']),queueFile:clean(args.queue),runtimeFile:clean(args.runtime)||'vibe2-runtime.json',controlFile:clean(args.control),experienceFile:clean(args.experience),recombinationFile:clean(args.recombination),historicalRegistryFile:clean(args['historical-registry']),robloxDistillationFile:clean(args['roblox-distillation']),repoRoot:clean(args.root)||process.cwd(),requestedGameId:clean(args['requested-game']),maxConcurrentTasks:clean(args.max)||process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS});
   console.log(`VIBE2_MACHINE_HANDOFF=${result.machineHandoff?.used?'USED':'NOT_USED'}`);
   console.log(`VIBE2_MACHINE_STATE=${result.machineHandoff?.consistency?.ok?'CONSISTENT':'INCONSISTENT'}`);
   console.log(`VIBE2_PLANNER_PERSISTENT_MAX=${result.machineHandoff?.currentPersistentMax||0}`);
@@ -3234,6 +3346,9 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_PLANNING_BACKLOG_CURRENT=${result.planningBacklog?.current||0}`);
   console.log(`VIBE2_PLANNING_BACKLOG_AFTER=${result.planningBacklog?.after??result.planningBacklog?.current??0}`);
   console.log(`VIBE2_PLANNING_BACKLOG_RELEASE_WAIT_EXCLUDED=${result.planningBacklog?.releaseWaitExcluded||0}`);
+  console.log(`VIBE2_POST_F9_ROBLOX_MISSING_LANES=${result.planningBacklog?.postF9RobloxMissingLaneCount||0}`);
+  console.log(`VIBE2_POST_F9_ROBLOX_BACKLOG_BYPASS=${result.planningBacklog?.postF9RobloxTargetBypass?'YES':'NO'}`);
+  console.log(`VIBE2_AUTO_PLAN_REQUESTED_GAME=${result.planningBacklog?.requestedGameId||'NONE'}`);
   console.log(`VIBE2_AUTO_PLAN=${result.planned?'YES':'NO'}`);
   console.log(`VIBE2_DEVELOPMENT_QUEUE_SOURCE=${clean(args['development-queue'])||'NONE'}`);
   console.log(`VIBE2_AUTO_PLAN_QUEUE_SYNC=${result.queueSynchronized?'YES':'NO'}`);
