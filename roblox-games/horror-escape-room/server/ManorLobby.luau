@@ -8,6 +8,7 @@ local PhysicsService=game:GetService("PhysicsService")
 local RS=game:GetService("ReplicatedStorage")
 local DSS=game:GetService("DataStoreService")
 local Assets=require(RS.Shared.ManorAssets)
+local C=require(RS.Shared.GameConfig)
 local Manor={}
 Manor.__index=Manor
 
@@ -27,9 +28,9 @@ local function stamp(p,speaker,text)
  p:SetAttribute("LobbyStoryEvent",speaker.."|"..text.."|"..tostring(workspace:GetServerTimeNow()))
 end
 
-function Manor.new(remote)
+function Manor.new(remote,selectMap)
  assert(Assets.ModelId>0,"MANOR_NATIVE_ASSET_NOT_PUBLISHED")
- local self=setmetatable({remote=remote,rooms={},slots={},ready=false},Manor)
+ local self=setmetatable({remote=remote,selectMap=selectMap,rooms={},slots={},ready=false},Manor)
  local old=workspace:FindFirstChild("MidnightLobby");if old then old:Destroy()end
  self.root=Instance.new("Folder");self.root.Name="MidnightLobby";self.root.Parent=workspace
  -- 게시 빌드에 검증된 모델을 포함해 새 서버가 자산 서버를 다시 기다리지 않게 한다.
@@ -112,7 +113,7 @@ function Manor:Get(p)
  end
  local spawn=Instance.new("SpawnLocation");spawn.Name="PersonalSpawn";spawn.Position=origin+Vector3.new(0,.4,60)
  spawn.Size=Vector3.new(10,.1,10);spawn.Anchored=true;spawn.Transparency=1;spawn.CanCollide=false;spawn.CanTouch=false;spawn.Neutral=true;spawn.Duration=0;spawn.Parent=folder
- local room={folder=folder,scene=scene,origin=origin,spawn=spawn,index=index,busy=false,gag=0,lastPrompt=0}
+ local room={folder=folder,scene=scene,origin=origin,spawn=spawn,index=index,busy=false,gag=0,lastPrompt=0,connections={},lastGhostCompleted=tonumber(p:GetAttribute("GhostCompleted"))or 0,lastRoundState=tostring(p:GetAttribute("RoundState")or"")}
  self.rooms[p]=room
  p:SetAttribute("ManorOriginX",origin.X);p:SetAttribute("ManorOriginZ",origin.Z)
  p.RespawnLocation=spawn
@@ -139,6 +140,22 @@ function Manor:Get(p)
  prompt("ArmorPrompt",Vector3.new(-16,4,-11),"졸고 있는 갑옷",2)
  prompt("CoffinPrompt",Vector3.new(17,3,-14),"누군가의 낮잠",3)
  prompt("TeaPrompt",Vector3.new(-15,4,-18),"막내가 훔친 찻잔",4)
+ -- 벽지도는 실제 공간에서 선택하지만 최종 승인은 Game.server의 selectLobbyMap 한 곳이 담당한다.
+ for _,map in ipairs(C.Maps or{})do
+  local z=map.Id=="SCHOOL"and-39 or map.Id=="HOSPITAL"and-31 or-23
+  local anchor=part(folder,"MapPrompt_"..map.Id,origin+Vector3.new(-68,5.5,z),Vector3.new(1.2,1.2,1.2),false)
+  anchor.CanCollide=false;anchor.CanTouch=false
+  local pr=Instance.new("ProximityPrompt");pr.Name="WallMapPrompt";pr.ObjectText=map.Name
+  pr.ActionText="출정지 선택";pr.MaxActivationDistance=9;pr.RequiresLineOfSight=false;pr.HoldDuration=.12;pr.Parent=anchor
+  pr.Triggered:Connect(function(visitor)
+   if visitor~=p or p:GetAttribute("RoomServer")==true or p:GetAttribute("RoundState")=="RUNNING"then return end
+   local selected=self.selectMap and self.selectMap(p,map.Id)
+   if selected then
+    stamp(p,"집사 모티머",selected.Name.."으로 예약서를 준비하겠습니다.")
+    self.remote:FireClient(p,"MANOR_MENU","PLAY")
+   end
+  end)
+ end
  -- 홀 전체를 비추는 샹들리에와 얼굴 앞의 부드러운 조명. 그림자는 벽난로·샹들리에만 사용한다.
  for _,spec in ipairs({{Vector3.new(0,16,-24),2.1,38,true},{Vector3.new(-21,7,15),1.4,25,false},{Vector3.new(23,7,19),1.4,25,false},{Vector3.new(-19,9,-22),1.7,23,false},{Vector3.new(20,9,-14),1.7,23,false},{Vector3.new(0,3,-60),1.8,22,true},{Vector3.new(5,9,-3),1.65,23,false},{Vector3.new(0,9,9),1.35,26,false}})do
   local anchor=part(folder,"WarmLight",origin+spec[1],Vector3.one,false);anchor.CanCollide=false
@@ -174,14 +191,82 @@ function Manor:Get(p)
    end
   end
  end
- -- Owner records turn the back wall into a personal collection display.
- local function collection()
-  local count=math.clamp(tonumber(p:GetAttribute("GhostSeenCount"))or 0,0,12)
-  for i=1,12 do for _,mesh in ipairs(namedParts(scene,"PortraitCanvas"..i))do
-   if mesh.Name=="PortraitCanvas"..i then mesh.Color=i<=count and Color3.fromRGB(255,239,206)or Color3.fromRGB(130,122,119)end
-  end end
+ -- 개인 저택 진행도: 초상화, 실물 장부 책, 맵 추억 유물, 2층 봉인을 기존 저장 속성으로만 갱신한다.
+ local function ghostStages()
+  local stages={}
+  for id,n in string.gmatch(tostring(p:GetAttribute("GhostProgress")or""),"([^:,]+):(%d+)")do stages[id]=tonumber(n)or 0 end
+  return stages
  end
- room.collection=p:GetAttributeChangedSignal("GhostSeenCount"):Connect(collection);collection()
+ local function refreshDisplays()
+  local seen=math.clamp(tonumber(p:GetAttribute("GhostSeenCount"))or 0,0,12)
+  local completed=math.clamp(tonumber(p:GetAttribute("GhostCompleted"))or 0,0,12)
+  local selected=tostring(p:GetAttribute("SelectedLobbyMap")or"SCHOOL")
+  local stages=ghostStages()
+
+  for i=1,12 do
+   for _,mesh in ipairs(namedParts(scene,"PortraitCanvas"..i))do
+    if mesh.Name=="PortraitCanvas"..i then mesh.Color=i<=seen and Color3.fromRGB(255,239,206)or Color3.fromRGB(130,122,119)end
+   end
+   for _,mesh in ipairs(namedParts(scene,string.format("GhostArchiveBook%02d",i)))do
+    mesh.Transparency=i<=completed and 0 or .86;mesh.CanQuery=false
+   end
+   for _,mesh in ipairs(namedParts(scene,string.format("GhostArchiveBookBand%02d",i)))do
+    mesh.Transparency=i<=completed and 0 or 1;mesh.CanQuery=false
+   end
+  end
+
+  for _,map in ipairs(C.Maps or{})do
+   local chosen=map.Id==selected
+   for _,mesh in ipairs(namedParts(scene,"MapCard_"..map.Id))do
+    mesh.Transparency=chosen and 0 or .16
+    mesh.Reflectance=chosen and .08 or 0
+   end
+   for _,mesh in ipairs(namedParts(scene,"MapPin_"..map.Id))do mesh.Transparency=chosen and 0 or .78 end
+
+   local discovered=false;local full=true;local count=0
+   for _,ghost in ipairs(C.GhostCatalog or{})do
+    if ghost.Map==map.Id then
+     count+=1
+     local stage=stages[ghost.Id]or 0
+     if stage>0 then discovered=true end
+     if stage<3 then full=false end
+    end
+   end
+   if count==0 then full=false end
+   for _,mesh in ipairs(namedParts(scene,"MemoryRelic_"..map.Id))do
+    mesh.Transparency=discovered and 0 or .82
+    mesh.Reflectance=full and .10 or 0
+   end
+  end
+
+  local total=math.max(1,#(C.GhostCatalog or{}))
+  for i=0,5 do
+   local threshold=math.ceil((i+1)*total/6)
+   local reached=completed>=threshold
+   for _,mesh in ipairs(namedParts(scene,"GuestDoorSeal"..i))do
+    mesh.Color=reached and Color3.fromRGB(148,58,72)or Color3.fromRGB(66,20,31)
+    mesh.Reflectance=reached and .08 or 0
+   end
+  end
+ end
+ local function connect(signal,fn)local connection=signal:Connect(fn);table.insert(room.connections,connection);return connection end
+ connect(p:GetAttributeChangedSignal("GhostSeenCount"),refreshDisplays)
+ connect(p:GetAttributeChangedSignal("GhostProgress"),refreshDisplays)
+ connect(p:GetAttributeChangedSignal("SelectedLobbyMap"),refreshDisplays)
+ connect(p:GetAttributeChangedSignal("GhostCompleted"),function()
+  local value=tonumber(p:GetAttribute("GhostCompleted"))or 0
+  if value>room.lastGhostCompleted then stamp(p,"기록관 에드윈","새 괴담 기록을 저택 장부에 정리했습니다.")end
+  room.lastGhostCompleted=value;refreshDisplays()
+ end)
+ connect(p:GetAttributeChangedSignal("RoundState"),function()
+  local newState=tostring(p:GetAttribute("RoundState")or"")
+  local oldState=room.lastRoundState
+  room.lastRoundState=newState
+  if newState=="ROOM_BROWSER"and(oldState=="RUNNING"or oldState=="SPECTATING"or string.match(oldState,"^RESULT_"))then
+   stamp(p,"집사 모티머","돌아오셨군요. 오늘 밤의 흔적은 그대로 보관해두었습니다.")
+  end
+ end)
+ refreshDisplays()
  folder.Parent=self.root
  p:SetAttribute("PersonalLobbyOwner",p.UserId)
  task.spawn(function()
@@ -290,7 +375,7 @@ function Manor:Recover(p)
 end
 function Manor:Remove(p)
  local r=self.rooms[p];if not r then return end
- if r.collection then r.collection:Disconnect()end
+ for _,connection in ipairs(r.connections or{})do connection:Disconnect()end
  self.slots[r.index]=nil;self.rooms[p]=nil;self.rankingRequests[p]=nil;r.folder:Destroy()
 end
 return Manor
