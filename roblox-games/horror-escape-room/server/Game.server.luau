@@ -196,6 +196,13 @@ local function roomFeedback(p,kind,message)
  if not p or not p.Parent then return end
  p:SetAttribute("RoomFeedback",tostring(kind or"INFO")..":"..tostring(message or""))
 end
+local function manorFeedback(p,kind,message)
+ if not p or not p.Parent then return end
+ p:SetAttribute("ManorVisitFeedback",tostring(kind or"INFO")..":"..tostring(message or""))
+end
+local function visitingManor(p)
+ return math.floor(tonumber(p:GetAttribute("VisitedManorOwnerUserId"))or 0)>0
+end
 local function normalizeRoomVisibility(value)
  local raw=string.upper(tostring(value or"PUBLIC"))
  for _,allowed in ipairs(C.Room and C.Room.Visibility or{"PUBLIC","FRIENDS","PRIVATE"})do
@@ -204,6 +211,7 @@ local function normalizeRoomVisibility(value)
  return"PUBLIC"
 end
 local function roomActionReady(p)
+ if visitingManor(p)then manorFeedback(p,"ERROR","내 저택으로 돌아간 뒤 출정할 수 있어");return false end
  local now=os.clock()
  local cd=math.max(.5,tonumber(C.Room and C.Room.ActionCooldownSeconds)or 1.5)
  if now-(roomActionLast[p]or 0)<cd then return false end
@@ -220,6 +228,13 @@ mapById=function(id)
  local wanted=tostring(id or"")
  for _,map in ipairs(C.Maps or{})do if map.Id==wanted then return map end end
  return(C.Maps and C.Maps[1])or{Id="SCHOOL",Name="학교"}
+end
+local function selectLobbyMap(p,value)
+ if state=="RUNNING"or roomServer or visitingManor(p)or typeof(value)~="string"then return nil end
+ local map=mapById(value)
+ p:SetAttribute("SelectedLobbyMap",map.Id)
+ p:SetAttribute("SelectedLobbyMapName",map.Name)
+ return map
 end
 local function setRoomDirectoryEntry(code,data)
  if not roomDirectory or code==""or typeof(data)~="table"then return false end
@@ -860,7 +875,7 @@ end
 
 -- New native GLB scene with one spatial instance per player.
 makePhysicalLobby=function()
- local ok,value=pcall(ManorLobby.new,remote)
+ local ok,value=pcall(ManorLobby.new,remote,selectLobbyMap)
  if not ok then
   workspace:SetAttribute("LobbyLoadError","저택을 불러오지 못했어. 잠시 후 다시 접속해줘.")
   error(value)
@@ -2887,14 +2902,51 @@ local function validRemoteAction(p,a)
  lastRequest[p]=now
  return true
 end
+local function returnToPersonalManor(p,reason)
+ if not manorLobby or roomServer or state=="RUNNING"then return false end
+ local destination,look=manorLobby:ReturnHome(p)
+ if destination then
+  teleport(p,destination,look)
+  manorFeedback(p,"RETURNED",reason or"내 저택으로 돌아왔어")
+  return true
+ end
+ return false
+end
+local function setPersonalManorVisibility(p,value)
+ if not manorLobby or roomServer or state=="RUNNING"then return end
+ local visibility=string.upper(tostring(value or"PRIVATE"))=="PUBLIC"and"PUBLIC"or"PRIVATE"
+ local ejected=manorLobby:SetVisibility(p,visibility)
+ manorFeedback(p,"VISIBILITY",visibility=="PUBLIC"and"저택을 공개했어"or"저택을 비공개로 전환했어")
+ for _,visitor in ipairs(ejected or{})do
+  if visitor.Parent==Players then
+   local destination,look=manorLobby:GetSpawn(visitor)
+   teleport(visitor,destination,look)
+   manorFeedback(visitor,"RETURNED","저택 주인이 비공개로 전환해서 내 저택으로 돌아왔어")
+  end
+ end
+end
+local function visitPublicManor(p,ownerUserId)
+ if not manorLobby or roomServer or state=="RUNNING"then return end
+ local destination,look,reason=manorLobby:Visit(p,ownerUserId)
+ if not destination then manorFeedback(p,"ERROR",reason or"저택을 방문할 수 없어");return end
+ teleport(p,destination,look)
+ manorFeedback(p,"VISITING",tostring(p:GetAttribute("VisitedManorOwnerName")or"").."의 저택 방문 중")
+end
+
 local function broadcastMultiplayerSync(actor)
  local participants=Players:GetPlayers();local hc,mc=teamCounts()
  remote:FireAllClients("MULTIPLAYER_SYNC",{ActorUserId=actor and actor.UserId or 0,ParticipantCount=#participants,ActivePopulation=hc+mc,AICount=#bots,HumanCount=hc,MonsterCount=mc,TimeLeft=math.max(0,math.ceil(timeLeft)),RoundScore=actor and(actor:GetAttribute("RoundScore")or 0)or 0})
 end
 remote.OnServerEvent:Connect(function(p,a,value)
  if not validRemoteAction(p,a)then return end
- if a==C.Actions.SELECT_MAP and state~="RUNNING"and not roomServer then
-  if typeof(value)=="string"then local map=mapById(value);p:SetAttribute("SelectedLobbyMap",map.Id);p:SetAttribute("SelectedLobbyMapName",map.Name)end
+ if a==C.Actions.SELECT_MAP then
+  selectLobbyMap(p,value)
+ elseif a==C.Actions.SET_MANOR_VISIBILITY then
+  setPersonalManorVisibility(p,value)
+ elseif a==C.Actions.VISIT_MANOR then
+  visitPublicManor(p,value)
+ elseif a==C.Actions.RETURN_MANOR then
+  returnToPersonalManor(p)
  elseif a==C.Actions.MANOR_SOLO and state~="RUNNING"and not roomServer then
   createReservedRoom(p,"PRIVATE",true)
  elseif a==C.Actions.MANOR_RANK and state~="RUNNING"and manorLobby then
