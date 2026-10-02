@@ -1,5 +1,5 @@
 {
-  "version": 62,
+  "version": 63,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -870,7 +870,10 @@
       ],
       "fullRescanEveryFloor": false,
       "f9UsesCurrentExactEvidenceFanIn": true,
-      "newSecurityPipelineForbidden": true
+      "newSecurityPipelineForbidden": true,
+      "singleScanPerExactCandidate": true,
+      "repeatScanSameExactCandidateForbidden": true,
+      "revalidateOnlyAfterRelevantSecurityBoundaryOrExactCandidateChange": true
     },
     "protections": {
       "unrelatedSecurityProcedureMayNotSerializeGameBuildUp": true,
