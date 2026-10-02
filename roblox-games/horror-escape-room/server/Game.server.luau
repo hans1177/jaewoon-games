@@ -9,21 +9,42 @@ local TeleportService=game:GetService("TeleportService")
 local MemoryStoreService=game:GetService("MemoryStoreService")
 local TweenService=game:GetService("TweenService")
 
--- 서버 부팅 첫 프레임부터 실제 로비 좌표에 SpawnLocation을 둔다.
--- 동적 로비 생성 전 Roblox 기본 공중 스폰이 노출되는 것을 막는다.
+-- FIRST_FRAME_SPAWN_SINGLE_PATH_V4:
+-- 엔진 SpawnLocation은 로비 bootstrap 하나만 유지한다.
+-- 개인 저택과 경기장은 일반 Part 표식 + 서버 teleport만 사용해 SpawnLocation 경쟁을 원천 차단한다.
+-- bootstrap 안전 바닥은 저택 생성 뒤에도 유지해 CharacterAdded 전후의 첫 프레임 낙하도 막는다.
+local bootstrapGround=workspace:FindFirstChild("ManorBootstrapGround")
+if not bootstrapGround or not bootstrapGround:IsA("BasePart")then
+ if bootstrapGround then bootstrapGround:Destroy()end
+ bootstrapGround=Instance.new("Part")
+ bootstrapGround.Name="ManorBootstrapGround"
+ bootstrapGround.Size=Vector3.new(84,1,44)
+ bootstrapGround.Position=Vector3.new(0,-.15,330)
+ bootstrapGround.Anchored=true
+ bootstrapGround.Transparency=1
+ bootstrapGround.CanCollide=true
+ bootstrapGround.CanTouch=false
+ bootstrapGround.CanQuery=true
+ bootstrapGround.Parent=workspace
+end
+
+-- 서버 첫 프레임에는 단 하나의 엔진 SpawnLocation만 둔다.
+-- 실제 개인 저택 좌표/경기장 좌표로의 이동은 아래 onCharacter -> teleport 한 경로만 담당한다.
 local lobbyBootstrapSpawn=workspace:FindFirstChild("LobbyBootstrapSpawn")
 if not lobbyBootstrapSpawn or not lobbyBootstrapSpawn:IsA("SpawnLocation")then
  if lobbyBootstrapSpawn then lobbyBootstrapSpawn:Destroy()end
  lobbyBootstrapSpawn=Instance.new("SpawnLocation")
  lobbyBootstrapSpawn.Name="LobbyBootstrapSpawn"
  lobbyBootstrapSpawn.Size=Vector3.new(18,.2,18)
- lobbyBootstrapSpawn.Position=Vector3.new(0,.55,270)
+ lobbyBootstrapSpawn.Position=Vector3.new(0,.55,330)
  lobbyBootstrapSpawn.Anchored=true
  lobbyBootstrapSpawn.Neutral=true
+ lobbyBootstrapSpawn.AllowTeamChangeOnTouch=false
+ lobbyBootstrapSpawn.Enabled=true
  lobbyBootstrapSpawn.Transparency=1
  lobbyBootstrapSpawn.CanCollide=false
  lobbyBootstrapSpawn.CanTouch=false
- lobbyBootstrapSpawn.CanQuery=true
+ lobbyBootstrapSpawn.CanQuery=false
  lobbyBootstrapSpawn.Duration=0
  lobbyBootstrapSpawn:SetAttribute("WalkableGround",false)
  lobbyBootstrapSpawn.Parent=workspace
@@ -31,16 +52,20 @@ end
 do
 local function bootstrapLobbyCharacter(player,character)
  if workspace:GetAttribute("LobbyPhase")=="RUNNING"or workspace:GetAttribute("RoomState")=="RUNNING"then return end
+ lobbyBootstrapSpawn.Enabled=true
  player.RespawnLocation=lobbyBootstrapSpawn
  task.defer(function()
   local rootPart=character and character:WaitForChild("HumanoidRootPart",5)
   local humanoid=character and character:WaitForChild("Humanoid",5)
   if not rootPart or not humanoid or not character.Parent then return end
   if workspace:GetAttribute("LobbyPhase")=="RUNNING"or workspace:GetAttribute("RoomState")=="RUNNING"then return end
+  -- 여기서는 위치를 다시 PivotTo 하지 않는다.
+  -- 엔진 bootstrap -> 개인저택 teleport 두 단계만 유지해 이중/삼중 스폰 보정을 제거한다.
   rootPart.Anchored=false
   rootPart.AssemblyLinearVelocity=Vector3.zero
   rootPart.AssemblyAngularVelocity=Vector3.zero
   humanoid.PlatformStand=false;humanoid.Sit=false;humanoid.AutoRotate=true
+  player:SetAttribute("BootstrapGroundReadyAt",workspace:GetServerTimeNow())
  end)
 end
 local function bindBootstrapLobbySpawn(player)
@@ -53,12 +78,87 @@ end
 Players.PlayerAdded:Connect(bindBootstrapLobbySpawn)
 for _,player in ipairs(Players:GetPlayers())do bindBootstrapLobbySpawn(player)end
 end
-
-local bootstrapGround=Instance.new("Part")
-bootstrapGround.Name="ManorBootstrapGround";bootstrapGround.Size=Vector3.new(84,1,90)
-bootstrapGround.Position=Vector3.new(0,-.15,268);bootstrapGround.Anchored=true;bootstrapGround.Transparency=1;bootstrapGround.Parent=workspace
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
+local CombatAssets=require(Shared:WaitForChild("CombatAssets"))
+
+-- 작성된 스킨드 GLB는 서버에서 한 번만 불러 ReplicatedStorage 템플릿으로 공유한다.
+-- 게임 권한/피격판정/이동은 기존 캐릭터가 계속 담당하고 이 모델은 100% 시각 레이어다.
+local combatVisualTemplates=RS:FindFirstChild("CombatVisualTemplates")
+if not combatVisualTemplates then
+ combatVisualTemplates=Instance.new("Folder")
+ combatVisualTemplates.Name="CombatVisualTemplates"
+ combatVisualTemplates.Parent=RS
+end
+local function prepareAuthoredCombatVisual(template,assetId,sourceMode)
+ if not template or not template:IsA("Model")then return false end
+ for _,d in ipairs(template:GetDescendants())do
+  if d:IsA("LuaSourceContainer")or d:IsA("RemoteEvent")or d:IsA("RemoteFunction")or d:IsA("Tool")then
+   d:Destroy()
+  elseif d:IsA("BasePart")then
+   d.Anchored=true;d.CanCollide=false;d.CanTouch=false;d.CanQuery=false;d.CastShadow=true
+  end
+ end
+ local visible=0
+ for _,d in ipairs(template:GetDescendants())do
+  if d:IsA("BasePart")and d.Transparency<1 then visible+=1 end
+ end
+ if visible==0 then return false end
+ template.Name="AuthoredHumanoidGhost"
+ template:SetAttribute("SourceAssetLibrary","roblox-world-ghost-authored-glb")
+ template:SetAttribute("SourceAssetId",assetId)
+ template:SetAttribute("SourceSha256",tostring(CombatAssets.HumanoidSourceSha256 or""))
+ template:SetAttribute("VisualOnly",true)
+ template:SetAttribute("PackagedNativeModel",sourceMode=="PACKAGED_RBXM")
+ template.Parent=combatVisualTemplates
+ workspace:SetAttribute("CombatAuthoredAssetsReady",true)
+ workspace:SetAttribute("CombatAuthoredAssetSource",sourceMode)
+ workspace:SetAttribute("CombatAuthoredAssetState",sourceMode=="PACKAGED_RBXM"and"READY_PACKAGED"or"READY_RUNTIME")
+ return true
+end
+
+local function loadAuthoredCombatVisual()
+ local assetId=math.floor(tonumber(CombatAssets.HumanoidModelId)or 0)
+ workspace:SetAttribute("CombatAuthoredAssetId",assetId)
+ workspace:SetAttribute("CombatAuthoredAssetsReady",false)
+ workspace:SetAttribute("CombatAuthoredAssetLoadAttempts",0)
+ workspace:SetAttribute("CombatAuthoredAssetSource","NONE")
+ if assetId<=0 then
+  workspace:SetAttribute("CombatAuthoredAssetState","MISSING_MODEL_ID")
+  return
+ end
+
+ -- OWNER_DIRECT_PACKAGED_COMBAT_V1:
+ -- owner publish가 검증된 native RBXM을 place 안에 포함한 경우 런타임 외부 다운로드를 전혀 기다리지 않는다.
+ local packaged=combatVisualTemplates:FindFirstChild("AuthoredHumanoidGhost")
+ if packaged then
+  if prepareAuthoredCombatVisual(packaged,assetId,"PACKAGED_RBXM")then
+   return
+  end
+  packaged:Destroy()
+ end
+
+ -- 패키지되지 않은 개발/Studio 경로만 Roblox asset loader를 fallback으로 사용한다.
+ local template=nil
+ workspace:SetAttribute("CombatAuthoredAssetState","LOADING_RUNTIME_FALLBACK")
+ for attempt=1,6 do
+  workspace:SetAttribute("CombatAuthoredAssetLoadAttempts",attempt)
+  local ok,result=pcall(AssetService.LoadAssetAsync,AssetService,assetId)
+  if ok and result then template=result;break end
+  workspace:SetAttribute("CombatAuthoredAssetState","RETRY_"..attempt)
+  task.wait(attempt<3 and 1 or 2)
+ end
+ if not template then
+  workspace:SetAttribute("CombatAuthoredAssetState","LOAD_FAILED_AFTER_RETRY")
+  return
+ end
+ if not prepareAuthoredCombatVisual(template,assetId,"RUNTIME_LOAD")then
+  template:Destroy()
+  workspace:SetAttribute("CombatAuthoredAssetState","EMPTY_MODEL")
+ end
+end
+task.spawn(loadAuthoredCombatVisual)
+
 local manorLobby=nil
 local ManorLobby=require(script.Parent:WaitForChild("ManorLobby"))
 local Style=require(Shared:WaitForChild("VisualStyle"))
@@ -89,6 +189,7 @@ local roomVisibility="PUBLIC"
 local roomSelectedMapId="SCHOOL"
 local roomStartRequested=false
 local roomSolo=false
+local localSoloSession=false
 local roomActionLast={}
 local roomJoinedAt={}
 local roomExpectedCount=1
@@ -367,6 +468,19 @@ local function createQueuedReservedRoom(players,selectedMapId)
  if not teleportPlayersToReservedRoom(players,record)then removeRoomDirectoryEntry(code);return false end
  return true
 end
+local function startLocalSoloRoom(p)
+ if roomServer or state=="RUNNING"or not roomActionReady(p)then return false end
+ local selectedMap=mapById(p:GetAttribute("SelectedLobbyMap")or"SCHOOL")
+ localSoloSession=true;roomSolo=true;roomServer=true;roomCode="SOLO"
+ roomHostUserId=p.UserId;roomHostName=p.DisplayName;roomVisibility="PRIVATE";roomSelectedMapId=selectedMap.Id
+ roomExpectedCount=1;roomFirstJoinAt=os.clock();roomStartRequested=true;roomJoinedAt[p]=os.clock()
+ p:SetAttribute("LobbySelectionConfirmed",true)
+ workspace:SetAttribute("RoomStartRequested",true)
+ roomFeedback(p,"START",selectedMap.Name.." · 같은 서버에서 바로 출정")
+ syncRoomState();syncLobbyState("INTERMISSION")
+ return true
+end
+
 local function createReservedRoom(p,visibility,solo)
  if roomServer or state=="RUNNING"or not roomActionReady(p)then return end
  local selectedMap=mapById(p:GetAttribute("SelectedLobbyMap")or"SCHOOL")
@@ -522,7 +636,7 @@ local function shuffledSpawns(source)
 end
 local function personalSpawn(p)
  if manorLobby then return manorLobby:GetSpawn(p)end
- return Vector3.new(0,3,293),Vector3.new(0,4,262),lobbyBootstrapSpawn
+ return Vector3.new(0,3,330),Vector3.new(0,5,268),lobbyBootstrapSpawn
 end
 local assetCache={}
 local objectiveState={round=0,done=0,total=0}
@@ -784,12 +898,20 @@ local function groundedRootTarget(p,pos)
  local c=p.Character;local r=root(p);local h=hum(p)
  if not c or not r or not h then return Vector3.new(pos.X,pos.Y,pos.Z)end
  local lobbyDestination=pos.Z>=180
- local rootFolders=lobbyDestination and{workspace:FindFirstChild("MidnightLobby")}or{arena}
+ -- 경기장은 현재 MidnightArena의 WalkableGround만 사용한다.
+ -- 천장/지붕/소품을 fallback 바닥으로 잡으면 캐릭터가 공중 스폰하므로 일반 Workspace Raycast는 금지한다.
+ local currentArena=arena
+ if not currentArena or not currentArena.Parent then currentArena=workspace:FindFirstChild("MidnightArena")end
+ local rootFolders=lobbyDestination and{workspace:FindFirstChild("MidnightLobby")}or{currentArena}
  local grounds={}
+ local maxGroundY=lobbyDestination and(pos.Y+1.5)or(pos.Y+3)
  for _,rootFolder in ipairs(rootFolders)do
   if rootFolder and rootFolder.Parent then
    for _,d in ipairs(rootFolder:GetDescendants())do
-    if d:IsA("BasePart")and d:GetAttribute("WalkableGround")==true then table.insert(grounds,d)end
+    if d:IsA("BasePart")and d:GetAttribute("WalkableGround")==true then
+     local topY=d.Position.Y+d.Size.Y*.5
+     if topY<=maxGroundY then table.insert(grounds,d)end
+    end
    end
   end
  end
@@ -798,14 +920,11 @@ local function groundedRootTarget(p,pos)
  if #grounds>0 then
   params.FilterType=Enum.RaycastFilterType.Include
   params.FilterDescendantsInstances=grounds
-  local rayTop=lobbyDestination and 30 or(pos.Y+24)
-  local rayLength=lobbyDestination and 60 or 52
+  local rayTop=lobbyDestination and(pos.Y+4)or(pos.Y+6)
+  local rayLength=lobbyDestination and math.max(16,pos.Y+12)or 18
   hit=workspace:Raycast(Vector3.new(pos.X,rayTop,pos.Z),Vector3.new(0,-rayLength,0),params)
- else
-  params.FilterType=Enum.RaycastFilterType.Exclude
-  params.FilterDescendantsInstances={c}
-  hit=workspace:Raycast(Vector3.new(pos.X,pos.Y+20,pos.Z),Vector3.new(0,-44,0),params)
  end
+ -- 바닥 태그가 잠깐 비어 있어도 지붕으로 올리지 않고 맵 기준 바닥으로 고정한다.
  local groundY=hit and hit.Position.Y or(lobbyDestination and .65 or .5)
  local standingOffset=math.max(1,tonumber(h.HipHeight)or 0)+(r.Size.Y*.5)
  if h.RigType==Enum.HumanoidRigType.R6 then
@@ -813,13 +932,16 @@ local function groundedRootTarget(p,pos)
   standingOffset+=leg and leg.Size.Y or 2
  end
  local targetY=groundY+standingOffset+.03
- if lobbyDestination then targetY=math.clamp(targetY,2.8,5.2)end
+ if lobbyDestination then targetY=math.clamp(targetY,2.8,5.2)else targetY=math.clamp(targetY,2.8,6.5)end
  return Vector3.new(pos.X,targetY,pos.Z)
 end
 local function teleport(p,pos,lookAtPos)
  local c=p.Character
  local r=root(p);if r then
-  local target=groundedRootTarget(p,pos)
+  -- 개인 저택/로비는 호출자가 지정한 앞마당 좌표를 그대로 사용한다.
+  -- 다층 WalkableGround 탐색이나 재보정으로 2층에 올라가지 않는다.
+  local lobbyDestination=pos.Z>=180
+  local target=lobbyDestination and Vector3.new(pos.X,pos.Y,pos.Z)or groundedRootTarget(p,pos)
   movementGraceUntil[p]=os.clock()+1
   lastValidPosition[p]=target
   local targetCFrame=CFrame.new(target)
@@ -840,7 +962,7 @@ local function teleport(p,pos,lookAtPos)
    task.wait(.08)
    local rr=root(p);local hh=hum(p)
    if p.Character~=c or rr~=r or not rr or not hh or not rr.Parent then return end
-   local corrected=groundedRootTarget(p,pos)
+   local corrected=lobbyDestination and Vector3.new(pos.X,pos.Y,pos.Z)or groundedRootTarget(p,pos)
    if math.abs(rr.Position.Y-corrected.Y)>.08 then
     movementGraceUntil[p]=os.clock()+.5
     lastValidPosition[p]=corrected
@@ -884,8 +1006,9 @@ makePhysicalLobby=function()
  lobbySpawnLocation=lobbyBootstrapSpawn
  lobbySpawnLocation.Name="LobbySpawn"
  lobbySpawnLocation.CanCollide=false
- lobbySpawnLocation.Position=Vector3.new(0,.4,293)
- local safety=workspace:FindFirstChild("ManorBootstrapGround");if safety then safety:Destroy()end
+ lobbySpawnLocation.Position=Vector3.new(0,.4,330)
+ -- 안전 바닥은 제거하지 않는다. 개인 저택 teleport 직전/재스폰 경쟁에서도 바닥을 보장한다.
+ bootstrapGround:SetAttribute("PersistentBootstrapSafety",true)
  for _,player in ipairs(Players:GetPlayers())do manorLobby:Get(player)end
  refreshPhysicalLobby=function()end
  workspace:SetAttribute("PhysicalLobbyReady",true)
@@ -896,9 +1019,12 @@ end
 task.spawn(function()
  while true do
   task.wait(.5)
-  if manorLobby and state~="RUNNING"then
+  -- RESULT_CEREMONY_NO_MANOR_RECOVERY: 결과/세레머니 중 저택 안전복구가 경기장 캐릭터를 끌어내지 않는다.
+  if manorLobby and state=="WAITING"then
    for _,p in ipairs(Players:GetPlayers())do
-    if not roomTeleportPending[p]and p:GetAttribute("RoundState")~="SPECTATING"then
+    local roundState=tostring(p:GetAttribute("RoundState")or"")
+    local lobbySafe=roundState=="ROOM_BROWSER"or roundState=="WAITING"
+    if lobbySafe and not roomTeleportPending[p]then
      local destination,look=manorLobby:Recover(p)
      if destination then teleport(p,destination,look);p:SetAttribute("LobbySafetyRecoveredAt",workspace:GetServerTimeNow())end
     end
@@ -972,14 +1098,50 @@ local function addLoreCollectible(f,id,pos)
  return base
 end
 
+local function syncObjectiveProgress()
+ local total=math.max(1,tonumber(objectiveState.total)or tonumber(C.ObjectiveCount)or 4)
+ local done=math.clamp(math.floor(tonumber(objectiveState.done)or 0),0,total)
+ for _,player in ipairs(Players:GetPlayers())do
+  if player:GetAttribute("RoundParticipant")==true then
+   player:SetAttribute("ObjectivesDone",done)
+   player:SetAttribute("ObjectivesTotal",total)
+  end
+ end
+ if done>=math.max(1,tonumber(C.EscapeUnlockObjectives)or total)then
+  workspace:SetAttribute("EscapeUnlocked",true)
+  if arena and arena.Parent then
+   for _,d in ipairs(arena:GetDescendants())do
+    if d:IsA("BasePart")and d.Name=="EmergencyGate"then d.CanCollide=false;d.Transparency=.62
+    elseif d:IsA("BasePart")and d.Name=="EmergencySign"then d.Color=Color3.fromRGB(91,231,158)
+    elseif d:IsA("ProximityPrompt")and d.Name=="EscapePrompt"then d.Enabled=true end
+   end
+  end
+ end
+end
+
 local function addObjectiveStation(f,name,pos,index)
  local base=arenaPart(f,"EnergyStation_"..name,Vector3.new(7,5,4),pos,Color3.fromRGB(62,72,86),Enum.Material.Metal)
  local screen=arenaPart(f,"EnergyScreen_"..name,Vector3.new(4.6,2.2,.35),pos+Vector3.new(0,.5,-2.2),Color3.fromRGB(84,181,235),Enum.Material.Neon);screen.CanCollide=false
- local prompt=Instance.new("ProximityPrompt");prompt.Name="EnergyPrompt";prompt.ObjectText=name.." · 에너지";prompt.ActionText="충전";prompt.HoldDuration=.8;prompt.MaxActivationDistance=10;prompt.RequiresLineOfSight=false;prompt.Parent=base
+ local prompt=Instance.new("ProximityPrompt");prompt.Name="EnergyPrompt";prompt.ObjectText=name;prompt.ActionText="가동 / 충전";prompt.HoldDuration=.8;prompt.MaxActivationDistance=10;prompt.RequiresLineOfSight=true;prompt.Parent=base
  base:SetAttribute("EnergyStationIndex",index)
+ base:SetAttribute("ObjectiveRound",0)
  prompt.Triggered:Connect(function(p)
   if state~="RUNNING"or p:GetAttribute("Frozen")==true then return end
   local role=p:GetAttribute("Role");if role~="SURVIVOR"and role~="MONSTER"then return end
+
+  if role=="SURVIVOR"and tonumber(base:GetAttribute("ObjectiveRound"))~=objectiveState.round then
+   base:SetAttribute("ObjectiveRound",objectiveState.round)
+   objectiveState.done=math.min(math.max(1,tonumber(objectiveState.total)or tonumber(C.ObjectiveCount)or 4),objectiveState.done+1)
+   screen.Color=Color3.fromRGB(96,231,166)
+   syncObjectiveProgress()
+   local total=math.max(1,tonumber(objectiveState.total)or tonumber(C.ObjectiveCount)or 4)
+   for _,player in ipairs(Players:GetPlayers())do
+    if player:GetAttribute("RoundParticipant")==true then
+     player:SetAttribute("MapContentFeedback","OBJECTIVE:"..tostring(objectiveState.done)..":"..tostring(total))
+    end
+   end
+  end
+
   local now=workspace:GetServerTimeNow()
   local ready=energyStationReady[p]or{};energyStationReady[p]=ready
   local availableAt=tonumber(ready[index])or 0
@@ -995,17 +1157,28 @@ local function addObjectiveStation(f,name,pos,index)
   ready[index]=now+stationCooldown
   setEnergy(p,current+recharge)
   p:SetAttribute("EnergyFeedback","STATION_RECHARGE:"..tostring(math.floor(recharge)))
-  screen.Color=Color3.fromRGB(150,226,255)
-  task.delay(.25,function()if screen and screen.Parent then screen.Color=Color3.fromRGB(84,181,235)end end)
+  if tonumber(base:GetAttribute("ObjectiveRound"))~=objectiveState.round then screen.Color=Color3.fromRGB(150,226,255)end
+  task.delay(.25,function()
+   if screen and screen.Parent and tonumber(base:GetAttribute("ObjectiveRound"))~=objectiveState.round then screen.Color=Color3.fromRGB(84,181,235)end
+  end)
  end)
  return base
 end
+
 local function addEscapeGate(f,mapId,pos)
  local gate=arenaPart(f,"EmergencyGate",Vector3.new(18,12,3),pos,Color3.fromRGB(68,78,86),Enum.Material.Metal)
  local sign=arenaPart(f,"EmergencySign",Vector3.new(12,2,.4),pos+Vector3.new(0,6,-1.8),Color3.fromRGB(112,130,145),Enum.Material.Neon);sign.CanCollide=false
- gate:SetAttribute("DecorativeOnly",true);gate:SetAttribute("MapId",mapId)
+ gate:SetAttribute("DecorativeOnly",false);gate:SetAttribute("MapId",mapId)
+ local prompt=Instance.new("ProximityPrompt");prompt.Name="EscapePrompt";prompt.ObjectText="비상 출구";prompt.ActionText="탈출";prompt.HoldDuration=.7;prompt.MaxActivationDistance=11;prompt.RequiresLineOfSight=true;prompt.Enabled=false;prompt.Parent=gate
+ prompt.Triggered:Connect(function(p)
+  if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"or workspace:GetAttribute("EscapeUnlocked")~=true then return end
+  p:SetAttribute("Escaped",true)
+  p:SetAttribute("MapContentFeedback","ESCAPED:"..mapId..":OK")
+  workspace:SetAttribute("SurvivorEscapeTriggered",true)
+ end)
  return gate
 end
+
 local function addMapUtility(f,id,name,pos)
  local base=arenaPart(f,"MapUtility_"..id,Vector3.new(6,5,4),pos,Color3.fromRGB(58,66,78),Enum.Material.Metal)
  local panel=arenaPart(f,"MapUtilityPanel_"..id,Vector3.new(4,2,.35),pos+Vector3.new(0,.5,-2.2),Color3.fromRGB(124,172,221),Enum.Material.Neon);panel.CanCollide=false
@@ -1268,7 +1441,11 @@ local function decorateArenaWithOfficialAssets(f,map)
     Vector3.new(-62,2,35),Vector3.new(-42,2,47),Vector3.new(42,2,37),Vector3.new(60,2,54),
     Vector3.new(88,2,98),Vector3.new(108,2,118),Vector3.new(128,2,98),
     Vector3.new(-128,2,100),Vector3.new(-108,2,116),Vector3.new(-88,2,100),
-    Vector3.new(-12,2,-18),Vector3.new(12,2,18)
+    Vector3.new(-12,2,-18),Vector3.new(12,2,18),
+    Vector3.new(-14,2,-48),Vector3.new(14,2,-36),Vector3.new(-14,2,-8),Vector3.new(14,2,6),
+    Vector3.new(-14,2,28),Vector3.new(14,2,44),
+    Vector3.new(-145,2,-55),Vector3.new(-92,2,-55),Vector3.new(92,2,-55),Vector3.new(145,2,-55),
+    Vector3.new(-145,2,112),Vector3.new(-72,2,108),Vector3.new(72,2,108),Vector3.new(145,2,112)
    }
    for i,pos in ipairs(spots)do
     if not f.Parent then return end
@@ -1342,16 +1519,16 @@ local function makeArena(map)
  local f=Instance.new("Folder")
  f.Name=old and"MidnightArenaNext"or"MidnightArena"
  f.Parent=workspace
- foundationSpawn=Instance.new("SpawnLocation")
+ foundationSpawn=Instance.new("Part")
  foundationSpawn.Name="FoundationSpawn"
  foundationSpawn.Size=Vector3.new(10,1,10)
  foundationSpawn.Position=Vector3.new(survivorSpawns[1].X,.55,survivorSpawns[1].Z)
  foundationSpawn.Anchored=true
- foundationSpawn.Neutral=true
  foundationSpawn.Transparency=1
  foundationSpawn.CanCollide=false
  foundationSpawn.CanTouch=false
  foundationSpawn.CanQuery=false
+ foundationSpawn:SetAttribute("SpawnMarkerOnly",true)
  foundationSpawn.Parent=f
  for k,v in pairs(Style.Lighting)do Lighting[k]=v end
  local grade=Lighting:FindFirstChild("MidnightColorGrade")or Instance.new("ColorCorrectionEffect")
@@ -1471,6 +1648,24 @@ local function makeArena(map)
   end
   arenaPart(f,"SchoolTrophyCase",Vector3.new(10,6,1.6),Vector3.new(16.1,5.2,30),Color3.fromRGB(77,91,104),Enum.Material.Glass).Transparency=.38
   arenaPart(f,"SchoolVendingMachine",Vector3.new(4,8,3),Vector3.new(-14,4.3,55),Color3.fromRGB(72,99,123),Enum.Material.Metal)
+  -- 복도/교실 사이의 빈 면을 줄이는 추격용 소품 군집. 주요 통로 폭은 유지한다.
+  for _,z in ipairs({-44,-20,8,34})do
+   local benchL=arenaPart(f,"SchoolHallBench",Vector3.new(8,2.1,2.6),Vector3.new(-12.5,1.15,z),Color3.fromRGB(105,79,59),Enum.Material.WoodPlanks)
+   local benchR=arenaPart(f,"SchoolHallBench",Vector3.new(8,2.1,2.6),Vector3.new(12.5,1.15,z+7),Color3.fromRGB(105,79,59),Enum.Material.WoodPlanks)
+   benchL:SetAttribute("ChaseCover",true);benchR:SetAttribute("ChaseCover",true)
+  end
+  for _,spec in ipairs({
+   {Vector3.new(-13.5,2.4,-55),"SchoolLostFoundCabinet",Vector3.new(5,4.8,2.2)},
+   {Vector3.new(13.5,1.7,-34),"SchoolCleaningCart",Vector3.new(4,3.2,3)},
+   {Vector3.new(-13.5,2.2,-6),"SchoolDisplayCase",Vector3.new(5.5,4.2,2)},
+   {Vector3.new(13.5,1.6,24),"SchoolSupplyStack",Vector3.new(4.5,3,3.4)},
+   {Vector3.new(-13.5,1.5,48),"SchoolBrokenDeskPile",Vector3.new(6,2.8,3.2)},
+  })do
+   local cover=arenaPart(f,spec[2],spec[3],spec[1],Color3.fromRGB(83,91,98),Enum.Material.Metal);cover:SetAttribute("ChaseCover",true)
+  end
+  for _,z in ipairs({-54,-30,-6,18,42,58})do
+   local poster=arenaPart(f,"SchoolWallPoster",Vector3.new(.16,3.2,5.4),Vector3.new(-16.35,6,z),Color3.fromRGB(176,153,111),Enum.Material.SmoothPlastic);poster.CanCollide=false
+  end
   local gymBackboard=arenaPart(f,"GymBackboard",Vector3.new(9,5,.4),Vector3.new(50,11.5,25.5),Color3.fromRGB(222,224,220),Enum.Material.SmoothPlastic);gymBackboard.CanCollide=false
   local gymRim=arenaPart(f,"GymRim",Vector3.new(4,.35,4),Vector3.new(50,9.2,23.6),Color3.fromRGB(199,75,49),Enum.Material.Metal);gymRim.CanCollide=false
 
@@ -1685,6 +1880,8 @@ local function makeArena(map)
  workspace:SetAttribute("EscapeUnlocked",false)
  workspace:SetAttribute("SurvivorEscapeTriggered",false)
  decorateArenaWithOfficialAssets(f,map)
+ -- 정상 빌드도 fallback과 동일하게 현재 arena 참조를 갱신해야 스폰 바닥 검증이 새 맵을 본다.
+ arena=f
  workspace:SetAttribute("MapReady",true)
  workspace:SetAttribute("MapBuilding",false)
  foundationCheckpoint("WORLD_READY",nil,{mapId=map.Id})
@@ -1711,7 +1908,7 @@ makeFallbackArena=function(map,reason)
  local old=workspace:FindFirstChild("MidnightArena");if old then old:Destroy()end
  local nextArena=workspace:FindFirstChild("MidnightArenaNext");if nextArena then nextArena:Destroy()end
  local f=Instance.new("Folder");f.Name="MidnightArena";f.Parent=workspace
- foundationSpawn=Instance.new("SpawnLocation");foundationSpawn.Name="FoundationSpawn";foundationSpawn.Size=Vector3.new(10,1,10);foundationSpawn.Position=Vector3.new(survivorSpawns[1].X,.55,survivorSpawns[1].Z);foundationSpawn.Anchored=true;foundationSpawn.Neutral=true;foundationSpawn.Transparency=1;foundationSpawn.CanCollide=false;foundationSpawn.CanTouch=false;foundationSpawn.CanQuery=false;foundationSpawn.Parent=f
+ foundationSpawn=Instance.new("Part");foundationSpawn.Name="FoundationSpawn";foundationSpawn.Size=Vector3.new(10,1,10);foundationSpawn.Position=Vector3.new(survivorSpawns[1].X,.55,survivorSpawns[1].Z);foundationSpawn.Anchored=true;foundationSpawn.Transparency=1;foundationSpawn.CanCollide=false;foundationSpawn.CanTouch=false;foundationSpawn.CanQuery=false;foundationSpawn:SetAttribute("SpawnMarkerOnly",true);foundationSpawn.Parent=f
  Lighting.Brightness=2.05;Lighting.ClockTime=.35;Lighting.FogEnd=270
  Lighting.Ambient=Color3.fromRGB(72,78,90);Lighting.OutdoorAmbient=Color3.fromRGB(58,64,76)
  local mainFloor=arenaPart(f,"Floor",Vector3.new(160,1,160),Vector3.new(0,0,0),Style.Floor,Enum.Material.Concrete);mainFloor:SetAttribute("WalkableGround",true)
@@ -1912,7 +2109,8 @@ local function createBotAvatar(role,pos)
   accessory("AIJacketStripe",torso,Vector3.new(.24,1.8,1.12),Vector3.new(0,.1,-.58),Color3.fromRGB(91,205,220),Enum.Material.Neon)
  end
 
- local hi=Instance.new("Highlight");hi.Name="AIRoleHighlight";hi.FillTransparency=role=="MONSTER"and .82 or .94;hi.OutlineTransparency=.48
+ local hi=Instance.new("Highlight");hi.Name="AIRoleHighlight";hi.FillTransparency=1;hi.OutlineTransparency=1
+ hi.DepthMode=Enum.HighlightDepthMode.Occluded;hi.Enabled=false;hi:SetAttribute("CombatDebugOnly",true)
  hi.FillColor=role=="MONSTER"and Color3.fromRGB(120,42,58)or Color3.fromRGB(75,143,169)
  hi.OutlineColor=role=="MONSTER"and Color3.fromRGB(225,86,103)or Color3.fromRGB(142,213,235)
  hi.Parent=model
@@ -1970,6 +2168,7 @@ local function bot(role,pos)
   infectReadyAt=0,purifyReadyAt=0,infectAttackReadyAt=0,abilityReadyAt=0,dashReadyAt=0,
   energy=energyMax(),motionClock=math.random()*6.28,tacticSlot=botSequence,
   decisionAt=0,speedResetAt=0,currentTargetKey=nil,targetLockUntil=0,patrolTarget=nil,patrolRefreshAt=0,patrolCycle=0,
+  lastSeenTargetKey=nil,lastSeenPos=nil,lastSeenAt=0,lastCalloutTargetKey=nil,calloutAt=0,
  }
  table.insert(bots,b);return b
 end
@@ -2198,14 +2397,14 @@ local function applyRoleVisual(p,r)
  clearRoleVisual(p);local c=p.Character;if not c then return end
  -- 로비 외형 선택은 실제 경기의 진영/능력치와 분리한다.
  if state~="RUNNING"and r=="WAITING"then r=p:GetAttribute("LobbyAppearance")or"SURVIVOR"end
- local hi=Instance.new("Highlight");hi.Name="RoleHighlight";hi.FillTransparency=.86;hi.OutlineTransparency=.42;hi.Parent=c
+ local hi=Instance.new("Highlight");hi.Name="RoleHighlight";hi.FillTransparency=1;hi.OutlineTransparency=1;hi.DepthMode=Enum.HighlightDepthMode.Occluded;hi.Enabled=false;hi:SetAttribute("CombatDebugOnly",true);hi.Parent=c
  if r=="MONSTER"then
   local currentForm=form(p);local mf=Style.Monsters[currentForm.Id]or Style.Monsters.DRACULA;hi.FillColor=mf.Color;hi.OutlineColor=mf.Accent
   applyMonsterPalette(c,currentForm.Id)
   applyClassicCostume(c,currentForm.Id)
   local head=c:FindFirstChild("Head")or root(p)
   if head then
-   local g=Instance.new("BillboardGui");g.Name="RoleVisual";g.Size=UDim2.fromOffset(150,34);g.StudsOffset=Vector3.new(0,3.8,0);g.AlwaysOnTop=true;g.Parent=head
+   local g=Instance.new("BillboardGui");g.Name="RoleVisual";g.Size=UDim2.fromOffset(150,34);g.StudsOffset=Vector3.new(0,3.8,0);g.AlwaysOnTop=false;g.MaxDistance=18;g.Parent=head
    local t=Instance.new("TextLabel");t.Size=UDim2.fromScale(1,1);t.BackgroundTransparency=1;t.TextScaled=true;t.Text=mf.Label;t.TextColor3=mf.Accent;t.TextStrokeTransparency=.25;t.Parent=g
   end
  else hi.FillColor=Style.Survivor;hi.OutlineColor=Color3.fromRGB(166,205,219)end
@@ -2216,7 +2415,7 @@ local function applyRoleVisual(p,r)
 end
 local function setRole(p,r)
  p:SetAttribute("Role",r);p:SetAttribute("Frozen",false)
- if state=="RUNNING"and foundationSpawn and foundationSpawn.Parent then p.RespawnLocation=foundationSpawn end
+ if state=="RUNNING"then p.RespawnLocation=lobbyBootstrapSpawn end
  if r=="MONSTER"or r=="SURVIVOR"then
   p:SetAttribute("RoundTeam",r)
   if p.Character then for _,d in ipairs(p.Character:GetDescendants())do if d:IsA("BasePart")then d.CollisionGroup="Default"end end end
@@ -2290,7 +2489,7 @@ local function infectBot(b,sourcePlayer)
  if b.model and b.model.Parent then
   b.model.Name="AI_MONSTER_"..monsterId
   for _,d in ipairs(b.model:GetDescendants())do if d:IsA("BasePart")and d~=b.part and d:GetAttribute("MonsterCostume")~=true then d.Color=monsterStyle.Color;d.Material=Enum.Material.Fabric end end
-  local hi=b.model:FindFirstChild("AIRoleHighlight");if hi and hi:IsA("Highlight")then hi.FillTransparency=.72;hi.FillColor=monsterStyle.Color;hi.OutlineColor=monsterStyle.Accent end
+  local hi=b.model:FindFirstChild("AIRoleHighlight");if hi and hi:IsA("Highlight")then hi.Enabled=false;hi.FillTransparency=1;hi.OutlineTransparency=1;hi.FillColor=monsterStyle.Color;hi.OutlineColor=monsterStyle.Accent end
  else
   b.part.Color=monsterStyle.Color;b.part.Material=Enum.Material.Fabric
  end
@@ -2339,6 +2538,9 @@ local function startRound()
  escapedPlayers={};workspace:SetAttribute("EscapeUnlocked",false);workspace:SetAttribute("SurvivorEscapeTriggered",false)
  local survivorOrder=shuffledSpawns(survivorSpawns)
  local monsterOrder=shuffledSpawns(monsterSpawns)
+ -- Roblox 엔진 리스폰은 항상 bootstrap 하나만 사용한다. 실제 경기 위치는 아래 role teleport가 책임진다.
+ lobbyBootstrapSpawn.Enabled=true
+ workspace:SetAttribute("EngineSpawnPhase","SINGLE_BOOTSTRAP")
  local si,mi=1,1
  for _,p in ipairs(h)do
   p:SetAttribute("CurrentMap",map.Name);p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
@@ -2348,7 +2550,7 @@ local function startRound()
   setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
   p:SetAttribute("RoundContributionCoins",0);p:SetAttribute("LastRoundBaseReward",0);p:SetAttribute("LastRoundWinBonus",0);p:SetAttribute("LastRoundContribution",0)
   p:SetAttribute("RoundParticipant",true)
-  if foundationSpawn and foundationSpawn.Parent then p.RespawnLocation=foundationSpawn end
+  p.RespawnLocation=lobbyBootstrapSpawn
   ghostSeenThisRound[p]={_count=0}
   p:SetAttribute("CelebrationName","");p:SetAttribute("CelebrationCaption","");p:SetAttribute("CelebrationWinner",false);p:SetAttribute("CelebrationComic",false)
   local role=startingMonsters[p]and"MONSTER"or"SURVIVOR";setRole(p,role);p:SetAttribute("RoundState","RUNNING")
@@ -2375,33 +2577,30 @@ local function playCelebrationEmote(player,celebration)
 end
 
 local function stageResultCeremony(winner,celebrationPlayers)
- local cameraPos=Vector3.new(0,7.2,32)
- local focusPos=Vector3.new(0,3.8,12)
- local slots={-7.5,-2.5,2.5,7.5}
  local entries={}
  for _,player in ipairs(celebrationPlayers)do table.insert(entries,{player=player})end
  for _,b in ipairs(bots)do
   if winner=="DRAW"or b.role==winner then table.insert(entries,{bot=b})end
  end
  while #entries>4 do table.remove(entries)end
- workspace:SetAttribute("CelebrationCameraPosition",cameraPos)
- workspace:SetAttribute("CelebrationFocusPosition",focusPos)
- workspace:SetAttribute("CelebrationStagedCount",#entries)
 
- for i,row in ipairs(entries)do
-  local x=slots[i]or 0
-  local pos=Vector3.new(x,3,12)
+ -- 실제 캐릭터 위치는 건드리지 않는다. 결과 연출 때문에 경기 종료 직전에 순간이동/튕김처럼 보이지 않게 한다.
+ local anchor=nil
+ for _,row in ipairs(entries)do
   if row.player then
-   teleport(row.player,pos,cameraPos)
+   local rr=root(row.player)
+   if rr and not anchor then anchor=rr.Position end
    speed(row.player,0)
-  elseif row.bot and row.bot.part and row.bot.part.Parent then
-   local grounded=Vector3.new(pos.X,row.bot.part.Position.Y,pos.Z)
-   setBotCFrame(row.bot,CFrame.lookAt(grounded,Vector3.new(cameraPos.X,grounded.Y,cameraPos.Z)))
+  elseif row.bot and row.bot.part and row.bot.part.Parent and not anchor then
+   anchor=row.bot.part.Position
   end
  end
+ anchor=anchor or Vector3.new(0,3,0)
+ workspace:SetAttribute("CelebrationFocusPosition",anchor+Vector3.new(0,2,0))
+ workspace:SetAttribute("CelebrationCameraPosition",anchor+Vector3.new(0,5.2,12))
+ workspace:SetAttribute("CelebrationStagedCount",#entries)
  return entries
 end
-
 local function animateCelebratingBots(winner,duration,entries)
  local bases={}
  for _,row in ipairs(entries or{})do
@@ -2479,16 +2678,28 @@ local function endRound(winner)
  end
  clearBots();monster=nil;monsterBot=nil;workspace:SetAttribute("HumanCount",0);workspace:SetAttribute("MonsterCount",0)
  workspace:SetAttribute("CelebrationWinnerTeam","");workspace:SetAttribute("CelebrationName","");workspace:SetAttribute("CelebrationCaption","");workspace:SetAttribute("CelebrationAIWinners",0);workspace:SetAttribute("CelebrationStagedCount",0)
+
+ -- RESULT_RETURN_SAME_SERVER: 결과 화면 뒤 같은 place 재접속 없이 현재 서버의 개인 저택으로 바로 복귀한다.
+ local completedRoomCode=roomCode
+ local wasRoomServer=roomServer
  local players=Players:GetPlayers();table.sort(players,function(a,b)return a.UserId<b.UserId end)
  state="WAITING"
- for i,p in ipairs(players)do
+ lobbyBootstrapSpawn.Enabled=true
+ workspace:SetAttribute("EngineSpawnPhase","SINGLE_BOOTSTRAP")
+ for _,p in ipairs(players)do
+  p.RespawnLocation=lobbyBootstrapSpawn
   p:SetAttribute("RoundState","ROOM_BROWSER")
   p:SetAttribute("Role","WAITING");applyRoleVisual(p,"WAITING")
   if manorLobby then manorLobby:Dress(p)end
   teleport(p,personalSpawn(p))
-  if roomServer and not studioRoomFallback then leaveReservedRoom(p)end
  end
- if studioRoomFallback then roomServer=false;roomCode="";roomSolo=false end
+ if wasRoomServer and completedRoomCode~=""and completedRoomCode~="SOLO"and not studioRoomFallback then
+  removeRoomDirectoryEntry(completedRoomCode)
+ end
+ localSoloSession=false;roomServer=false;roomCode="";roomHostUserId=0;roomHostName="";roomVisibility="PUBLIC"
+ roomSolo=false;roomStartRequested=false;roomExpectedCount=1;roomFirstJoinAt=0
+ workspace:SetAttribute("RoomStartRequested",false)
+ syncRoomState();syncLobbyState("ROOM_BROWSER")
  if refreshPhysicalLobby then refreshPhysicalLobby()end
 end
 local purifyCooldown={}
@@ -2704,6 +2915,10 @@ local function ability(p)
   end
   p:SetAttribute("AbilityFeedback",(profile.Name or infectedAbility)..":"..stamp)
   p:SetAttribute("FeedbackEvent","ABILITY:"..infectedAbility..":"..stamp)
+  remote:FireAllClients("MONSTER_ABILITY_EFFECT",{
+   Ability=infectedAbility,Effect=profile.Effect or infectedAbility,Origin=r.Position,Target=nil,
+   Look=r.CFrame.LookVector,UserId=p.UserId,Stamp=stamp,Infected=true,
+  })
   return
  end
 
@@ -2813,7 +3028,11 @@ local function infectAttack(p)
  if not spendEnergy(p,C.Energy and C.Energy.InfectAttackCost or 30,"INFECT")then return end
  infectAttackCooldown[p]=now;p:SetAttribute("InfectReadyAt",workspace:GetServerTimeNow()+cd)
  local hit=targetPlayer and infectPlayer(targetPlayer,p)or infectBot(targetBot,p)
- if hit then p:SetAttribute("FeedbackEvent","INFECT_ATTACK_HIT:"..tostring(math.floor(now*1000)))end
+ if hit then
+  local stamp=tostring(math.floor(now*1000))
+  p:SetAttribute("FeedbackEvent","INFECT_ATTACK_HIT:"..stamp)
+  remote:FireAllClients("MONSTER_ATTACK_EFFECT",{Origin=r.Position,Look=r.CFrame.LookVector,UserId=p.UserId,Stamp=stamp})
+ end
 end
 
 local function nextMonster(p)
@@ -2948,7 +3167,7 @@ remote.OnServerEvent:Connect(function(p,a,value)
  elseif a==C.Actions.RETURN_MANOR then
   returnToPersonalManor(p)
  elseif a==C.Actions.MANOR_SOLO and state~="RUNNING"and not roomServer then
-  createReservedRoom(p,"PRIVATE",true)
+  if #Players:GetPlayers()==1 then startLocalSoloRoom(p)else createReservedRoom(p,"PRIVATE",true)end
  elseif a==C.Actions.MANOR_RANK and state~="RUNNING"and manorLobby then
   task.spawn(function()manorLobby:Rank(p)end)
  elseif a==C.Actions.MANOR_GAG and state~="RUNNING"and manorLobby then
@@ -2995,7 +3214,7 @@ local function validateCharacterFoundation(p,c)
  local h=c:WaitForChild("Humanoid",10);local r=c:WaitForChild("HumanoidRootPart",10)
  if not h or not r then p:SetAttribute("FoundationFailure","CHARACTER_FOUNDATION_FAILURE");return end
  if not foundationSpawn or not foundationSpawn.Parent then p:SetAttribute("FoundationFailure","SPAWN_FOUNDATION_MISSING");return end
- h.PlatformStand=false;h.AutoRotate=true;r.Anchored=false;p.RespawnLocation=foundationSpawn
+ h.PlatformStand=false;h.AutoRotate=true;r.Anchored=false;p.RespawnLocation=lobbyBootstrapSpawn
  local pos=r.Position
  if pos.X~=pos.X or pos.Y~=pos.Y or pos.Z~=pos.Z or math.abs(pos.X)==math.huge or math.abs(pos.Y)==math.huge or math.abs(pos.Z)==math.huge then p:SetAttribute("FoundationFailure","INVALID_ROOT_POSITION");return end
  foundationCheckpoint("CHARACTER_READY",p,{rootAnchored=r.Anchored,platformStand=h.PlatformStand,rootX=pos.X,rootY=pos.Y,rootZ=pos.Z})
@@ -3041,8 +3260,8 @@ local function onCharacter(p)
   setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
   p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
   p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
-  local destination,look,spawn=personalSpawn(p)
-  p.RespawnLocation=spawn
+  local destination,look=personalSpawn(p)
+  p.RespawnLocation=lobbyBootstrapSpawn
   teleport(p,destination,look)
   applyRoleVisual(p,"WAITING")
   for _,d in ipairs(c:GetDescendants())do if d:IsA("BasePart")then d.CollisionGroup="ManorAvatar"end end
@@ -3054,7 +3273,7 @@ local function onCharacter(p)
  local readyDeadline=os.clock()+10
  while workspace:GetAttribute("MapReady")~=true and os.clock()<readyDeadline do task.wait(.1)end
  if not c.Parent or p.Character~=c then return end
- if foundationSpawn and foundationSpawn.Parent then p.RespawnLocation=foundationSpawn end
+ p.RespawnLocation=lobbyBootstrapSpawn
  local role=p:GetAttribute("Role")
  if role=="MONSTER"or role=="SURVIVOR"then
   setRole(p,role)
@@ -3069,8 +3288,8 @@ local function onCharacter(p)
    if p.Parent==Players and p.Character==c and state=="RUNNING"then validateCharacterFoundation(p,c)end
   end)
  elseif role=="SPECTATING"then
-  local destination,look,spawn=personalSpawn(p)
-  p.RespawnLocation=spawn
+  local destination,look=personalSpawn(p)
+  p.RespawnLocation=lobbyBootstrapSpawn
   h.PlatformStand=false;h.Sit=false;h.AutoRotate=true;r.Anchored=false
   teleport(p,destination,look)
   p:SetAttribute("RoundState","SPECTATING")
@@ -3280,6 +3499,7 @@ task.spawn(function()
      local humans,monsters=teamCounts();workspace:SetAttribute("HumanCount",humans);workspace:SetAttribute("MonsterCount",monsters)
      if humans==0 then endRound("MONSTER");break end
      if monsters==0 then endRound("SURVIVOR");break end
+     if workspace:GetAttribute("SurvivorEscapeTriggered")==true then endRound("SURVIVOR");break end
 
      local baseRegen=math.max(0,tonumber(C.Energy and C.Energy.RegenPerSecond)or 10)*.25
      for _,p in ipairs(Players:GetPlayers())do
@@ -3458,29 +3678,121 @@ function BotAI.botPatrolTarget(b)
  return Vector3.new(b.patrolTarget.X,b.part.Position.Y,b.patrolTarget.Z)
 end
 
+local aiTeamCalloutAt={SURVIVOR=0,MONSTER=0}
+
+function BotAI.targetVisible(b,targetPos)
+ if not b or not b.part or not targetPos then return false end
+ local distance=(targetPos-b.part.Position).Magnitude
+ if distance>math.max(20,tonumber(C.AICombat and C.AICombat.VisionRange)or 78)then return false end
+ local ignore={}
+ if b.model and b.model.Parent then table.insert(ignore,b.model)elseif b.part then table.insert(ignore,b.part)end
+ for _,player in ipairs(Players:GetPlayers())do if player.Character then table.insert(ignore,player.Character)end end
+ for _,other in ipairs(bots)do
+  if other~=b then
+   if other.model and other.model.Parent then table.insert(ignore,other.model)elseif other.part then table.insert(ignore,other.part)end
+  end
+ end
+ local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude;params.FilterDescendantsInstances=ignore;params.IgnoreWater=true
+ local origin=b.part.Position+Vector3.new(0,2.2,0)
+ local target=targetPos+Vector3.new(0,1.6,0)
+ local ray=target-origin
+ if ray.Magnitude<.1 then return true end
+ local hit=workspace:Raycast(origin,ray,params)
+ return hit==nil
+end
+
+function BotAI.predictedTargetPosition(entry,pos,distance)
+ if not entry or not pos then return pos end
+ local velocity=Vector3.zero
+ if entry.p then
+  local rr=root(entry.p)
+  if rr then velocity=Vector3.new(rr.AssemblyLinearVelocity.X,0,rr.AssemblyLinearVelocity.Z)end
+ elseif entry.b and entry.b.lastMoveDirection then
+  velocity=entry.b.lastMoveDirection*(entry.b.speed or 14)
+ end
+ local lookAhead=math.clamp((tonumber(C.AICombat and C.AICombat.PredictionSeconds)or .32)*(distance/28),.12,.48)
+ return pos+velocity*lookAhead
+end
+
+function BotAI.rememberTarget(b,key,pos)
+ b.lastSeenTargetKey=key;b.lastSeenPos=pos;b.lastSeenAt=os.clock()
+end
+
+function BotAI.callout(b,text)
+ if not b or not text or text==""then return end
+ local now=os.clock();local team=b.role
+ local teamCd=math.max(1.5,tonumber(C.AICombat and C.AICombat.TeamCalloutCooldown)or 3.5)
+ local botCd=math.max(teamCd,tonumber(C.AICombat and C.AICombat.BotCalloutCooldown)or 8)
+ if now<(aiTeamCalloutAt[team]or 0)or now<(b.calloutAt or 0)then return end
+ aiTeamCalloutAt[team]=now+teamCd;b.calloutAt=now+botCd
+ local speaker
+ if team=="MONSTER"then speaker="AI "..tostring((BotAI.botMonsterForm(b).Name or"몬스터"))
+ else speaker="AI "..tostring((BotAI.botHumanForm(b).Name or"동료"))end
+ for _,player in ipairs(Players:GetPlayers())do
+  if player:GetAttribute("Role")==team and player:GetAttribute("RoundState")=="RUNNING"then
+   remote:FireClient(player,"AI_TEAM_CHAT",{Team=team,Speaker=speaker,Text=text,TacticSlot=b.tacticSlot or 0})
+  end
+ end
+end
+
+function BotAI.monsterApproachDirection(b,targetPos,distance,visible)
+ local flat=Vector3.new(targetPos.X-b.part.Position.X,0,targetPos.Z-b.part.Position.Z)
+ if flat.Magnitude<.1 then return flat end
+ local dir=flat.Unit
+ if not visible then return dir end
+ local side=(b.tacticSlot or 1)%2==0 and 1 or-1
+ local right=Vector3.new(-dir.Z,0,dir.X)
+ local flank=tonumber(C.AICombat and C.AICombat.FlankStrength)or .38
+ if distance<14 then flank*=1.1 elseif distance>34 then flank*=.55 end
+ return dir+right*(flank*side)
+end
+
 function BotAI.distributedSurvivorTarget(b)
  local now=os.clock()
- if b.currentTargetKey and now<(b.targetLockUntil or 0)then
-  local locked,pos=BotAI.botFindEntryByKey("SURVIVOR",b.currentTargetKey)
-  if locked and pos then return locked,pos,(pos-b.part.Position).Magnitude end
- end
+ local vision=math.max(20,tonumber(C.AICombat and C.AICombat.VisionRange)or 78)
+ local hearing=math.max(6,tonumber(C.AICombat and C.AICombat.HearingRange)or 18)
+ local memory=math.max(1,tonumber(C.AICombat and C.AICombat.TargetMemorySeconds)or 4.5)
  local entries={}
  for _,entry in ipairs(active())do
   local pos=BotAI.botTargetPosition(entry)
   if pos then
    local key=BotAI.botEntryKey(entry)
    local distance=(pos-b.part.Position).Magnitude
-   local load=BotAI.botTargetLoad("MONSTER",key,b)
-   local lane=math.abs(pos.X-(BotAI.botPatrolTarget(b).X))*.035
-   table.insert(entries,{entry=entry,pos=pos,distance=distance,key=key,score=distance+load*(tonumber(C.AICombat and C.AICombat.TargetCrowdPenalty)or 38)+lane})
+   local visible=distance<=vision and BotAI.targetVisible(b,pos)
+   local remembered=key==b.lastSeenTargetKey and now-(b.lastSeenAt or 0)<=memory
+   local audible=distance<=hearing
+   if visible then BotAI.rememberTarget(b,key,pos)end
+   if visible or audible or remembered then
+    local predicted=visible and BotAI.predictedTargetPosition(entry,pos,distance)or(remembered and b.lastSeenPos or pos)
+    local load=BotAI.botTargetLoad("MONSTER",key,b)
+    local blocked=visible and 0 or(tonumber(C.AICombat and C.AICombat.BlockedSightPenalty)or 52)
+    local vulnerability=0
+    if entry.p then
+     local ratio=energyOf(entry.p)/energyMax()
+     vulnerability=ratio*(tonumber(C.AICombat and C.AICombat.LowEnergyTargetWeight)or 16)
+    elseif entry.b then
+     local ratio=math.clamp((entry.b.energy or energyMax())/energyMax(),0,1)
+     vulnerability=ratio*(tonumber(C.AICombat and C.AICombat.LowEnergyTargetWeight)or 16)
+    end
+    table.insert(entries,{entry=entry,pos=predicted,rawPos=pos,distance=(predicted-b.part.Position).Magnitude,key=key,visible=visible,score=distance+load*(tonumber(C.AICombat and C.AICombat.TargetCrowdPenalty)or 38)+blocked+vulnerability})
+   end
   end
  end
  table.sort(entries,function(a,c)return a.score<c.score end)
  local chosen=entries[1]
- if not chosen then b.currentTargetKey=nil;return nil,nil,math.huge end
+ if not chosen then
+  b.currentTargetKey=nil
+  if b.lastSeenPos and now-(b.lastSeenAt or 0)<=memory then return nil,b.lastSeenPos,(b.lastSeenPos-b.part.Position).Magnitude,false end
+  return nil,nil,math.huge,false
+ end
+ local changed=b.currentTargetKey~=chosen.key
  b.currentTargetKey=chosen.key
  b.targetLockUntil=now+(tonumber(C.AICombat and C.AICombat.TargetLockSeconds)or 3.2)+((b.tacticSlot or 1)%3)*.45
- return chosen.entry,chosen.pos,chosen.distance
+ if chosen.visible and changed and b.lastCalloutTargetKey~=chosen.key then
+  b.lastCalloutTargetKey=chosen.key
+  BotAI.callout(b,chosen.distance<18 and"가까이 인간 발견. 내가 붙을게."or"인간 발견. 양쪽으로 몰아.")
+ end
+ return chosen.entry,chosen.pos,chosen.distance,chosen.visible
 end
 
 function BotAI.distributedMonsterTarget(b)
@@ -3758,7 +4070,7 @@ RunService.Heartbeat:Connect(function(dt)
    end
 
    if b.role=="MONSTER"then
-    local bestEntry,bestPos,bd=BotAI.distributedSurvivorTarget(b)
+    local bestEntry,bestPos,bd,visible=BotAI.distributedSurvivorTarget(b)
     if bestPos then
      local infectRange=math.max(2,tonumber(C.Energy and C.Energy.InfectRange)or 8)
      local botForm=BotAI.botMonsterForm(b)
@@ -3768,26 +4080,36 @@ RunService.Heartbeat:Connect(function(dt)
      end
      local infectCost=math.max(0,tonumber(C.Energy and C.Energy.InfectAttackCost)or 30)
      local attackCd=math.max(.4,tonumber(C.Energy and C.Energy.InfectAttackCooldown)or 1.2)
-     if bd<=infectRange and os.clock()>=(b.infectAttackReadyAt or 0)and(b.energy or 0)>=infectCost then
+     if bestEntry and visible and bd<=infectRange and os.clock()>=(b.infectAttackReadyAt or 0)and(b.energy or 0)>=infectCost then
       b.energy=math.max(0,(b.energy or 0)-infectCost);b.infectAttackReadyAt=os.clock()+attackCd
-      if bestEntry and bestEntry.p then infectPlayer(bestEntry.p,nil)elseif bestEntry and bestEntry.b then infectBot(bestEntry.b,nil)end
-     elseif not BotAI.tryBotMonsterAbility(b,bestPos,bd)then
-      local toTarget=bestPos-b.part.Position
-      local flat=Vector3.new(toTarget.X,0,toTarget.Z)
-      if flat.Magnitude>.1 then
-       local side=b.strafeSign or((b.tacticSlot or 1)%2==0 and 1 or-1)
-       local right=Vector3.new(-flat.Unit.Z,0,flat.Unit.X)
-       local approach=flat.Unit+right*(bd<20 and .28*side or .12*side)
-       BotAI.moveBotDirection(b,approach,dt,b.speed)
+      BotAI.callout(b,"지금 붙는다.")
+      local hit=bestEntry.p and infectPlayer(bestEntry.p,nil)or(bestEntry.b and infectBot(bestEntry.b,nil))
+      if hit then
+       remote:FireAllClients("MONSTER_ATTACK_EFFECT",{Origin=b.part.Position,Look=b.part.CFrame.LookVector,UserId=0,Stamp=tostring(math.floor(os.clock()*1000))})
       end
+     elseif bestEntry and visible and BotAI.tryBotMonsterAbility(b,bestPos,bd)then
+      BotAI.callout(b,"능력 쓴다. 같이 압박해.")
+     else
+      local approach=BotAI.monsterApproachDirection(b,bestPos,bd,visible)
+      if approach.Magnitude>.1 then b.lastMoveDirection=approach.Unit;BotAI.moveBotDirection(b,approach,dt,b.speed)end
      end
+    else
+     b.currentTargetKey=nil
+     local patrol=BotAI.botPatrolTarget(b)
+     local delta=patrol-b.part.Position
+     if delta.Magnitude>.5 then b.lastMoveDirection=delta.Unit;BotAI.moveBotDirection(b,delta,dt,b.speed*.9)end
     end
 
    elseif b.role=="SURVIVOR"then
     local target,targetPos,best=BotAI.distributedMonsterTarget(b)
     local engageRange=math.max(20,tonumber(C.AICombat and C.AICombat.HumanEngageRange)or 46)
     if targetPos and best<=engageRange then
+     if b.lastCalloutTargetKey~=b.currentTargetKey then
+      b.lastCalloutTargetKey=b.currentTargetKey
+      BotAI.callout(b,best<16 and"몬스터 가까워. 뒤로 빠져!"or"몬스터 발견. 흩어져서 막자.")
+     end
      local usedAbility=BotAI.tryBotHumanAbility(b,target,best)
+     if usedAbility then BotAI.callout(b,"스킬 썼어. 지금 밀어.")end
      local attacked,purifyRange=false,math.max(4,(C.PurifyDistance or 8)+(tonumber(BotAI.botHumanForm(b).PurifyRangeBonus)or 0))
      if not usedAbility then attacked,purifyRange=BotAI.tryBotHumanPurify(b,target,best)end
      if not usedAbility and not attacked then

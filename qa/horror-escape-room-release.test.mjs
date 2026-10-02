@@ -9,6 +9,13 @@ const client=fs.readFileSync('roblox-games/horror-escape-room/client/Game.client
 const manorServer=fs.readFileSync('roblox-games/horror-escape-room/server/ManorLobby.luau','utf8');
 const manorClient=fs.readFileSync('roblox-games/horror-escape-room/client/ManorLobby.client.luau','utf8');
 const manorAssets=fs.readFileSync('roblox-games/horror-escape-room/shared/ManorAssets.luau','utf8');
+const combatAssets=fs.readFileSync('roblox-games/horror-escape-room/shared/CombatAssets.luau','utf8');
+const combatAssetTool=fs.readFileSync('tools/horror-combat-assets.mjs','utf8');
+const combatAssetWorkflow=fs.readFileSync('.github/workflows/horror-combat-assets.yml','utf8');
+const combatNativeTool=fs.readFileSync('tools/horror-combat-native-check.mjs','utf8');
+const ownerWorkflow=fs.readFileSync('.github/workflows/horror-owner-system-publish.yml','utf8');
+const robloxBootstrapTool=fs.readFileSync('tools/company-development-roblox-bootstrap.mjs','utf8');
+const project=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/default.project.json','utf8'));
 const launch=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/launch-mvp.json','utf8'));
 
 test('8명 4대4 시작과 AI 채움',()=>{
@@ -151,14 +158,14 @@ test('로비 선택 완료는 서버 승인 속성만 신뢰한다',()=>{
 test('Studio 실플레이 계약은 현재 저택 로비의 실제 입력 순서를 그대로 따른다',()=>{
  const flow=launch.studioActualPlayContract;
  assert.deepEqual(flow.entryButtonTexts,['저택 들어가기','출정']);
- assert.equal(flow.selectionButtonText,'인간으로 준비');
- assert.equal(flow.startButtonText,'1인 플레이 · 빈자리는 AI');
+ assert.equal(flow.selectionButtonText,'인간');
+ assert.equal(flow.startButtonText,'혼자 바로 시작');
  assert.equal(flow.primaryActionButtonText,'대시');
  assert.ok(flow.afterStartWaitMs>=4000);
- assert.match(manorClient,/button\(card,"저택 들어가기"/);
- assert.match(manorClient,/button\(commands,"출정"/);
- assert.match(manorClient,/button\(body,"인간으로 준비"/);
- assert.match(manorClient,/button\(body,"1인 플레이 · 빈자리는 AI"/);
+ assert.match(manorClient,/artbookButton\(card,"저택 들어가기"/);
+ assert.match(manorClient,/button\(commands,"   출정"/);
+ assert.match(manorClient,/artbookButton\(body,"인간"/);
+ assert.match(manorClient,/artbookButton\(body,"혼자 바로 시작"/);
  assert.doesNotMatch(flow.selectionButtonText,/인간 선호/);
 });
 
@@ -172,7 +179,7 @@ test('로비 상용화 계약은 launch gate에도 고정된다',()=>{
 });
 
 
-test('월드 로비는 밝은 가시성, 전용 BGM, 기괴한 직원과 공포코믹 소품을 유지한다',()=>{
+test('월드 로비는 밝은 가시성, 전용 BGM, 기괴한 직원과 재빌드 대기 상태를 정직하게 유지한다',()=>{
  assert.match(config,/LobbyBackground="rbxassetid:\/\/"\.\.tostring\(require\(script\.Parent\.ManorAssets\)\.LobbyMusicId\)/);
  assert.match(manorAssets,/ModelId=[1-9][0-9]+/);
  assert.match(manorAssets,/LobbyMusicId=[1-9][0-9]+/);
@@ -183,6 +190,7 @@ test('월드 로비는 밝은 가시성, 전용 BGM, 기괴한 직원과 공포�
  for(const prop of ['ClockCase','CoffinLid','FamilyMirror','FamilyPortrait','Wardrobe','HearthFlame'])assert.ok(manorAssets.includes(prop),prop);
  assert.match(manorServer,/LobbyArtPass","REBUILD_PENDING_STUDIO"/);
  assert.match(manorServer,/LobbyBuildRevision","BLENDER_MANOR_REBUILD_20261002"/);
+ assert.doesNotMatch(manorServer,/LobbyArtPass","BLENDER_MONSTER_FAMILY_V2"/);
  assert.match(manorServer,/ManorGag/);
 });
 
@@ -216,6 +224,34 @@ test('플레이어와 AI 추격 모션은 기존 Animator 위에 레이어로 �
  assert.match(server,/local stride=math\.sin\(b\.motionClock\)/);
 });
 
+
+test('AI는 시야·기억·예측·협공 판단과 같은 편 멘트를 사용한다',()=>{
+ for(const key of ['VisionRange=78','HearingRange=18','TargetMemorySeconds=4.5','PredictionSeconds=.32','BlockedSightPenalty=52','FlankStrength=.38','TeamCalloutCooldown=3.5','BotCalloutCooldown=8'])assert.ok(config.includes(key),key);
+ assert.match(server,/function BotAI\.targetVisible\(b,targetPos\)/);
+ assert.match(server,/function BotAI\.predictedTargetPosition\(entry,pos,distance\)/);
+ assert.match(server,/function BotAI\.rememberTarget\(b,key,pos\)/);
+ assert.match(server,/function BotAI\.monsterApproachDirection\(b,targetPos,distance,visible\)/);
+ assert.match(server,/function BotAI\.callout\(b,text\)/);
+ assert.match(server,/remote:FireClient\(player,"AI_TEAM_CHAT"/);
+ assert.match(server,/chosen\.visible and changed/);
+ assert.match(server,/b\.lastSeenPos/);
+ assert.match(client,/local function showAITeamChat\(snapshot\)/);
+ assert.match(client,/kind=="AI_TEAM_CHAT"/);
+ assert.match(client,/team~=tostring\(p:GetAttribute\("Role"\)or""\)/);
+});
+
+test('1인 출정은 같은 서버에서 시작하고 맵 선택만으로 서버 이동하지 않는다',()=>{
+ assert.match(server,/local function startLocalSoloRoom\(p\)/);
+ assert.match(server,/localSoloSession=true;roomSolo=true;roomServer=true;roomCode="SOLO"/);
+ assert.match(server,/if #Players:GetPlayers\(\)==1 then startLocalSoloRoom\(p\)else createReservedRoom\(p,"PRIVATE",true\)end/);
+ assert.match(server,/RESULT_RETURN_SAME_SERVER/);
+ assert.doesNotMatch(server,/if roomServer and not studioRoomFallback and not localSoloSession then leaveReservedRoom\(p\)end/);
+ assert.match(server,/localSoloSession=false;roomServer=false;roomCode=""/);
+ assert.match(manorClient,/artbookButton\(body,"혼자 바로 시작"/);
+ assert.match(manorClient,/label\(body,"1\. 맵 선택"/);
+ assert.match(manorClient,/label\(body,"2\. 역할 · "/);
+ assert.match(manorClient,/label\(body,"3\. 시작"/);
+});
 
 test('AI는 몰려다니지 않고 분산 교전하며 양 진영 스킬을 실제 사용한다',()=>{
  assert.match(config,/SeparationRadius=15/);
@@ -377,14 +413,16 @@ test('5대3 6대2 7대1 열세 패시브는 양 진영 공통 에너지 보정�
  assert.match(client,/열세 패시브/);
 });
 
-test('기존 단말은 에너지 충전 거점으로 동작하고 탈출 승리 흔적은 제거된다',()=>{
+test('기존 단말은 충전과 4단계 탈출 목표를 함께 담당한다',()=>{
  assert.match(server,/Name="EnergyPrompt"/);
  assert.match(server,/StationRecharge/);
  assert.match(server,/StationCooldown/);
  assert.match(server,/Name="EnergyCorePrompt"/);
  assert.match(server,/EnergyCoreState/);
- assert.doesNotMatch(server,/Name="EscapePrompt"/);
- assert.doesNotMatch(server,/ActionText="탈출"/);
+ assert.match(server,/Name="EscapePrompt"/);
+ assert.match(server,/ActionText="탈출"/);
+ assert.match(server,/ObjectiveRound/);
+ assert.match(server,/EscapeUnlocked/);
 });
 
 test('세 맵에는 각자 다른 상호작용 콘텐츠가 있다',()=>{
@@ -432,8 +470,10 @@ test('승리 결과는 실제 캐릭터 3D 스테이징과 시네마틱 카메�
  assert.match(client,/local function startResultCeremonyCamera\(stage\)/);
  assert.match(client,/CameraType=Enum\.CameraType\.Scriptable/);
  assert.match(client,/local function stopResultCeremonyCamera\(\)/);
- assert.match(client,/ceremonyStage\.Visible=false/);
- assert.doesNotMatch(client,/playResultCeremony\(resultCode\)[\s\S]{0,1200}playCeremonyConfetti/);
+ assert.match(client,/ceremonyStage\.Visible=true/);
+ assert.match(client,/local names=collectCeremonyNames\(winner\)/);
+ assert.match(client,/playCeremonyConfetti\(ceremonyColor\)/);
+ assert.match(client,/TweenService:Create\(row\.slot/);
 });
 
 test('맵 놀람 요소는 경쟁 판정과 레이캐스트에서 완전히 제외된다',()=>{
@@ -463,15 +503,182 @@ test('병원과 놀이공원도 학교처럼 별도 코믹 발견거리를 가�
 });
 
 test('세레머니 콘셉트는 생존 완료와 사냥 완료 중심이며 구형 코믹 춤을 사용하지 않는다',()=>{
- assert.match(config,/ResultSeconds=6/);
+ assert.match(config,/ResultSeconds=8/);
  for(const id of ['LAST_LIGHT','CLEAN_EXIT','FINAL_PURIFY','HUNT_COMPLETE','NIGHT_PROCESSION','RED_CHECKIN','DEADLOCK'])assert.ok(config.includes('Id="'+id+'"'),id);
  for(const removed of ['PHOTO_FAIL','PURIFIER_HIGHFIVE','CLOCK_OUT','ROLL_CALL','SHRUG_DANCE','SCARY_POSE','AWKWARD_CLAP'])assert.ok(!config.includes('Id="'+removed+'"'),removed);
  assert.match(server,/stageResultCeremony/);
  assert.match(server,/CelebrationStagedCount/);
  assert.match(client,/RESULT_CEREMONY_STAGE/);
- assert.match(client,/실제 캐릭터 중심|startResultCeremonyCamera|ceremonyStage\.Visible=false/);
+ assert.match(client,/startResultCeremonyCamera/);
+ assert.match(client,/ceremonyStage\.Visible=true/);
+ assert.match(client,/playCeremonyConfetti\(ceremonyColor\)/);
  assert.doesNotMatch(config,/Emote="dance/);
 });
+
+test('전투 캐릭터 디버그 외곽선은 실제 플레이 화면에서 비활성화된다',()=>{
+ assert.match(server,/AIRoleHighlight";hi\.FillTransparency=1;hi\.OutlineTransparency=1/);
+ assert.match(server,/AIRoleHighlight"[\s\S]{0,260}hi\.Enabled=false/);
+ assert.match(server,/RoleHighlight";hi\.FillTransparency=1;hi\.OutlineTransparency=1;hi\.DepthMode=Enum\.HighlightDepthMode\.Occluded;hi\.Enabled=false/);
+ assert.match(server,/CombatDebugOnly/);
+ assert.match(server,/g\.AlwaysOnTop=false;g\.MaxDistance=18/);
+ assert.doesNotMatch(server,/RoleVisual"[\s\S]{0,220}AlwaysOnTop=true/);
+});
+
+test('학교는 빈 복도를 줄이고 추격용 소품 밀도를 높인다',()=>{
+ for(const marker of ['SchoolHallBench','SchoolLostFoundCabinet','SchoolCleaningCart','SchoolDisplayCase','SchoolSupplyStack','SchoolBrokenDeskPile','SchoolWallPoster'])assert.ok(server.includes(marker),marker);
+ assert.match(server,/ChaseCover",true/);
+ const schoolOfficial=server.slice(server.indexOf('if map.Id=="SCHOOL"then',server.indexOf('local function decorateArenaWithOfficialAssets')),server.indexOf('else',server.indexOf('if map.Id=="SCHOOL"then',server.indexOf('local function decorateArenaWithOfficialAssets'))));
+ assert.ok((schoolOfficial.match(/Vector3\.new\(/g)||[]).length>=28);
+});
+
+test('기존 4개 단말 목표와 비상구 탈출 루프가 실제 승리조건에 연결된다',()=>{
+ assert.match(server,/local function syncObjectiveProgress\(\)/);
+ assert.match(server,/base:SetAttribute\("ObjectiveRound",objectiveState\.round\)/);
+ assert.match(server,/objectiveState\.done=math\.min/);
+ assert.match(server,/workspace:SetAttribute\("EscapeUnlocked",true\)/);
+ assert.match(server,/prompt\.Name="EscapePrompt"/);
+ assert.match(server,/workspace:SetAttribute\("SurvivorEscapeTriggered",true\)/);
+ assert.match(server,/if workspace:GetAttribute\("SurvivorEscapeTriggered"\)==true then endRound\("SURVIVOR"\)/);
+ assert.match(client,/목표 · 단말 %d\/%d 작동 → 몬스터 정화 → 탈출/);
+ assert.match(client,/목표 · 인간 추적 → 감염 → 전멸/);
+});
+
+test('verified learning 바인딩은 임시 LoadingScreen 대신 지속 ScreenGui를 사용한다',()=>{
+ assert.match(robloxBootstrapTool,/Instance\.new\(\s*["']ScreenGui["']\s*\)/);
+ assert.ok(robloxBootstrapTool.includes('ScreenGui')&&robloxBootstrapTool.includes('||output.match'));
+ assert.match(client,/local verifiedLearningRoot = gui/);
+ assert.doesNotMatch(client,/local verifiedLearningRoot = loadingLayer/);
+ assert.doesNotMatch(client,/loadingLayer:SetAttribute\("Verified/);
+ assert.match(client,/gui:SetAttribute\("VerifiedExternalLearningCoveragePct"/);
+ assert.match(client,/gui\.DisplayOrder=30/);
+ assert.match(client,/gui\.ZIndexBehavior=Enum\.ZIndexBehavior\.Global/);
+});
+
+test('스킬은 이름뿐 아니라 용도와 범위를 HUD에서 설명한다',()=>{
+ for(const marker of [
+  'Description="24m 안 몬스터의 에너지를 깎는다"',
+  'Description="14m 안 몬스터를 1.5초 느리게 만든다"',
+  'Description="가까운 몬스터를 강하게 밀쳐낸다"',
+  'Description="19m 섬광으로 몬스터를 잠깐 둔화한다"',
+  'Description="8m 안 몬스터를 잠깐 멈춘다"',
+ ])assert.ok(config.includes(marker),marker);
+ assert.match(client,/local skillGuideLine=Instance\.new\("TextLabel"\)/);
+ assert.match(client,/local function abilityRangeLabel\(profile\)/);
+ assert.match(client,/local function abilityGuideText\(name,profile,cost,cooldownSeconds,status\)/);
+ assert.match(client,/humanAbilityButton\.TextScaled=false;humanAbilityButton\.TextSize=11;humanAbilityButton\.TextWrapped=true/);
+ assert.match(client,/abilityButton\.TextScaled=false;abilityButton\.TextSize=11;abilityButton\.TextWrapped=true/);
+ assert.match(client,/humanAbilityButton\.Size=UDim2\.fromOffset\(142,76\)/);
+ assert.match(client,/abilityButton\.Size=UDim2\.fromOffset\(150,76\)/);
+ assert.match(client,/"★ "\.\.currentHumanAbilityName\(\)/);
+ assert.match(client,/"★ "\.\.currentAbilityName\(\)/);
+ assert.match(client,/쿨 %d초 · %dE/);
+ assert.match(client,/currentHumanAbilityDescription\(\)/);
+ assert.match(client,/currentAbilityDescription\(\)/);
+ assert.match(client,/combatActionStatus\.Name="CombatActionStatus"/);
+ assert.match(client,/local serverRoundRunning=roomState=="RUNNING"or lobbyPhase=="RUNNING"/);
+ assert.match(client,/local inMatch=running or spectating or serverRoundRunning/);
+ assert.match(client,/hud\.Visible=inMatch/);
+ assert.match(client,/actionDock\.Visible=inMatch/);
+ assert.match(client,/전투 상태 동기화 중 · HUD 유지/);
+ assert.match(client,/관전 중 · 다음 라운드에 전투 스킬 활성화/);
+});
+
+test('내부 세계 귀신 자산은 실제 런타임 목격 연출에 연결되고 실패 시 fallback한다',()=>{
+ assert.equal(project.tree.ReplicatedStorage.WorldGhostSkins.GhostSkinFactory.$path,'../../assets/roblox/world-ghosts/GhostSkinFactory.luau');
+ assert.equal(project.tree.ReplicatedStorage.WorldGhostSkins.GhostSkinMotion.$path,'../../assets/roblox/world-ghosts/GhostSkinMotion.luau');
+ assert.match(client,/local GhostSkinFactory=nil/);
+ assert.match(client,/local function loadGhostSkinModules\(\)/);
+ assert.match(client,/RS:WaitForChild\("WorldGhostSkins",10\)/);
+ assert.match(client,/InternalGhostAssetsReady/);
+ assert.match(client,/local internalGhostSkinByCatalogId=\{/);
+ for(const id of ['yurei','nopperabo','gwisin-bride','krasue','banshee','jiangshi','churel','dullahan','la-llorona','pontianak','barghest'])assert.ok(client.includes('"'+id+'"'),id);
+ assert.match(client,/GhostSkinFactory\.Create\(skinId,\{quality=touchEnabled and"mid"or"near"/);
+ assert.match(client,/GhostSkinMotion\.Bind\(model\)/);
+ assert.match(client,/SourceAssetLibrary","roblox-world-ghost-skins-v1"/);
+ assert.match(client,/if tryInternalGhostSighting\(trigger,id\)then/);
+ assert.match(client,/LocalGhostSightingBody/);
+});
+
+test('등록된 authored 스킨드 GLB만 전투 비주얼로 쓰고 블록형 procedural fallback은 금지한다',()=>{
+ assert.match(combatAssets,/HumanoidModelId=123358389302774/);
+ assert.match(combatAssets,/HumanoidSourceSha256="3bf90c01cf86745251c8b6465a9515b92c652235c93f5fd6143b796d2ef76e8a"/);
+ assert.match(combatAssets,/AssetSource="assets\/roblox\/world-ghosts\/native\/mesh\/bride\.glb"/);
+ assert.match(combatAssetTool,/assets\/roblox\/world-ghosts\/native\/mesh\/bride\.glb/);
+ assert.match(combatAssetTool,/assetType:'Model'/);
+ assert.match(combatAssetTool,/asset-permissions-api\/v1\/assets\/permissions/);
+ assert.match(combatAssetWorkflow,/name: Horror Authored Combat Assets/);
+ assert.match(server,/local CombatAssets=require\(Shared:WaitForChild\("CombatAssets"\)\)/);
+ assert.match(server,/CombatVisualTemplates/);
+ assert.match(server,/OWNER_DIRECT_PACKAGED_COMBAT_V1/);
+ assert.match(server,/PackagedNativeModel/);
+ assert.match(server,/READY_PACKAGED/);
+ assert.match(server,/CombatAuthoredAssetSource/);
+ assert.match(server,/LOADING_RUNTIME_FALLBACK/);
+ assert.match(server,/for attempt=1,6 do/);
+ assert.match(server,/AssetService\.LoadAssetAsync,AssetService,assetId/);
+ assert.match(server,/LOAD_FAILED_AFTER_RETRY/);
+ assert.match(server,/CombatAuthoredAssetsReady/);
+ assert.match(server,/SourceAssetLibrary","roblox-world-ghost-authored-glb"/);
+ assert.match(combatNativeTool,/assetdelivery\.roblox\.com\/v1\/asset/);
+ assert.match(combatNativeTool,/COMBAT_NATIVE_MODEL/);
+ assert.match(combatNativeTool,/COMBAT_NATIVE_IMPORT_CHECK=PASS/);
+ assert.match(ownerWorkflow,/Download and verify authored combat native model/);
+ assert.match(ownerWorkflow,/AuthoredHumanoidGhost:\{\$path:'\/tmp\/horror-combat-native\/authored-humanoid-ghost\.rbxm'\}/);
+ assert.match(ownerWorkflow,/OWNER_DIRECT_COMBAT_TEMPLATE_PACKAGED=PASS/);
+ assert.match(client,/local function authoredCombatTemplate\(\)/);
+ assert.match(client,/local function bindAuthoredCombatMotion\(model\)/);
+ assert.match(client,/d:IsA\("Bone"\)/);
+ assert.match(client,/RuntimeQuality","AUTHORED_SKINNED_MESH"/);
+ assert.match(client,/ProceduralFallback",false/);
+ assert.match(client,/local function ensureCombatSkin\(source,rootPart,skinId,formId\)/);
+ assert.match(client,/row\.authored~=wantAuthored/);
+ assert.match(client,/CombatAuthoredVisualFallback","ORIGINAL_ROLE_COSTUME"/);
+ const combatBlock=client.slice(client.indexOf('local function ensureCombatSkin'),client.indexOf('local function refreshCombatSkins'));
+ assert.doesNotMatch(combatBlock,/GhostSkinFactory\.Create|GhostSkinMotion\.Bind|ProceduralFallback",true|CombatGhostFallback_/);
+ assert.match(client,/state="attack"/);
+ assert.match(client,/state="chase"/);
+ assert.match(client,/state="walk"/);
+ assert.match(client,/CFrame\.new\(0,\.08\*pulse,-\.72\*pulse\)/);
+ assert.match(client,/CFrame\.Angles\(math\.rad\(-6\)/);
+});
+
+test('감염 스킬과 감염 공격은 화면 효과와 공격 모션 이벤트를 보낸다',()=>{
+ assert.match(server,/Infected=true/);
+ assert.match(server,/FireAllClients\("MONSTER_ABILITY_EFFECT"/);
+ assert.match(server,/FireAllClients\("MONSTER_ATTACK_EFFECT"/);
+ assert.match(client,/snapshot\.Infected==true/);
+ for(const ability of ['FALSE_ALARM','BLACKOUT','RUSH','HUNT_FLASH','BREACH'])assert.ok(client.includes('ability=="'+ability+'"'),ability);
+ assert.match(client,/local function abilityRing\(/);
+ assert.match(client,/local function abilitySparkBurst\(/);
+ assert.match(client,/MonsterAbilitySparks/);
+ assert.match(client,/InfectedAbilitySparks/);
+ assert.match(client,/MonsterAttackSparks/);
+ assert.match(client,/HumanAbilitySparks/);
+ assert.match(client,/local function playMonsterAttackEffect\(snapshot\)/);
+ assert.match(client,/kind=="MONSTER_ATTACK_EFFECT"/);
+});
+
+test('결과는 시레머니 다음 보상 정산 후 저택 복귀 안내로 이어진다',()=>{
+ assert.match(config,/ResultSeconds=8/);
+ assert.match(client,/resultDetail\.Visible=false/);
+ assert.match(client,/task\.delay\(2\.15/);
+ assert.match(client,/보상 정산 완료 · 잠시 뒤 내 저택으로 돌아가/);
+ assert.match(client,/task\.delay\(6\.15/);
+ assert.match(client,/내 저택으로 돌아가는 중…/);
+ assert.match(client,/총 \+%d 코인/);
+ assert.match(server,/teleport\(p,personalSpawn\(p\)\)/);
+ assert.match(server,/RESULT_RETURN_SAME_SERVER/);
+ assert.match(server,/RESULT_CEREMONY_NO_MANOR_RECOVERY/);
+ assert.match(server,/if manorLobby and state=="WAITING"then/);
+ assert.match(server,/local lobbySafe=roundState=="ROOM_BROWSER"or roundState=="WAITING"/);
+ assert.doesNotMatch(server,/stageResultCeremony[\s\S]{0,1800}teleport\(row\.player,pos,cameraPos\)/);
+ const resultBlock=server.slice(server.indexOf('local function endRound(winner)'),server.indexOf('local purifyCooldown=',server.indexOf('local function endRound(winner)')));
+ assert.doesNotMatch(resultBlock,/leaveReservedRoom\(p\)/);
+ const recoverBlock=server.slice(server.indexOf('RESULT_CEREMONY_NO_MANOR_RECOVERY'),server.indexOf('local function stripLoadedAsset'));
+ assert.doesNotMatch(recoverBlock,/state~="RUNNING"/);
+ assert.doesNotMatch(recoverBlock,/RoundState"\)~="SPECTATING"/);
+});
+
 
 test('초기 세계 괴담 도감은 12종 3단계이며 서버 근접 검증을 사용한다',()=>{
  const catalog=config.slice(config.indexOf('GhostCatalog={'),config.indexOf('GhostTitles={'));
@@ -510,7 +717,9 @@ test('1인 방 생성과 방장 시작은 8인 AI 충원 계약을 유지한다'
  assert.match(server,/local function startRoomMatch\(p\)/);
  assert.match(server,/#Players:GetPlayers\(\)<math\.max\(1,tonumber\(C\.MinimumParticipants\)or 1\)/);
  assert.match(server,/configure\(h,survivorOrder,monsterOrder,si,mi\)/);
- assert.match(manorClient,/1인 플레이 · 빈자리는 AI/);
+ assert.match(manorClient,/혼자 바로 시작/);
+ assert.match(server,/local function startLocalSoloRoom\(p\)/);
+ assert.match(server,/if #Players:GetPlayers\(\)==1 then startLocalSoloRoom\(p\)else createReservedRoom\(p,"PRIVATE",true\)end/);
 });
 
 test('예약 방은 공개 친구만 비공개를 서버가 검증하고 예약 코드를 클라이언트에 노출하지 않는다',()=>{
@@ -566,7 +775,9 @@ test('투명 스폰은 공중 발판이 되지 않고 로비와 경기장 스폰
  assert.match(server,/lobbySpawnLocation\.Name="LobbySpawn"/);
  assert.match(server,/lobbySpawnLocation\.CanCollide=false/);
  assert.match(server,/local lobbyDestination=pos\.Z>=180/);
- assert.match(server,/rootFolders=lobbyDestination and\{workspace:FindFirstChild\("MidnightLobby"\)\}or\{arena\}/);
+ assert.match(server,/local currentArena=arena/);
+ assert.match(server,/currentArena=workspace:FindFirstChild\("MidnightArena"\)/);
+ assert.match(server,/rootFolders=lobbyDestination and\{workspace:FindFirstChild\("MidnightLobby"\)\}or\{currentArena\}/);
  assert.match(server,/r\.AssemblyLinearVelocity=Vector3\.zero/);
  assert.match(server,/r\.AssemblyAngularVelocity=Vector3\.zero/);
 });
@@ -586,14 +797,53 @@ test('실제 캐릭터 스폰은 목적 월드 바닥 Raycast와 아바타 높�
  assert.match(server,/workspace:Raycast\(Vector3\.new\(pos\.X,rayTop,pos\.Z\),Vector3\.new\(0,-rayLength,0\),params\)/);
  assert.match(server,/local standingOffset=math\.max\(1,tonumber\(h\.HipHeight\)or 0\)\+\(r\.Size\.Y\*\.5\)/);
  assert.match(server,/local targetY=groundY\+standingOffset\+\.03/);
- assert.match(server,/if lobbyDestination then targetY=math\.clamp\(targetY,2\.8,5\.2\)end/);
+ assert.match(server,/if lobbyDestination then targetY=math\.clamp\(targetY,2\.8,5\.2\)else targetY=math\.clamp\(targetY,2\.8,6\.5\)end/);
+ const groundBlock=server.slice(server.indexOf('local function groundedRootTarget'),server.indexOf('local function teleport',server.indexOf('local function groundedRootTarget')));
+ assert.match(groundBlock,/local maxGroundY=lobbyDestination and\(pos\.Y\+1\.5\)or\(pos\.Y\+3\)/);
+ assert.doesNotMatch(groundBlock,/FilterType=Enum\.RaycastFilterType\.Exclude/);
+ assert.doesNotMatch(groundBlock,/Vector3\.new\(0,-44,0\)/);
  assert.match(server,/h:ChangeState\(Enum\.HumanoidStateType\.GettingUp\)/);
+});
+
+test('정상 경기장 빌드는 현재 arena 참조를 갱신해 스폰 바닥 검증이 새 맵을 사용한다',()=>{
+ const makeArenaBlock=server.slice(server.indexOf('local function makeArena(map)'),server.indexOf('local function recordServerQA'));
+ assert.match(makeArenaBlock,/decorateArenaWithOfficialAssets\(f,map\)[\s\S]{0,240}arena=f[\s\S]{0,120}workspace:SetAttribute\("MapReady",true\)/);
+});
+
+test('첫 캐릭터 프레임은 안전 바닥을 먼저 만들고 실제 목적지 teleport 한 경로만 사용한다',()=>{
+ const bootstrapBlock=server.slice(server.indexOf('local function bootstrapLobbyCharacter'),server.indexOf('local function bindBootstrapLobbySpawn'));
+ const groundIndex=server.indexOf('local bootstrapGround=workspace:FindFirstChild("ManorBootstrapGround")');
+ const spawnIndex=server.indexOf('local lobbyBootstrapSpawn=workspace:FindFirstChild("LobbyBootstrapSpawn")');
+ assert.ok(groundIndex>=0&&spawnIndex>groundIndex,'bootstrap ground must exist before engine spawn');
+ assert.match(server,/FIRST_FRAME_SPAWN_SINGLE_PATH_V4/);
+ assert.match(server,/bootstrapGround\.CanCollide=true/);
+ assert.match(server,/PersistentBootstrapSafety/);
+ assert.match(bootstrapBlock,/BootstrapGroundReadyAt/);
+ assert.doesNotMatch(bootstrapBlock,/character:PivotTo/);
+ assert.doesNotMatch(bootstrapBlock,/bootstrapTarget/);
+ assert.doesNotMatch(server,/ManorBootstrapGround"\);if safety then safety:Destroy\(\)end/);
+ const engineSpawnCreates=server.match(/Instance\.new\("SpawnLocation"\)/g)||[];
+ assert.equal(engineSpawnCreates.length,1,'horror runtime must create exactly one engine SpawnLocation');
+ assert.match(server,/lobbyBootstrapSpawn\.AllowTeamChangeOnTouch=false/);
+ assert.match(server,/lobbyBootstrapSpawn\.Enabled=true/);
+ assert.doesNotMatch(server,/lobbyBootstrapSpawn\.Enabled=false/);
+ assert.match(server,/foundationSpawn=Instance\.new\("Part"\)/);
+ assert.match(server,/foundationSpawn:SetAttribute\("SpawnMarkerOnly",true\)/);
+ assert.doesNotMatch(server,/foundationSpawn=Instance\.new\("SpawnLocation"\)/);
+ assert.doesNotMatch(server,/foundationSpawn\.Enabled=/);
+ assert.doesNotMatch(server,/RespawnLocation=foundationSpawn/);
+ assert.match(server,/workspace:SetAttribute\("EngineSpawnPhase","SINGLE_BOOTSTRAP"\)/);
+ assert.match(manorServer,/local spawn=Instance\.new\("Part"\);spawn\.Name="PersonalSpawn"/);
+ assert.match(manorServer,/SpawnMarkerOnly/);
+ assert.doesNotMatch(manorServer,/local spawn=Instance\.new\("SpawnLocation"\);spawn\.Name="PersonalSpawn"/);
+ assert.doesNotMatch(manorServer,/p\.RespawnLocation=spawn/);
 });
 
 test('대기 로비 캐릭터는 경기장 MapReady를 기다리지 않고 로비 바닥에 즉시 스폰한다',()=>{
  const block=server.slice(server.indexOf('local function onCharacter'),server.indexOf('Players.PlayerAdded:Connect(function(p)'));
  assert.match(block,/workspace:GetAttribute\("PhysicalLobbyReady"\)/);
- assert.match(block,/local destination,look,spawn=personalSpawn\(p\)/);
+ assert.match(block,/local destination,look=personalSpawn\(p\)/);
+ assert.match(block,/p\.RespawnLocation=lobbyBootstrapSpawn/);
  assert.match(block,/teleport\(p,destination,look\)/);
  assert.match(block,/LobbySpawnGroundedAt/);
  const waitingBranch=block.slice(block.indexOf('if state~="RUNNING"then'),block.indexOf('local readyDeadline'));
@@ -619,4 +869,15 @@ test('안전 스폰은 상호작용 오브젝트와 분리되고 바닥만 착�
  assert.match(server,/SetAttribute\("WalkableGround",true\)/);
  assert.match(server,/FilterType=Enum\.RaycastFilterType\.Include/);
  assert.match(server,/d:GetAttribute\("WalkableGround"\)==true/);
+});
+
+test('저택 로비 UI는 Version 77 구조 위에서 내부 아이콘 기반 다크카툰 카드로 구성된다',()=>{
+ assert.match(manorAssets,/ModelId=89009422966867/);
+ assert.match(manorClient,/ArtbookStyle","DARK_CARTOON_GOTHIC_HALLOWEEN"/);
+ assert.match(manorClient,/UIAssetSource","INTERNAL_MANOR_ICONS"/);
+ assert.match(manorClient,/local function internalIcon\(/);
+ assert.match(manorClient,/local function artbookButton\(/);
+ assert.match(manorClient,/DarkCartoonWelcomeCard/);
+ for(const text of ['"인간","정화·대시·직업 스킬"','"몬스터","추적·감염·고유 스킬"','"혼자 바로 시작","같은 서버에서 즉시 출정"'])assert.ok(manorClient.includes(text),text);
+ assert.doesNotMatch(manorClient,/local mapGlyph=/);
 });
