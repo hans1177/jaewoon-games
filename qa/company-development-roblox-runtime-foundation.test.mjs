@@ -798,6 +798,26 @@ test('F9 scan dedupe cancels only older queued runs and preserves a newer main s
  assert.match(workflow,/ROBLOX_F9_CONTROL_SHA=/);
 });
 
+test('F9 runtime critical path reuses current-main contract QA instead of replaying repository tests per game',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+ const start=workflow.indexOf('\n  final-review:');
+ const end=workflow.indexOf('\n      - name: Promote only the exact tested runtime candidate',start);
+ const block=workflow.slice(start,end);
+ const vibe3=fs.readFileSync('.github/workflows/vibe3-engine-contract.yml','utf8');
+ assert.ok(start>0&&end>start);
+ assert.match(block,/Verify only F9 executable syntax/);
+ assert.match(block,/node --input-type=module --check < tools\/company-tester-debug-intake\.mjs/);
+ assert.match(block,/ROBLOX_F9_CONTRACT_QA=REUSED_CURRENT_MAIN_CI/);
+ assert.match(block,/ROBLOX_F9_CRITICAL_PATH_DUPLICATE_TESTS=0/);
+ assert.doesNotMatch(block,/node --test/);
+ assert.match(vibe3,/qa\/company-development-roblox-runtime-foundation\.test\.mjs/);
+ assert.match(vibe3,/qa\/company-development-roblox-headless-fast-mvp\.test\.mjs/);
+ assert.match(vibe3,/qa\/company-development-roblox-release-promotion\.test\.mjs/);
+ assert.match(vibe3,/qa\/company-tester-debug-intake\.test\.mjs/);
+ assert.match(vibe3,/qa\/vibe3-roblox-platform\.test\.mjs/);
+});
+
+
 test('F9 Vibe fan-in shell parses so verified publication never strands the next evolution',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
  const step=workflow.slice(workflow.indexOf('      - name: Fan verified F9 runtime proof into waiting Vibe Roblox tasks'));
