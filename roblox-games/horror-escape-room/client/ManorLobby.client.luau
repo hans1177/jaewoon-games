@@ -621,12 +621,20 @@ RunService.Heartbeat:Connect(function(dt)
    elseif name:match("^LivingVineTip")or name:match("^LivingBranch")then
     mesh.CFrame=around(row.home.Position,Vector3.new(math.sin(now*.47+row.home.Position.Z*.05)*.018,math.sin(now*.38+row.home.Position.X*.04)*.020,math.sin(now*.51)*.025))*row.home
    elseif name:match("^BackdropCloud")then
-    mesh.CFrame=row.home+Vector3.new(math.sin(now*.075+row.home.Position.X*.01)*3.2,math.sin(now*.11)*.22,0)
+    local layer=tonumber(name:match("(%d+)$"))or 0
+    local speed=.050+layer*.010
+    local travel=2.1+layer*.42
+    mesh.CFrame=row.home+Vector3.new(math.sin(now*speed+row.home.Position.X*.01)*travel,math.sin(now*(speed*1.55)+layer)*(.12+layer*.035),0)
    elseif name:match("^BackdropMist")then
-    mesh.CFrame=row.home+Vector3.new(math.sin(now*.095+row.home.Position.Y*.03)*2.4,math.sin(now*.13+row.home.Position.X*.02)*.28,0)
+    local layer=tonumber(name:match("(%d+)$"))or 0
+    local speed=.060+layer*.012
+    mesh.CFrame=row.home+Vector3.new(math.sin(now*speed+layer*.8)*(1.5+layer*.35),math.sin(now*(speed*1.4)+row.home.Position.X*.02)*(.10+layer*.035),0)
    elseif name:match("^BackdropBat")then
-    local phase=row.home.Position.X*.11
-    mesh.CFrame=(row.home+Vector3.new(math.sin(now*.55+phase)*1.15,math.sin(now*.93+phase)*.55,0))*CFrame.Angles(0,0,math.sin(now*1.8+phase)*.08)
+    local layer=tonumber(name:match("(%d+)$"))or 0
+    local phase=row.home.Position.X*.11+layer*.71
+    local flap=math.sin(now*(1.65+layer*.08)+phase)
+    mesh.CFrame=(row.home+Vector3.new(math.sin(now*(.42+layer*.025)+phase)*(1.0+layer*.10),math.sin(now*(.78+layer*.035)+phase)*(.42+layer*.05),0))*CFrame.Angles(0,0,flap*.10)
+    mesh.Size=Vector3.new(row.size.X*(1+math.abs(flap)*.055),row.size.Y*(1-math.abs(flap)*.045),row.size.Z)
    elseif name:match("^ChandelierDrop")or name:match("^ChandelierPearDrop")then
     local phase=row.home.Position.X*.21+row.home.Position.Z*.17
     mesh.CFrame=around(row.home.Position+Vector3.new(0,.8,0),Vector3.new(math.sin(now*.62+phase)*.020,0,math.sin(now*.48+phase)*.024))*row.home
