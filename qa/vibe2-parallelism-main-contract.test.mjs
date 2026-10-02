@@ -253,9 +253,12 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.equal(runtime.continuous.auxiliaryLaneFanIn.recoveryFastCausalGameRefillAllowed,true);
   assert.equal(runtime.continuous.auxiliaryLaneFanIn.recoveryFastCausalGameRefillPressureGuardRequired,true);
   assert.equal(runtime.continuous.auxiliaryLaneFanIn.recoveryFastCausalGameRefillQueuePressureThreshold,4);
-  assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'LANE_SCOPED_STATELESS_WAKE_COALESCING');
+  assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'SOURCE_TASK_SCOPED_PARALLEL_OPTIMISTIC_SHARED_QUEUE_WRITE');
   assert.equal(runtime.continuous.atomicNeuronStream.globalFanInRefillSingletonForbidden,true);
-  assert.equal(runtime.continuous.atomicNeuronStream.pressureCoalescingIndependentFreeSlotRefillPreserved,false);
+  assert.equal(runtime.continuous.atomicNeuronStream.pressureCoalescingIndependentFreeSlotRefillPreserved,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.sameLaneFanInRefillSerialization,false);
+  assert.equal(runtime.continuous.atomicNeuronStream.topLevelFanInRefillLaneSerialization,false);
+  assert.equal(runtime.continuous.reserveConcurrency.statelessRefillCoalescing,'SOURCE_TASK_OR_SOURCE_RUN_SCOPED');
   assert.equal(runtime.continuous.callbackCoalescing.capacityRefillMayProceedWhileResultCoalesced,false);
   assert.equal(runtime.continuous.callbackCoalescing.pressureCapacityRefill.maxSignalsPerWave,0);
   assert.match(core,/VIBE2_PRESSURE_REFILL_DISPATCH=SKIPPED_DEFER_TO_COHORT_FANIN/);
