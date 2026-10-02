@@ -2562,11 +2562,16 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
         const queueWithoutCurrent={...queue,tasks:tasks.filter((_,rowIndex)=>rowIndex!==index)};
         const refreshed=attachGameSpecificBuildUpDirective(item,project,repoRoot,queueWithoutCurrent,verifiedDesign);
         if(clean(refreshed?.buildUpDirective?.directiveId)){
+          const newerTerminalGeneration=latestHistoricalGeneration>currentGeneration;
           candidate=bindSharedBuildUpDirective(item,refreshed.buildUpDirective);
           canonicalByScope.set(scope,refreshed.buildUpDirective);
-          candidate={...candidate,evidence:[...new Set([...(candidate.evidence||[]),...(refreshed.evidence||[]),'build-up-directive-source-refresh:CURRENT_SOURCE_TREE'])]};
+          candidate={...candidate,evidence:[...new Set([
+            ...(candidate.evidence||[]),...(refreshed.evidence||[]),
+            'build-up-directive-source-refresh:CURRENT_SOURCE_TREE',
+            ...(newerTerminalGeneration?['build-up-directive-stale-refresh:queued-existing-work']:[])
+          ])]};
           rebound+=1;changed+=1;
-          freshness='REGENERATED_AFTER_SOURCE_TREE_CHANGE';
+          freshness=newerTerminalGeneration?'REGENERATED_AFTER_NEWER_TERMINAL_GENERATION':'REGENERATED_AFTER_SOURCE_TREE_CHANGE';
         }else{
           designPending+=1;
           freshness='STALE_SOURCE_REGENERATION_FAILED';
