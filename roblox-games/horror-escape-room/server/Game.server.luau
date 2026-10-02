@@ -2903,7 +2903,7 @@ local function validRemoteAction(p,a)
  return true
 end
 local function returnToPersonalManor(p,reason)
- if not manorLobby then return false end
+ if not manorLobby or roomServer or state=="RUNNING"then return false end
  local destination,look=manorLobby:ReturnHome(p)
  if destination then
   teleport(p,destination,look)
