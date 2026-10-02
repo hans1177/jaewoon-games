@@ -95,6 +95,8 @@ env:
   VIBE2_OPENAI_PAID_API_ALLOWED: 'false'
   VIBE2_SHARED_CONTEXT_REQUIRED: 'true'
   VIBE2_EXECUTION_LANE: ${{ inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary' }}
+  VIBE2_FANIN_SOURCE_TASK: ${{ github.event.client_payload.source_task || '' }}
+  VIBE2_FANIN_REASON: ${{ github.event.client_payload.reason || '' }}
   VIBE2_LANE_MAX: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && '1' || inputs.lane_max || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && '64') || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'recovery-fast' && '5') || '256' }}
 
 jobs:
@@ -128,6 +130,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           VIBE2_DISPATCH_ACTION: ${{ github.event.action || '' }}
+          VIBE2_DISPATCH_SOURCE_TASK: ${{ github.event.client_payload.source_task || '' }}
+          VIBE2_DISPATCH_REASON: ${{ github.event.client_payload.reason || '' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -145,8 +149,12 @@ jobs:
             echo "VIBE2_RESERVE_WAKE_LATEST_SHA=$latest_main"
             if [[ "$GITHUB_SHA" != "$latest_main" ]]; then
               if [[ "${GITHUB_EVENT_NAME:-}" == 'repository_dispatch' ]]; then
-                proceed=false
-                echo "VIBE2_FANIN_WAKE_STALE_DROPPED=$GITHUB_SHA:$latest_main"
+                if [[ "${VIBE2_DISPATCH_ACTION:-}" == 'vibe2-fanin-refill' && -n "${VIBE2_DISPATCH_SOURCE_TASK:-}" && "${VIBE2_DISPATCH_REASON:-}" == 'roblox-f9-verified-next-evolution' ]]; then
+                  echo "VIBE2_ROBLOX_F9_FANIN_WAKE_REBASED_TO_LATEST=$GITHUB_SHA:$latest_main:${VIBE2_DISPATCH_SOURCE_TASK}"
+                else
+                  proceed=false
+                  echo "VIBE2_FANIN_WAKE_STALE_DROPPED=$GITHUB_SHA:$latest_main"
+                fi
               else
                 echo "VIBE2_MAIN_PUSH_WAKE_REBASED_TO_LATEST=$GITHUB_SHA:$latest_main"
               fi
@@ -525,6 +533,7 @@ jobs:
               --experience="$control_root/.vibe2/experience.json" \
               --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
               --root=/tmp/vibe2-main \
+              --requested-game="$VIBE2_FANIN_SOURCE_TASK" \
               --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-reserve-autoplan.log
             node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs \
               --state="$control_root/.vibe2/learning-motor-state.json" \
