@@ -152,9 +152,15 @@ function Manor:Get(p)
  room.doors={};room.doorOpen=nil
  for _,side in ipairs({-1,1})do
   local node=scene:FindFirstChild("EntryDoor"..side,true)
-  if node then for _,mesh in ipairs(node:GetDescendants())do
-   if mesh:IsA("BasePart")then table.insert(room.doors,{mesh=mesh,home=mesh.CFrame,pivot=origin+Vector3.new(side*7.2,.5,-2),side=side})end
-  end end
+  if node then
+   local doorMeshes={}
+   if node:IsA("BasePart")then table.insert(doorMeshes,node)end
+   for _,mesh in ipairs(node:GetDescendants())do if mesh:IsA("BasePart")then table.insert(doorMeshes,mesh)end end
+   for _,mesh in ipairs(doorMeshes)do
+    mesh.CanCollide=false;mesh.CanTouch=false;mesh.CanQuery=true
+    table.insert(room.doors,{mesh=mesh,home=mesh.CFrame,pivot=origin+Vector3.new(side*7.2,.5,-2),side=side})
+   end
+  end
  end
  -- Owner records turn the back wall into a personal collection display.
  local function collection()
