@@ -1,5 +1,5 @@
 {
-  "version": 523,
+  "version": 524,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-02",
@@ -8729,6 +8729,53 @@
       "newSchedulerCreated": false,
       "watchdogCreated": false,
       "canonicalPipelinePreserved": true
+    },
+    "assetAiHeroModelNativeAuthoringPromotion20261003": {
+      "authority": "OWNER_DIRECTIVE_2026-10-03",
+      "status": "ACTIVE",
+      "objective": "HERO_ASSET_LOCAL_MODEL_UPGRADE_PLUS_RUNTIME_GATED_COMPANY_PROMOTION_AND_ACTUAL_NATIVE_AUTHORING_WITHOUT_INCREASING_GENERATION_BUDGET",
+      "heroModelRouting": {
+        "version": 1,
+        "enabled": true,
+        "provider": "LOCAL_OLLAMA",
+        "scope": "HERO_ASSET_SOURCE_IMPLEMENTATION_ONLY",
+        "baselineModel": "qwen3:1.7b",
+        "heroModel": "qwen3:4b-instruct",
+        "triggerSignals": [
+          "EXPLICIT_HERO_TIER",
+          "PLAYER_OR_HERO",
+          "PRIMARY_BOSS_OR_ENEMY",
+          "SIGNATURE_WEAPON_OR_TOOL",
+          "KEY_LANDMARK_OR_STARTING_HUB"
+        ],
+        "fallbackToBaseline": true,
+        "paidApiAllowed": false,
+        "generationBudgetUnchanged": true,
+        "maxAttempts": 3,
+        "focusedTimeoutMs": 120000,
+        "focusedMaxPredict": 768,
+        "focusedContextWindow": 8192,
+        "fullGraphicsLongRetryAfterFocusedFailure": false,
+        "gamePrimaryGenerationPolicyUnchanged": true
+      },
+      "nativeAuthoring": {
+        "canonicalRoot": "assets/vibe-art-pipeline.js",
+        "planner": "tools/vibe2-asset-production-plan.mjs",
+        "sourceWorker": "tools/vibe2-source-worker.mjs",
+        "authoringRequestIsNotCompletion": true,
+        "actualArtifactOrNativeSourceDeltaRequired": true,
+        "nativeRuntimeEvidenceRequired": true
+      },
+      "companyAssetPromotion": {
+        "registry": "company-asset-library.json",
+        "runtimeVerifiedConsumerRequired": true,
+        "licenseProvenanceRequired": true,
+        "mobilePerformanceRequired": true,
+        "regressionPassRequired": true,
+        "preparedArtifactSelfPromotionForbidden": true
+      },
+      "newTopLevelPipelineCreated": false,
+      "gameplaySaveProgressionEconomyNetworkAuthorityUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -15305,7 +15352,33 @@
       "assetDevelopmentSourceWorkerBuildUpDirectiveSyntaxGuard": true,
       "assetDevelopmentModelCachePersistOnMiss": true,
       "assetDevelopmentWorkerModelRepullAfterSharedCacheHitForbidden": true,
-      "assetDevelopmentCacheGeneration": 5
+      "assetDevelopmentCacheGeneration": 5,
+      "assetDevelopmentHeroModelRouting": {
+        "version": 1,
+        "enabled": true,
+        "provider": "LOCAL_OLLAMA",
+        "scope": "HERO_ASSET_SOURCE_IMPLEMENTATION_ONLY",
+        "baselineModel": "qwen3:1.7b",
+        "heroModel": "qwen3:4b-instruct",
+        "triggerSignals": [
+          "EXPLICIT_HERO_TIER",
+          "PLAYER_OR_HERO",
+          "PRIMARY_BOSS_OR_ENEMY",
+          "SIGNATURE_WEAPON_OR_TOOL",
+          "KEY_LANDMARK_OR_STARTING_HUB"
+        ],
+        "fallbackToBaseline": true,
+        "paidApiAllowed": false,
+        "generationBudgetUnchanged": true,
+        "maxAttempts": 3,
+        "focusedTimeoutMs": 120000,
+        "focusedMaxPredict": 768,
+        "focusedContextWindow": 8192,
+        "fullGraphicsLongRetryAfterFocusedFailure": false,
+        "gamePrimaryGenerationPolicyUnchanged": true
+      },
+      "assetDevelopmentHeroOllamaCacheKey": "vibe2-ollama-v6-${runner.os}-${runner.arch}-qwen3-4b-instruct",
+      "assetDevelopmentPerTaskModelCacheKey": "vibe2-ollama-v6-${runner.os}-${runner.arch}-${model-slug}"
     },
     "failureHandling": {
       "state": "ASSET_REPAIR_REQUIRED",
