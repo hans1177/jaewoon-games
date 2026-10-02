@@ -128,6 +128,7 @@ jobs:
             '.github/workflows/vibe3-engine-contract.yml',
             '.github/workflows/vibe2-core-qa.yml',
             '.github/workflows/company-game-seed-qa.yml',
+            '.github/workflows/company-platform-exposure-sync.yml',
           ]);
           for(const path of pureControlPlane){
             const rows=runs.filter(r=>r.path===path&&active.has(String(r.status||'').toLowerCase()));
@@ -251,13 +252,17 @@ jobs:
 
           const staleBefore=Date.now()-(15*60*1000);
           const legacyRoblox=runs
-            .filter(r=>r.path==='.github/workflows/company-development-roblox-runtime.yml'
+            .filter(r=>[
+                '.github/workflows/company-development-roblox-runtime.yml',
+                '.github/workflows/company-development-roblox-runtime-continuation.yml',
+              ].includes(String(r.path||''))
               &&active.has(String(r.status||'').toLowerCase())
               &&String(r.head_sha||'')!==String(process.env.GITHUB_SHA||'')
               &&Date.parse(String(r.created_at||0))<staleBefore
               &&(
                 String(r.display_title||'')==='Company DEVELOPMENT_CONFIRMED Roblox Runtime'
                 ||String(r.display_title||'')==='Roblox runtime · batch'
+                ||String(r.display_title||'')==='Company DEVELOPMENT_CONFIRMED Roblox Vibe Shared Preflight'
               ));
           for(const stale of legacyRoblox)add(stale,'ROBLOX_STALE_LEGACY_OR_BATCH');
 
