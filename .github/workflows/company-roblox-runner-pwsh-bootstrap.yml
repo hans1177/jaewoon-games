@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/company-roblox-runner-pwsh-bootstrap.yml'
+      - '.github/workflows/horror-manor-review.yml'
+      - 'tools/horror-manor-studio-review.mjs'
   workflow_dispatch:
 
 permissions:
