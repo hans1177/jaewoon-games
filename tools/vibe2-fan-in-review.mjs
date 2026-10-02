@@ -112,6 +112,39 @@ function studioQualityImplementationFailures(task={},row={}){
   return[];
 }
 
+function assetProductionTask(task={}){
+  const evidence=new Set((task?.evidence||[]).map(clean).filter(Boolean));
+  return task?.assetProductionLane===true||evidence.has('asset-production-parallel:v1');
+}
+function heroAssetModelFailures(task={},row={}){
+  if(!assetProductionTask(task))return[];
+  const routing=row?.modelRouting&&typeof row.modelRouting==='object'
+    ?row.modelRouting
+    :row?.assetProduction?.modelRouting&&typeof row.assetProduction.modelRouting==='object'
+      ?row.assetProduction.modelRouting:null;
+  if(routing?.heroRequested!==true)return[];
+  const failures=[];
+  const expected=clean(routing.heroModel||row?.assetProduction?.modelRouting?.heroModel);
+  const actual=clean(row?.model||routing.actualModel);
+  if(routing.heroModelApplied!==true)failures.push('hero-asset-model-not-applied');
+  if(expected&&actual!==expected)failures.push('hero-asset-model-identity');
+  if(clean(routing.tier).toUpperCase()!=='HERO_STUDIO')failures.push('hero-asset-model-tier');
+  if(routing.generationBudgetUnchanged!==true)failures.push('hero-asset-model-budget-drift');
+  return[...new Set(failures)];
+}
+function nativeAssetAuthoringFailures(task={},row={}){
+  if(!assetProductionTask(task))return[];
+  const contract=row?.assetProduction?.nativeAuthoringExecution&&typeof row.assetProduction.nativeAuthoringExecution==='object'
+    ?row.assetProduction.nativeAuthoringExecution:null;
+  if(contract?.enabled!==true)return[];
+  const authoring=row?.nativeAssetAuthoring&&typeof row.nativeAssetAuthoring==='object'?row.nativeAssetAuthoring:null;
+  if(!authoring||authoring.required!==true)return['native-asset-authoring-evidence'];
+  const status=clean(authoring.status).toUpperCase();
+  if(['DCC_AUTHORING_EXECUTOR_REQUIRED','NATIVE_AUTHORING_DELTA_REQUIRED','AUTHORING_REQUIRED'].includes(status))return['native-asset-authoring-not-executed'];
+  if(status==='NATIVE_SOURCE_AUTHORED_RUNTIME_REQUIRED')return[];
+  return['native-asset-authoring-status'];
+}
+
 function graphicsReplacementGroundingFailures(row={}){
   const contract=row?.presentationQuality?.graphicsReplacement&&typeof row.presentationQuality.graphicsReplacement==='object'
     ?row.presentationQuality.graphicsReplacement:null;
@@ -307,6 +340,8 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       else {
         missing.push(...candidateIdentityFailures(task,selectedResult,candidateBranch));
         missing.push(...studioQualityImplementationFailures(task,selectedResult));
+        missing.push(...heroAssetModelFailures(task,selectedResult));
+        missing.push(...nativeAssetAuthoringFailures(task,selectedResult));
         missing.push(...graphicsReplacementGroundingFailures(selectedResult));
         missing.push(...gameRepairEvidenceFailures(selectedResult));
         missing.push(...verifiedExternalLearningApplicationFailures(selectedResult));
@@ -371,6 +406,8 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       evidence.add('package-review:all-required-roles-pass');
       evidence.add('candidate-identity:PASS');
       if(task?.studioQualityEvolution?.realSourceDeltaRequired===true)evidence.add('studio-quality-implementation-delta:PASS');
+      if(selectedResult?.modelRouting?.heroRequested===true)evidence.add('hero-asset-model:PASS');
+      if(selectedResult?.nativeAssetAuthoring?.required===true)evidence.add(`native-asset-authoring:${clean(selectedResult.nativeAssetAuthoring.status)||'UNKNOWN'}`);
       if(selectedResult?.presentationQuality?.graphicsReplacement?.required===true){
         evidence.add('graphics-replacement-grounding:PASS');
         evidence.add(`graphics-replacement-grounded-count:${Number(selectedResult?.graphicsReplacementQa?.groundedCount||0)}`);
