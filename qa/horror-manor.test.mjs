@@ -25,7 +25,10 @@ test('manor UI follows the current artbook and mobile-safe map board',()=>{
  assert.match(ui,/panel\.AnchorPoint=Vector2\.new\(\.5,1\)/);
  assert.match(ui,/nav\.Size=UDim2\.fromOffset\(74,236\)/);
  assert.match(ui,/\{\{"PLAY","지도"\},\{"BOOK","도감"\},\{"DRESS","옷장"\},\{"EVENT","저택"\},\{"RECORD","기록"\}\}/);
- assert.match(ui,/벽걸이 지도 · 황동 핀을 옮기면 실제 출정 맵도 함께 바뀐다/);
+ assert.match(ui,/label\(body,"1\. 맵 선택"/);
+ assert.match(ui,/label\(body,"2\. 역할 · "/);
+ assert.match(ui,/label\(body,"3\. 시작"/);
+ assert.match(ui,/button\(body,"혼자 바로 시작"/);
  assert.match(ui,/mapGlyph=\{SCHOOL="교",HOSPITAL="병",THEME_PARK="원"\}/);
  assert.match(ui,/send\(C\.Actions\.SELECT_MAP,map\.Id\)/);
  assert.match(ui,/header\.Visible=false;commands\.Visible=false;panel\.Visible=true/);
