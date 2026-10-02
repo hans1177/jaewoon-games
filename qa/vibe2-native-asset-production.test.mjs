@@ -334,6 +334,32 @@ test('internal asset development is not ready when verified commercial distillat
   assert.equal(plan.commercialDistillation.exactRetrievedSetBinding,false);
 });
 
+test('hero asset planning upgrades only hero requests to the stronger local model',()=>{
+  const hero=buildVibeAssetProductionPlan({
+    target:'roblox',
+    task:{gameId:'hero-demo',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] primary boss 보스 외형과 모션을 스튜디오급으로 개선'},
+    manifest:{assets:[]},presetCatalog:{presets:[]}
+  });
+  assert.equal(hero.modelRouting.heroRequested,true);
+  assert.equal(hero.modelRouting.selectedModel,'qwen3:4b-instruct');
+  assert.equal(hero.modelRouting.baselineModel,'qwen3:1.7b');
+  assert.equal(hero.modelRouting.maxAttemptsUnchanged,true);
+  assert.equal(hero.nativeAuthoringExecution.enabled,true);
+  assert.equal(hero.nativeAuthoringExecution.completion.authoringRequestIsNotCompletion,true);
+  assert.ok(hero.nativeAuthoringExecution.dcc.requiredTypes.length>0);
+  const guidance=assetProductionGuidance(hero);
+  assert.match(guidance,/ASSET MODEL ROUTING/);
+  assert.match(guidance,/NATIVE AUTHORING EXECUTION LOOP/);
+
+  const ordinary=buildVibeAssetProductionPlan({
+    target:'roblox',
+    task:{gameId:'ordinary-demo',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 일반 환경 소품 정리'},
+    manifest:{assets:[]},presetCatalog:{presets:[]}
+  });
+  assert.equal(ordinary.modelRouting.heroRequested,false);
+  assert.equal(ordinary.modelRouting.selectedModel,'qwen3:1.7b');
+});
+
 test('native asset production defaults to Roblox and exposes reproducible Blender authoring evidence',()=>{
   const root=tempRoot();
   try{
