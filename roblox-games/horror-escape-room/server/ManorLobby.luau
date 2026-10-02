@@ -283,17 +283,37 @@ function Manor:Get(p)
    end
   end
 
-  -- 괴담별 대표 유물은 각 기록의 실제 단계만 따른다. 1·2단계에서는 흐릿하게 드러나고 3단계에서 완전 전시된다.
+  -- 괴담별 대표 유물은 각 기록의 실제 단계만 따른다. 희귀 케이스도 같은 GhostProgress만 사용한다.
+  local featureId=nil
+  local featureStage=-1
   for _,ghost in ipairs(C.GhostCatalog or{})do
    local stage=math.clamp(tonumber(stages[ghost.Id])or 0,0,3)
+   if stage>featureStage then featureStage=stage;featureId=ghost.Id end
    for _,mesh in ipairs(namedParts(scene,"GhostRelic_"..ghost.Id))do
     mesh.Transparency=stage==0 and .92 or stage==1 and .56 or stage==2 and .24 or 0
     mesh.Reflectance=stage==3 and .08 or 0
     mesh.CanQuery=false;mesh.CanTouch=false;mesh.CanCollide=false
    end
+   -- 기존 등장 가중치가 낮은 괴담만 전용 유리 케이스를 사용한다. 게임 확률 자체는 전혀 바꾸지 않는다.
+   if (tonumber(ghost.Weight)or math.huge)<=58 then
+    for _,mesh in ipairs(namedParts(scene,"RareRelic_"..ghost.Id))do
+     mesh.Transparency=stage==0 and .94 or stage==1 and .64 or stage==2 and .30 or 0
+     mesh.Reflectance=stage==3 and .12 or 0
+     mesh.CanQuery=false;mesh.CanTouch=false;mesh.CanCollide=false
+    end
+   end
   end
 
   local allComplete=(tonumber(p:GetAttribute("GhostCompleted"))or 0)>=#(C.GhostCatalog or{})
+  -- 벽난로 대표 슬롯은 가장 진척된 기존 괴담 하나만 보여주며 전체 완성 기념물이 나타나면 비운다.
+  for _,ghost in ipairs(C.GhostCatalog or{})do
+   local show=not allComplete and featureStage>0 and ghost.Id==featureId
+   for _,mesh in ipairs(namedParts(scene,"FireplaceFeature_"..ghost.Id))do
+    mesh.Transparency=show and 0 or .96
+    mesh.Reflectance=show and featureStage==3 and .10 or 0
+    mesh.CanQuery=false;mesh.CanTouch=false;mesh.CanCollide=false
+   end
+  end
   for _,mesh in ipairs(namedParts(scene,"MasterCollectionRelic"))do
    mesh.Transparency=allComplete and 0 or .92
    mesh.Reflectance=allComplete and .10 or 0
@@ -317,6 +337,15 @@ function Manor:Get(p)
    for _,mesh in ipairs(namedParts(scene,"MemoryRelic_"..map.Id))do
     mesh.Transparency=discovered and 0 or .82
     mesh.Reflectance=full and .10 or 0
+    mesh.CanCollide=false;mesh.CanTouch=false;mesh.CanQuery=false
+   end
+   -- 지역 100% 대형 전시와 2층 완성 세트는 같은 기존 GhostProgress의 full 판정만 시각화한다.
+   for _,prefix in ipairs({"MapMasterpiece_","GallerySet_"})do
+    for _,mesh in ipairs(namedParts(scene,prefix..map.Id))do
+     mesh.Transparency=full and 0 or .94
+     mesh.Reflectance=full and .12 or 0
+     mesh.CanCollide=false;mesh.CanTouch=false;mesh.CanQuery=false
+    end
    end
   end
 
