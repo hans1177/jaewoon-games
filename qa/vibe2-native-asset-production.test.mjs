@@ -11,6 +11,7 @@ import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} 
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource} from '../tools/company-development-roblox-bootstrap.mjs';
+import {validateVibeNativeDccAuthoringRecipe,executeVibeNativeDccAuthoringRecipes} from '../assets/vibe-art-pipeline.js';
 
 test('Web fully consumes the same visual loadout as Unity and imports a shared customization document',()=>{
   const asset={id:'icon',family:'UI',types:['ui'],license:'project-original',sourceHash:'icon-v1',customization:{controls:{color:{kind:'COLOR',axis:'MATERIAL',target:'Fill'}}},platformVariants:{
@@ -358,6 +359,52 @@ test('hero asset planning upgrades only hero requests to the stronger local mode
   });
   assert.equal(ordinary.modelRouting.heroRequested,false);
   assert.equal(ordinary.modelRouting.selectedModel,'qwen3:1.7b');
+});
+
+test('Blender authoring executor requires repo-local grounded outputs and hashes every artifact',async()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-dcc-authoring-'));
+  try{
+    const script='assets/authoring/hero.py';
+    const sourceRoot='roblox-games/demo';
+    fs.mkdirSync(path.join(root,'assets/authoring'),{recursive:true});
+    fs.mkdirSync(path.join(root,sourceRoot,'assets'),{recursive:true});
+    fs.writeFileSync(path.join(root,script),'# fixture blender recipe\n');
+    const recipe={
+      id:'demo-hero-v1',family:'CHARACTER',platform:'ROBLOX',executor:'BLENDER_PYTHON',
+      scriptPath:script,license:'project-original',
+      outputs:{
+        editableSource:sourceRoot+'/assets/demo-hero.blend',
+        nativeArtifact:sourceRoot+'/assets/demo-hero.glb',
+        preview:sourceRoot+'/assets/demo-hero.png',
+        evidence:sourceRoot+'/assets/demo-hero.evidence.json'
+      }
+    };
+    const validation=validateVibeNativeDccAuthoringRecipe({recipe,allowedOutputRoot:sourceRoot});
+    assert.equal(validation.valid,true);
+    const result=await executeVibeNativeDccAuthoringRecipes({
+      repoRoot:root,allowedOutputRoot:sourceRoot,recipes:[recipe],blenderBinary:'fixture-blender',
+      processRunner:(_exe,_args,options)=>{
+        fs.writeFileSync(options.env.VIBE_DCC_EDITABLE_SOURCE,Buffer.from('BLENDER-v1'));
+        const glb=Buffer.alloc(16);glb.write('glTF',0,'ascii');glb.writeUInt32LE(2,4);glb.writeUInt32LE(16,8);
+        fs.writeFileSync(options.env.VIBE_DCC_NATIVE_ARTIFACT,glb);
+        fs.writeFileSync(options.env.VIBE_DCC_PREVIEW_RENDER,Buffer.from('89504e470d0a1a0a00000000','hex'));
+      }
+    });
+    assert.equal(result.pass,true);
+    assert.equal(result.status,'DCC_ARTIFACT_AUTHORED_RUNTIME_REQUIRED');
+    assert.equal(result.outputs.length,4);
+    assert.match(result.promotionCandidates[0].sourceHash,/^[a-f0-9]{64}$/);
+    assert.match(result.promotionCandidates[0].artifactHash,/^[a-f0-9]{64}$/);
+    assert.equal(result.promotionCandidates[0].productionVerified,false);
+    assert.equal(result.runtimeVerified,false);
+    const evidence=JSON.parse(fs.readFileSync(path.join(root,recipe.outputs.evidence),'utf8'));
+    assert.equal(evidence.runtimeVerified,false);
+    assert.equal(evidence.status,'DCC_ARTIFACT_AUTHORED_RUNTIME_REQUIRED');
+
+    const escaped=validateVibeNativeDccAuthoringRecipe({recipe:{...recipe,outputs:{...recipe.outputs,nativeArtifact:'../escape.glb'}},allowedOutputRoot:sourceRoot});
+    assert.equal(escaped.valid,false);
+    assert.ok(escaped.issues.includes('GLB_OUTPUT_REQUIRED')||escaped.issues.includes('OUTPUT_OUTSIDE_APPROVED_SOURCE_ROOT'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('native asset production defaults to Roblox and exposes reproducible Blender authoring evidence',()=>{
