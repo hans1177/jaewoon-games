@@ -3445,3 +3445,56 @@ test('exact runtime static multiplayer evidence replaces stale queue evidence an
     }
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('reboot-safe Studio session settles only the exact reserved source and artifact',()=>{
+  const candidate=item();
+  candidate.robloxStudioRuntimeSession={
+    version:1,
+    sessionId:'run:g1:777:9',
+    sourceRevision:source,
+    artifactIdentity:artifact,
+    candidateVersionNumber:9,
+    status:'QUEUED_FOR_STUDIO',
+    rebootSafeCheckpoint:true,
+    hostStateAuthoritative:false,
+    companyRuntimeAuthoritative:true
+  };
+  const applied=applyLocalStudioPlayResult({
+    queue:{items:[candidate]},
+    gameId:'g1',
+    runtime:runtime(),
+    expected,
+    workflowRunId:42,
+    studioStepSucceeded:true,
+    studioSessionId:'run:g1:777:9',
+    testedAt:'2026-10-02T02:30:00.000Z'
+  });
+  assert.equal(applied.result.pass,true);
+  assert.equal(applied.item.robloxStudioRuntimeSession.status,'COMPLETED_PASS');
+  assert.equal(applied.item.robloxStudioRuntimeSession.resultPass,true);
+  assert.equal(applied.item.robloxStudioRuntimeSession.infrastructureFailure,false);
+  assert.equal(applied.item.robloxStudioRuntimeSession.hostStateAuthoritative,false);
+  assert.equal(applied.item.robloxStudioRuntimeSession.companyRuntimeAuthoritative,true);
+
+  const stale=item();
+  stale.robloxStudioRuntimeSession={
+    version:1,
+    sessionId:'older',
+    sourceRevision:source,
+    artifactIdentity:artifact,
+    candidateVersionNumber:9,
+    status:'QUEUED_FOR_STUDIO'
+  };
+  const staleApplied=applyLocalStudioPlayResult({
+    queue:{items:[stale]},
+    gameId:'g1',
+    runtime:runtime(),
+    expected,
+    workflowRunId:43,
+    studioStepSucceeded:true,
+    studioSessionId:'different-session',
+    testedAt:'2026-10-02T02:31:00.000Z'
+  });
+  assert.equal(staleApplied.item.robloxStudioRuntimeSession.status,'QUEUED_FOR_STUDIO');
+});
+
