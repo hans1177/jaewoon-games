@@ -501,18 +501,19 @@ test('central policy makes external server observation diagnostic only while Stu
  assert.equal(stack.releaseGate.externalServerBootRequiredForPublicReleaseReady,false);
 });
 
-test('runtime QA uses Studio for internal validation and runs Open Cloud server probe only by explicit diagnostic input',()=>{
+test('runtime QA automatically validates the private candidate through Open Cloud while Studio stays deferred',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
- assert.match(workflow,/Probe exact Roblox Open Cloud engine execution[\s\S]*?if: \$\{\{ inputs\.retry_open_cloud_only == true \}\}/);
- assert.match(workflow,/SERVER_DIAGNOSTIC_ENABLED: \$\{\{ inputs\.retry_open_cloud_only \|\| false \}\}/);
+ assert.match(workflow,/Probe exact Roblox Open Cloud engine execution/);
+ assert.doesNotMatch(workflow,/Probe exact Roblox Open Cloud engine execution[\s\S]*?if: \$\{\{ inputs\.retry_open_cloud_only == true \}\}/);
+ assert.match(workflow,/SERVER_DIAGNOSTIC_ENABLED: true/);
+ assert.match(workflow,/ROBLOX_OPEN_CLOUD_API_KEY_REQUIRED_FOR_RUNTIME_VALIDATION/);
  assert.match(workflow,/const exactStudioInternalValidation=/);
- assert.match(workflow,/ROBLOX_INTERNAL_VALIDATION_WAITING_FOR_STUDIO=/);
+ assert.match(workflow,/if: \$\{\{ inputs\.run_studio == true && inputs\.retry_open_cloud_only != true \}\}/);
  assert.match(workflow,/internalStudioValidationOnly:true/);
  assert.match(workflow,/externalServerBootRequired:false/);
  assert.match(workflow,/authority:'roblox-internal-studio-single-session-qa'/);
  assert.match(workflow,/ROBLOX_INTERNAL_STUDIO_SINGLE_SESSION_PASS=/);
  assert.match(workflow,/F1_F8=COLLECTED:F9=FAN_IN_ONLY/);
- assert.match(workflow,/if\(!process\.env\.ROBLOX_OPEN_CLOUD_API_KEY\)throw new Error\('ROBLOX_OPEN_CLOUD_API_KEY_REQUIRED_FOR_MANUAL_SERVER_DIAGNOSTIC'\)/);
 });
 
 test('exact private Roblox runtime failures continue internal flow but remain external-release blockers',()=>{
