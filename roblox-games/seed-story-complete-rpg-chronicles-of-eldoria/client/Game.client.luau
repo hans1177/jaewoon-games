@@ -88,6 +88,8 @@ end
 verifiedLearningAtmosphere.Density = 0.22
 verifiedLearningAtmosphere.Haze = 1.1
 verifiedLearningAtmosphere.Glare = 0.08
+verifiedLearningAtmosphere.Density = 0.22
+verifiedLearningAtmosphere.Haze = 1.1
 local verifiedLearningDepth = verifiedLearningLighting:FindFirstChild("VerifiedLearningDepthOfField")
 if not verifiedLearningDepth then
   verifiedLearningDepth = Instance.new("DepthOfFieldEffect")

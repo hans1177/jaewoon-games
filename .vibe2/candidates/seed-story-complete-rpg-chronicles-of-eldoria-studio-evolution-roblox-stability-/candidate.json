@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "verifiedLearningAtmosphere.Glare = 0.08",
+      "replace": "verifiedLearningAtmosphere.Glare = 0.08\nverifiedLearningAtmosphere.Density = 0.22\nverifiedLearningAtmosphere.Haze = 1.1"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
