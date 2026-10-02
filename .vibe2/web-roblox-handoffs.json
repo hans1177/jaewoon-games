@@ -15,8 +15,8 @@
   "projects": [
     {
       "gameId": "daechung-rpg",
-      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
-      "PLATFORM": "UNITY",
+      "PROJECT_PHASE": "RELEASE_PROMOTION",
+      "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
@@ -37,9 +37,13 @@
         "CONTENT_STRUCTURE": null,
         "BALANCE_INTENT": null
       },
-      "ROBLOX_HANDOFF": null,
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
       "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": false,
+        "eligibleAfterRelease": true,
         "assigned": false,
         "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
@@ -71,7 +75,7 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
+      "NEXT_MACHINE_ACTION": "PROMOTE_EXACT_VERIFIED_RELEASE"
     },
     {
       "gameId": "horror-escape-room",
@@ -124,8 +128,8 @@
     },
     {
       "gameId": "cozy-island",
-      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
-      "PLATFORM": "UNITY",
+      "PROJECT_PHASE": "RELEASE_PROMOTION",
+      "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
@@ -146,9 +150,13 @@
         "CONTENT_STRUCTURE": null,
         "BALANCE_INTENT": null
       },
-      "ROBLOX_HANDOFF": null,
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
       "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": false,
+        "eligibleAfterRelease": true,
         "assigned": false,
         "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
@@ -169,7 +177,7 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
+      "NEXT_MACHINE_ACTION": "PROMOTE_EXACT_VERIFIED_RELEASE"
     }
   ],
   "handoffs": [],
