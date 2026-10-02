@@ -394,9 +394,10 @@ function openBag(){
 function openEvent(){
  currentRoom='event';
  const e=EVENTS[Math.floor(Math.random()*EVENTS.length)];
- e.run();hud();$('eventTitle').textContent=e.name;$('eventText').textContent=e.text;
+ e.run();hud();
+ if(state.player.hp<=0)return;
+ $('eventTitle').textContent=e.name;$('eventText').textContent=e.text;
  showOverlay('eventOverlay');
- if(state.player.hp<=0){hideOverlay('eventOverlay');loseGame('랜덤 이벤트에서 쓰러졌다.')}
 }
 
 function damagePlayer(amount,source){
