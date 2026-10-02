@@ -501,18 +501,19 @@ test('central policy makes external server observation diagnostic only while Stu
  assert.equal(stack.releaseGate.externalServerBootRequiredForPublicReleaseReady,false);
 });
 
-test('runtime QA uses Studio for internal validation and runs Open Cloud server probe only by explicit diagnostic input',()=>{
+test('runtime QA automatically validates the private candidate through Open Cloud while Studio stays deferred',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
- assert.match(workflow,/Probe exact Roblox Open Cloud engine execution[\s\S]*?if: \$\{\{ inputs\.retry_open_cloud_only == true \}\}/);
- assert.match(workflow,/SERVER_DIAGNOSTIC_ENABLED: \$\{\{ inputs\.retry_open_cloud_only \|\| false \}\}/);
+ assert.match(workflow,/Probe exact Roblox Open Cloud engine execution/);
+ assert.doesNotMatch(workflow,/Probe exact Roblox Open Cloud engine execution[\s\S]*?if: \$\{\{ inputs\.retry_open_cloud_only == true \}\}/);
+ assert.match(workflow,/SERVER_DIAGNOSTIC_ENABLED: true/);
+ assert.match(workflow,/ROBLOX_OPEN_CLOUD_API_KEY_REQUIRED_FOR_RUNTIME_VALIDATION/);
  assert.match(workflow,/const exactStudioInternalValidation=/);
- assert.match(workflow,/ROBLOX_INTERNAL_VALIDATION_WAITING_FOR_STUDIO=/);
+ assert.match(workflow,/if: \$\{\{ inputs\.run_studio == true && inputs\.retry_open_cloud_only != true \}\}/);
  assert.match(workflow,/internalStudioValidationOnly:true/);
  assert.match(workflow,/externalServerBootRequired:false/);
  assert.match(workflow,/authority:'roblox-internal-studio-single-session-qa'/);
  assert.match(workflow,/ROBLOX_INTERNAL_STUDIO_SINGLE_SESSION_PASS=/);
  assert.match(workflow,/F1_F8=COLLECTED:F9=FAN_IN_ONLY/);
- assert.match(workflow,/if\(!process\.env\.ROBLOX_OPEN_CLOUD_API_KEY\)throw new Error\('ROBLOX_OPEN_CLOUD_API_KEY_REQUIRED_FOR_MANUAL_SERVER_DIAGNOSTIC'\)/);
 });
 
 test('exact private Roblox runtime failures continue internal flow but remain external-release blockers',()=>{
@@ -776,8 +777,10 @@ test('Roblox F0-F9 orchestration dispatches exact games without cross-game fan-i
   const f9=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
   const release=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
 
-  assert.match(runtime,/ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED/);
-  assert.match(runtime,/ROBLOX_ONLY_FINAL_F9_SERVER_PUBLISH=YES/);
+  assert.match(runtime,/ROBLOX_PRE_F9_VALIDATION_TARGET=PRIVATE_DEDICATED/);
+  assert.match(runtime,/ROBLOX_CANONICAL_GAME_TARGET_MUTATED=NO/);
+  assert.match(runtime,/ROBLOX_STUDIO_REQUIRED_FOR_DEVELOPMENT_CONTINUATION=NO/);
+  assert.match(runtime,/publish_stage=validation/);
 
   const f9Dispatch=post.slice(
     post.indexOf('Dispatch exact F9 review for every runtime-accepted candidate'),

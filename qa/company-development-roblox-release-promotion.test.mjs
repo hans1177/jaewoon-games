@@ -279,18 +279,18 @@ test('private runtime persistence retries from fresh company-runtime state inste
   assert.doesNotMatch(block,/git cherry-pick /);
 });
 
-test('final-only publish dedupes same-game runs without workflow-level pending cancellation',()=>{
+
+test('validation and final publish dedupe same-game stage without workflow-level pending cancellation',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
-  assert.match(workflow,/run-name: Roblox publish · \$\{\{ inputs\.game_id \|\| 'push' \}\} · \$\{\{ github\.event_name == 'workflow_dispatch' && \(inputs\.publish_stage \|\| 'final'\) \|\| 'sync-only' \}\}/);
+  assert.match(workflow,/run-name: Roblox publish · \$\{\{ inputs\.game_id \|\| 'push' \}\} · \$\{\{ github\.event_name == 'workflow_dispatch' && \(inputs\.publish_stage \|\| 'validation'\) \|\| 'sync-only' \}\}/);
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
   assert.doesNotMatch(workflow.slice(0,jobsAt),/\nconcurrency:/);
   assert.match(workflow,/release-dedupe:/);
-  assert.match(workflow,/PUBLISH_STAGE: \$\{\{ inputs\.publish_stage \|\| 'final' \}\}/);
-  assert.match(workflow,/ROBLOX_PUBLISH_STAGE_FINAL_ONLY/);
+  assert.match(workflow,/PUBLISH_STAGE: \$\{\{ inputs\.publish_stage \|\| 'validation' \}\}/);
+  assert.match(workflow,/\['validation','final'\]\.includes\(publishStage\)/);
   assert.match(workflow,/const title='Roblox publish · '/);
 });
-
 
 test('central policy requires perpetual F0-F9 cycles and canonical publish only after F9',()=>{
   const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
@@ -365,11 +365,12 @@ test('validation and canonical targets are separate persisted fields',()=>{
 });
 
 
-test('final-only target provisioning uses canonical target only after F9',()=>{
+
+test('publish-stage target provisioning separates private validation from canonical final target',()=>{
   const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
   assert.match(candidate,/name: Ensure game-specific private Roblox target for current publish stage/);
-  assert.match(candidate,/PUBLISH_STAGE: \$\{\{ inputs\.publish_stage \|\| 'final' \}\}/);
-  assert.match(candidate,/if\(publishStage!=='final'\)throw new Error\('ROBLOX_PUBLISH_STAGE_FINAL_ONLY:'/);
+  assert.match(candidate,/PUBLISH_STAGE: \$\{\{ inputs\.publish_stage \|\| 'validation' \}\}/);
+  assert.match(candidate,/\['validation','final'\]\.includes\(publishStage\)/);
   assert.match(candidate,/const current=publishStage==='final'\?\(item\.robloxPublicationTarget\|\|\{\}\):\(item\.robloxValidationTarget\|\|\{\}\)/);
   assert.match(candidate,/createRobloxDedicatedExperience/);
   assert.match(candidate,/configureRobloxExperience/);
@@ -386,19 +387,19 @@ test('publish stage selects validation target before F9 and canonical target aft
   assert.match(candidate,/const currentFinalPublish=publishStage==='final'/);
 });
 
-test('internal Roblox modification loop is F0-F9 then one canonical publish then repeat',()=>{
+
+test('internal Roblox modification loop uses isolated validation before F9 and canonical publish only after F9',()=>{
   const drift=fs.readFileSync('tools/company-roblox-source-drift-sync.mjs','utf8');
   const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
   const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
   assert.match(drift,/validateExistingRobloxSourceTree/);
-  assert.doesNotMatch(runtime,/publish_stage=validation/);
-  assert.match(runtime,/ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED/);
-  assert.match(runtime,/company-development-roblox-post-runtime-qa\.yml/);
+  assert.match(runtime,/publish_stage=validation/);
+  assert.match(runtime,/ROBLOX_PRE_F9_VALIDATION_TARGET=PRIVATE_DEDICATED/);
+  assert.match(runtime,/ROBLOX_CANONICAL_GAME_TARGET_MUTATED=NO/);
   assert.match(finalReview,/publish_stage=final/);
   assert.match(finalReview,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=/);
   assert.match(finalReview,/ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO/);
 });
-
 
 test('push-triggered candidate deployment selects any canonical pending Roblox candidate without legacy releaseStrategy',()=>{
   const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');

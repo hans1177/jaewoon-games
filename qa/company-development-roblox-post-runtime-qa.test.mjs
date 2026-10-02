@@ -248,12 +248,17 @@ test('transient 429 does not fail the whole workflow while non-transient persist
   assert.match(classify,/if \[ -s "\$blocking_file" \]; then[\s\S]*exit 1/);
 });
 
-test('exact transient Open Cloud retry does not consume the Studio MCP lane',()=>{
+test('Open Cloud runtime stays automatic while Studio requires explicit opt-in',()=>{
   const studioPlanAt=workflow.indexOf('\n  studio-local-plan:');
   const studioAutoPlayAt=workflow.indexOf('\n  studio-mcp-auto-play:',studioPlanAt);
   assert.ok(studioPlanAt>0&&studioAutoPlayAt>studioPlanAt);
+  const foundation=workflow.slice(0,studioPlanAt);
   const studioPlan=workflow.slice(studioPlanAt,studioAutoPlayAt);
-  assert.match(studioPlan,/if: \$\{\{ inputs\.retry_open_cloud_only != true && \(inputs\.run_studio == true \|\| github\.event_name == 'push'\) \}\}/);
+  assert.match(foundation,/name: Probe exact Roblox Open Cloud engine execution/);
+  assert.doesNotMatch(foundation,/name: Probe exact Roblox Open Cloud engine execution\n\s+if: \$\{\{ inputs\.retry_open_cloud_only == true \}\}/);
+  assert.match(foundation,/SERVER_DIAGNOSTIC_ENABLED: true/);
+  assert.match(studioPlan,/if: \$\{\{ inputs\.run_studio == true && inputs\.retry_open_cloud_only != true \}\}/);
+  assert.doesNotMatch(studioPlan,/github\.event_name == 'push'/);
 });
 
 
