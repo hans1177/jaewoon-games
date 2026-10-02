@@ -446,7 +446,36 @@
         "stagger",
         "death"
       ],
-      "note": "직접 제작 고디테일 거미 GLB. 8다리 독립 관절, 8눈, 송곳니·촉지·방적돌기·갑각·감각모 포함. CI에서 GLB/스킨/45본/12모션 구조 검증 완료. Roblox Studio와 Unity Web 실제 런타임 검증 전이라 production PASS로 표시하지 않음."
+      "note": "직접 제작 고디테일 거미 GLB. 8다리 독립 관절, 8눈, 송곳니·촉지·방적돌기·갑각·감각모 포함. CI에서 GLB/스킨/45본/12모션 구조 검증 완료. Roblox Studio와 Unity Web 실제 런타임 검증 전이라 production PASS로 표시하지 않음.",
+      "authoringRecipes": [
+        {
+          "id": "roblox-spider-hd-blender-v1",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "enemy",
+            "boss"
+          ],
+          "targetPlatforms": [
+            "ROBLOX",
+            "UNITY"
+          ],
+          "script": "assets/roblox/world-ghosts/build-spider.py",
+          "args": [
+            "--output",
+            "assets/roblox/world-ghosts/native/spider",
+            "--render"
+          ],
+          "outputs": [
+            "assets/roblox/world-ghosts/native/spider/spider.glb",
+            "assets/roblox/world-ghosts/native/spider/spider.png",
+            "assets/roblox/world-ghosts/native/spider/evidence.json"
+          ],
+          "evidenceJson": "assets/roblox/world-ghosts/native/spider/evidence.json",
+          "preview": "assets/roblox/world-ghosts/native/spider/spider.png",
+          "editableSource": "assets/roblox/world-ghosts/build-spider.py",
+          "runMode": "VERIFY_ONLY"
+        }
+      ]
     },
     {
       "id": "roblox-world-ghost-skins-v1",
@@ -545,7 +574,38 @@
       "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
       "meshArtifact": "assets/roblox/world-ghosts/native/mesh/bride.glb",
       "meshRigVersion": "MESH_BRIDE_1",
-      "meshReviewState": "ART_REVIEW_REQUIRED"
+      "meshReviewState": "ART_REVIEW_REQUIRED",
+      "authoringRecipes": [
+        {
+          "id": "shared-humanoid-motion-bride-v3",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "animation"
+          ],
+          "targetPlatforms": [
+            "ROBLOX",
+            "UNITY"
+          ],
+          "script": "assets/roblox/world-ghosts/refine-humanoid-motion.py",
+          "args": [
+            "--source",
+            "assets/roblox/world-ghosts/native/mesh/bride.glb",
+            "--output",
+            "assets/roblox/world-ghosts/native/mesh/bride-motion-v3",
+            "--render-dir",
+            "assets/roblox/world-ghosts/native/mesh/bride-motion-v3/previews"
+          ],
+          "outputs": [
+            "assets/roblox/world-ghosts/native/mesh/bride-motion-v3/bride-motion-v3.glb",
+            "assets/roblox/world-ghosts/native/mesh/bride-motion-v3/evidence.json",
+            "assets/roblox/world-ghosts/native/mesh/bride-motion-v3/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/roblox/world-ghosts/native/mesh/bride-motion-v3/evidence.json",
+          "preview": "assets/roblox/world-ghosts/native/mesh/bride-motion-v3/previews/source-bind-reference.png",
+          "editableSource": "assets/roblox/world-ghosts/refine-humanoid-motion.py",
+          "runMode": "VERIFY_ONLY"
+        }
+      ]
     },
     {
       "id": "roblox-world-ghost-mongdal",
