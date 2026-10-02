@@ -3113,6 +3113,23 @@ test('Studio planner removes only superseded pending automatic runs for the exac
  assert.match(plan,/games\.every\(g=>planned\.has\(g\)\)\?'CANCEL':'PRESERVE_UNRELATED'/);
 });
 
+test('explicit owner Studio priority can supersede unrelated waiting exact runs while preserving named games',()=>{
+ const plan=workflow.slice(workflow.indexOf('  studio-local-plan:'),workflow.indexOf('  studio-mcp-auto-play:'));
+ assert.match(plan,/supersedeUnrelatedExactStudio:/);
+ assert.match(plan,/preserveStudioGames:/);
+ assert.match(plan,/ROBLOX_STUDIO_OWNER_PRIORITY_SUPERSEDE_UNRELATED=/);
+ assert.match(plan,/ROBLOX_STUDIO_OWNER_PRIORITY_PRESERVE_GAMES=/);
+ assert.match(plan,/ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_PRESERVED_OWNER_PRIORITY=/);
+ assert.match(plan,/ROBLOX_SUPERSEDED_PENDING_STUDIO_RUN_OWNER_PRIORITY_CANCEL_REQUESTED=/);
+ assert.ok(plan.includes('PRESERVE_GAMES="$current_preserve_games"'));
+ assert.ok(plan.includes('SUPERSEDE_UNRELATED="$current_supersede_unrelated"'));
+ assert.ok(plan.includes("if(games.some(g=>preserve.has(g)))return process.stdout.write('PRESERVE_PRIORITY')"));
+ assert.ok(plan.includes("if(ownerExact&&supersedeUnrelated)return process.stdout.write('CANCEL')"));
+ const activeCheck=plan.indexOf("return process.stdout.write('PRESERVE_ACTIVE')");
+ const supersedeCheck=plan.indexOf("if(ownerExact&&supersedeUnrelated)return process.stdout.write('CANCEL')");
+ assert.ok(activeCheck>0&&activeCheck<supersedeCheck);
+});
+
 test('Studio serializes play without replacing pending games or blocking parallel build jobs',()=>{
  const play=workflow.slice(workflow.indexOf('  studio-mcp-auto-play:'));
  assert.match(play,/concurrency:\n      group: roblox-studio-shared-host\n      cancel-in-progress: false\n      queue: max/);
