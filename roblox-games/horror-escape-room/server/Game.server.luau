@@ -75,13 +75,22 @@ local function loadAuthoredCombatVisual()
  local assetId=math.floor(tonumber(CombatAssets.HumanoidModelId)or 0)
  workspace:SetAttribute("CombatAuthoredAssetId",assetId)
  workspace:SetAttribute("CombatAuthoredAssetsReady",false)
+ workspace:SetAttribute("CombatAuthoredAssetLoadAttempts",0)
  if assetId<=0 then
-  workspace:SetAttribute("CombatAuthoredAssetState","FALLBACK_PENDING_IMPORT")
+  workspace:SetAttribute("CombatAuthoredAssetState","MISSING_MODEL_ID")
   return
  end
- local ok,template=pcall(AssetService.LoadAssetAsync,AssetService,assetId)
- if not ok or not template then
-  workspace:SetAttribute("CombatAuthoredAssetState","LOAD_FAILED")
+ local template=nil
+ workspace:SetAttribute("CombatAuthoredAssetState","LOADING")
+ for attempt=1,6 do
+  workspace:SetAttribute("CombatAuthoredAssetLoadAttempts",attempt)
+  local ok,result=pcall(AssetService.LoadAssetAsync,AssetService,assetId)
+  if ok and result then template=result;break end
+  workspace:SetAttribute("CombatAuthoredAssetState","RETRY_"..attempt)
+  task.wait(attempt<3 and 1 or 2)
+ end
+ if not template then
+  workspace:SetAttribute("CombatAuthoredAssetState","LOAD_FAILED_AFTER_RETRY")
   return
  end
  for _,d in ipairs(template:GetDescendants())do

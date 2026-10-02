@@ -1215,22 +1215,10 @@ local function ensureCombatSkin(source,rootPart,skinId,formId)
    end
   end
   if not model then
-   if not loadGhostSkinModules()then return nil end
-   local sourcePlayer=Players:GetPlayerFromCharacter(source)
-   quality=sourcePlayer and"near"or"mid"
-   local ok,created=pcall(function()
-    return GhostSkinFactory.Create(skinId,{quality=quality,parent=workspace,anchored=true,pivot=CFrame.new()})
-   end)
-   if not ok or not created then return nil end
-   model=created
-   local bindOk,bound=pcall(function()return GhostSkinMotion.Bind(model)end)
-   if not bindOk or not bound then model:Destroy();return nil end
-   motion=bound
-   model.Name="CombatGhostFallback_"..skinId
-   model:SetAttribute("SourceAssetLibrary","roblox-world-ghost-skins-v1")
-   model:SetAttribute("CombatSkin",true)
-   model:SetAttribute("RuntimeQuality",quality)
-   model:SetAttribute("ProceduralFallback",true)
+   -- 전투는 authored 스킨드 모델만 사용한다. 로드 실패 시 네모 절차형 귀신으로 강등하지 않는다.
+   -- 이 경우 서버가 이미 적용한 기존 역할 의상을 그대로 유지해 화면 회귀를 막는다.
+   p:SetAttribute("CombatAuthoredVisualFallback","ORIGINAL_ROLE_COSTUME")
+   return nil
   end
   row={source=source,root=rootPart,skinId=skinId,formId=formId,quality=quality,authored=authored,model=model,motion=motion,pivotToBottom=pivotToBottom,createdAt=os.clock(),lastPos=rootPart.Position,hiddenParts={},hiddenHighlights={},attackStart=0,attackUntil=0}
   combatSkins[source]=row
