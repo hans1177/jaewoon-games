@@ -3850,7 +3850,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
           FORM_STRUCTURE:/(?:Instance\.new\s*\(\s*["'](?:Model|MeshPart|Part|Attachment|Bone|Motor6D)["']|SpecialMesh|SurfaceAppearance|WeldConstraint|\.Size\s*=|\.CFrame\s*=)/i.test(changedPresentationText),
           MATERIAL_STYLE:visualDomains.MATERIAL_COLOR_STYLE===true,
           MOTION_CONTACT:motionDriver&&motionMutation,
-          WORLD_COMPOSITION:/(?:terrain|ground|tree|rock|plant|building|environment|sky|fog|biome|forest|village|dungeon|landmark|path|road|set.?dress)/i.test(changedPresentationText),
+          WORLD_COMPOSITION:/\b(?:terrain|ground|tree|rock|plant|building|environment|sky|fog|biome|forest|village|dungeon|landmark|path|road|set.?dress)/i.test(changedPresentationText),
           PRESENTATION_FEEDBACK:/(?:ParticleEmitter|Trail|Beam|PointLight|SpotLight|SurfaceLight|Camera|FieldOfView|ScreenGui|Frame|ImageLabel|ImageButton|Sound)/i.test(changedPresentationText)
         };
         const studioAxisCount=Object.values(studioAssetQualityAxes).filter(Boolean).length;
