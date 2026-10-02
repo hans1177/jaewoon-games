@@ -5,12 +5,14 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
 import {assetProductionGuidance,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb} from '../tools/vibe2-asset-production-plan.mjs';
 import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource} from '../tools/company-development-roblox-bootstrap.mjs';
+import {verifyPerformanceSanity} from '../tools/vibe2-performance-sanity.mjs';
 import {validateVibeNativeDccAuthoringRecipe,executeVibeNativeDccAuthoringRecipes} from '../assets/vibe-art-pipeline.js';
 
 test('Web fully consumes the same visual loadout as Unity and imports a shared customization document',()=>{
@@ -359,6 +361,44 @@ test('hero asset planning upgrades only hero requests to the stronger local mode
   });
   assert.equal(ordinary.modelRouting.heroRequested,false);
   assert.equal(ordinary.modelRouting.selectedModel,'qwen3:1.7b');
+});
+
+test('performance sanity allows only manifest-grounded DCC binaries and rejects unregistered binary writes',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-dcc-performance-'));
+  try{
+    execFileSync('git',['init'],{cwd:root,stdio:'ignore'});
+    execFileSync('git',['config','user.email','qa@example.invalid'],{cwd:root});
+    execFileSync('git',['config','user.name','qa'],{cwd:root});
+    const sourceRoot='roblox-games/demo';
+    fs.mkdirSync(path.join(root,sourceRoot,'client'),{recursive:true});
+    fs.writeFileSync(path.join(root,sourceRoot,'client/Game.client.luau'),'local ready = true\n');
+    execFileSync('git',['add','.'],{cwd:root});execFileSync('git',['commit','-m','base'],{cwd:root,stdio:'ignore'});
+    const base=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
+    fs.appendFileSync(path.join(root,sourceRoot,'client/Game.client.luau'),'local polished = true\n');
+    fs.mkdirSync(path.join(root,sourceRoot,'assets'),{recursive:true});
+    const files={
+      'assets/hero.blend':Buffer.from('BLENDER-v1'),
+      'assets/hero.glb':(()=>{const b=Buffer.alloc(16);b.write('glTF');return b;})(),
+      'assets/hero.png':Buffer.from('89504e470d0a1a0a00000000','hex')
+    };
+    for(const [relative,bytes] of Object.entries(files))fs.writeFileSync(path.join(root,sourceRoot,relative),bytes);
+    fs.writeFileSync(path.join(root,sourceRoot,'assets/hero.evidence.json'),'{}\n');
+    const hash=relative=>createHash('sha256').update(fs.readFileSync(path.join(root,sourceRoot,relative))).digest('hex');
+    const outputs=Object.keys(files).map(relative=>({sourceRelativePath:relative,path:sourceRoot+'/'+relative,sha256:hash(relative)}));
+    outputs.push({sourceRelativePath:'assets/hero.evidence.json',path:sourceRoot+'/assets/hero.evidence.json',sha256:hash('assets/hero.evidence.json')});
+    const manifest={
+      sourceRoot,baseMainSha:base,
+      changedFiles:['client/Game.client.luau','assets/hero.blend','assets/hero.glb','assets/hero.png','assets/hero.evidence.json'],
+      exploration:{reuseKey:'dcc-grounded',sourceWrite:false},
+      nativeAssetAuthoring:{status:'DCC_ARTIFACT_AUTHORED_RUNTIME_REQUIRED',dccExecution:{pass:true,outputs}}
+    };
+    const grounded=verifyPerformanceSanity({root,manifest});
+    assert.equal(grounded.pass,true,JSON.stringify(grounded.checks));
+    assert.equal(grounded.groundedDccAuthoring,true);
+    const ungrounded=verifyPerformanceSanity({root,manifest:{...manifest,nativeAssetAuthoring:null}});
+    assert.equal(ungrounded.pass,false);
+    assert.equal(ungrounded.checks.find(row=>row.name==='no-binary-source-write').pass,false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('Blender authoring executor requires repo-local grounded outputs and hashes every artifact',async()=>{
