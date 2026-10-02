@@ -1215,7 +1215,7 @@ jobs:
           put('deterministic_source',deterministicRoblox?'true':'false');
           const selectedModel=order.assetProduction?.modelRouting?.selectedModel||process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b';
           const heroModelRequested=order.assetProduction?.modelRouting?.heroRequested===true;
-          const modelCacheFamily=order.assetProduction?.modelRouting?.cacheFamily||'vibe2-ollama-v6';
+          const modelCacheFamily=order.assetProduction?.modelRouting?.cacheFamily||'vibe2-ollama-v5';
           const modelCacheKey=order.assetProduction?.modelRouting?.cacheKey||String(selectedModel).toLowerCase().replace(/[^a-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'')||'local-model';
           put('local_model',selectedModel);
           put('hero_model_requested',heroModelRequested?'true':'false');
