@@ -202,8 +202,8 @@ test('personal manor exterior has signature housing and collection architecture'
  assert.match(lobby,/local reached=completed>=i\*2/);
  assert.match(lobby,/PorchStepGround/);
  assert.match(lobby,/EntranceWalkwayGround/);
- assert.match(lobby,/PersonalSpawn";spawn\.Position=origin\+Vector3\.new\(0,\.55,-12\)/);
- assert.match(lobby,/return room\.origin\+Vector3\.new\(0,3,-12\),room\.origin\+Vector3\.new\(0,5,-32\),room\.spawn/);
+ assert.match(lobby,/PersonalSpawn";spawn\.Position=origin\+Vector3\.new\(0,\.55,60\)/);
+ assert.match(lobby,/return room\.origin\+Vector3\.new\(0,3,60\),room\.origin\+Vector3\.new\(0,5,-2\),room\.spawn/);
  assert.match(lobby,/SecondFloorGroundRear/);
  assert.match(lobby,/SecondFloorGroundSide/);
  assert.match(lobby,/SecondFloorStairLandingGround/);
