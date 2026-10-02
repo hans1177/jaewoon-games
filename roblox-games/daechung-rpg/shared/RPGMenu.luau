@@ -109,7 +109,7 @@ function Menu.install(config,gui,player,options)
  local partyText=label(content["파티"],"PartySummary","",18);partyText.Size=UDim2.new(1,-8,0,100)
  local room=button(content["파티"],"ChangePartyCode","멀티 코드 변경");room.Size=UDim2.new(1,-8,0,52)
  room.Activated:Connect(function()if options.changeRoom then options.changeRoom()end end)
- local companions=label(content["파티"],"CompanionRoster","",16);companions.Size=UDim2.new(1,-8,0,270);companions.TextYAlignment=Enum.TextYAlignment.Top
+ local companions=label(content["파티"],"CompanionRoster","",16);companions.Size=UDim2.new(1,-8,0,0);companions.AutomaticSize=Enum.AutomaticSize.Y;companions.TextYAlignment=Enum.TextYAlignment.Top
  local soundButton=button(content["설정"],"ToggleMenuSound","효과음 켜짐");soundButton.Size=UDim2.new(1,-8,0,52)
  soundButton.Activated:Connect(function()
   muted=not muted
@@ -163,9 +163,17 @@ function Menu.install(config,gui,player,options)
   local class=(config.Classes or {})[a.ClassId]
   equipmentText.Text=string.format("%s  ·  Lv.%d\n\n최대 체력  %d\n공격력  %d\n\n무기  T%d    방어구  T%d\n유물  %s",class and class.Name or "직업 미선택",a.Level or 1,a.MaxHP or 100,a.AttackPower or 0,a.WeaponTier or 0,a.ArmorTier or 0,a.RelicId=="NONE" and "비어 있음" or tostring(a.RelicId or "비어 있음"))
   local quest=Model.quest(a,config);questTitle.Text=quest.title;questText.Text=quest.text;track.Visible=quest.active
-  partyText.Text=string.format("멀티 코드 %d  ·  파티 %d/%d\n사냥 %d/%d  ·  기여 %d",a.RoomCode or 1,(a.PartyCount or 0)+1,config.PartySlots or 4,a.PartyKills or 0,config.PartyHuntTarget or 15,a.Contribution or 0)
-  local roster={"동료 · 월드에서 두 번 터치해 초대"}
-  for _,row in ipairs(Model.companions(a,config))do table.insert(roster,(row.unlocked and "해금  " or "잠김  ")..row.name.." · "..row.role)end
+  local party=Model.partySummary(a,config)
+  partyText.Text=string.format("편성 %d/%d  ·  동료 슬롯 %d/%d\n보스 동료 해금 %d/%d  ·  멀티 코드 %d\n사냥 %d/%d  ·  기여 %d",party.size,party.slots,party.companionCount,party.companionSlots,party.unlockedCount,party.totalBossCompanions,party.roomCode,party.huntKills,party.huntNeed,party.contribution)
+  local roster={"보스 동료 도감 · 해금한 동료를 월드에서 두 번 터치해 편성"}
+  for _,row in ipairs(Model.companions(a,config))do
+   local zone=tonumber(row.zone)or 0
+   if row.unlocked then
+    table.insert(roster,string.format("● %s · %s · %d번 포탈\n기본 %s · 스킬 %s",tostring(row.name),tostring(row.role),zone,tostring(row.basic or"-"),tostring(row.skill or"-")))
+   else
+    table.insert(roster,string.format("○ %s · %s\n%d번 포탈 보스 첫 처치로 해금",tostring(row.name),tostring(row.role),zone))
+   end
+  end
   companions.Text=table.concat(roster,"\n\n")
   relayout()
  end
@@ -209,7 +217,7 @@ function Menu.install(config,gui,player,options)
   if pending or not opened then return end
   pending=true;task.defer(function()pending=false;if gui.Parent then refresh()end end)
  end
- local watched={Level=true,Gold=true,ClassId=true,MaxHP=true,AttackPower=true,WeaponTier=true,ArmorTier=true,RelicId=true,QuestPortal=true,QuestKills=true,QuestNeed=true,RoomCode=true,PartyCount=true,PartyKills=true,Contribution=true,UnlockedCompanions=true,LastAction=true}
+ local watched={Level=true,Gold=true,ClassId=true,MaxHP=true,AttackPower=true,WeaponTier=true,ArmorTier=true,RelicId=true,QuestPortal=true,QuestKills=true,QuestNeed=true,RoomCode=true,PartyCount=true,PartyKills=true,Contribution=true,UnlockedCompanions=true,CompanionUnlockCount=true,LastAction=true}
  table.insert(connections,player.AttributeChanged:Connect(function(name)if watched[name]then scheduleRefresh()end end))
  local function watchTools()
   for _,c in ipairs(toolConnections)do c:Disconnect()end;toolConnections={}
