@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/company-roblox-runner-pwsh-bootstrap.yml'
+      - 'tools/roblox-runner-hidden.ps1'
   workflow_dispatch:
 
 permissions:
@@ -17,8 +18,14 @@ jobs:
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 12
     steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          fetch-tags: false
+
       - name: Install portable PowerShell 7 and expose pwsh on existing runner PATH
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -75,3 +82,12 @@ jobs:
           Write-Host "ROBLOX_RUNNER_PWSH_SHIM=$($resolved.Source)"
           Write-Host "ROBLOX_RUNNER_PWSH_PORTABLE=$pwsh"
           & $pwsh -NoLogo -NoProfile -Command '$PSVersionTable.PSVersion.ToString()'
+
+      - name: Install hidden reboot-safe Roblox runner host
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
+        run: |
+          $ErrorActionPreference = 'Stop'
+          & .\tools\roblox-runner-hidden.ps1 -RunnerPath 'C:\actions-runner' -ExpectedRunnerName 'roblox-studio-local'
+          if ($LASTEXITCODE -ne 0) { throw 'Hidden Roblox runner setup failed' }
+          Write-Host 'ROBLOX_RUNNER_HIDDEN_BOOTSTRAP=PASS'
+
