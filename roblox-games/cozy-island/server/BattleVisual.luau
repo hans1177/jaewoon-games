@@ -1,7 +1,10 @@
+-- 파일명: roblox-games/cozy-island/server/BattleVisual.luau
+-- 임포트와 전투별 연출 상태. 전투 수치·보상·저장은 기존 서버가 전담한다.
 local TweenService=game:GetService("TweenService")
 local Active={}
 local BattleVisual={}
 
+-- 유틸: 모든 전투 연출은 충돌·터치·쿼리 판정에서 제외한다.
 local function makePart(parent,name,size,pos,color,material)
  local p=Instance.new("Part")
  p.Name=name
@@ -17,9 +20,10 @@ local function makePart(parent,name,size,pos,color,material)
  return p
 end
 
+-- 메인: 시작·종료와 지연 정리는 해당 전투 폴더에만 적용한다.
 function BattleVisual.cleanup(player)
  local folder=Active[player]
- if folder then folder:Destroy();Active[player]=nil end
+ if folder then Active[player]=nil;folder:Destroy() end
 end
 
 function BattleVisual.start(player,index,troops,config,style)
@@ -64,13 +68,14 @@ function BattleVisual.start(player,index,troops,config,style)
 end
 
 function BattleVisual.finish(player,won)
- local folder=Active[player];if not folder then return end
- local banner=Instance.new("Part");banner.Name=won and"점령성공"or"전투패배";banner.Anchored=true;banner.CanCollide=false
- banner.Size=Vector3.new(5,10,1);banner.Color=won and Color3.fromRGB(70,170,105)or Color3.fromRGB(170,65,65);banner.Material=Enum.Material.Neon
+ local folder=Active[player];if not folder or not folder.Parent then return end
  local sum=Vector3.new();local count=0
  for _,x in ipairs(folder:GetChildren())do if x:IsA("BasePart")then sum+=x.Position;count+=1 end end
- banner.Position=count>0 and sum/count+Vector3.new(0,7,0)or Vector3.new(0,10,0);banner.Parent=folder
- task.delay(1.2,function()BattleVisual.cleanup(player)end)
+ local position=count>0 and sum/count+Vector3.new(0,7,0)or Vector3.new(0,10,0)
+ makePart(folder,won and"점령성공"or"전투패배",Vector3.new(5,10,1),position,won and Color3.fromRGB(70,170,105)or Color3.fromRGB(170,65,65),Enum.Material.Neon)
+ task.delay(1.2,function()
+  if Active[player]==folder then BattleVisual.cleanup(player) end
+ end)
 end
 
 return BattleVisual
