@@ -3851,7 +3851,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
           MATERIAL_STYLE:visualDomains.MATERIAL_COLOR_STYLE===true,
           MOTION_CONTACT:motionDriver&&motionMutation,
           WORLD_COMPOSITION:/(?:terrain|ground|tree|rock|plant|building|environment|sky|fog|biome|forest|village|dungeon|landmark|path|road|set.?dress)/i.test(changedPresentationText),
-          PRESENTATION_FEEDBACK:/(?:ParticleEmitter|Trail|Beam|PointLight|SpotLight|SurfaceLight|Camera|FieldOfView|ScreenGui|Frame|ImageLabel|ImageButton|Sound|TweenService)/i.test(changedPresentationText)
+          PRESENTATION_FEEDBACK:/(?:ParticleEmitter|Trail|Beam|PointLight|SpotLight|SurfaceLight|Camera|FieldOfView|ScreenGui|Frame|ImageLabel|ImageButton|Sound)/i.test(changedPresentationText)
         };
         const studioAxisCount=Object.values(studioAssetQualityAxes).filter(Boolean).length;
         if(studioAxisCount<3)throw new Error('STUDIO_QUALITY_DELTA_REQUIRED:ASSET_AXES:'+studioAxisCount+'/3');
