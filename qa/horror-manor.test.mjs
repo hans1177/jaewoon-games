@@ -47,11 +47,18 @@ test('personal manor spawn stays on the front-yard ground layer',()=>{
  assert.match(manorBuild,/ArrivalCourtCrest/);
 });
 
-test('personal manor visual alignment cannot take the lobby down',()=>{
+test('personal manor uses hall-to-courtyard direction to keep the front yard in front',()=>{
  assert.match(lobby,/local hallAnchor=exactVisualPart\("HallFloor"\)/);
- assert.match(lobby,/local delta=expectedHall-hallAnchor\.Position/);
+ assert.match(lobby,/local courtyardAnchor=exactVisualPart\("Courtyard"\)/);
+ assert.match(lobby,/local expectedCourtyard=Vector3\.new\(0,-\.2,20\)/);
+ assert.match(lobby,/local expectedFlat=Vector3\.new\(0,0,49\)/);
+ assert.match(lobby,/local pairScale=expectedFlat\.Magnitude\/actualFlat\.Magnitude/);
+ assert.match(lobby,/local heading=math\.atan2\(actualFlat\.X,actualFlat\.Z\)/);
+ assert.match(lobby,/CFrame\.Angles\(0,-heading,0\)/);
+ assert.match(lobby,/self\.visualAnchorMode="HALL_COURTYARD_PAIR"/);
  assert.match(lobby,/self\.visualAnchorMode="HALL_FLOOR_TRANSLATION"/);
  assert.match(lobby,/self\.visualAnchorMode="SOURCE_CENTER_FALLBACK"/);
+ assert.match(lobby,/ManorVisualAnchorYawDegrees/);
  assert.doesNotMatch(lobby,/MANOR_NATIVE_ARCHITECTURE_ALIGNMENT_FAILED/);
  assert.doesNotMatch(lobby,/MANOR_NATIVE_ARCHITECTURE_ANCHOR_MISSING/);
 });
