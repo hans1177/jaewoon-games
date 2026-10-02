@@ -1,4 +1,4 @@
-name: Horror Owner System Publish
+name: Horror Owner Asset Verify
 # Asset import uses the existing authenticated account session; place publishing uses its API key.
 on:
   push:
@@ -6,17 +6,20 @@ on:
     paths:
       - '.github/workflows/horror-owner-system-publish.yml'
       - 'assets/roblox/midnight-manor/**'
-      - 'roblox-games/horror-escape-room/**'
+      - 'roblox-games/horror-escape-room/server/ManorLobby.luau'
+      - 'roblox-games/horror-escape-room/client/ManorLobby.client.luau'
+      - 'roblox-games/horror-escape-room/shared/ManorAssets.luau'
+      - 'roblox-games/horror-escape-room/default.project.json'
       - 'tools/horror-manor-*.mjs'
       - 'qa/horror-manor.test.mjs'
 permissions:
   contents: read
   actions: write
 concurrency:
-  group: horror-owner-system-publish-cloud-v2
+  group: horror-owner-asset-verify-cloud-v3
   cancel-in-progress: true
 jobs:
-  import-build-publish:
+  import-build-verify:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -86,30 +89,18 @@ jobs:
           echo "MANOR_PLACE=/tmp/horror-personal-manor/horror-escape-room.rbxlx" >> "$GITHUB_ENV"
           echo "MANOR_PLACE_SHA256=$(sha256sum /tmp/horror-personal-manor/horror-escape-room.rbxlx | awk '{print $1}')"
           echo "MANOR_PACKAGED_TEMPLATE_BYTES=$(stat -c%s /tmp/horror-personal-manor/manor.rbxm)"
-      - name: Publish verified manor to owner-only private target
-        if: github.ref == 'refs/heads/main'
-        env:
-          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+      - name: Verify generated manor bindings match canonical source
         shell: bash
         run: |
           set -euo pipefail
-          response="$(curl -fsSL -X POST             -H "x-api-key: $ROBLOX_OPEN_CLOUD_API_KEY"             -H 'Content-Type: application/xml'             --data-binary @"$MANOR_PLACE"             'https://apis.roblox.com/universes/v1/10767445796/places/98222620265768/versions?versionType=Published')"
-          version="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.versionNumber||""))' "$response")"
-          test -n "$version" && test "$version" -gt 0
-          echo "MANOR_PUBLISHED_VERSION=$version"
-          node - "$version" <<'NODE'
-          const fs=require('fs');
-          const version=Number(process.argv[2]);
-          fs.writeFileSync('assets/roblox/midnight-manor/generated/publication.json',JSON.stringify({
-            sourceRevision:process.env.GITHUB_SHA,
-            placeId:'98222620265768',
-            universeId:'10767445796',
-            publishedVersion:version,
-            publishedAt:new Date().toISOString(),
-            actualRobloxPlayTest:false,
-            buildSurface:'GITHUB_HOSTED_UBUNTU_CLOUD'
-          },null,2)+'\n');
-          NODE
+          git diff --exit-code -- roblox-games/horror-escape-room/shared/ManorAssets.luau
+          echo 'MANOR_CANONICAL_BINDING=PASS'
+      - name: Preserve exact manor package as validation artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "$MANOR_PLACE"
+          echo 'MANOR_CANONICAL_PUBLISH=DEFER_TO_F9_RELEASE_PROMOTION'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -118,7 +109,6 @@ jobs:
             assets/roblox/midnight-manor/generated/roblox-asset.json
             roblox-games/horror-escape-room/shared/ManorAssets.luau
             assets/roblox/midnight-manor/generated/native-import-check.json
-            assets/roblox/midnight-manor/generated/publication.json
       - name: Return horror changes to canonical development flow
         if: success() && github.ref == 'refs/heads/main'
         env:
