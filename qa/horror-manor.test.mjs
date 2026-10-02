@@ -147,7 +147,9 @@ test('personal manor exterior has signature housing and collection architecture'
   'GalleryFrameBack_','GalleryFrameLiner_','GalleryFrameCornice_','GallerySetFrame_','GallerySet_',
   'FireplaceFeatureFrame','FireplaceFeatureCrown','FireplaceFeature_','PortraitGalleryRail',
   'WingGutter','WingRainPipe','WingStoneWeathering','CentralRoofRidge','RoofFinial','ApproachWaystone',
-  'ButlerServiceConsole','ArchivistIndexCabinet','UndertakerMeasureRack'
+  'ButlerServiceConsole','ArchivistIndexCabinet','UndertakerMeasureRack',
+  'BoardedWingWindow','FacadeCrack','FacadeVine','CollectionViewingBenchSeat','CollectionSideRail',
+  'ButlerKeyRing','ArchivistInkPot','ArchivistQuill','UndertakerScissors'
  ])assert.match(manorBuild,new RegExp(token));
  for(const room of ['ArchiveRoom','LibraryRoom','ParlorRoom','MortuaryRoom','WardrobeRoom','LoungeRoom'])assert.match(manorBuild,new RegExp("'"+room+"'"));
  assert.match(manorBuild,/room_accent=\{/);
@@ -158,6 +160,12 @@ test('personal manor exterior has signature housing and collection architecture'
  assert.match(manorBuild,/name\+'DisplayCoffin'/);
  assert.match(manorBuild,/name\+'WardrobeA'/);
  assert.match(manorBuild,/name\+'Sofa'/);
+ assert.match(manorBuild,/name\+'PendantGlass'/);
+ assert.match(manorBuild,/name\+'ReadingLampShade'/);
+ assert.match(manorBuild,/name\+'WallCameo'/);
+ assert.match(manorBuild,/name\+'LampCage'/);
+ assert.match(manorBuild,/name\+'VanityMirror'/);
+ assert.match(manorBuild,/name\+'GramophoneHorn'/);
  assert.doesNotMatch(manorBuild,/s\.lathe\('LeftTurret'/,'Archivist tower replaces the old duplicate left turret');
  assert.match(manorBuild,/for step in range\(5\)/);
  assert.match(manorBuild,/for i,outline in enumerate\(crest_shapes\)/);
