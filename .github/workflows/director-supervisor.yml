@@ -119,6 +119,7 @@ jobs:
             cancel.set(Number(run.id),reason);
           };
 
+          // Platform exposure sync is control-plane state projection, so a newer same-branch run may supersede a stale one.
           const pureControlPlane=new Set([
             '.github/workflows/company-evolution-qa.yml',
             '.github/workflows/company-central-policy-contract-qa.yml',
