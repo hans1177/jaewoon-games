@@ -145,6 +145,7 @@ local function openStory(item,stage)
 end
 open=function(key)
  if not gui.Enabled then return end
+ if key=="PLAY"and math.floor(tonumber(p:GetAttribute("VisitedManorOwnerUserId"))or 0)>0 then key="EVENT"end
  activeMenu=key;activeStory=nil;rankingRows={};notebookOpen=false;nav.Visible=false;panel.Visible=true;panel.GroupTransparency=1;clear();body.CanvasPosition=Vector2.zero;TweenService:Create(panel,TweenInfo.new(.18,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{GroupTransparency=0}):Play()
  if key=="PLAY"then
   panelTitle.Text="오늘 밤의 출정"
@@ -256,12 +257,36 @@ open=function(key)
    end
   end
  elseif key=="EVENT"then
-  panelTitle.Text="저택의 초대장"
-  label(body,"기록관의 첫 부탁",34,18)
-  label(body,"학교·폐병원·폐놀이공원에서 괴담을 찾아봐. 같은 괴담을 여러 판에서 목격하면 사연이 완성돼.",82,14)
-  label(body,string.format("세계 괴담 완성  %d / %d\n도감 전체 완성 보상: 기존 괴담 계약서 1장",p:GetAttribute("GhostCompleted")or 0,#C.GhostCatalog),64,14)
+  panelTitle.Text="개인 저택 · 방문"
+  local visitingId=math.floor(tonumber(p:GetAttribute("VisitedManorOwnerUserId"))or 0)
+  local visitingName=tostring(p:GetAttribute("VisitedManorOwnerName")or"")
+  if visitingId>0 then
+   label(body,(visitingName~=""and visitingName or"다른 플레이어").."의 저택을 방문 중이야.\n방문자는 전시와 공간만 구경할 수 있어.",60,14,parchment)
+   button(body,"내 저택으로 돌아가기",function()send(C.Actions.RETURN_MANOR);hidePanel()end,wine)
+  else
+   local visibility=tostring(p:GetAttribute("ManorVisibility")or"PRIVATE")
+   local visitorCount=math.max(0,tonumber(p:GetAttribute("ManorVisitorCount"))or 0)
+   label(body,string.format("내 저택 · %s · 방문자 %d명",visibility=="PUBLIC"and"공개"or"비공개",visitorCount),38,16,ivory)
+   if visibility=="PUBLIC"then
+    button(body,"저택 비공개로 전환",function()send(C.Actions.SET_MANOR_VISIBILITY,"PRIVATE")end,Color3.fromRGB(53,45,58))
+   else
+    button(body,"저택 공개하기",function()send(C.Actions.SET_MANOR_VISIBILITY,"PUBLIC")end,wine)
+   end
+   label(body,"공개 저택 방문",32,15,brass)
+   local publicCount=0
+   for _,owner in ipairs(Players:GetPlayers())do
+    if owner~=p and owner:GetAttribute("ManorVisibility")=="PUBLIC"and owner:GetAttribute("RoomServer")~=true and owner:GetAttribute("RoundState")~="RUNNING"then
+     publicCount+=1
+     local ownerName=tostring(owner.DisplayName or owner.Name or("플레이어 "..tostring(owner.UserId)))
+     button(body,ownerName.."의 저택 방문",function()send(C.Actions.VISIT_MANOR,owner.UserId);hidePanel()end)
+    end
+   end
+   if publicCount==0 then label(body,"지금 이 서버에는 공개된 다른 저택이 없어.",42,13,parchment)end
+  end
+  label(body,"수집 전시",32,15,brass)
+  label(body,string.format("세계 괴담 완성  %d / %d · 발견한 기록과 현장 유물이 저택에 전시돼.",p:GetAttribute("GhostCompleted")or 0,#C.GhostCatalog),52,13)
   button(body,"괴담 도감 확인",function()open("BOOK")end)
-  button(body,"집사에게 인사 · 기묘한 사고",function()send(C.Actions.MANOR_GAG);panel.Visible=false end)
+  if visitingId==0 then button(body,"집사에게 인사 · 기묘한 사고",function()send(C.Actions.MANOR_GAG);hidePanel()end)end
  elseif key=="RECORD"then
   panelTitle.Text="괴담 수집 랭킹"
   send(C.Actions.MANOR_RANK)
@@ -279,7 +304,7 @@ local notebook=button(commands,"수첩",function()
 end)
 notebook.Size=UDim2.fromOffset(78,52);notebook.Position=UDim2.fromOffset(74,0)
 -- 무료 Lucide 아이콘: 원본 ISC/MIT 라이선스를 모델 폴더에 보관.
-for index,entry in ipairs({{"PLAY","현관"},{"BOOK","도감"},{"DRESS","옷장"},{"EVENT","초대장"},{"RECORD","기록"}})do
+for index,entry in ipairs({{"PLAY","현관"},{"BOOK","도감"},{"DRESS","옷장"},{"EVENT","저택"},{"RECORD","기록"}})do
  local item=button(nav,"",function()if activeMenu==entry[1]and panel.Visible then hidePanel()else open(entry[1])end end,entry[1]=="PLAY"and wine or leather);item.Size=UDim2.new(1,0,0,52)
  local icon=Instance.new("ImageLabel");icon.BackgroundTransparency=1;icon.Image="rbxassetid://"..tostring(Assets.IconsId or 0)
  icon.ImageRectOffset=Vector2.new((index-1)*64,0);icon.ImageRectSize=Vector2.new(64,64);icon.Size=UDim2.fromOffset(24,24);icon.AnchorPoint=Vector2.new(.5,0);icon.Position=UDim2.new(.5,0,0,6);icon.Parent=item
@@ -314,12 +339,17 @@ p:GetAttributeChangedSignal("RoomFeedback"):Connect(function()
  if text~=""then notify(text)end
  if kind=="ERROR"and not panel.Visible and gui.Enabled then open("PLAY")end
 end)
+p:GetAttributeChangedSignal("ManorVisitFeedback"):Connect(function()
+ local kind,text=tostring(p:GetAttribute("ManorVisitFeedback")or""):match("^([^:]+):?(.*)$")
+ if text and text~=""then notify(text)end
+ if kind=="ERROR"and gui.Enabled then open("EVENT")end
+end)
 p:GetAttributeChangedSignal("CosmeticFeedback"):Connect(function()
  local code=tostring(p:GetAttribute("CosmeticFeedback")or""):match("^[^:]+")
  notify(code=="NEED_COINS"and"코인이 부족해"or code=="PURCHASED"and"구매 완료 · 의상실에서 착용할 수 있어"or code=="EQUIPPED"and"장식 착용 완료"or"소지품을 확인했어")
 end)
 local refreshQueued=false
-for _,key in ipairs({"MonsterPreference","MonsterForm","HumanForm","LobbyAppearance","SelectedLobbyMap","OwnedCosmetics","EquippedCosmetic","Coins","MonsterXP","GhostProgress","GhostSeenCount","GhostCompleted","RoomServer","RoomState","RoomIsHost","RoomAutoStart","RoomCode","RoomMemberCount","RoomSelectedMapName","TimeLeft"})do
+for _,key in ipairs({"MonsterPreference","MonsterForm","HumanForm","LobbyAppearance","SelectedLobbyMap","OwnedCosmetics","EquippedCosmetic","Coins","MonsterXP","GhostProgress","GhostSeenCount","GhostCompleted","RoomServer","RoomState","RoomIsHost","RoomAutoStart","RoomCode","RoomMemberCount","RoomSelectedMapName","TimeLeft","ManorVisibility","ManorVisitorCount","VisitedManorOwnerUserId","VisitedManorOwnerName"})do
  p:GetAttributeChangedSignal(key):Connect(function()
   -- 입력칸·읽던 사연·랭킹은 다른 속성 변경으로 다시 만들지 않는다.
   if activeMenu=="CODE"or activeMenu=="RECORD"or(key=="TimeLeft"and activeMenu~="PLAY")then return end
@@ -390,7 +420,12 @@ visibility=function()
  local cosmeticTitle="신입 참가자"
  local equippedCosmetic=tostring(p:GetAttribute("EquippedCosmetic")or"DEFAULT")
  for _,item in ipairs(C.Cosmetics or{})do if item.Id==equippedCosmetic then cosmeticTitle=item.Title or cosmeticTitle;break end end
- status.Text=string.format("괴담 %d/%d · %d 코인 · 에너지 %d/%d · %s",p:GetAttribute("GhostCompleted")or 0,#C.GhostCatalog,p:GetAttribute("Coins")or 0,energy,maxEnergy,cosmeticTitle)
+ local visitId=math.floor(tonumber(p:GetAttribute("VisitedManorOwnerUserId"))or 0)
+ if visitId>0 then
+  status.Text=string.format("%s의 저택 방문 중 · 보기 전용",tostring(p:GetAttribute("VisitedManorOwnerName")or"다른 플레이어"))
+ else
+  status.Text=string.format("괴담 %d/%d · %d 코인 · 에너지 %d/%d · %s",p:GetAttribute("GhostCompleted")or 0,#C.GhostCatalog,p:GetAttribute("Coins")or 0,energy,maxEnergy,cosmeticTitle)
+ end
  if p:GetAttribute("RoomServer")==true then
   status.Text=(round=="INTERMISSION"and string.format("출정까지 %d초",p:GetAttribute("TimeLeft")or 0)or string.format("초대 %s · 참가 %d명",p:GetAttribute("RoomCode")or"------",p:GetAttribute("RoomMemberCount")or 1))..string.format(" · 에너지 %d/%d · %s",energy,maxEnergy,cosmeticTitle)
  end
