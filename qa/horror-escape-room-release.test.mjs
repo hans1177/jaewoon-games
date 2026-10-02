@@ -751,7 +751,9 @@ test('투명 스폰은 공중 발판이 되지 않고 로비와 경기장 스폰
  assert.match(server,/lobbySpawnLocation\.Name="LobbySpawn"/);
  assert.match(server,/lobbySpawnLocation\.CanCollide=false/);
  assert.match(server,/local lobbyDestination=pos\.Z>=180/);
- assert.match(server,/rootFolders=lobbyDestination and\{workspace:FindFirstChild\("MidnightLobby"\)\}or\{arena\}/);
+ assert.match(server,/local currentArena=arena/);
+ assert.match(server,/currentArena=workspace:FindFirstChild\("MidnightArena"\)/);
+ assert.match(server,/rootFolders=lobbyDestination and\{workspace:FindFirstChild\("MidnightLobby"\)\}or\{currentArena\}/);
  assert.match(server,/r\.AssemblyLinearVelocity=Vector3\.zero/);
  assert.match(server,/r\.AssemblyAngularVelocity=Vector3\.zero/);
 });
@@ -771,8 +773,17 @@ test('실제 캐릭터 스폰은 목적 월드 바닥 Raycast와 아바타 높�
  assert.match(server,/workspace:Raycast\(Vector3\.new\(pos\.X,rayTop,pos\.Z\),Vector3\.new\(0,-rayLength,0\),params\)/);
  assert.match(server,/local standingOffset=math\.max\(1,tonumber\(h\.HipHeight\)or 0\)\+\(r\.Size\.Y\*\.5\)/);
  assert.match(server,/local targetY=groundY\+standingOffset\+\.03/);
- assert.match(server,/if lobbyDestination then targetY=math\.clamp\(targetY,2\.8,5\.2\)end/);
+ assert.match(server,/if lobbyDestination then targetY=math\.clamp\(targetY,2\.8,5\.2\)else targetY=math\.clamp\(targetY,2\.8,6\.5\)end/);
+ const groundBlock=server.slice(server.indexOf('local function groundedRootTarget'),server.indexOf('local function teleport',server.indexOf('local function groundedRootTarget')));
+ assert.match(groundBlock,/local maxGroundY=lobbyDestination and\(pos\.Y\+1\.5\)or\(pos\.Y\+3\)/);
+ assert.doesNotMatch(groundBlock,/FilterType=Enum\.RaycastFilterType\.Exclude/);
+ assert.doesNotMatch(groundBlock,/Vector3\.new\(0,-44,0\)/);
  assert.match(server,/h:ChangeState\(Enum\.HumanoidStateType\.GettingUp\)/);
+});
+
+test('정상 경기장 빌드는 현재 arena 참조를 갱신해 스폰 바닥 검증이 새 맵을 사용한다',()=>{
+ const makeArenaBlock=server.slice(server.indexOf('local function makeArena(map)'),server.indexOf('local function recordServerQA'));
+ assert.match(makeArenaBlock,/decorateArenaWithOfficialAssets\(f,map\)[\s\S]{0,240}arena=f[\s\S]{0,120}workspace:SetAttribute\("MapReady",true\)/);
 });
 
 test('대기 로비 캐릭터는 경기장 MapReady를 기다리지 않고 로비 바닥에 즉시 스폰한다',()=>{

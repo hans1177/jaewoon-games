@@ -859,15 +859,18 @@ local function groundedRootTarget(p,pos)
  local c=p.Character;local r=root(p);local h=hum(p)
  if not c or not r or not h then return Vector3.new(pos.X,pos.Y,pos.Z)end
  local lobbyDestination=pos.Z>=180
- local rootFolders=lobbyDestination and{workspace:FindFirstChild("MidnightLobby")}or{arena}
+ -- 경기장은 현재 MidnightArena의 WalkableGround만 사용한다.
+ -- 천장/지붕/소품을 fallback 바닥으로 잡으면 캐릭터가 공중 스폰하므로 일반 Workspace Raycast는 금지한다.
+ local currentArena=arena
+ if not currentArena or not currentArena.Parent then currentArena=workspace:FindFirstChild("MidnightArena")end
+ local rootFolders=lobbyDestination and{workspace:FindFirstChild("MidnightLobby")}or{currentArena}
  local grounds={}
- local maxGroundY=lobbyDestination and(pos.Y+1.5)or math.huge
+ local maxGroundY=lobbyDestination and(pos.Y+1.5)or(pos.Y+3)
  for _,rootFolder in ipairs(rootFolders)do
   if rootFolder and rootFolder.Parent then
    for _,d in ipairs(rootFolder:GetDescendants())do
     if d:IsA("BasePart")and d:GetAttribute("WalkableGround")==true then
      local topY=d.Position.Y+d.Size.Y*.5
-     -- 다층 저택에서는 목적지보다 높은 층을 스폰 후보에서 제외한다.
      if topY<=maxGroundY then table.insert(grounds,d)end
     end
    end
@@ -878,15 +881,11 @@ local function groundedRootTarget(p,pos)
  if #grounds>0 then
   params.FilterType=Enum.RaycastFilterType.Include
   params.FilterDescendantsInstances=grounds
-  -- 로비는 요청한 층 바로 위에서 아래로 검사한다. Y=30 고정 시작점은 2층을 먼저 집을 수 있다.
-  local rayTop=lobbyDestination and(pos.Y+4)or(pos.Y+24)
-  local rayLength=lobbyDestination and math.max(16,pos.Y+12)or 52
+  local rayTop=lobbyDestination and(pos.Y+4)or(pos.Y+6)
+  local rayLength=lobbyDestination and math.max(16,pos.Y+12)or 18
   hit=workspace:Raycast(Vector3.new(pos.X,rayTop,pos.Z),Vector3.new(0,-rayLength,0),params)
- else
-  params.FilterType=Enum.RaycastFilterType.Exclude
-  params.FilterDescendantsInstances={c}
-  hit=workspace:Raycast(Vector3.new(pos.X,pos.Y+20,pos.Z),Vector3.new(0,-44,0),params)
  end
+ -- 바닥 태그가 잠깐 비어 있어도 지붕으로 올리지 않고 맵 기준 바닥으로 고정한다.
  local groundY=hit and hit.Position.Y or(lobbyDestination and .65 or .5)
  local standingOffset=math.max(1,tonumber(h.HipHeight)or 0)+(r.Size.Y*.5)
  if h.RigType==Enum.HumanoidRigType.R6 then
@@ -894,7 +893,7 @@ local function groundedRootTarget(p,pos)
   standingOffset+=leg and leg.Size.Y or 2
  end
  local targetY=groundY+standingOffset+.03
- if lobbyDestination then targetY=math.clamp(targetY,2.8,5.2)end
+ if lobbyDestination then targetY=math.clamp(targetY,2.8,5.2)else targetY=math.clamp(targetY,2.8,6.5)end
  return Vector3.new(pos.X,targetY,pos.Z)
 end
 local function teleport(p,pos,lookAtPos)
@@ -1841,6 +1840,8 @@ local function makeArena(map)
  workspace:SetAttribute("EscapeUnlocked",false)
  workspace:SetAttribute("SurvivorEscapeTriggered",false)
  decorateArenaWithOfficialAssets(f,map)
+ -- 정상 빌드도 fallback과 동일하게 현재 arena 참조를 갱신해야 스폰 바닥 검증이 새 맵을 본다.
+ arena=f
  workspace:SetAttribute("MapReady",true)
  workspace:SetAttribute("MapBuilding",false)
  foundationCheckpoint("WORLD_READY",nil,{mapId=map.Id})
