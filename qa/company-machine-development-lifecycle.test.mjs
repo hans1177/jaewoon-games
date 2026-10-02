@@ -19,7 +19,7 @@ const queueControl=read('tools/vibe2-queue-control.mjs');
 const adaptiveBackpressure=read('tools/vibe2-adaptive-backpressure.mjs');
 const parallelismTelemetry=read('tools/vibe2-parallelism-telemetry.mjs');
 const releaseDispatchRecovery=read('tools/vibe2-release-dispatch-recovery.mjs');
-const robloxRunnerHidden=read('tools/roblox-runner-hidden.ps1');
+const robloxRunnerHidden=read('.github/workflows/company-roblox-runner-pwsh-bootstrap.yml');
 
 const lifecycle=roadmap.developmentLifecycleMachine;
 assert.equal(roadmap.policySource,'company-learning/platform-release-roadmap.json');
@@ -300,7 +300,7 @@ assert.equal(recovery.bindings.queueController,'tools/vibe2-queue-control.mjs');
 assert.equal(recovery.bindings.adaptiveBackpressure,'tools/vibe2-adaptive-backpressure.mjs');
 assert.equal(recovery.bindings.telemetry,'tools/vibe2-parallelism-telemetry.mjs');
 assert.equal(recovery.bindings.releaseDispatchRecovery,'tools/vibe2-release-dispatch-recovery.mjs');
-assert.equal(recovery.bindings.robloxRunnerSelfHeal,'tools/roblox-runner-hidden.ps1');
+assert.equal(recovery.bindings.robloxRunnerSelfHeal,'.github/workflows/company-roblox-runner-pwsh-bootstrap.yml#hidden-runner-bootstrap');
 assert.equal(recovery.automaticRecovery.externalModelQuota,'CHECKPOINT_AND_CONTINUE_NON_BLOCKED_VIBE_WORK');
 assert.equal(recovery.automaticRecovery.waitingForVerifiedSamples,'CONTINUE_SAMPLE_COLLECTION_NOT_FAILURE');
 assert.deepEqual(recovery.bottleneckPolicy.adaptiveSteps,[256,128,64,32,20,16,8,4]);
