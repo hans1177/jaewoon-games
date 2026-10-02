@@ -2752,7 +2752,6 @@
       "coding_qngr8z"
     ],
     "seenNegativeOutcomeIds": [
-      "coding_negative_1d924op",
       "coding_negative_1e1poyu",
       "coding_negative_1lgriw",
       "coding_negative_5b228d",
@@ -7751,7 +7750,8 @@
       "coding_negative_d9va4s",
       "coding_negative_1y9en61",
       "coding_negative_1it6een",
-      "coding_negative_7vc2xg"
+      "coding_negative_7vc2xg",
+      "coding_negative_1s2ed3a"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -20624,7 +20624,7 @@
         "verifiedApplications": 58,
         "firstCandidatePasses": 15,
         "totalGenerationAttempts": 134,
-        "verifiedFailures": 3679,
+        "verifiedFailures": 3680,
         "games": {
           "fantasy-survival": 5,
           "bug-defense": 3,
@@ -20645,13 +20645,13 @@
         "contextModes": {
           "STANDARD_CONTEXT": {
             "verifiedApplications": 58,
-            "verifiedFailures": 1067,
+            "verifiedFailures": 1068,
             "firstCandidatePasses": 15,
             "totalGenerationAttempts": 134,
             "totalContextBytes": 963946,
             "lastEvidence": "coding_qngr8z",
-            "lastFailureEvidence": "coding_negative_7vc2xg",
-            "lastUpdatedAt": "2026-10-02T21:13:43.356Z"
+            "lastFailureEvidence": "coding_negative_1s2ed3a",
+            "lastUpdatedAt": "2026-10-02T21:41:15.807Z"
           },
           "UNITY_WEB_BOOTSTRAP_SHELL": {
             "verifiedApplications": 0,
@@ -21137,21 +21137,21 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 21,
+            "verifiedFailures": 22,
             "games": {},
             "targets": {},
             "failureGames": {
-              "daechung-rpg": 21
+              "daechung-rpg": 22
             },
             "failureTargets": {
-              "unity": 21
+              "unity": 22
             },
             "failureClasses": {
-              "TIMEOUT": 21
+              "TIMEOUT": 22
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_7vc2xg",
-            "lastUpdatedAt": "2026-10-02T21:13:43.356Z"
+            "lastFailureEvidence": "coding_negative_1s2ed3a",
+            "lastUpdatedAt": "2026-10-02T21:41:15.807Z"
           },
           "unity|NO_OP|OTHER|PRESENTATION_PATCH_DELTA|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -21716,8 +21716,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_qngr8z",
-        "lastFailureEvidence": "coding_negative_7vc2xg",
-        "lastUpdatedAt": "2026-10-02T21:13:43.356Z"
+        "lastFailureEvidence": "coding_negative_1s2ed3a",
+        "lastUpdatedAt": "2026-10-02T21:41:15.807Z"
       }
     }
   },
@@ -24484,7 +24484,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-10-02T21:13:43.503Z",
+    "lastBuiltAt": "2026-10-02T21:41:15.958Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -24493,14 +24493,14 @@
     "domains": {
       "CORE_LOOP": {
         "verifiedApplications": 268,
-        "verifiedFailures": 203,
+        "verifiedFailures": 204,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
-          "amusement-tycoon": 56,
+          "amusement-tycoon": 57,
           "seed-puzzle-chromatic-cascade": 45,
           "seed-single-defense-strat-celestial-bastion": 28,
           "village-dungeons": 35,
@@ -24518,19 +24518,19 @@
         },
         "holdoutPasses": 0,
         "level": 2,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "STATE_MACHINE": {
         "verifiedApplications": 319,
-        "verifiedFailures": 250,
+        "verifiedFailures": 251,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
-          "amusement-tycoon": 56,
+          "amusement-tycoon": 57,
           "seed-puzzle-chromatic-cascade": 45,
           "seed-single-defense-strat-celestial-bastion": 28,
           "village-dungeons": 35,
@@ -24550,12 +24550,12 @@
         },
         "holdoutPasses": 0,
         "level": 2,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "COMBAT": {
         "verifiedApplications": 254,
-        "verifiedFailures": 175,
+        "verifiedFailures": 176,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -24563,7 +24563,7 @@
         "primaryDomainMismatches": 0,
         "games": {
           "seed-single-defense-strat-celestial-bastion": 23,
-          "amusement-tycoon": 48,
+          "amusement-tycoon": 49,
           "bug-defense": 38,
           "village-dungeons": 27,
           "monster-adventure": 31,
@@ -24581,19 +24581,19 @@
         },
         "holdoutPasses": 0,
         "level": 2,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "AI": {
         "verifiedApplications": 181,
-        "verifiedFailures": 144,
+        "verifiedFailures": 145,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
-          "amusement-tycoon": 34,
+          "amusement-tycoon": 35,
           "monster-adventure": 31,
           "daechung-rpg": 14,
           "line-defense": 27,
@@ -24611,19 +24611,19 @@
         },
         "holdoutPasses": 0,
         "level": 2,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "PROGRESSION": {
         "verifiedApplications": 292,
-        "verifiedFailures": 186,
+        "verifiedFailures": 187,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
-          "amusement-tycoon": 49,
+          "amusement-tycoon": 50,
           "seed-puzzle-chromatic-cascade": 40,
           "seed-single-defense-strat-celestial-bastion": 23,
           "village-dungeons": 28,
@@ -24643,12 +24643,12 @@
         },
         "holdoutPasses": 0,
         "level": 2,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "ECONOMY": {
         "verifiedApplications": 143,
-        "verifiedFailures": 186,
+        "verifiedFailures": 187,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -24662,7 +24662,7 @@
           "fantasy-survival": 25,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -24674,12 +24674,12 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "SAVE": {
         "verifiedApplications": 154,
-        "verifiedFailures": 186,
+        "verifiedFailures": 187,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -24693,7 +24693,7 @@
           "ant-simulator": 31,
           "fantasy-survival": 25,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -24705,19 +24705,19 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "MOBILE_INPUT": {
         "verifiedApplications": 282,
-        "verifiedFailures": 155,
+        "verifiedFailures": 156,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
-          "amusement-tycoon": 49,
+          "amusement-tycoon": 50,
           "seed-puzzle-chromatic-cascade": 40,
           "seed-single-defense-strat-celestial-bastion": 23,
           "village-dungeons": 20,
@@ -24736,12 +24736,12 @@
         },
         "holdoutPasses": 0,
         "level": 2,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "UI_STATE": {
         "verifiedApplications": 177,
-        "verifiedFailures": 218,
+        "verifiedFailures": 219,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -24755,7 +24755,7 @@
           "village-dungeons": 24,
           "cozy-island": 60,
           "horror-escape-room": 17,
-          "amusement-tycoon": 31,
+          "amusement-tycoon": 32,
           "seed-casual-realm-weaver": 28,
           "seed-idle-growth-rpg-crystal-bloom": 37,
           "seed-puzzle-chromatic-cascade": 29,
@@ -24767,19 +24767,19 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "DEBUGGING": {
         "verifiedApplications": 341,
-        "verifiedFailures": 258,
+        "verifiedFailures": 259,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
-          "amusement-tycoon": 56,
+          "amusement-tycoon": 57,
           "seed-puzzle-chromatic-cascade": 45,
           "seed-single-defense-strat-celestial-bastion": 28,
           "village-dungeons": 36,
@@ -24799,12 +24799,12 @@
         },
         "holdoutPasses": 0,
         "level": 2,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "RECOVERY": {
         "verifiedApplications": 108,
-        "verifiedFailures": 143,
+        "verifiedFailures": 144,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -24815,7 +24815,7 @@
           "fantasy-survival": 25,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -24827,12 +24827,12 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "SECURITY": {
         "verifiedApplications": 157,
-        "verifiedFailures": 187,
+        "verifiedFailures": 188,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -24847,7 +24847,7 @@
           "fantasy-survival": 25,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
           "seed-puzzle-chromatic-cascade": 24,
@@ -24858,12 +24858,12 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "PERFORMANCE": {
         "verifiedApplications": 143,
-        "verifiedFailures": 155,
+        "verifiedFailures": 156,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -24876,7 +24876,7 @@
           "fantasy-survival": 25,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -24888,12 +24888,12 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "ASSET_PRODUCTION": {
         "verifiedApplications": 116,
-        "verifiedFailures": 181,
+        "verifiedFailures": 182,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -24906,7 +24906,7 @@
           "cozy-island": 40,
           "ant-simulator": 31,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
           "seed-puzzle-chromatic-cascade": 24,
@@ -24917,12 +24917,12 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "ASSET_ADAPTATION": {
         "verifiedApplications": 137,
-        "verifiedFailures": 177,
+        "verifiedFailures": 178,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -24935,7 +24935,7 @@
           "cozy-island": 39,
           "ant-simulator": 31,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
           "seed-puzzle-chromatic-cascade": 24,
@@ -24946,12 +24946,12 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "LIVING_MOTION": {
         "verifiedApplications": 126,
-        "verifiedFailures": 143,
+        "verifiedFailures": 144,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -24962,7 +24962,7 @@
           "cozy-island": 35,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -24974,12 +24974,12 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "ANIMATION_FEEL": {
         "verifiedApplications": 108,
-        "verifiedFailures": 143,
+        "verifiedFailures": 144,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -24990,7 +24990,7 @@
           "fantasy-survival": 25,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -25002,12 +25002,12 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "VFX": {
         "verifiedApplications": 108,
-        "verifiedFailures": 150,
+        "verifiedFailures": 151,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25019,7 +25019,7 @@
           "cozy-island": 40,
           "fantasy-survival": 25,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
           "seed-puzzle-chromatic-cascade": 24,
@@ -25030,19 +25030,19 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "AUDIO_FEEL": {
         "verifiedApplications": 167,
-        "verifiedFailures": 110,
+        "verifiedFailures": 111,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
-          "amusement-tycoon": 48,
+          "amusement-tycoon": 49,
           "village-dungeons": 29,
           "monster-adventure": 26,
           "fantasy-survival": 24,
@@ -25058,12 +25058,12 @@
         },
         "holdoutPasses": 0,
         "level": 2,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "CAMERA_LANGUAGE": {
         "verifiedApplications": 108,
-        "verifiedFailures": 212,
+        "verifiedFailures": 213,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25071,7 +25071,7 @@
         "primaryDomainMismatches": 0,
         "games": {
           "cozy-island": 40,
-          "amusement-tycoon": 31,
+          "amusement-tycoon": 32,
           "bug-defense": 35,
           "seed-casual-realm-weaver": 28,
           "seed-idle-growth-rpg-crystal-bloom": 37,
@@ -25087,12 +25087,12 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "STORYTELLING": {
         "verifiedApplications": 108,
-        "verifiedFailures": 150,
+        "verifiedFailures": 151,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25104,7 +25104,7 @@
           "fantasy-survival": 25,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -25115,12 +25115,12 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "NARRATIVE_STRUCTURE": {
         "verifiedApplications": 104,
-        "verifiedFailures": 108,
+        "verifiedFailures": 109,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25130,7 +25130,7 @@
           "fantasy-survival": 21,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -25142,19 +25142,19 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "QUEST_DESIGN": {
         "verifiedApplications": 275,
-        "verifiedFailures": 114,
+        "verifiedFailures": 115,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
-          "amusement-tycoon": 49,
+          "amusement-tycoon": 50,
           "seed-puzzle-chromatic-cascade": 40,
           "seed-single-defense-strat-celestial-bastion": 23,
           "village-dungeons": 29,
@@ -25172,12 +25172,12 @@
         },
         "holdoutPasses": 0,
         "level": 3,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "CHARACTER_ARC": {
         "verifiedApplications": 143,
-        "verifiedFailures": 219,
+        "verifiedFailures": 220,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25187,7 +25187,7 @@
           "cozy-island": 55,
           "horror-escape-room": 17,
           "daechung-rpg": 10,
-          "amusement-tycoon": 31,
+          "amusement-tycoon": 32,
           "bug-defense": 35,
           "seed-casual-realm-weaver": 28,
           "seed-idle-growth-rpg-crystal-bloom": 37,
@@ -25203,12 +25203,12 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "DIALOGUE": {
         "verifiedApplications": 96,
-        "verifiedFailures": 49,
+        "verifiedFailures": 50,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25217,7 +25217,7 @@
         "games": {
           "fantasy-survival": 25,
           "bug-defense": 14,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "seed-puzzle-chromatic-cascade": 24,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 7,
@@ -25229,8 +25229,8 @@
         },
         "holdoutPasses": 0,
         "level": 3,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "CHARACTER_PERSONA": {
         "verifiedApplications": 0,
@@ -25248,7 +25248,7 @@
       },
       "RELATIONSHIP_MEMORY": {
         "verifiedApplications": 108,
-        "verifiedFailures": 143,
+        "verifiedFailures": 144,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25259,7 +25259,7 @@
           "fantasy-survival": 25,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -25271,12 +25271,12 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "WORLD_NARRATIVE": {
         "verifiedApplications": 108,
-        "verifiedFailures": 37,
+        "verifiedFailures": 38,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25290,7 +25290,7 @@
           "monster-adventure": 12,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 7,
           "survival": 7,
-          "amusement-tycoon": 9,
+          "amusement-tycoon": 10,
           "seed-puzzle-chromatic-cascade": 7,
           "line-defense": 7,
           "seed-casual-realm-weaver": 4,
@@ -25299,8 +25299,8 @@
         },
         "holdoutPasses": 0,
         "level": 3,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "MAIN_STORY_GENERATION": {
         "verifiedApplications": 0,
@@ -25332,7 +25332,7 @@
       },
       "FORESHADOWING_PAYOFF": {
         "verifiedApplications": 102,
-        "verifiedFailures": 2,
+        "verifiedFailures": 3,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25344,7 +25344,7 @@
           "seed-idle-growth-rpg-crystal-bloom": 14,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 7,
           "survival": 7,
-          "amusement-tycoon": 9,
+          "amusement-tycoon": 10,
           "seed-puzzle-chromatic-cascade": 7,
           "line-defense": 7,
           "monster-adventure": 6,
@@ -25354,8 +25354,8 @@
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "TWIST_EVIDENCE_CHAIN": {
         "verifiedApplications": 0,
@@ -25457,7 +25457,7 @@
       },
       "WORLD_NARRATIVE_BINDING": {
         "verifiedApplications": 108,
-        "verifiedFailures": 143,
+        "verifiedFailures": 144,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25468,7 +25468,7 @@
           "fantasy-survival": 25,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -25480,12 +25480,12 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "VISUAL_IDENTITY": {
         "verifiedApplications": 108,
-        "verifiedFailures": 143,
+        "verifiedFailures": 144,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25496,7 +25496,7 @@
           "fantasy-survival": 25,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -25508,12 +25508,12 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "CONCEPT_DIRECTION": {
         "verifiedApplications": 84,
-        "verifiedFailures": 174,
+        "verifiedFailures": 175,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25523,7 +25523,7 @@
           "ant-simulator": 31,
           "cozy-island": 35,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "line-defense": 22,
           "bug-defense": 22,
@@ -25537,8 +25537,8 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "ENVIRONMENT_COMPOSITION": {
         "verifiedApplications": 0,
@@ -25570,7 +25570,7 @@
       },
       "LEVEL_DESIGN": {
         "verifiedApplications": 108,
-        "verifiedFailures": 143,
+        "verifiedFailures": 144,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25581,7 +25581,7 @@
           "fantasy-survival": 25,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -25593,12 +25593,12 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "NAVIGATION": {
         "verifiedApplications": 108,
-        "verifiedFailures": 112,
+        "verifiedFailures": 113,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25608,7 +25608,7 @@
           "fantasy-survival": 25,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -25621,12 +25621,12 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "ROUTE_DESIGN": {
         "verifiedApplications": 108,
-        "verifiedFailures": 143,
+        "verifiedFailures": 144,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25637,7 +25637,7 @@
           "fantasy-survival": 25,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -25649,12 +25649,12 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "STREAMING": {
         "verifiedApplications": 52,
-        "verifiedFailures": 108,
+        "verifiedFailures": 109,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25664,7 +25664,7 @@
           "fantasy-survival": 19,
           "bug-defense": 22,
           "seed-casual-realm-weaver": 16,
-          "amusement-tycoon": 18,
+          "amusement-tycoon": 19,
           "village-dungeons": 15,
           "seed-idle-growth-rpg-crystal-bloom": 23,
           "line-defense": 16,
@@ -25675,8 +25675,8 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1qi393s",
-        "lastUpdatedAt": "2026-10-02T21:01:26.375Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "STREAMING_OPTIMIZATION": {
         "verifiedApplications": 0,
@@ -25694,7 +25694,7 @@
       },
       "WEB_RUNTIME": {
         "verifiedApplications": 327,
-        "verifiedFailures": 182,
+        "verifiedFailures": 183,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25702,7 +25702,7 @@
         "primaryDomainMismatches": 0,
         "games": {
           "daechung-rpg": 24,
-          "amusement-tycoon": 49,
+          "amusement-tycoon": 50,
           "seed-puzzle-chromatic-cascade": 40,
           "seed-single-defense-strat-celestial-bastion": 23,
           "village-dungeons": 29,
@@ -25720,12 +25720,12 @@
         },
         "holdoutPasses": 0,
         "level": 2,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "ROBLOX_STUDIO": {
         "verifiedApplications": 146,
-        "verifiedFailures": 251,
+        "verifiedFailures": 252,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25735,7 +25735,7 @@
           "cozy-island": 59,
           "horror-escape-room": 17,
           "daechung-rpg": 10,
-          "amusement-tycoon": 31,
+          "amusement-tycoon": 32,
           "bug-defense": 35,
           "seed-casual-realm-weaver": 28,
           "seed-idle-growth-rpg-crystal-bloom": 37,
@@ -25752,12 +25752,12 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "ROBLOX_DATASTORE": {
         "verifiedApplications": 108,
-        "verifiedFailures": 108,
+        "verifiedFailures": 109,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25767,7 +25767,7 @@
           "fantasy-survival": 25,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -25778,13 +25778,13 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 3
         },
         "holdoutPasses": 0,
-        "level": 2,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "level": 1,
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "ROBLOX_REMOTE_SECURITY": {
         "verifiedApplications": 108,
-        "verifiedFailures": 108,
+        "verifiedFailures": 109,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25794,7 +25794,7 @@
           "fantasy-survival": 25,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -25805,13 +25805,13 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 3
         },
         "holdoutPasses": 0,
-        "level": 2,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "level": 1,
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "ROBLOX_REPLICATION": {
         "verifiedApplications": 108,
-        "verifiedFailures": 108,
+        "verifiedFailures": 109,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25821,7 +25821,7 @@
           "fantasy-survival": 25,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -25832,13 +25832,13 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 3
         },
         "holdoutPasses": 0,
-        "level": 2,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "level": 1,
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "ROBLOX_MULTIPLAYER": {
         "verifiedApplications": 112,
-        "verifiedFailures": 108,
+        "verifiedFailures": 109,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25849,7 +25849,7 @@
           "fantasy-survival": 25,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -25860,12 +25860,12 @@
         },
         "holdoutPasses": 0,
         "level": 2,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "ROBLOX_TOUCH_INPUT": {
         "verifiedApplications": 108,
-        "verifiedFailures": 108,
+        "verifiedFailures": 109,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25875,7 +25875,7 @@
           "fantasy-survival": 25,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -25886,13 +25886,13 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 3
         },
         "holdoutPasses": 0,
-        "level": 2,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "level": 1,
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "ROBLOX_CHARACTER_STATE": {
         "verifiedApplications": 108,
-        "verifiedFailures": 108,
+        "verifiedFailures": 109,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25902,7 +25902,7 @@
           "fantasy-survival": 25,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -25913,13 +25913,13 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 3
         },
         "holdoutPasses": 0,
-        "level": 2,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "level": 1,
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "ROBLOX_UI_STATE": {
         "verifiedApplications": 108,
-        "verifiedFailures": 112,
+        "verifiedFailures": 113,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25929,7 +25929,7 @@
           "fantasy-survival": 25,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -25942,12 +25942,12 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.745Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "UNITY_RUNTIME": {
         "verifiedApplications": 124,
-        "verifiedFailures": 239,
+        "verifiedFailures": 240,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -25956,7 +25956,7 @@
         "games": {
           "daechung-rpg": 13,
           "cozy-island": 39,
-          "amusement-tycoon": 31,
+          "amusement-tycoon": 32,
           "bug-defense": 35,
           "seed-casual-realm-weaver": 28,
           "seed-idle-growth-rpg-crystal-bloom": 37,
@@ -25973,8 +25973,8 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_1q51yns",
-        "lastUpdatedAt": "2026-10-02T21:09:25.746Z"
+        "lastEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.926Z"
       },
       "UNITY_PHYSICS": {
         "verifiedApplications": 0,
@@ -26069,15 +26069,15 @@
       "EXPERIENCE:exp_1oonbi8": {
         "source": "EXPERIENCE",
         "verifiedApplications": 377,
-        "verifiedFailures": 258,
+        "verifiedFailures": 259,
         "firstPasses": 27,
         "failureSignatureClears": 204,
-        "regressionFailures": 258,
+        "regressionFailures": 259,
         "primaryDomainMatches": 56,
         "primaryDomainMismatches": 0,
         "games": {
           "daechung-rpg": 49,
-          "amusement-tycoon": 56,
+          "amusement-tycoon": 57,
           "seed-puzzle-chromatic-cascade": 45,
           "seed-single-defense-strat-celestial-bastion": 28,
           "village-dungeons": 36,
@@ -26097,25 +26097,25 @@
         "targets": {
           "web": 293,
           "unity": 123,
-          "roblox": 219
+          "roblox": 220
         },
         "state": "DEMOTED",
         "lastEvidence": "knowledge_1q51yns",
-        "lastFailureEvidence": "knowledge_180wxk9",
-        "lastUpdatedAt": "2026-10-02T21:09:25.738Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.917Z"
       },
       "EXPERIENCE:exp_4odofx": {
         "source": "EXPERIENCE",
         "verifiedApplications": 377,
-        "verifiedFailures": 258,
+        "verifiedFailures": 259,
         "firstPasses": 27,
         "failureSignatureClears": 204,
-        "regressionFailures": 258,
+        "regressionFailures": 259,
         "primaryDomainMatches": 56,
         "primaryDomainMismatches": 0,
         "games": {
           "daechung-rpg": 49,
-          "amusement-tycoon": 56,
+          "amusement-tycoon": 57,
           "seed-puzzle-chromatic-cascade": 45,
           "seed-single-defense-strat-celestial-bastion": 28,
           "village-dungeons": 36,
@@ -26135,25 +26135,25 @@
         "targets": {
           "web": 293,
           "unity": 123,
-          "roblox": 219
+          "roblox": 220
         },
         "state": "DEMOTED",
         "lastEvidence": "knowledge_1q51yns",
-        "lastFailureEvidence": "knowledge_180wxk9",
-        "lastUpdatedAt": "2026-10-02T21:09:25.738Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.918Z"
       },
       "EXPERIENCE:exp_pg739o": {
         "source": "EXPERIENCE",
         "verifiedApplications": 377,
-        "verifiedFailures": 257,
+        "verifiedFailures": 258,
         "firstPasses": 27,
         "failureSignatureClears": 204,
-        "regressionFailures": 257,
+        "regressionFailures": 258,
         "primaryDomainMatches": 56,
         "primaryDomainMismatches": 0,
         "games": {
           "daechung-rpg": 49,
-          "amusement-tycoon": 56,
+          "amusement-tycoon": 57,
           "seed-puzzle-chromatic-cascade": 45,
           "seed-single-defense-strat-celestial-bastion": 28,
           "village-dungeons": 36,
@@ -26173,25 +26173,25 @@
         "targets": {
           "web": 293,
           "unity": 123,
-          "roblox": 218
+          "roblox": 219
         },
         "state": "DEMOTED",
         "lastEvidence": "knowledge_1q51yns",
-        "lastFailureEvidence": "knowledge_180wxk9",
-        "lastUpdatedAt": "2026-10-02T21:09:25.739Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.918Z"
       },
       "EXPERIENCE:supervised_bug-defense_35476177742_revise": {
         "source": "EXPERIENCE",
         "verifiedApplications": 377,
-        "verifiedFailures": 252,
+        "verifiedFailures": 253,
         "firstPasses": 27,
         "failureSignatureClears": 204,
-        "regressionFailures": 252,
+        "regressionFailures": 253,
         "primaryDomainMatches": 56,
         "primaryDomainMismatches": 0,
         "games": {
           "daechung-rpg": 49,
-          "amusement-tycoon": 55,
+          "amusement-tycoon": 56,
           "seed-puzzle-chromatic-cascade": 45,
           "seed-single-defense-strat-celestial-bastion": 28,
           "village-dungeons": 35,
@@ -26211,25 +26211,25 @@
         "targets": {
           "web": 293,
           "unity": 123,
-          "roblox": 213
+          "roblox": 214
         },
         "state": "DEMOTED",
         "lastEvidence": "knowledge_1q51yns",
-        "lastFailureEvidence": "knowledge_180wxk9",
-        "lastUpdatedAt": "2026-10-02T21:09:25.739Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.918Z"
       },
       "EXPERIENCE:exp_rg6lvy": {
         "source": "EXPERIENCE",
         "verifiedApplications": 376,
-        "verifiedFailures": 249,
+        "verifiedFailures": 250,
         "firstPasses": 27,
         "failureSignatureClears": 203,
-        "regressionFailures": 249,
+        "regressionFailures": 250,
         "primaryDomainMatches": 55,
         "primaryDomainMismatches": 0,
         "games": {
           "daechung-rpg": 49,
-          "amusement-tycoon": 55,
+          "amusement-tycoon": 56,
           "seed-puzzle-chromatic-cascade": 45,
           "seed-single-defense-strat-celestial-bastion": 28,
           "village-dungeons": 35,
@@ -26249,25 +26249,25 @@
         "targets": {
           "web": 290,
           "unity": 123,
-          "roblox": 212
+          "roblox": 213
         },
         "state": "DEMOTED",
         "lastEvidence": "knowledge_1q51yns",
-        "lastFailureEvidence": "knowledge_180wxk9",
-        "lastUpdatedAt": "2026-10-02T21:09:25.739Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.918Z"
       },
       "EXPERIENCE:exp_i00mwv": {
         "source": "EXPERIENCE",
         "verifiedApplications": 375,
-        "verifiedFailures": 257,
+        "verifiedFailures": 258,
         "firstPasses": 27,
         "failureSignatureClears": 202,
-        "regressionFailures": 257,
+        "regressionFailures": 258,
         "primaryDomainMatches": 56,
         "primaryDomainMismatches": 0,
         "games": {
           "daechung-rpg": 48,
-          "amusement-tycoon": 56,
+          "amusement-tycoon": 57,
           "seed-puzzle-chromatic-cascade": 45,
           "seed-single-defense-strat-celestial-bastion": 28,
           "village-dungeons": 36,
@@ -26287,12 +26287,12 @@
         "targets": {
           "web": 291,
           "unity": 122,
-          "roblox": 219
+          "roblox": 220
         },
         "state": "DEMOTED",
         "lastEvidence": "knowledge_1q51yns",
-        "lastFailureEvidence": "knowledge_180wxk9",
-        "lastUpdatedAt": "2026-10-02T21:09:25.739Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.917Z"
       },
       "EXPERIENCE:exp_recovery_0283345dd9580a246abbf745": {
         "source": "EXPERIENCE",
@@ -26335,15 +26335,15 @@
       "EXPERIENCE:exp_security_28453669955c43a85d166c5c": {
         "source": "EXPERIENCE",
         "verifiedApplications": 289,
-        "verifiedFailures": 98,
+        "verifiedFailures": 99,
         "firstPasses": 25,
         "failureSignatureClears": 131,
-        "regressionFailures": 98,
+        "regressionFailures": 99,
         "primaryDomainMatches": 32,
         "primaryDomainMismatches": 0,
         "games": {
           "daechung-rpg": 30,
-          "amusement-tycoon": 36,
+          "amusement-tycoon": 37,
           "seed-puzzle-chromatic-cascade": 36,
           "seed-single-defense-strat-celestial-bastion": 24,
           "village-dungeons": 17,
@@ -26363,12 +26363,12 @@
         "targets": {
           "web": 233,
           "unity": 64,
-          "roblox": 90
+          "roblox": 91
         },
         "state": "VERIFIED",
         "lastEvidence": "knowledge_1q51yns",
-        "lastFailureEvidence": "knowledge_180wxk9",
-        "lastUpdatedAt": "2026-10-02T21:09:25.738Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.917Z"
       },
       "CODE_PATTERN:pat_130jf9c": {
         "source": "CODE_PATTERN",
@@ -26582,14 +26582,14 @@
       "PRACTICE_DISTILLED:practice-distilled:73a2ceb29bb96077cecf": {
         "source": "PRACTICE_DISTILLED",
         "verifiedApplications": 282,
-        "verifiedFailures": 155,
+        "verifiedFailures": 156,
         "firstPasses": 27,
         "failureSignatureClears": 173,
-        "regressionFailures": 155,
+        "regressionFailures": 156,
         "primaryDomainMatches": 21,
         "primaryDomainMismatches": 0,
         "games": {
-          "amusement-tycoon": 49,
+          "amusement-tycoon": 50,
           "seed-puzzle-chromatic-cascade": 40,
           "seed-single-defense-strat-celestial-bastion": 23,
           "village-dungeons": 20,
@@ -26608,25 +26608,25 @@
         },
         "targets": {
           "web": 174,
-          "roblox": 155,
+          "roblox": 156,
           "unity": 108
         },
         "state": "VERIFIED",
         "lastEvidence": "knowledge_1q51yns",
-        "lastFailureEvidence": "knowledge_180wxk9",
-        "lastUpdatedAt": "2026-10-02T21:09:25.740Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.919Z"
       },
       "PRACTICE_DISTILLED:practice-distilled:9c328ab0d2941e9c1b3c": {
         "source": "PRACTICE_DISTILLED",
         "verifiedApplications": 292,
-        "verifiedFailures": 186,
+        "verifiedFailures": 187,
         "firstPasses": 27,
         "failureSignatureClears": 173,
-        "regressionFailures": 186,
+        "regressionFailures": 187,
         "primaryDomainMatches": 52,
         "primaryDomainMismatches": 0,
         "games": {
-          "amusement-tycoon": 49,
+          "amusement-tycoon": 50,
           "seed-puzzle-chromatic-cascade": 40,
           "seed-single-defense-strat-celestial-bastion": 23,
           "village-dungeons": 28,
@@ -26646,13 +26646,13 @@
         },
         "targets": {
           "web": 215,
-          "roblox": 155,
+          "roblox": 156,
           "unity": 108
         },
         "state": "DEMOTED",
         "lastEvidence": "knowledge_1q51yns",
-        "lastFailureEvidence": "knowledge_180wxk9",
-        "lastUpdatedAt": "2026-10-02T21:09:25.741Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.919Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_0ce73fa4ec23024bd474ad30": {
         "source": "VERIFIED_CAPABILITY",
@@ -27168,10 +27168,10 @@
       "CODE_PATTERN:pat_7a30sr": {
         "source": "CODE_PATTERN",
         "verifiedApplications": 98,
-        "verifiedFailures": 33,
+        "verifiedFailures": 34,
         "firstPasses": 18,
         "failureSignatureClears": 64,
-        "regressionFailures": 33,
+        "regressionFailures": 34,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
@@ -27179,7 +27179,7 @@
           "ant-simulator": 12,
           "fantasy-survival": 19,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 4,
-          "amusement-tycoon": 14,
+          "amusement-tycoon": 15,
           "seed-casual-realm-weaver": 9,
           "seed-idle-growth-rpg-crystal-bloom": 13,
           "seed-story-complete-rpg-chronicles-of-eldoria": 4,
@@ -27190,21 +27190,21 @@
         },
         "targets": {
           "web": 35,
-          "roblox": 33,
+          "roblox": 34,
           "unity": 63
         },
-        "state": "PREFERRED",
+        "state": "VERIFIED",
         "lastEvidence": "knowledge_1q51yns",
-        "lastFailureEvidence": "knowledge_1qi393s",
-        "lastUpdatedAt": "2026-10-02T21:09:25.740Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.919Z"
       },
       "CODE_PATTERN:pat_83szfq": {
         "source": "CODE_PATTERN",
         "verifiedApplications": 98,
-        "verifiedFailures": 27,
+        "verifiedFailures": 28,
         "firstPasses": 18,
         "failureSignatureClears": 64,
-        "regressionFailures": 27,
+        "regressionFailures": 28,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
@@ -27212,7 +27212,7 @@
           "ant-simulator": 12,
           "fantasy-survival": 19,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 4,
-          "amusement-tycoon": 13,
+          "amusement-tycoon": 14,
           "seed-casual-realm-weaver": 8,
           "seed-idle-growth-rpg-crystal-bloom": 12,
           "seed-story-complete-rpg-chronicles-of-eldoria": 4,
@@ -27223,13 +27223,13 @@
         },
         "targets": {
           "web": 35,
-          "roblox": 27,
+          "roblox": 28,
           "unity": 63
         },
         "state": "PREFERRED",
         "lastEvidence": "knowledge_1q51yns",
-        "lastFailureEvidence": "knowledge_1qi393s",
-        "lastUpdatedAt": "2026-10-02T21:09:25.740Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.919Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_cd82f46339f60a9d3d87c01f": {
         "source": "VERIFIED_CAPABILITY",
@@ -27870,15 +27870,15 @@
       "CODE_PATTERN:pat_r3a1fy": {
         "source": "CODE_PATTERN",
         "verifiedApplications": 123,
-        "verifiedFailures": 56,
+        "verifiedFailures": 57,
         "firstPasses": 17,
         "failureSignatureClears": 114,
-        "regressionFailures": 56,
+        "regressionFailures": 57,
         "primaryDomainMatches": 13,
         "primaryDomainMismatches": 0,
         "games": {
           "daechung-rpg": 15,
-          "amusement-tycoon": 12,
+          "amusement-tycoon": 13,
           "bug-defense": 19,
           "seed-casual-realm-weaver": 7,
           "seed-idle-growth-rpg-crystal-bloom": 18,
@@ -27896,26 +27896,26 @@
         },
         "targets": {
           "unity": 123,
-          "roblox": 29,
+          "roblox": 30,
           "web": 27
         },
         "state": "VERIFIED",
         "lastEvidence": "knowledge_1q51yns",
-        "lastFailureEvidence": "knowledge_180wxk9",
-        "lastUpdatedAt": "2026-10-02T21:09:25.740Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.919Z"
       },
       "CODE_PATTERN:pat_1xg0er9": {
         "source": "CODE_PATTERN",
         "verifiedApplications": 123,
-        "verifiedFailures": 66,
+        "verifiedFailures": 67,
         "firstPasses": 17,
         "failureSignatureClears": 114,
-        "regressionFailures": 66,
+        "regressionFailures": 67,
         "primaryDomainMatches": 12,
         "primaryDomainMismatches": 0,
         "games": {
           "daechung-rpg": 15,
-          "amusement-tycoon": 14,
+          "amusement-tycoon": 15,
           "bug-defense": 19,
           "seed-casual-realm-weaver": 9,
           "seed-idle-growth-rpg-crystal-bloom": 20,
@@ -27933,26 +27933,26 @@
         },
         "targets": {
           "unity": 123,
-          "roblox": 41,
+          "roblox": 42,
           "web": 25
         },
         "state": "VERIFIED",
         "lastEvidence": "knowledge_1q51yns",
-        "lastFailureEvidence": "knowledge_180wxk9",
-        "lastUpdatedAt": "2026-10-02T21:09:25.740Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.919Z"
       },
       "CODE_PATTERN:pat_vzhsq4": {
         "source": "CODE_PATTERN",
         "verifiedApplications": 123,
-        "verifiedFailures": 56,
+        "verifiedFailures": 57,
         "firstPasses": 17,
         "failureSignatureClears": 114,
-        "regressionFailures": 56,
+        "regressionFailures": 57,
         "primaryDomainMatches": 13,
         "primaryDomainMismatches": 0,
         "games": {
           "daechung-rpg": 15,
-          "amusement-tycoon": 12,
+          "amusement-tycoon": 13,
           "bug-defense": 19,
           "seed-casual-realm-weaver": 7,
           "seed-idle-growth-rpg-crystal-bloom": 18,
@@ -27970,26 +27970,26 @@
         },
         "targets": {
           "unity": 123,
-          "roblox": 29,
+          "roblox": 30,
           "web": 27
         },
         "state": "VERIFIED",
         "lastEvidence": "knowledge_1q51yns",
-        "lastFailureEvidence": "knowledge_180wxk9",
-        "lastUpdatedAt": "2026-10-02T21:09:25.740Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.919Z"
       },
       "CODE_PATTERN:pat_1x7z0gk": {
         "source": "CODE_PATTERN",
         "verifiedApplications": 124,
-        "verifiedFailures": 70,
+        "verifiedFailures": 71,
         "firstPasses": 17,
         "failureSignatureClears": 115,
-        "regressionFailures": 70,
+        "regressionFailures": 71,
         "primaryDomainMatches": 10,
         "primaryDomainMismatches": 0,
         "games": {
           "daechung-rpg": 16,
-          "amusement-tycoon": 16,
+          "amusement-tycoon": 17,
           "bug-defense": 19,
           "seed-casual-realm-weaver": 11,
           "seed-idle-growth-rpg-crystal-bloom": 21,
@@ -28007,13 +28007,13 @@
         },
         "targets": {
           "unity": 123,
-          "roblox": 50,
+          "roblox": 51,
           "web": 21
         },
         "state": "VERIFIED",
         "lastEvidence": "knowledge_1q51yns",
-        "lastFailureEvidence": "knowledge_180wxk9",
-        "lastUpdatedAt": "2026-10-02T21:09:25.740Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.918Z"
       },
       "PRACTICE_DISTILLED:practice-distilled:9b7b3c1df9b291d1f576": {
         "source": "PRACTICE_DISTILLED",
@@ -28812,25 +28812,25 @@
       "VERIFIED_CAPABILITY:capability_ctrace_2c0a700824026293385a417b": {
         "source": "VERIFIED_CAPABILITY",
         "verifiedApplications": 20,
-        "verifiedFailures": 34,
+        "verifiedFailures": 35,
         "firstPasses": 0,
         "failureSignatureClears": 14,
-        "regressionFailures": 34,
+        "regressionFailures": 35,
         "primaryDomainMatches": 5,
         "primaryDomainMismatches": 0,
         "games": {
-          "amusement-tycoon": 38,
+          "amusement-tycoon": 39,
           "cozy-island": 12,
           "horror-escape-room": 4
         },
         "targets": {
           "web": 23,
-          "roblox": 31
+          "roblox": 32
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_o94fbe",
-        "lastFailureEvidence": "knowledge_1qi393s",
-        "lastUpdatedAt": "2026-10-02T21:01:26.371Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.921Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_b8d48cb4bef5453d919f5f04": {
         "source": "VERIFIED_CAPABILITY",
@@ -28859,25 +28859,25 @@
       "VERIFIED_CAPABILITY:capability_ctrace_333cb035bd13d117708a9b9d": {
         "source": "VERIFIED_CAPABILITY",
         "verifiedApplications": 18,
-        "verifiedFailures": 29,
+        "verifiedFailures": 30,
         "firstPasses": 0,
         "failureSignatureClears": 13,
-        "regressionFailures": 29,
+        "regressionFailures": 30,
         "primaryDomainMatches": 5,
         "primaryDomainMismatches": 0,
         "games": {
-          "amusement-tycoon": 37,
+          "amusement-tycoon": 38,
           "cozy-island": 7,
           "horror-escape-room": 3
         },
         "targets": {
           "web": 17,
-          "roblox": 30
+          "roblox": 31
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_o94fbe",
-        "lastFailureEvidence": "knowledge_1qi393s",
-        "lastUpdatedAt": "2026-10-02T21:01:26.371Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.921Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_3b6ad5256a4470ed7070280a": {
         "source": "VERIFIED_CAPABILITY",
@@ -29400,10 +29400,10 @@
       "EXPERIENCE:exp_system_ai_34373d2f1f6135962e2e0a5d": {
         "source": "EXPERIENCE",
         "verifiedApplications": 107,
-        "verifiedFailures": 156,
+        "verifiedFailures": 157,
         "firstPasses": 17,
         "failureSignatureClears": 107,
-        "regressionFailures": 156,
+        "regressionFailures": 157,
         "primaryDomainMatches": 18,
         "primaryDomainMismatches": 0,
         "games": {
@@ -29419,7 +29419,7 @@
           "survival": 8,
           "village-dungeons": 17,
           "ant-simulator": 18,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "line-defense": 22,
           "seed-puzzle-chromatic-cascade": 24,
           "monster-adventure": 12,
@@ -29428,12 +29428,12 @@
         "targets": {
           "web": 42,
           "unity": 104,
-          "roblox": 117
+          "roblox": 118
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_1q51yns",
-        "lastFailureEvidence": "knowledge_180wxk9",
-        "lastUpdatedAt": "2026-10-02T21:09:25.739Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.918Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_9fe65cb8b0b9d335e6647eb3": {
         "source": "VERIFIED_CAPABILITY",
@@ -31196,10 +31196,10 @@
       "PLAYBOOK_REUSE:external-black-box-block-blast-run-30": {
         "source": "PLAYBOOK_REUSE",
         "verifiedApplications": 103,
-        "verifiedFailures": 148,
+        "verifiedFailures": 149,
         "firstPasses": 17,
         "failureSignatureClears": 103,
-        "regressionFailures": 148,
+        "regressionFailures": 149,
         "primaryDomainMatches": 19,
         "primaryDomainMismatches": 0,
         "games": {
@@ -31208,7 +31208,7 @@
           "fantasy-survival": 20,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -31221,20 +31221,20 @@
         "targets": {
           "web": 40,
           "unity": 103,
-          "roblox": 108
+          "roblox": 109
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_1q51yns",
-        "lastFailureEvidence": "knowledge_180wxk9",
-        "lastUpdatedAt": "2026-10-02T21:09:25.741Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.919Z"
       },
       "PLAYBOOK_REUSE:external-black-box-cavern-cravers-run-47": {
         "source": "PLAYBOOK_REUSE",
         "verifiedApplications": 103,
-        "verifiedFailures": 148,
+        "verifiedFailures": 149,
         "firstPasses": 17,
         "failureSignatureClears": 103,
-        "regressionFailures": 148,
+        "regressionFailures": 149,
         "primaryDomainMatches": 19,
         "primaryDomainMismatches": 0,
         "games": {
@@ -31243,7 +31243,7 @@
           "fantasy-survival": 20,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -31256,20 +31256,20 @@
         "targets": {
           "web": 40,
           "unity": 103,
-          "roblox": 108
+          "roblox": 109
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_1q51yns",
-        "lastFailureEvidence": "knowledge_180wxk9",
-        "lastUpdatedAt": "2026-10-02T21:09:25.741Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.920Z"
       },
       "PLAYBOOK_REUSE:external-black-box-idle-fantasy-run-42": {
         "source": "PLAYBOOK_REUSE",
         "verifiedApplications": 103,
-        "verifiedFailures": 148,
+        "verifiedFailures": 149,
         "firstPasses": 17,
         "failureSignatureClears": 103,
-        "regressionFailures": 148,
+        "regressionFailures": 149,
         "primaryDomainMatches": 19,
         "primaryDomainMismatches": 0,
         "games": {
@@ -31278,7 +31278,7 @@
           "fantasy-survival": 20,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -31291,20 +31291,20 @@
         "targets": {
           "web": 40,
           "unity": 103,
-          "roblox": 108
+          "roblox": 109
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_1q51yns",
-        "lastFailureEvidence": "knowledge_180wxk9",
-        "lastUpdatedAt": "2026-10-02T21:09:25.741Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.920Z"
       },
       "PLAYBOOK_REUSE:external-black-box-luanti-run-10": {
         "source": "PLAYBOOK_REUSE",
         "verifiedApplications": 103,
-        "verifiedFailures": 148,
+        "verifiedFailures": 149,
         "firstPasses": 17,
         "failureSignatureClears": 103,
-        "regressionFailures": 148,
+        "regressionFailures": 149,
         "primaryDomainMatches": 19,
         "primaryDomainMismatches": 0,
         "games": {
@@ -31313,7 +31313,7 @@
           "fantasy-survival": 20,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -31326,20 +31326,20 @@
         "targets": {
           "web": 40,
           "unity": 103,
-          "roblox": 108
+          "roblox": 109
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_1q51yns",
-        "lastFailureEvidence": "knowledge_180wxk9",
-        "lastUpdatedAt": "2026-10-02T21:09:25.741Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.920Z"
       },
       "PLAYBOOK_REUSE:external-black-box-revengate-run-59": {
         "source": "PLAYBOOK_REUSE",
         "verifiedApplications": 103,
-        "verifiedFailures": 148,
+        "verifiedFailures": 149,
         "firstPasses": 17,
         "failureSignatureClears": 103,
-        "regressionFailures": 148,
+        "regressionFailures": 149,
         "primaryDomainMatches": 19,
         "primaryDomainMismatches": 0,
         "games": {
@@ -31348,7 +31348,7 @@
           "fantasy-survival": 20,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -31361,20 +31361,20 @@
         "targets": {
           "web": 40,
           "unity": 103,
-          "roblox": 108
+          "roblox": 109
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_1q51yns",
-        "lastFailureEvidence": "knowledge_180wxk9",
-        "lastUpdatedAt": "2026-10-02T21:09:25.742Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.920Z"
       },
       "PLAYBOOK_REUSE:external-black-box-sgtpuzzles-run-29": {
         "source": "PLAYBOOK_REUSE",
         "verifiedApplications": 103,
-        "verifiedFailures": 148,
+        "verifiedFailures": 149,
         "firstPasses": 17,
         "failureSignatureClears": 103,
-        "regressionFailures": 148,
+        "regressionFailures": 149,
         "primaryDomainMatches": 19,
         "primaryDomainMismatches": 0,
         "games": {
@@ -31383,7 +31383,7 @@
           "fantasy-survival": 20,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -31396,20 +31396,20 @@
         "targets": {
           "web": 40,
           "unity": 103,
-          "roblox": 108
+          "roblox": 109
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_1q51yns",
-        "lastFailureEvidence": "knowledge_180wxk9",
-        "lastUpdatedAt": "2026-10-02T21:09:25.742Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.920Z"
       },
       "PLAYBOOK_REUSE:external-black-box-shattered-pixel-dungeon-run-4": {
         "source": "PLAYBOOK_REUSE",
         "verifiedApplications": 103,
-        "verifiedFailures": 148,
+        "verifiedFailures": 149,
         "firstPasses": 17,
         "failureSignatureClears": 103,
-        "regressionFailures": 148,
+        "regressionFailures": 149,
         "primaryDomainMatches": 19,
         "primaryDomainMismatches": 0,
         "games": {
@@ -31418,7 +31418,7 @@
           "fantasy-survival": 20,
           "bug-defense": 27,
           "seed-casual-realm-weaver": 20,
-          "amusement-tycoon": 24,
+          "amusement-tycoon": 25,
           "village-dungeons": 16,
           "seed-idle-growth-rpg-crystal-bloom": 29,
           "line-defense": 22,
@@ -31431,12 +31431,12 @@
         "targets": {
           "web": 40,
           "unity": 103,
-          "roblox": 108
+          "roblox": 109
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_1q51yns",
-        "lastFailureEvidence": "knowledge_180wxk9",
-        "lastUpdatedAt": "2026-10-02T21:09:25.742Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.920Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_8305b4f8ffdcc3aaf9882d39": {
         "source": "VERIFIED_CAPABILITY",
@@ -31830,62 +31830,62 @@
       "VERIFIED_CAPABILITY:capability_ctrace_9038f0e3e454437f6f76db36": {
         "source": "VERIFIED_CAPABILITY",
         "verifiedApplications": 0,
-        "verifiedFailures": 17,
+        "verifiedFailures": 18,
         "firstPasses": 0,
         "failureSignatureClears": 0,
-        "regressionFailures": 17,
+        "regressionFailures": 18,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
-          "amusement-tycoon": 17
+          "amusement-tycoon": 18
         },
         "targets": {
-          "roblox": 17
+          "roblox": 18
         },
         "state": "RETIRED",
         "lastEvidence": null,
-        "lastFailureEvidence": "knowledge_1qi393s",
-        "lastUpdatedAt": "2026-10-02T21:01:26.370Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.920Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_f62c06d7a9d2bb196bb41171": {
         "source": "VERIFIED_CAPABILITY",
         "verifiedApplications": 0,
-        "verifiedFailures": 17,
+        "verifiedFailures": 18,
         "firstPasses": 0,
         "failureSignatureClears": 0,
-        "regressionFailures": 17,
+        "regressionFailures": 18,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
-          "amusement-tycoon": 17
+          "amusement-tycoon": 18
         },
         "targets": {
-          "roblox": 17
+          "roblox": 18
         },
         "state": "RETIRED",
         "lastEvidence": null,
-        "lastFailureEvidence": "knowledge_1qi393s",
-        "lastUpdatedAt": "2026-10-02T21:01:26.370Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.920Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_c438ccd9ed818081d8bd94fa": {
         "source": "VERIFIED_CAPABILITY",
         "verifiedApplications": 0,
-        "verifiedFailures": 17,
+        "verifiedFailures": 18,
         "firstPasses": 0,
         "failureSignatureClears": 0,
-        "regressionFailures": 17,
+        "regressionFailures": 18,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
-          "amusement-tycoon": 17
+          "amusement-tycoon": 18
         },
         "targets": {
-          "roblox": 17
+          "roblox": 18
         },
         "state": "RETIRED",
         "lastEvidence": null,
-        "lastFailureEvidence": "knowledge_1qi393s",
-        "lastUpdatedAt": "2026-10-02T21:01:26.370Z"
+        "lastFailureEvidence": "knowledge_1yh90wm",
+        "lastUpdatedAt": "2026-10-02T21:41:15.921Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_0a17c87ebe16c73e38747aab": {
         "source": "VERIFIED_CAPABILITY",
@@ -33770,7 +33770,8 @@
       "knowledge_hx84tt",
       "knowledge_1phww2e",
       "knowledge_17tu6rs",
-      "knowledge_1q51yns"
+      "knowledge_1q51yns",
+      "knowledge_1yh90wm"
     ]
   },
   "graphicsEvolutionMemory": {
@@ -33778,5 +33779,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-10-02T21:13:43.503Z"
+  "updatedAt": "2026-10-02T21:41:15.958Z"
 }
