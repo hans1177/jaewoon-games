@@ -408,7 +408,7 @@ class Scene:
         # 장식의 수는 유지하고 같은 재질의 고정 소품만 병합한다. 움직이는 노드는 보존한다.
         keep=('Butler','Archivist','Undertaker','CoffinLid','CoffinHand','ArmorHelmet','LittleGhost',
               'TeaCup','Tea','ChandelierFlame','MirrorPupil','FamilyPortrait','PortraitCanvas','HearthFlame',
-              'MapPin','GhostRelic_','MemoryRelic',
+              'MapPin','GhostRelic_','MemoryRelic','MasterCollectionRelic',
               'BackWall','HallFloor','Courtyard','CrookedRoof','ClockPendulum','EntryDoor')
         groups={}
         bpy.context.view_layer.update()
@@ -1258,6 +1258,13 @@ def build():
         s.ellipsoid('HearthFlame'+str(i),(-3+i*1.5,1.8+(i%2)*.6,-61.2),(.75,2.2+(i%2)*1.1,.55),c['amber'])
     s.ellipsoid('FamilyMirrorFrame',(0,15,-63.2),(13,11.5,.55),c['brass'])
     s.ellipsoid('FamilyMirror',(0,15,-62.83),(11.6,10.1,.15),c['glass'])
+    # 세계 괴담 12종 완성 기념물. 별도 보상이나 저장키 없이 GhostCompleted=12만 시각화한다.
+    s.loft('MasterCollectionRelic',(0,9.25,-61.15),[
+      (-.62,1.05,.42),(-.20,1.28,.52),(.28,1.36,.58),(.72,1.02,.44)
+    ],s.material('MasterRelicLeather',(.055,.025,.032)),sides=30)
+    s.curve_tube('MasterCollectionRelicCrest',[
+      (-.82,9.42,-60.82),(0,10.12,-60.74),(.82,9.42,-60.82)
+    ],[.10,.14,.10],[.08,.11,.08],c['brass'],sides=20)
     for side in [-1,1]:
         s.ellipsoid('MirrorEye'+str(side),(side*1.9,14.5,-40.98),(1.4,1.1,.1),c['ivory'])
         s.ellipsoid('MirrorPupil'+str(side),(side*1.9,14.5,-40.87),(.42,.8,.08),c['black'])
