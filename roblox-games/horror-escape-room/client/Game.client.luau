@@ -109,13 +109,16 @@ gui.Name="MidnightTagHUD"
 gui.ResetOnSpawn=false
 gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
 gui.IgnoreGuiInset=false
+gui.DisplayOrder=30
+gui.ZIndexBehavior=Enum.ZIndexBehavior.Global
 gui.Parent=p:WaitForChild("PlayerGui")
 
 -- 로딩: 클라이언트 핵심 리소스와 서버 맵 준비가 끝날 때까지 로비 진입을 가린다.
 -- 로딩 화면 생성 전용 지역 범위: 생성용 변수가 파일 전체에 누적되지 않는다.
+local loadingLayer
 local loadingFill
 do
-local loadingLayer=Instance.new("Frame")
+loadingLayer=Instance.new("Frame")
 loadingLayer.Name="LoadingScreen"
 loadingLayer.Size=UDim2.fromScale(1,1)
 loadingLayer.BackgroundColor3=Color3.fromRGB(17,20,25)
@@ -429,7 +432,8 @@ local verifiedLearningContext = C.VerifiedExternalLearning or C.LearningContext 
 local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples or {}
 local verifiedLearningAxes = verifiedLearningContext.ApplyAxes or {}
 local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 6
-local verifiedLearningRoot = loadingLayer
+-- Permanent runtime bindings must attach to a persistent root; LoadingScreen is destroyed after entry.
+local verifiedLearningRoot = gui
 local verifiedLearningSemanticVariant = "SURVIVAL_RISK"
 local verifiedLearningSemanticDomain = "CORE_GAMEPLAY_FEEL"
 local verifiedLearningSemanticColor = Color3.fromRGB(255, 112, 112)
