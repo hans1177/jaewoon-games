@@ -221,6 +221,13 @@ mapById=function(id)
  for _,map in ipairs(C.Maps or{})do if map.Id==wanted then return map end end
  return(C.Maps and C.Maps[1])or{Id="SCHOOL",Name="학교"}
 end
+local function selectLobbyMap(p,value)
+ if state=="RUNNING"or roomServer or typeof(value)~="string"then return nil end
+ local map=mapById(value)
+ p:SetAttribute("SelectedLobbyMap",map.Id)
+ p:SetAttribute("SelectedLobbyMapName",map.Name)
+ return map
+end
 local function setRoomDirectoryEntry(code,data)
  if not roomDirectory or code==""or typeof(data)~="table"then return false end
  local ok=pcall(function()roomDirectory:SetAsync(code,data,roomDirectoryExpiration(),os.time())end)
@@ -860,7 +867,7 @@ end
 
 -- New native GLB scene with one spatial instance per player.
 makePhysicalLobby=function()
- local ok,value=pcall(ManorLobby.new,remote)
+ local ok,value=pcall(ManorLobby.new,remote,selectLobbyMap)
  if not ok then
   workspace:SetAttribute("LobbyLoadError","저택을 불러오지 못했어. 잠시 후 다시 접속해줘.")
   error(value)
@@ -2893,8 +2900,8 @@ local function broadcastMultiplayerSync(actor)
 end
 remote.OnServerEvent:Connect(function(p,a,value)
  if not validRemoteAction(p,a)then return end
- if a==C.Actions.SELECT_MAP and state~="RUNNING"and not roomServer then
-  if typeof(value)=="string"then local map=mapById(value);p:SetAttribute("SelectedLobbyMap",map.Id);p:SetAttribute("SelectedLobbyMapName",map.Name)end
+ if a==C.Actions.SELECT_MAP then
+  selectLobbyMap(p,value)
  elseif a==C.Actions.MANOR_SOLO and state~="RUNNING"and not roomServer then
   createReservedRoom(p,"PRIVATE",true)
  elseif a==C.Actions.MANOR_RANK and state~="RUNNING"and manorLobby then
