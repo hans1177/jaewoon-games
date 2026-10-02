@@ -60,6 +60,23 @@ test('platform-release-roadmap is the single machine execution policy source',()
     'tools/apply-common-development-quality-policy.mjs'
   ]) assert.equal(fs.existsSync(path.join(repoRoot,removed)),false,removed);
 });
+test('every registered launcher is bound to the same central worker context',()=>{
+  assert.equal(architecture.requiredForAllWorkers,true);
+  assert.equal(architecture.synchronization.beforeWork,'LOAD_AND_VALIDATE_ROADMAP_LOG_ARCHITECTURE_SECURITY_POLICY');
+  assert.equal(architecture.synchronization.duringWork,'DO_NOT_CREATE_POLICY_OUTSIDE_CENTRAL_POLICY');
+  assert.equal(architecture.synchronization.shadowDocumentationSystemForbidden,true);
+  assert.equal(architecture.synchronization.gameErrorRepairCannotCreateShadowQaOrRepairPipeline,true);
+  const launchers=architecture.workerSynchronization?.launcherWorkflows||[];
+  assert.ok(Array.isArray(launchers)&&launchers.length>0);
+  assert.equal(new Set(launchers).size,launchers.length);
+  for(const workflowFile of launchers){
+    assert.equal(fs.existsSync(path.join(repoRoot,workflowFile)),true,workflowFile);
+    const source=readText(workflowFile);
+    assert.match(source,/company-shared-context\.mjs/,workflowFile+': central shared context required');
+    assert.doesNotMatch(source,/COMPANY_FLOW\.md/,workflowFile+': removed policy mirror forbidden');
+  }
+});
+
 test('director fallback wake only re-dispatches existing queued GAME_PRIMARY work',()=>{
   const fallback=roadmap.changeRecord?.directorGamePrimaryFallbackWake20260927||{};
   assert.equal(fallback.existingQueuedTaskDispatchOnly,true);
