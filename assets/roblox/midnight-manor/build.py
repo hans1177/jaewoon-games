@@ -1205,6 +1205,9 @@ def build():
           (x-4.15,9.7,z+.10),(x-2.8,11.1,z+.10),(x,13.25,z+.10),
           (x+2.8,11.1,z+.10),(x+4.15,9.7,z+.10)
         ],[.22,.20,.18,.20,.22],[.18,.17,.15,.17,.18],c['wood'],sides=18)
+        room_bat=[(-1.55,0),(-1.05,.46),(-.52,.12),(0,.50),(.52,.12),(1.05,.46),(1.55,0),(.72,-.26),(0,-.55),(-.72,-.26)]
+        s.prism(name+'DoorBatCrest',(x,13.55,z+.34),room_bat,.12,c['black'])
+        s.ellipsoid(name+'DoorBatGem',(x,13.55,z+.48),(.42,.38,.13),c['brass'])
 
     # 방마다 천장·벽·가구 언어를 다르게 잡아 좌우 날개가 복제 방처럼 보이지 않게 한다.
     room_accent={
@@ -1743,6 +1746,13 @@ def build():
         s.box('DormerFace'+str(side),(side*19,29,-6.8),(6,6,.3),c['plum'])
         s.box('DormerLight'+str(side),(side*19,29,-6.5),(2,3,.1),c['amber'])
     for i in range(9):s.box('RoofRib'+str(i),(-32+i*8,22.5,-22),(.25,.6,46),c['black'])
+    # 처마 아래 반복 가시 브래킷. 작은 부재는 재질별 정적 병합으로 한 덩어리가 된다.
+    for side in [-1,1]:
+        for i,x0 in enumerate(range(12,50,6)):
+            x=side*x0
+            thorn=[(-.34,0),(.34,0),(.24,.48),(0,1.35),(-.20,.48)]
+            s.prism('EaveThorn'+str(side)+'_'+str(i),(x,23.15,-1.52),thorn,.18,c['black'],rot=side*.035)
+            s.box('EaveBracket'+str(side)+'_'+str(i),(x,22.45,-1.55),(.42,1.35,.62),c['wood'],lean=-side*.08)
     # 현관 포치: 계단-기단-4기둥-난간-박공지붕 순서로 건축적으로 읽히게 한다.
     for step in range(5):
         width=22-step*1.4
@@ -1933,12 +1943,30 @@ def build():
     s.box('BackdropChapelDoor',(5,6.1,-75.88),(2.4,5.2,.08),c['black'])
     s.curve_tube('BackdropChapelSpire',[(5,18,-75.9),(5,25,-75.9)],[.16,.04],[.12,.03],c['black'],sides=14)
 
-    # 이동 가능한 구름/안개/박쥐 레이어. 카메라와 독립적으로 천천히 움직여 배경에 생동감을 준다.
+    # 원경 철책/침엽수 레이어. 저택 뒤에 중거리 실루엣을 추가해 평면 배경 느낌을 줄인다.
+    fence_mat=s.material('backdrop_fence',(.018,.018,.036))
+    for i,x0 in enumerate(range(-54,55,6)):
+        top=8.0+(i%3)*.55
+        s.box('BackdropFencePost'+str(i),(x0,top*.5,-63.5),(.18,top,.16),fence_mat,lean=((i%3)-1)*.05)
+        spike=[(-.20,0),(.20,0),(0,.85)]
+        s.prism('BackdropFenceSpike'+str(i),(x0,top+.38,-63.5),spike,.10,fence_mat)
+    s.box('BackdropFenceRailA',(0,3.0,-63.5),(112,.18,.12),fence_mat)
+    s.box('BackdropFenceRailB',(0,5.4,-63.5),(112,.16,.10),fence_mat)
+    pine_mat=s.material('backdrop_pine',(.025,.040,.055))
+    for pi,(px,ph,pz) in enumerate([(-52,17,-68),(-43,23,-69),(-27,19,-67),(-12,27,-72),(13,21,-69),(29,26,-71),(47,18,-67),(56,24,-70)]):
+        trunk_w=.50+(pi%2)*.12
+        s.box('BackdropPineTrunk'+str(pi),(px,ph*.34,pz),(trunk_w,ph*.68,.22),pine_mat,lean=((pi%3)-1)*.12)
+        for tier in range(4):
+            y=ph*(.36+tier*.15);half=3.7-tier*.62
+            crown=[(-half,0),(0,3.7-tier*.42),(half,0),(.65,-.28),(0,.55),(-.65,-.28)]
+            s.prism('BackdropPineCrown'+str(pi)+'_'+str(tier),(px,y,pz+.04),crown,.08,pine_mat)
+
+    # 이동 가능한 구름/안개/박쥐 레이어. 속도와 높이가 달라 다층 시차를 만든다.
     cloud_mat=s.material('cartoon_cloud',(.085,.075,.135));mist_mat=s.material('cartoon_mist',(.16,.18,.24))
-    for ci,(cx,cy,cz,scale) in enumerate([(-38,38,-68,1.0),(0,46,-71,1.25),(40,34,-67,.90)]):
+    for ci,(cx,cy,cz,scale) in enumerate([(-48,31,-64,.78),(-38,38,-68,1.0),(0,46,-71,1.25),(40,34,-67,.90),(50,45,-74,.62)]):
         outline=[(-7,0),(-5,2),(-2,2.8),(0,4.5),(3,3.0),(6,3.2),(8,1.2),(6,-.6),(-5,-.7)]
         s.prism('BackdropCloud'+str(ci),(cx,cy,cz),[(x*scale,y*scale)for x,y in outline],.08,cloud_mat)
-    for mi,(mx,my,mz,wid) in enumerate([(-25,8,-60,32),(22,12,-65,40),(0,5,-72,54)]):
+    for mi,(mx,my,mz,wid) in enumerate([(-34,4.5,-57,26),(-25,8,-60,32),(22,12,-65,40),(0,5,-72,54),(38,7,-69,28)]):
         outline=[(-wid/2,0),(-wid*.28,1.4),(-wid*.05,.6),(wid*.16,1.6),(wid/2,.3),(wid*.46,-1.0),(-wid*.2,-.7)]
         s.prism('BackdropMist'+str(mi),(mx,my,mz),outline,.06,mist_mat)
     bat_shape=[(-1.0,0),(-.55,.45),(-.18,.14),(0,.42),(.18,.14),(.55,.45),(1.0,0),(.46,-.18),(0,-.42),(-.46,-.18)]
@@ -1955,6 +1983,16 @@ def build():
     for side in [-1,1]:
         curtain=[[-2,0,0],[2,0,0],[2,22,0],[7,25,0],[10,26,0],[7,28,0],[1,26,0],[-1,31,0],[-3,30,0]]
         s.node('ForegroundBranch'+str(side),s.mesh('ForegroundBranch',curtain,[list(range(len(curtain)))],foreground),(side*43,0,35),scale=[side*.65,.85,1])
+        # 화면 가장자리에서만 보이는 가시 아치로 저택을 액자처럼 감싼다.
+        arch_points=[
+          (side*55,2,18),(side*54,11,22),(side*51,21,28),(side*47,30,36),(side*43,37,46)
+        ]
+        s.curve_tube('ForegroundThornArch'+str(side),arch_points,[.34,.30,.24,.17,.08],[.26,.23,.18,.13,.06],foreground,sides=16)
+        for ti in range(1,4):
+            p=arch_points[ti]
+            s.curve_tube('ForegroundThornTwig'+str(side)+'_'+str(ti),[
+              p,(p[0]-side*(2.0+ti*.4),p[1]+1.2,p[2]+(-1 if ti%2 else 1)*1.4)
+            ],[.13,.035],[.10,.026],foreground,sides=14)
     # 가족 초상화: 반복되는 빈 얼굴 대신 종별 특징을 그린 내부 제작 질감.
     # 가족 초상화: Blender 내장 numpy만 사용한다. 외부 Pillow 의존성 없이 내장 텍스처를 만든다.
     def paint_rect(img,x0,y0,x1,y1,color):
