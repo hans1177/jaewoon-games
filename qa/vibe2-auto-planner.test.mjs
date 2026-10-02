@@ -4033,3 +4033,127 @@ test('queued Web assessment with PRESENTATION generation is repaired into graphi
   assert.ok(repaired.evidence.includes('build-up-pre-reserve-binding:CHECKED'));
   assert.match(repaired.goal,/ADAPTIVE_GRAPHICS_REPLACEMENT_CONTRACT/);
 });
+
+
+test('exact Roblox F9 evidence bypasses a full generic backlog once and stays same-game deduped',()=>{
+  const root=tempRepo();
+  const gameId='post-f9-backlog';
+  const gameRoot=path.join(root,'roblox-games',gameId);
+  fs.mkdirSync(path.join(gameRoot,'server'),{recursive:true});
+  fs.mkdirSync(path.join(gameRoot,'client'),{recursive:true});
+  fs.mkdirSync(path.join(gameRoot,'shared'),{recursive:true});
+  fs.writeFileSync(path.join(gameRoot,'server','Game.server.luau'),'local state = {}\nfunction advanceRound(player) state.last=player end\n','utf8');
+  fs.writeFileSync(path.join(gameRoot,'client','Game.client.luau'),'function submitAction() return true end\n','utf8');
+  fs.writeFileSync(path.join(gameRoot,'shared','GameConfig.luau'),'return {RoundSeconds=90}\n','utf8');
+  writeStudioDesign(root,gameId);
+
+  const source='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const runtimeItem={
+    gameId,gameName:'Post F9 Backlog',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+    selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',robloxProjectPath:\`roblox-games/\${gameId}\`,
+    currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION',canonicalState:'PRIVATE_RUNTIME_CANDIDATE_DEPLOYED',
+    robloxSourceCommit:source,robloxBuildArtifactIdentity:artifact,
+    robloxFinalReviewPassed:true,robloxF9ReleaseRegressionPassed:true,
+    robloxF9VerifiedPrepublishEvidence:{
+      sourceRevision:source,artifactIdentity:artifact,finalReviewPassed:true,f9ReleaseRegressionPassed:true,
+      runtimeAcceptancePassed:true,authority:'roblox-f9-verified-prepublish-gate',verifiedAt:'2026-10-02T11:35:30.286Z'
+    }
+  };
+  const dummyCatalog=Array.from({length:60},(_,i)=>({
+    id:\`dummy-\${i}\`,name:\`Dummy \${i}\`,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'
+  }));
+  const backlog=Array.from({length:60},(_,i)=>({
+    id:\`dummy-task-\${i}\`,gameId:\`dummy-\${i}\`,target:'web',department:'development',type:'implementation',
+    sourceRoot:\`web-games/dummy-\${i}\`,responsibleFiles:[\`web-games/dummy-\${i}/index.html\`],
+    goal:'existing unrelated game work',releaseState:'development-confirmed',status:'queued',retries:0
+  }));
+  const catalog={games:[
+    {id:gameId,name:'Post F9 Backlog',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',robloxProjectPath:\`roblox-games/\${gameId}\`},
+    ...dummyCatalog
+  ]};
+  const first=planVibe2AutonomousTasks({
+    status:{projects:[]},catalog,developmentQueue:{items:[runtimeItem]},
+    queue:{maxConcurrentTasks:256,tasks:backlog},repoRoot:root,requestedGameId:gameId,
+    maxConcurrentTasks:20,queueMaxConcurrentTasks:256,planningBacklogTarget:60,planningBacklogMinimum:40
+  });
+  assert.equal(first.planned,true);
+  assert.equal(first.planningBacklog.normalCapacity,0);
+  assert.equal(first.planningBacklog.postF9RobloxTargetBypass,true);
+  const activeForGame=first.queue.tasks.filter(row=>row.gameId===gameId&&row.target==='roblox'&&['queued','running'].includes(String(row.status||'').toLowerCase()));
+  assert.equal(activeForGame.length,1);
+  assert.ok(activeForGame[0].buildUpDirective?.directiveId);
+  assert.equal(activeForGame[0].buildUpDirective.platform,'ROBLOX');
+  assert.ok((activeForGame[0].evidence||[]).includes('roblox-post-f9-continuous-evolution:REQUIRED'));
+  assert.ok((activeForGame[0].evidence||[]).includes('roblox-post-f9-requested-game:MATCH'));
+
+  const second=planVibe2AutonomousTasks({
+    status:{projects:[]},catalog,developmentQueue:{items:[runtimeItem]},
+    queue:first.queue,repoRoot:root,requestedGameId:gameId,
+    maxConcurrentTasks:20,queueMaxConcurrentTasks:256,planningBacklogTarget:60,planningBacklogMinimum:40
+  });
+  const activeAgain=second.queue.tasks.filter(row=>row.gameId===gameId&&row.target==='roblox'&&['queued','running'].includes(String(row.status||'').toLowerCase()));
+  assert.equal(activeAgain.length,1);
+  assert.equal(second.planningBacklog.postF9RobloxMissingLaneCount,0);
+});
+
+test('queued Roblox build-up advances generation only after exact F9 source tree changes',()=>{
+  const root=tempRepo();
+  const gameId='post-f9-source-refresh';
+  const gameRoot=path.join(root,'roblox-games',gameId);
+  fs.mkdirSync(path.join(gameRoot,'server'),{recursive:true});
+  fs.mkdirSync(path.join(gameRoot,'client'),{recursive:true});
+  fs.mkdirSync(path.join(gameRoot,'shared'),{recursive:true});
+  fs.writeFileSync(path.join(gameRoot,'server','Game.server.luau'),'function primaryAction() return 1 end\n','utf8');
+  fs.writeFileSync(path.join(gameRoot,'client','Game.client.luau'),'function inputAction() return true end\n','utf8');
+  fs.writeFileSync(path.join(gameRoot,'shared','GameConfig.luau'),'return {Version=1}\n','utf8');
+  writeStudioDesign(root,gameId);
+
+  const project={
+    gameId,name:'Post F9 Source Refresh',engine:'roblox',target:'roblox',
+    projectPath:\`roblox-games/\${gameId}\`,releaseState:'development-confirmed',existing:true,source:'test'
+  };
+  const old=findStudioContinuousImprovementTask(project,root,{tasks:[]},'PRESENTATION');
+  assert.ok(old?.buildUpDirective?.directiveId);
+  const oldGeneration=old.buildUpDirective.generation;
+  const oldTree=old.buildUpDirective.sourceTreeFingerprint;
+
+  fs.writeFileSync(path.join(gameRoot,'server','Game.server.luau'),'function primaryAction() return 2 end\nfunction rewardFeedback() return true end\n','utf8');
+  const source='c'.repeat(40),artifact='sha256:'+'d'.repeat(64);
+  const runtimeItem={
+    gameId,gameName:'Post F9 Source Refresh',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+    selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',robloxProjectPath:\`roblox-games/\${gameId}\`,
+    currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION',canonicalState:'PRIVATE_RUNTIME_CANDIDATE_DEPLOYED',
+    robloxSourceCommit:source,robloxBuildArtifactIdentity:artifact,
+    robloxFinalReviewPassed:true,robloxF9ReleaseRegressionPassed:true,
+    robloxF9VerifiedPrepublishEvidence:{
+      sourceRevision:source,artifactIdentity:artifact,finalReviewPassed:true,f9ReleaseRegressionPassed:true,
+      runtimeAcceptancePassed:true,authority:'roblox-f9-verified-prepublish-gate',verifiedAt:'2026-10-02T11:35:30.286Z'
+    }
+  };
+  const catalog={games:[{
+    id:gameId,name:'Post F9 Source Refresh',productionClass:'DEVELOPMENT_CONFIRMED',
+    lifecycleState:'ACTIVE',robloxProjectPath:\`roblox-games/\${gameId}\`
+  }]};
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},catalog,developmentQueue:{items:[runtimeItem]},
+    queue:{maxConcurrentTasks:20,tasks:[{...old,status:'queued'}]},repoRoot:root,requestedGameId:gameId,
+    maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:1,planningBacklogMinimum:0
+  });
+  const refreshed=result.queue.tasks.find(row=>row.id===old.id);
+  assert.ok(refreshed);
+  assert.equal(refreshed.id,old.id);
+  assert.equal(refreshed.buildUpDirective.generation,oldGeneration+1);
+  assert.notEqual(refreshed.buildUpDirective.directiveId,old.buildUpDirective.directiveId);
+  assert.notEqual(refreshed.buildUpDirective.sourceTreeFingerprint,oldTree);
+  assert.ok((refreshed.evidence||[]).includes('roblox-post-f9-source-refresh:YES'));
+  assert.equal(result.queue.tasks.filter(row=>row.gameId===gameId&&row.target==='roblox'&&['queued','running'].includes(String(row.status||'').toLowerCase())).length,1);
+
+  const stable=planVibe2AutonomousTasks({
+    status:{projects:[]},catalog,developmentQueue:{items:[runtimeItem]},
+    queue:result.queue,repoRoot:root,requestedGameId:gameId,
+    maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:1,planningBacklogMinimum:0
+  });
+  const stableTask=stable.queue.tasks.find(row=>row.id===old.id);
+  assert.equal(stableTask.buildUpDirective.generation,oldGeneration+1);
+  assert.equal(stableTask.buildUpDirective.directiveId,refreshed.buildUpDirective.directiveId);
+});
