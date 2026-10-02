@@ -899,48 +899,105 @@ def build():
     for i,outline in enumerate(crest_shapes):
         s.prism('ManorCrestSegment'+str(i+1),(0,22.9,-.48),outline,.10,crest_wine)
 
-    # 에드윈 기록탑: 왼쪽 날개 위로 솟은 비뚤어진 기록 전용 탑.
-    s.box('ArchivistTowerBase',(-65,30,-47),(13,17,15),c['plum'],lean=-.55)
-    s.box('ArchivistTowerUpper',(-65.6,42,-47),(10.5,10,11),c['plum'],lean=-.35)
-    s.lathe('ArchivistTowerRoof',(-66,51,-47),7.8,.4,13,c['roof'],sides=8)
-    for y in [29,36,43]:
-        s.box('ArchivistTowerWindowFrame',(-58.35,y,-47),(1.0,5.2,4.2),c['wood'])
-        s.box('ArchivistTowerWindowGlow',(-57.82,y,-47),(.12,4.0,3.1),c['amber'])
-        s.box('ArchivistTowerWindowCross',(-57.70,y,-47),(.10,.28,3.2),c['black'])
-        s.box('ArchivistTowerWindowMullion',(-57.70,y,-47),(.10,4.0,.24),c['black'])
-    for y in [33,39,45]:
-        s.box('ArchivistTowerBookShadow'+str(y),(-57.56,y,-47),(.06,1.3,2.6),c['black'])
-
-    # 장의사 관 반입구: 오른쪽 외벽의 넓은 쌍문과 관 운반 레일.
+    # 에드윈 기록탑: 본관에서 자연스럽게 솟는 석재 기단 + 3단 입면 + 아치창 + 코니스 + 뾰족 지붕.
+    tower_plum=s.material('ArchivistTowerPlum',(.155,.060,.095))
+    tower_stone=s.material('ArchivistTowerStone',(.24,.25,.24))
+    s.box('ArchivistTowerPlinth',(-65,24.8,-47),(15.2,2.4,17.2),tower_stone,lean=-.18)
+    s.box('ArchivistTowerBase',(-65,31.2,-47),(13.8,10.6,15.4),tower_plum,lean=-.42)
+    s.box('ArchivistTowerBelt',(-65.25,36.4,-47),(14.4,.70,16.1),c['stone'],lean=-.20)
+    s.box('ArchivistTowerUpper',(-65.5,42.0,-47),(11.7,10.3,12.6),tower_plum,lean=-.26)
     for side in [-1,1]:
-        s.box('MortuaryLoadingDoor'+str(side),(74.18,5.1,-43+side*2.55),(.42,10.2,5.0),c['wood'])
-        s.box('MortuaryDoorBrace'+str(side),(73.92,5.1,-43+side*2.55),(.10,.55,4.2),c['brass'])
-    s.box('MortuaryLoadingLintel',(73.85,11,-43),(.55,2.1,11.0),c['stone'])
-    s.box('MortuaryLoadingCanopy',(68.8,11.8,-43),(10.5,.65,12.5),c['roof'])
+        s.box('ArchivistTowerButtress'+str(side),(-58.9,31.5,-47+side*5.6),(1.20,13.0,1.75),tower_stone,lean=-.18)
+        s.box('ArchivistTowerButtressFoot'+str(side),(-58.7,25.4,-47+side*5.6),(1.65,1.8,2.3),tower_stone)
+    # 창은 빛나는 판 하나가 아니라 깊은 창턱/세로창/뾰족 아치로 구성한다.
+    for wi,(y,z0) in enumerate([(29.4,-50.0),(29.4,-44.0),(41.3,-50.0),(41.3,-44.0)]):
+        xface=-57.96
+        s.box('ArchivistWindowRecess'+str(wi),(xface,y,z0),(.52,4.7,3.7),c['black'])
+        s.box('ArchivistWindowGlow'+str(wi),(xface-.08,y,z0),(.10,3.65,2.75),c['amber'])
+        for mullion in [-.72,0,.72]:
+            s.box('ArchivistWindowMullion'+str(wi)+'_'+str(mullion),(xface-.19,y,z0+mullion),(.16,3.8,.12),c['wood'])
+        s.curve_tube('ArchivistWindowArch'+str(wi),[
+          (xface-.25,y+1.75,z0-1.38),(xface-.25,y+2.55,z0-.90),
+          (xface-.25,y+3.15,z0),(xface-.25,y+2.55,z0+.90),(xface-.25,y+1.75,z0+1.38)
+        ],[.12]*5,[.10]*5,c['stone'],sides=16)
+        s.box('ArchivistWindowSill'+str(wi),(xface-.28,y-2.35,z0),(.70,.34,3.35),c['stone'])
+    s.box('ArchivistTowerCornice',(-65.6,47.35,-47),(12.6,.72,13.6),c['stone'],lean=-.12)
+    # 지붕은 단일 원뿔 대신 팔각 드럼 + 갈비뼈 + 첨탑.
+    s.lathe('ArchivistTowerRoofDrum',(-65.8,48.6,-47),6.4,5.7,2.1,c['roof'],sides=8)
+    s.lathe('ArchivistTowerRoof',(-66.0,54.8,-47),7.2,.35,11.2,c['roof'],sides=8)
+    for k in range(8):
+        a=math.tau*k/8
+        ex=-66.0+math.cos(a)*6.7;ez=-47+math.sin(a)*6.7
+        s.curve_tube('ArchivistRoofRib'+str(k),[(ex,49.4,ez),(-66.0,60.0,-47)],[.11,.06],[.09,.05],c['black'],sides=14)
+    s.lathe('ArchivistSpire',(-66.0,61.8,-47),.18,.035,3.7,c['brass'],sides=18)
+    s.ellipsoid('ArchivistSpireFinial',(-66.0,63.75,-47),(.48,.62,.48),c['brass'])
+
+    # 장의사 관 반입구: 본체에서 돌출된 고딕 적재 베이 + 깊은 아치 포털 + 실제 판넬 쌍문.
+    s.box('MortuaryLoadingPlinth',(73.5,.65,-43),(5.0,1.1,15.2),c['stone'])
+    for side in [-1,1]:
+        zdoor=-43+side*3.0
+        s.box('MortuaryPortalJamb'+str(side),(73.05,5.7,-43+side*5.7),(1.65,11.4,1.15),c['stone'])
+        s.box('MortuaryLoadingDoor'+str(side),(73.52,5.05,zdoor),(.46,9.9,5.6),c['wood'])
+        for py in [2.7,7.0]:
+            s.box('MortuaryDoorPanel'+str(side)+str(py),(73.25,py,zdoor),(.16,3.0,4.3),c['plum'])
+        s.box('MortuaryDoorBrace'+str(side),(73.14,5.05,zdoor),(.10,.42,4.9),c['brass'])
+        s.lathe('MortuaryDoorKnob'+str(side),(72.96,5.0,zdoor-side*1.65),.16,.16,.18,c['brass'],sides=18)
+    s.curve_tube('MortuaryPortalArch',[
+      (72.95,10.0,-48.6),(72.95,12.0,-47.1),(72.95,13.5,-43),
+      (72.95,12.0,-38.9),(72.95,10.0,-37.4)
+    ],[.36,.34,.30,.34,.36],[.28,.27,.25,.27,.28],c['stone'],sides=20)
+    s.box('MortuaryLoadingCornice',(72.8,14.0,-43),(1.0,.72,14.8),c['stone'])
+    # 캐노피는 평판이 아니라 박공지붕 단면.
+    canopy=[(-6.2,0,-4.5),(6.2,0,-4.5),(6.2,0,4.5),(-6.2,0,4.5),(0,2.4,-4.5),(0,2.4,4.5)]
+    s.node('MortuaryLoadingCanopy',s.mesh('MortuaryLoadingCanopy',canopy,[
+      [0,1,4],[3,5,2],[0,4,5,3],[1,2,5,4],[0,3,2,1]
+    ],c['roof']),(67.2,11.7,-43))
     for zrail in [-45.0,-41.0]:
-        s.curve_tube('CoffinRail'+str(zrail),[(62,.22,zrail),(73,.22,zrail)],[.12,.12],[.10,.10],c['brass'],sides=18)
-    s.box('CoffinTrolleyDeck',(66.5,1.15,-43),(6.5,.40,3.7),c['wood'])
+        s.curve_tube('CoffinRail'+str(zrail),[(61.5,.20,zrail),(72.3,.20,zrail)],[.11,.11],[.09,.09],c['brass'],sides=18)
+    s.box('CoffinTrolleyDeck',(66.5,1.05,-43),(6.2,.34,3.6),c['wood'])
+    s.box('CoffinTrolleyLip',(69.55,1.35,-43),(.34,.80,3.75),c['brass'])
     for wx in [64.2,68.8]:
         for wz in [-44.5,-41.5]:
-            wheel=s.lathe('CoffinTrolleyWheel'+str(wx)+str(wz),(wx,.72,wz),.58,.58,.18,c['black'],sides=24);wheel.rotation_euler.x=math.pi/2
+            wheel=s.lathe('CoffinTrolleyWheel'+str(wx)+str(wz),(wx,.67,wz),.54,.54,.18,c['black'],sides=24)
+            wheel.rotation_euler.x=math.pi/2
 
-    # 모티머 서비스 구역: 왼쪽 후문, 비가림, 장작/우산/쟁반 보관 흔적.
-    s.box('MortimerServiceDoor',(-74.15,4.8,-13),(.40,9.6,5.8),c['wood'])
-    s.box('MortimerServiceCanopy',(-69.8,10.2,-13),(9.0,.55,8.5),c['roof'])
-    s.box('MortimerServiceStep',(-71.0,.45,-13),(7.5,.7,7.0),c['stone'])
-    for i in range(8):
-        x=-68.5+(i%4)*1.05;y=.65+(i//4)*.85
-        s.lathe('ServiceFirewood'+str(i),(x,y,-8.7),.24,.20,1.45,c['wood'],sides=18)
-    s.lathe('UmbrellaStand',(-69.4,1.6,-17.0),.72,.58,3.1,c['brass'],sides=24)
+    # 모티머 서비스 구역: 후문을 벽에 파묻힌 작은 서비스 포치로 구성한다.
+    s.box('MortimerServicePlinth',(-73.2,.55,-13),(4.0,.9,9.6),c['stone'])
+    s.box('MortimerServiceRecess',(-73.65,5.1,-13),(.70,10.2,7.2),c['black'])
+    s.box('MortimerServiceDoor',(-73.30,5.0,-13),(.38,9.2,5.3),c['wood'])
+    for py in [2.8,6.8]:
+        s.box('MortimerServicePanel'+str(py),(-73.07,py,-13),(.10,2.8,4.1),c['teal'])
+    s.curve_tube('MortimerServiceArch',[
+      (-72.95,9.1,-15.8),(-72.95,10.4,-14.7),(-72.95,11.0,-13),
+      (-72.95,10.4,-11.3),(-72.95,9.1,-10.2)
+    ],[.24,.22,.20,.22,.24],[.19,.18,.17,.18,.19],c['stone'],sides=18)
+    # 박공형 비가림과 작은 벽기둥.
+    serviceRoof=[(-4.6,0,-3.7),(4.6,0,-3.7),(4.6,0,3.7),(-4.6,0,3.7),(0,1.8,-3.7),(0,1.8,3.7)]
+    s.node('MortimerServiceCanopy',s.mesh('MortimerServiceCanopy',serviceRoof,[
+      [0,1,4],[3,5,2],[0,4,5,3],[1,2,5,4],[0,3,2,1]
+    ],c['roof']),(-68.7,9.7,-13))
+    for zpost in [-16.0,-10.0]:
+        s.lathe('MortimerServicePost'+str(zpost),(-69.2,5.0,zpost),.22,.17,8.8,c['stone'],sides=18)
+    # 서비스 창/장작걸이/우산걸이.
+    s.box('MortimerServiceWindow',(-73.30,5.0,-4.8),(.36,4.4,4.2),c['glass'])
+    s.box('MortimerServiceWindowFrame',(-73.08,5.0,-4.8),(.12,4.9,4.8),c['wood'])
+    for i in range(10):
+        x=-68.9+(i%5)*.82;y=.62+(i//5)*.72
+        log=s.lathe('ServiceFirewood'+str(i),(x,y,-8.4),.20,.16,1.30,c['wood'],sides=16)
+        log.rotation_euler.x=math.pi/2
+    s.box('ServiceWoodRack',(-67.25,1.1,-8.4),(5.1,2.2,2.2),c['black'])
+    s.lathe('UmbrellaStand',(-69.2,1.55,-17.0),.62,.50,2.9,c['brass'],sides=24)
     for i in range(4):
         s.curve_tube('ServiceUmbrella'+str(i),[
-          (-69.75+i*.24,.75,-17.0),(-69.70+i*.24,2.4,-17.0),(-69.45+i*.24,3.45,-16.95)
-        ],[.045,.045,.030],[.040,.040,.026],c['black'],sides=14)
+          (-69.50+i*.20,.72,-17.0),(-69.46+i*.20,2.25,-17.0),(-69.24+i*.20,3.25,-16.95)
+        ],[.040,.040,.026],[.035,.035,.022],c['black'],sides=14)
 
-    # 지붕 홈통/배수관. 큰 면을 세분화하지 않고 외관 스케일만 읽히게 한다.
+    # 지붕 홈통/배수관은 코니스와 창 사이에 붙어 외벽 높이를 읽게 한다.
     for side in [-1,1]:
-        s.curve_tube('FrontGutter'+str(side),[(side*5,24.2,.15),(side*53,24.2,.15)],[.16,.16],[.13,.13],c['black'],sides=18)
-        s.curve_tube('RainPipe'+str(side),[(side*52.5,23.8,.10),(side*52.5,3.0,.10),(side*53.2,.55,1.4)],[.14,.14,.12],[.12,.12,.10],c['black'],sides=16)
+        s.curve_tube('FrontGutter'+str(side),[(side*5,24.15,.15),(side*53,24.15,.15)],[.15,.15],[.12,.12],c['black'],sides=18)
+        s.curve_tube('RainPipe'+str(side),[
+          (side*52.5,23.8,.10),(side*52.5,12.0,.10),(side*52.7,3.0,.35),(side*53.2,.55,1.4)
+        ],[.13,.13,.12,.10],[.11,.11,.10,.08],c['black'],sides=16)
 
     # 큰 계단: 각 단의 윗면 높이가 정확히 이어지는 12단 솔리드 구조.
     stair_rise=.82;stair_tread=1.36
