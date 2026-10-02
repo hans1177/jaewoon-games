@@ -126,12 +126,11 @@ function restoreDedicatedTargetIdentity(item,{registry,gameId,stamp}){
 function directQueueProgressIsCurrent(item,design){
   return item?.minimumDesignContract?.pass===true
     &&clean(item?.minimumDesignContract?.source)===clean(design?.file)
-    &&item?.platformExecutionMode==='ROBLOX_UNITY_CONCURRENT_SAME_GAME'
     &&Array.isArray(item?.concurrentTargetPlatforms)
     &&item.concurrentTargetPlatforms.includes('ROBLOX')
     &&item.concurrentTargetPlatforms.includes('UNITY')
-    && clean(item?.currentStep)
-    && !/^WEB_|^WAITING_WEB/.test(clean(item.currentStep).toUpperCase());
+    &&clean(item?.currentStep)
+    &&!/^WEB_|^WAITING_WEB/.test(clean(item.currentStep).toUpperCase());
 }
 function bindDirectNativeQueueItem(item,{seed,design,stamp}){
   const gameId=clean(seed?.gameId);
