@@ -472,7 +472,15 @@ def npc(s,kind,pos):
             if bs:
                 bs.inputs['Roughness'].default_value=rough
                 bs.inputs['Metallic'].default_value=metal
-    trousers['manorFinish']='Fabric';leather['manorFinish']='SmoothPlastic';glove['manorFinish']='Fabric' if kind=='Butler' else 'SmoothPlastic'
+    q['skin']['manorFinish']='SmoothPlastic'
+    q['coat']['manorFinish']='Fabric'
+    q['vest']['manorFinish']='Fabric'
+    q['accent']['manorFinish']='Fabric'
+    q['hair']['manorFinish']='SmoothPlastic'
+    q['eye']['manorFinish']='SmoothPlastic'
+    trousers['manorFinish']='Fabric'
+    leather['manorFinish']='Leather'
+    glove['manorFinish']='Fabric' if kind=='Butler' else 'SmoothPlastic'
     p=s.node(kind,pos=pos)
     p.rotation_euler.y=q['lean']
 
