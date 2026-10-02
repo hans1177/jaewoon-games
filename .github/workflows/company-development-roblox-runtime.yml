@@ -1303,6 +1303,8 @@ jobs:
           F0_OUTCOME: ${{ steps.fused_f0.outcome }}
           SECONDARY_OWNER_FOCUS: ${{ matrix.secondaryOwnerFocus }}
           BUILD_EVIDENCE: ${{ steps.package.outputs.build_evidence }}
+          SUPERSEDED: ${{ steps.freshness.outputs.superseded }}
+          SUPERSEDE_REASON: ${{ steps.freshness.outputs.reason }}
         shell: bash
         run: |
           set -euo pipefail
