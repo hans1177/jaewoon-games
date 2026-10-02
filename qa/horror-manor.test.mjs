@@ -110,6 +110,29 @@ test('personal manor collection display is driven by existing saved progression 
  assert.doesNotMatch(lobby,/SetAttribute\("GhostCompleted"/);
 });
 
+test('personal manor visibility and visiting stay server-authoritative',()=>{
+ assert.match(config,/SET_MANOR_VISIBILITY="SET_MANOR_VISIBILITY"/);
+ assert.match(config,/VISIT_MANOR="VISIT_MANOR"/);
+ assert.match(config,/RETURN_MANOR="RETURN_MANOR"/);
+ assert.match(lobby,/function Manor:SetVisibility\(owner,value\)/);
+ assert.match(lobby,/function Manor:Visit\(visitor,ownerUserId\)/);
+ assert.match(lobby,/function Manor:ReturnHome\(visitor\)/);
+ assert.match(lobby,/owner:GetAttribute\("ManorVisibility"\)~="PUBLIC"/);
+ assert.match(lobby,/tonumber\(p:GetAttribute\("VisitedManorOwnerUserId"\)\)/);
+ assert.match(lobby,/visitor~=p/);
+ assert.match(server,/visitingManor\(p\)/);
+ assert.match(server,/elseif a==C\.Actions\.SET_MANOR_VISIBILITY then/);
+ assert.match(server,/elseif a==C\.Actions\.VISIT_MANOR then/);
+ assert.match(server,/elseif a==C\.Actions\.RETURN_MANOR then/);
+ assert.match(server,/local visitors=manorLobby:CloseVisitors\(p\)/);
+ assert.match(ui,/저택 공개하기/);
+ assert.match(ui,/저택 비공개로 전환/);
+ assert.match(ui,/의 저택 방문/);
+ assert.match(ui,/내 저택으로 돌아가기/);
+ assert.doesNotMatch(lobby,/SetAttribute\("Coins"/);
+ assert.doesNotMatch(lobby,/SetAttribute\("GhostCompleted"/);
+});
+
 test('replacement lobby music has no old screaming source and is original instrumental',()=>{
  assert.doesNotMatch(config,/1843529635/);assert.match(config,/LobbyMusicId/);
  const m=JSON.parse(read(root+'/generated/music-evidence.json'));assert.equal(m.vocals,false);assert.equal(m.screams,false);assert.equal(m.originalComposition,true);assert.ok(m.durationSeconds>=60);
