@@ -595,7 +595,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-02T08:42:14.595Z",
+      "updatedAt": "2026-10-02T08:42:52.220Z",
       "robloxSourceCommit": "762654a66684c219395a77de2b5ac88ab970bf40",
       "robloxSourceBootstrapPassedAt": "2026-10-02T08:32:03.136Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -991,7 +991,25 @@
       },
       "resumeStage": "F1_SERVER_BOOT",
       "failureCount": 1,
-      "contractCanaryPassed": false
+      "contractCanaryPassed": false,
+      "robloxValidationTarget": {
+        "version": 1,
+        "gameId": "horror-escape-room",
+        "universeId": "10768961379",
+        "placeId": "130054603482321",
+        "verified": false,
+        "verifiedAt": null,
+        "lastVerifiedAt": null,
+        "source": "canonical-dedicated-open-cloud-bootstrap",
+        "authority": "roblox-pre-f9-validation-target",
+        "dedicated": true,
+        "shared": false,
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "internalOnly": true,
+        "publicDiscoveryAllowed": false,
+        "bootstrapState": "CREATED_PRIVATE_UNPUBLISHED",
+        "reservedAt": "2026-10-02T08:42:52.220Z"
+      }
     },
     {
       "gameId": "cozy-island",
@@ -1477,7 +1495,7 @@
       "robloxValidationPublishRepairAt": "2026-10-02T08:42:37.448Z"
     }
   ],
-  "updatedAt": "2026-10-02T08:42:48.161Z",
+  "updatedAt": "2026-10-02T08:42:52.220Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
