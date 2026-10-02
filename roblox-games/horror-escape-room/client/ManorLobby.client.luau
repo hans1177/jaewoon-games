@@ -13,13 +13,16 @@ local remote=RS:WaitForChild(C.RemoteName)
 local gui=Instance.new("ScreenGui");gui.Name="PersonalManorUI";gui.ResetOnSpawn=false;gui.DisplayOrder=15;gui.Enabled=false
 gui.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
 gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets;gui.Parent=p:WaitForChild("PlayerGui")
-local ink=Color3.fromRGB(20,15,18)
-local parchment=Color3.fromRGB(218,194,145)
-local ivory=Color3.fromRGB(230,214,176)
-local wood=Color3.fromRGB(48,27,21)
-local leather=Color3.fromRGB(39,20,25)
-local brass=Color3.fromRGB(151,113,61)
-local wine=Color3.fromRGB(76,24,38)
+-- 다크카툰 고딕 UI 팔레트: 먹보라/와인 면 + 선명한 황동/상아 대비.
+local ink=Color3.fromRGB(14,10,20)
+local parchment=Color3.fromRGB(216,184,119)
+local ivory=Color3.fromRGB(239,219,170)
+local wood=Color3.fromRGB(42,18,27)
+local leather=Color3.fromRGB(29,12,31)
+local brass=Color3.fromRGB(179,119,45)
+local wine=Color3.fromRGB(92,16,52)
+local purple=Color3.fromRGB(61,28,82)
+local ember=Color3.fromRGB(211,72,22)
 local activeMenu=nil
 local activeStory=nil
 local invitationCode=""
@@ -35,8 +38,17 @@ local function corner(parent,n)
  frameStroke(parent,2,.10)
 end
 local function brassRule(parent,y)
- local rule=Instance.new("Frame");rule.BackgroundColor3=brass;rule.BackgroundTransparency=.22
- rule.BorderSizePixel=0;rule.Size=UDim2.new(1,-18,0,1);rule.Position=UDim2.new(0,9,0,y);rule.Parent=parent;return rule
+ local rule=Instance.new("Frame");rule.BackgroundColor3=brass;rule.BackgroundTransparency=.18
+ rule.BorderSizePixel=0;rule.Size=UDim2.new(1,-18,0,2);rule.Position=UDim2.new(0,9,0,y);rule.Parent=parent;return rule
+end
+local function gothicCorners(parent)
+ for _,spec in ipairs({
+  {0,7,0,7,45},{1,-7,0,7,45},{0,7,1,-7,45},{1,-7,1,-7,45}
+ })do
+  local mark=Instance.new("Frame");mark.Name="GothicCorner";mark.AnchorPoint=Vector2.new(.5,.5)
+  mark.Position=UDim2.new(spec[1],spec[2],spec[3],spec[4]);mark.Size=UDim2.fromOffset(8,8)
+  mark.BackgroundColor3=brass;mark.BackgroundTransparency=.08;mark.BorderSizePixel=0;mark.Rotation=spec[5];mark.Parent=parent
+ end
 end
 local function label(parent,text,height,size,color)
  local x=Instance.new("TextLabel");x.BackgroundTransparency=1;x.Size=UDim2.new(1,-12,0,height or 32)
@@ -69,7 +81,7 @@ local function mapPostcard(parent,map,chosen,fn)
 end
 -- 화면 구성 · 황동 명패, 가죽 책갈피, 좌측/하단 장부. 중앙 플레이 시야를 최대한 비운다.
 local header=Instance.new("Frame");header.Name="ManorNameplate";header.Size=UDim2.fromOffset(238,56);header.Position=UDim2.fromOffset(10,6)
-header.BackgroundColor3=wood;header.BackgroundTransparency=.02;header.Parent=gui;corner(header,1);brassRule(header,27)
+header.BackgroundColor3=wood;header.BackgroundTransparency=.01;header.Parent=gui;corner(header,1);brassRule(header,27);gothicCorners(header)
 local title=label(header,"MIDNIGHT ESCAPE",23,15,ivory);title.Position=UDim2.fromOffset(11,2);title.AutoLocalize=false
 local status=label(header,"괴물 가족의 저택",22,10,parchment);status.Position=UDim2.fromOffset(11,30);status.Size=UDim2.new(1,-22,0,22)
 
@@ -77,7 +89,7 @@ local commands=Instance.new("Frame");commands.Name="ManorCommands";commands.Anch
 commands.Position=UDim2.new(1,-10,0,6);commands.Size=UDim2.fromOffset(162,54);commands.BackgroundTransparency=1;commands.Parent=gui
 
 local nav=Instance.new("Frame");nav.Name="FamilyNotebook";nav.AnchorPoint=Vector2.new(1,0);nav.Position=UDim2.new(1,-10,0,68)
-nav.Size=UDim2.fromOffset(92,304);nav.BackgroundColor3=leather;nav.BackgroundTransparency=.01;nav.Visible=false;nav.Parent=gui;corner(nav,1)
+nav.Size=UDim2.fromOffset(92,304);nav.BackgroundColor3=leather;nav.BackgroundTransparency=.01;nav.Visible=false;nav.Parent=gui;corner(nav,1);gothicCorners(nav)
 local navPadding=Instance.new("UIPadding");navPadding.PaddingTop=UDim.new(0,7);navPadding.PaddingBottom=UDim.new(0,7);navPadding.PaddingLeft=UDim.new(0,6);navPadding.PaddingRight=UDim.new(0,6);navPadding.Parent=nav
 local navList=Instance.new("UIListLayout");navList.Padding=UDim.new(0,6);navList.SortOrder=Enum.SortOrder.LayoutOrder;navList.Parent=nav
 
@@ -85,7 +97,7 @@ local shade=Instance.new("Frame");shade.Name="NotebookShade";shade.Size=UDim2.fr
 shade.BackgroundTransparency=1;shade.Active=true;shade.Visible=false;shade.ZIndex=10;shade.Parent=gui
 
 local panel=Instance.new("CanvasGroup");panel.Name="NotebookPage";panel.AnchorPoint=Vector2.new(0,0);panel.Position=UDim2.fromOffset(10,70)
-panel.Size=UDim2.fromOffset(420,520);panel.BackgroundColor3=leather;panel.Visible=false;panel.ZIndex=11;panel.Parent=gui;corner(panel,1)
+panel.Size=UDim2.fromOffset(420,520);panel.BackgroundColor3=leather;panel.Visible=false;panel.ZIndex=11;panel.Parent=gui;corner(panel,1);gothicCorners(panel)
 local binding=Instance.new("Frame");binding.Name="LeatherBinding";binding.BackgroundColor3=wood;binding.BorderSizePixel=0
 binding.Size=UDim2.new(0,13,1,-8);binding.Position=UDim2.fromOffset(4,4);binding.Parent=panel
 local bindingLine=Instance.new("Frame");bindingLine.BackgroundColor3=brass;bindingLine.BackgroundTransparency=.18;bindingLine.BorderSizePixel=0
@@ -101,7 +113,7 @@ local function hidePanel()
 end
 local close=button(panel,"×",hidePanel);close.Size=UDim2.fromOffset(54,54);close.Position=UDim2.new(1,-62,0,5)
 local body=Instance.new("ScrollingFrame");body.Position=UDim2.fromOffset(25,65);body.Size=UDim2.new(1,-36,1,-78)
-body.BackgroundColor3=Color3.fromRGB(31,22,24);body.BackgroundTransparency=.12;body.BorderSizePixel=0;body.ScrollBarThickness=3
+body.BackgroundColor3=Color3.fromRGB(24,13,27);body.BackgroundTransparency=.06;body.BorderSizePixel=0;body.ScrollBarThickness=3
 body.ScrollBarImageColor3=brass;body.AutomaticCanvasSize=Enum.AutomaticSize.Y;body.CanvasSize=UDim2.new();body.Parent=panel
 local bodyPad=Instance.new("UIPadding");bodyPad.PaddingTop=UDim.new(0,7);bodyPad.PaddingBottom=UDim.new(0,10);bodyPad.PaddingLeft=UDim.new(0,5);bodyPad.PaddingRight=UDim.new(0,3);bodyPad.Parent=body
 local layout=Instance.new("UIListLayout");layout.Padding=UDim.new(0,8);layout.SortOrder=Enum.SortOrder.LayoutOrder;layout.Parent=body
@@ -395,12 +407,12 @@ end
 -- 접속 메인: 입장 버튼을 누르면 기본 카메라/조작으로 정확히 복귀한다.
 local entered=false
 local welcome=Instance.new("Frame");welcome.Name="ManorWelcome";welcome.ZIndex=13;welcome.Active=true;welcome.Size=UDim2.fromScale(1,1);welcome.BackgroundColor3=ink;welcome.BackgroundTransparency=.58;welcome.Parent=gui
-local card=Instance.new("Frame");card.AnchorPoint=Vector2.new(.5,.5);card.Position=UDim2.fromScale(.5,.72);card.Size=UDim2.new(1,-48,0,238);card.BackgroundColor3=parchment;card.BackgroundTransparency=.02;card.Parent=welcome;corner(card,1)
+local card=Instance.new("Frame");card.AnchorPoint=Vector2.new(.5,.5);card.Position=UDim2.fromScale(.5,.72);card.Size=UDim2.new(1,-48,0,238);card.BackgroundColor3=parchment;card.BackgroundTransparency=.02;card.Parent=welcome;corner(card,1);gothicCorners(card)
 local cardLimit=Instance.new("UISizeConstraint");cardLimit.MaxSize=Vector2.new(430,238);cardLimit.Parent=card
 local mainTitle=label(card,"MIDNIGHT ESCAPE",54,26);mainTitle.Size=UDim2.new(1,-24,0,54);mainTitle.Position=UDim2.fromOffset(12,14);mainTitle.TextXAlignment=Enum.TextXAlignment.Center;mainTitle.TextColor3=ink;mainTitle.AutoLocalize=false
 local subtitle=label(card,"심야 대탈출 · 괴물 가족의 저택",38,14);subtitle.Position=UDim2.fromOffset(12,65);subtitle.TextXAlignment=Enum.TextXAlignment.Center;subtitle.TextColor3=ink
 local greeting=label(card,"집사가 문을 열어두었어.\n이 집에서는 기이한 일도 일상이야.",54,13);greeting.Position=UDim2.fromOffset(12,105);greeting.TextXAlignment=Enum.TextXAlignment.Center;greeting.TextColor3=ink
-local wax=Instance.new("Frame");wax.Name="WaxSeal";wax.AnchorPoint=Vector2.new(.5,.5);wax.Position=UDim2.new(.5,0,0,161);wax.Size=UDim2.fromOffset(34,34);wax.BackgroundColor3=Color3.fromRGB(112,31,39);wax.Parent=card
+local wax=Instance.new("Frame");wax.Name="WaxSeal";wax.AnchorPoint=Vector2.new(.5,.5);wax.Position=UDim2.new(.5,0,0,161);wax.Size=UDim2.fromOffset(36,36);wax.BackgroundColor3=wine;wax.Parent=card
 local waxCorner=Instance.new("UICorner");waxCorner.CornerRadius=UDim.new(1,0);waxCorner.Parent=wax
 local waxMark=label(wax,"M",30,18);waxMark.Size=UDim2.fromScale(1,1);waxMark.TextColor3=Color3.fromRGB(205,155,87);waxMark.TextXAlignment=Enum.TextXAlignment.Center;waxMark.TextYAlignment=Enum.TextYAlignment.Center
 local controls=nil
