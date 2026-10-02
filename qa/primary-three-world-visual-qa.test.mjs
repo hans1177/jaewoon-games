@@ -47,7 +47,7 @@ test('심야는 이동 가능한 어둠과 지도별 시각 기준점을 가진�
  const server=read('roblox-games/horror-escape-room/server/Game.server.luau');
  for(const marker of ['MiniMap','PlayerDot','mapLayouts','RunService.RenderStepped','CurrentMapId','MidnightArena','MapReady'])assert.match(client,new RegExp(marker.replaceAll('.','\\.')));
  for(const marker of ['HallGuideStrip','HospitalGuideStrip','ParkLandmarkSign','MIDNIGHT_"..map.Id.."_INFECTION_HORROR_V10','AssetService','EnergyPrompt','EnergyCorePrompt','LibraryWing','EmergencyWing','ArcadeZone','MapReady','SchoolRoofRim','ClassDoorGlass','LibraryShelfExtra'])assert.match(server,new RegExp(marker.replaceAll('.','\\.')));
- assert.doesNotMatch(server,/Name="EscapePrompt"/);
+ assert.match(server,/Name="EscapePrompt"/);
  assert.match(server,/Vector3\.new\(340,1,340\)/);
  assert.match(server,/Lighting\.Brightness=map\.Id=="SCHOOL"and 1\.82 or 1\.65/);
  assert.match(server,/MainHallCeiling/);
