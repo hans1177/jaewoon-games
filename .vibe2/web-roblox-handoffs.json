@@ -15,7 +15,7 @@
   "projects": [
     {
       "gameId": "daechung-rpg",
-      "PROJECT_PHASE": "TARGET_PLATFORM_SOURCE_BIND",
+      "PROJECT_PHASE": "TARGET_PLATFORM_RUNTIME",
       "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
@@ -75,11 +75,11 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "COMPLETE_VERIFIED_WEB_TO_ROBLOX_HANDOFF_CONTEXT"
+      "NEXT_MACHINE_ACTION": "RUN_TARGET_PLATFORM_RUNTIME"
     },
     {
       "gameId": "horror-escape-room",
-      "PROJECT_PHASE": "TARGET_PLATFORM_SOURCE_BIND",
+      "PROJECT_PHASE": "TARGET_PLATFORM_RUNTIME",
       "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
@@ -128,7 +128,7 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "COMPLETE_VERIFIED_WEB_TO_ROBLOX_HANDOFF_CONTEXT"
+      "NEXT_MACHINE_ACTION": "RUN_TARGET_PLATFORM_RUNTIME"
     },
     {
       "gameId": "cozy-island",
@@ -156,9 +156,9 @@
       "POST_RELEASE_FOCUS_RUNNER": {
         "eligibleAfterRelease": true,
         "assigned": true,
-        "state": "ASSIGNED",
+        "state": "RUNNING",
         "queueTaskId": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
-        "queueStatus": "queued",
+        "queueStatus": "running",
         "logicalRunnerPerProject": 1,
         "activeTaskMaxPerProject": 1,
         "sharedProtectedRunnerSlots": 1,
@@ -178,7 +178,7 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "EXECUTE_POST_RELEASE_FOCUSED_GAP"
+      "NEXT_MACHINE_ACTION": "CONTINUE_POST_RELEASE_FOCUSED_GAP"
     }
   ],
   "handoffs": [],
