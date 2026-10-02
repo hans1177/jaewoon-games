@@ -136,6 +136,30 @@ function restoreDedicatedTargetIdentity(item,{registry,gameId,stamp}){
 function recoverExactPrivateRuntimeCheckpoint(item,design){
   const priorDesignSource=clean(item?.minimumDesignContract?.source||item?.designBaselineSource);
   if(priorDesignSource&&priorDesignSource!==clean(design?.file))return null;
+  const f9Evidence=item?.robloxF9ReleaseRegressionEvidence||{};
+  const exactF9=Boolean(
+    item?.robloxFinalReviewPassed===true
+    &&item?.robloxF9ReleaseRegressionPassed===true
+    &&clean(f9Evidence.sourceRevision)===clean(item?.robloxSourceCommit)
+    &&clean(f9Evidence.artifactIdentity)===clean(item?.robloxBuildArtifactIdentity)
+    &&Number(f9Evidence.candidateVersionNumber)>0
+  );
+  if(exactF9){
+    const publishQueue=Array.isArray(item?.robloxCanonicalPublishQueue)?item.robloxCanonicalPublishQueue:[];
+    const exactCycle=publishQueue.find(row=>
+      clean(row?.sourceRevision)===clean(item?.robloxSourceCommit)
+      &&clean(row?.artifactIdentity)===clean(item?.robloxBuildArtifactIdentity)
+      &&row?.finalReviewPassed===true
+      &&row?.f9ReleaseRegressionPassed===true
+    );
+    const publishDispatched=Boolean(exactCycle);
+    return{
+      currentStep:'POST_F9_CONTINUOUS_EVOLUTION',
+      canonicalState:publishDispatched
+        ?'F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION'
+        :'F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION'
+    };
+  }
   const internalEvidence=item?.robloxInternalReleaseEvidence?.published===true
     ?item.robloxInternalReleaseEvidence
     :(item?.robloxReleaseEvidence?.published===true&&item?.robloxExternalPublicReleaseConfirmed!==true?item.robloxReleaseEvidence:null);
