@@ -94,7 +94,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-02T08:40:25.867Z",
+      "updatedAt": "2026-10-02T08:42:17.020Z",
       "robloxSourceCommit": "b953d4fb6e4121fe7fb62a23eace4ea7c3871f85",
       "robloxSourceBootstrapPassedAt": "2026-10-02T03:03:09.588Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -480,7 +480,25 @@
       },
       "resumeStage": "F1_SERVER_BOOT",
       "failureCount": 1,
-      "contractCanaryPassed": false
+      "contractCanaryPassed": false,
+      "robloxValidationTarget": {
+        "version": 1,
+        "gameId": "daechung-rpg",
+        "universeId": "10768961338",
+        "placeId": "79150944093879",
+        "verified": false,
+        "verifiedAt": null,
+        "lastVerifiedAt": null,
+        "source": "canonical-dedicated-open-cloud-bootstrap",
+        "authority": "roblox-pre-f9-validation-target",
+        "dedicated": true,
+        "shared": false,
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "internalOnly": true,
+        "publicDiscoveryAllowed": false,
+        "bootstrapState": "CREATED_PRIVATE_UNPUBLISHED",
+        "reservedAt": "2026-10-02T08:42:17.020Z"
+      }
     },
     {
       "gameId": "horror-escape-room",
@@ -1394,7 +1412,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-02T08:42:12.655Z",
+  "updatedAt": "2026-10-02T08:42:17.020Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
