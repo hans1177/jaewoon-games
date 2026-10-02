@@ -619,6 +619,13 @@ def npc(s,kind,pos):
         thumb_tip=(hand_center[0]+side*w*.132,hand_center[1]-h*.062,hand_center[2]+.050)
         s.curve_tube(kind+'_Thumb'+str(side),[thumb_start,thumb_mid,thumb_tip],
           [w*.030,w*.027,w*.020],[w*.032,w*.029,w*.021],glove,sides=18,parent=p)
+        # 손등 관절/손바닥 접힘은 한 곡선 메시로만 보강해 막대기 손 느낌을 줄이고 메시 폭증을 피한다.
+        hand_detail_mat=q['accent'] if kind=='Butler' else leather if kind=='Undertaker' else q['accent']
+        s.curve_tube(kind+'_HandCrease'+str(side),[
+          (hand_center[0]-side*w*.065,hand_center[1]-h*.060,hand_center[2]+.118),
+          (hand_center[0],hand_center[1]-h*.075,hand_center[2]+.132),
+          (hand_center[0]+side*w*.065,hand_center[1]-h*.058,hand_center[2]+.112)
+        ],[w*.005,w*.006,w*.004],[w*.004,w*.005,w*.003],hand_detail_mat,sides=14,parent=p)
 
     # 역할별 코트 자락. 앞에서 삼각 판처럼 보이지 않게 허리 뒤에서 시작하고 아래로 자연스럽게 벌어진다.
     if kind=='Butler':
@@ -652,6 +659,16 @@ def npc(s,kind,pos):
             ]
             tail=s.prism('Archivist_CoatTail'+str(side),(0,h*.425,-.29),outline,.095,q['coat'],parent=p)
             tail.rotation_euler.x=side*.012
+
+    # 의상 중앙 봉제선/허리 접힘. 역할별 재질과 곡률만 달리해 근접에서 천이 한 덩어리처럼 보이지 않게 한다.
+    seam_y0=h*.43;seam_y1=h*.69
+    s.curve_tube(kind+'_CoatCenterSeam',[
+      (0,seam_y0,.505),(w*(.012 if kind=='Undertaker' else -.008),h*.56,.555),(0,seam_y1,.585)
+    ],[w*.006,w*.007,w*.005],[w*.004,w*.005,w*.004],q['accent'],sides=14,parent=p)
+    for side in [-1,1]:
+        s.curve_tube(kind+'_WaistFold'+str(side),[
+          (side*w*.12,h*.455,.475),(side*w*.24,h*.445,.455),(side*w*.36,h*.432,.405)
+        ],[w*.006,w*.007,w*.004],[w*.004,w*.005,w*.003],q['coat'],sides=14,parent=p)
 
     # 목/머리: 얼굴은 2천+ 정점 연속 곡면으로 직접 조형한다.
     s.loft(kind+'_Neck',(0,h*.735,-.02),[
@@ -869,6 +886,15 @@ def build():
                 s.box('WindowGlass'+key,(x,y,-.38),(4.85,6.8,.10),c['glass'])
                 s.box('WindowMullion'+key,(x,y,-.20),(.20,6.9,.12),c['black'])
                 s.box('WindowCross'+key,(x,y+.35,-.20),(4.9,.20,.12),c['black'])
+                # 얕은 사선 납선과 상부 빗물받이가 평면 유리 느낌을 줄인다.
+                for lattice in [-1.65,-.55,.55,1.65]:
+                    lead=s.box('WindowLeadA'+key+str(lattice),(x+lattice,y,-.14),(.08,6.25,.07),c['brass'],rot=.20)
+                    lead.rotation_euler.x=.16
+                    lead2=s.box('WindowLeadB'+key+str(lattice),(x+lattice,y,-.135),(.08,6.25,.07),c['brass'],rot=-.20)
+                    lead2.rotation_euler.x=-.16
+                s.box('WindowDripCap'+key,(x,y+4.35,-.63),(6.9,.30,1.05),c['stone'])
+                for bracket in [-1,1]:
+                    s.box('WindowSillBracket'+key+str(bracket),(x+bracket*2.15,y-4.55,-.60),(.48,.95,.78),c['stone'],lean=-bracket*.10)
                 # 커튼은 양쪽 가장자리에만 보여 창 내부에 깊이를 만든다.
                 curtain=s.material('WindowCurtain',(.16,.035,.055))
                 s.box('WindowCurtainL'+key,(x-1.72,y,-.50),(1.05,6.2,.08),curtain,lean=.12)
@@ -904,6 +930,18 @@ def build():
         ],[.09]*5,[.07]*5,c['brass'],sides=16,parent=door)
     s.box('ManorNamePlaque',(0,17.8,-.56),(9.2,1.7,.24),c['wood'])
     s.box('ManorNamePlaqueInset',(0,17.8,-.40),(7.7,1.0,.08),c['brass'])
+    # 현관 상부 팬라이트는 문이 열려도 고정된 입면 디테일로 남는다.
+    fan_outline=[]
+    for i in range(17):
+        a=math.pi*i/16
+        fan_outline.append((math.cos(a)*5.0,math.sin(a)*2.4))
+    s.prism('EntryFanlightGlass',(0,13.9,-.55),fan_outline,.08,c['glass'])
+    for i in range(7):
+        a=math.pi*(i+1)/8
+        s.curve_tube('EntryFanlightBar'+str(i),[
+          (0,13.9,-.42),(math.cos(a)*4.55,13.9+math.sin(a)*2.05,-.42)
+        ],[.075,.050],[.060,.040],c['brass'],sides=14)
+    s.box('EntryFanlightSill',(0,13.55,-.58),(10.8,.34,1.05),c['stone'])
 
     # 중앙부는 2층 높이로 솟고 좌우 지붕은 낮아 실루엣이 단계적으로 읽힌다.
     roof=[[-61,25,-67],[61,25,-67],[61,25,1],[-61,25,1],[-7,46,-67],[-7,42,1]]
@@ -1624,6 +1662,15 @@ def build():
     for x in [-45,-31,31,45]:
         s.box('WindowSill'+str(x),(x,3.25,-.10),(6.2,.45,1.0),c['stone'])
         s.box('RainStain'+str(x),(x,1.8,-.18),(3.1,2.7,.05),s.material('RainStainMat',(.10,.09,.09)))
+    # 전면 석재 기단의 줄눈/돌출 캡. 얕은 부재만 추가해 실루엣보다 재질 읽기를 강화한다.
+    for course,y0 in enumerate([.75,1.55,2.35]):
+        for x0 in range(-48,49,8):
+            offset=4 if course%2 else 0
+            xx=x0+offset
+            if abs(xx)<11:continue
+            s.box('FacadeStoneCourse'+str(course)+'_'+str(xx),(xx,y0,-1.82),(7.4,.62,.38),c['stone'],lean=.04*((course+x0)%3-1))
+    s.box('FacadeStoneCap',(-31,3.02,-1.64),(42,.34,.72),c['stone'])
+    s.box('FacadeStoneCapR',(31,3.02,-1.64),(42,.34,.72),c['stone'])
 
     # 외관 비대칭 노후화: 일부 측면 창은 임시 판자로 막히고, 석재 균열/덩굴은 좌우가 다르게 흐른다.
     board_mat=s.material('WeatheredBoard',(.085,.042,.025))
@@ -1686,6 +1733,15 @@ def build():
     s.curve_tube('PorchGableTrim',[
       (-10.0,13.05,.2),(0,16.2,.2),(10.0,13.05,.2)
     ],[.18,.14,.18],[.14,.11,.14],c['brass'],sides=18)
+    # 포치 천장 패널과 코벨. 현관 위가 얇은 지붕판처럼 보이지 않게 목공 깊이를 추가한다.
+    for px in [-6,-2,2,6]:
+        s.box('PorchCeilingPanel'+str(px),(px,12.68,5.4),(3.2,.16,8.4),c['wood'])
+        s.box('PorchCeilingInset'+str(px),(px,12.55,5.4),(2.55,.06,7.5),c['plum'])
+    for side in [-1,1]:
+        for zp in [2.4,8.4]:
+            s.curve_tube('PorchCorbel'+str(side)+str(zp),[
+              (side*7.9,12.3,zp),(side*8.5,11.45,zp),(side*9.15,10.95,zp)
+            ],[.22,.18,.10],[.16,.13,.08],c['wood'],sides=16)
     for side in [-1,1]:
         s.lathe('PorchLanternPost'+str(side),(side*5.6,4.5,9.8),.12,.09,5.6,c['black'],sides=16)
         s.ellipsoid('PorchLanternGlass'+str(side),(side*5.6,7.75,9.8),(.78,1.15,.78),c['glass'])
