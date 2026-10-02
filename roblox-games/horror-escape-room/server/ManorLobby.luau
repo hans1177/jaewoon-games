@@ -119,27 +119,11 @@ function Manor:Get(p)
  for _,x in ipairs({-36,-22,-8,8,22,36})do
   part(folder,"LockedGuestBoundary",origin+Vector3.new(x,15,-63.7),Vector3.new(5.3,8.6,.7),false)
  end
- -- 큰 계단/2층 복도는 실제 WalkableGround로 별도 보장한다.
- local stairRise=.82;local stairTread=1.36
- for i=0,11 do
-  local topY=stairRise*(i+1);local stepZ=-40-i*stairTread
-  part(folder,"GrandStairGround",origin+Vector3.new(0,topY*.5,stepZ),Vector3.new(30,topY,stairTread+.08),true)
- end
- -- 2층 중앙 바닥은 계단 위를 덮지 않는다. rear bridge + 좌우 deck + landing으로 U자형 충돌을 만든다.
- part(folder,"SecondFloorGroundRear",origin+Vector3.new(0,10.2,-61.75),Vector3.new(92,.55,5.5),true)
- for _,side in ipairs({-1,1})do
-  part(folder,"SecondFloorGroundSide",origin+Vector3.new(side*31,10.2,-52.25),Vector3.new(30,.55,13.5),true)
- end
- -- 랜딩은 좌우 deck 안쪽 끝과 0.25stud 겹쳐 작은 낙하 틈이 생기지 않는다.
- part(folder,"SecondFloorStairLandingGround",origin+Vector3.new(0,10.05,-57.0),Vector3.new(32.5,.35,4.5),true)
- part(folder,"SecondFloorGround",origin+Vector3.new(-43,10.2,-31),Vector3.new(15,.55,48),true)
- part(folder,"SecondFloorGround",origin+Vector3.new(43,10.2,-31),Vector3.new(15,.55,48),true)
- -- 안전 난간은 중앙 아트리움 가장자리까지만 둔다. x=35.5 이후 좌우 복도는
- -- rear deck과 BalconyWalk가 겹쳐 연결되는 실제 이동 통로이므로 충돌벽을 두지 않는다.
- for _,side in ipairs({-1,1})do
-  part(folder,"StairwellRailBoundary",origin+Vector3.new(side*15.7,11.55,-50.7),Vector3.new(.45,2.8,10.4),false)
-  part(folder,"GalleryFrontRailBoundary",origin+Vector3.new(side*25.25,11.55,-45.62),Vector3.new(18.5,2.8,.45),false)
- end
+ -- 로비 플레이는 1층 기준면 하나만 사용한다.
+ -- 2층/계단의 투명 충돌체가 캐릭터를 상층 높이에 받쳐 버리는 문제를 막기 위해
+ -- 상층 시각 메시만 유지하고 서버 보행 충돌은 만들지 않는다.
+ -- 1층 전체는 PersonalGround가 연속 보행면을 담당한다.
+
  -- 현관 포치의 시각 계단과 보행면을 정확히 맞춘다.
  for step=0,4 do
   local width=22-step*1.4
