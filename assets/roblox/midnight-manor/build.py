@@ -532,12 +532,12 @@ def npc(s,kind,pos):
     s.prism(kind+'_Waistcoat',(0,h*.445,.475),[
       (-w*.27,0),(w*.27,0),(w*.255,h*.15),(w*.105,h*.215),(0,h*.17),(-w*.105,h*.215),(-w*.255,h*.15)
     ],.085,q['vest'],parent=p)
-    s.loft(kind+'_Belt',(0,h*.425,.035),[
-      (-h*.022,w*.57,w*.39),(0,w*.58,w*.40),(h*.022,w*.57,w*.39)
-    ],leather,sides=28,parent=p)
+    s.prism(kind+'_Belt',(0,h*.425,.405),[
+      (-w*.43,-h*.018),(w*.43,-h*.018),(w*.43,h*.018),(-w*.43,h*.018)
+    ],.055,leather,parent=p)
     s.prism(kind+'_BeltBuckle',(0,h*.425,.445),[
-      (-w*.10,-h*.025),(w*.10,-h*.025),(w*.10,h*.025),(-w*.10,h*.025)
-    ],.055,c['brass'],parent=p)
+      (-w*.060,-h*.020),(w*.060,-h*.020),(w*.060,h*.020),(-w*.060,h*.020)
+    ],.040,c['brass'],parent=p)
     for i in range(4):
         s.loft(kind+'_Button'+str(i),(0,h*.60-i*h*.034,.61),[
           (-.045,.075,.035),(0,.085,.045),(.045,.075,.035)
@@ -576,8 +576,8 @@ def npc(s,kind,pos):
           [w*.27,w*.245,w*.215,w*.195,w*.18],
           q['coat'],sides=28,parent=p)
         s.loft(kind+'_Cuff'+str(side),wrist,[
-          (-h*.025,w*.18,w*.19),(0,w*.19,w*.20),(h*.025,w*.18,w*.19)
-        ],c['ivory'],sides=20,parent=p)
+          (-h*.016,w*.115,w*.125),(0,w*.125,w*.135),(h*.016,w*.115,w*.125)
+        ],c['ivory'],sides=22,parent=p)
         hand_center=(wrist[0],wrist[1]-h*.07,wrist[2]+.045)
         s.loft(kind+'_Hand'+str(side),hand_center,[
           (-h*.040,w*.115,w*.125),(0,w*.140,w*.145),(h*.040,w*.120,w*.125)
@@ -698,10 +698,11 @@ def npc(s,kind,pos):
           (-h*.015,w*.39,w*.34),(h*.04,w*.41,w*.35),(h*.095,w*.30,w*.28)
         ],q['hair'],sides=30,parent=p)
         for side in [-1,1]:
-            lock=s.prism('Butler_HairTemple'+str(side),(side*w*.34,head_y+h*.025,.01),[
-              (-w*.07,h*.055),(w*.07,h*.045),(w*.055,-h*.045),(-w*.045,-h*.06)
-            ],.10,q['hair'],parent=p)
-            lock.rotation_euler.z=-side*.08
+            s.curve_tube('Butler_HairTemple'+str(side),[
+              (side*w*.31,head_y+h*.060,-.02),
+              (side*w*.35,head_y+h*.018,.00),
+              (side*w*.32,head_y-h*.030,.015)
+            ],[w*.045,w*.052,w*.032],[w*.030,w*.035,w*.022],q['hair'],sides=18,parent=p)
             s.curve_tube('Butler_Moustache'+str(side),[
               (side*w*.018,head_y-h*.036,face_front+.071),
               (side*w*.095,head_y-h*.038,face_front+.075),
@@ -710,8 +711,8 @@ def npc(s,kind,pos):
         s.prism('Butler_BowTie',(0,h*.728,.63),[
           (-w*.16,0),(-w*.045,h*.030),(0,0),(w*.045,h*.030),(w*.16,0),(w*.050,-h*.028),(0,0),(-w*.050,-h*.028)
         ],.075,q['accent'],parent=p)
-        s.lathe('Butler_Tray',(w*.80,h*.34,.70),w*.58,w*.58,.10,c['brass'],parent=p)
-        s.lathe('Butler_Candle',(w*.80,h*.415,.70),.13,.11,h*.12,c['ivory'],parent=p)
+        s.lathe('Butler_Tray',(w*.74,h*.35,.64),w*.47,w*.47,.075,c['brass'],parent=p)
+        s.lathe('Butler_Candle',(w*.74,h*.415,.64),.095,.080,h*.095,c['ivory'],parent=p)
         s.loft('Butler_CandleFlame',(w*.80,h*.485,.70),[
           (-.25,.10,.08),(0,.13,.10),(.30,.03,.025)
         ],c['amber'],sides=18,parent=p)
@@ -724,12 +725,8 @@ def npc(s,kind,pos):
           (0,w*.46,w*.42),(h*.12,w*.43,w*.39),(h*.22,w*.34,w*.33)
         ],c['black'],sides=32,parent=p)
         s.lathe('UndertakerHatRibbon',(0,head_y+h*.175,.02),w*.47,w*.47,h*.026,q['accent'],sides=32,parent=p)
-        for side in [-1,1]:
-            s.prism('Undertaker_CheekShadow'+str(side),(side*w*.24,head_y-h*.018,face_front+.020),[
-              (-w*.09,h*.025),(w*.10,h*.015),(w*.08,-h*.04),(-w*.05,-h*.05)
-            ],.018,q['vest'],parent=p)
-        s.box('Undertaker_Ledger',(w*.62,h*.43,.66),(w*.72,h*.18,.18),q['accent'],parent=p)
-        s.box('Undertaker_LedgerBand',(w*.62,h*.43,.77),(w*.14,h*.19,.025),c['brass'],parent=p)
+        s.box('Undertaker_Ledger',(w*.57,h*.44,.60),(w*.56,h*.145,.14),q['accent'],parent=p)
+        s.box('Undertaker_LedgerBand',(w*.57,h*.44,.685),(w*.095,h*.155,.020),c['brass'],parent=p)
         s.lathe('Undertaker_SpadeHandle',(-w*.70,h*.37,-.12),.055,.055,h*.55,s.material('DarkWood',(.10,.045,.025)),parent=p)
         s.prism('Undertaker_SpadeBlade',(-w*.70,h*.07,-.10),[
           (-w*.20,0),(w*.20,0),(w*.15,h*.13),(0,h*.18),(-w*.15,h*.13)
@@ -739,10 +736,11 @@ def npc(s,kind,pos):
           (-h*.03,w*.31,w*.31),(h*.035,w*.36,w*.34),(h*.095,w*.24,w*.27)
         ],q['hair'],sides=26,parent=p)
         for side in [-1,1]:
-            wisp=s.prism('Archivist_HairWisp'+str(side),(side*w*.28,head_y+h*.105,.01),[
-              (-w*.05,0),(0,h*.12),(w*.06,h*.02),(w*.03,-h*.035)
-            ],.055,q['hair'],parent=p)
-            wisp.rotation_euler.z=side*.14
+            s.curve_tube('Archivist_HairWisp'+str(side),[
+              (side*w*.25,head_y+h*.105,-.03),
+              (side*w*.30,head_y+h*.145,-.055),
+              (side*w*.26,head_y+h*.175,-.075)
+            ],[w*.022,w*.017,w*.010],[w*.016,w*.012,w*.008],q['hair'],sides=16,parent=p)
             s.lathe('Archivist_GlassRim'+str(side),(side*w*.205,head_y+h*.03,face_front+.095),w*.105,w*.105,.022,c['brass'],sides=28,parent=p)
         s.prism('Archivist_GlassBridge',(0,head_y+h*.03,face_front+.110),[
           (-w*.070,-h*.006),(w*.070,-h*.006),(w*.070,h*.006),(-w*.070,h*.006)
@@ -750,8 +748,8 @@ def npc(s,kind,pos):
         s.prism('Archivist_InkStainL',(-w*.11,h*.43,.615),[
           (-w*.05,0),(w*.06,h*.01),(w*.04,h*.05),(-w*.045,h*.04)
         ],.018,q['accent'],parent=p)
-        s.box('Archivist_Ledger',(w*.54,h*.40,.71),(w*.82,h*.24,.20),q['accent'],parent=p)
-        s.box('Archivist_LedgerLabel',(w*.54,h*.40,.825),(w*.50,h*.12,.025),c['ivory'],parent=p)
+        s.box('Archivist_Ledger',(w*.50,h*.41,.63),(w*.60,h*.18,.14),q['accent'],parent=p)
+        s.box('Archivist_LedgerLabel',(w*.50,h*.41,.712),(w*.34,h*.085,.020),c['ivory'],parent=p)
         s.lathe('Archivist_Pen',(w*.15,h*.46,.86),.025,.015,h*.18,c['brass'],parent=p)
         s.lathe('Archivist_KeyStem',(-w*.55,h*.32,.58),.025,.025,h*.13,c['brass'],parent=p)
         s.lathe('Archivist_KeyBow',(-w*.55,h*.40,.58),w*.08,w*.08,.025,c['brass'],sides=24,parent=p)
