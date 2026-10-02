@@ -145,7 +145,10 @@ test('personal manor exterior has signature housing and collection architecture'
   'RareCaseGlass_','RareCasePlaque_','RareCaseCornice_','RareRelic_',
   'MapMasterpiece_SCHOOL','MapMasterpiece_HOSPITAL','MapMasterpiece_THEME_PARK','CompletionDaisStone_','CompletionDaisBrass_',
   'GalleryFrameBack_','GalleryFrameLiner_','GalleryFrameCornice_','GallerySetFrame_','GallerySet_',
-  'FireplaceFeatureFrame','FireplaceFeatureCrown','FireplaceFeature_','PortraitGalleryRail'
+  'FireplaceFeatureFrame','FireplaceFeatureCrown','FireplaceFeature_','PortraitGalleryRail',
+  'ArchiveRoomWallPanel','LibraryRoomReadingChair','ParlorRoomSofa','MortuaryRoomDisplayCoffin','WardrobeRoomWardrobeA','LoungeRoomSofa',
+  'WingGutter','WingRainPipe','WingStoneWeathering','CentralRoofRidge','RoofFinial','ApproachWaystone',
+  'ButlerServiceConsole','ArchivistIndexCabinet','UndertakerMeasureRack'
  ])assert.match(manorBuild,new RegExp(token));
  assert.doesNotMatch(manorBuild,/s\.lathe\('LeftTurret'/,'Archivist tower replaces the old duplicate left turret');
  assert.match(manorBuild,/for step in range\(5\)/);
@@ -178,6 +181,10 @@ test('personal manor exterior has signature housing and collection architecture'
  assert.match(lobby,/surface\.Name="RareCaseLabelGui"/);
  assert.match(lobby,/text\.Text="희귀 기록 · "\.\.ghost\.Name/);
  assert.match(lobby,/Vector3\.new\(-70\.0,5\.0,-56\.8\),\.55,12,false/);
+ assert.match(lobby,/Vector3\.new\(-58,8,-47\),\.78,20,false/);
+ assert.match(lobby,/WingFurnitureBoundary/);
+ assert.match(lobby,/-69,4,-58\.8,4\.5,8,3\.8/);
+ assert.match(lobby,/69,4\.2,-37\.8,4\.5,8\.5,3\.8/);
  assert.match(lobby,/namedParts\(scene,"FireplaceFeature_"\.\.ghost\.Id\)/);
  assert.match(lobby,/for _,prefix in ipairs\(\{"MapMasterpiece_","GallerySet_"\}\)do/);
  assert.doesNotMatch(lobby,/SetAttribute\("GhostCompleted"/);
