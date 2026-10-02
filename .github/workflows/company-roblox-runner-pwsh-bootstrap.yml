@@ -18,136 +18,198 @@ jobs:
     runs-on: [self-hosted, Windows, X64, jaewoon-unity]
     timeout-minutes: 3
     steps:
-      - name: Start colocated Roblox runner when present
+      - name: Auto-detect and start authenticated Roblox runner
         shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
-          $runnerRoot = 'C:\actions-runner'
-          $metadataPath = Join-Path $runnerRoot '.runner'
-          $runCmd = Join-Path $runnerRoot 'run.cmd'
-          $svcCmd = Join-Path $runnerRoot 'svc.cmd'
+          $expectedRunnerName = 'roblox-studio-local'
 
-          if (-not (Test-Path -LiteralPath $metadataPath) -or -not (Test-Path -LiteralPath $runCmd)) {
-            Write-Host 'ROBLOX_RUNNER_COLOCATED=NO'
-            exit 0
+          function Get-RunnerMetadata([string]$root) {
+            if (-not $root) { return $null }
+            $metadataPath = Join-Path $root '.runner'
+            if (-not (Test-Path -LiteralPath $metadataPath)) { return $null }
+            try { return Get-Content -LiteralPath $metadataPath -Raw | ConvertFrom-Json } catch { return $null }
           }
 
-          $metadata = Get-Content -LiteralPath $metadataPath -Raw | ConvertFrom-Json
-          if ([string]$metadata.agentName -ne 'roblox-studio-local') {
-            Write-Host "ROBLOX_RUNNER_COLOCATED=NO:$($metadata.agentName)"
-            exit 0
-          }
-          Write-Host 'ROBLOX_RUNNER_COLOCATED=YES'
-
-          $service = Get-Service -ErrorAction SilentlyContinue |
-            Where-Object { $_.Name -like 'actions.runner.*' -and $_.Name -match 'roblox-studio-local' } |
-            Select-Object -First 1
-
-          if (-not $service -and (Test-Path -LiteralPath $svcCmd)) {
-            Push-Location $runnerRoot
-            try { & $svcCmd install } finally { Pop-Location }
-            $service = Get-Service -ErrorAction SilentlyContinue |
-              Where-Object { $_.Name -like 'actions.runner.*' -and $_.Name -match 'roblox-studio-local' } |
-              Select-Object -First 1
+          function Test-RunnerRoot([string]$root) {
+            if (-not $root) { return $false }
+            if (-not (Test-Path -LiteralPath (Join-Path $root 'bin\Runner.Listener.exe'))) { return $false }
+            $metadata = Get-RunnerMetadata $root
+            return $metadata -and [string]$metadata.agentName -eq $expectedRunnerName
           }
 
-          if ($service) {
-            Set-Service -Name $service.Name -StartupType Automatic
-            $service = Get-Service -Name $service.Name
-            if ($service.Status -ne 'Running') {
-              Start-Service -Name $service.Name
-              $service.WaitForStatus('Running',[TimeSpan]::FromSeconds(20))
+          function Resolve-RobloxRunnerRoot {
+            $candidates = New-Object System.Collections.Generic.List[string]
+            function Add-Candidate([string]$value) {
+              if (-not $value) { return }
+              try { $full = [IO.Path]::GetFullPath($value) } catch { return }
+              if (-not $candidates.Contains($full)) { [void]$candidates.Add($full) }
             }
-            Write-Host "ROBLOX_RUNNER_RECOVERY=SERVICE_RUNNING:$($service.Name)"
-            exit 0
+
+            foreach ($process in @(Get-CimInstance Win32_Process -Filter "Name='Runner.Listener.exe'" -ErrorAction SilentlyContinue)) {
+              if ($process.ExecutablePath) {
+                Add-Candidate (Split-Path (Split-Path $process.ExecutablePath -Parent) -Parent)
+              }
+            }
+
+            foreach ($service in @(Get-CimInstance Win32_Service -ErrorAction SilentlyContinue | Where-Object { $_.Name -like 'actions.runner.*' })) {
+              $raw = [string]$service.PathName
+              $exe = $null
+              if ($raw -match '^"([^"]+)"') { $exe = $Matches[1] }
+              elseif ($raw) { $exe = ($raw -split '\s+')[0].Trim('"') }
+              if ($exe -and (Split-Path $exe -Leaf) -match 'RunnerService') {
+                Add-Candidate (Split-Path (Split-Path $exe -Parent) -Parent)
+              }
+            }
+
+            $task = Get-ScheduledTask -TaskName 'Jaewoon-Roblox-GitHubRunner' -ErrorAction SilentlyContinue
+            if ($task) {
+              foreach ($action in @($task.Actions)) {
+                Add-Candidate ([string]$action.WorkingDirectory)
+                $args = [string]$action.Arguments
+                if ($args -match '([A-Za-z]:\\[^"]*?run\.cmd)') { Add-Candidate (Split-Path $Matches[1] -Parent) }
+              }
+            }
+
+            $patterns = @(
+              'C:\actions-runner*','C:\github-actions-runner*',
+              'D:\actions-runner*','D:\github-actions-runner*',
+              'E:\actions-runner*','E:\github-actions-runner*',
+              (Join-Path $env:USERPROFILE 'actions-runner*'),
+              (Join-Path $env:USERPROFILE 'github-actions-runner*')
+            )
+            foreach ($pattern in $patterns) {
+              foreach ($dir in @(Get-ChildItem -Path $pattern -Directory -ErrorAction SilentlyContinue)) {
+                Add-Candidate $dir.FullName
+              }
+            }
+
+            $valid = @($candidates | Where-Object { Test-RunnerRoot $_ } | Sort-Object -Unique)
+            if ($valid.Count -eq 0) { throw "ROBLOX_RUNNER_ROOT_NOT_FOUND:$expectedRunnerName" }
+            if ($valid.Count -eq 1) { return $valid[0] }
+
+            $running = @($valid | Where-Object {
+              $listener = [IO.Path]::GetFullPath((Join-Path $_ 'bin\Runner.Listener.exe'))
+              @(Get-CimInstance Win32_Process -Filter "Name='Runner.Listener.exe'" -ErrorAction SilentlyContinue |
+                Where-Object { $_.ExecutablePath -and [IO.Path]::GetFullPath($_.ExecutablePath) -ieq $listener }).Count -gt 0
+            })
+            if ($running.Count -eq 1) { return $running[0] }
+
+            return @($valid | Sort-Object {
+              try { (Get-Item -LiteralPath (Join-Path $_ '.runner')).LastWriteTimeUtc } catch { [datetime]::MinValue }
+            } -Descending)[0]
           }
 
-          $listener = Get-CimInstance Win32_Process -Filter "Name='Runner.Listener.exe'" -ErrorAction SilentlyContinue |
-            Where-Object { [string]$_.CommandLine -match [regex]::Escape($runnerRoot) } |
-            Select-Object -First 1
-          if (-not $listener) {
-            Start-Process -FilePath 'cmd.exe' -ArgumentList '/c',('"' + $runCmd + '"') -WorkingDirectory $runnerRoot -WindowStyle Hidden
-            Start-Sleep -Seconds 5
-            $listener = Get-CimInstance Win32_Process -Filter "Name='Runner.Listener.exe'" -ErrorAction SilentlyContinue |
-              Where-Object { [string]$_.CommandLine -match [regex]::Escape($runnerRoot) } |
-              Select-Object -First 1
+          function Get-TargetListener([string]$root) {
+            $listenerExe = [IO.Path]::GetFullPath((Join-Path $root 'bin\Runner.Listener.exe'))
+            return @(Get-CimInstance Win32_Process -Filter "Name='Runner.Listener.exe'" -ErrorAction SilentlyContinue |
+              Where-Object { $_.ExecutablePath -and [IO.Path]::GetFullPath($_.ExecutablePath) -ieq $listenerExe })
           }
-          if (-not $listener) { throw 'ROBLOX_RUNNER_LISTENER_NOT_RECOVERED' }
-          Write-Host "ROBLOX_RUNNER_RECOVERY=HIDDEN_LISTENER_RUNNING:$($listener.ProcessId)"
+
+          $runnerRoot = Resolve-RobloxRunnerRoot
+          $listenerExe = Join-Path $runnerRoot 'bin\Runner.Listener.exe'
+          Write-Host "ROBLOX_RUNNER_ROOT=$runnerRoot"
+          Write-Host 'ROBLOX_RUNNER_PATH_DISCOVERY=AUTO_METADATA'
+
+          $listener = @(Get-TargetListener $runnerRoot)
+          if ($listener.Count -eq 0) {
+            $startInfo = New-Object System.Diagnostics.ProcessStartInfo
+            $startInfo.FileName = $listenerExe
+            $startInfo.Arguments = 'run'
+            $startInfo.WorkingDirectory = $runnerRoot
+            $startInfo.UseShellExecute = $false
+            $startInfo.CreateNoWindow = $true
+            $startInfo.WindowStyle = [System.Diagnostics.ProcessWindowStyle]::Hidden
+            $process = New-Object System.Diagnostics.Process
+            $process.StartInfo = $startInfo
+            [void]$process.Start()
+            Start-Sleep -Seconds 5
+            $listener = @(Get-TargetListener $runnerRoot)
+          }
+          if ($listener.Count -eq 0) { throw 'ROBLOX_RUNNER_LISTENER_NOT_RECOVERED' }
+          Write-Host "ROBLOX_RUNNER_RECOVERY=HIDDEN_LOGON_LISTENER_RUNNING:$($listener[0].ProcessId)"
+          Write-Host 'ROBLOX_STUDIO_USER_PROFILE_PRESERVED=YES'
 
   bootstrap:
     name: install durable Roblox runner startup
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 5
     steps:
-      - name: Install Windows service with hidden Startup fallback
+      - name: Install hidden user-logon Startup launcher
         shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
-          $runnerRoot = 'C:\actions-runner'
-          $metadataPath = Join-Path $runnerRoot '.runner'
-          $runCmd = Join-Path $runnerRoot 'run.cmd'
-          $svcCmd = Join-Path $runnerRoot 'svc.cmd'
+          $expectedRunnerName = 'roblox-studio-local'
 
-          if (-not (Test-Path -LiteralPath $metadataPath)) { throw 'Roblox runner metadata missing' }
-          if (-not (Test-Path -LiteralPath $runCmd)) { throw 'Roblox runner run.cmd missing' }
-
-          $metadata = Get-Content -LiteralPath $metadataPath -Raw | ConvertFrom-Json
-          if ([string]$metadata.agentName -ne 'roblox-studio-local') { throw "Unexpected Roblox runner: $($metadata.agentName)" }
-
-          # 같은 러너가 자기 자신을 실행 중일 때 listener를 재시작하지 않는다.
-          # 대신 서비스 설치/자동 시작만 보장해 다음 재부팅부터 사용자 로그인 없이 복구되게 한다.
-          $service = Get-Service -ErrorAction SilentlyContinue |
-            Where-Object { $_.Name -like 'actions.runner.*' -and $_.Name -match 'roblox-studio-local' } |
-            Select-Object -First 1
-
-          if (-not $service -and (Test-Path -LiteralPath $svcCmd)) {
-            Push-Location $runnerRoot
-            try {
-              & $svcCmd install
-              $installExit = $LASTEXITCODE
-            } finally {
-              Pop-Location
-            }
-
-            $service = Get-Service -ErrorAction SilentlyContinue |
-              Where-Object { $_.Name -like 'actions.runner.*' -and $_.Name -match 'roblox-studio-local' } |
-              Select-Object -First 1
-
-            if (-not $service) {
-              throw "Roblox runner Windows service install failed: exit=$installExit"
-            }
+          function Get-RunnerMetadata([string]$root) {
+            if (-not $root) { return $null }
+            $metadataPath = Join-Path $root '.runner'
+            if (-not (Test-Path -LiteralPath $metadataPath)) { return $null }
+            try { return Get-Content -LiteralPath $metadataPath -Raw | ConvertFrom-Json } catch { return $null }
           }
 
-          if ($service) {
-            Set-Service -Name $service.Name -StartupType Automatic
-            Write-Host "ROBLOX_RUNNER_SERVICE=$($service.Name)"
-            Write-Host 'ROBLOX_RUNNER_SERVICE_AUTOSTART=PASS'
-          } else {
-            Write-Host 'ROBLOX_RUNNER_SERVICE_AUTOSTART=UNAVAILABLE_SVC_CMD'
+          function Test-RunnerRoot([string]$root) {
+            if (-not $root) { return $false }
+            if (-not (Test-Path -LiteralPath (Join-Path $root 'bin\Runner.Listener.exe'))) { return $false }
+            $metadata = Get-RunnerMetadata $root
+            return $metadata -and [string]$metadata.agentName -eq $expectedRunnerName
           }
 
-          # 서비스 설치가 불가능한 구형 runner 구성만 로그인 Startup fallback을 사용한다.
+          $listenerProcesses = @(Get-CimInstance Win32_Process -Filter "Name='Runner.Listener.exe'" -ErrorAction SilentlyContinue)
+          $runnerRoot = $null
+          foreach ($process in $listenerProcesses) {
+            if (-not $process.ExecutablePath) { continue }
+            $candidate = Split-Path (Split-Path $process.ExecutablePath -Parent) -Parent
+            if (Test-RunnerRoot $candidate) { $runnerRoot = $candidate; break }
+          }
+          if (-not $runnerRoot) {
+            foreach ($pattern in @(
+              'C:\actions-runner*','C:\github-actions-runner*',
+              'D:\actions-runner*','D:\github-actions-runner*',
+              'E:\actions-runner*','E:\github-actions-runner*',
+              (Join-Path $env:USERPROFILE 'actions-runner*'),
+              (Join-Path $env:USERPROFILE 'github-actions-runner*')
+            )) {
+              foreach ($dir in @(Get-ChildItem -Path $pattern -Directory -ErrorAction SilentlyContinue)) {
+                if (Test-RunnerRoot $dir.FullName) { $runnerRoot = $dir.FullName; break }
+              }
+              if ($runnerRoot) { break }
+            }
+          }
+          if (-not $runnerRoot) { throw 'ROBLOX_RUNNER_ROOT_NOT_FOUND' }
+
+          $listenerExe = Join-Path $runnerRoot 'bin\Runner.Listener.exe'
           $startupRoot = [Environment]::GetFolderPath('Startup')
           if (-not $startupRoot) { throw 'Windows Startup folder unavailable' }
-
           $startupPath = Join-Path $startupRoot 'Jaewoon-Roblox-Runner.vbs'
+
+          $vbsRoot = $runnerRoot.Replace('"','""')
+          $vbsListener = $listenerExe.Replace('"','""')
           $launcher = @"
           Set shell = CreateObject("WScript.Shell")
           Set svc = GetObject("winmgmts:\\.\root\cimv2")
-          Set runningService = svc.ExecQuery("SELECT * FROM Win32_Service WHERE Name LIKE 'actions.runner.%roblox-studio-local%' AND State='Running'")
-          Set runningListener = svc.ExecQuery("SELECT * FROM Win32_Process WHERE Name='Runner.Listener.exe'")
-          If runningService.Count = 0 And runningListener.Count = 0 Then
-            shell.CurrentDirectory = "C:\actions-runner"
-            shell.Run Chr(34) & "C:\actions-runner\run.cmd" & Chr(34), 0, False
+          target = "$vbsListener"
+          running = False
+          Set listeners = svc.ExecQuery("SELECT * FROM Win32_Process WHERE Name='Runner.Listener.exe'")
+          For Each p In listeners
+            If LCase(p.ExecutablePath) = LCase(target) Then
+              running = True
+              Exit For
+            End If
+          Next
+          If Not running Then
+            shell.CurrentDirectory = "$vbsRoot"
+            shell.Run Chr(34) & target & Chr(34) & " run", 0, False
           End If
           "@
-
           $launcher | Set-Content -LiteralPath $startupPath -Encoding ASCII
 
+          Write-Host "ROBLOX_RUNNER_ROOT=$runnerRoot"
           Write-Host "ROBLOX_RUNNER_STARTUP_LAUNCHER=$startupPath"
+          Write-Host 'ROBLOX_RUNNER_PATH_DISCOVERY=AUTO_METADATA'
           Write-Host 'ROBLOX_RUNNER_VISIBLE_CMD=NO'
           Write-Host 'ROBLOX_RUNNER_VISIBLE_POWERSHELL=NO'
           Write-Host 'ROBLOX_RUNNER_VISIBLE_APP=ROBLOX_STUDIO_ONLY'
-          Write-Host 'ROBLOX_RUNNER_REBOOT_AUTOSTART=WINDOWS_SERVICE_WITH_STARTUP_FALLBACK'
+          Write-Host 'ROBLOX_RUNNER_REBOOT_AUTOSTART=HIDDEN_USER_LOGON_STARTUP'
+          Write-Host 'ROBLOX_STUDIO_USER_PROFILE_PRESERVED=YES'
           Write-Host 'ROBLOX_RUNNER_HIDDEN_BOOTSTRAP=PASS'

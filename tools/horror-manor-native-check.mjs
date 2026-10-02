@@ -5,10 +5,12 @@ import zlib from 'node:zlib';
 import assert from 'node:assert/strict';
 const root='assets/roblox/midnight-manor/generated';
 const evidence=JSON.parse(fs.readFileSync(`${root}/roblox-asset.json`,'utf8'));
+const assetId=String(process.env.MANOR_NATIVE_ASSET_ID||evidence.assetId||'').trim();
+assert.ok(Number(assetId)>0,'Valid manor asset id required');
 const cookie=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
 assert.ok(cookie,'Existing account session required');
 const headers={cookie:cookie.includes('.ROBLOSECURITY=')?cookie:`.ROBLOSECURITY=${cookie};`};
-const response=await fetch(`https://assetdelivery.roblox.com/v1/asset/?id=${evidence.assetId}`,{headers,signal:AbortSignal.timeout(60000)});
+const response=await fetch(`https://assetdelivery.roblox.com/v1/asset/?id=${assetId}`,{headers,signal:AbortSignal.timeout(60000)});
 assert.ok(response.ok,`MANOR_NATIVE_DOWNLOAD_HTTP_${response.status}`);
 const file=Buffer.from(await response.arrayBuffer());
 assert.ok(file.length>1000,'Model is empty');
@@ -65,8 +67,9 @@ assert.ok(textures.length>=meshes*.8,`Imported color textures missing: ${texture
 assert.ok(!values.some(x=>['Script','LocalScript','ModuleScript','RemoteEvent','RemoteFunction','Tool'].includes(x.name)),'Unexpected executable asset content');
 for(const name of ['ButlerHead','ArchivistHead','CoffinLid'])assert.ok(names.includes(name),`Missing native node ${name}`);
 assert.ok(names.some(x=>x.startsWith('Butler_')),'Missing imported butler GLB');
-const result={assetId:evidence.assetId,meshCount:meshes,texturedMeshCount:textures.length,byteCount:file.length,classes:values,pass:true,qualityFloorEnforced:true,upperMeshCapBlocking:false,actualPlayTest:false,checkedAt:new Date().toISOString()};
-fs.writeFileSync(`${root}/native-import-check.json`,JSON.stringify(result,null,2)+'\n');
+const result={assetId,meshCount:meshes,texturedMeshCount:textures.length,byteCount:file.length,classes:values,pass:true,qualityFloorEnforced:true,upperMeshCapBlocking:false,actualPlayTest:false,checkedAt:new Date().toISOString()};
+const evidencePath=String(process.env.MANOR_NATIVE_EVIDENCE||`${root}/native-import-check.json`).trim();
+fs.writeFileSync(evidencePath,JSON.stringify(result,null,2)+'\n');
 // 검증한 바로 그 바이트를 Rojo의 ServerStorage에 넣는다. 서버 부팅 때 재다운로드하지 않는다.
 if(process.env.MANOR_NATIVE_MODEL)fs.writeFileSync(process.env.MANOR_NATIVE_MODEL,file);
-console.log(`MANOR_NATIVE_IMPORT_CHECK=PASS:${meshes}`);
+console.log(`MANOR_NATIVE_IMPORT_CHECK=PASS:asset=${assetId}:meshes=${meshes}:bytes=${file.length}`);

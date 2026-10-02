@@ -326,8 +326,13 @@ assert.match(runner,/vibe2-release-dispatch-recovery\.mjs/);
 assert.match(robloxRunnerHidden,/ROBLOX_RUNNER_VISIBLE_CMD=NO/);
 assert.match(robloxRunnerHidden,/ROBLOX_RUNNER_VISIBLE_POWERSHELL=NO/);
 assert.match(robloxRunnerHidden,/ROBLOX_RUNNER_VISIBLE_APP=ROBLOX_STUDIO_ONLY/);
-assert.match(robloxRunnerHidden,/ROBLOX_RUNNER_REBOOT_AUTOSTART=WINDOWS_SERVICE_WITH_STARTUP_FALLBACK/);
+assert.match(robloxRunnerHidden,/ROBLOX_RUNNER_REBOOT_AUTOSTART=HIDDEN_USER_LOGON_STARTUP/);
+assert.match(robloxRunnerHidden,/ROBLOX_RUNNER_PATH_DISCOVERY=AUTO_METADATA/);
+assert.match(robloxRunnerHidden,/ROBLOX_STUDIO_USER_PROFILE_PRESERVED=YES/);
+assert.match(robloxRunnerHidden,/Runner\.Listener\.exe/);
 assert.match(robloxRunnerHidden,/shell\.Run[\s\S]*, 0, False/);
+assert.doesNotMatch(robloxRunnerHidden,/\$runnerRoot\s*=\s*'C:\\\\actions-runner'/);
+assert.doesNotMatch(robloxRunnerHidden,/svc\.cmd|Start-Service|Set-Service|WINDOWS_SERVICE_WITH_STARTUP_FALLBACK/);
 assert.doesNotMatch(robloxRunnerHidden,/RepetitionInterval|WATCHDOG=YES/);
 
 const multiverse=lifecycle.intentAmplificationMultiverse;
