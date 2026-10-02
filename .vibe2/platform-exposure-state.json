@@ -3,16 +3,16 @@
   "kind": "platform-exposure-state",
   "authority": "OWNER_DIRECTIVE_2026-09-25",
   "policy": "PERPETUAL_INTERNAL_BUILDUP_WITH_FAIL_CLOSED_EXTERNAL_PUBLIC_HARD_GATE",
-  "updatedAt": "2026-10-02T14:15:35.229Z",
+  "updatedAt": "2026-10-02T14:17:32.038Z",
   "games": [
     {
-      "gameId": "daechung-rpg",
-      "gameName": "대충 RPG",
+      "gameId": "horror-escape-room",
+      "gameName": "심야 술래잡기",
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "homepageVisibility": "INTERNAL_COMPANY_HOME_FULL_DETAIL_ALLOWED",
       "suitability": {
-        "gameId": "daechung-rpg",
-        "gameName": "대충 RPG",
+        "gameId": "horror-escape-room",
+        "gameName": "심야 술래잡기",
         "executionMode": "ROBLOX_UNITY_CONCURRENT",
         "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
         "ROBLOX": {
@@ -61,8 +61,8 @@
           ]
         },
         "signals": {
-          "genre": "RPG",
-          "playMode": "COOP",
+          "genre": "Survival",
+          "playMode": "COMPETITIVE",
           "multiplayer": true,
           "deepSystemGenre": true,
           "socialGenre": false
@@ -73,18 +73,18 @@
         {
           "platform": "ROBLOX",
           "technicalReady": false,
-          "internalReleaseState": "NATIVE_DEVELOPMENT",
-          "internalReleaseReady": false,
+          "internalReleaseState": "INTERNAL_RELEASE_READY",
+          "internalReleaseReady": true,
           "releaseReadiness": {
             "version": 1,
-            "ready": false,
-            "homepageReady": false,
+            "ready": true,
+            "homepageReady": true,
             "technicalReady": false,
             "designReady": true,
             "lobbyReady": false,
-            "ownerConfirmed": false,
-            "basis": "PENDING_EVIDENCE",
-            "experience": "DEVELOPMENT",
+            "ownerConfirmed": true,
+            "basis": "OWNER_CONFIRMED",
+            "experience": "LOBBY",
             "checks": {
               "design": true,
               "publication": true,
@@ -93,14 +93,9 @@
               "movement": false,
               "noRuntimeErrors": false
             },
-            "blockers": [
-              "exactRuntime",
-              "lobby",
-              "movement",
-              "noRuntimeErrors"
-            ],
-            "sourceRevision": "e2b3b809861bed8c53ccf9e11326d09f8ea9f402",
-            "artifactIdentity": "sha256:8031e52fd5f3275e2fc563567413fb123f0746952daa2fc83f665e9adf4846da",
+            "blockers": [],
+            "sourceRevision": "eaed72bca6904aae805385fc732b0041fafa46f2",
+            "artifactIdentity": "sha256:b9f50157f3da037f9700f84fb3ad6c926c12325bcddd52b364d73622143d7055",
             "verifiedAt": null
           },
           "internalReleasePublished": false,
@@ -146,17 +141,16 @@
               "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
               "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
             ],
-            "candidateVersionNumber": 4
+            "candidateVersionNumber": 0
           },
           "perpetualBuildupActive": false,
           "testerTickets": {
             "openBlocking": [
-              "bug-2cfb0882ff23baaef682",
-              "bug-c56861641c064996c2d1",
-              "bug-6c53a36a6d111e2d487b",
-              "bug-f83e541f135414abb820",
-              "bug-8b468210dc1ff863a00f",
-              "bug-a3eadf254608ae413f00"
+              "bug-b021616100dca0c3a206",
+              "bug-b7c064342172f6862d62",
+              "bug-7f05f545355f823c22e3",
+              "bug-51e28af235567cbda4cf",
+              "bug-8993f93f8cb272a623ba"
             ]
           },
           "publication": {
@@ -674,13 +668,13 @@
       "externalPublicReleaseState": "INTERNAL_ONLY"
     },
     {
-      "gameId": "horror-escape-room",
-      "gameName": "심야 술래잡기",
+      "gameId": "daechung-rpg",
+      "gameName": "대충 RPG",
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "homepageVisibility": "INTERNAL_COMPANY_HOME_FULL_DETAIL_ALLOWED",
       "suitability": {
-        "gameId": "horror-escape-room",
-        "gameName": "심야 술래잡기",
+        "gameId": "daechung-rpg",
+        "gameName": "대충 RPG",
         "executionMode": "ROBLOX_UNITY_CONCURRENT",
         "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
         "ROBLOX": {
@@ -729,8 +723,8 @@
           ]
         },
         "signals": {
-          "genre": "Survival",
-          "playMode": "COMPETITIVE",
+          "genre": "RPG",
+          "playMode": "COOP",
           "multiplayer": true,
           "deepSystemGenre": true,
           "socialGenre": false
@@ -741,18 +735,18 @@
         {
           "platform": "ROBLOX",
           "technicalReady": false,
-          "internalReleaseState": "INTERNAL_RELEASE_READY",
-          "internalReleaseReady": true,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
-            "ready": true,
-            "homepageReady": true,
+            "ready": false,
+            "homepageReady": false,
             "technicalReady": false,
             "designReady": true,
             "lobbyReady": false,
-            "ownerConfirmed": true,
-            "basis": "OWNER_CONFIRMED",
-            "experience": "LOBBY",
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
             "checks": {
               "design": true,
               "publication": true,
@@ -761,9 +755,14 @@
               "movement": false,
               "noRuntimeErrors": false
             },
-            "blockers": [],
-            "sourceRevision": "eaed72bca6904aae805385fc732b0041fafa46f2",
-            "artifactIdentity": "sha256:b9f50157f3da037f9700f84fb3ad6c926c12325bcddd52b364d73622143d7055",
+            "blockers": [
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": "e2b3b809861bed8c53ccf9e11326d09f8ea9f402",
+            "artifactIdentity": "sha256:8031e52fd5f3275e2fc563567413fb123f0746952daa2fc83f665e9adf4846da",
             "verifiedAt": null
           },
           "internalReleasePublished": false,
@@ -809,16 +808,17 @@
               "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
               "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
             ],
-            "candidateVersionNumber": 0
+            "candidateVersionNumber": 4
           },
           "perpetualBuildupActive": false,
           "testerTickets": {
             "openBlocking": [
-              "bug-b021616100dca0c3a206",
-              "bug-b7c064342172f6862d62",
-              "bug-7f05f545355f823c22e3",
-              "bug-51e28af235567cbda4cf",
-              "bug-8993f93f8cb272a623ba"
+              "bug-2cfb0882ff23baaef682",
+              "bug-c56861641c064996c2d1",
+              "bug-6c53a36a6d111e2d487b",
+              "bug-f83e541f135414abb820",
+              "bug-8b468210dc1ff863a00f",
+              "bug-a3eadf254608ae413f00"
             ]
           },
           "publication": {
