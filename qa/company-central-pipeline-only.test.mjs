@@ -150,6 +150,18 @@ test('native development trigger ownership avoids duplicate central plus child p
   assert.ok(unityPush.includes('unity-games/**'));
 });
 
+test('platform exposure sync has no workflow-wide lock and Director has no hard-coded stale run ids',()=>{
+  const exposure=read('.github/workflows/company-platform-exposure-sync.yml');
+  const director=read('.github/workflows/director-supervisor.yml');
+  const jobsAt=exposure.indexOf('\njobs:\n');
+  assert.ok(jobsAt>0);
+  assert.doesNotMatch(exposure.slice(0,jobsAt),/\nconcurrency:/);
+  assert.match(exposure,/for attempt in 1 2 3 4/);
+  assert.match(exposure,/git push origin "HEAD:refs\/heads\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.doesNotMatch(director,/for stale_run_id in [0-9 ]+; do/);
+  assert.doesNotMatch(director,/OWNER_STALE_RUN_CLEANUP|DIRECTOR_OWNER_STALE_/);
+});
+
 test('director drains superseded runner backlog before noncritical supervision',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
   const jobsAt=director.indexOf('\njobs:\n');
