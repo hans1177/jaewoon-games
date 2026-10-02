@@ -406,14 +406,16 @@ test('5대3 6대2 7대1 열세 패시브는 양 진영 공통 에너지 보정�
  assert.match(client,/열세 패시브/);
 });
 
-test('기존 단말은 에너지 충전 거점으로 동작하고 탈출 승리 흔적은 제거된다',()=>{
+test('기존 단말은 충전과 4단계 탈출 목표를 함께 담당한다',()=>{
  assert.match(server,/Name="EnergyPrompt"/);
  assert.match(server,/StationRecharge/);
  assert.match(server,/StationCooldown/);
  assert.match(server,/Name="EnergyCorePrompt"/);
  assert.match(server,/EnergyCoreState/);
- assert.doesNotMatch(server,/Name="EscapePrompt"/);
- assert.doesNotMatch(server,/ActionText="탈출"/);
+ assert.match(server,/Name="EscapePrompt"/);
+ assert.match(server,/ActionText="탈출"/);
+ assert.match(server,/ObjectiveRound/);
+ assert.match(server,/EscapeUnlocked/);
 });
 
 test('세 맵에는 각자 다른 상호작용 콘텐츠가 있다',()=>{
