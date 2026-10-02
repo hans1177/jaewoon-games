@@ -5779,7 +5779,7 @@
     },
     "openCloudPressureObjective": "AVOID_NON_RUNTIME_MAIN_EDIT_PROBES_WHILE_PRESERVING_RECURRING_AND_RUNTIME_CAUSAL_OBSERVATION",
     "studioShellVisibility": "HIDDEN_CMD_AND_POWERSHELL_CHILDREN_STUDIO_GUI_ONLY",
-    "runnerHostBootstrap": "tools/roblox-runner-hidden.ps1",
+    "runnerHostBootstrap": ".github/workflows/company-roblox-runner-pwsh-bootstrap.yml#hidden-runner-bootstrap",
     "rebootSafeSessionCheckpoint": true,
     "sessionCheckpointAuthority": "company-runtime:development-queue.json#robloxStudioRuntimeSession",
     "interruptedSessionRequeuesExactArtifact": true,
