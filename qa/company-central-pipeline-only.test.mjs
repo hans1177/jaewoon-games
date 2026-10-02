@@ -30,6 +30,12 @@ test('platform-release-roadmap is the only production machine policy with author
   assert.equal(Object.hasOwn(roadmap,'legacyPolicyMirror'),false);
   assert.equal(roadmap.centralDocumentation.canonicalSet.policy,'company-learning/platform-release-roadmap.json');
 });
+test('obsolete Roblox runtime v8 migration helpers are removed',()=>{
+  assert.equal(exists('.github/workflows/roblox-runtime-v8-finalize.yml'),false);
+  assert.equal(exists('.github/workflows/roblox-runtime-v8-local-finalize.yml'),false);
+  assert.equal(exists('tools/company-finalize-roblox-runtime-v8.py'),false);
+});
+
 test('legacy autonomous top-level workflow namespace is removed',()=>{
   const files=fs.readdirSync(path.join(repoRoot,'.github/workflows'));
   const legacy=files.filter(name=>/^autonomous-.*\.ya?ml$/i.test(name));
