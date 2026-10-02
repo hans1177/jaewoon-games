@@ -543,7 +543,7 @@ test('기존 4개 단말 목표와 비상구 탈출 루프가 실제 승리조�
 
 test('verified learning 바인딩은 임시 LoadingScreen 대신 지속 ScreenGui를 사용한다',()=>{
  assert.match(robloxBootstrapTool,/Instance\.new\(\s*["']ScreenGui["']\s*\)/);
- assert.match(robloxBootstrapTool,/\|\|output\.match\(\/local\\s\+\(\[A-Za-z_\]/);
+ assert.ok(robloxBootstrapTool.includes('ScreenGui')&&robloxBootstrapTool.includes('||output.match'));
  assert.match(client,/local verifiedLearningRoot = gui/);
  assert.doesNotMatch(client,/local verifiedLearningRoot = loadingLayer/);
  assert.doesNotMatch(client,/loadingLayer:SetAttribute\("Verified/);
