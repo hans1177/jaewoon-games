@@ -2480,7 +2480,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-02T14:25:15.663Z",
+      "updatedAt": "2026-10-02T14:25:21.530Z",
       "robloxSourceCommit": "9472bd4b844466429db623f3319252e3d488efda",
       "robloxSourceBootstrapPassedAt": "2026-10-02T14:20:25.085Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -2718,7 +2718,27 @@
       "strictDesignReviewRefreshRequired": true,
       "ownerPreservationPresentationUpgrade": false,
       "presentationFirstPass": null,
-      "robloxExactRevisionPassed": true
+      "robloxExactRevisionPassed": true,
+      "robloxValidationTarget": {
+        "version": 1,
+        "gameId": "village-dungeons",
+        "universeId": "10768993470",
+        "placeId": "103084074848206",
+        "verified": false,
+        "verifiedAt": null,
+        "lastVerifiedAt": null,
+        "source": "canonical-dedicated-open-cloud-bootstrap",
+        "authority": "roblox-pre-f9-validation-target",
+        "dedicated": true,
+        "shared": false,
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "internalOnly": true,
+        "publicDiscoveryAllowed": false,
+        "bootstrapState": "CREATED_PRIVATE_UNPUBLISHED",
+        "reservedAt": "2026-10-02T14:25:21.530Z"
+      },
+      "robloxSharedTargetCurrent": false,
+      "robloxFastMvpSupersededBy": null
     },
     {
       "gameId": "cozy-island",
@@ -7037,7 +7057,7 @@
       "robloxFastMvpSupersededBy": null
     }
   ],
-  "updatedAt": "2026-10-02T14:25:15.663Z",
+  "updatedAt": "2026-10-02T14:25:21.530Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
