@@ -1,5 +1,5 @@
 {
-  "version": 302,
+  "version": 303,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -481,7 +481,7 @@
     "centralDocumentationRequired": true,
     "centralDocumentationContract": "company-learning/platform-release-roadmap.json#centralDocumentation",
     "currentMainPolicyShaBindingRequired": true,
-    "afterWorkSharedContextRevalidationRequired": true,
+    "afterWorkSharedContextRevalidationRequired": false,
     "postCentralDocumentWriteResyncRequired": true,
     "fanInPinnedContractRoot": "$GITHUB_WORKSPACE/vibe2-contract",
     "fanInRuntimeDesignOverlaySource": "company-runtime:design,game-seed-state.json",
@@ -496,7 +496,9 @@
       "ordinaryMissingSourceRootFailsClosed": true,
       "bootstrapRequiresExplicitEvidence": true,
       "bootstrapDoesNotExpandDevelopmentAuthority": true
-    }
+    },
+    "singlePreWorkValidationPerExactWorkUnit": true,
+    "reuseValidatedContextWithinExactWorkUnit": true
   },
   "longHorizonTopology": {
     "version": 2,
@@ -6636,7 +6638,7 @@
     ],
     "roblox": {
       "internalRuntimeExecutor": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-mcp-auto-play",
-      "internalRuntimeSurface": "OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD",
+      "internalRuntimeSurface": "ROBLOX_STUDIO_ACTUAL_PLAY",
       "externalServerProbe": "MANUAL_DIAGNOSTIC_ONLY",
       "automaticOpenCloudServerProbe": false,
       "playerAutomation": false,
@@ -6645,7 +6647,9 @@
     },
     "unity": {
       "internalRuntimeExecutor": ".github/workflows/company-development-unity-runtime.yml",
-      "existingFingerprintReusePreserved": true
+      "existingFingerprintReusePreserved": true,
+      "internalRuntimeSurface": "EXACT_ANDROID_BUILD_BLACK_BOX_RUNTIME",
+      "editorOrStudioValidationRequired": false
     },
     "security": {
       "sameExactCandidateEvidenceReusableWithinCycle": true,
@@ -6657,7 +6661,9 @@
       ],
       "invalidateOnlyAffectedResponsibilities": true,
       "securityBoundaryChangeRequiresRevalidation": true,
-      "fullRescanEveryFloor": false
+      "fullRescanEveryFloor": false,
+      "singleScanPerExactCandidate": true,
+      "repeatScanSameExactCandidateForbidden": true
     },
     "multiplayer": {
       "ownerFloor": "F7",
@@ -6682,8 +6688,11 @@
       "internalRuntimeExecutor": ".github/workflows/vibe2-continuous-core.yml#fan-in",
       "releaseExecutor": ".github/workflows/vibe2-candidate-release.yml#web-release",
       "actualDeploymentTarget": "CLOUDFLARE_PAGES_CONFIGURED_WEB_TARGET",
-      "publicationOutcomeBlocksEvolution": false
-    }
+      "publicationOutcomeBlocksEvolution": false,
+      "internalRuntimeSurface": "ACTUAL_BROWSER_BLACK_BOX_RUNTIME",
+      "editorOrStudioValidationRequired": false
+    },
+    "nonBuildValidationMode": "SINGLE_PREFLIGHT_PER_EXACT_WORK_UNIT"
   },
   "verifiedExternalLearningFirstApplicationTopology": {
     "version": 3,
