@@ -783,8 +783,8 @@
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "ACTIVE",
       "status": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "targetPlatform": "ROBLOX",
+      "selectedPlatform": "UNITY",
+      "targetPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -837,8 +837,8 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-10-02T01:24:10.538Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -868,7 +868,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-02T12:47:06.501Z",
+      "updatedAt": "2026-10-02T12:48:40.630Z",
       "robloxSourceCommit": "18141713083918f873f7b25fa0dea966f00f44ab",
       "robloxSourceBootstrapPassedAt": "2026-10-02T12:45:26.428Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -1026,7 +1026,7 @@
       "unityCandidateBranch": "development/unity-tech-horror-escape-room-36958178395",
       "unitySourceCommit": "188da3bb77d8184afc3e315552024915536a573a",
       "unityBuildRunId": 36958637457,
-      "unityRuntimeSmokeRunId": 37008459074,
+      "unityRuntimeSmokeRunId": 37008941281,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityF0ThroughF9Evidence": {
@@ -1083,7 +1083,7 @@
           }
         },
         "multiplayerRequired": true,
-        "verifiedAt": "2026-10-02T12:44:01.692Z"
+        "verifiedAt": "2026-10-02T12:48:40.630Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -2332,7 +2332,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-02T12:48:39.797Z",
+  "updatedAt": "2026-10-02T12:48:48.179Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
