@@ -41,13 +41,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          blender --background --python assets/roblox/midnight-manor/build.py -- --render
+          blender --background --python assets/roblox/midnight-manor/build.py
           test -s assets/roblox/midnight-manor/generated/manor-lobby.glb
-          test -s assets/roblox/midnight-manor/generated/review/butler-front.png
-          test -s assets/roblox/midnight-manor/generated/review/undertaker-front.png
-          test -s assets/roblox/midnight-manor/generated/review/archivist-front.png
+          test -s assets/roblox/midnight-manor/generated/build-evidence.json
+          test -s assets/roblox/midnight-manor/generated/import-bounds.json
           echo 'MANOR_CLOUD_BLENDER_BUILD=PASS'
       - name: Validate manor release contract
+        env:
+          MANOR_CLOUD_BUILD: '1'
         shell: bash
         run: node --test qa/horror-manor.test.mjs
       - name: Import verified original GLB
