@@ -24,6 +24,20 @@ local function namedParts(model,prefix)
  end
  return result
 end
+local function manorPlaque(parent,owner,origin)
+ local anchor=part(parent,"ManorOwnerPlaque",origin+Vector3.new(0,17.8,-.20),Vector3.new(8.2,1.45,.18),false)
+ anchor.Transparency=1;anchor.CanCollide=false;anchor.CanTouch=false;anchor.CanQuery=false
+ local gui=Instance.new("SurfaceGui");gui.Name="ManorOwnerPlaqueGui";gui.Adornee=anchor;gui.Face=Enum.NormalId.Back
+ gui.CanvasSize=Vector2.new(820,145);gui.AlwaysOnTop=false;gui.LightInfluence=.15;gui.Parent=anchor
+ local text=Instance.new("TextLabel");text.Name="OwnerPlaqueText";text.Size=UDim2.fromScale(1,1);text.BackgroundTransparency=1
+ text.Font=Enum.Font.Antique;text.TextScaled=true;text.TextColor3=Color3.fromRGB(222,196,137);text.TextStrokeTransparency=.68;text.Parent=gui
+ local function refresh()
+  local visibility=owner:GetAttribute("ManorVisibility")=="PUBLIC"and"공개"or"비공개"
+  text.Text=string.format("%s의 저택  ·  %s",owner.DisplayName,visibility)
+ end
+ refresh()
+ return anchor,refresh
+end
 local function stamp(p,speaker,text)
  p:SetAttribute("LobbyStoryEvent",speaker.."|"..text.."|"..tostring(workspace:GetServerTimeNow()))
 end
@@ -149,6 +163,7 @@ function Manor:Get(p)
  if p:GetAttribute("VisitedManorOwnerUserId")==nil then p:SetAttribute("VisitedManorOwnerUserId",0)end
  if p:GetAttribute("VisitedManorOwnerName")==nil then p:SetAttribute("VisitedManorOwnerName","")end
  p:SetAttribute("ManorVisitorCount",0)
+ room.ownerPlaque,room.refreshOwnerPlaque=manorPlaque(folder,p,origin)
  p.RespawnLocation=spawn
  local function prompt(name,pos,caption,menu)
   local anchor=part(folder,name,origin+pos,Vector3.new(1,1,1),false);anchor.CanCollide=false
@@ -341,6 +356,8 @@ function Manor:SetVisibility(owner,value)
  self:Get(owner)
  local visibility=string.upper(tostring(value or"PRIVATE"))=="PUBLIC"and"PUBLIC"or"PRIVATE"
  owner:SetAttribute("ManorVisibility",visibility)
+ local ownerRoom=self.rooms[owner]
+ if ownerRoom and ownerRoom.refreshOwnerPlaque then ownerRoom.refreshOwnerPlaque()end
  local ejected={}
  if visibility=="PRIVATE"then
   for _,visitor in ipairs(Players:GetPlayers())do
