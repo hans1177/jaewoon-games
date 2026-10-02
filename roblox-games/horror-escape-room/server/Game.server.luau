@@ -1070,7 +1070,7 @@ local function addEscapeGate(f,mapId,pos)
  prompt.Triggered:Connect(function(p)
   if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"or workspace:GetAttribute("EscapeUnlocked")~=true then return end
   p:SetAttribute("Escaped",true)
-  p:SetAttribute("MapContentFeedback","ESCAPED:"..mapId..":")
+  p:SetAttribute("MapContentFeedback","ESCAPED:"..mapId..":OK")
   workspace:SetAttribute("SurvivorEscapeTriggered",true)
  end)
  return gate
