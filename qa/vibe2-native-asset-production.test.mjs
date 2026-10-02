@@ -416,6 +416,23 @@ test('native asset production defaults to Roblox and exposes reproducible Blende
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('native planner preserves an existing Blender recipe as the DCC execution path',()=>{
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',
+    task:{gameId:'blender-recipe-demo',goal:'보스 3D 메시와 모션을 고품질로 다시 제작'},
+    manifest:{assets:[{
+      id:'boss-authoring-base',family:'CREATURE',types:['boss'],license:'project-original',
+      platforms:['roblox'],downloaded:false,sourceHash:'boss-source-v1',
+      sourceFiles:['assets/roblox/demo/build-boss.py','assets/roblox/demo/BOSS.md']
+    }]},
+    presetCatalog:{presets:[]}
+  });
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionRequired,true);
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionStatus,'EXISTING_AUTHORING_RECIPE_AVAILABLE');
+  assert.deepEqual([...plan.nativeAuthoringExecution.dcc.availableExistingRecipes],['assets/roblox/demo/build-boss.py']);
+  assert.equal(plan.nativeAuthoringExecution.dcc.availableExistingRecipeCount,1);
+});
+
 test('web-only assets are never reused directly by Unity or Roblox',()=>{
   const manifest={version:1,assets:[
     {id:'web-tree',path:'web-games/demo/assets/tree.png',types:['prop'],tags:['나무'],license:'CC0'},
