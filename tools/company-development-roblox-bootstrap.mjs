@@ -617,7 +617,11 @@ local verifiedExternalLearningDispositions = verifiedExternalLearningContext.Lea
     const at=requireMatch.index+requireMatch[0].length;
     output=output.slice(0,at)+'\n'+contextBlock+output.slice(at);
   }
-  const frameMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*Instance\.new\(\s*["']Frame["']\s*\)/);
+  // Existing games often create a temporary loading Frame first. Binding persistent learning/runtime
+  // behavior to that local frame can put generated code outside the frame's lexical scope and crash
+  // the entire LocalScript. Prefer the persistent ScreenGui root; fall back to a Frame only when needed.
+  const frameMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*Instance\.new\(\s*["']ScreenGui["']\s*\)/)
+    ||output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*Instance\.new\(\s*["']Frame["']\s*\)/);
   if(!frameMatch)throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_VISIBLE_TARGET_REQUIRED');
   const frameVar=frameMatch[1];
   const runtimeBlock=`-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_BEGIN
