@@ -1,0 +1,411 @@
+<!doctype html>
+<!-- 파일명: web-games/dice-battle-board/index.html -->
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#101827">
+<title>주사위 전투 보드</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#0b1220;--panel:#131d2e;--line:#2a3953;--ink:#f4f7ff;--muted:#a9b7cd;--gold:#ffd166;--blue:#4f86ff;--red:#ff6474;--green:#54d58c;--purple:#b888ff}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
+body{padding:env(safe-area-inset-top) 0 calc(82px + env(safe-area-inset-bottom))}
+button,select{font:inherit}
+button{touch-action:manipulation}
+.wrap{width:min(980px,100%);margin:auto;padding:10px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+h1{font-size:22px;margin:0}.tag{font-size:11px;color:#cbd7e9;background:#1b2940;border:1px solid #314463;border-radius:999px;padding:6px 9px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:11px}
+#setup{max-width:520px;margin:28px auto}
+#setup h2{margin:0 0 6px}#setup p{margin:0 0 14px;color:var(--muted);font-size:13px;line-height:1.5}
+.setupRow{display:grid;grid-template-columns:1fr;gap:9px}.setupRow label{font-size:12px;color:var(--muted);font-weight:800}
+select{width:100%;min-height:48px;border-radius:11px;border:1px solid #3a4c68;background:#0d1728;color:#fff;padding:0 12px}
+.primary,.secondary,.danger{min-height:48px;border:0;border-radius:11px;padding:0 14px;font-weight:950;color:#fff}
+.primary{background:#4779ec}.secondary{background:#31415a}.danger{background:#8f3d4a}
+.hidden{display:none!important}
+#notice{min-height:42px;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--gold);font-size:12px;font-weight:900;margin-bottom:8px}
+.players{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-bottom:8px}
+.player{min-width:0;padding:9px;border:1px solid #2c3b55;border-radius:12px;background:#0f1929}
+.player.current{outline:2px solid var(--gold)}.player.dead{opacity:.45;filter:grayscale(.5)}
+.playerHead{display:flex;align-items:center;justify-content:space-between;gap:5px}.playerHead b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.token{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;color:#06101b;font-size:10px;font-weight:1000}
+.player small{display:block;color:#9eacc2;font-size:9px;line-height:1.45;margin-top:4px}
+.hpbar{height:5px;border-radius:99px;background:#331f28;overflow:hidden;margin-top:6px}.hpbar i{display:block;height:100%;background:var(--green)}
+.boardPanel{padding:7px}
+.board{display:grid;grid-template-columns:repeat(10,minmax(62px,1fr));gap:4px;overflow-x:auto;padding-bottom:4px}
+.cell{position:relative;min-height:66px;border-radius:9px;border:1px solid #31435d;background:#1b293d;padding:5px;text-align:center}
+.cell b{display:block;font-size:9px}.cell small{font-size:8px;color:#c0cadb}
+.cell.start{background:#24413a}.cell.battle{background:#402933}.cell.boss{background:#4b2430}.cell.shop{background:#3d3520}.cell.heal{background:#1f3e34}.cell.event{background:#30284b}.cell.normal{background:#1b293d}
+.tokens{position:absolute;left:4px;right:4px;bottom:4px;display:flex;justify-content:center;gap:2px;flex-wrap:wrap}
+.miniToken{width:13px;height:13px;border-radius:50%;border:1px solid #fff9}
+.statusLine{display:flex;justify-content:space-between;gap:10px;margin-top:8px;color:var(--muted);font-size:11px}
+.log{margin-top:8px;max-height:120px;overflow:auto;font-size:10px;line-height:1.55;color:#c4d0e2}.log div{padding:3px 0;border-bottom:1px solid #202d43}
+.bottom{position:fixed;z-index:20;left:0;right:0;bottom:0;display:flex;justify-content:center;gap:8px;padding:8px max(10px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));background:#0b1220e8;border-top:1px solid #26354d;backdrop-filter:blur(10px)}
+.bottom button{width:min(44%,280px);min-height:54px}
+#diceFace{font-size:18px}
+.modal{position:fixed;z-index:50;inset:0;background:#030711c7;display:flex;align-items:center;justify-content:center;padding:12px}
+.modalCard{width:min(580px,100%);max-height:88vh;overflow:auto;background:#121d2f;border:1px solid #344762;border-radius:16px;padding:14px}
+.modalCard h2{margin:0 0 6px;font-size:20px}.modalCard p{margin:6px 0;color:#b8c5d8;font-size:12px;line-height:1.5}
+.modalActions{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}.modalActions button{flex:1;min-width:120px}
+.shopGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
+.item{border:1px solid #33455f;border-radius:10px;padding:9px;background:#0d1728}
+.item b{display:block;font-size:12px}.item small{display:block;min-height:30px;color:#9fb0c7;font-size:9px;margin:4px 0}.item button{width:100%;min-height:38px;border:0;border-radius:8px;background:#385b9d;color:#fff;font-weight:900;font-size:10px}.item button:disabled{opacity:.4}
+.battleBox{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.fighter{padding:10px;border:1px solid #33455f;border-radius:12px;background:#0e1828;text-align:center}.fighter strong{display:block;font-size:15px}.fighter span{font-size:11px;color:#b8c5d8}
+.battleLog{margin-top:8px;padding:8px;border-radius:10px;background:#091221;color:#d8e2f0;font-size:10px;line-height:1.55;min-height:54px}
+@media(max-width:700px){.players{grid-template-columns:repeat(2,minmax(0,1fr))}.board{grid-template-columns:repeat(7,minmax(52px,1fr))}.cell{min-height:58px}.shopGrid{grid-template-columns:1fr}.wrap{padding:7px}.top h1{font-size:19px}.tag{font-size:9px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><h1>주사위 전투 보드</h1><span class="tag">70칸 · 2~4인 · 턴제</span></div>
+
+  <section id="setup" class="panel">
+    <h2>게임 시작</h2>
+    <p>너 1명 + AI로 2~4명이 한 보드를 돌면서 싸워. 마지막까지 살아남으면 승리야.</p>
+    <div class="setupRow">
+      <label>총 참가자 수
+        <select id="playerCount"><option value="2">2명</option><option value="3" selected>3명</option><option value="4">4명</option></select>
+      </label>
+      <button id="startBtn" class="primary">새 게임 시작</button>
+      <button id="continueBtn" class="secondary hidden">이어하기</button>
+    </div>
+  </section>
+
+  <main id="game" class="hidden">
+    <div id="notice" class="panel">준비</div>
+    <div id="players" class="players"></div>
+    <div class="panel boardPanel"><div id="board" class="board"></div></div>
+    <div class="statusLine"><span id="turnInfo">-</span><span id="boardInfo">전투33 · 보스3 · 상점5 · 회복4 · 이벤트3 · 일반22</span></div>
+    <div id="log" class="panel log"></div>
+  </main>
+</div>
+
+<div id="bottom" class="bottom hidden">
+  <button id="rollBtn" class="primary"><span id="diceFace">🎲</span> 주사위 굴리기</button>
+  <button id="restartBtn" class="secondary">처음부터</button>
+</div>
+
+<div id="modal" class="modal hidden"><div id="modalCard" class="modalCard"></div></div>
+
+<script>
+const SAVE_KEY='dice-battle-board-v1';
+const COLORS=['#5aa2ff','#ff6f7d','#67d98e','#d89bff'];
+const TILE_LABEL={normal:'일반',battle:'전투',boss:'보스',shop:'상점',heal:'회복',event:'이벤트'};
+const TILE_ICON={normal:'·',battle:'⚔',boss:'☠',shop:'🛒',heal:'♥',event:'?'};
+
+const ENEMIES=[
+{id:'SLIME',name:'슬라임',hp:45,atk:8,def:0,gold:15,special:''},
+{id:'GOBLIN',name:'고블린',hp:60,atk:11,def:1,gold:20,special:'steal'},
+{id:'WOLF',name:'늑대',hp:70,atk:12,def:1,gold:24,special:'bleed'},
+{id:'SKELETON',name:'해골 병사',hp:80,atk:14,def:2,gold:28,special:''},
+{id:'SPIDER',name:'독거미',hp:65,atk:10,def:1,gold:30,special:'poison'},
+{id:'ORC',name:'오크',hp:100,atk:18,def:3,gold:38,special:'heavy'},
+{id:'MAGE',name:'어둠 마법사',hp:85,atk:16,def:2,gold:42,special:'weaken'},
+{id:'KNIGHT',name:'타락 기사',hp:120,atk:20,def:5,gold:50,special:'guard'},
+{id:'VAMPIRE',name:'흡혈귀',hp:110,atk:17,def:3,gold:55,special:'drain'},
+{id:'GOLEM',name:'골렘',hp:150,atk:22,def:7,gold:62,special:'stun'},
+{id:'WITCH',name:'저주 마녀',hp:105,atk:18,def:2,gold:66,special:'curse'},
+{id:'TROLL',name:'트롤',hp:180,atk:24,def:4,gold:75,special:'regen'},
+{id:'ASSASSIN',name:'그림자 암살자',hp:120,atk:25,def:3,gold:82,special:'crit'},
+{id:'DRAGONLING',name:'어린 용',hp:200,atk:28,def:6,gold:95,special:'burn'},
+{id:'DARK_KNIGHT',name:'흑기사',hp:240,atk:32,def:8,gold:115,special:'heavy'}
+];
+const BOSSES=[
+{id:'OGRE_KING',name:'오우거 왕',hp:380,atk:35,def:7,gold:180,special:'bossSmash'},
+{id:'ANCIENT_DRAGON',name:'고대 용',hp:520,atk:43,def:10,gold:260,special:'bossFire'},
+{id:'DEMON_KING',name:'마왕',hp:680,atk:52,def:12,gold:380,special:'bossCurse'}
+];
+const WEAPONS=[
+{name:'나무검',atk:5,cost:80},{name:'철검',atk:10,cost:130},{name:'창',atk:14,cost:190},{name:'전투도끼',atk:18,cost:260},
+{name:'기사검',atk:23,cost:350},{name:'마법검',atk:28,cost:470},{name:'용살검',atk:35,cost:620},{name:'전설의 검',atk:45,cost:850}
+];
+const ARMORS=[
+{name:'가죽 갑옷',def:2,cost:90},{name:'철 갑옷',def:4,cost:170},{name:'기사 갑옷',def:6,cost:270},
+{name:'마법 갑옷',def:8,cost:400},{name:'용 갑옷',def:11,cost:580},{name:'전설 갑옷',def:15,cost:800}
+];
+const EVENTS=[
+{name:'보물상자',good:true,desc:'골드 +100',run:p=>p.gold+=100},
+{name:'큰 보물상자',good:true,desc:'골드 +180',run:p=>p.gold+=180},
+{name:'회복의 샘',good:true,desc:'체력 50% 회복',run:p=>heal(p,.5)},
+{name:'완전 휴식',good:true,desc:'체력 100% 회복',run:p=>p.hp=p.maxHp},
+{name:'행운의 주사위',good:true,desc:'다음 주사위 +2 (최대 6)',run:p=>p.lucky=true},
+{name:'공격 강화',good:true,desc:'다음 전투 공격력 +25%',run:p=>p.attackBuff=true},
+{name:'방어 강화',good:true,desc:'다음 전투 받는 피해 -25%',run:p=>p.defenseBuff=true},
+{name:'부활의 축복',good:true,desc:'부활 +1 (최대 2)',run:p=>p.revives=Math.min(2,p.revives+1)},
+{name:'상인의 선물',good:true,desc:'다음 상점 장비 50% 할인',run:p=>p.discount=true},
+{name:'도둑',good:false,desc:'보유 골드 20% 잃음',run:p=>p.gold=Math.floor(p.gold*.8)},
+{name:'함정',good:false,desc:'최대체력 20% 피해',run:p=>damageOutsideBattle(p,Math.ceil(p.maxHp*.2),'함정')},
+{name:'독 안개',good:false,desc:'다음 전투 3턴 동안 매턴 5 피해',run:p=>p.prePoison=3},
+{name:'장비 파손',good:false,desc:'다음 전투 공격력 -20%',run:p=>p.attackPenalty=true},
+{name:'발목 부상',good:false,desc:'다음 주사위 -2 (최소 1)',run:p=>p.ankle=true},
+{name:'매복',good:false,desc:'즉시 일반 적과 전투',ambush:true,run:p=>{}}
+];
+
+let state=null;
+let battle=null;
+const $=s=>document.querySelector(s);
+function seededShuffle(arr){
+  let seed=117702;
+  for(let i=arr.length-1;i>0;i--){
+    seed=(seed*1664525+1013904223)>>>0;
+    const j=seed%(i+1);
+    const t=arr[i];arr[i]=arr[j];arr[j]=t;
+  }
+  return arr;
+}
+function buildBoard(){
+  const arr=[];
+  const add=(type,n)=>{for(let i=0;i<n;i++)arr.push(type)};
+  add('normal',21);add('battle',33);add('boss',3);add('shop',5);add('heal',4);add('event',3);
+  seededShuffle(arr);
+  return ['normal'].concat(arr);
+}
+const BOARD=buildBoard();
+
+function makePlayer(i){
+  return {id:i,name:i===0?'나':'AI '+i,ai:i!==0,color:COLORS[i],pos:0,laps:0,rolls:0,maxHp:120,hp:120,baseAtk:18,gold:100,revives:2,dead:false,weapon:-1,armor:-1,lucky:false,ankle:false,attackBuff:false,defenseBuff:false,discount:false,prePoison:0,attackPenalty:false};
+}
+function startGame(count){
+  state={players:Array.from({length:count},(_,i)=>makePlayer(i)),current:0,turn:1,phase:'ROLL',logs:[]};
+  battle=null;
+  $('#setup').classList.add('hidden');$('#game').classList.remove('hidden');$('#bottom').classList.remove('hidden');
+  addLog('게임 시작 · '+count+'명 참가');
+  save();render();updateTurn();
+}
+function save(){if(state&&state.phase==='ROLL')localStorage.setItem(SAVE_KEY,JSON.stringify(state))}
+function load(){
+  try{const s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(!s||!Array.isArray(s.players))return false;state=s;state.phase='ROLL';battle=null;$('#setup').classList.add('hidden');$('#game').classList.remove('hidden');$('#bottom').classList.remove('hidden');render();updateTurn();return true}catch{return false}
+}
+function restart(){localStorage.removeItem(SAVE_KEY);location.reload()}
+function addLog(text){if(!state)return;state.logs.unshift(text);state.logs=state.logs.slice(0,28);renderLog()}
+function notice(text){$('#notice').textContent=text}
+function render(){
+  if(!state)return;
+  renderPlayers();renderBoard();renderLog();
+  const p=state.players[state.current];
+  $('#turnInfo').textContent='턴 '+state.turn+' · '+p.name+' · '+(p.ai?'AI':'내 차례');
+  $('#rollBtn').disabled=p.ai||p.dead||state.phase!=='ROLL';
+}
+function renderPlayers(){
+  const box=$('#players');box.innerHTML='';
+  state.players.forEach((p,i)=>{
+    const w=p.weapon>=0?WEAPONS[p.weapon].name:'기본 무기',a=p.armor>=0?ARMORS[p.armor].name:'갑옷 없음';
+    const el=document.createElement('div');el.className='player'+(i===state.current?' current':'')+(p.dead?' dead':'');
+    el.innerHTML='<div class="playerHead"><b>'+p.name+'</b><span class="token" style="background:'+p.color+'">'+(i+1)+'</span></div>'+
+      '<small>HP '+Math.max(0,p.hp)+'/'+p.maxHp+' · 골드 '+p.gold+'<br>부활 '+p.revives+' · '+p.laps+'바퀴 · '+w+' / '+a+'</small>'+
+      '<div class="hpbar"><i style="width:'+Math.max(0,Math.round(p.hp/p.maxHp*100))+'%"></i></div>';
+    box.appendChild(el);
+  });
+}
+function renderBoard(){
+  const box=$('#board');box.innerHTML='';
+  BOARD.forEach((type,i)=>{
+    const cell=document.createElement('div');cell.className='cell '+type+(i===0?' start':'');
+    cell.innerHTML='<b>'+(i===0?'START':(i+1)+' · '+TILE_ICON[type])+'</b><small>'+(i===0?'시작':TILE_LABEL[type])+'</small><div class="tokens"></div>';
+    const tokens=cell.querySelector('.tokens');
+    state.players.filter(p=>!p.dead&&p.pos===i).forEach(p=>{const t=document.createElement('span');t.className='miniToken';t.style.background=p.color;tokens.appendChild(t)});
+    box.appendChild(cell);
+  });
+}
+function renderLog(){if(!state)return;$('#log').innerHTML=state.logs.map(x=>'<div>'+x+'</div>').join('')}
+function updateTurn(){
+  if(!state)return;
+  const winner=alivePlayers();
+  if(winner.length<=1){
+    state.phase='GAMEOVER';render();
+    const name=winner[0]?winner[0].name:'승자 없음';
+    showModal('<h2>게임 종료</h2><p><b>'+name+'</b> 승리</p><div class="modalActions"><button class="primary" onclick="restart()">새 게임</button></div>');
+    localStorage.removeItem(SAVE_KEY);return;
+  }
+  const p=state.players[state.current];
+  if(p.dead){nextTurn();return}
+  notice(p.ai?p.name+'가 주사위를 굴릴 차례':'네 차례야. 주사위를 굴려.');
+  render();
+  if(p.ai)setTimeout(()=>rollCurrent(),650);
+}
+function alivePlayers(){return state.players.filter(p=>!p.dead)}
+function nextTurn(){
+  if(!state||state.phase==='GAMEOVER')return;
+  let n=state.current;
+  do{n=(n+1)%state.players.length}while(state.players[n].dead&&n!==state.current);
+  state.current=n;state.turn++;state.phase='ROLL';save();render();updateTurn();
+}
+function rollCurrent(){
+  if(!state||state.phase!=='ROLL')return;
+  const p=state.players[state.current];if(p.dead)return;
+  state.phase='MOVE';
+  let raw=1+Math.floor(Math.random()*6),move=raw;
+  if(p.lucky){move=Math.min(6,move+2);p.lucky=false}
+  if(p.ankle){move=Math.max(1,move-2);p.ankle=false}
+  p.rolls++;
+  const total=p.pos+move;
+  const gained=Math.floor(total/70);p.laps+=gained;p.pos=total%70;
+  addLog(p.name+' · 주사위 '+raw+(move!==raw?' → 이동 '+move:'')+' · '+(p.pos+1)+'번 칸');
+  notice(p.name+' 이동 '+move+'칸');
+  render();
+  setTimeout(()=>resolveTile(p),350);
+}
+function resolveTile(p){
+  if(!state||p.dead){nextTurn();return}
+  const type=BOARD[p.pos];
+  if(type==='normal'){addLog(p.name+' · 일반칸');finishResolution();return}
+  if(type==='heal'){const before=p.hp;heal(p,.7);addLog(p.name+' · 회복칸 · HP +'+(p.hp-before));finishResolution();return}
+  if(type==='event'){resolveEvent(p);return}
+  if(type==='shop'){if(p.ai){aiShop(p);finishResolution()}else openShop(p);return}
+  if(type==='battle'){startBattle(p,randomEnemy(),false);return}
+  if(type==='boss'){
+    const boss=BOSSES[((p.pos+state.turn)%BOSSES.length)];
+    if(p.rolls<5){
+      if(p.ai){addLog(p.name+' · 보스칸 스킵');finishResolution();return}
+      showModal('<h2>보스칸</h2><p>'+boss.name+' 등장. 아직 주사위를 5번 미만 굴려서 스킵할 수 있어.</p><div class="modalActions"><button class="danger" id="bossFight">싸운다</button><button class="secondary" id="bossSkip">스킵</button></div>');
+      $('#bossFight').onclick=()=>{hideModal();startBattle(p,boss,true)};
+      $('#bossSkip').onclick=()=>{hideModal();addLog(p.name+' · 보스칸 스킵');finishResolution()};
+      return;
+    }
+    startBattle(p,boss,true);return;
+  }
+}
+function finishResolution(){state.phase='ROLL';render();nextTurn()}
+function heal(p,ratio){p.hp=Math.min(p.maxHp,p.hp+Math.ceil(p.maxHp*ratio))}
+function reviveOrEliminate(p,reason){
+  if(p.hp>0)return false;
+  if(p.revives>0){p.revives--;p.hp=Math.ceil(p.maxHp*.5);addLog(p.name+' · '+reason+'로 쓰러졌지만 부활 · HP '+p.hp);return true}
+  p.hp=0;p.dead=true;addLog(p.name+' · 탈락');return false;
+}
+function damageOutsideBattle(p,amount,reason){p.hp-=Math.max(1,amount);reviveOrEliminate(p,reason)}
+function randomEnemy(){return ENEMIES[Math.floor(Math.random()*ENEMIES.length)]}
+function resolveEvent(p){
+  const e=EVENTS[Math.floor(Math.random()*EVENTS.length)];
+  e.run(p);addLog(p.name+' · 이벤트 ['+e.name+'] '+e.desc);render();
+  if(e.ambush){startBattle(p,randomEnemy(),false);return}
+  if(p.dead){finishResolution();return}
+  if(!p.ai){
+    showModal('<h2>'+(e.good?'좋은 이벤트':'안 좋은 이벤트')+' · '+e.name+'</h2><p>'+e.desc+'</p><div class="modalActions"><button class="primary" id="eventOk">확인</button></div>');
+    $('#eventOk').onclick=()=>{hideModal();finishResolution()};
+  }else setTimeout(finishResolution,450);
+}
+function playerAtk(p){return p.baseAtk+(p.weapon>=0?WEAPONS[p.weapon].atk:0)}
+function playerDef(p){return p.armor>=0?ARMORS[p.armor].def:0}
+function startBattle(p,base,isBoss){
+  state.phase='BATTLE';
+  battle={playerId:p.id,isBoss,enemy:{...base,hpNow:base.hp,maxHp:base.hp},poison:p.prePoison||0,bleed:0,burn:0,stun:0,weaken:0,guard:0,attackMul:(p.attackBuff?1.25:1)*(p.attackPenalty?.8:1),defenseMul:p.defenseBuff?.75:1,lines:[]};
+  p.prePoison=0;p.attackBuff=false;p.attackPenalty=false;p.defenseBuff=false;
+  addBattleLine((isBoss?'보스 ':'')+base.name+' 등장');
+  renderBattle();
+  if(p.ai)setTimeout(aiBattleStep,450);
+}
+function addBattleLine(t){battle.lines.unshift(t);battle.lines=battle.lines.slice(0,8)}
+function renderBattle(){
+  if(!battle)return;
+  const p=state.players[battle.playerId],e=battle.enemy;
+  const statuses=[];
+  if(battle.poison)statuses.push('독 '+battle.poison);if(battle.bleed)statuses.push('출혈 '+battle.bleed);if(battle.burn)statuses.push('화상 '+battle.burn);if(battle.stun)statuses.push('기절');if(battle.weaken)statuses.push('약화 '+battle.weaken);
+  showModal('<h2>'+(battle.isBoss?'보스전':'전투')+' · '+e.name+'</h2>'+
+    '<div class="battleBox"><div class="fighter"><strong>'+p.name+'</strong><span>HP '+p.hp+'/'+p.maxHp+'<br>공격 '+playerAtk(p)+' · 방어 '+playerDef(p)+(statuses.length?'<br>'+statuses.join(' · '):'')+'</span></div>'+
+    '<div class="fighter"><strong>'+e.name+'</strong><span>HP '+Math.max(0,e.hpNow)+'/'+e.maxHp+'<br>공격 '+e.atk+' · 방어 '+e.def+'<br>보상 '+e.gold+'골드</span></div></div>'+
+    '<div class="battleLog">'+battle.lines.join('<br>')+'</div>'+
+    '<div class="modalActions">'+(p.ai?'<button class="secondary" disabled>AI 전투 진행 중</button>':'<button class="danger" id="attackBtn">공격</button>')+'</div>');
+  if(!p.ai){const b=$('#attackBtn');if(b)b.onclick=humanBattleStep}
+  renderPlayers();
+}
+function applyBattleStatusDamage(p){
+  let total=0;
+  if(battle.poison>0){battle.poison--;total+=5;addBattleLine('독 피해 5')}
+  if(battle.bleed>0){battle.bleed--;total+=4;addBattleLine('출혈 피해 4')}
+  if(battle.burn>0){battle.burn--;total+=6;addBattleLine('화상 피해 6')}
+  if(total){p.hp-=total;if(p.hp<=0)reviveOrEliminate(p,'상태이상')}
+}
+function humanBattleStep(){battleRound(false)}
+function aiBattleStep(){if(!battle)return;battleRound(true)}
+function battleRound(auto){
+  if(!battle)return;
+  const p=state.players[battle.playerId],e=battle.enemy;
+  applyBattleStatusDamage(p);
+  if(p.dead){endBattle(false);return}
+  if(battle.stun>0){battle.stun--;addBattleLine(p.name+' 기절로 공격 실패')}
+  else{
+    let atk=playerAtk(p)*battle.attackMul;
+    if(battle.weaken>0){atk*=.75;battle.weaken--}
+    const dmg=Math.max(1,Math.round(atk)-e.def-(battle.guard||0));
+    battle.guard=0;e.hpNow-=dmg;addBattleLine(p.name+' 공격 · '+dmg+' 피해');
+    if(e.hpNow<=0){p.gold+=e.gold;addLog(p.name+' · '+e.name+' 처치 · +'+e.gold+'골드');endBattle(true);return}
+  }
+  enemyAction(p,e);
+  if(p.dead){endBattle(false);return}
+  renderBattle();
+  if(auto)setTimeout(aiBattleStep,420);
+}
+function enemyAction(p,e){
+  let mult=1,extra='';
+  const r=Math.random();
+  if(e.special==='steal'&&r<.3){const stolen=Math.min(p.gold,15);p.gold-=stolen;extra=' · 골드 '+stolen+' 강탈'}
+  if(e.special==='bleed'&&r<.35){battle.bleed=3;extra=' · 출혈'}
+  if(e.special==='poison'&&r<.35){battle.poison=3;extra=' · 독'}
+  if(e.special==='heavy'&&r<.3){mult=1.6;extra=' · 강타'}
+  if(e.special==='weaken'&&r<.3){battle.weaken=2;extra=' · 약화'}
+  if(e.special==='guard'&&r<.35){battle.guard=5;extra=' · 다음 피해 방어'}
+  if(e.special==='drain'&&r<.35){mult=1.15;extra=' · 흡혈'}
+  if(e.special==='stun'&&r<.25){battle.stun=1;extra=' · 기절'}
+  if(e.special==='curse'&&r<.3){battle.weaken=2;battle.poison=Math.max(battle.poison,2);extra=' · 저주'}
+  if(e.special==='crit'&&r<.25){mult=2;extra=' · 치명타'}
+  if(e.special==='burn'&&r<.35){battle.burn=2;extra=' · 화상'}
+  if(e.special==='bossSmash'&&r<.35){mult=1.8;battle.stun=1;extra=' · 왕의 강타'}
+  if(e.special==='bossFire'&&r<.4){mult=1.5;battle.burn=3;extra=' · 용의 화염'}
+  if(e.special==='bossCurse'&&r<.4){mult=1.55;battle.poison=3;battle.weaken=2;extra=' · 마왕의 저주'}
+  const raw=Math.round(e.atk*mult);
+  const dmg=Math.max(1,Math.round((raw-playerDef(p))*battle.defenseMul));
+  p.hp-=dmg;addBattleLine(e.name+' 공격 · '+dmg+' 피해'+extra);
+  if(e.special==='drain'&&extra)e.hpNow=Math.min(e.maxHp,e.hpNow+Math.ceil(dmg*.5));
+  if(e.special==='regen'&&r<.35){e.hpNow=Math.min(e.maxHp,e.hpNow+18);addBattleLine(e.name+' 체력 18 회복')}
+  if(p.hp<=0)reviveOrEliminate(p,e.name+' 공격');
+}
+function endBattle(won){
+  const p=state.players[battle.playerId];
+  battle=null;hideModal();render();
+  if(!won&&p.dead){notice(p.name+' 탈락')}
+  setTimeout(finishResolution,300);
+}
+function showModal(html){$('#modalCard').innerHTML=html;$('#modal').classList.remove('hidden')}
+function hideModal(){$('#modal').classList.add('hidden');$('#modalCard').innerHTML=''}
+function openShop(p){
+  const canGear=p.laps>=1,discount=p.discount?.5:1;
+  let html='<h2>상점</h2><p>'+(canGear?'장비 구매 가능':'장비는 맵을 1바퀴 돈 뒤부터 구매 가능')+(p.discount?' · 이번 장비 1개 50% 할인':'')+'</p>';
+  html+='<div class="item"><b>체력 회복</b><small>50골드 · 최대체력의 50% 회복</small><button id="shopHeal">회복</button></div>';
+  html+='<h3>무기 8종</h3><div class="shopGrid">';
+  WEAPONS.forEach((w,i)=>{const price=Math.ceil(w.cost*discount);html+='<div class="item"><b>'+w.name+'</b><small>공격 +'+w.atk+' · '+price+'골드</small><button data-weapon="'+i+'" '+(!canGear||p.gold<price||p.weapon===i?'disabled':'')+'>구매</button></div>'});
+  html+='</div><h3>방어구 6종</h3><div class="shopGrid">';
+  ARMORS.forEach((a,i)=>{const price=Math.ceil(a.cost*discount);html+='<div class="item"><b>'+a.name+'</b><small>방어 +'+a.def+' · '+price+'골드</small><button data-armor="'+i+'" '+(!canGear||p.gold<price||p.armor===i?'disabled':'')+'>구매</button></div>'});
+  html+='</div><div class="modalActions"><button class="secondary" id="shopClose">상점 나가기</button></div>';
+  showModal(html);
+  $('#shopHeal').disabled=p.gold<50||p.hp>=p.maxHp;
+  $('#shopHeal').onclick=()=>{if(p.gold<50||p.hp>=p.maxHp)return;p.gold-=50;heal(p,.5);addLog(p.name+' · 상점 회복 · -50골드');render();openShop(p)};
+  document.querySelectorAll('[data-weapon]').forEach(btn=>btn.onclick=()=>buyGear(p,'weapon',Number(btn.dataset.weapon)));
+  document.querySelectorAll('[data-armor]').forEach(btn=>btn.onclick=()=>buyGear(p,'armor',Number(btn.dataset.armor)));
+  $('#shopClose').onclick=()=>{hideModal();finishResolution()};
+}
+function buyGear(p,type,index){
+  if(p.laps<1)return;
+  const item=type==='weapon'?WEAPONS[index]:ARMORS[index];
+  const price=Math.ceil(item.cost*(p.discount?.5:1));if(p.gold<price)return;
+  p.gold-=price;p[type]=index;
+  if(p.discount)p.discount=false;
+  addLog(p.name+' · '+item.name+' 구매 · -'+price+'골드');render();openShop(p);
+}
+function aiShop(p){
+  if(p.hp<p.maxHp*.55&&p.gold>=50){p.gold-=50;heal(p,.5);addLog(p.name+' · 상점에서 체력 회복')}
+  if(p.laps<1)return;
+  const discount=p.discount?.5:1;
+  const w=[...WEAPONS].map((x,i)=>({x,i})).filter(o=>o.i>p.weapon&&Math.ceil(o.x.cost*discount)<=p.gold).pop();
+  if(w){const price=Math.ceil(w.x.cost*discount);p.gold-=price;p.weapon=w.i;p.discount=false;addLog(p.name+' · '+w.x.name+' 구매');return}
+  const a=[...ARMORS].map((x,i)=>({x,i})).filter(o=>o.i>p.armor&&Math.ceil(o.x.cost*discount)<=p.gold).pop();
+  if(a){const price=Math.ceil(a.x.cost*discount);p.gold-=price;p.armor=a.i;p.discount=false;addLog(p.name+' · '+a.x.name+' 구매')}
+}
+
+$('#startBtn').onclick=()=>startGame(Number($('#playerCount').value));
+$('#continueBtn').onclick=()=>load();
+$('#rollBtn').onclick=()=>rollCurrent();
+$('#restartBtn').onclick=()=>{if(confirm('현재 게임을 지우고 처음부터 할까?'))restart()};
+if(localStorage.getItem(SAVE_KEY))$('#continueBtn').classList.remove('hidden');
+</script>
+</body>
+</html>
