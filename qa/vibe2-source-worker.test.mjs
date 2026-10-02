@@ -79,6 +79,8 @@ test('hero asset routing selects stronger local model without changing generatio
   const route=resolveAssetSourceModel(workOrder,'qwen3:1.7b');
   assert.equal(route.heroRequested,true);
   assert.equal(route.selectedModel,'qwen3:4b-instruct');
+  assert.equal(route.cacheFamily,'vibe2-ollama-v6');
+  assert.equal(route.cacheKey,'qwen3-4b-instruct');
   assert.equal(route.generationBudgetUnchanged,true);
   assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'primary'}),4);
 });
@@ -101,7 +103,10 @@ test('native asset authoring evidence requires real engine-native source delta a
     'model:PivotTo(CFrame.new(0,4,0))'
   ].join('\n')}]}});
   assert.equal(strong.nativeTextAuthored,true);
-  assert.equal(strong.status,'NATIVE_SOURCE_AUTHORED_RUNTIME_REQUIRED');
+  assert.equal(strong.dccRequired,true);
+  assert.equal(strong.dccAuthored,false);
+  assert.equal(strong.dccStatus,'DCC_AUTHORING_EXECUTOR_REQUIRED');
+  assert.equal(strong.status,'NATIVE_SOURCE_AUTHORED_DCC_EXECUTOR_REQUIRED');
   assert.equal(strong.runtimeVerified,false);
 });
 
