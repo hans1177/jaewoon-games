@@ -108,17 +108,12 @@ class Scene:
             if p[1]>0:p[0]+=lean
         f=[[0,3,2,1],[4,5,6,7],[0,4,7,3],[1,2,6,5],[0,1,5,4],[3,7,6,2]]
         o=self.node(name,self.mesh(name,v,f,mat),pos,rot,parent=parent)
-        # 0.12 stud 미만의 얇은 납선/트림은 챔퍼가 화면에 보이지 않는데 삼각형만 크게 늘린다.
-        # 두꺼운 건축/가구 부품만 기존 단일 챔퍼를 유지한다.
-        if min(size)>=.12:
-            bevel=o.modifiers.new('Carved_edges','BEVEL');bevel.width=min(.085,min(size)*.18);bevel.segments=1
+        # Roblox 모바일 예산: 실루엣을 유지하는 단일 챔퍼로 상자형 건축 부품의 중복 폴리곤을 줄인다.
+        bevel=o.modifiers.new('Carved_edges','BEVEL');bevel.width=min(.085,min(size)*.18);bevel.segments=1
         return o
 
     def lathe(self,name,pos,r0,r1,height,mat,sides=24,parent=None):
-        # NPC/주요 영웅 파츠는 기존 분할을 유지하고, 환경의 작은 20-side 이하 원통만
-        # 실루엣 차이가 거의 없는 8~14 side 범위로 낮춘다.
-        if parent is None and sides<=20:sides=max(8,int(round(sides*.70)))
-        sides=max(8,sides);v=[]
+        sides=max(20,sides);v=[]
         for r,y in [(r0,-height/2),(r1,height/2)]:
             for i in range(sides):
                 a=math.tau*i/sides;v.append((math.cos(a)*r,y,math.sin(a)*r))
@@ -182,11 +177,7 @@ class Scene:
         data=self.mesh(name,verts,faces,mat)
         for face in data.polygons:face.use_smooth=False
         o=self.node(name,data,pos,rot,parent=parent)
-        # NPC 의상 패널은 2단 곡률을 그대로 유지한다. 환경의 얇은 박쥐/가시/안개 판은
-        # bevel을 제거해 외곽선은 동일하게 유지하면서 불필요한 측면 분할을 없앤다.
-        if parent is not None or depth>=.12:
-            bevel=o.modifiers.new('Soft_seam','BEVEL');bevel.width=min(.035,depth*.24)
-            bevel.segments=2 if parent is not None else 1
+        bevel=o.modifiers.new('Soft_seam','BEVEL');bevel.width=min(.035,depth*.24);bevel.segments=2
         return o
 
     def capsule(self,name,pos,height,radius,depth,mat,parent=None,taper=.82):
@@ -204,10 +195,7 @@ class Scene:
     def curve_tube(self,name,points,radii,depths,mat,sides=28,parent=None):
         """굽은 팔/다리/손잡이를 위한 경로 기반 연속 곡면."""
         assert len(points)>=2 and len(points)==len(radii)==len(depths)
-        # NPC 팔·손은 parent가 있어 기존 분할을 유지한다. 환경의 18-side 이하 작은
-        # 덩굴/가시/철책만 8~13 side로 줄여 동일 실루엣에서 삼각형을 절약한다.
-        if parent is None and sides<=18:sides=max(8,int(round(sides*.72)))
-        sides=max(8,sides);verts=[]
+        sides=max(18,sides);verts=[]
         vectors=[Vector(p) for p in points]
         previous_u=None
         for j,center in enumerate(vectors):
@@ -419,56 +407,32 @@ class Scene:
 
     def batch_static(self):
         # 장식의 수는 유지하고 같은 재질의 고정 소품만 병합한다. 움직이는 노드는 보존한다.
-        keep=('CoffinLid','CoffinHand','ArmorHelmet','LittleGhost',
+        keep=('Butler','Archivist','Undertaker','CoffinLid','CoffinHand','ArmorHelmet','LittleGhost',
               'TeaCup','Tea','ChandelierFlame','MirrorPupil','FamilyPortrait','PortraitCanvas','HearthFlame',
               'MapPin','GhostRelic_','RareRelic_','MemoryRelic','MapMasterpiece_','GallerySet_',
               'FireplaceFeature_','MasterCollectionRelic','ManorCrestSegment',
               'LivingCurtain','LivingVineTip','LivingBranch','BackdropCloud','BackdropMist','BackdropBat',
               'ChandelierDrop','ChandelierPearDrop','PaperMoonHalo','JackGlow','GargoyleEye',
               'BackWall','HallFloor','Courtyard','CrookedRoof','ClockPendulum','EntryDoor')
-        npc_roles=('Butler','Archivist','Undertaker')
-        npc_dynamic=('Iris','Pupil','UpperLid','LowerLid','Tray','Ledger','Pen','Key','Spade','PocketWatch','CandleFlame')
-        head_tokens=('Head','Hair','Sclera','Brow','Nose','Lip','MouthCorner','TempleFold','ChinFold','Ear','Moustache','Glass','Hat')
-        def npc_region(name,role):
-            local=name[len(role):]
-            # 핵심 sculpted head 노드는 이름/정체성을 그대로 보존한다.
-            if name==role+'Head':return None
-            if any(token in local for token in npc_dynamic):return None
-            if any(token in local for token in head_tokens):return 'Head'
-            if '_Hand-1' in local or '_Finger-1' in local or '_Thumb-1' in local:return 'HandL'
-            if '_Hand1' in local or '_Finger1' in local or '_Thumb1' in local:return 'HandR'
-            return 'Body'
         groups={}
         bpy.context.view_layer.update()
         for o in list(self.collection.objects):
             if o.type!='MESH' or o.name.startswith(keep) or 'Flame' in o.name:continue
-            role=next((r for r in npc_roles if o.name.startswith(r)),None)
-            region=npc_region(o.name,role) if role else ''
-            if role and region is None:continue
             material=o.data.materials[0] if len(o.data.materials)==1 else None
             if not material:continue
             # 재질 복제본도 원본 이미지와 색이 같으면 함께 묶는다.
             bs=material.node_tree.nodes.get('Principled BSDF') if material.use_nodes else None
             textures=tuple(n.image.name for n in material.node_tree.nodes if n.type=='TEX_IMAGE' and n.image) if material.use_nodes else ()
-            material_key=(textures,tuple(bs.inputs['Base Color'].default_value) if bs else tuple(material.diffuse_color),material.get('manorFinish','SmoothPlastic'))
-            # NPC는 역할+움직임 영역을 키에 넣어 서로 다른 NPC/머리/손이 한 메시로 합쳐지지 않게 한다.
-            key=(role or '',region,material_key)
+            key=(textures,tuple(bs.inputs['Base Color'].default_value) if bs else tuple(material.diffuse_color),material.get('manorFinish','SmoothPlastic'))
             groups.setdefault(key,[]).append(o)
-        static_index=0
-        npc_index={r:0 for r in npc_roles}
-        for key,objects in groups.items():
+        for index,objects in enumerate(groups.values()):
             if len(objects)<2:continue
             bpy.ops.object.select_all(action='DESELECT')
             for o in objects:o.select_set(True)
             bpy.context.view_layer.objects.active=objects[0]
             bpy.ops.object.convert(target='MESH')
             bpy.ops.object.join()
-            combined=bpy.context.object
-            role,region,_=key
-            if role:
-                combined.name=role+'_'+region+'Batch'+str(npc_index[role]);npc_index[role]+=1
-            else:
-                combined.name='ManorDetail'+str(static_index);static_index+=1
+            combined=bpy.context.object;combined.name='ManorDetail'+str(index)
             material=combined.data.materials[0]
             combined.data.materials.clear();combined.data.materials.append(material)
             for polygon in combined.data.polygons:polygon.material_index=0
