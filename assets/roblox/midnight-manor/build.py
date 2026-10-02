@@ -108,13 +108,16 @@ class Scene:
             if p[1]>0:p[0]+=lean
         f=[[0,3,2,1],[4,5,6,7],[0,4,7,3],[1,2,6,5],[0,1,5,4],[3,7,6,2]]
         o=self.node(name,self.mesh(name,v,f,mat),pos,rot,parent=parent)
-        # Roblox 모바일 예산: 실루엣을 유지하는 단일 챔퍼로 상자형 건축 부품의 중복 폴리곤을 줄인다.
-        bevel=o.modifiers.new('Carved_edges','BEVEL');bevel.width=min(.085,min(size)*.18);bevel.segments=1
+        # 0.12 stud 미만의 얇은 납선/트림은 챔퍼가 화면에 보이지 않는데 삼각형만 크게 늘린다.
+        # 두꺼운 건축/가구 부품만 기존 단일 챔퍼를 유지한다.
+        if min(size)>=.12:
+            bevel=o.modifiers.new('Carved_edges','BEVEL');bevel.width=min(.085,min(size)*.18);bevel.segments=1
         return o
 
     def lathe(self,name,pos,r0,r1,height,mat,sides=24,parent=None):
-        # 호출부가 작은 배경/장식에 12~18 sides를 명시하면 그대로 존중한다.
-        # NPC/주요 실루엣은 기존 20~36 sides 호출값을 유지한다.
+        # NPC/주요 영웅 파츠는 기존 분할을 유지하고, 환경의 작은 20-side 이하 원통만
+        # 실루엣 차이가 거의 없는 8~14 side 범위로 낮춘다.
+        if parent is None and sides<=20:sides=max(8,int(round(sides*.70)))
         sides=max(8,sides);v=[]
         for r,y in [(r0,-height/2),(r1,height/2)]:
             for i in range(sides):
@@ -179,9 +182,11 @@ class Scene:
         data=self.mesh(name,verts,faces,mat)
         for face in data.polygons:face.use_smooth=False
         o=self.node(name,data,pos,rot,parent=parent)
-        bevel=o.modifiers.new('Soft_seam','BEVEL');bevel.width=min(.035,depth*.24)
-        # NPC 의상 패널은 기존 2단 곡률을 유지하고, 환경 문양은 1단 챔퍼로 실루엣만 보존한다.
-        bevel.segments=2 if parent is not None else 1
+        # NPC 의상 패널은 2단 곡률을 그대로 유지한다. 환경의 얇은 박쥐/가시/안개 판은
+        # bevel을 제거해 외곽선은 동일하게 유지하면서 불필요한 측면 분할을 없앤다.
+        if parent is not None or depth>=.12:
+            bevel=o.modifiers.new('Soft_seam','BEVEL');bevel.width=min(.035,depth*.24)
+            bevel.segments=2 if parent is not None else 1
         return o
 
     def capsule(self,name,pos,height,radius,depth,mat,parent=None,taper=.82):
@@ -199,8 +204,9 @@ class Scene:
     def curve_tube(self,name,points,radii,depths,mat,sides=28,parent=None):
         """굽은 팔/다리/손잡이를 위한 경로 기반 연속 곡면."""
         assert len(points)>=2 and len(points)==len(radii)==len(depths)
-        # 작은 덩굴/가시/철책은 호출부의 12~14 sides를 유지하고,
-        # NPC 팔·손과 주요 난간은 기존 18~28 sides를 그대로 쓴다.
+        # NPC 팔·손은 parent가 있어 기존 분할을 유지한다. 환경의 18-side 이하 작은
+        # 덩굴/가시/철책만 8~13 side로 줄여 동일 실루엣에서 삼각형을 절약한다.
+        if parent is None and sides<=18:sides=max(8,int(round(sides*.72)))
         sides=max(8,sides);verts=[]
         vectors=[Vector(p) for p in points]
         previous_u=None
@@ -425,6 +431,8 @@ class Scene:
         head_tokens=('Head','Hair','Sclera','Brow','Nose','Lip','MouthCorner','TempleFold','ChinFold','Ear','Moustache','Glass','Hat')
         def npc_region(name,role):
             local=name[len(role):]
+            # 핵심 sculpted head 노드는 이름/정체성을 그대로 보존한다.
+            if name==role+'Head':return None
             if any(token in local for token in npc_dynamic):return None
             if any(token in local for token in head_tokens):return 'Head'
             if '_Hand-1' in local or '_Finger-1' in local or '_Thumb-1' in local:return 'HandL'
