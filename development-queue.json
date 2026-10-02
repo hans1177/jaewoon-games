@@ -9,8 +9,8 @@
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "ACTIVE",
       "status": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "targetPlatform": "ROBLOX",
+      "selectedPlatform": "UNITY",
+      "targetPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -63,7 +63,7 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "VIBE_INTERNAL_PLAY",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-02T01:24:10.538Z",
       "saveNormalizationRequired": true,
@@ -94,7 +94,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-02T03:22:58.346Z",
+      "updatedAt": "2026-10-02T03:23:21.692Z",
       "robloxSourceCommit": "b953d4fb6e4121fe7fb62a23eace4ea7c3871f85",
       "robloxSourceBootstrapPassedAt": "2026-10-02T03:03:09.588Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -359,7 +359,128 @@
         "rebootSafeCheckpoint": true,
         "hostStateAuthoritative": false,
         "companyRuntimeAuthoritative": true
-      }
+      },
+      "platformAdapter": "tools/company-development-unity-platform.mjs",
+      "unityCandidateBranch": "development/unity-tech-daechung-rpg-36859359319",
+      "unitySourceCommit": "dcb0c574594500da5c1eba3830e956dacd6aab6c",
+      "unityBuildRunId": 36958766481,
+      "unityRuntimeSmokeRunId": 36959942763,
+      "unityIndependentQaRunId": null,
+      "unityRegressionRunId": null,
+      "unityF0ThroughF9Evidence": {
+        "version": 2,
+        "platform": "UNITY",
+        "sourceRevision": "dcb0c574594500da5c1eba3830e956dacd6aab6c",
+        "artifactIdentity": "sha256:81879044f99ec1783be7015b7de553f00e875681a5549a95f1656ee17d10e4c2",
+        "sourceRootTreeSha": "f07770c67f822a90555f53d48caedb317e29c8da",
+        "evidenceMode": "F0_COMPILE_PLUS_ONE_EXACT_ANDROID_BLACK_BOX_RUNTIME_F1_F8_PLUS_F9_EVIDENCE_FAN_IN",
+        "singleRuntimeSessionF1ThroughF8": true,
+        "f9RuntimeReplayRequired": false,
+        "floors": {
+          "F0": {
+            "state": "PASS",
+            "authority": "UNITY_EDITOR_BUILD_COMPILE_AND_EXACT_SOURCE_ARTIFACT_BINDING"
+          },
+          "F1": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION"
+          },
+          "F2": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION"
+          },
+          "F3": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION"
+          },
+          "F4": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION"
+          },
+          "F5": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION_PLUS_INDEPENDENT_QA"
+          },
+          "F6": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION_PLUS_INDEPENDENT_QA"
+          },
+          "F7": {
+            "state": "FAIL",
+            "authority": "UNITY_MULTIPLAYER_QA_EVIDENCE",
+            "participantCount": 0,
+            "authoritativeSync": false
+          },
+          "F8": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION_PLUS_INDEPENDENT_QA"
+          },
+          "F9": {
+            "state": "FAIL",
+            "authority": "F0_TO_F8_EVIDENCE_FAN_IN_NO_RUNTIME_REPLAY"
+          }
+        },
+        "multiplayerRequired": true,
+        "verifiedAt": "2026-10-02T03:23:21.692Z"
+      },
+      "unityCanonicalEvidenceBound": false,
+      "unityF9ReleaseRegressionPassed": false,
+      "unityF9ReleaseRegressionPassedAt": null,
+      "unityCanonicalPublishPending": false,
+      "unityInternalReleaseReady": false,
+      "unityInternalReleaseAt": null,
+      "unityInternalReleaseEvidence": null,
+      "unityExecutionEvidence": {
+        "version": 4,
+        "platform": "UNITY",
+        "sourceRevision": "dcb0c574594500da5c1eba3830e956dacd6aab6c",
+        "sourceRootTreeSha": "f07770c67f822a90555f53d48caedb317e29c8da",
+        "sourceFingerprint": "d019adeefe574f588aa708e4f85e0638cdebeac6c7d93bd8848f3fd42bc55867",
+        "buildOrPackagePassed": true,
+        "artifactIdentity": "sha256:81879044f99ec1783be7015b7de553f00e875681a5549a95f1656ee17d10e4c2",
+        "runtimePassed": false,
+        "independentQaPassed": false,
+        "multiplayerPassed": false,
+        "regressionPassed": false,
+        "rawStageResults": {
+          "runtime": false,
+          "independentQa": false,
+          "regression": false
+        },
+        "canonicalEvidenceBound": false,
+        "f0ToF9Passed": false,
+        "exactRevision": true,
+        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
+        "failureStage": "F1_SERVER_BOOT",
+        "failureSignature": "0868e0111a4f323f50f79a8e7dd2b67608df925c8ff30f4ab0d3e2324b8f49b0"
+      },
+      "executionEvidence": {
+        "version": 4,
+        "platform": "UNITY",
+        "sourceRevision": "dcb0c574594500da5c1eba3830e956dacd6aab6c",
+        "sourceRootTreeSha": "f07770c67f822a90555f53d48caedb317e29c8da",
+        "sourceFingerprint": "d019adeefe574f588aa708e4f85e0638cdebeac6c7d93bd8848f3fd42bc55867",
+        "buildOrPackagePassed": true,
+        "artifactIdentity": "sha256:81879044f99ec1783be7015b7de553f00e875681a5549a95f1656ee17d10e4c2",
+        "runtimePassed": false,
+        "independentQaPassed": false,
+        "multiplayerPassed": false,
+        "regressionPassed": false,
+        "rawStageResults": {
+          "runtime": false,
+          "independentQa": false,
+          "regression": false
+        },
+        "canonicalEvidenceBound": false,
+        "f0ToF9Passed": false,
+        "exactRevision": true,
+        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
+        "failureStage": "F1_SERVER_BOOT",
+        "failureSignature": "0868e0111a4f323f50f79a8e7dd2b67608df925c8ff30f4ab0d3e2324b8f49b0"
+      },
+      "resumeStage": "F1_SERVER_BOOT",
+      "failureCount": 1,
+      "contractCanaryPassed": false
     },
     {
       "gameId": "horror-escape-room",
@@ -853,7 +974,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-10-02T03:22:58.346Z",
+  "updatedAt": "2026-10-02T03:23:24.488Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
