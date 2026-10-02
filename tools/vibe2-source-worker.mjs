@@ -437,7 +437,6 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
   });
 }
 
-function escapeRegex(value=''){return String(value??'').replace(/[.*+?^$()|[\]\\{}]/g,'\\export function robloxDeterministicPresentationEligible(order={}){');}
 export function collectNativeAssetRuntimePromotionCandidates({order={},candidate={}}={}){
   const target=clean(order?.target).toLowerCase();
   if(!assetDevelopmentTask(order)||!['roblox','unity'].includes(target))return Object.freeze([]);
@@ -467,7 +466,7 @@ export function collectNativeAssetRuntimePromotionCandidates({order={},candidate
       const robloxAssetId=clean(asset?.robloxAssetId);
       if(!id||asset?.productionVerified===true||asset?.verifiedCompanyReusable===true||!license||!sourceHash)continue;
       const evidence=[];
-      if(robloxAssetId&&new RegExp('rbxassetid:\\/\\/'+escapeRegex(robloxAssetId)+'\\b','i').test(changedText))evidence.push('ROBLOX_ASSET_ID');
+      if(robloxAssetId&&new RegExp('rbxassetid:\\/\\/'+robloxAssetId+'\\b','i').test(changedText))evidence.push('ROBLOX_ASSET_ID');
       if(assetPath&&changedText.includes(assetPath))evidence.push('ASSET_PATH');
       if(changedText.includes('"'+id+'"')||changedText.includes("'"+id+"'"))evidence.push('ASSET_ID');
       if(!evidence.length)continue;
