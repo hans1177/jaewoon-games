@@ -795,8 +795,14 @@ test('실제 캐릭터 스폰은 목적 월드 바닥 Raycast와 아바타 높�
  assert.match(server,/local function groundedRootTarget\(p,pos\)/);
  assert.match(server,/local lobbyDestination=pos\.Z>=180/);
  assert.match(server,/workspace:Raycast\(Vector3\.new\(pos\.X,rayTop,pos\.Z\),Vector3\.new\(0,-rayLength,0\),params\)/);
- assert.match(server,/local standingOffset=math\.max\(1,tonumber\(h\.HipHeight\)or 0\)\+\(r\.Size\.Y\*\.5\)/);
+ assert.match(server,/local standingOffset=\(tonumber\(h\.HipHeight\)or 0\)\+\(r\.Size\.Y\*\.5\)/);
+ assert.match(server,/if h\.RigType==Enum\.HumanoidRigType\.R6 then/);
+ assert.match(server,/standingOffset=\(r\.Size\.Y\*\.5\)\+\(leg and leg\.Size\.Y or 2\)/);
+ assert.doesNotMatch(server,/standingOffset=math\.max\(1,tonumber\(h\.HipHeight\)or 0\)/);
  assert.match(server,/local targetY=groundY\+standingOffset\+\.03/);
+ assert.match(client,/local groundOffset=\(h and tonumber\(h\.HipHeight\)or 0\)\+\(rr\.Size\.Y\*\.5\)/);
+ assert.match(client,/groundOffset=\(rr\.Size\.Y\*\.5\)\+\(leg and leg\.Size\.Y or 2\)/);
+ assert.doesNotMatch(client,/local groundOffset=\(h and tonumber\(h\.HipHeight\)or 2\)/);
  assert.match(server,/if lobbyDestination then targetY=math\.clamp\(targetY,2\.8,5\.2\)else targetY=math\.clamp\(targetY,2\.8,6\.5\)end/);
  const groundBlock=server.slice(server.indexOf('local function groundedRootTarget'),server.indexOf('local function teleport',server.indexOf('local function groundedRootTarget')));
  assert.match(groundBlock,/local maxGroundY=lobbyDestination and\(pos\.Y\+1\.5\)or\(pos\.Y\+3\)/);

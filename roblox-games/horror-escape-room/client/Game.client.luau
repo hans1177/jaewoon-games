@@ -1282,7 +1282,13 @@ RunService.RenderStepped:Connect(function(dt)
   local rr=row.root
   if rr and rr.Parent and row.model and row.model.Parent then
    local h=row.source:FindFirstChildOfClass("Humanoid")
-   local groundOffset=(h and tonumber(h.HipHeight)or 2)+(rr.Size.Y*.5)
+   local groundOffset=(h and tonumber(h.HipHeight)or 0)+(rr.Size.Y*.5)
+   if h and h.RigType==Enum.HumanoidRigType.R6 then
+    local leg=row.source:FindFirstChild("Left Leg")or row.source:FindFirstChild("Right Leg")
+    groundOffset=(rr.Size.Y*.5)+(leg and leg.Size.Y or 2)
+   else
+    groundOffset=math.max(rr.Size.Y*.5,groundOffset)
+   end
    local last=row.lastPos or rr.Position
    local velocity=(rr.Position-last).Magnitude/math.max(dt,1/120)
    row.lastPos=rr.Position
