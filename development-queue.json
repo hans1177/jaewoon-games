@@ -649,7 +649,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-02T09:28:07.982Z",
+      "updatedAt": "2026-10-02T09:28:14.291Z",
       "robloxSourceCommit": "64532238f7988ce6fafc3a4c788a0841cc778d2a",
       "robloxSourceBootstrapPassedAt": "2026-10-02T09:26:40.620Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -862,18 +862,42 @@
         "authority": "roblox-open-cloud-pre-f9-validation-candidate"
       },
       "robloxRuntimeFoundationPassed": false,
-      "robloxRuntimeFoundationEvidence": null,
+      "robloxRuntimeFoundationEvidence": {
+        "version": 2,
+        "gameId": "horror-escape-room",
+        "sourceRevision": "64532238f7988ce6fafc3a4c788a0841cc778d2a",
+        "artifactIdentity": "sha256:a7d7bd552aac9a89e75c2933206e365aecfd6607f3b7c8d7be151a333fa76f01",
+        "artifactRunId": 36989047594,
+        "universeId": "10768961379",
+        "placeId": "130054603482321",
+        "candidateVersionNumber": 3,
+        "expectedVersionNumber": 3,
+        "observedVersionNumber": null,
+        "exactGame": true,
+        "exactPlace": true,
+        "exactVersion": false,
+        "exactEngineVersion": true,
+        "engineExecuted": true,
+        "simulationRunning": false,
+        "serverBootObserved": false,
+        "blockers": [
+          "runtime-sentinel-unavailable"
+        ],
+        "observedAt": "2026-10-02T09:28:14.291Z",
+        "workflowRunId": 36989595242,
+        "authority": "exact-engine-version-awaiting-real-server-boot"
+      },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 0,
+      "robloxRuntimeRetryCount": 1,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
-      "robloxMultiplayerQaPassed": false,
+      "robloxMultiplayerQaPassed": true,
       "robloxIndependentQaPassed": false,
       "robloxIndependentQaPassedAt": null,
       "robloxRegressionPassed": false,
@@ -892,17 +916,17 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT",
       "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-runtime-foundation-awaiting-real-server-boot"
       ],
       "robloxExactRevisionPassed": true,
       "robloxMultiplayerQaEvidence": {
         "version": 2,
         "gameId": "horror-escape-room",
-        "sourceRevision": "3078ffbe9473110bdbfedc86674955d11d358d39",
-        "artifactIdentity": "sha256:b5e249c0efdacde3a27f98c8bb60298e5ce1511ec27562e8857afb89ee72fb93",
-        "candidateVersionNumber": 36964644360,
+        "sourceRevision": "64532238f7988ce6fafc3a4c788a0841cc778d2a",
+        "artifactIdentity": "sha256:a7d7bd552aac9a89e75c2933206e365aecfd6607f3b7c8d7be151a333fa76f01",
+        "candidateVersionNumber": 3,
         "passed": true,
         "codeContractPassed": true,
         "checks": {
@@ -914,9 +938,9 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-02T05:30:45.716Z"
+        "verifiedAt": "2026-10-02T09:28:14.291Z"
       },
-      "robloxMultiplayerQaPassedAt": "2026-10-02T04:55:55.965Z",
+      "robloxMultiplayerQaPassedAt": "2026-10-02T09:28:14.291Z",
       "robloxStudioRuntimeSession": {
         "version": 1,
         "sessionId": "36961339568:horror-escape-room:36961212185:36961212185",
@@ -1093,7 +1117,8 @@
       "robloxSecurityReleaseEvidence": null,
       "robloxPresentationCompletionEvidence": null,
       "robloxReleaseStabilityEvidence": null,
-      "robloxPublicReleaseFinalEvidence": null
+      "robloxPublicReleaseFinalEvidence": null,
+      "robloxRuntimeLastObservationAttemptAt": "2026-10-02T09:28:14.291Z"
     },
     {
       "gameId": "cozy-island",
@@ -1608,7 +1633,7 @@
       "robloxPublicReleaseFinalEvidence": null
     }
   ],
-  "updatedAt": "2026-10-02T09:28:07.982Z",
+  "updatedAt": "2026-10-02T09:28:14.291Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
