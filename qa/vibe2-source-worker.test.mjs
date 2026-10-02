@@ -8,7 +8,7 @@ import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
-import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
@@ -110,6 +110,27 @@ test('native asset authoring evidence requires real engine-native source delta a
   assert.equal(strong.runtimeVerified,false);
 });
 
+test('asset runtime promotion candidates require exact source binding to an unverified asset',()=>{
+  const workOrder=order({target:'roblox',root:'roblox-games/demo',responsibleFiles:['roblox-games/demo/client/Game.client.luau'],taskId:'asset-promotion'});
+  workOrder.selectedTask={id:workOrder.taskId,gameId:'demo',target:'roblox',assetProductionLane:true,evidence:['asset-production-parallel:v1']};
+  workOrder.assetProduction={decisions:[{type:'enemy',qualityDNA:{profile:'CREATURE'},reuseCandidates:[
+    {id:'wolf-derived',family:'CREATURE',license:'project-original-derivative',path:'assets/wolf-derived.glb',sourceHash:'wolf-source',artifactHash:'wolf-artifact',productionVerified:false},
+    {id:'already-verified',family:'CREATURE',license:'project-original',robloxAssetId:'123456789',sourceHash:'verified-source',productionVerified:true},
+    {id:'unused-spider',family:'CREATURE',license:'project-original',robloxAssetId:'987654321',sourceHash:'spider-source',productionVerified:false}
+  ]}]};
+  const candidate={edits:[{path:'client/Game.client.luau',replace:[
+    'local WOLF_ASSET = "wolf-derived"',
+    'local WOLF_SOURCE = "assets/wolf-derived.glb"',
+    'local VERIFIED = "rbxassetid://123456789"'
+  ].join('\n')}]};
+  const rows=collectNativeAssetRuntimePromotionCandidates({order:workOrder,candidate});
+  assert.deepEqual(rows.map(row=>row.assetId),['wolf-derived']);
+  assert.equal(rows[0].sourceHash,'wolf-source');
+  assert.equal(rows[0].artifactHash,'wolf-artifact');
+  assert.equal(rows[0].candidateSourceBindingVerified,true);
+  assert.ok(rows[0].bindingEvidence.includes('ASSET_ID'));
+  assert.ok(rows[0].bindingEvidence.includes('ASSET_PATH'));
+});
 test('game context capsule keeps responsibility save style and verified memory through focused retries',()=>{
   const relative='client/Game.client.luau';
   const workOrder=order({target:'roblox',root:'roblox-games/demo',responsibleFiles:['roblox-games/demo/'+relative],taskId:'context-capsule'});
