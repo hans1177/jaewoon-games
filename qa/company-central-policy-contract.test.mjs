@@ -2039,16 +2039,22 @@ test('Roblox Studio PC host keeps only Studio visible and resumes exact work aft
   const bootstrap=readText('.github/workflows/company-roblox-runner-pwsh-bootstrap.yml');
   assert.match(runner,/shell\.Run[\s\S]*, 0, False/);
   assert.match(runner,/Jaewoon-Roblox-Runner\.vbs/);
-  assert.match(runner,/ROBLOX_RUNNER_WATCHDOG=NO/);
+  assert.match(runner,/Install hidden Startup launcher/);
+  assert.match(runner,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
   assert.match(runner,/ROBLOX_RUNNER_VISIBLE_CMD=NO/);
   assert.match(runner,/ROBLOX_RUNNER_VISIBLE_POWERSHELL=NO/);
   assert.match(runner,/ROBLOX_RUNNER_VISIBLE_APP=ROBLOX_STUDIO_ONLY/);
+  assert.doesNotMatch(runner,/WATCHDOG/i);
+  assert.doesNotMatch(runner,/Register-ScheduledTask|New-ScheduledTask|schtasks(?:\.exe)?/i);
+  assert.doesNotMatch(runner,/hidden-state\.json|migrationPending|hidden-migrate\.ps1|hidden-migrate\.vbs/i);
+  assert.doesNotMatch(runner,/AddMinutes\(45\)|while \(\[DateTime\]::UtcNow -lt \$deadline\)/);
+  assert.doesNotMatch(runner,/PowerShell\/PowerShell\/releases\/latest|JaewoonRunner\\PowerShell7/);
+  assert.doesNotMatch(runner,/\n  runner-control:\n/);
   assert.match(runtime,/ROBLOX_STUDIO_REBOOT_CHECKPOINT_RESERVED=/);
   assert.match(runtime,/ROBLOX_STUDIO_REBOOT_REQUEUE=YES:/);
   assert.match(runtime,/ROBLOX_STUDIO_PC_INTERRUPTION_COUNTS_AS_GAME_FAILURE=NO/);
   assert.doesNotMatch(runtime,/shell:\s*powershell\s*$/m);
   assert.match(runtime,/WindowStyle Hidden/);
-  assert.match(bootstrap,/Install hidden reboot-safe Roblox runner host/);
   assert.doesNotMatch(bootstrap,/shell:\s*powershell\s*$/m);
 });
 
