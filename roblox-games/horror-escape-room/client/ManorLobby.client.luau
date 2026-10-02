@@ -207,7 +207,7 @@ open=function(key)
   local input=Instance.new("TextBox");input.Name="InvitationCode";input.Size=UDim2.fromScale(1,1);input.BackgroundTransparency=1
   input.TextTransparency=1;input.Text=invitationCode;input.ClearTextOnFocus=false;input.MaxVisibleGraphemes=6;input.ZIndex=4;input.Parent=codeCard
   local function refreshCode()
-   local clean=string.upper(input.Text):gsub("[^A-Z0-9]",""):sub(1,6)
+   local clean=input.Text:gsub("[^0-9]",""):sub(1,6)
    if clean~=input.Text then input.Text=clean;return end
    invitationCode=clean
    for i=1,6 do cells[i].Text=string.sub(clean,i,i)~=""and string.sub(clean,i,i)or"·"end
