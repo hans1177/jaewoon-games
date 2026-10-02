@@ -1021,6 +1021,135 @@ local internalGhostSkinByCatalogId={
  DULLAHAN="dullahan",LA_LLORONA="la-llorona",PONTIANAK="pontianak",BLACK_SHUCK="barghest",
 }
 
+local combatSkinByMonster={
+ DRACULA="strigoi",FRANKENSTEIN="draugr",WEREWOLF="barghest",MUMMY="pocong",GRIM_REAPER="hei-wuchang",
+}
+local combatSkinByInfected={
+ BROADCAST="nopperabo",ELECTRICIAN="jiangshi",COURIER="aswang",PHOTOGRAPHER="la-sayona",SECURITY="vetala",
+}
+local combatSkins={}
+local combatSkinClock=0
+
+local function combatSkinIdForPlayer(player)
+ if player:GetAttribute("Role")~="MONSTER"then return nil end
+ if player:GetAttribute("Infected")==true then
+  return combatSkinByInfected[tostring(player:GetAttribute("HumanForm")or"BROADCAST")]or"pocong"
+ end
+ return combatSkinByMonster[tostring(player:GetAttribute("MonsterForm")or"DRACULA")]or"strigoi"
+end
+local function restoreCombatSkinSource(row)
+ for part,value in pairs(row.hiddenParts or{})do
+  if part and part.Parent then part.LocalTransparencyModifier=value end
+ end
+ for hi,value in pairs(row.hiddenHighlights or{})do
+  if hi and hi.Parent then hi.Enabled=value end
+ end
+end
+local function destroyCombatSkin(source)
+ local row=combatSkins[source];if not row then return end
+ restoreCombatSkinSource(row)
+ if row.motion then pcall(function()row.motion.destroy()end)end
+ if row.model and row.model.Parent then row.model:Destroy()end
+ combatSkins[source]=nil
+end
+local function hideCombatSkinSource(row)
+ row.hiddenParts=row.hiddenParts or{}
+ row.hiddenHighlights=row.hiddenHighlights or{}
+ for _,d in ipairs(row.source:GetDescendants())do
+  if d:IsA("BasePart")and row.hiddenParts[d]==nil then
+   row.hiddenParts[d]=d.LocalTransparencyModifier;d.LocalTransparencyModifier=1
+  elseif d:IsA("Highlight")and row.hiddenHighlights[d]==nil then
+   row.hiddenHighlights[d]=d.Enabled;d.Enabled=false
+  end
+ end
+end
+local function ensureCombatSkin(source,rootPart,skinId)
+ if not GhostSkinFactory or not GhostSkinMotion or not source or not rootPart or not skinId then return nil end
+ local row=combatSkins[source]
+ if row and(row.skinId~=skinId or not row.model or not row.model.Parent)then destroyCombatSkin(source);row=nil end
+ if not row then
+  local ok,model=pcall(function()
+   return GhostSkinFactory.Create(skinId,{quality=touchEnabled and"far"or"mid",parent=workspace,anchored=true,pivot=CFrame.new()})
+  end)
+  if not ok or not model then return nil end
+  local bindOk,motion=pcall(function()return GhostSkinMotion.Bind(model)end)
+  if not bindOk or not motion then model:Destroy();return nil end
+  model.Name="CombatGhostSkin_"..skinId
+  model:SetAttribute("SourceAssetLibrary","roblox-world-ghost-skins-v1")
+  model:SetAttribute("CombatSkin",true)
+  row={source=source,root=rootPart,skinId=skinId,model=model,motion=motion,createdAt=os.clock(),lastPos=rootPart.Position,hiddenParts={},hiddenHighlights={},attackStart=0,attackUntil=0}
+  combatSkins[source]=row
+ end
+ row.root=rootPart
+ hideCombatSkinSource(row)
+ return row
+end
+local function refreshCombatSkins()
+ local active={}
+ local round=tostring(p:GetAttribute("RoundState")or"")
+ local show=round=="RUNNING"or round:match("^RESULT_")~=nil
+ if show and GhostSkinFactory and GhostSkinMotion then
+  for _,player in ipairs(Players:GetPlayers())do
+   local source=player.Character
+   local rr=source and source:FindFirstChild("HumanoidRootPart")
+   local skinId=combatSkinIdForPlayer(player)
+   if source and rr and skinId then active[source]=true;ensureCombatSkin(source,rr,skinId)end
+  end
+  local arena=workspace:FindFirstChild("MidnightArena")
+  if arena then
+   for _,source in ipairs(arena:GetChildren())do
+    if source:IsA("Model")then
+     local formId=source.Name:match("^AI_MONSTER_(.+)$")
+     local rr=formId and(source:FindFirstChild("HumanoidRootPart")or source.PrimaryPart)or nil
+     local skinId=formId and combatSkinByMonster[formId]or nil
+     if rr and skinId then active[source]=true;ensureCombatSkin(source,rr,skinId)end
+    end
+   end
+  end
+ end
+ for source in pairs(combatSkins)do if not active[source]then destroyCombatSkin(source)end end
+end
+local function markCombatSkinAttack(userId,origin,duration)
+ local row=nil
+ if tonumber(userId)and tonumber(userId)>0 then
+  local player=Players:GetPlayerByUserId(tonumber(userId))
+  if player and player.Character then row=combatSkins[player.Character]end
+ elseif typeof(origin)=="Vector3"then
+  local best=math.huge
+  for source,candidate in pairs(combatSkins)do
+   if source:IsA("Model")and source.Name:match("^AI_MONSTER_")and candidate.root and candidate.root.Parent then
+    local distance=(candidate.root.Position-origin).Magnitude
+    if distance<best then best=distance;row=candidate end
+   end
+  end
+ end
+ if row then row.attackStart=os.clock();row.attackUntil=row.attackStart+(duration or .7)end
+end
+
+RunService.RenderStepped:Connect(function(dt)
+ combatSkinClock+=dt
+ if combatSkinClock>=.3 then combatSkinClock=0;refreshCombatSkins()end
+ local now=os.clock()
+ for _,row in pairs(combatSkins)do
+  local rr=row.root
+  if rr and rr.Parent and row.model and row.model.Parent then
+   local h=row.source:FindFirstChildOfClass("Humanoid")
+   local groundOffset=(h and tonumber(h.HipHeight)or 2)+.9
+   row.model:PivotTo(rr.CFrame*CFrame.new(0,-groundOffset,0))
+   local last=row.lastPos or rr.Position
+   local velocity=(rr.Position-last).Magnitude/math.max(dt,1/120)
+   row.lastPos=rr.Position
+   local state,time
+   if now<(row.attackUntil or 0)then state="attack";time=now-(row.attackStart or now)
+   elseif velocity>11 then state="chase";time=now-row.createdAt
+   elseif velocity>1 then state="walk";time=now-row.createdAt
+   else state="idle";time=now-row.createdAt end
+   pcall(function()row.motion.step(time,state)end)
+   hideCombatSkinSource(row)
+  end
+ end
+end)
+
 local function tryInternalGhostSighting(trigger,id)
  if not GhostSkinFactory then return false end
  local skinId=internalGhostSkinByCatalogId[id]
@@ -2026,34 +2155,34 @@ end
 local actionDock=Instance.new("Frame")
 actionDock.Name="RoundActions"
 actionDock.AnchorPoint=Vector2.new(.5,1)
-actionDock.Position=UDim2.new(.5,0,1,-18)
-actionDock.Size=UDim2.fromOffset(308,72)
+actionDock.Position=UDim2.new(.5,0,1,-20)
+actionDock.Size=UDim2.fromOffset(338,86)
 actionDock.BackgroundTransparency=1
-actionDock.ZIndex=10
+actionDock.ZIndex=30
 actionDock.Parent=gui
 
 local rescueButton=makeButton(actionDock,"정화 공격",Color3.fromRGB(75,91,94))
-rescueButton.Size=UDim2.fromOffset(96,64);rescueButton.Position=UDim2.fromOffset(2,4);rescueButton.ZIndex=11
+rescueButton.Size=UDim2.fromOffset(92,72);rescueButton.Position=UDim2.fromOffset(0,6);rescueButton.ZIndex=31
 rescueButton.Activated:Connect(function()setMotionImpulse("PURIFY",.34);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.PURIFY)end)
 
 local dashButton=makeButton(actionDock,"대시",Color3.fromRGB(87,78,66))
-dashButton.Size=UDim2.fromOffset(96,64);dashButton.Position=UDim2.fromOffset(106,4);dashButton.ZIndex=11
+dashButton.Size=UDim2.fromOffset(92,72);dashButton.Position=UDim2.fromOffset(98,6);dashButton.ZIndex=31
 dashButton.Activated:Connect(function()setMotionImpulse("DASH",.38);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.DASH)end)
 
 local humanAbilityButton=makeButton(actionDock,"인간 스킬",Color3.fromRGB(61,96,105))
-humanAbilityButton.Size=UDim2.fromOffset(96,64);humanAbilityButton.Position=UDim2.fromOffset(210,4);humanAbilityButton.ZIndex=11
-humanAbilityButton.TextScaled=false;humanAbilityButton.TextSize=9;humanAbilityButton.TextWrapped=true
+humanAbilityButton.Size=UDim2.fromOffset(142,76);humanAbilityButton.Position=UDim2.fromOffset(196,4);humanAbilityButton.ZIndex=32
+humanAbilityButton.TextScaled=false;humanAbilityButton.TextSize=11;humanAbilityButton.TextWrapped=true
 humanAbilityButton.Activated:Connect(function()
  setMotionImpulse("ABILITY",.42);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.HUMAN_ABILITY)
 end)
 
 local infectButton=makeButton(actionDock,"감염 공격",Color3.fromRGB(111,45,49))
-infectButton.Size=UDim2.fromOffset(96,64);infectButton.Position=UDim2.fromOffset(55,4);infectButton.ZIndex=11
+infectButton.Size=UDim2.fromOffset(116,72);infectButton.Position=UDim2.fromOffset(42,6);infectButton.ZIndex=31
 infectButton.Activated:Connect(function()setMotionImpulse("INFECT_ATTACK",.34);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.INFECT_ATTACK)end)
 
 local abilityButton=makeButton(actionDock,"괴물 스킬",Color3.fromRGB(72,55,77))
-abilityButton.Size=UDim2.fromOffset(96,64);abilityButton.Position=UDim2.fromOffset(157,4);abilityButton.ZIndex=11
-abilityButton.TextScaled=false;abilityButton.TextSize=9;abilityButton.TextWrapped=true
+abilityButton.Size=UDim2.fromOffset(150,76);abilityButton.Position=UDim2.fromOffset(166,4);abilityButton.ZIndex=32
+abilityButton.TextScaled=false;abilityButton.TextSize=11;abilityButton.TextWrapped=true
 abilityButton.Activated:Connect(function()setMotionImpulse("ABILITY",.44);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.ABILITY)end)
 
 -- 액션 쿨다운과 에너지 비용은 서버 상태 기준으로 표시한다.
@@ -2090,10 +2219,10 @@ RunService.RenderStepped:Connect(function(dt)
  updateCooldownButton(rescueButton,p:GetAttribute("PurifyReadyAt"),"정화 공격","정화",C.Energy and C.Energy.PurifyCost or 35)
  updateCooldownButton(dashButton,p:GetAttribute("DashReadyAt"),"대시","대시",C.Energy and C.Energy.DashCost or 25)
  local _,humanAbilityProfile=currentHumanAbilityProfile()
- updateCooldownButton(humanAbilityButton,p:GetAttribute("HumanAbilityReadyAt"),currentHumanAbilityName(),"스킬",humanAbilityProfile and humanAbilityProfile.Cost or 30,humanAbilityProfile,humanAbilityProfile and humanAbilityProfile.Cooldown or 8)
+ updateCooldownButton(humanAbilityButton,p:GetAttribute("HumanAbilityReadyAt"),"★ "..currentHumanAbilityName(),"스킬",humanAbilityProfile and humanAbilityProfile.Cost or 30,humanAbilityProfile,humanAbilityProfile and humanAbilityProfile.Cooldown or 8)
  updateCooldownButton(infectButton,p:GetAttribute("InfectReadyAt"),"감염 공격","감염",C.Energy and C.Energy.InfectAttackCost or 30)
  local monsterAbilityProfile=currentAbilityProfile()
- updateCooldownButton(abilityButton,p:GetAttribute("AbilityReadyAt"),currentAbilityName(),"스킬",C.Energy and C.Energy.AbilityCost or 45,monsterAbilityProfile,C.MonsterAbilityCooldown or 7)
+ updateCooldownButton(abilityButton,p:GetAttribute("AbilityReadyAt"),"★ "..currentAbilityName(),"스킬",C.Energy and C.Energy.AbilityCost or 45,monsterAbilityProfile,C.MonsterAbilityCooldown or 7)
 
  local now=workspace:GetServerTimeNow()
  local blackout=(tonumber(p:GetAttribute("BlackoutUntil"))or 0)>now
@@ -2726,33 +2855,69 @@ local function abilityStreak(name,origin,look,color,offset,length,width,duration
  return part
 end
 
+local function abilityRing(name,pos,color,startDiameter,endDiameter,duration)
+ local part=abilityVfxPart(name,Vector3.new(.16,startDiameter,startDiameter),CFrame.new(pos)*CFrame.Angles(0,0,math.rad(90)),color,Enum.PartType.Cylinder)
+ part.Transparency=.05
+ local light=Instance.new("PointLight");light.Color=color;light.Range=10;light.Brightness=2.5;light.Parent=part
+ TweenService:Create(part,TweenInfo.new(duration,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Size=Vector3.new(.05,endDiameter,endDiameter),Transparency=1}):Play()
+ TweenService:Create(light,TweenInfo.new(duration),{Brightness=0,Range=endDiameter*.5}):Play()
+ Debris:AddItem(part,duration+.08)
+ return part
+end
+
 local function playMonsterAbilityEffect(snapshot)
  if typeof(snapshot)~="table"then return end
+ markCombatSkinAttack(snapshot.UserId,snapshot.Origin,.82)
  local ability=tostring(snapshot.Ability or"")
  local origin=typeof(snapshot.Origin)=="Vector3"and snapshot.Origin or Vector3.zero
  local look=typeof(snapshot.Look)=="Vector3"and snapshot.Look or Vector3.new(0,0,-1)
  local formInfo,profile=monsterEffectProfile(ability)
  local color=formInfo.EffectColor or Color3.fromRGB(190,100,220)
  local accent=formInfo.AccentColor or color
+ if snapshot.Infected==true then
+  color=Color3.fromRGB(220,70,112);accent=Color3.fromRGB(144,76,226)
+  if ability=="FALSE_ALARM"then
+   abilityPulse("FalseAlarmBurst",origin+Vector3.new(0,1.2,0),color,Vector3.new(2,2,2),Vector3.new(16,6,16),.42)
+   abilityRing("FalseAlarmRing",origin+Vector3.new(0,.25,0),accent,3,28,.62)
+  elseif ability=="BLACKOUT"then
+   abilityPulse("BlackoutCore",origin+Vector3.new(0,1.5,0),Color3.fromRGB(48,24,78),Vector3.new(2,2,2),Vector3.new(18,12,18),.55)
+   abilityRing("BlackoutRing",origin+Vector3.new(0,.25,0),accent,3,30,.68)
+  elseif ability=="RUSH"then
+   abilityRing("RushRing",origin+Vector3.new(0,.25,0),color,2,12,.35)
+   for _,offset in ipairs({-1.8,-.9,0,.9,1.8})do abilityStreak("RushTrail",origin,look,accent,offset,13,.3,.48)end
+  elseif ability=="HUNT_FLASH"then
+   abilityPulse("HuntFlashCore",origin+Vector3.new(0,1.5,0),Color3.fromRGB(250,238,226),Vector3.new(2,2,2),Vector3.new(18,12,18),.24)
+   abilityRing("HuntFlashRing",origin+Vector3.new(0,.25,0),color,2,22,.42)
+  elseif ability=="BREACH"then
+   abilityPulse("BreachBurst",origin+Vector3.new(0,1.2,0),color,Vector3.new(1,1,1),Vector3.new(8,6,8),.28)
+   abilityRing("BreachRing",origin+Vector3.new(0,.25,0),accent,2,12,.35)
+   for _,offset in ipairs({-1.2,-.6,0,.6,1.2})do abilityStreak("BreachTrail",origin,look,accent,offset,15,.26,.42)end
+  end
+  return
+ end
  if ability=="BAT_DASH"then
-  abilityPulse("BatDashBurst",origin+Vector3.new(0,1.8,0),color,Vector3.new(1.5,1.5,1.5),Vector3.new(7,4,7),.32)
+  abilityPulse("BatDashBurst",origin+Vector3.new(0,1.8,0),color,Vector3.new(1.5,1.5,1.5),Vector3.new(9,5,9),.36)
+  abilityRing("BatDashRing",origin+Vector3.new(0,.25,0),accent,2,13,.42)
   for i=-3,3 do
    local streak=abilityStreak("BatShadow",origin,look,i%2==0 and color or accent,i*1.05,8+math.abs(i)*1.2,.28,.42)
    streak.CFrame=streak.CFrame*CFrame.Angles(0,0,math.rad(i*9))
   end
  elseif ability=="POWER_CHARGE"then
-  abilityPulse("ElectricChargeCore",origin+Vector3.new(0,1.6,0),color,Vector3.new(1,1,1),Vector3.new(8,8,8),.38)
+  abilityPulse("ElectricChargeCore",origin+Vector3.new(0,1.6,0),color,Vector3.new(1,1,1),Vector3.new(10,10,10),.42)
+  abilityRing("ElectricChargeRing",origin+Vector3.new(0,.25,0),accent,2,14,.4)
   for i=1,8 do
    local angle=(i/8)*math.pi*2
    local dir=Vector3.new(math.cos(angle),0,math.sin(angle))
    abilityStreak("ElectricArc",origin,dir,color,0,5,.16,.3)
   end
  elseif ability=="RAGE_RUN"then
-  abilityPulse("RageDust",origin+Vector3.new(0,.8,0),accent,Vector3.new(1,1,1),Vector3.new(6,2.5,6),.35)
+  abilityPulse("RageDust",origin+Vector3.new(0,.8,0),accent,Vector3.new(1,1,1),Vector3.new(8,3.5,8),.4)
+  abilityRing("RageRing",origin+Vector3.new(0,.25,0),color,2,11,.36)
   for _,offset in ipairs({-1.2,0,1.2})do abilityStreak("WolfClaw",origin,look,color,offset,10,.2,.45)end
  elseif ability=="CURSE_SLOW"then
   local radius=tonumber(profile.Radius)or 22
-  abilityPulse("CurseSandCore",origin+Vector3.new(0,.5,0),color,Vector3.new(1,1,1),Vector3.new(radius*1.65,1.2,radius*1.65),.65)
+  abilityPulse("CurseSandCore",origin+Vector3.new(0,.5,0),color,Vector3.new(1,1,1),Vector3.new(radius*1.8,1.6,radius*1.8),.7)
+  abilityRing("CurseRing",origin+Vector3.new(0,.22,0),accent,3,radius*2,.7)
   for i=1,12 do
    local a=(i/12)*math.pi*2
    local pos=origin+Vector3.new(math.cos(a)*4,.5,math.sin(a)*4)
@@ -2766,6 +2931,17 @@ local function playMonsterAbilityEffect(snapshot)
   abilityPulse("ShadowGateTarget",target+Vector3.new(0,1.8,0),color,Vector3.new(2,4,2),Vector3.new(7,8,7),.5)
   for i=-2,2 do abilityStreak("ShadowThread",origin,look,accent,i*.65,tonumber(profile.Distance)or 18,.16,.5)end
  end
+end
+
+local function playMonsterAttackEffect(snapshot)
+ if typeof(snapshot)~="table"then return end
+ local origin=typeof(snapshot.Origin)=="Vector3"and snapshot.Origin or Vector3.zero
+ local look=typeof(snapshot.Look)=="Vector3"and snapshot.Look or Vector3.new(0,0,-1)
+ markCombatSkinAttack(snapshot.UserId,origin,.58)
+ local blood=Color3.fromRGB(224,60,86)
+ abilityPulse("MonsterAttackBurst",origin+Vector3.new(0,1.45,0),blood,Vector3.new(.8,.8,.8),Vector3.new(5,5,5),.24)
+ abilityRing("MonsterAttackRing",origin+Vector3.new(0,.24,0),blood,1.5,7,.28)
+ for _,offset in ipairs({-1,-.5,0,.5,1})do abilityStreak("MonsterClaw",origin,look,blood,offset,7,.18,.28)end
 end
 
 local function playHumanAbilityEffect(snapshot)
@@ -2784,20 +2960,24 @@ local function playHumanAbilityEffect(snapshot)
  }
  local color=palette[formId]or Color3.fromRGB(116,201,220)
  if ability=="SIGNAL_JAM"then
-  abilityPulse("SignalJam",origin+Vector3.new(0,1.2,0),color,Vector3.new(1,1,1),Vector3.new(22,3,22),.52)
+  abilityPulse("SignalJam",origin+Vector3.new(0,1.2,0),color,Vector3.new(1,1,1),Vector3.new(24,4,24),.55)
+  abilityRing("SignalJamRing",origin+Vector3.new(0,.2,0),color,3,28,.58)
   task.delay(.12,function()abilityPulse("SignalJamEcho",origin+Vector3.new(0,1.2,0),color,Vector3.new(2,1,2),Vector3.new(27,2,27),.5)end)
  elseif ability=="OVERLOAD"then
-  abilityPulse("HumanOverload",origin+Vector3.new(0,.8,0),color,Vector3.new(1,1,1),Vector3.new(14,2,14),.38)
+  abilityPulse("HumanOverload",origin+Vector3.new(0,.8,0),color,Vector3.new(1,1,1),Vector3.new(16,3,16),.42)
+  abilityRing("HumanOverloadRing",origin+Vector3.new(0,.2,0),color,2,18,.4)
   for i=1,8 do
    local a=i/8*math.pi*2
    abilityStreak("OverloadArc",origin,Vector3.new(math.cos(a),0,math.sin(a)),color,0,5,.16,.3)
   end
  elseif ability=="IMPACT_BAG"then
   local dir=target-origin
-  abilityPulse("ImpactBagBurst",origin+Vector3.new(0,1.2,0),color,Vector3.new(1,1,1),Vector3.new(5,4,5),.3)
+  abilityPulse("ImpactBagBurst",origin+Vector3.new(0,1.2,0),color,Vector3.new(1,1,1),Vector3.new(7,5,7),.32)
+  abilityRing("ImpactBagRing",origin+Vector3.new(0,.2,0),color,2,10,.34)
   if dir.Magnitude>.1 then abilityStreak("ImpactBagTrail",origin,dir.Unit,color,0,math.min(14,dir.Magnitude),.35,.34)end
  elseif ability=="CAMERA_FLASH"then
-  abilityPulse("CameraFlash",origin+Vector3.new(0,1.5,0),color,Vector3.new(2,2,2),Vector3.new(19,10,19),.22)
+  abilityPulse("CameraFlash",origin+Vector3.new(0,1.5,0),color,Vector3.new(2,2,2),Vector3.new(22,13,22),.24)
+  abilityRing("CameraFlashRing",origin+Vector3.new(0,.2,0),Color3.fromRGB(255,255,246),2,22,.3)
   local character=p.Character
   local localRoot=character and character:FindFirstChild("HumanoidRootPart")
   local profile=C.HumanAbilities and C.HumanAbilities.CAMERA_FLASH
@@ -2812,7 +2992,8 @@ local function playHumanAbilityEffect(snapshot)
  elseif ability=="SHOCK_BATON"then
   local dir=target-origin
   if dir.Magnitude>.1 then
-   for i=-1,1 do abilityStreak("BatonArc",origin,dir.Unit,color,i*.25,math.min(8,dir.Magnitude),.18,.28)end
+   abilityRing("BatonShockRing",target+Vector3.new(0,.25,0),color,1,8,.28)
+   for i=-2,2 do abilityStreak("BatonArc",origin,dir.Unit,color,i*.22,math.min(9,dir.Magnitude),.2,.3)end
   end
  elseif action=="PURIFY"then
   abilityPulse("AIPurify",target+Vector3.new(0,1,0),color,Vector3.new(.8,.8,.8),Vector3.new(4,4,4),.25)
@@ -2825,6 +3006,7 @@ end
 p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
  local value=tostring(p:GetAttribute("FeedbackEvent")or"")
  if value:find("^INFECT:")then setMotionImpulse("INFECT",.72);warningSfx.TimePosition=0;warningSfx:Play();chaseTint.BackgroundTransparency=.72;showMapContentToast("감염 완료 · 몬스터로 전환",Color3.fromRGB(218,86,96),1.8)
+ elseif value:find("^INFECT_ATTACK_HIT")then setMotionImpulse("INFECT_ATTACK",.55);actionSfx.TimePosition=0;actionSfx:Play()
  elseif value:find("^PURIFY")then setMotionImpulse("PURIFY",.3);rescueSfx.TimePosition=0;rescueSfx:Play();chaseTint.BackgroundTransparency=.9
  elseif value:find("^ABILITY:")then
   setMotionImpulse("ABILITY",.48);warningSfx.TimePosition=0;warningSfx:Play()
@@ -2844,6 +3026,10 @@ remote.OnClientEvent:Connect(function(kind,snapshot)
  end
  if kind=="MONSTER_ABILITY_EFFECT"then
   playMonsterAbilityEffect(snapshot)
+  return
+ end
+ if kind=="MONSTER_ATTACK_EFFECT"then
+  playMonsterAttackEffect(snapshot)
   return
  end
  if kind=="HUMAN_ABILITY_EFFECT"or kind=="AI_HUMAN_ACTION_EFFECT"then
