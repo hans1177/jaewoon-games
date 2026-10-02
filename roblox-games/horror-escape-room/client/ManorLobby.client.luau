@@ -482,39 +482,150 @@ RunService.RenderStepped:Connect(function()
  end
 end)
 
--- 생활 연출 · 거울의 시선, 시계추, 막내의 숨결, 촛불. 서버 물리와 분리한다.
+-- 생활 연출 · NPC idle, 저택 호흡, 배경 시차. 서버 물리/저장/상호작용과 완전히 분리한다.
 local animatedScene=nil
+local animatedRoom=nil
 local details={}
+local npcGroups={}
+local livingLights={}
 local elapsed=0
+
+local function npcRole(name)
+ if string.sub(name,1,6)=="Butler"then return"BUTLER"
+ elseif string.sub(name,1,10)=="Undertaker"then return"UNDERTAKER"
+ elseif string.sub(name,1,9)=="Archivist"then return"ARCHIVIST"end
+ return nil
+end
+local function rolePhase(role)return role=="BUTLER"and .3 or role=="UNDERTAKER"and 2.1 or 4.2 end
+local function roleMotion(role,now)
+ local phase=rolePhase(role)
+ if role=="BUTLER"then
+  return Vector3.new(0,math.sin(now*.95+phase)*.030,0),Vector3.new(math.sin(now*.42+phase)*.004,math.sin(now*.36+phase)*.010,math.sin(now*.55+phase)*.004)
+ elseif role=="UNDERTAKER"then
+  return Vector3.new(math.sin(now*.33+phase)*.010,math.sin(now*.68+phase)*.024,0),Vector3.new(math.sin(now*.31+phase)*.008,math.sin(now*.29+phase)*.007,math.sin(now*.41+phase)*.006)
+ else
+  return Vector3.new(0,math.sin(now*.82+phase)*.026,0),Vector3.new(math.sin(now*.54+phase)*.012,math.sin(now*.38+phase)*.006,math.sin(now*.46+phase)*.005)
+ end
+end
+local function around(pivot,angles)
+ return CFrame.new(pivot)*CFrame.Angles(angles.X,angles.Y,angles.Z)*CFrame.new(-pivot)
+end
+local function rebuildLivingScene(room,scene)
+ animatedRoom=room;animatedScene=scene;details={};npcGroups={};livingLights={}
+ if not scene then return end
+ for _,mesh in ipairs(scene:GetDescendants())do
+  if mesh:IsA("BasePart")then
+   local name=mesh.Name
+   local role=npcRole(name)
+   if role then
+    local group=npcGroups[role]
+    if not group then group={parts={},sum=Vector3.zero,count=0};npcGroups[role]=group end
+    local row={part=mesh,home=mesh.CFrame,size=mesh.Size,name=name}
+    table.insert(group.parts,row);group.sum+=mesh.Position;group.count+=1
+   elseif name:match("^MirrorPupil")or name:match("^ClockPendulum")or name:match("^LittleGhost")or name:match("Flame")
+    or name:match("^LivingCurtain")or name:match("^LivingVineTip")or name:match("^LivingBranch")
+    or name:match("^BackdropCloud")or name:match("^BackdropMist")or name:match("^BackdropBat")
+    or name:match("^ChandelierDrop")or name:match("^ChandelierPearDrop")or name:match("^PaperMoonHalo")then
+    table.insert(details,{part=mesh,home=mesh.CFrame,size=mesh.Size,name=name})
+   end
+  end
+ end
+ for _,group in pairs(npcGroups)do group.pivot=group.count>0 and group.sum/group.count or Vector3.zero end
+ if room then
+  for _,item in ipairs(room:GetDescendants())do
+   if item:IsA("PointLight")then table.insert(livingLights,{light=item,brightness=item.Brightness})end
+  end
+ end
+end
+
 RunService.Heartbeat:Connect(function(dt)
  elapsed+=dt;if elapsed<.05 or not gui.Enabled then return end;elapsed=0
  local root=workspace:FindFirstChild("MidnightLobby")
- local room=root and root:FindFirstChild("PersonalManor_"..p.UserId)
+ local visited=math.floor(tonumber(p:GetAttribute("VisitedManorOwnerUserId"))or 0)
+ local ownerId=visited>0 and visited or p.UserId
+ local room=root and root:FindFirstChild("PersonalManor_"..ownerId)
  local scene=room and room:FindFirstChild("ManorScene")
- if scene~=animatedScene then
-  animatedScene=scene;details={}
-  if scene then for _,mesh in ipairs(scene:GetDescendants())do
-   if mesh:IsA("BasePart")and(mesh.Name:match("^MirrorPupil")or mesh.Name:match("^ClockPendulum")or mesh.Name:match("^LittleGhost")or mesh.Name:match("Flame"))then
-    table.insert(details,{part=mesh,home=mesh.CFrame,size=mesh.Size})
+ if scene~=animatedScene or room~=animatedRoom then rebuildLivingScene(room,scene)end
+ if not scene then return end
+
+ local now=workspace:GetServerTimeNow()
+ local playerRoot=p.Character and p.Character:FindFirstChild("HumanoidRootPart")
+
+ -- NPC는 역할마다 다른 호흡/체중 이동을 한다. 서버가 gag 연출로 잠시 unanchor한 파츠는 건드리지 않는다.
+ for role,group in pairs(npcGroups)do
+  local offset,angles=roleMotion(role,now)
+  local transform=CFrame.new(offset)*around(group.pivot,angles)
+  local phase=rolePhase(role)
+  local blinkCycle=(now+phase*1.7)%5.6
+  local blink=blinkCycle<.16 and math.sin(blinkCycle/.16*math.pi)or 0
+  for _,row in ipairs(group.parts)do
+   local mesh=row.part
+   if mesh.Parent and mesh.Anchored then
+    local cf=transform*row.home
+    -- 눈은 플레이어 쪽으로 아주 작게 따라가고 일정 주기로 눈꺼풀이 닫힌다.
+    if playerRoot and(row.name:match("_Iris")or row.name:match("_Pupil"))then
+     local delta=playerRoot.Position-row.home.Position
+     cf=cf+Vector3.new(math.clamp(delta.X*.004,-.045,.045),math.clamp(delta.Y*.0025,-.028,.028),0)
+    elseif row.name:match("_UpperLid")then
+     cf=cf+Vector3.new(0,-blink*.060,0)
+    elseif row.name:match("_LowerLid")then
+     cf=cf+Vector3.new(0,blink*.035,0)
+    elseif row.name:match("Tray")then
+     cf=cf* CFrame.Angles(0,0,math.sin(now*.72+phase)*.006)
+    elseif row.name:match("Ledger")then
+     cf=cf* CFrame.Angles(math.sin(now*.61+phase)*.005,0,math.sin(now*.43+phase)*.004)
+    elseif row.name:match("Pen")or row.name:match("Key")then
+     cf=cf* CFrame.Angles(0,0,math.sin(now*1.05+phase)*.010)
+    elseif row.name:match("Spade")then
+     cf=cf* CFrame.Angles(0,math.sin(now*.38+phase)*.006,0)
+    end
+    mesh.CFrame=cf
    end
-  end end
+  end
  end
- local now=workspace:GetServerTimeNow();local playerRoot=p.Character and p.Character:FindFirstChild("HumanoidRootPart")
+
+ -- 저택/배경은 서로 다른 주기로 움직여 기계적으로 동시에 흔들리지 않는다.
  for _,row in ipairs(details)do
   local mesh=row.part
-  if mesh.Parent then
-   if mesh.Name:match("^MirrorPupil")and playerRoot then
+  if mesh.Parent and mesh.Anchored then
+   local name=row.name
+   if name:match("^MirrorPupil")and playerRoot then
     local delta=playerRoot.Position-row.home.Position
     mesh.CFrame=row.home+Vector3.new(math.clamp(delta.X*.022,-.38,.38),math.clamp((delta.Y+10)*.018,-.13,.13),0)
-   elseif mesh.Name:match("^ClockPendulum")then
-    local pivot=Vector3.new((p:GetAttribute("ManorOriginX")or 0)-9,6.7,(p:GetAttribute("ManorOriginZ")or 270)-60.65)
-    mesh.CFrame=CFrame.new(pivot)*CFrame.Angles(0,0,math.sin(now*2.2)*.12)*CFrame.new(-pivot)*row.home
-   elseif mesh.Name:match("^LittleGhost")then mesh.CFrame=row.home+Vector3.new(0,math.sin(now*1.6)*.18,0)
-   elseif mesh.Name:match("Flame")then
+   elseif name:match("^ClockPendulum")then
+    local pivot=row.home.Position+Vector3.new(0,3.7,0)
+    mesh.CFrame=around(pivot,Vector3.new(0,0,math.sin(now*2.2)*.12))*row.home
+   elseif name:match("^LittleGhost")then
+    mesh.CFrame=row.home+Vector3.new(math.sin(now*.62)*.06,math.sin(now*1.6)*.18,0)
+   elseif name:match("Flame")then
     local phase=row.home.Position.X*.37+row.home.Position.Z*.19
     mesh.Size=Vector3.new(row.size.X*(1+math.sin(now*5.8+phase)*.025),row.size.Y*(1+math.sin(now*7.1+phase)*.065),row.size.Z)
     mesh.CFrame=row.home+Vector3.new(math.sin(now*4.7+phase)*.018,math.sin(now*6.3+phase)*.025,0)
+   elseif name:match("^LivingCurtain")then
+    mesh.CFrame=around(row.home.Position,Vector3.new(math.sin(now*.55+row.home.Position.X*.07)*.018,0,math.sin(now*.43+row.home.Position.X*.05)*.030))*row.home
+   elseif name:match("^LivingVineTip")or name:match("^LivingBranch")then
+    mesh.CFrame=around(row.home.Position,Vector3.new(math.sin(now*.47+row.home.Position.Z*.05)*.018,math.sin(now*.38+row.home.Position.X*.04)*.020,math.sin(now*.51)*.025))*row.home
+   elseif name:match("^BackdropCloud")then
+    mesh.CFrame=row.home+Vector3.new(math.sin(now*.075+row.home.Position.X*.01)*3.2,math.sin(now*.11)*.22,0)
+   elseif name:match("^BackdropMist")then
+    mesh.CFrame=row.home+Vector3.new(math.sin(now*.095+row.home.Position.Y*.03)*2.4,math.sin(now*.13+row.home.Position.X*.02)*.28,0)
+   elseif name:match("^BackdropBat")then
+    local phase=row.home.Position.X*.11
+    mesh.CFrame=(row.home+Vector3.new(math.sin(now*.55+phase)*1.15,math.sin(now*.93+phase)*.55,0))*CFrame.Angles(0,0,math.sin(now*1.8+phase)*.08)
+   elseif name:match("^ChandelierDrop")or name:match("^ChandelierPearDrop")then
+    local phase=row.home.Position.X*.21+row.home.Position.Z*.17
+    mesh.CFrame=around(row.home.Position+Vector3.new(0,.8,0),Vector3.new(math.sin(now*.62+phase)*.020,0,math.sin(now*.48+phase)*.024))*row.home
+   elseif name:match("^PaperMoonHalo")then
+    local pulse=1+math.sin(now*.35+row.home.Position.Z)*.018
+    mesh.Size=Vector3.new(row.size.X*pulse,row.size.Y*pulse,row.size.Z)
    end
+  end
+ end
+
+ -- 조명은 아주 약하게 호흡시켜 정적인 스테이지 조명 느낌을 없앤다.
+ for index,row in ipairs(livingLights)do
+  if row.light.Parent then
+   row.light.Brightness=row.brightness*(1+math.sin(now*.72+index*.83)*.035)
   end
  end
 end)
