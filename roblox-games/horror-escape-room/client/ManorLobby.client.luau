@@ -494,7 +494,7 @@ RunService.Heartbeat:Connect(function(dt)
  if scene~=animatedScene then
   animatedScene=scene;details={}
   if scene then for _,mesh in ipairs(scene:GetDescendants())do
-   if mesh:IsA("BasePart")and(mesh.Name:match("^MirrorPupil")or mesh.Name:match("^ClockPendulum")or mesh.Name:match("^LittleGhost")or mesh.Name:match("^HearthFlame"))then
+   if mesh:IsA("BasePart")and(mesh.Name:match("^MirrorPupil")or mesh.Name:match("^ClockPendulum")or mesh.Name:match("^LittleGhost")or mesh.Name:match("Flame"))then
     table.insert(details,{part=mesh,home=mesh.CFrame,size=mesh.Size})
    end
   end end
@@ -510,7 +510,11 @@ RunService.Heartbeat:Connect(function(dt)
     local pivot=Vector3.new((p:GetAttribute("ManorOriginX")or 0)-9,6.7,(p:GetAttribute("ManorOriginZ")or 270)-60.65)
     mesh.CFrame=CFrame.new(pivot)*CFrame.Angles(0,0,math.sin(now*2.2)*.12)*CFrame.new(-pivot)*row.home
    elseif mesh.Name:match("^LittleGhost")then mesh.CFrame=row.home+Vector3.new(0,math.sin(now*1.6)*.18,0)
-   elseif mesh.Name:match("^HearthFlame")then mesh.Size=Vector3.new(row.size.X,row.size.Y*(1+math.sin(now*7+row.home.Position.X)*.07),row.size.Z)end
+   elseif mesh.Name:match("Flame")then
+    local phase=row.home.Position.X*.37+row.home.Position.Z*.19
+    mesh.Size=Vector3.new(row.size.X*(1+math.sin(now*5.8+phase)*.025),row.size.Y*(1+math.sin(now*7.1+phase)*.065),row.size.Z)
+    mesh.CFrame=row.home+Vector3.new(math.sin(now*4.7+phase)*.018,math.sin(now*6.3+phase)*.025,0)
+   end
   end
  end
 end)
