@@ -130,13 +130,15 @@ function Manor:Get(p)
  for _,side in ipairs({-1,1})do
   part(folder,"SecondFloorGroundSide",origin+Vector3.new(side*31,10.2,-52.25),Vector3.new(30,.55,13.5),true)
  end
- part(folder,"SecondFloorStairLandingGround",origin+Vector3.new(0,10.05,-57.0),Vector3.new(30,.35,4.5),true)
+ -- 랜딩은 좌우 deck 안쪽 끝과 0.25stud 겹쳐 작은 낙하 틈이 생기지 않는다.
+ part(folder,"SecondFloorStairLandingGround",origin+Vector3.new(0,10.05,-57.0),Vector3.new(32.5,.35,4.5),true)
  part(folder,"SecondFloorGround",origin+Vector3.new(-43,10.2,-31),Vector3.new(15,.55,48),true)
  part(folder,"SecondFloorGround",origin+Vector3.new(43,10.2,-31),Vector3.new(15,.55,48),true)
- -- 시각 난간은 비충돌이므로 2층 가장자리에는 얇은 서버 안전 난간만 둔다.
+ -- 안전 난간은 중앙 아트리움 가장자리까지만 둔다. x=35.5 이후 좌우 복도는
+ -- rear deck과 BalconyWalk가 겹쳐 연결되는 실제 이동 통로이므로 충돌벽을 두지 않는다.
  for _,side in ipairs({-1,1})do
   part(folder,"StairwellRailBoundary",origin+Vector3.new(side*15.7,11.55,-50.7),Vector3.new(.45,2.8,10.4),false)
-  part(folder,"GalleryFrontRailBoundary",origin+Vector3.new(side*31,11.55,-45.62),Vector3.new(30,2.8,.45),false)
+  part(folder,"GalleryFrontRailBoundary",origin+Vector3.new(side*25.25,11.55,-45.62),Vector3.new(18.5,2.8,.45),false)
  end
  -- 현관 포치의 시각 계단과 보행면을 정확히 맞춘다.
  for step=0,4 do
