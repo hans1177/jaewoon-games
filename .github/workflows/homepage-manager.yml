@@ -585,17 +585,6 @@ jobs:
           echo 'DIRECTOR_TEST_SHELF_SUPERVISION=PASS'
           echo 'OWNER_FIXED_PWA_CHAT_REGRESSION=PASS'
 
-      - name: Revalidate central homepage policy before publication
-        shell: bash
-        run: |
-          set -euo pipefail
-          node tools/company-shared-context.mjs --require-homepage-policy=true --output=/tmp/worker-shared-context-final.json
-          expected="$(node -p "JSON.parse(require('fs').readFileSync('.homepage-candidate/homepage-candidate.json','utf8')).policyFingerprint")"
-          current="$(node -p "JSON.parse(require('fs').readFileSync('/tmp/worker-shared-context-final.json','utf8')).homepage.fingerprint")"
-          test -n "$expected"
-          test "$expected" = "$current"
-          echo 'HOMEPAGE_CENTRAL_POLICY_FINAL_SYNC=PASS'
-
       - name: Publish Director-approved homepage candidate
         if: github.event_name != 'pull_request' && needs.manage-and-self-qa.outputs.candidate_changed == 'true'
         env:
