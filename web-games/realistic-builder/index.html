@@ -1,0 +1,321 @@
+<!doctype html>
+<!-- 파일명: web-games/realistic-builder/index.html -->
+<html lang="ko" data-game-id="realistic-builder" data-game-version="1" data-prototype-stage="PLAYABLE_CORE_LOOP">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#b7c8a2">
+<title>현실 건축가</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#b7c8a2;color:#fff;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;touch-action:none}
+button{font:inherit}
+#game{position:fixed;inset:0;width:100%;height:100%;display:block}
+.panel{background:#1d261fe8;border:1px solid #ffffff2d;border-radius:14px;box-shadow:0 8px 26px #0005;backdrop-filter:blur(6px)}
+#hud{position:fixed;left:7px;right:7px;top:max(7px,env(safe-area-inset-top));z-index:30;display:grid;gap:6px;pointer-events:none}
+#topRow{display:flex;justify-content:space-between;gap:6px;min-width:0}
+#inventory{padding:7px;display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;pointer-events:auto}
+#inventory::-webkit-scrollbar{display:none}
+.pill{flex:0 0 auto;padding:5px 7px;border-radius:999px;background:#ffffff16;border:1px solid #ffffff1f;font-size:9px;font-weight:900;white-space:nowrap}
+#goal{padding:7px 9px;min-width:118px;text-align:right}
+#goal b{display:block;color:#f1d98b;font-size:10px}#goal span{display:block;margin-top:2px;color:#d6dfd1;font-size:8px;line-height:1.35}
+#status{justify-self:center;max-width:88vw;padding:6px 10px;border-radius:999px;background:#172019df;border:1px solid #ffffff2d;color:#f0f5ed;font-size:9px;font-weight:900;text-align:center;pointer-events:none}
+#processBar{position:fixed;left:7px;right:7px;bottom:126px;z-index:35;display:flex;gap:6px;overflow-x:auto;padding:6px;scrollbar-width:none}
+#processBar::-webkit-scrollbar{display:none}
+.actionChip{flex:0 0 auto;min-height:46px;padding:5px 9px;border:1px solid #ffffff2d;border-radius:11px;background:#354839;color:#fff;font-size:9px;font-weight:900}
+.actionChip small{display:block;margin-top:2px;color:#c4d1c1;font-size:7px;font-weight:700}
+.actionChip.on{background:#8d6b3e;border-color:#f2da91;outline:2px solid #ffffff3c}
+.actionChip:disabled{opacity:.38}
+#controls{position:fixed;left:0;right:0;bottom:0;z-index:40;height:122px;pointer-events:none}
+#joystick{position:absolute;left:14px;bottom:max(14px,env(safe-area-inset-bottom));width:92px;height:92px;border-radius:50%;background:#17201988;border:1px solid #ffffff35;pointer-events:auto;touch-action:none}
+#stick{position:absolute;left:26px;top:26px;width:40px;height:40px;border-radius:50%;background:#d6dfd1cc;border:2px solid #fff8}
+#rightControls{position:absolute;right:12px;bottom:max(14px,env(safe-area-inset-bottom));display:flex;gap:8px;align-items:end;pointer-events:auto}
+.ctrl{width:58px;height:58px;border:1px solid #ffffff42;border-radius:18px;background:#2b3d2fdd;color:#fff;font-size:10px;font-weight:1000;box-shadow:0 5px 15px #0004}
+#actBtn{width:72px;height:72px;background:#8b6537}
+#toast{position:fixed;left:50%;top:26%;transform:translate(-50%,-8px);z-index:90;max-width:82vw;padding:9px 12px;border-radius:12px;background:#101711ed;border:1px solid #ffffff38;color:#fff;font-size:10px;font-weight:900;text-align:center;opacity:0;transition:.18s;pointer-events:none}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+#dryList{position:fixed;right:7px;top:98px;z-index:31;width:min(52vw,210px);padding:7px 8px;display:none}
+#dryList.on{display:block}#dryList b{display:block;color:#f0d98f;font-size:9px;margin-bottom:4px}#dryRows{display:grid;gap:3px}.dryRow{display:flex;justify-content:space-between;gap:6px;font-size:8px;color:#d6dfd1}.bar{height:4px;margin-top:2px;border-radius:999px;background:#ffffff17;overflow:hidden}.bar i{display:block;height:100%;background:#d6b56b}
+.overlay{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:15px;background:#101611d9}
+.card{width:min(94vw,470px);overflow:hidden;border:1px solid #ffffff2f;border-radius:20px;background:#202a22;box-shadow:0 22px 70px #0009}
+.heroArt{min-height:150px;padding:18px;background:linear-gradient(0deg,#172019e8,#17201944),url('/assets/page-bg-v4.webp') center/cover no-repeat;display:flex;align-items:end}
+.heroArt h1{margin:0;font-size:30px;letter-spacing:-1px}.body{padding:15px 16px 18px}.body p{margin:6px 0;color:#d6dfd1;font-size:10px;line-height:1.5}.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:10px 0}.step{padding:7px 5px;border-radius:10px;background:#ffffff0c;text-align:center;font-size:8px;font-weight:900}.step strong{display:block;color:#f0d98f;font-size:12px}
+#startBtn{width:100%;min-height:49px;margin-top:8px;border:0;border-radius:13px;background:#9a7443;color:#fff;font-size:14px;font-weight:1000}
+.note{margin-top:8px;padding:8px;border-radius:10px;background:#ffffff0a;color:#b8c6b5;font-size:8px;line-height:1.45}
+@media(max-width:390px){.pill{font-size:8px}.actionChip{min-height:44px;padding:4px 8px}#processBar{bottom:121px}.ctrl{width:54px;height:54px}#actBtn{width:68px;height:68px}}
+</style>
+</head>
+<body>
+<canvas id="game" aria-label="현실 건축가 3D 게임"></canvas>
+<div id="hud">
+  <div id="topRow">
+    <div id="inventory" class="panel" aria-label="재료 보유량"></div>
+    <div id="goal" class="panel"><b>첫 목표</b><span>흙벽돌 벽 1칸 만들기</span></div>
+  </div>
+  <div id="status">자원 가까이 가서 작업 버튼을 눌러.</div>
+</div>
+<div id="dryList" class="panel"><b>흙 건조 중</b><div id="dryRows"></div></div>
+<div id="processBar" class="panel" aria-label="제작과 건축"></div>
+<div id="controls">
+  <div id="joystick" aria-label="이동 조이스틱"><div id="stick"></div></div>
+  <div id="rightControls">
+    <button class="ctrl" id="rotateBtn" type="button">회전</button>
+    <button class="ctrl" id="actBtn" type="button">작업</button>
+  </div>
+</div>
+<div id="toast"></div>
+<div id="start" class="overlay">
+  <div class="card">
+    <div class="heroArt"><h1>현실 건축가</h1></div>
+    <div class="body">
+      <p>재료만 모으면 벽이 생기는 게임이 아니야. 재료를 가공하고, 붙이는 재료를 따로 만들고, 기초를 만든 뒤 직접 조립해야 해.</p>
+      <div class="steps">
+        <div class="step"><strong>1</strong>흙 채집</div>
+        <div class="step"><strong>2</strong>60초 건조</div>
+        <div class="step"><strong>3</strong>네모 성형</div>
+        <div class="step"><strong>4</strong>접착 후 설치</div>
+      </div>
+      <button id="startBtn" type="button">건축 시작</button>
+      <div class="note">모바일: 왼쪽 조이스틱 이동 · 오른쪽 작업 버튼 채집 · 아래 제작/건축 버튼 사용<br>흙벽은 <b>기초 + 흙벽돌 + 진흙 접착재</b>가 모두 있어야 설치돼.</div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script>
+(function(){
+"use strict";
+
+if(!window.THREE){
+  document.querySelector('.body').innerHTML='<p>3D 엔진을 불러오지 못했어. 인터넷 연결 후 다시 열어.</p>';
+  return;
+}
+
+var SAVE_KEY='realistic-builder-v1';
+var DRY_MS=60000;
+var GRID=2;
+var state={
+  inv:{soil:0,wood:0,stone:0,water:0,fiber:0,brick:0,mortar:0,rope:0},
+  player:{x:0,z:0},
+  drying:[],structures:{},nextDryId:1,rotation:0,firstWallBuilt:false
+};
+var defs={
+  soil:{label:'흙',icon:'흙'},wood:{label:'나무',icon:'목'},stone:{label:'돌',icon:'돌'},water:{label:'물',icon:'물'},fiber:{label:'섬유',icon:'섬'},
+  brick:{label:'흙벽돌',icon:'벽'},mortar:{label:'접착재',icon:'접'},rope:{label:'밧줄',icon:'줄'}
+};
+var buildMode=null;
+var input={x:0,y:0};
+var toastTimer=null;
+
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function key(x,z){return x+','+z;}
+function snap(v){return Math.round(v/GRID)*GRID;}
+function dist2(ax,az,bx,bz){var x=ax-bx,z=az-bz;return Math.sqrt(x*x+z*z);}
+function has(cost){return Object.keys(cost).every(function(k){return (state.inv[k]||0)>=cost[k];});}
+function spend(cost){Object.keys(cost).forEach(function(k){state.inv[k]-=cost[k];});}
+function gain(type,n){state.inv[type]=(state.inv[type]||0)+n;}
+function costText(cost){return Object.keys(cost).map(function(k){return defs[k].label+' '+cost[k];}).join(' · ');}
+function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove('on');},1700);}
+function save(){
+  try{localStorage.setItem(SAVE_KEY,JSON.stringify(state));}catch(e){}
+}
+function load(){
+  try{
+    var s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');
+    if(!s||!s.inv||!s.player)return;
+    Object.keys(state.inv).forEach(function(k){state.inv[k]=Math.max(0,Math.floor(Number(s.inv[k])||0));});
+    state.player.x=Number(s.player.x)||0;state.player.z=Number(s.player.z)||0;
+    state.drying=Array.isArray(s.drying)?s.drying.filter(function(d){return Number.isFinite(d.x)&&Number.isFinite(d.z)&&Number.isFinite(d.startedAt);}):[];
+    state.structures=s.structures&&typeof s.structures==='object'?s.structures:{};
+    state.nextDryId=Math.max(1,Number(s.nextDryId)||1);state.rotation=Number(s.rotation)||0;state.firstWallBuilt=!!s.firstWallBuilt;
+  }catch(e){}
+}
+load();
+
+var renderer=new THREE.WebGLRenderer({canvas:document.getElementById('game'),antialias:false,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.35));
+renderer.setSize(innerWidth,innerHeight,false);renderer.outputColorSpace=THREE.SRGBColorSpace;
+var scene=new THREE.Scene();scene.background=new THREE.Color(0xb9caaa);scene.fog=new THREE.Fog(0xb9caaa,30,58);
+var camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,.1,100);camera.position.set(10,14,12);
+var hemi=new THREE.HemisphereLight(0xf4f0d8,0x54614e,2.05);scene.add(hemi);
+var sun=new THREE.DirectionalLight(0xffe5b0,2.25);sun.position.set(-12,20,7);scene.add(sun);
+var world=new THREE.Group();scene.add(world);
+var ground=new THREE.Mesh(new THREE.PlaneGeometry(44,44),new THREE.MeshLambertMaterial({color:0x78915f}));ground.rotation.x=-Math.PI/2;ground.position.y=-.03;ground.userData.ground=true;world.add(ground);
+var grid=new THREE.GridHelper(44,22,0x506146,0x6d805e);grid.position.y=.01;world.add(grid);
+function mat(c){return new THREE.MeshLambertMaterial({color:c});}
+function box(w,h,d,c){var m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(c));m.position.y=h/2;return m;}
+function cyl(r1,r2,h,c,seg){var m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,seg||10),mat(c));m.position.y=h/2;return m;}
+function sphere(r,c){return new THREE.Mesh(new THREE.SphereGeometry(r,9,7),mat(c));}
+
+var player=new THREE.Group();
+var torso=box(.7,1.0,.45,0x4d5f4d);torso.position.y=1.15;player.add(torso);
+var head=sphere(.32,0xd3b28d);head.position.y=1.95;player.add(head);
+var leg1=box(.22,.75,.25,0x2a312b);leg1.position.set(-.19,.38,0);player.add(leg1);var leg2=leg1.clone();leg2.position.x=.19;player.add(leg2);
+var arm1=box(.18,.82,.2,0x5e725d);arm1.position.set(-.45,1.18,0);player.add(arm1);var arm2=arm1.clone();arm2.position.x=.45;player.add(arm2);
+world.add(player);player.position.set(state.player.x,0,state.player.z);
+
+var nodes=[];
+function addNode(type,x,z){
+  var g=new THREE.Group();g.position.set(x,0,z);g.userData.nodeType=type;
+  if(type==='soil'){
+    var m=new THREE.Mesh(new THREE.SphereGeometry(.75,10,6,0,Math.PI*2,0,Math.PI*.55),mat(0x825f3f));m.scale.y=.55;g.add(m);
+  }else if(type==='wood'){
+    var log=cyl(.28,.34,1.55,0x805534,10);log.rotation.z=Math.PI/2;log.position.y=.32;g.add(log);var ring=cyl(.3,.3,.06,0xc58d52,10);ring.rotation.z=Math.PI/2;ring.position.set(.78,.32,0);g.add(ring);
+  }else if(type==='stone'){
+    var rock=new THREE.Mesh(new THREE.DodecahedronGeometry(.72,0),mat(0x737873));rock.scale.set(1,.75,.9);rock.position.y=.45;g.add(rock);
+  }else if(type==='water'){
+    var well=cyl(.72,.82,.7,0x6c706b,12);well.position.y=.35;g.add(well);var water=cyl(.55,.55,.05,0x4e9ab7,16);water.position.y=.72;g.add(water);
+  }else if(type==='fiber'){
+    for(var i=0;i<5;i++){var b=cyl(.05,.1,.8,0x5e7f46,6);b.position.set((i-2)*.13,.4,(i%2?.12:-.12));b.rotation.z=(i-2)*.08;g.add(b);}
+  }
+  world.add(g);nodes.push({type:type,x:x,z:z,mesh:g});
+}
+addNode('soil',-7,-4);addNode('soil',7,5);addNode('wood',-6,6);addNode('wood',6,7);addNode('stone',7,-6);addNode('stone',-7,2);addNode('water',0,-8);addNode('fiber',-8,7);addNode('fiber',8,-1);
+
+function addRepoSprite(path,x,z,w,h){
+  new THREE.TextureLoader().load(path,function(tex){
+    tex.colorSpace=THREE.SRGBColorSpace;
+    var s=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,alphaTest:.15}));s.position.set(x,h*.45,z);s.scale.set(w,h,1);world.add(s);
+  },undefined,function(){});
+}
+addRepoSprite('/web-games/survival2/assets/tree.png',-10,9,3.3,4.6);
+addRepoSprite('/web-games/survival2/assets/tree.png',10,9,3.3,4.6);
+addRepoSprite('/web-games/survival2/assets/rock.png',10,-9,2.4,2.0);
+
+var dryVisuals={};
+function syncDryVisuals(){
+  Object.keys(dryVisuals).forEach(function(id){world.remove(dryVisuals[id]);delete dryVisuals[id];});
+  state.drying.forEach(function(d){
+    var elapsed=Date.now()-d.startedAt,ready=elapsed>=DRY_MS,g=new THREE.Group();g.position.set(d.x,0,d.z);
+    var slab=box(1.45,.12,1.15,ready?0xb87548:0x6f4c35);slab.position.y=.07;g.add(slab);
+    if(!ready){var wet=box(1.2,.025,.92,0x493428);wet.position.y=.145;g.add(wet);}
+    world.add(g);dryVisuals[d.id]=g;
+  });
+}
+
+var structVisuals={};
+function structureAt(x,z){var k=key(x,z);if(!state.structures[k])state.structures[k]={x:x,z:z,foundation:false,post:false,wallType:null,wallLevel:0,rotation:0};return state.structures[k];}
+function removeStructureVisual(k){if(structVisuals[k]){world.remove(structVisuals[k]);delete structVisuals[k];}}
+function rebuildStructureVisual(k){
+  removeStructureVisual(k);var s=state.structures[k];if(!s)return;
+  var g=new THREE.Group();g.position.set(s.x,0,s.z);g.rotation.y=s.rotation||0;
+  if(s.foundation){var f=box(1.8,.22,1.8,0x696b66);f.position.y=.11;g.add(f);}
+  if(s.post){
+    var p1=box(.18,3.5,.18,0x67452f);p1.position.set(-.75,1.85,0);g.add(p1);var p2=p1.clone();p2.position.x=.75;g.add(p2);
+  }
+  for(var level=0;level<(s.wallLevel||0);level++){
+    var y=.25+level*1.03,c=s.wallType==='mud'?0xa96f46:s.wallType==='stone'?0x80837d:0x8a5e3b;
+    var w=box(1.78,.95,.32,c);w.position.y=y+.48;g.add(w);
+    if(s.wallType==='mud'){
+      for(var r=0;r<2;r++)for(var q=0;q<4;q++){
+        var line=box(.38,.05,.34,0x7f5035);line.position.set(-.59+q*.4,y+.25+r*.45,.01);g.add(line);
+      }
+    }
+  }
+  world.add(g);structVisuals[k]=g;
+}
+function rebuildAllStructures(){Object.keys(state.structures).forEach(rebuildStructureVisual);}
+syncDryVisuals();rebuildAllStructures();
+
+var invEl=document.getElementById('inventory');
+function updateInventory(){
+  invEl.innerHTML='';Object.keys(defs).forEach(function(k){var s=document.createElement('span');s.className='pill';s.textContent=defs[k].icon+' '+defs[k].label+' '+state.inv[k];invEl.appendChild(s);});
+  document.getElementById('goal').innerHTML=state.firstWallBuilt?'<b>목표 달성</b><span>기초와 벽을 더 확장해.</span>':'<b>첫 목표</b><span>흙벽돌 벽 1칸 만들기</span>';
+}
+function nearestNode(){var best=null,bd=999;nodes.forEach(function(n){var d=dist2(player.position.x,player.position.z,n.x,n.z);if(d<bd){bd=d;best=n;}});return best&&bd<=2.35?{node:best,d:bd}:null;}
+function nearestDry(readyOnly){var best=null,bd=999;state.drying.forEach(function(d){var ready=Date.now()-d.startedAt>=DRY_MS;if(readyOnly&&!ready)return;var dd=dist2(player.position.x,player.position.z,d.x,d.z);if(dd<bd){bd=dd;best=d;}});return best&&bd<=2.5?best:null;}
+function updateStatus(){
+  if(buildMode){document.getElementById('status').textContent='설치 위치를 땅에 터치해. 회전 버튼으로 방향 변경.';return;}
+  var d=nearestDry(true);if(d){document.getElementById('status').textContent='말린 흙이 가까워. 네모 성형 버튼을 눌러.';return;}
+  var n=nearestNode();document.getElementById('status').textContent=n?defs[n.node.type].label+' 채집 가능 · 작업 버튼':'자원 가까이 가서 작업 버튼을 눌러.';
+}
+function renderDryList(){
+  var boxEl=document.getElementById('dryList'),rows=document.getElementById('dryRows');rows.innerHTML='';
+  if(!state.drying.length){boxEl.classList.remove('on');return;}
+  boxEl.classList.add('on');
+  state.drying.forEach(function(d){var e=Date.now()-d.startedAt,p=clamp(e/DRY_MS,0,1),remain=Math.max(0,Math.ceil((DRY_MS-e)/1000));var row=document.createElement('div');row.innerHTML='<div class="dryRow"><span>흙 '+d.id+'</span><span>'+(p>=1?'성형 가능':remain+'초')+'</span></div><div class="bar"><i style="width:'+Math.round(p*100)+'%"></i></div>';rows.appendChild(row);});
+}
+var actions=[
+  {id:'layMud',name:'흙 펼치기',sub:'흙 2',run:function(){if(!has({soil:2}))return toast('흙 2개가 필요해.');var x=snap(player.position.x+Math.sin(player.rotation.y)*1.8),z=snap(player.position.z+Math.cos(player.rotation.y)*1.8);if(state.drying.some(function(d){return d.x===x&&d.z===z;}))return toast('그 자리는 이미 건조 중이야.');spend({soil:2});state.drying.push({id:state.nextDryId++,x:x,z:z,startedAt:Date.now()});syncDryVisuals();save();updateInventory();toast('흙을 펼쳤어. 60초 동안 말려야 해.');}},
+  {id:'shape',name:'네모 성형',sub:'마른 흙 → 벽돌',run:function(){var d=nearestDry(true);if(!d)return toast('가까운 곳에 60초 다 마른 흙이 없어.');state.drying=state.drying.filter(function(x){return x.id!==d.id;});gain('brick',1);syncDryVisuals();save();updateInventory();toast('네모 모양 흙벽돌 1개 완성.');}},
+  {id:'mortar',name:'접착재 반죽',sub:'흙 1 + 물 1',run:function(){if(!has({soil:1,water:1}))return toast('흙 1개와 물 1개가 필요해.');spend({soil:1,water:1});gain('mortar',1);save();updateInventory();toast('진흙 접착재 1개를 만들었어.');}},
+  {id:'rope',name:'밧줄 꼬기',sub:'섬유 2',run:function(){if(!has({fiber:2}))return toast('섬유 2개가 필요해.');spend({fiber:2});gain('rope',1);save();updateInventory();toast('밧줄 1개 완성.');}},
+  {id:'foundation',name:'돌 기초',sub:'돌 2 + 접착재 1',build:true,cost:{stone:2,mortar:1}},
+  {id:'post',name:'지지기둥',sub:'나무 2 + 밧줄 1',build:true,cost:{wood:2,rope:1}},
+  {id:'mudWall',name:'흙벽돌 벽',sub:'벽돌 1 + 접착재 1',build:true,cost:{brick:1,mortar:1}},
+  {id:'stoneWall',name:'돌벽',sub:'돌 3 + 접착재 1',build:true,cost:{stone:3,mortar:1}},
+  {id:'woodWall',name:'나무벽',sub:'나무 2 + 밧줄 1',build:true,cost:{wood:2,rope:1}}
+];
+function renderActions(){
+  var bar=document.getElementById('processBar');bar.innerHTML='';actions.forEach(function(a){var b=document.createElement('button');b.type='button';b.className='actionChip'+(buildMode===a.id?' on':'');b.innerHTML=a.name+'<small>'+a.sub+'</small>';b.addEventListener('click',function(ev){ev.stopPropagation();if(a.build){buildMode=buildMode===a.id?null:a.id;renderActions();updateStatus();}else a.run();});bar.appendChild(b);});
+}
+function actionById(id){return actions.find(function(a){return a.id===id;});}
+renderActions();updateInventory();
+
+function canPlaceBuild(a,s){
+  if(a.id==='foundation'){if(s.foundation)return '이미 기초가 있어.';return null;}
+  if(!s.foundation)return '먼저 돌 기초를 설치해야 해.';
+  if(a.id==='post'){if(s.post)return '이미 지지기둥이 있어.';return null;}
+  var type=a.id==='mudWall'?'mud':a.id==='stoneWall'?'stone':'wood';
+  if(s.wallType&&s.wallType!==type)return '한 칸에는 같은 벽 재료만 쌓을 수 있어.';
+  var max=s.post?3:2;if((s.wallLevel||0)>=max)return s.post?'이 기둥의 최대 높이야.':'3단 벽은 지지기둥이 필요해.';
+  return null;
+}
+function placeBuildAt(x,z){
+  var a=actionById(buildMode);if(!a)return;
+  if(dist2(player.position.x,player.position.z,x,z)>5.2)return toast('너무 멀어. 가까이 가서 설치해.');
+  if(!has(a.cost))return toast('재료 부족: '+costText(a.cost));
+  var s=structureAt(x,z),reason=canPlaceBuild(a,s);if(reason)return toast(reason);
+  spend(a.cost);s.rotation=state.rotation;
+  if(a.id==='foundation')s.foundation=true;
+  else if(a.id==='post')s.post=true;
+  else{s.wallType=a.id==='mudWall'?'mud':a.id==='stoneWall'?'stone':'wood';s.wallLevel=(s.wallLevel||0)+1;if(a.id==='mudWall')state.firstWallBuilt=true;}
+  rebuildStructureVisual(key(x,z));save();updateInventory();buildMode=null;renderActions();toast(a.name+' 설치 완료.');
+}
+
+var raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
+document.getElementById('game').addEventListener('pointerdown',function(ev){
+  if(!buildMode)return;pointer.x=(ev.clientX/innerWidth)*2-1;pointer.y=-(ev.clientY/innerHeight)*2+1;raycaster.setFromCamera(pointer,camera);var hits=raycaster.intersectObject(ground,false);if(!hits.length)return;var p=hits[0].point;placeBuildAt(snap(p.x),snap(p.z));
+});
+
+var lastGather=0;
+document.getElementById('actBtn').addEventListener('pointerdown',function(ev){
+  ev.preventDefault();var now=performance.now();if(now-lastGather<380)return;lastGather=now;var n=nearestNode();if(!n)return toast('채집할 자원 가까이 가야 해.');var type=n.node.type,amount=type==='water'?1:1;gain(type,amount);save();updateInventory();toast(defs[type].label+' +'+amount);
+});
+
+var joy=document.getElementById('joystick'),stick=document.getElementById('stick'),joyId=null,joyRect=null;
+function setJoy(ev){joyRect=joy.getBoundingClientRect();var cx=joyRect.left+joyRect.width/2,cy=joyRect.top+joyRect.height/2,dx=ev.clientX-cx,dy=ev.clientY-cy,len=Math.hypot(dx,dy)||1,max=31;if(len>max){dx=dx/len*max;dy=dy/len*max;}input.x=dx/max;input.y=dy/max;stick.style.transform='translate('+dx+'px,'+dy+'px)';}
+joy.addEventListener('pointerdown',function(ev){joyId=ev.pointerId;joy.setPointerCapture(ev.pointerId);setJoy(ev);});
+joy.addEventListener('pointermove',function(ev){if(ev.pointerId===joyId)setJoy(ev);});
+function clearJoy(ev){if(joyId!==null&&(!ev||ev.pointerId===joyId)){joyId=null;input.x=0;input.y=0;stick.style.transform='translate(0,0)';}}
+joy.addEventListener('pointerup',clearJoy);joy.addEventListener('pointercancel',clearJoy);
+document.getElementById('rotateBtn').addEventListener('click',function(){state.rotation=(state.rotation+Math.PI/2)%(Math.PI*2);save();toast('벽 방향 90° 회전');});
+
+var keys={};addEventListener('keydown',function(e){keys[e.key.toLowerCase()]=true;});addEventListener('keyup',function(e){keys[e.key.toLowerCase()]=false;});
+
+var last=performance.now(),walkPhase=0,lastDryState='';
+function animate(now){
+  requestAnimationFrame(animate);var dt=Math.min(.035,(now-last)/1000);last=now;
+  var kx=(keys['d']?1:0)-(keys['a']?1:0),ky=(keys['s']?1:0)-(keys['w']?1:0);var ix=Math.abs(input.x)>0.04?input.x:kx,iy=Math.abs(input.y)>0.04?input.y:ky;var len=Math.hypot(ix,iy);if(len>1){ix/=len;iy/=len;}
+  if(len>.04){
+    var angle=Math.atan2(ix,iy);player.rotation.y=angle;var speed=4.2;player.position.x=clamp(player.position.x+Math.sin(angle)*speed*dt,-20,20);player.position.z=clamp(player.position.z+Math.cos(angle)*speed*dt,-20,20);walkPhase+=dt*9;leg1.rotation.x=Math.sin(walkPhase)*.45;leg2.rotation.x=-Math.sin(walkPhase)*.45;arm1.rotation.x=-Math.sin(walkPhase)*.35;arm2.rotation.x=Math.sin(walkPhase)*.35;
+  }else{leg1.rotation.x*=.82;leg2.rotation.x*=.82;arm1.rotation.x*=.82;arm2.rotation.x*=.82;}
+  state.player.x=player.position.x;state.player.z=player.position.z;
+  var cx=player.position.x+10,cz=player.position.z+12;camera.position.x+=(cx-camera.position.x)*.055;camera.position.z+=(cz-camera.position.z)*.055;camera.lookAt(player.position.x,0,player.position.z);
+  var dryState=state.drying.map(function(d){return d.id+':' +(Date.now()-d.startedAt>=DRY_MS?'1':'0');}).join('|');if(dryState!==lastDryState){lastDryState=dryState;syncDryVisuals();}
+  renderDryList();updateStatus();renderer.render(scene,camera);
+}
+requestAnimationFrame(animate);
+setInterval(save,5000);
+addEventListener('beforeunload',save);
+addEventListener('resize',function(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight,false);});
+
+document.getElementById('startBtn').addEventListener('click',function(){document.getElementById('start').style.display='none';toast('흙더미부터 찾아가.');});
+
+window.__REALISTIC_BUILDER_SELFTEST__=function(){
+  var checks={dryingIs60Seconds:DRY_MS===60000,mudWallNeedsBrickAndMortar:actionById('mudWall').cost.brick===1&&actionById('mudWall').cost.mortar===1,foundationNeedsStoneAndMortar:actionById('foundation').cost.stone===2&&actionById('foundation').cost.mortar===1,woodWallNeedsJoinMaterial:actionById('woodWall').cost.rope===1,stoneWallNeedsJoinMaterial:actionById('stoneWall').cost.mortar===1};
+  return{pass:Object.keys(checks).every(function(k){return checks[k];}),checks:checks};
+};
+})();
+</script>
+</body>
+</html>
