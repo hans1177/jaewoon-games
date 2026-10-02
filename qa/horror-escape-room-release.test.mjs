@@ -822,7 +822,7 @@ test('첫 캐릭터 프레임은 안전 바닥을 먼저 만들고 실제 목적
  assert.doesNotMatch(bootstrapBlock,/character:PivotTo/);
  assert.doesNotMatch(bootstrapBlock,/bootstrapTarget/);
  assert.doesNotMatch(server,/ManorBootstrapGround"\);if safety then safety:Destroy\(\)end/);
- const engineSpawnCreates=server.match(/Instance\.new\("SpawnLocation"\)/g)or[];
+ const engineSpawnCreates=server.match(/Instance\.new\("SpawnLocation"\)/g)||[];
  assert.equal(engineSpawnCreates.length,1,'horror runtime must create exactly one engine SpawnLocation');
  assert.match(server,/lobbyBootstrapSpawn\.AllowTeamChangeOnTouch=false/);
  assert.match(server,/lobbyBootstrapSpawn\.Enabled=true/);
