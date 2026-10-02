@@ -9,7 +9,6 @@ on:
   push:
     branches: [main]
     paths:
-      - 'COMPANY_FLOW.md'
       - 'company-directive.json'
       - 'REMOTE_AUTOMATION.md'
       - '.github/agents/homepage.agent.md'
@@ -50,7 +49,6 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'COMPANY_FLOW.md'
       - 'company-directive.json'
       - 'REMOTE_AUTOMATION.md'
       - '.github/agents/homepage.agent.md'
