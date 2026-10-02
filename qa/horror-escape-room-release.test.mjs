@@ -181,8 +181,8 @@ test('월드 로비는 밝은 가시성, 전용 BGM, 기괴한 직원과 공포�
  assert.match(manorClient,/Lighting\.ExposureCompensation=\.4/);
  for(const visual of ['Butler_Finger','Undertaker_','Archivist_','LittleGhost_'])assert.ok(manorAssets.includes(visual),visual);
  for(const prop of ['ClockCase','CoffinLid','FamilyMirror','FamilyPortrait','Wardrobe','HearthFlame'])assert.ok(manorAssets.includes(prop),prop);
- assert.match(manorServer,/LobbyArtPass","BLENDER_MONSTER_FAMILY_V2"/);
- assert.match(manorServer,/LobbyBuildRevision","BLENDER_MANOR_20260930"/);
+ assert.match(manorServer,/LobbyArtPass","REBUILD_PENDING_STUDIO"/);
+ assert.match(manorServer,/LobbyBuildRevision","BLENDER_MANOR_REBUILD_20261002"/);
  assert.match(manorServer,/ManorGag/);
 });
 
