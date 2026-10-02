@@ -1153,6 +1153,57 @@ def build():
             s.prop('furniture','tableRound',name+'Table',(x+outer*4.5,.4,z+1.6),2.7)
             s.prop('furniture','chairCushion',name+'Chair',(x+outer*5.2,.4,z-4.3),3.2,rot=-outer*math.pi/2)
 
+        # 천장등과 벽 장식도 방마다 다른 실루엣을 사용한다.
+        if name=='ArchiveRoom':
+            s.lathe(name+'PendantStem',(x,11.0,z),.08,.06,2.6,c['black'],sides=16)
+            s.ellipsoid(name+'PendantGlass',(x,9.55,z),(1.55,1.95,1.55),c['glass'])
+            s.ellipsoid(name+'PendantFlame',(x,9.55,z),(.26,.64,.26),c['amber'])
+            for i in range(3):
+                s.box(name+'WallLedger'+str(i),(wall_x-outer*.72,7.7-i*1.35,z-4.0+i*4.0),(.18,1.0,3.0),c['wood'])
+        elif name=='LibraryRoom':
+            s.lathe(name+'ReadingLampStem',(x+outer*4.8,4.2,z-2.0),.07,.055,2.7,c['brass'],sides=16)
+            s.loft(name+'ReadingLampShade',(x+outer*4.8,5.85,z-2.0),[
+              (-.35,.85,.85),(0,.72,.72),(.45,.30,.30)
+            ],s.material('LibraryLampShade',(.11,.18,.10)),sides=24)
+            for i in range(4):
+                s.box(name+'FramedPage'+str(i),(wall_x-outer*.72,6.4+(i%2)*3.3,z-4.5+(i//2)*9.0),(.16,2.3,3.2),c['wood'])
+                s.box(name+'PageInset'+str(i),(wall_x-outer*.84,6.4+(i%2)*3.3,z-4.5+(i//2)*9.0),(.05,1.75,2.55),c['ivory'])
+        elif name=='ParlorRoom':
+            s.lathe(name+'CeilingDrop',(x,11.2,z),.08,.06,2.0,c['brass'],sides=16)
+            for i in range(4):
+                a=math.tau*i/4
+                px=x+math.cos(a)*1.45;pz=z+math.sin(a)*1.45
+                s.curve_tube(name+'LightArm'+str(i),[(x,10.0,z),(px,9.45,pz)],[.08,.06],[.07,.05],c['brass'],sides=16)
+                s.ellipsoid(name+'LightFlame'+str(i),(px,9.85,pz),(.20,.52,.20),c['amber'])
+            s.ellipsoid(name+'WallCameo',(wall_x-outer*.78,7.1,z),(0.16,4.4,3.8),c['brass'])
+            s.ellipsoid(name+'WallCameoInset',(wall_x-outer*.90,7.1,z),(0.05,3.65,3.05),room_accent[name])
+        elif name=='MortuaryRoom':
+            for i,dz in enumerate([-2.8,2.8]):
+                s.curve_tube(name+'LampChain'+str(i),[(x,12.35,z+dz),(x,9.5,z+dz)],[.055,.045],[.045,.035],c['black'],sides=14)
+                s.lathe(name+'LampCage'+str(i),(x,8.95,z+dz),.65,.46,1.20,c['brass'],sides=20)
+                s.ellipsoid(name+'LampFlame'+str(i),(x,8.95,z+dz),(.18,.48,.18),c['amber'])
+            for i in range(4):
+                s.box(name+'ToolRack'+str(i),(wall_x-outer*.72,3.6+i*1.55,z+5.0),(0.18,.22,5.2),c['black'])
+                s.lathe(name+'ToolHandle'+str(i),(wall_x-outer*.96,3.6+i*1.55,z+4.1-i*.5),.08,.07,1.4,c['wood'],sides=16)
+        elif name=='WardrobeRoom':
+            s.ellipsoid(name+'VanityFrame',(wall_x-outer*.70,6.7,z),(0.20,7.0,5.4),c['brass'])
+            s.ellipsoid(name+'VanityMirror',(wall_x-outer*.84,6.7,z),(0.06,6.15,4.55),c['glass'])
+            for i in range(3):
+                s.lathe(name+'VanityBottle'+str(i),(x+outer*5.1,3.1,z-1+i*.95),.16,.11,.85,c['glass'],sides=18)
+                s.lathe(name+'VanityCap'+str(i),(x+outer*5.1,3.58,z-1+i*.95),.10,.08,.18,c['brass'],sides=16)
+        else:
+            # 라운지는 오래된 축음기와 낮은 벽 조명으로 가족 생활감을 준다.
+            s.lathe(name+'GramophoneBase',(x+outer*5.1,2.0,z+1.5),.90,.82,1.1,c['wood'],sides=24)
+            s.curve_tube(name+'GramophoneNeck',[
+              (x+outer*5.1,2.6,z+1.5),(x+outer*4.6,3.35,z+1.5),(x+outer*4.2,4.0,z+1.5)
+            ],[.12,.10,.09],[.10,.08,.07],c['brass'],sides=18)
+            s.loft(name+'GramophoneHorn',(x+outer*3.55,4.15,z+1.5),[
+              (-.75,.24,.24),(-.10,.55,.55),(.80,1.15,1.15)
+            ],c['brass'],sides=26)
+            for dz in [-4.4,4.4]:
+                s.ellipsoid(name+'WallLamp'+str(dz),(wall_x-outer*.82,6.5,z+dz),(.18,1.4,1.0),c['glass'])
+                s.ellipsoid(name+'WallFlame'+str(dz),(wall_x-outer*.92,6.5,z+dz),(.12,.34,.12),c['amber'])
+
     # 왼쪽 날개 출정용 실제 벽지도. 서버 승인된 SelectedLobbyMap만 선택 표시를 바꾼다.
     s.box('WallMapFrame',(-74.15,7,-31),(.70,13,27),c['wood'])
     s.box('WallMapPaper',(-73.75,7,-31),(.16,11.4,24.8),s.material('map_parchment',(.47,.40,.28)))
@@ -1391,6 +1442,29 @@ def build():
         s.lathe('ApproachWaystoneCap'+str(i),(x,2.05,z),.72,.50,.32,c['brass'],sides=20)
     s.curve_tube('CollectionGardenRailLeft',[(-35,2.5,31),(-35,2.5,40)],[.10,.10],[.08,.08],c['black'],sides=16)
     s.curve_tube('CollectionGardenRailRight',[(35,2.5,31),(35,2.5,40)],[.10,.10],[.08,.08],c['black'],sides=16)
+    # 수집 전시 주변은 낮은 난간·마른 식재·관람 벤치로 작은 정원방처럼 묶는다.
+    garden_shrub=s.material('CollectionShrub',(.070,.105,.060))
+    for group,(cx,cz) in enumerate([(-30,35),(30,35),(45,54)]):
+        for i,a in enumerate([-.9,-.3,.35,.95]):
+            x=cx+math.cos(a*2.4)*5.0;z=cz+math.sin(a*2.4)*4.2
+            s.curve_tube('CollectionShrubStem'+str(group)+'_'+str(i),[
+              (x,.25,z),(x+.18,1.2,z-.10),(x-.12,2.2,z+.16)
+            ],[.10,.07,.025],[.08,.055,.020],garden_shrub,sides=14)
+            for side in [-1,1]:
+                s.curve_tube('CollectionShrubTwig'+str(group)+'_'+str(i)+str(side),[
+                  (x,1.1,z),(x+side*.70,1.65,z+side*.35)
+                ],[.035,.014],[.028,.010],garden_shrub,sides=12)
+        # 전시 정면은 비우고 양옆만 낮은 황동 난간.
+        for side in [-1,1]:
+            rx=cx+side*5.6
+            s.curve_tube('CollectionSideRail'+str(group)+str(side),[
+              (rx,1.5,cz-3.2),(rx,1.5,cz+2.7)
+            ],[.075,.075],[.060,.060],c['brass'],sides=14)
+            for dz in [-2.5,0,2.2]:
+                s.lathe('CollectionRailPost'+str(group)+str(side)+str(dz),(rx,.85,cz+dz),.07,.055,1.7,c['black'],sides=14)
+        bench_z=cz-6.2
+        s.box('CollectionViewingBenchSeat'+str(group),(cx,1.25,bench_z),(5.6,.30,1.35),c['wood'])
+        s.box('CollectionViewingBenchBack'+str(group),(cx,2.45,bench_z-.50),(5.6,2.2,.25),c['wood'],lean=.14)
 
     # 폐쇄된 지하 납골당: 정원 지형에 파묻힌 석재 전면 + 버트레스 + 깊은 철문 + 배수로.
     crypt_stone=s.material('CryptStone',(.205,.215,.205))
@@ -1517,6 +1591,31 @@ def build():
     for x in [-45,-31,31,45]:
         s.box('WindowSill'+str(x),(x,3.25,-.10),(6.2,.45,1.0),c['stone'])
         s.box('RainStain'+str(x),(x,1.8,-.18),(3.1,2.7,.05),s.material('RainStainMat',(.10,.09,.09)))
+
+    # 외관 비대칭 노후화: 일부 측면 창은 임시 판자로 막히고, 석재 균열/덩굴은 좌우가 다르게 흐른다.
+    board_mat=s.material('WeatheredBoard',(.085,.042,.025))
+    for i,(x,y,z0,lean) in enumerate([
+      (-74.35,7.2,-18,-.12),(-74.35,17.0,-48,.08),(74.35,7.0,-54,.11)
+    ]):
+        for plank in range(3):
+            p=s.box('BoardedWingWindow'+str(i)+'_'+str(plank),(x,y-2.0+plank*2.0,z0),(.14,.48,5.8),board_mat,rot=(lean if x<0 else -lean))
+            p.rotation_euler.x=(plank-1)*.045
+        s.box('BoardBrace'+str(i),(x-(-.10 if x<0 else .10),y,z0),(.18,5.8,.42),c['black'],rot=.18 if i%2==0 else -.16)
+    for i,(x,y,z0,dx,dz) in enumerate([
+      (-74.46,5.0,-7,-.04,4.0),(-74.46,14.5,-37,.03,-4.8),(74.46,9.0,-24,-.03,5.5)
+    ]):
+        s.curve_tube('FacadeCrack'+str(i),[
+          (x,y-2.4,z0),(x+dx,y-1.0,z0+dz*.25),(x-dx*.6,y+.6,z0+dz*.62),(x+dx*.4,y+2.2,z0+dz)
+        ],[.045,.038,.030,.018],[.020,.018,.014,.010],c['black'],sides=14)
+    vine_mat=s.material('DeadVine',(.055,.075,.045))
+    for i,(x,z0,side) in enumerate([(-74.55,-31,-1),(74.55,-11,1)]):
+        points=[(x,.7,z0),(x,5.0,z0+side*1.2),(x,10.0,z0-side*.6),(x,16.0,z0+side*2.1),(x,21.0,z0+side*.5)]
+        s.curve_tube('FacadeVine'+str(i),points,[.10,.085,.065,.045,.025],[.08,.07,.055,.038,.020],vine_mat,sides=16)
+        for j in [1,2,3]:
+            p=points[j]
+            s.curve_tube('FacadeVineTwig'+str(i)+'_'+str(j),[
+              p,(x, p[1]+1.2, p[2]+side*(1.3+j*.35))
+            ],[.035,.014],[.028,.010],vine_mat,sides=14)
 
     # Carved trims, imperfect rooflines and pointed arch panels give a western manor silhouette.
     for side in [-1,1]:
@@ -1793,6 +1892,18 @@ def build():
         s.curve_tube('UndertakerTape'+str(i),[
           (24.0+i*.75,3.0,-21.95),(24.1+i*.75,3.9,-21.90),(23.9+i*.75,4.6,-21.95)
         ],[.035,.030,.022],[.028,.024,.018],c['ivory'],sides=14)
+    # 작은 역할 소품으로 가까이에서만 보이는 생활 디테일을 추가한다.
+    for i in range(3):
+        s.lathe('ButlerKeyRing'+str(i),(10.8+i*.35,3.3,-11.55),.20,.20,.045,c['brass'],sides=20)
+    s.lathe('ArchivistInkPot',(-23.8,3.65,-26.0),.30,.22,.52,c['black'],sides=20)
+    s.curve_tube('ArchivistQuill',[
+      (-23.8,3.9,-26.0),(-23.5,4.7,-25.9),(-23.0,5.45,-25.8)
+    ],[.035,.025,.010],[.028,.020,.008],c['ivory'],sides=14)
+    s.curve_tube('UndertakerScissors',[
+      (23.6,3.85,-24.8),(24.1,4.15,-24.8),(24.6,3.85,-24.8)
+    ],[.05,.08,.05],[.04,.06,.04],c['brass'],sides=16)
+    s.lathe('UndertakerScissorLoopA',(23.45,3.75,-24.8),.22,.22,.045,c['brass'],sides=20)
+    s.lathe('UndertakerScissorLoopB',(24.75,3.75,-24.8),.22,.22,.045,c['brass'],sides=20)
     # 샹들리에의 실제 곡선 팔과 촛농.
     for i in range(8):
         a=i*math.pi/4
