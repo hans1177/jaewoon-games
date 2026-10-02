@@ -1105,6 +1105,17 @@ def build():
     s.curve_tube('GalleryRearHandrail',back_top,[.13]*len(back_top),[.10]*len(back_top),c['wood'],sides=18)
     s.curve_tube('GalleryRearBaseRail',back_base,[.08]*len(back_base),[.065]*len(back_base),c['brass'],sides=16)
 
+    # 그랜드홀 천장 코퍼. 계단/샹들리에 축 위는 비워 시야를 막지 않고 주변 천장만 깊이를 준다.
+    for row,z0 in enumerate([-55,-47,-39,-31,-23,-15,-7]):
+        for col,x0 in enumerate([-45,-30,-15,0,15,30,45]):
+            if abs(x0)<10 and z0 in [-31,-23]:continue
+            s.box('GrandCeilingCoffer'+str(row)+'_'+str(col),(x0,23.36,z0),(11.6,.22,6.2),c['wood'])
+            s.box('GrandCeilingCofferInset'+str(row)+'_'+str(col),(x0,23.20,z0),(10.35,.08,5.0),c['plum'])
+            if (row+col)%3==0:
+                s.ellipsoid('GrandCeilingBoss'+str(row)+'_'+str(col),(x0,23.05,z0),(1.0,.18,1.0),c['brass'])
+    for x0 in [-45,-30,-15,15,30,45]:
+        s.box('GrandCeilingCorbel'+str(x0),(x0,21.85,-63.75),(1.2,2.2,.65),c['wood'],lean=(.10 if x0<0 else -.10))
+
     # 좌우 날개 방: 기록보관실/서재/응접실/의상실/장례용품실/라운지.
     room_specs=[
       (-58,-54,'ArchiveRoom'),(-58,-33,'LibraryRoom'),(-58,-12,'ParlorRoom'),
@@ -1899,33 +1910,33 @@ def build():
         s.lathe('ThreadSpool'+str(i),(20+i*.48,3.75,-25),.16,.16,.65,c['red'] if i%2 else c['teal'])
         s.lathe('ThreadCap'+str(i),(20+i*.48,4.08,-25),.21,.21,.10,c['ivory'])
     # NPC 주변 생활 흔적. 상호작용이나 보상 없이 역할만 공간에서 더 읽히게 한다.
-    s.box('ButlerServiceConsole',(8.7,2.0,-12.2),(5.6,3.6,1.7),c['wood'])
-    s.lathe('ButlerServiceBell',(7.8,4.05,-11.7),.32,.22,.34,c['brass'],sides=20)
+    s.box('ServiceConsoleMortimer',(8.7,2.0,-12.2),(5.6,3.6,1.7),c['wood'])
+    s.lathe('ServiceBellMortimer',(7.8,4.05,-11.7),.32,.22,.34,c['brass'],sides=20)
     for i in range(3):
-        s.box('ButlerFoldedLinen'+str(i),(9.3,3.95+i*.18,-11.7),(1.9,.14,1.2),c['ivory'])
-    s.box('ArchivistIndexCabinet',(-26.4,2.7,-30.0),(5.3,5.0,2.0),c['wood'])
+        s.box('ServiceFoldedLinen'+str(i),(9.3,3.95+i*.18,-11.7),(1.9,.14,1.2),c['ivory'])
+    s.box('RecordIndexCabinet',(-26.4,2.7,-30.0),(5.3,5.0,2.0),c['wood'])
     for row in range(4):
         for col in [-1,0,1]:
-            s.box('ArchivistIndexDrawer'+str(row)+str(col),(-26.0+col*1.25,1.4+row*.90,-28.92),(1.05,.65,.12),c['wood'])
-            s.box('ArchivistIndexTag'+str(row)+str(col),(-26.0+col*1.25,1.4+row*.90,-28.82),(.40,.18,.05),c['brass'])
-    s.box('UndertakerMeasureRack',(25.6,3.2,-22.8),(5.0,5.8,1.1),c['wood'])
+            s.box('RecordIndexDrawer'+str(row)+str(col),(-26.0+col*1.25,1.4+row*.90,-28.92),(1.05,.65,.12),c['wood'])
+            s.box('RecordIndexTag'+str(row)+str(col),(-26.0+col*1.25,1.4+row*.90,-28.82),(.40,.18,.05),c['brass'])
+    s.box('MortuaryMeasureRack',(25.6,3.2,-22.8),(5.0,5.8,1.1),c['wood'])
     for i in range(5):
-        s.lathe('UndertakerClothRoll'+str(i),(24.0+i*.75,1.75,-22.05),.28,.25,2.7,c['red'] if i%2 else c['black'],sides=18)
-        s.curve_tube('UndertakerTape'+str(i),[
+        s.lathe('MortuaryClothRoll'+str(i),(24.0+i*.75,1.75,-22.05),.28,.25,2.7,c['red'] if i%2 else c['black'],sides=18)
+        s.curve_tube('MortuaryTape'+str(i),[
           (24.0+i*.75,3.0,-21.95),(24.1+i*.75,3.9,-21.90),(23.9+i*.75,4.6,-21.95)
         ],[.035,.030,.022],[.028,.024,.018],c['ivory'],sides=14)
     # 작은 역할 소품으로 가까이에서만 보이는 생활 디테일을 추가한다.
     for i in range(3):
-        s.lathe('ButlerKeyRing'+str(i),(10.8+i*.35,3.3,-11.55),.20,.20,.045,c['brass'],sides=20)
-    s.lathe('ArchivistInkPot',(-23.8,3.65,-26.0),.30,.22,.52,c['black'],sides=20)
-    s.curve_tube('ArchivistQuill',[
+        s.lathe('ServiceKeyRing'+str(i),(10.8+i*.35,3.3,-11.55),.20,.20,.045,c['brass'],sides=20)
+    s.lathe('RecordInkPot',(-23.8,3.65,-26.0),.30,.22,.52,c['black'],sides=20)
+    s.curve_tube('RecordQuill',[
       (-23.8,3.9,-26.0),(-23.5,4.7,-25.9),(-23.0,5.45,-25.8)
     ],[.035,.025,.010],[.028,.020,.008],c['ivory'],sides=14)
-    s.curve_tube('UndertakerScissors',[
+    s.curve_tube('MortuaryScissors',[
       (23.6,3.85,-24.8),(24.1,4.15,-24.8),(24.6,3.85,-24.8)
     ],[.05,.08,.05],[.04,.06,.04],c['brass'],sides=16)
-    s.lathe('UndertakerScissorLoopA',(23.45,3.75,-24.8),.22,.22,.045,c['brass'],sides=20)
-    s.lathe('UndertakerScissorLoopB',(24.75,3.75,-24.8),.22,.22,.045,c['brass'],sides=20)
+    s.lathe('MortuaryScissorLoopA',(23.45,3.75,-24.8),.22,.22,.045,c['brass'],sides=20)
+    s.lathe('MortuaryScissorLoopB',(24.75,3.75,-24.8),.22,.22,.045,c['brass'],sides=20)
     # 샹들리에 천장 접속부/사슬/크리스털 드롭. 기존 곡선 팔과 촛불은 중복 생성하지 않는다.
     s.lathe('ChandelierCeilingRose',(0,22.55,-24),2.15,1.55,.44,c['wood'],sides=32)
     s.lathe('ChandelierCanopy',(0,22.08,-24),.82,.48,.72,c['brass'],sides=28)
