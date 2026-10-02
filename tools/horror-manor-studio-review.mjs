@@ -115,6 +115,66 @@ end
 return HttpService:JSONEncode({count=#errors,errors=errors})
 `;
 
+const groundContactSnapshot=`
+local Players=game:GetService("Players")
+local HttpService=game:GetService("HttpService")
+local p=Players.LocalPlayer
+local c=p and p.Character
+local h=c and c:FindFirstChildOfClass("Humanoid")
+local r=c and c:FindFirstChild("HumanoidRootPart")
+if not p or not c or not h or not r then
+ return HttpService:JSONEncode({ok=false,error="CHARACTER_NOT_READY"})
+end
+local params=RaycastParams.new()
+params.FilterType=Enum.RaycastFilterType.Exclude
+params.FilterDescendantsInstances={c}
+params.IgnoreWater=true
+local hit=workspace:Raycast(r.Position,Vector3.new(0,-24,0),params)
+local ground=hit and hit.Instance or nil
+local originZ=tonumber(p:GetAttribute("ManorOriginZ"))
+local localZ=originZ and(r.Position.Z-originZ)or nil
+return HttpService:JSONEncode({
+ ok=true,
+ rootX=r.Position.X,
+ rootY=r.Position.Y,
+ rootZ=r.Position.Z,
+ localZ=localZ,
+ floorMaterial=tostring(h.FloorMaterial),
+ hit=hit~=nil,
+ hitName=ground and ground.Name or "",
+ hitY=hit and hit.Position.Y or nil,
+ personalGround=ground~=nil and ground.Name=="PersonalGround" and ground:GetAttribute("WalkableGround")==true,
+ rootAnchored=r.Anchored,
+ platformStand=h.PlatformStand,
+ physicalReady=workspace:GetAttribute("PhysicalLobbyReady")==true,
+ lobbySpawnGroundedAt=p:GetAttribute("LobbySpawnGroundedAt"),
+ bootstrapGroundReadyAt=p:GetAttribute("BootstrapGroundReadyAt")
+})
+`;
+
+async function captureGroundContact(studioId,label){
+ let last=null;
+ for(let attempt=1;attempt<=16;attempt++){
+  const result=await call('execute_luau',{studio_id:studioId,datamodel_type:'Client',code:groundContactSnapshot});
+  fs.writeFileSync(path.join(output,label+'-ground-attempt-'+String(attempt).padStart(2,'0')+'.json'),JSON.stringify(result,null,2));
+  const data=parsedText(result);last=data;
+  const floor=String(data?.floorMaterial||'');
+  const rootY=Number(data?.rootY);
+  const localZ=Number(data?.localZ);
+  if(data?.ok===true&&data.physicalReady===true&&data.hit===true&&data.personalGround===true
+    &&!floor.includes('Air')&&Number.isFinite(rootY)&&rootY>=2.5&&rootY<=6.5
+    &&Number.isFinite(localZ)&&localZ>=52&&localZ<=68
+    &&data.rootAnchored===false&&data.platformStand===false){
+   fs.writeFileSync(path.join(output,label+'-ground-contact.json'),JSON.stringify(data,null,2)+'\n');
+   console.log('MANOR_GROUND_CONTACT=PASS:'+label+':Y='+rootY+':LOCAL_Z='+localZ+':HIT='+String(data.hitName||''));
+   return data;
+  }
+  await sleep(500);
+ }
+ console.log('MANOR_GROUND_CONTACT=FAIL:'+label+':'+JSON.stringify(last));
+ throw Error('STUDIO_GROUND_CONTACT_FAILED:'+label+':'+JSON.stringify(last));
+}
+
 try{
  await request('initialize',{protocolVersion:'2024-11-05',capabilities:{},clientInfo:{name:'midnight-manor-review',version:'2.0'}});
  send({jsonrpc:'2.0',method:'notifications/initialized',params:{}});
@@ -150,6 +210,7 @@ try{
  await sleep(7000);
  const playState=await call('get_studio_state',{studio_id:studioId});
  fs.writeFileSync(path.join(output,'studio-state-play.json'),JSON.stringify(playState,null,2));
+ const firstGround=await captureGroundContact(studioId,'server-1');
 
  const before=await call('execute_luau',{studio_id:studioId,datamodel_type:'Client',code:clientSnapshot});
  fs.writeFileSync(path.join(output,'client-before-enter.json'),JSON.stringify(before,null,2));
@@ -185,11 +246,24 @@ try{
  const errorData=parsedText(errors);
  if(errorData&&Number(errorData.count)>0)throw Error('STUDIO_CLIENT_CONSOLE_ERRORS:'+JSON.stringify(errorData));
 
+ await call('start_stop_play',{studio_id:studioId,is_start:false});playStarted=false;
+ await sleep(2200);
+ await call('start_stop_play',{studio_id:studioId,is_start:true});playStarted=true;
+ await sleep(7000);
+ const restartGround=await captureGroundContact(studioId,'server-2');
+ const restartErrors=await call('execute_luau',{studio_id:studioId,datamodel_type:'Client',code:errorSnapshot});
+ fs.writeFileSync(path.join(output,'client-errors-server-2.json'),JSON.stringify(restartErrors,null,2));
+ const restartErrorData=parsedText(restartErrors);
+ if(restartErrorData&&Number(restartErrorData.count)>0)throw Error('STUDIO_RESTART_CLIENT_CONSOLE_ERRORS:'+JSON.stringify(restartErrorData));
+
  fs.writeFileSync(path.join(output,'studio-review-evidence.json'),JSON.stringify({
-  studioId,actualPlayTest:true,enterButtonVisible:true,enterButtonActivatedByMouse:true,
+  studioId,actualPlayTest:true,newServerRestarted:true,
+  groundContactServer1:firstGround,groundContactServer2:restartGround,
+  enterButtonVisible:true,enterButtonActivatedByMouse:true,
   invitationOverlayDismissed:true,cameraReturnedCustom:true,departButtonVisible:true,
-  clientConsoleErrorCount:errorData?.count??null,pass:true
+  clientConsoleErrorCount:errorData?.count??null,restartClientConsoleErrorCount:restartErrorData?.count??null,pass:true
  },null,2)+'\n');
+ console.log('MANOR_NEW_SERVER_GROUND_CONTACT=PASS');
  console.log('MANOR_STUDIO_ENTRY_QA=PASS');
 }finally{
  if(playStarted){
