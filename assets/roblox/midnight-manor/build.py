@@ -597,20 +597,38 @@ def npc(s,kind,pos):
         s.curve_tube(kind+'_Thumb'+str(side),[thumb_start,thumb_mid,thumb_tip],
           [w*.030,w*.027,w*.020],[w*.032,w*.029,w*.021],glove,sides=18,parent=p)
 
-    # 코트 자락도 사각 박스 대신 불규칙 윤곽과 벌어진 뒷자락을 갖는다.
-    tail_len=.35 if kind=='Butler' else .40 if kind=='Undertaker' else .23
-    for side in [-1,1]:
-        outline=[
-          (0,0),(side*w*.36,.02),(side*w*.40,-h*tail_len*.70),
-          (side*w*.31,-h*tail_len),(side*w*.04,-h*tail_len*.91)
-        ]
-        tail=s.prism(kind+'_CoatTail'+str(side),(0,h*.43,-.14),outline,.17,q['coat'],parent=p)
-        tail.rotation_euler.x=side*.02
-        if kind=='Undertaker':
-            lining=s.prism('Undertaker_CoatLining'+str(side),(0,h*.425,-.035),[
-              (0,0),(side*w*.29,.01),(side*w*.31,-h*tail_len*.72),(side*w*.08,-h*tail_len*.84)
-            ],.035,q['accent'],parent=p)
-            lining.rotation_euler.x=side*.018
+    # 역할별 코트 자락. 앞에서 삼각 판처럼 보이지 않게 허리 뒤에서 시작하고 아래로 자연스럽게 벌어진다.
+    if kind=='Butler':
+        tail_len=.36
+        for side in [-1,1]:
+            outline=[
+              (side*w*.03,0),(side*w*.24,-h*.015),(side*w*.30,-h*tail_len*.44),
+              (side*w*.26,-h*tail_len*.83),(side*w*.16,-h*tail_len),(side*w*.055,-h*tail_len*.94)
+            ]
+            tail=s.prism('Butler_CoatTail'+str(side),(0,h*.425,-.34),outline,.11,q['coat'],parent=p)
+            tail.rotation_euler.x=side*.018
+    elif kind=='Undertaker':
+        tail_len=.42
+        for side in [-1,1]:
+            outline=[
+              (side*w*.02,0),(side*w*.33,-h*.020),(side*w*.40,-h*tail_len*.34),
+              (side*w*.43,-h*tail_len*.74),(side*w*.34,-h*tail_len),(side*w*.08,-h*tail_len*.96)
+            ]
+            tail=s.prism('Undertaker_CoatTail'+str(side),(0,h*.435,-.31),outline,.15,q['coat'],parent=p)
+            lining=s.prism('Undertaker_CoatLining'+str(side),(0,h*.430,-.215),[
+              (side*w*.06,-h*.025),(side*w*.27,-h*.045),(side*w*.31,-h*tail_len*.48),
+              (side*w*.28,-h*tail_len*.84),(side*w*.12,-h*tail_len*.90)
+            ],.028,q['accent'],parent=p)
+            lining.rotation_euler.x=side*.012
+    else:
+        tail_len=.245
+        for side in [-1,1]:
+            outline=[
+              (side*w*.02,0),(side*w*.25,-h*.012),(side*w*.28,-h*tail_len*.44),
+              (side*w*.22,-h*tail_len),(side*w*.055,-h*tail_len*.93)
+            ]
+            tail=s.prism('Archivist_CoatTail'+str(side),(0,h*.425,-.29),outline,.095,q['coat'],parent=p)
+            tail.rotation_euler.x=side*.012
 
     # 목/머리: 얼굴은 2천+ 정점 연속 곡면으로 직접 조형한다.
     s.loft(kind+'_Neck',(0,h*.735,-.02),[
