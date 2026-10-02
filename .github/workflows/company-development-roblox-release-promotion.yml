@@ -1065,7 +1065,7 @@ jobs:
           test "$persisted" = '1'
           echo 'ROBLOX_RELEASE_RUNTIME_PERSIST=PASS'
 
-      - name: Dispatch existing game tester runtime foundation QA
+      - name: Dispatch exact Roblox Player black-box validation
         if: steps.target.outputs.skip != 'true' && steps.publish.outcome == 'success' && steps.publish.outputs.deferred != 'true' && steps.target.outputs.publish_stage != 'final'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -1073,8 +1073,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"
-          echo "ROBLOX_EXISTING_TESTER_FOUNDATION_QA_DISPATCHED=$GAME_ID"
+          gh workflow run company-development-roblox-player-blackbox.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"
+          echo "ROBLOX_PLAYER_BLACK_BOX_DISPATCHED=$GAME_ID"
 
       - name: Record canonical publication result without gating evolution
         if: always() && steps.target.outputs.publish_stage == 'final'
