@@ -146,5 +146,9 @@ test('F9 fan-in repeats development without requiring publication',()=>{
   assert.match(workflow,/const exactInternalF9Proof=/);
   assert.match(workflow,/prepublish\.f9RuntimeReplay===false/);
   assert.match(workflow,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=/);
+  assert.match(workflow,/ROBLOX_F9_VIBE_REFILL_REQUIRES_SETTLED_WAITER=NO/);
+  assert.match(workflow,/ROBLOX_F9_VIBE_REFILL_GAME_DISPATCHED=\$game_id/);
+  assert.match(workflow,/execution_lane:"game-primary"/);
+  assert.doesNotMatch(workflow,/if \[ "\$settled_count" -gt 0 \]; then/);
   assert.match(workflow,/vibe2-fanin-refill/);
 });

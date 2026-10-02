@@ -412,7 +412,9 @@ test('F9 canonical publish uses exact F9 released-game identity and immediately 
  assert.doesNotMatch(dispatch,/evaluateInternalRelease/);
  assert.match(workflow,/ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO/);
  assert.match(workflow,/event_type:"vibe2-fanin-refill"/);
- assert.match(workflow,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=\$settled_count/);
+ assert.match(workflow,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=\$refill_count/);
+ assert.match(workflow,/ROBLOX_F9_VIBE_REFILL_REQUIRES_SETTLED_WAITER=NO/);
+ assert.match(workflow,/ROBLOX_F9_VIBE_REFILL_GAME_DISPATCHED=\$game_id/);
 });
 
 
