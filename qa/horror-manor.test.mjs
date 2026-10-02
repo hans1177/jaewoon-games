@@ -99,10 +99,10 @@ test('personal manor spawn stays on the front-yard ground layer',()=>{
  assert.match(server,/local rayLength=lobbyDestination and math\.max\(16,pos\.Y\+12\)or 18/);
  assert.doesNotMatch(server,/rayTop=lobbyDestination and 30/);
  assert.match(server,/lobbySpawnLocation\.Position=Vector3\.new\(0,\.4,330\)/);
- assert.match(lobby,/local spawn=Instance\.new\("Part"\);spawn\.Name="PersonalSpawn";spawn\.Position=origin\+Vector3\.new\(0,\.55,60\)/);
- assert.match(lobby,/SpawnMarkerOnly/);
- assert.doesNotMatch(lobby,/local spawn=Instance\.new\("SpawnLocation"\);spawn\.Name="PersonalSpawn"/);
- assert.doesNotMatch(lobby,/p\.RespawnLocation=spawn/);
+ assert.match(lobby,/local spawn=Instance\.new\("SpawnLocation"\);spawn\.Name="PersonalSpawn";spawn\.Position=origin\+Vector3\.new\(0,\.55,60\)/);
+ assert.match(lobby,/spawn\.Neutral=true;spawn\.Duration=0;spawn\.Enabled=true/);
+ assert.match(lobby,/p\.RespawnLocation=spawn/);
+ assert.doesNotMatch(lobby,/SpawnMarkerOnly/);
  assert.match(server,/FIRST_FRAME_SPAWN_SINGLE_PATH_V3/);
  assert.match(server,/bootstrapGround\.CanCollide=true/);
  assert.match(server,/PersistentBootstrapSafety/);
