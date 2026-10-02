@@ -400,13 +400,14 @@ function buildAssetModelRouting({task={},request='',decisions=[],highEndActive=f
 }
 function buildNativeAuthoringExecution({target='',task={},decisions=[]}={}){
   const nativeTarget=['roblox','unity'].includes(clean(target).toLowerCase());
-  const dccTypes=decisions.filter(row=>(row.directAuthoring||[]).some(kind=>NATIVE_DCC_AUTHORING.includes(kind))).map(row=>row.type);
+  const needsAuthoring=row=>row?.required!==false&&row?.applyFirst?.enabled!==true;
+  const dccTypes=decisions.filter(row=>needsAuthoring(row)&&(row.directAuthoring||[]).some(kind=>NATIVE_DCC_AUTHORING.includes(kind))).map(row=>row.type);
   const nativeTextKinds=clean(target).toLowerCase()==='roblox'?ROBLOX_DIRECT_AUTHORING:clean(target).toLowerCase()==='unity'?UNITY_DIRECT_AUTHORING:[];
-  const nativeTextTypes=decisions.filter(row=>(row.directAuthoring||[]).some(kind=>nativeTextKinds.includes(kind))).map(row=>row.type);
+  const nativeTextTypes=decisions.filter(row=>needsAuthoring(row)&&(row.directAuthoring||[]).some(kind=>nativeTextKinds.includes(kind))).map(row=>row.type);
   const explicitRecipes=freezeList(task?.assetAuthoring?.recipes||task?.authoringRecipes||[]);
   return freeze({
     version:1,
-    enabled:nativeTarget&&decisions.some(row=>(row.directAuthoring||[]).length>0),
+    enabled:nativeTarget&&(dccTypes.length>0||nativeTextTypes.length>0),
     target:clean(target).toLowerCase(),
     stages:freezeList(['INSPECT','REUSE_OR_DERIVE','AUTHOR_EDITABLE_SOURCE','EXPORT_NATIVE_DERIVATIVE','APPLY_TO_EXISTING_RESPONSIBILITY','CAPTURE','VERIFY_NATIVE_RUNTIME','PROMOTE_IF_VERIFIED']),
     dcc:freeze({
