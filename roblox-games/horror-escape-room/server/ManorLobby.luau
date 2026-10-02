@@ -192,6 +192,22 @@ function Manor:Get(p)
  prompt("ArmorPrompt",Vector3.new(-16,4,-11),"졸고 있는 갑옷",2)
  prompt("CoffinPrompt",Vector3.new(17,3,-14),"누군가의 낮잠",3)
  prompt("TeaPrompt",Vector3.new(-15,4,-18),"막내가 훔친 찻잔",4)
+
+ -- 희귀 괴담 케이스의 황동 명패. 기존 카탈로그 이름만 읽는 표시 전용 SurfaceGui다.
+ local rareCaseZ={KRASUE=-58.8,WHITE_LADY=-55.1,PONTIANAK=-51.4,BLACK_SHUCK=-47.7}
+ for _,ghost in ipairs(C.GhostCatalog or{})do
+  local z=rareCaseZ[ghost.Id]
+  if z then
+   local plaque=part(folder,"RareCaseLabel_"..ghost.Id,origin+Vector3.new(-72.82,1.56,z),Vector3.new(.08,.50,2.05),false)
+   plaque.CanCollide=false;plaque.CanTouch=false;plaque.CanQuery=false
+   local surface=Instance.new("SurfaceGui");surface.Name="RareCaseLabelGui";surface.Adornee=plaque;surface.Face=Enum.NormalId.Right
+   surface.CanvasSize=Vector2.new(410,100);surface.AlwaysOnTop=false;surface.LightInfluence=.2;surface.Parent=plaque
+   local text=Instance.new("TextLabel");text.Size=UDim2.fromScale(1,1);text.BackgroundTransparency=1
+   text.Text="희귀 기록 · "..ghost.Name;text.TextColor3=Color3.fromRGB(47,27,24);text.TextStrokeTransparency=.9
+   text.Font=Enum.Font.Antique;text.TextScaled=true;text.Parent=surface
+  end
+ end
+
  -- 벽지도는 실제 공간에서 선택하지만 최종 승인은 Game.server의 selectLobbyMap 한 곳이 담당한다.
  for _,map in ipairs(C.Maps or{})do
   local z=map.Id=="SCHOOL"and-39 or map.Id=="HOSPITAL"and-31 or-23
@@ -209,7 +225,12 @@ function Manor:Get(p)
   end)
  end
  -- 홀 전체를 비추는 샹들리에와 얼굴 앞의 부드러운 조명. 그림자는 벽난로·샹들리에만 사용한다.
- for _,spec in ipairs({{Vector3.new(0,16,-24),2.1,38,true},{Vector3.new(-21,7,15),1.4,25,false},{Vector3.new(23,7,19),1.4,25,false},{Vector3.new(-19,9,-22),1.7,23,false},{Vector3.new(20,9,-14),1.7,23,false},{Vector3.new(0,3,-60),1.8,22,true},{Vector3.new(5,9,-3),1.65,23,false},{Vector3.new(0,9,9),1.35,26,false}})do
+ for _,spec in ipairs({
+  {Vector3.new(0,16,-24),2.1,38,true},{Vector3.new(-21,7,15),1.4,25,false},{Vector3.new(23,7,19),1.4,25,false},
+  {Vector3.new(-19,9,-22),1.7,23,false},{Vector3.new(20,9,-14),1.7,23,false},{Vector3.new(0,3,-60),1.8,22,true},
+  {Vector3.new(5,9,-3),1.65,23,false},{Vector3.new(0,9,9),1.35,26,false},
+  {Vector3.new(-70.0,5.0,-56.8),.55,12,false},{Vector3.new(-70.0,5.0,-49.2),.55,12,false}
+ })do
   local anchor=part(folder,"WarmLight",origin+spec[1],Vector3.one,false);anchor.CanCollide=false
   local light=Instance.new("PointLight");light.Color=Color3.fromRGB(255,217,167);light.Brightness=spec[2];light.Range=spec[3];light.Shadows=spec[4];light.Parent=anchor
  end
