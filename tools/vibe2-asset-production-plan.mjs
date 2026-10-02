@@ -368,6 +368,79 @@ const NATIVE_DCC_AUTHORING=freeze([
   'blender-review-render-and-evidence'
 ]);
 
+const ASSET_MODEL_ROUTING=freeze({
+  version:1,
+  baselineModel:'qwen3:1.7b',
+  heroModel:'qwen3:4b-instruct',
+  route:'LOCAL_OLLAMA_ONLY',
+  heroModelUse:'HERO_ASSET_SOURCE_IMPLEMENTATION_ONLY',
+  fallbackToBaseline:true,
+  maxAttemptsUnchanged:true,
+  generationBudgetUnchanged:true,
+  paidApiAllowed:false
+});
+const HERO_SIGNAL_RULES=freeze([
+  freeze({id:'PLAYER_OR_HERO',re:/(?:\bhero\b|player[ _-]character|primary[ _-]character|주인공|플레이어[ _-]?캐릭터)/i,profiles:freeze(['HERO_CHARACTER'])}),
+  freeze({id:'PRIMARY_BOSS_OR_ENEMY',re:/(?:primary[ _-](?:boss|enemy)|main[ _-]boss|\bboss\b|주[요 ]*보스|보스|대표[ _-]?적)/i,profiles:freeze(['HERO_BOSS','FOREGROUND_CREATURE'])}),
+  freeze({id:'SIGNATURE_WEAPON_OR_TOOL',re:/(?:signature[ _-](?:weapon|tool)|시그니처[ _-]?(?:무기|도구)|대표[ _-]?무기)/i,profiles:freeze(['INTERACTIVE_EQUIPMENT'])}),
+  freeze({id:'KEY_LANDMARK_OR_STARTING_HUB',re:/(?:key[ _-]landmark|starting[ _-](?:hub|region)|핵심[ _-]?랜드마크|시작[ _-]?(?:허브|지역|마을))/i,profiles:freeze(['REGION_WORLD'])})
+]);
+function buildAssetModelRouting({task={},request='',decisions=[],highEndActive=false}={}){
+  const explicitHero=clean(task?.assetModelTier||task?.assetPriority||task?.qualityTier).toUpperCase()==='HERO';
+  const matchedRules=HERO_SIGNAL_RULES.filter(rule=>rule.re.test(clean(request))&&decisions.some(row=>rule.profiles.includes(clean(row?.qualityDNA?.profile).toUpperCase())));
+  const heroRequested=Boolean(highEndActive&&(explicitHero||matchedRules.length));
+  return freeze({
+    ...ASSET_MODEL_ROUTING,
+    heroRequested,
+    selectedModel:heroRequested?ASSET_MODEL_ROUTING.heroModel:ASSET_MODEL_ROUTING.baselineModel,
+    tier:heroRequested?'HERO_STUDIO':'BASELINE',
+    reasons:freezeList(explicitHero?['EXPLICIT_HERO_TIER']:matchedRules.map(row=>row.id)),
+    sourceBudgetPolicy:'CENTRAL_BOUNDED_FOCUSED_EXACT_ANCHOR_UNCHANGED'
+  });
+}
+function buildNativeAuthoringExecution({target='',task={},decisions=[]}={}){
+  const nativeTarget=['roblox','unity'].includes(clean(target).toLowerCase());
+  const dccTypes=decisions.filter(row=>(row.directAuthoring||[]).some(kind=>NATIVE_DCC_AUTHORING.includes(kind))).map(row=>row.type);
+  const nativeTextKinds=clean(target).toLowerCase()==='roblox'?ROBLOX_DIRECT_AUTHORING:clean(target).toLowerCase()==='unity'?UNITY_DIRECT_AUTHORING:[];
+  const nativeTextTypes=decisions.filter(row=>(row.directAuthoring||[]).some(kind=>nativeTextKinds.includes(kind))).map(row=>row.type);
+  const explicitRecipes=freezeList(task?.assetAuthoring?.recipes||task?.authoringRecipes||[]);
+  return freeze({
+    version:1,
+    enabled:nativeTarget&&decisions.some(row=>(row.directAuthoring||[]).length>0),
+    target:clean(target).toLowerCase(),
+    stages:freezeList(['INSPECT','REUSE_OR_DERIVE','AUTHOR_EDITABLE_SOURCE','EXPORT_NATIVE_DERIVATIVE','APPLY_TO_EXISTING_RESPONSIBILITY','CAPTURE','VERIFY_NATIVE_RUNTIME','PROMOTE_IF_VERIFIED']),
+    dcc:freeze({
+      requiredTypes:freezeList(unique(dccTypes)),
+      preferredExecutor:'BLENDER_PYTHON',
+      requiredCapabilities:NATIVE_DCC_AUTHORING,
+      explicitRecipes,
+      sourceRecipeRequired:true,
+      editableSourceArtifactRequired:true,
+      exportedNativeArtifactRequired:true,
+      previewRenderRequired:true,
+      artifactHashesRequired:true,
+      textWorkerMayClaimDccCompletion:false
+    }),
+    nativeText:freeze({
+      requiredTypes:freezeList(unique(nativeTextTypes)),
+      capabilities:freezeList(nativeTextKinds),
+      directResponsibleSourceOnly:true,
+      runtimeBindingRequired:true,
+      gameplaySemanticsImmutable:true
+    }),
+    completion:freeze({
+      authoringRequestIsNotCompletion:true,
+      generatedFileExistenceIsNotRuntimePass:true,
+      actualArtifactOrNativeSourceDeltaRequired:true,
+      nativeBindingRequired:true,
+      runtimeCaptureRequired:true,
+      mobileQaRequired:true,
+      provenanceRequired:true,
+      promotionRequiresRuntimeVerifiedConsumer:true
+    })
+  });
+}
+
 const GENERATED_ASSET_OUTPUT_CONTRACT=freeze({
   originalOrLicenseVerifiedDerivativeOnly:true,
   deterministicSourceRecipeRequired:true,
@@ -1224,6 +1297,8 @@ export function buildVibeAssetProductionPlan({
   const decisions=freezeList((selector.binding||[]).map(binding=>decisionFor(selector,resolvedTarget,binding,manifestInput,{task,requestedConcept})));
   const highEnd=highEndVisualContract(repoRoot);
   const highEndActive=highEnd?.status==='ACTIVE_EXECUTABLE_CONTRACT';
+  const modelRouting=buildAssetModelRouting({task,request,decisions,highEndActive});
+  const nativeAuthoringExecution=buildNativeAuthoringExecution({target:resolvedTarget,task,decisions});
   const companyLibrary=companyGraphicsLibraryContract(repoRoot);
   const companyLibraryActive=companyLibrary?.status==='ACTIVE_EXECUTABLE_CONTRACT';
   const directCount=decisions.filter(row=>row.directAuthoring.length>0).length;
@@ -1482,6 +1557,8 @@ export function buildVibeAssetProductionPlan({
       detailInvestmentPriority:freezeList(['SCREEN_SPACE_OCCUPANCY','PLAYER_DWELL_TIME','INTERACTION_FREQUENCY','HERO_BOSS_SIGNATURE_ROLE','CAMERA_PROXIMITY','GAMEPLAY_READABILITY'])
     }),
     generatedAssetOutputContract:GENERATED_ASSET_OUTPUT_CONTRACT,
+    modelRouting,
+    nativeAuthoringExecution,
     baseMaterialLoadout,
     assetCustomization,
     qualityDNA,
@@ -1796,7 +1873,11 @@ export function buildVibeAssetProductionPlan({
       repositoryCandidateTypes:repositoryCount,
       externalCandidateTypes:externalCount,
       directAuthorableTypes:directCount,
-      missingSelectorTypes:(selector.missingTypes||[]).length
+      missingSelectorTypes:(selector.missingTypes||[]).length,
+      heroModelRequested:modelRouting.heroRequested,
+      selectedAssetModel:modelRouting.selectedModel,
+      dccAuthoringRequiredTypes:nativeAuthoringExecution.dcc.requiredTypes.length,
+      nativeTextAuthoringRequiredTypes:nativeAuthoringExecution.nativeText.requiredTypes.length
     }),
     policy:freeze({
       qualityAndGameIdentityFirst:true,
@@ -1933,6 +2014,8 @@ export function assetProductionGuidance(plan={}){
     plan.qualityDNA?`[QUALITY DNA] ${JSON.stringify(plan.qualityDNA)}. 이 값은 현재 자산의 임의 점수가 아니라 게임별 최소 제작 하한이다. 각 type의 minimumFloors와 detailLod를 만족시키도록 강한 축은 잠그고 실패한 축만 수정한다. donor는 실패 축만 교체하고 스타일 정체성·출처·잠긴 특징을 보존한다. 검증 상태나 폴리곤/텍스처 수만으로 고퀄 판정하지 않는다.`:'',
     plan.applyFirstSummary?.enabled?`[APPLY USABLE ASSETS FIRST] ${JSON.stringify(plan.applyFirstSummary)}. 먼저 현재 게임/회사/저장소에서 target-compatible하고 실제 경로 또는 native binding이 있는 자산을 게임에 적용한다. 적용 후 실제 게임 카메라에서 품질을 확인하고 부족한 부위만 derived variant로 조형·재질·리그·LOD를 보강해 재적용한다. 사용 가능한 자산이 목표 품질에 도달할 수 있는데 새 자산부터 만들지 않는다. 품질이 부족하면 SILHOUETTE/PROPORTION/STRUCTURE/FACE_HANDS_FEET/MATERIAL/RIG/SOCKET/MOTION/LOD/UI_STATE 같은 축으로 분해하고 강한 축은 유지한다. 다른 호환 자산은 전체 대체뿐 아니라 파츠·리그·재질·모션 기증자로 사용해 derived variant를 재조립한다. GAME_CAMERA→MID_RANGE→CLOSEUP→CONTACT 디테일 바닥을 채우고, 랜덤 소품/노이즈/텍스처 과밀로 디테일을 가장하지 않는다. 핵심 형태나 구조 품질이 부분 보강으로 회복 불가능할 때만 전체 신규 제작으로 넘어간다.`:'' ,
     plan.generatedAssetOutputContract?`[GENERATED NATIVE ASSET CONTRACT] ${JSON.stringify(plan.generatedAssetOutputContract)}. Roblox/Unity에서 기존 자산이 목표 품질을 못 채우면 Blender/Python 또는 엔진 네이티브 authoring으로 실제 원본 자산을 만든다. 생성 소스 레시피와 원본/파생 파일, 동일 조건 미리보기, evidence.json, 회사 자산 장부 등록을 남긴다. GLB/이미지 파일이 생겼다는 사실만으로 VERIFIED 처리하지 말고 대상 native 런타임에서 실제 바인딩·표현·성능 검증 뒤 승격한다.`:'',
+    plan.modelRouting?`[ASSET MODEL ROUTING] ${JSON.stringify(plan.modelRouting)}. Hero 자산일 때만 선택된 강한 로컬 모델을 사용하고 일반 자산은 baseline을 유지한다. 모델 상향은 중앙 생성 횟수·timeout·context 예산을 늘리는 권한이 아니며, 준비 실패 시 baseline으로 복귀한다.`:'',
+    plan.nativeAuthoringExecution?`[NATIVE AUTHORING EXECUTION LOOP] ${JSON.stringify(plan.nativeAuthoringExecution)}. AUTHORING_GENERATOR_REQUEST나 텍스트 계획은 제작 완료가 아니다. DCC 대상은 실제 editable source/export/hash/preview가 필요하고, 엔진 네이티브 대상은 기존 책임 소스에 실제 생성·바인딩 변경이 있어야 한다. 실제 런타임 캡처와 mobile QA 전에는 VERIFIED나 회사 공용 승격을 주장하지 않는다.`:'',
     plan.detailReview?`[STYLE COMPARISON AND LOCAL REPAIR] ${JSON.stringify(plan.detailReview)}. 같은 원형·카메라·조명·동작·표본 시점으로 카툰/실사/다크를 비교한다. repairs의 현재 소스/캡처 근거가 있는 부위·프레임·editableParameters만 수정하고 previousParameters와 잠긴 특징은 유지한다. 수정 뒤 동일 조건 재촬영으로 재검토하며 캡처 등록이나 파라미터 변경만으로 문제를 닫지 않는다.`:'',
     plan.runtimeVisualReview?`[RUNTIME VISUAL PIXEL REVIEW] ${JSON.stringify(plan.runtimeVisualReview)}. Roblox Studio·Unity Editor/Android APK·Web Browser의 실제 캡처를 현재 sourceRevision에 묶어 픽셀로 검수한다. expectedSubjects 중 해당 view에서 required인 대상만 누락 판정 대상으로 삼고, 가림·화면 밖·판독 불확실은 누락으로 확정하지 않는다. 실제 픽셀에서 확인된 누락 오브젝트·약한 디테일·겹침·잘림·가독성 문제를 APPLY_FIRST 후보와 precisionProduction의 약한 축 입력으로 사용한다. 먼저 사용 가능 자산을 적용하고 부족 축만 파생 제작·재적용하며 게임 규칙·밸런스·저장·네트워크 권한은 바꾸지 않는다. 수정 후 같은 surface/view에서 재캡처해야 하며 캡처 메타데이터만으로 품질 PASS를 주장하지 않는다.`:'',
     plan.motionContinuityAudit?`[MEASURED CONTINUOUS MOTION] ${JSON.stringify(plan.motionContinuityAudit)}. 루트·접촉점·손/무기 목표점=월드 미터, 관절=루트 로컬 미터, 지지물 접촉=동일 supportId의 로컬 미터, 회전/시선 오차=라디안, 표정=0~1 가중치다. violations의 region/frameRange/normalizedTimeRange에서 발 고정·손/무기 접촉·의상 관통·시선 추적·표정 튐을 수정한다. attachments는 active와 effectorWorldPosition/targetWorldPosition, penetrations는 depthMeters, gaze는 tracking과 forwardWorld/targetDirectionWorld, expressions는 morph별 가중치를 모든 프레임에 계측한다. 레지스트리 motionQA.requiredDetailChannels/limits를 작업 입력이 약화할 수 없다. 현재 소스 해시와 클립 전체 표본 및 선언된 채널이 없으면 UNVERIFIED다. 판정 시점·클립 길이·게임 이동 권한을 바꾸지 말고 재측정한다. unmeasuredGroups는 미검수이며 수치 PASS는 전체 시각 품질이나 런타임 승격 PASS가 아니다.`:'',
