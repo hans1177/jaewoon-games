@@ -209,10 +209,9 @@ function Manor:Get(p)
  })do
   part(folder,"GreenhouseBoundary",origin+Vector3.new(spec[1],spec[2],spec[3]),Vector3.new(spec[4],spec[5],spec[6]),false)
  end
- -- Version 82 안정 경로: 개인 저택은 실제 SpawnLocation을 소유하고 플레이어 RespawnLocation에 직접 결박한다.
- local spawn=Instance.new("SpawnLocation");spawn.Name="PersonalSpawn";spawn.Position=origin+Vector3.new(0,.55,60)
- spawn.Size=Vector3.new(14,.2,12);spawn.Anchored=true;spawn.Transparency=1;spawn.CanCollide=false;spawn.CanTouch=false;spawn.CanQuery=false
- spawn.Neutral=true;spawn.Duration=0;spawn.Enabled=true;spawn.Parent=folder
+ -- 개인 저택 스폰은 위치 표식만 둔다. 실제 엔진 SpawnLocation으로 만들면 여러 저택의 중립 스폰이 서로 경쟁한다.
+ local spawn=Instance.new("Part");spawn.Name="PersonalSpawn";spawn.Position=origin+Vector3.new(0,.55,60)
+ spawn.Size=Vector3.new(14,.2,12);spawn.Anchored=true;spawn.Transparency=1;spawn.CanCollide=false;spawn.CanTouch=false;spawn.CanQuery=false;spawn:SetAttribute("SpawnMarkerOnly",true);spawn.Parent=folder
  local room={folder=folder,scene=scene,origin=origin,spawn=spawn,index=index,busy=false,gag=0,lastPrompt=0,connections={},lastGhostCompleted=tonumber(p:GetAttribute("GhostCompleted"))or 0,lastRoundState=tostring(p:GetAttribute("RoundState")or"")}
  self.rooms[p]=room
  p:SetAttribute("ManorOriginX",origin.X);p:SetAttribute("ManorOriginZ",origin.Z)
@@ -220,7 +219,6 @@ function Manor:Get(p)
  if p:GetAttribute("VisitedManorOwnerUserId")==nil then p:SetAttribute("VisitedManorOwnerUserId",0)end
  if p:GetAttribute("VisitedManorOwnerName")==nil then p:SetAttribute("VisitedManorOwnerName","")end
  p:SetAttribute("ManorVisitorCount",0)
- p.RespawnLocation=spawn
  room.ownerPlaque,room.refreshOwnerPlaque=manorPlaque(folder,p,origin)
  local function prompt(name,pos,caption,menu)
   local anchor=part(folder,name,origin+pos,Vector3.new(1,1,1),false);anchor.CanCollide=false
