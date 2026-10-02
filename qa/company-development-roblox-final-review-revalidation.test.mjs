@@ -79,6 +79,8 @@ test('exact Roblox F9 review is isolated per game after multiplayer acceptance',
 test('F9 records exact verified evidence and queues publication only for released games',()=>{
   assert.match(workflow,/item\.robloxFinalReviewPassed=true/);
   assert.match(workflow,/item\.robloxF9ReleaseRegressionPassed=true/);
+  assert.match(workflow,/evaluateInternalRelease/);
+  assert.match(workflow,/releaseReadiness\.ready===true/);
   assert.match(workflow,/item\.robloxF9VerifiedPrepublishEvidence=\{/);
   assert.match(workflow,/canonicalPublishRequired:serverPublishEligible/);
   assert.match(workflow,/canonicalPublishCompleted:false/);
@@ -109,12 +111,14 @@ test('F9 runs in parallel and cannot pause internal playtest under an external-o
   assert.match(workflow,/PUBLIC_RELEASE_RUNTIME_OBSERVATION/);
 });
 
-test('F9 is nonterminal and dispatches final canonical publish instead of ending evolution',()=>{
+test('F9 is nonterminal, publishes only released games, and continues development otherwise',()=>{
   assert.match(workflow,/item\.robloxInternalReleaseReady=serverPublishEligible/);
   assert.match(workflow,/item\.robloxCanonicalPublishPending=serverPublishEligible/);
-  assert.match(workflow,/ROBLOX_F9_VERIFIED_CANONICAL_PUBLISH_PENDING=/);
+  assert.match(workflow,/ROBLOX_F9_SERVER_PUBLICATION=/);
+  assert.match(workflow,/SKIPPED_DEVELOPMENT/);
   assert.match(workflow,/Dispatch exact F9-verified artifact to canonical Roblox game target/);
   assert.match(workflow,/publish_stage=final/);
+  assert.match(workflow,/ROBLOX_F9_NEXT_CYCLE_DISPATCHED=/);
   assert.doesNotMatch(workflow,/promotedWithoutRepublish:true/);
 });
 

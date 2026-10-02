@@ -393,7 +393,7 @@ test('F9 final review requires exact Studio asset runtime proof when a binding w
  assert.match(workflow,/&&studioAssetRuntimeBindingExact===true/);
 });
 
-test('F9 canonical private publish uses exact F9 identity and immediately reopens the next evolution cycle',()=>{
+test('F9 canonical publish uses exact F9 released-game identity and immediately reopens the next evolution cycle',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
  const dispatchAt=workflow.indexOf('Dispatch exact F9-verified artifact to canonical Roblox game target');
  const fanInAt=workflow.indexOf('Fan verified F9 runtime proof into waiting Vibe Roblox tasks');
@@ -401,10 +401,10 @@ test('F9 canonical private publish uses exact F9 identity and immediately reopen
  assert.match(workflow,/robloxF9VerifiedPrepublishEvidence/);
  assert.match(workflow,/robloxCanonicalPublishQueue/);
  assert.match(workflow,/status:'PENDING'/);
- assert.match(workflow,/const serverPublishEligible=[\s\S]*?item\.robloxFinalReviewPassed===true[\s\S]*?item\.robloxF9ReleaseRegressionPassed===true[\s\S]*?candidate\.sourceRevision===sourceRevision[\s\S]*?candidate\.artifactIdentity===artifactIdentity/);
+ assert.match(workflow,/const releaseReadiness=evaluateInternalRelease\(item,'ROBLOX',roadmap\)/);
+ assert.match(workflow,/const serverPublishEligible=[\s\S]*?releaseReadiness\.ready===true[\s\S]*?item\.robloxFinalReviewPassed===true[\s\S]*?item\.robloxF9ReleaseRegressionPassed===true[\s\S]*?candidate\.sourceRevision===sourceRevision[\s\S]*?candidate\.artifactIdentity===artifactIdentity/);
  assert.match(workflow,/item\.robloxInternalReleaseReady=serverPublishEligible/);
  assert.match(workflow,/if\(serverPublishEligible&&!publishQueue/);
- assert.doesNotMatch(workflow,/evaluateInternalRelease/);
  assert.match(workflow,/item\.currentStep='POST_F9_CONTINUOUS_EVOLUTION'/);
  assert.match(workflow,/ROBLOX_F9_CANONICAL_PUBLISH_DISPATCHED=/);
  const dispatch=workflow.slice(dispatchAt,workflow.indexOf('Immediately continue each successfully persisted Roblox F9 game',dispatchAt));

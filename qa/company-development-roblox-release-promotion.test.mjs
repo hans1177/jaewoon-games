@@ -82,7 +82,7 @@ test('headless source preflight can never satisfy Roblox final release evidence'
   assert.ok(evidence.blockedReasons.includes('headless-source-preflight-cannot-satisfy-runtime-release'));
 });
 
-test('pre-F9 publish is isolated while final private publish requires exact F9 source artifact identity',()=>{
+test('pre-F9 publish is isolated while final private publish requires exact F9 identity and released-game classification',()=>{
   const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
   assert.match(candidate,/publish_stage:/);
   assert.match(candidate,/robloxValidationTarget/);
@@ -93,7 +93,9 @@ test('pre-F9 publish is isolated while final private publish requires exact F9 s
   assert.match(candidate,/finalEntry\?\.f9ReleaseRegressionPassed===true/);
   assert.match(candidate,/finalEntry\?\.sourceRevision===item\.robloxSourceCommit/);
   assert.match(candidate,/finalEntry\?\.artifactIdentity===item\.robloxBuildArtifactIdentity/);
-  assert.match(candidate,/ROBLOX_CANONICAL_PRIVATE_SERVER_PUBLICATION_GATE=EXACT_F9_SOURCE_ARTIFACT/);
+  assert.match(candidate,/evaluateInternalRelease/);
+  assert.match(candidate,/ROBLOX_SERVER_PUBLICATION=SKIPPED_DEVELOPMENT/);
+  assert.match(candidate,/ROBLOX_CANONICAL_PRIVATE_SERVER_PUBLICATION_GATE=EXACT_F9_AND_RELEASE_CLASS/);
   assert.doesNotMatch(candidate,/development-game-server-publication-forbidden/);
   assert.match(candidate,/publishCycleId/);
 });
@@ -117,6 +119,8 @@ test('F9 is nonterminal and dispatches exact artifacts only for released games',
   assert.match(finalReview,/Roblox F9 Final Review/);
   assert.match(finalReview,/item\.robloxFinalReviewPassed=true/);
   assert.match(finalReview,/item\.robloxF9ReleaseRegressionPassed=true/);
+  assert.match(finalReview,/evaluateInternalRelease/);
+  assert.match(finalReview,/releaseReadiness\.ready===true/);
   assert.match(finalReview,/item\.robloxInternalReleaseReady=serverPublishEligible/);
   assert.match(finalReview,/item\.robloxCanonicalPublishPending=serverPublishEligible/);
   assert.match(finalReview,/item\.currentStep='POST_F9_CONTINUOUS_EVOLUTION'/);
@@ -391,15 +395,16 @@ test('publish stage selects validation target before F9 and canonical target aft
 });
 
 
-test('canonical final publish no longer depends on Studio lobby exposure readiness',()=>{
+test('canonical final publish requires exact F9 and central released-game classification',()=>{
   const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
   const targetAt=candidate.indexOf('Resolve exact canonical release target');
   const publishAt=candidate.indexOf('Publish exact package to validation target or F9-verified canonical target');
   const block=candidate.slice(targetAt,publishAt);
   assert.match(block,/ROBLOX_FINAL_PUBLISH_EXACT_F9_IDENTITY_REQUIRED/);
-  assert.match(block,/ROBLOX_CANONICAL_PRIVATE_SERVER_PUBLICATION_GATE=EXACT_F9_SOURCE_ARTIFACT/);
-  assert.doesNotMatch(block,/evaluateInternalRelease/);
-  assert.doesNotMatch(block,/ROBLOX_SERVER_PUBLICATION=SKIPPED_DEVELOPMENT/);
+  assert.match(block,/evaluateInternalRelease/);
+  assert.match(block,/releaseReadiness\?\.ready!==true/);
+  assert.match(block,/ROBLOX_SERVER_PUBLICATION=SKIPPED_DEVELOPMENT/);
+  assert.match(block,/ROBLOX_CANONICAL_PRIVATE_SERVER_PUBLICATION_GATE=EXACT_F9_AND_RELEASE_CLASS/);
 });
 
 
