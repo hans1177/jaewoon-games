@@ -82,6 +82,17 @@ function Manor:Get(p)
  })do
   part(folder,"ManorStructureBoundary",origin+Vector3.new(spec[1],spec[2],spec[3]),Vector3.new(spec[4],spec[5],spec[6]),false)
  end
+ -- 좌우 날개 각 방의 벽 충돌도 중앙 8stud 출입구를 비운다.
+ for _,x in ipairs({-58,58})do
+  for _,z in ipairs({-54,-33,-12})do
+   part(folder,"WingRoomBoundary",origin+Vector3.new(x-10.5,7,z),Vector3.new(13,14,1),false)
+   part(folder,"WingRoomBoundary",origin+Vector3.new(x+10.5,7,z),Vector3.new(13,14,1),false)
+  end
+ end
+ -- 2층 객실은 잠긴 문이므로 실제 충돌을 유지한다.
+ for _,x in ipairs({-36,-22,-8,8,22,36})do
+  part(folder,"LockedGuestBoundary",origin+Vector3.new(x,15,-63.7),Vector3.new(5.3,8.6,.7),false)
+ end
  -- 큰 계단/2층 복도는 실제 WalkableGround로 별도 보장한다.
  local stairRise=.82;local stairTread=1.36
  for i=0,11 do
@@ -144,7 +155,7 @@ function Manor:Get(p)
  for _,mesh in ipairs(scene:GetDescendants())do
   if mesh:IsA("BasePart")and (mesh.Name:match("^HearthFlame")or mesh.Name:match("^ChandelierFlame"))then
    mesh.Material=Enum.Material.Neon;mesh.Color=Color3.fromRGB(255,185,99)
-  elseif mesh:IsA("BasePart")and(mesh.Name:match("^ManorSideWall")or mesh.Name:match("^FacadeWing")or mesh.Name:match("^OuterWingWall")or mesh.Name:match("^WingBackWall")or mesh.Name:match("RoomDivider$")or mesh.Name:match("RoomDoor$")or mesh.Name:match("^LockedGuestDoor")or mesh.Name:match("^GrandStair")or mesh.Name:match("^BalconyWalk")or mesh.Name=="SecondFloorGallery"or mesh.Name=="LeftWingFloor"or mesh.Name=="RightWingFloor"or mesh.Name:match("^BackWall")or mesh.Name=="HallFloor"or mesh.Name=="Courtyard"or mesh.Name=="CrookedRoof")then
+  elseif mesh:IsA("BasePart")and(mesh.Name:match("^ManorSideWall")or mesh.Name:match("^FacadeWing")or mesh.Name:match("^OuterWingWall")or mesh.Name:match("^WingBackWall")or mesh.Name:match("^LockedGuestDoor")or mesh.Name:match("^GrandStair")or mesh.Name:match("^BalconyWalk")or mesh.Name=="SecondFloorGallery"or mesh.Name=="LeftWingFloor"or mesh.Name=="RightWingFloor"or mesh.Name:match("^BackWall")or mesh.Name=="HallFloor"or mesh.Name=="Courtyard"or mesh.Name=="CrookedRoof")then
    -- 카메라도 실제 불투명 벽/바닥과 충돌한다. 장식 전체의 볼록 충돌체는 만들지 않는다.
    mesh.CanCollide=true;mesh.CanQuery=true
   end
