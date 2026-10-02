@@ -135,15 +135,17 @@ test('personal manor visibility and visiting stay server-authoritative',()=>{
 
 test('personal manor exterior has signature housing and collection architecture',()=>{
  for(const token of [
-  'ManorCrestShield','ManorCrestSegment1','ManorCrestSegment6',
-  'ArchivistTowerBase','ArchivistTowerUpper','ArchivistTowerRoof',
+  'ManorCrestShield','ArchivistTowerBase','ArchivistTowerUpper','ArchivistTowerRoof',
   'MortuaryLoadingDoor','CoffinRail','CoffinTrolleyDeck',
   'MortimerServiceDoor','MortimerServiceCanopy','UmbrellaStand',
   'CryptFacade','CryptDoorBlack','CryptGateBar','CryptArch',
   'GreenhouseFoundation','GreenhouseRoofRib','GreenhouseGlassSide',
-  'CollectionPlinth_SCHOOL','CollectionPlinth_HOSPITAL','CollectionPlinth_THEME_PARK',
   'FrontGutter','RainPipe'
  ])assert.match(manorBuild,new RegExp(token));
+ assert.match(manorBuild,/for i,outline in enumerate\(crest_shapes\)/);
+ assert.match(manorBuild,/s\.prism\('ManorCrestSegment'\+str\(i\+1\)/);
+ assert.match(manorBuild,/for name,x,z in \[\('SCHOOL',-30,35\),\('HOSPITAL',30,35\),\('THEME_PARK',45,54\)\]/);
+ assert.match(manorBuild,/s\.box\('CollectionPlinth_'\+name/);
  assert.match(lobby,/ManorCrestSegment"\.\.i/);
  assert.match(lobby,/local reached=completed>=i\*2/);
  assert.match(lobby,/GreenhouseBoundary/);
