@@ -995,14 +995,50 @@ local function addLoreCollectible(f,id,pos)
  return base
 end
 
+local function syncObjectiveProgress()
+ local total=math.max(1,tonumber(objectiveState.total)or tonumber(C.ObjectiveCount)or 4)
+ local done=math.clamp(math.floor(tonumber(objectiveState.done)or 0),0,total)
+ for _,player in ipairs(Players:GetPlayers())do
+  if player:GetAttribute("RoundParticipant")==true then
+   player:SetAttribute("ObjectivesDone",done)
+   player:SetAttribute("ObjectivesTotal",total)
+  end
+ end
+ if done>=math.max(1,tonumber(C.EscapeUnlockObjectives)or total)then
+  workspace:SetAttribute("EscapeUnlocked",true)
+  if arena and arena.Parent then
+   for _,d in ipairs(arena:GetDescendants())do
+    if d:IsA("BasePart")and d.Name=="EmergencyGate"then d.CanCollide=false;d.Transparency=.62
+    elseif d:IsA("BasePart")and d.Name=="EmergencySign"then d.Color=Color3.fromRGB(91,231,158)
+    elseif d:IsA("ProximityPrompt")and d.Name=="EscapePrompt"then d.Enabled=true end
+   end
+  end
+ end
+end
+
 local function addObjectiveStation(f,name,pos,index)
  local base=arenaPart(f,"EnergyStation_"..name,Vector3.new(7,5,4),pos,Color3.fromRGB(62,72,86),Enum.Material.Metal)
  local screen=arenaPart(f,"EnergyScreen_"..name,Vector3.new(4.6,2.2,.35),pos+Vector3.new(0,.5,-2.2),Color3.fromRGB(84,181,235),Enum.Material.Neon);screen.CanCollide=false
- local prompt=Instance.new("ProximityPrompt");prompt.Name="EnergyPrompt";prompt.ObjectText=name.." · 에너지";prompt.ActionText="충전";prompt.HoldDuration=.8;prompt.MaxActivationDistance=10;prompt.RequiresLineOfSight=false;prompt.Parent=base
+ local prompt=Instance.new("ProximityPrompt");prompt.Name="EnergyPrompt";prompt.ObjectText=name;prompt.ActionText="가동 / 충전";prompt.HoldDuration=.8;prompt.MaxActivationDistance=10;prompt.RequiresLineOfSight=true;prompt.Parent=base
  base:SetAttribute("EnergyStationIndex",index)
+ base:SetAttribute("ObjectiveRound",0)
  prompt.Triggered:Connect(function(p)
   if state~="RUNNING"or p:GetAttribute("Frozen")==true then return end
   local role=p:GetAttribute("Role");if role~="SURVIVOR"and role~="MONSTER"then return end
+
+  if role=="SURVIVOR"and tonumber(base:GetAttribute("ObjectiveRound"))~=objectiveState.round then
+   base:SetAttribute("ObjectiveRound",objectiveState.round)
+   objectiveState.done=math.min(math.max(1,tonumber(objectiveState.total)or tonumber(C.ObjectiveCount)or 4),objectiveState.done+1)
+   screen.Color=Color3.fromRGB(96,231,166)
+   syncObjectiveProgress()
+   local total=math.max(1,tonumber(objectiveState.total)or tonumber(C.ObjectiveCount)or 4)
+   for _,player in ipairs(Players:GetPlayers())do
+    if player:GetAttribute("RoundParticipant")==true then
+     player:SetAttribute("MapContentFeedback","OBJECTIVE:"..tostring(objectiveState.done)..":"..tostring(total))
+    end
+   end
+  end
+
   local now=workspace:GetServerTimeNow()
   local ready=energyStationReady[p]or{};energyStationReady[p]=ready
   local availableAt=tonumber(ready[index])or 0
@@ -1018,17 +1054,28 @@ local function addObjectiveStation(f,name,pos,index)
   ready[index]=now+stationCooldown
   setEnergy(p,current+recharge)
   p:SetAttribute("EnergyFeedback","STATION_RECHARGE:"..tostring(math.floor(recharge)))
-  screen.Color=Color3.fromRGB(150,226,255)
-  task.delay(.25,function()if screen and screen.Parent then screen.Color=Color3.fromRGB(84,181,235)end end)
+  if tonumber(base:GetAttribute("ObjectiveRound"))~=objectiveState.round then screen.Color=Color3.fromRGB(150,226,255)end
+  task.delay(.25,function()
+   if screen and screen.Parent and tonumber(base:GetAttribute("ObjectiveRound"))~=objectiveState.round then screen.Color=Color3.fromRGB(84,181,235)end
+  end)
  end)
  return base
 end
+
 local function addEscapeGate(f,mapId,pos)
  local gate=arenaPart(f,"EmergencyGate",Vector3.new(18,12,3),pos,Color3.fromRGB(68,78,86),Enum.Material.Metal)
  local sign=arenaPart(f,"EmergencySign",Vector3.new(12,2,.4),pos+Vector3.new(0,6,-1.8),Color3.fromRGB(112,130,145),Enum.Material.Neon);sign.CanCollide=false
- gate:SetAttribute("DecorativeOnly",true);gate:SetAttribute("MapId",mapId)
+ gate:SetAttribute("DecorativeOnly",false);gate:SetAttribute("MapId",mapId)
+ local prompt=Instance.new("ProximityPrompt");prompt.Name="EscapePrompt";prompt.ObjectText="비상 출구";prompt.ActionText="탈출";prompt.HoldDuration=.7;prompt.MaxActivationDistance=11;prompt.RequiresLineOfSight=true;prompt.Enabled=false;prompt.Parent=gate
+ prompt.Triggered:Connect(function(p)
+  if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"or workspace:GetAttribute("EscapeUnlocked")~=true then return end
+  p:SetAttribute("Escaped",true)
+  p:SetAttribute("MapContentFeedback","ESCAPED:"..mapId..":")
+  workspace:SetAttribute("SurvivorEscapeTriggered",true)
+ end)
  return gate
 end
+
 local function addMapUtility(f,id,name,pos)
  local base=arenaPart(f,"MapUtility_"..id,Vector3.new(6,5,4),pos,Color3.fromRGB(58,66,78),Enum.Material.Metal)
  local panel=arenaPart(f,"MapUtilityPanel_"..id,Vector3.new(4,2,.35),pos+Vector3.new(0,.5,-2.2),Color3.fromRGB(124,172,221),Enum.Material.Neon);panel.CanCollide=false
@@ -1291,7 +1338,11 @@ local function decorateArenaWithOfficialAssets(f,map)
     Vector3.new(-62,2,35),Vector3.new(-42,2,47),Vector3.new(42,2,37),Vector3.new(60,2,54),
     Vector3.new(88,2,98),Vector3.new(108,2,118),Vector3.new(128,2,98),
     Vector3.new(-128,2,100),Vector3.new(-108,2,116),Vector3.new(-88,2,100),
-    Vector3.new(-12,2,-18),Vector3.new(12,2,18)
+    Vector3.new(-12,2,-18),Vector3.new(12,2,18),
+    Vector3.new(-14,2,-48),Vector3.new(14,2,-36),Vector3.new(-14,2,-8),Vector3.new(14,2,6),
+    Vector3.new(-14,2,28),Vector3.new(14,2,44),
+    Vector3.new(-145,2,-55),Vector3.new(-92,2,-55),Vector3.new(92,2,-55),Vector3.new(145,2,-55),
+    Vector3.new(-145,2,112),Vector3.new(-72,2,108),Vector3.new(72,2,108),Vector3.new(145,2,112)
    }
    for i,pos in ipairs(spots)do
     if not f.Parent then return end
@@ -1494,6 +1545,24 @@ local function makeArena(map)
   end
   arenaPart(f,"SchoolTrophyCase",Vector3.new(10,6,1.6),Vector3.new(16.1,5.2,30),Color3.fromRGB(77,91,104),Enum.Material.Glass).Transparency=.38
   arenaPart(f,"SchoolVendingMachine",Vector3.new(4,8,3),Vector3.new(-14,4.3,55),Color3.fromRGB(72,99,123),Enum.Material.Metal)
+  -- 복도/교실 사이의 빈 면을 줄이는 추격용 소품 군집. 주요 통로 폭은 유지한다.
+  for _,z in ipairs({-44,-20,8,34})do
+   local benchL=arenaPart(f,"SchoolHallBench",Vector3.new(8,2.1,2.6),Vector3.new(-12.5,1.15,z),Color3.fromRGB(105,79,59),Enum.Material.WoodPlanks)
+   local benchR=arenaPart(f,"SchoolHallBench",Vector3.new(8,2.1,2.6),Vector3.new(12.5,1.15,z+7),Color3.fromRGB(105,79,59),Enum.Material.WoodPlanks)
+   benchL:SetAttribute("ChaseCover",true);benchR:SetAttribute("ChaseCover",true)
+  end
+  for _,spec in ipairs({
+   {Vector3.new(-13.5,2.4,-55),"SchoolLostFoundCabinet",Vector3.new(5,4.8,2.2)},
+   {Vector3.new(13.5,1.7,-34),"SchoolCleaningCart",Vector3.new(4,3.2,3)},
+   {Vector3.new(-13.5,2.2,-6),"SchoolDisplayCase",Vector3.new(5.5,4.2,2)},
+   {Vector3.new(13.5,1.6,24),"SchoolSupplyStack",Vector3.new(4.5,3,3.4)},
+   {Vector3.new(-13.5,1.5,48),"SchoolBrokenDeskPile",Vector3.new(6,2.8,3.2)},
+  })do
+   local cover=arenaPart(f,spec[2],spec[3],spec[1],Color3.fromRGB(83,91,98),Enum.Material.Metal);cover:SetAttribute("ChaseCover",true)
+  end
+  for _,z in ipairs({-54,-30,-6,18,42,58})do
+   local poster=arenaPart(f,"SchoolWallPoster",Vector3.new(.16,3.2,5.4),Vector3.new(-16.35,6,z),Color3.fromRGB(176,153,111),Enum.Material.SmoothPlastic);poster.CanCollide=false
+  end
   local gymBackboard=arenaPart(f,"GymBackboard",Vector3.new(9,5,.4),Vector3.new(50,11.5,25.5),Color3.fromRGB(222,224,220),Enum.Material.SmoothPlastic);gymBackboard.CanCollide=false
   local gymRim=arenaPart(f,"GymRim",Vector3.new(4,.35,4),Vector3.new(50,9.2,23.6),Color3.fromRGB(199,75,49),Enum.Material.Metal);gymRim.CanCollide=false
 
@@ -1936,6 +2005,7 @@ local function createBotAvatar(role,pos)
  end
 
  local hi=Instance.new("Highlight");hi.Name="AIRoleHighlight";hi.FillTransparency=role=="MONSTER"and .82 or .94;hi.OutlineTransparency=.48
+ hi.DepthMode=Enum.HighlightDepthMode.Occluded
  hi.FillColor=role=="MONSTER"and Color3.fromRGB(120,42,58)or Color3.fromRGB(75,143,169)
  hi.OutlineColor=role=="MONSTER"and Color3.fromRGB(225,86,103)or Color3.fromRGB(142,213,235)
  hi.Parent=model
@@ -2222,14 +2292,14 @@ local function applyRoleVisual(p,r)
  clearRoleVisual(p);local c=p.Character;if not c then return end
  -- 로비 외형 선택은 실제 경기의 진영/능력치와 분리한다.
  if state~="RUNNING"and r=="WAITING"then r=p:GetAttribute("LobbyAppearance")or"SURVIVOR"end
- local hi=Instance.new("Highlight");hi.Name="RoleHighlight";hi.FillTransparency=.86;hi.OutlineTransparency=.42;hi.Parent=c
+ local hi=Instance.new("Highlight");hi.Name="RoleHighlight";hi.FillTransparency=.86;hi.OutlineTransparency=.42;hi.DepthMode=Enum.HighlightDepthMode.Occluded;hi.Parent=c
  if r=="MONSTER"then
   local currentForm=form(p);local mf=Style.Monsters[currentForm.Id]or Style.Monsters.DRACULA;hi.FillColor=mf.Color;hi.OutlineColor=mf.Accent
   applyMonsterPalette(c,currentForm.Id)
   applyClassicCostume(c,currentForm.Id)
   local head=c:FindFirstChild("Head")or root(p)
   if head then
-   local g=Instance.new("BillboardGui");g.Name="RoleVisual";g.Size=UDim2.fromOffset(150,34);g.StudsOffset=Vector3.new(0,3.8,0);g.AlwaysOnTop=true;g.Parent=head
+   local g=Instance.new("BillboardGui");g.Name="RoleVisual";g.Size=UDim2.fromOffset(150,34);g.StudsOffset=Vector3.new(0,3.8,0);g.AlwaysOnTop=false;g.MaxDistance=32;g.Parent=head
    local t=Instance.new("TextLabel");t.Size=UDim2.fromScale(1,1);t.BackgroundTransparency=1;t.TextScaled=true;t.Text=mf.Label;t.TextColor3=mf.Accent;t.TextStrokeTransparency=.25;t.Parent=g
   end
  else hi.FillColor=Style.Survivor;hi.OutlineColor=Color3.fromRGB(166,205,219)end
@@ -3309,6 +3379,7 @@ task.spawn(function()
      local humans,monsters=teamCounts();workspace:SetAttribute("HumanCount",humans);workspace:SetAttribute("MonsterCount",monsters)
      if humans==0 then endRound("MONSTER");break end
      if monsters==0 then endRound("SURVIVOR");break end
+     if workspace:GetAttribute("SurvivorEscapeTriggered")==true then endRound("SURVIVOR");break end
 
      local baseRegen=math.max(0,tonumber(C.Energy and C.Energy.RegenPerSecond)or 10)*.25
      for _,p in ipairs(Players:GetPlayers())do
