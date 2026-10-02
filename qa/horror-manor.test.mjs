@@ -27,6 +27,10 @@ test('Studio 검증은 고정 버전 Rojo를 직접 설치하고 러너 복구 �
  assert.match(manorReviewWorkflow,/rojo-7\.7\.0-windows-x86_64\.zip/);
  assert.match(manorReviewWorkflow,/2179c44862a10ecbd725bdfeb4abc64e16dc4aad9b6c8f3e1a7c46a87280b949/);
  assert.match(manorReviewWorkflow,/MANOR_REVIEW_ROJO/);
+ assert.match(manorReviewWorkflow,/MANOR_NATIVE_ASSET_ID='89009422966867'/);
+ assert.match(manorReviewWorkflow,/ManorTemplate:\{\$path:process\.env\.MANOR_REVIEW_MANOR\}/);
+ assert.match(manorReviewWorkflow,/MANOR_REVIEW_PACKAGED_VERSION77=PASS/);
+ assert.doesNotMatch(manorReviewWorkflow,/81599595871905/);
  assert.doesNotMatch(manorReviewWorkflow,/PREVIOUS_VERIFIED_ROJO_NOT_FOUND/);
  assert.match(runnerBootstrapWorkflow,/\.github\/workflows\/horror-manor-review\.yml/);
  assert.match(runnerBootstrapWorkflow,/tools\/horror-manor-studio-review\.mjs/);
