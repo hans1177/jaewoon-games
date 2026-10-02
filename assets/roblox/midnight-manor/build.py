@@ -610,12 +610,18 @@ def npc(s,kind,pos):
           (-h*.040,w*.115,w*.125),(0,w*.140,w*.145),(h*.040,w*.120,w*.125)
         ],glove,sides=24,parent=p)
         finger_lengths=[.036,.043,.041,.033]
+        grip_profiles={
+          'Butler':{-1:[.18,.22,.26,.18],1:[.62,.70,.66,.56]},
+          'Undertaker':{-1:[.54,.62,.66,.58],1:[.34,.40,.46,.36]},
+          'Archivist':{-1:[.46,.58,.62,.50],1:[.72,.78,.74,.64]},
+        }
         for finger in range(4):
             fx=hand_center[0]+(finger-1.5)*w*.048
             length=h*finger_lengths[finger]
+            curl=grip_profiles[kind][side][finger]
             start=(fx,hand_center[1]-h*.040,hand_center[2]+.060)
-            mid=(fx+side*(finger-1.5)*w*.004,hand_center[1]-h*.040-length*.52,hand_center[2]+.072)
-            tip=(fx+side*(finger-1.5)*w*.006,hand_center[1]-h*.040-length,hand_center[2]+.048)
+            mid=(fx+side*(finger-1.5)*w*.004,hand_center[1]-h*.040-length*.48,hand_center[2]+.072+curl*w*.040)
+            tip=(fx+side*(finger-1.5)*w*.006,hand_center[1]-h*.040-length*(.82+curl*.12),hand_center[2]+.048+curl*w*.085)
             s.curve_tube(kind+'_Finger'+str(side)+'_'+str(finger),[start,mid,tip],
               [w*.024,w*.022,w*.017],[w*.026,w*.024,w*.018],glove,sides=18,parent=p)
         thumb_start=(hand_center[0]+side*w*.085,hand_center[1]-h*.008,hand_center[2]+.036)
@@ -759,6 +765,22 @@ def npc(s,kind,pos):
       (0,mouth_y-h*.017,face_front+.038),
       (mouth_half*.88,mouth_y-h*.013,face_front+.032)
     ],[w*.008,w*.010,w*.008],[w*.006,w*.008,w*.006],lip,sides=16,parent=p)
+    # 입꼬리/관자/턱 접힘은 역할별 표정을 고정한다: 집사 절제된 미소, 장의사 처진 입매, 기록관 긴장된 비대칭.
+    corner_dir=.012 if kind=='Butler' else -.018 if kind=='Undertaker' else -.006
+    for side in [-1,1]:
+        s.curve_tube(kind+'_MouthCorner'+str(side),[
+          (side*mouth_half*.86,mouth_y-h*.004,face_front+.030),
+          (side*mouth_half*1.12,mouth_y+h*corner_dir,face_front+.022)
+        ],[w*.006,w*.0035],[w*.0045,w*.0025],lip,sides=14,parent=p)
+        temple_y=head_y+h*.035
+        s.curve_tube(kind+'_TempleFold'+str(side),[
+          (side*w*.285,temple_y+h*.025,face_front*.62),
+          (side*w*.315,temple_y-h*.012,face_front*.58),
+          (side*w*.292,temple_y-h*.055,face_front*.55)
+        ],[w*.0045,w*.005,w*.003],[w*.0032,w*.0038,w*.0022],q['skin'],sides=14,parent=p)
+    s.curve_tube(kind+'_ChinFold',[
+      (-w*.080,mouth_y-h*.054,face_front+.010),(0,mouth_y-h*.065,face_front+.016),(w*.080,mouth_y-h*.054,face_front+.010)
+    ],[w*.004,w*.005,w*.004],[w*.003,w*.004,w*.003],q['skin'],sides=14,parent=p)
     ear_profile={
       'Butler':(.405,.035,.045,.034),
       'Undertaker':(.418,.040,.050,.038),
@@ -790,6 +812,16 @@ def npc(s,kind,pos):
         s.prism('Butler_BowTie',(0,h*.728,.63),[
           (-w*.16,0),(-w*.045,h*.030),(0,0),(w*.045,h*.030),(w*.16,0),(w*.050,-h*.028),(0,0),(-w*.050,-h*.028)
         ],.075,q['accent'],parent=p)
+        for side in [-1,1]:
+            s.prism('Butler_ShirtCollar'+str(side),(side*w*.070,h*.704,.625),[
+              (0,0),(side*w*.13,-h*.070),(side*w*.03,-h*.115)
+            ],.040,c['ivory'],parent=p)
+        s.curve_tube('Butler_VestPiping',[
+          (-w*.18,h*.635,.625),(0,h*.560,.650),(w*.18,h*.635,.625)
+        ],[w*.008,w*.010,w*.008],[w*.005,w*.007,w*.005],c['brass'],sides=16,parent=p)
+        watch_points=[(-w*.12,h*.548,.66),(w*.02,h*.505,.68),(w*.16,h*.548,.66)]
+        s.curve_tube('Butler_PocketWatchChain',watch_points,[w*.010,w*.012,w*.010],[w*.007,w*.008,w*.007],c['brass'],sides=16,parent=p)
+        s.lathe('Butler_PocketWatch',(w*.18,h*.535,.675),w*.075,w*.075,.028,c['brass'],sides=24,parent=p)
         s.lathe('Butler_Tray',(w*.74,h*.355,.60),w*.47,w*.47,.075,c['brass'],parent=p)
         s.lathe('Butler_Candle',(w*.74,h*.420,.60),.095,.080,h*.095,c['ivory'],parent=p)
         s.loft('Butler_CandleFlame',(w*.74,h*.475,.60),[
@@ -804,6 +836,16 @@ def npc(s,kind,pos):
           (0,w*.46,w*.42),(h*.12,w*.43,w*.39),(h*.22,w*.34,w*.33)
         ],c['black'],sides=32,parent=p)
         s.lathe('UndertakerHatRibbon',(0,head_y+h*.175,.02),w*.47,w*.47,h*.026,q['accent'],sides=32,parent=p)
+        s.curve_tube('UndertakerHatDent',[
+          (-w*.24,head_y+h*.265,.02),(0,head_y+h*.245,.03),(w*.24,head_y+h*.265,.02)
+        ],[w*.022,w*.028,w*.022],[w*.014,w*.018,w*.014],q['accent'],sides=16,parent=p)
+        for side in [-1,1]:
+            s.prism('Undertaker_HighCollar'+str(side),(side*w*.13,h*.700,.56),[
+              (0,0),(side*w*.20,h*.060),(side*w*.25,-h*.075),(side*w*.06,-h*.115)
+            ],.070,q['coat'],parent=p)
+        s.prism('Undertaker_LapelPin',(w*.22,h*.620,.655),[
+          (-w*.045,-h*.018),(w*.045,-h*.018),(w*.060,h*.018),(0,h*.060),(-w*.060,h*.018)
+        ],.035,c['brass'],parent=p)
         s.box('Undertaker_Ledger',(w*.50,h*.445,.56),(w*.54,h*.145,.14),q['accent'],parent=p)
         s.box('Undertaker_LedgerBand',(w*.50,h*.445,.645),(w*.090,h*.155,.020),c['brass'],parent=p)
         s.lathe('Undertaker_SpadeHandle',(-w*.70,h*.37,-.12),.055,.055,h*.55,s.material('DarkWood',(.10,.045,.025)),parent=p)
@@ -824,11 +866,23 @@ def npc(s,kind,pos):
         s.prism('Archivist_GlassBridge',(0,head_y+h*.03,face_front+.110),[
           (-w*.070,-h*.006),(w*.070,-h*.006),(w*.070,h*.006),(-w*.070,h*.006)
         ],.020,c['brass'],parent=p)
+        for side in [-1,1]:
+            s.curve_tube('Archivist_GlassArm'+str(side),[
+              (side*w*.29,head_y+h*.03,face_front+.070),(side*w*.38,head_y+h*.025,.03)
+            ],[w*.012,w*.008],[w*.008,w*.005],c['brass'],sides=14,parent=p)
+        s.curve_tube('Archivist_BrowWrinkle',[
+          (-w*.20,head_y+h*.092,face_front+.018),(0,head_y+h*.105,face_front+.024),(w*.20,head_y+h*.087,face_front+.018)
+        ],[w*.004,w*.005,w*.004],[w*.003,w*.004,w*.003],q['skin'],sides=14,parent=p)
         s.prism('Archivist_InkStainL',(-w*.11,h*.43,.615),[
           (-w*.05,0),(w*.06,h*.01),(w*.04,h*.05),(-w*.045,h*.04)
         ],.018,q['accent'],parent=p)
         s.box('Archivist_Ledger',(w*.46,h*.415,.57),(w*.58,h*.18,.14),q['accent'],parent=p)
         s.box('Archivist_LedgerLabel',(w*.46,h*.415,.652),(w*.32,h*.085,.020),c['ivory'],parent=p)
+        for page in range(3):
+            s.box('Archivist_LedgerPage'+str(page),(w*.46,h*(.383+page*.010),.642+page*.006),(w*.50,.010,.118),c['ivory'],parent=p)
+        s.curve_tube('Archivist_LedgerStrap',[
+          (w*.20,h*.395,.668),(w*.46,h*.425,.675),(w*.72,h*.395,.668)
+        ],[w*.012,w*.015,w*.012],[w*.008,w*.010,w*.008],leather,sides=14,parent=p)
         s.lathe('Archivist_Pen',(-w*.23,h*.475,.66),.020,.012,h*.15,c['brass'],parent=p)
         s.lathe('Archivist_KeyStem',(-w*.55,h*.32,.58),.025,.025,h*.13,c['brass'],parent=p)
         s.lathe('Archivist_KeyBow',(-w*.55,h*.40,.58),w*.08,w*.08,.025,c['brass'],sides=24,parent=p)
