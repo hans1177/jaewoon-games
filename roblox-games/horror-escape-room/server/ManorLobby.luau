@@ -125,9 +125,19 @@ function Manor:Get(p)
   local topY=stairRise*(i+1);local stepZ=-40-i*stairTread
   part(folder,"GrandStairGround",origin+Vector3.new(0,topY*.5,stepZ),Vector3.new(30,topY,stairTread+.08),true)
  end
- part(folder,"SecondFloorGround",origin+Vector3.new(0,10.2,-55),Vector3.new(92,.55,19),true)
+ -- 2층 중앙 바닥은 계단 위를 덮지 않는다. rear bridge + 좌우 deck + landing으로 U자형 충돌을 만든다.
+ part(folder,"SecondFloorGroundRear",origin+Vector3.new(0,10.2,-61.75),Vector3.new(92,.55,5.5),true)
+ for _,side in ipairs({-1,1})do
+  part(folder,"SecondFloorGroundSide",origin+Vector3.new(side*31,10.2,-52.25),Vector3.new(30,.55,13.5),true)
+ end
+ part(folder,"SecondFloorStairLandingGround",origin+Vector3.new(0,10.05,-57.0),Vector3.new(30,.35,4.5),true)
  part(folder,"SecondFloorGround",origin+Vector3.new(-43,10.2,-31),Vector3.new(15,.55,48),true)
  part(folder,"SecondFloorGround",origin+Vector3.new(43,10.2,-31),Vector3.new(15,.55,48),true)
+ -- 시각 난간은 비충돌이므로 2층 가장자리에는 얇은 서버 안전 난간만 둔다.
+ for _,side in ipairs({-1,1})do
+  part(folder,"StairwellRailBoundary",origin+Vector3.new(side*15.7,11.55,-50.7),Vector3.new(.45,2.8,10.4),false)
+  part(folder,"GalleryFrontRailBoundary",origin+Vector3.new(side*31,11.55,-45.62),Vector3.new(30,2.8,.45),false)
+ end
  -- 현관 포치의 시각 계단과 보행면을 정확히 맞춘다.
  for step=0,4 do
   local width=22-step*1.4
@@ -163,8 +173,9 @@ function Manor:Get(p)
  })do
   part(folder,"GreenhouseBoundary",origin+Vector3.new(spec[1],spec[2],spec[3]),Vector3.new(spec[4],spec[5],spec[6]),false)
  end
- local spawn=Instance.new("SpawnLocation");spawn.Name="PersonalSpawn";spawn.Position=origin+Vector3.new(0,.4,60)
- spawn.Size=Vector3.new(10,.1,10);spawn.Anchored=true;spawn.Transparency=1;spawn.CanCollide=false;spawn.CanTouch=false;spawn.Neutral=true;spawn.Duration=0;spawn.Parent=folder
+ -- 개인 저택 스폰은 1층 foyer 안쪽으로 고정한다. 2층/옥상/부트스트랩 위치를 절대 스폰으로 쓰지 않는다.
+ local spawn=Instance.new("SpawnLocation");spawn.Name="PersonalSpawn";spawn.Position=origin+Vector3.new(0,.55,-12)
+ spawn.Size=Vector3.new(12,.2,10);spawn.Anchored=true;spawn.Transparency=1;spawn.CanCollide=false;spawn.CanTouch=false;spawn.CanQuery=false;spawn.Neutral=true;spawn.Duration=0;spawn.Parent=folder
  local room={folder=folder,scene=scene,origin=origin,spawn=spawn,index=index,busy=false,gag=0,lastPrompt=0,connections={},lastGhostCompleted=tonumber(p:GetAttribute("GhostCompleted"))or 0,lastRoundState=tostring(p:GetAttribute("RoundState")or"")}
  self.rooms[p]=room
  p:SetAttribute("ManorOriginX",origin.X);p:SetAttribute("ManorOriginZ",origin.Z)
@@ -434,7 +445,8 @@ end
 
 function Manor:GetSpawn(p)
  local room=self:Get(p)
- return room.origin+Vector3.new(0,3,60),room.origin+Vector3.new(0,5,-2),room.spawn
+ -- 1층 foyer 고정 스폰. 계단/2층 walkable raycast와 겹치지 않는 좌표다.
+ return room.origin+Vector3.new(0,3,-12),room.origin+Vector3.new(0,5,-32),room.spawn
 end
 
 function Manor:RefreshVisitorCounts()
