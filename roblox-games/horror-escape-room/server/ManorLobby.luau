@@ -121,6 +121,10 @@ function Manor:Get(p)
  local room={folder=folder,scene=scene,origin=origin,spawn=spawn,index=index,busy=false,gag=0,lastPrompt=0,connections={},lastGhostCompleted=tonumber(p:GetAttribute("GhostCompleted"))or 0,lastRoundState=tostring(p:GetAttribute("RoundState")or"")}
  self.rooms[p]=room
  p:SetAttribute("ManorOriginX",origin.X);p:SetAttribute("ManorOriginZ",origin.Z)
+ if p:GetAttribute("ManorVisibility")==nil then p:SetAttribute("ManorVisibility","PRIVATE")end
+ if p:GetAttribute("VisitedManorOwnerUserId")==nil then p:SetAttribute("VisitedManorOwnerUserId",0)end
+ if p:GetAttribute("VisitedManorOwnerName")==nil then p:SetAttribute("VisitedManorOwnerName","")end
+ p:SetAttribute("ManorVisitorCount",0)
  p.RespawnLocation=spawn
  local function prompt(name,pos,caption,menu)
   local anchor=part(folder,name,origin+pos,Vector3.new(1,1,1),false);anchor.CanCollide=false
@@ -286,6 +290,62 @@ function Manor:GetSpawn(p)
  local room=self:Get(p)
  return room.origin+Vector3.new(0,3,60),room.origin+Vector3.new(0,5,-2),room.spawn
 end
+
+function Manor:RefreshVisitorCounts()
+ for owner in pairs(self.rooms)do
+  if owner.Parent==Players then
+   local count=0
+   for _,visitor in ipairs(Players:GetPlayers())do
+    if visitor~=owner and tonumber(visitor:GetAttribute("VisitedManorOwnerUserId"))==owner.UserId then count+=1 end
+   end
+   owner:SetAttribute("ManorVisitorCount",count)
+  end
+ end
+end
+
+function Manor:SetVisibility(owner,value)
+ self:Get(owner)
+ local visibility=string.upper(tostring(value or"PRIVATE"))=="PUBLIC"and"PUBLIC"or"PRIVATE"
+ owner:SetAttribute("ManorVisibility",visibility)
+ local ejected={}
+ if visibility=="PRIVATE"then
+  for _,visitor in ipairs(Players:GetPlayers())do
+   if visitor~=owner and tonumber(visitor:GetAttribute("VisitedManorOwnerUserId"))==owner.UserId then
+    visitor:SetAttribute("VisitedManorOwnerUserId",0)
+    visitor:SetAttribute("VisitedManorOwnerName","")
+    table.insert(ejected,visitor)
+   end
+  end
+ end
+ self:RefreshVisitorCounts()
+ return ejected
+end
+
+function Manor:Visit(visitor,ownerUserId)
+ if not visitor or not visitor.Parent then return nil,nil,"방문자 확인 실패"end
+ if visitor:GetAttribute("RoomServer")==true or visitor:GetAttribute("RoundState")=="RUNNING"then return nil,nil,"경기 중에는 저택을 방문할 수 없음"end
+ local id=math.floor(tonumber(ownerUserId)or 0)
+ local owner=id>0 and Players:GetPlayerByUserId(id)or nil
+ if not owner or owner==visitor then return nil,nil,"방문할 저택을 찾을 수 없음"end
+ if owner:GetAttribute("ManorVisibility")~="PUBLIC"then return nil,nil,"비공개 저택"end
+ if owner:GetAttribute("RoomServer")==true or owner:GetAttribute("RoundState")=="RUNNING"then return nil,nil,"저택 주인이 출정 중"end
+ local room=self.rooms[owner]or self:Get(owner)
+ visitor:SetAttribute("VisitedManorOwnerUserId",owner.UserId)
+ visitor:SetAttribute("VisitedManorOwnerName",owner.DisplayName)
+ self:RefreshVisitorCounts()
+ return room.origin+Vector3.new(0,3,60),room.origin+Vector3.new(0,5,-2),nil
+end
+
+function Manor:ReturnHome(visitor)
+ visitor:SetAttribute("VisitedManorOwnerUserId",0)
+ visitor:SetAttribute("VisitedManorOwnerName","")
+ self:RefreshVisitorCounts()
+ return self:GetSpawn(visitor)
+end
+
+function Manor:CloseVisitors(owner)
+ return self:SetVisibility(owner,"PRIVATE")
+end
 function Manor:Dress(p)
  local char=p.Character;if not char then return end
  local old=char:FindFirstChild("ManorDecoration");if old then old:Destroy()end
@@ -361,7 +421,18 @@ function Manor:Gag(p,requested)
  room.busy=false
 end
 function Manor:Recover(p)
- local room=self:Get(p);local r=p.Character and p.Character:FindFirstChild("HumanoidRootPart")
+ local ownRoom=self:Get(p);local room=ownRoom
+ local visitingId=math.floor(tonumber(p:GetAttribute("VisitedManorOwnerUserId"))or 0)
+ if visitingId>0 then
+  local owner=Players:GetPlayerByUserId(visitingId)
+  local target=owner and self.rooms[owner]or nil
+  if owner and target and owner:GetAttribute("ManorVisibility")=="PUBLIC"and owner:GetAttribute("RoomServer")~=true and owner:GetAttribute("RoundState")~="RUNNING"then
+   room=target
+  else
+   return self:ReturnHome(p)
+  end
+ end
+ local r=p.Character and p.Character:FindFirstChild("HumanoidRootPart")
  if not r then return nil end
  local localPos=r.Position-room.origin
  local nearDoor=math.abs(localPos.X)<13 and localPos.Z> -19 and localPos.Z<14
@@ -374,7 +445,10 @@ function Manor:Recover(p)
    end
   end
  end
- if localPos.Y< -3 or localPos.Y>30 or math.abs(localPos.X)>78 or localPos.Z< -67 or localPos.Z>86 then return self:GetSpawn(p)end
+ if localPos.Y< -3 or localPos.Y>30 or math.abs(localPos.X)>78 or localPos.Z< -67 or localPos.Z>86 then
+  if room~=ownRoom then return room.origin+Vector3.new(0,3,60),room.origin+Vector3.new(0,5,-2),room.spawn end
+  return self:GetSpawn(p)
+ end
  return nil
 end
 function Manor:Remove(p)
