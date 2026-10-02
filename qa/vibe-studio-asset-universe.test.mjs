@@ -30,6 +30,7 @@ import {
   createStudioTestbedPlan,
   evaluateCompanyAssetPromotion,
   promoteVerifiedCompanyAssetRegistry,
+  promoteVerifiedCompanyAssetsFromRuntimeEvidence,
   summarizeVerifiedAssetUsage,
   createStyleBible,
   createAssetCustomizationPlan,
@@ -340,8 +341,30 @@ test('company asset promotion is impossible without actual native runtime consum
 
   const promoted=promoteVerifiedCompanyAssetRegistry({registry:{version:28,assets:[]},asset,consumer:{gameId:'survival'},runtimeEvidence:evidence});
   assert.equal(promoted.updated,true);
+  assert.equal(promoted.registry.version,29);
   assert.equal(promoted.registry.assets.length,1);
   assert.equal(promoted.registry.assets[0].status,'VERIFIED_COMPANY_ASSET');
+
+  const derivedAsset={id:'wolf-derived',family:'CREATURE',platform:'ROBLOX',path:'assets/wolf-derived.glb',license:'project-original-derivative',sourceSha256:'source-v1',derivedSha256:'artifact-v2'};
+  const exactBatch=promoteVerifiedCompanyAssetsFromRuntimeEvidence({
+    registry:{version:28,assets:[derivedAsset]},
+    consumer:{gameId:'survival',platform:'ROBLOX'},
+    runtimeEvidence:{
+      id:'studio-run-2',platform:'ROBLOX',gameId:'survival',assetIds:['wolf-derived'],
+      assets:[{assetId:'wolf-derived',sourceHash:'artifact-v2',artifactHash:'artifact-v2'}],
+      nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true
+    }
+  });
+  assert.equal(exactBatch.updated,true);
+  assert.deepEqual([...exactBatch.promotedAssetIds],['wolf-derived']);
+  assert.equal(exactBatch.registry.assets[0].verifiedCompanyReusable,true);
+  const noIdentity=promoteVerifiedCompanyAssetsFromRuntimeEvidence({
+    registry:{version:28,assets:[derivedAsset]},
+    consumer:{gameId:'survival',platform:'ROBLOX'},
+    runtimeEvidence:{nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true}
+  });
+  assert.equal(noIdentity.updated,false);
+  assert.equal(noIdentity.reason,'EXPLICIT_RUNTIME_ASSET_IDS_REQUIRED');
 });
 
 test('future demand creature blueprint platform optimizer testbed and usage feedback stay preparation or verified-evidence bounded',()=>{
