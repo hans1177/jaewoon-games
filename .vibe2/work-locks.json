@@ -3,26 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-dms8sg",
-      "worker": "vibe2",
-      "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-roblox-stability-v2",
-      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-      "files": [
-        "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau"
-      ],
-      "baseSha": "cc2b0942f047b84e644603d32fa88910284c7b28",
-      "runId": "36992112420",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-02T10:06:47.501Z",
-      "expiresAt": "2026-10-02T10:51:47.501Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-roblox-stability-v2"
-      ]
-    },
-    {
       "id": "wl-1hz6u2c",
       "worker": "vibe2",
       "taskId": "daechung-rpg-unity-web-repair-v1",
@@ -340,6 +320,26 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-beq1qv",
+      "worker": "vibe2",
+      "taskId": "amusement-tycoon-studio-evolution-unity-web-usability-v1",
+      "gameId": "amusement-tycoon",
+      "files": [
+        "unity-games/amusement-tycoon/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/amusement-tycoon/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "fd58126ee7e6ee1fb2f08103b44dba76e64c16a3",
+      "runId": "36996503158",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-02T10:51:49.753Z",
+      "expiresAt": "2026-10-02T11:36:49.753Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:amusement-tycoon-studio-evolution-unity-web-usability-v1"
       ]
     }
   ]
