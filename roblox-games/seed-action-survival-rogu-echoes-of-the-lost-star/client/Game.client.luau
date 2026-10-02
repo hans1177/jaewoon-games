@@ -41,7 +41,7 @@ local verifiedLearningContext = Config.VerifiedExternalLearning or Config.Learni
 local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples or {}
 local verifiedLearningAxes = verifiedLearningContext.ApplyAxes or {}
 local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 6
-local verifiedLearningRoot = root
+local verifiedLearningRoot = gui
 local verifiedLearningSemanticVariant = "SURVIVAL_RISK"
 local verifiedLearningSemanticDomain = "CORE_GAMEPLAY_FEEL"
 local verifiedLearningSemanticColor = Color3.fromRGB(255, 112, 112)
@@ -276,17 +276,17 @@ end)
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END
 
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_BEGIN
-root:SetAttribute("VerifiedExternalLearningCoveragePct", verifiedExternalLearningContext.CoveragePct or 0)
-root:SetAttribute("VerifiedExternalLearningContentComplete", verifiedExternalLearningContext.ContentComplete == true)
-root:SetAttribute("VerifiedExternalLearningCount", #verifiedExternalLearningIds)
-root:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedExternalLearningPrinciples)
-root:SetAttribute("VerifiedExternalLearningFingerprint", verifiedExternalLearningContext.MemoryFingerprint or "")
-root:SetAttribute("VerifiedExternalGameDevelopmentPrincipleCount", #verifiedExternalGameDevelopmentPrinciples)
-root:SetAttribute("VerifiedExternalLearningSemanticMappingVersion", verifiedExternalLearningContext.SemanticMappingVersion or 0)
-root:SetAttribute("VerifiedExternalLearningSemanticMappingFingerprint", verifiedExternalLearningContext.SemanticMappingFingerprint or "")
-root:SetAttribute("VerifiedExternalLearningDispositionCount", #verifiedExternalLearningDispositions)
-root:SetAttribute("VerifiedExternalLearningMappingCount", #verifiedExternalLearningMappings)
-root:SetAttribute("VerifiedLearningSemanticVariant", verifiedExternalLearningContext.SemanticVariant or "")
+gui:SetAttribute("VerifiedExternalLearningCoveragePct", verifiedExternalLearningContext.CoveragePct or 0)
+gui:SetAttribute("VerifiedExternalLearningContentComplete", verifiedExternalLearningContext.ContentComplete == true)
+gui:SetAttribute("VerifiedExternalLearningCount", #verifiedExternalLearningIds)
+gui:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedExternalLearningPrinciples)
+gui:SetAttribute("VerifiedExternalLearningFingerprint", verifiedExternalLearningContext.MemoryFingerprint or "")
+gui:SetAttribute("VerifiedExternalGameDevelopmentPrincipleCount", #verifiedExternalGameDevelopmentPrinciples)
+gui:SetAttribute("VerifiedExternalLearningSemanticMappingVersion", verifiedExternalLearningContext.SemanticMappingVersion or 0)
+gui:SetAttribute("VerifiedExternalLearningSemanticMappingFingerprint", verifiedExternalLearningContext.SemanticMappingFingerprint or "")
+gui:SetAttribute("VerifiedExternalLearningDispositionCount", #verifiedExternalLearningDispositions)
+gui:SetAttribute("VerifiedExternalLearningMappingCount", #verifiedExternalLearningMappings)
+gui:SetAttribute("VerifiedLearningSemanticVariant", verifiedExternalLearningContext.SemanticVariant or "")
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_END
 
 if hasStudioAssetAtom("FRAME_PANEL") then
