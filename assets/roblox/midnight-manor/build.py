@@ -108,7 +108,8 @@ class Scene:
             if p[1]>0:p[0]+=lean
         f=[[0,3,2,1],[4,5,6,7],[0,4,7,3],[1,2,6,5],[0,1,5,4],[3,7,6,2]]
         o=self.node(name,self.mesh(name,v,f,mat),pos,rot,parent=parent)
-        bevel=o.modifiers.new('Carved_edges','BEVEL');bevel.width=min(.085,min(size)*.18);bevel.segments=2
+        # Roblox 모바일 예산: 실루엣을 유지하는 단일 챔퍼로 상자형 건축 부품의 중복 폴리곤을 줄인다.
+        bevel=o.modifiers.new('Carved_edges','BEVEL');bevel.width=min(.085,min(size)*.18);bevel.segments=1
         return o
 
     def lathe(self,name,pos,r0,r1,height,mat,sides=24,parent=None):
