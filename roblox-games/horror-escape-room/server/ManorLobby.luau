@@ -105,7 +105,7 @@ function Manor.new(remote,selectMap)
  self.ready=true
  workspace:SetAttribute("PersonalLobby",true)
  workspace:SetAttribute("LobbyArtPass","REBUILD_PENDING_STUDIO")
- workspace:SetAttribute("LobbyBuildRevision","BLENDER_MANOR_ANCHOR_ALIGNED_20261002")
+ workspace:SetAttribute("LobbyBuildRevision","BLENDER_MANOR_REBUILD_20261002")
  workspace:SetAttribute("ManorVisualAnchorMode","HALL_FLOOR_COURTYARD")
  workspace:SetAttribute("ManorVisualAnchorHallError",self.visualAnchorHallError or -1)
  workspace:SetAttribute("ManorVisualAnchorCourtyardError",self.visualAnchorCourtyardError or -1)
