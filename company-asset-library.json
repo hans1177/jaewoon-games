@@ -3960,8 +3960,8 @@
           "loopLocationMax": 0.004,
           "transitionRotationMaxRad": 0.025,
           "speedBlendRotationMaxRad": 0.42,
-          "rootRotationMaxRad": 1e-7,
-          "rootLocationMax": 1e-7,
+          "rootRotationMaxRad": 1e-07,
+          "rootLocationMax": 1e-07,
           "maxEulerRad": 1.6,
           "leftRightPhaseErrorRad": 0.02,
           "footContactLateralVerticalDriftNormalizedMaxByClip": {
@@ -3991,94 +3991,94 @@
         },
         "loop": {
           "hero_idle_hq": {
-            "rotationMaxRad": 0,
-            "locationMax": 0
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
           },
           "hero_walk_hq": {
-            "rotationMaxRad": 0,
-            "locationMax": 0
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
           },
           "hero_jog_hq": {
-            "rotationMaxRad": 0,
-            "locationMax": 0
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
           },
           "hero_run_hq": {
-            "rotationMaxRad": 0,
-            "locationMax": 0
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
           },
           "hero_sprint_hq": {
-            "rotationMaxRad": 0,
-            "locationMax": 0
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
           },
           "hero_strafe_left_hq": {
-            "rotationMaxRad": 0,
-            "locationMax": 0
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
           },
           "hero_strafe_right_hq": {
-            "rotationMaxRad": 0,
-            "locationMax": 0
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
           },
           "hero_backward_hq": {
-            "rotationMaxRad": 0,
-            "locationMax": 0
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
           },
           "hero_crouch_hq": {
-            "rotationMaxRad": 0,
-            "locationMax": 0
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
           }
         },
         "transitions": {
           "startToWalk": {
-            "rotationMaxRad": 0,
-            "locationMax": 0
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
           },
           "stopFromWalk": {
-            "rotationMaxRad": 0,
-            "locationMax": 0
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
           },
           "stopToIdle": {
-            "rotationMaxRad": 0,
-            "locationMax": 0
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
           },
           "turn45FromIdle": {
-            "rotationMaxRad": 0,
-            "locationMax": 0
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
           },
           "turn45ToIdle": {
-            "rotationMaxRad": 0,
-            "locationMax": 0
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
           },
           "turn90FromIdle": {
-            "rotationMaxRad": 0,
-            "locationMax": 0
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
           },
           "turn90ToIdle": {
-            "rotationMaxRad": 0,
-            "locationMax": 0
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
           },
           "turn180FromIdle": {
-            "rotationMaxRad": 0,
-            "locationMax": 0
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
           },
           "turn180ToIdle": {
-            "rotationMaxRad": 0,
-            "locationMax": 0
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
           },
           "jumpStartFromIdle": {
-            "rotationMaxRad": 0,
-            "locationMax": 0
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
           },
           "jumpStartToAir": {
-            "rotationMaxRad": 0,
-            "locationMax": 0
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
           },
           "airToLand": {
-            "rotationMaxRad": 0,
-            "locationMax": 0
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
           },
           "landToIdle": {
-            "rotationMaxRad": 0,
-            "locationMax": 0
+            "rotationMaxRad": 0.0,
+            "locationMax": 0.0
           }
         },
         "speedBlendRotationMaxRad": {
@@ -4087,16 +4087,16 @@
           "hero_run_hq->hero_sprint_hq": 0.28536415100097656
         },
         "leftRightPhaseErrorRad": {
-          "hero_walk_hq": 0,
-          "hero_jog_hq": 0,
-          "hero_run_hq": 0,
-          "hero_sprint_hq": 0,
-          "hero_backward_hq": 0
+          "hero_walk_hq": 0.0,
+          "hero_jog_hq": 0.0,
+          "hero_run_hq": 0.0,
+          "hero_sprint_hq": 0.0,
+          "hero_backward_hq": 0.0
         },
         "footContactLateralVerticalDriftNormalized": {
           "hero_walk_hq": {
-            "left": 0,
-            "right": 0
+            "left": 0.0,
+            "right": 0.0
           },
           "hero_jog_hq": {
             "left": 0.016935472731521576,
@@ -4223,8 +4223,8 @@
           "hero_land_hq": 0.05862849019467831
         },
         "root": {
-          "rotationMaxRad": 0,
-          "locationMax": 0
+          "rotationMaxRad": 0.0,
+          "locationMax": 0.0
         },
         "maxEulerRad": 1.0251131057739258,
         "allSamplesFinite": true,
