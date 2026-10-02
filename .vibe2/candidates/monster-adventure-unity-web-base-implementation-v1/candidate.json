@@ -1,0 +1,20 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "Assets/Scripts/GameCore.cs",
+      "find": "        // Vibe가 승인 설계의 실제 상태/규칙/세이브 책임으로 교체한다.",
+      "replace": ""
+    },
+    {
+      "path": "Assets/Scripts/RuntimeBootstrap.cs",
+      "find": "        private void Start()",
+      "replace": ""
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
