@@ -47,6 +47,17 @@ test('personal manor spawn stays on the front-yard ground layer',()=>{
  assert.match(manorBuild,/ArrivalCourtCrest/);
 });
 
+test('personal manor first floor is the only active lobby walkable level',()=>{
+ assert.match(lobby,/part\(folder,"PersonalGround",origin\+Vector3\.new\(0,-\.15,10\),Vector3\.new\(160,1,156\),true\)/);
+ assert.doesNotMatch(lobby,/part\(folder,"GrandStairGround"/);
+ assert.doesNotMatch(lobby,/part\(folder,"SecondFloorGroundRear"/);
+ assert.doesNotMatch(lobby,/part\(folder,"SecondFloorGroundSide"/);
+ assert.doesNotMatch(lobby,/part\(folder,"SecondFloorStairLandingGround"/);
+ assert.doesNotMatch(lobby,/part\(folder,"SecondFloorGround",origin\+Vector3\.new\(/);
+ assert.doesNotMatch(lobby,/StairwellRailBoundary/);
+ assert.doesNotMatch(lobby,/GalleryFrontRailBoundary/);
+});
+
 test('downloaded assets retain original bytes and CC0 license',()=>{
  const manifest=JSON.parse(read(root+'/asset-manifest.json'));
  assert.equal(manifest.models.length,231);
