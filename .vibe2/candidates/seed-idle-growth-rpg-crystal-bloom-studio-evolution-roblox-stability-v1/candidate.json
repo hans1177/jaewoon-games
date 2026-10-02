@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "  local character = player.Character or player.CharacterAdded:Wait()",
+      "replace": "local character = player.Character or player.CharacterAdded:Wait()\nlocal humanoid = character:WaitForChild(\"Humanoid\")\nif nativeFoundationCamera and nativeFoundationCamera.CameraSubject == humanoid then\n  nativeFoundationRemote:FireServer(\"CAMERA_READY\")\nelse\n  nativeFoundationRemote:FireServer(\"INPUT_READY\")\nend"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
