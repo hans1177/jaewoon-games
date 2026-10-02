@@ -1536,6 +1536,81 @@ function universalAssetWorkerGuidance(order={}) {
   ].filter(Boolean).join('\n');
 }
 
+export function buildGameContextCapsule({order={},exploration=null,responsibleFiles=[]}={}) {
+  const target=clean(order?.target).toLowerCase();
+  const gameId=clean(order?.gameId||order?.selectedTask?.gameId);
+  if(!gameId||target==='system')return null;
+  const editContract=exploration?.editContract||{};
+  const selected=order?.selectedTask||{};
+  const directive=selected?.buildUpDirective||order?.buildUpDirective||{};
+  const saveKeys=unique(editContract?.semanticDiffBudget?.saveKeysMustRemainCompatible||[]).slice(0,12);
+  const memoryIds=unique([
+    ...(editContract?.patchRecipe?.verifiedMemoryIds||[]),
+    ...(order?.unifiedLearning?.playbookReuse||[]).map(row=>clean(row?.id))
+  ]).filter(Boolean).slice(0,8);
+  return Object.freeze({
+    version:1,gameId,target,taskId:clean(order?.taskId||selected?.id)||null,
+    responsibility:Object.freeze({
+      files:Object.freeze(unique(responsibleFiles).slice(0,12)),
+      primaryTargets:Object.freeze(unique(editContract?.primaryTargets||[]).slice(0,10)),
+      primarySystems:Object.freeze(unique(editContract?.primarySystems||[]).slice(0,10)),
+      dependentSystems:Object.freeze(unique(editContract?.dependentSystems||editContract?.allowedDependentSymbolsOrSystems||[]).slice(0,10)),
+      ownedState:Object.freeze(unique(editContract?.ownedState||[]).slice(0,12))
+    }),
+    protected:Object.freeze({
+      saveKeys:Object.freeze(saveKeys),preserveGameplayMeaning:true,preserveSaveMeaning:true,
+      preserveProgressionEconomy:true,preserveNetworkAuthority:true,wrapperShadowOverrideForbidden:true
+    }),
+    intent:Object.freeze({
+      primaryGoal:boundedPromptText(clean(directive?.thisLoopPrimaryGoal||selected?.goal||order?.goal),700),
+      expectedPlayerEffect:boundedPromptText(clean(directive?.effectivenessMeasurement?.expectedPlayerEffect),400)
+    }),
+    style:Object.freeze({
+      styleProfile:clean(order?.assetProduction?.qualityDNA?.styleProfile||order?.assetProduction?.styleBible?.profileKey)||null,
+      qualityProfile:clean(order?.assetProduction?.qualityProfile)||null
+    }),
+    learning:Object.freeze({
+      failureFingerprint:clean(editContract?.patchRecipe?.failureFingerprint||order?.unifiedLearning?.failureFingerprint)||null,
+      strategy:clean(order?.candidateStrategyRole?.strategy||editContract?.strategyHint)||null,
+      verifiedMemoryIds:Object.freeze(memoryIds)
+    })
+  });
+}
+function gameContextCapsuleGuidance(order={},exploration=null,responsibleFiles=[]) {
+  const capsule=buildGameContextCapsule({order,exploration,responsibleFiles});
+  if(!capsule)return'';
+  return[
+    '[GAME CONTEXT CAPSULE BEGIN]',JSON.stringify(capsule),
+    'Treat this capsule as the compact continuity contract for this game and task. Preserve protected fields and named responsibilities. Use it to avoid generic genre rewrites or repeating a previously failed strategy.',
+    'If writable source conflicts with a guessed detail in this capsule, current source and the latest explicit owner/canonical work order win. Do not invent missing gameplay rules.',
+    '[GAME CONTEXT CAPSULE END]'
+  ].join('\n');
+}
+function gameContextCapsuleBlockFromPrompt(prompt='') {
+  const raw=String(prompt??''),begin='[GAME CONTEXT CAPSULE BEGIN]',end='[GAME CONTEXT CAPSULE END]';
+  const start=raw.indexOf(begin);if(start<0)return'';
+  const finish=raw.indexOf(end,start+begin.length);if(finish<0)return'';
+  return raw.slice(start,finish+end.length);
+}
+function preSubmitSelfReviewGuidance(order={}) {
+  const target=clean(order?.target).toLowerCase();
+  if(!target||target==='system')return'';
+  return[
+    '[PRE-SUBMIT SELF REVIEW BEGIN]',
+    'Before returning the candidate, silently re-read the exact writable source and your proposed delta once.',
+    'Check: the edit hits the named responsibility; path/find are exact; the change is executable rather than comment/marker-only; protected gameplay/save/progression/economy/network meaning is unchanged unless explicitly authorized; no wrapper/shadow/override duplicate was added; unrelated working behavior remains intact.',
+    'For presentation work also check that the player-visible result materially changes. If any check fails, rewrite the candidate before output.',
+    'Do not narrate this review and do not add review comments to game source.',
+    '[PRE-SUBMIT SELF REVIEW END]'
+  ].join('\n');
+}
+function preSubmitSelfReviewBlockFromPrompt(prompt='') {
+  const raw=String(prompt??''),begin='[PRE-SUBMIT SELF REVIEW BEGIN]',end='[PRE-SUBMIT SELF REVIEW END]';
+  const start=raw.indexOf(begin);if(start<0)return'';
+  const finish=raw.indexOf(end,start+begin.length);if(finish<0)return'';
+  return raw.slice(start,finish+end.length);
+}
+
 function studioAssetQualityCoreGuidance(order={}) {
   const target=clean(order?.target).toLowerCase();
   if(!assetDevelopmentTask(order)||!['roblox','unity'].includes(target))return'';
@@ -1972,6 +2047,8 @@ learningContract.block,
 explorationGuidance(exploration),
 presentationWorkerGuidance(order),
 universalAssetWorkerGuidance(order),
+gameContextCapsuleGuidance(order,exploration,responsibleFiles),
+preSubmitSelfReviewGuidance(order),
 studioAssetQualityCoreGuidance(order),
 assetDetailBlock,
 runtimeVisualBlock,
@@ -2131,8 +2208,32 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
     ambiguousClassificationObserved:!hardGate&&!saveInvariantGate,writableScopeExpansionAllowed:false,authorityExpanded:false
   };
 }
+function meaningfulReviewSource(text=''){
+  return String(text??'').split(/\r?\n/).filter(line=>!/^\s*(?:--|\/\/|#|<!--)/.test(line)).join('\n').replace(/\s+/g,' ').trim();
+}
+export function evaluateCandidateSelfReview({candidate={},order={},exploration=null,responsibleFiles=[]}={}){
+  const target=clean(order?.target).toLowerCase();
+  if(!target||target==='system')return{required:false,pass:true,checks:[],issues:[],capsule:null};
+  const rows=[
+    ...(candidate?.edits||[]).map(row=>({path:clean(row.path),before:String(row.find||''),after:String(row.replace||'')})),
+    ...(candidate?.replaceFiles||[]).map(row=>({path:clean(row.path),before:'',after:String(row.content||'')})),
+    ...(candidate?.newFiles||[]).map(row=>({path:clean(row.path),before:'',after:String(row.content||'')}))
+  ];
+  const meaningful=rows.filter(row=>meaningfulReviewSource(row.before)!==meaningfulReviewSource(row.after)&&meaningfulReviewSource(row.after));
+  const writable=new Set(unique(responsibleFiles));
+  const scopePass=!writable.size||rows.every(row=>writable.has(row.path));
+  const capsule=buildGameContextCapsule({order,exploration,responsibleFiles});
+  const checks=[
+    {name:'MEANINGFUL_EXECUTABLE_DELTA',pass:meaningful.length>0},
+    {name:'RESPONSIBLE_FILE_SCOPE',pass:scopePass},
+    {name:'NO_EMPTY_IMPLEMENTATION',pass:rows.length>0}
+  ];
+  const issues=checks.filter(row=>!row.pass).map(row=>row.name);
+  return{required:true,pass:issues.length===0,checks,issues,capsule,meaningfulDeltaCount:meaningful.length,touchedFiles:unique(rows.map(row=>row.path))};
+}
 export function generationFailureClass(error){
   const message=clean(error?.message||error);
+  if(/CANDIDATE_SELF_REVIEW_REQUIRED/i.test(message))return'SELF_REVIEW';
   if(/실제 source 변경|변경 없는 edit/i.test(message))return'NO_OP';
   if(/시간 초과|timeout|prediction aborted|token repeat limit/i.test(message))return'TIMEOUT';
   if(/UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED|Unity Web source bootstrap는 GameCore\.cs와 RuntimeBootstrap\.cs 실제 편집을 모두 요구/i.test(message))return'UNITY_BOOTSTRAP_PAIR';
@@ -2154,11 +2255,11 @@ export function generationFailureClass(error){
   if(/edit find/i.test(message))return'EDIT_MATCH';
   return'OTHER';
 }
-function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET','PRESENTATION_PATCH_DELTA','GRAPHICS_REPLACEMENT_REPORT','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','STUDIO_QUALITY_DELTA','DIAGNOSTIC_POSTCONDITION','ROBLOX_STUDIO_ASSET_APPLICATION','SYSTEM_CAUSAL_TEST_REQUIRED','SYSTEM_CANDIDATE_SYNTAX','WEB_STRUCTURAL_CONTINUITY','ROBLOX_STRUCTURAL_CONTINUITY'].includes(generationFailureClass(error));}
+function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET','PRESENTATION_PATCH_DELTA','GRAPHICS_REPLACEMENT_REPORT','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','STUDIO_QUALITY_DELTA','SELF_REVIEW','DIAGNOSTIC_POSTCONDITION','ROBLOX_STUDIO_ASSET_APPLICATION','SYSTEM_CAUSAL_TEST_REQUIRED','SYSTEM_CANDIDATE_SYNTAX','WEB_STRUCTURAL_CONTINUITY','ROBLOX_STRUCTURAL_CONTINUITY'].includes(generationFailureClass(error));}
 function fullWebFinalRetryAllowed(error){return['FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT'].includes(generationFailureClass(error));}
 export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
-  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|잘못된 상대 경로|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|SEMANTIC_DIFF_BUDGET_VIOLATION|PRESENTATION_PATCH_DELTA_REQUIRED|GRAPHICS_REPLACEMENT_REPORT_REQUIRED|ROBLOX_ASSET_ADAPTATION_(?:DOMAINS_REQUIRED|MOTION_REQUIRED)|STUDIO_QUALITY_DELTA_REQUIRED|DIAGNOSTIC_POSTCONDITION_MISSING|ROBLOX_STUDIO_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)|UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED|Unity Web source bootstrap는 GameCore\.cs와 RuntimeBootstrap\.cs 실제 편집을 모두 요구|SYSTEM_CAUSAL_TEST_REQUIRED|SYSTEM_CANDIDATE_SYNTAX_INVALID|WEB_SOURCE_STRUCTURAL_CONTINUITY|ROBLOX_SOURCE_STRUCTURAL_CONTINUITY|prediction aborted|token repeat limit/i.test(message);
+  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|잘못된 상대 경로|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|SEMANTIC_DIFF_BUDGET_VIOLATION|PRESENTATION_PATCH_DELTA_REQUIRED|GRAPHICS_REPLACEMENT_REPORT_REQUIRED|ROBLOX_ASSET_ADAPTATION_(?:DOMAINS_REQUIRED|MOTION_REQUIRED)|STUDIO_QUALITY_DELTA_REQUIRED|CANDIDATE_SELF_REVIEW_REQUIRED|DIAGNOSTIC_POSTCONDITION_MISSING|ROBLOX_STUDIO_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)|UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED|Unity Web source bootstrap는 GameCore\.cs와 RuntimeBootstrap\.cs 실제 편집을 모두 요구|SYSTEM_CAUSAL_TEST_REQUIRED|SYSTEM_CANDIDATE_SYNTAX_INVALID|WEB_SOURCE_STRUCTURAL_CONTINUITY|ROBLOX_SOURCE_STRUCTURAL_CONTINUITY|prediction aborted|token repeat limit/i.test(message);
 }
 export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsibleFiles=[],preferredTargets=[]}={}){
   const raw=String(prompt??'');
@@ -2381,6 +2482,8 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       goal,
       verifiedExternalLearningBlockFromPrompt(raw),
       buildUpDirectiveBlockFromPrompt(raw,{compact:true,focusedRobloxVisual:robloxPresentationTask,focusedPresentation:presentationTask,selectedPath:spec.path}),
+      gameContextCapsuleBlockFromPrompt(raw),
+      preSubmitSelfReviewBlockFromPrompt(raw),
       studioAssetQualityCoreBlockFromPrompt(raw),
       reason?'Previous failure: '+reason:'',
       /SOURCE_LINE_REPETITION/.test(reason)?'SOURCE REPETITION REPAIR: the prior stream repeated the same assignment without completing. Rebuild only the fixed anchor replacement; do not copy the surrounding function or repeat identical assignments. Preserve every required behavior.':'',
@@ -3813,6 +3916,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     }
     if(target==='roblox'&&!luauCompiler&&process.env.VIBE2_LUAU_COMPILE_REQUIRED==='true')throw new Error('ROBLOX_LUAU_COMPILER_UNAVAILABLE:NOT_CONFIGURED');
     const sourceSyntax=target==='system'||(target==='roblox'&&luauCompiler)?validateCandidateSyntax({candidate,sourceRoot,target,luauCompiler}):{pass:null,scope:'NOT_EXECUTED',runtimeVerified:false};
+    const candidateSelfReview=evaluateCandidateSelfReview({candidate,order,exploration,responsibleFiles});
+    if(candidateSelfReview.required&&!candidateSelfReview.pass)throw new Error('CANDIDATE_SELF_REVIEW_REQUIRED:'+candidateSelfReview.issues.join('|'));
     const result=evaluateSemanticDiffBudget({candidate,editContract,allowFullRewrite,bootstrap,sourceRoot});
     if(!result.pass)throw new Error('SEMANTIC_DIFF_BUDGET_VIOLATION:'+result.violations.join('|'));
     const diagnosticPostcondition=evaluateDiagnosticPostcondition({candidate,exploration});
@@ -3862,7 +3967,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     if(studioQualityDelta.required&&!studioQualityDelta.pass){
       throw new Error(`STUDIO_QUALITY_DELTA_REQUIRED:${studioQualityDelta.phase}:${studioQualityDelta.sourceDeltaUnits}/${studioQualityDelta.requiredSourceDeltaUnits}:VISUAL:${studioQualityDelta.visualUnits}/${studioQualityDelta.requiredVisualUnits}:${studioQualityDelta.reason}`);
     }
-    return{...result,sourceSyntax,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta,studioAssetQualityAxes};
+    return{...result,sourceSyntax,candidateSelfReview,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta,studioAssetQualityAxes};
   };
   const candidateVariant=clean(order?.candidateStrategyRole?.variant)||clean(process.env.VIBE2_SPECULATIVE_VARIANT)||'primary';
   const deterministicDiagnostic=!allowFullRewrite&&verifiedExternalLearningContract.required!==true?deterministicDiagnosticCandidate({exploration,sourceRoot,responsibleFiles,order}):null;
@@ -4079,6 +4184,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     graphicsReplacementValidation:semanticDiffEnforcement?.graphicsReplacementReport||{required:false,pass:true,reason:'NOT_REQUIRED',groundedCount:0},
     presentationCandidateDelta,
     studioQualityCandidateDelta,
+    candidateSelfReview:semanticDiffEnforcement?.candidateSelfReview||null,
+    gameContextCapsule:buildGameContextCapsule({order,exploration,responsibleFiles}),
     studioAssetQualityAxes:semanticDiffEnforcement?.studioAssetQualityAxes||null,
     fullFileRewriteAllowed:allowFullRewrite,
     protectedGameplayMutationAutomatic:false,
