@@ -420,7 +420,7 @@ function enterRest(rewardText){
   msg(rewardText)
 }
 function stageClearRewards(stageNo){
-  const base={1:50,2:200,3:300}[stageNo]||0;
+  const base={1:50,2:200,3:250}[stageNo]||0;
   if(base)awardDiamonds(base);
   dailyEvent('stageClear',1);
   if(stageNo===3)dailyEvent('stage3Clear',1);
@@ -444,9 +444,8 @@ function clearStageTwo(){
 }
 function clearStageThree(){
   state.keys+=3;
-  state.gold.BLUE+=250;
   const r=stageClearRewards(3);
-  enterRest('3스테이지 클리어 · 열쇠 3개 + 골드 250 + 다이아 '+r.base+'개'+(r.bonus?' + 무피해 '+r.bonus+'개':''))
+  enterRest('3스테이지 클리어 · 열쇠 3개 + 다이아 '+r.base+'개'+(r.bonus?' + 무피해 '+r.bonus+'개':''))
 }
 function checkWin(){
   if(!state||state.phase!=='BATTLE'||state.winner)return;
