@@ -61,7 +61,7 @@ p.PlayerScripts={WaitForChild=function()return "PLAYER_MODULE"end}
 local controls={Enable=function()end,Disable=function()end}
 local remote={OnClientEvent=signal(),sent={}}
 function remote:FireServer(action,value)table.insert(self.sent,{action,value})end
-local C={RemoteName="GameEvent",Actions=setmetatable({}, {__index=function(_,k)return k end}),Maps={{Id="SCHOOL",Name="학교"}},GhostCatalog={{Id="BRIDE",Name="처녀귀신",Origin="한국"}},MonsterForms={{Id="DRACULA",Name="드라큘라",UnlockXP=0}},Cosmetics={{Id="DEFAULT",Name="기본",Price=0}}}
+local C={RemoteName="GameEvent",Actions=setmetatable({}, {__index=function(_,k)return k end}),Maps={{Id="SCHOOL",Name="학교"}},GhostCatalog={{Id="BRIDE",Name="처녀귀신",Origin="한국",Map="SCHOOL",Weight=46}},MonsterForms={{Id="DRACULA",Name="드라큘라",UnlockXP=0}},Cosmetics={{Id="DEFAULT",Name="기본",Price=0}}}
 local RS={Shared={GameConfig="CONFIG",ManorAssets="ASSETS",MonsterStories="STORIES"},WaitForChild=function()return remote end}
 local otherAttrs={ManorVisibility="PUBLIC",RoomServer=false,RoundState="ROOM_BROWSER"}
 local other={UserId=8,DisplayName="PublicOwner",Name="PublicOwner"}
@@ -114,6 +114,10 @@ assert(named.NotebookShade.Visible==true,"Open menu does not intercept backgroun
 click("×");assert(named.NotebookShade.Visible==false,"Closed menu blocks movement")
 open("EVENT")
 assert(find("내 저택 · 비공개 · 방문자 0명"),"Private manor state missing")
+assert(find("세계 괴담")and find("0 / 1"),"Collection total row missing")
+assert(find("지역 완성 전시"),"Map completion display row missing")
+assert(find("희귀 진열장"),"Rare display row missing")
+assert(find("벽난로 대표 슬롯")and find("미발견"),"Featured fireplace display row missing")
 click("저택 공개하기");sent("SET_MANOR_VISIBILITY");assert(remote.sent[#remote.sent][2]=="PUBLIC")
 p:SetAttribute("ManorVisibility","PUBLIC");flush()
 assert(find("내 저택 · 공개 · 방문자 0명"),"Public manor state did not refresh")
