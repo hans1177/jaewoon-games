@@ -854,8 +854,8 @@
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "ACTIVE",
       "status": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "targetPlatform": "ROBLOX",
+      "selectedPlatform": "UNITY",
+      "targetPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -939,7 +939,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-02T10:10:01.709Z",
+      "updatedAt": "2026-10-02T10:14:08.200Z",
       "robloxSourceCommit": "58f718faeb945ab1dfad2aa1c95bd438330839ab",
       "robloxSourceBootstrapPassedAt": "2026-10-02T10:03:42.331Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -1237,7 +1237,7 @@
       "unityCandidateBranch": "development/unity-tech-horror-escape-room-36958178395",
       "unitySourceCommit": "188da3bb77d8184afc3e315552024915536a573a",
       "unityBuildRunId": 36958637457,
-      "unityRuntimeSmokeRunId": 36993911570,
+      "unityRuntimeSmokeRunId": 36994327995,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityF0ThroughF9Evidence": {
@@ -1294,7 +1294,7 @@
           }
         },
         "multiplayerRequired": true,
-        "verifiedAt": "2026-10-02T10:09:43.084Z"
+        "verifiedAt": "2026-10-02T10:14:08.200Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -1317,8 +1317,8 @@
         "regressionPassed": false,
         "rawStageResults": {
           "runtime": false,
-          "independentQa": true,
-          "regression": true
+          "independentQa": false,
+          "regression": false
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
@@ -1341,8 +1341,8 @@
         "regressionPassed": false,
         "rawStageResults": {
           "runtime": false,
-          "independentQa": true,
-          "regression": true
+          "independentQa": false,
+          "regression": false
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
@@ -2223,7 +2223,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-02T10:14:02.247Z",
+  "updatedAt": "2026-10-02T10:14:11.905Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
