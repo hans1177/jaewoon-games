@@ -278,7 +278,7 @@ jobs:
             sleep $((attempt*2))
           done
           test "$persisted" = '1'
-      - name: Dispatch exact Roblox Studio QA directly after F0
+      - name: Dispatch exact private Roblox validation directly after F0
         if: needs.plan.outputs.count != '0'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -287,7 +287,7 @@ jobs:
           set -euo pipefail
           git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/q.json
-          node - <<'NODE' > /tmp/roblox-f0-studio-ready-ids
+          node - <<'NODE' > /tmp/roblox-f0-validation-ready-ids
           const fs=require('fs');
           const q=JSON.parse(fs.readFileSync('/tmp/q.json','utf8'));
           const targets=JSON.parse(process.env.TARGETS||'[]');
@@ -306,47 +306,55 @@ jobs:
               &&f0.sourceRevision===revision
               &&f0.artifactIdentity===artifact
               &&Number(f0.artifactRunId||0)>0;
-            if(!exact||x.robloxRuntimeFoundationPassed===true)continue;
+            const candidate=x.robloxRuntimeCandidateEvidence||{};
+            const exactPublished=
+              candidate.published===true
+              &&candidate.sourceRevision===revision
+              &&candidate.artifactIdentity===artifact
+              &&Number(candidate.versionNumber||0)>0;
+            if(!exact||exactPublished)continue;
             if(x.robloxQualityBuildUpRequired===true&&String(x.robloxQualityBuildUpSourceRevision||'').trim()===revision)continue;
             console.log(id);
           }
           NODE
 
-          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-post-runtime-qa.yml/runs?per_page=100" > /tmp/roblox-f0-studio-active-runs.json
-          node <<'NODE' > /tmp/roblox-f0-studio-active-ids
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-release-promotion.yml/runs?per_page=100" > /tmp/roblox-f0-validation-active-runs.json
+          node <<'NODE' > /tmp/roblox-f0-validation-active-ids
           const fs=require('fs');
-          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-f0-studio-active-runs.json','utf8'));
+          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-f0-validation-active-runs.json','utf8'));
           const states=new Set(['queued','pending','in_progress','requested']);
-          const prefix='Roblox runtime foundation QA · ';
+          const currentSha=String(process.env.GITHUB_SHA||'').trim();
+          const prefix='Roblox publish · ';
+          const suffix=' · validation';
           const ids=new Set();
           for(const run of payload.workflow_runs||[]){
             if(!states.has(String(run.status||'').toLowerCase()))continue;
+            if(String(run.head_sha||'')!==currentSha)continue;
             const title=String(run.display_title||'');
-            if(!title.startsWith(prefix)||title===prefix+'scan')continue;
-            const id=title.slice(prefix.length).trim();
+            if(!title.startsWith(prefix)||!title.endsWith(suffix))continue;
+            const id=title.slice(prefix.length,-suffix.length).trim();
             if(/^[a-z0-9][a-z0-9-]{1,48}$/.test(id))ids.add(id);
           }
           for(const id of [...ids].sort())console.log(id);
           NODE
 
-          candidate_count="$(grep -c . /tmp/roblox-f0-studio-ready-ids || true)"
+          candidate_count="$(grep -c . /tmp/roblox-f0-validation-ready-ids || true)"
           dispatch_count=0
           deduped_count=0
           while read -r id; do
             [ -n "$id" ] || continue
-            if grep -Fxq "$id" /tmp/roblox-f0-studio-active-ids; then
+            if grep -Fxq "$id" /tmp/roblox-f0-validation-active-ids; then
               deduped_count=$((deduped_count+1))
-              echo "ROBLOX_F0_STUDIO_QA_HANDOFF=DEDUPED_ACTIVE:$id"
+              echo "ROBLOX_F0_PRIVATE_VALIDATION_HANDOFF=DEDUPED_CURRENT_MAIN:$id:$GITHUB_SHA"
               continue
             fi
-            gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id" -f run_studio=true
-            printf '%s\n' "$id" >> /tmp/roblox-f0-studio-active-ids
+            gh workflow run company-development-roblox-release-promotion.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id" -f publish_stage=validation
+            printf '%s\n' "$id" >> /tmp/roblox-f0-validation-active-ids
             dispatch_count=$((dispatch_count+1))
-            echo "ROBLOX_F0_STUDIO_QA_HANDOFF=DISPATCHED:$id"
-          done < /tmp/roblox-f0-studio-ready-ids
-          echo "ROBLOX_F0_STUDIO_QA_CANDIDATE_COUNT=$candidate_count"
-          echo "ROBLOX_F0_STUDIO_QA_DISPATCH_COUNT=$dispatch_count"
-          echo "ROBLOX_F0_STUDIO_QA_DEDUPED_COUNT=$deduped_count"
-          echo 'ROBLOX_F0_STUDIO_QA_TARGET_DEPENDENCY=NONE_LOCAL_EXACT_ARTIFACT'
-          echo 'ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED'
-          echo 'ROBLOX_ONLY_FINAL_F9_SERVER_PUBLISH=YES'
+            echo "ROBLOX_F0_PRIVATE_VALIDATION_HANDOFF=DISPATCHED:$id"
+          done < /tmp/roblox-f0-validation-ready-ids
+          echo "ROBLOX_F0_PRIVATE_VALIDATION_CANDIDATE_COUNT=$candidate_count"
+          echo "ROBLOX_F0_PRIVATE_VALIDATION_DISPATCH_COUNT=$dispatch_count"
+          echo "ROBLOX_F0_PRIVATE_VALIDATION_DEDUPED_COUNT=$deduped_count"
+          echo 'ROBLOX_F0_PRIVATE_VALIDATION_TARGET=DEDICATED_NONCANONICAL'
+          echo 'ROBLOX_STUDIO_REQUIRED_FOR_F0_CONTINUATION=NO'
