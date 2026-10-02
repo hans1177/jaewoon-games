@@ -1021,6 +1021,135 @@ local internalGhostSkinByCatalogId={
  DULLAHAN="dullahan",LA_LLORONA="la-llorona",PONTIANAK="pontianak",BLACK_SHUCK="barghest",
 }
 
+local combatSkinByMonster={
+ DRACULA="strigoi",FRANKENSTEIN="draugr",WEREWOLF="barghest",MUMMY="pocong",GRIM_REAPER="hei-wuchang",
+}
+local combatSkinByInfected={
+ BROADCAST="nopperabo",ELECTRICIAN="jiangshi",COURIER="aswang",PHOTOGRAPHER="la-sayona",SECURITY="vetala",
+}
+local combatSkins={}
+local combatSkinClock=0
+
+local function combatSkinIdForPlayer(player)
+ if player:GetAttribute("Role")~="MONSTER"then return nil end
+ if player:GetAttribute("Infected")==true then
+  return combatSkinByInfected[tostring(player:GetAttribute("HumanForm")or"BROADCAST")]or"pocong"
+ end
+ return combatSkinByMonster[tostring(player:GetAttribute("MonsterForm")or"DRACULA")]or"strigoi"
+end
+local function restoreCombatSkinSource(row)
+ for part,value in pairs(row.hiddenParts or{})do
+  if part and part.Parent then part.LocalTransparencyModifier=value end
+ end
+ for hi,value in pairs(row.hiddenHighlights or{})do
+  if hi and hi.Parent then hi.Enabled=value end
+ end
+end
+local function destroyCombatSkin(source)
+ local row=combatSkins[source];if not row then return end
+ restoreCombatSkinSource(row)
+ if row.motion then pcall(function()row.motion.destroy()end)end
+ if row.model and row.model.Parent then row.model:Destroy()end
+ combatSkins[source]=nil
+end
+local function hideCombatSkinSource(row)
+ row.hiddenParts=row.hiddenParts or{}
+ row.hiddenHighlights=row.hiddenHighlights or{}
+ for _,d in ipairs(row.source:GetDescendants())do
+  if d:IsA("BasePart")and row.hiddenParts[d]==nil then
+   row.hiddenParts[d]=d.LocalTransparencyModifier;d.LocalTransparencyModifier=1
+  elseif d:IsA("Highlight")and row.hiddenHighlights[d]==nil then
+   row.hiddenHighlights[d]=d.Enabled;d.Enabled=false
+  end
+ end
+end
+local function ensureCombatSkin(source,rootPart,skinId)
+ if not GhostSkinFactory or not GhostSkinMotion or not source or not rootPart or not skinId then return nil end
+ local row=combatSkins[source]
+ if row and(row.skinId~=skinId or not row.model or not row.model.Parent)then destroyCombatSkin(source);row=nil end
+ if not row then
+  local ok,model=pcall(function()
+   return GhostSkinFactory.Create(skinId,{quality=touchEnabled and"far"or"mid",parent=workspace,anchored=true,pivot=CFrame.new()})
+  end)
+  if not ok or not model then return nil end
+  local bindOk,motion=pcall(function()return GhostSkinMotion.Bind(model)end)
+  if not bindOk or not motion then model:Destroy();return nil end
+  model.Name="CombatGhostSkin_"..skinId
+  model:SetAttribute("SourceAssetLibrary","roblox-world-ghost-skins-v1")
+  model:SetAttribute("CombatSkin",true)
+  row={source=source,root=rootPart,skinId=skinId,model=model,motion=motion,createdAt=os.clock(),lastPos=rootPart.Position,hiddenParts={},hiddenHighlights={},attackStart=0,attackUntil=0}
+  combatSkins[source]=row
+ end
+ row.root=rootPart
+ hideCombatSkinSource(row)
+ return row
+end
+local function refreshCombatSkins()
+ local active={}
+ local round=tostring(p:GetAttribute("RoundState")or"")
+ local show=round=="RUNNING"or round:match("^RESULT_")~=nil
+ if show and GhostSkinFactory and GhostSkinMotion then
+  for _,player in ipairs(Players:GetPlayers())do
+   local source=player.Character
+   local rr=source and source:FindFirstChild("HumanoidRootPart")
+   local skinId=combatSkinIdForPlayer(player)
+   if source and rr and skinId then active[source]=true;ensureCombatSkin(source,rr,skinId)end
+  end
+  local arena=workspace:FindFirstChild("MidnightArena")
+  if arena then
+   for _,source in ipairs(arena:GetChildren())do
+    if source:IsA("Model")then
+     local formId=source.Name:match("^AI_MONSTER_(.+)$")
+     local rr=formId and(source:FindFirstChild("HumanoidRootPart")or source.PrimaryPart)or nil
+     local skinId=formId and combatSkinByMonster[formId]or nil
+     if rr and skinId then active[source]=true;ensureCombatSkin(source,rr,skinId)end
+    end
+   end
+  end
+ end
+ for source in pairs(combatSkins)do if not active[source]then destroyCombatSkin(source)end end
+end
+local function markCombatSkinAttack(userId,origin,duration)
+ local row=nil
+ if tonumber(userId)and tonumber(userId)>0 then
+  local player=Players:GetPlayerByUserId(tonumber(userId))
+  if player and player.Character then row=combatSkins[player.Character]end
+ elseif typeof(origin)=="Vector3"then
+  local best=math.huge
+  for source,candidate in pairs(combatSkins)do
+   if source:IsA("Model")and source.Name:match("^AI_MONSTER_")and candidate.root and candidate.root.Parent then
+    local distance=(candidate.root.Position-origin).Magnitude
+    if distance<best then best=distance;row=candidate end
+   end
+  end
+ end
+ if row then row.attackStart=os.clock();row.attackUntil=row.attackStart+(duration or .7)end
+end
+
+RunService.RenderStepped:Connect(function(dt)
+ combatSkinClock+=dt
+ if combatSkinClock>=.3 then combatSkinClock=0;refreshCombatSkins()end
+ local now=os.clock()
+ for _,row in pairs(combatSkins)do
+  local rr=row.root
+  if rr and rr.Parent and row.model and row.model.Parent then
+   local h=row.source:FindFirstChildOfClass("Humanoid")
+   local groundOffset=(h and tonumber(h.HipHeight)or 2)+.9
+   row.model:PivotTo(rr.CFrame*CFrame.new(0,-groundOffset,0))
+   local last=row.lastPos or rr.Position
+   local velocity=(rr.Position-last).Magnitude/math.max(dt,1/120)
+   row.lastPos=rr.Position
+   local state,time
+   if now<(row.attackUntil or 0)then state="attack";time=now-(row.attackStart or now)
+   elseif velocity>11 then state="chase";time=now-row.createdAt
+   elseif velocity>1 then state="walk";time=now-row.createdAt
+   else state="idle";time=now-row.createdAt end
+   pcall(function()row.motion.step(time,state)end)
+   hideCombatSkinSource(row)
+  end
+ end
+end)
+
 local function tryInternalGhostSighting(trigger,id)
  if not GhostSkinFactory then return false end
  local skinId=internalGhostSkinByCatalogId[id]
