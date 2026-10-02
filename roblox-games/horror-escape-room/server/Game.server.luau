@@ -926,10 +926,12 @@ local function groundedRootTarget(p,pos)
  end
  -- 바닥 태그가 잠깐 비어 있어도 지붕으로 올리지 않고 맵 기준 바닥으로 고정한다.
  local groundY=hit and hit.Position.Y or(lobbyDestination and .65 or .5)
- local standingOffset=math.max(1,tonumber(h.HipHeight)or 0)+(r.Size.Y*.5)
+ local standingOffset=(tonumber(h.HipHeight)or 0)+(r.Size.Y*.5)
  if h.RigType==Enum.HumanoidRigType.R6 then
   local leg=c:FindFirstChild("Left Leg")or c:FindFirstChild("Right Leg")
-  standingOffset+=leg and leg.Size.Y or 2
+  standingOffset=(r.Size.Y*.5)+(leg and leg.Size.Y or 2)
+ else
+  standingOffset=math.max(r.Size.Y*.5,standingOffset)
  end
  local targetY=groundY+standingOffset+.03
  if lobbyDestination then targetY=math.clamp(targetY,2.8,5.2)else targetY=math.clamp(targetY,2.8,6.5)end
