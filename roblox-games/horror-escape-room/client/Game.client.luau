@@ -751,8 +751,8 @@ objectiveLine.Size=UDim2.new(1,-16,0,24)
 objectiveLine.Position=UDim2.fromOffset(8,43)
 objectiveLine.BackgroundTransparency=1
 objectiveLine.TextColor3=Color3.fromRGB(230,218,190)
-objectiveLine.TextSize=11
-objectiveLine.TextWrapped=true
+objectiveLine.TextSize=13
+objectiveLine.TextWrapped=false
 objectiveLine.Font=Enum.Font.GothamBold
 objectiveLine.TextXAlignment=Enum.TextXAlignment.Left
 objectiveLine.Parent=hud
@@ -2027,32 +2027,32 @@ local actionDock=Instance.new("Frame")
 actionDock.Name="RoundActions"
 actionDock.AnchorPoint=Vector2.new(.5,1)
 actionDock.Position=UDim2.new(.5,0,1,-18)
-actionDock.Size=UDim2.fromOffset(308,58)
+actionDock.Size=UDim2.fromOffset(308,72)
 actionDock.BackgroundTransparency=1
 actionDock.ZIndex=10
 actionDock.Parent=gui
 
 local rescueButton=makeButton(actionDock,"정화 공격",Color3.fromRGB(75,91,94))
-rescueButton.Size=UDim2.fromOffset(96,50);rescueButton.Position=UDim2.fromOffset(2,4);rescueButton.ZIndex=11
+rescueButton.Size=UDim2.fromOffset(96,64);rescueButton.Position=UDim2.fromOffset(2,4);rescueButton.ZIndex=11
 rescueButton.Activated:Connect(function()setMotionImpulse("PURIFY",.34);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.PURIFY)end)
 
 local dashButton=makeButton(actionDock,"대시",Color3.fromRGB(87,78,66))
-dashButton.Size=UDim2.fromOffset(96,50);dashButton.Position=UDim2.fromOffset(106,4);dashButton.ZIndex=11
+dashButton.Size=UDim2.fromOffset(96,64);dashButton.Position=UDim2.fromOffset(106,4);dashButton.ZIndex=11
 dashButton.Activated:Connect(function()setMotionImpulse("DASH",.38);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.DASH)end)
 
 local humanAbilityButton=makeButton(actionDock,"인간 스킬",Color3.fromRGB(61,96,105))
-humanAbilityButton.Size=UDim2.fromOffset(96,50);humanAbilityButton.Position=UDim2.fromOffset(210,4);humanAbilityButton.ZIndex=11
+humanAbilityButton.Size=UDim2.fromOffset(96,64);humanAbilityButton.Position=UDim2.fromOffset(210,4);humanAbilityButton.ZIndex=11
 humanAbilityButton.TextScaled=false;humanAbilityButton.TextSize=9;humanAbilityButton.TextWrapped=true
 humanAbilityButton.Activated:Connect(function()
  setMotionImpulse("ABILITY",.42);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.HUMAN_ABILITY)
 end)
 
 local infectButton=makeButton(actionDock,"감염 공격",Color3.fromRGB(111,45,49))
-infectButton.Size=UDim2.fromOffset(96,50);infectButton.Position=UDim2.fromOffset(55,4);infectButton.ZIndex=11
+infectButton.Size=UDim2.fromOffset(96,64);infectButton.Position=UDim2.fromOffset(55,4);infectButton.ZIndex=11
 infectButton.Activated:Connect(function()setMotionImpulse("INFECT_ATTACK",.34);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.INFECT_ATTACK)end)
 
 local abilityButton=makeButton(actionDock,"괴물 스킬",Color3.fromRGB(72,55,77))
-abilityButton.Size=UDim2.fromOffset(96,50);abilityButton.Position=UDim2.fromOffset(157,4);abilityButton.ZIndex=11
+abilityButton.Size=UDim2.fromOffset(96,64);abilityButton.Position=UDim2.fromOffset(157,4);abilityButton.ZIndex=11
 abilityButton.TextScaled=false;abilityButton.TextSize=9;abilityButton.TextWrapped=true
 abilityButton.Activated:Connect(function()setMotionImpulse("ABILITY",.44);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.ABILITY)end)
 
