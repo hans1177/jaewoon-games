@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: horror-authored-combat-assets
@@ -33,7 +34,9 @@ jobs:
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         run: node tools/horror-combat-assets.mjs
-      - name: Persist exact combat asset binding
+      - name: Open exact combat asset binding PR
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -45,7 +48,7 @@ jobs:
             exit 0
           fi
           git commit -m 'horror: bind authored combat model asset'
-          git fetch --no-tags origin main
-          git rebase origin/main
-          git push origin HEAD:main
-          echo 'COMBAT_ASSET_BINDING_PERSISTED=YES'
+          branch="automation/horror-combat-asset-${GITHUB_RUN_ID}"
+          git push origin "HEAD:$branch"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title '심야 대탈출 authored 전투 자산 바인딩' --body 'Roblox에 등록된 exact bride.glb ModelId와 SHA만 바인딩한다. 게임 수치/저장/로비 구조는 변경하지 않는다.')"
+          echo "COMBAT_ASSET_BINDING_PR=$pr_url"
