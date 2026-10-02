@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { isWorkflowPath, scanTextForDirectMainWrite } from '../tools/main-write-guard.mjs';
+import { isWorkflowPath, scanTextForDirectMainWrite, scanCentralWorkflowGovernance } from '../tools/main-write-guard.mjs';
 
 test('workflow path detector only accepts workflow yaml files',()=>{
   assert.equal(isWorkflowPath('.github/workflows/build.yml'),true);
@@ -43,4 +43,65 @@ test('main write guard falls back to two-point diff when shallow history has no 
   const source=fs.readFileSync(new URL('../tools/main-write-guard.mjs',import.meta.url),'utf8');
   assert.match(source,/\${baseRef}\.\.\.\${headRef}/);
   assert.match(source,/\['diff','--name-only',baseRef,headRef\]/);
+});
+
+
+test('new workflow requires central policy and architecture registration',()=>{
+  const file='.github/workflows/random-extra.yml';
+  const architecture={workerSynchronization:{launcherWorkflows:[]}};
+  const violations=scanCentralWorkflowGovernance({
+    changedFiles:[file],
+    addedWorkflowFiles:[file],
+    architecture,
+    readWorkflow:()=> 'name: random\n'
+  });
+  assert.deepEqual(violations,[
+    {file,code:'NEW_WORKFLOW_REQUIRES_CENTRAL_POLICY_AND_ARCHITECTURE_CHANGE'},
+    {file,code:'NEW_WORKFLOW_NOT_REGISTERED_IN_CENTRAL_ARCHITECTURE'}
+  ]);
+});
+
+test('new canonical workflow is allowed only when central topology changes in the same diff',()=>{
+  const file='.github/workflows/canonical-new.yml';
+  const architecture={workerSynchronization:{launcherWorkflows:[file]}};
+  const changedFiles=[
+    file,
+    'company-learning/platform-release-roadmap.json',
+    'company-learning/company-architecture-map.json'
+  ];
+  const violations=scanCentralWorkflowGovernance({
+    changedFiles,
+    addedWorkflowFiles:[file],
+    architecture,
+    readWorkflow:()=> 'run: node tools/company-shared-context.mjs\n'
+  });
+  assert.deepEqual(violations,[]);
+});
+
+test('changed canonical launcher must keep shared central context and cannot revive removed policy mirror',()=>{
+  const file='.github/workflows/canonical.yml';
+  const architecture={workerSynchronization:{launcherWorkflows:[file]}};
+  const missing=scanCentralWorkflowGovernance({
+    changedFiles:[file],
+    addedWorkflowFiles:[],
+    architecture,
+    readWorkflow:()=> 'name: canonical\n'
+  });
+  assert.deepEqual(missing,[{file,code:'CANONICAL_LAUNCHER_MISSING_SHARED_CONTEXT'}]);
+
+  const legacy=scanCentralWorkflowGovernance({
+    changedFiles:[file],
+    addedWorkflowFiles:[],
+    architecture,
+    readWorkflow:()=> 'run: node tools/company-shared-context.mjs\n# COMPANY_FLOW.md\n'
+  });
+  assert.deepEqual(legacy,[{file,code:'REMOVED_HUMAN_POLICY_MIRROR_REFERENCE'}]);
+});
+
+test('main write guard detects newly added workflows separately from ordinary changed files',()=>{
+  const source=fs.readFileSync(new URL('../tools/main-write-guard.mjs',import.meta.url),'utf8');
+  assert.match(source,/--diff-filter=A/);
+  assert.match(source,/NEW_WORKFLOW_REQUIRES_CENTRAL_POLICY_AND_ARCHITECTURE_CHANGE/);
+  assert.match(source,/NEW_WORKFLOW_NOT_REGISTERED_IN_CENTRAL_ARCHITECTURE/);
+  assert.match(source,/CANONICAL_LAUNCHER_MISSING_SHARED_CONTEXT/);
 });
