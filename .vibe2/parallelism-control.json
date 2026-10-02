@@ -1,22 +1,11 @@
 {
   "version": 4,
-  "currentMax": 30,
+  "currentMax": 256,
   "healthyStreak": 0,
   "pressureStreak": 0,
-  "lastDecision": "HOLD",
-  "lastReason": "NO_WORKERS",
-  "lastRunId": "37025378761",
-  "lastUpdatedAt": "2026-10-02T15:58:28.329Z",
-  "lastTelemetry": {
-    "runId": null,
-    "workerCount": 0,
-    "effectiveMax": 30,
-    "actualPeakConcurrency": 0,
-    "effectivePeakUtilizationPct": 0,
-    "failureRatePct": 0,
-    "pressureLevel": "LOW",
-    "bottleneck": "NONE",
-    "firstCandidatePassRatePct": 0,
-    "verifiedCandidatesPerMinute": 0
-  }
+  "lastDecision": "RESET",
+  "lastReason": "SYSTEM_STEWARD_STALE_TELEMETRY_RESET_TO_256",
+  "lastRunId": null,
+  "lastUpdatedAt": "2026-10-02T18:06:27.949Z",
+  "lastTelemetry": null
 }
