@@ -1304,11 +1304,12 @@ test('central Studio MCP recovery policy stays restart-only and fail-closed on i
 
 test('Studio MCP strategy matrix receives include rows only and never planner metadata axes',()=>{
   const studioPlanBlock=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
-  const jsIncludeOnly=/const include=Array\.isArray\(plan\.include\)\?plan\.include:\[\];[\s\S]*JSON\.stringify\(\{include\}\)/.test(studioPlanBlock)
+  const jsIncludeOnly=/const (?:rawInclude|include)=Array\.isArray\(plan\.include\)\?plan\.include:\[\];[\s\S]*JSON\.stringify\(\{include\}\)/.test(studioPlanBlock)
     ||/JSON\.stringify\(\{include:Array\.isArray\(x\.include\)\?x\.include:\[\]\}\)/.test(studioPlanBlock);
   const powershellIncludeOnly=/\$include = @\(\$plan\.include\)[\s\S]*\$matrix = @\{ include = \$include \} \| ConvertTo-Json -Compress -Depth 12/.test(studioPlanBlock);
   assert.equal(jsIncludeOnly||powershellIncludeOnly,true);
   assert.doesNotMatch(studioPlanBlock,/JSON\.stringify\(x\)\)"/);
+  assert.match(studioPlanBlock,/sessionId:\[workflowRunId,String\(row\.gameId\|\|''\),Number\(row\.artifactRunId\|\|0\),Number\(row\.versionNumber\|\|0\)\]\.join\(':'\)/);
   assert.match(workflow,/matrix: \$\{\{ fromJSON\(needs\.studio-local-plan\.outputs\.matrix\) \}\}/);
 });
 
