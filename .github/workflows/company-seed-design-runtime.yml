@@ -1138,7 +1138,7 @@ jobs:
 
   sync-strict-design-scores:
     needs: [resolve-seed-targets, design-cycle]
-    if: always() && needs.resolve-seed-targets.outputs.run == 'true'
+    if: always() && !cancelled() && needs.resolve-seed-targets.outputs.run == 'true'
     runs-on: ubuntu-slim
     timeout-minutes: 10
     steps:
@@ -1234,7 +1234,7 @@ jobs:
 
   continue-seed-supply:
     needs: [resolve-seed-targets, design-cycle, mark-design-engine-canary, sync-strict-design-scores]
-    if: always() && needs.resolve-seed-targets.outputs.run == 'true'
+    if: always() && !cancelled() && needs.resolve-seed-targets.outputs.run == 'true'
     runs-on: ubuntu-slim
     timeout-minutes: 5
     steps:
