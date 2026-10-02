@@ -7,8 +7,9 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
+import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
-import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
@@ -110,6 +111,47 @@ test('native asset authoring evidence requires real engine-native source delta a
   assert.equal(strong.runtimeVerified,false);
 });
 
+test('declared Blender verification executes only declared recipe and restores the repository',()=>{
+  const root=tempRoot();
+  try{
+    fs.mkdirSync(path.join(root,'assets/test/native/model'),{recursive:true});
+    fs.writeFileSync(path.join(root,'assets/test/build.py'),'# fixture recipe\n');
+    fs.writeFileSync(path.join(root,'assets/test/native/model/model.glb'),'fixture-glb');
+    fs.writeFileSync(path.join(root,'assets/test/native/model/preview.png'),'fixture-preview');
+    fs.writeFileSync(path.join(root,'assets/test/native/model/evidence.json'),JSON.stringify({runtimeVerificationState:'STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING',productionVerified:false}));
+    const blender=path.join(root,'fake-blender');
+    fs.writeFileSync(blender,[
+      '#!/usr/bin/env node',
+      'const fs=require("fs"),path=require("path");',
+      'if(process.argv.includes("--version")){console.log("Blender 4.0 fixture");process.exit(0)}',
+      'const at=process.argv.indexOf("--");const args=at>=0?process.argv.slice(at+1):[];',
+      'const oi=args.indexOf("--output");const out=oi>=0?args[oi+1]:"assets/test/native/model";',
+      'fs.mkdirSync(out,{recursive:true});',
+      'fs.writeFileSync(path.join(out,"model.glb"),"fixture-glb");',
+      'fs.writeFileSync(path.join(out,"preview.png"),"fixture-preview");',
+      'fs.writeFileSync(path.join(out,"evidence.json"),JSON.stringify({runtimeVerificationState:"STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING",productionVerified:false}));'
+    ].join('\n')+'\n');
+    fs.chmodSync(blender,0o755);
+    execFileSync('git',['init'],{cwd:root});
+    execFileSync('git',['config','user.email','test@example.invalid'],{cwd:root});
+    execFileSync('git',['config','user.name','test'],{cwd:root});
+    execFileSync('git',['add','.'],{cwd:root});
+    execFileSync('git',['commit','-m','fixture'],{cwd:root});
+    const workOrder=order({target:'roblox',root:'roblox-games/demo',responsibleFiles:['roblox-games/demo/client/Game.client.luau'],taskId:'dcc-verify'});
+    workOrder.selectedTask={id:workOrder.taskId,gameId:'demo',target:'roblox',assetProductionLane:true,evidence:['asset-production-parallel:v1']};
+    workOrder.assetProduction={nativeAuthoringExecution:{dcc:{executionRecipes:[{
+      id:'fixture-blender',executor:'BLENDER_PYTHON',script:'assets/test/build.py',runMode:'VERIFY_ONLY',
+      args:['--output','assets/test/native/model'],outputs:['assets/test/native/model/model.glb','assets/test/native/model/preview.png','assets/test/native/model/evidence.json'],
+      evidenceJson:'assets/test/native/model/evidence.json',preview:'assets/test/native/model/preview.png',editableSource:'assets/test/build.py'
+    }]}}};
+    const result=executeDeclaredNativeDccAuthoringVerification({cwd:root,order:workOrder,blenderExecutable:blender});
+    assert.equal(result.executed,true);
+    assert.equal(result.candidateUsable,true);
+    assert.equal(result.status,'DCC_RECIPE_REPRODUCED_EXISTING_ARTIFACT');
+    assert.equal(result.recipes[0].runtimeVerified,false);
+    assert.equal(execFileSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8'}),'');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
 test('asset runtime promotion candidates require exact source binding to an unverified asset',()=>{
   const workOrder=order({target:'roblox',root:'roblox-games/demo',responsibleFiles:['roblox-games/demo/client/Game.client.luau'],taskId:'asset-promotion'});
   workOrder.selectedTask={id:workOrder.taskId,gameId:'demo',target:'roblox',assetProductionLane:true,evidence:['asset-production-parallel:v1']};
