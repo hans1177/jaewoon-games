@@ -1609,8 +1609,8 @@
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "ACTIVE",
       "status": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "targetPlatform": "ROBLOX",
+      "selectedPlatform": "UNITY",
+      "targetPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -1663,8 +1663,8 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
-      "canonicalState": "F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION",
+      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-10-02T05:12:43.771Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -1694,7 +1694,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T05:12:43.771Z"
       },
-      "updatedAt": "2026-10-02T11:59:51.157Z",
+      "updatedAt": "2026-10-02T12:02:09.208Z",
       "robloxSourceCommit": "63208f3829048797b49a8dec2b2607a1aff9513d",
       "robloxSourceBootstrapPassedAt": "2026-10-02T05:14:01.929Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -2058,7 +2058,7 @@
       "unityCandidateBranch": "development/unity-tech-cozy-island-36831315548",
       "unitySourceCommit": "4432b8b37953480242da03ee8cb093e08adafac4",
       "unityBuildRunId": 36969346424,
-      "unityRuntimeSmokeRunId": 37003653218,
+      "unityRuntimeSmokeRunId": 37004317422,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityF0ThroughF9Evidence": {
@@ -2115,7 +2115,7 @@
           }
         },
         "multiplayerRequired": true,
-        "verifiedAt": "2026-10-02T11:55:03.677Z"
+        "verifiedAt": "2026-10-02T12:02:09.208Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -2381,7 +2381,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-02T11:59:51.157Z",
+  "updatedAt": "2026-10-02T12:02:12.216Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
