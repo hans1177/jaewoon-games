@@ -1178,10 +1178,18 @@ def build():
       ('PONTIANAK',-51.4,'flower'),('BLACK_SHUCK',-47.7,'collar')
     ]
     rare_case_metal=s.material('RareCaseMetal',(.20,.15,.10))
+    rare_case_velvet=s.material('RareCaseVelvet',(.12,.018,.032))
     for ghost_id,z0,shape in rare_case_specs:
+        # 케이스 자체는 정적 건축 디테일로 병합하고, 내부 유물만 진행도 제어를 위해 개별 이름을 유지한다.
         s.box('RareCaseBack_'+ghost_id,(-73.7,3.65,z0),(1.05,5.0,3.0),c['wood'])
+        s.box('RareCaseVelvet_'+ghost_id,(-73.10,3.65,z0),(.08,4.18,2.22),rare_case_velvet)
         s.box('RareCaseGlass_'+ghost_id,(-73.02,3.65,z0),(.07,4.55,2.55),c['glass'])
         s.box('RareCaseBase_'+ghost_id,(-73.18,1.15,z0),(.62,.38,3.15),rare_case_metal)
+        s.box('RareCaseCornice_'+ghost_id,(-73.18,6.05,z0),(.72,.30,3.20),c['brass'])
+        s.box('RareCasePlaque_'+ghost_id,(-72.90,1.55,z0),(.12,.56,2.05),c['brass'])
+        # 황동 명패의 얕은 음각선. 텍스트는 Roblox SurfaceGui가 실제 괴담 이름을 표시한다.
+        for line in [-.34,0,.34]:
+            s.box('RareCasePlaqueLine_'+ghost_id+str(line),(-72.82,1.56,z0+line),(.035,.08,.34),c['black'])
         if shape=='orb':
             s.ellipsoid('RareRelic_'+ghost_id+'_Orb',(-72.90,3.55,z0),(1.00,1.00,1.00),relic_mats[1])
             s.curve_tube('RareRelic_'+ghost_id+'_Vein',[
@@ -1237,24 +1245,39 @@ def build():
           (45,4.15,54),(45+math.cos(a)*2.25,4.15+math.sin(a)*2.25,54)
         ],[.075,.055],[.065,.045],s.material('ParkMasterIron',(.17,.11,.12)),sides=16)
 
+    # 완료 전에는 빈 건축형 받침대로 보이고, 100%가 되면 위의 대형 유물이 채워진다.
+    for map_id,x0,z0 in [('SCHOOL',-30,35),('HOSPITAL',30,35),('THEME_PARK',45,54)]:
+        s.lathe('CompletionDaisStone_'+map_id,(x0,.48,z0),3.45,3.15,.72,c['stone'],sides=28)
+        s.lathe('CompletionDaisBrass_'+map_id,(x0,.91,z0),3.02,2.92,.16,c['brass'],sides=28)
+        for side in [-1,1]:
+            s.box('CompletionDaisStep_'+map_id+str(side),(x0+side*2.55,.18,z0+3.0),(2.6,.30,1.55),c['stone'])
+        # 정면에 낮은 명패만 두어 정원 동선을 가리지 않는다.
+        s.box('CompletionDaisPlaque_'+map_id,(x0,1.16,z0+3.10),(3.8,.68,.18),c['brass'])
+
     # 2층 완성 세트 갤러리. 객실 자체는 계속 잠겨 있고 벽 사이 전시판만 지역 100%에서 드러난다.
     gallery_specs=[('SCHOOL',-29),('HOSPITAL',0),('THEME_PARK',29)]
+    gallery_liner=[s.material('GalleryWine',(.15,.025,.045)),s.material('GalleryTeal',(.035,.11,.095)),s.material('GalleryInk',(.045,.050,.070))]
     for index,(map_id,x0) in enumerate(gallery_specs):
-        s.box('GallerySetFrame_'+map_id,(x0,21.2,-63.30),(7.8,4.1,.32),c['wood'])
-        s.box('GallerySetGlass_'+map_id,(x0,21.2,-63.08),(7.15,3.45,.08),c['glass'])
+        # 프레임을 벽에서 단계적으로 띄워 2층에서도 평면 카드가 아니라 실제 벽장처럼 읽히게 한다.
+        s.box('GalleryFrameBack_'+map_id,(x0,21.2,-63.48),(8.65,4.95,.42),c['wood'])
+        s.box('GalleryFrameLiner_'+map_id,(x0,21.2,-63.22),(7.85,4.18,.16),gallery_liner[index])
+        s.box('GallerySetFrame_'+map_id,(x0,21.2,-63.02),(7.45,3.78,.24),c['brass'])
+        s.box('GallerySetGlass_'+map_id,(x0,21.2,-62.84),(6.90,3.24,.07),c['glass'])
+        s.box('GalleryFrameCornice_'+map_id,(x0,23.48,-63.10),(8.75,.42,.58),c['brass'])
+        s.box('GalleryFrameBase_'+map_id,(x0,18.92,-63.10),(8.55,.38,.58),c['brass'])
         if map_id=='SCHOOL':
-            s.loft('GallerySet_'+map_id,(x0,21.15,-62.93),[
+            s.loft('GallerySet_'+map_id,(x0,21.15,-62.68),[
               (-.75,.42,.16),(-.35,.82,.22),(.18,.96,.25),(.65,.50,.18)
             ],c['brass'],sides=24)
         elif map_id=='HOSPITAL':
-            s.prism('GallerySet_'+map_id,(x0,21.15,-62.93),[
+            s.prism('GallerySet_'+map_id,(x0,21.15,-62.68),[
               (-.28,-1.15),(.28,-1.15),(.28,-.34),(1.0,-.34),(1.0,.34),(.28,.34),
               (.28,1.15),(-.28,1.15),(-.28,.34),(-1.0,.34),(-1.0,-.34),(-.28,-.34)
             ],.10,c['brass'])
         else:
             points=[]
             for a in np.linspace(0,math.tau,13):
-                points.append((x0+math.cos(a)*1.05,21.15+math.sin(a)*1.05,-62.93))
+                points.append((x0+math.cos(a)*1.05,21.15+math.sin(a)*1.05,-62.68))
             s.curve_tube('GallerySet_'+map_id,points,[.06]*len(points),[.05]*len(points),c['brass'],sides=16)
 
     # 2층 객실은 잠긴 상태를 유지한다.
@@ -1606,6 +1629,12 @@ def build():
         for uv,value in zip(data.uv_layers.active.data,[(0,0),(1,0),(1,1),(0,1)]):uv.uv=value
         s.node('FamilyPortrait'+str(i+1),data,(x,y,-63.26))
 
+    # 초상화 벽의 가로 몰딩은 가족 기록이 한 벽면 체계로 읽히게 하되 문/통로를 막지 않는다.
+    for y in [5.45,12.55,19.55]:
+        s.box('PortraitGalleryRail'+str(y),(0,y,-63.36),(102,.28,.22),c['brass'])
+    for x in [-47,-33,-19,-5,5,19,33,47]:
+        s.box('PortraitGalleryStud'+str(x),(x,12.5,-63.42),(.18,14.0,.20),c['wood'])
+
     # 저택 배경도 내부 GLB를 재구성한다. 문·기둥·담장 원형의 출처는 기존 CC0 manifest다.
     for side in [-1,1]:
         s.prop('graveyard','column-large','EntryCarvedColumn'+str(side),(side*8,.35,-2),14,stretch=(.85,1,.85))
@@ -1649,6 +1678,14 @@ def build():
     # 전체 완성 전까지는 가장 진척된 괴담 하나를 벽난로 대표 슬롯에 올린다.
     s.box('FireplaceFeatureFrame',(0,10.55,-61.05),(5.6,3.0,.34),c['wood'])
     s.box('FireplaceFeatureGlass',(0,10.55,-60.83),(5.0,2.45,.08),c['glass'])
+    # 벽난로-대표 슬롯-가족 거울이 한 축으로 읽히는 중앙 장식. 통로와 충돌하지 않는 벽면 깊이만 사용한다.
+    s.box('FireplaceFeaturePediment',(0,12.38,-61.04),(6.6,.46,.44),c['brass'])
+    s.curve_tube('FireplaceFeatureCrown',[
+      (-3.0,12.45,-60.82),(-1.7,13.15,-60.80),(0,13.55,-60.78),
+      (1.7,13.15,-60.80),(3.0,12.45,-60.82)
+    ],[.11,.10,.09,.10,.11],[.08,.075,.07,.075,.08],c['brass'],sides=16)
+    for side in [-1,1]:
+        s.box('FireplaceFeatureBracket'+str(side),(side*2.55,9.15,-61.03),(.42,1.55,.42),c['wood'],lean=-side*.08)
     feature_outline=[(-1.15,-.82),(1.15,-.82),(1.35,-.25),(.92,.68),(0,1.02),(-.92,.68),(-1.35,-.25)]
     for idx,(ghost_id,shape,bx,by) in enumerate(relic_slots):
         medallion=s.prism('FireplaceFeature_'+ghost_id,(0,10.48,-60.66),feature_outline,.09,relic_mats[idx%len(relic_mats)])
