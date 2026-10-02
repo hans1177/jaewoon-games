@@ -181,6 +181,7 @@ test('owner horror edits automatically re-enter the canonical development flow',
   assert.match(horror,/assets\/roblox\/midnight-manor\/\*\*/);
   assert.match(horror,/actions: write/);
   assert.match(horror,/gh workflow run company-design-promotion-sync\.yml/);
+  assert.match(horror,/--ref main/);
   assert.match(horror,/HORROR_CANONICAL_FLOW=DESIGN_PROMOTION_TO_DEVELOPMENT/);
   assert.doesNotMatch(development,/ownerExcludedGameIds[^\n]*horror-escape-room/);
 });
