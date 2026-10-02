@@ -142,11 +142,12 @@ h1{font-size:22px;margin:0}
 <script type="module">
 import { JaewoonMultiplayerClient } from '/multiplayer/multiplayer-client.js';
 
-const GAME_ID='card-grid-duel', SIZE=5, START_GOLD=200;
+const GAME_ID='card-grid-duel', BASE_ROWS=5, BASE_COLS=5, START_GOLD=200;
 const STAGES={
   1:{blueMax:10,redMax:6,redPool:['GOBLIN','SKELETON_ARCHER','SKELETON_MAGE','ORC']},
   2:{blueMax:12,redMax:8,redPool:['SKELETON_SOLDIER','SKELETON_ARCHER','SKELETON_MAGE','ORC','SLIME']},
-  3:{blueMax:12,redMax:8,redPool:['ENHANCED_GOBLIN','GOLEM','BOAR','SKELETON_SOLDIER','ORC','SLIME']}
+  3:{blueMax:12,redMax:8,redPool:['ENHANCED_GOBLIN','GOLEM','BOAR','SKELETON_SOLDIER','ORC','SLIME']},
+  4:{blueMax:12,redMax:8,redPool:['SHIELD_GOBLIN','CHARGE_ORC','POISON_SCORPION','RUIN_GUARDIAN']}
 };
 const GACHA_POOL=['LANCER','CROSSBOW','HAMMER'];
 const DAILY_KEY='card-grid-duel-daily-v1',DIAMOND_KEY='card-grid-duel-diamonds-v1';
@@ -253,7 +254,11 @@ const CARDS={
     SMALL_SLIME:{name:'작은 슬라임',icon:'🟩',hp:20,atk:5,range:1,cost:0,reward:10,desc:'슬라임 분열체'},
     ENHANCED_GOBLIN:{name:'강화 고블린',icon:'👺',hp:80,atk:30,range:1,cost:0,reward:35,desc:'3스테이지 강화 고블린'},
     GOLEM:{name:'골렘',icon:'🗿',hp:180,atk:45,range:1,cost:0,reward:70,rockThrow:true,desc:'공격 시 40% 확률로 최저 체력 아군에게 돌 50 피해'},
-    BOAR:{name:'멧돼지',icon:'🐗',hp:100,atk:35,range:1,cost:0,reward:50,chargeAttack:true,desc:'공격 시 65% 확률로 최고 체력 아군에게 박치기'}
+    BOAR:{name:'멧돼지',icon:'🐗',hp:100,atk:35,range:1,cost:0,reward:50,chargeAttack:true,desc:'공격 시 65% 확률로 최고 체력 아군에게 박치기'},
+    SHIELD_GOBLIN:{name:'방패 고블린',icon:'🛡️👺',hp:120,atk:30,range:1,cost:0,reward:55,reduce:.4,desc:'받는 피해 40% 감소'},
+    CHARGE_ORC:{name:'돌격 오크',icon:'👹💨',hp:150,atk:45,range:1,cost:0,reward:70,turnCharge:true,desc:'적 턴 시작 시 40% 확률로 벽까지 돌진 · 충돌 55 피해 + 1턴 공격 불가'},
+    POISON_SCORPION:{name:'독전갈',icon:'🦂',hp:90,atk:35,range:1,cost:0,reward:55,desc:'4스테이지 독전갈'},
+    RUIN_GUARDIAN:{name:'유적 수호자',icon:'🗿',hp:190,atk:40,range:1,cost:0,reward:80,guardianPulse:true,desc:'3번째 적 턴마다 주변 아군에게 25 피해'}
   }
 };
 const BASE_BLUE_IDS=['SWORDSMAN','ARCHER','MAGE','GUARDIAN'];
@@ -264,7 +269,9 @@ let state=null,side='BLUE',selectedUnit=null,selectedCard='',mode='idle',aiThink
 
 function msg(t){notice.textContent=t}
 function other(s){return s==='BLUE'?'RED':'BLUE'}
-function homeRow(s){return s==='BLUE'?5:1}
+function boardRows(){return state?.stage===4?7:BASE_ROWS}
+function boardCols(){return BASE_COLS}
+function homeRow(s){return s==='BLUE'?boardRows():1}
 function moveDist(a,b){return Math.abs(a.r-b.r)+Math.abs(a.c-b.c)}
 function attackDist(a,b){return Math.abs(a.r-b.r)+Math.abs(a.c-b.c)}
 function newState(){
@@ -334,7 +341,7 @@ function applyDamage(target,amount,attackerSide){
   }
   return false
 }
-function isInside(r,c){return r>=1&&r<=SIZE&&c>=1&&c<=SIZE}
+function isInside(r,c){return r>=1&&r<=boardRows()&&c>=1&&c<=boardCols()}
 function splitSecondSpot(dead){
   const dirs=[
     {r:dead.r,c:dead.c-1},
@@ -358,7 +365,7 @@ function splitSecondSpot(dead){
     }
   }
 
-  for(let r=1;r<=SIZE;r++)for(let c=1;c<=SIZE;c++)if(!at(r,c))return {r,c};
+  for(let r=1;r<=boardRows();r++)for(let c=1;c<=boardCols();c++)if(!at(r,c))return {r,c};
   return null
 }
 function spawnSmallSlime(r,c){
@@ -412,9 +419,9 @@ function clearStageTwo(){
   enterRest('2스테이지 클리어 · 열쇠 1개 + 다이아 '+r.base+'개'+(r.bonus?' + 무피해 '+r.bonus+'개':''))
 }
 function clearStageThree(){
+  state.keys+=3;
   const r=stageClearRewards(3);
-  state.winner='BLUE';
-  msg('3스테이지 클리어 · 다이아 '+r.base+'개'+(r.bonus?' + 무피해 '+r.bonus+'개':''))
+  enterRest('3스테이지 클리어 · 열쇠 3개 + 다이아 '+r.base+'개'+(r.bonus?' + 무피해 '+r.bonus+'개':''))
 }
 function checkWin(){
   if(!state||state.phase!=='BATTLE'||state.winner)return;
@@ -423,6 +430,7 @@ function checkWin(){
     if(state.stage===1){clearStageOne();return}
     if(state.stage===2){clearStageTwo();return}
     if(state.stage===3){clearStageThree();return}
+    if(state.stage===4){state.winner='BLUE';msg('4스테이지 클리어');return}
     state.winner='BLUE'
   }
 }
@@ -438,17 +446,52 @@ function resolveHammerHits(s){
     if(state.winner||state.phase!=='BATTLE')break
   }
 }
+function resolveStageFourEnemyTurn(){
+  if(state.stage!==4)return;
+  state.enemyTurns=(state.enemyTurns||0)+1;
+  for(const orc of [...state.units].filter(u=>u.side==='RED'&&u.card==='CHARGE_ORC'&&u.hp>0)){
+    if(Math.random()>=0.40)continue;
+    let r=orc.r;
+    while(r<boardRows()){
+      const nextR=r+1,target=at(nextR,orc.c);
+      if(target){
+        if(target.side==='BLUE'){
+          applyDamage(target,55,'RED');
+          target.attackLock=Math.max(target.attackLock||0,1);
+        }
+        break
+      }
+      r=nextR;
+    }
+    orc.r=r;
+    removeDeadAndSplit();
+    checkWin();
+    if(state.winner||state.phase!=='BATTLE')return
+  }
+  if(state.enemyTurns%3===0){
+    for(const guard of [...state.units].filter(u=>u.side==='RED'&&u.card==='RUIN_GUARDIAN'&&u.hp>0)){
+      for(const target of [...state.units].filter(u=>u.side==='BLUE'&&u.hp>0&&Math.abs(u.r-guard.r)+Math.abs(u.c-guard.c)<=1))applyDamage(target,25,'RED');
+      removeDeadAndSplit();
+      checkWin();
+      if(state.winner||state.phase!=='BATTLE')return
+    }
+  }
+}
 function startTurn(s){
   state.current=s;
   state.turn++;
   state.summonUsed=false;
   resolveHammerHits(s);
   if(state.winner||state.phase!=='BATTLE')return;
+  if(s==='RED')resolveStageFourEnemyTurn();
+  if(state.winner||state.phase!=='BATTLE')return;
   for(const u of state.units.filter(x=>x.side===s)){
     u.moved=false;
     u.attacked=false;
     u.frozenNow=(u.freeze||0)>0;
-    if(u.frozenNow)u.freeze--
+    if(u.frozenNow)u.freeze--;
+    u.attackLockedNow=(u.attackLock||0)>0;
+    if(u.attackLockedNow)u.attackLock--
   }
 }
 function processAction(actor,p){
@@ -482,15 +525,17 @@ function processAction(actor,p){
       frozenNow:false,
       hammerTarget:''
     });
+    applyTile(state.units[state.units.length-1]);
     state.summonUsed=true;
   }else if(p.type==='move'){
     const u=byId(p.unit);
     if(!u||u.side!==actor||u.moved||u.frozenNow||at(p.r,p.c)||moveDist(u,{r:p.r,c:p.c})!==1)return false;
     u.r=p.r;u.c=p.c;u.moved=true;
+    applyTile(u);
     if(actor==='BLUE')dailyEvent('move',1);
   }else if(p.type==='attack'){
     const a=byId(p.unit),t=byId(p.target);
-    if(!a||!t||a.side!==actor||t.side===actor||a.attacked||a.frozenNow)return false;
+    if(!a||!t||a.side!==actor||t.side===actor||a.attacked||a.frozenNow||a.attackLockedNow)return false;
 
     const d=card(actor,a.card);
     if(attackDist(a,t)>d.range)return false;
@@ -582,16 +627,39 @@ function artHtml(id,d){
 function unitText(u){
   const d=card(u.side,u.card);
   const charge=u.card==='HAMMER'?(u.hammerTarget?' · 공격예약':' · 대상지정 필요'):'';
+  const lock=u.attackLockedNow?' · 공격불가':'';
   const maxHp=unitMaxHp(u),atk=unitAtk(u);
-  return '<div class="unit '+(u.side==='BLUE'?'blue':'red')+'">'+portraitHtml(u.card,d)+'<b>'+d.name+'</b><small>'+u.hp+'/'+maxHp+' · 공'+atk+' 사'+d.range+charge+(u.frozenNow?' · 봉인':'')+'</small><span class="hp"><i style="width:'+Math.max(0,u.hp/maxHp*100)+'%"></i></span></div>'
+  return '<div class="unit '+(u.side==='BLUE'?'blue':'red')+'">'+portraitHtml(u.card,d)+'<b>'+d.name+'</b><small>'+u.hp+'/'+maxHp+' · 공'+atk+' 사'+d.range+charge+(u.frozenNow?' · 봉인':'')+lock+'</small><span class="hp"><i style="width:'+Math.max(0,u.hp/maxHp*100)+'%"></i></span></div>'
+}
+function createStageFourTiles(){
+  const cells=[];
+  for(let r=1;r<=7;r++)for(let c=1;c<=5;c++)cells.push({r,c});
+  for(let i=cells.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cells[i],cells[j]]=[cells[j],cells[i]]}
+  const types=['SPIKE','HEAL','JUMP','CRACK'];
+  return cells.slice(0,5).map((p,i)=>({...p,type:types[i%types.length]}))
+}
+function tileAt(r,c){return state?.stage===4?(state.specialTiles||[]).find(t=>t.r===r&&t.c===c):null}
+function applyTile(u){
+  const t=tileAt(u.r,u.c);if(!t)return;
+  if(t.type==='SPIKE'){applyDamage(u,20,u.side==='BLUE'?'RED':'BLUE');removeDeadAndSplit();checkWin()}
+  else if(t.type==='HEAL'&&u.side==='BLUE')u.hp=Math.min(unitMaxHp(u),u.hp+30);
+  else if(t.type==='JUMP'){
+    const dir=u.side==='BLUE'?-1:1,dest={r:u.r+dir*2,c:u.c};
+    if(isInside(dest.r,dest.c)&&!at(dest.r,dest.c)){u.r=dest.r;u.c=dest.c}
+  }else if(t.type==='CRACK')state.specialTiles=state.specialTiles.filter(x=>x!==t)
 }
 function render(){
   board.innerHTML='';
-  for(let r=1;r<=SIZE;r++)for(let c=1;c<=SIZE;c++){
+  const rows=boardRows(),cols=boardCols();
+  board.style.gridTemplateColumns='repeat('+cols+',1fr)';
+  board.style.gridTemplateRows='repeat('+rows+',1fr)';
+  board.style.aspectRatio=cols+'/'+rows;
+  for(let r=1;r<=rows;r++)for(let c=1;c<=cols;c++){
     const b=document.createElement('button');
     b.className='cell '+(r===1?'homeRed ':'')+(r===5?'homeBlue ':'');
-    const u=state?at(r,c):null;
-    if(u){b.innerHTML=unitText(u);if(u.id===selectedUnit)b.classList.add('sel')}
+    const u=state?at(r,c):null,tile=state?tileAt(r,c):null;
+    if(tile){b.dataset.tile=tile.type;b.title=({SPIKE:'가시 발판',HEAL:'회복 발판',JUMP:'점프 발판',CRACK:'균열 발판'})[tile.type]||'특수 발판';b.style.boxShadow='inset 0 0 0 3px '+({SPIKE:'#d9534f',HEAL:'#47b96b',JUMP:'#5b8cff',CRACK:'#b57cff'})[tile.type]}
+    if(u){b.innerHTML=unitText(u);if(u.id===selectedUnit)b.classList.add('sel')}else if(tile){b.textContent=({SPIKE:'▲',HEAL:'✚',JUMP:'↟',CRACK:'◇'})[tile.type]}
     b.addEventListener('click',()=>cellTap(r,c,u));
     board.appendChild(b)
   }
@@ -697,7 +765,7 @@ function aiTurn(){
   aiThinking=true;
 
   const free=[];
-  for(let c=1;c<=5;c++)if(!at(1,c))free.push(c);
+  for(let c=1;c<=boardCols();c++)if(!at(1,c))free.push(c);
   const options=affordableCards('RED');
 
   if(!state.summonUsed&&free.length&&options.length){
@@ -717,7 +785,7 @@ function aiTurn(){
       const t=targets[0];
       const moves=[[u.r+1,u.c],[u.r-1,u.c],[u.r,u.c+1],[u.r,u.c-1]]
         .map(([r,c])=>({r,c}))
-        .filter(p=>p.r>=1&&p.r<=5&&p.c>=1&&p.c<=5&&!at(p.r,p.c))
+        .filter(p=>isInside(p.r,p.c)&&!at(p.r,p.c))
         .sort((a,b)=>moveDist(a,t)-moveDist(b,t));
       if(moves[0])processAction('RED',{type:'move',unit:u.id,...moves[0]})
     }
@@ -790,15 +858,17 @@ $('#nextStage').onclick=()=>{
   state.summonUsed=false;
   state.winner='';
   state.stageTookDamage=false;
-  if(next===2||next===3)state.gold.BLUE=250;
+  if(next===2||next===3||next===4)state.gold.BLUE=250;
   state.gold.RED=0;
   state.summons={BLUE:0,RED:0};
   state.units=[];
+  state.enemyTurns=0;
   selectedUnit=null;
   selectedCard='';
   $('#drawResult').textContent='';
   if(next===2)msg('2스테이지 시작 · 기본 골드 250 · 적 8마리 / 아군 12마리');
-  else msg('3스테이지 시작 · 해골궁수/해골법사 제외 · 강화 고블린/골렘/멧돼지 등장');
+  else if(next===3)msg('3스테이지 시작 · 해골궁수/해골법사 제외 · 강화 고블린/골렘/멧돼지 등장');
+  else if(next===4){state.specialTiles=createStageFourTiles();msg('4스테이지 시작 · 7×5 맵 · 특수 발판 5개 · 방패 고블린/돌격 오크/독전갈/유적 수호자')}
   state.version++;
   broadcast();
   render()
