@@ -1,5 +1,26 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1jwwooo",
+      "worker": "vibe2",
+      "taskId": "bug-defense-unity-web-base-implementation-v1",
+      "gameId": "bug-defense",
+      "files": [
+        "unity-games/bug-defense/Assets/Scripts/GameCore.cs",
+        "unity-games/bug-defense/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "63208f3829048797b49a8dec2b2607a1aff9513d",
+      "runId": "36967943448",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-02T05:14:38.980Z",
+      "expiresAt": "2026-10-02T05:59:38.980Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:bug-defense-unity-web-base-implementation-v1"
+      ]
+    }
+  ]
 }
