@@ -232,7 +232,7 @@ test('transient Open Cloud failures stay inside the bounded runtime-foundation s
   assert.match(workflow,/ROBLOX_OPEN_CLOUD_ENGINE_PROBE_RETRY_IN_CURRENT_SCAN=/);
   assert.match(workflow,/ROBLOX_OPEN_CLOUD_RUNTIME_STATE_RETRY_IN_CURRENT_SCAN=/);
   assert.doesNotMatch(workflow,/gh workflow run company-development-roblox-post-runtime-qa\.yml[\s\S]{0,240}-f retry_open_cloud_only=true/);
-  assert.match(workflow,/Run deterministic foundation protocol QA[\s\S]{0,120}if: \$\{\{ inputs\.retry_open_cloud_only != true \}\}/);
+  assert.match(workflow,/Verify only runtime-foundation executable syntax[\s\S]{0,120}if: \$\{\{ inputs\.retry_open_cloud_only != true \}\}/);
   assert.match(workflow,/ROBLOX_OPEN_CLOUD_EXACT_GATE_RETRY_PENDING=/);
   assert.match(workflow,/QUALITY_FAILURE_CLASS=INFRASTRUCTURE_OR_EVIDENCE_ONLY/);
   assert.match(workflow,/QUALITY_BUILDUP_AUTO_REQUEUE=NO/);
@@ -250,6 +250,24 @@ test('transient 429 does not fail the whole workflow while non-transient persist
   assert.doesNotMatch(classify,/transient_file[\s\S]{0,500}exit 1/);
   assert.match(classify,/if \[ -s "\$blocking_file" \]; then[\s\S]*exit 1/);
 });
+
+test('runtime foundation critical path reuses current-main contract QA instead of replaying repository tests per candidate',()=>{
+  const foundationJob=workflow.slice(
+    workflow.indexOf('\n  runtime-foundation-qa:'),
+    workflow.indexOf('\n  studio-local-plan:')
+  );
+  const vibe3=fs.readFileSync('.github/workflows/vibe3-engine-contract.yml','utf8');
+  assert.match(foundationJob,/Verify only runtime-foundation executable syntax/);
+  assert.match(foundationJob,/node --input-type=module --check < tools\/company-development-roblox-runtime-foundation\.mjs/);
+  assert.match(foundationJob,/node --input-type=module --check < tools\/company-tester-debug-intake\.mjs/);
+  assert.match(foundationJob,/ROBLOX_FOUNDATION_CONTRACT_QA=REUSED_CURRENT_MAIN_CI/);
+  assert.match(foundationJob,/ROBLOX_FOUNDATION_CRITICAL_PATH_DUPLICATE_TESTS=0/);
+  assert.doesNotMatch(foundationJob,/node --test/);
+  assert.match(vibe3,/qa\/company-development-roblox-runtime-foundation\.test\.mjs/);
+  assert.match(vibe3,/qa\/company-development-roblox-headless-fast-mvp\.test\.mjs/);
+  assert.match(vibe3,/qa\/company-tester-debug-intake\.test\.mjs/);
+});
+
 
 test('Open Cloud runtime stays automatic while Studio requires explicit opt-in',()=>{
   const studioPlanAt=workflow.indexOf('\n  studio-local-plan:');
