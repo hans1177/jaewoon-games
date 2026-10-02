@@ -2229,7 +2229,7 @@ jobs:
     timeout-minutes: 25
     steps:
       - name: Clear only previous automated evidence files
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
           $sessionId = "${{ github.run_id }}-${{ github.run_attempt }}-" + ([Guid]::NewGuid().ToString('N').Substring(0,8))
@@ -2270,7 +2270,7 @@ jobs:
 
       - name: Bind isolated candidate context without canonical state mutation
         if: inputs.candidate_context != ''
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         env:
           CANDIDATE_REVISION: ${{ inputs.candidate_revision }}
           CANDIDATE_GAME: ${{ inputs.game_id }}
@@ -2281,7 +2281,7 @@ jobs:
 
       - name: Verify official Studio MCP policy and runner
         id: mcp_preflight
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
           & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=check-head "--control-revision=${{ inputs.control_revision || github.sha }}"
@@ -2474,7 +2474,7 @@ jobs:
 
       - name: Rebuild byte-identical exact artifact when GitHub artifact API is unavailable
         if: inputs.candidate_context == '' && steps.mcp_preflight.outputs.setting_blocked != 'true' && steps.artifact_download.outcome != 'success'
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         env:
           GAME_ID: ${{ matrix.gameId }}
           SOURCE_REVISION: ${{ matrix.sourceRevision }}
@@ -2541,7 +2541,7 @@ jobs:
 
       - name: Bind and open exact local Place artifact
         if: steps.mcp_preflight.outputs.setting_blocked != 'true'
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         env:
           EXPECTED_ARTIFACT: ${{ matrix.artifactIdentity }}
         run: |
@@ -2706,7 +2706,7 @@ jobs:
       - name: Run actual local play through official Studio MCP
         id: studio_play
         if: steps.mcp_preflight.outputs.setting_blocked != 'true'
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         continue-on-error: true
         run: |
           $ErrorActionPreference = 'Stop'
@@ -2870,7 +2870,7 @@ jobs:
 
       - name: Finalize Studio session after final capture
         if: always()
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Continue'
           Write-Host 'ROBLOX_STUDIO_POST_CAPTURE_FINALIZE=AUTOMATED'
@@ -2881,7 +2881,7 @@ jobs:
       - name: Persist exact Studio MCP play evidence
         id: persist
         if: always()
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         env:
           GAME_ID: ${{ matrix.gameId }}
           SOURCE_REVISION: ${{ matrix.sourceRevision }}
@@ -3008,7 +3008,7 @@ jobs:
 
       - name: Close owned Studio after evidence persistence
         if: always()
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
           if (-not $env:VIBE2_LOCAL_PLACE_FILE -or -not $env:VIBE2_STUDIO_LAUNCH_STARTED) {
@@ -3075,7 +3075,7 @@ jobs:
 
       - name: Refill existing 24H development loop after verified play
         if: inputs.candidate_context == '' && steps.studio_play.outcome == 'success' && steps.persist.outcome == 'success'
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -Command ". '{0}'"
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ matrix.gameId }}
