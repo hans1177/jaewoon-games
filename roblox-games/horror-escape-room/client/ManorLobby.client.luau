@@ -16,6 +16,8 @@ gui.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
 gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
 gui:SetAttribute("ArtbookId","horror-escape-room-2026-10-02-manor-rebuild")
 gui:SetAttribute("ArtbookStyle","DARK_CARTOON_GOTHIC_HALLOWEEN")
+gui:SetAttribute("UIAssetAtlasId",Assets.IconsId)
+gui:SetAttribute("UIAssetSource","INTERNAL_MANOR_ICONS")
 gui.Parent=p:WaitForChild("PlayerGui")
 -- 아트북 팔레트: #141012 / #4C1826 / #DAC291 / #97713D / #E6D6B0 / #301B15.
 local ink=Color3.fromRGB(20,16,18)
@@ -69,6 +71,21 @@ local function button(parent,text,fn,color)
  x.MouseLeave:Connect(function()if x.Active then x.BackgroundColor3=color or wood end end)
  x.Activated:Connect(fn);return x
 end
+
+local function internalIcon(parent,index,size,position,tint)
+ local icon=Instance.new("ImageLabel");icon.Name="InternalArtbookIcon";icon.BackgroundTransparency=1
+ icon.Image="rbxassetid://"..tostring(Assets.IconsId or 0);icon.ImageRectOffset=Vector2.new((index or 0)*64,0);icon.ImageRectSize=Vector2.new(64,64)
+ icon.Size=UDim2.fromOffset(size or 28,size or 28);icon.Position=position or UDim2.fromOffset(12,12);icon.ImageColor3=tint or ivory;icon.ZIndex=parent.ZIndex+1;icon.Parent=parent
+ return icon
+end
+local function artbookButton(parent,text,subtitle,fn,color,iconIndex)
+ local x=button(parent,"",fn,color);x.Name="ArtbookButton_"..tostring(text);x.Size=UDim2.new(1,-12,0,64)
+ internalIcon(x,iconIndex or 0,30,UDim2.fromOffset(14,17),ivory)
+ local title=label(x,text,24,15,ivory);title.Position=UDim2.fromOffset(54,7);title.Size=UDim2.new(1,-66,0,24);title.ZIndex=x.ZIndex+1
+ local detail=label(x,subtitle or"",22,10,parchment);detail.Position=UDim2.fromOffset(54,32);detail.Size=UDim2.new(1,-66,0,22);detail.ZIndex=x.ZIndex+1
+ gothicCorners(x)
+ return x
+end
 local function ledgerRow(parent,leftText,rightText)
  local row=Instance.new("Frame");row.Size=UDim2.new(1,-12,0,42);row.BackgroundColor3=Color3.fromRGB(43,19,47);row.BorderSizePixel=0;row.Parent=parent
  frameStroke(row,1,.48)
@@ -77,13 +94,13 @@ local function ledgerRow(parent,leftText,rightText)
  return row
 end
 local mapDifficultyLabel={BEGINNER="입문",CHASE="추격",ADVANCED="고급"}
-local mapGlyph={SCHOOL="교",HOSPITAL="병",THEME_PARK="원"}
+local mapIconIndex={SCHOOL=0,HOSPITAL=4,THEME_PARK=3}
 local function mapPostcard(parent,map,chosen,fn)
  local x=button(parent,"",fn,chosen and wine or wood)
  x.Name="MapPostcard_"..tostring(map.Id);x.Size=UDim2.new(1,-12,0,72)
  local photo=Instance.new("Frame");photo.Name="FieldPhoto";photo.Position=UDim2.fromOffset(11,10);photo.Size=UDim2.fromOffset(50,50)
  photo.BackgroundColor3=parchment;photo.BackgroundTransparency=.04;photo.BorderSizePixel=0;photo.Parent=x;frameStroke(photo,1,.28)
- local glyph=label(photo,mapGlyph[map.Id]or"?",44,22,ink);glyph.Size=UDim2.fromScale(1,1);glyph.TextXAlignment=Enum.TextXAlignment.Center;glyph.TextYAlignment=Enum.TextYAlignment.Center
+ internalIcon(photo,mapIconIndex[map.Id]or 0,32,UDim2.fromOffset(9,9),ink)
  local pin=Instance.new("Frame");pin.Name="BrassPin";pin.AnchorPoint=Vector2.new(.5,.5);pin.Position=UDim2.new(0,57,0,13);pin.Size=UDim2.fromOffset(9,9)
  pin.BackgroundColor3=brass;pin.BorderSizePixel=0;pin.Parent=x
  local pinCorner=Instance.new("UICorner");pinCorner.CornerRadius=UDim.new(1,0);pinCorner.Parent=pin
@@ -236,13 +253,13 @@ open=function(key)
     end
    end
    if waiting and p:GetAttribute("RoomIsHost")==true and p:GetAttribute("RoomAutoStart")~=true then
-    button(body,"친구 준비 완료 · 출정 시작",function()send(C.Actions.START_ROOM)end,Color3.fromRGB(107,56,64))
+    artbookButton(body,"출정 시작","참가자 준비 완료",function()send(C.Actions.START_ROOM)end,Color3.fromRGB(107,56,64),0)
    elseif not waiting then
     label(body,string.format("출정까지 %d초",p:GetAttribute("TimeLeft")or 0),48,15)
    else
     label(body,p:GetAttribute("RoomAutoStart")==true and"참가자 연결 후 곧 출정해."or"방장이 출정을 시작할 때까지 기다려줘.",48,13)
    end
-   if waiting then button(body,"방 나가기 · 저택으로",function()send(C.Actions.LEAVE_ROOM)end)end
+   if waiting then artbookButton(body,"방 나가기","개인 저택으로 복귀",function()send(C.Actions.LEAVE_ROOM)end,wood,3)end
   end
   if not inRoom then
    label(body,"1. 맵 선택",30,15,ivory)
@@ -253,14 +270,14 @@ open=function(key)
   end
   local preference=p:GetAttribute("MonsterPreference")=="MONSTER"and"몬스터"or p:GetAttribute("MonsterPreference")=="SURVIVOR"and"인간"or"자동 배정"
   label(body,"2. 역할 · "..preference,30,15,ivory)
-  button(body,"인간",function()send(C.Actions.PREFER_SURVIVOR)end)
-  button(body,"몬스터",function()send(C.Actions.PREFER_MONSTER)end)
+  artbookButton(body,"인간","정화·대시·직업 스킬",function()send(C.Actions.PREFER_SURVIVOR)end,Color3.fromRGB(41,64,72),1)
+  artbookButton(body,"몬스터","추적·감염·고유 스킬",function()send(C.Actions.PREFER_MONSTER)end,Color3.fromRGB(76,24,38),4)
   if not inRoom then
    label(body,"3. 시작",30,15,ivory)
-   button(body,"혼자 바로 시작",function()send(C.Actions.MANOR_SOLO);hidePanel() end,wine)
-   button(body,"공개방 빠른 참가",function()send(C.Actions.QUICK_JOIN_PUBLIC);hidePanel() end,Color3.fromRGB(53,45,58))
-   button(body,"친구방 만들기",function()send(C.Actions.CREATE_ROOM,"FRIENDS");hidePanel() end)
-   button(body,"초대 코드 입력",function()open("CODE")end)
+   artbookButton(body,"혼자 바로 시작","같은 서버에서 즉시 출정",function()send(C.Actions.MANOR_SOLO);hidePanel() end,wine,0)
+   artbookButton(body,"공개방 빠른 참가","열린 방을 찾아 합류",function()send(C.Actions.QUICK_JOIN_PUBLIC);hidePanel() end,Color3.fromRGB(53,45,58),3)
+   artbookButton(body,"친구방 만들기","초대 코드가 있는 전용 방",function()send(C.Actions.CREATE_ROOM,"FRIENDS");hidePanel() end,wood,2)
+   artbookButton(body,"초대 코드 입력","6자리 초대장으로 합류",function()open("CODE")end,leather,4)
   end
  elseif key=="CODE"then
   panelTitle.Text="초대장 번호"
@@ -387,13 +404,13 @@ open=function(key)
   table.insert(rankingRows,label(body,"수집가들의 기록을 가져오는 중",48,13))
  end
 end
-depart=button(commands,"출정",function()open("PLAY")end,wine)
-depart.Size=UDim2.fromOffset(68,52)
-notebook=button(commands,"메뉴",function()
+depart=button(commands,"   출정",function()open("PLAY")end,wine)
+depart.Size=UDim2.fromOffset(68,52);internalIcon(depart,0,18,UDim2.fromOffset(7,17),parchment)
+notebook=button(commands,"   메뉴",function()
  notebookOpen=not notebookOpen;nav.Visible=notebookOpen
  if notebookOpen then activeMenu=nil;panel.Visible=false end
 end)
-notebook.Size=UDim2.fromOffset(78,52);notebook.Position=UDim2.fromOffset(74,0)
+notebook.Size=UDim2.fromOffset(78,52);notebook.Position=UDim2.fromOffset(74,0);internalIcon(notebook,1,18,UDim2.fromOffset(7,17),parchment)
 -- 무료 Lucide 아이콘: 원본 ISC/MIT 라이선스를 모델 폴더에 보관.
 for index,entry in ipairs({{"PLAY","지도"},{"BOOK","도감"},{"DRESS","옷장"},{"EVENT","저택"},{"RECORD","기록"}})do
  local item=button(nav,"",function()if activeMenu==entry[1]and panel.Visible then hidePanel()else open(entry[1])end end,entry[1]=="PLAY"and wine or leather);item.Size=UDim2.new(1,0,0,52)
@@ -464,14 +481,14 @@ end
 -- 접속 메인: 입장 버튼을 누르면 기본 카메라/조작으로 정확히 복귀한다.
 local entered=false
 local welcome=Instance.new("Frame");welcome.Name="ManorWelcome";welcome.ZIndex=13;welcome.Active=true;welcome.Size=UDim2.fromScale(1,1);welcome.BackgroundColor3=ink;welcome.BackgroundTransparency=.58;welcome.Parent=gui
-local card=Instance.new("Frame");card.AnchorPoint=Vector2.new(.5,.5);card.Position=UDim2.fromScale(.5,.72);card.Size=UDim2.new(1,-48,0,238);card.BackgroundColor3=parchment;card.BackgroundTransparency=.02;card.Parent=welcome;corner(card,1);gothicCorners(card)
-local cardLimit=Instance.new("UISizeConstraint");cardLimit.MaxSize=Vector2.new(430,238);cardLimit.Parent=card
-local mainTitle=label(card,"MIDNIGHT ESCAPE",54,26);mainTitle.Size=UDim2.new(1,-24,0,54);mainTitle.Position=UDim2.fromOffset(12,14);mainTitle.TextXAlignment=Enum.TextXAlignment.Center;mainTitle.TextColor3=ink;mainTitle.AutoLocalize=false
-local subtitle=label(card,"심야 대탈출 · 괴물 가족의 저택",38,14);subtitle.Position=UDim2.fromOffset(12,65);subtitle.TextXAlignment=Enum.TextXAlignment.Center;subtitle.TextColor3=ink
-local greeting=label(card,"집사가 문을 열어두었어.\n이 집에서는 기이한 일도 일상이야.",54,13);greeting.Position=UDim2.fromOffset(12,105);greeting.TextXAlignment=Enum.TextXAlignment.Center;greeting.TextColor3=ink
-local wax=Instance.new("Frame");wax.Name="WaxSeal";wax.AnchorPoint=Vector2.new(.5,.5);wax.Position=UDim2.new(.5,0,0,161);wax.Size=UDim2.fromOffset(36,36);wax.BackgroundColor3=wine;wax.Parent=card
+local card=Instance.new("Frame");card.Name="DarkCartoonWelcomeCard";card.AnchorPoint=Vector2.new(.5,.5);card.Position=UDim2.fromScale(.5,.72);card.Size=UDim2.new(1,-48,0,260);card.BackgroundColor3=leather;card.BackgroundTransparency=.02;card.Parent=welcome;corner(card,1);gothicCorners(card)
+local cardLimit=Instance.new("UISizeConstraint");cardLimit.MaxSize=Vector2.new(430,260);cardLimit.Parent=card
+local mainTitle=label(card,"MIDNIGHT ESCAPE",50,26);mainTitle.Size=UDim2.new(1,-24,0,50);mainTitle.Position=UDim2.fromOffset(12,10);mainTitle.TextXAlignment=Enum.TextXAlignment.Center;mainTitle.TextColor3=ivory;mainTitle.AutoLocalize=false
+local subtitle=label(card,"심야 대탈출 · 괴물 가족의 저택",34,14);subtitle.Position=UDim2.fromOffset(12,58);subtitle.TextXAlignment=Enum.TextXAlignment.Center;subtitle.TextColor3=brass
+local greeting=label(card,"집사가 문을 열어두었어.\n이 집에서는 기이한 일도 일상이야.",48,13);greeting.Position=UDim2.fromOffset(12,92);greeting.TextXAlignment=Enum.TextXAlignment.Center;greeting.TextColor3=parchment
+local wax=Instance.new("Frame");wax.Name="WaxSeal";wax.AnchorPoint=Vector2.new(.5,.5);wax.Position=UDim2.new(.5,0,0,158);wax.Size=UDim2.fromOffset(38,38);wax.BackgroundColor3=wine;wax.Parent=card
 local waxCorner=Instance.new("UICorner");waxCorner.CornerRadius=UDim.new(1,0);waxCorner.Parent=wax
-local waxMark=label(wax,"M",30,18);waxMark.Size=UDim2.fromScale(1,1);waxMark.TextColor3=Color3.fromRGB(205,155,87);waxMark.TextXAlignment=Enum.TextXAlignment.Center;waxMark.TextYAlignment=Enum.TextYAlignment.Center
+internalIcon(wax,3,24,UDim2.fromOffset(7,7),brass)
 local controls=nil
 local mainCameraActive=false
 local function releaseMainCamera()
@@ -488,11 +505,11 @@ task.spawn(function()
  if module then local ok,value=pcall(require,module);if ok then controls=value:GetControls()end end
 end)
 local visibility
-local enter=button(card,"저택 들어가기",function()
+local enter=artbookButton(card,"저택 들어가기","Version 77 앞마당에서 시작",function()
  entered=true
  releaseMainCamera()
  if visibility then visibility()end
-end,wood);enter.Position=UDim2.fromOffset(18,174);enter.Size=UDim2.new(1,-36,0,52)
+end,wine,3);enter.Position=UDim2.fromOffset(18,184);enter.Size=UDim2.new(1,-36,0,62)
 local oldLighting=nil
 local atmosphere=nil
 local oldAtmosphere=nil
