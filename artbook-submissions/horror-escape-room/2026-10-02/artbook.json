@@ -21,7 +21,10 @@
     "currentBaseline": true,
     "approvedByOwnerDirection": true,
     "createsNewVersion": true,
-    "historyPreserved": true
+    "historyPreserved": true,
+    "internalReleaseApproved": true,
+    "publicReleaseApproved": false,
+    "externalExposure": false
   },
   "identity": {
     "coreFantasy": "플레이어가 공용 광장에 서는 것이 아니라 자기 소유의 음산한 대저택으로 돌아와, 밤마다 가져온 괴담 기록과 현장 흔적이 집 안에 실제로 쌓이는 개인 로비.",
@@ -217,5 +220,16 @@
     "확장된 날개/방/정원 동선과 충돌 최종 실기 검증 필요.",
     "고딕 UI의 모바일 세로/가로 실기 검증 필요.",
     "Studio 실제 입장·카메라·맵 연결·콘솔 오류 0 근거 필요."
-  ]
+  ],
+  "releaseIntent": "INTERNAL_ONLY",
+  "internalDistribution": {
+    "approvedByOwner": true,
+    "stage": "INTERNAL_PLATFORM_RELEASE",
+    "visibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
+    "externalExposure": false,
+    "publicRelease": false,
+    "homepagePublicExposure": false,
+    "purpose": "OWNER_INTERNAL_PLAYTEST_AND_DEBUG",
+    "note": "내부 테스트/사내 배포 승인. 공개 노출이나 외부 출시 승인이 아님."
+  }
 }
