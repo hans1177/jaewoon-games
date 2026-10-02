@@ -1749,8 +1749,8 @@
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "ACTIVE",
       "status": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "targetPlatform": "ROBLOX",
+      "selectedPlatform": "UNITY",
+      "targetPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -1803,8 +1803,8 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
-      "canonicalState": "F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION",
+      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-10-02T05:12:43.771Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -1834,7 +1834,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T05:12:43.771Z"
       },
-      "updatedAt": "2026-10-02T11:38:42.526Z",
+      "updatedAt": "2026-10-02T11:44:08.596Z",
       "robloxSourceCommit": "63208f3829048797b49a8dec2b2607a1aff9513d",
       "robloxSourceBootstrapPassedAt": "2026-10-02T05:14:01.929Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -2198,7 +2198,7 @@
       "unityCandidateBranch": "development/unity-tech-cozy-island-36831315548",
       "unitySourceCommit": "4432b8b37953480242da03ee8cb093e08adafac4",
       "unityBuildRunId": 36969346424,
-      "unityRuntimeSmokeRunId": 36999991117,
+      "unityRuntimeSmokeRunId": 37002627754,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityF0ThroughF9Evidence": {
@@ -2255,7 +2255,7 @@
           }
         },
         "multiplayerRequired": true,
-        "verifiedAt": "2026-10-02T11:15:24.148Z"
+        "verifiedAt": "2026-10-02T11:44:08.596Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -2278,8 +2278,8 @@
         "regressionPassed": false,
         "rawStageResults": {
           "runtime": false,
-          "independentQa": false,
-          "regression": false
+          "independentQa": true,
+          "regression": true
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
@@ -2297,20 +2297,20 @@
         "buildOrPackagePassed": true,
         "artifactIdentity": "sha256:d900d9076ff0d2d831ae71edfe478c8a1544594e9681ad61dac6bb1cd19d8380",
         "runtimePassed": false,
-        "independentQaPassed": true,
+        "independentQaPassed": false,
         "multiplayerPassed": false,
-        "regressionPassed": true,
+        "regressionPassed": false,
         "rawStageResults": {
           "runtime": false,
-          "independentQa": false,
-          "regression": false
+          "independentQa": true,
+          "regression": true
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": true,
-        "lastSuccessfulStage": "F9_RELEASE_REGRESSION",
-        "failureStage": null,
-        "failureSignature": null
+        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
+        "failureStage": "F1_SERVER_BOOT",
+        "failureSignature": "97d8233bdd541a516564c9abf205f7f62a9fb10fe95096d491bcb687eae6b111"
       },
       "resumeStage": "F1_SERVER_BOOT",
       "failureCount": 1,
@@ -2521,7 +2521,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-02T11:43:54.277Z",
+  "updatedAt": "2026-10-02T11:44:10.354Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
