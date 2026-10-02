@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": true,
-  "generatedAt": "2026-10-02T10:03:42.458Z",
+  "generatedAt": "2026-10-02T10:06:04.219Z",
   "games": [
     {
       "gameId": "cozy-island",
@@ -133,7 +133,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-02T10:03:15.240Z"
+      "updatedAt": "2026-10-02T10:06:02.314Z"
     },
     {
       "gameId": "daechung-rpg",
@@ -145,11 +145,20 @@
         {
           "platform": "ROBLOX",
           "completion": {
-            "count": 0,
-            "lastCompletedAt": null,
-            "evidenceUrl": null,
+            "count": 1,
+            "lastCompletedAt": "2026-10-02T10:04:30.834Z",
+            "evidenceUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/36993292122",
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
-            "records": []
+            "records": [
+              {
+                "cycleId": "b953d4fb6e4121fe7fb62a23eace4ea7c3871f85:sha256:fc2c92e482f47e15e9ae7db9dd7fab2861b633fbe87d53b14bde0d291c711f6a",
+                "sourceRevision": "b953d4fb6e4121fe7fb62a23eace4ea7c3871f85",
+                "artifactIdentity": "sha256:fc2c92e482f47e15e9ae7db9dd7fab2861b633fbe87d53b14bde0d291c711f6a",
+                "completedAt": "2026-10-02T10:04:30.834Z",
+                "workflowRunId": 36993292122,
+                "evidenceUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/36993292122"
+              }
+            ]
           },
           "developmentState": "NATIVE_DEVELOPMENT",
           "runtimePassed": false,
@@ -246,7 +255,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-02T10:02:57.906Z"
+      "updatedAt": "2026-10-02T10:04:30.834Z"
     },
     {
       "gameId": "horror-escape-room",
@@ -288,8 +297,8 @@
               "noRuntimeErrors": false
             },
             "blockers": [],
-            "sourceRevision": "64532238f7988ce6fafc3a4c788a0841cc778d2a",
-            "artifactIdentity": "sha256:a7d7bd552aac9a89e75c2933206e365aecfd6607f3b7c8d7be151a333fa76f01",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "historicalInternalRelease": true,
@@ -354,7 +363,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-02T10:03:42.331Z"
+      "updatedAt": "2026-10-02T10:05:18.346Z"
     }
   ]
 }
