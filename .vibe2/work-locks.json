@@ -1,5 +1,26 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1vtkyas",
+      "worker": "vibe2",
+      "taskId": "fantasy-survival-unity-web-base-implementation-v1",
+      "gameId": "fantasy-survival",
+      "files": [
+        "unity-games/fantasy-survival/Assets/Scripts/GameCore.cs",
+        "unity-games/fantasy-survival/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "2ecfebcfaff62730b67231befa49679cfb69f8b1",
+      "runId": "37045181390",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-02T18:09:53.268Z",
+      "expiresAt": "2026-10-02T18:54:53.268Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:fantasy-survival-unity-web-base-implementation-v1"
+      ]
+    }
+  ]
 }
