@@ -540,6 +540,17 @@ test('기존 4개 단말 목표와 비상구 탈출 루프가 실제 승리조�
  assert.match(client,/목표 · 인간 추적 → 감염 → 전멸/);
 });
 
+test('클라이언트는 로딩 UI 종료 뒤에도 HUD·전투 스킨 초기화를 계속 실행한다',()=>{
+ assert.match(client,/local loadingLayer\s*\nlocal loadingFill\s*\ndo\s*\nloadingLayer=Instance\.new\("Frame"\)/);
+ assert.match(client,/local verifiedLearningRoot = gui/);
+ assert.doesNotMatch(client,/local verifiedLearningRoot = loadingLayer/);
+ assert.match(client,/gui\.DisplayOrder=30/);
+ assert.match(client,/gui\.ZIndexBehavior=Enum\.ZIndexBehavior\.Global/);
+ assert.match(client,/local function combatRoleForPlayer\(player\)/);
+ assert.match(client,/local team=tostring\(player:GetAttribute\("RoundTeam"\)or""\)/);
+ assert.match(client,/local roundTeam=tostring\(p:GetAttribute\("RoundTeam"\)or""\)/);
+});
+
 test('스킬은 이름뿐 아니라 용도와 범위를 HUD에서 설명한다',()=>{
  for(const marker of [
   'Description="24m 안 몬스터의 에너지를 깎는다"',
