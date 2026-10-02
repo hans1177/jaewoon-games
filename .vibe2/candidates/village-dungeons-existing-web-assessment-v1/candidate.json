@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function claimQuest(id){",
+      "replace": "function claimQuest(id){\n  var q=QUESTS.find(function(x){return x.id===id;});\n  var s=qState(id);if(!q||s.status!=="
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
