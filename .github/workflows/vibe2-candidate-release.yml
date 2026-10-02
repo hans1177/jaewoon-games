@@ -52,6 +52,7 @@ jobs:
       candidate_branch: ${{ steps.gate.outputs.candidate_branch }}
       origin: ${{ steps.gate.outputs.origin }}
       already_promoted: ${{ steps.gate.outputs.already_promoted }}
+      asset_promotion_candidates: ${{ steps.gate.outputs.asset_promotion_candidates }}
     steps:
       - name: Checkout candidate
         uses: actions/checkout@v4
@@ -127,6 +128,18 @@ jobs:
           }
           put('candidate_decision',decision); put('candidate_reason',reason); put('task_id',task); put('game_id',game);
           put('target',target); put('execution_surface',executionSurface); put('source_root',root); put('base_sha',base); put('transport_base_sha',transportBase); put('release_state',state); put('production_class',productionClass); put('origin',origin);
+          const promotionCandidates=(Array.isArray(m.runtimePromotionCandidates)?m.runtimePromotionCandidates:[]).slice(0,64).map(row=>({
+            assetId:String(row?.assetId||'').trim(),
+            family:String(row?.family||'').trim(),
+            license:String(row?.license||'').trim(),
+            path:String(row?.path||'').trim()||null,
+            robloxAssetId:String(row?.robloxAssetId||'').trim()||null,
+            sourceHash:String(row?.sourceHash||'').trim(),
+            artifactHash:String(row?.artifactHash||'').trim()||null,
+            bindingEvidence:Array.isArray(row?.bindingEvidence)?row.bindingEvidence.map(String).slice(0,8):[],
+            candidateSourceBindingVerified:row?.candidateSourceBindingVerified===true
+          })).filter(row=>row.assetId&&row.license&&row.sourceHash&&row.candidateSourceBindingVerified);
+          put('asset_promotion_candidates',JSON.stringify(promotionCandidates));
           put('request_file',decision==='unity'?`.build-requests/unity/${game}.json`:'');
           NODE
 
@@ -1007,6 +1020,71 @@ jobs:
           echo "ROBLOX_RELEASE_PR=$pr_url"
           echo 'DIRECT_MAIN_WRITE=NO'
 
+      - name: Persist exact runtime asset promotion plan
+        if: steps.promote.outcome == 'success' && needs.inspect.outputs.evidence_only != 'true' && needs.inspect.outputs.asset_promotion_candidates != '[]'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ needs.inspect.outputs.game_id }}
+          CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
+          PROMOTED_MAIN_SHA: ${{ steps.promote.outputs.main_sha }}
+          PROMOTED_SOURCE_TREE_SHA: ${{ steps.promote.outputs.source_tree_sha }}
+          ASSET_PROMOTION_CANDIDATES: ${{ needs.inspect.outputs.asset_promotion_candidates }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/vibe2-asset-runtime
+          gh auth setup-git --hostname github.com
+          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-asset-runtime -- --branch company-runtime --single-branch --depth=1 --no-tags >/dev/null 2>&1
+          cd /tmp/vibe2-asset-runtime
+          git config user.name 'jaewoon-vibe2-asset-runtime'
+          git config user.email 'vibe2-worker@users.noreply.github.com'
+          persisted=0
+          for attempt in 1 2 3 4 5; do
+            git fetch --no-tags origin company-runtime
+            git reset --hard origin/company-runtime
+            node <<'NODE'
+          const fs=require('fs');
+          const file='development-queue.json';
+          const queue=JSON.parse(fs.readFileSync(file,'utf8'));
+          const gameId=String(process.env.GAME_ID||'').trim();
+          const candidateRevision=String(process.env.CANDIDATE_SHA||'').trim();
+          const promotedMainSha=String(process.env.PROMOTED_MAIN_SHA||'').trim();
+          const sourceTreeSha=String(process.env.PROMOTED_SOURCE_TREE_SHA||'').trim();
+          const candidates=JSON.parse(process.env.ASSET_PROMOTION_CANDIDATES||'[]');
+          if(!gameId||!/^[0-9a-f]{40}$/.test(candidateRevision)||!/^[0-9a-f]{40}$/.test(promotedMainSha)||!/^[0-9a-f]{40}$/.test(sourceTreeSha))throw Error('asset promotion plan identity invalid');
+          if(!Array.isArray(candidates)||!candidates.length)process.exit(0);
+          const item=(queue.items||[]).find(row=>String(row?.gameId||'')===gameId);
+          if(!item)throw Error('asset promotion plan game missing');
+          const plan={
+            version:1,gameId,candidateRevision,promotedMainSha,promotedSourceTreeSha:sourceTreeSha,candidates,
+            status:'PENDING_EXACT_NATIVE_RUNTIME',exactSourceBindingRequired:true,studioRuntimeRequired:true,mobilePerformanceRequired:true,
+            independentQaRequired:true,regressionRequired:true,verifiedCompanyPromotionAuthority:'assets/vibe-studio-asset-universe.js',requestedAt:new Date().toISOString()
+          };
+          const prior=item.robloxAssetRuntimePromotionPlan;
+          const comparable=value=>JSON.stringify(value,(key,row)=>key==='requestedAt'?undefined:row);
+          if(prior&&comparable(prior)===comparable(plan))process.exit(0);
+          item.robloxAssetRuntimePromotionPlan=plan;
+          item.updatedAt=new Date().toISOString();
+          queue.updatedAt=item.updatedAt;
+          fs.writeFileSync(file,JSON.stringify(queue,null,2)+'\n');
+          console.log('ROBLOX_ASSET_RUNTIME_PROMOTION_PLAN='+gameId+':'+candidates.map(row=>row.assetId).join(','));
+          NODE
+            git add development-queue.json
+            if git diff --cached --quiet; then
+              persisted=1
+              echo 'ROBLOX_ASSET_RUNTIME_PROMOTION_PLAN_STATE=NO_CHANGE'
+              break
+            fi
+            git commit -m "runtime: bind exact asset promotion plan for $GAME_ID [skip ci]"
+            if git push origin HEAD:company-runtime; then
+              persisted=1
+              echo "ROBLOX_ASSET_RUNTIME_PROMOTION_PLAN_STATE=PUSHED:$attempt"
+              break
+            fi
+            sleep $((attempt*2))
+          done
+          test "$persisted" = 1
       - name: Hand exact promoted Roblox source to F0-F9 runtime without pre-F9 canonical publish
         id: publish
         if: steps.validate.outcome == 'success' && steps.promote.outcome == 'success'
