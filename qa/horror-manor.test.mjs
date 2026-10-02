@@ -26,6 +26,24 @@ test('selected lobby map stays server-authoritative through room and round',()=>
  assert.match(server,/workspace:SetAttribute\("CurrentMapName",map\.Name\)/);
 });
 
+test('personal manor spawn stays on the front-yard ground layer',()=>{
+ assert.match(server,/lobbyBootstrapSpawn\.Position=Vector3\.new\(0,\.55,330\)/);
+ assert.match(server,/bootstrapGround\.Position=Vector3\.new\(0,-\.15,330\)/);
+ assert.match(server,/return Vector3\.new\(0,3,330\),Vector3\.new\(0,5,268\),lobbyBootstrapSpawn/);
+ assert.match(server,/local maxGroundY=lobbyDestination and\(pos\.Y\+1\.5\)or math\.huge/);
+ assert.match(server,/local topY=d\.Position\.Y\+d\.Size\.Y\*\.5/);
+ assert.match(server,/if topY<=maxGroundY then table\.insert\(grounds,d\)end/);
+ assert.match(server,/local rayTop=lobbyDestination and\(pos\.Y\+4\)or\(pos\.Y\+24\)/);
+ assert.match(server,/local rayLength=lobbyDestination and math\.max\(16,pos\.Y\+12\)or 52/);
+ assert.doesNotMatch(server,/rayTop=lobbyDestination and 30/);
+ assert.match(server,/lobbySpawnLocation\.Position=Vector3\.new\(0,\.4,330\)/);
+ assert.match(lobby,/PersonalSpawn";spawn\.Position=origin\+Vector3\.new\(0,\.55,60\)/);
+ assert.match(ui,/camera\.CFrame=CFrame\.lookAt\(Vector3\.new\(x,7\.2,z\+76\),Vector3\.new\(x,6\.2,z\+2\)\)/);
+ assert.match(manorBuild,/ArrivalCourtOuter/);
+ assert.match(manorBuild,/ArrivalCourtInner/);
+ assert.match(manorBuild,/ArrivalCourtCrest/);
+});
+
 test('downloaded assets retain original bytes and CC0 license',()=>{
  const manifest=JSON.parse(read(root+'/asset-manifest.json'));
  assert.equal(manifest.models.length,231);
