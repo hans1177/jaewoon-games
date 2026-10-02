@@ -920,24 +920,24 @@ def build():
         x=(-1 if i%2 else 1)*(9+(i*7)%21);z=(i*11)%40
         s.box('LeafCard'+str(i),(x,.24,z),(.5,.015,.9),c['wood'],rot=i*.71)
     for side in [-1,1]:
-        s.box('InteriorDado'+str(side),(side*28.1,3,-23),(.3,5,37),c['wood'])
-        for z in [-10,-19,-28,-37]:s.box('WallPanel'+str(side)+str(z),(side*27.8,3,z),(.35,4,7),c['teal'])
-    s.box('BackDado',(0,3,-42),(56,5,.6),c['wood'])
+        s.box('InteriorDado'+str(side),(side*53.1,3,-33),(.3,5,58),c['wood'])
+        for z in [-10,-21,-32,-43,-54]:s.box('WallPanel'+str(side)+str(z),(side*52.8,3,z),(.35,4,8.2),c['teal'])
+    s.box('BackDado',(0,3,-64.1),(106,5,.6),c['wood'])
     # 집안의 시간도 살짝 고장났다. 시계추·시곗바늘은 클라이언트가 느리게 움직인다.
-    s.box('ClockCase',(-9,5,-40.3),(3.2,9.2,1.8),c['wood'])
-    s.ellipsoid('ClockFace',(-9,8.6,-39.32),(2.5,2.5,.12),c['ivory'])
-    s.box('ClockMinute',(-9,9.05,-39.2),(.12,.95,.08),c['black'])
-    s.box('ClockHour',(-8.64,8.6,-39.15),(.78,.15,.08),c['black'])
-    s.lathe('ClockPendulumRod',(-9,4.8,-39.15),.055,.055,3.8,c['brass'])
-    s.ellipsoid('ClockPendulum',(-9,3,-39.1),(1.1,1.1,.14),c['brass'])
-    for i in range(9):s.box('FloorPlank'+str(i),(-26+i*6,.365,-23),(.06,.02,36),c['black'])
+    s.box('ClockCase',(-9,5,-61.8),(3.2,9.2,1.8),c['wood'])
+    s.ellipsoid('ClockFace',(-9,8.6,-60.82),(2.5,2.5,.12),c['ivory'])
+    s.box('ClockMinute',(-9,9.05,-60.70),(.12,.95,.08),c['black'])
+    s.box('ClockHour',(-8.64,8.6,-60.65),(.78,.15,.08),c['black'])
+    s.lathe('ClockPendulumRod',(-9,4.8,-60.65),.055,.055,3.8,c['brass'])
+    s.ellipsoid('ClockPendulum',(-9,3,-60.60),(1.1,1.1,.14),c['brass'])
+    for i in range(18):s.box('FloorPlank'+str(i),(-51+i*6,.365,-31),(.055,.02,64),c['black'])
     for i,(x,z) in enumerate([(-22,15),(24,19),(-22,-10),(22,-9)]):s.prop('graveyard','lightpost-single','LampPost'+str(i),(x,0,z),9)
     for i,(x,z) in enumerate([(-21,29),(22,32)]):s.prop('graveyard','bench-damaged','Bench'+str(i),(x,0,z),3,math.pi)
     for i,(x,z) in enumerate([(-30,7),(29,10),(-33,-35),(30,-37)]):s.prop('graveyard','urn-round','Urn'+str(i),(x,.4,z),3)
     for i,(x,z) in enumerate([(-27,22),(28,25),(-29,1),(30,0)]):s.prop('graveyard','rocks','GardenRock'+str(i),(x,0,z),2)
     for i in range(6):
         s.prop('graveyard','candle-multiple','Candle'+str(i),((-1 if i%2 else 1)*23,1.4,-9-(i//2)*12),2.4)
-    for i,x in enumerate([-22,-15,15,22]):s.prop('furniture','bookcaseClosed','Bookcase'+str(i),(x,.4,-39),8,stretch=(.85,1.18,1),tilt=(-1 if i%2 else 1)*.035)
+    for i,x in enumerate([-40,-27,27,40]):s.prop('furniture','bookcaseClosed','Bookcase'+str(i),(x,.4,-59.5),8,stretch=(.85,1.18,1),tilt=(-1 if i%2 else 1)*.035)
     s.prop('furniture','desk','RecordDesk',(-19,.4,-26),3)
     s.prop('furniture','books','OpenRecords',(-18,3.5,-26),.8)
     s.prop('furniture','coatRackStanding','CoatRack',(23,.4,-18),7)
@@ -957,9 +957,9 @@ def build():
         a=i*math.pi/4;s.lathe('ChandelierCandle'+str(i),(math.cos(a)*3,17.4,-24+math.sin(a)*3),.15,.12,1.3,c['ivory'])
     # Portraits and stage reward relics; the owner-specific module controls their visibility.
     for i in range(12):
-        x=([-24,-17,-10,10,17,24])[i%6];z=-41.7;y=9 if i<6 else 16
-        s.box('PortraitFrame'+str(i+1),(x,y,z),(5.2,5.8,.5),c['brass'])
-        s.box('PortraitCanvas'+str(i+1),(x,y,z+.3),(4.4,5,.1),c['black'])
+        x=([-40,-26,-12,12,26,40])[i%6];z=-63.7;y=9 if i<6 else 16
+        s.box('PortraitFrame'+str(i+1),(x,y,z),(6.0,6.6,.5),c['brass'])
+        s.box('PortraitCanvas'+str(i+1),(x,y,z+.3),(5.2,5.8,.1),c['black'])
     npc(s,'Butler',(5,.5,-9));npc(s,'Undertaker',(20,.5,-22));npc(s,'Archivist',(-21,.5,-30))
     # 가족이 사는 집의 흔적. 동일 무료 GLB를 비율/각도만 바꿔 재사용한다.
     s.prop('furniture','tableRound','FamilyTeaTable',(-15,.4,-18),3.2,stretch=(1.45,1,1.2))
@@ -1003,7 +1003,7 @@ def build():
             paint_ellipse(img,x,y,width,width,color)
 
     for i in range(12):
-        x=([-24,-17,-10,10,17,24])[i%6];y=9 if i<6 else 16
+        x=([-40,-26,-12,12,26,40])[i%6];y=9 if i<6 else 16
         pixels=np.ones((320,256,4),dtype=np.float32)
         pixels[:,:,:3]=np.array((23,29,32),dtype=np.float32)/255
         coat=[(41,54,54),(67,34,47),(31,50,69),(74,60,41)][i%4]
@@ -1043,7 +1043,7 @@ def build():
         mat.node_tree.links.new(tex.outputs['Color'],bs.inputs['Base Color'])
         data=s.mesh('FamilyPortrait'+str(i+1),[(-2.2,-2.5,0),(2.2,-2.5,0),(2.2,2.5,0),(-2.2,2.5,0)],[(0,1,2,3)],mat)
         for uv,value in zip(data.uv_layers.active.data,[(0,0),(1,0),(1,1),(0,1)]):uv.uv=value
-        s.node('FamilyPortrait'+str(i+1),data,(x,y,-41.26))
+        s.node('FamilyPortrait'+str(i+1),data,(x,y,-63.26))
 
     # 저택 배경도 내부 GLB를 재구성한다. 문·기둥·담장 원형의 출처는 기존 CC0 manifest다.
     for side in [-1,1]:
@@ -1051,7 +1051,7 @@ def build():
         s.prop('graveyard','crypt-large-roof','ManorPediment'+str(side),(side*20,21,-4),5.8,stretch=(1.8,1,.6))
         for z in [8,23,38]:
             s.prop('graveyard','stone-wall','GardenWall'+str(side)+str(z),(side*39,0,z),2.2,math.pi/2,stretch=(1.5,1,1))
-        s.prop('graveyard','crypt-door','AncestorsDoor'+str(side),(side*24,.4,-41),9,stretch=(1.05,1,.5))
+        s.prop('graveyard','crypt-door','AncestorsDoor'+str(side),(side*36,.4,-63),9,stretch=(1.05,1,.5))
         for z in [-11,-25,-38]:
             s.box('PanelPillar'+str(side)+str(z),(side*27,10,z),(.8,20,.8),c['wood'])
             s.box('PanelCapital'+str(side)+str(z),(side*26.7,19,z),(1.2,.65,1.4),c['brass'])
@@ -1070,14 +1070,14 @@ def build():
                 s.box('ArchiveVolume'+str(row)+str(shelf)+str(k),(bx,y+bh/2,-37.9),(.43,bh,.95),book_colors[(k+row+shelf)%4],lean=.035*(k%2))
                 s.box('BookSpineGold'+str(row)+str(shelf)+str(k),(bx,y+bh*.7,-37.40),(.27,.07,.015),c['brass'])
     # 굽은 벽난로와 중앙 가족 거울. 기존 방의 통로 폭을 유지한다.
-    for x in [-5.8,5.8]:s.box('FireplacePillar'+str(x),(x,4,-40),(1.7,8,3),c['stone'])
-    s.box('FireplaceMantel',(0,8.1,-40),(14,1.1,3.6),c['stone'])
-    s.box('FireplaceBlack',(0,3.8,-42),(10,6.5,.1),c['black'])
+    for x in [-7.2,7.2]:s.box('FireplacePillar'+str(x),(x,4,-61.7),(1.9,8,3.2),c['stone'])
+    s.box('FireplaceMantel',(0,8.1,-61.7),(17,1.1,3.8),c['stone'])
+    s.box('FireplaceBlack',(0,3.8,-63.45),(12.5,6.5,.1),c['black'])
     for i in range(5):
-        s.lathe('FireplaceLog'+str(i),(-3+i*1.5,.9,-40),.36,.36,1.4,c['wood'])
-        s.ellipsoid('HearthFlame'+str(i),(-3+i*1.5,1.8+(i%2)*.6,-39.8),(.75,2.2+(i%2)*1.1,.55),c['amber'])
-    s.ellipsoid('FamilyMirrorFrame',(0,14,-41.5),(11,10,.55),c['brass'])
-    s.ellipsoid('FamilyMirror',(0,14,-41.13),(9.7,8.7,.15),c['glass'])
+        s.lathe('FireplaceLog'+str(i),(-3+i*1.5,.9,-61.4),.36,.36,1.4,c['wood'])
+        s.ellipsoid('HearthFlame'+str(i),(-3+i*1.5,1.8+(i%2)*.6,-61.2),(.75,2.2+(i%2)*1.1,.55),c['amber'])
+    s.ellipsoid('FamilyMirrorFrame',(0,15,-63.2),(13,11.5,.55),c['brass'])
+    s.ellipsoid('FamilyMirror',(0,15,-62.83),(11.6,10.1,.15),c['glass'])
     for side in [-1,1]:
         s.ellipsoid('MirrorEye'+str(side),(side*1.9,14.5,-40.98),(1.4,1.1,.1),c['ivory'])
         s.ellipsoid('MirrorPupil'+str(side),(side*1.9,14.5,-40.87),(.42,.8,.08),c['black'])
