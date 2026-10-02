@@ -62,20 +62,30 @@ jobs:
         env:
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          node tools/horror-manor-native-check.mjs
-          echo 'MANOR_CLOUD_NATIVE_ASSET_CHECK=PASS'
-      - name: Build exact cloud place
+          MANOR_NATIVE_MODEL: /tmp/horror-personal-manor/manor.rbxm
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p /tmp/horror-personal-manor
+          node tools/horror-manor-native-check.mjs
+          test -s "$MANOR_NATIVE_MODEL"
+          echo 'MANOR_CLOUD_NATIVE_ASSET_CHECK=PASS'
+      - name: Build exact cloud place with packaged manor
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const p='roblox-games/horror-escape-room/default.project.json';
+          const j=JSON.parse(fs.readFileSync(p,'utf8'));
+          j.tree.ServerStorage={$className:'ServerStorage',ManorTemplate:{$path:'/tmp/horror-personal-manor/manor.rbxm'}};
+          fs.writeFileSync(p,JSON.stringify(j,null,2)+'\n');
+          NODE
           /tmp/rojo-bin/rojo build roblox-games/horror-escape-room/default.project.json -o /tmp/horror-personal-manor/horror-escape-room.rbxlx
           test -s /tmp/horror-personal-manor/horror-escape-room.rbxlx
           echo "MANOR_PLACE=/tmp/horror-personal-manor/horror-escape-room.rbxlx" >> "$GITHUB_ENV"
           echo "MANOR_PLACE_SHA256=$(sha256sum /tmp/horror-personal-manor/horror-escape-room.rbxlx | awk '{print $1}')"
+          echo "MANOR_PACKAGED_TEMPLATE_BYTES=$(stat -c%s /tmp/horror-personal-manor/manor.rbxm)"
       - name: Publish verified manor to owner-only private target
         if: github.ref == 'refs/heads/main'
         env:
