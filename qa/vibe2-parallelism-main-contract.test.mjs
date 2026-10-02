@@ -139,6 +139,12 @@ test('game-primary control work uses available latest capacity while push/manual
   assert.match(core,/Record asset no-model cache bypass/);
   assert.match(core,/VIBE2_MODEL_CACHE_RESERVE_PROBE=SKIPPED_ASSET_LANE/);
   assert.match(core,/VIBE2_MODEL_CACHE_WARMUP_DECISION=SKIP_ASSET_WORKER_LOCAL_DECISION/);
+  assert.match(core,/put\('local_model',selectedModel\)/);
+  assert.match(core,/put\('hero_model_requested',heroModelRequested\?'true':'false'\)/);
+  assert.match(core,/model: \$\{\{ steps\.order\.outputs\.local_model \}\}/);
+  assert.match(core,/VIBE2_LOCAL_MODEL: \$\{\{ steps\.order\.outputs\.local_model \}\}/);
+  assert.match(core,/VIBE2_HERO_ASSET_MODEL_ACTIVE=\$\{\{ steps\.order\.outputs\.hero_model_requested \}\}/);
+  assert.match(core,/key: vibe2-ollama-v5-\$\{\{ runner\.os \}\}-\$\{\{ runner\.arch \}\}-qwen3-1\.7b/);
   assert.match(core,/\n  worker:[\s\S]{0,520}?matrix\.target == 'roblox'[\s\S]{0,220}?'ubuntu-latest'[\s\S]{0,220}?'ubuntu-24\.04-arm'/);
   assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentRunnerLabel,'ubuntu-24.04-arm');
   assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentSchedulerPlanRunner,'ubuntu-24.04-arm');
