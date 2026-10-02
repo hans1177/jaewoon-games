@@ -207,7 +207,9 @@ test('personal manor exterior has signature housing and collection architecture'
  assert.match(lobby,/surface\.Name="RareCaseLabelGui"/);
  assert.match(lobby,/text\.Text="희귀 기록 · "\.\.ghost\.Name/);
  assert.match(lobby,/Vector3\.new\(-70\.0,5\.0,-56\.8\),\.55,12,false/);
- assert.match(lobby,/Vector3\.new\(-58,8,-47\),\.78,20,false/);
+ assert.match(lobby,/Vector3\.new\(-58,8,-54\),\.72,16,false,Color3\.fromRGB\(244,203,154\)/);
+ assert.match(lobby,/Vector3\.new\(58,8,-33\),\.72,16,false,Color3\.fromRGB\(248,188,165\)/);
+ assert.match(lobby,/Vector3\.new\(0,34,-5\),\.42,24,Color3\.fromRGB\(169,187,217\)/);
  assert.match(lobby,/WingFurnitureBoundary/);
  assert.match(lobby,/-69,4,-58\.8,4\.5,8,3\.8/);
  assert.match(lobby,/69,4\.2,-37\.8,4\.5,8\.5,3\.8/);
@@ -225,6 +227,10 @@ test('personal manor exterior has signature housing and collection architecture'
  assert.match(ui,/BackdropCloud/);assert.match(ui,/BackdropMist/);assert.match(ui,/BackdropBat/);
  assert.match(ui,/ChandelierPearDrop/);assert.match(ui,/PaperMoonHalo/);
  assert.match(ui,/row\.light\.Brightness=row\.brightness\*\(1\+math\.sin/);
+ assert.match(ui,/다크카툰 고딕 UI 팔레트/);
+ assert.match(ui,/local purple=Color3\.fromRGB\(61,28,82\)/);
+ assert.match(ui,/local function gothicCorners\(parent\)/);
+ assert.match(ui,/mark\.Name="GothicCorner"/);
  assert.match(ui,/mesh\.CFrame=row\.home\+Vector3\.new\(math\.sin\(now\*4\.7\+phase\)\*\.018/);
  assert.match(lobby,/for _,prefix in ipairs\(\{"MapMasterpiece_","GallerySet_"\}\)do/);
  assert.doesNotMatch(lobby,/SetAttribute\("GhostCompleted"/);
