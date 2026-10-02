@@ -517,6 +517,18 @@ test('candidate release gate isolates candidates and requires the affected Web d
   assert.ok((candidateReleaseWorkflow.match(/git reset --hard origin\/vibe2-unreal-core/g)||[]).length>=4);
 });
 
+test('candidate release carries exact source-bound asset promotion candidates into company runtime state',()=>{
+  assert.match(candidateReleaseWorkflow,/asset_promotion_candidates: \$\{\{ steps\.gate\.outputs\.asset_promotion_candidates \}\}/);
+  assert.match(candidateReleaseWorkflow,/m\.runtimePromotionCandidates/);
+  assert.match(candidateReleaseWorkflow,/candidateSourceBindingVerified/);
+  assert.match(candidateReleaseWorkflow,/Persist exact runtime asset promotion plan/);
+  assert.match(candidateReleaseWorkflow,/robloxAssetRuntimePromotionPlan/);
+  assert.match(candidateReleaseWorkflow,/PENDING_EXACT_NATIVE_RUNTIME/);
+  assert.match(candidateReleaseWorkflow,/promotedMainSha/);
+  assert.match(candidateReleaseWorkflow,/promotedSourceTreeSha/);
+  assert.match(candidateReleaseWorkflow,/verifiedCompanyPromotionAuthority:'assets\/vibe-studio-asset-universe\.js'/);
+  assert.match(candidateReleaseWorkflow,/git push origin HEAD:company-runtime/);
+});
 test('controller runs content-hash incremental QA per worker and one parallel full regression at fan-in',()=>{
   assert(workflow.includes('actions/cache@v4'));
   assert(workflow.includes('tools/vibe2-incremental-qa.mjs'));
