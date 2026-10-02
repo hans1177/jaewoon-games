@@ -72,7 +72,15 @@ if(!evidence||evidence.sha256!==hash||!(Number(evidence.assetId)>0)){
   operation=await request(`https://apis.roblox.com/assets/v1/${operationPath}`,{headers});
  }
  const assetId=operation.response?.assetId;
- if(!operation.done||operation.error||!(Number(assetId)>0))throw Error('MANOR_ASSET_IMPORT_FAILED');
+ if(!operation.done||operation.error||!(Number(assetId)>0)){
+  console.error('MANOR_ASSET_IMPORT_OPERATION='+JSON.stringify({
+   done:operation.done===true,
+   error:operation.error||null,
+   response:operation.response||null,
+   path:operation.path||null
+  }));
+  throw Error('MANOR_ASSET_IMPORT_FAILED');
+ }
  evidence={...evidence,assetId:String(assetId),sha256:hash,creator,sourceRevision:process.env.GITHUB_SHA,importedAt:new Date().toISOString()};
  fs.writeFileSync(evidencePath,JSON.stringify(evidence,null,2)+'\n');
 }
