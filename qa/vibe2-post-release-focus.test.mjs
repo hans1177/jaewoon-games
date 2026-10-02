@@ -69,10 +69,31 @@ function setup(){
   const first=feedPostReleaseFocus({roadmapFile,companyRuntimeQueueFile:runtimeFile,queueFile,recombinationFile:memoryFile,exposureFile,repoRoot:root});
   assert.equal(first.added,true);
   assert.equal(first.queue.tasks.length,1);
-  const second=feedPostReleaseFocus({roadmapFile,companyRuntimeQueueFile:runtimeFile,queueFile,recombinationFile:memoryFile,exposureFile,repoRoot:root});
-  assert.equal(second.added,false);
-  assert.equal(second.reason,'NO_NEW_SOURCE_CYCLE');
+  assert(first.task.evidence.includes('post-release-cycle-source:'+item.robloxSourceCommit));
+  assert(first.task.evidence.includes('post-release-cycle-artifact:'+item.robloxBuildArtifactIdentity));
+
+  fs.writeFileSync(path.join(root,'roblox-games/demo/client/Game.client.luau'),'return { localSweep = true }\n');
+  const sameCycleAfterTreeChange=feedPostReleaseFocus({roadmapFile,companyRuntimeQueueFile:runtimeFile,queueFile,recombinationFile:memoryFile,exposureFile,repoRoot:root});
+  assert.equal(sameCycleAfterTreeChange.added,false);
+  assert.equal(sameCycleAfterTreeChange.reason,'NO_NEW_SOURCE_CYCLE');
   assert.equal(JSON.parse(fs.readFileSync(queueFile,'utf8')).tasks.length,1);
+
+  const nextItem={
+    ...item,
+    robloxSourceCommit:'c'.repeat(40),
+    robloxBuildArtifactIdentity:'sha256:'+'d'.repeat(64),
+    robloxReleaseEvidence:{
+      ...item.robloxReleaseEvidence,
+      sourceRevision:'c'.repeat(40),
+      artifactIdentity:'sha256:'+'d'.repeat(64),
+      versionNumber:8
+    }
+  };
+  fs.writeFileSync(runtimeFile,JSON.stringify({items:[nextItem]}));
+  const nextCycle=feedPostReleaseFocus({roadmapFile,companyRuntimeQueueFile:runtimeFile,queueFile,recombinationFile:memoryFile,exposureFile,repoRoot:root});
+  assert.equal(nextCycle.added,true);
+  assert.notEqual(nextCycle.task.id,first.task.id);
+  assert.equal(JSON.parse(fs.readFileSync(queueFile,'utf8')).tasks.length,2);
 }
 
 {

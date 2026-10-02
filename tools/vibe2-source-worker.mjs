@@ -3213,7 +3213,10 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
         studioEditMatchCreditRetry=true;
         console.log(`VIBE2_STUDIO_EDIT_MATCH_CREDIT=${attempt}->${maxAttempts}:${candidateVariant}`);
       }
-      const studioCausalRecoveryClass=studioExpansion&&['NO_OP','TIMEOUT','INVALID_PATH','STUDIO_QUALITY_DELTA'].includes(failureClass);
+      const studioCausalRecoveryClass=studioExpansion&&(
+        ['NO_OP','TIMEOUT','INVALID_PATH','STUDIO_QUALITY_DELTA'].includes(failureClass)
+        ||(target==='roblox'&&['ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','PRESENTATION_PATCH_DELTA','GRAPHICS_REPLACEMENT_REPORT'].includes(failureClass))
+      );
       let studioCausalRecoveryCreditRetry=false;
       if(!allowFullRewrite&&studioCausalRecoveryClass&&attempt>=maxAttempts&&attempt<configuredBaseMaxAttempts&&!studioCausalRecoveryCreditUsed){
         maxAttempts=Math.min(configuredBaseMaxAttempts,attempt+1);
@@ -3306,11 +3309,13 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       }
       const ordinaryRetry=attempt===1&&shouldRetryGenerationError(error);
       const focusedRetry=attempt===2&&!allowFullRewrite&&focusedFinalRetryAllowed(error);
+      const focusedPrimaryBudgetRetry=!allowFullRewrite&&focusedReplaceOnly&&!speculativeVariant&&focusedFinalRetryAllowed(error)&&attempt<maxAttempts;
+      if(focusedPrimaryBudgetRetry)console.log(`VIBE2_FOCUSED_PRIMARY_BUDGET_RETRY=${attempt}->${attempt+1}:${candidateVariant}:${failureClass}`);
       const fullWebAccumulationRetry=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt<maxAttempts&&(['FULL_REWRITE_SIZE','MALFORMED_OUTPUT','TIMEOUT'].includes(failureClass)||/FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)/.test(clean(error?.message)));
       const fullWebFallbackRetry=allowFullRewrite&&!accumulatedFullWeb&&attempt===2&&fullWebFinalRetryAllowed(error)&&attempt<maxAttempts;
       const zeroOutputCircuitOpen=consecutiveZeroOutputTimeouts>=2;
       if(zeroOutputCircuitOpen)console.log(`VIBE2_ZERO_OUTPUT_TIMEOUT_CIRCUIT_OPEN=${attempt}:${candidateVariant}`);
-      const hasAnother=!zeroOutputCircuitOpen&&(robloxStructuralRetry||truncatedOutputRetry||ordinaryRetry||focusedRetry||multiFilePairRetry||robloxFullGraphicsRecoveryRetry||presentationRecoveryRetry||focusedNoOpCreditRetry||studioEditMatchCreditRetry||studioCausalRecoveryCreditRetry||speculativeFocusedRetryCredit||presentationPatchDeltaCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry);
+      const hasAnother=!zeroOutputCircuitOpen&&(robloxStructuralRetry||truncatedOutputRetry||ordinaryRetry||focusedRetry||focusedPrimaryBudgetRetry||multiFilePairRetry||robloxFullGraphicsRecoveryRetry||presentationRecoveryRetry||focusedNoOpCreditRetry||studioEditMatchCreditRetry||studioCausalRecoveryCreditRetry||speculativeFocusedRetryCredit||presentationPatchDeltaCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry);
       const fakeSequence=Array.isArray(responseFiles)&&responseFiles.filter(Boolean).length>attempt;
       if(!hasAnother||(responseFile&&!fakeSequence)){
         error.vibe2GenerationAttempts=attempt;

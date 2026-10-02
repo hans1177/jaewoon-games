@@ -1589,6 +1589,31 @@ test('speculative focused repair gets one bounded retry after focused no-op at t
   assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/spec-focused-credit/files/Assets/Player.cs'),'utf8'),/return 2/);
 });
 
+test('primary focused Roblox repair uses the existing fourth attempt after repeated no-op replacements', async () => {
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  const badEdit=path.join(cwd,'primary-bad-edit.json');
+  const noOp2=path.join(cwd,'primary-noop-2.json');
+  const noOp3=path.join(cwd,'primary-noop-3.json');
+  const good4=path.join(cwd,'primary-good-4.json');
+  const workOrder=order({target:'roblox',root,responsibleFiles:[root+'/'+relative],taskId:'primary-focused-fourth-attempt'});
+  workOrder.goal='[POST_RELEASE_FOCUSED_DEVELOPMENT] improve the existing Roblox source without changing authority';
+  write(path.join(cwd,root,relative),'local score = 0\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(badEdit,JSON.stringify({edits:[{path:relative,find:'local score = 9',replace:'local score = 1'}]}));
+  write(noOp2,JSON.stringify({replace:'local score = 0'}));
+  write(noOp3,JSON.stringify({replace:'local score = 0'}));
+  write(good4,JSON.stringify({replace:'local score = 1'}));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[badEdit,noOp2,noOp3,good4]});
+  assert.equal(result.generation.attempts,4);
+  assert.equal(result.generation.baseAttemptBudget,4);
+  assert.equal(result.generation.effectiveAttemptBudget,4);
+  assert.equal(result.generation.focusedReplaceOnly,true);
+  assert.deepEqual(result.changedFiles,[relative]);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/primary-focused-fourth-attempt/files',relative),'utf8'),/local score = 1/);
+});
+
 test('focused replace recovery budget matches the central fast-path contract',()=>{
   const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
   const focusedPredict=Number(source.match(/const JSON_FOCUSED_REPLACE_MAX_PREDICT=(\d+);/)?.[1]||0);
@@ -3152,6 +3177,22 @@ test('focused no-op retry keeps speculative base budget but grants only targeted
   assert.match(workerSource,/focusedReplaceAnchorCursor\+=1/);
   assert.match(workerSource,/focusedReplaceNoOpCreditUsed=true/);
 });
+
+test('primary focused Roblox recovery consumes the configured fourth attempt without expanding the retry budget',()=>{
+  assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'primary'}),4);
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(workerSource,/focusedPrimaryBudgetRetry=!allowFullRewrite&&focusedReplaceOnly&&!speculativeVariant&&focusedFinalRetryAllowed\(error\)&&attempt<maxAttempts/);
+  assert.match(workerSource,/VIBE2_FOCUSED_PRIMARY_BUDGET_RETRY/);
+  assert.match(workerSource,/hasAnother=.*focusedPrimaryBudgetRetry/);
+});
+
+test('Roblox studio visual-domain failures consume the remaining configured causal recovery attempt',()=>{
+  assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'primary'}),4);
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(workerSource,/studioCausalRecoveryClass=studioExpansion&&\([\s\S]*ROBLOX_VISUAL_DOMAINS[\s\S]*ROBLOX_VISUAL_MOTION/);
+  assert.match(workerSource,/studioCausalRecoveryClass&&attempt>=maxAttempts&&attempt<configuredBaseMaxAttempts/);
+});
+
 test('focused replace recovery salvages a complete replace string from an unfinished outer JSON object',()=>{
   const spec={path:'index.html',find:'<button id="play">Play</button>'};
   const raw='{"replace":"<button id=\\\"play\\\">Continue</button>"\n';

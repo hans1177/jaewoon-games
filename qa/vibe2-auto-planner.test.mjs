@@ -3114,6 +3114,49 @@ test('stale queued directive rebinds to the active shared generation before rese
   assert.ok(staleAfter.evidence.includes('build-up-directive-freshness:RECONCILED_TO_ACTIVE_GENERATION'));
 });
 
+test('current source change regenerates queued BUILD_UP while the stale prior generation is still running',()=>{
+  const root=tempRepo();
+  const gameId='source-changed-build-up-refresh';
+  const source=path.join(root,'roblox-games',gameId,'server');
+  fs.mkdirSync(source,{recursive:true});
+  const combatFile=path.join(source,'Combat.server.luau');
+  fs.writeFileSync(combatFile,'function resolveAttack(enemy) return enemy ~= nil end\n','utf8');
+  writeStudioDesign(root,gameId,{coreFun:'적 상태를 읽고 공격 타이밍을 선택하는 재미'});
+  const project={gameId,name:'Source Changed Build Up Refresh',engine:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`};
+  const first=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
+  assert.ok(first?.buildUpDirective);
+  assert.equal(first.buildUpGeneration,1);
+  const oldFingerprint=first.buildUpDirective.sourceTreeFingerprint;
+  const running={...first,id:`${gameId}-running-g1`,status:'running',reservationRunId:'old-source-run'};
+
+  fs.writeFileSync(combatFile,'function resolveAttack(enemy) return enemy ~= nil and enemy.Health > 0 end\n','utf8');
+  const queued={
+    ...first,
+    id:`${gameId}-queued-next-cycle`,
+    status:'queued',
+    reservationRunId:null,
+    reservationRunAttempt:0,
+    reservedAt:null,
+    goal:'current source post-F9 next evolution'
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[{gameId,ownerDecision:'PASS',target:'roblox',projectPath:`roblox-games/${gameId}`,progress:80}]},
+    catalog:{games:[{id:gameId,name:project.name,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
+    queue:{maxConcurrentTasks:20,tasks:[running,queued]},
+    repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:2,planningBacklogMinimum:0
+  });
+  assert.equal(result.planned,false);
+  const runningAfter=result.queue.tasks.find(row=>row.id===running.id);
+  const queuedAfter=result.queue.tasks.find(row=>row.id===queued.id);
+  assert.equal(runningAfter.buildUpGeneration,1);
+  assert.equal(runningAfter.buildUpDirective.sourceTreeFingerprint,oldFingerprint);
+  assert.equal(queuedAfter.buildUpGeneration,2);
+  assert.notEqual(queuedAfter.buildUpDirectiveId,queued.buildUpDirectiveId);
+  assert.notEqual(queuedAfter.buildUpDirective.sourceTreeFingerprint,oldFingerprint);
+  assert.ok(queuedAfter.evidence.includes('build-up-directive-source-refresh:CURRENT_SOURCE_TREE'));
+  assert.ok(queuedAfter.evidence.includes('build-up-directive-freshness:REGENERATED_AFTER_SOURCE_TREE_CHANGE'));
+});
+
 test('failed and blocked resume candidates share one reconciled directive without changing task status',()=>{
   const root=tempRepo();
   const gameId='resume-build-up-siblings';

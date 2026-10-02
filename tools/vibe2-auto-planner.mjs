@@ -2013,6 +2013,9 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     };
   }
   const platformLane=studioQualityLane(project);
+  const sourceRoots=[project.projectPath]
+    .map(posix).filter((value,index,array)=>value&&array.indexOf(value)===index&&fs.existsSync(sourceFile(repoRoot,value)));
+  const sourceObservation=inspectGameSources({repoRoot,sourceRoots});
   const taskHistory=[...(queue?.tasks||[])].filter(item=>
     clean(item?.gameId)===clean(project.gameId)
     &&sameStudioQualityLane(item,project)
@@ -2029,7 +2032,12 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     ?taskHistory.filter(item=>clean(item?.buildUpDirective?.directiveId)===latestDirectiveId)
     :[];
   const activeDirectiveTask=[...latestDirectiveTasks].reverse().find(item=>!inactiveDirectiveStatuses.has(clean(item.status).toLowerCase()));
-  if(activeDirectiveTask?.buildUpDirective){
+  const activeDirectiveMatchesCurrentSource=Boolean(
+    activeDirectiveTask?.buildUpDirective
+    &&clean(activeDirectiveTask.buildUpDirective.sourceTreeFingerprint)
+    &&clean(activeDirectiveTask.buildUpDirective.sourceTreeFingerprint)===clean(sourceObservation.sourceTreeFingerprint)
+  );
+  if(activeDirectiveMatchesCurrentSource){
     const repairRequired=platformLane==='roblox'&&project.queueRobloxQualityBuildUpRequired===true;
     const directive={
       ...activeDirectiveTask.buildUpDirective,
@@ -2127,9 +2135,6 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     regressionPassed:(samePlatform&&project?.queueRuntimeRegressionPassed===true)
       ||(roblox&&project?.queueRobloxRegressionPassed===true)
   };
-  const sourceRoots=[project.projectPath]
-    .map(posix).filter((value,index,array)=>value&&array.indexOf(value)===index&&fs.existsSync(sourceFile(repoRoot,value)));
-  const sourceObservation=inspectGameSources({repoRoot,sourceRoots});
   const directive=buildGameSpecificBuildUpDirective({
     gameId:project.gameId,
     gameName:project.name||project.gameId,
@@ -2499,10 +2504,18 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
   };
   const terminalStatuses=new Set(['verified','done','completed','failed','error','rejected','cancelled','superseded']);
   const tasks=[...(queue?.tasks||[])];
+  const sourceFingerprintByScope=new Map();
+  for(const [scope,project] of projectByScope.entries()){
+    const sourceRoots=[project.projectPath]
+      .map(posix).filter((value,index,array)=>value&&array.indexOf(value)===index&&fs.existsSync(sourceFile(repoRoot,value)));
+    sourceFingerprintByScope.set(scope,clean(inspectGameSources({repoRoot,sourceRoots}).sourceTreeFingerprint));
+  }
   const canonicalByScope=new Map();
   for(const row of tasks){
     const gameId=clean(row?.gameId),directive=row?.buildUpDirective,lane=studioQualityTaskLane(row),scope=gameId+'|'+lane;
     if(!gameId||!clean(directive?.directiveId)||clean(row?.status).toLowerCase()!=='running'||!hasCurrentAutonomousContentExpansionDirective(directive))continue;
+    const currentSourceFingerprint=sourceFingerprintByScope.get(scope)||'';
+    if(currentSourceFingerprint&&clean(directive.sourceTreeFingerprint)!==currentSourceFingerprint)continue;
     const current=canonicalByScope.get(scope);
     if(!current||Number(directive?.generation||0)>Number(current?.generation||0))canonicalByScope.set(scope,directive);
   }
@@ -2523,6 +2536,11 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
     const latestHistorical=history.slice().sort(byGeneration)[0]||null;
     const currentId=clean(item?.buildUpDirective?.directiveId||item?.buildUpDirectiveId);
     const currentGeneration=Number(item?.buildUpDirective?.generation||item?.buildUpGeneration||0);
+    const currentSourceFingerprint=sourceFingerprintByScope.get(scope)||'';
+    const currentDirectiveSourceStale=Boolean(
+      currentId&&currentSourceFingerprint
+      &&clean(item?.buildUpDirective?.sourceTreeFingerprint)!==currentSourceFingerprint
+    );
     const currentDirectiveNeedsContractMigration=Boolean(currentId&&!hasCurrentAutonomousContentExpansionDirective(item?.buildUpDirective));
     const latestHistoricalGeneration=Number(latestHistorical?.buildUpDirective?.generation||0);
     let candidate=item,freshness='CURRENT_NO_NEWER_ACTIVE_GENERATION';
@@ -2534,6 +2552,31 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
       }
       rebound+=1;changed+=1;
       freshness=currentDirectiveNeedsContractMigration?'RECONCILED_LEGACY_DIRECTIVE_TO_ACTIVE_AUTONOMOUS_GENERATION':'RECONCILED_TO_ACTIVE_GENERATION';
+    }else if(currentDirectiveSourceStale){
+      const verifiedDesign=latestVerifiedDesign(repoRoot,gameId);
+      if(!verifiedDesign){
+        designPending+=1;
+        freshness='STALE_SOURCE_DESIGN_PENDING';
+        candidate={...item,buildUpStatus:'DESIGN_PENDING',evidence:[...new Set([...(item.evidence||[]),'build-up-directive:DESIGN_PENDING','build-up-directive:STALE_SOURCE_TREE'])]};
+      }else{
+        const queueWithoutCurrent={...queue,tasks:tasks.filter((_,rowIndex)=>rowIndex!==index)};
+        const refreshed=attachGameSpecificBuildUpDirective(item,project,repoRoot,queueWithoutCurrent,verifiedDesign);
+        if(clean(refreshed?.buildUpDirective?.directiveId)){
+          const newerTerminalGeneration=latestHistoricalGeneration>currentGeneration;
+          candidate=bindSharedBuildUpDirective(item,refreshed.buildUpDirective);
+          canonicalByScope.set(scope,refreshed.buildUpDirective);
+          candidate={...candidate,evidence:[...new Set([
+            ...(candidate.evidence||[]),...(refreshed.evidence||[]),
+            'build-up-directive-source-refresh:CURRENT_SOURCE_TREE',
+            ...(newerTerminalGeneration?['build-up-directive-stale-refresh:queued-existing-work']:[])
+          ])]};
+          rebound+=1;changed+=1;
+          freshness=newerTerminalGeneration?'REGENERATED_AFTER_NEWER_TERMINAL_GENERATION':'REGENERATED_AFTER_SOURCE_TREE_CHANGE';
+        }else{
+          designPending+=1;
+          freshness='STALE_SOURCE_REGENERATION_FAILED';
+        }
+      }
     }else if(currentDirectiveNeedsContractMigration){
       const verifiedDesign=latestVerifiedDesign(repoRoot,gameId);
       if(!verifiedDesign){
