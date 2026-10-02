@@ -12,6 +12,7 @@ const manorAssets=fs.readFileSync('roblox-games/horror-escape-room/shared/ManorA
 const combatAssets=fs.readFileSync('roblox-games/horror-escape-room/shared/CombatAssets.luau','utf8');
 const combatAssetTool=fs.readFileSync('tools/horror-combat-assets.mjs','utf8');
 const combatAssetWorkflow=fs.readFileSync('.github/workflows/horror-combat-assets.yml','utf8');
+const robloxBootstrapTool=fs.readFileSync('tools/company-development-roblox-bootstrap.mjs','utf8');
 const project=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/default.project.json','utf8'));
 const launch=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/launch-mvp.json','utf8'));
 
@@ -538,6 +539,17 @@ test('기존 4개 단말 목표와 비상구 탈출 루프가 실제 승리조�
  assert.match(server,/if workspace:GetAttribute\("SurvivorEscapeTriggered"\)==true then endRound\("SURVIVOR"\)/);
  assert.match(client,/목표 · 단말 %d\/%d 작동 → 몬스터 정화 → 탈출/);
  assert.match(client,/목표 · 인간 추적 → 감염 → 전멸/);
+});
+
+test('verified learning 바인딩은 임시 LoadingScreen 대신 지속 ScreenGui를 사용한다',()=>{
+ assert.match(robloxBootstrapTool,/Instance\.new\(\s*["']ScreenGui["']\s*\)/);
+ assert.ok(robloxBootstrapTool.includes('ScreenGui')&&robloxBootstrapTool.includes('||output.match'));
+ assert.match(client,/local verifiedLearningRoot = gui/);
+ assert.doesNotMatch(client,/local verifiedLearningRoot = loadingLayer/);
+ assert.doesNotMatch(client,/loadingLayer:SetAttribute\("Verified/);
+ assert.match(client,/gui:SetAttribute\("VerifiedExternalLearningCoveragePct"/);
+ assert.match(client,/gui\.DisplayOrder=30/);
+ assert.match(client,/gui\.ZIndexBehavior=Enum\.ZIndexBehavior\.Global/);
 });
 
 test('스킬은 이름뿐 아니라 용도와 범위를 HUD에서 설명한다',()=>{
