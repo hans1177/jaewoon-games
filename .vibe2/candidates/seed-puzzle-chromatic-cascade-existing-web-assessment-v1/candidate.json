@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 recovered partial timeout edit",
+  "expectedEffect": "recovered complete edit from bounded timeout output",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "window.GAME_CONFIG={id:'seed-puzzle-chromatic-cascade',name:'색채의 연쇄',mode:'chromatic',desc:'인접한 같은 색 덩어리를 연결해 연쇄 점수를 쌓고 목표 점수 600을 만드는 터치 퍼즐.'}",
+      "replace": ""
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
