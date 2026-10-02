@@ -1535,6 +1535,34 @@ function universalAssetWorkerGuidance(order={}) {
     'Use the existing responsible functions/files directly; do not create a wrapper or shadow asset pipeline.'
   ].filter(Boolean).join('\n');
 }
+
+function studioAssetQualityCoreGuidance(order={}) {
+  const target=clean(order?.target).toLowerCase();
+  if(!assetDevelopmentTask(order)||!['roblox','unity'].includes(target))return'';
+  const quality=order?.assetProduction?.qualityDNA||{};
+  const profiles=(quality?.contracts||[]).map(row=>clean(row?.qualityDNA?.profile)).filter(Boolean);
+  return [
+    '[STUDIO ASSET QUALITY CORE BEGIN]',
+    'target='+target.toUpperCase()+'; qualityProfile='+clean(order?.assetProduction?.qualityProfile||'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION')+'; profiles='+(profiles.join('|')||'GAME_SPECIFIC'),
+    'Choose the highest-value visible existing responsibility in the allowed source. Do not spend the pass on metadata, naming, a single color, one generic Part, or decorative noise.',
+    'A studio asset candidate must improve at least THREE connected presentation axes in the same player-visible result: FORM_STRUCTURE, MATERIAL_STYLE, MOTION_CONTACT, WORLD_COMPOSITION, or PRESENTATION_FEEDBACK.',
+    'FORM_STRUCTURE means readable silhouette/proportion/body-plan/part construction at game camera and mid range. MATERIAL_STYLE means coherent material response, palette, lighting or surface language tied to the game Style Lock.',
+    'MOTION_CONTACT means native articulated/transform motion with weight/contact/transition intent, not root-only drift. WORLD_COMPOSITION means depth, landmark, route readability, set dressing or environment hierarchy. PRESENTATION_FEEDBACK means VFX, camera, lighting, audio-visual or UI feedback tied to the visible action.',
+    'Prefer existing compatible assets and direct responsible-system binding. Preserve strong axes, repair weak axes, keep source provenance, and do not invent a gameplay system just to satisfy an asset family.',
+    'Runtime capture and before/after comparison remain required for visual closure. Source markers, counts, comments, asset lists, or a model claim never prove studio quality.',
+    'Preserve gameplay numbers, hit timing, save/progression/economy meaning, multiplayer authority, and unrelated systems.',
+    '[STUDIO ASSET QUALITY CORE END]'
+  ].join('\n');
+}
+
+function studioAssetQualityCoreBlockFromPrompt(prompt='') {
+  const raw=String(prompt??''),begin='[STUDIO ASSET QUALITY CORE BEGIN]',end='[STUDIO ASSET QUALITY CORE END]';
+  const start=raw.indexOf(begin);
+  if(start<0)return'';
+  const finish=raw.indexOf(end,start+begin.length);
+  if(finish<0)return'';
+  return raw.slice(start,finish+end.length);
+}
 // 기존 로컬 모델 연결로 실제 이미지 바이트를 관찰한다. 텍스트 모델의 추측으로 대체하지 않는다.
 export async function observeAssetReferenceImages({order={},cwd=process.cwd(),model=clean(process.env.VIBE2_VISION_MODEL),requestModel=requestLocalModel}={}){
   const creation=order.assetProduction?.imageAssetCreation;
@@ -1944,6 +1972,7 @@ learningContract.block,
 explorationGuidance(exploration),
 presentationWorkerGuidance(order),
 universalAssetWorkerGuidance(order),
+studioAssetQualityCoreGuidance(order),
 assetDetailBlock,
 runtimeVisualBlock,
 runtimeVisualRepairBlock,
@@ -2352,6 +2381,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       goal,
       verifiedExternalLearningBlockFromPrompt(raw),
       buildUpDirectiveBlockFromPrompt(raw,{compact:true,focusedRobloxVisual:robloxPresentationTask,focusedPresentation:presentationTask,selectedPath:spec.path}),
+      studioAssetQualityCoreBlockFromPrompt(raw),
       reason?'Previous failure: '+reason:'',
       /SOURCE_LINE_REPETITION/.test(reason)?'SOURCE REPETITION REPAIR: the prior stream repeated the same assignment without completing. Rebuild only the fixed anchor replacement; do not copy the surrounding function or repeat identical assignments. Preserve every required behavior.':'',
       /LUAU_SYNTAX/.test(reason)?'LUAU SYNTAX REPAIR: fix the compiler diagnostic in the replacement below. Preserve the original enclosing scope and retained source. Return the corrected replacement against the same ORIGINAL find anchor; do not edit the rejected candidate as if it were applied.':'',
@@ -2563,6 +2593,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
       compactGoalLine,
       verifiedExternalLearningBlockFromPrompt(rawPrompt),
       buildUpDirectiveBlockFromPrompt(rawPrompt,{compact:true,responsiblePaths:exactResponsible}),
+      studioAssetQualityCoreBlockFromPrompt(rawPrompt),
       allowedLine,
       fullWebTargetLine,
       'Preserve the exact responsible path. Do not touch homepage/company files or widen writable scope.',
@@ -2634,6 +2665,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
           compactGoalLine,
           compactVerifiedExternalLearningBlockFromPrompt(rawPrompt),
           buildUpDirectiveBlockFromPrompt(rawPrompt,{compact:true,responsiblePaths:exactResponsible}),
+          studioAssetQualityCoreBlockFromPrompt(rawPrompt),
           allowedLine,
           'Preserve gameplay values, save meaning and existing behavior unless the work order explicitly authorizes a protected change.',
           'Every edits[].path MUST be one exact path from Allowed edit paths.',
@@ -3790,6 +3822,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     const graphicsReplacementReport=evaluateGraphicsReplacementReport({candidate,contract:order?.presentationQuality?.graphicsReplacement||{}});
     if(graphicsReplacementReport.required&&!graphicsReplacementReport.pass)throw new Error('GRAPHICS_REPLACEMENT_REPORT_REQUIRED:'+graphicsReplacementReport.reason);
     const presentationPass=clean(order?.presentationQuality?.pass).toUpperCase();
+    let studioAssetQualityAxes=null;
     if(target==='roblox'&&presentationPass==='ASSET_ADAPTATION'){
       const changedPresentationText=[
         ...(candidate.edits||[]).map(row=>String(row.replace||'')),
@@ -3812,13 +3845,24 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       const motionDriver=/(?:TweenService|RenderStepped|Heartbeat|Animator|AnimationTrack|Motor6D|Bone)/i.test(changedPresentationText);
       const motionMutation=/(?:TweenService[\s\S]{0,1200}(?:CFrame|Transform|Position|Orientation)\s*=|(?:RenderStepped|Heartbeat)[\s\S]{0,1200}\.(?:CFrame|Transform|Position|Orientation)\s*=|(?:Motor6D|Bone)[\s\S]{0,800}\.Transform\s*=|\.(?:CFrame|Transform|Position|Orientation)\s*=\s*(?:CFrame|Vector3|UDim2|[^\n;]+[+*\-]))/i.test(changedPresentationText);
       if(!motionDriver||!motionMutation)throw new Error('ROBLOX_ASSET_ADAPTATION_MOTION_REQUIRED:NATIVE_DRIVER_AND_TRANSFORM_MUTATION');
+      if(assetDevelopmentTask(order)){
+        studioAssetQualityAxes={
+          FORM_STRUCTURE:/(?:Instance\.new\s*\(\s*["'](?:Model|MeshPart|Part|Attachment|Bone|Motor6D)["']|SpecialMesh|SurfaceAppearance|WeldConstraint|\.Size\s*=|\.CFrame\s*=)/i.test(changedPresentationText),
+          MATERIAL_STYLE:visualDomains.MATERIAL_COLOR_STYLE===true,
+          MOTION_CONTACT:motionDriver&&motionMutation,
+          WORLD_COMPOSITION:/(?:terrain|ground|tree|rock|plant|building|environment|sky|fog|biome|forest|village|dungeon|landmark|path|road|set.?dress)/i.test(changedPresentationText),
+          PRESENTATION_FEEDBACK:/(?:ParticleEmitter|Trail|Beam|PointLight|SpotLight|SurfaceLight|Camera|FieldOfView|ScreenGui|Frame|ImageLabel|ImageButton|Sound|TweenService)/i.test(changedPresentationText)
+        };
+        const studioAxisCount=Object.values(studioAssetQualityAxes).filter(Boolean).length;
+        if(studioAxisCount<3)throw new Error('STUDIO_QUALITY_DELTA_REQUIRED:ASSET_AXES:'+studioAxisCount+'/3');
+      }
     }
     const studioQualityContract=order?.selectedTask?.studioQualityEvolution||order?.workPackage?.sharedContext?.studioQualityEvolution||null;
     const studioQualityDelta=evaluateStudioQualityCandidateDelta({candidate,sourceRoot,contract:studioQualityContract});
     if(studioQualityDelta.required&&!studioQualityDelta.pass){
       throw new Error(`STUDIO_QUALITY_DELTA_REQUIRED:${studioQualityDelta.phase}:${studioQualityDelta.sourceDeltaUnits}/${studioQualityDelta.requiredSourceDeltaUnits}:VISUAL:${studioQualityDelta.visualUnits}/${studioQualityDelta.requiredVisualUnits}:${studioQualityDelta.reason}`);
     }
-    return{...result,sourceSyntax,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta};
+    return{...result,sourceSyntax,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta,studioAssetQualityAxes};
   };
   const candidateVariant=clean(order?.candidateStrategyRole?.variant)||clean(process.env.VIBE2_SPECULATIVE_VARIANT)||'primary';
   const deterministicDiagnostic=!allowFullRewrite&&verifiedExternalLearningContract.required!==true?deterministicDiagnosticCandidate({exploration,sourceRoot,responsibleFiles,order}):null;
