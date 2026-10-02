@@ -130,6 +130,7 @@ jobs:
             cancel.set(Number(run.id),reason);
           };
 
+          // Owner-requested stale cleanup: cancel these historical runs only; do not touch active game work.
           const ownerRequestedStaleRunIds=new Set([34748574272,36794190147,36802981975,36802982062,36803420019]);
           for(const stale of runs.filter(r=>ownerRequestedStaleRunIds.has(Number(r.id)))){
             add(stale,'OWNER_STALE_RUN_CLEANUP');
