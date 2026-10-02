@@ -2933,6 +2933,17 @@ local function playMonsterAbilityEffect(snapshot)
  end
 end
 
+local function playMonsterAttackEffect(snapshot)
+ if typeof(snapshot)~="table"then return end
+ local origin=typeof(snapshot.Origin)=="Vector3"and snapshot.Origin or Vector3.zero
+ local look=typeof(snapshot.Look)=="Vector3"and snapshot.Look or Vector3.new(0,0,-1)
+ markCombatSkinAttack(snapshot.UserId,origin,.58)
+ local blood=Color3.fromRGB(224,60,86)
+ abilityPulse("MonsterAttackBurst",origin+Vector3.new(0,1.45,0),blood,Vector3.new(.8,.8,.8),Vector3.new(5,5,5),.24)
+ abilityRing("MonsterAttackRing",origin+Vector3.new(0,.24,0),blood,1.5,7,.28)
+ for _,offset in ipairs({-1,-.5,0,.5,1})do abilityStreak("MonsterClaw",origin,look,blood,offset,7,.18,.28)end
+end
+
 local function playHumanAbilityEffect(snapshot)
  if typeof(snapshot)~="table"then return end
  local ability=tostring(snapshot.Ability or"")
@@ -2949,20 +2960,24 @@ local function playHumanAbilityEffect(snapshot)
  }
  local color=palette[formId]or Color3.fromRGB(116,201,220)
  if ability=="SIGNAL_JAM"then
-  abilityPulse("SignalJam",origin+Vector3.new(0,1.2,0),color,Vector3.new(1,1,1),Vector3.new(22,3,22),.52)
+  abilityPulse("SignalJam",origin+Vector3.new(0,1.2,0),color,Vector3.new(1,1,1),Vector3.new(24,4,24),.55)
+  abilityRing("SignalJamRing",origin+Vector3.new(0,.2,0),color,3,28,.58)
   task.delay(.12,function()abilityPulse("SignalJamEcho",origin+Vector3.new(0,1.2,0),color,Vector3.new(2,1,2),Vector3.new(27,2,27),.5)end)
  elseif ability=="OVERLOAD"then
-  abilityPulse("HumanOverload",origin+Vector3.new(0,.8,0),color,Vector3.new(1,1,1),Vector3.new(14,2,14),.38)
+  abilityPulse("HumanOverload",origin+Vector3.new(0,.8,0),color,Vector3.new(1,1,1),Vector3.new(16,3,16),.42)
+  abilityRing("HumanOverloadRing",origin+Vector3.new(0,.2,0),color,2,18,.4)
   for i=1,8 do
    local a=i/8*math.pi*2
    abilityStreak("OverloadArc",origin,Vector3.new(math.cos(a),0,math.sin(a)),color,0,5,.16,.3)
   end
  elseif ability=="IMPACT_BAG"then
   local dir=target-origin
-  abilityPulse("ImpactBagBurst",origin+Vector3.new(0,1.2,0),color,Vector3.new(1,1,1),Vector3.new(5,4,5),.3)
+  abilityPulse("ImpactBagBurst",origin+Vector3.new(0,1.2,0),color,Vector3.new(1,1,1),Vector3.new(7,5,7),.32)
+  abilityRing("ImpactBagRing",origin+Vector3.new(0,.2,0),color,2,10,.34)
   if dir.Magnitude>.1 then abilityStreak("ImpactBagTrail",origin,dir.Unit,color,0,math.min(14,dir.Magnitude),.35,.34)end
  elseif ability=="CAMERA_FLASH"then
-  abilityPulse("CameraFlash",origin+Vector3.new(0,1.5,0),color,Vector3.new(2,2,2),Vector3.new(19,10,19),.22)
+  abilityPulse("CameraFlash",origin+Vector3.new(0,1.5,0),color,Vector3.new(2,2,2),Vector3.new(22,13,22),.24)
+  abilityRing("CameraFlashRing",origin+Vector3.new(0,.2,0),Color3.fromRGB(255,255,246),2,22,.3)
   local character=p.Character
   local localRoot=character and character:FindFirstChild("HumanoidRootPart")
   local profile=C.HumanAbilities and C.HumanAbilities.CAMERA_FLASH
@@ -2977,7 +2992,8 @@ local function playHumanAbilityEffect(snapshot)
  elseif ability=="SHOCK_BATON"then
   local dir=target-origin
   if dir.Magnitude>.1 then
-   for i=-1,1 do abilityStreak("BatonArc",origin,dir.Unit,color,i*.25,math.min(8,dir.Magnitude),.18,.28)end
+   abilityRing("BatonShockRing",target+Vector3.new(0,.25,0),color,1,8,.28)
+   for i=-2,2 do abilityStreak("BatonArc",origin,dir.Unit,color,i*.22,math.min(9,dir.Magnitude),.2,.3)end
   end
  elseif action=="PURIFY"then
   abilityPulse("AIPurify",target+Vector3.new(0,1,0),color,Vector3.new(.8,.8,.8),Vector3.new(4,4,4),.25)
@@ -2990,6 +3006,7 @@ end
 p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
  local value=tostring(p:GetAttribute("FeedbackEvent")or"")
  if value:find("^INFECT:")then setMotionImpulse("INFECT",.72);warningSfx.TimePosition=0;warningSfx:Play();chaseTint.BackgroundTransparency=.72;showMapContentToast("감염 완료 · 몬스터로 전환",Color3.fromRGB(218,86,96),1.8)
+ elseif value:find("^INFECT_ATTACK_HIT")then setMotionImpulse("INFECT_ATTACK",.55);actionSfx.TimePosition=0;actionSfx:Play()
  elseif value:find("^PURIFY")then setMotionImpulse("PURIFY",.3);rescueSfx.TimePosition=0;rescueSfx:Play();chaseTint.BackgroundTransparency=.9
  elseif value:find("^ABILITY:")then
   setMotionImpulse("ABILITY",.48);warningSfx.TimePosition=0;warningSfx:Play()
@@ -3009,6 +3026,10 @@ remote.OnClientEvent:Connect(function(kind,snapshot)
  end
  if kind=="MONSTER_ABILITY_EFFECT"then
   playMonsterAbilityEffect(snapshot)
+  return
+ end
+ if kind=="MONSTER_ATTACK_EFFECT"then
+  playMonsterAttackEffect(snapshot)
   return
  end
  if kind=="HUMAN_ABILITY_EFFECT"or kind=="AI_HUMAN_ACTION_EFFECT"then
