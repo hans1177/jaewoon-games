@@ -2025,7 +2025,7 @@ test('Roblox Studio PC host keeps only Studio visible and resumes exact work aft
   assert.equal(host.consolePolicy,'HIDDEN_CONSOLE_PARENT_NO_VISIBLE_CMD_OR_POWERSHELL');
   assert.equal(host.hiddenChildShellsRequired,true);
   assert.equal(host.persistentBootstrap,'USER_STARTUP_WSCRIPT_HIDDEN_RUN_CMD');
-  assert.equal(host.bootstrapImplementation,'tools/roblox-runner-hidden.ps1');
+  assert.equal(host.bootstrapImplementation,'.github/workflows/company-roblox-runner-pwsh-bootstrap.yml#hidden-runner-bootstrap');
   assert.equal(host.watchdogRequired,false);
   assert.equal(host.recurringWatchdogForbidden,true);
   assert.equal(host.rebootRecovery,'HIDDEN_LOGON_RUNNER_RESTART');
@@ -2034,7 +2034,7 @@ test('Roblox Studio PC host keeps only Studio visible and resumes exact work aft
   assert.equal(host.restartFromBlankForbidden,true);
   assert.equal(host.exactSourceArtifactBindingPreservedAcrossHostInterruption,true);
 
-  const runner=readText('tools/roblox-runner-hidden.ps1');
+  const runner=readText('.github/workflows/company-roblox-runner-pwsh-bootstrap.yml');
   const runtime=readText('.github/workflows/company-development-roblox-post-runtime-qa.yml');
   const bootstrap=readText('.github/workflows/company-roblox-runner-pwsh-bootstrap.yml');
   assert.match(runner,/shell\.Run[\s\S]*, 0, False/);
@@ -2048,7 +2048,7 @@ test('Roblox Studio PC host keeps only Studio visible and resumes exact work aft
   assert.match(runtime,/ROBLOX_STUDIO_PC_INTERRUPTION_COUNTS_AS_GAME_FAILURE=NO/);
   assert.doesNotMatch(runtime,/shell:\s*powershell\s*$/m);
   assert.match(runtime,/WindowStyle Hidden/);
-  assert.match(bootstrap,/tools\\roblox-runner-hidden\.ps1/);
+  assert.match(bootstrap,/Install hidden reboot-safe Roblox runner host/);
   assert.doesNotMatch(bootstrap,/shell:\s*powershell\s*$/m);
 });
 
