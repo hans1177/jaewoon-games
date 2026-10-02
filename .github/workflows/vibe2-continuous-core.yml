@@ -2243,6 +2243,8 @@ jobs:
             `actions-run:${process.env.GITHUB_RUN_ID}`,
             clean(process.env.MODEL_CACHE_REQUIRED)&&`model-cache-required:${clean(process.env.MODEL_CACHE_REQUIRED).toUpperCase()}`,
             clean(process.env.MODEL_CACHE_REASON)&&`model-cache-reason:${clean(process.env.MODEL_CACHE_REASON)}`,
+            manifest?.modelRouting?.heroRequested===true?`asset-hero-model:${manifest?.modelRouting?.heroModelApplied===true?'PASS':'FAIL'}:${clean(manifest?.model)||'UNKNOWN'}`:'',
+            manifest?.nativeAssetAuthoring?.required===true?`native-asset-authoring-status:${clean(manifest.nativeAssetAuthoring.status)||'UNKNOWN'}`:'',
             clean(process.env.RESERVATION_ID)&&`reservation-id:${clean(process.env.RESERVATION_ID)}`,
             `variant:${clean(process.env.VARIANT)||'primary'}`,
             ...(fs.existsSync(clean(process.env.SHARED_CONTEXT_FILE))?(()=>{
@@ -2384,7 +2386,7 @@ jobs:
             authorityExpanded:false
           }:null;
           const workLock={required:workLockRequired,acquired:process.env.WORK_LOCK_ACQUIRED==='true',id:clean(process.env.WORK_LOCK_ID)||null,reason:clean(process.env.WORK_LOCK_REASON)||null,worker:'vibe2',baseSha:clean(workOrder?.compiledWorkContract?.workLock?.baseSha)||clean(process.env.BASE_SHA)||null,files:Array.isArray(workOrder?.compiledWorkContract?.workLock?.files)?workOrder.compiledWorkContract.workLock.files:[],releaseRule:clean(workOrder?.compiledWorkContract?.workLock?.releaseRule)||null};
-          const result={version:17,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,graphicsReplacementReport,graphicsReplacementValidation,graphicsReplacementQa,gameRepairQa,specializedVerificationRequest,specializedVerificationQa,roleResults,practiceDistillation,practiceArtifact,neuralDiagnosis,capabilityApplication,phase4BenchmarkVerification,durationMs:metrics.workerTotalMs,knowledgeApplication,workLock,metrics};
+          const result={version:18,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,graphicsReplacementReport,graphicsReplacementValidation,graphicsReplacementQa,gameRepairQa,specializedVerificationRequest,specializedVerificationQa,roleResults,practiceDistillation,practiceArtifact,neuralDiagnosis,capabilityApplication,phase4BenchmarkVerification,durationMs:metrics.workerTotalMs,knowledgeApplication,workLock,metrics,model:clean(manifest?.model)||null,modelRouting:manifest?.modelRouting||workOrder?.assetProduction?.modelRouting||null,nativeAssetAuthoring:manifest?.nativeAssetAuthoring||null,assetProduction:manifest?.assetProduction||workOrder?.assetProduction||null};
           const safe=clean(process.env.SAFE_TASK)||'task';
           const file=`/tmp/vibe2-result/result-${safe}-${result.variant}.json`;
           fs.writeFileSync(file,JSON.stringify(result,null,2)+'\n');
