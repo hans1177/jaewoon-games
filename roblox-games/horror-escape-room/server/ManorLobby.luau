@@ -69,32 +69,30 @@ function Manor.new(remote,selectMap)
  local _,size=template:GetBoundingBox()
  assert(size.X>1 and #namedParts(template,"Butler_")>0,"MANOR_NATIVE_MODEL_INVALID")
  template:ScaleTo(template:GetScale()*Assets.SourceWidth/size.X)
- -- 전체 배경까지 포함한 bounding-box center는 장식 추가 때마다 움직인다.
- -- 실제 건축 기준점 HallFloor/Courtyard를 사용해 Roblox 변환 모델을 저택 좌표에 고정한다.
+ -- Roblox 변환 뒤에는 전체 bounding-box가 아니라 실제 1층 HallFloor를 기준으로 위치만 보정한다.
+ -- 방향은 GLB가 이미 맞으므로 회전 추정을 하지 않는다. 기준 파츠가 없으면 기존 안정 배치로 fallback한다.
  local function exactVisualPart(name)
   for _,d in ipairs(template:GetDescendants())do
    if d:IsA("BasePart")and d.Name==name then return d end
   end
   return nil
  end
- local hallAnchor=exactVisualPart("HallFloor")
- local courtyardAnchor=exactVisualPart("Courtyard")
- assert(hallAnchor and courtyardAnchor,"MANOR_NATIVE_ARCHITECTURE_ANCHOR_MISSING")
  local expectedHall=Vector3.new(0,.1,-29)
- local expectedCourtyard=Vector3.new(0,-.2,20)
- local span=courtyardAnchor.Position-hallAnchor.Position
- local flatSpan=Vector3.new(span.X,0,span.Z)
- assert(flatSpan.Magnitude>10,"MANOR_NATIVE_ARCHITECTURE_ANCHOR_INVALID")
- local yaw=math.atan2(flatSpan.X,flatSpan.Z)
- local correction=CFrame.new(expectedHall)*CFrame.Angles(0,-yaw,0)*CFrame.new(-hallAnchor.Position)
- template:PivotTo(correction*template:GetPivot())
- hallAnchor=exactVisualPart("HallFloor")
- courtyardAnchor=exactVisualPart("Courtyard")
- local hallError=(hallAnchor.Position-expectedHall).Magnitude
- local courtyardError=(courtyardAnchor.Position-expectedCourtyard).Magnitude
- assert(hallError<.35 and courtyardError<1.25,"MANOR_NATIVE_ARCHITECTURE_ALIGNMENT_FAILED")
- self.visualAnchorHallError=hallError
- self.visualAnchorCourtyardError=courtyardError
+ local hallAnchor=exactVisualPart("HallFloor")
+ if hallAnchor then
+  local delta=expectedHall-hallAnchor.Position
+  template:PivotTo(CFrame.new(delta)*template:GetPivot())
+  hallAnchor=exactVisualPart("HallFloor")
+  self.visualAnchorHallError=hallAnchor and(hallAnchor.Position-expectedHall).Magnitude or -1
+  self.visualAnchorMode="HALL_FLOOR_TRANSLATION"
+ else
+  local bbox=template:GetBoundingBox()
+  template:PivotTo(CFrame.new(Assets.SourceCenter)*bbox:Inverse()*template:GetPivot())
+  self.visualAnchorHallError=-1
+  self.visualAnchorMode="SOURCE_CENTER_FALLBACK"
+ end
+ local courtyardAnchor=exactVisualPart("Courtyard")
+ self.visualAnchorCourtyardError=courtyardAnchor and(courtyardAnchor.Position-Vector3.new(0,-.2,20)).Magnitude or -1
  template.Parent=nil;self.template=template
  self.ranking=DSS:GetOrderedDataStore("midnight-manor-archive-v1")
  self.rankingCache={};self.rankingAt=0;self.rankingRequests={}
@@ -106,7 +104,7 @@ function Manor.new(remote,selectMap)
  workspace:SetAttribute("PersonalLobby",true)
  workspace:SetAttribute("LobbyArtPass","REBUILD_PENDING_STUDIO")
  workspace:SetAttribute("LobbyBuildRevision","BLENDER_MANOR_REBUILD_20261002")
- workspace:SetAttribute("ManorVisualAnchorMode","HALL_FLOOR_COURTYARD")
+ workspace:SetAttribute("ManorVisualAnchorMode",self.visualAnchorMode or"UNKNOWN")
  workspace:SetAttribute("ManorVisualAnchorHallError",self.visualAnchorHallError or -1)
  workspace:SetAttribute("ManorVisualAnchorCourtyardError",self.visualAnchorCourtyardError or -1)
  return self
@@ -146,24 +144,8 @@ function Manor:Get(p)
  for _,x in ipairs({-36,-22,-8,8,22,36})do
   part(folder,"LockedGuestBoundary",origin+Vector3.new(x,15,-63.7),Vector3.new(5.3,8.6,.7),false)
  end
- -- 시각 모델을 HallFloor/Courtyard 건축 기준점에 고정했으므로
- -- 계단/2층 충돌도 같은 authored 좌표로 복원한다.
- local stairRise=.82;local stairTread=1.36
- for i=0,11 do
-  local topY=stairRise*(i+1);local stepZ=-40-i*stairTread
-  part(folder,"GrandStairGround",origin+Vector3.new(0,topY*.5,stepZ),Vector3.new(30,topY,stairTread+.08),true)
- end
- part(folder,"SecondFloorGroundRear",origin+Vector3.new(0,10.2,-61.75),Vector3.new(92,.55,5.5),true)
- for _,side in ipairs({-1,1})do
-  part(folder,"SecondFloorGroundSide",origin+Vector3.new(side*31,10.2,-52.25),Vector3.new(30,.55,13.5),true)
- end
- part(folder,"SecondFloorStairLandingGround",origin+Vector3.new(0,10.05,-57.0),Vector3.new(32.5,.35,4.5),true)
- part(folder,"SecondFloorGround",origin+Vector3.new(-43,10.2,-31),Vector3.new(15,.55,48),true)
- part(folder,"SecondFloorGround",origin+Vector3.new(43,10.2,-31),Vector3.new(15,.55,48),true)
- for _,side in ipairs({-1,1})do
-  part(folder,"StairwellRailBoundary",origin+Vector3.new(side*15.7,11.55,-50.7),Vector3.new(.45,2.8,10.4),false)
-  part(folder,"GalleryFrontRailBoundary",origin+Vector3.new(side*25.25,11.55,-45.62),Vector3.new(18.5,2.8,.45),false)
- end
+ -- 1층 위치가 실제 화면에서 확정될 때까지 로비의 상층 투명 충돌은 만들지 않는다.
+ -- 캐릭터는 PersonalGround만 밟으며, 계단/2층은 시각 레이어로만 남긴다.
 
  -- 현관 포치의 시각 계단과 보행면을 정확히 맞춘다.
  for step=0,4 do
