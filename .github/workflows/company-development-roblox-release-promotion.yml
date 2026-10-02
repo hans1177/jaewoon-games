@@ -673,6 +673,7 @@ jobs:
           SOURCE_REVISION: ${{ steps.target.outputs.source_revision }}
           ARTIFACT_IDENTITY: ${{ steps.target.outputs.artifact_identity }}
           PLACE_FILE: ${{ steps.package.outputs.place_file }}
+          PUBLISH_STAGE: ${{ inputs.publish_stage || 'validation' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -700,8 +701,9 @@ jobs:
             artifactIdentity:process.env.ARTIFACT_IDENTITY,
             sourceTree:process.env.PUBLISH_SOURCE_TREE,
             latestSourceTree:process.env.PUBLISH_LATEST_SOURCE_TREE,
+            publishStage:process.env.PUBLISH_STAGE,
           });
-          console.log('ROBLOX_PUBLISH_LATEST_SOURCE_AND_F9=PASS');
+          console.log('ROBLOX_PUBLISH_LATEST_SOURCE_GATE=PASS:'+String(process.env.PUBLISH_STAGE||'validation'));
           const f0=JSON.parse(fs.readFileSync('/tmp/roblox-runtime-candidate-evidence.json','utf8'));
           const plan=createRobloxRuntimeCandidatePublishPlan({
             placeFile:process.env.PLACE_FILE,
