@@ -257,6 +257,7 @@ test('Open Cloud runtime stays automatic while Studio requires explicit opt-in',
   assert.match(foundation,/name: Probe exact Roblox Open Cloud engine execution/);
   assert.doesNotMatch(foundation,/name: Probe exact Roblox Open Cloud engine execution\n\s+if: \$\{\{ inputs\.retry_open_cloud_only == true \}\}/);
   assert.match(foundation,/SERVER_DIAGNOSTIC_ENABLED: true/);
+  assert.match(foundation,/ROBLOX_OPEN_CLOUD_API_KEY_REQUIRED_FOR_RUNTIME_VALIDATION/);
   assert.match(studioPlan,/if: \$\{\{ inputs\.run_studio == true && inputs\.retry_open_cloud_only != true \}\}/);
   assert.doesNotMatch(studioPlan,/github\.event_name == 'push'/);
 });
