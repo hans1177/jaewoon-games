@@ -891,12 +891,12 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-02T12:39:32.971Z",
+      "updatedAt": "2026-10-02T12:40:17.727Z",
       "robloxSourceCommit": "000c56385e85e1ac101032e66a271becf7dfd3bf",
       "robloxSourceBootstrapPassedAt": "2026-10-02T12:36:25.891Z",
-      "robloxSourceBootstrapFailedAt": null,
-      "robloxSourceCandidateBranch": "development/roblox-horror-escape-room-37007812525-1",
-      "robloxSourceCandidateReadyAt": "2026-10-02T12:39:02.050Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-02T12:40:17.727Z",
+      "robloxSourceCandidateBranch": null,
+      "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "000c56385e85e1ac101032e66a271becf7dfd3bf",
       "robloxBuildArtifactIdentity": "sha256:90fee558e8464c29c12b2d88b02af21a06c5fb2827bfd6c0c38fe1b092fab9b1",
@@ -994,7 +994,7 @@
       "robloxFailureStage": "F0_SOURCE_INTEGRITY",
       "robloxFailureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
       "routingBlockers": [
-        "roblox-source-promotion-pending"
+        "roblox-source-bootstrap:source-generation-failed"
       ],
       "robloxExactRevisionPassed": false,
       "robloxMultiplayerQaEvidence": {
@@ -2378,7 +2378,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-02T12:40:04.981Z",
+  "updatedAt": "2026-10-02T12:40:17.727Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
