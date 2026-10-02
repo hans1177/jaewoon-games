@@ -68,7 +68,8 @@ assert.ok(!values.some(x=>['Script','LocalScript','ModuleScript','RemoteEvent','
 for(const name of ['ButlerHead','ArchivistHead','CoffinLid'])assert.ok(names.includes(name),`Missing native node ${name}`);
 assert.ok(names.some(x=>x.startsWith('Butler_')),'Missing imported butler GLB');
 const result={assetId,meshCount:meshes,texturedMeshCount:textures.length,byteCount:file.length,classes:values,pass:true,qualityFloorEnforced:true,upperMeshCapBlocking:false,actualPlayTest:false,checkedAt:new Date().toISOString()};
-fs.writeFileSync(`${root}/native-import-check.json`,JSON.stringify(result,null,2)+'\n');
+const evidencePath=String(process.env.MANOR_NATIVE_EVIDENCE||`${root}/native-import-check.json`).trim();
+fs.writeFileSync(evidencePath,JSON.stringify(result,null,2)+'\n');
 // 검증한 바로 그 바이트를 Rojo의 ServerStorage에 넣는다. 서버 부팅 때 재다운로드하지 않는다.
 if(process.env.MANOR_NATIVE_MODEL)fs.writeFileSync(process.env.MANOR_NATIVE_MODEL,file);
 console.log(`MANOR_NATIVE_IMPORT_CHECK=PASS:asset=${assetId}:meshes=${meshes}:bytes=${file.length}`);
