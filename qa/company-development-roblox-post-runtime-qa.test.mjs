@@ -150,6 +150,9 @@ test('post-runtime QA deduplicates heavy scans while Studio planning avoids the 
   assert.ok(jobsAt>0);
   assert.match(workflow,/run-name: Roblox runtime foundation QA · \$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
   assert.match(workflow.slice(0,jobsAt),/\nconcurrency:\n\s+group: roblox-runtime-foundation-\$\{\{ github\.run_id \}\}\n\s+cancel-in-progress: false/);
+  assert.match(workflow,/CURRENT_CONTROL_SHA: \$\{\{ github\.sha \}\}/);
+  assert.match(workflow,/String\(r\.head_sha\|\|''\)===controlSha/);
+  assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_CONTROL_SHA=/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_ACTIVE_WINNER=/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_EXACT_DEDUPED=/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_SCAN_DEDUPED_NEWER=/);
