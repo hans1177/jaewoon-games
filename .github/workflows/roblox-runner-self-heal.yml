@@ -12,7 +12,6 @@ on:
 
 permissions:
   contents: read
-  actions: write
 
 concurrency:
   group: roblox-authenticated-runner-self-heal
@@ -24,27 +23,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Force-cancel stale Actions runs
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -u
-          for run_id in 36946411892 34748574272 36802981975 36802982062 36803420019; do
-            status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || echo unknown)"
-            case "$status" in
-              queued|pending|requested|waiting|in_progress)
-                if gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/force-cancel" >/dev/null 2>&1; then
-                  echo "STALE_FORCE_CANCELLED=${run_id}:${status}"
-                else
-                  echo "STALE_FORCE_CANCEL_FAILED=${run_id}:${status}"
-                fi
-                ;;
-              *)
-                echo "STALE_ALREADY_TERMINAL=${run_id}:${status}"
-                ;;
-            esac
-          done
       - uses: actions/checkout@v4
         with:
           ref: main
