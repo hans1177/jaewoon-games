@@ -15,10 +15,21 @@ const config=read('roblox-games/horror-escape-room/shared/GameConfig.luau');
 const studioReview=read('tools/horror-manor-studio-review.mjs');
 const manorBuild=read(root+'/build.py');
 const ownerWorkflow=read('.github/workflows/horror-owner-system-publish.yml');
+const manorReviewWorkflow=read('.github/workflows/horror-manor-review.yml');
+const runnerBootstrapWorkflow=read('.github/workflows/company-roblox-runner-pwsh-bootstrap.yml');
 const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
 const manorAssets=read('roblox-games/horror-escape-room/shared/ManorAssets.luau');
 const cloudOwnerBuild=process.env.MANOR_CLOUD_BUILD==='1';
 
+
+test('Studio 검증은 고정 버전 Rojo를 직접 설치하고 러너 복구 경로와 연결된다',()=>{
+ assert.match(manorReviewWorkflow,/rojo-7\.7\.0-windows-x86_64\.zip/);
+ assert.match(manorReviewWorkflow,/2179c44862a10ecbd725bdfeb4abc64e16dc4aad9b6c8f3e1a7c46a87280b949/);
+ assert.match(manorReviewWorkflow,/MANOR_REVIEW_ROJO/);
+ assert.doesNotMatch(manorReviewWorkflow,/PREVIOUS_VERIFIED_ROJO_NOT_FOUND/);
+ assert.match(runnerBootstrapWorkflow,/\.github\/workflows\/horror-manor-review\.yml/);
+ assert.match(runnerBootstrapWorkflow,/tools\/horror-manor-studio-review\.mjs/);
+});
 
 test('공식 Studio 검증은 실제 PersonalGround 접촉을 새 서버 재시작 전후로 확인한다',()=>{
  assert.match(studioReview,/captureGroundContact\(studioId,'server-1'\)/);
