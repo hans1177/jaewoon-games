@@ -17,7 +17,7 @@ if not lobbyBootstrapSpawn or not lobbyBootstrapSpawn:IsA("SpawnLocation")then
  lobbyBootstrapSpawn=Instance.new("SpawnLocation")
  lobbyBootstrapSpawn.Name="LobbyBootstrapSpawn"
  lobbyBootstrapSpawn.Size=Vector3.new(18,.2,18)
- lobbyBootstrapSpawn.Position=Vector3.new(0,.55,270)
+ lobbyBootstrapSpawn.Position=Vector3.new(0,.55,330)
  lobbyBootstrapSpawn.Anchored=true
  lobbyBootstrapSpawn.Neutral=true
  lobbyBootstrapSpawn.Transparency=1
@@ -55,8 +55,8 @@ for _,player in ipairs(Players:GetPlayers())do bindBootstrapLobbySpawn(player)en
 end
 
 local bootstrapGround=Instance.new("Part")
-bootstrapGround.Name="ManorBootstrapGround";bootstrapGround.Size=Vector3.new(84,1,90)
-bootstrapGround.Position=Vector3.new(0,-.15,268);bootstrapGround.Anchored=true;bootstrapGround.Transparency=1;bootstrapGround.Parent=workspace
+bootstrapGround.Name="ManorBootstrapGround";bootstrapGround.Size=Vector3.new(84,1,44)
+bootstrapGround.Position=Vector3.new(0,-.15,330);bootstrapGround.Anchored=true;bootstrapGround.Transparency=1;bootstrapGround.Parent=workspace
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
 local manorLobby=nil
@@ -522,7 +522,7 @@ local function shuffledSpawns(source)
 end
 local function personalSpawn(p)
  if manorLobby then return manorLobby:GetSpawn(p)end
- return Vector3.new(0,3,293),Vector3.new(0,4,262),lobbyBootstrapSpawn
+ return Vector3.new(0,3,330),Vector3.new(0,5,268),lobbyBootstrapSpawn
 end
 local assetCache={}
 local objectiveState={round=0,done=0,total=0}
@@ -786,10 +786,15 @@ local function groundedRootTarget(p,pos)
  local lobbyDestination=pos.Z>=180
  local rootFolders=lobbyDestination and{workspace:FindFirstChild("MidnightLobby")}or{arena}
  local grounds={}
+ local maxGroundY=lobbyDestination and(pos.Y+1.5)or math.huge
  for _,rootFolder in ipairs(rootFolders)do
   if rootFolder and rootFolder.Parent then
    for _,d in ipairs(rootFolder:GetDescendants())do
-    if d:IsA("BasePart")and d:GetAttribute("WalkableGround")==true then table.insert(grounds,d)end
+    if d:IsA("BasePart")and d:GetAttribute("WalkableGround")==true then
+     local topY=d.Position.Y+d.Size.Y*.5
+     -- 다층 저택에서는 목적지보다 높은 층을 스폰 후보에서 제외한다.
+     if topY<=maxGroundY then table.insert(grounds,d)end
+    end
    end
   end
  end
@@ -798,8 +803,9 @@ local function groundedRootTarget(p,pos)
  if #grounds>0 then
   params.FilterType=Enum.RaycastFilterType.Include
   params.FilterDescendantsInstances=grounds
-  local rayTop=lobbyDestination and 30 or(pos.Y+24)
-  local rayLength=lobbyDestination and 60 or 52
+  -- 로비는 요청한 층 바로 위에서 아래로 검사한다. Y=30 고정 시작점은 2층을 먼저 집을 수 있다.
+  local rayTop=lobbyDestination and(pos.Y+4)or(pos.Y+24)
+  local rayLength=lobbyDestination and math.max(16,pos.Y+12)or 52
   hit=workspace:Raycast(Vector3.new(pos.X,rayTop,pos.Z),Vector3.new(0,-rayLength,0),params)
  else
   params.FilterType=Enum.RaycastFilterType.Exclude
@@ -884,7 +890,7 @@ makePhysicalLobby=function()
  lobbySpawnLocation=lobbyBootstrapSpawn
  lobbySpawnLocation.Name="LobbySpawn"
  lobbySpawnLocation.CanCollide=false
- lobbySpawnLocation.Position=Vector3.new(0,.4,293)
+ lobbySpawnLocation.Position=Vector3.new(0,.4,330)
  local safety=workspace:FindFirstChild("ManorBootstrapGround");if safety then safety:Destroy()end
  for _,player in ipairs(Players:GetPlayers())do manorLobby:Get(player)end
  refreshPhysicalLobby=function()end
