@@ -408,6 +408,7 @@ class Scene:
         # 장식의 수는 유지하고 같은 재질의 고정 소품만 병합한다. 움직이는 노드는 보존한다.
         keep=('Butler','Archivist','Undertaker','CoffinLid','CoffinHand','ArmorHelmet','LittleGhost',
               'TeaCup','Tea','ChandelierFlame','MirrorPupil','FamilyPortrait','PortraitCanvas','HearthFlame',
+              'MapCard','MapPin','GhostArchiveBook','MemoryRelic','GuestDoorSeal',
               'ManorSideWall','FacadeWing','BackWall','HallFloor','Courtyard','CrookedRoof','ClockPendulum','EntryDoor')
         groups={}
         bpy.context.view_layer.update()
@@ -917,10 +918,49 @@ def build():
           (x-4.15,9.7,z+.10),(x-2.8,11.1,z+.10),(x,13.25,z+.10),
           (x+2.8,11.1,z+.10),(x+4.15,9.7,z+.10)
         ],[.22,.20,.18,.20,.22],[.18,.17,.15,.17,.18],c['wood'],sides=18)
+    # 왼쪽 날개 출정용 실제 벽지도. 서버 승인된 SelectedLobbyMap만 선택 표시를 바꾼다.
+    s.box('WallMapFrame',(-74.15,7,-31),(.70,13,27),c['wood'])
+    s.box('WallMapPaper',(-73.75,7,-31),(.16,11.4,24.8),s.material('map_parchment',(.47,.40,.28)))
+    map_cards=[
+      ('SCHOOL',-39,s.material('MapSchoolTint',(.26,.31,.30))),
+      ('HOSPITAL',-31,s.material('MapHospitalTint',(.22,.27,.31))),
+      ('THEME_PARK',-23,s.material('MapParkTint',(.32,.24,.25))),
+    ]
+    for map_id,z0,map_mat in map_cards:
+        s.box('MapCard_'+map_id,(-73.35,6.5,z0),(.14,4.5,6.1),map_mat)
+        s.prism('MapCardLabel_'+map_id,(-73.23,4.75,z0),[
+          (-.02,-2.4),(.02,-2.4),(.02,2.4),(-.02,2.4)
+        ],.02,c['ivory'])
+        s.lathe('MapPin_'+map_id,(-73.08,8.45,z0),.22,.09,.24,c['brass'],sides=20)
+
+    # 기록관 책장에 저장 진행도를 실물 책으로 보여준다. 12권은 런타임에서 완료 수만큼 공개된다.
+    archive_colors=[
+      s.material('ArchiveWine',(.18,.035,.050)),s.material('ArchivePine',(.040,.12,.085)),
+      s.material('ArchiveOchre',(.22,.14,.055)),s.material('ArchiveInk',(.045,.065,.10))
+    ]
+    for i in range(12):
+        row=i//6;col=i%6
+        bx=-47.5+col*1.35;by=3.0+row*2.55
+        hbook=1.75+(i%3)*.12
+        s.box('GhostArchiveBook%02d'%(i+1),(bx,by,-59.15),(1.0,hbook,.72),archive_colors[i%4],lean=(-.05 if i%2 else .035))
+        s.box('GhostArchiveBookBand%02d'%(i+1),(bx,by+hbook*.12,-58.76),(.74,.10,.025),c['brass'])
+
+    # 마당의 개인 추억 진열물. 각 맵의 괴담을 발견하면 서버가 해당 유물을 공개한다.
+    s.box('MemoryRelic_SCHOOL',(-30,1.55,35),(4.8,3.1,.42),c['stone'],lean=-.10)
+    s.box('MemoryRelic_SCHOOL_Plate',(-30,1.55,35.28),(3.7,1.5,.10),s.material('SchoolRelicPaint',(.20,.28,.25)))
+    s.box('MemoryRelic_HOSPITAL',(30,1.75,35),(5.2,3.5,.42),c['stone'],lean=.08)
+    s.box('MemoryRelic_HOSPITAL_Plate',(30,1.75,35.28),(4.1,1.65,.10),s.material('HospitalRelicPaint',(.20,.24,.29)))
+    s.prism('MemoryRelic_THEME_PARK',(45,2.05,54),[
+      (-2.6,-1.3),(2.6,-1.3),(2.2,1.3),(-2.2,1.3)
+    ],.28,s.material('ParkTicketPaint',(.31,.20,.22)))
+
+    # 2층 객실은 잠긴 채 유지하지만 진행도에 따라 왁스 봉인이 하나씩 밝아진다.
     # 2층 잠긴 객실문.
     for i,x in enumerate([-36,-22,-8,8,22,36]):
         s.box('LockedGuestDoor'+str(i),(x,15,-63.9),(5.2,8.5,.34),c['wood'])
         s.lathe('LockedGuestKnob'+str(i),(x+1.7,14.7,-63.55),.13,.13,.18,c['brass'],sides=18)
+        s.lathe('GuestDoorSeal'+str(i),(x,15.4,-63.50),.42,.42,.10,s.material('WaxSealMat',(.28,.025,.045)),sides=28)
+        s.box('GuestDoorNumber'+str(i),(x,18.1,-63.50),(1.5,.72,.08),c['brass'])
 
     # 정원 중앙 진입로와 분수/부서진 동상.
     for i,z in enumerate(range(8,71,5)):
