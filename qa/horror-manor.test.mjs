@@ -50,8 +50,12 @@ test('manor UI follows the current artbook and mobile-safe map board',()=>{
  assert.match(ui,/label\(body,"1\. 맵 선택"/);
  assert.match(ui,/label\(body,"2\. 역할 · "/);
  assert.match(ui,/label\(body,"3\. 시작"/);
- assert.match(ui,/button\(body,"혼자 바로 시작"/);
- assert.match(ui,/mapGlyph=\{SCHOOL="교",HOSPITAL="병",THEME_PARK="원"\}/);
+ assert.match(ui,/artbookButton\(body,"혼자 바로 시작"/);
+ assert.match(ui,/local mapIconIndex=\{SCHOOL=0,HOSPITAL=4,THEME_PARK=3\}/);
+ assert.match(ui,/UIAssetSource","INTERNAL_MANOR_ICONS"/);
+ assert.match(ui,/local function internalIcon\(/);
+ assert.match(ui,/local function artbookButton\(/);
+ assert.match(ui,/DarkCartoonWelcomeCard/);
  assert.match(ui,/send\(C\.Actions\.SELECT_MAP,map\.Id\)/);
  assert.match(ui,/header\.Visible=false;commands\.Visible=false;panel\.Visible=true/);
 });
