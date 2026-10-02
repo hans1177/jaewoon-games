@@ -59,9 +59,19 @@ function robloxState(item={},policy={}){
   const qa=bool(item.robloxIndependentQaPassed)||bool(item.robloxIndependentQaEvidence?.pass);
   const regression=bool(item.robloxRegressionPassed)||bool(item.robloxRegressionEvidence?.pass);
   const sourceReady=Boolean(item.robloxProjectPath||item.robloxSourceCommit||item.robloxCandidateBranch||item.targetSourcePaths?.ROBLOX);
+  const verifiedDedicatedInternalTarget=
+    !staleSharedTarget
+    &&pub.verified===true
+    &&pub.dedicated===true
+    &&pub.shared!==true
+    &&pub.internalOnly===true
+    &&clean(pub.bootstrapState).toUpperCase()==='PUBLISHED_PRIVATE'
+    &&/^[1-9][0-9]*$/.test(clean(pub.universeId))
+    &&/^[1-9][0-9]*$/.test(clean(pub.placeId));
   const preservedInternalRelease=bool(item.robloxInternalReleasePublished)
     ||(bool(internal.internalRelease)&&bool(internal.published))
-    ||bool(migration.internalReleasePreserved);
+    ||bool(migration.internalReleasePreserved)
+    ||verifiedDedicatedInternalTarget;
   const releaseReadiness=evaluateInternalRelease(item,'ROBLOX',policy);
   const internalReady=releaseReadiness.homepageReady;
   const publicReleaseReady=!staleSharedTarget&&(bool(item.robloxPublicReleaseReady)||(runtime&&qa&&regression&&published));
@@ -75,7 +85,7 @@ function robloxState(item={},policy={}){
     internalReleaseReady:internalReady,
     releaseReadiness,
     historicalInternalRelease:preservedInternalRelease,
-    internalReleaseState:internalReady?'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE':'NOT_READY',
+    internalReleaseState:internalReady?'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE':preservedInternalRelease?'DEPLOYED_REVALIDATING':'NOT_READY',
     publicReleaseReady,
     publicRelease:explicitPublic,
     publicReleaseState:explicitPublic?'PUBLIC_RELEASE':(publicReleaseReady?'PUBLIC_RELEASE_READY':'INTERNAL_ONLY'),
