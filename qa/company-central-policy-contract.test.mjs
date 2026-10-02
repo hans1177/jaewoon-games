@@ -60,6 +60,23 @@ test('platform-release-roadmap is the single machine execution policy source',()
     'tools/apply-common-development-quality-policy.mjs'
   ]) assert.equal(fs.existsSync(path.join(repoRoot,removed)),false,removed);
 });
+test('every registered launcher is bound to the same central worker context',()=>{
+  assert.equal(architecture.requiredForAllWorkers,true);
+  assert.equal(architecture.synchronization.beforeWork,'LOAD_AND_VALIDATE_ROADMAP_LOG_ARCHITECTURE_SECURITY_POLICY');
+  assert.equal(architecture.synchronization.duringWork,'DO_NOT_CREATE_POLICY_OUTSIDE_CENTRAL_POLICY');
+  assert.equal(architecture.synchronization.shadowDocumentationSystemForbidden,true);
+  assert.equal(architecture.synchronization.gameErrorRepairCannotCreateShadowQaOrRepairPipeline,true);
+  const launchers=architecture.workerSynchronization?.launcherWorkflows||[];
+  assert.ok(Array.isArray(launchers)&&launchers.length>0);
+  assert.equal(new Set(launchers).size,launchers.length);
+  for(const workflowFile of launchers){
+    assert.equal(fs.existsSync(path.join(repoRoot,workflowFile)),true,workflowFile);
+    const source=readText(workflowFile);
+    assert.match(source,/company-shared-context\.mjs/,workflowFile+': central shared context required');
+    assert.doesNotMatch(source,/COMPANY_FLOW\.md/,workflowFile+': removed human policy mirror forbidden');
+  }
+});
+
 test('director fallback wake only re-dispatches existing queued GAME_PRIMARY work',()=>{
   const fallback=roadmap.changeRecord?.directorGamePrimaryFallbackWake20260927||{};
   assert.equal(fallback.existingQueuedTaskDispatchOnly,true);
@@ -2039,7 +2056,6 @@ test('Roblox Studio PC host keeps only Studio visible and resumes exact work aft
   const bootstrap=readText('.github/workflows/company-roblox-runner-pwsh-bootstrap.yml');
   assert.match(runner,/shell\.Run[\s\S]*, 0, False/);
   assert.match(runner,/Jaewoon-Roblox-Runner\.vbs/);
-  assert.match(runner,/ROBLOX_RUNNER_WATCHDOG=NO/);
   assert.match(runner,/ROBLOX_RUNNER_VISIBLE_CMD=NO/);
   assert.match(runner,/ROBLOX_RUNNER_VISIBLE_POWERSHELL=NO/);
   assert.match(runner,/ROBLOX_RUNNER_VISIBLE_APP=ROBLOX_STUDIO_ONLY/);
@@ -2048,7 +2064,19 @@ test('Roblox Studio PC host keeps only Studio visible and resumes exact work aft
   assert.match(runtime,/ROBLOX_STUDIO_PC_INTERRUPTION_COUNTS_AS_GAME_FAILURE=NO/);
   assert.doesNotMatch(runtime,/shell:\s*powershell\s*$/m);
   assert.match(runtime,/WindowStyle Hidden/);
-  assert.match(bootstrap,/Install hidden reboot-safe Roblox runner host/);
+
+  assert.match(bootstrap,/# hidden-runner-bootstrap/);
+  assert.match(bootstrap,/Install hidden Startup VBS/);
+  assert.match(bootstrap,/GetFolderPath\('Startup'\)/);
+  assert.match(bootstrap,/shell\.Run Chr\(34\)[\s\S]*, 0, False/);
+  assert.equal((bootstrap.match(/Jaewoon-Roblox-Runner\.vbs/g)||[]).length,1);
+  assert.doesNotMatch(bootstrap,/watchdog/i);
+  assert.doesNotMatch(bootstrap,/migrat/i);
+  assert.doesNotMatch(bootstrap,/hidden-state|state\.json/i);
+  assert.doesNotMatch(bootstrap,/Runner\.Worker/i);
+  assert.doesNotMatch(bootstrap,/Stop-Process|Start-Sleep|while\s*\(|for\s*\(\$attempt/i);
+  assert.doesNotMatch(bootstrap,/Install portable PowerShell 7|PowerShell\/PowerShell\/releases|Invoke-WebRequest|Expand-Archive|GITHUB_PATH|JaewoonRunner\\PowerShell7/i);
+  assert.doesNotMatch(bootstrap,/schtasks|Register-ScheduledTask|New-ScheduledTask/i);
   assert.doesNotMatch(bootstrap,/shell:\s*powershell\s*$/m);
 });
 
