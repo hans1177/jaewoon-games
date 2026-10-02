@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "verifiedLearningRoot:SetAttribute(\"VerifiedLearningSemanticMood\", verifiedLearningSemanticMood)",
+      "replace": "verifiedLearningColorGrade = Instance.new(\"ColorCorrectionEffect\", verifiedLearningRoot); verifiedLearningColorGrade.Name = \"VerifiedLearningColorGrade\""
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
