@@ -142,8 +142,10 @@ test('personal manor exterior has signature housing and collection architecture'
   'GreenhouseFoundation','GreenhouseBrickPlinth','GreenhouseRoofRib','GreenhouseSideGlass','GreenhouseEndArch','GreenhouseDoor','GreenhouseRidge',
   'PorchStep','PorchPlinth','PorchColumn','PorchGableTrim','PorchLantern',
   'FrontGutter','RainPipe',
-  'RareCaseGlass_','RareRelic_','MapMasterpiece_SCHOOL','MapMasterpiece_HOSPITAL','MapMasterpiece_THEME_PARK',
-  'GallerySetFrame_','GallerySet_','FireplaceFeatureFrame','FireplaceFeature_'
+  'RareCaseGlass_','RareCasePlaque_','RareCaseCornice_','RareRelic_',
+  'MapMasterpiece_SCHOOL','MapMasterpiece_HOSPITAL','MapMasterpiece_THEME_PARK','CompletionDaisStone_','CompletionDaisBrass_',
+  'GalleryFrameBack_','GalleryFrameLiner_','GalleryFrameCornice_','GallerySetFrame_','GallerySet_',
+  'FireplaceFeatureFrame','FireplaceFeatureCrown','FireplaceFeature_','PortraitGalleryRail'
  ])assert.match(manorBuild,new RegExp(token));
  assert.doesNotMatch(manorBuild,/s\.lathe\('LeftTurret'/,'Archivist tower replaces the old duplicate left turret');
  assert.match(manorBuild,/for step in range\(5\)/);
@@ -172,6 +174,10 @@ test('personal manor exterior has signature housing and collection architecture'
  assert.match(manorBuild,/Nostril/);
  assert.match(lobby,/\(tonumber\(ghost\.Weight\)or math\.huge\)<=58/);
  assert.match(lobby,/namedParts\(scene,"RareRelic_"\.\.ghost\.Id\)/);
+ assert.match(lobby,/local rareCaseZ=\{KRASUE=-58\.8,WHITE_LADY=-55\.1,PONTIANAK=-51\.4,BLACK_SHUCK=-47\.7\}/);
+ assert.match(lobby,/surface\.Name="RareCaseLabelGui"/);
+ assert.match(lobby,/text\.Text="희귀 기록 · "\.\.ghost\.Name/);
+ assert.match(lobby,/Vector3\.new\(-70\.0,5\.0,-56\.8\),\.55,12,false/);
  assert.match(lobby,/namedParts\(scene,"FireplaceFeature_"\.\.ghost\.Id\)/);
  assert.match(lobby,/for _,prefix in ipairs\(\{"MapMasterpiece_","GallerySet_"\}\)do/);
  assert.doesNotMatch(lobby,/SetAttribute\("GhostCompleted"/);
