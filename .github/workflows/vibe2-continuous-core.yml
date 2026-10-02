@@ -929,7 +929,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ~/.ollama/models
-          key: vibe2-ollama-v5-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
+          key: vibe2-ollama-v6-${{ runner.os }}-${{ runner.arch }}-${{ steps.order.outputs.local_model_cache_slug }}
           lookup-only: true
 
       - name: Probe canonical Ollama runtime cache
@@ -1216,6 +1216,7 @@ jobs:
           const selectedModel=order.assetProduction?.modelRouting?.selectedModel||process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b';
           const heroModelRequested=order.assetProduction?.modelRouting?.heroRequested===true;
           put('local_model',selectedModel);
+          put('local_model_cache_slug',selectedModel.replace(/[^A-Za-z0-9._-]+/g,'-'));
           put('hero_model_requested',heroModelRequested?'true':'false');
           put('source_root',order.source?.root||'');
           put('work_lock_required',order.compiledWorkContract?.workLock?.requiredBeforeSourceWrite===true?'true':'false');
