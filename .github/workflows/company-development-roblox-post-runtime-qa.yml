@@ -1848,14 +1848,34 @@ jobs:
         run: |
           set -euo pipefail
           test -f /tmp/roblox-studio-followup-ids || exit 0
+          git -C runtime fetch --no-tags origin company-runtime
+          git -C runtime reset --hard origin/company-runtime
+          owner_priority_game="$(sed -n 's/^gameId:[[:space:]]*//p' main/roblox-games/.company-runtime-trigger | head -n1 | xargs || true)"
+          owner_priority_active="$(OWNER_PRIORITY_GAME="$owner_priority_game" node - <<'NODE'
+          const fs=require('fs');
+          const gameId=String(process.env.OWNER_PRIORITY_GAME||'').trim();
+          const q=JSON.parse(fs.readFileSync('runtime/development-queue.json','utf8'));
+          const item=(q.items||[]).find(x=>String(x.gameId||'')===gameId);
+          const active=Boolean(item&&item.robloxFoundationF0Passed===true&&item.robloxInternalReleaseReady!==true);
+          process.stdout.write(active?'true':'false');
+          NODE
+          )"
+          echo "ROBLOX_STUDIO_OWNER_EXACT_PRIORITY=$owner_priority_game:$owner_priority_active"
           dispatch_count=0
+          deferred_count=0
           while read -r id; do
             [ -n "$id" ] || continue
+            if [ "$owner_priority_active" = 'true' ] && [ "$id" != "$owner_priority_game" ]; then
+              deferred_count=$((deferred_count+1))
+              echo "ROBLOX_STUDIO_MCP_POST_FOUNDATION_DEFERRED_OWNER_EXACT_PRIORITY=$id:$owner_priority_game"
+              continue
+            fi
             gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id" -f run_studio=true
             dispatch_count=$((dispatch_count+1))
             echo "ROBLOX_STUDIO_MCP_POST_FOUNDATION_DISPATCH=$id"
           done < /tmp/roblox-studio-followup-ids
           echo "ROBLOX_STUDIO_MCP_POST_FOUNDATION_DISPATCH_COUNT=$dispatch_count"
+          echo "ROBLOX_STUDIO_MCP_POST_FOUNDATION_DEFERRED_COUNT=$deferred_count"
 
       - name: Enforce persistent Open Cloud probe failures after evidence persistence
         shell: bash
@@ -3241,10 +3261,28 @@ jobs:
         run: |
           set -euo pipefail
           payload="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-post-runtime-qa.yml/runs?per_page=100")"
+          git -C runtime fetch --no-tags origin company-runtime
+          git -C runtime reset --hard origin/company-runtime
+          owner_priority_game="$(sed -n 's/^gameId:[[:space:]]*//p' main/roblox-games/.company-runtime-trigger | head -n1 | xargs || true)"
+          owner_priority_active="$(OWNER_PRIORITY_GAME="$owner_priority_game" node - <<'NODE'
+          const fs=require('fs');
+          const gameId=String(process.env.OWNER_PRIORITY_GAME||'').trim();
+          const q=JSON.parse(fs.readFileSync('runtime/development-queue.json','utf8'));
+          const item=(q.items||[]).find(x=>String(x.gameId||'')===gameId);
+          const active=Boolean(item&&item.robloxFoundationF0Passed===true&&item.robloxInternalReleaseReady!==true);
+          process.stdout.write(active?'true':'false');
+          NODE
+          )"
           dispatch_count=0
           deduped_count=0
+          deferred_count=0
           while read -r id; do
             [ -n "$id" ] || continue
+            if [ "$owner_priority_active" = 'true' ] && [ "$id" != "$owner_priority_game" ]; then
+              deferred_count=$((deferred_count+1))
+              echo "ROBLOX_STUDIO_REBOOT_REQUEUE_DEFERRED_OWNER_EXACT_PRIORITY=$id:$owner_priority_game"
+              continue
+            fi
             active="$(printf '%s' "$payload" | GAME_ID="$id" CURRENT_RUN_ID="$GITHUB_RUN_ID" node -e "
               let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
                 const j=JSON.parse(s),states=new Set(['queued','pending','requested','waiting','in_progress']);
@@ -3264,6 +3302,7 @@ jobs:
           done < /tmp/roblox-studio-reboot-retry-ids
           echo "ROBLOX_STUDIO_REBOOT_REQUEUE_DISPATCH_COUNT=$dispatch_count"
           echo "ROBLOX_STUDIO_REBOOT_REQUEUE_DEDUPED_COUNT=$deduped_count"
+          echo "ROBLOX_STUDIO_REBOOT_REQUEUE_DEFERRED_COUNT=$deferred_count"
           echo 'ROBLOX_STUDIO_PC_INTERRUPTION_COUNTS_AS_GAME_FAILURE=NO'
           echo 'ROBLOX_STUDIO_PC_REBOOT_RESTARTS_FROM_BLANK=NO'
 
