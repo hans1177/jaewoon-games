@@ -539,8 +539,8 @@ test('Studio 방 검증은 TeleportService 대신 로컬 fallback을 사용한�
 test('예약방 로비는 8칸 슬롯에서 실제 유저와 AI를 구분한다',()=>{
  assert.match(manorClient,/for i=1,8 do/);
  assert.match(manorClient,/roomSlots\.Name="ManorRoomSlots"/);
- assert.match(manorClient,/player\.UserId==hostId and"방장 · "or""/);
- assert.match(manorClient,/string\.format\("%d · AI",i\)/);
+ assert.match(manorClient,/ledgerRow\(roomSlots,string\.format\("%02d · %s",i,player\.DisplayName\),player\.UserId==hostId and"방장"or"손님"\)/);
+ assert.match(manorClient,/ledgerRow\(roomSlots,string\.format\("%02d · 빈 객실",i\),"AI 예약"\)/);
  assert.match(manorClient,/Players:GetPlayers\(\)/);
 });
 
