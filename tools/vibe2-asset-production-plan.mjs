@@ -369,7 +369,7 @@ const NATIVE_DCC_AUTHORING=freeze([
 ]);
 
 const ASSET_MODEL_ROUTING=freeze({
-  version:1,
+  version:2,
   baselineModel:'qwen3:1.7b',
   heroModel:'qwen3:4b-instruct',
   route:'LOCAL_OLLAMA_ONLY',
@@ -377,7 +377,8 @@ const ASSET_MODEL_ROUTING=freeze({
   fallbackToBaseline:true,
   maxAttemptsUnchanged:true,
   generationBudgetUnchanged:true,
-  paidApiAllowed:false
+  paidApiAllowed:false,
+  cacheFamily:'vibe2-ollama-v6'
 });
 const HERO_SIGNAL_RULES=freeze([
   freeze({id:'PLAYER_OR_HERO',re:/(?:\bhero\b|player[ _-]character|primary[ _-]character|주인공|플레이어[ _-]?캐릭터)/i,profiles:freeze(['HERO_CHARACTER'])}),
@@ -389,10 +390,13 @@ function buildAssetModelRouting({task={},request='',decisions=[],highEndActive=f
   const explicitHero=clean(task?.assetModelTier||task?.assetPriority||task?.qualityTier).toUpperCase()==='HERO';
   const matchedRules=HERO_SIGNAL_RULES.filter(rule=>rule.re.test(clean(request))&&decisions.some(row=>rule.profiles.includes(clean(row?.qualityDNA?.profile).toUpperCase())));
   const heroRequested=Boolean(highEndActive&&(explicitHero||matchedRules.length));
+  const selectedModel=heroRequested?ASSET_MODEL_ROUTING.heroModel:ASSET_MODEL_ROUTING.baselineModel;
+  const cacheKey=clean(selectedModel).toLowerCase().replace(/[^a-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'')||'local-model';
   return freeze({
     ...ASSET_MODEL_ROUTING,
     heroRequested,
-    selectedModel:heroRequested?ASSET_MODEL_ROUTING.heroModel:ASSET_MODEL_ROUTING.baselineModel,
+    selectedModel,
+    cacheKey,
     tier:heroRequested?'HERO_STUDIO':'BASELINE',
     reasons:freezeList(explicitHero?['EXPLICIT_HERO_TIER']:matchedRules.map(row=>row.id)),
     sourceBudgetPolicy:'CENTRAL_BOUNDED_FOCUSED_EXACT_ANCHOR_UNCHANGED'
@@ -405,25 +409,32 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[]}={}){
   const nativeTextKinds=clean(target).toLowerCase()==='roblox'?ROBLOX_DIRECT_AUTHORING:clean(target).toLowerCase()==='unity'?UNITY_DIRECT_AUTHORING:[];
   const nativeTextTypes=decisions.filter(row=>needsAuthoring(row)&&(row.directAuthoring||[]).some(kind=>nativeTextKinds.includes(kind))).map(row=>row.type);
   const explicitRecipes=freezeList(task?.assetAuthoring?.recipes||task?.authoringRecipes||[]);
+  const uniqueDccTypes=unique(dccTypes);
+  const uniqueNativeTextTypes=unique(nativeTextTypes);
   return freeze({
-    version:1,
-    enabled:nativeTarget&&(dccTypes.length>0||nativeTextTypes.length>0),
+    version:2,
+    enabled:nativeTarget&&(uniqueDccTypes.length>0||uniqueNativeTextTypes.length>0),
     target:clean(target).toLowerCase(),
     stages:freezeList(['INSPECT','REUSE_OR_DERIVE','AUTHOR_EDITABLE_SOURCE','EXPORT_NATIVE_DERIVATIVE','APPLY_TO_EXISTING_RESPONSIBILITY','CAPTURE','VERIFY_NATIVE_RUNTIME','PROMOTE_IF_VERIFIED']),
     dcc:freeze({
-      requiredTypes:freezeList(unique(dccTypes)),
+      requiredTypes:freezeList(uniqueDccTypes),
       preferredExecutor:'BLENDER_PYTHON',
+      executionRequired:uniqueDccTypes.length>0,
+      executionStatus:uniqueDccTypes.length===0?'NOT_REQUIRED':explicitRecipes.length>0?'READY_FOR_EXISTING_AUTHORING_EXECUTOR':'AUTHORING_RECIPE_REQUIRED',
       requiredCapabilities:NATIVE_DCC_AUTHORING,
       explicitRecipes,
+      executionRequestCount:explicitRecipes.length,
       sourceRecipeRequired:true,
       editableSourceArtifactRequired:true,
       exportedNativeArtifactRequired:true,
       previewRenderRequired:true,
       artifactHashesRequired:true,
+      requiredEvidenceFields:freezeList(['recipe','editableSource','nativeArtifact','artifactHash','preview','runtimeVerificationState']),
+      nativeSourceMayNotMaskDccRequirement:true,
       textWorkerMayClaimDccCompletion:false
     }),
     nativeText:freeze({
-      requiredTypes:freezeList(unique(nativeTextTypes)),
+      requiredTypes:freezeList(uniqueNativeTextTypes),
       capabilities:freezeList(nativeTextKinds),
       directResponsibleSourceOnly:true,
       runtimeBindingRequired:true,
@@ -451,6 +462,8 @@ const GENERATED_ASSET_OUTPUT_CONTRACT=freeze({
   evidenceJsonRequired:true,
   companyAssetLibraryRegistrationRequired:true,
   nativeRuntimeVerificationRequiredBeforeVerifiedPromotion:true,
+  exactRuntimeConsumerAssetIdentityRequired:true,
+  promotionMustBindSourceOrDerivedHash:true,
   generatedArtifactAloneDoesNotProveRuntimePass:true,
   requiredEvidenceFields:freezeList(['sourceHash','generator','artifactHash','preview','license','targetPlatforms','runtimeVerificationState'])
 });
