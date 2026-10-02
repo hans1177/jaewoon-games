@@ -78,6 +78,8 @@ QA_THRESHOLDS = {
     'loopRotationMaxRad': 0.015,
     'loopLocationMax': 0.004,
     'transitionRotationMaxRad': 0.025,
+    'transitionLocationMax': 0.040,
+    'framePosePopRotationMaxRad': 0.30,
     'speedBlendRotationMaxRad': 0.42,
     'rootRotationMaxRad': 1e-7,
     'rootLocationMax': 1e-7,
@@ -91,6 +93,24 @@ QA_THRESHOLDS = {
         'hero_backward_hq': 0.045,
         'hero_strafe_left_hq': 0.075,
         'hero_strafe_right_hq': 0.075,
+    },
+    'footSwingVerticalLiftNormalizedMinByClip': {
+        'hero_walk_hq': 0.015,
+        'hero_jog_hq': 0.020,
+        'hero_run_hq': 0.025,
+        'hero_sprint_hq': 0.030,
+        'hero_backward_hq': 0.012,
+        'hero_strafe_left_hq': 0.012,
+        'hero_strafe_right_hq': 0.012,
+    },
+    'heelToeRotationRangeMinRadByClip': {
+        'hero_walk_hq': 0.100,
+        'hero_jog_hq': 0.120,
+        'hero_run_hq': 0.120,
+        'hero_sprint_hq': 0.150,
+        'hero_backward_hq': 0.080,
+        'hero_strafe_left_hq': 0.050,
+        'hero_strafe_right_hq': 0.050,
     },
     'secondaryRotationRangeMinRad': 0.010,
     'primaryJointRotationRangeMinRad': {
@@ -156,6 +176,21 @@ def glb_document(path):
 source = ARGS.source.resolve()
 assert source.is_file(), f'SOURCE_GLB_MISSING:{source}'
 source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+source_ledger_path = source.parent / 'evidence.json'
+source_ledger_sha256 = None
+source_ledger_expected_hash = None
+if source_ledger_path.is_file():
+    source_ledger_bytes = source_ledger_path.read_bytes()
+    source_ledger_sha256 = hashlib.sha256(source_ledger_bytes).hexdigest()
+    source_ledger = json.loads(source_ledger_bytes.decode('utf-8'))
+    for artifact in source_ledger.get('artifacts', []):
+        if artifact.get('file') == source.name:
+            source_ledger_expected_hash = artifact.get('sha256')
+            break
+    if source_ledger_expected_hash:
+        assert source_hash == source_ledger_expected_hash, (
+            f'SOURCE_LEDGER_HASH_MISMATCH:expected={source_ledger_expected_hash}:actual={source_hash}'
+        )
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=str(source))
@@ -656,6 +691,32 @@ def bone_world_position(clip_name, t, bone_name):
     return (float(point.x),float(point.y),float(point.z))
 
 
+def axis_rotation_range(clip_name, bone_name, axis=0, samples=33):
+    values=[]
+    for index in range(samples):
+        snap=sampled_snapshot(clip_name,index/(samples-1))
+        row=snap.get(bone_name)
+        if row:
+            values.append(row['r'][axis])
+    return (max(values)-min(values)) if values else 0.0
+
+
+def world_vertical_range(clip_name, bone_name, samples=33):
+    values=[bone_world_position(clip_name,index/(samples-1),bone_name)[2] for index in range(samples)]
+    return (max(values)-min(values)) if values else 0.0
+
+
+def frame_pose_pop(clip_name):
+    frame_count=max(1,round(CLIPS[clip_name]*FPS))
+    previous=sampled_snapshot(clip_name,0.0)
+    maximum=0.0
+    for frame in range(1,frame_count+1):
+        current=sampled_snapshot(clip_name,frame/frame_count)
+        maximum=max(maximum,snapshot_distance(previous,current)['rotationMaxRad'])
+        previous=current
+    return maximum
+
+
 def contact_drift(clip_name, bone_name, start, end, samples=9):
     rows=[bone_world_position(clip_name,start+(end-start)*i/(samples-1),bone_name) for i in range(samples)]
     base=rows[0]
@@ -721,6 +782,24 @@ for clip_name,(left_window,right_window) in contact_windows.items():
         'left':contact_drift(clip_name,'FootL',*left_window)/height,
         'right':contact_drift(clip_name,'FootR',*right_window)/height,
     }
+foot_swing_vertical_lift={
+    clip_name:{
+        'left':world_vertical_range(clip_name,'FootL')/height,
+        'right':world_vertical_range(clip_name,'FootR')/height,
+    }
+    for clip_name in LOCOMOTION_QA_CLIPS
+}
+heel_toe_rotation_range={
+    clip_name:{
+        'left':axis_rotation_range(clip_name,'FootL',0),
+        'right':axis_rotation_range(clip_name,'FootR',0),
+    }
+    for clip_name in LOCOMOTION_QA_CLIPS
+}
+frame_pose_pop_rotation={
+    clip_name:frame_pose_pop(clip_name)
+    for clip_name in CLIPS
+}
 primary_activity={
     clip_name:{bone:rotation_activity(clip_name,bone) for bone in QA_THRESHOLDS['primaryJointRotationRangeMinRad']}
     for clip_name in LOCOMOTION_QA_CLIPS
@@ -729,6 +808,18 @@ secondary_candidates=[bone for bone in SECONDARY_QA_BONES if bone in RIG.pose.bo
 secondary_activity={
     clip_name:max([rotation_activity(clip_name,bone) for bone in secondary_candidates] or [0.0])
     for clip_name in DYNAMIC_SECONDARY_QA_CLIPS
+}
+body_chain_activity={
+    clip_name:{bone:primary_activity[clip_name][bone] for bone in ('Hips','Spine','Chest','Head')}
+    for clip_name in LOCOMOTION_QA_CLIPS
+}
+limb_activity={
+    clip_name:{
+        'arms':max(primary_activity[clip_name]['UpperArmL'],primary_activity[clip_name]['UpperArmR']),
+        'thighs':max(primary_activity[clip_name]['ThighL'],primary_activity[clip_name]['ThighR']),
+        'shins':max(primary_activity[clip_name]['ShinL'],primary_activity[clip_name]['ShinR']),
+    }
+    for clip_name in LOCOMOTION_QA_CLIPS
 }
 root_metrics={'rotationMaxRad':0.0,'locationMax':0.0}
 max_euler=0.0
@@ -747,8 +838,11 @@ for clip_name,row in loop_metrics.items():
     if row['rotationMaxRad']>QA_THRESHOLDS['loopRotationMaxRad'] or row['locationMax']>QA_THRESHOLDS['loopLocationMax']:
         qa_failures.append('LOOP_CONTINUITY:'+clip_name)
 for name,row in transition_metrics.items():
-    if row['rotationMaxRad']>QA_THRESHOLDS['transitionRotationMaxRad']:
+    if row['rotationMaxRad']>QA_THRESHOLDS['transitionRotationMaxRad'] or row['locationMax']>QA_THRESHOLDS['transitionLocationMax']:
         qa_failures.append('TRANSITION_POP:'+name)
+for clip_name,value in frame_pose_pop_rotation.items():
+    if value>QA_THRESHOLDS['framePosePopRotationMaxRad']:
+        qa_failures.append('FRAME_POSE_POP:'+clip_name)
 for name,value in speed_blend_metrics.items():
     if value>QA_THRESHOLDS['speedBlendRotationMaxRad']:
         qa_failures.append('SPEED_BLEND_POSE_GAP:'+name)
@@ -764,6 +858,16 @@ for clip_name,feet in foot_contact_metrics.items():
     for side,value in feet.items():
         if value>maximum:
             qa_failures.append(f'FOOT_CONTACT_DRIFT:{clip_name}:{side}')
+for clip_name,feet in foot_swing_vertical_lift.items():
+    minimum=QA_THRESHOLDS['footSwingVerticalLiftNormalizedMinByClip'][clip_name]
+    for side,value in feet.items():
+        if value<minimum:
+            qa_failures.append(f'FOOT_SWING_VERTICAL_LIFT:{clip_name}:{side}')
+for clip_name,feet in heel_toe_rotation_range.items():
+    minimum=QA_THRESHOLDS['heelToeRotationRangeMinRadByClip'][clip_name]
+    for side,value in feet.items():
+        if value<minimum:
+            qa_failures.append(f'HEEL_TOE_ROTATION:{clip_name}:{side}')
 for clip_name,rows in primary_activity.items():
     for bone,minimum in QA_THRESHOLDS['primaryJointRotationRangeMinRad'].items():
         if rows[bone]<minimum:
@@ -776,8 +880,13 @@ qa_metrics={
     'loop':loop_metrics,
     'transitions':transition_metrics,
     'speedBlendRotationMaxRad':speed_blend_metrics,
+    'framePosePopRotationMaxRad':frame_pose_pop_rotation,
     'leftRightPhaseErrorRad':phase_metrics,
     'footContactLateralVerticalDriftNormalized':foot_contact_metrics,
+    'footSwingVerticalLiftNormalized':foot_swing_vertical_lift,
+    'heelToeRotationRangeRad':heel_toe_rotation_range,
+    'bodyChainRotationRangeRad':body_chain_activity,
+    'limbRotationRangeRad':limb_activity,
     'primaryJointRotationRangeRad':primary_activity,
     'secondaryRotationRangeMaxRadByClip':secondary_activity,
     'root':root_metrics,
@@ -870,6 +979,10 @@ evidence = {
     'sourceAsset': str(ARGS.source.as_posix()),
     'sourceSha256': source_hash,
     'sourceSha256AfterBuild': source_hash_after,
+    'sourceLedger': str(source_ledger_path.as_posix()) if source_ledger_path.is_file() else None,
+    'sourceLedgerSha256': source_ledger_sha256,
+    'sourceLedgerExpectedSha256': source_ledger_expected_hash,
+    'sourceLedgerHashMatched': source_ledger_expected_hash is None or source_ledger_expected_hash == source_hash,
     'derivedArtifact': 'bride-motion-v3.glb',
     'derivedSha256': derived_hash,
     'rigObject': RIG.name,
@@ -948,13 +1061,21 @@ if ARGS.render_dir:
     baseline=ARGS.render_dir/'source-bind-reference.png'
     SCENE.render.filepath=str(baseline);bpy.ops.render.render(write_still=True)
     preview_files=[]
+    preview_artifacts=[]
     for clip_name,t in preview_times.items():
         animate(clip_name,t);bpy.context.view_layer.update()
         output=ARGS.render_dir/(clip_name+'.png')
         SCENE.render.filepath=str(output);bpy.ops.render.render(write_still=True)
         preview_files.append(str(output.name))
+        preview_artifacts.append({
+            'file':output.name,
+            'bytes':output.stat().st_size,
+            'sha256':hashlib.sha256(output.read_bytes()).hexdigest(),
+        })
     evidence['previewFiles']=preview_files
+    evidence['previewArtifacts']=preview_artifacts
     evidence['baselinePreviewFile']='source-bind-reference.png'
+    evidence['baselinePreviewSha256']=hashlib.sha256(baseline.read_bytes()).hexdigest()
     evidence['previewComparisonAxes']=['READABILITY','MOTION_CONTINUITY','WEIGHT_TRANSFER','CONTACT','SECONDARY_MOTION']
     evidence['previewIsRuntimeProof']=False
     (ARGS.output / 'evidence.json').write_text(
