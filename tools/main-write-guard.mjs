@@ -10,6 +10,8 @@ const DIRECT_MAIN_PATTERNS=[
   /refs\/heads\/main\b[^\n]*(?:\bPATCH\b|\bPOST\b|\bPUT\b)/i,
 ];
 const WORKFLOW_EXT=/\.ya?ml$/i;
+const CENTRAL_ARCHITECTURE_PATH='company-learning/company-architecture-map.json';
+const CENTRAL_CONTEXT_TOKEN='company-shared-context.mjs';
 
 export function isWorkflowPath(file=''){
   return String(file).startsWith('.github/workflows/')&&WORKFLOW_EXT.test(file);
@@ -38,6 +40,47 @@ export function scanChangedWorkflowFiles(files=[]){
   return violations;
 }
 
+export function scanCentralWorkflowGovernance(entries=[],architecture={},readWorkflow=file=>fs.readFileSync(file,'utf8')){
+  const violations=[];
+  const launchers=new Set(architecture?.workerSynchronization?.launcherWorkflows||[]);
+  for(const entry of entries){
+    const file=String(entry?.file||'');
+    if(!isWorkflowPath(file))continue;
+    const status=String(entry?.status||'').trim().toUpperCase();
+    const isAdded=status==='A'||status.startsWith('A');
+    if(isAdded&&!launchers.has(file)){
+      violations.push({file,code:'NEW_WORKFLOW_NOT_REGISTERED_IN_CENTRAL_ARCHITECTURE'});
+      continue;
+    }
+    if(launchers.has(file)){
+      let source='';
+      try{source=String(readWorkflow(file)||'');}catch{source='';}
+      if(!source.includes(CENTRAL_CONTEXT_TOKEN)){
+        violations.push({file,code:'CANONICAL_LAUNCHER_MISSING_SHARED_CONTEXT'});
+      }
+      if(source.includes('COMPANY_FLOW.md')){
+        violations.push({file,code:'REMOVED_HUMAN_POLICY_MIRROR_REFERENCE'});
+      }
+    }
+  }
+  return violations;
+}
+
+function changedEntries(baseRef,headRef){
+  let out='';
+  try{
+    out=execFileSync('git',['diff','--name-status',`${baseRef}...${headRef}`],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
+  }catch{
+    out=execFileSync('git',['diff','--name-status',baseRef,headRef],{encoding:'utf8'});
+  }
+  return out.split(/\r?\n/).map(line=>line.trim()).filter(Boolean).map(line=>{
+    const parts=line.split(/\t+/);
+    const status=parts[0]||'';
+    const file=parts[parts.length-1]||'';
+    return{status,file};
+  });
+}
+
 function changedFiles(baseRef,headRef){
   let out='';
   try{
@@ -56,15 +99,19 @@ function arg(name,fallback=''){
 function main(){
   const base=arg('base','origin/main');
   const head=arg('head','HEAD');
-  const files=changedFiles(base,head);
-  const violations=scanChangedWorkflowFiles(files);
+  const entries=changedEntries(base,head);
+  const files=entries.map(x=>x.file);
+  const directWriteViolations=scanChangedWorkflowFiles(files);
+  const architecture=JSON.parse(fs.readFileSync(CENTRAL_ARCHITECTURE_PATH,'utf8'));
+  const governanceViolations=scanCentralWorkflowGovernance(entries,architecture);
+  const violations=[...directWriteViolations,...governanceViolations];
   const result={
     status:violations.length?'FAIL':'PASS',
     developmentProgress:violations.length?'BLOCKED':'INCOMPLETE_PROGRESS',
     changedWorkflowFiles:files.filter(isWorkflowPath),
     violations,
     adminProtection:'ADMIN_PROTECTION_BLOCKER',
-    rule:'feature branch -> PR -> CI -> merge; workflow direct-write to main forbidden',
+    rule:'feature branch -> PR -> CI -> merge; workflow direct-write to main forbidden; new workflows must be central-architecture registered; registered launchers must load shared central context',
   };
   console.log(JSON.stringify(result,null,2));
   if(violations.length)process.exitCode=1;
