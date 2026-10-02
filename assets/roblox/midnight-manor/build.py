@@ -2284,7 +2284,7 @@ def render_export():
     d=bpy.data.cameras.new('ReviewCamera');o=bpy.data.objects.new('ReviewCamera',d);collection.objects.link(o)
     bpy.context.scene.camera=o;d.lens=23
     sc=bpy.context.scene
-    fast_review=str(os.environ.get('GITHUB_REF','')).startswith('refs/heads/chatgpt/')
+    fast_review=os.environ.get('GITHUB_ACTIONS','').lower()=='true' or str(os.environ.get('GITHUB_REF','')).startswith('refs/heads/chatgpt/')
     def select_review_engine(scene,fast):
         if not fast:
             scene.render.engine='CYCLES'
@@ -2300,7 +2300,7 @@ def render_export():
         return 'CYCLES'
     review_engine=select_review_engine(sc,fast_review)
     if review_engine=='CYCLES':
-        sc.cycles.samples=16;sc.cycles.use_denoising=True
+        sc.cycles.samples=16;sc.cycles.use_denoising=False
     else:
         sc.render.image_settings.file_format='PNG'
     sc.render.resolution_x=1200;sc.render.resolution_y=780;sc.render.resolution_percentage=100
@@ -2331,7 +2331,7 @@ def render_export():
         sc=bpy.context.scene
         npc_review_engine=select_review_engine(sc,fast_review)
         if npc_review_engine=='CYCLES':
-            sc.cycles.samples=20;sc.cycles.use_denoising=True
+            sc.cycles.samples=20;sc.cycles.use_denoising=False
         else:
             sc.render.image_settings.file_format='PNG'
         sc.render.resolution_x=720;sc.render.resolution_y=900;sc.render.resolution_percentage=100
