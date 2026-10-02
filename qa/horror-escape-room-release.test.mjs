@@ -9,6 +9,7 @@ const client=fs.readFileSync('roblox-games/horror-escape-room/client/Game.client
 const manorServer=fs.readFileSync('roblox-games/horror-escape-room/server/ManorLobby.luau','utf8');
 const manorClient=fs.readFileSync('roblox-games/horror-escape-room/client/ManorLobby.client.luau','utf8');
 const manorAssets=fs.readFileSync('roblox-games/horror-escape-room/shared/ManorAssets.luau','utf8');
+const project=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/default.project.json','utf8'));
 const launch=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/launch-mvp.json','utf8'));
 
 test('8명 4대4 시작과 AI 채움',()=>{
@@ -491,7 +492,7 @@ test('병원과 놀이공원도 학교처럼 별도 코믹 발견거리를 가�
 });
 
 test('세레머니 콘셉트는 생존 완료와 사냥 완료 중심이며 구형 코믹 춤을 사용하지 않는다',()=>{
- assert.match(config,/ResultSeconds=6/);
+ assert.match(config,/ResultSeconds=8/);
  for(const id of ['LAST_LIGHT','CLEAN_EXIT','FINAL_PURIFY','HUNT_COMPLETE','NIGHT_PROCESSION','RED_CHECKIN','DEADLOCK'])assert.ok(config.includes('Id="'+id+'"'),id);
  for(const removed of ['PHOTO_FAIL','PURIFIER_HIGHFIVE','CLOCK_OUT','ROLL_CALL','SHRUG_DANCE','SCARY_POSE','AWKWARD_CLAP'])assert.ok(!config.includes('Id="'+removed+'"'),removed);
  assert.match(server,/stageResultCeremony/);
@@ -499,6 +500,69 @@ test('세레머니 콘셉트는 생존 완료와 사냥 완료 중심이며 구�
  assert.match(client,/RESULT_CEREMONY_STAGE/);
  assert.match(client,/실제 캐릭터 중심|startResultCeremonyCamera|ceremonyStage\.Visible=false/);
  assert.doesNotMatch(config,/Emote="dance/);
+});
+
+test('적 실루엣과 이름표는 벽을 뚫고 보이지 않는다',()=>{
+ assert.match(server,/AIRoleHighlight";hi\.FillTransparency=.*?hi\.DepthMode=Enum\.HighlightDepthMode\.Occluded/s);
+ assert.match(server,/RoleHighlight";hi\.FillTransparency=.*?hi\.DepthMode=Enum\.HighlightDepthMode\.Occluded/s);
+ assert.match(server,/g\.AlwaysOnTop=false;g\.MaxDistance=32/);
+ assert.doesNotMatch(server,/RoleVisual"[\s\S]{0,220}AlwaysOnTop=true/);
+});
+
+test('학교는 빈 복도를 줄이고 추격용 소품 밀도를 높인다',()=>{
+ for(const marker of ['SchoolHallBench','SchoolLostFoundCabinet','SchoolCleaningCart','SchoolDisplayCase','SchoolSupplyStack','SchoolBrokenDeskPile','SchoolWallPoster'])assert.ok(server.includes(marker),marker);
+ assert.match(server,/ChaseCover",true/);
+ const schoolOfficial=server.slice(server.indexOf('if map.Id=="SCHOOL"then',server.indexOf('local function decorateArenaWithOfficialAssets')),server.indexOf('else',server.indexOf('if map.Id=="SCHOOL"then',server.indexOf('local function decorateArenaWithOfficialAssets'))));
+ assert.ok((schoolOfficial.match(/Vector3\.new\(/g)||[]).length>=28);
+});
+
+test('기존 4개 단말 목표와 비상구 탈출 루프가 실제 승리조건에 연결된다',()=>{
+ assert.match(server,/local function syncObjectiveProgress\(\)/);
+ assert.match(server,/base:SetAttribute\("ObjectiveRound",objectiveState\.round\)/);
+ assert.match(server,/objectiveState\.done=math\.min/);
+ assert.match(server,/workspace:SetAttribute\("EscapeUnlocked",true\)/);
+ assert.match(server,/prompt\.Name="EscapePrompt"/);
+ assert.match(server,/workspace:SetAttribute\("SurvivorEscapeTriggered",true\)/);
+ assert.match(server,/if workspace:GetAttribute\("SurvivorEscapeTriggered"\)==true then endRound\("SURVIVOR"\)/);
+ assert.match(client,/목표 · 단말 가동 %d\/%d → 비상 출구 개방/);
+ assert.match(client,/목표 · 비상 출구가 열렸어 → 남쪽 출구로 탈출/);
+});
+
+test('스킬은 이름뿐 아니라 용도와 범위를 HUD에서 설명한다',()=>{
+ for(const marker of [
+  'Description="24m 안 몬스터의 에너지를 깎는다"',
+  'Description="14m 안 몬스터를 1.5초 느리게 만든다"',
+  'Description="가까운 몬스터를 강하게 밀쳐낸다"',
+  'Description="19m 섬광으로 몬스터를 잠깐 둔화한다"',
+  'Description="8m 안 몬스터를 잠깐 멈춘다"',
+ ])assert.ok(config.includes(marker),marker);
+ assert.match(client,/local skillGuideLine=Instance\.new\("TextLabel"\)/);
+ assert.match(client,/currentHumanAbilityDescription\(\)/);
+ assert.match(client,/currentAbilityDescription\(\)/);
+});
+
+test('내부 세계 귀신 자산은 실제 런타임 목격 연출에 연결되고 실패 시 fallback한다',()=>{
+ assert.equal(project.tree.ReplicatedStorage.WorldGhostSkins.GhostSkinFactory.$path,'../../assets/roblox/world-ghosts/GhostSkinFactory.luau');
+ assert.equal(project.tree.ReplicatedStorage.WorldGhostSkins.GhostSkinMotion.$path,'../../assets/roblox/world-ghosts/GhostSkinMotion.luau');
+ assert.match(client,/local GhostSkinFactory=nil/);
+ assert.match(client,/local internalGhostSkinByCatalogId=\{/);
+ for(const id of ['yurei','nopperabo','gwisin-bride','krasue','banshee','jiangshi','churel','dullahan','la-llorona','pontianak','barghest'])assert.ok(client.includes('"'+id+'"'),id);
+ assert.match(client,/GhostSkinFactory\.Create\(skinId,\{quality="far"/);
+ assert.match(client,/GhostSkinMotion\.Bind\(model\)/);
+ assert.match(client,/SourceAssetLibrary","roblox-world-ghost-skins-v1"/);
+ assert.match(client,/if tryInternalGhostSighting\(trigger,id\)then/);
+ assert.match(client,/LocalGhostSightingBody/);
+});
+
+test('결과는 시레머니 다음 보상 정산 후 저택 복귀 안내로 이어진다',()=>{
+ assert.match(config,/ResultSeconds=8/);
+ assert.match(client,/resultDetail\.Visible=false/);
+ assert.match(client,/task\.delay\(2\.15/);
+ assert.match(client,/보상 정산 완료 · 잠시 뒤 내 저택으로 돌아가/);
+ assert.match(client,/task\.delay\(6\.15/);
+ assert.match(client,/내 저택으로 돌아가는 중…/);
+ assert.match(client,/총 \+%d 코인/);
+ assert.match(server,/teleport\(p,personalSpawn\(p\)\)/);
 });
 
 test('초기 세계 괴담 도감은 12종 3단계이며 서버 근접 검증을 사용한다',()=>{
