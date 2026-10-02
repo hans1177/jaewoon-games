@@ -2,8 +2,445 @@
   "version": 3,
   "publicSafe": true,
   "internalCompanySurface": true,
-  "updatedAt": "2026-10-02T23:32:15.521Z",
+  "updatedAt": "2026-10-02T23:39:28.291Z",
   "games": [
+    {
+      "gameId": "amusement-tycoon",
+      "gameName": "놀이공원 타이쿤",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "publicReleaseReady": false,
+      "suitability": {
+        "gameId": "amusement-tycoon",
+        "gameName": "놀이공원 타이쿤",
+        "executionMode": "ROBLOX_UNITY_CONCURRENT",
+        "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
+        "ROBLOX": {
+          "score": 70,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 70,
+            "development": 68,
+            "graphics": 68,
+            "audio": 70,
+            "qa": 72,
+            "balance": 70,
+            "growthMarketing": 72
+          },
+          "adaptationProfile": "SOCIAL_FAST_SESSION",
+          "direction": [
+            "FAST_ENTRY",
+            "MOBILE_FIRST",
+            "SOCIAL_AND_MULTIPLAYER",
+            "SHORT_REPEATABLE_GOALS",
+            "SERVER_AUTHORITATIVE_SYNC",
+            "ROBLOX_NATIVE_SERVICES"
+          ]
+        },
+        "UNITY": {
+          "score": 75,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 72,
+            "development": 77,
+            "graphics": 82,
+            "audio": 80,
+            "qa": 72,
+            "balance": 74,
+            "growthMarketing": 70
+          },
+          "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
+          "direction": [
+            "DEEP_SYSTEM_PRESENTATION",
+            "RICHER_VISUALS",
+            "CAMERA_AND_CINEMATIC_LANGUAGE",
+            "LONGER_SESSION_SUPPORT",
+            "DETAILED_CONTROLS",
+            "PERFORMANCE_SCALING",
+            "IMMERSIVE_AUDIO"
+          ]
+        },
+        "signals": {
+          "genre": "놀이공원 타이쿤",
+          "playMode": "UNSPECIFIED",
+          "multiplayer": false,
+          "deepSystemGenre": false,
+          "socialGenre": false
+        },
+        "lowerSuitabilityDoesNotDisableDevelopment": true
+      },
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": "9472bd4b844466429db623f3319252e3d488efda",
+            "artifactIdentity": "sha256:a145618a7355216193a2391616610393a33ad61794802c0230abace833f27188",
+            "verifiedAt": null
+          },
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "publicHardGate": {
+            "pass": false,
+            "checks": {
+              "technical": false,
+              "realServerBoot": false,
+              "exactRuntime": true,
+              "actualVibePlay": false,
+              "vibeScenarioCoverage": false,
+              "noBlockingTickets": false,
+              "gameCompletion": false,
+              "platformAdaptation": false,
+              "saveRejoin": false,
+              "multiplayer": false,
+              "serverClientAuthority": false,
+              "mobileAndPerformance": false,
+              "security": false,
+              "presentation": false,
+              "stability": false,
+              "exactFinal": false
+            },
+            "blockers": [
+              "ROBLOX_PUBLIC_HARD_GATE_TECHNICAL",
+              "ROBLOX_PUBLIC_HARD_GATE_REALSERVERBOOT",
+              "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
+              "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
+              "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
+              "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
+              "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
+              "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
+              "ROBLOX_PUBLIC_HARD_GATE_MULTIPLAYER",
+              "ROBLOX_PUBLIC_HARD_GATE_SERVERCLIENTAUTHORITY",
+              "ROBLOX_PUBLIC_HARD_GATE_MOBILEANDPERFORMANCE",
+              "ROBLOX_PUBLIC_HARD_GATE_SECURITY",
+              "ROBLOX_PUBLIC_HARD_GATE_PRESENTATION",
+              "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
+              "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
+            ],
+            "candidateVersionNumber": 2
+          },
+          "perpetualBuildupActive": false,
+          "testerTickets": {
+            "openBlocking": [
+              "bug-d9326601c4a0d6f105ea"
+            ]
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+            "publicDiscoveryAllowed": false
+          },
+          "rebuildRequired": false
+        },
+        {
+          "platform": "UNITY",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "publicHardGate": null,
+          "perpetualBuildupActive": false,
+          "testerTickets": {
+            "openBlocking": [
+              "bug-f223cac682770a672a1a",
+              "bug-329c15824bc04d427c2d"
+            ]
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedTrack": "INTERNAL_OR_CLOSED_APP_TEST",
+            "productionTrackAllowed": false,
+            "credentialsRequiredForStoreUpload": true
+          },
+          "rebuildRequired": false
+        }
+      ]
+    },
+    {
+      "gameId": "bug-defense",
+      "gameName": "곤충 디펜스",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "publicReleaseReady": false,
+      "suitability": {
+        "gameId": "bug-defense",
+        "gameName": "곤충 디펜스",
+        "executionMode": "ROBLOX_UNITY_CONCURRENT",
+        "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
+        "ROBLOX": {
+          "score": 70,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 70,
+            "development": 68,
+            "graphics": 68,
+            "audio": 70,
+            "qa": 72,
+            "balance": 70,
+            "growthMarketing": 72
+          },
+          "adaptationProfile": "SOCIAL_FAST_SESSION",
+          "direction": [
+            "FAST_ENTRY",
+            "MOBILE_FIRST",
+            "SOCIAL_AND_MULTIPLAYER",
+            "SHORT_REPEATABLE_GOALS",
+            "SERVER_AUTHORITATIVE_SYNC",
+            "ROBLOX_NATIVE_SERVICES"
+          ]
+        },
+        "UNITY": {
+          "score": 75,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 72,
+            "development": 77,
+            "graphics": 82,
+            "audio": 80,
+            "qa": 72,
+            "balance": 74,
+            "growthMarketing": 70
+          },
+          "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
+          "direction": [
+            "DEEP_SYSTEM_PRESENTATION",
+            "RICHER_VISUALS",
+            "CAMERA_AND_CINEMATIC_LANGUAGE",
+            "LONGER_SESSION_SUPPORT",
+            "DETAILED_CONTROLS",
+            "PERFORMANCE_SCALING",
+            "IMMERSIVE_AUDIO"
+          ]
+        },
+        "signals": {
+          "genre": "곤충 디펜스",
+          "playMode": "UNSPECIFIED",
+          "multiplayer": false,
+          "deepSystemGenre": false,
+          "socialGenre": false
+        },
+        "lowerSuitabilityDoesNotDisableDevelopment": true
+      },
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": "9472bd4b844466429db623f3319252e3d488efda",
+            "artifactIdentity": "sha256:c94009e8789af8b5cb375538b9132bced413d2d771974309d8b4fed5194f3dee",
+            "verifiedAt": null
+          },
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "publicHardGate": {
+            "pass": false,
+            "checks": {
+              "technical": false,
+              "realServerBoot": true,
+              "exactRuntime": false,
+              "actualVibePlay": false,
+              "vibeScenarioCoverage": false,
+              "noBlockingTickets": false,
+              "gameCompletion": false,
+              "platformAdaptation": false,
+              "saveRejoin": false,
+              "multiplayer": false,
+              "serverClientAuthority": false,
+              "mobileAndPerformance": false,
+              "security": false,
+              "presentation": false,
+              "stability": false,
+              "exactFinal": false
+            },
+            "blockers": [
+              "ROBLOX_PUBLIC_HARD_GATE_TECHNICAL",
+              "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
+              "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
+              "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
+              "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
+              "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
+              "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
+              "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
+              "ROBLOX_PUBLIC_HARD_GATE_MULTIPLAYER",
+              "ROBLOX_PUBLIC_HARD_GATE_SERVERCLIENTAUTHORITY",
+              "ROBLOX_PUBLIC_HARD_GATE_MOBILEANDPERFORMANCE",
+              "ROBLOX_PUBLIC_HARD_GATE_SECURITY",
+              "ROBLOX_PUBLIC_HARD_GATE_PRESENTATION",
+              "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
+              "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
+            ],
+            "candidateVersionNumber": 2
+          },
+          "perpetualBuildupActive": false,
+          "testerTickets": {
+            "openBlocking": [
+              "bug-2d9eb45865e17276bf07"
+            ]
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+            "publicDiscoveryAllowed": false
+          },
+          "rebuildRequired": false
+        },
+        {
+          "platform": "UNITY",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "publicHardGate": null,
+          "perpetualBuildupActive": false,
+          "testerTickets": {
+            "openBlocking": []
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedTrack": "INTERNAL_OR_CLOSED_APP_TEST",
+            "productionTrackAllowed": false,
+            "credentialsRequiredForStoreUpload": true
+          },
+          "rebuildRequired": false
+        }
+      ]
+    },
     {
       "gameId": "daechung-rpg",
       "gameName": "대충 RPG",
@@ -373,443 +810,6 @@
               "bug-7f05f545355f823c22e3",
               "bug-51e28af235567cbda4cf",
               "bug-8993f93f8cb272a623ba"
-            ]
-          },
-          "publication": {
-            "explicitPublicEvidence": false,
-            "publicReleased": false
-          },
-          "distribution": {
-            "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-            "publicDiscoveryAllowed": false
-          },
-          "rebuildRequired": false
-        },
-        {
-          "platform": "UNITY",
-          "technicalReady": false,
-          "internalReleaseState": "NATIVE_DEVELOPMENT",
-          "internalReleaseReady": false,
-          "releaseReadiness": {
-            "version": 1,
-            "ready": false,
-            "homepageReady": false,
-            "technicalReady": false,
-            "designReady": true,
-            "lobbyReady": false,
-            "ownerConfirmed": false,
-            "basis": "PENDING_EVIDENCE",
-            "experience": "DEVELOPMENT",
-            "checks": {
-              "design": true,
-              "publication": false,
-              "exactRuntime": false,
-              "lobby": false,
-              "movement": false,
-              "noRuntimeErrors": false
-            },
-            "blockers": [
-              "publication",
-              "exactRuntime",
-              "lobby",
-              "movement",
-              "noRuntimeErrors"
-            ],
-            "sourceRevision": null,
-            "artifactIdentity": null,
-            "verifiedAt": null
-          },
-          "internalReleasePublished": false,
-          "internalPlaytestPassed": false,
-          "externalExposureAllowed": false,
-          "externalExposureState": "INTERNAL_ONLY",
-          "publicReleaseReady": false,
-          "publicHardGate": null,
-          "perpetualBuildupActive": false,
-          "testerTickets": {
-            "openBlocking": []
-          },
-          "publication": {
-            "explicitPublicEvidence": false,
-            "publicReleased": false
-          },
-          "distribution": {
-            "intendedTrack": "INTERNAL_OR_CLOSED_APP_TEST",
-            "productionTrackAllowed": false,
-            "credentialsRequiredForStoreUpload": true
-          },
-          "rebuildRequired": false
-        }
-      ]
-    },
-    {
-      "gameId": "amusement-tycoon",
-      "gameName": "놀이공원 타이쿤",
-      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
-      "externalPublicReleaseState": "INTERNAL_ONLY",
-      "publicReleaseReady": false,
-      "suitability": {
-        "gameId": "amusement-tycoon",
-        "gameName": "놀이공원 타이쿤",
-        "executionMode": "ROBLOX_UNITY_CONCURRENT",
-        "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
-        "ROBLOX": {
-          "score": 70,
-          "label": "MEDIUM",
-          "departments": {
-            "planning": 70,
-            "development": 68,
-            "graphics": 68,
-            "audio": 70,
-            "qa": 72,
-            "balance": 70,
-            "growthMarketing": 72
-          },
-          "adaptationProfile": "SOCIAL_FAST_SESSION",
-          "direction": [
-            "FAST_ENTRY",
-            "MOBILE_FIRST",
-            "SOCIAL_AND_MULTIPLAYER",
-            "SHORT_REPEATABLE_GOALS",
-            "SERVER_AUTHORITATIVE_SYNC",
-            "ROBLOX_NATIVE_SERVICES"
-          ]
-        },
-        "UNITY": {
-          "score": 75,
-          "label": "MEDIUM",
-          "departments": {
-            "planning": 72,
-            "development": 77,
-            "graphics": 82,
-            "audio": 80,
-            "qa": 72,
-            "balance": 74,
-            "growthMarketing": 70
-          },
-          "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
-          "direction": [
-            "DEEP_SYSTEM_PRESENTATION",
-            "RICHER_VISUALS",
-            "CAMERA_AND_CINEMATIC_LANGUAGE",
-            "LONGER_SESSION_SUPPORT",
-            "DETAILED_CONTROLS",
-            "PERFORMANCE_SCALING",
-            "IMMERSIVE_AUDIO"
-          ]
-        },
-        "signals": {
-          "genre": "놀이공원 타이쿤",
-          "playMode": "UNSPECIFIED",
-          "multiplayer": false,
-          "deepSystemGenre": false,
-          "socialGenre": false
-        },
-        "lowerSuitabilityDoesNotDisableDevelopment": true
-      },
-      "platforms": [
-        {
-          "platform": "ROBLOX",
-          "technicalReady": false,
-          "internalReleaseState": "NATIVE_DEVELOPMENT",
-          "internalReleaseReady": false,
-          "releaseReadiness": {
-            "version": 1,
-            "ready": false,
-            "homepageReady": false,
-            "technicalReady": false,
-            "designReady": true,
-            "lobbyReady": false,
-            "ownerConfirmed": false,
-            "basis": "PENDING_EVIDENCE",
-            "experience": "DEVELOPMENT",
-            "checks": {
-              "design": true,
-              "publication": false,
-              "exactRuntime": false,
-              "lobby": false,
-              "movement": false,
-              "noRuntimeErrors": false
-            },
-            "blockers": [
-              "publication",
-              "exactRuntime",
-              "lobby",
-              "movement",
-              "noRuntimeErrors"
-            ],
-            "sourceRevision": "9472bd4b844466429db623f3319252e3d488efda",
-            "artifactIdentity": "sha256:a145618a7355216193a2391616610393a33ad61794802c0230abace833f27188",
-            "verifiedAt": null
-          },
-          "internalReleasePublished": false,
-          "internalPlaytestPassed": false,
-          "externalExposureAllowed": false,
-          "externalExposureState": "INTERNAL_ONLY",
-          "publicReleaseReady": false,
-          "publicHardGate": {
-            "pass": false,
-            "checks": {
-              "technical": false,
-              "realServerBoot": false,
-              "exactRuntime": true,
-              "actualVibePlay": false,
-              "vibeScenarioCoverage": false,
-              "noBlockingTickets": false,
-              "gameCompletion": false,
-              "platformAdaptation": false,
-              "saveRejoin": false,
-              "multiplayer": false,
-              "serverClientAuthority": false,
-              "mobileAndPerformance": false,
-              "security": false,
-              "presentation": false,
-              "stability": false,
-              "exactFinal": false
-            },
-            "blockers": [
-              "ROBLOX_PUBLIC_HARD_GATE_TECHNICAL",
-              "ROBLOX_PUBLIC_HARD_GATE_REALSERVERBOOT",
-              "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
-              "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
-              "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
-              "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
-              "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
-              "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
-              "ROBLOX_PUBLIC_HARD_GATE_MULTIPLAYER",
-              "ROBLOX_PUBLIC_HARD_GATE_SERVERCLIENTAUTHORITY",
-              "ROBLOX_PUBLIC_HARD_GATE_MOBILEANDPERFORMANCE",
-              "ROBLOX_PUBLIC_HARD_GATE_SECURITY",
-              "ROBLOX_PUBLIC_HARD_GATE_PRESENTATION",
-              "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
-              "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
-            ],
-            "candidateVersionNumber": 2
-          },
-          "perpetualBuildupActive": false,
-          "testerTickets": {
-            "openBlocking": [
-              "bug-d9326601c4a0d6f105ea"
-            ]
-          },
-          "publication": {
-            "explicitPublicEvidence": false,
-            "publicReleased": false
-          },
-          "distribution": {
-            "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-            "publicDiscoveryAllowed": false
-          },
-          "rebuildRequired": false
-        },
-        {
-          "platform": "UNITY",
-          "technicalReady": false,
-          "internalReleaseState": "NATIVE_DEVELOPMENT",
-          "internalReleaseReady": false,
-          "releaseReadiness": {
-            "version": 1,
-            "ready": false,
-            "homepageReady": false,
-            "technicalReady": false,
-            "designReady": true,
-            "lobbyReady": false,
-            "ownerConfirmed": false,
-            "basis": "PENDING_EVIDENCE",
-            "experience": "DEVELOPMENT",
-            "checks": {
-              "design": true,
-              "publication": false,
-              "exactRuntime": false,
-              "lobby": false,
-              "movement": false,
-              "noRuntimeErrors": false
-            },
-            "blockers": [
-              "publication",
-              "exactRuntime",
-              "lobby",
-              "movement",
-              "noRuntimeErrors"
-            ],
-            "sourceRevision": null,
-            "artifactIdentity": null,
-            "verifiedAt": null
-          },
-          "internalReleasePublished": false,
-          "internalPlaytestPassed": false,
-          "externalExposureAllowed": false,
-          "externalExposureState": "INTERNAL_ONLY",
-          "publicReleaseReady": false,
-          "publicHardGate": null,
-          "perpetualBuildupActive": false,
-          "testerTickets": {
-            "openBlocking": [
-              "bug-f223cac682770a672a1a",
-              "bug-329c15824bc04d427c2d"
-            ]
-          },
-          "publication": {
-            "explicitPublicEvidence": false,
-            "publicReleased": false
-          },
-          "distribution": {
-            "intendedTrack": "INTERNAL_OR_CLOSED_APP_TEST",
-            "productionTrackAllowed": false,
-            "credentialsRequiredForStoreUpload": true
-          },
-          "rebuildRequired": false
-        }
-      ]
-    },
-    {
-      "gameId": "bug-defense",
-      "gameName": "곤충 디펜스",
-      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
-      "externalPublicReleaseState": "INTERNAL_ONLY",
-      "publicReleaseReady": false,
-      "suitability": {
-        "gameId": "bug-defense",
-        "gameName": "곤충 디펜스",
-        "executionMode": "ROBLOX_UNITY_CONCURRENT",
-        "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
-        "ROBLOX": {
-          "score": 70,
-          "label": "MEDIUM",
-          "departments": {
-            "planning": 70,
-            "development": 68,
-            "graphics": 68,
-            "audio": 70,
-            "qa": 72,
-            "balance": 70,
-            "growthMarketing": 72
-          },
-          "adaptationProfile": "SOCIAL_FAST_SESSION",
-          "direction": [
-            "FAST_ENTRY",
-            "MOBILE_FIRST",
-            "SOCIAL_AND_MULTIPLAYER",
-            "SHORT_REPEATABLE_GOALS",
-            "SERVER_AUTHORITATIVE_SYNC",
-            "ROBLOX_NATIVE_SERVICES"
-          ]
-        },
-        "UNITY": {
-          "score": 75,
-          "label": "MEDIUM",
-          "departments": {
-            "planning": 72,
-            "development": 77,
-            "graphics": 82,
-            "audio": 80,
-            "qa": 72,
-            "balance": 74,
-            "growthMarketing": 70
-          },
-          "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
-          "direction": [
-            "DEEP_SYSTEM_PRESENTATION",
-            "RICHER_VISUALS",
-            "CAMERA_AND_CINEMATIC_LANGUAGE",
-            "LONGER_SESSION_SUPPORT",
-            "DETAILED_CONTROLS",
-            "PERFORMANCE_SCALING",
-            "IMMERSIVE_AUDIO"
-          ]
-        },
-        "signals": {
-          "genre": "곤충 디펜스",
-          "playMode": "UNSPECIFIED",
-          "multiplayer": false,
-          "deepSystemGenre": false,
-          "socialGenre": false
-        },
-        "lowerSuitabilityDoesNotDisableDevelopment": true
-      },
-      "platforms": [
-        {
-          "platform": "ROBLOX",
-          "technicalReady": false,
-          "internalReleaseState": "NATIVE_DEVELOPMENT",
-          "internalReleaseReady": false,
-          "releaseReadiness": {
-            "version": 1,
-            "ready": false,
-            "homepageReady": false,
-            "technicalReady": false,
-            "designReady": true,
-            "lobbyReady": false,
-            "ownerConfirmed": false,
-            "basis": "PENDING_EVIDENCE",
-            "experience": "DEVELOPMENT",
-            "checks": {
-              "design": true,
-              "publication": false,
-              "exactRuntime": false,
-              "lobby": false,
-              "movement": false,
-              "noRuntimeErrors": false
-            },
-            "blockers": [
-              "publication",
-              "exactRuntime",
-              "lobby",
-              "movement",
-              "noRuntimeErrors"
-            ],
-            "sourceRevision": "9472bd4b844466429db623f3319252e3d488efda",
-            "artifactIdentity": "sha256:c94009e8789af8b5cb375538b9132bced413d2d771974309d8b4fed5194f3dee",
-            "verifiedAt": null
-          },
-          "internalReleasePublished": false,
-          "internalPlaytestPassed": false,
-          "externalExposureAllowed": false,
-          "externalExposureState": "INTERNAL_ONLY",
-          "publicReleaseReady": false,
-          "publicHardGate": {
-            "pass": false,
-            "checks": {
-              "technical": false,
-              "realServerBoot": true,
-              "exactRuntime": false,
-              "actualVibePlay": false,
-              "vibeScenarioCoverage": false,
-              "noBlockingTickets": false,
-              "gameCompletion": false,
-              "platformAdaptation": false,
-              "saveRejoin": false,
-              "multiplayer": false,
-              "serverClientAuthority": false,
-              "mobileAndPerformance": false,
-              "security": false,
-              "presentation": false,
-              "stability": false,
-              "exactFinal": false
-            },
-            "blockers": [
-              "ROBLOX_PUBLIC_HARD_GATE_TECHNICAL",
-              "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
-              "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
-              "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
-              "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
-              "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
-              "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
-              "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
-              "ROBLOX_PUBLIC_HARD_GATE_MULTIPLAYER",
-              "ROBLOX_PUBLIC_HARD_GATE_SERVERCLIENTAUTHORITY",
-              "ROBLOX_PUBLIC_HARD_GATE_MOBILEANDPERFORMANCE",
-              "ROBLOX_PUBLIC_HARD_GATE_SECURITY",
-              "ROBLOX_PUBLIC_HARD_GATE_PRESENTATION",
-              "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
-              "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
-            ],
-            "candidateVersionNumber": 2
-          },
-          "perpetualBuildupActive": false,
-          "testerTickets": {
-            "openBlocking": [
-              "bug-2d9eb45865e17276bf07"
             ]
           },
           "publication": {
