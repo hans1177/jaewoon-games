@@ -909,7 +909,7 @@ def build():
         # 중앙 홀↔좌우 날개는 통짜 벽이 아니라 세 개의 실제 통로로 연결한다.
         wall_segments=[(-61.5,7),(-43.5,13),(-22.5,13),(-.5,15)]
         for seg,(z0,length) in enumerate(wall_segments):
-            s.box('ManorSideWall'+str(side)+'_'+str(seg),(side*54,13,z0),(1.5,26,length),c['plum'],lean=side*.35)
+            s.box('ManorSideWall'+str(side)+'_'+str(seg),(side*54,16,z0),(1.5,32,length),c['plum'],lean=side*.35)
         # 각 통로에 석재 문설주와 뾰족 아치 프레임을 둔다. 이동 폭은 8stud 이상 유지.
         for gate,z0 in enumerate([-54,-33,-12]):
             for jamb in [-1,1]:
@@ -925,12 +925,12 @@ def build():
               [.30,.28,.24,.28,.30],[.30,.28,.24,.28,.30],c['stone'],sides=20)
             s.box('WingThreshold'+str(side)+'_'+str(gate),(side*54,.28,z0),(5.5,.18,8.0),c['stone'])
             # 1층 아치 위쪽은 2층 벽으로 닫아 상층이 외부로 뚫려 보이지 않게 한다.
-            s.box('UpperWingWallCap'+str(side)+'_'+str(gate),(side*54,20.0,z0),(1.5,12.0,8.6),c['plum'],lean=side*.18)
-        s.box('FacadeWing'+str(side),(side*43,13,-2),(34,26,2),c['plum'],lean=side*.5)
-        s.box('OuterWingWall'+str(side),(side*75,11,-31),(1.2,22,64),c['plum'],lean=side*.35)
-        s.box('WingBackWall'+str(side),(side*58,11,-63),(35,22,1.2),c['plum'])
+            s.box('UpperWingWallCap'+str(side)+'_'+str(gate),(side*54,23.0,z0),(1.5,18.0,8.6),c['plum'],lean=side*.18)
+        s.box('FacadeWing'+str(side),(side*43,16,-2),(34,32,2),c['plum'],lean=side*.5)
+        s.box('OuterWingWall'+str(side),(side*75,14,-31),(1.2,28,64),c['plum'],lean=side*.35)
+        s.box('WingBackWall'+str(side),(side*58,14,-63),(35,28,1.2),c['plum'])
         for z in [-55,-39,-23,-7]:
-            s.box('WallRib'+str(side)+str(z),(side*53.4,11,z),(1.2,22,1),c['wood'])
+            s.box('WallRib'+str(side)+str(z),(side*53.4,14,z),(1.2,28,1),c['wood'])
         # 1·2층 창: 깊은 recess + 석재 jamb/sill + 첨두 아치 + 목재 mullion + 안쪽 커튼 실루엣.
         for x in [side*33,side*45,side*61,side*70]:
             for y in [6.8,17.2]:
@@ -967,14 +967,14 @@ def build():
                 s.box('WindowCurtainL'+key,(x-1.72,y,-.50),(1.05,6.2,.08),curtain,lean=.12)
                 s.box('WindowCurtainR'+key,(x+1.72,y,-.50),(1.05,6.2,.08),curtain,lean=-.12)
         s.box('EntryPillar'+str(side),(side*8.5,7.5,-2),(1.8,15,4),c['stone'],lean=-side*.45)
-    s.box('BackWall',(0,13,-65),(110,26,1.5),c['plum'])
+    s.box('BackWall',(0,16,-65),(110,32,1.5),c['plum'])
     for x in [-42,-28,-14,0,14,28,42]:
-        s.box('CeilingBeamX'+str(x),(x,24.0,-31),(0.55,.70,64),c['wood'])
+        s.box('CeilingBeamX'+str(x),(x,30.0,-31),(0.55,.70,64),c['wood'])
     for z0 in [-58,-46,-34,-22,-10]:
-        s.box('CeilingBeamZ'+str(z0),(0,23.85,z0),(104,.55,.60),c['wood'])
+        s.box('CeilingBeamZ'+str(z0),(0,29.85,z0),(104,.55,.60),c['wood'])
     for side in [-1,1]:
-        s.box('UpperWallMoulding'+str(side),(side*52.9,20.8,-31),(.35,.65,64),c['brass'])
-    s.box('BackUpperMoulding',(0,20.8,-64.1),(106,.65,.35),c['brass'])
+        s.box('UpperWallMoulding'+str(side),(side*52.9,26.8,-31),(.35,.65,64),c['brass'])
+    s.box('BackUpperMoulding',(0,26.8,-64.1),(106,.65,.35),c['brass'])
     s.box('EntryLintel',(0,15,-2),(20,3.5,4),c['wood'])
     s.curve_tube('EntryGrandArch',[
       (-9.2,14.2,-1.0),(-6.5,17.2,-1.0),(0,20.7,-1.0),(6.5,17.2,-1.0),(9.2,14.2,-1.0)
@@ -1011,25 +1011,25 @@ def build():
     s.box('EntryFanlightSill',(0,13.55,-.58),(10.8,.34,1.05),c['stone'])
 
     # 중앙부는 2층 높이로 솟고 좌우 지붕은 낮아 실루엣이 단계적으로 읽힌다.
-    roof=[[-61,25,-67],[61,25,-67],[61,25,1],[-61,25,1],[-7,46,-67],[-7,42,1]]
+    roof=[[-61,31,-67],[61,31,-67],[61,31,1],[-61,31,1],[-7,52,-67],[-7,48,1]]
     s.node('CrookedRoof',s.mesh('CrookedRoof',roof,[[0,4,1],[3,2,5],[0,3,5,4],[4,5,2,1],[0,1,2,3]],c['roof']))
-    s.box('CentralTower',(0,29,-36),(28,17,25),c['plum'])
-    s.lathe('CentralTowerCrown',(0,46,-36),15,11,13,c['roof'],sides=8)
+    s.box('CentralTower',(0,35,-36),(28,17,25),c['plum'])
+    s.lathe('CentralTowerCrown',(0,52,-36),15,11,13,c['roof'],sides=8)
     # 굴뚝은 기단-샤프트-코니스-캡-연도 순서로 쌓아 큰 박스 느낌을 없앤다.
-    s.box('LeaningChimneyBase',(31,28.4,-42),(7.2,2.0,7.2),c['stone'],lean=.35)
-    s.box('LeaningChimney',(31.7,39.0,-42),(4.8,20.5,4.8),c['stone'],lean=1.25)
-    s.box('ChimneyCornice',(32.9,48.9,-42),(6.0,.75,6.0),c['stone'])
-    s.box('ChimneyCap',(33.1,50.0,-42),(6.8,.65,6.8),c['black'])
+    s.box('LeaningChimneyBase',(31,34.4,-42),(7.2,2.0,7.2),c['stone'],lean=.35)
+    s.box('LeaningChimney',(31.7,45.0,-42),(4.8,20.5,4.8),c['stone'],lean=1.25)
+    s.box('ChimneyCornice',(32.9,54.9,-42),(6.0,.75,6.0),c['stone'])
+    s.box('ChimneyCap',(33.1,56.0,-42),(6.8,.65,6.8),c['black'])
     for side in [-1,1]:
-        s.lathe('ChimneyFlue'+str(side),(33.1+side*1.25,51.2,-42),.62,.54,2.0,c['black'],sides=20)
-        s.lathe('ChimneyPot'+str(side),(33.1+side*1.25,52.65,-42),.78,.56,.90,c['stone'],sides=20)
+        s.lathe('ChimneyFlue'+str(side),(33.1+side*1.25,57.2,-42),.62,.54,2.0,c['black'],sides=20)
+        s.lathe('ChimneyPot'+str(side),(33.1+side*1.25,58.65,-42),.78,.56,.90,c['stone'],sides=20)
     for ci,(x,z,h) in enumerate([(-31,-25,10),(-18,-52,8),(45,-18,9)]):
         s.box('SecondaryChimneyBase'+str(ci),(x,27.0,z),(4.8,1.4,4.8),c['stone'])
         s.box('SecondaryChimney'+str(ci),(x,31.0+h*.20,z),(3.1,7.0+h*.18,3.1),c['stone'],lean=(-.35 if ci%2 else .30))
         s.box('SecondaryChimneyCap'+str(ci),(x,35.0+h*.28,z),(4.1,.52,4.1),c['black'])
         s.lathe('SecondaryChimneyPot'+str(ci),(x,36.0+h*.28,z),.48,.38,1.25,c['stone'],sides=18)
-    s.lathe('RightTurret',(57,27,-48),7,5.5,25,c['plum'],sides=10)
-    s.lathe('RightTurretRoof',(58,48,-48),9,0,17,c['roof'],sides=10)
+    s.lathe('RightTurret',(57,33,-48),7,5.5,25,c['plum'],sides=10)
+    s.lathe('RightTurretRoof',(58,54,-48),9,0,17,c['roof'],sides=10)
 
     # 개인 저택 외부 정체성: 진행도 가문 문장, 기록탑, 장의사 반입구, 집사 서비스 구역.
     crest_bg=s.material('CrestBlack',(.028,.025,.030))
@@ -1174,7 +1174,7 @@ def build():
     for side in [-1,1]:
         for z0 in [-49,-31,-13]:
             s.curve_tube('WingRoofThorn'+str(side)+str(z0),[
-              (side*68,25.0,z0),(side*69.0,27.1,z0-.35),(side*68.35,28.8,z0+.15)
+              (side*68,31.0,z0),(side*69.0,33.1,z0-.35),(side*68.35,34.8,z0+.15)
             ],[.16,.10,.035],[.13,.08,.028],c['black'],sides=14)
 
     # 큰 계단: 단차는 유지하고 목재 난간/뉴얼/갤러리 앞판을 실제 저택 계단처럼 한 구조로 묶는다.
@@ -1237,12 +1237,12 @@ def build():
     for row,z0 in enumerate([-55,-47,-39,-31,-23,-15,-7]):
         for col,x0 in enumerate([-45,-30,-15,0,15,30,45]):
             if abs(x0)<10 and z0 in [-31,-23]:continue
-            s.box('GrandCeilingCoffer'+str(row)+'_'+str(col),(x0,23.36,z0),(11.6,.22,6.2),c['wood'])
-            s.box('GrandCeilingCofferInset'+str(row)+'_'+str(col),(x0,23.20,z0),(10.35,.08,5.0),c['plum'])
+            s.box('GrandCeilingCoffer'+str(row)+'_'+str(col),(x0,29.36,z0),(11.6,.22,6.2),c['wood'])
+            s.box('GrandCeilingCofferInset'+str(row)+'_'+str(col),(x0,29.20,z0),(10.35,.08,5.0),c['plum'])
             if (row+col)%3==0:
-                s.ellipsoid('GrandCeilingBoss'+str(row)+'_'+str(col),(x0,23.05,z0),(1.0,.18,1.0),c['brass'])
+                s.ellipsoid('GrandCeilingBoss'+str(row)+'_'+str(col),(x0,29.05,z0),(1.0,.18,1.0),c['brass'])
     for x0 in [-45,-30,-15,15,30,45]:
-        s.box('GrandCeilingCorbel'+str(x0),(x0,21.85,-63.75),(1.2,2.2,.65),c['wood'],lean=(.10 if x0<0 else -.10))
+        s.box('GrandCeilingCorbel'+str(x0),(x0,27.85,-63.75),(1.2,2.2,.65),c['wood'],lean=(.10 if x0<0 else -.10))
 
     # 그랜드홀 벽과 2층 난간에도 같은 박쥐/가시 문양을 반복해 실내외 컨셉을 연결한다.
     hall_bat=[(-2.1,0),(-1.4,.65),(-.7,.18),(0,.72),(.7,.18),(1.4,.65),(2.1,0),(1.0,-.35),(0,-.75),(-1.0,-.35)]
@@ -1292,8 +1292,8 @@ def build():
             s.box(name+'WallPanel'+str(panel),(wall_x,5.2,z+panel),(1.0,8.6,4.8),room_accent[name])
             s.box(name+'WallPanelTrim'+str(panel),(wall_x-outer*.58,5.2,z+panel),(.18,9.1,5.2),c['brass'])
         for beam in [-6.3,0,6.3]:
-            s.box(name+'CeilingBeam'+str(beam),(x,12.8,z+beam),(31,.42,.52),c['wood'])
-        s.lathe(name+'CeilingRose',(x,12.48,z),1.45,.95,.28,c['brass'],sides=24)
+            s.box(name+'CeilingBeam'+str(beam),(x,16.8,z+beam),(31,.42,.52),c['wood'])
+        s.lathe(name+'CeilingRose',(x,16.48,z),1.45,.95,.28,c['brass'],sides=24)
 
         if name=='ArchiveRoom':
             s.prop('furniture','bookcaseClosed',name+'TallArchive',(x+outer*11,.4,z-4.8),8,stretch=(.78,1.12,1))
