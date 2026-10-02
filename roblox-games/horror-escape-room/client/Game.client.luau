@@ -1065,9 +1065,9 @@ end
 local function combatSkinIdForPlayer(player)
  if player:GetAttribute("Role")~="MONSTER"then return nil end
  if player:GetAttribute("Infected")==true then
-  return combatSkinByInfected[tostring(player:GetAttribute("HumanForm")or"BROADCAST"]or"pocong"
+  return combatSkinByInfected[tostring(player:GetAttribute("HumanForm")or"BROADCAST")]or"pocong"
  end
- return combatSkinByMonster[tostring(player:GetAttribute("MonsterForm")or"DRACULA"]or"strigoi"
+ return combatSkinByMonster[tostring(player:GetAttribute("MonsterForm")or"DRACULA")]or"strigoi"
 end
 local function authoredCombatTemplate()
  local folder=RS:FindFirstChild("CombatVisualTemplates")
