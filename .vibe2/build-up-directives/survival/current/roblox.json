@@ -1,20 +1,19 @@
 {
   "version": 2,
-  "directiveId": "survival-build-up-g2-016719ed769b",
-  "directiveFingerprint": "016719ed769bd11d0048b6cc75591251bde4a429b7482d9b1b1b99f1ee24bf5b",
+  "directiveId": "survival-build-up-g1-470526c15c1e",
+  "directiveFingerprint": "470526c15c1ed3a7a15abd143fb867e4e109be94cefd7b9e90e6e18645df88d9",
   "previousDirectiveFingerprint": "470526c15c1ed3a7a15abd143fb867e4e109be94cefd7b9e90e6e18645df88d9",
   "forbiddenRepeatFingerprint": "470526c15c1ed3a7a15abd143fb867e4e109be94cefd7b9e90e6e18645df88d9",
   "gameId": "survival",
   "gameName": "나의 생존기",
-  "generation": 2,
+  "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
-  "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
+  "previousDirectiveOutcome": "cancelled",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/survival",
-  "sourceTreeFingerprint": "a21daff88273b105f898d9330652e4d3ee5237a1c99c90c0a9351fa83897c22e",
+  "sourceTreeFingerprint": "7be6d5e897711c2b31fe1cd0ac19025db7c8d03aa6e0a8647aec0bbf8e804b2f",
   "designFingerprint": "efe91120fd918ad40a64d2470a22f7dfb7986423ca1af5ded6711ca024b29a44",
   "gameIdentityAndNonNegotiables": {
     "identity": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.",
@@ -51,58 +50,50 @@
   "currentImplementationFindings": {
     "sourceObservations": [
       "CURRENT_SOURCE_FILES=4",
-      "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
-      "AUDIO_IMPLEMENTATION_SPARSE",
-      "INVENTORY_EQUIPMENT_FLOW_SPARSE",
-      "UI_MENU_FLOW_SPARSE"
+      "MOTION_IMPLEMENTATION_SPARSE",
+      "SETTINGS_ACCESSIBILITY_SPARSE"
     ],
     "signals": {
-      "combat": 68,
-      "progression": 114,
-      "ai": 19,
-      "save": 49,
-      "multiplayer": 13,
-      "animation": 28,
-      "motionStates": 111,
-      "gameFeel": 22,
-      "vfx": 19,
-      "camera": 31,
-      "audio": 1,
-      "audioDynamics": 14,
-      "ui": 57,
-      "uiFlow": 30,
-      "entryFlow": 6,
-      "loadingFlow": 0,
-      "input": 57,
-      "map": 93,
+      "combat": 52,
+      "progression": 47,
+      "ai": 2,
+      "save": 21,
+      "multiplayer": 11,
+      "animation": 1,
+      "vfx": 4,
+      "camera": 6,
+      "ui": 29,
+      "uiFlow": 10,
+      "input": 20,
+      "map": 3,
       "landmark": 2,
-      "interaction": 29,
-      "inventory": 2,
+      "interaction": 3,
+      "inventory": 0,
       "equipment": 0,
-      "settings": 1,
-      "feedback": 67,
-      "session": 12,
-      "content": 81,
-      "choice": 12,
+      "settings": 0,
+      "feedback": 1,
+      "session": 8,
+      "content": 38,
+      "choice": 3,
       "connection": 0,
-      "performance": 16,
-      "lighting": 37,
-      "primitive": 12,
+      "performance": 5,
+      "lighting": 1,
+      "primitive": 0,
       "todo": 0,
-      "errorRecovery": 11
+      "errorRecovery": 9
     },
     "topFiles": [
-      {
-        "file": "roblox-games/survival/shared/GameConfig.luau",
-        "score": 253
-      },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
         "score": 204
       },
       {
+        "file": "roblox-games/survival/shared/GameConfig.luau",
+        "score": 51
+      },
+      {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "score": 142
+        "score": 39
       },
       {
         "file": "roblox-games/survival/default.project.json",
@@ -112,7 +103,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 356,
+        "line": 90,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -176,7 +167,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 375,
+        "line": 109,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -191,14 +182,6 @@
         "score": 74
       },
       {
-        "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 176,
-        "kind": "FUNCTION",
-        "symbol": "playVerifiedLearningActionFeedback",
-        "context": "local function playVerifiedLearningActionFeedback(control)",
-        "score": 66
-      },
-      {
         "file": "roblox-games/survival/server/Game.server.luau",
         "line": 202,
         "kind": "FUNCTION",
@@ -208,27 +191,11 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 23,
+        "line": 14,
         "kind": "FUNCTION",
         "symbol": "hasStudioAssetAtom",
         "context": "local function hasStudioAssetAtom(atom)",
         "score": 50
-      },
-      {
-        "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 253,
-        "kind": "FUNCTION",
-        "symbol": "bindVerifiedLearningControl",
-        "context": "local function bindVerifiedLearningControl(control)",
-        "score": 50
-      },
-      {
-        "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 106,
-        "kind": "FUNCTION",
-        "symbol": "syncVerifiedLearningCharacterMotion",
-        "context": "local function syncVerifiedLearningCharacterMotion(character)",
-        "score": 42
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
@@ -259,22 +226,21 @@
   "previousVersionDelta": {
     "previousGoal": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 1,
+    "previousGeneration": null,
     "previousSourceTreeFingerprint": "7be6d5e897711c2b31fe1cd0ac19025db7c8d03aa6e0a8647aec0bbf8e804b2f",
-    "currentSourceTreeFingerprint": "a21daff88273b105f898d9330652e4d3ee5237a1c99c90c0a9351fa83897c22e",
-    "sourceChanged": true,
+    "currentSourceTreeFingerprint": "7be6d5e897711c2b31fe1cd0ac19025db7c8d03aa6e0a8647aec0bbf8e804b2f",
+    "sourceChanged": false,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
-    "platform": "ROBLOX",
-    "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-    "failureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
+    "failureStage": "",
+    "failureSignature": "",
     "blockers": [],
-    "runtimeObserved": false,
+    "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
-    "regressionPassed": false
+    "regressionPassed": false,
+    "studioQualityFailure": null
   },
   "qualityGapMap": [
     {
@@ -359,18 +325,18 @@
     },
     {
       "domain": "WORLD_MAP_TOPOLOGY",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "MAP_EXPANSION",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "REGIONS",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "WORLD_DENSITY",
@@ -484,8 +450,8 @@
     },
     {
       "domain": "MENU_FLOW",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "CONVENIENCE",
@@ -499,13 +465,13 @@
     },
     {
       "domain": "UI_INFORMATION_PRIORITY",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "FEEDBACK_CLARITY",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "TUTORIAL_ONBOARDING",
@@ -539,8 +505,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
@@ -549,13 +515,13 @@
     },
     {
       "domain": "CHARACTER_VISUALS",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "ENEMY_VISUALS",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "WEAPONS_AND_EQUIPMENT",
@@ -569,18 +535,18 @@
     },
     {
       "domain": "ENVIRONMENT",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "TERRAIN",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "MATERIALS",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "PALETTE",
@@ -594,13 +560,13 @@
     },
     {
       "domain": "ANIMATION",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "SECONDARY_MOTION",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "VFX",
@@ -795,8 +761,8 @@
     },
     {
       "domain": "WORLD_MAP_TOPOLOGY",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "월드 구조는 시작점·안전/위험 구역·주요 동선·우회 경로·보상 지점·잠금/해금 연결을 읽을 수 있게 하고 막다른 빈 공간을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -804,8 +770,8 @@
     },
     {
       "domain": "MAP_EXPANSION",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "맵 확장은 면적만 늘리지 말고 새 지역 역할, 연결 경로, 잠금/해금, 랜드마크, 자원·적·이벤트 차이와 기존 지역으로 돌아올 이유를 함께 설계한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -813,8 +779,8 @@
     },
     {
       "domain": "REGIONS",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "지역마다 지형, 적/상호작용, 자원, 위험, 조명/색, 이동 방식 중 여러 축이 달라 실제 플레이 역할이 구별되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -924,7 +890,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "접속→준비→첫 행동→목표/실패→결과/보상→재시도→다음 선택을 연결한다. 확인된 실패 수리 후 첫 플레이·재도전·적용 가능한 친구 참가·연출 순으로 한 흐름씩 구현·검수한다. 결과는 달성 내용·실제 실패 원인/성공 선택·재도전/다음 단계/로비를 보여주고 서버 확정 보상만 표시한다. 재도전 연타도 한 번만 시작되며 입력·판정·상태·피드백·실패 복귀가 연결되어야 한다.",
+      "directive": "접속→첫 행동→핵심 재미→보상→업그레이드/선택→새 목표→실패/성공→저장/종료가 막힘 없이 한 세션으로 이어지고 할 일이 사라지는 공백을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -942,7 +908,7 @@
       "state": "PASS",
       "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
-      "directive": "사망/실패/런 종료 시 기존 손실·보존·체크포인트·리스폰 규칙을 유지하고 빠르게 재시작하게 한다. 실제 기록에 있는 원인만 시각화한다: 퍼즐의 잘못된 연결, 방어의 뚫린 경로, 생존의 사망 원인 등 해당 장르에 맞게 표시하며 근거가 없으면 추측하지 않는다.",
+      "directive": "사망/실패/런 종료 시 손실·보존·체크포인트·리스폰 위치·재시작 시간을 명확히 하고 실패 후 다시 핵심 재미로 돌아가는 시간을 최소화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -951,7 +917,7 @@
       "state": "PASS",
       "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
-      "directive": "기존 저장 키·구조·의미를 보존하고 진행·장비·해금을 재접속 후 복구한다. 불러오기 실패를 신규 사용자로 처리하거나 기본값으로 덮어쓰지 말고 재시도·안전 복귀를 제공한다.",
+      "directive": "세이브는 기존 키/의미를 보존하면서 진행·장비·해금 등 승인된 상태가 재접속 후 정확히 복구되고 중간 실패 시 안전한 fallback을 갖게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -969,7 +935,7 @@
       "state": "PASS",
       "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
-      "directive": "재접속/late join/네트워크 실패 후 권위 상태를 재동기화하고 중복 보상·장비 유실·퀘스트 되감기 없이 복구한다. 복구된 실제 진행·현재 목표·다음 행동을 짧게 안내하며 복구 전 상태를 확정해 표시하지 않는다.",
+      "directive": "재접속/late join/일시 네트워크 실패 시 권위 상태를 다시 동기화하고 중복 보상·장비 유실·퀘스트 되감기 없이 안전한 복구 경로를 제공한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -978,7 +944,7 @@
       "state": "PASS",
       "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
-      "directive": "멀티가 적용되는 게임만 기존 방 생성·참가·준비·시작·이탈을 서버 판정으로 연결한다. 참가자·준비·기존 모드를 표시하고 대기 중 안전한 공동 연습을 제공한다. 결과 화면에 각자 재도전 의사를 표시하고 기존 참가 규칙으로 인원을 유지하되 이탈자 때문에 무한 대기하지 않게 한다. 방장 이탈·late join·재접속을 기존 규칙으로 복구하고 실제 2인 이상의 행동·목표·승패·보상 일치와 중복 지급 방지를 검수한다.",
+      "directive": "멀티가 적용되는 게임이면 authoritative state, 참가/이탈, 핵심 행동 동기화, 재접속/late join, 승패/보상 일관성을 실제 2인 이상 흐름에 맞춘다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -996,7 +962,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "작은 화면에서 핵심 행동 버튼을 크게, 설정·도움말을 접어서 배치하고 HUD·위험 경고가 손가락에 가리지 않게 한다. safe area·스크롤·가로/세로를 검수하고 팝업 닫기 터치가 뒤쪽 이동·공격으로 전달되지 않게 입력을 소비한다.",
+      "directive": "작은 화면에서 핵심 HUD·조작·위험 경고·선택지가 손가락과 겹치지 않게 하고 safe area, 스크롤, 팝업 닫기, 가로/세로 대응을 실제 플레이 기준으로 정리한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1020,10 +986,10 @@
     },
     {
       "domain": "MENU_FLOW",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "일일 생존 기록 시스템를 연습하는 로비/허브를 기존 UI에 연결한다. 승인된 장르에 맞게 퍼즐은 작은 연습판, 방어는 적 하나에 배치·회수, 생존은 안전한 채집·제작·장착을 활용한다. 연습은 건너뛸 수 있고 기존 재화·보상·저장에 영향을 주지 않는다. 로딩은 실제 월드·저장·참가 준비 단계와 실패 이유·재시도/안전 복귀를 표시한다. 시작은 준비 확인 후 한 번만 처리하고 스폰·카메라·목표까지 연결한다. 기존 메뉴의 뒤로가기·닫기·스크롤·팝업·선택 유지를 모바일에서 검수하며 중복 화면·가짜 진행률·장식용 버튼을 금지한다.",
+      "directive": "인벤토리·장비·제작·상점·퀘스트·설정 등 존재하는 메뉴 사이 전환, 뒤로가기, 닫기, 팝업 중첩, 스크롤, 선택 유지가 모바일에서 예측 가능하게 동작하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1047,8 +1013,8 @@
     },
     {
       "domain": "UI_INFORMATION_PRIORITY",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "현재 목표, 생존/위험, 핵심 자원, 장비/쿨다운, 다음 행동 순으로 실제 플레이 중요도에 맞게 정보 위계를 정하고 작은 화면에서 비핵심 정보가 핵심 HUD를 밀어내지 않게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1056,8 +1022,8 @@
     },
     {
       "domain": "FEEDBACK_CLARITY",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "획득·구매·제작·장착·레벨업·퀘스트·실패·사용 불가 등 중요한 상태 변화에 즉시 읽히는 UI/음향/시각 피드백과 실패 이유를 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1068,7 +1034,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "일일 생존 기록 시스템의 첫 입력·결과·목표를 필요한 순간 한 줄과 실습으로 안내한다. 같은 실패 반복 시 목표 확인→관련 위치→행동 예시의 선택형 힌트를 단계적으로 제공하되 정답 자동 처리·난이도 변경은 금지한다. 설명 닫기는 학습 완료가 아니며 건너뛰기·도움말 다시 열기를 제공한다. 재접속은 초기 설명 대신 현재 목표를 보여준다.",
+      "directive": "첫 플레이에서 일일 생존 기록 시스템의 핵심 입력→결과→다음 목표를 실제 행동으로 학습시키고, 설명문만 읽는 튜토리얼보다 단계적 실습·즉시 피드백·도움말 회수를 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1119,8 +1085,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "배경음악은 지역/상태/전투 강도 전환과 연결하고, 핵심 행동·위험 전조·피격·보상·UI SFX를 서로 구별해 화면을 보지 않아도 중요한 사건을 인지할 수 있게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1137,8 +1103,8 @@
     },
     {
       "domain": "CHARACTER_VISUALS",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다. 플레이어/NPC의 역할·등급·장비가 실루엣, 비율, 자세, 재질에서 구별되고 핵심 행동 모션과 연결되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1146,8 +1112,8 @@
     },
     {
       "domain": "ENEMY_VISUALS",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "적 종류와 위험도가 색상만이 아니라 실루엣·크기·이동 리듬·공격 전조·피격/사망 반응으로 구별되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1173,8 +1139,8 @@
     },
     {
       "domain": "ENVIRONMENT",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "전경/중경/배경, 식생/소품, 위험/안전 신호, 환경 스토리텔링을 나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다. 아트 방향 안에서 통일하고 빈 장식면을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1182,8 +1148,8 @@
     },
     {
       "domain": "TERRAIN",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "지형 높낮이·경계·통로·전투/상호작용 공간이 플레이 기능과 맞고 반복 평면/단일 primitive 위주 구성을 실제 지형 형태로 교체한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1191,8 +1157,8 @@
     },
     {
       "domain": "MATERIALS",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "재질은 이름 등록이 아니라 거칠기·광택·마모·투명/발광·빛 반응이 표면 역할과 맞게 실제 렌더에 적용되도록 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1218,8 +1184,8 @@
     },
     {
       "domain": "ANIMATION",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "주요 캐릭터/적 행동을 idle→locomotion→anticipation→impact→recovery→hit/death 상태와 실제 게임 이벤트에 연결하고 정지 모델 판정을 금지한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1227,8 +1193,8 @@
     },
     {
       "domain": "SECONDARY_MOTION",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "장비·의상·머리·꼬리·식생·기계 등 적합한 요소에 지연/관성/반동을 추가해 무게감과 생동감을 주되 판정/권한은 바꾸지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1318,6 +1284,21 @@
   ],
   "detectedGaps": [
     {
+      "domain": "WORLD_MAP_TOPOLOGY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "MAP_EXPANSION",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "REGIONS",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
       "domain": "INVENTORY",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
@@ -1348,39 +1329,24 @@
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "MENU_FLOW",
+      "domain": "UI_INFORMATION_PRIORITY",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "AUDIO_MUSIC_SFX",
+      "domain": "FEEDBACK_CLARITY",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "CHARACTER_VISUALS",
+      "domain": "ANIMATION",
       "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "ENEMY_VISUALS",
+      "domain": "SECONDARY_MOTION",
       "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
-    },
-    {
-      "domain": "ENVIRONMENT",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
-    },
-    {
-      "domain": "TERRAIN",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
-    },
-    {
-      "domain": "MATERIALS",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     }
   ],
   "primaryFocus": "STABILITY",
@@ -1390,12 +1356,6 @@
     "우선 책임 소스 앵커 roblox-games/survival/client/Game.client.luau::render, roblox-games/survival/server/Game.server.luau::scopeHandler1, roblox-games/survival/server/Game.server.luau::scopeHandler2, roblox-games/survival/server/Game.server.luau::scopeHandler3, roblox-games/survival/server/Game.server.luau::scopeHandler4, roblox-games/survival/server/Game.server.luau::scopeHandler5, roblox-games/survival/server/Game.server.luau::scopeHandler6, roblox-games/survival/server/Game.server.luau::scopeHandler7에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "일일 생존 기록 시스템를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "즉석 제작 및 개조 시스템가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
-    "기획 루프 1 \"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
-    "기획 루프 2 \"밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
-    "기획 루프 3 \"전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
-    "기획 루프 4 \"생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
-    "고유 시스템 \"일일 생존 기록 시스템\": 플레이어 선택 \"어제 실패했던 구역을 다시 도전할지, 새로운 자원을 찾아 위험한 지역으로 이동할지 결정합니다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
-    "고유 시스템 \"즉석 제작 및 개조 시스템\": 플레이어 선택 \"공격력을 높이는 무기 강화에 집중할지, 방어적인 함정 설치에 자원을 투자할지 선택합니다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
     "고유 시스템 일일 생존 기록 시스템, 즉석 제작 및 개조 시스템 중 이번 목표와 직접 연결된 시스템을 기존 책임 코드에서 심화한다.",
     "핵심 게임플레이 의미는 보존하면서 이번 품질축에 필요한 연결만 수정한다."
   ],
@@ -1422,35 +1382,11 @@
     "platformScope": [
       "WEB",
       "ROBLOX",
-      "UNITY"
+      "UNITY",
+      "FORTNITE_UEFN"
     ],
     "requestedPlatform": "ROBLOX",
     "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
-    "dataCapacityBudget": {
-      "state": "NORMAL",
-      "limits": {
-        "savePersistedDataBytes": 2097152,
-        "webDownloadBytes": 104857600,
-        "singleFileBytes": 26214400,
-        "mobileMemoryTargetBytes": 314572800,
-        "mobileMinimumFps": 30
-      },
-      "warningRatio": 0.8,
-      "measured": {
-        "sourceBytes": 110026,
-        "largestFileBytes": 43553,
-        "savePersistedDataBytes": 0,
-        "mobileMemoryBytes": 0,
-        "mobileFps": 0
-      },
-      "warning": [],
-      "exceeded": [],
-      "strategy": "CONTINUE_HIGHEST_VALUE_COHERENT_BUILD_UP",
-      "generationLimit": null,
-      "contentCountLimit": null,
-      "buildUpMustContinue": true,
-      "protectedStateDeletionForbidden": true
-    },
     "existingCompletenessReview": {
       "requiredEveryBuildUp": true,
       "mode": "CHECK_EXISTING_AND_EXPAND_OR_IMPROVE_WHICHEVER_HAS_HIGHER_PLAYER_VALUE",
@@ -1470,21 +1406,20 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 3,
-    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
+    "themeDepth": 2,
+    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 3,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 2,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
       ],
@@ -1521,7 +1456,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 194,
+        "score": 212,
         "gapDomains": [
           "INVENTORY",
           "INVENTORY_USABILITY",
@@ -1530,13 +1465,18 @@
         ]
       },
       {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 68,
+        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
+        "score": 41,
         "gapDomains": [
-          "ENVIRONMENT",
-          "TERRAIN",
-          "CHARACTER_VISUALS",
-          "ENEMY_VISUALS"
+          "MAP_EXPANSION",
+          "REGIONS"
+        ]
+      },
+      {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": 37,
+        "gapDomains": [
+          "ANIMATION"
         ]
       },
       {
@@ -1547,20 +1487,15 @@
         ]
       },
       {
-        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "theme": "MID_LATE_ENDGAME_COMPLETION",
         "score": 26,
         "gapDomains": [
-          "ENEMY_VISUALS"
+          "MAP_EXPANSION"
         ]
       },
       {
-        "theme": "MID_LATE_ENDGAME_COMPLETION",
-        "score": 14,
-        "gapDomains": []
-      },
-      {
-        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 12,
+        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "score": 20,
         "gapDomains": []
       },
       {
@@ -1636,8 +1571,7 @@
       "DISTINCT_FROM_EXISTING_CONTENT_BY_MEANING_NOT_ONLY_NAME_OR_STATS",
       "CONNECTED_TO_EXISTING_GAME_FLOW",
       "CONTINUITY_AND_CAUSALITY_PRESERVED",
-      "EXISTING_RELEVANT_INCREMENTAL_QA_PASSES",
-      "DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP"
+      "EXISTING_RELEVANT_INCREMENTAL_QA_PASSES"
     ]
   },
   "visualBuildUpDirective": {
@@ -1645,7 +1579,7 @@
       "identity": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.",
       "visualPurpose": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 플레이 판단과 일일 생존 기록 시스템가 화면만 보고도 구별되도록 시각 언어를 통일한다.",
       "distinctnessRule": "즉석 제작 및 개조 시스템와 연결되지 않는 장식 추가보다 실루엣·동작·환경 맥락으로 게임 고유성을 강화한다.",
-      "placeholderDebt": "HIGH"
+      "placeholderDebt": "EVALUATE_AND_REPLACE_WHEN_VISIBLE"
     },
     "domains": {
       "CHARACTER": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다. 플레이어의 역할이 실루엣·장비·자세에서 읽히게 만들고 idle/이동/핵심행동 사이 포즈 차이를 명확히 한다.",
@@ -1661,9 +1595,7 @@
       "VFX": "일반 타격·강한 타격·위험 예고·상태이상·보상 VFX의 형태와 타이밍을 분리하고 실제 impact 이벤트에 동기화한다.",
       "CAMERA": "기본 시야와 모바일 가독성을 보존하면서 핵심행동·강공격·보스/시그니처 순간에 강도가 다른 짧은 카메라 반응을 준다.",
       "UI_HUD": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 핵심 목표·자원·위험·다음 선택이 한눈에 보이게 하고 게임 세계관과 맞는 패널/아이콘/피드백 언어를 사용한다.",
-      "INVENTORY_EQUIPMENT_UI": "인벤토리와 장비 UI는 획득→비교→장착/교체→현재 장착 표시→실제 외형/행동 반영까지 같은 상태를 사용하고 모바일에서도 한 손 조작과 스크롤/닫기/선택 유지가 명확해야 한다.",
-      "AUDIO_MUSIC": "BGM·환경음·행동 피드백은 현재 지역/상태/전투 강도와 연결하고, 소리가 의도적으로 비활성화된 카테고리는 되살리지 않는다. 여러 음악 맥락이 있으면 같은 한 곡 단순 반복 대신 전환·크로스페이드·믹스 변화로 상태가 들리게 한다.",
-      "AUDIO_VISUAL_SYNC": "damage/VFX/animation/camera/audio가 같은 authoritative impact 순간을 공유하게 하며 소리만 먼저/늦게 나오는 불일치를 제거한다.",
+      "AUDIO_VISUAL_SYNC": "damage/VFX/animation/camera/audio가 같은 impact 순간을 공유하게 하며 소리만 먼저/늦게 나오는 불일치를 제거한다.",
       "ENVIRONMENTAL_MOTION": "정적인 배경을 피하고 식생·빛·파티클·기계/건축 요소 중 세계에 맞는 미세 움직임을 지속시킨다.",
       "SCENE_DENSITY": "빈 공간과 반복 오브젝트 밀도를 실제 플레이 동선 기준으로 조정하고 중요 영역에는 의미 있는 시각 정보가 있게 한다.",
       "LANDMARK_READABILITY": "플레이어가 지도 없이도 방향과 지역 역할을 기억할 수 있는 실루엣이 다른 랜드마크를 유지·강화한다."
@@ -1682,175 +1614,9 @@
       "MARKER_CONFIG_ATOM_ONLY_FORBIDDEN",
       "COLOR_ONLY_NOT_FULL_IDENTITY_UPGRADE",
       "PRIMARY_PLACEHOLDER_PRIMITIVE_CANNOT_CLOSE_VISUAL_BUILD_UP",
-      "UI_INVENTORY_AUDIO_MOTION_PRESENCE_ALONE_CANNOT_CLOSE_BUILD_UP",
-      "BEFORE_AFTER_COMPARISON_REQUIRED",
-      "SAME_SCENE_RUNTIME_REOBSERVATION_REQUIRED"
+      "BEFORE_AFTER_COMPARISON_REQUIRED"
     ],
     "focus": "STABILITY"
-  },
-  "experienceBuildUpContract": {
-    "version": 1,
-    "status": "ACTIVE_EXECUTABLE_BUILD_UP_CONTRACT",
-    "platform": "ROBLOX",
-    "focus": "STABILITY",
-    "attention": "EXTRA",
-    "tracks": [
-      {
-        "track": "MOTION_AND_ACTING",
-        "status": "PRESENT"
-      },
-      {
-        "track": "COMBAT_AND_PRIMARY_ACTION_FEEL",
-        "status": "PRESENT"
-      },
-      {
-        "track": "UI_HUD_AND_MENU",
-        "status": "PRESENT"
-      },
-      {
-        "track": "INVENTORY_AND_EQUIPMENT",
-        "status": "WEAK_OR_MISSING"
-      },
-      {
-        "track": "AUDIO_MUSIC_AND_FEEDBACK",
-        "status": "WEAK_OR_MISSING"
-      },
-      {
-        "track": "VFX_CAMERA_AND_IMPACT_SYNC",
-        "status": "PRESENT"
-      },
-      {
-        "track": "WORLD_VISUAL_COHESION",
-        "status": "PRESENT"
-      },
-      {
-        "track": "MOBILE_TOUCH_AND_ACCESSIBILITY",
-        "status": "PRESENT"
-      },
-      {
-        "track": "PERFORMANCE_AND_RUNTIME_STABILITY",
-        "status": "PRESENT"
-      }
-    ],
-    "priorityOrder": [
-      "MOTION_AND_ACTING",
-      "AUDIO_MUSIC_AND_FEEDBACK",
-      "COMBAT_AND_PRIMARY_ACTION_FEEL",
-      "UI_HUD_AND_MENU",
-      "INVENTORY_AND_EQUIPMENT",
-      "VFX_CAMERA_AND_IMPACT_SYNC",
-      "WORLD_VISUAL_COHESION",
-      "MOBILE_TOUCH_AND_ACCESSIBILITY",
-      "PERFORMANCE_AND_RUNTIME_STABILITY"
-    ],
-    "weakestTracks": [
-      "AUDIO_MUSIC_AND_FEEDBACK",
-      "INVENTORY_AND_EQUIPMENT"
-    ],
-    "loop": [
-      "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
-      "RANK_WEAKEST_APPLICABLE_TRACKS",
-      "IMPLEMENT_EXISTING_RESPONSIBLE_SYSTEMS_DIRECTLY",
-      "REPLAY_REAL_INPUTS_AND_CAPTURE_SAME_SCENE_BEFORE_AFTER",
-      "VERIFY_PLAYER_FACING_EFFECT_AND_NO_SEMANTIC_REGRESSION",
-      "PROMOTE_VERIFIED_BASELINE_OR_REPEAT"
-    ],
-    "commonRules": [
-      "AUDIT_ALL_APPLICABLE_PLAYER_FACING_TRACKS_EVERY_GENERATION",
-      "RANK_AND_BUILD_THE_WEAKEST_THREE_BEFORE_ADDING_DECORATIVE_EXTRAS",
-      "PRESENCE_OR_MARKER_ONLY_CANNOT_PASS_QUALITY",
-      "IMPLEMENT_IN_THE_EXISTING_RESPONSIBLE_SYSTEM_NOT_A_SHADOW_WRAPPER",
-      "COMPARE_BEFORE_AFTER_UNDER_THE_SAME_SCENE_INPUT_AND_STATE",
-      "VERIFY_INPUT_TO_STATE_TO_MOTION_UI_AUDIO_VFX_CAMERA_FEEDBACK_CAUSALITY",
-      "PRESERVE_GAMEPLAY_BALANCE_SAVE_ECONOMY_AND_NETWORK_AUTHORITY",
-      "OWNER_INTENTIONALLY_DISABLED_AUDIO_CATEGORIES_MUST_REMAIN_DISABLED",
-      "REPEAT_BUILD_UP_UNTIL_NO_CRITICAL_PLAYER_FACING_TRACK_GAP_REMAINS"
-    ],
-    "platformProfile": {
-      "attention": "EXTRA",
-      "runtimeSurface": "OFFICIAL_ROBLOX_STUDIO_MCP",
-      "requirements": [
-        "ARTICULATED_ACTOR_MOTION_WITH_ANIMATOR_MOTOR6D_OR_BONES",
-        "ROOT_ONLY_MOTION_CANNOT_PASS",
-        "IDLE_WALK_JOG_RUN_START_STOP_TURN_JUMP_LAND_HIT_DEATH_COVERAGE_WHEN_APPLICABLE",
-        "ANTICIPATION_IMPACT_RECOVERY_FOR_PRIMARY_ACTIONS",
-        "TOUCH_FIRST_UI_WITH_MINIMUM_44PX_EQUIVALENT_TARGETS",
-        "INVENTORY_COMPARE_EQUIP_UNEQUIP_REPLACE_FEEDBACK_WHEN_APPLICABLE",
-        "SOUNDSERVICE_SOUNDGROUP_MIXING_AND_SPATIAL_ROLLOFF_WHEN_AUDIO_APPLICABLE",
-        "REGION_OR_STATE_BGM_TRANSITION_WHEN_MULTIPLE_CONTEXTS_EXIST",
-        "VFX_CAMERA_AUDIO_SHARE_AUTHORITATIVE_IMPACT_EVENT",
-        "OFFICIAL_STUDIO_MCP_BEFORE_AFTER_RUNTIME_CAPTURE"
-      ],
-      "ownerDisabledAudioCategoriesMustRemainDisabled": true,
-      "nativeRuntimeEvidenceRequired": true,
-      "mobileRuntimeEvidenceRequired": true
-    },
-    "robloxExtra": {
-      "priority": "EXTRA_ATTENTION",
-      "motion": {
-        "articulatedActorsRequireJointMotion": true,
-        "animatorMotor6dOrBonesRequiredWhenApplicable": true,
-        "rootOnlyLocomotionCannotPass": true,
-        "requiredStateIntent": [
-          "IDLE",
-          "WALK",
-          "JOG",
-          "RUN",
-          "START",
-          "STOP",
-          "TURN",
-          "JUMP",
-          "LAND",
-          "ATTACK_ANTICIPATION",
-          "IMPACT",
-          "RECOVERY",
-          "HIT_REACTION",
-          "DEATH"
-        ],
-        "blendAndSpeedSyncRequired": true,
-        "weightShiftAndSecondaryMotionRequired": true,
-        "ikOrProceduralGroundingPreferred": true
-      },
-      "uiAndInventory": {
-        "touchFirst": true,
-        "minimumTouchTargetPxEquivalent": 44,
-        "safeAreaRequired": true,
-        "modalStackBackCloseScrollSelectionPersistenceRequired": true,
-        "inventoryFlowWhenApplicable": [
-          "ACQUIRE",
-          "COMPARE",
-          "SELECT",
-          "EQUIP",
-          "UNEQUIP_OR_REPLACE",
-          "CURRENT_EQUIPPED_INDICATOR",
-          "WORLD_OR_CHARACTER_FEEDBACK"
-        ]
-      },
-      "audio": {
-        "ownerDisabledCategoriesPreserved": true,
-        "soundServiceLifecycleRequired": true,
-        "soundGroupMixingPreferred": true,
-        "spatialWorldAudioUsesRolloffWhenApplicable": true,
-        "bgmRegionStateCombatTransitionsRequiredWhenMultipleContextsExist": true,
-        "duplicatePlaybackOnRespawnOrResumeForbidden": true,
-        "singleLoopAcrossDistinctContextsCannotClaimMusicBuildUp": true
-      },
-      "runtimeEvidence": {
-        "officialStudioMcpRequired": true,
-        "actualInputRequired": true,
-        "beforeAfterCaptureRequired": true,
-        "mobileViewportRequired": true,
-        "runtimeStateObservationRequired": true,
-        "sourceMarkersAloneCannotPass": true
-      }
-    },
-    "webExtra": null,
-    "unityExtra": null,
-    "ownerLocks": {
-      "gameplayBalanceSaveEconomyNetworkMeaningPreserved": true,
-      "intentionallyDisabledAudioCategoriesPreserved": true
-    },
-    "designIdentity": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다."
   },
   "uxInputDirectives": [
     "핵심 행동, 위험, 현재 목표, 다음 선택을 모바일 화면에서 우선순위가 명확하게 보이게 한다.",
@@ -1860,12 +1626,12 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: 동일 공통 목표 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "ROBLOX": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: 동일 공통 목표 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: 동일 공통 목표 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "WEB": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: 동일 공통 목표 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 현재 canonical Web 경로에 구현하고 브라우저 터치/카메라/렌더 비용을 맞춘다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "ROBLOX": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: 동일 공통 목표 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
+    "UNITY": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: 동일 공통 목표 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
     "FORTNITE_UEFN": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: 동일 공통 목표 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: 동일 공통 목표 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "UNITY_APP": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: 동일 공통 목표 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "UNITY_WEB": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: 동일 공통 목표 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 현재 canonical Web 경로에 구현하고 브라우저 터치/카메라/렌더 비용을 맞춘다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "UNITY_APP": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: 동일 공통 목표 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
     "UNREAL": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: 동일 공통 목표 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
     "UEFN": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: 동일 공통 목표 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
@@ -1881,7 +1647,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 356,
+        "line": 90,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -2043,7 +1809,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 356,
+        "line": 90,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -2145,16 +1911,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
-      "runtimeObserved": false
+      "classification": "REGRESSION",
+      "reason": "current source Studio product-quality failure",
+      "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "a21daff88273b105f898d9330652e4d3ee5237a1c99c90c0a9351fa83897c22e",
+      "sourceTreeFingerprint": "7be6d5e897711c2b31fe1cd0ac19025db7c8d03aa6e0a8647aec0bbf8e804b2f",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "failureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE"
+      "failureStage": null,
+      "failureSignature": null
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2165,8 +1931,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current source Studio product-quality failure requires source repair before another observation"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2180,14 +1946,10 @@
     "EXISTING_APPLICABLE_GAP_CANNOT_BE_SILENTLY_SKIPPED",
     "FIRST_10_MINUTES_AND_SESSION_FLOW_REVIEWED",
     "MAP_INVENTORY_UI_CONVENIENCE_AND_SYSTEM_CONNECTION_REVIEWED_WHEN_APPLICABLE",
-    "MOTION_UI_INVENTORY_AUDIO_VFX_CAMERA_WORLD_MOBILE_PERFORMANCE_TRACKS_REVIEWED",
-    "PRESENCE_ONLY_OR_MARKER_ONLY_CANNOT_CLOSE_PLAYER_FACING_QUALITY",
-    "SAME_SCENE_BEFORE_AFTER_RUNTIME_REOBSERVATION_REQUIRED_FOR_EXPERIENCE_BUILD_UP",
-    "ROBLOX_EXPERIENCE_BUILD_UP_USES_EXTRA_NATIVE_STUDIO_ATTENTION",
     "AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP",
     "CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE",
     "EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP",
-    "WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT"
+    "WEB_ROBLOX_UNITY_FORTNITE_UEFN_COMMON_EXPANSION_CONTRACT"
   ],
   "nextEscalationCandidates": [
     "DEEPEN_CORE_FUN_DECISION_DENSITY",
@@ -2197,12 +1959,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 2,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
     "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -2210,10 +1972,7 @@
   "coverage": {
     "allDomainsConsidered": true,
     "domainCount": 74,
-    "visualDomainCount": 19,
-    "experienceTrackCount": 9,
-    "experienceBuildUpPlatform": "ROBLOX",
-    "robloxExtraExperienceAttention": true,
+    "visualDomainCount": 17,
     "allowedStates": [
       "PASS",
       "GAP",
@@ -2254,13 +2013,17 @@
       "RUNTIME_STABILITY"
     ],
     "holisticGaps": [
+      "WORLD_MAP_TOPOLOGY",
+      "MAP_EXPANSION",
+      "REGIONS",
       "INVENTORY",
       "INVENTORY_USABILITY",
       "EQUIPMENT_LOADOUT",
       "SYSTEM_CONNECTION",
       "SAVE_COMPLETENESS",
       "SETTINGS_ACCESSIBILITY",
-      "MENU_FLOW"
+      "UI_INFORMATION_PRIORITY",
+      "FEEDBACK_CLARITY"
     ],
     "notApplicable": [
       "QUESTS",
@@ -2270,5 +2033,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-02T23:32:44.153Z"
+  "generatedAt": "2026-09-27T13:32:12.120Z"
 }
