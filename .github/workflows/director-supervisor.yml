@@ -98,7 +98,7 @@ jobs:
             done
           }
           # Owner-requested exact stale cleanup. This is the existing Director drain, not a new pipeline.
-          for stale_run_id in 34748574272 36802981975 36802982062 36803420019; do
+          for stale_run_id in 34748574272 36802981975 36802982062 36803420019 36946640682 36947640969 36948944252 36946855834 36943839130; do
             stale_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${stale_run_id}" --jq '.status' 2>/dev/null || true)"
             case "$stale_status" in
               queued|pending|requested|waiting|in_progress)
