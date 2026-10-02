@@ -111,10 +111,18 @@ function Manor:Get(p)
  -- 마당 주요 소품은 단순 안정 충돌체를 사용해 복잡한 장식 메시 끼임을 막는다.
  for _,spec in ipairs({
   {0,2.5,39,15,5,15},{46,2.6,47,10,5,7},
-  {-31,2.0,35,7,4,2},{31,2.0,35,7,4,2},
+  {-31,2.0,35,7,4,5},{31,2.0,35,7,4,5},{45,2.0,54,7,4,5},
   {-57,2.0,10,2,4,7},{57,2.0,10,2,4,7},
+  {-65,8.0,-47,13,16,15},{-57,4.0,69,14,8,1.8},
  })do
   part(folder,"GardenBoundary",origin+Vector3.new(spec[1],spec[2],spec[3]),Vector3.new(spec[4],spec[5],spec[6]),false)
+ end
+ -- 폐쇄 온실은 네 벽만 단순 충돌체로 막고 내부 장식 메시에는 복잡 충돌을 주지 않는다.
+ for _,spec in ipairs({
+  {46,5.2,69,1,10.4,16},{68,5.2,69,1,10.4,16},
+  {57,5.2,61.5,22,10.4,1},{57,5.2,76.5,22,10.4,1},
+ })do
+  part(folder,"GreenhouseBoundary",origin+Vector3.new(spec[1],spec[2],spec[3]),Vector3.new(spec[4],spec[5],spec[6]),false)
  end
  local spawn=Instance.new("SpawnLocation");spawn.Name="PersonalSpawn";spawn.Position=origin+Vector3.new(0,.4,60)
  spawn.Size=Vector3.new(10,.1,10);spawn.Anchored=true;spawn.Transparency=1;spawn.CanCollide=false;spawn.CanTouch=false;spawn.Neutral=true;spawn.Duration=0;spawn.Parent=folder
@@ -216,6 +224,16 @@ function Manor:Get(p)
   for i=1,12 do
    for _,mesh in ipairs(namedParts(scene,"PortraitCanvas"..i))do
     if mesh.Name=="PortraitCanvas"..i then mesh.Color=i<=seen and Color3.fromRGB(255,239,206)or Color3.fromRGB(130,122,119)end
+   end
+  end
+
+  -- 현관 가문 문장은 괴담 2개 완성마다 한 조각씩 채워진다. 새 저장값 없이 GhostCompleted만 시각화한다.
+  for i=1,6 do
+   local reached=completed>=i*2
+   for _,mesh in ipairs(namedParts(scene,"ManorCrestSegment"..i))do
+    mesh.Transparency=reached and 0 or .78
+    mesh.Reflectance=reached and .12 or 0
+    mesh.CanCollide=false;mesh.CanTouch=false;mesh.CanQuery=false
    end
   end
 
