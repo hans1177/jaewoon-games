@@ -25,6 +25,17 @@ test('selected lobby map stays server-authoritative through room and round',()=>
  assert.match(server,/workspace:SetAttribute\("CurrentMapName",map\.Name\)/);
 });
 
+test('personal manor keeps expanded +60 arrival while spawn authority stays in Game.server',()=>{
+ assert.match(lobby,/local spawn=Instance\.new\("Part"\);spawn\.Name="PersonalSpawn";spawn\.Position=origin\+Vector3\.new\(0,\.55,60\)/);
+ assert.match(lobby,/SpawnMarkerOnly/);
+ assert.doesNotMatch(lobby,/local spawn=Instance\.new\("SpawnLocation"\);spawn\.Name="PersonalSpawn"/);
+ assert.doesNotMatch(lobby,/p\.RespawnLocation=spawn/);
+ assert.match(lobby,/return room\.origin\+Vector3\.new\(0,3,60\),room\.origin\+Vector3\.new\(0,5,-2\),room\.spawn/);
+ assert.match(lobby,/math\.abs\(localPos\.X\)>78 or localPos\.Z< -67 or localPos\.Z>86/);
+ assert.match(lobby,/function Manor:Visit\(visitor,ownerUserId\)/);
+ assert.match(lobby,/SecondFloorGround/);
+});
+
 test('downloaded assets retain original bytes and CC0 license',()=>{
  const manifest=JSON.parse(read(root+'/asset-manifest.json'));
  assert.equal(manifest.models.length,231);
