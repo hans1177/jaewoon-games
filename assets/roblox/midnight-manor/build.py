@@ -1010,11 +1010,22 @@ def build():
         ],[.075,.050],[.060,.040],c['brass'],sides=14)
     s.box('EntryFanlightSill',(0,13.55,-.58),(10.8,.34,1.05),c['stone'])
 
-    # 중앙부는 2층 높이로 솟고 좌우 지붕은 낮아 실루엣이 단계적으로 읽힌다.
-    roof=[[-61,31,-67],[61,31,-67],[61,31,1],[-61,31,1],[-7,52,-67],[-7,48,1]]
-    s.node('CrookedRoof',s.mesh('CrookedRoof',roof,[[0,4,1],[3,2,5],[0,3,5,4],[4,5,2,1],[0,1,2,3]],c['roof']))
-    s.box('CentralTower',(0,35,-36),(28,17,25),c['plum'])
-    s.lathe('CentralTowerCrown',(0,52,-36),15,11,13,c['roof'],sides=8)
+    # 중앙 ridge 기준의 정상 박공지붕. 이전 6점 비평면 폴리곤은 Roblox 변환에서
+    # 거대 삼각면이 실내를 관통했으므로 좌/우 roof plane + 앞/뒤 gable로 명시한다.
+    roof=[
+      [-61,35,-67],[-61,35,1],
+      [0,58,-67],[0,54,1],
+      [61,35,-67],[61,35,1]
+    ]
+    roof_faces=[
+      [0,2,3,1],
+      [2,4,5,3],
+      [0,4,2],
+      [1,3,5],
+    ]
+    s.node('CrookedRoof',s.mesh('CrookedRoof',roof,roof_faces,c['roof']))
+    s.box('CentralTower',(0,39,-36),(28,17,25),c['plum'])
+    s.lathe('CentralTowerCrown',(0,56,-36),15,11,13,c['roof'],sides=8)
     # 굴뚝은 기단-샤프트-코니스-캡-연도 순서로 쌓아 큰 박스 느낌을 없앤다.
     s.box('LeaningChimneyBase',(31,34.4,-42),(7.2,2.0,7.2),c['stone'],lean=.35)
     s.box('LeaningChimney',(31.7,45.0,-42),(4.8,20.5,4.8),c['stone'],lean=1.25)
@@ -1174,7 +1185,7 @@ def build():
     for side in [-1,1]:
         for z0 in [-49,-31,-13]:
             s.curve_tube('WingRoofThorn'+str(side)+str(z0),[
-              (side*68,31.0,z0),(side*69.0,33.1,z0-.35),(side*68.35,34.8,z0+.15)
+              (side*68,35.0,z0),(side*69.0,37.1,z0-.35),(side*68.35,38.8,z0+.15)
             ],[.16,.10,.035],[.13,.08,.028],c['black'],sides=14)
 
     # 큰 계단: 단차는 유지하고 목재 난간/뉴얼/갤러리 앞판을 실제 저택 계단처럼 한 구조로 묶는다.
