@@ -328,8 +328,12 @@ def gait_pose(t, pace='walk'):
         'backward': {'amp':0.34,'arm':0.26,'lean':-0.055,'lift':0.15,'drop':0.030,'secondary':0.96,'alert':0.32,'reverse':-0.88,'stance':0.28},
     }
     cfg = profiles[pace]
+    stance = cfg['stance']
     body_y = phase_curve(t, [(0.00,-1.0),(0.14,-0.25),(0.28,0.62),(0.50,-0.86),(0.66,-0.12),(0.80,0.72),(1.00,-1.0)])
-    yaw = phase_curve(t, [(0.00,-1.0),(0.25,0.10),(0.50,1.0),(0.75,-0.08),(1.00,-1.0)])
+    yaw = phase_curve(t, [
+        (0.00,-0.88),(stance,-0.78),(0.50,0.88),
+        (0.50 + stance,0.78),(1.00,-0.88)
+    ])
     lateral = phase_curve(t, [(0.00,-0.24),(0.22,0.08),(0.50,0.24),(0.76,-0.06),(1.00,-0.24)])
     loc('Hips', lateral * (0.010 if pace in ('run','sprint') else 0.006), 0.0, cfg['drop'] * body_y)
     rot('Hips', cfg['lean'] * 0.30, yaw * 0.085, yaw * 0.030)
@@ -338,7 +342,6 @@ def gait_pose(t, pace='walk'):
     rot('Head', -cfg['lean'] * 0.52, yaw * 0.020, -yaw * 0.015)
     for side_name, sign in [('L', -1), ('R', 1)]:
         p = (t + (0.5 if side_name == 'R' else 0.0)) % 1.0
-        stance = cfg['stance']
         thigh = phase_curve(p, [
             (0.00,0.72),(stance * 0.50,0.72),(stance,0.72),
             (min(0.48, stance + 0.14),0.08),(0.56,-0.82),
