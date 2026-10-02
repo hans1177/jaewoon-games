@@ -507,6 +507,45 @@ function renderBuildBar(){
 }
 
 function renderInfo(){
+  var panel=document.getElementById('info'),actions=document.getElementById('infoActions');
+  var b=state.buildings.find(function(x){return x.id===selectedId;});
+  if(!b){panel.classList.remove('on');return;}
+  var d=BUILD_DEFS[b.type],rt=runtime[b.id]||{queue:[],active:[]},lv=b.level||0;
+  var line="길 연결 " + (buildingConnected(b) ? "정상" : "끊김");
+  if(d.cap)line += " · 수용 " + capacity(b) + "명 · 대기 " + rt.queue.length + "명 · 이용 " + d.time + "초";
+  if(d.kind === "food" || d.kind === "ride")line += " · 업그레이드 " + lv + "/3";
+  if(d.kind === "ride")line += b.broken ? " · 고장" : " · 정상";
+  document.getElementById('infoText').innerHTML="<b>" + d.name + "</b><span>" + line + "</span>";
+  actions.innerHTML="";
+
+  if(d.kind === "food" || d.kind === "ride"){
+    var up=document.createElement('button'),cost=upgradeCost(lv);
+    up.type='button';up.className='infoBtn';up.textContent=lv>=3 ? "최대 업글" : "업글 " + cost + "G";
+    up.disabled=lv>=3 || state.money < cost;
+    up.addEventListener('click',function(){
+      if(lv>=3 || state.money < cost)return;
+      state.money -= cost;b.level=lv+1;save();toast(d.name + " 업그레이드!");renderInfo();updateHud();renderBuildBar();
+    });
+    actions.appendChild(up);
+  }
+  if(b.type === "cleaner"){
+    var hire=document.createElement('button');
+    hire.type='button';hire.className='infoBtn';
+    hire.textContent=state.cleaners >= 3 ? "3/3 고용" : "청소부 " + CLEANER_HIRE_COST + "G";
+    hire.disabled=state.cleaners >= 3 || state.money < CLEANER_HIRE_CO;
+    hire.addEventListener('click',function(){
+      if(state.cleaners >= 3 || state.money < CLEANER_HIRE_CO)return;
+      state.money -= CLEANER_HIRE_CO;
+      state.cleaners++;
+      save();
+      toast("청소부 고용!");
+      renderInfo();
+      updateHud();
+      renderBuildBar();
+    });
+    actions.appendChild(hire);
+  }
+}
   var panel=document.getElementById("info"),actions=document.getElementById("infoActions");
   var b=state.buildings.find(function(x){return x.id===selectedId;});
   if(!b){panel.classList.remove("on");return;}
