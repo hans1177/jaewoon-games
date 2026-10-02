@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "window.GAME_CONFIG={id:'seed-puzzle-chromatic-cascade',name:'색채의 연쇄',mode:'chromatic',desc:'인접한 같은 색 덩어리를 연결해 연쇄 점수를 쌓고 목표 점수 600을 만드는 터치 퍼즐.'}",
+      "replace": "window.GAME_CONFIG=window.GAME_CONFIG||{};window.GAME_CONFIG.validationScopes=[{\"id\":\"scope-corefun-93c1bae76d\",\"path\":\"coreFun\",\"label\":\"Match-3, Puzzle Solving, Pattern Recognition, board-centered puzzle patterns.\"},{\"id\":\"scope-coreloop-0-ef0535c873\",\"path\":\"coreLoop[0]\",\"label\":\"Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.\"},{\"id\":\"scope-coreloop-1-751b04e48c\",\"path\":\"coreLoop[1]\",\"label\":\"Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.\"},{\"id\":\"scope-coreloop-2-0a34a5aee7\",\"path\":\"coreLoop[2]\",\"label\":\"Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.\"},{\"id\":\"scope-mobileux-140b52e107\",\"path\":\"mobileUx\",\"label\":\"Android mobile platform with single-player mode.\"}];"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
