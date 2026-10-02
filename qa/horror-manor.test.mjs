@@ -157,6 +157,14 @@ test('personal manor exterior has signature housing and collection architecture'
  assert.match(lobby,/44\.3,5\.6,69,1,9\.2,17\.5/);
  assert.match(lobby,/57,5\.6,60\.25,25\.5,9\.2,1/);
  assert.match(lobby,/-62\.2,2\.1,66\.0,1\.2,4\.2,8\.6/);
+ assert.match(manorBuild,/WindowRecess/);
+ assert.match(manorBuild,/WindowJamb/);
+ assert.match(manorBuild,/WindowCurtainL/);
+ assert.match(manorBuild,/EntryDoorPanelFrame/);
+ assert.match(manorBuild,/EntryDoorKnocker/);
+ assert.match(manorBuild,/ManorNamePlaque/);
+ assert.match(manorBuild,/LeaningChimneyBase/);
+ assert.match(manorBuild,/SecondaryChimneyPot/);
  assert.doesNotMatch(lobby,/SetAttribute\("GhostCompleted"/);
 });
 
