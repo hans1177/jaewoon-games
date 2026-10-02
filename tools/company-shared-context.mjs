@@ -46,7 +46,7 @@ export function compileOwnerCanonicalConstitution(policy={}){
   if(binding?.sharedContextMustCompileEveryEnabledCanonicalRule!==true)errors.push('CONSTITUTION_SHARED_CONTEXT_COMPILE');
   if(binding?.centralWorkContractMustEmbedEveryEnabledCanonicalRule!==true)errors.push('CONSTITUTION_WORK_CONTRACT_EMBED');
   if(binding?.workerInstructionMustExposeOrderedCanonicalRules!==true)errors.push('CONSTITUTION_WORKER_INSTRUCTION');
-  if(binding?.beforeWorkValidationRequired!==true||binding?.afterWorkValidationRequired!==true)errors.push('CONSTITUTION_PRE_POST_VALIDATION');
+  if(binding?.beforeWorkValidationRequired!==true||binding?.afterWorkValidationRequired!==false)errors.push('CONSTITUTION_SINGLE_PREFLIGHT_VALIDATION');
   if(binding?.staleConstitutionMayNotStartWork!==true||binding?.staleConstitutionMayNotCompleteWork!==true)errors.push('CONSTITUTION_STALE_GUARD');
   if(clean(binding?.missingOrInvalidBindingAction)!=='FAIL_CLOSED_BLOCK_WORK_AND_REQUEUE_EXACT_FAILURE_STAGE')errors.push('CONSTITUTION_FAIL_CLOSED');
   if(binding?.constitutionChangeInvalidatesActiveWorkerExecutionFingerprint!==true)errors.push('CONSTITUTION_STALE_FINGERPRINT');
@@ -55,7 +55,7 @@ export function compileOwnerCanonicalConstitution(policy={}){
   if(binding?.enforcerRequiredAtPolicyQa!==true)errors.push('CONSTITUTION_POLICY_QA_ENFORCER');
   if(binding?.enforcerRequiredAt24hPlanner!==true)errors.push('CONSTITUTION_24H_PLANNER_ENFORCER');
   if(binding?.enforcerRequiredBeforeWorkerSourceWrite!==true)errors.push('CONSTITUTION_WORKER_PREWRITE_ENFORCER');
-  if(binding?.enforcerRequiredAfterWorkerExecution!==true)errors.push('CONSTITUTION_WORKER_POST_ENFORCER');
+  if(binding?.enforcerRequiredAfterWorkerExecution!==false)errors.push('CONSTITUTION_WORKER_POST_DISABLED');
   if(binding?.global24hStopOnConstitutionFailureForbidden!==true)errors.push('CONSTITUTION_GLOBAL_24H_CONTINUES');
   if(binding?.declarativeRuleEnforcementRequired!==true)errors.push('CONSTITUTION_DECLARATIVE_ENFORCEMENT');
   if(Number(binding?.ruleEnforcementSchemaVersion)<=0)errors.push('CONSTITUTION_ENFORCEMENT_SCHEMA');
@@ -283,8 +283,10 @@ export function validateSharedWorkerContext({
   if(contract?.documentIsCode!==true||contract?.roadmapIsExecutableContract!==true)fail('DOCUMENT_CODE_INVARIANT');
   if(contract?.workerLauncherSyncRequired!==true)fail('WORKER_LAUNCHER_SYNC_REQUIRED');
   if(contract?.staleContextMayNotStartWork!==true||contract?.staleContextMayNotCompleteWork!==true)fail('STALE_CONTEXT_GUARD');
+  if(contract?.beforeWorkRequired!==true||contract?.afterWorkRequired!==false)fail('SINGLE_PREFLIGHT_CONTEXT_VALIDATION');
+  if(contract?.singlePreWorkValidationPerExactWorkUnit!==true||contract?.repeatedFullValidationWithinExactWorkUnitForbidden!==true)fail('SINGLE_PREFLIGHT_CONTEXT_REUSE');
   if(clean(contract?.syncMode)!=='ROADMAP_FIRST_FAIL_CLOSED')fail('ROADMAP_SYNC_MODE');
-  if(contract?.completionRequiresSharedContextSync!==true)fail('COMPLETION_SYNC_REQUIRED');
+  if(contract?.completionRequiresSharedContextSync!==true||contract?.completionUsesInitialValidatedContextEvidence!==true)fail('COMPLETION_SYNC_REQUIRED');
   if(contract?.mismatchAction!=='BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE')fail('MISMATCH_ACTION');
 
   const launchers=Array.isArray(contract?.workerLauncherWorkflows)?contract.workerLauncherWorkflows.map(clean).filter(Boolean):[];
