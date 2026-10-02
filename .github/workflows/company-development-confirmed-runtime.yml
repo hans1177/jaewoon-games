@@ -1,3 +1,4 @@
+# Unity reusable workflow syntax verified for automatic canonical dispatch.
 name: Company DEVELOPMENT_CONFIRMED Runtime
 run-name: DEVELOPMENT cycle | ${{ inputs.game_id || 'batch' }} | ${{ inputs.trigger_source || github.event_name }}
 

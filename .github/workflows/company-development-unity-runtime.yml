@@ -826,14 +826,14 @@ jobs:
               failure_json="$(find /tmp/unity-runtime-failure -type f -name evidence.json -size +0c | head -n1 || true)"
               if [[ -n "$failure_json" ]]; then
                 failure_floor="$(node - "$failure_json" <<'NODE'
-const fs=require('fs');
-const evidence=JSON.parse(fs.readFileSync(process.argv[2],'utf8').replace(/^\uFEFF/,''));
-const floors=evidence?.blackBoxFoundation?.floors||{};
-for(const id of ['F1','F2','F3','F4','F5','F6','F8']){
-  if(floors[id]?.state!=='PASS'){process.stdout.write(id);process.exit(0);}
-}
-process.stdout.write('F1');
-NODE
+                const fs=require('fs');
+                const evidence=JSON.parse(fs.readFileSync(process.argv[2],'utf8').replace(/^\uFEFF/,''));
+                const floors=evidence?.blackBoxFoundation?.floors||{};
+                for(const id of ['F1','F2','F3','F4','F5','F6','F8']){
+                  if(floors[id]?.state!=='PASS'){process.stdout.write(id);process.exit(0);}
+                }
+                process.stdout.write('F1');
+                NODE
                 )"
                 echo "failure_floor=$failure_floor" >> "$GITHUB_OUTPUT"
                 echo "UNITY_RUNTIME_EXACT_FAILURE_FLOOR=$failure_floor"
