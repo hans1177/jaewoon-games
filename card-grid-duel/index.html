@@ -679,7 +679,7 @@ function render(){
   board.style.aspectRatio=cols+'/'+rows;
   for(let r=1;r<=rows;r++)for(let c=1;c<=cols;c++){
     const b=document.createElement('button');
-    b.className='cell '+(r===1?'homeRed ':'')+(r===5?'homeBlue ':'');
+    b.className='cell '+(r===1?'homeRed ':'')+(r===homeRow('BLUE')?'homeBlue ':'');
     const u=state?at(r,c):null,tile=state?tileAt(r,c):null;
     if(tile){b.dataset.tile=tile.type;b.title=({SPIKE:'가시 발판',HEAL:'회복 발판',JUMP:'점프 발판',CRACK:'균열 발판'})[tile.type]||'특수 발판';b.style.boxShadow='inset 0 0 0 3px '+({SPIKE:'#d9534f',HEAL:'#47b96b',JUMP:'#5b8cff',CRACK:'#b57cff'})[tile.type];b.insertAdjacentHTML('beforeend',tileHtml(tile.type))}
     if(u){b.insertAdjacentHTML('beforeend',unitText(u));if(u.id===selectedUnit)b.classList.add('sel')}
