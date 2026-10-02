@@ -242,9 +242,11 @@ test('target platform failures stay in repair states in native workers',()=>{
   assert.match(router,/return 'TARGET_PLATFORM_REPAIR_REQUIRED'/);
   assert.match(roblox,/canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED'/);
   assert.match(roblox,/BUILD_REPAIR_REQUIRED/);
-  assert.match(unity,/if\(build&&!runtime\)failure='F1_SERVER_BOOT'/);
-  assert.match(unity,/if\(runtime&&!qa\)failure='F5_INPUT_CAMERA_UI'/);
-  assert.match(unity,/if\(runtime&&qa&&multiplayerPass&&!regression\)failure='F9_RELEASE_REGRESSION'/);
+  assert.match(unity,/F1:'F1_SERVER_BOOT'/);
+  assert.match(unity,/F5:'F5_INPUT_CAMERA_UI'/);
+  assert.match(unity,/F9:'F9_RELEASE_REGRESSION'/);
+  assert.match(unity,/for\(const id of \['F0','F1','F2','F3','F4','F5','F6','F7','F8','F9'\]\)/);
+  assert.match(unity,/else\{failure=stageByFloor\[id\];break;\}/);
   assert.match(unity,/mergedUpdate\.canonicalState='TARGET_PLATFORM_REPAIR_REQUIRED'/);
   assert.match(unity,/FAILED_STAGE=TARGET_PLATFORM_RUNTIME/);
   assert.match(unity,/FAILED_STAGE=INDEPENDENT_QA/);
