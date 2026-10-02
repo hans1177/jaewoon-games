@@ -1,0 +1,221 @@
+{
+  "version": 1,
+  "gameId": "horror-escape-room",
+  "gameName": "심야 대탈출",
+  "date": "2026-10-02",
+  "artbookId": "horror-escape-room-2026-10-02-manor-rebuild",
+  "status": "completed-artbook",
+  "workMode": "REVISION",
+  "initialArtbook": false,
+  "revisionArtbook": true,
+  "productionApproval": false,
+  "published": false,
+  "homepageVisible": false,
+  "localization": "ko-KR",
+  "styleProfile": "괴물 가족이 운영하는 개인 고딕 대저택 + 수집 전시형 귀환 허브",
+  "lifecycle": {
+    "documentType": "LIVING_GAME_DESIGN_ARTBOOK",
+    "state": "IMPLEMENTATION_REPAIR_REQUIRED",
+    "targetState": "ROBLOX_NATIVE_PERSONAL_MANOR",
+    "trigger": "OWNER_DIRECT_PERSONAL_LOBBY_REBUILD",
+    "currentBaseline": true,
+    "approvedByOwnerDirection": true,
+    "createsNewVersion": true,
+    "historyPreserved": true
+  },
+  "identity": {
+    "coreFantasy": "플레이어가 공용 광장에 서는 것이 아니라 자기 소유의 음산한 대저택으로 돌아와, 밤마다 가져온 괴담 기록과 현장 흔적이 집 안에 실제로 쌓이는 개인 로비.",
+    "lobbyMeaning": "저택은 메뉴 화면이 아니라 집·기지·기록실·출정 준비실을 겸하는 실제 플레이 공간.",
+    "primaryVisualRead": "큰 중앙 2층 그랜드홀 + 좌우 기능 날개 + 전면 정원 + 2층 봉인 객실.",
+    "emotionalTone": [
+      "오래된 가족 저택",
+      "괴물 가족의 생활감",
+      "고딕 공포",
+      "약한 블랙코미디",
+      "수집 성취감"
+    ],
+    "notThis": [
+      "공용 매칭 광장",
+      "현대식 회색 카드 허브",
+      "호텔 프런트 복제",
+      "판매용 꾸미기 상점 중심",
+      "밝은 네온 UI"
+    ]
+  },
+  "visualDirection": {
+    "architecture": {
+      "grandHall": "2층 높이 중앙홀, 큰 계단, 샹들리에, 벽난로, 초상화 벽, 시계, 2층 난간 복도.",
+      "leftWing": "출정 벽지도, 기록보관실, 서재, 실물 괴담 장부 책장.",
+      "rightWing": "장의사·의상실·장례용품실·라운지. 장식보다 역할 소품과 수집 흔적 중심.",
+      "courtyard": "석재 진입로, 분수, 부서진 동상, 가스등, 폐마차, 마른 나무, 묘비, 정원 산책로.",
+      "secondFloor": "잠긴 객실 6개. 현재는 미래 확장 공간의 존재만 보여주고 진행 보상으로 자동 개방하지 않는다."
+    },
+    "materials": [
+      "오래된 목재",
+      "황동",
+      "석재",
+      "낡은 천",
+      "가죽",
+      "유리",
+      "바랜 상아",
+      "짙은 자주색 천"
+    ],
+    "palette": {
+      "ink": "#141012",
+      "deepWine": "#4C1826",
+      "parchment": "#DAC291",
+      "brass": "#97713D",
+      "ivory": "#E6D6B0",
+      "darkWood": "#301B15",
+      "coldMoonlight": "#B9C3D2",
+      "candlelight": "#FFD9A7"
+    },
+    "lighting": "차가운 달빛과 따뜻한 실내광의 대비. 어둠으로 디테일을 숨기지 않고 얼굴·재질·동선을 읽을 수 있게 유지.",
+    "mobileReadability": "멀리서는 NPC 실루엣과 큰 공간 구성이 먼저 읽히고, 가까이서는 얼굴·의상·수집품 디테일이 읽혀야 한다."
+  },
+  "personalLobbySystem": {
+    "rule": "저택은 플레이어 개인 공간이며, 다른 플레이어용 공용 광장 구조를 기준으로 설계하지 않는다.",
+    "returnFantasy": "경기 후 메뉴로 튕기는 느낌보다 '내 저택으로 돌아왔다'는 감각을 우선한다.",
+    "progressionDisplay": "기존 저장 속성을 새 화폐나 별도 저장키로 바꾸지 않고, 현재 수집 진행도를 실물 전시 상태로 번역한다.",
+    "collectionFirst": true,
+    "sellableDecorationPriority": false
+  },
+  "collectionDisplay": {
+    "priority": "수집 전시가 단순 꾸미기보다 우선.",
+    "implementedDirection": [
+      {
+        "name": "출정 벽지도",
+        "location": "왼쪽 날개",
+        "sourceState": "SelectedLobbyMap",
+        "visual": "학교·폐병원·폐놀이공원 현장 카드와 황동 핀. 선택된 맵의 핀만 강조.",
+        "interaction": "실제 벽 앞에서 선택하되 최종 선택 권한은 기존 Game.server 맵 선택 로직이 유지."
+      },
+      {
+        "name": "괴담 기록 책장",
+        "location": "기록보관실",
+        "sourceState": "GhostCompleted",
+        "visual": "완성한 괴담 수만큼 검은 가죽·짙은 와인·녹색·황토색 장부가 실제 책장에 나타남."
+      },
+      {
+        "name": "맵별 현장 기념 전시",
+        "location": "마당/홀",
+        "sourceState": "GhostProgress",
+        "visual": "학교·병원·놀이공원에서 첫 흔적을 찾으면 해당 지역의 기념 유물이 저택에 전시됨.",
+        "rarityRead": "해당 맵 괴담을 전부 완성하면 같은 유물이 더 정돈되고 고급스럽게 읽히는 방향."
+      },
+      {
+        "name": "가족 초상화 벽",
+        "location": "그랜드홀 후면",
+        "sourceState": "GhostSeenCount",
+        "visual": "발견 기록이 늘수록 죽어 있던 캔버스가 밝아져 개인 기록실 느낌을 강화."
+      },
+      {
+        "name": "2층 봉인 객실",
+        "location": "2층 갤러리",
+        "sourceState": "future-content-only",
+        "visual": "번호판과 왁스 봉인이 있는 잠긴 객실. 현재 수집량에 따라 자동 해금하지 않음."
+      }
+    ],
+    "nextHighValueTargets": [
+      "괴담별 대표 유물을 책이 아니라 작은 독립 진열물로 확장",
+      "맵 100% 완료 시 지역별 대형 기념 전시 1개 추가",
+      "희귀 괴담 전용 유리 진열장",
+      "벽난로 위 대표 컬렉션 슬롯",
+      "2층 컬렉션 갤러리에 완성 세트 전시"
+    ],
+    "excludedLowValueDecoration": [
+      "벽지 색만 바꾸는 판매형 꾸미기",
+      "카펫 색상만 바꾸는 판매형 꾸미기",
+      "샹들리에 스킨만 파는 방식",
+      "가구 위치 자유배치 에디터",
+      "게임 수집과 무관한 장식 뽑기"
+    ]
+  },
+  "npcDirection": {
+    "butlerMortimer": {
+      "silhouette": "셋 중 가장 키 크고 마른 체형, 좁은 허리와 긴 팔다리, 테일코트.",
+      "face": "긴 두상, 긴 콧대, 날카로운 턱, 피곤한 눈가, 정돈된 머리와 얇은 수염.",
+      "costume": "셔츠·조끼·라펠·테일코트·커프·장갑·가죽 신발.",
+      "prop": "쟁반과 촛대.",
+      "pose": "한 손으로 쟁반을 받치는 비대칭 서비스 자세."
+    },
+    "undertaker": {
+      "silhouette": "넓은 큰 챙 모자, 셋 중 가장 무거운 롱코트, 약간 굽은 등.",
+      "face": "창백한 피부, 깊은 안와, 튀어나온 광대, 억눌린 입가.",
+      "costume": "검은 긴 코트, 붉은 안감/포인트, 가죽 신발.",
+      "prop": "장부와 삽.",
+      "pose": "한 손은 장부, 반대 손은 삽 쪽으로 내려가는 비대칭 자세."
+    },
+    "archivistEdwin": {
+      "silhouette": "셋 중 가장 작고 마르며 목과 상체가 앞으로 굽음.",
+      "face": "좁고 노쇠한 얼굴, 얇은 코, 처진 눈꺼풀, 관자 함몰.",
+      "costume": "셔츠·조끼·짧은 가운, 안경.",
+      "prop": "장부·펜·열쇠·잉크 묻은 손.",
+      "pose": "장부를 끌어안고 기록 중인 자세."
+    },
+    "qualityBar": [
+      "그림자만 봐도 셋 구분",
+      "정면과 3/4뷰에서 얼굴 비율 유지",
+      "손가락이 막대기처럼 보이지 않음",
+      "코트가 몸통에 붙은 박스처럼 보이지 않음",
+      "동일 얼굴/몸체 재탕 금지",
+      "primitive 조립 티가 최종 렌더에서 남으면 REPAIR_REQUIRED"
+    ]
+  },
+  "uiDirection": {
+    "principle": "화면 중앙 카드 UI보다 저택 오브젝트에서 기능이 열린다는 느낌을 우선.",
+    "surfaces": {
+      "entry": "초대장 + 문패 + 왁스 인장",
+      "hud": "황동·목재 명패",
+      "notebook": "가죽 기록책 + 책갈피",
+      "expedition": "벽걸이 지도 + 낡은 현장 사진",
+      "waitingRoom": "손님 명부",
+      "invitationCode": "양피지 예약 카드 6칸",
+      "catalog": "검은 가죽 장부",
+      "wardrobe": "거울/옷장",
+      "ranking": "도서관 카드 인덱스"
+    },
+    "mobile": "주요 터치 영역 48~56px 이상, 세로/가로 클리핑 금지, 중앙 플레이 시야 확보.",
+    "motion": "120~250ms 종이 넘김·봉인 해제·서랍 열림 정도의 짧은 전환."
+  },
+  "gameplayMeaningPreservation": {
+    "unchanged": [
+      "전투 수치",
+      "보상 의미",
+      "저장 키와 저장 의미",
+      "멀티플레이 권한",
+      "맵/방 선택 의미",
+      "SelectedLobbyMap → RoomSelectedMapId → TeleportData.selectedMapId → 실제 라운드 맵 계약"
+    ],
+    "visualOnlyAdditions": [
+      "수집 진행도의 실물 전시",
+      "저택 공간 확장",
+      "고딕 다이제틱 UI",
+      "NPC 역할별 비주얼 리워크"
+    ]
+  },
+  "implementationEvidence": {
+    "sourceFiles": [
+      "assets/roblox/midnight-manor/build.py",
+      "roblox-games/horror-escape-room/server/ManorLobby.luau",
+      "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
+      "roblox-games/horror-escape-room/server/Game.server.luau",
+      "qa/horror-manor.test.mjs",
+      "qa/horror-manor-ui-harness.luau"
+    ],
+    "currentBranch": "chatgpt/horror-manor-mesh-rebuild-20261002",
+    "currentState": "REPAIR_REQUIRED",
+    "notes": [
+      "저택 확장·NPC 연속 곡면·고딕 UI·벽지도·수집 책장·맵 기념 전시 방향이 소스에 반영 중.",
+      "Blender GLB와 NPC front/three-quarter/full-body 리뷰 산출물 생성 파이프라인 존재.",
+      "실제 Studio 최종 근거 전에는 GRAPHICS_PASS/NPC_GRAPHICS_PASS/LOBBY_COMPLETE/MAP_LINK_PASS 금지."
+    ]
+  },
+  "openIssues": [
+    "NPC 얼굴·손·의상 실루엣을 최종 고퀄 기준까지 추가 조형 필요.",
+    "수집 전시 실물 메쉬를 모바일 메시 예산 안에서 유지해야 함.",
+    "확장된 날개/방/정원 동선과 충돌 최종 실기 검증 필요.",
+    "고딕 UI의 모바일 세로/가로 실기 검증 필요.",
+    "Studio 실제 입장·카메라·맵 연결·콘솔 오류 0 근거 필요."
+  ]
+}
