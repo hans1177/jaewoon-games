@@ -335,6 +335,68 @@ test('queue reconcile restores exact private Roblox candidate checkpoint instead
 });
 
 
+test('queue reconcile preserves exact Roblox F9 continuous-evolution checkpoint above private runtime candidate recovery',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-queue-f9-monotonic-'));
+  try{
+    writePolicy(root);
+    write(root,'game-catalog.json',{games:[{
+      id:'f9-monotonic',name:'F9 Monotonic',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',selectedPlatform:'ROBLOX'
+    }]});
+    write(root,'game-seed-state.json',{seeds:[{
+      seedId:'R',gameId:'f9-monotonic',status:'ACTIVE',
+      productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX'
+    }]});
+    const source=writeDesign(root,'f9-monotonic');
+    const revision='9'.repeat(40),artifact='sha256:'+'8'.repeat(64);
+    write(root,'development-queue.json',{items:[{
+      gameId:'f9-monotonic',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+      selectedPlatform:'ROBLOX',
+      currentStep:'POST_F9_CONTINUOUS_EVOLUTION',
+      canonicalState:'F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION',
+      concurrentTargetPlatforms:['ROBLOX','UNITY'],
+      platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME',
+      minimumDesignContract:{pass:true,source},
+      robloxSourceCommit:revision,
+      robloxBuildSourceRevision:revision,
+      robloxBuildArtifactIdentity:artifact,
+      robloxBuildOrPackagePassed:true,
+      robloxBuildPreflightPassed:true,
+      robloxFoundationF0Passed:true,
+      robloxRuntimeFoundationPassed:false,
+      robloxRuntimePassed:false,
+      robloxIndependentQaPassed:true,
+      robloxRegressionPassed:true,
+      robloxFinalReviewPassed:true,
+      robloxF9ReleaseRegressionPassed:true,
+      robloxRuntimeFoundationInternalReleaseException:true,
+      robloxPublicReleaseRuntimeObservationPending:true,
+      robloxRuntimeCandidateEvidence:{
+        published:true,releaseClaim:false,sourceRevision:revision,artifactIdentity:artifact,
+        versionNumber:2,universeId:'10768961327',placeId:'120624557291637'
+      },
+      robloxF9ReleaseRegressionEvidence:{
+        sourceRevision:revision,artifactIdentity:artifact,candidateVersionNumber:2
+      },
+      robloxCanonicalPublishPending:true,
+      robloxCanonicalPublishQueue:[{
+        cycleId:revision+':'+artifact,sourceRevision:revision,artifactIdentity:artifact,
+        finalReviewPassed:true,f9ReleaseRegressionPassed:true,status:'PENDING'
+      }]
+    }]});
+    reconcileDevelopmentQueue({root});
+    const item=JSON.parse(fs.readFileSync(path.join(root,'development-queue.json'),'utf8')).items[0];
+    assert.equal(item.currentStep,'POST_F9_CONTINUOUS_EVOLUTION');
+    assert.equal(item.canonicalState,'F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION');
+    assert.equal(item.robloxFinalReviewPassed,true);
+    assert.equal(item.robloxF9ReleaseRegressionPassed,true);
+    assert.equal(item.robloxRuntimeFoundationPassed,false);
+    assert.equal(item.robloxRuntimePassed,false);
+    assert.equal(item.robloxCanonicalPublishPending,true);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+
 test('queue reconcile restores exact Roblox F0 private-runtime deploy after a concurrent Unity checkpoint regresses shared step',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-queue-f0-monotonic-'));
   try{
