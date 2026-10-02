@@ -2738,7 +2738,6 @@
       "coding_b9xpmk"
     ],
     "seenNegativeOutcomeIds": [
-      "coding_negative_v0owx8",
       "coding_negative_1ec1t98",
       "coding_negative_13mv1k6",
       "coding_negative_1lqm301",
@@ -7737,7 +7736,8 @@
       "coding_negative_o852hp",
       "coding_negative_1iyi2b5",
       "coding_negative_12k9w76",
-      "coding_negative_p2zm3x"
+      "coding_negative_p2zm3x",
+      "coding_negative_f0fzpt"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -13726,7 +13726,7 @@
         "verifiedApplications": 558,
         "firstCandidatePasses": 98,
         "totalGenerationAttempts": 1242,
-        "verifiedFailures": 578,
+        "verifiedFailures": 579,
         "games": {
           "seed-single-defense-strat-celestial-bastion": 90,
           "seed-idle-growth-rpg-crystal-bloom": 5,
@@ -15667,31 +15667,32 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 4,
+            "verifiedFailures": 5,
             "games": {},
             "targets": {},
             "failureGames": {
               "seed-puzzle-chromatic-cascade": 1,
               "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
               "amusement-tycoon": 1,
-              "seed-casual-realm-weaver": 1
+              "seed-casual-realm-weaver": 1,
+              "seed-single-defense-strat-celestial-bastion": 1
             },
             "failureTargets": {
-              "roblox": 4
+              "roblox": 5
             },
             "failureClasses": {
-              "NO_OP": 3,
+              "NO_OP": 4,
               "TIMEOUT": 1
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_p2zm3x",
-            "lastUpdatedAt": "2026-10-02T07:10:47.691Z"
+            "lastFailureEvidence": "coding_negative_f0fzpt",
+            "lastUpdatedAt": "2026-10-02T07:11:34.455Z"
           }
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_obbja9",
-        "lastFailureEvidence": "coding_negative_p2zm3x",
-        "lastUpdatedAt": "2026-10-02T07:10:47.691Z"
+        "lastFailureEvidence": "coding_negative_f0fzpt",
+        "lastUpdatedAt": "2026-10-02T07:11:34.455Z"
       },
       "PHASE4_FIXED_CONTEXT_CONTROLLED_AB": {
         "verifiedApplications": 142,
@@ -23760,7 +23761,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-10-02T07:10:47.747Z",
+    "lastBuiltAt": "2026-10-02T07:11:34.511Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -32676,5 +32677,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-10-02T07:10:47.747Z"
+  "updatedAt": "2026-10-02T07:11:34.511Z"
 }
