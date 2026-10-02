@@ -1,123 +1,183 @@
-name: Horror Owner Asset Verify
-# Asset import uses the existing authenticated account session; place publishing uses its API key.
+name: Horror Owner Direct Publish
+# Explicit owner-direct route: publish the exact current main game package to the canonical private owner place.
+# This route never claims F9 and never rebuilds or replaces the approved Version 77 manor asset.
 on:
   push:
     branches: [main]
     paths:
       - '.github/workflows/horror-owner-system-publish.yml'
-      - 'assets/roblox/midnight-manor/**'
+      - 'company-learning/platform-release-roadmap.json'
       - 'roblox-games/horror-escape-room/**'
-      - 'roblox-games/horror-escape-room/server/ManorLobby.luau'
-      - 'roblox-games/horror-escape-room/client/ManorLobby.client.luau'
-      - 'roblox-games/horror-escape-room/shared/ManorAssets.luau'
-      - 'roblox-games/horror-escape-room/default.project.json'
-      - 'tools/horror-manor-*.mjs'
+      - 'qa/horror-escape-room-release.test.mjs'
       - 'qa/horror-manor.test.mjs'
+
 permissions:
   contents: read
-  actions: write
+
 concurrency:
-  group: horror-owner-asset-verify-cloud-v3
+  group: horror-owner-direct-publish
   cancel-in-progress: true
+
 jobs:
-  import-build-verify:
+  owner-direct-publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 20
+    env:
+      ROBLOX_UNIVERSE_ID: '10767445796'
+      ROBLOX_PLACE_ID: '98222620265768'
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
+          fetch-depth: 1
+
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install cloud Blender and pinned Rojo
-        shell: bash
-        run: |
-          set -euo pipefail
-          sudo apt-get update -y
-          sudo apt-get install -y blender python3-numpy
-          mkdir -p /tmp/rojo-bin
-          curl -fsSL --retry 3 --retry-delay 2 -o /tmp/rojo.zip https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-linux-x86_64.zip
-          echo '22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073  /tmp/rojo.zip' | sha256sum -c -
-          unzip -q /tmp/rojo.zip -d /tmp/rojo-bin
-          chmod +x /tmp/rojo-bin/rojo
-      - name: Rebuild canonical Blender manor in cloud
-        shell: bash
-        run: |
-          set -euo pipefail
-          blender --background --python assets/roblox/midnight-manor/build.py
-          test -s assets/roblox/midnight-manor/generated/manor-lobby.glb
-          test -s assets/roblox/midnight-manor/generated/build-evidence.json
-          test -s assets/roblox/midnight-manor/generated/import-bounds.json
-          echo 'MANOR_CLOUD_BLENDER_BUILD=PASS'
-      - name: Validate manor release contract
-        env:
-          MANOR_CLOUD_BUILD: '1'
-        shell: bash
-        run: node --test qa/horror-manor.test.mjs
-      - name: Import verified original GLB
-        env:
-          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
-          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
-        shell: pwsh
-        run: node tools/horror-manor-assets.mjs
-      - name: Verify imported native manor asset in cloud
-        env:
-          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
-          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
-          MANOR_NATIVE_MODEL: /tmp/horror-personal-manor/manor.rbxm
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p /tmp/horror-personal-manor
-          node tools/horror-manor-native-check.mjs
-          test -s "$MANOR_NATIVE_MODEL"
-          echo 'MANOR_CLOUD_NATIVE_ASSET_CHECK=PASS'
-      - name: Build exact cloud place with packaged manor
+
+      - name: Verify explicit owner-direct policy and Version 77 manor binding
         shell: bash
         run: |
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          const p='roblox-games/horror-escape-room/default.project.json';
-          const j=JSON.parse(fs.readFileSync(p,'utf8'));
-          j.tree.ServerStorage={$className:'ServerStorage',ManorTemplate:{$path:'/tmp/horror-personal-manor/manor.rbxm'}};
-          fs.writeFileSync(p,JSON.stringify(j,null,2)+'\n');
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const policy=roadmap?.roblox?.deploymentControl?.ownerDirectCanonicalPublishException;
+          if(policy?.enabled!==true)throw new Error('OWNER_DIRECT_POLICY_DISABLED');
+          if(!Array.isArray(policy.gameIds)||!policy.gameIds.includes('horror-escape-room'))throw new Error('OWNER_DIRECT_GAME_NOT_ALLOWED');
+          if(policy.f9RequiredForOwnerDirectPublish!==false)throw new Error('OWNER_DIRECT_F9_EXCEPTION_MISSING');
+          if(policy.exactMainSourceRequired!==true||policy.canonicalPrivateTargetOnly!==true||policy.publicDiscoveryAllowed!==false)throw new Error('OWNER_DIRECT_SCOPE_INVALID');
+          if(policy.doesNotClaimF9Pass!==true||policy.doesNotReplaceOrSatisfyDevelopmentF0F9!==true)throw new Error('OWNER_DIRECT_CLAIM_SCOPE_INVALID');
+          const manor=fs.readFileSync('roblox-games/horror-escape-room/shared/ManorAssets.luau','utf8');
+          if(!/ModelId=89009422966867/.test(manor))throw new Error('VERSION_77_MANOR_BINDING_CHANGED');
+          if(!/SourceWidth=185\.47802734375/.test(manor))throw new Error('VERSION_77_MANOR_WIDTH_CHANGED');
+          console.log('OWNER_DIRECT_POLICY=PASS');
+          console.log('OWNER_DIRECT_VERSION77_MANOR_BINDING=PASS');
           NODE
-          /tmp/rojo-bin/rojo build roblox-games/horror-escape-room/default.project.json -o /tmp/horror-personal-manor/horror-escape-room.rbxlx
-          test -s /tmp/horror-personal-manor/horror-escape-room.rbxlx
-          echo "MANOR_PLACE=/tmp/horror-personal-manor/horror-escape-room.rbxlx" >> "$GITHUB_ENV"
-          echo "MANOR_PLACE_SHA256=$(sha256sum /tmp/horror-personal-manor/horror-escape-room.rbxlx | awk '{print $1}')"
-          echo "MANOR_PACKAGED_TEMPLATE_BYTES=$(stat -c%s /tmp/horror-personal-manor/manor.rbxm)"
-      - name: Verify generated manor bindings match canonical source
+
+      - name: Run focused horror source regression
         shell: bash
         run: |
           set -euo pipefail
-          git diff --exit-code -- roblox-games/horror-escape-room/shared/ManorAssets.luau
-          echo 'MANOR_CANONICAL_BINDING=PASS'
-      - name: Preserve exact manor package as validation artifact
+          node --test qa/horror-escape-room-release.test.mjs qa/horror-manor.test.mjs
+
+      - name: Install pinned Rojo
         shell: bash
         run: |
           set -euo pipefail
-          test -s "$MANOR_PLACE"
-          echo 'MANOR_CANONICAL_PUBLISH=DEFER_TO_F9_RELEASE_PROMOTION'
+          mkdir -p /tmp/rojo-bin /tmp/horror-owner-direct
+          curl -fsSL --retry 3 --retry-delay 2 -o /tmp/rojo.zip https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-linux-x86_64.zip
+          echo '22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073  /tmp/rojo.zip' | sha256sum -c -
+          unzip -q /tmp/rojo.zip -d /tmp/rojo-bin
+          chmod +x /tmp/rojo-bin/rojo
+
+      - name: Build exact current main game package without rebuilding manor
+        shell: bash
+        run: |
+          set -euo pipefail
+          /tmp/rojo-bin/rojo build roblox-games/horror-escape-room/default.project.json -o /tmp/horror-owner-direct/horror-escape-room.rbxlx
+          test -s /tmp/horror-owner-direct/horror-escape-room.rbxlx
+          git diff --exit-code
+          sha256sum /tmp/horror-owner-direct/horror-escape-room.rbxlx | tee /tmp/horror-owner-direct/package.sha256
+          echo "OWNER_DIRECT_PLACE=/tmp/horror-owner-direct/horror-escape-room.rbxlx" >> "$GITHUB_ENV"
+          echo "OWNER_DIRECT_PACKAGE_SHA256=$(awk '{print $1}' /tmp/horror-owner-direct/package.sha256)" >> "$GITHUB_ENV"
+          echo "OWNER_DIRECT_SOURCE_REVISION=$GITHUB_SHA" >> "$GITHUB_ENV"
+          echo 'OWNER_DIRECT_EXACT_MAIN_BUILD=PASS'
+
+      - name: Ensure canonical owner universe remains private
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          status=/tmp/horror-owner-direct/universe-before.json
+          status_code="$(curl --silent --show-error --output "$status" --write-out '%{http_code}' "https://develop.roblox.com/v1/universes/$ROBLOX_UNIVERSE_ID" || true)"
+          already_private=0
+          if [[ "$status_code" == 200 ]]; then
+            already_private="$(node - "$status" <<'NODE'
+          const fs=require('fs');
+          try{
+            const x=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+            const active=x.isActive ?? x.IsActive ?? x.isUniverseActive ?? x.IsUniverseActive;
+            process.stdout.write(active===false?'1':'0');
+          }catch{process.stdout.write('0');}
+          NODE
+            )"
+          fi
+          if [[ "$already_private" == 1 ]]; then
+            echo 'OWNER_DIRECT_PRIVATE_ENFORCEMENT=ALREADY_PRIVATE'
+            exit 0
+          fi
+          response=/tmp/horror-owner-direct/deactivate-response.txt
+          code=000
+          if [[ -n "${ROBLOX_OPEN_CLOUD_API_KEY:-}" ]]; then
+            code="$(curl --silent --show-error --output "$response" --write-out '%{http_code}' --request POST --header "x-api-key: $ROBLOX_OPEN_CLOUD_API_KEY" "https://apis.roblox.com/legacy-develop/v1/universes/$ROBLOX_UNIVERSE_ID/deactivate")"
+          fi
+          if [[ "$code" != 200 && "$code" != 201 && "$code" != 204 ]]; then
+            raw_cookie="${ROBLOX_ROBLOSECURITY:-${ROBLOX_SECURITY_COOKIE:-}}"
+            [[ -n "$raw_cookie" ]] || { cat "$response" >&2 || true; exit 42; }
+            if [[ "$raw_cookie" == *'.ROBLOSECURITY='* ]]; then cookie="$raw_cookie"; else cookie=".ROBLOSECURITY=$raw_cookie;"; fi
+            headers=/tmp/horror-owner-direct/csrf-headers.txt
+            curl --silent --show-error --output /tmp/horror-owner-direct/csrf-body.txt --dump-header "$headers" --request POST --header "cookie: $cookie" "https://develop.roblox.com/v1/universes/$ROBLOX_UNIVERSE_ID/deactivate" || true
+            csrf="$(awk 'BEGIN{IGNORECASE=1}/^x-csrf-token:/{sub(/\r$/,"",$2);print $2;exit}' "$headers")"
+            [[ -n "$csrf" ]] || exit 43
+            code="$(curl --silent --show-error --output "$response" --write-out '%{http_code}' --request POST --header "cookie: $cookie" --header "x-csrf-token: $csrf" "https://develop.roblox.com/v1/universes/$ROBLOX_UNIVERSE_ID/deactivate")"
+          fi
+          case "$code" in 200|201|204) ;; *) cat "$response" >&2 || true; exit 44 ;; esac
+          echo 'OWNER_DIRECT_PRIVATE_ENFORCEMENT=PASS'
+
+      - name: Publish exact current main package directly to owner private place
+        id: publish
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          response=/tmp/horror-owner-direct/publish-response.json
+          success=0
+          for attempt in 1 2 3 4 5 6; do
+            code="$(curl --silent --show-error --output "$response" --write-out '%{http_code}' -X POST \
+              -H "x-api-key: $ROBLOX_OPEN_CLOUD_API_KEY" \
+              -H 'Content-Type: application/xml' \
+              --data-binary @"$OWNER_DIRECT_PLACE" \
+              "https://apis.roblox.com/universes/v1/$ROBLOX_UNIVERSE_ID/places/$ROBLOX_PLACE_ID/versions?versionType=Published")"
+            if [[ "$code" == 200 || "$code" == 201 ]]; then success=1; break; fi
+            if [[ "$code" != 409 ]]; then cat "$response" >&2 || true; exit 45; fi
+            sleep 10
+          done
+          [[ "$success" == 1 ]] || { cat "$response" >&2 || true; exit 46; }
+          version="$(node -e 'const fs=require("fs");const x=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));process.stdout.write(String(x.versionNumber||""))' "$response")"
+          [[ "$version" =~ ^[1-9][0-9]*$ ]]
+          echo "version_number=$version" >> "$GITHUB_OUTPUT"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const response=JSON.parse(fs.readFileSync('/tmp/horror-owner-direct/publish-response.json','utf8'));
+          fs.writeFileSync('/tmp/horror-owner-direct/publication.json',JSON.stringify({
+            version:1,
+            gameId:'horror-escape-room',
+            authority:'OWNER_DIRECTIVE_2026-10-02',
+            route:'OWNER_DIRECT_CANONICAL_PRIVATE_PUBLISH',
+            sourceRevision:process.env.OWNER_DIRECT_SOURCE_REVISION,
+            packageSha256:process.env.OWNER_DIRECT_PACKAGE_SHA256,
+            universeId:process.env.ROBLOX_UNIVERSE_ID,
+            placeId:process.env.ROBLOX_PLACE_ID,
+            publishedVersion:Number(response.versionNumber),
+            publishedAt:new Date().toISOString(),
+            privateOnly:true,
+            publicRelease:false,
+            f9Claim:false
+          },null,2)+'\n');
+          NODE
+          echo "OWNER_DIRECT_PUBLISHED_VERSION=$version"
+          echo "OWNER_DIRECT_CANONICAL_PRIVATE_PUBLISH=PASS"
+          echo "OWNER_DIRECT_F9_CLAIM=NO"
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: horror-manor-release-evidence
+          name: horror-owner-direct-publication
           path: |
-            assets/roblox/midnight-manor/generated/roblox-asset.json
-            roblox-games/horror-escape-room/shared/ManorAssets.luau
-            assets/roblox/midnight-manor/generated/native-import-check.json
-      - name: Return horror changes to canonical development flow
-        if: success() && github.ref == 'refs/heads/main'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: pwsh
-        run: |
-          $ErrorActionPreference='Stop'
-          gh workflow run company-design-promotion-sync.yml --repo $env:GITHUB_REPOSITORY --ref main
-          if($LASTEXITCODE -ne 0){throw 'HORROR_CANONICAL_FLOW_DISPATCH_FAILED'}
-          Write-Host 'HORROR_CANONICAL_FLOW=DESIGN_PROMOTION_TO_DEVELOPMENT'
-          Write-Host 'HORROR_CANONICAL_FLOW_GAME_ID=horror-escape-room'
+            /tmp/horror-owner-direct/package.sha256
+            /tmp/horror-owner-direct/publication.json
