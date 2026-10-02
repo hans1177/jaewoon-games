@@ -34,40 +34,6 @@ jobs:
     runs-on: ubuntu-slim
     timeout-minutes: 10
     steps:
-      - name: Cancel owner-requested stale Actions runs
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          stale_ids=(34748574272 36794190147 36802981975 36802982062 36803420019)
-          cancelled=0
-          already_done=0
-          failed=0
-          for run_id in "${stale_ids[@]}"; do
-            status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || echo unknown)"
-            if [ "$status" = "completed" ]; then
-              already_done=$((already_done+1))
-              echo "OWNER_STALE_RUN_ALREADY_DONE=${run_id}"
-              continue
-            fi
-            if gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/cancel" >/dev/null 2>&1; then
-              cancelled=$((cancelled+1))
-              echo "OWNER_STALE_RUN_CANCELLED=${run_id}:cancel"
-              continue
-            fi
-            if gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/force-cancel" >/dev/null 2>&1; then
-              cancelled=$((cancelled+1))
-              echo "OWNER_STALE_RUN_CANCELLED=${run_id}:force-cancel"
-              continue
-            fi
-            failed=$((failed+1))
-            echo "OWNER_STALE_RUN_CANCEL_FAILED=${run_id}:status=${status}"
-          done
-          echo "OWNER_STALE_RUN_CANCELLED_COUNT=$cancelled"
-          echo "OWNER_STALE_RUN_ALREADY_DONE_COUNT=$already_done"
-          echo "OWNER_STALE_RUN_CANCEL_FAILED_COUNT=$failed"
-
       - uses: actions/checkout@v4
         with:
           ref: main
