@@ -24,7 +24,7 @@
       "tools/company-selected-platform-router.mjs",
       "assets/homepage-enhancements.js",
       "_worker.js",
-      "tools/roblox-runner-hidden.ps1",
+      ".github/workflows/company-roblox-runner-pwsh-bootstrap.yml#hidden-runner-bootstrap",
       ".github/workflows/company-development-roblox-post-runtime-qa.yml",
       ".github/workflows/company-roblox-runner-pwsh-bootstrap.yml"
     ],
@@ -581,7 +581,7 @@
     "robloxStudioHiddenRunnerHostRequired": true,
     "robloxStudioRebootSafeCheckpointRequired": true,
     "robloxStudioInterruptedHostSessionIsGameFailure": false,
-    "robloxStudioRunnerBootstrap": "tools/roblox-runner-hidden.ps1"
+    "robloxStudioRunnerBootstrap": ".github/workflows/company-roblox-runner-pwsh-bootstrap.yml#hidden-runner-bootstrap"
   },
   "classes": {
     "DESIGN_ONLY": {
