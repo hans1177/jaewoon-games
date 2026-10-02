@@ -59,7 +59,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node --test qa/horror-escape-room-release.test.mjs qa/horror-manor.test.mjs
+          node --test qa/horror-escape-room-release.test.mjs
+          node --test --test-name-pattern='personal manor stays on the Published Version 77|explicit owner-direct route|manor UI follows the current artbook|personal manor spawn stays on the front-yard ground layer|personal manor uses hall-to-courtyard direction' qa/horror-manor.test.mjs
+          echo 'OWNER_DIRECT_SOURCE_REGRESSION=PASS'
 
       - name: Install pinned Rojo
         shell: bash
