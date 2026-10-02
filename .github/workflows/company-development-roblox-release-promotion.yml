@@ -15,12 +15,11 @@ on:
         required: true
         type: string
       publish_stage:
-        description: Publish the exact artifact either to the isolated pre-F9 validation target or the canonical F9 target
+        description: Final-only publish of the exact F9-passed artifact; pre-F9 validation stays local in Studio
         required: false
-        default: validation
+        default: final
         type: choice
         options:
-          - validation
           - final
       publish_cycle_id:
         description: Immutable F9 publish queue cycle id. Required when publish_stage=final.
@@ -142,7 +141,7 @@ jobs:
           const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           const publishStage=String(process.env.PUBLISH_STAGE||'final').trim().toLowerCase();
-          if(!['validation','final'].includes(publishStage))throw new Error('ROBLOX_PUBLISH_STAGE_INVALID:'+publishStage);
+          if(publishStage!=='final')throw new Error('ROBLOX_PUBLISH_STAGE_FINAL_ONLY:'+publishStage);
           const pending=(q.items||[]).find(row=>
             row.robloxFoundationF0Passed===true
             &&row.robloxFailureStage==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'
@@ -284,7 +283,7 @@ jobs:
           const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
           const requestedGameId=String(process.env.REQUESTED_GAME_ID||'').trim();
           const publishStage=String(process.env.PUBLISH_STAGE||'final').trim().toLowerCase();
-          if(!['validation','final'].includes(publishStage))throw new Error('ROBLOX_PUBLISH_STAGE_INVALID:'+publishStage);
+          if(publishStage!=='final')throw new Error('ROBLOX_PUBLISH_STAGE_FINAL_ONLY:'+publishStage);
           const pending=(q.items||[]).find(row=>
             String(row.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'
             &&row.robloxFoundationF0Passed===true
@@ -381,8 +380,13 @@ jobs:
             &&finalEntry?.f9ReleaseRegressionPassed===true
             &&['PENDING','RETRY_REQUIRED'].includes(String(finalEntry?.status||''))
             &&Number(finalEntry?.validationVersionNumber)>0
-            &&/^[1-9][0-9]*$/.test(String(finalEntry?.validationUniverseId||''))
-            &&/^[1-9][0-9]*$/.test(String(finalEntry?.validationPlaceId||''))
+            &&(
+              finalEntry?.internalStudioValidationOnly===true
+              ||(
+                /^[1-9][0-9]*$/.test(String(finalEntry?.validationUniverseId||''))
+                &&/^[1-9][0-9]*$/.test(String(finalEntry?.validationPlaceId||''))
+              )
+            )
             &&/^[0-9a-f]{40}$/i.test(revision)
             &&/^sha256:[0-9a-f]{64}$/i.test(artifact)
             &&sourceRoot===`roblox-games/${gameId}`
@@ -829,7 +833,7 @@ jobs:
           const artifactRunId=Number(process.env.ARTIFACT_RUN_ID);
           const releaseRunId=Number(process.env.RELEASE_RUN_ID);
           const publishStage=String(process.env.PUBLISH_STAGE||'final').trim().toLowerCase();
-          if(!['validation','final'].includes(publishStage))throw new Error('invalid publish stage: '+publishStage);
+          if(publishStage!=='final')throw new Error('invalid publish stage: final only: '+publishStage);
           const publishCycleId=String(process.env.PUBLISH_CYCLE_ID||'').trim();
           const publishQueue=Array.isArray(item.robloxCanonicalPublishQueue)?item.robloxCanonicalPublishQueue:[];
           const queuedFinalEntry=publishStage==='final'
@@ -868,8 +872,11 @@ jobs:
             const entry=queuedFinalEntry;
             if(Number(entry.validationVersionNumber||0)<=0)throw new Error('queued F9 validation version missing during canonical persist');
             if(
-              !/^[1-9][0-9]*$/.test(String(entry.validationUniverseId||''))
-              ||!/^[1-9][0-9]*$/.test(String(entry.validationPlaceId||''))
+              entry.internalStudioValidationOnly!==true
+              &&(
+                !/^[1-9][0-9]*$/.test(String(entry.validationUniverseId||''))
+                ||!/^[1-9][0-9]*$/.test(String(entry.validationPlaceId||''))
+              )
             )throw new Error('queued F9 validation target missing during canonical persist');
             const canonicalEvidence={
               version:2,gameId:item.gameId,platform:'ROBLOX',cycleId:publishCycleId,
@@ -1065,7 +1072,7 @@ jobs:
           test "$persisted" = '1'
           echo 'ROBLOX_RELEASE_RUNTIME_PERSIST=PASS'
 
-      - name: Dispatch exact Roblox Player black-box validation
+      - name: Dispatch existing game tester runtime foundation QA
         if: steps.target.outputs.skip != 'true' && steps.publish.outcome == 'success' && steps.publish.outputs.deferred != 'true' && steps.target.outputs.publish_stage != 'final'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -1073,8 +1080,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh workflow run company-development-roblox-player-blackbox.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"
-          echo "ROBLOX_PLAYER_BLACK_BOX_DISPATCHED=$GAME_ID"
+          gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"
+          echo "ROBLOX_EXISTING_TESTER_FOUNDATION_QA_DISPATCHED=$GAME_ID"
 
       - name: Record canonical publication result without gating evolution
         if: always() && steps.target.outputs.publish_stage == 'final'
