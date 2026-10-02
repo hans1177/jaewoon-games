@@ -175,10 +175,10 @@
     "coreInfectionRule": "EXPLICIT_SERVER_AUTHORITATIVE_INFECT_ATTACK_ONLY"
   },
   "studioActualPlayContract": {
-    "version": 3,
+    "version": 4,
     "required": true,
     "source": "APPROVED_LAUNCH_AND_DESIGN_RUNTIME_SEMANTICS",
-    "selectionButtonText": "인간으로 준비",
+    "selectionButtonText": "인간",
     "primaryActionButtonText": "대시",
     "afterSelectionWaitMs": 500,
     "postActionWaitMs": 350,
@@ -231,8 +231,9 @@
     },
     "failureAction": "REPAIR_REQUIRED",
     "notes": [
-      "Official Studio MCP input follows the current visible lobby flow: 저택 들어가기 → 출정 → 인간으로 준비 → 1인 플레이 · 빈자리는 AI.",
-      "The scenario must observe the role-specific action surface after the Studio solo-room fallback starts the round; direct gameplay mutation is not evidence.",
+      "Official Studio MCP input follows the current visible lobby flow: 저택 들어가기 → 출정 → 인간 → 혼자 바로 시작.",
+      "Solo owner play starts in the same server when the player is alone; public/friend room isolation still uses the existing reserved-server route.",
+      "The scenario must observe the role-specific action surface after the solo round starts; direct gameplay mutation is not evidence.",
       "Client and server execute_luau calls are read-only observation probes.",
       "Console runtime errors remain release-blocking and are persisted separately from MCP infrastructure failures."
     ],
@@ -240,7 +241,7 @@
       "저택 들어가기",
       "출정"
     ],
-    "startButtonText": "1인 플레이 · 빈자리는 AI",
+    "startButtonText": "혼자 바로 시작",
     "afterEntryWaitMs": 350,
     "afterStartWaitMs": 4200
   },

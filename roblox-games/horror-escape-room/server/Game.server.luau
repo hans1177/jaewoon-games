@@ -89,6 +89,7 @@ local roomVisibility="PUBLIC"
 local roomSelectedMapId="SCHOOL"
 local roomStartRequested=false
 local roomSolo=false
+local localSoloSession=false
 local roomActionLast={}
 local roomJoinedAt={}
 local roomExpectedCount=1
@@ -367,6 +368,19 @@ local function createQueuedReservedRoom(players,selectedMapId)
  if not teleportPlayersToReservedRoom(players,record)then removeRoomDirectoryEntry(code);return false end
  return true
 end
+local function startLocalSoloRoom(p)
+ if roomServer or state=="RUNNING"or not roomActionReady(p)then return false end
+ local selectedMap=mapById(p:GetAttribute("SelectedLobbyMap")or"SCHOOL")
+ localSoloSession=true;roomSolo=true;roomServer=true;roomCode="SOLO"
+ roomHostUserId=p.UserId;roomHostName=p.DisplayName;roomVisibility="PRIVATE";roomSelectedMapId=selectedMap.Id
+ roomExpectedCount=1;roomFirstJoinAt=os.clock();roomStartRequested=true;roomJoinedAt[p]=os.clock()
+ p:SetAttribute("LobbySelectionConfirmed",true)
+ workspace:SetAttribute("RoomStartRequested",true)
+ roomFeedback(p,"START",selectedMap.Name.." · 같은 서버에서 바로 출정")
+ syncRoomState();syncLobbyState("INTERMISSION")
+ return true
+end
+
 local function createReservedRoom(p,visibility,solo)
  if roomServer or state=="RUNNING"or not roomActionReady(p)then return end
  local selectedMap=mapById(p:GetAttribute("SelectedLobbyMap")or"SCHOOL")
@@ -1979,6 +1993,7 @@ local function bot(role,pos)
   infectReadyAt=0,purifyReadyAt=0,infectAttackReadyAt=0,abilityReadyAt=0,dashReadyAt=0,
   energy=energyMax(),motionClock=math.random()*6.28,tacticSlot=botSequence,
   decisionAt=0,speedResetAt=0,currentTargetKey=nil,targetLockUntil=0,patrolTarget=nil,patrolRefreshAt=0,patrolCycle=0,
+  lastSeenTargetKey=nil,lastSeenPos=nil,lastSeenAt=0,lastCalloutTargetKey=nil,calloutAt=0,
  }
  table.insert(bots,b);return b
 end
@@ -2495,9 +2510,14 @@ local function endRound(winner)
   p:SetAttribute("Role","WAITING");applyRoleVisual(p,"WAITING")
   if manorLobby then manorLobby:Dress(p)end
   teleport(p,personalSpawn(p))
-  if roomServer and not studioRoomFallback then leaveReservedRoom(p)end
+  if roomServer and not studioRoomFallback and not localSoloSession then leaveReservedRoom(p)end
  end
- if studioRoomFallback then roomServer=false;roomCode="";roomSolo=false end
+ if localSoloSession then
+  localSoloSession=false;roomServer=false;roomCode="";roomHostUserId=0;roomHostName="";roomVisibility="PUBLIC";roomSolo=false;roomStartRequested=false
+  workspace:SetAttribute("RoomStartRequested",false);syncLobbyState("ROOM_BROWSER")
+ elseif studioRoomFallback then
+  roomServer=false;roomCode="";roomSolo=false
+ end
  if refreshPhysicalLobby then refreshPhysicalLobby()end
 end
 local purifyCooldown={}
@@ -2957,7 +2977,7 @@ remote.OnServerEvent:Connect(function(p,a,value)
  elseif a==C.Actions.RETURN_MANOR then
   returnToPersonalManor(p)
  elseif a==C.Actions.MANOR_SOLO and state~="RUNNING"and not roomServer then
-  createReservedRoom(p,"PRIVATE",true)
+  if #Players:GetPlayers()==1 then startLocalSoloRoom(p)else createReservedRoom(p,"PRIVATE",true)end
  elseif a==C.Actions.MANOR_RANK and state~="RUNNING"and manorLobby then
   task.spawn(function()manorLobby:Rank(p)end)
  elseif a==C.Actions.MANOR_GAG and state~="RUNNING"and manorLobby then
@@ -3467,29 +3487,121 @@ function BotAI.botPatrolTarget(b)
  return Vector3.new(b.patrolTarget.X,b.part.Position.Y,b.patrolTarget.Z)
 end
 
+local aiTeamCalloutAt={SURVIVOR=0,MONSTER=0}
+
+function BotAI.targetVisible(b,targetPos)
+ if not b or not b.part or not targetPos then return false end
+ local distance=(targetPos-b.part.Position).Magnitude
+ if distance>math.max(20,tonumber(C.AICombat and C.AICombat.VisionRange)or 78)then return false end
+ local ignore={}
+ if b.model and b.model.Parent then table.insert(ignore,b.model)elseif b.part then table.insert(ignore,b.part)end
+ for _,player in ipairs(Players:GetPlayers())do if player.Character then table.insert(ignore,player.Character)end end
+ for _,other in ipairs(bots)do
+  if other~=b then
+   if other.model and other.model.Parent then table.insert(ignore,other.model)elseif other.part then table.insert(ignore,other.part)end
+  end
+ end
+ local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude;params.FilterDescendantsInstances=ignore;params.IgnoreWater=true
+ local origin=b.part.Position+Vector3.new(0,2.2,0)
+ local target=targetPos+Vector3.new(0,1.6,0)
+ local ray=target-origin
+ if ray.Magnitude<.1 then return true end
+ local hit=workspace:Raycast(origin,ray,params)
+ return hit==nil
+end
+
+function BotAI.predictedTargetPosition(entry,pos,distance)
+ if not entry or not pos then return pos end
+ local velocity=Vector3.zero
+ if entry.p then
+  local rr=root(entry.p)
+  if rr then velocity=Vector3.new(rr.AssemblyLinearVelocity.X,0,rr.AssemblyLinearVelocity.Z)end
+ elseif entry.b and entry.b.lastMoveDirection then
+  velocity=entry.b.lastMoveDirection*(entry.b.speed or 14)
+ end
+ local lookAhead=math.clamp((tonumber(C.AICombat and C.AICombat.PredictionSeconds)or .32)*(distance/28),.12,.48)
+ return pos+velocity*lookAhead
+end
+
+function BotAI.rememberTarget(b,key,pos)
+ b.lastSeenTargetKey=key;b.lastSeenPos=pos;b.lastSeenAt=os.clock()
+end
+
+function BotAI.callout(b,text)
+ if not b or not text or text==""then return end
+ local now=os.clock();local team=b.role
+ local teamCd=math.max(1.5,tonumber(C.AICombat and C.AICombat.TeamCalloutCooldown)or 3.5)
+ local botCd=math.max(teamCd,tonumber(C.AICombat and C.AICombat.BotCalloutCooldown)or 8)
+ if now<(aiTeamCalloutAt[team]or 0)or now<(b.calloutAt or 0)then return end
+ aiTeamCalloutAt[team]=now+teamCd;b.calloutAt=now+botCd
+ local speaker
+ if team=="MONSTER"then speaker="AI "..tostring((BotAI.botMonsterForm(b).Name or"몬스터"))
+ else speaker="AI "..tostring((BotAI.botHumanForm(b).Name or"동료"))end
+ for _,player in ipairs(Players:GetPlayers())do
+  if player:GetAttribute("Role")==team and player:GetAttribute("RoundState")=="RUNNING"then
+   remote:FireClient(player,"AI_TEAM_CHAT",{Team=team,Speaker=speaker,Text=text,TacticSlot=b.tacticSlot or 0})
+  end
+ end
+end
+
+function BotAI.monsterApproachDirection(b,targetPos,distance,visible)
+ local flat=Vector3.new(targetPos.X-b.part.Position.X,0,targetPos.Z-b.part.Position.Z)
+ if flat.Magnitude<.1 then return flat end
+ local dir=flat.Unit
+ if not visible then return dir end
+ local side=(b.tacticSlot or 1)%2==0 and 1 or-1
+ local right=Vector3.new(-dir.Z,0,dir.X)
+ local flank=tonumber(C.AICombat and C.AICombat.FlankStrength)or .38
+ if distance<14 then flank*=1.1 elseif distance>34 then flank*=.55 end
+ return dir+right*(flank*side)
+end
+
 function BotAI.distributedSurvivorTarget(b)
  local now=os.clock()
- if b.currentTargetKey and now<(b.targetLockUntil or 0)then
-  local locked,pos=BotAI.botFindEntryByKey("SURVIVOR",b.currentTargetKey)
-  if locked and pos then return locked,pos,(pos-b.part.Position).Magnitude end
- end
+ local vision=math.max(20,tonumber(C.AICombat and C.AICombat.VisionRange)or 78)
+ local hearing=math.max(6,tonumber(C.AICombat and C.AICombat.HearingRange)or 18)
+ local memory=math.max(1,tonumber(C.AICombat and C.AICombat.TargetMemorySeconds)or 4.5)
  local entries={}
  for _,entry in ipairs(active())do
   local pos=BotAI.botTargetPosition(entry)
   if pos then
    local key=BotAI.botEntryKey(entry)
    local distance=(pos-b.part.Position).Magnitude
-   local load=BotAI.botTargetLoad("MONSTER",key,b)
-   local lane=math.abs(pos.X-(BotAI.botPatrolTarget(b).X))*.035
-   table.insert(entries,{entry=entry,pos=pos,distance=distance,key=key,score=distance+load*(tonumber(C.AICombat and C.AICombat.TargetCrowdPenalty)or 38)+lane})
+   local visible=distance<=vision and BotAI.targetVisible(b,pos)
+   local remembered=key==b.lastSeenTargetKey and now-(b.lastSeenAt or 0)<=memory
+   local audible=distance<=hearing
+   if visible then BotAI.rememberTarget(b,key,pos)end
+   if visible or audible or remembered then
+    local predicted=visible and BotAI.predictedTargetPosition(entry,pos,distance)or(remembered and b.lastSeenPos or pos)
+    local load=BotAI.botTargetLoad("MONSTER",key,b)
+    local blocked=visible and 0 or(tonumber(C.AICombat and C.AICombat.BlockedSightPenalty)or 52)
+    local vulnerability=0
+    if entry.p then
+     local ratio=energyOf(entry.p)/energyMax()
+     vulnerability=ratio*(tonumber(C.AICombat and C.AICombat.LowEnergyTargetWeight)or 16)
+    elseif entry.b then
+     local ratio=math.clamp((entry.b.energy or energyMax())/energyMax(),0,1)
+     vulnerability=ratio*(tonumber(C.AICombat and C.AICombat.LowEnergyTargetWeight)or 16)
+    end
+    table.insert(entries,{entry=entry,pos=predicted,rawPos=pos,distance=(predicted-b.part.Position).Magnitude,key=key,visible=visible,score=distance+load*(tonumber(C.AICombat and C.AICombat.TargetCrowdPenalty)or 38)+blocked+vulnerability})
+   end
   end
  end
  table.sort(entries,function(a,c)return a.score<c.score end)
  local chosen=entries[1]
- if not chosen then b.currentTargetKey=nil;return nil,nil,math.huge end
+ if not chosen then
+  b.currentTargetKey=nil
+  if b.lastSeenPos and now-(b.lastSeenAt or 0)<=memory then return nil,b.lastSeenPos,(b.lastSeenPos-b.part.Position).Magnitude,false end
+  return nil,nil,math.huge,false
+ end
+ local changed=b.currentTargetKey~=chosen.key
  b.currentTargetKey=chosen.key
  b.targetLockUntil=now+(tonumber(C.AICombat and C.AICombat.TargetLockSeconds)or 3.2)+((b.tacticSlot or 1)%3)*.45
- return chosen.entry,chosen.pos,chosen.distance
+ if chosen.visible and changed and b.lastCalloutTargetKey~=chosen.key then
+  b.lastCalloutTargetKey=chosen.key
+  BotAI.callout(b,chosen.distance<18 and"가까이 인간 발견. 내가 붙을게."or"인간 발견. 양쪽으로 몰아.")
+ end
+ return chosen.entry,chosen.pos,chosen.distance,chosen.visible
 end
 
 function BotAI.distributedMonsterTarget(b)
@@ -3767,7 +3879,7 @@ RunService.Heartbeat:Connect(function(dt)
    end
 
    if b.role=="MONSTER"then
-    local bestEntry,bestPos,bd=BotAI.distributedSurvivorTarget(b)
+    local bestEntry,bestPos,bd,visible=BotAI.distributedSurvivorTarget(b)
     if bestPos then
      local infectRange=math.max(2,tonumber(C.Energy and C.Energy.InfectRange)or 8)
      local botForm=BotAI.botMonsterForm(b)
@@ -3777,26 +3889,33 @@ RunService.Heartbeat:Connect(function(dt)
      end
      local infectCost=math.max(0,tonumber(C.Energy and C.Energy.InfectAttackCost)or 30)
      local attackCd=math.max(.4,tonumber(C.Energy and C.Energy.InfectAttackCooldown)or 1.2)
-     if bd<=infectRange and os.clock()>=(b.infectAttackReadyAt or 0)and(b.energy or 0)>=infectCost then
+     if bestEntry and visible and bd<=infectRange and os.clock()>=(b.infectAttackReadyAt or 0)and(b.energy or 0)>=infectCost then
       b.energy=math.max(0,(b.energy or 0)-infectCost);b.infectAttackReadyAt=os.clock()+attackCd
-      if bestEntry and bestEntry.p then infectPlayer(bestEntry.p,nil)elseif bestEntry and bestEntry.b then infectBot(bestEntry.b,nil)end
-     elseif not BotAI.tryBotMonsterAbility(b,bestPos,bd)then
-      local toTarget=bestPos-b.part.Position
-      local flat=Vector3.new(toTarget.X,0,toTarget.Z)
-      if flat.Magnitude>.1 then
-       local side=b.strafeSign or((b.tacticSlot or 1)%2==0 and 1 or-1)
-       local right=Vector3.new(-flat.Unit.Z,0,flat.Unit.X)
-       local approach=flat.Unit+right*(bd<20 and .28*side or .12*side)
-       BotAI.moveBotDirection(b,approach,dt,b.speed)
-      end
+      BotAI.callout(b,"지금 붙는다.")
+      if bestEntry.p then infectPlayer(bestEntry.p,nil)elseif bestEntry.b then infectBot(bestEntry.b,nil)end
+     elseif bestEntry and visible and BotAI.tryBotMonsterAbility(b,bestPos,bd)then
+      BotAI.callout(b,"능력 쓴다. 같이 압박해.")
+     else
+      local approach=BotAI.monsterApproachDirection(b,bestPos,bd,visible)
+      if approach.Magnitude>.1 then b.lastMoveDirection=approach.Unit;BotAI.moveBotDirection(b,approach,dt,b.speed)end
      end
+    else
+     b.currentTargetKey=nil
+     local patrol=BotAI.botPatrolTarget(b)
+     local delta=patrol-b.part.Position
+     if delta.Magnitude>.5 then b.lastMoveDirection=delta.Unit;BotAI.moveBotDirection(b,delta,dt,b.speed*.9)end
     end
 
    elseif b.role=="SURVIVOR"then
     local target,targetPos,best=BotAI.distributedMonsterTarget(b)
     local engageRange=math.max(20,tonumber(C.AICombat and C.AICombat.HumanEngageRange)or 46)
     if targetPos and best<=engageRange then
+     if b.lastCalloutTargetKey~=b.currentTargetKey then
+      b.lastCalloutTargetKey=b.currentTargetKey
+      BotAI.callout(b,best<16 and"몬스터 가까워. 뒤로 빠져!"or"몬스터 발견. 흩어져서 막자.")
+     end
      local usedAbility=BotAI.tryBotHumanAbility(b,target,best)
+     if usedAbility then BotAI.callout(b,"스킬 썼어. 지금 밀어.")end
      local attacked,purifyRange=false,math.max(4,(C.PurifyDistance or 8)+(tonumber(BotAI.botHumanForm(b).PurifyRangeBonus)or 0))
      if not usedAbility then attacked,purifyRange=BotAI.tryBotHumanPurify(b,target,best)end
      if not usedAbility and not attacked then

@@ -808,6 +808,36 @@ mapContentToast.Visible=false
 mapContentToast.Parent=gui
 roundify(mapContentToast,7)
 
+local aiTeamChat=Instance.new("TextLabel")
+aiTeamChat.Name="AITeamChat"
+aiTeamChat.AnchorPoint=Vector2.new(.5,1)
+aiTeamChat.Position=UDim2.new(.5,0,1,-154)
+aiTeamChat.Size=UDim2.fromOffset(360,46)
+aiTeamChat.BackgroundColor3=Color3.fromRGB(18,20,24)
+aiTeamChat.BackgroundTransparency=.12
+aiTeamChat.TextColor3=Color3.fromRGB(224,232,238)
+aiTeamChat.TextSize=13
+aiTeamChat.TextWrapped=true
+aiTeamChat.Font=Enum.Font.GothamBold
+aiTeamChat.ZIndex=15
+aiTeamChat.Visible=false
+aiTeamChat.Parent=gui
+roundify(aiTeamChat,8)
+local aiTeamChatLimit=Instance.new("UISizeConstraint");aiTeamChatLimit.MaxSize=Vector2.new(420,48);aiTeamChatLimit.MinSize=Vector2.new(250,44);aiTeamChatLimit.Parent=aiTeamChat
+local aiTeamChatSerial=0
+local function showAITeamChat(snapshot)
+ if typeof(snapshot)~="table"then return end
+ local team=tostring(snapshot.Team or"")
+ if team~=tostring(p:GetAttribute("Role")or"")then return end
+ aiTeamChatSerial+=1;local serial=aiTeamChatSerial
+ local speaker=tostring(snapshot.Speaker or"AI 동료")
+ local message=tostring(snapshot.Text or"")
+ aiTeamChat.Text=speaker.." · "..message
+ aiTeamChat.TextColor3=team=="MONSTER"and Color3.fromRGB(238,154,174)or Color3.fromRGB(164,224,235)
+ aiTeamChat.Visible=message~=""
+ task.delay(3.1,function()if aiTeamChatSerial==serial then aiTeamChat.Visible=false end end)
+end
+
 local toastSerial=0
 local function showMapContentToast(text,color,duration)
  toastSerial+=1
@@ -2672,6 +2702,10 @@ p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
 end)
 
 remote.OnClientEvent:Connect(function(kind,snapshot)
+ if kind=="AI_TEAM_CHAT"then
+  showAITeamChat(snapshot)
+  return
+ end
  if kind=="MONSTER_ABILITY_EFFECT"then
   playMonsterAbilityEffect(snapshot)
   return
