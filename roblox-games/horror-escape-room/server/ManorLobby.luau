@@ -229,6 +229,8 @@ function Manor:Get(p)
   {Vector3.new(0,16,-24),2.1,38,true},{Vector3.new(-21,7,15),1.4,25,false},{Vector3.new(23,7,19),1.4,25,false},
   {Vector3.new(-19,9,-22),1.7,23,false},{Vector3.new(20,9,-14),1.7,23,false},{Vector3.new(0,3,-60),1.8,22,true},
   {Vector3.new(5,9,-3),1.65,23,false},{Vector3.new(0,9,9),1.35,26,false},
+  {Vector3.new(-58,8,-47),.78,20,false},{Vector3.new(-58,8,-18),.72,19,false},
+  {Vector3.new(58,8,-47),.78,20,false},{Vector3.new(58,8,-18),.72,19,false},
   {Vector3.new(-70.0,5.0,-56.8),.55,12,false},{Vector3.new(-70.0,5.0,-49.2),.55,12,false}
  })do
   local anchor=part(folder,"WarmLight",origin+spec[1],Vector3.one,false);anchor.CanCollide=false
@@ -253,6 +255,17 @@ function Manor:Get(p)
   {0,3,-61.2,17,7,4}
  })do
   part(folder,"FurnitureBoundary",origin+Vector3.new(spec[1],spec[2],spec[3]),Vector3.new(spec[4],spec[5],spec[6]),false)
+ end
+ -- 좌우 기능실의 큰 가구만 외벽 쪽 단순 충돌로 잡는다. 중앙 통로/8stud 출입구는 침범하지 않는다.
+ for _,spec in ipairs({
+  {-69,4,-58.8,4.5,8,3.8},
+  {-69,3.8,-38.2,4.2,7.5,3.5},{-69,3.8,-28.2,4.2,7.5,3.5},
+  {-67,2.1,-12,5.5,4.2,7.2},
+  {66.5,2.0,-54,4.8,3.8,7.4},
+  {69,4.2,-37.8,4.5,8.5,3.8},{69,4.2,-28.2,4.5,8.5,3.8},
+  {67,2.1,-13.5,5.5,4.2,7.2},
+ })do
+  part(folder,"WingFurnitureBoundary",origin+Vector3.new(spec[1],spec[2],spec[3]),Vector3.new(spec[4],spec[5],spec[6]),false)
  end
  for _,mesh in ipairs(scene:GetDescendants())do
   if mesh:IsA("BasePart")and (mesh.Name:match("^HearthFlame")or mesh.Name:match("^ChandelierFlame"))then
