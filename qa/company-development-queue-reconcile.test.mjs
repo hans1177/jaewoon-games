@@ -390,6 +390,54 @@ test('queue reconcile restores exact Roblox F0 private-runtime deploy after a co
 });
 
 
+
+test('queue reconcile converts legacy Studio-pending F0 checkpoint into private validation deploy without rebuilding source',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-queue-legacy-studio-pending-'));
+  try{
+    writePolicy(root);
+    write(root,'game-catalog.json',{games:[{
+      id:'legacy-studio-pending',name:'Legacy Studio Pending',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',selectedPlatform:'ROBLOX'
+    }]});
+    write(root,'game-seed-state.json',{seeds:[{
+      seedId:'R',gameId:'legacy-studio-pending',status:'ACTIVE',
+      productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX'
+    }]});
+    const source=writeDesign(root,'legacy-studio-pending');
+    const revision='e'.repeat(40),artifact='sha256:'+'f'.repeat(64);
+    write(root,'development-queue.json',{items:[{
+      gameId:'legacy-studio-pending',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+      selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',
+      currentStep:'PRIVATE_RUNTIME_CANDIDATE_DEPLOY',
+      canonicalState:'F0_SOURCE_PREFLIGHT_PASSED',
+      concurrentTargetPlatforms:['ROBLOX','UNITY'],
+      platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME',
+      minimumDesignContract:{pass:true,source},
+      robloxSourceCommit:revision,
+      robloxBuildSourceRevision:revision,
+      robloxBuildArtifactIdentity:artifact,
+      robloxBuildOrPackagePassed:true,
+      robloxBuildPreflightPassed:true,
+      robloxFoundationF0Passed:true,
+      robloxRuntimeCandidateEvidence:null,
+      robloxFailureStage:'VIBE_INTERNAL_PLAY',
+      robloxFailureSignature:'ROBLOX_STUDIO_INTERNAL_VALIDATION_PENDING',
+      routingBlockers:['roblox-studio-internal-validation-pending']
+    }]});
+    reconcileDevelopmentQueue({root});
+    const item=JSON.parse(fs.readFileSync(path.join(root,'development-queue.json'),'utf8')).items[0];
+    assert.equal(item.currentStep,'PRIVATE_RUNTIME_CANDIDATE_DEPLOY');
+    assert.equal(item.canonicalState,'F0_SOURCE_PREFLIGHT_PASSED');
+    assert.equal(item.robloxBuildSourceRevision,revision);
+    assert.equal(item.robloxBuildArtifactIdentity,artifact);
+    assert.equal(item.robloxFoundationF0Passed,true);
+    assert.equal(item.robloxFailureStage,'PRIVATE_RUNTIME_CANDIDATE_DEPLOY');
+    assert.equal(item.robloxFailureSignature,'ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING');
+    assert.deepEqual(item.routingBlockers,['roblox-runtime-candidate-deploy-pending']);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+
 test('queue reconcile migrates exact shared Roblox fallback candidate to dedicated-target redeploy without rebuilding F0',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-queue-shared-target-migration-'));
   try{
