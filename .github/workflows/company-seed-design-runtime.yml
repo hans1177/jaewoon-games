@@ -28,9 +28,9 @@ permissions:
   actions: write
 
 concurrency:
-  # Temporary recovery: a new engine push may replace the stale run stuck before design work begins.
+  # Preserve the active design cycle; GitHub replaces only the older pending run in this group.
   group: company-seed-design-runtime-${{ github.event_name == 'push' && 'engine-push' || 'continuation' }}
-  cancel-in-progress: ${{ github.event_name == 'push' }}
+  cancel-in-progress: false
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime

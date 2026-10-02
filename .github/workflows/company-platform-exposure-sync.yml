@@ -23,8 +23,7 @@ permissions:
 
 concurrency:
   group: company-platform-exposure-sync
-  # Temporary stale-run recovery: replace the impossible 22h-old ghost execution.
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
