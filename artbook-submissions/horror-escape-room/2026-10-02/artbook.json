@@ -117,14 +117,40 @@
         "location": "2층 갤러리",
         "sourceState": "future-content-only",
         "visual": "번호판과 왁스 봉인이 있는 잠긴 객실. 현재 수집량에 따라 자동 해금하지 않음."
+      },
+      {
+        "name": "희귀 괴담 전용 유리 진열장",
+        "location": "왼쪽 기록 날개 벽면",
+        "sourceState": "GhostProgress + GhostCatalog.Weight",
+        "visual": "기존 등장 가중치가 낮은 괴담 4종을 개별 유리 케이스와 고유 실루엣 유물로 전시.",
+        "rule": "희귀 확률이나 보상은 변경하지 않고 기존 Weight와 수집 단계만 읽는다."
+      },
+      {
+        "name": "지역 100% 대형 기념 전시",
+        "location": "전면 정원",
+        "sourceState": "GhostProgress",
+        "visual": "학교는 대형 종, 병원은 대형 표식, 놀이공원은 황동 관람차 형상으로 지역 완성을 구분.",
+        "rule": "해당 지역의 기존 괴담이 전부 3단계일 때만 표시."
+      },
+      {
+        "name": "벽난로 대표 컬렉션 슬롯",
+        "location": "그랜드홀 벽난로",
+        "sourceState": "GhostProgress",
+        "visual": "현재 가장 진척된 괴담 하나를 벽난로 대표 슬롯에 표시하며 전체 완성 기념물이 나오면 비운다."
+      },
+      {
+        "name": "2층 컬렉션 갤러리",
+        "location": "2층 후면 갤러리",
+        "sourceState": "GhostProgress",
+        "visual": "잠긴 객실 사이에 학교·병원·놀이공원 완성 세트를 별도 전시.",
+        "rule": "객실 잠금 상태는 그대로 유지하고 전시만 나타난다."
       }
     ],
     "nextHighValueTargets": [
-      "괴담별 대표 유물을 책이 아니라 작은 독립 진열물로 확장",
-      "맵 100% 완료 시 지역별 대형 기념 전시 1개 추가",
-      "희귀 괴담 전용 유리 진열장",
-      "벽난로 위 대표 컬렉션 슬롯",
-      "2층 컬렉션 갤러리에 완성 세트 전시"
+      "희귀 진열장 케이스별 황동 명패와 조명 읽기 개선",
+      "2층 완성 세트 프레임 깊이·재질 차이 확대",
+      "맵 100% 대형 기념 전시 주변 받침대·동선 연출 강화",
+      "가족 초상화와 벽난로 대표 슬롯의 시선 흐름 개선"
     ],
     "excludedLowValueDecoration": [
       "벽지 색만 바꾸는 판매형 꾸미기",
@@ -194,7 +220,11 @@
       "수집 진행도의 실물 전시",
       "저택 공간 확장",
       "고딕 다이제틱 UI",
-      "NPC 역할별 비주얼 리워크"
+      "NPC 역할별 비주얼 리워크",
+      "희귀 괴담 전용 유리 진열장",
+      "지역 100% 대형 기념 전시",
+      "벽난로 대표 컬렉션 슬롯",
+      "2층 완성 세트 갤러리"
     ]
   },
   "implementationEvidence": {
@@ -209,14 +239,16 @@
     "currentBranch": "chatgpt/horror-manor-mesh-rebuild-20261002",
     "currentState": "REPAIR_REQUIRED",
     "notes": [
-      "저택 확장·NPC 연속 곡면·고딕 UI·벽지도·수집 책장·맵 기념 전시 방향이 소스에 반영 중.",
-      "Blender GLB와 NPC front/three-quarter/full-body 리뷰 산출물 생성 파이프라인 존재.",
-      "실제 Studio 최종 근거 전에는 GRAPHICS_PASS/NPC_GRAPHICS_PASS/LOBBY_COMPLETE/MAP_LINK_PASS 금지."
+      "저택 확장·NPC 연속 곡면·고딕 UI·벽지도·수집 책장·맵 기념 전시가 소스에 반영됨.",
+      "NPC 얼굴에 눈 밑 접힘·팔자선·콧구멍 등 얕은 곡면 디테일을 추가해 정면/3/4 얼굴 깊이를 강화함.",
+      "희귀 괴담 유리 진열장·지역 100% 대형 전시·벽난로 대표 슬롯·2층 완성 세트 갤러리를 기존 GhostProgress/GhostCatalog 상태에만 연결함.",
+      "Blender GLB와 NPC front/three-quarter/full-body 리뷰 산출물 생성 파이프라인은 존재하지만 현재 저장된 산출물은 최신 소스보다 뒤처져 있음.",
+      "실제 Blender 재생성·Studio 최종 근거 전에는 GRAPHICS_PASS/NPC_GRAPHICS_PASS/LOBBY_COMPLETE/MAP_LINK_PASS 금지."
     ]
   },
   "openIssues": [
-    "NPC 얼굴·손·의상 실루엣을 최종 고퀄 기준까지 추가 조형 필요.",
-    "수집 전시 실물 메쉬를 모바일 메시 예산 안에서 유지해야 함.",
+    "최신 build.py 기준 Blender GLB와 NPC 정면/3/4/전신 렌더 재생성 필요.",
+    "새 수집 전시를 포함한 전체 GLB가 모바일 메시/삼각형 예산을 지키는지 실측 필요.",
     "확장된 날개/방/정원 동선과 충돌 최종 실기 검증 필요.",
     "고딕 UI의 모바일 세로/가로 실기 검증 필요.",
     "Studio 실제 입장·카메라·맵 연결·콘솔 오류 0 근거 필요."
