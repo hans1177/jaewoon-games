@@ -929,7 +929,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ~/.ollama/models
-          key: vibe2-ollama-v6-${{ runner.os }}-${{ runner.arch }}-${{ steps.order.outputs.local_model_cache_slug }}
+          key: vibe2-ollama-v5-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
           lookup-only: true
 
       - name: Probe canonical Ollama runtime cache
@@ -1218,6 +1218,9 @@ jobs:
           put('local_model',selectedModel);
           put('local_model_cache_slug',selectedModel.replace(/[^A-Za-z0-9._-]+/g,'-'));
           put('hero_model_requested',heroModelRequested?'true':'false');
+          const dcc=order.assetProduction?.nativeAuthoringExecution?.dcc||{};
+          put('dcc_authoring_required',Array.isArray(dcc.requiredTypes)&&dcc.requiredTypes.length?'true':'false');
+          put('dcc_recipe_count',Array.isArray(dcc.explicitRecipes)?dcc.explicitRecipes.length:0);
           put('source_root',order.source?.root||'');
           put('work_lock_required',order.compiledWorkContract?.workLock?.requiredBeforeSourceWrite===true?'true':'false');
           put('work_lock_base_sha',order.compiledWorkContract?.workLock?.baseSha||'');
@@ -1267,7 +1270,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ~/.ollama/models
-          key: vibe2-ollama-v5-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
+          key: vibe2-ollama-v6-${{ runner.os }}-${{ runner.arch }}-${{ steps.order.outputs.local_model_cache_slug }}
 
       - name: Mark worker Ollama preparation start
         id: worker_ollama_prepare_start
@@ -1295,6 +1298,20 @@ jobs:
           start="${START_MS:-$finished}"
           echo "duration_ms=$((finished-start))" >> "$GITHUB_OUTPUT"
           echo 'VIBE2_OLLAMA_RUNTIME_SOURCE=SHARED_PREPARE_OLLAMA'
+
+      - name: Prepare Blender for explicit native asset authoring
+        id: blender_prepare
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.dcc_authoring_required == 'true' && steps.order.outputs.dcc_recipe_count != '0'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v blender >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends blender
+          fi
+          command -v blender
+          blender --version | head -n1
+          echo 'VIBE2_DCC_BLENDER_EXECUTOR=READY'
 
       - name: Run isolated learning practice
         id: practice
@@ -1599,6 +1616,44 @@ jobs:
           test -f "$candidate_manifest"
           echo "candidate_manifest=$candidate_manifest" >> "$GITHUB_OUTPUT"
           echo "VIBE2_CANDIDATE_MANIFEST=$candidate_manifest_rel"
+
+          dcc_required="$(node -e "const o=require('/tmp/vibe2-work-order.json');const d=o.assetProduction?.nativeAuthoringExecution?.dcc||{};process.stdout.write(Array.isArray(d.requiredTypes)&&d.requiredTypes.length?'true':'false')")"
+          dcc_recipe_count="$(node -e "const o=require('/tmp/vibe2-work-order.json');const d=o.assetProduction?.nativeAuthoringExecution?.dcc||{};process.stdout.write(String(Array.isArray(d.explicitRecipes)?d.explicitRecipes.length:0))")"
+          if [ "$dcc_required" = 'true' ] && [ "$dcc_recipe_count" != '0' ]; then
+            command -v blender >/dev/null
+            dcc_result="/tmp/vibe2-dcc-authoring-${SAFE_TASK}-${VARIANT}.json"
+            node --input-type=module - "$candidate_manifest" "$candidate_dir" "$SOURCE_ROOT" "$contract_root/assets/vibe-art-pipeline.js" "$dcc_result" <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import {pathToFileURL} from 'node:url';
+          const [manifestFile,repoRoot,sourceRoot,moduleFile,resultFile]=process.argv.slice(2);
+          const {executeVibeNativeDccAuthoringRecipes}=await import(pathToFileURL(moduleFile).href);
+          const order=JSON.parse(fs.readFileSync(path.join(repoRoot,'.vibe2/work-order.json'),'utf8'));
+          const dcc=order?.assetProduction?.nativeAuthoringExecution?.dcc||{};
+          const recipes=Array.isArray(dcc.explicitRecipes)?dcc.explicitRecipes:[];
+          const result=await executeVibeNativeDccAuthoringRecipes({
+            repoRoot,allowedOutputRoot:sourceRoot,recipes,blenderBinary:process.env.VIBE2_BLENDER_BINARY||'blender'
+          });
+          if(result.pass!==true)throw new Error('DCC_AUTHORING_EXECUTION_FAILED:'+String(result.status||'UNKNOWN'));
+          const manifest=JSON.parse(fs.readFileSync(manifestFile,'utf8'));
+          const prefix=String(sourceRoot).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'')+'/';
+          const outputs=(result.outputs||[]).map(row=>{
+            const repoPath=String(row.path||'').replaceAll('\\','/').replace(/^\.\//,'');
+            if(!repoPath.startsWith(prefix))throw new Error('DCC_OUTPUT_OUTSIDE_SOURCE_ROOT:'+repoPath);
+            return {...row,sourceRelativePath:repoPath.slice(prefix.length)};
+          });
+          const dccExecution={...result,outputs};
+          manifest.nativeAssetAuthoring={...(manifest.nativeAssetAuthoring||{}),required:true,status:result.status,dccExecution};
+          manifest.assetPromotionCandidates=(result.promotionCandidates||[]).map(row=>({...row}));
+          manifest.changedFiles=[...new Set([...(manifest.changedFiles||[]),...outputs.map(row=>row.sourceRelativePath)])];
+          fs.writeFileSync(manifestFile,JSON.stringify(manifest,null,2)+'\n');
+          fs.writeFileSync(resultFile,JSON.stringify(dccExecution,null,2)+'\n');
+          console.log('VIBE2_DCC_AUTHORING_EXECUTED='+result.status+':outputs='+outputs.length);
+          NODE
+          elif [ "$dcc_required" = 'true' ]; then
+            echo 'VIBE2_DCC_AUTHORING=RECIPE_REQUIRED_NOT_COMPLETED'
+          fi
+
           # Formatting whitespace is not a gameplay failure; conflict markers still fail.
           git -c core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab diff --check
           security_sensitive="$(node --input-type=module - "$candidate_manifest" <<'NODE'
