@@ -165,7 +165,9 @@ assert.ok(homepageSync.successSignals.includes('NO_SHADOW_PIPELINE_CREATED'));
 
 assert.equal(lifecycle.sharedWorkerContext.syncMode,'ROADMAP_FIRST_FAIL_CLOSED');
 assert.equal(lifecycle.sharedWorkerContext.beforeWorkRequired,true);
-assert.equal(lifecycle.sharedWorkerContext.afterWorkRequired,true);
+assert.equal(lifecycle.sharedWorkerContext.afterWorkRequired,false);
+assert.equal(lifecycle.sharedWorkerContext.singlePreWorkValidationPerExactWorkUnit,true);
+assert.equal(lifecycle.sharedWorkerContext.repeatedFullValidationWithinExactWorkUnitForbidden,true);
 assert.equal(lifecycle.sharedWorkerContext.runtimeMayNotCreatePolicy,true);
 assert.equal(lifecycle.sharedWorkerContext.postCentralDocumentWriteSharedContextResyncRequired,true);
 assert.equal(lifecycle.postReleaseFocusedDevelopment.enabled,true);
