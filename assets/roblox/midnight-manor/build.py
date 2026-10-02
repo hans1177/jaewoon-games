@@ -553,22 +553,34 @@ def npc(s,kind,pos):
         lapel=s.prism(kind+'_Lapel'+str(side),(side*w*.10,h*.695,.59),lapel_outline,.10,q['coat'],parent=p)
         lapel.rotation_euler.y=side*.035
 
-        # 팔은 역할별 어깨-팔꿈치-손목 경로를 직접 만든다. 굽힘이 실제 실루엣에 반영된다.
+        # 팔은 역할/좌우마다 다른 행동 자세를 가진다. 좌우 대칭 마네킹 포즈를 금지한다.
         shoulder=(side*w*.69,h*.64,.00)
         if kind=='Butler':
-            elbow=(side*w*.76,h*.535,.055)
-            wrist=(side*w*.69,h*.405,.18)
+            if side<0:
+                elbow=(-w*.75,h*.525,.025)
+                wrist=(-w*.66,h*.385,.10)
+            else:
+                elbow=(w*.82,h*.500,.12)
+                wrist=(w*.74,h*.365,.53)
         elif kind=='Undertaker':
-            elbow=(side*w*.84,h*.525,-.035)
-            wrist=(side*w*.75,h*.385,.04)
+            if side<0:
+                elbow=(-w*.78,h*.505,-.055)
+                wrist=(-w*.71,h*.315,-.08)
+            else:
+                elbow=(w*.75,h*.535,.14)
+                wrist=(w*.53,h*.435,.48)
         else:
-            elbow=(side*w*.80,h*.515,.08)
-            wrist=(side*w*.61,h*.385,.26)
+            if side<0:
+                elbow=(-w*.70,h*.530,.16)
+                wrist=(-w*.39,h*.455,.48)
+            else:
+                elbow=(w*.72,h*.520,.10)
+                wrist=(w*.50,h*.405,.50)
         arm_points=[
           shoulder,
-          (side*(abs(shoulder[0])*.98),h*.595,.015),
+          (shoulder[0]*.985,h*.595,.018),
           elbow,
-          (side*(abs(elbow[0])*.96),(elbow[1]+wrist[1])*.5,(elbow[2]+wrist[2])*.5),
+          ((elbow[0]+wrist[0])*.5,(elbow[1]+wrist[1])*.5,(elbow[2]+wrist[2])*.5),
           wrist,
         ]
         s.curve_tube(kind+'_Arm'+str(side),arm_points,
@@ -729,9 +741,9 @@ def npc(s,kind,pos):
         s.prism('Butler_BowTie',(0,h*.728,.63),[
           (-w*.16,0),(-w*.045,h*.030),(0,0),(w*.045,h*.030),(w*.16,0),(w*.050,-h*.028),(0,0),(-w*.050,-h*.028)
         ],.075,q['accent'],parent=p)
-        s.lathe('Butler_Tray',(w*.74,h*.35,.64),w*.47,w*.47,.075,c['brass'],parent=p)
-        s.lathe('Butler_Candle',(w*.74,h*.415,.64),.095,.080,h*.095,c['ivory'],parent=p)
-        s.loft('Butler_CandleFlame',(w*.80,h*.485,.70),[
+        s.lathe('Butler_Tray',(w*.74,h*.355,.60),w*.47,w*.47,.075,c['brass'],parent=p)
+        s.lathe('Butler_Candle',(w*.74,h*.420,.60),.095,.080,h*.095,c['ivory'],parent=p)
+        s.loft('Butler_CandleFlame',(w*.74,h*.475,.60),[
           (-.25,.10,.08),(0,.13,.10),(.30,.03,.025)
         ],c['amber'],sides=18,parent=p)
     elif kind=='Undertaker':
@@ -743,8 +755,8 @@ def npc(s,kind,pos):
           (0,w*.46,w*.42),(h*.12,w*.43,w*.39),(h*.22,w*.34,w*.33)
         ],c['black'],sides=32,parent=p)
         s.lathe('UndertakerHatRibbon',(0,head_y+h*.175,.02),w*.47,w*.47,h*.026,q['accent'],sides=32,parent=p)
-        s.box('Undertaker_Ledger',(w*.57,h*.44,.60),(w*.56,h*.145,.14),q['accent'],parent=p)
-        s.box('Undertaker_LedgerBand',(w*.57,h*.44,.685),(w*.095,h*.155,.020),c['brass'],parent=p)
+        s.box('Undertaker_Ledger',(w*.50,h*.445,.56),(w*.54,h*.145,.14),q['accent'],parent=p)
+        s.box('Undertaker_LedgerBand',(w*.50,h*.445,.645),(w*.090,h*.155,.020),c['brass'],parent=p)
         s.lathe('Undertaker_SpadeHandle',(-w*.70,h*.37,-.12),.055,.055,h*.55,s.material('DarkWood',(.10,.045,.025)),parent=p)
         s.prism('Undertaker_SpadeBlade',(-w*.70,h*.07,-.10),[
           (-w*.20,0),(w*.20,0),(w*.15,h*.13),(0,h*.18),(-w*.15,h*.13)
@@ -766,9 +778,9 @@ def npc(s,kind,pos):
         s.prism('Archivist_InkStainL',(-w*.11,h*.43,.615),[
           (-w*.05,0),(w*.06,h*.01),(w*.04,h*.05),(-w*.045,h*.04)
         ],.018,q['accent'],parent=p)
-        s.box('Archivist_Ledger',(w*.50,h*.41,.63),(w*.60,h*.18,.14),q['accent'],parent=p)
-        s.box('Archivist_LedgerLabel',(w*.50,h*.41,.712),(w*.34,h*.085,.020),c['ivory'],parent=p)
-        s.lathe('Archivist_Pen',(w*.15,h*.46,.86),.025,.015,h*.18,c['brass'],parent=p)
+        s.box('Archivist_Ledger',(w*.46,h*.415,.57),(w*.58,h*.18,.14),q['accent'],parent=p)
+        s.box('Archivist_LedgerLabel',(w*.46,h*.415,.652),(w*.32,h*.085,.020),c['ivory'],parent=p)
+        s.lathe('Archivist_Pen',(-w*.23,h*.475,.66),.020,.012,h*.15,c['brass'],parent=p)
         s.lathe('Archivist_KeyStem',(-w*.55,h*.32,.58),.025,.025,h*.13,c['brass'],parent=p)
         s.lathe('Archivist_KeyBow',(-w*.55,h*.40,.58),w*.08,w*.08,.025,c['brass'],sides=24,parent=p)
 
