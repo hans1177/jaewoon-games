@@ -2017,3 +2017,38 @@ test('central document has a bounded current-policy budget and archives historic
   assert.equal(policy.f0ThroughF9MustRemain,true);
   assert.equal(policy.publicationApprovalMustRemain,true);
 });
+
+test('Roblox Studio PC host keeps only Studio visible and resumes exact work after reboot',()=>{
+  const host=roadmap.roblox?.studioExecution?.runnerHost||{};
+  assert.equal(host.pcImpactScope,'ROBLOX_STUDIO_ONLY');
+  assert.equal(host.visibleApplication,'ROBLOX_STUDIO_GUI_ONLY');
+  assert.equal(host.consolePolicy,'HIDDEN_CONSOLE_PARENT_NO_VISIBLE_CMD_OR_POWERSHELL');
+  assert.equal(host.hiddenChildShellsRequired,true);
+  assert.equal(host.persistentBootstrap,'USER_STARTUP_WSCRIPT_HIDDEN_RUN_CMD');
+  assert.equal(host.bootstrapImplementation,'tools/roblox-runner-hidden.ps1');
+  assert.equal(host.watchdogRequired,false);
+  assert.equal(host.recurringWatchdogForbidden,true);
+  assert.equal(host.rebootRecovery,'HIDDEN_LOGON_RUNNER_RESTART');
+  assert.equal(host.checkpointBeforeWindowsExecution,true);
+  assert.equal(host.interruptedSessionIsGameFailure,false);
+  assert.equal(host.restartFromBlankForbidden,true);
+  assert.equal(host.exactSourceArtifactBindingPreservedAcrossHostInterruption,true);
+
+  const runner=readText('tools/roblox-runner-hidden.ps1');
+  const runtime=readText('.github/workflows/company-development-roblox-post-runtime-qa.yml');
+  const bootstrap=readText('.github/workflows/company-roblox-runner-pwsh-bootstrap.yml');
+  assert.match(runner,/shell\.Run[\s\S]*, 0, False/);
+  assert.match(runner,/Jaewoon-Roblox-Runner\.vbs/);
+  assert.match(runner,/ROBLOX_RUNNER_WATCHDOG=NO/);
+  assert.match(runner,/ROBLOX_RUNNER_VISIBLE_CMD=NO/);
+  assert.match(runner,/ROBLOX_RUNNER_VISIBLE_POWERSHELL=NO/);
+  assert.match(runner,/ROBLOX_RUNNER_VISIBLE_APP=ROBLOX_STUDIO_ONLY/);
+  assert.match(runtime,/ROBLOX_STUDIO_REBOOT_CHECKPOINT_RESERVED=/);
+  assert.match(runtime,/ROBLOX_STUDIO_REBOOT_REQUEUE=YES:/);
+  assert.match(runtime,/ROBLOX_STUDIO_PC_INTERRUPTION_COUNTS_AS_GAME_FAILURE=NO/);
+  assert.doesNotMatch(runtime,/shell:\s*powershell\s*$/m);
+  assert.match(runtime,/WindowStyle Hidden/);
+  assert.match(bootstrap,/tools\\roblox-runner-hidden\.ps1/);
+  assert.doesNotMatch(bootstrap,/shell:\s*powershell\s*$/m);
+});
+
