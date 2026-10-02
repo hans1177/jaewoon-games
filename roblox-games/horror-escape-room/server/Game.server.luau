@@ -825,7 +825,10 @@ end
 local function teleport(p,pos,lookAtPos)
  local c=p.Character
  local r=root(p);if r then
-  local target=groundedRootTarget(p,pos)
+  -- 개인 저택/로비는 호출자가 지정한 앞마당 좌표를 그대로 사용한다.
+  -- 다층 WalkableGround 탐색이나 재보정으로 2층에 올라가지 않는다.
+  local lobbyDestination=pos.Z>=180
+  local target=lobbyDestination and Vector3.new(pos.X,pos.Y,pos.Z)or groundedRootTarget(p,pos)
   movementGraceUntil[p]=os.clock()+1
   lastValidPosition[p]=target
   local targetCFrame=CFrame.new(target)
@@ -846,7 +849,7 @@ local function teleport(p,pos,lookAtPos)
    task.wait(.08)
    local rr=root(p);local hh=hum(p)
    if p.Character~=c or rr~=r or not rr or not hh or not rr.Parent then return end
-   local corrected=groundedRootTarget(p,pos)
+   local corrected=lobbyDestination and Vector3.new(pos.X,pos.Y,pos.Z)or groundedRootTarget(p,pos)
    if math.abs(rr.Position.Y-corrected.Y)>.08 then
     movementGraceUntil[p]=os.clock()+.5
     lastValidPosition[p]=corrected
