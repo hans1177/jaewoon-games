@@ -26,27 +26,31 @@ test('Roblox runner self-heals every minute without a visible manual run.cmd win
   assert.match(script, /HealthCheckMinutes = 1/);
   assert.match(script, /-RepetitionInterval \(New-TimeSpan -Minutes \$HealthCheckMinutes\)/);
   assert.match(script, /\.jaewoon-roblox-runner-watchdog\.ps1/);
-  assert.match(script, /-WindowStyle Hidden/);
-  assert.match(script, /run\.cmd/);
-  assert.match(script, /WScript\.Shell/);
-  assert.match(script, /shell\.Run[^\n]*, 0, False/);
-  assert.match(script, /wscript\.exe/);
-  assert.doesNotMatch(script, /CreateNoWindow = \$true/);
-  assert.doesNotMatch(script, /Start-Process -FilePath \$listenerExe/);
+  assert.match(script, /\.jaewoon-roblox-runner-hidden-migrate\.ps1/);
+  assert.match(script, /System\.Diagnostics\.ProcessStartInfo/);
+  assert.match(script, /CreateNoWindow = \$true/);
+  assert.match(script, /UseShellExecute = \$false/);
+  assert.match(script, /ProcessWindowStyle\]::Hidden/);
+  assert.doesNotMatch(script, /WScript\.Shell/);
+  assert.doesNotMatch(script, /wscript\.exe/);
+  assert.doesNotMatch(script, /shell\.Run/);
   assert.doesNotMatch(script, /Start-Process -FilePath \$env:ComSpec/);
   assert.match(script, /New-ScheduledTaskSettingsSet[^\n]*-Hidden/);
+  assert.match(script, /HiddenMigration/);
+  assert.match(script, /Start-Sleep -Milliseconds 200/);
   assert.match(script, /ROBLOX_RUNNER_TASK_HIDDEN=YES/);
-  assert.match(script, /ROBLOX_RUNNER_LAUNCH_MODE=HIDDEN_CMD_CONSOLE_HOST/);
-  assert.match(script, /ROBLOX_RUNNER_CHILD_CONSOLE_INHERITANCE=HIDDEN_PARENT/);
+  assert.match(script, /ROBLOX_RUNNER_LAUNCH_MODE=DIRECT_CREATE_NO_WINDOW/);
+  assert.match(script, /ROBLOX_RUNNER_CHILD_CONSOLE_INHERITANCE=NO_CONSOLE_PARENT/);
   assert.match(script, /Runner\.Worker/);
   assert.match(script, /hidden-restart\.pending/);
   assert.match(script, /Get-TargetWorkers/);
   assert.match(script, /Stop-Process -Id \$process\.Id/);
   assert.match(script, /Remove-Item -LiteralPath \$restartMarker/);
   assert.match(script, /ROBLOX_RUNNER_IDLE_MIGRATION=PENDING_UNTIL_NO_RUNNER_WORKER/);
+  assert.match(script, /ROBLOX_RUNNER_IDLE_MIGRATION_POLL_MS=200/);
   assert.match(script, /ROBLOX_RUNNER_VISIBLE_CMD_REQUIRED=NO/);
   assert.match(script, /scheduled self-heal will retry automatically/i);
-});
+})
 
 test('one-click bootstrap self-elevates and installs only the exact Roblox runner watchdog', () => {
   assert.match(bootstrap, /Start-Process .* -Verb RunAs/);

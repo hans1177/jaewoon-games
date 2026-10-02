@@ -94,6 +94,7 @@ if ($runnerName -ne $ExpectedRunnerName) {
 $runnerUrl = if ($runnerJson.gitHubUrl) { [string]$runnerJson.gitHubUrl } elseif ($runnerJson.serverUrl) { [string]$runnerJson.serverUrl } else { 'UNKNOWN' }
 $identityName = [Security.Principal.WindowsIdentity]::GetCurrent().Name
 $watchdogPath = Join-Path $runnerRoot '.jaewoon-roblox-runner-watchdog.ps1'
+$migrationPath = Join-Path $runnerRoot '.jaewoon-roblox-runner-hidden-migrate.ps1'
 $escapedRoot = $runnerRoot.Replace("'", "''")
 
 $watchdogTemplate = @'
@@ -101,8 +102,6 @@ $ErrorActionPreference = 'Stop'
 $runnerRoot = '__RUNNER_ROOT__'
 $listenerExe = [IO.Path]::GetFullPath((Join-Path $runnerRoot 'bin\Runner.Listener.exe'))
 $workerExe = [IO.Path]::GetFullPath((Join-Path $runnerRoot 'bin\Runner.Worker.exe'))
-$runCmd = [IO.Path]::GetFullPath((Join-Path $runnerRoot 'run.cmd'))
-$hiddenLauncher = [IO.Path]::GetFullPath((Join-Path $runnerRoot '.jaewoon-roblox-runner-hidden.vbs'))
 $restartMarker = Join-Path $runnerRoot '.jaewoon-roblox-runner-hidden-restart.pending'
 
 function Get-TargetListener {
@@ -125,32 +124,38 @@ function Get-TargetWorkers {
   })
 }
 
+function Start-HiddenListener {
+  $startInfo = New-Object System.Diagnostics.ProcessStartInfo
+  $startInfo.FileName = $listenerExe
+  $startInfo.Arguments = 'run'
+  $startInfo.WorkingDirectory = $runnerRoot
+  $startInfo.UseShellExecute = $false
+  $startInfo.CreateNoWindow = $true
+  $startInfo.WindowStyle = [System.Diagnostics.ProcessWindowStyle]::Hidden
+  $listenerProcess = New-Object System.Diagnostics.Process
+  $listenerProcess.StartInfo = $startInfo
+  [void]$listenerProcess.Start()
+}
+
 $listener = @(Get-TargetListener)
 if ($listener.Count -gt 0) {
   if ((Test-Path -LiteralPath $restartMarker) -and @(Get-TargetWorkers).Count -eq 0) {
     foreach ($process in $listener) {
-      Stop-Process -Id $process.Id -ErrorAction Stop
+      Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
     }
-    for ($attempt = 0; $attempt -lt 10 -and @(Get-TargetListener).Count -gt 0; $attempt++) {
-      Start-Sleep -Milliseconds 500
+    for ($attempt = 0; $attempt -lt 20 -and @(Get-TargetListener).Count -gt 0; $attempt++) {
+      Start-Sleep -Milliseconds 100
     }
     if (@(Get-TargetListener).Count -gt 0) {
-      throw 'Idle Runner.Listener did not stop for hidden-launch migration; scheduled self-heal will retry.'
+      throw 'Idle Runner.Listener did not stop for no-console migration; scheduled self-heal will retry.'
     }
   } else {
     exit 0
   }
 }
 
-$escapedRunCmd = $runCmd.Replace('"','""')
-@"
-Set shell = CreateObject("WScript.Shell")
-shell.CurrentDirectory = "$($runnerRoot.Replace('"','""'))"
-shell.Run Chr(34) & "$escapedRunCmd" & Chr(34), 0, False
-"@ | Set-Content -LiteralPath $hiddenLauncher -Encoding ASCII
-$wscript = Join-Path $env:SystemRoot 'System32\wscript.exe'
-Start-Process -FilePath $wscript -ArgumentList @('//B','//Nologo',('"' + $hiddenLauncher + '"')) -WindowStyle Hidden
-Start-Sleep -Seconds 5
+Start-HiddenListener
+Start-Sleep -Seconds 3
 
 if (@(Get-TargetListener).Count -eq 0) {
   throw 'Runner.Listener did not start; scheduled self-heal will retry automatically.'
@@ -159,7 +164,61 @@ if (@(Get-TargetListener).Count -eq 0) {
 Remove-Item -LiteralPath $restartMarker -Force -ErrorAction SilentlyContinue
 '@
 
+$migrationTemplate = @'
+$ErrorActionPreference = 'Stop'
+$runnerRoot = '__RUNNER_ROOT__'
+$listenerExe = [IO.Path]::GetFullPath((Join-Path $runnerRoot 'bin\Runner.Listener.exe'))
+$workerExe = [IO.Path]::GetFullPath((Join-Path $runnerRoot 'bin\Runner.Worker.exe'))
+$restartMarker = Join-Path $runnerRoot '.jaewoon-roblox-runner-hidden-restart.pending'
+
+function Get-TargetListener {
+  return @(Get-Process -Name 'Runner.Listener' -ErrorAction SilentlyContinue | Where-Object {
+    try { $_.Path -and ([IO.Path]::GetFullPath($_.Path) -ieq $listenerExe) } catch { $false }
+  })
+}
+
+function Get-TargetWorkers {
+  return @(Get-Process -Name 'Runner.Worker' -ErrorAction SilentlyContinue | Where-Object {
+    try { $_.Path -and ([IO.Path]::GetFullPath($_.Path) -ieq $workerExe) } catch { $false }
+  })
+}
+
+function Start-HiddenListener {
+  $startInfo = New-Object System.Diagnostics.ProcessStartInfo
+  $startInfo.FileName = $listenerExe
+  $startInfo.Arguments = 'run'
+  $startInfo.WorkingDirectory = $runnerRoot
+  $startInfo.UseShellExecute = $false
+  $startInfo.CreateNoWindow = $true
+  $startInfo.WindowStyle = [System.Diagnostics.ProcessWindowStyle]::Hidden
+  $listenerProcess = New-Object System.Diagnostics.Process
+  $listenerProcess.StartInfo = $startInfo
+  [void]$listenerProcess.Start()
+}
+
+$deadline = [DateTime]::UtcNow.AddMinutes(30)
+while ((Test-Path -LiteralPath $restartMarker) -and [DateTime]::UtcNow -lt $deadline) {
+  if (@(Get-TargetWorkers).Count -eq 0) {
+    foreach ($process in @(Get-TargetListener)) {
+      Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+    }
+    for ($attempt = 0; $attempt -lt 20 -and @(Get-TargetListener).Count -gt 0; $attempt++) {
+      Start-Sleep -Milliseconds 100
+    }
+    Start-HiddenListener
+    Start-Sleep -Seconds 2
+    if (@(Get-TargetListener).Count -gt 0) {
+      Remove-Item -LiteralPath $restartMarker -Force -ErrorAction SilentlyContinue
+      exit 0
+    }
+  }
+  Start-Sleep -Milliseconds 200
+}
+exit 0
+'@
+
 $watchdogTemplate.Replace('__RUNNER_ROOT__', $escapedRoot) | Set-Content -LiteralPath $watchdogPath -Encoding UTF8
+$migrationTemplate.Replace('__RUNNER_ROOT__', $escapedRoot) | Set-Content -LiteralPath $migrationPath -Encoding UTF8
 $restartMarkerPath = Join-Path $runnerRoot '.jaewoon-roblox-runner-hidden-restart.pending'
 Set-Content -LiteralPath $restartMarkerPath -Value 'DIRECT_HIDDEN_LISTENER_MIGRATION_PENDING' -Encoding Ascii
 
@@ -173,6 +232,15 @@ $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoi
 $task = New-ScheduledTask -Action $action -Trigger @($logonTrigger, $healthTrigger) -Principal $principal -Settings $settings
 
 Register-ScheduledTask -TaskName $TaskName -InputObject $task -Force | Out-Null
+
+$migrationTaskName = "$TaskName-HiddenMigration"
+$migrationArgument = "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$migrationPath`""
+$migrationAction = New-ScheduledTaskAction -Execute $powershellExe -Argument $migrationArgument -WorkingDirectory $runnerRoot
+$migrationTrigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(3)
+$migrationSettings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew -ExecutionTimeLimit (New-TimeSpan -Minutes 31) -Hidden
+$migrationTask = New-ScheduledTask -Action $migrationAction -Trigger $migrationTrigger -Principal $principal -Settings $migrationSettings
+Register-ScheduledTask -TaskName $migrationTaskName -InputObject $migrationTask -Force | Out-Null
+Start-ScheduledTask -TaskName $migrationTaskName
 
 $listener = @(Get-TargetListener $runnerRoot)
 Start-ScheduledTask -TaskName $TaskName
@@ -195,9 +263,11 @@ Write-Host "ROBLOX_RUNNER_SELF_HEAL_INTERVAL_MINUTES=$HealthCheckMinutes"
 Write-Host "ROBLOX_RUNNER_WATCHDOG=$watchdogPath"
 Write-Host 'ROBLOX_RUNNER_VISIBLE_CMD_REQUIRED=NO'
 Write-Host 'ROBLOX_RUNNER_TASK_HIDDEN=YES'
-Write-Host 'ROBLOX_RUNNER_CHILD_CONSOLE_INHERITANCE=HIDDEN_PARENT'
-Write-Host 'ROBLOX_RUNNER_LAUNCH_MODE=HIDDEN_CMD_CONSOLE_HOST'
+Write-Host 'ROBLOX_RUNNER_CHILD_CONSOLE_INHERITANCE=NO_CONSOLE_PARENT'
+Write-Host 'ROBLOX_RUNNER_LAUNCH_MODE=DIRECT_CREATE_NO_WINDOW'
 Write-Host 'ROBLOX_RUNNER_IDLE_MIGRATION=PENDING_UNTIL_NO_RUNNER_WORKER'
+Write-Host 'ROBLOX_RUNNER_IDLE_MIGRATION_POLL_MS=200'
+Write-Host "ROBLOX_RUNNER_HIDDEN_MIGRATION_TASK=$migrationTaskName"
 Write-Host 'ROBLOX_RUNNER_SERVICE_MODE=NO'
 Write-Host 'ROBLOX_STUDIO_USER_PROFILE_PRESERVED=YES'
 Write-Host 'ROBLOX_RUNNER_AUTOSTART_CONFIGURED=YES'
