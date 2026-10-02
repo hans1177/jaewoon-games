@@ -182,6 +182,8 @@ test('F0 planner dedupes duplicate dispatches while validation matrix remains pa
   const planBlock=workflow.slice(planStart,validateStart);
   assert.match(planBlock,/runs-on:\s*ubuntu-slim/);
   assert.doesNotMatch(planBlock,/concurrency:/);
+  assert.match(planBlock,/ROBLOX_F0_PLAN_CONTROL_SHA=/);
+  assert.match(planBlock,/String\(run\.head_sha\|\|''\)===currentSha/);
   assert.match(planBlock,/ROBLOX_F0_PLAN_ACTIVE_WINNER=/);
   assert.match(planBlock,/ROBLOX_F0_PLAN_EXACT_DEDUPED=/);
   assert.match(planBlock,/ROBLOX_F0_PLAN_BATCH_DEDUPED_NEWER=/);
