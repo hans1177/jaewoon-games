@@ -908,8 +908,8 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "canonicalState": "PRE_F9_VALIDATION_CANDIDATE_DEPLOYED",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-10-02T01:24:10.538Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -939,7 +939,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-02T10:06:32.509Z",
+      "updatedAt": "2026-10-02T10:09:42.939Z",
       "robloxSourceCommit": "58f718faeb945ab1dfad2aa1c95bd438330839ab",
       "robloxSourceBootstrapPassedAt": "2026-10-02T10:03:42.331Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -1181,11 +1181,9 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
-      "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-observation"
-      ],
+      "robloxFailureStage": "PUBLIC_RELEASE_RUNTIME_OBSERVATION",
+      "robloxFailureSignature": "ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT",
+      "routingBlockers": [],
       "robloxExactRevisionPassed": true,
       "robloxMultiplayerQaEvidence": {
         "version": 2,
@@ -1391,7 +1389,11 @@
       ],
       "robloxPublicReleaseFailureSignature": "ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT",
       "robloxPublicReleaseRuntimeObservationPending": true,
-      "robloxRuntimeFoundationInternalReleaseException": true
+      "robloxRuntimeFoundationInternalReleaseException": true,
+      "robloxF9Blockers": [
+        "roblox-f9-exact-evidence-mismatch"
+      ],
+      "robloxF9FailureSignature": "ROBLOX_F9_EXACT_EVIDENCE_MISMATCH"
     },
     {
       "gameId": "cozy-island",
@@ -2221,7 +2223,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-02T10:09:04.756Z",
+  "updatedAt": "2026-10-02T10:09:42.939Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
