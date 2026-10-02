@@ -152,10 +152,10 @@ function recoverExactPrivateRuntimeCheckpoint(item,design){
       &&row?.finalReviewPassed===true
       &&row?.f9ReleaseRegressionPassed===true
     );
-    const publishPending=exactCycle&&['PENDING','RETRY_REQUIRED','PUBLISHING'].includes(upper(exactCycle?.status));
+    const publishDispatched=Boolean(exactCycle);
     return{
       currentStep:'POST_F9_CONTINUOUS_EVOLUTION',
-      canonicalState:publishPending
+      canonicalState:publishDispatched
         ?'F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION'
         :'F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION'
     };
