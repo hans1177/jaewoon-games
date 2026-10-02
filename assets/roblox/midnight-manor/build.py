@@ -1172,15 +1172,22 @@ def build():
         for zchip in [-10,-26,-44,-57]:
             s.box('WingStoneWeathering'+str(side)+str(zchip),(side*74.42,2.2,zchip),(.12,2.8,2.6),c['stone'],lean=-side*.06)
 
-    s.curve_tube('CentralRoofRidge',[(-7,42,-62),(-7,44,-35),(-7,42,-7)],[.17,.20,.17],[.14,.16,.14],c['black'],sides=18)
+    # 장식 ridge도 실제 박공지붕 중앙 꼭대기에 붙인다. 예전 x=-7/y=42~44 좌표는
+    # 지붕을 올린 뒤 실내에 남아 검은 보처럼 보였으므로 현재 roof plane과 같은 선형 높이를 쓴다.
+    ridge_points=[]
+    for z0 in [-62,-35,-7]:
+        ridge_y=54.0+(1.0-z0)*(4.0/68.0)
+        ridge_points.append((0,ridge_y+.12,z0))
+    s.curve_tube('CentralRoofRidge',ridge_points,[.17,.20,.17],[.14,.16,.14],c['black'],sides=18)
     for zfinial in [-55,-35,-15]:
-        s.lathe('RoofFinial'+str(zfinial),(-7,44.9,zfinial),.22,.035,2.0,c['brass'],sides=18)
+        ridge_y=54.0+(1.0-zfinial)*(4.0/68.0)
+        s.lathe('RoofFinial'+str(zfinial),(0,ridge_y+1.0,zfinial),.22,.035,2.0,c['brass'],sides=18)
         # 비뚤어진 가시형 꼭지로 멀리서도 다크카툰 실루엣을 강화한다.
         for side in [-1,1]:
             thorn=[
               (-.18,0),(.18,0),(side*.36,.75),(side*.10,1.65),(-side*.18,.82)
             ]
-            s.prism('RoofThorn'+str(zfinial)+str(side),(-7+side*.42,46.0,zfinial),thorn,.14,c['black'],rot=side*.12)
+            s.prism('RoofThorn'+str(zfinial)+str(side),(side*.42,ridge_y+2.1,zfinial),thorn,.14,c['black'],rot=side*.12)
     # 날개 지붕에도 작은 가시를 반복해 중앙탑과 같은 문법으로 묶는다.
     for side in [-1,1]:
         for z0 in [-49,-31,-13]:
@@ -1213,14 +1220,15 @@ def build():
         s.curve_tube('GrandStairStringer'+str(side),stringer,[.20]*len(stringer),[.10]*len(stringer),c['wood'],sides=18)
 
     # 2층 갤러리는 계단 입구를 실제로 비운 U자형 구조로 만든다.
-    # 기존 통짜 바닥은 계단 위를 덮어 내려오는 길을 막았으므로 rear bridge + 좌우 deck + landing으로 분리한다.
+    # rear bridge + 좌우 deck + landing은 서로 겹쳐 보행 틈이 없고, 전면 apron은
+    # 중앙 아트리움 가장자리에만 둬 좌우 복도와 BalconyWalk 연결부를 가리지 않는다.
     s.box('SecondFloorGallery',(0,10.2,-61.75),(92,.55,5.5),c['wood'])
     for side in [-1,1]:
         s.box('SecondFloorGallerySide'+str(side),(side*31,10.2,-52.25),(30,.55,13.5),c['wood'])
-        s.box('SecondFloorGalleryApron'+str(side),(side*31,9.72,-45.62),(30,1.02,.48),c['wood'])
-        s.box('SecondFloorGalleryBrassLine'+str(side),(side*31,10.17,-45.34),(29,.10,.10),c['brass'])
-    s.box('SecondFloorStairLanding',(0,10.05,-57.0),(30,.35,4.5),c['wood'])
-    s.box('SecondFloorStairLandingTrim',(0,10.15,-54.82),(29.5,.12,.16),c['brass'])
+        s.box('SecondFloorGalleryApron'+str(side),(side*25.25,9.72,-45.62),(18.5,1.02,.48),c['wood'])
+        s.box('SecondFloorGalleryBrassLine'+str(side),(side*25.25,10.17,-45.34),(18.2,.10,.10),c['brass'])
+    s.box('SecondFloorStairLanding',(0,10.05,-57.0),(32.5,.35,4.5),c['wood'])
+    s.box('SecondFloorStairLandingTrim',(0,10.15,-54.82),(32.0,.12,.16),c['brass'])
     for side in [-1,1]:
         s.box('BalconyWalk'+str(side),(side*43,10.2,-31),(15,.55,48),c['wood'])
         side_top=[];side_base=[]
@@ -1232,8 +1240,9 @@ def build():
         for z in [-53,-8]:
             s.lathe('GalleryNewel'+str(side)+str(z),(side*36,11.48,z),.25,.16,2.55,c['wood'],sides=20)
             s.lathe('GalleryNewelCap'+str(side)+str(z),(side*36,12.82,z),.30,.07,.28,c['brass'],sides=20)
-    # 2층 전면 난간도 계단 폭 중앙 32stud를 비워 실제 계단 입구가 시각적으로 읽힌다.
-    for rail_side,xs in [(-1,list(range(-42,-15,4))),(1,list(range(18,43,4)))]:
+    # 2층 전면 난간은 중앙 계단 가장자리만 보호한다. 좌우 x=35.5 이후는
+    # BalconyWalk로 이어지는 실제 복도이므로 난간/앞판을 끝내 동선을 열어 둔다.
+    for rail_side,xs in [(-1,[-34,-31,-28,-25,-22,-19,-16]),(1,[16,19,22,25,28,31,34])]:
         back_top=[];back_base=[]
         for x in xs:
             s.lathe('BackBaluster'+str(rail_side)+'_'+str(x),(x,11.45,-46),.095,.065,2.25,c['wood'],sides=14)
@@ -1241,8 +1250,11 @@ def build():
         s.curve_tube('GalleryRearHandrail'+str(rail_side),back_top,[.13]*len(back_top),[.10]*len(back_top),c['wood'],sides=18)
         s.curve_tube('GalleryRearBaseRail'+str(rail_side),back_base,[.08]*len(back_base),[.065]*len(back_base),c['brass'],sides=16)
         edge_x=-16 if rail_side<0 else 16
+        corridor_x=-34.5 if rail_side<0 else 34.5
         s.lathe('GalleryStairNewel'+str(rail_side),(edge_x,11.55,-46),.27,.17,2.7,c['wood'],sides=22)
         s.lathe('GalleryStairNewelCap'+str(rail_side),(edge_x,12.96,-46),.32,.08,.30,c['brass'],sides=22)
+        s.lathe('GalleryCorridorNewel'+str(rail_side),(corridor_x,11.55,-46),.25,.16,2.55,c['wood'],sides=20)
+        s.lathe('GalleryCorridorNewelCap'+str(rail_side),(corridor_x,12.88,-46),.30,.07,.28,c['brass'],sides=20)
 
     # 그랜드홀 천장 코퍼. 계단/샹들리에 축 위는 비워 시야를 막지 않고 주변 천장만 깊이를 준다.
     for row,z0 in enumerate([-55,-47,-39,-31,-23,-15,-7]):
