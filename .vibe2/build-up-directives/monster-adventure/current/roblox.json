@@ -231,33 +231,7 @@
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false,
-    "studioQualityFailure": {
-      "sourceRevision": "165f9e2394e51293fcfb61451ad42305ed26d123",
-      "artifactIdentity": "sha256:a11caf7fca639a3f1ccf5529ecc813757e72d47ee2599aabcf332df24a6fe883",
-      "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 36919854592,
-      "testedAt": "2026-10-01T20:43:28.588Z",
-      "repairSurfaces": [
-        "CHARACTER_BOOT",
-        "GAME_START"
-      ],
-      "qualityFailureDetails": [
-        {
-          "id": "character-camera-ready",
-          "repairSurface": "CHARACTER_BOOT",
-          "priority": "CRITICAL",
-          "hint": "Repair character spawn, Humanoid/root, and camera binding before gameplay starts.",
-          "observed": "{\"interactionSurfaceCount\":6,\"progressionSurfaceCount\":7,\"combatSurfaceCount\":0,\"npcSurfaceCount\":0,\"companionSurfaceCount\":0,\"itemSurfaceCount\":0,\"remoteCount\":16,\"soundCount\":0,\"effectCount\":0,\"promptCount\":0,\"inventoryCount\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":false,\"multiplayerActualSessionPass\":false}"
-        },
-        {
-          "id": "adaptive-start-playability",
-          "repairSurface": "GAME_START",
-          "priority": "CRITICAL",
-          "hint": "Repair initial character health/state and start/continue flow so Studio reaches a healthy controllable character and gameplay state.",
-          "observed": "{\"initialDead\":false,\"finalDead\":true,\"initialHealth\":100,\"finalHealth\":2.0304746627807617,\"startGateVisible\":false,\"startGateActionOk\":false,\"startGateEffectObserved\":true}"
-        }
-      ]
-    }
+    "studioQualityFailure": null
   },
   "qualityGapMap": [
     {

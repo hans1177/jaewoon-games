@@ -241,40 +241,7 @@
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false,
-    "studioQualityFailure": {
-      "sourceRevision": "25b1b2b162099754e756b8171e2ab440a455dfd4",
-      "artifactIdentity": "sha256:4deca0802a0ec0a6af024e95fdd07db82aea7930abd5daaa2cf1faa4102f154d",
-      "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 36919854592,
-      "testedAt": "2026-10-01T20:25:08.425Z",
-      "repairSurfaces": [
-        "SYSTEM_TRANSACTION",
-        "ROBLOX_OBSERVED_INTERACTION"
-      ],
-      "qualityFailureDetails": [
-        {
-          "id": "adaptive-system-transaction-effect",
-          "repairSurface": "SYSTEM_TRANSACTION",
-          "priority": "CRITICAL",
-          "hint": "One or more discovered shop/craft/equip/upgrade actions accepted input without changing inventory, currency/progression, feedback, or relevant UI state. Repair each transaction chain independently.",
-          "observed": "{\"systemActionCount\":1,\"systemEffectCount\":0,\"actions\":[{\"id\":\"ui-discovered-ScopeAction4\",\"semantic\":\"EQUIP\",\"effectObserved\":false,\"effect\":{\"moved\":2.1827872842550278e-11,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":false}}]}"
-        },
-        {
-          "id": "observed-action-cc7378b4b159247bc4b8",
-          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
-          "priority": "HIGH",
-          "hint": "Replay the exact observed action and verify its real state change after repair.",
-          "observed": "{\"id\":\"observed-action-cc7378b4b159247bc4b8\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"ui-discovered-ScopeAction4\",\"targetIdentity\":\"ApprovedScopeHud.Root.ApprovedActions.ScopeAction4\",\"actionType\":\"mcp-ui-exploration\",\"effectRequired\":true,\"recoveredByInteraction\":false,\"attempts\":1}"
-        },
-        {
-          "id": "observed-action-2d0e58992d36acfea821",
-          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
-          "priority": "HIGH",
-          "hint": "Replay the exact observed action and verify its real state change after repair.",
-          "observed": "{\"id\":\"observed-action-2d0e58992d36acfea821\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"ui-discovered-ScopeAction3\",\"targetIdentity\":\"ApprovedScopeHud.Root.ApprovedActions.ScopeAction3\",\"actionType\":\"mcp-ui-exploration\",\"effectRequired\":true,\"recoveredByInteraction\":false,\"attempts\":1}"
-        }
-      ]
-    }
+    "studioQualityFailure": null
   },
   "qualityGapMap": [
     {

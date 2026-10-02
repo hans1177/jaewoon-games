@@ -240,25 +240,7 @@
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false,
-    "studioQualityFailure": {
-      "sourceRevision": "165f9e2394e51293fcfb61451ad42305ed26d123",
-      "artifactIdentity": "sha256:9a47f8a200ca580ad18e0843480cb9055222919b4dbd02e743d41758c857d762",
-      "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 36919854592,
-      "testedAt": "2026-10-01T20:29:54.594Z",
-      "repairSurfaces": [
-        "ROBLOX_OBSERVED_INTERACTION"
-      ],
-      "qualityFailureDetails": [
-        {
-          "id": "observed-action-219c32b79963a0cb0efd",
-          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
-          "priority": "HIGH",
-          "hint": "Replay the exact observed action and verify its real state change after repair.",
-          "observed": "{\"id\":\"observed-action-219c32b79963a0cb0efd\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"ui-discovered-ScopeAction5\",\"targetIdentity\":\"ApprovedScopeHud.Root.ApprovedActions.ScopeAction5\",\"actionType\":\"mcp-ui-exploration\",\"effectRequired\":true,\"recoveredByInteraction\":false,\"attempts\":1}"
-        }
-      ]
-    }
+    "studioQualityFailure": null
   },
   "qualityGapMap": [
     {
