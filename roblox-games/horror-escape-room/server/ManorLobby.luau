@@ -32,8 +32,11 @@ local function manorPlaque(parent,owner,origin)
  local text=Instance.new("TextLabel");text.Name="OwnerPlaqueText";text.Size=UDim2.fromScale(1,1);text.BackgroundTransparency=1
  text.Font=Enum.Font.Antique;text.TextScaled=true;text.TextColor3=Color3.fromRGB(222,196,137);text.TextStrokeTransparency=.68;text.Parent=gui
  local function refresh()
-  local visibility=owner:GetAttribute("ManorVisibility")=="PUBLIC"and"공개"or"비공개"
-  text.Text=string.format("%s의 저택  ·  %s",owner.DisplayName,visibility)
+  local public=owner:GetAttribute("ManorVisibility")=="PUBLIC"
+  local visibility=public and"공개"or"비공개"
+  local visitors=math.max(0,tonumber(owner:GetAttribute("ManorVisitorCount"))or 0)
+  text.Text=string.format("%s의 저택  ·  %s  ·  방문 %d",owner.DisplayName,visibility,visitors)
+  text.TextColor3=public and Color3.fromRGB(232,204,145)or Color3.fromRGB(164,145,112)
  end
  refresh()
  return anchor,refresh
@@ -210,6 +213,18 @@ function Manor:Get(p)
   local anchor=part(folder,"WarmLight",origin+spec[1],Vector3.one,false);anchor.CanCollide=false
   local light=Instance.new("PointLight");light.Color=Color3.fromRGB(255,217,167);light.Brightness=spec[2];light.Range=spec[3];light.Shadows=spec[4];light.Parent=anchor
  end
+ -- 외부 하우징 조명: 구조 윤곽만 살리고 그림자는 최소화해 모바일 비용을 제한한다.
+ for _,spec in ipairs({
+  {Vector3.new(-5.6,7.8,9.8),1.15,18,Color3.fromRGB(255,205,143)},
+  {Vector3.new(5.6,7.8,9.8),1.15,18,Color3.fromRGB(255,205,143)},
+  {Vector3.new(-58.3,37,-47),1.00,17,Color3.fromRGB(224,190,132)},
+  {Vector3.new(70.5,8.5,-43),.92,16,Color3.fromRGB(221,164,121)},
+  {Vector3.new(-57,4.3,65),.78,14,Color3.fromRGB(214,170,104)},
+  {Vector3.new(57,7.0,61.5),.55,13,Color3.fromRGB(180,202,192)},
+ })do
+  local exterior=part(folder,"ExteriorHouseLight",origin+spec[1],Vector3.one,false);exterior.CanCollide=false;exterior.CanQuery=false
+  local light=Instance.new("PointLight");light.Color=spec[4];light.Brightness=spec[2];light.Range=spec[3];light.Shadows=false;light.Parent=exterior
+ end
  -- 움직이는 장식은 비충돌, 가구의 몸체만 기존 바닥 위에서 이동을 막는다.
  for _,spec in ipairs({
   {-33.5,2,-59.5,18,4,3},{33.5,2,-59.5,18,4,3},
@@ -348,6 +363,8 @@ function Manor:RefreshVisitorCounts()
     if visitor~=owner and tonumber(visitor:GetAttribute("VisitedManorOwnerUserId"))==owner.UserId then count+=1 end
    end
    owner:SetAttribute("ManorVisitorCount",count)
+   local room=self.rooms[owner]
+   if room and room.refreshOwnerPlaque then room.refreshOwnerPlaque()end
   end
  end
 end
