@@ -1,5 +1,5 @@
 {
-  "version": 42,
+  "version": 43,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 42,
+      "runtime": 43,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -567,13 +567,13 @@
       "cohortFanInConsumesCoalescedResults": true,
       "coalescedCompletionIsNotFailure": true,
       "logicalPerTaskVariantJoinStillRequiredWhenCoalesced": true,
-      "fanInRefillConcurrencyScope": "LANE_SCOPED_STATELESS_WAKE_COALESCING",
+      "fanInRefillConcurrencyScope": "SOURCE_TASK_SCOPED_PARALLEL_OPTIMISTIC_SHARED_QUEUE_WRITE",
       "globalFanInRefillSingletonForbidden": true,
-      "sameLaneFanInRefillSerialization": true,
-      "pressureCoalescingIndependentFreeSlotRefillPreserved": false,
+      "sameLaneFanInRefillSerialization": false,
+      "pressureCoalescingIndependentFreeSlotRefillPreserved": true,
       "pressureCoalescingDefersNewWorkflowCreation": true,
       "pressureThreshold": 4,
-      "topLevelFanInRefillLaneSerialization": true
+      "topLevelFanInRefillLaneSerialization": false
     },
     "signalLiveness": {
       "runState": "ALWAYS_RUNNING",
@@ -754,7 +754,7 @@
       "mode": "PARALLEL_RESERVE_OPTIMISTIC_SHARED_QUEUE_WRITE",
       "crossLaneGlobalReserveLock": false,
       "sameLaneReserveSerialization": false,
-      "statelessRefillCoalescing": "LANE_SCOPED_ONE_RUNNING_ONE_PENDING",
+      "statelessRefillCoalescing": "SOURCE_TASK_OR_SOURCE_RUN_SCOPED",
       "sharedQueueWriteRetryAttempts": null,
       "sharedQueueWriteRetryPolicy": "UNBOUNDED_WITH_CAPPED_BACKOFF",
       "gamePrimaryExternalBoundary": 256,
