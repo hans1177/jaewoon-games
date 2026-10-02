@@ -189,7 +189,7 @@ test('repairs stale owner-direct catalog pause and restores canonical developmen
     write(root,'game-seed-state.json',{seeds:[{
       seedId:'H',gameId:'horror-escape-room',status:'PAUSED',
       pausedReason:'NOT_IN_CANONICAL_GAME_CATALOG',pausedAt:'2026-10-01T00:00:00Z',
-      productionClass:'DEVELOPMENT_CONFIRMED',ownerDirectDevelopment:true,selectedPlatform:'ROBLOX'
+      productionClass:'DEVELOPMENT_CONFIRMED',OWNER_DIRECT_DEVELOPMENT:true,selectedPlatform:'ROBLOX'
     }]});
     const design=writeDesign(root,'horror-escape-room');
     write(root,'development-queue.json',{items:[]});
