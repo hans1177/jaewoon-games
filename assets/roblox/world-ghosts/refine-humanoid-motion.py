@@ -329,12 +329,71 @@ def gait_pose(t, pace='walk'):
     }
     cfg = profiles[pace]
     stance = cfg['stance']
-    # 접지 구간에는 골반 높이 변화 폭을 줄이고, 발이 풀린 뒤에만 상승/하강을 크게 준다.
-    # 발을 고정한 채 골반을 급상승시키는 이전 곡선은 Foot bone 원점이 수직으로 끌려가 접지 드리프트를 만들었다.
+
+    if pace == 'walk':
+        # 걷기는 접지발을 먼저 고정하고 나머지 몸이 그 위를 지나가게 만든다.
+        # QA 접지창(좌 0.00~0.30 / 우 0.50~0.80) 동안 골반 X/Z와 지지다리 원점은
+        # 거의 고정하고, 골반 교대와 높이 회복은 양발이 풀리는 통과 구간에서만 수행한다.
+        body_z = phase_curve(t, [
+            (0.00,-0.54),(0.30,-0.54),(0.36,-0.18),(0.42,0.32),(0.48,-0.16),(0.50,-0.54),
+            (0.80,-0.54),(0.86,-0.18),(0.92,0.32),(0.98,-0.16),(1.00,-0.54)
+        ])
+        lateral = phase_curve(t, [
+            (0.00,-0.20),(0.30,-0.20),(0.40,0.06),(0.48,0.18),(0.50,0.20),
+            (0.80,0.20),(0.90,-0.06),(0.98,-0.18),(1.00,-0.20)
+        ])
+        pelvis_yaw = phase_curve(t, [
+            (0.00,-0.82),(0.30,-0.82),(0.40,-0.18),(0.48,0.70),(0.50,0.82),
+            (0.80,0.82),(0.90,0.18),(0.98,-0.70),(1.00,-0.82)
+        ])
+        chest_follow = phase_curve(t, [
+            (0.00,0.62),(0.18,0.30),(0.36,-0.28),(0.50,-0.62),
+            (0.68,-0.30),(0.86,0.28),(1.00,0.62)
+        ])
+        loc('Hips', lateral * 0.006, 0.0, body_z * 0.020)
+        rot('Hips', 0.014, pelvis_yaw * 0.058, lateral * 0.060)
+        rot('Spine', 0.016, -pelvis_yaw * 0.040, -lateral * 0.050)
+        rot('Chest', 0.015, chest_follow * 0.052, lateral * 0.038)
+        rot('Head', -0.028, -chest_follow * 0.022, -lateral * 0.020)
+
+        for side_name, sign in [('L', -1), ('R', 1)]:
+            p = (t + (0.5 if side_name == 'R' else 0.0)) % 1.0
+
+            # 지지다리는 접지창 전체에서 같은 hip/knee 원점을 유지한다.
+            # toe-off 이후 회수 → 무릎 리드 → 앞꿈치 정렬 → 다음 heel strike 순서로 스윙한다.
+            thigh = phase_curve(p, [
+                (0.00,0.66),(0.30,0.66),
+                (0.38,0.18),(0.52,-0.82),(0.64,-0.66),(0.76,-0.18),(0.90,0.46),(1.00,0.66)
+            ])
+            knee = phase_curve(p, [
+                (0.00,0.12),(0.30,0.12),
+                (0.38,0.34),(0.52,0.92),(0.66,1.00),(0.78,0.58),(0.90,0.24),(1.00,0.12)
+            ])
+            heel_toe = phase_curve(p, [
+                (0.00,-0.20),(0.08,-0.16),(0.18,-0.06),(0.26,0.10),(0.30,0.20),
+                (0.38,0.12),(0.54,-0.30),(0.68,-0.36),(0.82,-0.22),(0.94,-0.18),(1.00,-0.20)
+            ])
+            arm = phase_curve(p, [
+                (0.00,-0.82),(0.18,-0.50),(0.38,0.20),(0.50,0.78),
+                (0.68,0.52),(0.86,-0.24),(1.00,-0.82)
+            ])
+            elbow = phase_curve(p, [
+                (0.00,0.18),(0.20,0.12),(0.44,0.22),(0.58,0.34),(0.78,0.22),(1.00,0.18)
+            ])
+
+            rot('Thigh' + side_name, thigh * 0.38, 0.0, -sign * lateral * 0.020)
+            rot('Shin' + side_name, knee * 0.16 * 2.7, 0.0, 0.0)
+            rot('Foot' + side_name, heel_toe * 0.42, 0.0, sign * 0.010)
+            rot('UpperArm' + side_name, arm * 0.30, sign * 0.035, -sign * (0.034 + max(0.0,-arm) * 0.010))
+            rot('Forearm' + side_name, -0.11 - elbow * 0.18, sign * 0.015, 0.0)
+            rot('Hand' + side_name, 0.032 + max(0.0, arm) * 0.052, 0.0, -sign * 0.040)
+
+        detail_face_and_hands(t, moving=0.72, alert=0.18)
+        apply_secondary(t, drive=1.05, turn=pelvis_yaw * 0.28, braking=-body_z * 0.08)
+        return
+
     body_y = phase_curve(t, [
-        (0.00,-0.72),(stance * 0.50,-0.56),(stance,-0.32),(0.40,0.46),
-        (0.50,-0.72),(0.50 + stance * 0.50,-0.56),(0.50 + stance,-0.32),(0.90,0.46),
-        (1.00,-0.72)
+        (0.00,-1.0),(0.14,-0.25),(0.28,0.62),(0.50,-0.86),(0.66,-0.12),(0.80,0.72),(1.00,-1.0)
     ])
     yaw = phase_curve(t, [
         (0.00,-0.88),(stance,-0.78),(0.50,0.88),
@@ -371,9 +430,8 @@ def gait_pose(t, pace='walk'):
         rot('UpperArm' + side_name, arm * cfg['arm'], sign * (0.045 if pace == 'sprint' else 0.035), -sign * 0.035)
         rot('Forearm' + side_name, -0.12 - max(0.0, -arm) * (0.27 if pace == 'sprint' else 0.22 if pace in ('run','jog') else 0.12), sign * 0.015, 0.0)
         rot('Hand' + side_name, 0.035 + max(0.0, arm) * 0.055, 0.0, -sign * 0.040)
-    detail_face_and_hands(t, moving=0.72 if pace == 'walk' else 0.82 if pace in ('jog','backward') else 1.0, alert=cfg['alert'])
+    detail_face_and_hands(t, moving=0.82 if pace in ('jog','backward') else 1.0, alert=cfg['alert'])
     apply_secondary(t, drive=cfg['secondary'], turn=yaw * 0.3)
-
 
 def strafe_pose(t, direction):
     shift = phase_curve(t, [(0.00,-0.82),(0.20,-0.24),(0.38,0.64),(0.50,0.86),(0.72,-0.08),(1.00,-0.82)])
