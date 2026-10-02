@@ -320,6 +320,36 @@ test('promotion runtime writer purges legacy feature freezes and internal queue 
 });
 
 
+test('promotion sync preserves verified advanced progress while normalizing execution metadata',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-native-progress-preserve-'));
+  try{
+    base(root);
+    write(root,'game-seed-state.json',{version:1,seeds:[{
+      seedId:'SP',gameId:'progress-game',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',INITIAL_TARGET_PLATFORM:'ROBLOX'
+    }]});
+    const source=writeMinimumDesign(root,'progress-game','2026-09-18');
+    write(root,'development-queue.json',{version:1,items:[{
+      gameId:'progress-game',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+      platformExecutionMode:'UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT',
+      concurrentTargetPlatforms:['ROBLOX','UNITY'],
+      minimumDesignContract:{pass:true,source},
+      currentStep:'POST_F9_CONTINUOUS_EVOLUTION',
+      canonicalState:'F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION',
+      robloxFoundationF0Passed:true,
+      robloxFinalReviewPassed:true,
+      robloxF9ReleaseRegressionPassed:true
+    }]});
+    promoteReadyDesignSeeds({root});
+    const item=read(root,'development-queue.json').items[0];
+    assert.equal(item.currentStep,'POST_F9_CONTINUOUS_EVOLUTION');
+    assert.equal(item.canonicalState,'F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION');
+    assert.equal(item.robloxFoundationF0Passed,true);
+    assert.equal(item.robloxFinalReviewPassed,true);
+    assert.equal(item.robloxF9ReleaseRegressionPassed,true);
+    assert.equal(item.platformExecutionMode,'UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('promotion sync recovers exact private Roblox runtime candidate instead of regressing to source bind',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-native-runtime-checkpoint-'));
   base(root);
