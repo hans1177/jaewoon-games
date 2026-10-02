@@ -14,6 +14,23 @@ const oldUI=read('roblox-games/horror-escape-room/client/Game.client.luau');
 const config=read('roblox-games/horror-escape-room/shared/GameConfig.luau');
 const manorBuild=read(root+'/build.py');
 const cloudOwnerBuild=process.env.MANOR_CLOUD_BUILD==='1';
+test('manor UI follows the current artbook and mobile-safe map board',()=>{
+ assert.match(ui,/ArtbookId","horror-escape-room-2026-10-02-manor-rebuild"/);
+ assert.match(ui,/ArtbookStyle","DARK_CARTOON_GOTHIC_HALLOWEEN"/);
+ assert.match(ui,/local ink=Color3\.fromRGB\(20,16,18\)/);
+ assert.match(ui,/local wine=Color3\.fromRGB\(76,24,38\)/);
+ assert.match(ui,/local parchment=Color3\.fromRGB\(218,194,145\)/);
+ assert.match(ui,/local brass=Color3\.fromRGB\(151,113,61\)/);
+ assert.match(ui,/compactMobile=UserInputService\.TouchEnabled or v\.X<900 or v\.Y<600/);
+ assert.match(ui,/panel\.AnchorPoint=Vector2\.new\(\.5,1\)/);
+ assert.match(ui,/nav\.Size=UDim2\.fromOffset\(74,236\)/);
+ assert.match(ui,/\{\{"PLAY","지도"\},\{"BOOK","도감"\},\{"DRESS","옷장"\},\{"EVENT","저택"\},\{"RECORD","기록"\}\}/);
+ assert.match(ui,/벽걸이 지도 · 황동 핀을 옮기면 실제 출정 맵도 함께 바뀐다/);
+ assert.match(ui,/mapGlyph=\{SCHOOL="교",HOSPITAL="병",THEME_PARK="원"\}/);
+ assert.match(ui,/send\(C\.Actions\.SELECT_MAP,map\.Id\)/);
+ assert.match(ui,/header\.Visible=false;commands\.Visible=false;panel\.Visible=true/);
+});
+
 test('selected lobby map stays server-authoritative through room and round',()=>{
  assert.match(ui,/send\(C\.Actions\.SELECT_MAP,map\.Id\)/);
  assert.match(ui,/p:GetAttribute\("SelectedLobbyMap"\)/);
