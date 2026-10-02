@@ -69,8 +69,8 @@ function Manor.new(remote,selectMap)
  local _,size=template:GetBoundingBox()
  assert(size.X>1 and #namedParts(template,"Butler_")>0,"MANOR_NATIVE_MODEL_INVALID")
  template:ScaleTo(template:GetScale()*Assets.SourceWidth/size.X)
- -- Roblox 변환 뒤에는 전체 bounding-box가 아니라 실제 1층 HallFloor를 기준으로 위치만 보정한다.
- -- 방향은 GLB가 이미 맞으므로 회전 추정을 하지 않는다. 기준 파츠가 없으면 기존 안정 배치로 fallback한다.
+ -- Roblox 변환 뒤에는 HallFloor→Courtyard 실제 방향과 거리를 authored 좌표에 맞춘다.
+ -- 이 쌍이 앞/뒤 뒤집힘까지 교정하며, 기준 파츠가 없거나 비정상이면 nonfatal fallback한다.
  local function exactVisualPart(name)
   for _,d in ipairs(template:GetDescendants())do
    if d:IsA("BasePart")and d.Name==name then return d end
@@ -78,21 +78,46 @@ function Manor.new(remote,selectMap)
   return nil
  end
  local expectedHall=Vector3.new(0,.1,-29)
+ local expectedCourtyard=Vector3.new(0,-.2,20)
  local hallAnchor=exactVisualPart("HallFloor")
- if hallAnchor then
+ local courtyardAnchor=exactVisualPart("Courtyard")
+ if hallAnchor and courtyardAnchor then
+  local actualSpan=courtyardAnchor.Position-hallAnchor.Position
+  local actualFlat=Vector3.new(actualSpan.X,0,actualSpan.Z)
+  local expectedFlat=Vector3.new(0,0,49)
+  if actualFlat.Magnitude>10 then
+   local pairScale=expectedFlat.Magnitude/actualFlat.Magnitude
+   template:ScaleTo(template:GetScale()*pairScale)
+   hallAnchor=exactVisualPart("HallFloor")
+   courtyardAnchor=exactVisualPart("Courtyard")
+   actualSpan=courtyardAnchor.Position-hallAnchor.Position
+   actualFlat=Vector3.new(actualSpan.X,0,actualSpan.Z)
+   local heading=math.atan2(actualFlat.X,actualFlat.Z)
+   local transform=CFrame.new(expectedHall)*CFrame.Angles(0,-heading,0)*CFrame.new(-hallAnchor.Position)
+   template:PivotTo(transform*template:GetPivot())
+   hallAnchor=exactVisualPart("HallFloor")
+   courtyardAnchor=exactVisualPart("Courtyard")
+   self.visualAnchorMode="HALL_COURTYARD_PAIR"
+   self.visualAnchorPairScale=pairScale
+   self.visualAnchorYawDegrees=math.deg(heading)
+  else
+   local delta=expectedHall-hallAnchor.Position
+   template:PivotTo(CFrame.new(delta)*template:GetPivot())
+   self.visualAnchorMode="HALL_FLOOR_TRANSLATION"
+  end
+ elseif hallAnchor then
   local delta=expectedHall-hallAnchor.Position
   template:PivotTo(CFrame.new(delta)*template:GetPivot())
-  hallAnchor=exactVisualPart("HallFloor")
-  self.visualAnchorHallError=hallAnchor and(hallAnchor.Position-expectedHall).Magnitude or -1
   self.visualAnchorMode="HALL_FLOOR_TRANSLATION"
  else
   local bbox=template:GetBoundingBox()
   template:PivotTo(CFrame.new(Assets.SourceCenter)*bbox:Inverse()*template:GetPivot())
-  self.visualAnchorHallError=-1
   self.visualAnchorMode="SOURCE_CENTER_FALLBACK"
  end
- local courtyardAnchor=exactVisualPart("Courtyard")
- self.visualAnchorCourtyardError=courtyardAnchor and(courtyardAnchor.Position-Vector3.new(0,-.2,20)).Magnitude or -1
+ hallAnchor=exactVisualPart("HallFloor")
+ courtyardAnchor=exactVisualPart("Courtyard")
+ self.visualAnchorHallError=hallAnchor and(hallAnchor.Position-expectedHall).Magnitude or -1
+ self.visualAnchorCourtyardError=courtyardAnchor and(courtyardAnchor.Position-expectedCourtyard).Magnitude or -1
  template.Parent=nil;self.template=template
  self.ranking=DSS:GetOrderedDataStore("midnight-manor-archive-v1")
  self.rankingCache={};self.rankingAt=0;self.rankingRequests={}
@@ -107,6 +132,8 @@ function Manor.new(remote,selectMap)
  workspace:SetAttribute("ManorVisualAnchorMode",self.visualAnchorMode or"UNKNOWN")
  workspace:SetAttribute("ManorVisualAnchorHallError",self.visualAnchorHallError or -1)
  workspace:SetAttribute("ManorVisualAnchorCourtyardError",self.visualAnchorCourtyardError or -1)
+ workspace:SetAttribute("ManorVisualAnchorPairScale",self.visualAnchorPairScale or 1)
+ workspace:SetAttribute("ManorVisualAnchorYawDegrees",self.visualAnchorYawDegrees or 0)
  return self
 end
 
