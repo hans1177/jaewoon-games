@@ -141,7 +141,9 @@ test('personal manor exterior has signature housing and collection architecture'
   'CryptFacade','CryptDoorRecess','CryptGateBar','CryptArch','CryptPediment','CryptRetainingWall','CryptDrain',
   'GreenhouseFoundation','GreenhouseBrickPlinth','GreenhouseRoofRib','GreenhouseSideGlass','GreenhouseEndArch','GreenhouseDoor','GreenhouseRidge',
   'PorchStep','PorchPlinth','PorchColumn','PorchGableTrim','PorchLantern',
-  'FrontGutter','RainPipe'
+  'FrontGutter','RainPipe',
+  'RareCaseGlass_','RareRelic_','MapMasterpiece_SCHOOL','MapMasterpiece_HOSPITAL','MapMasterpiece_THEME_PARK',
+  'GallerySetFrame_','GallerySet_','FireplaceFeatureFrame','FireplaceFeature_'
  ])assert.match(manorBuild,new RegExp(token));
  assert.doesNotMatch(manorBuild,/s\.lathe\('LeftTurret'/,'Archivist tower replaces the old duplicate left turret');
  assert.match(manorBuild,/for step in range\(5\)/);
@@ -165,7 +167,15 @@ test('personal manor exterior has signature housing and collection architecture'
  assert.match(manorBuild,/ManorNamePlaque/);
  assert.match(manorBuild,/LeaningChimneyBase/);
  assert.match(manorBuild,/SecondaryChimneyPot/);
+ assert.match(manorBuild,/UnderEyeCrease/);
+ assert.match(manorBuild,/Nasolabial/);
+ assert.match(manorBuild,/Nostril/);
+ assert.match(lobby,/\(tonumber\(ghost\.Weight\)or math\.huge\)<=58/);
+ assert.match(lobby,/namedParts\(scene,"RareRelic_"\.\.ghost\.Id\)/);
+ assert.match(lobby,/namedParts\(scene,"FireplaceFeature_"\.\.ghost\.Id\)/);
+ assert.match(lobby,/for _,prefix in ipairs\(\{"MapMasterpiece_","GallerySet_"\}\)do/);
  assert.doesNotMatch(lobby,/SetAttribute\("GhostCompleted"/);
+ assert.doesNotMatch(lobby,/SetAttribute\("GhostProgress"/);
 });
 
 test('replacement lobby music has no old screaming source and is original instrumental',()=>{
