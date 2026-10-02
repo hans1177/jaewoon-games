@@ -2855,33 +2855,69 @@ local function abilityStreak(name,origin,look,color,offset,length,width,duration
  return part
 end
 
+local function abilityRing(name,pos,color,startDiameter,endDiameter,duration)
+ local part=abilityVfxPart(name,Vector3.new(.16,startDiameter,startDiameter),CFrame.new(pos)*CFrame.Angles(0,0,math.rad(90)),color,Enum.PartType.Cylinder)
+ part.Transparency=.05
+ local light=Instance.new("PointLight");light.Color=color;light.Range=10;light.Brightness=2.5;light.Parent=part
+ TweenService:Create(part,TweenInfo.new(duration,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Size=Vector3.new(.05,endDiameter,endDiameter),Transparency=1}):Play()
+ TweenService:Create(light,TweenInfo.new(duration),{Brightness=0,Range=endDiameter*.5}):Play()
+ Debris:AddItem(part,duration+.08)
+ return part
+end
+
 local function playMonsterAbilityEffect(snapshot)
  if typeof(snapshot)~="table"then return end
+ markCombatSkinAttack(snapshot.UserId,snapshot.Origin,.82)
  local ability=tostring(snapshot.Ability or"")
  local origin=typeof(snapshot.Origin)=="Vector3"and snapshot.Origin or Vector3.zero
  local look=typeof(snapshot.Look)=="Vector3"and snapshot.Look or Vector3.new(0,0,-1)
  local formInfo,profile=monsterEffectProfile(ability)
  local color=formInfo.EffectColor or Color3.fromRGB(190,100,220)
  local accent=formInfo.AccentColor or color
+ if snapshot.Infected==true then
+  color=Color3.fromRGB(220,70,112);accent=Color3.fromRGB(144,76,226)
+  if ability=="FALSE_ALARM"then
+   abilityPulse("FalseAlarmBurst",origin+Vector3.new(0,1.2,0),color,Vector3.new(2,2,2),Vector3.new(16,6,16),.42)
+   abilityRing("FalseAlarmRing",origin+Vector3.new(0,.25,0),accent,3,28,.62)
+  elseif ability=="BLACKOUT"then
+   abilityPulse("BlackoutCore",origin+Vector3.new(0,1.5,0),Color3.fromRGB(48,24,78),Vector3.new(2,2,2),Vector3.new(18,12,18),.55)
+   abilityRing("BlackoutRing",origin+Vector3.new(0,.25,0),accent,3,30,.68)
+  elseif ability=="RUSH"then
+   abilityRing("RushRing",origin+Vector3.new(0,.25,0),color,2,12,.35)
+   for _,offset in ipairs({-1.8,-.9,0,.9,1.8})do abilityStreak("RushTrail",origin,look,accent,offset,13,.3,.48)end
+  elseif ability=="HUNT_FLASH"then
+   abilityPulse("HuntFlashCore",origin+Vector3.new(0,1.5,0),Color3.fromRGB(250,238,226),Vector3.new(2,2,2),Vector3.new(18,12,18),.24)
+   abilityRing("HuntFlashRing",origin+Vector3.new(0,.25,0),color,2,22,.42)
+  elseif ability=="BREACH"then
+   abilityPulse("BreachBurst",origin+Vector3.new(0,1.2,0),color,Vector3.new(1,1,1),Vector3.new(8,6,8),.28)
+   abilityRing("BreachRing",origin+Vector3.new(0,.25,0),accent,2,12,.35)
+   for _,offset in ipairs({-1.2,-.6,0,.6,1.2})do abilityStreak("BreachTrail",origin,look,accent,offset,15,.26,.42)end
+  end
+  return
+ end
  if ability=="BAT_DASH"then
-  abilityPulse("BatDashBurst",origin+Vector3.new(0,1.8,0),color,Vector3.new(1.5,1.5,1.5),Vector3.new(7,4,7),.32)
+  abilityPulse("BatDashBurst",origin+Vector3.new(0,1.8,0),color,Vector3.new(1.5,1.5,1.5),Vector3.new(9,5,9),.36)
+  abilityRing("BatDashRing",origin+Vector3.new(0,.25,0),accent,2,13,.42)
   for i=-3,3 do
    local streak=abilityStreak("BatShadow",origin,look,i%2==0 and color or accent,i*1.05,8+math.abs(i)*1.2,.28,.42)
    streak.CFrame=streak.CFrame*CFrame.Angles(0,0,math.rad(i*9))
   end
  elseif ability=="POWER_CHARGE"then
-  abilityPulse("ElectricChargeCore",origin+Vector3.new(0,1.6,0),color,Vector3.new(1,1,1),Vector3.new(8,8,8),.38)
+  abilityPulse("ElectricChargeCore",origin+Vector3.new(0,1.6,0),color,Vector3.new(1,1,1),Vector3.new(10,10,10),.42)
+  abilityRing("ElectricChargeRing",origin+Vector3.new(0,.25,0),accent,2,14,.4)
   for i=1,8 do
    local angle=(i/8)*math.pi*2
    local dir=Vector3.new(math.cos(angle),0,math.sin(angle))
    abilityStreak("ElectricArc",origin,dir,color,0,5,.16,.3)
   end
  elseif ability=="RAGE_RUN"then
-  abilityPulse("RageDust",origin+Vector3.new(0,.8,0),accent,Vector3.new(1,1,1),Vector3.new(6,2.5,6),.35)
+  abilityPulse("RageDust",origin+Vector3.new(0,.8,0),accent,Vector3.new(1,1,1),Vector3.new(8,3.5,8),.4)
+  abilityRing("RageRing",origin+Vector3.new(0,.25,0),color,2,11,.36)
   for _,offset in ipairs({-1.2,0,1.2})do abilityStreak("WolfClaw",origin,look,color,offset,10,.2,.45)end
  elseif ability=="CURSE_SLOW"then
   local radius=tonumber(profile.Radius)or 22
-  abilityPulse("CurseSandCore",origin+Vector3.new(0,.5,0),color,Vector3.new(1,1,1),Vector3.new(radius*1.65,1.2,radius*1.65),.65)
+  abilityPulse("CurseSandCore",origin+Vector3.new(0,.5,0),color,Vector3.new(1,1,1),Vector3.new(radius*1.8,1.6,radius*1.8),.7)
+  abilityRing("CurseRing",origin+Vector3.new(0,.22,0),accent,3,radius*2,.7)
   for i=1,12 do
    local a=(i/12)*math.pi*2
    local pos=origin+Vector3.new(math.cos(a)*4,.5,math.sin(a)*4)
