@@ -66,6 +66,18 @@ jobs:
             --playbooks=/tmp/vibe3-task-playbooks.json \
             --recombination=/tmp/vibe3-recombination-memory.json \
             --report=/tmp/roblox-learning-sweep.json
+          git diff --binary -- roblox-games > /tmp/roblox-learning-sweep-first.diff
+          node tools/company-roblox-verified-learning-sweep.mjs \
+            --root=roblox-games \
+            --playbooks=/tmp/vibe3-task-playbooks.json \
+            --recombination=/tmp/vibe3-recombination-memory.json \
+            --report=/tmp/roblox-learning-sweep-repeat.json
+          git diff --binary -- roblox-games > /tmp/roblox-learning-sweep-repeat.diff
+          cmp -s /tmp/roblox-learning-sweep-first.diff /tmp/roblox-learning-sweep-repeat.diff || {
+            echo 'ROBLOX_VERIFIED_LEARNING_SWEEP_IDEMPOTENCE=FAIL' >&2
+            exit 1
+          }
+          echo 'ROBLOX_VERIFIED_LEARNING_SWEEP_IDEMPOTENCE=PASS'
           git diff --check
           if git diff --quiet -- roblox-games; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
