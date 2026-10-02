@@ -408,8 +408,8 @@ class Scene:
         # 장식의 수는 유지하고 같은 재질의 고정 소품만 병합한다. 움직이는 노드는 보존한다.
         keep=('Butler','Archivist','Undertaker','CoffinLid','CoffinHand','ArmorHelmet','LittleGhost',
               'TeaCup','Tea','ChandelierFlame','MirrorPupil','FamilyPortrait','PortraitCanvas','HearthFlame',
-              'MapCard','MapPin','GhostArchiveBook','MemoryRelic','GuestDoorSeal',
-              'ManorSideWall','FacadeWing','BackWall','HallFloor','Courtyard','CrookedRoof','ClockPendulum','EntryDoor')
+              'MapPin','GhostArchiveBook','MemoryRelic',
+              'BackWall','HallFloor','Courtyard','CrookedRoof','ClockPendulum','EntryDoor')
         groups={}
         bpy.context.view_layer.update()
         for o in list(self.collection.objects):
@@ -947,9 +947,7 @@ def build():
 
     # 마당의 개인 추억 진열물. 각 맵의 괴담을 발견하면 서버가 해당 유물을 공개한다.
     s.box('MemoryRelic_SCHOOL',(-30,1.55,35),(4.8,3.1,.42),c['stone'],lean=-.10)
-    s.box('MemoryRelic_SCHOOL_Plate',(-30,1.55,35.28),(3.7,1.5,.10),s.material('SchoolRelicPaint',(.20,.28,.25)))
     s.box('MemoryRelic_HOSPITAL',(30,1.75,35),(5.2,3.5,.42),c['stone'],lean=.08)
-    s.box('MemoryRelic_HOSPITAL_Plate',(30,1.75,35.28),(4.1,1.65,.10),s.material('HospitalRelicPaint',(.20,.24,.29)))
     s.prism('MemoryRelic_THEME_PARK',(45,2.05,54),[
       (-2.6,-1.3),(2.6,-1.3),(2.2,1.3),(-2.2,1.3)
     ],.28,s.material('ParkTicketPaint',(.31,.20,.22)))
