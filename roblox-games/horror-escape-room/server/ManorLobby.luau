@@ -108,19 +108,35 @@ function Manor:Get(p)
  part(folder,"SecondFloorGround",origin+Vector3.new(0,10.2,-55),Vector3.new(92,.55,19),true)
  part(folder,"SecondFloorGround",origin+Vector3.new(-43,10.2,-31),Vector3.new(15,.55,48),true)
  part(folder,"SecondFloorGround",origin+Vector3.new(43,10.2,-31),Vector3.new(15,.55,48),true)
+ -- 현관 포치의 시각 계단과 보행면을 정확히 맞춘다.
+ for step=0,4 do
+  local width=22-step*1.4
+  part(folder,"PorchStepGround",origin+Vector3.new(0,.16+step*.28,8.8-step*.95),Vector3.new(width,.30,2.0),true)
+ end
+ part(folder,"PorchPlinthGround",origin+Vector3.new(0,.72,4.9),Vector3.new(20.5,1.0,9.8),true)
+ for _,x in ipairs({-8.6,-7.6,7.6,8.6})do
+  local z=math.abs(x)>8 and 8.2 or 3.2
+  part(folder,"PorchColumnBoundary",origin+Vector3.new(x,6.7,z),Vector3.new(1.25,11.4,1.25),false)
+ end
+ -- 장의사 적재 베이는 문틀/플랫폼만 단순 충돌체로 잡아 장식 바퀴나 레일에 끼이지 않게 한다.
+ part(folder,"MortuaryLoadingPlatformGround",origin+Vector3.new(67.2,.65,-43),Vector3.new(12.8,1.1,15.2),true)
+ for _,z in ipairs({-48.7,-37.3})do
+  part(folder,"MortuaryPortalBoundary",origin+Vector3.new(72.9,6.0,z),Vector3.new(2.0,12.0,1.5),false)
+ end
  -- 마당 주요 소품은 단순 안정 충돌체를 사용해 복잡한 장식 메시 끼임을 막는다.
  for _,spec in ipairs({
   {0,2.5,39,15,5,15},{46,2.6,47,10,5,7},
   {-31,2.0,35,7,4,5},{31,2.0,35,7,4,5},{45,2.0,54,7,4,5},
   {-57,2.0,10,2,4,7},{57,2.0,10,2,4,7},
-  {-65,8.0,-47,13,16,15},{-57,4.0,69,14,8,1.8},
+  {-57,4.4,69.1,13.1,8.8,2.0},
+  {-62.2,2.1,66.0,1.2,4.2,8.6},{-51.8,2.1,66.0,1.2,4.2,8.6},
  })do
   part(folder,"GardenBoundary",origin+Vector3.new(spec[1],spec[2],spec[3]),Vector3.new(spec[4],spec[5],spec[6]),false)
  end
  -- 폐쇄 온실은 네 벽만 단순 충돌체로 막고 내부 장식 메시에는 복잡 충돌을 주지 않는다.
  for _,spec in ipairs({
-  {46,5.2,69,1,10.4,16},{68,5.2,69,1,10.4,16},
-  {57,5.2,61.5,22,10.4,1},{57,5.2,76.5,22,10.4,1},
+  {44.3,5.6,69,1,9.2,17.5},{69.7,5.6,69,1,9.2,17.5},
+  {57,5.6,60.25,25.5,9.2,1},{57,5.6,77.75,25.5,9.2,1},
  })do
   part(folder,"GreenhouseBoundary",origin+Vector3.new(spec[1],spec[2],spec[3]),Vector3.new(spec[4],spec[5],spec[6]),false)
  end
