@@ -136,21 +136,6 @@ function restoreDedicatedTargetIdentity(item,{registry,gameId,stamp}){
 function recoverExactPrivateRuntimeCheckpoint(item,design){
   const priorDesignSource=clean(item?.minimumDesignContract?.source||item?.designBaselineSource);
   if(priorDesignSource&&priorDesignSource!==clean(design?.file))return null;
-  const internalEvidence=item?.robloxInternalReleaseEvidence?.published===true
-    ?item.robloxInternalReleaseEvidence
-    :(item?.robloxReleaseEvidence?.published===true&&item?.robloxExternalPublicReleaseConfirmed!==true?item.robloxReleaseEvidence:null);
-  const exactInternalRelease=Boolean(
-    internalEvidence
-    &&clean(internalEvidence.sourceRevision)===clean(item?.robloxSourceCommit)
-    &&clean(internalEvidence.artifactIdentity)===clean(item?.robloxBuildArtifactIdentity)
-    &&Number(internalEvidence.versionNumber)>0
-  );
-  if(exactInternalRelease){
-    return{
-      currentStep:clean(item?.currentStep)||'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
-      canonicalState:clean(item?.canonicalState)||'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'
-    };
-  }
   const f9Evidence=item?.robloxF9ReleaseRegressionEvidence||{};
   const exactF9=Boolean(
     item?.robloxFinalReviewPassed===true
@@ -173,6 +158,21 @@ function recoverExactPrivateRuntimeCheckpoint(item,design){
       canonicalState:publishPending
         ?'F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION'
         :'F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION'
+    };
+  }
+  const internalEvidence=item?.robloxInternalReleaseEvidence?.published===true
+    ?item.robloxInternalReleaseEvidence
+    :(item?.robloxReleaseEvidence?.published===true&&item?.robloxExternalPublicReleaseConfirmed!==true?item.robloxReleaseEvidence:null);
+  const exactInternalRelease=Boolean(
+    internalEvidence
+    &&clean(internalEvidence.sourceRevision)===clean(item?.robloxSourceCommit)
+    &&clean(internalEvidence.artifactIdentity)===clean(item?.robloxBuildArtifactIdentity)
+    &&Number(internalEvidence.versionNumber)>0
+  );
+  if(exactInternalRelease){
+    return{
+      currentStep:clean(item?.currentStep)||'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+      canonicalState:clean(item?.canonicalState)||'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'
     };
   }
   const candidate=item?.robloxRuntimeCandidateEvidence||{};
