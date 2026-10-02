@@ -9,9 +9,10 @@ local TeleportService=game:GetService("TeleportService")
 local MemoryStoreService=game:GetService("MemoryStoreService")
 local TweenService=game:GetService("TweenService")
 
--- FIRST_FRAME_SPAWN_SINGLE_PATH_V3:
--- 엔진 스폰보다 먼저 충돌 가능한 안전 바닥을 만든다. 저택 생성 뒤에도 제거하지 않아
--- CharacterAdded/로비 생성 타이밍 사이에 캐릭터가 허공으로 떨어지는 경쟁 조건을 없앤다.
+-- FIRST_FRAME_SPAWN_SINGLE_PATH_V4:
+-- 엔진 SpawnLocation은 로비 bootstrap 하나만 유지한다.
+-- 개인 저택과 경기장은 일반 Part 표식 + 서버 teleport만 사용해 SpawnLocation 경쟁을 원천 차단한다.
+-- bootstrap 안전 바닥은 저택 생성 뒤에도 유지해 CharacterAdded 전후의 첫 프레임 낙하도 막는다.
 local bootstrapGround=workspace:FindFirstChild("ManorBootstrapGround")
 if not bootstrapGround or not bootstrapGround:IsA("BasePart")then
  if bootstrapGround then bootstrapGround:Destroy()end
@@ -38,6 +39,8 @@ if not lobbyBootstrapSpawn or not lobbyBootstrapSpawn:IsA("SpawnLocation")then
  lobbyBootstrapSpawn.Position=Vector3.new(0,.55,330)
  lobbyBootstrapSpawn.Anchored=true
  lobbyBootstrapSpawn.Neutral=true
+ lobbyBootstrapSpawn.AllowTeamChangeOnTouch=false
+ lobbyBootstrapSpawn.Enabled=true
  lobbyBootstrapSpawn.Transparency=1
  lobbyBootstrapSpawn.CanCollide=false
  lobbyBootstrapSpawn.CanTouch=false
@@ -1516,17 +1519,16 @@ local function makeArena(map)
  local f=Instance.new("Folder")
  f.Name=old and"MidnightArenaNext"or"MidnightArena"
  f.Parent=workspace
- foundationSpawn=Instance.new("SpawnLocation")
+ foundationSpawn=Instance.new("Part")
  foundationSpawn.Name="FoundationSpawn"
  foundationSpawn.Size=Vector3.new(10,1,10)
  foundationSpawn.Position=Vector3.new(survivorSpawns[1].X,.55,survivorSpawns[1].Z)
  foundationSpawn.Anchored=true
- foundationSpawn.Neutral=true
  foundationSpawn.Transparency=1
  foundationSpawn.CanCollide=false
  foundationSpawn.CanTouch=false
  foundationSpawn.CanQuery=false
- foundationSpawn.Enabled=false
+ foundationSpawn:SetAttribute("SpawnMarkerOnly",true)
  foundationSpawn.Parent=f
  for k,v in pairs(Style.Lighting)do Lighting[k]=v end
  local grade=Lighting:FindFirstChild("MidnightColorGrade")or Instance.new("ColorCorrectionEffect")
@@ -1906,7 +1908,7 @@ makeFallbackArena=function(map,reason)
  local old=workspace:FindFirstChild("MidnightArena");if old then old:Destroy()end
  local nextArena=workspace:FindFirstChild("MidnightArenaNext");if nextArena then nextArena:Destroy()end
  local f=Instance.new("Folder");f.Name="MidnightArena";f.Parent=workspace
- foundationSpawn=Instance.new("SpawnLocation");foundationSpawn.Name="FoundationSpawn";foundationSpawn.Size=Vector3.new(10,1,10);foundationSpawn.Position=Vector3.new(survivorSpawns[1].X,.55,survivorSpawns[1].Z);foundationSpawn.Anchored=true;foundationSpawn.Neutral=true;foundationSpawn.Transparency=1;foundationSpawn.CanCollide=false;foundationSpawn.CanTouch=false;foundationSpawn.CanQuery=false;foundationSpawn.Enabled=false;foundationSpawn.Parent=f
+ foundationSpawn=Instance.new("Part");foundationSpawn.Name="FoundationSpawn";foundationSpawn.Size=Vector3.new(10,1,10);foundationSpawn.Position=Vector3.new(survivorSpawns[1].X,.55,survivorSpawns[1].Z);foundationSpawn.Anchored=true;foundationSpawn.Transparency=1;foundationSpawn.CanCollide=false;foundationSpawn.CanTouch=false;foundationSpawn.CanQuery=false;foundationSpawn:SetAttribute("SpawnMarkerOnly",true);foundationSpawn.Parent=f
  Lighting.Brightness=2.05;Lighting.ClockTime=.35;Lighting.FogEnd=270
  Lighting.Ambient=Color3.fromRGB(72,78,90);Lighting.OutdoorAmbient=Color3.fromRGB(58,64,76)
  local mainFloor=arenaPart(f,"Floor",Vector3.new(160,1,160),Vector3.new(0,0,0),Style.Floor,Enum.Material.Concrete);mainFloor:SetAttribute("WalkableGround",true)
@@ -2413,7 +2415,7 @@ local function applyRoleVisual(p,r)
 end
 local function setRole(p,r)
  p:SetAttribute("Role",r);p:SetAttribute("Frozen",false)
- if state=="RUNNING"and foundationSpawn and foundationSpawn.Parent then p.RespawnLocation=foundationSpawn end
+ if state=="RUNNING"then p.RespawnLocation=lobbyBootstrapSpawn end
  if r=="MONSTER"or r=="SURVIVOR"then
   p:SetAttribute("RoundTeam",r)
   if p.Character then for _,d in ipairs(p.Character:GetDescendants())do if d:IsA("BasePart")then d.CollisionGroup="Default"end end end
@@ -2536,10 +2538,9 @@ local function startRound()
  escapedPlayers={};workspace:SetAttribute("EscapeUnlocked",false);workspace:SetAttribute("SurvivorEscapeTriggered",false)
  local survivorOrder=shuffledSpawns(survivorSpawns)
  local monsterOrder=shuffledSpawns(monsterSpawns)
- -- 경기 중에는 arena spawn 하나만 활성화해 Roblox의 중립 SpawnLocation 랜덤 선택을 막는다.
- lobbyBootstrapSpawn.Enabled=false
- if foundationSpawn and foundationSpawn.Parent then foundationSpawn.Enabled=true end
- workspace:SetAttribute("EngineSpawnPhase","ARENA_ONLY")
+ -- Roblox 엔진 리스폰은 항상 bootstrap 하나만 사용한다. 실제 경기 위치는 아래 role teleport가 책임진다.
+ lobbyBootstrapSpawn.Enabled=true
+ workspace:SetAttribute("EngineSpawnPhase","SINGLE_BOOTSTRAP")
  local si,mi=1,1
  for _,p in ipairs(h)do
   p:SetAttribute("CurrentMap",map.Name);p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
@@ -2549,7 +2550,7 @@ local function startRound()
   setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
   p:SetAttribute("RoundContributionCoins",0);p:SetAttribute("LastRoundBaseReward",0);p:SetAttribute("LastRoundWinBonus",0);p:SetAttribute("LastRoundContribution",0)
   p:SetAttribute("RoundParticipant",true)
-  if foundationSpawn and foundationSpawn.Parent then p.RespawnLocation=foundationSpawn end
+  p.RespawnLocation=lobbyBootstrapSpawn
   ghostSeenThisRound[p]={_count=0}
   p:SetAttribute("CelebrationName","");p:SetAttribute("CelebrationCaption","");p:SetAttribute("CelebrationWinner",false);p:SetAttribute("CelebrationComic",false)
   local role=startingMonsters[p]and"MONSTER"or"SURVIVOR";setRole(p,role);p:SetAttribute("RoundState","RUNNING")
@@ -2683,9 +2684,8 @@ local function endRound(winner)
  local wasRoomServer=roomServer
  local players=Players:GetPlayers();table.sort(players,function(a,b)return a.UserId<b.UserId end)
  state="WAITING"
- if foundationSpawn and foundationSpawn.Parent then foundationSpawn.Enabled=false end
  lobbyBootstrapSpawn.Enabled=true
- workspace:SetAttribute("EngineSpawnPhase","LOBBY_ONLY")
+ workspace:SetAttribute("EngineSpawnPhase","SINGLE_BOOTSTRAP")
  for _,p in ipairs(players)do
   p.RespawnLocation=lobbyBootstrapSpawn
   p:SetAttribute("RoundState","ROOM_BROWSER")
@@ -3214,7 +3214,7 @@ local function validateCharacterFoundation(p,c)
  local h=c:WaitForChild("Humanoid",10);local r=c:WaitForChild("HumanoidRootPart",10)
  if not h or not r then p:SetAttribute("FoundationFailure","CHARACTER_FOUNDATION_FAILURE");return end
  if not foundationSpawn or not foundationSpawn.Parent then p:SetAttribute("FoundationFailure","SPAWN_FOUNDATION_MISSING");return end
- h.PlatformStand=false;h.AutoRotate=true;r.Anchored=false;p.RespawnLocation=foundationSpawn
+ h.PlatformStand=false;h.AutoRotate=true;r.Anchored=false;p.RespawnLocation=lobbyBootstrapSpawn
  local pos=r.Position
  if pos.X~=pos.X or pos.Y~=pos.Y or pos.Z~=pos.Z or math.abs(pos.X)==math.huge or math.abs(pos.Y)==math.huge or math.abs(pos.Z)==math.huge then p:SetAttribute("FoundationFailure","INVALID_ROOT_POSITION");return end
  foundationCheckpoint("CHARACTER_READY",p,{rootAnchored=r.Anchored,platformStand=h.PlatformStand,rootX=pos.X,rootY=pos.Y,rootZ=pos.Z})
@@ -3273,7 +3273,7 @@ local function onCharacter(p)
  local readyDeadline=os.clock()+10
  while workspace:GetAttribute("MapReady")~=true and os.clock()<readyDeadline do task.wait(.1)end
  if not c.Parent or p.Character~=c then return end
- if foundationSpawn and foundationSpawn.Parent then p.RespawnLocation=foundationSpawn end
+ p.RespawnLocation=lobbyBootstrapSpawn
  local role=p:GetAttribute("Role")
  if role=="MONSTER"or role=="SURVIVOR"then
   setRole(p,role)
