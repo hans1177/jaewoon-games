@@ -464,8 +464,10 @@ test('승리 결과는 실제 캐릭터 3D 스테이징과 시네마틱 카메�
  assert.match(client,/local function startResultCeremonyCamera\(stage\)/);
  assert.match(client,/CameraType=Enum\.CameraType\.Scriptable/);
  assert.match(client,/local function stopResultCeremonyCamera\(\)/);
- assert.match(client,/ceremonyStage\.Visible=false/);
- assert.doesNotMatch(client,/playResultCeremony\(resultCode\)[\s\S]{0,1200}playCeremonyConfetti/);
+ assert.match(client,/ceremonyStage\.Visible=true/);
+ assert.match(client,/local names=collectCeremonyNames\(winner\)/);
+ assert.match(client,/playCeremonyConfetti\(ceremonyColor\)/);
+ assert.match(client,/TweenService:Create\(row\.slot/);
 });
 
 test('맵 놀람 요소는 경쟁 판정과 레이캐스트에서 완전히 제외된다',()=>{
@@ -501,7 +503,9 @@ test('세레머니 콘셉트는 생존 완료와 사냥 완료 중심이며 구�
  assert.match(server,/stageResultCeremony/);
  assert.match(server,/CelebrationStagedCount/);
  assert.match(client,/RESULT_CEREMONY_STAGE/);
- assert.match(client,/실제 캐릭터 중심|startResultCeremonyCamera|ceremonyStage\.Visible=false/);
+ assert.match(client,/startResultCeremonyCamera/);
+ assert.match(client,/ceremonyStage\.Visible=true/);
+ assert.match(client,/playCeremonyConfetti\(ceremonyColor\)/);
  assert.doesNotMatch(config,/Emote="dance/);
 });
 
@@ -557,9 +561,12 @@ test('내부 세계 귀신 자산은 실제 런타임 목격 연출에 연결되
  assert.equal(project.tree.ReplicatedStorage.WorldGhostSkins.GhostSkinFactory.$path,'../../assets/roblox/world-ghosts/GhostSkinFactory.luau');
  assert.equal(project.tree.ReplicatedStorage.WorldGhostSkins.GhostSkinMotion.$path,'../../assets/roblox/world-ghosts/GhostSkinMotion.luau');
  assert.match(client,/local GhostSkinFactory=nil/);
+ assert.match(client,/local function loadGhostSkinModules\(\)/);
+ assert.match(client,/RS:WaitForChild\("WorldGhostSkins",10\)/);
+ assert.match(client,/InternalGhostAssetsReady/);
  assert.match(client,/local internalGhostSkinByCatalogId=\{/);
  for(const id of ['yurei','nopperabo','gwisin-bride','krasue','banshee','jiangshi','churel','dullahan','la-llorona','pontianak','barghest'])assert.ok(client.includes('"'+id+'"'),id);
- assert.match(client,/GhostSkinFactory\.Create\(skinId,\{quality="far"/);
+ assert.match(client,/GhostSkinFactory\.Create\(skinId,\{quality=touchEnabled and"mid"or"near"/);
  assert.match(client,/GhostSkinMotion\.Bind\(model\)/);
  assert.match(client,/SourceAssetLibrary","roblox-world-ghost-skins-v1"/);
  assert.match(client,/if tryInternalGhostSighting\(trigger,id\)then/);
@@ -570,12 +577,18 @@ test('내부 귀신 스킨과 모션은 실제 전투 몬스터에도 연결된�
  assert.match(client,/local combatSkinByMonster=\{/);
  for(const pair of ['DRACULA="strigoi"','FRANKENSTEIN="draugr"','WEREWOLF="barghest"','MUMMY="pocong"','GRIM_REAPER="hei-wuchang"'])assert.ok(client.includes(pair),pair);
  assert.match(client,/local function ensureCombatSkin\(source,rootPart,skinId\)/);
- assert.match(client,/GhostSkinFactory\.Create\(skinId,\{quality=touchEnabled and"far"or"mid"/);
+ assert.match(client,/local sourcePlayer=Players:GetPlayerFromCharacter\(source\)/);
+ assert.match(client,/local quality=sourcePlayer and"near"or"mid"/);
+ assert.match(client,/GhostSkinFactory\.Create\(skinId,\{quality=quality/);
  assert.match(client,/GhostSkinMotion\.Bind\(model\)/);
+ assert.match(client,/RuntimeQuality",quality/);
  assert.match(client,/state="attack"/);
  assert.match(client,/state="chase"/);
  assert.match(client,/state="walk"/);
+ assert.match(client,/CFrame\.new\(0,\.08\*pulse,-\.95\*pulse\)/);
+ assert.match(client,/CFrame\.Angles\(math\.rad\(-8\)/);
  assert.match(client,/SourceAssetLibrary","roblox-world-ghost-skins-v1"/);
+ assert.doesNotMatch(client,/quality=touchEnabled and"far"or"mid"/);
 });
 
 test('감염 스킬과 감염 공격은 화면 효과와 공격 모션 이벤트를 보낸다',()=>{
@@ -585,6 +598,11 @@ test('감염 스킬과 감염 공격은 화면 효과와 공격 모션 이벤트
  assert.match(client,/snapshot\.Infected==true/);
  for(const ability of ['FALSE_ALARM','BLACKOUT','RUSH','HUNT_FLASH','BREACH'])assert.ok(client.includes('ability=="'+ability+'"'),ability);
  assert.match(client,/local function abilityRing\(/);
+ assert.match(client,/local function abilitySparkBurst\(/);
+ assert.match(client,/MonsterAbilitySparks/);
+ assert.match(client,/InfectedAbilitySparks/);
+ assert.match(client,/MonsterAttackSparks/);
+ assert.match(client,/HumanAbilitySparks/);
  assert.match(client,/local function playMonsterAttackEffect\(snapshot\)/);
  assert.match(client,/kind=="MONSTER_ATTACK_EFFECT"/);
 });
@@ -599,9 +617,15 @@ test('결과는 시레머니 다음 보상 정산 후 저택 복귀 안내로 �
  assert.match(client,/총 \+%d 코인/);
  assert.match(server,/teleport\(p,personalSpawn\(p\)\)/);
  assert.match(server,/RESULT_RETURN_SAME_SERVER/);
+ assert.match(server,/RESULT_CEREMONY_NO_MANOR_RECOVERY/);
+ assert.match(server,/if manorLobby and state=="WAITING"then/);
+ assert.match(server,/local lobbySafe=roundState=="ROOM_BROWSER"or roundState=="WAITING"/);
  assert.doesNotMatch(server,/stageResultCeremony[\s\S]{0,1800}teleport\(row\.player,pos,cameraPos\)/);
  const resultBlock=server.slice(server.indexOf('local function endRound(winner)'),server.indexOf('local purifyCooldown=',server.indexOf('local function endRound(winner)')));
  assert.doesNotMatch(resultBlock,/leaveReservedRoom\(p\)/);
+ const recoverBlock=server.slice(server.indexOf('RESULT_CEREMONY_NO_MANOR_RECOVERY'),server.indexOf('local function stripLoadedAsset'));
+ assert.doesNotMatch(recoverBlock,/state~="RUNNING"/);
+ assert.doesNotMatch(recoverBlock,/RoundState"\)~="SPECTATING"/);
 });
 
 
