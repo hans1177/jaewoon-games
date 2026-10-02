@@ -61,19 +61,19 @@ local function button(parent,text,fn,color)
  x.Parent=parent;corner(x,1)
  local left=Instance.new("Frame");left.BackgroundColor3=brass;left.BackgroundTransparency=.08;left.BorderSizePixel=0
  left.Size=UDim2.fromOffset(3,38);left.Position=UDim2.new(0,6,.5,-19);left.Parent=x
- x.MouseEnter:Connect(function()if x.Active then x.BackgroundColor3=color or Color3.fromRGB(60,34,27)end end)
+ x.MouseEnter:Connect(function()if x.Active then x.BackgroundColor3=color or purple end end)
  x.MouseLeave:Connect(function()if x.Active then x.BackgroundColor3=color or wood end end)
  x.Activated:Connect(fn);return x
 end
 local function ledgerRow(parent,leftText,rightText)
- local row=Instance.new("Frame");row.Size=UDim2.new(1,-12,0,42);row.BackgroundColor3=Color3.fromRGB(48,30,30);row.BorderSizePixel=0;row.Parent=parent
+ local row=Instance.new("Frame");row.Size=UDim2.new(1,-12,0,42);row.BackgroundColor3=Color3.fromRGB(43,19,47);row.BorderSizePixel=0;row.Parent=parent
  frameStroke(row,1,.48)
  local left=label(row,leftText,36,13,ivory);left.Position=UDim2.fromOffset(10,3);left.Size=UDim2.new(.66,-12,0,36)
  local right=label(row,rightText or"",36,12,brass);right.AnchorPoint=Vector2.new(1,0);right.Position=UDim2.new(1,-9,0,3);right.Size=UDim2.new(.34,-8,0,36);right.TextXAlignment=Enum.TextXAlignment.Right
  return row
 end
 local function mapPostcard(parent,map,chosen,fn)
- local x=button(parent,(chosen and"◆  "or"◇  ")..map.Name,fn,chosen and wine or Color3.fromRGB(55,34,29))
+ local x=button(parent,(chosen and"◆  "or"◇  ")..map.Name,fn,chosen and wine or Color3.fromRGB(49,24,61))
  x.Name="MapPostcard_"..tostring(map.Id);x.Size=UDim2.new(1,-12,0,66);x.TextXAlignment=Enum.TextXAlignment.Left
  x.Text="      "..x.Text
  local tag=label(x,"벽걸이 지도 · 낡은 현장 사진",18,10,brass);tag.Position=UDim2.new(0,31,1,-22);tag.Size=UDim2.new(1,-42,0,18)
@@ -533,13 +533,15 @@ local function rebuildLivingScene(room,scene)
    if role then
     local group=npcGroups[role]
     if not group then group={parts={},sum=Vector3.zero,count=0};npcGroups[role]=group end
-    local row={part=mesh,home=mesh.CFrame,size=mesh.Size,name=name}
+    local row={part=mesh,home=mesh.CFrame,size=mesh.Size,name=name,transparency=mesh.Transparency}
     table.insert(group.parts,row);group.sum+=mesh.Position;group.count+=1
    elseif name:match("^MirrorPupil")or name:match("^ClockPendulum")or name:match("^LittleGhost")or name:match("Flame")
     or name:match("^LivingCurtain")or name:match("^LivingVineTip")or name:match("^LivingBranch")
     or name:match("^BackdropCloud")or name:match("^BackdropMist")or name:match("^BackdropBat")
-    or name:match("^ChandelierDrop")or name:match("^ChandelierPearDrop")or name:match("^PaperMoonHalo")then
-    table.insert(details,{part=mesh,home=mesh.CFrame,size=mesh.Size,name=name})
+    or name:match("^ChandelierDrop")or name:match("^ChandelierPearDrop")or name:match("^PaperMoonHalo")
+    or name:match("^JackGlow")or name:match("^GargoyleEye")then
+    if name:match("^JackGlow")or name:match("^GargoyleEye")then mesh.Material=Enum.Material.Neon end
+    table.insert(details,{part=mesh,home=mesh.CFrame,size=mesh.Size,name=name,transparency=mesh.Transparency})
    end
   end
  end
@@ -631,6 +633,15 @@ RunService.Heartbeat:Connect(function(dt)
    elseif name:match("^PaperMoonHalo")then
     local pulse=1+math.sin(now*.35+row.home.Position.Z)*.018
     mesh.Size=Vector3.new(row.size.X*pulse,row.size.Y*pulse,row.size.Z)
+   elseif name:match("^JackGlow")then
+    local phase=row.home.Position.X*.19+row.home.Position.Z*.13
+    local glow=.10+math.sin(now*1.35+phase)*.06
+    mesh.Transparency=math.clamp((row.transparency or 0)+glow,0,.32)
+    mesh.Size=Vector3.new(row.size.X*(1+math.sin(now*1.15+phase)*.025),row.size.Y*(1+math.sin(now*1.30+phase)*.025),row.size.Z)
+   elseif name:match("^GargoyleEye")then
+    local phase=row.home.Position.X*.23
+    mesh.Transparency=.04+(.5+.5*math.sin(now*.62+phase))*.10
+    mesh.CFrame=row.home+Vector3.new(0,math.sin(now*.47+phase)*.012,0)
    end
   end
  end
