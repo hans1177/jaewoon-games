@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { isWorkflowPath, scanTextForDirectMainWrite } from '../tools/main-write-guard.mjs';
+import { isWorkflowPath, scanTextForDirectMainWrite, scanCentralWorkflowGovernance } from '../tools/main-write-guard.mjs';
 
 test('workflow path detector only accepts workflow yaml files',()=>{
   assert.equal(isWorkflowPath('.github/workflows/build.yml'),true);
@@ -43,4 +43,56 @@ test('main write guard falls back to two-point diff when shallow history has no 
   const source=fs.readFileSync(new URL('../tools/main-write-guard.mjs',import.meta.url),'utf8');
   assert.match(source,/\${baseRef}\.\.\.\${headRef}/);
   assert.match(source,/\['diff','--name-only',baseRef,headRef\]/);
+});
+
+
+test('new workflow files must be registered in central architecture',()=>{
+  const architecture={workerSynchronization:{launcherWorkflows:['.github/workflows/canonical.yml']}};
+  const violations=scanCentralWorkflowGovernance(
+    [{status:'A',file:'.github/workflows/random-extra.yml'}],
+    architecture,
+    ()=> 'name: random\n'
+  );
+  assert.deepEqual(violations,[{
+    file:'.github/workflows/random-extra.yml',
+    code:'NEW_WORKFLOW_NOT_REGISTERED_IN_CENTRAL_ARCHITECTURE'
+  }]);
+});
+
+test('registered canonical launcher must load shared central context',()=>{
+  const file='.github/workflows/canonical.yml';
+  const architecture={workerSynchronization:{launcherWorkflows:[file]}};
+  const missing=scanCentralWorkflowGovernance([{status:'M',file}],architecture,()=> 'name: canonical\n');
+  assert.deepEqual(missing,[{file,code:'CANONICAL_LAUNCHER_MISSING_SHARED_CONTEXT'}]);
+  const pass=scanCentralWorkflowGovernance([{status:'M',file}],architecture,()=> 'run: node tools/company-shared-context.mjs\n');
+  assert.deepEqual(pass,[]);
+});
+
+test('removed human policy mirror cannot return through a canonical launcher',()=>{
+  const file='.github/workflows/canonical.yml';
+  const architecture={workerSynchronization:{launcherWorkflows:[file]}};
+  const violations=scanCentralWorkflowGovernance(
+    [{status:'M',file}],
+    architecture,
+    ()=> 'run: node tools/company-shared-context.mjs\n# COMPANY_FLOW.md\n'
+  );
+  assert.ok(violations.some(x=>x.code==='REMOVED_HUMAN_POLICY_MIRROR_REFERENCE'));
+});
+
+test('new registered launcher using shared context is allowed by workflow governance',()=>{
+  const file='.github/workflows/canonical-new.yml';
+  const architecture={workerSynchronization:{launcherWorkflows:[file]}};
+  const violations=scanCentralWorkflowGovernance(
+    [{status:'A',file}],
+    architecture,
+    ()=> 'run: node tools/company-shared-context.mjs\n'
+  );
+  assert.deepEqual(violations,[]);
+});
+
+test('main write guard reads workflow additions with name-status diff',()=>{
+  const source=fs.readFileSync(new URL('../tools/main-write-guard.mjs',import.meta.url),'utf8');
+  assert.match(source,/git',\['diff','--name-status'/);
+  assert.match(source,/NEW_WORKFLOW_NOT_REGISTERED_IN_CENTRAL_ARCHITECTURE/);
+  assert.match(source,/CANONICAL_LAUNCHER_MISSING_SHARED_CONTEXT/);
 });
