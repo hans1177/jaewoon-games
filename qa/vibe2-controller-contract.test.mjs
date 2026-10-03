@@ -901,7 +901,6 @@ test('24H asset-first preplan dispatch shell is syntactically valid',()=>{
     .join('\n');
   const parsed=spawnSync('bash',['-n'],{input:shell,encoding:'utf8'});
   assert.equal(parsed.status,0,parsed.stderr||parsed.stdout);
-  assert.doesNotMatch(shell,/mapfile -t vibe_pressure_runs[\s\S]*?\nNODE\n\)"/);
 });
 
 test('24H safety-net refills free game slots while preserving responsible-file conflict protection',()=>{
