@@ -968,10 +968,9 @@ test('free-slot refill keeps game-study idle-gated while learning-idle yields fi
   assert(safetyNetWorkflow.includes("needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.asset_development_queued == '0' && needs.plan.outputs.asset_development_active == '0' && needs.plan.outputs.learning_idle_queued == '0'"));
 });
 
-test('24H cycle preserves continuity without multiplying independent scheduler chains',()=>{
-  assert(safetyNetWorkflow.includes('group: vibe2-24h-cycle-singleton-v9'));
-  assert(!safetyNetWorkflow.includes('group: vibe2-24h-cycle-singleton\n'));
-  assert(!safetyNetWorkflow.includes('group: vibe2-24h-cycle-${{ github.run_id }}'));
+test('24H cycle preserves continuity with run-scoped schedulers and optimistic shared-state writes',()=>{
+  assert(safetyNetWorkflow.includes('group: vibe2-24h-cycle-${{ github.run_id }}'));
+  assert(!safetyNetWorkflow.includes('group: vibe2-24h-cycle-singleton'));
   assert(safetyNetWorkflow.includes('cancel-in-progress: false'));
   const planStart=safetyNetWorkflow.indexOf('  plan:');
   const recoveryStart=safetyNetWorkflow.indexOf('  recovery_fast:');
