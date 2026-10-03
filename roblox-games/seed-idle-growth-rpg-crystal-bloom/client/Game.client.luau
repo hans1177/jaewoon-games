@@ -373,7 +373,14 @@ local nativeTouchEnabled = nativeFoundationInput.TouchEnabled
 local nativeFoundationRemote = ReplicatedStorage:WaitForChild("RuntimeFoundationReport")
 local nativeFoundationCamera = workspace.CurrentCamera
 local function reportNativeFoundationReady()
-  local character = player.Character or player.CharacterAdded:Wait()
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+if nativeFoundationCamera and nativeFoundationCamera.CameraSubject == humanoid then
+  nativeFoundationRemote:FireServer("CAMERA_READY")
+else
+  nativeFoundationRemote:FireServer(nativeTouchEnabled and "INPUT_READY_TOUCH" or "INPUT_READY")
+end
+task.defer(reportNativeFoundationReady)
   local humanoid = character:WaitForChild("Humanoid")
   if nativeFoundationCamera and nativeFoundationCamera.CameraSubject == humanoid then
     nativeFoundationRemote:FireServer("CAMERA_READY")
