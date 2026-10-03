@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "amusement-tycoon-build-up-g3-30bf91ab1f64",
-  "directiveFingerprint": "30bf91ab1f64d139c6409c18b8218a2ee4d5c493f18cdd77b9169c2369db28de",
-  "previousDirectiveFingerprint": "acfc2182e73bde3d2774734143a413e8315494239603922b964d87cefbed174e",
-  "forbiddenRepeatFingerprint": "acfc2182e73bde3d2774734143a413e8315494239603922b964d87cefbed174e",
+  "directiveId": "amusement-tycoon-build-up-g5-20a466a27e0d",
+  "directiveFingerprint": "20a466a27e0dbed49a3c210b230d1cf8a1f56e17d4be8391425f997f00b0928b",
+  "previousDirectiveFingerprint": "85c2b35e43e16405c958497eb87194e4705e3ec5aeda6f7c8155d7dea737be45",
+  "forbiddenRepeatFingerprint": "85c2b35e43e16405c958497eb87194e4705e3ec5aeda6f7c8155d7dea737be45",
   "gameId": "amusement-tycoon",
   "gameName": "놀이공원 타이쿤",
-  "generation": 3,
+  "generation": 5,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/amusement-tycoon",
-  "sourceTreeFingerprint": "0c0a39e0fe0b276a321a75bbb1481ba47c2fe60a3d2eec874061ff9caf5bcc93",
+  "sourceTreeFingerprint": "beb255defb8b2840034f38f2b8014ee6ee803ed43426ff99037697851fa0c2ff",
   "designFingerprint": "611d4a16ac6d84d419fddbbdc17eb5b874d863cdb394d7568cec6e83a4b4601b",
   "gameIdentityAndNonNegotiables": {
     "identity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.",
@@ -57,51 +57,51 @@
     ],
     "signals": {
       "combat": 20,
-      "progression": 101,
-      "ai": 19,
+      "progression": 120,
+      "ai": 21,
       "save": 48,
       "multiplayer": 13,
-      "animation": 28,
-      "motionStates": 118,
+      "animation": 32,
+      "motionStates": 124,
       "gameFeel": 22,
       "vfx": 19,
       "camera": 31,
       "audio": 1,
-      "audioDynamics": 16,
+      "audioDynamics": 14,
       "ui": 56,
       "uiFlow": 30,
-      "entryFlow": 27,
+      "entryFlow": 24,
       "loadingFlow": 0,
       "input": 58,
-      "map": 97,
-      "landmark": 4,
+      "map": 104,
+      "landmark": 5,
       "interaction": 43,
       "inventory": 2,
       "equipment": 0,
       "settings": 1,
       "feedback": 68,
-      "session": 11,
-      "content": 56,
-      "choice": 27,
+      "session": 13,
+      "content": 58,
+      "choice": 36,
       "connection": 0,
-      "performance": 16,
+      "performance": 17,
       "lighting": 37,
-      "primitive": 17,
+      "primitive": 18,
       "todo": 0,
       "errorRecovery": 11
     },
     "topFiles": [
       {
         "file": "roblox-games/amusement-tycoon/shared/GameConfig.luau",
-        "score": 251
+        "score": 252
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "score": 147
+        "score": 170
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "score": 140
+        "score": 141
       },
       {
         "file": "roblox-games/amusement-tycoon/default.project.json",
@@ -109,6 +109,14 @@
       }
     ],
     "sourceAnchors": [
+      {
+        "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+        "line": 33,
+        "kind": "FUNCTION",
+        "symbol": "initializePlayer",
+        "context": "local function initializePlayer(player)",
+        "score": 90
+      },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
         "line": 356,
@@ -127,18 +135,18 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 32,
+        "line": 216,
         "kind": "FUNCTION",
-        "symbol": "initializePlayer",
-        "context": "local function initializePlayer(player)",
-        "score": 74
+        "symbol": "buildPathTile",
+        "context": "local function buildPathTile(player)",
+        "score": 82
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 103,
+        "line": 54,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler3",
-        "context": "local function scopeHandler3(player)",
+        "symbol": "buildThemeParkWorld",
+        "context": "local function buildThemeParkWorld()",
         "score": 74
       },
       {
@@ -151,7 +159,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 46,
+        "line": 48,
         "kind": "FUNCTION",
         "symbol": "markAction",
         "context": "local function markAction(player, scope, pattern)",
@@ -159,7 +167,31 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 304,
+        "line": 116,
+        "kind": "FUNCTION",
+        "symbol": "spawnCustomer",
+        "context": "local function spawnCustomer(player)",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+        "line": 175,
+        "kind": "FUNCTION",
+        "symbol": "startParkDay",
+        "context": "local function startParkDay(player)",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+        "line": 182,
+        "kind": "FUNCTION",
+        "symbol": "finishParkDay",
+        "context": "local function finishParkDay(player)",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+        "line": 381,
         "kind": "FUNCTION",
         "symbol": "bindNativeFoundationPlayer",
         "context": "local function bindNativeFoundationPlayer(player)",
@@ -167,7 +199,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 52,
+        "line": 149,
         "kind": "FUNCTION",
         "symbol": "recomputePark",
         "context": "local function recomputePark(player)",
@@ -175,26 +207,26 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 78,
+        "line": 189,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler1",
-        "context": "local function scopeHandler1(player)",
+        "symbol": "toggleParkSession",
+        "context": "local function toggleParkSession(player)",
         "score": 58
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 85,
+        "line": 197,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler2",
-        "context": "local function scopeHandler2(player)",
+        "symbol": "runCustomerFlow",
+        "context": "local function runCustomerFlow(player)",
         "score": 58
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 120,
+        "line": 233,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler5",
-        "context": "local function scopeHandler5(player)",
+        "symbol": "upgradeRide",
+        "context": "local function upgradeRide(player)",
         "score": 58
       },
       {
@@ -215,18 +247,18 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 110,
+        "line": 223,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler4",
-        "context": "local function scopeHandler4(player)",
+        "symbol": "placeRide",
+        "context": "local function placeRide(player)",
         "score": 50
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 139,
+        "line": 252,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler6",
-        "context": "local function scopeHandler6(player)",
+        "symbol": "manageJanitors",
+        "context": "local function manageJanitors(player)",
         "score": 50
       },
       {
@@ -239,7 +271,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 23,
+        "line": 24,
         "kind": "FUNCTION",
         "symbol": "readNumber",
         "context": "local function readNumber(player, name, fallback)",
@@ -247,7 +279,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 28,
+        "line": 29,
         "kind": "FUNCTION",
         "symbol": "setNumber",
         "context": "local function setNumber(player, name, value)",
@@ -255,18 +287,18 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 42,
-        "kind": "FUNCTION",
-        "symbol": "clamp",
-        "context": "local function clamp(value, low, high)",
-        "score": 26
-      },
-      {
-        "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 289,
+        "line": 366,
         "kind": "FUNCTION",
         "symbol": "bindNativeFoundationCharacter",
         "context": "local function bindNativeFoundationCharacter(character)",
+        "score": 34
+      },
+      {
+        "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+        "line": 44,
+        "kind": "FUNCTION",
+        "symbol": "clamp",
+        "context": "local function clamp(value, low, high)",
         "score": 26
       }
     ]
@@ -274,24 +306,22 @@
   "previousVersionDelta": {
     "previousGoal": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 2,
-    "previousSourceTreeFingerprint": "462e4ea5fcb7ddfb8808f7e600fd940e45d0a0b7a4d7ad6580fb3328f4912faa",
-    "currentSourceTreeFingerprint": "0c0a39e0fe0b276a321a75bbb1481ba47c2fe60a3d2eec874061ff9caf5bcc93",
+    "previousGeneration": 4,
+    "previousSourceTreeFingerprint": "70ff9149de118a6de49f25d20611876814e8d5b130ef7ba0313a837f285b807d",
+    "currentSourceTreeFingerprint": "beb255defb8b2840034f38f2b8014ee6ee803ed43426ff99037697851fa0c2ff",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-    "failureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
-    "blockers": [
-      "roblox-open-cloud-engine-probe-transient-retry"
-    ],
-    "runtimeObserved": true,
+    "failureStage": "",
+    "failureSignature": "",
+    "blockers": [],
+    "runtimeObserved": false,
     "runtimePassed": false,
-    "independentQaPassed": true,
-    "regressionPassed": true
+    "independentQaPassed": false,
+    "regressionPassed": false
   },
   "qualityGapMap": [
     {
@@ -1397,9 +1427,9 @@
   ],
   "primaryFocus": "STABILITY",
   "thisLoopPrimaryGoal": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"동선 최적화 시스템\", 현재 책임 소스는 roblox-games/amusement-tycoon/client/Game.client.luau::render, roblox-games/amusement-tycoon/client/Game.client.luau::reportNativeFoundationReady, roblox-games/amusement-tycoon/server/Game.server.luau::initializePlayer, roblox-games/amusement-tycoon/server/Game.server.luau::scopeHandler3, roblox-games/amusement-tycoon/client/Game.client.luau::playVerifiedLearningActionFeedback, roblox-games/amusement-tycoon/server/Game.server.luau::markAction, roblox-games/amusement-tycoon/server/Game.server.luau::bindNativeFoundationPlayer, roblox-games/amusement-tycoon/server/Game.server.luau::recomputePark이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"동선 최적화 시스템\", 현재 책임 소스는 roblox-games/amusement-tycoon/server/Game.server.luau::initializePlayer, roblox-games/amusement-tycoon/client/Game.client.luau::render, roblox-games/amusement-tycoon/client/Game.client.luau::reportNativeFoundationReady, roblox-games/amusement-tycoon/server/Game.server.luau::buildPathTile, roblox-games/amusement-tycoon/server/Game.server.luau::buildThemeParkWorld, roblox-games/amusement-tycoon/client/Game.client.luau::playVerifiedLearningActionFeedback, roblox-games/amusement-tycoon/server/Game.server.luau::markAction, roblox-games/amusement-tycoon/server/Game.server.luau::spawnCustomer이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 roblox-games/amusement-tycoon/client/Game.client.luau::render, roblox-games/amusement-tycoon/client/Game.client.luau::reportNativeFoundationReady, roblox-games/amusement-tycoon/server/Game.server.luau::initializePlayer, roblox-games/amusement-tycoon/server/Game.server.luau::scopeHandler3, roblox-games/amusement-tycoon/client/Game.client.luau::playVerifiedLearningActionFeedback, roblox-games/amusement-tycoon/server/Game.server.luau::markAction, roblox-games/amusement-tycoon/server/Game.server.luau::bindNativeFoundationPlayer, roblox-games/amusement-tycoon/server/Game.server.luau::recomputePark에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 roblox-games/amusement-tycoon/server/Game.server.luau::initializePlayer, roblox-games/amusement-tycoon/client/Game.client.luau::render, roblox-games/amusement-tycoon/client/Game.client.luau::reportNativeFoundationReady, roblox-games/amusement-tycoon/server/Game.server.luau::buildPathTile, roblox-games/amusement-tycoon/server/Game.server.luau::buildThemeParkWorld, roblox-games/amusement-tycoon/client/Game.client.luau::playVerifiedLearningActionFeedback, roblox-games/amusement-tycoon/server/Game.server.luau::markAction, roblox-games/amusement-tycoon/server/Game.server.luau::spawnCustomer에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "동선 최적화 시스템를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "감정 기반 만족도 엔진가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"공간 배치 및 놀이기구 건설: 제한된 자본을 사용하여 놀이기구와 편의시설을 배치하고 동선을 설계합니다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -1448,8 +1478,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 113619,
-        "largestFileBytes": 43507,
+        "sourceBytes": 116039,
+        "largestFileBytes": 43563,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1481,12 +1511,12 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "WORLD_ECOLOGY_STORY_CHAIN",
-    "themeDepth": 4,
-    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=6.",
+    "themeDepth": 6,
+    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
-        "WORLD_ECOLOGY_STORY_CHAIN": 4,
+        "WORLD_ECOLOGY_STORY_CHAIN": 6,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
@@ -1495,6 +1525,8 @@
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
+        "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1533,7 +1565,7 @@
     "scoredThemes": [
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 120,
+        "score": 84,
         "gapDomains": []
       },
       {
@@ -1885,12 +1917,21 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/amusement-tycoon/client/Game.client.luau",
-      "roblox-games/amusement-tycoon/server/Game.server.luau",
       "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+      "roblox-games/amusement-tycoon/server/Game.server.luau",
+      "roblox-games/amusement-tycoon/client/Game.client.luau",
       "roblox-games/amusement-tycoon/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
+      {
+        "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+        "line": 33,
+        "kind": "FUNCTION",
+        "symbol": "initializePlayer",
+        "currentBehavior": "local function initializePlayer(player)",
+        "intendedBehavior": "STABILITY primary goal \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 initializePlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/amusement-tycoon/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
         "line": 356,
@@ -1911,20 +1952,20 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 32,
+        "line": 216,
         "kind": "FUNCTION",
-        "symbol": "initializePlayer",
-        "currentBehavior": "local function initializePlayer(player)",
-        "intendedBehavior": "STABILITY primary goal \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 initializePlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "symbol": "buildPathTile",
+        "currentBehavior": "local function buildPathTile(player)",
+        "intendedBehavior": "STABILITY primary goal \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 buildPathTile의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/amusement-tycoon/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 103,
+        "line": 54,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler3",
-        "currentBehavior": "local function scopeHandler3(player)",
-        "intendedBehavior": "STABILITY primary goal \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler3의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "symbol": "buildThemeParkWorld",
+        "currentBehavior": "local function buildThemeParkWorld()",
+        "intendedBehavior": "STABILITY primary goal \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 buildThemeParkWorld의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/amusement-tycoon/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
@@ -1938,7 +1979,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 46,
+        "line": 48,
         "kind": "FUNCTION",
         "symbol": "markAction",
         "currentBehavior": "local function markAction(player, scope, pattern)",
@@ -1947,24 +1988,21 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 304,
+        "line": 116,
         "kind": "FUNCTION",
-        "symbol": "bindNativeFoundationPlayer",
-        "currentBehavior": "local function bindNativeFoundationPlayer(player)",
-        "intendedBehavior": "STABILITY primary goal \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 bindNativeFoundationPlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/amusement-tycoon/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 52,
-        "kind": "FUNCTION",
-        "symbol": "recomputePark",
-        "currentBehavior": "local function recomputePark(player)",
-        "intendedBehavior": "STABILITY primary goal \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 recomputePark의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "symbol": "spawnCustomer",
+        "currentBehavior": "local function spawnCustomer(player)",
+        "intendedBehavior": "STABILITY primary goal \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 spawnCustomer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/amusement-tycoon/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
+      {
+        "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+        "symbol": "initializePlayer",
+        "role": "SERVER_AUTHORITY",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
         "symbol": "render",
@@ -1979,13 +2017,13 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "symbol": "initializePlayer",
+        "symbol": "buildPathTile",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "symbol": "scopeHandler3",
+        "symbol": "buildThemeParkWorld",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
@@ -2003,13 +2041,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "symbol": "bindNativeFoundationPlayer",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "symbol": "recomputePark",
+        "symbol": "spawnCustomer",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
@@ -2047,12 +2079,24 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/amusement-tycoon/client/Game.client.luau",
-      "roblox-games/amusement-tycoon/server/Game.server.luau",
       "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+      "roblox-games/amusement-tycoon/server/Game.server.luau",
+      "roblox-games/amusement-tycoon/client/Game.client.luau",
       "roblox-games/amusement-tycoon/default.project.json"
     ],
     "sourceAnchors": [
+      {
+        "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+        "line": 33,
+        "kind": "FUNCTION",
+        "symbol": "initializePlayer",
+        "context": "local function initializePlayer(player)",
+        "score": 90,
+        "currentBehavior": "local function initializePlayer(player)",
+        "intendedBehavior": "STABILITY primary goal \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 initializePlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/amusement-tycoon/server/Game.server.luau::initializePlayer이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/amusement-tycoon/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
         "line": 356,
@@ -2079,26 +2123,26 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 32,
+        "line": 216,
         "kind": "FUNCTION",
-        "symbol": "initializePlayer",
-        "context": "local function initializePlayer(player)",
-        "score": 74,
-        "currentBehavior": "local function initializePlayer(player)",
-        "intendedBehavior": "STABILITY primary goal \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 initializePlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/amusement-tycoon/server/Game.server.luau::initializePlayer이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "symbol": "buildPathTile",
+        "context": "local function buildPathTile(player)",
+        "score": 82,
+        "currentBehavior": "local function buildPathTile(player)",
+        "intendedBehavior": "STABILITY primary goal \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 buildPathTile의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/amusement-tycoon/server/Game.server.luau::buildPathTile이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/amusement-tycoon/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 103,
+        "line": 54,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler3",
-        "context": "local function scopeHandler3(player)",
+        "symbol": "buildThemeParkWorld",
+        "context": "local function buildThemeParkWorld()",
         "score": 74,
-        "currentBehavior": "local function scopeHandler3(player)",
-        "intendedBehavior": "STABILITY primary goal \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler3의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/amusement-tycoon/server/Game.server.luau::scopeHandler3이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "currentBehavior": "local function buildThemeParkWorld()",
+        "intendedBehavior": "STABILITY primary goal \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 buildThemeParkWorld의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/amusement-tycoon/server/Game.server.luau::buildThemeParkWorld이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/amusement-tycoon/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
@@ -2115,7 +2159,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 46,
+        "line": 48,
         "kind": "FUNCTION",
         "symbol": "markAction",
         "context": "local function markAction(player, scope, pattern)",
@@ -2127,26 +2171,14 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 304,
+        "line": 116,
         "kind": "FUNCTION",
-        "symbol": "bindNativeFoundationPlayer",
-        "context": "local function bindNativeFoundationPlayer(player)",
+        "symbol": "spawnCustomer",
+        "context": "local function spawnCustomer(player)",
         "score": 66,
-        "currentBehavior": "local function bindNativeFoundationPlayer(player)",
-        "intendedBehavior": "STABILITY primary goal \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 bindNativeFoundationPlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/amusement-tycoon/server/Game.server.luau::bindNativeFoundationPlayer이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/amusement-tycoon/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 52,
-        "kind": "FUNCTION",
-        "symbol": "recomputePark",
-        "context": "local function recomputePark(player)",
-        "score": 58,
-        "currentBehavior": "local function recomputePark(player)",
-        "intendedBehavior": "STABILITY primary goal \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 recomputePark의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/amusement-tycoon/server/Game.server.luau::recomputePark이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "currentBehavior": "local function spawnCustomer(player)",
+        "intendedBehavior": "STABILITY primary goal \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 spawnCustomer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/amusement-tycoon/server/Game.server.luau::spawnCustomer이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/amusement-tycoon/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -2196,9 +2228,9 @@
     "gameId": "amusement-tycoon",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/amusement-tycoon/client/Game.client.luau",
-      "roblox-games/amusement-tycoon/server/Game.server.luau",
       "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+      "roblox-games/amusement-tycoon/server/Game.server.luau",
+      "roblox-games/amusement-tycoon/client/Game.client.luau",
       "roblox-games/amusement-tycoon/default.project.json"
     ],
     "impact": {
@@ -2276,16 +2308,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure",
-      "runtimeObserved": true
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "0c0a39e0fe0b276a321a75bbb1481ba47c2fe60a3d2eec874061ff9caf5bcc93",
+      "sourceTreeFingerprint": "beb255defb8b2840034f38f2b8014ee6ee803ed43426ff99037697851fa0c2ff",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "failureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE"
+      "failureStage": null,
+      "failureSignature": null
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2296,8 +2328,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2328,7 +2360,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 4,
+    "nextGeneration": 6,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2401,5 +2433,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-03T13:43:52.445Z"
+  "generatedAt": "2026-10-03T15:41:09.668Z"
 }
