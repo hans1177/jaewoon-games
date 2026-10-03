@@ -565,6 +565,15 @@ test('existing Roblox source rebind applies all verified APK learning without ch
   }
 });
 
+test('verified learning sweep preserves a newer native binding instead of downgrading it',()=>{
+  const sweep=fs.readFileSync(new URL('../tools/company-roblox-verified-learning-sweep.mjs',import.meta.url),'utf8');
+  assert.match(sweep,/ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION/);
+  assert.match(sweep,/currentNativeBindingVersion>ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION/);
+  assert.match(sweep,/ROBLOX_SWEEP_NEWER_NATIVE_BINDING_CONFIG_DRIFT/);
+  assert.match(sweep,/PRESERVED_NEWER_NATIVE_BINDING/);
+  assert.match(sweep,/newerNativeBindingPreserved/);
+});
+
 test('verified APK refresh is owned by one Roblox sweep instead of duplicate per-game source jobs',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
   assert.match(workflow,/existing-source-verified-external-learning-required/);
