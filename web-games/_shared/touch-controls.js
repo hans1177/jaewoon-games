@@ -8,6 +8,7 @@ const nativeSel='#joy,#joystick,.joystick,.virtual-joystick,.touch-stick,[data-j
 const native=()=>!!document.querySelector(nativeSel);
 const emit=(name,detail)=>window.dispatchEvent(new CustomEvent(name,{detail}));
 function boot(){
+  if(document.documentElement.dataset.disableUniversalTouch==='true'||document.body?.dataset.disableUniversalTouch==='true')return;
   if(!touch())return;
   if(native()){document.documentElement.dataset.jaewoonTouchMode='native';return;}
   if(document.getElementById('jgUniversalTouchControls'))return;
