@@ -156,11 +156,20 @@ const STAGE_PLANS={
 
 // ===== 저장 =====
 function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+const STORY_REQUIRE={shield:1,spear:3,ranger:3,rush:4,giant:6};
+function applyStoryUnlocks(v,addNew=false){
+  const unlocked=[];v.owned=v.owned||{};v.squad=Array.isArray(v.squad)?v.squad:[];v.owned.blob=true;
+  Object.entries(STORY_REQUIRE).forEach(([id,need])=>{
+    const was=!!v.owned[id],now=(v.maxCleared||0)>=need;v.owned[id]=now;
+    if(addNew&&now&&!was){unlocked.push(id);if(v.squad.length<MAX_SQUAD)v.squad.push(id)}
+  });
+  return unlocked;
+}
 function defaultSave(){
   return{
-    gold:0,exp:0,stage:1,
-    owned:{blob:true,shield:true,spear:true,ranger:true,rush:true},
-    squad:['blob','shield','spear','ranger','rush'],
+    gold:0,exp:0,stage:1,maxCleared:0,
+    owned:{blob:true,shield:false,spear:false,ranger:false,rush:false,giant:false},
+    squad:['blob'],
     charLv:{},
     castleLv:0,startWalletLv:0,killRewardLv:0,
     baseLv:1,incomeLv:1,walletLv:1
