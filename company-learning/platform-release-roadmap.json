@@ -1,5 +1,5 @@
 {
-  "version": 524,
+  "version": 525,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -918,14 +918,23 @@
       "releaseQaFailureIsLaneLocalUntilSharedFanIn": true,
       "defaultRequestedGameWorkers": 256,
       "recoverToExternalProviderBoundaryAfterPressure": true,
-      "workflowLevelGameWideSerializationForbidden": false,
-      "workflowLevelConcurrencyGroupByGameIdForbidden": false,
-      "sameGameConflictSerializationScope": "EXACT_DUPLICATE_WORKFLOW_OR_RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY",
+      "workflowLevelGameWideSerializationForbidden": true,
+      "workflowLevelConcurrencyGroupByGameIdForbidden": true,
+      "sameGameConflictSerializationScope": "EXACT_RESPONSIBLE_FILE_WRITE_CONFLICT_ONLY; ROBLOX_STUDIO_ACTUAL_RUNTIME_SESSION_MAY_SERIALIZE; ATOMIC_SHARED_STATE_WRITE_IS_BRIEF_INTEGRITY_SECTION_NOT_HEAVY_WORK_SERIALIZATION",
       "crossGameWorkflowSerializationForbidden": true,
-      "exactGameDuplicateWorkflowSerializationAllowed": true,
-      "exactGameDuplicateWorkflowSerializationPurpose": "RACE_DUPLICATE_PLANNER_AND_HEAVY_NATIVE_EXECUTION_SUPPRESSION_ONLY",
+      "exactGameDuplicateWorkflowSerializationAllowed": false,
+      "exactGameDuplicateWorkflowSerializationPurpose": "DUPLICATE_DISPATCH_MUST_DEDUPE_OR_NOOP_WITHOUT_SERIALIZING_INDEPENDENT_WORK",
       "exactGameDuplicateWorkflowSerializationAuthority": "company-learning/platform-release-roadmap.json#changeRecord.nativeExactGameWorkflowConcurrency20260927",
-      "internalSameWorkflowGameMatrixParallelismPreserved": true
+      "internalSameWorkflowGameMatrixParallelismPreserved": true,
+      "sameGameDifferentPlatformsParallel": true,
+      "platformResponsibilityRoots": {
+        "WEB": "web-games/<gameId>",
+        "ROBLOX": "roblox-games/<gameId>",
+        "UNITY": "unity-games/<gameId>"
+      },
+      "crossPlatformGameSourceResponsibilityMixForbidden": true,
+      "robloxStudioActualRuntimeSerialException": true,
+      "atomicSharedStateCriticalSectionIsNotHeavyWorkSerialization": true
     },
     "candidateReleaseConcurrency": {
       "scope": "CANDIDATE_BRANCH",
@@ -1153,7 +1162,10 @@
       "failedGameEvidencePreserved": true,
       "cancellationNoiseMayNotTriggerHeavyControlWork": true,
       "qualityOrEvidenceGateWeakeningForbidden": true
-    }
+    },
+    "sameGameDifferentPlatformWorkMaxParallel": true,
+    "platformResponsibilityPartitioningRequired": true,
+    "generalHeavyWorkSerializationForbiddenExceptRobloxStudio": true
   },
   "phases": [
     {
@@ -3404,7 +3416,11 @@
         "PUBLISHED_PLACE_DIRECT_STUDIO_AUTOMATION",
         "UNDOCUMENTED_STUDIO_CLI_AUTOMATION",
         "EXTERNAL_GUI_MACRO_OR_INJECTION"
-      ]
+      ],
+      "serialExecutionRequired": true,
+      "onlyGlobalHeavyWorkSerializationException": true,
+      "maxParallel": 1,
+      "concurrencyGroup": "roblox-studio-shared-host"
     },
     "deterministicGateAuthority": {
       "version": 1,
@@ -14641,7 +14657,24 @@
       "assetDevelopmentSourceWorkerBuildUpDirectiveSyntaxGuard": true,
       "assetDevelopmentModelCachePersistOnMiss": true,
       "assetDevelopmentWorkerModelRepullAfterSharedCacheHitForbidden": true,
-      "assetDevelopmentCacheGeneration": 5
+      "assetDevelopmentCacheGeneration": 5,
+      "sameGameDifferentPlatformsParallel": true,
+      "platformResponsibilitySeparated": true,
+      "platformResponsibilityRoots": {
+        "WEB": "web-games/<gameId>",
+        "ROBLOX": "roblox-games/<gameId>",
+        "UNITY": "unity-games/<gameId>"
+      },
+      "generatedAssetRoots": {
+        "ROBLOX": "assets/generated/roblox/<gameId>",
+        "UNITY": "assets/generated/unity/<gameId>",
+        "WEB": "web-games/<gameId>"
+      },
+      "crossPlatformGameSourceResponsibilityMixForbidden": true,
+      "explicitSharedFileConflictOnlyWhenDeclared": true,
+      "generalHeavyWorkSerializationForbidden": true,
+      "robloxStudioActualRuntimeSerialExceptionOnly": true,
+      "atomicSharedStateCriticalSectionIsNotHeavyWorkSerialization": true
     },
     "failureHandling": {
       "state": "ASSET_REPAIR_REQUIRED",
