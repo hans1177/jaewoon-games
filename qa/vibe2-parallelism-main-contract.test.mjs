@@ -78,6 +78,8 @@ test('maximum parallelism is default and source-root locks are permanently disab
   assert.ok(runner.includes("VIBE2_MAX_CONCURRENT_GAME_TASKS: '256'"));
   assert.ok(runner.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '256'"));
   assert.ok(runner.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '30'"));
+  assert.ok(runner.includes("VIBE2_ASSET_PRIORITY_BURST_MAX: '8'"));
+  assert.ok(runner.includes("VIBE2_RUNNER_JOB_PRESSURE_THRESHOLD: '8'"));
   assert.ok(runner.includes('VIBE2_24H_GAME_PRIMARY_RESERVATION_LIMIT_SOURCE=CONFIGURED_EXTERNAL_PROVIDER_BOUNDARY'));
   assert.ok(core.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '256'"));
   assert.ok(core.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '30'"));
@@ -86,7 +88,7 @@ test('maximum parallelism is default and source-root locks are permanently disab
   assert.match(core,/github\.event_name == 'push' && github\.ref == 'refs\/heads\/main' && inputs\.execution_lane == '' && 'vibe2-main-push-game-primary-wake'/);
   assert.match(core,/format\('vibe2-continuous-\{0\}-\{1\}', github\.run_id, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
   assert.match(core,/cancel-in-progress: false/);
-  const fastDispatch=runner.indexOf('      - name: Dispatch queued GAME_PRIMARY work before full planning');
+  const fastDispatch=runner.indexOf('      - name: Dispatch queued asset work first, otherwise GAME_PRIMARY before full planning');
   const fullPlan=runner.indexOf('      - name: Plan from latest main and persist control queue');
   assert.ok(fastDispatch>=0&&fullPlan>fastDispatch);
   assert.match(runner,/actions\/workflows\/vibe2-continuous-core\.yml\/dispatches/);
@@ -315,6 +317,11 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.match(runner,/group: vibe2-24h-cycle-singleton-v9/);
   assert.match(runner,/VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=PASS/);
   assert.match(runner,/VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=FAIL_DEFER_LEARNING/);
+  assert.match(runner,/VIBE2_24H_RUNNER_JOB_QUEUE_PRESSURE=/);
+  assert.match(runner,/VIBE2_24H_RUNNER_JOB_PRESSURE_THRESHOLD=/);
+  assert.match(runner,/actions\/runs\/\$run_id\/jobs\?per_page=100/);
+  assert.match(runner,/VIBE2_PREPLAN_PRIORITY_LANE=ASSET_DEVELOPMENT/);
+  assert.match(runner,/VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED/);
   assert.match(runner,/needs\.plan\.outputs\.learning_idle_queued != '0'/);
 });
 
