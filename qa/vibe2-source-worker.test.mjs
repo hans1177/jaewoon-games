@@ -111,6 +111,50 @@ test('native asset authoring evidence requires real engine-native source delta a
   assert.equal(strong.runtimeVerified,false);
 });
 
+test('native DCC authoring stays incomplete until every required DCC type has execution evidence',()=>{
+  const workOrder=order({target:'roblox',root:'roblox-games/demo',responsibleFiles:['roblox-games/demo/client/Game.client.luau'],taskId:'dcc-type-coverage'});
+  workOrder.assetProduction={nativeAuthoringExecution:{
+    enabled:true,target:'roblox',
+    dcc:{
+      requiredTypes:['background','prop'],
+      executionEvidence:{
+        executed:true,allRecipesPassed:true,candidateUsable:true,persistedForCandidate:true,
+        editableSource:'assets/native-authoring/build-game-visual.py',
+        nativeArtifact:'assets/generated/roblox/demo/background/asset.glb',
+        artifactHash:'bg123',preview:'assets/generated/roblox/demo/background/preview.png',
+        recipes:[{id:'background',types:['background'],nativeArtifact:'assets/generated/roblox/demo/background/asset.glb',artifactHash:'bg123',sourceHash:'src123',persistedForCandidate:true}]
+      }
+    },
+    nativeText:{requiredTypes:['background','prop']}
+  }};
+  const source=[
+    'local model = Instance.new("Model")',
+    'local part = Instance.new("Part")',
+    'part.Parent = model',
+    'local background = "assets/generated/roblox/demo/background/asset.glb"',
+    'local backgroundSha = "bg123"'
+  ].join('\n');
+  const partial=evaluateNativeAssetAuthoringCandidate({order:workOrder,candidate:{edits:[{replace:source}]}});
+  assert.equal(partial.dccTypeCoveragePass,false);
+  assert.deepEqual([...partial.dccCoveredTypes],['background']);
+  assert.equal(partial.dccAuthored,false);
+  assert.equal(partial.status,'NATIVE_SOURCE_AUTHORED_DCC_EXECUTOR_REQUIRED');
+
+  workOrder.assetProduction.nativeAuthoringExecution.dcc.executionEvidence={
+    ...workOrder.assetProduction.nativeAuthoringExecution.dcc.executionEvidence,
+    recipes:[
+      ...workOrder.assetProduction.nativeAuthoringExecution.dcc.executionEvidence.recipes,
+      {id:'prop',types:['prop'],nativeArtifact:'assets/generated/roblox/demo/prop/asset.glb',artifactHash:'prop456',sourceHash:'src456',persistedForCandidate:true}
+    ]
+  };
+  const completeSource=source+'\nlocal prop = "assets/generated/roblox/demo/prop/asset.glb"\nlocal propSha = "prop456"';
+  const complete=evaluateNativeAssetAuthoringCandidate({order:workOrder,candidate:{edits:[{replace:completeSource}]}});
+  assert.equal(complete.dccTypeCoveragePass,true);
+  assert.deepEqual([...complete.dccCoveredTypes].sort(),['background','prop']);
+  assert.equal(complete.dccAuthored,true);
+  assert.equal(complete.generatedAssetBindingApplied,true);
+});
+
 test('generated native asset binding requires exact artifact path hash and engine-native source',()=>{
   const workOrder=order({target:'unity',root:'unity-games/demo',responsibleFiles:['unity-games/demo/Assets/Scripts/GameCore.cs'],taskId:'generated-binding'});
   workOrder.assetProduction={nativeAuthoringExecution:{
@@ -4384,6 +4428,20 @@ test('asset-development Roblox graphics stays on bounded focused retries while g
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   assert.match(workflow,/coding-roblox-zero-timeout-focused-recovery:YES/);
   assert.match(workflow,/coding-roblox-timeout-recovery-escalated-full-graphics:YES/);
+});
+
+test('Roblox game workers smoke-check Luau binaries but leave the full compiler regression suite to Core QA',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  const candidateStart=workflow.indexOf('- name: Generate isolated candidate from pinned main contract');
+  const candidateEnd=workflow.indexOf('\n      - name:',candidateStart+1);
+  assert.ok(candidateStart>=0&&candidateEnd>candidateStart);
+  const candidate=workflow.slice(candidateStart,candidateEnd);
+  assert.match(candidate,/VIBE2_LUAU_COMPILER_SMOKE=PASS/);
+  assert.match(candidate,/VIBE2_LUAU_REGRESSION_AUTHORITY=CORE_QA_ONLY/);
+  assert.match(candidate,/luau-compile/);
+  assert.match(candidate,/luau-ast/);
+  assert.doesNotMatch(candidate,/VIBE2_TEST_LUAU_COMPILER/);
+  assert.doesNotMatch(candidate,/--test-name-pattern='Luau compiler'/);
 });
 
 test('worker model runtime is prepared once and downstream source or practice steps do not restart or repull it',()=>{
