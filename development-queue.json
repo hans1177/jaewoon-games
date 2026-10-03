@@ -1723,8 +1723,8 @@
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "ACTIVE",
       "status": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "targetPlatform": "ROBLOX",
+      "selectedPlatform": "UNITY",
+      "targetPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -1777,8 +1777,8 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-10-02T01:24:10.538Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -1808,7 +1808,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-03T07:53:32.505Z",
+      "updatedAt": "2026-10-03T07:54:30.119Z",
       "robloxSourceCommit": "9816c7becd8ec4774d69fc0784e891f1764107cb",
       "robloxSourceBootstrapPassedAt": "2026-10-03T07:49:22.839Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -1966,7 +1966,7 @@
       "unityCandidateBranch": "development/unity-tech-horror-escape-room-36958178395",
       "unitySourceCommit": "188da3bb77d8184afc3e315552024915536a573a",
       "unityBuildRunId": 36958637457,
-      "unityRuntimeSmokeRunId": 37107296658,
+      "unityRuntimeSmokeRunId": 37107901499,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityF0ThroughF9Evidence": {
@@ -2023,7 +2023,7 @@
           }
         },
         "multiplayerRequired": true,
-        "verifiedAt": "2026-10-03T07:43:41.575Z"
+        "verifiedAt": "2026-10-03T07:54:30.119Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -9250,7 +9250,7 @@
       "robloxPublicReleaseFinalEvidence": null
     }
   ],
-  "updatedAt": "2026-10-03T07:53:32.505Z",
+  "updatedAt": "2026-10-03T07:54:31.967Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
