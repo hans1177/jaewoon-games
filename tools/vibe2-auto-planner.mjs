@@ -167,7 +167,7 @@ function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={
 
 export function latestDevelopmentBaselineEvidence(gameId,repoRoot=process.cwd()){const id=clean(gameId),root=path.join(repoRoot,'design',id),missing={ready:false,reason:'DEVELOPMENT_BASELINE_REQUIRED',source:null,gate:null,policySource:CANONICAL_POLICY_PATH};if(!id||!fs.existsSync(root))return missing;const policy=readJson(path.join(repoRoot,CANONICAL_POLICY_PATH),null);if(policy&&(clean(policy.authority)!=='MACHINE_EXECUTION_CONTRACT'||clean(policy.machineSourceOfTruth)!==CANONICAL_POLICY_PATH||policy.humanDocumentRequired!==false))return{...missing,reason:'CENTRAL_MACHINE_POLICY_INVALID'};let dates=[];try{dates=fs.readdirSync(root,{withFileTypes:true}).filter(e=>e.isDirectory()&&/^\d{4}-\d{2}-\d{2}$/.test(e.name)).map(e=>e.name).sort().reverse();}catch{return missing;}for(const date of dates){const file=path.join(root,date,'cycle-status.json'),status=readJson(file,null),gate=status?.baselineGate;if(!gate||gate.state!=='DEVELOPMENT_BASELINE_READY'||gate.ready!==true)continue;const e=gate.evidence||{};if(e.webGameplay?.pass!==true||e.unityProject?.present!==true||e.unityTechnical?.pass!==true)continue;return{ready:true,reason:'DEVELOPMENT_BASELINE_READY',source:posix(path.relative(repoRoot,file)),gate,policySource:CANONICAL_POLICY_PATH,historicalPolicyDocument:clean(gate.policyDocument)||null};}return missing;}
 function latestDevelopmentValidationStatus(gameId,repoRoot=process.cwd()){const id=clean(gameId),root=path.join(repoRoot,'design',id),missing={state:'MISSING',score:null,blockers:[],path:null,evidence:null};if(!id||!fs.existsSync(root))return missing;let dates=[];try{dates=fs.readdirSync(root,{withFileTypes:true}).filter(e=>e.isDirectory()&&/^\d{4}-\d{2}-\d{2}$/.test(e.name)).map(e=>e.name).sort().reverse();}catch{return missing;}for(const date of dates){for(const name of ['development-validation-status.json','cycle-status.json']){const file=path.join(root,date,name);if(!fs.existsSync(file))continue;const data=readJson(file,null);if(!data||clean(data.gameId)!==id)continue;const score=Number(data.webStrictScore??data?.evidence?.web?.webStrictScore);return{state:clean(data.state).toUpperCase()||'MISSING',score:Number.isFinite(score)?score:null,blockers:Array.isArray(data.blockers)?data.blockers.map(clean).filter(Boolean):[],path:posix(path.relative(repoRoot,file)),evidence:data?.evidence||null,nextAction:clean(data.nextAction)};}}return missing;}
-function bottleneckRank(project={}){const v=project.developmentValidation||{},score=Number(v.score),state=clean(v.state).toUpperCase(),blockers=Array.isArray(v.blockers)?v.blockers:[];if(project.engine==='web'&&score>=80&&score<=88)return 0;if(blockers.length===1)return 1;if(project.engine==='web'&&project.releaseState==='development-confirmed'&&state==='MISSING')return 2;if(/REVALIDATION|RETURN_TO_WEB_DEVELOPMENT/.test(state))return 3;if(clean(project.lifecycleState).toUpperCase()==='REBUILD')return 4;return 5;}
+function bottleneckRank(project={}){const v=project.developmentValidation||{},score=Number(v.score),state=clean(v.state).toUpperCase(),blockers=Array.isArray(v.blockers)?v.blockers:[];if(project.engine==='roblox'&&project.queueRobloxPostF9ContinuousEvolution===true)return 0;if(project.engine==='web'&&score>=80&&score<=88)return 0;if(blockers.length===1)return 1;if(project.engine==='web'&&project.releaseState==='development-confirmed'&&state==='MISSING')return 2;if(/REVALIDATION|RETURN_TO_WEB_DEVELOPMENT/.test(state))return 3;if(clean(project.lifecycleState).toUpperCase()==='REBUILD')return 4;return 5;}
 
 export function collectProjects(status={},catalog={},repoRoot=process.cwd(),developmentQueue={}){catalog=discoverExistingRobloxGames(catalog,repoRoot).catalog;const byId=catalogById(catalog),removed=permanentRemovalIds(catalog),rows=[];for(const project of Array.isArray(status.projects)?status.projects:[]){const id=clean(project.gameId),engine=engineFromProject(project),root=posix(project.robloxProjectPath||project.projectPath||project.source);if(!id||removed.has(id)||!engine||!root||clean(project.ownerDecision).toUpperCase()!=='PASS')continue;const game=byId.get(id);if(!game||!lifecycleAllowsDevelopment(game))continue;const state=stateFromCatalog(game),developmentBaseline=state==='release-confirmed'&&engine==='unity'?latestDevelopmentBaselineEvidence(id,repoRoot):null,developmentValidation=latestDevelopmentValidationStatus(id,repoRoot);rows.push({...project,gameId:id,engine,projectPath:root,lifecycleState:gameLifecycleState(game),releaseState:state,existing:true,source:'company-status',developmentBaseline,developmentValidation});}
 for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:[]){
@@ -309,6 +309,16 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       queueRobloxInternalReleaseVersion:Number(item?.robloxInternalReleaseEvidence?.versionNumber||0)||null,
       queueRobloxInternalReleaseSource:clean(item?.robloxInternalReleaseEvidence?.sourceRevision),
       queueRobloxInternalReleaseArtifact:clean(item?.robloxInternalReleaseEvidence?.artifactIdentity),
+      queueRobloxFinalReviewPassed:item?.robloxFinalReviewPassed===true,
+      queueRobloxFinalReviewPassedAt:clean(item?.robloxFinalReviewPassedAt),
+      queueRobloxF9SourceRevision:clean(item?.robloxF9ReleaseRegressionEvidence?.sourceRevision),
+      queueRobloxF9ArtifactIdentity:clean(item?.robloxF9ReleaseRegressionEvidence?.artifactIdentity),
+      queueRobloxPostF9ContinuousEvolution:Boolean(
+        item?.robloxFinalReviewPassed===true
+        &&['POST_F9_CONTINUOUS_EVOLUTION','F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION'].includes(clean(item?.currentStep||item?.canonicalState).toUpperCase())
+        &&clean(item?.robloxF9ReleaseRegressionEvidence?.sourceRevision)
+        &&clean(item?.robloxF9ReleaseRegressionEvidence?.sourceRevision)===queueRobloxSourceCommit
+      ),
       genre:clean(robloxDesignProfile.genre),
       subgenre:clean(robloxDesignProfile.subgenre),
       playMode:clean(robloxDesignProfile.playMode),
@@ -2158,13 +2168,23 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   const successDirectiveStatuses=new Set(['verified','done','completed']);
   const failedDirectiveStatuses=new Set(['failed','error','rejected']);
   const inactiveDirectiveStatuses=new Set([...successDirectiveStatuses,...failedDirectiveStatuses,'cancelled','superseded']);
+  const postF9Exact=Boolean(
+    platformLane==='roblox'
+    &&project?.queueRobloxPostF9ContinuousEvolution===true
+    &&project?.queueRobloxFinalReviewPassed===true
+    &&clean(project?.queueRobloxF9SourceRevision)
+    &&clean(project?.queueRobloxF9SourceRevision)===clean(project?.queueRobloxSourceCommit)
+  );
   const latestGeneration=taskHistory.reduce((max,item)=>Math.max(max,Number(item?.buildUpDirective?.generation||0)),0);
   const latestGenerationTask=[...taskHistory].reverse().find(item=>Number(item?.buildUpDirective?.generation||0)===latestGeneration)||null;
   const latestDirectiveId=clean(latestGenerationTask?.buildUpDirective?.directiveId);
   const latestDirectiveTasks=latestDirectiveId
     ?taskHistory.filter(item=>clean(item?.buildUpDirective?.directiveId)===latestDirectiveId)
     :[];
-  const activeDirectiveTask=[...latestDirectiveTasks].reverse().find(item=>!inactiveDirectiveStatuses.has(clean(item.status).toLowerCase()));
+  const activeDirectiveTask=[...latestDirectiveTasks].reverse().find(item=>
+    !inactiveDirectiveStatuses.has(clean(item.status).toLowerCase())
+    &&!(postF9Exact&&isReleaseWait(item))
+  );
   const activeDirectiveMultiplayerState=clean((activeDirectiveTask?.buildUpDirective?.qualityGapMap||[]).find(row=>clean(row?.domain).toUpperCase()==='MULTIPLAYER_AND_SYNC')?.state).toUpperCase();
   const projectPlayMode=clean(project?.playMode).toUpperCase();
   const projectRequiresMultiplayer=Boolean(projectPlayMode&&projectPlayMode!=='SINGLE');
@@ -2235,13 +2255,16 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   }
   const previous=latestGenerationTask?.buildUpDirective||null;
   const latestStatuses=latestDirectiveTasks.map(item=>clean(item.status).toLowerCase()).filter(Boolean);
-  const previousDirectiveOutcome=latestStatuses.some(status=>failedDirectiveStatuses.has(status))
-    ?'failed'
-    :latestStatuses.length&&latestStatuses.every(status=>successDirectiveStatuses.has(status))
-      ?'verified'
-      :latestStatuses.some(status=>status==='cancelled'||status==='superseded')
-        ?'cancelled'
-        :clean(latestGenerationTask?.status).toLowerCase();
+  const postF9SettledRuntimeWaiter=Boolean(postF9Exact&&latestDirectiveTasks.some(item=>isReleaseWait(item)));
+  const previousDirectiveOutcome=postF9SettledRuntimeWaiter
+    ?'verified'
+    :latestStatuses.some(status=>failedDirectiveStatuses.has(status))
+      ?'failed'
+      :latestStatuses.length&&latestStatuses.every(status=>successDirectiveStatuses.has(status))
+        ?'verified'
+        :latestStatuses.some(status=>status==='cancelled'||status==='superseded')
+          ?'cancelled'
+          :clean(latestGenerationTask?.status).toLowerCase();
   const qualitySignals=[
     ...(project?.developmentValidation?.blockers||[]),
     clean(project?.developmentValidation?.nextAction),
@@ -2341,6 +2364,11 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       'build-up-all-domain-coverage:YES',
       'build-up-platform-common-goal:YES',
       ...(platformLane==='roblox'?['build-up-roblox-design-profile-grounded:YES']:[]),
+      ...(postF9Exact?[
+        'post-f9-continuous-evolution:EXACT_F9_VERIFIED',
+        'post-f9-source-revision:'+clean(project.queueRobloxF9SourceRevision),
+        'post-f9-new-build-up-generation:REQUIRED'
+      ]:[]),
       'experience-build-up-platform:'+clean(directive.experienceBuildUpContract?.platform||'COMMON'),
       ...(directive.experienceBuildUpContract?.platform==='ROBLOX'?['experience-build-up-roblox-extra-attention:YES']:[]),
       'experience-build-up-owner-disabled-audio-preserved:YES',
@@ -2374,10 +2402,21 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
     &&(item.evidence||[]).map(clean).includes('studio-quality-loop:v1')
     &&(!requestedFocus||clean(item?.studioQualityEvolution?.focusPillar).toUpperCase()===requestedFocus)
   );
-  if(history.some(item=>['queued','running'].includes(clean(item.status).toLowerCase())))return null;
-  const id=nextCausalGenerationId({tasks:history},generationBase);
+  const postF9Exact=Boolean(
+    platformLane==='roblox'
+    &&project?.queueRobloxPostF9ContinuousEvolution===true
+    &&project?.queueRobloxFinalReviewPassed===true
+    &&clean(project?.queueRobloxF9SourceRevision)
+    &&clean(project?.queueRobloxF9SourceRevision)===clean(project?.queueRobloxSourceCommit)
+  );
+  const unsettledActive=history.filter(item=>['queued','running'].includes(clean(item.status).toLowerCase())&&!(postF9Exact&&isReleaseWait(item)));
+  if(unsettledActive.length)return null;
+  const effectiveHistory=postF9Exact
+    ?history.map(item=>isReleaseWait(item)?{...item,status:'verified',lastOutcome:'F9_EXACT_RUNTIME_WAITER_SETTLED_FOR_NEXT_GENERATION'}:item)
+    :history;
+  const id=nextCausalGenerationId({tasks:effectiveHistory},generationBase);
   if(!id)return null;
-  const verified=history.filter(item=>clean(item.status).toLowerCase()==='verified');
+  const verified=effectiveHistory.filter(item=>clean(item.status).toLowerCase()==='verified');
   const previous=verified.at(-1)||null;
   const previousPhase=clean(previous?.studioQualityEvolution?.phase).toUpperCase();
   const previousIndex=previous?history.lastIndexOf(previous):-1;
@@ -2507,6 +2546,11 @@ ${existingBackfillInstruction}${phaseInstruction}${visualInstruction}${designIns
   ]:[];
   const out=task(id,project,goal,responsibleFiles,project.ownerFocusedCaretaker?'critical':'high','medium',[
     'studio-quality-loop:v1',
+    ...(postF9Exact?[
+      'post-f9-continuous-evolution:EXACT_F9_VERIFIED',
+      'post-f9-source-revision:'+clean(project.queueRobloxF9SourceRevision),
+      'post-f9-runtime-waiter-settlement:ALLOWED_FOR_NEXT_GENERATION'
+    ]:[]),
     'studio-quality-platform-lane:'+platformLane,
     `studio-quality-cycle:${cycle}`,
     `studio-quality-phase:${phase}`,
