@@ -77,6 +77,9 @@ adb shell pm path "$package" > "$out_dir/package-path.txt" 2>&1 || { echo "[JAEW
 
 # Launch the exact APK activity directly. Android monkey can abort on unrelated system-app ANRs
 # before injecting any event, which produces false "process exited" failures for the game.
+# Android의 첫 immersive/fullscreen 안내가 게임 화면과 입력을 가리지 않게 한다.
+# 지원하지 않는 런타임에서는 실패해도 실제 앱 검증을 계속한다.
+adb shell settings put secure immersive_mode_confirmations confirmed >/dev/null 2>&1 || true
 adb logcat -c || true
 set +e
 timeout 20 adb shell am start -W -n "$launch_component" > "$out_dir/launch.log" 2>&1
@@ -97,16 +100,27 @@ process_observed_after_launch=false
 process_exited_before_runtime_ready=false
 launch_process_missing=false
 
-if [[ "$seed_technical" == "true" && "$launch_command_pass" == "true" ]]; then
-  for attempt in $(seq 1 20); do
+# 모든 Unity APK에서 exact activity launch 뒤 실제 앱 process를 관찰한다.
+# seed 전용 기술 로그가 없는 일반 게임도 이 증거를 가져야 F1을 검증할 수 있다.
+if [[ "$launch_command_pass" == "true" ]]; then
+  for attempt in $(seq 1 12); do
     current_pid="$(adb shell pidof "$package" 2>/dev/null | tr -d '\r' | head -n 1 || true)"
     if [[ -n "$current_pid" ]]; then
       process_observed_after_launch=true
-    elif [[ "$process_observed_after_launch" == "true" ]]; then
-      process_exited_before_runtime_ready=true
       break
-    elif [[ "$attempt" -ge 5 ]]; then
-      launch_process_missing=true
+    fi
+    sleep 1
+  done
+  if [[ "$process_observed_after_launch" != "true" ]]; then
+    launch_process_missing=true
+  fi
+fi
+
+if [[ "$seed_technical" == "true" && "$launch_command_pass" == "true" && "$launch_process_missing" != "true" ]]; then
+  for attempt in $(seq 1 20); do
+    current_pid="$(adb shell pidof "$package" 2>/dev/null | tr -d '\r' | head -n 1 || true)"
+    if [[ -z "$current_pid" && "$process_observed_after_launch" == "true" ]]; then
+      process_exited_before_runtime_ready=true
       break
     fi
 
@@ -137,6 +151,15 @@ fi
 center_x=$((screen_w / 2))
 primary_y=$((screen_h * 68 / 100))
 secondary_y=$((screen_h * 84 / 100))
+
+# 일부 Android 런타임은 secure 설정과 별개로 최초 fullscreen 확인창을 띄운다.
+# UI 트리에서 시스템 확인창이 실제 관찰된 경우에만 그 버튼 위치를 눌러 게임 입력과 분리한다.
+adb shell uiautomator dump /sdcard/jaewoon-window.xml >/dev/null 2>&1 || true
+fullscreen_ui="$(adb shell cat /sdcard/jaewoon-window.xml 2>/dev/null | tr -d '\r' || true)"
+if grep -Eq 'Viewing full screen|Got it' <<<"$fullscreen_ui"; then
+  adb shell input tap $((screen_w * 85 / 100)) $((screen_h * 20 / 100)) || true
+  sleep 2
+fi
 
 # One exact Android runtime session supplies the Unity F1-F8 black-box evidence.
 # Capture the frame immediately before gameplay input so later floors can reuse
@@ -178,6 +201,10 @@ else
 fi
 
 pid="$(adb shell pidof "$package" 2>/dev/null | tr -d '\r' | head -n 1 || true)"
+if [[ -n "$pid" ]]; then
+  process_observed_after_launch=true
+  launch_process_missing=false
+fi
 adb shell dumpsys activity activities > "$out_dir/activity.txt" 2>&1 || true
 foreground_observed=false
 if grep -Eq "mResumedActivity.*${package}|topResumedActivity.*${package}|ResumedActivity.*${package}" "$out_dir/activity.txt"; then
@@ -185,7 +212,14 @@ if grep -Eq "mResumedActivity.*${package}|topResumedActivity.*${package}|Resumed
 fi
 adb shell dumpsys package "$package" > "$out_dir/package.txt" 2>&1 || true
 adb shell dumpsys gfxinfo "$package" > "$out_dir/gfxinfo.txt" 2>&1 || true
-adb shell dumpsys SurfaceFlinger --latency > "$out_dir/surfaceflinger-latency.txt" 2>&1 || true
+adb shell dumpsys SurfaceFlinger --list > "$out_dir/surfaceflinger-layers.txt" 2>&1 || true
+surface_layer="$(grep -F "$package" "$out_dir/surfaceflinger-layers.txt" | grep -m1 'SurfaceView' || grep -F "$package" "$out_dir/surfaceflinger-layers.txt" | head -n 1 || true)"
+printf '%s\n' "$surface_layer" > "$out_dir/surfaceflinger-layer.txt"
+if [[ -n "$surface_layer" ]]; then
+  adb shell dumpsys SurfaceFlinger --latency "$surface_layer" > "$out_dir/surfaceflinger-latency.txt" 2>&1 || true
+else
+  adb shell dumpsys SurfaceFlinger --latency > "$out_dir/surfaceflinger-latency.txt" 2>&1 || true
+fi
 adb shell dumpsys meminfo "$package" > "$out_dir/meminfo.txt" 2>&1 || true
 adb logcat -d > "$out_dir/logcat.txt" 2>&1 || true
 if [[ -s "$out_dir/screen-after-input.png" ]]; then
@@ -370,7 +404,7 @@ data={
     'activity/package/logcat/screenshot evidence captured even on runtime failure'
   ],
   'artifacts':{
-    'installLog':'install.log','updateInstallLog':'update-install.log','launchLog':'launch.log','launchComponent':'launch-component.txt','logcat':'logcat.txt','packageFatalScan':'package-fatal-scan.txt','screenshot':'screenshot.png','screenBeforeInput':'screen-before-input.png','screenAfterInput':'screen-after-input.png','activity':'activity.txt','packageDump':'package.txt','gfxInfo':'gfxinfo.txt','surfaceFlingerLatency':'surfaceflinger-latency.txt','memInfo':'meminfo.txt','apkBadging':'apk-badging.txt','deviceApi':'device-api.txt','deviceAbis':'device-abis.txt'
+    'installLog':'install.log','updateInstallLog':'update-install.log','launchLog':'launch.log','launchComponent':'launch-component.txt','logcat':'logcat.txt','packageFatalScan':'package-fatal-scan.txt','screenshot':'screenshot.png','screenBeforeInput':'screen-before-input.png','screenAfterInput':'screen-after-input.png','activity':'activity.txt','packageDump':'package.txt','gfxInfo':'gfxinfo.txt','surfaceFlingerLatency':'surfaceflinger-latency.txt','surfaceFlingerLayers':'surfaceflinger-layers.txt','surfaceFlingerLayer':'surfaceflinger-layer.txt','memInfo':'meminfo.txt','apkBadging':'apk-badging.txt','deviceApi':'device-api.txt','deviceAbis':'device-abis.txt'
   }
 }
 pathlib.Path(out).write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
