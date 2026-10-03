@@ -36154,7 +36154,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-03T16:28:15.876Z",
+      "updatedAt": "2026-10-03T16:29:05.835Z",
       "robloxSourceCommit": "9472bd4b844466429db623f3319252e3d488efda",
       "robloxSourceBootstrapPassedAt": "2026-10-03T16:01:55.391Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -36163,17 +36163,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "9472bd4b844466429db623f3319252e3d488efda",
       "robloxBuildArtifactIdentity": "sha256:315f57a0f13bf64482fb0b95bd938800b6135b38009d0c56820c187fb0cee0b1",
-      "robloxBuildPassedAt": "2026-10-03T16:28:15.876Z",
+      "robloxBuildPassedAt": "2026-10-03T16:29:05.835Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-03T16:28:15.876Z",
+      "robloxBuildPreflightPassedAt": "2026-10-03T16:29:05.835Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-03T16:16:13.034Z",
+        "checkedAt": "2026-10-03T16:17:22.061Z",
         "sourceRevision": "9472bd4b844466429db623f3319252e3d488efda",
         "artifactIdentity": "sha256:315f57a0f13bf64482fb0b95bd938800b6135b38009d0c56820c187fb0cee0b1",
         "secondaryOwnerFocus": false,
@@ -36224,12 +36224,12 @@
         "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-03T16:16:13.714Z",
+        "checkedAt": "2026-10-03T16:17:22.575Z",
         "sourcePath": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
         "sourceRevision": "9472bd4b844466429db623f3319252e3d488efda",
         "artifactIdentity": "sha256:315f57a0f13bf64482fb0b95bd938800b6135b38009d0c56820c187fb0cee0b1",
         "rebuiltArtifactIdentity": "sha256:315f57a0f13bf64482fb0b95bd938800b6135b38009d0c56820c187fb0cee0b1",
-        "artifactRunId": 37134628044,
+        "artifactRunId": 37135468385,
         "nativeLanguageCompilePassed": true,
         "nativeCompilerVersion": "0.739",
         "playMode": "SINGLE",
@@ -36267,12 +36267,10 @@
             "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
             "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
             "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-            "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
             "MISSING_GAMEPLAY_CAPABILITY:WAVE",
             "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
             "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
             "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-            "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
             "CORE_LOOP_STEP_UNIMPLEMENTED:0",
             "CORE_LOOP_STEP_UNIMPLEMENTED:1",
             "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -36287,13 +36285,11 @@
             "CONTENT_ENTITY",
             "COMBAT",
             "ENEMY_AI",
-            "DAY_NIGHT",
             "WAVE",
             "EQUIPMENT",
             "PROGRESSION",
             "BOSS",
             "SAVE",
-            "MULTIPLAYER",
             "MOBILE_UI"
           ],
           "implementedCapabilities": {
@@ -36303,13 +36299,11 @@
             "CONTENT_ENTITY": false,
             "COMBAT": false,
             "ENEMY_AI": false,
-            "DAY_NIGHT": false,
             "WAVE": false,
             "EQUIPMENT": false,
             "PROGRESSION": false,
             "BOSS": false,
             "SAVE": true,
-            "MULTIPLAYER": false,
             "MOBILE_UI": true
           },
           "coreLoopTrace": [
@@ -36353,7 +36347,6 @@
               "index": 0,
               "name": "메아리 공명 시스템",
               "capabilities": [
-                "CONTENT_ENTITY",
                 "COMBAT"
               ],
               "pass": false
@@ -36362,8 +36355,7 @@
               "index": 1,
               "name": "엔트로피 미터",
               "capabilities": [
-                "WORLD",
-                "CONTENT_ENTITY"
+                "WORLD"
               ],
               "pass": false
             }
@@ -36513,12 +36505,12 @@
         "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-03T16:16:13.714Z",
+        "checkedAt": "2026-10-03T16:17:22.575Z",
         "sourcePath": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
         "sourceRevision": "9472bd4b844466429db623f3319252e3d488efda",
         "artifactIdentity": "sha256:315f57a0f13bf64482fb0b95bd938800b6135b38009d0c56820c187fb0cee0b1",
         "rebuiltArtifactIdentity": "sha256:315f57a0f13bf64482fb0b95bd938800b6135b38009d0c56820c187fb0cee0b1",
-        "artifactRunId": 37134628044,
+        "artifactRunId": 37135468385,
         "nativeLanguageCompilePassed": true,
         "nativeCompilerVersion": "0.739",
         "playMode": "SINGLE",
@@ -36556,12 +36548,10 @@
             "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
             "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
             "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-            "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
             "MISSING_GAMEPLAY_CAPABILITY:WAVE",
             "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
             "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
             "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-            "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
             "CORE_LOOP_STEP_UNIMPLEMENTED:0",
             "CORE_LOOP_STEP_UNIMPLEMENTED:1",
             "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -36576,13 +36566,11 @@
             "CONTENT_ENTITY",
             "COMBAT",
             "ENEMY_AI",
-            "DAY_NIGHT",
             "WAVE",
             "EQUIPMENT",
             "PROGRESSION",
             "BOSS",
             "SAVE",
-            "MULTIPLAYER",
             "MOBILE_UI"
           ],
           "implementedCapabilities": {
@@ -36592,13 +36580,11 @@
             "CONTENT_ENTITY": false,
             "COMBAT": false,
             "ENEMY_AI": false,
-            "DAY_NIGHT": false,
             "WAVE": false,
             "EQUIPMENT": false,
             "PROGRESSION": false,
             "BOSS": false,
             "SAVE": true,
-            "MULTIPLAYER": false,
             "MOBILE_UI": true
           },
           "coreLoopTrace": [
@@ -36642,7 +36628,6 @@
               "index": 0,
               "name": "메아리 공명 시스템",
               "capabilities": [
-                "CONTENT_ENTITY",
                 "COMBAT"
               ],
               "pass": false
@@ -36651,8 +36636,7 @@
               "index": 1,
               "name": "엔트로피 미터",
               "capabilities": [
-                "WORLD",
-                "CONTENT_ENTITY"
+                "WORLD"
               ],
               "pass": false
             }
@@ -37038,8 +37022,8 @@
         "sourceRevision": "9472bd4b844466429db623f3319252e3d488efda",
         "artifactIdentity": "sha256:315f57a0f13bf64482fb0b95bd938800b6135b38009d0c56820c187fb0cee0b1",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 37134628044,
-        "testedAt": "2026-10-03T16:28:15.876Z",
+        "workflowRunId": 37135468385,
+        "testedAt": "2026-10-03T16:29:05.835Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -37047,12 +37031,10 @@
           "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
           "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
           "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-          "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
           "MISSING_GAMEPLAY_CAPABILITY:WAVE",
           "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
           "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
           "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-          "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
           "CORE_LOOP_STEP_UNIMPLEMENTED:0",
           "CORE_LOOP_STEP_UNIMPLEMENTED:1",
           "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -37083,12 +37065,10 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
                 "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -37103,13 +37083,11 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "DAY_NIGHT",
                 "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
                 "BOSS",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI"
               ],
               "implementedCapabilities": {
@@ -37119,13 +37097,11 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "DAY_NIGHT": false,
                 "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
                 "BOSS": false,
                 "SAVE": true,
-                "MULTIPLAYER": false,
                 "MOBILE_UI": true
               },
               "coreLoopTrace": [
@@ -37169,7 +37145,6 @@
                   "index": 0,
                   "name": "메아리 공명 시스템",
                   "capabilities": [
-                    "CONTENT_ENTITY",
                     "COMBAT"
                   ],
                   "pass": false
@@ -37178,8 +37153,7 @@
                   "index": 1,
                   "name": "엔트로피 미터",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -37296,12 +37270,10 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
                 "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -37316,13 +37288,11 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "DAY_NIGHT",
                 "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
                 "BOSS",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI"
               ],
               "implementedCapabilities": {
@@ -37332,13 +37302,11 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "DAY_NIGHT": false,
                 "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
                 "BOSS": false,
                 "SAVE": true,
-                "MULTIPLAYER": false,
                 "MOBILE_UI": true
               },
               "coreLoopTrace": [
@@ -37382,7 +37350,6 @@
                   "index": 0,
                   "name": "메아리 공명 시스템",
                   "capabilities": [
-                    "CONTENT_ENTITY",
                     "COMBAT"
                   ],
                   "pass": false
@@ -37391,8 +37358,7 @@
                   "index": 1,
                   "name": "엔트로피 미터",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -37509,12 +37475,10 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
                 "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -37529,13 +37493,11 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "DAY_NIGHT",
                 "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
                 "BOSS",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI"
               ],
               "implementedCapabilities": {
@@ -37545,13 +37507,11 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "DAY_NIGHT": false,
                 "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
                 "BOSS": false,
                 "SAVE": true,
-                "MULTIPLAYER": false,
                 "MOBILE_UI": true
               },
               "coreLoopTrace": [
@@ -37595,7 +37555,6 @@
                   "index": 0,
                   "name": "메아리 공명 시스템",
                   "capabilities": [
-                    "CONTENT_ENTITY",
                     "COMBAT"
                   ],
                   "pass": false
@@ -37604,8 +37563,7 @@
                   "index": 1,
                   "name": "엔트로피 미터",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -37722,12 +37680,10 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
                 "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -37742,13 +37698,11 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "DAY_NIGHT",
                 "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
                 "BOSS",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI"
               ],
               "implementedCapabilities": {
@@ -37758,13 +37712,11 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "DAY_NIGHT": false,
                 "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
                 "BOSS": false,
                 "SAVE": true,
-                "MULTIPLAYER": false,
                 "MOBILE_UI": true
               },
               "coreLoopTrace": [
@@ -37808,7 +37760,6 @@
                   "index": 0,
                   "name": "메아리 공명 시스템",
                   "capabilities": [
-                    "CONTENT_ENTITY",
                     "COMBAT"
                   ],
                   "pass": false
@@ -37817,8 +37768,7 @@
                   "index": 1,
                   "name": "엔트로피 미터",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -37935,12 +37885,10 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
                 "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -37955,13 +37903,11 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "DAY_NIGHT",
                 "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
                 "BOSS",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI"
               ],
               "implementedCapabilities": {
@@ -37971,13 +37917,11 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "DAY_NIGHT": false,
                 "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
                 "BOSS": false,
                 "SAVE": true,
-                "MULTIPLAYER": false,
                 "MOBILE_UI": true
               },
               "coreLoopTrace": [
@@ -38021,7 +37965,6 @@
                   "index": 0,
                   "name": "메아리 공명 시스템",
                   "capabilities": [
-                    "CONTENT_ENTITY",
                     "COMBAT"
                   ],
                   "pass": false
@@ -38030,8 +37973,7 @@
                   "index": 1,
                   "name": "엔트로피 미터",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -38148,12 +38090,10 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
                 "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -38168,13 +38108,11 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "DAY_NIGHT",
                 "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
                 "BOSS",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI"
               ],
               "implementedCapabilities": {
@@ -38184,13 +38122,11 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "DAY_NIGHT": false,
                 "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
                 "BOSS": false,
                 "SAVE": true,
-                "MULTIPLAYER": false,
                 "MOBILE_UI": true
               },
               "coreLoopTrace": [
@@ -38234,7 +38170,6 @@
                   "index": 0,
                   "name": "메아리 공명 시스템",
                   "capabilities": [
-                    "CONTENT_ENTITY",
                     "COMBAT"
                   ],
                   "pass": false
@@ -38243,221 +38178,7 @@
                   "index": 1,
                   "name": "엔트로피 미터",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "EQUIPMENT_TO_COMBAT",
-                      "pass": false
-                    },
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "WORLD_TOPOLOGY_AND_LANDMARKS",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": false,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "9969a2740c6cf6c246188dd2d4f147683ae8d2ee1685bb86ad8fa1ba5adaf283",
-              "antiSkeletonPassed": false,
-              "designGenre": "Survival",
-              "sourceGenre": "Survival",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "DAY_NIGHT",
-                "WAVE",
-                "EQUIPMENT",
-                "PROGRESSION",
-                "BOSS",
-                "SAVE",
-                "MULTIPLAYER",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "DAY_NIGHT": false,
-                "WAVE": false,
-                "EQUIPMENT": false,
-                "PROGRESSION": false,
-                "BOSS": false,
-                "SAVE": true,
-                "MULTIPLAYER": false,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "실시간 전투를 통해 적의 물결을 돌파하며 생존하고, 적 처치 시 드롭되는 메아리 파편을 수집합니다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "수집한 파편을 사용하여 실시간으로 무기, 스킬, 능력치를 강화하는 '메아리 선택' 메뉴를 통해 빌드를 구성합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "EQUIPMENT",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "강화된 빌드를 바탕으로 더욱 강력해진 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION",
-                    "BOSS"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "메아리 공명 시스템",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "엔트로피 미터",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -38574,12 +38295,10 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
                 "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -38594,13 +38313,11 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "DAY_NIGHT",
                 "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
                 "BOSS",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI"
               ],
               "implementedCapabilities": {
@@ -38610,13 +38327,11 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "DAY_NIGHT": false,
                 "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
                 "BOSS": false,
                 "SAVE": true,
-                "MULTIPLAYER": false,
                 "MOBILE_UI": true
               },
               "coreLoopTrace": [
@@ -38660,7 +38375,6 @@
                   "index": 0,
                   "name": "메아리 공명 시스템",
                   "capabilities": [
-                    "CONTENT_ENTITY",
                     "COMBAT"
                   ],
                   "pass": false
@@ -38669,8 +38383,7 @@
                   "index": 1,
                   "name": "엔트로피 미터",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -38787,12 +38500,10 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
                 "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -38807,13 +38518,11 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "DAY_NIGHT",
                 "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
                 "BOSS",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI"
               ],
               "implementedCapabilities": {
@@ -38823,13 +38532,11 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "DAY_NIGHT": false,
                 "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
                 "BOSS": false,
                 "SAVE": true,
-                "MULTIPLAYER": false,
                 "MOBILE_UI": true
               },
               "coreLoopTrace": [
@@ -38873,7 +38580,6 @@
                   "index": 0,
                   "name": "메아리 공명 시스템",
                   "capabilities": [
-                    "CONTENT_ENTITY",
                     "COMBAT"
                   ],
                   "pass": false
@@ -38882,8 +38588,7 @@
                   "index": 1,
                   "name": "엔트로피 미터",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -39000,12 +38705,10 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
                 "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -39020,13 +38723,11 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "DAY_NIGHT",
                 "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
                 "BOSS",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI"
               ],
               "implementedCapabilities": {
@@ -39036,13 +38737,11 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "DAY_NIGHT": false,
                 "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
                 "BOSS": false,
                 "SAVE": true,
-                "MULTIPLAYER": false,
                 "MOBILE_UI": true
               },
               "coreLoopTrace": [
@@ -39086,7 +38785,6 @@
                   "index": 0,
                   "name": "메아리 공명 시스템",
                   "capabilities": [
-                    "CONTENT_ENTITY",
                     "COMBAT"
                   ],
                   "pass": false
@@ -39095,8 +38793,7 @@
                   "index": 1,
                   "name": "엔트로피 미터",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -39213,12 +38910,10 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
                 "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -39233,13 +38928,11 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "DAY_NIGHT",
                 "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
                 "BOSS",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI"
               ],
               "implementedCapabilities": {
@@ -39249,13 +38942,11 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "DAY_NIGHT": false,
                 "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
                 "BOSS": false,
                 "SAVE": true,
-                "MULTIPLAYER": false,
                 "MOBILE_UI": true
               },
               "coreLoopTrace": [
@@ -39299,7 +38990,6 @@
                   "index": 0,
                   "name": "메아리 공명 시스템",
                   "capabilities": [
-                    "CONTENT_ENTITY",
                     "COMBAT"
                   ],
                   "pass": false
@@ -39308,221 +38998,7 @@
                   "index": 1,
                   "name": "엔트로피 미터",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "EQUIPMENT_TO_COMBAT",
-                      "pass": false
-                    },
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "WORLD_TOPOLOGY_AND_LANDMARKS",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": false,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "9969a2740c6cf6c246188dd2d4f147683ae8d2ee1685bb86ad8fa1ba5adaf283",
-              "antiSkeletonPassed": false,
-              "designGenre": "Survival",
-              "sourceGenre": "Survival",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "DAY_NIGHT",
-                "WAVE",
-                "EQUIPMENT",
-                "PROGRESSION",
-                "BOSS",
-                "SAVE",
-                "MULTIPLAYER",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "DAY_NIGHT": false,
-                "WAVE": false,
-                "EQUIPMENT": false,
-                "PROGRESSION": false,
-                "BOSS": false,
-                "SAVE": true,
-                "MULTIPLAYER": false,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "실시간 전투를 통해 적의 물결을 돌파하며 생존하고, 적 처치 시 드롭되는 메아리 파편을 수집합니다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "수집한 파편을 사용하여 실시간으로 무기, 스킬, 능력치를 강화하는 '메아리 선택' 메뉴를 통해 빌드를 구성합니다.",
-                  "capabilities": [
-                    "COMBAT",
-                    "EQUIPMENT",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "강화된 빌드를 바탕으로 더욱 강력해진 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION",
-                    "BOSS"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "메아리 공명 시스템",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "엔트로피 미터",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -39639,12 +39115,10 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
                 "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -39659,13 +39133,11 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "DAY_NIGHT",
                 "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
                 "BOSS",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI"
               ],
               "implementedCapabilities": {
@@ -39675,13 +39147,11 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "DAY_NIGHT": false,
                 "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
                 "BOSS": false,
                 "SAVE": true,
-                "MULTIPLAYER": false,
                 "MOBILE_UI": true
               },
               "coreLoopTrace": [
@@ -39725,7 +39195,6 @@
                   "index": 0,
                   "name": "메아리 공명 시스템",
                   "capabilities": [
-                    "CONTENT_ENTITY",
                     "COMBAT"
                   ],
                   "pass": false
@@ -39734,8 +39203,7 @@
                   "index": 1,
                   "name": "엔트로피 미터",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -39852,12 +39320,10 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
                 "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -39872,13 +39338,11 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "DAY_NIGHT",
                 "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
                 "BOSS",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI"
               ],
               "implementedCapabilities": {
@@ -39888,13 +39352,11 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "DAY_NIGHT": false,
                 "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
                 "BOSS": false,
                 "SAVE": true,
-                "MULTIPLAYER": false,
                 "MOBILE_UI": true
               },
               "coreLoopTrace": [
@@ -39938,7 +39400,6 @@
                   "index": 0,
                   "name": "메아리 공명 시스템",
                   "capabilities": [
-                    "CONTENT_ENTITY",
                     "COMBAT"
                   ],
                   "pass": false
@@ -39947,8 +39408,7 @@
                   "index": 1,
                   "name": "엔트로피 미터",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -40065,12 +39525,10 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
                 "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -40085,13 +39543,11 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "DAY_NIGHT",
                 "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
                 "BOSS",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI"
               ],
               "implementedCapabilities": {
@@ -40101,13 +39557,11 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "DAY_NIGHT": false,
                 "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
                 "BOSS": false,
                 "SAVE": true,
-                "MULTIPLAYER": false,
                 "MOBILE_UI": true
               },
               "coreLoopTrace": [
@@ -40151,7 +39605,6 @@
                   "index": 0,
                   "name": "메아리 공명 시스템",
                   "capabilities": [
-                    "CONTENT_ENTITY",
                     "COMBAT"
                   ],
                   "pass": false
@@ -40160,8 +39613,7 @@
                   "index": 1,
                   "name": "엔트로피 미터",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -40278,12 +39730,10 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
                 "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -40298,13 +39748,11 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "DAY_NIGHT",
                 "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
                 "BOSS",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI"
               ],
               "implementedCapabilities": {
@@ -40314,13 +39762,11 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "DAY_NIGHT": false,
                 "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
                 "BOSS": false,
                 "SAVE": true,
-                "MULTIPLAYER": false,
                 "MOBILE_UI": true
               },
               "coreLoopTrace": [
@@ -40364,7 +39810,6 @@
                   "index": 0,
                   "name": "메아리 공명 시스템",
                   "capabilities": [
-                    "CONTENT_ENTITY",
                     "COMBAT"
                   ],
                   "pass": false
@@ -40373,8 +39818,7 @@
                   "index": 1,
                   "name": "엔트로피 미터",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -40491,12 +39935,10 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
                 "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -40511,13 +39953,11 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "DAY_NIGHT",
                 "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
                 "BOSS",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI"
               ],
               "implementedCapabilities": {
@@ -40527,13 +39967,11 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "DAY_NIGHT": false,
                 "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
                 "BOSS": false,
                 "SAVE": true,
-                "MULTIPLAYER": false,
                 "MOBILE_UI": true
               },
               "coreLoopTrace": [
@@ -40577,7 +40015,6 @@
                   "index": 0,
                   "name": "메아리 공명 시스템",
                   "capabilities": [
-                    "CONTENT_ENTITY",
                     "COMBAT"
                   ],
                   "pass": false
@@ -40586,8 +40023,7 @@
                   "index": 1,
                   "name": "엔트로피 미터",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -40704,12 +40140,10 @@
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
                 "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -40724,13 +40158,11 @@
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "DAY_NIGHT",
                 "WAVE",
                 "EQUIPMENT",
                 "PROGRESSION",
                 "BOSS",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI"
               ],
               "implementedCapabilities": {
@@ -40740,13 +40172,11 @@
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "DAY_NIGHT": false,
                 "WAVE": false,
                 "EQUIPMENT": false,
                 "PROGRESSION": false,
                 "BOSS": false,
                 "SAVE": true,
-                "MULTIPLAYER": false,
                 "MOBILE_UI": true
               },
               "coreLoopTrace": [
@@ -40790,7 +40220,6 @@
                   "index": 0,
                   "name": "메아리 공명 시스템",
                   "capabilities": [
-                    "CONTENT_ENTITY",
                     "COMBAT"
                   ],
                   "pass": false
@@ -40799,8 +40228,7 @@
                   "index": 1,
                   "name": "엔트로피 미터",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -68341,7 +67769,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-03T16:29:00.001Z",
+  "updatedAt": "2026-10-03T16:29:05.835Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
