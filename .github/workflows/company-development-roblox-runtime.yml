@@ -1055,10 +1055,17 @@ jobs:
             const secondaryOwnerFocus=!concurrentDefault&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
             if(!concurrentDefault&&!secondaryOwnerFocus)continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
+            const productF0Current=!secondaryOwnerFocus
+              &&Number(item.robloxFoundationF0Evidence?.version||0)>=4
+              &&item.robloxFoundationF0Evidence?.gameplayProductReadinessRequired===true
+              &&item.robloxFoundationF0Evidence?.gameplayProductReadiness?.pass===true;
+            const productF0RevalidationNeeded=!secondaryOwnerFocus
+              &&item.robloxFoundationF0Passed===true
+              &&!productF0Current;
             if(secondaryOwnerFocus){
               const lane=String(item.ownerFocusRobloxAssetPipelineState||'').toUpperCase();
               if(!['SOURCE_READY','BUILD_REPAIR_REQUIRED'].includes(lane))continue;
-            }else{
+            }else if(!productF0RevalidationNeeded){
               if(String(item.currentStep||'').toUpperCase()!=='TARGET_PLATFORM_TECHNICAL_VALIDATION')continue;
               const canonicalState=String(item.canonicalState||'').toUpperCase();
               const buildRevalidationPending=String(item.robloxFailureStage||'').toUpperCase()==='TARGET_PLATFORM_BUILD_OR_PACKAGE'
@@ -1066,6 +1073,8 @@ jobs:
               const technicalStateEligible=canonicalState==='TARGET_PLATFORM_REPAIR_REQUIRED'
                 ||(canonicalState==='WAITING_TARGET_PLATFORM_VALIDATION'&&buildRevalidationPending);
               if(!technicalStateEligible)continue;
+            }else{
+              console.log('ROBLOX_F0_PRODUCT_CONTRACT_REVALIDATION_REQUIRED='+item.gameId);
             }
             const sourcePath=String(secondaryOwnerFocus?item.ownerFocusRobloxSourcePath:(item.robloxProjectPath||item.targetSourcePath||item.sourcePath)||`roblox-games/${item.gameId}`).trim();
             const sourceRevision=String(secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
@@ -1074,8 +1083,8 @@ jobs:
               ?item.ownerFocusRobloxBuildOrPackagePassed===true&&item.ownerFocusRobloxBuildSourceRevision===sourceRevision&&artifactIdentity.startsWith('sha256:')
               :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===sourceRevision&&artifactIdentity.startsWith('sha256:');
             if(!/^[0-9a-f]{40}$/i.test(sourceRevision))continue;
-            if(exactBuild)continue;
-            rows.push({gameId:item.gameId,gameName:item.gameName||item.gameId,baseline:item.designBaselineSource,sourcePath,sourceRevision,secondaryOwnerFocus});
+            if(exactBuild&&productF0Current)continue;
+            rows.push({gameId:item.gameId,gameName:item.gameName||item.gameId,baseline:item.designBaselineSource,sourcePath,sourceRevision,secondaryOwnerFocus,productF0RevalidationNeeded});
           }
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:rows})}\n`);
