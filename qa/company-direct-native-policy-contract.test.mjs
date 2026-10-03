@@ -171,47 +171,29 @@ test('active scheduling cannot silently re-enable UEFN or weaken native evidence
   assert.equal(roadmap.directNativeDualPlatformDevelopment.externalRelease.requiresOwnRuntimeQaRegressionAndExplicitPublicExposureEvidence,true);
 });
 
-test('Roblox internal release enters perpetual 3-to-6 buildup while external public release stays fail-closed',()=>{
+test('Roblox buildup uses code and static QA while external public release stays fail-closed',()=>{
   const gate=roadmap.developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate;
   const loop=gate.internalBuildupLoop;
   const hard=gate.externalPublicReleaseHardGate;
-  assert.equal(loop.status,'ACTIVE_EXECUTABLE_CONTRACT_WITH_ACTUAL_VIBE_PLAY_EXECUTOR_REQUIRED');
-  assert.equal(loop.startsAfter,'INTERNAL_PLATFORM_RELEASE');
+  assert.equal(loop.status,'ACTIVE_MINIMAL');
   assert.equal(loop.perpetual,true);
   assert.equal(loop.neverCompletes,true);
-  assert.equal(loop.continuesAfterPublicRelease,true);
-  assert.deepEqual(loop.sequence,[
-    'VIBE_INTERNAL_PLAY',
-    'CAUSAL_REPAIR_AND_DEVELOPMENT',
-    'ROBLOX_PLATFORM_REBUILD',
-    'EXACT_CANDIDATE_REVALIDATION',
-    'LOOP_BACK_TO_VIBE_INTERNAL_PLAY'
-  ]);
-  assert.equal(loop.actualVibePlayEvidenceRequired,true);
-  assert.equal(loop.actualVibePlayExecutor,'.github/workflows/company-development-roblox-post-runtime-qa.yml#studio-mcp-auto-play');
-  assert.equal(loop.actualVibePlaySurface,'ROBLOX_STUDIO_MCP_PLAY_MODE');
-  assert.equal(loop.robloxPlayerAutomation,false);
-  assert.equal(loop.externalGuiAutomation,false);
-  assert.equal(loop.undocumentedStudioCliAutomation,false);
-  assert.equal(loop.thirdPartyMcpBridgeForbidden,true);
-  assert.equal(loop.generatedBatchRepairPolicy,'DO_NOT_REWRITE_USE_OFFICIAL_INSTALLED_STUDIOMCP_EXE_FALLBACK');
-  assert.equal(roadmap.roblox.studioExecution.generatedBatchBrokenOrStaleFallbackAllowed,true);
-  assert.equal(roadmap.roblox.studioExecution.generatedBatchRewriteForbidden,true);
-  assert.equal(roadmap.roblox.studioExecution.thirdPartyMcpBridgeForbidden,true);
-  assert.equal(roadmap.roblox.studioExecution.studioMcpWindowsOfficialBinaryFallback,'%LOCALAPPDATA%\\Roblox\\Versions\\version-*\\StudioMCP.exe');
-  assert.equal(loop.historicalSharedTargetExactArtifactLocalPlayAllowed,true);
-  assert.equal(loop.historicalSharedTargetLocalPlayDoesNotClaimCurrentPublishedRuntime,true);
-  assert.equal(loop.syntheticStaticOrDeclaredPlayPassForbidden,true);
-  assert.equal(loop.noDurationExit,true);
-  assert.equal(loop.noLimitedOrRestrictedPublicTestExit,true);
+  assert.deepEqual(loop.sequence,['BUILD_UP','CODE_AND_STATIC_QA','OPTIONAL_STUDIO_DIAGNOSTIC','NEXT_BUILD_UP']);
+  assert.equal(loop.codeAndStaticQaRequired,true);
+  assert.equal(loop.studioRequired,false);
+  assert.equal(loop.missingStudioAction,'CONTINUE_DEVELOPMENT_AND_DEPLOYMENT');
+  assert.equal(loop.publicReleaseAuthorityUnchanged,true);
+  assert.equal(roadmap.roblox.studioExecution.required,false);
+  assert.equal(roadmap.roblox.studioExecution.optionalDiagnostic,true);
+  assert.equal(roadmap.roblox.studioExecution.deploymentGate,false);
+  assert.equal(roadmap.roblox.studioExecution.f9Gate,false);
+
   assert.equal(hard.status,'FAIL_CLOSED');
   assert.equal(hard.criteriaMode,'EVIDENCE_AND_COMPLETION_ONLY');
   assert.equal(hard.fixedDurationRequired,false);
-  assert.equal(hard.elapsedDaysRequired,null);
   assert.equal(hard.limitedOrRestrictedPublicTestRequired,false);
   assert.equal(hard.allRequirementsRequired,true);
   assert.equal(hard.exactCandidateBindingRequired,true);
-  assert.ok(hard.requirements.includes('ACTUAL_VIBE_INTERNAL_PLAY_EVIDENCE_PASS'));
   assert.ok(hard.requirements.includes('GAME_COMPLETION_EVIDENCE_PASS'));
   assert.ok(hard.requirements.includes('ROBLOX_PLATFORM_ADAPTATION_RUNTIME_EVIDENCE_PASS'));
   assert.ok(hard.requirements.includes('PRESENTATION_COMPLETION_EVIDENCE_PASS'));
@@ -222,38 +204,30 @@ test('Roblox internal release enters perpetual 3-to-6 buildup while external pub
   const archLoop=architecture.releaseExposureLifecycle.robloxPerpetualInternalBuildup;
   const archGate=architecture.releaseExposureLifecycle.robloxExternalPublicReleaseHardGate;
   assert.equal(archLoop.perpetual,true);
-  assert.equal(archLoop.continuesAfterPublicRelease,true);
-  assert.equal(archLoop.actualPlayExecutor,'.github/workflows/company-development-roblox-post-runtime-qa.yml#studio-mcp-auto-play');
-  assert.equal(archLoop.windowsMcpOfficialBinaryFallback,'%LOCALAPPDATA%\\Roblox\\Versions\\version-*\\StudioMCP.exe');
-  assert.equal(archLoop.thirdPartyMcpBridge,false);
+  assert.equal(archLoop.codeAndStaticQaPrimary,true);
+  assert.equal(archLoop.studioRequired,false);
+  assert.equal(archLoop.studioUnavailableBlocksDevelopment,false);
+  assert.equal(archLoop.studioUnavailableBlocksDeployment,false);
   assert.equal(archGate.failClosed,true);
-  assert.equal(archGate.actualVibePlayRequired,true);
   assert.equal(archGate.f9InternalReleaseCannotSetPublicReady,true);
   assert.equal(archGate.fixedDurationRequired,false);
   assert.equal(archGate.restrictedPublicTestRequired,false);
 });
 
-test('every accepted Roblox buildup modification must rebuild before revalidation and replay',()=>{
+test('accepted Roblox buildup requires fresh code and static QA without Studio gating',()=>{
   const loop=roadmap.developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.internalBuildupLoop;
-  assert.equal(loop.rebuildAfterEveryAcceptedModificationRequired,true);
-  assert.equal(loop.modifiedSourceMayNotReusePriorBuildArtifact,true);
-  assert.equal(loop.modifiedSourceInvalidatesAffectedPlayAndValidationEvidence,true);
-  assert.equal(loop.rebuildMustProduceNewExactCandidateBeforeRevalidation,true);
-  assert.equal(loop.revalidationMustBindToRebuiltCandidate,true);
-  assert.deepEqual(loop.rebuildSequence,[
-    'ACCEPTED_MODIFICATION_WRITTEN',
-    'PRIOR_AFFECTED_ARTIFACT_AND_PLAY_EVIDENCE_INVALIDATED',
-    'ROBLOX_PLATFORM_REBUILD',
-    'INTERNAL_REDEPLOY_EXACT_CANDIDATE',
-    'EXACT_CANDIDATE_REVALIDATION',
-    'VIBE_INTERNAL_PLAY'
-  ]);
-  const a=architecture.releaseExposureLifecycle.robloxPerpetualInternalBuildup;
-  assert.equal(a.rebuildAfterEveryAcceptedModification,true);
-  assert.equal(a.staleArtifactReuseAfterSourceModification,false);
-  assert.equal(a.revalidationInput,'NEWLY_REBUILT_EXACT_CANDIDATE_ONLY');
+  const verify=roadmap.roblox.developmentVerification;
+  const arch=architecture.releaseExposureLifecycle.robloxPerpetualInternalBuildup;
+  assert.deepEqual(loop.sequence,['BUILD_UP','CODE_AND_STATIC_QA','OPTIONAL_STUDIO_DIAGNOSTIC','NEXT_BUILD_UP']);
+  assert.equal(loop.codeAndStaticQaRequired,true);
+  assert.equal(loop.studioRequired,false);
+  assert.deepEqual(verify.postBuildUpRequired,['CODE_QA','STATIC_QA']);
+  assert.equal(verify.exactSourceArtifactBindingRequired,true);
+  assert.equal(verify.studioBlocksDevelopment,false);
+  assert.equal(verify.studioBlocksDeployment,false);
+  assert.equal(arch.codeAndStaticQaPrimary,true);
+  assert.equal(arch.studioRequired,false);
 });
-
 
 test('native executors cannot bypass Unity Web upper-platform readiness',()=>{
   const unity=fs.readFileSync('.github/workflows/company-development-unity-runtime.yml','utf8');

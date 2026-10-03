@@ -238,14 +238,109 @@ jobs:
     needs: [scan, record_incident]
     if: ${{ always() }}
     runs-on: ubuntu-slim
-    timeout-minutes: 2
+    timeout-minutes: 4
     permissions:
       contents: read
       pull-requests: read
     steps:
+      - name: Checkout exact PR head for deterministic auto-prune verification
+        if: ${{ github.event_name == 'pull_request' && needs.scan.outputs.verdict == 'REVIEW' && needs.scan.outputs.review_only == 'YES' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+
+      - name: Verify records-governance current-use auto-prune
+        id: auto_prune
+        if: ${{ github.event_name == 'pull_request' && needs.scan.outputs.verdict == 'REVIEW' && needs.scan.outputs.review_only == 'YES' }}
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'pass=NO' >> "$GITHUB_OUTPUT"
+          if [[ "$HEAD_REF" != records/central-current-use-* ]]; then
+            echo 'CENTRAL_AUTO_PRUNE_SECURITY=NOT_AUTO_PRUNE_BRANCH'
+            exit 0
+          fi
+          if [[ "$PR_TITLE" != 'records: auto-prune unused central policy' ]]; then
+            echo 'CENTRAL_AUTO_PRUNE_SECURITY=TITLE_MISMATCH'
+            exit 0
+          fi
+          git fetch --no-tags --depth=1 origin "$BASE_SHA"
+          git diff --name-only "$BASE_SHA" HEAD > /tmp/central-prune-files.txt
+          if grep -Ev '^(company-learning/platform-release-roadmap\.json|company-records/operations/[0-9]{4}/[0-9]{4}-[0-9]{2}-[0-9]{2}/company/central-policy-archive--central-policy-current-use-[a-z0-9-]+\.json)$' /tmp/central-prune-files.txt | grep -q .; then
+            echo 'CENTRAL_AUTO_PRUNE_SECURITY=UNEXPECTED_FILE'
+            cat /tmp/central-prune-files.txt
+            exit 0
+          fi
+          grep -qx 'company-learning/platform-release-roadmap.json' /tmp/central-prune-files.txt
+          grep -Eq '^company-records/operations/.+/central-policy-archive--central-policy-current-use-.+\.json$' /tmp/central-prune-files.txt
+          node tools/company-records-governance.mjs --central-report
+          BASE_SHA="$BASE_SHA" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {execFileSync} from 'node:child_process';
+          import {findCurrentCentralPolicyReferences} from './tools/company-records-governance.mjs';
+
+          const baseSha=process.env.BASE_SHA;
+          const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+          const head=read('company-learning/platform-release-roadmap.json');
+          const base=JSON.parse(execFileSync('git',['show',baseSha+':company-learning/platform-release-roadmap.json'],{encoding:'utf8'}));
+          const changed=fs.readFileSync('/tmp/central-prune-files.txt','utf8').split(/\r?\n/).filter(Boolean);
+          const archives=changed.filter(x=>x.includes('/central-policy-archive--central-policy-current-use-')).map(read);
+          if(archives.length!==1)throw new Error('AUTO_PRUNE_EXACTLY_ONE_ARCHIVE_REQUIRED');
+          const archive=archives[0];
+          if(archive?.data?.mode!=='AUTO_CURRENT_USE_ONLY')throw new Error('AUTO_PRUNE_MODE_REQUIRED');
+          const paths=archive?.data?.archivedPaths||[];
+          const payload=archive?.data?.archivedPayload||{};
+          if(!Array.isArray(paths)||!paths.length)throw new Error('AUTO_PRUNE_PATHS_REQUIRED');
+
+          const refs=findCurrentCentralPolicyReferences();
+          const refKeys=Object.keys(refs);
+          const get=(root,dotted)=>{
+            let cur=root;
+            for(const key of dotted.split('.').filter(Boolean)){
+              if(!cur||typeof cur!=='object'||!Object.hasOwn(cur,key))return undefined;
+              cur=cur[key];
+            }
+            return cur;
+          };
+          const del=(root,dotted)=>{
+            const parts=dotted.split('.').filter(Boolean),last=parts.pop();
+            let cur=root;
+            for(const key of parts){
+              if(!cur||typeof cur!=='object'||!Object.hasOwn(cur,key))return false;
+              cur=cur[key];
+            }
+            if(!cur||typeof cur!=='object'||!Object.hasOwn(cur,last))return false;
+            delete cur[last];
+            return true;
+          };
+
+          const reconstructed=structuredClone(base);
+          for(const p of paths){
+            const stillReferenced=refKeys.some(ref=>ref===p||ref.startsWith(p+'.')||p.startsWith(ref+'.'));
+            if(stillReferenced)throw new Error('AUTO_PRUNE_REFERENCED_PATH:'+p);
+            const prior=get(base,p);
+            if(prior===undefined)throw new Error('AUTO_PRUNE_BASE_PATH_MISSING:'+p);
+            if(JSON.stringify(prior)!==JSON.stringify(payload[p]))throw new Error('AUTO_PRUNE_ARCHIVE_PAYLOAD_MISMATCH:'+p);
+            if(get(head,p)!==undefined)throw new Error('AUTO_PRUNE_HEAD_PATH_NOT_REMOVED:'+p);
+            if(!del(reconstructed,p))throw new Error('AUTO_PRUNE_RECONSTRUCT_DELETE_FAILED:'+p);
+          }
+          reconstructed.centralDocumentRetention=head.centralDocumentRetention;
+          if(JSON.stringify(reconstructed)!==JSON.stringify(head))throw new Error('AUTO_PRUNE_NON_ARCHIVAL_POLICY_MUTATION');
+          console.log('CENTRAL_AUTO_PRUNE_REFERENCED_PATHS_PROTECTED=PASS');
+          console.log('CENTRAL_AUTO_PRUNE_ARCHIVE_FIDELITY=PASS');
+          console.log('CENTRAL_AUTO_PRUNE_ONLY_ARCHIVAL_MUTATION=PASS');
+          NODE
+          echo 'pass=YES' >> "$GITHUB_OUTPUT"
+          echo 'CENTRAL_AUTO_PRUNE_SECURITY=PASS'
+
       - name: Verify exact-head Primary-AI direct policy review
         id: direct_review
-        if: ${{ github.event_name == 'pull_request' && needs.scan.outputs.verdict == 'REVIEW' && needs.scan.outputs.review_only == 'YES' }}
+        if: ${{ github.event_name == 'pull_request' && needs.scan.outputs.verdict == 'REVIEW' && needs.scan.outputs.review_only == 'YES' && steps.auto_prune.outputs.pass != 'YES' }}
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -277,6 +372,7 @@ jobs:
           HIGHEST: ${{ needs.scan.outputs.highest }}
           EVENT_NAME: ${{ github.event_name }}
           REVIEW_ONLY: ${{ needs.scan.outputs.review_only }}
+          AUTO_PRUNE_PASS: ${{ steps.auto_prune.outputs.pass || 'NO' }}
           DIRECT_REVIEW_PASS: ${{ steps.direct_review.outputs.pass || 'NO' }}
         run: |
           set -euo pipefail
@@ -287,9 +383,14 @@ jobs:
             exit 1
           fi
           if [ "$VERDICT" = 'REVIEW' ]; then
-            echo 'VIBE_SECURITY_ACTION=PRIMARY_AI_DIRECT_REVIEW_REQUIRED'
             if [ "$EVENT_NAME" = 'pull_request' ]; then
               test "$REVIEW_ONLY" = 'YES'
+              if [ "$AUTO_PRUNE_PASS" = 'YES' ]; then
+                echo 'VIBE_SECURITY_ACTION=ALLOW_VERIFIED_CURRENT_USE_AUTO_PRUNE'
+                echo 'VIBE_SECURITY_REVIEW_STATE=DETERMINISTIC_ARCHIVE_ONLY_PRUNE_PASS'
+                exit 0
+              fi
+              echo 'VIBE_SECURITY_ACTION=PRIMARY_AI_DIRECT_REVIEW_REQUIRED'
               test "$DIRECT_REVIEW_PASS" = 'YES'
               echo 'VIBE_SECURITY_REVIEW_STATE=EXACT_HEAD_OWNER_PRIMARY_AI_REVIEW_PASS'
               exit 0

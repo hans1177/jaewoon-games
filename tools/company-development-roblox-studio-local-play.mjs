@@ -37,7 +37,10 @@ export function validateLocalStudioPolicy(roadmap={}){
   const forbidden=Array.isArray(usage.forbidden)?usage.forbidden:[];
   const pass=
     studio.enabled===true
-    &&studio.requiredForActualVibeInternalPlay===true
+    &&studio.required===false
+    &&studio.optionalDiagnostic===true
+    &&studio.deploymentGate===false
+    &&studio.f9Gate===false
     &&studio.officialStudioMcpOnly===true
     &&studio.localPlaceFileRequired===true
     &&studio.onlinePublishedPlaceDirectOpenForbidden===true

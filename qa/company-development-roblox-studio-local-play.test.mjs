@@ -122,8 +122,10 @@ function roadmap(){
     roblox:{studioExecution:{
       enabled:true,
       required:false,
-      requiredForActualVibeInternalPlay:true,
-      requiredForInternalRelease:true,
+      optionalDiagnostic:true,
+      deploymentGate:false,
+      f9Gate:false,
+      requiredForInternalRelease:false,
       officialStudioMcpOnly:true,
       localPlaceFileRequired:true,
       onlinePublishedPlaceDirectOpenForbidden:true,
@@ -390,28 +392,25 @@ test('planner excludes only explicit disabled games rather than using currentSte
   assert.deepEqual(result.include.map(row=>row.gameId).sort(),['g1','g2']);
 });
 
-test('central contract makes actual play evidence-gated and parallel to foundation revalidation after internal release',()=>{
+test('central contract keeps Studio optional and outside build-up F9 deployment gates',()=>{
   const central=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
   const loop=central.developmentLifecycleMachine?.internalPlatformReleaseAndPublicExposureGate?.internalBuildupLoop||{};
-  assert.equal(loop.actualVibePlayEligibility,'EXACT_PRIVATE_RUNTIME_CANDIDATE_PLUS_EXACT_SOURCE_ARTIFACT_BINDING');
-  assert.equal(loop.actualVibePlayMayStartAfterRuntimeFoundationPassBeforeInternalRelease,false);
-  assert.equal(loop.actualVibePlayMayStartAfterExactPrivateCandidateBeforeRuntimeFoundationPass,true);
-  assert.equal(loop.actualVibePlayEligibilityMustNotDependOnExclusiveCurrentStep,true);
-  assert.equal(loop.foundationOrFinalRevalidationMayRunParallelWithActualVibePlayAfterInternalRelease,true);
-  assert.equal(loop.currentStepMayRepresentParallelRuntimeRevalidationWithoutRevokingInternalReleasePlayEligibility,true);
-  assert.equal(loop.explicitDisabledGameRemainsIneligible,true);
+  assert.deepEqual(loop.sequence,['BUILD_UP','CODE_AND_STATIC_QA','OPTIONAL_STUDIO_DIAGNOSTIC','NEXT_BUILD_UP']);
+  assert.equal(loop.codeAndStaticQaRequired,true);
+  assert.equal(loop.studioRequired,false);
+  assert.equal(loop.missingStudioAction,'CONTINUE_DEVELOPMENT_AND_DEPLOYMENT');
+  const studio=central.roblox?.studioExecution||{};
+  assert.equal(studio.required,false);
+  assert.equal(studio.optionalDiagnostic,true);
+  assert.equal(studio.deploymentGate,false);
+  assert.equal(studio.f9Gate,false);
   const arch=architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup||{};
-  assert.equal(arch.actualPlayPlannerEligibility,'EXACT_PRIVATE_RUNTIME_CANDIDATE_PLUS_EXACT_SOURCE_ARTIFACT_BINDING');
-  assert.equal(arch.externalServerProbeAutomatic,false);
-  assert.equal(arch.externalServerObservationRequiredForInternalDevelopment,false);
-  assert.equal(arch.f1ThroughF8SingleStudioSession,true);
-  assert.equal(arch.f9RuntimeReplay,false);
-  assert.equal(arch.actualPlayPlannerExclusiveCurrentStepGate,false);
-  assert.equal(arch.parallelRuntimeFoundationAndFinalRevalidationAllowedAfterInternalRelease,true);
-  assert.equal(arch.explicitDisabledGameEligible,false);
+  assert.equal(arch.codeAndStaticQaPrimary,true);
+  assert.equal(arch.studioRequired,false);
+  assert.equal(arch.studioUnavailableBlocksDevelopment,false);
+  assert.equal(arch.studioUnavailableBlocksDeployment,false);
 });
-
 
 test('planner skips only an already verified exact Studio MCP play record',()=>{
   const candidate=item();
@@ -1237,70 +1236,31 @@ test('MCP helper accepts bounded per-session readiness attempts from workflow ar
   assert.match(helper,/toolDelayMs:Number\(a\['tool-delay-ms'\]\|\|1000\)/);
 });
 
-test('central Studio MCP recovery policy stays restart-only and fail-closed on infrastructure exhaustion',()=>{
+test('central Studio policy keeps only nonblocking optional diagnostic recovery essentials',()=>{
   const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
-  const recovery=roadmap.roblox?.studioExecution?.mcpUnavailableRecovery||{};
-  assert.equal(recovery.mode,'OFFICIAL_RESTART_ONLY');
-  assert.equal(recovery.automaticSessionAttempts,3);
-  assert.equal(recovery.toolReadinessAttemptsPerSession,5);
-  assert.equal(recovery.assistantSettingsDiagnosticOnly,true);
-  assert.equal(recovery.assistantSettingsMutationForbidden,true);
-  assert.equal(recovery.guiToggleAutomationForbidden,true);
-  assert.equal(recovery.finalFailureClass,'STUDIO_MCP_INFRASTRUCTURE_PENDING');
-  assert.equal(recovery.infrastructureFailureMustNotBecomeGameFailure,true);
-  assert.deepEqual(recovery.sessionRestartEligibleFailureScope,[
-    'MCP_TOOL_READINESS',
-    'MCP_SERVER_ENABLEMENT',
-    'STUDIO_ATTACHMENT',
-    'MCP_TRANSPORT'
-  ]);
-  assert.equal(recovery.completedMcpSessionRuntimeFailureAction,'PERSIST_GAME_RUNTIME_EVIDENCE_WITHOUT_MCP_SESSION_RESTART');
-  assert.equal(recovery.runtimeFailureMustNotConsumeMcpRecoveryAttempts,true);
-  assert.equal(recovery.completedSessionExitContract,'MCP_RUN_EXITS_SUCCESS_AFTER_REQUIRED_TOOLS_AND_STUDIO_SESSION_COMPLETE_EVEN_WHEN_RUNTIME_QA_FAILS');
-  assert.equal(recovery.settingEnablementEvidenceRequired,true);
-  assert.equal(recovery.settingEnablementAuthority,'READ_ONLY_SETTING_DIAGNOSTIC_OR_SUCCESSFUL_OFFICIAL_REQUIRED_TOOL_HANDSHAKE');
-  assert.equal(recovery.confirmedEnabledState,'YES');
-  assert.equal(recovery.explicitDisabledState,'NO');
-  assert.deepEqual(recovery.unconfirmedStates,['MISSING','UNKNOWN']);
-  assert.equal(recovery.assistantSettingsDiagnosticAdvisoryWhenMissingOrUnknown,true);
-  assert.equal(recovery.requiredToolHandshakeCanConfirmEnabledState,true);
-  assert.equal(recovery.unconfirmedSettingAction,'PROBE_OFFICIAL_MCP_REQUIRED_TOOLS_AND_FAIL_CLOSED_IF_HANDSHAKE_NOT_READY');
-  assert.equal(recovery.explicitDisabledAction,'FAIL_CLOSED_AS_INFRASTRUCTURE_PENDING_WITHOUT_STUDIO_PLAY_ATTEMPT');
-  assert.equal(recovery.automaticSettingMutationForbidden,true);
-  assert.equal(recovery.manualPrerequisite,'ASSISTANT_MANAGE_MCP_SERVERS_ENABLE_STUDIO_AS_MCP_SERVER');
+  const studio=roadmap.roblox?.studioExecution||{};
+  const recovery=studio.mcpUnavailableRecovery||{};
+  assert.equal(studio.required,false);
+  assert.equal(studio.optionalDiagnostic,true);
+  assert.equal(studio.deploymentGate,false);
+  assert.equal(studio.f9Gate,false);
+  assert.equal(studio.requiredForInternalRelease,false);
+  assert.equal(studio.postBuildUpVerificationLevel,'CODE_AND_STATIC_QA');
   assert.equal(recovery.automaticResumeAfterPrerequisite,true);
-  const arch=architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup?.mcpUnavailableRecovery||{};
-  assert.equal(arch.automaticSessionAttempts,3);
-  assert.equal(arch.ownedStudioRestart,true);
-  assert.equal(arch.mcpClientRestart,true);
-  assert.equal(arch.assistantSettingsReadOnlyDiagnostic,true);
-  assert.equal(arch.assistantSettingsMutation,false);
-  assert.equal(arch.guiToggleAutomation,false);
-  assert.equal(arch.settingGate,'EXPLICIT_NO_BLOCKS_OTHERWISE_OFFICIAL_REQUIRED_TOOL_HANDSHAKE_IS_AUTHORITATIVE');
-  assert.equal(arch.explicitDisabledState,'NO');
-  assert.equal(arch.explicitDisabledExecution,'SKIP_STUDIO_AND_MCP_SESSION_ATTEMPTS');
-  assert.deepEqual(arch.unconfirmedSettingStates,['MISSING','UNKNOWN']);
-  assert.equal(arch.unconfirmedSettingExecution,'PROBE_OFFICIAL_MCP_REQUIRED_TOOLS');
-  assert.equal(arch.requiredToolHandshakeAuthority,true);
-  assert.deepEqual(arch.sessionRestartEligibleFailureScope,[
-    'MCP_TOOL_READINESS',
-    'MCP_SERVER_ENABLEMENT',
-    'STUDIO_ATTACHMENT',
-    'MCP_TRANSPORT'
-  ]);
-  assert.equal(arch.completedMcpSessionRuntimeFailureAction,'PERSIST_GAME_RUNTIME_EVIDENCE_WITHOUT_MCP_SESSION_RESTART');
-  assert.equal(arch.runtimeFailureMustNotConsumeMcpRecoveryAttempts,true);
-  const ingress=architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress||{};
-  assert.equal(ingress.version,3);
-  assert.equal(ingress.infrastructureRecovery,'RESTART_ONLY_WHEN_MCP_TOOL_READINESS_ENABLEMENT_ATTACHMENT_OR_TRANSPORT_FAILS');
-  assert.equal(ingress.completedSessionRuntimeFailure,'PERSIST_AS_GAME_RUNTIME_EVIDENCE_NO_MCP_RESTART');
-  assert.equal(ingress.runtimeFailureConsumesMcpRecoveryAttempt,false);
-  assert.equal(ingress.completedSessionExitContract,'MCP_PROCESS_EXIT_ZERO_RUNTIME_QA_RESULT_PERSISTED_SEPARATELY');
-  assert.equal(arch.unconfirmedSettingState,'STUDIO_MCP_INFRASTRUCTURE_PENDING_IF_REQUIRED_TOOL_HANDSHAKE_FAILS');
-  assert.equal(arch.automaticSettingMutation,false);
+  assert.equal(recovery.developmentContinuesWhileStudioUnavailable,true);
+  for(const obsolete of [
+    'mode','automaticSessionAttempts','toolReadinessAttemptsPerSession',
+    'assistantSettingsDiagnosticOnly','assistantSettingsMutationForbidden',
+    'guiToggleAutomationForbidden','finalFailureClass',
+    'infrastructureFailureMustNotBecomeGameFailure','sessionRestartEligibleFailureScope',
+    'completedMcpSessionRuntimeFailureAction','runtimeFailureMustNotConsumeMcpRecoveryAttempts',
+    'completedSessionExitContract','settingEnablementEvidenceRequired',
+    'settingEnablementAuthority','confirmedEnabledState','explicitDisabledState',
+    'unconfirmedStates','assistantSettingsDiagnosticAdvisoryWhenMissingOrUnknown',
+    'requiredToolHandshakeCanConfirmEnabledState','unconfirmedSettingAction',
+    'explicitDisabledAction'
+  ])assert.equal(Object.hasOwn(recovery,obsolete),false,obsolete);
 });
-
 
 test('Studio MCP strategy matrix receives include rows only and never planner metadata axes',()=>{
   const studioPlanBlock=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
@@ -1408,8 +1368,8 @@ test('declared Studio actual-play contract requires core progression UI action e
   const contract=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/launch-mvp.json','utf8')).studioActualPlayContract;
   assert.equal(contract.required,true);
   assert.deepEqual(contract.entryButtonTexts,['저택 들어가기','출정']);
-  assert.equal(contract.selectionButtonText,'인간으로 준비');
-  assert.equal(contract.startButtonText,'1인 플레이 · 빈자리는 AI');
+  assert.equal(contract.selectionButtonText,'인간');
+  assert.equal(contract.startButtonText,'혼자 바로 시작');
   assert.equal(contract.primaryActionButtonText,'대시');
   assert.ok(contract.afterStartWaitMs>=4000);
   for(const id of ['role-selection-interaction','round-running','logical-population-eight','hud-visible','action-ui-visible','design-runtime-binding','interaction-surface-present','world-geometry-present','primary-action-input','primary-action-effect','visual-capture-sane'])assert.ok(contract.requiredScenarios.includes(id),id);

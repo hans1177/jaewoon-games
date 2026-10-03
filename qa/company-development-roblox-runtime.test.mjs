@@ -741,10 +741,8 @@ test('Roblox source persistence rejects results when the source-plan control con
 });
 
 
-test('every Roblox source-plan contract path wakes a fresh batch immediately',()=>{
+test('every current Roblox source-plan contract path wakes a fresh batch immediately',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
-  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
-  const change=roadmap.changeRecord?.robloxSourcePlanWakeAndRunnerIsolation20260927||{};
   const pushStart=workflow.indexOf('  push:');
   const pushEnd=workflow.indexOf('  workflow_call:',pushStart);
   assert.ok(pushStart>=0&&pushEnd>pushStart);
@@ -753,8 +751,16 @@ test('every Roblox source-plan contract path wakes a fresh batch immediately',()
   const contractEnd=workflow.indexOf('\n\njobs:',contractStart);
   assert.ok(contractStart>=0&&contractEnd>contractStart);
   const contractBlock=workflow.slice(contractStart,contractEnd);
-  assert.equal(change.sourcePlanContractPushWakeRequired,true);
-  for(const required of change.sourcePlanContractPaths||[]){
+  const requiredPaths=[
+    '.github/workflows/company-development-roblox-runtime.yml',
+    'tools/company-development-roblox-bootstrap.mjs',
+    'tools/company-development-roblox-source-reconcile.mjs',
+    'tools/company-selected-platform-router.mjs',
+    'tools/company-upper-platform-admission.mjs',
+    'company-asset-library.json',
+    'company-learning/platform-release-roadmap.json',
+  ];
+  for(const required of requiredPaths){
     assert.ok(contractBlock.includes(required),'contract path missing: '+required);
     assert.ok(pushBlock.includes(`'${required}'`),'push wake missing: '+required);
   }

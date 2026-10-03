@@ -28,6 +28,8 @@ const vibe24hRunner=readText('.github/workflows/vibe2-24h-runner.yml');
 const vibeContinuousCore=readText('.github/workflows/vibe2-continuous-core.yml');
 const vibeAutoPlanner=readText('tools/vibe2-auto-planner.mjs');
 const vibeSourceWorker=readText('tools/vibe2-source-worker.mjs');
+const securityWorkflow=readText('.github/workflows/company-security-immune.yml');
+const recordsWorkflow=readText('.github/workflows/company-records-governance.yml');
 
 test('platform-release-roadmap is the single machine execution policy source',()=>{
   assert.equal(directive.policyDocument,'company-learning/platform-release-roadmap.json');
@@ -1211,7 +1213,7 @@ test('Vibe3 contract QA stays off game-primary ubuntu-latest capacity',()=>{
   assert.equal(roadmap.minimumNecessaryProcedurePolicy.principles.administrativeChecksMayNotConsumeGamePrimaryWorkerSlots,true);
 });
 
-test('Roblox remote runtime QA stays off game-primary ubuntu-latest capacity',()=>{
+test('Roblox development keeps only current code/static QA contract and no historical repair mirrors',()=>{
   const workflow=readText('.github/workflows/company-development-roblox-post-runtime-qa.yml');
   const qaStart=workflow.indexOf('\n  runtime-foundation-qa:\n');
   const studioStart=workflow.indexOf('\n  studio-local-plan:\n',qaStart);
@@ -1219,123 +1221,43 @@ test('Roblox remote runtime QA stays off game-primary ubuntu-latest capacity',()
   const remoteQa=workflow.slice(qaStart,studioStart);
   assert.match(remoteQa,/runs-on:\s*ubuntu-24\.04/);
   assert.doesNotMatch(remoteQa,/runs-on:\s*ubuntu-latest/);
-  assert.match(workflow,/dedupe:[\s\S]*?runs-on:\s*ubuntu-24\.04/);
-  const projection=architecture.robloxRuntimeFoundationRunnerIsolation;
-  assert.equal(projection?.runtimeFoundationQa,'ubuntu-24.04');
-  assert.equal(projection?.studioLocalPlan,'ubuntu-slim');
-  assert.equal(projection?.studioMcpAutoPlay,'self-hosted:Windows:X64:roblox-studio-authenticated');
-  assert.equal(projection?.studioPlanningMovedOffSharedHost,true);
-  assert.equal(projection?.dedupeRunner,'ubuntu-24.04');
-  assert.equal(projection?.previousRunner,'ubuntu-slim');
-  assert.equal(projection?.localStudioExecutionMoved,false);
-  assert.equal(projection?.gamePrimaryUbuntuLatestCapacityProtected,true);
-  const isolation=roadmap.changeRecord?.robloxPostRuntimeQaRunnerIsolation20260927;
-  assert.equal(isolation?.dedupeRunner,'ubuntu-24.04');
-  assert.equal(isolation?.runtimeFoundationQaRunner,'ubuntu-24.04');
-  assert.equal(isolation?.localStudioExecutionMoved,false);
-  assert.equal(isolation?.exactSourceArtifactVersionGatePreserved,true);
-  assert.equal(isolation?.postFoundationStudioFollowup?.trigger,'CANONICAL_STUDIO_PLANNER_REQUIRES_EXACT_PLAY');
-  assert.equal(isolation?.postFoundationStudioFollowup?.coversExactFoundationEvidenceReuse,true);
-  assert.equal(isolation?.postFoundationStudioFollowup?.coversExactEnginePrebootEvidence,true);
-  assert.equal(isolation?.postFoundationStudioFollowup?.prePlannerRuntimeFoundationPassGuardForbidden,true);
-  assert.equal(isolation?.postFoundationStudioFollowup?.observedMissedDispatchRunId,36297021567);
-  assert.equal(isolation?.postFoundationStudioFollowup?.repeatExactFoundationRedispatch,false);
-  assert.match(workflow,/ROBLOX_STUDIO_MCP_POST_FOUNDATION_DISPATCH=/);
-  assert.match(workflow,/planLocalStudioCandidates/);
-  assert.match(workflow,/queueStudioFollowupIfEligible\(item\)/);
-  assert.doesNotMatch(workflow,/!runtimeFoundationWasPassed&&item\.robloxRuntimeFoundationPassed===true/);
-  const throttle=roadmap.changeRecord?.robloxOpenCloudThrottleRecovery20260927;
-  assert.deepEqual(throttle?.transientHttpRetryStatuses,[408,429,500,502,503,504]);
-  assert.equal(throttle?.retryAttempts,6);
-  assert.equal(throttle?.scanProbeConcurrency,2);
-  assert.equal(throttle?.exactGameProbeConcurrency,1);
-  assert.equal(throttle?.persistentApiFailureStillFails,true);
-  assert.match(workflow,/networkRetryAttempts:6,networkRetryDelayMs:1000/);
-  assert.equal(throttle?.scanProbeConcurrencyUnderVerified429,1);
-  assert.match(workflow,/const throttlePressure=candidates\.some/);
-  assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(requested\?1:\(throttlePressure\?1:2\),candidates\.length\|\|1\)\)/);
-  assert.match(workflow,/ROBLOX_OPEN_CLOUD_THROTTLE_PRESSURE=/);
-  assert.equal(architecture.robloxOpenCloudThrottleRecovery?.runtimeTruthGateUnchanged,true);
-  assert.equal(architecture.robloxOpenCloudThrottleRecovery?.publicReleaseGateUnchanged,true);
-  assert.equal(Object.hasOwn(roadmap.changeRecord||{},'robloxExactEvidenceRaceRepair20260927'),false);
-  assert.equal(Object.hasOwn(architecture,'robloxExactEvidenceRaceRepair'),false);
-  assert.equal(Object.hasOwn(logMap,'robloxExactEvidenceRaceRepairEvidence'),false);
-  assert.equal(throttle?.perCandidateProbeFailureIsolation,true);
-  assert.equal(throttle?.successfulProbeMustSurviveSiblingPersistentThrottle,true);
-  assert.equal(throttle?.successfulProbeEvidencePersistsAcrossPeerFailures,true);
-  assert.equal(throttle?.persistentProbeFailurePersistedBeforeWorkflowFailure,true);
-  assert.equal(throttle?.exactEnginePrebootStudioEvidencePersistenceAllowed,true);
-  assert.equal(throttle?.exactEnginePrebootStudioEvidencePersistenceMaySetRuntimeFoundationPass,false);
-  assert.equal(throttle?.exactEnginePrebootStudioEvidencePersistenceMaySetPublicReleaseReady,false);
-  assert.equal(throttle?.studioAssetBindingVersionMustMatchDeclaredBindingVersion,true);
-  assert.equal(throttle?.primaryActionEffectMayUseAuthoritativeServerFeedbackTransition,true);
-  assert.equal(throttle?.primaryActionFeedbackRequiresSuccessfulPrimaryInput,true);
-  assert.equal(throttle?.sourceArtifactCandidateBindingMustRemainExact,true);
-  assert.equal(throttle?.postFoundationStudioFollowupMustDelegateToCanonicalPlanner,true);
-  assert.equal(throttle?.postFoundationStudioFollowupMayNotPreRequireRuntimeFoundationPass,true);
-  assert.equal(throttle?.observedEvidence?.liveRepairRunId,36297021567);
-  assert.equal(throttle?.observedEvidence?.liveRepairStudioAssetSelectionMatched,true);
-  assert.equal(throttle?.observedEvidence?.liveRepairStudioFollowupReadyCountBeforeGuardFix,0);
-  assert.equal(throttle?.observedEvidence?.studioPassRunId,36298580885);
-  assert.equal(throttle?.observedEvidence?.studioAllRequiredScenariosPass,true);
-  assert.equal(throttle?.observedEvidence?.studioConsoleErrorCount,0);
-  assert.equal(throttle?.observedEvidence?.studioPrimaryActionEffectPass,true);
-  assert.equal(throttle?.observedEvidence?.studioCurrentSourceArtifactBinding,true);
-  assert.equal(throttle?.observedEvidence?.studioPrimaryActionFeedbackMetricPersistedBeforeRepair,false);
-  assert.equal(throttle?.primaryActionFeedbackMetricMustPersistToRuntimeSummary,true);
-  assert.equal(throttle?.primaryActionScenarioPassMayNotRelyOnSerializationOmission,true);
-  assert.equal(throttle?.gameplayRulesChanged,false);
-  assert.equal(throttle?.qualityGateWeakening,false);
-  assert.equal(architecture.robloxOpenCloudThrottleRecovery?.openCloudProbeFailureIsolation,'PER_CANDIDATE');
-  assert.equal(architecture.robloxOpenCloudThrottleRecovery?.successfulProbePersistence,true);
-  assert.equal(architecture.robloxOpenCloudThrottleRecovery?.persistentThrottleFailClosed,true);
-  assert.equal(architecture.robloxOpenCloudThrottleRecovery?.exactEnginePrebootMayPromoteRuntimeFoundation,false);
-  assert.equal(architecture.robloxOpenCloudThrottleRecovery?.exactEnginePrebootMayPromotePublicRelease,false);
-  assert.equal(architecture.robloxOpenCloudThrottleRecovery?.postFoundationStudioFollowupDelegatesToCanonicalPlanner,true);
-  assert.equal(architecture.robloxOpenCloudThrottleRecovery?.prePlannerRuntimeFoundationPassGuard,false);
-  assert.equal(architecture.robloxOpenCloudThrottleRecovery?.primaryActionFeedbackMetricPropagation,'EVALUATION_TO_RUNTIME_METRICS_TO_COMPANY_RUNTIME_EVIDENCE');
-  assert.equal(architecture.robloxOpenCloudThrottleRecovery?.primaryActionFeedbackSerializationOmissionAllowed,false);
-  assert.equal(architecture.robloxRuntimeFoundationRunnerIsolation?.postFoundationStudioFollowup?.prebootExactEngineCovered,true);
-  assert.equal(architecture.robloxRuntimeFoundationRunnerIsolation?.postFoundationStudioFollowup?.prePlannerRuntimeFoundationPassGuard,false);
-  assert.match(workflow,/persistentFailure:true/);
-  assert.match(workflow,/Enforce persistent Open Cloud probe failures after evidence persistence/);
-  assert.equal(logMap.robloxOpenCloudThrottleRecoveryEvidence?.followupObservedRunId,36296050875);
-  assert.equal(logMap.robloxOpenCloudThrottleRecoveryEvidence?.peerPersistent429ErasedSuccessfulProbeBeforeRepair,true);
-  assert.equal(logMap.robloxOpenCloudThrottleRecoveryEvidence?.studioPassObservation?.workflowRunId,36298580885);
-  assert.equal(logMap.robloxOpenCloudThrottleRecoveryEvidence?.studioPassObservation?.primaryActionEffect,'PASS');
-  assert.equal(logMap.robloxOpenCloudThrottleRecoveryEvidence?.studioPassObservation?.consoleErrorCount,0);
-  assert.equal(logMap.robloxOpenCloudThrottleRecoveryEvidence?.studioPassObservation?.persistedRuntimeSummaryPrimaryActionFeedbackChangedBeforeRepair,false);
-  assert.equal(logMap.robloxOpenCloudThrottleRecoveryEvidence?.falsePassAllowed,false);
-  assert.equal(roadmap.minimumNecessaryProcedurePolicy.principles.administrativeChecksMayNotConsumeGamePrimaryWorkerSlots,true);
-});
 
-test('Roblox F9 fan-in reads canonical runtime state from the workspace root',()=>{
-  const policy=roadmap.changeRecord?.robloxF9FaninRuntimePathRepair20260927;
-  const topology=architecture.robloxF9FaninRuntimePathRepair;
-  const evidence=logMap.robloxF9FaninRuntimePathRepairEvidence;
-  const f9Workflow=readText('.github/workflows/company-development-roblox-final-review-revalidation.yml');
-  assert.equal(policy?.observedRunId,36298713127);
-  assert.equal(policy?.observedGameId,'horror-escape-room');
-  assert.equal(policy?.canonicalRuntimePath,'runtime/development-queue.json');
-  assert.equal(policy?.f9PromotionStatePersistedBeforeFanInFailure,true);
-  assert.equal(policy?.exactCandidatePromotionPreserved,true);
-  assert.equal(policy?.publicReleaseGateUnchanged,true);
-  assert.equal(policy?.gameplayRulesChanged,false);
-  assert.equal(policy?.saveSchemaChanged,false);
-  assert.equal(policy?.qualityGateWeakening,false);
-  assert.equal(topology?.fanInWorkingDirectory,'GITHUB_WORKSPACE_ROOT');
-  assert.equal(topology?.runtimeQueuePath,'runtime/development-queue.json');
-  assert.equal(topology?.exactF9PromotionPrecedesFanIn,true);
-  assert.equal(topology?.promotionStateMustSurviveFanInFailure,true);
-  assert.equal(topology?.publicReleaseGateUnchanged,true);
-  assert.equal(evidence?.workflowRunId,36298713127);
-  assert.equal(evidence?.promotionResult,'ROBLOX_F9_INTERNAL_RELEASE_PROMOTED=1');
-  assert.equal(evidence?.blockedCount,0);
-  assert.equal(evidence?.repairedRuntimeQueuePath,'runtime/development-queue.json');
-  assert.equal(evidence?.exactPromotionLost,false);
-  assert.equal(evidence?.falsePassAllowed,false);
-  assert.match(f9Workflow,/node --input-type=module - "runtime\/development-queue\.json" "\$REQUESTED_GAME_ID"/);
-  assert.doesNotMatch(f9Workflow,/node --input-type=module - "\.\.\/runtime\/development-queue\.json"/);
+  const verification=roadmap.roblox?.developmentVerification||{};
+  assert.deepEqual(verification.postBuildUpRequired,['CODE_QA','STATIC_QA']);
+  assert.equal(verification.studio,'OPTIONAL_DIAGNOSTIC');
+  assert.equal(verification.studioBlocksDevelopment,false);
+  assert.equal(verification.studioBlocksF9,false);
+  assert.equal(verification.studioBlocksDeployment,false);
+  assert.equal(verification.exactSourceArtifactBindingRequired,true);
+
+  assert.equal(roadmap.roblox?.studioExecution?.required,false);
+  assert.equal(roadmap.roblox?.studioExecution?.requiredForInternalRelease,false);
+  assert.equal(roadmap.roblox?.studioExecution?.deploymentGate,false);
+  assert.equal(roadmap.developmentLifecycleMachine?.validationEfficiencyOptimization?.roblox?.studioValidationRequired,false);
+
+  for(const key of [
+    'robloxPostRuntimeQaRunnerIsolation20260927',
+    'robloxOpenCloudThrottleRecovery20260927',
+    'robloxStudioUnavailableUnlimitedRetry20261002',
+    'robloxF9FaninRuntimePathRepair20260927',
+    'robloxPlannerDuplicateContractQaRemoval20260927',
+    'robloxSourcePlanWakeAndRunnerIsolation20260927'
+  ])assert.equal(Object.hasOwn(roadmap.changeRecord||{},key),false,key);
+  for(const key of [
+    'robloxRuntimeFoundationRunnerIsolation',
+    'robloxPlannerDuplicateContractQaRemoval',
+    'robloxSourcePlanWakeAndRunnerIsolation',
+    'robloxOpenCloudThrottleRecovery',
+    'robloxF9FaninRuntimePathRepair'
+  ])assert.equal(Object.hasOwn(architecture,key),false,key);
+  for(const key of [
+    'robloxPostRuntimeQaRunnerIsolationEvidence',
+    'robloxExactEngineStudioHandoffEvidence',
+    'robloxOpenCloudThrottleRecoveryEvidence',
+    'robloxF9FaninRuntimePathRepairEvidence',
+    'robloxPlannerDuplicateContractQaRemovalEvidence',
+    'robloxSourcePlanWakeAndRunnerIsolationEvidence'
+  ])assert.equal(Object.hasOwn(logMap,key),false,key);
 });
 
 test('core QA cancels superseded main regressions while preserving non-main active runs',()=>{
@@ -1908,169 +1830,90 @@ test('BUILD_UP grounding stays connected from source proof through exact target 
   assert.equal(webChange.gameplaySemanticsUnchanged,true);
 });
 
-test('development-focused F0-F9 validation dedupe preserves perpetual game evolution',()=>{
+test('Roblox development policy keeps only code-static QA core gates and optional Studio diagnostics',()=>{
+  const verify=roadmap.roblox.developmentVerification;
+  assert.equal(verify.buildUpRequired,true);
+  assert.deepEqual(verify.postBuildUpRequired,['CODE_QA','STATIC_QA']);
+  assert.equal(verify.studio,'OPTIONAL_DIAGNOSTIC');
+  assert.equal(verify.studioBlocksDevelopment,false);
+  assert.equal(verify.studioBlocksF9,false);
+  assert.equal(verify.studioBlocksDeployment,false);
+
+  const studio=roadmap.roblox.studioExecution;
+  assert.equal(studio.required,false);
+  assert.equal(studio.optionalDiagnostic,true);
+  assert.equal(studio.deploymentGate,false);
+  assert.equal(studio.f9Gate,false);
+  assert.equal(studio.requiredForInternalRelease,false);
+  assert.equal(studio.postBuildUpVerificationLevel,'CODE_AND_STATIC_QA');
+  assert.equal(Object.hasOwn(studio,'actualPlayQualityContract'),false);
+  assert.equal(Object.hasOwn(studio,'runnerHost'),false);
+
   const policy=roadmap.developmentLifecycleMachine.validationEfficiencyOptimization;
-  assert.deepEqual(policy.appliesTo,['WEB','ROBLOX','UNITY']);
-  assert.deepEqual(policy.excludedPlatforms,['FORTNITE_UEFN']);
   assert.deepEqual(policy.floors,['F0','F1','F2','F3','F4','F5','F6','F7','F8','F9']);
-  assert.equal(policy.floors.includes('F10'),false);
   assert.equal(policy.f10Forbidden,true);
-  assert.equal(policy.newFloorCreated,false);
-  assert.equal(policy.developmentEvolutionLoopUnchanged,true);
-  assert.equal(policy.everyVerifiedDevelopmentDeltaStillRunsF0ThroughF9,true);
-  assert.equal(policy.externalServerObservationRequiredForInternalDevelopment,false);
-  assert.equal(policy.robloxInternalRuntimeAuthority,'OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD');
-  assert.equal(policy.sameExactCandidateSecurityEvidenceReusableWithinCycle,true);
-  assert.equal(policy.securityRevalidationByAffectedResponsibility,true);
-  assert.equal(policy.fullSecurityRescanEveryFloor,false);
-  assert.equal(policy.multiplayerEvidenceReusableWithinExactCycle,true);
-  assert.equal(policy.notApplicableSubcheckAllowedWithDesignOrSourceEvidence,true);
-  assert.equal(policy.f1ThroughF8MayShareOneInternalRuntimeSession,true);
-  assert.equal(policy.f9FanInOnlyNoDuplicateRuntimeSession,true);
-  assert.equal(policy.f9DoesNotTerminateEvolution,true);
-  assert.equal(policy.f9ReturnsResultToExistingBuildUpDirectiveLoop,true);
+  assert.equal(policy.impactScopedValidation,true);
+  assert.equal(policy.duplicateValidationForbidden,true);
+  assert.equal(policy.roblox.studioValidationRequired,false);
+  assert.equal(policy.roblox.studioDiagnosticOptional,true);
   assert.equal(policy.f9.startsNewRuntimeSession,false);
   assert.equal(policy.f9.terminatesEvolution,false);
 
-  const evolution=roadmap.continuousGameplaySystemEvolutionContract;
-  assert.equal(evolution.status,'ACTIVE_EXECUTABLE_CONTRACT');
-  assert.equal(evolution.taskGeneration.terminalCompletionStateForbidden,true);
-  assert.equal(evolution.taskGeneration.nextVerifiedGapCycleRequired,true);
-  assert.equal(evolution.gameSpecificBuildUpDirective.loopEscalation.everyVerifiedCycleCreatesNextDirective,true);
-  assert.equal(evolution.gameSpecificBuildUpDirective.loopEscalation.completedGoalBecomesBaseline,true);
-  assert.equal(evolution.gameSpecificBuildUpDirective.loopEscalation.terminalCompletionStateForbidden,true);
-
   const topology=architecture.validationEfficiencyTopology;
-  assert.equal(topology.gameEvolutionPipelineUnchanged,true);
-  assert.equal(topology.releaseStateDoesNotTerminateEvolution,true);
+  assert.equal(topology.roblox.verification,'CODE_AND_STATIC_QA');
+  assert.equal(topology.roblox.studio,'OPTIONAL_DIAGNOSTIC');
+  assert.equal(topology.roblox.studioRequired,false);
   assert.equal(topology.f9.terminalState,false);
-  assert.equal(topology.f9.nextAction,'RETURN_TO_EXISTING_GAME_SPECIFIC_BUILD_UP_LOOP');
-  assert.equal(topology.security.fullRescanEveryFloor,false);
-  assert.equal(topology.multiplayer.nonMultiplayerFloorResult,'NOT_APPLICABLE');
-
-  const mirror=directive.validationEfficiencyOptimization;
-  assert.equal(mirror.mirrorOnly,true);
-  assert.equal(mirror.f9DoesNotTerminateEvolution,true);
-  assert.equal(mirror.externalPublicApprovalAuthority,'OWNER_EXPLICIT_DIRECTIVE_ONLY');
 
   const securityPolicy=security.minimumNecessaryDevelopmentSecurity;
-  assert.deepEqual(securityPolicy.evidenceReuse.evidenceKey,[
-    'sourceRevision','artifactIdentity','securityScopeFingerprint','affectedResponsibilities','pass','checkedAt'
-  ]);
   assert.equal(securityPolicy.evidenceReuse.fullRescanEveryFloor,false);
   assert.equal(securityPolicy.evidenceReuse.newSecurityPipelineForbidden,true);
 });
 
-
-test('commercial Studio deep audit execution rules stay locked',()=>{
-  const contract=roadmap.roblox?.studioExecution?.actualPlayQualityContract||{};
-  assert.ok(Number(contract.version)>=4);
-  assert.equal(contract.commercialAuditRequired,true);
-  assert.equal(contract.adaptiveRuntimeDiscoveryRequired,true);
-  assert.equal(contract.semanticCoverageDiversityRequired,true);
-  assert.equal(contract.worldFloorGridSamplingRequired,true);
-  assert.equal(contract.pathfindingRouteCoverageRequired,true);
-  assert.equal(contract.liveCombatTargetActionEffectRequired,true);
-  assert.equal(contract.realDeathRespawnRecoveryRequiredWhenObserved,true);
-  assert.equal(contract.f9SaveRejoinRestartRequiredWhenSaveDeclared,true);
-  assert.equal(contract.f9SoakPerformanceTrendRequired,true);
-  assert.equal(contract.f9MultiplayerActualTwoPlayerRequired,true);
-  assert.equal(contract.f9MultiplayerRemoteOnlyCannotPass,true);
-  assert.equal(contract.f9MultiplayerSynchronizedStateTransitionRequired,true);
-  assert.ok(contract.requiredAxes.includes('F9_ACTUAL_TWO_PLAYER_SYNCHRONIZED_RUNTIME'));
-  assert.ok(Number(contract.fastDeepMinimumTimelineSamples)>=4);
-  assert.ok(Number(contract.f9SoakMinimumTimelineSamples)>=12);
-  for(const axis of [
-    'MAP_FLOOR_GRID_AND_PATHFINDING_COVERAGE',
-    'LIVE_COMBAT_TARGET_ACTION_EFFECT',
-    'F9_SAVE_REJOIN_RESTART_PERSISTENCE',
-    'REAL_DEATH_RESPAWN_RECOVERY',
-    'SEMANTIC_CATEGORY_DIVERSITY',
-    'F9_SOAK_MEMORY_AND_INSTANCE_TREND'
-  ])assert.ok(contract.requiredAxes.includes(axis),axis);
-});
-
-test('central document has a bounded current-policy budget and archives historical records in git',()=>{
+test('central document automatically retains only current references and archives removed policy',()=>{
   const file='company-learning/platform-release-roadmap.json';
   const current=JSON.parse(fs.readFileSync(file,'utf8'));
   const policy=current.centralDocumentRetention;
-  assert.equal(policy.maxUtf8Bytes,1120000);
-  assert.ok(Object.keys(current.changeRecord).length<=policy.maxChangeRecordEntries);
-  assert.ok(fs.statSync(file).size<=policy.maxUtf8Bytes,'Archive obsolete run history before expanding the central document');
-  assert.equal(policy.historicalExecutionLogsAuthority,'GIT_HISTORY');
-  assert.equal(policy.structuredArchiveAuthority,'COMPANY_RECORDS');
-  assert.equal(policy.softTargetUtf8Bytes,1100000);
-  assert.equal(policy.softTargetEnforced,true);
-  assert.equal(policy.minimumHeadroomBytes,20000);
-  assert.equal(policy.candidateCommand,'node tools/company-records-governance.mjs --central-candidates');
-  assert.equal(policy.archiveBeforeExpansion,true);
+  assert.equal(policy.version,3);
+  assert.equal(policy.mode,'AUTO_CURRENT_USE_ONLY');
+  assert.equal(policy.autoPruneEnabled,true);
+  assert.equal(policy.keepOnlyCurrentUseAndPinned,true);
+  assert.equal(policy.autoArchiveUnreferencedChangeRecords,true);
+  assert.equal(policy.autoArchiveHistoricalShapedNestedState,true);
+  assert.equal(policy.manualHistoricalSelectorMaintenanceRequired,false);
+  assert.deepEqual(policy.historicalArchiveSelectors,[]);
+  assert.deepEqual(policy.currentUseReferenceScanRoots,['qa','tools','.github','assets']);
+  assert.equal(policy.currentUseReferenceScanner,'tools/company-records-governance.mjs#findCurrentCentralPolicyReferences');
+  assert.equal(policy.autoPruneCommand,'node tools/company-records-governance.mjs --central-auto-prune');
+  assert.equal(policy.autoPruneWorkflow,'.github/workflows/company-records-governance.yml#central-current-use-prune');
   assert.equal(policy.archiveRecordRequiredBeforeDeletion,true);
   assert.equal(policy.referencedChangeRecordKeysAutoProtected,true);
-  assert.equal(policy.archiveUnreferencedChangeRecords,true);
-  assert.equal(policy.maintainer,'tools/company-records-governance.mjs');
-  assert.equal(policy.archiveRecordType,'central-policy-archive');
-  assert.ok(Array.isArray(policy.historicalArchiveSelectors)&&policy.historicalArchiveSelectors.length>=20);
+  assert.ok(fs.statSync(file).size<=policy.maxUtf8Bytes);
   assert.ok(fs.existsSync(path.join(repoRoot,policy.latestArchiveRecord)));
-  assert.match(policy.latestArchiveSourceRevision,/^[0-9a-f]{40}$/);
-  assert.match(policy.archivedChangeRecordCommit,/^[0-9a-f]{40}$/);
-  assert.equal(policy.currentOwnerRulesMustRemain,true);
-  assert.equal(policy.f0ThroughF9MustRemain,true);
-  assert.equal(policy.publicationApprovalMustRemain,true);
 });
 
-test('Roblox Studio PC host keeps only Studio visible and resumes exact work after reboot',()=>{
-  const host=roadmap.roblox?.studioExecution?.runnerHost||{};
-  assert.equal(host.pcImpactScope,'ROBLOX_STUDIO_ONLY');
-  assert.equal(host.visibleApplication,'ROBLOX_STUDIO_GUI_ONLY');
-  assert.equal(host.consolePolicy,'HIDDEN_CONSOLE_PARENT_NO_VISIBLE_CMD_OR_POWERSHELL');
-  assert.equal(host.hiddenChildShellsRequired,true);
-  assert.equal(host.persistentBootstrap,'USER_STARTUP_WSCRIPT_HIDDEN_RUN_CMD');
-  assert.equal(host.bootstrapImplementation,'.github/workflows/company-roblox-runner-pwsh-bootstrap.yml#hidden-runner-bootstrap');
-  assert.equal(host.watchdogRequired,false);
-  assert.equal(host.recurringWatchdogForbidden,true);
-  assert.equal(host.rebootRecovery,'HIDDEN_LOGON_RUNNER_RESTART');
-  assert.equal(host.checkpointBeforeWindowsExecution,true);
-  assert.equal(host.interruptedSessionIsGameFailure,false);
-  assert.equal(host.restartFromBlankForbidden,true);
-  assert.equal(host.exactSourceArtifactBindingPreservedAcrossHostInterruption,true);
-  const recovery=roadmap.roblox?.studioExecution?.mcpUnavailableRecovery||{};
-  assert.equal(recovery.infrastructureRetryMode,'UNLIMITED_EXACT_CANDIDATE_REQUEUE');
-  assert.equal(recovery.infrastructureRetryLimit,null);
-  assert.equal(recovery.runnerOfflineAction,'KEEP_EXACT_STUDIO_JOB_QUEUED_UNTIL_AUTHENTICATED_RUNNER_RETURNS');
-  assert.equal(recovery.runnerUnavailableAfterStartAction,'PERSIST_INFRASTRUCTURE_PENDING_AND_REQUEUE_SAME_EXACT_CANDIDATE');
-  assert.equal(recovery.infrastructureEvidenceDoesNotSuppressRetry,true);
-  assert.equal(recovery.retrySameExactSourceArtifact,true);
-  assert.equal(recovery.developmentContinuesWhileStudioUnavailable,true);
-  assert.equal(recovery.noWaitingTerminalState,true);
-  assert.equal(host.runnerOfflineAction,'KEEP_EXACT_STUDIO_JOB_QUEUED');
-  assert.equal(host.studioUnavailableAfterJobStartAction,'REQUEUE_SAME_EXACT_SOURCE_ARTIFACT');
-  assert.equal(host.infrastructureRetryLimit,null);
-  assert.equal(host.infrastructureRetryIsGameFailure,false);
-  assert.equal(host.independentDevelopmentContinuesWhileRunnerUnavailable,true);
-
-  const runner=readText('.github/workflows/company-roblox-runner-pwsh-bootstrap.yml');
-  const runtime=readText('.github/workflows/company-development-roblox-post-runtime-qa.yml');
-  const bootstrap=readText('.github/workflows/company-roblox-runner-pwsh-bootstrap.yml');
-  assert.match(runner,/shell\.Run[\s\S]*, 0, False/);
-  assert.match(runner,/Jaewoon-Roblox-Runner\.vbs/);
-  assert.match(runner,/Install hidden Startup launcher/);
-  assert.match(runner,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
-  assert.match(runner,/ROBLOX_RUNNER_VISIBLE_CMD=NO/);
-  assert.match(runner,/ROBLOX_RUNNER_VISIBLE_POWERSHELL=NO/);
-  assert.match(runner,/ROBLOX_RUNNER_VISIBLE_APP=ROBLOX_STUDIO_ONLY/);
-  assert.doesNotMatch(runner,/WATCHDOG/i);
-  assert.doesNotMatch(runner,/Register-ScheduledTask|New-ScheduledTask|schtasks(?:\.exe)?/i);
-  assert.doesNotMatch(runner,/hidden-state\.json|migrationPending|hidden-migrate\.ps1|hidden-migrate\.vbs/i);
-  assert.doesNotMatch(runner,/AddMinutes\(45\)|while \(\[DateTime\]::UtcNow -lt \$deadline\)/);
-  assert.doesNotMatch(runner,/PowerShell\/PowerShell\/releases\/latest|JaewoonRunner\\PowerShell7/);
-  assert.doesNotMatch(runner,/\n  runner-control:\n/);
-  assert.match(runtime,/ROBLOX_STUDIO_REBOOT_CHECKPOINT_RESERVED=/);
-  assert.match(runtime,/ROBLOX_STUDIO_REBOOT_REQUEUE=YES:/);
-  assert.match(runtime,/ROBLOX_STUDIO_INFRASTRUCTURE_RETRY_REQUIRED=/);
-  assert.match(runtime,/COMPLETED_INFRASTRUCTURE_PENDING/);
-  assert.match(runtime,/ROBLOX_STUDIO_PC_INTERRUPTION_COUNTS_AS_GAME_FAILURE=NO/);
-  assert.doesNotMatch(runtime,/shell:\s*powershell\s*$/m);
-  assert.match(runtime,/WindowStyle Hidden/);
-  assert.doesNotMatch(bootstrap,/shell:\s*powershell\s*$/m);
+test('automatic current-use pruning is isolated and deterministically security-verified',()=>{
+  assert.match(recordsWorkflow,/central-current-use-prune:/);
+  assert.match(recordsWorkflow,/node tools\/company-records-governance\.mjs --central-auto-prune/);
+  assert.match(recordsWorkflow,/records\/central-current-use-\$\{GITHUB_RUN_ID\}/);
+  assert.match(recordsWorkflow,/gh pr merge/);
+  assert.match(securityWorkflow,/CENTRAL_AUTO_PRUNE_REFERENCED_PATHS_PROTECTED=PASS/);
+  assert.match(securityWorkflow,/CENTRAL_AUTO_PRUNE_ARCHIVE_FIDELITY=PASS/);
+  assert.match(securityWorkflow,/CENTRAL_AUTO_PRUNE_ONLY_ARCHIVAL_MUTATION=PASS/);
+  assert.match(securityWorkflow,/AUTO_PRUNE_NON_ARCHIVAL_POLICY_MUTATION/);
+  assert.match(securityWorkflow,/steps\.auto_prune\.outputs\.pass != 'YES'/);
+  assert.match(securityWorkflow,/PRIMARY_AI_DIRECT_REVIEW=PASS/);
+  assert.match(securityWorkflow,/ALLOW_VERIFIED_CURRENT_USE_AUTO_PRUNE/);
 });
+
+test('obsolete Roblox Studio and recovery detail is not duplicated in central policy',()=>{
+  assert.equal(Object.hasOwn(roadmap.roblox.studioExecution,'actualPlayQualityContract'),false);
+  assert.equal(Object.hasOwn(roadmap.roblox.studioExecution,'runnerHost'),false);
+  assert.equal(Object.hasOwn(architecture,'robloxRuntimeFoundationRunnerIsolation'),false);
+  assert.equal(Object.hasOwn(architecture,'robloxPlannerDuplicateContractQaRemoval'),false);
+  assert.equal(Object.hasOwn(architecture,'robloxOpenCloudThrottleRecovery'),false);
+  assert.equal(Object.hasOwn(logMap,'robloxOpenCloudThrottleRecoveryEvidence'),false);
+  assert.equal(Object.hasOwn(security,'robloxVerifiedCyclePublicationSecurity'),false);
+});
+
 

@@ -502,27 +502,30 @@ test('runtime sentinel 404 uses exact Open Cloud engine evidence for nonblocking
 });
 
 
-test('central policy makes real server observation and Studio nonblocking for internal F0-F9 continuation',()=>{
+test('central policy keeps runtime and Studio optional while code and static QA drive Roblox continuation',()=>{
  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
- const policy=roadmap.developmentLifecycleMachine?.robloxStudioUsage?.runtimeFoundationBoundary||{};
- const topology=architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup?.runtimeFoundationObservation||{};
+ const verify=roadmap.roblox?.developmentVerification||{};
+ const studio=roadmap.roblox?.studioExecution||{};
  const stack=roadmap.developmentLifecycleMachine?.nativeGameFoundationValidationStack||{};
- assert.equal(policy.runtimeFoundationPassMustNotBeFabricatedFromOpenCloudHeadlessExecution,true);
- assert.equal(policy.developmentBlocking,false);
- assert.equal(policy.internalQaBlocking,false);
- assert.equal(policy.internalRegressionBlocking,false);
- assert.equal(policy.internalReleaseBlocking,false);
- assert.equal(policy.observationRetry,'OPTIONAL_MANUAL_DIAGNOSTIC_ONLY');
- assert.equal(policy.externalServerObservationRequiredForInternalDevelopment,false);
- assert.equal(topology.role,'OPTIONAL_MANUAL_DIAGNOSTIC_ONLY');
- assert.equal(topology.observationRetry,'MANUAL_WHEN_NEEDED');
- assert.equal(topology.sameGameIndependentDevelopmentContinues,true);
- assert.equal(topology.studioActualPlayMayNotSetRuntimeFoundationPass,true);
+ const topology=architecture.robloxDevelopmentVerificationTopology||{};
+ assert.deepEqual(verify.postBuildUpRequired,['CODE_QA','STATIC_QA']);
+ assert.equal(verify.studio,'OPTIONAL_DIAGNOSTIC');
+ assert.equal(verify.studioBlocksDevelopment,false);
+ assert.equal(verify.studioBlocksF9,false);
+ assert.equal(verify.studioBlocksDeployment,false);
+ assert.equal(studio.required,false);
+ assert.equal(studio.requiredForInternalRelease,false);
+ assert.equal(studio.deploymentGate,false);
+ assert.equal(studio.f9Gate,false);
  assert.equal(stack.governingPrinciples.robloxExternalServerBootRequiredBeforeInternalRelease,false);
- assert.equal(stack.governingPrinciples.oneExactInternalRuntimeSessionMaySatisfyMultipleApplicableFloors,true);
  assert.equal(stack.releaseGate.runtimeFoundationRequiredForInternalRelease,false);
- assert.equal(stack.releaseGate.internalRuntimeValidationRequiredForInternalRelease,true);
+ assert.equal(stack.releaseGate.internalRuntimeValidationRequiredForInternalRelease,false);
+ assert.equal(stack.releaseGate.studioRequiredForInternalRelease,false);
+ assert.equal(topology.studioRole,'OPTIONAL_DIAGNOSTIC_AND_VERIFIED_LEARNING');
+ assert.equal(topology.studioBlocksDevelopment,false);
+ assert.equal(topology.studioBlocksF9,false);
+ assert.equal(topology.studioBlocksDeployment,false);
 });
 
 test('F9 consumes exact deferred engine evidence without requiring Studio actual play',()=>{

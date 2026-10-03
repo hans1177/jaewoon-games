@@ -1,5 +1,5 @@
 {
-  "version": 63,
+  "version": 64,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -991,22 +991,6 @@
     "workerAuthorityExpansion": false,
     "sharedContextRevalidationRequiredOnFailurePath": true
   },
-  "robloxVerifiedCyclePublicationSecurity": {
-    "version": 1,
-    "authority": "company-learning/platform-release-roadmap.json#roblox.deploymentControl.verifiedCyclePublication",
-    "canonicalGameTargetPublishBeforeF9Forbidden": true,
-    "preF9ValidationTargetIsolationRequired": true,
-    "exactSourceRevisionAndArtifactIdentityRequiredAcrossValidationF9AndCanonicalPublish": true,
-    "f9MayNotEndEvolution": true,
-    "canonicalPublishSuccessRequiredBeforeNextCycleRefill": false,
-    "failureAction": "PUBLICATION_REPAIR_CONTINUES_IN_PARALLEL_WHILE_NEXT_F0_TO_F9_EVOLUTION_CYCLE_PROCEEDS",
-    "finalPublishDispatchRequiredBeforeNextCycleRefill": true,
-    "publicationFailureBlocksEvolution": false,
-    "publicationVisibilityBlocksEvolution": false,
-    "nextCycleStartsAfterF9PublishDispatch": true,
-    "publicationFailureMayNotBlockNextCycle": true,
-    "canonicalPublishDispatchRequiredBeforeNextCycleRefill": true
-  },
   "platformVerifiedF0F9PublicationLoopSecurity": {
     "version": 1,
     "authority": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.verifiedF0F9PublicationLoop",
@@ -1039,5 +1023,17 @@
     "f9RuntimeReplayForbidden": true,
     "publicationBeforeF9Forbidden": true,
     "failureRoutesExistingRepairPipeline": true
+  },
+  "robloxDevelopmentVerificationSecurity": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#roblox.developmentVerification",
+    "codeAndStaticQaRequired": true,
+    "studioRequired": false,
+    "studioFailureBlocksDeployment": false,
+    "actualStudioPassMayNotBeFabricated": true,
+    "exactSourceArtifactBindingRequired": true,
+    "relevantSecurityBoundaryChangesStillRequireExistingSecurityGate": true,
+    "publicReleaseAuthorityUnchanged": true,
+    "confirmedHighRiskFindingStillFailClosed": true
   }
 }
