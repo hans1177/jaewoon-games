@@ -96,10 +96,12 @@ env:
   VIBE2_RUNNER_JOB_PRESSURE_THRESHOLD: '8'
   VIBE2_RELEASE_RECOVERY_BATCH_MAX: '2'
 
-# Keep one continuous scheduler chain. v9 releases the stale v8 scheduler epoch
-# while keeping the canonical scheduler and moving only its lightweight plan onto the ARM control pool.
+# 24H cycles are run-scoped. Shared queue writes already use optimistic fetch/reset/replan/push
+# retries and Work Lock protects exact responsible-file conflicts. Do not serialize unrelated
+# development behind an older scheduler run. Actual Roblox Studio execution remains the only
+# intentional heavy shared-host serialization.
 concurrency:
-  group: vibe2-24h-cycle-singleton-v9
+  group: vibe2-24h-cycle-${{ github.run_id }}
   cancel-in-progress: false
 
 jobs:
