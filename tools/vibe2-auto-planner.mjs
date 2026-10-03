@@ -1294,7 +1294,7 @@ function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_
   if(!adaptiveGraphicsReplacementSupported(project))return taskInput;
   const normalizedPass=clean(pass).toUpperCase()||'ASSET_ADAPTATION';
   const existingEvidence=new Set((taskInput.evidence||[]).map(clean));
-  if(taskInput.graphicsReplacementContract&&existingEvidence.includes('adaptive-graphics-replacement:v1')){
+  if(taskInput.graphicsReplacementContract&&existingEvidence.has('adaptive-graphics-replacement:v1')){
     return{
       ...taskInput,
       presentationPass:normalizedPass,
