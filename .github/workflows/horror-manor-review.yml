@@ -1,13 +1,7 @@
-name: Horror Manor Native Review
+name: Horror Manor Optional Studio Diagnostic
+# Studio is optional post-build-up diagnostics only. It is never a deployment gate.
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/horror-manor-review.yml'
-      - 'tools/horror-manor-studio-review.mjs'
-      - 'tools/horror-manor-native-check.mjs'
-      - 'roblox-games/horror-escape-room/shared/ManorAssets.luau'
-      - 'roblox-games/horror-escape-room/server/ManorLobby.luau'
+  workflow_dispatch:
 permissions:
   contents: read
 concurrency:
