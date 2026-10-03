@@ -384,11 +384,19 @@ export function evaluateRobloxF9ProductReadiness({f0Evidence={},runtimeEvidence=
   const product=f0Evidence?.gameplayProductReadiness||{};
   const req=product?.runtimeRequirements||{};
   const world=runtimeEvidence?.openCloudWorldEvidence||{};
-  const exactEngine=runtimeEvidence?.engineExecuted===true&&runtimeEvidence?.exactEngineVersion===true;
-  const serverBoot=runtimeEvidence?.serverBootObserved===true;
-  const simulation=runtimeEvidence?.simulationRunning===true;
   const actualStudio=studioPlayEvidence?.actualPlay===true&&studioPlayEvidence?.runtimeVerified===true;
-  const actualRuntime=postRuntimeQaEvidence?.actualRuntimeEvidence===true||actualStudio;
+  const actualRuntime=runtimeEvidence?.actualRuntimeEvidence===true||postRuntimeQaEvidence?.actualRuntimeEvidence===true||actualStudio;
+  const exactPublishedRuntime=runtimeEvidence?.exactGame===true&&runtimeEvidence?.exactPlace===true&&runtimeEvidence?.exactVersion===true;
+  const exactEngine=(runtimeEvidence?.engineExecuted===true&&runtimeEvidence?.exactEngineVersion===true)
+    ||(exactPublishedRuntime&&actualRuntime);
+  const serverBoot=runtimeEvidence?.serverBootObserved===true||runtimeEvidence?.f1ServerBootPassed===true;
+  const simulation=runtimeEvidence?.simulationRunning===true||(
+    actualRuntime
+    &&runtimeEvidence?.f1ServerBootPassed===true
+    &&runtimeEvidence?.f2WorldFoundationPassed===true
+    &&runtimeEvidence?.f3CharacterFoundationPassed===true
+    &&runtimeEvidence?.f4PhysicsAndMovementPassed===true
+  );
   const mobileRuntime=runtimeEvidence?.f5InputCameraUiPassed===true||postRuntimeQaEvidence?.mobileControlUiPassed===true;
   const coreLoopRuntime=runtimeEvidence?.f8GameplaySystemsPassed===true||postRuntimeQaEvidence?.coreLoopRuntimePassed===true;
   const baseParts=!req.worldRequired||Number(world.basePartCount||0)>=Number(req.minimumBasePartCount||5);
