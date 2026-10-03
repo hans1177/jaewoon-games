@@ -1114,7 +1114,7 @@ test('Roblox studio item pack keeps world and UI views on the same visual source
   }
   assert.ok(source.includes('function StudioItems.Create(id, options)'));
   assert.ok(source.includes('function StudioItems.CreateViewport(id, options)'));
-  assert.ok(source.includes('same')===false || true);
+  assert.ok(source.includes('local model = StudioItems.Create(id'));
   assert.ok(source.includes('StudioAssetQualityTarget'));
   assert.ok(source.includes('ProductionVerified", false'));
   assert.ok(source.includes('GameplayAuthority", false'));
