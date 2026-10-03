@@ -1,5 +1,5 @@
 {
-  "version": 42,
+  "version": 43,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -196,11 +196,11 @@
       "workflow": ".github/workflows/vibe2-continuous-core.yml",
       "trigger": "MAIN_PUSH",
       "executionLane": "GAME_PRIMARY",
-      "reason": "PREVENT_SINGLETON_PLANNER_PENDING_REPLACEMENT_FROM_STARVING_ALREADY_QUEUED_GAME_WORK",
+      "reason": "KEEP_QUEUED_GAME_WORK_LIVE_WITH_RUN_UNIQUE_RESERVE_AND_OPTIMISTIC_SHARED_STATE",
       "usesExistingReservePath": true,
       "newSchedulerCreated": false,
-      "duplicateWakeSignalsCoalesced": true,
-      "concurrencyGroup": "vibe2-main-push-game-primary-wake",
+      "duplicateWakeSignalsCoalesced": false,
+      "concurrencyGroup": null,
       "activeWakeCancellationForbidden": true,
       "staleUnstartedWakeDrain": ".github/workflows/director-supervisor.yml::VIBE2_STALE_UNSTARTED_MAIN_PUSH_GAME_PRIMARY_WAKE",
       "sharedQueueWriteMode": "EXISTING_OPTIMISTIC_RESERVE_ONLY",
@@ -567,13 +567,13 @@
       "cohortFanInConsumesCoalescedResults": true,
       "coalescedCompletionIsNotFailure": true,
       "logicalPerTaskVariantJoinStillRequiredWhenCoalesced": true,
-      "fanInRefillConcurrencyScope": "LANE_SCOPED_STATELESS_WAKE_COALESCING",
+      "fanInRefillConcurrencyScope": "RUN_UNIQUE_NO_TOP_LEVEL_SERIALIZATION",
       "globalFanInRefillSingletonForbidden": true,
-      "sameLaneFanInRefillSerialization": true,
-      "pressureCoalescingIndependentFreeSlotRefillPreserved": false,
-      "pressureCoalescingDefersNewWorkflowCreation": true,
+      "sameLaneFanInRefillSerialization": false,
+      "pressureCoalescingIndependentFreeSlotRefillPreserved": true,
+      "pressureCoalescingDefersNewWorkflowCreation": false,
       "pressureThreshold": 4,
-      "topLevelFanInRefillLaneSerialization": true
+      "topLevelFanInRefillLaneSerialization": false
     },
     "signalLiveness": {
       "runState": "ALWAYS_RUNNING",
@@ -749,23 +749,24 @@
       ]
     },
     "cohortFanInPressureIngressEnabled": true,
-    "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v9",
+    "schedulerConcurrencyEpoch": null,
     "reserveConcurrency": {
       "mode": "PARALLEL_RESERVE_OPTIMISTIC_SHARED_QUEUE_WRITE",
       "crossLaneGlobalReserveLock": false,
       "sameLaneReserveSerialization": false,
-      "statelessRefillCoalescing": "LANE_SCOPED_ONE_RUNNING_ONE_PENDING",
+      "statelessRefillCoalescing": "NONE_RUN_UNIQUE",
       "sharedQueueWriteRetryAttempts": null,
       "sharedQueueWriteRetryPolicy": "UNBOUNDED_WITH_CAPPED_BACKOFF",
       "gamePrimaryExternalBoundary": 256,
       "reserveJobsParallel": true,
       "serializationScope": "ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY",
-      "statelessRefillCoalescingScope": "VIBE2_FANIN_REFILL_ONLY",
+      "statelessRefillCoalescingScope": "NONE",
       "workerCohortsRemainParallel": true,
       "staleFanInRefillWakeAction": "DROP_BEFORE_CONTRACT_PREFLIGHT_WHEN_EVENT_HEAD_IS_NOT_CURRENT_MAIN",
       "staleFanInRefillMayWriteControlState": false,
       "staleFanInRefillMayStartWorker": false,
-      "staleFanInRefillRecovery": "LATEST_MAIN_PUSH_OR_FIVE_MINUTE_24H_SAFETY_NET"
+      "staleFanInRefillRecovery": "LATEST_MAIN_PUSH_OR_FIVE_MINUTE_24H_SAFETY_NET",
+      "topLevelWorkflowSerialization": false
     },
     "assetDevelopmentControlRunnerPool": {
       "authority": "company-learning/platform-release-roadmap.json#changeRecord.assetArmControlPlaneIsolation20260927",
@@ -808,7 +809,17 @@
       "constitutionalEnforcementPreserved": true,
       "observationFailureAction": "RUN_TARGETED_QA",
       "qualityGateWeakening": false
-    }
+    },
+    "schedulerConcurrencyMode": "RUN_UNIQUE_NO_TOP_LEVEL_SERIALIZATION",
+    "sameGameDifferentPlatformsParallel": true,
+    "platformResponsibilityRoots": {
+      "WEB": "web-games/<gameId>",
+      "ROBLOX": "roblox-games/<gameId>",
+      "UNITY": "unity-games/<gameId>"
+    },
+    "generalHeavyWorkSerializationForbidden": true,
+    "robloxStudioActualRuntimeSerialException": true,
+    "atomicSharedStateCriticalSectionIsNotHeavyWorkSerialization": true
   },
   "adaptiveBackpressure": {
     "enabled": true,
@@ -1681,11 +1692,12 @@
     },
     "postReleaseFocusRunner": {
       "logicalRunnerPerReleasedProject": 1,
-      "activeTaskMaxPerProject": 1,
-      "sharedProtectedRunnerSlots": 1,
+      "activeTaskMaxPerProject": null,
+      "sharedProtectedRunnerSlots": null,
       "scheduler": ".github/workflows/vibe2-24h-runner.yml",
       "worker": ".github/workflows/vibe2-continuous-core.yml",
-      "continuousRefill": true
+      "continuousRefill": true,
+      "sameGameNonOverlappingPackagesParallel": true
     },
     "learningContinuity": {
       "continuous": true,
