@@ -1,0 +1,124 @@
+{
+  "version": 1,
+  "packId": "roblox-monster-adventure-v1",
+  "targetGameId": "monster-adventure",
+  "sourceOfTruth": "web-games/monster-adventure/index.html#species",
+  "license": "project-original",
+  "authoringQualityTarget": 100,
+  "productionVerified": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "units": "ROBLOX_STUD_APPROXIMATE",
+  "upAxis": "Z",
+  "forwardAxis": "NEGATIVE_Y",
+  "assets": [
+    {
+      "id": "flamefox",
+      "name": "불꽃여우",
+      "role": "STARTER_HERO_FIRE",
+      "zone": "STARTER",
+      "bodyPlan": "QUADRUPED_CANINE",
+      "source": "flamefox.obj",
+      "vertices": 1280,
+      "faces": 1222,
+      "hero": true
+    },
+    {
+      "id": "leafturtle",
+      "name": "새싹거북",
+      "role": "STARTER_HERO_GRASS",
+      "zone": "STARTER",
+      "bodyPlan": "QUADRUPED_REPTILE",
+      "source": "leafturtle.obj",
+      "vertices": 1164,
+      "faces": 1086,
+      "hero": true
+    },
+    {
+      "id": "waterotter",
+      "name": "물방울수달",
+      "role": "STARTER_HERO_WATER",
+      "zone": "STARTER",
+      "bodyPlan": "QUADRUPED_CANINE",
+      "source": "waterotter.obj",
+      "vertices": 1376,
+      "faces": 1279,
+      "hero": true
+    },
+    {
+      "id": "boar",
+      "name": "풀숲멧돼지",
+      "role": "PLAINS_WILD_GROUND",
+      "zone": "PLAINS",
+      "bodyPlan": "QUADRUPED_HEAVY",
+      "source": "boar.obj",
+      "vertices": 1106,
+      "faces": 1042,
+      "hero": false
+    },
+    {
+      "id": "bat",
+      "name": "밤날개",
+      "role": "PLAINS_WILD_DARK",
+      "zone": "PLAINS",
+      "bodyPlan": "FLYING_BAT",
+      "source": "bat.obj",
+      "vertices": 584,
+      "faces": 538,
+      "hero": false
+    },
+    {
+      "id": "bird",
+      "name": "바람새",
+      "role": "PLAINS_WILD_WIND",
+      "zone": "PLAINS",
+      "bodyPlan": "FLYING_BIRD",
+      "source": "bird.obj",
+      "vertices": 732,
+      "faces": 711,
+      "hero": false
+    },
+    {
+      "id": "hornbull",
+      "name": "뿔바위소",
+      "role": "FIELD_ELITE_GROUND",
+      "zone": "FIELD",
+      "bodyPlan": "QUADRUPED_HEAVY",
+      "source": "hornbull.obj",
+      "vertices": 1242,
+      "faces": 1166,
+      "hero": false
+    },
+    {
+      "id": "rockgator",
+      "name": "철갑악어",
+      "role": "FIELD_ELITE_WATER",
+      "zone": "FIELD",
+      "bodyPlan": "CROCODILIAN",
+      "source": "rockgator.obj",
+      "vertices": 1220,
+      "faces": 1143,
+      "hero": false
+    },
+    {
+      "id": "stormeagle",
+      "name": "폭풍독수리",
+      "role": "FIELD_ELITE_WIND",
+      "zone": "FIELD",
+      "bodyPlan": "FLYING_BIRD",
+      "source": "stormeagle.obj",
+      "vertices": 852,
+      "faces": 861,
+      "hero": false
+    }
+  ],
+  "import": {
+    "robloxStudio": [
+      "Import 3D",
+      "Preserve separate material regions",
+      "Set collision fidelity to Box/Hull as appropriate",
+      "Create rig/Animator derivative after mesh import",
+      "Do not move gameplay damage, capture, save or network authority into asset code"
+    ],
+    "runtimeBindingRequiredBeforeProductionVerified": true
+  }
+}
