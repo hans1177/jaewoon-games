@@ -287,6 +287,57 @@ root.Size = UDim2.new(1, -24, 0, 330)
 root.BackgroundTransparency = 0.15
 root.BackgroundColor3 = Color3.fromRGB(18, 28, 48)
 root.Parent = gui
+-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_ROOT_BEGIN stage=1
+do
+  local deterministicBuildStage = 1
+  root:SetAttribute("DeterministicBuildStage", deterministicBuildStage)
+  local generatedAssetBindingLighting = game:GetService("Lighting")
+  root:SetAttribute("GeneratedNativeAssetBindingVersion", 1)
+  root:SetAttribute("GeneratedNativeAssetBindingCount", 3)
+  generatedAssetBindingLighting:SetAttribute("GeneratedNativeAssetBindingCount", 3)
+  root:SetAttribute("GeneratedNativeAssetPath1", "assets/generated/roblox/seed-roblox-story-rpg-adventur-blox-fruits/background/asset.glb")
+  root:SetAttribute("GeneratedNativeAssetSha256_1", "e0d1208701a6b479d04419f550dc9b33c78edeae7fb14bf447944afb232c7f5a")
+  root:SetAttribute("GeneratedNativeAssetFamily1", "ENVIRONMENT")
+  root:SetAttribute("GeneratedNativeAssetId1", "seed-roblox-story-rpg-adventur-blox-fruits-roblox-background-generated-v1")
+  root:SetAttribute("GeneratedNativeAssetPath2", "assets/generated/roblox/seed-roblox-story-rpg-adventur-blox-fruits/item/asset.glb")
+  root:SetAttribute("GeneratedNativeAssetSha256_2", "36778ef9aa4e12e032fce15dd9c2032b103d138df78151dd498ec27aaf9b2757")
+  root:SetAttribute("GeneratedNativeAssetFamily2", "WEAPON")
+  root:SetAttribute("GeneratedNativeAssetId2", "seed-roblox-story-rpg-adventur-blox-fruits-roblox-item-generated-v1")
+  root:SetAttribute("GeneratedNativeAssetPath3", "assets/generated/roblox/seed-roblox-story-rpg-adventur-blox-fruits/prop/asset.glb")
+  root:SetAttribute("GeneratedNativeAssetSha256_3", "f095f6c179fa666b920885d2d33c2129adc9e9442dd68baf27520fa64531e1fb")
+  root:SetAttribute("GeneratedNativeAssetFamily3", "PROP")
+  root:SetAttribute("GeneratedNativeAssetId3", "seed-roblox-story-rpg-adventur-blox-fruits-roblox-prop-generated-v1")
+  local deterministicGameplayHudCorner = root:FindFirstChild("DeterministicGameplayHudCorner")
+  if not deterministicGameplayHudCorner then
+    deterministicGameplayHudCorner = Instance.new("UICorner")
+    deterministicGameplayHudCorner.Name = "DeterministicGameplayHudCorner"
+    deterministicGameplayHudCorner.Parent = root
+  end
+  deterministicGameplayHudCorner.CornerRadius = UDim.new(0, 11)
+  local deterministicGameplayHudStroke = root:FindFirstChild("DeterministicGameplayHudStroke")
+  if not deterministicGameplayHudStroke then
+    deterministicGameplayHudStroke = Instance.new("UIStroke")
+    deterministicGameplayHudStroke.Name = "DeterministicGameplayHudStroke"
+    deterministicGameplayHudStroke.Parent = root
+  end
+  deterministicGameplayHudStroke.Color = Color3.fromRGB(97, 100, 112)
+  deterministicGameplayHudStroke.Thickness = 1.5
+  deterministicGameplayHudStroke.Transparency = 0.24
+  local deterministicGameplayHudGradient = root:FindFirstChild("DeterministicGameplayHudGradient")
+  if not deterministicGameplayHudGradient then
+    deterministicGameplayHudGradient = Instance.new("UIGradient")
+    deterministicGameplayHudGradient.Name = "DeterministicGameplayHudGradient"
+    deterministicGameplayHudGradient.Parent = root
+  end
+  deterministicGameplayHudGradient.Color = ColorSequence.new(Color3.fromRGB(97, 100, 112), Color3.fromRGB(125, 124, 132))
+  deterministicGameplayHudGradient.Rotation = 17
+  local deterministicGameplayHudTweenService = game:GetService("TweenService")
+  local deterministicGameplayHudRestPosition = root.Position
+  local deterministicGameplayHudEntryPosition = UDim2.new(root.Position.X.Scale, root.Position.X.Offset, root.Position.Y.Scale, root.Position.Y.Offset + 10)
+  root.Position = deterministicGameplayHudEntryPosition
+  deterministicGameplayHudTweenService:Create(root, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = deterministicGameplayHudRestPosition}):Play()
+end
+-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_ROOT_END
 
 local title = Instance.new("TextLabel")
 title.Name = "Title"
@@ -306,6 +357,27 @@ status.BackgroundColor3 = Color3.fromRGB(10, 17, 30)
 status.TextColor3 = Color3.fromRGB(220, 232, 250)
 status.TextScaled = true
 status.Parent = root
+-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_STATUS_BEGIN stage=1
+do
+  local deterministicStatusCorner = status:FindFirstChild("DeterministicStatusCorner")
+  if not deterministicStatusCorner then
+    deterministicStatusCorner = Instance.new("UICorner")
+    deterministicStatusCorner.Name = "DeterministicStatusCorner"
+    deterministicStatusCorner.Parent = status
+  end
+  deterministicStatusCorner.CornerRadius = UDim.new(0, 8)
+  local deterministicStatusStroke = status:FindFirstChild("DeterministicStatusStroke")
+  if not deterministicStatusStroke then
+    deterministicStatusStroke = Instance.new("UIStroke")
+    deterministicStatusStroke.Name = "DeterministicStatusStroke"
+    deterministicStatusStroke.Parent = status
+  end
+  deterministicStatusStroke.Color = Color3.fromRGB(97, 100, 112)
+  deterministicStatusStroke.Thickness = 1
+  deterministicStatusStroke.Transparency = 0.5
+  status.BackgroundTransparency = 0.08
+end
+-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_STATUS_END
 
 local list = Instance.new("ScrollingFrame")
 list.Name = "ApprovedActions"
