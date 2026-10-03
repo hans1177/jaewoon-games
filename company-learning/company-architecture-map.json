@@ -1,5 +1,5 @@
 {
-  "version": 306,
+  "version": 307,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6647,5 +6647,36 @@
       "reason": "SHARED_AUTHENTICATED_STUDIO_HOST",
       "scope": "ACTUAL_STUDIO_SESSION_ONLY"
     }
+  },
+  "githubPreWorkPolicySyncTopology": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#ownerCanonicalRules.rule5",
+    "trigger": "ANY_GITHUB_REPOSITORY_WORK",
+    "sourceRef": "LATEST_MAIN",
+    "canonicalDocuments": [
+      "company-learning/platform-release-roadmap.json",
+      "company-learning/company-log-map.json",
+      "company-learning/company-architecture-map.json",
+      "company-learning/security-immune-system.json"
+    ],
+    "readOrder": [
+      "company-learning/platform-release-roadmap.json",
+      "company-learning/company-log-map.json",
+      "company-learning/company-architecture-map.json",
+      "company-learning/security-immune-system.json"
+    ],
+    "participants": [
+      "CHATGPT_PRIMARY_AI",
+      "VIBE2",
+      "VIBE3",
+      "ALL_CURRENT_AND_FUTURE_REGISTERED_WORKERS"
+    ],
+    "validator": "tools/company-shared-context.mjs",
+    "freshnessValidator": "tools/vibe2-central-work-contract.mjs",
+    "hashBindingRequired": true,
+    "codeWriteDeployStateChangeAndCompletionBlockedUntilPass": true,
+    "staleAction": "FAIL_CLOSED_RESYNC_LATEST_MAIN",
+    "existingCanonicalPipelineOnly": true,
+    "wrapperShadowPipelineForbidden": true
   }
 }

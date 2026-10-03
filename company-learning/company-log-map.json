@@ -1,5 +1,5 @@
 {
-  "version": 157,
+  "version": 158,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2831,5 +2831,28 @@
     "gameIdOnlyConflictMarkerForbidden": true,
     "exactResponsibleFileConflictMayDefer": true,
     "studioSessionMayDefer": true
+  },
+  "githubPreWorkPolicySyncEvidenceContract": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#ownerCanonicalRules.rule5",
+    "trigger": "ANY_GITHUB_REPOSITORY_WORK",
+    "requiredMarkers": [
+      "WORKER_CONTEXT_POLICY_SHA256",
+      "WORKER_CONTEXT_LOG_MAP_SHA256",
+      "WORKER_CONTEXT_ARCHITECTURE_SHA256",
+      "WORKER_CONTEXT_SECURITY_POLICY_SHA256",
+      "WORKER_CONTEXT_SYNC=PASS"
+    ],
+    "requiredActors": [
+      "CHATGPT_PRIMARY_AI",
+      "VIBE2",
+      "VIBE3",
+      "ALL_REGISTERED_WORKERS"
+    ],
+    "latestMainRequired": true,
+    "mutationBeforeMarkersForbidden": true,
+    "deploymentBeforeMarkersForbidden": true,
+    "stateChangeBeforeMarkersForbidden": true,
+    "completionClaimBeforeMarkersForbidden": true
   }
 }

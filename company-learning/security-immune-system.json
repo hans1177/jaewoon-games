@@ -1,5 +1,5 @@
 {
-  "version": 65,
+  "version": 66,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -1054,5 +1054,24 @@
       "studioExceptionMayNotExpandToSourceBuildQaRuntime": true
     },
     "failureAction": "REPAIR_RESPONSIBILITY_SCOPE_OR_SCHEDULER_WITHOUT_WEAKENING_WORK_LOCK"
+  },
+  "githubPreWorkPolicySyncSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#ownerCanonicalRules.rule5",
+    "protections": {
+      "latestMainRequired": true,
+      "allFourCanonicalDocumentsRequired": true,
+      "exactSha256EvidenceRequired": true,
+      "staleOrMissingContextBlocksRepositoryMutation": true,
+      "staleOrMissingContextBlocksDeployment": true,
+      "staleOrMissingContextBlocksRuntimeStateChange": true,
+      "staleOrMissingContextBlocksCompletionClaim": true,
+      "chatGptPrimaryAiCannotBypass": true,
+      "vibeWorkersCannotBypass": true,
+      "oldConversationOrMemoryCannotOverrideLatestMain": true,
+      "centralDocumentWriteRequiresResync": true,
+      "wrapperShadowPolicyPipelineForbidden": true
+    },
+    "failureAction": "FAIL_CLOSED_RESYNC_LATEST_MAIN_AND_RETRY_EXACT_STAGE"
   }
 }

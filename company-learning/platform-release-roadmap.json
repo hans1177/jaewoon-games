@@ -1,5 +1,5 @@
 {
-  "version": 525,
+  "version": 526,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -3689,7 +3689,40 @@
       },
       "singlePreWorkValidationPerExactWorkUnit": true,
       "repeatedFullValidationWithinExactWorkUnitForbidden": true,
-      "completionUsesInitialValidatedContextEvidence": true
+      "completionUsesInitialValidatedContextEvidence": true,
+      "githubPreWorkPolicySync": {
+        "required": true,
+        "trigger": "ANY_GITHUB_REPOSITORY_WORK",
+        "latestMainRequired": true,
+        "canonicalDocuments": [
+          "company-learning/platform-release-roadmap.json",
+          "company-learning/company-log-map.json",
+          "company-learning/company-architecture-map.json",
+          "company-learning/security-immune-system.json"
+        ],
+        "readOrder": [
+          "company-learning/platform-release-roadmap.json",
+          "company-learning/company-log-map.json",
+          "company-learning/company-architecture-map.json",
+          "company-learning/security-immune-system.json"
+        ],
+        "participants": [
+          "CHATGPT_PRIMARY_AI",
+          "VIBE2",
+          "VIBE3",
+          "ALL_CURRENT_AND_FUTURE_REGISTERED_WORKERS"
+        ],
+        "sha256BindingRequired": true,
+        "versionAndHashEvidenceRequired": true,
+        "blockCodeWriteUntilPass": true,
+        "blockDeployUntilPass": true,
+        "blockRuntimeStateChangeUntilPass": true,
+        "blockCompletionClaimUntilPass": true,
+        "staleContextAction": "FAIL_CLOSED_RESYNC_LATEST_MAIN",
+        "postCanonicalDocumentWriteResyncRequired": true,
+        "validator": "tools/company-shared-context.mjs",
+        "workContractFreshnessValidator": "tools/vibe2-central-work-contract.mjs"
+      }
     },
     "primaryAiOrchestration": {
       "version": 3,
@@ -20285,9 +20318,9 @@
     "priorPassingPresentationRegressionMustRepair": true
   },
   "ownerCanonicalRules": {
-    "version": 8,
+    "version": 9,
     "authority": "OWNER_DIRECTIVE_2026-09-21",
-    "rule1Handling": "RULE_1_THROUGH_RULE_4_ARE_CANONICALIZED_HERE; IMPLEMENTATION_MUST_PRESERVE_THEIR_ORDERED_GATES_AND_EXISTING_AUTHORITY_BOUNDARIES",
+    "rule1Handling": "ALL_ENABLED_CANONICAL_RULES_ARE_CANONICALIZED_HERE_AND_MUST_PRESERVE_ORDERED_GATES_AND_EXISTING_AUTHORITY_BOUNDARIES",
     "rule2": {
       "id": "RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION",
       "label": "제2규칙",
@@ -20880,7 +20913,8 @@
       "RULE_1",
       "RULE_2",
       "RULE_3",
-      "RULE_4"
+      "RULE_4",
+      "RULE_5"
     ],
     "orderedImplementationRequired": true,
     "constitutionalAuthority": "HIGHEST_VIBE_INTERNAL_WORKER_CONTRACT_AUTHORITY",
@@ -20955,7 +20989,18 @@
         }
       ],
       "singlePreWorkValidationPerExactWorkUnit": true,
-      "repeatedPostWorkConstitutionValidationForbidden": true
+      "repeatedPostWorkConstitutionValidationForbidden": true,
+      "appliesToChatGPTPrimaryAiGithubWork": true,
+      "githubPreWorkCanonicalSyncRequired": true,
+      "githubPreWorkCanonicalDocuments": [
+        "company-learning/platform-release-roadmap.json",
+        "company-learning/company-log-map.json",
+        "company-learning/company-architecture-map.json",
+        "company-learning/security-immune-system.json"
+      ],
+      "githubMutationBeforeSyncPassForbidden": true,
+      "githubDeploymentBeforeSyncPassForbidden": true,
+      "githubStateChangeBeforeSyncPassForbidden": true
     },
     "ownerExclusiveDevelopment": {
       "version": 1,
@@ -21020,6 +21065,182 @@
           "SINGLE_AND_BATCH_RESERVATION",
           "PRE_SOURCE_GENERATION",
           "PRE_CANDIDATE_WRITE"
+        ]
+      }
+    },
+    "rule5": {
+      "id": "RULE_5_GITHUB_PREWORK_CANONICAL_POLICY_SYNC",
+      "label": "제5규칙",
+      "enabled": true,
+      "authority": "OWNER_DIRECTIVE_2026-10-03",
+      "objective": "BEFORE_ANY_GITHUB_REPOSITORY_WORK_CHATGPT_PRIMARY_AI_VIBE_AND_ALL_REGISTERED_WORKERS_MUST_RESOLVE_LATEST_MAIN_LOAD_VALIDATE_AND_HASH_BIND_THE_CANONICAL_FOUR_DOCUMENT_SET; NO_CODE_WRITE_DEPLOY_STATE_CHANGE_OR_COMPLETION_CLAIM_MAY_START_BEFORE_SYNC_PASS",
+      "scope": "ALL_GITHUB_REPOSITORY_WORK_INCLUDING_READ_FOR_WORK_WRITE_EDIT_MERGE_DEPLOY_RELEASE_RUNTIME_STATE_CHANGE_AND_COMPLETION_CLAIM",
+      "githubAccessTriggersPreWorkSync": true,
+      "latestMainRequired": true,
+      "canonicalDocuments": [
+        "company-learning/platform-release-roadmap.json",
+        "company-learning/company-log-map.json",
+        "company-learning/company-architecture-map.json",
+        "company-learning/security-immune-system.json"
+      ],
+      "readOrder": [
+        "company-learning/platform-release-roadmap.json",
+        "company-learning/company-log-map.json",
+        "company-learning/company-architecture-map.json",
+        "company-learning/security-immune-system.json"
+      ],
+      "appliesToChatGPTPrimaryAi": true,
+      "appliesToVibe2": true,
+      "appliesToVibe3": true,
+      "appliesToAllCurrentAndFutureRegisteredWorkers": true,
+      "sha256BindingRequired": true,
+      "policyVersionAndHashEvidenceRequired": true,
+      "mutationBlockedUntilSyncPass": true,
+      "deploymentBlockedUntilSyncPass": true,
+      "runtimeStateChangeBlockedUntilSyncPass": true,
+      "completionClaimBlockedUntilSyncPass": true,
+      "staleContextMayNotStartWork": true,
+      "cachedConversationOrOldMemoryMayNotOverrideLatestMain": true,
+      "ownerLatestDirectiveOverridesOlderConversationAndMemory": true,
+      "postCanonicalDocumentWriteResyncRequired": true,
+      "existingCanonicalValidatorOnly": true,
+      "newWrapperShadowOrParallelPolicyPipelineForbidden": true,
+      "validator": "tools/company-shared-context.mjs",
+      "workContractFreshnessValidator": "tools/vibe2-central-work-contract.mjs",
+      "failureAction": "FAIL_CLOSED_RESYNC_LATEST_MAIN_AND_RETRY_EXACT_STAGE",
+      "machineEnforcement": {
+        "schemaVersion": 1,
+        "assertions": [
+          {
+            "code": "GITHUB_ACCESS_TRIGGERS_SYNC",
+            "operator": "EQ",
+            "path": "githubAccessTriggersPreWorkSync",
+            "expected": true
+          },
+          {
+            "code": "LATEST_MAIN_REQUIRED",
+            "operator": "EQ",
+            "path": "latestMainRequired",
+            "expected": true
+          },
+          {
+            "code": "CHATGPT_PRIMARY_INCLUDED",
+            "operator": "EQ",
+            "path": "appliesToChatGPTPrimaryAi",
+            "expected": true
+          },
+          {
+            "code": "VIBE2_INCLUDED",
+            "operator": "EQ",
+            "path": "appliesToVibe2",
+            "expected": true
+          },
+          {
+            "code": "VIBE3_INCLUDED",
+            "operator": "EQ",
+            "path": "appliesToVibe3",
+            "expected": true
+          },
+          {
+            "code": "ALL_FUTURE_WORKERS_INCLUDED",
+            "operator": "EQ",
+            "path": "appliesToAllCurrentAndFutureRegisteredWorkers",
+            "expected": true
+          },
+          {
+            "code": "POLICY_DOC_REQUIRED",
+            "operator": "ARRAY_INCLUDES",
+            "path": "canonicalDocuments",
+            "expected": "company-learning/platform-release-roadmap.json"
+          },
+          {
+            "code": "LOG_DOC_REQUIRED",
+            "operator": "ARRAY_INCLUDES",
+            "path": "canonicalDocuments",
+            "expected": "company-learning/company-log-map.json"
+          },
+          {
+            "code": "ARCH_DOC_REQUIRED",
+            "operator": "ARRAY_INCLUDES",
+            "path": "canonicalDocuments",
+            "expected": "company-learning/company-architecture-map.json"
+          },
+          {
+            "code": "SECURITY_DOC_REQUIRED",
+            "operator": "ARRAY_INCLUDES",
+            "path": "canonicalDocuments",
+            "expected": "company-learning/security-immune-system.json"
+          },
+          {
+            "code": "HASH_BINDING_REQUIRED",
+            "operator": "EQ",
+            "path": "sha256BindingRequired",
+            "expected": true
+          },
+          {
+            "code": "MUTATION_BLOCKED_BEFORE_SYNC",
+            "operator": "EQ",
+            "path": "mutationBlockedUntilSyncPass",
+            "expected": true
+          },
+          {
+            "code": "DEPLOY_BLOCKED_BEFORE_SYNC",
+            "operator": "EQ",
+            "path": "deploymentBlockedUntilSyncPass",
+            "expected": true
+          },
+          {
+            "code": "STATE_CHANGE_BLOCKED_BEFORE_SYNC",
+            "operator": "EQ",
+            "path": "runtimeStateChangeBlockedUntilSyncPass",
+            "expected": true
+          },
+          {
+            "code": "COMPLETION_BLOCKED_BEFORE_SYNC",
+            "operator": "EQ",
+            "path": "completionClaimBlockedUntilSyncPass",
+            "expected": true
+          },
+          {
+            "code": "STALE_CONTEXT_CANNOT_START",
+            "operator": "EQ",
+            "path": "staleContextMayNotStartWork",
+            "expected": true
+          },
+          {
+            "code": "OLD_MEMORY_CANNOT_OVERRIDE",
+            "operator": "EQ",
+            "path": "cachedConversationOrOldMemoryMayNotOverrideLatestMain",
+            "expected": true
+          },
+          {
+            "code": "POST_POLICY_WRITE_RESYNC",
+            "operator": "EQ",
+            "path": "postCanonicalDocumentWriteResyncRequired",
+            "expected": true
+          },
+          {
+            "code": "EXISTING_VALIDATOR_ONLY",
+            "operator": "EQ",
+            "path": "existingCanonicalValidatorOnly",
+            "expected": true
+          },
+          {
+            "code": "NO_SHADOW_POLICY_PIPELINE",
+            "operator": "EQ",
+            "path": "newWrapperShadowOrParallelPolicyPipelineForbidden",
+            "expected": true
+          },
+          {
+            "code": "SHARED_CONTEXT_VALIDATOR_EXISTS",
+            "operator": "FILE_EXISTS_FROM_PATH",
+            "path": "validator"
+          },
+          {
+            "code": "WORK_CONTRACT_VALIDATOR_EXISTS",
+            "operator": "FILE_EXISTS_FROM_PATH",
+            "path": "workContractFreshnessValidator"
+          }
         ]
       }
     }
@@ -24251,7 +24472,12 @@
       "qa": "qa/company-shared-context.test.mjs",
       "mismatchAction": "BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE",
       "singleCanonicalSetLoadAndValidationPerExactWorkUnit": true,
-      "reuseValidatedDocumentHashesUntilRelevantPolicyOrSourceChange": true
+      "reuseValidatedDocumentHashesUntilRelevantPolicyOrSourceChange": true,
+      "githubPreWorkCanonicalSyncRequired": true,
+      "githubPreWorkLatestMainRequired": true,
+      "chatGptPrimaryAiIncluded": true,
+      "vibeAndAllRegisteredWorkersIncluded": true,
+      "githubMutationDeployStateChangeBlockedUntilSyncPass": true
     },
     "stateDocumentation": {
       "policyStoresRulesNotTransientRuntimeState": true,
