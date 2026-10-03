@@ -946,12 +946,22 @@ test('Open Cloud engine reuses the same Luau session to capture map and world ev
 
 test('Open Cloud requested game is prioritized without wasting the remaining cross-game worker slots',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
-  assert.doesNotMatch(workflow,/if\(requested&&item\.gameId!==requested\)return false/);
-  assert.match(workflow,/Number\(b\.gameId===requested\)-Number\(a\.gameId===requested\)/);
-  assert.match(workflow,/retryOpenCloudOnly&&requested&&item\.gameId===requested/);
-  assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(8,candidates\.length\|\|1\)\)/);
-  assert.match(workflow,/ROBLOX_OPEN_CLOUD_REQUESTED_PRIORITY=/);
-  assert.match(workflow,/ROBLOX_OPEN_CLOUD_429_SCOPE=PER_GAME_RETRY_ONLY/);
-  assert.doesNotMatch(workflow,/requested\?1:/);
-  assert.doesNotMatch(workflow,/ACTIVE_SERIAL|ACTIVE_MIN4_PARALLEL/);
+  const probeStart=workflow.indexOf("const candidates=(q.items||[]).filter(item=>{",workflow.indexOf('Probe exact Roblox Open Cloud engine execution'));
+  const probeEnd=workflow.indexOf("fs.writeFileSync('/tmp/roblox-open-cloud-engine-probes.json'",probeStart);
+  const probeBlock=workflow.slice(probeStart,probeEnd);
+  const persistStart=workflow.indexOf("const candidates=(q.items||[]).filter(item=>{",workflow.indexOf('Read exact runtime sentinel and persist tester QA evidence'));
+  const persistEnd=workflow.indexOf('const f9Ids=[];',persistStart);
+  const persistBlock=workflow.slice(persistStart,persistEnd);
+  assert.ok(probeStart>0&&probeEnd>probeStart);
+  assert.ok(persistStart>0&&persistEnd>persistStart);
+  assert.doesNotMatch(probeBlock,/if\(requested&&item\.gameId!==requested\)return false/);
+  assert.doesNotMatch(persistBlock,/if\(requested&&item\.gameId!==requested\)return false/);
+  assert.match(probeBlock,/Number\(b\.gameId===requested\)-Number\(a\.gameId===requested\)/);
+  assert.match(persistBlock,/Number\(b\.gameId===requested\)-Number\(a\.gameId===requested\)/);
+  assert.match(probeBlock,/retryOpenCloudOnly&&requested&&item\.gameId===requested/);
+  assert.match(probeBlock,/const probeConcurrency=Math\.max\(1,Math\.min\(8,candidates\.length\|\|1\)\)/);
+  assert.match(probeBlock,/ROBLOX_OPEN_CLOUD_REQUESTED_PRIORITY=/);
+  assert.match(probeBlock,/ROBLOX_OPEN_CLOUD_429_SCOPE=PER_GAME_RETRY_ONLY/);
+  assert.doesNotMatch(probeBlock,/requested\?1:/);
+  assert.doesNotMatch(probeBlock,/ACTIVE_SERIAL|ACTIVE_MIN4_PARALLEL/);
 });
