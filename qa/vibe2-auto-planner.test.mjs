@@ -4243,3 +4243,66 @@ test('Roblox build-up directive preserves competitive multiplayer platform seman
     fs.rmSync(root,{recursive:true,force:true});
   }
 });
+
+
+test('exact Roblox F9 settles only runtime waiter and forces a fresh BUILD_UP generation',()=>{
+  const root=tempRepo();
+  try{
+    const gameId='post-f9-fresh-generation';
+    const serverDir=path.join(root,'roblox-games',gameId,'server');
+    const clientDir=path.join(root,'roblox-games',gameId,'client');
+    fs.mkdirSync(serverDir,{recursive:true});
+    fs.mkdirSync(clientDir,{recursive:true});
+    fs.writeFileSync(path.join(serverDir,'Game.server.luau'),[
+      'local Players=game:GetService("Players")',
+      'local function attackEnemy(enemy) return enemy ~= nil end',
+      'local function startRound() return true end',
+      'local function endRound() return true end',
+      'Players.PlayerAdded:Connect(function() end)'
+    ].join('\n')+'\n','utf8');
+    fs.writeFileSync(path.join(clientDir,'Game.client.luau'),'local input=true\n','utf8');
+    writeStudioDesign(root,gameId,{
+      identity:'F9 이후에도 계속 성장하는 Roblox 전투 게임',
+      coreFun:'적 상태를 읽고 공격 타이밍을 고르는 재미',
+      coreLoop:['라운드를 시작한다','적을 공격한다','결과를 보고 다음 선택을 한다'],
+      multiplayerMode:'SINGLE'
+    });
+    const sourceRevision='a'.repeat(40);
+    const baseProject={
+      gameId,name:'Post F9 Fresh Generation',engine:'roblox',target:'roblox',
+      releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`,
+      existing:true,genre:'Action',subgenre:'Combat',playMode:'SINGLE',
+      queueRobloxSourceCommit:sourceRevision
+    };
+    const first=findStudioContinuousImprovementTask(baseProject,root,{tasks:[]},'CORE_FUN');
+    assert.ok(first?.buildUpDirective);
+    assert.equal(first.buildUpDirective.generation,1);
+
+    const waiter={
+      ...first,
+      status:'running',
+      blocker:'candidate-awaiting-runtime-evidence',
+      reservationId:'runtime-waiter',
+      evidence:[...(first.evidence||[]),'candidate-awaiting-runtime-evidence']
+    };
+    const postF9Project={
+      ...baseProject,
+      queueRobloxPostF9ContinuousEvolution:true,
+      queueRobloxFinalReviewPassed:true,
+      queueRobloxF9SourceRevision:sourceRevision
+    };
+    const next=findStudioContinuousImprovementTask(postF9Project,root,{tasks:[waiter]},'CORE_FUN');
+    assert.ok(next,'exact F9 must release the runtime waiter for the next BUILD_UP generation');
+    assert.equal(next.buildUpDirective.generation,2);
+    assert.notEqual(next.buildUpDirectiveId,first.buildUpDirectiveId);
+    assert.ok((next.evidence||[]).includes('post-f9-continuous-evolution:EXACT_F9_VERIFIED'));
+    assert.ok((next.evidence||[]).includes('post-f9-source-revision:'+sourceRevision));
+    assert.ok((next.evidence||[]).includes('post-f9-runtime-waiter-settlement:ALLOWED_FOR_NEXT_GENERATION'));
+
+    const unrelatedActive={...waiter,id:waiter.id+'-real-work',blocker:null};
+    const blocked=findStudioContinuousImprovementTask(postF9Project,root,{tasks:[unrelatedActive]},'CORE_FUN');
+    assert.equal(blocked,null,'F9 may not bypass real queued/running source work');
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
