@@ -1656,7 +1656,13 @@ jobs:
             }
             const alreadyPersistedF0=!secondaryOwnerFocus
               &&result.pass===true
+              &&result.f0Pass===true
+              &&result.f0Evidence?.gameplayProductReadinessRequired===true
+              &&result.f0Evidence?.gameplayProductReadiness?.pass===true
+              &&Number(result.f0Evidence?.version||0)>=4
               &&item.robloxFoundationF0Passed===true
+              &&Number(item.robloxFoundationF0Evidence?.version||0)>=4
+              &&item.robloxFoundationF0Evidence?.gameplayProductReadiness?.pass===true
               &&item.robloxBuildOrPackagePassed===true
               &&item.robloxBuildPreflightPassed===true
               &&item.robloxBuildSourceRevision===result.sourceRevision
