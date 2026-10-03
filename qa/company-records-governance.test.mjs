@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import {validateCompanyRecord,scanCompanyRecords,extractChangeRecordReferences,classifyCentralChangeRecordRetention,planCentralDocumentArchive,inspectCentralDocument,discoverCentralArchiveCandidates} from '../tools/company-records-governance.mjs';
+import {validateCompanyRecord,scanCompanyRecords,extractChangeRecordReferences,extractCentralPolicyReferences,classifyCentralChangeRecordRetention,planCentralDocumentArchive,planCentralCurrentUsePrune,inspectCentralDocument,discoverCentralArchiveCandidates} from '../tools/company-records-governance.mjs';
 
 const root=process.cwd();
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
@@ -118,6 +118,54 @@ test('central policy reference scanner protects direct and optional changeRecord
     "roadmap."+token+"['deltaRule'].status"
   ].join('\n'));
   assert.deepEqual(refs,['alphaRule','betaRule','deltaRule','gammaRule']);
+});
+
+test('central current-use reference scanner extracts executable roadmap paths',()=>{
+  const refs=extractCentralPolicyReferences([
+    'roadmap.roblox.studioExecution.enabled',
+    'roadmap?.developmentLifecycleMachine?.validationEfficiencyOptimization?.roblox',
+    'company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy',
+    'roadmap.changeRecord.alphaRule.enabled'
+  ].join('\n'));
+  assert.ok(refs.includes('roblox.studioExecution.enabled'));
+  assert.ok(refs.includes('developmentLifecycleMachine.validationEfficiencyOptimization.roblox'));
+  assert.ok(refs.includes('minimumNecessaryProcedurePolicy'));
+  assert.ok(refs.includes('changeRecord.alphaRule'));
+});
+
+test('central current-use prune keeps live references and pins while archiving unused history',()=>{
+  const roadmap={
+    centralDocumentRetention:{
+      autoArchiveUnreferencedChangeRecords:true,
+      autoArchiveHistoricalShapedNestedState:true,
+      pinnedChangeRecordKeys:['pinnedRule'],
+      pinnedCorePaths:['roblox.developmentVerification']
+    },
+    roblox:{
+      developmentVerification:{enabled:true},
+      currentRuntime:{enabled:true},
+      oldDiagnostic:{runs:[1,2,3]}
+    },
+    changeRecord:{
+      liveRule:{status:'ACTIVE',value:1},
+      pinnedRule:{status:'ACTIVE',value:2},
+      unusedRule:{status:'ACTIVE',value:3}
+    }
+  };
+  const refs={
+    'roblox.currentRuntime.enabled':['tools/current.mjs'],
+    'changeRecord.liveRule':['qa/current.test.mjs']
+  };
+  const plan=planCentralCurrentUsePrune({roadmap,currentReferences:refs});
+  assert.equal(plan.roadmap.changeRecord.liveRule.value,1);
+  assert.equal(plan.roadmap.changeRecord.pinnedRule.value,2);
+  assert.equal(Object.hasOwn(plan.roadmap.changeRecord,'unusedRule'),false);
+  assert.equal(plan.roadmap.roblox.currentRuntime.enabled,true);
+  assert.equal(plan.roadmap.roblox.developmentVerification.enabled,true);
+  assert.equal(Object.hasOwn(plan.roadmap.roblox,'oldDiagnostic'),false);
+  assert.ok(plan.archivedPaths.includes('changeRecord.unusedRule'));
+  assert.ok(plan.archivedPaths.includes('roblox.oldDiagnostic'));
+  assert.ok(plan.reducedBytes>0);
 });
 
 test('central change record archival requires semantic retirement and never relies on an unreferenced name alone',()=>{
