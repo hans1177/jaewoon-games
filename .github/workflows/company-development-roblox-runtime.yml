@@ -1563,7 +1563,7 @@ jobs:
     needs: [technical-plan, technical-worker]
     if: always() && needs.technical-plan.result == 'success'
     concurrency:
-      group: roblox-private-runtime-dispatch-${{ inputs.game_id || github.run_id }}
+      group: roblox-private-runtime-dispatch-run-${{ github.run_id }}
       cancel-in-progress: false
     runs-on: ubuntu-24.04
     timeout-minutes: 12
