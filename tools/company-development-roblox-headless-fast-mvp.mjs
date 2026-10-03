@@ -43,7 +43,7 @@ export function inspectHeadlessSourceTexts({gameId='',sourcePath='',sourceRevisi
   checks.f0SourceIntegrity=checks.nativeLanguageCompilePassed&&checks.exactArtifact&&checks.projectContract&&checks.robloxPolicy&&checks.duplicateDeclarationGuard&&checks.sourceStartupMarkers&&checks.foundationSentinelContract&&checks.characterPhysicsGuard&&checks.mobileFirst&&checks.serverClientBoundary&&checks.remoteSecurity&&checks.saveRejoin&&checks.multiplayerSync&&checks.sessionEndRestart&&checks.errorGuards;
   const pass=Object.values(checks).every(Boolean)&&Number.isInteger(Number(artifactRunId))&&Number(artifactRunId)>0;
   return Object.freeze({
-    version:3,gameId:clean(gameId),platform:'ROBLOX',validationMode:'HEADLESS_SOURCE_PREFLIGHT_F0',checkedAt:new Date().toISOString(),
+    version:4,gameId:clean(gameId),platform:'ROBLOX',validationMode:'HEADLESS_SOURCE_PREFLIGHT_F0',checkedAt:new Date().toISOString(),
     sourcePath:clean(sourcePath),sourceRevision:clean(sourceRevision),artifactIdentity:clean(artifactIdentity),rebuiltArtifactIdentity:clean(rebuiltArtifactIdentity),artifactRunId:Number(artifactRunId),
     nativeLanguageCompilePassed:checks.nativeLanguageCompilePassed,nativeCompilerVersion:clean(nativeCompilerVersion)||null,
     playMode:parsePlayMode(config)||null,saveExists:save,multiplayerApplicable:multi,
