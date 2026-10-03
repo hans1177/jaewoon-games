@@ -897,6 +897,12 @@ test('24H safety-net refills free game slots while preserving responsible-file c
   assert(safetyNetWorkflow.includes('VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=PASS'));
   assert(safetyNetWorkflow.includes('VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=FAIL_DEFER_LEARNING'));
   assert(safetyNetWorkflow.includes('VIBE2_24H_RUNNER_QUEUE_PRESSURE='));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_RUNNER_JOB_QUEUE_PRESSURE='));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_RUNNER_JOB_PRESSURE_THRESHOLD='));
+  assert(safetyNetWorkflow.includes('VIBE2_PREPLAN_RUNNER_JOB_PRESSURE='));
+  assert(safetyNetWorkflow.includes('VIBE2_PREPLAN_PRIORITY_LANE=ASSET_DEVELOPMENT'));
+  assert(safetyNetWorkflow.includes('VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED'));
+  assert(safetyNetWorkflow.includes('actions/runs/$run_id/jobs?per_page=100'));
   assert(safetyNetWorkflow.includes('VIBE2_24H_LEARNING_IDLE_DEFERRED='));
   assert(safetyNetWorkflow.includes('VIBE2_24H_ACTIVE_GAME_WORKER_RESERVATIONS='));
   assert(safetyNetWorkflow.includes('VIBE2_24H_FREE_GAME_WORKER_SLOTS='));
@@ -904,6 +910,8 @@ test('24H safety-net refills free game slots while preserving responsible-file c
   assert(safetyNetWorkflow.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '256'"));
   assert(safetyNetWorkflow.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '30'"));
   assert(safetyNetWorkflow.includes("VIBE2_RUNNER_PRESSURE_DISPATCH_THRESHOLD: '4'"));
+  assert(safetyNetWorkflow.includes("VIBE2_RUNNER_JOB_PRESSURE_THRESHOLD: '8'"));
+  assert(safetyNetWorkflow.includes("VIBE2_ASSET_PRIORITY_BURST_MAX: '8'"));
   assert(safetyNetWorkflow.includes("VIBE2_RELEASE_RECOVERY_BATCH_MAX: '2'"));
   assert(safetyNetWorkflow.includes('VIBE2_RELEASE_RECOVERY_BATCH_LIMIT='));
   assert(safetyNetWorkflow.includes('VIBE2_24H_RUNNER_PRESSURE_THRESHOLD='));
