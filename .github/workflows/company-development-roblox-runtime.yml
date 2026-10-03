@@ -41,10 +41,11 @@ permissions:
   pull-requests: write
   actions: write
 
+# Non-Studio native development is never serialized by gameId. Exact duplicate execution is
+# deduped by immutable identity inside the existing workflow. Actual Studio sessions remain separate.
 concurrency:
-  group: roblox-native-exact-${{ inputs.game_id || (github.event_name == 'push' && 'batch-push') || github.run_id }}
-  # Only main-push batch planners are disposable. Exact-game and manual runs keep active execution.
-  cancel-in-progress: ${{ github.event_name == 'push' }}
+  group: roblox-native-run-${{ github.run_id }}
+  cancel-in-progress: false
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
