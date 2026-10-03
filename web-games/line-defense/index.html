@@ -137,6 +137,8 @@ const U={
   legend:{name:'전설 고양이',icon:'★',cost:650,hp:360,atk:160,range:60,speed:32,rate:1.1,cool:45,size:24,kind:'legend',role:'딜러',gacha:true,stage6Gacha:true,rareGacha:true}
 };
 const GACHA_IDS=Object.keys(U).filter(k=>U[k].gacha);
+function availableGachaIds(){return GACHA_IDS.filter(k=>!U[k].stage6Gacha||(save.maxCleared||0)>=6)}
+function remainingGachaIds(){return availableGachaIds().filter(k=>!save.owned[k])}
 
 // ===== 적 =====
 const E={
