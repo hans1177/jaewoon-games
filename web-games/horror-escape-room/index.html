@@ -179,7 +179,14 @@ function draw(){
   }
   if(player?.alive&&player.cool>0){ctx.fillStyle='#ffffffaa';ctx.font='12px system-ui';ctx.textAlign='center';ctx.fillText('스킬 '+player.cool.toFixed(1)+'s',player.x,player.y-28)}
 }
-function loop(now){
+function loop(now) {
+  if (!running) return;
+  const dt = Math.min(0.04, (now - last) / 1000 || 0.016);
+  last = now;
+  update(dt);
+  draw();
+  if (running) requestAnimationFrame(loop);
+}
   if(!running)return;const dt=Math.min(.04,(now-last)/1000||.016);last=now;update(dt);draw();if(running)requestAnimationFrame(loop);
 }
 $('startHuman').onclick=()=>setup('human');$('startMonster').onclick=()=>setup('monster');$('restart').onclick=()=>setup(save.lastRole==='monster'?'monster':'human');

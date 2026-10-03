@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function loop(now){",
+      "replace": "function loop(now) {\n  if (!running) return;\n  const dt = Math.min(0.04, (now - last) / 1000 || 0.016);\n  last = now;\n  update(dt);\n  draw();\n  if (running) requestAnimationFrame(loop);\n}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
