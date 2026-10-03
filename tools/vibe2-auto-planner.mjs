@@ -252,7 +252,7 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
   const queueRobloxRoot=posix(item?.robloxProjectPath||item?.targetSourcePaths?.ROBLOX||(queueTarget==='ROBLOX'?item?.targetSourcePath:''));
   if(queueTarget==='ROBLOX'||/^roblox-games\//.test(queueRobloxRoot)){
     const root=/^roblox-games\/[a-zA-Z0-9._-]+$/.test(queueRobloxRoot)?queueRobloxRoot:'roblox-games/'+id;
-    const minimumDesign=latestMinimumDesign(repoRoot,id);
+    const minimumDesign=latestVerifiedDesign(repoRoot,id)||latestMinimumDesign(repoRoot,id);
     let robloxDesignProfile={};
     if(minimumDesign?.record){
       try{robloxDesignProfile=robloxDesignProfileFromBaseline(minimumDesign.record);}
