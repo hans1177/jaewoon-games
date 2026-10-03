@@ -50,8 +50,10 @@ jobs:
 
           persisted=0
           final_continue=0
-          for attempt in 1 2 3; do
-            echo "VIBE2_RECONCILE_ATTEMPT=$attempt/3"
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            echo "VIBE2_RECONCILE_ATTEMPT=$attempt"
             git fetch origin "$CONTROL_BRANCH"
             git checkout -B "$CONTROL_BRANCH" "origin/$CONTROL_BRANCH"
 
@@ -93,7 +95,9 @@ jobs:
               final_continue="$continue_work"
               break
             fi
-            sleep $((attempt * 2))
+            sleep_for=$((attempt<5?attempt:5))
+            echo "VIBE2_RECONCILE_WRITE_RACE=RETRY:$attempt:$sleep_for"
+            sleep "$sleep_for"
           done
 
           test "$persisted" = 1
