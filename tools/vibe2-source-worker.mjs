@@ -393,10 +393,22 @@ function gitStatusPaths(cwd){
   try{raw=execFileSync('git',['status','--porcelain=v1','-z','--untracked-files=all'],{cwd,encoding:'utf8',timeout:15000,maxBuffer:16*1024*1024});}catch(error){throw new Error('NATIVE_DCC_GIT_STATUS_FAILED:'+clean(error?.message||error).slice(0,160));}
   return raw.split('\0').map(row=>row.slice(3).trim()).filter(Boolean).map(posix).sort();
 }
-export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd(),order={},blenderExecutable=clean(process.env.VIBE2_BLENDER_BINARY)||'blender'}={}){
+export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd(),order={},blenderExecutable=clean(process.env.VIBE2_BLENDER_BINARY)||'blender',persistCandidateOutputs=false}={}){
   const dcc=order?.assetProduction?.nativeAuthoringExecution?.dcc;
   const recipes=Array.isArray(dcc?.executionRecipes)?dcc.executionRecipes:[];
-  if(!assetDevelopmentTask(order)||!recipes.length)return Object.freeze({required:false,executed:false,status:'NOT_REQUIRED',recipes:Object.freeze([])});
+  if(!assetDevelopmentTask(order)||!recipes.length)return Object.freeze({required:false,executed:false,status:'NOT_REQUIRED',recipes:Object.freeze([]),generatedFiles:Object.freeze([]),persistedForCandidate:false});
+  const persist=persistCandidateOutputs===true;
+  if(persist)assertCandidateBranch(cwd);
+  const workLockFiles=new Set((order?.compiledWorkContract?.workLock?.files||[]).map(posix));
+  const declaredGeneratedFiles=unique(recipes.flatMap(recipe=>[
+    ...(Array.isArray(recipe?.outputs)?recipe.outputs:[]),
+    recipe?.evidenceJson,
+    recipe?.preview
+  ].filter(Boolean).map(dccRepoPath)));
+  if(persist){
+    const outsideLock=declaredGeneratedFiles.filter(file=>!workLockFiles.has(file));
+    if(outsideLock.length)throw new Error('NATIVE_DCC_WORK_LOCK_SCOPE_MISSING:'+outsideLock.join(','));
+  }
   const beforeStatus=gitStatusPaths(cwd);
   const beforeStatusKey=JSON.stringify(beforeStatus);
   const tempRoot=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-dcc-verify-'));
@@ -427,7 +439,7 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
         snapshots.push({parent,absolute,backup,existed});
       }
       const preOutput=new Map(outputs.map(relative=>{const file=path.resolve(cwd,relative);return[relative,fs.existsSync(file)&&fs.statSync(file).isFile()?{sha256:sha256File(file),size:fs.statSync(file).size}:null];}));
-      let stdout='';
+      let stdout='',recipeSucceeded=false;
       try{
         stdout=execFileSync(blenderExecutable,['--background','--python',scriptAbs,'--',...(recipe?.args||[]).map(value=>String(value))],{cwd,encoding:'utf8',timeout:600000,maxBuffer:64*1024*1024,stdio:['ignore','pipe','pipe']});
         const generated=outputs.map(relative=>{
@@ -447,28 +459,37 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
         const nativeArtifact=generated.find(row=>/\.(?:glb|gltf|fbx|blend)$/i.test(row.path))||generated[0];
         const priorNative=preOutput.get(nativeArtifact.path);
         const reproducesExistingNativeArtifact=Boolean(priorNative&&priorNative.sha256===nativeArtifact.sha256);
+        recipeSucceeded=true;
         results.push(Object.freeze({
-          id:clean(recipe?.id)||path.basename(script,'.py'),executor:'BLENDER_PYTHON',script,editableSource:dccRepoPath(recipe?.editableSource||script),
+          id:clean(recipe?.id)||path.basename(script,'.py'),assetId:clean(recipe?.assetId)||null,executor:'BLENDER_PYTHON',script,editableSource:dccRepoPath(recipe?.editableSource||script),
           outputs:Object.freeze(generated),evidenceJson,preview,nativeArtifact:nativeArtifact.path,artifactHash:nativeArtifact.sha256,sourceHash:sha256File(scriptAbs),
           evidenceState:evidence?.runtimeVerificationState||null,productionVerified:evidence?.productionVerified===true,
-          reproducesExistingNativeArtifact,candidateUsable:reproducesExistingNativeArtifact,
+          reproducesExistingNativeArtifact,persistedForCandidate:persist,candidateUsable:persist||reproducesExistingNativeArtifact,
           stdoutTail:String(stdout||'').slice(-2000),runtimeVerified:false,companyPromotionEligible:false
         }));
       }finally{
-        for(const snap of snapshots){
-          fs.rmSync(snap.absolute,{recursive:true,force:true});
-          if(snap.existed)fs.cpSync(snap.backup,snap.absolute,{recursive:true,force:true});
+        if(!persist||!recipeSucceeded){
+          for(const snap of snapshots){
+            fs.rmSync(snap.absolute,{recursive:true,force:true});
+            if(snap.existed)fs.cpSync(snap.backup,snap.absolute,{recursive:true,force:true});
+          }
         }
       }
     }
     const afterStatus=gitStatusPaths(cwd);
-    if(JSON.stringify(afterStatus)!==beforeStatusKey)throw new Error('NATIVE_DCC_VERIFY_MUTATED_REPOSITORY:'+afterStatus.join(','));
+    if(persist){
+      const allowed=new Set(declaredGeneratedFiles);
+      const escaped=afterStatus.filter(file=>!beforeStatus.includes(file)&&!allowed.has(file));
+      if(escaped.length)throw new Error('NATIVE_DCC_CANDIDATE_SCOPE_ESCAPE:'+escaped.join(','));
+    }else if(JSON.stringify(afterStatus)!==beforeStatusKey)throw new Error('NATIVE_DCC_VERIFY_MUTATED_REPOSITORY:'+afterStatus.join(','));
     const candidateUsable=results.length>0&&results.every(row=>row.candidateUsable===true);
     const first=results[0]||{};
     return Object.freeze({
-      version:1,required:true,executed:true,status:candidateUsable?'DCC_RECIPE_REPRODUCED_EXISTING_ARTIFACT':'DCC_RECIPE_EXECUTED_PERSISTENCE_REQUIRED',
+      version:2,required:true,executed:true,
+      status:persist?(candidateUsable?'DCC_RECIPE_EXECUTED_CANDIDATE_PERSISTED':'DCC_RECIPE_EXECUTED_PERSISTENCE_FAILED'):(candidateUsable?'DCC_RECIPE_REPRODUCED_EXISTING_ARTIFACT':'DCC_RECIPE_EXECUTED_PERSISTENCE_REQUIRED'),
       taskId:clean(order?.taskId)||null,gameId:clean(order?.gameId)||null,baseMainSha:clean(process.env.VIBE2_BASE_MAIN_SHA)||null,
-      allRecipesPassed:true,candidateUsable,recipeCount:results.length,recipes:Object.freeze(results),
+      allRecipesPassed:true,candidateUsable,persistedForCandidate:persist,recipeCount:results.length,recipes:Object.freeze(results),
+      generatedFiles:Object.freeze(declaredGeneratedFiles),
       editableSource:first.editableSource||null,nativeArtifact:first.nativeArtifact||null,artifactHash:first.artifactHash||null,preview:first.preview||null,
       runtimeVerified:false,companyPromotionEligible:false
     });
@@ -492,38 +513,58 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
     :target==='unity'
       ?[
         /\b(?:GameObject|Mesh|MeshFilter|MeshRenderer|SkinnedMeshRenderer|Material|Animator|ParticleSystem)\b/,
-        /(?:sharedMesh|sharedMaterial|SetTriangles|SetVertices|SetUVs|SetNormals|SetFloat|SetColor)/,
+        /(?:sharedMesh|sharedMaterial|SetTriangles|SetVertices|SetUVs|SetNormals|SetFloat|SetColor|Resources\.Load|AssetDatabase\.LoadAssetAtPath)/,
         /(?:transform\.(?:position|rotation|localScale)|Quaternion|Matrix4x4)/
       ].filter(re=>re.test(text)).length
-      :0;
+      :target==='web'
+        ?[
+          /<svg\b|<path\b|<defs\b|(?:linearGradient|radialGradient|filter)\b/i,
+          /(?:getContext\s*\(\s*["']2d["']|CanvasRenderingContext2D|fillRect\s*\(|drawImage\s*\(|\barc\s*\()/i,
+          /(?:@keyframes|animation\s*:|transform\s*:|filter\s*:|box-shadow\s*:|background\s*:)/i,
+          /(?:requestAnimationFrame\s*\(|Path2D\s*\(|OffscreenCanvas\b|ImageData\b)/i,
+          /(?:AudioContext|webkitAudioContext|createOscillator\s*\(|createGain\s*\(|OscillatorNode|GainNode)/i
+        ].filter(re=>re.test(text)).length
+        :0;
   const dccRequired=(contract?.dcc?.requiredTypes||[]).length>0;
   const nativeTextRequired=(contract?.nativeText?.requiredTypes||[]).length>0;
-  const nativeTextAuthored=nativeSignals>=2;
+  const nativeTextAuthored=target==='web'?nativeSignals>=1:nativeSignals>=2;
   const dccEvidence=contract?.dcc?.executionEvidence&&typeof contract.dcc.executionEvidence==='object'?contract.dcc.executionEvidence:null;
   const dccAuthored=Boolean(
     !dccRequired||(
       dccEvidence?.executed===true
       &&dccEvidence?.allRecipesPassed===true
       &&dccEvidence?.candidateUsable===true
+      &&dccEvidence?.persistedForCandidate===true
       &&clean(dccEvidence?.editableSource)
       &&clean(dccEvidence?.nativeArtifact)
       &&clean(dccEvidence?.artifactHash)
       &&clean(dccEvidence?.preview)
     )
   );
+  const generatedNativeArtifacts=unique((dccEvidence?.recipes||[]).map(row=>posix(row?.nativeArtifact)).filter(Boolean));
+  const boundGeneratedArtifacts=generatedNativeArtifacts.filter(assetPath=>text.includes(assetPath));
+  const generatedAssetBindingRequired=dccRequired&&dccAuthored&&['roblox','unity'].includes(target);
+  const generatedAssetBindingApplied=!generatedAssetBindingRequired||(nativeTextAuthored&&boundGeneratedArtifacts.length>0);
   const dccStatus=!dccRequired?'NOT_REQUIRED':dccAuthored?'DCC_AUTHORED_RUNTIME_REQUIRED':dccEvidence?.executed===true?'DCC_RECIPE_EXECUTED_PERSISTENCE_REQUIRED':clean(contract?.dcc?.executionStatus)||'DCC_AUTHORING_EXECUTOR_REQUIRED';
-  const nativeTextStatus=!nativeTextRequired?'NOT_REQUIRED':nativeTextAuthored?'NATIVE_SOURCE_AUTHORED_RUNTIME_REQUIRED':'NATIVE_AUTHORING_DELTA_REQUIRED';
+  const nativeTextStatus=!nativeTextRequired?'NOT_REQUIRED':nativeTextAuthored?(target==='web'?'WEB_NATIVE_SOURCE_AUTHORED_RUNTIME_REQUIRED':'NATIVE_SOURCE_AUTHORED_RUNTIME_REQUIRED'):'NATIVE_AUTHORING_DELTA_REQUIRED';
   const status=dccRequired&&!dccAuthored
     ?(nativeTextAuthored?'NATIVE_SOURCE_AUTHORED_DCC_EXECUTOR_REQUIRED':'DCC_AUTHORING_EXECUTOR_REQUIRED')
-    :nativeTextAuthored?'NATIVE_SOURCE_AUTHORED_RUNTIME_REQUIRED'
-      :nativeTextRequired?'NATIVE_AUTHORING_DELTA_REQUIRED'
-        :'AUTHORING_REQUIRED';
+    :generatedAssetBindingRequired&&!generatedAssetBindingApplied?'GENERATED_ASSET_BINDING_REQUIRED'
+      :nativeTextAuthored?(target==='web'?'WEB_NATIVE_SOURCE_AUTHORED_RUNTIME_REQUIRED':'NATIVE_SOURCE_AUTHORED_RUNTIME_REQUIRED')
+        :nativeTextRequired?'NATIVE_AUTHORING_DELTA_REQUIRED'
+          :'AUTHORING_REQUIRED';
   return Object.freeze({
     required:true,status,target,nativeSignals,nativeTextAuthored,dccRequired,dccAuthored,dccStatus,nativeTextRequired,nativeTextStatus,
     requiredDccTypes:Object.freeze([...(contract?.dcc?.requiredTypes||[])]),
     requiredNativeTextTypes:Object.freeze([...(contract?.nativeText?.requiredTypes||[])]),
     dccExecutionEvidencePresent:Boolean(dccEvidence),
     dccExecutionEvidence:dccEvidence?Object.freeze({...dccEvidence}):null,
+    generatedNativeArtifacts:Object.freeze(generatedNativeArtifacts),
+    boundGeneratedArtifacts:Object.freeze(boundGeneratedArtifacts),
+    generatedAssetBindingRequired,
+    generatedAssetBindingApplied,
+    platformNativeReauthoringRequired:contract?.platformReauthoringRequired!==false,
+    webArtifactCopyIntoRobloxOrUnityForbidden:contract?.webAssetDirectReuseIntoRobloxOrUnityForbidden!==false,
     nativeSourceMayNotMaskDccRequirement:contract?.dcc?.nativeSourceMayNotMaskDccRequirement!==false,
     authoringRequestIsNotCompletion:true,
     generatedArtifactAloneIsNotRuntimePass:true,
@@ -570,6 +611,20 @@ export function collectNativeAssetRuntimePromotionCandidates({order={},candidate
         bindingEvidence:Object.freeze(evidence),candidateSourceBindingVerified:true,runtimeVerificationRequired:true,promotionState:'PENDING_EXACT_NATIVE_RUNTIME'
       }));
     }
+  }
+  const dccEvidence=order?.assetProduction?.nativeAuthoringExecution?.dcc?.executionEvidence;
+  for(const recipe of Array.isArray(dccEvidence?.recipes)?dccEvidence.recipes:[]){
+    const id=clean(recipe?.assetId||recipe?.id);
+    const assetPath=posix(recipe?.nativeArtifact);
+    const sourceHash=clean(recipe?.sourceHash);
+    const artifactHash=clean(recipe?.artifactHash);
+    if(!id||!assetPath||!sourceHash||!artifactHash||!changedText.includes(assetPath))continue;
+    rows.set(id,Object.freeze({
+      assetId:id,family:null,license:'project-original-generated',path:assetPath,robloxAssetId:null,sourceHash,artifactHash,
+      bindingEvidence:Object.freeze(['GENERATED_NATIVE_ARTIFACT_PATH','ENGINE_NATIVE_SOURCE']),
+      candidateSourceBindingVerified:true,runtimeVerificationRequired:true,promotionState:'PENDING_EXACT_NATIVE_RUNTIME',
+      generatedByDeclaredRecipe:true,persistedForCandidate:dccEvidence?.persistedForCandidate===true
+    }));
   }
   return Object.freeze([...rows.values()]);
 }
@@ -2489,6 +2544,8 @@ export function generationFailureClass(error){
   if(/PRESENTATION_PATCH_DELTA_REQUIRED/i.test(message))return'PRESENTATION_PATCH_DELTA';
   if(/GRAPHICS_REPLACEMENT_REPORT_REQUIRED/i.test(message))return'GRAPHICS_REPLACEMENT_REPORT';
   if(/STUDIO_QUALITY_DELTA_REQUIRED/i.test(message))return'STUDIO_QUALITY_DELTA';
+  if(/GENERATED_ASSET_BINDING_REQUIRED/i.test(message))return'GENERATED_ASSET_BINDING';
+  if(/WEB_NATIVE_AUTHORING_DELTA_REQUIRED/i.test(message))return'WEB_NATIVE_AUTHORING';
   if(/SEMANTIC_DIFF_BUDGET_VIOLATION/i.test(message))return'SEMANTIC_DIFF_BUDGET';
   if(/잘못된 상대 경로|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path/i.test(message))return'INVALID_PATH';
   if(/전체 교체 파일 크기 오류/i.test(message))return'FULL_REWRITE_SIZE';
@@ -2496,11 +2553,11 @@ export function generationFailureClass(error){
   if(/edit find/i.test(message))return'EDIT_MATCH';
   return'OTHER';
 }
-function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET','PRESENTATION_PATCH_DELTA','GRAPHICS_REPLACEMENT_REPORT','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','STUDIO_QUALITY_DELTA','SELF_REVIEW','DIAGNOSTIC_POSTCONDITION','ROBLOX_STUDIO_ASSET_APPLICATION','SYSTEM_CAUSAL_TEST_REQUIRED','SYSTEM_CANDIDATE_SYNTAX','WEB_STRUCTURAL_CONTINUITY','ROBLOX_STRUCTURAL_CONTINUITY'].includes(generationFailureClass(error));}
+function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET','PRESENTATION_PATCH_DELTA','GRAPHICS_REPLACEMENT_REPORT','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','STUDIO_QUALITY_DELTA','SELF_REVIEW','DIAGNOSTIC_POSTCONDITION','ROBLOX_STUDIO_ASSET_APPLICATION','GENERATED_ASSET_BINDING','WEB_NATIVE_AUTHORING','SYSTEM_CAUSAL_TEST_REQUIRED','SYSTEM_CANDIDATE_SYNTAX','WEB_STRUCTURAL_CONTINUITY','ROBLOX_STRUCTURAL_CONTINUITY'].includes(generationFailureClass(error));}
 function fullWebFinalRetryAllowed(error){return['FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT'].includes(generationFailureClass(error));}
 export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
-  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|잘못된 상대 경로|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|SEMANTIC_DIFF_BUDGET_VIOLATION|PRESENTATION_PATCH_DELTA_REQUIRED|GRAPHICS_REPLACEMENT_REPORT_REQUIRED|ROBLOX_ASSET_ADAPTATION_(?:DOMAINS_REQUIRED|MOTION_REQUIRED)|STUDIO_QUALITY_DELTA_REQUIRED|CANDIDATE_SELF_REVIEW_REQUIRED|DIAGNOSTIC_POSTCONDITION_MISSING|ROBLOX_STUDIO_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)|UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED|Unity Web source bootstrap는 GameCore\.cs와 RuntimeBootstrap\.cs 실제 편집을 모두 요구|SYSTEM_CAUSAL_TEST_REQUIRED|SYSTEM_CANDIDATE_SYNTAX_INVALID|WEB_SOURCE_STRUCTURAL_CONTINUITY|ROBLOX_SOURCE_STRUCTURAL_CONTINUITY|prediction aborted|token repeat limit/i.test(message);
+  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|잘못된 상대 경로|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|SEMANTIC_DIFF_BUDGET_VIOLATION|PRESENTATION_PATCH_DELTA_REQUIRED|GRAPHICS_REPLACEMENT_REPORT_REQUIRED|ROBLOX_ASSET_ADAPTATION_(?:DOMAINS_REQUIRED|MOTION_REQUIRED)|STUDIO_QUALITY_DELTA_REQUIRED|CANDIDATE_SELF_REVIEW_REQUIRED|DIAGNOSTIC_POSTCONDITION_MISSING|ROBLOX_STUDIO_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)|UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED|Unity Web source bootstrap는 GameCore\.cs와 RuntimeBootstrap\.cs 실제 편집을 모두 요구|SYSTEM_CAUSAL_TEST_REQUIRED|SYSTEM_CANDIDATE_SYNTAX_INVALID|WEB_SOURCE_STRUCTURAL_CONTINUITY|ROBLOX_SOURCE_STRUCTURAL_CONTINUITY|GENERATED_ASSET_BINDING_REQUIRED|WEB_NATIVE_AUTHORING_DELTA_REQUIRED|prediction aborted|token repeat limit/i.test(message);
 }
 export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsibleFiles=[],preferredTargets=[]}={}){
   const raw=String(prompt??'');
@@ -4028,15 +4085,26 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   if(order?.workerPolicy?.directMainWrite!==false)throw new Error('directMainWrite 정책 위반');
   assertOwnerDevelopmentAvailable({cwd,order});
   const centralPolicyPreflight=assertCompiledWorkContractFresh({cwd,contract:order?.compiledWorkContract||{},phase:'PRE_SOURCE_GENERATION'});
-  const dccEvidenceFile=clean(process.env.VIBE2_DCC_AUTHORING_EVIDENCE_FILE);
-  if(dccEvidenceFile&&fs.existsSync(dccEvidenceFile)){
-    const dccEvidence=readJson(dccEvidenceFile);
-    if(dccEvidence?.executed===true&&clean(dccEvidence?.taskId)===clean(order?.taskId)){
-      order={...order,assetProduction:{...(order.assetProduction||{}),nativeAuthoringExecution:{
-        ...(order.assetProduction?.nativeAuthoringExecution||{}),
-        dcc:{...(order.assetProduction?.nativeAuthoringExecution?.dcc||{}),executionEvidence:dccEvidence}
-      }}};
+  let dccEvidence=null;
+  const dccRecipes=order?.assetProduction?.nativeAuthoringExecution?.dcc?.executionRecipes;
+  if(applySource&&assetDevelopmentTask(order)&&Array.isArray(dccRecipes)&&dccRecipes.length){
+    assertCandidateBranch(cwd);
+    dccEvidence=executeDeclaredNativeDccAuthoringVerification({cwd,order,persistCandidateOutputs:true});
+    if(dccEvidence.required===true&&(dccEvidence.executed!==true||dccEvidence.candidateUsable!==true||dccEvidence.persistedForCandidate!==true)){
+      throw new Error('NATIVE_DCC_CANDIDATE_PERSISTENCE_REQUIRED');
     }
+  }else{
+    const dccEvidenceFile=clean(process.env.VIBE2_DCC_AUTHORING_EVIDENCE_FILE);
+    if(dccEvidenceFile&&fs.existsSync(dccEvidenceFile)){
+      const preflightEvidence=readJson(dccEvidenceFile);
+      if(preflightEvidence?.executed===true&&clean(preflightEvidence?.taskId)===clean(order?.taskId))dccEvidence=preflightEvidence;
+    }
+  }
+  if(dccEvidence){
+    order={...order,assetProduction:{...(order.assetProduction||{}),nativeAuthoringExecution:{
+      ...(order.assetProduction?.nativeAuthoringExecution||{}),
+      dcc:{...(order.assetProduction?.nativeAuthoringExecution?.dcc||{}),executionEvidence:dccEvidence}
+    }}};
   }
   const target=clean(order.target).toLowerCase();
   const modelRouting=resolveAssetSourceModel(order,model);
@@ -4245,6 +4313,13 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         if(studioAxisCount<3)throw new Error('STUDIO_QUALITY_DELTA_REQUIRED:ASSET_AXES:'+studioAxisCount+'/3');
       }
     }
+    const nativeAuthoringCheck=evaluateNativeAssetAuthoringCandidate({order,candidate});
+    if(nativeAuthoringCheck.generatedAssetBindingRequired===true&&nativeAuthoringCheck.generatedAssetBindingApplied!==true){
+      throw new Error('GENERATED_ASSET_BINDING_REQUIRED:'+(nativeAuthoringCheck.generatedNativeArtifacts||[]).join(','));
+    }
+    if(target==='web'&&nativeAuthoringCheck.required===true&&nativeAuthoringCheck.nativeTextRequired===true&&nativeAuthoringCheck.nativeTextAuthored!==true){
+      throw new Error('WEB_NATIVE_AUTHORING_DELTA_REQUIRED:'+(nativeAuthoringCheck.requiredNativeTextTypes||[]).join(','));
+    }
     const studioQualityContract=order?.selectedTask?.studioQualityEvolution||order?.workPackage?.sharedContext?.studioQualityEvolution||null;
     const studioQualityDelta=evaluateStudioQualityCandidateDelta({candidate,sourceRoot,contract:studioQualityContract});
     if(studioQualityDelta.required&&!studioQualityDelta.pass){
@@ -4431,7 +4506,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     ?(order?.selectedTask?.firstStageUnityWeb===true?'UNITY_WEB':'UNITY_NATIVE')
     :target.toUpperCase();
   const manifest={
-    version:7,
+    version:8,
     taskId:order.taskId,
     gameId:order.gameId||null,
     target,
@@ -4454,9 +4529,12 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     modelRouting:{...modelRouting,actualModel:effectiveModel,heroModelApplied:modelRouting.heroRequested===true&&effectiveModel===modelRouting.heroModel},
     nativeAssetAuthoring,
     runtimePromotionCandidates,
+    generatedAssetFiles:Object.freeze([...(order?.assetProduction?.nativeAuthoringExecution?.dcc?.executionEvidence?.generatedFiles||[])]),
+    generatedAssetPersistence:order?.assetProduction?.nativeAuthoringExecution?.dcc?.executionEvidence?.persistedForCandidate===true?'CANDIDATE_BRANCH':'NOT_PERSISTED',
     nativeAssetAuthoringPending:nativeAssetAuthoring.required===true&&(
       (nativeAssetAuthoring.dccRequired===true&&nativeAssetAuthoring.dccAuthored!==true)
       ||(nativeAssetAuthoring.nativeTextRequired===true&&nativeAssetAuthoring.nativeTextAuthored!==true)
+      ||(nativeAssetAuthoring.generatedAssetBindingRequired===true&&nativeAssetAuthoring.generatedAssetBindingApplied!==true)
     ),
     changedFiles,
     summary:candidate.summary,
@@ -4506,6 +4584,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     console.log(`VIBE2_NATIVE_ASSET_DCC_STATUS=${result.nativeAssetAuthoring?.dccStatus||'NOT_REQUIRED'}`);
     console.log(`VIBE2_NATIVE_ASSET_AUTHORING_PENDING=${result.nativeAssetAuthoringPending===true?'YES':'NO'}`);
     console.log(`VIBE2_NATIVE_ASSET_RUNTIME_PROMOTION_CANDIDATES=${result.runtimePromotionCandidates?.map(row=>row.assetId).join(',')||'NONE'}`);
+    console.log(`VIBE2_NATIVE_ASSET_GENERATED_FILES=${result.generatedAssetFiles?.join(',')||'NONE'}`);
     console.log(`VIBE2_CHANGED_FILES=${result.changedFiles.join(',')}`);
     console.log(`VIBE2_CANDIDATE_MANIFEST=${result.candidateManifestPath}`);
     console.log(`VIBE2_GENERATION_ATTEMPTS=${result.generation?.attempts||1}`);
