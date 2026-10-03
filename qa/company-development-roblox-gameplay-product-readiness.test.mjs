@@ -178,6 +178,22 @@ test('F9 blocks exact engine execution without server boot actual play and real 
   assert.equal(pass.mobileRuntime,true);
   assert.equal(pass.coreLoopRuntime,true);
   assert.equal(pass.verticalSlicePassed,true);
+
+  const persistedPass=evaluateRobloxF9ProductReadiness({
+    f0Evidence,
+    runtimeEvidence:{
+      exactGame:true,exactPlace:true,exactVersion:true,actualRuntimeEvidence:true,
+      f1ServerBootPassed:true,f2WorldFoundationPassed:true,f3CharacterFoundationPassed:true,f4PhysicsAndMovementPassed:true,
+      f5InputCameraUiPassed:true,f8GameplaySystemsPassed:true,
+      openCloudWorldEvidence:{basePartCount:20,spawnCount:1,landmarkCount:2,objectiveCount:1}
+    },
+    postRuntimeQaEvidence:{actualRuntimeEvidence:true},
+    studioPlayEvidence:{}
+  });
+  assert.equal(persistedPass.pass,true);
+  assert.equal(persistedPass.exactEngine,true);
+  assert.equal(persistedPass.serverBoot,true);
+  assert.equal(persistedPass.simulation,true);
 });
 
 
