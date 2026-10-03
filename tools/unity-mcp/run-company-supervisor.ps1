@@ -195,6 +195,167 @@ function Repair-UnityMcpIfNeeded {
     return $false
 }
 
+function Get-RobloxRunnerMetadata([string]$Root) {
+    if (-not $Root) { return $null }
+    $metadataPath = Join-Path $Root '.runner'
+    if (-not (Test-Path -LiteralPath $metadataPath)) { return $null }
+    try {
+        return Get-Content -LiteralPath $metadataPath -Raw | ConvertFrom-Json
+    } catch {
+        return $null
+    }
+}
+
+function Test-RobloxRunnerRoot([string]$Root) {
+    if (-not $Root) { return $false }
+    $listenerPath = Join-Path $Root 'bin\Runner.Listener.exe'
+    if (-not (Test-Path -LiteralPath $listenerPath)) { return $false }
+    $metadata = Get-RobloxRunnerMetadata -Root $Root
+    return $metadata -and [string]$metadata.agentName -eq 'roblox-studio-local'
+}
+
+function Resolve-RobloxRunnerRoot {
+    $candidates = New-Object System.Collections.Generic.List[string]
+
+    function Add-RobloxRunnerCandidate([string]$Value) {
+        if (-not $Value) { return }
+        try { $full = [System.IO.Path]::GetFullPath($Value) } catch { return }
+        if (-not $candidates.Contains($full)) { [void]$candidates.Add($full) }
+    }
+
+    foreach ($process in @(Get-CimInstance Win32_Process -Filter "Name='Runner.Listener.exe'" -ErrorAction SilentlyContinue)) {
+        if ($process.ExecutablePath) {
+            Add-RobloxRunnerCandidate (Split-Path (Split-Path $process.ExecutablePath -Parent) -Parent)
+        }
+    }
+
+    $task = Get-ScheduledTask -TaskName 'Jaewoon-Roblox-GitHubRunner' -ErrorAction SilentlyContinue
+    if ($task) {
+        foreach ($action in @($task.Actions)) {
+            Add-RobloxRunnerCandidate ([string]$action.WorkingDirectory)
+            $arguments = [string]$action.Arguments
+            if ($arguments -match '([A-Za-z]:\\[^"]*?run\.cmd)') {
+                Add-RobloxRunnerCandidate (Split-Path $Matches[1] -Parent)
+            }
+        }
+    }
+
+    foreach ($service in @(Get-CimInstance Win32_Service -ErrorAction SilentlyContinue | Where-Object { $_.Name -like 'actions.runner.*' })) {
+        $raw = [string]$service.PathName
+        $exe = $null
+        if ($raw -match '^"([^"]+)"') { $exe = $Matches[1] }
+        elseif ($raw) { $exe = ($raw -split '\s+')[0].Trim('"') }
+        if ($exe -and (Split-Path $exe -Leaf) -match 'RunnerService') {
+            Add-RobloxRunnerCandidate (Split-Path (Split-Path $exe -Parent) -Parent)
+        }
+    }
+
+    $patterns = @(
+        'C:\actions-runner*','C:\github-actions-runner*',
+        'D:\actions-runner*','D:\github-actions-runner*',
+        'E:\actions-runner*','E:\github-actions-runner*',
+        (Join-Path $env:USERPROFILE 'actions-runner*'),
+        (Join-Path $env:USERPROFILE 'github-actions-runner*')
+    )
+    foreach ($pattern in $patterns) {
+        foreach ($dir in @(Get-ChildItem -Path $pattern -Directory -ErrorAction SilentlyContinue)) {
+            Add-RobloxRunnerCandidate $dir.FullName
+        }
+    }
+
+    $valid = @($candidates | Where-Object { Test-RobloxRunnerRoot -Root $_ } | Sort-Object -Unique)
+    if ($valid.Count -eq 0) { return $null }
+    if ($valid.Count -eq 1) { return $valid[0] }
+
+    $running = @($valid | Where-Object {
+        $listener = [System.IO.Path]::GetFullPath((Join-Path $_ 'bin\Runner.Listener.exe'))
+        @(Get-CimInstance Win32_Process -Filter "Name='Runner.Listener.exe'" -ErrorAction SilentlyContinue |
+            Where-Object { $_.ExecutablePath -and [System.IO.Path]::GetFullPath($_.ExecutablePath) -ieq $listener }).Count -gt 0
+    })
+    if ($running.Count -eq 1) { return $running[0] }
+
+    return @($valid | Sort-Object {
+        try { (Get-Item -LiteralPath (Join-Path $_ '.runner')).LastWriteTimeUtc } catch { [datetime]::MinValue }
+    } -Descending)[0]
+}
+
+function Install-RobloxRunnerStartup([string]$RunnerRoot) {
+    if (-not $RunnerRoot) { return $false }
+    $startupRoot = [Environment]::GetFolderPath('Startup')
+    if (-not $startupRoot) { return $false }
+
+    $listenerExe = Join-Path $RunnerRoot 'bin\Runner.Listener.exe'
+    $startupPath = Join-Path $startupRoot 'Jaewoon-Roblox-Runner.vbs'
+    $vbsRoot = $RunnerRoot.Replace('"','""')
+    $vbsListener = $listenerExe.Replace('"','""')
+    $launcher = @"
+Set shell = CreateObject("WScript.Shell")
+Set svc = GetObject("winmgmts:\\.\root\cimv2")
+target = "$vbsListener"
+running = False
+Set listeners = svc.ExecQuery("SELECT * FROM Win32_Process WHERE Name='Runner.Listener.exe'")
+For Each p In listeners
+  If LCase(p.ExecutablePath) = LCase(target) Then
+    running = True
+    Exit For
+  End If
+Next
+If Not running Then
+  shell.CurrentDirectory = "$vbsRoot"
+  shell.Run Chr(34) & target & Chr(34) & " run", 0, False
+End If
+"@
+    try {
+        $launcher | Set-Content -LiteralPath $startupPath -Encoding ASCII
+        return $true
+    } catch {
+        Write-CompanyLog "[ROBLOX-RUNNER-WARN] Could not refresh hidden Startup launcher: $($_.Exception.Message)"
+        return $false
+    }
+}
+
+function Repair-RobloxRunnerIfNeeded {
+    $runnerRoot = Resolve-RobloxRunnerRoot
+    if (-not $runnerRoot) {
+        Write-CompanyLog '[ROBLOX-RUNNER-WARN] Configured roblox-studio-local runner was not found.'
+        return $false
+    }
+
+    Install-RobloxRunnerStartup -RunnerRoot $runnerRoot | Out-Null
+    $listenerExe = [System.IO.Path]::GetFullPath((Join-Path $runnerRoot 'bin\Runner.Listener.exe'))
+    $listener = @(Get-CimInstance Win32_Process -Filter "Name='Runner.Listener.exe'" -ErrorAction SilentlyContinue |
+        Where-Object { $_.ExecutablePath -and [System.IO.Path]::GetFullPath($_.ExecutablePath) -ieq $listenerExe })
+    if ($listener.Count -gt 0) { return $true }
+
+    Write-CompanyLog "[ROBLOX-RUNNER] Recovering hidden authenticated runner from $runnerRoot"
+    try {
+        $startInfo = New-Object System.Diagnostics.ProcessStartInfo
+        $startInfo.FileName = $listenerExe
+        $startInfo.Arguments = 'run'
+        $startInfo.WorkingDirectory = $runnerRoot
+        $startInfo.UseShellExecute = $false
+        $startInfo.CreateNoWindow = $true
+        $startInfo.WindowStyle = [System.Diagnostics.ProcessWindowStyle]::Hidden
+        $process = New-Object System.Diagnostics.Process
+        $process.StartInfo = $startInfo
+        [void]$process.Start()
+        Start-Sleep -Seconds 4
+    } catch {
+        Write-CompanyLog "[ROBLOX-RUNNER-WARN] Hidden runner start failed: $($_.Exception.Message)"
+        return $false
+    }
+
+    $listener = @(Get-CimInstance Win32_Process -Filter "Name='Runner.Listener.exe'" -ErrorAction SilentlyContinue |
+        Where-Object { $_.ExecutablePath -and [System.IO.Path]::GetFullPath($_.ExecutablePath) -ieq $listenerExe })
+    if ($listener.Count -eq 0) {
+        Write-CompanyLog '[ROBLOX-RUNNER-WARN] Runner.Listener did not remain active after recovery.'
+        return $false
+    }
+
+    Write-CompanyLog "[ROBLOX-RUNNER-PASS] Hidden login runner active. PID=$($listener[0].ProcessId) Root=$runnerRoot"
+    return $true
+}
+
 function Sync-Repository {
     $beforeSupervisorHash = Get-FileSha256 -Path $PSCommandPath
     $status = Invoke-Git @('status','--porcelain')
@@ -425,7 +586,7 @@ $nextAutonomousAt = [DateTimeOffset]::Now
 try {
     Write-CompanyLog "[START] Jaewoon Company supervisor. PID=$PID Repo=$repoRoot"
     Write-CompanyLog "[AUTO] Remote sync every $SyncIntervalSeconds seconds; pending owner directives bypass the normal work interval."
-    Write-CompanyLog '[AUTO] Unity/MCP health repair and guarded company-ai auto publish are enabled.'
+    Write-CompanyLog '[AUTO] Unity/MCP health repair, Roblox Studio runner recovery, and guarded company-ai auto publish are enabled.'
 
     while ($true) {
         $sync = Sync-Repository
@@ -434,6 +595,8 @@ try {
             $restartRequested = $true
             break
         }
+
+        Repair-RobloxRunnerIfNeeded | Out-Null
 
         if (Test-CoreDecisionPending) {
             if (-not $waitingForCoreDecision) {
