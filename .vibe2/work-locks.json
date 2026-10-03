@@ -3,65 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-105ksc6",
-      "worker": "vibe2",
-      "taskId": "line-defense-studio-evolution-roblox-presentation-v1",
-      "gameId": "line-defense",
-      "files": [
-        "roblox-games/line-defense/client/Game.client.luau",
-        "roblox-games/line-defense/server/Game.server.luau",
-        "assets/generated/roblox/line-defense/background/asset.glb",
-        "assets/generated/roblox/line-defense/background/preview.png",
-        "assets/generated/roblox/line-defense/background/evidence.json",
-        "assets/generated/roblox/line-defense/item/asset.glb",
-        "assets/generated/roblox/line-defense/item/preview.png",
-        "assets/generated/roblox/line-defense/item/evidence.json",
-        "assets/generated/roblox/line-defense/prop/asset.glb",
-        "assets/generated/roblox/line-defense/prop/preview.png",
-        "assets/generated/roblox/line-defense/prop/evidence.json"
-      ],
-      "baseSha": "5cee47800865f6e0dab1d7cd8b1e030227e23bb1",
-      "runId": "37117290395",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-03T11:23:59.346Z",
-      "expiresAt": "2026-10-03T12:08:59.346Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-studio-evolution-roblox-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-14htuud",
-      "worker": "vibe2",
-      "taskId": "seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-casual-realm-weaver",
-      "files": [
-        "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
-        "roblox-games/seed-casual-realm-weaver/server/Game.server.luau",
-        "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau",
-        "assets/generated/roblox/seed-casual-realm-weaver/background/asset.glb",
-        "assets/generated/roblox/seed-casual-realm-weaver/background/preview.png",
-        "assets/generated/roblox/seed-casual-realm-weaver/background/evidence.json",
-        "assets/generated/roblox/seed-casual-realm-weaver/item/asset.glb",
-        "assets/generated/roblox/seed-casual-realm-weaver/item/preview.png",
-        "assets/generated/roblox/seed-casual-realm-weaver/item/evidence.json",
-        "assets/generated/roblox/seed-casual-realm-weaver/prop/asset.glb",
-        "assets/generated/roblox/seed-casual-realm-weaver/prop/preview.png",
-        "assets/generated/roblox/seed-casual-realm-weaver/prop/evidence.json"
-      ],
-      "baseSha": "5cee47800865f6e0dab1d7cd8b1e030227e23bb1",
-      "runId": "37117290395",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-03T11:24:02.039Z",
-      "expiresAt": "2026-10-03T12:09:02.039Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-1855h9c",
       "worker": "vibe2",
       "taskId": "seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1",
@@ -454,6 +395,35 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:daechung-rpg-existing-web-assessment-v1"
+      ]
+    },
+    {
+      "id": "wl-h6s6iy",
+      "worker": "vibe2",
+      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1",
+      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+      "files": [
+        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/GameCore.cs",
+        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/RuntimeBootstrap.cs",
+        "assets/generated/unity/seed-action-survival-rogu-echoes-of-the-lost-star/background/asset.glb",
+        "assets/generated/unity/seed-action-survival-rogu-echoes-of-the-lost-star/background/preview.png",
+        "assets/generated/unity/seed-action-survival-rogu-echoes-of-the-lost-star/background/evidence.json",
+        "assets/generated/unity/seed-action-survival-rogu-echoes-of-the-lost-star/item/asset.glb",
+        "assets/generated/unity/seed-action-survival-rogu-echoes-of-the-lost-star/item/preview.png",
+        "assets/generated/unity/seed-action-survival-rogu-echoes-of-the-lost-star/item/evidence.json",
+        "assets/generated/unity/seed-action-survival-rogu-echoes-of-the-lost-star/prop/asset.glb",
+        "assets/generated/unity/seed-action-survival-rogu-echoes-of-the-lost-star/prop/preview.png",
+        "assets/generated/unity/seed-action-survival-rogu-echoes-of-the-lost-star/prop/evidence.json"
+      ],
+      "baseSha": "a37c29f403c506f9a7a127b7f88c8d966bcfa8f6",
+      "runId": "37119923619",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-03T12:09:04.880Z",
+      "expiresAt": "2026-10-03T12:54:04.880Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1"
       ]
     }
   ]
