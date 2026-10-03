@@ -519,23 +519,19 @@ test('central native active-run dedupe covers the full 256 game execution window
 });
 
 
-test('Roblox runtime planners reuse central contract QA and keep responsibility-local tests only',()=>{
+test('Roblox runtime planners reuse current central QA and keep responsibility-local tests only',()=>{
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
-  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
-  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
   const roblox=read('.github/workflows/company-development-roblox-runtime.yml');
   const continuation=read('.github/workflows/company-development-roblox-runtime-continuation.yml');
   const centralQa=read('.github/workflows/company-central-policy-contract-qa.yml');
-  const change=roadmap.changeRecord?.robloxPlannerDuplicateContractQaRemoval20260927;
 
   for(const testFile of [
     'qa/company-shared-context.test.mjs',
     'qa/company-development-roblox-runtime.test.mjs',
     'qa/company-selected-platform-router.test.mjs',
-  ]){
-    assert.ok(centralQa.includes(testFile),testFile+' central QA authority');
-  }
-  assert.ok(centralQa.includes('qa/company-development-roblox-runtime-continuation.test.mjs'));
+    'qa/company-development-roblox-runtime-continuation.test.mjs',
+  ])assert.ok(centralQa.includes(testFile),testFile+' central QA authority');
+
   assert.doesNotMatch(roblox,/node --test qa\/company-shared-context\.test\.mjs/);
   assert.doesNotMatch(roblox,/node --test[^\n]*company-development-roblox-runtime\.test\.mjs/);
   assert.doesNotMatch(roblox,/node --test[^\n]*company-selected-platform-router\.test\.mjs/);
@@ -546,16 +542,11 @@ test('Roblox runtime planners reuse central contract QA and keep responsibility-
     'qa/company-development-roblox-package.test.mjs',
     'qa/company-development-roblox-independent-promotion.test.mjs',
     'qa/company-upper-platform-admission.test.mjs',
-  ]) assert.ok(roblox.includes(local),local+' responsibility-local test retained');
+  ])assert.ok(roblox.includes(local),local+' responsibility-local test retained');
 
-  assert.equal(change?.canonicalQaAuthority,'.github/workflows/company-central-policy-contract-qa.yml');
-  assert.equal(change?.duplicateValidationForbidden,true);
-  assert.equal(change?.gameDispatchWaitsForDuplicateQa,false);
-  assert.equal(change?.qualitySecurityReleaseGatesUnchanged,true);
-  assert.equal(architecture.robloxPlannerDuplicateContractQaRemoval?.runtimeCriticalPathWaitsForDuplicateQa,false);
-  assert.equal(logMap.robloxPlannerDuplicateContractQaRemovalEvidence?.duplicateRuntimeTestsPresent,false);
+  assert.equal(roadmap.minimumNecessaryProcedurePolicy?.qaAndReview?.reviewMayNotBecomeRoutineSerializationPoint,true);
+  assert.equal(roadmap.minimumNecessaryProcedurePolicy?.principles?.unrelatedProcedureMayNotDelayDevelopment,true);
 });
-
 
 test('Unity prepare delegates all contract tests to canonical QA and keeps only runtime compilation on the critical path',()=>{
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
@@ -759,48 +750,21 @@ test('exact-game native workflow concurrency closes dedupe races without global 
   assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.manualEmptyBatchRunScoped,true);
 });
 
-test('Roblox source-plan wake and runner isolation stay aligned across central records',()=>{
+test('Roblox source-plan uses current control runners without historical repair mirrors',()=>{
   const workflow=read('.github/workflows/company-development-roblox-runtime.yml');
-  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
   const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
   const logMap=JSON.parse(read('company-learning/company-log-map.json'));
-  const change=roadmap.changeRecord?.robloxSourcePlanWakeAndRunnerIsolation20260927||{};
-  const relief=roadmap.changeRecord?.lightweightGameIngressRunnerRelief20260927||{};
-  const topology=architecture.robloxSourcePlanWakeAndRunnerIsolation||{};
-  const evidence=logMap.robloxSourcePlanWakeAndRunnerIsolationEvidence||{};
 
   assert.match(workflow,/\n  source-plan:\n[\s\S]*?runs-on: ubuntu-24\.04/);
-  assert.equal(change.sourcePlanRunner,'ubuntu-24.04');
-  assert.equal(change.sourcePlanExactGameRunner,'ubuntu-24.04');
-  assert.equal(change.sourcePlanBatchRunner,'ubuntu-24.04');
-  assert.equal(change.previousSourcePlanRunner,'ubuntu-slim');
-  assert.equal(change.sourcePlanContractPushWakeRequired,true);
-  assert.equal(topology.sourcePlanRunner,'ubuntu-24.04');
-  assert.equal(topology.sourcePlanExactGameRunner,'ubuntu-24.04');
-  assert.equal(topology.sourcePlanBatchRunner,'ubuntu-24.04');
-  assert.equal(topology.pushWakeMatchesContractPaths,true);
   assert.equal(architecture.gameControlRunnerPools?.roblox?.sourcePlanRunner,'ubuntu-24.04');
   assert.equal(architecture.gameControlRunnerPools?.roblox?.sourcePlanExactGameRunner,'ubuntu-24.04');
   assert.equal(architecture.gameControlRunnerPools?.roblox?.sourcePlanBatchRunner,'ubuntu-24.04');
   assert.equal(logMap.gameControlRunnerPoolEvidence?.expectedRunnerLabels?.robloxIngress,'ubuntu-24.04');
   assert.equal(logMap.gameControlRunnerPoolEvidence?.expectedRunnerLabels?.robloxExactIngress,'ubuntu-24.04');
   assert.equal(logMap.gameControlRunnerPoolEvidence?.expectedRunnerLabels?.robloxBatchIngress,'ubuntu-24.04');
-  assert.equal(logMap.lightweightGameIngressRunnerReliefEvidence?.expectedRunnerLabels?.robloxSourcePlan,'ubuntu-24.04');
-  assert.equal(logMap.lightweightGameIngressRunnerReliefEvidence?.expectedRunnerLabels?.robloxSourcePlanExact,'ubuntu-24.04');
-  assert.equal(logMap.lightweightGameIngressRunnerReliefEvidence?.expectedRunnerLabels?.robloxSourcePlanBatch,'ubuntu-24.04');
-  assert.equal(evidence.expectedRunnerLabel,'ubuntu-24.04');
-  assert.equal(evidence.expectedExactGameRunnerLabel,'ubuntu-24.04');
-  assert.equal(evidence.expectedBatchRunnerLabel,'ubuntu-24.04');
-  assert.equal(evidence.pushWakeMustCoverSourcePlanContractPaths,true);
-  assert.equal(Object.hasOwn(relief.movedToSlim||{},'robloxSourcePlan'),false);
-  assert.equal(relief.robloxSourcePlanCriticalIngressException?.centralNativePlanRemains,'ubuntu-slim');
-  assert.equal(relief.robloxSourcePlanCriticalIngressException?.unityPrepareRemains,'ubuntu-slim');
-  assert.equal(relief.robloxSourcePlanCriticalIngressException?.vibeReserveRemains,'ubuntu-slim');
-  assert.equal(change.technicalPlanRunnerUnchanged,'ubuntu-24.04');
-  assert.equal(change.heavyExecutionRunnerUnchanged,'ubuntu-latest');
+  assert.equal(Object.hasOwn(architecture,'robloxSourcePlanWakeAndRunnerIsolation'),false);
+  assert.equal(Object.hasOwn(logMap,'robloxSourcePlanWakeAndRunnerIsolationEvidence'),false);
 });
-
-
 
 test('verified external black-box learning is applied first at full retrieved coverage across development and internal assets',()=>{
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
