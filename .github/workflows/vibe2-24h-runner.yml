@@ -91,7 +91,9 @@ env:
   VIBE2_LEARNING_CONCURRENT_WITH_PRODUCTION: 'true'
   VIBE2_LEARNING_LANE_MAX: '4'
   VIBE2_ASSET_DEVELOPMENT_MAX: '64'
+  VIBE2_ASSET_PRIORITY_BURST_MAX: '8'
   VIBE2_RUNNER_PRESSURE_DISPATCH_THRESHOLD: '4'
+  VIBE2_RUNNER_JOB_PRESSURE_THRESHOLD: '8'
   VIBE2_RELEASE_RECOVERY_BATCH_MAX: '2'
 
 # Keep one continuous scheduler chain. v9 releases the stale v8 scheduler epoch
@@ -145,13 +147,14 @@ jobs:
           echo "VIBE2_24H_LEARNING_PROVIDER=$VIBE2_24H_LEARNING_PROVIDER"
           echo "VIBE2_24H_GEMINI_LEARNING=FORBIDDEN"
 
-      - name: Dispatch queued GAME_PRIMARY work before full planning
+      - name: Dispatch queued asset work first, otherwise GAME_PRIMARY before full planning
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
           pressure_threshold="${VIBE2_RUNNER_PRESSURE_DISPATCH_THRESHOLD:-4}"
+          job_pressure_threshold="${VIBE2_RUNNER_JOB_PRESSURE_THRESHOLD:-8}"
           pressure_body="$(mktemp)"
           pressure_code="$(curl --silent --show-error --output "$pressure_body" --write-out '%{http_code}' \
             --header 'Accept: application/vnd.github+json' \
@@ -161,24 +164,56 @@ jobs:
           if [ "$pressure_code" != '200' ]; then
             rm -f "$pressure_body"
             echo "VIBE2_PREPLAN_RUNNER_PRESSURE=UNKNOWN_HTTP_$pressure_code"
-            echo 'VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DEFER_PRESSURE_UNKNOWN'
+            echo 'VIBE2_PREPLAN_DISPATCH=DEFER_PRESSURE_UNKNOWN'
             exit 0
           fi
+
           pressure_count="$(CURRENT_RUN_ID="$GITHUB_RUN_ID" node - "$pressure_body" <<'NODE'
           const fs=require('fs');
           const payload=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
           const current=String(process.env.CURRENT_RUN_ID||'');
           const states=new Set(['queued','pending','requested']);
-          const count=(payload.workflow_runs||[]).filter(row=>String(row.id||'')!==current&&states.has(String(row.status||'').toLowerCase())).length;
+          const count=(payload.workflow_runs||[]).filter(row=>
+            String(row.id||'')!==current &&
+            states.has(String(row.status||'').toLowerCase())
+          ).length;
           process.stdout.write(String(count));
           NODE
           )"
+
+          mapfile -t vibe_pressure_runs < <(CURRENT_RUN_ID="$GITHUB_RUN_ID" node - "$pressure_body" <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const current=String(process.env.CURRENT_RUN_ID||'');
+          const active=new Set(['queued','pending','requested','in_progress']);
+          const paths=new Set(['.github/workflows/vibe2-24h-runner.yml','.github/workflows/vibe2-continuous-core.yml']);
+          for(const row of payload.workflow_runs||[]){
+            if(String(row.id||'')===current)continue;
+            if(!active.has(String(row.status||'').toLowerCase()))continue;
+            if(!paths.has(String(row.path||'')))continue;
+            console.log(String(row.id));
+          }
+          NODE
+          )"
+
+          job_pressure_count=0
+          for run_id in "${vibe_pressure_runs[@]:0:12}"; do
+            queued_in_run="$(gh api --paginate "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" \
+              --jq '[.jobs[] | select(.status=="queued" or .status=="pending" or .status=="requested")] | length' 2>/dev/null \
+              | awk '{s+=$1}END{print s+0}' || echo 0)"
+            [[ "$queued_in_run" =~ ^[0-9]+$ ]] || queued_in_run=0
+            job_pressure_count=$((job_pressure_count+queued_in_run))
+          done
           rm -f "$pressure_body"
+
           echo "VIBE2_PREPLAN_RUNNER_PRESSURE=$pressure_count"
-          if [ "$pressure_count" -ge "$pressure_threshold" ]; then
-            echo "VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DEFER_RUNNER_PRESSURE_THRESHOLD_$pressure_threshold"
+          echo "VIBE2_PREPLAN_RUNNER_JOB_PRESSURE=$job_pressure_count"
+          echo "VIBE2_PREPLAN_RUNNER_JOB_PRESSURE_THRESHOLD=$job_pressure_threshold"
+          if [ "$pressure_count" -ge "$pressure_threshold" ] || [ "$job_pressure_count" -ge "$job_pressure_threshold" ]; then
+            echo "VIBE2_PREPLAN_DISPATCH=DEFER_RUNNER_PRESSURE:RUNS=$pressure_count:JOBS=$job_pressure_count"
             exit 0
           fi
+
           state="$(node <<'NODE'
           const fs=require('fs');
           const q=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
@@ -196,17 +231,48 @@ jobs:
             return'CONTROL_FAST';
           };
           const tasks=q.tasks||[];
-          const active=tasks.filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)==='GAME_PRIMARY').length;
-          const queued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='GAME_PRIMARY').length;
-          const max=Math.max(1,Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||256));
-          process.stdout.write([queued,active,Math.max(0,max-active)].join('\t'));
+          const activeGame=tasks.filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)==='GAME_PRIMARY').length;
+          const queuedGame=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='GAME_PRIMARY').length;
+          const activeAsset=tasks.filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)==='ASSET_DEVELOPMENT').length;
+          const queuedAsset=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='ASSET_DEVELOPMENT').length;
+          const gameMax=Math.max(1,Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||256));
+          const assetMax=Math.max(1,Number(process.env.VIBE2_ASSET_DEVELOPMENT_MAX||64));
+          process.stdout.write([
+            queuedGame,activeGame,Math.max(0,gameMax-activeGame),
+            queuedAsset,activeAsset,Math.max(0,assetMax-activeAsset)
+          ].join('\t'));
           NODE
           )"
-          IFS=$'\t' read -r queued active free_slots <<< "$state"
-          echo "VIBE2_PREPLAN_GAME_PRIMARY_QUEUED=$queued"
-          echo "VIBE2_PREPLAN_GAME_PRIMARY_ACTIVE=$active"
-          echo "VIBE2_PREPLAN_GAME_PRIMARY_FREE_SLOTS=$free_slots"
-          if [ "$queued" -eq 0 ] || [ "$free_slots" -eq 0 ]; then
+          IFS=$'\t' read -r game_queued game_active game_free asset_queued asset_active asset_free <<< "$state"
+          echo "VIBE2_PREPLAN_GAME_PRIMARY_QUEUED=$game_queued"
+          echo "VIBE2_PREPLAN_GAME_PRIMARY_ACTIVE=$game_active"
+          echo "VIBE2_PREPLAN_GAME_PRIMARY_FREE_SLOTS=$game_free"
+          echo "VIBE2_PREPLAN_ASSET_DEVELOPMENT_QUEUED=$asset_queued"
+          echo "VIBE2_PREPLAN_ASSET_DEVELOPMENT_ACTIVE=$asset_active"
+          echo "VIBE2_PREPLAN_ASSET_DEVELOPMENT_FREE_SLOTS=$asset_free"
+
+          if [ "$asset_queued" -gt 0 ] && [ "$asset_free" -gt 0 ]; then
+            burst_max="${VIBE2_ASSET_PRIORITY_BURST_MAX:-8}"
+            asset_burst="$asset_free"
+            if [ "$asset_burst" -gt "$asset_queued" ]; then asset_burst="$asset_queued"; fi
+            if [ "$asset_burst" -gt "$burst_max" ]; then asset_burst="$burst_max"; fi
+            body="$(jq -nc --arg lane_max "$asset_burst" '{ref:"main",inputs:{execution_lane:"asset-development",lane_max:$lane_max}}')"
+            if curl --fail-with-body --silent --show-error \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-continuous-core.yml/dispatches" \
+              --data "$body"; then
+              echo 'VIBE2_PREPLAN_PRIORITY_LANE=ASSET_DEVELOPMENT'
+              echo "VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED:$asset_burst"
+            else
+              echo 'VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=FAILED_FALLBACK_POST_PLAN' >&2
+            fi
+            exit 0
+          fi
+
+          if [ "$game_queued" -eq 0 ] || [ "$game_free" -eq 0 ]; then
             echo 'VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=NOT_NEEDED'
             exit 0
           fi
@@ -219,6 +285,7 @@ jobs:
             --header 'X-GitHub-Api-Version: 2022-11-28' \
             "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-continuous-core.yml/dispatches" \
             --data "$body"; then
+            echo 'VIBE2_PREPLAN_PRIORITY_LANE=GAME_PRIMARY'
             echo 'VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DISPATCHED'
           else
             echo 'VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=FAILED_FALLBACK_POST_PLAN' >&2
@@ -679,7 +746,9 @@ jobs:
 
           runner_pressure='YES'
           pressure_count='unknown'
+          job_pressure_count='unknown'
           pressure_threshold="${VIBE2_RUNNER_PRESSURE_DISPATCH_THRESHOLD:-4}"
+          job_pressure_threshold="${VIBE2_RUNNER_JOB_PRESSURE_THRESHOLD:-8}"
           if curl --fail-with-body --silent --show-error \
             --header 'Accept: application/vnd.github+json' \
             --header "Authorization: Bearer $GH_TOKEN" \
@@ -698,10 +767,35 @@ jobs:
           process.stdout.write(String(count));
           NODE
             )" && [[ "$pressure_count" =~ ^[0-9]+$ ]]; then
-              if [ "$pressure_count" -lt "$pressure_threshold" ]; then runner_pressure='NO'; fi
+              mapfile -t vibe_pressure_runs < <(node <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-24h-actions-runs.json','utf8'));
+          const current=String(process.env.GITHUB_RUN_ID||'');
+          const active=new Set(['queued','pending','requested','in_progress']);
+          const paths=new Set(['.github/workflows/vibe2-24h-runner.yml','.github/workflows/vibe2-continuous-core.yml']);
+          for(const row of payload.workflow_runs||[]){
+            if(String(row.id||'')===current)continue;
+            if(!active.has(String(row.status||'').toLowerCase()))continue;
+            if(!paths.has(String(row.path||'')))continue;
+            console.log(String(row.id));
+          }
+          NODE
+              )
+              job_pressure_count=0
+              for run_id in "${vibe_pressure_runs[@]:0:12}"; do
+                queued_in_run="$(gh api --paginate "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" \
+                  --jq '[.jobs[] | select(.status=="queued" or .status=="pending" or .status=="requested")] | length' 2>/dev/null \
+                  | awk '{s+=$1}END{print s+0}' || echo 0)"
+                [[ "$queued_in_run" =~ ^[0-9]+$ ]] || queued_in_run=0
+                job_pressure_count=$((job_pressure_count+queued_in_run))
+              done
+              if [ "$pressure_count" -lt "$pressure_threshold" ] && [ "$job_pressure_count" -lt "$job_pressure_threshold" ]; then
+                runner_pressure='NO'
+              fi
               echo 'VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=PASS'
             else
               pressure_count='unknown'
+              job_pressure_count='unknown'
               echo 'VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=FAIL_DEFER_LEARNING'
             fi
           else
@@ -709,7 +803,9 @@ jobs:
           fi
           echo "runner_pressure=$runner_pressure" >> "$GITHUB_OUTPUT"
           echo "VIBE2_24H_RUNNER_QUEUE_PRESSURE=${pressure_count}"
+          echo "VIBE2_24H_RUNNER_JOB_QUEUE_PRESSURE=${job_pressure_count}"
           echo "VIBE2_24H_RUNNER_PRESSURE_THRESHOLD=${pressure_threshold}"
+          echo "VIBE2_24H_RUNNER_JOB_PRESSURE_THRESHOLD=${job_pressure_threshold}"
           if [ "$runner_pressure" = 'YES' ]; then
             echo 'VIBE2_24H_LEARNING_IDLE_DEFERRED=RUNNER_PRESSURE'
           else
