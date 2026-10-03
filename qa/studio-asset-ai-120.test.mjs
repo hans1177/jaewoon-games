@@ -4,6 +4,8 @@ import assert from 'node:assert/strict';
 import {
   STUDIO_ASSET_QUALITY_MAX,
   STUDIO_ASSET_QUALITY_WEIGHTS,
+  createAssetDNA,
+  createStudioAssetFamilyPlan,
   scoreStudioAssetQuality120,
   buildStudioAssetLoadout,
   buildStudioAssetQuality120Program,
@@ -183,4 +185,38 @@ test('existing 24h gap fill receives quality-debt actions without unbinding low-
   assert.equal(plan.qualityActions[0].bindCurrentAsset,true);
   assert.equal(plan.qualityActions[0].visualDebtMustRemainOpen,true);
   assert.equal(plan.qualityScoreIsNotBindingGate,true);
+});
+
+test('item lineage keeps world and UI representations under one asset DNA',()=>{
+  const dna=createAssetDNA({
+    id:'healing-potion',
+    family:'PROP',
+    subfamily:'ITEM',
+    functionClass:'CONSUMABLE',
+    itemRole:'HEALING',
+    familyRootId:'potion-family',
+    visualIntent:'small readable survival consumable',
+    presentationRoles:['WORLD_MODEL','INVENTORY_ICON','DROP_MODEL','CRAFTING_ICON']
+  });
+  assert.equal(dna.FAMILY_ROOT_ID,'potion-family');
+  assert.equal(dna.ITEM_ROLE,'HEALING');
+  assert.ok(dna.PRESENTATION_ROLES.includes('INVENTORY_ICON'));
+  const plan=createStudioAssetFamilyPlan({
+    asset:{id:'healing-potion',family:'PROP',subfamily:'ITEM',functionClass:'CONSUMABLE',dna},
+    availableOutputs:['WORLD_MODEL']
+  });
+  assert.equal(plan.itemPresentationRequired,true);
+  assert.equal(plan.familyRootId,'potion-family');
+  assert.equal(plan.uiIconMustReflectWorldAssetIdentity,true);
+  assert.equal(plan.equippedDropInventoryCraftingVariantsShareLineage,true);
+});
+
+test('audio remains a first-class studio asset family',()=>{
+  const plan=createStudioAssetFamilyPlan({
+    asset:{id:'wolf-growl',family:'AUDIO'},
+    availableOutputs:['SOURCE_ASSET']
+  });
+  assert.equal(plan.family,'AUDIO');
+  assert.ok(plan.requiredOutputs.includes('EVENT_BINDING'));
+  assert.ok(plan.missingRequiredOutputs.includes('VARIATION_SET'));
 });
