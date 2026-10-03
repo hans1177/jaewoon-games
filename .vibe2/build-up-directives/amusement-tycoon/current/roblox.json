@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "amusement-tycoon-build-up-g6-29d83edaedee",
-  "directiveFingerprint": "29d83edaedeef287496a1e2d26dbff0ba86e2af106d0f7221d4a9d39bfa13478",
-  "previousDirectiveFingerprint": "20a466a27e0dbed49a3c210b230d1cf8a1f56e17d4be8391425f997f00b0928b",
-  "forbiddenRepeatFingerprint": "20a466a27e0dbed49a3c210b230d1cf8a1f56e17d4be8391425f997f00b0928b",
+  "directiveId": "amusement-tycoon-build-up-g8-71b8b32064d8",
+  "directiveFingerprint": "71b8b32064d8c55d53405b6a34dd18434f2a3b1639ccb77c63fb394c48336b8c",
+  "previousDirectiveFingerprint": "625aec15a6d6e53a6162c44c41bc586e21fcc2808ed69514ff0c1fae57203d98",
+  "forbiddenRepeatFingerprint": "625aec15a6d6e53a6162c44c41bc586e21fcc2808ed69514ff0c1fae57203d98",
   "gameId": "amusement-tycoon",
   "gameName": "놀이공원 타이쿤",
-  "generation": 6,
+  "generation": 8,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/amusement-tycoon",
-  "sourceTreeFingerprint": "70ff9149de118a6de49f25d20611876814e8d5b130ef7ba0313a837f285b807d",
+  "sourceTreeFingerprint": "9bfdaccb88d4affd53ad6cc35bf4563c550062e830fe7d7df44a26137c671892",
   "designFingerprint": "611d4a16ac6d84d419fddbbdc17eb5b874d863cdb394d7568cec6e83a4b4601b",
   "gameIdentityAndNonNegotiables": {
     "identity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.",
@@ -82,7 +82,7 @@
       "feedback": 68,
       "session": 13,
       "content": 56,
-      "choice": 32,
+      "choice": 33,
       "connection": 0,
       "performance": 17,
       "lighting": 37,
@@ -306,9 +306,9 @@
   "previousVersionDelta": {
     "previousGoal": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 5,
-    "previousSourceTreeFingerprint": "beb255defb8b2840034f38f2b8014ee6ee803ed43426ff99037697851fa0c2ff",
-    "currentSourceTreeFingerprint": "70ff9149de118a6de49f25d20611876814e8d5b130ef7ba0313a837f285b807d",
+    "previousGeneration": 7,
+    "previousSourceTreeFingerprint": "23ce1ab33a71b1181ee13ed1ec97db57bbf31b21d392b43b930b063c301ca3da",
+    "currentSourceTreeFingerprint": "9bfdaccb88d4affd53ad6cc35bf4563c550062e830fe7d7df44a26137c671892",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1478,8 +1478,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 86565,
-        "largestFileBytes": 43515,
+        "sourceBytes": 115920,
+        "largestFileBytes": 43507,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1511,8 +1511,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 1,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=6.",
+    "themeDepth": 3,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1522,7 +1522,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 1
+        "PRESENTATION_WORLD_COHESION": 3
       },
       "sequence": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1531,6 +1531,8 @@
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
       "requiredThemes": [
@@ -1564,18 +1566,13 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 68,
+        "score": 192,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
           "CHARACTER_VISUALS",
           "ENEMY_VISUALS"
         ]
-      },
-      {
-        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 66,
-        "gapDomains": []
       },
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1608,6 +1605,11 @@
       {
         "theme": "QUEST_STORY_PROGRESSION_CHAIN",
         "score": 12,
+        "gapDomains": []
+      },
+      {
+        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
+        "score": -94,
         "gapDomains": []
       }
     ],
@@ -2311,7 +2313,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "70ff9149de118a6de49f25d20611876814e8d5b130ef7ba0313a837f285b807d",
+      "sourceTreeFingerprint": "9bfdaccb88d4affd53ad6cc35bf4563c550062e830fe7d7df44a26137c671892",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2358,7 +2360,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 7,
+    "nextGeneration": 9,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2431,5 +2433,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-03T16:02:19.524Z"
+  "generatedAt": "2026-10-03T16:11:55.110Z"
 }
