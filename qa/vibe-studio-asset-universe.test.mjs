@@ -61,6 +61,21 @@ import {
 } from '../assets/vibe-studio-asset-universe.js';
 import {createVibeCharacterPersona,resolveVibeCharacterBehaviorIntent,createVibePopulationPersonaDiversity} from '../assets/vibe-character-identity-director.js';
 
+const fullQualityEvidence=Object.freeze({
+  SILHOUETTE_FORM:100,
+  MODELING_STRUCTURE:100,
+  MATERIAL_TEXTURE:100,
+  COLOR_LIGHTING:100,
+  WORLD_STYLE_COHERENCE:100,
+  DETAIL_DENSITY:100,
+  MOTION_LIVINGNESS:100,
+  GAME_CAMERA_READABILITY:100,
+  UI_UX_COHERENCE:100,
+  VFX_AUDIO_COHESION:100,
+  ORIGINALITY_IDENTITY:100,
+  MOBILE_PERFORMANCE:100
+});
+
 function sharedCustomizationFixture(){
   const assets=[{id:'body',family:'CHARACTER',sourceHash:'body-v1',customization:{controls:{jaw:{axis:'FACE',kind:'MORPH',target:'Jaw',min:0,max:1}}},platformVariants:{
     WEB:{path:'body.glb',contentHash:'web-v1',derivedFromHash:'body-v1',bindings:{jaw:{kind:'MORPH',target:'Jaw',scale:1}}},
