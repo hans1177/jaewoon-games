@@ -438,6 +438,8 @@ test('native planner preserves an existing Blender recipe as the DCC execution p
   assert.equal(plan.nativeAuthoringExecution.dcc.executionRequestCount,1);
   assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].id,'boss-blender-v1');
   assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].script,'assets/roblox/demo/build-boss.py');
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].family,'CREATURE');
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].license,'project-original');
   assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].safe,true);
   assert.deepEqual([...plan.nativeAuthoringExecution.dcc.availableExistingRecipes],['assets/roblox/demo/build-boss.py']);
   assert.equal(plan.nativeAuthoringExecution.dcc.availableExistingRecipeCount,1);
