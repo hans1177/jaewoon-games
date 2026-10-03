@@ -12,6 +12,18 @@ const architecture=JSON.parse(fs.readFileSync('company-learning/company-architec
 const queue=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
 const control=JSON.parse(fs.readFileSync('.vibe2/parallelism-control.json','utf8'));
 
+test('early fan-in review never suppresses new runnable worker reservations',()=>{
+  const start=core.indexOf('early_review_run="$(cat /tmp/vibe2-early-review-run');
+  const end=core.indexOf('node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check',start);
+  assert.ok(start>=0&&end>start);
+  const block=core.slice(start,end);
+  assert.match(block,/VIBE2_RESERVE_MODE=BATCH_EARLY_FAN_IN_PARALLEL/);
+  assert.match(block,/VIBE2_RESERVE_CONTINUES_DURING_EARLY_FAN_IN=YES/);
+  assert.match(block,/vibe2-queue-control\.mjs reserve-batch/);
+  assert.doesNotMatch(block,/BATCH_EARLY_FAN_IN_DRAIN/);
+  assert.doesNotMatch(block,/matrix:\[\]/);
+});
+
 test('maximum parallelism is default and source-root locks are permanently disabled',()=>{
   const wave=roadmap.neuralDevelopmentBrain.currentWaveExecution;
   assert.equal(wave.externalProviderAndPlanningBound,256);
