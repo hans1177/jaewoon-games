@@ -296,7 +296,17 @@ function summon(k){
   const u=charStats(k);if((s.cools[k]||0)>0||s.money<u.cost)return;
   s.money-=u.cost;s.cools[k]=u.cool;s.a.push(fighter(u,86,'ally'));toast(u.name+' 출격!');
 }
-function spawn(k){s.e.push(fighter(E[k],innerWidth-92,'enemy'));if(k==='boss')toast('바위왕 등장!')}
+function spawn(k,tag=''){
+  const f=fighter(E[k],innerWidth-92,'enemy');f.spawnTag=tag;s.e.push(f);if(k==='boss')toast('바위왕 등장!');
+}
+function onEnemyKilled(enemy){
+  if(s.stage===7&&enemy.spawnTag==='stage7OpeningBoar'&&!s.stage7BoarTriggered){
+    s.stage7BoarTriggered=true;for(let i=0;i<3;i++)spawn('rabbit','stage7Rabbit');
+  }
+  if(s.stage===8&&enemy.spawnTag==='stage8Boss'&&s.stage8BossKilledAt===null){
+    s.stage8BossKilledAt=s.time;for(let i=0;i<4;i++)spawn('rabbit','stage8BossRabbit');s.stage8NextRabbit=s.time+5;
+  }
+}
 function loop(now){if(!s||!s.running)return;const dt=Math.min(.035,(now-last)/1000||0);last=now;if(!s.paused)update(dt);draw();hud();if(s&&s.running)raf=requestAnimationFrame(loop)}
 function update(dt){
   s.time+=dt;s.money=Math.min(s.maxMoney,s.money+s.income*dt);Object.keys(s.cools).forEach(k=>s.cools[k]=Math.max(0,s.cools[k]-dt));
