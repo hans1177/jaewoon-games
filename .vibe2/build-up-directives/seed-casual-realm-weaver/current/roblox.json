@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "seed-casual-realm-weaver-build-up-g2-794be688ae74",
-  "directiveFingerprint": "794be688ae745171c7fc194aedfbea2dd44c700f1519a34d44d8e91cb69d094b",
-  "previousDirectiveFingerprint": "8d5dc6b963f2944bd42c2d4b5d923eb44ed6c2694cb14e92de28d56c9b1a02df",
-  "forbiddenRepeatFingerprint": "8d5dc6b963f2944bd42c2d4b5d923eb44ed6c2694cb14e92de28d56c9b1a02df",
+  "directiveId": "seed-casual-realm-weaver-build-up-g3-5d5b8f8e6166",
+  "directiveFingerprint": "5d5b8f8e61664e88e1924475f8d2169fd85584ba32b96fc2b8e308b27a319807",
+  "previousDirectiveFingerprint": "794be688ae745171c7fc194aedfbea2dd44c700f1519a34d44d8e91cb69d094b",
+  "forbiddenRepeatFingerprint": "794be688ae745171c7fc194aedfbea2dd44c700f1519a34d44d8e91cb69d094b",
   "gameId": "seed-casual-realm-weaver",
   "gameName": "세계의 직조자",
-  "generation": 2,
+  "generation": 3,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "escalationMode": "VERIFIED_SOURCE_DELTA_AWAITING_EFFECT",
+  "previousDirectiveOutcome": "verified",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-casual-realm-weaver",
-  "sourceTreeFingerprint": "5ec8664b847af444c7835959442316bf57b4e11c18c8c4cd0b7574f8d93f645b",
+  "sourceTreeFingerprint": "34c7b3da54ca5d31d67c720aa9046c754a84f61f5e137d8f6f89117f7fee5548",
   "designFingerprint": "60a5f88b64b3c454d1f87de504919394158457dec77dff0714476bad7179db40",
   "gameIdentityAndNonNegotiables": {
     "identity": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.",
@@ -58,7 +58,7 @@
     ],
     "signals": {
       "combat": 36,
-      "progression": 119,
+      "progression": 113,
       "ai": 19,
       "save": 49,
       "multiplayer": 13,
@@ -68,22 +68,22 @@
       "vfx": 19,
       "camera": 31,
       "audio": 1,
-      "audioDynamics": 16,
+      "audioDynamics": 14,
       "ui": 57,
       "uiFlow": 30,
-      "entryFlow": 6,
+      "entryFlow": 4,
       "loadingFlow": 0,
       "input": 59,
-      "map": 93,
+      "map": 95,
       "landmark": 2,
       "interaction": 29,
       "inventory": 2,
       "equipment": 0,
       "settings": 1,
       "feedback": 68,
-      "session": 11,
-      "content": 63,
-      "choice": 10,
+      "session": 13,
+      "content": 65,
+      "choice": 12,
       "connection": 0,
       "performance": 16,
       "lighting": 37,
@@ -259,17 +259,17 @@
   "previousVersionDelta": {
     "previousGoal": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "1964ea03734b8b563e00ecd0608655810953b245edbd3aa2a02133238dd1be34",
-    "currentSourceTreeFingerprint": "5ec8664b847af444c7835959442316bf57b4e11c18c8c4cd0b7574f8d93f645b",
+    "previousGeneration": 2,
+    "previousSourceTreeFingerprint": "5ec8664b847af444c7835959442316bf57b4e11c18c8c4cd0b7574f8d93f645b",
+    "currentSourceTreeFingerprint": "34c7b3da54ca5d31d67c720aa9046c754a84f61f5e137d8f6f89117f7fee5548",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "",
-    "failureSignature": "",
+    "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+    "failureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -1432,8 +1432,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 109424,
-        "largestFileBytes": 43616,
+        "sourceBytes": 109430,
+        "largestFileBytes": 43643,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1465,8 +1465,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-    "themeDepth": 3,
-    "selectedThemeReason": "1 explicit GAP(s) and 6 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
+    "themeDepth": 4,
+    "selectedThemeReason": "1 explicit GAP(s) and 6 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=PARTIAL_EFFECT; previousCoverage=3; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1474,11 +1474,12 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 3,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 4,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM"
@@ -1516,7 +1517,7 @@
     "scoredThemes": [
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 156,
+        "score": 138,
         "gapDomains": [
           "SYSTEM_CONNECTION"
         ]
@@ -1867,9 +1868,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
-      "roblox-games/seed-casual-realm-weaver/server/Game.server.luau",
       "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau",
+      "roblox-games/seed-casual-realm-weaver/server/Game.server.luau",
+      "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
       "roblox-games/seed-casual-realm-weaver/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -2029,9 +2030,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
-      "roblox-games/seed-casual-realm-weaver/server/Game.server.luau",
       "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau",
+      "roblox-games/seed-casual-realm-weaver/server/Game.server.luau",
+      "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
       "roblox-games/seed-casual-realm-weaver/default.project.json"
     ],
     "sourceAnchors": [
@@ -2136,19 +2137,138 @@
     "exactSourceAnchorRequired": true,
     "currentAndIntendedBehaviorRequiredPerPrimaryAnchor": true
   },
+  "developmentImpact": {
+    "version": 1,
+    "platform": "ROBLOX",
+    "categories": [
+      "GRAPHICS",
+      "MAP",
+      "UI",
+      "GAMEPLAY",
+      "SAVE"
+    ],
+    "requiredQa": [
+      "CHANGED_RESPONSIBILITY_STATIC_QA",
+      "ROBLOX_LUAU_COMPILE",
+      "MAP_PROTECTED_ANCHOR_QA",
+      "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
+      "SAVE_LOAD_MIGRATION_QA",
+      "SECURITY_AUTHORITY_QA",
+      "VISUAL_BINDING_QA",
+      "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
+    ],
+    "conditionalQa": [
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+    ],
+    "securityRelevant": true,
+    "openCloudWorldChecks": [
+      "SERVER_BOOT",
+      "FINITE_WORLD_BOUNDS",
+      "SPAWN_IN_PLAYABLE_BOUNDS",
+      "LANDMARK_AND_OBJECTIVE_COUNTS",
+      "WORLD_GEOMETRY",
+      "TERRAIN_BINDING",
+      "LIGHTING_ATMOSPHERE",
+      "STREAMING_CONFIGURATION"
+    ]
+  },
+  "preMutationDryRun": {
+    "version": 1,
+    "mode": "DRY_RUN_NO_SOURCE_MUTATION",
+    "gameId": "seed-casual-realm-weaver",
+    "platform": "ROBLOX",
+    "plannedFiles": [
+      "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau",
+      "roblox-games/seed-casual-realm-weaver/server/Game.server.luau",
+      "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
+      "roblox-games/seed-casual-realm-weaver/default.project.json"
+    ],
+    "impact": {
+      "version": 1,
+      "platform": "ROBLOX",
+      "categories": [
+        "GRAPHICS",
+        "MAP",
+        "UI",
+        "GAMEPLAY",
+        "SAVE"
+      ],
+      "requiredQa": [
+        "CHANGED_RESPONSIBILITY_STATIC_QA",
+        "ROBLOX_LUAU_COMPILE",
+        "MAP_PROTECTED_ANCHOR_QA",
+        "MOBILE_TOUCH_UI_QA",
+        "GAMEPLAY_STATE_DELTA_QA",
+        "SAVE_LOAD_MIGRATION_QA",
+        "SECURITY_AUTHORITY_QA",
+        "VISUAL_BINDING_QA",
+        "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
+      ],
+      "conditionalQa": [
+        "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+      ],
+      "securityRelevant": true,
+      "openCloudWorldChecks": [
+        "SERVER_BOOT",
+        "FINITE_WORLD_BOUNDS",
+        "SPAWN_IN_PLAYABLE_BOUNDS",
+        "LANDMARK_AND_OBJECTIVE_COUNTS",
+        "WORLD_GEOMETRY",
+        "TERRAIN_BINDING",
+        "LIGHTING_ATMOSPHERE",
+        "STREAMING_CONFIGURATION"
+      ]
+    },
+    "protectedSemantics": [
+      "CORE_RULES",
+      "BALANCE",
+      "PROGRESSION",
+      "SAVE_MEANING",
+      "ECONOMY",
+      "NETWORK_AUTHORITY"
+    ],
+    "requiredQa": [
+      "CHANGED_RESPONSIBILITY_STATIC_QA",
+      "ROBLOX_LUAU_COMPILE",
+      "MAP_PROTECTED_ANCHOR_QA",
+      "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
+      "SAVE_LOAD_MIGRATION_QA",
+      "SECURITY_AUTHORITY_QA",
+      "VISUAL_BINDING_QA",
+      "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
+    ],
+    "conditionalQa": [
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+    ],
+    "openCloudWorldChecks": [
+      "SERVER_BOOT",
+      "FINITE_WORLD_BOUNDS",
+      "SPAWN_IN_PLAYABLE_BOUNDS",
+      "LANDMARK_AND_OBJECTIVE_COUNTS",
+      "WORLD_GEOMETRY",
+      "TERRAIN_BINDING",
+      "LIGHTING_ATMOSPHERE",
+      "STREAMING_CONFIGURATION"
+    ],
+    "sourceMutationPerformed": false,
+    "newWorkflowOrQueueRequired": false,
+    "nextStep": "EXISTING_WORK_ORDER_EXECUTION"
+  },
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "PARTIAL_EFFECT",
+      "reason": "all required generation work verified with source delta; runtime effect remains unobserved",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "5ec8664b847af444c7835959442316bf57b4e11c18c8c4cd0b7574f8d93f645b",
+      "sourceTreeFingerprint": "34c7b3da54ca5d31d67c720aa9046c754a84f61f5e137d8f6f89117f7fee5548",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "failureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2159,8 +2279,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "source/QA progress exists but the player-value effect is not fully confirmed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2191,11 +2311,11 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 4,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
+    "escalationMode": "VERIFIED_SOURCE_DELTA_AWAITING_EFFECT",
     "sourceChangedSincePrevious": true,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
@@ -2265,5 +2385,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-02T15:13:34.877Z"
+  "generatedAt": "2026-10-03T13:43:52.660Z"
 }

@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-story-complete-rpg-chronicles-of-eldoria-build-up-g2-25c55985d81f",
-  "directiveFingerprint": "25c55985d81f012b9275cc6425c16d262b49eb86e4c79bd1fd30c1eb3a34c2fd",
-  "previousDirectiveFingerprint": "66813d7b3379e36f00c0a88fe3fb23ee15fe4b55e3a344eff27f1c475ba84b4a",
-  "forbiddenRepeatFingerprint": "66813d7b3379e36f00c0a88fe3fb23ee15fe4b55e3a344eff27f1c475ba84b4a",
+  "directiveId": "seed-story-complete-rpg-chronicles-of-eldoria-build-up-g3-b04d626e4333",
+  "directiveFingerprint": "b04d626e4333c0dc752f9cc3f064100d14c703bf85088f8837aac99dc5e7ba6d",
+  "previousDirectiveFingerprint": "25c55985d81f012b9275cc6425c16d262b49eb86e4c79bd1fd30c1eb3a34c2fd",
+  "forbiddenRepeatFingerprint": "25c55985d81f012b9275cc6425c16d262b49eb86e4c79bd1fd30c1eb3a34c2fd",
   "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
   "gameName": "엘도리아 연대기",
-  "generation": 2,
+  "generation": 3,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
-  "sourceTreeFingerprint": "b5247318e8ef7a6ce89e65923d4964de0b1650d877afe0f7d65dc84bd9deb249",
+  "sourceTreeFingerprint": "401cf6982da2fae208dc7cf30d2ea9f03f3763e720e9f74a6f827c5430d6eae1",
   "designFingerprint": "4f25e622432ac76ed9c051cab2997576c674b80354f8f44a579d880e70b1d43c",
   "gameIdentityAndNonNegotiables": {
     "identity": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.",
@@ -57,7 +57,7 @@
     ],
     "signals": {
       "combat": 66,
-      "progression": 136,
+      "progression": 117,
       "ai": 19,
       "save": 49,
       "multiplayer": 13,
@@ -93,7 +93,7 @@
     "topFiles": [
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/shared/GameConfig.luau",
-        "score": 272
+        "score": 252
       },
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau",
@@ -101,7 +101,7 @@
       },
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "score": 143
+        "score": 142
       },
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/default.project.json",
@@ -250,9 +250,9 @@
   "previousVersionDelta": {
     "previousGoal": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "3e44f6d4c55eb68ef804e77c1b98bc1b151930908ffd3ebba3e63acc79645409",
-    "currentSourceTreeFingerprint": "b5247318e8ef7a6ce89e65923d4964de0b1650d877afe0f7d65dc84bd9deb249",
+    "previousGeneration": 2,
+    "previousSourceTreeFingerprint": "b5247318e8ef7a6ce89e65923d4964de0b1650d877afe0f7d65dc84bd9deb249",
+    "currentSourceTreeFingerprint": "401cf6982da2fae208dc7cf30d2ea9f03f3763e720e9f74a6f827c5430d6eae1",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -264,8 +264,8 @@
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
-    "independentQaPassed": false,
-    "regressionPassed": false
+    "independentQaPassed": true,
+    "regressionPassed": true
   },
   "qualityGapMap": [
     {
@@ -1422,8 +1422,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 110137,
-        "largestFileBytes": 43752,
+        "sourceBytes": 110027,
+        "largestFileBytes": 43716,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1455,12 +1455,12 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "WORLD_ECOLOGY_STORY_CHAIN",
-    "themeDepth": 3,
-    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
+    "themeDepth": 4,
+    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
-        "WORLD_ECOLOGY_STORY_CHAIN": 3,
+        "WORLD_ECOLOGY_STORY_CHAIN": 4,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
@@ -1469,6 +1469,7 @@
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN"
@@ -1506,7 +1507,7 @@
     "scoredThemes": [
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 138,
+        "score": 120,
         "gapDomains": []
       },
       {
@@ -2127,6 +2128,125 @@
     "exactSourceAnchorRequired": true,
     "currentAndIntendedBehaviorRequiredPerPrimaryAnchor": true
   },
+  "developmentImpact": {
+    "version": 1,
+    "platform": "ROBLOX",
+    "categories": [
+      "GRAPHICS",
+      "MAP",
+      "UI",
+      "GAMEPLAY",
+      "SAVE"
+    ],
+    "requiredQa": [
+      "CHANGED_RESPONSIBILITY_STATIC_QA",
+      "ROBLOX_LUAU_COMPILE",
+      "MAP_PROTECTED_ANCHOR_QA",
+      "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
+      "SAVE_LOAD_MIGRATION_QA",
+      "SECURITY_AUTHORITY_QA",
+      "VISUAL_BINDING_QA",
+      "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
+    ],
+    "conditionalQa": [
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+    ],
+    "securityRelevant": true,
+    "openCloudWorldChecks": [
+      "SERVER_BOOT",
+      "FINITE_WORLD_BOUNDS",
+      "SPAWN_IN_PLAYABLE_BOUNDS",
+      "LANDMARK_AND_OBJECTIVE_COUNTS",
+      "WORLD_GEOMETRY",
+      "TERRAIN_BINDING",
+      "LIGHTING_ATMOSPHERE",
+      "STREAMING_CONFIGURATION"
+    ]
+  },
+  "preMutationDryRun": {
+    "version": 1,
+    "mode": "DRY_RUN_NO_SOURCE_MUTATION",
+    "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+    "platform": "ROBLOX",
+    "plannedFiles": [
+      "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
+      "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau",
+      "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/shared/GameConfig.luau",
+      "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/default.project.json"
+    ],
+    "impact": {
+      "version": 1,
+      "platform": "ROBLOX",
+      "categories": [
+        "GRAPHICS",
+        "MAP",
+        "UI",
+        "GAMEPLAY",
+        "SAVE"
+      ],
+      "requiredQa": [
+        "CHANGED_RESPONSIBILITY_STATIC_QA",
+        "ROBLOX_LUAU_COMPILE",
+        "MAP_PROTECTED_ANCHOR_QA",
+        "MOBILE_TOUCH_UI_QA",
+        "GAMEPLAY_STATE_DELTA_QA",
+        "SAVE_LOAD_MIGRATION_QA",
+        "SECURITY_AUTHORITY_QA",
+        "VISUAL_BINDING_QA",
+        "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
+      ],
+      "conditionalQa": [
+        "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+      ],
+      "securityRelevant": true,
+      "openCloudWorldChecks": [
+        "SERVER_BOOT",
+        "FINITE_WORLD_BOUNDS",
+        "SPAWN_IN_PLAYABLE_BOUNDS",
+        "LANDMARK_AND_OBJECTIVE_COUNTS",
+        "WORLD_GEOMETRY",
+        "TERRAIN_BINDING",
+        "LIGHTING_ATMOSPHERE",
+        "STREAMING_CONFIGURATION"
+      ]
+    },
+    "protectedSemantics": [
+      "CORE_RULES",
+      "BALANCE",
+      "PROGRESSION",
+      "SAVE_MEANING",
+      "ECONOMY",
+      "NETWORK_AUTHORITY"
+    ],
+    "requiredQa": [
+      "CHANGED_RESPONSIBILITY_STATIC_QA",
+      "ROBLOX_LUAU_COMPILE",
+      "MAP_PROTECTED_ANCHOR_QA",
+      "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
+      "SAVE_LOAD_MIGRATION_QA",
+      "SECURITY_AUTHORITY_QA",
+      "VISUAL_BINDING_QA",
+      "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
+    ],
+    "conditionalQa": [
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+    ],
+    "openCloudWorldChecks": [
+      "SERVER_BOOT",
+      "FINITE_WORLD_BOUNDS",
+      "SPAWN_IN_PLAYABLE_BOUNDS",
+      "LANDMARK_AND_OBJECTIVE_COUNTS",
+      "WORLD_GEOMETRY",
+      "TERRAIN_BINDING",
+      "LIGHTING_ATMOSPHERE",
+      "STREAMING_CONFIGURATION"
+    ],
+    "sourceMutationPerformed": false,
+    "newWorkflowOrQueueRequired": false,
+    "nextStep": "EXISTING_WORK_ORDER_EXECUTION"
+  },
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
@@ -2135,7 +2255,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "b5247318e8ef7a6ce89e65923d4964de0b1650d877afe0f7d65dc84bd9deb249",
+      "sourceTreeFingerprint": "401cf6982da2fae208dc7cf30d2ea9f03f3763e720e9f74a6f827c5430d6eae1",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2182,7 +2302,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 4,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2255,5 +2375,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-02T13:25:28.374Z"
+  "generatedAt": "2026-10-03T13:43:52.499Z"
 }

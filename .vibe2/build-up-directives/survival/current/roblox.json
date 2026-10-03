@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "survival-build-up-g2-cb30170a1d5e",
-  "directiveFingerprint": "cb30170a1d5e036c2d62d997180642666c228dc2bfd2cf999e05727bd8eee7de",
-  "previousDirectiveFingerprint": "470526c15c1ed3a7a15abd143fb867e4e109be94cefd7b9e90e6e18645df88d9",
-  "forbiddenRepeatFingerprint": "470526c15c1ed3a7a15abd143fb867e4e109be94cefd7b9e90e6e18645df88d9",
+  "directiveId": "survival-build-up-g3-0cdc3089e6e9",
+  "directiveFingerprint": "0cdc3089e6e964f2b8c4b5247e976b89e3192d4c5946edfa6382757f680c5a87",
+  "previousDirectiveFingerprint": "cb30170a1d5e036c2d62d997180642666c228dc2bfd2cf999e05727bd8eee7de",
+  "forbiddenRepeatFingerprint": "cb30170a1d5e036c2d62d997180642666c228dc2bfd2cf999e05727bd8eee7de",
   "gameId": "survival",
   "gameName": "나의 생존기",
-  "generation": 2,
+  "generation": 3,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/survival",
-  "sourceTreeFingerprint": "a21daff88273b105f898d9330652e4d3ee5237a1c99c90c0a9351fa83897c22e",
+  "sourceTreeFingerprint": "650acd1a209e6103f584b93956b226d0406b70b109271a073ee3e39a29708041",
   "designFingerprint": "efe91120fd918ad40a64d2470a22f7dfb7986423ca1af5ded6711ca024b29a44",
   "gameIdentityAndNonNegotiables": {
     "identity": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.",
@@ -57,8 +57,8 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 68,
-      "progression": 114,
+      "combat": 66,
+      "progression": 118,
       "ai": 19,
       "save": 49,
       "multiplayer": 13,
@@ -68,12 +68,12 @@
       "vfx": 19,
       "camera": 31,
       "audio": 1,
-      "audioDynamics": 14,
+      "audioDynamics": 16,
       "ui": 57,
       "uiFlow": 30,
       "entryFlow": 6,
       "loadingFlow": 0,
-      "input": 57,
+      "input": 59,
       "map": 93,
       "landmark": 2,
       "interaction": 29,
@@ -259,22 +259,22 @@
   "previousVersionDelta": {
     "previousGoal": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "7be6d5e897711c2b31fe1cd0ac19025db7c8d03aa6e0a8647aec0bbf8e804b2f",
-    "currentSourceTreeFingerprint": "a21daff88273b105f898d9330652e4d3ee5237a1c99c90c0a9351fa83897c22e",
+    "previousGeneration": 2,
+    "previousSourceTreeFingerprint": "a21daff88273b105f898d9330652e4d3ee5237a1c99c90c0a9351fa83897c22e",
+    "currentSourceTreeFingerprint": "650acd1a209e6103f584b93956b226d0406b70b109271a073ee3e39a29708041",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-    "failureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
+    "failureStage": "",
+    "failureSignature": "",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
-    "independentQaPassed": false,
-    "regressionPassed": false
+    "independentQaPassed": true,
+    "regressionPassed": true
   },
   "qualityGapMap": [
     {
@@ -1437,8 +1437,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 110026,
-        "largestFileBytes": 43553,
+        "sourceBytes": 110027,
+        "largestFileBytes": 43544,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1470,20 +1470,21 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 3,
-    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
+    "themeDepth": 4,
+    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 3,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 4,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
@@ -1521,7 +1522,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 194,
+        "score": 176,
         "gapDomains": [
           "INVENTORY",
           "INVENTORY_USABILITY",
@@ -2142,6 +2143,125 @@
     "exactSourceAnchorRequired": true,
     "currentAndIntendedBehaviorRequiredPerPrimaryAnchor": true
   },
+  "developmentImpact": {
+    "version": 1,
+    "platform": "ROBLOX",
+    "categories": [
+      "GRAPHICS",
+      "MAP",
+      "UI",
+      "GAMEPLAY",
+      "SAVE"
+    ],
+    "requiredQa": [
+      "CHANGED_RESPONSIBILITY_STATIC_QA",
+      "ROBLOX_LUAU_COMPILE",
+      "MAP_PROTECTED_ANCHOR_QA",
+      "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
+      "SAVE_LOAD_MIGRATION_QA",
+      "SECURITY_AUTHORITY_QA",
+      "VISUAL_BINDING_QA",
+      "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
+    ],
+    "conditionalQa": [
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+    ],
+    "securityRelevant": true,
+    "openCloudWorldChecks": [
+      "SERVER_BOOT",
+      "FINITE_WORLD_BOUNDS",
+      "SPAWN_IN_PLAYABLE_BOUNDS",
+      "LANDMARK_AND_OBJECTIVE_COUNTS",
+      "WORLD_GEOMETRY",
+      "TERRAIN_BINDING",
+      "LIGHTING_ATMOSPHERE",
+      "STREAMING_CONFIGURATION"
+    ]
+  },
+  "preMutationDryRun": {
+    "version": 1,
+    "mode": "DRY_RUN_NO_SOURCE_MUTATION",
+    "gameId": "survival",
+    "platform": "ROBLOX",
+    "plannedFiles": [
+      "roblox-games/survival/shared/GameConfig.luau",
+      "roblox-games/survival/server/Game.server.luau",
+      "roblox-games/survival/client/Game.client.luau",
+      "roblox-games/survival/default.project.json"
+    ],
+    "impact": {
+      "version": 1,
+      "platform": "ROBLOX",
+      "categories": [
+        "GRAPHICS",
+        "MAP",
+        "UI",
+        "GAMEPLAY",
+        "SAVE"
+      ],
+      "requiredQa": [
+        "CHANGED_RESPONSIBILITY_STATIC_QA",
+        "ROBLOX_LUAU_COMPILE",
+        "MAP_PROTECTED_ANCHOR_QA",
+        "MOBILE_TOUCH_UI_QA",
+        "GAMEPLAY_STATE_DELTA_QA",
+        "SAVE_LOAD_MIGRATION_QA",
+        "SECURITY_AUTHORITY_QA",
+        "VISUAL_BINDING_QA",
+        "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
+      ],
+      "conditionalQa": [
+        "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+      ],
+      "securityRelevant": true,
+      "openCloudWorldChecks": [
+        "SERVER_BOOT",
+        "FINITE_WORLD_BOUNDS",
+        "SPAWN_IN_PLAYABLE_BOUNDS",
+        "LANDMARK_AND_OBJECTIVE_COUNTS",
+        "WORLD_GEOMETRY",
+        "TERRAIN_BINDING",
+        "LIGHTING_ATMOSPHERE",
+        "STREAMING_CONFIGURATION"
+      ]
+    },
+    "protectedSemantics": [
+      "CORE_RULES",
+      "BALANCE",
+      "PROGRESSION",
+      "SAVE_MEANING",
+      "ECONOMY",
+      "NETWORK_AUTHORITY"
+    ],
+    "requiredQa": [
+      "CHANGED_RESPONSIBILITY_STATIC_QA",
+      "ROBLOX_LUAU_COMPILE",
+      "MAP_PROTECTED_ANCHOR_QA",
+      "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
+      "SAVE_LOAD_MIGRATION_QA",
+      "SECURITY_AUTHORITY_QA",
+      "VISUAL_BINDING_QA",
+      "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
+    ],
+    "conditionalQa": [
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+    ],
+    "openCloudWorldChecks": [
+      "SERVER_BOOT",
+      "FINITE_WORLD_BOUNDS",
+      "SPAWN_IN_PLAYABLE_BOUNDS",
+      "LANDMARK_AND_OBJECTIVE_COUNTS",
+      "WORLD_GEOMETRY",
+      "TERRAIN_BINDING",
+      "LIGHTING_ATMOSPHERE",
+      "STREAMING_CONFIGURATION"
+    ],
+    "sourceMutationPerformed": false,
+    "newWorkflowOrQueueRequired": false,
+    "nextStep": "EXISTING_WORK_ORDER_EXECUTION"
+  },
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
@@ -2150,11 +2270,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "a21daff88273b105f898d9330652e4d3ee5237a1c99c90c0a9351fa83897c22e",
+      "sourceTreeFingerprint": "650acd1a209e6103f584b93956b226d0406b70b109271a073ee3e39a29708041",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "failureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE"
+      "failureStage": null,
+      "failureSignature": null
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2197,7 +2317,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 4,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2270,5 +2390,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-03T08:53:28.904Z"
+  "generatedAt": "2026-10-03T13:43:52.689Z"
 }
