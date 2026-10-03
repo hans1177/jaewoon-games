@@ -61,6 +61,7 @@ button{font:inherit}
     <p>편성한 고양이 군단으로 적 성을 밀어붙여.</p>
     <div class="meta">골드 <b id="startGold">0G</b> · 경험치 <b id="startExp">0</b> · 진행 <b id="stageMeta">1스테이지</b></div>
     <button class="wide secondary" id="formationStart" type="button">캐릭터 편성</button>
+    <button class="wide secondary" id="resetProgress" type="button">처음부터 시작</button>
     <button class="start" id="start" type="button">1스테이지 시작</button>
     <div class="roster" id="startRoster"></div>
   </div>
@@ -179,6 +180,7 @@ function load(){
 }
 let save=load(),s=null,last=0,raf=0,toastTimer=0,lastCleared=0;
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(save))}catch(e){}}
+function resetAllProgress(){save=defaultSave();persist();updateMeta();buttons();toast('진행도를 처음부터 초기화했어')}
 
 // ===== 성장 계산 =====
 function castleMax(){return 1200+save.castleLv*200}
@@ -387,6 +389,7 @@ function hud(){
 
 // ===== 이벤트 =====
 q('start').addEventListener('click',start);q('nextStage').addEventListener('click',start);q('retry').addEventListener('click',start);
+q('resetProgress').addEventListener('click',resetAllProgress);
 q('walletBattle').addEventListener('click',upgradeBattleWallet);
 q('pause').addEventListener('click',()=>{if(!s||!s.running)return;s.paused=!s.paused;q('pause').textContent=s.paused?'계속':'일시정지';q('phase').textContent=s.paused?'일시정지':'전투 중';last=performance.now()});
 q('formationStart').addEventListener('click',()=>{renderFormation();q('formationOverlay').hidden=false});
