@@ -225,16 +225,26 @@ export function recoverTransientWorkLockBlocks(queueInput) {
   return{recovered,queue:recovered?createVibeContinuousQueue({tasks,maxConcurrentTasks:queue.maxConcurrentTasks}):queue};
 }
 
-export function recoverCompletedRunningReservations(queueInput, { completedRunIds = [] } = {}) {
+export function recoverCompletedRunningReservations(queueInput, {
+  completedRunIds = [],
+  recoveryOutcome = 'COMPLETED_RESERVATION_RUN_RECOVERED',
+  recoveryEvidence = COMPLETED_RESERVATION_RUN_RECOVERY_EVIDENCE,
+  evidencePrefix = 'completed-reservation-run'
+} = {}) {
   const queue=createVibeContinuousQueue(queueInput);
   const completed=new Set((Array.isArray(completedRunIds)?completedRunIds:[]).map(clean).filter(Boolean));
   if(!completed.size)return{recovered:0,recoveredRunIds:[],queue};
+  const normalizedOutcome=clean(recoveryOutcome)||'COMPLETED_RESERVATION_RUN_RECOVERED';
+  const normalizedEvidence=clean(recoveryEvidence)||COMPLETED_RESERVATION_RUN_RECOVERY_EVIDENCE;
+  const normalizedPrefix=clean(evidencePrefix)||'completed-reservation-run';
   let recovered=0;
   const recoveredRunIds=new Set();
   const tasks=queue.tasks.map(task=>{
     const runId=clean(task.reservationRunId);
     if(task.status!=='running')return task;
     if(clean(task.department).toLowerCase()!=='development'||clean(task.type).toLowerCase()!=='implementation')return task;
+    // Completed worker artifacts are converted to slot-released fan-in waits before this recovery.
+    // Preserve those immutable results and only reclaim still-unstarted blocker-free reservations.
     if(clean(task.blocker)||!runId||!completed.has(runId))return task;
     recovered+=1;
     recoveredRunIds.add(runId);
@@ -243,10 +253,10 @@ export function recoverCompletedRunningReservations(queueInput, { completedRunId
       ...clearedReservation(),
       status:'queued',
       blocker:null,
-      lastOutcome:'COMPLETED_RESERVATION_RUN_RECOVERED',
+      lastOutcome:normalizedOutcome,
       neuronExpectedVariants:0,
       neuronResults:[],
-      evidence:[...new Set([...(task.evidence||[]),COMPLETED_RESERVATION_RUN_RECOVERY_EVIDENCE,`completed-reservation-run:${runId}`])]
+      evidence:[...new Set([...(task.evidence||[]),normalizedEvidence,`${normalizedPrefix}:${runId}`])]
     };
   });
   return{
@@ -972,9 +982,17 @@ export function runQueueCommand(args = {}) {
     });
     writeJson(file, queue);
     result = { command, updated: true, taskId: clean(args.id), summary: summarizeVibeContinuousQueue(queue) };
-  } else if (command === 'recover-completed-reservations') {
-    const completedRunIds=list(args['completed-runs']);
-    const recovered=recoverCompletedRunningReservations(queue,{completedRunIds});
+  } else if (command === 'recover-completed-reservations' || command === 'recover-reservation-runs') {
+    const completedRunIds=command==='recover-completed-reservations'
+      ?list(args['completed-runs'])
+      :list(args.runs);
+    const superseded=command==='recover-reservation-runs';
+    const recovered=recoverCompletedRunningReservations(queue,{
+      completedRunIds,
+      recoveryOutcome:superseded?'SUPERSEDED_QUEUED_RESERVATION_RECOVERED':'COMPLETED_RESERVATION_RUN_RECOVERED',
+      recoveryEvidence:superseded?'recovery:superseded-queued-reservation-v1':COMPLETED_RESERVATION_RUN_RECOVERY_EVIDENCE,
+      evidencePrefix:superseded?'superseded-queued-reservation-run':'completed-reservation-run'
+    });
     queue=recovered.queue;
     if(recovered.recovered)writeJson(file,queue);
     result={
