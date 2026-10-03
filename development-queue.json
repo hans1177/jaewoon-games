@@ -3553,8 +3553,8 @@
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "ACTIVE",
       "status": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "targetPlatform": "ROBLOX",
+      "selectedPlatform": "UNITY",
+      "targetPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -3607,8 +3607,8 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
-      "canonicalState": "F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION",
+      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-10-02T05:12:43.771Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -3638,7 +3638,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T05:12:43.771Z"
       },
-      "updatedAt": "2026-10-03T10:36:42.139Z",
+      "updatedAt": "2026-10-03T10:39:05.891Z",
       "robloxSourceCommit": "dc0e69c84c82c09269eaabd9565294973bcb751b",
       "robloxSourceBootstrapPassedAt": "2026-10-02T14:23:24.976Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -4002,7 +4002,7 @@
       "unityCandidateBranch": "development/unity-tech-cozy-island-36831315548",
       "unitySourceCommit": "4432b8b37953480242da03ee8cb093e08adafac4",
       "unityBuildRunId": 36969346424,
-      "unityRuntimeSmokeRunId": 37114766429,
+      "unityRuntimeSmokeRunId": 37117110136,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityF0ThroughF9Evidence": {
@@ -4059,7 +4059,7 @@
           }
         },
         "multiplayerRequired": true,
-        "verifiedAt": "2026-10-03T09:57:18.005Z"
+        "verifiedAt": "2026-10-03T10:39:05.891Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -9248,7 +9248,7 @@
       "robloxPublicReleaseFinalEvidence": null
     }
   ],
-  "updatedAt": "2026-10-03T10:38:53.080Z",
+  "updatedAt": "2026-10-03T10:39:08.193Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
