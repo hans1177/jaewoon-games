@@ -323,12 +323,12 @@ function catPose(now){
       const t=easeOut(raw/.5);
       x=lerp(a.sx,a.tx,t*.62);
       y=lerp(a.sy,a.ty-gapY()*.53,t);
-      tilt=lerp(0,(a.tx>a.sx?.13:-.13),t);
+      tilt=lerp(0,(a.tx>a.sx?0.13:-0.13),t);
     }else{
       const t=easeIn((raw-.5)/.5);
       x=lerp(lerp(a.sx,a.tx,.62),a.tx,t);
       y=lerp(a.ty-gapY()*.53,a.ty,t);
-      tilt=lerp(a.tx>a.sx?.13:-.13,0,t);
+      tilt=lerp(a.tx>a.sx?0.13:-0.13,0,t);
     }
     if(raw>=1)requestAnimationFrame(finishCorrect);
     return{x,y,tilt,squash:raw>.88?1.12:1};
