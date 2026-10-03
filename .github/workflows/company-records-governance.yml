@@ -125,7 +125,7 @@ jobs:
           git config user.email 'actions@users.noreply.github.com'
           git switch -c "$branch"
           git add company-learning/platform-release-roadmap.json company-records/operations
-          git commit -m 'records: auto-prune unused central policy [skip ci]'
+          git commit -m 'records: auto-prune unused central policy'
           git push origin "$branch"
           pr_url="$(gh pr create --base main --head "$branch" --title 'records: auto-prune unused central policy' --body '자동 현재사용 참조 스캔 결과에 따라 미사용 중앙정책 기록을 company-records로 아카이브하고 중앙문서에서 제거합니다.')"
           echo "CENTRAL_POLICY_AUTO_PR=$pr_url"
