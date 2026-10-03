@@ -178,6 +178,59 @@ test('4v4 design cannot be classified as non multiplayer',()=>{
 });
 
 
+test('daechung style RPG lifecycle and equipment are recognized without fake crafting',()=>{
+  const baseline={content:{
+    identity:'마을에서 장비와 퀘스트를 준비하고 포탈 사냥터에서 AI 동료와 보스를 공략하는 3D 액션 RPG.',
+    coreFun:'몬스터 전투와 파티 사냥 보상으로 성장한다.',
+    coreLoop:['마을에서 장비 준비','포탈 입장','몬스터 전투','15마리 파티 사냥과 보상','마을 귀환'],
+    signatureSystems:[
+      {name:'5단계 장비',purpose:'무기와 방어구를 5단계로 성장한다.'},
+      {name:'보스 동료 수집',purpose:'별도 인간형 캐릭터 제작 없이 보스 외형을 동료에 재사용한다.'}
+    ],
+    progressionDirection:'전투와 장비 강화로 성장한다.',
+    multiplayerMode:'COOP',
+    robloxBuildProfile:{
+      version:1,targetPlatform:'ROBLOX',genre:'RPG',subgenre:'Portal RPG',playMode:'COOP',
+      multiplayerRequired:true,coopImplementationRequired:true,competitiveImplementationRequired:false,
+      networkingRequired:true,multiplayerQaRequired:true,minimumParticipantsForRequiredQa:2
+    }
+  }};
+  const server=[
+    'local Players=game:GetService("Players")',
+    'local DataStoreService=game:GetService("DataStoreService")',
+    'local store=DataStoreService:GetDataStore("x")',
+    'local remote=Instance.new("RemoteEvent")',
+    'local function buildWorld() local p=Instance.new("Part"); p.Parent=workspace end',
+    'local function spawnEnemy() local m=Instance.new("Model"); m.Parent=workspace end',
+    'local function playerAttack() end',
+    'local function enemyTarget() end',
+    'local function completeQuestIfNeeded() end',
+    'local function spawnBoss() end',
+    'local function awardProgress(player) player:SetAttribute("Level",2) end',
+    'local function enterPortal(player) player:SetAttribute("PartyHuntActive",true) end',
+    'local function finishPartyHunt(player) player:SetAttribute("PartyHuntActive",false) end',
+    'local function upgradeGear(player) player:SetAttribute("WeaponTier",2); player:SetAttribute("ArmorTier",2) end',
+    'remote.OnServerEvent:Connect(function() end)',
+    'Players.PlayerAdded:Connect(function(player) store:GetAsync("p:"..player.UserId); buildWorld() end)',
+    'Players.PlayerRemoving:Connect(function(player) store:UpdateAsync("p:"..player.UserId,function() return {} end) end)',
+    'Players:GetPlayers()',
+    'remote:FireAllClients("sync")'
+  ].join("\n");
+  const client=mobileClient+'\nlocal remote=Instance.new("RemoteEvent"); remote.OnClientEvent:Connect(function() end)';
+  const result=evaluateRobloxGameplayProductReadiness({
+    gameId:'daechung-rpg',
+    baseline,
+    config:'local Config={Genre="RPG",PlayMode="COOP",MobileFirst=true} return Config',
+    server,
+    client,
+    project
+  });
+  assert.equal(result.requiredCapabilities.includes('CRAFTING'),false);
+  assert.equal(result.requiredCapabilities.includes('EQUIPMENT'),true);
+  assert.equal(result.implementedCapabilities.EQUIPMENT,true);
+  assert.equal(result.implementedCapabilities.SESSION_FLOW,true);
+});
+
 test('future expansion and platform metadata do not inflate current F0 capabilities',()=>{
   const baseline={content:{
     identity:'놀이공원을 운영하고 손님 만족도를 관리하는 전략 경영 게임',
