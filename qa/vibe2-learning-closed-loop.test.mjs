@@ -179,9 +179,10 @@ test('24H learning cycle persists verified experience and external AI distilled 
   const core=read('.github/workflows/vibe2-continuous-core.yml');
   assert.match(core,/== 'learning-idle' && 'vibe2-learning-single-worker'/);
   assert.match(core,/cancel-in-progress: false/);
-  assert.match(workflow,/Dispatch next cycle when runner queue is healthy/);
-  assert.match(workflow,/VIBE2_24H_REFILL=DEFERRED_TO_SCHEDULE_RUNNER_PRESSURE/);
-  assert.match(workflow,/VIBE2_24H_REFILL=SKIPPED_EXISTING_SCHEDULER/);
+  assert.match(workflow,/Dispatch next cycle without repository-wide pressure gate/);
+  assert.match(workflow,/VIBE2_24H_REFILL_GLOBAL_GATE=DISABLED_EXTERNAL_RUNNER_QUEUE_OWNS_CAPACITY/);
+  assert.doesNotMatch(workflow,/VIBE2_24H_REFILL=DEFERRED_TO_SCHEDULE_RUNNER_PRESSURE/);
+  assert.doesNotMatch(workflow,/VIBE2_24H_REFILL=SKIPPED_EXISTING_SCHEDULER/);
 });
 
 test('human-readable roadmap mirror is not part of the learning closed-loop mutation contract',()=>{
