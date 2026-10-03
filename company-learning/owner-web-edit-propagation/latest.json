@@ -1,34 +1,39 @@
 {
   "version": 1,
-  "before": "3895c81b45c5cb99a6e9da319bac06f24fce1485",
-  "after": "17fa0cef23a0eb1f2280c8b8f5a91cbcf8201289",
-  "generatedAt": "2026-10-03T10:31:30.422Z",
+  "before": "afffaa9a5ceb3eae581ed70dcae0d3af1faec71d",
+  "after": "b0b06b00f077045170a98593484e95cf2786469e",
+  "generatedAt": "2026-10-03T10:58:34.394Z",
   "manifests": [
     {
       "version": 1,
       "authority": "OWNER_DIRECTIVE",
-      "gameId": "line-defense",
-      "sourcePath": "web-games/line-defense",
-      "sourceBefore": "3895c81b45c5cb99a6e9da319bac06f24fce1485",
-      "sourceAfter": "17fa0cef23a0eb1f2280c8b8f5a91cbcf8201289",
-      "semanticIntentFingerprint": "8ca0b8fc2369318f16da584c6c267bc04dad39fb0ac85c3ee417ccf075c7cfe9",
+      "gameId": "fantasy-survival",
+      "sourcePath": "web-games/fantasy-survival",
+      "sourceBefore": "afffaa9a5ceb3eae581ed70dcae0d3af1faec71d",
+      "sourceAfter": "b0b06b00f077045170a98593484e95cf2786469e",
+      "semanticIntentFingerprint": "53387564a38836eb4f83aae8511bc787edf5bbe9d71097c15c39742ed70fc3c7",
       "affectedSystems": [
         "MOVEMENT",
         "COMBAT",
+        "CRAFTING",
+        "INVENTORY",
         "WORLD",
+        "MULTIPLAYER",
         "PROGRESSION",
+        "AUDIO",
         "UI_UX",
         "SAVE",
         "BALANCE"
       ],
       "platformTargets": [
-        "UNITY"
+        "UNITY",
+        "ROBLOX"
       ],
       "literalWebCodeCrossPlatformCopyForbidden": true,
       "semanticIntentPropagationRequired": true,
       "affectedWebQaRequired": true,
       "affectedPlatformQaRequired": true,
-      "detectedAt": "2026-10-03T10:31:30.422Z",
+      "detectedAt": "2026-10-03T10:58:34.394Z",
       "state": "PLATFORM_PROPAGATION_REQUIRED"
     }
   ]
