@@ -53,6 +53,7 @@ jobs:
       origin: ${{ steps.gate.outputs.origin }}
       already_promoted: ${{ steps.gate.outputs.already_promoted }}
       asset_promotion_candidates: ${{ steps.gate.outputs.asset_promotion_candidates }}
+      generated_asset_files: ${{ steps.gate.outputs.generated_asset_files }}
     steps:
       - name: Checkout candidate
         uses: actions/checkout@v4
@@ -140,6 +141,13 @@ jobs:
             candidateSourceBindingVerified:row?.candidateSourceBindingVerified===true
           })).filter(row=>row.assetId&&row.license&&row.sourceHash&&row.candidateSourceBindingVerified);
           put('asset_promotion_candidates',JSON.stringify(promotionCandidates));
+          const lockFiles=new Set(Array.isArray(m?.compiledWorkContract?.workLock?.files)?m.compiledWorkContract.workLock.files.map(String):[]);
+          const generatedAssetFiles=[...new Set((Array.isArray(m.generatedAssetFiles)?m.generatedAssetFiles:[]).map(value=>String(value||'').replaceAll('\\','/').replace(/^\.\//,'')).filter(Boolean))];
+          for(const file of generatedAssetFiles){
+            if(!file.startsWith('assets/')||file.startsWith('/')||file.split('/').includes('..'))throw new Error('generated asset path invalid:'+file);
+            if(!lockFiles.has(file))throw new Error('generated asset missing from work lock:'+file);
+          }
+          put('generated_asset_files',JSON.stringify(generatedAssetFiles));
           put('request_file',decision==='unity'?`.build-requests/unity/${game}.json`:'');
           NODE
 
@@ -157,6 +165,8 @@ jobs:
           game_id="$(sed -n 's/^game_id=//p' "$GITHUB_OUTPUT" | tail -n1)"
           production_class="$(sed -n 's/^production_class=//p' "$GITHUB_OUTPUT" | tail -n1)"
           candidate_origin="$(sed -n 's/^origin=//p' "$GITHUB_OUTPUT" | tail -n1)"
+          generated_asset_files_json="$(sed -n 's/^generated_asset_files=//p' "$GITHUB_OUTPUT" | tail -n1)"
+          mapfile -t generated_asset_files < <(GENERATED_ASSET_FILES="$generated_asset_files_json" node -e "for(const file of JSON.parse(process.env.GENERATED_ASSET_FILES||'[]'))console.log(file)")
 
           if [ "$candidate_origin" = 'VIBE2_NATIVE' ]; then
             git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
@@ -224,13 +234,14 @@ jobs:
             git fetch --no-tags --depth=1 origin "$transport_base_sha" --quiet || reject transport-base-sha-missing
           fi
           git cat-file -e "${transport_base_sha}^{commit}" 2>/dev/null || reject transport-base-sha-missing
+          candidate_paths=("$source_root" "${generated_asset_files[@]}")
           already_promoted=false
-          if [ -n "$(git diff --name-only "$base_sha" origin/main -- "$source_root")" ]; then
-            if git diff --quiet "$candidate_sha" origin/main -- "$source_root"; then
+          if [ -n "$(git diff --name-only "$base_sha" origin/main -- "${candidate_paths[@]}")" ]; then
+            if git diff --quiet "$candidate_sha" origin/main -- "${candidate_paths[@]}"; then
               already_promoted=true
               echo "VIBE2_CANDIDATE_ALREADY_PROMOTED=$SUBMITTED_CANDIDATE_BRANCH"
             else
-              reject source-root-changed-on-main
+              reject source-or-generated-asset-changed-on-main
             fi
           fi
           echo "already_promoted=$already_promoted" >> "$GITHUB_OUTPUT"
@@ -239,8 +250,14 @@ jobs:
           git -c core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab diff --check "$transport_base_sha" "$candidate_sha" || reject candidate-diff-check-failed
           mapfile -t changed < <(git diff --name-only "$transport_base_sha" "$candidate_sha")
           for file in "${changed[@]}"; do
-            case "$file" in "$source_root"/*|.vibe2/candidates/*) ;; *) reject candidate-path-outside-boundary ;; esac
+            case "$file" in
+              "$source_root"/*|.vibe2/candidates/*) ;;
+              *)
+                printf '%s\n' "${generated_asset_files[@]}" | grep -Fxq "$file" || reject candidate-path-outside-boundary
+                ;;
+            esac
           done
+          echo "VIBE2_CANDIDATE_GENERATED_ASSET_FILES=${generated_asset_files[*]:-NONE}"
 
           if [ "$decision" = 'roblox' ]; then
             # Source admission precedes packaging; generated evidence belongs to roblox-package.
@@ -971,7 +988,7 @@ jobs:
           console.log('ROBLOX_FINAL_PUBLICATION_CLAIM=NO');
           NODE
 
-      - name: Promote verified Roblox source root through reviewed PR
+      - name: Promote verified Roblox source and declared generated assets through reviewed PR
         id: promote
         if: steps.validate.outcome == 'success' && needs.inspect.outputs.evidence_only != 'true'
         continue-on-error: true
@@ -981,12 +998,15 @@ jobs:
           BASE_SHA: ${{ needs.inspect.outputs.base_sha }}
           TASK_ID: ${{ needs.inspect.outputs.task_id }}
           CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
+          GENERATED_ASSET_FILES: ${{ needs.inspect.outputs.generated_asset_files }}
         shell: bash
         run: |
           set -euo pipefail
+          mapfile -t generated_asset_files < <(node -e "for(const file of JSON.parse(process.env.GENERATED_ASSET_FILES||'[]'))console.log(file)")
+          promotion_paths=("$SOURCE_ROOT" "${generated_asset_files[@]}")
           git fetch --no-tags --depth=1 origin "$BASE_SHA" --quiet
           git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
-          [ -z "$(git diff --name-only "$BASE_SHA" origin/main -- "$SOURCE_ROOT")" ] || { echo 'main source changed; replan required' >&2; exit 1; }
+          [ -z "$(git diff --name-only "$BASE_SHA" origin/main -- "${promotion_paths[@]}")" ] || { echo 'main source or generated asset changed; replan required' >&2; exit 1; }
           rm -rf /tmp/vibe2-roblox-promote
           git worktree prune
           safe_task="$(printf '%s' "$TASK_ID" | tr -cs 'A-Za-z0-9._-' '-' | sed 's/^-*//;s/-*$//' | cut -c1-60)"
@@ -995,9 +1015,9 @@ jobs:
           cd /tmp/vibe2-roblox-promote
           git config user.name 'jaewoon-vibe2-release'
           git config user.email 'vibe2-release@users.noreply.github.com'
-          git checkout "$CANDIDATE_SHA" -- "$SOURCE_ROOT"
+          git checkout "$CANDIDATE_SHA" -- "${promotion_paths[@]}"
           git -c core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab diff --check
-          git add "$SOURCE_ROOT"
+          git add -- "${promotion_paths[@]}"
           git diff --cached --quiet && { echo 'nothing to promote' >&2; exit 1; }
           git commit -m "vibe2: promote Roblox ${TASK_ID}"
           release_commit="$(git rev-parse HEAD)"
@@ -1006,10 +1026,10 @@ jobs:
           sleep 5
           gh pr checks "$pr_url" --watch --fail-fast --interval 10
           git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
-          [ -z "$(git diff --name-only "$BASE_SHA" origin/main -- "$SOURCE_ROOT")" ] || { echo 'main source changed before merge; replan required' >&2; exit 1; }
+          [ -z "$(git diff --name-only "$BASE_SHA" origin/main -- "${promotion_paths[@]}")" ] || { echo 'main source or generated asset changed before merge; replan required' >&2; exit 1; }
           gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
           git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
-          git diff --quiet "$release_commit" origin/main -- "$SOURCE_ROOT"
+          git diff --quiet "$release_commit" origin/main -- "${promotion_paths[@]}"
           promoted_main_sha="$(git rev-parse origin/main)"
           promoted_source_tree_sha="$(git rev-parse "origin/main:$SOURCE_ROOT")"
           [[ "$promoted_source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
