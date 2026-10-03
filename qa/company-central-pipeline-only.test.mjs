@@ -486,8 +486,15 @@ test('central policy architecture and log maps bind the development floor parall
   assert.equal(change?.qualitySecurityReleaseGatesUnchanged,true);
   assert.equal(architecture.developmentFloorParallelBottleneckRepair?.centralPlanner?.blockingScope,'ADMISSION_CRITICAL_ONLY');
   assert.equal(architecture.developmentFloorParallelBottleneckRepair?.unityWebFloor?.independentGameParallelism,true);
+  assert.equal(architecture.developmentFloorParallelBottleneckRepair?.unityWebFloor?.sameGameHeavyParallelism,true);
+  assert.equal(architecture.developmentFloorParallelBottleneckRepair?.unityWebFloor?.gameIdConcurrencyGroupForbidden,true);
+  assert.equal(architecture.developmentFloorParallelBottleneckRepair?.unityWebFloor?.callerConcurrency,'NONE_GAME_ID_LOCK_REMOVED');
+  assert.equal(architecture.developmentFloorParallelBottleneckRepair?.unityWebFloor?.heavyExecutionConcurrency,'unity-web-floor-exec-run-<runId>');
   assert.equal(logMap.developmentFloorParallelBottleneckRepairEvidence?.duplicateRuntimeAuditPresent,false);
   assert.equal(logMap.developmentFloorParallelBottleneckRepairEvidence?.independentGameParallelismRequired,true);
+  assert.equal(logMap.developmentFloorParallelBottleneckRepairEvidence?.sameGameUnityWebHeavyOverlapForbidden,false);
+  assert.equal(logMap.developmentFloorParallelBottleneckRepairEvidence?.sameGameUnityWebHeavyParallelRequired,true);
+  assert.equal(logMap.developmentFloorParallelBottleneckRepairEvidence?.gameIdConcurrencyGroupForbidden,true);
 });
 
 test('Unity Web floor stays parallel without gameId workflow serialization',()=>{
