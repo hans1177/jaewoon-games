@@ -753,6 +753,11 @@ test('idle learning fixes one worker regardless of game pressure',()=>{
   assert.ok(workflow.includes("!= 'asset-development' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') != 'learning-idle'"));
 });
 
+test('candidate Luau smoke setup cannot leave an indented heredoc open in the workflow shell',()=>{
+  assert.match(workflow,/printf '%s\\\\n' 'local value = 1' 'return value \+ 1' > "\$luau_dir\/smoke\.luau"/);
+  assert.doesNotMatch(workflow,/cat > "\$luau_dir\/smoke\.luau" <<'LUAU'/);
+});
+
 test('candidate formatting whitespace does not abort development but conflict markers still fail',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-format-gate-'));
   const git=(args)=>spawnSync('git',args,{cwd:root,encoding:'utf8'});
