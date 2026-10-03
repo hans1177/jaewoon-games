@@ -46106,14 +46106,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-03T20:04:07.824Z",
+      "updatedAt": "2026-10-03T20:09:13.750Z",
       "robloxSourceCommit": "9472bd4b844466429db623f3319252e3d488efda",
       "robloxSourceBootstrapPassedAt": "2026-10-03T19:55:05.534Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -46797,18 +46797,18 @@
       "presentationFirstPass": null,
       "robloxExactRevisionPassed": false,
       "platformAdapter": "tools/company-development-unity-platform.mjs",
-      "unityCandidateBranch": "development/unity-tech-seed-single-defense-strat-celestial-bastion-36774290498",
-      "unitySourceCommit": "06bc967c543e1825930a53c3716c7e3a80711078",
-      "unityBuildRunId": 37018605614,
+      "unityCandidateBranch": "development/unity-tech-seed-single-defense-strat-celestial-bastion-37149677034",
+      "unitySourceCommit": "8998de2310017a93419bbac6f58dd027ac8c1d16",
+      "unityBuildRunId": 37150035923,
       "unityRuntimeSmokeRunId": null,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityF0ThroughF9Evidence": {
         "version": 2,
         "platform": "UNITY",
-        "sourceRevision": "06bc967c543e1825930a53c3716c7e3a80711078",
+        "sourceRevision": "8998de2310017a93419bbac6f58dd027ac8c1d16",
         "artifactIdentity": null,
-        "sourceRootTreeSha": "74243b3582ca35ba9069dc2d81d3eed7a171a40d",
+        "sourceRootTreeSha": "f2b4b6da7f3793172ccec5b16fe58dc177c00c11",
         "evidenceMode": "F0_COMPILE_PLUS_ONE_EXACT_ANDROID_BLACK_BOX_RUNTIME_F1_F8_PLUS_F9_EVIDENCE_FAN_IN",
         "singleRuntimeSessionF1ThroughF8": true,
         "f9RuntimeReplayRequired": false,
@@ -46857,7 +46857,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-02T14:17:59.447Z"
+        "verifiedAt": "2026-10-03T20:09:13.750Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -46869,9 +46869,9 @@
       "unityExecutionEvidence": {
         "version": 4,
         "platform": "UNITY",
-        "sourceRevision": "06bc967c543e1825930a53c3716c7e3a80711078",
-        "sourceRootTreeSha": "74243b3582ca35ba9069dc2d81d3eed7a171a40d",
-        "sourceFingerprint": "fbb690981076748d6a36ff0cdca3efe2d5b6f4e35d32323690976f7d6dc4604f",
+        "sourceRevision": "8998de2310017a93419bbac6f58dd027ac8c1d16",
+        "sourceRootTreeSha": "f2b4b6da7f3793172ccec5b16fe58dc177c00c11",
+        "sourceFingerprint": "dbb3ae1f3f7bdedd7ab237f5828cebb96030ca83a7e2e4c530f4270dbc485b47",
         "buildOrPackagePassed": false,
         "artifactIdentity": null,
         "runtimePassed": false,
@@ -46893,15 +46893,15 @@
       "executionEvidence": {
         "version": 4,
         "platform": "UNITY",
-        "sourceRevision": "06bc967c543e1825930a53c3716c7e3a80711078",
-        "sourceRootTreeSha": "74243b3582ca35ba9069dc2d81d3eed7a171a40d",
-        "sourceFingerprint": "fbb690981076748d6a36ff0cdca3efe2d5b6f4e35d32323690976f7d6dc4604f",
+        "sourceRevision": "8998de2310017a93419bbac6f58dd027ac8c1d16",
+        "sourceRootTreeSha": "f2b4b6da7f3793172ccec5b16fe58dc177c00c11",
+        "sourceFingerprint": "dbb3ae1f3f7bdedd7ab237f5828cebb96030ca83a7e2e4c530f4270dbc485b47",
         "buildOrPackagePassed": false,
         "artifactIdentity": null,
         "runtimePassed": false,
-        "independentQaPassed": true,
+        "independentQaPassed": false,
         "multiplayerPassed": true,
-        "regressionPassed": true,
+        "regressionPassed": false,
         "rawStageResults": {
           "runtime": false,
           "independentQa": false,
@@ -46910,9 +46910,9 @@
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": false,
-        "lastSuccessfulStage": "F9_RELEASE_REGRESSION",
-        "failureStage": null,
-        "failureSignature": null
+        "lastSuccessfulStage": "CHEAP_PRECHECK",
+        "failureStage": "F0_SOURCE_INTEGRITY",
+        "failureSignature": "d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152"
       },
       "resumeStage": "F0_SOURCE_INTEGRITY",
       "failureCount": 1,
@@ -49941,7 +49941,11 @@
             }
           }
         ]
-      }
+      },
+      "unityMobilePerformancePassed": false,
+      "unityMobilePerformanceEvidence": null,
+      "unityGeneratedAssetRuntimeBindingPassed": false,
+      "unityAssetRuntimeBindingEvidence": null
     },
     {
       "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -60344,7 +60348,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-03T20:09:00.913Z",
+  "updatedAt": "2026-10-03T20:09:15.276Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
