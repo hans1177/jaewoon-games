@@ -161,6 +161,7 @@ jobs:
           import fs from 'node:fs';
           import {ingestTesterDebug} from './tools/company-tester-debug-intake.mjs';
           import {evaluateInternalRelease} from './tools/company-platform-exposure-control.mjs';
+          import {evaluateRobloxF9ProductReadiness} from './tools/company-development-roblox-gameplay-product-readiness.mjs';
 
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           const queuePath='../runtime/development-queue.json';
@@ -298,6 +299,13 @@ jobs:
               ||(internalRuntimeFindingDeferred&&post.studioAssetBindingRequired!==true)
               ||(internalRuntimeFindingDeferred&&post.studioAssetRuntimeBindingPassed===true)
               ||(internalStudioValidationAccepted&&post.studioAssetRuntimeBindingPassed===true);
+            const productReadiness=evaluateRobloxF9ProductReadiness({
+              f0Evidence:f0CandidateEvidence,
+              runtimeEvidence:runtime,
+              postRuntimeQaEvidence:post,
+              studioPlayEvidence:studioPlay,
+            });
+            console.log('ROBLOX_F9_GAMEPLAY_PRODUCT_READINESS='+item.gameId+':'+(productReadiness.pass?'PASS':'BLOCKED')+':'+(productReadiness.blockers.join(',')||'NONE'));
             const exactRuntimeBinding=Boolean(
               runtime.sourceRevision===sourceRevision
               &&runtime.artifactIdentity===artifactIdentity
@@ -309,7 +317,8 @@ jobs:
               &&Number(runtime.candidateVersionNumber||runtime.expectedVersionNumber)===Number(candidate.versionNumber)
             );
             const exact=
-              item.robloxFoundationF0Passed===true
+              productReadiness.pass===true
+              &&item.robloxFoundationF0Passed===true
               &&(item.robloxRuntimeFoundationPassed===true||internalRuntimeObservationDeferred||internalRuntimeFindingDeferred||internalStudioValidationAccepted)
               &&internalRuntimeAcceptance===true
               &&(
@@ -347,12 +356,48 @@ jobs:
               &&studioAssetRuntimeBindingExact===true;
             const tickets=currentBlockingTickets.get(item.gameId)||[];
             if(!exact||tickets.length){
-              const f9FailureSignature=!exact?'ROBLOX_F9_EXACT_EVIDENCE_MISMATCH':'ROBLOX_F9_OPEN_TESTER_FAILURE';
-              const f9Blocker=!exact?'roblox-f9-exact-evidence-mismatch':'roblox-f9-open-tester-failure';
-              const internalFlowNonBlocking=
+              const productBlocked=productReadiness.pass!==true;
+              const f9FailureSignature=productBlocked?'ROBLOX_F9_GAMEPLAY_PRODUCT_READINESS_FAILED':(!exact?'ROBLOX_F9_EXACT_EVIDENCE_MISMATCH':'ROBLOX_F9_OPEN_TESTER_FAILURE');
+              const f9Blocker=productBlocked?'roblox-f9-gameplay-product-readiness-failed':(!exact?'roblox-f9-exact-evidence-mismatch':'roblox-f9-open-tester-failure');
+              const internalFlowNonBlocking=!productBlocked&&(
                 item.robloxRuntimeFailureExternalReleaseOnly===true
                 ||item.robloxRuntimeFoundationInternalReleaseException===true
-                ||item.robloxInternalReleaseReady===true;
+                ||item.robloxInternalReleaseReady===true
+              );
+              if(productBlocked){
+                item.robloxQualityBuildUpRequired=true;
+                item.robloxQualityBuildUpSourceRevision=sourceRevision;
+                item.robloxQualityFailureClass='GAMEPLAY_PRODUCT_READINESS';
+                item.robloxQualityBuildUpEvidence={
+                  version:1,
+                  gameId:item.gameId,
+                  sourceRevision,
+                  artifactIdentity,
+                  authority:'roblox-f9-gameplay-product-readiness-failure',
+                  workflowRunId:Number(process.env.GITHUB_RUN_ID||0)||null,
+                  testedAt:stamp,
+                  qualityFailureKinds:[...(productReadiness.blockers||[])],
+                  repairSurfaces:[...new Set((productReadiness.blockers||[]).map(value=>{
+                    const text=String(value||'');
+                    if(/WORLD|LANDMARK|SPAWN|BASEPART/.test(text))return 'WORLD_MAP';
+                    if(/AI_/.test(text))return 'ENEMY_AI';
+                    if(/COMBAT/.test(text))return 'COMBAT_FEEL';
+                    if(/FIRST_10/.test(text))return 'FIRST_SESSION';
+                    if(/MID_LATE|PROGRESSION/.test(text))return 'PROGRESSION_CONTENT';
+                    if(/PLACEHOLDER|STUDIO_SOURCE/.test(text))return 'PRESENTATION';
+                    if(/SYSTEM_CONNECTION/.test(text))return 'SYSTEM_CONNECTION';
+                    if(/ACTUAL_PLAY|SERVER_BOOT|SIMULATION/.test(text))return 'RUNTIME_PLAY';
+                    return 'CORE_GAMEPLAY';
+                  }))],
+                  qualityFailureDetails:(productReadiness.blockers||[]).map((id,index)=>({
+                    id:String(id),
+                    repairSurface:'GAMEPLAY_PRODUCT_READINESS',
+                    priority:index<3?'P0':'P1',
+                    hint:'Repair the exact responsible Roblox gameplay system and rerun F0-F9 with observable player-facing evidence.',
+                    observed:productReadiness
+                  }))
+                };
+              }
               item.robloxFinalReviewPassed=false;
               item.robloxF9PendingInParallel=internalFlowNonBlocking;
               item.robloxF9FailureSignature=f9FailureSignature;
@@ -374,6 +419,10 @@ jobs:
               continue;
             }
 
+            item.robloxQualityBuildUpRequired=false;
+            item.robloxQualityBuildUpSourceRevision=null;
+            item.robloxQualityFailureClass=null;
+            item.robloxQualityBuildUpEvidence=null;
             item.robloxFinalReviewPassed=true;
             item.robloxFinalReviewPassedAt=stamp;
             item.robloxF9PendingInParallel=false;
@@ -390,6 +439,8 @@ jobs:
               runtimeFoundationEvidenceAuthority:runtime.authority,
               postRuntimeQaAuthority:post.authority,
               noCurrentCriticalOrHighTesterFailure:true,
+              gameplayProductReadiness:productReadiness,
+              studioQualitySheet:f0CandidateEvidence?.studioQualitySheet||f0CandidateEvidence?.gameplayProductReadiness?.studioQualitySheet||null,
               studioAssetBindingRequired,
               studioAssetRuntimeBindingPassed:studioAssetRuntimeBindingExact,
               studioAssetRuntimeBindingEvidence:studioAssetBindingRequired?post.studioAssetRuntimeBindingEvidence:null,

@@ -217,3 +217,31 @@ test('F0 private validation handoff stays dedicated and noncanonical before F9',
   assert.doesNotMatch(block,/publish_stage=final/);
 });
 
+
+
+test('F0 blocks generic scope handlers when an exact survival design baseline is bound',()=>{
+ const baseline={content:{
+   identity:'낮에는 자원을 채집하고 밤에는 몰려오는 적을 막는 액션 생존 게임',
+   coreFun:'자원 관리와 실시간 전투',
+   coreLoop:['낮 시간에 자원을 채집하고 장비를 제작한다','밤에 적 웨이브를 막는다','보상으로 성장과 제작법을 해금한다'],
+   signatureSystems:[{name:'즉석 제작',purpose:'자원으로 장비를 제작한다'}],
+   progressionDirection:'경험치와 제작법 해금을 저장한다.',
+   multiplayerMode:'SINGLE'
+ }};
+ const skeletonServer=server
+   +' local function scopeHandler1(p) p:SetAttribute("Score",1) end'
+   +' local function scopeHandler2(p) p:SetAttribute("EnemyHealth",90) end'
+   +' local function scopeHandler3(p) p:SetAttribute("Wave",2) end';
+ const r=inspectHeadlessSourceTexts({
+   gameId:'survival',sourcePath:'roblox-games/survival',sourceRevision:'a'.repeat(40),
+   artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),
+   artifactRunId:123,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',
+   config,server:skeletonServer,client,project,baseline
+ });
+ assert.equal(r.gameplayProductReadinessRequired,true);
+ assert.equal(r.pass,false);
+ assert.ok(r.blockers.includes('gameplayProductReadiness'));
+ assert.ok(r.gameplayProductReadiness.blockers.includes('GENERIC_SCOPE_HANDLER_SKELETON'));
+ assert.ok(r.gameplayProductReadiness.blockers.some(x=>x.includes('CRAFTING')));
+ assert.equal(r.version,4);
+});

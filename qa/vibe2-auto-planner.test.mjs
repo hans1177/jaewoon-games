@@ -4197,3 +4197,161 @@ test('queued Web assessment with PRESENTATION generation is repaired into graphi
   assert.equal(laneRecovered.assetProductionLane,true);
   assert.ok(laneRecovered.evidence.includes('asset-production-parallel:v1'));
 });
+
+
+test('Roblox build-up directive preserves competitive multiplayer platform semantics',()=>{
+  const root=tempRepo();
+  try{
+    const gameId='roblox-competitive-directive';
+    const serverDir=path.join(root,'roblox-games',gameId,'server');
+    const clientDir=path.join(root,'roblox-games',gameId,'client');
+    fs.mkdirSync(serverDir,{recursive:true});
+    fs.mkdirSync(clientDir,{recursive:true});
+    fs.writeFileSync(path.join(serverDir,'Game.server.luau'),[
+      'local Players=game:GetService("Players")',
+      'local ReplicatedStorage=game:GetService("ReplicatedStorage")',
+      'local remote=Instance.new("RemoteEvent")',
+      'local function infectPlayer(player) player:SetAttribute("Role","MONSTER") end',
+      'local function endRound() remote:FireAllClients("MULTIPLAYER_SYNC") end',
+      'for _,player in ipairs(Players:GetPlayers()) do player:SetAttribute("ParticipantCount",#Players:GetPlayers()) end',
+    ].join('\n')+'\n','utf8');
+    fs.writeFileSync(path.join(clientDir,'Game.client.luau'),[
+      'local remote=Instance.new("RemoteEvent")',
+      'remote.OnClientEvent:Connect(function(kind) if kind=="MULTIPLAYER_SYNC" then return end end)',
+    ].join('\n')+'\n','utf8');
+    writeStudioDesign(root,gameId,{
+      identity:'8명 4대4 감염 추격전',
+      coreFun:'인간과 몬스터가 실시간으로 역할을 바꾸는 추격전',
+      coreLoop:['4대4로 시작한다','몬스터가 인간을 감염한다','한 진영이 0명이 되면 라운드가 끝난다'],
+      multiplayerMode:'SINGLE'
+    });
+    const project={
+      gameId,name:'Competitive Infection',engine:'roblox',target:'roblox',
+      releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`,
+      genre:'Survival',subgenre:'Infection Chase',playMode:'COMPETITIVE'
+    };
+    const planned=findStudioContinuousImprovementTask(project,root,{tasks:[]},'STABILITY');
+    assert.ok(planned);
+    assert.equal(planned.buildUpDirective.platform,'ROBLOX');
+    assert.equal(planned.buildUpDirective.sourceRoot,`roblox-games/${gameId}`);
+    assert.equal(planned.buildUpDirective.gameIdentityAndNonNegotiables.multiplayerMode,'COMPETITIVE');
+    const multiplayer=planned.buildUpDirective.qualityGapMap.find(row=>row.domain==='MULTIPLAYER_AND_SYNC');
+    assert.ok(multiplayer);
+    assert.notEqual(multiplayer.state,'NOT_APPLICABLE');
+    assert.ok((planned.evidence||[]).includes('build-up-roblox-design-profile-grounded:YES'));
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
+
+test('exact Roblox F9 settles only runtime waiter and forces a fresh BUILD_UP generation',()=>{
+  const root=tempRepo();
+  try{
+    const gameId='post-f9-fresh-generation';
+    const serverDir=path.join(root,'roblox-games',gameId,'server');
+    const clientDir=path.join(root,'roblox-games',gameId,'client');
+    fs.mkdirSync(serverDir,{recursive:true});
+    fs.mkdirSync(clientDir,{recursive:true});
+    fs.writeFileSync(path.join(serverDir,'Game.server.luau'),[
+      'local Players=game:GetService("Players")',
+      'local function attackEnemy(enemy) return enemy ~= nil end',
+      'local function startRound() return true end',
+      'local function endRound() return true end',
+      'Players.PlayerAdded:Connect(function() end)'
+    ].join('\n')+'\n','utf8');
+    fs.writeFileSync(path.join(clientDir,'Game.client.luau'),'local input=true\n','utf8');
+    writeStudioDesign(root,gameId,{
+      identity:'F9 이후에도 계속 성장하는 Roblox 전투 게임',
+      coreFun:'적 상태를 읽고 공격 타이밍을 고르는 재미',
+      coreLoop:['라운드를 시작한다','적을 공격한다','결과를 보고 다음 선택을 한다'],
+      multiplayerMode:'SINGLE'
+    });
+    const sourceRevision='a'.repeat(40);
+    const baseProject={
+      gameId,name:'Post F9 Fresh Generation',engine:'roblox',target:'roblox',
+      releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`,
+      existing:true,genre:'Action',subgenre:'Combat',playMode:'SINGLE',
+      queueRobloxSourceCommit:sourceRevision
+    };
+    const first=findStudioContinuousImprovementTask(baseProject,root,{tasks:[]},'CORE_FUN');
+    assert.ok(first?.buildUpDirective);
+    assert.equal(first.buildUpDirective.generation,1);
+
+    const waiter={
+      ...first,
+      status:'running',
+      blocker:'candidate-awaiting-runtime-evidence',
+      reservationId:'runtime-waiter',
+      evidence:[...(first.evidence||[]),'candidate-awaiting-runtime-evidence']
+    };
+    const postF9Project={
+      ...baseProject,
+      queueRobloxPostF9ContinuousEvolution:true,
+      queueRobloxFinalReviewPassed:true,
+      queueRobloxF9SourceRevision:sourceRevision
+    };
+    const next=findStudioContinuousImprovementTask(postF9Project,root,{tasks:[waiter]},'CORE_FUN');
+    assert.ok(next,'exact F9 must release the runtime waiter for the next BUILD_UP generation');
+    assert.equal(next.buildUpDirective.generation,2);
+    assert.notEqual(next.buildUpDirectiveId,first.buildUpDirectiveId);
+    assert.ok((next.evidence||[]).includes('post-f9-continuous-evolution:EXACT_F9_VERIFIED'));
+    assert.ok((next.evidence||[]).includes('post-f9-source-revision:'+sourceRevision));
+    assert.ok((next.evidence||[]).includes('post-f9-runtime-waiter-settlement:ALLOWED_FOR_NEXT_GENERATION'));
+
+    const unrelatedActive={...waiter,id:waiter.id+'-real-work',blocker:null};
+    const blocked=findStudioContinuousImprovementTask(postF9Project,root,{tasks:[unrelatedActive]},'CORE_FUN');
+    assert.equal(blocked,null,'F9 may not bypass real queued/running source work');
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
+
+test('company runtime projects project exact post-F9 Roblox continuation and prioritize it',()=>{
+  const root=tempRepo();
+  try{
+    const gameId='post-f9-projection';
+    const gameRoot=path.join(root,'roblox-games',gameId);
+    fs.mkdirSync(path.join(gameRoot,'server'),{recursive:true});
+    fs.writeFileSync(path.join(gameRoot,'server','Game.server.luau'),'local function attackEnemy() return true end\n','utf8');
+    writeStudioDesign(root,gameId,{
+      identity:'post F9 Roblox action game',
+      coreFun:'attack timing',
+      coreLoop:['start','attack','reward'],
+      multiplayerMode:'SINGLE'
+    });
+    const sourceRevision='b'.repeat(40);
+    const projects=collectProjects(
+      {projects:[]},
+      {games:[
+        {id:gameId,name:'Post F9 Projection',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',robloxProjectPath:`roblox-games/${gameId}`},
+        {id:'other-post-f9-peer',name:'Peer',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',robloxProjectPath:'roblox-games/other-post-f9-peer'}
+      ]},
+      root,
+      {items:[{
+        gameId,gameName:'Post F9 Projection',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
+        selectedPlatform:'ROBLOX',robloxProjectPath:`roblox-games/${gameId}`,
+        robloxSourceCommit:sourceRevision,
+        currentStep:'POST_F9_CONTINUOUS_EVOLUTION',
+        canonicalState:'F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION',
+        robloxFinalReviewPassed:true,
+        robloxFinalReviewPassedAt:'2026-10-03T00:00:00Z',
+        robloxF9ReleaseRegressionEvidence:{
+          sourceRevision,
+          artifactIdentity:'sha256:'+'c'.repeat(64)
+        }
+      }]}
+    );
+    const project=projects.find(row=>row.gameId===gameId&&row.engine==='roblox');
+    assert.ok(project);
+    assert.equal(project.queueRobloxFinalReviewPassed,true);
+    assert.equal(project.queueRobloxF9SourceRevision,sourceRevision);
+    assert.equal(project.queueRobloxPostF9ContinuousEvolution,true);
+
+    const peer={gameId:'peer',engine:'roblox',releaseState:'development-confirmed',progress:100};
+    assert.ok(projectSort(project,peer)<0,'exact post-F9 Roblox continuation must outrank ordinary backlog');
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});

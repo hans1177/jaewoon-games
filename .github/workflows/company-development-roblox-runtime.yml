@@ -16,6 +16,8 @@ on:
       - 'tools/company-roblox-source-drift-sync.mjs'
       - 'qa/company-roblox-source-drift-sync.test.mjs'
       - 'tools/company-development-roblox-bootstrap.mjs'
+      - 'tools/company-development-roblox-gameplay-product-readiness.mjs'
+      - 'qa/company-development-roblox-gameplay-product-readiness.test.mjs'
       - 'tools/company-development-roblox-source-reconcile.mjs'
       - 'tools/vibe3-roblox-learning-context.mjs'
       - 'tools/company-selected-platform-router.mjs'
@@ -53,6 +55,8 @@ env:
   ROBLOX_SOURCE_PLAN_CONTRACT_PATHS: >-
     .github/workflows/company-development-roblox-runtime.yml
     tools/company-development-roblox-bootstrap.mjs
+    tools/company-development-roblox-gameplay-product-readiness.mjs
+    qa/company-development-roblox-gameplay-product-readiness.test.mjs
     tools/company-development-roblox-source-reconcile.mjs
     tools/vibe3-roblox-learning-context.mjs
     qa/company-development-roblox-source-reconcile.test.mjs
@@ -216,7 +220,7 @@ jobs:
           node --check tools/company-upper-platform-admission.mjs
           node --check tools/vibe3-roblox-platform.mjs
           node --check tools/vibe3-roblox-learning-context.mjs
-          node --test qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs qa/company-upper-platform-admission.test.mjs
+          node --test qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs qa/company-development-roblox-gameplay-product-readiness.test.mjs qa/company-upper-platform-admission.test.mjs
 
       - name: Fetch current company runtime and verified Vibe learning
         if: steps.freshness.outputs.run == 'true'
@@ -423,12 +427,23 @@ jobs:
           git fetch --no-tags --depth=1 origin "+refs/heads/$VIBE2_LEARNING_RUNTIME_BRANCH:refs/remotes/origin/$VIBE2_LEARNING_RUNTIME_BRANCH"
           git fetch --no-tags --depth=1 origin "+refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core"
           directive="/tmp/build-up-directive-${GAME_ID}.json"
-          if git cat-file -e "origin/vibe2-unreal-core:.vibe2/build-up-directives/${GAME_ID}/current.json" 2>/dev/null; then
-            git show "origin/vibe2-unreal-core:.vibe2/build-up-directives/${GAME_ID}/current.json" > "$directive"
-            echo "ROBLOX_BUILD_UP_DIRECTIVE_SOURCE=VIBE_RUNTIME:${GAME_ID}"
+          directive_ref="origin/vibe2-unreal-core:.vibe2/build-up-directives/${GAME_ID}/current/roblox.json"
+          if git cat-file -e "$directive_ref" 2>/dev/null; then
+            git show "$directive_ref" > "$directive"
+            GAME_ID="$GAME_ID" DIRECTIVE="$directive" node <<'NODE'
+          const fs=require('fs');
+          const d=JSON.parse(fs.readFileSync(process.env.DIRECTIVE,'utf8'));
+          if(String(d.gameId||'')!==String(process.env.GAME_ID||''))throw new Error('ROBLOX_BUILD_UP_DIRECTIVE_GAME_MISMATCH');
+          if(String(d.platform||'').toUpperCase()!=='ROBLOX')throw new Error('ROBLOX_BUILD_UP_DIRECTIVE_PLATFORM_MISMATCH');
+          if(!String(d.sourceRoot||'').split('|').some(root=>root.trim()===('roblox-games/'+process.env.GAME_ID)))throw new Error('ROBLOX_BUILD_UP_DIRECTIVE_SOURCE_ROOT_MISMATCH');
+          const files=d?.responsibleSystemsAndFiles?.files||[];
+          if(!files.some(file=>String(file).startsWith('roblox-games/'+process.env.GAME_ID+'/')))throw new Error('ROBLOX_BUILD_UP_DIRECTIVE_RESPONSIBLE_FILES_MISSING');
+          console.log('ROBLOX_BUILD_UP_DIRECTIVE_NATIVE_BINDING=PASS:'+d.directiveId);
+          NODE
+            echo "ROBLOX_BUILD_UP_DIRECTIVE_SOURCE=VIBE_RUNTIME_ROBLOX:${GAME_ID}"
           else
             rm -f "$directive"
-            echo "ROBLOX_BUILD_UP_DIRECTIVE_SOURCE=BASELINE_ONLY_NO_VIBE_DIRECTIVE:${GAME_ID}"
+            echo "ROBLOX_BUILD_UP_DIRECTIVE_SOURCE=MISSING_PLATFORM_DIRECTIVE:${GAME_ID}"
           fi
           git show "origin/$VIBE2_LEARNING_RUNTIME_BRANCH:company-learning/vibe3-task-playbooks.json" > /tmp/vibe3-task-playbooks.json
           git show "origin/$VIBE2_LEARNING_RUNTIME_BRANCH:company-learning/vibe3-recombination-memory.json" > /tmp/vibe3-recombination-memory.json
@@ -1040,10 +1055,17 @@ jobs:
             const secondaryOwnerFocus=!concurrentDefault&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
             if(!concurrentDefault&&!secondaryOwnerFocus)continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
+            const productF0Current=!secondaryOwnerFocus
+              &&Number(item.robloxFoundationF0Evidence?.version||0)>=4
+              &&item.robloxFoundationF0Evidence?.gameplayProductReadinessRequired===true
+              &&item.robloxFoundationF0Evidence?.gameplayProductReadiness?.pass===true;
+            const productF0RevalidationNeeded=!secondaryOwnerFocus
+              &&item.robloxFoundationF0Passed===true
+              &&!productF0Current;
             if(secondaryOwnerFocus){
               const lane=String(item.ownerFocusRobloxAssetPipelineState||'').toUpperCase();
               if(!['SOURCE_READY','BUILD_REPAIR_REQUIRED'].includes(lane))continue;
-            }else{
+            }else if(!productF0RevalidationNeeded){
               if(String(item.currentStep||'').toUpperCase()!=='TARGET_PLATFORM_TECHNICAL_VALIDATION')continue;
               const canonicalState=String(item.canonicalState||'').toUpperCase();
               const buildRevalidationPending=String(item.robloxFailureStage||'').toUpperCase()==='TARGET_PLATFORM_BUILD_OR_PACKAGE'
@@ -1051,6 +1073,8 @@ jobs:
               const technicalStateEligible=canonicalState==='TARGET_PLATFORM_REPAIR_REQUIRED'
                 ||(canonicalState==='WAITING_TARGET_PLATFORM_VALIDATION'&&buildRevalidationPending);
               if(!technicalStateEligible)continue;
+            }else{
+              console.log('ROBLOX_F0_PRODUCT_CONTRACT_REVALIDATION_REQUIRED='+item.gameId);
             }
             const sourcePath=String(secondaryOwnerFocus?item.ownerFocusRobloxSourcePath:(item.robloxProjectPath||item.targetSourcePath||item.sourcePath)||`roblox-games/${item.gameId}`).trim();
             const sourceRevision=String(secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
@@ -1059,8 +1083,8 @@ jobs:
               ?item.ownerFocusRobloxBuildOrPackagePassed===true&&item.ownerFocusRobloxBuildSourceRevision===sourceRevision&&artifactIdentity.startsWith('sha256:')
               :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===sourceRevision&&artifactIdentity.startsWith('sha256:');
             if(!/^[0-9a-f]{40}$/i.test(sourceRevision))continue;
-            if(exactBuild)continue;
-            rows.push({gameId:item.gameId,gameName:item.gameName||item.gameId,baseline:item.designBaselineSource,sourcePath,sourceRevision,secondaryOwnerFocus});
+            if(exactBuild&&productF0Current)continue;
+            rows.push({gameId:item.gameId,gameName:item.gameName||item.gameId,baseline:item.designBaselineSource,sourcePath,sourceRevision,secondaryOwnerFocus,productF0RevalidationNeeded});
           }
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:rows})}\n`);
@@ -1210,6 +1234,7 @@ jobs:
           SOURCE_REVISION: ${{ matrix.sourceRevision }}
           SECONDARY_OWNER_FOCUS: ${{ matrix.secondaryOwnerFocus }}
           BUILD_EVIDENCE: ${{ steps.package.outputs.build_evidence }}
+          BASELINE_SOURCE: ${{ matrix.baseline }}
           SUPERSEDED: ${{ steps.freshness.outputs.superseded }}
           SUPERSEDE_REASON: ${{ steps.freshness.outputs.reason }}
         shell: bash
@@ -1278,6 +1303,8 @@ jobs:
             /tmp/luau-bin/luau-compile "$file" >/dev/null
           done
           echo "ROBLOX_F0_LUAU_COMPILE_PASS=${#luau_files[@]}"
+          baseline="/tmp/roblox-technical/input/${safe}/baseline.json"
+          test -s "$baseline"
           node tools/company-development-roblox-headless-fast-mvp.mjs \
             --repo-root=. \
             --game-id="$GAME_ID" \
@@ -1288,6 +1315,7 @@ jobs:
             --artifact-run-id="$GITHUB_RUN_ID" \
             --native-language-compile-passed=true \
             --native-compiler-version=0.739 \
+            --baseline="$baseline" \
             --output="/tmp/roblox-technical/results/${safe}.headless.json"
           echo 'ROBLOX_F0_BUILD_REUSE=SAME_WORKER_EXACT_PACKAGE'
       - name: Record Roblox technical package result
@@ -1628,7 +1656,13 @@ jobs:
             }
             const alreadyPersistedF0=!secondaryOwnerFocus
               &&result.pass===true
+              &&result.f0Pass===true
+              &&result.f0Evidence?.gameplayProductReadinessRequired===true
+              &&result.f0Evidence?.gameplayProductReadiness?.pass===true
+              &&Number(result.f0Evidence?.version||0)>=4
               &&item.robloxFoundationF0Passed===true
+              &&Number(item.robloxFoundationF0Evidence?.version||0)>=4
+              &&item.robloxFoundationF0Evidence?.gameplayProductReadiness?.pass===true
               &&item.robloxBuildOrPackagePassed===true
               &&item.robloxBuildPreflightPassed===true
               &&item.robloxBuildSourceRevision===result.sourceRevision
@@ -1667,6 +1701,11 @@ jobs:
               const f0Exact=preflightExact&&result.f0Pass===true
                 &&result.f0Evidence?.sourceRevision===result.sourceRevision
                 &&result.f0Evidence?.artifactIdentity===result.artifactIdentity;
+              const gameplayProductFailure=preflightExact
+                &&result.f0Pass!==true
+                &&result.f0Evidence?.gameplayProductReadinessRequired===true
+                &&result.f0Evidence?.gameplayProductReadiness?.pass===false;
+              const productEvidence=result.f0Evidence?.gameplayProductReadiness||null;
               Object.assign(item,{
                 status:'ACTIVE',
                 currentStep:f0Exact?'PRIVATE_RUNTIME_CANDIDATE_DEPLOY':preflightExact?'ROBLOX_F0_SOURCE_PREFLIGHT':'TARGET_PLATFORM_TECHNICAL_VALIDATION',
@@ -1674,8 +1713,8 @@ jobs:
                 robloxBuildOrPackagePassed:true,robloxBuildSourceRevision:result.sourceRevision,robloxBuildArtifactIdentity:result.artifactIdentity,
                 robloxBuildPassedAt:stamp,robloxBuildFailedAt:null,
                 robloxBuildPreflightPassed:preflightExact,robloxBuildPreflightPassedAt:preflightExact?stamp:null,robloxBuildPreflightFailedAt:preflightExact?null:stamp,robloxBuildPreflightEvidence:result.preflightEvidence||null,
-                robloxFoundationF0Passed:f0Exact,robloxFoundationF0PassedAt:f0Exact?stamp:null,robloxFoundationF0Evidence:f0Exact?result.f0Evidence:null,
-                robloxHeadlessFastMvpPassed:f0Exact,robloxHeadlessFastMvpEvidence:f0Exact?result.f0Evidence:null,robloxHeadlessFinalReviewPassed:false,
+                robloxFoundationF0Passed:f0Exact,robloxFoundationF0PassedAt:f0Exact?stamp:null,robloxFoundationF0Evidence:(f0Exact||gameplayProductFailure)?result.f0Evidence:null,
+                robloxHeadlessFastMvpPassed:f0Exact,robloxHeadlessFastMvpEvidence:(f0Exact||gameplayProductFailure)?result.f0Evidence:null,robloxHeadlessFinalReviewPassed:false,
                 robloxExactRevisionPassed:f0Exact,
                 robloxRuntimeCandidateEvidence:null,robloxRuntimeFoundationPassed:false,robloxRuntimeFoundationEvidence:null,
                 robloxRuntimePassed:false,robloxRuntimePassedAt:null,robloxRuntimeFailedAt:null,robloxRuntimeEvidence:null,robloxRuntimeRetryCount:0,
@@ -1684,9 +1723,33 @@ jobs:
                 robloxFinalReviewPassed:false,robloxFinalReviewPassedAt:null,robloxF9ReleaseRegressionPassed:false,robloxF9ReleaseRegressionEvidence:null,robloxPostRuntimeQaEvidence:null,
                 robloxInternalReleaseReady:false,robloxInternalReleaseAt:null,
                 robloxLastSuccessfulStage:f0Exact?'F0_SOURCE_PREFLIGHT':preflightExact?'VIBE_SHARED_MODEL_BUILD_PREFLIGHT':'TARGET_PLATFORM_BUILD_OR_PACKAGE',
-                robloxFailureStage:f0Exact?'PRIVATE_RUNTIME_CANDIDATE_DEPLOY':preflightExact?'F0_SOURCE_INTEGRITY':'VIBE_SHARED_MODEL_BUILD_PREFLIGHT',
-                robloxFailureSignature:f0Exact?'ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING':preflightExact?'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED':'ROBLOX_BUILD_PREFLIGHT_BLOCKED',
-                routingBlockers:[f0Exact?'roblox-runtime-candidate-deploy-pending':preflightExact?'roblox-f0-source-preflight-failed':'roblox-build-preflight-blocked'],
+                robloxFailureStage:f0Exact?'PRIVATE_RUNTIME_CANDIDATE_DEPLOY':gameplayProductFailure?'F0_GAMEPLAY_PRODUCT_READINESS':preflightExact?'F0_SOURCE_INTEGRITY':'VIBE_SHARED_MODEL_BUILD_PREFLIGHT',
+                robloxFailureSignature:f0Exact?'ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING':gameplayProductFailure?'ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED':preflightExact?'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED':'ROBLOX_BUILD_PREFLIGHT_BLOCKED',
+                routingBlockers:[f0Exact?'roblox-runtime-candidate-deploy-pending':gameplayProductFailure?'roblox-f0-gameplay-product-readiness-failed':preflightExact?'roblox-f0-source-preflight-failed':'roblox-build-preflight-blocked'],
+                robloxQualityBuildUpRequired:gameplayProductFailure,
+                robloxQualityBuildUpSourceRevision:gameplayProductFailure?result.sourceRevision:null,
+                robloxQualityFailureClass:gameplayProductFailure?'GAMEPLAY_PRODUCT_READINESS':null,
+                robloxQualityBuildUpEvidence:gameplayProductFailure?{
+                  version:1,gameId:item.gameId,sourceRevision:result.sourceRevision,artifactIdentity:result.artifactIdentity,
+                  authority:'roblox-f0-gameplay-product-readiness-failure',workflowRunId:Number(process.env.GITHUB_RUN_ID||0)||null,testedAt:stamp,
+                  qualityFailureKinds:[...(productEvidence?.blockers||[])],
+                  repairSurfaces:[...new Set((productEvidence?.blockers||[]).map(value=>{
+                    const text=String(value||'');
+                    if(/WORLD|LANDMARK|SPAWN|BASEPART/.test(text))return 'WORLD_MAP';
+                    if(/AI_/.test(text))return 'ENEMY_AI';
+                    if(/COMBAT/.test(text))return 'COMBAT_FEEL';
+                    if(/FIRST_10/.test(text))return 'FIRST_SESSION';
+                    if(/MID_LATE|PROGRESSION/.test(text))return 'PROGRESSION_CONTENT';
+                    if(/PLACEHOLDER/.test(text))return 'PRESENTATION';
+                    if(/SYSTEM_CONNECTION/.test(text))return 'SYSTEM_CONNECTION';
+                    return 'CORE_GAMEPLAY';
+                  }))],
+                  qualityFailureDetails:(productEvidence?.blockers||[]).map((id,index)=>({
+                    id:String(id),repairSurface:'GAMEPLAY_PRODUCT_READINESS',priority:index<3?'P0':'P1',
+                    hint:'Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.',
+                    observed:productEvidence
+                  }))
+                }:null,
                 updatedAt:stamp,
               });
               passCount++;
@@ -1772,6 +1835,38 @@ jobs:
           process.stdout.write(String(count));
           NODE
           )"
+          mapfile -t product_repair_ids < <(node - <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('/tmp/roblox-f0-repair-queue.json','utf8'));
+          const ids=new Set(JSON.parse(process.env.CURRENT_TARGETS_JSON||'[]').filter(x=>x.secondaryOwnerFocus!==true).map(x=>x.gameId));
+          for(const item of q.items||[]){
+            if(!ids.has(item.gameId))continue;
+            if(item.robloxQualityBuildUpRequired!==true)continue;
+            if(String(item.robloxQualityBuildUpSourceRevision||'')!==String(item.robloxSourceCommit||''))continue;
+            if(String(item.robloxQualityBuildUpEvidence?.authority||'')!=='roblox-f0-gameplay-product-readiness-failure')continue;
+            console.log(item.gameId);
+          }
+          NODE
+          )
+          product_refill_count=0
+          for game_id in "${product_repair_ids[@]}"; do
+            [ -n "$game_id" ] || continue
+            payload="$(jq -nc \
+              --arg run "${GITHUB_RUN_ID:-}" \
+              --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
+              --arg game "$game_id" \
+              '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$game,source_outcome:"FAILED",execution_lane:"game-primary",reason:"roblox-f0-gameplay-product-repair"}}')"
+            curl --fail-with-body --silent --show-error \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+              --data "$payload"
+            product_refill_count=$((product_refill_count+1))
+            echo "ROBLOX_F0_GAMEPLAY_PRODUCT_VIBE_REFILL=$game_id"
+          done
+          echo "ROBLOX_F0_GAMEPLAY_PRODUCT_VIBE_REFILL_COUNT=$product_refill_count"
           echo "ROBLOX_F0_SOURCE_REPAIR_COUNT=$repair_count"
           if [[ "$repair_count" =~ ^[1-9][0-9]*$ ]]; then
             git fetch --no-tags --depth=1 origin main
@@ -1813,7 +1908,14 @@ jobs:
             const secondaryOwnerFocus=!concurrentDefault&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
             if(!concurrentDefault&&!secondaryOwnerFocus)continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
-            if(!secondaryOwnerFocus){
+            const productF0Current=!secondaryOwnerFocus
+              &&Number(item.robloxFoundationF0Evidence?.version||0)>=4
+              &&item.robloxFoundationF0Evidence?.gameplayProductReadinessRequired===true
+              &&item.robloxFoundationF0Evidence?.gameplayProductReadiness?.pass===true;
+            const productF0RevalidationNeeded=!secondaryOwnerFocus
+              &&item.robloxFoundationF0Passed===true
+              &&!productF0Current;
+            if(!secondaryOwnerFocus&&!productF0RevalidationNeeded){
               if(String(item.currentStep||'').toUpperCase()!=='TARGET_PLATFORM_TECHNICAL_VALIDATION')continue;
               if(String(item.canonicalState||'').toUpperCase()!=='TARGET_PLATFORM_REPAIR_REQUIRED')continue;
             }
@@ -1822,7 +1924,7 @@ jobs:
             const exactBuild=secondaryOwnerFocus
               ?item.ownerFocusRobloxBuildOrPackagePassed===true&&item.ownerFocusRobloxBuildSourceRevision===revision&&artifact.startsWith('sha256:')
               :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&artifact.startsWith('sha256:');
-            if(exactBuild)continue;
+            if(exactBuild&&productF0Current)continue;
             if(secondaryOwnerFocus&&!['SOURCE_READY','BUILD_REPAIR_REQUIRED'].includes(String(item.ownerFocusRobloxAssetPipelineState||'').toUpperCase()))continue;
             count++;
           }

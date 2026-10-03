@@ -6,73 +6,60 @@ import assert from 'node:assert/strict';
 const workflow = fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml', 'utf8');
 const evaluator = fs.readFileSync('tools/company-development-roblox-final-review.mjs', 'utf8');
 
-test('final-review revalidation reuses prior Studio QA and dispatches only canonical downstream gates', () => {
-  assert.match(workflow, /name: Company DEVELOPMENT_CONFIRMED Roblox Final Review Revalidation/);
-  assert.match(workflow, /workflows: \["Company DEVELOPMENT_CONFIRMED Roblox Multiplayer QA"\]/);
-  assert.match(workflow, /repository_dispatch:[\s\S]*types: \[roblox_multiplayer_qa_persisted\]/);
+test('F9 workflow uses canonical same-identity dedupe and exact-candidate review', () => {
+  assert.match(workflow, /name: Company DEVELOPMENT_CONFIRMED Roblox F9 Final Review/);
+  assert.match(workflow, /run-name: Roblox F9 · \$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
+  assert.match(workflow, /name: collapse duplicate F9 reviews/);
+  assert.match(workflow, /name: Select newest same-identity F9 run/);
+  assert.match(workflow, /name: deterministic F9 review and exact-candidate internal release promotion/);
   assert.match(workflow, /ref: company-runtime/);
-  assert.match(workflow, /node \.\.\/main\/tools\/company-development-roblox-final-review\.mjs/);
-  assert.match(workflow, /gh workflow run company-development-roblox-multiplayer-qa\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
-  assert.match(workflow, /gh workflow run company-development-roblox-release-promotion\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
-  assert.match(workflow, /steps\.evaluate\.outputs\.release_pending_count != '0'/);
-  assert.match(workflow, /company-learning\/platform-release-roadmap\.json/);
-  assert.match(workflow, /automaticPublishPaused/);
-  assert.match(workflow, /automaticReleaseDispatchAllowed/);
-  assert.match(workflow, /ROBLOX_AUTOMATIC_PUBLISH_PAUSED=YES/);
-  assert.match(workflow, /ROBLOX_AUTOMATIC_RELEASE_DISPATCH_ALLOWED=NO/);
-  assert.match(workflow, /ROBLOX_RELEASE_PROMOTION_DISPATCHED=NO/);
-  assert.match(workflow, /'company-learning\/platform-release-roadmap\.json'/);
-  assert.match(workflow, /ROBLOX_RUNTIME_RERUN=NO/);
-  assert.match(workflow, /ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO/);
-  assert.match(workflow, /ROBLOX_REGRESSION_RERUN=NO/);
-  assert.match(workflow, /ROBLOX_RELEASE_STATE_FORCING=NO/);
+  assert.match(workflow, /evaluateRobloxF9ProductReadiness/);
+  assert.match(workflow, /ROBLOX_F9_CONTRACT_QA=REUSED_CURRENT_MAIN_CI/);
   assert.doesNotMatch(workflow, /RobloxStudioBeta\.exe/);
   assert.doesNotMatch(workflow, /company-development-roblox-runtime-smoke\.luau/);
   assert.doesNotMatch(workflow, /company-development-roblox-mobile-independent-qa\.luau/);
 });
 
-test('legacy design normalization is grounded, persisted, and re-enters final review without weakening QA', () => {
+test('legacy design normalization remains grounded and fail-closed in the canonical evaluator', () => {
   assert.match(evaluator, /repairPersistedDesignForPromotion/);
   assert.match(evaluator, /FINAL_REVIEW_LEGACY_NORMALIZATION/);
   assert.match(evaluator, /ROBLOX_FINAL_REVIEW_LEGACY_DESIGN_REPAIR=/);
-  assert.match(workflow, /tools\/company-design-prepromotion-repair\.mjs/);
-  assert.match(workflow, /qa\/design-prepromotion-repair\.test\.mjs/);
-  assert.match(workflow, /git add development-queue\.json design/);
-  assert.match(workflow, /ROBLOX_LEGACY_DESIGN_REPAIR_GROUNDED_ONLY=YES/);
   assert.match(evaluator, /ROBLOX_MULTIPLAYER_DESIGN_DECISION_MISSING/);
   assert.match(evaluator, /ROBLOX_MULTIPLAYER_QA_REQUIRED/);
+  assert.match(evaluator, /ROBLOX_DATASTORE_REJOIN_REQUIRED/);
+  assert.doesNotMatch(workflow, /git add development-queue\.json design/);
 });
 
-test('multiplayer and release implementation changes automatically re-enter final-review revalidation', () => {
-  assert.match(workflow, /'\.github\/workflows\/company-development-roblox-multiplayer-qa\.yml'/);
+test('F9 implementation changes re-enter review through current workflow inputs and regression paths', () => {
+  assert.match(workflow, /'\.github\/workflows\/company-development-roblox-final-review-revalidation\.yml'/);
   assert.match(workflow, /'\.github\/workflows\/company-development-roblox-release-promotion\.yml'/);
-  assert.match(workflow, /'tools\/company-development-roblox-multiplayer-qa\.luau'/);
-  assert.match(workflow, /'tools\/vibe3-roblox-platform\.mjs'/);
-  assert.match(workflow, /'qa\/company-development-roblox-multiplayer-qa\.test\.mjs'/);
+  assert.match(workflow, /'qa\/company-development-roblox-final-review-revalidation\.test\.mjs'/);
+  assert.match(workflow, /'qa\/company-development-roblox-runtime-foundation\.test\.mjs'/);
   assert.match(workflow, /'qa\/company-development-roblox-release-promotion\.test\.mjs'/);
 });
 
-test('canonical evaluator preserves fail-closed multiplayer and release gates', () => {
+test('canonical evaluator preserves fail-closed multiplayer and internal-release gates', () => {
   assert.match(evaluator, /new Set\(\['SINGLE', 'COOP', 'COMPETITIVE', 'HYBRID'\]\)/);
   assert.match(evaluator, /item\.robloxMultiplayerQaPassed === true/);
   assert.match(evaluator, /ROBLOX_MULTIPLAYER_DESIGN_DECISION_MISSING/);
   assert.match(evaluator, /ROBLOX_MULTIPLAYER_QA_REQUIRED/);
   assert.match(evaluator, /ROBLOX_DATASTORE_REJOIN_REQUIRED/);
-  assert.match(evaluator, /ROBLOX_RELEASE_PROMOTION_PENDING/);
+  assert.match(evaluator, /ROBLOX_INTERNAL_RELEASE_PENDING/);
   assert.match(evaluator, /releasePendingIds\.push\(item\.gameId\)/);
   assert.match(evaluator, /release_pending_ids_json/);
   assert.match(evaluator, /item\.robloxReleaseClaim = false/);
-  assert.match(evaluator, /hasCurrentPublishedRelease\(item\)/);
+  assert.match(evaluator, /hasCurrentInternalRelease\(item\)/);
   assert.match(evaluator, /evidence\?\.sourceRevision[\s\S]*item\.robloxSourceCommit/);
   assert.match(evaluator, /evidence\?\.artifactIdentity[\s\S]*item\.robloxBuildArtifactIdentity/);
   assert.match(evaluator, /item\.robloxExactRevisionPassed === true/);
 });
 
-
-test('exact Roblox F9 review is isolated per game after multiplayer acceptance',()=>{
-  assert.match(workflow,/group: company-development-roblox-f9-final-review-\$\{\{ inputs\.game_id/);
-  assert.match(workflow,/scheduled-scan/);
-  assert.match(workflow,/manual-scan/);
+test('exact Roblox F9 review is deduped per game identity and current control SHA',()=>{
+  assert.match(workflow,/const title='Roblox F9 · '\+\(game\|\|'scan'\)/);
+  assert.match(workflow,/CURRENT_CONTROL_SHA/);
+  assert.match(workflow,/String\(r\.head_sha\|\|''\)===controlSha/);
+  assert.match(workflow,/ROBLOX_F9_EXACT_DEDUPED=/);
+  assert.match(workflow,/ROBLOX_F9_SCAN_DEDUPED_NEWER=/);
   assert.doesNotMatch(workflow,/group: company-development-roblox-f9-final-review\s*\n/);
 });
 
@@ -151,4 +138,18 @@ test('F9 fan-in repeats development without requiring publication',()=>{
   assert.match(workflow,/execution_lane:"game-primary"/);
   assert.doesNotMatch(workflow,/if \[ "\$settled_count" -gt 0 \]; then/);
   assert.match(workflow,/vibe2-fanin-refill/);
+});
+
+
+test('F9 requires gameplay product readiness and routes failures back to Vibe build-up',()=>{
+  assert.match(workflow,/evaluateRobloxF9ProductReadiness/);
+  assert.match(workflow,/ROBLOX_F9_GAMEPLAY_PRODUCT_READINESS=/);
+  assert.match(workflow,/productReadiness\.pass===true[\s\S]*item\.robloxFoundationF0Passed===true/);
+  assert.match(workflow,/const internalFlowNonBlocking=!productBlocked&&\(/);
+  assert.match(workflow,/item\.robloxQualityBuildUpRequired=true/);
+  assert.match(workflow,/item\.robloxQualityBuildUpSourceRevision=sourceRevision/);
+  assert.match(workflow,/roblox-f9-gameplay-product-readiness-failure/);
+  assert.match(workflow,/GAMEPLAY_PRODUCT_READINESS/);
+  assert.match(workflow,/item\.robloxQualityBuildUpRequired=false/);
+  assert.match(workflow,/gameplayProductReadiness:productReadiness/);
 });
