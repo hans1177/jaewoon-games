@@ -1773,8 +1773,8 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T01:24:10.538Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -1804,27 +1804,27 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-03T00:01:37.218Z",
+      "updatedAt": "2026-10-03T00:11:36.462Z",
       "robloxSourceCommit": "9e87cb2e7fc33ee4c691dc78614ab1bd7ee9463b",
       "robloxSourceBootstrapPassedAt": "2026-10-03T00:01:37.218Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "6bbe9651a0649c4033936e5e35e65c0824daa69c",
+      "robloxBuildSourceRevision": "9e87cb2e7fc33ee4c691dc78614ab1bd7ee9463b",
       "robloxBuildArtifactIdentity": "sha256:cae01bd939c1ca166d4d0d9171f7b484d5563eb4adaac39819d3161e8b09db92",
-      "robloxBuildPassedAt": "2026-10-02T23:44:22.849Z",
+      "robloxBuildPassedAt": "2026-10-03T00:11:36.462Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-02T23:44:22.849Z",
+      "robloxBuildPreflightPassedAt": "2026-10-03T00:11:36.462Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "horror-escape-room",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-02T23:38:13.813Z",
-        "sourceRevision": "6bbe9651a0649c4033936e5e35e65c0824daa69c",
+        "checkedAt": "2026-10-03T00:10:37.301Z",
+        "sourceRevision": "9e87cb2e7fc33ee4c691dc78614ab1bd7ee9463b",
         "artifactIdentity": "sha256:cae01bd939c1ca166d4d0d9171f7b484d5563eb4adaac39819d3161e8b09db92",
         "secondaryOwnerFocus": false,
         "facts": {
@@ -1841,10 +1841,10 @@
           "distinctLeadCount": 1,
           "secondaryOwnerFocus": false,
           "robloxLaneEligible": true,
-          "directRoblox": false,
-          "concurrentRoblox": true,
+          "directRoblox": true,
+          "concurrentRoblox": false,
           "build": {
-            "sourceRevision": "6bbe9651a0649c4033936e5e35e65c0824daa69c",
+            "sourceRevision": "9e87cb2e7fc33ee4c691dc78614ab1bd7ee9463b",
             "artifactIdentity": "sha256:cae01bd939c1ca166d4d0d9171f7b484d5563eb4adaac39819d3161e8b09db92",
             "webValidationPassed": false,
             "musicValidationPassed": false,
@@ -1861,7 +1861,7 @@
             "model": "llama3.2:1b",
             "decision": "PASS",
             "blockers": [],
-            "note": "No concrete build-stage blockers found."
+            "note": "No concrete build-stage blocker found."
           }
         ],
         "blockers": [],
@@ -1907,7 +1907,7 @@
       "robloxFailureStage": "F0_SOURCE_INTEGRITY",
       "robloxFailureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-f0-source-preflight-failed"
       ],
       "robloxExactRevisionPassed": false,
       "robloxMultiplayerQaEvidence": {
@@ -9207,7 +9207,7 @@
       "robloxPublicReleaseFinalEvidence": null
     }
   ],
-  "updatedAt": "2026-10-03T00:10:44.238Z",
+  "updatedAt": "2026-10-03T00:11:36.462Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -9274,5 +9274,6 @@
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
   "executionContractVersion": 1,
-  "robloxSourceParallelism": null
+  "robloxSourceParallelism": null,
+  "robloxTechnicalParallelism": null
 }
