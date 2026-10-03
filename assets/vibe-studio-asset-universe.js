@@ -1377,11 +1377,29 @@ export function summarizeVerifiedAssetUsage({events=[]}={}){
   const rows=new Map();
   for(const event of events||[]){
     const id=text(event.assetId);if(!id)continue;
-    const row=rows.get(id)||{assetId:id,usageCount:0,gameIds:new Set(),runtimePassCount:0,runtimeFailureCount:0,failureReasons:new Set()};
+    const row=rows.get(id)||{
+      assetId:id,usageCount:0,gameIds:new Set(),runtimePassCount:0,runtimeFailureCount:0,failureReasons:new Set(),
+      verifiedQualityScores:[],verifiedWeakAxes:new Set(),lastVerifiedQuality120:null
+    };
     row.usageCount+=Math.max(1,Number(event.count)||1);
     if(event.gameId)row.gameIds.add(text(event.gameId));
-    if(event.verifiedRuntimePass===true)row.runtimePassCount++;
-    if(event.verifiedRuntimeFailure===true){row.runtimeFailureCount++;if(event.failureReason)row.failureReasons.add(upper(event.failureReason));}
+    if(event.verifiedRuntimePass===true){
+      row.runtimePassCount++;
+      const qualityScore=Number(event.quality120?.score??event.qualityScore120);
+      if(Number.isFinite(qualityScore)){
+        const bounded=Math.max(0,Math.min(STUDIO_ASSET_QUALITY_MAX,qualityScore));
+        row.verifiedQualityScores.push(bounded);
+        row.lastVerifiedQuality120=bounded;
+      }
+      const weakAxis=upper(event.quality120?.weakestAxis?.axis||event.weakestQualityAxis);
+      if(weakAxis)row.verifiedWeakAxes.add(weakAxis);
+    }
+    if(event.verifiedRuntimeFailure===true){
+      row.runtimeFailureCount++;
+      if(event.failureReason)row.failureReasons.add(upper(event.failureReason));
+      const weakAxis=upper(event.quality120?.weakestAxis?.axis||event.weakestQualityAxis);
+      if(weakAxis)row.verifiedWeakAxes.add(weakAxis);
+    }
     rows.set(id,row);
   }
   return Object.freeze({
@@ -1389,10 +1407,16 @@ export function summarizeVerifiedAssetUsage({events=[]}={}){
       assetId:row.assetId,usageCount:row.usageCount,gameConsumerCount:row.gameIds.size,
       runtimePassCount:row.runtimePassCount,runtimeFailureCount:row.runtimeFailureCount,
       failureReasons:freezeList([...row.failureReasons]),
+      verifiedQualitySampleCount:row.verifiedQualityScores.length,
+      bestVerifiedQuality120:row.verifiedQualityScores.length?Math.max(...row.verifiedQualityScores):null,
+      lastVerifiedQuality120:row.lastVerifiedQuality120,
+      verifiedWeakAxes:freezeList([...row.verifiedWeakAxes]),
       positiveLearningEligible:row.runtimePassCount>0,
+      qualityLearningEligible:row.runtimePassCount>0&&row.verifiedQualityScores.length>0,
       negativeLearningEligible:row.runtimeFailureCount>0
     }))),
     rawTelemetryDirectTrainingAllowed:false,
+    unverifiedQualityScoresMayTeachPositiveLearning:false,
     existingCanonicalLearningChainOnly:true
   });
 }
