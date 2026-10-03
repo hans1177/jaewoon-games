@@ -254,15 +254,11 @@ function centralPathIsReferenced(pathKey='',referenceMap={}){
   );
 }
 function centralPathPinned(pathKey='',retention={}){
-  const pins=[
-    ...(Array.isArray(retention.pinnedCorePaths)?retention.pinnedCorePaths:[]),
+  const configured=Array.isArray(retention.pinnedCorePaths)?retention.pinnedCorePaths.filter(Boolean):[];
+  const pins=configured.length?configured:[
     'centralDocumentRetention',
     'ownerCanonicalRules',
-    'minimumNecessaryProcedurePolicy',
-    'developmentLifecycleMachine',
-    'continuousGameplaySystemEvolutionContract',
-    'roblox',
-    'security'
+    'minimumNecessaryProcedurePolicy'
   ];
   return pins.some(prefix=>pathKey===prefix||pathKey.startsWith(prefix+'.'));
 }
