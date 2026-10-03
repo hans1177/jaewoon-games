@@ -833,6 +833,18 @@
       ],
       "learningIdleSingleWorkerIsNotGameDevelopmentSerialization": true,
       "sharedStateWriteConflictResolution": "FETCH_RESET_REAPPLY_PUSH_RETRY_WITH_CAPPED_BACKOFF"
+    },
+    "productionPressurePolicy": {
+      "version": 1,
+      "repositoryWideActionsPressureGate": false,
+      "gamePrimaryBlockedByRunnerPressure": false,
+      "assetDevelopmentBlockedByRunnerPressure": false,
+      "recoveryFastBlockedByRunnerPressure": false,
+      "next24hCycleBlockedByRunnerPressure": false,
+      "learningIdleMayYieldUnderRunnerPressure": true,
+      "externalRunnerQueueOwnsCapacity": true,
+      "gamePrimaryBoundary": 256,
+      "assetDevelopmentBoundary": 64
     }
   },
   "adaptiveBackpressure": {
