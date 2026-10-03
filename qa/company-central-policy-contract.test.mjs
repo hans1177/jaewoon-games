@@ -28,6 +28,8 @@ const vibe24hRunner=readText('.github/workflows/vibe2-24h-runner.yml');
 const vibeContinuousCore=readText('.github/workflows/vibe2-continuous-core.yml');
 const vibeAutoPlanner=readText('tools/vibe2-auto-planner.mjs');
 const vibeSourceWorker=readText('tools/vibe2-source-worker.mjs');
+const securityWorkflow=readText('.github/workflows/company-security-immune.yml');
+const recordsWorkflow=readText('.github/workflows/company-records-governance.yml');
 
 test('platform-release-roadmap is the single machine execution policy source',()=>{
   assert.equal(directive.policyDocument,'company-learning/platform-release-roadmap.json');
@@ -1888,6 +1890,20 @@ test('central document automatically retains only current references and archive
   assert.equal(policy.referencedChangeRecordKeysAutoProtected,true);
   assert.ok(fs.statSync(file).size<=policy.maxUtf8Bytes);
   assert.ok(fs.existsSync(path.join(repoRoot,policy.latestArchiveRecord)));
+});
+
+test('automatic current-use pruning is isolated and deterministically security-verified',()=>{
+  assert.match(recordsWorkflow,/central-current-use-prune:/);
+  assert.match(recordsWorkflow,/node tools\/company-records-governance\.mjs --central-auto-prune/);
+  assert.match(recordsWorkflow,/records\/central-current-use-\$\{GITHUB_RUN_ID\}/);
+  assert.match(recordsWorkflow,/gh pr merge/);
+  assert.match(securityWorkflow,/CENTRAL_AUTO_PRUNE_REFERENCED_PATHS_PROTECTED=PASS/);
+  assert.match(securityWorkflow,/CENTRAL_AUTO_PRUNE_ARCHIVE_FIDELITY=PASS/);
+  assert.match(securityWorkflow,/CENTRAL_AUTO_PRUNE_ONLY_ARCHIVAL_MUTATION=PASS/);
+  assert.match(securityWorkflow,/AUTO_PRUNE_NON_ARCHIVAL_POLICY_MUTATION/);
+  assert.match(securityWorkflow,/steps\.auto_prune\.outputs\.pass != 'YES'/);
+  assert.match(securityWorkflow,/PRIMARY_AI_DIRECT_REVIEW=PASS/);
+  assert.match(securityWorkflow,/ALLOW_VERIFIED_CURRENT_USE_AUTO_PRUNE/);
 });
 
 test('obsolete Roblox Studio and recovery detail is not duplicated in central policy',()=>{
