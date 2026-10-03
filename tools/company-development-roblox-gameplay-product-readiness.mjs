@@ -319,6 +319,8 @@ export function evaluateRobloxF9ProductReadiness({f0Evidence={},runtimeEvidence=
   const simulation=runtimeEvidence?.simulationRunning===true;
   const actualStudio=studioPlayEvidence?.actualPlay===true&&studioPlayEvidence?.runtimeVerified===true;
   const actualRuntime=postRuntimeQaEvidence?.actualRuntimeEvidence===true||actualStudio;
+  const mobileRuntime=runtimeEvidence?.f5InputCameraUiPassed===true||postRuntimeQaEvidence?.mobileControlUiPassed===true;
+  const coreLoopRuntime=runtimeEvidence?.f8GameplaySystemsPassed===true||postRuntimeQaEvidence?.coreLoopRuntimePassed===true;
   const baseParts=!req.worldRequired||Number(world.basePartCount||0)>=Number(req.minimumBasePartCount||5);
   const spawn=!req.spawnRequired||Number(world.spawnCount||0)>=1;
   const landmark=!req.landmarkRequired||Number(world.landmarkCount||0)>=1;
@@ -333,6 +335,8 @@ export function evaluateRobloxF9ProductReadiness({f0Evidence={},runtimeEvidence=
   if(req.serverBootRequired!==false&&!serverBoot)blockers.push('F9_SERVER_BOOT_MISSING');
   if(req.simulationRequired!==false&&!simulation)blockers.push('F9_SIMULATION_MISSING');
   if(req.actualPlayRequired!==false&&!actualRuntime)blockers.push('F9_ACTUAL_PLAY_EVIDENCE_MISSING');
+  if(!mobileRuntime)blockers.push('F9_MOBILE_INPUT_UI_RUNTIME_MISSING');
+  if(!coreLoopRuntime)blockers.push('F9_CORE_LOOP_RUNTIME_MISSING');
   if(!baseParts)blockers.push('F9_WORLD_BASEPART_MINIMUM_MISSING');
   if(!spawn)blockers.push('F9_WORLD_SPAWN_MISSING');
   if(!landmark)blockers.push('F9_WORLD_LANDMARK_MISSING');
@@ -345,6 +349,9 @@ export function evaluateRobloxF9ProductReadiness({f0Evidence={},runtimeEvidence=
     serverBoot,
     simulation,
     actualRuntime,
+    mobileRuntime,
+    coreLoopRuntime,
+    verticalSlicePassed:blockers.length===0,
     world:Object.freeze({
       observed:world.observed===true,
       basePartCount:Number(world.basePartCount||0),
