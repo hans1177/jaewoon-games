@@ -135,6 +135,18 @@ test('slot-released fan-in wait releases ordinary source conflicts while explici
   assert.equal(available.selected.some(row=>row.id===asset.id),true);
   assert.equal(available.deferredConflicts.some(row=>row.task.id===asset.id),false);
 
+  const legacyWaiting={
+    ...running,
+    blocker:'slot-released-awaiting-fan-in',
+    evidence:['worker-artifact-slot-release:v1'],
+    retainedResponsibleFileLocks:[file]
+  };
+  const legacy=selectVibeQueueBatch(createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[legacyWaiting,asset]}),{
+    lane:'asset-development',maxConcurrentTasks:4
+  });
+  assert.equal(legacy.selected.some(row=>row.id===asset.id),true);
+  assert.equal(legacy.deferredConflicts.some(row=>row.task.id===asset.id),false);
+
   const retainedQueue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[
     {...running,retainedResponsibleFileLocks:[file]},
     asset
@@ -142,7 +154,9 @@ test('slot-released fan-in wait releases ordinary source conflicts while explici
   const retainedRelease=releaseVibeTaskExecutionSlot(retainedQueue,{
     taskId:running.id,evidence:['worker-artifact-slot-release:v1']
   });
-  assert.deepEqual([...retainedRelease.queue.tasks.find(row=>row.id===running.id).retainedResponsibleFileLocks],[file]);
+  const retainedTask=retainedRelease.queue.tasks.find(row=>row.id===running.id);
+  assert.deepEqual([...retainedTask.retainedResponsibleFileLocks],[file]);
+  assert.ok(retainedTask.evidence.includes('worker-slot-explicit-retained-locks:v1'));
   const blocked=selectVibeQueueBatch(retainedRelease.queue,{lane:'asset-development',maxConcurrentTasks:4});
   assert.equal(blocked.selected.some(row=>row.id===asset.id),false);
   const conflict=blocked.deferredConflicts.find(row=>row.task.id===asset.id);
