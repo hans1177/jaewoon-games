@@ -553,6 +553,43 @@ test('native planner preserves an existing Blender recipe as the DCC execution p
   assert.equal(plan.nativeAuthoringExecution.dcc.availableExistingRecipeCount,1);
 });
 
+test('generated native asset authoring belongs only to the actual asset-development execution lane',()=>{
+  const task={
+    gameId:'lane-owned-asset-demo',
+    goal:'배경 소품 자산 제작',
+    assetProductionLane:true,
+    assetAuthoring:{recipes:[{
+      id:'lane-owned-prop-v1',assetId:'lane-owned-prop',family:'PROP',license:'project-original',
+      executor:'BLENDER_PYTHON',types:['prop'],targetPlatforms:['UNITY'],
+      script:'assets/native-authoring/build-game-visual.py',
+      outputs:[
+        'assets/generated/unity/lane-owned-asset-demo/prop/asset.glb',
+        'assets/generated/unity/lane-owned-asset-demo/prop/preview.png',
+        'assets/generated/unity/lane-owned-asset-demo/prop/evidence.json'
+      ],
+      evidenceJson:'assets/generated/unity/lane-owned-asset-demo/prop/evidence.json',
+      preview:'assets/generated/unity/lane-owned-asset-demo/prop/preview.png',
+      editableSource:'assets/native-authoring/build-game-visual.py'
+    }]}
+  };
+  const gamePrimary=buildVibeAssetProductionPlan({
+    task,target:'unity',executionLane:'game-primary',manifest:{assets:[]},presetCatalog:{presets:[]}
+  });
+  assert.equal(gamePrimary.nativeAuthoringExecution.enabled,false);
+  assert.equal(gamePrimary.nativeAuthoringExecution.dcc.executionAllowed,false);
+  assert.equal(gamePrimary.nativeAuthoringExecution.dcc.executionRequired,false);
+  assert.equal(gamePrimary.nativeAuthoringExecution.dcc.executionRecipes.length,0);
+  assert.equal(gamePrimary.nativeAuthoringExecution.nativeText.executionAllowed,false);
+
+  const assetLane=buildVibeAssetProductionPlan({
+    task,target:'unity',executionLane:'asset-development',manifest:{assets:[]},presetCatalog:{presets:[]}
+  });
+  assert.equal(assetLane.nativeAuthoringExecution.enabled,true);
+  assert.equal(assetLane.nativeAuthoringExecution.dcc.executionAllowed,true);
+  assert.equal(assetLane.nativeAuthoringExecution.dcc.executionRequired,true);
+  assert.equal(assetLane.nativeAuthoringExecution.dcc.executionRecipes.some(row=>row.id==='lane-owned-prop-v1'),true);
+});
+
 test('Web native authoring stays inside Web source while Unity and Roblox keep platform-native recreation',()=>{
   const task={gameId:'web-native-demo',goal:'캐릭터 UI 이펙트 오디오를 웹 네이티브로 강화'};
   const web=buildVibeAssetProductionPlan({task,target:'web',manifest:{assets:[]},presetCatalog:{presets:[]}});
