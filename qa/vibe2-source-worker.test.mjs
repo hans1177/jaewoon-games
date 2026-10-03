@@ -4444,6 +4444,23 @@ test('Roblox game workers smoke-check Luau binaries but leave the full compiler 
   assert.doesNotMatch(candidate,/--test-name-pattern='Luau compiler'/);
 });
 
+test('candidate source-generation workflow block stays valid Bash',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  const candidateStart=workflow.indexOf('- name: Generate isolated candidate from pinned main contract');
+  const candidateEnd=workflow.indexOf('\n      - name:',candidateStart+1);
+  assert.ok(candidateStart>=0&&candidateEnd>candidateStart);
+  const candidate=workflow.slice(candidateStart,candidateEnd);
+  const runMarker='        run: |\n';
+  const runAt=candidate.indexOf(runMarker);
+  assert.ok(runAt>=0);
+  const shell=candidate.slice(runAt+runMarker.length)
+    .split('\n')
+    .map(line=>line.startsWith('          ')?line.slice(10):line)
+    .join('\n')
+    .replace(/\$\{\{[^\n]*?\}\}/g,'CI_EXPR');
+  assert.doesNotThrow(()=>execFileSync('bash',['-n'],{input:shell,encoding:'utf8',stdio:['pipe','pipe','pipe']}));
+});
+
 test('worker model runtime is prepared once and downstream source or practice steps do not restart or repull it',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   const workerStart=workflow.indexOf('\n  worker:\n');
