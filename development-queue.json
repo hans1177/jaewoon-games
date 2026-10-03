@@ -814,8 +814,8 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T01:24:10.538Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -845,9 +845,9 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-03T07:48:04.217Z",
-      "robloxSourceCommit": "16d717739646de239268612e4801107d56ce2dd7",
-      "robloxSourceBootstrapPassedAt": "2026-10-03T07:36:47.564Z",
+      "updatedAt": "2026-10-03T07:49:22.839Z",
+      "robloxSourceCommit": "9816c7becd8ec4774d69fc0784e891f1764107cb",
+      "robloxSourceBootstrapPassedAt": "2026-10-03T07:49:22.839Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -948,7 +948,7 @@
       "robloxFailureStage": "F0_SOURCE_INTEGRITY",
       "robloxFailureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
       "routingBlockers": [
-        "roblox-f0-source-preflight-failed"
+        "roblox-runtime-evidence-pending"
       ],
       "robloxExactRevisionPassed": false,
       "robloxMultiplayerQaEvidence": {
@@ -9250,7 +9250,7 @@
       "robloxPublicReleaseFinalEvidence": null
     }
   ],
-  "updatedAt": "2026-10-03T07:48:31.724Z",
+  "updatedAt": "2026-10-03T07:49:22.839Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -9316,5 +9316,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxSourceParallelism": null
 }
