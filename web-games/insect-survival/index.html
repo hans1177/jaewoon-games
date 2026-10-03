@@ -109,6 +109,8 @@ const ctx=cv.getContext('2d');
 const $=id=>document.getElementById(id);
 const WORLD_W=2200,WORLD_H=1600;
 const CAMP={x:420,y:800,r:95};
+const ANT_HILL={x:1120,y:920,r:150};
+const GRAVEL_ZONE={x:1380,y:1260,rx:250,ry:150};
 const SAVE_KEY='jaewoon_insect_survival_v3';
 const DAY_SEC=95;
 const RESPAWN_SEC=60;
@@ -150,11 +152,11 @@ const RES_NAMES={
 
 // ===== 곤충 데이터 =====
 const SPECIES={
-  spider:{name:'거미',hp:65,dmg:20,speed:68,size:18,color:'#5b3534',aggro:250,drop:'spiderPart',count:3,zone:'top'},
-  beetle:{name:'딱정벌레',hp:105,dmg:25,speed:44,size:22,color:'#26362e',aggro:205,drop:'beetleShell',count:6,zone:'near'},
-  ant:{name:'개미',hp:55,dmg:12,speed:74,size:15,color:'#6c352c',aggro:220,drop:'antHead',count:8,zone:'near'},
-  soldierAnt:{name:'병정개미',hp:110,dmg:24,speed:68,size:18,color:'#8a382b',aggro:270,drop:'antHead',count:5,zone:'east'},
-  mite:{name:'진드기',hp:45,dmg:15,speed:82,size:13,color:'#8f6554',aggro:185,drop:'miteTooth',count:7,zone:'near'}
+  spider:{name:'거미',hp:65,dmg:20,speed:68,size:18,color:'#5b3534',aggro:250,drop:'spiderPart',count:3,zone:'spiderFar',temper:'aggressive',roam:190},
+  beetle:{name:'딱정벌레',hp:105,dmg:25,speed:44,size:22,color:'#26362e',aggro:205,drop:'beetleShell',count:6,zone:'beetleFar',temper:'neutral',roam:180},
+  ant:{name:'개미',hp:55,dmg:12,speed:74,size:15,color:'#6c352c',aggro:220,drop:'antHead',count:8,zone:'antHill',temper:'neutral',roam:135},
+  soldierAnt:{name:'병정개미',hp:110,dmg:24,speed:68,size:18,color:'#8a382b',aggro:270,drop:'antHead',count:5,zone:'east',temper:'aggressive',roam:190},
+  mite:{name:'진드기',hp:45,dmg:15,speed:82,size:13,color:'#8f6554',aggro:185,drop:'miteTooth',count:7,zone:'gravel',temper:'aggressive',roam:140}
 };
 
 // ===== 상태 =====
@@ -190,11 +192,18 @@ function toast(msg,sec=2){
   noticeTimer=sec;
 }
 function safePoint(zone){
-  if(zone==='top')return{x:rnd(650,WORLD_W-180),y:rnd(130,360)};
-  if(zone==='east')return{x:rnd(1650,2100),y:rnd(300,1300)};
-  let p;
-  do{p={x:rnd(650,1500),y:rnd(280,1320)}}while(Math.hypot(p.x-CAMP.x,p.y-CAMP.y)>1250);
-  return p;
+  if(zone==='spiderFar')return{x:rnd(1050,1540),y:rnd(120,360)};
+  if(zone==='beetleFar')return{x:rnd(1280,1580),y:rnd(500,790)};
+  if(zone==='antHill'){
+    const a=rnd(0,Math.PI*2),r=rnd(70,ANT_HILL.r);
+    return{x:ANT_HILL.x+Math.cos(a)*r,y:ANT_HILL.y+Math.sin(a)*r*.7};
+  }
+  if(zone==='gravel'){
+    const a=rnd(0,Math.PI*2),r=Math.sqrt(Math.random());
+    return{x:GRAVEL_ZONE.x+Math.cos(a)*GRAVEL_ZONE.rx*r,y:GRAVEL_ZONE.y+Math.sin(a)*GRAVEL_ZONE.ry*r};
+  }
+  if(zone==='east')return{x:rnd(1710,2080),y:rnd(330,1320)};
+  return{x:rnd(700,1450),y:rnd(300,1300)};
 }
 function formatCost(cost){
   return Object.entries(cost).map(([k,v])=>(RES_NAMES[k]||k)+' '+v).join(' · ');
@@ -431,7 +440,7 @@ function update(dt){
     b.hit=Math.max(0,b.hit-dt);
     b.attackCd-=dt;
     const d=dist(player,b);
-    if(d<sp.aggro*(night?1.2:1))b.aggro=true;
+    if(sp.temper==='aggressive'&&d<sp.aggro*(night?1.2:1))b.aggro=true;
 
     if(b.aggro){
       const dx=(player.x-b.x)/Math.max(1,d),dy=(player.y-b.y)/Math.max(1,d);
@@ -450,8 +459,13 @@ function update(dt){
     }else{
       b.wander-=dt;
       if(b.wander<=0){b.wander=rnd(.7,2.4);b.ang+=rnd(-1.6,1.6)}
-      b.x=clamp(b.x+Math.cos(b.ang)*sp.speed*.22*dt,45,WORLD_W-45);
-      b.y=clamp(b.y+Math.sin(b.ang)*sp.speed*.22*dt,55,WORLD_H-55);
+      const nx=clamp(b.x+Math.cos(b.ang)*sp.speed*.22*dt,45,WORLD_W-45);
+      const ny=clamp(b.y+Math.sin(b.ang)*sp.speed*.22*dt,55,WORLD_H-55);
+      if(Math.hypot(nx-b.spawnX,ny-b.spawnY)<=sp.roam){
+        b.x=nx;b.y=ny;
+      }else{
+        b.ang=Math.atan2(b.spawnY-b.y,b.spawnX-b.x);
+      }
     }
   }
 
@@ -468,6 +482,32 @@ function update(dt){
 // ===== 렌더 =====
 function shadow(x,y,rx,ry,a=.24){
   ctx.fillStyle='rgba(0,0,0,'+a+')';ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fill();
+}
+function drawHabitatZones(){
+  ctx.save();
+  ctx.fillStyle='#756f65';
+  ctx.beginPath();ctx.ellipse(GRAVEL_ZONE.x,GRAVEL_ZONE.y,GRAVEL_ZONE.rx,GRAVEL_ZONE.ry,0,0,Math.PI*2);ctx.fill();
+  for(let i=0;i<42;i++){
+    const a=i*2.399,r=Math.sqrt((i+1)/42);
+    const x=GRAVEL_ZONE.x+Math.cos(a)*GRAVEL_ZONE.rx*.88*r;
+    const y=GRAVEL_ZONE.y+Math.sin(a)*GRAVEL_ZONE.ry*.78*r;
+    ctx.fillStyle=i%3===0?'#a7aaa5':'#858984';
+    ctx.beginPath();ctx.ellipse(x,y,5+(i%4)*2,3+(i%3),a,0,Math.PI*2);ctx.fill();
+  }
+  ctx.fillStyle='#6b4a2d';
+  ctx.beginPath();ctx.ellipse(ANT_HILL.x,ANT_HILL.y,145,82,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#49311f';
+  ctx.beginPath();ctx.ellipse(ANT_HILL.x,ANT_HILL.y+4,48,24,0,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#3e2a1c';ctx.lineWidth=6;
+  for(let i=0;i<4;i++){
+    const a=-1.05+i*.7;
+    ctx.beginPath();ctx.moveTo(ANT_HILL.x+Math.cos(a)*55,ANT_HILL.y+Math.sin(a)*27);
+    ctx.lineTo(ANT_HILL.x+Math.cos(a)*125,ANT_HILL.y+Math.sin(a)*70);ctx.stroke();
+  }
+  ctx.fillStyle='#efe6c9';ctx.font='700 12px system-ui';ctx.textAlign='center';
+  ctx.fillText('개미굴',ANT_HILL.x,ANT_HILL.y-100);
+  ctx.fillText('자갈 지역',GRAVEL_ZONE.x,GRAVEL_ZONE.y-GRAVEL_ZONE.ry-18);
+  ctx.restore();
 }
 function drawRootArea(){
   ctx.fillStyle='#49351f';
@@ -565,6 +605,7 @@ function draw(){
       ctx.beginPath();ctx.ellipse(x+55,y+55,70,34,0,0,Math.PI*2);ctx.fill();
     }
   }
+  drawHabitatZones();
   drawRootArea();
   drawCamp();
 
