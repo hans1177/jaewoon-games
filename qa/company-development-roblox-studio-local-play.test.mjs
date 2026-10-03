@@ -1369,7 +1369,7 @@ test('declared Studio actual-play contract requires core progression UI action e
   assert.equal(contract.required,true);
   assert.deepEqual(contract.entryButtonTexts,['저택 들어가기','출정']);
   assert.equal(contract.selectionButtonText,'인간');
-  assert.equal(contract.startButtonText,'1인 플레이 · 빈자리는 AI');
+  assert.equal(contract.startButtonText,'혼자 바로 시작');
   assert.equal(contract.primaryActionButtonText,'대시');
   assert.ok(contract.afterStartWaitMs>=4000);
   for(const id of ['role-selection-interaction','round-running','logical-population-eight','hud-visible','action-ui-visible','design-runtime-binding','interaction-surface-present','world-geometry-present','primary-action-input','primary-action-effect','visual-capture-sane'])assert.ok(contract.requiredScenarios.includes(id),id);
