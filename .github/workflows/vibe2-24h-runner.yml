@@ -209,10 +209,6 @@ jobs:
           echo "VIBE2_PREPLAN_RUNNER_PRESSURE=$pressure_count"
           echo "VIBE2_PREPLAN_RUNNER_JOB_PRESSURE=$job_pressure_count"
           echo "VIBE2_PREPLAN_RUNNER_JOB_PRESSURE_THRESHOLD=$job_pressure_threshold"
-          if [ "$pressure_count" -ge "$pressure_threshold" ] || [ "$job_pressure_count" -ge "$job_pressure_threshold" ]; then
-            echo "VIBE2_PREPLAN_DISPATCH=DEFER_RUNNER_PRESSURE:RUNS=$pressure_count:JOBS=$job_pressure_count"
-            exit 0
-          fi
 
           state="$(node <<'NODE'
           const fs=require('fs');
@@ -269,6 +265,11 @@ jobs:
             else
               echo 'VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=FAILED_FALLBACK_POST_PLAN' >&2
             fi
+            exit 0
+          fi
+
+          if [ "$pressure_count" -ge "$pressure_threshold" ] || [ "$job_pressure_count" -ge "$job_pressure_threshold" ]; then
+            echo "VIBE2_PREPLAN_DISPATCH=DEFER_RUNNER_PRESSURE:RUNS=$pressure_count:JOBS=$job_pressure_count"
             exit 0
           fi
 
