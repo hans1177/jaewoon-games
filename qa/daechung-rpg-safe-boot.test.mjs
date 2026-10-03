@@ -26,7 +26,7 @@ test('daechung RPG Web entry parses and reaches the restored playable runtime',(
 
 test('service worker bypasses stale cache for daechung RPG',()=>{
   new Function(sw);
-  assert.match(sw,/jaewoon-pwa-v25/);
+  assert.match(sw,/jaewoon-pwa-v26/);
   assert.match(sw,/url\.pathname\.startsWith\('\/web-games\/daechung-rpg\/'\)/);
   assert.match(sw,/fetch\(request,\{cache:'no-store'\}\)/);
 });
