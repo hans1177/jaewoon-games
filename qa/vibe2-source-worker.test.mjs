@@ -4459,6 +4459,7 @@ test('candidate source-generation workflow block stays valid Bash',()=>{
     .join('\n')
     .replace(/\$\{\{[^\n]*?\}\}/g,'CI_EXPR');
   assert.doesNotThrow(()=>execFileSync('bash',['-n'],{input:shell,encoding:'utf8',stdio:['pipe','pipe','pipe']}));
+  assert.ok(candidate.includes("printf '%s\\n' 'local value = 1' 'return value + 1' > \"$luau_dir/smoke.luau\""));
 });
 
 test('worker model runtime is prepared once and downstream source or practice steps do not restart or repull it',()=>{
