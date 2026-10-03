@@ -2022,7 +2022,7 @@
     "acceptanceGatesUnchanged": true
   },
   "developmentFloorParallelBottleneckRepairEvidence": {
-    "version": 1,
+    "version": 2,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "source": "company-learning/platform-release-roadmap.json#changeRecord.developmentFloorParallelBottleneckRepair20260927",
     "markers": [
@@ -2032,10 +2032,9 @@
       "NATIVE_ACTIVE_RUN_SCAN=FAIL"
     ],
     "concurrencyGroups": [
-      "unity-web-floor-call-<gameId>",
-      "unity-web-floor-exec-<gameId>"
+      "unity-web-floor-exec-run-<runId>"
     ],
-    "sameGameUnityWebHeavyOverlapForbidden": true,
+    "sameGameUnityWebHeavyOverlapForbidden": false,
     "independentGameParallelismRequired": true,
     "contractAuditMayBlockGameDispatch": false,
     "qualitySecurityReleaseEvidenceUnchanged": true,
@@ -2048,7 +2047,11 @@
     "canonicalQaEvidenceSources": [
       "Company GAME_SEED Production QA / contract",
       "Company Central Policy Contract QA / central-policy-contract"
-    ]
+    ],
+    "callerConcurrencyGroup": "NONE_GAME_ID_LOCK_REMOVED",
+    "sameGameUnityWebHeavyParallelRequired": true,
+    "gameIdConcurrencyGroupForbidden": true,
+    "exactDuplicateDispatchDedupePreserved": true
   },
   "mainPushWakeFreshnessEvidence": {
     "version": 2,
