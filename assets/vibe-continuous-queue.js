@@ -398,6 +398,8 @@ export function createVibeContinuousQueue(seed = {}) {
       sourceRootExclusive: false,
       gameWideLockForbidden: true,
       sameGameNonOverlappingPackagesParallel: true,
+      sameGameDifferentPlatformsParallel: true,
+      crossPlatformParallelRequiresDisjointResponsibleFiles: true,
       responsibleFileExclusive: true,
       unityReleaseFocusSlots: null,
       postReleaseFocusedSlots: null,
