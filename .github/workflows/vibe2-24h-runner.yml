@@ -194,7 +194,7 @@ jobs:
             console.log(String(row.id));
           }
           NODE
-          )"
+          )
 
           job_pressure_count=0
           for run_id in "${vibe_pressure_runs[@]:0:12}"; do
