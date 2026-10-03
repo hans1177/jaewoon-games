@@ -1,5 +1,5 @@
 {
-  "version": 305,
+  "version": 306,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -931,10 +931,14 @@
         "adaptiveRole": "TELEMETRY_AND_SPECULATIVE_SUPPRESSION_ONLY",
         "primaryReservationLimit": "CONFIGURED_EXTERNAL_PROVIDER_BOUNDARY",
         "pressureMayDownshiftPrimaryReservations": false,
-        "fanInRefillConcurrencyScope": "LANE_SCOPED_STATELESS_WAKE_COALESCING",
+        "fanInRefillConcurrencyScope": "RUN_SCOPED_RESULT_LIVENESS",
         "globalFanInRefillSingletonForbidden": true,
         "recoveryFastCausalReturn": "VIBE2_FANIN_REFILL_EVENT_WITH_GAME_PRIMARY_EXECUTION_LANE",
-        "recoveryFastDirectGameWorkerDispatch": false
+        "recoveryFastDirectGameWorkerDispatch": false,
+        "sameLaneFanInRefillSerialization": false,
+        "topLevelFanInRefillLaneSerialization": false,
+        "fanInRefillPendingReplacementForbidden": true,
+        "resultBearingCallbackCancellationForbidden": true
       },
       "bottleneckFirstRuntimeCheckpoint": {
         "version": 1,
@@ -1404,7 +1408,7 @@
         "qaSecurityReleaseAuthorityChanged": false
       },
       "reserveConcurrency": {
-        "version": 2,
+        "version": 3,
         "mode": "PARALLEL_RESERVE_OPTIMISTIC_SHARED_QUEUE_WRITE",
         "workflow": ".github/workflows/vibe2-continuous-core.yml",
         "executionLanes": [
@@ -1415,7 +1419,7 @@
         ],
         "crossLaneGlobalReserveLock": false,
         "sameLaneReserveSerialization": false,
-        "statelessRefillCoalescing": "LANE_SCOPED_ONE_RUNNING_ONE_PENDING",
+        "statelessRefillCoalescing": "RUN_SCOPED_NO_PENDING_REPLACEMENT",
         "sharedQueue": "vibe2-unreal-core:.vibe2/queue.json",
         "conflictResolution": "FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UNBOUNDED_WITH_CAPPED_BACKOFF_ON_ACTUAL_WRITE_CONFLICT",
         "workerDirectControlWrite": false,
@@ -1430,12 +1434,14 @@
         },
         "reserveJobsParallel": true,
         "serializationScope": "ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY",
-        "statelessRefillCoalescingScope": "VIBE2_FANIN_REFILL_ONLY",
+        "statelessRefillCoalescingScope": "NONE_RESULT_LIVENESS",
         "workerCohortsRemainParallel": true,
         "staleFanInRefillWakeAction": "DROP_BEFORE_CONTRACT_PREFLIGHT_WHEN_EVENT_HEAD_IS_NOT_CURRENT_MAIN",
         "staleFanInRefillMayWriteControlState": false,
         "staleFanInRefillMayStartWorker": false,
-        "staleFanInRefillRecovery": "LATEST_MAIN_PUSH_OR_FIVE_MINUTE_24H_SAFETY_NET"
+        "staleFanInRefillRecovery": "LATEST_MAIN_PUSH_OR_FIVE_MINUTE_24H_SAFETY_NET",
+        "fanInRefillPendingReplacementForbidden": true,
+        "resultLivenessCallbacksRunScoped": true
       },
       "learningIdlePressureGate": {
         "version": 1,
@@ -5654,13 +5660,15 @@
     "managerSupervisorTopologyUnchanged": true
   },
   "fanInRefillParallelReserve": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.fanInRefillParallelReserve20260927",
     "workflow": ".github/workflows/vibe2-continuous-core.yml",
     "workflowConcurrency": "RUN_SCOPED",
     "sameLaneSerialization": false,
     "reserveJobsParallel": true,
-    "sharedStateWriteConflictControl": "OPTIMISTIC_RETRY_ATOMIC_WRITE_ONLY"
+    "sharedStateWriteConflictControl": "OPTIMISTIC_RETRY_ATOMIC_WRITE_ONLY",
+    "pendingReplacementForbidden": true,
+    "resultLivenessCritical": true
   },
   "unityExactChildRunDedupe": {
     "version": 1,
