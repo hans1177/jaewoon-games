@@ -12,7 +12,7 @@ permissions:
   contents: read
 concurrency:
   group: horror-manor-native-review
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   review:
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
