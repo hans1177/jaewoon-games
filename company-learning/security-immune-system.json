@@ -1,5 +1,5 @@
 {
-  "version": 64,
+  "version": 65,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -1035,5 +1035,21 @@
     "relevantSecurityBoundaryChangesStillRequireExistingSecurityGate": true,
     "publicReleaseAuthorityUnchanged": true,
     "confirmedHighRiskFindingStillFailClosed": true
+  },
+  "fanInResultLivenessSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#changeRecord.fanInRefillResultLiveness20261003",
+    "protections": {
+      "successfulWorkerArtifactMayNotBeDroppedByConcurrencyReplacement": true,
+      "successfulTaskReviewWakeMayNotBeCancelledBySameLanePendingWake": true,
+      "workLockIntegrityRequired": true,
+      "qaGateBypassForbidden": true,
+      "releaseGateBypassForbidden": true,
+      "runtimeVerificationBypassForbidden": true,
+      "optimisticSharedStateConflictRetryRequired": true,
+      "newPipelineForbidden": true,
+      "wrapperShadowBypassForbidden": true
+    },
+    "failureAction": "RECOVER_EXISTING_IMMUTABLE_RESULT_THROUGH_CANONICAL_FANIN_AND_CONTINUE"
   }
 }
