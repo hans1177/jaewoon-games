@@ -111,6 +111,50 @@ test('native asset authoring evidence requires real engine-native source delta a
   assert.equal(strong.runtimeVerified,false);
 });
 
+test('generated native asset binding requires exact artifact path hash and engine-native source',()=>{
+  const workOrder=order({target:'unity',root:'unity-games/demo',responsibleFiles:['unity-games/demo/Assets/Scripts/GameCore.cs'],taskId:'generated-binding'});
+  workOrder.assetProduction={nativeAuthoringExecution:{
+    enabled:true,target:'unity',platformReauthoringRequired:true,webAssetDirectReuseIntoRobloxOrUnityForbidden:true,
+    dcc:{
+      requiredTypes:['boss'],
+      executionEvidence:{
+        executed:true,allRecipesPassed:true,candidateUsable:true,persistedForCandidate:true,
+        editableSource:'assets/unity/demo/build-boss.py',
+        nativeArtifact:'assets/unity/demo/native/boss/boss.glb',
+        artifactHash:'abc123',
+        preview:'assets/unity/demo/native/boss/preview.png',
+        recipes:[{
+          id:'boss-v1',nativeArtifact:'assets/unity/demo/native/boss/boss.glb',artifactHash:'abc123',
+          sourceHash:'source123',persistedForCandidate:true
+        }]
+      }
+    },
+    nativeText:{requiredTypes:['boss']}
+  }};
+  const missingHash=evaluateNativeAssetAuthoringCandidate({order:workOrder,candidate:{edits:[{replace:[
+    'var boss = new GameObject("Boss");',
+    'boss.AddComponent<MeshRenderer>();',
+    'boss.transform.position = Vector3.zero;',
+    'const string source = "assets/unity/demo/native/boss/boss.glb";'
+  ].join('\n')}]}});  
+  assert.equal(missingHash.dccAuthored,true);
+  assert.equal(missingHash.generatedAssetBindingRequired,true);
+  assert.equal(missingHash.generatedAssetBindingApplied,false);
+  assert.equal(missingHash.status,'GENERATED_ASSET_BINDING_REQUIRED');
+
+  const exact=evaluateNativeAssetAuthoringCandidate({order:workOrder,candidate:{edits:[{replace:[
+    'var boss = new GameObject("Boss");',
+    'boss.AddComponent<MeshRenderer>();',
+    'boss.transform.position = Vector3.zero;',
+    'const string source = "assets/unity/demo/native/boss/boss.glb";',
+    'const string sourceSha256 = "abc123";'
+  ].join('\n')}]}});  
+  assert.equal(exact.generatedAssetBindingApplied,true);
+  assert.deepEqual([...exact.boundGeneratedArtifacts],['assets/unity/demo/native/boss/boss.glb']);
+  assert.equal(exact.generatedAssetIdentityBindings[0].artifactHash,'abc123');
+  assert.equal(exact.runtimeVerified,false);
+});
+
 test('declared Blender verification executes only declared recipe and restores the repository',()=>{
   const root=tempRoot();
   try{
