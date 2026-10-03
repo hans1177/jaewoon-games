@@ -242,6 +242,7 @@ function load(){
     state=Object.assign(structuredClone(baseState),d.state);
     state.crafted=Object.assign({},d.state.crafted||{});
     if(d.player){player.x=Number(d.player.x)||player.x;player.y=Number(d.player.y)||player.y}
+    if(state.dead||state.hp<=0){state.dead=false;state.hp=maxHp();player.x=CAMP.x+120;player.y=CAMP.y}
     if(!WEAPONS[state.weapon])state.weapon='none';
     if(!ARMORS[state.armor])state.armor='none';
     state.hp=clamp(Number(state.hp)||maxHp(),1,maxHp());
