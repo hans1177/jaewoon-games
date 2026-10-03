@@ -781,6 +781,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     snapshot:centralPolicy,
     task:{...task,supervisionApproved},
     plan,
+    assetProduction,
     route,
     responsibleFiles,
     presentationQuality,
