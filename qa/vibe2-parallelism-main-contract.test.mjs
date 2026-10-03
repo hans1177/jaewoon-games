@@ -242,6 +242,21 @@ test('reserve batch persists control state only through the explicit Vibe2 contr
   assert.ok(snapshotBranch>=0&&planner>snapshotBranch);
 });
 
+test('24H runner gives queued asset work priority before pressure defers new game-primary waves',()=>{
+  const stepStart=runner.indexOf('      - name: Dispatch queued asset work first, otherwise GAME_PRIMARY before full planning');
+  const stepEnd=runner.indexOf('\n      - name: Plan from latest main and persist control queue',stepStart);
+  assert.ok(stepStart>=0&&stepEnd>stepStart);
+  const step=runner.slice(stepStart,stepEnd);
+  const assetGate=step.indexOf('if [ "$asset_queued" -gt 0 ] && [ "$asset_free" -gt 0 ]; then');
+  const assetDispatch=step.indexOf('VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED');
+  const pressureGate=step.indexOf('if [ "$pressure_count" -ge "$pressure_threshold" ] || [ "$job_pressure_count" -ge "$job_pressure_threshold" ]; then');
+  const gameGate=step.indexOf('if [ "$game_queued" -eq 0 ] || [ "$game_free" -eq 0 ]; then');
+  assert.ok(assetGate>=0);
+  assert.ok(assetDispatch>assetGate);
+  assert.ok(pressureGate>assetDispatch);
+  assert.ok(gameGate>pressureGate);
+});
+
 test('24H pre-plan priority dispatch block stays valid Bash',()=>{
   const stepStart=runner.indexOf('      - name: Dispatch queued asset work first, otherwise GAME_PRIMARY before full planning');
   const stepEnd=runner.indexOf('\n      - name: Plan from latest main and persist control queue',stepStart);
