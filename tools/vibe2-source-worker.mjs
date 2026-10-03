@@ -542,9 +542,18 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
     )
   );
   const generatedNativeArtifacts=unique((dccEvidence?.recipes||[]).map(row=>posix(row?.nativeArtifact)).filter(Boolean));
-  const boundGeneratedArtifacts=generatedNativeArtifacts.filter(assetPath=>text.includes(assetPath));
+  const generatedAssetIdentityBindings=(dccEvidence?.recipes||[]).filter(row=>{
+    const assetPath=posix(row?.nativeArtifact);
+    const artifactHash=clean(row?.artifactHash);
+    return assetPath&&artifactHash&&text.includes(assetPath)&&text.includes(artifactHash);
+  }).map(row=>Object.freeze({path:posix(row.nativeArtifact),artifactHash:clean(row.artifactHash)}));
+  const boundGeneratedArtifacts=generatedAssetIdentityBindings.map(row=>row.path);
   const generatedAssetBindingRequired=dccRequired&&dccAuthored&&['roblox','unity'].includes(target);
-  const generatedAssetBindingApplied=!generatedAssetBindingRequired||(nativeTextAuthored&&boundGeneratedArtifacts.length>0);
+  const generatedAssetBindingApplied=!generatedAssetBindingRequired||(
+    nativeTextAuthored
+    &&generatedAssetIdentityBindings.length===generatedNativeArtifacts.length
+    &&generatedNativeArtifacts.length>0
+  );
   const dccStatus=!dccRequired?'NOT_REQUIRED':dccAuthored?'DCC_AUTHORED_RUNTIME_REQUIRED':dccEvidence?.executed===true?'DCC_RECIPE_EXECUTED_PERSISTENCE_REQUIRED':clean(contract?.dcc?.executionStatus)||'DCC_AUTHORING_EXECUTOR_REQUIRED';
   const nativeTextStatus=!nativeTextRequired?'NOT_REQUIRED':nativeTextAuthored?(target==='web'?'WEB_NATIVE_SOURCE_AUTHORED_RUNTIME_REQUIRED':'NATIVE_SOURCE_AUTHORED_RUNTIME_REQUIRED'):'NATIVE_AUTHORING_DELTA_REQUIRED';
   const status=dccRequired&&!dccAuthored
@@ -560,6 +569,7 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
     dccExecutionEvidencePresent:Boolean(dccEvidence),
     dccExecutionEvidence:dccEvidence?Object.freeze({...dccEvidence}):null,
     generatedNativeArtifacts:Object.freeze(generatedNativeArtifacts),
+    generatedAssetIdentityBindings:Object.freeze(generatedAssetIdentityBindings),
     boundGeneratedArtifacts:Object.freeze(boundGeneratedArtifacts),
     generatedAssetBindingRequired,
     generatedAssetBindingApplied,
@@ -618,7 +628,7 @@ export function collectNativeAssetRuntimePromotionCandidates({order={},candidate
     const assetPath=posix(recipe?.nativeArtifact);
     const sourceHash=clean(recipe?.sourceHash);
     const artifactHash=clean(recipe?.artifactHash);
-    if(!id||!assetPath||!sourceHash||!artifactHash||!changedText.includes(assetPath))continue;
+    if(!id||!assetPath||!sourceHash||!artifactHash||!changedText.includes(assetPath)||!changedText.includes(artifactHash))continue;
     rows.set(id,Object.freeze({
       assetId:id,family:null,license:'project-original-generated',path:assetPath,robloxAssetId:null,sourceHash,artifactHash,
       bindingEvidence:Object.freeze(['GENERATED_NATIVE_ARTIFACT_PATH','ENGINE_NATIVE_SOURCE']),
