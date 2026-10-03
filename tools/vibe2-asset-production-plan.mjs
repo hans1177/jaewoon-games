@@ -466,20 +466,31 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
   };
 }
 
-function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest={}}={}){
+function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest={},explicitRequestedTypes=[]}={}){
   const targetName=clean(target).toLowerCase();
   const engineNativeTarget=['roblox','unity'].includes(targetName);
   const webNativeTarget=targetName==='web';
   const supportedAuthoringTarget=engineNativeTarget||webNativeTarget;
   const needsAuthoring=row=>row?.required!==false&&row?.applyFirst?.enabled!==true;
+  const explicitRecipeRows=Array.isArray(task?.assetAuthoring?.recipes)?task.assetAuthoring.recipes:Array.isArray(task?.authoringRecipes)?task.authoringRecipes:[];
+  const explicitRecipeTypes=unique(explicitRecipeRows.flatMap(recipe=>[
+    ...(Array.isArray(recipe?.types)?recipe.types:[]),
+    clean(recipe?.type)
+  ]).map(value=>clean(value).toLowerCase()).filter(Boolean));
+  const explicitRecipeHasUntyped=explicitRecipeRows.some(recipe=>!(Array.isArray(recipe?.types)&&recipe.types.length)&&!clean(recipe?.type));
+  const dccCapableTypes=unique(decisions
+    .filter(row=>needsAuthoring(row)&&(row.directAuthoring||[]).some(kind=>NATIVE_DCC_AUTHORING.includes(kind)))
+    .map(row=>clean(row.type).toLowerCase()));
+  const requestedDccScope=explicitRecipeHasUntyped
+    ?dccCapableTypes
+    :unique([...(explicitRequestedTypes||[]),...explicitRecipeTypes].map(value=>clean(value).toLowerCase()).filter(Boolean));
   const dccTypes=engineNativeTarget
-    ?decisions.filter(row=>needsAuthoring(row)&&(row.directAuthoring||[]).some(kind=>NATIVE_DCC_AUTHORING.includes(kind))).map(row=>row.type)
+    ?dccCapableTypes.filter(type=>requestedDccScope.includes(type))
     :[];
   const nativeTextKinds=targetName==='roblox'?ROBLOX_DIRECT_AUTHORING:targetName==='unity'?UNITY_DIRECT_AUTHORING:webNativeTarget?WEB_DIRECT_AUTHORING:[];
   const nativeTextTypes=decisions.filter(row=>needsAuthoring(row)&&(row.directAuthoring||[]).some(kind=>nativeTextKinds.includes(kind))).map(row=>row.type);
   const uniqueDccTypes=unique(dccTypes);
   const uniqueNativeTextTypes=unique(nativeTextTypes);
-  const explicitRecipeRows=Array.isArray(task?.assetAuthoring?.recipes)?task.assetAuthoring.recipes:Array.isArray(task?.authoringRecipes)?task.authoringRecipes:[];
   const selectedCandidateIds=new Set(decisions.flatMap(row=>[
     ...(row?.reuseCandidates||[]),
     ...(row?.externalCandidates||[])
@@ -532,6 +543,9 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
     stages:freezeList(['INSPECT','REUSE_OR_DERIVE','AUTHOR_EDITABLE_SOURCE','EXPORT_NATIVE_DERIVATIVE','APPLY_TO_EXISTING_RESPONSIBILITY','CAPTURE','VERIFY_NATIVE_RUNTIME','PROMOTE_IF_VERIFIED']),
     dcc:freeze({
       requiredTypes:freezeList(uniqueDccTypes),
+      universalAuditTypes:freezeList(dccCapableTypes),
+      explicitRequestedTypes:freezeList(unique((explicitRequestedTypes||[]).map(value=>clean(value).toLowerCase()))),
+      authoringScopeMode:'EXPLICIT_TASK_REQUEST_PLUS_DECLARED_RECIPES',
       preferredExecutor:'BLENDER_PYTHON',
       executionRequired:uniqueDccTypes.length>0,
       executionStatus:uniqueDccTypes.length===0?'NOT_REQUIRED':uncoveredDccTypes.length===0&&executionRecipes.length>0?'READY_FOR_EXISTING_AUTHORING_EXECUTOR':executionRecipes.length>0?'PARTIAL_AUTHORING_RECIPE_COVERAGE':availableExistingRecipes.length>0?'EXISTING_AUTHORING_RECIPE_AVAILABLE':'AUTHORING_RECIPE_REQUIRED',
@@ -1442,7 +1456,13 @@ export function buildVibeAssetProductionPlan({
   const highEnd=highEndVisualContract(repoRoot);
   const highEndActive=highEnd?.status==='ACTIVE_EXECUTABLE_CONTRACT';
   const modelRouting=buildAssetModelRouting({task,request,decisions,highEndActive});
-  const nativeAuthoringExecution=buildNativeAuthoringExecution({target:resolvedTarget,task,decisions,manifest:manifestInput});
+  const nativeAuthoringExecution=buildNativeAuthoringExecution({
+    target:resolvedTarget,
+    task,
+    decisions,
+    manifest:manifestInput,
+    explicitRequestedTypes:selector.explicitRequestedTypes||[]
+  });
   const companyLibrary=companyGraphicsLibraryContract(repoRoot);
   const companyLibraryActive=companyLibrary?.status==='ACTIVE_EXECUTABLE_CONTRACT';
   const directCount=decisions.filter(row=>row.directAuthoring.length>0).length;
@@ -1688,6 +1708,7 @@ export function buildVibeAssetProductionPlan({
     productionProfile:selector.production||null,
     commercialDistillation,
     requestedTypes:freezeList(selector.requestedTypes||[]),
+    explicitRequestedTypes:freezeList(selector.explicitRequestedTypes||[]),
     missingTypes:freezeList(selector.missingTypes||[]),
     decisions,
     applyFirstSummary:freeze({
