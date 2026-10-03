@@ -7425,36 +7425,6 @@
       "scanStartsBeforeQueueAuthorityFetchCompletes": true,
       "dispatchPlanningWaitsForBothQueueAndRunScan": true
     },
-    "robloxPlannerDuplicateContractQaRemoval20260927": {
-      "id": "ROBLOX_PLANNER_DUPLICATE_CONTRACT_QA_REMOVAL_2026-09-27",
-      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
-      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
-      "objective": "REMOVE_CENTRALLY_DUPLICATED_CONTRACT_TESTS_FROM_PER_RUN_ROBLOX_PLANNERS_WHILE_PRESERVING_RESPONSIBILITY_LOCAL_TESTS",
-      "workflows": [
-        ".github/workflows/company-development-roblox-runtime.yml",
-        ".github/workflows/company-development-roblox-runtime-continuation.yml"
-      ],
-      "canonicalQaAuthority": ".github/workflows/company-central-policy-contract-qa.yml",
-      "removedFromRuntimeCriticalPath": [
-        "qa/company-shared-context.test.mjs",
-        "qa/company-development-roblox-runtime.test.mjs",
-        "qa/company-selected-platform-router.test.mjs",
-        "qa/company-development-roblox-runtime-continuation.test.mjs"
-      ],
-      "retainedResponsibilityLocalTests": [
-        "qa/company-development-roblox-source-reconcile.test.mjs",
-        "qa/company-development-roblox-package.test.mjs",
-        "qa/company-development-roblox-independent-promotion.test.mjs",
-        "qa/company-upper-platform-admission.test.mjs"
-      ],
-      "staticSyntaxChecksPreserved": true,
-      "sharedContextRuntimeCompilationPreserved": true,
-      "canonicalQaMustStillRunOnRelevantMainChanges": true,
-      "duplicateValidationForbidden": true,
-      "gameDispatchWaitsForDuplicateQa": false,
-      "qualitySecurityReleaseGatesUnchanged": true,
-      "independentGameParallelismPreserved": true
-    },
     "unityPlannerDuplicateContractQaRemoval20260927": {
       "id": "UNITY_PLANNER_DUPLICATE_CONTRACT_QA_REMOVAL_2026-09-27",
       "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
@@ -7688,43 +7658,6 @@
       "runnerDrainConcurrencyGroup": "director-runner-drain-v2",
       "concurrencyEpochAdvancedForLegacyPendingQueue": true
     },
-    "robloxSourcePlanWakeAndRunnerIsolation20260927": {
-      "id": "ROBLOX_SOURCE_PLAN_WAKE_AND_RUNNER_ISOLATION_2026-09-27",
-      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
-      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
-      "objective": "WAKE_ROBLOX_SOURCE_PLAN_IMMEDIATELY_ON_FIXED_2404_CONTROL_CAPACITY_WITHOUT_ARM_QUEUE_DEPENDENCY_OR_HEAVY_GAME_CAPACITY_CONTENTION",
-      "observedEvidence": {
-        "directorDrainRunId": 36290168197,
-        "directorDrainSucceededOnFixed2404": true,
-        "robloxBatchSourcePlanStillQueuedOnSlimAfterDrain": true,
-        "sourcePlanContractIncludedRoadmapWithoutPushWake": true,
-        "staleBatchWouldOtherwiseNeed_TO_RUN_BEFORE_REDISPATCH": true
-      },
-      "sourcePlanRunner": "ubuntu-24.04",
-      "previousSourcePlanRunner": "ubuntu-slim",
-      "technicalPlanRunnerUnchanged": "ubuntu-24.04",
-      "heavyExecutionRunnerUnchanged": "ubuntu-latest",
-      "sourcePlanContractPushWakeRequired": true,
-      "sourcePlanContractPaths": [
-        ".github/workflows/company-development-roblox-runtime.yml",
-        "tools/company-development-roblox-bootstrap.mjs",
-        "tools/company-development-roblox-source-reconcile.mjs",
-        "tools/company-selected-platform-router.mjs",
-        "tools/company-upper-platform-admission.mjs",
-        "company-asset-library.json",
-        "company-learning/platform-release-roadmap.json"
-      ],
-      "staleBatchFreshnessGuardPreserved": true,
-      "exactSourceBindingPreserved": true,
-      "currentArtifactBindingRequired": true,
-      "activeGameCancellationForbidden": true,
-      "qualitySecurityReleaseGatesUnchanged": true,
-      "sourcePlanExactGameRunner": "ubuntu-24.04",
-      "sourcePlanBatchRunner": "ubuntu-24.04",
-      "runnerRoutingReason": "FIXED_2404_CONTROL_POOL_AVOIDS_ARM_INGRESS_QUEUE_BOTTLENECK_WHILE_HEAVY_GAME_WORK_REMAINS_ON_UBUNTU_LATEST",
-      "exactGameParallelismPreserved": true,
-      "batchFreshnessGuardPreserved": true
-    },
     "developmentQueueReconcileRunnerIsolation20260927": {
       "id": "DEVELOPMENT_QUEUE_RECONCILE_RUNNER_ISOLATION_2026-09-27",
       "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
@@ -7754,22 +7687,6 @@
       "previousConcurrencyGroup": "company-development-queue-reconcile-runtime",
       "concurrencyGroup": "company-development-queue-reconcile-runtime-v2",
       "concurrencyEpochAdvancedToBypassLegacyPendingGroup": true
-    },
-    "robloxF9FaninRuntimePathRepair20260927": {
-      "id": "ROBLOX_F9_FANIN_RUNTIME_PATH_REPAIR_2026-09-27",
-      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
-      "observedRunId": 36298713127,
-      "observedJobId": 108562535249,
-      "observedGameId": "horror-escape-room",
-      "observedFailure": "ENOENT ../runtime/development-queue.json",
-      "cause": "FANIN_STEP_EXECUTES_FROM_WORKSPACE_ROOT_BUT_USED_MAIN_RELATIVE_RUNTIME_PATH",
-      "canonicalRuntimePath": "runtime/development-queue.json",
-      "f9PromotionStatePersistedBeforeFanInFailure": true,
-      "exactCandidatePromotionPreserved": true,
-      "publicReleaseGateUnchanged": true,
-      "gameplayRulesChanged": false,
-      "saveSchemaChanged": false,
-      "qualityGateWeakening": false
     },
     "reusableCoreLaneConcurrencyIsolation20260927": {
       "id": "REUSABLE_CORE_LANE_CONCURRENCY_ISOLATION_2026-09-27",
