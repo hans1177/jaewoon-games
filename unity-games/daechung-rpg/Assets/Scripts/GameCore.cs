@@ -299,7 +299,76 @@ namespace JaewoonGames.DaechungRpg
                 {
                     Player.level = 1;
                 }
-                if (Player.gold < 0)
+public void Save()
+{
+    var data = new GameSaveData { player = Player };
+    PlayerPrefs.SetString(SaveKey, JsonUtility.ToJson(data));
+    PlayerPrefs.Save();
+}
+
+public void Load()
+{
+    if (!PlayerPrefs.HasKey(SaveKey))
+    {
+        Player = new PlayerState();
+        return;
+    }
+
+    try
+    {
+        var data = JsonUtility.FromJson<GameSaveData>(PlayerPrefs.GetString(SaveKey));
+        Player = data?.player ?? new PlayerState();
+
+        if (Player.level < 1)
+        {
+            Player.level = 1;
+        }
+        if (Player.gold < 0)
+        {
+            Player.gold = 0;
+        }
+        if (Player.experience < 0)
+        {
+            Player.experience = 0;
+        }
+        if (Player.mainQuestStep < 0)
+        {
+            Player.mainQuestStep = 0;
+        }
+        if (Player.baseMaxHp <= 0)
+        {
+            Player.baseMaxHp = 100;
+        }
+        if (Player.baseAttack <= 0)
+        {
+            Player.baseAttack = 3;
+        }
+        if (!Enum.IsDefined(typeof(JobType), Player.job))
+        {
+            Player.job = JobType.None;
+        }
+        if (Player.ownedWeapons == null)
+        {
+            Player.ownedWeapons = new List<string>();
+        }
+        if (Player.ownedArmors == null)
+        {
+            Player.ownedArmors = new List<string>();
+        }
+        if (Player.completedHiddenQuests == null)
+        {
+            Player.completedHiddenQuests = new List<string>();
+        }
+        if (string.IsNullOrEmpty(Player.currentRegionId) || !GameCatalog.Regions.ContainsKey(Player.currentRegionId))
+        {
+            Player.currentRegionId = "town";
+        }
+    }
+    catch (Exception ex)
+    {
+        Debug.LogError("Load failed: " + ex.Message);
+    }
+}
                 {
                     Player.gold = 0;
                 }
