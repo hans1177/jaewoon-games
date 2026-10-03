@@ -813,7 +813,27 @@
     "schedulerGlobalSingleton": false,
     "schedulerGlobalSingletonForbidden": true,
     "studioActualPlayOnlyHeavySerializationException": true,
-    "releaseDispatchQueuePressureGateEnabled": false
+    "releaseDispatchQueuePressureGateEnabled": false,
+    "serializationAudit": {
+      "version": 1,
+      "gameDevelopmentGlobalSerialization": false,
+      "forbiddenGlobalGroups": [
+        "vibe2-control-state-vibe2-unreal-core",
+        "vibe2-release-serial",
+        "vibe2-recovery-fast",
+        "vibe2-roblox-release-handoff",
+        "company-runtime-writer"
+      ],
+      "allowedExactIdentitySerialization": [
+        "candidate-branch-duplicate-release",
+        "candidate-ref-duplicate-roblox-runtime",
+        "task-id-duplicate-system-evolution",
+        "responsible-file-conflict",
+        "atomic-shared-state-write"
+      ],
+      "learningIdleSingleWorkerIsNotGameDevelopmentSerialization": true,
+      "sharedStateWriteConflictResolution": "FETCH_RESET_REAPPLY_PUSH_RETRY_WITH_CAPPED_BACKOFF"
+    }
   },
   "adaptiveBackpressure": {
     "enabled": true,
