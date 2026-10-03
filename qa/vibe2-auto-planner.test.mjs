@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort } from '../tools/vibe2-auto-planner.mjs';
 import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
@@ -111,6 +111,67 @@ test('build-up directive persistence keeps platform currents independent and com
   assert.equal(lanes.get('ROBLOX').directiveId,currentRoblox.directiveId);
   assert.equal(lanes.get('WEB').directiveId,currentWeb.directiveId);
   assert.equal(rows[0].compatibilityWinner.directiveId,currentWeb.directiveId);
+});
+
+test('declared DCC planner emits one existing-lane Blender task for the intended native consumer only',()=>{
+  const root=tempRepo();
+  try{
+    fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
+      authority:'MACHINE_EXECUTION_CONTRACT',
+      machineSourceOfTruth:'company-learning/platform-release-roadmap.json',
+      humanDocumentRequired:false,
+      assetProductionParallelContract:{enabled:true}
+    },null,2),'utf8');
+    const gameRoot=path.join(root,'roblox-games','horror-demo');
+    fs.mkdirSync(path.join(gameRoot,'client'),{recursive:true});
+    fs.mkdirSync(path.join(root,'assets','roblox','world-ghosts'),{recursive:true});
+    fs.writeFileSync(path.join(gameRoot,'client','Game.client.luau'),'local presentation = true\n','utf8');
+    fs.writeFileSync(path.join(root,'assets','roblox','world-ghosts','refine-motion.py'),'# declared blender recipe fixture\n','utf8');
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+      version:1,
+      assets:[{
+        id:'ghost-motion-source',family:'MOTION',category:'MOTION',license:'project-original',
+        status:'REPO_ASSET',productionVerified:false,verifiedCompanyReusable:false,
+        intendedConsumerGameIds:['horror-demo'],
+        authoringRecipes:[{
+          id:'ghost-motion-v3',executor:'BLENDER_PYTHON',types:['animation'],targetPlatforms:['ROBLOX','UNITY'],
+          script:'assets/roblox/world-ghosts/refine-motion.py',
+          args:['--output','assets/roblox/world-ghosts/native/motion-v3'],
+          outputs:[
+            'assets/roblox/world-ghosts/native/motion-v3/motion-v3.glb',
+            'assets/roblox/world-ghosts/native/motion-v3/evidence.json',
+            'assets/roblox/world-ghosts/native/motion-v3/preview.png'
+          ],
+          evidenceJson:'assets/roblox/world-ghosts/native/motion-v3/evidence.json',
+          preview:'assets/roblox/world-ghosts/native/motion-v3/preview.png',
+          editableSource:'assets/roblox/world-ghosts/refine-motion.py',
+          runMode:'VERIFY_ONLY'
+        }]
+      }]
+    },null,2),'utf8');
+    const project={
+      gameId:'horror-demo',name:'Horror Demo',engine:'roblox',releaseState:'development-confirmed',
+      projectPath:'roblox-games/horror-demo',source:'game-catalog'
+    };
+    const planned=findDeclaredDccAuthoringTask(project,root,{tasks:[]});
+    assert.ok(planned);
+    assert.equal(planned.id,'horror-demo-roblox-declared-dcc-ghost-motion-v3-v1');
+    assert.equal(planned.assetProductionLane,true);
+    assert.equal(planned.declaredDccAuthoring,true);
+    assert.equal(planned.speculativeEligible,false);
+    assert.deepEqual(planned.responsibleFiles,['roblox-games/horror-demo/client/Game.client.luau']);
+    assert.equal(planned.assetAuthoring.recipes.length,1);
+    assert.equal(planned.assetAuthoring.recipes[0].assetId,'ghost-motion-source');
+    assert.equal(planned.assetAuthoring.recipes[0].family,'MOTION');
+    assert.equal(planned.assetAuthoring.recipes[0].license,'project-original');
+    assert.deepEqual(planned.assetAuthoring.recipes[0].types,['animation']);
+    assert.match(planned.goal,/exact outputs를 실제 저장/);
+    assert.match(planned.goal,/repository path와 artifact SHA256/);
+    assert.ok(planned.evidence.includes('declared-dcc-candidate-persistence:required'));
+    assert.ok(planned.evidence.includes('declared-dcc-work-lock:existing-single-lock'));
+    assert.equal(findDeclaredDccAuthoringTask(project,root,{tasks:[planned]}),null);
+    assert.equal(findDeclaredDccAuthoringTask({...project,engine:'web',projectPath:'web-games/horror-demo'},root,{tasks:[]}),null);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('active independent work no longer blocks autonomous planning when slots remain',()=>{
