@@ -1207,3 +1207,17 @@ test('successful F0 checkpoints persist and dispatch per game before matrix fan-
   assert.match(persist,/ROBLOX_PACKAGE_ALREADY_PERSISTED_PER_GAME=/);
   assert.match(workflow,/successfulGamesContinueWithoutWaitingForFailedGameRepair|ROBLOX_OTHER_GAME_PROMOTION_BLOCKED=NO/);
 });
+
+test('Roblox native motion binding keeps Animator IK foot-contact and mobile frame evidence fail-closed',()=>{
+  const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  assert.match(bootstrap,/ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=7/);
+  assert.match(bootstrap,/Instance\.new\("IKControl"\)/);
+  assert.match(bootstrap,/Enum\.IKControlType\.Position/);
+  assert.match(bootstrap,/ROBLOX_CHARACTER_MOTION_RUNTIME=START/);
+  assert.match(bootstrap,/FOOT_SLIDE_EXCEEDED/);
+  assert.match(bootstrap,/MOBILE_FRAME_FLOOR_30_FAILED/);
+  assert.match(bootstrap,/footSlideNormalizedMax > 0\.035/);
+  assert.match(bootstrap,/verifiedLearningMotionFps >= 50 and 60/);
+  assert.match(bootstrap,/state\.hitReactionCount \+= 1/);
+  assert.match(bootstrap,/GetMarkerReachedSignal\(markerName\)/);
+});
