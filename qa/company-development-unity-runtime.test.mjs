@@ -713,3 +713,17 @@ test('Unity publication and repair preserve unique completed history on retry an
     assert.equal(item.unityCanonicalPublishHistory[1].publishedAt,'now');
   }
 });
+
+test('Unity native generator binds real Animator IK motion evidence without claiming placeholder success',()=>{
+  const source=fs.readFileSync(generatorSource,'utf8');
+  assert.match(source,/public sealed class JaewoonNativeMotionActor/);
+  assert.match(source,/private void OnAnimatorIK\(int layerIndex\)/);
+  assert.match(source,/FindObjectsByType<Animator>\(FindObjectsSortMode\.None\)/);
+  assert.match(source,/JAEWOON_UNITY_NATIVE_MOTION_BIND status=/);
+  assert.match(source,/JAEWOON_UNITY_NATIVE_MOTION=START/);
+  assert.match(source,/FOOT_SLIDE_EXCEEDED/);
+  assert.match(source,/MOBILE_FRAME_FLOOR_30_FAILED/);
+  assert.match(source,/FootSlideNormalizedMax = 0\.035f/);
+  assert.match(source,/JaewoonMotionContact\(\)/);
+  assert.match(source,/JaewoonMotionHit\(\)/);
+});

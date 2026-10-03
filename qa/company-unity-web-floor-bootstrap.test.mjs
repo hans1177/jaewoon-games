@@ -261,3 +261,21 @@ test('Unity Web source bootstrap uses slim control capacity',()=>{
   assert.match(workflow,/\n  bootstrap:\n\s+runs-on:\s*ubuntu-slim/);
   assert.doesNotMatch(workflow,/runs-on:\s*ubuntu-latest/);
 });
+
+test('Unity Web/native shared source no longer treats primitive root motion as character-motion PASS',()=>{
+  const generator=fs.readFileSync(path.resolve('tools/company-unity-web-floor-bootstrap.mjs'),'utf8');
+  assert.match(generator,/public sealed class JaewoonNativeMotionActor/);
+  assert.match(generator,/private void OnAnimatorIK\(int layerIndex\)/);
+  assert.match(generator,/FindObjectsByType<Animator>\(FindObjectsSortMode\.None\)/);
+  assert.match(generator,/reason=ANIMATOR_REQUIRED/);
+  assert.doesNotMatch(generator,/JAEWOON_UNITY_WEB_QA MOTION game=" \+ GameId \+ " status=PASS"/);
+
+  for(const gameId of ['survival','monster-adventure']){
+    const runtime=fs.readFileSync(path.resolve('unity-games',gameId,'Assets','Scripts','UnityWebFloorGame.cs'),'utf8');
+    assert.match(runtime,/public sealed class JaewoonNativeMotionActor/);
+    assert.match(runtime,/private void OnAnimatorIK\(int layerIndex\)/);
+    assert.match(runtime,/BindNativeMotionActors\(\)/);
+    assert.match(runtime,/reason=ANIMATOR_REQUIRED/);
+    assert.doesNotMatch(runtime,/JAEWOON_UNITY_WEB_QA MOTION game=" \+ GameId \+ " status=PASS"/);
+  }
+});

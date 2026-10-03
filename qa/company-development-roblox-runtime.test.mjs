@@ -1207,3 +1207,19 @@ test('successful F0 checkpoints persist and dispatch per game before matrix fan-
   assert.match(persist,/ROBLOX_PACKAGE_ALREADY_PERSISTED_PER_GAME=/);
   assert.match(workflow,/successfulGamesContinueWithoutWaitingForFailedGameRepair|ROBLOX_OTHER_GAME_PROMOTION_BLOCKED=NO/);
 });
+
+test('Roblox native motion binding keeps Animator IK foot-contact and mobile frame evidence in real game clients',()=>{
+  for(const gameId of ['survival','monster-adventure','horror-escape-room']){
+    const client=fs.readFileSync(new URL('../roblox-games/'+gameId+'/client/Game.client.luau',import.meta.url),'utf8');
+    assert.match(client,/VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 7/);
+    assert.match(client,/Instance\.new\("IKControl"\)/);
+    assert.match(client,/Enum\.IKControlType\.Position/);
+    assert.match(client,/ROBLOX_CHARACTER_MOTION_RUNTIME=START/);
+    assert.match(client,/FOOT_SLIDE_EXCEEDED/);
+    assert.match(client,/MOBILE_FRAME_FLOOR_30_FAILED/);
+    assert.match(client,/footSlideNormalizedMax > 0\.035/);
+    assert.match(client,/verifiedLearningMotionFps >= 50 and 60/);
+    assert.match(client,/state\.hitReactionCount \+= 1/);
+    assert.match(client,/GetMarkerReachedSignal\(markerName\)/);
+  }
+});

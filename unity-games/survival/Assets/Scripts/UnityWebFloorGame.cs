@@ -1,5 +1,158 @@
 using UnityEngine;
 
+public sealed class JaewoonNativeMotionActor : MonoBehaviour
+{
+    private const float FootSlideNormalizedMax = 0.035f;
+    private Animator animator;
+    private Transform leftFoot;
+    private Transform rightFoot;
+    private Transform spine;
+    private Vector3 lastRootPosition;
+    private Vector3 lastLeftFoot;
+    private Vector3 lastRightFoot;
+    private bool footHistoryReady;
+    private float fpsEma = 60f;
+    private float footSlideMax;
+    private float elapsed;
+    private float hitKick;
+    private int footSlideSamples;
+    private int ikSamples;
+    private int contactCount;
+    private int hitReactionCount;
+    private bool reported;
+
+    private void Awake()
+    {
+        animator = GetComponent<Animator>();
+        if (animator == null) { enabled = false; return; }
+        if (animator.isHuman)
+        {
+            leftFoot = animator.GetBoneTransform(HumanBodyBones.LeftFoot);
+            rightFoot = animator.GetBoneTransform(HumanBodyBones.RightFoot);
+            spine = animator.GetBoneTransform(HumanBodyBones.Spine);
+        }
+        lastRootPosition = animator.transform.position;
+        Debug.Log("JAEWOON_UNITY_NATIVE_MOTION=START actor=" + gameObject.name.Replace(" ", "_") +
+                  " human=" + animator.isHuman + " controller=" + (animator.runtimeAnimatorController != null));
+    }
+
+    private static Vector3 Horizontal(Vector3 value)
+    {
+        return new Vector3(value.x, 0f, value.z);
+    }
+
+    private void Update()
+    {
+        if (animator == null) return;
+        float dt = Mathf.Min(Time.unscaledDeltaTime, 0.1f);
+        elapsed += dt;
+        float instantFps = 1f / Mathf.Max(dt, 1f / 240f);
+        fpsEma += (instantFps - fpsEma) * Mathf.Clamp01(dt * 3f);
+    }
+
+    private void LateUpdate()
+    {
+        if (animator == null) return;
+        SampleFootSliding();
+        if (hitKick > 0.001f && spine != null)
+        {
+            spine.localRotation = spine.localRotation * Quaternion.Euler(-6f * hitKick, 0f, 0f);
+            hitKick *= Mathf.Exp(-Time.unscaledDeltaTime * 10f);
+        }
+        if (!reported && elapsed >= 6f)
+        {
+            reported = true;
+            string reason = MotionFailureReason();
+            string fields = " fps=" + fpsEma.ToString("F1") +
+                            " human=" + animator.isHuman +
+                            " ikSamples=" + ikSamples +
+                            " slide=" + footSlideMax.ToString("F4") +
+                            " slideSamples=" + footSlideSamples +
+                            " contacts=" + contactCount +
+                            " hits=" + hitReactionCount;
+            Debug.Log("JAEWOON_UNITY_NATIVE_MOTION=" +
+                      (string.IsNullOrEmpty(reason) ? "PASS" : "FAIL reason=" + reason) + fields);
+        }
+    }
+
+    private void SampleFootSliding()
+    {
+        if (!animator.isHuman || leftFoot == null || rightFoot == null) return;
+        float scale = Mathf.Max(0.5f, animator.humanScale);
+        Vector3 rootPosition = animator.transform.position;
+        float rootDelta = Horizontal(rootPosition - lastRootPosition).magnitude;
+        if (footHistoryReady && rootDelta > 0.002f)
+        {
+            float leftSlide = FootContactSlide(leftFoot, lastLeftFoot, scale);
+            float rightSlide = FootContactSlide(rightFoot, lastRightFoot, scale);
+            float best = leftSlide < 0f ? rightSlide : rightSlide < 0f ? leftSlide : Mathf.Min(leftSlide, rightSlide);
+            if (best >= 0f)
+            {
+                footSlideSamples++;
+                footSlideMax = Mathf.Max(footSlideMax, best);
+            }
+        }
+        lastRootPosition = rootPosition;
+        lastLeftFoot = leftFoot.position;
+        lastRightFoot = rightFoot.position;
+        footHistoryReady = true;
+    }
+
+    private static float FootContactSlide(Transform foot, Vector3 previous, float scale)
+    {
+        Vector3 origin = foot.position + Vector3.up * (0.35f * scale);
+        if (!Physics.Raycast(origin, Vector3.down, out RaycastHit hit, 0.8f * scale, ~0, QueryTriggerInteraction.Ignore))
+            return -1f;
+        float gap = Mathf.Abs(foot.position.y - hit.point.y);
+        if (gap > 0.16f * scale) return -1f;
+        return Horizontal(foot.position - previous).magnitude / Mathf.Max(1f, scale * 2f);
+    }
+
+    private void OnAnimatorIK(int layerIndex)
+    {
+        if (animator == null || !animator.isHuman) return;
+        ApplyFootIk(AvatarIKGoal.LeftFoot, leftFoot);
+        ApplyFootIk(AvatarIKGoal.RightFoot, rightFoot);
+    }
+
+    private void ApplyFootIk(AvatarIKGoal goal, Transform foot)
+    {
+        if (foot == null) return;
+        float scale = Mathf.Max(0.5f, animator.humanScale);
+        Vector3 origin = foot.position + Vector3.up * (0.45f * scale);
+        if (!Physics.Raycast(origin, Vector3.down, out RaycastHit hit, 1.1f * scale, ~0, QueryTriggerInteraction.Ignore))
+        {
+            animator.SetIKPositionWeight(goal, 0f);
+            animator.SetIKRotationWeight(goal, 0f);
+            return;
+        }
+        animator.SetIKPositionWeight(goal, 0.35f);
+        animator.SetIKRotationWeight(goal, 0.2f);
+        animator.SetIKPosition(goal, hit.point + hit.normal * (0.045f * scale));
+        animator.SetIKRotation(goal, Quaternion.FromToRotation(Vector3.up, hit.normal) * foot.rotation);
+        ikSamples++;
+    }
+
+    public void JaewoonMotionContact() { contactCount++; }
+    public void JaewoonMotionHit() { hitReactionCount++; hitKick = 1f; }
+
+    private string MotionFailureReason()
+    {
+        if (animator == null) return "ANIMATOR_REQUIRED";
+        if (!animator.enabled) return "ANIMATOR_DISABLED";
+        if (animator.runtimeAnimatorController == null) return "ANIMATOR_CONTROLLER_REQUIRED";
+        if (fpsEma < 27f) return "MOBILE_FRAME_FLOOR_30_FAILED";
+        if (animator.isHuman)
+        {
+            if (leftFoot == null || rightFoot == null) return "HUMANOID_FEET_REQUIRED";
+            if (ikSamples < 2) return "FOOT_IK_RUNTIME_REQUIRED";
+            if (footSlideSamples < 2) return "FOOT_CONTACT_SAMPLE_REQUIRED";
+            if (footSlideMax > FootSlideNormalizedMax) return "FOOT_SLIDE_EXCEEDED";
+        }
+        return "";
+    }
+}
+
 public sealed class UnityWebFloorGame : MonoBehaviour
 {
     private const string GameId = "survival";
@@ -30,9 +183,26 @@ public sealed class UnityWebFloorGame : MonoBehaviour
         Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=enemy status=PASS");
         Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=environment status=PASS");
         Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=equipment status=PASS");
-        Debug.Log("JAEWOON_UNITY_WEB_QA MOTION game=" + GameId + " status=PASS");
+        int nativeMotionActors = BindNativeMotionActors();
+        Debug.Log("JAEWOON_UNITY_WEB_QA MOTION game=" + GameId +
+                  " status=" + (nativeMotionActors > 0 ? "STARTED" : "REPAIR_REQUIRED") +
+                  " actors=" + nativeMotionActors +
+                  (nativeMotionActors > 0 ? "" : " reason=ANIMATOR_REQUIRED"));
         Debug.Log("JAEWOON_UNITY_WEB_QA MOBILE_TARGET game=" + GameId + " role=action x=0.5000 y=0.7200");
         LogState();
+    }
+
+    private int BindNativeMotionActors()
+    {
+        int count = 0;
+        foreach (Animator candidate in FindObjectsByType<Animator>(FindObjectsSortMode.None))
+        {
+            if (candidate == null) continue;
+            if (candidate.GetComponent<JaewoonNativeMotionActor>() == null)
+                candidate.gameObject.AddComponent<JaewoonNativeMotionActor>();
+            count++;
+        }
+        return count;
     }
 
     private void BuildWorld()
