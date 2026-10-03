@@ -222,7 +222,7 @@ let fighterSeq=0;
 function fighter(t,x,team){return Object.assign({},t,{x,team,uid:++fighterSeq,maxHp:t.hp,hp:t.hp,cd:Math.random()*.12,flash:0,dead:false})}
 function fresh(){
   const h=castleMax(),stage=save.stage;
-  return{running:true,paused:false,time:0,money:160,income:incomeRate(),walletLv:1,maxMoney:battleWalletMax(1),ally:{hp:h,maxHp:h},enemy:{hp:1500,maxHp:1500},a:[],e:[],stage,plan:STAGE_PLANS[stage]||[],spawn:0,nextRabbit:2,bossSpawned:false,cools:{},shake:0}
+  return{running:true,paused:false,time:0,money:160,income:incomeRate(),walletLv:1,maxMoney:battleWalletMax(1),ally:{hp:h,maxHp:h},enemy:{hp:1500,maxHp:1500},a:[],e:[],stage,plan:STAGE_PLANS[stage]||[],spawn:0,nextRabbit:2,bossSpawned:false,stage7BoarTriggered:false,stage7MoleSpawned:false,stage8WaveSpawned:false,stage8BossKilledAt:null,stage8NextRabbit:null,cools:{},shake:0}
 }
 
 // ===== UI =====
