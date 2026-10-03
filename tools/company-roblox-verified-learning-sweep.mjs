@@ -1,7 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {createRobloxVibe3LearningContext,existingRobloxGameLearningProfile} from './vibe3-roblox-learning-context.mjs';
-import {robloxLearningProfileFromSource} from './company-development-roblox-gameplay-product-readiness.mjs';
+import {robloxLearningProfileFromSource,robloxDesignProfileFromBaseline} from './company-development-roblox-gameplay-product-readiness.mjs';
+import {latestVerifiedDesign} from './company-all-games-design-reset.mjs';
+import {latestMinimumDesign} from './company-minimum-design-contract.mjs';
 import {applyVerifiedExternalLearningToExistingRobloxSource} from './company-development-roblox-bootstrap.mjs';
 
 const args=Object.fromEntries(process.argv.slice(2).filter(x=>x.startsWith('--')).map(x=>{
@@ -29,7 +31,10 @@ for(const gameId of gameIds){
   const gameRoot=path.join(root,gameId);
   const configSource=fs.readFileSync(path.join(gameRoot,'shared','GameConfig.luau'),'utf8');
   const fallbackProfile=existingRobloxGameLearningProfile(gameId);
-  const learningProfile=robloxLearningProfileFromSource({gameId,config:configSource,fallback:fallbackProfile});
+  const sourceProfile=robloxLearningProfileFromSource({gameId,config:configSource,fallback:fallbackProfile});
+  const designContext=latestVerifiedDesign(process.cwd(),gameId)||latestMinimumDesign(process.cwd(),gameId);
+  const designProfile=designContext?.record?robloxDesignProfileFromBaseline(designContext.record):null;
+  const learningProfile=designProfile||sourceProfile;
   const learning=createRobloxVibe3LearningContext({gameId,profile:learningProfile,artbook:{},playbooks,recombination});
   if(learning.applied!==true)throw new Error('ROBLOX_SWEEP_LEARNING_NOT_APPLIED:'+gameId);
   if(learning.allRetrievedPrinciplesHaveExplicitDisposition!==true||Number(learning.semanticMappingVersion||0)!==1)throw new Error('ROBLOX_SWEEP_SEMANTIC_MAPPING_NOT_FAIL_CLOSED:'+gameId);
@@ -83,7 +88,9 @@ for(const gameId of gameIds){
     semanticVariant:learning.semanticVariant||null,
     coreKind:learning.coreKind||null,
     gameSpecificMappingCount:Number(learning.verifiedExternalLearningGameDevelopmentAppliedCount||0),
-    sourceProfile:learningProfile,
+    sourceProfile,
+    designProfile,
+    profileMismatch:Boolean(designProfile&&(String(designProfile.genre)!==String(sourceProfile.genre)||String(designProfile.playMode)!==String(sourceProfile.playMode))),
     validationOnlyPrincipleCount:Number(learning.verifiedExternalValidationOnlyPrincipleCount||0),
     serverInspection:applied.serverInspection||'AFFECTED_SCOPE_ONLY_PRESENTATION_BINDING'
   });
