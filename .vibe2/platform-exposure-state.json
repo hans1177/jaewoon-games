@@ -3,7 +3,7 @@
   "kind": "platform-exposure-state",
   "authority": "OWNER_DIRECTIVE_2026-09-25",
   "policy": "PERPETUAL_INTERNAL_BUILDUP_WITH_FAIL_CLOSED_EXTERNAL_PUBLIC_HARD_GATE",
-  "updatedAt": "2026-10-03T17:24:41.220Z",
+  "updatedAt": "2026-10-03T17:40:45.902Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -72,14 +72,14 @@
       "platforms": [
         {
           "platform": "ROBLOX",
-          "technicalReady": false,
+          "technicalReady": true,
           "internalReleaseState": "NATIVE_DEVELOPMENT",
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": false,
+            "technicalReady": true,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
@@ -99,11 +99,11 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "b953d4fb6e4121fe7fb62a23eace4ea7c3871f85",
-            "artifactIdentity": "sha256:fc2c92e482f47e15e9ae7db9dd7fab2861b633fbe87d53b14bde0d291c711f6a",
+            "sourceRevision": "dc0e69c84c82c09269eaabd9565294973bcb751b",
+            "artifactIdentity": "sha256:ea03b17b1547dc7d667d9330cf57d21a993dd55b1907ae47f40fd5e47239bd13",
             "verifiedAt": null
           },
-          "internalReleasePublished": false,
+          "internalReleasePublished": true,
           "internalPlaytestPassed": false,
           "externalExposureAllowed": false,
           "externalExposureState": "INTERNAL_ONLY",
@@ -145,9 +145,9 @@
               "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
               "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
             ],
-            "candidateVersionNumber": 0
+            "candidateVersionNumber": 5
           },
-          "perpetualBuildupActive": false,
+          "perpetualBuildupActive": true,
           "testerTickets": {
             "openBlocking": [
               "bug-2cfb0882ff23baaef682",
@@ -166,7 +166,7 @@
             "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
             "publicDiscoveryAllowed": false
           },
-          "rebuildRequired": false
+          "rebuildRequired": true
         },
         {
           "platform": "UNITY",
