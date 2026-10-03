@@ -4,7 +4,7 @@ import {createRobloxVibe3LearningContext,existingRobloxGameLearningProfile} from
 import {robloxLearningProfileFromSource,robloxDesignProfileFromBaseline} from './company-development-roblox-gameplay-product-readiness.mjs';
 import {latestVerifiedDesign} from './company-all-games-design-reset.mjs';
 import {latestMinimumDesign} from './company-minimum-design-contract.mjs';
-import {applyVerifiedExternalLearningToExistingRobloxSource} from './company-development-roblox-bootstrap.mjs';
+import {applyVerifiedExternalLearningToExistingRobloxSource,ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION} from './company-development-roblox-bootstrap.mjs';
 
 const args=Object.fromEntries(process.argv.slice(2).filter(x=>x.startsWith('--')).map(x=>{
   const i=x.indexOf('=');
@@ -18,6 +18,10 @@ if(!fs.existsSync(root))throw new Error('ROBLOX_GAMES_ROOT_MISSING:'+root);
 if(!playbooksFile||!fs.existsSync(playbooksFile))throw new Error('ROBLOX_LEARNING_PLAYBOOKS_MISSING:'+playbooksFile);
 
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
+const nativeBindingVersion=source=>{
+  const match=String(source||'').match(/VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION\s*=\s*(\d+)/);
+  return Number(match?.[1]||0);
+};
 const playbooks=readJson(playbooksFile);
 const recombination=recombinationFile&&fs.existsSync(recombinationFile)?readJson(recombinationFile):{};
 const gameIds=fs.readdirSync(root,{withFileTypes:true})
@@ -38,7 +42,28 @@ for(const gameId of gameIds){
   const learning=createRobloxVibe3LearningContext({gameId,profile:learningProfile,artbook:{},playbooks,recombination});
   if(learning.applied!==true)throw new Error('ROBLOX_SWEEP_LEARNING_NOT_APPLIED:'+gameId);
   if(learning.allRetrievedPrinciplesHaveExplicitDisposition!==true||Number(learning.semanticMappingVersion||0)!==1)throw new Error('ROBLOX_SWEEP_SEMANTIC_MAPPING_NOT_FAIL_CLOSED:'+gameId);
-  const applied=applyVerifiedExternalLearningToExistingRobloxSource({root:gameRoot,learning});
+  const clientFile=path.join(gameRoot,'client','Game.client.luau');
+  const currentClientSource=fs.readFileSync(clientFile,'utf8');
+  const currentNativeBindingVersion=nativeBindingVersion(currentClientSource);
+  let applied;
+  if(currentNativeBindingVersion>ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION){
+    const requiredConfigSignals=[
+      `MemoryFingerprint = "${learning.verifiedExternalLearningFingerprint||''}"`,
+      `SemanticMappingVersion = ${Number(learning.semanticMappingVersion||0)}`,
+      'GameSpecificSemanticMappings = {',
+      'LearningDispositions = {'
+    ];
+    if(requiredConfigSignals.some(signal=>!configSource.includes(signal))){
+      throw new Error('ROBLOX_SWEEP_NEWER_NATIVE_BINDING_CONFIG_DRIFT:'+gameId);
+    }
+    applied=Object.freeze({
+      changed:false,
+      changedFiles:Object.freeze([]),
+      serverInspection:'PRESERVED_NEWER_NATIVE_BINDING'
+    });
+  }else{
+    applied=applyVerifiedExternalLearningToExistingRobloxSource({root:gameRoot,learning});
+  }
   const evidenceFile=path.join(gameRoot,'roblox-source-bootstrap.json');
   let evidence={version:1,gameId,platform:'ROBLOX',sourcePath:path.relative(process.cwd(),gameRoot).replaceAll('\\','/')};
   if(fs.existsSync(evidenceFile)){
@@ -92,7 +117,10 @@ for(const gameId of gameIds){
     designProfile,
     profileMismatch:Boolean(designProfile&&(String(designProfile.genre)!==String(sourceProfile.genre)||String(designProfile.playMode)!==String(sourceProfile.playMode))),
     validationOnlyPrincipleCount:Number(learning.verifiedExternalValidationOnlyPrincipleCount||0),
-    serverInspection:applied.serverInspection||'AFFECTED_SCOPE_ONLY_PRESENTATION_BINDING'
+    serverInspection:applied.serverInspection||'AFFECTED_SCOPE_ONLY_PRESENTATION_BINDING',
+    currentNativeBindingVersion,
+    generatorNativeBindingVersion:Number(ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION||0),
+    newerNativeBindingPreserved:currentNativeBindingVersion>ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION
   });
 }
 const report={
