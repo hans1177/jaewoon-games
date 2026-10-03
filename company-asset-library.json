@@ -1,8 +1,8 @@
 {
-  "version": 28,
+  "version": 29,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
-  "updatedAt": "2026-09-30",
+  "updatedAt": "2026-10-04",
   "publicInspectionSurface": true,
   "productionPassAuthority": false,
   "rules": {
@@ -3972,6 +3972,379 @@
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
       "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+    },
+    {
+      "id": "roblox-studio-items-v1",
+      "title": "Roblox 공용 스튜디오 아이템 비주얼 8종",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/studio-items/StudioItems.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "AUTHORING_SOURCE_READY_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room",
+        "survival",
+        "monster-adventure"
+      ],
+      "packId": "roblox-studio-items-v1",
+      "sourceFiles": [
+        "assets/roblox/studio-items/StudioItems.luau"
+      ],
+      "qualityTarget": 120,
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "gameplayAuthority": false,
+      "subfamily": "ITEM_PACK",
+      "itemCount": 8,
+      "itemIds": [
+        "HEALING_POTION",
+        "MANA_CRYSTAL",
+        "IRON_INGOT",
+        "GOLD_INGOT",
+        "WOOD_BUNDLE",
+        "STONE_CHUNK",
+        "RELIC_KEY",
+        "LANTERN"
+      ],
+      "capabilities": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "EQUIPPED_VISUAL",
+        "VIEWPORT_ICON",
+        "LOD_FAR",
+        "LOD_MID",
+        "LOD_NEAR"
+      ],
+      "note": "순수 비주얼 자산 팩. 아이템 수치/효과/가격/세이브/네트워크 권한 없음. 실제 Studio 런타임 검증 전."
+    },
+    {
+      "id": "roblox-studio-item-healing-potion",
+      "title": "회복 포션 비주얼",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/studio-items/StudioItems.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "AUTHORING_SOURCE_READY_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room",
+        "survival",
+        "monster-adventure"
+      ],
+      "packId": "roblox-studio-items-v1",
+      "sourceFiles": [
+        "assets/roblox/studio-items/StudioItems.luau"
+      ],
+      "qualityTarget": 120,
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "gameplayAuthority": false,
+      "subfamily": "ITEM",
+      "assetId": "HEALING_POTION",
+      "familyRootId": "POTION_BOTTLE",
+      "itemRole": "CONSUMABLE",
+      "silhouetteClass": "ROUND_BOTTLE_SHOULDER_CORK",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "EQUIPPED_VISUAL",
+        "INVENTORY_VIEWPORT_ICON",
+        "CRAFTING_VIEWPORT_ICON"
+      ]
+    },
+    {
+      "id": "roblox-studio-item-mana-crystal",
+      "title": "마력 수정 비주얼",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/studio-items/StudioItems.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "AUTHORING_SOURCE_READY_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room",
+        "survival",
+        "monster-adventure"
+      ],
+      "packId": "roblox-studio-items-v1",
+      "sourceFiles": [
+        "assets/roblox/studio-items/StudioItems.luau"
+      ],
+      "qualityTarget": 120,
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "gameplayAuthority": false,
+      "subfamily": "RESOURCE",
+      "assetId": "MANA_CRYSTAL",
+      "familyRootId": "CRYSTAL_CLUSTER",
+      "itemRole": "RESOURCE",
+      "silhouetteClass": "ASYMMETRIC_FACETED_CLUSTER",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "INVENTORY_VIEWPORT_ICON",
+        "CRAFTING_VIEWPORT_ICON"
+      ]
+    },
+    {
+      "id": "roblox-studio-item-iron-ingot",
+      "title": "철괴 비주얼",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/studio-items/StudioItems.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "AUTHORING_SOURCE_READY_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room",
+        "survival",
+        "monster-adventure"
+      ],
+      "packId": "roblox-studio-items-v1",
+      "sourceFiles": [
+        "assets/roblox/studio-items/StudioItems.luau"
+      ],
+      "qualityTarget": 120,
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "gameplayAuthority": false,
+      "subfamily": "RESOURCE",
+      "assetId": "IRON_INGOT",
+      "familyRootId": "METAL_INGOT",
+      "itemRole": "RESOURCE",
+      "silhouetteClass": "TAPERED_STACKED_INGOT",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "INVENTORY_VIEWPORT_ICON",
+        "CRAFTING_VIEWPORT_ICON"
+      ]
+    },
+    {
+      "id": "roblox-studio-item-gold-ingot",
+      "title": "금괴 비주얼",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/studio-items/StudioItems.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "AUTHORING_SOURCE_READY_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room",
+        "survival",
+        "monster-adventure"
+      ],
+      "packId": "roblox-studio-items-v1",
+      "sourceFiles": [
+        "assets/roblox/studio-items/StudioItems.luau"
+      ],
+      "qualityTarget": 120,
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "gameplayAuthority": false,
+      "subfamily": "RESOURCE",
+      "assetId": "GOLD_INGOT",
+      "familyRootId": "METAL_INGOT",
+      "itemRole": "RESOURCE",
+      "silhouetteClass": "TAPERED_STACKED_INGOT",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "INVENTORY_VIEWPORT_ICON",
+        "CRAFTING_VIEWPORT_ICON"
+      ]
+    },
+    {
+      "id": "roblox-studio-item-wood-bundle",
+      "title": "나무 묶음 비주얼",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/studio-items/StudioItems.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "AUTHORING_SOURCE_READY_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room",
+        "survival",
+        "monster-adventure"
+      ],
+      "packId": "roblox-studio-items-v1",
+      "sourceFiles": [
+        "assets/roblox/studio-items/StudioItems.luau"
+      ],
+      "qualityTarget": 120,
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "gameplayAuthority": false,
+      "subfamily": "RESOURCE",
+      "assetId": "WOOD_BUNDLE",
+      "familyRootId": "RESOURCE_BUNDLE",
+      "itemRole": "RESOURCE",
+      "silhouetteClass": "THREE_LOG_BUNDLE_WITH_BINDINGS",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "INVENTORY_VIEWPORT_ICON",
+        "CRAFTING_VIEWPORT_ICON"
+      ]
+    },
+    {
+      "id": "roblox-studio-item-stone-chunk",
+      "title": "돌 덩이 비주얼",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/studio-items/StudioItems.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "AUTHORING_SOURCE_READY_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room",
+        "survival",
+        "monster-adventure"
+      ],
+      "packId": "roblox-studio-items-v1",
+      "sourceFiles": [
+        "assets/roblox/studio-items/StudioItems.luau"
+      ],
+      "qualityTarget": 120,
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "gameplayAuthority": false,
+      "subfamily": "RESOURCE",
+      "assetId": "STONE_CHUNK",
+      "familyRootId": "STONE_RESOURCE",
+      "itemRole": "RESOURCE",
+      "silhouetteClass": "ASYMMETRIC_THREE_MASS_ROCK",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "INVENTORY_VIEWPORT_ICON",
+        "CRAFTING_VIEWPORT_ICON"
+      ]
+    },
+    {
+      "id": "roblox-studio-item-relic-key",
+      "title": "유물 열쇠 비주얼",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/studio-items/StudioItems.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "AUTHORING_SOURCE_READY_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room",
+        "survival",
+        "monster-adventure"
+      ],
+      "packId": "roblox-studio-items-v1",
+      "sourceFiles": [
+        "assets/roblox/studio-items/StudioItems.luau"
+      ],
+      "qualityTarget": 120,
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "gameplayAuthority": false,
+      "subfamily": "ITEM",
+      "assetId": "RELIC_KEY",
+      "familyRootId": "RELIC_KEY",
+      "itemRole": "KEY_ITEM",
+      "silhouetteClass": "RING_SHAFT_ORNATE_BIT",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "EQUIPPED_VISUAL",
+        "INVENTORY_VIEWPORT_ICON"
+      ]
+    },
+    {
+      "id": "roblox-studio-item-lantern",
+      "title": "랜턴 비주얼",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/studio-items/StudioItems.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "AUTHORING_SOURCE_READY_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room",
+        "survival",
+        "monster-adventure"
+      ],
+      "packId": "roblox-studio-items-v1",
+      "sourceFiles": [
+        "assets/roblox/studio-items/StudioItems.luau"
+      ],
+      "qualityTarget": 120,
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "gameplayAuthority": false,
+      "subfamily": "ITEM",
+      "assetId": "LANTERN",
+      "familyRootId": "HAND_LANTERN",
+      "itemRole": "UTILITY",
+      "silhouetteClass": "CAGED_GLASS_LANTERN_HANDLE",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "EQUIPPED_VISUAL",
+        "INVENTORY_VIEWPORT_ICON",
+        "CRAFTING_VIEWPORT_ICON"
+      ]
     }
   ],
   "research": [
