@@ -1028,18 +1028,32 @@ function rememberItem(id){if(!id)return;state.knownItems[id]=true;state.dirty=tr
 function recipeKnown(r){if(!r)return false;if(itemTier(r.id)===1)return true;if(state.knownItems[r.id])return true;return Object.entries(r.cost||{}).some(([k,v])=>Number(v)>0&&!DISCOVERY_IGNORED_MATERIALS.has(k)&&state.knownMaterials[k])}
 function addInv(id,n=1){state.player.inventory[id]=invCount(id)+n;rememberItem(id);state.dirty=true}
 function applyOwnerInventoryGift(){
- const params=new URL(location.href).searchParams;
- if(params.get('ownerGift')!=='best-kit-20260928')return false;
- const key='magic-forest-owner-gift-best-kit-20260928';
- try{if(localStorage.getItem(key)==='1')return false}catch{}
- addInv('yeti-horn-maul',1);
- addInv('yeti-armor',1);
- addInv('cooked-crystal-deer-meat',10);
- try{localStorage.setItem(key,'1')}catch{}
- state.dirty=true;
- saveGame(false);
- showNotice('가방 지급 · 예티 뿔 대검 · 예티 방어구 · 구운 수정사슴고기 10개');
- return true
+ const params=new URL(location.href).searchParams,gift=params.get('ownerGift');
+ if(gift==='best-kit-20260928'){
+  const key='magic-forest-owner-gift-best-kit-20260928';
+  try{if(localStorage.getItem(key)==='1')return false}catch{}
+  addInv('yeti-horn-maul',1);
+  addInv('yeti-armor',1);
+  addInv('cooked-crystal-deer-meat',10);
+  try{localStorage.setItem(key,'1')}catch{}
+  state.dirty=true;saveGame(false);
+  showNotice('가방 지급 · 예티 뿔 대검 · 예티 방어구 · 구운 수정사슴고기 10개');
+  return true
+ }
+ if(gift==='resources-100-20261003'){
+  const key='magic-forest-owner-gift-resources-100-20261003';
+  try{if(localStorage.getItem(key)==='1')return false}catch{}
+  addMaterial('monopolyIngot',100);
+  addMaterial('ironIngot',100);
+  addMaterial('goldIngot',100);
+  addMaterial('wood',100);
+  addMaterial('stone',100);
+  try{localStorage.setItem(key,'1')}catch{}
+  state.dirty=true;saveGame(false);updateHud();
+  showNotice('재료 지급 · 구운 독점석 · 구운철 · 구운금 · 나무 · 돌 각 100개');
+  return true
+ }
+ return false
 }
 function showNotice(text){ui.notice.textContent=text;ui.notice.classList.add('on');clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>ui.notice.classList.remove('on'),1500)}
 function updateHud(){
