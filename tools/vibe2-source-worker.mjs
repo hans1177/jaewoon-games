@@ -2943,6 +2943,20 @@ export function recoverFocusedReplaceOnly(raw,spec={}){
   }
   return null;
 }
+function nativeAssetBindingPromptBlock(hints=[]){
+  const rows=(Array.isArray(hints)?hints:[]).map(row=>({
+    path:clean(row?.path),
+    artifactHash:clean(row?.artifactHash),
+    assetId:clean(row?.assetId)||null,
+    family:clean(row?.family).toUpperCase()||null
+  })).filter(row=>row.path&&row.artifactHash);
+  return rows.length?[
+    '[GENERATED NATIVE ASSET IDENTITY]',
+    ...rows.map(row=>`path=${row.path} | sha256=${row.artifactHash} | assetId=${row.assetId||'generated'} | family=${row.family||'UNKNOWN'}`),
+    'The changed engine-native source MUST bind every exact path and sha256 above in executable presentation-owned source while preserving gameplay/save/progression/network authority.',
+    '[END GENERATED NATIVE ASSET IDENTITY]'
+  ].join('\n'):'';
+}
 export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2,previousOutput='',sourceRoot='',systemAtomicPairRequired=false,multiFilePairRequired=false,studioInitial=false,robloxGraphicsInitial=false,assetFocusedInitial=false,nativeAssetBindingHints=[],robloxFullGraphicsPackageActive=false,oversizedInitial=false,failureRepeatCount=0}={}){
   const rawPrompt=String(prompt??'');
   const rawGoalLine=rawPrompt.split('\n').find(value=>value.startsWith('Goal:'))||'';
@@ -2957,18 +2971,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
   const exactResponsible=unique(responsibleFiles.length?responsibleFiles:allowedPaths);
   const exactPath=exactResponsible.length===1?exactResponsible[0]:'';
   const reason=robloxGraphicsInitial?'INITIAL_ROBLOX_GRAPHICS_PACKAGE':assetFocusedInitial?'INITIAL_NATIVE_ASSET_BINDING':studioInitial?'INITIAL_STUDIO_PACKAGE':oversizedInitial?'INITIAL_OVERSIZED_PROMPT':(clean(error?.message||error).slice(0,240)||'malformed candidate');
-  const nativeBindingRows=(Array.isArray(nativeAssetBindingHints)?nativeAssetBindingHints:[]).map(row=>({
-    path:clean(row?.path),
-    artifactHash:clean(row?.artifactHash),
-    assetId:clean(row?.assetId)||null,
-    family:clean(row?.family).toUpperCase()||null
-  })).filter(row=>row.path&&row.artifactHash);
-  const nativeAssetBindingBlock=nativeBindingRows.length?[
-    '[GENERATED NATIVE ASSET IDENTITY]',
-    ...nativeBindingRows.map(row=>`path=${row.path} | sha256=${row.artifactHash} | assetId=${row.assetId||'generated'} | family=${row.family||'UNKNOWN'}`),
-    'The changed engine-native source MUST bind every exact path and sha256 above in executable presentation-owned source while preserving gameplay/save/progression/network authority.',
-    '[END GENERATED NATIVE ASSET IDENTITY]'
-  ].join('\n'):'';
+  const nativeAssetBindingBlock=nativeAssetBindingPromptBlock(nativeAssetBindingHints);
   const zeroChange=/실제 source 변경/i.test(reason);
   const noChangeEdit=/변경 없는 edit/i.test(reason);
   const timeoutFailure=/시간 초과|timeout|prediction aborted|token repeat limit/i.test(reason);
@@ -3336,6 +3339,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   const failureHistory=[];
   let repeatedFailureStrategyShifts=0;
   let repeatedFailureShiftKey='';
+  const nativeAssetBindingBlock=nativeAssetBindingPromptBlock(nativeAssetBindingHints);
   const studioExpansion=/\[STUDIO[_ ]QUALITY[_ ]EVOLUTION\]/i.test(String(prompt??''));
   const assetDevelopmentLane=clean(process.env.VIBE2_EXECUTION_LANE).toLowerCase()==='asset-development';
   const assetAdaptationRequested=!allowFullRewrite&&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(String(prompt??''));
