@@ -404,7 +404,11 @@ test('native asset production defaults to Roblox and exposes reproducible Blende
     assert.equal(plan.generatedAssetOutputContract.exactRuntimeConsumerAssetIdentityRequired,true);
     assert.equal(plan.generatedAssetOutputContract.promotionMustBindSourceOrDerivedHash,true);
     assert.equal(plan.nativeAuthoringExecution.dcc.executionRequired,true);
-    assert.equal(plan.nativeAuthoringExecution.dcc.executionStatus,'AUTHORING_RECIPE_REQUIRED');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionStatus,'PARTIAL_AUTHORING_RECIPE_COVERAGE');
+    assert.ok(plan.nativeAuthoringExecution.dcc.executionRequestCount>=1);
+    assert.ok(plan.nativeAuthoringExecution.dcc.genericRecipeCount>=1);
+    assert.ok(plan.nativeAuthoringExecution.dcc.genericRecipeTypes.some(type=>['background','item','weapon','prop','environment'].includes(type)));
+    assert.ok(plan.nativeAuthoringExecution.dcc.uncoveredTypes.some(type=>['character','enemy','boss','animation'].includes(type)));
     assert.ok(plan.decisions.every(row=>row.generatorFallback.outputContract===plan.generatedAssetOutputContract));
     assert.match(assetProductionGuidance(plan),/GENERATED NATIVE ASSET CONTRACT/);
 
@@ -414,6 +418,43 @@ test('native asset production defaults to Roblox and exposes reproducible Blende
     assert.equal(unity.targetResolution.explicit,true);
     assert.ok(unity.decisions.some(row=>row.directAuthoring.includes('blender-python-original-mesh-rig-and-glb')));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('canonical generic Blender visual recipe is syntax-valid and emits GLB preview evidence outputs',()=>{
+  const script=new URL('../assets/native-authoring/build-game-visual.py',import.meta.url);
+  execFileSync('python3',['-c','import pathlib; compile(pathlib.Path(r"'+decodeURIComponent(script.pathname).replaceAll('\\','\\\\')+'").read_text(), "build-game-visual.py", "exec")']);
+  const source=fs.readFileSync(script,'utf8');
+  assert.match(source,/asset\.glb/);
+  assert.match(source,/preview\.png/);
+  assert.match(source,/evidence\.json/);
+  assert.match(source,/STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING/);
+  assert.match(source,/project-original/);
+});
+
+test('generic environment and prop authoring declares task-specific Blender outputs per native platform',()=>{
+  const task={gameId:'amusement-tycoon',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 놀이공원 환경 배경 소품을 플랫폼 네이티브 3D 자산으로 개선'};
+  const roblox=buildVibeAssetProductionPlan({target:'roblox',task,manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.equal(roblox.nativeAuthoringExecution.dcc.executionRequired,true);
+  assert.equal(roblox.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_EXISTING_AUTHORING_EXECUTOR');
+  assert.equal(roblox.nativeAuthoringExecution.dcc.uncoveredTypes.length,0);
+  assert.ok(roblox.nativeAuthoringExecution.dcc.genericRecipeCount>=1);
+  for(const recipe of roblox.nativeAuthoringExecution.dcc.executionRecipes){
+    assert.equal(recipe.script,'assets/native-authoring/build-game-visual.py');
+    assert.equal(recipe.license,'project-original');
+    assert.ok(recipe.outputs.every(file=>file.startsWith('assets/generated/roblox/amusement-tycoon/')));
+    assert.equal(recipe.targetPlatforms.includes('roblox'),true);
+  }
+
+  const unity=buildVibeAssetProductionPlan({target:'unity',task,manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.equal(unity.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_EXISTING_AUTHORING_EXECUTOR');
+  assert.ok(unity.nativeAuthoringExecution.dcc.executionRecipes.every(recipe=>recipe.outputs.every(file=>file.startsWith('assets/generated/unity/amusement-tycoon/'))));
+  const robloxOutputs=new Set(roblox.nativeAuthoringExecution.dcc.executionRecipes.flatMap(recipe=>recipe.outputs));
+  const unityOutputs=unity.nativeAuthoringExecution.dcc.executionRecipes.flatMap(recipe=>recipe.outputs);
+  assert.equal(unityOutputs.some(file=>robloxOutputs.has(file)),false);
+
+  const web=buildVibeAssetProductionPlan({target:'web',task,manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.equal(web.nativeAuthoringExecution.dcc.executionRequired,false);
+  assert.equal(web.nativeAuthoringExecution.dcc.executionRecipes.length,0);
 });
 
 test('native planner preserves an existing Blender recipe as the DCC execution path',()=>{
