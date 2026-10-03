@@ -217,7 +217,7 @@ local function job(p,key)
  if freeResidents(p)<=0 then msg(p,"배치할 주민 없음");feedback(p,"JOB_BLOCKED");return false end
  s(p,key,n(p,key,0)+1);msg(p,key=="WoodWorkers"and"벌목 주민 배치"or"농장 주민 배치");feedback(p,"JOB");return true
 end
-local function barracks(p)
+local function upgradeBarracks(p)
  local lv=n(p,"BarracksLevel",1);local wc=14+lv*8;local fc=10+lv*6;local ic=math.max(0,(lv-1)*4)
  if n(p,"Wood",0)<wc or n(p,"Food",0)<fc or n(p,"Iron",0)<ic then msg(p,string.format("병영 재료 부족 · 나무%d 식량%d 철%d",wc,fc,ic));feedback(p,"BUILD_BLOCKED");return false end
  s(p,"Wood",n(p,"Wood",0)-wc);s(p,"Food",n(p,"Food",0)-fc);s(p,"Iron",n(p,"Iron",0)-ic);s(p,"BarracksLevel",lv+1);msg(p,"병영 Lv."..(lv+1));feedback(p,"BUILD");return true
@@ -406,7 +406,7 @@ end)
    local chief=figure(npcs,"Chief",Vector3.new(0,topY+6,8),Color3.fromRGB(157,109,73),Color3.fromRGB(77,67,57),1);label(chief,"마을 이장",Color3.fromRGB(255,221,145),30);prompt(chief,"마을 이장","주민 고용").Triggered:Connect(hire)
    local lumber=figure(npcs,"LumberMaster",Vector3.new(-32,topY+6,14),Color3.fromRGB(86,126,78),Color3.fromRGB(67,76,58),.9);label(lumber,"벌목반장",Color3.fromRGB(202,239,189),26);prompt(lumber,"벌목반장","주민 배치").Triggered:Connect(function(p)job(p,"WoodWorkers")end)
    local farmer=figure(npcs,"Farmer",Vector3.new(-30,topY+6,-12),Color3.fromRGB(168,139,73),Color3.fromRGB(83,76,55),.9);label(farmer,"농장주",Color3.fromRGB(242,226,151),26);prompt(farmer,"농장주","주민 배치").Triggered:Connect(function(p)job(p,"Farmers")end)
-   local captain=figure(npcs,"Captain",Vector3.new(36,topY+6,-12),Color3.fromRGB(111,87,75),Color3.fromRGB(68,66,70),.95);label(captain,"병영대장",Color3.fromRGB(235,194,153),26);prompt(captain,"병영대장","병영 강화").Triggered:Connect(barracks)
+   local captain=figure(npcs,"Captain",Vector3.new(36,topY+6,-12),Color3.fromRGB(111,87,75),Color3.fromRGB(68,66,70),.95);label(captain,"병영대장",Color3.fromRGB(235,194,153),26);prompt(captain,"병영대장","병영 강화").Triggered:Connect(upgradeBarracks)
    for i=1,5 do local a=i/5*math.pi*2;local vill=figure(npcs,"Villager"..i,Vector3.new(math.cos(a)*31,topY+6,27+math.sin(a)*22),Color3.fromRGB(100+i*9,120+i*5,93+i*4),Color3.fromRGB(65,70,61),.78);label(vill,"주민",Color3.fromRGB(235,238,225),18)end
 
     spawnVillageBears(world,topY)
@@ -434,6 +434,18 @@ end)
 end
 
 buildWorld()
+
+local function startSession(p)
+ if not p or not p.Parent then return end
+ p:SetAttribute("SessionActive",true)
+ p:SetAttribute("SessionStartedAt",os.time())
+ p:SetAttribute("SessionEndReason","")
+end
+local function finishSession(p,reason)
+ if not p then return end
+ p:SetAttribute("SessionActive",false)
+ p:SetAttribute("SessionEndReason",reason or "PLAYER_EXIT")
+end
 
 local function init(p)
  for k,v in pairs(C.InitialState)do p:SetAttribute(k,v)end
@@ -470,7 +482,7 @@ end
 
 local H={
  [C.Actions.HIRE]=hire,[C.Actions.WOOD_JOB]=function(p)job(p,"WoodWorkers")end,[C.Actions.FOOD_JOB]=function(p)job(p,"Farmers")end,
- [C.Actions.BARRACKS]=barracks,[C.Actions.RECRUIT]=recruit,[C.Actions.ATTACK]=attackBase,
+ [C.Actions.BARRACKS]=upgradeBarracks,[C.Actions.RECRUIT]=recruit,[C.Actions.ATTACK]=attackBase,
  [C.Actions.SUPPORT]=function(p)p:SetAttribute("SupportReady",not(p:GetAttribute("SupportReady")==true));msg(p,p:GetAttribute("SupportReady")and"원정지원 ON"or"원정지원 OFF");return true end,
 }
 remote.OnServerEvent:Connect(function(p,a)
@@ -512,14 +524,15 @@ local function validateCharacterFoundation(p,c)
 end
 local function bindPlayer(p)
  load(p)
+ startSession(p)
  p.CharacterAdded:Connect(function(c)validateCharacterFoundation(p,c)end)
  if p.Character then task.spawn(validateCharacterFoundation,p,p.Character)end
  task.defer(function()if p.Parent==Players then broadcastMultiplayerSync(p)end end)
 end
 Players.PlayerAdded:Connect(bindPlayer)
 for _,p in ipairs(Players:GetPlayers())do bindPlayer(p)end
-Players.PlayerRemoving:Connect(function(p)save(p);dataLoaded[p]=nil;lastRequest[p]=nil;battling[p]=nil;gatherCooldown[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;BattleVisual.cleanup(p);task.defer(function()broadcastMultiplayerSync(nil)end)end)
-game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
+Players.PlayerRemoving:Connect(function(p)finishSession(p,"PLAYER_EXIT");save(p);dataLoaded[p]=nil;lastRequest[p]=nil;battling[p]=nil;gatherCooldown[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;BattleVisual.cleanup(p);task.defer(function()broadcastMultiplayerSync(nil)end)end)
+game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do finishSession(p,"SERVER_CLOSE");save(p)end end)
 
 task.spawn(function()
  while true do task.wait(C.AutomationTickSeconds)
