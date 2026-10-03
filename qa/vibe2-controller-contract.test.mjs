@@ -953,7 +953,9 @@ test('24H safety-net refills free game slots while preserving responsible-file c
   assert(safetyNetWorkflow.includes("VIBE2_RUNNER_PRESSURE_DISPATCH_THRESHOLD: '4'"));
   assert(safetyNetWorkflow.includes("VIBE2_RUNNER_JOB_PRESSURE_THRESHOLD: '8'"));
   assert(safetyNetWorkflow.includes("VIBE2_ASSET_PRIORITY_BURST_MAX: '8'"));
-  assert(safetyNetWorkflow.includes("VIBE2_RELEASE_RECOVERY_BATCH_MAX: '2'"));
+  assert(safetyNetWorkflow.includes("VIBE2_RELEASE_RECOVERY_BATCH_MAX: '256'"));
+  assert(safetyNetWorkflow.includes('VIBE2_RELEASE_RECOVERY_RUNNER_PRESSURE=OBSERVED_EXTERNAL_QUEUE_OWNS_CAPACITY'));
+  assert.equal(safetyNetWorkflow.includes('VIBE2_RELEASE_RECOVERY=DEFERRED_RUNNER_PRESSURE'),false);
   assert(safetyNetWorkflow.includes('VIBE2_RELEASE_RECOVERY_BATCH_LIMIT='));
   assert(safetyNetWorkflow.includes('VIBE2_24H_RUNNER_PRESSURE_THRESHOLD='));
   assert(safetyNetWorkflow.includes('const controlTarget=Math.max(adaptiveMin,Number(control.currentMax||baselineTarget));'));
@@ -989,10 +991,9 @@ test('free-slot refill keeps game-study idle-gated while learning-idle yields fi
   assert(safetyNetWorkflow.includes("needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.asset_development_queued == '0' && needs.plan.outputs.asset_development_active == '0' && needs.plan.outputs.learning_idle_queued == '0'"));
 });
 
-test('24H cycle preserves continuity without multiplying independent scheduler chains',()=>{
-  assert(safetyNetWorkflow.includes('group: vibe2-24h-cycle-singleton-v9'));
-  assert(!safetyNetWorkflow.includes('group: vibe2-24h-cycle-singleton\n'));
-  assert(!safetyNetWorkflow.includes('group: vibe2-24h-cycle-${{ github.run_id }}'));
+test('24H cycle preserves continuity with run-scoped schedulers and optimistic shared-state writes',()=>{
+  assert(safetyNetWorkflow.includes('group: vibe2-24h-cycle-${{ github.run_id }}'));
+  assert(!safetyNetWorkflow.includes('group: vibe2-24h-cycle-singleton'));
   assert(safetyNetWorkflow.includes('cancel-in-progress: false'));
   const planStart=safetyNetWorkflow.indexOf('  plan:');
   const recoveryStart=safetyNetWorkflow.indexOf('  recovery_fast:');
@@ -1268,16 +1269,17 @@ test('fan-in workflow persists verified supervised review learning before releas
   assert.match(workflow,/--batch-review=\/tmp\/vibe2-package-review\.json/);
   assert.match(workflow,/\.vibe2\/experience\.json/);
 });
-test('fan-in defers candidate release dispatch while the GitHub runner queue is pressured',()=>{
+test('fan-in dispatches reviewed candidates without unrelated runner-queue starvation',()=>{
   const start=workflow.indexOf('- name: Dispatch reviewed winner candidates to release gate');
   const end=workflow.indexOf('- name: Dispatch verified system architecture candidates',start);
   assert.ok(start>=0&&end>start);
   const block=workflow.slice(start,end);
-  assert.match(block,/VIBE2_RELEASE_DISPATCH_QUEUE_PRESSURE=/);
-  assert.match(block,/VIBE2_RELEASE_DISPATCH_QUEUE_THRESHOLD/);
-  assert.match(block,/VIBE2_NATIVE_RELEASE_DISPATCH_BATCH_MAX/);
+  assert.match(workflow,/VIBE2_NATIVE_RELEASE_DISPATCH_BATCH_MAX: '256'/);
+  assert.match(block,/VIBE2_RELEASE_DISPATCH_QUEUE_PRESSURE_GATE=DISABLED_EXTERNAL_RUNNER_QUEUE_OWNS_CAPACITY/);
+  assert.match(block,/native_dispatch_max="\$\{VIBE2_NATIVE_RELEASE_DISPATCH_BATCH_MAX:-256\}"/);
   assert.match(block,/VIBE2_NATIVE_RELEASE_DISPATCH=DEFERRED_BATCH_LIMIT/);
-  assert.match(block,/VIBE2_RELEASE_DISPATCH=DEFERRED_TO_24H_RECOVERY_RUNNER_PRESSURE/);
+  assert.doesNotMatch(block,/VIBE2_RELEASE_DISPATCH_QUEUE_THRESHOLD/);
+  assert.doesNotMatch(block,/VIBE2_RELEASE_DISPATCH=DEFERRED_TO_24H_RECOVERY_RUNNER_PRESSURE/);
   assert.match(block,/actions\/workflows\/vibe2-candidate-release\.yml\/dispatches/);
 });
 
