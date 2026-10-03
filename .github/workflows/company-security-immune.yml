@@ -271,34 +271,31 @@ jobs:
           fi
           git fetch --no-tags --depth=1 origin "$BASE_SHA"
           git diff --name-only "$BASE_SHA" HEAD > /tmp/central-prune-files.txt
-          if grep -Ev '^(company-learning/platform-release-roadmap\.json|company-records/operations/[0-9]{4}/[0-9]{4}-[0-9]{2}-[0-9]{2}/company/central-policy-archive--central-policy-current-use-[a-z0-9-]+\.json)$' /tmp/central-prune-files.txt | grep -q .; then
+          if grep -Ev '^(company-learning/(platform-release-roadmap|company-architecture-map|company-log-map)\.json|company-records/operations/[0-9]{4}/[0-9]{4}-[0-9]{2}-[0-9]{2}/company/(central-policy-archive--central-policy-current-use-[a-z0-9-]+|central-document-archive--central-companion-current-use-[a-z0-9-]+)\.json)$' /tmp/central-prune-files.txt | grep -q .; then
             echo 'CENTRAL_AUTO_PRUNE_SECURITY=UNEXPECTED_FILE'
             cat /tmp/central-prune-files.txt
             exit 0
           fi
-          grep -qx 'company-learning/platform-release-roadmap.json' /tmp/central-prune-files.txt
-          grep -Eq '^company-records/operations/.+/central-policy-archive--central-policy-current-use-.+\.json$' /tmp/central-prune-files.txt
+          grep -Eq '^company-learning/(platform-release-roadmap|company-architecture-map|company-log-map)\.json$' /tmp/central-prune-files.txt
+          grep -Eq '^company-records/operations/.+/(central-policy-archive--central-policy-current-use-|central-document-archive--central-companion-current-use-).+\.json$' /tmp/central-prune-files.txt
           node tools/company-records-governance.mjs --central-report
           BASE_SHA="$BASE_SHA" node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {execFileSync} from 'node:child_process';
-          import {findCurrentCentralPolicyReferences} from './tools/company-records-governance.mjs';
+          import {findCurrentCentralPolicyReferences,findCurrentCompanionDocumentReferences} from './tools/company-records-governance.mjs';
 
           const baseSha=process.env.BASE_SHA;
           const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
-          const head=read('company-learning/platform-release-roadmap.json');
-          const base=JSON.parse(execFileSync('git',['show',baseSha+':company-learning/platform-release-roadmap.json'],{encoding:'utf8'}));
+          const readBase=p=>JSON.parse(execFileSync('git',['show',baseSha+':'+p],{encoding:'utf8'}));
           const changed=fs.readFileSync('/tmp/central-prune-files.txt','utf8').split(/\r?\n/).filter(Boolean);
-          const archives=changed.filter(x=>x.includes('/central-policy-archive--central-policy-current-use-')).map(read);
-          if(archives.length!==1)throw new Error('AUTO_PRUNE_EXACTLY_ONE_ARCHIVE_REQUIRED');
-          const archive=archives[0];
-          if(archive?.data?.mode!=='AUTO_CURRENT_USE_ONLY')throw new Error('AUTO_PRUNE_MODE_REQUIRED');
-          const paths=archive?.data?.archivedPaths||[];
-          const payload=archive?.data?.archivedPayload||{};
-          if(!Array.isArray(paths)||!paths.length)throw new Error('AUTO_PRUNE_PATHS_REQUIRED');
+          const policyPath='company-learning/platform-release-roadmap.json';
+          const architecturePath='company-learning/company-architecture-map.json';
+          const logMapPath='company-learning/company-log-map.json';
+          const policyArchives=changed.filter(x=>x.includes('/central-policy-archive--central-policy-current-use-')).map(read);
+          const companionArchives=changed.filter(x=>x.includes('/central-document-archive--central-companion-current-use-')).map(read);
+          if(policyArchives.length>1)throw new Error('AUTO_PRUNE_MULTIPLE_POLICY_ARCHIVES_FORBIDDEN');
+          if(companionArchives.length>1)throw new Error('AUTO_PRUNE_MULTIPLE_COMPANION_ARCHIVES_FORBIDDEN');
 
-          const refs=findCurrentCentralPolicyReferences();
-          const refKeys=Object.keys(refs);
           const get=(root,dotted)=>{
             let cur=root;
             for(const key of dotted.split('.').filter(Boolean)){
@@ -318,19 +315,70 @@ jobs:
             delete cur[last];
             return true;
           };
+          const isReferenced=(path,refKeys)=>refKeys.includes('*')||refKeys.some(ref=>ref===path||ref.startsWith(path+'.')||path.startsWith(ref+'.'));
 
-          const reconstructed=structuredClone(base);
-          for(const p of paths){
-            const stillReferenced=refKeys.some(ref=>ref===p||ref.startsWith(p+'.')||p.startsWith(ref+'.'));
-            if(stillReferenced)throw new Error('AUTO_PRUNE_REFERENCED_PATH:'+p);
-            const prior=get(base,p);
-            if(prior===undefined)throw new Error('AUTO_PRUNE_BASE_PATH_MISSING:'+p);
-            if(JSON.stringify(prior)!==JSON.stringify(payload[p]))throw new Error('AUTO_PRUNE_ARCHIVE_PAYLOAD_MISMATCH:'+p);
-            if(get(head,p)!==undefined)throw new Error('AUTO_PRUNE_HEAD_PATH_NOT_REMOVED:'+p);
-            if(!del(reconstructed,p))throw new Error('AUTO_PRUNE_RECONSTRUCT_DELETE_FAILED:'+p);
+          if(changed.includes(policyPath)){
+            if(policyArchives.length!==1)throw new Error('AUTO_PRUNE_POLICY_ARCHIVE_REQUIRED');
+            const archive=policyArchives[0];
+            if(archive?.data?.mode!=='AUTO_CURRENT_USE_ONLY')throw new Error('AUTO_PRUNE_POLICY_MODE_REQUIRED');
+            const paths=archive?.data?.archivedPaths||[];
+            const payload=archive?.data?.archivedPayload||{};
+            if(!Array.isArray(paths)||!paths.length)throw new Error('AUTO_PRUNE_POLICY_PATHS_REQUIRED');
+            const head=read(policyPath);
+            const base=readBase(policyPath);
+            const refKeys=Object.keys(findCurrentCentralPolicyReferences());
+            const reconstructed=structuredClone(base);
+            for(const p of paths){
+              if(isReferenced(p,refKeys))throw new Error('AUTO_PRUNE_REFERENCED_POLICY_PATH:'+p);
+              const prior=get(base,p);
+              if(prior===undefined)throw new Error('AUTO_PRUNE_POLICY_BASE_PATH_MISSING:'+p);
+              if(JSON.stringify(prior)!==JSON.stringify(payload[p]))throw new Error('AUTO_PRUNE_POLICY_ARCHIVE_PAYLOAD_MISMATCH:'+p);
+              if(get(head,p)!==undefined)throw new Error('AUTO_PRUNE_POLICY_HEAD_PATH_NOT_REMOVED:'+p);
+              if(!del(reconstructed,p))throw new Error('AUTO_PRUNE_POLICY_RECONSTRUCT_DELETE_FAILED:'+p);
+            }
+            reconstructed.centralDocumentRetention=head.centralDocumentRetention;
+            if(JSON.stringify(reconstructed)!==JSON.stringify(head))throw new Error('AUTO_PRUNE_NON_ARCHIVAL_POLICY_MUTATION');
+          }else if(policyArchives.length){
+            throw new Error('AUTO_PRUNE_POLICY_ARCHIVE_WITHOUT_POLICY_CHANGE');
           }
-          reconstructed.centralDocumentRetention=head.centralDocumentRetention;
-          if(JSON.stringify(reconstructed)!==JSON.stringify(head))throw new Error('AUTO_PRUNE_NON_ARCHIVAL_POLICY_MUTATION');
+
+          const companionChanged=[
+            ['architecture',architecturePath],
+            ['logMap',logMapPath]
+          ].filter(([,sourcePath])=>changed.includes(sourcePath));
+          if(companionChanged.length){
+            if(companionArchives.length!==1)throw new Error('AUTO_PRUNE_COMPANION_ARCHIVE_REQUIRED');
+            const archive=companionArchives[0];
+            if(archive?.data?.mode!=='AUTO_CURRENT_USE_COMPANION')throw new Error('AUTO_PRUNE_COMPANION_MODE_REQUIRED');
+            const documents=archive?.data?.documents||{};
+            const refs=findCurrentCompanionDocumentReferences();
+            const allowedKeys=new Set(companionChanged.map(([documentKey])=>documentKey));
+            for(const documentKey of Object.keys(documents))if(!allowedKeys.has(documentKey))throw new Error('AUTO_PRUNE_UNCHANGED_COMPANION_ARCHIVED:'+documentKey);
+            for(const [documentKey,sourcePath] of companionChanged){
+              const row=documents[documentKey];
+              if(!row||row.sourcePath!==sourcePath)throw new Error('AUTO_PRUNE_COMPANION_DOCUMENT_REQUIRED:'+documentKey);
+              const paths=Array.isArray(row.archivedPaths)?row.archivedPaths:[];
+              const payload=row.archivedPayload||{};
+              if(!paths.length)throw new Error('AUTO_PRUNE_COMPANION_PATHS_REQUIRED:'+documentKey);
+              const head=read(sourcePath);
+              const base=readBase(sourcePath);
+              const refKeys=Object.keys(refs[documentKey]||{});
+              const reconstructed=structuredClone(base);
+              for(const p of paths){
+                if(isReferenced(p,refKeys))throw new Error('AUTO_PRUNE_REFERENCED_COMPANION_PATH:'+documentKey+':'+p);
+                const prior=get(base,p);
+                if(prior===undefined)throw new Error('AUTO_PRUNE_COMPANION_BASE_PATH_MISSING:'+documentKey+':'+p);
+                if(JSON.stringify(prior)!==JSON.stringify(payload[p]))throw new Error('AUTO_PRUNE_COMPANION_ARCHIVE_PAYLOAD_MISMATCH:'+documentKey+':'+p);
+                if(get(head,p)!==undefined)throw new Error('AUTO_PRUNE_COMPANION_HEAD_PATH_NOT_REMOVED:'+documentKey+':'+p);
+                if(!del(reconstructed,p))throw new Error('AUTO_PRUNE_COMPANION_RECONSTRUCT_DELETE_FAILED:'+documentKey+':'+p);
+              }
+              if(JSON.stringify(reconstructed)!==JSON.stringify(head))throw new Error('AUTO_PRUNE_NON_ARCHIVAL_COMPANION_MUTATION:'+documentKey);
+            }
+          }else if(companionArchives.length){
+            throw new Error('AUTO_PRUNE_COMPANION_ARCHIVE_WITHOUT_COMPANION_CHANGE');
+          }
+
+          if(!policyArchives.length&&!companionArchives.length)throw new Error('AUTO_PRUNE_ARCHIVE_REQUIRED');
           console.log('CENTRAL_AUTO_PRUNE_REFERENCED_PATHS_PROTECTED=PASS');
           console.log('CENTRAL_AUTO_PRUNE_ARCHIVE_FIDELITY=PASS');
           console.log('CENTRAL_AUTO_PRUNE_ONLY_ARCHIVAL_MUTATION=PASS');
