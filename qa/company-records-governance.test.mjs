@@ -321,6 +321,15 @@ test('current central four documents stay inside absolute anti-bloat budgets',()
   assert.equal(report.documents.security.maxGrowthUtf8Bytes,4000);
 });
 
+test('central document growth report reads an exact git baseline',()=>{
+  const report=inspectCentralDocumentBudgets({baseRevision:'HEAD'});
+  assert.deepEqual(report.errors,[]);
+  for(const row of Object.values(report.documents)){
+    assert.equal(row.growthUtf8Bytes,0);
+    assert.equal(row.baseUtf8Bytes,row.utf8Bytes);
+  }
+});
+
 test('current central policy stays within hard retention limit and keeps every referenced compatibility record',()=>{
   const report=inspectCentralDocument();
   assert.deepEqual(report.errors,[]);
