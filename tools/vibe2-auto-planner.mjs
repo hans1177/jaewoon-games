@@ -2165,10 +2165,17 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     ?taskHistory.filter(item=>clean(item?.buildUpDirective?.directiveId)===latestDirectiveId)
     :[];
   const activeDirectiveTask=[...latestDirectiveTasks].reverse().find(item=>!inactiveDirectiveStatuses.has(clean(item.status).toLowerCase()));
+  const activeDirectiveMultiplayerState=clean((activeDirectiveTask?.buildUpDirective?.qualityGapMap||[]).find(row=>clean(row?.domain).toUpperCase()==='MULTIPLAYER_AND_SYNC')?.state).toUpperCase();
+  const projectPlayMode=clean(project?.playMode).toUpperCase();
+  const projectRequiresMultiplayer=Boolean(projectPlayMode&&projectPlayMode!=='SINGLE');
+  const activeDirectivePlatformCompatible=platformLane!=='roblox'||clean(activeDirectiveTask?.buildUpDirective?.platform).toUpperCase()==='ROBLOX';
+  const activeDirectiveSemanticCompatible=!projectRequiresMultiplayer||activeDirectiveMultiplayerState!=='NOT_APPLICABLE';
   const activeDirectiveMatchesCurrentSource=Boolean(
     activeDirectiveTask?.buildUpDirective
     &&clean(activeDirectiveTask.buildUpDirective.sourceTreeFingerprint)
     &&clean(activeDirectiveTask.buildUpDirective.sourceTreeFingerprint)===clean(sourceObservation.sourceTreeFingerprint)
+    &&activeDirectivePlatformCompatible
+    &&activeDirectiveSemanticCompatible
   );
   if(activeDirectiveMatchesCurrentSource){
     const repairRequired=platformLane==='roblox'&&project.queueRobloxQualityBuildUpRequired===true;
@@ -2268,11 +2275,26 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     regressionPassed:(samePlatform&&project?.queueRuntimeRegressionPassed===true)
       ||(roblox&&project?.queueRobloxRegressionPassed===true)
   };
+  const rawDesignRecord=designContext?.record||{content:{identity:project.name||project.gameId}};
+  const effectiveDesignRecord=JSON.parse(JSON.stringify(rawDesignRecord));
+  effectiveDesignRecord.content=effectiveDesignRecord.content&&typeof effectiveDesignRecord.content==='object'?effectiveDesignRecord.content:{};
+  if(platformLane==='roblox'){
+    const mode=clean(project?.playMode).toUpperCase();
+    const genre=clean(project?.genre);
+    const subgenre=clean(project?.subgenre);
+    if(mode)effectiveDesignRecord.content.multiplayerMode=mode;
+    effectiveDesignRecord.content.robloxBuildProfile={
+      ...(effectiveDesignRecord.content.robloxBuildProfile||{}),
+      ...(genre?{genre}:{}),
+      ...(subgenre?{subgenre}:{}),
+      ...(mode?{playMode:mode,multiplayerRequired:mode!=='SINGLE',networkingRequired:mode!=='SINGLE',multiplayerQaRequired:mode!=='SINGLE'}:{})
+    };
+  }
   const directive=buildGameSpecificBuildUpDirective({
     gameId:project.gameId,
     gameName:project.name||project.gameId,
     platform:buildUpPlatformToken(project,platformLane),
-    designRecord:designContext?.record||{content:{identity:project.name||project.gameId}},
+    designRecord:effectiveDesignRecord,
     sourceObservation,
     repoRoot,
     sourceRoot:sourceRoots.join('|'),
@@ -2318,6 +2340,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       'build-up-every-loop-regenerate:YES',
       'build-up-all-domain-coverage:YES',
       'build-up-platform-common-goal:YES',
+      ...(platformLane==='roblox'?['build-up-roblox-design-profile-grounded:YES']:[]),
       'experience-build-up-platform:'+clean(directive.experienceBuildUpContract?.platform||'COMMON'),
       ...(directive.experienceBuildUpContract?.platform==='ROBLOX'?['experience-build-up-roblox-extra-attention:YES']:[]),
       'experience-build-up-owner-disabled-audio-preserved:YES',
