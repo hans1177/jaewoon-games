@@ -187,7 +187,7 @@ export function extractCentralPolicyReferences(text=''){
     const path=clean(value).replace(/^\.+|\.+$/g,'');
     if(path&&/^[A-Za-z0-9_.-]+$/.test(path))refs.add(path);
   };
-  for(const match of source.matchAll(/(?:roadmap|policy|central)(?:\?\.|\.)([A-Za-z0-9_]+(?:\?\.|\.[A-Za-z0-9_]+)*)/g)){
+  for(const match of source.matchAll(/(?:roadmap|policy|central)(?:\?\.|\.)([A-Za-z0-9_]+(?:(?:\?\.|\.)[A-Za-z0-9_]+)*)/g)){
     add(match[1].replaceAll('?.','.'));
   }
   for(const match of source.matchAll(/platform-release-roadmap\.json#([A-Za-z0-9_.-]+)/g))add(match[1]);
