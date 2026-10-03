@@ -462,11 +462,15 @@ function releasesResponsibleFileLocksForCausalRepair(task={}) {
     &&/candidate-awaiting-runtime-evidence/i.test(clean(task.blocker))
     &&clean(task.buildUpNextAction).toUpperCase()==='CAUSAL_REPAIR';
 }
+function releasesResponsibleFileLocksAfterWorkerSlot(task={}) {
+  return clean(task.status).toLowerCase()==='running'
+    &&/slot-released.*fan-in/i.test(clean(task.blocker));
+}
 function fileLocks(task) {
   const root = posix(task.sourceRoot);
   const current=(task.responsibleFiles || []).map(posix).filter(Boolean).map((file) => root && !file.startsWith(`${root}/`) ? `${root}/${file}` : file);
   const retained=(task.retainedResponsibleFileLocks || []).map(posix).filter(Boolean);
-  if(releasesResponsibleFileLocksForCausalRepair(task))return new Set(retained);
+  if(releasesResponsibleFileLocksForCausalRepair(task)||releasesResponsibleFileLocksAfterWorkerSlot(task))return new Set(retained);
   return new Set([...current,...retained]);
 }
 function lockConflict(a, b) {
