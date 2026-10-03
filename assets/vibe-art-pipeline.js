@@ -660,6 +660,7 @@ export function createVibeGraphicsProduction({
     stages:GRAPHICS_PRODUCTION_STAGES,
     assetProductionPlanBound:assetPlanBound,
     assetProductionPlan:assetPlanBound?assetProductionPlan:null,
+    studioQuality120:assetPlanBound?assetProductionPlan?.studioQuality120||null:null,
     artSpec,
     visualDirection,
     visualWork,
@@ -717,7 +718,16 @@ export function createVibeGraphicsProduction({
       characterIdentityDirectorIntegrated:true,
       environmentDetailDirectorIntegrated:true,
       engineMeasurementCaptureRequired:true,
-      missingEngineMeasurementRemainsUnverified:true
+      missingEngineMeasurementRemainsUnverified:true,
+      studioAssetQualityScaleMaximum:120,
+      studioAssetQualityScoreIsNotDevelopmentBindingGate:true,
+      lowQualityAssetMayBindWhenNoBetterSafeCompatibleAlternative:true,
+      lowQualityBindingKeepsVisualDebtOpen:true,
+      heroAssetsDefineQualityBaseline:true,
+      worstPartFirstAssetEvolution:true,
+      uiItemAndPresentationFamiliesIncluded:true,
+      productionVerificationIndependentFromQualityScore:true,
+      verifiedRuntimeOutcomeOnlyMayTeachPositiveAssetLearning:true
     })
   });
 }
