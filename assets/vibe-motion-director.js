@@ -1092,7 +1092,7 @@ export function buildSkillMotionSequence({prepare='PREPARE',charge='CHARGE',aim=
   });
 }
 
-export function createReactionMatch({impactDirection='FRONT',impactHeight='MID',impactStrength='LIGHT',attackType='GENERIC',contactLimb='',stance='NEUTRAL',weightClass='STANDARD',airborneState='GROUNDED',wallProximity='CLEAR',groundState='STABLE'}={}){
+export function createReactionMatch({impactDirection='FRONT',impactHeight='MID',impactStrength='LIGHT',attackType='GENERIC',contactLimb='',bodyRegion='TORSO',stance='NEUTRAL',weightClass='STANDARD',airborneState='GROUNDED',wallProximity='CLEAR',groundState='STABLE',partialPhysics=true}={}){
   const strength=upper(impactStrength);
   const airborne=upper(airborneState);
   const wall=upper(wallProximity);
@@ -1102,12 +1102,23 @@ export function createReactionMatch({impactDirection='FRONT',impactHeight='MID',
   else if(strength==='LAUNCH')output='LAUNCH';
   else if(strength==='HEAVY')output='FULL_BODY_HIT';
   else if(strength==='KNOCKDOWN')output='KNOCKDOWN';
+  const partialRagdollEnabled=partialPhysics!==false&&['HEAVY','LAUNCH','KNOCKDOWN'].includes(strength);
   return Object.freeze({
     output,
     tags:Object.freeze({
       direction:upper(impactDirection),height:upper(impactHeight),strength,
-      attackType:upper(attackType),contactLimb:upper(contactLimb),stance:upper(stance),
+      attackType:upper(attackType),contactLimb:upper(contactLimb),bodyRegion:upper(bodyRegion),stance:upper(stance),
       weightClass:upper(weightClass),airborneState:airborne,wallProximity:wall,groundState:upper(groundState)
+    }),
+    directionalReactionRequired:true,
+    bodyRegionReactionRequired:true,
+    partialRagdoll:Object.freeze({
+      enabled:partialRagdollEnabled,
+      mode:partialRagdollEnabled?'IMPACT_CHAIN_ONLY':'NONE',
+      maxBlendSeconds:partialRagdollEnabled?.22:0,
+      recoverToAuthoredPose:true,
+      authoritativeRootAndColliderImmutable:true,
+      visualPhysicsOnly:true
     }),
     gameplayHitResultAuthoritative:true
   });
@@ -1828,11 +1839,17 @@ export function bindGameplayEventToMotion({event='',availableRoles=[]}={}){
 
 export function createProceduralMotionProfile({
   footIk=true,
+  footLock=true,
+  multiLimbContact=true,
   groundNormal=true,
   pelvisHeight=true,
   spineLean=true,
   headGaze=true,
+  lookAtTarget=true,
   handGrip=true,
+  handContact=true,
+  weaponGripLock=true,
+  contactCorrection=true,
   aimOffset=true,
   tailBalance=false,
   wingBalance=false,
@@ -1840,16 +1857,24 @@ export function createProceduralMotionProfile({
   stairContact=true,
   ledgeContact=true,
   wallProximityPose=true,
+  limbCount=2,
   platformBudget='MOBILE'
 }={}){
+  const limbs=Math.max(2,Math.floor(Number(limbCount)||2));
   return Object.freeze({
     corrections:Object.freeze({
       FOOT_IK:footIk===true,
+      FOOT_PLANT_LOCK:footLock===true,
+      MULTI_LIMB_CONTACT:multiLimbContact===true&&limbs>2,
       GROUND_NORMAL_ALIGNMENT:groundNormal===true,
       PELVIS_HEIGHT:pelvisHeight===true,
       SPINE_LEAN:spineLean===true,
       HEAD_GAZE:headGaze===true,
+      LOOK_AT_TARGET:lookAtTarget===true,
       HAND_GRIP:handGrip===true,
+      HAND_WORLD_CONTACT:handContact===true,
+      WEAPON_GRIP_LOCK:weaponGripLock===true,
+      CONTACT_CORRECTION:contactCorrection===true,
       AIM_OFFSET:aimOffset===true,
       TAIL_BALANCE:tailBalance===true,
       WING_BALANCE:wingBalance===true,
@@ -1857,6 +1882,14 @@ export function createProceduralMotionProfile({
       STAIR_CONTACT:stairContact===true,
       LEDGE_CONTACT:ledgeContact===true,
       WALL_PROXIMITY_POSE:wallProximityPose===true
+    }),
+    limbCount:limbs,
+    contactPolicy:Object.freeze({
+      plantedLimbWorldLock:true,
+      predictiveGroundProbe:true,
+      perLimbSurfaceNormal:true,
+      handAndWeaponTargetConstraint:true,
+      bodyPlanSpecificSolverRequired:limbs>2
     }),
     platformBudget:upper(platformBudget),
     visualOnly:true,
@@ -1953,22 +1986,36 @@ export function selectMotionLod({
   screenSize=0,
   deviceClass='MOBILE',
   actorImportance='STANDARD',
-  combatRelevant=true
+  combatRelevant=true,
+  visible=true
 }={}){
   const importance=upper(actorImportance);
   const device=upper(deviceClass);
   let tier='FAR';
-  if(importance==='HERO'||importance==='BOSS'||Number(cameraDistance)<12||Number(screenSize)>0.2)tier='NEAR';
+  if(visible===false)tier='OFFSCREEN';
+  else if(importance==='HERO'||importance==='BOSS'||Number(cameraDistance)<12||Number(screenSize)>0.2)tier='NEAR';
   else if(Number(cameraDistance)<35||combatRelevant===true)tier='MID';
   if(device==='LOW_END_MOBILE'&&tier==='NEAR'&&importance!=='HERO'&&importance!=='BOSS')tier='MID';
   const features=tier==='NEAR'
-    ?['FULL_BODY_LAYERING','IK_CONTACT','HEAD_GAZE','SECONDARY_MOTION','FACIAL_WHEN_AVAILABLE','FULL_VFX_SYNC']
+    ?['FULL_BODY_LAYERING','POSE_MATCHING','IK_CONTACT','FULL_IK_CONTACT','HEAD_GAZE','SECONDARY_MOTION','FACIAL_WHEN_AVAILABLE','FULL_VFX_SYNC']
     :tier==='MID'
-      ?['CORE_LAYERING','SIMPLIFIED_IK','HEAD_GAZE','LIMITED_SECONDARY']
-      :['BASE_LOCOMOTION','PRIMARY_ACTION','CRITICAL_REACTION_ONLY'];
+      ?['CORE_LAYERING','POSE_MATCHING','SIMPLIFIED_IK','HEAD_GAZE','LIMITED_SECONDARY']
+      :tier==='FAR'
+        ?['BASE_LOCOMOTION','PRIMARY_ACTION','CRITICAL_REACTION_ONLY']
+        :['CRITICAL_STATE_ONLY'];
+  const budget=tier==='NEAR'
+    ?{animationHz:60,ikHz:60,secondaryHz:30,facialHz:30}
+    :tier==='MID'
+      ?{animationHz:30,ikHz:20,secondaryHz:15,facialHz:10}
+      :tier==='FAR'
+        ?{animationHz:15,ikHz:0,secondaryHz:0,facialHz:0}
+        :{animationHz:5,ikHz:0,secondaryHz:0,facialHz:0};
   return Object.freeze({
     tier,
     features:Object.freeze(features),
+    budget:Object.freeze(budget),
+    offscreenMayReducePoseEvaluation:tier==='OFFSCREEN',
+    heroAndBossNeverLoseCriticalReaction:true,
     gameplayHitAndCollisionUnaffected:true,
     mobileBudgetFirst:true
   });
@@ -2116,8 +2163,11 @@ export function createRobloxMotionBlendProfile({
   sprintSpeed=22,
   turnBlendSeconds=.14,
   attackRecoveryBlendSeconds=.12,
+  poseMatchWindowFrames=12,
   speedSync=true,
-  upperLowerBodyLayering=true
+  upperLowerBodyLayering=true,
+  inertialization=true,
+  additiveLayers=true
 }={}){
   return Object.freeze({
     crossFadeSeconds:clamp(crossFadeSeconds,.08,.35),
@@ -2129,13 +2179,134 @@ export function createRobloxMotionBlendProfile({
     }),
     turnBlendSeconds:clamp(turnBlendSeconds,.08,.35),
     attackRecoveryBlendSeconds:clamp(attackRecoveryBlendSeconds,.08,.35),
+    poseMatching:Object.freeze({
+      required:true,
+      candidateWindowFrames:Math.max(4,Math.min(30,Math.floor(Number(poseMatchWindowFrames)||12))),
+      compare:Object.freeze(['POSE','ROOT_VELOCITY','ANGULAR_VELOCITY','FOOT_PHASE','CONTACT_STATE'])
+    }),
+    inertializationRequired:inertialization!==false,
+    footPhaseAwareBlendRequired:true,
     animationTrackCrossFadeRequired:true,
     adjustWeightPreferred:true,
     playbackSpeedSyncRequired:speedSync!==false,
     accelerationDecelerationContinuityRequired:true,
     upperLowerBodyLayeringPreferred:upperLowerBodyLayering!==false,
+    additiveLayersRequired:additiveLayers!==false,
+    layerMasks:Object.freeze({
+      LOWER_BODY:'LOCOMOTION_AND_FOOT_CONTACT',
+      UPPER_BODY:'AIM_ATTACK_RELOAD_INTERACTION',
+      ADDITIVE:'BREATH_RECOIL_HIT_EMOTION_SECONDARY'
+    }),
     hardStatePopForbidden:true,
     gameplayTimingAuthority:false
+  });
+}
+
+export function createStudioMotionActionProfile({
+  platform='UNITY',
+  actorClass='HUMANOID_NPC',
+  bodyPlan='HUMANOID',
+  archetype='',
+  weaponFamily='UNARMED',
+  weightClass='STANDARD',
+  combat=true,
+  mobile=true,
+  limbCount=2
+}={}){
+  const weight=upper(weightClass)||'STANDARD';
+  const limbs=Math.max(2,Math.floor(Number(limbCount)||2));
+  const weightTuning=weight==='HEAVY'
+    ?{anticipation:1.3,followThrough:1.35,hitStopMs:70,cameraImpulse:1.25}
+    :weight==='LIGHT'
+      ?{anticipation:.82,followThrough:.8,hitStopMs:28,cameraImpulse:.7}
+      :{anticipation:1,followThrough:1,hitStopMs:45,cameraImpulse:1};
+  return Object.freeze({
+    version:1,
+    systems:freezeList([
+      'POSE_MATCHING','UPPER_LOWER_BODY_LAYERING','ADDITIVE_MOTION','MOTION_WARPING','COMBAT_CONTACT_SOLVER',
+      'WEIGHTED_ATTACK_PRESENTATION','INERTIALIZATION','PROCEDURAL_FOOT_HAND_IK','DIRECTIONAL_BODY_REGION_HIT_REACTION',
+      'PARTIAL_RAGDOLL','ATTACK_TELEGRAPH','SPECIES_MOTION_DNA','GAZE_HEAD_TRACKING','EMOTION_COMBAT_STATE',
+      'COMBO_RHYTHM','CONTEXTUAL_HIT_STOP','CAMERA_IMPULSE','MOTION_AUDIO_SYNC','ANIMATION_LOD','MOBILE_FRAME_BUDGET','AUTOMATED_MOTION_QA'
+    ]),
+    poseMatching:Object.freeze({
+      enabled:true,candidateWindowFrames:12,
+      compare:Object.freeze(['POSE','ROOT_VELOCITY','ANGULAR_VELOCITY','FOOT_PHASE','CONTACT_STATE']),
+      preserveCurrentVelocity:true,hardPopForbidden:true
+    }),
+    layering:Object.freeze({
+      lowerBody:'LOCOMOTION_AND_FOOT_CONTACT',upperBody:'AIM_ATTACK_RELOAD_INTERACTION',
+      additive:Object.freeze(['BREATHING','RECOIL','HIT_REACTION','EMOTION','SECONDARY_MOTION']),
+      compatibleMasksRequired:true
+    }),
+    motionWarping:Object.freeze({
+      enabled:combat===true,translationClampNormalized:.12,yawClampDegrees:18,
+      targets:Object.freeze(['HAND','WEAPON_TIP','FOOT_OR_CLAW','PAIR_CONTACT']),
+      activeContactWindowImmutable:true,authoritativeRootMovementImmutable:true
+    }),
+    contactSolver:Object.freeze({
+      continuousSweep:true,sampleHz:mobile?60:120,
+      resolveOnlyInsideAuthoritativeActiveWindow:true,
+      contactPointDrives:Object.freeze(['HIT_REACTION_DIRECTION','CONTACT_VFX','CONTACT_AUDIO','CAMERA_IMPULSE']),
+      damageAndHitboxAuthority:false
+    }),
+    weightedAttack:Object.freeze({...weightTuning,weightClass:weight,weaponFamily:upper(weaponFamily),gameplayAttackWindowImmutable:true}),
+    inertialization:Object.freeze({
+      enabled:true,channels:Object.freeze(['ROOT_VELOCITY_VISUAL','PELVIS','SPINE','HEAD','LIMBS','EQUIPMENT']),
+      startStopTurnAndInterrupt:true,authoritativeVelocityImmutable:true
+    }),
+    proceduralIk:Object.freeze({
+      footPlantLock:true,handAndWeaponContact:true,multiLimbContact:limbs>2,limbCount:limbs,
+      slopeAndStairAdaptation:true,predictiveGroundProbe:true,bodyPlanSpecific:true
+    }),
+    hitReaction:Object.freeze({
+      directional:true,bodyRegion:true,strengthTiered:true,
+      partialRagdoll:Object.freeze({enabled:true,mode:'IMPACT_CHAIN_ONLY',maxBlendSeconds:.22,recoverToAuthoredPose:true,visualPhysicsOnly:true})
+    }),
+    telegraph:Object.freeze({
+      order:Object.freeze(['GAZE','HEAD','TORSO_WEIGHT_SHIFT','WEAPON_OR_LIMB_PREPARE','COMMIT']),
+      strongAttackReadabilityRequired:true,redOverlayAloneInsufficient:true
+    }),
+    identity:Object.freeze({
+      actorClass:upper(actorClass),bodyPlan:upper(bodyPlan),archetype:upper(archetype),
+      speciesMotionDnaRequired:true,genericMotionCopyAcrossDistinctBodyPlansForbidden:true
+    }),
+    stateLayers:Object.freeze({
+      gazeHeadTracking:true,emotionCombatState:true,
+      states:Object.freeze(['CALM','ALERT','AGGRESSIVE','INJURED','FEAR_OR_RETREAT_WHEN_APPLICABLE'])
+    }),
+    comboRhythm:Object.freeze({
+      defaultCadence:Object.freeze(['QUICK','QUICK','HEAVY']),
+      inputBufferPresentationAware:true,authoritativeComboWindowImmutable:true,recoveryPoseMatchRequired:true
+    }),
+    impact:Object.freeze({
+      hitStopMs:weightTuning.hitStopMs,cameraImpulse:weightTuning.cameraImpulse,
+      contactFrameSyncRequired:true,criticalMayScaleWithinExistingPresentationEnvelope:true
+    }),
+    motionAudio:Object.freeze({
+      footstepsFromActualFootContact:true,weaponWhooshFromEffectorVelocity:true,
+      impactAudioFromConfirmedContact:true,surfaceMaterialMaySelectPresentationOnly:true
+    }),
+    animationLod:Object.freeze({
+      NEAR:Object.freeze({animationHz:60,ikHz:60,secondaryHz:30}),
+      MID:Object.freeze({animationHz:30,ikHz:20,secondaryHz:15}),
+      FAR:Object.freeze({animationHz:15,ikHz:0,secondaryHz:0}),
+      OFFSCREEN:Object.freeze({animationHz:5,ikHz:0,secondaryHz:0}),
+      gameplayCollisionUnaffected:true
+    }),
+    mobilePerformance:Object.freeze({
+      targetFps:60,hardFloorFps:30,p95FrameTargetMs:16.7,p95FrameHardCeilingMs:33.4,
+      degradePresentationBeforeGameplay:true,heroBossCriticalMotionPreserved:true
+    }),
+    automatedQa:Object.freeze({
+      requiredMetrics:Object.freeze([
+        'POSE_DISCONTINUITY','ROOT_VELOCITY_DELTA','FOOT_SLIDE','FOOT_PLANT_DRIFT','HAND_WEAPON_OFFSET',
+        'ATTACK_CONTACT_OFFSET','IMPACT_EVENT_OFFSET','IK_CONTACT_ERROR','DIRECTIONAL_HIT_MATCH','PARTIAL_RAGDOLL_RECOVERY',
+        'AUDIO_CONTACT_OFFSET','MOBILE_P95_FRAME_MS'
+      ]),
+      nativeRuntimeEvidenceRequired:true,staticMarkersAloneInsufficient:true
+    }),
+    platform:upper(platform),
+    gameplayAuthority:false
   });
 }
 
@@ -2148,6 +2319,7 @@ const STUDIO_MOTION_PRODUCTION=Object.freeze({
       representativeScene:Object.freeze({durationSeconds:10,beats:Object.freeze(['OBSERVE','TRAVEL','NOTICE_TARGET','ACT','REACT','RECOVER']),combatOnlyWhenApplicable:true}),
       reviewCapture:Object.freeze({sameCamera:true,samePlaybackSpeed:true,referenceAndCandidate:true,frameAddressedFindings:true,sourceAndClipVersionBound:true}),
       secondaryMotion:Object.freeze(['BREATH','GAZE','EARS_TAIL_WINGS_WHEN_PRESENT','INERTIA_AND_SETTLE']),
+      studioGradeSystems:createStudioMotionActionProfile().systems,
       gameplayTimingChangesForbidden:true,
       failedStageRepairThenRegression:true,
       promotionRequiresActualNativeEvidence:true
@@ -2163,7 +2335,8 @@ export function createRobloxCharacterMotionPlan({
   context={},
   recentMotionIds=[],
   blend={},
-  procedural={}
+  procedural={},
+  studio={}
 }={}){
   const actor=upper(actorClass);
   const normalizedActor=ROBLOX_ACTOR_CLASSES.includes(actor)?actor:'HUMANOID_NPC';
@@ -2189,14 +2362,29 @@ export function createRobloxCharacterMotionPlan({
     studioProduction:STUDIO_MOTION_PRODUCTION,
     motionSource:source,
     blend:createRobloxMotionBlendProfile(blend),
+    studioGrade:createStudioMotionActionProfile({
+      platform:'ROBLOX',actorClass:normalizedActor,bodyPlan,archetype,
+      weaponFamily:studio.weaponFamily||context.weaponFamily||'UNARMED',
+      weightClass:studio.weightClass||context.weightClass||'STANDARD',
+      combat:studio.combat!==false,mobile:studio.mobile!==false,
+      limbCount:studio.limbCount||procedural.limbCount||2
+    }),
     procedural:createProceduralMotionProfile({
       footIk:procedural.footIk!==false,
+      footLock:procedural.footLock!==false,
+      multiLimbContact:procedural.multiLimbContact!==false,
       groundNormal:procedural.groundNormal!==false,
       pelvisHeight:procedural.pelvisHeight!==false,
       spineLean:procedural.spineLean!==false,
       headGaze:procedural.headGaze!==false,
+      lookAtTarget:procedural.lookAtTarget!==false,
+      handGrip:procedural.handGrip!==false,
+      handContact:procedural.handContact!==false,
+      weaponGripLock:procedural.weaponGripLock!==false,
+      contactCorrection:procedural.contactCorrection!==false,
       aimOffset:procedural.aimOffset!==false,
       slopeAdaptation:procedural.slopeAdaptation!==false,
+      limbCount:studio.limbCount||procedural.limbCount||2,
       platformBudget:procedural.platformBudget||'MOBILE'
     }),
     runtimeScenario:Object.freeze(['IDLE_5_SECONDS','WALK_10_SECONDS','TURN_LEFT_RIGHT','RUN_AND_STOP','ATTACK_THREE_TIMES_WHEN_COMBATANT','HIT_REACTION_WHEN_DAMAGEABLE','DEATH_WHEN_MORTAL','RESPAWN_WHEN_SUPPORTED']),
@@ -2294,7 +2482,7 @@ export function createMotionDirectorPlan({
   platform='UNITY',bodyPlan='HUMANOID',rigProfile='HUMANOID',styleFamily='STYLIZED_FANTASY',
   motionCandidates=[],context={},layers={},skill={},pair=null,reaction={},recentMotionIds=[],
   transition=null,contactQa=null,gameplayEvent=null,procedural=null,group=null,multiActor=null,
-  emotion=null,lod=null,lineage=null,runtimeSignals=[],robloxCharacterMotion=null,combat=null,styles=[],styleModifiers={},continuityTrace=null
+  emotion=null,lod=null,lineage=null,runtimeSignals=[],robloxCharacterMotion=null,combat=null,studio={},styles=[],styleModifiers={},continuityTrace=null
 }={}){
   const selector=selectContextMotion({
     candidates:motionCandidates,
@@ -2311,6 +2499,15 @@ export function createMotionDirectorPlan({
     motionDNA:createMotionDNA(selectedDNA),
     selector,
     composition,
+    studioGrade:createStudioMotionActionProfile({
+      platform,bodyPlan,
+      actorClass:studio.actorClass||context.actorClass||'HUMANOID_NPC',
+      archetype:studio.archetype||context.archetype||selectedDNA.SPECIES_OR_ARCHETYPE,
+      weaponFamily:studio.weaponFamily||context.weaponFamily||selectedDNA.WEAPON_FAMILY||'UNARMED',
+      weightClass:studio.weightClass||context.weightClass||selectedDNA.WEIGHT_CLASS||'STANDARD',
+      combat:studio.combat!==false,mobile:studio.mobile!==false,
+      limbCount:studio.limbCount||context.limbCount||2
+    }),
     continuityAudit:continuityTrace?auditMotionContinuityTrace(continuityTrace):null,
     continuity:Object.freeze({
       startFromCurrentPoseAndVelocity:true,footPhaseAndContactAwareLocomotion:true,
@@ -2343,8 +2540,9 @@ export function createMotionDirectorPlan({
     systems:Object.freeze([
       'MOTION_DNA','COMPATIBILITY_GRAPH','BODY_LAYER_COMPOSER','CONTEXT_SELECTOR','MOTION_GRAMMAR',
       'REACTION_MATCHER','PAIR_MOTION','SPECIES_SIGNATURE','STYLE_MODIFIER','MOTION_MUTATION','VARIATION_MEMORY',
-      'TRANSITION_DIRECTOR','AUTOMATIC_CONTACT_QA','GAMEPLAY_EVENT_MOTION_BINDING','PROCEDURAL_MOTION_LAYER',
-      'GROUP_MOTION_DIRECTOR','MULTI_ACTOR_MOTION','EMOTION_INTENT_LAYER','MOTION_LOD','MOTION_LINEAGE','RUNTIME_MOTION_LEARNING',
+      'TRANSITION_DIRECTOR','POSE_MATCH_TRANSITION','MOTION_WARPING','AUTOMATIC_CONTACT_QA','COMBAT_CONTACT_SOLVER',
+      'GAMEPLAY_EVENT_MOTION_BINDING','PROCEDURAL_MOTION_LAYER','PARTIAL_RAGDOLL','MOTION_AUDIO_SYNC',
+      'GROUP_MOTION_DIRECTOR','MULTI_ACTOR_MOTION','EMOTION_INTENT_LAYER','MOTION_LOD','MOBILE_FRAME_BUDGET','MOTION_LINEAGE','RUNTIME_MOTION_LEARNING',
       ...(upper(platform)==='ROBLOX'?['ROBLOX_SMOOTH_CHARACTER_MOTION']:[]),
       ...(combat?['DUEL_COMBAT_MOTION_KIT']:[])
     ]),

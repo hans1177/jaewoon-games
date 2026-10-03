@@ -35,6 +35,11 @@
     flashIntensity: 1,
     afterimageIntensity: 1,
     secondaryMotion: 1,
+    poseMatchResponse: 1,
+    inertialization: 1,
+    contactPulse: 1,
+    hitStop: 1,
+    ragdollBlend: 1,
   });
 
   function normalizeMotionProfile(profile = {}) {
@@ -98,9 +103,15 @@
       this.profile = normalizeMotionProfile(options.profile || options.motionProfile || {});
       this.moving = false;
       this.speed = 0;
+      this.targetSpeed = 0;
+      this.smoothedSpeed = 0;
+      this.turn = 0;
       this.facing = 1;
-      this.attack = { time: 0, duration: 0.24, strength: 1 };
-      this.hit = { time: 0, duration: 0.16, direction: -1, strength: 1 };
+      this.lodTier = 'NEAR';
+      this.visualPause = 0;
+      this.contactPulse = 0;
+      this.attack = { time: 0, duration: 0.24, strength: 1, weightClass: 'STANDARD', contactAt: 0.52, comboIndex: 0 };
+      this.hit = { time: 0, duration: 0.16, direction: -1, strength: 1, bodyRegion: 'TORSO' };
       this.land = { time: 0, duration: 0.2, strength: 1 };
       this.flash = 0;
       this.history = [];
@@ -113,6 +124,11 @@
     setMotionScale(value) { this.motionScale = clamp(finite(value, 1), 0, 2); return this; }
     setProfile(profile = {}) { this.profile = normalizeMotionProfile(profile); return this; }
     getProfile() { return { ...this.profile }; }
+    setLod({ tier = 'NEAR' } = {}) {
+      const value = String(tier || 'NEAR').toUpperCase();
+      this.lodTier = ['NEAR', 'MID', 'FAR', 'OFFSCREEN'].includes(value) ? value : 'NEAR';
+      return this;
+    }
 
     setBasePose(pose = {}, { snap = false } = {}) {
       for (const key of ['x', 'y', 'rotation', 'scaleX', 'scaleY', 'alpha']) {
@@ -123,21 +139,47 @@
       return this;
     }
 
-    setMotionState({ moving = this.moving, speed = this.speed, facing = this.facing } = {}) {
+    setMotionState({ moving = this.moving, speed = this.targetSpeed, facing = this.facing, turn = this.turn } = {}) {
       this.moving = Boolean(moving);
-      this.speed = Math.max(0, finite(speed));
+      this.targetSpeed = Math.max(0, finite(speed));
+      this.speed = this.targetSpeed;
+      this.turn = clamp(finite(turn), -1, 1);
       this.facing = finite(facing, 1) < 0 ? -1 : 1;
       return this;
     }
 
-    triggerAttack({ strength = 1, duration = 0.24 } = {}) {
-      this.attack = { time: Math.max(0.08, finite(duration, 0.24)), duration: Math.max(0.08, finite(duration, 0.24)), strength: clamp(finite(strength, 1), 0, 3) };
+    triggerAttack({ strength = 1, duration = 0.24, weightClass = 'STANDARD', contactAt = 0.52, comboIndex = 0 } = {}) {
+      const d = Math.max(0.08, finite(duration, 0.24));
+      const weight = String(weightClass || 'STANDARD').toUpperCase();
+      this.attack = {
+        time: d,
+        duration: d,
+        strength: clamp(finite(strength, 1), 0, 3),
+        weightClass: ['LIGHT', 'STANDARD', 'HEAVY'].includes(weight) ? weight : 'STANDARD',
+        contactAt: clamp(finite(contactAt, 0.52), 0.2, 0.82),
+        comboIndex: Math.max(0, Math.floor(finite(comboIndex)))
+      };
       return this;
     }
 
-    triggerHit({ direction = -1, strength = 1, duration = 0.16 } = {}) {
-      this.hit = { time: Math.max(0.06, finite(duration, 0.16)), duration: Math.max(0.06, finite(duration, 0.16)), direction: finite(direction, -1) < 0 ? -1 : 1, strength: clamp(finite(strength, 1), 0, 3) };
+    triggerHit({ direction = -1, strength = 1, duration = 0.16, bodyRegion = 'TORSO' } = {}) {
+      const region = String(bodyRegion || 'TORSO').toUpperCase();
+      this.hit = {
+        time: Math.max(0.06, finite(duration, 0.16)),
+        duration: Math.max(0.06, finite(duration, 0.16)),
+        direction: finite(direction, -1) < 0 ? -1 : 1,
+        strength: clamp(finite(strength, 1), 0, 3),
+        bodyRegion: ['HEAD', 'TORSO', 'ARMS', 'LEGS'].includes(region) ? region : 'TORSO'
+      };
       this.flash = this.profile.flashIntensity;
+      return this;
+    }
+
+    triggerContact({ strength = 1, hitStopMs = 35 } = {}) {
+      const k = clamp(finite(strength, 1), 0, 3);
+      this.visualPause = Math.max(this.visualPause, clamp(finite(hitStopMs, 35), 0, 120) / 1000 * this.profile.hitStop);
+      this.contactPulse = Math.max(this.contactPulse, clamp(k / 3, 0, 1) * this.profile.contactPulse);
+      this.flash = Math.max(this.flash, Math.min(1, 0.35 + k * 0.15) * this.profile.flashIntensity);
       return this;
     }
 
@@ -158,12 +200,18 @@
 
     update(dt) {
       const delta = clamp(finite(dt), 0, 0.1);
-      this.time += delta;
+      const wasPaused = this.visualPause > 0;
+      this.visualPause = Math.max(0, this.visualPause - delta);
+      const motionDelta = wasPaused ? 0 : delta;
+      this.time += motionDelta;
       for (const spring of Object.values(this.channels)) spring.update(delta);
-      this.attack.time = Math.max(0, this.attack.time - delta);
-      this.hit.time = Math.max(0, this.hit.time - delta);
-      this.land.time = Math.max(0, this.land.time - delta);
+      const follow = 1 - Math.exp(-delta * 12 * this.profile.inertialization);
+      this.smoothedSpeed = lerp(this.smoothedSpeed, this.targetSpeed, clamp(follow, 0, 1));
+      this.attack.time = Math.max(0, this.attack.time - motionDelta);
+      this.hit.time = Math.max(0, this.hit.time - motionDelta);
+      this.land.time = Math.max(0, this.land.time - motionDelta);
       this.flash = Math.max(0, this.flash - delta * 8);
+      this.contactPulse = Math.max(0, this.contactPulse - delta * 6);
       this.lastSample = this.sample();
       this.history.unshift({ ...this.lastSample, age: 0 });
       this.history = this.history.slice(0, this.maxHistory).map((entry, index) => ({ ...entry, age: index / Math.max(1, this.maxHistory - 1) }));
@@ -173,13 +221,15 @@
     effectScale() {
       const reduced = this.reducedMotion ? 0.28 : 1;
       const lowPower = this.lowPower ? 0.65 : 1;
-      return this.motionScale * reduced * lowPower;
+      const lod = this.lodTier === 'NEAR' ? 1 : this.lodTier === 'MID' ? 0.82 : this.lodTier === 'FAR' ? 0.55 : 0.35;
+      return this.motionScale * reduced * lowPower * lod;
     }
 
     sample() {
       const k = this.effectScale();
       const pfx = this.profile;
-      const moveIntensity = this.moving ? clamp(this.speed / 220, 0.25, 1.2) : 0;
+      const moveIntensity = this.moving ? clamp(this.smoothedSpeed / 220, 0.25, 1.2) : 0;
+      const locomotionBlend = clamp(this.smoothedSpeed / 220, 0, 1);
       const idleBreath = Math.sin(this.time * TAU * 0.72 * pfx.idleBreathFrequency) * 0.018 * k * pfx.idleBreathAmplitude;
       const moveBob = Math.sin(this.time * TAU * (2.8 + moveIntensity) * pfx.moveFrequency) * 3.2 * moveIntensity * k * pfx.moveBobAmplitude;
       const moveTilt = Math.sin(this.time * TAU * (1.4 + moveIntensity * 0.6) * pfx.moveFrequency) * 0.035 * moveIntensity * k * pfx.moveTiltAmplitude;
@@ -187,21 +237,24 @@
       let attackX = 0, attackRot = 0, attackScaleX = 0, attackScaleY = 0;
       if (this.attack.time > 0) {
         const p = 1 - this.attack.time / this.attack.duration;
-        const s = this.attack.strength * k;
-        if (p < 0.34) {
-          const q = smoothstep(p / 0.34);
+        const weight = this.attack.weightClass === 'HEAVY' ? 1.28 : this.attack.weightClass === 'LIGHT' ? 0.82 : 1;
+        const contactAt = this.attack.contactAt;
+        const anticipationEnd = clamp(contactAt - 0.22, 0.22, 0.42);
+        const s = this.attack.strength * k * weight;
+        if (p < anticipationEnd) {
+          const q = smoothstep(p / anticipationEnd);
           attackX = -this.facing * 8 * q * s * pfx.attackAnticipation;
           attackRot = -this.facing * 0.08 * q * s * pfx.attackRotation;
           attackScaleX = -0.045 * q * s * pfx.attackStretch;
           attackScaleY = 0.04 * q * s * pfx.attackStretch;
-        } else if (p < 0.62) {
-          const q = smoothstep((p - 0.34) / 0.28);
+        } else if (p < contactAt) {
+          const q = smoothstep((p - anticipationEnd) / Math.max(0.08, contactAt - anticipationEnd));
           attackX = this.facing * lerp(-8 * pfx.attackAnticipation, 16 * pfx.attackStrike, q) * s;
           attackRot = this.facing * lerp(-0.08, 0.12, q) * s * pfx.attackRotation;
           attackScaleX = lerp(-0.045, 0.08, q) * s * pfx.attackStretch;
           attackScaleY = lerp(0.04, -0.06, q) * s * pfx.attackStretch;
         } else {
-          const q = 1 - smoothstep((p - 0.62) / 0.38);
+          const q = 1 - smoothstep((p - contactAt) / Math.max(0.08, 1 - contactAt));
           attackX = this.facing * 16 * q * s * pfx.attackStrike;
           attackRot = this.facing * 0.12 * q * s * pfx.attackRotation;
           attackScaleX = 0.08 * q * s * pfx.attackStretch;
@@ -209,12 +262,15 @@
         }
       }
 
-      let hitX = 0, hitRot = 0;
+      let hitX = 0, hitY = 0, hitRot = 0;
       if (this.hit.time > 0) {
         const p = this.hit.time / this.hit.duration;
         const wave = Math.sin((1 - p) * Math.PI * 3.4) * p;
-        hitX = this.hit.direction * 10 * wave * this.hit.strength * k * pfx.hitRecoil;
-        hitRot = this.hit.direction * 0.09 * wave * this.hit.strength * k * pfx.hitRotation;
+        const region = this.hit.bodyRegion || 'TORSO';
+        const regionScale = region === 'HEAD' ? 1.18 : region === 'LEGS' ? 0.86 : 1;
+        hitX = this.hit.direction * 10 * wave * this.hit.strength * k * pfx.hitRecoil * regionScale;
+        hitY = (region === 'HEAD' ? -4 : region === 'LEGS' ? 3 : 0) * wave * this.hit.strength * k;
+        hitRot = this.hit.direction * 0.09 * wave * this.hit.strength * k * pfx.hitRotation * regionScale;
       }
 
       let landScaleX = 0, landScaleY = 0, landY = 0;
@@ -228,19 +284,25 @@
 
       return {
         x: this.channels.x.value + attackX + hitX,
-        y: this.channels.y.value + moveBob + landY,
+        y: this.channels.y.value + moveBob + landY + hitY,
         rotation: this.channels.rotation.value + moveTilt + attackRot + hitRot,
         scaleX: Math.max(0.05, this.channels.scaleX.value * (1 + idleBreath + attackScaleX + landScaleX)),
         scaleY: Math.max(0.05, this.channels.scaleY.value * (1 - idleBreath + attackScaleY + landScaleY)),
         alpha: clamp(this.channels.alpha.value, 0, 1),
         flash: clamp(this.flash, 0, 1),
+        contactPulse: clamp(this.contactPulse, 0, 1),
+        hitStopActive: this.visualPause > 0,
         moving: this.moving,
+        locomotionBlend,
+        lodTier: this.lodTier,
+        hitBodyRegion: this.hit.bodyRegion,
         reducedMotion: this.reducedMotion,
-        profileVersion: 1,
+        profileVersion: 2,
       };
     }
 
     afterimages({ count = 4, alpha = 0.22 } = {}) {
+      if (this.lodTier === 'FAR' || this.lodTier === 'OFFSCREEN') return [];
       const n = Math.min(this.history.length, Math.max(0, Math.floor(count)));
       const intensity = this.profile.afterimageIntensity;
       return this.history.slice(1, n + 1).map((sample, index) => ({
@@ -280,7 +342,7 @@
 
   return {
     version: 2,
-    profileVersion: 1,
+    profileVersion: 2,
     DEFAULT_PROFILE,
     normalizeMotionProfile,
     MotionSpring,
