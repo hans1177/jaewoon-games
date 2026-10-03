@@ -1,5 +1,5 @@
 {
-  "version": 306,
+  "version": 307,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6621,5 +6621,22 @@
     "studioBlocksF9": false,
     "studioBlocksDeployment": false,
     "exactSourceArtifactBindingRequired": true
+  },
+  "vibeUnityResultParallelism": {
+    "version": 1,
+    "authority": "DERIVED_FROM_EXISTING_CENTRAL_PARALLELISM_POLICY",
+    "workflows": [
+      ".github/workflows/vibe2-unity-candidate-result.yml",
+      ".github/workflows/vibe2-unity-release-result.yml"
+    ],
+    "globalWorkflowSerialization": false,
+    "crossCandidateSerializationForbidden": true,
+    "exactDuplicateCandidateSerializationOwnedElsewhere": true,
+    "sharedQueueWriteMode": "FETCH_RESET_REAPPLY_SEMANTIC_COMMAND_PUSH_RETRY",
+    "sharedRuntimeWriteMode": "FETCH_RESET_REAPPLY_SEMANTIC_MUTATION_PUSH_RETRY",
+    "exactResponsibleFileConflictProtectionPreserved": true,
+    "atomicSharedStateWriteIntegrityPreserved": true,
+    "newPipelineCreated": false,
+    "authorityExpanded": false
   }
 }
