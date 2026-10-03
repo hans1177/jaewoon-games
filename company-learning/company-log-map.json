@@ -1,5 +1,5 @@
 {
-  "version": 156,
+  "version": 157,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1091,7 +1091,10 @@
     "unrelatedGraphicsRuntimeOrReleaseFailureMayNotBeLoggedAsGameWideDevelopmentBlocker": true,
     "internalConcurrencyCapForbidden": true,
     "externalProviderCapacityMayQueueWork": true,
-    "queueingFromExternalCapacityIsNotGameQualityFailure": true
+    "queueingFromExternalCapacityIsNotGameQualityFailure": true,
+    "sameGameDifferentPlatformsParallelRequired": true,
+    "gameIdOnlySerializationForbidden": true,
+    "robloxStudioActualPlayExceptionOnly": true
   },
   "focusedCaretakerMaximumParallelismContract": {
     "version": 1,
@@ -2200,32 +2203,37 @@
     "regressionStillRequired": true
   },
   "nativeExactGameWorkflowConcurrencyEvidence": {
-    "version": 2,
+    "version": 3,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "source": "company-learning/platform-release-roadmap.json#changeRecord.nativeExactGameWorkflowConcurrency20260927",
     "concurrencyGroups": [
-      "roblox-native-exact-<gameId-or-push-batch-or-runId>",
-      "unity-native-exact-<gameId-or-push-batch-or-runId>"
+      "roblox-native-run-<runId>",
+      "unity-native-run-<runId>"
     ],
     "cancelInProgress": false,
-    "exactGameOverlapForbidden": true,
+    "exactGameOverlapForbidden": false,
     "distinctGameParallelismRequired": true,
-    "batchRunIdentity": "PUSH=batch-push;NON_PUSH=github.run_id",
+    "batchRunIdentity": "RUN_ID",
     "batchGlobalSerialization": false,
     "centralActiveRunScanMarkers": [
       "ROBLOX_NATIVE_DISPATCH_DEDUPED_ACTIVE",
       "UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE"
     ],
     "qualitySecurityReleaseEvidenceUnchanged": true,
-    "pushBatchRunIdentity": "batch-push",
+    "pushBatchRunIdentity": "github.run_id",
     "nonPushEmptyBatchRunIdentity": "github.run_id",
-    "pushBatchCoalesced": true,
+    "pushBatchCoalesced": false,
     "manualEmptyBatchRunScoped": true,
-    "cancelInProgressMeaning": "EXACT_GAME_ACTIVE_EXECUTION_PRESERVED",
+    "cancelInProgressMeaning": "RUN_SCOPED_NO_GAME_ID_SERIALIZATION",
     "exactGameCancelInProgress": false,
-    "pushBatchCancelInProgress": true,
+    "pushBatchCancelInProgress": false,
     "manualEmptyBatchCancelInProgress": false,
-    "pushBatchLatestWins": true
+    "pushBatchLatestWins": false,
+    "sameGameIndependentExecutionParallelRequired": true,
+    "gameIdConcurrencyGroupForbidden": true,
+    "runScopedConcurrencyRequired": true,
+    "exactDuplicateDispatchDedupePreserved": true,
+    "studioActualPlayExceptionOnly": true
   },
   "lightweightGameIngressRunnerReliefEvidence": {
     "version": 3,
@@ -2802,5 +2810,26 @@
     "studioEvidenceRequired": false,
     "studioDiagnosticOptional": true,
     "actualStudioPassMayNotBeFabricated": true
+  },
+  "sameGamePlatformParallelEvidenceContract": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.sameGamePlatformParallelismContract",
+    "requiredMarkers": [
+      "SAME_GAME_PLATFORM_PARALLEL_POLICY=ACTIVE",
+      "GAME_ID_SERIALIZATION=FORBIDDEN",
+      "RESPONSIBLE_FILE_CONFLICT_ONLY=YES",
+      "EXACT_DUPLICATE_DEDUPE_ALLOWED=YES",
+      "ROBLOX_STUDIO_SERIALIZATION_EXCEPTION=ACTUAL_SESSION_ONLY"
+    ],
+    "requiredEvidence": [
+      "PLATFORM",
+      "GAME_ID",
+      "RESPONSIBLE_FILES",
+      "EXECUTION_LANE",
+      "CONFLICT_REASON_WHEN_DEFERRED"
+    ],
+    "gameIdOnlyConflictMarkerForbidden": true,
+    "exactResponsibleFileConflictMayDefer": true,
+    "studioSessionMayDefer": true
   }
 }
