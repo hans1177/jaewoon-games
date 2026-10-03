@@ -1674,12 +1674,17 @@ test('completed worker results batch into early fan-in without per-worker dispat
   const released={assetProductionLane:false,status:'running',blocker:'slot-released-awaiting-fan-in',reservationRunId:'123',evidence:[]};
   const partial={...released,blocker:null,reservationRunId:'124'};
   const reviewed={...released,reservationRunId:'125',evidence:['role-result:review:PASS']};
-  fs.writeFileSync(path.join(root,'.vibe2/queue.json'),JSON.stringify({tasks:[released,{...released},{...released,reservationRunId:'126',assetProductionLane:true},partial,reviewed]}));
+  const assetReleased={...released,reservationRunId:'126',assetProductionLane:true};
+  const legacyAsset={...released,reservationRunId:'127',assetProductionLane:true,blocker:'candidate-awaiting-qa-and-deployment'};
+  fs.writeFileSync(path.join(root,'.vibe2/queue.json'),JSON.stringify({tasks:[released,{...released},assetReleased,legacyAsset,partial,reviewed]}));
   try{
     const result=spawnSync(process.execPath,['-e',script],{cwd:root,encoding:'utf8',env:{...process.env,VIBE2_EXECUTION_LANE:'game-primary'}});
     assert.equal(result.status,0,result.stderr);
     assert.equal(result.stdout.trim(),'123\tEARLY_SLOT');
-    assert.match(block,/in_progress\|completed/);
+    const assetResult=spawnSync(process.execPath,['-e',script],{cwd:root,encoding:'utf8',env:{...process.env,VIBE2_EXECUTION_LANE:'asset-development'}});
+    assert.equal(assetResult.status,0,assetResult.stderr);
+    assert.equal(assetResult.stdout.trim(),'126\tEARLY_SLOT\n127\tLEGACY_ASSET');
+    assert.match(block,/LEGACY_ASSET:in_progress\|LEGACY_ASSET:completed/);
     assert.match(block,/VIBE2_COMPLETED_RESULT_REVIEW_RESUME/);
     assert.match(workflow,/run-id: \$\{\{ needs\.reserve\.outputs\.stranded_review_run \}\}/);
     assert.match(workflow,/VIBE2_BATCH_EARLY_FAN_IN_ELIGIBLE/);
