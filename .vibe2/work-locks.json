@@ -1,5 +1,35 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-18ozra9",
+      "worker": "vibe2",
+      "taskId": "card-grid-duel-studio-evolution-roblox-presentation-v1",
+      "gameId": "card-grid-duel",
+      "files": [
+        "roblox-games/card-grid-duel/client/Game.client.luau",
+        "roblox-games/card-grid-duel/server/Game.server.luau",
+        "assets/generated/roblox/card-grid-duel/background/asset.glb",
+        "assets/generated/roblox/card-grid-duel/background/preview.png",
+        "assets/generated/roblox/card-grid-duel/background/evidence.json",
+        "assets/generated/roblox/card-grid-duel/item/asset.glb",
+        "assets/generated/roblox/card-grid-duel/item/preview.png",
+        "assets/generated/roblox/card-grid-duel/item/evidence.json",
+        "assets/generated/roblox/card-grid-duel/prop/asset.glb",
+        "assets/generated/roblox/card-grid-duel/prop/preview.png",
+        "assets/generated/roblox/card-grid-duel/prop/evidence.json"
+      ],
+      "baseSha": "f86f434a3a9ee622f64ef7ba9d06dc9a505671ca",
+      "runId": "37091044709",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-03T02:52:06.194Z",
+      "expiresAt": "2026-10-03T03:37:06.194Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:card-grid-duel-studio-evolution-roblox-presentation-v1"
+      ]
+    }
+  ]
 }
