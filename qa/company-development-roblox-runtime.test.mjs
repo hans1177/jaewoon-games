@@ -1115,7 +1115,8 @@ test('pre-F9 private validation stays per-game and dedupes active exact work',()
   const persistStart=runtime.indexOf('\n  technical-persist:\n');
   const persist=runtime.slice(persistStart);
   assert.ok(persistStart>=0);
-  assert.match(persist,/group: roblox-private-runtime-dispatch-\$\{\{ inputs\.game_id \|\| github\.run_id \}\}/);
+  assert.match(persist,/group: roblox-private-runtime-dispatch-run-\$\{\{ github\.run_id \}\}/);
+  assert.doesNotMatch(persist,/roblox-private-runtime-dispatch-\$\{\{ inputs\.game_id/);
   assert.match(persist,/Route F0-passed artifacts to private runtime validation without Studio/);
   assert.match(persist,/ROBLOX_PRIVATE_RUNTIME_VALIDATION_DISPATCH=YES:/);
   assert.match(persist,/String\(run\.head_sha\|\|''\)!==currentSha/);
