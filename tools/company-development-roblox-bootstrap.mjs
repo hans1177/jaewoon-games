@@ -20,7 +20,7 @@ function luauLearningDispositionRows(dispositions=[],indent='      '){
   return (dispositions||[]).map(row=>indent+'{ PrincipleId = '+luauString(row.principleId)+', SourceLearningId = '+luauString(row.sourceLearningId)+', Disposition = '+luauString(row.disposition||'')+', Scope = '+luauString(row.scope||'')+', Domains = { '+(row.domains||[]).map(luauString).join(', ')+' }, Mapping = '+luauString(row.mapping||'')+', Implementation = '+luauString(row.implementation||'')+', Reason = '+luauString(row.reason||'')+' },').join('\n');
 }
 const MODES=new Set(['SINGLE','COOP','COMPETITIVE','HYBRID']);
-export const ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=6;
+export const ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=7;
 
 const SHA256=/^[a-f0-9]{64}$/i;
 export function validateWebPlatformHandoff({handoff={},roadmap={},gameId=''}={}){
@@ -340,26 +340,286 @@ verifiedLearningDepth.InFocusRadius = 24
 
 end
 
-if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "COMBAT_IMPACT" or verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
--- Roblox character animation / motion adaptation.
-local function syncVerifiedLearningCharacterMotion(character)
-  local humanoid = character:FindFirstChildOfClass("Humanoid") or character:WaitForChild("Humanoid", 5)
-  if not humanoid then return end
-  local animator = humanoid:FindFirstChildOfClass("Animator") or humanoid:WaitForChild("Animator", 5)
+-- Roblox studio-grade native character motion binding.
+local verifiedLearningRunService = game:GetService("RunService")
+local verifiedLearningWorkspace = game:GetService("Workspace")
+local verifiedLearningUserInputService = game:GetService("UserInputService")
+local verifiedLearningMotionStates = {}
+local verifiedLearningMotionFps = 60
+
+local function verifiedLearningHorizontal(v)
+  return Vector3.new(v.X, 0, v.Z)
+end
+
+local function verifiedLearningBindTrack(state, track)
+  if state.tracks[track] then return end
+  state.tracks[track] = true
+  state.maxTrackCount = math.max(state.maxTrackCount, #state.animator:GetPlayingAnimationTracks())
+  for _, markerName in ipairs({ "Impact", "Hit", "Contact" }) do
+    local ok, signal = pcall(function()
+      return track:GetMarkerReachedSignal(markerName)
+    end)
+    if ok and signal then
+      signal:Connect(function()
+        state.contactMarkers += 1
+        state.character:SetAttribute("JaewoonMotionLastContactMarker", markerName)
+        state.character:SetAttribute("JaewoonMotionContactCount", state.contactMarkers)
+      end)
+    end
+  end
+end
+
+local function verifiedLearningCreateFootIk(state, side)
+  if state.humanoid.RigType ~= Enum.HumanoidRigType.R15 then return end
+  local upper = state.character:FindFirstChild(side .. "UpperLeg", true)
+  local foot = state.character:FindFirstChild(side .. "Foot", true)
+  if not upper or not foot or not upper:IsA("BasePart") or not foot:IsA("BasePart") then return end
+
+  local target = Instance.new("Attachment")
+  target.Name = "JaewoonMotion" .. side .. "FootTarget"
+  target.Parent = state.root
+
+  local control = Instance.new("IKControl")
+  control.Name = "JaewoonMotion" .. side .. "FootIK"
+  control.Type = Enum.IKControlType.Position
+  control.ChainRoot = upper
+  control.EndEffector = foot
+  control.Target = target
+  control.SmoothTime = 0.055
+  control.Weight = 0
+  control.Priority = 1
+  control.Parent = state.humanoid
+
+  table.insert(state.feet, {
+    foot = foot,
+    target = target,
+    control = control,
+    lastPosition = nil,
+  })
+end
+
+local function verifiedLearningBindMotionActor(character)
+  if verifiedLearningMotionStates[character] or not character:IsA("Model") then return end
+  local humanoid = character:FindFirstChildOfClass("Humanoid")
+  local rootPart = character:FindFirstChild("HumanoidRootPart")
+  if not humanoid or not rootPart or not rootPart:IsA("BasePart") then return end
+  local animator = humanoid:FindFirstChildOfClass("Animator")
   if not animator then return end
+
+  local state = {
+    character = character,
+    humanoid = humanoid,
+    root = rootPart,
+    animator = animator,
+    feet = {},
+    tracks = {},
+    elapsed = 0,
+    updateClock = 0,
+    lastRootPosition = rootPart.Position,
+    lastJointTransform = nil,
+    jointSamples = 0,
+    locomotionSamples = 0,
+    footSlideSamples = 0,
+    footSlideNormalizedMax = 0,
+    maxTrackCount = 0,
+    hitReactionCount = 0,
+    contactMarkers = 0,
+    hitKick = 0,
+    reported = false,
+    motorCount = 0,
+    motionJoint = nil,
+    isLocalPlayer = verifiedLearningPlayers:GetPlayerFromCharacter(character) == verifiedLearningPlayer,
+  }
+
+  for _, descendant in ipairs(character:GetDescendants()) do
+    if descendant:IsA("Motor6D") then
+      state.motorCount += 1
+      if not state.motionJoint or descendant.Name == "Waist" then
+        state.motionJoint = descendant
+      end
+    end
+  end
+
+  local params = RaycastParams.new()
+  params.FilterType = Enum.RaycastFilterType.Exclude
+  params.FilterDescendantsInstances = { character }
+  state.raycastParams = params
+
+  verifiedLearningCreateFootIk(state, "Left")
+  verifiedLearningCreateFootIk(state, "Right")
+  verifiedLearningMotionStates[character] = state
+
+  for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
+    verifiedLearningBindTrack(state, track)
+  end
+  animator.AnimationPlayed:Connect(function(track)
+    verifiedLearningBindTrack(state, track)
+  end)
+
   humanoid.Running:Connect(function(speed)
-    local ratio = speed > 0.1 and math.clamp(speed / math.max(humanoid.WalkSpeed, 1), 0.82, 1.25) or 1
+    local ratio = speed > 0.1 and math.clamp(speed / math.max(humanoid.WalkSpeed, 1), 0.72, 1.35) or 1
     for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
-      if track.Priority == Enum.AnimationPriority.Movement or track.Priority == Enum.AnimationPriority.Core then
+      state.maxTrackCount = math.max(state.maxTrackCount, #animator:GetPlayingAnimationTracks())
+      if track.Priority == Enum.AnimationPriority.Movement then
         track:AdjustSpeed(ratio)
       end
     end
   end)
-end
-if verifiedLearningPlayer.Character then task.defer(syncVerifiedLearningCharacterMotion, verifiedLearningPlayer.Character) end
-verifiedLearningPlayer.CharacterAdded:Connect(syncVerifiedLearningCharacterMotion)
 
+  local lastHealth = humanoid.Health
+  humanoid.HealthChanged:Connect(function(health)
+    if health + 0.01 < lastHealth then
+      state.hitKick = 1
+      state.hitReactionCount += 1
+      character:SetAttribute("JaewoonMotionHitReactionCount", state.hitReactionCount)
+    end
+    lastHealth = health
+  end)
+
+  character:SetAttribute("JaewoonNativeMotionBound", true)
+  character:SetAttribute("JaewoonNativeMotionAnimator", true)
+  character:SetAttribute("JaewoonNativeMotionMotorCount", state.motorCount)
+  character:SetAttribute("JaewoonNativeMotionFootIkCount", #state.feet)
+
+  if state.isLocalPlayer then
+    print("ROBLOX_CHARACTER_MOTION_RUNTIME=START actor=PLAYER animator=YES motors=" .. state.motorCount .. " ik=" .. #state.feet)
+  end
 end
+
+local function verifiedLearningMotionFailureReason(state)
+  if state.motorCount < 3 then return "ARTICULATED_RIG_REQUIRED" end
+  if state.maxTrackCount < 1 then return "ANIMATION_TRACK_REQUIRED" end
+  if state.jointSamples < 3 then return "JOINT_ACTIVITY_REQUIRED" end
+  if state.humanoid.RigType == Enum.HumanoidRigType.R15 and #state.feet < 2 then return "FOOT_IK_REQUIRED" end
+  if state.locomotionSamples < 3 then return "LOCOMOTION_SAMPLE_REQUIRED" end
+  if state.footSlideSamples < 2 then return "FOOT_CONTACT_SAMPLE_REQUIRED" end
+  if state.footSlideNormalizedMax > 0.035 then return "FOOT_SLIDE_EXCEEDED" end
+  if verifiedLearningMotionFps < 27 then return "MOBILE_FRAME_FLOOR_30_FAILED" end
+  return nil
+end
+
+verifiedLearningRunService.RenderStepped:Connect(function(dt)
+  dt = math.min(dt, 0.1)
+  local instantFps = 1 / math.max(dt, 1 / 240)
+  verifiedLearningMotionFps += (instantFps - verifiedLearningMotionFps) * math.clamp(dt * 3, 0, 1)
+
+  for character, state in pairs(verifiedLearningMotionStates) do
+    if not character.Parent or state.humanoid.Health <= 0 then
+      if not character.Parent then verifiedLearningMotionStates[character] = nil end
+    else
+      state.elapsed += dt
+
+      if state.motionJoint then
+        local currentTransform = state.motionJoint.Transform
+        if state.lastJointTransform then
+          local delta = state.lastJointTransform:ToObjectSpace(currentTransform)
+          local rx, ry, rz = delta:ToOrientation()
+          if delta.Position.Magnitude > 0.001 or math.abs(rx) + math.abs(ry) + math.abs(rz) > math.rad(0.2) then
+            state.jointSamples += 1
+          end
+        end
+        state.lastJointTransform = currentTransform
+        if state.hitKick > 0.001 then
+          state.motionJoint.Transform = currentTransform * CFrame.Angles(math.rad(-5) * state.hitKick, 0, 0)
+          state.hitKick *= math.exp(-dt * 10)
+        end
+      end
+
+      state.updateClock += dt
+      local updateHz = 60
+      if verifiedLearningUserInputService.TouchEnabled then
+        updateHz = verifiedLearningMotionFps >= 50 and 60 or (verifiedLearningMotionFps >= 27 and 30 or 15)
+      end
+
+      if state.updateClock >= 1 / updateHz then
+        state.updateClock = 0
+        local rootPosition = state.root.Position
+        local rootDelta = (verifiedLearningHorizontal(rootPosition) - verifiedLearningHorizontal(state.lastRootPosition)).Magnitude
+        local rootSpeed = verifiedLearningHorizontal(state.root.AssemblyLinearVelocity).Magnitude
+        local slideMin = nil
+
+        for _, footState in ipairs(state.feet) do
+          local foot = footState.foot
+          local hit = verifiedLearningWorkspace:Raycast(
+            foot.Position + Vector3.new(0, 0.65, 0),
+            Vector3.new(0, -1.8, 0),
+            state.raycastParams
+          )
+          if hit then
+            local groundGap = math.abs((foot.Position.Y - foot.Size.Y * 0.5) - hit.Position.Y)
+            footState.target.WorldCFrame = CFrame.new(hit.Position + hit.Normal * (foot.Size.Y * 0.5 + 0.02))
+            footState.control.Weight = groundGap <= 0.35 and (rootSpeed < 1 and 0.5 or 0.32) or 0.12
+            if footState.lastPosition and rootDelta > 0.02 and groundGap <= 0.12 then
+              local footDelta = (verifiedLearningHorizontal(foot.Position) - verifiedLearningHorizontal(footState.lastPosition)).Magnitude
+              local normalized = footDelta / math.max(state.humanoid.HipHeight + 2, 4)
+              slideMin = slideMin and math.min(slideMin, normalized) or normalized
+            end
+          else
+            footState.control.Weight = 0
+          end
+          footState.lastPosition = foot.Position
+        end
+
+        if rootDelta > 0.02 then
+          state.locomotionSamples += 1
+          if slideMin then
+            state.footSlideSamples += 1
+            state.footSlideNormalizedMax = math.max(state.footSlideNormalizedMax, slideMin)
+          end
+        end
+        state.lastRootPosition = rootPosition
+        state.character:SetAttribute("JaewoonNativeMotionFps", math.floor(verifiedLearningMotionFps + 0.5))
+        state.character:SetAttribute("JaewoonNativeMotionFootSlide", state.footSlideNormalizedMax)
+        state.character:SetAttribute("JaewoonNativeMotionTier", updateHz)
+      end
+
+      if state.isLocalPlayer and not state.reported then
+        local readyToReport = state.elapsed >= 5 and state.locomotionSamples >= 3
+        local forcedReport = state.elapsed >= 8
+        if readyToReport or forcedReport then
+          state.reported = true
+          local reason = verifiedLearningMotionFailureReason(state)
+          local fields = " fps=" .. string.format("%.1f", verifiedLearningMotionFps)
+            .. " tier=" .. tostring(verifiedLearningUserInputService.TouchEnabled and (verifiedLearningMotionFps >= 50 and 60 or (verifiedLearningMotionFps >= 27 and 30 or 15)) or 60)
+            .. " motors=" .. state.motorCount
+            .. " tracks=" .. state.maxTrackCount
+            .. " joints=" .. state.jointSamples
+            .. " ik=" .. #state.feet
+            .. " slide=" .. string.format("%.4f", state.footSlideNormalizedMax)
+            .. " slideSamples=" .. state.footSlideSamples
+            .. " contacts=" .. state.contactMarkers
+            .. " hits=" .. state.hitReactionCount
+          if reason then
+            print("ROBLOX_CHARACTER_MOTION_RUNTIME=FAIL reason=" .. reason .. fields)
+          else
+            print("ROBLOX_CHARACTER_MOTION_RUNTIME=PASS" .. fields)
+          end
+        end
+      end
+    end
+  end
+end)
+
+local function verifiedLearningTryBindMotionInstance(instance)
+  if instance:IsA("Humanoid") and instance.Parent and instance.Parent:IsA("Model") then
+    task.defer(verifiedLearningBindMotionActor, instance.Parent)
+  elseif instance:IsA("Model") and instance:FindFirstChildOfClass("Humanoid") then
+    task.defer(verifiedLearningBindMotionActor, instance)
+  end
+end
+
+if verifiedLearningPlayer.Character then
+  task.defer(verifiedLearningBindMotionActor, verifiedLearningPlayer.Character)
+end
+verifiedLearningPlayer.CharacterAdded:Connect(function(character)
+  task.defer(verifiedLearningBindMotionActor, character)
+end)
+for _, descendant in ipairs(verifiedLearningWorkspace:GetDescendants()) do
+  if descendant:IsA("Humanoid") and descendant.Parent and descendant.Parent:IsA("Model") then
+    task.defer(verifiedLearningBindMotionActor, descendant.Parent)
+  end
+end
+verifiedLearningWorkspace.DescendantAdded:Connect(verifiedLearningTryBindMotionInstance)
 
 -- Roblox UI / touch / progression guidance.
 local verifiedLearningGuidance = Instance.new("TextLabel")
