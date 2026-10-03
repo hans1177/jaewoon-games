@@ -322,6 +322,13 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.match(core,/VIBE2_COMPLETED_RESERVATION_RUN_MATCHES=/);
   assert.match(core,/actions\/runs\/\$\{reservation_run_id\}/);
   assert.match(core,/VIBE2_COMPLETED_RESERVATION_RUN_CANDIDATES=/);
+  assert.match(core,/VIBE2_SUPERSEDED_QUEUED_RESERVATION_RUNS=/);
+  assert.match(core,/VIBE2_SUPERSEDED_QUEUED_RUN_MATCH=/);
+  assert.match(core,/recover-reservation-runs/);
+  assert.match(core,/actions\/runs\/\$superseded_run_id\/cancel/);
+  assert.match(core,/queued_workers/);
+  assert.match(core,/active_workers/);
+  assert.match(core,/in_progress\|completed\|cancelled/);
   assert.match(core,/VIBE2_RESERVE_PROBE_PARALLELISM=\$probe_parallelism/);
   assert.match(core,/probe_parallelism=16/);
 
