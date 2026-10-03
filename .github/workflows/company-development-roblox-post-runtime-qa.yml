@@ -342,8 +342,7 @@ jobs:
             }:persisted;
           };
           const candidates=(q.items||[]).filter(item=>{
-            if(requested&&item.gameId!==requested)return false;
-            if(!requested&&transientRetryIds.has(item.gameId)){
+            if(transientRetryIds.has(item.gameId)){
               console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE_RETRY_IN_CURRENT_SCAN='+item.gameId);
             }
             const c=item.robloxRuntimeCandidateEvidence||{};
@@ -353,7 +352,7 @@ jobs:
               &&item.robloxSharedTargetCurrent===false)return false;
             const sourceRevision=String(item.robloxSourceCommit||'').trim();
             const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
-            if(retryOpenCloudOnly&&requested){
+            if(retryOpenCloudOnly&&requested&&item.gameId===requested){
               const transientEvidence=item.robloxRuntimeFoundationEvidence||{};
               const exactRetryStillCurrent=
                 c.sourceRevision===sourceRevision
@@ -411,15 +410,15 @@ jobs:
               return false;
             }
             return c.published===true&&Number(c.versionNumber)>0&&c.universeId&&c.placeId;
+          }).sort((a,b)=>{
+            if(!requested)return 0;
+            return Number(b.gameId===requested)-Number(a.gameId===requested);
           });
           const probes=new Array(candidates.length);
-          const throttlePressure=candidates.some(item=>{
-            const evidence=item.robloxRuntimeFoundationEvidence||{};
-            return item.robloxFailureSignature==='ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE'
-              &&Number(evidence.httpStatus||0)===429;
-          });
-          const probeConcurrency=Math.max(1,Math.min(requested?1:(throttlePressure?4:8),candidates.length||1));
-          console.log('ROBLOX_OPEN_CLOUD_THROTTLE_PRESSURE='+(throttlePressure?'ACTIVE_MIN4_PARALLEL':'CLEAR_MAX8_PARALLEL'));
+          const probeConcurrency=Math.max(1,Math.min(8,candidates.length||1));
+          console.log('ROBLOX_OPEN_CLOUD_PARALLEL_MODE=MAX8_FILL_AVAILABLE');
+          console.log('ROBLOX_OPEN_CLOUD_REQUESTED_PRIORITY='+(requested||'NONE'));
+          console.log('ROBLOX_OPEN_CLOUD_429_SCOPE=PER_GAME_RETRY_ONLY');
           let probeCursor=0;
           const runProbeWorker=async()=>{
             while(true){
