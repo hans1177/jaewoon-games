@@ -150,7 +150,7 @@ jobs:
           echo "VIBE2_24H_LEARNING_PROVIDER=$VIBE2_24H_LEARNING_PROVIDER"
           echo "VIBE2_24H_GEMINI_LEARNING=FORBIDDEN"
 
-      - name: Dispatch queued asset work first, otherwise GAME_PRIMARY before full planning
+      - name: Dispatch queued ASSET_DEVELOPMENT and GAME_PRIMARY before full planning
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -215,7 +215,6 @@ jobs:
             else
               echo 'VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=FAILED_FALLBACK_POST_PLAN' >&2
             fi
-            exit 0
           fi
 
           if [ "$game_queued" -eq 0 ] || [ "$game_free" -eq 0 ]; then
