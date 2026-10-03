@@ -31,8 +31,10 @@ on:
         default: MANUAL_OR_NATIVE
         type: string
 
+# Same-game/platform orchestration is parallel. Duplicate whole-portfolio dispatches are
+# coalesced by the coordinator scan below, not by a gameId workflow lock.
 concurrency:
-  group: company-development-confirmed-${{ inputs.game_id || (github.event_name == 'push' && 'main-push') || github.run_id }}
+  group: company-development-confirmed-run-${{ github.run_id }}
   cancel-in-progress: false
 
 permissions:
@@ -48,7 +50,7 @@ jobs:
     runs-on: ubuntu-slim
     timeout-minutes: 5
     concurrency:
-      group: company-development-confirmed-coordinator-gate-${{ inputs.game_id || (github.event_name == 'push' && github.run_id) || 'batch' }}
+      group: company-development-confirmed-coordinator-gate-${{ github.run_id }}
       cancel-in-progress: false
     outputs:
       proceed: ${{ steps.admit.outputs.proceed }}
