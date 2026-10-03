@@ -148,11 +148,27 @@ export function changedGovernedFiles(base='HEAD^',head='HEAD'){
 
 
 const CENTRAL_POLICY_REL='company-learning/platform-release-roadmap.json';
+const CENTRAL_ARCHITECTURE_REL='company-learning/company-architecture-map.json';
+const CENTRAL_LOG_MAP_REL='company-learning/company-log-map.json';
 const CENTRAL_SCAN_ROOTS=Object.freeze(['qa','tools','.github','assets']);
+const CENTRAL_COMPANION_DOCUMENTS=Object.freeze({
+  architecture:Object.freeze({
+    sourcePath:CENTRAL_ARCHITECTURE_REL,
+    aliases:Object.freeze(['architecture','architectureMap']),
+    pinnedCorePaths:Object.freeze(['version','authority','sourceOfTruth','centralPolicy','logMap','securityPolicy','purpose','requiredForAllWorkers'])
+  }),
+  logMap:Object.freeze({
+    sourcePath:CENTRAL_LOG_MAP_REL,
+    aliases:Object.freeze(['logMap']),
+    pinnedCorePaths:Object.freeze(['version','authority','sourceOfTruth','centralPolicy','architectureMap','securityPolicy','purpose','requiredForAllWorkers'])
+  })
+});
 const CENTRAL_TEXT_EXTENSIONS=new Set(['.js','.mjs','.cjs','.json','.yml','.yaml','.md']);
 const cloneJson=value=>JSON.parse(JSON.stringify(value));
 const utf8Bytes=value=>Buffer.byteLength(typeof value==='string'?value:JSON.stringify(value,null,2)+'\n','utf8');
-const readCentralRoadmap=()=>JSON.parse(fs.readFileSync(path.join(ROOT,CENTRAL_POLICY_REL),'utf8'));
+const readJsonRel=rel=>JSON.parse(fs.readFileSync(path.join(ROOT,rel),'utf8'));
+const readCentralRoadmap=()=>readJsonRel(CENTRAL_POLICY_REL);
+const escapeRegExp=value=>String(value??'').replace(/[|\\{}()[\]^$+*?.-]/g,'\\const readCentralRoadmap=()=>JSON.parse(fs.readFileSync(path.join(ROOT,CENTRAL_POLICY_REL),'utf8'));');
 
 function pathValue(root,dotted=''){
   let current=root;
@@ -192,6 +208,34 @@ export function extractCentralPolicyReferences(text=''){
   }
   for(const match of source.matchAll(/platform-release-roadmap\.json#([A-Za-z0-9_.-]+)/g))add(match[1]);
   for(const key of extractChangeRecordReferences(source))add('changeRecord.'+key);
+  return [...refs].sort();
+}
+
+export function extractCentralDocumentReferences(text='',{aliases=[],filename=''}={}){
+  const refs=new Set(),source=String(text||'');
+  const add=value=>{
+    const refPath=clean(value).replace(/^\.+|\.+$/g,'');
+    if(refPath&&/^[A-Za-z0-9_.-]+$/.test(refPath))refs.add(refPath);
+  };
+  for(const alias of aliases.map(clean).filter(Boolean)){
+    const escaped=escapeRegExp(alias);
+    for(const match of source.matchAll(new RegExp('\\b'+escaped+'(?:\\?\\.|\\.)([A-Za-z0-9_]+(?:(?:\\?\\.|\\.)[A-Za-z0-9_]+)*)','g'))){
+      add(match[1].replaceAll('?.','.'));
+    }
+    for(const match of source.matchAll(new RegExp('\\b'+escaped+'(?:\\?\\.)?\\[\\s*[\\\'"]([^\\\'"]+)[\\\'"]\\s*\\]','g')))add(match[1]);
+    for(const match of source.matchAll(new RegExp('\\{([^{}]+)\\}\\s*=\\s*'+escaped+'\\b','g'))){
+      for(const token of match[1].split(',')){
+        const key=clean(token).split(':')[0].split('=')[0].trim();
+        if(/^[A-Za-z0-9_-]+$/.test(key))add(key);
+      }
+    }
+    const dynamic=new RegExp('\\b'+escaped+'(?:\\?\\.)?\\[\\s*(?![\\\'"])','g');
+    if(dynamic.test(source))refs.add('*');
+  }
+  if(clean(filename)){
+    const escapedFile=escapeRegExp(clean(filename));
+    for(const match of source.matchAll(new RegExp(escapedFile+'#([A-Za-z0-9_.-]+)','g')))add(match[1]);
+  }
   return [...refs].sort();
 }
 function walkCentralReferenceFiles(rootDir,out=[]){
@@ -246,10 +290,46 @@ export function findCurrentCentralPolicyReferences({roots=CENTRAL_SCAN_ROOTS}={}
     [...refs.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([key,files])=>[key,Object.freeze(uniq(files).sort())])
   ));
 }
+
+export function findCurrentCompanionDocumentReferences({roots=CENTRAL_SCAN_ROOTS}={}){
+  const refsByDocument=new Map(Object.keys(CENTRAL_COMPANION_DOCUMENTS).map(key=>[key,new Map()]));
+  const centralFiles=new Set([
+    CENTRAL_POLICY_REL,
+    CENTRAL_ARCHITECTURE_REL,
+    CENTRAL_LOG_MAP_REL,
+    'company-learning/security-immune-system.json'
+  ]);
+  for(const root of roots){
+    const abs=path.join(ROOT,root);
+    for(const file of walkCentralReferenceFiles(abs)){
+      const rel=repoRel(file);
+      if(centralFiles.has(rel))continue;
+      let source='';
+      try{source=fs.readFileSync(file,'utf8');}catch{continue;}
+      for(const [documentKey,config] of Object.entries(CENTRAL_COMPANION_DOCUMENTS)){
+        for(const ref of extractCentralDocumentReferences(source,{aliases:config.aliases,filename:path.basename(config.sourcePath)})){
+          const refs=refsByDocument.get(documentKey);
+          if(!refs.has(ref))refs.set(ref,[]);
+          refs.get(ref).push(rel);
+        }
+      }
+    }
+  }
+  return Object.freeze(Object.fromEntries(
+    [...refsByDocument.entries()].map(([documentKey,refs])=>[
+      documentKey,
+      Object.freeze(Object.fromEntries(
+        [...refs.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([key,files])=>[key,Object.freeze(uniq(files).sort())])
+      ))
+    ])
+  ));
+}
 function centralPathIsReferenced(pathKey='',referenceMap={}){
   const target=clean(pathKey);
   if(!target)return false;
-  return Object.keys(referenceMap||{}).some(ref=>
+  const refs=Object.keys(referenceMap||{});
+  if(refs.includes('*'))return true;
+  return refs.some(ref=>
     ref===target||ref.startsWith(target+'.')||target.startsWith(ref+'.')
   );
 }
@@ -505,6 +585,105 @@ export function archiveCentralCurrentUse({createdAt=new Date().toISOString(),sou
   return Object.freeze({changed:true,plan,archiveRecord:archive,archivePath:archiveRel});
 }
 
+
+export function planCompanionCurrentUsePrune({document,currentReferences={},pinnedCorePaths=[]}={}){
+  if(!isObject(document))throw new Error('companion document object required');
+  const work=cloneJson(document);
+  const pinned=new Set((Array.isArray(pinnedCorePaths)?pinnedCorePaths:[]).map(clean).filter(Boolean));
+  const archivedPayload={},archivedPaths=[];
+  for(const [key,value] of Object.entries({...work})){
+    if(pinned.has(key)||centralPathIsReferenced(key,currentReferences))continue;
+    archivedPayload[key]=value;
+    delete work[key];
+    archivedPaths.push(key);
+  }
+  const beforeBytes=utf8Bytes(JSON.stringify(document,null,2)+'\n');
+  const afterBytes=utf8Bytes(JSON.stringify(work,null,2)+'\n');
+  return Object.freeze({
+    beforeBytes,
+    afterBytes,
+    reducedBytes:beforeBytes-afterBytes,
+    archivedPaths:Object.freeze(archivedPaths.sort()),
+    archivedPayload:Object.freeze(archivedPayload),
+    currentReferencePaths:Object.freeze(Object.keys(currentReferences||{}).sort()),
+    document:work
+  });
+}
+
+function companionArchiveRecord({plans,sourceRevision,createdAt,recordId}){
+  const documents={};
+  const sourceRefs=[];
+  const relatedFiles=[];
+  for(const [documentKey,row] of Object.entries(plans)){
+    sourceRefs.push(row.sourcePath);
+    relatedFiles.push(row.sourcePath);
+    documents[documentKey]={
+      sourcePath:row.sourcePath,
+      beforeUtf8Bytes:row.plan.beforeBytes,
+      afterUtf8Bytes:row.plan.afterBytes,
+      archivedPaths:[...row.plan.archivedPaths],
+      archivedPayload:row.plan.archivedPayload,
+      currentReferencePaths:[...row.plan.currentReferencePaths]
+    };
+  }
+  return{
+    schemaVersion:1,
+    recordId,
+    recordType:'central-document-archive',
+    domain:'operations',
+    scope:{type:'COMPANY',id:'company',gameId:'',platform:'NONE'},
+    timestamps:{createdAt,observedAt:null},
+    provenance:{
+      producer:'COMPANY_RECORDS_GOVERNANCE',
+      authority:'MACHINE_EXECUTION_CONTRACT',
+      sourceRevision:sourceRevision||null,
+      artifactIdentity:null,
+      sourceRefs
+    },
+    status:'ARCHIVED',
+    retentionClass:'CANONICAL',
+    data:{mode:'AUTO_CURRENT_USE_COMPANION',documents},
+    evidenceRefs:[],
+    relatedFiles,
+    supersedes:[],
+    tags:['central-document','archive','retention','current-use']
+  };
+}
+
+export function archiveCentralCompanionCurrentUse({createdAt=new Date().toISOString(),sourceRevision=currentGitRevision()}={}){
+  const refs=findCurrentCompanionDocumentReferences();
+  const plans={};
+  for(const [documentKey,config] of Object.entries(CENTRAL_COMPANION_DOCUMENTS)){
+    const current=readJsonRel(config.sourcePath);
+    const plan=planCompanionCurrentUsePrune({
+      document:current,
+      currentReferences:refs[documentKey]||{},
+      pinnedCorePaths:config.pinnedCorePaths
+    });
+    if(plan.archivedPaths.length)plans[documentKey]={sourcePath:config.sourcePath,plan};
+  }
+  if(!Object.keys(plans).length)return Object.freeze({changed:false,plans,archiveRecord:null,archivePath:null});
+  const date=createdAt.slice(0,10),compact=date.replaceAll('-','');
+  const fingerprint=crypto.createHash('sha256').update(JSON.stringify(Object.fromEntries(
+    Object.entries(plans).map(([key,row])=>[key,row.plan.archivedPaths])
+  ))).digest('hex').slice(0,12);
+  const revision=(sourceRevision||'no-revision').slice(0,8).toLowerCase().replace(/[^a-z0-9]/g,'');
+  const recordId='central-companion-current-use-'+compact+'-'+revision+'-'+fingerprint;
+  const archiveRel='company-records/operations/'+date.slice(0,4)+'/'+date+'/company/central-document-archive--'+recordId+'.json';
+  if(existsRel(archiveRel))throw new Error('companion current-use archive record already exists: '+archiveRel);
+  const archive=companionArchiveRecord({plans,sourceRevision,createdAt,recordId});
+  const archiveAbs=path.join(ROOT,archiveRel);
+  fs.mkdirSync(path.dirname(archiveAbs),{recursive:true});
+  fs.writeFileSync(archiveAbs,JSON.stringify(archive,null,2)+'\n');
+  const validation=validateCompanyRecord(archiveRel);
+  if(validation.errors.length){
+    fs.rmSync(archiveAbs,{force:true});
+    throw new Error('companion current-use archive record validation failed: '+validation.errors.join(','));
+  }
+  for(const row of Object.values(plans))fs.writeFileSync(path.join(ROOT,row.sourcePath),JSON.stringify(row.plan.document,null,2)+'\n');
+  return Object.freeze({changed:true,plans,archiveRecord:archive,archivePath:archiveRel});
+}
+
 function currentGitRevision(){
   try{return clean(execFileSync('git',['rev-parse','HEAD'],{cwd:ROOT,encoding:'utf8'}));}catch{return'';}
 }
@@ -581,10 +760,17 @@ function main(){
   const args=process.argv.slice(2);
   if(args.includes('--central-auto-prune')){
     const result=archiveCentralCurrentUse();
+    const companion=archiveCentralCompanionCurrentUse();
     console.log('CENTRAL_POLICY_AUTO_PRUNE_CHANGED='+(result.changed?'YES':'NO'));
     console.log('CENTRAL_POLICY_AUTO_PRUNE_PATHS='+result.plan.archivedPaths.length);
     console.log('CENTRAL_POLICY_AUTO_PRUNE_REDUCED_BYTES='+result.plan.reducedBytes);
     if(result.archivePath)console.log('CENTRAL_POLICY_AUTO_PRUNE_ARCHIVE='+result.archivePath);
+    console.log('CENTRAL_COMPANION_AUTO_PRUNE_CHANGED='+(companion.changed?'YES':'NO'));
+    for(const [documentKey,row] of Object.entries(companion.plans||{})){
+      console.log('CENTRAL_COMPANION_AUTO_PRUNE_'+documentKey.toUpperCase()+'_PATHS='+row.plan.archivedPaths.length);
+      console.log('CENTRAL_COMPANION_AUTO_PRUNE_'+documentKey.toUpperCase()+'_REDUCED_BYTES='+row.plan.reducedBytes);
+    }
+    if(companion.archivePath)console.log('CENTRAL_COMPANION_AUTO_PRUNE_ARCHIVE='+companion.archivePath);
     return;
   }
   if(args.includes('--central-report')){
