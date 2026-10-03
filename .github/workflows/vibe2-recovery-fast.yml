@@ -17,9 +17,6 @@ permissions:
   contents: write
   actions: write
 
-env:
-  VIBE2_RUNNER_PRESSURE_DISPATCH_THRESHOLD: '4'
-
 jobs:
   recover:
     runs-on: ubuntu-slim
@@ -119,32 +116,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          pressure_file="$(mktemp)"
-          pressure_code="$(curl --silent --show-error --output "$pressure_file" --write-out '%{http_code}' \
-            --header 'Accept: application/vnd.github+json' \
-            --header "Authorization: Bearer $GH_TOKEN" \
-            --header 'X-GitHub-Api-Version: 2022-11-28' \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" || true)"
-          if [ "$pressure_code" != '200' ]; then
-            rm -f "$pressure_file"
-            echo "VIBE2_RECOVERY_FAST_GAME_WORKER_DISPATCH=DEFERRED_PRESSURE_UNKNOWN_HTTP_$pressure_code"
-            exit 0
-          fi
-          pressure_count="$(CURRENT_RUN_ID="$GITHUB_RUN_ID" node - "$pressure_file" <<'NODE'
-          const fs=require('fs');
-          const payload=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
-          const current=String(process.env.CURRENT_RUN_ID||'');
-          const states=new Set(['queued','pending','requested']);
-          const count=(payload.workflow_runs||[]).filter(row=>String(row.id||'')!==current&&states.has(String(row.status||'').toLowerCase())).length;
-          process.stdout.write(String(count));
-          NODE
-          )"
-          rm -f "$pressure_file"
-          echo "VIBE2_RECOVERY_FAST_RUNNER_QUEUE_PRESSURE=$pressure_count"
-          if [ "$pressure_count" -ge "${VIBE2_RUNNER_PRESSURE_DISPATCH_THRESHOLD:-4}" ]; then
-            echo 'VIBE2_RECOVERY_FAST_GAME_WORKER_DISPATCH=DEFERRED_RUNNER_PRESSURE_QUEUE_STATE_PRESERVED'
-            exit 0
-          fi
+          echo 'VIBE2_RECOVERY_FAST_PRODUCTION_PRESSURE_GATE=DISABLED_EXTERNAL_RUNNER_QUEUE_OWNS_CAPACITY'
           payload='{"event_type":"vibe2-fanin-refill","client_payload":{"execution_lane":"game-primary","reason":"recovery-fast-causal-return"}}'
           curl --fail-with-body --silent --show-error \
             --request POST \
