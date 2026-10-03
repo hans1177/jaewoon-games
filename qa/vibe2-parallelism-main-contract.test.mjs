@@ -5,12 +5,32 @@ import {execFileSync} from 'node:child_process';
 
 const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
 const core=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+const unityCandidateResult=fs.readFileSync('.github/workflows/vibe2-unity-candidate-result.yml','utf8');
+const unityReleaseResult=fs.readFileSync('.github/workflows/vibe2-unity-release-result.yml','utf8');
+const candidateRelease=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
+const robloxCandidateRuntime=fs.readFileSync('.github/workflows/vibe2-roblox-candidate-runtime.yml','utf8');
 const director=fs.readFileSync('.github/workflows/director-supervisor.yml','utf8');
 const runtime=JSON.parse(fs.readFileSync('vibe2-runtime.json','utf8'));
 const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
 const queue=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
 const control=JSON.parse(fs.readFileSync('.vibe2/parallelism-control.json','utf8'));
+
+test('Unity Vibe result handlers do not globally serialize unrelated candidates',()=>{
+  assert.doesNotMatch(unityCandidateResult,/\nconcurrency:\s*\n\s*group:/);
+  assert.doesNotMatch(unityReleaseResult,/\nconcurrency:\s*\n\s*group:/);
+  assert.doesNotMatch(unityCandidateResult,/vibe2-control-state-vibe2-unreal-core/);
+  assert.doesNotMatch(unityReleaseResult,/vibe2-release-serial/);
+  assert.match(unityCandidateResult,/VIBE2_RECONCILE_WRITE_RACE=RETRY/);
+  assert.match(unityCandidateResult,/git checkout -B "\$CONTROL_BRANCH" "origin\/\$CONTROL_BRANCH"/);
+  assert.match(unityReleaseResult,/VIBE2_UNITY_RESULT_QUEUE_WRITE_ATTEMPT=/);
+  assert.match(unityReleaseResult,/git reset --hard origin\/vibe2-unreal-core/);
+  assert.doesNotMatch(unityReleaseResult,/git pull --rebase origin vibe2-unreal-core/);
+
+  // 정확히 같은 후보의 중복 heavy 실행만 후보 identity 단위로 직렬화한다.
+  assert.match(candidateRelease,/group: vibe2-release-\$\{\{ github\.event\.inputs\.candidate_branch \|\| github\.ref_name \}\}/);
+  assert.match(robloxCandidateRuntime,/group: vibe2-roblox-candidate-runtime-\$\{\{ inputs\.candidate_ref \|\| github\.ref \}\}/);
+});
 
 test('early fan-in review never suppresses new runnable worker reservations',()=>{
   const start=core.indexOf('early_review_run="$(cat /tmp/vibe2-early-review-run');
