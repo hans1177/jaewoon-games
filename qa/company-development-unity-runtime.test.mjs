@@ -388,7 +388,9 @@ test('Unity runtime captures exact process, visible surface, input and platform 
   assert.match(runtimeSmokeSource,/Viewing full screen\|Got it/);
   assert.match(runtimeSmokeSource,/dumpsys gfxinfo "\$package"/);
   assert.match(runtimeSmokeSource,/dumpsys SurfaceFlinger --list/);
-  assert.match(runtimeSmokeSource,/surface_layer=.*SurfaceView/);
+  assert.match(runtimeSmokeSource,/SurfaceView\.\*\(BLAST\)/);
+  assert.match(runtimeSmokeSource,/grep -v 'Background for '/);
+  assert.match(runtimeSmokeSource,/RequestedLayerState\\\{/);
   assert.match(runtimeSmokeSource,/dumpsys SurfaceFlinger --latency "\$surface_layer"/);
   assert.match(runtimeSmokeSource,/dumpsys meminfo "\$package"/);
   assert.match(runtimeSmokeSource,/ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO/);
