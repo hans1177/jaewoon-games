@@ -23,7 +23,11 @@ const manorAssets=read('roblox-games/horror-escape-room/shared/ManorAssets.luau'
 const cloudOwnerBuild=process.env.MANOR_CLOUD_BUILD==='1';
 
 
-test('Studio 검증은 고정 버전 Rojo를 직접 설치하고 러너 복구 경로와 연결된다',()=>{
+test('Studio 검증은 수동 선택 진단이며 배포 게이트가 아니다',()=>{
+ assert.match(manorReviewWorkflow,/name: Horror Manor Optional Studio Diagnostic/);
+ assert.match(manorReviewWorkflow,/workflow_dispatch:/);
+ assert.doesNotMatch(manorReviewWorkflow,/\npush:/);
+ assert.match(manorReviewWorkflow,/Studio is optional post-build-up diagnostics only/);
  assert.match(manorReviewWorkflow,/rojo-7\.7\.0-windows-x86_64\.zip/);
  assert.match(manorReviewWorkflow,/2179c44862a10ecbd725bdfeb4abc64e16dc4aad9b6c8f3e1a7c46a87280b949/);
  assert.match(manorReviewWorkflow,/MANOR_REVIEW_ROJO/);
@@ -32,14 +36,10 @@ test('Studio 검증은 고정 버전 Rojo를 직접 설치하고 러너 복구 �
  assert.match(manorReviewWorkflow,/MANOR_REVIEW_PACKAGED_VERSION77=PASS/);
  assert.doesNotMatch(manorReviewWorkflow,/81599595871905/);
  assert.doesNotMatch(manorReviewWorkflow,/PREVIOUS_VERIFIED_ROJO_NOT_FOUND/);
- assert.match(runnerBootstrapWorkflow,/\.github\/workflows\/horror-manor-review\.yml/);
- assert.match(runnerBootstrapWorkflow,/tools\/horror-manor-studio-review\.mjs/);
- assert.match(runnerBootstrapWorkflow,/ROBLOX_RUNNER_PATH_DISCOVERY=AUTO_METADATA/);
- assert.match(runnerBootstrapWorkflow,/ROBLOX_RUNNER_REBOOT_AUTOSTART=HIDDEN_USER_LOGON_STARTUP/);
- assert.doesNotMatch(runnerBootstrapWorkflow,/\$runnerRoot\s*=\s*'C:\\\\actions-runner'/);
+ assert.doesNotMatch(ownerWorkflow,/horror-manor-review\.yml/);
 });
 
-test('공식 Studio 검증은 실제 PersonalGround 접촉을 새 서버 재시작 전후로 확인한다',()=>{
+test('Studio 진단을 수동 실행하면 실제 PersonalGround 접촉을 새 서버 재시작 전후로 확인한다',()=>{
  assert.match(studioReview,/captureGroundContact\(studioId,'server-1'\)/);
  assert.match(studioReview,/captureGroundContact\(studioId,'server-2'\)/);
  assert.match(studioReview,/ground\.Name=="PersonalGround"/);
@@ -62,6 +62,13 @@ test('explicit owner-direct route publishes exact current main only to the canon
  assert.equal(policy?.enabled,true);
  assert.ok(policy?.gameIds?.includes('horror-escape-room'));
  assert.equal(policy?.f9RequiredForOwnerDirectPublish,false);
+ assert.equal(policy?.studioRequiredForOwnerDirectPublish,false);
+ assert.equal(policy?.postBuildUpVerificationLevel,'CODE_AND_STATIC_QA');
+ assert.equal(roadmap?.roblox?.studioExecution?.required,false);
+ assert.equal(roadmap?.roblox?.studioExecution?.requiredForInternalRelease,false);
+ assert.equal(roadmap?.roblox?.studioExecution?.deploymentGate,false);
+ assert.equal(roadmap?.roblox?.studioExecution?.f9Gate,false);
+ assert.equal(roadmap?.developmentLifecycleMachine?.validationEfficiencyOptimization?.roblox?.studioValidationRequired,false);
  assert.equal(policy?.exactMainSourceRequired,true);
  assert.equal(policy?.canonicalPrivateTargetOnly,true);
  assert.equal(policy?.publicDiscoveryAllowed,false);
@@ -70,6 +77,8 @@ test('explicit owner-direct route publishes exact current main only to the canon
  assert.match(ownerWorkflow,/name: Horror Owner Direct Publish/);
  assert.match(ownerWorkflow,/OWNER_DIRECT_CANONICAL_PRIVATE_PUBLISH=PASS/);
  assert.match(ownerWorkflow,/OWNER_DIRECT_F9_CLAIM=NO/);
+ assert.match(ownerWorkflow,/OWNER_DIRECT_STUDIO_REQUIRED=NO/);
+ assert.match(ownerWorkflow,/OWNER_DIRECT_POST_BUILDUP_VERIFICATION=CODE_AND_STATIC_QA/);
  assert.match(ownerWorkflow,/ROBLOX_UNIVERSE_ID: '10767445796'/);
  assert.match(ownerWorkflow,/ROBLOX_PLACE_ID: '98222620265768'/);
  assert.match(ownerWorkflow,/versions\?versionType=Published/);
