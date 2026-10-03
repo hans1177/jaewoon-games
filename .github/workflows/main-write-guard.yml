@@ -105,8 +105,8 @@ jobs:
 
       - name: Reject new workflow direct writes to main
         env:
-          PR_TITLE: ${{ github.event.pull_request.title || '' }}
-        run: node tools/main-write-guard.mjs --base='${{ steps.base.outputs.ref }}' --head=HEAD --actor='${{ github.actor }}' --owner=hans1177 --unlock-title="$PR_TITLE"
+          UNLOCK_CONTEXT: ${{ github.event.pull_request.title || github.event.head_commit.message || '' }}
+        run: node tools/main-write-guard.mjs --base='${{ steps.base.outputs.ref }}' --head=HEAD --actor='${{ github.actor }}' --owner=hans1177 --unlock-title="$UNLOCK_CONTEXT"
 
       - name: Protection status
         shell: bash
