@@ -439,6 +439,33 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
     runtimeVerificationRequired:true,companyPromotionAllowed:false
   });
 }
+const GENERIC_NATIVE_DCC_TYPES=freezeList(['background','environment','item','weapon','prop']);
+function genericNativeDccRecipeForType({target='',task={},type=''}={}){
+  const targetName=clean(target).toLowerCase();
+  const typeName=clean(type).toLowerCase();
+  if(!['roblox','unity'].includes(targetName)||!GENERIC_NATIVE_DCC_TYPES.includes(typeName))return null;
+  const gameSlug=(clean(task?.gameId)||'game').toLowerCase().replace(/[^a-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'')||'game';
+  const typeSlug=typeName.replace(/[^a-z0-9._-]+/g,'-')||'asset';
+  const outputRoot=`assets/generated/${targetName}/${gameSlug}/${typeSlug}`;
+  const family=nativeDccFamilyForTypes([typeName]);
+  return {
+    id:`generated-${gameSlug}-${targetName}-${typeSlug}-blender-v1`,
+    assetId:`${gameSlug}-${targetName}-${typeSlug}-generated-v1`,
+    family,
+    license:'project-original',
+    executor:'BLENDER_PYTHON',
+    script:'assets/native-authoring/build-game-visual.py',
+    editableSource:'assets/native-authoring/build-game-visual.py',
+    types:[typeName],
+    targetPlatforms:[targetName],
+    args:['--output',outputRoot,'--asset-id',`${gameSlug}-${typeSlug}`,'--profile',typeName,'--target',targetName],
+    outputs:[`${outputRoot}/asset.glb`,`${outputRoot}/preview.png`,`${outputRoot}/evidence.json`],
+    evidenceJson:`${outputRoot}/evidence.json`,
+    preview:`${outputRoot}/preview.png`,
+    runMode:'VERIFY_ONLY'
+  };
+}
+
 function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest={}}={}){
   const targetName=clean(target).toLowerCase();
   const engineNativeTarget=['roblox','unity'].includes(targetName);
@@ -473,9 +500,22 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
     .flatMap(asset=>(Array.isArray(asset?.authoringRecipes)?asset.authoringRecipes:[]).map(recipe=>({recipe,asset})));
   const normalizedExplicit=explicitRecipeRows.map(recipe=>normalizeNativeDccAuthoringRecipe(recipe,{id:'task-explicit'},target,uniqueDccTypes));
   const normalizedRegistry=registryRecipeRows.map(({recipe,asset})=>normalizeNativeDccAuthoringRecipe(recipe,asset,target,uniqueDccTypes));
-  const executionRecipes=freezeList([...normalizedExplicit,...normalizedRegistry]
+  const concreteRecipes=[...normalizedExplicit,...normalizedRegistry]
     .filter(row=>row.safe&&row.typeMatch&&row.targetMatch)
-    .filter((row,index,rows)=>rows.findIndex(other=>other.id===row.id)===index));
+    .filter((row,index,rows)=>rows.findIndex(other=>other.id===row.id)===index);
+  const concreteCovers=type=>concreteRecipes.some(row=>!row.types.length||row.types.includes(type));
+  const normalizedGeneric=uniqueDccTypes
+    .filter(type=>!concreteCovers(type))
+    .map(type=>genericNativeDccRecipeForType({target:targetName,task,type}))
+    .filter(Boolean)
+    .map(recipe=>normalizeNativeDccAuthoringRecipe(recipe,{},target,uniqueDccTypes))
+    .filter(row=>row.safe&&row.typeMatch&&row.targetMatch);
+  const executionRecipeRows=[...concreteRecipes,...normalizedGeneric]
+    .filter((row,index,rows)=>rows.findIndex(other=>other.id===row.id)===index);
+  const executionRecipes=freezeList(executionRecipeRows);
+  const recipeCovers=type=>executionRecipeRows.some(row=>!row.types.length||row.types.includes(type));
+  const coveredDccTypes=uniqueDccTypes.filter(recipeCovers);
+  const uncoveredDccTypes=uniqueDccTypes.filter(type=>!recipeCovers(type));
   const explicitRecipes=freezeList(explicitRecipeRows);
   const availableExistingRecipes=unique(decisions.flatMap(row=>
     [...(row?.reuseCandidates||[]),...(row?.externalCandidates||[])]
@@ -494,10 +534,15 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
       requiredTypes:freezeList(uniqueDccTypes),
       preferredExecutor:'BLENDER_PYTHON',
       executionRequired:uniqueDccTypes.length>0,
-      executionStatus:uniqueDccTypes.length===0?'NOT_REQUIRED':executionRecipes.length>0?'READY_FOR_EXISTING_AUTHORING_EXECUTOR':availableExistingRecipes.length>0?'EXISTING_AUTHORING_RECIPE_AVAILABLE':'AUTHORING_RECIPE_REQUIRED',
+      executionStatus:uniqueDccTypes.length===0?'NOT_REQUIRED':uncoveredDccTypes.length===0&&executionRecipes.length>0?'READY_FOR_EXISTING_AUTHORING_EXECUTOR':executionRecipes.length>0?'PARTIAL_AUTHORING_RECIPE_COVERAGE':availableExistingRecipes.length>0?'EXISTING_AUTHORING_RECIPE_AVAILABLE':'AUTHORING_RECIPE_REQUIRED',
       requiredCapabilities:NATIVE_DCC_AUTHORING,
       explicitRecipes,
       executionRecipes,
+      coveredTypes:freezeList(coveredDccTypes),
+      uncoveredTypes:freezeList(uncoveredDccTypes),
+      genericRecipeCount:normalizedGeneric.length,
+      genericRecipeTypes:freezeList(normalizedGeneric.flatMap(row=>row.types)),
+      genericRecipeScript:'assets/native-authoring/build-game-visual.py',
       availableExistingRecipes:freezeList(availableExistingRecipes),
       executionRequestCount:executionRecipes.length,
       availableExistingRecipeCount:availableExistingRecipes.length,
