@@ -73,7 +73,7 @@ button{font:inherit}
     <p id="restReward">스테이지 클리어 보상</p>
     <div class="meta">골드 <b id="restGold">0G</b> · 경험치 <b id="restExp">0</b></div>
     <div class="restGrid">
-      <button class="restBtn" id="gacha" type="button"><b>100골드 뽑기</b><span>신규 아군 4종</span><small id="gachaState">뽑기 가능</small></button>
+      <button class="restBtn" id="gacha" type="button"><b>100골드 뽑기</b><span>기본 4종 · 6스테이지 후 3종 추가</span><small id="gachaState">뽑기 가능</small></button>
       <button class="restBtn" id="formationRest" type="button"><b>캐릭터 편성</b><span>최대 6종</span><small id="squadCount">5 / 6</small></button>
       <button class="restBtn" id="openCharUpgrade" type="button"><b>캐릭터 강화</b><span>각 캐릭터 +3</span><small>골드 사용</small></button>
     </div>
@@ -130,9 +130,15 @@ const U={
   blade:{name:'검사 고양이',icon:'◇',cost:210,hp:155,atk:45,range:35,speed:33,rate:.72,cool:5.5,size:18,kind:'blade',role:'근접',gacha:true},
   hammer:{name:'망치 고양이',icon:'⬟',cost:300,hp:260,atk:72,range:30,speed:20,rate:1.35,cool:8,size:21,kind:'hammer',role:'근접',gacha:true},
   knight:{name:'기사 고양이',icon:'⬢',cost:330,hp:360,atk:42,range:33,speed:24,rate:1.0,cool:8.5,size:22,kind:'knight',role:'근접',gacha:true},
-  mage:{name:'마법 고양이',icon:'✹',cost:390,hp:110,atk:56,range:175,speed:20,rate:1.45,cool:10,size:18,kind:'mage',role:'원거리',gacha:true}
+  mage:{name:'마법 고양이',icon:'✹',cost:390,hp:110,atk:56,range:175,speed:20,rate:1.45,cool:10,size:18,kind:'mage',role:'원거리',gacha:true},
+  giant:{name:'거대 고양이',icon:'⬤',cost:450,hp:350,atk:65,range:42,speed:16,rate:2,cool:11,size:29,kind:'giant',role:'근접',attackScale:1},
+  wall:{name:'성벽 고양이',icon:'▰',cost:420,hp:700,atk:24,range:30,speed:14,rate:2.2,cool:18,size:24,kind:'wall',role:'탱커',gacha:true,stage6Gacha:true},
+  iron:{name:'철갑 고양이',icon:'⬣',cost:500,hp:950,atk:32,range:32,speed:12,rate:2.5,cool:24,size:26,kind:'iron',role:'탱커',gacha:true,stage6Gacha:true},
+  legend:{name:'전설 고양이',icon:'★',cost:650,hp:360,atk:160,range:60,speed:32,rate:1.1,cool:45,size:24,kind:'legend',role:'딜러',gacha:true,stage6Gacha:true,rareGacha:true}
 };
 const GACHA_IDS=Object.keys(U).filter(k=>U[k].gacha);
+function availableGachaIds(){return GACHA_IDS.filter(k=>!U[k].stage6Gacha||(save.maxCleared||0)>=6)}
+function remainingGachaIds(){return availableGachaIds().filter(k=>!save.owned[k])}
 
 // ===== 적 =====
 const E={
@@ -152,11 +158,20 @@ const STAGE_PLANS={
 
 // ===== 저장 =====
 function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+const STORY_REQUIRE={shield:1,spear:3,ranger:3,rush:4,giant:6};
+function applyStoryUnlocks(v,addNew=false){
+  const unlocked=[];v.owned=v.owned||{};v.squad=Array.isArray(v.squad)?v.squad:[];v.owned.blob=true;
+  Object.entries(STORY_REQUIRE).forEach(([id,need])=>{
+    const was=!!v.owned[id],now=(v.maxCleared||0)>=need;v.owned[id]=now;
+    if(addNew&&now&&!was){unlocked.push(id);if(v.squad.length<MAX_SQUAD)v.squad.push(id)}
+  });
+  return unlocked;
+}
 function defaultSave(){
   return{
-    gold:0,exp:0,stage:1,
-    owned:{blob:true,shield:true,spear:true,ranger:true,rush:true},
-    squad:['blob','shield','spear','ranger','rush'],
+    gold:0,exp:0,stage:1,maxCleared:0,
+    owned:{blob:true,shield:false,spear:false,ranger:false,rush:false,giant:false},
+    squad:['blob'],
     charLv:{},
     castleLv:0,startWalletLv:0,killRewardLv:0,
     baseLv:1,incomeLv:1,walletLv:1
@@ -165,8 +180,8 @@ function defaultSave(){
 function load(){
   try{
     const raw=JSON.parse(localStorage.getItem(KEY)||'{}'),d=defaultSave(),v=Object.assign(d,raw);
-    v.gold=Math.max(0,Number(v.gold)||0);v.exp=Math.max(0,Number(v.exp)||0);v.stage=clamp(Number(v.stage)||1,1,6);
-    v.owned=Object.assign({},d.owned,raw.owned||{});
+    v.gold=Math.max(0,Number(v.gold)||0);v.exp=Math.max(0,Number(v.exp)||0);v.stage=clamp(Number(v.stage)||1,1,8);v.maxCleared=clamp(Number(raw.maxCleared??Math.max(0,v.stage-1))||0,0,8);
+    v.owned=Object.assign({},d.owned,raw.owned||{});applyStoryUnlocks(v,false);
     v.charLv=Object.assign({},raw.charLv||{});
     Object.keys(U).forEach(k=>v.charLv[k]=clamp(Number(v.charLv[k])||0,0,3));
     const rawSquad=Array.isArray(raw.squad)?raw.squad:d.squad;
@@ -190,7 +205,8 @@ function battleWalletMax(lv){return startingWalletMax()+(lv-1)*120}
 function killReward(base){return Math.round(base*(1+save.killRewardLv*.2))}
 function charStats(id){
   const b=U[id],lv=save.charLv[id]||0,m=1+lv*.15;
-  return Object.assign({},b,{hp:Math.round(b.hp*m),atk:Math.round(b.atk*m*1.8),level:lv});
+  const attackScale=b.attackScale??1.8;
+  return Object.assign({},b,{hp:Math.round(b.hp*m),atk:Math.round(b.atk*m*attackScale),level:lv});
 }
 function metaCost(type){
   const lv=save[type];
@@ -206,7 +222,7 @@ let fighterSeq=0;
 function fighter(t,x,team){return Object.assign({},t,{x,team,uid:++fighterSeq,maxHp:t.hp,hp:t.hp,cd:Math.random()*.12,flash:0,dead:false})}
 function fresh(){
   const h=castleMax(),stage=save.stage;
-  return{running:true,paused:false,time:0,money:160,income:incomeRate(),walletLv:1,maxMoney:battleWalletMax(1),ally:{hp:h,maxHp:h},enemy:{hp:1500,maxHp:1500},a:[],e:[],stage,plan:STAGE_PLANS[stage]||[],spawn:0,nextRabbit:2,bossSpawned:false,cools:{},shake:0}
+  return{running:true,paused:false,time:0,money:160,income:incomeRate(),walletLv:1,maxMoney:battleWalletMax(1),ally:{hp:h,maxHp:h},enemy:{hp:1500,maxHp:1500},a:[],e:[],stage,plan:STAGE_PLANS[stage]||[],spawn:0,nextRabbit:2,bossSpawned:false,stage7BoarTriggered:false,stage7MoleSpawned:false,stage8WaveSpawned:false,stage8BossKilledAt:null,stage8NextRabbit:null,cools:{},shake:0}
 }
 
 // ===== UI =====
@@ -216,7 +232,7 @@ function updateMeta(){
   q('restGold').textContent=save.gold+'G';q('restExp').textContent=save.exp;q('squadCount').textContent=save.squad.length+' / '+MAX_SQUAD;
   q('castleLv').textContent='Lv.'+save.castleLv;q('startWalletLv').textContent='Lv.'+save.startWalletLv;q('killRewardLv').textContent='Lv.'+save.killRewardLv;
   q('castleCost').textContent=save.castleLv>=5?'MAX':metaCost('castleLv')+'G';q('startWalletCost').textContent=save.startWalletLv>=5?'MAX':metaCost('startWalletLv')+'G';q('killRewardCost').textContent=save.killRewardLv>=5?'MAX':metaCost('killRewardLv')+'G';
-  const left=GACHA_IDS.filter(k=>!save.owned[k]);q('gachaState').textContent=left.length?left.length+'종 남음':'전부 획득';
+  const left=remainingGachaIds();q('gachaState').textContent=left.length?left.length+'종 남음':((save.maxCleared||0)<6?'6스테이지 후 신규 3종 추가':'전부 획득');
   q('startRoster').innerHTML=save.squad.map(k=>'<div><b>'+U[k].icon+'</b>'+U[k].name+'<br>+'+(save.charLv[k]||0)+'</div>').join('');
 }
 function buttons(){
@@ -254,9 +270,14 @@ function upgradeCharacter(id){
   save.gold-=cost;save.charLv[id]=(save.charLv[id]||0)+1;persist();renderCharUpgrades();updateMeta();buttons();toast(U[id].name+' 강화 +'+save.charLv[id]);
 }
 function gacha(){
-  const left=GACHA_IDS.filter(k=>!save.owned[k]);if(!left.length)return toast('뽑기 캐릭터를 모두 얻었어');
+  const left=remainingGachaIds();if(!left.length)return toast((save.maxCleared||0)<6?'현재 뽑기 캐릭터를 모두 얻었어. 6스테이지 후 신규 3종 추가!':'뽑기 캐릭터를 모두 얻었어');
   if(save.gold<100)return toast('100골드가 필요해');
-  save.gold-=100;const id=left[Math.floor(Math.random()*left.length)];save.owned[id]=true;persist();updateMeta();toast(U[id].name+' 획득!');
+  save.gold-=100;
+  const rare=left.find(k=>U[k].rareGacha),normal=left.filter(k=>!U[k].rareGacha);
+  let id;
+  if(rare&&(!normal.length||Math.random()<.15))id=rare;
+  else id=normal[Math.floor(Math.random()*normal.length)];
+  save.owned[id]=true;persist();updateMeta();toast(U[id].name+(U[id].rareGacha?' 희귀 획득!':' 획득!'));
 }
 function upgradeMeta(type){
   const cost=metaCost(type);if(!Number.isFinite(cost))return toast('최대 레벨이야');
@@ -266,18 +287,37 @@ function upgradeMeta(type){
 
 // ===== 전투 =====
 function start(){
-  s=fresh();buttons();q('startOverlay').hidden=true;q('restOverlay').hidden=true;q('defeatOverlay').hidden=true;q('battleBar').hidden=false;q('phase').textContent='전투 중';q('stageLabel').textContent='스테이지 '+s.stage;last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);hud();
+  s=fresh();buttons();q('startOverlay').hidden=true;q('restOverlay').hidden=true;q('defeatOverlay').hidden=true;q('battleBar').hidden=false;q('phase').textContent='전투 중';q('stageLabel').textContent='스테이지 '+s.stage;
+  if(s.stage===7){spawn('boar','stage7OpeningBoar');spawn('boar','stage7OpeningBoar')}
+  last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);hud();
 }
 function summon(k){
   if(!s||!s.running||s.paused||!save.squad.includes(k))return;
   const u=charStats(k);if((s.cools[k]||0)>0||s.money<u.cost)return;
   s.money-=u.cost;s.cools[k]=u.cool;s.a.push(fighter(u,86,'ally'));toast(u.name+' 출격!');
 }
-function spawn(k){s.e.push(fighter(E[k],innerWidth-92,'enemy'));if(k==='boss')toast('바위왕 등장!')}
+function spawn(k,tag=''){
+  const f=fighter(E[k],innerWidth-92,'enemy');f.spawnTag=tag;s.e.push(f);if(k==='boss')toast('바위왕 등장!');
+}
+function onEnemyKilled(enemy){
+  if(s.stage===7&&enemy.spawnTag==='stage7OpeningBoar'&&!s.stage7BoarTriggered){
+    s.stage7BoarTriggered=true;for(let i=0;i<3;i++)spawn('rabbit','stage7Rabbit');
+  }
+  if(s.stage===8&&enemy.spawnTag==='stage8Boss'&&s.stage8BossKilledAt===null){
+    s.stage8BossKilledAt=s.time;for(let i=0;i<4;i++)spawn('rabbit','stage8BossRabbit');s.stage8NextRabbit=s.time+5;
+  }
+}
 function loop(now){if(!s||!s.running)return;const dt=Math.min(.035,(now-last)/1000||0);last=now;if(!s.paused)update(dt);draw();hud();if(s&&s.running)raf=requestAnimationFrame(loop)}
 function update(dt){
   s.time+=dt;s.money=Math.min(s.maxMoney,s.money+s.income*dt);Object.keys(s.cools).forEach(k=>s.cools[k]=Math.max(0,s.cools[k]-dt));
   if(s.stage===6){while(!s.bossSpawned&&s.time>=s.nextRabbit){spawn('rabbit');s.nextRabbit+=4}}
+  else if(s.stage===7){
+    if(!s.stage7MoleSpawned&&s.time>=20){s.stage7MoleSpawned=true;spawn('mole','stage7TimedMole')}
+  }
+  else if(s.stage===8){
+    if(!s.stage8WaveSpawned&&s.time>=12){s.stage8WaveSpawned=true;spawn('boss','stage8Boss');spawn('boar','stage8Boar')}
+    while(s.stage8NextRabbit!==null&&s.time>=s.stage8NextRabbit){spawn('rabbit','stage8EndlessRabbit');s.stage8NextRabbit+=2.5}
+  }
   else while(s.spawn<s.plan.length&&s.plan[s.spawn][0]<=s.time){spawn(s.plan[s.spawn][1]);s.spawn++}
   team(s.a,s.e,'ally',dt);team(s.e,s.a,'enemy',dt);
   s.a=s.a.filter(v=>!v.dead);s.e=s.e.filter(v=>!v.dead);s.shake=Math.max(0,s.shake-dt*18);
@@ -318,7 +358,7 @@ function hit(a,t,foes){
     o.hp-=a.atk;o.flash=.16;
     if(o.hp<=0&&!o.dead){
       o.dead=true;
-      if(a.team==='ally')s.money=Math.min(s.maxMoney,s.money+killReward(o.reward||0));
+      if(a.team==='ally'){s.money=Math.min(s.maxMoney,s.money+killReward(o.reward||0));onEnemyKilled(o)}
     }
   });
   a.cd=a.rate;if(a.team==='enemy'&&a.splash&&targets.length>1)s.shake=Math.min(7,s.shake+2.2);
@@ -333,9 +373,11 @@ function finish(win){
   if(!s||!s.running)return;s.running=false;cancelAnimationFrame(raf);q('battleBar').hidden=true;
   if(!win){q('defeatOverlay').hidden=false;q('phase').textContent='패배';return}
   const cleared=s.stage,goldReward=120+cleared*20,expReward=50+cleared*25;lastCleared=cleared;
-  save.gold+=goldReward;save.exp+=expReward;if(save.stage<6)save.stage++;persist();q('phase').textContent='휴식';
-  q('restReward').textContent=cleared+'스테이지 클리어 · 골드 +'+goldReward+' · 경험치 +'+expReward;
-  q('nextStage').textContent=cleared<6?save.stage+'스테이지 시작':'6스테이지 다시 하기';
+  save.gold+=goldReward;save.exp+=expReward;save.maxCleared=Math.max(save.maxCleared||0,cleared);
+  const unlocked=applyStoryUnlocks(save,true);if(save.stage<8)save.stage++;persist();q('phase').textContent='휴식';
+  const unlockText=unlocked.length?' · '+unlocked.map(id=>U[id].name).join(', ')+' 해금':'';
+  q('restReward').textContent=cleared+'스테이지 클리어 · 골드 +'+goldReward+' · 경험치 +'+expReward+unlockText;
+  q('nextStage').textContent=cleared<8?save.stage+'스테이지 시작':'8스테이지 다시 하기';
   updateMeta();q('restOverlay').hidden=false;
 }
 
