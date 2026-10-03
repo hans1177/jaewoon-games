@@ -325,8 +325,10 @@ export function evaluateRobloxGameplayProductReadiness({gameId='',baseline={},co
   const actualGenre=field(config,'Genre');
   const expectedPlayMode=inferDesignPlayMode(baseline);
   const actualPlayMode=upper(field(config,'PlayMode'));
-  if(expectedGenre&&actualGenre&&upper(expectedGenre)!==upper(actualGenre))blockers.push('DESIGN_GENRE_MISMATCH:'+expectedGenre+':'+actualGenre);
-  if(expectedPlayMode&&actualPlayMode&&expectedPlayMode!==actualPlayMode)blockers.push('DESIGN_PLAY_MODE_MISMATCH:'+expectedPlayMode+':'+actualPlayMode);
+  if(expectedGenre&&!actualGenre)blockers.push('DESIGN_GENRE_MISSING:'+expectedGenre);
+  else if(expectedGenre&&upper(expectedGenre)!==upper(actualGenre))blockers.push('DESIGN_GENRE_MISMATCH:'+expectedGenre+':'+actualGenre);
+  if(expectedPlayMode&&!actualPlayMode)blockers.push('DESIGN_PLAY_MODE_MISSING:'+expectedPlayMode);
+  else if(expectedPlayMode!==actualPlayMode)blockers.push('DESIGN_PLAY_MODE_MISMATCH:'+expectedPlayMode+':'+actualPlayMode);
   for(const id of required)if(implemented[id]!==true)blockers.push('MISSING_GAMEPLAY_CAPABILITY:'+id);
   for(const row of coreLoop)if(!row.pass)blockers.push('CORE_LOOP_STEP_UNIMPLEMENTED:'+row.index);
   for(const row of signatureSystems)if(!row.pass)blockers.push('SIGNATURE_SYSTEM_UNIMPLEMENTED:'+row.index);
