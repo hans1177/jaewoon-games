@@ -2,6 +2,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
+local TweenService = game:GetService("TweenService")
 -- 로컬 Studio에서 저장소를 사용할 수 없어도 시작 월드가 생성되어야 한다.
 local store
 local storeReady, storeResult = pcall(function()
@@ -32,6 +33,7 @@ end
 local function initializePlayer(player)
   for key, value in pairs(Config.InitialState) do player:SetAttribute(key, value) end
   player:SetAttribute("LastApprovedScope", "ready")
+  player:SetAttribute("CurrentPhase", "PARK_CLOSED")
   if Config.LearningContext and Config.LearningContext.Applied then
     player:SetAttribute("LearningOperator", Config.LearningContext.Operator)
     player:SetAttribute("LastLearningPattern", "")
@@ -47,6 +49,101 @@ local function markAction(player, scope, pattern)
   player:SetAttribute("LastApprovedScope", scope)
   setNumber(player, "ActionSequence", readNumber(player, "ActionSequence", 0) + 1)
   player:SetAttribute("LastLearningPattern", pattern)
+end
+
+local function buildThemeParkWorld()
+  local spawn = workspace:FindFirstChild("NativeFoundationSpawn")
+  if not spawn then
+    spawn = Instance.new("SpawnLocation")
+    spawn.Name = "NativeFoundationSpawn"
+    spawn.Size = Vector3.new(8, 1, 8)
+    spawn.Position = Vector3.new(0, 3, 0)
+    spawn.Neutral = true
+    spawn.Anchored = true
+    spawn.CanCollide = true
+    spawn.Parent = workspace
+  end
+
+  local parkSeed = workspace:FindFirstChild("AmusementTycoonSeed")
+  if not parkSeed then
+    parkSeed = Instance.new("Folder")
+    parkSeed.Name = "AmusementTycoonSeed"
+    parkSeed.Parent = workspace
+
+    local counter = Instance.new("Part")
+    counter.Name = "EntranceCounter"
+    counter.Size = Vector3.new(8, 4, 3)
+    counter.Position = spawn.Position + Vector3.new(0, -1, -12)
+    counter.Anchored = true
+    counter.CanCollide = true
+    counter.Material = Enum.Material.Wood
+    counter.Color = Color3.fromRGB(154, 104, 66)
+    counter:SetAttribute("Landmark", "PARK_ENTRANCE")
+    counter.Parent = parkSeed
+
+    local buildPad = Instance.new("Part")
+    buildPad.Name = "RideBuildPad"
+    buildPad.Size = Vector3.new(22, 0.4, 22)
+    buildPad.Position = spawn.Position + Vector3.new(18, -2.8, 10)
+    buildPad.Anchored = true
+    buildPad.CanCollide = true
+    buildPad.Material = Enum.Material.Concrete
+    buildPad.Color = Color3.fromRGB(96, 126, 158)
+    buildPad.Parent = parkSeed
+
+    local path = Instance.new("Part")
+    path.Name = "StarterPath"
+    path.Size = Vector3.new(8, 0.3, 26)
+    path.Position = spawn.Position + Vector3.new(0, -2.75, 3)
+    path.Anchored = true
+    path.CanCollide = true
+    path.Material = Enum.Material.Concrete
+    path.Color = Color3.fromRGB(190, 184, 166)
+    path.Parent = parkSeed
+  end
+
+  local guests = workspace:FindFirstChild("ParkGuests")
+  if not guests then
+    guests = Instance.new("Folder")
+    guests.Name = "ParkGuests"
+    guests.Parent = workspace
+  end
+  return spawn, parkSeed, guests
+end
+
+local parkSpawn, parkWorld, parkGuests = buildThemeParkWorld()
+
+local function spawnCustomer(player)
+  if #parkGuests:GetChildren() >= 12 then return nil end
+
+  local customer = Instance.new("Model")
+  customer.Name = "Customer_" .. tostring(player.UserId) .. "_" .. tostring(readNumber(player, "ActionSequence", 0))
+
+  local body = Instance.new("Part")
+  body.Name = "Body"
+  body.Size = Vector3.new(1.8, 3.2, 1.4)
+  body.Position = parkSpawn.Position + Vector3.new(-4 + (#parkGuests:GetChildren() % 5) * 2, -0.9, -8)
+  body.Anchored = true
+  body.CanCollide = false
+  body.Material = Enum.Material.SmoothPlastic
+  body.Color = Color3.fromRGB(255, 206, 112)
+  body.Parent = customer
+  customer.PrimaryPart = body
+  customer.Parent = parkGuests
+
+  local ridePad = parkWorld:FindFirstChild("RideBuildPad")
+  if ridePad then
+    TweenService:Create(
+      body,
+      TweenInfo.new(3.5, Enum.EasingStyle.Linear),
+      { Position = ridePad.Position + Vector3.new(0, 2, 0) }
+    ):Play()
+  end
+
+  task.delay(5, function()
+    if customer.Parent then customer:Destroy() end
+  end)
+  return customer
 end
 
 local function recomputePark(player)
@@ -75,14 +172,29 @@ local function recomputePark(player)
   setNumber(player, "Objective", connectedFacilities)
 end
 
-local function scopeHandler1(player)
-  local nextOpen = readNumber(player, "ParkOpen", 0) == 1 and 0 or 1
-  setNumber(player, "ParkOpen", nextOpen)
+local function startParkDay(player)
+  setNumber(player, "ParkOpen", 1)
+  player:SetAttribute("CurrentPhase", "PARK_OPEN")
   recomputePark(player)
-  markAction(player, "genre-core", "park-open-close")
+  markAction(player, "genre-core", "park-open")
 end
 
-local function scopeHandler2(player)
+local function finishParkDay(player)
+  setNumber(player, "ParkOpen", 0)
+  player:SetAttribute("CurrentPhase", "PARK_CLOSED")
+  recomputePark(player)
+  markAction(player, "genre-core", "park-close")
+end
+
+local function toggleParkSession(player)
+  if readNumber(player, "ParkOpen", 0) == 1 then
+    finishParkDay(player)
+  else
+    startParkDay(player)
+  end
+end
+
+local function runCustomerFlow(player)
   recomputePark(player)
   if readNumber(player, "ParkOpen", 0) ~= 1 then
     markAction(player, "scope-corefun-a853810159", "guest-flow-park-closed")
@@ -90,6 +202,7 @@ local function scopeHandler2(player)
   end
   local guests = readNumber(player, "GuestCount", 0)
   local satisfaction = readNumber(player, "Satisfaction", 70)
+  if guests > 0 then spawnCustomer(player) end
   local entryFee = clamp(readNumber(player, "EntryFee", 10), 10, 100)
   local revenue = math.floor(guests * entryFee * satisfaction / 100)
   setNumber(player, "Coins", readNumber(player, "Coins", 0) + revenue)
@@ -100,14 +213,14 @@ local function scopeHandler2(player)
   markAction(player, "scope-corefun-a853810159", "guest-flow-satisfaction-revenue")
 end
 
-local function scopeHandler3(player)
+local function buildPathTile(player)
   setNumber(player, "PathTiles", readNumber(player, "PathTiles", 0) + 1)
   setNumber(player, "Position", readNumber(player, "PathTiles", 0))
   recomputePark(player)
   markAction(player, "scope-coreloop-0-523ae29a28", "path-placement")
 end
 
-local function scopeHandler4(player)
+local function placeRide(player)
   if readNumber(player, "PathTiles", 0) <= 0 then
     markAction(player, "scope-coreloop-1-640e4b8554", "ride-placement-needs-path")
     return
@@ -117,7 +230,7 @@ local function scopeHandler4(player)
   markAction(player, "scope-coreloop-1-640e4b8554", "ride-placement")
 end
 
-local function scopeHandler5(player)
+local function upgradeRide(player)
   local coins = readNumber(player, "Coins", 0)
   local current = readNumber(player, "RideUpgradeLevel", 0)
   if current >= Config.DirectBuildUpSeed.MaxFacilityUpgrade then
@@ -136,7 +249,7 @@ local function scopeHandler5(player)
   markAction(player, "scope-coreloop-2-3c5e4bad83", "ride-upgrade")
 end
 
-local function scopeHandler6(player)
+local function manageJanitors(player)
   local janitors = readNumber(player, "Janitors", 0)
   local trash = readNumber(player, "TrashCount", 0)
   if trash > 0 then
@@ -149,12 +262,12 @@ local function scopeHandler6(player)
 end
 
 local handlers = {
-  ["genre-core"] = scopeHandler1,
-  ["scope-corefun-a853810159"] = scopeHandler2,
-  ["scope-coreloop-0-523ae29a28"] = scopeHandler3,
-  ["scope-coreloop-1-640e4b8554"] = scopeHandler4,
-  ["scope-coreloop-2-3c5e4bad83"] = scopeHandler5,
-  ["scope-mobileux-99c5a4b00a"] = scopeHandler6,
+  ["genre-core"] = toggleParkSession,
+  ["scope-corefun-a853810159"] = runCustomerFlow,
+  ["scope-coreloop-0-523ae29a28"] = buildPathTile,
+  ["scope-coreloop-1-640e4b8554"] = placeRide,
+  ["scope-coreloop-2-3c5e4bad83"] = upgradeRide,
+  ["scope-mobileux-99c5a4b00a"] = manageJanitors,
 }
 
 Players.PlayerAdded:Connect(function(player)
@@ -249,43 +362,7 @@ nativeFoundationSpawn.Anchored = true
 nativeFoundationSpawn.CanCollide = true
 nativeFoundationSpawn.Parent = workspace
 
--- 직접 1차 빌드업: 입구 카운터와 건설 가능한 공원 구역만 제공하고 이후 확장은 자동 순환에 맡긴다.
-local parkSeed = workspace:FindFirstChild("AmusementTycoonSeed")
-if not parkSeed then
-  parkSeed = Instance.new("Folder")
-  parkSeed.Name = "AmusementTycoonSeed"
-  parkSeed.Parent = workspace
-
-  local counter = Instance.new("Part")
-  counter.Name = "EntranceCounter"
-  counter.Size = Vector3.new(8, 4, 3)
-  counter.Position = lobbyCenter + Vector3.new(0, 2, -12)
-  counter.Anchored = true
-  counter.CanCollide = true
-  counter.Material = Enum.Material.Wood
-  counter.Color = Color3.fromRGB(154, 104, 66)
-  counter.Parent = parkSeed
-
-  local buildPad = Instance.new("Part")
-  buildPad.Name = "RideBuildPad"
-  buildPad.Size = Vector3.new(22, 0.4, 22)
-  buildPad.Position = lobbyCenter + Vector3.new(18, 0.2, 10)
-  buildPad.Anchored = true
-  buildPad.CanCollide = true
-  buildPad.Material = Enum.Material.Concrete
-  buildPad.Color = Color3.fromRGB(96, 126, 158)
-  buildPad.Parent = parkSeed
-
-  local path = Instance.new("Part")
-  path.Name = "StarterPath"
-  path.Size = Vector3.new(8, 0.3, 26)
-  path.Position = lobbyCenter + Vector3.new(0, 0.25, 3)
-  path.Anchored = true
-  path.CanCollide = true
-  path.Material = Enum.Material.Concrete
-  path.Color = Color3.fromRGB(190, 184, 166)
-  path.Parent = parkSeed
-end
+-- 공원 핵심 월드는 buildThemeParkWorld에서 생성하며 foundation은 같은 오브젝트를 재사용한다.
 local function bindNativeFoundationCharacter(character)
   local humanoid = character:WaitForChild("Humanoid")
   local rootPart = character:WaitForChild("HumanoidRootPart")

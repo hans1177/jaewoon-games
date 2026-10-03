@@ -109,6 +109,47 @@ Players.PlayerRemoving:Connect(function(player) pcall(function() store:UpdateAsy
   assert.equal(result.implementedCapabilities.PROGRESSION,true);
 });
 
+test('tycoon optimization and feedback collection do not create combat AI or resource gathering requirements',()=>{
+  const tycoonBaseline={content:{
+    identity:'3D 놀이공원 경영 시뮬레이션에서 동선을 최적화하고 손님 만족도를 관리한다.',
+    coreFun:'손님 이동 경로와 만족도 피드백을 수집해 수익을 최적화한다.',
+    coreLoop:[
+      '놀이기구와 편의시설을 배치하고 동선을 설계한다.',
+      '손님 흐름 관찰 및 피드백 수집으로 병목을 파악한다.',
+      '수익을 재투자해 시설을 업그레이드하고 새 구역을 해금한다.'
+    ],
+    progressionDirection:'업그레이드와 구역 해금으로 성장한다.',
+    multiplayerMode:'SINGLE'
+  }};
+  const result=evaluateRobloxGameplayProductReadiness({
+    gameId:'amusement-tycoon',
+    baseline:tycoonBaseline,
+    config:'local Config={Genre="Simulation",Subgenre="Tycoon",PlayMode="SINGLE",MobileFirst=true} return Config',
+    server:'local function buildWorld() local p=Instance.new("Part"); p.Parent=workspace end\nlocal function spawnCustomer() local m=Instance.new("Model"); m.Parent=workspace end\nlocal function startParkDay() end\nlocal function finishParkDay() end\nlocal function upgradeRide(player) player:SetAttribute("Level",2) end',
+    client:mobileClient,
+    project
+  });
+  assert.equal(result.requiredCapabilities.includes('COMBAT'),false);
+  assert.equal(result.requiredCapabilities.includes('ENEMY_AI'),false);
+  assert.equal(result.requiredCapabilities.includes('GATHERING'),false);
+  assert.ok(result.requiredCapabilities.includes('TYCOON'));
+  assert.ok(result.requiredCapabilities.includes('WORLD'));
+  assert.ok(result.requiredCapabilities.includes('CONTENT_ENTITY'));
+  assert.ok(result.requiredCapabilities.includes('PROGRESSION'));
+
+  const survival=evaluateRobloxGameplayProductReadiness({
+    gameId:'survival-positive-control',
+    baseline:survivalBaseline,
+    config:'local Config={Genre="Survival",PlayMode="SINGLE",MobileFirst=true} return Config',
+    server:'',
+    client:mobileClient,
+    project
+  });
+  assert.ok(survival.requiredCapabilities.includes('COMBAT'));
+  assert.ok(survival.requiredCapabilities.includes('ENEMY_AI'));
+  assert.ok(survival.requiredCapabilities.includes('GATHERING'));
+});
+
 test('SINGLE multiplayerMode metadata key does not create a false multiplayer requirement',()=>{
   const baseline={content:{identity:'solo survival',coreLoop:['survive one session'],multiplayerMode:'SINGLE'}};
   const result=evaluateRobloxGameplayProductReadiness({
