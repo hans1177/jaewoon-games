@@ -365,6 +365,20 @@ test('hero asset planning upgrades only hero requests to the stronger local mode
   assert.equal(ordinary.modelRouting.selectedModel,'qwen3:1.7b');
 });
 
+test('generic Blender fallback is an executable GLB preview and evidence authoring recipe',()=>{
+  const file=path.resolve('assets/vibe2/native-authoring.py');
+  assert.ok(fs.existsSync(file));
+  execFileSync('python3',['-c','import ast,pathlib,sys; ast.parse(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))',file]);
+  const source=fs.readFileSync(file,'utf8');
+  assert.match(source,/import bpy/);
+  assert.match(source,/bpy\.ops\.export_scene\.gltf/);
+  assert.match(source,/bpy\.ops\.render\.render\(write_still=True\)/);
+  assert.match(source,/STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING/);
+  assert.match(source,/"productionVerified": False/);
+  assert.match(source,/"companyPromotionEligible": False/);
+  assert.match(source,/"webArtifactReused": False/);
+});
+
 test('native asset production defaults to Roblox and exposes reproducible Blender authoring evidence',()=>{
   const root=tempRoot();
   try{
