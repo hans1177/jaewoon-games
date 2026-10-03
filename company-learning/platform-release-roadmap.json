@@ -1,5 +1,5 @@
 {
-  "version": 524,
+  "version": 525,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -918,14 +918,15 @@
       "releaseQaFailureIsLaneLocalUntilSharedFanIn": true,
       "defaultRequestedGameWorkers": 256,
       "recoverToExternalProviderBoundaryAfterPressure": true,
-      "workflowLevelGameWideSerializationForbidden": false,
-      "workflowLevelConcurrencyGroupByGameIdForbidden": false,
-      "sameGameConflictSerializationScope": "EXACT_DUPLICATE_WORKFLOW_OR_RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY",
+      "workflowLevelGameWideSerializationForbidden": true,
+      "workflowLevelConcurrencyGroupByGameIdForbidden": true,
+      "sameGameConflictSerializationScope": "RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_OR_ACTUAL_ROBLOX_STUDIO_SESSION_ONLY",
       "crossGameWorkflowSerializationForbidden": true,
-      "exactGameDuplicateWorkflowSerializationAllowed": true,
-      "exactGameDuplicateWorkflowSerializationPurpose": "RACE_DUPLICATE_PLANNER_AND_HEAVY_NATIVE_EXECUTION_SUPPRESSION_ONLY",
-      "exactGameDuplicateWorkflowSerializationAuthority": "company-learning/platform-release-roadmap.json#changeRecord.nativeExactGameWorkflowConcurrency20260927",
-      "internalSameWorkflowGameMatrixParallelismPreserved": true
+      "exactGameDuplicateWorkflowSerializationAllowed": false,
+      "exactGameDuplicateWorkflowSerializationPurpose": "SUPERSEDED_BY_RUN_SCOPED_CONCURRENCY_AND_EXACT_DUPLICATE_DEDUPE",
+      "exactGameDuplicateWorkflowSerializationAuthority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.sameGamePlatformParallelismContract",
+      "internalSameWorkflowGameMatrixParallelismPreserved": true,
+      "exactGameDuplicateDispatchDedupeAllowed": true
     },
     "candidateReleaseConcurrency": {
       "scope": "CANDIDATE_BRANCH",
@@ -1153,6 +1154,30 @@
       "failedGameEvidencePreserved": true,
       "cancellationNoiseMayNotTriggerHeavyControlWork": true,
       "qualityOrEvidenceGateWeakeningForbidden": true
+    },
+    "gameIdOnlySerializationForbidden": true,
+    "sameGameDifferentPlatformsMustRunInParallel": true,
+    "sameGamePlatformParallelismContract": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-03",
+      "status": "ACTIVE",
+      "rule": "SAME_GAME_DIFFERENT_PLATFORM_OR_NON_OVERLAPPING_RESPONSIBILITY_RUNS_IN_PARALLEL",
+      "gameIdOnlySerializationForbidden": true,
+      "workflowConcurrencyGroupByGameIdForbidden": true,
+      "platformScopedResponsibleFilesRequired": true,
+      "exactResponsibleFileConflictMaySerialize": true,
+      "atomicSharedStateWriteMaySerializeBriefly": true,
+      "sourceRootWideSerializationForbidden": true,
+      "differentPlatformSourceRootsMustNotConflictByGameIdAlone": true,
+      "exactDuplicateDispatchDedupeAllowed": true,
+      "exactDuplicateDedupeIsNotSerialization": true,
+      "robloxStudioException": {
+        "enabled": true,
+        "scope": "ACTUAL_ROBLOX_STUDIO_SESSION_ONLY",
+        "sharedAuthenticatedStudioHostMaySerialize": true,
+        "studioPlanningMayRemainParallel": true,
+        "nonStudioSourceBuildQaRuntimeMayNotSerializeByGameId": true
+      }
     }
   },
   "phases": [
@@ -1332,7 +1357,10 @@
       "mcpUnavailableRecovery": {
         "automaticResumeAfterPrerequisite": true,
         "developmentContinuesWhileStudioUnavailable": true
-      }
+      },
+      "actualStudioSessionSerializationException": true,
+      "serializationScope": "SHARED_AUTHENTICATED_STUDIO_HOST_ONLY",
+      "nonStudioDevelopmentSerializationAuthority": false
     },
     "headlessValidation": {
       "version": 2,
@@ -3661,7 +3689,19 @@
       },
       "singlePreWorkValidationPerExactWorkUnit": true,
       "repeatedFullValidationWithinExactWorkUnitForbidden": true,
-      "completionUsesInitialValidatedContextEvidence": true
+      "completionUsesInitialValidatedContextEvidence": true,
+      "primaryAiPreworkRequired": true,
+      "chatgptNewConversationPreworkRequired": true,
+      "latestMainFourDocumentPreloadRequired": true,
+      "latestMainFourDocumentPaths": [
+        "company-learning/platform-release-roadmap.json",
+        "company-learning/company-log-map.json",
+        "company-learning/company-architecture-map.json",
+        "company-learning/security-immune-system.json"
+      ],
+      "primaryAiAndWorkersSameCanonicalContextRequired": true,
+      "mutationForbiddenBeforeSyncPass": true,
+      "policyAuthorityPrecedesConversationMemory": true
     },
     "primaryAiOrchestration": {
       "version": 3,
@@ -8065,6 +8105,33 @@
       "codingBuildRuntimeQaPreserved": true,
       "canonicalPipelinePreserved": true,
       "wrapperShadowBypassForbidden": true
+    },
+    "githubPreworkCentralSync20261003": {
+      "id": "GITHUB_PREWORK_CENTRAL_SYNC_2026-10-03",
+      "authority": "OWNER_DIRECTIVE_2026-10-03",
+      "constitutionalRule": "RULE_5_GITHUB_PREWORK_LATEST_MAIN_CENTRAL_CONTEXT_SYNC",
+      "scope": "CHATGPT_PRIMARY_AI_VIBE_ALL_REGISTERED_WORKERS",
+      "latestMainFourDocumentsRequired": true,
+      "newConversationRequiresFreshPrework": true,
+      "mutationBeforeSyncForbidden": true,
+      "existingValidatorOnly": true,
+      "newPipelineCreated": false
+    },
+    "sameGamePlatformParallelism20261003": {
+      "id": "SAME_GAME_PLATFORM_PARALLELISM_2026-10-03",
+      "authority": "OWNER_DIRECTIVE_2026-10-03",
+      "objective": "REMOVE_GAME_ID_BASED_SERIALIZATION_AND_KEEP_ONLY_EXACT_FILE_ATOMIC_STATE_OR_ACTUAL_ROBLOX_STUDIO_SESSION_SERIALIZATION",
+      "sameGameDifferentPlatformsParallel": true,
+      "sameGameNonOverlappingResponsibilitiesParallel": true,
+      "gameIdOnlySerializationForbidden": true,
+      "exactResponsibleFileConflictStillProtected": true,
+      "atomicSharedStateWriteStillProtected": true,
+      "exactDuplicateDispatchDedupeAllowed": true,
+      "robloxStudioActualPlayOnlyException": true,
+      "responsibilitySplitRequired": true,
+      "centralParallelismUnchanged": 256,
+      "newPipelineCreated": false,
+      "shadowPipelineCreated": false
     }
   },
   "vibeExecutionLaneContract": {
@@ -14641,7 +14708,12 @@
       "assetDevelopmentSourceWorkerBuildUpDirectiveSyntaxGuard": true,
       "assetDevelopmentModelCachePersistOnMiss": true,
       "assetDevelopmentWorkerModelRepullAfterSharedCacheHitForbidden": true,
-      "assetDevelopmentCacheGeneration": 5
+      "assetDevelopmentCacheGeneration": 5,
+      "sameGameDifferentPlatformsParallel": true,
+      "gameIdSerializationForbidden": true,
+      "platformScopedResponsibleFilesRequired": true,
+      "assetAndNonAssetResponsibilitiesMustBeSplit": true,
+      "robloxStudioActualPlaySerializationExceptionOnly": true
     },
     "failureHandling": {
       "state": "ASSET_REPAIR_REQUIRED",
@@ -20236,7 +20308,7 @@
     "priorPassingPresentationRegressionMustRepair": true
   },
   "ownerCanonicalRules": {
-    "version": 8,
+    "version": 9,
     "authority": "OWNER_DIRECTIVE_2026-09-21",
     "rule1Handling": "RULE_1_THROUGH_RULE_4_ARE_CANONICALIZED_HERE; IMPLEMENTATION_MUST_PRESERVE_THEIR_ORDERED_GATES_AND_EXISTING_AUTHORITY_BOUNDARIES",
     "rule2": {
@@ -20831,7 +20903,8 @@
       "RULE_1",
       "RULE_2",
       "RULE_3",
-      "RULE_4"
+      "RULE_4",
+      "RULE_5"
     ],
     "orderedImplementationRequired": true,
     "constitutionalAuthority": "HIGHEST_VIBE_INTERNAL_WORKER_CONTRACT_AUTHORITY",
@@ -20906,7 +20979,16 @@
         }
       ],
       "singlePreWorkValidationPerExactWorkUnit": true,
-      "repeatedPostWorkConstitutionValidationForbidden": true
+      "repeatedPostWorkConstitutionValidationForbidden": true,
+      "appliesToChatgptPrimaryAi": true,
+      "chatgptNewConversationRequiresFreshPrework": true,
+      "githubWorkMustUseLatestMainCentralDocuments": true,
+      "centralDocumentPreloadPaths": [
+        "company-learning/platform-release-roadmap.json",
+        "company-learning/company-log-map.json",
+        "company-learning/company-architecture-map.json",
+        "company-learning/security-immune-system.json"
+      ]
     },
     "ownerExclusiveDevelopment": {
       "version": 1,
@@ -20971,6 +21053,123 @@
           "SINGLE_AND_BATCH_RESERVATION",
           "PRE_SOURCE_GENERATION",
           "PRE_CANDIDATE_WRITE"
+        ]
+      }
+    },
+    "rule5": {
+      "id": "RULE_5_GITHUB_PREWORK_LATEST_MAIN_CENTRAL_CONTEXT_SYNC",
+      "label": "제5규칙",
+      "enabled": true,
+      "authority": "OWNER_DIRECTIVE_2026-10-03",
+      "objective": "EVERY_GITHUB_WORK_SESSION_MUST_LOAD_AND_VALIDATE_THE_LATEST_MAIN_CENTRAL_FOUR_MACHINE_DOCUMENTS_BEFORE_ANY_REPOSITORY_MUTATION_DEPLOYMENT_OR_STATE_CHANGE_AND_CHATGPT_PRIMARY_AI_VIBE_AND_ALL_WORKERS_MUST_USE_THE_SAME_VALIDATED_POLICY_CONTEXT",
+      "appliesTo": [
+        "CHATGPT_PRIMARY_AI",
+        "VIBE2",
+        "VIBE3",
+        "ALL_CURRENT_AND_FUTURE_REGISTERED_VIBE_WORKERS",
+        "ALL_INTERNAL_AI_DEPARTMENTS_AND_AUTONOMOUS_SUBSYSTEMS"
+      ],
+      "repository": "hans1177/jaewoon-games",
+      "canonicalBranch": "main",
+      "requiredDocuments": [
+        "company-learning/platform-release-roadmap.json",
+        "company-learning/company-log-map.json",
+        "company-learning/company-architecture-map.json",
+        "company-learning/security-immune-system.json"
+      ],
+      "requiredReadOrder": [
+        "company-learning/platform-release-roadmap.json",
+        "company-learning/company-log-map.json",
+        "company-learning/company-architecture-map.json",
+        "company-learning/security-immune-system.json"
+      ],
+      "latestMainRequired": true,
+      "beforeAnyGitHubWorkRequired": true,
+      "beforeAnyRepositoryMutationRequired": true,
+      "beforeDeploymentRequired": true,
+      "beforeRuntimeStateChangeRequired": true,
+      "noMutationBeforeSyncPass": true,
+      "staleContextMayNotStartWork": true,
+      "mainHeadChangeBeforeFirstMutationRequiresReload": true,
+      "sameValidatedSnapshotMayBeReusedWithinExactWorkUnit": true,
+      "chatgptNewConversationRequiresFreshPrework": true,
+      "chatgptPrimaryAiMayNotBypass": true,
+      "vibeWorkersMayNotBypass": true,
+      "workerPinnedFourDocumentHashesRequired": true,
+      "primaryAiAndWorkersMustShareCanonicalDocumentSet": true,
+      "policyAuthorityPrecedesConversationMemoryAndHistoricalNotes": true,
+      "failureAction": "BLOCK_WRITE_RELOAD_LATEST_MAIN_FOUR_DOCUMENTS_REPLAN_EXACT_WORK",
+      "wrapperShadowOrAlternatePolicyLoaderForbidden": true,
+      "existingSharedContextValidator": "tools/company-shared-context.mjs",
+      "existingConstitutionEnforcer": "tools/company-constitution-enforcer.mjs",
+      "newPipelineCreated": false,
+      "machineEnforcement": {
+        "schemaVersion": 1,
+        "assertions": [
+          {
+            "code": "LATEST_MAIN_REQUIRED",
+            "operator": "EQ",
+            "path": "latestMainRequired",
+            "expected": true
+          },
+          {
+            "code": "PREWORK_SYNC_REQUIRED",
+            "operator": "EQ",
+            "path": "beforeAnyGitHubWorkRequired",
+            "expected": true
+          },
+          {
+            "code": "NO_MUTATION_BEFORE_SYNC",
+            "operator": "EQ",
+            "path": "noMutationBeforeSyncPass",
+            "expected": true
+          },
+          {
+            "code": "CHATGPT_NEW_CHAT_PREWORK",
+            "operator": "EQ",
+            "path": "chatgptNewConversationRequiresFreshPrework",
+            "expected": true
+          },
+          {
+            "code": "CHATGPT_NO_BYPASS",
+            "operator": "EQ",
+            "path": "chatgptPrimaryAiMayNotBypass",
+            "expected": true
+          },
+          {
+            "code": "VIBE_NO_BYPASS",
+            "operator": "EQ",
+            "path": "vibeWorkersMayNotBypass",
+            "expected": true
+          },
+          {
+            "code": "PINNED_FOUR_DOC_HASHES",
+            "operator": "EQ",
+            "path": "workerPinnedFourDocumentHashesRequired",
+            "expected": true
+          },
+          {
+            "code": "CENTRAL_POLICY_PRECEDES_MEMORY",
+            "operator": "EQ",
+            "path": "policyAuthorityPrecedesConversationMemoryAndHistoricalNotes",
+            "expected": true
+          },
+          {
+            "code": "EXISTING_SHARED_CONTEXT_VALIDATOR",
+            "operator": "FILE_EXISTS_FROM_PATH",
+            "path": "existingSharedContextValidator"
+          },
+          {
+            "code": "EXISTING_CONSTITUTION_ENFORCER",
+            "operator": "FILE_EXISTS_FROM_PATH",
+            "path": "existingConstitutionEnforcer"
+          },
+          {
+            "code": "NO_NEW_PIPELINE",
+            "operator": "EQ",
+            "path": "newPipelineCreated",
+            "expected": false
+          }
         ]
       }
     }
@@ -24124,9 +24323,12 @@
       "longRunningNativeMayNotBlockUnityWebFloor": true,
       "longRunningUnityWebMayNotBlockOtherGames": true,
       "sameGameIndependentNonOverlappingPackagesParallel": true,
-      "onlyAllowedSerialization": "ATOMIC_SHARED_STATE_WRITE_OR_EXACT_RESPONSIBLE_FILE_CONFLICT",
+      "onlyAllowedSerialization": "ATOMIC_SHARED_STATE_WRITE_OR_EXACT_RESPONSIBLE_FILE_CONFLICT_OR_ACTUAL_ROBLOX_STUDIO_SESSION",
       "sharedStateWriteMustReleaseHeavyExecutionCapacity": true,
-      "externalProviderCapacityIsOnlyHeavyExecutionBoundary": true
+      "externalProviderCapacityIsOnlyHeavyExecutionBoundary": true,
+      "sameGameDifferentPlatformsParallel": true,
+      "gameIdOnlySerializationForbidden": true,
+      "platformScopedResponsibleFilesRequired": true
     },
     "fortniteUefnDevelopmentStatus": "DEVELOPMENT_PAUSED",
     "fortniteUefnStatusLabel": "개발보류",
