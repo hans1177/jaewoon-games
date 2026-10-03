@@ -358,7 +358,7 @@ function hit(a,t,foes){
     o.hp-=a.atk;o.flash=.16;
     if(o.hp<=0&&!o.dead){
       o.dead=true;
-      if(a.team==='ally')s.money=Math.min(s.maxMoney,s.money+killReward(o.reward||0));
+      if(a.team==='ally'){s.money=Math.min(s.maxMoney,s.money+killReward(o.reward||0));onEnemyKilled(o)}
     }
   });
   a.cd=a.rate;if(a.team==='enemy'&&a.splash&&targets.length>1)s.shake=Math.min(7,s.shake+2.2);
