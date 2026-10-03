@@ -8,7 +8,11 @@ const core=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8')
 const unityCandidateResult=fs.readFileSync('.github/workflows/vibe2-unity-candidate-result.yml','utf8');
 const unityReleaseResult=fs.readFileSync('.github/workflows/vibe2-unity-release-result.yml','utf8');
 const candidateRelease=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
+const recoveryFast=fs.readFileSync('.github/workflows/vibe2-recovery-fast.yml','utf8');
+const robloxCandidateResult=fs.readFileSync('.github/workflows/vibe2-roblox-candidate-result.yml','utf8');
 const robloxCandidateRuntime=fs.readFileSync('.github/workflows/vibe2-roblox-candidate-runtime.yml','utf8');
+const robloxReleaseHandoff=fs.readFileSync('.github/workflows/vibe2-roblox-release-handoff.yml','utf8');
+const systemEvolutionRelease=fs.readFileSync('.github/workflows/vibe2-system-evolution-release.yml','utf8');
 const director=fs.readFileSync('.github/workflows/director-supervisor.yml','utf8');
 const runtime=JSON.parse(fs.readFileSync('vibe2-runtime.json','utf8'));
 const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
@@ -16,20 +20,37 @@ const architecture=JSON.parse(fs.readFileSync('company-learning/company-architec
 const queue=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
 const control=JSON.parse(fs.readFileSync('.vibe2/parallelism-control.json','utf8'));
 
-test('Unity Vibe result handlers do not globally serialize unrelated candidates',()=>{
-  assert.doesNotMatch(unityCandidateResult,/\nconcurrency:\s*\n\s*group:/);
-  assert.doesNotMatch(unityReleaseResult,/\nconcurrency:\s*\n\s*group:/);
-  assert.doesNotMatch(unityCandidateResult,/vibe2-control-state-vibe2-unreal-core/);
-  assert.doesNotMatch(unityReleaseResult,/vibe2-release-serial/);
+test('Vibe result and recovery handlers do not globally serialize unrelated game work',()=>{
+  for(const source of [unityCandidateResult,unityReleaseResult,recoveryFast,robloxCandidateResult,robloxReleaseHandoff]){
+    assert.doesNotMatch(source,/\nconcurrency:\s*\n\s*group:/);
+  }
+  for(const forbidden of ['vibe2-control-state-vibe2-unreal-core','vibe2-release-serial','vibe2-recovery-fast','vibe2-roblox-release-handoff','company-runtime-writer']){
+    assert.doesNotMatch(unityCandidateResult,new RegExp(forbidden));
+    assert.doesNotMatch(unityReleaseResult,new RegExp(forbidden));
+    assert.doesNotMatch(recoveryFast,new RegExp(forbidden));
+    assert.doesNotMatch(robloxCandidateResult,new RegExp(forbidden));
+    assert.doesNotMatch(robloxReleaseHandoff,new RegExp(forbidden));
+  }
   assert.match(unityCandidateResult,/VIBE2_RECONCILE_WRITE_RACE=RETRY/);
-  assert.match(unityCandidateResult,/git checkout -B "\$CONTROL_BRANCH" "origin\/\$CONTROL_BRANCH"/);
   assert.match(unityReleaseResult,/VIBE2_UNITY_RESULT_QUEUE_WRITE_ATTEMPT=/);
-  assert.match(unityReleaseResult,/git reset --hard origin\/vibe2-unreal-core/);
+  assert.match(recoveryFast,/VIBE2_RECOVERY_FAST_PUSH_RETRY=/);
+  assert.match(robloxCandidateResult,/VIBE2_ROBLOX_RECONCILE_WRITE_RACE=RETRY/);
+  assert.match(robloxCandidateResult,/VIBE2_R5_SETTLE_WRITE_RACE=RETRY/);
+  assert.match(robloxReleaseHandoff,/ROBLOX_RELEASE_HANDOFF_RUNTIME_WRITE_RACE=RETRY/);
+  assert.match(candidateRelease,/VIBE2_CANDIDATE_QUEUE_WRITE_RACE=RETRY/);
   assert.doesNotMatch(unityReleaseResult,/git pull --rebase origin vibe2-unreal-core/);
 
-  // 정확히 같은 후보의 중복 heavy 실행만 후보 identity 단위로 직렬화한다.
+  const audit=runtime.continuous.serializationAudit||{};
+  assert.equal(audit.gameDevelopmentGlobalSerialization,false);
+  assert.equal(audit.learningIdleSingleWorkerIsNotGameDevelopmentSerialization,true);
+  for(const forbidden of audit.forbiddenGlobalGroups||[]) assert.ok([
+    'vibe2-control-state-vibe2-unreal-core','vibe2-release-serial','vibe2-recovery-fast','vibe2-roblox-release-handoff','company-runtime-writer'
+  ].includes(forbidden));
+
+  // 정확히 같은 identity의 중복 heavy 실행만 직렬화한다.
   assert.match(candidateRelease,/group: vibe2-release-\$\{\{ github\.event\.inputs\.candidate_branch \|\| github\.ref_name \}\}/);
   assert.match(robloxCandidateRuntime,/group: vibe2-roblox-candidate-runtime-\$\{\{ inputs\.candidate_ref \|\| github\.ref \}\}/);
+  assert.match(systemEvolutionRelease,/group: vibe2-system-evolution-\$\{\{ inputs\.task_id \}\}/);
 });
 
 test('early fan-in review never suppresses new runnable worker reservations',()=>{
