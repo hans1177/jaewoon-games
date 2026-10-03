@@ -1,21 +1,22 @@
 {
   "version": 1,
-  "before": "2a5c037f32a81c0d37138fa9377c5f17b071a95b",
-  "after": "7b2b379b47bcf00d50725d9b6022e53dbdcc6ee5",
-  "generatedAt": "2026-10-03T06:29:34.296Z",
+  "before": "edc0a520c9c6a521a5116ea1b7c3c42a5d7b39f9",
+  "after": "9820337c995556cb376e5c19208329b0ed6bae34",
+  "generatedAt": "2026-10-03T06:54:27.267Z",
   "manifests": [
     {
       "version": 1,
       "authority": "OWNER_DIRECTIVE",
       "gameId": "line-defense",
       "sourcePath": "web-games/line-defense",
-      "sourceBefore": "2a5c037f32a81c0d37138fa9377c5f17b071a95b",
-      "sourceAfter": "7b2b379b47bcf00d50725d9b6022e53dbdcc6ee5",
-      "semanticIntentFingerprint": "fd8585237efdfefa538621530ed446cf7b6dd81ceaed7518bd2fa570c49f496e",
+      "sourceBefore": "edc0a520c9c6a521a5116ea1b7c3c42a5d7b39f9",
+      "sourceAfter": "9820337c995556cb376e5c19208329b0ed6bae34",
+      "semanticIntentFingerprint": "ac5e3b9e4db5192a731d65a63b4633cd062d387effb0da776978093bd54561f0",
       "affectedSystems": [
         "MOVEMENT",
         "COMBAT",
-        "MULTIPLAYER",
+        "INVENTORY",
+        "WORLD",
         "PROGRESSION",
         "UI_UX",
         "SAVE",
@@ -28,7 +29,7 @@
       "semanticIntentPropagationRequired": true,
       "affectedWebQaRequired": true,
       "affectedPlatformQaRequired": true,
-      "detectedAt": "2026-10-03T06:29:34.296Z",
+      "detectedAt": "2026-10-03T06:54:27.267Z",
       "state": "PLATFORM_PROPAGATION_REQUIRED"
     }
   ]
