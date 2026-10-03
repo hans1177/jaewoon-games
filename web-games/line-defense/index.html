@@ -178,8 +178,8 @@ function defaultSave(){
 function load(){
   try{
     const raw=JSON.parse(localStorage.getItem(KEY)||'{}'),d=defaultSave(),v=Object.assign(d,raw);
-    v.gold=Math.max(0,Number(v.gold)||0);v.exp=Math.max(0,Number(v.exp)||0);v.stage=clamp(Number(v.stage)||1,1,6);
-    v.owned=Object.assign({},d.owned,raw.owned||{});
+    v.gold=Math.max(0,Number(v.gold)||0);v.exp=Math.max(0,Number(v.exp)||0);v.stage=clamp(Number(v.stage)||1,1,8);v.maxCleared=clamp(Number(raw.maxCleared??Math.max(0,v.stage-1))||0,0,8);
+    v.owned=Object.assign({},d.owned,raw.owned||{});applyStoryUnlocks(v,false);
     v.charLv=Object.assign({},raw.charLv||{});
     Object.keys(U).forEach(k=>v.charLv[k]=clamp(Number(v.charLv[k])||0,0,3));
     const rawSquad=Array.isArray(raw.squad)?raw.squad:d.squad;
