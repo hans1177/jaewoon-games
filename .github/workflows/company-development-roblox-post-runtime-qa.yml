@@ -600,8 +600,7 @@ jobs:
           const transientRetryIds=new Set(fs.existsSync(transientRetryPath)?fs.readFileSync(transientRetryPath,'utf8').split(/\r?\n/).map(v=>v.trim()).filter(Boolean):[]);
           const engineProbeByGame=new Map((Array.isArray(probeRows)?probeRows:[]).map(row=>[String(row?.gameId||''),row]));
           const candidates=(q.items||[]).filter(item=>{
-            if(requested&&item.gameId!==requested)return false;
-            if(!requested&&transientRetryIds.has(item.gameId)){
+            if(transientRetryIds.has(item.gameId)){
               console.log('ROBLOX_OPEN_CLOUD_RUNTIME_STATE_RETRY_IN_CURRENT_SCAN='+item.gameId);
             }
             const candidate=candidateForItem(item);
@@ -637,6 +636,9 @@ jobs:
               &&item.robloxPublicRelease!==true
               &&(item.robloxInternalReleaseReady!==true||externalRuntimeObservationPending)
               &&(explicitRuntimeStage||exactStudioPlayPendingRuntime||externalRuntimeObservationPending);
+          }).sort((a,b)=>{
+            if(!requested)return 0;
+            return Number(b.gameId===requested)-Number(a.gameId===requested);
           });
           const f9Ids=[];
           const studioFollowupIds=[];
