@@ -119,7 +119,7 @@ function statusFromRatio(ratio,{polished=false,applicable=true}={}){
 }
 
 function graphicsSignals(ctx){
-  const all=ctx.all;
+  const all=ctx.gameplayCombined;
   return {
     mesh:/(?:MeshPart|SpecialMesh|AssetId|TextureID|SurfaceAppearance)/.test(all),
     material:/Enum\.Material\.|MaterialVariant|SurfaceAppearance/.test(all),
@@ -132,7 +132,7 @@ function graphicsSignals(ctx){
 
 function studioReadinessSignals({required,implemented,ctx,placeholderDebt}){
   const req=id=>required.includes(id);
-  const signal=(re,text=ctx.all)=>re.test(text);
+  const signal=(re,text=ctx.gameplayCombined)=>re.test(text);
   const aiSignals=[
     signal(/PathfindingService|CreatePath|ComputeAsync/i,ctx.gameplayServer),
     signal(/Target|selectTarget|nearest|FindFirstChild.*HumanoidRootPart/i,ctx.gameplayServer),
@@ -224,10 +224,10 @@ function qualitySheet({required,implemented,ctx,runtimeEvidence=null}){
     Progression:statusFromRatio(req('PROGRESSION')?(ok('PROGRESSION')?1:0):1,{applicable:req('PROGRESSION')}),
     UI:statusFromRatio(ok('MOBILE_UI')?1:0,{polished:/UIListLayout|UICorner|UIStroke|UIScale/.test(ctx.client)}),
     Graphics:statusFromRatio([g.mesh,g.material,g.lighting,g.vfx].filter(Boolean).length/4,{polished:g.mesh&&g.material&&g.lighting&&g.vfx}),
-    Motion:statusFromRatio(g.motion?1:0,{polished:g.motion&&/(Animator|Motor6D|Bone)/.test(ctx.all)}),
-    Audio:statusFromRatio(g.audio?1:0,{polished:g.audio&&/SoundGroup|RollOff|PlaybackSpeed/.test(ctx.all)}),
+    Motion:statusFromRatio(g.motion?1:0,{polished:g.motion&&/(Animator|Motor6D|Bone)/.test(ctx.gameplayCombined)}),
+    Audio:statusFromRatio(g.audio?1:0,{polished:g.audio&&/SoundGroup|RollOff|PlaybackSpeed/.test(ctx.gameplayCombined)}),
     Mobile:statusFromRatio(ok('MOBILE_UI')?1:0,{polished:/SafeArea|GuiInset|TouchEnabled/.test(ctx.client)}),
-    Performance:statusFromRatio(/StreamingEnabled|pool|Pool|budget|LOD|MaxParts|Heartbeat/.test(ctx.all)?1:0),
+    Performance:statusFromRatio(/StreamingEnabled|pool|Pool|budget|LOD|MaxParts|Heartbeat/.test(ctx.gameplayCombined)?1:0),
     Runtime:runtimeEvidence?statusFromRatio(runtimePass?1:0):'N/A'
   });
 }
