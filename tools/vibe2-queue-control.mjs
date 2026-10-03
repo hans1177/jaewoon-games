@@ -33,6 +33,7 @@ const STALE_RUNNING_RECOVERY_EVIDENCE = 'recovery:stale-running-reservation-v1';
 const COMPLETED_RESERVATION_RUN_RECOVERY_EVIDENCE = 'recovery:completed-reservation-run-v1';
 const TRANSIENT_WORK_LOCK_RECOVERY_EVIDENCE = 'recovery:transient-work-lock-requeue-v1';
 const WORKER_ARTIFACT_SLOT_RELEASE_EVIDENCE = 'worker-artifact-slot-release:v1';
+const WORKER_SLOT_EXPLICIT_RETAINED_LOCK_EVIDENCE = 'worker-slot-explicit-retained-locks:v1';
 const DEFAULT_STALE_RUNNING_MS = 45 * 60 * 1000;
 function readJson(file, fallback = {}) {
   if (!file || !fs.existsSync(file)) return fallback;
@@ -550,7 +551,10 @@ export function releaseVibeTaskExecutionSlot(queueInput, { taskId = '', evidence
     .filter(Boolean))];
   const nextQueue = markVibeTaskAwaiting(queue, {
     taskId:id,
-    evidence,
+    evidence:[
+      ...(evidence||[]),
+      ...(retainedResponsibleFileLocks.length?[WORKER_SLOT_EXPLICIT_RETAINED_LOCK_EVIDENCE]:[])
+    ],
     blocker:clean(blocker) || 'slot-released-awaiting-fan-in',
     retainedResponsibleFileLocks
   });
