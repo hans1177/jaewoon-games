@@ -398,7 +398,6 @@ jobs:
           neuron_refill=0
           state_attempt=0
           company_runtime_snapshot_sha=''
-          fast_retry_existing_queue=0
           echo 'VIBE2_CONTROL_OPTIMISTIC_RETRY_POLICY=UNBOUNDED'
           while [ "$state_persisted" != 1 ]; do
             state_attempt=$((state_attempt+1))
@@ -483,7 +482,8 @@ jobs:
 
             # Pin company-runtime once per reserve ingress. A push conflict retries against the latest
             # control queue, but it must not refetch/re-extract the same external runtime snapshot.
-            # Planner/steward/learning still rerun on every attempt against the freshly reset control state.
+            # Steward/recovery/reservation still rerun on every attempt against the freshly reset control state.
+            # Production planner/post-release-focus/learning remain owned by the 24H plan path.
             if [ "$state_attempt" -eq 1 ] || [ ! -s /tmp/vibe2-company-runtime-queue.json ]; then
               git -C "$control_root" fetch origin company-runtime --quiet
               company_runtime_snapshot_sha="$(git -C "$control_root" rev-parse origin/company-runtime)"
@@ -503,48 +503,19 @@ jobs:
             echo 'VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state.json'
             echo "VIBE2_RESERVE_RUNTIME_SYNC_SOURCE=company-runtime:$company_runtime_snapshot_sha:$callback_kind"
 
-            # ASSET_DEVELOPMENT consumes tasks already planned into the canonical queue.
-            # Keep auxiliary reserve lane-local. GAME_PRIMARY performs the canonical global replan once,
-            # but an optimistic push conflict must not repeat that expensive work when it produced no
-            # queue/directive mutation. The retry still fetches the latest control state and recomputes
-            # steward/recovery/reservation against that exact queue; no global lock or serialization is added.
-            if [[ "$VIBE2_EXECUTION_LANE" == 'asset-development' || "$VIBE2_EXECUTION_LANE" == 'recovery-fast' ]]; then
+            # Production reserves only consume tasks already planned into the canonical queue.
+            # The 24H plan job owns global planning, post-release focus, and learning refresh before
+            # production dispatch. Repeating those global passes inside every GAME_PRIMARY reserve
+            # creates duplicate work and shared-control write contention. Keep production reserve
+            # lane-local; every optimistic retry still fetches/reset the latest canonical control state,
+            # runs steward/recovery, recomputes conflicts, reserves, and pushes atomically.
+            if [[ "$VIBE2_EXECUTION_LANE" == 'game-primary' || "$VIBE2_EXECUTION_LANE" == 'asset-development' || "$VIBE2_EXECUTION_LANE" == 'recovery-fast' ]]; then
               echo "VIBE2_LANE_LOCAL_RESERVE_GLOBAL_REPLAN=SKIPPED_EXISTING_CANONICAL_QUEUE:$VIBE2_EXECUTION_LANE"
               echo "VIBE2_LANE_LOCAL_RESERVE_QUEUE_AUTHORITY=EXISTING_CANONICAL_VIBE_QUEUE:$VIBE2_EXECUTION_LANE"
-            elif [ "$state_attempt" -gt 1 ] && [ "$fast_retry_existing_queue" = '1' ]; then
-              echo 'VIBE2_CONTROL_OPTIMISTIC_RETRY_GLOBAL_REPLAN=SKIPPED_NO_GLOBAL_QUEUE_MUTATION'
-              echo 'VIBE2_CONTROL_OPTIMISTIC_RETRY_QUEUE_AUTHORITY=LATEST_CANONICAL_VIBE_QUEUE'
+              if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then
+                echo 'VIBE2_GAME_PRIMARY_RESERVE_PLANNER_AUTHORITY=VIBE2_24H_PLAN_AND_EXISTING_CANONICAL_QUEUE'
+              fi
             else
-              global_queue_before="$(
-                {
-                  git -C "$control_root" diff --binary -- .vibe2/queue.json .vibe2/build-up-directives 2>/dev/null || true
-                  git -C "$control_root" status --porcelain -- .vibe2/queue.json .vibe2/build-up-directives 2>/dev/null || true
-                } | sha256sum | awk '{print $1}'
-              )"
-
-              # Released Roblox caretakers and active repair work are refilled from the same canonical
-              # company-runtime snapshot on manual, callable, refill and fan-in reserve ingress.
-              node --check /tmp/vibe2-main/tools/vibe2-post-release-focus.mjs
-              node /tmp/vibe2-main/tools/vibe2-post-release-focus.mjs \
-                --roadmap=/tmp/vibe2-main/company-learning/platform-release-roadmap.json \
-                --company-runtime-queue=/tmp/vibe2-company-runtime-queue.json \
-                --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
-                --queue="$control_root/.vibe2/queue.json" \
-                --exposure="$control_root/.vibe2/platform-exposure-state.json" \
-                --root=/tmp/vibe2-main | tee /tmp/vibe2-reserve-post-release-focus.log
-              echo 'VIBE2_RESERVE_FOCUSED_CARETAKER_REFILL=PASS'
-
-              node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs \
-                --runtime=/tmp/vibe2-main/vibe2-runtime.json \
-                --status=/tmp/vibe2-main/company-status.json \
-                --catalog=/tmp/vibe2-main/game-catalog.json \
-                --development-queue=/tmp/vibe2-company-runtime-queue.json \
-                --queue="$control_root/.vibe2/queue.json" \
-                --control="$control_root/.vibe2/parallelism-control.json" \
-                --experience="$control_root/.vibe2/experience.json" \
-                --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
-                --root=/tmp/vibe2-main \
-                --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-reserve-autoplan.log
               node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs \
                 --state="$control_root/.vibe2/learning-motor-state.json" \
                 --experience="$control_root/.vibe2/experience.json" \
@@ -556,19 +527,6 @@ jobs:
                 --practice="$control_root/.vibe2/idle-practice-queue.json" \
                 --handoff="$control_root/.vibe2/web-roblox-handoffs.json" | tee /tmp/vibe2-self-signal-mesh.log
               echo 'VIBE2_SELF_SIGNAL_MESH=PASS'
-
-              global_queue_after="$(
-                {
-                  git -C "$control_root" diff --binary -- .vibe2/queue.json .vibe2/build-up-directives 2>/dev/null || true
-                  git -C "$control_root" status --porcelain -- .vibe2/queue.json .vibe2/build-up-directives 2>/dev/null || true
-                } | sha256sum | awk '{print $1}'
-              )"
-              if [ "$state_attempt" -eq 1 ] && [ "$global_queue_before" = "$global_queue_after" ]; then
-                fast_retry_existing_queue=1
-                echo 'VIBE2_CONTROL_OPTIMISTIC_RETRY_FAST_PATH=ELIGIBLE_NO_GLOBAL_QUEUE_MUTATION'
-              else
-                echo 'VIBE2_CONTROL_OPTIMISTIC_RETRY_FAST_PATH=FULL_GLOBAL_REPLAN_REQUIRED'
-              fi
             fi
             echo "VIBE2_RESERVE_RUNTIME_SYNC=PASS:$callback_kind"
 
