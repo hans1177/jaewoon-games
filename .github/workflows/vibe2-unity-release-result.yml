@@ -54,6 +54,13 @@ jobs:
           if(!task||!game||target!=='unity'||root!==`unity-games/${game}`||!base) throw new Error('invalid Unity Vibe2 candidate manifest');
           if(!['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(productionClass))throw new Error('candidate productionClass is not deployable');
           put('task_id',task); put('game_id',game); put('source_root',root); put('base_sha',base); put('release_state',state); put('production_class',productionClass); put('origin',origin);
+          const lockFiles=new Set(Array.isArray(m?.compiledWorkContract?.workLock?.files)?m.compiledWorkContract.workLock.files.map(String):[]);
+          const generatedAssetFiles=[...new Set((Array.isArray(m.generatedAssetFiles)?m.generatedAssetFiles:[]).map(value=>String(value||'').replaceAll('\\','/').replace(/^\.\//,'')).filter(Boolean))];
+          for(const file of generatedAssetFiles){
+            if(!file.startsWith('assets/')||file.startsWith('/')||file.split('/').includes('..'))throw new Error('generated asset path invalid:'+file);
+            if(!lockFiles.has(file))throw new Error('generated asset missing from work lock:'+file);
+          }
+          put('generated_asset_files',JSON.stringify(generatedAssetFiles));
           NODE
 
       - name: Revalidate semantic authority and BASE_SHA after successful APK build
@@ -64,16 +71,20 @@ jobs:
           SOURCE_ROOT: ${{ steps.manifest.outputs.source_root }}
           BASE_SHA: ${{ steps.manifest.outputs.base_sha }}
           PRODUCTION_CLASS: ${{ steps.manifest.outputs.production_class }}
+          GENERATED_ASSET_FILES: ${{ steps.manifest.outputs.generated_asset_files }}
         shell: bash
         run: |
           set -euo pipefail
+          mapfile -t generated_asset_files < <(node -e "for(const file of JSON.parse(process.env.GENERATED_ASSET_FILES||'[]'))console.log(file)")
+          candidate_paths=("$SOURCE_ROOT" "${generated_asset_files[@]}")
           case "$PRODUCTION_CLASS" in RELEASE_CONFIRMED|DEVELOPMENT_CONFIRMED) ;; *) exit 1 ;; esac
           git fetch origin main --quiet
           git cat-file -e "${BASE_SHA}^{commit}"
-          test -z "$(git diff --name-only "$BASE_SHA" origin/main -- "$SOURCE_ROOT")"
+          test -z "$(git diff --name-only "$BASE_SHA" origin/main -- "${candidate_paths[@]}")"
+          echo "VIBE2_UNITY_GENERATED_ASSET_FILES=${generated_asset_files[*]:-NONE}"
           echo 'VIBE2_UNITY_CANDIDATE_APK_BUILD=PASS'
 
-      - name: Promote verified Unity source root through reviewed PR
+      - name: Promote verified Unity source and declared generated assets through reviewed PR
         id: promote
         if: github.event.workflow_run.conclusion == 'success' && steps.revalidate.outcome == 'success'
         continue-on-error: true
@@ -83,11 +94,14 @@ jobs:
           BASE_SHA: ${{ steps.manifest.outputs.base_sha }}
           TASK_ID: ${{ steps.manifest.outputs.task_id }}
           CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}
+          GENERATED_ASSET_FILES: ${{ steps.manifest.outputs.generated_asset_files }}
         shell: bash
         run: |
           set -euo pipefail
+          mapfile -t generated_asset_files < <(node -e "for(const file of JSON.parse(process.env.GENERATED_ASSET_FILES||'[]'))console.log(file)")
+          promotion_paths=("$SOURCE_ROOT" "${generated_asset_files[@]}")
           git fetch origin main --quiet
-          test -z "$(git diff --name-only "$BASE_SHA" origin/main -- "$SOURCE_ROOT")" || exit 1
+          test -z "$(git diff --name-only "$BASE_SHA" origin/main -- "${promotion_paths[@]}")" || exit 1
           rm -rf /tmp/vibe2-promote
           git worktree prune
           safe_task="$(printf '%s' "$TASK_ID" | tr -cs 'A-Za-z0-9._-' '-' | sed 's/^-*//;s/-*$//' | cut -c1-60)"
@@ -96,9 +110,9 @@ jobs:
           cd /tmp/vibe2-promote
           git config user.name 'jaewoon-vibe2-release'
           git config user.email 'vibe2-release@users.noreply.github.com'
-          git checkout "$CANDIDATE_SHA" -- "$SOURCE_ROOT"
+          git checkout "$CANDIDATE_SHA" -- "${promotion_paths[@]}"
           git diff --check
-          git add "$SOURCE_ROOT"
+          git add -- "${promotion_paths[@]}"
           git diff --cached --quiet && exit 1
           git commit -m "vibe2: deploy ${TASK_ID}"
           release_commit="$(git rev-parse HEAD)"
@@ -107,10 +121,10 @@ jobs:
           sleep 5
           gh pr checks "$pr_url" --watch --fail-fast --interval 10
           git fetch origin main --quiet
-          test -z "$(git diff --name-only "$BASE_SHA" origin/main -- "$SOURCE_ROOT")" || exit 1
+          test -z "$(git diff --name-only "$BASE_SHA" origin/main -- "${promotion_paths[@]}")" || exit 1
           gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
           git fetch origin main --quiet
-          git diff --quiet "$release_commit" origin/main -- "$SOURCE_ROOT"
+          git diff --quiet "$release_commit" origin/main -- "${promotion_paths[@]}"
           promotion_sha="$(git rev-parse origin/main)"
           source_tree_sha="$(git rev-parse "origin/main:$SOURCE_ROOT")"
           [[ "$source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
