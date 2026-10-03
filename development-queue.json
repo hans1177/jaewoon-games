@@ -39098,14 +39098,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-03T19:45:59.217Z",
+      "updatedAt": "2026-10-03T19:48:23.438Z",
       "robloxSourceCommit": "9472bd4b844466429db623f3319252e3d488efda",
       "robloxSourceBootstrapPassedAt": "2026-10-02T14:20:25.085Z",
       "robloxSourceBootstrapFailedAt": "2026-10-03T19:39:52.837Z",
@@ -39177,7 +39177,7 @@
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-seed-idle-growth-rpg-crystal-bloom-37131116107",
       "unitySourceCommit": "f653a705109ad223f3dbbd5cf772b76227c002b2",
-      "unityBuildRunId": 37146449914,
+      "unityBuildRunId": 37148548889,
       "unityRuntimeSmokeRunId": null,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
@@ -39235,7 +39235,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-03T19:10:02.433Z"
+        "verifiedAt": "2026-10-03T19:48:23.438Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -60452,7 +60452,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-03T19:48:28.859Z",
+  "updatedAt": "2026-10-03T19:48:36.951Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
