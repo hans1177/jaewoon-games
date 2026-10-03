@@ -1091,12 +1091,28 @@ export function promoteVerifiedCompanyAssetsFromRuntimeEvidence({registry={},con
   let nextRegistry=registry;
   const promoted=[],decisions=[];
   for(const id of explicitIds){
-    const asset=assets.find(row=>text(row?.id)===id);
+    const descriptor=evidenceById.get(id)||{};
+    const registered=assets.find(row=>text(row?.id)===id);
+    const declaredGenerated=descriptor?.generatedByDeclaredRecipe===true&&descriptor?.persistedForCandidate===true;
+    const asset=registered||(declaredGenerated?{
+      id,
+      family:upper(descriptor?.family),
+      category:upper(descriptor?.family),
+      platform:upper(runtimeEvidence?.platform||consumer?.platform),
+      path:text(descriptor?.path),
+      license:text(descriptor?.license),
+      sourceHash:text(descriptor?.sourceHash),
+      artifactHash:text(descriptor?.artifactHash),
+      status:'PREPARED_DECLARED_GENERATED_ASSET',
+      productionVerified:false,
+      verifiedCompanyReusable:false,
+      runtimeVerificationState:'PENDING_EXACT_NATIVE_RUNTIME'
+    }:null);
     if(!asset){
-      decisions.push(Object.freeze({assetId:id,eligible:false,blockers:Object.freeze(['ASSET_NOT_IN_REGISTRY'])}));
+      decisions.push(Object.freeze({assetId:id,eligible:false,blockers:Object.freeze(['ASSET_NOT_IN_REGISTRY_OR_DECLARED_GENERATED_DESCRIPTOR'])}));
       continue;
     }
-    const perAsset={...runtimeEvidence,...(evidenceById.get(id)||{}),assetId:id,assetIds:undefined,assets:undefined};
+    const perAsset={...runtimeEvidence,...descriptor,assetId:id,assetIds:undefined,assets:undefined};
     const result=promoteVerifiedCompanyAssetRegistry({registry:nextRegistry,asset,consumer,runtimeEvidence:perAsset});
     decisions.push(result.decision);
     if(result.updated){
