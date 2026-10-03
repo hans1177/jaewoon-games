@@ -236,7 +236,7 @@ test('declared Blender authoring persists exact generated outputs only inside th
     assert.equal(result.status,'DCC_RECIPE_EXECUTED_CANDIDATE_PERSISTED');
     assert.deepEqual([...result.generatedFiles],outputs);
     for(const relative of outputs)assert.ok(fs.existsSync(path.join(root,relative)),relative);
-    const status=execFileSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8'});
+    const status=execFileSync('git',['status','--porcelain','--untracked-files=all'],{cwd:root,encoding:'utf8'});
     assert.match(status,/assets\/test\/native\/model\/model\.glb/);
     workOrder.compiledWorkContract.workLock.files=['roblox-games/demo/client/Game.client.luau'];
     assert.throws(
