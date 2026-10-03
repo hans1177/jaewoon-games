@@ -152,6 +152,80 @@ test('declared Blender verification executes only declared recipe and restores t
     assert.equal(execFileSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8'}),'');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+test('declared Blender authoring persists exact generated outputs only inside the candidate Work Lock',()=>{
+  const root=tempRoot();
+  try{
+    fs.mkdirSync(path.join(root,'assets/test'),{recursive:true});
+    fs.writeFileSync(path.join(root,'assets/test/build.py'),'# fixture recipe\n');
+    const blender=path.join(root,'fake-blender');
+    fs.writeFileSync(blender,[
+      '#!/usr/bin/env node',
+      'const fs=require("fs"),path=require("path");',
+      'if(process.argv.includes("--version")){console.log("Blender 4.0 fixture");process.exit(0)}',
+      'const at=process.argv.indexOf("--");const args=at>=0?process.argv.slice(at+1):[];',
+      'const oi=args.indexOf("--output");const out=oi>=0?args[oi+1]:"assets/test/native/model";',
+      'fs.mkdirSync(out,{recursive:true});',
+      'fs.writeFileSync(path.join(out,"model.glb"),"candidate-glb");',
+      'fs.writeFileSync(path.join(out,"preview.png"),"candidate-preview");',
+      'fs.writeFileSync(path.join(out,"evidence.json"),JSON.stringify({runtimeVerificationState:"STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING",productionVerified:false}));'
+    ].join('\n')+'\n');
+    fs.chmodSync(blender,0o755);
+    execFileSync('git',['init'],{cwd:root});
+    execFileSync('git',['config','user.email','test@example.invalid'],{cwd:root});
+    execFileSync('git',['config','user.name','test'],{cwd:root});
+    execFileSync('git',['add','.'],{cwd:root});
+    execFileSync('git',['commit','-m','fixture'],{cwd:root});
+    execFileSync('git',['checkout','-b','vibe2/candidate/dcc-persist'],{cwd:root});
+    const outputs=['assets/test/native/model/model.glb','assets/test/native/model/preview.png','assets/test/native/model/evidence.json'];
+    const workOrder=order({target:'roblox',root:'roblox-games/demo',responsibleFiles:['roblox-games/demo/client/Game.client.luau'],taskId:'dcc-persist'});
+    workOrder.selectedTask={id:workOrder.taskId,gameId:'demo',target:'roblox',assetProductionLane:true,evidence:['asset-production-parallel:v1']};
+    workOrder.compiledWorkContract={workLock:{files:['roblox-games/demo/client/Game.client.luau',...outputs]}};
+    workOrder.assetProduction={nativeAuthoringExecution:{dcc:{executionRecipes:[{
+      id:'fixture-blender',executor:'BLENDER_PYTHON',script:'assets/test/build.py',runMode:'VERIFY_ONLY',
+      args:['--output','assets/test/native/model'],outputs,
+      evidenceJson:'assets/test/native/model/evidence.json',preview:'assets/test/native/model/preview.png',editableSource:'assets/test/build.py'
+    }]}}};
+    const result=executeDeclaredNativeDccAuthoringVerification({cwd:root,order:workOrder,blenderExecutable:blender,persistCandidateOutputs:true});
+    assert.equal(result.executed,true);
+    assert.equal(result.persistedForCandidate,true);
+    assert.equal(result.candidateUsable,true);
+    assert.equal(result.status,'DCC_RECIPE_EXECUTED_CANDIDATE_PERSISTED');
+    assert.deepEqual([...result.generatedFiles],outputs);
+    for(const relative of outputs)assert.ok(fs.existsSync(path.join(root,relative)),relative);
+    const status=execFileSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8'});
+    assert.match(status,/assets\/test\/native\/model\/model\.glb/);
+    workOrder.compiledWorkContract.workLock.files=['roblox-games/demo/client/Game.client.luau'];
+    assert.throws(
+      ()=>executeDeclaredNativeDccAuthoringVerification({cwd:root,order:workOrder,blenderExecutable:blender,persistCandidateOutputs:true}),
+      /NATIVE_DCC_WORK_LOCK_SCOPE_MISSING/
+    );
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Web asset authoring recognizes native SVG Canvas CSS JS and WebAudio source without DCC reuse',()=>{
+  const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'web-native-authoring'});
+  workOrder.assetProduction={nativeAuthoringExecution:{
+    enabled:true,target:'web',platformReauthoringRequired:true,webAssetDirectReuseIntoRobloxOrUnityForbidden:true,
+    dcc:{requiredTypes:[]},
+    nativeText:{requiredTypes:['ui','effect'],authoringMode:'SVG_CSS_CANVAS_JS_WEBAUDIO_NATIVE'}
+  }};
+  const result=evaluateNativeAssetAuthoringCandidate({order:workOrder,candidate:{edits:[{replace:[
+    '<svg viewBox="0 0 32 32"><path d="M0 0L32 32"/></svg>',
+    'const ctx = canvas.getContext("2d"); ctx.fillRect(0,0,10,10);',
+    'requestAnimationFrame(render);',
+    'const audio = new AudioContext(); const osc = audio.createOscillator();',
+    '<style>@keyframes pulse{to{transform:scale(1.05)}} .fx{animation:pulse .2s}</style>'
+  ].join('\n')}]}});  
+  assert.equal(result.required,true);
+  assert.equal(result.target,'web');
+  assert.equal(result.dccRequired,false);
+  assert.equal(result.nativeTextAuthored,true);
+  assert.equal(result.status,'WEB_NATIVE_SOURCE_AUTHORED_RUNTIME_REQUIRED');
+  assert.equal(result.platformNativeReauthoringRequired,true);
+  assert.equal(result.webArtifactCopyIntoRobloxOrUnityForbidden,true);
+  assert.equal(result.runtimeVerified,false);
+});
+
 test('asset runtime promotion candidates require exact source binding to an unverified asset',()=>{
   const workOrder=order({target:'roblox',root:'roblox-games/demo',responsibleFiles:['roblox-games/demo/client/Game.client.luau'],taskId:'asset-promotion'});
   workOrder.selectedTask={id:workOrder.taskId,gameId:'demo',target:'roblox',assetProductionLane:true,evidence:['asset-production-parallel:v1']};
