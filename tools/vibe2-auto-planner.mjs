@@ -2419,8 +2419,8 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
   const verified=effectiveHistory.filter(item=>clean(item.status).toLowerCase()==='verified');
   const previous=verified.at(-1)||null;
   const previousPhase=clean(previous?.studioQualityEvolution?.phase).toUpperCase();
-  const previousIndex=previous?history.lastIndexOf(previous):-1;
-  const latestFailed=[...history.slice(previousIndex+1)].reverse().find(item=>['failed','blocked'].includes(clean(item.status).toLowerCase()))||null;
+  const previousIndex=previous?effectiveHistory.findIndex(item=>clean(item.id)===clean(previous.id)):-1;
+  const latestFailed=[...effectiveHistory.slice(previousIndex+1)].reverse().find(item=>['failed','blocked'].includes(clean(item.status).toLowerCase()))||null;
   const qualityBuildUpRequired=project?.queueRobloxQualityBuildUpRequired===true;
   const cycle=verified.length+1;
   const phase=qualityBuildUpRequired||latestFailed?'REPAIR':previousPhase==='BUILD_UP'?'OPTIMIZE':'BUILD_UP';
