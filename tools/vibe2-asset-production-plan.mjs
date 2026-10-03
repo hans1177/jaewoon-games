@@ -445,14 +445,17 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const webNativeTarget=targetName==='web';
   const supportedAuthoringTarget=engineNativeTarget||webNativeTarget;
   const needsAuthoring=row=>row?.required!==false&&row?.applyFirst?.enabled!==true;
-  const dccTypes=engineNativeTarget
+  const explicitRecipeRows=Array.isArray(task?.assetAuthoring?.recipes)?task.assetAuthoring.recipes:Array.isArray(task?.authoringRecipes)?task.authoringRecipes:[];
+  const automaticDccTypes=engineNativeTarget
     ?decisions.filter(row=>needsAuthoring(row)&&(row.directAuthoring||[]).some(kind=>NATIVE_DCC_AUTHORING.includes(kind))).map(row=>row.type)
+    :[];
+  const explicitDccTypes=engineNativeTarget
+    ?explicitRecipeRows.flatMap(recipe=>Array.isArray(recipe?.types)?recipe.types:[]).map(value=>clean(value).toLowerCase()).filter(Boolean)
     :[];
   const nativeTextKinds=targetName==='roblox'?ROBLOX_DIRECT_AUTHORING:targetName==='unity'?UNITY_DIRECT_AUTHORING:webNativeTarget?WEB_DIRECT_AUTHORING:[];
   const nativeTextTypes=decisions.filter(row=>needsAuthoring(row)&&(row.directAuthoring||[]).some(kind=>nativeTextKinds.includes(kind))).map(row=>row.type);
-  const uniqueDccTypes=unique(dccTypes);
+  const uniqueDccTypes=unique([...automaticDccTypes,...explicitDccTypes]);
   const uniqueNativeTextTypes=unique(nativeTextTypes);
-  const explicitRecipeRows=Array.isArray(task?.assetAuthoring?.recipes)?task.assetAuthoring.recipes:Array.isArray(task?.authoringRecipes)?task.authoringRecipes:[];
   const selectedCandidateIds=new Set(decisions.flatMap(row=>[
     ...(row?.reuseCandidates||[]),
     ...(row?.externalCandidates||[])
@@ -462,6 +465,7 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const genericRecipeTokens=new Set(['asset','model','3d','creature','character','enemy','boss','motion','animation','prop','environment','building','ui','vfx','audio','material']);
   const recipeAssetRelevant=asset=>{
     if(selectedCandidateIds.has(clean(asset?.id)))return true;
+    if((Array.isArray(asset?.intendedConsumerGameIds)?asset.intendedConsumerGameIds:[]).map(clean).includes(clean(task?.gameId)))return true;
     const rawTokens=unique([
       clean(asset?.id),clean(asset?.title),clean(asset?.name),clean(asset?.family),clean(asset?.category),clean(asset?.subfamily),
       ...(Array.isArray(asset?.tags)?asset.tags:[])
@@ -471,7 +475,11 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const registryRecipeRows=manifestAssets
     .filter(asset=>recipeAssetRelevant(asset))
     .flatMap(asset=>(Array.isArray(asset?.authoringRecipes)?asset.authoringRecipes:[]).map(recipe=>({recipe,asset})));
-  const normalizedExplicit=explicitRecipeRows.map(recipe=>normalizeNativeDccAuthoringRecipe(recipe,{id:'task-explicit'},target,uniqueDccTypes));
+  const normalizedExplicit=explicitRecipeRows.map(recipe=>normalizeNativeDccAuthoringRecipe(recipe,{
+    id:clean(recipe?.assetId)||'task-explicit',
+    family:clean(recipe?.family)||null,
+    license:clean(recipe?.license)||null
+  },target,uniqueDccTypes));
   const normalizedRegistry=registryRecipeRows.map(({recipe,asset})=>normalizeNativeDccAuthoringRecipe(recipe,asset,target,uniqueDccTypes));
   const executionRecipes=freezeList([...normalizedExplicit,...normalizedRegistry]
     .filter(row=>row.safe&&row.typeMatch&&row.targetMatch)
