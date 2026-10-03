@@ -33,6 +33,10 @@ on:
       vibe2_candidate_branch:
         required: false
         type: string
+      generated_asset_files:
+        required: false
+        default: '[]'
+        type: string
       publish_to_main:
         required: false
         default: false
@@ -78,6 +82,11 @@ on:
         description: 'Optional exact Vibe2 candidate branch for audit evidence'
         required: false
         default: ''
+        type: string
+      generated_asset_files:
+        description: 'JSON array of exact Work-Locked generated asset paths to carry with the candidate'
+        required: false
+        default: '[]'
         type: string
       publish_to_main:
         description: 'Create one reviewed PR containing candidate Unity source plus verified WebGL output'
@@ -612,8 +621,16 @@ jobs:
           BASE_MAIN_SHA: ${{ inputs.base_main_sha }}
           VIBE2_TASK_ID: ${{ inputs.vibe2_task_id }}
           VIBE2_CANDIDATE_BRANCH: ${{ inputs.vibe2_candidate_branch }}
+          GENERATED_ASSET_FILES: ${{ inputs.generated_asset_files || '[]' }}
         run: |
           set -euo pipefail
+          mapfile -t generated_asset_files < <(node -e "for(const file of JSON.parse(process.env.GENERATED_ASSET_FILES||'[]'))console.log(file)")
+          for file in "${generated_asset_files[@]}"; do
+            [[ "$file" == assets/* ]] || { echo "UNITY_WEB_GENERATED_ASSET_PATH_INVALID=$file" >&2; exit 1; }
+            [[ "$file" != /* && "$file" != *"/../"* && "$file" != ../* && "$file" != */.. ]] || { echo "UNITY_WEB_GENERATED_ASSET_PATH_INVALID=$file" >&2; exit 1; }
+            git cat-file -e "${SOURCE_COMMIT}:$file" 2>/dev/null || { echo "UNITY_WEB_GENERATED_ASSET_MISSING=$file" >&2; exit 1; }
+          done
+          candidate_paths=("unity-games/$GAME_ID" "${generated_asset_files[@]}")
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch --no-tags origin main
@@ -624,18 +641,21 @@ jobs:
           fi
           if [ -n "$BASE_MAIN_SHA" ]; then
             git cat-file -e "${BASE_MAIN_SHA}^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$BASE_MAIN_SHA"
-            git diff --quiet "$BASE_MAIN_SHA" origin/main -- "unity-games/$GAME_ID" || { echo 'VIBE2_UNITY_WEB_MAIN_SOURCE_DRIFT_BEFORE_PR' >&2; exit 1; }
+            git diff --quiet "$BASE_MAIN_SHA" origin/main -- "${candidate_paths[@]}" || { echo 'VIBE2_UNITY_WEB_MAIN_SOURCE_OR_ASSET_DRIFT_BEFORE_PR' >&2; exit 1; }
           fi
 
           branch="unity-web/$GAME_ID-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git checkout -B "$branch" origin/main
-          git checkout "$SOURCE_COMMIT" -- "unity-games/$GAME_ID"
+          git checkout "$SOURCE_COMMIT" -- "${candidate_paths[@]}"
           rm -rf "web-games/$GAME_ID"
           mkdir -p "web-games/$GAME_ID"
           cp -R "/tmp/unity-web/web-games/$GAME_ID"/. "web-games/$GAME_ID"/
           test -d "web-games/$GAME_ID/Build"
           test -s "web-games/$GAME_ID/unity-web-deploy-manifest.json"
           git add "unity-games/$GAME_ID" "web-games/$GAME_ID"
+          if [ "${#generated_asset_files[@]}" -gt 0 ]; then
+            git add -- "${generated_asset_files[@]}"
+          fi
           # Historical repo-wide Unity ignore rules matched this nested public Build directory.
           # Force-add the runtime bundle so index.html never lands without loader/data/framework/wasm.
           git add -f "web-games/$GAME_ID/Build"
@@ -678,11 +698,12 @@ jobs:
 
           git fetch --no-tags origin main
           if [ -n "$BASE_MAIN_SHA" ]; then
-            git diff --quiet "$BASE_MAIN_SHA" origin/main -- "unity-games/$GAME_ID" || { echo 'VIBE2_UNITY_WEB_MAIN_SOURCE_DRIFT_BEFORE_MERGE' >&2; exit 1; }
+            git diff --quiet "$BASE_MAIN_SHA" origin/main -- "${candidate_paths[@]}" || { echo 'VIBE2_UNITY_WEB_MAIN_SOURCE_OR_ASSET_DRIFT_BEFORE_MERGE' >&2; exit 1; }
           fi
           gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
           git fetch --no-tags origin main
-          git diff --quiet "$release_commit" origin/main -- "unity-games/$GAME_ID" "web-games/$GAME_ID" || { echo 'UNITY_WEB_MERGED_TREE_MISMATCH' >&2; exit 1; }
+          merged_paths=("unity-games/$GAME_ID" "web-games/$GAME_ID" "${generated_asset_files[@]}")
+          git diff --quiet "$release_commit" origin/main -- "${merged_paths[@]}" || { echo 'UNITY_WEB_MERGED_TREE_MISMATCH' >&2; exit 1; }
 
           promotion_sha="$(git rev-parse origin/main)"
           unity_source_tree_sha="$(git rev-parse "origin/main:unity-games/$GAME_ID")"
