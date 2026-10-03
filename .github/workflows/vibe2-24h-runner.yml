@@ -94,12 +94,14 @@ env:
   VIBE2_ASSET_PRIORITY_BURST_MAX: '8'
   VIBE2_RUNNER_PRESSURE_DISPATCH_THRESHOLD: '4'
   VIBE2_RUNNER_JOB_PRESSURE_THRESHOLD: '8'
-  VIBE2_RELEASE_RECOVERY_BATCH_MAX: '2'
+  VIBE2_RELEASE_RECOVERY_BATCH_MAX: '256'
 
-# Keep one continuous scheduler chain. v9 releases the stale v8 scheduler epoch
-# while keeping the canonical scheduler and moving only its lightweight plan onto the ARM control pool.
+# 24H cycles are run-scoped. Shared queue writes already use optimistic fetch/reset/replan/push
+# retries and Work Lock protects exact responsible-file conflicts. Do not serialize unrelated
+# development behind an older scheduler run. Actual Roblox Studio execution remains the only
+# intentional heavy shared-host serialization.
 concurrency:
-  group: vibe2-24h-cycle-singleton-v9
+  group: vibe2-24h-cycle-${{ github.run_id }}
   cancel-in-progress: false
 
 jobs:
@@ -883,8 +885,9 @@ jobs:
         run: |
           set -euo pipefail
           if [ "${VIBE2_RUNNER_PRESSURE:-YES}" = 'YES' ]; then
-            echo 'VIBE2_RELEASE_RECOVERY=DEFERRED_RUNNER_PRESSURE'
-            exit 0
+            echo 'VIBE2_RELEASE_RECOVERY_RUNNER_PRESSURE=OBSERVED_EXTERNAL_QUEUE_OWNS_CAPACITY'
+          else
+            echo 'VIBE2_RELEASE_RECOVERY_RUNNER_PRESSURE=LOW'
           fi
           git config user.name 'jaewoon-vibe2-release-recovery'
           git config user.email 'vibe2-release-recovery@users.noreply.github.com'
@@ -920,7 +923,7 @@ jobs:
             done < /tmp/vibe2-release-recovery-candidates.tsv
 
             count="$(wc -l < /tmp/vibe2-release-recovery-current.tsv | tr -d ' ')"
-            recovery_batch_max="${VIBE2_RELEASE_RECOVERY_BATCH_MAX:-2}"
+            recovery_batch_max="${VIBE2_RELEASE_RECOVERY_BATCH_MAX:-256}"
             if [ "${count:-0}" -gt "$recovery_batch_max" ]; then
               head -n "$recovery_batch_max" /tmp/vibe2-release-recovery-current.tsv > /tmp/vibe2-release-recovery-limited.tsv
               mv /tmp/vibe2-release-recovery-limited.tsv /tmp/vibe2-release-recovery-current.tsv
