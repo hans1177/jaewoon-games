@@ -7,7 +7,9 @@ import {
   BUILD_UP_DOMAINS,
   HOLISTIC_CORE_DOMAINS,
   VISUAL_DOMAINS,
+  buildDevelopmentDryRun,
   buildGameSpecificBuildUpDirective,
+  classifyDevelopmentImpact,
   directivePrompt,
   inspectGameSources
 } from '../tools/company-build-up-directive.mjs';
@@ -613,4 +615,43 @@ test('each approved loop and signature choice reaches the shared implementation 
     assert.match(prompt,/공통 점수 증가만으로/);
     assert.match(prompt,/실측하지 못하면 미확인/);
   }
+});
+
+
+test('development dry-run classifies only relevant impact and adds no new execution path',()=>{
+  const impact=classifyDevelopmentImpact({
+    platform:'ROBLOX',
+    responsibleFiles:['roblox-games/demo/server/WorldMap.server.luau','roblox-games/demo/shared/SaveData.luau'],
+    qualityGapMap:[
+      {domain:'WORLD_MAP_TOPOLOGY',state:'GAP'},
+      {domain:'SAVE_COMPLETENESS',state:'GAP'}
+    ]
+  });
+  assert.deepEqual([...impact.categories],['MAP','SAVE']);
+  assert.ok(impact.requiredQa.includes('ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE'));
+  assert.ok(impact.requiredQa.includes('SECURITY_AUTHORITY_QA'));
+  assert.equal(impact.securityRelevant,true);
+  const dry=buildDevelopmentDryRun({
+    gameId:'demo',platform:'ROBLOX',
+    responsibleSystemsAndFiles:{files:['roblox-games/demo/server/WorldMap.server.luau']},
+    qualityGapMap:[{domain:'WORLD_MAP_TOPOLOGY',state:'GAP'}]
+  });
+  assert.equal(dry.mode,'DRY_RUN_NO_SOURCE_MUTATION');
+  assert.equal(dry.sourceMutationPerformed,false);
+  assert.equal(dry.newWorkflowOrQueueRequired,false);
+  assert.deepEqual(dry.openCloudWorldChecks,[
+    'SERVER_BOOT','FINITE_WORLD_BOUNDS','SPAWN_IN_PLAYABLE_BOUNDS','LANDMARK_AND_OBJECTIVE_COUNTS',
+    'WORLD_GEOMETRY','TERRAIN_BINDING','LIGHTING_ATMOSPHERE','STREAMING_CONFIGURATION'
+  ]);
+});
+
+test('generated BUILD_UP directive carries dry-run and impact classification before mutation',()=>{
+  const directive=buildGameSpecificBuildUpDirective({
+    gameId:'map-demo',platform:'ROBLOX',designRecord:design(),
+    sourceObservation:{sourceTreeFingerprint:'tree',signals:{},observations:[],topFiles:[{file:'roblox-games/map-demo/server/WorldMap.server.luau'}],sourceAnchors:[]},
+    responsibleFiles:['roblox-games/map-demo/server/WorldMap.server.luau']
+  });
+  assert.equal(directive.preMutationDryRun.mode,'DRY_RUN_NO_SOURCE_MUTATION');
+  assert.ok(directive.developmentImpact.categories.includes('MAP'));
+  assert.equal(directive.preMutationDryRun.sourceMutationPerformed,false);
 });
