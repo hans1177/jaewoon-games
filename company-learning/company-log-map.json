@@ -1,5 +1,5 @@
 {
-  "version": 156,
+  "version": 157,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -359,7 +359,10 @@
       "shared-context-security",
       "shared-context-sync:PASS"
     ],
-    "allCanonicalDocumentHashesMustBeBoundToExecutionEvidence": true
+    "allCanonicalDocumentHashesMustBeBoundToExecutionEvidence": true,
+    "primaryAiPreworkMarkersRequired": true,
+    "latestMainShaRequired": true,
+    "allFourDocumentHashesRequired": true
   },
   "dualNativeCorrelation": {
     "gameKey": "GAME_ID",
@@ -2019,7 +2022,7 @@
     "acceptanceGatesUnchanged": true
   },
   "developmentFloorParallelBottleneckRepairEvidence": {
-    "version": 1,
+    "version": 2,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "source": "company-learning/platform-release-roadmap.json#changeRecord.developmentFloorParallelBottleneckRepair20260927",
     "markers": [
@@ -2029,10 +2032,9 @@
       "NATIVE_ACTIVE_RUN_SCAN=FAIL"
     ],
     "concurrencyGroups": [
-      "unity-web-floor-call-<gameId>",
-      "unity-web-floor-exec-<gameId>"
+      "unity-web-floor-exec-run-<runId>"
     ],
-    "sameGameUnityWebHeavyOverlapForbidden": true,
+    "sameGameUnityWebHeavyOverlapForbidden": false,
     "independentGameParallelismRequired": true,
     "contractAuditMayBlockGameDispatch": false,
     "qualitySecurityReleaseEvidenceUnchanged": true,
@@ -2045,7 +2047,11 @@
     "canonicalQaEvidenceSources": [
       "Company GAME_SEED Production QA / contract",
       "Company Central Policy Contract QA / central-policy-contract"
-    ]
+    ],
+    "callerConcurrencyGroup": "NONE_GAME_ID_LOCK_REMOVED",
+    "sameGameUnityWebHeavyParallelRequired": true,
+    "gameIdConcurrencyGroupForbidden": true,
+    "exactDuplicateDispatchDedupePreserved": true
   },
   "mainPushWakeFreshnessEvidence": {
     "version": 2,
@@ -2200,32 +2206,37 @@
     "regressionStillRequired": true
   },
   "nativeExactGameWorkflowConcurrencyEvidence": {
-    "version": 2,
+    "version": 3,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "source": "company-learning/platform-release-roadmap.json#changeRecord.nativeExactGameWorkflowConcurrency20260927",
     "concurrencyGroups": [
-      "roblox-native-exact-<gameId-or-push-batch-or-runId>",
-      "unity-native-exact-<gameId-or-push-batch-or-runId>"
+      "roblox-native-run-<runId>",
+      "unity-native-run-<runId>"
     ],
     "cancelInProgress": false,
-    "exactGameOverlapForbidden": true,
+    "exactGameOverlapForbidden": false,
     "distinctGameParallelismRequired": true,
-    "batchRunIdentity": "PUSH=batch-push;NON_PUSH=github.run_id",
+    "batchRunIdentity": "RUN_ID",
     "batchGlobalSerialization": false,
     "centralActiveRunScanMarkers": [
       "ROBLOX_NATIVE_DISPATCH_DEDUPED_ACTIVE",
       "UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE"
     ],
     "qualitySecurityReleaseEvidenceUnchanged": true,
-    "pushBatchRunIdentity": "batch-push",
+    "pushBatchRunIdentity": "github.run_id",
     "nonPushEmptyBatchRunIdentity": "github.run_id",
-    "pushBatchCoalesced": true,
+    "pushBatchCoalesced": false,
     "manualEmptyBatchRunScoped": true,
-    "cancelInProgressMeaning": "EXACT_GAME_ACTIVE_EXECUTION_PRESERVED",
+    "cancelInProgressMeaning": "RUN_SCOPED_NO_GAME_ID_SERIALIZATION",
     "exactGameCancelInProgress": false,
-    "pushBatchCancelInProgress": true,
+    "pushBatchCancelInProgress": false,
     "manualEmptyBatchCancelInProgress": false,
-    "pushBatchLatestWins": true
+    "pushBatchLatestWins": false,
+    "sameGameIndependentExecutionParallelRequired": true,
+    "gameIdConcurrencyGroupForbidden": true,
+    "runScopedConcurrencyRequired": true,
+    "exactDuplicateDispatchDedupePreserved": true,
+    "studioActualPlayExceptionOnly": true
   },
   "lightweightGameIngressRunnerReliefEvidence": {
     "version": 3,
@@ -2802,5 +2813,48 @@
     "studioEvidenceRequired": false,
     "studioDiagnosticOptional": true,
     "actualStudioPassMayNotBeFabricated": true
+  },
+  "githubPreworkCentralSyncEvidenceContract": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#ownerCanonicalRules.rule5",
+    "requiredMarkers": [
+      "GITHUB_PREWORK_MAIN_SHA",
+      "WORKER_CONTEXT_POLICY_SHA256",
+      "WORKER_CONTEXT_LOG_MAP_SHA256",
+      "WORKER_CONTEXT_ARCHITECTURE_SHA256",
+      "WORKER_CONTEXT_SECURITY_POLICY_SHA256",
+      "WORKER_CONTEXT_SYNC=PASS",
+      "WORKER_CONTEXT_CONSTITUTION_RULES"
+    ],
+    "requiredActors": [
+      "CHATGPT_PRIMARY_AI",
+      "VIBE2",
+      "VIBE3",
+      "REGISTERED_WORKER"
+    ],
+    "mutationBeforeSyncPassForbidden": true,
+    "staleMainRequiresNewPrework": true,
+    "newConversationRequiresNewPrework": true
+  },
+  "sameGamePlatformParallelEvidenceContract": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.sameGamePlatformParallelismContract",
+    "requiredMarkers": [
+      "SAME_GAME_PLATFORM_PARALLEL_POLICY=ACTIVE",
+      "GAME_ID_SERIALIZATION=FORBIDDEN",
+      "RESPONSIBLE_FILE_CONFLICT_ONLY=YES",
+      "EXACT_DUPLICATE_DEDUPE_ALLOWED=YES",
+      "ROBLOX_STUDIO_SERIALIZATION_EXCEPTION=ACTUAL_SESSION_ONLY"
+    ],
+    "requiredEvidence": [
+      "PLATFORM",
+      "GAME_ID",
+      "RESPONSIBLE_FILES",
+      "EXECUTION_LANE",
+      "CONFLICT_REASON_WHEN_DEFERRED"
+    ],
+    "gameIdOnlyConflictMarkerForbidden": true,
+    "exactResponsibleFileConflictMayDefer": true,
+    "studioSessionMayDefer": true
   }
 }

@@ -13,8 +13,9 @@ permissions:
   contents: write
   actions: write
 
+# Continuation runs are run-scoped; exact duplicate work is deduped by source/artifact identity.
 concurrency:
-  group: roblox-shared-preflight-${{ inputs.game_id || 'batch' }}
+  group: roblox-shared-preflight-run-${{ github.run_id }}
   cancel-in-progress: false
 
 env:

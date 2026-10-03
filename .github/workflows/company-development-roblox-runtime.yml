@@ -41,10 +41,11 @@ permissions:
   pull-requests: write
   actions: write
 
+# Same-game source/build/runtime work is parallel by default. Exact duplicate work is handled
+# by immutable identity/SHA dedupe below. Only actual Roblox Studio execution stays serialized.
 concurrency:
-  group: roblox-native-exact-${{ inputs.game_id || (github.event_name == 'push' && 'batch-push') || github.run_id }}
-  # Only main-push batch planners are disposable. Exact-game and manual runs keep active execution.
-  cancel-in-progress: ${{ github.event_name == 'push' }}
+  group: roblox-native-run-${{ github.run_id }}
+  cancel-in-progress: false
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
@@ -1562,7 +1563,7 @@ jobs:
     needs: [technical-plan, technical-worker]
     if: always() && needs.technical-plan.result == 'success'
     concurrency:
-      group: roblox-private-runtime-dispatch-${{ inputs.game_id || github.run_id }}
+      group: roblox-private-runtime-dispatch-run-${{ github.run_id }}
       cancel-in-progress: false
     runs-on: ubuntu-24.04
     timeout-minutes: 12

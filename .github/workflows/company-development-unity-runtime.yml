@@ -91,10 +91,11 @@ permissions:
 env:
   VIBE2_LEARNING_RUNTIME_BRANCH: vibe2-learning-runtime
 
+# Same-game Unity work is not serialized by gameId. Exact duplicate work may still dedupe
+# by immutable identity; Work Lock protects actual responsible-file conflicts.
 concurrency:
-  group: unity-native-exact-${{ inputs.game_id || (github.event_name == 'push' && 'batch-push') || github.run_id }}
-  # Only main-push batch planners are disposable. Exact-game and manual runs keep active execution.
-  cancel-in-progress: ${{ github.event_name == 'push' }}
+  group: unity-native-run-${{ github.run_id }}
+  cancel-in-progress: false
 
 jobs:
   publication-repair:

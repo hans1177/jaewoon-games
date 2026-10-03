@@ -9,6 +9,8 @@ const director=fs.readFileSync('.github/workflows/director-supervisor.yml','utf8
 const runtime=JSON.parse(fs.readFileSync('vibe2-runtime.json','utf8'));
 const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
+const logMap=JSON.parse(fs.readFileSync('company-learning/company-log-map.json','utf8'));
+const security=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
 const queue=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
 const control=JSON.parse(fs.readFileSync('.vibe2/parallelism-control.json','utf8'));
 
@@ -74,6 +76,38 @@ test('maximum parallelism is default and source-root locks are permanently disab
   assert.equal(queue.scheduling.sourceRootExclusive,false);
   assert.equal(queue.scheduling.gameWideLockForbidden,true);
   assert.equal(queue.scheduling.responsibleFileExclusive,true);
+
+  const rule5=roadmap.ownerCanonicalRules.rule5;
+  assert.equal(rule5.id,'RULE_5_GITHUB_PREWORK_LATEST_MAIN_CENTRAL_CONTEXT_SYNC');
+  assert.equal(rule5.latestMainRequired,true);
+  assert.equal(rule5.chatgptNewConversationRequiresFreshPrework,true);
+  assert.equal(rule5.chatgptPrimaryAiMayNotBypass,true);
+  assert.equal(rule5.vibeWorkersMayNotBypass,true);
+  assert.deepEqual(rule5.requiredDocuments,[
+    'company-learning/platform-release-roadmap.json',
+    'company-learning/company-log-map.json',
+    'company-learning/company-architecture-map.json',
+    'company-learning/security-immune-system.json'
+  ]);
+  assert.equal(architecture.githubPreworkCentralSync.latestMainRequired,true);
+  assert.equal(architecture.githubPreworkCentralSync.mutationBlockedUntilPass,true);
+  assert.equal(logMap.githubPreworkCentralSyncEvidenceContract.mutationBeforeSyncPassForbidden,true);
+  assert.equal(security.githubPreworkCentralSyncSecurity.protections.chatgptPrimaryAiBound,true);
+  assert.equal(security.githubPreworkCentralSyncSecurity.protections.newConversationPreworkRequired,true);
+
+  const sameGamePlatform=roadmap.developmentSpeedExecution.sameGamePlatformParallelismContract;
+  assert.equal(sameGamePlatform.status,'ACTIVE');
+  assert.equal(sameGamePlatform.gameIdOnlySerializationForbidden,true);
+  assert.equal(sameGamePlatform.workflowConcurrencyGroupByGameIdForbidden,true);
+  assert.equal(sameGamePlatform.exactResponsibleFileConflictMaySerialize,true);
+  assert.equal(sameGamePlatform.exactDuplicateDispatchDedupeAllowed,true);
+  assert.equal(sameGamePlatform.robloxStudioException.scope,'ACTUAL_ROBLOX_STUDIO_SESSION_ONLY');
+  assert.equal(architecture.sameGamePlatformParallelism.gameIdOnlySerializationForbidden,true);
+  assert.equal(architecture.assetProductionParallelism.platformScopedResponsibleFilesRequired,true);
+  assert.equal(logMap.sameGamePlatformParallelEvidenceContract.gameIdOnlyConflictMarkerForbidden,true);
+  assert.equal(security.sameGamePlatformParallelSecurity.protections.gameIdOnlySerializationForbidden,true);
+  assert.equal(security.sameGamePlatformParallelSecurity.protections.robloxStudioActualPlaySerializationExceptionOnly,true);
+
   assert.equal(control.currentMax,256);
 
   assert.ok(runner.includes("VIBE2_MAX_CONCURRENT_GAME_TASKS: '256'"));

@@ -1,5 +1,5 @@
 {
-  "version": 64,
+  "version": 65,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -128,7 +128,9 @@
       ".github/workflows/director-supervisor.yml",
       ".github/workflows/homepage-manager.yml"
     ],
-    "securityAndRecoveryWorkersUseSameRoadmapContext": true
+    "securityAndRecoveryWorkersUseSameRoadmapContext": true,
+    "chatgptPrimaryAiBound": true,
+    "latestMainPreworkRequired": true
   },
   "verdicts": {
     "PASS": {
@@ -1035,5 +1037,38 @@
     "relevantSecurityBoundaryChangesStillRequireExistingSecurityGate": true,
     "publicReleaseAuthorityUnchanged": true,
     "confirmedHighRiskFindingStillFailClosed": true
+  },
+  "githubPreworkCentralSyncSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#ownerCanonicalRules.rule5",
+    "protections": {
+      "chatgptPrimaryAiBound": true,
+      "newConversationPreworkRequired": true,
+      "latestMainRequired": true,
+      "fourCanonicalDocumentsRequired": true,
+      "mutationBeforeSyncPassForbidden": true,
+      "staleContextWriteForbidden": true,
+      "conversationMemoryMayNotOverrideCentralPolicy": true,
+      "pinnedWorkerHashesRequired": true,
+      "wrapperShadowPolicyLoaderForbidden": true
+    },
+    "failureAction": "BLOCK_AFFECTED_WRITE_RELOAD_MAIN_CONTEXT_REPLAN_WITHOUT_WEAKENING_GLOBAL_24H"
+  },
+  "sameGamePlatformParallelSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.sameGamePlatformParallelismContract",
+    "protections": {
+      "gameIdOnlySerializationForbidden": true,
+      "sameGameDifferentPlatformsMustRemainParallel": true,
+      "platformScopedResponsibleFilesRequired": true,
+      "exactResponsibleFileConflictProtectionRequired": true,
+      "atomicSharedStateIntegrityRequired": true,
+      "exactDuplicateDispatchDedupeAllowed": true,
+      "dedupeMayNotSerializeIndependentResponsibilities": true,
+      "sourceRootWideLockForbidden": true,
+      "robloxStudioActualPlaySerializationExceptionOnly": true,
+      "studioExceptionMayNotExpandToSourceBuildQaRuntime": true
+    },
+    "failureAction": "REPAIR_RESPONSIBILITY_SCOPE_OR_SCHEDULER_WITHOUT_WEAKENING_WORK_LOCK"
   }
 }

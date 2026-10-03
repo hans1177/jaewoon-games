@@ -466,7 +466,7 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
   };
 }
 
-function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest={},explicitRequestedTypes=[]}={}){
+function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest={},explicitRequestedTypes=[],executionAllowed=true}={}){
   const targetName=clean(target).toLowerCase();
   const engineNativeTarget=['roblox','unity'].includes(targetName);
   const webNativeTarget=targetName==='web';
@@ -484,12 +484,15 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const requestedDccScope=explicitRecipeHasUntyped
     ?dccCapableTypes
     :unique([...(explicitRequestedTypes||[]),...explicitRecipeTypes].map(value=>clean(value).toLowerCase()).filter(Boolean));
-  const automaticDccTypes=engineNativeTarget
+  const laneExecutionAllowed=executionAllowed!==false;
+  const automaticDccTypes=engineNativeTarget&&laneExecutionAllowed
     ?dccCapableTypes.filter(type=>requestedDccScope.includes(type))
     :[];
-  const declaredDccTypes=engineNativeTarget?explicitRecipeTypes:[];
+  const declaredDccTypes=engineNativeTarget&&laneExecutionAllowed?explicitRecipeTypes:[];
   const nativeTextKinds=targetName==='roblox'?ROBLOX_DIRECT_AUTHORING:targetName==='unity'?UNITY_DIRECT_AUTHORING:webNativeTarget?WEB_DIRECT_AUTHORING:[];
-  const nativeTextTypes=decisions.filter(row=>needsAuthoring(row)&&(row.directAuthoring||[]).some(kind=>nativeTextKinds.includes(kind))).map(row=>row.type);
+  const nativeTextTypes=laneExecutionAllowed
+    ?decisions.filter(row=>needsAuthoring(row)&&(row.directAuthoring||[]).some(kind=>nativeTextKinds.includes(kind))).map(row=>row.type)
+    :[];
   const uniqueDccTypes=unique([...automaticDccTypes,...declaredDccTypes]);
   const uniqueNativeTextTypes=unique(nativeTextTypes);
   const selectedCandidateIds=new Set(decisions.flatMap(row=>[
@@ -541,7 +544,7 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   ));
   return freeze({
     version:3,
-    enabled:supportedAuthoringTarget&&(uniqueDccTypes.length>0||uniqueNativeTextTypes.length>0),
+    enabled:laneExecutionAllowed&&supportedAuthoringTarget&&(uniqueDccTypes.length>0||uniqueNativeTextTypes.length>0),
     target:targetName,
     authoringSurface:webNativeTarget?'WEB_NATIVE_SOURCE':'ENGINE_NATIVE_SOURCE',
     platformReauthoringRequired:true,
@@ -553,8 +556,9 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
       explicitRequestedTypes:freezeList(unique((explicitRequestedTypes||[]).map(value=>clean(value).toLowerCase()))),
       authoringScopeMode:'EXPLICIT_TASK_REQUEST_PLUS_DECLARED_RECIPES',
       preferredExecutor:'BLENDER_PYTHON',
-      executionRequired:uniqueDccTypes.length>0,
-      executionStatus:uniqueDccTypes.length===0?'NOT_REQUIRED':uncoveredDccTypes.length===0&&executionRecipes.length>0?'READY_FOR_EXISTING_AUTHORING_EXECUTOR':executionRecipes.length>0?'PARTIAL_AUTHORING_RECIPE_COVERAGE':availableExistingRecipes.length>0?'EXISTING_AUTHORING_RECIPE_AVAILABLE':'AUTHORING_RECIPE_REQUIRED',
+      executionAllowed:laneExecutionAllowed,
+      executionRequired:laneExecutionAllowed&&uniqueDccTypes.length>0,
+      executionStatus:!laneExecutionAllowed&&dccCapableTypes.length>0?'DEFERRED_TO_ASSET_DEVELOPMENT_LANE':uniqueDccTypes.length===0?'NOT_REQUIRED':uncoveredDccTypes.length===0&&executionRecipes.length>0?'READY_FOR_EXISTING_AUTHORING_EXECUTOR':executionRecipes.length>0?'PARTIAL_AUTHORING_RECIPE_COVERAGE':availableExistingRecipes.length>0?'EXISTING_AUTHORING_RECIPE_AVAILABLE':'AUTHORING_RECIPE_REQUIRED',
       requiredCapabilities:NATIVE_DCC_AUTHORING,
       explicitRecipes,
       executionRecipes,
@@ -578,6 +582,7 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
       textWorkerMayClaimDccCompletion:false
     }),
     nativeText:freeze({
+      executionAllowed:laneExecutionAllowed,
       requiredTypes:freezeList(uniqueNativeTextTypes),
       capabilities:freezeList(nativeTextKinds),
       authoringMode:webNativeTarget?'SVG_CSS_CANVAS_JS_WEBAUDIO_NATIVE':'ENGINE_NATIVE_TEXT',
@@ -1462,12 +1467,15 @@ export function buildVibeAssetProductionPlan({
   const highEnd=highEndVisualContract(repoRoot);
   const highEndActive=highEnd?.status==='ACTIVE_EXECUTABLE_CONTRACT';
   const modelRouting=buildAssetModelRouting({task,request,decisions,highEndActive});
+  const requestedExecutionLane=clean(executionLane).toLowerCase();
+  const assetAuthoringExecutionAllowed=requestedExecutionLane?requestedExecutionLane==='asset-development':true;
   const nativeAuthoringExecution=buildNativeAuthoringExecution({
     target:resolvedTarget,
     task,
     decisions,
     manifest:manifestInput,
-    explicitRequestedTypes:selector.explicitRequestedTypes||[]
+    explicitRequestedTypes:selector.explicitRequestedTypes||[],
+    executionAllowed:assetAuthoringExecutionAllowed
   });
   const companyLibrary=companyGraphicsLibraryContract(repoRoot);
   const companyLibraryActive=companyLibrary?.status==='ACTIVE_EXECUTABLE_CONTRACT';

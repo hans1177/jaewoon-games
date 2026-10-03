@@ -82,3 +82,29 @@ test('future enabled rule without declarative enforcement fails closed',()=>{
   assert.equal(result.pass,false);
   assert.ok(result.errors.some(error=>error.includes('CONSTITUTION_MACHINE_ENFORCEMENT_MISSING')||error.includes('MACHINE_ENFORCEMENT_MISSING')));
 });
+
+
+test('owner Rule 5 forces latest-main four-document prework for ChatGPT and Vibe',()=>{
+  const rule=policy.ownerCanonicalRules?.rule5;
+  assert.ok(rule);
+  assert.equal(rule.id,'RULE_5_GITHUB_PREWORK_LATEST_MAIN_CENTRAL_CONTEXT_SYNC');
+  assert.equal(rule.enabled,true);
+  assert.equal(rule.latestMainRequired,true);
+  assert.equal(rule.beforeAnyGitHubWorkRequired,true);
+  assert.equal(rule.noMutationBeforeSyncPass,true);
+  assert.equal(rule.chatgptNewConversationRequiresFreshPrework,true);
+  assert.equal(rule.chatgptPrimaryAiMayNotBypass,true);
+  assert.equal(rule.vibeWorkersMayNotBypass,true);
+  assert.equal(rule.workerPinnedFourDocumentHashesRequired,true);
+  assert.deepEqual(rule.requiredDocuments,[
+    'company-learning/platform-release-roadmap.json',
+    'company-learning/company-log-map.json',
+    'company-learning/company-architecture-map.json',
+    'company-learning/security-immune-system.json'
+  ]);
+  assert.equal(policy.ownerCanonicalRules.constitutionalBinding.appliesToChatgptPrimaryAi,true);
+  assert.equal(policy.ownerCanonicalRules.constitutionalBinding.githubWorkMustUseLatestMainCentralDocuments,true);
+  const result=run(policy);
+  assert.equal(result.pass,true,result.errors.join('\n'));
+  assert.ok(result.orderedRuleIds.includes(rule.id));
+});
