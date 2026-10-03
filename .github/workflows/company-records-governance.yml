@@ -30,7 +30,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
 
 concurrency:
   group: company-records-governance-${{ github.ref }}-${{ github.event_name }}
@@ -76,3 +77,56 @@ jobs:
           echo "COMPANY_RECORDS_SCHEDULE=${{ github.event.schedule }}"
           node tools/company-records-governance.mjs --summary
           echo 'COMPANY_RECORDS_SCHEDULED_HYGIENE=PASS'
+
+  central-current-use-prune:
+    name: Auto-prune unused central policy
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    steps:
+      - name: Checkout latest main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify pruning tool
+        run: |
+          set -euo pipefail
+          node --check tools/company-records-governance.mjs
+          node --test qa/company-records-governance.test.mjs
+
+      - name: Archive unused central policy and keep only current references
+        id: prune
+        run: |
+          set -euo pipefail
+          node tools/company-records-governance.mjs --central-auto-prune | tee /tmp/central-auto-prune.log
+          git diff --check
+          if git diff --quiet -- company-learning/platform-release-roadmap.json company-records/operations; then
+            echo "changed=NO" >> "$GITHUB_OUTPUT"
+            echo 'CENTRAL_POLICY_CURRENT_USE_PRUNE=NO_CHANGE'
+          else
+            echo "changed=YES" >> "$GITHUB_OUTPUT"
+            echo 'CENTRAL_POLICY_CURRENT_USE_PRUNE=CHANGED'
+          fi
+
+      - name: Open automatic current-use policy PR
+        if: steps.prune.outputs.changed == 'YES'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          branch="records/central-current-use-${GITHUB_RUN_ID}"
+          git config user.name 'jaewoon-records-governance'
+          git config user.email 'actions@users.noreply.github.com'
+          git switch -c "$branch"
+          git add company-learning/platform-release-roadmap.json company-records/operations
+          git commit -m 'records: auto-prune unused central policy [skip ci]'
+          git push origin "$branch"
+          pr_url="$(gh pr create --base main --head "$branch" --title 'records: auto-prune unused central policy' --body '자동 현재사용 참조 스캔 결과에 따라 미사용 중앙정책 기록을 company-records로 아카이브하고 중앙문서에서 제거합니다.')"
+          echo "CENTRAL_POLICY_AUTO_PR=$pr_url"
+          gh pr merge "$pr_url" --auto --squash || echo 'CENTRAL_POLICY_AUTO_MERGE=PENDING_OR_UNAVAILABLE'
