@@ -1,5 +1,5 @@
 {
-  "version": 524,
+  "version": 525,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -1094,29 +1094,34 @@
       ]
     },
     "controlPlaneQueueBacklogMitigation": {
-      "version": 3,
+      "version": 4,
       "authority": "OWNER_DIRECTIVE_2026-09-30",
-      "status": "ENABLED_PRESSURE_COHORT_FANIN",
+      "status": "ENABLED_RUN_UNIQUE_RESULT_LIVENESS",
       "objective": "KEEP_COMPLETION_INGEST_AND_REFILL_CONTROL_OFF_THE_SLOW_RESERVE_QUEUE_WITHOUT_DROPPING_GAME_RESULTS",
       "neuronCompletionCallback": {
         "event": "vibe2-neuron-complete",
         "resultBearing": true,
-        "coalescingForbidden": false,
+        "coalescingForbidden": true,
         "cancellationForbidden": true,
         "reserveRunnerPool": "ubuntu-latest",
         "resultArtifactCoalescingForbidden": true,
         "callbackWorkflowSuppressionUnderQueuePressure": true,
         "callbackSuppressionCarrier": "IMMUTABLE_WORKER_ARTIFACT_CONSUMED_BY_COHORT_FAN_IN",
         "singleTaskGameMicroFanInPressureExceptionRemoved": true,
-        "immediateCallbackAllowedOnlyWhenQueuePressureZero": true
+        "immediateCallbackAllowedOnlyWhenQueuePressureZero": true,
+        "pendingReplacementForbidden": true
       },
       "fanInRefill": {
         "event": "vibe2-fanin-refill",
         "resultBearing": false,
-        "coalesceByExecutionLane": true,
-        "topLevelConcurrencyGroupRequired": true,
+        "coalesceByExecutionLane": false,
+        "topLevelConcurrencyGroupRequired": false,
         "cancelRunningRefill": false,
-        "reserveRunnerPool": "ubuntu-latest"
+        "reserveRunnerPool": "ubuntu-latest",
+        "runUniqueConcurrencyRequired": true,
+        "pendingRefillCancellationForbidden": true,
+        "sameLanePendingReplacementForbidden": true,
+        "resultLivenessCritical": true
       },
       "defaultPushAndManualReserveRunnerPool": "ubuntu-slim",
       "gameWorkerRunnerPolicyUnchanged": true,
@@ -1128,7 +1133,8 @@
         "queuedOrPendingRunCountGreaterThan": 0,
         "assetDevelopmentKeepsImmediateCallback": true,
         "nonAssetCompletionUsesCohortFanIn": true,
-        "waveLeaderMayDispatchSingleCoalescedRefill": true
+        "waveLeaderMayDispatchSingleCoalescedRefill": false,
+        "parallelRunUniqueFanInRefillAllowed": true
       }
     },
     "controlWorkflowNoiseSuppression": {
@@ -8065,6 +8071,23 @@
       "codingBuildRuntimeQaPreserved": true,
       "canonicalPipelinePreserved": true,
       "wrapperShadowBypassForbidden": true
+    },
+    "fanInRefillResultLiveness20261003": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-03",
+      "observedFailure": "SUCCESSFUL_GAME_RESULT_FANIN_RUN_CANCELLED_BY_HIGHER_PRIORITY_PENDING_SAME_LANE_REFILL",
+      "exactRunId": 37098717544,
+      "rule": "RESULT_LIVENESS_CALLBACKS_AND_FANIN_REFILLS_MUST_NOT_SHARE_A_PENDING_REPLACEMENT_CONCURRENCY_GROUP",
+      "canonicalWorkflow": ".github/workflows/vibe2-continuous-core.yml",
+      "workflowConcurrency": "RUN_SCOPED",
+      "sameLaneSerialization": false,
+      "pendingReplacementForbidden": true,
+      "runningCancellationForbidden": true,
+      "optimisticSharedQueueWriteRetryPreserved": true,
+      "workLockPreserved": true,
+      "qaReleaseRuntimeGatesPreserved": true,
+      "newPipelineCreated": false,
+      "wrapperShadowCreated": false
     }
   },
   "vibeExecutionLaneContract": {
