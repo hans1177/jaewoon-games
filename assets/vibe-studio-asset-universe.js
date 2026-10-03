@@ -15,6 +15,57 @@ export const STUDIO_ASSET_FAMILIES=Object.freeze([
   'CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'
 ]);
 
+export const STUDIO_ASSET_QUALITY_MAX=120;
+export const STUDIO_ASSET_QUALITY_WEIGHTS=Object.freeze({
+  SILHOUETTE_FORM:10,
+  MODELING_STRUCTURE:10,
+  MATERIAL_TEXTURE:10,
+  COLOR_LIGHTING:8,
+  WORLD_STYLE_COHERENCE:10,
+  DETAIL_DENSITY:8,
+  MOTION_LIVINGNESS:10,
+  GAME_CAMERA_READABILITY:10,
+  UI_UX_COHERENCE:8,
+  VFX_AUDIO_COHESION:8,
+  ORIGINALITY_IDENTITY:8,
+  MOBILE_PERFORMANCE:8,
+  ACTUAL_GAME_BINDING:6,
+  PRODUCTION_VERIFICATION:6
+});
+export const STUDIO_ASSET_QUALITY_GRADES=Object.freeze([
+  Object.freeze({min:116,id:'MASTER_ASSET'}),
+  Object.freeze({min:110,id:'HERO_QUALITY'}),
+  Object.freeze({min:100,id:'COMMERCIAL_GAME_READY'}),
+  Object.freeze({min:85,id:'DEVELOPMENT_READY'}),
+  Object.freeze({min:70,id:'PROTOTYPE'}),
+  Object.freeze({min:0,id:'REPAIR_REQUIRED'})
+]);
+export const STUDIO_ASSET_CRITICS=Object.freeze({
+  ART_DIRECTOR:Object.freeze(['WORLD_STYLE_COHERENCE','COLOR_LIGHTING','ORIGINALITY_IDENTITY']),
+  MODEL_CRITIC:Object.freeze(['SILHOUETTE_FORM','MODELING_STRUCTURE','DETAIL_DENSITY']),
+  MATERIAL_CRITIC:Object.freeze(['MATERIAL_TEXTURE','COLOR_LIGHTING']),
+  RIG_MOTION_CRITIC:Object.freeze(['MOTION_LIVINGNESS']),
+  GAME_CAMERA_CRITIC:Object.freeze(['GAME_CAMERA_READABILITY','ACTUAL_GAME_BINDING']),
+  UI_CRITIC:Object.freeze(['UI_UX_COHERENCE']),
+  VFX_AUDIO_CRITIC:Object.freeze(['VFX_AUDIO_COHESION']),
+  MOBILE_CRITIC:Object.freeze(['MOBILE_PERFORMANCE']),
+  PRODUCTION_CRITIC:Object.freeze(['PRODUCTION_VERIFICATION'])
+});
+export const STUDIO_ASSET_FAMILY_OUTPUTS=Object.freeze({
+  CHARACTER:Object.freeze(['WORLD_MODEL','RIG','MATERIAL_SET','MOTION_SET','PORTRAIT_OR_ICON','LOD0','LOD1','LOD2']),
+  CREATURE:Object.freeze(['WORLD_MODEL','BODY_PLAN_RIG','MATERIAL_SET','SPECIES_MOTION_SET','ICON','LOD0','LOD1','LOD2']),
+  BUILDING:Object.freeze(['WORLD_MODEL','MODULAR_PARTS','INTERIOR_WHEN_APPLICABLE','MATERIAL_SET','COLLISION_NAV_PROXY','LOD0','LOD1','LOD2']),
+  ENVIRONMENT:Object.freeze(['TERRAIN_OR_KIT','LANDMARK','SET_DRESSING','MATERIAL_SET','PLACEMENT_RULES','LOD_OR_STREAMING_VARIANTS']),
+  WEAPON:Object.freeze(['EQUIPPED_MODEL','WORLD_DROP_MODEL','INVENTORY_ICON','CRAFTING_ICON_WHEN_CRAFTABLE','MATERIAL_SET','GRIP_SOCKET_MAP','LOD0','LOD1','LOD2']),
+  SKILL:Object.freeze(['CAST_PRESENTATION','PROJECTILE_OR_AREA_VISUAL','IMPACT_PRESENTATION','ICON','AUDIO_ROLE','REACTION_PRESENTATION']),
+  MATERIAL:Object.freeze(['BASE_MATERIAL','PLATFORM_VARIANT','WEATHERING_VARIANT','DAMAGE_VARIANT_WHEN_APPLICABLE']),
+  AUDIO:Object.freeze(['SOURCE_ASSET','EVENT_BINDING','VARIATION_SET','MOBILE_BUDGET_VARIANT']),
+  VFX:Object.freeze(['SOURCE_EFFECT','GAMEPLAY_EVENT_BINDING','MOBILE_BUDGET_VARIANT','LOD_OR_DENSITY_VARIANT']),
+  UI:Object.freeze(['HUD_COMPONENT','MENU_COMPONENT','INVENTORY_COMPONENT','ICON_SET','STATE_VARIANTS','TOUCH_FEEDBACK']),
+  MOTION:Object.freeze(['SOURCE_MOTION','PLATFORM_RETARGET','CONTACT_MAP','BLEND_VARIANTS','MOTION_LOD']),
+  PROP:Object.freeze(['WORLD_MODEL','INTERACTION_VARIANT','INVENTORY_ICON_WHEN_ITEM','CRAFTING_ICON_WHEN_CRAFTABLE','DROP_MODEL_WHEN_COLLECTIBLE','COLLISION_PROXY','LOD0','LOD1','LOD2'])
+});
+
 export const CREATURE_BODY_PLANS=Object.freeze([
   'SMALL_HUMANOID_BIPED','STANDARD_HUMANOID_MONSTER','HEAVY_BIPED','DIGITIGRADE_BIPED','HUNCHED_BIPED',
   'APE_LIKE_BIPED','SKELETAL_BIPED','BOSS_BIPED','QUADRUPED_CANINE','QUADRUPED_FELINE','QUADRUPED_HEAVY',
@@ -237,6 +288,186 @@ export function createAssetDNA(input={}){
     EXCLUSION_TAGS:freezeList(uniq(input.EXCLUSION_TAGS||input.exclusionTags))
   };
   return Object.freeze(dna);
+}
+
+function qualityMetric(value){
+  const n=Number(value);
+  if(!Number.isFinite(n))return 0;
+  if(n>1)return clamp(n/100,0,1);
+  return clamp(n,0,1);
+}
+function qualityGrade(score=0){
+  return STUDIO_ASSET_QUALITY_GRADES.find(row=>Number(score)>=row.min)?.id||'REPAIR_REQUIRED';
+}
+function qualityEvidenceValue(source={},axis=''){
+  const aliases={
+    SILHOUETTE_FORM:['SILHOUETTE_FORM','silhouetteForm','silhouette','form'],
+    MODELING_STRUCTURE:['MODELING_STRUCTURE','modelingStructure','modeling','structure'],
+    MATERIAL_TEXTURE:['MATERIAL_TEXTURE','materialTexture','material','texture'],
+    COLOR_LIGHTING:['COLOR_LIGHTING','colorLighting','lighting','color'],
+    WORLD_STYLE_COHERENCE:['WORLD_STYLE_COHERENCE','worldStyleCoherence','styleCoherence','worldFit'],
+    DETAIL_DENSITY:['DETAIL_DENSITY','detailDensity','detail'],
+    MOTION_LIVINGNESS:['MOTION_LIVINGNESS','motionLivingness','motion','animation'],
+    GAME_CAMERA_READABILITY:['GAME_CAMERA_READABILITY','gameCameraReadability','cameraReadability','readability'],
+    UI_UX_COHERENCE:['UI_UX_COHERENCE','uiUxCoherence','uiUx','ui'],
+    VFX_AUDIO_COHESION:['VFX_AUDIO_COHESION','vfxAudioCohesion','vfxAudio'],
+    ORIGINALITY_IDENTITY:['ORIGINALITY_IDENTITY','originalityIdentity','identity','originality'],
+    MOBILE_PERFORMANCE:['MOBILE_PERFORMANCE','mobilePerformance','performance'],
+    ACTUAL_GAME_BINDING:['ACTUAL_GAME_BINDING','actualGameBinding','gameBinding'],
+    PRODUCTION_VERIFICATION:['PRODUCTION_VERIFICATION','productionVerification','verification']
+  };
+  for(const key of aliases[axis]||[axis])if(source[key]!==undefined)return source[key];
+  return 0;
+}
+
+export function scoreStudioAssetQuality120({asset={},evidence={}}={}){
+  const source={...(asset?.qualityEvidence||{}),...(asset?.quality120||{}),...(evidence||{})};
+  const runtimeState=upper(asset?.runtimeVerificationState||source.runtimeVerificationState);
+  const actualBinding=source.actualGameBinding===true||source.ACTUAL_GAME_BINDING===true||(asset?.consumerGameIds||[]).length>0;
+  const productionVerified=(asset?.productionVerified===true||asset?.verifiedCompanyReusable===true)
+    &&(/VERIFIED_NATIVE_RUNTIME|VERIFIED_RUNTIME/.test(runtimeState)||source.runtimeVerified===true);
+  const normalized={};
+  let score=0;
+  for(const [axis,weight] of Object.entries(STUDIO_ASSET_QUALITY_WEIGHTS)){
+    let value=qualityMetric(qualityEvidenceValue(source,axis));
+    if(axis==='ACTUAL_GAME_BINDING'&&actualBinding)value=1;
+    if(axis==='PRODUCTION_VERIFICATION')value=productionVerified?1:0;
+    normalized[axis]=value;
+    score+=weight*value;
+  }
+  score=Math.round(score*10)/10;
+  const ranked=Object.entries(normalized).map(([axis,value])=>Object.freeze({
+    axis,value,weightedScore:Math.round(STUDIO_ASSET_QUALITY_WEIGHTS[axis]*value*10)/10,
+    max:STUDIO_ASSET_QUALITY_WEIGHTS[axis]
+  })).sort((a,b)=>a.value-b.value||b.max-a.max||a.axis.localeCompare(b.axis));
+  return Object.freeze({
+    version:1,
+    assetId:text(asset?.id)||null,
+    score,
+    maxScore:STUDIO_ASSET_QUALITY_MAX,
+    grade:qualityGrade(score),
+    axes:Object.freeze(normalized),
+    weakestAxis:ranked[0]||null,
+    strongestAxes:freezeList(ranked.filter(row=>row.value>=.85).map(row=>row.axis)),
+    measuredAxisCount:Object.values(normalized).filter(value=>value>0).length,
+    commercialTargetReached:score>=100,
+    heroTargetReached:score>=110,
+    masterTargetReached:score>=116,
+    scoreBlocksDevelopmentBinding:false,
+    lowScoreMayBindWhenNoBetterSafeCompatibleAsset:true,
+    productionVerified,
+    productionVerificationIndependentFromQualityScore:true
+  });
+}
+
+export function createStudioAssetCriticReview({assessment={}}={}){
+  const axes=assessment?.axes||{};
+  const critics=Object.entries(STUDIO_ASSET_CRITICS).map(([critic,ownedAxes])=>{
+    const values=ownedAxes.map(axis=>Number(axes[axis]||0));
+    const percent=values.length?Math.round(values.reduce((sum,value)=>sum+value,0)/values.length*100):0;
+    return Object.freeze({critic,axes:ownedAxes,percent,status:percent>=90?'STRONG':percent>=75?'ACCEPTABLE':'IMPROVE'});
+  }).sort((a,b)=>a.percent-b.percent||a.critic.localeCompare(b.critic));
+  return Object.freeze({
+    assetId:assessment?.assetId||null,
+    critics:Object.freeze(critics),
+    weakestCritic:critics[0]||null,
+    independentPerspectivesRequired:true,
+    oneCriticCannotSelfPromoteProduction:true
+  });
+}
+
+export function createStudioAssetFamilyPlan({asset={},availableOutputs=[]}={}){
+  const family=upper(asset?.family||asset?.category);
+  const required=STUDIO_ASSET_FAMILY_OUTPUTS[family]||Object.freeze([]);
+  const available=new Set((availableOutputs||asset?.availableOutputs||[]).map(upper));
+  const gaps=required.filter(role=>!/_WHEN_/.test(role)&&!available.has(role));
+  const itemLike=family==='PROP'&&/(ITEM|LOOT|RESOURCE|CONSUMABLE|CRAFT)/.test(upper(asset?.functionClass||asset?.subfamily||asset?.type));
+  return Object.freeze({
+    assetId:text(asset?.id)||null,
+    family,
+    requiredOutputs:required,
+    availableOutputs:freezeList([...available]),
+    missingRequiredOutputs:freezeList(gaps),
+    itemPresentationRequired:itemLike,
+    itemPresentationRoles:itemLike?freezeList(['WORLD_MODEL','INVENTORY_ICON_WHEN_ITEM','DROP_MODEL_WHEN_COLLECTIBLE']):freezeList([]),
+    sameAssetDnaAcrossWorldEquipDropAndUi:true,
+    complete:gaps.length===0
+  });
+}
+
+export function createHeroAssetQualityBaseline({assets=[],assessments=[],heroAssetIds=[]}={}){
+  const explicit=new Set((heroAssetIds||[]).map(text).filter(Boolean));
+  const byId=new Map((assessments||[]).map(row=>[text(row.assetId),row]));
+  const heroes=(assets||[]).filter(asset=>{
+    const id=text(asset?.id);
+    const tags=(asset?.tags||[]).map(upper);
+    return explicit.has(id)||asset?.hero===true||/HERO|PRIMARY|SIGNATURE|BOSS|LANDMARK|STARTING_HUB/.test(upper(asset?.heroRole||asset?.importance||''))||tags.some(tag=>/HERO|PRIMARY|SIGNATURE|BOSS|LANDMARK/.test(tag));
+  }).map(asset=>({assetId:text(asset.id),assessment:byId.get(text(asset.id))||scoreStudioAssetQuality120({asset})}));
+  const scores=heroes.map(row=>Number(row.assessment?.score)||0);
+  return Object.freeze({
+    heroAssetIds:freezeList(heroes.map(row=>row.assetId)),
+    averageScore:scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length*10)/10:0,
+    minimumScore:scores.length?Math.min(...scores):0,
+    heroTarget:110,
+    masterTarget:116,
+    heroAssetsDefineGameQualityBaseline:true,
+    empty:heroes.length===0
+  });
+}
+
+export function createStudioAssetEvolutionPlan({assessment={},criticReview={},alternatives=[]}={}){
+  const safeAlternatives=(alternatives||[]).filter(row=>row&&row.rightsPass!==false&&row.platformCompatible!==false&&row.gameplayAuthoritySafe!==false);
+  const score=Number(assessment?.score)||0;
+  const weakest=assessment?.weakestAxis?.axis||criticReview?.weakestCritic?.axes?.[0]||'UNMEASURED_QUALITY';
+  const useCurrent=score<STUDIO_ASSET_QUALITY_MAX;
+  return Object.freeze({
+    assetId:assessment?.assetId||null,
+    currentScore:score,
+    targetScore:STUDIO_ASSET_QUALITY_MAX,
+    currentGrade:assessment?.grade||qualityGrade(score),
+    bindCurrentAsset:useCurrent||score>=STUDIO_ASSET_QUALITY_MAX,
+    lowScoreBindingAllowed:score<100,
+    fallbackReason:score<100&&safeAlternatives.length===0?'NO_BETTER_SAFE_COMPATIBLE_ALTERNATIVE':null,
+    replacementPolicy:safeAlternatives.length?'KEEP_CURRENT_UNTIL_BETTER_ALTERNATIVE_PROVES_SUPERIOR':'IMPROVE_CURRENT_IN_PLACE',
+    nextTarget:weakest,
+    worstPartFirst:true,
+    preserveStrongAxes:freezeList(assessment?.strongestAxes||[]),
+    fullRebuildDefault:false,
+    productionPromotionStillRequiresRuntimeEvidence:true,
+    verifiedOutcomeOnlyMayTeachPositiveLearning:true,
+    continueEvolutionAfterCheckpoint:true
+  });
+}
+
+export function buildStudioAssetQuality120Program({assets=[],qualityEvidenceByAsset={},heroAssetIds=[],familyOutputsByAsset={}}={}){
+  const seen=new Set();
+  const uniqueAssets=[];
+  for(const asset of assets||[]){const id=text(asset?.id);if(!id||seen.has(id))continue;seen.add(id);uniqueAssets.push(asset);}
+  const assessments=uniqueAssets.map(asset=>scoreStudioAssetQuality120({asset,evidence:qualityEvidenceByAsset?.[text(asset.id)]||{}}));
+  const assessmentById=new Map(assessments.map(row=>[row.assetId,row]));
+  const criticReviews=uniqueAssets.map(asset=>createStudioAssetCriticReview({assessment:assessmentById.get(text(asset.id))}));
+  const criticById=new Map(criticReviews.map(row=>[row.assetId,row]));
+  const familyPlans=uniqueAssets.map(asset=>createStudioAssetFamilyPlan({asset,availableOutputs:familyOutputsByAsset?.[text(asset.id)]||asset?.availableOutputs||[]}));
+  const evolutionQueue=uniqueAssets.map(asset=>createStudioAssetEvolutionPlan({
+    assessment:assessmentById.get(text(asset.id)),criticReview:criticById.get(text(asset.id)),alternatives:asset?.qualityAlternatives||[]
+  })).sort((a,b)=>a.currentScore-b.currentScore||String(a.assetId).localeCompare(String(b.assetId)));
+  const heroBaseline=createHeroAssetQualityBaseline({assets:uniqueAssets,assessments,heroAssetIds});
+  return Object.freeze({
+    version:1,
+    maxScore:STUDIO_ASSET_QUALITY_MAX,
+    weights:STUDIO_ASSET_QUALITY_WEIGHTS,
+    assessments:Object.freeze(assessments),
+    criticReviews:Object.freeze(criticReviews),
+    familyPlans:Object.freeze(familyPlans),
+    heroBaseline,
+    evolutionQueue:Object.freeze(evolutionQueue),
+    belowCommercialCount:assessments.filter(row=>row.score<100).length,
+    belowMasterCount:assessments.filter(row=>row.score<116).length,
+    lowScoreBindingPolicy:'USE_WHEN_NO_BETTER_SAFE_COMPATIBLE_ALTERNATIVE_AND_KEEP_VISUAL_DEBT_OPEN',
+    qualityScoreIsNotADevelopmentBindingGate:true,
+    productionVerificationRemainsRuntimeEvidenceBased:true,
+    verifiedOutcomeOnlyLearning:true
+  });
 }
 
 // 스타일: 조형·표면·연기를 함께 정의하며 실제 메시/클립 적용 전에는 제작 지침이다.
@@ -906,6 +1137,8 @@ export function scoreStudioAssetCandidate({asset={},gameDna={},usage={}}={}){
   if(usage.runtimeFailure===true||Number(usage.verifiedFailureCount)>0)score-=Math.min(60,20+Number(usage.verifiedFailureCount||0)*10);
   if(usage.identityFailure===true||usage.styleFailure===true||usage.navigationFailure===true)score-=25;
   if(usage.mobileBudgetFailure===true)score-=20;
+  const quality120=scoreStudioAssetQuality120({asset,evidence:usage.qualityEvidence||usage.quality120||{}});
+  score+=Math.round(quality120.score/12);
   return Object.freeze({
     id:row.id,
     score:Math.round(score),
@@ -913,10 +1146,14 @@ export function scoreStudioAssetCandidate({asset={},gameDna={},usage={}}={}){
     verified:row.verified,
     conceptPass:conceptQa.pass,
     platformCompatible:!targetPlatform||!row.platform||row.platform===targetPlatform||row.platform==='SHARED_REFERENCE',
+    quality120,
+    qualityScoreBlocksBinding:false,
+    lowQualityMayBindWhenNoBetterSafeCompatibleAsset:true,
     rejected:Boolean(!conceptQa.pass||usage.lockedOut===true),
     reasons:Object.freeze([
       row.verified?'VERIFIED_RUNTIME_OR_COMPANY':'UNVERIFIED_OR_PREPARED',
       conceptQa.pass?'CONCEPT_COMPATIBLE':'CONCEPT_MISMATCH',
+      quality120.score<100?'QUALITY_DEBT_KEEP_IMPROVING':'QUALITY_COMMERCIAL_TARGET_REACHED',
       usage.runtimeFailure===true?'VERIFIED_RUNTIME_FAILURE':''
     ].filter(Boolean))
   });
@@ -931,7 +1168,7 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
       .filter(({row})=>row.family===family&&(!subfamily||row.subfamily===subfamily||row.tags.includes(subfamily)))
       .map(({asset,row})=>({asset,row,score:scoreStudioAssetCandidate({asset,gameDna,usage:usageByAsset[row.id]||{}})}))
       .filter(x=>!x.score.rejected)
-      .sort((a,b)=>b.score.sourceTier-a.score.sourceTier||b.score.score-a.score.score||a.row.id.localeCompare(b.row.id));
+      .sort((a,b)=>b.score.sourceTier-a.score.sourceTier||b.score.quality120.score-a.score.quality120.score||b.score.score-a.score.score||a.row.id.localeCompare(b.row.id));
     const picked=candidates[0]||null;
     selections.push(Object.freeze({
       family,subfamily,required:requirement.required!==false,
@@ -939,6 +1176,10 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
       score:picked?.score.score??null,
       sourceTier:picked?.score.sourceTier??0,
       verified:picked?.row.verified===true,
+      quality120:picked?.score.quality120?.score??null,
+      qualityGrade:picked?.score.quality120?.grade??null,
+      lowQualityFallback:Boolean(picked&&Number(picked.score.quality120?.score||0)<100),
+      qualityScoreBlocksBinding:false,
       unresolved:!picked
     }));
   }
@@ -946,6 +1187,9 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
     selections:Object.freeze(selections),
     unresolved:Object.freeze(selections.filter(row=>row.required&&row.unresolved)),
     complete:selections.every(row=>!row.required||!row.unresolved),
+    lowQualityFallbackCount:selections.filter(row=>row.lowQualityFallback).length,
+    lowQualityBindingAllowedWhenNoBetterSafeCompatibleAsset:true,
+    qualityScoreIsNotBindingGate:true,
     manualOrLockedChoiceWins:true,
     gameplayAuthority:false
   });
@@ -1587,7 +1831,7 @@ export function createStudioAssetUniversePlan({
   assets=[],repositoryAssets=[],externalSources=[],activeDemand={},signalsByKey={},platform='UNITY',
   styleFamily='STYLIZED_FANTASY',styleBible={},concept={},gameId='',worldDna={},languages={},
   requirements=[],usageByAsset={},futureGameDemands=[],usageEvents=[],baseMaterialFamilies={},baseMaterialUsageByAtom={},
-  customizationRecipes=[],customizationContract=null
+  customizationRecipes=[],customizationContract=null,qualityEvidenceByAsset={},heroAssetIds=[],familyOutputsByAsset={}
 }={}){
   const conceptProfile=createConceptProfile({...concept,styleFamily:concept.styleFamily||styleFamily});
   const resolvedStyle=conceptProfile.dominantStyle||upper(styleFamily);
@@ -1605,6 +1849,12 @@ export function createStudioAssetUniversePlan({
   const usageFeedback=summarizeVerifiedAssetUsage({events:usageEvents});
   const baseMaterialRotation=buildBaseMaterialRotationPlan({families:baseMaterialFamilies,usageByAtom:baseMaterialUsageByAtom});
   const testbed=createStudioTestbedPlan({assetIds:loadout.selections.map(row=>row.assetId).filter(Boolean),platform,mobile:true});
+  const quality120=buildStudioAssetQuality120Program({
+    assets:[...assets,...repositoryAssets],
+    qualityEvidenceByAsset,
+    heroAssetIds,
+    familyOutputsByAsset
+  });
   return Object.freeze({
     version:3,
     target:STUDIO_ASSET_UNIVERSE_TARGET,
@@ -1625,6 +1875,7 @@ export function createStudioAssetUniversePlan({
     usageFeedback,
     baseMaterialRotation,
     testbed,
+    quality120,
     coverage,
     heatmap:gapFill.heatmap,
     gapFill,
