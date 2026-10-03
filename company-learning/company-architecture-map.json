@@ -1,5 +1,5 @@
 {
-  "version": 305,
+  "version": 306,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1231,8 +1231,8 @@
         "singletonPlannerCompletionRequired": false,
         "usesExistingCanonicalReserve": true,
         "newSchedulerCreated": false,
-        "duplicateWakeSignalsCoalesced": true,
-        "concurrencyGroup": "vibe2-main-push-game-primary-wake",
+        "duplicateWakeSignalsCoalesced": false,
+        "concurrencyGroup": null,
         "activeWakeCancellationForbidden": true,
         "staleUnstartedWakeDrain": ".github/workflows/director-supervisor.yml::VIBE2_STALE_UNSTARTED_MAIN_PUSH_GAME_PRIMARY_WAKE",
         "sharedStateSerializationScope": "ATOMIC_OPTIMISTIC_WRITE_CONFLICT_ONLY",
@@ -1415,11 +1415,11 @@
         ],
         "crossLaneGlobalReserveLock": false,
         "sameLaneReserveSerialization": false,
-        "statelessRefillCoalescing": "LANE_SCOPED_ONE_RUNNING_ONE_PENDING",
+        "statelessRefillCoalescing": "NONE_RUN_UNIQUE",
         "sharedQueue": "vibe2-unreal-core:.vibe2/queue.json",
         "conflictResolution": "FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UNBOUNDED_WITH_CAPPED_BACKOFF_ON_ACTUAL_WRITE_CONFLICT",
         "workerDirectControlWrite": false,
-        "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v9",
+        "schedulerConcurrencyEpoch": null,
         "gamePrimaryExternalBoundary": 256,
         "liveVerification": {
           "previousRunId": 36204978877,
@@ -1430,12 +1430,13 @@
         },
         "reserveJobsParallel": true,
         "serializationScope": "ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY",
-        "statelessRefillCoalescingScope": "VIBE2_FANIN_REFILL_ONLY",
+        "statelessRefillCoalescingScope": "NONE",
         "workerCohortsRemainParallel": true,
         "staleFanInRefillWakeAction": "DROP_BEFORE_CONTRACT_PREFLIGHT_WHEN_EVENT_HEAD_IS_NOT_CURRENT_MAIN",
         "staleFanInRefillMayWriteControlState": false,
         "staleFanInRefillMayStartWorker": false,
-        "staleFanInRefillRecovery": "LATEST_MAIN_PUSH_OR_FIVE_MINUTE_24H_SAFETY_NET"
+        "staleFanInRefillRecovery": "LATEST_MAIN_PUSH_OR_FIVE_MINUTE_24H_SAFETY_NET",
+        "topLevelWorkflowSerialization": false
       },
       "learningIdlePressureGate": {
         "version": 1,
@@ -3120,7 +3121,17 @@
       "cacheGeneration": 5,
       "modelCachePersistOnMiss": true,
       "workerModelRepullAfterSharedCacheHitForbidden": true
-    }
+    },
+    "sameGameDifferentPlatformsParallel": true,
+    "platformResponsibilitySeparated": true,
+    "platformResponsibilityRoots": {
+      "WEB": "web-games/<gameId>",
+      "ROBLOX": "roblox-games/<gameId>",
+      "UNITY": "unity-games/<gameId>"
+    },
+    "generalHeavyWorkSerializationForbidden": true,
+    "robloxStudioActualRuntimeSerialException": true,
+    "atomicSharedStateCriticalSectionIsNotHeavyWorkSerialization": true
   },
   "platformPresentationSeparation": {
     "version": 1,
@@ -3718,10 +3729,21 @@
       "sameGameIndependentNonOverlappingPackagesParallel": true,
       "serializationAllowedOnlyFor": [
         "ATOMIC_SHARED_STATE_WRITE",
-        "EXACT_RESPONSIBLE_FILE_WRITE_CONFLICT"
+        "EXACT_RESPONSIBLE_FILE_WRITE_CONFLICT",
+        "ROBLOX_STUDIO_ACTUAL_RUNTIME_SESSION"
       ],
       "sharedStateCriticalSectionMayNotEncloseHeavyExecution": true,
-      "externalProviderCapacityOnlyHeavyExecutionBoundary": true
+      "externalProviderCapacityOnlyHeavyExecutionBoundary": true,
+      "sameGameDifferentPlatformsParallel": true,
+      "platformResponsibilityRoots": {
+        "WEB": "web-games/<gameId>",
+        "ROBLOX": "roblox-games/<gameId>",
+        "UNITY": "unity-games/<gameId>"
+      },
+      "crossPlatformGameSourceResponsibilityMixForbidden": true,
+      "generalHeavyWorkSerializationForbidden": true,
+      "robloxStudioActualRuntimeSerialException": true,
+      "atomicSharedStateWriteIsNotHeavyWorkSerialization": true
     },
     "uefnDevelopmentStatus": "DEVELOPMENT_PAUSED",
     "uefnStatusLabel": "개발보류",
@@ -5390,10 +5412,11 @@
     "source": "company-learning/platform-release-roadmap.json#changeRecord.assetArmControlPlaneIsolation20260927",
     "workflow": ".github/workflows/vibe2-24h-runner.yml",
     "concurrency": {
-      "currentGroup": "vibe2-24h-cycle-singleton-v9",
+      "currentGroup": null,
       "cancelInProgress": false,
-      "maxCurrentEpochChains": 1,
-      "wakeSignalsCollapse": true
+      "maxCurrentEpochChains": null,
+      "wakeSignalsCollapse": false,
+      "mode": "RUN_UNIQUE_NO_TOP_LEVEL_SERIALIZATION"
     },
     "staleEpochRelease": {
       "previousGroup": "vibe2-24h-cycle-singleton-v5",
@@ -5657,7 +5680,7 @@
     "version": 1,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.fanInRefillParallelReserve20260927",
     "workflow": ".github/workflows/vibe2-continuous-core.yml",
-    "workflowConcurrency": "RUN_SCOPED",
+    "workflowConcurrency": "RUN_UNIQUE_NO_TOP_LEVEL_SERIALIZATION",
     "sameLaneSerialization": false,
     "reserveJobsParallel": true,
     "sharedStateWriteConflictControl": "OPTIMISTIC_RETRY_ATOMIC_WRITE_ONLY"
@@ -5751,10 +5774,11 @@
     "unityWebFloor": {
       "callerConcurrency": "unity-web-floor-call-<gameId>",
       "heavyExecutionConcurrency": "unity-web-floor-exec-<gameId>",
-      "sameGameHeavyParallelism": false,
+      "sameGameHeavyParallelism": true,
       "independentGameParallelism": true,
       "cancelInProgress": false,
-      "globalSerialization": false
+      "globalSerialization": false,
+      "responsibleFileConflictOnly": true
     },
     "serializationScope": "SAME_GAME_HEAVY_UNITY_WEB_OR_ATOMIC_SHARED_STATE_WRITE_ONLY",
     "robloxUnityUpperPlatformPairingPreserved": true,

@@ -129,3 +129,21 @@ test('lock preserves owning workflow run identity', () => {
   assert.equal(restored.locks[0].runId, '12345');
   assert.equal(restored.locks[0].runAttempt, '2');
 });
+
+test('same game different platform file locks can run together', () => {
+  const roblox = acquireVibeWorkLock(createVibeWorkLockState(), {
+    worker: 'vibe2', taskId: 'same-roblox', gameId: 'same',
+    files: ['roblox-games/same/client/Game.client.luau'], baseSha: 'same-base'
+  }, NOW);
+  assert.equal(roblox.acquired, true);
+  const unity = acquireVibeWorkLock(roblox.state, {
+    worker: 'vibe2', taskId: 'same-unity', gameId: 'same',
+    files: ['unity-games/same/Assets/Scripts/GameCore.cs'], baseSha: 'same-base'
+  }, NOW);
+  assert.equal(unity.acquired, true);
+  const web = acquireVibeWorkLock(unity.state, {
+    worker: 'vibe2', taskId: 'same-web', gameId: 'same',
+    files: ['web-games/same/index.html'], baseSha: 'same-base'
+  }, NOW);
+  assert.equal(web.acquired, true);
+});

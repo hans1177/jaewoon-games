@@ -50,6 +50,27 @@ test('legacy presentation tasks expand to existing native visual responsibility 
 });
 
 
+test('worker responsibility scope excludes another platform game source but keeps explicit shared files',()=>{
+  const files=expandPresentationResponsibleFiles({
+    target:'roblox',
+    task:{
+      target:'roblox',
+      sourceRoot:'roblox-games/demo',
+      responsibleFiles:[
+        'client/Game.client.luau',
+        'web-games/demo/index.html',
+        'unity-games/demo/Assets/Scripts/GameCore.cs',
+        'assets/shared/demo-style.json'
+      ]
+    }
+  });
+  assert.deepEqual(files,[
+    'roblox-games/demo/client/Game.client.luau',
+    'assets/shared/demo-style.json'
+  ]);
+});
+
+
 test('adaptive graphics replacement worker contract covers UEFN Verse and rejects zero-replacement PASS',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-uefn-presentation-scope-'));
   try{

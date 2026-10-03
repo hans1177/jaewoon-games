@@ -1,5 +1,5 @@
 {
-  "version": 524,
+  "version": 525,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -918,14 +918,23 @@
       "releaseQaFailureIsLaneLocalUntilSharedFanIn": true,
       "defaultRequestedGameWorkers": 256,
       "recoverToExternalProviderBoundaryAfterPressure": true,
-      "workflowLevelGameWideSerializationForbidden": false,
-      "workflowLevelConcurrencyGroupByGameIdForbidden": false,
-      "sameGameConflictSerializationScope": "EXACT_DUPLICATE_WORKFLOW_OR_RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY",
+      "workflowLevelGameWideSerializationForbidden": true,
+      "workflowLevelConcurrencyGroupByGameIdForbidden": true,
+      "sameGameConflictSerializationScope": "EXACT_RESPONSIBLE_FILE_WRITE_CONFLICT_ONLY; ROBLOX_STUDIO_ACTUAL_RUNTIME_SESSION_MAY_SERIALIZE; ATOMIC_SHARED_STATE_WRITE_IS_BRIEF_INTEGRITY_SECTION_NOT_HEAVY_WORK_SERIALIZATION",
       "crossGameWorkflowSerializationForbidden": true,
-      "exactGameDuplicateWorkflowSerializationAllowed": true,
-      "exactGameDuplicateWorkflowSerializationPurpose": "RACE_DUPLICATE_PLANNER_AND_HEAVY_NATIVE_EXECUTION_SUPPRESSION_ONLY",
+      "exactGameDuplicateWorkflowSerializationAllowed": false,
+      "exactGameDuplicateWorkflowSerializationPurpose": "DUPLICATE_DISPATCH_MUST_DEDUPE_OR_NOOP_WITHOUT_SERIALIZING_INDEPENDENT_WORK",
       "exactGameDuplicateWorkflowSerializationAuthority": "company-learning/platform-release-roadmap.json#changeRecord.nativeExactGameWorkflowConcurrency20260927",
-      "internalSameWorkflowGameMatrixParallelismPreserved": true
+      "internalSameWorkflowGameMatrixParallelismPreserved": true,
+      "sameGameDifferentPlatformsParallel": true,
+      "platformResponsibilityRoots": {
+        "WEB": "web-games/<gameId>",
+        "ROBLOX": "roblox-games/<gameId>",
+        "UNITY": "unity-games/<gameId>"
+      },
+      "crossPlatformGameSourceResponsibilityMixForbidden": true,
+      "robloxStudioActualRuntimeSerialException": true,
+      "atomicSharedStateCriticalSectionIsNotHeavyWorkSerialization": true
     },
     "candidateReleaseConcurrency": {
       "scope": "CANDIDATE_BRANCH",
@@ -1153,7 +1162,10 @@
       "failedGameEvidencePreserved": true,
       "cancellationNoiseMayNotTriggerHeavyControlWork": true,
       "qualityOrEvidenceGateWeakeningForbidden": true
-    }
+    },
+    "sameGameDifferentPlatformWorkMaxParallel": true,
+    "platformResponsibilityPartitioningRequired": true,
+    "generalHeavyWorkSerializationForbiddenExceptRobloxStudio": true
   },
   "phases": [
     {
@@ -3404,7 +3416,11 @@
         "PUBLISHED_PLACE_DIRECT_STUDIO_AUTOMATION",
         "UNDOCUMENTED_STUDIO_CLI_AUTOMATION",
         "EXTERNAL_GUI_MACRO_OR_INJECTION"
-      ]
+      ],
+      "serialExecutionRequired": true,
+      "onlyGlobalHeavyWorkSerializationException": true,
+      "maxParallel": 1,
+      "concurrencyGroup": "roblox-studio-shared-host"
     },
     "deterministicGateAuthority": {
       "version": 1,
@@ -7335,11 +7351,11 @@
       "sharedStateOptimisticRetryUnchanged": true,
       "independentGameParallelismPreserved": true,
       "qualitySecurityReleaseGatesUnchanged": true,
-      "duplicateWakeSignalsCoalesced": true,
-      "concurrencyGroup": "vibe2-main-push-game-primary-wake",
-      "concurrencyScope": "MAIN_PUSH_WAKE_ONLY",
+      "duplicateWakeSignalsCoalesced": false,
+      "concurrencyGroup": null,
+      "concurrencyScope": "RUN_UNIQUE_NO_TOP_LEVEL_SERIALIZATION",
       "activeWakeCancellationForbidden": true,
-      "pendingWakePolicy": "KEEP_ACTIVE_AND_ONLY_NEWEST_PENDING_WAKE",
+      "pendingWakePolicy": "RUN_UNIQUE; STALE_WAKE_DROPPED_BY_FRESHNESS_GATE",
       "repositoryDispatchAndCallableRunsRemainRunScoped": true,
       "staleUnstartedWakeDrain": ".github/workflows/director-supervisor.yml::VIBE2_STALE_UNSTARTED_MAIN_PUSH_GAME_PRIMARY_WAKE",
       "staleQueuedWakeMayCancel": true,
@@ -7349,7 +7365,8 @@
       "directMainPushOnly": true,
       "explicitExecutionLaneBypassesMainPushSingleton": true,
       "workflowCallInheritedPushEventMustRemainRunScoped": true,
-      "workflowCallLaneCancellationForbiddenByMainPushSingleton": true
+      "workflowCallLaneCancellationForbiddenByMainPushSingleton": false,
+      "supersededSerializationBy": "OWNER_DIRECTIVE_2026-10-03_NON_STUDIO_SERIALIZATION_FORBIDDEN"
     },
     "directorGamePrimaryFallbackWake20260927": {
       "id": "DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE_2026-09-27",
@@ -8065,6 +8082,32 @@
       "codingBuildRuntimeQaPreserved": true,
       "canonicalPipelinePreserved": true,
       "wrapperShadowBypassForbidden": true
+    },
+    "ownerParallelResponsibility20261003": {
+      "id": "OWNER_PARALLEL_RESPONSIBILITY_2026-10-03",
+      "authority": "OWNER_DIRECTIVE_2026-10-03",
+      "status": "ACTIVE_EXECUTABLE_CONTRACT",
+      "rules": [
+        "SAME_GAME_DIFFERENT_PLATFORMS_RUN_IN_PARALLEL",
+        "WEB_ROBLOX_UNITY_RESPONSIBLE_FILES_STAY_PLATFORM_LOCAL",
+        "NON_STUDIO_HEAVY_WORK_TOP_LEVEL_SERIALIZATION_FORBIDDEN",
+        "EXACT_RESPONSIBLE_FILE_WRITE_CONFLICT_MAY_DEFER_ONLY_THE_CONFLICTING_WRITE",
+        "ATOMIC_SHARED_STATE_CAS_IS_BRIEF_INTEGRITY_SECTION_NOT_HEAVY_WORK_SERIALIZATION",
+        "OFFICIAL_ROBLOX_STUDIO_ACTUAL_PLAY_IS_THE_SERIAL_HEAVY_EXECUTION_EXCEPTION"
+      ],
+      "platformRoots": {
+        "WEB": "web-games/<gameId>",
+        "ROBLOX": "roblox-games/<gameId>",
+        "UNITY": "unity-games/<gameId>"
+      },
+      "studioException": {
+        "workflow": ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+        "job": "studio-mcp-auto-play",
+        "concurrencyGroup": "roblox-studio-shared-host",
+        "maxParallel": 1
+      },
+      "existingCanonicalPipelineOnly": true,
+      "newPipelineCreated": false
     }
   },
   "vibeExecutionLaneContract": {
@@ -14641,7 +14684,24 @@
       "assetDevelopmentSourceWorkerBuildUpDirectiveSyntaxGuard": true,
       "assetDevelopmentModelCachePersistOnMiss": true,
       "assetDevelopmentWorkerModelRepullAfterSharedCacheHitForbidden": true,
-      "assetDevelopmentCacheGeneration": 5
+      "assetDevelopmentCacheGeneration": 5,
+      "sameGameDifferentPlatformsParallel": true,
+      "platformResponsibilitySeparated": true,
+      "platformResponsibilityRoots": {
+        "WEB": "web-games/<gameId>",
+        "ROBLOX": "roblox-games/<gameId>",
+        "UNITY": "unity-games/<gameId>"
+      },
+      "generatedAssetRoots": {
+        "ROBLOX": "assets/generated/roblox/<gameId>",
+        "UNITY": "assets/generated/unity/<gameId>",
+        "WEB": "web-games/<gameId>"
+      },
+      "crossPlatformGameSourceResponsibilityMixForbidden": true,
+      "explicitSharedFileConflictOnlyWhenDeclared": true,
+      "generalHeavyWorkSerializationForbidden": true,
+      "robloxStudioActualRuntimeSerialExceptionOnly": true,
+      "atomicSharedStateCriticalSectionIsNotHeavyWorkSerialization": true
     },
     "failureHandling": {
       "state": "ASSET_REPAIR_REQUIRED",
