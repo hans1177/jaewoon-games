@@ -17,7 +17,7 @@ import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence
 import { createRobloxVibe3LearningContext } from './vibe3-roblox-learning-context.mjs';
 import { latestVerifiedDesign } from './company-all-games-design-reset.mjs';
 import { latestMinimumDesign } from './company-minimum-design-contract.mjs';
-import { robloxBuildProfileFromBaseline } from './company-development-roblox-bootstrap.mjs';
+import { robloxDesignProfileFromBaseline } from './company-development-roblox-gameplay-product-readiness.mjs';
 import { readUpperPlatformReadiness, nativeUpperPlatformAlreadyStarted } from './company-upper-platform-admission.mjs';
 import { buildGameSpecificBuildUpDirective, directivePrompt, inspectGameSources } from './company-build-up-directive.mjs';
 
@@ -255,7 +255,7 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     const minimumDesign=latestMinimumDesign(repoRoot,id);
     let robloxDesignProfile={};
     if(minimumDesign?.record){
-      try{robloxDesignProfile=robloxBuildProfileFromBaseline(minimumDesign.record);}
+      try{robloxDesignProfile=robloxDesignProfileFromBaseline(minimumDesign.record);}
       catch{robloxDesignProfile={};}
     }
     const existingRoblox=rows.find(r=>r.gameId===id&&r.engine==='roblox');
