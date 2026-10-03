@@ -6,7 +6,13 @@ const count=(text,re)=>(String(text||'').match(re)||[]).length;
 const has=(text,re)=>re.test(String(text||''));
 const uniq=rows=>[...new Set(rows.filter(Boolean))];
 const baselineContent=baseline=>baseline?.content&&typeof baseline.content==='object'?baseline.content:(baseline&&typeof baseline==='object'?baseline:{});
-const designText=baseline=>JSON.stringify(baselineContent(baseline)).toLowerCase();
+function collectDesignTextValues(value,out=[]){
+  if(typeof value==='string'){const text=clean(value);if(text)out.push(text);return out;}
+  if(Array.isArray(value)){for(const row of value)collectDesignTextValues(row,out);return out;}
+  if(value&&typeof value==='object'){for(const row of Object.values(value))collectDesignTextValues(row,out);}
+  return out;
+}
+const designText=baseline=>collectDesignTextValues(baselineContent(baseline),[]).join(' ').toLowerCase();
 const stripFoundation=server=>String(server||'').split('-- native-foundation-sentinel-v1')[0];
 
 function field(config,name){
