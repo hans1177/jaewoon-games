@@ -750,8 +750,10 @@ export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sour
   const generatedBindingLines=(targetExpression)=>{
     if(!generatedAssetBindingMode)return[];
     const lines=[
+      '  local generatedAssetBindingLighting = game:GetService("Lighting")',
       `  ${targetExpression}:SetAttribute("GeneratedNativeAssetBindingVersion", 1)`,
-      `  ${targetExpression}:SetAttribute("GeneratedNativeAssetBindingCount", ${persistedBindings.length})`
+      `  ${targetExpression}:SetAttribute("GeneratedNativeAssetBindingCount", ${persistedBindings.length})`,
+      `  generatedAssetBindingLighting:SetAttribute("GeneratedNativeAssetBindingCount", ${persistedBindings.length})`
     ];
     for(const [index,binding] of persistedBindings.entries()){
       const slot=index+1;
