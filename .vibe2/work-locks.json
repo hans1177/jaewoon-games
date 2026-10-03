@@ -3,35 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1gbltpc",
-      "worker": "vibe2",
-      "taskId": "seed-single-defense-strat-celestial-bastion-studio-evolution-roblox-stability-v1",
-      "gameId": "seed-single-defense-strat-celestial-bastion",
-      "files": [
-        "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "assets/generated/roblox/seed-single-defense-strat-celestial-bastion/background/asset.glb",
-        "assets/generated/roblox/seed-single-defense-strat-celestial-bastion/background/preview.png",
-        "assets/generated/roblox/seed-single-defense-strat-celestial-bastion/background/evidence.json",
-        "assets/generated/roblox/seed-single-defense-strat-celestial-bastion/item/asset.glb",
-        "assets/generated/roblox/seed-single-defense-strat-celestial-bastion/item/preview.png",
-        "assets/generated/roblox/seed-single-defense-strat-celestial-bastion/item/evidence.json",
-        "assets/generated/roblox/seed-single-defense-strat-celestial-bastion/prop/asset.glb",
-        "assets/generated/roblox/seed-single-defense-strat-celestial-bastion/prop/preview.png",
-        "assets/generated/roblox/seed-single-defense-strat-celestial-bastion/prop/evidence.json"
-      ],
-      "baseSha": "e3f7f8995fed803123a3dbce2b8dec6c7869b3c2",
-      "runId": "37091908476",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-03T03:36:28.408Z",
-      "expiresAt": "2026-10-03T04:21:28.408Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-single-defense-strat-celestial-bastion-studio-evolution-roblox-stability-v1"
-      ]
-    },
-    {
       "id": "wl-1j0w11l",
       "worker": "vibe2",
       "taskId": "daechung-rpg-unity-web-repair-v1",
@@ -389,6 +360,35 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-studio-evolution-unity-web-usability-v1"
+      ]
+    },
+    {
+      "id": "wl-ll3ir5",
+      "worker": "vibe2",
+      "taskId": "village-dungeons-studio-evolution-unity-web-usability-v1",
+      "gameId": "village-dungeons",
+      "files": [
+        "unity-games/village-dungeons/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/village-dungeons/Assets/Scripts/UnityWebFloorGame.cs",
+        "assets/generated/unity/village-dungeons/background/asset.glb",
+        "assets/generated/unity/village-dungeons/background/preview.png",
+        "assets/generated/unity/village-dungeons/background/evidence.json",
+        "assets/generated/unity/village-dungeons/item/asset.glb",
+        "assets/generated/unity/village-dungeons/item/preview.png",
+        "assets/generated/unity/village-dungeons/item/evidence.json",
+        "assets/generated/unity/village-dungeons/prop/asset.glb",
+        "assets/generated/unity/village-dungeons/prop/preview.png",
+        "assets/generated/unity/village-dungeons/prop/evidence.json"
+      ],
+      "baseSha": "94bd1d1de7c16bab289a596e8b7f44592ecbdfd9",
+      "runId": "37094553225",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-03T04:21:43.352Z",
+      "expiresAt": "2026-10-03T05:06:43.352Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:village-dungeons-studio-evolution-unity-web-usability-v1"
       ]
     }
   ]
