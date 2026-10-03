@@ -3162,11 +3162,16 @@
         "authority": "OWNER_DIRECTIVE",
         "gameId": "line-defense",
         "sourcePath": "web-games/line-defense",
-        "sourceBefore": "5631470e2143058cd08026fa3a94416522932728",
-        "sourceAfter": "c87c46cf581e8b7a46d225d2f0824a5f2717ee5f",
-        "semanticIntentFingerprint": "d1070af64ea372bfa9876ed11aaa30619a5a9c814a9dab4fa5ae96e3a2d8e9ca",
+        "sourceBefore": "3895c81b45c5cb99a6e9da319bac06f24fce1485",
+        "sourceAfter": "17fa0cef23a0eb1f2280c8b8f5a91cbcf8201289",
+        "semanticIntentFingerprint": "8ca0b8fc2369318f16da584c6c267bc04dad39fb0ac85c3ee417ccf075c7cfe9",
         "affectedSystems": [
+          "MOVEMENT",
+          "COMBAT",
+          "WORLD",
           "PROGRESSION",
+          "UI_UX",
+          "SAVE",
           "BALANCE"
         ],
         "platformTargets": [
@@ -3176,11 +3181,11 @@
         "semanticIntentPropagationRequired": true,
         "affectedWebQaRequired": true,
         "affectedPlatformQaRequired": true,
-        "detectedAt": "2026-10-03T09:46:01.202Z",
+        "detectedAt": "2026-10-03T10:31:30.422Z",
         "state": "PLATFORM_PROPAGATION_REQUIRED"
       },
       "ownerWebEditPropagationPending": true,
-      "ownerWebEditPropagationUpdatedAt": "2026-10-03T09:46:01.202Z"
+      "ownerWebEditPropagationUpdatedAt": "2026-10-03T10:31:30.422Z"
     },
     {
       "gameId": "village-dungeons",
@@ -9243,7 +9248,7 @@
       "robloxPublicReleaseFinalEvidence": null
     }
   ],
-  "updatedAt": "2026-10-03T10:29:15.422Z",
+  "updatedAt": "2026-10-03T10:31:30.422Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
