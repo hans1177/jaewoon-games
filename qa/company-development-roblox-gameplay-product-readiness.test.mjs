@@ -178,6 +178,132 @@ test('4v4 design cannot be classified as non multiplayer',()=>{
 });
 
 
+test('future expansion and platform metadata do not inflate current F0 capabilities',()=>{
+  const baseline={content:{
+    identity:'놀이공원을 운영하고 손님 만족도를 관리하는 전략 경영 게임',
+    coreFun:'동선을 최적화하고 수익을 재투자한다',
+    coreLoop:[
+      '놀이기구와 편의시설을 배치한다',
+      '손님 흐름과 만족도를 확인한다',
+      '수익으로 시설을 업그레이드한다'
+    ],
+    signatureSystems:[
+      {name:'동선 최적화 시스템',purpose:'손님 이동 효율을 높인다',playerChoice:'길과 입구 위치를 조정한다'}
+    ],
+    progressionDirection:'시설 업그레이드와 구역 확장으로 성장한다',
+    multiplayerMode:'SINGLE',
+    contentExpansionPlan:[{milestone:'계절 이벤트',newGameplay:'향후 한정 퀘스트와 글로벌 랭킹을 추가한다'}],
+    technicalAssumptions:['클라우드 저장으로 진행 데이터를 보존한다'],
+    platformProfiles:{ROBLOX:{
+      platform:'ROBLOX',
+      inputModel:'Roblox touch controls with keyboard and gamepad parity',
+      sessionModel:'Fast single-player Roblox park management session',
+      multiplayerRuntime:'single-player server boundary; no fake multiplayer claims',
+      performanceBudget:'maintain stable mobile frame pacing with bounded instances',
+      uiUx:'Touch-safe Roblox ScreenGui with readable feedback',
+      saveAndNetwork:'Server validated persistent save state',
+      platformContentAdaptation:'Roblox native park management adaptation',
+      internalReleaseTarget:'Private restricted Roblox owner playtest experience',
+      validationEvidence:'Exact source runtime mobile QA and regression evidence'
+    }}
+  }};
+  const result=evaluateRobloxGameplayProductReadiness({
+    gameId:'amusement-tycoon',
+    baseline,
+    config:'local Config={Genre="Strategy",PlayMode="SINGLE",MobileFirst=true} return Config',
+    server:'local DataStoreService=game:GetService("DataStoreService")\nlocal store=DataStoreService:GetDataStore("x")\nlocal function buildWorld() local p=Instance.new("Part"); p.Parent=workspace end\nlocal function spawnCustomer() local m=Instance.new("Model"); m.Parent=workspace end\nlocal function startParkDay() end\nlocal function finishParkDay() end\nlocal function upgradeRide(player) player:SetAttribute("Level",2) end\nlocal function save(player) store:UpdateAsync("p:"..player.UserId,function() return {} end) end\nlocal function load(player) store:GetAsync("p:"..player.UserId) end',
+    client:mobileClient,
+    project
+  });
+  assert.equal(result.requiredCapabilities.includes('QUEST'),false);
+  assert.equal(result.requiredCapabilities.includes('MULTIPLAYER'),false);
+  assert.equal(result.requiredCapabilities.includes('DAY_NIGHT'),false);
+  assert.equal(result.requiredCapabilities.includes('SAVE'),true);
+});
+
+test('single-player tycoon metadata does not imply enemy AI day-night or multiplayer gameplay',()=>{
+  const baseline={content:{
+    identity:'놀이공원 경영 게임에서 손님 만족도가 낮아지면 수익이 감소한다.',
+    coreFun:'동선을 최적화하고 공원을 안정적으로 maintain 한다.',
+    coreLoop:['시설을 배치한다','손님 만족도를 확인한다','수익으로 시설을 업그레이드한다'],
+    progressionDirection:'업그레이드로 성장한다.',
+    multiplayerMode:'SINGLE',
+    platformProfiles:{ROBLOX:{
+      platform:'ROBLOX',
+      inputModel:'Roblox touch controls with keyboard and gamepad parity',
+      sessionModel:'Fast single-player Roblox park management session',
+      multiplayerRuntime:'single-player server boundary; no fake multiplayer claims',
+      performanceBudget:'maintain stable mobile frame pacing with bounded instances',
+      uiUx:'Touch-safe Roblox ScreenGui with readable feedback',
+      saveAndNetwork:'Server validated persistent save state',
+      platformContentAdaptation:'Roblox native park management adaptation',
+      internalReleaseTarget:'Private restricted Roblox owner playtest experience',
+      validationEvidence:'Exact source runtime mobile QA and regression evidence'
+    }}
+  }};
+  const result=evaluateRobloxGameplayProductReadiness({
+    gameId:'amusement-tycoon',
+    baseline,
+    config:'local Config={Genre="Strategy",PlayMode="SINGLE",MobileFirst=true} return Config',
+    server:'local function buildWorld() local p=Instance.new("Part"); p.Parent=workspace end\nlocal function spawnCustomer() local m=Instance.new("Model"); m.Parent=workspace end\nlocal function startParkDay() end\nlocal function finishParkDay() end\nlocal function upgradeRide(player) player:SetAttribute("Level",2) end',
+    client:mobileClient,
+    project
+  });
+  assert.equal(result.requiredCapabilities.includes('ENEMY_AI'),false);
+  assert.equal(result.requiredCapabilities.includes('DAY_NIGHT'),false);
+  assert.equal(result.requiredCapabilities.includes('MULTIPLAYER'),false);
+});
+
+test('canonical Roblox profile owns genre when the approved baseline provides platform design',()=>{
+  const baseline={content:{
+    identity:'놀이공원 타이쿤은 동선을 설계하고 손님 만족도를 관리하는 3D 전략 경영 게임입니다.',
+    coreFun:'동선 최적화와 손님 만족도 관리',
+    coreLoop:[
+      '놀이기구와 편의시설을 배치한다.',
+      '손님 흐름과 만족도를 확인한다.',
+      '수익을 재투자해 시설을 업그레이드한다.'
+    ],
+    progressionDirection:'시설 업그레이드와 구역 확장으로 성장한다.',
+    multiplayerMode:'SINGLE',
+    platformProfiles:{ROBLOX:{
+      platform:'ROBLOX',
+      inputModel:'Roblox touch controls with keyboard and gamepad parity',
+      sessionModel:'Fast single-player Roblox park management session',
+      multiplayerRuntime:'Single-player server authority without multiplayer claims',
+      performanceBudget:'Mobile-first bounded instances and stable frame pacing',
+      uiUx:'Touch-safe Roblox ScreenGui with readable state feedback',
+      saveAndNetwork:'Server validated actions with persistent save semantics',
+      platformContentAdaptation:'Roblox avatar-scale native park management adaptation',
+      internalReleaseTarget:'Private restricted Roblox owner playtest experience',
+      validationEvidence:'Exact source runtime mobile QA and regression evidence'
+    }}
+  }};
+  const profile=robloxDesignProfileFromBaseline(baseline);
+  assert.equal(profile.genre,'Strategy');
+  assert.equal(profile.playMode,'SINGLE');
+
+  const server='local function buildWorld() local p=Instance.new("Part"); p.Parent=workspace end\nlocal function spawnCustomer() local m=Instance.new("Model"); m.Parent=workspace end\nlocal function startParkDay() end\nlocal function finishParkDay() end\nlocal function upgradeRide(player) player:SetAttribute("Level",2) end';
+  const strategy=evaluateRobloxGameplayProductReadiness({
+    gameId:'amusement-tycoon',
+    baseline,
+    config:'local Config={Genre="Strategy",PlayMode="SINGLE",MobileFirst=true} return Config',
+    server,
+    client:mobileClient,
+    project
+  });
+  assert.equal(strategy.blockers.some(value=>value.startsWith('DESIGN_GENRE_MISMATCH:')),false);
+
+  const simulation=evaluateRobloxGameplayProductReadiness({
+    gameId:'amusement-tycoon',
+    baseline,
+    config:'local Config={Genre="Simulation",PlayMode="SINGLE",MobileFirst=true} return Config',
+    server,
+    client:mobileClient,
+    project
+  });
+  assert.ok(simulation.blockers.includes('DESIGN_GENRE_MISMATCH:Strategy:Simulation'));
+});
+
 test('design-grounded profile prioritizes survival identity over incidental strategy wording',()=>{
   const profile=robloxDesignProfileFromBaseline({content:{
     identity:'극한 환경에서 매일 살아남는 액션 생존 로그라이트',
