@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort, refreshQueuedUnityPlatformResponsibilities } from '../tools/vibe2-auto-planner.mjs';
 import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
@@ -1718,6 +1718,52 @@ test('Unity native presentation owns dedicated visual files and excludes gamepla
   assert.ok(task.responsibleFiles.includes('unity-games/demo/Assets/Scripts/PrototypeAnimatedVisuals.cs'));
   assert.equal(task.responsibleFiles.includes('unity-games/demo/Assets/Scripts/GameCore.cs'),false);
   assert.equal(task.responsibleFiles.includes('unity-games/demo/Assets/Scripts/RuntimeBootstrap.cs'),false);
+});
+
+test('queued Unity tasks refresh stale broad responsibilities before reservation',()=>{
+  const root=tempRepo();
+  const project={
+    gameId:'demo',name:'Demo',engine:'unity',target:'unity',
+    releaseState:'development-confirmed',projectPath:'unity-games/demo',firstStageUnityWeb:true,
+    queueCanonicalState:'WEB_VIBE_REPAIR_REQUIRED',queueCurrentStep:'VIBE_WEB_REPAIR'
+  };
+  const broad=[
+    'unity-games/demo/Assets/Scripts/GameCore.cs',
+    'unity-games/demo/Assets/Scripts/RuntimeBootstrap.cs',
+    'unity-games/demo/Assets/Scripts/PrototypeAnimatedVisuals.cs'
+  ];
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[
+    {
+      id:'demo-unity-web-repair-v1',gameId:'demo',target:'unity',department:'development',type:'implementation',
+      goal:'[UNITY_WEB_DEVELOPMENT_FLOOR_REPAIR] old queued repair',sourceRoot:'unity-games/demo',
+      responsibleFiles:broad,status:'queued',releaseState:'development-confirmed',
+      evidence:['unity-web-first-stage']
+    },
+    {
+      id:'demo-unity-presentation-asset-adaptation-v1',gameId:'demo',target:'unity',department:'development',type:'implementation',
+      goal:'asset presentation',sourceRoot:'unity-games/demo',responsibleFiles:broad,status:'queued',
+      releaseState:'development-confirmed',assetProductionLane:true,presentationPass:'ASSET_ADAPTATION',
+      evidence:['presentation-quality-pipeline:v1','asset-production-parallel:v1']
+    }
+  ]});
+  const refreshed=refreshQueuedUnityPlatformResponsibilities(queue,[project],root);
+  assert.equal(refreshed.changed,2);
+  const web=refreshed.queue.tasks.find(row=>row.id==='demo-unity-web-repair-v1');
+  const presentation=refreshed.queue.tasks.find(row=>row.id==='demo-unity-presentation-asset-adaptation-v1');
+  assert.deepEqual(web.responsibleFiles,[
+    'unity-games/demo/Assets/Scripts/GameCore.cs',
+    'unity-games/demo/Assets/Scripts/RuntimeBootstrap.cs'
+  ]);
+  assert.deepEqual(presentation.responsibleFiles,['unity-games/demo/Assets/Scripts/PrototypeAnimatedVisuals.cs']);
+  assert.ok(web.evidence.includes('platform-responsibility-split:unity-web-refresh-v1'));
+  assert.ok(presentation.evidence.includes('platform-responsibility-split:unity-presentation-refresh-v1'));
+
+  const runningQueue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[
+    {...queue.tasks[0],status:'running',reservationRunId:'active'},
+    queue.tasks[1]
+  ]});
+  const runningRefresh=refreshQueuedUnityPlatformResponsibilities(runningQueue,[project],root);
+  assert.equal(runningRefresh.queue.tasks.find(row=>row.id==='demo-unity-web-repair-v1').responsibleFiles.length,3);
 });
 
 test('same-game Unity Web core repair and Unity presentation can reserve in parallel when files do not overlap',()=>{
