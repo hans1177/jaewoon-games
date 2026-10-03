@@ -131,7 +131,10 @@ const U={
   hammer:{name:'망치 고양이',icon:'⬟',cost:300,hp:260,atk:72,range:30,speed:20,rate:1.35,cool:8,size:21,kind:'hammer',role:'근접',gacha:true},
   knight:{name:'기사 고양이',icon:'⬢',cost:330,hp:360,atk:42,range:33,speed:24,rate:1.0,cool:8.5,size:22,kind:'knight',role:'근접',gacha:true},
   mage:{name:'마법 고양이',icon:'✹',cost:390,hp:110,atk:56,range:175,speed:20,rate:1.45,cool:10,size:18,kind:'mage',role:'원거리',gacha:true},
-  giant:{name:'거대 고양이',icon:'⬤',cost:450,hp:350,atk:65,range:42,speed:16,rate:2,cool:11,size:29,kind:'giant',role:'근접',attackScale:1}
+  giant:{name:'거대 고양이',icon:'⬤',cost:450,hp:350,atk:65,range:42,speed:16,rate:2,cool:11,size:29,kind:'giant',role:'근접',attackScale:1},
+  wall:{name:'성벽 고양이',icon:'▰',cost:420,hp:700,atk:24,range:30,speed:14,rate:2.2,cool:18,size:24,kind:'wall',role:'탱커',gacha:true,stage6Gacha:true},
+  iron:{name:'철갑 고양이',icon:'⬣',cost:500,hp:950,atk:32,range:32,speed:12,rate:2.5,cool:24,size:26,kind:'iron',role:'탱커',gacha:true,stage6Gacha:true},
+  legend:{name:'전설 고양이',icon:'★',cost:650,hp:360,atk:160,range:60,speed:32,rate:1.1,cool:45,size:24,kind:'legend',role:'딜러',gacha:true,stage6Gacha:true,rareGacha:true}
 };
 const GACHA_IDS=Object.keys(U).filter(k=>U[k].gacha);
 
