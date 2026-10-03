@@ -70,11 +70,8 @@ permissions:
   contents: write
   actions: write
 
-# Only true singletons stay serialized. Fan-in refills and result-bearing runs are run-unique;
-# shared queue writes already use optimistic fetch/reset/replan/push retries.
-concurrency:
-  group: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && 'vibe2-learning-single-worker' || github.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake' || github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && 'vibe2-main-push-game-primary-wake' || github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-refill-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
-  cancel-in-progress: false
+# 일반 Vibe2 실행은 top-level 직렬화하지 않는다.
+# 공유 상태는 기존 optimistic CAS/retry로 보호하고, 실제 Roblox Studio 세션만 별도 workflow에서 직렬화한다.
 
 env:
   VIBE2_LOCAL_MODEL: qwen3:1.7b
@@ -95,7 +92,7 @@ env:
   VIBE2_OPENAI_PAID_API_ALLOWED: 'false'
   VIBE2_SHARED_CONTEXT_REQUIRED: 'true'
   VIBE2_EXECUTION_LANE: ${{ inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary' }}
-  VIBE2_LANE_MAX: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && '1' || inputs.lane_max || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && '64') || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'recovery-fast' && '5') || '256' }}
+  VIBE2_LANE_MAX: ${{ inputs.lane_max || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && '64') || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'recovery-fast' && '5') || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && '4') || '256' }}
 
 jobs:
   reserve:
