@@ -462,6 +462,7 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
         recipeSucceeded=true;
         results.push(Object.freeze({
           id:clean(recipe?.id)||path.basename(script,'.py'),assetId:clean(recipe?.assetId)||null,family:clean(recipe?.family).toUpperCase()||null,license:clean(recipe?.license)||null,executor:'BLENDER_PYTHON',script,editableSource:dccRepoPath(recipe?.editableSource||script),
+          types:Object.freeze([...(Array.isArray(recipe?.types)?recipe.types:[])]),targetPlatforms:Object.freeze([...(Array.isArray(recipe?.targetPlatforms)?recipe.targetPlatforms:[])]),
           outputs:Object.freeze(generated),evidenceJson,preview,nativeArtifact:nativeArtifact.path,artifactHash:nativeArtifact.sha256,sourceHash:sha256File(scriptAbs),
           evidenceState:evidence?.runtimeVerificationState||null,productionVerified:evidence?.productionVerified===true,
           reproducesExistingNativeArtifact,persistedForCandidate:persist,candidateUsable:persist||reproducesExistingNativeArtifact,
@@ -525,13 +526,20 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
           /(?:AudioContext|webkitAudioContext|createOscillator\s*\(|createGain\s*\(|OscillatorNode|GainNode)/i
         ].filter(re=>re.test(text)).length
         :0;
-  const dccRequired=(contract?.dcc?.requiredTypes||[]).length>0;
+  const requiredDccTypes=unique(contract?.dcc?.requiredTypes||[]);
+  const dccRequired=requiredDccTypes.length>0;
   const nativeTextRequired=(contract?.nativeText?.requiredTypes||[]).length>0;
   const nativeTextAuthored=target==='web'?nativeSignals>=1:nativeSignals>=2;
   const dccEvidence=contract?.dcc?.executionEvidence&&typeof contract.dcc.executionEvidence==='object'?contract.dcc.executionEvidence:null;
+  const dccCoveredTypes=unique((dccEvidence?.recipes||[]).flatMap(row=>{
+    const types=Array.isArray(row?.types)?row.types.map(value=>clean(value).toLowerCase()).filter(Boolean):[];
+    return types.length?types:requiredDccTypes;
+  }));
+  const dccTypeCoveragePass=!dccRequired||requiredDccTypes.every(type=>dccCoveredTypes.includes(clean(type).toLowerCase()));
   const dccAuthored=Boolean(
     !dccRequired||(
-      dccEvidence?.executed===true
+      dccTypeCoveragePass
+      &&dccEvidence?.executed===true
       &&dccEvidence?.allRecipesPassed===true
       &&dccEvidence?.candidateUsable===true
       &&dccEvidence?.persistedForCandidate===true
@@ -564,7 +572,9 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
           :'AUTHORING_REQUIRED';
   return Object.freeze({
     required:true,status,target,nativeSignals,nativeTextAuthored,dccRequired,dccAuthored,dccStatus,nativeTextRequired,nativeTextStatus,
-    requiredDccTypes:Object.freeze([...(contract?.dcc?.requiredTypes||[])]),
+    requiredDccTypes:Object.freeze([...requiredDccTypes]),
+    dccCoveredTypes:Object.freeze([...dccCoveredTypes]),
+    dccTypeCoveragePass,
     requiredNativeTextTypes:Object.freeze([...(contract?.nativeText?.requiredTypes||[])]),
     dccExecutionEvidencePresent:Boolean(dccEvidence),
     dccExecutionEvidence:dccEvidence?Object.freeze({...dccEvidence}):null,
