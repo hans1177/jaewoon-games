@@ -1007,11 +1007,12 @@ jobs:
           while IFS=$'\t' read -r source_run review_mode || [ -n "$source_run" ]; do
             [ -n "$source_run" ] || continue
             status="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$source_run" --jq '.status' 2>/dev/null || true)"
-            if [ "$review_mode" = 'EARLY_SLOT' ]; then
-              case "$status" in in_progress|completed) ;; *) continue ;; esac
-            elif [ "$status" != 'completed' ]; then
-              continue
-            fi
+            # The task artifact is immutable and task-id filtered below, so an in-progress
+            # parent matrix run must not hold an already-finished asset task behind unrelated workers.
+            case "$review_mode:$status" in
+              EARLY_SLOT:in_progress|EARLY_SLOT:completed|LEGACY_ASSET:in_progress|LEGACY_ASSET:completed) ;;
+              *) continue ;;
+            esac
             available="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$source_run/artifacts?per_page=100" --jq '[.artifacts[] | select(.expired == false and (.name | startswith("vibe2-result-")))] | length' 2>/dev/null || echo 0)"
             [ "${available:-0}" -gt 0 ] || continue
             echo "source_run=$source_run" >> "$GITHUB_OUTPUT"
