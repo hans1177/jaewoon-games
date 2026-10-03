@@ -1170,3 +1170,81 @@ test('monster adventure pack is registered as repo assets without false producti
     assert.equal(row.path,'/assets/roblox/monster-adventure-v1/'+id+'.obj');
   }
 });
+
+
+test('horror lore prop pack matches the current ten-item Lore roster',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','horror-lore-v1');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+  const config=fs.readFileSync(path.join(root,'roblox-games','horror-escape-room','shared','GameConfig.luau'),'utf8');
+  const mtl=fs.readFileSync(path.join(packDir,'horror-lore.mtl'),'utf8');
+  const materials=new Set(mtl.split(/\r?\n/).filter(line=>line.startsWith('newmtl ')).map(line=>line.slice(7).trim()));
+  const expected=[
+    ['SCHOOL_01','school_01','빈 교실 출석부',100,70],
+    ['SCHOOL_02','school_02','사물함 낙서',100,70],
+    ['SCHOOL_03','school_03','체육관 호루라기',300,200],
+    ['SCHOOL_04','school_04','급식표 뒷면',100,80],
+    ['HOSPITAL_01','hospital_01','퇴원 기록',80,60],
+    ['HOSPITAL_02','hospital_02','수술실 메모',220,160],
+    ['HOSPITAL_03','hospital_03','영안실 번호표',300,200],
+    ['PARK_01','park_01','찢어진 입장권',350,280],
+    ['PARK_02','park_02','회전목마 사진',700,550],
+    ['PARK_03','park_03','광대 분실물',350,300],
+  ];
+  assert.equal(catalog.assets.length,10);
+  assert.equal(catalog.productionVerified,false);
+  assert.equal(catalog.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(catalog.authoringQualityTarget,100);
+  assert.equal(quality.staticAuthoringChecklist.score,100);
+  assert.equal(quality.quality120.claimedRuntimeScore,null);
+  assert.equal(quality.productionVerified,false);
+  for(const [loreId,fileId,name,minVertices,minFaces] of expected){
+    assert.ok(config.includes('Id="'+loreId+'"'),loreId+':config-id');
+    assert.ok(config.includes('Name="'+name+'"'),loreId+':config-name');
+    const source=fs.readFileSync(path.join(packDir,fileId+'.obj'),'utf8');
+    const lines=source.split(/\r?\n/);
+    const vertices=lines.filter(line=>line.startsWith('v ')).length;
+    const faces=lines.filter(line=>line.startsWith('f ')).length;
+    const used=[...new Set(lines.filter(line=>line.startsWith('usemtl ')).map(line=>line.slice(7).trim()))];
+    assert.ok(vertices>=minVertices,fileId+':vertices='+vertices);
+    assert.ok(faces>=minFaces,fileId+':faces='+faces);
+    assert.ok(lines.filter(line=>line.startsWith('g ')).length>=8,fileId+':semantic-groups');
+    assert.equal(used.filter(mat=>!materials.has(mat)).length,0,fileId+':materials');
+    const row=catalog.assets.find(asset=>asset.id===loreId);
+    assert.ok(row,loreId+':catalog');
+    assert.equal(row.file,fileId+'.obj',loreId+':catalog-file');
+    assert.equal(row.vertices,vertices,loreId+':catalog-vertices');
+    assert.equal(row.faces,faces,loreId+':catalog-faces');
+  }
+});
+
+test('horror lore pack is registered for automatic game binding without false verification',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const pack=registry.assets.find(row=>row.id==='roblox-horror-lore-v1');
+  assert.ok(pack);
+  assert.equal(pack.status,'REPO_ASSET');
+  assert.equal(pack.productionVerified,false);
+  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(pack.qualityTarget,100);
+  assert.equal(pack.authoringChecklistScore,100);
+  const expected=[
+    ['SCHOOL_01','school_01'],['SCHOOL_02','school_02'],['SCHOOL_03','school_03'],['SCHOOL_04','school_04'],
+    ['HOSPITAL_01','hospital_01'],['HOSPITAL_02','hospital_02'],['HOSPITAL_03','hospital_03'],
+    ['PARK_01','park_01'],['PARK_02','park_02'],['PARK_03','park_03']
+  ];
+  for(const [loreId,fileId] of expected){
+    const row=registry.assets.find(asset=>asset.id==='roblox-horror-lore-'+fileId);
+    assert.ok(row,loreId);
+    assert.equal(row.status,'REPO_ASSET');
+    assert.equal(row.productionVerified,false);
+    assert.equal(row.gameplayAuthority,false);
+    assert.equal(row.qualityScoreBlocksBinding,false);
+    assert.equal(row.bindingHint.gameId,'horror-escape-room');
+    assert.equal(row.bindingHint.configCollection,'Lore');
+    assert.equal(row.bindingHint.configId,loreId);
+    assert.equal(row.bindingHint.preservePromptRewardSaveAuthority,true);
+  }
+});
