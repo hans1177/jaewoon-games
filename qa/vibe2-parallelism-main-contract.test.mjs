@@ -320,6 +320,14 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.match(core,/VIBE2_COMPLETED_RESERVATION_RUN_MATCHES=/);
   assert.match(core,/actions\/runs\/\$\{reservation_run_id\}/);
   assert.match(core,/VIBE2_COMPLETED_RESERVATION_RUN_CANDIDATES=/);
+  assert.match(core,/VIBE2_SUPERSEDED_QUEUED_RESERVATION_RUNS=/);
+  assert.match(core,/VIBE2_SUPERSEDED_QUEUED_RUN_MATCH=/);
+  assert.match(core,/recover-reservation-runs/);
+  assert.match(core,/actions\/runs\/\$superseded_run_id\/cancel/);
+  assert.match(core,/contents\/\.github\/workflows\/vibe2-continuous-core\.yml\?ref=\$\{reservation_run_head\}/);
+  assert.match(core,/queued_workers/);
+  assert.match(core,/active_workers/);
+  assert.match(core,/in_progress\|completed\|cancelled/);
   assert.match(core,/VIBE2_RESERVE_PROBE_PARALLELISM=\$probe_parallelism/);
   assert.match(core,/probe_parallelism=16/);
 
@@ -354,6 +362,23 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.match(runner,/needs\.plan\.outputs\.learning_idle_queued != '0'/);
 });
 
+
+test('superseded queued worker cohorts are recycled when the continuous-core runner topology changed',()=>{
+  const start=core.indexOf("completed_reservation_runs=''");
+  const end=core.indexOf("active_worker_reservations=",start);
+  assert.ok(start>=0&&end>start);
+  const block=core.slice(start,end);
+  assert.match(block,/latest_main_sha=/);
+  assert.match(block,/latest_core_blob=/);
+  assert.match(block,/old_core_blob=/);
+  assert.match(block,/reservation_run_head.*!=.*latest_main_sha/s);
+  assert.match(block,/old_core_blob.*!=.*latest_core_blob/s);
+  assert.match(block,/queued_workers.*-gt 0/);
+  assert.match(block,/active_workers.*-eq 0/);
+  assert.match(block,/recover-reservation-runs/);
+  assert.match(block,/VIBE2_SUPERSEDED_QUEUED_RUN_CANCEL_REQUESTED=/);
+  assert.match(block,/in_progress\|completed\|cancelled/);
+});
 
 test('stale main push wake rebases to latest main before expensive reserve work without cancelling active game workers',()=>{
   const wake=runtime.continuous.mainPushGamePrimaryWake||{};
