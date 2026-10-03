@@ -144,7 +144,7 @@ test('F9 blocks exact engine execution without server boot actual play and real 
   };
   const blocked=evaluateRobloxF9ProductReadiness({
     f0Evidence,
-    runtimeEvidence:{engineExecuted:true,exactEngineVersion:true,simulationRunning:false,serverBootObserved:false,openCloudWorldEvidence:{basePartCount:1,spawnCount:0,landmarkCount:0,objectiveCount:0}},
+    runtimeEvidence:{engineExecuted:true,exactEngineVersion:true,simulationRunning:false,serverBootObserved:false,f5InputCameraUiPassed:false,f8GameplaySystemsPassed:false,openCloudWorldEvidence:{basePartCount:1,spawnCount:0,landmarkCount:0,objectiveCount:0}},
     postRuntimeQaEvidence:{actualRuntimeEvidence:false},
     studioPlayEvidence:{}
   });
@@ -152,14 +152,19 @@ test('F9 blocks exact engine execution without server boot actual play and real 
   assert.ok(blocked.blockers.includes('F9_SERVER_BOOT_MISSING'));
   assert.ok(blocked.blockers.includes('F9_ACTUAL_PLAY_EVIDENCE_MISSING'));
   assert.ok(blocked.blockers.includes('F9_WORLD_BASEPART_MINIMUM_MISSING'));
+  assert.ok(blocked.blockers.includes('F9_MOBILE_INPUT_UI_RUNTIME_MISSING'));
+  assert.ok(blocked.blockers.includes('F9_CORE_LOOP_RUNTIME_MISSING'));
 
   const pass=evaluateRobloxF9ProductReadiness({
     f0Evidence,
-    runtimeEvidence:{engineExecuted:true,exactEngineVersion:true,simulationRunning:true,serverBootObserved:true,openCloudWorldEvidence:{basePartCount:20,spawnCount:1,landmarkCount:2,objectiveCount:1}},
+    runtimeEvidence:{engineExecuted:true,exactEngineVersion:true,simulationRunning:true,serverBootObserved:true,f5InputCameraUiPassed:true,f8GameplaySystemsPassed:true,openCloudWorldEvidence:{basePartCount:20,spawnCount:1,landmarkCount:2,objectiveCount:1}},
     postRuntimeQaEvidence:{actualRuntimeEvidence:true},
     studioPlayEvidence:{}
   });
   assert.equal(pass.pass,true);
+  assert.equal(pass.mobileRuntime,true);
+  assert.equal(pass.coreLoopRuntime,true);
+  assert.equal(pass.verticalSlicePassed,true);
 });
 
 
