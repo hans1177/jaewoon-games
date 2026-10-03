@@ -49,6 +49,7 @@ concurrency:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   guard:
@@ -106,7 +107,22 @@ jobs:
       - name: Reject new workflow direct writes to main
         env:
           PR_TITLE: ${{ github.event.pull_request.title || '' }}
-        run: node tools/main-write-guard.mjs --base='${{ steps.base.outputs.ref }}' --head=HEAD --actor='${{ github.actor }}' --owner=hans1177 --unlock-title="$PR_TITLE"
+          EVENT_NAME: ${{ github.event_name }}
+          HEAD_SHA: ${{ github.sha }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          unlock_title="$PR_TITLE"
+          if [ "$EVENT_NAME" = 'push' ] && [ -z "$unlock_title" ]; then
+            unlock_title="$(gh api "repos/$GITHUB_REPOSITORY/commits/$HEAD_SHA/pulls?per_page=20" --jq '[.[] | select(.merged_at != null) | .title][0] // ""' 2>/dev/null || true)"
+          fi
+          if [ -n "$unlock_title" ]; then
+            echo 'MAIN_WRITE_GUARD_UNLOCK_METADATA=ASSOCIATED_PR_OR_EVENT'
+          else
+            echo 'MAIN_WRITE_GUARD_UNLOCK_METADATA=NONE'
+          fi
+          node tools/main-write-guard.mjs --base='${{ steps.base.outputs.ref }}' --head=HEAD --actor='${{ github.actor }}' --owner=hans1177 --unlock-title="$unlock_title"
 
       - name: Protection status
         shell: bash
