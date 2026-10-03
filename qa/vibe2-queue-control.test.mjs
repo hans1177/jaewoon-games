@@ -1233,6 +1233,47 @@ test('completed workflow reservation is requeued immediately without waiting for
   assert.equal(recovered.queue.tasks.find(row=>row.id==='live-run-task').status,'running');
 });
 
+test('superseded queued run recovery preserves completed artifact waits and requeues only blocker-free reservations', () => {
+  const queue=createVibeContinuousQueue({tasks:[
+    {
+      id:'queued-old-run',gameId:'a',target:'roblox',department:'development',type:'implementation',
+      sourceRoot:'roblox-games/a',goal:'asset adaptation',status:'running',retries:0,
+      reservationId:'123:1',reservationRunId:'123',reservationRunAttempt:1,reservedAt:'2026-10-03T04:20:00Z'
+    },
+    {
+      id:'artifact-ready',gameId:'b',target:'web',department:'development',type:'implementation',
+      sourceRoot:'web-games/b',goal:'asset adaptation',status:'running',blocker:'slot-released-awaiting-fan-in',
+      reservationId:'123:1',reservationRunId:'123',reservationRunAttempt:1,reservedAt:'2026-10-03T04:20:00Z',
+      evidence:['worker-artifact-slot-release:v1']
+    },
+    {
+      id:'qa-wait',gameId:'c',target:'roblox',department:'development',type:'implementation',
+      sourceRoot:'roblox-games/c',goal:'runtime qa',status:'running',blocker:'candidate-awaiting-runtime-evidence',
+      reservationId:'123:1',reservationRunId:'123',reservationRunAttempt:1,reservedAt:'2026-10-03T04:20:00Z'
+    }
+  ]});
+  const recovered=recoverCompletedRunningReservations(queue,{
+    completedRunIds:['123'],
+    recoveryOutcome:'SUPERSEDED_QUEUED_RESERVATION_RECOVERED',
+    recoveryEvidence:'recovery:superseded-queued-reservation-v1',
+    evidencePrefix:'superseded-queued-reservation-run'
+  });
+  assert.equal(recovered.recovered,1);
+  const queued=recovered.queue.tasks.find(row=>row.id==='queued-old-run');
+  assert.equal(queued.status,'queued');
+  assert.equal(queued.reservationRunId,null);
+  assert.equal(queued.lastOutcome,'SUPERSEDED_QUEUED_RESERVATION_RECOVERED');
+  assert.ok(queued.evidence.includes('recovery:superseded-queued-reservation-v1'));
+  assert.ok(queued.evidence.includes('superseded-queued-reservation-run:123'));
+  const artifact=recovered.queue.tasks.find(row=>row.id==='artifact-ready');
+  assert.equal(artifact.status,'running');
+  assert.equal(artifact.blocker,'slot-released-awaiting-fan-in');
+  assert.equal(artifact.reservationRunId,'123');
+  const qa=recovered.queue.tasks.find(row=>row.id==='qa-wait');
+  assert.equal(qa.status,'running');
+  assert.equal(qa.blocker,'candidate-awaiting-runtime-evidence');
+});
+
 test('completed workflow recovery preserves intentional awaiting QA reservations and non-development work', () => {
   const queue=createVibeContinuousQueue({tasks:[
     {
