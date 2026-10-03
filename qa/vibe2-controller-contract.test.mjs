@@ -704,14 +704,17 @@ test('controller allows approved source root but enforces candidate boundary',()
   assert(workflow.includes('candidate escaped approved boundary'));
 });
 
-test('game-primary callbacks always coalesce to cohort fan-in while auxiliary lanes remain pressure-aware',()=>{
+test('game-primary stays cohort fan-in while asset-development always dispatches atomic completion',()=>{
   const start=workflow.indexOf('- name: Dispatch or coalesce atomic neuron completion');
   const end=workflow.indexOf('\n  fan_in:',start);
   assert.ok(start>=0&&end>start);
   const block=workflow.slice(start,end);
   assert.match(block,/if \[ "\$VIBE2_EXECUTION_LANE" = 'game-primary' \]; then/);
   assert.match(block,/VIBE2_GAME_PRIMARY_CALLBACK_DISPATCH=COALESCED_TO_COHORT_FANIN/);
-  assert.match(block,/VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN/);
+  assert.match(block,/if \[ "\$VIBE2_EXECUTION_LANE" = 'asset-development' \]; then/);
+  assert.match(block,/VIBE2_ASSET_ATOMIC_CALLBACK_PRESSURE_BYPASS=YES/);
+  assert.match(block,/event_type:'vibe2-neuron-complete'/);
+  assert.match(block,/VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=PASS/);
   assert.match(block,/if \[ "\$\{queue_pressure:-0\}" -gt 0 \]; then/);
   assert.equal(runtime.continuous.callbackCoalescing.singleGameTaskImmediateCompletionRequired,false);
   assert.equal(runtime.continuous.callbackCoalescing.singleGameTaskFullReviewBeforeCohortCompletion,false);
