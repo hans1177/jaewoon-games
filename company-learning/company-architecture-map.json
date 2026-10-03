@@ -5905,13 +5905,13 @@
   },
   "nativeExactGameWorkflowConcurrency": {
     "version": 3,
-    "source": "company-learning/platform-release-roadmap.json#changeRecord.nativeExactGameWorkflowConcurrency20260927",
+    "source": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.sameGamePlatformParallelismContract",
     "ROBLOX": {
       "workflow": ".github/workflows/company-development-roblox-runtime.yml",
       "group": "roblox-native-run-<runId>",
       "cancelInProgress": false,
       "exactGameCancelInProgress": false,
-      "pushBatchCancelInProgress": true,
+      "pushBatchCancelInProgress": false,
       "manualEmptyBatchCancelInProgress": false
     },
     "UNITY": {
@@ -5919,16 +5919,16 @@
       "group": "unity-native-run-<runId>",
       "cancelInProgress": false,
       "exactGameCancelInProgress": false,
-      "pushBatchCancelInProgress": true,
+      "pushBatchCancelInProgress": false,
       "manualEmptyBatchCancelInProgress": false
     },
     "exactGameScope": "NO_GAME_ID_CONCURRENCY_GROUP",
-    "batchFallback": "PUSH_BATCH_ELSE_RUN_ID",
+    "batchFallback": "RUN_ID",
     "distinctGamesParallel": true,
     "batchGlobalSerialization": false,
     "centralActiveRunScanPreserved": true,
     "qualityGateWeakening": false,
-    "pushBatchFallback": "batch-push",
+    "pushBatchFallback": "RUN_ID",
     "nonPushEmptyBatchFallback": "RUN_ID",
     "pushBatchCoalesced": true,
     "manualEmptyBatchRunScoped": true,
@@ -5936,7 +5936,8 @@
     "exactGameActiveExecutionPreserved": true,
     "gameIdWorkflowSerializationForbidden": true,
     "exactDuplicateDispatchDedupePreserved": true,
-    "studioActualPlayException": "ROBLOX_STUDIO_SHARED_HOST_ONLY"
+    "studioActualPlayException": "ROBLOX_STUDIO_SHARED_HOST_ONLY",
+    "pushBatchRunScoped": true
   },
   "lightweightGameIngressRunnerRelief": {
     "version": 2,
