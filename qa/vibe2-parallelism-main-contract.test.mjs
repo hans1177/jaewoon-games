@@ -280,10 +280,10 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.equal(reserve.reserveJobsParallel,true);
   assert.equal(reserve.serializationScope,'ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY');
   assert.equal(reserve.conflictResolution,'FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UNBOUNDED_WITH_CAPPED_BACKOFF_ON_ACTUAL_WRITE_CONFLICT');
-  assert.equal(reserve.schedulerConcurrencyEpoch,'vibe2-24h-cycle-singleton-v9');
+  assert.equal(reserve.schedulerConcurrencyEpoch,'vibe2-24h-cycle-run-scoped-v10');
   assert.equal(reserve.gamePrimaryExternalBoundary,256);
 
-  assert.equal(runtime.continuous.schedulerConcurrencyEpoch,'vibe2-24h-cycle-singleton-v9');
+  assert.equal(runtime.continuous.schedulerConcurrencyEpoch,'vibe2-24h-cycle-run-scoped-v10');
   assert.equal(runtime.continuous.reserveConcurrency.mode,'PARALLEL_RESERVE_OPTIMISTIC_SHARED_QUEUE_WRITE');
   assert.equal(runtime.continuous.reserveConcurrency.crossLaneGlobalReserveLock,false);
   assert.equal(runtime.continuous.reserveConcurrency.sameLaneReserveSerialization,false);
@@ -343,7 +343,7 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.doesNotMatch(core,/vibe2-fanin-refill-singleton/);
   assert.match(core,/github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-fanin-refill-\{0\}', inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
   assert.doesNotMatch(core,/\|\| 'vibe2-control-state-vibe2-unreal-core'/);
-  assert.match(runner,/group: vibe2-24h-cycle-singleton-v9/);
+  assert.match(runner,/group: vibe2-24h-cycle-\$\{\{ github\.run_id \}\}/);
   assert.match(runner,/VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=PASS/);
   assert.match(runner,/VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=FAIL_DEFER_LEARNING/);
   assert.match(runner,/VIBE2_24H_RUNNER_JOB_QUEUE_PRESSURE=/);
@@ -412,11 +412,16 @@ test('stale main push wake rebases to latest main before expensive reserve work 
 });
 
 
-test('24h runner wakes asset lane when active reservations need recovery even with no queued asset task',()=>{
+test('24h runner wakes asset lane when active reservations need recovery without a repository-wide pressure gate',()=>{
   assert.match(runner,/asset_development_active/);
   assert.match(runner,/asset_development_queued/);
   assert.match(runner,/asset_development_refill_ready/);
-  assert.match(runner,/needs\.plan\.outputs\.runner_pressure != 'YES' && needs\.plan\.outputs\.asset_development_refill_ready == 'YES' && \(needs\.plan\.outputs\.asset_development_queued != '0' \|\| needs\.plan\.outputs\.asset_development_active != '0'\)/);
+  const assetStart=runner.indexOf('\n  asset_development:\n');
+  const assetEnd=runner.indexOf('\n  learning_idle:',assetStart);
+  assert.ok(assetStart>=0&&assetEnd>assetStart);
+  const assetBlock=runner.slice(assetStart,assetEnd);
+  assert.match(assetBlock,/needs\.plan\.outputs\.asset_development_refill_ready == 'YES' && \(needs\.plan\.outputs\.asset_development_queued != '0' \|\| needs\.plan\.outputs\.asset_development_active != '0'\)/);
+  assert.doesNotMatch(assetBlock,/runner_pressure/);
 });
 
 test('failed worker releases its exact lock after immutable upload while PASS holds until fan-in',()=>{
@@ -433,14 +438,14 @@ test('failed worker releases its exact lock after immutable upload while PASS ho
   assert.match(core,/VIBE_REMOTE_WORK_LOCK_REASON=lock-not-found/);
 });
 
-test('24H pre-plan keeps asset priority ahead of runner pressure defer',()=>{
+test('24H pre-plan production dispatch is not blocked by repository-wide runner pressure',()=>{
   const stepStart=runner.indexOf('      - name: Dispatch queued asset work first, otherwise GAME_PRIMARY before full planning');
   const stepEnd=runner.indexOf('\n      - name: Plan from latest main and persist control queue',stepStart);
   assert.ok(stepStart>=0&&stepEnd>stepStart);
   const step=runner.slice(stepStart,stepEnd);
-  const assetDispatch=step.indexOf('VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED');
-  const pressureDefer=step.indexOf('VIBE2_PREPLAN_DISPATCH=DEFER_RUNNER_PRESSURE');
-  assert.ok(assetDispatch>=0&&pressureDefer>=0&&assetDispatch<pressureDefer);
+  assert.match(step,/VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=DISABLED_EXTERNAL_RUNNER_QUEUE_OWNS_CAPACITY/);
+  assert.match(step,/VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED/);
+  assert.match(step,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DISPATCHED/);
   assert.match(step,/VIBE2_ASSET_PRIORITY_BURST_MAX/);
-  assert.match(step,/VIBE2_RUNNER_JOB_PRESSURE_THRESHOLD/);
+  assert.doesNotMatch(step,/VIBE2_PREPLAN_DISPATCH=DEFER_RUNNER_PRESSURE/);
 });
