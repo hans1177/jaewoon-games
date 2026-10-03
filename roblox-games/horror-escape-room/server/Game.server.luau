@@ -3212,7 +3212,9 @@ remote.OnServerEvent:Connect(function(p,a,value)
  broadcastMultiplayerSync(p)
 end)
 
-local function validateCharacterFoundation(p,c)
+-- 하단 lifecycle 함수는 기존 BotAI 책임 테이블 메서드로 유지한다.
+-- 대형 서버 청크의 top-level local register를 추가로 소비하지 않아 Luau 200-register 한도를 넘지 않는다.
+function BotAI.validateCharacterFoundation(p,c)
  local h=c:WaitForChild("Humanoid",10);local r=c:WaitForChild("HumanoidRootPart",10)
  if not h or not r then p:SetAttribute("FoundationFailure","CHARACTER_FOUNDATION_FAILURE");return end
  if not foundationSpawn or not foundationSpawn.Parent then p:SetAttribute("FoundationFailure","SPAWN_FOUNDATION_MISSING");return end
@@ -3245,7 +3247,7 @@ local function validateCharacterFoundation(p,c)
  end)
 end
 
-local function onCharacter(p)
+function BotAI.onCharacter(p)
  task.wait(.05)
  local c=p.Character
  if state~="RUNNING"then
@@ -3287,7 +3289,7 @@ local function onCharacter(p)
   teleport(p,spawnPos,faceTarget)
   p:SetAttribute("RoundRespawnGroundedAt",workspace:GetServerTimeNow())
   task.delay(.15,function()
-   if p.Parent==Players and p.Character==c and state=="RUNNING"then validateCharacterFoundation(p,c)end
+   if p.Parent==Players and p.Character==c and state=="RUNNING"then BotAI.validateCharacterFoundation(p,c)end
   end)
  elseif role=="SPECTATING"then
   local destination,look=personalSpawn(p)
@@ -3333,8 +3335,8 @@ Players.PlayerAdded:Connect(function(p)
  end
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
- p.CharacterAdded:Connect(function()onCharacter(p)end)
- if p.Character then task.defer(function()onCharacter(p)end)end
+ p.CharacterAdded:Connect(function()BotAI.onCharacter(p)end)
+ if p.Character then task.defer(function()BotAI.onCharacter(p)end)end
  syncLobbyState()
 end)
 for _,p in ipairs(Players:GetPlayers())do
@@ -3345,8 +3347,8 @@ for _,p in ipairs(Players:GetPlayers())do
  adoptReservedRoomFromPlayer(p)
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
- p.CharacterAdded:Connect(function()onCharacter(p)end)
- if p.Character then task.defer(function()onCharacter(p)end)end
+ p.CharacterAdded:Connect(function()BotAI.onCharacter(p)end)
+ if p.Character then task.defer(function()BotAI.onCharacter(p)end)end
  end)
 end
 syncLobbyState()
