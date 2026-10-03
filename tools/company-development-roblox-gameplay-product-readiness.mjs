@@ -1,0 +1,278 @@
+import crypto from 'node:crypto';
+
+const clean=value=>String(value??'').replace(/\s+/g,' ').trim();
+const upper=value=>clean(value).toUpperCase();
+const count=(text,re)=>(String(text||'').match(re)||[]).length;
+const has=(text,re)=>re.test(String(text||''));
+const uniq=rows=>[...new Set(rows.filter(Boolean))];
+const baselineContent=baseline=>baseline?.content&&typeof baseline.content==='object'?baseline.content:(baseline&&typeof baseline==='object'?baseline:{});
+const designText=baseline=>JSON.stringify(baselineContent(baseline)).toLowerCase();
+const stripFoundation=server=>String(server||'').split('-- native-foundation-sentinel-v1')[0];
+
+function field(config,name){
+  const m=String(config||'').match(new RegExp('\\b'+name+'\\s*=\\s*["\\\']([^"\\\']+)["\\\']','i'));
+  return clean(m?.[1]);
+}
+
+function designMode(baseline={}){
+  const content=baselineContent(baseline);
+  return upper(content.multiplayerMode||content?.robloxBuildProfile?.playMode||'SINGLE');
+}
+
+function multiplayerRequiredByDesign(baseline={}){
+  const content=baselineContent(baseline);
+  if(content?.robloxBuildProfile?.multiplayerRequired===true)return true;
+  const mode=designMode(baseline);
+  if(!['','SINGLE','SOLO','NONE','SINGLE_PLAYER'].includes(mode))return true;
+  return /(?:4v4|[2-9]\s*(?:player|players|인)|vs\s*[2-9]|multiplayer|co-?op|pvp|협동|대전|멀티|감염 추격)/i.test(designText(baseline));
+}
+
+export function robloxLearningProfileFromSource({gameId='',config='',fallback={}}={}){
+  const genre=field(config,'Genre')||clean(fallback.genre)||'Adventure';
+  const subgenre=field(config,'Subgenre')||clean(fallback.subgenre)||'';
+  const playMode=upper(field(config,'PlayMode')||fallback.playMode||'SINGLE')||'SINGLE';
+  return Object.freeze({
+    platform:'ROBLOX',
+    gameId:clean(gameId),
+    genre,
+    subgenre,
+    playMode,
+    multiplayerRequired:playMode!=='SINGLE'
+  });
+}
+
+function sourceContext({config='',server='',client='',project=''}={}){
+  const gameplayServer=stripFoundation(server);
+  const gameplayCombined=gameplayServer+'\n'+String(client||'');
+  const all=String(config||'')+'\n'+String(server||'')+'\n'+String(client||'')+'\n'+String(project||'');
+  const namedGameplayFunctions=[...gameplayServer.matchAll(/(?:local\s+)?function\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(/g)]
+    .map(match=>match[1])
+    .filter(name=>!/^scopeHandler\d+$/i.test(name))
+    .filter(name=>! /^(?:readNumber|setNumber|initializePlayer|root|hum|part|attach|label|save|load)$/i.test(name));
+  return Object.freeze({config:String(config||''),server:String(server||''),client:String(client||''),project:String(project||''),gameplayServer,gameplayCombined,all,namedGameplayFunctions});
+}
+
+const CAPABILITY_RULES=Object.freeze([
+  {id:'CORE_GAMEPLAY_STATE',design:/./,always:true},
+  {id:'SESSION_FLOW',design:/(?:loop|round|session|day|night|wave|stage|floor|match|라운드|세션|하루|낮|밤|웨이브|스테이지|층|경기)/i},
+  {id:'WORLD',design:/(?:world|map|region|zone|dungeon|village|island|forest|jungle|school|hospital|theme park|terrain|월드|맵|지역|구역|던전|마을|섬|숲|학교|병원|놀이공원|지형)/i},
+  {id:'CONTENT_ENTITY',design:/(?:enemy|monster|boss|npc|customer|resource|item|creature|적|몬스터|보스|주민|손님|자원|아이템|생물)/i},
+  {id:'COMBAT',design:/(?:combat|attack|damage|hit|weapon|skill|enemy|monster|boss|전투|공격|피해|타격|무기|스킬|적|몬스터|보스)/i},
+  {id:'ENEMY_AI',design:/(?:enemy|monster|boss|chase|aggro|ai|적|몬스터|보스|추격|어그로)/i},
+  {id:'GATHERING',design:/(?:gather|harvest|collect resource|resource gathering|mine|chop|채집|자원 수집|수집|채광|벌목)/i},
+  {id:'CRAFTING',design:/(?:craft|recipe|workbench|제작|제작법|제작대)/i},
+  {id:'DAY_NIGHT',design:/(?:day|night|낮|밤|주야)/i},
+  {id:'WAVE',design:/(?:wave|horde|파상|웨이브|몰려오는)/i},
+  {id:'INVENTORY',design:/(?:inventory|item ownership|loot|인벤|인벤토리|전리품|아이템 보유)/i},
+  {id:'EQUIPMENT',design:/(?:equipment|equip|weapon|armor|loadout|장비|장착|무기|방어구)/i},
+  {id:'PROGRESSION',design:/(?:progression|level|xp|experience|unlock|upgrade|growth|성장|레벨|경험치|해금|강화)/i},
+  {id:'QUEST',design:/(?:quest|mission|objective chain|퀘스트|미션)/i},
+  {id:'BOSS',design:/(?:boss|보스)/i},
+  {id:'TYCOON',design:/(?:tycoon|customer|ride|facility|satisfaction|경영|손님|놀이기구|시설|만족도)/i},
+  {id:'DEFENSE',design:/(?:tower defense|defense|tower|base health|디펜스|방어탑|타워|기지 체력)/i},
+  {id:'DUNGEON',design:/(?:dungeon|던전)/i},
+  {id:'INFECTION',design:/(?:infection|infect|purif|감염|정화)/i},
+  {id:'SAVE',design:/(?:save|persistent|persistence|rejoin|저장|영구|재접속)/i},
+  {id:'MULTIPLAYER',design:/(?:multiplayer|co-?op|pvp|4v4|vs|멀티|협동|대전|감염 추격)/i},
+  {id:'MOBILE_UI',design:/./,always:true}
+]);
+
+function implementedCapability(id,ctx){
+  const s=ctx.gameplayServer,c=ctx.client,a=ctx.all,both=ctx.gameplayCombined;
+  if(id==='CORE_GAMEPLAY_STATE'){
+    const meaningful=ctx.namedGameplayFunctions.filter(name=>/(attack|combat|damage|hit|move|build|place|spawn|gather|harvest|mine|chop|craft|quest|round|wave|day|night|interact|dash|ability|infect|purify|customer|ride|dungeon|boss|tower|resource|upgrade|equip|inventory|session|match|stage)/i.test(name));
+    return meaningful.length>=2||/(StateMachine|CurrentPhase|RoundState|DayPhase|GameState)/.test(both);
+  }
+  if(id==='SESSION_FLOW')return /(?:function\s+\w*(?:start|begin|round|session|day|night|wave|stage|match)|RoundState|DayPhase|CurrentWave|CurrentStage)/i.test(s)&&/(?:function\s+\w*(?:end|finish|next|restart|reset)|endRound|NextDay|RoundEnded|MATCH_END)/i.test(s);
+  if(id==='WORLD')return /Instance\.new\(["'](?:Part|MeshPart|Model|Folder|SpawnLocation)["']\)|Terrain(?::|\.)|buildWorld|makeArena|createWorld|buildMap|workspace\s*:\s*FindFirstChild/i.test(s);
+  if(id==='CONTENT_ENTITY')return /(?:spawn|create|build)(?:Enemy|Monster|Boss|Npc|NPC|Customer|Resource|Mob|Creature)|Instance\.new\(["']Model["']\)|HumanoidDescription|CreateHumanoidModel/i.test(s);
+  if(id==='COMBAT')return /TakeDamage\s*\(|function\s+\w*(?:attack|damage|hit|combat|skill|ability|purify|infect)|Hitbox|Raycast.*damage|Damage\s*=/i.test(both);
+  if(id==='ENEMY_AI')return /PathfindingService|MoveTo\s*\(|Target|Aggro|Chase|Heartbeat:Connect|Stepped:Connect|function\s+\w*(?:ai|target|chase|aggro|enemy)/i.test(s);
+  if(id==='GATHERING')return /function\s+\w*(?:gather|harvest|mine|chop|collect)|ResourceNode|GatherPrompt|HarvestPrompt|WoodNode|OreNode/i.test(both);
+  if(id==='CRAFTING')return /function\s+\w*craft|Recipes?\s*=|Crafting|Workbench|CraftPrompt|CRAFT_/i.test(both);
+  if(id==='DAY_NIGHT')return /ClockTime|TimeOfDay|DayPhase|CurrentDay|function\s+\w*(?:day|night)|DAY_PHASE|NIGHT_PHASE/i.test(both);
+  if(id==='WAVE')return /function\s+\w*(?:spawnEnemy|spawnWave|startWave|nextWave)|WaveState|CurrentWave|EnemySpawn|WAVE_/i.test(s);
+  if(id==='INVENTORY')return /Inventory|BackpackState|ItemStacks?|function\s+\w*(?:addItem|removeItem|inventory)|INVENTORY_/i.test(both);
+  if(id==='EQUIPMENT')return /Equipped|Equipment|Loadout|function\s+\w*equip|EQUIP_|UNEQUIP_/i.test(both);
+  if(id==='PROGRESSION')return /(?:XP|Experience|Level|Unlock|Progression|RecipeUnlock|SkillTree)/.test(both)&&/(?:function\s+\w*(?:level|unlock|award|progress|upgrade)|SetAttribute\(["'](?:XP|Experience|Level|Unlock))/i.test(s);
+  if(id==='QUEST')return /Quest|Mission|ObjectiveState|function\s+\w*(?:quest|mission)|QUEST_/i.test(both);
+  if(id==='BOSS')return /Boss|function\s+\w*(?:spawnBoss|boss)|BOSS_/i.test(s);
+  if(id==='TYCOON')return /Customer|Satisfaction|Ride|Facility|function\s+\w*(?:customer|ride|facility|build|place)|EntranceFee/i.test(both);
+  if(id==='DEFENSE')return /Tower|BaseHealth|EnemyPath|function\s+\w*(?:placeTower|spawnWave|spawnEnemy)|TOWER_|DEFENSE_/i.test(both);
+  if(id==='DUNGEON')return /Dungeon|DungeonRoom|RoomIndex|function\s+\w*(?:dungeon|room)|DUNGEON_/i.test(both);
+  if(id==='INFECTION')return /function\s+infect|function\s+purify|INFECT_ATTACK|setRole\s*\([^,]+,\s*["']MONSTER["']/i.test(s);
+  if(id==='SAVE')return /DataStoreService/.test(s)&&/GetAsync\s*\(/.test(s)&&/(?:SetAsync|UpdateAsync)\s*\(/.test(s);
+  if(id==='MULTIPLAYER')return /Players:GetPlayers\s*\(\)/.test(s)&&/FireAllClients\s*\(/.test(s)&&/OnClientEvent:Connect/.test(c);
+  if(id==='MOBILE_UI')return /ScreenGui|TextButton|ImageButton/.test(c)&&/UserInputService|ContextActionService/.test(c)&&/(?:TouchEnabled|Activated:Connect|BindAction)/.test(c);
+  return false;
+}
+
+function capabilityIdsForText(text=''){
+  return CAPABILITY_RULES.filter(rule=>!rule.always&&rule.design.test(String(text))).map(rule=>rule.id);
+}
+
+function statusFromRatio(ratio,{polished=false,applicable=true}={}){
+  if(!applicable)return 'N/A';
+  if(ratio<=0)return 'MISSING';
+  if(ratio<1)return 'ROUGH';
+  return polished?'POLISHED':'PLAYABLE';
+}
+
+function graphicsSignals(ctx){
+  const all=ctx.all;
+  return {
+    mesh:/(?:MeshPart|SpecialMesh|AssetId|TextureID|SurfaceAppearance)/.test(all),
+    material:/Enum\.Material\.|MaterialVariant|SurfaceAppearance/.test(all),
+    lighting:/(?:Lighting\.|PointLight|SpotLight|SurfaceLight|Atmosphere|ColorCorrectionEffect|BloomEffect)/.test(all),
+    vfx:/(?:ParticleEmitter|Trail|Beam|TweenService)/.test(all),
+    motion:/(?:Animator|AnimationTrack|Motor6D|Bone|TweenService|RenderStepped|Heartbeat)/.test(all),
+    audio:/(?:SoundService|Instance\.new\(["']Sound["']\)|SoundId)/.test(all)
+  };
+}
+
+function qualitySheet({required,implemented,ctx,runtimeEvidence=null}){
+  const req=id=>required.includes(id);
+  const ok=id=>implemented[id]===true;
+  const ratio=ids=>{
+    const relevant=ids.filter(req);
+    if(!relevant.length)return null;
+    return relevant.filter(ok).length/relevant.length;
+  };
+  const g=graphicsSignals(ctx);
+  const coreIds=['CORE_GAMEPLAY_STATE','SESSION_FLOW','COMBAT','GATHERING','CRAFTING','WAVE','INFECTION','TYCOON','DEFENSE','DUNGEON'];
+  const contentIds=['CONTENT_ENTITY','GATHERING','CRAFTING','WAVE','QUEST','BOSS','TYCOON','DEFENSE','DUNGEON'];
+  const runtimePass=runtimeEvidence?.simulationRunning===true&&runtimeEvidence?.serverBootObserved===true;
+  return Object.freeze({
+    Core:statusFromRatio(ratio(coreIds)??(ok('CORE_GAMEPLAY_STATE')?1:0)),
+    Content:statusFromRatio(ratio(contentIds)??1,{applicable:contentIds.some(req)}),
+    World:statusFromRatio(req('WORLD')?(ok('WORLD')?1:0):1,{applicable:req('WORLD'),polished:g.mesh&&g.material&&g.lighting}),
+    Combat:statusFromRatio(req('COMBAT')?(ok('COMBAT')?1:0):1,{applicable:req('COMBAT')}),
+    AI:statusFromRatio(req('ENEMY_AI')?(ok('ENEMY_AI')?1:0):1,{applicable:req('ENEMY_AI')}),
+    Progression:statusFromRatio(req('PROGRESSION')?(ok('PROGRESSION')?1:0):1,{applicable:req('PROGRESSION')}),
+    UI:statusFromRatio(ok('MOBILE_UI')?1:0,{polished:/UIListLayout|UICorner|UIStroke|UIScale/.test(ctx.client)}),
+    Graphics:statusFromRatio([g.mesh,g.material,g.lighting,g.vfx].filter(Boolean).length/4,{polished:g.mesh&&g.material&&g.lighting&&g.vfx}),
+    Motion:statusFromRatio(g.motion?1:0,{polished:g.motion&&/(Animator|Motor6D|Bone)/.test(ctx.all)}),
+    Audio:statusFromRatio(g.audio?1:0,{polished:g.audio&&/SoundGroup|RollOff|PlaybackSpeed/.test(ctx.all)}),
+    Mobile:statusFromRatio(ok('MOBILE_UI')?1:0,{polished:/SafeArea|GuiInset|TouchEnabled/.test(ctx.client)}),
+    Performance:statusFromRatio(/StreamingEnabled|pool|Pool|budget|LOD|MaxParts|Heartbeat/.test(ctx.all)?1:0),
+    Runtime:runtimeEvidence?statusFromRatio(runtimePass?1:0):'N/A'
+  });
+}
+
+export function evaluateRobloxGameplayProductReadiness({gameId='',baseline={},config='',server='',client='',project='',runtimeEvidence=null}={}){
+  const content=baselineContent(baseline);
+  const text=designText(baseline);
+  const ctx=sourceContext({config,server,client,project});
+  const required=[];
+  for(const rule of CAPABILITY_RULES){
+    if(rule.always||rule.design.test(text))required.push(rule.id);
+  }
+  if(multiplayerRequiredByDesign(baseline)&&!required.includes('MULTIPLAYER'))required.push('MULTIPLAYER');
+  if(Array.isArray(content.coreLoop)&&content.coreLoop.length>=2&&!required.includes('SESSION_FLOW'))required.push('SESSION_FLOW');
+  if((content.progressionDirection||'').trim()&&!required.includes('PROGRESSION'))required.push('PROGRESSION');
+
+  const implemented={};
+  for(const id of required)implemented[id]=implementedCapability(id,ctx);
+
+  const coreLoop=(Array.isArray(content.coreLoop)?content.coreLoop:[]).map((step,index)=>{
+    const ids=capabilityIdsForText(step);
+    const effective=ids.length?ids:['CORE_GAMEPLAY_STATE'];
+    return Object.freeze({index,step:clean(step),capabilities:Object.freeze(effective),pass:effective.every(id=>implemented[id]===true)});
+  });
+  const signatureSystems=(Array.isArray(content.signatureSystems)?content.signatureSystems:[]).map((row,index)=>{
+    const description=[row?.name,row?.purpose,row?.playerChoice].map(clean).join(' ');
+    const ids=capabilityIdsForText(description);
+    const effective=ids.length?ids:['CORE_GAMEPLAY_STATE'];
+    return Object.freeze({index,name:clean(row?.name)||'signature-'+(index+1),capabilities:Object.freeze(effective),pass:effective.every(id=>implemented[id]===true)});
+  });
+
+  const scopeHandlerCount=count(ctx.gameplayServer,/local\s+function\s+scopeHandler\d+/g);
+  const meaningfulFunctionCount=ctx.namedGameplayFunctions.filter(name=>/(attack|combat|damage|hit|move|build|place|spawn|gather|harvest|mine|chop|craft|quest|round|wave|day|night|interact|dash|ability|infect|purify|customer|ride|dungeon|boss|tower|resource|upgrade|equip|inventory|session|match|stage)/i.test(name)).length;
+  const genericSkeleton=scopeHandlerCount>=3&&meaningfulFunctionCount<2;
+  const blockers=[];
+  for(const id of required)if(implemented[id]!==true)blockers.push('MISSING_GAMEPLAY_CAPABILITY:'+id);
+  for(const row of coreLoop)if(!row.pass)blockers.push('CORE_LOOP_STEP_UNIMPLEMENTED:'+row.index);
+  for(const row of signatureSystems)if(!row.pass)blockers.push('SIGNATURE_SYSTEM_UNIMPLEMENTED:'+row.index);
+  if(genericSkeleton)blockers.push('GENERIC_SCOPE_HANDLER_SKELETON');
+
+  const primitiveConstructionCount=count(ctx.gameplayServer,/Instance\.new\(["']Part["']\)/g);
+  const meshConstructionCount=count(ctx.all,/(?:Instance\.new\(["']MeshPart["']\)|SpecialMesh|SurfaceAppearance)/g);
+  const placeholderDebt=Object.freeze({
+    primitiveConstructionCount,
+    meshConstructionCount,
+    likelyPrimitiveHeavy:primitiveConstructionCount>=6&&meshConstructionCount===0,
+    genericScopeHandlerCount:scopeHandlerCount,
+    meaningfulGameplayFunctionCount:meaningfulFunctionCount
+  });
+  const sheet=qualitySheet({required,implemented,ctx,runtimeEvidence});
+  const pass=blockers.length===0&&sheet.Core!=='MISSING'&&sheet.Core!=='ROUGH'&&sheet.Mobile!=='MISSING';
+
+  const runtimeRequirements=Object.freeze({
+    worldRequired:required.includes('WORLD'),
+    minimumBasePartCount:required.includes('WORLD')?5:1,
+    spawnRequired:required.includes('WORLD'),
+    landmarkRequired:required.some(id=>['WORLD','DUNGEON','TYCOON','DEFENSE'].includes(id)),
+    objectiveRequired:required.some(id=>['QUEST','DEFENSE','TYCOON','DUNGEON'].includes(id)),
+    serverBootRequired:true,
+    simulationRequired:true,
+    actualPlayRequired:true
+  });
+
+  return Object.freeze({
+    version:1,
+    gameId:clean(gameId),
+    pass,
+    blockers:Object.freeze(uniq(blockers)),
+    requiredCapabilities:Object.freeze(required),
+    implementedCapabilities:Object.freeze({...implemented}),
+    coreLoopTrace:Object.freeze(coreLoop),
+    signatureSystemTrace:Object.freeze(signatureSystems),
+    placeholderDebt,
+    studioQualitySheet:sheet,
+    runtimeRequirements,
+    designFingerprint:crypto.createHash('sha256').update(JSON.stringify(content)).digest('hex'),
+    antiSkeletonPassed:!genericSkeleton
+  });
+}
+
+export function evaluateRobloxF9ProductReadiness({f0Evidence={},runtimeEvidence={},postRuntimeQaEvidence={},studioPlayEvidence={}}={}){
+  const product=f0Evidence?.gameplayProductReadiness||{};
+  const req=product?.runtimeRequirements||{};
+  const world=runtimeEvidence?.openCloudWorldEvidence||{};
+  const exactEngine=runtimeEvidence?.engineExecuted===true&&runtimeEvidence?.exactEngineVersion===true;
+  const serverBoot=runtimeEvidence?.serverBootObserved===true;
+  const simulation=runtimeEvidence?.simulationRunning===true;
+  const actualStudio=studioPlayEvidence?.actualPlay===true&&studioPlayEvidence?.runtimeVerified===true;
+  const actualRuntime=postRuntimeQaEvidence?.actualRuntimeEvidence===true||actualStudio;
+  const baseParts=!req.worldRequired||Number(world.basePartCount||0)>=Number(req.minimumBasePartCount||5);
+  const spawn=!req.spawnRequired||Number(world.spawnCount||0)>=1;
+  const landmark=!req.landmarkRequired||Number(world.landmarkCount||0)>=1;
+  const objective=!req.objectiveRequired||Number(world.objectiveCount||0)>=1;
+  const blockers=[];
+  if(product.pass!==true)blockers.push('F0_GAMEPLAY_PRODUCT_READINESS_MISSING');
+  if(!exactEngine)blockers.push('F9_EXACT_ENGINE_EXECUTION_MISSING');
+  if(req.serverBootRequired!==false&&!serverBoot)blockers.push('F9_SERVER_BOOT_MISSING');
+  if(req.simulationRequired!==false&&!simulation)blockers.push('F9_SIMULATION_MISSING');
+  if(req.actualPlayRequired!==false&&!actualRuntime)blockers.push('F9_ACTUAL_PLAY_EVIDENCE_MISSING');
+  if(!baseParts)blockers.push('F9_WORLD_BASEPART_MINIMUM_MISSING');
+  if(!spawn)blockers.push('F9_WORLD_SPAWN_MISSING');
+  if(!landmark)blockers.push('F9_WORLD_LANDMARK_MISSING');
+  if(!objective)blockers.push('F9_WORLD_OBJECTIVE_MISSING');
+  return Object.freeze({
+    version:1,
+    pass:blockers.length===0,
+    blockers:Object.freeze(blockers),
+    exactEngine,
+    serverBoot,
+    simulation,
+    actualRuntime,
+    world:Object.freeze({
+      observed:world.observed===true,
+      basePartCount:Number(world.basePartCount||0),
+      spawnCount:Number(world.spawnCount||0),
+      landmarkCount:Number(world.landmarkCount||0),
+      objectiveCount:Number(world.objectiveCount||0)
+    }),
+    sourceQualitySheet:product?.studioQualitySheet||null
+  });
+}
