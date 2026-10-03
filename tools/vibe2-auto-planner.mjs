@@ -1294,7 +1294,7 @@ function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_
   if(!adaptiveGraphicsReplacementSupported(project))return taskInput;
   const normalizedPass=clean(pass).toUpperCase()||'ASSET_ADAPTATION';
   const existingEvidence=new Set((taskInput.evidence||[]).map(clean));
-  if(taskInput.graphicsReplacementContract&&existingEvidence.includes('adaptive-graphics-replacement:v1')){
+  if(taskInput.graphicsReplacementContract&&existingEvidence.has('adaptive-graphics-replacement:v1')){
     return{
       ...taskInput,
       presentationPass:normalizedPass,
@@ -2529,8 +2529,10 @@ function bindSharedBuildUpDirective(taskInput,directive){
   const marker='\n\n[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]';
   const at=rawGoal.indexOf(marker);
   const baseGoal=(at>=0?rawGoal.slice(0,at):rawGoal).trimEnd();
+  const presentationFocus=clean(directive.primaryFocus).toUpperCase()==='PRESENTATION';
   return{
     ...taskInput,
+    assetProductionLane:presentationFocus?true:taskInput.assetProductionLane,
     goal:baseGoal+'\n\n'+directivePrompt(directive),
     buildUpDirective:directive,
     buildUpDirectiveId:directive.directiveId,
@@ -2561,6 +2563,12 @@ function bindSharedBuildUpDirective(taskInput,directive){
       'build-up-focus:'+directive.primaryFocus,
       'build-up-source-tree:'+directive.sourceTreeFingerprint,
       'build-up-platform-common-goal:YES',
+      ...(presentationFocus?[
+        'asset-production-parallel:v1',
+        'atomic-neuron-stream:presentation',
+        'atomic-neuron-micro-fanin:per-task',
+        'graphics-atomic-candidate-isolation-required'
+      ]:[]),
       'experience-build-up-platform:'+clean(directive.experienceBuildUpContract?.platform||'COMMON'),
       ...(directive.experienceBuildUpContract?.platform==='ROBLOX'?['experience-build-up-roblox-extra-attention:YES']:[]),
       'experience-build-up-owner-disabled-audio-preserved:YES',
@@ -2790,12 +2798,25 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
         ||value==='web-stage:WEB_BASE_IMPLEMENTATION'
       );
     const webPresentationContractIncomplete=webPresentationBuildUpCarrier&&(
-      !candidate?.graphicsReplacementContract
+      candidate?.assetProductionLane!==true
+      ||!candidateEvidence.includes('asset-production-parallel:v1')
+      ||!candidate?.graphicsReplacementContract
       ||clean(candidate?.presentationPass).toUpperCase()!=='ASSET_ADAPTATION'
       ||!candidateEvidence.includes('presentation-pass:ASSET_ADAPTATION')
     );
     if(webPresentationContractIncomplete){
-      candidate=applyAdaptiveGraphicsReplacementContract(candidate,project,'ASSET_ADAPTATION');
+      const graphicsBound=applyAdaptiveGraphicsReplacementContract(candidate,project,'ASSET_ADAPTATION');
+      candidate={
+        ...graphicsBound,
+        assetProductionLane:true,
+        evidence:[...new Set([
+          ...(graphicsBound.evidence||[]),
+          'asset-production-parallel:v1',
+          'atomic-neuron-stream:presentation',
+          'atomic-neuron-micro-fanin:per-task',
+          'graphics-atomic-candidate-isolation-required'
+        ])]
+      };
       changed+=1;
       freshness=freshness==='CURRENT_NO_NEWER_GENERATION'
         ?'CURRENT_PRESENTATION_CONTRACT_REPAIRED'
