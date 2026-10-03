@@ -287,7 +287,9 @@ function upgradeMeta(type){
 
 // ===== 전투 =====
 function start(){
-  s=fresh();buttons();q('startOverlay').hidden=true;q('restOverlay').hidden=true;q('defeatOverlay').hidden=true;q('battleBar').hidden=false;q('phase').textContent='전투 중';q('stageLabel').textContent='스테이지 '+s.stage;last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);hud();
+  s=fresh();buttons();q('startOverlay').hidden=true;q('restOverlay').hidden=true;q('defeatOverlay').hidden=true;q('battleBar').hidden=false;q('phase').textContent='전투 중';q('stageLabel').textContent='스테이지 '+s.stage;
+  if(s.stage===7){spawn('boar','stage7OpeningBoar');spawn('boar','stage7OpeningBoar')}
+  last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);hud();
 }
 function summon(k){
   if(!s||!s.running||s.paused||!save.squad.includes(k))return;
