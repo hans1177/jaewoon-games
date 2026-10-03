@@ -373,9 +373,11 @@ function finish(win){
   if(!s||!s.running)return;s.running=false;cancelAnimationFrame(raf);q('battleBar').hidden=true;
   if(!win){q('defeatOverlay').hidden=false;q('phase').textContent='패배';return}
   const cleared=s.stage,goldReward=120+cleared*20,expReward=50+cleared*25;lastCleared=cleared;
-  save.gold+=goldReward;save.exp+=expReward;if(save.stage<6)save.stage++;persist();q('phase').textContent='휴식';
-  q('restReward').textContent=cleared+'스테이지 클리어 · 골드 +'+goldReward+' · 경험치 +'+expReward;
-  q('nextStage').textContent=cleared<6?save.stage+'스테이지 시작':'6스테이지 다시 하기';
+  save.gold+=goldReward;save.exp+=expReward;save.maxCleared=Math.max(save.maxCleared||0,cleared);
+  const unlocked=applyStoryUnlocks(save,true);if(save.stage<8)save.stage++;persist();q('phase').textContent='휴식';
+  const unlockText=unlocked.length?' · '+unlocked.map(id=>U[id].name).join(', ')+' 해금':'';
+  q('restReward').textContent=cleared+'스테이지 클리어 · 골드 +'+goldReward+' · 경험치 +'+expReward+unlockText;
+  q('nextStage').textContent=cleared<8?save.stage+'스테이지 시작':'8스테이지 다시 하기';
   updateMeta();q('restOverlay').hidden=false;
 }
 
