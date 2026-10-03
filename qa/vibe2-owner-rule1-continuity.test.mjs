@@ -50,9 +50,9 @@ test('empty queue and failed subjobs keep pressure-aware next-cycle continuity',
 });
 
 
-test('24h scheduler wake signals collapse into one singleton chain with pressure-aware refill',()=>{
-  assert.match(runner,/group: vibe2-24h-cycle-singleton-v9/);
+test('24h scheduler keeps pressure-aware continuity without a global singleton',()=>{
+  assert.match(runner,/group: vibe2-24h-cycle-\$\{\{ github\.run_id \}\}/);
   assert.match(runner,/cancel-in-progress:\s*false/);
-  assert.doesNotMatch(runner,/group: vibe2-24h-cycle-\$\{\{ github\.run_id \}\}/);
+  assert.doesNotMatch(runner,/group: vibe2-24h-cycle-singleton/);
   assert.match(runner,/if: \$\{\{ always\(\) \}\}[\s\S]*VIBE2_24H_REFILL=DEFERRED_TO_SCHEDULE_RUNNER_PRESSURE[\s\S]*actions\/workflows\/vibe2-24h-runner\.yml\/dispatches/);
 });
