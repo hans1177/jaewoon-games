@@ -575,9 +575,10 @@ jobs:
           NODE
           )"
 
-          # Cohort fan-in may still be waiting on one slow matrix worker. Reclaim only execution
-          # capacity for tasks whose immutable worker artifacts are already complete; task/file locks
-          # and final fan-in QA remain intact through slot-released-awaiting-fan-in.
+          # Cohort fan-in may still be waiting on one slow matrix worker. Reclaim execution
+          # capacity and ordinary queue-local source locks once immutable worker artifacts are complete.
+          # Exact concurrent writes remain protected by the existing remote Work Lock until fan-in releases it;
+          # explicit retained locks and final fan-in QA remain intact.
           artifact_probe_tsv=/tmp/vibe2-completed-worker-artifacts.tsv
           artifact_probe_json=/tmp/vibe2-completed-worker-artifacts.json
           : > "$artifact_probe_tsv"
