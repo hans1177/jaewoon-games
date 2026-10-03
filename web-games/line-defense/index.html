@@ -203,7 +203,8 @@ function battleWalletMax(lv){return startingWalletMax()+(lv-1)*120}
 function killReward(base){return Math.round(base*(1+save.killRewardLv*.2))}
 function charStats(id){
   const b=U[id],lv=save.charLv[id]||0,m=1+lv*.15;
-  return Object.assign({},b,{hp:Math.round(b.hp*m),atk:Math.round(b.atk*m*1.8),level:lv});
+  const attackScale=b.attackScale??1.8;
+  return Object.assign({},b,{hp:Math.round(b.hp*m),atk:Math.round(b.atk*m*attackScale),level:lv});
 }
 function metaCost(type){
   const lv=save[type];
