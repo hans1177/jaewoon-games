@@ -650,6 +650,14 @@ test('Unity runs exact F0-F9, deploys the F9 artifact, and starts the next cycle
   for(const floor of ['F0','F1','F2','F3','F4','F5','F6','F7','F8','F9']) assert.match(workflow,new RegExp(floor+'\\s*:'));
   assert.match(workflow,/unityF0ThroughF9Evidence:f0ToF9/);
   assert.match(workflow,/unityF9ReleaseRegressionPassed:internalReady/);
+  assert.match(workflow,/const performanceCoverage=technical\?\.coverage\?\.ANDROID_FPS_FRAME_STABILITY\|\|\{\}/);
+  assert.match(workflow,/const unityMobilePerformancePassed=Boolean\(/);
+  assert.match(workflow,/totalFramesRendered/);
+  assert.match(workflow,/crypto\.createHash\('sha256'\)/);
+  assert.match(workflow,/exactGeneratedAssetIdentityPassed:generatedAssetIdentityPassed/);
+  assert.match(workflow,/unityGeneratedAssetRuntimeBindingPassed/);
+  assert.match(workflow,/unityAssetRuntimeBindingEvidence/);
+  assert.match(workflow,/UNITY_GENERATED_ASSET_RUNTIME_BINDING=/);
   assert.match(workflow,/Publish exact F9 Unity APK to canonical internal release target/);
   assert.match(workflow,/gh release create "\$tag"[\s\S]*--target "\$SOURCE_REVISION"[\s\S]*--prerelease/);
   assert.match(workflow,/UNITY_F9_CANONICAL_SOURCE_ARTIFACT_MATCH=YES/);

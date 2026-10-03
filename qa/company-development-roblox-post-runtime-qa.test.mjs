@@ -54,6 +54,10 @@ test('verified company asset promotion requires exact Studio runtime performance
   assert.match(workflow,/item\.robloxIndependentQaPassed!==true/);
   assert.match(workflow,/item\.robloxRegressionPassed!==true/);
   assert.match(workflow,/item\.robloxStudioAssetRuntimeBindingPassed===true/);
+  assert.match(workflow,/row\?\.generatedByDeclaredRecipe===true/);
+  assert.match(workflow,/row\?\.persistedForCandidate===true/);
+  assert.match(workflow,/generatedByDeclaredRecipe:declaredGenerated/);
+  assert.match(workflow,/licenseProvenancePass:asset/);
   assert.match(workflow,/gh pr create[\s\S]*company-asset-library\.json|company-asset-library\.json[\s\S]*gh pr create/);
   assert.match(workflow,/gh pr checks "\$pr_url" --watch --fail-fast/);
   assert.match(workflow,/gh pr merge "\$pr_url"/);

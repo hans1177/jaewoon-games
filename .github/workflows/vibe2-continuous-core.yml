@@ -1643,6 +1643,23 @@ jobs:
           test -f "$candidate_manifest"
           echo "candidate_manifest=$candidate_manifest" >> "$GITHUB_OUTPUT"
           echo "VIBE2_CANDIDATE_MANIFEST=$candidate_manifest_rel"
+          mapfile -t generated_asset_files < <(node --input-type=module - "$candidate_manifest" <<'NODE'
+          import fs from 'node:fs';
+          const manifest=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const locked=new Set(manifest?.compiledWorkContract?.workLock?.files||[]);
+          for(const raw of manifest?.generatedAssetFiles||[]){
+            const file=String(raw||'').replaceAll('\\','/').replace(/^\.\//,'');
+            if(!file||!file.startsWith('assets/')||file.startsWith('/')||file.split('/').includes('..'))throw new Error('GENERATED_ASSET_PATH_INVALID:'+file);
+            if(!locked.has(file))throw new Error('GENERATED_ASSET_WORK_LOCK_MISSING:'+file);
+            console.log(file);
+          }
+          NODE
+          )
+          for file in "${generated_asset_files[@]}"; do
+            test -s "$candidate_dir/$file"
+          done
+          echo "generated_asset_file_count=${#generated_asset_files[@]}" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_CANDIDATE_GENERATED_ASSET_FILES=${generated_asset_files[*]:-NONE}"
           # Formatting whitespace is not a gameplay failure; conflict markers still fail.
           git -c core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab diff --check
           security_sensitive="$(node --input-type=module - "$candidate_manifest" <<'NODE'
@@ -1693,12 +1710,17 @@ jobs:
             read -r added_line_count deleted_line_count < <(git diff --cached --numstat -- "${system_files[@]}" | awk '{if($1~/^[0-9]+$/)a+=$1;if($2~/^[0-9]+$/)d+=$2}END{print a+0,d+0}')
           else
             git add "$SOURCE_ROOT" .vibe2/candidates
-            git diff --cached --quiet && { echo 'candidate has no source diff' >&2; exit 1; }
+            if [ "${#generated_asset_files[@]}" -gt 0 ]; then
+              git add -- "${generated_asset_files[@]}"
+            fi
+            git diff --cached --quiet && { echo 'candidate has no source or generated asset diff' >&2; exit 1; }
             mapfile -t changed < <(git diff --cached --name-only)
             for file in "${changed[@]}"; do
               case "$file" in
                 "$SOURCE_ROOT"/*|.vibe2/candidates/*) ;;
-                *) echo "candidate escaped approved boundary: $file" >&2; exit 1 ;;
+                *)
+                  printf '%s\n' "${generated_asset_files[@]}" | grep -Fxq "$file" || { echo "candidate escaped approved boundary: $file" >&2; exit 1; }
+                  ;;
               esac
             done
             changed_file_count="$(git diff --cached --name-only -- "$SOURCE_ROOT" | sed '/^$/d' | wc -l | tr -d ' ')"
@@ -1721,10 +1743,11 @@ jobs:
           git -C "$contract_root" fetch --depth=1 --no-tags origin main --quiet
           transport_base_sha="$(git -C "$contract_root" rev-parse FETCH_HEAD)"
           test -n "$transport_base_sha"
-          if [ -n "$(git -C "$contract_root" diff --name-only "$base_sha" "$transport_base_sha" -- "$SOURCE_ROOT")" ]; then
+          candidate_transport_paths=("$SOURCE_ROOT" "${generated_asset_files[@]}")
+          if [ -n "$(git -C "$contract_root" diff --name-only "$base_sha" "$transport_base_sha" -- "${candidate_transport_paths[@]}")" ]; then
             echo "failure_class=CANDIDATE_SOURCE_DRIFT" >> "$GITHUB_OUTPUT"
-            echo "failure_message=responsible source changed on main after reserve; exact replan required" >> "$GITHUB_OUTPUT"
-            echo "VIBE2_CANDIDATE_TRANSPORT=REPLAN_SOURCE_DRIFT:$base_sha:$transport_base_sha"
+            echo "failure_message=responsible source or declared generated asset changed on main after reserve; exact replan required" >> "$GITHUB_OUTPUT"
+            echo "VIBE2_CANDIDATE_TRANSPORT=REPLAN_SOURCE_OR_ASSET_DRIFT:$base_sha:$transport_base_sha"
             exit 1
           fi
 
@@ -1747,6 +1770,10 @@ jobs:
             mkdir -p "$(dirname "$transport_dir/$SOURCE_ROOT")"
             cp -a "$candidate_dir/$SOURCE_ROOT" "$transport_dir/$SOURCE_ROOT"
           fi
+          for file in "${generated_asset_files[@]}"; do
+            mkdir -p "$transport_dir/$(dirname "$file")"
+            cp -a "$candidate_dir/$file" "$transport_dir/$file"
+          done
 
           candidate_manifest_dir="$(dirname "$candidate_manifest_rel")"
           rm -rf "$transport_dir/$candidate_manifest_dir"
@@ -1771,6 +1798,9 @@ jobs:
             git -C "$transport_dir" add -- "${system_files[@]}" "$candidate_manifest_dir"
           else
             git -C "$transport_dir" add "$SOURCE_ROOT" "$candidate_manifest_dir"
+          fi
+          if [ "${#generated_asset_files[@]}" -gt 0 ]; then
+            git -C "$transport_dir" add -- "${generated_asset_files[@]}"
           fi
           git -C "$transport_dir" diff --cached --quiet && {
             echo "failure_class=CANDIDATE_BRANCH_PUBLISH" >> "$GITHUB_OUTPUT"
@@ -1802,6 +1832,7 @@ jobs:
           echo "VIBE2_CANDIDATE_SHA=$candidate_sha"
           echo "VIBE2_BASE_MAIN_SHA=$base_sha"
           echo "VIBE2_CHANGED_FILE_COUNT=${changed_file_count:-0}"
+          echo "VIBE2_GENERATED_ASSET_FILE_COUNT=${#generated_asset_files[@]}"
           echo "VIBE2_CHANGED_LINE_COUNT=$(( ${added_line_count:-0} + ${deleted_line_count:-0} ))"
 
       - name: Restore incremental QA content-hash cache

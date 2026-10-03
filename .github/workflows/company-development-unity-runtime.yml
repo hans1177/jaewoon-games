@@ -1038,6 +1038,7 @@ jobs:
           git show origin/company-runtime:development-queue.json > /tmp/unity-current-queue.json
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
+          import crypto from 'node:crypto';
           import {failureSignature} from './tools/company-selected-platform-router.mjs';
           import {evaluateInternalRelease} from './tools/company-platform-exposure-control.mjs';
           const yes=v=>String(v).toLowerCase()==='true';
@@ -1065,6 +1066,35 @@ jobs:
           const exactBinding=Boolean(artifactIdentity&&process.env.SOURCE_REVISION&&process.env.SOURCE_TREE_SHA);
           let technical={};
           try{technical=JSON.parse(fs.readFileSync(process.env.BASE+'/unity-technical-validation.json','utf8'));}catch{}
+          const performanceCoverage=technical?.coverage?.ANDROID_FPS_FRAME_STABILITY||{};
+          const unityMobilePerformancePassed=Boolean(
+            technical?.realEvidence?.platformMetricsPass===true
+            &&performanceCoverage.state==='PASS'
+            &&Number(performanceCoverage.totalFramesRendered||0)>0
+          );
+          const assetPlan=currentItem?.unityAssetRuntimePromotionPlan||null;
+          const assetCandidates=Array.isArray(assetPlan?.candidates)?assetPlan.candidates:[];
+          const generatedAssetChecks=assetCandidates.map(row=>{
+            const assetPath=String(row?.path||'').replaceAll('\\','/').replace(/^\.\//,'');
+            const expectedHash=String(row?.artifactHash||'').trim().toLowerCase();
+            let actualHash=null;
+            try{
+              if(assetPath&&fs.existsSync(assetPath)&&fs.statSync(assetPath).isFile()){
+                actualHash=crypto.createHash('sha256').update(fs.readFileSync(assetPath)).digest('hex');
+              }
+            }catch{}
+            return{
+              assetId:String(row?.assetId||'').trim(),
+              path:assetPath||null,
+              artifactHash:expectedHash||null,
+              actualArtifactHash:actualHash,
+              candidateSourceBindingVerified:row?.candidateSourceBindingVerified===true,
+              exactArtifactIdentity:Boolean(expectedHash&&actualHash&&expectedHash===actualHash)
+            };
+          });
+          const generatedAssetIdentityPassed=assetCandidates.length>0
+            &&generatedAssetChecks.length===assetCandidates.length
+            &&generatedAssetChecks.every(row=>row.candidateSourceBindingVerified===true&&row.exactArtifactIdentity===true);
           const adapterFloors=technical?.foundationAdapter?.foundationFloors||{};
           const adapterPass=id=>adapterFloors?.[id]?.state==='PASS';
           const runtimeFailureFloor=/^F(?:[1-6]|8)$/.test(String(process.env.RUNTIME_FAILURE_FLOOR||''))?String(process.env.RUNTIME_FAILURE_FLOOR):'';
@@ -1123,6 +1153,32 @@ jobs:
             verifiedAt:stamp
           };
           const internalReady=f0ToF9.floors.F9.state==='PASS';
+          const unityGeneratedAssetRuntimeBindingPassed=Boolean(
+            assetCandidates.length>0
+            &&internalReady
+            &&generatedAssetIdentityPassed
+            &&unityMobilePerformancePassed
+            &&technical?.realEvidence?.visualDeltaObserved===true
+            &&technical?.realEvidence?.foregroundActivityObserved===true
+          );
+          const unityAssetRuntimeBindingEvidence=assetCandidates.length?{
+            version:1,
+            gameId:process.env.GAME_ID,
+            sourceRevision:process.env.SOURCE_REVISION||null,
+            sourceRootTreeSha:process.env.SOURCE_TREE_SHA||null,
+            candidateRevision:String(assetPlan?.candidateRevision||'')||null,
+            promotedMainSha:String(assetPlan?.promotedMainSha||'')||null,
+            exactGeneratedAssetIdentityPassed:generatedAssetIdentityPassed,
+            generatedAssets:generatedAssetChecks,
+            targetEngineRuntimePassed:internalReady,
+            visualRuntimePassed:technical?.realEvidence?.visualDeltaObserved===true&&technical?.realEvidence?.foregroundActivityObserved===true,
+            mobilePerformancePassed:unityMobilePerformancePassed,
+            independentQaPassed:qa,
+            regressionPassed:regression,
+            runtimeBindingPassed:unityGeneratedAssetRuntimeBindingPassed,
+            authority:'unity-exact-source-generated-asset-f0-f9-binding',
+            verifiedAt:unityGeneratedAssetRuntimeBindingPassed?stamp:null
+          }:null;
           const evidence={version:4,platform:'UNITY',sourceRevision:process.env.SOURCE_REVISION||null,sourceRootTreeSha:process.env.SOURCE_TREE_SHA||null,sourceFingerprint:process.env.SOURCE_FINGERPRINT||null,buildOrPackagePassed:build,artifactIdentity,runtimePassed:runtime,independentQaPassed:qa,multiplayerPassed:multiplayerPass,regressionPassed:regression,rawStageResults:{runtime:rawRuntime,independentQa:rawQa,regression:rawRegression},canonicalEvidenceBound,f0ToF9Passed:internalReady,exactRevision:exactBinding,lastSuccessfulStage:last,failureStage:failure,failureSignature:failure?failureSignature({stage:failure,code:canonicalEvidenceBound?'STAGE_NOT_PASSED':'CANONICAL_EVIDENCE_NOT_BOUND',message:`${process.env.GAME_ID}:${failure}`}):null};
           const row={
             gameId:process.env.GAME_ID,status:'ACTIVE',selectedPlatform:'UNITY',targetPlatform:'UNITY',
@@ -1134,6 +1190,17 @@ jobs:
             unityF0ThroughF9Evidence:f0ToF9,unityCanonicalEvidenceBound:canonicalEvidenceBound,
             unityF9ReleaseRegressionPassed:internalReady,
             unityF9ReleaseRegressionPassedAt:internalReady?stamp:null,
+            unityMobilePerformancePassed,
+            unityMobilePerformanceEvidence:unityMobilePerformancePassed?{
+              state:performanceCoverage.state,
+              provider:performanceCoverage.provider||null,
+              totalFramesRendered:Number(performanceCoverage.totalFramesRendered||0),
+              jankyFrames:Number(performanceCoverage.jankyFrames||0),
+              jankyFrameRatePct:Number.isFinite(Number(performanceCoverage.jankyFrameRatePct))?Number(performanceCoverage.jankyFrameRatePct):null,
+              authority:'unity-android-technical-validation-metrics'
+            }:null,
+            unityGeneratedAssetRuntimeBindingPassed,
+            unityAssetRuntimeBindingEvidence,
             unityCanonicalPublishPending:internalReady,
             unityInternalReleaseReady:internalReady,
             unityInternalReleaseAt:internalReady?stamp:null,
@@ -1142,6 +1209,9 @@ jobs:
               buildRunId:buildRun,runtimeRunId:runtimeRun,independentQaRunId:qaRun,regressionRunId:regressionRun,
               distribution:'INTERNAL_OR_CLOSED_APP_TEST_BUILD',artifactInternalTestingAllowed:true,publicRelease:false,
               f0ThroughF9Passed:true,f9ReleaseRegressionPassed:true,
+              mobilePerformancePassed:unityMobilePerformancePassed,
+              generatedAssetRuntimeBindingRequired:assetCandidates.length>0,
+              generatedAssetRuntimeBindingPassed:assetCandidates.length>0?unityGeneratedAssetRuntimeBindingPassed:null,
               authority:'unity-exact-apk-runtime-qa-regression'
             }:null,
             unityExecutionEvidence:evidence,executionEvidence:evidence,resumeStage:failure||(internalReady?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':'IMMEDIATE_NEXT_STAGE_DISPATCH'),
@@ -1159,7 +1229,7 @@ jobs:
           }
           fs.writeFileSync(`runtime-persist/queue/${process.env.GAME_ID}.json`,JSON.stringify(row,null,2)+'\n');
           fs.writeFileSync(`runtime-persist/queue/${process.env.GAME_ID}.evidence.json`,JSON.stringify(evidence,null,2)+'\n');
-          console.log(`CHECKPOINT_LAST_SUCCESS=${last}`);console.log(`CHECKPOINT_FAILURE_STAGE=${failure||'NONE'}`);console.log(`UNITY_INTERNAL_RELEASE_READY=${internalReady?'YES':'NO'}`);console.log(`UNITY_PLATFORM_F0_TO_F9_VERIFIED=${internalReady?'YES':'NO'}`);console.log('UNITY_PUBLIC_RELEASE_MUTATION=NO');
+          console.log(`CHECKPOINT_LAST_SUCCESS=${last}`);console.log(`CHECKPOINT_FAILURE_STAGE=${failure||'NONE'}`);console.log(`UNITY_INTERNAL_RELEASE_READY=${internalReady?'YES':'NO'}`);console.log(`UNITY_PLATFORM_F0_TO_F9_VERIFIED=${internalReady?'YES':'NO'}`);console.log(`UNITY_MOBILE_PERFORMANCE_VERIFIED=${unityMobilePerformancePassed?'YES':'NO'}`);console.log(`UNITY_GENERATED_ASSET_RUNTIME_BINDING=${assetCandidates.length?(unityGeneratedAssetRuntimeBindingPassed?'PASS':'PENDING'):'NOT_REQUIRED'}`);console.log('UNITY_PUBLIC_RELEASE_MUTATION=NO');
           NODE
 
       - name: Upload checkpoint for company-runtime persistence
