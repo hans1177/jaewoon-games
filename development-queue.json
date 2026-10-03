@@ -14373,7 +14373,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-03T14:34:08.843Z",
+      "updatedAt": "2026-10-03T14:34:43.431Z",
       "robloxSourceCommit": "08bb8bba5b5f22a8790f066a9a4dbef536c1f16e",
       "robloxSourceBootstrapPassedAt": "2026-10-03T13:21:33.792Z",
       "robloxSourceBootstrapFailedAt": "2026-10-03T14:34:08.843Z",
@@ -14490,14 +14490,14 @@
         "version": 2,
         "platform": "UNITY",
         "sourceRevision": "188da3bb77d8184afc3e315552024915536a573a",
-        "artifactIdentity": "sha256:2080a096a3752828337044d2b5b1eba64a0e1f1ad57986cde219e37a5265c753",
+        "artifactIdentity": null,
         "sourceRootTreeSha": "48aa3265eb90442eb642f42a2bc102c619476328",
         "evidenceMode": "F0_COMPILE_PLUS_ONE_EXACT_ANDROID_BLACK_BOX_RUNTIME_F1_F8_PLUS_F9_EVIDENCE_FAN_IN",
         "singleRuntimeSessionF1ThroughF8": true,
         "f9RuntimeReplayRequired": false,
         "floors": {
           "F0": {
-            "state": "PASS",
+            "state": "FAIL",
             "authority": "UNITY_EDITOR_BUILD_COMPILE_AND_EXACT_SOURCE_ARTIFACT_BINDING"
           },
           "F1": {
@@ -14540,7 +14540,7 @@
           }
         },
         "multiplayerRequired": true,
-        "verifiedAt": "2026-10-03T13:41:45.207Z"
+        "verifiedAt": "2026-10-03T14:34:43.431Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -14556,7 +14556,7 @@
         "sourceRootTreeSha": "48aa3265eb90442eb642f42a2bc102c619476328",
         "sourceFingerprint": "a1c5c41c99ea0b53d1e8bbcbf02bdef8949e88a4e7de82a4de033b4b9c2cd201",
         "buildOrPackagePassed": true,
-        "artifactIdentity": "sha256:2080a096a3752828337044d2b5b1eba64a0e1f1ad57986cde219e37a5265c753",
+        "artifactIdentity": null,
         "runtimePassed": false,
         "independentQaPassed": false,
         "multiplayerPassed": false,
@@ -14568,10 +14568,10 @@
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
-        "exactRevision": true,
-        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
-        "failureStage": "F1_SERVER_BOOT",
-        "failureSignature": "54a968f2f5824ce65c933b4bd7188cfc35292ed4e0c02930174eb16c0c7312f3"
+        "exactRevision": false,
+        "lastSuccessfulStage": "CHEAP_PRECHECK",
+        "failureStage": "F0_SOURCE_INTEGRITY",
+        "failureSignature": "d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152"
       },
       "executionEvidence": {
         "version": 4,
@@ -14580,7 +14580,7 @@
         "sourceRootTreeSha": "48aa3265eb90442eb642f42a2bc102c619476328",
         "sourceFingerprint": "a1c5c41c99ea0b53d1e8bbcbf02bdef8949e88a4e7de82a4de033b4b9c2cd201",
         "buildOrPackagePassed": true,
-        "artifactIdentity": "sha256:2080a096a3752828337044d2b5b1eba64a0e1f1ad57986cde219e37a5265c753",
+        "artifactIdentity": null,
         "runtimePassed": false,
         "independentQaPassed": false,
         "multiplayerPassed": false,
@@ -14592,12 +14592,12 @@
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
-        "exactRevision": true,
-        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
-        "failureStage": "F1_SERVER_BOOT",
-        "failureSignature": "54a968f2f5824ce65c933b4bd7188cfc35292ed4e0c02930174eb16c0c7312f3"
+        "exactRevision": false,
+        "lastSuccessfulStage": "CHEAP_PRECHECK",
+        "failureStage": "F0_SOURCE_INTEGRITY",
+        "failureSignature": "d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152"
       },
-      "resumeStage": "F1_SERVER_BOOT",
+      "resumeStage": "F0_SOURCE_INTEGRITY",
       "failureCount": 1,
       "contractCanaryPassed": false,
       "robloxValidationTarget": {
@@ -72915,7 +72915,7 @@
       "unityAssetRuntimeBindingEvidence": null
     }
   ],
-  "updatedAt": "2026-10-03T14:34:08.843Z",
+  "updatedAt": "2026-10-03T14:34:45.489Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
