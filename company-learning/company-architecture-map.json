@@ -1,5 +1,5 @@
 {
-  "version": 307,
+  "version": 308,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6636,6 +6636,36 @@
     "sharedRuntimeWriteMode": "FETCH_RESET_REAPPLY_SEMANTIC_MUTATION_PUSH_RETRY",
     "exactResponsibleFileConflictProtectionPreserved": true,
     "atomicSharedStateWriteIntegrityPreserved": true,
+    "newPipelineCreated": false,
+    "authorityExpanded": false
+  },
+  "vibeResultAndRecoveryParallelism": {
+    "version": 1,
+    "authority": "DERIVED_FROM_EXISTING_CENTRAL_PARALLELISM_POLICY",
+    "globalWorkflowSerialization": false,
+    "forbiddenGlobalGroups": [
+      "vibe2-control-state-vibe2-unreal-core",
+      "vibe2-release-serial",
+      "vibe2-recovery-fast",
+      "vibe2-roblox-release-handoff",
+      "company-runtime-writer"
+    ],
+    "parallelWorkflows": [
+      ".github/workflows/vibe2-unity-candidate-result.yml",
+      ".github/workflows/vibe2-unity-release-result.yml",
+      ".github/workflows/vibe2-roblox-candidate-result.yml",
+      ".github/workflows/vibe2-roblox-release-handoff.yml",
+      ".github/workflows/vibe2-recovery-fast.yml"
+    ],
+    "allowedExactIdentityGroups": [
+      "vibe2-release-<candidateBranch>",
+      "vibe2-roblox-candidate-runtime-<candidateRef>",
+      "vibe2-system-evolution-<taskId>"
+    ],
+    "sharedStateWriteMode": "FETCH_RESET_REAPPLY_SEMANTIC_MUTATION_PUSH_RETRY_WITH_CAPPED_BACKOFF",
+    "responsibleFileConflictOnlySerialization": true,
+    "atomicSharedStateCriticalSectionOnly": true,
+    "learningIdleSingleModelLaneExcludedFromGameDevelopmentParallelism": true,
     "newPipelineCreated": false,
     "authorityExpanded": false
   }
