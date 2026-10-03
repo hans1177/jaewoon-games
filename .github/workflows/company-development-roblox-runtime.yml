@@ -423,12 +423,23 @@ jobs:
           git fetch --no-tags --depth=1 origin "+refs/heads/$VIBE2_LEARNING_RUNTIME_BRANCH:refs/remotes/origin/$VIBE2_LEARNING_RUNTIME_BRANCH"
           git fetch --no-tags --depth=1 origin "+refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core"
           directive="/tmp/build-up-directive-${GAME_ID}.json"
-          if git cat-file -e "origin/vibe2-unreal-core:.vibe2/build-up-directives/${GAME_ID}/current.json" 2>/dev/null; then
-            git show "origin/vibe2-unreal-core:.vibe2/build-up-directives/${GAME_ID}/current.json" > "$directive"
-            echo "ROBLOX_BUILD_UP_DIRECTIVE_SOURCE=VIBE_RUNTIME:${GAME_ID}"
+          directive_ref="origin/vibe2-unreal-core:.vibe2/build-up-directives/${GAME_ID}/current/roblox.json"
+          if git cat-file -e "$directive_ref" 2>/dev/null; then
+            git show "$directive_ref" > "$directive"
+            GAME_ID="$GAME_ID" DIRECTIVE="$directive" node <<'NODE'
+          const fs=require('fs');
+          const d=JSON.parse(fs.readFileSync(process.env.DIRECTIVE,'utf8'));
+          if(String(d.gameId||'')!==String(process.env.GAME_ID||''))throw new Error('ROBLOX_BUILD_UP_DIRECTIVE_GAME_MISMATCH');
+          if(String(d.platform||'').toUpperCase()!=='ROBLOX')throw new Error('ROBLOX_BUILD_UP_DIRECTIVE_PLATFORM_MISMATCH');
+          if(!String(d.sourceRoot||'').split('|').some(root=>root.trim()===('roblox-games/'+process.env.GAME_ID)))throw new Error('ROBLOX_BUILD_UP_DIRECTIVE_SOURCE_ROOT_MISMATCH');
+          const files=d?.responsibleSystemsAndFiles?.files||[];
+          if(!files.some(file=>String(file).startsWith('roblox-games/'+process.env.GAME_ID+'/')))throw new Error('ROBLOX_BUILD_UP_DIRECTIVE_RESPONSIBLE_FILES_MISSING');
+          console.log('ROBLOX_BUILD_UP_DIRECTIVE_NATIVE_BINDING=PASS:'+d.directiveId);
+          NODE
+            echo "ROBLOX_BUILD_UP_DIRECTIVE_SOURCE=VIBE_RUNTIME_ROBLOX:${GAME_ID}"
           else
             rm -f "$directive"
-            echo "ROBLOX_BUILD_UP_DIRECTIVE_SOURCE=BASELINE_ONLY_NO_VIBE_DIRECTIVE:${GAME_ID}"
+            echo "ROBLOX_BUILD_UP_DIRECTIVE_SOURCE=MISSING_PLATFORM_DIRECTIVE:${GAME_ID}"
           fi
           git show "origin/$VIBE2_LEARNING_RUNTIME_BRANCH:company-learning/vibe3-task-playbooks.json" > /tmp/vibe3-task-playbooks.json
           git show "origin/$VIBE2_LEARNING_RUNTIME_BRANCH:company-learning/vibe3-recombination-memory.json" > /tmp/vibe3-recombination-memory.json
