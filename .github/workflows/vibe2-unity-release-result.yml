@@ -54,6 +54,19 @@ jobs:
           if(!task||!game||target!=='unity'||root!==`unity-games/${game}`||!base) throw new Error('invalid Unity Vibe2 candidate manifest');
           if(!['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(productionClass))throw new Error('candidate productionClass is not deployable');
           put('task_id',task); put('game_id',game); put('source_root',root); put('base_sha',base); put('release_state',state); put('production_class',productionClass); put('origin',origin);
+          const promotionCandidates=(Array.isArray(m.runtimePromotionCandidates)?m.runtimePromotionCandidates:[]).slice(0,64).map(row=>({
+            assetId:String(row?.assetId||'').trim(),
+            family:String(row?.family||'').trim().toUpperCase(),
+            license:String(row?.license||'').trim(),
+            path:String(row?.path||'').trim()||null,
+            sourceHash:String(row?.sourceHash||'').trim(),
+            artifactHash:String(row?.artifactHash||'').trim()||null,
+            bindingEvidence:Array.isArray(row?.bindingEvidence)?row.bindingEvidence.map(String).slice(0,8):[],
+            candidateSourceBindingVerified:row?.candidateSourceBindingVerified===true,
+            generatedByDeclaredRecipe:row?.generatedByDeclaredRecipe===true,
+            persistedForCandidate:row?.persistedForCandidate===true
+          })).filter(row=>row.assetId&&row.family&&row.license&&row.path&&row.sourceHash&&row.artifactHash&&row.candidateSourceBindingVerified);
+          put('asset_promotion_candidates',JSON.stringify(promotionCandidates));
           const lockFiles=new Set(Array.isArray(m?.compiledWorkContract?.workLock?.files)?m.compiledWorkContract.workLock.files.map(String):[]);
           const generatedAssetFiles=[...new Set((Array.isArray(m.generatedAssetFiles)?m.generatedAssetFiles:[]).map(value=>String(value||'').replaceAll('\\','/').replace(/^\.\//,'')).filter(Boolean))];
           for(const file of generatedAssetFiles){
@@ -134,6 +147,75 @@ jobs:
           echo "VIBE2_UNITY_MAIN_PROMOTION_SOURCE_TREE_SHA=$source_tree_sha"
           echo "VIBE2_RELEASE_PR=$pr_url"
           echo 'DIRECT_MAIN_WRITE=NO'
+
+      - name: Persist exact Unity generated asset runtime promotion plan
+        if: steps.promote.outcome == 'success' && steps.manifest.outputs.asset_promotion_candidates != '[]'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ steps.manifest.outputs.game_id }}
+          CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}
+          PROMOTED_MAIN_SHA: ${{ steps.promote.outputs.promotion_sha }}
+          PROMOTED_SOURCE_TREE_SHA: ${{ steps.promote.outputs.source_tree_sha }}
+          ASSET_PROMOTION_CANDIDATES: ${{ steps.manifest.outputs.asset_promotion_candidates }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/vibe2-unity-asset-runtime
+          gh auth setup-git --hostname github.com
+          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-unity-asset-runtime -- --branch company-runtime --single-branch --depth=1 --no-tags >/dev/null 2>&1
+          cd /tmp/vibe2-unity-asset-runtime
+          git config user.name 'jaewoon-vibe2-unity-asset-runtime'
+          git config user.email 'vibe2-worker@users.noreply.github.com'
+          persisted=0
+          for attempt in 1 2 3 4 5; do
+            git fetch --no-tags origin company-runtime
+            git reset --hard origin/company-runtime
+            node <<'NODE'
+          const fs=require('fs');
+          const file='development-queue.json';
+          const queue=JSON.parse(fs.readFileSync(file,'utf8'));
+          const gameId=String(process.env.GAME_ID||'').trim();
+          const candidateRevision=String(process.env.CANDIDATE_SHA||'').trim();
+          const promotedMainSha=String(process.env.PROMOTED_MAIN_SHA||'').trim();
+          const sourceTreeSha=String(process.env.PROMOTED_SOURCE_TREE_SHA||'').trim();
+          const candidates=JSON.parse(process.env.ASSET_PROMOTION_CANDIDATES||'[]');
+          if(!gameId||!/^[0-9a-f]{40}$/.test(candidateRevision)||!/^[0-9a-f]{40}$/.test(promotedMainSha)||!/^[0-9a-f]{40}$/.test(sourceTreeSha))throw Error('Unity asset promotion plan identity invalid');
+          if(!Array.isArray(candidates)||!candidates.length)process.exit(0);
+          const item=(queue.items||[]).find(row=>String(row?.gameId||'')===gameId);
+          if(!item)throw Error('Unity asset promotion plan game missing');
+          const plan={
+            version:1,gameId,candidateRevision,promotedMainSha,promotedSourceTreeSha:sourceTreeSha,candidates,
+            status:'PENDING_EXACT_NATIVE_RUNTIME',
+            exactSourceBindingRequired:true,targetEngineRuntimeRequired:true,mobilePerformanceRequired:true,
+            independentQaRequired:true,regressionRequired:true,
+            verifiedCompanyPromotionAuthority:'assets/vibe-studio-asset-universe.js',
+            requestedAt:new Date().toISOString()
+          };
+          const prior=item.unityAssetRuntimePromotionPlan;
+          const comparable=value=>JSON.stringify(value,(key,row)=>key==='requestedAt'?undefined:row);
+          if(prior&&comparable(prior)===comparable(plan))process.exit(0);
+          item.unityAssetRuntimePromotionPlan=plan;
+          item.updatedAt=new Date().toISOString();
+          queue.updatedAt=item.updatedAt;
+          fs.writeFileSync(file,JSON.stringify(queue,null,2)+'\n');
+          console.log('UNITY_ASSET_RUNTIME_PROMOTION_PLAN='+gameId+':'+candidates.map(row=>row.assetId).join(','));
+          NODE
+            git add development-queue.json
+            if git diff --cached --quiet; then
+              persisted=1
+              echo 'UNITY_ASSET_RUNTIME_PROMOTION_PLAN_STATE=NO_CHANGE'
+              break
+            fi
+            git commit -m "runtime: bind exact Unity asset promotion plan for $GAME_ID [skip ci]"
+            if git push origin HEAD:company-runtime; then
+              persisted=1
+              echo "UNITY_ASSET_RUNTIME_PROMOTION_PLAN_STATE=PUSHED:$attempt"
+              break
+            fi
+            sleep $((attempt*2))
+          done
+          test "$persisted" = 1
 
       - name: Record current-source incremental Vibe2 and APK build evidence
         id: release_evidence
