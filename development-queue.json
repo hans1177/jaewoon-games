@@ -35775,7 +35775,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-03T14:33:26.958Z",
+      "updatedAt": "2026-10-03T14:33:14.154Z",
       "robloxSourceCommit": "9472bd4b844466429db623f3319252e3d488efda",
       "robloxSourceBootstrapPassedAt": "2026-10-02T14:20:25.085Z",
       "robloxSourceBootstrapFailedAt": "2026-10-03T14:33:26.958Z",
@@ -35847,7 +35847,7 @@
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-monster-adventure-36773180555",
       "unitySourceCommit": "92c76090d928b7724e18a0fd980f1f173a4581ba",
-      "unityBuildRunId": 37018567394,
+      "unityBuildRunId": 37129910013,
       "unityRuntimeSmokeRunId": null,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
@@ -35905,7 +35905,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-02T14:17:35.569Z"
+        "verifiedAt": "2026-10-03T14:33:14.154Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -35947,9 +35947,9 @@
         "buildOrPackagePassed": false,
         "artifactIdentity": null,
         "runtimePassed": false,
-        "independentQaPassed": true,
+        "independentQaPassed": false,
         "multiplayerPassed": true,
-        "regressionPassed": true,
+        "regressionPassed": false,
         "rawStageResults": {
           "runtime": false,
           "independentQa": false,
@@ -35958,9 +35958,9 @@
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": false,
-        "lastSuccessfulStage": "F9_RELEASE_REGRESSION",
-        "failureStage": null,
-        "failureSignature": null
+        "lastSuccessfulStage": "CHEAP_PRECHECK",
+        "failureStage": "F0_SOURCE_INTEGRITY",
+        "failureSignature": "3837e5850d5baab625f3df16277c5218a8c9c008ae4a1a72f56f3e0e488a54ad"
       },
       "resumeStage": "F0_SOURCE_INTEGRITY",
       "failureCount": 1,
@@ -39901,7 +39901,11 @@
             }
           }
         ]
-      }
+      },
+      "unityMobilePerformancePassed": false,
+      "unityMobilePerformanceEvidence": null,
+      "unityGeneratedAssetRuntimeBindingPassed": false,
+      "unityAssetRuntimeBindingEvidence": null
     },
     {
       "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -72782,7 +72786,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-03T14:33:26.958Z",
+  "updatedAt": "2026-10-03T14:33:30.734Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
