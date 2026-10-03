@@ -338,7 +338,9 @@ test('candidate publication rebases transport onto latest main only when respons
   assert.doesNotMatch(workflow,/\/git\/refs"/);
   assert.match(workflow,/git -C "\$contract_root" fetch --depth=1 --no-tags origin main --quiet/);
   assert.match(workflow,/transport_base_sha="\$\(git -C "\$contract_root" rev-parse FETCH_HEAD\)"/);
-  assert.match(workflow,/diff --name-only "\$base_sha" "\$transport_base_sha" -- "\$SOURCE_ROOT"/);
+  assert.match(workflow,/candidate_transport_paths=\("\$SOURCE_ROOT" "\$\{generated_asset_files\[@\]\}"\)/);
+  assert.match(workflow,/diff --name-only "\$base_sha" "\$transport_base_sha" -- "\$\{candidate_transport_paths\[@\]\}"/);
+  assert.match(workflow,/for file in "\$\{generated_asset_files\[@\]\}"; do[\s\S]*cp -a "\$candidate_dir\/\$file" "\$transport_dir\/\$file"/);
   assert.match(workflow,/failure_class=CANDIDATE_SOURCE_DRIFT/);
   assert.match(workflow,/worktree add --detach "\$transport_dir" "\$transport_base_sha"/);
   assert.match(workflow,/row\.transportBaseSha=String\(process\.env\.TRANSPORT_BASE_SHA\|\|''\)/);
