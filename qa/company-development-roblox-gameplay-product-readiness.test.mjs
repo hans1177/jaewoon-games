@@ -99,6 +99,7 @@ Players.PlayerRemoving:Connect(function(player) pcall(function() store:UpdateAsy
 `;
   const result=evaluateRobloxGameplayProductReadiness({gameId:'survival',baseline:survivalBaseline,config,server,client:mobileClient+'\nlocal remote=Instance.new("RemoteEvent"); remote:FireServer("GATHER")',project});
   assert.equal(result.antiSkeletonPassed,true);
+  assert.equal(result.pass,true);
   assert.equal(result.implementedCapabilities.GATHERING,true);
   assert.equal(result.implementedCapabilities.CRAFTING,true);
   assert.equal(result.implementedCapabilities.DAY_NIGHT,true);
@@ -136,6 +137,7 @@ test('F9 blocks exact engine execution without server boot actual play and real 
     gameplayProductReadiness:{
       pass:true,
       studioQualitySheet:{Core:'PLAYABLE'},
+      studioReadiness:{f9SourceQualityReady:true,criticalGaps:[]},
       runtimeRequirements:{worldRequired:true,minimumBasePartCount:5,spawnRequired:true,landmarkRequired:true,objectiveRequired:true,serverBootRequired:true,simulationRequired:true,actualPlayRequired:true}
     }
   };
