@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "survival-build-up-g2-1a0705fb7b13",
-  "directiveFingerprint": "1a0705fb7b136d68947d6040152034f2bd330cbeab9d51c9d643f8f240770fa5",
-  "previousDirectiveFingerprint": "174b7129dd907e0b9adf791d8de35bf2d120041e25f83c84ee97d0ca094d6edb",
-  "forbiddenRepeatFingerprint": "174b7129dd907e0b9adf791d8de35bf2d120041e25f83c84ee97d0ca094d6edb",
+  "directiveId": "survival-build-up-g3-8e624154bb75",
+  "directiveFingerprint": "8e624154bb752430195c875020c3e9a87477e43b17cf3b75455a92155047e148",
+  "previousDirectiveFingerprint": "1a0705fb7b136d68947d6040152034f2bd330cbeab9d51c9d643f8f240770fa5",
+  "forbiddenRepeatFingerprint": "1a0705fb7b136d68947d6040152034f2bd330cbeab9d51c9d643f8f240770fa5",
   "gameId": "survival",
   "gameName": "나의 생존기",
-  "generation": 2,
+  "generation": 3,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "unity-games/survival",
-  "sourceTreeFingerprint": "7fc9e9db3d8d1676b631aa9425291f2da9e588282793b962782e7ce7cbb3f694",
+  "sourceTreeFingerprint": "8c2eab6c33eea06a57fa673fd629cac8768ce1e0302de31d43bb4c64d06e5066",
   "designFingerprint": "efe91120fd918ad40a64d2470a22f7dfb7986423ca1af5ded6711ca024b29a44",
   "gameIdentityAndNonNegotiables": {
     "identity": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.",
@@ -55,17 +55,16 @@
       "GAME_FEEL_SPARSE",
       "VFX_IMPLEMENTATION_SPARSE",
       "AUDIO_IMPLEMENTATION_SPARSE",
-      "UI_MENU_FLOW_SPARSE",
-      "PERFORMANCE_BUDGET_SPARSE"
+      "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
       "combat": 12,
-      "progression": 24,
+      "progression": 25,
       "ai": 18,
       "save": 25,
       "multiplayer": 0,
-      "animation": 2,
-      "motionStates": 16,
+      "animation": 42,
+      "motionStates": 42,
       "gameFeel": 0,
       "vfx": 0,
       "camera": 8,
@@ -76,18 +75,18 @@
       "entryFlow": 4,
       "loadingFlow": 0,
       "input": 7,
-      "map": 14,
+      "map": 15,
       "landmark": 4,
-      "interaction": 3,
+      "interaction": 7,
       "inventory": 0,
       "equipment": 10,
       "settings": 12,
-      "feedback": 5,
+      "feedback": 6,
       "session": 10,
       "content": 14,
       "choice": 41,
       "connection": 0,
-      "performance": 0,
+      "performance": 8,
       "lighting": 6,
       "primitive": 13,
       "todo": 0,
@@ -96,7 +95,7 @@
     "topFiles": [
       {
         "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
-        "score": 86
+        "score": 110
       },
       {
         "file": "unity-games/survival/Assets/Editor/UnityWebFloorBuild.cs",
@@ -122,7 +121,7 @@
     "sourceAnchors": [
       {
         "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 142,
+        "line": 312,
         "kind": "METHOD",
         "symbol": "LoadState",
         "context": "private void LoadState()",
@@ -146,7 +145,7 @@
       },
       {
         "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 150,
+        "line": 320,
         "kind": "METHOD",
         "symbol": "LogState",
         "context": "private void LogState()",
@@ -154,7 +153,7 @@
       },
       {
         "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 38,
+        "line": 208,
         "kind": "METHOD",
         "symbol": "BuildWorld",
         "context": "private void BuildWorld()",
@@ -162,7 +161,7 @@
       },
       {
         "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 108,
+        "line": 278,
         "kind": "METHOD",
         "symbol": "StartGameplay",
         "context": "private void StartGameplay()",
@@ -178,7 +177,31 @@
       },
       {
         "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 84,
+        "line": 101,
+        "kind": "METHOD",
+        "symbol": "FootContactSlide",
+        "context": "private static float FootContactSlide(Transform foot, Vector3 previous, float scale)",
+        "score": 32
+      },
+      {
+        "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 139,
+        "kind": "METHOD",
+        "symbol": "MotionFailureReason",
+        "context": "private string MotionFailureReason()",
+        "score": 32
+      },
+      {
+        "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 195,
+        "kind": "METHOD",
+        "symbol": "BindNativeMotionActors",
+        "context": "private int BindNativeMotionActors()",
+        "score": 32
+      },
+      {
+        "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 254,
         "kind": "METHOD",
         "symbol": "Update",
         "context": "private void Update()",
@@ -186,7 +209,7 @@
       },
       {
         "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 135,
+        "line": 305,
         "kind": "METHOD",
         "symbol": "SafeReturn",
         "context": "private void SafeReturn()",
@@ -194,7 +217,7 @@
       },
       {
         "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 155,
+        "line": 325,
         "kind": "METHOD",
         "symbol": "OnGUI",
         "context": "private void OnGUI()",
@@ -203,6 +226,14 @@
       {
         "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
         "line": 3,
+        "kind": "CLASS",
+        "symbol": "JaewoonNativeMotionActor",
+        "context": "public sealed class JaewoonNativeMotionActor : MonoBehaviour",
+        "score": 28
+      },
+      {
+        "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 156,
         "kind": "CLASS",
         "symbol": "UnityWebFloorGame",
         "context": "public sealed class UnityWebFloorGame : MonoBehaviour",
@@ -218,7 +249,7 @@
       },
       {
         "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 22,
+        "line": 24,
         "kind": "METHOD",
         "symbol": "Awake",
         "context": "private void Awake()",
@@ -226,7 +257,79 @@
       },
       {
         "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 115,
+        "line": 39,
+        "kind": "METHOD",
+        "symbol": "Horizontal",
+        "context": "private static Vector3 Horizontal(Vector3 value)",
+        "score": 24
+      },
+      {
+        "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 44,
+        "kind": "METHOD",
+        "symbol": "Update",
+        "context": "private void Update()",
+        "score": 24
+      },
+      {
+        "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 53,
+        "kind": "METHOD",
+        "symbol": "LateUpdate",
+        "context": "private void LateUpdate()",
+        "score": 24
+      },
+      {
+        "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 78,
+        "kind": "METHOD",
+        "symbol": "SampleFootSliding",
+        "context": "private void SampleFootSliding()",
+        "score": 24
+      },
+      {
+        "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 111,
+        "kind": "METHOD",
+        "symbol": "OnAnimatorIK",
+        "context": "private void OnAnimatorIK(int layerIndex)",
+        "score": 24
+      },
+      {
+        "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 118,
+        "kind": "METHOD",
+        "symbol": "ApplyFootIk",
+        "context": "private void ApplyFootIk(AvatarIKGoal goal, Transform foot)",
+        "score": 24
+      },
+      {
+        "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 136,
+        "kind": "METHOD",
+        "symbol": "JaewoonMotionContact",
+        "context": "public void JaewoonMotionContact() { contactCount++; }",
+        "score": 24
+      },
+      {
+        "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 137,
+        "kind": "METHOD",
+        "symbol": "JaewoonMotionHit",
+        "context": "public void JaewoonMotionHit() { hitReactionCount++; hitKick = 1f; }",
+        "score": 24
+      },
+      {
+        "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 175,
+        "kind": "METHOD",
+        "symbol": "Awake",
+        "context": "private void Awake()",
+        "score": 24
+      },
+      {
+        "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 285,
         "kind": "METHOD",
         "symbol": "PerformAction",
         "context": "private void PerformAction(bool mobile)",
@@ -234,7 +337,7 @@
       },
       {
         "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 7,
+        "line": 160,
         "kind": "STATE",
         "symbol": "STATE:SURVIVAL",
         "context": "private const string Mode = \"SURVIVAL\";",
@@ -245,9 +348,9 @@
   "previousVersionDelta": {
     "previousGoal": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "6b8227ab4cff23dba82c50b1b6de97f0baff661234587ce9cc7b3f6388b026e9",
-    "currentSourceTreeFingerprint": "7fc9e9db3d8d1676b631aa9425291f2da9e588282793b962782e7ce7cbb3f694",
+    "previousGeneration": 2,
+    "previousSourceTreeFingerprint": "7fc9e9db3d8d1676b631aa9425291f2da9e588282793b962782e7ce7cbb3f694",
+    "currentSourceTreeFingerprint": "8c2eab6c33eea06a57fa673fd629cac8768ce1e0302de31d43bb4c64d06e5066",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -615,13 +718,13 @@
     },
     {
       "domain": "PERFORMANCE",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "PERFORMANCE_BUDGET",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "RUNTIME_STABILITY",
@@ -1267,8 +1370,8 @@
     },
     {
       "domain": "PERFORMANCE",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "실제 병목 근거를 기준으로 update/tick 빈도, 객체/파티클 수명, draw/instance 수, GC/할당, 네트워크 빈도, 모바일 열/메모리 비용을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1276,8 +1379,8 @@
     },
     {
       "domain": "PERFORMANCE_BUDGET",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "맵·에셋·NPC·VFX를 늘릴 때 객체 수명, 동시 NPC/파티클, 업데이트 빈도, 스트리밍/LOD, 메모리·모바일 프레임 예산을 함께 정의하고 초과 시 표현 비용부터 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1379,16 +1482,6 @@
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "PERFORMANCE",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "PERFORMANCE_BUDGET",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "RUNTIME_STABILITY",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
@@ -1401,9 +1494,9 @@
   ],
   "primaryFocus": "USABILITY",
   "thisLoopPrimaryGoal": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"일일 생존 기록 시스템\", 현재 책임 소스는 unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs::LoadState, unity-games/survival/Assets/Editor/UnityWebFloorBuild.cs::BuildWeb, unity-games/survival/Assets/Editor/UnityWebFloorBuild.cs::Build, unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs::LogState, unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs::BuildWorld, unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs::StartGameplay, unity-games/survival/Assets/Editor/UnityWebFloorBuild.cs::UnityWebFloorBuild, unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs::Update이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"일일 생존 기록 시스템\", 현재 책임 소스는 unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs::LoadState, unity-games/survival/Assets/Editor/UnityWebFloorBuild.cs::BuildWeb, unity-games/survival/Assets/Editor/UnityWebFloorBuild.cs::Build, unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs::LogState, unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs::BuildWorld, unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs::StartGameplay, unity-games/survival/Assets/Editor/UnityWebFloorBuild.cs::UnityWebFloorBuild, unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs::FootContactSlide이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs::LoadState, unity-games/survival/Assets/Editor/UnityWebFloorBuild.cs::BuildWeb, unity-games/survival/Assets/Editor/UnityWebFloorBuild.cs::Build, unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs::LogState, unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs::BuildWorld, unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs::StartGameplay, unity-games/survival/Assets/Editor/UnityWebFloorBuild.cs::UnityWebFloorBuild, unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs::Update에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs::LoadState, unity-games/survival/Assets/Editor/UnityWebFloorBuild.cs::BuildWeb, unity-games/survival/Assets/Editor/UnityWebFloorBuild.cs::Build, unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs::LogState, unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs::BuildWorld, unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs::StartGameplay, unity-games/survival/Assets/Editor/UnityWebFloorBuild.cs::UnityWebFloorBuild, unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs::FootContactSlide에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "일일 생존 기록 시스템를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "즉석 제작 및 개조 시스템가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -1453,8 +1546,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 16974,
-        "largestFileBytes": 7793,
+        "sourceBytes": 23881,
+        "largestFileBytes": 14700,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1486,8 +1579,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 3,
-    "selectedThemeReason": "6 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
+    "themeDepth": 4,
+    "selectedThemeReason": "6 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1497,9 +1590,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 3
+        "PRESENTATION_WORLD_COHESION": 4
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
@@ -1537,7 +1631,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 229,
+        "score": 211,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1834,7 +1928,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 142,
+        "line": 312,
         "kind": "METHOD",
         "symbol": "LoadState",
         "currentBehavior": "private void LoadState()",
@@ -1861,7 +1955,7 @@
       },
       {
         "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 150,
+        "line": 320,
         "kind": "METHOD",
         "symbol": "LogState",
         "currentBehavior": "private void LogState()",
@@ -1870,7 +1964,7 @@
       },
       {
         "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 38,
+        "line": 208,
         "kind": "METHOD",
         "symbol": "BuildWorld",
         "currentBehavior": "private void BuildWorld()",
@@ -1879,7 +1973,7 @@
       },
       {
         "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 108,
+        "line": 278,
         "kind": "METHOD",
         "symbol": "StartGameplay",
         "currentBehavior": "private void StartGameplay()",
@@ -1897,11 +1991,11 @@
       },
       {
         "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 84,
+        "line": 101,
         "kind": "METHOD",
-        "symbol": "Update",
-        "currentBehavior": "private void Update()",
-        "intendedBehavior": "USABILITY primary goal \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 Update의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "symbol": "FootContactSlide",
+        "currentBehavior": "private static float FootContactSlide(Transform foot, Vector3 previous, float scale)",
+        "intendedBehavior": "USABILITY primary goal \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 FootContactSlide의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
         "observableAcceptance": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -1950,7 +2044,7 @@
       },
       {
         "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
-        "symbol": "Update",
+        "symbol": "FootContactSlide",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
@@ -2000,7 +2094,7 @@
     "sourceAnchors": [
       {
         "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 142,
+        "line": 312,
         "kind": "METHOD",
         "symbol": "LoadState",
         "context": "private void LoadState()",
@@ -2036,7 +2130,7 @@
       },
       {
         "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 150,
+        "line": 320,
         "kind": "METHOD",
         "symbol": "LogState",
         "context": "private void LogState()",
@@ -2048,7 +2142,7 @@
       },
       {
         "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 38,
+        "line": 208,
         "kind": "METHOD",
         "symbol": "BuildWorld",
         "context": "private void BuildWorld()",
@@ -2060,7 +2154,7 @@
       },
       {
         "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 108,
+        "line": 278,
         "kind": "METHOD",
         "symbol": "StartGameplay",
         "context": "private void StartGameplay()",
@@ -2084,20 +2178,110 @@
       },
       {
         "file": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 84,
+        "line": 101,
         "kind": "METHOD",
-        "symbol": "Update",
-        "context": "private void Update()",
+        "symbol": "FootContactSlide",
+        "context": "private static float FootContactSlide(Transform foot, Vector3 previous, float scale)",
         "score": 32,
-        "currentBehavior": "private void Update()",
-        "intendedBehavior": "USABILITY primary goal \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 Update의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs::Update이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "currentBehavior": "private static float FootContactSlide(Transform foot, Vector3 previous, float scale)",
+        "intendedBehavior": "USABILITY primary goal \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 FootContactSlide의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs::FootContactSlide이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "selectionRule": "DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST",
     "exactSourceAnchorRequired": true,
     "currentAndIntendedBehaviorRequiredPerPrimaryAnchor": true
+  },
+  "developmentImpact": {
+    "version": 1,
+    "platform": "WEB",
+    "categories": [
+      "GRAPHICS",
+      "MAP",
+      "UI",
+      "GAMEPLAY",
+      "SAVE"
+    ],
+    "requiredQa": [
+      "CHANGED_RESPONSIBILITY_STATIC_QA",
+      "MAP_PROTECTED_ANCHOR_QA",
+      "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
+      "SAVE_LOAD_MIGRATION_QA",
+      "SECURITY_AUTHORITY_QA",
+      "VISUAL_BINDING_QA"
+    ],
+    "conditionalQa": [
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+    ],
+    "securityRelevant": true,
+    "openCloudWorldChecks": []
+  },
+  "preMutationDryRun": {
+    "version": 1,
+    "mode": "DRY_RUN_NO_SOURCE_MUTATION",
+    "gameId": "survival",
+    "platform": "WEB",
+    "plannedFiles": [
+      "unity-games/survival/Assets/Scripts/GameCore.cs",
+      "unity-games/survival/Assets/Scripts/RuntimeBootstrap.cs",
+      "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
+      "unity-games/survival/Assets/Editor/UnityWebFloorBuild.cs",
+      "unity-games/survival/Assets/Art/unity-web-floor-domain.json",
+      "unity-games/survival/Assets/Animations/unity-web-floor-domain.json",
+      "unity-games/survival/Assets/Materials/unity-web-floor-domain.json",
+      "unity-games/survival/Assets/Prefabs/unity-web-floor-domain.json"
+    ],
+    "impact": {
+      "version": 1,
+      "platform": "WEB",
+      "categories": [
+        "GRAPHICS",
+        "MAP",
+        "UI",
+        "GAMEPLAY",
+        "SAVE"
+      ],
+      "requiredQa": [
+        "CHANGED_RESPONSIBILITY_STATIC_QA",
+        "MAP_PROTECTED_ANCHOR_QA",
+        "MOBILE_TOUCH_UI_QA",
+        "GAMEPLAY_STATE_DELTA_QA",
+        "SAVE_LOAD_MIGRATION_QA",
+        "SECURITY_AUTHORITY_QA",
+        "VISUAL_BINDING_QA"
+      ],
+      "conditionalQa": [
+        "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+      ],
+      "securityRelevant": true,
+      "openCloudWorldChecks": []
+    },
+    "protectedSemantics": [
+      "CORE_RULES",
+      "BALANCE",
+      "PROGRESSION",
+      "SAVE_MEANING",
+      "ECONOMY",
+      "NETWORK_AUTHORITY"
+    ],
+    "requiredQa": [
+      "CHANGED_RESPONSIBILITY_STATIC_QA",
+      "MAP_PROTECTED_ANCHOR_QA",
+      "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
+      "SAVE_LOAD_MIGRATION_QA",
+      "SECURITY_AUTHORITY_QA",
+      "VISUAL_BINDING_QA"
+    ],
+    "conditionalQa": [
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+    ],
+    "openCloudWorldChecks": [],
+    "sourceMutationPerformed": false,
+    "newWorkflowOrQueueRequired": false,
+    "nextStep": "EXISTING_WORK_ORDER_EXECUTION"
   },
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
@@ -2107,7 +2291,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "7fc9e9db3d8d1676b631aa9425291f2da9e588282793b962782e7ce7cbb3f694",
+      "sourceTreeFingerprint": "8c2eab6c33eea06a57fa673fd629cac8768ce1e0302de31d43bb4c64d06e5066",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2154,7 +2338,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 4,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2216,7 +2400,6 @@
       "SYSTEM_CONNECTION",
       "SAVE_COMPLETENESS",
       "MENU_FLOW",
-      "PERFORMANCE_BUDGET",
       "RUNTIME_STABILITY"
     ],
     "notApplicable": [
@@ -2228,5 +2411,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-02T13:25:27.980Z"
+  "generatedAt": "2026-10-03T15:14:00.661Z"
 }
