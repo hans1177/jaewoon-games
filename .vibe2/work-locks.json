@@ -3,36 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1ktotuh",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-unity-web-repair-v1",
-      "gameId": "daechung-rpg",
-      "files": [
-        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "assets/generated/unity/daechung-rpg/background/asset.glb",
-        "assets/generated/unity/daechung-rpg/background/preview.png",
-        "assets/generated/unity/daechung-rpg/background/evidence.json",
-        "assets/generated/unity/daechung-rpg/item/asset.glb",
-        "assets/generated/unity/daechung-rpg/item/preview.png",
-        "assets/generated/unity/daechung-rpg/item/evidence.json",
-        "assets/generated/unity/daechung-rpg/prop/asset.glb",
-        "assets/generated/unity/daechung-rpg/prop/preview.png",
-        "assets/generated/unity/daechung-rpg/prop/evidence.json"
-      ],
-      "baseSha": "5cfa784a236faf9c96d7488dabc45df00c2adb8a",
-      "runId": "37145783131",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-03T19:17:18.563Z",
-      "expiresAt": "2026-10-03T20:02:18.563Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-unity-web-repair-v1"
-      ]
-    },
-    {
       "id": "wl-1p3g0nj",
       "worker": "vibe2",
       "taskId": "bug-defense-roblox-second-gate-rebuild-v1",
@@ -287,6 +257,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-13ejcsy",
+      "worker": "vibe2",
+      "taskId": "cozy-island-existing-web-assessment-v1",
+      "gameId": "cozy-island",
+      "files": [
+        "web-games/cozy-island/index.html"
+      ],
+      "baseSha": "d1816f8f0967df460dda045a2cab1a1fbf3cd62e",
+      "runId": "37149385634",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-03T20:02:34.646Z",
+      "expiresAt": "2026-10-03T20:47:34.646Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:cozy-island-existing-web-assessment-v1"
       ]
     }
   ]
