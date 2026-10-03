@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { isWorkflowPath, scanTextForDirectMainWrite } from '../tools/main-write-guard.mjs';
+import { FINAL_CHAIN_LOCK_PATHS, finalChainLockViolations, isWorkflowPath, scanTextForDirectMainWrite } from '../tools/main-write-guard.mjs';
 
 test('workflow path detector only accepts workflow yaml files',()=>{
   assert.equal(isWorkflowPath('.github/workflows/build.yml'),true);
@@ -53,4 +53,33 @@ test('main write guard skips its own unit suite when only unrelated workflow fil
   assert.match(workflow,/tools\/main-write-guard\\.mjs\|qa\/main-write-guard\\.test\\.mjs\|\\.github\/workflows\/main-write-guard\\.yml/);
   assert.match(workflow,/if: \$\{\{ steps\.scope\.outputs\.guard_changed == 'YES' \}\}/);
   assert.match(workflow,/Reject new workflow direct writes to main/);
+});
+
+
+test('final chain lock blocks only locked pipeline files and leaves game source development open',()=>{
+  const lock={status:'LOCKED',lockedPaths:FINAL_CHAIN_LOCK_PATHS};
+  const hits=finalChainLockViolations({
+    files:['tools/company-build-up-directive.mjs','roblox-games/demo/server/Game.server.luau'],
+    lock,actor:'github-actions[bot]',owner:'hans1177'
+  });
+  assert.deepEqual(hits.map(row=>row.file),['tools/company-build-up-directive.mjs']);
+});
+
+test('final chain lock owner unlock requires both repository owner actor and explicit title token',()=>{
+  const lock={status:'LOCKED',lockedPaths:FINAL_CHAIN_LOCK_PATHS};
+  assert.equal(finalChainLockViolations({
+    files:['tools/company-build-up-directive.mjs'],lock,actor:'hans1177',owner:'hans1177',unlockTitle:'[OWNER_UNLOCK] pipeline repair'
+  }).length,0);
+  assert.equal(finalChainLockViolations({
+    files:['tools/company-build-up-directive.mjs'],lock,actor:'other-user',owner:'hans1177',unlockTitle:'[OWNER_UNLOCK] pipeline repair'
+  }).length,1);
+});
+
+test('main write guard watches final locked chain without watching ordinary game source',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/main-write-guard.yml',import.meta.url),'utf8');
+  assert.match(workflow,/company-learning\/platform-release-roadmap\.json/);
+  assert.match(workflow,/tools\/company-build-up-directive\.mjs/);
+  assert.match(workflow,/company-development-roblox-post-runtime-qa\.yml/);
+  assert.match(workflow,/--unlock-title=/);
+  assert.doesNotMatch(workflow,/roblox-games\/\*\*/);
 });
