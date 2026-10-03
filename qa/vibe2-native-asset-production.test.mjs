@@ -435,6 +435,9 @@ test('generic environment and prop authoring declares task-specific Blender outp
   const task={gameId:'amusement-tycoon',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 놀이공원 환경 배경 소품을 플랫폼 네이티브 3D 자산으로 개선'};
   const roblox=buildVibeAssetProductionPlan({target:'roblox',task,manifest:{assets:[]},presetCatalog:{presets:[]}});
   assert.equal(roblox.nativeAuthoringExecution.dcc.executionRequired,true);
+  assert.deepEqual([...roblox.explicitRequestedTypes].sort(),['background','prop']);
+  assert.deepEqual([...roblox.nativeAuthoringExecution.dcc.explicitRequestedTypes].sort(),['background','prop']);
+  assert.equal(roblox.nativeAuthoringExecution.dcc.authoringScopeMode,'EXPLICIT_TASK_REQUEST_PLUS_DECLARED_RECIPES');
   assert.equal(roblox.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_EXISTING_AUTHORING_EXECUTOR');
   assert.equal(roblox.nativeAuthoringExecution.dcc.uncoveredTypes.length,0);
   assert.ok(roblox.nativeAuthoringExecution.dcc.genericRecipeCount>=1);
