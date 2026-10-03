@@ -846,7 +846,7 @@ test('첫 캐릭터 프레임은 안전 바닥을 먼저 만들고 실제 목적
 });
 
 test('대기 로비 캐릭터는 경기장 MapReady를 기다리지 않고 로비 바닥에 즉시 스폰한다',()=>{
- const block=server.slice(server.indexOf('local function onCharacter'),server.indexOf('Players.PlayerAdded:Connect(function(p)'));
+ const block=server.slice(server.indexOf('function BotAI.onCharacter'),server.indexOf('Players.PlayerAdded:Connect(function(p)'));
  assert.match(block,/workspace:GetAttribute\("PhysicalLobbyReady"\)/);
  assert.match(block,/local destination,look=personalSpawn\(p\)/);
  assert.match(block,/p\.RespawnLocation=lobbyBootstrapSpawn/);
