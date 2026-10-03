@@ -86,6 +86,10 @@ const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT=768;
 const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS=120000;
 const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW=8192;
 const ASSET_DEVELOPMENT_ROBLOX_MAX_GENERATION_ATTEMPTS=3;
+const ASSET_DEVELOPMENT_UNITY_FOCUSED_MAX_PREDICT=768;
+const ASSET_DEVELOPMENT_UNITY_FOCUSED_TIMEOUT_MS=120000;
+const ASSET_DEVELOPMENT_UNITY_FOCUSED_CONTEXT_WINDOW=8192;
+const ASSET_DEVELOPMENT_UNITY_MAX_GENERATION_ATTEMPTS=3;
 const JSON_CONTEXT_WINDOW=16384;
 const JSON_FINAL_CONTEXT_WINDOW=16384;
 const JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=8192;
@@ -2939,7 +2943,7 @@ export function recoverFocusedReplaceOnly(raw,spec={}){
   }
   return null;
 }
-export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2,previousOutput='',sourceRoot='',systemAtomicPairRequired=false,multiFilePairRequired=false,studioInitial=false,robloxGraphicsInitial=false,robloxFullGraphicsPackageActive=false,oversizedInitial=false,failureRepeatCount=0}={}){
+export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2,previousOutput='',sourceRoot='',systemAtomicPairRequired=false,multiFilePairRequired=false,studioInitial=false,robloxGraphicsInitial=false,assetFocusedInitial=false,nativeAssetBindingHints=[],robloxFullGraphicsPackageActive=false,oversizedInitial=false,failureRepeatCount=0}={}){
   const rawPrompt=String(prompt??'');
   const rawGoalLine=rawPrompt.split('\n').find(value=>value.startsWith('Goal:'))||'';
   const compactGoalLine=rawGoalLine
@@ -2952,7 +2956,19 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
     : [];
   const exactResponsible=unique(responsibleFiles.length?responsibleFiles:allowedPaths);
   const exactPath=exactResponsible.length===1?exactResponsible[0]:'';
-  const reason=robloxGraphicsInitial?'INITIAL_ROBLOX_GRAPHICS_PACKAGE':studioInitial?'INITIAL_STUDIO_PACKAGE':oversizedInitial?'INITIAL_OVERSIZED_PROMPT':(clean(error?.message||error).slice(0,240)||'malformed candidate');
+  const reason=robloxGraphicsInitial?'INITIAL_ROBLOX_GRAPHICS_PACKAGE':assetFocusedInitial?'INITIAL_NATIVE_ASSET_BINDING':studioInitial?'INITIAL_STUDIO_PACKAGE':oversizedInitial?'INITIAL_OVERSIZED_PROMPT':(clean(error?.message||error).slice(0,240)||'malformed candidate');
+  const nativeBindingRows=(Array.isArray(nativeAssetBindingHints)?nativeAssetBindingHints:[]).map(row=>({
+    path:clean(row?.path),
+    artifactHash:clean(row?.artifactHash),
+    assetId:clean(row?.assetId)||null,
+    family:clean(row?.family).toUpperCase()||null
+  })).filter(row=>row.path&&row.artifactHash);
+  const nativeAssetBindingBlock=nativeBindingRows.length?[
+    '[GENERATED NATIVE ASSET IDENTITY]',
+    ...nativeBindingRows.map(row=>`path=${row.path} | sha256=${row.artifactHash} | assetId=${row.assetId||'generated'} | family=${row.family||'UNKNOWN'}`),
+    'The changed engine-native source MUST bind every exact path and sha256 above in executable presentation-owned source while preserving gameplay/save/progression/network authority.',
+    '[END GENERATED NATIVE ASSET IDENTITY]'
+  ].join('\n'):'';
   const zeroChange=/실제 source 변경/i.test(reason);
   const noChangeEdit=/변경 없는 edit/i.test(reason);
   const timeoutFailure=/시간 초과|timeout|prediction aborted|token repeat limit/i.test(reason);
@@ -3043,7 +3059,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
       retryBase=[criticalPrefix,...editable].join('\n\n');
     }
   }
-  if(!allowFullRewrite&&(oversizedInitial||zeroChange||noChangeEdit||invalidPath||editMatchFailure||semanticDiffViolation||presentationDelta||robloxFullGraphicsPackageRecovery||studioQualityDelta||systemCausalTestRequired||systemSyntaxInvalid||(attempt>=2&&timeoutFailure))){
+  if(!allowFullRewrite&&(assetFocusedInitial||oversizedInitial||zeroChange||noChangeEdit||invalidPath||editMatchFailure||semanticDiffViolation||presentationDelta||robloxFullGraphicsPackageRecovery||studioQualityDelta||systemCausalTestRequired||systemSyntaxInvalid||(attempt>=2&&timeoutFailure))){
     const marker='\n=== FILE ';
     const starts=[];
     for(let at=retryBase.indexOf(marker);at>=0;at=retryBase.indexOf(marker,at+marker.length))starts.push(at);
@@ -3063,7 +3079,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         if(header.includes('[EDITABLE]')||exactResponsible.includes(sectionPath)){
           if(attempt>=3||timeoutFailure||studioInitial||robloxGraphicsInitial||oversizedInitial){
             const body=section.split('\n').slice(1).join('\n');
-            const excerptBytes=robloxGraphicsInitial?3200:(studioInitial?1500:(oversizedInitial?3500:5000));
+            const excerptBytes=assetFocusedInitial?1400:(robloxGraphicsInitial?3200:(studioInitial?1500:(oversizedInitial?3500:5000)));
             const excerpt=boundedLargeExcerpt(body,excerptBytes);
             section=header+'\n'+excerpt.content;
           }
@@ -3074,7 +3090,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         const atomicRequired=systemAtomicPairRequired||multiFilePairRequired;
         const editableLimit=atomicRequired
           ?Math.max(2,exactResponsible.length)
-          :(studioInitial||robloxGraphicsInitial?4:(oversizedInitial?3:editable.length));
+          :(assetFocusedInitial?3:(studioInitial||robloxGraphicsInitial?4:(oversizedInitial?3:editable.length)));
         const boundedEditable=editable.slice(0,editableLimit);
         const compactRetryPrefix=(oversizedInitial||invalidPath||timeoutFailure||presentationDelta||robloxFullGraphicsPackageRecovery||studioQualityDelta||(studioExpansion&&editMatchFailure))?[
           'You are the Vibe2 game source worker. Return JSON only.',
@@ -3085,6 +3101,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
           gameContextCapsuleBlockFromPrompt(rawPrompt),
           preSubmitSelfReviewBlockFromPrompt(rawPrompt),
           studioAssetQualityCoreBlockFromPrompt(rawPrompt),
+          nativeAssetBindingBlock,
           allowedLine,
           'Preserve gameplay values, save meaning and existing behavior unless the work order explicitly authorizes a protected change.',
           'Every edits[].path MUST be one exact path from Allowed edit paths.',
@@ -3141,11 +3158,13 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         'The response MUST begin with VIBE2_FULL_FILE and MUST end with ---VIBE2_FILE_END---. Finish the game before the limit rather than adding optional polish.'
       ].join('\n')
     : [
-        robloxGraphicsInitial?'INITIAL ROBLOX FULL GRAPHICS PACKAGE: generate the complete connected visual package directly from the writable source; this is the first attempt, not a recovery retry.':studioInitial?'STUDIO QUALITY BUILD-UP: generate the connected implementation package directly.':oversizedInitial?'INITIAL BOUNDED SOURCE REQUEST: this is the first generation attempt. The original work order exceeded the local model context budget, so duplicate planning and read-only context were removed while exact writable source, verified learning, and responsibility constraints remain authoritative.':zeroChange?'RECOVERY RETRY: the previous candidate contained zero actual source changes.':noChangeEdit?'RECOVERY RETRY: the previous edit copied the same text without changing source.':editMatchFailure?'RECOVERY RETRY: the previous edits[].find text did not match the writable source.':semanticDiffViolation?'RECOVERY RETRY: the previous candidate crossed the compiled semantic edit budget.':presentationDelta?'RECOVERY RETRY: the previous presentation candidate did not change any actual visible source behavior.':studioQualityDelta?'RECOVERY RETRY: the previous studio-quality candidate was too small for the required connected implementation package.':unityBootstrapPairFailure?'RECOVERY RETRY: the Unity Web bootstrap candidate did not edit both required game-source files in one atomic candidate.':systemCausalTestRequired?'RECOVERY RETRY: the system architecture candidate did not include the required atomic source plus causal regression-test pair.':systemSyntaxInvalid?'RECOVERY RETRY: the system architecture candidate was syntactically invalid before incremental QA.':timeoutFailure?'RECOVERY RETRY: the previous model response exceeded the time budget.':invalidPath?'RECOVERY RETRY: the previous candidate used an invalid edit path.':'RECOVERY RETRY: the previous candidate was not strict valid JSON.',
+        robloxGraphicsInitial?'INITIAL ROBLOX FULL GRAPHICS PACKAGE: generate the complete connected visual package directly from the writable source; this is the first attempt, not a recovery retry.':assetFocusedInitial?'INITIAL NATIVE ASSET BINDING: start with one small engine-native source change that consumes the exact generated asset path and sha256 identity below; this is the first attempt, not a recovery retry.':studioInitial?'STUDIO QUALITY BUILD-UP: generate the connected implementation package directly.':oversizedInitial?'INITIAL BOUNDED SOURCE REQUEST: this is the first generation attempt. The original work order exceeded the local model context budget, so duplicate planning and read-only context were removed while exact writable source, verified learning, and responsibility constraints remain authoritative.':zeroChange?'RECOVERY RETRY: the previous candidate contained zero actual source changes.':noChangeEdit?'RECOVERY RETRY: the previous edit copied the same text without changing source.':editMatchFailure?'RECOVERY RETRY: the previous edits[].find text did not match the writable source.':semanticDiffViolation?'RECOVERY RETRY: the previous candidate crossed the compiled semantic edit budget.':presentationDelta?'RECOVERY RETRY: the previous presentation candidate did not change any actual visible source behavior.':studioQualityDelta?'RECOVERY RETRY: the previous studio-quality candidate was too small for the required connected implementation package.':unityBootstrapPairFailure?'RECOVERY RETRY: the Unity Web bootstrap candidate did not edit both required game-source files in one atomic candidate.':systemCausalTestRequired?'RECOVERY RETRY: the system architecture candidate did not include the required atomic source plus causal regression-test pair.':systemSyntaxInvalid?'RECOVERY RETRY: the system architecture candidate was syntactically invalid before incremental QA.':timeoutFailure?'RECOVERY RETRY: the previous model response exceeded the time budget.':invalidPath?'RECOVERY RETRY: the previous candidate used an invalid edit path.':'RECOVERY RETRY: the previous candidate was not strict valid JSON.',
         retryBase.includes('[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]')?'':buildUpDirectiveBlockFromPrompt(rawPrompt,{responsiblePaths:invalidPath?exactResponsible:[]}),
         retryBase.includes('[GAME CONTEXT CAPSULE BEGIN]')?'':gameContextCapsuleBlockFromPrompt(rawPrompt),
         retryBase.includes('[PRE-SUBMIT SELF REVIEW BEGIN]')?'':preSubmitSelfReviewBlockFromPrompt(rawPrompt),
         repeatedFailureShift,
+        assetFocusedInitial?'The generated asset identity block above is mandatory binding input. Do not replace it with a placeholder or omit the sha256.':'',
+        nativeAssetBindingBlock,
         oversizedInitial?`Initial compaction reason: ${safeReason}`:`Previous failure: ${safeReason}`,
         robloxFullGraphicsPackageInstruction||standardRetryInstruction,
         missingRobloxVisualDomains.length?'MISSING CORE VISUAL DOMAINS TO ADD FIRST: '+missingRobloxVisualDomains.join(', ')+'. Keep every already-satisfied core domain and native motion while adding the missing ones.':'',
@@ -3279,7 +3298,7 @@ export function modelResponseComplete(output,mode='JSON_EDIT'){
     return Boolean(parsed&&typeof parsed==='object'&&!Array.isArray(parsed));
   }catch{return false;}
 }
-async function generateCandidateWithRecovery({prompt,model,responseFile='',responseFiles=[],allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot='',focusedWebRepair=false,exploration=null,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES,candidateValidator=null,candidateVariant='primary',systemAtomicPairRequired=false,multiFilePairRequired=false,verifiedExternalLearningContract=null}={}){
+async function generateCandidateWithRecovery({prompt,model,responseFile='',responseFiles=[],allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot='',focusedWebRepair=false,exploration=null,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES,candidateValidator=null,candidateVariant='primary',systemAtomicPairRequired=false,multiFilePairRequired=false,verifiedExternalLearningContract=null,nativeAssetBindingHints=[]}={}){
   let lastError=null;
   let lastRaw='';
   let lastRejectedCandidate=null;
@@ -3319,15 +3338,17 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let repeatedFailureShiftKey='';
   const studioExpansion=/\[STUDIO[_ ]QUALITY[_ ]EVOLUTION\]/i.test(String(prompt??''));
   const assetDevelopmentLane=clean(process.env.VIBE2_EXECUTION_LANE).toLowerCase()==='asset-development';
-  const robloxGraphicsInitial=!allowFullRewrite
-    &&/Engine:\s*roblox/i.test(String(prompt??''))
-    &&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(String(prompt??''));
+  const assetAdaptationRequested=!allowFullRewrite&&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(String(prompt??''));
+  const robloxGraphicsInitial=assetAdaptationRequested&&target==='roblox';
+  const unityAssetGraphicsInitial=assetDevelopmentLane&&assetAdaptationRequested&&target==='unity';
   if(robloxGraphicsInitial)robloxFullGraphicsPackageActive=true;
   const specializedInitialPrompt=studioExpansion&&!allowFullRewrite
-    ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,studioInitial:true})
-    :robloxGraphicsInitial
-      ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,robloxGraphicsInitial:true,robloxFullGraphicsPackageActive:true})
-      :prompt;
+    ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,studioInitial:true,nativeAssetBindingHints})
+    :unityAssetGraphicsInitial
+      ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,assetFocusedInitial:true,nativeAssetBindingHints})
+      :robloxGraphicsInitial
+        ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,robloxGraphicsInitial:true,nativeAssetBindingHints,robloxFullGraphicsPackageActive:true})
+        :prompt;
   const dedicatedRobloxOversizePath=target==='roblox'
     &&/\[(?:SECOND_PLATFORM_ADAPTATION_REBUILD:ROBLOX|POST_RELEASE_FOCUSED_DEVELOPMENT)\]/.test(String(prompt));
   const oversizedStandardInitial=!allowFullRewrite
@@ -3355,9 +3376,11 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   const configuredBaseMaxAttempts=generationAttemptBudget({allowFullRewrite,variant:candidateVariant});
   const baseMaxAttempts=assetDevelopmentLane&&robloxGraphicsInitial
     ?Math.min(ASSET_DEVELOPMENT_ROBLOX_MAX_GENERATION_ATTEMPTS,configuredBaseMaxAttempts)
-    :(studioExpansion&&!allowFullRewrite
-      ?Math.min(3,configuredBaseMaxAttempts)
-      :configuredBaseMaxAttempts);
+    :assetDevelopmentLane&&unityAssetGraphicsInitial
+      ?Math.min(ASSET_DEVELOPMENT_UNITY_MAX_GENERATION_ATTEMPTS,configuredBaseMaxAttempts)
+      :(studioExpansion&&!allowFullRewrite
+        ?Math.min(3,configuredBaseMaxAttempts)
+        :configuredBaseMaxAttempts);
   let maxAttempts=baseMaxAttempts;
   let additiveAttemptCreditUsed=false;
   let additiveAttemptCreditLogged=false;
@@ -3433,7 +3456,8 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const malformedFastEscalation=focusedWebRepair&&!allowFullRewrite&&attempt>=2&&priorFailureClass==='MALFORMED_OUTPUT';
     const systemCausalPairRecovery=priorFailureClass==='SYSTEM_CAUSAL_TEST_REQUIRED'||priorFailureClass==='SYSTEM_CANDIDATE_SYNTAX';
     const presentationPatchDeltaRecovery=!allowFullRewrite&&priorFailureClass==='PRESENTATION_PATCH_DELTA';
-    const assetDevelopmentFocusedGraphics=assetDevelopmentLane&&robloxAssetAdaptationTask;
+    const nativeAssetAdaptationTask=!allowFullRewrite&&assetAdaptationRequested&&['roblox','unity'].includes(target);
+    const assetDevelopmentFocusedGraphics=assetDevelopmentLane&&nativeAssetAdaptationTask;
     const focusedFinal=!allowFullRewrite&&!multiFilePairRequired&&(!studioExpansion||studioFocusedSourceRepair||zeroOutputTimeoutRecovery||unityStudioTimeoutFocusedRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||assetDevelopmentFocusedGraphics)&&!robloxFullGraphicsPackageRecovery&&!systemAtomicPairRequired&&!systemCausalPairRecovery&&(robloxRebuildFocused||assetDevelopmentFocusedGraphics||attempt>=3||(target==='roblox'&&/MODEL_CONTROL_TOKEN/.test(clean(lastError?.message)))||timeoutFastEscalation||editMatchFastEscalation||malformedFastEscalation||presentationPatchDeltaRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||(speculativeVariant&&attempt>=2));
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
     const diagnosticFocusedReplaceOnly=!allowFullRewrite&&!studioExpansion&&!robloxFullGraphicsPackageRecovery&&!assetDevelopmentFocusedGraphics
@@ -3453,11 +3477,14 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     let attemptPrompt=expansionMode
       ?buildFullWebExpansionPrompt(prompt,accumulatedFullWeb,{stage:expansionStages+1,minBytes:minFullRewriteBytes,maxBytes:Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minFullRewriteBytes*2),remainingStages,previousFailure:lastError?.message||'',capabilityTarget:fullWebExpansionStageTarget(accumulatedFullWeb.content,expansionStages+1)})
       :(systemAtomicPairCompletion?.prompt||focusedReplaceOnly?.prompt||(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:retryPreviousOutput,sourceRoot,systemAtomicPairRequired,multiFilePairRequired,robloxFullGraphicsPackageActive:robloxFullGraphicsPackageRecovery,failureRepeatCount}):initialStudioPrompt));
+    if(nativeAssetBindingHints.length&&nativeAssetBindingBlock&&!attemptPrompt.includes('[GENERATED NATIVE ASSET IDENTITY]')){
+      attemptPrompt+='\n'+nativeAssetBindingBlock;
+    }
     let maxPredict=expansionMode
       ?FULL_WEB_EXPANSION_MAX_PREDICT
       :(allowFullRewrite
         ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_MAX_PREDICT:(retry?FULL_WEB_RETRY_MAX_PREDICT:FULL_WEB_MAX_PREDICT))
-        :((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_RETRY_MAX_PREDICT:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT:JSON_FOCUSED_REPLACE_MAX_PREDICT)):(focusedFinal?JSON_FINAL_RETRY_MAX_PREDICT:(focusedWebRepair?FOCUSED_WEB_REPAIR_MAX_PREDICT:(retry?JSON_RETRY_MAX_PREDICT:DEFAULT_MAX_PREDICT)))));
+        :((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_RETRY_MAX_PREDICT:(assetDevelopmentFocusedGraphics?(target==='unity'?ASSET_DEVELOPMENT_UNITY_FOCUSED_MAX_PREDICT:ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT):JSON_FOCUSED_REPLACE_MAX_PREDICT)):(focusedFinal?JSON_FINAL_RETRY_MAX_PREDICT:(focusedWebRepair?FOCUSED_WEB_REPAIR_MAX_PREDICT:(retry?JSON_RETRY_MAX_PREDICT:DEFAULT_MAX_PREDICT)))));
     // 고정 앵커의 JSON 이스케이프 분량과 연결 작업에 필요한 여유를 먼저 배정한다.
     if(focusedReplaceOnly){
       const anchorBytes=Buffer.byteLength(JSON.stringify({replace:focusedReplaceOnly.spec.find}),'utf8');
@@ -3475,10 +3502,10 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
         ?FULL_WEB_EXPANSION_TIMEOUT_MS
         :(allowFullRewrite
           ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_TIMEOUT_MS:(retry?FULL_WEB_RETRY_TIMEOUT_MS:FULL_WEB_TIMEOUT_MS))
-          :((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_RETRY_TIMEOUT_MS:(unityStudioTimeoutFocusedRecovery?UNITY_STUDIO_FOCUSED_TIMEOUT_MS:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS))):(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS)))));
+          :((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_RETRY_TIMEOUT_MS:(unityStudioTimeoutFocusedRecovery?UNITY_STUDIO_FOCUSED_TIMEOUT_MS:(assetDevelopmentFocusedGraphics?(target==='unity'?ASSET_DEVELOPMENT_UNITY_FOCUSED_TIMEOUT_MS:ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS):JSON_FOCUSED_REPLACE_TIMEOUT_MS))):(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS)))));
     const baseContextWindow=expansionMode
       ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
-      :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:(robloxRebuildFocused?JSON_CONTEXT_WINDOW:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))));
+      :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:(robloxRebuildFocused?JSON_CONTEXT_WINDOW:(assetDevelopmentFocusedGraphics?(target==='unity'?ASSET_DEVELOPMENT_UNITY_FOCUSED_CONTEXT_WINDOW:ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW):JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))));
     // 압축·부분 수정·확장 재시도에서도 원본 관찰과 잠금/수정 범위를 보존하고 실제 전송량으로 예산을 잡는다.
     for(const label of ['IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR','RUNTIME VISUAL REVIEW']){
       const block=prompt.match(new RegExp('\\['+label+' BEGIN\\][\\s\\S]*?\\['+label+' END\\]'))?.[0]||'';
@@ -4380,7 +4407,13 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       generationSourceRoot=generationBootstrapRoot;
     }
     try{
-      generated=await generateCandidateWithRecovery({prompt,model:effectiveModel,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot:generationSourceRoot,focusedWebRepair,exploration,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator,candidateVariant,systemAtomicPairRequired:systemCausalPairRequired,multiFilePairRequired:bootstrap&&target==='unity',verifiedExternalLearningContract});
+      const nativeAssetBindingHints=(dccEvidence?.recipes||[]).map(row=>({
+        path:clean(row?.nativeArtifact),
+        artifactHash:clean(row?.artifactHash),
+        assetId:clean(row?.assetId||row?.id),
+        family:clean(row?.family)
+      })).filter(row=>row.path&&row.artifactHash);
+      generated=await generateCandidateWithRecovery({prompt,model:effectiveModel,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot:generationSourceRoot,focusedWebRepair,exploration,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator,candidateVariant,systemAtomicPairRequired:systemCausalPairRequired,multiFilePairRequired:bootstrap&&target==='unity',verifiedExternalLearningContract,nativeAssetBindingHints});
     }finally{
       if(generationBootstrapRoot)fs.rmSync(generationBootstrapRoot,{recursive:true,force:true});
     }
