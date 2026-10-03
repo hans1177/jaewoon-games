@@ -224,7 +224,9 @@ bpy.ops.export_scene.gltf(
     export_format="GLB",
     use_selection=True,
     export_animations=True,
-    export_apply=True,
+    export_yup=True,
+    export_materials="EXPORT",
+    export_extras=True,
 )
 scene.render.filepath = str(preview_path)
 bpy.ops.render.render(write_still=True)
