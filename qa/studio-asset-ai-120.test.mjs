@@ -220,3 +220,43 @@ test('audio remains a first-class studio asset family',()=>{
   assert.ok(plan.requiredOutputs.includes('EVENT_BINDING'));
   assert.ok(plan.missingRequiredOutputs.includes('VARIATION_SET'));
 });
+
+test('audio quality ignores irrelevant modeling axes',()=>{
+  const program=buildStudioAssetQuality120Program({
+    assets:[{
+      id:'forest-wind',
+      family:'AUDIO',
+      qualityEvidence:{
+        WORLD_STYLE_COHERENCE:100,
+        VFX_AUDIO_COHESION:100,
+        ORIGINALITY_IDENTITY:100,
+        MOBILE_PERFORMANCE:100,
+        ACTUAL_GAME_BINDING:100
+      },
+      consumerGameIds:['survival']
+    }]
+  });
+  const assessment=program.assessments[0];
+  assert.equal(assessment.applicableAxes.includes('MODELING_STRUCTURE'),false);
+  assert.equal(assessment.applicableAxes.includes('SILHOUETTE_FORM'),false);
+  assert.equal(assessment.weakestAxis.axis,'PRODUCTION_VERIFICATION');
+});
+
+test('item family requires world drop and inventory presentation when item-like',()=>{
+  const program=buildStudioAssetQuality120Program({
+    assets:[{
+      id:'ore-chunk',
+      family:'PROP',
+      subfamily:'RESOURCE',
+      functionClass:'ITEM_RESOURCE',
+      availableOutputs:['WORLD_MODEL','INTERACTION_VARIANT','COLLISION_PROXY','LOD0','LOD1','LOD2']
+    }]
+  });
+  const plan=program.familyPlans[0];
+  assert.equal(plan.itemPresentationRequired,true);
+  assert.ok(plan.requiredOutputs.includes('INVENTORY_ICON_WHEN_ITEM'));
+  assert.ok(plan.requiredOutputs.includes('DROP_MODEL_WHEN_COLLECTIBLE'));
+  assert.ok(plan.missingRequiredOutputs.includes('INVENTORY_ICON_WHEN_ITEM'));
+  assert.ok(plan.missingRequiredOutputs.includes('DROP_MODEL_WHEN_COLLECTIBLE'));
+  assert.equal(plan.complete,false);
+});
