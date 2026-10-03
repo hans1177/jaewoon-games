@@ -780,10 +780,10 @@
       "canonicalQueueUnchanged": true
     },
     "runnerPressureDispatchThreshold": 4,
-    "releaseDispatchQueueThreshold": null,
+    "releaseDispatchQueueThreshold": 4,
     "nativeReleaseDispatchBatchMax": 256,
     "releaseRecoveryBatchMax": 256,
-    "schedulerDispatchBackpressure": false,
+    "schedulerDispatchBackpressure": true,
     "plannerCoreQaReuse": {
       "enabled": true,
       "exactMainShaRequired": true,
@@ -812,7 +812,8 @@
     "schedulerConcurrencyScope": "RUN_SCOPED_NO_GLOBAL_SINGLETON",
     "schedulerGlobalSingleton": false,
     "schedulerGlobalSingletonForbidden": true,
-    "studioActualPlayOnlyHeavySerializationException": true
+    "studioActualPlayOnlyHeavySerializationException": true,
+    "releaseDispatchQueuePressureGateEnabled": false
   },
   "adaptiveBackpressure": {
     "enabled": true,
