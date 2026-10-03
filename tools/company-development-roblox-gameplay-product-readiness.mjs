@@ -325,8 +325,9 @@ export function evaluateRobloxF9ProductReadiness({f0Evidence={},runtimeEvidence=
   const objective=!req.objectiveRequired||Number(world.objectiveCount||0)>=1;
   const blockers=[];
   if(product.pass!==true)blockers.push('F0_GAMEPLAY_PRODUCT_READINESS_MISSING');
-  if(product?.studioReadiness?.f9SourceQualityReady!==true){
-    for(const gap of product?.studioReadiness?.criticalGaps||[])blockers.push('F9_STUDIO_SOURCE_QUALITY_GAP:'+gap);
+  if(!product?.studioReadiness)blockers.push('F9_STUDIO_SOURCE_QUALITY_MISSING');
+  else if(product.studioReadiness.f9SourceQualityReady!==true){
+    for(const gap of product.studioReadiness.criticalGaps||[])blockers.push('F9_STUDIO_SOURCE_QUALITY_GAP:'+gap);
   }
   if(!exactEngine)blockers.push('F9_EXACT_ENGINE_EXECUTION_MISSING');
   if(req.serverBootRequired!==false&&!serverBoot)blockers.push('F9_SERVER_BOOT_MISSING');
