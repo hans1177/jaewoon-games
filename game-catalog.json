@@ -374,7 +374,7 @@
       "developmentHandling": "OWNER_DIRECT_NATIVE_DEVELOPMENT",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageRecentWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
-      "selectedPlatform": "ROBLOX",
+      "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -529,7 +529,11 @@
       "internationalTitle": "Midnight Escape",
       "marketingThumbnail": "assets/roblox-thumbnails/horror-escape-room.svg",
       "homepageDisplayMode": "WEB_PUBLISHED",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "targetPlatform": "UNITY",
+      "unityProjectPath": "unity-games/horror-escape-room",
+      "homepagePublicationApproved": false,
+      "publishTestBuildWhenReady": false
     },
     {
       "id": "amusement-tycoon",
@@ -4193,7 +4197,9 @@
     "normalizedGames": 26,
     "ownerWebAdded": 0,
     "ownerWebUpdated": 0,
-    "ownerWebDisabled": 0
+    "ownerWebDisabled": 0,
+    "runtimeCatalogAdded": 0,
+    "actualWebPlayableReconciled": 25
   },
   "catalogSchemaVersion": 2,
   "normalization": {
