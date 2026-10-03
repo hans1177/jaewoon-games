@@ -101,8 +101,9 @@ permissions:
 
 jobs:
   build:
+    # Unity Web work is run-scoped so same-game non-overlapping/native work stays parallel.
     concurrency:
-      group: unity-web-floor-exec-${{ inputs.game_id || inputs.request_file || github.run_id }}
+      group: unity-web-floor-exec-run-${{ github.run_id }}
       cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 75
