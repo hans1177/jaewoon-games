@@ -1832,7 +1832,8 @@ test('24H plan uses optimistic writes while reserve stays lightweight and fan-in
   const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
   const core=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 
-  assert.match(runner,/group: vibe2-24h-cycle-singleton-v9/);
+  assert.match(runner,/group: vibe2-24h-cycle-\$\{\{ github\.run_id \}\}/);
+  assert.doesNotMatch(runner,/group: vibe2-24h-cycle-singleton/);
 
   const planStart=runner.indexOf('\n  plan:');
   const recoveryStart=runner.indexOf('\n  recovery_fast:',planStart);

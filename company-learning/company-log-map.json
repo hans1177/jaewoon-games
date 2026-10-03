@@ -1,5 +1,5 @@
 {
-  "version": 156,
+  "version": 157,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1710,11 +1710,11 @@
     "authorityChange": "NONE"
   },
   "vibe24hStaleSingletonEpochRelease": {
-    "version": 1,
-    "source": "company-learning/platform-release-roadmap.json#changeRecord.vibe24hStaleSingletonEpochRelease20260926",
+    "version": 2,
+    "source": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.vibe24hSchedulerGlobalSingletonForbidden",
     "workflow": ".github/workflows/vibe2-24h-runner.yml",
-    "previousEpoch": "vibe2-24h-cycle-singleton-v2",
-    "currentEpoch": "vibe2-24h-cycle-singleton-v3",
+    "previousEpoch": "vibe2-24h-cycle-singleton-v9",
+    "currentEpoch": "vibe2-24h-cycle-<runId>",
     "observedEvidence": {
       "holdingRunId": 36231868218,
       "holdingRunNumber": 4554,
@@ -1729,11 +1729,15 @@
       "nextPatchedPendingRunId": 36233623707
     },
     "expectedLiveEvidence": [
-      "V3_RUN_CREATES_PLAN_JOB",
-      "LATEST_PATCHED_MAIN_CONTRACT_REACHES_RESERVE_AND_WORKER",
-      "NO_REPEATED_JOBLESS_PENDING_REPLACEMENT_WITHIN_V3_EPOCH"
+      "LATEST_MAIN_24H_RUN_STARTS_WITHOUT_WAITING_FOR_OLDER_24H_RUN",
+      "ASSET_DEVELOPMENT_RESERVE_MAY_RUN_WHILE_OLDER_CYCLE_DRAINS",
+      "SHARED_QUEUE_WRITE_CONFLICTS_USE_EXISTING_OPTIMISTIC_RETRY",
+      "RESPONSIBLE_FILE_CONFLICTS_USE_EXISTING_WORK_LOCK"
     ],
-    "authorityChange": "NONE"
+    "authorityChange": "OWNER_DIRECTIVE_2026-10-03_REMOVE_GLOBAL_24H_SERIALIZATION",
+    "globalSingletonForbidden": true,
+    "runScopedConcurrencyRequired": true,
+    "studioActualPlayOnlyHeavySerializationException": true
   },
   "robloxDevelopmentParallelismEvidenceContract": {
     "version": 2,

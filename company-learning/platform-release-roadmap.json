@@ -1,5 +1,5 @@
 {
-  "version": 524,
+  "version": 525,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -1153,7 +1153,10 @@
       "failedGameEvidencePreserved": true,
       "cancellationNoiseMayNotTriggerHeavyControlWork": true,
       "qualityOrEvidenceGateWeakeningForbidden": true
-    }
+    },
+    "vibe24hSchedulerGlobalSingletonForbidden": true,
+    "vibe24hSchedulerConcurrencyScope": "RUN_SCOPED",
+    "robloxStudioActualPlayOnlyHeavySerializationException": true
   },
   "phases": [
     {
@@ -3203,7 +3206,7 @@
           "workerControlCheckoutGamePrimaryBoundary": 256,
           "workerControlCheckoutAdaptiveBehaviorUnchanged": true,
           "reserveConcurrencyRelief": "LIVE_VERIFIED",
-          "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v6",
+          "schedulerConcurrencyEpoch": "vibe2-24h-cycle-run-scoped-v10",
           "learningIdleRunnerPressureDeferral": "LIVE_VERIFIED",
           "gamePrimaryExternalBoundary": 256,
           "lastLanePressureLiveVerificationRun": 36204978877,
@@ -3213,8 +3216,11 @@
           "modelCacheWarmupRunnerRelief": "LIVE_VERIFIED_SKIP_MODEL_CACHE_JOB_ON_RESERVE_CACHE_HIT",
           "modelCacheHitRestoreLiveRun": 36208311596,
           "workerConditionalModelRestore": "IMPLEMENTED_PENDING_QA_AND_LIVE",
-          "schedulerEpochStaleRelease": "IMPLEMENTED_PENDING_CI_AND_ASSET_ARM_LIVE",
-          "schedulerEpochStaleReleaseReason": "V5_24H_PLAN_QUEUED_ON_SLIM_CONTROL_POOL_WHILE_ASSET_QUEUE_WAITED"
+          "schedulerEpochStaleRelease": "RUN_SCOPED_REPAIR_PENDING_QA_AND_LIVE",
+          "schedulerEpochStaleReleaseReason": "V5_24H_PLAN_QUEUED_ON_SLIM_CONTROL_POOL_WHILE_ASSET_QUEUE_WAITED",
+          "schedulerConcurrencyMode": "RUN_SCOPED_NO_GLOBAL_SINGLETON",
+          "global24hSchedulerSingletonForbidden": true,
+          "robloxStudioActualPlayOnlySerializationException": true
         }
       },
       "selfArchitectureEvolution": {
