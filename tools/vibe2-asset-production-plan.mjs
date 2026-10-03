@@ -1468,7 +1468,7 @@ export function buildVibeAssetProductionPlan({
   const highEndActive=highEnd?.status==='ACTIVE_EXECUTABLE_CONTRACT';
   const modelRouting=buildAssetModelRouting({task,request,decisions,highEndActive});
   const requestedExecutionLane=clean(executionLane).toLowerCase();
-  const assetAuthoringExecutionAllowed=!requestedExecutionLane||requestedExecutionLane==='asset-development'||task.assetProductionLane===true;
+  const assetAuthoringExecutionAllowed=requestedExecutionLane?requestedExecutionLane==='asset-development':true;
   const nativeAuthoringExecution=buildNativeAuthoringExecution({
     target:resolvedTarget,
     task,
