@@ -61,6 +61,30 @@ function multiplayerRequiredByDesign(baseline={}){
   return multiplayerRequiredByDesignText(designText(baseline));
 }
 
+export function robloxDesignProfileFromBaseline(baseline={}){
+  const content=baselineContent(baseline);
+  const genre=inferDesignGenre(baseline)||'Adventure';
+  const subgenre=clean(content?.robloxBuildProfile?.subgenre)||null;
+  const playMode=inferDesignPlayMode(baseline);
+  const multiplayerRequired=playMode!=='SINGLE';
+  return Object.freeze({
+    version:Number(content?.robloxBuildProfile?.version||1),
+    targetPlatform:'ROBLOX',
+    taxonomy:clean(content?.robloxBuildProfile?.taxonomy)||'DESIGN_GROUNDED_PRODUCT_PROFILE',
+    declaredGameCategory:clean(baseline?.gameCategory)||null,
+    genre,
+    subgenre,
+    playMode,
+    multiplayerRequired,
+    coopImplementationRequired:playMode==='COOP'||playMode==='HYBRID',
+    competitiveImplementationRequired:playMode==='COMPETITIVE'||playMode==='HYBRID',
+    networkingRequired:multiplayerRequired,
+    multiplayerQaRequired:multiplayerRequired,
+    minimumParticipantsForRequiredQa:multiplayerRequired?2:1,
+    displayLabelKo:[genre,subgenre,playMode].filter(Boolean).join(' · ')
+  });
+}
+
 export function robloxLearningProfileFromSource({gameId='',config='',fallback={}}={}){
   const genre=field(config,'Genre')||clean(fallback.genre)||'Adventure';
   const subgenre=field(config,'Subgenre')||clean(fallback.subgenre)||'';
