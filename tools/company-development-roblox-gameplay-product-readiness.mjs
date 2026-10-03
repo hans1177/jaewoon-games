@@ -335,7 +335,7 @@ export function evaluateRobloxGameplayProductReadiness({gameId='',baseline={},co
   if(genericSkeleton)blockers.push('GENERIC_SCOPE_HANDLER_SKELETON');
 
   const primitiveConstructionCount=count(ctx.gameplayServer,/Instance\.new\(["']Part["']\)/g);
-  const meshConstructionCount=count(ctx.all,/(?:Instance\.new\(["']MeshPart["']\)|SpecialMesh|SurfaceAppearance)/g);
+  const meshConstructionCount=count(ctx.gameplayCombined,/(?:Instance\.new\(["']MeshPart["']\)|SpecialMesh|SurfaceAppearance)/g);
   const placeholderDebt=Object.freeze({
     primitiveConstructionCount,
     meshConstructionCount,
