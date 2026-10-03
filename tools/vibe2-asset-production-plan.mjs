@@ -406,7 +406,7 @@ function nativeDccFamilyForTypes(types=[]){
   const joined=(types||[]).map(value=>clean(value).toLowerCase()).join(' ');
   if(/character|player|npc/.test(joined))return'CHARACTER';
   if(/boss|enemy|creature|monster/.test(joined))return'CREATURE';
-  if(/background|environment/.test(joined))return'ENVIRONMENT';
+  if(/background|environment|building|world|landmark/.test(joined))return'ENVIRONMENT';
   if(/item|weapon|equipment/.test(joined))return'WEAPON';
   if(/animation|motion/.test(joined))return'MOTION';
   if(/effect|vfx|particle/.test(joined))return'VFX';
@@ -438,6 +438,48 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
     typeMatch,targetMatch,safe,runMode:clean(recipe?.runMode||'VERIFY_ONLY').toUpperCase(),
     runtimeVerificationRequired:true,companyPromotionAllowed:false
   });
+}
+function nativeDccSlug(value='',fallback='asset'){
+  const slug=clean(value).toLowerCase().replace(/[^a-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,72);
+  return slug||fallback;
+}
+function genericNativeDccAuthoringRecipe({target='',task={},types=[]}={}){
+  const targetName=clean(target).toLowerCase();
+  if(!['roblox','unity'].includes(targetName)||!types.length)return null;
+  const gameId=clean(task?.gameId)||'game';
+  const taskId=clean(task?.id||task?.taskId)||[gameId,targetName,'native-asset'].join('-');
+  const gameSlug=nativeDccSlug(gameId,'game');
+  const taskSlug=nativeDccSlug(taskId,'asset-task');
+  const outputRoot=`assets/generated/${targetName}/${gameSlug}/${taskSlug}`;
+  const family=nativeDccFamilyForTypes(types)||'PROP';
+  return {
+    id:`vibe2-generic-${targetName}-${gameSlug}-${taskSlug}`,
+    assetId:`vibe2-generated-${targetName}-${gameSlug}-${taskSlug}`,
+    family,
+    license:'project-original',
+    executor:'BLENDER_PYTHON',
+    types:[...types],
+    targetPlatforms:[targetName.toUpperCase()],
+    script:'assets/vibe2/native-authoring.py',
+    args:[
+      '--game-id',gameId,
+      '--task-id',taskId,
+      '--target',targetName,
+      '--types',types.join(','),
+      '--family',family,
+      '--output',outputRoot
+    ],
+    outputs:[
+      `${outputRoot}/asset.glb`,
+      `${outputRoot}/preview.png`,
+      `${outputRoot}/evidence.json`
+    ],
+    evidenceJson:`${outputRoot}/evidence.json`,
+    preview:`${outputRoot}/preview.png`,
+    editableSource:'assets/vibe2/native-authoring.py',
+    runMode:'VERIFY_ONLY',
+    genericFallback:true
+  };
 }
 function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest={}}={}){
   const targetName=clean(target).toLowerCase();
@@ -473,9 +515,16 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
     .flatMap(asset=>(Array.isArray(asset?.authoringRecipes)?asset.authoringRecipes:[]).map(recipe=>({recipe,asset})));
   const normalizedExplicit=explicitRecipeRows.map(recipe=>normalizeNativeDccAuthoringRecipe(recipe,{id:'task-explicit'},target,uniqueDccTypes));
   const normalizedRegistry=registryRecipeRows.map(({recipe,asset})=>normalizeNativeDccAuthoringRecipe(recipe,asset,target,uniqueDccTypes));
-  const executionRecipes=freezeList([...normalizedExplicit,...normalizedRegistry]
+  const declaredRecipes=[...normalizedExplicit,...normalizedRegistry]
     .filter(row=>row.safe&&row.typeMatch&&row.targetMatch)
-    .filter((row,index,rows)=>rows.findIndex(other=>other.id===row.id)===index));
+    .filter((row,index,rows)=>rows.findIndex(other=>other.id===row.id)===index);
+  const genericRecipeSource=declaredRecipes.length===0?genericNativeDccAuthoringRecipe({target:targetName,task,types:uniqueDccTypes}):null;
+  const genericRecipe=genericRecipeSource?normalizeNativeDccAuthoringRecipe(genericRecipeSource,{},target,uniqueDccTypes):null;
+  const executionRecipes=freezeList([
+    ...declaredRecipes,
+    ...(genericRecipe?.safe&&genericRecipe.typeMatch&&genericRecipe.targetMatch?[genericRecipe]:[])
+  ]);
+  const genericFallbackApplied=Boolean(genericRecipe&&executionRecipes.some(row=>row.id===genericRecipe.id));
   const explicitRecipes=freezeList(explicitRecipeRows);
   const availableExistingRecipes=unique(decisions.flatMap(row=>
     [...(row?.reuseCandidates||[]),...(row?.externalCandidates||[])]
@@ -494,12 +543,14 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
       requiredTypes:freezeList(uniqueDccTypes),
       preferredExecutor:'BLENDER_PYTHON',
       executionRequired:uniqueDccTypes.length>0,
-      executionStatus:uniqueDccTypes.length===0?'NOT_REQUIRED':executionRecipes.length>0?'READY_FOR_EXISTING_AUTHORING_EXECUTOR':availableExistingRecipes.length>0?'EXISTING_AUTHORING_RECIPE_AVAILABLE':'AUTHORING_RECIPE_REQUIRED',
+      executionStatus:uniqueDccTypes.length===0?'NOT_REQUIRED':genericFallbackApplied?'READY_FOR_GENERIC_AUTHORING_EXECUTOR':executionRecipes.length>0?'READY_FOR_EXISTING_AUTHORING_EXECUTOR':availableExistingRecipes.length>0?'EXISTING_AUTHORING_RECIPE_AVAILABLE':'AUTHORING_RECIPE_REQUIRED',
       requiredCapabilities:NATIVE_DCC_AUTHORING,
       explicitRecipes,
       executionRecipes,
       availableExistingRecipes:freezeList(availableExistingRecipes),
       executionRequestCount:executionRecipes.length,
+      genericFallbackApplied,
+      genericFallbackScript:genericFallbackApplied?'assets/vibe2/native-authoring.py':null,
       availableExistingRecipeCount:availableExistingRecipes.length,
       executorInstallationRequired:executionRecipes.length>0,
       executionPolicy:'DECLARED_REPOSITORY_RECIPE_ONLY_NO_SHELL_EVAL',
