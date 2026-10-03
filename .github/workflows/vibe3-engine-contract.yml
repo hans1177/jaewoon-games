@@ -164,6 +164,7 @@ jobs:
           node --input-type=module --check < tools/company-development-roblox-runtime-foundation.mjs
           node --input-type=module --check < tools/company-development-roblox-headless-fast-mvp.mjs
           node --input-type=module --check < tools/company-development-roblox-gameplay-product-readiness.mjs
+          node --input-type=module --check < tools/vibe2-auto-planner.mjs
           node --input-type=module --check < tools/company-tester-debug-intake.mjs
           node --check tools/company-minimum-design-contract.mjs
 
@@ -185,6 +186,9 @@ jobs:
       - name: Run Roblox native foundation and tester QA contract tests
         run: |
           node --test             qa/company-development-roblox-gameplay-product-readiness.test.mjs             qa/company-development-roblox-runtime-foundation.test.mjs             qa/company-development-roblox-headless-fast-mvp.test.mjs             qa/company-development-roblox-final-review-revalidation.test.mjs             qa/company-development-roblox-release-promotion.test.mjs             qa/company-tester-debug-intake.test.mjs             qa/company-development-roblox-runtime.test.mjs
+
+      - name: Run Roblox post-F9 Vibe build-up planner regression
+        run: node --test qa/vibe2-auto-planner.test.mjs
 
       - name: Run direct native router tests
         run: node --test qa/company-selected-platform-router.test.mjs
