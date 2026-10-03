@@ -282,7 +282,7 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       queueRobloxQualityBuildUpEvidence:queueRobloxQualityBuildUpRequired
         &&clean(item?.robloxQualityBuildUpEvidence?.sourceRevision)===queueRobloxSourceCommit
         &&clean(item?.robloxQualityBuildUpEvidence?.artifactIdentity)===clean(item?.robloxBuildArtifactIdentity)
-        &&clean(item?.robloxQualityBuildUpEvidence?.authority)==='roblox-official-studio-mcp-product-quality-failure'
+        &&['roblox-official-studio-mcp-product-quality-failure','roblox-f9-gameplay-product-readiness-failure'].includes(clean(item?.robloxQualityBuildUpEvidence?.authority))
         ?{
           sourceRevision:queueRobloxSourceCommit,
           artifactIdentity:clean(item.robloxBuildArtifactIdentity),
