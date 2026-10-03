@@ -1695,6 +1695,11 @@ jobs:
               const f0Exact=preflightExact&&result.f0Pass===true
                 &&result.f0Evidence?.sourceRevision===result.sourceRevision
                 &&result.f0Evidence?.artifactIdentity===result.artifactIdentity;
+              const gameplayProductFailure=preflightExact
+                &&result.f0Pass!==true
+                &&result.f0Evidence?.gameplayProductReadinessRequired===true
+                &&result.f0Evidence?.gameplayProductReadiness?.pass===false;
+              const productEvidence=result.f0Evidence?.gameplayProductReadiness||null;
               Object.assign(item,{
                 status:'ACTIVE',
                 currentStep:f0Exact?'PRIVATE_RUNTIME_CANDIDATE_DEPLOY':preflightExact?'ROBLOX_F0_SOURCE_PREFLIGHT':'TARGET_PLATFORM_TECHNICAL_VALIDATION',
@@ -1702,8 +1707,8 @@ jobs:
                 robloxBuildOrPackagePassed:true,robloxBuildSourceRevision:result.sourceRevision,robloxBuildArtifactIdentity:result.artifactIdentity,
                 robloxBuildPassedAt:stamp,robloxBuildFailedAt:null,
                 robloxBuildPreflightPassed:preflightExact,robloxBuildPreflightPassedAt:preflightExact?stamp:null,robloxBuildPreflightFailedAt:preflightExact?null:stamp,robloxBuildPreflightEvidence:result.preflightEvidence||null,
-                robloxFoundationF0Passed:f0Exact,robloxFoundationF0PassedAt:f0Exact?stamp:null,robloxFoundationF0Evidence:f0Exact?result.f0Evidence:null,
-                robloxHeadlessFastMvpPassed:f0Exact,robloxHeadlessFastMvpEvidence:f0Exact?result.f0Evidence:null,robloxHeadlessFinalReviewPassed:false,
+                robloxFoundationF0Passed:f0Exact,robloxFoundationF0PassedAt:f0Exact?stamp:null,robloxFoundationF0Evidence:(f0Exact||gameplayProductFailure)?result.f0Evidence:null,
+                robloxHeadlessFastMvpPassed:f0Exact,robloxHeadlessFastMvpEvidence:(f0Exact||gameplayProductFailure)?result.f0Evidence:null,robloxHeadlessFinalReviewPassed:false,
                 robloxExactRevisionPassed:f0Exact,
                 robloxRuntimeCandidateEvidence:null,robloxRuntimeFoundationPassed:false,robloxRuntimeFoundationEvidence:null,
                 robloxRuntimePassed:false,robloxRuntimePassedAt:null,robloxRuntimeFailedAt:null,robloxRuntimeEvidence:null,robloxRuntimeRetryCount:0,
@@ -1712,9 +1717,33 @@ jobs:
                 robloxFinalReviewPassed:false,robloxFinalReviewPassedAt:null,robloxF9ReleaseRegressionPassed:false,robloxF9ReleaseRegressionEvidence:null,robloxPostRuntimeQaEvidence:null,
                 robloxInternalReleaseReady:false,robloxInternalReleaseAt:null,
                 robloxLastSuccessfulStage:f0Exact?'F0_SOURCE_PREFLIGHT':preflightExact?'VIBE_SHARED_MODEL_BUILD_PREFLIGHT':'TARGET_PLATFORM_BUILD_OR_PACKAGE',
-                robloxFailureStage:f0Exact?'PRIVATE_RUNTIME_CANDIDATE_DEPLOY':preflightExact?'F0_SOURCE_INTEGRITY':'VIBE_SHARED_MODEL_BUILD_PREFLIGHT',
-                robloxFailureSignature:f0Exact?'ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING':preflightExact?'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED':'ROBLOX_BUILD_PREFLIGHT_BLOCKED',
-                routingBlockers:[f0Exact?'roblox-runtime-candidate-deploy-pending':preflightExact?'roblox-f0-source-preflight-failed':'roblox-build-preflight-blocked'],
+                robloxFailureStage:f0Exact?'PRIVATE_RUNTIME_CANDIDATE_DEPLOY':gameplayProductFailure?'F0_GAMEPLAY_PRODUCT_READINESS':preflightExact?'F0_SOURCE_INTEGRITY':'VIBE_SHARED_MODEL_BUILD_PREFLIGHT',
+                robloxFailureSignature:f0Exact?'ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING':gameplayProductFailure?'ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED':preflightExact?'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED':'ROBLOX_BUILD_PREFLIGHT_BLOCKED',
+                routingBlockers:[f0Exact?'roblox-runtime-candidate-deploy-pending':gameplayProductFailure?'roblox-f0-gameplay-product-readiness-failed':preflightExact?'roblox-f0-source-preflight-failed':'roblox-build-preflight-blocked'],
+                robloxQualityBuildUpRequired:gameplayProductFailure,
+                robloxQualityBuildUpSourceRevision:gameplayProductFailure?result.sourceRevision:null,
+                robloxQualityFailureClass:gameplayProductFailure?'GAMEPLAY_PRODUCT_READINESS':null,
+                robloxQualityBuildUpEvidence:gameplayProductFailure?{
+                  version:1,gameId:item.gameId,sourceRevision:result.sourceRevision,artifactIdentity:result.artifactIdentity,
+                  authority:'roblox-f0-gameplay-product-readiness-failure',workflowRunId:Number(process.env.GITHUB_RUN_ID||0)||null,testedAt:stamp,
+                  qualityFailureKinds:[...(productEvidence?.blockers||[])],
+                  repairSurfaces:[...new Set((productEvidence?.blockers||[]).map(value=>{
+                    const text=String(value||'');
+                    if(/WORLD|LANDMARK|SPAWN|BASEPART/.test(text))return 'WORLD_MAP';
+                    if(/AI_/.test(text))return 'ENEMY_AI';
+                    if(/COMBAT/.test(text))return 'COMBAT_FEEL';
+                    if(/FIRST_10/.test(text))return 'FIRST_SESSION';
+                    if(/MID_LATE|PROGRESSION/.test(text))return 'PROGRESSION_CONTENT';
+                    if(/PLACEHOLDER/.test(text))return 'PRESENTATION';
+                    if(/SYSTEM_CONNECTION/.test(text))return 'SYSTEM_CONNECTION';
+                    return 'CORE_GAMEPLAY';
+                  }))],
+                  qualityFailureDetails:(productEvidence?.blockers||[]).map((id,index)=>({
+                    id:String(id),repairSurface:'GAMEPLAY_PRODUCT_READINESS',priority:index<3?'P0':'P1',
+                    hint:'Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.',
+                    observed:productEvidence
+                  }))
+                }:null,
                 updatedAt:stamp,
               });
               passCount++;
@@ -1800,6 +1829,38 @@ jobs:
           process.stdout.write(String(count));
           NODE
           )"
+          mapfile -t product_repair_ids < <(node - <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('/tmp/roblox-f0-repair-queue.json','utf8'));
+          const ids=new Set(JSON.parse(process.env.CURRENT_TARGETS_JSON||'[]').filter(x=>x.secondaryOwnerFocus!==true).map(x=>x.gameId));
+          for(const item of q.items||[]){
+            if(!ids.has(item.gameId))continue;
+            if(item.robloxQualityBuildUpRequired!==true)continue;
+            if(String(item.robloxQualityBuildUpSourceRevision||'')!==String(item.robloxSourceCommit||''))continue;
+            if(String(item.robloxQualityBuildUpEvidence?.authority||'')!=='roblox-f0-gameplay-product-readiness-failure')continue;
+            console.log(item.gameId);
+          }
+          NODE
+          )
+          product_refill_count=0
+          for game_id in "${product_repair_ids[@]}"; do
+            [ -n "$game_id" ] || continue
+            payload="$(jq -nc \
+              --arg run "${GITHUB_RUN_ID:-}" \
+              --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
+              --arg game "$game_id" \
+              '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$game,source_outcome:"FAILED",execution_lane:"game-primary",reason:"roblox-f0-gameplay-product-repair"}}')"
+            curl --fail-with-body --silent --show-error \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+              --data "$payload"
+            product_refill_count=$((product_refill_count+1))
+            echo "ROBLOX_F0_GAMEPLAY_PRODUCT_VIBE_REFILL=$game_id"
+          done
+          echo "ROBLOX_F0_GAMEPLAY_PRODUCT_VIBE_REFILL_COUNT=$product_refill_count"
           echo "ROBLOX_F0_SOURCE_REPAIR_COUNT=$repair_count"
           if [[ "$repair_count" =~ ^[1-9][0-9]*$ ]]; then
             git fetch --no-tags --depth=1 origin main
