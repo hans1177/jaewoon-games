@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-15q04u2",
+      "worker": "vibe2",
+      "taskId": "amusement-tycoon-existing-web-assessment-v1",
+      "gameId": "amusement-tycoon",
+      "files": [
+        "web-games/amusement-tycoon/index.html"
+      ],
+      "baseSha": "5e29b0ce3cad5a0db344b9437ff80f63f8639ec3",
+      "runId": "37084489919",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-03T01:09:20.769Z",
+      "expiresAt": "2026-10-03T01:54:20.769Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:amusement-tycoon-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
