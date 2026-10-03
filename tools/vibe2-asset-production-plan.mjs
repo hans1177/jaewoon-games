@@ -402,6 +402,19 @@ function buildAssetModelRouting({task={},request='',decisions=[],highEndActive=f
     sourceBudgetPolicy:'CENTRAL_BOUNDED_FOCUSED_EXACT_ANCHOR_UNCHANGED'
   });
 }
+function nativeDccFamilyForTypes(types=[]){
+  const joined=(types||[]).map(value=>clean(value).toLowerCase()).join(' ');
+  if(/character|player|npc/.test(joined))return'CHARACTER';
+  if(/boss|enemy|creature|monster/.test(joined))return'CREATURE';
+  if(/background|environment/.test(joined))return'ENVIRONMENT';
+  if(/item|weapon|equipment/.test(joined))return'WEAPON';
+  if(/animation|motion/.test(joined))return'MOTION';
+  if(/effect|vfx|particle/.test(joined))return'VFX';
+  if(/ui|hud|icon/.test(joined))return'UI';
+  if(/audio|sound|music|bgm|sfx/.test(joined))return'AUDIO';
+  if(/prop|furniture/.test(joined))return'PROP';
+  return null;
+}
 function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',requiredTypes=[]){
   const executor=clean(recipe?.executor||recipe?.engine).toUpperCase();
   const script=clean(recipe?.script||recipe?.recipe||recipe?.path).replaceAll('\\','/').replace(/^\.\//,'');
@@ -418,8 +431,10 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
   const targetMatch=!targets.length||targets.includes(targetName)||targets.includes(targetName.toUpperCase().toLowerCase());
   const safePath=value=>Boolean(value&&!path.isAbsolute(value)&&!value.split('/').includes('..'));
   const safe=executor==='BLENDER_PYTHON'&&/\.py$/i.test(script)&&safePath(script)&&outputs.length>0&&outputs.every(safePath)&&(!evidenceJson||safePath(evidenceJson))&&(!preview||safePath(preview));
+  const family=clean(recipe?.family||asset?.family||asset?.category).toUpperCase()||nativeDccFamilyForTypes(types);
+  const license=clean(recipe?.license||asset?.license)||null;
   return freeze({
-    id,assetId:clean(asset?.id)||null,executor,script,types:freezeList(types),targetPlatforms:freezeList(targets),args,outputs,evidenceJson,preview,editableSource,
+    id,assetId:clean(asset?.id)||clean(recipe?.assetId)||null,family:family||null,license,executor,script,types:freezeList(types),targetPlatforms:freezeList(targets),args,outputs,evidenceJson,preview,editableSource,
     typeMatch,targetMatch,safe,runMode:clean(recipe?.runMode||'VERIFY_ONLY').toUpperCase(),
     runtimeVerificationRequired:true,companyPromotionAllowed:false
   });
