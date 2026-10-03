@@ -1,5 +1,5 @@
 {
-  "version": 158,
+  "version": 159,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2827,6 +2827,27 @@
       "vibe2-release-serial"
     ],
     "allowedSerialization": "EXACT_DUPLICATE_CANDIDATE_OR_RESPONSIBLE_FILE_CONFLICT_OR_ATOMIC_SHARED_STATE_WRITE_ONLY",
+    "liveVerification": "PENDING_EXACT_HEAD_QA_AND_MAIN_RUNTIME"
+  },
+  "vibeResultAndRecoveryParallelismEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "requiredMarkers": [
+      "VIBE2_CANDIDATE_QUEUE_WRITE_ATTEMPT",
+      "VIBE2_CANDIDATE_QUEUE_WRITE_RACE=RETRY",
+      "VIBE2_ROBLOX_RECONCILE_ATTEMPT",
+      "VIBE2_ROBLOX_RECONCILE_WRITE_RACE=RETRY",
+      "ROBLOX_RELEASE_HANDOFF_RUNTIME_WRITE_ATTEMPT",
+      "ROBLOX_RELEASE_HANDOFF_RUNTIME_WRITE_RACE=RETRY",
+      "VIBE2_RECOVERY_FAST_PUSH_RETRY"
+    ],
+    "forbiddenGlobalGroups": [
+      "vibe2-control-state-vibe2-unreal-core",
+      "vibe2-release-serial",
+      "vibe2-recovery-fast",
+      "vibe2-roblox-release-handoff",
+      "company-runtime-writer"
+    ],
     "liveVerification": "PENDING_EXACT_HEAD_QA_AND_MAIN_RUNTIME"
   }
 }
