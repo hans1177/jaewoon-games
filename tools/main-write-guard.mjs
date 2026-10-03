@@ -4,6 +4,27 @@ import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 
+const clean=v=>String(v??'').trim();
+const normalizePath=v=>clean(v).replaceAll('\\','/').replace(/^\.\//,'');
+export const FINAL_CHAIN_LOCK_PATHS=Object.freeze([
+  "company-learning/platform-release-roadmap.json",
+  "company-learning/company-log-map.json",
+  "company-learning/company-architecture-map.json",
+  "company-learning/security-immune-system.json",
+  "company-learning/vibe3-engine-contract.json",
+  "company-learning/vibe3-task-playbooks.json",
+  "tools/main-write-guard.mjs",
+  ".github/workflows/main-write-guard.yml",
+  ".github/workflows/company-central-policy-contract-qa.yml",
+  "tools/company-build-up-directive.mjs",
+  "tools/vibe2-source-worker.mjs",
+  "tools/company-development-roblox-bootstrap.mjs",
+  "tools/company-development-roblox-source-reconcile.mjs",
+  "tools/company-development-roblox-runtime-foundation.mjs",
+  "tools/vibe3-roblox-platform.mjs",
+  ".github/workflows/company-development-roblox-post-runtime-qa.yml"
+]);
+
 const DIRECT_MAIN_PATTERNS=[
   /git\s+push\b[^\n]*\borigin\b[^\n]*(?:HEAD:main|\bmain\b)/i,
   /gh\s+api\b[^\n]*\/git\/refs\/heads\/main\b/i,
@@ -38,6 +59,23 @@ export function scanChangedWorkflowFiles(files=[]){
   return violations;
 }
 
+export function finalChainLockViolations({files=[],lock=null,actor='',owner='hans1177',unlockTitle=''}={}){
+  if(clean(lock?.status).toUpperCase()!=='LOCKED')return[];
+  const ownerUnlock=clean(actor)===clean(owner)&&/\[OWNER_UNLOCK\]/i.test(clean(unlockTitle));
+  if(ownerUnlock)return[];
+  const configured=Array.isArray(lock?.lockedPaths)&&lock.lockedPaths.length?lock.lockedPaths:FINAL_CHAIN_LOCK_PATHS;
+  const locked=new Set(configured.map(normalizePath));
+  return files.map(normalizePath).filter(file=>locked.has(file)).map(file=>({file,reason:'FINAL_CHAIN_LOCKED'}));
+}
+
+function readBaseFinalChainLock(baseRef){
+  try{
+    const raw=execFileSync('git',['show',`${baseRef}:company-learning/platform-release-roadmap.json`],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
+    const policy=JSON.parse(raw);
+    return policy?.finalDevelopmentLock?.chainLock||policy?.finalChainLock||null;
+  }catch{return null;}
+}
+
 function changedFiles(baseRef,headRef){
   let out='';
   try{
@@ -57,11 +95,18 @@ function main(){
   const base=arg('base','origin/main');
   const head=arg('head','HEAD');
   const files=changedFiles(base,head);
-  const violations=scanChangedWorkflowFiles(files);
+  const directMainViolations=scanChangedWorkflowFiles(files);
+  const lock=readBaseFinalChainLock(base);
+  const lockViolations=finalChainLockViolations({
+    files,lock,actor:arg('actor',''),owner:arg('owner','hans1177'),unlockTitle:arg('unlock-title','')
+  });
+  const violations=[...directMainViolations,...lockViolations];
   const result={
     status:violations.length?'FAIL':'PASS',
     developmentProgress:violations.length?'BLOCKED':'INCOMPLETE_PROGRESS',
     changedWorkflowFiles:files.filter(isWorkflowPath),
+    finalChainLockActive:clean(lock?.status).toUpperCase()==='LOCKED',
+    finalChainLockViolationCount:lockViolations.length,
     violations,
     adminProtection:'ADMIN_PROTECTION_BLOCKER',
     rule:'feature branch -> PR -> CI -> merge; workflow direct-write to main forbidden',
