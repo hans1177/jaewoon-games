@@ -6,9 +6,9 @@ const TYPES = Object.freeze({
   character: ['주인공', '캐릭터', '영웅', '플레이어', '기사', '궁수', '사마귀'],
   enemy: ['적', '몬스터', '고블린', '오크', '좀비', '거미', '전갈', '벌'],
   boss: ['보스', '중간보스', '대형'],
-  background: ['배경', '숲', '사막', '황무지', '동굴', '광산', '성', '마을', '기지'],
+  background: ['배경', '환경', '지형', '랜드마크', '숲', '사막', '황무지', '동굴', '광산', '성', '마을', '기지'],
   item: ['아이템', '검', '칼', '활', '방패', '갑옷', '물약', '장비', '도구'],
-  prop: ['사물', '나무', '바위', '풀', '버섯', '상자', '건물', '집', '벽', '문', '자원'],
+  prop: ['소품', '가구', '장식', '사물', '나무', '바위', '풀', '버섯', '상자', '건물', '집', '벽', '문', '자원'],
   effect: ['이펙트', '폭발', '불꽃', '마법', '피격', '스킬 효과', '파티클'],
   ui: ['UI', '버튼', '체력바', '조이스틱', '인벤토리', '상점'],
   audio: ['소리', '사운드', '효과음', 'BGM', '음악'],
@@ -213,8 +213,8 @@ function buildProductionPlan(request, preset) {
 export function planAssetApplication({ prompt = '', manifest = null, presetCatalog = null, rebuild = false } = {}) {
   const request = text(prompt);
   if (!request) throw new Error('asset request required');
-  const requestedTypes = Object.entries(TYPES).filter(([, words]) => hasAny(request, words)).map(([type]) => type);
-  const types = unique([...REQUIRED_VISUAL_TYPES, ...requestedTypes]);
+  const explicitRequestedTypes = Object.entries(TYPES).filter(([, words]) => hasAny(request, words)).map(([type]) => type);
+  const types = unique([...REQUIRED_VISUAL_TYPES, ...explicitRequestedTypes]);
   const assets = Array.isArray(manifest?.assets) ? manifest.assets : [];
   const candidates = assets.filter((asset) => {
     const license = text(asset?.license || asset?.policy || '');
@@ -242,6 +242,7 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
     prototypePreset,
     production,
     requestedTypes:Object.freeze(types),
+    explicitRequestedTypes:Object.freeze(explicitRequestedTypes),
     matched:Object.freeze(matched),
     missingTypes:Object.freeze(missingTypes),
     binding:Object.freeze(binding),
