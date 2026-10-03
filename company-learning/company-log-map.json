@@ -1,5 +1,5 @@
 {
-  "version": 156,
+  "version": 157,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1948,7 +1948,7 @@
     "publicationEvidenceUnchanged": true
   },
   "fanInRefillParallelReserveEvidence": {
-    "version": 1,
+    "version": 2,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "markers": [
       "VIBE2_CONTROL_OPTIMISTIC_ATTEMPT",
@@ -1956,7 +1956,9 @@
       "VIBE2_EVENT_DRIVEN_REFILL"
     ],
     "sameLaneWorkflowSingletonForbidden": true,
-    "atomicSharedStateRetryRequired": true
+    "atomicSharedStateRetryRequired": true,
+    "pendingReplacementForbidden": true,
+    "runScopedConcurrencyRequired": true
   },
   "unityExactChildRunDedupeEvidence": {
     "version": 1,
@@ -2802,5 +2804,19 @@
     "studioEvidenceRequired": false,
     "studioDiagnosticOptional": true,
     "actualStudioPassMayNotBeFabricated": true
+  },
+  "fanInRefillResultLivenessEvidence": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#changeRecord.fanInRefillResultLiveness20261003",
+    "requiredMarkers": [
+      "VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=PASS",
+      "VIBE2_TASK_REVIEW_READY=COMPLETE_SINGLE_GAME_RESULT",
+      "VIBE2_RELEASE_DISPATCH="
+    ],
+    "cancelledBySameLanePendingRequestForbidden": true,
+    "runScopedConcurrencyRequired": true,
+    "sameLaneWorkflowSingletonForbidden": true,
+    "immutableWorkerArtifactPreserved": true,
+    "optimisticQueueWriteRetryRequired": true
   }
 }
