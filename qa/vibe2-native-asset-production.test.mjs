@@ -443,6 +443,30 @@ test('native planner preserves an existing Blender recipe as the DCC execution p
   assert.equal(plan.nativeAuthoringExecution.dcc.availableExistingRecipeCount,1);
 });
 
+test('Web native authoring stays inside Web source while Unity and Roblox keep platform-native recreation',()=>{
+  const task={gameId:'web-native-demo',goal:'캐릭터 UI 이펙트 오디오를 웹 네이티브로 강화'};
+  const web=buildVibeAssetProductionPlan({task,target:'web',manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.equal(web.nativeAuthoringExecution.enabled,true);
+  assert.equal(web.nativeAuthoringExecution.target,'web');
+  assert.equal(web.nativeAuthoringExecution.authoringSurface,'WEB_NATIVE_SOURCE');
+  assert.equal(web.nativeAuthoringExecution.dcc.executionRequired,false);
+  assert.equal(web.nativeAuthoringExecution.nativeText.authoringMode,'SVG_CSS_CANVAS_JS_WEBAUDIO_NATIVE');
+  assert.ok(web.nativeAuthoringExecution.nativeText.capabilities.includes('svg-final-art'));
+  assert.ok(web.nativeAuthoringExecution.nativeText.capabilities.includes('canvas-art-and-effects'));
+  assert.ok(web.nativeAuthoringExecution.nativeText.capabilities.includes('web-audio-sfx'));
+  assert.equal(web.nativeAuthoringExecution.nativeText.webArtifactCopyIntoRobloxOrUnityForbidden,true);
+  assert.match(assetProductionGuidance(web),/Web 산출물을 Roblox\/Unity에 그대로 복사하지 말고/);
+
+  const roblox=buildVibeAssetProductionPlan({task:{...task,goal:'캐릭터 UI 이펙트를 Roblox 네이티브로 강화'},target:'roblox',manifest:{assets:[]},presetCatalog:{presets:[]}});
+  const unity=buildVibeAssetProductionPlan({task:{...task,goal:'캐릭터 UI 이펙트를 Unity 네이티브로 강화'},target:'unity',manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.equal(roblox.nativeAuthoringExecution.authoringSurface,'ENGINE_NATIVE_SOURCE');
+  assert.equal(unity.nativeAuthoringExecution.authoringSurface,'ENGINE_NATIVE_SOURCE');
+  assert.ok(roblox.nativeAuthoringExecution.nativeText.capabilities.includes('luau-composed-low-poly-model'));
+  assert.ok(unity.nativeAuthoringExecution.nativeText.capabilities.includes('csharp-procedural-mesh-and-low-poly-model'));
+  assert.equal(roblox.nativeAuthoringExecution.platformReauthoringRequired,true);
+  assert.equal(unity.nativeAuthoringExecution.platformReauthoringRequired,true);
+});
+
 test('web-only assets are never reused directly by Unity or Roblox',()=>{
   const manifest={version:1,assets:[
     {id:'web-tree',path:'web-games/demo/assets/tree.png',types:['prop'],tags:['나무'],license:'CC0'},
