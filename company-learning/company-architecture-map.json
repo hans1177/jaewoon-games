@@ -1,5 +1,5 @@
 {
-  "version": 305,
+  "version": 306,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3120,7 +3120,12 @@
       "cacheGeneration": 5,
       "modelCachePersistOnMiss": true,
       "workerModelRepullAfterSharedCacheHitForbidden": true
-    }
+    },
+    "sameGameDifferentPlatformsParallel": true,
+    "platformScopedResponsibleFilesRequired": true,
+    "gameIdSerializationForbidden": true,
+    "nonAssetLaneMayNotOwnGeneratedAssetFiles": true,
+    "robloxStudioActualPlaySerializationExceptionOnly": true
   },
   "platformPresentationSeparation": {
     "version": 1,
@@ -3718,10 +3723,14 @@
       "sameGameIndependentNonOverlappingPackagesParallel": true,
       "serializationAllowedOnlyFor": [
         "ATOMIC_SHARED_STATE_WRITE",
-        "EXACT_RESPONSIBLE_FILE_WRITE_CONFLICT"
+        "EXACT_RESPONSIBLE_FILE_WRITE_CONFLICT",
+        "ACTUAL_ROBLOX_STUDIO_SESSION"
       ],
       "sharedStateCriticalSectionMayNotEncloseHeavyExecution": true,
-      "externalProviderCapacityOnlyHeavyExecutionBoundary": true
+      "externalProviderCapacityOnlyHeavyExecutionBoundary": true,
+      "sameGameDifferentPlatformsParallel": true,
+      "gameIdOnlySerializationForbidden": true,
+      "platformScopedResponsibleFilesRequired": true
     },
     "uefnDevelopmentStatus": "DEVELOPMENT_PAUSED",
     "uefnStatusLabel": "개발보류",
@@ -5442,7 +5451,11 @@
     "privateRuntimeWorkflowWideLock": false,
     "privateRuntimeOldestActiveSameGameWins": true,
     "pendingReplacementCancellationEliminated": true,
-    "duplicatePrivateRuntimeRunsSelfSkipBeforeHeavyWork": true
+    "duplicatePrivateRuntimeRunsSelfSkipBeforeHeavyWork": true,
+    "gameIdWorkflowSerializationForbidden": true,
+    "exactDuplicateDispatchDedupeAllowed": true,
+    "exactDuplicateDispatchDedupeDoesNotSerializeIndependentWork": true,
+    "studioActualPlayExceptionOnly": true
   },
   "controlPlaneQaRunnerIsolation": {
     "version": 1,
@@ -5891,11 +5904,11 @@
     "qualityGateWeakening": false
   },
   "nativeExactGameWorkflowConcurrency": {
-    "version": 2,
+    "version": 3,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.nativeExactGameWorkflowConcurrency20260927",
     "ROBLOX": {
       "workflow": ".github/workflows/company-development-roblox-runtime.yml",
-      "group": "roblox-native-exact-<gameId-or-push-batch-or-runId>",
+      "group": "roblox-native-run-<runId>",
       "cancelInProgress": false,
       "exactGameCancelInProgress": false,
       "pushBatchCancelInProgress": true,
@@ -5903,13 +5916,13 @@
     },
     "UNITY": {
       "workflow": ".github/workflows/company-development-unity-runtime.yml",
-      "group": "unity-native-exact-<gameId-or-push-batch-or-runId>",
+      "group": "unity-native-run-<runId>",
       "cancelInProgress": false,
       "exactGameCancelInProgress": false,
       "pushBatchCancelInProgress": true,
       "manualEmptyBatchCancelInProgress": false
     },
-    "exactGameScope": "INPUT_GAME_ID_ONLY",
+    "exactGameScope": "NO_GAME_ID_CONCURRENCY_GROUP",
     "batchFallback": "PUSH_BATCH_ELSE_RUN_ID",
     "distinctGamesParallel": true,
     "batchGlobalSerialization": false,
@@ -5920,7 +5933,10 @@
     "pushBatchCoalesced": true,
     "manualEmptyBatchRunScoped": true,
     "pushBatchLatestWins": true,
-    "exactGameActiveExecutionPreserved": true
+    "exactGameActiveExecutionPreserved": true,
+    "gameIdWorkflowSerializationForbidden": true,
+    "exactDuplicateDispatchDedupePreserved": true,
+    "studioActualPlayException": "ROBLOX_STUDIO_SHARED_HOST_ONLY"
   },
   "lightweightGameIngressRunnerRelief": {
     "version": 2,
@@ -6616,5 +6632,20 @@
     "studioBlocksF9": false,
     "studioBlocksDeployment": false,
     "exactSourceArtifactBindingRequired": true
+  },
+  "sameGamePlatformParallelism": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.sameGamePlatformParallelismContract",
+    "executionDefault": "PARALLEL",
+    "gameIdOnlySerializationForbidden": true,
+    "sameGameDifferentPlatformsParallel": true,
+    "sameGameNonOverlappingResponsibilitiesParallel": true,
+    "conflictAuthority": "EXACT_RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY",
+    "exactDuplicateDispatchDedupeAllowed": true,
+    "robloxStudioActualPlayException": {
+      "serialized": true,
+      "reason": "SHARED_AUTHENTICATED_STUDIO_HOST",
+      "scope": "ACTUAL_STUDIO_SESSION_ONLY"
+    }
   }
 }
