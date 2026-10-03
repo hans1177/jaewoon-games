@@ -730,7 +730,7 @@ test('awaiting QA holds only its responsible file and same-game disjoint work co
   assert.equal(next.deferredConflicts.some(row=>row.task.id==='same-next'),false);
 });
 
-test('completed single worker releases capacity before fan-in without dropping source locks or adding QA pressure', () => {
+test('completed single worker releases capacity and ordinary source locks before fan-in without adding QA pressure', () => {
   const queue=createVibeContinuousQueue({
     maxConcurrentTasks:2,
     tasks:[
@@ -746,14 +746,14 @@ test('completed single worker releases capacity before fan-in without dropping s
   assert.equal(batch.capacityRunning.length,1);
   assert.equal(batch.releasedWorkerSlots.length,1);
   assert.equal(batch.backpressure.awaitingQaCount,0);
-  assert.equal(batch.selected.some(t=>t.id==='same-root'),false);
-  assert.equal(batch.selected.some(t=>t.id==='refill'),true);
+  assert.equal(batch.selected.length,1);
+  assert.equal(batch.selected.some(t=>t.id==='same-root'),true);
   const second=releaseVibeTaskExecutionSlot(released.queue,{taskId:'first'});
   assert.equal(second.released,false);
   assert.equal(second.reason,'ALREADY_RELEASED');
 });
 
-test('completed worker artifacts release capacity before slow cohort fan-in without dropping locks', () => {
+test('completed worker artifacts release capacity and ordinary source locks before slow cohort fan-in', () => {
   const queue=createVibeContinuousQueue({
     maxConcurrentTasks:2,
     tasks:[
@@ -772,10 +772,10 @@ test('completed worker artifacts release capacity before slow cohort fan-in with
   const task=complete.queue.tasks.find(row=>row.id==='artifact-task');
   assert.match(task.blocker,/slot-released.*fan-in/);
   assert.equal(task.reservationRunId,'123');
-  assert.deepEqual(task.retainedResponsibleFileLocks,['web-games/shared-lock/shared.js']);
+  assert.deepEqual(task.retainedResponsibleFileLocks,[]);
   const selection=selectVibeQueueBatch(complete.queue,{maxConcurrentTasks:2});
-  assert.equal(selection.selected.some(row=>row.id==='same-lock'),false);
-  assert.equal(selection.selected.some(row=>row.id==='refill'),true);
+  assert.equal(selection.selected.length,1);
+  assert.equal(selection.selected.some(row=>row.id==='same-lock'),true);
 });
 
 test('worker artifact release ignores artifacts from a different reservation run', () => {
