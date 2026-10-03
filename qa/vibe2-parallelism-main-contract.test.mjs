@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {execFileSync} from 'node:child_process';
 
 const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
 const core=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
@@ -239,6 +240,22 @@ test('reserve batch persists control state only through the explicit Vibe2 contr
   const snapshotBranch=reserve.indexOf('if [ "$state_attempt" -eq 1 ] || [ ! -s /tmp/vibe2-company-runtime-queue.json ]; then');
   const planner=reserve.indexOf('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs');
   assert.ok(snapshotBranch>=0&&planner>snapshotBranch);
+});
+
+test('24H pre-plan priority dispatch block stays valid Bash',()=>{
+  const stepStart=runner.indexOf('      - name: Dispatch queued asset work first, otherwise GAME_PRIMARY before full planning');
+  const stepEnd=runner.indexOf('\n      - name: Plan from latest main and persist control queue',stepStart);
+  assert.ok(stepStart>=0&&stepEnd>stepStart);
+  const step=runner.slice(stepStart,stepEnd);
+  const runMarker='        run: |\n';
+  const runAt=step.indexOf(runMarker);
+  assert.ok(runAt>=0);
+  const shell=step.slice(runAt+runMarker.length)
+    .split('\n')
+    .map(line=>line.startsWith('          ')?line.slice(10):line)
+    .join('\n')
+    .replace(/\$\{\{[^\n]*?\}\}/g,'CI_EXPR');
+  assert.doesNotThrow(()=>execFileSync('bash',['-n'],{input:shell,encoding:'utf8',stdio:['pipe','pipe','pipe']}));
 });
 
 test('reserve scheduling runs same-lane reserves in parallel and learning still defers before production under runner pressure',()=>{
