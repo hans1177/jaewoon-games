@@ -6,11 +6,53 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {assetProductionGuidance,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb} from '../tools/vibe2-asset-production-plan.mjs';
-import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt} from '../tools/vibe2-source-worker.mjs';
+import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource} from '../tools/company-development-roblox-bootstrap.mjs';
+
+test('persisted DCC asset binding does not depend on duplicate presentation metadata',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'dcc-binding-candidate-'));
+  try{
+    const sourceRoot=path.join(root,'roblox-games','demo');
+    const clientDir=path.join(sourceRoot,'client');
+    fs.mkdirSync(clientDir,{recursive:true});
+    fs.writeFileSync(path.join(clientDir,'Game.client.luau'),[
+      'local gui = Instance.new("ScreenGui")',
+      'local root = Instance.new("Frame")',
+      'root.Parent = gui'
+    ].join('\n')+'\n','utf8');
+    const generated=[{
+      path:'assets/generated/roblox/demo/prop/asset.glb',
+      artifactHash:'a'.repeat(64),
+      assetId:'demo-prop',
+      family:'PROP'
+    }];
+    const result=deterministicRobloxBuildUpCandidate({
+      order:{gameId:'demo',target:'roblox',assetProductionLane:true},
+      sourceRoot,
+      sourceRootRelative:'roblox-games/demo',
+      responsibleFiles:['client/Game.client.luau'],
+      generatedAssetBindings:generated,
+      allowAssetDevelopment:true
+    });
+    assert.ok(result);
+    assert.equal(result.generation.deterministicGeneratedAssetBinding,true);
+    const text=result.candidate.edits.map(row=>row.replace).join('\n');
+    assert.match(text,/GeneratedNativeAssetPath1/);
+    assert.ok(text.includes(generated[0].path));
+    assert.ok(text.includes(generated[0].artifactHash));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('asset Web zero-output and first-output timers keep the normal long model budget',()=>{
+  const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(source,/ASSET_DEVELOPMENT_WEB_TIMEOUT_MS=Math\.max\(240000,DEFAULT_TIMEOUT_MS\)/);
+  assert.match(source,/assetDevelopmentLane&&target==='web'\?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:ZERO_OUTPUT_RETRY_TIMEOUT_MS/);
+  assert.match(source,/firstOutputTimeoutMs=assetDevelopmentLane&&target==='web'\?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:MODEL_FIRST_OUTPUT_TIMEOUT_MS/);
+  assert.match(source,/Math\.min\(timeoutMs,firstOutputTimeoutMs\)/);
+});
 
 test('Web fully consumes the same visual loadout as Unity and imports a shared customization document',()=>{
   const asset={id:'icon',family:'UI',types:['ui'],license:'project-original',sourceHash:'icon-v1',customization:{controls:{color:{kind:'COLOR',axis:'MATERIAL',target:'Fill'}}},platformVariants:{

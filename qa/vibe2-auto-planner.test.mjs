@@ -1690,10 +1690,51 @@ test('missing current upper-platform readiness requeues real Unity Web code and 
   assert.ok(task);
   assert.equal(task.target,'unity');
   assert.ok(task.evidence.includes('unity-web-development-floor:v1'));
+  assert.ok(task.evidence.includes('platform-responsibility-split:unity-web-core-runtime'));
+  assert.ok(task.evidence.includes('same-game-cross-platform-parallel:responsible-files-only'));
   assert.ok(task.evidence.includes('upper-platform-readiness:READINESS_EVIDENCE_MISSING'));
-  assert.ok(task.responsibleFiles.includes(`unity-games/${gameId}/Assets/Scripts/Visuals.cs`));
+  assert.deepEqual(task.responsibleFiles,[
+    `unity-games/${gameId}/Assets/Scripts/GameCore.cs`,
+    `unity-games/${gameId}/Assets/Scripts/RuntimeBootstrap.cs`
+  ]);
+  assert.equal(task.responsibleFiles.includes(`unity-games/${gameId}/Assets/Scripts/Visuals.cs`),false);
   assert.match(task.goal,/CODE\/GRAPHICS\/WEBGL_BUILD\/ACTUAL_PLAY\/QA\/PORTABILITY/);
   assert.match(task.goal,/실제 2명 이상 상태 동기화/);
+});
+
+test('Unity native presentation responsibility excludes gameplay core when a visual owner exists',()=>{
+  const root=tempRepo();
+  const policyPath=path.join(root,'company-learning','platform-release-roadmap.json');
+  const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+  policy.assetProductionParallelContract={enabled:true};
+  fs.writeFileSync(policyPath,JSON.stringify(policy,null,2),'utf8');
+  const project={gameId:'demo',name:'Demo',engine:'unity',target:'unity',releaseState:'development-confirmed',projectPath:'unity-games/demo'};
+  const task=findPresentationQualityTask(project,root,{tasks:[]});
+  assert.ok(task);
+  assert.equal(task.assetProductionLane,true);
+  assert.ok(task.responsibleFiles.includes('unity-games/demo/Assets/Scripts/PrototypeAnimatedVisuals.cs'));
+  assert.equal(task.responsibleFiles.includes('unity-games/demo/Assets/Scripts/GameCore.cs'),false);
+  assert.equal(task.responsibleFiles.includes('unity-games/demo/Assets/Scripts/RuntimeBootstrap.cs'),false);
+});
+
+test('same-game Unity Web repair and Unity asset task stay parallel when responsible files are disjoint',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[
+    {
+      id:'demo-unity-web-repair-v1',gameId:'demo',target:'unity',department:'development',type:'implementation',
+      goal:'repair Unity Web core runtime',sourceRoot:'unity-games/demo',
+      responsibleFiles:['unity-games/demo/Assets/Scripts/GameCore.cs','unity-games/demo/Assets/Scripts/RuntimeBootstrap.cs'],
+      status:'running',releaseState:'development-confirmed',executionLane:'game-primary',reservationRunId:'game-run'
+    },
+    {
+      id:'demo-unity-presentation-asset-adaptation-v1',gameId:'demo',target:'unity',department:'development',type:'implementation',
+      goal:'asset presentation',sourceRoot:'unity-games/demo',
+      responsibleFiles:['unity-games/demo/Assets/Scripts/PrototypeAnimatedVisuals.cs'],
+      status:'queued',releaseState:'development-confirmed',executionLane:'asset-development',assetProductionLane:true
+    }
+  ]});
+  const batch=selectVibeQueueBatch(queue,{maxConcurrentTasks:4,lane:'asset-development'});
+  assert.equal(batch.selected.some(row=>row.id==='demo-unity-presentation-asset-adaptation-v1'),true);
+  assert.equal(batch.deferredConflicts.some(row=>row.task?.id==='demo-unity-presentation-asset-adaptation-v1'),false);
 });
 
 test('explicit grandfathered native progress is not rewound into the Unity Web repair floor',()=>{
