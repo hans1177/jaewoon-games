@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import {validateCompanyRecord,scanCompanyRecords,extractChangeRecordReferences,extractCentralPolicyReferences,extractCentralDocumentReferences,classifyCentralChangeRecordRetention,planCentralDocumentArchive,planCentralCurrentUsePrune,planCompanionCurrentUsePrune,inspectCentralDocument,discoverCentralArchiveCandidates} from '../tools/company-records-governance.mjs';
+import {validateCompanyRecord,scanCompanyRecords,extractChangeRecordReferences,extractCentralPolicyReferences,extractCentralDocumentReferences,classifyCentralChangeRecordRetention,planCentralDocumentArchive,planCentralCurrentUsePrune,planCompanionCurrentUsePrune,evaluateCentralDocumentBudget,inspectCentralDocument,inspectCentralDocumentBudgets,discoverCentralArchiveCandidates} from '../tools/company-records-governance.mjs';
 
 const root=process.cwd();
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
@@ -280,6 +280,54 @@ test('central archive plan removes explicit history before unreferenced compatib
   assert.ok(!plan.archivedPaths.includes(changeToken+'.'+activeKey));
   assert.ok(plan.archivedPaths.includes(changeToken+'.'+oldKey));
   assert.equal(plan.hardLimitSatisfied,true);
+});
+
+test('central document budget blocks hard overflow and oversized single-change growth',()=>{
+  const hard=evaluateCentralDocumentBudget({
+    documentKey:'architecture',
+    sourcePath:'company-learning/company-architecture-map.json',
+    currentBytes:321000,
+    baseBytes:300000,
+    hardMaxUtf8Bytes:320000,
+    maxGrowthUtf8Bytes:8000
+  });
+  assert.ok(hard.errors.includes('CENTRAL_DOCUMENT_ARCHITECTURE_HARD_LIMIT_EXCEEDED:321000>320000'));
+  assert.ok(hard.errors.includes('CENTRAL_DOCUMENT_ARCHITECTURE_GROWTH_LIMIT_EXCEEDED:21000>8000'));
+
+  const normal=evaluateCentralDocumentBudget({
+    documentKey:'logMap',
+    sourcePath:'company-learning/company-log-map.json',
+    currentBytes:112000,
+    baseBytes:114000,
+    hardMaxUtf8Bytes:140000,
+    maxGrowthUtf8Bytes:4000
+  });
+  assert.deepEqual(normal.errors,[]);
+  assert.equal(normal.growthUtf8Bytes,-2000);
+  assert.equal(normal.headroomUtf8Bytes,28000);
+});
+
+test('current central four documents stay inside absolute anti-bloat budgets',()=>{
+  const report=inspectCentralDocumentBudgets();
+  assert.deepEqual(report.errors,[]);
+  assert.equal(Object.keys(report.documents).length,4);
+  assert.ok(report.documents.policy.utf8Bytes<=report.documents.policy.hardMaxUtf8Bytes);
+  assert.ok(report.documents.architecture.utf8Bytes<=320000);
+  assert.ok(report.documents.logMap.utf8Bytes<=140000);
+  assert.ok(report.documents.security.utf8Bytes<=70000);
+  assert.equal(report.documents.policy.maxGrowthUtf8Bytes,12000);
+  assert.equal(report.documents.architecture.maxGrowthUtf8Bytes,8000);
+  assert.equal(report.documents.logMap.maxGrowthUtf8Bytes,4000);
+  assert.equal(report.documents.security.maxGrowthUtf8Bytes,4000);
+});
+
+test('central document growth report reads an exact git baseline',()=>{
+  const report=inspectCentralDocumentBudgets({baseRevision:'HEAD'});
+  assert.deepEqual(report.errors,[]);
+  for(const row of Object.values(report.documents)){
+    assert.equal(row.growthUtf8Bytes,0);
+    assert.equal(row.baseUtf8Bytes,row.utf8Bytes);
+  }
 });
 
 test('current central policy stays within hard retention limit and keeps every referenced compatibility record',()=>{
