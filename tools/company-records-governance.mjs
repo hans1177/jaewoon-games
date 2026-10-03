@@ -150,7 +150,7 @@ export function changedGovernedFiles(base='HEAD^',head='HEAD'){
 const CENTRAL_POLICY_REL='company-learning/platform-release-roadmap.json';
 const CENTRAL_ARCHITECTURE_REL='company-learning/company-architecture-map.json';
 const CENTRAL_LOG_MAP_REL='company-learning/company-log-map.json';
-const CENTRAL_SECURITY_REL=CENTRAL_SECURITY_REL;
+const CENTRAL_SECURITY_REL='company-learning/security-immune-system.json';
 const CENTRAL_SCAN_ROOTS=Object.freeze(['qa','tools','.github','assets']);
 const CENTRAL_COMPANION_DOCUMENTS=Object.freeze({
   architecture:Object.freeze({
