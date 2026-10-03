@@ -1,5 +1,36 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-fie712",
+      "worker": "vibe2",
+      "taskId": "amusement-tycoon-roblox-presentation-asset-adaptation-v1",
+      "gameId": "amusement-tycoon",
+      "files": [
+        "roblox-games/amusement-tycoon/client/Game.client.luau",
+        "roblox-games/amusement-tycoon/server/Game.server.luau",
+        "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+        "assets/generated/roblox/amusement-tycoon/background/asset.glb",
+        "assets/generated/roblox/amusement-tycoon/background/preview.png",
+        "assets/generated/roblox/amusement-tycoon/background/evidence.json",
+        "assets/generated/roblox/amusement-tycoon/item/asset.glb",
+        "assets/generated/roblox/amusement-tycoon/item/preview.png",
+        "assets/generated/roblox/amusement-tycoon/item/evidence.json",
+        "assets/generated/roblox/amusement-tycoon/prop/asset.glb",
+        "assets/generated/roblox/amusement-tycoon/prop/preview.png",
+        "assets/generated/roblox/amusement-tycoon/prop/evidence.json"
+      ],
+      "baseSha": "f86f434a3a9ee622f64ef7ba9d06dc9a505671ca",
+      "runId": "37091044709",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-03T02:51:45.705Z",
+      "expiresAt": "2026-10-03T03:36:45.705Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:amusement-tycoon-roblox-presentation-asset-adaptation-v1"
+      ]
+    }
+  ]
 }
