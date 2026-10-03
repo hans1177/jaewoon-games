@@ -416,6 +416,47 @@ test('native asset production defaults to Roblox and exposes reproducible Blende
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('task-declared Blender recipe stays mandatory even when a reusable animation candidate is ready',()=>{
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',
+    task:{
+      gameId:'declared-dcc-demo',
+      goal:'기존 모션 자산을 유지하면서 선언된 Blender 파생 모션을 실제 제작',
+      assetAuthoring:{recipes:[{
+        id:'declared-motion-v1',assetId:'declared-motion-source',family:'MOTION',license:'project-original',
+        executor:'BLENDER_PYTHON',types:['animation'],targetPlatforms:['ROBLOX'],
+        script:'assets/roblox/demo/refine-motion.py',
+        args:['--output','assets/roblox/demo/native/motion-v1'],
+        outputs:[
+          'assets/roblox/demo/native/motion-v1/motion.glb',
+          'assets/roblox/demo/native/motion-v1/evidence.json',
+          'assets/roblox/demo/native/motion-v1/preview.png'
+        ],
+        evidenceJson:'assets/roblox/demo/native/motion-v1/evidence.json',
+        preview:'assets/roblox/demo/native/motion-v1/preview.png',
+        editableSource:'assets/roblox/demo/refine-motion.py',
+        runMode:'VERIFY_ONLY'
+      }]}
+    },
+    manifest:{assets:[{
+      id:'ready-motion',family:'MOTION',types:['animation'],tags:['animation','motion'],
+      path:'assets/roblox/demo/ready-motion.glb',platforms:['roblox'],license:'project-original',
+      downloaded:true,productionVerified:true,verifiedAnimation:true,sourceHash:'ready-motion-source'
+    }]},
+    presetCatalog:{presets:[]}
+  });
+  const animation=plan.decisions.find(row=>row.type==='animation');
+  assert.equal(animation?.applyFirst?.enabled,true);
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionRequired,true);
+  assert.ok(plan.nativeAuthoringExecution.dcc.requiredTypes.includes('animation'));
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionRequestCount,1);
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].id,'declared-motion-v1');
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].assetId,'declared-motion-source');
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].family,'MOTION');
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].license,'project-original');
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_EXISTING_AUTHORING_EXECUTOR');
+});
+
 test('native planner preserves an existing Blender recipe as the DCC execution path',()=>{
   const plan=buildVibeAssetProductionPlan({
     target:'roblox',
