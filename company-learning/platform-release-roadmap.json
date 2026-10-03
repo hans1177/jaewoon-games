@@ -1,5 +1,5 @@
 {
-  "version": 524,
+  "version": 525,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -918,14 +918,15 @@
       "releaseQaFailureIsLaneLocalUntilSharedFanIn": true,
       "defaultRequestedGameWorkers": 256,
       "recoverToExternalProviderBoundaryAfterPressure": true,
-      "workflowLevelGameWideSerializationForbidden": false,
-      "workflowLevelConcurrencyGroupByGameIdForbidden": false,
-      "sameGameConflictSerializationScope": "EXACT_DUPLICATE_WORKFLOW_OR_RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY",
+      "workflowLevelGameWideSerializationForbidden": true,
+      "workflowLevelConcurrencyGroupByGameIdForbidden": true,
+      "sameGameConflictSerializationScope": "RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_OR_ACTUAL_ROBLOX_STUDIO_SESSION_ONLY",
       "crossGameWorkflowSerializationForbidden": true,
-      "exactGameDuplicateWorkflowSerializationAllowed": true,
-      "exactGameDuplicateWorkflowSerializationPurpose": "RACE_DUPLICATE_PLANNER_AND_HEAVY_NATIVE_EXECUTION_SUPPRESSION_ONLY",
-      "exactGameDuplicateWorkflowSerializationAuthority": "company-learning/platform-release-roadmap.json#changeRecord.nativeExactGameWorkflowConcurrency20260927",
-      "internalSameWorkflowGameMatrixParallelismPreserved": true
+      "exactGameDuplicateWorkflowSerializationAllowed": false,
+      "exactGameDuplicateWorkflowSerializationPurpose": "SUPERSEDED_BY_RUN_SCOPED_CONCURRENCY_AND_EXACT_DUPLICATE_DEDUPE",
+      "exactGameDuplicateWorkflowSerializationAuthority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.sameGamePlatformParallelismContract",
+      "internalSameWorkflowGameMatrixParallelismPreserved": true,
+      "exactGameDuplicateDispatchDedupeAllowed": true
     },
     "candidateReleaseConcurrency": {
       "scope": "CANDIDATE_BRANCH",
@@ -1153,6 +1154,30 @@
       "failedGameEvidencePreserved": true,
       "cancellationNoiseMayNotTriggerHeavyControlWork": true,
       "qualityOrEvidenceGateWeakeningForbidden": true
+    },
+    "gameIdOnlySerializationForbidden": true,
+    "sameGameDifferentPlatformsMustRunInParallel": true,
+    "sameGamePlatformParallelismContract": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-03",
+      "status": "ACTIVE",
+      "rule": "SAME_GAME_DIFFERENT_PLATFORM_OR_NON_OVERLAPPING_RESPONSIBILITY_RUNS_IN_PARALLEL",
+      "gameIdOnlySerializationForbidden": true,
+      "workflowConcurrencyGroupByGameIdForbidden": true,
+      "platformScopedResponsibleFilesRequired": true,
+      "exactResponsibleFileConflictMaySerialize": true,
+      "atomicSharedStateWriteMaySerializeBriefly": true,
+      "sourceRootWideSerializationForbidden": true,
+      "differentPlatformSourceRootsMustNotConflictByGameIdAlone": true,
+      "exactDuplicateDispatchDedupeAllowed": true,
+      "exactDuplicateDedupeIsNotSerialization": true,
+      "robloxStudioException": {
+        "enabled": true,
+        "scope": "ACTUAL_ROBLOX_STUDIO_SESSION_ONLY",
+        "sharedAuthenticatedStudioHostMaySerialize": true,
+        "studioPlanningMayRemainParallel": true,
+        "nonStudioSourceBuildQaRuntimeMayNotSerializeByGameId": true
+      }
     }
   },
   "phases": [
@@ -1332,7 +1357,10 @@
       "mcpUnavailableRecovery": {
         "automaticResumeAfterPrerequisite": true,
         "developmentContinuesWhileStudioUnavailable": true
-      }
+      },
+      "actualStudioSessionSerializationException": true,
+      "serializationScope": "SHARED_AUTHENTICATED_STUDIO_HOST_ONLY",
+      "nonStudioDevelopmentSerializationAuthority": false
     },
     "headlessValidation": {
       "version": 2,
@@ -8065,6 +8093,22 @@
       "codingBuildRuntimeQaPreserved": true,
       "canonicalPipelinePreserved": true,
       "wrapperShadowBypassForbidden": true
+    },
+    "sameGamePlatformParallelism20261003": {
+      "id": "SAME_GAME_PLATFORM_PARALLELISM_2026-10-03",
+      "authority": "OWNER_DIRECTIVE_2026-10-03",
+      "objective": "REMOVE_GAME_ID_BASED_SERIALIZATION_AND_KEEP_ONLY_EXACT_FILE_ATOMIC_STATE_OR_ACTUAL_ROBLOX_STUDIO_SESSION_SERIALIZATION",
+      "sameGameDifferentPlatformsParallel": true,
+      "sameGameNonOverlappingResponsibilitiesParallel": true,
+      "gameIdOnlySerializationForbidden": true,
+      "exactResponsibleFileConflictStillProtected": true,
+      "atomicSharedStateWriteStillProtected": true,
+      "exactDuplicateDispatchDedupeAllowed": true,
+      "robloxStudioActualPlayOnlyException": true,
+      "responsibilitySplitRequired": true,
+      "centralParallelismUnchanged": 256,
+      "newPipelineCreated": false,
+      "shadowPipelineCreated": false
     }
   },
   "vibeExecutionLaneContract": {
@@ -14641,7 +14685,12 @@
       "assetDevelopmentSourceWorkerBuildUpDirectiveSyntaxGuard": true,
       "assetDevelopmentModelCachePersistOnMiss": true,
       "assetDevelopmentWorkerModelRepullAfterSharedCacheHitForbidden": true,
-      "assetDevelopmentCacheGeneration": 5
+      "assetDevelopmentCacheGeneration": 5,
+      "sameGameDifferentPlatformsParallel": true,
+      "gameIdSerializationForbidden": true,
+      "platformScopedResponsibleFilesRequired": true,
+      "assetAndNonAssetResponsibilitiesMustBeSplit": true,
+      "robloxStudioActualPlaySerializationExceptionOnly": true
     },
     "failureHandling": {
       "state": "ASSET_REPAIR_REQUIRED",
@@ -24124,9 +24173,12 @@
       "longRunningNativeMayNotBlockUnityWebFloor": true,
       "longRunningUnityWebMayNotBlockOtherGames": true,
       "sameGameIndependentNonOverlappingPackagesParallel": true,
-      "onlyAllowedSerialization": "ATOMIC_SHARED_STATE_WRITE_OR_EXACT_RESPONSIBLE_FILE_CONFLICT",
+      "onlyAllowedSerialization": "ATOMIC_SHARED_STATE_WRITE_OR_EXACT_RESPONSIBLE_FILE_CONFLICT_OR_ACTUAL_ROBLOX_STUDIO_SESSION",
       "sharedStateWriteMustReleaseHeavyExecutionCapacity": true,
-      "externalProviderCapacityIsOnlyHeavyExecutionBoundary": true
+      "externalProviderCapacityIsOnlyHeavyExecutionBoundary": true,
+      "sameGameDifferentPlatformsParallel": true,
+      "gameIdOnlySerializationForbidden": true,
+      "platformScopedResponsibleFilesRequired": true
     },
     "fortniteUefnDevelopmentStatus": "DEVELOPMENT_PAUSED",
     "fortniteUefnStatusLabel": "개발보류",
