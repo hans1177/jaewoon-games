@@ -420,3 +420,15 @@ test('failed worker releases its exact lock after immutable upload while PASS ho
   assert.match(block,/vibe2-remote-work-lock\.mjs" release --worker=vibe2 --id="\$lock_id"/);
   assert.match(core,/VIBE_REMOTE_WORK_LOCK_REASON=lock-not-found/);
 });
+
+test('24H pre-plan keeps asset priority ahead of runner pressure defer',()=>{
+  const stepStart=runner.indexOf('      - name: Dispatch queued asset work first, otherwise GAME_PRIMARY before full planning');
+  const stepEnd=runner.indexOf('\n      - name: Plan from latest main and persist control queue',stepStart);
+  assert.ok(stepStart>=0&&stepEnd>stepStart);
+  const step=runner.slice(stepStart,stepEnd);
+  const assetDispatch=step.indexOf('VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED');
+  const pressureDefer=step.indexOf('VIBE2_PREPLAN_DISPATCH=DEFER_RUNNER_PRESSURE');
+  assert.ok(assetDispatch>=0&&pressureDefer>=0&&assetDispatch<pressureDefer);
+  assert.match(step,/VIBE2_ASSET_PRIORITY_BURST_MAX/);
+  assert.match(step,/VIBE2_RUNNER_JOB_PRESSURE_THRESHOLD/);
+});
