@@ -490,11 +490,16 @@ test('central policy architecture and log maps bind the development floor parall
   assert.equal(logMap.developmentFloorParallelBottleneckRepairEvidence?.independentGameParallelismRequired,true);
 });
 
-test('Unity Web floor serializes only the same game while independent games remain parallel',()=>{
+test('Unity Web floor stays parallel without gameId workflow serialization',()=>{
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
   const workflow=read('.github/workflows/unity-web-first-stage-build.yml');
-  assert.match(development,/dispatch-unity-web-floor:[\s\S]*?group: unity-web-floor-call-\$\{\{ matrix\.game_id \}\}[\s\S]*?cancel-in-progress: false/);
-  assert.match(workflow,/build:\n\s+concurrency:\n\s+group: unity-web-floor-exec-\$\{\{ inputs\.game_id \|\| inputs\.request_file \|\| github\.run_id \}\}[\s\S]*?cancel-in-progress: false[\s\S]*?runs-on: ubuntu-latest/);
+  const callStart=development.indexOf('\n  dispatch-unity-web-floor:\n');
+  const callEnd=development.indexOf('\n  dispatch-unity-web-bootstrap:\n',callStart);
+  const callBlock=development.slice(callStart,callEnd);
+  assert.ok(callStart>=0&&callEnd>callStart);
+  assert.doesNotMatch(callBlock,/\n\s+concurrency:/);
+  assert.match(workflow,/build:[\s\S]*?group: unity-web-floor-exec-run-\$\{\{ github\.run_id \}\}[\s\S]*?cancel-in-progress: false[\s\S]*?runs-on: ubuntu-latest/);
+  assert.doesNotMatch(workflow,/group: unity-web-floor-exec-\$\{\{ inputs\.game_id/);
   assert.doesNotMatch(workflow,/UNITY_WEB_FLOOR_EXACT_DEDUPED_ACTIVE=/);
   assert.doesNotMatch(development,/strategy:[\s\S]{0,160}?max-parallel:/);
 });
