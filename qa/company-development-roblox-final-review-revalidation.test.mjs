@@ -152,3 +152,17 @@ test('F9 fan-in repeats development without requiring publication',()=>{
   assert.doesNotMatch(workflow,/if \[ "\$settled_count" -gt 0 \]; then/);
   assert.match(workflow,/vibe2-fanin-refill/);
 });
+
+
+test('F9 requires gameplay product readiness and routes failures back to Vibe build-up',()=>{
+  assert.match(workflow,/evaluateRobloxF9ProductReadiness/);
+  assert.match(workflow,/ROBLOX_F9_GAMEPLAY_PRODUCT_READINESS=/);
+  assert.match(workflow,/productReadiness\.pass===true[\s\S]*item\.robloxFoundationF0Passed===true/);
+  assert.match(workflow,/const internalFlowNonBlocking=!productBlocked&&\(/);
+  assert.match(workflow,/item\.robloxQualityBuildUpRequired=true/);
+  assert.match(workflow,/item\.robloxQualityBuildUpSourceRevision=sourceRevision/);
+  assert.match(workflow,/roblox-f9-gameplay-product-readiness-failure/);
+  assert.match(workflow,/GAMEPLAY_PRODUCT_READINESS/);
+  assert.match(workflow,/item\.robloxQualityBuildUpRequired=false/);
+  assert.match(workflow,/gameplayProductReadiness:productReadiness/);
+});
