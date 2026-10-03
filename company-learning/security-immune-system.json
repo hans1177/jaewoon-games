@@ -1,5 +1,5 @@
 {
-  "version": 63,
+  "version": 64,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -1039,5 +1039,21 @@
     "f9RuntimeReplayForbidden": true,
     "publicationBeforeF9Forbidden": true,
     "failureRoutesExistingRepairPipeline": true
+  },
+  "robloxStudioOptionalDeploymentSecurity": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#changeRecord.robloxStudioOptionalDeployment20261003",
+    "classification": "OWNER_DEPLOYMENT_VERIFICATION_POLICY",
+    "protections": {
+      "studioMayNotBeRequiredAsDeploymentGate": true,
+      "codeAndStaticQaRequiredAfterBuildUp": true,
+      "studioFailureMayNotBlockDeployment": true,
+      "studioUnavailableMayNotBlockBuildUpOrF9": true,
+      "studioPassMayNotBeFabricatedWithoutActualStudioEvidence": true,
+      "existingSecurityTrustBoundaryChecksRemainRequired": true,
+      "exactSourceAndArtifactBindingRemainRequiredWhenApplicable": true,
+      "publicReleaseAuthorityUnchanged": true
+    },
+    "failureAction": "CODE_OR_STATIC_QA_FAILURE_ROUTES_TO_CAUSAL_REPAIR; OPTIONAL_STUDIO_DIAGNOSTIC_FAILURE_IS_NONBLOCKING_UNLESS_IT_REPRODUCES_A_REAL_PRODUCT_DEFECT"
   }
 }
