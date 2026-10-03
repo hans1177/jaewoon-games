@@ -72,6 +72,82 @@ export const EXPERIENCE_BUILD_UP_TRACKS=Object.freeze([
   'PERFORMANCE_AND_RUNTIME_STABILITY'
 ]);
 
+export const DEVELOPMENT_IMPACT_CATEGORIES=Object.freeze(['GRAPHICS','MAP','UI','GAMEPLAY','SAVE','MULTIPLAYER_SERVER']);
+
+const IMPACT_DOMAINS=Object.freeze({
+  GRAPHICS:Object.freeze(['CHARACTER_VISUALS','ENEMY_VISUALS','WEAPONS_AND_EQUIPMENT','BUILDINGS_AND_PROPS','ENVIRONMENT','TERRAIN','MATERIALS','PALETTE','LIGHTING','ANIMATION','SECONDARY_MOTION','VFX','CAMERA','AUDIO_VISUAL_TIMING','ENVIRONMENTAL_MOTION']),
+  MAP:Object.freeze(['WORLD_MAP_TOPOLOGY','MAP_EXPANSION','REGIONS','WORLD_DENSITY','WORLD_NAVIGATION','LANDMARKS','TRAVERSAL','SPAWN_ENCOUNTER_DIRECTOR','ENVIRONMENT','TERRAIN']),
+  UI:Object.freeze(['INPUT','MOBILE_UX','ACCESSIBILITY','SETTINGS_ACCESSIBILITY','MENU_FLOW','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','UI_HUD']),
+  GAMEPLAY:Object.freeze(['CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_ACTIONS','PLAYER_AGENCY','ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS','PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','ECONOMY','INVENTORY','EQUIPMENT_LOADOUT','CRAFTING','DIFFICULTY_PACING','GAME_FEEL']),
+  SAVE:Object.freeze(['SAVE_AND_RECOVERY','SAVE_COMPLETENESS','RECONNECT_RECOVERY']),
+  MULTIPLAYER_SERVER:Object.freeze(['MULTIPLAYER_AND_SYNC'])
+});
+
+export function classifyDevelopmentImpact({platform='COMMON',responsibleFiles=[],qualityGapMap=[]}={}){
+  const gaps=new Set((Array.isArray(qualityGapMap)?qualityGapMap:[]).filter(row=>clean(row?.state).toUpperCase()==='GAP').map(row=>clean(row?.domain).toUpperCase()));
+  const fileText=(Array.isArray(responsibleFiles)?responsibleFiles:[]).map(posix).join(' ').toLowerCase();
+  const categories=[];
+  const add=name=>{if(!categories.includes(name))categories.push(name);};
+  const domainHit=name=>(IMPACT_DOMAINS[name]||[]).some(domain=>gaps.has(domain));
+  if(domainHit('GRAPHICS')||/(visual|render|animation|vfx|camera|lighting|material|asset)/.test(fileText))add('GRAPHICS');
+  if(domainHit('MAP')||/(world|map|terrain|region|spawn|environment|landmark)/.test(fileText))add('MAP');
+  if(domainHit('UI')||/(ui|hud|menu|inventory|touch|input)/.test(fileText))add('UI');
+  if(domainHit('GAMEPLAY')||/(combat|enemy|quest|progression|economy|gameplay)/.test(fileText))add('GAMEPLAY');
+  if(domainHit('SAVE')||/(save|datastore|persist|migration)/.test(fileText))add('SAVE');
+  if(domainHit('MULTIPLAYER_SERVER')||/(remoteevent|remotefunction|network|multiplayer|replication)/.test(fileText))add('MULTIPLAYER_SERVER');
+  if(!categories.length)add('GAMEPLAY');
+
+  const target=clean(platform).toUpperCase()||'COMMON';
+  const requiredQa=['CHANGED_RESPONSIBILITY_STATIC_QA'];
+  if(target==='ROBLOX')requiredQa.push('ROBLOX_LUAU_COMPILE');
+  if(categories.includes('MAP'))requiredQa.push('MAP_PROTECTED_ANCHOR_QA');
+  if(categories.includes('UI'))requiredQa.push('MOBILE_TOUCH_UI_QA');
+  if(categories.includes('GAMEPLAY'))requiredQa.push('GAMEPLAY_STATE_DELTA_QA');
+  if(categories.includes('SAVE'))requiredQa.push('SAVE_LOAD_MIGRATION_QA','SECURITY_AUTHORITY_QA');
+  if(categories.includes('MULTIPLAYER_SERVER'))requiredQa.push('REMOTE_AUTHORITY_AND_SYNC_QA','SECURITY_AUTHORITY_QA');
+  if(categories.includes('GRAPHICS'))requiredQa.push('VISUAL_BINDING_QA');
+  if(target==='ROBLOX'&&categories.includes('MAP'))requiredQa.push('ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE');
+
+  const conditionalQa=[];
+  if(categories.some(name=>['GRAPHICS','UI'].includes(name)))conditionalQa.push('STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE');
+  if(categories.includes('MULTIPLAYER_SERVER'))conditionalQa.push('STUDIO_MCP_ONLY_IF_ACTUAL_MULTI_CLIENT_REQUIRED');
+
+  return Object.freeze({
+    version:1,
+    platform:target,
+    categories:Object.freeze(categories),
+    requiredQa:Object.freeze(uniq(requiredQa)),
+    conditionalQa:Object.freeze(uniq(conditionalQa)),
+    securityRelevant:categories.some(name=>['SAVE','MULTIPLAYER_SERVER'].includes(name)),
+    openCloudWorldChecks:Object.freeze(target==='ROBLOX'&&categories.includes('MAP')?[
+      'SERVER_BOOT','FINITE_WORLD_BOUNDS','SPAWN_IN_PLAYABLE_BOUNDS','LANDMARK_AND_OBJECTIVE_COUNTS',
+      'WORLD_GEOMETRY','TERRAIN_BINDING','LIGHTING_ATMOSPHERE','STREAMING_CONFIGURATION'
+    ]:[])
+  });
+}
+
+export function buildDevelopmentDryRun(directive={}){
+  const files=directive?.responsibleSystemsAndFiles?.files||directive?.responsibleFiles||[];
+  const impact=directive?.developmentImpact||classifyDevelopmentImpact({
+    platform:directive?.platform,responsibleFiles:files,qualityGapMap:directive?.qualityGapMap||[]
+  });
+  return Object.freeze({
+    version:1,
+    mode:'DRY_RUN_NO_SOURCE_MUTATION',
+    gameId:clean(directive?.gameId),
+    platform:clean(directive?.platform).toUpperCase()||'COMMON',
+    plannedFiles:Object.freeze(uniq(files.map(posix))),
+    impact,
+    protectedSemantics:Object.freeze(['CORE_RULES','BALANCE','PROGRESSION','SAVE_MEANING','ECONOMY','NETWORK_AUTHORITY']),
+    requiredQa:impact.requiredQa,
+    conditionalQa:impact.conditionalQa,
+    openCloudWorldChecks:impact.openCloudWorldChecks,
+    sourceMutationPerformed:false,
+    newWorkflowOrQueueRequired:false,
+    nextStep:'EXISTING_WORK_ORDER_EXECUTION'
+  });
+}
+
 export const PLATFORM_EXPERIENCE_PROFILES=Object.freeze({
   COMMON:Object.freeze({
     attention:'STANDARD',
@@ -1463,6 +1539,12 @@ export function buildGameSpecificBuildUpDirective({
       'CLOSE_NEXT_HIGHEST_VALUE_GAP_FROM_RUNTIME_OR_PLAYTEST',
       'OPTIMIZE_MOBILE_FRAME_INPUT_RENDER_OR_STATE_BOTTLENECK_WHEN_VERIFIED'
     ]);
+  const developmentImpact=classifyDevelopmentImpact({
+    platform,responsibleFiles:topFiles,qualityGapMap:states
+  });
+  const preMutationDryRun=buildDevelopmentDryRun({
+    gameId:id,platform,responsibleSystemsAndFiles:{files:topFiles},qualityGapMap:states,developmentImpact
+  });
   return Object.freeze({
     version:2,
     directiveId:`${id}-build-up-g${generation}-${fingerprint.slice(0,12)}`,
@@ -1516,6 +1598,8 @@ export function buildGameSpecificBuildUpDirective({
       'wrapper/shadow/temporary override 대신 기존 책임 시스템을 직접 수정한다.'
     ],
     responsibleSystemsAndFiles:{files:topFiles,sourceAnchors:sourceResponsibilities,selectionRule:'DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST',exactSourceAnchorRequired:true,currentAndIntendedBehaviorRequiredPerPrimaryAnchor:true},
+    developmentImpact,
+    preMutationDryRun,
     effectivenessMeasurement:{expectedPlayerEffect:expectedEffect,previousGeneration:previousEffectiveness,baseline:{sourceTreeFingerprint:source.sourceTreeFingerprint,runtimeObserved:runtimeEvidence?.runtimeObserved===true,runtimePassed:runtimeEvidence?.runtimePassed===true,failureStage:clean(runtimeEvidence?.failureStage)||null,failureSignature:clean(runtimeEvidence?.failureSignature)||null},requiredPostChangeEvidence:['CHANGED_GAME_FILES','POST_CHANGE_SOURCE_TREE_FINGERPRINT','RELEVANT_QA_OR_RUNTIME_RESULT','OBSERVED_PLAYER_VALUE_EFFECT'],sourceDeltaAloneDoesNotProvePlayerValueImprovement:true},
     nextActionDecision,
     acceptanceEvidence:effectiveAcceptance,
