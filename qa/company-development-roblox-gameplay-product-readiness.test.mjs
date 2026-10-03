@@ -4,7 +4,8 @@ import fs from 'node:fs';
 import {
   evaluateRobloxGameplayProductReadiness,
   evaluateRobloxF9ProductReadiness,
-  robloxLearningProfileFromSource
+  robloxLearningProfileFromSource,
+  robloxDesignProfileFromBaseline
 } from '../tools/company-development-roblox-gameplay-product-readiness.mjs';
 
 const survivalBaseline={
@@ -122,6 +123,18 @@ test('4v4 design cannot be classified as non multiplayer',()=>{
   assert.ok(result.blockers.includes('MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER'));
 });
 
+
+test('design-grounded profile prioritizes survival identity over incidental strategy wording',()=>{
+  const profile=robloxDesignProfileFromBaseline({content:{
+    identity:'극한 환경에서 매일 살아남는 액션 생존 로그라이트',
+    coreFun:'실시간 액션과 자원 관리의 전략적 선택',
+    coreLoop:['낮에 채집한다','밤에 적을 막는다'],
+    multiplayerMode:'SINGLE'
+  }});
+  assert.equal(profile.genre,'Survival');
+  assert.equal(profile.playMode,'SINGLE');
+});
+
 test('learning profile follows the actual game config instead of stale per-game hardcoding',()=>{
   const profile=robloxLearningProfileFromSource({
     gameId:'horror-escape-room',
@@ -193,4 +206,6 @@ test('verified learning sweep derives genre and play mode from each actual GameC
   assert.match(sweep,/shared','GameConfig\.luau/);
   assert.match(sweep,/configSource/);
   assert.match(sweep,/fallbackProfile/);
+  assert.match(sweep,/latestVerifiedDesign/);
+  assert.match(sweep,/robloxDesignProfileFromBaseline/);
 });
