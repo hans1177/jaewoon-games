@@ -62568,7 +62568,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-03T14:33:46.587Z",
+      "updatedAt": "2026-10-03T14:33:14.225Z",
       "robloxSourceCommit": "9472bd4b844466429db623f3319252e3d488efda",
       "robloxSourceBootstrapPassedAt": "2026-10-02T14:20:25.085Z",
       "robloxSourceBootstrapFailedAt": "2026-10-03T14:33:46.587Z",
@@ -66573,7 +66573,132 @@
             }
           }
         ]
-      }
+      },
+      "platformAdapter": "tools/company-development-unity-platform.mjs",
+      "unityCandidateBranch": "development/unity-tech-seed-story-complete-rpg-chronicles-of-eldoria-36774290498",
+      "unitySourceCommit": "348df0432e88cc64bb59755a5d24bfc3e202e9ad",
+      "unityBuildRunId": 37129891279,
+      "unityRuntimeSmokeRunId": null,
+      "unityIndependentQaRunId": null,
+      "unityRegressionRunId": null,
+      "unityF0ThroughF9Evidence": {
+        "version": 2,
+        "platform": "UNITY",
+        "sourceRevision": "348df0432e88cc64bb59755a5d24bfc3e202e9ad",
+        "artifactIdentity": null,
+        "sourceRootTreeSha": "6684c0278102e15d93a7765b9ce5dfefcf304bd0",
+        "evidenceMode": "F0_COMPILE_PLUS_ONE_EXACT_ANDROID_BLACK_BOX_RUNTIME_F1_F8_PLUS_F9_EVIDENCE_FAN_IN",
+        "singleRuntimeSessionF1ThroughF8": true,
+        "f9RuntimeReplayRequired": false,
+        "floors": {
+          "F0": {
+            "state": "FAIL",
+            "authority": "UNITY_EDITOR_BUILD_COMPILE_AND_EXACT_SOURCE_ARTIFACT_BINDING"
+          },
+          "F1": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION"
+          },
+          "F2": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION"
+          },
+          "F3": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION"
+          },
+          "F4": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION"
+          },
+          "F5": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION_PLUS_INDEPENDENT_QA"
+          },
+          "F6": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION_PLUS_INDEPENDENT_QA"
+          },
+          "F7": {
+            "state": "NOT_APPLICABLE",
+            "authority": "VERIFIED_DESIGN_SINGLE_PLAYER",
+            "participantCount": 0,
+            "authoritativeSync": false
+          },
+          "F8": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION_PLUS_INDEPENDENT_QA"
+          },
+          "F9": {
+            "state": "FAIL",
+            "authority": "F0_TO_F8_EVIDENCE_FAN_IN_NO_RUNTIME_REPLAY"
+          }
+        },
+        "multiplayerRequired": false,
+        "verifiedAt": "2026-10-03T14:33:14.225Z"
+      },
+      "unityCanonicalEvidenceBound": false,
+      "unityF9ReleaseRegressionPassed": false,
+      "unityF9ReleaseRegressionPassedAt": null,
+      "unityMobilePerformancePassed": false,
+      "unityMobilePerformanceEvidence": null,
+      "unityGeneratedAssetRuntimeBindingPassed": false,
+      "unityAssetRuntimeBindingEvidence": null,
+      "unityCanonicalPublishPending": false,
+      "unityInternalReleaseReady": false,
+      "unityInternalReleaseAt": null,
+      "unityInternalReleaseEvidence": null,
+      "unityExecutionEvidence": {
+        "version": 4,
+        "platform": "UNITY",
+        "sourceRevision": "348df0432e88cc64bb59755a5d24bfc3e202e9ad",
+        "sourceRootTreeSha": "6684c0278102e15d93a7765b9ce5dfefcf304bd0",
+        "sourceFingerprint": "2dc2bd5c2bd3c4a54dec157c74832193aa3325cb317f01600b561b2792d0e3ab",
+        "buildOrPackagePassed": false,
+        "artifactIdentity": null,
+        "runtimePassed": false,
+        "independentQaPassed": false,
+        "multiplayerPassed": true,
+        "regressionPassed": false,
+        "rawStageResults": {
+          "runtime": false,
+          "independentQa": false,
+          "regression": false
+        },
+        "canonicalEvidenceBound": false,
+        "f0ToF9Passed": false,
+        "exactRevision": false,
+        "lastSuccessfulStage": "CHEAP_PRECHECK",
+        "failureStage": "F0_SOURCE_INTEGRITY",
+        "failureSignature": "d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152"
+      },
+      "executionEvidence": {
+        "version": 4,
+        "platform": "UNITY",
+        "sourceRevision": "348df0432e88cc64bb59755a5d24bfc3e202e9ad",
+        "sourceRootTreeSha": "6684c0278102e15d93a7765b9ce5dfefcf304bd0",
+        "sourceFingerprint": "2dc2bd5c2bd3c4a54dec157c74832193aa3325cb317f01600b561b2792d0e3ab",
+        "buildOrPackagePassed": false,
+        "artifactIdentity": null,
+        "runtimePassed": false,
+        "independentQaPassed": false,
+        "multiplayerPassed": true,
+        "regressionPassed": false,
+        "rawStageResults": {
+          "runtime": false,
+          "independentQa": false,
+          "regression": false
+        },
+        "canonicalEvidenceBound": false,
+        "f0ToF9Passed": false,
+        "exactRevision": false,
+        "lastSuccessfulStage": "CHEAP_PRECHECK",
+        "failureStage": "F0_SOURCE_INTEGRITY",
+        "failureSignature": "d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152"
+      },
+      "resumeStage": "F0_SOURCE_INTEGRITY",
+      "failureCount": 1,
+      "contractCanaryPassed": false
     },
     {
       "gameId": "survival",
@@ -72790,7 +72915,7 @@
       "unityAssetRuntimeBindingEvidence": null
     }
   ],
-  "updatedAt": "2026-10-03T14:33:46.587Z",
+  "updatedAt": "2026-10-03T14:33:55.613Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
