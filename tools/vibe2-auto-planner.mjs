@@ -1696,6 +1696,103 @@ function nextGraphicsEvolutionTask(project,repoRoot,queue,relatives,stages){
   }
   return null;
 }
+export function findDeclaredDccAuthoringTask(project,repoRoot,queue){
+  const engine=clean(project?.engine).toLowerCase();
+  if(!['roblox','unity'].includes(engine))return null;
+  if(!['development-confirmed','release-confirmed'].includes(clean(project?.releaseState).toLowerCase()))return null;
+  if(!assetProductionEnabled(repoRoot))return null;
+  const responsibleFiles=presentationSourcesForProject(project,repoRoot);
+  if(!responsibleFiles.length)return null;
+  const registry=readJson(path.join(repoRoot,'company-asset-library.json'),{assets:[]});
+  const targetPlatform=engine.toUpperCase(),gameId=clean(project?.gameId);
+  const safeRelative=value=>{
+    const normalized=posix(value);
+    return Boolean(normalized&&!path.isAbsolute(normalized)&&!normalized.split('/').includes('..'));
+  };
+  const licenseAllowed=value=>{
+    const license=clean(value),lower=license.toLowerCase();
+    return Boolean(license)
+      &&!/(?:^|[^a-z0-9])nc(?:[^a-z0-9]|$)/i.test(license)
+      &&!lower.includes('unknown')
+      &&!lower.includes('출처 불명')
+      &&!lower.includes('재배포 제한');
+  };
+  const rows=[];
+  for(const asset of Array.isArray(registry?.assets)?registry.assets:[]){
+    if(!(Array.isArray(asset?.intendedConsumerGameIds)?asset.intendedConsumerGameIds:[]).map(clean).includes(gameId))continue;
+    if(!licenseAllowed(asset?.license||asset?.policy))continue;
+    for(const recipe of Array.isArray(asset?.authoringRecipes)?asset.authoringRecipes:[]){
+      const targets=(Array.isArray(recipe?.targetPlatforms)?recipe.targetPlatforms:[]).map(value=>clean(value).toUpperCase()).filter(Boolean);
+      const outputs=(Array.isArray(recipe?.outputs)?recipe.outputs:[]).map(posix).filter(Boolean);
+      const script=posix(recipe?.script);
+      const recipeId=clean(recipe?.id);
+      if(!recipeId||clean(recipe?.executor).toUpperCase()!=='BLENDER_PYTHON')continue;
+      if(targets.length&&!targets.includes(targetPlatform))continue;
+      if(!/\.py$/i.test(script)||!safeRelative(script)||!fs.existsSync(sourceFile(repoRoot,script)))continue;
+      if(!outputs.length||outputs.some(file=>!safeRelative(file)))continue;
+      if(recipe?.evidenceJson&&!safeRelative(recipe.evidenceJson))continue;
+      if(recipe?.preview&&!safeRelative(recipe.preview))continue;
+      rows.push({asset,recipe,script,outputs});
+    }
+  }
+  rows.sort((a,b)=>clean(a.asset?.id).localeCompare(clean(b.asset?.id))||clean(a.recipe?.id).localeCompare(clean(b.recipe?.id)));
+  for(const row of rows){
+    const slug=clean(row.recipe.id).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,64)||'recipe';
+    const id=`${gameId}-${engine}-declared-dcc-${slug}-v1`;
+    if(hasTask(queue,id))continue;
+    const family=clean(row.asset?.family||row.asset?.category).toUpperCase()||null;
+    const license=clean(row.asset?.license||row.asset?.policy);
+    const types=(Array.isArray(row.recipe?.types)?row.recipe.types:[]).map(value=>clean(value).toLowerCase()).filter(Boolean);
+    const exactRecipe={
+      ...row.recipe,
+      id:clean(row.recipe.id),
+      assetId:clean(row.asset?.id),
+      family,
+      license,
+      targetPlatforms:[...(Array.isArray(row.recipe?.targetPlatforms)?row.recipe.targetPlatforms:[])],
+      types:[...types],
+      outputs:[...row.outputs],
+      script:row.script,
+      evidenceJson:row.recipe?.evidenceJson?posix(row.recipe.evidenceJson):null,
+      preview:row.recipe?.preview?posix(row.recipe.preview):null,
+      editableSource:row.recipe?.editableSource?posix(row.recipe.editableSource):row.script
+    };
+    const goal=[
+      '[GRAPHICS_PRODUCTION] [DECLARED_DCC_AUTHORING]',
+      `게임: ${project.name||gameId}; 플랫폼: ${targetPlatform}; declared recipe: ${exactRecipe.id}; source asset: ${exactRecipe.assetId}.`,
+      '회사 자산 레지스트리에 이미 선언된 Blender/Python authoring recipe를 새 파이프라인 없이 기존 Vibe2 asset-development worker에서 실행한다.',
+      `candidate 브랜치의 기존 Work Lock 안에 exact outputs를 실제 저장한다: ${row.outputs.join(', ')}.`,
+      '게임의 기존 책임 소스는 생성 native artifact의 정확한 repository path와 artifact SHA256을 엔진 네이티브 표현과 함께 실제 바인딩해야 한다.',
+      '미검증 source asset 자체를 VERIFIED 재사용 자산으로 간주하지 않는다. 생성 파일 존재만으로 PASS하지 않고 target runtime, mobile performance, independent QA, regression을 기존 흐름에서 통과해야 한다.',
+      'Web 렌더 산출물을 복사하지 말고 플랫폼 네이티브 재제작 원칙을 유지한다.',
+      '게임 규칙·데미지·체력·밸런스·경제·저장·진행·멀티플레이 권한은 변경하지 않는다.'
+    ].join('\n');
+    const out=task(id,project,goal,responsibleFiles,'high','high',[
+      'asset-production-parallel:v1',
+      'graphics-production:DECLARED_DCC_AUTHORING',
+      'declared-dcc-authoring:v1',
+      `declared-dcc-recipe:${exactRecipe.id}`,
+      `declared-dcc-asset:${exactRecipe.assetId}`,
+      `declared-dcc-platform:${targetPlatform}`,
+      'declared-dcc-candidate-persistence:required',
+      'declared-dcc-work-lock:existing-single-lock',
+      'declared-dcc-exact-path-sha-binding:required',
+      'declared-dcc-runtime-verification:required',
+      'presentation-preserve-gameplay-semantics',
+      'web-native-direct-asset-reuse:FORBIDDEN'
+    ]);
+    out.assetProductionLane=true;
+    out.declaredDccAuthoring=true;
+    out.assetAuthoring={recipes:[exactRecipe]};
+    out.workUnits=6;
+    out.speculativeEligible=false;
+    out.atomicNeuronMode='PER_TASK_MICRO_FANIN';
+    out.atomicCompletionRequired=true;
+    return out;
+  }
+  return null;
+}
+
 export function findRobloxStudioAssetBackfillTask(project,repoRoot,queue){
   if(clean(project?.engine).toLowerCase()!=='roblox')return null;
   if(!['development-confirmed','release-confirmed'].includes(clean(project?.releaseState).toLowerCase()))return null;
@@ -2802,6 +2899,7 @@ function findSafeTasks(project,repoRoot,queue){
   if(project.engine==='roblox'){
     if(project.queueRobloxQualityBuildUpRequired===true)return uniqueTaskCandidates([
       ...holisticBackfillTasks,
+      findDeclaredDccAuthoringTask(project,repoRoot,queue),
       ...normalStudioTasks,
       findRobloxStudioAssetBackfillTask(project,repoRoot,queue),
       findPresentationQualityTask(project,repoRoot,queue),
@@ -2811,6 +2909,7 @@ function findSafeTasks(project,repoRoot,queue){
     return uniqueTaskCandidates([
       findRobloxInternalPlaytestTask(project,repoRoot,queue),
       ...holisticBackfillTasks,
+      findDeclaredDccAuthoringTask(project,repoRoot,queue),
       findRobloxStudioAssetBackfillTask(project,repoRoot,queue),
       findWeatherPresentationTask(project,repoRoot,queue),
       findPresentationQualityTask(project,repoRoot,queue),
@@ -2824,6 +2923,7 @@ function findSafeTasks(project,repoRoot,queue){
       if(firstStage)return[firstStage];
       return uniqueTaskCandidates([
         ...holisticBackfillTasks,
+        findDeclaredDccAuthoringTask(project,repoRoot,queue),
         findPresentationQualityTask(project,repoRoot,queue),
         ...normalStudioTasks,
         scanExplicitMarkerTask(project,repoRoot,queue)
@@ -2831,6 +2931,7 @@ function findSafeTasks(project,repoRoot,queue){
     }
     if(project.releaseState==='development-confirmed'&&!pilot)return uniqueTaskCandidates([
       ...holisticBackfillTasks,
+      findDeclaredDccAuthoringTask(project,repoRoot,queue),
       findPresentationQualityTask(project,repoRoot,queue),
       ...normalStudioTasks,
       scanExplicitMarkerTask(project,repoRoot,queue)
@@ -2840,6 +2941,7 @@ function findSafeTasks(project,repoRoot,queue){
       ...(weatherPilot?[findWeatherPresentationTask(project,repoRoot,queue)]:[]),
       ...holisticBackfillTasks,
       ...(!weatherPilot?[findWeatherPresentationTask(project,repoRoot,queue)]:[]),
+      findDeclaredDccAuthoringTask(project,repoRoot,queue),
       findPresentationQualityTask(project,repoRoot,queue),
       ...normalStudioTasks,
       scanExplicitMarkerTask(project,repoRoot,queue)
