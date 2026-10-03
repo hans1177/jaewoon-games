@@ -168,7 +168,7 @@ const cloneJson=value=>JSON.parse(JSON.stringify(value));
 const utf8Bytes=value=>Buffer.byteLength(typeof value==='string'?value:JSON.stringify(value,null,2)+'\n','utf8');
 const readJsonRel=rel=>JSON.parse(fs.readFileSync(path.join(ROOT,rel),'utf8'));
 const readCentralRoadmap=()=>readJsonRel(CENTRAL_POLICY_REL);
-const escapeRegExp=value=>String(value??'').replace(/[|\\{}()[\]^$+*?.-]/g,'\\const readCentralRoadmap=()=>JSON.parse(fs.readFileSync(path.join(ROOT,CENTRAL_POLICY_REL),'utf8'));');
+const escapeRegExp=value=>String(value??'').replace(/[|\\{}()[\]^$+*?.-]/g,'\\$&');
 
 function pathValue(root,dotted=''){
   let current=root;
