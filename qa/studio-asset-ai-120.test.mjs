@@ -7,7 +7,8 @@ import {
   scoreStudioAssetQuality120,
   buildStudioAssetLoadout,
   buildStudioAssetQuality120Program,
-  evaluateCompanyAssetPromotion
+  evaluateCompanyAssetPromotion,
+  summarizeVerifiedAssetUsage
 } from '../assets/vibe-studio-asset-universe.js';
 
 const fullQualityEvidence=Object.freeze({
@@ -139,4 +140,22 @@ test('120 quality never substitutes for native runtime promotion evidence',()=>{
   assert.ok(decision.blockers.includes('NATIVE_BINDING_PASS_REQUIRED'));
   assert.ok(decision.blockers.includes('VISUAL_RUNTIME_PASS_REQUIRED'));
   assert.ok(decision.blockers.includes('MOBILE_PERFORMANCE_PASS_REQUIRED'));
+});
+
+test('verified quality learning ignores unverified scores',()=>{
+  const summary=summarizeVerifiedAssetUsage({
+    events:[
+      {assetId:'wolf',gameId:'survival',qualityScore120:119},
+      {assetId:'wolf',gameId:'survival',verifiedRuntimePass:true,qualityScore120:91,weakestQualityAxis:'MATERIAL_TEXTURE'},
+      {assetId:'wolf',gameId:'survival',verifiedRuntimeFailure:true,failureReason:'FOOT_SLIDE',qualityScore120:97,weakestQualityAxis:'MOTION_LIVINGNESS'}
+    ]
+  });
+  const row=summary.rows[0];
+  assert.equal(row.runtimePassCount,1);
+  assert.equal(row.verifiedQualitySampleCount,1);
+  assert.equal(row.bestVerifiedQuality120,91);
+  assert.equal(row.qualityLearningEligible,true);
+  assert.equal(summary.unverifiedQualityScoresMayTeachPositiveLearning,false);
+  assert.ok(row.verifiedWeakAxes.includes('MATERIAL_TEXTURE'));
+  assert.ok(row.verifiedWeakAxes.includes('MOTION_LIVINGNESS'));
 });
