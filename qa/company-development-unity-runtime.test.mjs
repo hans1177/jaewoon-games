@@ -517,6 +517,15 @@ test('Unity hybrid router avoids full repository history and fetches only the ev
 });
 
 
+test('same-game Unity runtime uses run-scoped concurrency instead of gameId serialization',()=>{
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const policy=roadmap.developmentSpeedExecution.sameGamePlatformParallelismContract;
+  assert.equal(policy.sameGameDifferentPlatformsMustRunInParallel ?? policy.sameGameDifferentPlatformsParallel,true);
+  assert.equal(policy.gameIdOnlySerializationForbidden,true);
+  assert.match(workflowSource,/concurrency:\n\s+group: unity-native-run-\$\{\{ github\.run_id \}\}\n\s+cancel-in-progress: false/);
+  assert.doesNotMatch(workflowSource,/group: unity-native-exact-/);
+});
+
 test('distinct Unity games persist immediately without a cohort fan-in or global writer lock',()=>{
   assert.doesNotMatch(workflowSource,/^concurrency:\s*\n\s*group:\s*company-development-unity-runtime\s*$/m);
   assert.doesNotMatch(workflowSource,/\n  persist-runtime:\n/);
