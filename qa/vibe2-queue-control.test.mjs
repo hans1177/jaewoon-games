@@ -107,6 +107,50 @@ test('runtime-evidence wait releases ordinary file locks only after CAUSAL_REPAI
   assert.equal(conflict.conflictTaskId,'runtime-wait');
 });
 
+
+test('slot-released fan-in wait releases ordinary source conflicts while explicit retained locks still serialize',()=>{
+  const file='unity-games/demo/Assets/Scripts/PrototypeAnimatedVisuals.cs';
+  const common={
+    gameId:'demo',target:'unity',department:'development',type:'implementation',
+    sourceRoot:'unity-games/demo',responsibleFiles:[file]
+  };
+  const running={
+    id:'demo-unity-web-repair-v1',goal:'finish existing worker result fan-in',
+    status:'running',executionLane:'game-primary',...common
+  };
+  const asset={
+    id:'demo-unity-presentation-asset-adaptation-v1',goal:'native presentation asset adaptation',
+    status:'queued',executionLane:'asset-development',assetProductionLane:true,...common
+  };
+
+  const released=releaseVibeTaskExecutionSlot(createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[running,asset]}),{
+    taskId:running.id,evidence:['worker-artifact-slot-release:v1']
+  });
+  assert.equal(released.released,true);
+  const waiting=released.queue.tasks.find(row=>row.id===running.id);
+  assert.equal(waiting.blocker,'slot-released-awaiting-fan-in');
+  assert.deepEqual([...waiting.retainedResponsibleFileLocks],[]);
+
+  const available=selectVibeQueueBatch(released.queue,{lane:'asset-development',maxConcurrentTasks:4});
+  assert.equal(available.selected.some(row=>row.id===asset.id),true);
+  assert.equal(available.deferredConflicts.some(row=>row.task.id===asset.id),false);
+
+  const retainedQueue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[
+    {...running,retainedResponsibleFileLocks:[file]},
+    asset
+  ]});
+  const retainedRelease=releaseVibeTaskExecutionSlot(retainedQueue,{
+    taskId:running.id,evidence:['worker-artifact-slot-release:v1']
+  });
+  assert.deepEqual([...retainedRelease.queue.tasks.find(row=>row.id===running.id).retainedResponsibleFileLocks],[file]);
+  const blocked=selectVibeQueueBatch(retainedRelease.queue,{lane:'asset-development',maxConcurrentTasks:4});
+  assert.equal(blocked.selected.some(row=>row.id===asset.id),false);
+  const conflict=blocked.deferredConflicts.find(row=>row.task.id===asset.id);
+  assert.ok(conflict);
+  assert.equal(conflict.reason,'responsible-file-conflict');
+  assert.equal(conflict.conflictTaskId,running.id);
+});
+
 test('transient work lock conflicts are requeued without consuming retry budget or poisoning failure learning',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[{
     id:'visual-lock',gameId:'visual-game',target:'roblox',department:'development',type:'implementation',
