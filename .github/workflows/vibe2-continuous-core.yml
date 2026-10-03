@@ -1580,7 +1580,14 @@ jobs:
             export VIBE2_LUAU_COMPILE_REQUIRED=true
             "$VIBE2_LUAU_COMPILER" --help >/dev/null
             "$luau_dir/luau-ast" --help >/dev/null
-            VIBE2_TEST_LUAU_COMPILER="$VIBE2_LUAU_COMPILER" VIBE2_LUAU_COMPILER= node --test --test-name-pattern='Luau compiler' "$contract_root/qa/vibe2-source-worker.test.mjs"
+            cat > "$luau_dir/smoke.luau" <<'LUAU'
+            local value = 1
+            return value + 1
+            LUAU
+            "$VIBE2_LUAU_COMPILER" "$luau_dir/smoke.luau" >/dev/null
+            "$luau_dir/luau-ast" "$luau_dir/smoke.luau" >/dev/null
+            echo 'VIBE2_LUAU_COMPILER_SMOKE=PASS'
+            echo 'VIBE2_LUAU_REGRESSION_AUTHORITY=CORE_QA_ONLY'
           fi
 
           cd "$candidate_dir"
