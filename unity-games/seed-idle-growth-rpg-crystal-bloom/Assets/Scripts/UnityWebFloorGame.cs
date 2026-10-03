@@ -88,13 +88,18 @@ public sealed class UnityWebFloorGame : MonoBehaviour
         {
             enemy.transform.Rotate(0f,55f * Time.unscaledDeltaTime,0f,Space.World);
             var p=enemy.transform.position;
+            LogState();
             p.y=1f+Mathf.Sin(motionClock*2.1f)*0.28f;
             enemy.transform.position=p;
         }
         if (equipment != null) equipment.transform.Rotate(35f*Time.unscaledDeltaTime,45f*Time.unscaledDeltaTime,0f);
         if (player != null && started)
         {
+            LogState();
+        }
+        {
             var p=player.transform.position;
+            LogState();
             p.x=-2f+Mathf.Sin(motionClock*1.7f)*0.55f;
             player.transform.position=p;
         }
@@ -115,10 +120,12 @@ public sealed class UnityWebFloorGame : MonoBehaviour
     private void PerformAction(bool mobile)
     {
         if(!started) StartGameplay();
+        LogState();
         actions++;
         progress += Mathf.Max(1,level);
         resource += 1 + (actions % 3);
         if(progress >= level * 4) level++;
+        LogState();
         PlayerPrefs.SetInt(SavePrefix+"progress",progress);
         PlayerPrefs.SetInt(SavePrefix+"level",level);
         PlayerPrefs.SetInt(SavePrefix+"resource",resource);
