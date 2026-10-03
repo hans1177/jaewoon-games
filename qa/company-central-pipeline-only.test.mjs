@@ -160,8 +160,10 @@ test('native development trigger ownership avoids duplicate central plus child p
   ]) assert.ok(!developmentPush.includes(nonRuntimeWake),nonRuntimeWake);
   assert.match(development,/group: company-development-confirmed-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'main-push'\) \|\| github\.run_id \}\}/);
   assert.match(development,/group: company-development-confirmed-[\s\S]{0,180}?cancel-in-progress: false/);
-  assert.match(roblox,/group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}/);
-  assert.match(unity,/group: unity-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}/);
+  assert.match(roblox,/group: roblox-native-run-\$\{\{ github\.run_id \}\}/);
+  assert.match(unity,/group: unity-native-run-\$\{\{ github\.run_id \}\}/);
+  assert.doesNotMatch(roblox,/group: roblox-native-exact-/);
+  assert.doesNotMatch(unity,/group: unity-native-exact-/);
   for(const childPath of [
     '.github/workflows/company-development-roblox-runtime.yml',
     '.github/workflows/company-development-roblox-runtime-continuation.yml',
@@ -714,42 +716,48 @@ test('Unity Web bottleneck optimizations are bound consistently across central p
 });
 
 
-test('exact-game native workflow concurrency closes dedupe races without global serialization',()=>{
+test('same-game native workflows stay run-scoped while exact duplicate dedupe remains active',()=>{
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
   const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
   const logMap=JSON.parse(read('company-learning/company-log-map.json'));
   const roblox=read('.github/workflows/company-development-roblox-runtime.yml');
   const unity=read('.github/workflows/company-development-unity-runtime.yml');
   const central=read('.github/workflows/company-development-confirmed-runtime.yml');
-  const change=roadmap.changeRecord?.nativeExactGameWorkflowConcurrency20260927;
+  const policy=roadmap.developmentSpeedExecution?.sameGamePlatformParallelismContract;
 
-  assert.match(roblox,/concurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n(?:\s+#.*\n)*\s+cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
-  assert.match(unity,/concurrency:\n\s+group: unity-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n(?:\s+#.*\n)*\s+cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
+  assert.match(roblox,/concurrency:\n\s+group: roblox-native-run-\$\{\{ github\.run_id \}\}\n\s+cancel-in-progress: false/);
+  assert.match(unity,/concurrency:\n\s+group: unity-native-run-\$\{\{ github\.run_id \}\}\n\s+cancel-in-progress: false/);
+  assert.doesNotMatch(roblox,/group: roblox-native-exact-/);
+  assert.doesNotMatch(unity,/group: unity-native-exact-/);
   assert.match(central,/ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN=/);
   assert.match(central,/UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE=/);
 
-  assert.equal(change?.exactGameIdentity,'inputs.game_id');
-  assert.equal(change?.pushBatchIdentity,'batch-push');
-  assert.equal(change?.nonPushEmptyBatchIdentity,'github.run_id');
-  assert.equal(change?.cancelInProgress,false);
-  assert.equal(change?.exactGameCancelInProgress,false);
-  assert.equal(change?.manualEmptyBatchCancelInProgress,false);
-  assert.equal(change?.pushBatchCancelInProgress,true);
-  assert.equal(change?.distinctGamesParallel,true);
-  assert.equal(change?.pushBatchRunsCoalesced,true);
-  assert.equal(change?.manualEmptyBatchRunsRunScoped,true);
-  assert.equal(change?.batchRunsGloballySerialized,false);
-  assert.equal(change?.globalNativeSerializationForbidden,true);
-  assert.equal(architecture.nativeExactGameWorkflowConcurrency?.distinctGamesParallel,true);
-  assert.equal(architecture.nativeExactGameWorkflowConcurrency?.batchGlobalSerialization,false);
-  assert.equal(architecture.nativeExactGameWorkflowConcurrency?.pushBatchCoalesced,true);
-  assert.equal(architecture.nativeExactGameWorkflowConcurrency?.manualEmptyBatchRunScoped,true);
-  assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.exactGameOverlapForbidden,true);
-  assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.distinctGameParallelismRequired,true);
-  assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.pushBatchCoalesced,true);
-  assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.manualEmptyBatchRunScoped,true);
-});
+  assert.equal(policy?.status,'ACTIVE');
+  assert.equal(policy?.sameGameDifferentPlatformsMustRunInParallel,true);
+  assert.equal(policy?.gameIdOnlySerializationForbidden,true);
+  assert.equal(policy?.workflowConcurrencyGroupByGameIdForbidden,true);
+  assert.equal(policy?.exactResponsibleFileConflictMaySerialize,true);
+  assert.equal(policy?.exactDuplicateDispatchDedupeAllowed,true);
+  assert.equal(policy?.robloxStudioException?.scope,'ACTUAL_ROBLOX_STUDIO_SESSION_ONLY');
 
+  const topology=architecture.nativeExactGameWorkflowConcurrency;
+  assert.equal(topology?.ROBLOX?.group,'roblox-native-run-<runId>');
+  assert.equal(topology?.UNITY?.group,'unity-native-run-<runId>');
+  assert.equal(topology?.exactGameScope,'NO_GAME_ID_CONCURRENCY_GROUP');
+  assert.equal(topology?.batchGlobalSerialization,false);
+  assert.equal(topology?.pushBatchCoalesced,false);
+  assert.equal(topology?.gameIdWorkflowSerializationForbidden,true);
+  assert.equal(topology?.exactDuplicateDispatchDedupePreserved,true);
+
+  const evidence=logMap.nativeExactGameWorkflowConcurrencyEvidence;
+  assert.equal(evidence?.exactGameOverlapForbidden,false);
+  assert.equal(evidence?.distinctGameParallelismRequired,true);
+  assert.equal(evidence?.pushBatchCoalesced,false);
+  assert.equal(evidence?.sameGameIndependentExecutionParallelRequired,true);
+  assert.equal(evidence?.gameIdConcurrencyGroupForbidden,true);
+  assert.equal(evidence?.exactDuplicateDispatchDedupePreserved,true);
+  assert.equal(evidence?.studioActualPlayExceptionOnly,true);
+});
 test('Roblox source-plan uses current control runners without historical repair mirrors',()=>{
   const workflow=read('.github/workflows/company-development-roblox-runtime.yml');
   const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
