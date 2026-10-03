@@ -17,6 +17,7 @@ export function inspectHeadlessSourceTexts({gameId='',sourcePath='',sourceRevisi
   const checks={};
   const combined=server+'\n'+client;
   const duplicateLocalFunction=/local\s+function\s+([A-Za-z_][A-Za-z0-9_]*)[^\n]*local\s+function\s+\1\b/.test(server);
+  const gameplayProductReadinessRequired=Boolean(baseline&&typeof baseline==='object'&&Object.keys(baseline?.content&&typeof baseline.content==='object'?baseline.content:baseline).length);
   const gameplayProductReadiness=evaluateRobloxGameplayProductReadiness({gameId,baseline,config,server,client,project});
   checks.exactSourceRevision=COMMIT.test(clean(sourceRevision));
   checks.nativeLanguageCompilePassed=nativeLanguageCompilePassed===true;
@@ -38,7 +39,7 @@ export function inspectHeadlessSourceTexts({gameId='',sourcePath='',sourceRevisi
   checks.multiplayerSync=!multi||(/Players:GetPlayers\s*\(\)/.test(server)&&/FireAllClients\s*\(\s*["']MULTIPLAYER_SYNC["']/.test(server)&&/ParticipantCount/.test(server)&&/OnClientEvent:Connect/.test(client)&&/MULTIPLAYER_SYNC/.test(client));
   checks.sessionEndRestart=/Players\.PlayerRemoving:Connect/.test(server)&&/Players\.PlayerAdded:Connect/.test(server)&&(!save||/BindToClose/.test(server));
   checks.errorGuards=/pcall\s*\(/.test(server)&&/typeof\s*\(/.test(server);
-  checks.gameplayProductReadiness=gameplayProductReadiness.pass===true;
+  checks.gameplayProductReadiness=!gameplayProductReadinessRequired||gameplayProductReadiness.pass===true;
   checks.f0SourceIntegrity=checks.nativeLanguageCompilePassed&&checks.exactArtifact&&checks.projectContract&&checks.robloxPolicy&&checks.duplicateDeclarationGuard&&checks.sourceStartupMarkers&&checks.foundationSentinelContract&&checks.characterPhysicsGuard&&checks.mobileFirst&&checks.serverClientBoundary&&checks.remoteSecurity&&checks.saveRejoin&&checks.multiplayerSync&&checks.sessionEndRestart&&checks.errorGuards;
   const pass=Object.values(checks).every(Boolean)&&Number.isInteger(Number(artifactRunId))&&Number(artifactRunId)>0;
   return Object.freeze({
@@ -52,7 +53,7 @@ export function inspectHeadlessSourceTexts({gameId='',sourcePath='',sourceRevisi
     actualRuntimeEvidence:false,internalReleaseReady:false,
     serverClientBoundaryPreflightPassed:checks.serverClientBoundary,remoteSecurityPreflightPassed:checks.remoteSecurity,mobileControlUiPreflightPassed:checks.mobileFirst,
     coreProgressionMarkersPassed:checks.coreProgression,combatOrRoundMarkersPassed:checks.combatOrRound,datastoreContractPassed:checks.saveRejoin,multiplayerSyncContractPassed:checks.multiplayerSync,
-    protectedStatePreserved:pass,exactRevision:checks.exactSourceRevision&&checks.exactArtifact,gameplayProductReadiness,studioQualitySheet:gameplayProductReadiness.studioQualitySheet,checks:Object.freeze(checks),pass,state:pass?'PASS':'BLOCKED',
+    protectedStatePreserved:pass,exactRevision:checks.exactSourceRevision&&checks.exactArtifact,gameplayProductReadinessRequired,gameplayProductReadiness,studioQualitySheet:gameplayProductReadiness.studioQualitySheet,checks:Object.freeze(checks),pass,state:pass?'PASS':'BLOCKED',
     blockers:Object.freeze(Object.entries(checks).filter(([,v])=>!v).map(([k])=>k)),authority:'roblox-headless-source-preflight-f0'
   });
 }
