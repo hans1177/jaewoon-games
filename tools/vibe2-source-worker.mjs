@@ -369,7 +369,7 @@ export function persistedGeneratedAssetBindings(order={}){
     const assetPath=posix(row?.nativeArtifact);
     const artifactHash=clean(row?.artifactHash);
     if(!assetPath||!artifactHash||row?.persistedForCandidate!==true)return null;
-    return freeze({
+    return Object.freeze({
       index:index+1,
       path:assetPath,
       artifactHash,
