@@ -19,12 +19,46 @@ function designMode(baseline={}){
   return upper(content.multiplayerMode||content?.robloxBuildProfile?.playMode||'SINGLE');
 }
 
+function inferDesignGenre(baseline={}){
+  const content=baselineContent(baseline);
+  const explicit=clean(content?.robloxBuildProfile?.genre);
+  if(explicit)return explicit;
+  const identityText=[
+    content.identity,content.playerFantasy,content.coreFun,...(Array.isArray(content.coreLoop)?content.coreLoop:[]),
+    ...(Array.isArray(content.signatureSystems)?content.signatureSystems:[]).flatMap(row=>[row?.name,row?.purpose,row?.playerChoice])
+  ].map(clean).join(' ').toLowerCase();
+  if(/surviv|생존|horror|공포/.test(identityText))return'Survival';
+  if(/\brpg\b|role.?play|던전.*(?:성장|레벨)|역할 수행/.test(identityText))return'RPG';
+  if(/tycoon|simulat|경영|시뮬/.test(identityText))return'Simulation';
+  if(/puzzle|퍼즐/.test(identityText))return'Puzzle';
+  if(/tower.?defen|defen|strategy|디펜스|전략/.test(identityText))return'Strategy';
+  if(/action|combat|fight|액션|전투/.test(identityText))return'Action';
+  return null;
+}
+
+function inferDesignPlayMode(baseline={}){
+  const content=baselineContent(baseline);
+  const explicit=upper(content?.robloxBuildProfile?.playMode);
+  if(['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(explicit))return explicit;
+  const direct=upper(content.multiplayerMode);
+  if(['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(direct))return direct;
+  const text=designText(baseline);
+  if(/4v4|\bpvp\b|competitive|versus|대전|감염 추격/.test(text))return'COMPETITIVE';
+  if(/co-?op|coop|협동/.test(text))return'COOP';
+  if(/hybrid|혼합/.test(text))return'HYBRID';
+  return multiplayerRequiredByDesignText(text)?'COMPETITIVE':'SINGLE';
+}
+
+function multiplayerRequiredByDesignText(text=''){
+  return /(?:4v4|[2-9]\s*(?:player|players|인)|vs\s*[2-9]|multiplayer|co-?op|pvp|협동|대전|멀티|감염 추격)/i.test(String(text));
+}
+
 function multiplayerRequiredByDesign(baseline={}){
   const content=baselineContent(baseline);
   if(content?.robloxBuildProfile?.multiplayerRequired===true)return true;
   const mode=designMode(baseline);
   if(!['','SINGLE','SOLO','NONE','SINGLE_PLAYER'].includes(mode))return true;
-  return /(?:4v4|[2-9]\s*(?:player|players|인)|vs\s*[2-9]|multiplayer|co-?op|pvp|협동|대전|멀티|감염 추격)/i.test(designText(baseline));
+  return multiplayerRequiredByDesignText(designText(baseline));
 }
 
 export function robloxLearningProfileFromSource({gameId='',config='',fallback={}}={}){
@@ -263,6 +297,12 @@ export function evaluateRobloxGameplayProductReadiness({gameId='',baseline={},co
   const meaningfulFunctionCount=ctx.namedGameplayFunctions.filter(name=>/(attack|combat|damage|hit|move|build|place|spawn|gather|harvest|mine|chop|craft|quest|round|wave|day|night|interact|dash|ability|infect|purify|customer|ride|dungeon|boss|tower|resource|upgrade|equip|inventory|session|match|stage)/i.test(name)).length;
   const genericSkeleton=scopeHandlerCount>=3&&meaningfulFunctionCount<2;
   const blockers=[];
+  const expectedGenre=inferDesignGenre(baseline);
+  const actualGenre=field(config,'Genre');
+  const expectedPlayMode=inferDesignPlayMode(baseline);
+  const actualPlayMode=upper(field(config,'PlayMode'));
+  if(expectedGenre&&actualGenre&&upper(expectedGenre)!==upper(actualGenre))blockers.push('DESIGN_GENRE_MISMATCH:'+expectedGenre+':'+actualGenre);
+  if(expectedPlayMode&&actualPlayMode&&expectedPlayMode!==actualPlayMode)blockers.push('DESIGN_PLAY_MODE_MISMATCH:'+expectedPlayMode+':'+actualPlayMode);
   for(const id of required)if(implemented[id]!==true)blockers.push('MISSING_GAMEPLAY_CAPABILITY:'+id);
   for(const row of coreLoop)if(!row.pass)blockers.push('CORE_LOOP_STEP_UNIMPLEMENTED:'+row.index);
   for(const row of signatureSystems)if(!row.pass)blockers.push('SIGNATURE_SYSTEM_UNIMPLEMENTED:'+row.index);
@@ -306,7 +346,11 @@ export function evaluateRobloxGameplayProductReadiness({gameId='',baseline={},co
     studioReadiness,
     runtimeRequirements,
     designFingerprint:crypto.createHash('sha256').update(JSON.stringify(content)).digest('hex'),
-    antiSkeletonPassed:!genericSkeleton
+    antiSkeletonPassed:!genericSkeleton,
+    designGenre:expectedGenre,
+    sourceGenre:actualGenre||null,
+    designPlayMode:expectedPlayMode,
+    sourcePlayMode:actualPlayMode||null
   });
 }
 
