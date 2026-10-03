@@ -91,7 +91,9 @@
         "ROBLOX_STUDIO",
         "CAMERA_LANGUAGE",
         "STORYTELLING",
-        "CONCEPT_DIRECTION"
+        "CONCEPT_DIRECTION",
+        "LEVEL_DESIGN",
+        "ROUTE_DESIGN"
       ],
       "sourceFailure": "fail_1agpu1k"
     },
@@ -250,7 +252,9 @@
         "ROBLOX_STUDIO",
         "CAMERA_LANGUAGE",
         "STORYTELLING",
-        "CONCEPT_DIRECTION"
+        "CONCEPT_DIRECTION",
+        "LEVEL_DESIGN",
+        "ROUTE_DESIGN"
       ],
       "sourceFailure": "fail_1agpu1k"
     },
@@ -1689,16 +1693,6 @@
       ]
     },
     {
-      "id": "gap-level_design-l2",
-      "kind": "LEVEL_DESIGN_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "LEVEL_DESIGN"
-      ]
-    },
-    {
       "id": "gap-roblox_ui_state-l2",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -1709,16 +1703,6 @@
       ]
     },
     {
-      "id": "gap-route_design-l2",
-      "kind": "ROUTE_DESIGN_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "ROUTE_DESIGN"
-      ]
-    },
-    {
       "id": "gap-uefn_runtime-l2",
       "kind": "FORTNITE_UEFN_NATIVE_DRILL",
       "priority": "low",
@@ -1726,6 +1710,26 @@
       "countsAsProductionPass": false,
       "domains": [
         "UEFN_RUNTIME"
+      ]
+    },
+    {
+      "id": "gap-level_design-l3",
+      "kind": "LEVEL_DESIGN_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "LEVEL_DESIGN"
+      ]
+    },
+    {
+      "id": "gap-route_design-l3",
+      "kind": "ROUTE_DESIGN_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ROUTE_DESIGN"
       ]
     },
     {
