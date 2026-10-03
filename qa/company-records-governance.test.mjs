@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import {validateCompanyRecord,scanCompanyRecords,extractChangeRecordReferences,extractCentralPolicyReferences,classifyCentralChangeRecordRetention,planCentralDocumentArchive,planCentralCurrentUsePrune,inspectCentralDocument,discoverCentralArchiveCandidates} from '../tools/company-records-governance.mjs';
+import {validateCompanyRecord,scanCompanyRecords,extractChangeRecordReferences,extractCentralPolicyReferences,extractCentralDocumentReferences,classifyCentralChangeRecordRetention,planCentralDocumentArchive,planCentralCurrentUsePrune,planCompanionCurrentUsePrune,inspectCentralDocument,discoverCentralArchiveCandidates} from '../tools/company-records-governance.mjs';
 
 const root=process.cwd();
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
@@ -132,6 +132,73 @@ test('central current-use reference scanner extracts executable roadmap paths',(
   assert.ok(refs.includes('developmentLifecycleMachine.validationEfficiencyOptimization.roblox'));
   assert.ok(refs.includes('minimumNecessaryProcedurePolicy'));
   assert.ok(refs.includes(changeToken+'.alphaRule'));
+});
+
+test('companion document reference scanner protects direct optional bracket and destructured paths',()=>{
+  const refs=extractCentralDocumentReferences([
+    'architecture.workerSynchronization.documentIsCode',
+    'architecture?.centralArchitectureProjection?.required',
+    'architecture["externalAiRules"].finalSystemAcceptanceForbidden',
+    'const { primaryAiPresenceRequired, autonomous24hWorkersContinueWithoutPrimaryAi: autonomous } = architecture',
+    'company-architecture-map.json#departmentTopology.graphics'
+  ].join('\n'),{aliases:['architecture','architectureMap'],filename:'company-architecture-map.json'});
+  assert.ok(refs.includes('workerSynchronization.documentIsCode'));
+  assert.ok(refs.includes('centralArchitectureProjection.required'));
+  assert.ok(refs.includes('externalAiRules'));
+  assert.ok(refs.includes('primaryAiPresenceRequired'));
+  assert.ok(refs.includes('autonomous24hWorkersContinueWithoutPrimaryAi'));
+  assert.ok(refs.includes('departmentTopology.graphics'));
+
+  const logRefs=extractCentralDocumentReferences([
+    'logMap.workerContextLogContract.roadmapPolicyHashRequired',
+    'logMap?.orchestrationLogContract?.workerMustNotInventPolicy'
+  ].join('\n'),{aliases:['logMap'],filename:'company-log-map.json'});
+  assert.ok(logRefs.includes('workerContextLogContract.roadmapPolicyHashRequired'));
+  assert.ok(logRefs.includes('orchestrationLogContract.workerMustNotInventPolicy'));
+});
+
+test('companion current-use prune archives only unreferenced top-level blocks and keeps core pins',()=>{
+  const document={
+    version:1,
+    authority:'TEST',
+    requiredForAllWorkers:true,
+    workerSynchronization:{documentIsCode:true},
+    liveTopology:{enabled:true,nested:{value:1}},
+    staleTopology:{old:true},
+    staleEvidence:{runId:123}
+  };
+  const plan=planCompanionCurrentUsePrune({
+    document,
+    currentReferences:{
+      'workerSynchronization.documentIsCode':['tools/shared.mjs'],
+      'liveTopology.enabled':['qa/current.test.mjs']
+    },
+    pinnedCorePaths:['version','authority','requiredForAllWorkers']
+  });
+  assert.equal(plan.document.version,1);
+  assert.equal(plan.document.authority,'TEST');
+  assert.equal(plan.document.requiredForAllWorkers,true);
+  assert.equal(plan.document.workerSynchronization.documentIsCode,true);
+  assert.equal(plan.document.liveTopology.enabled,true);
+  assert.equal(Object.hasOwn(plan.document,'staleTopology'),false);
+  assert.equal(Object.hasOwn(plan.document,'staleEvidence'),false);
+  assert.deepEqual(plan.archivedPaths,['staleEvidence','staleTopology']);
+  assert.ok(plan.reducedBytes>0);
+});
+
+test('dynamic companion document property access fails safe by protecting the whole document',()=>{
+  const refs=extractCentralDocumentReferences(
+    'const key = getKey(); architecture[key];',
+    {aliases:['architecture'],filename:'company-architecture-map.json'}
+  );
+  assert.ok(refs.includes('*'));
+  const plan=planCompanionCurrentUsePrune({
+    document:{version:1,unused:{value:true}},
+    currentReferences:Object.fromEntries(refs.map(ref=>[ref,['tools/dynamic.mjs']])),
+    pinnedCorePaths:['version']
+  });
+  assert.equal(plan.archivedPaths.length,0);
+  assert.equal(plan.document.unused.value,true);
 });
 
 test('central current-use prune keeps live references and pins while archiving unused history',()=>{
