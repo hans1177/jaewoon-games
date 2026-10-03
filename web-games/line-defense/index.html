@@ -311,6 +311,13 @@ function loop(now){if(!s||!s.running)return;const dt=Math.min(.035,(now-last)/10
 function update(dt){
   s.time+=dt;s.money=Math.min(s.maxMoney,s.money+s.income*dt);Object.keys(s.cools).forEach(k=>s.cools[k]=Math.max(0,s.cools[k]-dt));
   if(s.stage===6){while(!s.bossSpawned&&s.time>=s.nextRabbit){spawn('rabbit');s.nextRabbit+=4}}
+  else if(s.stage===7){
+    if(!s.stage7MoleSpawned&&s.time>=20){s.stage7MoleSpawned=true;spawn('mole','stage7TimedMole')}
+  }
+  else if(s.stage===8){
+    if(!s.stage8WaveSpawned&&s.time>=12){s.stage8WaveSpawned=true;spawn('boss','stage8Boss');spawn('boar','stage8Boar')}
+    while(s.stage8NextRabbit!==null&&s.time>=s.stage8NextRabbit){spawn('rabbit','stage8EndlessRabbit');s.stage8NextRabbit+=2.5}
+  }
   else while(s.spawn<s.plan.length&&s.plan[s.spawn][0]<=s.time){spawn(s.plan[s.spawn][1]);s.spawn++}
   team(s.a,s.e,'ally',dt);team(s.e,s.a,'enemy',dt);
   s.a=s.a.filter(v=>!v.dead);s.e=s.e.filter(v=>!v.dead);s.shake=Math.max(0,s.shake-dt*18);
