@@ -101,12 +101,25 @@ Players.PlayerRemoving:Connect(function(player) pcall(function() store:UpdateAsy
 `;
   const result=evaluateRobloxGameplayProductReadiness({gameId:'survival',baseline:survivalBaseline,config,server,client:mobileClient+'\nlocal remote=Instance.new("RemoteEvent"); remote:FireServer("GATHER")',project});
   assert.equal(result.antiSkeletonPassed,true);
-  assert.equal(result.pass,true);
+  assert.equal(result.pass,true,JSON.stringify({blockers:result.blockers,required:result.requiredCapabilities,implemented:result.implementedCapabilities}));
   assert.equal(result.implementedCapabilities.GATHERING,true);
   assert.equal(result.implementedCapabilities.CRAFTING,true);
   assert.equal(result.implementedCapabilities.DAY_NIGHT,true);
   assert.equal(result.implementedCapabilities.WAVE,true);
   assert.equal(result.implementedCapabilities.PROGRESSION,true);
+});
+
+test('SINGLE multiplayerMode metadata key does not create a false multiplayer requirement',()=>{
+  const baseline={content:{identity:'solo survival',coreLoop:['survive one session'],multiplayerMode:'SINGLE'}};
+  const result=evaluateRobloxGameplayProductReadiness({
+    gameId:'solo-survival',
+    baseline,
+    config:'local Config={Genre="Survival",PlayMode="SINGLE",MobileFirst=true} return Config',
+    server:'local function startSession() end\nlocal function endSession() end',
+    client:mobileClient,
+    project
+  });
+  assert.equal(result.requiredCapabilities.includes('MULTIPLAYER'),false);
 });
 
 test('4v4 design cannot be classified as non multiplayer',()=>{
