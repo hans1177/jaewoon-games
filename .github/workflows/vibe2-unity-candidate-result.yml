@@ -11,10 +11,6 @@ permissions:
   contents: write
   actions: write
 
-concurrency:
-  group: vibe2-control-state-vibe2-unreal-core
-  cancel-in-progress: false
-
 jobs:
   reconcile:
     if: startsWith(github.event.workflow_run.head_branch, 'vibe2/candidate/')
