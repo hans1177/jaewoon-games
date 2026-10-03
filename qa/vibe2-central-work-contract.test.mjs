@@ -208,6 +208,40 @@ test('current central roadmap compiles a complete Vibe work request without auth
   assert.equal(contract.authorityExpanded,false);
 });
 
+test('declared generated asset outputs join the existing Work Lock and writable scope',()=>{
+  const root=tempRoot();
+  writePolicy(root);
+  const snapshot=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  const contract=compileVibeCentralWorkContract({
+    snapshot,
+    task:{id:'asset-lock-1',gameId:'demo',target:'roblox'},
+    plan:{target:'roblox',qa:['runtime']},
+    assetProduction:{nativeAuthoringExecution:{dcc:{executionRecipes:[{
+      id:'boss-v1',
+      outputs:['assets/roblox/demo/native/boss/boss.glb','assets/roblox/demo/native/boss/preview.png','assets/roblox/demo/native/boss/evidence.json'],
+      evidenceJson:'assets/roblox/demo/native/boss/evidence.json',
+      preview:'assets/roblox/demo/native/boss/preview.png'
+    }]}}},
+    route:{route:'text-source-worker'},
+    responsibleFiles:['roblox-games/demo/client/Game.client.luau'],
+    mainSha:'abc123'
+  });
+  assert.deepEqual(contract.workLock.sourceFiles,['roblox-games/demo/client/Game.client.luau']);
+  assert.deepEqual(contract.workLock.generatedAssetFiles,[
+    'assets/roblox/demo/native/boss/boss.glb',
+    'assets/roblox/demo/native/boss/preview.png',
+    'assets/roblox/demo/native/boss/evidence.json'
+  ]);
+  assert.deepEqual(contract.workLock.files,[
+    'roblox-games/demo/client/Game.client.luau',
+    'assets/roblox/demo/native/boss/boss.glb',
+    'assets/roblox/demo/native/boss/preview.png',
+    'assets/roblox/demo/native/boss/evidence.json'
+  ]);
+  assert.deepEqual(contract.writableScope.exactCandidateFiles,contract.workLock.files);
+  assert.equal(contract.writableScope.generatedAssetScopeDerivedOnlyFromDeclaredRecipes,true);
+});
+
 test('Vibe candidate evidence binds all four canonical document hashes',()=>{
   const workflow=fs.readFileSync(path.resolve(process.cwd(),'.github/workflows/vibe2-continuous-core.yml'),'utf8');
   const logMap=JSON.parse(fs.readFileSync(path.resolve(process.cwd(),'company-learning/company-log-map.json'),'utf8'));
