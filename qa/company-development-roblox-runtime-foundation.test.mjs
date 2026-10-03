@@ -418,13 +418,13 @@ test('F9 canonical publish uses exact F9 released-game identity and immediately 
 });
 
 
-test('post-runtime Open Cloud engine probes use bounded external API concurrency and stronger throttling retry',()=>{
+test('post-runtime Open Cloud engine probes keep bounded cross-game parallelism while retrying 429 per game',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  const foundation=fs.readFileSync('tools/company-development-roblox-runtime-foundation.mjs','utf8');
- assert.match(workflow,/const throttlePressure=candidates\.some/);
- assert.match(workflow,/Number\(evidence\.httpStatus\|\|0\)===429/);
- assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(requested\?1:\(throttlePressure\?4:8\),candidates\.length\|\|1\)\)/);
- assert.match(workflow,/ROBLOX_OPEN_CLOUD_THROTTLE_PRESSURE=/);
+ assert.doesNotMatch(workflow,/const throttlePressure=candidates\.some/);
+ assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(8,candidates\.length\|\|1\)\)/);
+ assert.match(workflow,/ROBLOX_OPEN_CLOUD_PARALLEL_MODE=MAX8_FILL_AVAILABLE/);
+ assert.match(workflow,/ROBLOX_OPEN_CLOUD_429_SCOPE=PER_GAME_RETRY_ONLY/);
  assert.match(workflow,/networkRetryAttempts:6,networkRetryDelayMs:1000/);
  assert.match(foundation,/const exponentialDelay=Math\.min\(30000,baseDelayMs\*Math\.max\(1,2\*\*Math\.max\(0,attempt-1\)\)\)/);
  assert.match(workflow,/ROBLOX_OPEN_CLOUD_ENGINE_PROBE_FAILURE=/);
@@ -677,9 +677,9 @@ test('central policy requires Roblox checkout through final promotion to stay ga
   assert.deepEqual(parallel.serverBootEvidenceReuse.requiredExactBindings,['SOURCE_REVISION','BUILD_ARTIFACT_IDENTITY','PLACE_ID','CANDIDATE_VERSION_NUMBER']);
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   assert.doesNotMatch(workflow,/candidates\.slice\(0,4\)/);
-  assert.match(workflow,/const throttlePressure=candidates\.some\(item=>/);
-  assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(requested\?1:\(throttlePressure\?4:8\),candidates\.length\|\|1\)\)/);
-  assert.match(workflow,/ROBLOX_OPEN_CLOUD_THROTTLE_PRESSURE=/);
+  assert.doesNotMatch(workflow,/const throttlePressure=candidates\.some\(item=>/);
+  assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(8,candidates\.length\|\|1\)\)/);
+  assert.match(workflow,/ROBLOX_OPEN_CLOUD_PARALLEL_MODE=MAX8_FILL_AVAILABLE/);
   assert.match(workflow,/await Promise\.all\(Array\.from\(\{length:probeConcurrency\},\(\)=>runProbeWorker\(\)\)\)/);
   assert.doesNotMatch(workflow,/Promise\.all\(candidates\.map\(async item=>/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_PARALLEL_COUNT=/);
@@ -944,11 +944,14 @@ test('Open Cloud engine reuses the same Luau session to capture map and world ev
 });
 
 
-test('Open Cloud runtime foundation keeps at least four cross-game probes under 429 pressure',()=>{
+test('Open Cloud requested game is prioritized without wasting the remaining cross-game worker slots',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
-  assert.match(workflow,/throttlePressure\?4:8/);
-  assert.match(workflow,/ACTIVE_MIN4_PARALLEL/);
-  assert.match(workflow,/CLEAR_MAX8_PARALLEL/);
-  assert.doesNotMatch(workflow,/throttlePressure\?1:2/);
-  assert.doesNotMatch(workflow,/ACTIVE_SERIAL/);
+  assert.doesNotMatch(workflow,/if\(requested&&item\.gameId!==requested\)return false/);
+  assert.match(workflow,/Number\(b\.gameId===requested\)-Number\(a\.gameId===requested\)/);
+  assert.match(workflow,/retryOpenCloudOnly&&requested&&item\.gameId===requested/);
+  assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(8,candidates\.length\|\|1\)\)/);
+  assert.match(workflow,/ROBLOX_OPEN_CLOUD_REQUESTED_PRIORITY=/);
+  assert.match(workflow,/ROBLOX_OPEN_CLOUD_429_SCOPE=PER_GAME_RETRY_ONLY/);
+  assert.doesNotMatch(workflow,/requested\?1:/);
+  assert.doesNotMatch(workflow,/ACTIVE_SERIAL|ACTIVE_MIN4_PARALLEL/);
 });
