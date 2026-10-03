@@ -4306,3 +4306,52 @@ test('exact Roblox F9 settles only runtime waiter and forces a fresh BUILD_UP ge
     fs.rmSync(root,{recursive:true,force:true});
   }
 });
+
+
+test('company runtime projects project exact post-F9 Roblox continuation and prioritize it',()=>{
+  const root=tempRepo();
+  try{
+    const gameId='post-f9-projection';
+    const gameRoot=path.join(root,'roblox-games',gameId);
+    fs.mkdirSync(path.join(gameRoot,'server'),{recursive:true});
+    fs.writeFileSync(path.join(gameRoot,'server','Game.server.luau'),'local function attackEnemy() return true end\n','utf8');
+    writeStudioDesign(root,gameId,{
+      identity:'post F9 Roblox action game',
+      coreFun:'attack timing',
+      coreLoop:['start','attack','reward'],
+      multiplayerMode:'SINGLE'
+    });
+    const sourceRevision='b'.repeat(40);
+    const projects=collectProjects(
+      {projects:[]},
+      {games:[
+        {id:gameId,name:'Post F9 Projection',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',robloxProjectPath:`roblox-games/${gameId}`},
+        {id:'other-post-f9-peer',name:'Peer',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',robloxProjectPath:'roblox-games/other-post-f9-peer'}
+      ]},
+      root,
+      {items:[{
+        gameId,gameName:'Post F9 Projection',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
+        selectedPlatform:'ROBLOX',robloxProjectPath:`roblox-games/${gameId}`,
+        robloxSourceCommit:sourceRevision,
+        currentStep:'POST_F9_CONTINUOUS_EVOLUTION',
+        canonicalState:'F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION',
+        robloxFinalReviewPassed:true,
+        robloxFinalReviewPassedAt:'2026-10-03T00:00:00Z',
+        robloxF9ReleaseRegressionEvidence:{
+          sourceRevision,
+          artifactIdentity:'sha256:'+'c'.repeat(64)
+        }
+      }]}
+    );
+    const project=projects.find(row=>row.gameId===gameId&&row.engine==='roblox');
+    assert.ok(project);
+    assert.equal(project.queueRobloxFinalReviewPassed,true);
+    assert.equal(project.queueRobloxF9SourceRevision,sourceRevision);
+    assert.equal(project.queueRobloxPostF9ContinuousEvolution,true);
+
+    const peer={gameId:'peer',engine:'roblox',releaseState:'development-confirmed',progress:100};
+    assert.ok(projectSort(project,peer)<0,'exact post-F9 Roblox continuation must outrank ordinary backlog');
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
