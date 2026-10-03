@@ -1,5 +1,5 @@
 {
-  "version": 155,
+  "version": 156,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2978,5 +2978,23 @@
     "exactArtifactIdentityRequired": true,
     "failureStageMustBeFirstFailedFloor": true,
     "rawLogAloneCannotProvePass": true
+  },
+  "robloxStudioOptionalDeploymentEvidenceContract": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#changeRecord.robloxStudioOptionalDeployment20261003",
+    "recordKind": "roblox-studio-optional-deployment-evidence",
+    "requiredFields": [
+      "GAME_ID",
+      "BUILD_UP_SOURCE_REVISION",
+      "CODE_QA_RESULT",
+      "STATIC_QA_RESULT",
+      "DEPLOYMENT_DISPATCH_RESULT"
+    ],
+    "studioEvidenceRequired": false,
+    "studioDiagnosticOptional": true,
+    "studioFailureBlocksDeployment": false,
+    "studioUnavailableBlocksBuildUp": false,
+    "studioUnavailableBlocksF9": false,
+    "studioPassMayOnlyBeClaimedFromActualStudioEvidence": true
   }
 }
