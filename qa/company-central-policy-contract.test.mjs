@@ -1237,7 +1237,9 @@ test('Roblox development keeps only current code/static QA contract and no histo
     'robloxPostRuntimeQaRunnerIsolation20260927',
     'robloxOpenCloudThrottleRecovery20260927',
     'robloxStudioUnavailableUnlimitedRetry20261002',
-    'robloxF9FaninRuntimePathRepair20260927'
+    'robloxF9FaninRuntimePathRepair20260927',
+    'robloxPlannerDuplicateContractQaRemoval20260927',
+    'robloxSourcePlanWakeAndRunnerIsolation20260927'
   ])assert.equal(Object.hasOwn(roadmap.changeRecord||{},key),false,key);
   for(const key of [
     'robloxRuntimeFoundationRunnerIsolation',
