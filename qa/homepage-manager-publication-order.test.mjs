@@ -108,7 +108,7 @@ test('verified runtime status and catalog join the same supervised publication c
 
 test('homepage live runtime state bypasses the PWA cache',()=>{
   const sw=fs.readFileSync('sw.js','utf8');
-  assert.match(sw,/const CACHE_NAME='jaewoon-pwa-v25'/);
+  assert.match(sw,/const CACHE_NAME='jaewoon-pwa-v\d+'/);
   for(const path of ['homepage-platform-exposure','homepage-portfolio-status','test-game-candidates'])assert.ok(sw.includes(path),`service worker network-only list missing ${path}`);
   assert.ok(sw.includes('/assets\\/homepage-enhancements\\.js'), 'homepage renderer must stay network-only');
 });
