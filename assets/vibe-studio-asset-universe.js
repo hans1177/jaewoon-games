@@ -1741,7 +1741,8 @@ export function buildAutonomousAssetGapFillPlan({
   verifiedAssets=[],
   repositoryAssets=[],
   externalSources=[],
-  signalsByKey={}
+  signalsByKey={},
+  qualityProgram={}
 }={}){
   const verified=(verifiedAssets||[]).map(normalizeRegistryAsset);
   const repo=(repositoryAssets||[]).map(normalizeRegistryAsset);
@@ -1765,9 +1766,50 @@ export function buildAutonomousAssetGapFillPlan({
       nativeRuntimeConsumerRequiredBeforePromotion:true
     }));
   }
+  const familyByAssetId=new Map([
+    ...(verifiedAssets||[]),
+    ...(repositoryAssets||[])
+  ].map(asset=>[text(asset?.id),Object.freeze({
+    family:upper(asset?.family||asset?.category),
+    subfamily:upper(asset?.subfamily||asset?.type)
+  })]));
+  const heroIds=new Set(qualityProgram?.heroBaseline?.heroAssetIds||[]);
+  const qualityActions=(qualityProgram?.evolutionQueue||[])
+    .filter(row=>row?.assetId&&Number(row.currentScore)<STUDIO_ASSET_QUALITY_MAX)
+    .map(row=>{
+      const identity=familyByAssetId.get(text(row.assetId))||{};
+      const deficit=Math.max(0,STUDIO_ASSET_QUALITY_MAX-Number(row.currentScore||0));
+      const heroBonus=heroIds.has(text(row.assetId))?50:0;
+      return Object.freeze({
+        kind:'QUALITY_EVOLUTION',
+        family:identity.family||'UNKNOWN',
+        subfamily:identity.subfamily||'',
+        assetId:text(row.assetId),
+        currentScore:Number(row.currentScore||0),
+        targetScore:STUDIO_ASSET_QUALITY_MAX,
+        qualityGrade:text(row.currentGrade),
+        priorityScore:200+heroBonus+deficit,
+        route:'IMPROVE_EXISTING_ASSET_WORST_PART_FIRST',
+        nextTarget:text(row.nextTarget)||'UNMEASURED_QUALITY',
+        preserveStrongAxes:freezeList(row.preserveStrongAxes||[]),
+        bindCurrentAsset:true,
+        lowScoreBindingAllowed:true,
+        visualDebtMustRemainOpen:Number(row.currentScore)<100,
+        fullRebuildDefault:false,
+        nativeRuntimeConsumerRequiredBeforePromotion:true,
+        verifiedOutcomeOnlyMayTeachPositiveLearning:true
+      });
+    });
+  const allActions=[...actions,...qualityActions].sort((a,b)=>b.priorityScore-a.priorityScore||String(a.family).localeCompare(String(b.family))||String(a.assetId||'').localeCompare(String(b.assetId||'')));
   return Object.freeze({
     heatmap,
-    actions:Object.freeze(actions.sort((a,b)=>b.priorityScore-a.priorityScore||a.family.localeCompare(b.family))),
+    actions:Object.freeze(allActions),
+    coverageActions:Object.freeze(actions.sort((a,b)=>b.priorityScore-a.priorityScore||a.family.localeCompare(b.family))),
+    qualityActions:Object.freeze(qualityActions.sort((a,b)=>b.priorityScore-a.priorityScore||String(a.assetId).localeCompare(String(b.assetId)))),
+    qualityEvolutionEnabled:true,
+    qualityTarget:STUDIO_ASSET_QUALITY_MAX,
+    qualityScoreIsNotBindingGate:true,
+    lowScoreAssetMayRemainBoundDuringImprovement:true,
     noArtificialCategoryCap:true,
     unityRobloxNativeVariantsRequired:true,
     runtimeVerificationRequired:true
@@ -1861,8 +1903,14 @@ export function createStudioAssetUniversePlan({
   const resolvedStyle=conceptProfile.dominantStyle||upper(styleFamily);
   const coverage=scanUniversalAssetCoverage({assets,activeDemand,platform,styleFamily:resolvedStyle});
   const verified=assets.filter(asset=>normalizeRegistryAsset(asset).verified);
+  const quality120=buildStudioAssetQuality120Program({
+    assets:[...assets,...repositoryAssets],
+    qualityEvidenceByAsset,
+    heroAssetIds,
+    familyOutputsByAsset
+  });
   const gapFill=buildAutonomousAssetGapFillPlan({
-    coverageReport:coverage,verifiedAssets:verified,repositoryAssets,externalSources,signalsByKey
+    coverageReport:coverage,verifiedAssets:verified,repositoryAssets,externalSources,signalsByKey,qualityProgram:quality120
   });
   const resolvedBible=createStyleBible({styleFamily:resolvedStyle,styles:conceptProfile.weightedStyles,...styleBible});
   const conceptCoherence=evaluateConceptCoherence({concept:conceptProfile,styleBible:resolvedBible,lockedStyle:styleFamily});
@@ -1873,12 +1921,6 @@ export function createStudioAssetUniversePlan({
   const usageFeedback=summarizeVerifiedAssetUsage({events:usageEvents});
   const baseMaterialRotation=buildBaseMaterialRotationPlan({families:baseMaterialFamilies,usageByAtom:baseMaterialUsageByAtom});
   const testbed=createStudioTestbedPlan({assetIds:loadout.selections.map(row=>row.assetId).filter(Boolean),platform,mobile:true});
-  const quality120=buildStudioAssetQuality120Program({
-    assets:[...assets,...repositoryAssets],
-    qualityEvidenceByAsset,
-    heroAssetIds,
-    familyOutputsByAsset
-  });
   return Object.freeze({
     version:3,
     target:STUDIO_ASSET_UNIVERSE_TARGET,
