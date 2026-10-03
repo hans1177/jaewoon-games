@@ -213,7 +213,15 @@ fi
 adb shell dumpsys package "$package" > "$out_dir/package.txt" 2>&1 || true
 adb shell dumpsys gfxinfo "$package" > "$out_dir/gfxinfo.txt" 2>&1 || true
 adb shell dumpsys SurfaceFlinger --list > "$out_dir/surfaceflinger-layers.txt" 2>&1 || true
-surface_layer="$(grep -F "$package" "$out_dir/surfaceflinger-layers.txt" | grep -m1 'SurfaceView' || grep -F "$package" "$out_dir/surfaceflinger-layers.txt" | head -n 1 || true)"
+# Android 16 --list may expose RequestedLayerState wrappers. Prefer the real Unity BLAST
+# SurfaceView and strip wrapper metadata before asking SurfaceFlinger for frame timestamps.
+surface_layer="$(grep -F "$package" "$out_dir/surfaceflinger-layers.txt" | grep -m1 'SurfaceView.*(BLAST)' | sed -E 's/^RequestedLayerState\{(.*) parentId=.*/\1/' || true)"
+if [[ -z "$surface_layer" ]]; then
+  surface_layer="$(grep -F "$package" "$out_dir/surfaceflinger-layers.txt" | grep 'SurfaceView' | grep -v 'Background for ' | head -n 1 | sed -E 's/^RequestedLayerState\{(.*) parentId=.*/\1/' || true)"
+fi
+if [[ -z "$surface_layer" ]]; then
+  surface_layer="$(grep -F "$package" "$out_dir/surfaceflinger-layers.txt" | head -n 1 | sed -E 's/^RequestedLayerState\{(.*) parentId=.*/\1/' || true)"
+fi
 printf '%s\n' "$surface_layer" > "$out_dir/surfaceflinger-layer.txt"
 if [[ -n "$surface_layer" ]]; then
   adb shell dumpsys SurfaceFlinger --latency "$surface_layer" > "$out_dir/surfaceflinger-latency.txt" 2>&1 || true
