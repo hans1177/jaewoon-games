@@ -632,6 +632,7 @@ jobs:
           BASE_SHA: ${{ needs.inspect.outputs.base_sha }}
           TASK_ID: ${{ needs.inspect.outputs.task_id }}
           CANDIDATE_BRANCH: ${{ needs.inspect.outputs.candidate_branch }}
+          GENERATED_ASSET_FILES: ${{ needs.inspect.outputs.generated_asset_files }}
         shell: bash
         run: |
           set -euo pipefail
@@ -642,7 +643,8 @@ jobs:
             -f base_main_sha="$BASE_SHA" \
             -f publish_to_main=true \
             -f vibe2_task_id="$TASK_ID" \
-            -f vibe2_candidate_branch="$CANDIDATE_BRANCH"
+            -f vibe2_candidate_branch="$CANDIDATE_BRANCH" \
+            -f generated_asset_files="$GENERATED_ASSET_FILES"
           echo 'VIBE2_UNITY_WEB_RELEASE_DISPATCHED=YES'
           echo "VIBE2_CANDIDATE_EXECUTION_SURFACE=UNITY_WEB"
 
