@@ -1,0 +1,346 @@
+{
+  "schemaVersion": 1,
+  "recordId": "roblox-cloud-world-sync-plan-20261003-v1",
+  "recordType": "roblox-cloud-world-sync-plan",
+  "domain": "planning",
+  "scope": {
+    "type": "PLATFORM",
+    "id": "roblox",
+    "gameId": "",
+    "platform": "ROBLOX"
+  },
+  "timestamps": {
+    "createdAt": "2026-10-03T09:29:08.582Z",
+    "observedAt": null
+  },
+  "provenance": {
+    "producer": "CHATGPT_PRIMARY_AI",
+    "authority": "OWNER_DIRECTIVE_2026-10-03",
+    "sourceRevision": "69990e3e832a5dbb1e65ff1675d2bceefbda78e0",
+    "artifactIdentity": null,
+    "sourceRefs": [
+      "company-learning/platform-release-roadmap.json",
+      "company-learning/company-log-map.json",
+      "company-learning/company-architecture-map.json",
+      "company-learning/security-immune-system.json",
+      "company-learning/vibe3-engine-contract.json",
+      "company-learning/vibe3-task-playbooks.json",
+      "assets/vibe-environment-director.js",
+      "assets/vibe-art-pipeline.js",
+      "tools/company-build-up-directive.mjs",
+      "tools/vibe2-source-worker.mjs",
+      "tools/company-development-roblox-bootstrap.mjs",
+      "tools/company-development-roblox-source-reconcile.mjs",
+      "tools/company-development-roblox-runtime-foundation.mjs",
+      ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+      "tools/company-development-roblox-studio-local-play.mjs",
+      "game-catalog.json"
+    ]
+  },
+  "status": "DRAFT",
+  "retentionClass": "WORKING_DRAFT",
+  "data": {
+    "title": "Roblox 기존 게임 Vibe3 맵 설계 + Open Cloud 제작·검증 동기화 계획",
+    "objective": "기존 Roblox 게임 구조와 게임 의미를 보존하면서 Vibe3 월드 설계 지능, 기존 환경/에셋 시스템, Roblox Open Cloud Luau Execution을 현재 canonical 파이프라인 안에서 연결해 맵 크기·지역·동선·스폰·배경·Lighting·Terrain·랜드마크·밀도·스트리밍을 게임별로 설계·적용·검증한다.",
+    "constraints": [
+      "새 workflow 금지",
+      "새 queue/worker 금지",
+      "shadow pipeline 금지",
+      "wrapper/override 누적 금지",
+      "전역 gate/전역 직렬화 금지",
+      "기존 소스·게임 규칙·저장·경제·네트워크 권한 보존",
+      "impact-scoped QA와 유효 PASS 증거 재사용",
+      "모바일 우선"
+    ],
+    "structure": {
+      "centralPolicy": {
+        "roadmap": 524,
+        "logMap": 160,
+        "architectureMap": 309,
+        "securityImmuneSystem": 64
+      },
+      "canonicalGameShape": [
+        "roblox-games/<gameId>/default.project.json",
+        "roblox-games/<gameId>/shared/",
+        "roblox-games/<gameId>/server/",
+        "roblox-games/<gameId>/client/"
+      ],
+      "activeRobloxTargets": 17,
+      "activeExistingRobloxSources": 16,
+      "existingSourceGameIds": [
+        "daechung-rpg",
+        "horror-escape-room",
+        "amusement-tycoon",
+        "bug-defense",
+        "line-defense",
+        "village-dungeons",
+        "cozy-island",
+        "fantasy-survival",
+        "monster-adventure",
+        "seed-action-survival-rogu-echoes-of-the-lost-star",
+        "seed-casual-realm-weaver",
+        "seed-idle-growth-rpg-crystal-bloom",
+        "seed-puzzle-chromatic-cascade",
+        "seed-single-defense-strat-celestial-bastion",
+        "seed-story-complete-rpg-chronicles-of-eldoria",
+        "survival"
+      ],
+      "sourceNotYetBound": [
+        "ant-simulator"
+      ],
+      "existingWorldFunctions": [
+        "createVibeMapDNA",
+        "createVibeRouteGraph",
+        "createVibeWorldStreamingPlan",
+        "createVibeMapDetailReconstruction",
+        "createVibeAdaptiveWorldGenerationPlan",
+        "planVibeMapAutopilot",
+        "createBiomeDNA",
+        "createPropDensityProfile"
+      ],
+      "vibe3AlreadyUsedBy": [
+        "tools/company-development-roblox-bootstrap.mjs",
+        "tools/company-development-roblox-source-reconcile.mjs",
+        "tools/vibe2-source-worker.mjs owner=VIBE2_VIBE3"
+      ],
+      "cloudAlreadyUsedBy": [
+        "tools/company-development-roblox-runtime-foundation.mjs#probeRobloxOpenCloudEngine",
+        ".github/workflows/company-development-roblox-post-runtime-qa.yml"
+      ],
+      "studioCurrentRole": "OPTIONAL_DIAGNOSTIC"
+    },
+    "mapIntent": {
+      "storage": "EXISTING_BUILD_UP_DIRECTIVE_OR_WORK_ORDER_ONLY",
+      "standaloneStateStore": false,
+      "producer": "VIBE3_CONTEXT_PLUS_EXISTING_VIBE_ENVIRONMENT_DIRECTOR",
+      "fields": [
+        "WORLD_BOUNDS",
+        "PLAYABLE_BOUNDS",
+        "TRAVEL_TIME_TARGETS",
+        "REGION_ROLES",
+        "ROUTE_GRAPH",
+        "SPAWN_ZONES",
+        "SAFE_DANGER_ZONES",
+        "OBJECTIVES_LANDMARKS",
+        "BIOME_TERRAIN_LANGUAGE",
+        "ELEVATION_VERTICALITY",
+        "ROAD_PATH_LANGUAGE",
+        "BACKGROUND_HORIZON",
+        "LIGHTING_ATMOSPHERE",
+        "VEGETATION_BUILDING_PROP_DENSITY",
+        "RESOURCE_ENCOUNTER_PRESSURE",
+        "STREAMING_LOD_BUDGET",
+        "MOBILE_DENSITY_BUDGET",
+        "DETERMINISTIC_SEED",
+        "PROTECTED_ANCHORS"
+      ],
+      "protectedAnchors": [
+        "SPAWN_MEANING",
+        "OBJECTIVE_RELATION",
+        "QUEST_WAVE_PATH_MEANING",
+        "INTERACTION_CLEARANCE",
+        "SAVE_BOUND_WORLD_IDENTIFIERS",
+        "NETWORK_AUTHORITY"
+      ]
+    },
+    "canonicalFlow": [
+      "READ_CURRENT_SOURCE_AND_APPROVED_DESIGN",
+      "INSPECT_WORLD_RESPONSIBILITY_AND_PROTECTED_ANCHORS",
+      "BUILD_GAME_SPECIFIC_MAP_INTENT_WITH_VIBE3",
+      "BIND_TO_EXISTING_BUILD_UP_WORK_ORDER",
+      "DIRECTLY_MODIFY_EXISTING_ROBLOX_RESPONSIBLE_FILES",
+      "REUSE_STUDIO_ASSET_UNIVERSE_AND_EXISTING_ASSETS",
+      "RUN_LUAU_COMPILE_AND_IMPACT_SCOPED_QA",
+      "BUILD_EXACT_PRIVATE_VALIDATION_ARTIFACT",
+      "RUN_OPEN_CLOUD_EXACT_PLACE_VERSION_LUAU_EXECUTION",
+      "VALIDATE_WORLD_STRUCTURE_AND_PROTECTED_SEMANTICS",
+      "RUN_STUDIO_MCP_ONLY_FOR_UNPROVABLE_CLIENT_RENDER_MULTIPLAYER_CASES",
+      "FAN_IN_RELEVANT_REGRESSION_ONLY",
+      "FEED_VERIFIED_RESULT_TO_EXISTING_LEARNING",
+      "CONTINUE_NEXT_BUILD_UP"
+    ],
+    "openCloud": {
+      "defaultVerification": "OPEN_CLOUD_FIRST",
+      "exactIdentity": [
+        "SOURCE_REVISION",
+        "ARTIFACT_IDENTITY",
+        "UNIVERSE_ID",
+        "PLACE_ID",
+        "PLACE_VERSION"
+      ],
+      "worldChecks": [
+        "SERVER_BOOT",
+        "FINITE_WORLD_BOUNDS",
+        "SPAWN_IN_PLAYABLE_BOUNDS",
+        "REQUIRED_LANDMARK_OBJECTIVE_BINDINGS",
+        "ROUTE_AND_REGION_COUNTS",
+        "ROUTE_REACHABILITY_MARKERS",
+        "TERRAIN_OR_WORLD_GEOMETRY_PRESENT",
+        "LIGHTING_ATMOSPHERE_BINDING",
+        "EXPECTED_ASSET_BINDING",
+        "OBJECT_DENSITY_BUDGET",
+        "STREAMING_CONFIGURATION",
+        "NO_PRESENTATION_TO_GAMEPLAY_AUTHORITY_MUTATION"
+      ],
+      "authoring": {
+        "allowedOnPrivateValidationTarget": true,
+        "canonicalTargetMutationBeforeF9": false,
+        "gitRemainsSourceOfTruth": true,
+        "exactF9PublishRulePreserved": true
+      }
+    },
+    "studioFallback": {
+      "defaultRun": false,
+      "deleteSystem": false,
+      "triggers": [
+        "TOUCH_OR_REAL_CLIENT_INPUT_CHANGED",
+        "CAMERA_OR_VIEWPORT_CHANGED",
+        "CLIENT_ONLY_UI_CANNOT_BE_PROVED_HEADLESS",
+        "ACTUAL_TWO_PLUS_CLIENT_SESSION_REQUIRED",
+        "ANIMATION_VFX_RENDER_COMPOSITION_NEEDS_REAL_RENDER",
+        "OPEN_CLOUD_RESULT_AMBIGUOUS_FOR_PLAYER_VISIBLE_BEHAVIOR",
+        "TARGETED_DIAGNOSIS_AFTER_REPRODUCED_FAILURE"
+      ],
+      "notRoutineGate": [
+        "EVERY_BUILD_UP",
+        "EVERY_F9",
+        "EVERY_DEPLOYMENT",
+        "LEARNING_PRACTICE",
+        "STATIC_ONLY_CHANGE",
+        "UNCHANGED_EXACT_EVIDENCE"
+      ]
+    },
+    "responsibleFiles": [
+      {
+        "file": "assets/vibe-environment-director.js",
+        "action": "reuse existing world/map grammar; extend only missing Roblox intent fields"
+      },
+      {
+        "file": "tools/company-build-up-directive.mjs",
+        "action": "bind map intent into existing work order and responsible-file package"
+      },
+      {
+        "file": "tools/vibe2-source-worker.mjs",
+        "action": "consume work order and directly modify responsible source"
+      },
+      {
+        "file": "tools/company-development-roblox-bootstrap.mjs",
+        "action": "translate map intent to Roblox-native project/server/client bindings"
+      },
+      {
+        "file": "tools/company-development-roblox-source-reconcile.mjs",
+        "action": "stale-rebind existing games only when map/world contract fingerprint changes"
+      },
+      {
+        "file": "tools/company-development-roblox-runtime-foundation.mjs",
+        "action": "extend existing Open Cloud probe with world/map evidence"
+      },
+      {
+        "file": ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+        "action": "consume extended cloud evidence; keep Studio opt-in"
+      },
+      {
+        "file": "tools/company-development-roblox-studio-local-play.mjs",
+        "action": "retain targeted diagnostic fallback only"
+      }
+    ],
+    "rollout": [
+      {
+        "phase": "P0",
+        "scope": "CONTRACT_ONLY",
+        "games": [],
+        "acceptance": "No production game source mutation"
+      },
+      {
+        "phase": "P1",
+        "scope": "CANARY",
+        "games": [
+          "cozy-island",
+          "daechung-rpg",
+          "line-defense"
+        ],
+        "acceptance": "Three distinct genres preserve gameplay/save semantics and pass scoped QA + exact cloud evidence"
+      },
+      {
+        "phase": "P2",
+        "scope": "ALL_EXISTING_ACTIVE_SOURCES",
+        "games": [
+          "horror-escape-room",
+          "amusement-tycoon",
+          "bug-defense",
+          "village-dungeons",
+          "fantasy-survival",
+          "monster-adventure",
+          "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "seed-casual-realm-weaver",
+          "seed-idle-growth-rpg-crystal-bloom",
+          "seed-puzzle-chromatic-cascade",
+          "seed-single-defense-strat-celestial-bastion",
+          "seed-story-complete-rpg-chronicles-of-eldoria",
+          "survival"
+        ],
+        "acceptance": "Parallel per-game sync without global barrier; exact evidence or explicit scoped blocker"
+      },
+      {
+        "phase": "P3",
+        "scope": "UNBOUND_SOURCE",
+        "games": [
+          "ant-simulator"
+        ],
+        "acceptance": "Join same flow only after canonical Roblox bootstrap source exists"
+      }
+    ],
+    "qa": {
+      "default": [
+        "Luau compile",
+        "changed-responsibility static QA",
+        "MapIntent/protected-anchor deterministic QA",
+        "Open Cloud exact place/version world probe"
+      ],
+      "conditional": [
+        "security only for relevant authority/remote/save delta",
+        "Studio only for explicit diagnostic triggers",
+        "full regression only at relevant fan-in or broad reproduced failure"
+      ],
+      "reuseUnchangedEvidence": true,
+      "fakePassForbidden": true
+    },
+    "acceptanceCriteria": [
+      "No new workflow queue worker shadow pipeline wrapper or global gate",
+      "No portfolio-wide serialization",
+      "Vibe3 reasoning flows through existing Vibe2/Roblox work order",
+      "Existing source is read before every mutation",
+      "Existing rules balance progression save economy and authority remain unchanged unless separately authorized",
+      "Existing topology is preserved by default; weak regions only are improved",
+      "Open Cloud exact place/version is routine runtime verification",
+      "Studio is not required for ordinary development F9 or deployment",
+      "All 16 currently bound active games can synchronize independently",
+      "ant-simulator joins only after canonical source binding",
+      "Unverified state is never reported as PASS"
+    ],
+    "completionDefinition": "This record is an implementation plan only. It does not claim source synchronization, QA, runtime, deployment, or portfolio rollout completion."
+  },
+  "evidenceRefs": [],
+  "relatedFiles": [
+    "assets/vibe-environment-director.js",
+    "assets/vibe-art-pipeline.js",
+    "tools/company-build-up-directive.mjs",
+    "tools/vibe2-source-worker.mjs",
+    "tools/company-development-roblox-bootstrap.mjs",
+    "tools/company-development-roblox-source-reconcile.mjs",
+    "tools/company-development-roblox-runtime-foundation.mjs",
+    ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+    "tools/company-development-roblox-studio-local-play.mjs",
+    "game-catalog.json"
+  ],
+  "supersedes": [],
+  "tags": [
+    "roblox",
+    "open-cloud",
+    "vibe3",
+    "map",
+    "world-generation",
+    "existing-games",
+    "planning"
+  ]
+}
