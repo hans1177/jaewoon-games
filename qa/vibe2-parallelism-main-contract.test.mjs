@@ -309,6 +309,9 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.doesNotMatch(core,/robloxLeaderTaskId|runner-pressure-wave-leader-free-slot-refill|VIBE2_ASSET_NEURON_PRESSURE_BYPASS/);
   assert.match(core,/VIBE2_CONTROL_OPTIMISTIC_RETRY_POLICY=UNBOUNDED/);
   assert.match(core,/VIBE2_CONTROL_OPTIMISTIC_RETRY_BACKOFF_SECONDS=/);
+  assert.match(core,/VIBE2_CONTROL_OPTIMISTIC_RETRY_FAST_PATH=ELIGIBLE_NO_GLOBAL_QUEUE_MUTATION/);
+  assert.match(core,/VIBE2_CONTROL_OPTIMISTIC_RETRY_GLOBAL_REPLAN=SKIPPED_NO_GLOBAL_QUEUE_MUTATION/);
+  assert.match(core,/VIBE2_CONTROL_OPTIMISTIC_RETRY_QUEUE_AUTHORITY=LATEST_CANONICAL_VIBE_QUEUE/);
   assert.doesNotMatch(core,/for state_attempt in 1 2 3 4 5/);
   assert.doesNotMatch(core,/VIBE2_CONTROL_OPTIMISTIC_ATTEMPT=\$state_attempt\/5/);
   assert.doesNotMatch(core,/VIBE2_ASSET_NEURON_PRESSURE_BYPASS=IMMEDIATE_MICRO_FANIN/);
@@ -344,6 +347,7 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.match(core,/github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-fanin-refill-\{0\}', inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
   assert.doesNotMatch(core,/\|\| 'vibe2-control-state-vibe2-unreal-core'/);
   assert.match(runner,/group: vibe2-24h-cycle-\$\{\{ github\.run_id \}\}/);
+  assert.match(runner,/'tools\/vibe2-queue-control\.mjs'/);
   assert.match(runner,/VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=PASS/);
   assert.match(runner,/VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=FAIL_DEFER_LEARNING/);
   assert.match(runner,/VIBE2_24H_RUNNER_JOB_QUEUE_PRESSURE=/);
