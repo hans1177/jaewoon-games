@@ -26,6 +26,7 @@ import {
   createConceptProfile,
   evaluateConceptCompatibility,
   createGameVisualDNA,
+  scoreStudioAssetQuality120,
   scoreStudioAssetCandidate,
   buildStudioAssetLoadout,
   buildFutureAssetDemandForecast,
