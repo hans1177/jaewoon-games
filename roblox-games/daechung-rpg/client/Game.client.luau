@@ -441,7 +441,59 @@ if hasStudioAssetAtom("FRAME_PANEL") then
 end
 stats:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
 stats:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))
-stats.Name="RPGTopHUD";stats.Size=touchEnabled and UDim2.fromOffset(214,82)or UDim2.fromOffset(270,88);stats.Position=UDim2.fromOffset(8,8);stats.BackgroundColor3=Color3.fromRGB(25,28,35);stats.BackgroundTransparency=.1;stats.Parent=gui;corner(stats,13);stroke(stats,.5)
+stats.Name="RPGTopHUD";stats.Size=touchEnabled and UDim2.fromOffset(214,82)or UDim2.fromOffset(270,88);stats.Position=UDim2.fromOffset(8,8);stats.BackgroundColor3=Color3.fromRGB(25,28,35);stats.BackgroundTransparency=.1;stats.Parent=gui
+-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_SURFACE_BEGIN stage=1
+do
+  local deterministicBuildStage = 1
+  local deterministicGameplaySurfaceTarget = stats
+  deterministicGameplaySurfaceTarget:SetAttribute("DeterministicBuildStage", deterministicBuildStage)
+  local generatedAssetBindingLighting = game:GetService("Lighting")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetBindingVersion", 1)
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetBindingCount", 3)
+  generatedAssetBindingLighting:SetAttribute("GeneratedNativeAssetBindingCount", 3)
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetPath1", "assets/generated/roblox/daechung-rpg/background/asset.glb")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetSha256_1", "d2f34083513a4c5a673c0c5561dd4549539bc3d5317bba4ada0b48d67a936132")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetFamily1", "ENVIRONMENT")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetId1", "daechung-rpg-roblox-background-generated-v1")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetPath2", "assets/generated/roblox/daechung-rpg/item/asset.glb")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetSha256_2", "f101c443bd0407d1aa68b05a34c8173e6b24879cb7afc366d61e3e5cd4ef38be")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetFamily2", "WEAPON")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetId2", "daechung-rpg-roblox-item-generated-v1")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetPath3", "assets/generated/roblox/daechung-rpg/prop/asset.glb")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetSha256_3", "fb5892727e5642001c0b5ffe3f368d239fa48d24b5f37ba01de2421c2b8dc1c3")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetFamily3", "PROP")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetId3", "daechung-rpg-roblox-prop-generated-v1")
+  local deterministicGameplaySurfaceCorner = deterministicGameplaySurfaceTarget:FindFirstChild("DeterministicGameplaySurfaceCorner")
+  if not deterministicGameplaySurfaceCorner then
+    deterministicGameplaySurfaceCorner = Instance.new("UICorner")
+    deterministicGameplaySurfaceCorner.Name = "DeterministicGameplaySurfaceCorner"
+    deterministicGameplaySurfaceCorner.Parent = deterministicGameplaySurfaceTarget
+  end
+  deterministicGameplaySurfaceCorner.CornerRadius = UDim.new(0, 11)
+  local deterministicGameplaySurfaceStroke = deterministicGameplaySurfaceTarget:FindFirstChild("DeterministicGameplaySurfaceStroke")
+  if not deterministicGameplaySurfaceStroke then
+    deterministicGameplaySurfaceStroke = Instance.new("UIStroke")
+    deterministicGameplaySurfaceStroke.Name = "DeterministicGameplaySurfaceStroke"
+    deterministicGameplaySurfaceStroke.Parent = deterministicGameplaySurfaceTarget
+  end
+  deterministicGameplaySurfaceStroke.Color = Color3.fromRGB(121, 178, 112)
+  deterministicGameplaySurfaceStroke.Thickness = 1.5
+  deterministicGameplaySurfaceStroke.Transparency = 0.24
+  local deterministicGameplaySurfaceGradient = deterministicGameplaySurfaceTarget:FindFirstChild("DeterministicGameplaySurfaceGradient")
+  if not deterministicGameplaySurfaceGradient then
+    deterministicGameplaySurfaceGradient = Instance.new("UIGradient")
+    deterministicGameplaySurfaceGradient.Name = "DeterministicGameplaySurfaceGradient"
+    deterministicGameplaySurfaceGradient.Parent = deterministicGameplaySurfaceTarget
+  end
+  deterministicGameplaySurfaceGradient.Color = ColorSequence.new(Color3.fromRGB(121, 178, 112), Color3.fromRGB(149, 202, 132))
+  deterministicGameplaySurfaceGradient.Rotation = 17
+  local deterministicGameplaySurfaceTweenService = game:GetService("TweenService")
+  local deterministicGameplaySurfaceRestPosition = deterministicGameplaySurfaceTarget.Position
+  local deterministicGameplaySurfaceEntryPosition = UDim2.new(deterministicGameplaySurfaceTarget.Position.X.Scale, deterministicGameplaySurfaceTarget.Position.X.Offset, deterministicGameplaySurfaceTarget.Position.Y.Scale, deterministicGameplaySurfaceTarget.Position.Y.Offset + 10)
+  deterministicGameplaySurfaceTarget.Position = deterministicGameplaySurfaceEntryPosition
+  deterministicGameplaySurfaceTweenService:Create(deterministicGameplaySurfaceTarget, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = deterministicGameplaySurfaceRestPosition}):Play()
+end
+-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_SURFACE_END;corner(stats,13);stroke(stats,.5)
 local title=Instance.new("TextLabel");title.Size=UDim2.new(1,-14,0,23);title.Position=UDim2.fromOffset(7,4);title.BackgroundTransparency=1;title.Text="대충 RPG";title.TextColor3=Color3.fromRGB(255,223,157);title.TextXAlignment=Enum.TextXAlignment.Left;title.Font=Enum.Font.GothamBold;title.TextSize=16;title.Parent=stats
 local statLine=Instance.new("TextLabel");statLine.Size=UDim2.new(1,-14,0,38);statLine.Position=UDim2.fromOffset(7,27);statLine.BackgroundTransparency=1;statLine.TextColor3=Color3.fromRGB(230,234,241);statLine.TextXAlignment=Enum.TextXAlignment.Left;statLine.TextYAlignment=Enum.TextYAlignment.Top;statLine.TextWrapped=true;statLine.TextSize=12;statLine.Font=Enum.Font.Gotham;statLine.Parent=stats
 
