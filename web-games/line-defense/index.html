@@ -270,9 +270,14 @@ function upgradeCharacter(id){
   save.gold-=cost;save.charLv[id]=(save.charLv[id]||0)+1;persist();renderCharUpgrades();updateMeta();buttons();toast(U[id].name+' 강화 +'+save.charLv[id]);
 }
 function gacha(){
-  const left=GACHA_IDS.filter(k=>!save.owned[k]);if(!left.length)return toast('뽑기 캐릭터를 모두 얻었어');
+  const left=remainingGachaIds();if(!left.length)return toast((save.maxCleared||0)<6?'현재 뽑기 캐릭터를 모두 얻었어. 6스테이지 후 신규 3종 추가!':'뽑기 캐릭터를 모두 얻었어');
   if(save.gold<100)return toast('100골드가 필요해');
-  save.gold-=100;const id=left[Math.floor(Math.random()*left.length)];save.owned[id]=true;persist();updateMeta();toast(U[id].name+' 획득!');
+  save.gold-=100;
+  const rare=left.find(k=>U[k].rareGacha),normal=left.filter(k=>!U[k].rareGacha);
+  let id;
+  if(rare&&(!normal.length||Math.random()<.15))id=rare;
+  else id=normal[Math.floor(Math.random()*normal.length)];
+  save.owned[id]=true;persist();updateMeta();toast(U[id].name+(U[id].rareGacha?' 희귀 획득!':' 획득!'));
 }
 function upgradeMeta(type){
   const cost=metaCost(type);if(!Number.isFinite(cost))return toast('최대 레벨이야');
