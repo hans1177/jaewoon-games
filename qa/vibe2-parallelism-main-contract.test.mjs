@@ -352,7 +352,7 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.doesNotMatch(core,/vibe2-fanin-refill-singleton/);
   assert.match(core,/github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-fanin-refill-\{0\}', inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
   assert.doesNotMatch(core,/\|\| 'vibe2-control-state-vibe2-unreal-core'/);
-  assert.match(runner,/group: vibe2-24h-cycle-run-scoped-v10/);
+  assert.match(runner,/group: vibe2-24h-cycle-\$\{\{ github\.run_id \}\}/);
   assert.match(runner,/VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=PASS/);
   assert.match(runner,/VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=FAIL_DEFER_LEARNING/);
   assert.match(runner,/VIBE2_24H_RUNNER_JOB_QUEUE_PRESSURE=/);
