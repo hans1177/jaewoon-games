@@ -166,7 +166,11 @@ public sealed class UnityWebFloorGame : MonoBehaviour
         Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=enemy status=PASS");
         Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=environment status=PASS");
         Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=equipment status=PASS");
-        Debug.Log("JAEWOON_UNITY_WEB_QA MOTION game=" + GameId + " status=PASS");
+        int nativeMotionActors = BindNativeMotionActors();
+        Debug.Log("JAEWOON_UNITY_WEB_QA MOTION game=" + GameId +
+                  " status=" + (nativeMotionActors > 0 ? "STARTED" : "REPAIR_REQUIRED") +
+                  " actors=" + nativeMotionActors +
+                  (nativeMotionActors > 0 ? "" : " reason=ANIMATOR_REQUIRED"));
         Debug.Log("JAEWOON_UNITY_WEB_QA MOBILE_TARGET game=" + GameId + " role=action x=0.5000 y=0.7200");
         LogState();
     }
