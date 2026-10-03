@@ -180,6 +180,20 @@ export function extractChangeRecordReferences(text=''){
   for(const match of source.matchAll(/changeRecord\[['"]([^'"]+)['"]\]/g))refs.add(match[1]);
   return [...refs].sort();
 }
+
+export function extractCentralPolicyReferences(text=''){
+  const refs=new Set(),source=String(text||'');
+  const add=value=>{
+    const path=clean(value).replace(/^\.+|\.+$/g,'');
+    if(path&&/^[A-Za-z0-9_.-]+$/.test(path))refs.add(path);
+  };
+  for(const match of source.matchAll(/(?:roadmap|policy|central)(?:\?\.|\.)([A-Za-z0-9_]+(?:\?\.|\.[A-Za-z0-9_]+)*)/g)){
+    add(match[1].replaceAll('?.','.'));
+  }
+  for(const match of source.matchAll(/platform-release-roadmap\.json#([A-Za-z0-9_.-]+)/g))add(match[1]);
+  for(const key of extractChangeRecordReferences(source))add('changeRecord.'+key);
+  return [...refs].sort();
+}
 function walkCentralReferenceFiles(rootDir,out=[]){
   if(!fs.existsSync(rootDir))return out;
   for(const entry of fs.readdirSync(rootDir,{withFileTypes:true})){
@@ -205,6 +219,52 @@ export function findProtectedCentralChangeRecordKeys({roots=CENTRAL_SCAN_ROOTS}=
   return Object.freeze(Object.fromEntries(
     [...refs.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([key,files])=>[key,Object.freeze(uniq(files).sort())])
   ));
+}
+
+export function findCurrentCentralPolicyReferences({roots=CENTRAL_SCAN_ROOTS}={}){
+  const refs=new Map();
+  const centralFiles=new Set([
+    'company-learning/platform-release-roadmap.json',
+    'company-learning/company-log-map.json',
+    'company-learning/company-architecture-map.json',
+    'company-learning/security-immune-system.json'
+  ]);
+  for(const root of roots){
+    const abs=path.join(ROOT,root);
+    for(const file of walkCentralReferenceFiles(abs)){
+      const rel=repoRel(file);
+      if(centralFiles.has(rel))continue;
+      let source='';
+      try{source=fs.readFileSync(file,'utf8');}catch{continue;}
+      for(const ref of extractCentralPolicyReferences(source)){
+        if(!refs.has(ref))refs.set(ref,[]);
+        refs.get(ref).push(rel);
+      }
+    }
+  }
+  return Object.freeze(Object.fromEntries(
+    [...refs.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([key,files])=>[key,Object.freeze(uniq(files).sort())])
+  ));
+}
+function centralPathIsReferenced(pathKey='',referenceMap={}){
+  const target=clean(pathKey);
+  if(!target)return false;
+  return Object.keys(referenceMap||{}).some(ref=>
+    ref===target||ref.startsWith(target+'.')||target.startsWith(ref+'.')
+  );
+}
+function centralPathPinned(pathKey='',retention={}){
+  const pins=[
+    ...(Array.isArray(retention.pinnedCorePaths)?retention.pinnedCorePaths:[]),
+    'centralDocumentRetention',
+    'ownerCanonicalRules',
+    'minimumNecessaryProcedurePolicy',
+    'developmentLifecycleMachine',
+    'continuousGameplaySystemEvolutionContract',
+    'roblox',
+    'security'
+  ];
+  return pins.some(prefix=>pathKey===prefix||pathKey.startsWith(prefix+'.'));
 }
 
 export function discoverCentralArchiveCandidates({roadmap=null,minBytes=512,limit=20}={}){
@@ -348,6 +408,107 @@ export function planCentralDocumentArchive({roadmap,protectedChangeRecordKeys=[]
     roadmap:work
   });
 }
+export function planCentralCurrentUsePrune({roadmap,currentReferences=null}={}){
+  if(!isObject(roadmap))throw new Error('roadmap object required');
+  const work=cloneJson(roadmap);
+  const retention=work.centralDocumentRetention||{};
+  const refs=currentReferences||findCurrentCentralPolicyReferences({
+    roots:Array.isArray(retention.currentUseReferenceScanRoots)&&retention.currentUseReferenceScanRoots.length
+      ?retention.currentUseReferenceScanRoots:CENTRAL_SCAN_ROOTS
+  });
+  const protectedChangeKeys=new Set(Object.keys(refs).filter(x=>x.startsWith('changeRecord.')).map(x=>x.slice('changeRecord.'.length).split('.')[0]));
+  const pinnedChangeKeys=new Set(Array.isArray(retention.pinnedChangeRecordKeys)?retention.pinnedChangeRecordKeys:[]);
+  const archivedPayload={},archivedPaths=[];
+
+  // changeRecord is history by definition: only live references and explicit pins remain central.
+  if(retention.autoArchiveUnreferencedChangeRecords!==false&&isObject(work.changeRecord)){
+    for(const [key,value] of Object.entries({...work.changeRecord})){
+      if(protectedChangeKeys.has(key)||pinnedChangeKeys.has(key))continue;
+      const p='changeRecord.'+key;
+      archivedPayload[p]=value;
+      delete work.changeRecord[key];
+      archivedPaths.push(p);
+    }
+  }
+
+  // Historical/diagnostic nested state is kept only while executable sources reference it.
+  if(retention.autoArchiveHistoricalShapedNestedState!==false){
+    const pattern=/(?:history|historical|incident|verification|implementationEvidence|observation|diagnostic|telemetry|audit|latest(?:Run|Qa|Evidence|Observation|Diagnostic)|recoveryEvidence)$/i;
+    const candidates=[];
+    const walk=(value,parts=[])=>{
+      if(!value||typeof value!=='object')return;
+      for(const [key,next] of Object.entries(value)){
+        if(!next||typeof next!=='object')continue;
+        const p=[...parts,key].join('.');
+        if(!centralPathPinned(p,retention)&&pattern.test(key)&&!centralPathIsReferenced(p,refs)){
+          candidates.push({path:p,bytes:utf8Bytes(JSON.stringify(next))});
+          continue;
+        }
+        walk(next,[...parts,key]);
+      }
+    };
+    walk(work,[]);
+    candidates.sort((a,b)=>b.path.split('.').length-a.path.split('.').length||b.bytes-a.bytes);
+    for(const row of candidates){
+      const value=pathValue(work,row.path);
+      if(value===undefined)continue;
+      archivedPayload[row.path]=value;
+      if(deletePathValue(work,row.path))archivedPaths.push(row.path);
+    }
+  }
+
+  const beforeBytes=utf8Bytes(JSON.stringify(roadmap,null,2)+'\n');
+  const afterBytes=utf8Bytes(JSON.stringify(work,null,2)+'\n');
+  return Object.freeze({
+    beforeBytes,afterBytes,
+    reducedBytes:beforeBytes-afterBytes,
+    archivedPaths:Object.freeze(uniq(archivedPaths).sort()),
+    archivedPayload:Object.freeze(archivedPayload),
+    currentReferencePaths:Object.freeze(Object.keys(refs).sort()),
+    protectedChangeRecordKeys:Object.freeze([...protectedChangeKeys].sort()),
+    roadmap:work
+  });
+}
+
+export function archiveCentralCurrentUse({createdAt=new Date().toISOString(),sourceRevision=currentGitRevision()}={}){
+  const current=readCentralRoadmap();
+  const plan=planCentralCurrentUsePrune({roadmap:current});
+  if(!plan.archivedPaths.length)return Object.freeze({changed:false,plan,archiveRecord:null,archivePath:null});
+  const date=createdAt.slice(0,10),compact=date.replaceAll('-','');
+  const fingerprint=crypto.createHash('sha256').update(JSON.stringify(plan.archivedPaths)).digest('hex').slice(0,12);
+  const recordId='central-policy-current-use-'+compact+'-'+fingerprint;
+  const archiveRel='company-records/operations/'+date.slice(0,4)+'/'+date+'/company/central-policy-archive--'+recordId+'.json';
+  if(existsRel(archiveRel))return Object.freeze({changed:false,plan,archiveRecord:null,archivePath:archiveRel});
+  const archive=centralArchiveRecord({plan:{
+    ...plan,
+    softTargetUtf8Bytes:Number(current.centralDocumentRetention?.softTargetUtf8Bytes||0),
+    maxUtf8Bytes:Number(current.centralDocumentRetention?.maxUtf8Bytes||0)
+  },sourceRevision,createdAt,recordId});
+  archive.data.mode='AUTO_CURRENT_USE_ONLY';
+  archive.data.currentReferencePaths=[...plan.currentReferencePaths];
+  archive.tags.push('current-use');
+  const next=cloneJson(plan.roadmap);
+  next.centralDocumentRetention={
+    ...(next.centralDocumentRetention||{}),
+    latestArchiveRecord:archiveRel,
+    latestArchiveRecordId:recordId,
+    latestArchiveSourceRevision:sourceRevision||null,
+    latestArchiveAt:createdAt,
+    latestArchivePathCount:plan.archivedPaths.length,
+    lastAutoPruneMode:'AUTO_CURRENT_USE_ONLY'
+  };
+  const archiveAbs=path.join(ROOT,archiveRel);
+  fs.mkdirSync(path.dirname(archiveAbs),{recursive:true});
+  fs.writeFileSync(archiveAbs,JSON.stringify(archive,null,2)+'\n');
+  const validation=validateCompanyRecord(archiveRel);
+  if(validation.errors.length){
+    fs.rmSync(archiveAbs,{force:true});
+    throw new Error('current-use archive record validation failed: '+validation.errors.join(','));
+  }
+  fs.writeFileSync(path.join(ROOT,CENTRAL_POLICY_REL),JSON.stringify(next,null,2)+'\n');
+  return Object.freeze({changed:true,plan,archiveRecord:archive,archivePath:archiveRel});
+}
+
 function currentGitRevision(){
   try{return clean(execFileSync('git',['rev-parse','HEAD'],{cwd:ROOT,encoding:'utf8'}));}catch{return'';}
 }
@@ -422,6 +583,14 @@ export function archiveCentralDocument({createdAt=new Date().toISOString(),sourc
 
 function main(){
   const args=process.argv.slice(2);
+  if(args.includes('--central-auto-prune')){
+    const result=archiveCentralCurrentUse();
+    console.log('CENTRAL_POLICY_AUTO_PRUNE_CHANGED='+(result.changed?'YES':'NO'));
+    console.log('CENTRAL_POLICY_AUTO_PRUNE_PATHS='+result.plan.archivedPaths.length);
+    console.log('CENTRAL_POLICY_AUTO_PRUNE_REDUCED_BYTES='+result.plan.reducedBytes);
+    if(result.archivePath)console.log('CENTRAL_POLICY_AUTO_PRUNE_ARCHIVE='+result.archivePath);
+    return;
+  }
   if(args.includes('--central-report')){
     const report=inspectCentralDocument();
     console.log('CENTRAL_POLICY_UTF8_BYTES='+report.utf8Bytes);
