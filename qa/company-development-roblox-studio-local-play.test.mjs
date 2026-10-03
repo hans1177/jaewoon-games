@@ -122,8 +122,10 @@ function roadmap(){
     roblox:{studioExecution:{
       enabled:true,
       required:false,
-      requiredForActualVibeInternalPlay:true,
-      requiredForInternalRelease:true,
+      optionalDiagnostic:true,
+      deploymentGate:false,
+      f9Gate:false,
+      requiredForInternalRelease:false,
       officialStudioMcpOnly:true,
       localPlaceFileRequired:true,
       onlinePublishedPlaceDirectOpenForbidden:true,
@@ -390,28 +392,25 @@ test('planner excludes only explicit disabled games rather than using currentSte
   assert.deepEqual(result.include.map(row=>row.gameId).sort(),['g1','g2']);
 });
 
-test('central contract makes actual play evidence-gated and parallel to foundation revalidation after internal release',()=>{
+test('central contract keeps Studio optional and outside build-up F9 deployment gates',()=>{
   const central=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
   const loop=central.developmentLifecycleMachine?.internalPlatformReleaseAndPublicExposureGate?.internalBuildupLoop||{};
-  assert.equal(loop.actualVibePlayEligibility,'EXACT_PRIVATE_RUNTIME_CANDIDATE_PLUS_EXACT_SOURCE_ARTIFACT_BINDING');
-  assert.equal(loop.actualVibePlayMayStartAfterRuntimeFoundationPassBeforeInternalRelease,false);
-  assert.equal(loop.actualVibePlayMayStartAfterExactPrivateCandidateBeforeRuntimeFoundationPass,true);
-  assert.equal(loop.actualVibePlayEligibilityMustNotDependOnExclusiveCurrentStep,true);
-  assert.equal(loop.foundationOrFinalRevalidationMayRunParallelWithActualVibePlayAfterInternalRelease,true);
-  assert.equal(loop.currentStepMayRepresentParallelRuntimeRevalidationWithoutRevokingInternalReleasePlayEligibility,true);
-  assert.equal(loop.explicitDisabledGameRemainsIneligible,true);
+  assert.deepEqual(loop.sequence,['BUILD_UP','CODE_AND_STATIC_QA','OPTIONAL_STUDIO_DIAGNOSTIC','NEXT_BUILD_UP']);
+  assert.equal(loop.codeAndStaticQaRequired,true);
+  assert.equal(loop.studioRequired,false);
+  assert.equal(loop.missingStudioAction,'CONTINUE_DEVELOPMENT_AND_DEPLOYMENT');
+  const studio=central.roblox?.studioExecution||{};
+  assert.equal(studio.required,false);
+  assert.equal(studio.optionalDiagnostic,true);
+  assert.equal(studio.deploymentGate,false);
+  assert.equal(studio.f9Gate,false);
   const arch=architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup||{};
-  assert.equal(arch.actualPlayPlannerEligibility,'EXACT_PRIVATE_RUNTIME_CANDIDATE_PLUS_EXACT_SOURCE_ARTIFACT_BINDING');
-  assert.equal(arch.externalServerProbeAutomatic,false);
-  assert.equal(arch.externalServerObservationRequiredForInternalDevelopment,false);
-  assert.equal(arch.f1ThroughF8SingleStudioSession,true);
-  assert.equal(arch.f9RuntimeReplay,false);
-  assert.equal(arch.actualPlayPlannerExclusiveCurrentStepGate,false);
-  assert.equal(arch.parallelRuntimeFoundationAndFinalRevalidationAllowedAfterInternalRelease,true);
-  assert.equal(arch.explicitDisabledGameEligible,false);
+  assert.equal(arch.codeAndStaticQaPrimary,true);
+  assert.equal(arch.studioRequired,false);
+  assert.equal(arch.studioUnavailableBlocksDevelopment,false);
+  assert.equal(arch.studioUnavailableBlocksDeployment,false);
 });
-
 
 test('planner skips only an already verified exact Studio MCP play record',()=>{
   const candidate=item();
