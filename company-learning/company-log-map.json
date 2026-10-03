@@ -1,5 +1,5 @@
 {
-  "version": 155,
+  "version": 156,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2097,22 +2097,6 @@
     "queueAuthorityFetchParallelWithRunScan": true,
     "dispatchRequiresQueueAuthorityFetchPass": true
   },
-  "robloxPlannerDuplicateContractQaRemovalEvidence": {
-    "version": 1,
-    "authority": "MACHINE_EXECUTION_LOG_MAP",
-    "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxPlannerDuplicateContractQaRemoval20260927",
-    "duplicateRuntimeTestsPresent": false,
-    "canonicalQaWorkflow": ".github/workflows/company-central-policy-contract-qa.yml",
-    "runtimeMarkersPreserved": [
-      "ROBLOX_SOURCE_PLAN_CONTRACT_FINGERPRINT",
-      "ROBLOX_RECONCILE_BOUND_REVISION_COUNT",
-      "ROBLOX_SOURCE_TARGET_COUNT",
-      "ROBLOX_PREFLIGHT_TARGET_COUNT"
-    ],
-    "responsibilityLocalRuntimeTestsPreserved": true,
-    "sharedContextCompilationPreserved": true,
-    "qualitySecurityReleaseEvidenceUnchanged": true
-  },
   "unityPlannerDuplicateContractQaRemovalEvidence": {
     "version": 1,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
@@ -2337,35 +2321,6 @@
     "runnerDrainConcurrencyGroup": "director-runner-drain-v2",
     "epochAdvancedToBypassLegacyPendingGroup": true
   },
-  "robloxSourcePlanWakeAndRunnerIsolationEvidence": {
-    "version": 2,
-    "authority": "MACHINE_EXECUTION_LOG_MAP",
-    "workflow": ".github/workflows/company-development-roblox-runtime.yml",
-    "job": "source-plan",
-    "expectedRunnerLabel": "ubuntu-24.04",
-    "previousRunnerLabel": "ubuntu-slim",
-    "pushWakeMustCoverSourcePlanContractPaths": true,
-    "requiredWakePaths": [
-      ".github/workflows/company-development-roblox-runtime.yml",
-      "tools/company-development-roblox-bootstrap.mjs",
-      "tools/company-development-roblox-source-reconcile.mjs",
-      "tools/company-selected-platform-router.mjs",
-      "tools/company-upper-platform-admission.mjs",
-      "company-asset-library.json",
-      "company-learning/platform-release-roadmap.json"
-    ],
-    "expectedMarkers": [
-      "ROBLOX_BATCH_FRESHNESS",
-      "ROBLOX_BATCH_CONTRACT_SUPERSEDED",
-      "ROBLOX_TECHNICAL_TARGET_IDS"
-    ],
-    "technicalPlanRunnerUnchanged": "ubuntu-24.04",
-    "heavyWorkerRunnerUnchanged": "ubuntu-latest",
-    "exactSourceAndArtifactBindingUnchanged": true,
-    "expectedExactGameRunnerLabel": "ubuntu-24.04",
-    "expectedBatchRunnerLabel": "ubuntu-24.04",
-    "exactGameParallelismPreserved": true
-  },
   "concurrentPlatformSharedProgressMonotonicityEvidence": {
     "version": 2,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
@@ -2415,151 +2370,6 @@
     "previousConcurrencyGroup": "company-development-queue-reconcile-runtime",
     "epochAdvancedToBypassLegacyPendingGroup": true,
     "observedLegacyPendingRunId": 36292590267
-  },
-  "robloxPostRuntimeQaRunnerIsolationEvidence": {
-    "version": 1,
-    "authority": "MACHINE_EXECUTION_LOG_MAP",
-    "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxPostRuntimeQaRunnerIsolation20260927",
-    "observedRunId": 36293301968,
-    "observedGameId": "horror-escape-room",
-    "observedQueuedJob": "collapse duplicate runtime foundation scans",
-    "observedQueuedRunner": "ubuntu-slim",
-    "exactRuntimeCandidateAlreadyPublished": true,
-    "runtimeFoundationQaRunner": "ubuntu-24.04",
-    "dedupeRunner": "ubuntu-24.04",
-    "studioLocalPlanRunner": "self-hosted:Windows:X64:roblox-studio-authenticated",
-    "studioMcpAutoPlayRunner": "self-hosted:Windows:X64:roblox-studio-authenticated",
-    "heavyGameExecutionRunnerChanged": false,
-    "qualityGateWeakening": false,
-    "postFoundationStudioFollowup": {
-      "enabled": true,
-      "reason": "OLDER_OR_PARALLEL_FOUNDATION_RUN_MAY_PERSIST_EXACT_FOUNDATION_BEFORE_NEW_WORKFLOW_REACHES_REMOTE_QA",
-      "eligibilityAuthority": "CANONICAL_STUDIO_MCP_PLANNER",
-      "coversNewFoundationTransition": true,
-      "coversExactFoundationEvidenceReuse": true,
-      "exactGameWorkflowDispatch": true,
-      "repeatAfterExactMcpObserved": false
-    }
-  },
-  "robloxExactEngineStudioHandoffEvidence": {
-    "version": 1,
-    "authority": "MACHINE_EXECUTION_LOG_MAP",
-    "observedGameId": "horror-escape-room",
-    "sourceRevision": "b74a4ac341b7dff0ecd9f2d6cf25375534a2d268",
-    "artifactIdentity": "sha256:4109e8ab3df1273f6fb877930c128b4e717c68cefcf6050269a11e1a59e846de",
-    "candidateVersionNumber": 24,
-    "observedSentinelVersionNumber": 23,
-    "exactEngineAwaitingRealServerBoot": true,
-    "plannerEligibility": "EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT",
-    "runtimeFoundationPassFabricated": false,
-    "externalPublicReleaseReadyFabricated": false,
-    "officialStudioMcpStillRequired": true
-  },
-  "robloxOpenCloudThrottleRecoveryEvidence": {
-    "version": 3,
-    "authority": "MACHINE_EXECUTION_LOG_MAP",
-    "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxOpenCloudThrottleRecovery20260927",
-    "observedRunId": 36294623143,
-    "observedGameId": "horror-escape-room",
-    "observedOpenCloudCreateStatus": 429,
-    "observedCandidateVersion": 24,
-    "causalRepair": [
-      "RETRY_TRANSIENT_HTTP_429_AND_SERVER_ERRORS_WITH_EXPONENTIAL_RETRY_AFTER_AWARE_BACKOFF",
-      "BOUND_SCAN_PROBE_CONCURRENCY_TO_TWO",
-      "DOWNSHIFT_SCAN_PROBE_CONCURRENCY_TO_ONE_AFTER_VERIFIED_HTTP_429",
-      "KEEP_EXACT_GAME_PROBE_CONCURRENCY_AT_ONE",
-      "KEEP_TRANSIENT_RETRIES_INSIDE_CURRENT_BOUNDED_SCAN",
-      "CANCEL_ONLY_DUPLICATE_AUTOMATIC_SCAN_RUNS_BEFORE_HEAVY_WORK"
-    ],
-    "falsePassAllowed": false,
-    "persistentApiFailureStillFails": true,
-    "followupObservedRunId": 36296050875,
-    "followupObservedGameId": "horror-escape-room",
-    "followupObservedExactEngineStatus": 200,
-    "followupObservedExactEngineVersion": true,
-    "followupObservedRealServerBoot": false,
-    "peerPersistent429Observed": true,
-    "peerPersistent429ErasedSuccessfulProbeBeforeRepair": true,
-    "studioActualPlayObserved": {
-      "gameId": "horror-escape-room",
-      "consoleErrorCount": 0,
-      "primaryActionInput": "PASS",
-      "primaryActionEffect": "FAIL_BEFORE_AUTHORITATIVE_EFFECT_OBSERVATION",
-      "evidencePersistFailure": "ROBLOX_STUDIO_MCP_CANDIDATE_STALE",
-      "studioAssetBindingObservedVersion": 2
-    },
-    "repairContract": [
-      "PERSIST_SUCCESSFUL_AND_FAILED_PER_CANDIDATE_PROBES",
-      "PERSIST_COMPANY_RUNTIME_STATE_BEFORE_SURFACING_PERSISTENT_PEER_FAILURE",
-      "DISPATCH_EXACT_STUDIO_FOLLOWUP_BEFORE_SURFACING_PERSISTENT_PEER_FAILURE",
-      "MATCH_DECLARED_STUDIO_ASSET_BINDING_VERSION",
-      "ALLOW_EXACT_ENGINE_PREBOOT_STUDIO_EVIDENCE_WITHOUT_RUNTIME_OR_PUBLIC_RELEASE_PASS",
-      "REQUIRE_SUCCESSFUL_PRIMARY_INPUT_WITH_AUTHORITATIVE_FEEDBACK_TRANSITION_OR_OBSERVED_MOTION",
-      "DELEGATE_PREBOOT_STUDIO_FOLLOWUP_ELIGIBILITY_TO_CANONICAL_PLANNER",
-      "PERSIST_PRIMARY_ACTION_FEEDBACK_METRIC_TO_RUNTIME_SUMMARY"
-    ],
-    "runtimeFoundationPassFabricationAllowed": false,
-    "liveRepairObservation": {
-      "workflowRunId": 36297021567,
-      "gameId": "horror-escape-room",
-      "candidateVersionNumber": 24,
-      "openCloudStatus": 200,
-      "exactEngineVersion": true,
-      "realServerBootObserved": false,
-      "studioAssetBindingVersion": 2,
-      "studioAssetSelectionMatched": true,
-      "peerPersistent429Count": 4,
-      "companyRuntimeStatePersisted": true,
-      "studioFollowupReadyCount": 0,
-      "missedDispatchCause": "PRE_PLANNER_RUNTIME_FOUNDATION_PASS_GUARD"
-    },
-    "studioPassObservation": {
-      "workflowRunId": 36298580885,
-      "gameId": "horror-escape-room",
-      "allRequiredScenariosPass": true,
-      "primaryActionInput": "PASS",
-      "primaryActionEffect": "PASS",
-      "consoleErrorCount": 0,
-      "currentSourceArtifactBinding": true,
-      "sourceRevision": "b74a4ac341b7dff0ecd9f2d6cf25375534a2d268",
-      "artifactIdentity": "sha256:4109e8ab3df1273f6fb877930c128b4e717c68cefcf6050269a11e1a59e846de",
-      "candidateVersionNumber": 24,
-      "persistedRuntimeSummaryPrimaryActionFeedbackChangedBeforeRepair": false,
-      "reportingGap": "PRIMARY_ACTION_FEEDBACK_METRIC_NOT_SERIALIZED_FROM_SCENARIO_METRICS"
-    },
-    "requiredMarkers": [
-      "ROBLOX_OPEN_CLOUD_THROTTLE_PRESSURE=",
-      "ROBLOX_OPEN_CLOUD_TRANSIENT_RETRY_MODE=IN_SCAN_BOUNDED",
-      "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_RETRY_IN_CURRENT_SCAN=",
-      "ROBLOX_OPEN_CLOUD_RUNTIME_STATE_RETRY_IN_CURRENT_SCAN=",
-      "ROBLOX_OPEN_CLOUD_TRANSIENT_PROBE_RETRY=IN_SCAN_BOUNDED"
-    ],
-    "transientRetryWorkflowFanoutForbidden": true,
-    "externalRunnerBacklogIsQualityFailure": false,
-    "latestContractVerification": {
-      "centralPolicyContractQaRunId": 36354073637,
-      "vibeCoreQaRunId": 36354076161,
-      "vibeParallelismQaRunId": 36354120374,
-      "conclusions": [
-        "SUCCESS",
-        "SUCCESS",
-        "SUCCESS"
-      ]
-    }
-  },
-  "robloxF9FaninRuntimePathRepairEvidence": {
-    "version": 1,
-    "authority": "MACHINE_EXECUTION_LOG_MAP",
-    "workflowRunId": 36298713127,
-    "jobId": 108562535249,
-    "gameId": "horror-escape-room",
-    "promotedRuntimeCommit": "c66242b",
-    "promotionResult": "ROBLOX_F9_INTERNAL_RELEASE_PROMOTED=1",
-    "blockedCount": 0,
-    "fanInFailure": "ENOENT ../runtime/development-queue.json",
-    "repairedRuntimeQueuePath": "runtime/development-queue.json",
-    "exactPromotionLost": false,
-    "falsePassAllowed": false
   },
   "qualityFirstBuildupShortCircuitEvidence": {
     "version": 1,
@@ -2978,5 +2788,19 @@
     "exactArtifactIdentityRequired": true,
     "failureStageMustBeFirstFailedFloor": true,
     "rawLogAloneCannotProvePass": true
+  },
+  "robloxDevelopmentVerificationEvidenceContract": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#roblox.developmentVerification",
+    "requiredFields": [
+      "GAME_ID",
+      "SOURCE_REVISION",
+      "CODE_QA_RESULT",
+      "STATIC_QA_RESULT",
+      "DEPLOYMENT_RESULT_WHEN_ATTEMPTED"
+    ],
+    "studioEvidenceRequired": false,
+    "studioDiagnosticOptional": true,
+    "actualStudioPassMayNotBeFabricated": true
   }
 }
