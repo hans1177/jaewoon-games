@@ -1,5 +1,5 @@
 {
-  "version": 524,
+  "version": 525,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -26082,5 +26082,16 @@
       "continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective",
       "centralDocumentRetention"
     ]
+  },
+  "finalDevelopmentLock": {
+    "version": 1,
+    "status": "LOCKED",
+    "authority": "OWNER_DIRECTIVE_2026-10-03",
+    "chainLock": {
+      "status": "LOCKED"
+    },
+    "guard": "tools/main-write-guard.mjs",
+    "dryRun": "tools/company-build-up-directive.mjs",
+    "robloxWorldEvidence": "tools/company-development-roblox-runtime-foundation.mjs"
   }
 }

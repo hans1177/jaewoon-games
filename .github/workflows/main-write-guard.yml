@@ -7,12 +7,40 @@ on:
       - '.github/workflows/**'
       - 'tools/main-write-guard.mjs'
       - 'qa/main-write-guard.test.mjs'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/company-log-map.json'
+      - 'company-learning/company-architecture-map.json'
+      - 'company-learning/security-immune-system.json'
+      - 'company-learning/vibe3-engine-contract.json'
+      - 'company-learning/vibe3-task-playbooks.json'
+      - '.github/workflows/company-central-policy-contract-qa.yml'
+      - 'tools/company-build-up-directive.mjs'
+      - 'tools/vibe2-source-worker.mjs'
+      - 'tools/company-development-roblox-bootstrap.mjs'
+      - 'tools/company-development-roblox-source-reconcile.mjs'
+      - 'tools/company-development-roblox-runtime-foundation.mjs'
+      - 'tools/vibe3-roblox-platform.mjs'
+      - '.github/workflows/company-development-roblox-post-runtime-qa.yml'
   push:
     branches: [main]
     paths:
       - '.github/workflows/**'
       - 'tools/main-write-guard.mjs'
       - 'qa/main-write-guard.test.mjs'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/company-log-map.json'
+      - 'company-learning/company-architecture-map.json'
+      - 'company-learning/security-immune-system.json'
+      - 'company-learning/vibe3-engine-contract.json'
+      - 'company-learning/vibe3-task-playbooks.json'
+      - '.github/workflows/company-central-policy-contract-qa.yml'
+      - 'tools/company-build-up-directive.mjs'
+      - 'tools/vibe2-source-worker.mjs'
+      - 'tools/company-development-roblox-bootstrap.mjs'
+      - 'tools/company-development-roblox-source-reconcile.mjs'
+      - 'tools/company-development-roblox-runtime-foundation.mjs'
+      - 'tools/vibe3-roblox-platform.mjs'
+      - '.github/workflows/company-development-roblox-post-runtime-qa.yml'
   workflow_dispatch:
 
 concurrency:
@@ -76,7 +104,9 @@ jobs:
         run: node --test qa/main-write-guard.test.mjs
 
       - name: Reject new workflow direct writes to main
-        run: node tools/main-write-guard.mjs --base='${{ steps.base.outputs.ref }}' --head=HEAD
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title || '' }}
+        run: node tools/main-write-guard.mjs --base='${{ steps.base.outputs.ref }}' --head=HEAD --actor='${{ github.actor }}' --owner=hans1177 --unlock-title="$PR_TITLE"
 
       - name: Protection status
         shell: bash

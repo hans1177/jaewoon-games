@@ -1,5 +1,5 @@
 {
-  "version": 309,
+  "version": 310,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4241,7 +4241,7 @@
       ]
     }
   },
-  "updatedAt": "2026-10-02",
+  "updatedAt": "2026-10-03",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -6686,5 +6686,15 @@
     "exactDuplicateHeavyExecutionProtectionPreserved": true,
     "newPipelineCreated": false,
     "authorityExpanded": false
+  },
+  "finalDevelopmentLockTopology": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#finalDevelopmentLock",
+    "chainGuard": "tools/main-write-guard.mjs",
+    "planningAndImpactOwner": "tools/company-build-up-directive.mjs",
+    "robloxWorldEvidenceOwner": "tools/company-development-roblox-runtime-foundation.mjs",
+    "topology": "EXISTING_CANONICAL_PIPELINE_ONLY",
+    "gameSourceLanesRemainParallel": true,
+    "newPipelineWorkerQueueForbidden": true
   }
 }
