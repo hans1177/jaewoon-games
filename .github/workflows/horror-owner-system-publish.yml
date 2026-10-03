@@ -51,12 +51,16 @@ jobs:
           if(policy?.enabled!==true)throw new Error('OWNER_DIRECT_POLICY_DISABLED');
           if(!Array.isArray(policy.gameIds)||!policy.gameIds.includes('horror-escape-room'))throw new Error('OWNER_DIRECT_GAME_NOT_ALLOWED');
           if(policy.f9RequiredForOwnerDirectPublish!==false)throw new Error('OWNER_DIRECT_F9_EXCEPTION_MISSING');
+          if(policy.studioRequiredForOwnerDirectPublish!==false)throw new Error('OWNER_DIRECT_STUDIO_MUST_BE_OPTIONAL');
+          if(policy.postBuildUpVerificationLevel!=='CODE_AND_STATIC_QA')throw new Error('OWNER_DIRECT_CODE_QA_POLICY_MISSING');
           if(policy.exactMainSourceRequired!==true||policy.canonicalPrivateTargetOnly!==true||policy.publicDiscoveryAllowed!==false)throw new Error('OWNER_DIRECT_SCOPE_INVALID');
           if(policy.doesNotClaimF9Pass!==true||policy.doesNotReplaceOrSatisfyDevelopmentF0F9!==true)throw new Error('OWNER_DIRECT_CLAIM_SCOPE_INVALID');
           const manor=fs.readFileSync('roblox-games/horror-escape-room/shared/ManorAssets.luau','utf8');
           if(!/ModelId=89009422966867/.test(manor))throw new Error('VERSION_77_MANOR_BINDING_CHANGED');
           if(!/SourceWidth=185\.47802734375/.test(manor))throw new Error('VERSION_77_MANOR_WIDTH_CHANGED');
           console.log('OWNER_DIRECT_POLICY=PASS');
+          console.log('OWNER_DIRECT_STUDIO_REQUIRED=NO');
+          console.log('OWNER_DIRECT_POST_BUILDUP_VERIFICATION=CODE_AND_STATIC_QA');
           console.log('OWNER_DIRECT_VERSION77_MANOR_BINDING=PASS');
           NODE
 
