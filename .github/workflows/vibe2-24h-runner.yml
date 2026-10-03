@@ -96,11 +96,8 @@ env:
   VIBE2_RUNNER_JOB_PRESSURE_THRESHOLD: '8'
   VIBE2_RELEASE_RECOVERY_BATCH_MAX: '2'
 
-# Keep one continuous scheduler chain. v9 releases the stale v8 scheduler epoch
-# while keeping the canonical scheduler and moving only its lightweight plan onto the ARM control pool.
-concurrency:
-  group: vibe2-24h-cycle-singleton-v9
-  cancel-in-progress: false
+# 스케줄러 wake도 top-level 직렬화하지 않는다.
+# 중복 예약/상태 경쟁은 기존 optimistic control-state retry와 정확한 task reservation으로 정리한다.
 
 jobs:
   plan:
@@ -1037,12 +1034,12 @@ jobs:
 
   learning_idle:
     needs: plan
-    # Reserve exactly one learning worker only while the GitHub runner queue is below the pressure threshold.
+    # Learning work also uses independent parallel reservations while runner pressure is healthy.
     if: ${{ needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.learning_idle_queued != '0' }}
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: learning-idle
-      lane_max: '1'
+      lane_max: '4'
     permissions:
       contents: write
       actions: write
