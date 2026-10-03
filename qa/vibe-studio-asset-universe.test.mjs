@@ -1100,3 +1100,73 @@ test('item family requires world drop and inventory presentation when item-like'
   assert.ok(plan.missingRequiredOutputs.includes('DROP_MODEL_WHEN_COLLECTIBLE'));
   assert.equal(plan.complete,false);
 });
+
+
+test('monster adventure internal creature pack matches the current nine-species roster',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','monster-adventure-v1');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+  const web=fs.readFileSync(path.join(root,'web-games','monster-adventure','index.html'),'utf8');
+  const expected=[
+    ['flamefox','불꽃여우',900,850],
+    ['leafturtle','새싹거북',900,850],
+    ['waterotter','물방울수달',1000,900],
+    ['boar','풀숲멧돼지',850,800],
+    ['bat','밤날개',450,400],
+    ['bird','바람새',550,500],
+    ['hornbull','뿔바위소',950,900],
+    ['rockgator','철갑악어',950,900],
+    ['stormeagle','폭풍독수리',650,650],
+  ];
+  assert.equal(catalog.assets.length,9);
+  assert.equal(catalog.productionVerified,false);
+  assert.equal(catalog.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(catalog.authoringQualityTarget,100);
+  assert.equal(quality.staticAuthoringChecklist.score,100);
+  assert.equal(quality.staticAuthoringChecklist.scoreType,'STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY');
+  assert.equal(quality.quality120.claimedRuntimeScore,null);
+  assert.equal(quality.productionVerified,false);
+  assert.equal(quality.gameplayAuthority,false);
+  for(const [id,name,minVertices,minFaces] of expected){
+    const objPath=path.join(packDir,id+'.obj');
+    assert.equal(fs.existsSync(objPath),true,id);
+    const source=fs.readFileSync(objPath,'utf8');
+    const vertices=source.split(/\r?\n/).filter(line=>line.startsWith('v ')).length;
+    const faces=source.split(/\r?\n/).filter(line=>line.startsWith('f ')).length;
+    assert.ok(vertices>=minVertices,id+':vertices='+vertices);
+    assert.ok(faces>=minFaces,id+':faces='+faces);
+    assert.ok(source.includes('mtllib monster-adventure.mtl'),id);
+    assert.ok(source.includes('usemtl '),id);
+    assert.ok(web.includes(id),id+':web-id');
+    assert.ok(web.includes(name),id+':web-name');
+    const row=catalog.assets.find(asset=>asset.id===id);
+    assert.ok(row,id+':catalog');
+    assert.equal(row.vertices,vertices,id+':catalog-vertices');
+    assert.equal(row.faces,faces,id+':catalog-faces');
+  }
+});
+
+test('monster adventure pack is registered as repo assets without false production verification',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const pack=registry.assets.find(row=>row.id==='roblox-monster-adventure-v1');
+  assert.ok(pack);
+  assert.equal(pack.status,'REPO_ASSET');
+  assert.equal(pack.productionVerified,false);
+  assert.equal(pack.verifiedCompanyReusable,false);
+  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(pack.qualityTarget,100);
+  assert.equal(pack.authoringChecklistScore,100);
+  assert.deepEqual(pack.heroAssetIds,['flamefox','leafturtle','waterotter']);
+  for(const id of ['flamefox','leafturtle','waterotter','boar','bat','bird','hornbull','rockgator','stormeagle']){
+    const row=registry.assets.find(asset=>asset.id==='roblox-monster-adventure-'+id);
+    assert.ok(row,id);
+    assert.equal(row.status,'REPO_ASSET');
+    assert.equal(row.productionVerified,false);
+    assert.equal(row.gameplayAuthority,false);
+    assert.equal(row.qualityScoreBlocksBinding,false);
+    assert.equal(row.path,'/assets/roblox/monster-adventure-v1/'+id+'.obj');
+  }
+});
