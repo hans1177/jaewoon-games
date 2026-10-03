@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function renderInfo(){",
+      "replace": "function renderInfo(){\n  var panel=document.getElementById('info'),actions=document.getElementById('infoActions');\n  var b=state.buildings.find(function(x){return x.id===selectedId;});\n  if(!b){panel.classList.remove('on');return;}\n  var d=BUILD_DEFS[b.type],rt=runtime[b.id]||{queue:[],active:[]},lv=b.level||0;\n  var line=\"길 연결 \" + (buildingConnected(b) ? \"정상\" : \"끊김\");\n  if(d.cap)line += \" · 수용 \" + capacity(b) + \"명 · 대기 \" + rt.queue.length + \"명 · 이용 \" + d.time + \"초\";\n  if(d.kind === \"food\" || d.kind === \"ride\")line += \" · 업그레이드 \" + lv + \"/3\";\n  if(d.kind === \"ride\")line += b.broken ? \" · 고장\" : \" · 정상\";\n  document.getElementById('infoText').innerHTML=\"<b>\" + d.name + \"</b><span>\" + line + \"</span>\";\n  actions.innerHTML=\"\";\n\n  if(d.kind === \"food\" || d.kind === \"ride\"){\n    var up=document.createElement('button'),cost=upgradeCost(lv);\n    up.type='button';up.className='infoBtn';up.textContent=lv>=3 ? \"최대 업글\" : \"업글 \" + cost + \"G\";\n    up.disabled=lv>=3 || state.money < cost;\n    up.addEventListener('click',function(){\n      if(lv>=3 || state.money < cost)return;\n      state.money -= cost;b.level=lv+1;save();toast(d.name + \" 업그레이드!\");renderInfo();updateHud();renderBuildBar();\n    });\n    actions.appendChild(up);\n  }\n  if(b.type === \"cleaner\"){\n    var hire=document.createElement('button');\n    hire.type='button';hire.className='infoBtn';\n    hire.textContent=state.cleaners >= 3 ? \"3/3 고용\" : \"청소부 \" + CLEANER_HIRE_COST + \"G\";\n    hire.disabled=state.cleaners >= 3 || state.money < CLEANER_HIRE_CO;\n    hire.addEventListener('click',function(){\n      if(state.cleaners >= 3 || state.money < CLEANER_HIRE_CO)return;\n      state.money -= CLEANER_HIRE_CO;\n      state.cleaners++;\n      save();\n      toast(\"청소부 고용!\");\n      renderInfo();\n      updateHud();\n      renderBuildBar();\n    });\n    actions.appendChild(hire);\n  }\n}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
