@@ -3200,7 +3200,14 @@ jobs:
             const existingById=new Map((registry.assets||[]).map(row=>[String(row?.id||''),row]));
             const pending=plan.candidates.filter(row=>{
               const asset=existingById.get(String(row?.assetId||''));
-              return asset&&asset.verifiedCompanyReusable!==true&&!/^VERIFIED_COMPANY_/i.test(String(asset.status||''));
+              if(asset)return asset.verifiedCompanyReusable!==true&&!/^VERIFIED_COMPANY_/i.test(String(asset.status||''));
+              return row?.generatedByDeclaredRecipe===true
+                &&row?.persistedForCandidate===true
+                &&Boolean(String(row?.family||'').trim())
+                &&Boolean(String(row?.license||'').trim())
+                &&Boolean(String(row?.path||'').trim())
+                &&Boolean(String(row?.sourceHash||'').trim())
+                &&Boolean(String(row?.artifactHash||'').trim());
             });
             if(!pending.length){
               reviewed.push({gameId:item.gameId,promoted:false,reason:'NO_UNVERIFIED_BOUND_ASSET'});
@@ -3209,12 +3216,21 @@ jobs:
             const evidenceAssets=pending.map(row=>{
               const asset=existingById.get(String(row.assetId));
               const registryLicense=String(asset?.license||'').trim();
+              const declaredGenerated=row?.generatedByDeclaredRecipe===true&&row?.persistedForCandidate===true;
+              const candidateLicense=String(row.license||'').trim();
               return{
                 assetId:String(row.assetId),
+                family:String(row.family||asset?.family||asset?.category||'').trim().toUpperCase(),
+                path:String(row.path||asset?.path||'').trim(),
+                license:candidateLicense||registryLicense,
                 sourceHash:String(row.sourceHash||''),
                 artifactHash:String(row.artifactHash||''),
+                generatedByDeclaredRecipe:declaredGenerated,
+                persistedForCandidate:row?.persistedForCandidate===true,
                 nativeBindingPass:row.candidateSourceBindingVerified===true,
-                licenseProvenancePass:Boolean(registryLicense&&registryLicense===String(row.license||'').trim())
+                licenseProvenancePass:asset
+                  ?Boolean(registryLicense&&registryLicense===candidateLicense)
+                  :Boolean(declaredGenerated&&candidateLicense&&!/^(?:unknown)$/i.test(candidateLicense)&&!/(?:CC-BY-NC|NONCOMMERCIAL|NO-COMMERCIAL|NC\b)/i.test(candidateLicense))
               };
             });
             const result=promoteVerifiedCompanyAssetsFromRuntimeEvidence({
