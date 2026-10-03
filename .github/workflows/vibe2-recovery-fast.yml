@@ -20,11 +20,6 @@ permissions:
 env:
   VIBE2_RUNNER_PRESSURE_DISPATCH_THRESHOLD: '4'
 
-concurrency:
-  # Recovery recomputes from the latest control state, so stale runs are disposable.
-  group: vibe2-recovery-fast
-  cancel-in-progress: true
-
 jobs:
   recover:
     runs-on: ubuntu-slim
@@ -53,7 +48,9 @@ jobs:
           primary_ai_collaboration_requested=0
           vibe_requeued=0
 
-          for attempt in 1 2 3; do
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
             rm -rf /tmp/vibe2-recovery-control
             git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
             git worktree prune
@@ -92,11 +89,11 @@ jobs:
               break
             fi
 
-            echo "VIBE2_RECOVERY_FAST_PUSH_RETRY=$attempt"
+            sleep_for=$((attempt<5?attempt:5))
+            echo "VIBE2_RECOVERY_FAST_PUSH_RETRY=$attempt:$sleep_for"
             cd "$GITHUB_WORKSPACE"
             rm -rf /tmp/vibe2-recovery-control
-            sleep $((attempt * 2))
-            test "$attempt" -lt 3
+            sleep "$sleep_for"
           done
 
           cd "$GITHUB_WORKSPACE"
