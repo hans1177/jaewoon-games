@@ -9,8 +9,8 @@
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "ACTIVE",
       "status": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "targetPlatform": "ROBLOX",
+      "selectedPlatform": "UNITY",
+      "targetPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -94,7 +94,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-03T19:48:46.004Z",
+      "updatedAt": "2026-10-03T20:30:30.280Z",
       "robloxSourceCommit": "dc0e69c84c82c09269eaabd9565294973bcb751b",
       "robloxSourceBootstrapPassedAt": "2026-10-03T16:02:33.739Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -1304,7 +1304,7 @@
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-daechung-rpg-37131116107",
       "unitySourceCommit": "ec98f80bd1b96f8eb1a327c787760b0a49bd878c",
-      "unityBuildRunId": 37139670866,
+      "unityBuildRunId": 37150935664,
       "unityRuntimeSmokeRunId": 37124423785,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
@@ -1362,7 +1362,7 @@
           }
         },
         "multiplayerRequired": true,
-        "verifiedAt": "2026-10-03T17:25:29.372Z"
+        "verifiedAt": "2026-10-03T20:30:30.280Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -1385,8 +1385,8 @@
         "regressionPassed": false,
         "rawStageResults": {
           "runtime": false,
-          "independentQa": false,
-          "regression": false
+          "independentQa": true,
+          "regression": true
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
@@ -1404,20 +1404,20 @@
         "buildOrPackagePassed": false,
         "artifactIdentity": null,
         "runtimePassed": false,
-        "independentQaPassed": true,
+        "independentQaPassed": false,
         "multiplayerPassed": false,
-        "regressionPassed": true,
+        "regressionPassed": false,
         "rawStageResults": {
           "runtime": false,
-          "independentQa": false,
-          "regression": false
+          "independentQa": true,
+          "regression": true
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": false,
         "lastSuccessfulStage": "CHEAP_PRECHECK",
-        "failureStage": "PUBLIC_RELEASE_RUNTIME_OBSERVATION",
-        "failureSignature": "ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT"
+        "failureStage": "F0_SOURCE_INTEGRITY",
+        "failureSignature": "d2f2831c8381c68a869381d8821b94d7dff445ceb7078a56c3b36fca3e8cd1cc"
       },
       "resumeStage": "F0_SOURCE_INTEGRITY",
       "failureCount": 1,
@@ -60378,7 +60378,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-03T20:29:39.276Z",
+  "updatedAt": "2026-10-03T20:30:31.488Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
