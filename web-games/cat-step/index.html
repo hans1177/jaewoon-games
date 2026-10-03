@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="ko" data-presentation-quality-version="1">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#25305d">
+<title>캣 스텝</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#20294f;color:#fff;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;touch-action:none}
+button{font:inherit}
+#game{position:relative;width:100vw;height:100vh;overflow:hidden;background:linear-gradient(#27335f 0%,#4a7ea4 55%,#84bfd0 100%)}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.hud{position:absolute;left:14px;right:14px;top:max(12px,env(safe-area-inset-top));z-index:5;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}
+.score{text-align:center;position:absolute;left:50%;transform:translateX(-50%);top:0;min-width:130px}
+.score b{display:block;font-size:42px;line-height:.95;text-shadow:0 4px 12px rgba(0,0,0,.3)}
+.score span,.mini{font-size:12px;font-weight:800;color:#e9f4ff;text-shadow:0 2px 8px rgba(0,0,0,.35)}
+.mini{padding:8px 10px;border-radius:12px;background:rgba(17,25,48,.34);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px)}
+.tip{position:absolute;left:50%;top:104px;transform:translateX(-50%);z-index:6;padding:8px 12px;border-radius:12px;background:rgba(21,30,55,.52);font-size:13px;font-weight:900;white-space:nowrap;transition:opacity .25s;pointer-events:none}
+.controls{position:absolute;left:14px;right:14px;bottom:max(14px,env(safe-area-inset-bottom));z-index:8;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.controls button{min-height:72px;border:1px solid rgba(255,255,255,.18);border-radius:20px;color:#fff;font-size:20px;font-weight:1000;box-shadow:0 10px 26px rgba(12,18,39,.28);touch-action:manipulation}
+.controls button:first-child{background:linear-gradient(180deg,#527ed7,#355eb8)}
+.controls button:last-child{background:linear-gradient(180deg,#ef8181,#cf5c63)}
+.controls button:active{transform:translateY(2px) scale(.985)}
+.overlay{position:absolute;inset:0;z-index:20;display:grid;place-items:center;padding:22px;background:rgba(12,17,34,.64);backdrop-filter:blur(5px)}
+.overlay.hidden{display:none}
+.card{width:min(88vw,420px);padding:24px;border-radius:26px;background:rgba(27,35,65,.95);border:1px solid rgba(255,255,255,.15);box-shadow:0 26px 80px rgba(4,9,28,.45);text-align:center}
+.card .catface{font-size:52px;filter:drop-shadow(0 6px 8px rgba(0,0,0,.2))}
+.card h1{margin:6px 0 8px;font-size:32px}
+.card p{margin:0 0 18px;color:#dbe8f4;line-height:1.55;font-size:14px}
+.card button{width:100%;min-height:56px;border:0;border-radius:16px;background:#83d5a7;color:#183b30;font-size:18px;font-weight:1000}
+@media(min-width:760px){.controls{left:50%;right:auto;width:480px;transform:translateX(-50%)}}
+</style>
+</head>
+<body>
+<div id="game">
+<canvas id="c" aria-label="캣 스텝 게임 화면"></canvas>
+<div class="hud">
+  <div class="mini" id="best">최고 0</div>
+  <div class="score"><span>현재 계단</span><b id="score">0</b></div>
+  <div class="mini" id="speed">속도 1</div>
+</div>
+<div class="tip" id="tip">다음 발판 방향으로 점프해</div>
+<div class="controls">
+  <button id="left" type="button">◀ 왼쪽</button>
+  <button id="right" type="button">오른쪽 ▶</button>
+</div>
+<div class="overlay" id="overlay">
+  <div class="card">
+    <div class="catface">🐱</div>
+    <h1 id="title">캣 스텝</h1>
+    <p id="desc">다음 발판이 있는 방향으로 점프해.<br>10계단마다 속도가 빨라져.</p>
+    <button id="start" type="button">시작</button>
+  </div>
+</div>
+</div>
+<script>
+(() => {
+'use strict';
+
+// 파일명: web-games/cat-step/index.html
+// 메인: 좌/우 점프 → 착지 → 연속 상승 → 추락 → 즉시 재시작
+
+const canvas=document.getElementById('c');
+const ctx=canvas.getContext('2d',{alpha:false});
+const $=id=>document.getElementById(id);
+const game=document.getElementById('game');
+
+let W=0,H=0,DPR=1;
+let score=0,best=Number(localStorage.getItem('cat-step-best')||0);
+let currentLane=1;
+let steps=[];
+let running=false;
+let jumping=false;
+let failAnim=null;
+let jumpAnim=null;
+let bgOffset=0;
+
+const COLORS={
+  skyTop:'#27335f',skyBottom:'#84bfd0',
+  platform:'#4d5874',platformTop:'#8dd3ae',platformFront:'#33405d',
+  gold:'#f8c55a',goldFront:'#a97926',
+  cat:'#f4a54e',catDark:'#61453e',white:'#ffffff'
+};
+
+function resize(){
+  DPR=Math.min(2,devicePixelRatio||1);
+  W=innerWidth;H=innerHeight;
+  canvas.width=Math.floor(W*DPR);
+  canvas.height=Math.floor(H*DPR);
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+addEventListener('resize',resize,{passive:true});
+resize();
+
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function lerp(a,b,t){return a+(b-a)*t}
+function easeOut(t){return 1-Math.pow(1-t,3)}
+function easeIn(t){return t*t*t}
+function laneX(lane){
+  const xs=[W*.22,W*.50,W*.78];
+  return xs[clamp(lane,0,2)];
+}
+function baseY(){return H*.69}
+function gapY(){return Math.max(58,Math.min(92,H*.105))}
+function platformY(i){return baseY()-i*gapY()}
+function nextLane(lane){
+  if(lane<=0)return 1;
+  if(lane>=2)return 1;
+  return Math.random()<.5?0:2;
+}
+function speedTier(){return 1+Math.floor(score/10)}
+function jumpDuration(){return Math.max(150,280-(speedTier()-1)*18)}
+
+function resetSteps(){
+  steps=[];
+  currentLane=1;
+  let lane=currentLane;
+  steps.push({lane,number:0});
+  for(let i=1;i<10;i++){
+    lane=nextLane(lane);
+    steps.push({lane,number:i});
+  }
+}
+function resetRun(){
+  score=0;
+  running=true;
+  jumping=false;
+  failAnim=null;
+  jumpAnim=null;
+  resetSteps();
+  updateHud();
+  $('tip').style.opacity='1';
+}
+function updateHud(){
+  $('score').textContent=score;
+  $('best').textContent='최고 '+best;
+  $('speed').textContent='속도 '+speedTier();
+}
+function gameOver(){
+  running=false;
+  jumping=false;
+  if(score>best){
+    best=score;
+    localStorage.setItem('cat-step-best',String(best));
+  }
+  updateHud();
+  $('title').textContent='추락!';
+  $('desc').innerHTML='점수 <b>'+score+'</b><br>최고 <b>'+best+'</b>';
+  $('start').textContent='다시 시작';
+  $('overlay').classList.remove('hidden');
+}
+function scrollSteps(){
+  steps.shift();
+  currentLane=steps[0].lane;
+  const last=steps[steps.length-1];
+  steps.push({lane:nextLane(last.lane),number:last.number+1});
+}
+function attempt(dir){
+  if(!running||jumping)return;
+  const target=steps[1];
+  if(!target)return;
+  jumping=true;
+  const desired=currentLane+dir;
+  const start={x:laneX(currentLane),y:baseY()-30};
+  const correct=desired===target.lane;
+  if(correct){
+    jumpAnim={
+      type:'ok',startTime:performance.now(),duration:jumpDuration(),
+      sx:start.x,sy:start.y,tx:laneX(target.lane),ty:platformY(1)-30,
+      targetLane:target.lane
+    };
+  }else{
+    jumpAnim={
+      type:'fail',startTime:performance.now(),duration:jumpDuration(),
+      sx:start.x,sy:start.y,tx:clamp(start.x+dir*W*.22,34,W-34),ty:H+110
+    };
+  }
+  if(navigator.vibrate)navigator.vibrate(correct?18:[22,28,22]);
+}
+function finishCorrect(){
+  score++;
+  if(score>best)best=score;
+  scrollSteps();
+  jumping=false;
+  jumpAnim=null;
+  if(score>=3)$('tip').style.opacity='.15';
+  updateHud();
+}
+function begin(){
+  $('overlay').classList.add('hidden');
+  $('title').textContent='캣 스텝';
+  $('start').textContent='시작';
+  resetRun();
+}
+$('left').addEventListener('pointerdown',e=>{e.preventDefault();attempt(-1)});
+$('right').addEventListener('pointerdown',e=>{e.preventDefault();attempt(1)});
+$('start').addEventListener('click',begin);
+addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A')attempt(-1);
+  if(e.key==='ArrowRight'||e.key==='d'||e.key==='D')attempt(1);
+});
+
+function drawSky(){
+  const g=ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,COLORS.skyTop);
+  g.addColorStop(1,COLORS.skyBottom);
+  ctx.fillStyle=g;
+  ctx.fillRect(0,0,W,H);
+
+  const t=performance.now()/1000;
+  for(let i=0;i<7;i++){
+    const x=((i*173+t*10*(i%2?1:-1)+W*2)% (W+180))-90;
+    const y=H*(.13+.09*(i%4));
+    ctx.globalAlpha=.15;
+    ctx.fillStyle='#fff';
+    ctx.beginPath();
+    ctx.ellipse(x,y,44+12*(i%3),14+3*(i%2),0,0,Math.PI*2);
+    ctx.fill();
+  }
+  ctx.globalAlpha=1;
+
+  ctx.fillStyle='rgba(28,52,70,.28)';
+  ctx.beginPath();
+  ctx.moveTo(0,H);
+  ctx.lineTo(0,H*.82);
+  for(let x=0;x<=W;x+=80){
+    const y=H*.80-Math.sin((x+bgOffset)*.012)*18;
+    ctx.lineTo(x,y);
+  }
+  ctx.lineTo(W,H);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function drawPlatform(x,y,w,isGold){
+  const h=18,depth=13;
+  ctx.save();
+  ctx.shadowColor='rgba(8,14,31,.28)';
+  ctx.shadowBlur=16;
+  ctx.shadowOffsetY=8;
+  ctx.fillStyle=isGold?COLORS.goldFront:COLORS.platformFront;
+  ctx.beginPath();
+  ctx.moveTo(x-w/2,y);
+  ctx.lineTo(x+w/2,y);
+  ctx.lineTo(x+w*.42,y+depth);
+  ctx.lineTo(x-w*.42,y+depth);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.shadowColor='transparent';
+  ctx.fillStyle=isGold?COLORS.gold:COLORS.platform;
+  roundRect(x-w/2,y-h/2,w,h,8);
+  ctx.fill();
+
+  ctx.fillStyle=isGold?'#ffe09b':COLORS.platformTop;
+  roundRect(x-w/2,y-h/2,w,5,7);
+  ctx.fill();
+  ctx.restore();
+}
+
+function roundRect(x,y,w,h,r){
+  r=Math.min(r,w/2,h/2);
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+
+function drawCat(x,y,tilt=0,squash=1){
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.rotate(tilt);
+  ctx.scale(1.04,1/squash);
+
+  ctx.strokeStyle=COLORS.cat;
+  ctx.lineWidth=8;
+  ctx.lineCap='round';
+  ctx.beginPath();
+  ctx.moveTo(18,10);
+  ctx.quadraticCurveTo(40,0,34,-19);
+  ctx.stroke();
+
+  ctx.fillStyle=COLORS.cat;
+  roundRect(-18,-28,36,34,12);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(0,-35,22,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(-17,-49);ctx.lineTo(-8,-65);ctx.lineTo(-2,-49);ctx.closePath();ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(17,-49);ctx.lineTo(8,-65);ctx.lineTo(2,-49);ctx.closePath();ctx.fill();
+
+  ctx.fillStyle=COLORS.catDark;
+  ctx.beginPath();ctx.arc(-8,-38,2.7,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(8,-38,2.7,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#a46361';
+  ctx.beginPath();ctx.arc(0,-31,2.5,0,Math.PI*2);ctx.fill();
+
+  ctx.fillStyle='#ef8f3e';
+  roundRect(-15,4,11,13,5);ctx.fill();
+  roundRect(4,4,11,13,5);ctx.fill();
+  ctx.restore();
+}
+
+function catPose(now){
+  if(!jumpAnim){
+    const bob=Math.sin(now*.004)*2;
+    return{x:laneX(currentLane),y:baseY()-30+bob,tilt:0,squash:1};
+  }
+  const a=jumpAnim;
+  const raw=clamp((now-a.startTime)/a.duration,0,1);
+
+  if(a.type==='ok'){
+    let x,y,tilt;
+    if(raw<.5){
+      const t=easeOut(raw/.5);
+      x=lerp(a.sx,a.tx,t*.62);
+      y=lerp(a.sy,a.ty-gapY()*.53,t);
+      tilt=lerp(0,(a.tx>a.sx?0.13:-0.13),t);
+    }else{
+      const t=easeIn((raw-.5)/.5);
+      x=lerp(lerp(a.sx,a.tx,.62),a.tx,t);
+      y=lerp(a.ty-gapY()*.53,a.ty,t);
+      tilt=lerp(a.tx>a.sx?0.13:-0.13,0,t);
+    }
+    if(raw>=1)requestAnimationFrame(finishCorrect);
+    return{x,y,tilt,squash:raw>.88?1.12:1};
+  }
+
+  const t=raw;
+  const arc=Math.sin(Math.PI*Math.min(1,t))*gapY()*.82;
+  const x=lerp(a.sx,a.tx,easeOut(t));
+  const y=lerp(a.sy,a.ty,easeIn(t))-arc;
+  const tilt=(a.tx>a.sx?1:-1)*t*1.4;
+  if(raw>=1&&!failAnim){
+    failAnim=true;
+    requestAnimationFrame(gameOver);
+  }
+  return{x,y,tilt,squash:1};
+}
+
+function draw(now){
+  bgOffset+=.08;
+  drawSky();
+
+  const platformW=Math.max(92,Math.min(150,W*.24));
+  for(let i=steps.length-1;i>=0;i--){
+    const step=steps[i];
+    const y=platformY(i);
+    if(y<-40||y>H+40)continue;
+    drawPlatform(laneX(step.lane),y,platformW,step.number>0&&step.number%10===0);
+  }
+
+  const pose=catPose(now);
+  drawCat(pose.x,pose.y,pose.tilt,pose.squash);
+
+  requestAnimationFrame(draw);
+}
+updateHud();
+resetSteps();
+requestAnimationFrame(draw);
+
+})();
+</script>
+</body>
+</html>
