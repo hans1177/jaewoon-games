@@ -404,7 +404,12 @@ test('native asset production defaults to Roblox and exposes reproducible Blende
     assert.equal(plan.generatedAssetOutputContract.exactRuntimeConsumerAssetIdentityRequired,true);
     assert.equal(plan.generatedAssetOutputContract.promotionMustBindSourceOrDerivedHash,true);
     assert.equal(plan.nativeAuthoringExecution.dcc.executionRequired,true);
-    assert.equal(plan.nativeAuthoringExecution.dcc.executionStatus,'AUTHORING_RECIPE_REQUIRED');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_GENERIC_AUTHORING_EXECUTOR');
+    assert.equal(plan.nativeAuthoringExecution.dcc.genericFallbackApplied,true);
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRequestCount,1);
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].script,'assets/vibe2/native-authoring.py');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].license,'project-original');
+    assert.ok(plan.nativeAuthoringExecution.dcc.executionRecipes[0].outputs.every(file=>file.startsWith('assets/generated/roblox/native-default/')));
     assert.ok(plan.decisions.every(row=>row.generatorFallback.outputContract===plan.generatedAssetOutputContract));
     assert.match(assetProductionGuidance(plan),/GENERATED NATIVE ASSET CONTRACT/);
 
@@ -413,6 +418,12 @@ test('native asset production defaults to Roblox and exposes reproducible Blende
     assert.equal(unity.targetResolution.source,'TASK_OR_CALLER');
     assert.equal(unity.targetResolution.explicit,true);
     assert.ok(unity.decisions.some(row=>row.directAuthoring.includes('blender-python-original-mesh-rig-and-glb')));
+    assert.equal(unity.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_GENERIC_AUTHORING_EXECUTOR');
+    assert.equal(unity.nativeAuthoringExecution.dcc.genericFallbackApplied,true);
+    assert.equal(unity.nativeAuthoringExecution.dcc.executionRequestCount,1);
+    assert.equal(unity.nativeAuthoringExecution.dcc.executionRecipes[0].script,'assets/vibe2/native-authoring.py');
+    assert.ok(unity.nativeAuthoringExecution.dcc.executionRecipes[0].outputs.every(file=>file.startsWith('assets/generated/unity/native-default/')));
+    assert.notDeepEqual([...unity.nativeAuthoringExecution.dcc.executionRecipes[0].outputs],[...plan.nativeAuthoringExecution.dcc.executionRecipes[0].outputs]);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -436,6 +447,7 @@ test('native planner preserves an existing Blender recipe as the DCC execution p
   assert.equal(plan.nativeAuthoringExecution.dcc.executionRequired,true);
   assert.equal(plan.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_EXISTING_AUTHORING_EXECUTOR');
   assert.equal(plan.nativeAuthoringExecution.dcc.executionRequestCount,1);
+  assert.equal(plan.nativeAuthoringExecution.dcc.genericFallbackApplied,false);
   assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].id,'boss-blender-v1');
   assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].script,'assets/roblox/demo/build-boss.py');
   assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].family,'CREATURE');
@@ -452,6 +464,8 @@ test('Web native authoring stays inside Web source while Unity and Roblox keep p
   assert.equal(web.nativeAuthoringExecution.target,'web');
   assert.equal(web.nativeAuthoringExecution.authoringSurface,'WEB_NATIVE_SOURCE');
   assert.equal(web.nativeAuthoringExecution.dcc.executionRequired,false);
+  assert.equal(web.nativeAuthoringExecution.dcc.genericFallbackApplied,false);
+  assert.equal(web.nativeAuthoringExecution.dcc.executionRequestCount,0);
   assert.equal(web.nativeAuthoringExecution.nativeText.authoringMode,'SVG_CSS_CANVAS_JS_WEBAUDIO_NATIVE');
   assert.ok(web.nativeAuthoringExecution.nativeText.capabilities.includes('svg-final-art'));
   assert.ok(web.nativeAuthoringExecution.nativeText.capabilities.includes('canvas-art-and-effects'));
