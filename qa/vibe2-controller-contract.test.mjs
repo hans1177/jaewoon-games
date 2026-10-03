@@ -888,6 +888,23 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert(reserveBlock.indexOf('VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE') < reserveBlock.indexOf("event_type:'vibe2-fanin-refill'"));
 });
 
+test('24H asset-first pre-plan scheduler block stays valid Bash',()=>{
+  const stepName='- name: Dispatch queued asset work first, otherwise GAME_PRIMARY before full planning';
+  const stepStart=safetyNetWorkflow.indexOf(stepName);
+  const stepEnd=safetyNetWorkflow.indexOf('\n      - name:',stepStart+1);
+  assert.ok(stepStart>=0&&stepEnd>stepStart);
+  const step=safetyNetWorkflow.slice(stepStart,stepEnd);
+  const runMarker='        run: |\n';
+  const runAt=step.indexOf(runMarker);
+  assert.ok(runAt>=0);
+  const shell=step.slice(runAt+runMarker.length)
+    .split('\n')
+    .map(line=>line.startsWith('          ')?line.slice(10):line)
+    .join('\n');
+  const parsed=spawnSync('bash',['-n'],{input:shell,encoding:'utf8'});
+  assert.equal(parsed.status,0,parsed.stderr||parsed.stdout);
+});
+
 test('24H safety-net refills free game slots while preserving responsible-file conflict protection',()=>{
   assert(safetyNetWorkflow.includes('wave_ready: ${{ steps.queue_state.outputs.wave_ready }}'));
   assert(safetyNetWorkflow.includes('game_refill_ready: ${{ steps.queue_state.outputs.game_refill_ready }}'));
