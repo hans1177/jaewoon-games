@@ -188,7 +188,7 @@
       "preferredPlatform": "unity-android",
       "selectedPlatform": "UNITY",
       "homepagePublicationApproved": false,
-      "publishTestBuildWhenReady": true,
+      "publishTestBuildWhenReady": false,
       "homepageWebPlayable": true,
       "homepageArtbookPath": "/artbook-viewer.html?game=daechung-rpg",
       "homepageCategory": "development-confirmed",
@@ -348,7 +348,8 @@
       "aliases": [
         "대충 RPG"
       ],
-      "marketingThumbnail": "assets/roblox-thumbnails/daechung-rpg.svg"
+      "marketingThumbnail": "assets/roblox-thumbnails/daechung-rpg.svg",
+      "targetPlatform": "UNITY"
     },
     {
       "id": "horror-escape-room",
@@ -4193,7 +4194,9 @@
     "normalizedGames": 26,
     "ownerWebAdded": 0,
     "ownerWebUpdated": 0,
-    "ownerWebDisabled": 0
+    "ownerWebDisabled": 0,
+    "runtimeCatalogAdded": 0,
+    "actualWebPlayableReconciled": 25
   },
   "catalogSchemaVersion": 2,
   "normalization": {
