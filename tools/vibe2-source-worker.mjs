@@ -461,7 +461,7 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
         const reproducesExistingNativeArtifact=Boolean(priorNative&&priorNative.sha256===nativeArtifact.sha256);
         recipeSucceeded=true;
         results.push(Object.freeze({
-          id:clean(recipe?.id)||path.basename(script,'.py'),assetId:clean(recipe?.assetId)||null,executor:'BLENDER_PYTHON',script,editableSource:dccRepoPath(recipe?.editableSource||script),
+          id:clean(recipe?.id)||path.basename(script,'.py'),assetId:clean(recipe?.assetId)||null,family:clean(recipe?.family).toUpperCase()||null,license:clean(recipe?.license)||null,executor:'BLENDER_PYTHON',script,editableSource:dccRepoPath(recipe?.editableSource||script),
           outputs:Object.freeze(generated),evidenceJson,preview,nativeArtifact:nativeArtifact.path,artifactHash:nativeArtifact.sha256,sourceHash:sha256File(scriptAbs),
           evidenceState:evidence?.runtimeVerificationState||null,productionVerified:evidence?.productionVerified===true,
           reproducesExistingNativeArtifact,persistedForCandidate:persist,candidateUsable:persist||reproducesExistingNativeArtifact,
@@ -628,9 +628,11 @@ export function collectNativeAssetRuntimePromotionCandidates({order={},candidate
     const assetPath=posix(recipe?.nativeArtifact);
     const sourceHash=clean(recipe?.sourceHash);
     const artifactHash=clean(recipe?.artifactHash);
-    if(!id||!assetPath||!sourceHash||!artifactHash||!changedText.includes(assetPath)||!changedText.includes(artifactHash))continue;
+    const family=clean(recipe?.family).toUpperCase();
+    const license=clean(recipe?.license);
+    if(!id||!assetPath||!sourceHash||!artifactHash||!family||!license||!changedText.includes(assetPath)||!changedText.includes(artifactHash))continue;
     rows.set(id,Object.freeze({
-      assetId:id,family:null,license:'project-original-generated',path:assetPath,robloxAssetId:null,sourceHash,artifactHash,
+      assetId:id,family,license,path:assetPath,robloxAssetId:null,sourceHash,artifactHash,
       bindingEvidence:Object.freeze(['GENERATED_NATIVE_ARTIFACT_PATH','ENGINE_NATIVE_SOURCE']),
       candidateSourceBindingVerified:true,runtimeVerificationRequired:true,promotionState:'PENDING_EXACT_NATIVE_RUNTIME',
       generatedByDeclaredRecipe:true,persistedForCandidate:dccEvidence?.persistedForCandidate===true
