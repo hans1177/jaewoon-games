@@ -4440,6 +4440,8 @@ test('Roblox game workers smoke-check Luau binaries but leave the full compiler 
   assert.match(candidate,/VIBE2_LUAU_REGRESSION_AUTHORITY=CORE_QA_ONLY/);
   assert.match(candidate,/luau-compile/);
   assert.match(candidate,/luau-ast/);
+  assert.match(candidate,/printf '%s\\\\n' 'local value = 1' 'return value \\+ 1' > "\\$luau_dir\\/smoke\\.luau"/);
+  assert.doesNotMatch(candidate,/<<'LUAU'/);
   assert.doesNotMatch(candidate,/VIBE2_TEST_LUAU_COMPILER/);
   assert.doesNotMatch(candidate,/--test-name-pattern='Luau compiler'/);
 });
