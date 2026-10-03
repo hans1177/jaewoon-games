@@ -26781,8 +26781,8 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-02T05:12:43.771Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -26812,7 +26812,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T05:12:43.771Z"
       },
-      "updatedAt": "2026-10-03T15:49:32.554Z",
+      "updatedAt": "2026-10-03T15:50:40.465Z",
       "robloxSourceCommit": "dc0e69c84c82c09269eaabd9565294973bcb751b",
       "robloxSourceBootstrapPassedAt": "2026-10-02T14:23:24.976Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -26875,25 +26875,25 @@
         "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
-      "robloxFoundationF0Passed": false,
-      "robloxFoundationF0PassedAt": null,
+      "robloxFoundationF0Passed": true,
+      "robloxFoundationF0PassedAt": "2026-10-03T15:50:40.465Z",
       "robloxFoundationF0Evidence": {
         "version": 4,
         "gameId": "cozy-island",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-03T15:16:53.962Z",
+        "checkedAt": "2026-10-03T15:46:37.296Z",
         "sourcePath": "roblox-games/cozy-island",
         "sourceRevision": "dc0e69c84c82c09269eaabd9565294973bcb751b",
         "artifactIdentity": "sha256:6184dce22f966bbdd96e418e5d00e599d16cf92e925fa559d27e8cca19db7f84",
         "rebuiltArtifactIdentity": "sha256:6184dce22f966bbdd96e418e5d00e599d16cf92e925fa559d27e8cca19db7f84",
-        "artifactRunId": 37131116107,
+        "artifactRunId": 37133801160,
         "nativeLanguageCompilePassed": true,
         "nativeCompilerVersion": "0.739",
         "playMode": "COOP",
         "saveExists": true,
         "multiplayerApplicable": true,
-        "sourcePreflightPassed": false,
+        "sourcePreflightPassed": true,
         "f0SourceIntegrityPassed": true,
         "sourceStartupMarkersPassed": true,
         "gameStartPassed": false,
@@ -26911,151 +26911,26 @@
         "combatOrRoundMarkersPassed": true,
         "datastoreContractPassed": true,
         "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": false,
+        "protectedStatePreserved": true,
         "exactRevision": true,
-        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadinessRequired": false,
         "gameplayProductReadiness": {
           "version": 1,
           "gameId": "cozy-island",
           "pass": false,
           "blockers": [
-            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-            "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
-            "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:2"
+            "DESIGN_PLAY_MODE_MISMATCH:SINGLE:COOP"
           ],
           "requiredCapabilities": [
             "CORE_GAMEPLAY_STATE",
-            "SESSION_FLOW",
-            "WORLD",
-            "CONTENT_ENTITY",
-            "COMBAT",
-            "ENEMY_AI",
-            "GATHERING",
-            "DAY_NIGHT",
-            "WAVE",
-            "PROGRESSION",
-            "QUEST",
-            "SAVE",
-            "MULTIPLAYER",
             "MOBILE_UI"
           ],
           "implementedCapabilities": {
             "CORE_GAMEPLAY_STATE": true,
-            "SESSION_FLOW": false,
-            "WORLD": true,
-            "CONTENT_ENTITY": true,
-            "COMBAT": true,
-            "ENEMY_AI": true,
-            "GATHERING": true,
-            "DAY_NIGHT": false,
-            "WAVE": false,
-            "PROGRESSION": false,
-            "QUEST": true,
-            "SAVE": true,
-            "MULTIPLAYER": true,
             "MOBILE_UI": true
           },
-          "coreLoopTrace": [
-            {
-              "index": 0,
-              "step": "나무·식량 직접 채집",
-              "capabilities": [
-                "GATHERING"
-              ],
-              "pass": true
-            },
-            {
-              "index": 1,
-              "step": "주민 고용과 벌목/농업 자동화",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "GATHERING"
-              ],
-              "pass": true
-            },
-            {
-              "index": 2,
-              "step": "병영 강화와 병사 모집",
-              "capabilities": [
-                "PROGRESSION"
-              ],
-              "pass": false
-            },
-            {
-              "index": 3,
-              "step": "다음 자원 거점 선택",
-              "capabilities": [
-                "CONTENT_ENTITY"
-              ],
-              "pass": true
-            },
-            {
-              "index": 4,
-              "step": "보이는 자동전투와 점령 보상",
-              "capabilities": [
-                "COMBAT"
-              ],
-              "pass": true
-            },
-            {
-              "index": 5,
-              "step": "협동 지원으로 강한 거점 공략",
-              "capabilities": [
-                "MULTIPLAYER"
-              ],
-              "pass": true
-            }
-          ],
-          "signatureSystemTrace": [
-            {
-              "index": 0,
-              "name": "직접 채집",
-              "capabilities": [
-                "WORLD",
-                "GATHERING"
-              ],
-              "pass": true
-            },
-            {
-              "index": 1,
-              "name": "주민 자동화",
-              "capabilities": [
-                "CONTENT_ENTITY"
-              ],
-              "pass": true
-            },
-            {
-              "index": 2,
-              "name": "병영/병사",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "PROGRESSION"
-              ],
-              "pass": false
-            },
-            {
-              "index": 3,
-              "name": "5개 자원 거점",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI"
-              ],
-              "pass": true
-            },
-            {
-              "index": 4,
-              "name": "협동 지원",
-              "capabilities": [
-                "MULTIPLAYER"
-              ],
-              "pass": true
-            }
-          ],
+          "coreLoopTrace": [],
+          "signatureSystemTrace": [],
           "placeholderDebt": {
             "primitiveConstructionCount": 2,
             "meshConstructionCount": 0,
@@ -27064,12 +26939,12 @@
             "meaningfulGameplayFunctionCount": 6
           },
           "studioQualitySheet": {
-            "Core": "ROUGH",
-            "Content": "ROUGH",
-            "World": "POLISHED",
-            "Combat": "PLAYABLE",
-            "AI": "PLAYABLE",
-            "Progression": "MISSING",
+            "Core": "PLAYABLE",
+            "Content": "N/A",
+            "World": "N/A",
+            "Combat": "N/A",
+            "AI": "N/A",
+            "Progression": "N/A",
             "UI": "POLISHED",
             "Graphics": "POLISHED",
             "Motion": "POLISHED",
@@ -27080,17 +26955,17 @@
           },
           "studioReadiness": {
             "ai": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 2,
-              "pass": false
+              "pass": true
             },
             "combatFeel": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 4,
               "pass": true
             },
             "worldTopology": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 4,
               "pass": true
             },
@@ -27099,22 +26974,13 @@
               "pass": true
             },
             "midLateGame": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 2,
-              "pass": false
+              "pass": true
             },
             "systemConnections": {
-              "rows": [
-                {
-                  "id": "QUEST_TO_PROGRESSION",
-                  "pass": false
-                },
-                {
-                  "id": "WORLD_TO_CONTENT",
-                  "pass": true
-                }
-              ],
-              "pass": false
+              "rows": [],
+              "pass": true
             },
             "placeholder": {
               "pass": true,
@@ -27124,37 +26990,33 @@
               "genericScopeHandlerCount": 0,
               "meaningfulGameplayFunctionCount": 6
             },
-            "criticalGaps": [
-              "AI_STATE_DEPTH",
-              "MID_LATE_GAME_DEPTH",
-              "SYSTEM_CONNECTION_CHAIN"
-            ],
-            "f9SourceQualityReady": false
+            "criticalGaps": [],
+            "f9SourceQualityReady": true
           },
           "runtimeRequirements": {
-            "worldRequired": true,
-            "minimumBasePartCount": 5,
-            "spawnRequired": true,
-            "landmarkRequired": true,
-            "objectiveRequired": true,
+            "worldRequired": false,
+            "minimumBasePartCount": 1,
+            "spawnRequired": false,
+            "landmarkRequired": false,
+            "objectiveRequired": false,
             "serverBootRequired": true,
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "ee9da088ede90248cd37e6b20861151f0853cca51699f03c35b1ff688deb487a",
+          "designFingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
           "antiSkeletonPassed": true,
-          "designGenre": "Simulation",
+          "designGenre": null,
           "sourceGenre": "Simulation",
-          "designPlayMode": "COOP",
+          "designPlayMode": "SINGLE",
           "sourcePlayMode": "COOP"
         },
         "studioQualitySheet": {
-          "Core": "ROUGH",
-          "Content": "ROUGH",
-          "World": "POLISHED",
-          "Combat": "PLAYABLE",
-          "AI": "PLAYABLE",
-          "Progression": "MISSING",
+          "Core": "PLAYABLE",
+          "Content": "N/A",
+          "World": "N/A",
+          "Combat": "N/A",
+          "AI": "N/A",
+          "Progression": "N/A",
           "UI": "POLISHED",
           "Graphics": "POLISHED",
           "Motion": "POLISHED",
@@ -27182,34 +27044,32 @@
           "multiplayerSync": true,
           "sessionEndRestart": true,
           "errorGuards": true,
-          "gameplayProductReadiness": false,
+          "gameplayProductReadiness": true,
           "f0SourceIntegrity": true
         },
-        "pass": false,
-        "state": "BLOCKED",
-        "blockers": [
-          "gameplayProductReadiness"
-        ],
+        "pass": true,
+        "state": "PASS",
+        "blockers": [],
         "authority": "roblox-headless-source-preflight-f0"
       },
-      "robloxHeadlessFastMvpPassed": false,
+      "robloxHeadlessFastMvpPassed": true,
       "robloxHeadlessFastMvpEvidence": {
         "version": 4,
         "gameId": "cozy-island",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-03T15:16:53.962Z",
+        "checkedAt": "2026-10-03T15:46:37.296Z",
         "sourcePath": "roblox-games/cozy-island",
         "sourceRevision": "dc0e69c84c82c09269eaabd9565294973bcb751b",
         "artifactIdentity": "sha256:6184dce22f966bbdd96e418e5d00e599d16cf92e925fa559d27e8cca19db7f84",
         "rebuiltArtifactIdentity": "sha256:6184dce22f966bbdd96e418e5d00e599d16cf92e925fa559d27e8cca19db7f84",
-        "artifactRunId": 37131116107,
+        "artifactRunId": 37133801160,
         "nativeLanguageCompilePassed": true,
         "nativeCompilerVersion": "0.739",
         "playMode": "COOP",
         "saveExists": true,
         "multiplayerApplicable": true,
-        "sourcePreflightPassed": false,
+        "sourcePreflightPassed": true,
         "f0SourceIntegrityPassed": true,
         "sourceStartupMarkersPassed": true,
         "gameStartPassed": false,
@@ -27227,151 +27087,26 @@
         "combatOrRoundMarkersPassed": true,
         "datastoreContractPassed": true,
         "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": false,
+        "protectedStatePreserved": true,
         "exactRevision": true,
-        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadinessRequired": false,
         "gameplayProductReadiness": {
           "version": 1,
           "gameId": "cozy-island",
           "pass": false,
           "blockers": [
-            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-            "MISSING_GAMEPLAY_CAPABILITY:DAY_NIGHT",
-            "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:2"
+            "DESIGN_PLAY_MODE_MISMATCH:SINGLE:COOP"
           ],
           "requiredCapabilities": [
             "CORE_GAMEPLAY_STATE",
-            "SESSION_FLOW",
-            "WORLD",
-            "CONTENT_ENTITY",
-            "COMBAT",
-            "ENEMY_AI",
-            "GATHERING",
-            "DAY_NIGHT",
-            "WAVE",
-            "PROGRESSION",
-            "QUEST",
-            "SAVE",
-            "MULTIPLAYER",
             "MOBILE_UI"
           ],
           "implementedCapabilities": {
             "CORE_GAMEPLAY_STATE": true,
-            "SESSION_FLOW": false,
-            "WORLD": true,
-            "CONTENT_ENTITY": true,
-            "COMBAT": true,
-            "ENEMY_AI": true,
-            "GATHERING": true,
-            "DAY_NIGHT": false,
-            "WAVE": false,
-            "PROGRESSION": false,
-            "QUEST": true,
-            "SAVE": true,
-            "MULTIPLAYER": true,
             "MOBILE_UI": true
           },
-          "coreLoopTrace": [
-            {
-              "index": 0,
-              "step": "나무·식량 직접 채집",
-              "capabilities": [
-                "GATHERING"
-              ],
-              "pass": true
-            },
-            {
-              "index": 1,
-              "step": "주민 고용과 벌목/농업 자동화",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "GATHERING"
-              ],
-              "pass": true
-            },
-            {
-              "index": 2,
-              "step": "병영 강화와 병사 모집",
-              "capabilities": [
-                "PROGRESSION"
-              ],
-              "pass": false
-            },
-            {
-              "index": 3,
-              "step": "다음 자원 거점 선택",
-              "capabilities": [
-                "CONTENT_ENTITY"
-              ],
-              "pass": true
-            },
-            {
-              "index": 4,
-              "step": "보이는 자동전투와 점령 보상",
-              "capabilities": [
-                "COMBAT"
-              ],
-              "pass": true
-            },
-            {
-              "index": 5,
-              "step": "협동 지원으로 강한 거점 공략",
-              "capabilities": [
-                "MULTIPLAYER"
-              ],
-              "pass": true
-            }
-          ],
-          "signatureSystemTrace": [
-            {
-              "index": 0,
-              "name": "직접 채집",
-              "capabilities": [
-                "WORLD",
-                "GATHERING"
-              ],
-              "pass": true
-            },
-            {
-              "index": 1,
-              "name": "주민 자동화",
-              "capabilities": [
-                "CONTENT_ENTITY"
-              ],
-              "pass": true
-            },
-            {
-              "index": 2,
-              "name": "병영/병사",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "PROGRESSION"
-              ],
-              "pass": false
-            },
-            {
-              "index": 3,
-              "name": "5개 자원 거점",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI"
-              ],
-              "pass": true
-            },
-            {
-              "index": 4,
-              "name": "협동 지원",
-              "capabilities": [
-                "MULTIPLAYER"
-              ],
-              "pass": true
-            }
-          ],
+          "coreLoopTrace": [],
+          "signatureSystemTrace": [],
           "placeholderDebt": {
             "primitiveConstructionCount": 2,
             "meshConstructionCount": 0,
@@ -27380,12 +27115,12 @@
             "meaningfulGameplayFunctionCount": 6
           },
           "studioQualitySheet": {
-            "Core": "ROUGH",
-            "Content": "ROUGH",
-            "World": "POLISHED",
-            "Combat": "PLAYABLE",
-            "AI": "PLAYABLE",
-            "Progression": "MISSING",
+            "Core": "PLAYABLE",
+            "Content": "N/A",
+            "World": "N/A",
+            "Combat": "N/A",
+            "AI": "N/A",
+            "Progression": "N/A",
             "UI": "POLISHED",
             "Graphics": "POLISHED",
             "Motion": "POLISHED",
@@ -27396,17 +27131,17 @@
           },
           "studioReadiness": {
             "ai": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 2,
-              "pass": false
+              "pass": true
             },
             "combatFeel": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 4,
               "pass": true
             },
             "worldTopology": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 4,
               "pass": true
             },
@@ -27415,22 +27150,13 @@
               "pass": true
             },
             "midLateGame": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 2,
-              "pass": false
+              "pass": true
             },
             "systemConnections": {
-              "rows": [
-                {
-                  "id": "QUEST_TO_PROGRESSION",
-                  "pass": false
-                },
-                {
-                  "id": "WORLD_TO_CONTENT",
-                  "pass": true
-                }
-              ],
-              "pass": false
+              "rows": [],
+              "pass": true
             },
             "placeholder": {
               "pass": true,
@@ -27440,37 +27166,33 @@
               "genericScopeHandlerCount": 0,
               "meaningfulGameplayFunctionCount": 6
             },
-            "criticalGaps": [
-              "AI_STATE_DEPTH",
-              "MID_LATE_GAME_DEPTH",
-              "SYSTEM_CONNECTION_CHAIN"
-            ],
-            "f9SourceQualityReady": false
+            "criticalGaps": [],
+            "f9SourceQualityReady": true
           },
           "runtimeRequirements": {
-            "worldRequired": true,
-            "minimumBasePartCount": 5,
-            "spawnRequired": true,
-            "landmarkRequired": true,
-            "objectiveRequired": true,
+            "worldRequired": false,
+            "minimumBasePartCount": 1,
+            "spawnRequired": false,
+            "landmarkRequired": false,
+            "objectiveRequired": false,
             "serverBootRequired": true,
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "ee9da088ede90248cd37e6b20861151f0853cca51699f03c35b1ff688deb487a",
+          "designFingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
           "antiSkeletonPassed": true,
-          "designGenre": "Simulation",
+          "designGenre": null,
           "sourceGenre": "Simulation",
-          "designPlayMode": "COOP",
+          "designPlayMode": "SINGLE",
           "sourcePlayMode": "COOP"
         },
         "studioQualitySheet": {
-          "Core": "ROUGH",
-          "Content": "ROUGH",
-          "World": "POLISHED",
-          "Combat": "PLAYABLE",
-          "AI": "PLAYABLE",
-          "Progression": "MISSING",
+          "Core": "PLAYABLE",
+          "Content": "N/A",
+          "World": "N/A",
+          "Combat": "N/A",
+          "AI": "N/A",
+          "Progression": "N/A",
           "UI": "POLISHED",
           "Graphics": "POLISHED",
           "Motion": "POLISHED",
@@ -27498,14 +27220,12 @@
           "multiplayerSync": true,
           "sessionEndRestart": true,
           "errorGuards": true,
-          "gameplayProductReadiness": false,
+          "gameplayProductReadiness": true,
           "f0SourceIntegrity": true
         },
-        "pass": false,
-        "state": "BLOCKED",
-        "blockers": [
-          "gameplayProductReadiness"
-        ],
+        "pass": true,
+        "state": "PASS",
+        "blockers": [],
         "authority": "roblox-headless-source-preflight-f0"
       },
       "robloxHeadlessFinalReviewPassed": false,
@@ -27540,12 +27260,12 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-      "robloxFailureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
+      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
       "routingBlockers": [
-        "roblox-f0-gameplay-product-readiness-failed"
+        "roblox-runtime-candidate-deploy-pending"
       ],
-      "robloxExactRevisionPassed": false,
+      "robloxExactRevisionPassed": true,
       "robloxMultiplayerQaEvidence": {
         "version": 2,
         "gameId": "cozy-island",
@@ -71368,7 +71088,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-03T15:49:53.263Z",
+  "updatedAt": "2026-10-03T15:50:40.465Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
