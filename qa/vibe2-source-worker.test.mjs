@@ -3241,6 +3241,41 @@ test('zero-output model stalls use first-output deadline and stop after two empt
   assert.match(workerSource,/priorFailureClass==='TIMEOUT'&&!clean\(lastRaw\)[\s\S]*?ZERO_OUTPUT_RETRY_TIMEOUT_MS/);
 });
 
+test('Unity asset-development first prompt is compact and preserves generated GLB path plus sha256',()=>{
+  const huge=Array.from({length:700},(_,i)=>'public int VisualDetail'+i+' = '+i+';').join('\\n');
+  const gameCore='Assets/Scripts/GameCore.cs';
+  const bootstrap='Assets/Scripts/RuntimeBootstrap.cs';
+  const prompt=[
+    '[PRESENTATION_PASS:ASSET_ADAPTATION]',
+    'Engine: unity',
+    'Goal: bind the generated native asset in existing Unity presentation source without changing gameplay',
+    'Allowed edit paths: '+gameCore+', '+bootstrap,
+    '=== FILE '+gameCore+' [EDITABLE] ===',
+    'public sealed class GameCore {',
+    '  public UnityEngine.GameObject VisualRoot;',
+    huge,
+    '}',
+    '=== FILE '+bootstrap+' [EDITABLE] ===',
+    'public sealed class RuntimeBootstrap { public bool Ready = true; }'
+  ].join('\\n');
+  const assetPath='assets/generated/unity/demo/native-task/asset.glb';
+  const artifactHash='0123456789abcdef'.repeat(4);
+  const focused=buildGenerationRetryPrompt(prompt,{
+    allowFullRewrite:false,
+    responsibleFiles:[gameCore,bootstrap],
+    attempt:1,
+    assetFocusedInitial:true,
+    nativeAssetBindingHints:[{path:assetPath,artifactHash,assetId:'generated-demo',family:'PROP'}]
+  });
+  assert.match(focused,/INITIAL NATIVE ASSET BINDING/);
+  assert.match(focused,/\\[GENERATED NATIVE ASSET IDENTITY\\]/);
+  assert.ok(focused.includes(assetPath));
+  assert.ok(focused.includes(artifactHash));
+  assert.match(focused,/MUST bind every exact path and sha256/);
+  assert.ok(Buffer.byteLength(focused,'utf8')<12000);
+  assert.ok(Buffer.byteLength(focused,'utf8')<Buffer.byteLength(prompt,'utf8'));
+});
+
 test('Unity Studio timeout recovery pins one exact responsible file before another large model retry',()=>{
   const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(source,/const UNITY_STUDIO_FOCUSED_TIMEOUT_MS=120000/);
@@ -4369,16 +4404,23 @@ test('focused replace-only compacts build-up directive without losing exact goal
   assert.ok(Buffer.byteLength(focused.prompt,'utf8')<Buffer.byteLength(prompt,'utf8'));
 });
 
-test('asset-development Roblox graphics stays on bounded focused retries while game-primary keeps existing escalation',()=>{
+test('asset-development native graphics stays on bounded focused retries while game-primary keeps existing escalation',()=>{
   const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(source,/const assetDevelopmentLane=clean\(process\.env\.VIBE2_EXECUTION_LANE\)\.toLowerCase\(\)==='asset-development'/);
   assert.match(source,/ASSET_DEVELOPMENT_ROBLOX_MAX_GENERATION_ATTEMPTS=3/);
   assert.match(source,/ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS=120000/);
   assert.match(source,/ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT=768/);
   assert.match(source,/ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW=8192/);
+  assert.match(source,/ASSET_DEVELOPMENT_UNITY_MAX_GENERATION_ATTEMPTS=3/);
+  assert.match(source,/ASSET_DEVELOPMENT_UNITY_FOCUSED_TIMEOUT_MS=120000/);
+  assert.match(source,/ASSET_DEVELOPMENT_UNITY_FOCUSED_MAX_PREDICT=768/);
+  assert.match(source,/ASSET_DEVELOPMENT_UNITY_FOCUSED_CONTEXT_WINDOW=8192/);
   assert.match(source,/robloxTimeoutFocusedRecoveryNeedsPackage=robloxAssetAdaptationTask[\s\S]*?&&!assetDevelopmentLane/);
   assert.match(source,/robloxFullGraphicsPackageRecovery=robloxAssetAdaptationTask[\s\S]*?&&!assetDevelopmentLane/);
-  assert.match(source,/const assetDevelopmentFocusedGraphics=assetDevelopmentLane&&robloxAssetAdaptationTask/);
+  assert.match(source,/const nativeAssetAdaptationTask=!allowFullRewrite&&assetAdaptationRequested&&\['roblox','unity'\]\.includes\(target\)/);
+  assert.match(source,/const assetDevelopmentFocusedGraphics=assetDevelopmentLane&&nativeAssetAdaptationTask/);
+  assert.match(source,/unityAssetGraphicsInitial=assetDevelopmentLane&&assetAdaptationRequested&&target==='unity'/);
+  assert.match(source,/assetFocusedInitial:true,nativeAssetBindingHints/);
   assert.match(source,/assetDevelopmentFocusedGraphics\|\|attempt>=3/);
   assert.match(source,/VIBE2_ROBLOX_TIMEOUT_RECOVERY_ESCALATE_FULL_GRAPHICS/);
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
