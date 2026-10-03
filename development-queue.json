@@ -1803,8 +1803,8 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T01:24:10.538Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -1834,9 +1834,9 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-03T13:19:40.345Z",
-      "robloxSourceCommit": "67b0f0d9d95a4a24c0ceb17c59294fa37cc52d54",
-      "robloxSourceBootstrapPassedAt": "2026-10-03T13:00:34.359Z",
+      "updatedAt": "2026-10-03T13:21:33.792Z",
+      "robloxSourceCommit": "08bb8bba5b5f22a8790f066a9a4dbef536c1f16e",
+      "robloxSourceBootstrapPassedAt": "2026-10-03T13:21:33.792Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -1937,7 +1937,7 @@
       "robloxFailureStage": "F0_SOURCE_INTEGRITY",
       "robloxFailureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_FAILED",
       "routingBlockers": [
-        "roblox-f0-source-preflight-failed"
+        "roblox-runtime-evidence-pending"
       ],
       "robloxExactRevisionPassed": false,
       "robloxMultiplayerQaEvidence": {
@@ -9632,7 +9632,7 @@
       "robloxPublicReleaseEvidence": null
     }
   ],
-  "updatedAt": "2026-10-03T13:19:40.345Z",
+  "updatedAt": "2026-10-03T13:21:33.792Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
