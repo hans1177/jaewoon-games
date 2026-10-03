@@ -120,6 +120,21 @@ function inferSourceRoot(input = {}) {
   if (target === 'godot') return `godot-games/${gameId}`;
   return `${target}:${gameId}`;
 }
+const PLATFORM_GAME_SOURCE_PREFIXES=freezeList(['roblox-games/','unity-games/','web-games/','uefn-games/','unreal-games/','godot-games/']);
+const EXPLICIT_SHARED_RESPONSIBILITY_PREFIXES=freezeList(['assets/','company-learning/','design/','qa/','tools/','.github/']);
+export function scopeVibeResponsibleFiles(files=[],sourceRoot=''){
+  const root=posix(sourceRoot);
+  const rows=(files||[]).map(posix).filter(Boolean);
+  if(!root||!PLATFORM_GAME_SOURCE_PREFIXES.some(prefix=>root.startsWith(prefix)))return freezeList(rows);
+  const scoped=[];
+  for(const file of rows){
+    if(file===root||file.startsWith(root+'/')){scoped.push(file);continue;}
+    if(PLATFORM_GAME_SOURCE_PREFIXES.some(prefix=>file.startsWith(prefix)))continue;
+    if(EXPLICIT_SHARED_RESPONSIBILITY_PREFIXES.some(prefix=>file.startsWith(prefix))){scoped.push(file);continue;}
+    scoped.push(root+'/'+file);
+  }
+  return freezeList(scoped);
+}
 function normalizeStudioQualityEvolution(input=null){
   if(!input||typeof input!=='object')return null;
   const sourceConnected=input.requiredConnectedImprovements&&typeof input.requiredConnectedImprovements==='object'
@@ -261,6 +276,9 @@ function normalizeGraphicsReplacementContract(input=null){
   catch{return null;}
 }
 function normalizeTask(input = {}, index = 0) {
+  const sourceRoot=inferSourceRoot(input);
+  const responsibleFiles=scopeVibeResponsibleFiles(input.responsibleFiles||[],sourceRoot);
+  const retainedResponsibleFileLocks=scopeVibeResponsibleFiles(input.retainedResponsibleFileLocks||[],sourceRoot);
   const rawStatus=clean(input.status).toLowerCase();
   const status = rawStatus==='done' ? 'verified' : VIBE_QUEUE_STATUSES.includes(rawStatus) ? rawStatus : 'queued';
   const priority = VIBE_QUEUE_PRIORITIES.includes(clean(input.priority)) ? clean(input.priority) : 'normal';
@@ -308,8 +326,8 @@ function normalizeTask(input = {}, index = 0) {
     graphicsReplacementContract: normalizeGraphicsReplacementContract(input.graphicsReplacementContract),
     executionLane: inferExecutionLane({...input,evidence:inputEvidence}),
     goal: clean(input.goal),
-    responsibleFiles: freezeList(input.responsibleFiles || []),
-    retainedResponsibleFileLocks: freezeList(input.retainedResponsibleFileLocks || []),
+    responsibleFiles,
+    retainedResponsibleFileLocks,
     dependencies: freezeList(input.dependencies || []),
     priority,
     portfolioValueScore: clampInt(input.portfolioValueScore || 0, 0, 100),
@@ -351,7 +369,7 @@ function normalizeTask(input = {}, index = 0) {
     buildUpNextActionReason: clean(input.buildUpNextActionReason||input.buildUpDirective?.nextActionDecision?.reason) || null,
     nextEscalationRequired: input.nextEscalationRequired === true,
     companyContext: normalizeCompanyContext(input.companyContext),
-    sourceRoot: inferSourceRoot(input),
+    sourceRoot,
     speculativeEligible: atomicPresentation || input.speculativeEligible === true,
     estimatedRisk: atomicPresentation ? 'high' : (['low','medium','high'].includes(clean(input.estimatedRisk).toLowerCase()) ? clean(input.estimatedRisk).toLowerCase() : 'low'),
     atomicNeuronMode: atomicPresentation ? 'PER_TASK_MICRO_FANIN' : (clean(input.atomicNeuronMode)||null),
