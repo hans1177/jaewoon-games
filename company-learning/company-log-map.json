@@ -1,5 +1,5 @@
 {
-  "version": 160,
+  "version": 161,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -475,7 +475,7 @@
     "continuousEvolutionEvidenceAllowedAfterInternalAndPublicRelease": true,
     "standaloneReleaseAuthority": false
   },
-  "updatedAt": "2026-10-02",
+  "updatedAt": "2026-10-03",
   "graphicsProductionEvidenceContract": {
     "version": 5,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -2865,5 +2865,36 @@
     ],
     "learningPressureObservationPreserved": true,
     "liveVerification": "PENDING_EXACT_HEAD_QA_AND_MAIN_RUNTIME"
+  },
+  "finalDevelopmentLockEvidenceContract": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#finalDevelopmentLock",
+    "markers": [
+      "MAIN_DIRECT_WRITE_GUARD",
+      "FINAL_CHAIN_LOCKED",
+      "BUILD_UP_DIRECTIVE_ID",
+      "ROBLOX_OPEN_CLOUD_ENGINE_PROBE",
+      "JAEWOON_OPEN_CLOUD_WORLD_BOUNDS_SIZE"
+    ],
+    "dryRunFields": [
+      "plannedFiles",
+      "impact.categories",
+      "requiredQa",
+      "conditionalQa",
+      "openCloudWorldChecks"
+    ],
+    "worldEvidenceFields": [
+      "basePartCount",
+      "spawnCount",
+      "spawnsInBounds",
+      "finiteWorldBounds",
+      "boundsSize",
+      "landmarkCount",
+      "objectiveCount",
+      "terrainPresent",
+      "lightingAtmospherePresent",
+      "streamingEnabled"
+    ],
+    "unverifiedStateCannotBeLoggedAsPass": true
   }
 }
