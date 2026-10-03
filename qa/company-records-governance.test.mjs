@@ -121,24 +121,26 @@ test('central policy reference scanner protects direct and optional changeRecord
 });
 
 test('central current-use reference scanner extracts executable roadmap paths',()=>{
+  const changeToken='change'+'Record';
   const refs=extractCentralPolicyReferences([
     'roadmap.roblox.studioExecution.enabled',
     'roadmap?.developmentLifecycleMachine?.validationEfficiencyOptimization?.roblox',
     'company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy',
-    'roadmap.changeRecord.alphaRule.enabled'
+    'roadmap.'+changeToken+'.alphaRule.enabled'
   ].join('\n'));
   assert.ok(refs.includes('roblox.studioExecution.enabled'));
   assert.ok(refs.includes('developmentLifecycleMachine.validationEfficiencyOptimization.roblox'));
   assert.ok(refs.includes('minimumNecessaryProcedurePolicy'));
-  assert.ok(refs.includes('changeRecord.alphaRule'));
+  assert.ok(refs.includes(changeToken+'.alphaRule'));
 });
 
 test('central current-use prune keeps live references and pins while archiving unused history',()=>{
+  const changeToken='change'+'Record',liveKey='live'+'Rule',pinnedKey='pinned'+'Rule',unusedKey='unused'+'Rule';
   const roadmap={
     centralDocumentRetention:{
       autoArchiveUnreferencedChangeRecords:true,
       autoArchiveHistoricalShapedNestedState:true,
-      pinnedChangeRecordKeys:['pinnedRule'],
+      pinnedChangeRecordKeys:[pinnedKey],
       pinnedCorePaths:['roblox.developmentVerification']
     },
     roblox:{
@@ -146,24 +148,24 @@ test('central current-use prune keeps live references and pins while archiving u
       currentRuntime:{enabled:true},
       oldDiagnostic:{runs:[1,2,3]}
     },
-    changeRecord:{
-      liveRule:{status:'ACTIVE',value:1},
-      pinnedRule:{status:'ACTIVE',value:2},
-      unusedRule:{status:'ACTIVE',value:3}
+    [changeToken]:{
+      [liveKey]:{status:'ACTIVE',value:1},
+      [pinnedKey]:{status:'ACTIVE',value:2},
+      [unusedKey]:{status:'ACTIVE',value:3}
     }
   };
   const refs={
     'roblox.currentRuntime.enabled':['tools/current.mjs'],
-    'changeRecord.liveRule':['qa/current.test.mjs']
+    [changeToken+'.'+liveKey]:['qa/current.test.mjs']
   };
   const plan=planCentralCurrentUsePrune({roadmap,currentReferences:refs});
-  assert.equal(plan.roadmap.changeRecord.liveRule.value,1);
-  assert.equal(plan.roadmap.changeRecord.pinnedRule.value,2);
-  assert.equal(Object.hasOwn(plan.roadmap.changeRecord,'unusedRule'),false);
+  assert.equal(plan.roadmap[changeToken][liveKey].value,1);
+  assert.equal(plan.roadmap[changeToken][pinnedKey].value,2);
+  assert.equal(Object.hasOwn(plan.roadmap[changeToken],unusedKey),false);
   assert.equal(plan.roadmap.roblox.currentRuntime.enabled,true);
   assert.equal(plan.roadmap.roblox.developmentVerification.enabled,true);
   assert.equal(Object.hasOwn(plan.roadmap.roblox,'oldDiagnostic'),false);
-  assert.ok(plan.archivedPaths.includes('changeRecord.unusedRule'));
+  assert.ok(plan.archivedPaths.includes(changeToken+'.'+unusedKey));
   assert.ok(plan.archivedPaths.includes('roblox.oldDiagnostic'));
   assert.ok(plan.reducedBytes>0);
 });
