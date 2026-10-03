@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {
   evaluateRobloxGameplayProductReadiness,
   evaluateRobloxF9ProductReadiness,
@@ -159,4 +160,32 @@ test('F9 blocks exact engine execution without server boot actual play and real 
     studioPlayEvidence:{}
   });
   assert.equal(pass.pass,true);
+});
+
+
+test('runtime workflow routes F0 gameplay product failures to canonical Vibe build-up',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.match(workflow,/ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED/);
+  assert.match(workflow,/roblox-f0-gameplay-product-readiness-failure/);
+  assert.match(workflow,/ROBLOX_F0_GAMEPLAY_PRODUCT_VIBE_REFILL=/);
+  assert.match(workflow,/event_type:"vibe2-fanin-refill"/);
+  assert.match(workflow,/source_outcome:"FAILED"/);
+  assert.match(workflow,/reason:"roblox-f0-gameplay-product-repair"/);
+  assert.match(workflow,/result\.f0Pass===true[\s\S]*gameplayProductReadinessRequired===true/);
+});
+
+test('Roblox runtime consumes only the platform-specific BUILD_UP directive',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.match(workflow,/current\/roblox\.json/);
+  assert.match(workflow,/ROBLOX_BUILD_UP_DIRECTIVE_PLATFORM_MISMATCH/);
+  assert.match(workflow,/ROBLOX_BUILD_UP_DIRECTIVE_RESPONSIBLE_FILES_MISSING/);
+  assert.doesNotMatch(workflow,/origin\/vibe2-unreal-core:\.vibe2\/build-up-directives\/\$\{GAME_ID\}\/current\.json/);
+});
+
+test('verified learning sweep derives genre and play mode from each actual GameConfig',()=>{
+  const sweep=fs.readFileSync('tools/company-roblox-verified-learning-sweep.mjs','utf8');
+  assert.match(sweep,/robloxLearningProfileFromSource/);
+  assert.match(sweep,/shared','GameConfig\.luau/);
+  assert.match(sweep,/configSource/);
+  assert.match(sweep,/fallbackProfile/);
 });
