@@ -1878,7 +1878,7 @@ function renderChest(){
 }
 function openChest(ch){state.activeChestId=ch.id;state.panelMode='chest';ui.sheet.classList.add('open');renderChest()}
 function portalById(id){return state.portals.find(p=>p.id===id)||null}
-function portalLabel(portal){const i=state.portals.findIndex(p=>p.id===portal);return '포탈 '+(i>=0?i+1:'?')}
+function portalLabel(portal){const i=state.portals.findIndex(p=>p===portal||p.id===portal?.id);return '포탈 '+(i>=0?i+1:'?')}
 function teleportToPortal(target){
  if(!target)return;
  const p=state.player;p.restingBedId=null;p.x=clamp(target.x,25,WORLD.w-25);p.y=clamp(target.y,25,WORLD.h-25);
