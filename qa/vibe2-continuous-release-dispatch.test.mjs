@@ -22,6 +22,10 @@ test('candidate release keeps Work-Locked generated assets through Roblox Unity 
   assert.match(unityReleaseWorkflow,/generated_asset_files/);
   assert.match(unityReleaseWorkflow,/promotion_paths=\("\$SOURCE_ROOT" "\$\{generated_asset_files\[@\]\}"\)/);
   assert.match(unityReleaseWorkflow,/git checkout "\$CANDIDATE_SHA" -- "\$\{promotion_paths\[@\]\}"/);
+  assert.match(unityReleaseWorkflow,/asset_promotion_candidates/);
+  assert.match(unityReleaseWorkflow,/Persist exact Unity generated asset runtime promotion plan/);
+  assert.match(unityReleaseWorkflow,/unityAssetRuntimePromotionPlan/);
+  assert.match(unityReleaseWorkflow,/status:'PENDING_EXACT_NATIVE_RUNTIME'/);
 
   assert.match(unityWebWorkflow,/generated_asset_files:/);
   assert.match(unityWebWorkflow,/candidate_paths=\("unity-games\/\$GAME_ID" "\$\{generated_asset_files\[@\]\}"\)/);
