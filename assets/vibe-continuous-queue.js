@@ -462,11 +462,25 @@ function releasesResponsibleFileLocksForCausalRepair(task={}) {
     &&/candidate-awaiting-runtime-evidence/i.test(clean(task.blocker))
     &&clean(task.buildUpNextAction).toUpperCase()==='CAUSAL_REPAIR';
 }
+function releasesResponsibleFileLocksAfterWorkerSlot(task={}) {
+  return clean(task.status).toLowerCase()==='running'
+    &&/slot-released.*fan-in/i.test(clean(task.blocker));
+}
 function fileLocks(task) {
   const root = posix(task.sourceRoot);
   const current=(task.responsibleFiles || []).map(posix).filter(Boolean).map((file) => root && !file.startsWith(`${root}/`) ? `${root}/${file}` : file);
   const retained=(task.retainedResponsibleFileLocks || []).map(posix).filter(Boolean);
   if(releasesResponsibleFileLocksForCausalRepair(task))return new Set(retained);
+  if(releasesResponsibleFileLocksAfterWorkerSlot(task)){
+    const evidence=new Set((task.evidence||[]).map(clean).filter(Boolean));
+    const explicitRetained=evidence.has('worker-slot-explicit-retained-locks:v1');
+    const currentSet=new Set(current);
+    const legacyAutomaticRetained=!explicitRetained
+      &&retained.length>0
+      &&retained.length===currentSet.size
+      &&retained.every(file=>currentSet.has(file));
+    return new Set(legacyAutomaticRetained?[]:retained);
+  }
   return new Set([...current,...retained]);
 }
 function lockConflict(a, b) {

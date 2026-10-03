@@ -357,6 +357,30 @@ function assetDevelopmentTask(order={}){
     ||selected.assetProductionLane===true
     ||evidence.includes('asset-production-parallel:v1');
 }
+export function persistedGeneratedAssetBindings(order={}){
+  const target=clean(order?.target).toLowerCase();
+  const dcc=order?.assetProduction?.nativeAuthoringExecution?.dcc?.executionEvidence;
+  const recipes=Array.isArray(dcc?.recipes)?dcc.recipes:[];
+  if(!assetDevelopmentTask(order)||!['roblox','unity'].includes(target)
+    ||dcc?.executed!==true||dcc?.allRecipesPassed!==true
+    ||dcc?.candidateUsable!==true||dcc?.persistedForCandidate!==true
+    ||!recipes.length)return Object.freeze([]);
+  const bindings=recipes.map((row,index)=>{
+    const assetPath=posix(row?.nativeArtifact);
+    const artifactHash=clean(row?.artifactHash);
+    if(!assetPath||!artifactHash||row?.persistedForCandidate!==true)return null;
+    return Object.freeze({
+      index:index+1,
+      path:assetPath,
+      artifactHash,
+      assetId:clean(row?.assetId||row?.id)||null,
+      family:clean(row?.family).toUpperCase()||null,
+      sourceHash:clean(row?.sourceHash)||null,
+      license:clean(row?.license)||null
+    });
+  }).filter(Boolean);
+  return bindings.length===recipes.length?Object.freeze(bindings):Object.freeze([]);
+}
 export function resolveAssetSourceModel(order={},requestedModel=DEFAULT_MODEL){
   const routing=order?.assetProduction?.modelRouting&&typeof order.assetProduction.modelRouting==='object'?order.assetProduction.modelRouting:null;
   const requested=clean(requestedModel)||DEFAULT_MODEL;
@@ -689,8 +713,17 @@ export function deterministicDiagnosticCandidate({exploration={},sourceRoot='',r
   return{summary:'Vibe2 deterministic diagnostic repair',expectedEffect:'eliminate reproduced '+spec.diagnosticType+' before model generation',edits:[{path:spec.path,find:spec.find,replace}],newFiles:[],replaceFiles:[],tests:[],deterministicDiagnosticType:spec.diagnosticType};
 }
 
-export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sourceRootRelative='',responsibleFiles=[],candidateValidator=null,verifiedExternalLearningContract=null}={}){
-  if(!robloxDeterministicPresentationEligible(order))return null;
+export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sourceRootRelative='',responsibleFiles=[],candidateValidator=null,verifiedExternalLearningContract=null,generatedAssetBindings=[],allowAssetDevelopment=false}={}){
+  const persistedBindings=(Array.isArray(generatedAssetBindings)?generatedAssetBindings:[])
+    .map(row=>({
+      path:posix(row?.path),
+      artifactHash:clean(row?.artifactHash),
+      family:clean(row?.family).toUpperCase()||null,
+      assetId:clean(row?.assetId)||null
+    }))
+    .filter(row=>row.path&&row.artifactHash);
+  const generatedAssetBindingMode=allowAssetDevelopment===true&&assetDevelopmentTask(order)&&persistedBindings.length>0;
+  if(!robloxDeterministicPresentationEligible(order)&&!generatedAssetBindingMode)return null;
   if(clean(order?.target).toLowerCase()!=='roblox'||!clean(sourceRoot))return null;
   const presentationPass=clean(order?.presentationQuality?.pass).toUpperCase();
   if(order?.presentationQuality?.required!==true||presentationPass!=='ASSET_ADAPTATION')return null;
@@ -712,6 +745,24 @@ export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sour
     if(existing)return{find:existing.text,replace:block,stage:existing.stage+1};
     if(!anchorText||source.split(anchorText).length-1!==1)return null;
     return{find:anchorText,replace:anchorText+'\n'+block,stage:1};
+  };
+
+  const generatedBindingLines=(targetExpression)=>{
+    if(!generatedAssetBindingMode)return[];
+    const lines=[
+      '  local generatedAssetBindingLighting = game:GetService("Lighting")',
+      `  ${targetExpression}:SetAttribute("GeneratedNativeAssetBindingVersion", 1)`,
+      `  ${targetExpression}:SetAttribute("GeneratedNativeAssetBindingCount", ${persistedBindings.length})`,
+      `  generatedAssetBindingLighting:SetAttribute("GeneratedNativeAssetBindingCount", ${persistedBindings.length})`
+    ];
+    for(const [index,binding] of persistedBindings.entries()){
+      const slot=index+1;
+      lines.push(`  ${targetExpression}:SetAttribute("GeneratedNativeAssetPath${slot}", ${JSON.stringify(binding.path)})`);
+      lines.push(`  ${targetExpression}:SetAttribute("GeneratedNativeAssetSha256_${slot}", ${JSON.stringify(binding.artifactHash)})`);
+      if(binding.family)lines.push(`  ${targetExpression}:SetAttribute("GeneratedNativeAssetFamily${slot}", ${JSON.stringify(binding.family)})`);
+      if(binding.assetId)lines.push(`  ${targetExpression}:SetAttribute("GeneratedNativeAssetId${slot}", ${JSON.stringify(binding.assetId)})`);
+    }
+    return lines;
   };
 
   for(const relative of clientFiles){
@@ -763,6 +814,7 @@ export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sour
       'do',
       `  local deterministicBuildStage = ${stage}`,
       '  root:SetAttribute("DeterministicBuildStage", deterministicBuildStage)',
+      ...generatedBindingLines('root'),
       '  local deterministicGameplayHudCorner = root:FindFirstChild("DeterministicGameplayHudCorner")',
       '  if not deterministicGameplayHudCorner then',
       '    deterministicGameplayHudCorner = Instance.new("UICorner")',
@@ -867,6 +919,7 @@ export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sour
           `  local deterministicBuildStage = ${stage}`,
           `  local deterministicGameplaySurfaceTarget = ${variable}`,
           '  deterministicGameplaySurfaceTarget:SetAttribute("DeterministicBuildStage", deterministicBuildStage)',
+          ...generatedBindingLines('deterministicGameplaySurfaceTarget'),
           '  local deterministicGameplaySurfaceCorner = deterministicGameplaySurfaceTarget:FindFirstChild("DeterministicGameplaySurfaceCorner")',
           '  if not deterministicGameplaySurfaceCorner then',
           '    deterministicGameplaySurfaceCorner = Instance.new("UICorner")',
@@ -945,8 +998,12 @@ export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sour
         after:'deterministic native Roblox HUD restyle with grounded corner, stroke, gradient, and TweenService entry motion'
       }:null;
       const candidate=normalizeCandidate({
-        summary:'Deterministic Roblox presentation build-up stage '+stage,
-        expectedEffect:'model-independent native Roblox HUD style and motion build-up',
+        summary:generatedAssetBindingMode
+          ?'Deterministic generated native asset binding stage '+stage
+          :'Deterministic Roblox presentation build-up stage '+stage,
+        expectedEffect:generatedAssetBindingMode
+          ?'persisted generated native asset identity bound to the existing Roblox visual owner before runtime verification'
+          :'model-independent native Roblox HUD style and motion build-up',
         edits:rows,newFiles:[],replaceFiles:[],tests:[],
         graphicsReplacementReport
       },{target:'roblox',responsibleFiles,sourceRootRelative,allowFullRewrite:false});
@@ -957,13 +1014,17 @@ export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sour
         candidateValidation,
         generation:{
           attempts:0,recoveryUsed:false,deterministicRobloxBuildUp:true,deterministicRobloxBuildStage:stage,
+          deterministicGeneratedAssetBinding:generatedAssetBindingMode,
+          generatedAssetBindingCount:generatedAssetBindingMode?persistedBindings.length:0,
           deterministicVerifiedExternalLearningApplied:verifiedLearning.required===true&&verifiedLearningConsumed,
           deterministicVerifiedExternalLearningIds:[...verifiedLearningIds],
           deterministicVerifiedExternalLearningCoveragePct:verifiedLearning.required===true?100:0,
           deterministicVerifiedExternalLearningContractConsumed:verifiedLearningConsumed,
           verifiedExternalLearningPromptChecks:0,
           verifiedExternalLearningPromptAllAttempts:verifiedLearning.required!==true,
-          mode:'DETERMINISTIC_ROBLOX_BUILDUP',maxPredict:0,timeoutMs:0,contextWindow:0,temperature:0,completionMode:'DETERMINISTIC_ROBLOX_BUILDUP'
+          mode:generatedAssetBindingMode?'DETERMINISTIC_GENERATED_ASSET_BINDING':'DETERMINISTIC_ROBLOX_BUILDUP',
+          maxPredict:0,timeoutMs:0,contextWindow:0,temperature:0,
+          completionMode:generatedAssetBindingMode?'DETERMINISTIC_GENERATED_ASSET_BINDING':'DETERMINISTIC_ROBLOX_BUILDUP'
         }
       };
     }catch(error){
@@ -4350,9 +4411,17 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     return{...result,sourceSyntax,candidateSelfReview,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta,studioAssetQualityAxes};
   };
   const candidateVariant=clean(order?.candidateStrategyRole?.variant)||clean(process.env.VIBE2_SPECULATIVE_VARIANT)||'primary';
-  const deterministicDiagnostic=!allowFullRewrite&&verifiedExternalLearningContract.required!==true?deterministicDiagnosticCandidate({exploration,sourceRoot,responsibleFiles,order}):null;
+  const generatedAssetBindings=persistedGeneratedAssetBindings(order);
   let generated=null;
-  if(deterministicDiagnostic){
+  if(target==='roblox'&&generatedAssetBindings.length){
+    generated=deterministicRobloxBuildUpCandidate({
+      order,sourceRoot,sourceRootRelative,responsibleFiles,candidateValidator,verifiedExternalLearningContract,
+      generatedAssetBindings,allowAssetDevelopment:true
+    });
+    if(generated)console.log('VIBE2_GENERATED_NATIVE_ASSET_BINDING=PASS:'+generatedAssetBindings.length);
+  }
+  const deterministicDiagnostic=!allowFullRewrite&&verifiedExternalLearningContract.required!==true?deterministicDiagnosticCandidate({exploration,sourceRoot,responsibleFiles,order}):null;
+  if(!generated&&deterministicDiagnostic){
     try{
       const candidate=normalizeCandidate(deterministicDiagnostic,{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES});
       if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});

@@ -107,6 +107,64 @@ test('runtime-evidence wait releases ordinary file locks only after CAUSAL_REPAI
   assert.equal(conflict.conflictTaskId,'runtime-wait');
 });
 
+
+test('slot-released fan-in wait releases ordinary source conflicts while explicit retained locks still serialize',()=>{
+  const file='unity-games/demo/Assets/Scripts/PrototypeAnimatedVisuals.cs';
+  const common={
+    gameId:'demo',target:'unity',department:'development',type:'implementation',
+    sourceRoot:'unity-games/demo',responsibleFiles:[file]
+  };
+  const running={
+    id:'demo-unity-web-repair-v1',goal:'finish existing worker result fan-in',
+    status:'running',executionLane:'game-primary',...common
+  };
+  const asset={
+    id:'demo-unity-presentation-asset-adaptation-v1',goal:'native presentation asset adaptation',
+    status:'queued',executionLane:'asset-development',assetProductionLane:true,...common
+  };
+
+  const released=releaseVibeTaskExecutionSlot(createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[running,asset]}),{
+    taskId:running.id,evidence:['worker-artifact-slot-release:v1']
+  });
+  assert.equal(released.released,true);
+  const waiting=released.queue.tasks.find(row=>row.id===running.id);
+  assert.equal(waiting.blocker,'slot-released-awaiting-fan-in');
+  assert.deepEqual([...waiting.retainedResponsibleFileLocks],[]);
+
+  const available=selectVibeQueueBatch(released.queue,{lane:'asset-development',maxConcurrentTasks:4});
+  assert.equal(available.selected.some(row=>row.id===asset.id),true);
+  assert.equal(available.deferredConflicts.some(row=>row.task.id===asset.id),false);
+
+  const legacyWaiting={
+    ...running,
+    blocker:'slot-released-awaiting-fan-in',
+    evidence:['worker-artifact-slot-release:v1'],
+    retainedResponsibleFileLocks:[file]
+  };
+  const legacy=selectVibeQueueBatch(createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[legacyWaiting,asset]}),{
+    lane:'asset-development',maxConcurrentTasks:4
+  });
+  assert.equal(legacy.selected.some(row=>row.id===asset.id),true);
+  assert.equal(legacy.deferredConflicts.some(row=>row.task.id===asset.id),false);
+
+  const retainedQueue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[
+    {...running,retainedResponsibleFileLocks:[file]},
+    asset
+  ]});
+  const retainedRelease=releaseVibeTaskExecutionSlot(retainedQueue,{
+    taskId:running.id,evidence:['worker-artifact-slot-release:v1']
+  });
+  const retainedTask=retainedRelease.queue.tasks.find(row=>row.id===running.id);
+  assert.deepEqual([...retainedTask.retainedResponsibleFileLocks],[file]);
+  assert.ok(retainedTask.evidence.includes('worker-slot-explicit-retained-locks:v1'));
+  const blocked=selectVibeQueueBatch(retainedRelease.queue,{lane:'asset-development',maxConcurrentTasks:4});
+  assert.equal(blocked.selected.some(row=>row.id===asset.id),false);
+  const conflict=blocked.deferredConflicts.find(row=>row.task.id===asset.id);
+  assert.ok(conflict);
+  assert.equal(conflict.reason,'responsible-file-conflict');
+  assert.equal(conflict.conflictTaskId,running.id);
+});
+
 test('transient work lock conflicts are requeued without consuming retry budget or poisoning failure learning',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[{
     id:'visual-lock',gameId:'visual-game',target:'roblox',department:'development',type:'implementation',
@@ -686,7 +744,7 @@ test('awaiting QA holds only its responsible file and same-game disjoint work co
   assert.equal(next.deferredConflicts.some(row=>row.task.id==='same-next'),false);
 });
 
-test('completed single worker releases capacity before fan-in without dropping source locks or adding QA pressure', () => {
+test('completed single worker releases capacity and ordinary source locks before fan-in without adding QA pressure', () => {
   const queue=createVibeContinuousQueue({
     maxConcurrentTasks:2,
     tasks:[
@@ -702,14 +760,14 @@ test('completed single worker releases capacity before fan-in without dropping s
   assert.equal(batch.capacityRunning.length,1);
   assert.equal(batch.releasedWorkerSlots.length,1);
   assert.equal(batch.backpressure.awaitingQaCount,0);
-  assert.equal(batch.selected.some(t=>t.id==='same-root'),false);
-  assert.equal(batch.selected.some(t=>t.id==='refill'),true);
+  assert.equal(batch.selected.length,1);
+  assert.equal(batch.selected.some(t=>t.id==='same-root'),true);
   const second=releaseVibeTaskExecutionSlot(released.queue,{taskId:'first'});
   assert.equal(second.released,false);
   assert.equal(second.reason,'ALREADY_RELEASED');
 });
 
-test('completed worker artifacts release capacity before slow cohort fan-in without dropping locks', () => {
+test('completed worker artifacts release capacity and ordinary source locks before slow cohort fan-in', () => {
   const queue=createVibeContinuousQueue({
     maxConcurrentTasks:2,
     tasks:[
@@ -728,10 +786,10 @@ test('completed worker artifacts release capacity before slow cohort fan-in with
   const task=complete.queue.tasks.find(row=>row.id==='artifact-task');
   assert.match(task.blocker,/slot-released.*fan-in/);
   assert.equal(task.reservationRunId,'123');
-  assert.deepEqual(task.retainedResponsibleFileLocks,['web-games/shared-lock/shared.js']);
+  assert.deepEqual(task.retainedResponsibleFileLocks,[]);
   const selection=selectVibeQueueBatch(complete.queue,{maxConcurrentTasks:2});
-  assert.equal(selection.selected.some(row=>row.id==='same-lock'),false);
-  assert.equal(selection.selected.some(row=>row.id==='refill'),true);
+  assert.equal(selection.selected.length,1);
+  assert.equal(selection.selected.some(row=>row.id==='same-lock'),true);
 });
 
 test('worker artifact release ignores artifacts from a different reservation run', () => {

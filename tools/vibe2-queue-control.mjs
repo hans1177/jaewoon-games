@@ -33,6 +33,7 @@ const STALE_RUNNING_RECOVERY_EVIDENCE = 'recovery:stale-running-reservation-v1';
 const COMPLETED_RESERVATION_RUN_RECOVERY_EVIDENCE = 'recovery:completed-reservation-run-v1';
 const TRANSIENT_WORK_LOCK_RECOVERY_EVIDENCE = 'recovery:transient-work-lock-requeue-v1';
 const WORKER_ARTIFACT_SLOT_RELEASE_EVIDENCE = 'worker-artifact-slot-release:v1';
+const WORKER_SLOT_EXPLICIT_RETAINED_LOCK_EVIDENCE = 'worker-slot-explicit-retained-locks:v1';
 const DEFAULT_STALE_RUNNING_MS = 45 * 60 * 1000;
 function readJson(file, fallback = {}) {
   if (!file || !fs.existsSync(file)) return fallback;
@@ -545,14 +546,15 @@ export function releaseVibeTaskExecutionSlot(queueInput, { taskId = '', evidence
   if (/candidate-awaiting-runtime-evidence|awaiting.*qa|qa.*awaiting/i.test(currentBlocker) || /slot-released.*fan-in/i.test(currentBlocker)) {
     return { released:false, updated:false, reason:'ALREADY_RELEASED', queue };
   }
-  const root=clean(task.sourceRoot).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
-  const retainedResponsibleFileLocks=[...new Set((task.responsibleFiles||[])
+  const retainedResponsibleFileLocks=[...new Set((task.retainedResponsibleFileLocks||[])
     .map(value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,''))
-    .filter(Boolean)
-    .map(file=>root&&!file.startsWith(root+'/')?root+'/'+file:file))];
+    .filter(Boolean))];
   const nextQueue = markVibeTaskAwaiting(queue, {
     taskId:id,
-    evidence,
+    evidence:[
+      ...(evidence||[]),
+      ...(retainedResponsibleFileLocks.length?[WORKER_SLOT_EXPLICIT_RETAINED_LOCK_EVIDENCE]:[])
+    ],
     blocker:clean(blocker) || 'slot-released-awaiting-fan-in',
     retainedResponsibleFileLocks
   });
