@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import {robloxBuildProfileFromBaseline as canonicalRobloxBuildProfileFromBaseline,requiresPersistentSave as canonicalRequiresPersistentSave} from './company-development-roblox-bootstrap.mjs';
 
 const clean=value=>String(value??'').replace(/\s+/g,' ').trim();
 const upper=value=>clean(value).toUpperCase();
@@ -13,6 +14,20 @@ function collectDesignTextValues(value,out=[]){
   return out;
 }
 const designText=baseline=>collectDesignTextValues(baselineContent(baseline),[]).join(' ').toLowerCase();
+const gameplayContractText=baseline=>{
+  const content=baselineContent(baseline);
+  return collectDesignTextValues({
+    identity:content.identity,
+    playerFantasy:content.playerFantasy,
+    coreFun:content.coreFun,
+    coreLoop:content.coreLoop,
+    signatureSystems:content.signatureSystems,
+    systemInterconnections:content.systemInterconnections,
+    progressionDirection:content.progressionDirection,
+    progressionEconomyBalance:content.progressionEconomyBalance,
+    failureRetryRisk:content.failureRetryRisk
+  },[]).join(' ').toLowerCase();
+};
 const stripFoundation=server=>String(server||'').split('-- native-foundation-sentinel-v1')[0];
 
 function field(config,name){
@@ -29,6 +44,10 @@ function inferDesignGenre(baseline={}){
   const content=baselineContent(baseline);
   const explicit=clean(content?.robloxBuildProfile?.genre);
   if(explicit)return explicit;
+  try{
+    const canonical=canonicalRobloxBuildProfileFromBaseline(baseline);
+    if(clean(canonical?.genre))return clean(canonical.genre);
+  }catch{};
   const identityText=[
     content.identity,content.playerFantasy,content.coreFun,...(Array.isArray(content.coreLoop)?content.coreLoop:[]),
     ...(Array.isArray(content.signatureSystems)?content.signatureSystems:[]).flatMap(row=>[row?.name,row?.purpose,row?.playerChoice])
@@ -46,6 +65,11 @@ function inferDesignPlayMode(baseline={}){
   const content=baselineContent(baseline);
   const explicit=upper(content?.robloxBuildProfile?.playMode);
   if(['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(explicit))return explicit;
+  try{
+    const canonical=canonicalRobloxBuildProfileFromBaseline(baseline);
+    const canonicalMode=upper(canonical?.playMode);
+    if(['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(canonicalMode))return canonicalMode;
+  }catch{};
   const direct=upper(content.multiplayerMode);
   if(['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(direct))return direct;
   const text=designText(baseline);
@@ -60,11 +84,7 @@ function multiplayerRequiredByDesignText(text=''){
 }
 
 function multiplayerRequiredByDesign(baseline={}){
-  const content=baselineContent(baseline);
-  if(content?.robloxBuildProfile?.multiplayerRequired===true)return true;
-  const mode=designMode(baseline);
-  if(!['','SINGLE','SOLO','NONE','SINGLE_PLAYER'].includes(mode))return true;
-  return multiplayerRequiredByDesignText(designText(baseline));
+  return inferDesignPlayMode(baseline)!=='SINGLE';
 }
 
 export function robloxDesignProfileFromBaseline(baseline={}){
@@ -120,12 +140,12 @@ const CAPABILITY_RULES=Object.freeze([
   {id:'CORE_GAMEPLAY_STATE',design:/./,always:true},
   {id:'SESSION_FLOW',design:/(?:loop|round|session|day|night|wave|stage|floor|match|라운드|세션|하루|낮|밤|웨이브|스테이지|층|경기)/i},
   {id:'WORLD',design:/(?:world|map|region|zone|dungeon|village|island|forest|jungle|school|hospital|theme park|terrain|월드|맵|지역|구역|던전|마을|섬|숲|학교|병원|놀이공원|지형)/i},
-  {id:'CONTENT_ENTITY',design:/(?:enemy|monster|boss|npc|customer|resource|item|creature|적|몬스터|보스|주민|손님|자원|아이템|생물)/i},
+  {id:'CONTENT_ENTITY',design:/(?:enemy|monster|boss|npc|customer|resource|item|creature|(?<![가-힣])적(?:의|을|를|이|가|에게|과|와|들|으로|한테)?(?![가-힣])|몬스터|보스|주민|손님|자원|아이템|생물)/i},
   {id:'COMBAT',design:/(?:combat|attack|damage|hit|weapon|skill|enemy|monster|boss|전투|공격|피해|타격|무기|스킬|(?<![가-힣])적(?:의|을|를|이|가|에게|과|와|들|으로|한테)?(?![가-힣])|몬스터|보스)/i},
-  {id:'ENEMY_AI',design:/(?:enemy|monster|boss|chase|aggro|ai|(?<![가-힣])적(?:의|을|를|이|가|에게|과|와|들|으로|한테)?(?![가-힣])|몬스터|보스|추격|어그로)/i},
+  {id:'ENEMY_AI',design:/(?:enemy|monster|boss|chase|aggro|\bai\b|(?<![가-힣])적(?:의|을|를|이|가|에게|과|와|들|으로|한테)?(?![가-힣])|몬스터|보스|추격|어그로)/i},
   {id:'GATHERING',design:/(?:gather|harvest|collect resource|resource gathering|mine|chop|채집|(?:자원|재료|아이템|전리품|나무|돌|광석|식량)\s*(?:을|를)?\s*수집|채광|벌목)/i},
   {id:'CRAFTING',design:/(?:craft|recipe|workbench|제작|제작법|제작대)/i},
-  {id:'DAY_NIGHT',design:/(?:day|night|낮|밤|주야)/i},
+  {id:'DAY_NIGHT',design:/(?:\bday\b|\bnight\b|낮(?:\s*시간|에|에는|동안|과|밤)|밤(?:이|에|에는|동안|과|마다)|주야)/i},
   {id:'WAVE',design:/(?:wave|horde|파상|웨이브|몰려오는)/i},
   {id:'INVENTORY',design:/(?:inventory|item ownership|loot|인벤|인벤토리|전리품|아이템 보유)/i},
   {id:'EQUIPMENT',design:/(?:equipment|equip|weapon|armor|loadout|장비|장착|무기|방어구)/i},
@@ -298,13 +318,14 @@ function qualitySheet({required,implemented,ctx,runtimeEvidence=null}){
 
 export function evaluateRobloxGameplayProductReadiness({gameId='',baseline={},config='',server='',client='',project='',runtimeEvidence=null}={}){
   const content=baselineContent(baseline);
-  const text=designText(baseline);
+  const text=gameplayContractText(baseline);
   const ctx=sourceContext({config,server,client,project});
   const required=[];
   for(const rule of CAPABILITY_RULES){
     if(rule.always||rule.design.test(text))required.push(rule.id);
   }
   if(multiplayerRequiredByDesign(baseline)&&!required.includes('MULTIPLAYER'))required.push('MULTIPLAYER');
+  if(canonicalRequiresPersistentSave(baseline)&&!required.includes('SAVE'))required.push('SAVE');
   if(Array.isArray(content.coreLoop)&&content.coreLoop.length>=2&&!required.includes('SESSION_FLOW'))required.push('SESSION_FLOW');
   if((content.progressionDirection||'').trim()&&!required.includes('PROGRESSION'))required.push('PROGRESSION');
 
