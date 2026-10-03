@@ -1,5 +1,5 @@
 {
-  "version": 156,
+  "version": 157,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1091,7 +1091,10 @@
     "unrelatedGraphicsRuntimeOrReleaseFailureMayNotBeLoggedAsGameWideDevelopmentBlocker": true,
     "internalConcurrencyCapForbidden": true,
     "externalProviderCapacityMayQueueWork": true,
-    "queueingFromExternalCapacityIsNotGameQualityFailure": true
+    "queueingFromExternalCapacityIsNotGameQualityFailure": true,
+    "sameGameDifferentPlatformsParallelRequired": true,
+    "gameIdOnlySerializationForbidden": true,
+    "robloxStudioActualPlayExceptionOnly": true
   },
   "focusedCaretakerMaximumParallelismContract": {
     "version": 1,
@@ -2225,7 +2228,11 @@
     "exactGameCancelInProgress": false,
     "pushBatchCancelInProgress": true,
     "manualEmptyBatchCancelInProgress": false,
-    "pushBatchLatestWins": true
+    "pushBatchLatestWins": true,
+    "gameIdConcurrencyGroupForbidden": true,
+    "runScopedConcurrencyRequired": true,
+    "exactDuplicateDispatchDedupePreserved": true,
+    "studioActualPlayExceptionOnly": true
   },
   "lightweightGameIngressRunnerReliefEvidence": {
     "version": 3,
@@ -2802,5 +2809,26 @@
     "studioEvidenceRequired": false,
     "studioDiagnosticOptional": true,
     "actualStudioPassMayNotBeFabricated": true
+  },
+  "sameGamePlatformParallelEvidenceContract": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.sameGamePlatformParallelismContract",
+    "requiredMarkers": [
+      "SAME_GAME_PLATFORM_PARALLEL_POLICY=ACTIVE",
+      "GAME_ID_SERIALIZATION=FORBIDDEN",
+      "RESPONSIBLE_FILE_CONFLICT_ONLY=YES",
+      "EXACT_DUPLICATE_DEDUPE_ALLOWED=YES",
+      "ROBLOX_STUDIO_SERIALIZATION_EXCEPTION=ACTUAL_SESSION_ONLY"
+    ],
+    "requiredEvidence": [
+      "PLATFORM",
+      "GAME_ID",
+      "RESPONSIBLE_FILES",
+      "EXECUTION_LANE",
+      "CONFLICT_REASON_WHEN_DEFERRED"
+    ],
+    "gameIdOnlyConflictMarkerForbidden": true,
+    "exactResponsibleFileConflictMayDefer": true,
+    "studioSessionMayDefer": true
   }
 }
