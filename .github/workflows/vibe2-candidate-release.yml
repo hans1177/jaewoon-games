@@ -138,8 +138,10 @@ jobs:
             sourceHash:String(row?.sourceHash||'').trim(),
             artifactHash:String(row?.artifactHash||'').trim()||null,
             bindingEvidence:Array.isArray(row?.bindingEvidence)?row.bindingEvidence.map(String).slice(0,8):[],
-            candidateSourceBindingVerified:row?.candidateSourceBindingVerified===true
-          })).filter(row=>row.assetId&&row.license&&row.sourceHash&&row.candidateSourceBindingVerified);
+            candidateSourceBindingVerified:row?.candidateSourceBindingVerified===true,
+            generatedByDeclaredRecipe:row?.generatedByDeclaredRecipe===true,
+            persistedForCandidate:row?.persistedForCandidate===true
+          })).filter(row=>row.assetId&&row.family&&row.license&&row.sourceHash&&row.candidateSourceBindingVerified);
           put('asset_promotion_candidates',JSON.stringify(promotionCandidates));
           const lockFiles=new Set(Array.isArray(m?.compiledWorkContract?.workLock?.files)?m.compiledWorkContract.workLock.files.map(String):[]);
           const generatedAssetFiles=[...new Set((Array.isArray(m.generatedAssetFiles)?m.generatedAssetFiles:[]).map(value=>String(value||'').replaceAll('\\','/').replace(/^\.\//,'')).filter(Boolean))];
