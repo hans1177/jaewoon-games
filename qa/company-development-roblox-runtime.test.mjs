@@ -1063,7 +1063,8 @@ test('Roblox runtime self-redispatch dedupes queued or running work for the same
   assert.match(workflow,/ROBLOX_BATCH_CONTRACT_SUPERSEDED_REDISPATCH=DEDUPED_EXISTING_RUN:/);
   assert.match(workflow,/ROBLOX_F0_SOURCE_REPAIR_DISPATCH=DEDUPED_EXISTING_RUN:/);
   assert.match(workflow,/ROBLOX_NEXT_TECHNICAL_BATCH_DISPATCH=DEDUPED_EXISTING_RUN:/);
-  assert.match(workflow,/group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}/);
+  assert.match(workflow,/group: roblox-native-run-\$\{\{ github\.run_id \}\}/);
+  assert.doesNotMatch(workflow,/group: roblox-native-exact-/);
 });
 
 
