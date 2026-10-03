@@ -5821,14 +5821,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-03T16:28:15.876Z",
+      "updatedAt": "2026-10-03T16:28:48.411Z",
       "robloxSourceCommit": "73e6ae68d20e0120cb2fcda36ea602a62b483bb6",
       "robloxSourceBootstrapPassedAt": "2026-10-03T16:07:00.751Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -5837,17 +5837,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "73e6ae68d20e0120cb2fcda36ea602a62b483bb6",
       "robloxBuildArtifactIdentity": "sha256:08d14fe84862ac561a466bb680912729b5102b5f08fc9dcc8f6ba0de304e7d55",
-      "robloxBuildPassedAt": "2026-10-03T16:28:15.876Z",
+      "robloxBuildPassedAt": "2026-10-03T16:28:48.411Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-03T16:28:15.876Z",
+      "robloxBuildPreflightPassedAt": "2026-10-03T16:28:48.411Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "amusement-tycoon",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-03T16:16:51.532Z",
+        "checkedAt": "2026-10-03T16:28:46.944Z",
         "sourceRevision": "73e6ae68d20e0120cb2fcda36ea602a62b483bb6",
         "artifactIdentity": "sha256:08d14fe84862ac561a466bb680912729b5102b5f08fc9dcc8f6ba0de304e7d55",
         "secondaryOwnerFocus": false,
@@ -5891,25 +5891,25 @@
         "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
-      "robloxFoundationF0Passed": false,
-      "robloxFoundationF0PassedAt": null,
+      "robloxFoundationF0Passed": true,
+      "robloxFoundationF0PassedAt": "2026-10-03T16:28:48.411Z",
       "robloxFoundationF0Evidence": {
         "version": 4,
         "gameId": "amusement-tycoon",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-03T16:16:52.055Z",
+        "checkedAt": "2026-10-03T16:28:47.489Z",
         "sourcePath": "roblox-games/amusement-tycoon",
         "sourceRevision": "73e6ae68d20e0120cb2fcda36ea602a62b483bb6",
         "artifactIdentity": "sha256:08d14fe84862ac561a466bb680912729b5102b5f08fc9dcc8f6ba0de304e7d55",
         "rebuiltArtifactIdentity": "sha256:08d14fe84862ac561a466bb680912729b5102b5f08fc9dcc8f6ba0de304e7d55",
-        "artifactRunId": 37134628044,
+        "artifactRunId": 37135615502,
         "nativeLanguageCompilePassed": true,
         "nativeCompilerVersion": "0.739",
         "playMode": "SINGLE",
         "saveExists": true,
         "multiplayerApplicable": false,
-        "sourcePreflightPassed": false,
+        "sourcePreflightPassed": true,
         "f0SourceIntegrityPassed": true,
         "sourceStartupMarkersPassed": true,
         "gameStartPassed": false,
@@ -5927,30 +5927,22 @@
         "combatOrRoundMarkersPassed": true,
         "datastoreContractPassed": true,
         "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": false,
+        "protectedStatePreserved": true,
         "exactRevision": true,
         "gameplayProductReadinessRequired": true,
         "gameplayProductReadiness": {
           "version": 1,
           "gameId": "amusement-tycoon",
-          "pass": false,
-          "blockers": [
-            "DESIGN_GENRE_MISMATCH:Simulation:Strategy",
-            "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-            "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER"
-          ],
+          "pass": true,
+          "blockers": [],
           "requiredCapabilities": [
             "CORE_GAMEPLAY_STATE",
             "SESSION_FLOW",
             "WORLD",
             "CONTENT_ENTITY",
-            "ENEMY_AI",
-            "DAY_NIGHT",
             "PROGRESSION",
-            "QUEST",
             "TYCOON",
             "SAVE",
-            "MULTIPLAYER",
             "MOBILE_UI"
           ],
           "implementedCapabilities": {
@@ -5958,13 +5950,9 @@
             "SESSION_FLOW": true,
             "WORLD": true,
             "CONTENT_ENTITY": true,
-            "ENEMY_AI": false,
-            "DAY_NIGHT": true,
             "PROGRESSION": true,
-            "QUEST": true,
             "TYCOON": true,
             "SAVE": true,
-            "MULTIPLAYER": false,
             "MOBILE_UI": true
           },
           "coreLoopTrace": [
@@ -5990,7 +5978,6 @@
               "step": "수익 재투자 및 최적화: 벌어들인 수익으로 시설을 업그레이드하거나 새로운 구역을 개방하여 효율을 극대화하고 다음 성장을 준비합니다.",
               "capabilities": [
                 "WORLD",
-                "CONTENT_ENTITY",
                 "PROGRESSION",
                 "TYCOON"
               ],
@@ -6029,7 +6016,7 @@
             "Content": "PLAYABLE",
             "World": "PLAYABLE",
             "Combat": "N/A",
-            "AI": "MISSING",
+            "AI": "N/A",
             "Progression": "PLAYABLE",
             "UI": "POLISHED",
             "Graphics": "ROUGH",
@@ -6041,9 +6028,9 @@
           },
           "studioReadiness": {
             "ai": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 0,
-              "pass": false
+              "pass": true
             },
             "combatFeel": {
               "applicable": false,
@@ -6067,10 +6054,6 @@
             "systemConnections": {
               "rows": [
                 {
-                  "id": "QUEST_TO_PROGRESSION",
-                  "pass": true
-                },
-                {
                   "id": "WORLD_TO_CONTENT",
                   "pass": true
                 }
@@ -6085,10 +6068,8 @@
               "genericScopeHandlerCount": 0,
               "meaningfulGameplayFunctionCount": 9
             },
-            "criticalGaps": [
-              "AI_STATE_DEPTH"
-            ],
-            "f9SourceQualityReady": false
+            "criticalGaps": [],
+            "f9SourceQualityReady": true
           },
           "runtimeRequirements": {
             "worldRequired": true,
@@ -6102,7 +6083,7 @@
           },
           "designFingerprint": "bb759659a67bdcb68318906be238f40e5991aa68218588a50bd9f6fb09202e29",
           "antiSkeletonPassed": true,
-          "designGenre": "Simulation",
+          "designGenre": "Strategy",
           "sourceGenre": "Strategy",
           "designPlayMode": "SINGLE",
           "sourcePlayMode": "SINGLE"
@@ -6112,7 +6093,7 @@
           "Content": "PLAYABLE",
           "World": "PLAYABLE",
           "Combat": "N/A",
-          "AI": "MISSING",
+          "AI": "N/A",
           "Progression": "PLAYABLE",
           "UI": "POLISHED",
           "Graphics": "ROUGH",
@@ -6141,34 +6122,32 @@
           "multiplayerSync": true,
           "sessionEndRestart": true,
           "errorGuards": true,
-          "gameplayProductReadiness": false,
+          "gameplayProductReadiness": true,
           "f0SourceIntegrity": true
         },
-        "pass": false,
-        "state": "BLOCKED",
-        "blockers": [
-          "gameplayProductReadiness"
-        ],
+        "pass": true,
+        "state": "PASS",
+        "blockers": [],
         "authority": "roblox-headless-source-preflight-f0"
       },
-      "robloxHeadlessFastMvpPassed": false,
+      "robloxHeadlessFastMvpPassed": true,
       "robloxHeadlessFastMvpEvidence": {
         "version": 4,
         "gameId": "amusement-tycoon",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-03T16:16:52.055Z",
+        "checkedAt": "2026-10-03T16:28:47.489Z",
         "sourcePath": "roblox-games/amusement-tycoon",
         "sourceRevision": "73e6ae68d20e0120cb2fcda36ea602a62b483bb6",
         "artifactIdentity": "sha256:08d14fe84862ac561a466bb680912729b5102b5f08fc9dcc8f6ba0de304e7d55",
         "rebuiltArtifactIdentity": "sha256:08d14fe84862ac561a466bb680912729b5102b5f08fc9dcc8f6ba0de304e7d55",
-        "artifactRunId": 37134628044,
+        "artifactRunId": 37135615502,
         "nativeLanguageCompilePassed": true,
         "nativeCompilerVersion": "0.739",
         "playMode": "SINGLE",
         "saveExists": true,
         "multiplayerApplicable": false,
-        "sourcePreflightPassed": false,
+        "sourcePreflightPassed": true,
         "f0SourceIntegrityPassed": true,
         "sourceStartupMarkersPassed": true,
         "gameStartPassed": false,
@@ -6186,30 +6165,22 @@
         "combatOrRoundMarkersPassed": true,
         "datastoreContractPassed": true,
         "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": false,
+        "protectedStatePreserved": true,
         "exactRevision": true,
         "gameplayProductReadinessRequired": true,
         "gameplayProductReadiness": {
           "version": 1,
           "gameId": "amusement-tycoon",
-          "pass": false,
-          "blockers": [
-            "DESIGN_GENRE_MISMATCH:Simulation:Strategy",
-            "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-            "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER"
-          ],
+          "pass": true,
+          "blockers": [],
           "requiredCapabilities": [
             "CORE_GAMEPLAY_STATE",
             "SESSION_FLOW",
             "WORLD",
             "CONTENT_ENTITY",
-            "ENEMY_AI",
-            "DAY_NIGHT",
             "PROGRESSION",
-            "QUEST",
             "TYCOON",
             "SAVE",
-            "MULTIPLAYER",
             "MOBILE_UI"
           ],
           "implementedCapabilities": {
@@ -6217,13 +6188,9 @@
             "SESSION_FLOW": true,
             "WORLD": true,
             "CONTENT_ENTITY": true,
-            "ENEMY_AI": false,
-            "DAY_NIGHT": true,
             "PROGRESSION": true,
-            "QUEST": true,
             "TYCOON": true,
             "SAVE": true,
-            "MULTIPLAYER": false,
             "MOBILE_UI": true
           },
           "coreLoopTrace": [
@@ -6249,7 +6216,6 @@
               "step": "수익 재투자 및 최적화: 벌어들인 수익으로 시설을 업그레이드하거나 새로운 구역을 개방하여 효율을 극대화하고 다음 성장을 준비합니다.",
               "capabilities": [
                 "WORLD",
-                "CONTENT_ENTITY",
                 "PROGRESSION",
                 "TYCOON"
               ],
@@ -6288,7 +6254,7 @@
             "Content": "PLAYABLE",
             "World": "PLAYABLE",
             "Combat": "N/A",
-            "AI": "MISSING",
+            "AI": "N/A",
             "Progression": "PLAYABLE",
             "UI": "POLISHED",
             "Graphics": "ROUGH",
@@ -6300,9 +6266,9 @@
           },
           "studioReadiness": {
             "ai": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 0,
-              "pass": false
+              "pass": true
             },
             "combatFeel": {
               "applicable": false,
@@ -6326,10 +6292,6 @@
             "systemConnections": {
               "rows": [
                 {
-                  "id": "QUEST_TO_PROGRESSION",
-                  "pass": true
-                },
-                {
                   "id": "WORLD_TO_CONTENT",
                   "pass": true
                 }
@@ -6344,10 +6306,8 @@
               "genericScopeHandlerCount": 0,
               "meaningfulGameplayFunctionCount": 9
             },
-            "criticalGaps": [
-              "AI_STATE_DEPTH"
-            ],
-            "f9SourceQualityReady": false
+            "criticalGaps": [],
+            "f9SourceQualityReady": true
           },
           "runtimeRequirements": {
             "worldRequired": true,
@@ -6361,7 +6321,7 @@
           },
           "designFingerprint": "bb759659a67bdcb68318906be238f40e5991aa68218588a50bd9f6fb09202e29",
           "antiSkeletonPassed": true,
-          "designGenre": "Simulation",
+          "designGenre": "Strategy",
           "sourceGenre": "Strategy",
           "designPlayMode": "SINGLE",
           "sourcePlayMode": "SINGLE"
@@ -6371,7 +6331,7 @@
           "Content": "PLAYABLE",
           "World": "PLAYABLE",
           "Combat": "N/A",
-          "AI": "MISSING",
+          "AI": "N/A",
           "Progression": "PLAYABLE",
           "UI": "POLISHED",
           "Graphics": "ROUGH",
@@ -6400,14 +6360,12 @@
           "multiplayerSync": true,
           "sessionEndRestart": true,
           "errorGuards": true,
-          "gameplayProductReadiness": false,
+          "gameplayProductReadiness": true,
           "f0SourceIntegrity": true
         },
-        "pass": false,
-        "state": "BLOCKED",
-        "blockers": [
-          "gameplayProductReadiness"
-        ],
+        "pass": true,
+        "state": "PASS",
+        "blockers": [],
         "authority": "roblox-headless-source-preflight-f0"
       },
       "robloxHeadlessFinalReviewPassed": false,
@@ -6441,11 +6399,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-      "robloxFailureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
+      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
+      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
       "routingBlockers": [
-        "roblox-f0-gameplay-product-readiness-failed"
+        "roblox-runtime-candidate-deploy-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -6458,7 +6416,7 @@
       "strictDesignReviewRefreshRequired": true,
       "ownerPreservationPresentationUpgrade": false,
       "presentationFirstPass": null,
-      "robloxExactRevisionPassed": false,
+      "robloxExactRevisionPassed": true,
       "robloxValidationTarget": {
         "version": 3,
         "gameId": "amusement-tycoon",
@@ -68619,7 +68577,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-03T16:28:31.786Z",
+  "updatedAt": "2026-10-03T16:28:48.411Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
