@@ -172,187 +172,6 @@
       "homepageDisplayMode": "WEB_PUBLISHED"
     },
     {
-      "id": "horror-escape-room",
-      "name": "심야 대탈출",
-      "description": "8명 4대4로 시작해 잡힌 인간이 몬스터로 전환되는 AI 충원형 감염 추격전",
-      "genre": [
-        "술래잡기",
-        "몬스터",
-        "비대칭 멀티"
-      ],
-      "image": "assets/roblox-thumbnails/horror-escape-room.svg",
-      "webPath": "/web-games/horror-escape-room/",
-      "hasWebArchive": true,
-      "featured": true,
-      "homepageWebPlayable": true,
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "productionTarget": "ROBLOX_UNITY",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_DIRECT_DEVELOPMENT",
-      "ownerExistingGame": false,
-      "developmentHandling": "OWNER_DIRECT_NATIVE_DEVELOPMENT",
-      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/horror-escape-room",
-        "UNITY": "unity-games/horror-escape-room"
-      },
-      "playModes": [
-        "SINGLE_WITH_AI",
-        "ASYMMETRIC_MULTIPLAYER"
-      ],
-      "multiplayerSupported": true,
-      "soloPlayable": true,
-      "ownerDirectDevelopment": true,
-      "catalogOrder": 2,
-      "updatedAt": "2026-09-22T19:15:00+09:00",
-      "ownerPrimaryDevelopment": true,
-      "ownerPrimaryRank": 3,
-      "robloxSourceCommit": "6d8a3363f60011b22e2e4634eefc3d6f878940e6",
-      "visualArtPass": "STYLIZED_ROBLOX_V1",
-      "directImplementationState": "PLAYABLE_ROUND_SPAWN_CHASE_FREEZE_RESCUE_DASH_MONSTER_ABILITIES_AI_FILL",
-      "releaseStrategy": "FAST_MVP",
-      "releasePrimaryPlatform": "ROBLOX",
-      "robloxValidationMode": "HEADLESS_FAST_MVP",
-      "robloxStudioExecutionAllowed": false,
-      "designBaselineSource": "design/horror-escape-room/2026-09-22/design-revised.json",
-      "robloxProjectPath": "roblox-games/horror-escape-room",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "ROBLOX",
-        "platformLabel": "Roblox",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-        "validationSchemaVersion": null,
-        "genre": [
-          "술래잡기",
-          "몬스터",
-          "비대칭 멀티"
-        ],
-        "genreLabel": "술래잡기 · 몬스터 · 비대칭 멀티",
-        "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
-        "latestWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
-        "updatedAt": "2026-10-03T11:54:10.864Z",
-        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
-        "productionClass": "DEVELOPMENT_CONFIRMED"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 2,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "horror-escape-room",
-          "name": "심야 대탈출",
-          "description": "8명 4대4로 시작해 잡힌 인간이 몬스터로 전환되는 AI 충원형 감염 추격전",
-          "genres": [
-            "술래잡기",
-            "몬스터",
-            "비대칭 멀티"
-          ],
-          "image": "assets/roblox-thumbnails/horror-escape-room.svg",
-          "aliases": []
-        },
-        "marketing": {
-          "thumbnail": "assets/roblox-thumbnails/horror-escape-room.svg",
-          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_DIRECT_DEVELOPMENT",
-          "ownerExistingGame": false
-        },
-        "production": {
-          "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "ROBLOX_UNITY",
-          "handling": "OWNER_DIRECT_NATIVE_DEVELOPMENT",
-          "selectedPlatform": "ROBLOX",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
-        },
-        "sources": {
-          "web": {
-            "path": "/web-games/horror-escape-room/",
-            "archive": true,
-            "playable": true,
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": "roblox-games/horror-escape-room"
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": true,
-          "category": "development-confirmed",
-          "displayMode": "WEB_PUBLISHED",
-          "artbookPath": "",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
-          "recentWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "ROBLOX",
-            "platformLabel": "Roblox",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-            "validationSchemaVersion": null,
-            "genre": [
-              "술래잡기",
-              "몬스터",
-              "비대칭 멀티"
-            ],
-            "genreLabel": "술래잡기 · 몬스터 · 비대칭 멀티",
-            "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
-            "latestWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
-            "updatedAt": "2026-10-03T11:54:10.864Z",
-            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
-            "productionClass": "DEVELOPMENT_CONFIRMED"
-          }
-        }
-      },
-      "nameEnglish": "Midnight Escape",
-      "internationalTitle": "Midnight Escape",
-      "marketingThumbnail": "assets/roblox-thumbnails/horror-escape-room.svg",
-      "homepageDisplayMode": "WEB_PUBLISHED",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
-    },
-    {
       "id": "amusement-tycoon",
       "name": "놀이공원 타이쿤",
       "description": "길을 직접 만들고 손님 만족도를 관리하는 3D 놀이공원 경영 게임",
@@ -404,7 +223,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 3,
+        "catalogOrder": 2,
         "authority": "company-runtime",
         "identity": {
           "gameId": "amusement-tycoon",
@@ -503,7 +322,7 @@
           }
         }
       },
-      "catalogOrder": 3,
+      "catalogOrder": 2,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -567,7 +386,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 4,
+        "catalogOrder": 3,
         "authority": "company-runtime",
         "identity": {
           "gameId": "bug-defense",
@@ -664,7 +483,7 @@
           }
         }
       },
-      "catalogOrder": 4,
+      "catalogOrder": 3,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -734,7 +553,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 5,
+        "catalogOrder": 4,
         "authority": "company-runtime",
         "identity": {
           "gameId": "daechung-rpg",
@@ -833,7 +652,7 @@
           }
         }
       },
-      "catalogOrder": 5,
+      "catalogOrder": 4,
       "homepageDisplayMode": "WEB_PUBLISHED",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "CURRENT_OWNER_BASELINE",
@@ -855,6 +674,187 @@
         "대충 RPG"
       ],
       "marketingThumbnail": "assets/roblox-thumbnails/daechung-rpg.svg"
+    },
+    {
+      "id": "horror-escape-room",
+      "name": "심야 대탈출",
+      "description": "8명 4대4로 시작해 잡힌 인간이 몬스터로 전환되는 AI 충원형 감염 추격전",
+      "genre": [
+        "술래잡기",
+        "몬스터",
+        "비대칭 멀티"
+      ],
+      "image": "assets/roblox-thumbnails/horror-escape-room.svg",
+      "webPath": "/web-games/horror-escape-room/",
+      "hasWebArchive": true,
+      "featured": true,
+      "homepageWebPlayable": true,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "ROBLOX_UNITY",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_DIRECT_DEVELOPMENT",
+      "ownerExistingGame": false,
+      "developmentHandling": "OWNER_DIRECT_NATIVE_DEVELOPMENT",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/horror-escape-room",
+        "UNITY": "unity-games/horror-escape-room"
+      },
+      "playModes": [
+        "SINGLE_WITH_AI",
+        "ASYMMETRIC_MULTIPLAYER"
+      ],
+      "multiplayerSupported": true,
+      "soloPlayable": true,
+      "ownerDirectDevelopment": true,
+      "catalogOrder": 5,
+      "updatedAt": "2026-09-22T19:15:00+09:00",
+      "ownerPrimaryDevelopment": true,
+      "ownerPrimaryRank": 3,
+      "robloxSourceCommit": "6d8a3363f60011b22e2e4634eefc3d6f878940e6",
+      "visualArtPass": "STYLIZED_ROBLOX_V1",
+      "directImplementationState": "PLAYABLE_ROUND_SPAWN_CHASE_FREEZE_RESCUE_DASH_MONSTER_ABILITIES_AI_FILL",
+      "releaseStrategy": "FAST_MVP",
+      "releasePrimaryPlatform": "ROBLOX",
+      "robloxValidationMode": "HEADLESS_FAST_MVP",
+      "robloxStudioExecutionAllowed": false,
+      "designBaselineSource": "design/horror-escape-room/2026-09-22/design-revised.json",
+      "robloxProjectPath": "roblox-games/horror-escape-room",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "술래잡기",
+          "몬스터",
+          "비대칭 멀티"
+        ],
+        "genreLabel": "술래잡기 · 몬스터 · 비대칭 멀티",
+        "subgenre": "",
+        "playMode": "",
+        "playModeLabel": "플레이 방식 미평가",
+        "latestWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
+        "updatedAt": "2026-10-03T12:14:19.749Z",
+        "status": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 5,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "horror-escape-room",
+          "name": "심야 대탈출",
+          "description": "8명 4대4로 시작해 잡힌 인간이 몬스터로 전환되는 AI 충원형 감염 추격전",
+          "genres": [
+            "술래잡기",
+            "몬스터",
+            "비대칭 멀티"
+          ],
+          "image": "assets/roblox-thumbnails/horror-escape-room.svg",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/roblox-thumbnails/horror-escape-room.svg",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_DIRECT_DEVELOPMENT",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "ROBLOX_UNITY",
+          "handling": "OWNER_DIRECT_NATIVE_DEVELOPMENT",
+          "selectedPlatform": "UNITY",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/horror-escape-room/",
+            "archive": true,
+            "playable": true,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": "roblox-games/horror-escape-room"
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": true,
+          "category": "development-confirmed",
+          "displayMode": "WEB_PUBLISHED",
+          "artbookPath": "",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "술래잡기",
+              "몬스터",
+              "비대칭 멀티"
+            ],
+            "genreLabel": "술래잡기 · 몬스터 · 비대칭 멀티",
+            "subgenre": "",
+            "playMode": "",
+            "playModeLabel": "플레이 방식 미평가",
+            "latestWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
+            "updatedAt": "2026-10-03T12:14:19.749Z",
+            "status": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "nameEnglish": "Midnight Escape",
+      "internationalTitle": "Midnight Escape",
+      "marketingThumbnail": "assets/roblox-thumbnails/horror-escape-room.svg",
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "line-defense",
@@ -2794,7 +2794,7 @@
       "homepageWebPlayable": true,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "productionTarget": "design-only",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -2822,7 +2822,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-03T11:53:06.974Z",
+        "updatedAt": "2026-09-26",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -2852,7 +2852,7 @@
         },
         "production": {
           "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+          "classSource": "OWNER_REDESIGN_RESET_2026-09-13",
           "target": "design-only",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "ROBLOX",
@@ -2917,7 +2917,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-03T11:53:06.974Z",
+            "updatedAt": "2026-09-26",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -2953,7 +2953,7 @@
       "homepageWebPlayable": true,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "productionTarget": "design-only",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -2982,7 +2982,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-03T11:53:06.974Z",
+        "updatedAt": "2026-09-26",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -3013,7 +3013,7 @@
         },
         "production": {
           "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+          "classSource": "OWNER_REDESIGN_RESET_2026-09-13",
           "target": "design-only",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "UNITY",
@@ -3079,7 +3079,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-03T11:53:06.974Z",
+            "updatedAt": "2026-09-26",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -3103,7 +3103,7 @@
       "homepageWebPlayable": true,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "productionTarget": "design-only",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -3131,7 +3131,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-03T11:53:06.974Z",
+        "updatedAt": "2026-09-26",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -3161,7 +3161,7 @@
         },
         "production": {
           "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+          "classSource": "OWNER_REDESIGN_RESET_2026-09-13",
           "target": "design-only",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "ROBLOX",
@@ -3226,7 +3226,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-03T11:53:06.974Z",
+            "updatedAt": "2026-09-26",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -3260,7 +3260,7 @@
       "homepageWebPlayable": true,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "productionTarget": "design-only",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -3288,7 +3288,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-03T11:53:06.974Z",
+        "updatedAt": "2026-09-26",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -3318,7 +3318,7 @@
         },
         "production": {
           "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+          "classSource": "OWNER_REDESIGN_RESET_2026-09-13",
           "target": "design-only",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "ROBLOX",
@@ -3383,7 +3383,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-03T11:53:06.974Z",
+            "updatedAt": "2026-09-26",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -3418,7 +3418,7 @@
       "homepageWebPlayable": false,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "productionTarget": "design-only",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -3446,7 +3446,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-03T11:53:06.974Z",
+        "updatedAt": "2026-09-26",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -3476,7 +3476,7 @@
         },
         "production": {
           "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+          "classSource": "OWNER_REDESIGN_RESET_2026-09-13",
           "target": "design-only",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "ROBLOX",
@@ -3541,7 +3541,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-03T11:53:06.974Z",
+            "updatedAt": "2026-09-26",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -3566,7 +3566,7 @@
       "homepageWebPlayable": true,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "productionTarget": "design-only",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -3595,7 +3595,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-03T11:53:06.974Z",
+        "updatedAt": "2026-09-26",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -3626,7 +3626,7 @@
         },
         "production": {
           "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+          "classSource": "OWNER_REDESIGN_RESET_2026-09-13",
           "target": "design-only",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "ROBLOX",
@@ -3692,7 +3692,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-03T11:53:06.974Z",
+            "updatedAt": "2026-09-26",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -3726,7 +3726,7 @@
       "homepageWebPlayable": true,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "productionTarget": "design-only",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -3754,7 +3754,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-03T11:53:06.974Z",
+        "updatedAt": "2026-09-26",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -3784,7 +3784,7 @@
         },
         "production": {
           "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+          "classSource": "OWNER_REDESIGN_RESET_2026-09-13",
           "target": "design-only",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "ROBLOX",
@@ -3849,7 +3849,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-03T11:53:06.974Z",
+            "updatedAt": "2026-09-26",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -3883,7 +3883,7 @@
       "homepageWebPlayable": true,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "productionTarget": "design-only",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -3911,7 +3911,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-03T11:53:06.974Z",
+        "updatedAt": "2026-09-26",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -3941,7 +3941,7 @@
         },
         "production": {
           "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+          "classSource": "OWNER_REDESIGN_RESET_2026-09-13",
           "target": "design-only",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "ROBLOX",
@@ -4006,7 +4006,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-03T11:53:06.974Z",
+            "updatedAt": "2026-09-26",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -4024,6 +4024,162 @@
       "homepageTestScore": null,
       "homepageReviewState": "WAITING_WEB_STRICT_REVIEW",
       "homepageDisplayMode": "WEB_PUBLISHED"
+    },
+    {
+      "id": "exorcist-office",
+      "name": "퇴마 사무소",
+      "description": "사용자 직접 업로드 웹게임",
+      "genre": [
+        "RPG",
+        "샌드박스",
+        "보드",
+        "전략"
+      ],
+      "image": "",
+      "webPath": "/web-games/exorcist-office/",
+      "hasWebArchive": true,
+      "homepageWebPlayable": true,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false,
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "lifecycleState": "ACTIVE",
+      "productionClass": "DESIGN_ONLY",
+      "productionClassSource": "OWNER_WEB_DIRECT_UPLOAD",
+      "homepageCategory": "design-only",
+      "ownerDirectWebUpload": true,
+      "ownerWebSourceState": "CURRENT_OWNER_BASELINE",
+      "ownerWebSourceRevision": "34b69192b853322f23244bdf62b56382497626286fd692264ca15cc29af1a3cd",
+      "ownerWebEntryFile": "web-games/exorcist-office/index.html",
+      "webDevelopmentResetRequired": false,
+      "productionTarget": "design-only",
+      "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "UNITY",
+        "platformLabel": "플랫폼 선택 필요",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "RPG",
+          "샌드박스",
+          "보드",
+          "전략"
+        ],
+        "genreLabel": "장르 미평가",
+        "subgenre": "",
+        "playMode": "",
+        "playModeLabel": "플레이 방식 미평가",
+        "latestWork": "개발 작업 정보 없음",
+        "updatedAt": "2026-09-26",
+        "status": "ACTIVE",
+        "productionClass": "DESIGN_ONLY"
+      },
+      "selectedPlatform": "UNITY",
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 26,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "exorcist-office",
+          "name": "퇴마 사무소",
+          "description": "사용자 직접 업로드 웹게임",
+          "genres": [
+            "RPG",
+            "샌드박스",
+            "보드",
+            "전략"
+          ],
+          "image": "assets/pwa-icon-512.png",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/pwa-icon-512.png",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DESIGN_ONLY",
+          "classSource": "OWNER_WEB_DIRECT_UPLOAD",
+          "target": "design-only",
+          "handling": "",
+          "selectedPlatform": "UNITY",
+          "stage": "기획 · 아트북/컨셉/설계 최적화"
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/exorcist-office/",
+            "archive": true,
+            "playable": true,
+            "purpose": ""
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "design-only",
+          "displayMode": "WEB_PUBLISHED",
+          "artbookPath": "",
+          "stage": "기획 · 아트북/컨셉/설계 최적화",
+          "recentWork": "",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "UNITY",
+            "platformLabel": "플랫폼 선택 필요",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "RPG",
+              "샌드박스",
+              "보드",
+              "전략"
+            ],
+            "genreLabel": "장르 미평가",
+            "subgenre": "",
+            "playMode": "",
+            "playModeLabel": "플레이 방식 미평가",
+            "latestWork": "개발 작업 정보 없음",
+            "updatedAt": "2026-09-26",
+            "status": "ACTIVE",
+            "productionClass": "DESIGN_ONLY"
+          }
+        }
+      },
+      "catalogOrder": 26
     },
     {
       "id": "zombie-survival",
@@ -4077,7 +4233,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 26,
+        "catalogOrder": 27,
         "authority": "company-runtime",
         "identity": {
           "gameId": "zombie-survival",
@@ -4176,7 +4332,7 @@
           }
         }
       },
-      "catalogOrder": 26,
+      "catalogOrder": 27,
       "selectedPlatform": "UNITY",
       "homepageDisplayMode": "WEB_PUBLISHED"
     }
@@ -4188,14 +4344,14 @@
     "UNITY"
   ],
   "runtimeCounts": {
-    "canonicalGames": 26,
-    "homepageInfo": 26,
-    "normalizedGames": 26,
-    "ownerWebAdded": 0,
+    "canonicalGames": 27,
+    "homepageInfo": 27,
+    "normalizedGames": 27,
+    "ownerWebAdded": 1,
     "ownerWebUpdated": 0,
     "ownerWebDisabled": 0,
     "runtimeCatalogAdded": 0,
-    "actualWebPlayableReconciled": 25
+    "actualWebPlayableReconciled": 26
   },
   "catalogSchemaVersion": 2,
   "normalization": {
