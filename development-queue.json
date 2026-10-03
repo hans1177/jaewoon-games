@@ -35164,14 +35164,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-03T15:17:38.840Z",
+      "updatedAt": "2026-10-03T15:17:39.092Z",
       "robloxSourceCommit": "894471019841dc9a92d9b2c7dced238b0d80de70",
       "robloxSourceBootstrapPassedAt": "2026-10-03T14:46:35.672Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -35863,7 +35863,7 @@
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-monster-adventure-37130661155",
       "unitySourceCommit": "bed6fb0c2c171b05b6205242f810f7dfc0676a85",
-      "unityBuildRunId": null,
+      "unityBuildRunId": 37132126183,
       "unityRuntimeSmokeRunId": null,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
@@ -35921,7 +35921,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-03T14:46:16.200Z"
+        "verifiedAt": "2026-10-03T15:17:39.092Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -73608,7 +73608,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-03T15:17:38.840Z",
+  "updatedAt": "2026-10-03T15:17:46.547Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
