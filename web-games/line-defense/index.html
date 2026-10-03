@@ -232,7 +232,7 @@ function updateMeta(){
   q('restGold').textContent=save.gold+'G';q('restExp').textContent=save.exp;q('squadCount').textContent=save.squad.length+' / '+MAX_SQUAD;
   q('castleLv').textContent='Lv.'+save.castleLv;q('startWalletLv').textContent='Lv.'+save.startWalletLv;q('killRewardLv').textContent='Lv.'+save.killRewardLv;
   q('castleCost').textContent=save.castleLv>=5?'MAX':metaCost('castleLv')+'G';q('startWalletCost').textContent=save.startWalletLv>=5?'MAX':metaCost('startWalletLv')+'G';q('killRewardCost').textContent=save.killRewardLv>=5?'MAX':metaCost('killRewardLv')+'G';
-  const left=GACHA_IDS.filter(k=>!save.owned[k]);q('gachaState').textContent=left.length?left.length+'종 남음':'전부 획득';
+  const left=remainingGachaIds();q('gachaState').textContent=left.length?left.length+'종 남음':((save.maxCleared||0)<6?'6스테이지 후 신규 3종 추가':'전부 획득');
   q('startRoster').innerHTML=save.squad.map(k=>'<div><b>'+U[k].icon+'</b>'+U[k].name+'<br>+'+(save.charLv[k]||0)+'</div>').join('');
 }
 function buttons(){
