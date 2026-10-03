@@ -1,5 +1,5 @@
 {
-  "version": 304,
+  "version": 305,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3341,7 +3341,7 @@
       }
     },
     "robloxStudioVerifiedRuntimeIngress": {
-      "version": 3,
+      "version": 4,
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.robloxStudioUsage",
       "sourceState": "company-runtime:development-queue.json#robloxInternalVibePlayEvidence",
       "producerWorkflow": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-mcp-auto-play",
@@ -3401,7 +3401,12 @@
       "requiredToolHandshakeAuthority": true,
       "completedSessionRuntimeFailure": "PERSIST_AS_GAME_RUNTIME_EVIDENCE_NO_MCP_RESTART",
       "runtimeFailureConsumesMcpRecoveryAttempt": false,
-      "completedSessionExitContract": "MCP_PROCESS_EXIT_ZERO_RUNTIME_QA_RESULT_PERSISTED_SEPARATELY"
+      "completedSessionExitContract": "MCP_PROCESS_EXIT_ZERO_RUNTIME_QA_RESULT_PERSISTED_SEPARATELY",
+      "deploymentGate": false,
+      "buildUpGate": false,
+      "f9Gate": false,
+      "codeStaticQaPrimary": true,
+      "postBuildUpUse": "OPTIONAL_DIAGNOSTIC_AND_VERIFIED_LEARNING"
     }
   },
   "ownerRule2Topology": {
@@ -6966,5 +6971,20 @@
     "selectionEffect": "RECENT_OWNER_WEB_FIRST_ONLY_AMONG_EQUIVALENT_WEB_PROJECTS",
     "firstPlayableDeployClearsPriority": true,
     "postDeploy": "RETURN_TO_EXISTING_NORMAL_WEB_PRIORITY"
+  },
+  "robloxDeploymentVerification": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#changeRecord.robloxStudioOptionalDeployment20261003",
+    "sequence": [
+      "GAME_BUILD_UP",
+      "CODE_AND_STATIC_QA",
+      "DEPLOY_OR_PUBLISH_WHEN_OTHER_EXISTING_RELEASE_AUTHORITY_ALLOWS"
+    ],
+    "studioRequired": false,
+    "studioRole": "OPTIONAL_POST_BUILDUP_DIAGNOSTIC_AND_VERIFIED_LEARNING",
+    "studioFailureBlocksDeployment": false,
+    "studioUnavailableBlocksBuildUp": false,
+    "studioUnavailableBlocksF9": false,
+    "actualStudioEvidenceMayNotBeFabricated": true
   }
 }
