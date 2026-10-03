@@ -77,10 +77,22 @@ jobs:
           set -euo pipefail
           node tools/company-records-governance.mjs --scan
 
-      - name: Validate central policy retention
+      - name: Validate central document retention and growth
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BASE_SHA: ${{ github.event.before }}
         run: |
           set -euo pipefail
-          node tools/company-records-governance.mjs --central-report
+          base_sha="${PR_BASE_SHA:-${PUSH_BASE_SHA:-}}"
+          if [ -n "$base_sha" ] && ! [[ "$base_sha" =~ ^0+$ ]]; then
+            if ! git cat-file -e "$base_sha^{commit}" 2>/dev/null; then
+              git fetch --no-tags --depth=1 origin "$base_sha"
+            fi
+            git cat-file -e "$base_sha^{commit}"
+            node tools/company-records-governance.mjs --central-report "--central-base=$base_sha"
+          else
+            node tools/company-records-governance.mjs --central-report
+          fi
 
       - name: Scheduled records hygiene summary
         if: github.event_name == 'schedule'
