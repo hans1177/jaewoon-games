@@ -749,7 +749,7 @@
       ]
     },
     "cohortFanInPressureIngressEnabled": true,
-    "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v9",
+    "schedulerConcurrencyEpoch": "vibe2-24h-cycle-run-scoped-v10",
     "reserveConcurrency": {
       "mode": "PARALLEL_RESERVE_OPTIMISTIC_SHARED_QUEUE_WRITE",
       "crossLaneGlobalReserveLock": false,
@@ -781,8 +781,8 @@
     },
     "runnerPressureDispatchThreshold": 4,
     "releaseDispatchQueueThreshold": 4,
-    "nativeReleaseDispatchBatchMax": 2,
-    "releaseRecoveryBatchMax": 2,
+    "nativeReleaseDispatchBatchMax": 256,
+    "releaseRecoveryBatchMax": 256,
     "schedulerDispatchBackpressure": true,
     "plannerCoreQaReuse": {
       "enabled": true,
@@ -808,7 +808,12 @@
       "constitutionalEnforcementPreserved": true,
       "observationFailureAction": "RUN_TARGETED_QA",
       "qualityGateWeakening": false
-    }
+    },
+    "schedulerConcurrencyScope": "RUN_SCOPED_NO_GLOBAL_SINGLETON",
+    "schedulerGlobalSingleton": false,
+    "schedulerGlobalSingletonForbidden": true,
+    "studioActualPlayOnlyHeavySerializationException": true,
+    "releaseDispatchQueuePressureGateEnabled": false
   },
   "adaptiveBackpressure": {
     "enabled": true,
