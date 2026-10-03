@@ -5746,7 +5746,7 @@
     "gameParallelismReduced": false
   },
   "developmentFloorParallelBottleneckRepair": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.developmentFloorParallelBottleneckRepair20260927",
     "centralPlanner": {
       "workflow": ".github/workflows/company-development-confirmed-runtime.yml",
@@ -5765,14 +5765,16 @@
       "cancelInProgress": false
     },
     "unityWebFloor": {
-      "callerConcurrency": "unity-web-floor-call-<gameId>",
-      "heavyExecutionConcurrency": "unity-web-floor-exec-<gameId>",
-      "sameGameHeavyParallelism": false,
+      "callerConcurrency": "NONE_GAME_ID_LOCK_REMOVED",
+      "heavyExecutionConcurrency": "unity-web-floor-exec-run-<runId>",
+      "sameGameHeavyParallelism": true,
       "independentGameParallelism": true,
       "cancelInProgress": false,
-      "globalSerialization": false
+      "globalSerialization": false,
+      "gameIdConcurrencyGroupForbidden": true,
+      "exactDuplicateDispatchDedupeOwnedByCentralActiveRunScan": true
     },
-    "serializationScope": "SAME_GAME_HEAVY_UNITY_WEB_OR_ATOMIC_SHARED_STATE_WRITE_ONLY",
+    "serializationScope": "ATOMIC_SHARED_STATE_WRITE_OR_EXACT_RESPONSIBLE_FILE_CONFLICT_ONLY",
     "robloxUnityUpperPlatformPairingPreserved": true,
     "qualityGateWeakening": false
   },
