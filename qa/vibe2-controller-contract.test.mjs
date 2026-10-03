@@ -264,25 +264,24 @@ test('work order exposes source bootstrap only for explicit Web or Unity Web fir
   assert.match(continuousRunnerSource,/sourceRootBootstrapAllowed,/);
 });
 
-test('asset and recovery reserve retries stay lane-local instead of rerunning global planning and learning',()=>{
-  const marker="if [[ \"$VIBE2_EXECUTION_LANE\" == 'asset-development' || \"$VIBE2_EXECUTION_LANE\" == 'recovery-fast' ]]; then";
+test('production reserves stay lane-local instead of rerunning global planning and learning',()=>{
+  const marker="if [[ \"$VIBE2_EXECUTION_LANE\" == 'game-primary' || \"$VIBE2_EXECUTION_LANE\" == 'asset-development' || \"$VIBE2_EXECUTION_LANE\" == 'recovery-fast' ]]; then";
   const markerAt=workflow.indexOf(marker);
   assert.ok(markerAt>=0);
   const elseAt=workflow.indexOf('\n            else\n',markerAt);
   const endAt=workflow.indexOf('\n            fi\n',elseAt);
   assert.ok(elseAt>markerAt&&endAt>elseAt);
-  const laneLocalFastPath=workflow.slice(markerAt,elseAt);
-  const globalPath=workflow.slice(elseAt,endAt);
-  assert.match(laneLocalFastPath,/VIBE2_LANE_LOCAL_RESERVE_GLOBAL_REPLAN=SKIPPED_EXISTING_CANONICAL_QUEUE/);
-  assert.match(laneLocalFastPath,/VIBE2_LANE_LOCAL_RESERVE_QUEUE_AUTHORITY=EXISTING_CANONICAL_VIBE_QUEUE/);
-  assert.match(laneLocalFastPath,/asset-development/);
-  assert.match(laneLocalFastPath,/recovery-fast/);
-  assert.doesNotMatch(laneLocalFastPath,/vibe2-auto-planner\.mjs|vibe2-learning-motor\.mjs|vibe2-post-release-focus\.mjs/);
-  assert.match(globalPath,/vibe2-post-release-focus\.mjs/);
-  assert.match(globalPath,/vibe2-auto-planner\.mjs/);
-  assert.match(globalPath,/vibe2-learning-motor\.mjs/);
-  assert.match(workflow,/VIBE2_CONTROL_OPTIMISTIC_RETRY_POLICY=UNBOUNDED/);
-  assert.match(workflow,/VIBE2_CONTROL_OPTIMISTIC_RETRY_BACKOFF_SECONDS=/);
+  const productionPath=workflow.slice(markerAt,elseAt);
+  const learningPath=workflow.slice(elseAt,endAt);
+  assert.match(productionPath,/VIBE2_LANE_LOCAL_RESERVE_GLOBAL_REPLAN=SKIPPED_EXISTING_CANONICAL_QUEUE/);
+  assert.match(productionPath,/VIBE2_LANE_LOCAL_RESERVE_QUEUE_AUTHORITY=EXISTING_CANONICAL_VIBE_QUEUE/);
+  assert.match(productionPath,/VIBE2_GAME_PRIMARY_RESERVE_PLANNER_AUTHORITY=VIBE2_24H_PLAN_AND_EXISTING_CANONICAL_QUEUE/);
+  assert.match(productionPath,/game-primary/);
+  assert.match(productionPath,/asset-development/);
+  assert.match(productionPath,/recovery-fast/);
+  assert.doesNotMatch(productionPath,/vibe2-auto-planner\.mjs|vibe2-learning-motor\.mjs|vibe2-post-release-focus\.mjs/);
+  assert.match(learningPath,/vibe2-learning-motor\.mjs/);
+  assert.doesNotMatch(learningPath,/vibe2-auto-planner\.mjs|vibe2-post-release-focus\.mjs/);
 });
 
 test('controller reserves a batch and fans workers out to the external matrix boundary',()=>{
@@ -1473,25 +1472,26 @@ test('continuous core connects existing evidence reasoning into self-generated s
 });
 
 
-test('every non-neuron reserve ingress syncs current company runtime before planning and reservation',()=>{
+test('every non-neuron reserve ingress syncs current company runtime before lane-local reservation',()=>{
   const steward=workflow.indexOf("echo 'VIBE2_RESERVE_STEWARD=PASS'");
   const fetchRuntime=workflow.indexOf('git -C "$control_root" fetch origin company-runtime --quiet',steward);
-  const planner=workflow.indexOf('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs',fetchRuntime);
-  const learning=workflow.indexOf('node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs',planner);
-  const handoff=workflow.indexOf('node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check',learning);
+  const productionMarker=workflow.indexOf('VIBE2_GAME_PRIMARY_RESERVE_PLANNER_AUTHORITY=VIBE2_24H_PLAN_AND_EXISTING_CANONICAL_QUEUE',fetchRuntime);
+  const handoff=workflow.indexOf('node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check',productionMarker);
   const reserve=workflow.indexOf('node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch',handoff);
-  assert.ok(steward>=0&&fetchRuntime>steward&&planner>fetchRuntime&&learning>planner&&handoff>learning&&reserve>handoff);
+  assert.ok(steward>=0&&fetchRuntime>steward&&productionMarker>fetchRuntime&&handoff>productionMarker&&reserve>handoff);
   const block=workflow.slice(steward,handoff);
   assert.match(block,/company_runtime_snapshot_sha="\$\(git -C "\$control_root" rev-parse origin\/company-runtime\)"/);
   assert.match(block,/git -C "\$control_root" show "\$company_runtime_snapshot_sha:development-queue\.json" > \/tmp\/vibe2-company-runtime-queue\.json/);
   assert.match(block,/VIBE2_RESERVE_RUNTIME_SNAPSHOT=PINNED_FIRST_ATTEMPT/);
   assert.match(block,/VIBE2_RESERVE_RUNTIME_SNAPSHOT=REUSED_RETRY/);
-  assert.match(block,/--development-queue=\/tmp\/vibe2-company-runtime-queue\.json/);
+  assert.match(block,/VIBE2_RESERVE_RUNTIME_SYNC_SOURCE=company-runtime/);
+  assert.match(block,/VIBE2_GAME_PRIMARY_RESERVE_PLANNER_AUTHORITY=VIBE2_24H_PLAN_AND_EXISTING_CANONICAL_QUEUE/);
+  assert.doesNotMatch(block,/node \/tmp\/vibe2-main\/tools\/vibe2-auto-planner\.mjs/);
+  assert.doesNotMatch(block,/node \/tmp\/vibe2-main\/tools\/vibe2-post-release-focus\.mjs/);
   assert.match(block,/--company-queue=\/tmp\/vibe2-company-runtime-queue\.json/);
   assert.match(block,/VIBE2_RESERVE_RUNTIME_SYNC=PASS/);
   assert.doesNotMatch(block,/if \[ "\$callback_kind" = 'fanin' \]; then/);
 });
-
 
 test('worker control checkout is state-only and worker executables come from the pinned main contract',()=>{
   const workerStart=workflow.indexOf('\n  worker:\n');
