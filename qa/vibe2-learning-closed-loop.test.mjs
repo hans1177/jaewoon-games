@@ -123,17 +123,17 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.equal(roadmap.developmentLifecycleMachine?.modelQuotaContinuity?.learningProviderIsolation?.robloxStudioRawViewportDirectTraining,false);
   assert.equal(roadmap.developmentLifecycleMachine?.robloxStudioUsage?.learningUseForbidden,false);
   assert.ok(roadmap.developmentLifecycleMachine?.robloxStudioUsage?.forbidden?.includes('ROBLOX_PLAYER_AUTOMATION'));
-  assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.launchInput,'LOCAL_EXACT_BUILD_PLACE_FILE_ONLY');
-  assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.onlinePlaceIdLaunchForbidden,true);
-  assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.executionTransport,'OFFICIAL_STUDIO_MCP_STDIO');
-  assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.mcpOfficialBinaryFallbackWindows,'%LOCALAPPDATA%\\Roblox\\Versions\\version-*\\StudioMCP.exe');
-  assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.generatedBatchRewrite,false);
-  assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.thirdPartyBridge,false);
-  assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.runtimeAuthority,'roblox-official-studio-mcp-runtime');
-  assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.structuredQaFactsOnly,true);
-  assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.rawViewportDirectTraining,false);
-  assert.equal(architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress?.separateTrainer,false);
-  assert.equal(architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup?.actualPlayExecutor,'.github/workflows/company-development-roblox-post-runtime-qa.yml#studio-mcp-auto-play');
+  const studioIngress=architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress||{};
+  assert.equal(studioIngress.role,'OPTIONAL_VERIFIED_DIAGNOSTIC_LEARNING');
+  assert.equal(studioIngress.producerWorkflow,'.github/workflows/company-development-roblox-post-runtime-qa.yml#studio-mcp-auto-play');
+  assert.equal(studioIngress.canonicalIngress,'tools/vibe2-learning-motor.mjs#collectVerifiedRobloxStudioPlayExperience');
+  assert.equal(studioIngress.exactArtifactRequired,true);
+  assert.equal(studioIngress.officialStudioMcpOnly,true);
+  assert.equal(studioIngress.deploymentGate,false);
+  assert.equal(studioIngress.buildUpGate,false);
+  assert.equal(studioIngress.f9Gate,false);
+  assert.equal(architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup?.codeAndStaticQaPrimary,true);
+  assert.equal(architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup?.studioRequired,false);
 });
 
 test('continuous runner loads distilled external AI and emits exact knowledge trace',()=>{
