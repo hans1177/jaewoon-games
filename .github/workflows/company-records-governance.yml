@@ -25,13 +25,21 @@ on:
       - '.github/workflows/company-records-governance.yml'
   schedule:
     - cron: '10 21 * * *'
-    - cron: '25 21 * * 0'
-    - cron: '40 21 1 * *'
   workflow_dispatch:
+    inputs:
+      mode:
+        description: 'validate or prune'
+        required: false
+        default: 'validate'
+        type: choice
+        options:
+          - validate
+          - prune
 
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 concurrency:
   group: company-records-governance-${{ github.ref }}-${{ github.event_name }}
@@ -80,9 +88,9 @@ jobs:
 
   central-current-use-prune:
     name: Auto-prune unused central policy
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.mode == 'prune')
     runs-on: ubuntu-slim
-    timeout-minutes: 10
+    timeout-minutes: 30
     steps:
       - name: Checkout latest main
         uses: actions/checkout@v4
@@ -114,7 +122,7 @@ jobs:
             echo 'CENTRAL_POLICY_CURRENT_USE_PRUNE=CHANGED'
           fi
 
-      - name: Open automatic current-use policy PR
+      - name: Open, validate, and merge automatic current-use policy PR
         if: steps.prune.outputs.changed == 'YES'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -126,7 +134,44 @@ jobs:
           git switch -c "$branch"
           git add company-learning/platform-release-roadmap.json company-records/operations
           git commit -m 'records: auto-prune unused central policy'
+          head_sha="$(git rev-parse HEAD)"
           git push origin "$branch"
-          pr_url="$(gh pr create --base main --head "$branch" --title 'records: auto-prune unused central policy' --body '자동 현재사용 참조 스캔 결과에 따라 미사용 중앙정책 기록을 company-records로 아카이브하고 중앙문서에서 제거합니다.')"
+          pr_url="$(gh pr create --base main --head "$branch" --title 'records: auto-prune unused central policy' --body '자동 현재사용 참조 스캔 결과에 따라 미사용 중앙정책 기록을 company-records로 아카이브하고 중앙문서에서 제거합니다. 현재 참조/핵심 핀은 유지되고 제거 내용은 먼저 company-records에 아카이브됩니다.')"
           echo "CENTRAL_POLICY_AUTO_PR=$pr_url"
-          gh pr merge "$pr_url" --auto --squash || echo 'CENTRAL_POLICY_AUTO_MERGE=PENDING_OR_UNAVAILABLE'
+
+          dispatch() {
+            local workflow="$1"
+            shift
+            gh workflow run "$workflow" --ref "$branch" "$@"
+          }
+          find_run() {
+            local workflow="$1"
+            local run_id=""
+            for attempt in $(seq 1 40); do
+              run_id="$(gh run list --workflow "$workflow" --branch "$branch" --event workflow_dispatch --limit 20 --json databaseId,headSha,createdAt --jq ".[] | select(.headSha==\"$head_sha\") | .databaseId" | head -n 1)"
+              if [ -n "$run_id" ]; then
+                printf '%s' "$run_id"
+                return 0
+              fi
+              sleep 3
+            done
+            return 1
+          }
+
+          dispatch company-records-governance.yml -f mode=validate
+          dispatch company-central-policy-contract-qa.yml
+          dispatch company-security-immune.yml
+
+          records_run="$(find_run company-records-governance.yml)"
+          policy_run="$(find_run company-central-policy-contract-qa.yml)"
+          security_run="$(find_run company-security-immune.yml)"
+          echo "CENTRAL_POLICY_AUTO_RECORDS_RUN=$records_run"
+          echo "CENTRAL_POLICY_AUTO_POLICY_RUN=$policy_run"
+          echo "CENTRAL_POLICY_AUTO_SECURITY_RUN=$security_run"
+
+          gh run watch "$records_run" --exit-status
+          gh run watch "$policy_run" --exit-status
+          gh run watch "$security_run" --exit-status
+
+          gh pr merge "$pr_url" --squash --delete-branch
+          echo 'CENTRAL_POLICY_AUTO_PRUNE_MERGE=PASS'
