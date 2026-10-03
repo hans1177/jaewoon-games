@@ -423,7 +423,7 @@ test('post-runtime Open Cloud engine probes use bounded external API concurrency
  const foundation=fs.readFileSync('tools/company-development-roblox-runtime-foundation.mjs','utf8');
  assert.match(workflow,/const throttlePressure=candidates\.some/);
  assert.match(workflow,/Number\(evidence\.httpStatus\|\|0\)===429/);
- assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(requested\?1:\(throttlePressure\?1:2\),candidates\.length\|\|1\)\)/);
+ assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(requested\?1:\(throttlePressure\?4:8\),candidates\.length\|\|1\)\)/);
  assert.match(workflow,/ROBLOX_OPEN_CLOUD_THROTTLE_PRESSURE=/);
  assert.match(workflow,/networkRetryAttempts:6,networkRetryDelayMs:1000/);
  assert.match(foundation,/const exponentialDelay=Math\.min\(30000,baseDelayMs\*Math\.max\(1,2\*\*Math\.max\(0,attempt-1\)\)\)/);
@@ -678,7 +678,7 @@ test('central policy requires Roblox checkout through final promotion to stay ga
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   assert.doesNotMatch(workflow,/candidates\.slice\(0,4\)/);
   assert.match(workflow,/const throttlePressure=candidates\.some\(item=>/);
-  assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(requested\?1:\(throttlePressure\?1:2\),candidates\.length\|\|1\)\)/);
+  assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(requested\?1:\(throttlePressure\?4:8\),candidates\.length\|\|1\)\)/);
   assert.match(workflow,/ROBLOX_OPEN_CLOUD_THROTTLE_PRESSURE=/);
   assert.match(workflow,/await Promise\.all\(Array\.from\(\{length:probeConcurrency\},\(\)=>runProbeWorker\(\)\)\)/);
   assert.doesNotMatch(workflow,/Promise\.all\(candidates\.map\(async item=>/);
@@ -941,4 +941,14 @@ test('Open Cloud engine reuses the same Luau session to capture map and world ev
   assert.match(body.script,/workspace:GetDescendants\(\)/);
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   assert.match(workflow,/openCloudWorldEvidence:engineProbe\?\.worldEvidence\|\|null/);
+});
+
+
+test('Open Cloud runtime foundation keeps at least four cross-game probes under 429 pressure',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  assert.match(workflow,/throttlePressure\?4:8/);
+  assert.match(workflow,/ACTIVE_MIN4_PARALLEL/);
+  assert.match(workflow,/CLEAR_MAX8_PARALLEL/);
+  assert.doesNotMatch(workflow,/throttlePressure\?1:2/);
+  assert.doesNotMatch(workflow,/ACTIVE_SERIAL/);
 });
