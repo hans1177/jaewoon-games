@@ -83,3 +83,11 @@ test('main write guard watches final locked chain without watching ordinary game
   assert.match(workflow,/--unlock-title=/);
   assert.doesNotMatch(workflow,/roblox-games\/\*\*/);
 });
+
+
+test('main write guard preserves owner unlock provenance after merge push',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/main-write-guard.yml',import.meta.url),'utf8');
+  assert.match(workflow,/UNLOCK_CONTEXT: \$\{\{ github\.event\.pull_request\.title \|\| github\.event\.head_commit\.message \|\| '' \}\}/);
+  assert.match(workflow,/--unlock-title="\$UNLOCK_CONTEXT"/);
+  assert.doesNotMatch(workflow,/PR_TITLE: \$\{\{ github\.event\.pull_request\.title \|\| '' \}\}/);
+});
