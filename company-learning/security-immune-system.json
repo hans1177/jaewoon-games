@@ -1,5 +1,5 @@
 {
-  "version": 64,
+  "version": 65,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -466,7 +466,7 @@
     "failureAction": "QUARANTINE_AFFECTED_ASSET_OR_SCOPE_AND_ROUTE_ASSET_REPAIR_REQUIRED",
     "wholeCompanyStopDefault": false
   },
-  "updatedAt": "2026-10-02",
+  "updatedAt": "2026-10-03",
   "graphicsProductionUnificationSecurity": {
     "version": 1,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -1035,5 +1035,17 @@
     "relevantSecurityBoundaryChangesStillRequireExistingSecurityGate": true,
     "publicReleaseAuthorityUnchanged": true,
     "confirmedHighRiskFindingStillFailClosed": true
+  },
+  "finalDevelopmentLockSecurity": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#finalDevelopmentLock",
+    "lockedChainChangesFailClosed": true,
+    "ownerUnlockRequiresOwnerActorAndExplicitToken": true,
+    "ordinaryGameSourceDevelopmentNotLocked": true,
+    "planningDryRunMayNotMutateSource": true,
+    "impactClassificationMayNotExpandWriteAuthority": true,
+    "saveOrNetworkingImpactRequiresExistingSecurityGate": true,
+    "openCloudWorldEvidenceMayNotAuthorizeGameplaySaveEconomyOrNetworkMutation": true,
+    "studioPassMayNotBeFabricated": true
   }
 }
