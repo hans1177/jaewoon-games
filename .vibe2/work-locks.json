@@ -1,5 +1,36 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-bgm94r",
+      "worker": "vibe2",
+      "taskId": "monster-adventure-roblox-presentation-asset-adaptation-v1",
+      "gameId": "monster-adventure",
+      "files": [
+        "roblox-games/monster-adventure/client/Game.client.luau",
+        "roblox-games/monster-adventure/server/Game.server.luau",
+        "roblox-games/monster-adventure/shared/GameConfig.luau",
+        "assets/generated/roblox/monster-adventure/background/asset.glb",
+        "assets/generated/roblox/monster-adventure/background/preview.png",
+        "assets/generated/roblox/monster-adventure/background/evidence.json",
+        "assets/generated/roblox/monster-adventure/item/asset.glb",
+        "assets/generated/roblox/monster-adventure/item/preview.png",
+        "assets/generated/roblox/monster-adventure/item/evidence.json",
+        "assets/generated/roblox/monster-adventure/prop/asset.glb",
+        "assets/generated/roblox/monster-adventure/prop/preview.png",
+        "assets/generated/roblox/monster-adventure/prop/evidence.json"
+      ],
+      "baseSha": "429caf2fb1bf54d251a2dce56766428c2af17cc4",
+      "runId": "37090738763",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-03T02:46:17.252Z",
+      "expiresAt": "2026-10-03T03:31:17.252Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:monster-adventure-roblox-presentation-asset-adaptation-v1"
+      ]
+    }
+  ]
 }
