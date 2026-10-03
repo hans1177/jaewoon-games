@@ -9,7 +9,7 @@ import path from 'node:path';
 import http from 'node:http';
 import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
-import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
@@ -197,6 +197,117 @@ test('generated native asset binding requires exact artifact path hash and engin
   assert.deepEqual([...exact.boundGeneratedArtifacts],['assets/unity/demo/native/boss/boss.glb']);
   assert.equal(exact.generatedAssetIdentityBindings[0].artifactHash,'abc123');
   assert.equal(exact.runtimeVerified,false);
+});
+
+
+test('persisted Roblox DCC assets bind exact path and hash before local-model retry',()=>{
+  const cwd=tempRoot();
+  const sourceRoot=path.join(cwd,'roblox-games/demo');
+  const relative='client/Game.client.luau';
+  const source=[
+    'local gui = Instance.new("ScreenGui")',
+    'local root = Instance.new("Frame")',
+    'root.Name = "Root"',
+    'root.AnchorPoint = Vector2.new(0.5, 1)',
+    'root.Position = UDim2.fromScale(0.5, 0.98)',
+    'root.Size = UDim2.new(1, -24, 0, 360)',
+    'root.BackgroundTransparency = 0.15',
+    'root.BackgroundColor3 = Color3.fromRGB(18, 28, 48)',
+    'root.Parent = gui',
+    'local title = Instance.new("TextLabel")',
+    'title.BackgroundTransparency = 1',
+    'title.TextColor3 = Color3.fromRGB(245, 248, 255)',
+    'title.TextScaled = true',
+    'title.Text = string.format("%s · %s · %s", Config.GameName, Config.Genre, Config.PlayMode)',
+    'title.Parent = root',
+    'local status = Instance.new("TextLabel")',
+    'status.BackgroundColor3 = Color3.fromRGB(10, 17, 30)',
+    'status.TextColor3 = Color3.fromRGB(220, 232, 250)',
+    'status.TextScaled = true',
+    'status.Parent = root',
+    ''
+  ].join('\\n');
+  write(path.join(sourceRoot,relative),source);
+  const workOrder=order({
+    target:'roblox',
+    root:'roblox-games/demo',
+    responsibleFiles:['roblox-games/demo/'+relative],
+    taskId:'persisted-dcc-binding'
+  });
+  workOrder.selectedTask={
+    id:workOrder.taskId,gameId:'demo',target:'roblox',
+    assetProductionLane:true,evidence:['asset-production-parallel:v1']
+  };
+  workOrder.presentationQuality={required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false};
+  const recipes=[
+    {
+      id:'demo-background',assetId:'demo-background',family:'BACKGROUND',types:['background'],license:'project-original',
+      nativeArtifact:'assets/generated/roblox/demo/background/asset.glb',artifactHash:'bg123',
+      sourceHash:'bg-source',preview:'assets/generated/roblox/demo/background/preview.png',persistedForCandidate:true
+    },
+    {
+      id:'demo-item',assetId:'demo-item',family:'ITEM',types:['item'],license:'project-original',
+      nativeArtifact:'assets/generated/roblox/demo/item/asset.glb',artifactHash:'item456',
+      sourceHash:'item-source',preview:'assets/generated/roblox/demo/item/preview.png',persistedForCandidate:true
+    },
+    {
+      id:'demo-prop',assetId:'demo-prop',family:'PROP',types:['prop'],license:'project-original',
+      nativeArtifact:'assets/generated/roblox/demo/prop/asset.glb',artifactHash:'prop789',
+      sourceHash:'prop-source',preview:'assets/generated/roblox/demo/prop/preview.png',persistedForCandidate:true
+    }
+  ];
+  workOrder.assetProduction={nativeAuthoringExecution:{
+    enabled:true,target:'roblox',
+    dcc:{
+      requiredTypes:['background','item','prop'],
+      executionEvidence:{
+        executed:true,allRecipesPassed:true,candidateUsable:true,persistedForCandidate:true,
+        editableSource:'assets/native-authoring/build-game-visual.py',
+        nativeArtifact:recipes[0].nativeArtifact,
+        artifactHash:recipes[0].artifactHash,
+        preview:recipes[0].preview,
+        recipes
+      }
+    },
+    nativeText:{requiredTypes:['background','item','prop']}
+  }};
+
+  assert.equal(robloxDeterministicPresentationEligible(workOrder),false);
+  const bindings=persistedGeneratedAssetBindings(workOrder);
+  assert.equal(bindings.length,3);
+  const generated=deterministicRobloxBuildUpCandidate({
+    order:workOrder,
+    sourceRoot,
+    sourceRootRelative:'roblox-games/demo',
+    responsibleFiles:[relative],
+    generatedAssetBindings:bindings,
+    allowAssetDevelopment:true
+  });
+  assert.ok(generated);
+  assert.equal(generated.generation.mode,'DETERMINISTIC_GENERATED_ASSET_BINDING');
+  assert.equal(generated.generation.attempts,0);
+  assert.equal(generated.generation.generatedAssetBindingCount,3);
+
+  const changed=generated.candidate.edits.map(row=>row.replace).join('\\n');
+  for(const binding of bindings){
+    assert.ok(changed.includes(binding.path));
+    assert.ok(changed.includes(binding.artifactHash));
+  }
+  assert.match(changed,/game:GetService\\("Lighting"\\)/);
+  assert.match(changed,/TweenService/);
+
+  const authored=evaluateNativeAssetAuthoringCandidate({order:workOrder,candidate:generated.candidate});
+  assert.equal(authored.dccAuthored,true);
+  assert.equal(authored.nativeTextAuthored,true);
+  assert.equal(authored.generatedAssetBindingApplied,true);
+  assert.deepEqual([...authored.boundGeneratedArtifacts].sort(),bindings.map(row=>row.path).sort());
+  assert.equal(authored.runtimeVerified,false);
+
+  const promotion=collectNativeAssetRuntimePromotionCandidates({order:workOrder,candidate:generated.candidate});
+  assert.equal(promotion.length,3);
+  assert.ok(promotion.every(row=>row.candidateSourceBindingVerified===true));
+  assert.ok(promotion.every(row=>row.runtimeVerificationRequired===true));
+  assert.ok(promotion.every(row=>row.promotionState==='PENDING_EXACT_NATIVE_RUNTIME'));
 });
 
 test('declared Blender verification executes only declared recipe and restores the repository',()=>{
