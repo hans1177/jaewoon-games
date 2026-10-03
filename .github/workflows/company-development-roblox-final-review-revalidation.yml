@@ -161,6 +161,7 @@ jobs:
           import fs from 'node:fs';
           import {ingestTesterDebug} from './tools/company-tester-debug-intake.mjs';
           import {evaluateInternalRelease} from './tools/company-platform-exposure-control.mjs';
+          import {evaluateRobloxF9ProductReadiness} from './tools/company-development-roblox-gameplay-product-readiness.mjs';
 
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           const queuePath='../runtime/development-queue.json';
@@ -298,6 +299,13 @@ jobs:
               ||(internalRuntimeFindingDeferred&&post.studioAssetBindingRequired!==true)
               ||(internalRuntimeFindingDeferred&&post.studioAssetRuntimeBindingPassed===true)
               ||(internalStudioValidationAccepted&&post.studioAssetRuntimeBindingPassed===true);
+            const productReadiness=evaluateRobloxF9ProductReadiness({
+              f0Evidence:f0CandidateEvidence,
+              runtimeEvidence:runtime,
+              postRuntimeQaEvidence:post,
+              studioPlayEvidence:studioPlay,
+            });
+            console.log('ROBLOX_F9_GAMEPLAY_PRODUCT_READINESS='+item.gameId+':'+(productReadiness.pass?'PASS':'BLOCKED')+':'+(productReadiness.blockers.join(',')||'NONE'));
             const exactRuntimeBinding=Boolean(
               runtime.sourceRevision===sourceRevision
               &&runtime.artifactIdentity===artifactIdentity
@@ -309,7 +317,8 @@ jobs:
               &&Number(runtime.candidateVersionNumber||runtime.expectedVersionNumber)===Number(candidate.versionNumber)
             );
             const exact=
-              item.robloxFoundationF0Passed===true
+              productReadiness.pass===true
+              &&item.robloxFoundationF0Passed===true
               &&(item.robloxRuntimeFoundationPassed===true||internalRuntimeObservationDeferred||internalRuntimeFindingDeferred||internalStudioValidationAccepted)
               &&internalRuntimeAcceptance===true
               &&(
@@ -347,8 +356,9 @@ jobs:
               &&studioAssetRuntimeBindingExact===true;
             const tickets=currentBlockingTickets.get(item.gameId)||[];
             if(!exact||tickets.length){
-              const f9FailureSignature=!exact?'ROBLOX_F9_EXACT_EVIDENCE_MISMATCH':'ROBLOX_F9_OPEN_TESTER_FAILURE';
-              const f9Blocker=!exact?'roblox-f9-exact-evidence-mismatch':'roblox-f9-open-tester-failure';
+              const productBlocked=productReadiness.pass!==true;
+              const f9FailureSignature=productBlocked?'ROBLOX_F9_GAMEPLAY_PRODUCT_READINESS_FAILED':(!exact?'ROBLOX_F9_EXACT_EVIDENCE_MISMATCH':'ROBLOX_F9_OPEN_TESTER_FAILURE');
+              const f9Blocker=productBlocked?'roblox-f9-gameplay-product-readiness-failed':(!exact?'roblox-f9-exact-evidence-mismatch':'roblox-f9-open-tester-failure');
               const internalFlowNonBlocking=
                 item.robloxRuntimeFailureExternalReleaseOnly===true
                 ||item.robloxRuntimeFoundationInternalReleaseException===true
@@ -390,6 +400,8 @@ jobs:
               runtimeFoundationEvidenceAuthority:runtime.authority,
               postRuntimeQaAuthority:post.authority,
               noCurrentCriticalOrHighTesterFailure:true,
+              gameplayProductReadiness:productReadiness,
+              studioQualitySheet:f0CandidateEvidence?.studioQualitySheet||f0CandidateEvidence?.gameplayProductReadiness?.studioQualitySheet||null,
               studioAssetBindingRequired,
               studioAssetRuntimeBindingPassed:studioAssetRuntimeBindingExact,
               studioAssetRuntimeBindingEvidence:studioAssetBindingRequired?post.studioAssetRuntimeBindingEvidence:null,
