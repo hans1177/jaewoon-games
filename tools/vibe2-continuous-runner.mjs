@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { planVibeCoreTask } from '../assets/vibe-core-runtime.js';
-import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
+import { createVibeContinuousQueue, selectVibeQueueBatch, scopeVibeResponsibleFiles } from '../assets/vibe-continuous-queue.js';
 import { createVibeExperienceMemory } from '../assets/vibe-experience-memory.js';
 import { generateVibe2Handoff } from './vibe2-handoff.mjs';
 import { buildVibeDesignIntelligence } from './vibe2-design-intelligence.mjs';
@@ -132,10 +132,10 @@ function presentationPassFromTask(task = {}) {
   return PRESENTATION_PASSES.has(fromGoal)?fromGoal:null;
 }
 export function expandPresentationResponsibleFiles({task={},target='',repoRoot=process.cwd(),fallbackRoot=''}={}){
-  const base=freezeList(task.responsibleFiles||[]);
+  const root=posix(task.sourceRoot||fallbackRoot);
+  const base=scopeVibeResponsibleFiles(task.responsibleFiles||[],root);
   const pass=presentationPassFromTask(task);
   if(!pass)return base;
-  const root=posix(task.sourceRoot||fallbackRoot);
   if(!root)return base;
   const resolvedTarget=clean(target||task.target).toLowerCase();
   const candidates=resolvedTarget==='roblox'
