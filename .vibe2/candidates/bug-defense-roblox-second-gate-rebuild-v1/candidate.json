@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end",
+      "replace": "local function render()\n  status.Text = string.format(\"Score %d · Lv %d · Progress %d · HP %d · Wave %d\", player:GetAttribute(\"Score\") or 0, player:GetAttribute(\"Level\") or 1, player:GetAttribute(\"Progress\") or 0, player:GetAttribute(\"Health\") or 100, player:GetAttribute(\"Wave\") or 1)\nend\n\nlocal watched = {\n  \"Score\",\n  \"Coins\",\n  \"Level\",\n  \"Progress\",\n  \"Health\",\n  \"Wave\",\n  \"Position\",\n  \"Objective\",\n  \"Combo\",\n  \"EnemyHealth\",\n  \"PuzzleChain\",\n  \"Towers\",\n  \"BaseHealth\",\n  \"SocialBond\",\n  \"SharedObjective\",\n  \"RoundScore\",\n  \"LastApprovedScope\"\n}\n\nlocal function render()\n  status.Text = string.format(\"Score %d · Lv %d · Progress %d · HP %d · Wave %d\", player:GetAttribute(\"Score\") or 0, player:GetAttribute(\"Level\") or 1, player:GetAttribute(\"Progress\") or 0, player:GetAttribute(\"Health\") or 100, player:GetAttribute(\"Wave\") or 1)\nend\n\nfor _, name in ipairs(watched) do\n  player:GetAttributeChangedSignal(name):Connect(render)\nend\n\nlocal function reportNativeFoundationReady()\n  local character = player.Character or player.CharacterAdded:Wait()\n  local humanoid = character:WaitForChild(\"Humanoid\")\n  if nativeFoundationCamera and nativeFoundationCamera.CameraSubject == humanoid then\n    nativeFoundationRemote:FireServer(\"CAMERA_READY\")\n  end\n  nativeFoundationRemote:FireServer(nativeTouchEnabled and \"INPUT_READY_TOUCH\" or \"INPUT_READY\")\nend\n\ntask.defer(reportNativeFoundationReady)\n"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}

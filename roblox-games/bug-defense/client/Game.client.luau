@@ -356,7 +356,49 @@ local watched = {"Score","Coins","Level","Progress","Health","Wave","Position","
 local function render()
   status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1)
 end
-for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end
+local function render()
+  status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1)
+end
+
+local watched = {
+  "Score",
+  "Coins",
+  "Level",
+  "Progress",
+  "Health",
+  "Wave",
+  "Position",
+  "Objective",
+  "Combo",
+  "EnemyHealth",
+  "PuzzleChain",
+  "Towers",
+  "BaseHealth",
+  "SocialBond",
+  "SharedObjective",
+  "RoundScore",
+  "LastApprovedScope"
+}
+
+local function render()
+  status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1)
+end
+
+for _, name in ipairs(watched) do
+  player:GetAttributeChangedSignal(name):Connect(render)
+end
+
+local function reportNativeFoundationReady()
+  local character = player.Character or player.CharacterAdded:Wait()
+  local humanoid = character:WaitForChild("Humanoid")
+  if nativeFoundationCamera and nativeFoundationCamera.CameraSubject == humanoid then
+    nativeFoundationRemote:FireServer("CAMERA_READY")
+  end
+  nativeFoundationRemote:FireServer(nativeTouchEnabled and "INPUT_READY_TOUCH" or "INPUT_READY")
+end
+
+task.defer(reportNativeFoundationReady)
+
 render()
 
 if #Config.Actions > 0 then
