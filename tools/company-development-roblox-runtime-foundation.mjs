@@ -161,6 +161,7 @@ export async function probeRobloxOpenCloudEngine({
   const script=[
     'local Players=game:GetService("Players")',
     'local ReplicatedStorage=game:GetService("ReplicatedStorage")',
+    'local Lighting=game:GetService("Lighting")',
     'local studioAssetApplied=false',
     'local studioAssetBindingVersion=0',
     'local studioAssetAtoms={}',
@@ -177,8 +178,30 @@ export async function probeRobloxOpenCloudEngine({
     'local RunService=game:GetService("RunService")',
     'local simulationRunning=RunService:IsRunning()',
     'local foundationServerBoot=workspace:GetAttribute("Foundation_SERVER_BOOT")==true',
+    'local descendants=workspace:GetDescendants()',
+    'local scanLimit=math.min(#descendants,5000)',
+    'local basePartCount=0; local spawnCount=0; local landmarkCount=0; local objectiveCount=0; local spawnPositions={}; local minX=math.huge; local minY=math.huge; local minZ=math.huge; local maxX=-math.huge; local maxY=-math.huge; local maxZ=-math.huge',
+    'for i=1,scanLimit do local item=descendants[i]; local lower=string.lower(item.Name); if item:IsA("BasePart") then basePartCount+=1; local p=item.Position; local h=item.Size*0.5; minX=math.min(minX,p.X-h.X); minY=math.min(minY,p.Y-h.Y); minZ=math.min(minZ,p.Z-h.Z); maxX=math.max(maxX,p.X+h.X); maxY=math.max(maxY,p.Y+h.Y); maxZ=math.max(maxZ,p.Z+h.Z); if item:IsA("SpawnLocation") then spawnCount+=1; table.insert(spawnPositions,p) end end; if string.find(lower,"landmark",1,true) or string.find(lower,"hub",1,true) then landmarkCount+=1 end; if string.find(lower,"objective",1,true) or string.find(lower,"goal",1,true) or string.find(lower,"quest",1,true) then objectiveCount+=1 end end',
+    'local finiteWorldBounds=basePartCount>0 and minX<math.huge and maxX>-math.huge',
+    'local spawnOutsideBounds=0; if finiteWorldBounds then for _,p in ipairs(spawnPositions) do if p.X<minX or p.X>maxX or p.Y<minY or p.Y>maxY or p.Z<minZ or p.Z>maxZ then spawnOutsideBounds+=1 end end end',
+    'local spawnInBounds=spawnCount>0 and spawnOutsideBounds==0',
+    'local boundsX=finiteWorldBounds and (maxX-minX) or 0; local boundsY=finiteWorldBounds and (maxY-minY) or 0; local boundsZ=finiteWorldBounds and (maxZ-minZ) or 0',
+    'local terrainPresent=workspace:FindFirstChildOfClass("Terrain")~=nil',
+    'local atmospherePresent=Lighting:FindFirstChildOfClass("Atmosphere")~=nil',
+    'local streamingEnabled=workspace.StreamingEnabled==true',
     'print("JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING="..tostring(simulationRunning))',
     'print("JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT="..tostring(foundationServerBoot))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_BASEPARTS="..tostring(basePartCount))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_SPAWNS="..tostring(spawnCount))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_SPAWNS_IN_BOUNDS="..tostring(spawnInBounds))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_BOUNDS_FINITE="..tostring(finiteWorldBounds))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_BOUNDS_SIZE="..string.format("%.2f,%.2f,%.2f",boundsX,boundsY,boundsZ))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_LANDMARKS="..tostring(landmarkCount))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_OBJECTIVES="..tostring(objectiveCount))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_TERRAIN_PRESENT="..tostring(terrainPresent))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_LIGHTING_ATMOSPHERE="..tostring(atmospherePresent))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_STREAMING_ENABLED="..tostring(streamingEnabled))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_SCAN_CAPPED="..tostring(#descendants>scanLimit))',
   ].join(';');
   const base=`https://apis.roblox.com/cloud/v2/universes/${encodeURIComponent(universe)}/places/${encodeURIComponent(place)}/versions/${version}`;
   const decode=async(response,label)=>{
@@ -241,8 +264,27 @@ export async function probeRobloxOpenCloudEngine({
   const observedStudioAssetAtoms=[...new Set(observedStudioAssetAtomCsv.split(',').map(clean).filter(Boolean))].sort();
   const observedAtomSet=new Set(observedStudioAssetAtoms);
   const studioAssetSelectionMatched=!studioAssetBindingRequired||(expectedStudioAssetAtoms.length>0&&studioAssetApplied&&studioAssetBindingVersion===expectedStudioAssetBindingVersion&&expectedStudioAssetAtoms.every(atom=>observedAtomSet.has(atom)));
+  const boundsMatch=joined.match(/JAEWOON_OPEN_CLOUD_WORLD_BOUNDS_SIZE=([0-9.+-]+),([0-9.+-]+),([0-9.+-]+)/);
+  const worldEvidence=Object.freeze({
+    observed:true,
+    basePartCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_BASEPARTS=(\d+)/)?.[1]||0),
+    spawnCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_SPAWNS=(\d+)/)?.[1]||0),
+    spawnsInBounds:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_SPAWNS_IN_BOUNDS=true'),
+    finiteWorldBounds:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_BOUNDS_FINITE=true'),
+    boundsSize:Object.freeze({
+      x:Number(boundsMatch?.[1]||0),y:Number(boundsMatch?.[2]||0),z:Number(boundsMatch?.[3]||0)
+    }),
+    landmarkCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_LANDMARKS=(\d+)/)?.[1]||0),
+    objectiveCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_OBJECTIVES=(\d+)/)?.[1]||0),
+    terrainPresent:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_TERRAIN_PRESENT=true'),
+    lightingAtmospherePresent:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_LIGHTING_ATMOSPHERE=true'),
+    streamingEnabled:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_STREAMING_ENABLED=true'),
+    scanCapped:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_SCAN_CAPPED=true'),
+    worldGeometryPresent:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_BASEPARTS=(\d+)/)?.[1]||0)>0,
+    sameLuauExecutionSession:true
+  });
   return Object.freeze({
-    available:true,permissionDenied:false,status:200,engineExecuted:true,exactPlace,exactVersion,simulationRunning,serverBootObserved,
+    available:true,permissionDenied:false,status:200,engineExecuted:true,exactPlace,exactVersion,simulationRunning,serverBootObserved,worldEvidence,
     playerCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS=(\d+)/)?.[1]||0),
     studioAssetBindingRequired,studioAssetApplied,studioAssetBindingVersion,expectedStudioAssetBindingVersion,
     expectedStudioAssetAtoms:Object.freeze(expectedStudioAssetAtoms),observedStudioAssetAtoms:Object.freeze(observedStudioAssetAtoms),
