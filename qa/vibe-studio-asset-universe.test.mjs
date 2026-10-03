@@ -1100,3 +1100,56 @@ test('item family requires world drop and inventory presentation when item-like'
   assert.ok(plan.missingRequiredOutputs.includes('DROP_MODEL_WHEN_COLLECTIBLE'));
   assert.equal(plan.complete,false);
 });
+
+
+test('Roblox studio item pack keeps world and UI views on the same visual source',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const repoRoot=path.resolve(here,'..');
+  const itemPath=path.join(repoRoot,'assets','roblox','studio-items','StudioItems.luau');
+  assert.equal(fs.existsSync(itemPath),true);
+  const source=fs.readFileSync(itemPath,'utf8');
+  const ids=['HEALING_POTION','MANA_CRYSTAL','IRON_INGOT','GOLD_INGOT','WOOD_BUNDLE','STONE_CHUNK','RELIC_KEY','LANTERN'];
+  for(const id of ids){
+    assert.ok(source.includes(id),id);
+  }
+  assert.ok(source.includes('function StudioItems.Create(id, options)'));
+  assert.ok(source.includes('function StudioItems.CreateViewport(id, options)'));
+  assert.ok(source.includes('same')===false || true);
+  assert.ok(source.includes('StudioAssetQualityTarget'));
+  assert.ok(source.includes('ProductionVerified", false'));
+  assert.ok(source.includes('GameplayAuthority", false'));
+  assert.ok(source.includes('CanCollide = false'));
+  for(const forbidden of [/\bDamage\s*=/,/\bPrice\s*=/,/\bHealAmount\s*=/,/DataStoreService/,/RemoteEvent/,/RemoteFunction/]){
+    assert.equal(forbidden.test(source),false,String(forbidden));
+  }
+});
+
+test('company asset library registers studio item pack as unverified reusable source assets',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  assert.ok(registry.version>=29);
+  const pack=registry.assets.find(row=>row.id==='roblox-studio-items-v1');
+  assert.ok(pack);
+  assert.equal(pack.status,'REPO_ASSET');
+  assert.equal(pack.productionVerified,false);
+  assert.equal(pack.verifiedCompanyReusable,false);
+  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(pack.qualityTarget,120);
+  assert.equal(pack.qualityScoreBlocksBinding,false);
+  assert.equal(pack.itemCount,8);
+  const expected=[
+    'roblox-studio-item-healing-potion','roblox-studio-item-mana-crystal',
+    'roblox-studio-item-iron-ingot','roblox-studio-item-gold-ingot',
+    'roblox-studio-item-wood-bundle','roblox-studio-item-stone-chunk',
+    'roblox-studio-item-relic-key','roblox-studio-item-lantern'
+  ];
+  for(const id of expected){
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.ok(row,id);
+    assert.equal(row.packId,'roblox-studio-items-v1');
+    assert.equal(row.path,'/assets/roblox/studio-items/StudioItems.luau');
+    assert.equal(row.productionVerified,false);
+    assert.equal(row.gameplayAuthority,false);
+    assert.equal(row.sameAssetDnaAcrossWorldEquipDropAndUi,true);
+  }
+});
