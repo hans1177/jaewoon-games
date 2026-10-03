@@ -200,7 +200,8 @@ function charUpgradeCost(id){const lv=save.charLv[id]||0;return lv>=3?Infinity:1
 // ===== 캔버스 =====
 function resize(){let d=Math.min(2,devicePixelRatio||1);C.width=innerWidth*d;C.height=innerHeight*d;C.style.width=innerWidth+'px';C.style.height=innerHeight+'px';X.setTransform(d,0,0,d,0,0)}
 addEventListener('resize',resize,{passive:true});resize();
-function fighter(t,x,team){return Object.assign({},t,{x,team,maxHp:t.hp,hp:t.hp,cd:Math.random()*.12,flash:0,dead:false})}
+let fighterSeq=0;
+function fighter(t,x,team){return Object.assign({},t,{x,team,uid:++fighterSeq,maxHp:t.hp,hp:t.hp,cd:Math.random()*.12,flash:0,dead:false})}
 function fresh(){
   const h=castleMax(),stage=save.stage;
   return{running:true,paused:false,time:0,money:160,income:incomeRate(),walletLv:1,maxMoney:battleWalletMax(1),ally:{hp:h,maxHp:h},enemy:{hp:1500,maxHp:1500},a:[],e:[],stage,plan:STAGE_PLANS[stage]||[],spawn:0,nextRabbit:2,bossSpawned:false,cools:{},shake:0}
@@ -345,11 +346,19 @@ function world(w,h,g){
 function base(x,y,side){
   X.save();X.translate(x,y);X.fillStyle=side==='ally'?'#f6fbff':'#594a57';X.strokeStyle='#26374e';X.lineWidth=3;X.fillRect(-27,-51,54,51);X.strokeRect(-27,-51,54,51);X.fillStyle=side==='ally'?'#7bd0ff':'#ff806f';X.beginPath();X.moveTo(-33,-51);X.lineTo(0,-75);X.lineTo(33,-51);X.closePath();X.fill();X.stroke();X.fillStyle='#26374e';X.fillRect(-7,-20,14,20);X.fillStyle='#fff';X.font='bold 11px system-ui';X.textAlign='center';X.fillText(side==='ally'?'우리 성':'적 성',0,-32);X.restore();
 }
-function draw(){
-  const w=innerWidth,h=innerHeight,g=h-Math.min(110,h*.19)-58;X.save();if(s)X.translate((Math.random()-.5)*s.shake,0);world(w,h,g);if(s){s.a.forEach(f=>actor(f,g));s.e.forEach(f=>actor(f,g))}X.restore();
+function visualOffsets(list){
+  const buckets=new Map(),out=new Map(),pattern=[0,-10,10,-18,18,-26,26,-34,34];
+  list.filter(f=>!f.dead).forEach(f=>{const key=Math.round(f.x/6);if(!buckets.has(key))buckets.set(key,[]);buckets.get(key).push(f)});
+  buckets.forEach(group=>group.sort((a,b)=>a.uid-b.uid).forEach((f,i)=>out.set(f.uid,pattern[i%pattern.length])));
+  return out;
 }
-function actor(f,g){
-  const y=g-8;X.save();X.translate(f.x,y);if(f.team==='enemy')X.scale(-1,1);X.lineWidth=2.5;X.strokeStyle='#26374e';X.fillStyle=f.flash>0?'#fff':(f.team==='ally'?'#f7fbff':enemyColor(f.kind));body(f);X.stroke();face(f);gear(f);
+function draw(){
+  const w=innerWidth,h=innerHeight,g=h-Math.min(110,h*.19)-58;X.save();if(s)X.translate((Math.random()-.5)*s.shake,0);world(w,h,g);
+  if(s){const ao=visualOffsets(s.a),eo=visualOffsets(s.e);s.a.forEach(f=>actor(f,g,ao.get(f.uid)||0));s.e.forEach(f=>actor(f,g,eo.get(f.uid)||0))}
+  X.restore();
+}
+function actor(f,g,visualY=0){
+  const y=g-8+visualY;X.save();X.translate(f.x,y);if(f.team==='enemy')X.scale(-1,1);X.lineWidth=2.5;X.strokeStyle='#26374e';X.fillStyle=f.flash>0?'#fff':(f.team==='ally'?'#f7fbff':enemyColor(f.kind));body(f);X.stroke();face(f);gear(f);
   if(f.team==='enemy')X.scale(-1,1);const hp=clamp(f.hp/f.maxHp,0,1);X.fillStyle='#26374e';X.fillRect(-f.size,-f.size-18,f.size*2,5);X.fillStyle=f.team==='ally'?'#65d77a':'#ff6c69';X.fillRect(-f.size+1,-f.size-17,(f.size*2-2)*hp,3);if(f.kind==='boss'){X.fillStyle='#26374e';X.font='bold 9px system-ui';X.textAlign='center';X.fillText('바위왕',0,-f.size-23)}X.restore();
 }
 function body(f){
