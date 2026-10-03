@@ -130,6 +130,79 @@ function graphicsSignals(ctx){
   };
 }
 
+function studioReadinessSignals({required,implemented,ctx,placeholderDebt}){
+  const req=id=>required.includes(id);
+  const signal=(re,text=ctx.all)=>re.test(text);
+  const aiSignals=[
+    signal(/PathfindingService|CreatePath|ComputeAsync/i,ctx.gameplayServer),
+    signal(/Target|selectTarget|nearest|FindFirstChild.*HumanoidRootPart/i,ctx.gameplayServer),
+    signal(/MoveTo\s*\(|Chase|Aggro/i,ctx.gameplayServer),
+    signal(/Telegraph|Windup|Anticipation|AttackState|ATTACK_/i,ctx.gameplayCombined),
+    signal(/Disengage|Leash|Aggro.*(?:drop|reset)|ReturnToSpawn|Recovery/i,ctx.gameplayServer),
+    signal(/Raycast|LineOfSight|Magnitude|Distance/i,ctx.gameplayServer)
+  ];
+  const combatSignals=[
+    signal(/TakeDamage\s*\(|Damage\s*=|damagePlayer|applyDamage/i,ctx.gameplayServer),
+    signal(/Anticipation|Windup|attack.*start|ATTACK_ANTICIPATION/i,ctx.gameplayCombined),
+    signal(/Impact|HitFlash|ParticleEmitter|Trail|VFX|hitReaction/i,ctx.gameplayCombined),
+    signal(/Recovery|Recoil|HitStop|Cooldown|attack.*end/i,ctx.gameplayCombined),
+    signal(/HIT_REACTION|TakeDamage|Humanoid\.HealthChanged|hit.*animation/i,ctx.gameplayCombined)
+  ];
+  const worldSignals=[
+    signal(/SpawnLocation|SpawnPoint|spawn position/i,ctx.gameplayServer),
+    signal(/Landmark|Region|Zone|Biome|District|Room|Dungeon|Village/i,ctx.gameplayServer),
+    signal(/Hazard|Danger|SafeZone|RiskZone|EnemySpawn/i,ctx.gameplayServer),
+    signal(/Objective|Quest|Mission|Interact|ProximityPrompt/i,ctx.gameplayCombined),
+    signal(/Terrain|MeshPart|Model|buildWorld|createWorld|buildMap/i,ctx.gameplayServer)
+  ];
+  const firstTenSignals=[
+    implemented.MOBILE_UI===true,
+    implemented.CORE_GAMEPLAY_STATE===true,
+    signal(/Reward|Coins|XP|Experience|Level|Score|toast|feedback|Result/i,ctx.gameplayCombined),
+    signal(/Objective|NextGoal|Quest|Mission|CurrentWave|DayPhase|RoundState|Stage/i,ctx.gameplayCombined),
+    signal(/Tutorial|Onboarding|Hint|Help|Guide|첫|안내/i,ctx.gameplayCombined)
+  ];
+  const midLateSignals=[
+    implemented.PROGRESSION===true,
+    signal(/Unlock|Tier|Recipe|SkillTree|Upgrade|NewRegion|NextRegion|Boss|Elite/i,ctx.gameplayCombined),
+    signal(/CurrentDay|CurrentWave|Stage|Floor|Difficulty|Biome|Region/i,ctx.gameplayCombined),
+    signal(/Random|Rng|Variant|Modifier|Event|Choice|Build/i,ctx.gameplayCombined)
+  ];
+  const systemConnections=[];
+  if(req('GATHERING')&&req('CRAFTING'))systemConnections.push({id:'RESOURCE_TO_CRAFT',pass:implemented.GATHERING===true&&implemented.CRAFTING===true});
+  if(req('CRAFTING')&&req('EQUIPMENT'))systemConnections.push({id:'CRAFT_TO_EQUIPMENT',pass:implemented.CRAFTING===true&&implemented.EQUIPMENT===true});
+  if(req('EQUIPMENT')&&req('COMBAT'))systemConnections.push({id:'EQUIPMENT_TO_COMBAT',pass:implemented.EQUIPMENT===true&&implemented.COMBAT===true});
+  if(req('QUEST')&&req('PROGRESSION'))systemConnections.push({id:'QUEST_TO_PROGRESSION',pass:implemented.QUEST===true&&implemented.PROGRESSION===true});
+  if(req('WORLD')&&req('CONTENT_ENTITY'))systemConnections.push({id:'WORLD_TO_CONTENT',pass:implemented.WORLD===true&&implemented.CONTENT_ENTITY===true});
+
+  const aiQualityPass=!req('ENEMY_AI')||aiSignals.filter(Boolean).length>=4;
+  const combatFeelPass=!req('COMBAT')||(combatSignals[0]===true&&combatSignals.filter(Boolean).length>=3);
+  const worldTopologyPass=!req('WORLD')||worldSignals.filter(Boolean).length>=3;
+  const firstTenMinutesPass=firstTenSignals.filter(Boolean).length>=4;
+  const midLateDepthPass=!req('PROGRESSION')||midLateSignals.filter(Boolean).length>=3;
+  const systemConnectionPass=systemConnections.every(row=>row.pass);
+  const placeholderPass=placeholderDebt.likelyPrimitiveHeavy!==true;
+  const criticalGaps=[];
+  if(!aiQualityPass)criticalGaps.push('AI_STATE_DEPTH');
+  if(!combatFeelPass)criticalGaps.push('COMBAT_FEEL_CHAIN');
+  if(!worldTopologyPass)criticalGaps.push('WORLD_TOPOLOGY_AND_LANDMARKS');
+  if(!firstTenMinutesPass)criticalGaps.push('FIRST_10_MINUTES_FLOW');
+  if(!midLateDepthPass)criticalGaps.push('MID_LATE_GAME_DEPTH');
+  if(!systemConnectionPass)criticalGaps.push('SYSTEM_CONNECTION_CHAIN');
+  if(!placeholderPass)criticalGaps.push('PRIMARY_PLACEHOLDER_DEBT');
+  return Object.freeze({
+    ai:Object.freeze({applicable:req('ENEMY_AI'),signalCount:aiSignals.filter(Boolean).length,pass:aiQualityPass}),
+    combatFeel:Object.freeze({applicable:req('COMBAT'),signalCount:combatSignals.filter(Boolean).length,pass:combatFeelPass}),
+    worldTopology:Object.freeze({applicable:req('WORLD'),signalCount:worldSignals.filter(Boolean).length,pass:worldTopologyPass}),
+    firstTenMinutes:Object.freeze({signalCount:firstTenSignals.filter(Boolean).length,pass:firstTenMinutesPass}),
+    midLateGame:Object.freeze({applicable:req('PROGRESSION'),signalCount:midLateSignals.filter(Boolean).length,pass:midLateDepthPass}),
+    systemConnections:Object.freeze({rows:Object.freeze(systemConnections),pass:systemConnectionPass}),
+    placeholder:Object.freeze({pass:placeholderPass,...placeholderDebt}),
+    criticalGaps:Object.freeze(criticalGaps),
+    f9SourceQualityReady:criticalGaps.length===0
+  });
+}
+
 function qualitySheet({required,implemented,ctx,runtimeEvidence=null}){
   const req=id=>required.includes(id);
   const ok=id=>implemented[id]===true;
@@ -205,6 +278,7 @@ export function evaluateRobloxGameplayProductReadiness({gameId='',baseline={},co
     meaningfulGameplayFunctionCount:meaningfulFunctionCount
   });
   const sheet=qualitySheet({required,implemented,ctx,runtimeEvidence});
+  const studioReadiness=studioReadinessSignals({required,implemented,ctx,placeholderDebt});
   const pass=blockers.length===0&&sheet.Core!=='MISSING'&&sheet.Core!=='ROUGH'&&sheet.Mobile!=='MISSING';
 
   const runtimeRequirements=Object.freeze({
@@ -229,6 +303,7 @@ export function evaluateRobloxGameplayProductReadiness({gameId='',baseline={},co
     signatureSystemTrace:Object.freeze(signatureSystems),
     placeholderDebt,
     studioQualitySheet:sheet,
+    studioReadiness,
     runtimeRequirements,
     designFingerprint:crypto.createHash('sha256').update(JSON.stringify(content)).digest('hex'),
     antiSkeletonPassed:!genericSkeleton
@@ -250,6 +325,9 @@ export function evaluateRobloxF9ProductReadiness({f0Evidence={},runtimeEvidence=
   const objective=!req.objectiveRequired||Number(world.objectiveCount||0)>=1;
   const blockers=[];
   if(product.pass!==true)blockers.push('F0_GAMEPLAY_PRODUCT_READINESS_MISSING');
+  if(product?.studioReadiness?.f9SourceQualityReady!==true){
+    for(const gap of product?.studioReadiness?.criticalGaps||[])blockers.push('F9_STUDIO_SOURCE_QUALITY_GAP:'+gap);
+  }
   if(!exactEngine)blockers.push('F9_EXACT_ENGINE_EXECUTION_MISSING');
   if(req.serverBootRequired!==false&&!serverBoot)blockers.push('F9_SERVER_BOOT_MISSING');
   if(req.simulationRequired!==false&&!simulation)blockers.push('F9_SIMULATION_MISSING');
@@ -273,6 +351,7 @@ export function evaluateRobloxF9ProductReadiness({f0Evidence={},runtimeEvidence=
       landmarkCount:Number(world.landmarkCount||0),
       objectiveCount:Number(world.objectiveCount||0)
     }),
-    sourceQualitySheet:product?.studioQualitySheet||null
+    sourceQualitySheet:product?.studioQualitySheet||null,
+    studioReadiness:product?.studioReadiness||null
   });
 }
