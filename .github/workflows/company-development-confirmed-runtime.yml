@@ -358,9 +358,6 @@ jobs:
       fail-fast: false
       matrix:
         game_id: ${{ fromJSON(needs.native-plan.outputs.unity_web_json) }}
-    concurrency:
-      group: unity-web-floor-call-${{ matrix.game_id }}
-      cancel-in-progress: false
     permissions:
       contents: write
       pull-requests: write
