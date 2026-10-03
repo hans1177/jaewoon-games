@@ -1083,6 +1083,7 @@ Unity Web에서 모바일 브라우저 실행 가능한 완전한 첫 플레이 
     ].filter(Boolean).join('|');
     const goal=`[UNITY_WEB_DEVELOPMENT_FLOOR_REPAIR] 게임: ${project.name||project.gameId}
 기존 unity-games/${project.gameId}/ canonical Unity 프로젝트를 직접 읽고 UPPER_PLATFORM_DEVELOPMENT_READY 실패 원인을 실제 코드·그래픽에서 수정한다. 기존 게임 규칙·수치·저장·핵심 루프를 임의로 바꾸지 않는다.
+플랫폼 병렬 책임을 지킨다. 이 Unity Web 수리 작업은 GameCore/RuntimeBootstrap/필요한 Editor 빌드 파일만 책임지고, Visual/Presentation 전용 C#과 assets/generated/unity 경로는 기존 ASSET_DEVELOPMENT 표현 작업이 병렬로 담당한다. 실제 같은 파일이 겹칠 때만 Work Lock으로 직렬화한다.
 필수 수리 근거: ${reasons||'UPPER_PLATFORM_READINESS_REPAIR'}.
 코드: 시작→플레이→진행/보상→종료 또는 재시도 핵심 루프가 실제 상태 변화로 이어지고 치명 오류·진행 소프트락이 없어야 한다.
 그래픽: 캐릭터/적/환경/장비 정체성이 실제 화면에서 구분되어야 하고 placeholder primitive 중심 표현은 완성으로 인정하지 않는다. 최소 2.5D/3D 공간 표현, 실제 모션/애니메이션/VFX를 게임 상태에 연결한다.
@@ -1090,24 +1091,32 @@ Unity Web에서 모바일 브라우저 실행 가능한 완전한 첫 플레이 
 QA: Independent QA와 Regression을 약화하지 않는다. 설계상 멀티가 필요하면 실제 2명 이상 상태 동기화와 authoritative sync 증거 없이는 PASS 처리하지 않는다.
 MOBILE_TARGET은 실제 화면 컨트롤 위치여야 하고 MOBILE_INPUT은 브라우저 Pointer/Touch가 그 실제 컨트롤을 작동시킨 뒤에만 기록한다. CORE_FUN은 장르 핵심 루프가 실제 진행/보상까지 완료된 뒤에만 PASS로 기록한다.
 UPPER_PLATFORM_DEVELOPMENT_READY의 DESIGN/CODE/GRAPHICS/WEBGL_BUILD/ACTUAL_PLAY/QA/PORTABILITY 7개 기준을 우회하거나 boolean만 조작하는 수정은 금지한다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
-    const scriptsDir=sourceFile(repoRoot,`${root}/Assets/Scripts`);
-    const files=[];
-    const collectScripts=dir=>{
-      if(!fs.existsSync(dir))return;
-      for(const entry of fs.readdirSync(dir,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){
-        const full=path.join(dir,entry.name);
-        if(entry.isDirectory())collectScripts(full);
-        else if(entry.isFile()&&entry.name.endsWith('.cs'))files.push(posix(path.relative(repoRoot,full)));
+    const files=[coreRel,runtimeRel].filter(relative=>fs.existsSync(sourceFile(repoRoot,relative)));
+    if(!buildWebReady){
+      const editorDir=sourceFile(repoRoot,`${root}/Assets/Editor`);
+      if(fs.existsSync(editorDir)&&fs.statSync(editorDir).isDirectory()){
+        const stack=[editorDir];
+        while(stack.length&&files.length<8){
+          const current=stack.pop();
+          let entries=[];
+          try{entries=fs.readdirSync(current,{withFileTypes:true});}catch{continue;}
+          for(const entry of entries.sort((a,b)=>a.name.localeCompare(b.name))){
+            const full=path.join(current,entry.name);
+            if(entry.isDirectory()){stack.push(full);continue;}
+            if(entry.isFile()&&/\.cs$/i.test(entry.name))files.push(posix(path.relative(repoRoot,full)));
+            if(files.length>=8)break;
+          }
+        }
       }
-    };
-    collectScripts(scriptsDir);
-    if(!files.length)for(const relative of [coreRel,runtimeRel])if(fs.existsSync(sourceFile(repoRoot,relative)))files.push(relative);
+    }
     if(!files.length)return null;
     const out=task(id,{...project,engine:'unity',target:'unity'},goal,files,'owner-immediate','medium',[
       'owner-directive:webgame-first',
       'web-stage:WEB_REPAIR',
       'unity-web-first-stage',
       'unity-web-development-floor:v1',
+      'platform-responsibility-split:unity-web-core-runtime',
+      'same-game-cross-platform-parallel:responsible-files-only',
       'upper-platform-readiness:'+readinessReason,
       bootstrapGraphicsBlocked?'graphics-buildup-required':'graphics-buildup-evaluate',
       multiplayerRepairRequired?'multiplayer-2plus-authoritative-sync-required':'multiplayer-gate-context-evaluated',
@@ -1399,7 +1408,33 @@ function presentationSourcesForProject(project,repoRoot){
       candidates=[...candidates,...discovered];
     }
   }else if(engine==='unity'){
-    candidates=[`${root}/Assets/Scripts/PrototypeAnimatedVisuals.cs`,`${root}/Assets/Scripts/RuntimeBootstrap.cs`,`${root}/Assets/Scripts/GameCore.cs`];
+    const scriptsDir=sourceFile(repoRoot,`${root}/Assets/Scripts`);
+    const dedicated=[];
+    for(const relative of [
+      `${root}/Assets/Scripts/PrototypeAnimatedVisuals.cs`,
+      `${root}/Assets/Scripts/Presentation.cs`,
+      `${root}/Assets/Scripts/Visuals.cs`,
+      `${root}/Assets/Scripts/AssetPresentation.cs`
+    ])if(fs.existsSync(sourceFile(repoRoot,relative)))dedicated.push(relative);
+    if(fs.existsSync(scriptsDir)&&fs.statSync(scriptsDir).isDirectory()){
+      const stack=[scriptsDir];
+      while(stack.length&&dedicated.length<12){
+        const current=stack.pop();
+        let entries=[];
+        try{entries=fs.readdirSync(current,{withFileTypes:true});}catch{continue;}
+        for(const entry of entries.sort((a,b)=>a.name.localeCompare(b.name))){
+          const full=path.join(current,entry.name);
+          if(entry.isDirectory()){stack.push(full);continue;}
+          if(!entry.isFile()||!/\.cs$/i.test(entry.name))continue;
+          if(/^(?:GameCore|RuntimeBootstrap)\.cs$/i.test(entry.name))continue;
+          if(!/(?:Visual|Presentation|Render|View|Animation|Motion|Vfx|Effect|Particle|Camera|Hud|Ui|Audio)/i.test(entry.name))continue;
+          dedicated.push(posix(path.relative(repoRoot,full)));
+          if(dedicated.length>=12)break;
+        }
+      }
+    }
+    candidates=[...new Set(dedicated)];
+    if(!candidates.length)candidates=[`${root}/Assets/Scripts/RuntimeBootstrap.cs`];
   }else if(engine==='roblox'){
     candidates=[`${root}/client/Game.client.luau`,`${root}/server/Game.server.luau`,`${root}/shared/GameConfig.luau`,`${root}/shared/VisualStyle.luau`,`${root}/client/BattleVisual.luau`];
   }else if(engine==='unreal'){
