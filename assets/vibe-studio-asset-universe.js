@@ -436,7 +436,10 @@ export function createStudioAssetFamilyPlan({asset={},availableOutputs=[]}={}){
     missingRequiredOutputs:freezeList(gaps),
     itemPresentationRequired:itemLike,
     itemPresentationRoles:itemLike?freezeList(required.filter(role=>/WORLD_MODEL|INVENTORY_ICON|DROP_MODEL|CRAFTING_ICON/.test(role))):freezeList([]),
+    familyRootId:text(asset?.familyRootId||asset?.assetFamilyId||asset?.dna?.FAMILY_ROOT_ID||asset?.parentId)||text(asset?.id)||null,
     sameAssetDnaAcrossWorldEquipDropAndUi:true,
+    uiIconMustReflectWorldAssetIdentity:itemLike||family==='WEAPON',
+    equippedDropInventoryCraftingVariantsShareLineage:itemLike||family==='WEAPON',
     complete:gaps.length===0
   });
 }
