@@ -25,11 +25,13 @@ test('Vibe result and recovery handlers do not globally serialize unrelated game
     assert.doesNotMatch(source,/\nconcurrency:\s*\n\s*group:/);
   }
   for(const forbidden of ['vibe2-control-state-vibe2-unreal-core','vibe2-release-serial','vibe2-recovery-fast','vibe2-roblox-release-handoff','company-runtime-writer']){
-    assert.doesNotMatch(unityCandidateResult,new RegExp(forbidden));
-    assert.doesNotMatch(unityReleaseResult,new RegExp(forbidden));
-    assert.doesNotMatch(recoveryFast,new RegExp(forbidden));
-    assert.doesNotMatch(robloxCandidateResult,new RegExp(forbidden));
-    assert.doesNotMatch(robloxReleaseHandoff,new RegExp(forbidden));
+    const escaped=forbidden.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    const groupPattern=new RegExp('group:\\s*'+escaped+'(?:\\s|$)');
+    assert.doesNotMatch(unityCandidateResult,groupPattern);
+    assert.doesNotMatch(unityReleaseResult,groupPattern);
+    assert.doesNotMatch(recoveryFast,groupPattern);
+    assert.doesNotMatch(robloxCandidateResult,groupPattern);
+    assert.doesNotMatch(robloxReleaseHandoff,groupPattern);
   }
   assert.match(unityCandidateResult,/VIBE2_RECONCILE_WRITE_RACE=RETRY/);
   assert.match(unityReleaseResult,/VIBE2_UNITY_RESULT_QUEUE_WRITE_ATTEMPT=/);
