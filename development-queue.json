@@ -3162,11 +3162,19 @@
         "authority": "OWNER_DIRECTIVE",
         "gameId": "line-defense",
         "sourcePath": "web-games/line-defense",
-        "sourceBefore": "9f0f5c63faef5758f65758c294fbe9704f387b93",
-        "sourceAfter": "59d894e53f5054ab34645956676db1dfbd2f720a",
-        "semanticIntentFingerprint": "9e033df33d8c9b6d5972350dd4989e89fd490d1bfb0f11929f8cebb1b96b69df",
+        "sourceBefore": "16d717739646de239268612e4801107d56ce2dd7",
+        "sourceAfter": "42b7c71012a56f620cb2c61c6d531ee21571d9fb",
+        "semanticIntentFingerprint": "e4f7842398bdf6dedc36b44abb24f1bec819b6c6dce330f3c33b6ecf3348c60c",
         "affectedSystems": [
-          "UI_UX"
+          "MOVEMENT",
+          "COMBAT",
+          "INVENTORY",
+          "WORLD",
+          "MULTIPLAYER",
+          "PROGRESSION",
+          "UI_UX",
+          "SAVE",
+          "BALANCE"
         ],
         "platformTargets": [
           "UNITY"
@@ -3175,11 +3183,11 @@
         "semanticIntentPropagationRequired": true,
         "affectedWebQaRequired": true,
         "affectedPlatformQaRequired": true,
-        "detectedAt": "2026-10-03T07:18:52.542Z",
+        "detectedAt": "2026-10-03T07:48:31.724Z",
         "state": "PLATFORM_PROPAGATION_REQUIRED"
       },
       "ownerWebEditPropagationPending": true,
-      "ownerWebEditPropagationUpdatedAt": "2026-10-03T07:18:52.542Z"
+      "ownerWebEditPropagationUpdatedAt": "2026-10-03T07:48:31.724Z"
     },
     {
       "gameId": "village-dungeons",
@@ -9242,7 +9250,7 @@
       "robloxPublicReleaseFinalEvidence": null
     }
   ],
-  "updatedAt": "2026-10-03T07:48:04.217Z",
+  "updatedAt": "2026-10-03T07:48:31.724Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
