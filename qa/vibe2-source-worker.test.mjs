@@ -226,7 +226,7 @@ test('persisted Roblox DCC assets bind exact path and hash before local-model re
     'status.TextScaled = true',
     'status.Parent = root',
     ''
-  ].join('\\n');
+  ].join('\n');
   write(path.join(sourceRoot,relative),source);
   const workOrder=order({
     target:'roblox',
@@ -288,12 +288,12 @@ test('persisted Roblox DCC assets bind exact path and hash before local-model re
   assert.equal(generated.generation.attempts,0);
   assert.equal(generated.generation.generatedAssetBindingCount,3);
 
-  const changed=generated.candidate.edits.map(row=>row.replace).join('\\n');
+  const changed=generated.candidate.edits.map(row=>row.replace).join('\n');
   for(const binding of bindings){
     assert.ok(changed.includes(binding.path));
     assert.ok(changed.includes(binding.artifactHash));
   }
-  assert.match(changed,/game:GetService\\("Lighting"\\)/);
+  assert.match(changed,/game:GetService\("Lighting"\)/);
   assert.match(changed,/TweenService/);
 
   const authored=evaluateNativeAssetAuthoringCandidate({order:workOrder,candidate:generated.candidate});
