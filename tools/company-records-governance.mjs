@@ -150,6 +150,7 @@ export function changedGovernedFiles(base='HEAD^',head='HEAD'){
 const CENTRAL_POLICY_REL='company-learning/platform-release-roadmap.json';
 const CENTRAL_ARCHITECTURE_REL='company-learning/company-architecture-map.json';
 const CENTRAL_LOG_MAP_REL='company-learning/company-log-map.json';
+const CENTRAL_SECURITY_REL='company-learning/security-immune-system.json';
 const CENTRAL_SCAN_ROOTS=Object.freeze(['qa','tools','.github','assets']);
 const CENTRAL_COMPANION_DOCUMENTS=Object.freeze({
   architecture:Object.freeze({
@@ -164,9 +165,16 @@ const CENTRAL_COMPANION_DOCUMENTS=Object.freeze({
   })
 });
 const CENTRAL_TEXT_EXTENSIONS=new Set(['.js','.mjs','.cjs','.json','.yml','.yaml','.md']);
+const CENTRAL_DOCUMENT_BUDGETS=Object.freeze({
+  policy:Object.freeze({sourcePath:CENTRAL_POLICY_REL,hardMaxUtf8Bytes:null,maxGrowthUtf8Bytes:12000}),
+  architecture:Object.freeze({sourcePath:CENTRAL_ARCHITECTURE_REL,hardMaxUtf8Bytes:320000,maxGrowthUtf8Bytes:8000}),
+  logMap:Object.freeze({sourcePath:CENTRAL_LOG_MAP_REL,hardMaxUtf8Bytes:140000,maxGrowthUtf8Bytes:4000}),
+  security:Object.freeze({sourcePath:CENTRAL_SECURITY_REL,hardMaxUtf8Bytes:70000,maxGrowthUtf8Bytes:4000})
+});
 const cloneJson=value=>JSON.parse(JSON.stringify(value));
 const utf8Bytes=value=>Buffer.byteLength(typeof value==='string'?value:JSON.stringify(value,null,2)+'\n','utf8');
-const readJsonRel=rel=>JSON.parse(fs.readFileSync(path.join(ROOT,rel),'utf8'));
+const readTextRel=rel=>fs.readFileSync(path.join(ROOT,rel),'utf8');
+const readJsonRel=rel=>JSON.parse(readTextRel(rel));
 const readCentralRoadmap=()=>readJsonRel(CENTRAL_POLICY_REL);
 const escapeRegExp=value=>String(value??'').replace(/[|\\{}()[\]^$+*?.-]/g,'\\$&');
 
@@ -271,7 +279,7 @@ export function findCurrentCentralPolicyReferences({roots=CENTRAL_SCAN_ROOTS}={}
     'company-learning/platform-release-roadmap.json',
     'company-learning/company-log-map.json',
     'company-learning/company-architecture-map.json',
-    'company-learning/security-immune-system.json'
+    CENTRAL_SECURITY_REL
   ]);
   for(const root of roots){
     const abs=path.join(ROOT,root);
@@ -297,7 +305,7 @@ export function findCurrentCompanionDocumentReferences({roots=CENTRAL_SCAN_ROOTS
     CENTRAL_POLICY_REL,
     CENTRAL_ARCHITECTURE_REL,
     CENTRAL_LOG_MAP_REL,
-    'company-learning/security-immune-system.json'
+    CENTRAL_SECURITY_REL
   ]);
   for(const root of roots){
     const abs=path.join(ROOT,root);
@@ -370,6 +378,74 @@ export function discoverCentralArchiveCandidates({roadmap=null,minBytes=512,limi
   walk(current,[]);
   rows.sort((a,b)=>b.utf8Bytes-a.utf8Bytes||a.path.localeCompare(b.path));
   return Object.freeze(rows.slice(0,Math.max(1,Number(limit)||20)));
+}
+
+export function evaluateCentralDocumentBudget({
+  documentKey='',
+  sourcePath='',
+  currentBytes=0,
+  baseBytes=null,
+  hardMaxUtf8Bytes=0,
+  maxGrowthUtf8Bytes=0
+}={}){
+  const key=clean(documentKey)||'unknown';
+  const marker=key.replace(/[^A-Za-z0-9]+/g,'_').toUpperCase();
+  const current=Math.max(0,Number(currentBytes)||0);
+  const base=baseBytes===null||baseBytes===undefined?null:Math.max(0,Number(baseBytes)||0);
+  const hardMax=Math.max(0,Number(hardMaxUtf8Bytes)||0);
+  const maxGrowth=Math.max(0,Number(maxGrowthUtf8Bytes)||0);
+  const growth=base===null?null:current-base;
+  const errors=[];
+  if(hardMax>0&&current>hardMax)errors.push('CENTRAL_DOCUMENT_'+marker+'_HARD_LIMIT_EXCEEDED:'+current+'>'+hardMax);
+  if(growth!==null&&growth>maxGrowth)errors.push('CENTRAL_DOCUMENT_'+marker+'_GROWTH_LIMIT_EXCEEDED:'+growth+'>'+maxGrowth);
+  return Object.freeze({
+    documentKey:key,
+    sourcePath:clean(sourcePath),
+    utf8Bytes:current,
+    baseUtf8Bytes:base,
+    growthUtf8Bytes:growth,
+    hardMaxUtf8Bytes:hardMax,
+    maxGrowthUtf8Bytes:maxGrowth,
+    headroomUtf8Bytes:hardMax>0?hardMax-current:null,
+    errors:Object.freeze(errors)
+  });
+}
+
+export function inspectCentralDocumentBudgets({baseRevision=''}={}){
+  const base=clean(baseRevision);
+  const documents={};
+  const errors=[];
+  for(const [documentKey,budget] of Object.entries(CENTRAL_DOCUMENT_BUDGETS)){
+    const currentText=readTextRel(budget.sourcePath);
+    const currentJson=JSON.parse(currentText);
+    const hardMax=documentKey==='policy'
+      ?Number(currentJson?.centralDocumentRetention?.maxUtf8Bytes||1120000)
+      :Number(budget.hardMaxUtf8Bytes||0);
+    let baseBytes=null;
+    if(base&& !/^0+$/.test(base)){
+      try{
+        const prior=execFileSync('git',['show',base+':'+budget.sourcePath],{cwd:ROOT,encoding:'utf8'});
+        baseBytes=utf8Bytes(prior);
+      }catch{
+        errors.push('CENTRAL_DOCUMENT_BASE_READ_FAILED:'+documentKey+':'+base);
+      }
+    }
+    const row=evaluateCentralDocumentBudget({
+      documentKey,
+      sourcePath:budget.sourcePath,
+      currentBytes:utf8Bytes(currentText),
+      baseBytes,
+      hardMaxUtf8Bytes:hardMax,
+      maxGrowthUtf8Bytes:budget.maxGrowthUtf8Bytes
+    });
+    documents[documentKey]=row;
+    errors.push(...row.errors);
+  }
+  return Object.freeze({
+    baseRevision:base||null,
+    documents:Object.freeze(documents),
+    errors:Object.freeze(uniq(errors))
+  });
 }
 
 export function inspectCentralDocument({roadmap=null,protectedReferences=null}={}){
@@ -774,17 +850,33 @@ function main(){
     return;
   }
   if(args.includes('--central-report')){
+    const baseArg=args.find(x=>x.startsWith('--central-base='));
+    const baseRevision=baseArg?clean(baseArg.slice('--central-base='.length)):'';
     const report=inspectCentralDocument();
+    const budgets=inspectCentralDocumentBudgets({baseRevision});
     console.log('CENTRAL_POLICY_UTF8_BYTES='+report.utf8Bytes);
     console.log('CENTRAL_POLICY_SOFT_TARGET_BYTES='+report.softTargetUtf8Bytes);
     console.log('CENTRAL_POLICY_HARD_MAX_BYTES='+report.maxUtf8Bytes);
     console.log('CENTRAL_POLICY_HEADROOM_BYTES='+report.headroomBytes);
     console.log('CENTRAL_POLICY_PROTECTED_CHANGE_RECORD_KEYS='+report.protectedChangeRecordKeys.length);
+    for(const [documentKey,row] of Object.entries(budgets.documents)){
+      const marker=documentKey.replace(/[^A-Za-z0-9]+/g,'_').toUpperCase();
+      console.log('CENTRAL_DOCUMENT_'+marker+'_UTF8_BYTES='+row.utf8Bytes);
+      console.log('CENTRAL_DOCUMENT_'+marker+'_HARD_MAX_BYTES='+row.hardMaxUtf8Bytes);
+      console.log('CENTRAL_DOCUMENT_'+marker+'_HEADROOM_BYTES='+row.headroomUtf8Bytes);
+      console.log('CENTRAL_DOCUMENT_'+marker+'_MAX_GROWTH_BYTES='+row.maxGrowthUtf8Bytes);
+      if(row.baseUtf8Bytes!==null){
+        console.log('CENTRAL_DOCUMENT_'+marker+'_BASE_BYTES='+row.baseUtf8Bytes);
+        console.log('CENTRAL_DOCUMENT_'+marker+'_GROWTH_BYTES='+row.growthUtf8Bytes);
+      }
+    }
     if(report.aboveSoftTarget){
       console.warn('CENTRAL_POLICY_SOFT_TARGET_EXCEEDED=YES');
       for(const row of discoverCentralArchiveCandidates({limit:10}))console.warn('CENTRAL_POLICY_ARCHIVE_CANDIDATE='+row.path+':'+row.utf8Bytes);
     }
-    if(report.errors.length){report.errors.forEach(x=>console.error(x));process.exit(1);}
+    const errors=uniq([...report.errors,...budgets.errors]);
+    if(errors.length){errors.forEach(x=>console.error(x));process.exit(1);}
+    console.log('CENTRAL_DOCUMENT_BUDGETS=PASS');
     console.log('CENTRAL_POLICY_RETENTION=PASS');
     return;
   }
