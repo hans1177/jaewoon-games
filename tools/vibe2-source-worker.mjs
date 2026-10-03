@@ -364,7 +364,7 @@ export function persistedGeneratedAssetBindings(order={}){
   if(!assetDevelopmentTask(order)||!['roblox','unity'].includes(target)
     ||dcc?.executed!==true||dcc?.allRecipesPassed!==true
     ||dcc?.candidateUsable!==true||dcc?.persistedForCandidate!==true
-    ||!recipes.length)return freezeList([]);
+    ||!recipes.length)return Object.freeze([]);
   const bindings=recipes.map((row,index)=>{
     const assetPath=posix(row?.nativeArtifact);
     const artifactHash=clean(row?.artifactHash);
@@ -379,7 +379,7 @@ export function persistedGeneratedAssetBindings(order={}){
       license:clean(row?.license)||null
     });
   }).filter(Boolean);
-  return bindings.length===recipes.length?freezeList(bindings):freezeList([]);
+  return bindings.length===recipes.length?Object.freeze(bindings):Object.freeze([]);
 }
 export function resolveAssetSourceModel(order={},requestedModel=DEFAULT_MODEL){
   const routing=order?.assetProduction?.modelRouting&&typeof order.assetProduction.modelRouting==='object'?order.assetProduction.modelRouting:null;
@@ -4420,10 +4420,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     });
     if(generated)console.log('VIBE2_GENERATED_NATIVE_ASSET_BINDING=PASS:'+generatedAssetBindings.length);
   }
-  const deterministicDiagnostic=!generated&&!allowFullRewrite&&verifiedExternalLearningContract.required!==true
-    ?deterministicDiagnosticCandidate({exploration,sourceRoot,responsibleFiles,order})
-    :null;
-  if(deterministicDiagnostic){
+  const deterministicDiagnostic=!allowFullRewrite&&verifiedExternalLearningContract.required!==true?deterministicDiagnosticCandidate({exploration,sourceRoot,responsibleFiles,order}):null;
+  if(!generated&&deterministicDiagnostic){
     try{
       const candidate=normalizeCandidate(deterministicDiagnostic,{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES});
       if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
