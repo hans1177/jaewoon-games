@@ -561,7 +561,10 @@ jobs:
           git config user.name 'jaewoon-vibe2-release'
           git config user.email 'vibe2-release@users.noreply.github.com'
           settled=0
-          for attempt in 1 2 3; do
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            echo "VIBE2_CANDIDATE_QUEUE_WRITE_ATTEMPT=$attempt"
             git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
             if [ "$result" = PASS ]; then
@@ -579,7 +582,9 @@ jobs:
               settled=1
               break
             fi
-            sleep $((attempt * 2))
+            sleep_for=$((attempt<5?attempt:5))
+            echo "VIBE2_CANDIDATE_QUEUE_WRITE_RACE=RETRY:$attempt:$sleep_for"
+            sleep "$sleep_for"
           done
           test "$settled" = 1
 
@@ -668,7 +673,10 @@ jobs:
           git config user.name 'jaewoon-vibe2-release'
           git config user.email 'vibe2-release@users.noreply.github.com'
           settled=0
-          for attempt in 1 2 3; do
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            echo "VIBE2_CANDIDATE_QUEUE_WRITE_ATTEMPT=$attempt"
             git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
             node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=unity-web-build-dispatch-failed --evidence="actions-run-${GITHUB_RUN_ID}"
@@ -682,7 +690,9 @@ jobs:
               settled=1
               break
             fi
-            sleep $((attempt * 2))
+            sleep_for=$((attempt<5?attempt:5))
+            echo "VIBE2_CANDIDATE_QUEUE_WRITE_RACE=RETRY:$attempt:$sleep_for"
+            sleep "$sleep_for"
           done
           test "$settled" = 1
           payload="$(jq -nc \
@@ -749,7 +759,10 @@ jobs:
           git config user.name 'jaewoon-vibe2-release'
           git config user.email 'vibe2-release@users.noreply.github.com'
           settled=0
-          for attempt in 1 2 3; do
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            echo "VIBE2_CANDIDATE_QUEUE_WRITE_ATTEMPT=$attempt"
             git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
             node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=unity-build-dispatch-failed --evidence="actions-run-${GITHUB_RUN_ID}"
@@ -763,7 +776,9 @@ jobs:
               settled=1
               break
             fi
-            sleep $((attempt * 2))
+            sleep_for=$((attempt<5?attempt:5))
+            echo "VIBE2_CANDIDATE_QUEUE_WRITE_RACE=RETRY:$attempt:$sleep_for"
+            sleep "$sleep_for"
           done
           test "$settled" = 1
           payload="$(jq -nc \
@@ -1163,7 +1178,10 @@ jobs:
           git config user.name 'jaewoon-vibe2-release'
           git config user.email 'vibe2-release@users.noreply.github.com'
           settled=0
-          for attempt in 1 2 3; do
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            echo "VIBE2_CANDIDATE_QUEUE_WRITE_ATTEMPT=$attempt"
             git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
             if [ "$EVIDENCE_ONLY" = true ]; then
@@ -1217,7 +1235,9 @@ jobs:
               settled=1
               break
             fi
-            sleep $((attempt * 2))
+            sleep_for=$((attempt<5?attempt:5))
+            echo "VIBE2_CANDIDATE_QUEUE_WRITE_RACE=RETRY:$attempt:$sleep_for"
+            sleep "$sleep_for"
           done
           test "$settled" = 1
           if [ "$EVIDENCE_ONLY" = true ]; then
@@ -1254,7 +1274,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Return rejected candidate to correct serial queue
+      - name: Return rejected candidate to canonical queue without global serialization
         env:
           GH_TOKEN: ${{ github.token }}
           TASK_ID: ${{ needs.inspect.outputs.task_id }}
@@ -1278,7 +1298,10 @@ jobs:
           git config user.name 'jaewoon-vibe2-release'
           git config user.email 'vibe2-release@users.noreply.github.com'
           settled=0
-          for attempt in 1 2 3; do
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            echo "VIBE2_CANDIDATE_QUEUE_WRITE_ATTEMPT=$attempt"
             git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
             node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker="$REASON" --evidence="candidate-release-rejected,actions-run-${GITHUB_RUN_ID}"
@@ -1292,7 +1315,9 @@ jobs:
               settled=1
               break
             fi
-            sleep $((attempt * 2))
+            sleep_for=$((attempt<5?attempt:5))
+            echo "VIBE2_CANDIDATE_QUEUE_WRITE_RACE=RETRY:$attempt:$sleep_for"
+            sleep "$sleep_for"
           done
           test "$settled" = 1
           payload="$(jq -nc \

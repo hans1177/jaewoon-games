@@ -29,11 +29,11 @@ on:
         default: ''
   repository_dispatch:
     types: [vibe2-neuron-complete, vibe2-fanin-refill]
-  # Independent game reserve safety net while the 24H singleton waits on slow workers.
+  # Independent game reserve safety net while older 24H runs or slow workers drain.
   schedule:
     - cron: '*/5 * * * *'
   # GAME_PRIMARY_MAIN_PUSH_WAKE: main churn must not starve queued game work behind
-  # the singleton planner. This enters the existing canonical reserve path only.
+  # older planner runs. This enters the existing canonical reserve path only; no global scheduler serialization.
   push:
     branches:
       - main
@@ -70,7 +70,7 @@ permissions:
   contents: write
   actions: write
 
-# Only true singletons stay serialized. Fan-in refills and result-bearing runs are run-unique;
+# Only exact duplicate identities stay serialized. Fan-in refills and result-bearing runs are run-unique;
 # shared queue writes already use optimistic fetch/reset/replan/push retries.
 concurrency:
   group: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && 'vibe2-learning-single-worker' || github.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake' || github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && 'vibe2-main-push-game-primary-wake' || github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-refill-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
@@ -84,8 +84,7 @@ env:
   VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'
   VIBE2_GAME_PRIMARY_BASELINE_TARGET: '256'
   VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '30'
-  VIBE2_RELEASE_DISPATCH_QUEUE_THRESHOLD: '4'
-  VIBE2_NATIVE_RELEASE_DISPATCH_BATCH_MAX: '2'
+  VIBE2_NATIVE_RELEASE_DISPATCH_BATCH_MAX: '256'
   OLLAMA_HOST: 127.0.0.1:11434
   VIBE2_GAME_DEVELOPMENT_OWNER: VIBE2_VIBE3
   VIBE2_GAME_SOURCE_PROVIDER: LOCAL_OLLAMA
@@ -556,6 +555,7 @@ jobs:
             --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
             --output=/tmp/vibe2-handoff-before-reserve.json >/tmp/vibe2-handoff-before-reserve.log
           completed_reservation_runs=''
+          superseded_queued_reservation_runs=''
           candidate_reservation_runs="$(node - "$control_root/.vibe2/queue.json" <<'NODE'
           const fs=require('fs');
           const queue=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
@@ -648,17 +648,39 @@ jobs:
           fi
 
           completed_probe_failures=0
-          rm -f /tmp/vibe2-run-probe-*.completed /tmp/vibe2-run-probe-*.error
+          latest_main_sha="$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq '.sha' 2>/dev/null || true)"
+          latest_core_blob="$(gh api "repos/$GITHUB_REPOSITORY/contents/.github/workflows/vibe2-continuous-core.yml?ref=${latest_main_sha}" --jq '.sha' 2>/dev/null || true)"
+          rm -f /tmp/vibe2-run-probe-*.completed /tmp/vibe2-run-probe-*.superseded /tmp/vibe2-run-probe-*.error
           if [ -n "$candidate_reservation_runs" ]; then
             IFS=',' read -r -a reservation_run_ids <<< "$candidate_reservation_runs"
             status_probe_pids=()
             for reservation_run_id in "${reservation_run_ids[@]}"; do
               [ -n "$reservation_run_id" ] || continue
               (
-                reservation_run_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${reservation_run_id}" --jq '.status' 2>/dev/null || true)"
-                if [ "$reservation_run_status" = 'completed' ]; then
-                  printf '%s\n' "$reservation_run_id" > "/tmp/vibe2-run-probe-${reservation_run_id}.completed"
-                elif [ -z "$reservation_run_status" ]; then
+                run_file="/tmp/vibe2-run-probe-${reservation_run_id}.json"
+                jobs_file="/tmp/vibe2-run-probe-${reservation_run_id}.jobs.json"
+                if gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${reservation_run_id}" > "$run_file" 2>/dev/null; then
+                  reservation_run_status="$(jq -r '.status // ""' "$run_file")"
+                  reservation_run_head="$(jq -r '.head_sha // ""' "$run_file")"
+                  if [ "$reservation_run_status" = 'completed' ]; then
+                    printf '%s\n' "$reservation_run_id" > "/tmp/vibe2-run-probe-${reservation_run_id}.completed"
+                  elif [[ "$reservation_run_status" =~ ^(queued|pending|requested|in_progress)$ ]] \
+                    && [ -n "$latest_main_sha" ] \
+                    && [ -n "$reservation_run_head" ] \
+                    && [ "$reservation_run_head" != "$latest_main_sha" ] \
+                    && [ -n "$latest_core_blob" ]; then
+                    old_core_blob="$(gh api "repos/$GITHUB_REPOSITORY/contents/.github/workflows/vibe2-continuous-core.yml?ref=${reservation_run_head}" --jq '.sha' 2>/dev/null || true)"
+                    if [ -n "$old_core_blob" ] && [ "$old_core_blob" != "$latest_core_blob" ] \
+                      && gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${reservation_run_id}/jobs?per_page=100" > "$jobs_file" 2>/dev/null; then
+                      queued_workers="$(jq '[.jobs[] | select((.status=="queued" or .status=="pending" or .status=="requested") and (.name | test("(^| / )worker \\(")))] | length' "$jobs_file")"
+                      active_workers="$(jq '[.jobs[] | select(.status=="in_progress" and (.name | test("(^| / )worker \\(")))] | length' "$jobs_file")"
+                      if [ "${queued_workers:-0}" -gt 0 ] && [ "${active_workers:-0}" -eq 0 ]; then
+                        printf '%s\n' "$reservation_run_id" > "/tmp/vibe2-run-probe-${reservation_run_id}.superseded"
+                        echo "VIBE2_SUPERSEDED_QUEUED_RUN_MATCH=${reservation_run_id}:head=${reservation_run_head}:queued=${queued_workers}:core=${old_core_blob}->${latest_core_blob}"
+                      fi
+                    fi
+                  fi
+                else
                   : > "/tmp/vibe2-run-probe-${reservation_run_id}.error"
                 fi
               ) &
@@ -674,9 +696,17 @@ jobs:
                 find /tmp -maxdepth 1 -type f -name 'vibe2-run-probe-*.completed' | sort
               )
             )
+            mapfile -t superseded_ids < <(
+              while IFS= read -r probe_file; do cat "$probe_file"; done < <(
+                find /tmp -maxdepth 1 -type f -name 'vibe2-run-probe-*.superseded' | sort
+              )
+            )
             completed_probe_failures="$(find /tmp -maxdepth 1 -type f -name 'vibe2-run-probe-*.error' | wc -l | tr -d ' ')"
             if [ "${#completed_ids[@]}" -gt 0 ]; then
               completed_reservation_runs="$(IFS=,; echo "${completed_ids[*]}")"
+            fi
+            if [ "${#superseded_ids[@]}" -gt 0 ]; then
+              superseded_queued_reservation_runs="$(IFS=,; echo "${superseded_ids[*]}")"
             fi
           fi
           if [ "$completed_probe_failures" -eq 0 ]; then
@@ -686,10 +716,22 @@ jobs:
           fi
           echo "VIBE2_COMPLETED_RESERVATION_RUN_CANDIDATES=${candidate_reservation_runs:-NONE}"
           echo "VIBE2_COMPLETED_RESERVATION_RUN_MATCHES=${completed_reservation_runs:-NONE}"
+          echo "VIBE2_SUPERSEDED_QUEUED_RESERVATION_RUNS=${superseded_queued_reservation_runs:-NONE}"
           if [ -n "$completed_reservation_runs" ]; then
             node /tmp/vibe2-main/tools/vibe2-queue-control.mjs recover-completed-reservations \
               --queue="$control_root/.vibe2/queue.json" \
               --completed-runs="$completed_reservation_runs" | tee /tmp/vibe2-completed-reservation-recovery.log
+          fi
+          if [ -n "$superseded_queued_reservation_runs" ]; then
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs recover-reservation-runs \
+              --queue="$control_root/.vibe2/queue.json" \
+              --runs="$superseded_queued_reservation_runs" | tee /tmp/vibe2-superseded-reservation-recovery.log
+            IFS=',' read -r -a superseded_cancel_ids <<< "$superseded_queued_reservation_runs"
+            for superseded_run_id in "${superseded_cancel_ids[@]}"; do
+              [ -n "$superseded_run_id" ] || continue
+              gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$superseded_run_id/cancel" >/dev/null 2>&1 || true
+              echo "VIBE2_SUPERSEDED_QUEUED_RUN_CANCEL_REQUESTED=$superseded_run_id"
+            done
           fi
 
           rm -f /tmp/vibe2-early-review-run /tmp/vibe2-early-review-candidates.txt
@@ -714,7 +756,7 @@ jobs:
           while IFS= read -r early_source_run || [ -n "$early_source_run" ]; do
             [ -n "$early_source_run" ] || continue
             early_status="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$early_source_run" --jq '.status' 2>/dev/null || true)"
-            case "$early_status" in in_progress|completed) ;; *) continue ;; esac
+            case "$early_status" in in_progress|completed|cancelled) ;; *) continue ;; esac
             early_available="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$early_source_run/artifacts?per_page=100" --jq '[.artifacts[] | select(.expired == false and (.name | startswith("vibe2-result-")))] | length' 2>/dev/null || echo 0)"
             [ "${early_available:-0}" -gt 0 ] || continue
             printf '%s\n' "$early_source_run" > /tmp/vibe2-early-review-run
@@ -1010,7 +1052,7 @@ jobs:
             # The task artifact is immutable and task-id filtered below, so an in-progress
             # parent matrix run must not hold an already-finished asset task behind unrelated workers.
             case "$review_mode:$status" in
-              EARLY_SLOT:in_progress|EARLY_SLOT:completed|LEGACY_ASSET:in_progress|LEGACY_ASSET:completed) ;;
+              EARLY_SLOT:in_progress|EARLY_SLOT:completed|EARLY_SLOT:cancelled|LEGACY_ASSET:in_progress|LEGACY_ASSET:completed|LEGACY_ASSET:cancelled) ;;
               *) continue ;;
             esac
             available="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$source_run/artifacts?per_page=100" --jq '[.artifacts[] | select(.expired == false and (.name | startswith("vibe2-result-")))] | length' 2>/dev/null || echo 0)"
@@ -3008,32 +3050,10 @@ jobs:
         run: |
           set -euo pipefail
           test -f /tmp/vibe2-package-review.json
-          release_pressure_body="$(mktemp)"
-          release_pressure_code="$(curl --silent --show-error --output "$release_pressure_body" --write-out '%{http_code}' \
-            --header 'Accept: application/vnd.github+json' \
-            --header "Authorization: Bearer $GH_TOKEN" \
-            --header 'X-GitHub-Api-Version: 2022-11-28' \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" || true)"
-          if [ "$release_pressure_code" != '200' ]; then
-            rm -f "$release_pressure_body"
-            echo "VIBE2_RELEASE_DISPATCH=DEFERRED_PRESSURE_UNKNOWN_HTTP_$release_pressure_code"
-            exit 0
-          fi
-          release_pressure="$(CURRENT_RUN_ID="$GITHUB_RUN_ID" node - "$release_pressure_body" <<'NODE'
-          const fs=require('fs');
-          const payload=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
-          const current=String(process.env.CURRENT_RUN_ID||'');
-          const states=new Set(['queued','pending','requested']);
-          const count=(payload.workflow_runs||[]).filter(row=>String(row.id||'')!==current&&states.has(String(row.status||'').toLowerCase())).length;
-          process.stdout.write(String(count));
-          NODE
-          )"
-          rm -f "$release_pressure_body"
-          echo "VIBE2_RELEASE_DISPATCH_QUEUE_PRESSURE=$release_pressure"
-          if [ "$release_pressure" -ge "${VIBE2_RELEASE_DISPATCH_QUEUE_THRESHOLD:-4}" ]; then
-            echo 'VIBE2_RELEASE_DISPATCH=DEFERRED_TO_24H_RECOVERY_RUNNER_PRESSURE'
-            exit 0
-          fi
+          # Reviewed candidates are isolated by candidate branch and still pass the existing runtime/QA gates.
+          # Do not starve candidate release behind unrelated repository-wide GitHub Actions queue depth.
+          # GitHub runner availability remains the external execution-capacity boundary after dispatch.
+          echo 'VIBE2_RELEASE_DISPATCH_QUEUE_PRESSURE_GATE=DISABLED_EXTERNAL_RUNNER_QUEUE_OWNS_CAPACITY'
           node - <<'NODE' > /tmp/vibe2-release-candidates.tsv
           const fs=require('fs');
           const review=JSON.parse(fs.readFileSync('/tmp/vibe2-package-review.json','utf8'));
@@ -3048,7 +3068,7 @@ jobs:
           count="$(wc -l < /tmp/vibe2-release-candidates.tsv | tr -d ' ')"
           echo "VIBE2_RELEASE_CANDIDATE_COUNT=${count:-0}"
           native_dispatch_count=0
-          native_dispatch_max="${VIBE2_NATIVE_RELEASE_DISPATCH_BATCH_MAX:-2}"
+          native_dispatch_max="${VIBE2_NATIVE_RELEASE_DISPATCH_BATCH_MAX:-256}"
           while IFS='|' read -r task_id candidate_branch target game_id evidence_only; do
             [ -n "$task_id" ] || continue
             [ -n "$candidate_branch" ] || continue
