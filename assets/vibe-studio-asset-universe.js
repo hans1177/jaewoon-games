@@ -236,7 +236,8 @@ export const BUILDING_THEMES=Object.freeze([
 export const ASSET_DNA_FIELDS=Object.freeze([
   'ASSET_ID','FAMILY','SUBFAMILY','BODY_PLAN','SPECIES','RIG_PROFILE','STYLE_FAMILY','THEME','BIOME_FAMILY',
   'LAYER_SLOT','MODULE_TYPE','WEAPON_FAMILY','SKILL_FAMILY','MATERIAL_FAMILY','AUDIO_ROLE','VFX_ROLE','UI_ROLE',
-  'INTERACTION_ROLE','SILHOUETTE_CLASS','FUNCTION_CLASS','PLATFORM_VARIANT','SOURCE_PROVENANCE','PARENT_ID',
+  'INTERACTION_ROLE','SILHOUETTE_CLASS','FUNCTION_CLASS','HERO_ROLE','ITEM_ROLE','FAMILY_ROOT_ID','VISUAL_INTENT',
+  'CAMERA_READABILITY_ROLE','PRESENTATION_ROLES','PLATFORM_VARIANT','SOURCE_PROVENANCE','PARENT_ID',
   'RUNTIME_VERIFICATION_STATE','COMPATIBILITY_TAGS','EXCLUSION_TAGS'
 ]);
 
@@ -280,6 +281,12 @@ export function createAssetDNA(input={}){
     INTERACTION_ROLE:upper(input.INTERACTION_ROLE||input.interactionRole),
     SILHOUETTE_CLASS:upper(input.SILHOUETTE_CLASS||input.silhouetteClass),
     FUNCTION_CLASS:upper(input.FUNCTION_CLASS||input.functionClass),
+    HERO_ROLE:upper(input.HERO_ROLE||input.heroRole),
+    ITEM_ROLE:upper(input.ITEM_ROLE||input.itemRole),
+    FAMILY_ROOT_ID:text(input.FAMILY_ROOT_ID||input.familyRootId||input.assetFamilyId||input.PARENT_ID||input.parentId),
+    VISUAL_INTENT:text(input.VISUAL_INTENT||input.visualIntent),
+    CAMERA_READABILITY_ROLE:upper(input.CAMERA_READABILITY_ROLE||input.cameraReadabilityRole),
+    PRESENTATION_ROLES:freezeList(uniq(input.PRESENTATION_ROLES||input.presentationRoles)),
     PLATFORM_VARIANT:upper(input.PLATFORM_VARIANT||input.platformVariant),
     SOURCE_PROVENANCE:text(input.SOURCE_PROVENANCE||input.sourceProvenance),
     PARENT_ID:text(input.PARENT_ID||input.parentId),
@@ -390,7 +397,10 @@ export function createStudioAssetFamilyPlan({asset={},availableOutputs=[]}={}){
     missingRequiredOutputs:freezeList(gaps),
     itemPresentationRequired:itemLike,
     itemPresentationRoles:itemLike?freezeList(['WORLD_MODEL','INVENTORY_ICON_WHEN_ITEM','DROP_MODEL_WHEN_COLLECTIBLE']):freezeList([]),
+    familyRootId:text(asset?.familyRootId||asset?.assetFamilyId||asset?.dna?.FAMILY_ROOT_ID||asset?.parentId)||text(asset?.id)||null,
     sameAssetDnaAcrossWorldEquipDropAndUi:true,
+    uiIconMustReflectWorldAssetIdentity:itemLike||family==='WEAPON',
+    equippedDropInventoryCraftingVariantsShareLineage:itemLike||family==='WEAPON',
     complete:gaps.length===0
   });
 }
@@ -514,6 +524,7 @@ export const ASSET_CUSTOMIZATION_AXES=Object.freeze(Object.fromEntries(Object.en
   WEAPON:['BLADE_HEAD','HANDLE','GUARD','ORNAMENT','MATERIAL','SURFACE_WEAR'],
   PROP:['STRUCTURE','PROPORTION','ATTACHMENT','MATERIAL','LOCAL_DAMAGE','SURFACE_WEAR'],
   MATERIAL:['BASE_COLOR','ROUGHNESS','METALLIC','NORMAL_DETAIL','CAVITY_GRIME','EDGE_WEAR','WETNESS'],
+  AUDIO:['TIMBRE','ATTACK_TRANSIENT','BODY','TAIL','LAYERING','VARIATION','SPATIAL_RESPONSE','MIX_PRIORITY'],
   UI:['SHAPE','BORDER','MATERIAL','ICON','CONTRAST','TYPOGRAPHY','LAYOUT_VISUAL','STATE_VARIANT','FEEDBACK_MOTION'],
   VFX:['SHAPE','PALETTE','DENSITY','TRAIL','IMPACT','DISSIPATION'],
   SKILL:['CAST_POSE','PROJECTILE_VISUAL','IMPACT_VISUAL','RECOVERY_POSE'],
@@ -602,6 +613,46 @@ export function createAssetCustomizationPlan({assets=[],recipes=[],styleBible={}
         CONTACT:Object.freeze(['CONTACT_DIRT','POLISH_BY_USE','WETNESS_OR_MUD','SEAM_ACCUMULATION'])
       }),
       authoredOutputs:Object.freeze(['EDITABLE_MATERIAL_SOURCE','TEXTURE_OR_PARAMETER_SET','MASK_SET','PLATFORM_SHADER_BINDINGS'])
+    }),
+    AUDIO:Object.freeze({
+      construction:Object.freeze(['EVENT_ROLE','SOURCE_OR_SYNTHESIS','TIMBRE_IDENTITY','TRANSIENT_BODY_TAIL','VARIATION_SET','SPATIAL_RESPONSE','MIX_PRIORITY','MOBILE_CODEC_VARIANT']),
+      detailByDistance:Object.freeze({
+        GAME_CAMERA:Object.freeze(['EVENT_READABILITY','ROLE_SEPARATION','MIX_PRIORITY']),
+        MID_RANGE:Object.freeze(['SPATIAL_FALLOFF','OCCLUSION_OR_FILTERING','VARIATION']),
+        CLOSEUP:Object.freeze(['TRANSIENT_BODY_TAIL','TIMBRE_DETAIL','LAYER_BALANCE']),
+        CONTACT:Object.freeze(['IMPACT_SYNC','SURFACE_RESPONSE','WEAPON_OR_BODY_CONTACT_MATCH'])
+      }),
+      authoredOutputs:Object.freeze(['EDITABLE_AUDIO_SOURCE_OR_RECIPE','EVENT_VARIATION_SET','SPATIAL_BINDING','MIX_BINDING','MOBILE_VARIANT'])
+    }),
+    VFX:Object.freeze({
+      construction:Object.freeze(['EVENT_ROLE','PRIMARY_SHAPE','SECONDARY_PARTICLES','TRAIL_OR_WAVE','IMPACT_BREAKUP','DISSIPATION','LIGHTING_RESPONSE','MOBILE_DENSITY_VARIANT']),
+      detailByDistance:Object.freeze({
+        GAME_CAMERA:Object.freeze(['TELEGRAPH_READABILITY','PRIMARY_SHAPE','DANGER_OR_REWARD_ROLE']),
+        MID_RANGE:Object.freeze(['PARTICLE_LAYERING','TRAIL_LENGTH','IMPACT_BREAKUP']),
+        CLOSEUP:Object.freeze(['EDGE_DETAIL','MATERIAL_LIGHT_RESPONSE','DISSIPATION_DETAIL']),
+        CONTACT:Object.freeze(['IMPACT_POINT_ALIGNMENT','HIT_EVENT_SYNC','SURFACE_INTERACTION'])
+      }),
+      authoredOutputs:Object.freeze(['EDITABLE_VFX_SOURCE','EVENT_BINDING','MOBILE_DENSITY_VARIANT','LOD_OR_DISTANCE_VARIANT'])
+    }),
+    SKILL:Object.freeze({
+      construction:Object.freeze(['CAST_INTENT','TELEGRAPH','PROJECTILE_OR_AREA_FORM','IMPACT','REACTION','AUDIO_CUE','CAMERA_RESPONSE','RECOVERY_PRESENTATION']),
+      detailByDistance:Object.freeze({
+        GAME_CAMERA:Object.freeze(['SKILL_ROLE_READABILITY','TELEGRAPH','IMPACT_IDENTITY']),
+        MID_RANGE:Object.freeze(['PROJECTILE_OR_AREA_STRUCTURE','CAST_BODY_LANGUAGE','VFX_LAYERING']),
+        CLOSEUP:Object.freeze(['HAND_OR_WEAPON_ORIGIN','MATERIAL_DETAIL','IMPACT_BREAKUP']),
+        CONTACT:Object.freeze(['CAST_EVENT_SYNC','HIT_EVENT_SYNC','TARGET_REACTION_ALIGNMENT'])
+      }),
+      authoredOutputs:Object.freeze(['CAST_PRESENTATION','TELEGRAPH_PRESENTATION','PROJECTILE_OR_AREA_PRESENTATION','IMPACT_PRESENTATION','AUDIO_BINDING','CAMERA_BINDING'])
+    }),
+    MOTION:Object.freeze({
+      construction:Object.freeze(['POSE_LANGUAGE','WEIGHT_TRANSFER','LOCOMOTION_OR_ACTION_ARC','CONTACT','FOLLOW_THROUGH','RECOVERY','BLEND_TRANSITIONS','MOTION_LOD']),
+      detailByDistance:Object.freeze({
+        GAME_CAMERA:Object.freeze(['POSE_READABILITY','TIMING_ARC','ACTION_ROLE']),
+        MID_RANGE:Object.freeze(['WEIGHT_TRANSFER','LIMB_ARCS','SECONDARY_MOTION']),
+        CLOSEUP:Object.freeze(['GAZE_HAND_FOOT_DETAIL','TORSO_COUNTER_MOTION','FACIAL_OR_APPENDAGE_ACTING']),
+        CONTACT:Object.freeze(['FOOT_PLANT','HAND_WEAPON_CONTACT','IMPACT_ALIGNMENT','PAIR_ALIGNMENT_WHEN_USED'])
+      }),
+      authoredOutputs:Object.freeze(['EDITABLE_MOTION_SOURCE_OR_KEYPOSE_RECIPE','PLATFORM_RETARGET','CONTACT_MAP','BLEND_VARIANTS','MOTION_LOD'])
     })
   });
   const defaultProduction=Object.freeze({
