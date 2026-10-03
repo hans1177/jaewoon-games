@@ -900,3 +900,45 @@ test('Roblox F0-F9 orchestration dispatches exact games without cross-game fan-i
   assert.match(release,/company-development-roblox-final-review-revalidation\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$GAME_ID"/);
 });
 
+
+
+test('Open Cloud engine reuses the same Luau session to capture map and world evidence',async()=>{
+  const calls=[];
+  const responses=[
+    {ok:true,status:200,body:{path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t',state:'PROCESSING'}},
+    {ok:true,status:200,body:{state:'COMPLETE'}},
+    {ok:true,status:200,body:{luauExecutionSessionTaskLogs:[{structuredMessages:[
+      {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLACE=2'},
+      {message:'JAEWOON_OPEN_CLOUD_ENGINE_VERSION=20'},
+      {message:'JAEWOON_OPEN_CLOUD_WORLD_BASEPARTS=42'},
+      {message:'JAEWOON_OPEN_CLOUD_WORLD_SPAWNS=2'},
+      {message:'JAEWOON_OPEN_CLOUD_WORLD_SPAWNS_IN_BOUNDS=true'},
+      {message:'JAEWOON_OPEN_CLOUD_WORLD_BOUNDS_FINITE=true'},
+      {message:'JAEWOON_OPEN_CLOUD_WORLD_BOUNDS_SIZE=100.00,20.00,80.00'},
+      {message:'JAEWOON_OPEN_CLOUD_WORLD_LANDMARKS=3'},
+      {message:'JAEWOON_OPEN_CLOUD_WORLD_OBJECTIVES=1'},
+      {message:'JAEWOON_OPEN_CLOUD_WORLD_TERRAIN_PRESENT=true'},
+      {message:'JAEWOON_OPEN_CLOUD_WORLD_LIGHTING_ATMOSPHERE=true'},
+      {message:'JAEWOON_OPEN_CLOUD_WORLD_STREAMING_ENABLED=true'},
+      {message:'JAEWOON_OPEN_CLOUD_WORLD_SCAN_CAPPED=false'}
+    ]}]}}
+  ];
+  const fetchImpl=async(url,init={})=>{calls.push({url,init});const row=responses.shift();return {ok:row.ok,status:row.status,text:async()=>JSON.stringify(row.body)};};
+  const result=await probeRobloxOpenCloudEngine({universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',fetchImpl,pollIntervalMs:0,maxPolls:2});
+  assert.equal(calls.length,3,'no extra Open Cloud request is added for world evidence');
+  assert.equal(result.worldEvidence.sameLuauExecutionSession,true);
+  assert.equal(result.worldEvidence.basePartCount,42);
+  assert.equal(result.worldEvidence.spawnCount,2);
+  assert.equal(result.worldEvidence.spawnsInBounds,true);
+  assert.deepEqual(result.worldEvidence.boundsSize,{x:100,y:20,z:80});
+  assert.equal(result.worldEvidence.landmarkCount,3);
+  assert.equal(result.worldEvidence.objectiveCount,1);
+  assert.equal(result.worldEvidence.terrainPresent,true);
+  assert.equal(result.worldEvidence.lightingAtmospherePresent,true);
+  assert.equal(result.worldEvidence.streamingEnabled,true);
+  const body=JSON.parse(calls[0].init.body);
+  assert.match(body.script,/JAEWOON_OPEN_CLOUD_WORLD_BOUNDS_SIZE/);
+  assert.match(body.script,/workspace:GetDescendants\(\)/);
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  assert.match(workflow,/openCloudWorldEvidence:engineProbe\?\.worldEvidence\|\|null/);
+});
