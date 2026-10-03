@@ -15,6 +15,71 @@ export const STUDIO_ASSET_FAMILIES=Object.freeze([
   'CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'
 ]);
 
+export const STUDIO_ASSET_QUALITY_MAX=120;
+export const STUDIO_ASSET_QUALITY_WEIGHTS=Object.freeze({
+  SILHOUETTE_FORM:10,
+  MODELING_STRUCTURE:10,
+  MATERIAL_TEXTURE:10,
+  COLOR_LIGHTING:8,
+  WORLD_STYLE_COHERENCE:10,
+  DETAIL_DENSITY:8,
+  MOTION_LIVINGNESS:10,
+  GAME_CAMERA_READABILITY:10,
+  UI_UX_COHERENCE:8,
+  VFX_AUDIO_COHESION:8,
+  ORIGINALITY_IDENTITY:8,
+  MOBILE_PERFORMANCE:8,
+  ACTUAL_GAME_BINDING:6,
+  PRODUCTION_VERIFICATION:6
+});
+export const STUDIO_ASSET_QUALITY_GRADES=Object.freeze([
+  Object.freeze({min:116,id:'MASTER_ASSET'}),
+  Object.freeze({min:110,id:'HERO_QUALITY'}),
+  Object.freeze({min:100,id:'COMMERCIAL_GAME_READY'}),
+  Object.freeze({min:85,id:'DEVELOPMENT_READY'}),
+  Object.freeze({min:70,id:'PROTOTYPE'}),
+  Object.freeze({min:0,id:'REPAIR_REQUIRED'})
+]);
+export const STUDIO_ASSET_CRITICS=Object.freeze({
+  ART_DIRECTOR:Object.freeze(['WORLD_STYLE_COHERENCE','COLOR_LIGHTING','ORIGINALITY_IDENTITY']),
+  MODEL_CRITIC:Object.freeze(['SILHOUETTE_FORM','MODELING_STRUCTURE','DETAIL_DENSITY']),
+  MATERIAL_CRITIC:Object.freeze(['MATERIAL_TEXTURE','COLOR_LIGHTING']),
+  RIG_MOTION_CRITIC:Object.freeze(['MOTION_LIVINGNESS']),
+  GAME_CAMERA_CRITIC:Object.freeze(['GAME_CAMERA_READABILITY','ACTUAL_GAME_BINDING']),
+  UI_CRITIC:Object.freeze(['UI_UX_COHERENCE']),
+  VFX_AUDIO_CRITIC:Object.freeze(['VFX_AUDIO_COHESION']),
+  MOBILE_CRITIC:Object.freeze(['MOBILE_PERFORMANCE']),
+  PRODUCTION_CRITIC:Object.freeze(['PRODUCTION_VERIFICATION'])
+});
+export const STUDIO_ASSET_QUALITY_AXIS_APPLICABILITY=Object.freeze({
+  CHARACTER:Object.freeze(['SILHOUETTE_FORM','MODELING_STRUCTURE','MATERIAL_TEXTURE','COLOR_LIGHTING','WORLD_STYLE_COHERENCE','DETAIL_DENSITY','MOTION_LIVINGNESS','GAME_CAMERA_READABILITY','VFX_AUDIO_COHESION','ORIGINALITY_IDENTITY','MOBILE_PERFORMANCE','ACTUAL_GAME_BINDING','PRODUCTION_VERIFICATION']),
+  CREATURE:Object.freeze(['SILHOUETTE_FORM','MODELING_STRUCTURE','MATERIAL_TEXTURE','COLOR_LIGHTING','WORLD_STYLE_COHERENCE','DETAIL_DENSITY','MOTION_LIVINGNESS','GAME_CAMERA_READABILITY','VFX_AUDIO_COHESION','ORIGINALITY_IDENTITY','MOBILE_PERFORMANCE','ACTUAL_GAME_BINDING','PRODUCTION_VERIFICATION']),
+  BUILDING:Object.freeze(['SILHOUETTE_FORM','MODELING_STRUCTURE','MATERIAL_TEXTURE','COLOR_LIGHTING','WORLD_STYLE_COHERENCE','DETAIL_DENSITY','GAME_CAMERA_READABILITY','ORIGINALITY_IDENTITY','MOBILE_PERFORMANCE','ACTUAL_GAME_BINDING','PRODUCTION_VERIFICATION']),
+  ENVIRONMENT:Object.freeze(['SILHOUETTE_FORM','MODELING_STRUCTURE','MATERIAL_TEXTURE','COLOR_LIGHTING','WORLD_STYLE_COHERENCE','DETAIL_DENSITY','MOTION_LIVINGNESS','GAME_CAMERA_READABILITY','VFX_AUDIO_COHESION','ORIGINALITY_IDENTITY','MOBILE_PERFORMANCE','ACTUAL_GAME_BINDING','PRODUCTION_VERIFICATION']),
+  WEAPON:Object.freeze(['SILHOUETTE_FORM','MODELING_STRUCTURE','MATERIAL_TEXTURE','COLOR_LIGHTING','WORLD_STYLE_COHERENCE','DETAIL_DENSITY','MOTION_LIVINGNESS','GAME_CAMERA_READABILITY','VFX_AUDIO_COHESION','ORIGINALITY_IDENTITY','MOBILE_PERFORMANCE','ACTUAL_GAME_BINDING','PRODUCTION_VERIFICATION']),
+  SKILL:Object.freeze(['SILHOUETTE_FORM','MATERIAL_TEXTURE','COLOR_LIGHTING','WORLD_STYLE_COHERENCE','DETAIL_DENSITY','MOTION_LIVINGNESS','GAME_CAMERA_READABILITY','UI_UX_COHERENCE','VFX_AUDIO_COHESION','ORIGINALITY_IDENTITY','MOBILE_PERFORMANCE','ACTUAL_GAME_BINDING','PRODUCTION_VERIFICATION']),
+  MATERIAL:Object.freeze(['MATERIAL_TEXTURE','COLOR_LIGHTING','WORLD_STYLE_COHERENCE','DETAIL_DENSITY','GAME_CAMERA_READABILITY','ORIGINALITY_IDENTITY','MOBILE_PERFORMANCE','ACTUAL_GAME_BINDING','PRODUCTION_VERIFICATION']),
+  AUDIO:Object.freeze(['WORLD_STYLE_COHERENCE','VFX_AUDIO_COHESION','ORIGINALITY_IDENTITY','MOBILE_PERFORMANCE','ACTUAL_GAME_BINDING','PRODUCTION_VERIFICATION']),
+  VFX:Object.freeze(['SILHOUETTE_FORM','MATERIAL_TEXTURE','COLOR_LIGHTING','WORLD_STYLE_COHERENCE','DETAIL_DENSITY','MOTION_LIVINGNESS','GAME_CAMERA_READABILITY','VFX_AUDIO_COHESION','ORIGINALITY_IDENTITY','MOBILE_PERFORMANCE','ACTUAL_GAME_BINDING','PRODUCTION_VERIFICATION']),
+  UI:Object.freeze(['SILHOUETTE_FORM','MODELING_STRUCTURE','MATERIAL_TEXTURE','COLOR_LIGHTING','WORLD_STYLE_COHERENCE','DETAIL_DENSITY','MOTION_LIVINGNESS','GAME_CAMERA_READABILITY','UI_UX_COHERENCE','VFX_AUDIO_COHESION','ORIGINALITY_IDENTITY','MOBILE_PERFORMANCE','ACTUAL_GAME_BINDING','PRODUCTION_VERIFICATION']),
+  MOTION:Object.freeze(['WORLD_STYLE_COHERENCE','MOTION_LIVINGNESS','GAME_CAMERA_READABILITY','VFX_AUDIO_COHESION','ORIGINALITY_IDENTITY','MOBILE_PERFORMANCE','ACTUAL_GAME_BINDING','PRODUCTION_VERIFICATION']),
+  PROP:Object.freeze(['SILHOUETTE_FORM','MODELING_STRUCTURE','MATERIAL_TEXTURE','COLOR_LIGHTING','WORLD_STYLE_COHERENCE','DETAIL_DENSITY','GAME_CAMERA_READABILITY','ORIGINALITY_IDENTITY','MOBILE_PERFORMANCE','ACTUAL_GAME_BINDING','PRODUCTION_VERIFICATION'])
+});
+export const STUDIO_ASSET_FAMILY_OUTPUTS=Object.freeze({
+  CHARACTER:Object.freeze(['WORLD_MODEL','RIG','MATERIAL_SET','MOTION_SET','PORTRAIT_OR_ICON','LOD0','LOD1','LOD2']),
+  CREATURE:Object.freeze(['WORLD_MODEL','BODY_PLAN_RIG','MATERIAL_SET','SPECIES_MOTION_SET','ICON','LOD0','LOD1','LOD2']),
+  BUILDING:Object.freeze(['WORLD_MODEL','MODULAR_PARTS','INTERIOR_WHEN_APPLICABLE','MATERIAL_SET','COLLISION_NAV_PROXY','LOD0','LOD1','LOD2']),
+  ENVIRONMENT:Object.freeze(['TERRAIN_OR_KIT','LANDMARK','SET_DRESSING','MATERIAL_SET','PLACEMENT_RULES','LOD_OR_STREAMING_VARIANTS']),
+  WEAPON:Object.freeze(['EQUIPPED_MODEL','WORLD_DROP_MODEL','INVENTORY_ICON','CRAFTING_ICON_WHEN_CRAFTABLE','MATERIAL_SET','GRIP_SOCKET_MAP','LOD0','LOD1','LOD2']),
+  SKILL:Object.freeze(['CAST_PRESENTATION','PROJECTILE_OR_AREA_VISUAL','IMPACT_PRESENTATION','ICON','AUDIO_ROLE','REACTION_PRESENTATION']),
+  MATERIAL:Object.freeze(['BASE_MATERIAL','PLATFORM_VARIANT','WEATHERING_VARIANT','DAMAGE_VARIANT_WHEN_APPLICABLE']),
+  AUDIO:Object.freeze(['SOURCE_ASSET','EVENT_BINDING','VARIATION_SET','MOBILE_BUDGET_VARIANT']),
+  VFX:Object.freeze(['SOURCE_EFFECT','GAMEPLAY_EVENT_BINDING','MOBILE_BUDGET_VARIANT','LOD_OR_DENSITY_VARIANT']),
+  UI:Object.freeze(['HUD_COMPONENT','MENU_COMPONENT','INVENTORY_COMPONENT','ICON_SET','STATE_VARIANTS','TOUCH_FEEDBACK']),
+  MOTION:Object.freeze(['SOURCE_MOTION','PLATFORM_RETARGET','CONTACT_MAP','BLEND_VARIANTS','MOTION_LOD']),
+  PROP:Object.freeze(['WORLD_MODEL','INTERACTION_VARIANT','INVENTORY_ICON_WHEN_ITEM','CRAFTING_ICON_WHEN_CRAFTABLE','DROP_MODEL_WHEN_COLLECTIBLE','COLLISION_PROXY','LOD0','LOD1','LOD2'])
+});
+
 export const CREATURE_BODY_PLANS=Object.freeze([
   'SMALL_HUMANOID_BIPED','STANDARD_HUMANOID_MONSTER','HEAVY_BIPED','DIGITIGRADE_BIPED','HUNCHED_BIPED',
   'APE_LIKE_BIPED','SKELETAL_BIPED','BOSS_BIPED','QUADRUPED_CANINE','QUADRUPED_FELINE','QUADRUPED_HEAVY',
@@ -185,7 +250,8 @@ export const BUILDING_THEMES=Object.freeze([
 export const ASSET_DNA_FIELDS=Object.freeze([
   'ASSET_ID','FAMILY','SUBFAMILY','BODY_PLAN','SPECIES','RIG_PROFILE','STYLE_FAMILY','THEME','BIOME_FAMILY',
   'LAYER_SLOT','MODULE_TYPE','WEAPON_FAMILY','SKILL_FAMILY','MATERIAL_FAMILY','AUDIO_ROLE','VFX_ROLE','UI_ROLE',
-  'INTERACTION_ROLE','SILHOUETTE_CLASS','FUNCTION_CLASS','PLATFORM_VARIANT','SOURCE_PROVENANCE','PARENT_ID',
+  'INTERACTION_ROLE','SILHOUETTE_CLASS','FUNCTION_CLASS','HERO_ROLE','ITEM_ROLE','FAMILY_ROOT_ID','VISUAL_INTENT',
+  'CAMERA_READABILITY_ROLE','PRESENTATION_ROLES','PLATFORM_VARIANT','SOURCE_PROVENANCE','PARENT_ID',
   'RUNTIME_VERIFICATION_STATE','COMPATIBILITY_TAGS','EXCLUSION_TAGS'
 ]);
 
@@ -229,6 +295,12 @@ export function createAssetDNA(input={}){
     INTERACTION_ROLE:upper(input.INTERACTION_ROLE||input.interactionRole),
     SILHOUETTE_CLASS:upper(input.SILHOUETTE_CLASS||input.silhouetteClass),
     FUNCTION_CLASS:upper(input.FUNCTION_CLASS||input.functionClass),
+    HERO_ROLE:upper(input.HERO_ROLE||input.heroRole),
+    ITEM_ROLE:upper(input.ITEM_ROLE||input.itemRole),
+    FAMILY_ROOT_ID:text(input.FAMILY_ROOT_ID||input.familyRootId||input.assetFamilyId||input.PARENT_ID||input.parentId),
+    VISUAL_INTENT:text(input.VISUAL_INTENT||input.visualIntent),
+    CAMERA_READABILITY_ROLE:upper(input.CAMERA_READABILITY_ROLE||input.cameraReadabilityRole),
+    PRESENTATION_ROLES:freezeList(uniq(input.PRESENTATION_ROLES||input.presentationRoles)),
     PLATFORM_VARIANT:upper(input.PLATFORM_VARIANT||input.platformVariant),
     SOURCE_PROVENANCE:text(input.SOURCE_PROVENANCE||input.sourceProvenance),
     PARENT_ID:text(input.PARENT_ID||input.parentId),
@@ -237,6 +309,214 @@ export function createAssetDNA(input={}){
     EXCLUSION_TAGS:freezeList(uniq(input.EXCLUSION_TAGS||input.exclusionTags))
   };
   return Object.freeze(dna);
+}
+
+function qualityMetric(value){
+  const n=Number(value);
+  if(!Number.isFinite(n))return 0;
+  if(n>1)return clamp(n/100,0,1);
+  return clamp(n,0,1);
+}
+function qualityGrade(score=0){
+  return STUDIO_ASSET_QUALITY_GRADES.find(row=>Number(score)>=row.min)?.id||'REPAIR_REQUIRED';
+}
+function qualityEvidenceValue(source={},axis=''){
+  const aliases={
+    SILHOUETTE_FORM:['SILHOUETTE_FORM','silhouetteForm','silhouette','form'],
+    MODELING_STRUCTURE:['MODELING_STRUCTURE','modelingStructure','modeling','structure'],
+    MATERIAL_TEXTURE:['MATERIAL_TEXTURE','materialTexture','material','texture'],
+    COLOR_LIGHTING:['COLOR_LIGHTING','colorLighting','lighting','color'],
+    WORLD_STYLE_COHERENCE:['WORLD_STYLE_COHERENCE','worldStyleCoherence','styleCoherence','worldFit'],
+    DETAIL_DENSITY:['DETAIL_DENSITY','detailDensity','detail'],
+    MOTION_LIVINGNESS:['MOTION_LIVINGNESS','motionLivingness','motion','animation'],
+    GAME_CAMERA_READABILITY:['GAME_CAMERA_READABILITY','gameCameraReadability','cameraReadability','readability'],
+    UI_UX_COHERENCE:['UI_UX_COHERENCE','uiUxCoherence','uiUx','ui'],
+    VFX_AUDIO_COHESION:['VFX_AUDIO_COHESION','vfxAudioCohesion','vfxAudio'],
+    ORIGINALITY_IDENTITY:['ORIGINALITY_IDENTITY','originalityIdentity','identity','originality'],
+    MOBILE_PERFORMANCE:['MOBILE_PERFORMANCE','mobilePerformance','performance'],
+    ACTUAL_GAME_BINDING:['ACTUAL_GAME_BINDING','actualGameBinding','gameBinding'],
+    PRODUCTION_VERIFICATION:['PRODUCTION_VERIFICATION','productionVerification','verification']
+  };
+  for(const key of aliases[axis]||[axis])if(source[key]!==undefined)return source[key];
+  return 0;
+}
+
+export function scoreStudioAssetQuality120({asset={},evidence={}}={}){
+  const source={...(asset?.qualityEvidence||{}),...(asset?.quality120||{}),...(evidence||{})};
+  const family=upper(asset?.family||asset?.category);
+  const configuredAxes=Array.isArray(asset?.applicableQualityAxes)&&asset.applicableQualityAxes.length
+    ?uniq(asset.applicableQualityAxes.map(upper)).filter(axis=>STUDIO_ASSET_QUALITY_WEIGHTS[axis]!==undefined)
+    :(STUDIO_ASSET_QUALITY_AXIS_APPLICABILITY[family]||Object.freeze(Object.keys(STUDIO_ASSET_QUALITY_WEIGHTS)));
+  const excluded=new Set((asset?.notApplicableQualityAxes||source.notApplicableQualityAxes||[]).map(upper));
+  const applicableAxes=configuredAxes.filter(axis=>!excluded.has(axis));
+  const runtimeState=upper(asset?.runtimeVerificationState||source.runtimeVerificationState);
+  const actualBinding=source.actualGameBinding===true||source.ACTUAL_GAME_BINDING===true||(asset?.consumerGameIds||[]).length>0;
+  const productionVerified=(asset?.productionVerified===true||asset?.verifiedCompanyReusable===true)
+    &&(/VERIFIED_NATIVE_RUNTIME|VERIFIED_RUNTIME/.test(runtimeState)||source.runtimeVerified===true);
+  const normalized={};
+  let earned=0;
+  let applicableWeight=0;
+  for(const [axis,weight] of Object.entries(STUDIO_ASSET_QUALITY_WEIGHTS)){
+    if(!applicableAxes.includes(axis))continue;
+    let value=qualityMetric(qualityEvidenceValue(source,axis));
+    if(axis==='ACTUAL_GAME_BINDING'&&actualBinding)value=1;
+    if(axis==='PRODUCTION_VERIFICATION')value=productionVerified?1:0;
+    normalized[axis]=value;
+    earned+=weight*value;
+    applicableWeight+=weight;
+  }
+  const score=applicableWeight>0?Math.round((earned/applicableWeight)*STUDIO_ASSET_QUALITY_MAX*10)/10:0;
+  const ranked=Object.entries(normalized).map(([axis,value])=>Object.freeze({
+    axis,value,weightedScore:Math.round(STUDIO_ASSET_QUALITY_WEIGHTS[axis]*value*10)/10,
+    max:STUDIO_ASSET_QUALITY_WEIGHTS[axis]
+  })).sort((a,b)=>a.value-b.value||b.max-a.max||a.axis.localeCompare(b.axis));
+  return Object.freeze({
+    version:2,
+    assetId:text(asset?.id)||null,
+    family:family||null,
+    score,
+    maxScore:STUDIO_ASSET_QUALITY_MAX,
+    grade:qualityGrade(score),
+    axes:Object.freeze(normalized),
+    applicableAxes:freezeList(applicableAxes),
+    applicableWeight,
+    weakestAxis:ranked[0]||null,
+    strongestAxes:freezeList(ranked.filter(row=>row.value>=.85).map(row=>row.axis)),
+    measuredAxisCount:Object.values(normalized).filter(value=>value>0).length,
+    commercialTargetReached:score>=100,
+    heroTargetReached:score>=110,
+    masterTargetReached:score>=116,
+    scoreBlocksDevelopmentBinding:false,
+    lowScoreMayBindWhenNoBetterSafeCompatibleAsset:true,
+    productionVerified,
+    productionVerificationIndependentFromQualityScore:true
+  });
+}
+
+export function createStudioAssetCriticReview({assessment={}}={}){
+  const axes=assessment?.axes||{};
+  const applicable=new Set(assessment?.applicableAxes||Object.keys(axes));
+  const critics=Object.entries(STUDIO_ASSET_CRITICS).map(([critic,ownedAxes])=>{
+    const relevant=ownedAxes.filter(axis=>applicable.has(axis));
+    if(!relevant.length)return null;
+    const values=relevant.map(axis=>Number(axes[axis]||0));
+    const percent=values.length?Math.round(values.reduce((sum,value)=>sum+value,0)/values.length*100):0;
+    return Object.freeze({critic,axes:freezeList(relevant),percent,status:percent>=90?'STRONG':percent>=75?'ACCEPTABLE':'IMPROVE'});
+  }).filter(Boolean).sort((a,b)=>a.percent-b.percent||a.critic.localeCompare(b.critic));
+  return Object.freeze({
+    assetId:assessment?.assetId||null,
+    critics:Object.freeze(critics),
+    weakestCritic:critics[0]||null,
+    independentPerspectivesRequired:true,
+    oneCriticCannotSelfPromoteProduction:true
+  });
+}
+
+export function createStudioAssetFamilyPlan({asset={},availableOutputs=[]}={}){
+  const family=upper(asset?.family||asset?.category);
+  const configured=STUDIO_ASSET_FAMILY_OUTPUTS[family]||Object.freeze([]);
+  const available=new Set((availableOutputs||asset?.availableOutputs||[]).map(upper));
+  const itemLike=(family==='PROP'||family==='WEAPON')&&/(ITEM|LOOT|RESOURCE|CONSUMABLE|CRAFT|WEAPON|TOOL)/.test(upper(asset?.functionClass||asset?.subfamily||asset?.type||family));
+  const craftable=asset?.craftable===true||/CRAFT/.test(upper(asset?.functionClass||asset?.tags?.join(' ')));
+  const collectible=asset?.collectible===true||itemLike;
+  const required=configured.filter(role=>{
+    if(!/_WHEN_/.test(role))return true;
+    if(role==='INVENTORY_ICON_WHEN_ITEM')return itemLike;
+    if(role==='CRAFTING_ICON_WHEN_CRAFTABLE')return craftable;
+    if(role==='DROP_MODEL_WHEN_COLLECTIBLE')return collectible;
+    return false;
+  });
+  const gaps=required.filter(role=>!available.has(role));
+  return Object.freeze({
+    assetId:text(asset?.id)||null,
+    family,
+    requiredOutputs:freezeList(required),
+    optionalOutputs:freezeList(configured.filter(role=>!required.includes(role))),
+    availableOutputs:freezeList([...available]),
+    missingRequiredOutputs:freezeList(gaps),
+    itemPresentationRequired:itemLike,
+    itemPresentationRoles:itemLike?freezeList(required.filter(role=>/WORLD_MODEL|INVENTORY_ICON|DROP_MODEL|CRAFTING_ICON/.test(role))):freezeList([]),
+    familyRootId:text(asset?.familyRootId||asset?.assetFamilyId||asset?.dna?.FAMILY_ROOT_ID||asset?.parentId)||text(asset?.id)||null,
+    sameAssetDnaAcrossWorldEquipDropAndUi:true,
+    uiIconMustReflectWorldAssetIdentity:itemLike||family==='WEAPON',
+    equippedDropInventoryCraftingVariantsShareLineage:itemLike||family==='WEAPON',
+    complete:gaps.length===0
+  });
+}
+
+export function createHeroAssetQualityBaseline({assets=[],assessments=[],heroAssetIds=[]}={}){
+  const explicit=new Set((heroAssetIds||[]).map(text).filter(Boolean));
+  const byId=new Map((assessments||[]).map(row=>[text(row.assetId),row]));
+  const heroes=(assets||[]).filter(asset=>{
+    const id=text(asset?.id);
+    const tags=(asset?.tags||[]).map(upper);
+    return explicit.has(id)||asset?.hero===true||/HERO|PRIMARY|SIGNATURE|BOSS|LANDMARK|STARTING_HUB/.test(upper(asset?.heroRole||asset?.importance||''))||tags.some(tag=>/HERO|PRIMARY|SIGNATURE|BOSS|LANDMARK/.test(tag));
+  }).map(asset=>({assetId:text(asset.id),assessment:byId.get(text(asset.id))||scoreStudioAssetQuality120({asset})}));
+  const scores=heroes.map(row=>Number(row.assessment?.score)||0);
+  return Object.freeze({
+    heroAssetIds:freezeList(heroes.map(row=>row.assetId)),
+    averageScore:scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length*10)/10:0,
+    minimumScore:scores.length?Math.min(...scores):0,
+    heroTarget:110,
+    masterTarget:116,
+    heroAssetsDefineGameQualityBaseline:true,
+    empty:heroes.length===0
+  });
+}
+
+export function createStudioAssetEvolutionPlan({assessment={},criticReview={},alternatives=[]}={}){
+  const safeAlternatives=(alternatives||[]).filter(row=>row&&row.rightsPass!==false&&row.platformCompatible!==false&&row.gameplayAuthoritySafe!==false);
+  const score=Number(assessment?.score)||0;
+  const weakest=assessment?.weakestAxis?.axis||criticReview?.weakestCritic?.axes?.[0]||'UNMEASURED_QUALITY';
+  const useCurrent=score<STUDIO_ASSET_QUALITY_MAX;
+  return Object.freeze({
+    assetId:assessment?.assetId||null,
+    currentScore:score,
+    targetScore:STUDIO_ASSET_QUALITY_MAX,
+    currentGrade:assessment?.grade||qualityGrade(score),
+    bindCurrentAsset:useCurrent||score>=STUDIO_ASSET_QUALITY_MAX,
+    lowScoreBindingAllowed:score<100,
+    fallbackReason:score<100&&safeAlternatives.length===0?'NO_BETTER_SAFE_COMPATIBLE_ALTERNATIVE':null,
+    replacementPolicy:safeAlternatives.length?'KEEP_CURRENT_UNTIL_BETTER_ALTERNATIVE_PROVES_SUPERIOR':'IMPROVE_CURRENT_IN_PLACE',
+    nextTarget:weakest,
+    worstPartFirst:true,
+    preserveStrongAxes:freezeList(assessment?.strongestAxes||[]),
+    fullRebuildDefault:false,
+    productionPromotionStillRequiresRuntimeEvidence:true,
+    verifiedOutcomeOnlyMayTeachPositiveLearning:true,
+    continueEvolutionAfterCheckpoint:true
+  });
+}
+
+export function buildStudioAssetQuality120Program({assets=[],qualityEvidenceByAsset={},heroAssetIds=[],familyOutputsByAsset={}}={}){
+  const seen=new Set();
+  const uniqueAssets=[];
+  for(const asset of assets||[]){const id=text(asset?.id);if(!id||seen.has(id))continue;seen.add(id);uniqueAssets.push(asset);}
+  const assessments=uniqueAssets.map(asset=>scoreStudioAssetQuality120({asset,evidence:qualityEvidenceByAsset?.[text(asset.id)]||{}}));
+  const assessmentById=new Map(assessments.map(row=>[row.assetId,row]));
+  const criticReviews=uniqueAssets.map(asset=>createStudioAssetCriticReview({assessment:assessmentById.get(text(asset.id))}));
+  const criticById=new Map(criticReviews.map(row=>[row.assetId,row]));
+  const familyPlans=uniqueAssets.map(asset=>createStudioAssetFamilyPlan({asset,availableOutputs:familyOutputsByAsset?.[text(asset.id)]||asset?.availableOutputs||[]}));
+  const evolutionQueue=uniqueAssets.map(asset=>createStudioAssetEvolutionPlan({
+    assessment:assessmentById.get(text(asset.id)),criticReview:criticById.get(text(asset.id)),alternatives:asset?.qualityAlternatives||[]
+  })).sort((a,b)=>a.currentScore-b.currentScore||String(a.assetId).localeCompare(String(b.assetId)));
+  const heroBaseline=createHeroAssetQualityBaseline({assets:uniqueAssets,assessments,heroAssetIds});
+  return Object.freeze({
+    version:1,
+    maxScore:STUDIO_ASSET_QUALITY_MAX,
+    weights:STUDIO_ASSET_QUALITY_WEIGHTS,
+    assessments:Object.freeze(assessments),
+    criticReviews:Object.freeze(criticReviews),
+    familyPlans:Object.freeze(familyPlans),
+    heroBaseline,
+    evolutionQueue:Object.freeze(evolutionQueue),
+    belowCommercialCount:assessments.filter(row=>row.score<100).length,
+    belowMasterCount:assessments.filter(row=>row.score<116).length,
+    lowScoreBindingPolicy:'USE_WHEN_NO_BETTER_SAFE_COMPATIBLE_ALTERNATIVE_AND_KEEP_VISUAL_DEBT_OPEN',
+    qualityScoreIsNotADevelopmentBindingGate:true,
+    productionVerificationRemainsRuntimeEvidenceBased:true,
+    verifiedOutcomeOnlyLearning:true
+  });
 }
 
 // 스타일: 조형·표면·연기를 함께 정의하며 실제 메시/클립 적용 전에는 제작 지침이다.
@@ -283,6 +563,7 @@ export const ASSET_CUSTOMIZATION_AXES=Object.freeze(Object.fromEntries(Object.en
   WEAPON:['BLADE_HEAD','HANDLE','GUARD','ORNAMENT','MATERIAL','SURFACE_WEAR'],
   PROP:['STRUCTURE','PROPORTION','ATTACHMENT','MATERIAL','LOCAL_DAMAGE','SURFACE_WEAR'],
   MATERIAL:['BASE_COLOR','ROUGHNESS','METALLIC','NORMAL_DETAIL','CAVITY_GRIME','EDGE_WEAR','WETNESS'],
+  AUDIO:['TIMBRE','ATTACK_TRANSIENT','BODY','TAIL','LAYERING','VARIATION','SPATIAL_RESPONSE','MIX_PRIORITY'],
   UI:['SHAPE','BORDER','MATERIAL','ICON','CONTRAST','TYPOGRAPHY','LAYOUT_VISUAL','STATE_VARIANT','FEEDBACK_MOTION'],
   VFX:['SHAPE','PALETTE','DENSITY','TRAIL','IMPACT','DISSIPATION'],
   SKILL:['CAST_POSE','PROJECTILE_VISUAL','IMPACT_VISUAL','RECOVERY_POSE'],
@@ -371,6 +652,46 @@ export function createAssetCustomizationPlan({assets=[],recipes=[],styleBible={}
         CONTACT:Object.freeze(['CONTACT_DIRT','POLISH_BY_USE','WETNESS_OR_MUD','SEAM_ACCUMULATION'])
       }),
       authoredOutputs:Object.freeze(['EDITABLE_MATERIAL_SOURCE','TEXTURE_OR_PARAMETER_SET','MASK_SET','PLATFORM_SHADER_BINDINGS'])
+    }),
+    AUDIO:Object.freeze({
+      construction:Object.freeze(['EVENT_ROLE','SOURCE_OR_SYNTHESIS','TIMBRE_IDENTITY','TRANSIENT_BODY_TAIL','VARIATION_SET','SPATIAL_RESPONSE','MIX_PRIORITY','MOBILE_CODEC_VARIANT']),
+      detailByDistance:Object.freeze({
+        GAME_CAMERA:Object.freeze(['EVENT_READABILITY','ROLE_SEPARATION','MIX_PRIORITY']),
+        MID_RANGE:Object.freeze(['SPATIAL_FALLOFF','OCCLUSION_OR_FILTERING','VARIATION']),
+        CLOSEUP:Object.freeze(['TRANSIENT_BODY_TAIL','TIMBRE_DETAIL','LAYER_BALANCE']),
+        CONTACT:Object.freeze(['IMPACT_SYNC','SURFACE_RESPONSE','WEAPON_OR_BODY_CONTACT_MATCH'])
+      }),
+      authoredOutputs:Object.freeze(['EDITABLE_AUDIO_SOURCE_OR_RECIPE','EVENT_VARIATION_SET','SPATIAL_BINDING','MIX_BINDING','MOBILE_VARIANT'])
+    }),
+    VFX:Object.freeze({
+      construction:Object.freeze(['EVENT_ROLE','PRIMARY_SHAPE','SECONDARY_PARTICLES','TRAIL_OR_WAVE','IMPACT_BREAKUP','DISSIPATION','LIGHTING_RESPONSE','MOBILE_DENSITY_VARIANT']),
+      detailByDistance:Object.freeze({
+        GAME_CAMERA:Object.freeze(['TELEGRAPH_READABILITY','PRIMARY_SHAPE','DANGER_OR_REWARD_ROLE']),
+        MID_RANGE:Object.freeze(['PARTICLE_LAYERING','TRAIL_LENGTH','IMPACT_BREAKUP']),
+        CLOSEUP:Object.freeze(['EDGE_DETAIL','MATERIAL_LIGHT_RESPONSE','DISSIPATION_DETAIL']),
+        CONTACT:Object.freeze(['IMPACT_POINT_ALIGNMENT','HIT_EVENT_SYNC','SURFACE_INTERACTION'])
+      }),
+      authoredOutputs:Object.freeze(['EDITABLE_VFX_SOURCE','EVENT_BINDING','MOBILE_DENSITY_VARIANT','LOD_OR_DISTANCE_VARIANT'])
+    }),
+    SKILL:Object.freeze({
+      construction:Object.freeze(['CAST_INTENT','TELEGRAPH','PROJECTILE_OR_AREA_FORM','IMPACT','REACTION','AUDIO_CUE','CAMERA_RESPONSE','RECOVERY_PRESENTATION']),
+      detailByDistance:Object.freeze({
+        GAME_CAMERA:Object.freeze(['SKILL_ROLE_READABILITY','TELEGRAPH','IMPACT_IDENTITY']),
+        MID_RANGE:Object.freeze(['PROJECTILE_OR_AREA_STRUCTURE','CAST_BODY_LANGUAGE','VFX_LAYERING']),
+        CLOSEUP:Object.freeze(['HAND_OR_WEAPON_ORIGIN','MATERIAL_DETAIL','IMPACT_BREAKUP']),
+        CONTACT:Object.freeze(['CAST_EVENT_SYNC','HIT_EVENT_SYNC','TARGET_REACTION_ALIGNMENT'])
+      }),
+      authoredOutputs:Object.freeze(['CAST_PRESENTATION','TELEGRAPH_PRESENTATION','PROJECTILE_OR_AREA_PRESENTATION','IMPACT_PRESENTATION','AUDIO_BINDING','CAMERA_BINDING'])
+    }),
+    MOTION:Object.freeze({
+      construction:Object.freeze(['POSE_LANGUAGE','WEIGHT_TRANSFER','LOCOMOTION_OR_ACTION_ARC','CONTACT','FOLLOW_THROUGH','RECOVERY','BLEND_TRANSITIONS','MOTION_LOD']),
+      detailByDistance:Object.freeze({
+        GAME_CAMERA:Object.freeze(['POSE_READABILITY','TIMING_ARC','ACTION_ROLE']),
+        MID_RANGE:Object.freeze(['WEIGHT_TRANSFER','LIMB_ARCS','SECONDARY_MOTION']),
+        CLOSEUP:Object.freeze(['GAZE_HAND_FOOT_DETAIL','TORSO_COUNTER_MOTION','FACIAL_OR_APPENDAGE_ACTING']),
+        CONTACT:Object.freeze(['FOOT_PLANT','HAND_WEAPON_CONTACT','IMPACT_ALIGNMENT','PAIR_ALIGNMENT_WHEN_USED'])
+      }),
+      authoredOutputs:Object.freeze(['EDITABLE_MOTION_SOURCE_OR_KEYPOSE_RECIPE','PLATFORM_RETARGET','CONTACT_MAP','BLEND_VARIANTS','MOTION_LOD'])
     })
   });
   const defaultProduction=Object.freeze({
@@ -906,6 +1227,8 @@ export function scoreStudioAssetCandidate({asset={},gameDna={},usage={}}={}){
   if(usage.runtimeFailure===true||Number(usage.verifiedFailureCount)>0)score-=Math.min(60,20+Number(usage.verifiedFailureCount||0)*10);
   if(usage.identityFailure===true||usage.styleFailure===true||usage.navigationFailure===true)score-=25;
   if(usage.mobileBudgetFailure===true)score-=20;
+  const quality120=scoreStudioAssetQuality120({asset,evidence:usage.qualityEvidence||usage.quality120||{}});
+  score+=Math.round(quality120.score/12);
   return Object.freeze({
     id:row.id,
     score:Math.round(score),
@@ -913,10 +1236,14 @@ export function scoreStudioAssetCandidate({asset={},gameDna={},usage={}}={}){
     verified:row.verified,
     conceptPass:conceptQa.pass,
     platformCompatible:!targetPlatform||!row.platform||row.platform===targetPlatform||row.platform==='SHARED_REFERENCE',
+    quality120,
+    qualityScoreBlocksBinding:false,
+    lowQualityMayBindWhenNoBetterSafeCompatibleAsset:true,
     rejected:Boolean(!conceptQa.pass||usage.lockedOut===true),
     reasons:Object.freeze([
       row.verified?'VERIFIED_RUNTIME_OR_COMPANY':'UNVERIFIED_OR_PREPARED',
       conceptQa.pass?'CONCEPT_COMPATIBLE':'CONCEPT_MISMATCH',
+      quality120.score<100?'QUALITY_DEBT_KEEP_IMPROVING':'QUALITY_COMMERCIAL_TARGET_REACHED',
       usage.runtimeFailure===true?'VERIFIED_RUNTIME_FAILURE':''
     ].filter(Boolean))
   });
@@ -931,7 +1258,7 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
       .filter(({row})=>row.family===family&&(!subfamily||row.subfamily===subfamily||row.tags.includes(subfamily)))
       .map(({asset,row})=>({asset,row,score:scoreStudioAssetCandidate({asset,gameDna,usage:usageByAsset[row.id]||{}})}))
       .filter(x=>!x.score.rejected)
-      .sort((a,b)=>b.score.sourceTier-a.score.sourceTier||b.score.score-a.score.score||a.row.id.localeCompare(b.row.id));
+      .sort((a,b)=>b.score.sourceTier-a.score.sourceTier||b.score.quality120.score-a.score.quality120.score||b.score.score-a.score.score||a.row.id.localeCompare(b.row.id));
     const picked=candidates[0]||null;
     selections.push(Object.freeze({
       family,subfamily,required:requirement.required!==false,
@@ -939,6 +1266,10 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
       score:picked?.score.score??null,
       sourceTier:picked?.score.sourceTier??0,
       verified:picked?.row.verified===true,
+      quality120:picked?.score.quality120?.score??null,
+      qualityGrade:picked?.score.quality120?.grade??null,
+      lowQualityFallback:Boolean(picked&&Number(picked.score.quality120?.score||0)<100),
+      qualityScoreBlocksBinding:false,
       unresolved:!picked
     }));
   }
@@ -946,6 +1277,9 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
     selections:Object.freeze(selections),
     unresolved:Object.freeze(selections.filter(row=>row.required&&row.unresolved)),
     complete:selections.every(row=>!row.required||!row.unresolved),
+    lowQualityFallbackCount:selections.filter(row=>row.lowQualityFallback).length,
+    lowQualityBindingAllowedWhenNoBetterSafeCompatibleAsset:true,
+    qualityScoreIsNotBindingGate:true,
     manualOrLockedChoiceWins:true,
     gameplayAuthority:false
   });
@@ -1133,11 +1467,29 @@ export function summarizeVerifiedAssetUsage({events=[]}={}){
   const rows=new Map();
   for(const event of events||[]){
     const id=text(event.assetId);if(!id)continue;
-    const row=rows.get(id)||{assetId:id,usageCount:0,gameIds:new Set(),runtimePassCount:0,runtimeFailureCount:0,failureReasons:new Set()};
+    const row=rows.get(id)||{
+      assetId:id,usageCount:0,gameIds:new Set(),runtimePassCount:0,runtimeFailureCount:0,failureReasons:new Set(),
+      verifiedQualityScores:[],verifiedWeakAxes:new Set(),lastVerifiedQuality120:null
+    };
     row.usageCount+=Math.max(1,Number(event.count)||1);
     if(event.gameId)row.gameIds.add(text(event.gameId));
-    if(event.verifiedRuntimePass===true)row.runtimePassCount++;
-    if(event.verifiedRuntimeFailure===true){row.runtimeFailureCount++;if(event.failureReason)row.failureReasons.add(upper(event.failureReason));}
+    if(event.verifiedRuntimePass===true){
+      row.runtimePassCount++;
+      const qualityScore=Number(event.quality120?.score??event.qualityScore120);
+      if(Number.isFinite(qualityScore)){
+        const bounded=Math.max(0,Math.min(STUDIO_ASSET_QUALITY_MAX,qualityScore));
+        row.verifiedQualityScores.push(bounded);
+        row.lastVerifiedQuality120=bounded;
+      }
+      const weakAxis=upper(event.quality120?.weakestAxis?.axis||event.weakestQualityAxis);
+      if(weakAxis)row.verifiedWeakAxes.add(weakAxis);
+    }
+    if(event.verifiedRuntimeFailure===true){
+      row.runtimeFailureCount++;
+      if(event.failureReason)row.failureReasons.add(upper(event.failureReason));
+      const weakAxis=upper(event.quality120?.weakestAxis?.axis||event.weakestQualityAxis);
+      if(weakAxis)row.verifiedWeakAxes.add(weakAxis);
+    }
     rows.set(id,row);
   }
   return Object.freeze({
@@ -1145,10 +1497,16 @@ export function summarizeVerifiedAssetUsage({events=[]}={}){
       assetId:row.assetId,usageCount:row.usageCount,gameConsumerCount:row.gameIds.size,
       runtimePassCount:row.runtimePassCount,runtimeFailureCount:row.runtimeFailureCount,
       failureReasons:freezeList([...row.failureReasons]),
+      verifiedQualitySampleCount:row.verifiedQualityScores.length,
+      bestVerifiedQuality120:row.verifiedQualityScores.length?Math.max(...row.verifiedQualityScores):null,
+      lastVerifiedQuality120:row.lastVerifiedQuality120,
+      verifiedWeakAxes:freezeList([...row.verifiedWeakAxes]),
       positiveLearningEligible:row.runtimePassCount>0,
+      qualityLearningEligible:row.runtimePassCount>0&&row.verifiedQualityScores.length>0,
       negativeLearningEligible:row.runtimeFailureCount>0
     }))),
     rawTelemetryDirectTrainingAllowed:false,
+    unverifiedQualityScoresMayTeachPositiveLearning:false,
     existingCanonicalLearningChainOnly:true
   });
 }
@@ -1473,7 +1831,8 @@ export function buildAutonomousAssetGapFillPlan({
   verifiedAssets=[],
   repositoryAssets=[],
   externalSources=[],
-  signalsByKey={}
+  signalsByKey={},
+  qualityProgram={}
 }={}){
   const verified=(verifiedAssets||[]).map(normalizeRegistryAsset);
   const repo=(repositoryAssets||[]).map(normalizeRegistryAsset);
@@ -1497,9 +1856,50 @@ export function buildAutonomousAssetGapFillPlan({
       nativeRuntimeConsumerRequiredBeforePromotion:true
     }));
   }
+  const familyByAssetId=new Map([
+    ...(verifiedAssets||[]),
+    ...(repositoryAssets||[])
+  ].map(asset=>[text(asset?.id),Object.freeze({
+    family:upper(asset?.family||asset?.category),
+    subfamily:upper(asset?.subfamily||asset?.type)
+  })]));
+  const heroIds=new Set(qualityProgram?.heroBaseline?.heroAssetIds||[]);
+  const qualityActions=(qualityProgram?.evolutionQueue||[])
+    .filter(row=>row?.assetId&&Number(row.currentScore)<STUDIO_ASSET_QUALITY_MAX)
+    .map(row=>{
+      const identity=familyByAssetId.get(text(row.assetId))||{};
+      const deficit=Math.max(0,STUDIO_ASSET_QUALITY_MAX-Number(row.currentScore||0));
+      const heroBonus=heroIds.has(text(row.assetId))?50:0;
+      return Object.freeze({
+        kind:'QUALITY_EVOLUTION',
+        family:identity.family||'UNKNOWN',
+        subfamily:identity.subfamily||'',
+        assetId:text(row.assetId),
+        currentScore:Number(row.currentScore||0),
+        targetScore:STUDIO_ASSET_QUALITY_MAX,
+        qualityGrade:text(row.currentGrade),
+        priorityScore:200+heroBonus+deficit,
+        route:'IMPROVE_EXISTING_ASSET_WORST_PART_FIRST',
+        nextTarget:text(row.nextTarget)||'UNMEASURED_QUALITY',
+        preserveStrongAxes:freezeList(row.preserveStrongAxes||[]),
+        bindCurrentAsset:true,
+        lowScoreBindingAllowed:true,
+        visualDebtMustRemainOpen:Number(row.currentScore)<100,
+        fullRebuildDefault:false,
+        nativeRuntimeConsumerRequiredBeforePromotion:true,
+        verifiedOutcomeOnlyMayTeachPositiveLearning:true
+      });
+    });
+  const allActions=[...actions,...qualityActions].sort((a,b)=>b.priorityScore-a.priorityScore||String(a.family).localeCompare(String(b.family))||String(a.assetId||'').localeCompare(String(b.assetId||'')));
   return Object.freeze({
     heatmap,
-    actions:Object.freeze(actions.sort((a,b)=>b.priorityScore-a.priorityScore||a.family.localeCompare(b.family))),
+    actions:Object.freeze(allActions),
+    coverageActions:Object.freeze(actions.sort((a,b)=>b.priorityScore-a.priorityScore||a.family.localeCompare(b.family))),
+    qualityActions:Object.freeze(qualityActions.sort((a,b)=>b.priorityScore-a.priorityScore||String(a.assetId).localeCompare(String(b.assetId)))),
+    qualityEvolutionEnabled:true,
+    qualityTarget:STUDIO_ASSET_QUALITY_MAX,
+    qualityScoreIsNotBindingGate:true,
+    lowScoreAssetMayRemainBoundDuringImprovement:true,
     noArtificialCategoryCap:true,
     unityRobloxNativeVariantsRequired:true,
     runtimeVerificationRequired:true
@@ -1587,14 +1987,20 @@ export function createStudioAssetUniversePlan({
   assets=[],repositoryAssets=[],externalSources=[],activeDemand={},signalsByKey={},platform='UNITY',
   styleFamily='STYLIZED_FANTASY',styleBible={},concept={},gameId='',worldDna={},languages={},
   requirements=[],usageByAsset={},futureGameDemands=[],usageEvents=[],baseMaterialFamilies={},baseMaterialUsageByAtom={},
-  customizationRecipes=[],customizationContract=null
+  customizationRecipes=[],customizationContract=null,qualityEvidenceByAsset={},heroAssetIds=[],familyOutputsByAsset={}
 }={}){
   const conceptProfile=createConceptProfile({...concept,styleFamily:concept.styleFamily||styleFamily});
   const resolvedStyle=conceptProfile.dominantStyle||upper(styleFamily);
   const coverage=scanUniversalAssetCoverage({assets,activeDemand,platform,styleFamily:resolvedStyle});
   const verified=assets.filter(asset=>normalizeRegistryAsset(asset).verified);
+  const quality120=buildStudioAssetQuality120Program({
+    assets:[...assets,...repositoryAssets],
+    qualityEvidenceByAsset,
+    heroAssetIds,
+    familyOutputsByAsset
+  });
   const gapFill=buildAutonomousAssetGapFillPlan({
-    coverageReport:coverage,verifiedAssets:verified,repositoryAssets,externalSources,signalsByKey
+    coverageReport:coverage,verifiedAssets:verified,repositoryAssets,externalSources,signalsByKey,qualityProgram:quality120
   });
   const resolvedBible=createStyleBible({styleFamily:resolvedStyle,styles:conceptProfile.weightedStyles,...styleBible});
   const conceptCoherence=evaluateConceptCoherence({concept:conceptProfile,styleBible:resolvedBible,lockedStyle:styleFamily});
@@ -1625,6 +2031,7 @@ export function createStudioAssetUniversePlan({
     usageFeedback,
     baseMaterialRotation,
     testbed,
+    quality120,
     coverage,
     heatmap:gapFill.heatmap,
     gapFill,
