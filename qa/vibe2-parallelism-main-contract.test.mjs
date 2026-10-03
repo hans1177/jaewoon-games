@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
+import {createVibeContinuousQueue,selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 
 const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
 const core=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
@@ -11,6 +12,31 @@ const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-road
 const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
 const queue=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
 const control=JSON.parse(fs.readFileSync('.vibe2/parallelism-control.json','utf8'));
+
+test('same game can run Roblox Unity and Web in parallel when responsible files are disjoint',()=>{
+  const tasks=[
+    {id:'same-roblox',gameId:'same-game',target:'roblox',department:'development',type:'implementation',status:'queued',priority:'high',responsibleFiles:['client/Game.client.luau']},
+    {id:'same-unity',gameId:'same-game',target:'unity',department:'development',type:'implementation',status:'queued',priority:'high',responsibleFiles:['Assets/Scripts/GameCore.cs']},
+    {id:'same-web',gameId:'same-game',target:'web',department:'development',type:'implementation',status:'queued',priority:'high',responsibleFiles:['index.html']}
+  ];
+  const batch=selectVibeQueueBatch(createVibeContinuousQueue({maxConcurrentTasks:3,tasks}),{maxConcurrentTasks:3,lane:'game-primary'});
+  assert.deepEqual(new Set(batch.selected.map(task=>task.id)),new Set(['same-roblox','same-unity','same-web']));
+  assert.equal(batch.deferredConflicts.length,0);
+  const normalized=createVibeContinuousQueue({tasks});
+  assert.equal(normalized.scheduling.sameGameDifferentPlatformsParallel,true);
+  assert.equal(normalized.scheduling.crossPlatformParallelRequiresDisjointResponsibleFiles,true);
+});
+
+test('same game different platforms still serialize when they explicitly own the same responsible file',()=>{
+  const tasks=[
+    {id:'shared-web',gameId:'same-game',target:'web',sourceRoot:'shared-game',department:'development',type:'implementation',status:'queued',priority:'high',responsibleFiles:['shared.js']},
+    {id:'shared-unity',gameId:'same-game',target:'unity',sourceRoot:'shared-game',department:'development',type:'implementation',status:'queued',priority:'high',responsibleFiles:['shared.js']}
+  ];
+  const batch=selectVibeQueueBatch(createVibeContinuousQueue({maxConcurrentTasks:2,tasks}),{maxConcurrentTasks:2,lane:'game-primary'});
+  assert.equal(batch.selected.length,1);
+  assert.equal(batch.deferredConflicts.length,1);
+  assert.equal(batch.deferredConflicts[0].reason,'responsible-file-conflict');
+});
 
 test('maximum parallelism is default and source-root locks are permanently disabled',()=>{
   const wave=roadmap.neuralDevelopmentBrain.currentWaveExecution;
