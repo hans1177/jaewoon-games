@@ -16,6 +16,8 @@ on:
       - 'tools/company-roblox-source-drift-sync.mjs'
       - 'qa/company-roblox-source-drift-sync.test.mjs'
       - 'tools/company-development-roblox-bootstrap.mjs'
+      - 'tools/company-development-roblox-gameplay-product-readiness.mjs'
+      - 'qa/company-development-roblox-gameplay-product-readiness.test.mjs'
       - 'tools/company-development-roblox-source-reconcile.mjs'
       - 'tools/vibe3-roblox-learning-context.mjs'
       - 'tools/company-selected-platform-router.mjs'
@@ -53,6 +55,8 @@ env:
   ROBLOX_SOURCE_PLAN_CONTRACT_PATHS: >-
     .github/workflows/company-development-roblox-runtime.yml
     tools/company-development-roblox-bootstrap.mjs
+    tools/company-development-roblox-gameplay-product-readiness.mjs
+    qa/company-development-roblox-gameplay-product-readiness.test.mjs
     tools/company-development-roblox-source-reconcile.mjs
     tools/vibe3-roblox-learning-context.mjs
     qa/company-development-roblox-source-reconcile.test.mjs
