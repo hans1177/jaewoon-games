@@ -101,12 +101,17 @@ test('maximum parallelism is default and source-root locks are permanently disab
   assert.match(core,/github\.event_name == 'push' && github\.ref == 'refs\/heads\/main' && inputs\.execution_lane == '' && 'vibe2-main-push-game-primary-wake'/);
   assert.match(core,/format\('vibe2-continuous-\{0\}-\{1\}', github\.run_id, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
   assert.match(core,/cancel-in-progress: false/);
-  const fastDispatch=runner.indexOf('      - name: Dispatch queued asset work first, otherwise GAME_PRIMARY before full planning');
+  const fastDispatch=runner.indexOf('      - name: Dispatch queued ASSET_DEVELOPMENT and GAME_PRIMARY before full planning');
   const fullPlan=runner.indexOf('      - name: Plan from latest main and persist control queue');
   assert.ok(fastDispatch>=0&&fullPlan>fastDispatch);
   assert.match(runner,/actions\/workflows\/vibe2-continuous-core\.yml\/dispatches/);
   assert.match(runner,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DISPATCHED/);
   assert.match(runner,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=FAILED_FALLBACK_POST_PLAN/);
+  const prePlanDispatch=runner.slice(fastDispatch,fullPlan);
+  const assetDispatch=prePlanDispatch.indexOf('VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED');
+  const gameDispatch=prePlanDispatch.indexOf('VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DISPATCHED');
+  assert.ok(assetDispatch>=0&&gameDispatch>assetDispatch);
+  assert.doesNotMatch(prePlanDispatch.slice(assetDispatch,gameDispatch),/\n\s*exit 0\s*\n/);
   const regressionPreflight=runtime.continuous?.reserveContractRegressionPreflight||{};
   const architectureRegressionPreflight=architecture.neuralWorkGraphTopology?.currentWaveExecution?.reserveContractRegressionPreflight||{};
   assert.equal(regressionPreflight.enabled,true);
@@ -250,12 +255,14 @@ test('reserve batch persists control state only through the explicit Vibe2 contr
   assert.match(reserve,/VIBE2_RESERVE_RUNTIME_SNAPSHOT=PINNED_FIRST_ATTEMPT/);
   assert.match(reserve,/VIBE2_RESERVE_RUNTIME_SNAPSHOT=REUSED_RETRY/);
   const snapshotBranch=reserve.indexOf('if [ "$state_attempt" -eq 1 ] || [ ! -s /tmp/vibe2-company-runtime-queue.json ]; then');
-  const planner=reserve.indexOf('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs');
-  assert.ok(snapshotBranch>=0&&planner>snapshotBranch);
+  const productionReserve=reserve.indexOf('VIBE2_GAME_PRIMARY_RESERVE_PLANNER_AUTHORITY=VIBE2_24H_PLAN_AND_EXISTING_CANONICAL_QUEUE');
+  assert.ok(snapshotBranch>=0&&productionReserve>snapshotBranch);
+  assert.doesNotMatch(reserve,/node \/tmp\/vibe2-main\/tools\/vibe2-auto-planner\.mjs/);
+  assert.doesNotMatch(reserve,/node \/tmp\/vibe2-main\/tools\/vibe2-post-release-focus\.mjs/);
 });
 
 test('24H pre-plan priority dispatch block stays valid Bash',()=>{
-  const stepStart=runner.indexOf('      - name: Dispatch queued asset work first, otherwise GAME_PRIMARY before full planning');
+  const stepStart=runner.indexOf('      - name: Dispatch queued ASSET_DEVELOPMENT and GAME_PRIMARY before full planning');
   const stepEnd=runner.indexOf('\n      - name: Plan from latest main and persist control queue',stepStart);
   assert.ok(stepStart>=0&&stepEnd>stepStart);
   const step=runner.slice(stepStart,stepEnd);
@@ -443,7 +450,7 @@ test('failed worker releases its exact lock after immutable upload while PASS ho
 });
 
 test('24H pre-plan production dispatch is not blocked by repository-wide runner pressure',()=>{
-  const stepStart=runner.indexOf('      - name: Dispatch queued asset work first, otherwise GAME_PRIMARY before full planning');
+  const stepStart=runner.indexOf('      - name: Dispatch queued ASSET_DEVELOPMENT and GAME_PRIMARY before full planning');
   const stepEnd=runner.indexOf('\n      - name: Plan from latest main and persist control queue',stepStart);
   assert.ok(stepStart>=0&&stepEnd>stepStart);
   const step=runner.slice(stepStart,stepEnd);
