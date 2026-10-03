@@ -7,6 +7,7 @@ import {
   scoreStudioAssetQuality120,
   buildStudioAssetLoadout,
   buildStudioAssetQuality120Program,
+  buildAutonomousAssetGapFillPlan,
   evaluateCompanyAssetPromotion,
   summarizeVerifiedAssetUsage
 } from '../assets/vibe-studio-asset-universe.js';
@@ -158,4 +159,28 @@ test('verified quality learning ignores unverified scores',()=>{
   assert.equal(summary.unverifiedQualityScoresMayTeachPositiveLearning,false);
   assert.ok(row.verifiedWeakAxes.includes('MATERIAL_TEXTURE'));
   assert.ok(row.verifiedWeakAxes.includes('MOTION_LIVINGNESS'));
+});
+
+test('existing 24h gap fill receives quality-debt actions without unbinding low-score assets',()=>{
+  const qualityProgram=buildStudioAssetQuality120Program({
+    assets:[{
+      id:'wolf-low',
+      family:'CREATURE',
+      subfamily:'SPECIES',
+      qualityEvidence:{SILHOUETTE_FORM:55,MODELING_STRUCTURE:45,MATERIAL_TEXTURE:35}
+    }],
+    heroAssetIds:['wolf-low']
+  });
+  const plan=buildAutonomousAssetGapFillPlan({
+    coverageReport:{rows:[]},
+    repositoryAssets:[{id:'wolf-low',family:'CREATURE',subfamily:'SPECIES',status:'REPO_ASSET'}],
+    qualityProgram
+  });
+  assert.equal(plan.qualityEvolutionEnabled,true);
+  assert.equal(plan.qualityActions.length,1);
+  assert.equal(plan.qualityActions[0].assetId,'wolf-low');
+  assert.equal(plan.qualityActions[0].route,'IMPROVE_EXISTING_ASSET_WORST_PART_FIRST');
+  assert.equal(plan.qualityActions[0].bindCurrentAsset,true);
+  assert.equal(plan.qualityActions[0].visualDebtMustRemainOpen,true);
+  assert.equal(plan.qualityScoreIsNotBindingGate,true);
 });
