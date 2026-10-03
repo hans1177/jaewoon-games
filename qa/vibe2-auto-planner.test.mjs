@@ -1704,6 +1704,10 @@ test('missing current upper-platform readiness requeues real Unity Web code and 
 
 test('Unity native presentation responsibility excludes gameplay core when a visual owner exists',()=>{
   const root=tempRepo();
+  const policyPath=path.join(root,'company-learning','platform-release-roadmap.json');
+  const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+  policy.assetProductionParallelContract={enabled:true};
+  fs.writeFileSync(policyPath,JSON.stringify(policy,null,2),'utf8');
   const project={gameId:'demo',name:'Demo',engine:'unity',target:'unity',releaseState:'development-confirmed',projectPath:'unity-games/demo'};
   const task=findPresentationQualityTask(project,root,{tasks:[]});
   assert.ok(task);
