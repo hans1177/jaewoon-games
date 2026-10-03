@@ -4197,3 +4197,49 @@ test('queued Web assessment with PRESENTATION generation is repaired into graphi
   assert.equal(laneRecovered.assetProductionLane,true);
   assert.ok(laneRecovered.evidence.includes('asset-production-parallel:v1'));
 });
+
+
+test('Roblox build-up directive preserves competitive multiplayer platform semantics',()=>{
+  const root=tempRepo();
+  try{
+    const gameId='roblox-competitive-directive';
+    const serverDir=path.join(root,'roblox-games',gameId,'server');
+    const clientDir=path.join(root,'roblox-games',gameId,'client');
+    fs.mkdirSync(serverDir,{recursive:true});
+    fs.mkdirSync(clientDir,{recursive:true});
+    fs.writeFileSync(path.join(serverDir,'Game.server.luau'),[
+      'local Players=game:GetService("Players")',
+      'local ReplicatedStorage=game:GetService("ReplicatedStorage")',
+      'local remote=Instance.new("RemoteEvent")',
+      'local function infectPlayer(player) player:SetAttribute("Role","MONSTER") end',
+      'local function endRound() remote:FireAllClients("MULTIPLAYER_SYNC") end',
+      'for _,player in ipairs(Players:GetPlayers()) do player:SetAttribute("ParticipantCount",#Players:GetPlayers()) end',
+    ].join('\n')+'\n','utf8');
+    fs.writeFileSync(path.join(clientDir,'Game.client.luau'),[
+      'local remote=Instance.new("RemoteEvent")',
+      'remote.OnClientEvent:Connect(function(kind) if kind=="MULTIPLAYER_SYNC" then return end end)',
+    ].join('\n')+'\n','utf8');
+    writeStudioDesign(root,gameId,{
+      identity:'8명 4대4 감염 추격전',
+      coreFun:'인간과 몬스터가 실시간으로 역할을 바꾸는 추격전',
+      coreLoop:['4대4로 시작한다','몬스터가 인간을 감염한다','한 진영이 0명이 되면 라운드가 끝난다'],
+      multiplayerMode:'SINGLE'
+    });
+    const project={
+      gameId,name:'Competitive Infection',engine:'roblox',target:'roblox',
+      releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`,
+      genre:'Survival',subgenre:'Infection Chase',playMode:'COMPETITIVE'
+    };
+    const planned=findStudioContinuousImprovementTask(project,root,{tasks:[]},'STABILITY');
+    assert.ok(planned);
+    assert.equal(planned.buildUpDirective.platform,'ROBLOX');
+    assert.equal(planned.buildUpDirective.sourceRoot,`roblox-games/${gameId}`);
+    assert.equal(planned.buildUpDirective.gameIdentityAndNonNegotiables.multiplayerMode,'COMPETITIVE');
+    const multiplayer=planned.buildUpDirective.qualityGapMap.find(row=>row.domain==='MULTIPLAYER_AND_SYNC');
+    assert.ok(multiplayer);
+    assert.notEqual(multiplayer.state,'NOT_APPLICABLE');
+    assert.ok((planned.evidence||[]).includes('build-up-roblox-design-profile-grounded:YES'));
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
