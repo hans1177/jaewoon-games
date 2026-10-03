@@ -3,65 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-zq1s5c",
-      "worker": "vibe2",
-      "taskId": "bug-defense-roblox-second-gate-rebuild-v1",
-      "gameId": "bug-defense",
-      "files": [
-        "roblox-games/bug-defense/shared/GameConfig.luau",
-        "roblox-games/bug-defense/server/Game.server.luau",
-        "roblox-games/bug-defense/client/Game.client.luau",
-        "assets/generated/roblox/bug-defense/background/asset.glb",
-        "assets/generated/roblox/bug-defense/background/preview.png",
-        "assets/generated/roblox/bug-defense/background/evidence.json",
-        "assets/generated/roblox/bug-defense/item/asset.glb",
-        "assets/generated/roblox/bug-defense/item/preview.png",
-        "assets/generated/roblox/bug-defense/item/evidence.json",
-        "assets/generated/roblox/bug-defense/prop/asset.glb",
-        "assets/generated/roblox/bug-defense/prop/preview.png",
-        "assets/generated/roblox/bug-defense/prop/evidence.json"
-      ],
-      "baseSha": "04bd03d46f12e0e0e684fb0287edbe1b0cced8e5",
-      "runId": "37132082837",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-03T16:13:38.775Z",
-      "expiresAt": "2026-10-03T16:58:38.775Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:bug-defense-roblox-second-gate-rebuild-v1"
-      ]
-    },
-    {
-      "id": "wl-nqgq4h",
-      "worker": "vibe2",
-      "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-roblox-stability-v1",
-      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-      "files": [
-        "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau",
-        "assets/generated/roblox/seed-story-complete-rpg-chronicles-of-eldoria/background/asset.glb",
-        "assets/generated/roblox/seed-story-complete-rpg-chronicles-of-eldoria/background/preview.png",
-        "assets/generated/roblox/seed-story-complete-rpg-chronicles-of-eldoria/background/evidence.json",
-        "assets/generated/roblox/seed-story-complete-rpg-chronicles-of-eldoria/item/asset.glb",
-        "assets/generated/roblox/seed-story-complete-rpg-chronicles-of-eldoria/item/preview.png",
-        "assets/generated/roblox/seed-story-complete-rpg-chronicles-of-eldoria/item/evidence.json",
-        "assets/generated/roblox/seed-story-complete-rpg-chronicles-of-eldoria/prop/asset.glb",
-        "assets/generated/roblox/seed-story-complete-rpg-chronicles-of-eldoria/prop/preview.png",
-        "assets/generated/roblox/seed-story-complete-rpg-chronicles-of-eldoria/prop/evidence.json"
-      ],
-      "baseSha": "04bd03d46f12e0e0e684fb0287edbe1b0cced8e5",
-      "runId": "37132082837",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-03T16:13:45.965Z",
-      "expiresAt": "2026-10-03T16:58:45.965Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-roblox-stability-v1"
-      ]
-    },
-    {
       "id": "wl-1wnc159",
       "worker": "vibe2",
       "taskId": "village-dungeons-roblox-second-gate-rebuild-v1",
@@ -698,6 +639,36 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-unity-web-usability-v1"
+      ]
+    },
+    {
+      "id": "wl-1kkppch",
+      "worker": "vibe2",
+      "taskId": "horror-escape-room-post-release-focus-4048dd962de0ea8d",
+      "gameId": "horror-escape-room",
+      "files": [
+        "roblox-games/horror-escape-room/server/Game.server.luau",
+        "roblox-games/horror-escape-room/client/Game.client.luau",
+        "roblox-games/horror-escape-room/shared/GameConfig.luau",
+        "assets/generated/roblox/horror-escape-room/background/asset.glb",
+        "assets/generated/roblox/horror-escape-room/background/preview.png",
+        "assets/generated/roblox/horror-escape-room/background/evidence.json",
+        "assets/generated/roblox/horror-escape-room/item/asset.glb",
+        "assets/generated/roblox/horror-escape-room/item/preview.png",
+        "assets/generated/roblox/horror-escape-room/item/evidence.json",
+        "assets/generated/roblox/horror-escape-room/prop/asset.glb",
+        "assets/generated/roblox/horror-escape-room/prop/preview.png",
+        "assets/generated/roblox/horror-escape-room/prop/evidence.json"
+      ],
+      "baseSha": "7eea852a88e7c860262f1971cafaa23c2652543b",
+      "runId": "37134236682",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-03T16:58:53.178Z",
+      "expiresAt": "2026-10-03T17:43:53.178Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:horror-escape-room-post-release-focus-4048dd962de0ea8d"
       ]
     }
   ]
