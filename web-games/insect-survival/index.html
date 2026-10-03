@@ -1,1 +1,629 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#08111b"><title>곤충 생존기</title></head><body><script>window.GAME_CONFIG={id:'insect-survival',name:'곤충 생존기',mode:'insect-survival',hp:100,desc:'거대한 정원에서 자원을 모으고 곤충의 습격을 버티며 10일 생존하는 제작 생존 게임.'}</script><script src="/web-games/_shared/vibe2-final.js"></script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#102517">
+<title>곤충 생존기</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0d1b10;color:#fff;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
+button{font:inherit}
+#game{position:relative;width:100%;height:100%;touch-action:none;background:#1d3a21}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+.hud{position:absolute;left:0;right:0;top:0;padding:calc(7px + env(safe-area-inset-top)) 9px 8px;pointer-events:none;z-index:5}
+.hudRow{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.pill{padding:6px 8px;border:1px solid #ffffff2b;border-radius:11px;background:#0b1711d9;backdrop-filter:blur(8px);font-size:11px;font-weight:750}
+.pill b{font-size:13px}
+.hpPill{min-width:132px}.track{height:6px;margin-top:4px;border-radius:6px;overflow:hidden;background:#452c2c}.track i{display:block;height:100%;background:#68d06f}
+.notice{margin-top:6px;max-width:min(94vw,560px);padding:7px 9px;border-radius:11px;border:1px solid #ffffff24;background:#0b1711df;font-size:12px;line-height:1.3;opacity:0;transition:opacity .15s}.notice.show{opacity:1}
+.side{position:absolute;right:8px;top:96px;z-index:6;display:flex;flex-direction:column;gap:7px}
+.uiBtn{border:1px solid #ffffff2b;background:#14311eea;color:#fff;border-radius:12px;padding:10px 11px;font-size:12px;font-weight:850;box-shadow:0 4px 14px #0005}
+.bottom{position:absolute;left:0;right:0;bottom:0;z-index:7;display:flex;align-items:flex-end;justify-content:space-between;padding:8px 10px calc(10px + env(safe-area-inset-bottom));pointer-events:none}
+.joy{position:relative;width:122px;height:122px;border:2px solid #ffffff3c;border-radius:50%;background:#06100977;pointer-events:auto;touch-action:none}
+.stick{position:absolute;left:34px;top:34px;width:50px;height:50px;border-radius:50%;background:#e7f3e7aa;border:2px solid #fff8;transform:translate(0,0)}
+.actions{display:grid;grid-template-columns:74px 74px;gap:9px;pointer-events:auto}
+.act{width:74px;height:74px;border:2px solid #ffffff55;border-radius:50%;color:#fff;font-size:12px;font-weight:900;background:#6b3030dd}
+.act.alt{background:#315e76dd}
+.modalWrap{position:absolute;inset:0;z-index:30;display:none;align-items:center;justify-content:center;padding:14px;background:#030805bf}.modalWrap.show{display:flex}
+.modal{width:min(94vw,470px);max-height:84vh;overflow:auto;padding:15px;border:1px solid #ffffff2c;border-radius:20px;background:#11251a;box-shadow:0 20px 50px #000a}
+.modal h2{margin:0 0 8px}.sub{font-size:11px;color:#bad0bf;line-height:1.45;margin-bottom:10px}
+.list{display:grid;gap:7px}.item{padding:10px;border-radius:12px;background:#09160f;border:1px solid #ffffff17}
+.itemTop{display:flex;justify-content:space-between;gap:10px;align-items:center}.item b{font-size:13px}.item small{display:block;margin-top:4px;color:#b7c9bb;font-size:10px;line-height:1.4}
+.item button{margin-top:8px;width:100%;border:0;border-radius:9px;padding:9px;background:#dcebdc;color:#102016;font-weight:900;font-size:11px}.item button:disabled{opacity:.38}
+.eq{color:#8de58e;font-weight:900;font-size:10px}.locked{opacity:.62}
+.close{width:100%;margin-top:11px;border:0;border-radius:11px;padding:11px;background:#e5f1e7;color:#102016;font-weight:900}
+.death{text-align:center}.death h1{margin:0 0 8px;font-size:30px}
+@media(min-width:760px){.joy{width:132px;height:132px}.stick{left:39px;top:39px}.actions{grid-template-columns:82px 82px}.act{width:82px;height:82px}}
+</style>
+</head>
+<body>
+<div id="game">
+<canvas id="cv"></canvas>
+
+<div class="hud">
+  <div class="hudRow">
+    <div class="pill"><b id="day">1일</b> <span id="phase">낮</span></div>
+    <div class="pill hpPill">HP <b id="hpText">100/100</b><div class="track"><i id="hpBar" style="width:100%"></i></div></div>
+    <div class="pill">방어 <b id="defText">0</b></div>
+    <div class="pill">공격 <b id="atkText">10</b></div>
+  </div>
+  <div class="hudRow" style="margin-top:5px">
+    <div class="pill">나뭇가지 <b id="branch">0</b></div>
+    <div class="pill">조약돌 <b id="pebble">0</b></div>
+    <div class="pill">섬유 <b id="fiber">0</b></div>
+  </div>
+  <div id="notice" class="notice"></div>
+</div>
+
+<div class="side">
+  <button id="inventoryBtn" class="uiBtn">가방</button>
+  <button id="craftBtn" class="uiBtn">제작</button>
+  <button id="saveBtn" class="uiBtn">저장</button>
+</div>
+
+<div class="bottom">
+  <div id="joy" class="joy"><div id="stick" class="stick"></div></div>
+  <div class="actions">
+    <button id="attackBtn" class="act">공격</button>
+    <button id="interactBtn" class="act alt">채집</button>
+  </div>
+</div>
+
+<div id="inventoryModal" class="modalWrap">
+  <div class="modal">
+    <h2>가방</h2>
+    <div class="sub">무기 1개, 방어구 1개만 장착할 수 있어. 새 장비를 장착하면 기존 장비 효과가 교체돼.</div>
+    <div id="inventoryList" class="list"></div>
+    <button class="close" data-close>닫기</button>
+  </div>
+</div>
+
+<div id="craftModal" class="modalWrap">
+  <div class="modal">
+    <h2>제작</h2>
+    <div id="craftHint" class="sub"></div>
+    <div id="craftList" class="list"></div>
+    <button class="close" data-close>닫기</button>
+  </div>
+</div>
+
+<div id="deathModal" class="modalWrap">
+  <div class="modal death">
+    <h1>쓰러졌어</h1>
+    <p id="deathText" class="sub"></p>
+    <button id="respawnBtn" class="close">야영지에서 부활</button>
+  </div>
+</div>
+</div>
+
+<script>
+// 파일명: web-games/insect-survival/index.html
+// 메인: 곤충 세계 2.5D 생존 / 채집 / 제작 / 장비 / 곤충 전투
+(()=>{
+'use strict';
+
+// ===== 기본 =====
+const cv=document.getElementById('cv');
+const ctx=cv.getContext('2d');
+const $=id=>document.getElementById(id);
+const WORLD_W=2200,WORLD_H=1600;
+const CAMP={x:420,y:800,r:95};
+const SAVE_KEY='jaewoon_insect_survival_v3';
+const DAY_SEC=95;
+const RESPAWN_SEC=60;
+const NODE_RESPAWN=32;
+let keys={},last=performance.now(),noticeTimer=0;
+let joy={active:false,pid:null,x:0,y:0};
+let camera={x:0,y:0};
+
+// ===== 장비 데이터 =====
+const WEAPONS={
+  none:{name:'맨손',attack:0,range:58},
+  axe:{name:'돌도끼',attack:5,range:62},
+  spear:{name:'돌창',attack:10,range:86},
+  hammer:{name:'돌망치',attack:8,range:60},
+  fangBlade:{name:'송곳니 검',attack:18,range:70},
+  shellHammer:{name:'갑각 망치',attack:22,range:62}
+};
+const ARMORS={
+  none:{name:'없음',hp:0,def:0},
+  beetle:{name:'딱정벌레 갑옷',hp:25,def:4},
+  spider:{name:'거미 갑옷',hp:35,def:6},
+  soldier:{name:'병정개미 갑옷',hp:50,def:8}
+};
+const RECIPES=[
+  {id:'axe',name:'돌도끼',type:'weapon',where:'basic',cost:{branch:2,pebble:3},desc:'나무를 더 빠르게 벨 수 있어. 공격력 +5'},
+  {id:'spear',name:'돌창',type:'weapon',where:'basic',cost:{branch:3,pebble:2},desc:'공격력 +10, 긴 공격 사거리'},
+  {id:'hammer',name:'돌망치',type:'weapon',where:'basic',cost:{branch:2,pebble:4},desc:'공격력 +8'},
+  {id:'workbench',name:'제작대',type:'build',where:'basic',cost:{branch:4},desc:'고급 방어구와 무기 제작을 해금해.'},
+  {id:'beetle',name:'딱정벌레 갑옷',type:'armor',where:'bench',cost:{beetleShell:3,pebble:2},desc:'최대체력 +25 · 방어력 +4'},
+  {id:'spider',name:'거미 갑옷',type:'armor',where:'bench',cost:{spiderPart:3,fiber:3},desc:'최대체력 +35 · 방어력 +6'},
+  {id:'soldier',name:'병정개미 갑옷',type:'armor',where:'bench',cost:{antHead:2,miteTooth:2,beetleShell:2},desc:'최대체력 +50 · 방어력 +8'},
+  {id:'fangBlade',name:'송곳니 검',type:'weapon',where:'bench',cost:{miteTooth:3,spiderPart:2},desc:'공격력 +18'},
+  {id:'shellHammer',name:'갑각 망치',type:'weapon',where:'bench',cost:{beetleShell:4,antHead:1},desc:'공격력 +22'}
+];
+const RES_NAMES={
+  branch:'나뭇가지',pebble:'조약돌',fiber:'섬유',
+  spiderPart:'거미 전리품',beetleShell:'딱정벌레 전리품',antHead:'개미 전리품',miteTooth:'진드기 전리품'
+};
+
+// ===== 곤충 데이터 =====
+const SPECIES={
+  spider:{name:'거미',hp:65,dmg:20,speed:68,size:18,color:'#5b3534',aggro:250,drop:'spiderPart',count:3,zone:'top'},
+  beetle:{name:'딱정벌레',hp:105,dmg:25,speed:44,size:22,color:'#26362e',aggro:205,drop:'beetleShell',count:6,zone:'near'},
+  ant:{name:'개미',hp:55,dmg:12,speed:74,size:15,color:'#6c352c',aggro:220,drop:'antHead',count:8,zone:'near'},
+  soldierAnt:{name:'병정개미',hp:110,dmg:24,speed:68,size:18,color:'#8a382b',aggro:270,drop:'antHead',count:5,zone:'east'},
+  mite:{name:'진드기',hp:45,dmg:15,speed:82,size:13,color:'#8f6554',aggro:185,drop:'miteTooth',count:7,zone:'near'}
+};
+
+// ===== 상태 =====
+const baseState={
+  day:1,time:0,hp:100,baseMaxHp:100,defense:0,baseAttack:10,
+  branch:0,pebble:0,fiber:0,spiderPart:0,beetleShell:0,antHead:0,miteTooth:0,
+  crafted:{},weapon:'none',armor:'none',workbench:false,
+  dead:false,kills:0
+};
+let state=structuredClone(baseState);
+const player={x:CAMP.x+120,y:CAMP.y,r:17,dirX:1,dirY:0,hit:0,lastAttack:0};
+let nodes=[],bugs=[];
+
+// ===== 유틸 =====
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function rnd(a,b){return a+Math.random()*(b-a)}
+function maxHp(){return state.baseMaxHp+(ARMORS[state.armor]||ARMORS.none).hp}
+function defense(){return (ARMORS[state.armor]||ARMORS.none).def}
+function attackPower(){return state.baseAttack+(WEAPONS[state.weapon]||WEAPONS.none).attack}
+function attackRange(){return (WEAPONS[state.weapon]||WEAPONS.none).range}
+function resize(){
+  const dpr=Math.min(2,devicePixelRatio||1);
+  cv.width=Math.floor(innerWidth*dpr);cv.height=Math.floor(innerHeight*dpr);
+  cv.style.width=innerWidth+'px';cv.style.height=innerHeight+'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+addEventListener('resize',resize);resize();
+
+function toast(msg,sec=2){
+  $('notice').textContent=msg;
+  $('notice').classList.add('show');
+  noticeTimer=sec;
+}
+function safePoint(zone){
+  if(zone==='top')return{x:rnd(650,WORLD_W-180),y:rnd(130,360)};
+  if(zone==='east')return{x:rnd(1650,2100),y:rnd(300,1300)};
+  let p;
+  do{p={x:rnd(650,1500),y:rnd(280,1320)}}while(Math.hypot(p.x-CAMP.x,p.y-CAMP.y)>1250);
+  return p;
+}
+function formatCost(cost){
+  return Object.entries(cost).map(([k,v])=>(RES_NAMES[k]||k)+' '+v).join(' · ');
+}
+function hasCost(cost){return Object.entries(cost).every(([k,v])=>(state[k]||0)>=v)}
+function payCost(cost){Object.entries(cost).forEach(([k,v])=>state[k]-=v)}
+
+// ===== 월드 생성 =====
+function buildWorld(){
+  nodes=[];
+  for(let i=0;i<28;i++){
+    nodes.push({type:'branch',x:rnd(620,1500),y:rnd(250,1350),alive:true,respawn:0,hp:state.weapon==='axe'?1:2});
+  }
+  for(let i=0;i<22;i++){
+    nodes.push({type:'pebble',x:rnd(600,1520),y:rnd(260,1360),alive:true,respawn:0,hp:1});
+  }
+  for(let i=0;i<20;i++){
+    nodes.push({type:'fiber',x:rnd(650,1480),y:rnd(240,1340),alive:true,respawn:0,hp:1});
+  }
+  bugs=[];
+  Object.entries(SPECIES).forEach(([type,sp])=>{
+    for(let i=0;i<sp.count;i++){
+      const p=safePoint(sp.zone);
+      bugs.push(makeBug(type,p.x,p.y));
+    }
+  });
+}
+function makeBug(type,x,y){
+  const sp=SPECIES[type];
+  return{type,x,y,spawnX:x,spawnY:y,hp:sp.hp,maxHp:sp.hp,dead:false,respawn:0,aggro:false,attackCd:rnd(0,.7),wander:rnd(.4,2),ang:rnd(0,Math.PI*2),hit:0};
+}
+
+// ===== 저장 =====
+function save(show=true){
+  try{
+    const data={state,player:{x:player.x,y:player.y}};
+    localStorage.setItem(SAVE_KEY,JSON.stringify(data));
+    if(show)toast('저장했어');
+  }catch(e){if(show)toast('저장에 실패했어')}
+}
+function load(){
+  try{
+    const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');
+    if(!d||!d.state)return;
+    state=Object.assign(structuredClone(baseState),d.state);
+    state.crafted=Object.assign({},d.state.crafted||{});
+    if(d.player){player.x=Number(d.player.x)||player.x;player.y=Number(d.player.y)||player.y}
+    if(state.dead||state.hp<=0){state.dead=false;state.hp=maxHp();player.x=CAMP.x+120;player.y=CAMP.y}
+    if(!WEAPONS[state.weapon])state.weapon='none';
+    if(!ARMORS[state.armor])state.armor='none';
+    state.hp=clamp(Number(state.hp)||maxHp(),1,maxHp());
+  }catch(e){}
+}
+
+// ===== UI =====
+function updateHud(){
+  $('day').textContent=state.day+'일';
+  $('phase').textContent=state.time/DAY_SEC>.68?'밤':'낮';
+  $('hpText').textContent=Math.ceil(state.hp)+'/'+maxHp();
+  $('hpBar').style.width=clamp(state.hp/maxHp()*100,0,100)+'%';
+  $('defText').textContent=defense();
+  $('atkText').textContent=attackPower();
+  $('branch').textContent=state.branch;
+  $('pebble').textContent=state.pebble;
+  $('fiber').textContent=state.fiber;
+}
+function openInventory(){
+  const rows=[];
+  rows.push('<div class="item"><b>현재 장비</b><small>무기: '+WEAPONS[state.weapon].name+' · 방어구: '+ARMORS[state.armor].name+'</small></div>');
+  Object.keys(state.crafted).filter(k=>state.crafted[k]).forEach(id=>{
+    const isWeapon=!!WEAPONS[id],isArmor=!!ARMORS[id];
+    if(!isWeapon&&!isArmor)return;
+    const data=isWeapon?WEAPONS[id]:ARMORS[id];
+    const equipped=isWeapon?state.weapon===id:state.armor===id;
+    const desc=isWeapon?'공격력 +'+data.attack+' · 사거리 '+data.range:'최대체력 +'+data.hp+' · 방어력 +'+data.def;
+    rows.push('<div class="item"><div class="itemTop"><b>'+data.name+'</b>'+(equipped?'<span class="eq">장착 중</span>':'')+'</div><small>'+desc+'</small><button data-equip="'+id+'" '+(equipped?'disabled':'')+'>'+(equipped?'장착됨':'장착')+'</button></div>');
+  });
+  const loots=[['spiderPart','거미 전리품'],['beetleShell','딱정벌레 전리품'],['antHead','개미 전리품'],['miteTooth','진드기 전리품']].filter(([k])=>state[k]>0);
+  if(loots.length){
+    rows.push('<div class="item"><b>획득한 곤충 전리품</b><small>'+loots.map(([k,n])=>n+' '+state[k]).join(' · ')+'</small></div>');
+  }
+  if(rows.length===1)rows.push('<div class="item"><small>아직 제작한 장비가 없어.</small></div>');
+  $('inventoryList').innerHTML=rows.join('');
+  $('inventoryList').querySelectorAll('[data-equip]').forEach(b=>b.addEventListener('click',()=>equip(b.dataset.equip)));
+  $('inventoryModal').classList.add('show');
+}
+function nearWorkbench(){
+  return state.workbench&&Math.hypot(player.x-(CAMP.x+40),player.y-(CAMP.y-55))<145;
+}
+function openCraft(){
+  const bench=nearWorkbench();
+  $('craftHint').textContent=state.workbench?(bench?'제작대 범위야. 고급 장비를 제작할 수 있어.':'고급 장비는 야영지 제작대 가까이에서만 만들 수 있어.'):'나뭇가지 4개로 제작대를 먼저 만들면 고급 장비가 열려.';
+  $('craftList').innerHTML=RECIPES.map(r=>{
+    const locked=r.where==='bench'&&!bench;
+    const already=r.type!=='build'&&!!state.crafted[r.id];
+    const built=r.type==='build'&&state.workbench;
+    const disabled=locked||already||built||!hasCost(r.cost);
+    return '<div class="item '+(locked?'locked':'')+'"><div class="itemTop"><b>'+r.name+'</b>'+(locked?'<span class="eq">제작대 필요</span>':'')+'</div><small>'+r.desc+'<br>재료: '+formatCost(r.cost)+'</small><button data-craft="'+r.id+'" '+(disabled?'disabled':'')+'>'+(already?'제작 완료':built?'설치 완료':locked?'제작대 가까이 이동':'제작')+'</button></div>';
+  }).join('');
+  $('craftList').querySelectorAll('[data-craft]').forEach(b=>b.addEventListener('click',()=>craft(b.dataset.craft)));
+  $('craftModal').classList.add('show');
+}
+function craft(id){
+  const r=RECIPES.find(x=>x.id===id);if(!r)return;
+  if(r.where==='bench'&&!nearWorkbench()){toast('제작대 가까이 가야 해');return}
+  if(!hasCost(r.cost)){toast('재료가 부족해');return}
+  payCost(r.cost);
+  if(r.type==='build'){state.workbench=true;toast('제작대를 설치했어')}
+  else{state.crafted[id]=true;toast(r.name+' 제작 완료 · 가방에서 장착해')}
+  save(false);updateHud();openCraft();
+}
+function equip(id){
+  if(WEAPONS[id]){
+    state.weapon=id;
+    toast(WEAPONS[id].name+' 장착');
+  }else if(ARMORS[id]){
+    const oldMax=maxHp();
+    const ratio=clamp(state.hp/oldMax,0,1);
+    state.armor=id;
+    state.hp=Math.max(1,Math.round(maxHp()*ratio));
+    toast(ARMORS[id].name+' 장착 · 최대체력 +'+ARMORS[id].hp+' · 방어력 +'+ARMORS[id].def);
+  }
+  save(false);updateHud();openInventory();
+}
+
+// ===== 채집 =====
+function interact(){
+  if(state.dead)return;
+  let best=null,bd=78;
+  for(const n of nodes){
+    if(!n.alive)continue;
+    const d=dist(player,n);
+    if(d<bd){bd=d;best=n}
+  }
+  if(!best){
+    if(Math.hypot(player.x-CAMP.x,player.y-CAMP.y)<130){state.hp=maxHp();toast('야영지에서 완전히 회복했어');updateHud();return}
+    toast('가까운 자원에 더 붙어');return;
+  }
+  if(best.type==='branch'){
+    const hits=state.weapon==='axe'?2:1;
+    best.hp-=hits;
+    if(best.hp>0){toast('나무를 한 번 더 베어야 해',1);return}
+  }
+  best.alive=false;best.respawn=NODE_RESPAWN;
+  if(best.type==='branch'){state.branch+=2;toast('나뭇가지 +2')}
+  else if(best.type==='pebble'){state.pebble+=2;toast('조약돌 +2')}
+  else{state.fiber+=2;toast('섬유 +2')}
+  updateHud();
+}
+
+// ===== 전투 =====
+function attack(){
+  const now=performance.now()/1000;
+  if(state.dead||now-player.lastAttack<.38)return;
+  player.lastAttack=now;
+  let target=null,bd=attackRange();
+  for(const b of bugs){
+    if(b.dead)continue;
+    const d=dist(player,b);
+    if(d>=bd)continue;
+    const vx=(b.x-player.x)/Math.max(1,d),vy=(b.y-player.y)/Math.max(1,d);
+    if(vx*player.dirX+vy*player.dirY>.05){bd=d;target=b}
+  }
+  if(!target){toast('공격 범위에 곤충이 없어',.7);return}
+  target.hp-=attackPower();target.hit=.14;target.aggro=true;
+  if(target.hp<=0)killBug(target);
+}
+function killBug(b){
+  b.dead=true;b.hp=0;b.respawn=RESPAWN_SEC;b.aggro=false;
+  const sp=SPECIES[b.type];
+  state[sp.drop]=(state[sp.drop]||0)+1;
+  state.kills++;
+  toast(sp.name+' 처치 · 전리품을 얻었어');
+  updateHud();save(false);
+}
+function damagePlayer(raw){
+  const taken=Math.max(1,raw-defense());
+  state.hp-=taken;player.hit=.18;
+  toast('피해 '+taken,1);
+  if(state.hp<=0){
+    state.hp=0;state.dead=true;
+    $('deathText').textContent='처치한 곤충 '+state.kills+'마리 · '+state.day+'일차';
+    $('deathModal').classList.add('show');
+  }
+  updateHud();
+}
+function respawnPlayer(){
+  state.dead=false;state.hp=maxHp();player.x=CAMP.x+120;player.y=CAMP.y;player.hit=0;
+  $('deathModal').classList.remove('show');save(false);toast('야영지에서 부활했어');
+}
+
+// ===== 업데이트 =====
+function update(dt){
+  if(state.dead)return;
+  state.time+=dt;
+  if(state.time>=DAY_SEC){
+    state.time-=DAY_SEC;state.day++;
+    state.hp=Math.min(maxHp(),state.hp+18);
+    save(false);toast(state.day+'일차 시작 · 체력 일부 회복');
+  }
+
+  let mx=(keys.d||keys.ArrowRight?1:0)-(keys.a||keys.ArrowLeft?1:0);
+  let my=(keys.s||keys.ArrowDown?1:0)-(keys.w||keys.ArrowUp?1:0);
+  if(joy.active){mx=joy.x;my=joy.y}
+  const len=Math.hypot(mx,my);
+  if(len>.05){
+    mx/=Math.max(1,len);my/=Math.max(1,len);
+    player.dirX=mx;player.dirY=my;
+    player.x=clamp(player.x+mx*165*dt,50,WORLD_W-50);
+    player.y=clamp(player.y+my*165*dt,60,WORLD_H-60);
+  }
+  player.hit=Math.max(0,player.hit-dt);
+
+  for(const n of nodes){
+    if(n.alive)continue;
+    n.respawn-=dt;
+    if(n.respawn<=0){
+      n.alive=true;
+      n.hp=n.type==='branch'?(state.weapon==='axe'?1:2):1;
+    }
+  }
+
+  const night=state.time/DAY_SEC>.68;
+  for(const b of bugs){
+    const sp=SPECIES[b.type];
+    if(b.dead){
+      b.respawn-=dt;
+      if(b.respawn<=0){
+        const p=safePoint(sp.zone);
+        Object.assign(b,makeBug(b.type,p.x,p.y));
+      }
+      continue;
+    }
+    b.hit=Math.max(0,b.hit-dt);
+    b.attackCd-=dt;
+    const d=dist(player,b);
+    if(d<sp.aggro*(night?1.2:1))b.aggro=true;
+
+    if(b.aggro){
+      const dx=(player.x-b.x)/Math.max(1,d),dy=(player.y-b.y)/Math.max(1,d);
+      if(d>player.r+sp.size+5){
+        b.x+=dx*sp.speed*(night?1.08:1)*dt;
+        b.y+=dy*sp.speed*(night?1.08:1)*dt;
+      }else if(b.attackCd<=0){
+        b.attackCd=1.05;
+        let dmg=sp.dmg;
+        if(b.type==='spider'&&Math.random()<.60){
+          dmg*=3;toast('거미 치명타!',.9);
+        }
+        damagePlayer(dmg);
+      }
+      if(d>520)b.aggro=false;
+    }else{
+      b.wander-=dt;
+      if(b.wander<=0){b.wander=rnd(.7,2.4);b.ang+=rnd(-1.6,1.6)}
+      b.x=clamp(b.x+Math.cos(b.ang)*sp.speed*.22*dt,45,WORLD_W-45);
+      b.y=clamp(b.y+Math.sin(b.ang)*sp.speed*.22*dt,55,WORLD_H-55);
+    }
+  }
+
+  camera.x=clamp(player.x-innerWidth*.46,0,Math.max(0,WORLD_W-innerWidth));
+  camera.y=clamp(player.y-innerHeight*.48,0,Math.max(0,WORLD_H-innerHeight));
+
+  if(noticeTimer>0){
+    noticeTimer-=dt;
+    if(noticeTimer<=0)$('notice').classList.remove('show');
+  }
+  updateHud();
+}
+
+// ===== 렌더 =====
+function shadow(x,y,rx,ry,a=.24){
+  ctx.fillStyle='rgba(0,0,0,'+a+')';ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fill();
+}
+function drawRootArea(){
+  ctx.fillStyle='#49351f';
+  ctx.beginPath();
+  ctx.moveTo(1650,0);ctx.lineTo(WORLD_W,0);ctx.lineTo(WORLD_W,WORLD_H);ctx.lineTo(1680,WORLD_H);
+  ctx.bezierCurveTo(1770,1320,1610,1100,1740,880);
+  ctx.bezierCurveTo(1850,680,1630,420,1710,0);ctx.fill();
+  ctx.strokeStyle='#6d4c2c';ctx.lineWidth=28;ctx.lineCap='round';
+  for(let i=0;i<8;i++){
+    ctx.beginPath();ctx.moveTo(1860+i*22,120);ctx.bezierCurveTo(1700+i*15,480,1990-i*20,850,1740+i*18,1450);ctx.stroke();
+  }
+  ctx.fillStyle='#2a4c27';ctx.beginPath();ctx.ellipse(2020,120,145,240,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#51371f';ctx.fillRect(1985,80,70,430);
+}
+function drawCamp(){
+  shadow(CAMP.x,CAMP.y+34,105,36,.28);
+  ctx.fillStyle='#7a5a32';ctx.beginPath();ctx.ellipse(CAMP.x,CAMP.y,95,55,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#d9782f';ctx.beginPath();ctx.moveTo(CAMP.x-10,CAMP.y+5);ctx.lineTo(CAMP.x,CAMP.y-32);ctx.lineTo(CAMP.x+12,CAMP.y+5);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#ffd264';ctx.beginPath();ctx.arc(CAMP.x,CAMP.y-4,10,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#fff';ctx.font='700 13px system-ui';ctx.textAlign='center';ctx.fillText('야영지',CAMP.x,CAMP.y-72);
+
+  if(state.workbench){
+    const x=CAMP.x+40,y=CAMP.y-55;
+    shadow(x,y+20,34,12,.25);
+    ctx.fillStyle='#7f5433';ctx.fillRect(x-30,y-10,60,14);ctx.fillRect(x-24,y+4,8,28);ctx.fillRect(x+16,y+4,8,28);
+    ctx.fillStyle='#d8c5a0';ctx.font='700 10px system-ui';ctx.fillText('제작대',x,y-18);
+  }
+}
+function drawNode(n){
+  if(!n.alive)return;
+  if(n.type==='branch'){
+    shadow(n.x,n.y+11,22,7,.18);
+    ctx.strokeStyle='#76502f';ctx.lineWidth=7;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(n.x-18,n.y+7);ctx.lineTo(n.x+18,n.y-9);ctx.stroke();
+    ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(n.x+3,n.y-2);ctx.lineTo(n.x+13,n.y-17);ctx.stroke();
+  }else if(n.type==='pebble'){
+    shadow(n.x,n.y+9,16,6,.18);ctx.fillStyle='#89918c';ctx.beginPath();ctx.ellipse(n.x,n.y,15,11,-.2,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#b3bab4';ctx.beginPath();ctx.ellipse(n.x-4,n.y-4,6,3,-.2,0,Math.PI*2);ctx.fill();
+  }else{
+    shadow(n.x,n.y+10,18,6,.15);ctx.strokeStyle='#5f8b4b';ctx.lineWidth=4;
+    for(let i=-2;i<=2;i++){ctx.beginPath();ctx.moveTo(n.x+i*4,n.y+9);ctx.quadraticCurveTo(n.x+i*6,n.y-8,n.x+i*9,n.y-18);ctx.stroke()}
+  }
+}
+function drawBug(b){
+  if(b.dead)return;
+  const sp=SPECIES[b.type],x=b.x,y=b.y;
+  shadow(x,y+sp.size*.65,sp.size*1.25,sp.size*.45,.27);
+  ctx.save();ctx.translate(x,y);
+  ctx.fillStyle=b.hit>0?'#fff':sp.color;
+  ctx.strokeStyle='#17120f';ctx.lineWidth=3;
+  if(b.type==='spider'){
+    for(let i=0;i<4;i++){
+      const yy=-10+i*7;
+      ctx.beginPath();ctx.moveTo(-8,yy);ctx.lineTo(-24,yy-7);ctx.lineTo(-31,yy+2);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(8,yy);ctx.lineTo(24,yy-7);ctx.lineTo(31,yy+2);ctx.stroke();
+    }
+    ctx.beginPath();ctx.ellipse(0,2,15,18,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.beginPath();ctx.arc(0,-14,10,0,Math.PI*2);ctx.fill();ctx.stroke();
+  }else if(b.type==='beetle'){
+    ctx.beginPath();ctx.ellipse(0,1,sp.size*.72,sp.size,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.strokeStyle='#6a7f70';ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(0,20);ctx.stroke();
+    for(let s=-1;s<=1;s+=2){ctx.strokeStyle='#17120f';ctx.beginPath();ctx.moveTo(s*10,-6);ctx.lineTo(s*28,-14);ctx.stroke();ctx.beginPath();ctx.moveTo(s*10,5);ctx.lineTo(s*28,14);ctx.stroke()}
+  }else{
+    const seg=b.type==='soldierAnt'?4:3;
+    for(let i=0;i<seg;i++){ctx.beginPath();ctx.ellipse(0,(i-1)*10,sp.size*.65,sp.size*.48,0,0,Math.PI*2);ctx.fill();ctx.stroke()}
+    for(let s=-1;s<=1;s+=2){ctx.beginPath();ctx.moveTo(s*7,-3);ctx.lineTo(s*22,-12);ctx.stroke();ctx.beginPath();ctx.moveTo(s*7,7);ctx.lineTo(s*22,18);ctx.stroke()}
+  }
+  ctx.restore();
+  ctx.fillStyle='#fff';ctx.font='700 10px system-ui';ctx.textAlign='center';ctx.fillText(sp.name,x,y-sp.size-13);
+  ctx.fillStyle='#4a1e1e';ctx.fillRect(x-22,y+sp.size+7,44,4);
+  ctx.fillStyle='#e25950';ctx.fillRect(x-22,y+sp.size+7,44*clamp(b.hp/b.maxHp,0,1),4);
+}
+function drawPlayer(){
+  const x=player.x,y=player.y;
+  shadow(x,y+18,19,8,.25);
+  ctx.save();ctx.translate(x,y);
+  ctx.fillStyle=player.hit>0?'#ffb1b1':'#d8b28c';ctx.beginPath();ctx.arc(0,-17,8,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#4a6d46';ctx.fillRect(-10,-10,20,25);
+  ctx.fillStyle='#303c32';ctx.fillRect(-9,14,7,14);ctx.fillRect(2,14,7,14);
+  ctx.strokeStyle='#d0d8d2';ctx.lineWidth=4;ctx.lineCap='round';
+  const wx=player.dirX*24,wy=player.dirY*24;
+  ctx.beginPath();ctx.moveTo(player.dirX*7,player.dirY*7);ctx.lineTo(wx,wy);ctx.stroke();
+  ctx.restore();
+}
+function draw(){
+  const w=innerWidth,h=innerHeight;
+  ctx.clearRect(0,0,w,h);
+  const night=state.time/DAY_SEC>.68;
+  ctx.fillStyle=night?'#18311d':'#4c7b45';ctx.fillRect(0,0,w,h);
+  ctx.save();ctx.translate(-camera.x,-camera.y);
+
+  ctx.fillStyle=night?'#18311d':'#4c7b45';ctx.fillRect(0,0,WORLD_W,WORLD_H);
+  for(let x=0;x<WORLD_W;x+=120){
+    for(let y=0;y<WORLD_H;y+=120){
+      ctx.fillStyle=((x+y)/120)%2?'#507f48':'#4a7743';
+      ctx.beginPath();ctx.ellipse(x+55,y+55,70,34,0,0,Math.PI*2);ctx.fill();
+    }
+  }
+  drawRootArea();
+  drawCamp();
+
+  const things=[];
+  nodes.forEach(n=>{if(n.alive)things.push({y:n.y,kind:'node',o:n})});
+  bugs.forEach(b=>{if(!b.dead)things.push({y:b.y,kind:'bug',o:b})});
+  things.push({y:player.y,kind:'player',o:player});
+  things.sort((a,b)=>a.y-b.y);
+  for(const t of things){
+    if(t.kind==='node')drawNode(t.o);
+    else if(t.kind==='bug')drawBug(t.o);
+    else drawPlayer();
+  }
+
+  ctx.restore();
+  if(night){
+    ctx.fillStyle='#06102070';ctx.fillRect(0,0,w,h);
+    const px=player.x-camera.x,py=player.y-camera.y;
+    const g=ctx.createRadialGradient(px,py,45,px,py,220);
+    g.addColorStop(0,'rgba(255,240,190,0)');g.addColorStop(1,'rgba(0,0,0,.58)');
+    ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+  }
+
+  const pct=state.time/DAY_SEC;
+  ctx.fillStyle='#ffffff20';ctx.fillRect(10,h-5,w-20,3);
+  ctx.fillStyle=night?'#7d8fe7':'#f0d26b';ctx.fillRect(10,h-5,(w-20)*pct,3);
+}
+
+// ===== 입력 =====
+function joyMove(e){
+  const r=$('joy').getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+  const dx=e.clientX-cx,dy=e.clientY-cy,m=r.width*.32,d=Math.hypot(dx,dy),k=d>m?m/d:1;
+  const px=dx*k,py=dy*k;joy.x=px/m;joy.y=py/m;
+  $('stick').style.transform='translate('+px+'px,'+py+'px)';
+}
+$('joy').addEventListener('pointerdown',e=>{joy.active=true;joy.pid=e.pointerId;$('joy').setPointerCapture(e.pointerId);joyMove(e)});
+$('joy').addEventListener('pointermove',e=>{if(joy.active&&e.pointerId===joy.pid)joyMove(e)});
+function joyEnd(e){if(e.pointerId!==joy.pid)return;joy.active=false;joy.x=0;joy.y=0;$('stick').style.transform='translate(0,0)'}
+$('joy').addEventListener('pointerup',joyEnd);$('joy').addEventListener('pointercancel',joyEnd);
+addEventListener('keydown',e=>{keys[e.key]=true;if(e.code==='Space'){e.preventDefault();attack()}});
+addEventListener('keyup',e=>keys[e.key]=false);
+
+$('attackBtn').addEventListener('pointerdown',attack);
+$('interactBtn').addEventListener('pointerdown',interact);
+$('inventoryBtn').addEventListener('click',openInventory);
+$('craftBtn').addEventListener('click',openCraft);
+$('saveBtn').addEventListener('click',()=>save(true));
+$('respawnBtn').addEventListener('click',respawnPlayer);
+document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>b.closest('.modalWrap').classList.remove('show')));
+
+// ===== 시작 =====
+load();
+buildWorld();
+updateHud();
+toast('나뭇가지·조약돌·섬유를 모아 장비와 제작대를 만들어');
+setInterval(()=>{if(!state.dead)save(false)},20000);
+function loop(t){const dt=Math.min(.04,(t-last)/1000);last=t;update(dt);draw();requestAnimationFrame(loop)}
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
