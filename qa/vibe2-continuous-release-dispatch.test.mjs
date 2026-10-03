@@ -8,6 +8,26 @@ import { execFileSync } from 'node:child_process';
 
 const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 const releaseWorkflow=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
+const unityWebWorkflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
+const unityReleaseWorkflow=fs.readFileSync('.github/workflows/vibe2-unity-release-result.yml','utf8');
+
+test('candidate release keeps Work-Locked generated assets through Roblox Unity and Unity Web reviewed promotion',()=>{
+  assert.match(releaseWorkflow,/generated_asset_files: \$\{\{ steps\.gate\.outputs\.generated_asset_files \}\}/);
+  assert.match(releaseWorkflow,/generated asset missing from work lock/);
+  assert.match(releaseWorkflow,/VIBE2_CANDIDATE_GENERATED_ASSET_FILES=/);
+  assert.match(releaseWorkflow,/GENERATED_ASSET_FILES: \$\{\{ needs\.inspect\.outputs\.generated_asset_files \}\}/);
+  assert.match(releaseWorkflow,/promotion_paths=\("\$SOURCE_ROOT" "\$\{generated_asset_files\[@\]\}"\)/);
+  assert.match(releaseWorkflow,/generated_asset_files="\$GENERATED_ASSET_FILES"/);
+
+  assert.match(unityReleaseWorkflow,/generated_asset_files/);
+  assert.match(unityReleaseWorkflow,/promotion_paths=\("\$SOURCE_ROOT" "\$\{generated_asset_files\[@\]\}"\)/);
+  assert.match(unityReleaseWorkflow,/git checkout "\$CANDIDATE_SHA" -- "\$\{promotion_paths\[@\]\}"/);
+
+  assert.match(unityWebWorkflow,/generated_asset_files:/);
+  assert.match(unityWebWorkflow,/candidate_paths=\("unity-games\/\$GAME_ID" "\$\{generated_asset_files\[@\]\}"\)/);
+  assert.match(unityWebWorkflow,/git checkout "\$SOURCE_COMMIT" -- "\$\{candidate_paths\[@\]\}"/);
+  assert.match(unityWebWorkflow,/UNITY_WEB_MAIN_SOURCE_OR_ASSET_DRIFT_BEFORE_MERGE/);
+});
 
 test('Luau compiler release gate checks exact candidate trees before package and Studio work',{skip:!process.env.VIBE2_TEST_LUAU_COMPILER},()=>{
   const block=releaseWorkflow.match(/VIBE2_LUAU_COMPILER=\/tmp\/luau-bin\/luau-compile node --input-type=module <<'NODE'\n([\s\S]*?)\n          NODE/);
