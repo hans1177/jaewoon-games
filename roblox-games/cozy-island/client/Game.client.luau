@@ -525,6 +525,58 @@ hud.Size=touchEnabled and UDim2.fromOffset(220,52)or UDim2.fromOffset(286,58)
 hud.BackgroundColor3=Color3.fromRGB(38,67,61)
 hud.BackgroundTransparency=.08
 hud.Parent=gui
+-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_SURFACE_BEGIN stage=1
+do
+  local deterministicBuildStage = 1
+  local deterministicGameplaySurfaceTarget = hud
+  deterministicGameplaySurfaceTarget:SetAttribute("DeterministicBuildStage", deterministicBuildStage)
+  local generatedAssetBindingLighting = game:GetService("Lighting")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetBindingVersion", 1)
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetBindingCount", 3)
+  generatedAssetBindingLighting:SetAttribute("GeneratedNativeAssetBindingCount", 3)
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetPath1", "assets/generated/roblox/cozy-island/background/asset.glb")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetSha256_1", "6a2f5e7f169ad89abac775ad624213e77fbba2253623d7aa77c4fcb2a42a3a7c")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetFamily1", "ENVIRONMENT")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetId1", "cozy-island-roblox-background-generated-v1")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetPath2", "assets/generated/roblox/cozy-island/item/asset.glb")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetSha256_2", "c2e0c2396a2d4114e5b93978bc0acfbf4fd639ed5b0bc4f77d9fdb3090d24335")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetFamily2", "WEAPON")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetId2", "cozy-island-roblox-item-generated-v1")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetPath3", "assets/generated/roblox/cozy-island/prop/asset.glb")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetSha256_3", "e542a1ba642e657a90e136cbb4aedf944d499410ba35024ae23d8e187834b8a0")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetFamily3", "PROP")
+  deterministicGameplaySurfaceTarget:SetAttribute("GeneratedNativeAssetId3", "cozy-island-roblox-prop-generated-v1")
+  local deterministicGameplaySurfaceCorner = deterministicGameplaySurfaceTarget:FindFirstChild("DeterministicGameplaySurfaceCorner")
+  if not deterministicGameplaySurfaceCorner then
+    deterministicGameplaySurfaceCorner = Instance.new("UICorner")
+    deterministicGameplaySurfaceCorner.Name = "DeterministicGameplaySurfaceCorner"
+    deterministicGameplaySurfaceCorner.Parent = deterministicGameplaySurfaceTarget
+  end
+  deterministicGameplaySurfaceCorner.CornerRadius = UDim.new(0, 11)
+  local deterministicGameplaySurfaceStroke = deterministicGameplaySurfaceTarget:FindFirstChild("DeterministicGameplaySurfaceStroke")
+  if not deterministicGameplaySurfaceStroke then
+    deterministicGameplaySurfaceStroke = Instance.new("UIStroke")
+    deterministicGameplaySurfaceStroke.Name = "DeterministicGameplaySurfaceStroke"
+    deterministicGameplaySurfaceStroke.Parent = deterministicGameplaySurfaceTarget
+  end
+  deterministicGameplaySurfaceStroke.Color = Color3.fromRGB(160, 175, 164)
+  deterministicGameplaySurfaceStroke.Thickness = 1.5
+  deterministicGameplaySurfaceStroke.Transparency = 0.24
+  local deterministicGameplaySurfaceGradient = deterministicGameplaySurfaceTarget:FindFirstChild("DeterministicGameplaySurfaceGradient")
+  if not deterministicGameplaySurfaceGradient then
+    deterministicGameplaySurfaceGradient = Instance.new("UIGradient")
+    deterministicGameplaySurfaceGradient.Name = "DeterministicGameplaySurfaceGradient"
+    deterministicGameplaySurfaceGradient.Parent = deterministicGameplaySurfaceTarget
+  end
+  deterministicGameplaySurfaceGradient.Color = ColorSequence.new(Color3.fromRGB(160, 175, 164), Color3.fromRGB(188, 199, 184))
+  deterministicGameplaySurfaceGradient.Rotation = 17
+  local deterministicGameplaySurfaceTweenService = game:GetService("TweenService")
+  local deterministicGameplaySurfaceRestPosition = deterministicGameplaySurfaceTarget.Position
+  local deterministicGameplaySurfaceEntryPosition = UDim2.new(deterministicGameplaySurfaceTarget.Position.X.Scale, deterministicGameplaySurfaceTarget.Position.X.Offset, deterministicGameplaySurfaceTarget.Position.Y.Scale, deterministicGameplaySurfaceTarget.Position.Y.Offset + 10)
+  deterministicGameplaySurfaceTarget.Position = deterministicGameplaySurfaceEntryPosition
+  deterministicGameplaySurfaceTweenService:Create(deterministicGameplaySurfaceTarget, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = deterministicGameplaySurfaceRestPosition}):Play()
+end
+-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_SURFACE_END
 roundify(hud,14);outline(hud,.4)
 
 local title=Instance.new("TextLabel")
