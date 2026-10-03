@@ -669,16 +669,20 @@ test('Roblox game source pushes route through source drift sync without duplicat
 
 
 
-test('exact Roblox dispatch stays per-game while batch runs and runtime writers avoid global serialization',()=>{
+test('Roblox runtime keeps same-game work parallel with run-scoped concurrency and exact duplicate dedupe',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
   const execution=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution;
   assert.equal(execution.gameLevelExecution,'PARALLEL_BY_DEFAULT');
   assert.equal(execution.internalGameConcurrencyCapsForbidden,true);
   assert.equal(execution.crossGameWorkflowSerializationForbidden,true);
-  assert.equal(execution.exactGameDuplicateWorkflowSerializationAllowed,true);
+  assert.equal(execution.workflowLevelGameWideSerializationForbidden,true);
+  assert.equal(execution.workflowLevelConcurrencyGroupByGameIdForbidden,true);
+  assert.equal(execution.exactGameDuplicateWorkflowSerializationAllowed,false);
+  assert.equal(execution.exactGameDuplicateDispatchDedupeAllowed,true);
   assert.equal(execution.internalSameWorkflowGameMatrixParallelismPreserved,true);
-  assert.match(workflow,/concurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n(?:\s+#.*\n)*\s+cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
+  assert.match(workflow,/concurrency:\n\s+group: roblox-native-run-\$\{\{ github\.run_id \}\}\n\s+cancel-in-progress: false/);
+  assert.doesNotMatch(workflow,/group: roblox-native-exact-/);
   assert.doesNotMatch(workflow,/max-parallel:/);
   for(const job of ['source-plan','source-bootstrap','technical-plan','technical-persist']){
     const header=`  ${job}:\n`;
@@ -786,7 +790,7 @@ test('Roblox source worker bases candidate on current main without leaking workf
 test('Roblox batch scheduler keeps control work fixed while preserving uncapped per-game matrix parallelism',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
-  assert.match(workflow,/group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}/);
+  assert.match(workflow,/group: roblox-native-run-\$\{\{ github\.run_id \}\}/);
   assert.match(workflow,/cancel-in-progress: false/);
   assert.match(workflow,/\n  source-plan:\n[\s\S]*?runs-on: ubuntu-24\.04/);
   assert.doesNotMatch(workflow,/\n  source-plan:\n[\s\S]{0,260}?runs-on: ubuntu-slim/);
@@ -1062,14 +1066,15 @@ test('Roblox runtime self-redispatch dedupes queued or running work for the same
 });
 
 
-test('Roblox runtime collapses duplicate exact-game and batch planners with same-game-only workflow locking',()=>{
+test('Roblox runtime collapses exact duplicate planners without same-game workflow serialization',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/run-name: Roblox runtime · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
   assert.match(workflow,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
   assert.match(workflow,/ROBLOX_RUNTIME_EXACT_DEDUPED_CURRENT_MAIN=/);
   assert.match(workflow,/ROBLOX_RUNTIME_BATCH_DEDUPED_CURRENT_MAIN=/);
   assert.match(workflow,/process\.stdout\.write\(String\(ids\[ids\.length-1\]\)\)/);
-  assert.match(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n(?:\s+#.*\n)*\s+cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
+  assert.match(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n\s+group: roblox-native-run-\$\{\{ github\.run_id \}\}\n\s+cancel-in-progress: false/);
+  assert.doesNotMatch(workflow.slice(0,workflow.indexOf('\njobs:\n')),/roblox-native-exact-/);
 });
 
 
