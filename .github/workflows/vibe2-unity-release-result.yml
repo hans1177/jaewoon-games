@@ -10,10 +10,6 @@ permissions:
   actions: write
   pull-requests: write
 
-concurrency:
-  group: vibe2-release-serial
-  cancel-in-progress: false
-
 jobs:
   candidate-result:
     if: startsWith(github.event.workflow_run.head_branch, 'vibe2/candidate/')
@@ -340,22 +336,34 @@ jobs:
           cd /tmp/vibe2-control
           git config user.name 'jaewoon-vibe2-release'
           git config user.email 'vibe2-release@users.noreply.github.com'
-          if [ "$result" = PASS ]; then
-            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs block --id="$TASK_ID" --blocker=candidate-awaiting-unity-runtime-qa --evidence="unity-candidate-apk-build-pass,unity-build-run-${{ github.event.workflow_run.id }},main-pr-merged,unity-runtime-await-game:${GAME_ID},unity-runtime-await-source-tree:${PROMOTED_SOURCE_TREE_SHA},unity-runtime-await-main-sha:${PROMOTED_MAIN_SHA},unity-runtime-independent-qa-regression-required,incremental-release-evidence-${EVIDENCE_OUTCOME},actions-run-${GITHUB_RUN_ID}"
-          else
-            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=unity-build-promotion-or-release-evidence-failed --evidence="build-${BUILD_CONCLUSION},revalidate-${REVALIDATE_OUTCOME},promotion-${PROMOTE_OUTCOME},release-evidence-${EVIDENCE_OUTCOME},unity-build-run-${{ github.event.workflow_run.id }}"
-          fi
-          git add .vibe2/queue.json
-          if ! git diff --cached --quiet; then
+
+          # Shared queue writes are optimistic. Do not serialize unrelated Unity candidates.
+          # On a write race, reset to the latest control branch and reapply the same semantic queue command.
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            echo "VIBE2_UNITY_RESULT_QUEUE_WRITE_ATTEMPT=$attempt"
+            git fetch origin vibe2-unreal-core --quiet
+            git reset --hard origin/vibe2-unreal-core
+            if [ "$result" = PASS ]; then
+              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs block --id="$TASK_ID" --blocker=candidate-awaiting-unity-runtime-qa --evidence="unity-candidate-apk-build-pass,unity-build-run-${{ github.event.workflow_run.id }},main-pr-merged,unity-runtime-await-game:${GAME_ID},unity-runtime-await-source-tree:${PROMOTED_SOURCE_TREE_SHA},unity-runtime-await-main-sha:${PROMOTED_MAIN_SHA},unity-runtime-independent-qa-regression-required,incremental-release-evidence-${EVIDENCE_OUTCOME},actions-run-${GITHUB_RUN_ID}"
+            else
+              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=unity-build-promotion-or-release-evidence-failed --evidence="build-${BUILD_CONCLUSION},revalidate-${REVALIDATE_OUTCOME},promotion-${PROMOTE_OUTCOME},release-evidence-${EVIDENCE_OUTCOME},unity-build-run-${{ github.event.workflow_run.id }}"
+            fi
+            git add .vibe2/queue.json
+            if git diff --cached --quiet; then
+              echo 'VIBE2_UNITY_RESULT_QUEUE_WRITE=NO_CHANGE'
+              break
+            fi
             git commit -m "vibe2: settle Unity task ${TASK_ID} ${result} [skip ci]"
-            pushed=0
-            for attempt in 1 2 3; do
-              if git push origin HEAD:vibe2-unreal-core; then pushed=1; break; fi
-              git pull --rebase origin vibe2-unreal-core
-              sleep $((attempt * 2))
-            done
-            test "$pushed" = 1
-          fi
+            if git push origin HEAD:vibe2-unreal-core; then
+              echo "VIBE2_UNITY_RESULT_QUEUE_WRITE=PASS:$attempt"
+              break
+            fi
+            sleep_for=$((attempt<5?attempt:5))
+            echo "VIBE2_UNITY_RESULT_QUEUE_WRITE=RETRY:$attempt:$sleep_for"
+            sleep "$sleep_for"
+          done
           if [ "$result" = PASS ]; then
             gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"
             echo "VIBE2_UNITY_RUNTIME_QA_DISPATCHED=$GAME_ID"
