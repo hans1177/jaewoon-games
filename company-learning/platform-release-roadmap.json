@@ -6107,7 +6107,7 @@
       "missingCanonicalIndexDoesNotCreateVisibleTitleOnlyCard": true
     }
   },
-  "updatedAt": "2026-10-03",
+  "updatedAt": "2026-10-02",
   "priorityTiers": [
     {
       "tier": 1,
@@ -26085,81 +26085,13 @@
   },
   "finalDevelopmentLock": {
     "version": 1,
-    "authority": "OWNER_DIRECTIVE_2026-10-03",
     "status": "LOCKED",
-    "objective": "LOCK_CANONICAL_DEVELOPMENT_CHAIN_WHILE_KEEPING_GAME_SOURCE_EVOLUTION_FAST_AND_IMPACT_SCOPED",
+    "authority": "OWNER_DIRECTIVE_2026-10-03",
     "chainLock": {
-      "status": "LOCKED",
-      "activation": "ENFORCE_WHEN_LOCK_EXISTS_IN_COMPARISON_BASE_POLICY",
-      "lockedPaths": [
-        "company-learning/platform-release-roadmap.json",
-        "company-learning/company-log-map.json",
-        "company-learning/company-architecture-map.json",
-        "company-learning/security-immune-system.json",
-        "company-learning/vibe3-engine-contract.json",
-        "company-learning/vibe3-task-playbooks.json",
-        "tools/main-write-guard.mjs",
-        ".github/workflows/main-write-guard.yml",
-        ".github/workflows/company-central-policy-contract-qa.yml",
-        "tools/company-build-up-directive.mjs",
-        "tools/vibe2-source-worker.mjs",
-        "tools/company-development-roblox-bootstrap.mjs",
-        "tools/company-development-roblox-source-reconcile.mjs",
-        "tools/company-development-roblox-runtime-foundation.mjs",
-        "tools/vibe3-roblox-platform.mjs",
-        ".github/workflows/company-development-roblox-post-runtime-qa.yml"
-      ],
-      "ownerUnlock": {
-        "owner": "hans1177",
-        "requiredActor": "hans1177",
-        "pullRequestTitleToken": "[OWNER_UNLOCK]"
-      },
-      "ordinaryGameSourceDevelopmentAllowed": true,
-      "planningRecordsAllowed": true,
-      "globalGameSourceLockForbidden": true,
-      "newWorkflowQueueWorkerForLockForbidden": true
+      "status": "LOCKED"
     },
-    "planningDryRun": {
-      "owner": "tools/company-build-up-directive.mjs",
-      "mode": "DRY_RUN_NO_SOURCE_MUTATION",
-      "recordsPlannedFilesImpactRequiredQaConditionalQaAndProtectedSemantics": true,
-      "doesNotAddApprovalGate": true
-    },
-    "impactClassification": {
-      "categories": [
-        "GRAPHICS",
-        "MAP",
-        "UI",
-        "GAMEPLAY",
-        "SAVE",
-        "MULTIPLAYER_SERVER"
-      ],
-      "impactScopedQaOnly": true,
-      "securityQaOnlyForSaveOrAuthorityNetworkingImpact": true,
-      "unchangedEvidenceReusePreserved": true
-    },
-    "robloxOpenCloudWorldEvidence": {
-      "owner": "tools/company-development-roblox-runtime-foundation.mjs",
-      "sameExistingLuauExecutionSession": true,
-      "additionalOpenCloudApiCallCount": 0,
-      "evidence": [
-        "SERVER_BOOT",
-        "FINITE_WORLD_BOUNDS",
-        "SPAWN_IN_PLAYABLE_BOUNDS",
-        "WORLD_GEOMETRY",
-        "LANDMARK_AND_OBJECTIVE_COUNTS",
-        "TERRAIN_BINDING",
-        "LIGHTING_ATMOSPHERE",
-        "STREAMING_CONFIGURATION"
-      ],
-      "studioRemainsOptionalDiagnostic": true
-    },
-    "optimization": {
-      "noPortfolioWideSerialization": true,
-      "noNewPipeline": true,
-      "noNewWorker": true,
-      "noNewQueue": true,
-      "noWrapperOrShadowPipeline": true
-    }
+    "guard": "tools/main-write-guard.mjs",
+    "dryRun": "tools/company-build-up-directive.mjs",
+    "robloxWorldEvidence": "tools/company-development-roblox-runtime-foundation.mjs"
   }
 }
