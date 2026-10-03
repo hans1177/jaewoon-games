@@ -23,10 +23,6 @@ permissions:
   actions: write
   pull-requests: write
 
-concurrency:
-  group: vibe2-control-state-vibe2-unreal-core
-  cancel-in-progress: false
-
 jobs:
   reconcile:
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch'
@@ -130,7 +126,10 @@ jobs:
           git config user.email 'vibe2-verifier@users.noreply.github.com'
           persisted=0
           final_continue=0
-          for attempt in 1 2 3; do
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            echo "VIBE2_ROBLOX_RECONCILE_ATTEMPT=$attempt"
             git fetch origin "$CONTROL_BRANCH"
             git checkout -B "$CONTROL_BRANCH" "origin/$CONTROL_BRANCH"
             node vibe2-main-contract/tools/vibe2-candidate-reconcile.mjs \
@@ -166,7 +165,9 @@ jobs:
               final_continue="$continue_work"
               break
             fi
-            sleep $((attempt * 2))
+            sleep_for=$((attempt<5?attempt:5))
+            echo "VIBE2_ROBLOX_RECONCILE_WRITE_RACE=RETRY:$attempt:$sleep_for"
+            sleep "$sleep_for"
           done
           test "$persisted" = 1
           echo 'updated=1' >> "$GITHUB_OUTPUT"
@@ -307,7 +308,10 @@ jobs:
           git config user.name 'jaewoon-vibe2-release'
           git config user.email 'vibe2-release@users.noreply.github.com'
           persisted=0
-          for attempt in 1 2 3; do
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            echo "VIBE2_R5_SETTLE_ATTEMPT=$attempt"
             git fetch origin "$CONTROL_BRANCH"
             git checkout -B "$CONTROL_BRANCH" "origin/$CONTROL_BRANCH"
             node vibe2-main-contract/tools/vibe2-queue-control.mjs pass \
@@ -355,7 +359,9 @@ jobs:
               persisted=1
               break
             fi
-            sleep $((attempt * 2))
+            sleep_for=$((attempt<5?attempt:5))
+            echo "VIBE2_R5_SETTLE_WRITE_RACE=RETRY:$attempt:$sleep_for"
+            sleep "$sleep_for"
           done
           test "$persisted" = 1
           echo 'VIBE2_R5_QUEUE_PASS=YES'
