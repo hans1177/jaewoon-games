@@ -20,6 +20,7 @@ const adaptiveBackpressure=read('tools/vibe2-adaptive-backpressure.mjs');
 const parallelismTelemetry=read('tools/vibe2-parallelism-telemetry.mjs');
 const releaseDispatchRecovery=read('tools/vibe2-release-dispatch-recovery.mjs');
 const robloxRunnerHidden=read('.github/workflows/company-roblox-runner-pwsh-bootstrap.yml');
+const localCompanySupervisor=read('tools/unity-mcp/run-company-supervisor.ps1');
 
 const lifecycle=roadmap.developmentLifecycleMachine;
 assert.equal(roadmap.policySource,'company-learning/platform-release-roadmap.json');
@@ -334,6 +335,13 @@ assert.match(robloxRunnerHidden,/shell\.Run[\s\S]*, 0, False/);
 assert.doesNotMatch(robloxRunnerHidden,/\$runnerRoot\s*=\s*'C:\\\\actions-runner'/);
 assert.doesNotMatch(robloxRunnerHidden,/svc\.cmd|Start-Service|Set-Service|WINDOWS_SERVICE_WITH_STARTUP_FALLBACK/);
 assert.doesNotMatch(robloxRunnerHidden,/RepetitionInterval|WATCHDOG=YES/);
+assert.match(localCompanySupervisor,/function Repair-RobloxRunnerIfNeeded/);
+assert.match(localCompanySupervisor,/roblox-studio-local/);
+assert.match(localCompanySupervisor,/ROBLOX-RUNNER-PASS/);
+assert.match(localCompanySupervisor,/Jaewoon-Roblox-Runner\.vbs/);
+assert.match(localCompanySupervisor,/Runner\.Listener\.exe/);
+assert.match(localCompanySupervisor,/Repair-RobloxRunnerIfNeeded \| Out-Null/);
+assert.doesNotMatch(localCompanySupervisor,/\$runnerRoot\s*=\s*'C:\\\\actions-runner'/);
 
 const multiverse=lifecycle.intentAmplificationMultiverse;
 assert.equal(multiverse.authority,'MACHINE_EXECUTION_CONTRACT');
