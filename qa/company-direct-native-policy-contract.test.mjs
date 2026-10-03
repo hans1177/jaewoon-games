@@ -45,7 +45,10 @@ test('canonical policy routes new Roblox and Unity work through the Unity Web re
   assert.equal(direct.orchestrationConcurrency?.unityWebAndNativeParallelWhenIndependent,true);
   assert.equal(direct.orchestrationConcurrency?.longRunningNativeMayNotBlockUnityWebFloor,true);
   assert.equal(direct.orchestrationConcurrency?.sameGameIndependentNonOverlappingPackagesParallel,true);
-  assert.equal(direct.orchestrationConcurrency?.onlyAllowedSerialization,'ATOMIC_SHARED_STATE_WRITE_OR_EXACT_RESPONSIBLE_FILE_CONFLICT');
+  assert.equal(direct.orchestrationConcurrency?.onlyAllowedSerialization,'ATOMIC_SHARED_STATE_WRITE_OR_EXACT_RESPONSIBLE_FILE_CONFLICT_OR_ACTUAL_ROBLOX_STUDIO_SESSION');
+  assert.equal(direct.orchestrationConcurrency?.sameGameDifferentPlatformsParallel,true);
+  assert.equal(direct.orchestrationConcurrency?.gameIdOnlySerializationForbidden,true);
+  assert.equal(direct.orchestrationConcurrency?.platformScopedResponsibleFilesRequired,true);
   assert.equal(roadmap.developmentSpeedExecution.globalHeavyExecutionSerializationForbidden,true);
   assert.equal(roadmap.developmentSpeedExecution.globalOrchestrationSerializationForbidden,true);
   assert.equal(roadmap.developmentSpeedExecution.longRunningNativeBuildMayNotBlockUnityWebDevelopment,true);
