@@ -715,49 +715,34 @@ jobs:
           early_review_run="$(cat /tmp/vibe2-early-review-run 2>/dev/null || true)"
 
           if [ -n "$early_review_run" ]; then
-            echo "VIBE2_RESERVE_MODE=BATCH_EARLY_FAN_IN_DRAIN:$early_review_run"
-            node <<'NODE'
-          const fs=require('fs');
-          const payload={
-            version:1,
-            createdAt:new Date().toISOString(),
-            matrix:[],
-            scheduler:{
-              requestedMaxConcurrentTasks:0,
-              effectiveMaxConcurrentTasks:0,
-              primaryTaskCount:0,
-              longWorkProtectedSlotUsed:false,
-              speculativeExpansionAllowed:false,
-              speculativeExpansionReason:'BATCH_EARLY_FAN_IN_DRAIN'
-            }
-          };
-          fs.writeFileSync('/tmp/vibe2-batch.json',JSON.stringify(payload,null,2)+'\n');
-          NODE
+            echo "VIBE2_RESERVE_MODE=BATCH_EARLY_FAN_IN_PARALLEL:$early_review_run"
+          fi
+
+          active_worker_reservations="$(node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const requested=String(process.env.VIBE2_EXECUTION_LANE||'game-primary').toUpperCase().replaceAll('-','_');const lane=t=>{const status=String(t.status||'').toLowerCase(),blocker=String(t.blocker||''),dep=String(t.department||'').toLowerCase(),type=String(t.type||'implementation').toLowerCase(),ev=(t.evidence||[]).map(String);if(status==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*qa|qa.*awaiting|slot-released.*fan-in/i.test(blocker))return'RELEASE_WAIT';if(ev.includes('learning-practice-only')||dep==='learning'||(dep==='development'&&type==='research'))return'LEARNING_IDLE';if(t.assetProductionLane===true||ev.includes('asset-production-parallel:v1'))return'ASSET_DEVELOPMENT';if(dep==='development'&&type==='implementation')return'GAME_PRIMARY';if(t.systemSteward===true)return'RECOVERY_FAST';return'CONTROL_FAST';};const rows=(q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)===requested);process.stdout.write(String(rows.length))" "$control_root/.vibe2/queue.json")"
+          echo "VIBE2_EXECUTION_LANE=$VIBE2_EXECUTION_LANE"
+          echo "VIBE2_ACTIVE_LANE_RESERVATIONS_BEFORE_RESERVE=${active_worker_reservations:-0}"
+          reservation_id="${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}"
+          reserved_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          lane_min='1'
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then lane_min="$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN"; fi
+          if [ -n "$early_review_run" ]; then
+            echo 'VIBE2_RESERVE_CONTINUES_DURING_EARLY_FAN_IN=YES'
+          elif [ "${active_worker_reservations:-0}" -gt 0 ]; then
+            echo 'VIBE2_RESERVE_MODE=FREE_SLOT_REFILL_DURING_ACTIVE_WORK'
           else
-            active_worker_reservations="$(node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const requested=String(process.env.VIBE2_EXECUTION_LANE||'game-primary').toUpperCase().replaceAll('-','_');const lane=t=>{const status=String(t.status||'').toLowerCase(),blocker=String(t.blocker||''),dep=String(t.department||'').toLowerCase(),type=String(t.type||'implementation').toLowerCase(),ev=(t.evidence||[]).map(String);if(status==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*qa|qa.*awaiting|slot-released.*fan-in/i.test(blocker))return'RELEASE_WAIT';if(ev.includes('learning-practice-only')||dep==='learning'||(dep==='development'&&type==='research'))return'LEARNING_IDLE';if(t.assetProductionLane===true||ev.includes('asset-production-parallel:v1'))return'ASSET_DEVELOPMENT';if(dep==='development'&&type==='implementation')return'GAME_PRIMARY';if(t.systemSteward===true)return'RECOVERY_FAST';return'CONTROL_FAST';};const rows=(q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)===requested);process.stdout.write(String(rows.length))" "$control_root/.vibe2/queue.json")"
-            echo "VIBE2_EXECUTION_LANE=$VIBE2_EXECUTION_LANE"
-            echo "VIBE2_ACTIVE_LANE_RESERVATIONS_BEFORE_RESERVE=${active_worker_reservations:-0}"
-            reservation_id="${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}"
-            reserved_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-            lane_min='1'
-            if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then lane_min="$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN"; fi
-            if [ "${active_worker_reservations:-0}" -gt 0 ]; then
-              echo 'VIBE2_RESERVE_MODE=FREE_SLOT_REFILL_DURING_ACTIVE_WORK'
-            else
-              echo 'VIBE2_RESERVE_MODE=NEW_WAVE_OR_IDLE_REFILL'
-            fi
-            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch \
-              --queue="$control_root/.vibe2/queue.json" \
-              --control="$control_root/.vibe2/parallelism-control.json" \
-              --lane="$VIBE2_EXECUTION_LANE" \
-              --max="$VIBE2_LANE_MAX" \
-              --min="$lane_min" \
-              --reservation-id="$reservation_id" \
-              --reservation-run="$GITHUB_RUN_ID" \
-              --reservation-attempt="$GITHUB_RUN_ATTEMPT" \
-              --reserved-at="$reserved_at" \
-              --output=/tmp/vibe2-batch.json | tee /tmp/vibe2-reserve.log
-            fi
+            echo 'VIBE2_RESERVE_MODE=NEW_WAVE_OR_IDLE_REFILL'
+          fi
+          node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch \
+            --queue="$control_root/.vibe2/queue.json" \
+            --control="$control_root/.vibe2/parallelism-control.json" \
+            --lane="$VIBE2_EXECUTION_LANE" \
+            --max="$VIBE2_LANE_MAX" \
+            --min="$lane_min" \
+            --reservation-id="$reservation_id" \
+            --reservation-run="$GITHUB_RUN_ID" \
+            --reservation-attempt="$GITHUB_RUN_ATTEMPT" \
+            --reserved-at="$reserved_at" \
+            --output=/tmp/vibe2-batch.json | tee /tmp/vibe2-reserve.log
 
           node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
             --runtime=/tmp/vibe2-main/vibe2-runtime.json \
