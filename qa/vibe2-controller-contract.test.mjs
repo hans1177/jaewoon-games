@@ -264,6 +264,25 @@ test('work order exposes source bootstrap only for explicit Web or Unity Web fir
   assert.match(continuousRunnerSource,/sourceRootBootstrapAllowed,/);
 });
 
+test('asset reserve retries stay lane-local instead of rerunning global planning and learning',()=>{
+  const marker="if [ \"$VIBE2_EXECUTION_LANE\" = 'asset-development' ]; then";
+  const markerAt=workflow.indexOf(marker);
+  assert.ok(markerAt>=0);
+  const elseAt=workflow.indexOf('\n            else\n',markerAt);
+  const endAt=workflow.indexOf('\n            fi\n',elseAt);
+  assert.ok(elseAt>markerAt&&endAt>elseAt);
+  const assetFastPath=workflow.slice(markerAt,elseAt);
+  const globalPath=workflow.slice(elseAt,endAt);
+  assert.match(assetFastPath,/VIBE2_ASSET_RESERVE_GLOBAL_REPLAN=SKIPPED_EXISTING_CANONICAL_QUEUE/);
+  assert.match(assetFastPath,/VIBE2_ASSET_RESERVE_QUEUE_AUTHORITY=EXISTING_CANONICAL_VIBE_QUEUE/);
+  assert.doesNotMatch(assetFastPath,/vibe2-auto-planner\.mjs|vibe2-learning-motor\.mjs|vibe2-post-release-focus\.mjs/);
+  assert.match(globalPath,/vibe2-post-release-focus\.mjs/);
+  assert.match(globalPath,/vibe2-auto-planner\.mjs/);
+  assert.match(globalPath,/vibe2-learning-motor\.mjs/);
+  assert.match(workflow,/VIBE2_CONTROL_OPTIMISTIC_RETRY_POLICY=UNBOUNDED/);
+  assert.match(workflow,/VIBE2_CONTROL_OPTIMISTIC_RETRY_BACKOFF_SECONDS=/);
+});
+
 test('controller reserves a batch and fans workers out to the external matrix boundary',()=>{
   assert(workflow.includes('reserve-batch'));
   assert(workflow.includes('strategy:'));
