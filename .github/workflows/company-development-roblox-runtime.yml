@@ -216,7 +216,7 @@ jobs:
           node --check tools/company-upper-platform-admission.mjs
           node --check tools/vibe3-roblox-platform.mjs
           node --check tools/vibe3-roblox-learning-context.mjs
-          node --test qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs qa/company-upper-platform-admission.test.mjs
+          node --test qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs qa/company-development-roblox-gameplay-product-readiness.test.mjs qa/company-upper-platform-admission.test.mjs
 
       - name: Fetch current company runtime and verified Vibe learning
         if: steps.freshness.outputs.run == 'true'
@@ -1210,6 +1210,7 @@ jobs:
           SOURCE_REVISION: ${{ matrix.sourceRevision }}
           SECONDARY_OWNER_FOCUS: ${{ matrix.secondaryOwnerFocus }}
           BUILD_EVIDENCE: ${{ steps.package.outputs.build_evidence }}
+          BASELINE_SOURCE: ${{ matrix.baseline }}
           SUPERSEDED: ${{ steps.freshness.outputs.superseded }}
           SUPERSEDE_REASON: ${{ steps.freshness.outputs.reason }}
         shell: bash
@@ -1278,6 +1279,8 @@ jobs:
             /tmp/luau-bin/luau-compile "$file" >/dev/null
           done
           echo "ROBLOX_F0_LUAU_COMPILE_PASS=${#luau_files[@]}"
+          baseline="/tmp/roblox-technical/input/${safe}/baseline.json"
+          test -s "$baseline"
           node tools/company-development-roblox-headless-fast-mvp.mjs \
             --repo-root=. \
             --game-id="$GAME_ID" \
@@ -1288,6 +1291,7 @@ jobs:
             --artifact-run-id="$GITHUB_RUN_ID" \
             --native-language-compile-passed=true \
             --native-compiler-version=0.739 \
+            --baseline="$baseline" \
             --output="/tmp/roblox-technical/results/${safe}.headless.json"
           echo 'ROBLOX_F0_BUILD_REUSE=SAME_WORKER_EXACT_PACKAGE'
       - name: Record Roblox technical package result
