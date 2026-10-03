@@ -381,9 +381,15 @@ test('Unity checkpoint cannot promote child job success when canonical evidence 
   assert.match(workflowSource,/unityCanonicalEvidenceBound:canonicalEvidenceBound/);
 });
 
-test('Unity runtime captures platform graphics and memory metrics for every APK',()=>{
+test('Unity runtime captures exact process, visible surface, input and platform metrics for every APK',()=>{
+  assert.match(runtimeSmokeSource,/if \[\[ "\$launch_command_pass" == "true" \]\]; then[\s\S]*process_observed_after_launch=true/);
+  assert.match(runtimeSmokeSource,/if \[\[ -n "\$pid" \]\]; then[\s\S]*launch_process_missing=false/);
+  assert.match(runtimeSmokeSource,/immersive_mode_confirmations confirmed/);
+  assert.match(runtimeSmokeSource,/Viewing full screen\|Got it/);
   assert.match(runtimeSmokeSource,/dumpsys gfxinfo "\$package"/);
-  assert.match(runtimeSmokeSource,/dumpsys SurfaceFlinger --latency/);
+  assert.match(runtimeSmokeSource,/dumpsys SurfaceFlinger --list/);
+  assert.match(runtimeSmokeSource,/surface_layer=.*SurfaceView/);
+  assert.match(runtimeSmokeSource,/dumpsys SurfaceFlinger --latency "\$surface_layer"/);
   assert.match(runtimeSmokeSource,/dumpsys meminfo "\$package"/);
   assert.match(runtimeSmokeSource,/ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO/);
   assert.match(runtimeSmokeSource,/ANDROID_PLATFORM_METRICS_MISSING/);
