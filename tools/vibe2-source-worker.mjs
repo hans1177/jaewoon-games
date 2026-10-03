@@ -84,6 +84,7 @@ const JSON_FOCUSED_REPLACE_TIMEOUT_MS=Math.max(120000,DEFAULT_TIMEOUT_MS);
 const UNITY_STUDIO_FOCUSED_TIMEOUT_MS=120000;
 const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT=768;
 const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS=120000;
+const ASSET_DEVELOPMENT_WEB_ZERO_OUTPUT_RETRY_TIMEOUT_MS=Math.max(240000,DEFAULT_TIMEOUT_MS);
 const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW=8192;
 const ASSET_DEVELOPMENT_ROBLOX_MAX_GENERATION_ATTEMPTS=3;
 const JSON_CONTEXT_WINDOW=16384;
@@ -726,7 +727,7 @@ export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sour
   if(!robloxDeterministicPresentationEligible(order)&&!generatedAssetBindingMode)return null;
   if(clean(order?.target).toLowerCase()!=='roblox'||!clean(sourceRoot))return null;
   const presentationPass=clean(order?.presentationQuality?.pass).toUpperCase();
-  if(order?.presentationQuality?.required!==true||presentationPass!=='ASSET_ADAPTATION')return null;
+  if(!generatedAssetBindingMode&&(order?.presentationQuality?.required!==true||presentationPass!=='ASSET_ADAPTATION'))return null;
   const clientFiles=unique(responsibleFiles).filter(file=>/(?:^|\/)client(?:\/|$)|\.client\.luau$/i.test(file));
   if(!clientFiles.length)return null;
 
@@ -3541,7 +3542,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     }
     if(!allowFullRewrite)maxPredict=Math.max(maxPredict,recoveredOutputBudget);
     const timeoutMs=priorFailureClass==='TIMEOUT'&&!clean(lastRaw)
-      ?ZERO_OUTPUT_RETRY_TIMEOUT_MS
+      ?(assetDevelopmentLane&&target==='web'?ASSET_DEVELOPMENT_WEB_ZERO_OUTPUT_RETRY_TIMEOUT_MS:ZERO_OUTPUT_RETRY_TIMEOUT_MS)
       :(expansionMode
         ?FULL_WEB_EXPANSION_TIMEOUT_MS
         :(allowFullRewrite
