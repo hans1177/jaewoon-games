@@ -29,11 +29,11 @@ on:
         default: ''
   repository_dispatch:
     types: [vibe2-neuron-complete, vibe2-fanin-refill]
-  # Independent game reserve safety net while the 24H singleton waits on slow workers.
+  # Independent game reserve safety net while older 24H runs or slow workers drain.
   schedule:
     - cron: '*/5 * * * *'
   # GAME_PRIMARY_MAIN_PUSH_WAKE: main churn must not starve queued game work behind
-  # the singleton planner. This enters the existing canonical reserve path only.
+  # older planner runs. This enters the existing canonical reserve path only; no global scheduler serialization.
   push:
     branches:
       - main
