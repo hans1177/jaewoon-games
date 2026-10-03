@@ -279,7 +279,7 @@ local function addWood(model, root, row, level)
 			weld(root, makePart("CutFace" .. i, Vector3.new(0.76, 0.08, 0.76), p.cut, Enum.Material.Wood, "CYLINDER"), CFrame.new(offset + Vector3.new(-1.34, 0, 0)) * CFrame.Angles(0, 0, math.rad(90)))
 		end
 	end
-	for x in {-0.68, 0.68} do
+	for _, x in ipairs({-0.68, 0.68}) do
 		weld(root, makePart("Binding" .. tostring(x), Vector3.new(0.12, 2.45, 1.72), p.band, Enum.Material.Fabric), CFrame.new(x, 0.76, 0))
 	end
 end
