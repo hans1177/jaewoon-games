@@ -144,7 +144,7 @@ const CAPABILITY_RULES=Object.freeze([
   {id:'COMBAT',design:/(?:combat|attack|damage|hit|weapon|skill|enemy|monster|boss|전투|공격|피해|타격|무기|스킬|(?<![가-힣])적(?:의|을|를|이|가|에게|과|와|들|으로|한테)?(?![가-힣])|몬스터|보스)/i},
   {id:'ENEMY_AI',design:/(?:enemy|monster|boss|chase|aggro|\bai\b|(?<![가-힣])적(?:의|을|를|이|가|에게|과|와|들|으로|한테)?(?![가-힣])|몬스터|보스|추격|어그로)/i},
   {id:'GATHERING',design:/(?:gather|harvest|collect resource|resource gathering|mine|chop|채집|(?:자원|재료|아이템|전리품|나무|돌|광석|식량)\s*(?:을|를)?\s*수집|채광|벌목)/i},
-  {id:'CRAFTING',design:/(?:craft|recipe|workbench|제작|제작법|제작대)/i},
+  {id:'CRAFTING',design:/(?:craft|recipe|workbench|제작법|제작대|(?:아이템|도구|무기|방어구|장비|포션|재료)\s*(?:을|를)?\s*제작)/i},
   {id:'DAY_NIGHT',design:/(?:\bday\b|\bnight\b|낮(?:\s*시간|에|에는|동안|과|밤)|밤(?:이|에|에는|동안|과|마다)|주야)/i},
   {id:'WAVE',design:/(?:wave|horde|파상|웨이브|몰려오는)/i},
   {id:'INVENTORY',design:/(?:inventory|item ownership|loot|인벤|인벤토리|전리품|아이템 보유)/i},
@@ -167,7 +167,14 @@ function implementedCapability(id,ctx){
     const meaningful=ctx.namedGameplayFunctions.filter(name=>/(attack|combat|damage|hit|move|build|place|spawn|gather|harvest|mine|chop|craft|quest|round|wave|day|night|interact|dash|ability|infect|purify|customer|ride|dungeon|boss|tower|resource|upgrade|equip|inventory|session|match|stage)/i.test(name));
     return meaningful.length>=2||/(StateMachine|CurrentPhase|RoundState|DayPhase|GameState)/.test(both);
   }
-  if(id==='SESSION_FLOW')return /(?:function\s+\w*(?:start|begin|round|session|day|night|wave|stage|match)|RoundState|DayPhase|CurrentWave|CurrentStage)/i.test(s)&&/(?:function\s+\w*(?:end|finish|next|restart|reset)|endRound|NextDay|RoundEnded|MATCH_END)/i.test(s);
+  if(id==='SESSION_FLOW'){
+    const namedStart=/(?:function\s+\w*(?:start|begin|round|session|day|night|wave|stage|match)|RoundState|DayPhase|CurrentWave|CurrentStage)/i.test(s);
+    const namedEnd=/(?:function\s+\w*(?:end|finish|next|restart|reset)|endRound|NextDay|RoundEnded|MATCH_END)/i.test(s);
+    if(namedStart&&namedEnd)return true;
+    const starts=new Set([...s.matchAll(/SetAttribute\(["']([A-Za-z][A-Za-z0-9_]*Active)["']\s*,\s*true\)/g)].map(match=>match[1]));
+    const ends=new Set([...s.matchAll(/SetAttribute\(["']([A-Za-z][A-Za-z0-9_]*Active)["']\s*,\s*false\)/g)].map(match=>match[1]));
+    return [...starts].some(name=>ends.has(name));
+  }
   if(id==='WORLD')return /Instance\.new\(["'](?:Part|MeshPart|Model|Folder|SpawnLocation)["']\)|Terrain(?::|\.)|buildWorld|makeArena|createWorld|buildMap|workspace\s*:\s*FindFirstChild/i.test(s);
   if(id==='CONTENT_ENTITY')return /(?:spawn|create|build)(?:Enemy|Monster|Boss|Npc|NPC|Customer|Resource|Mob|Creature)|Instance\.new\(["']Model["']\)|HumanoidDescription|CreateHumanoidModel/i.test(s);
   if(id==='COMBAT')return /TakeDamage\s*\(|function\s+\w*(?:attack|damage|hit|combat|skill|ability|purify|infect)|Hitbox|Raycast.*damage|Damage\s*=/i.test(both);
@@ -177,7 +184,7 @@ function implementedCapability(id,ctx){
   if(id==='DAY_NIGHT')return /ClockTime|TimeOfDay|DayPhase|CurrentDay|function\s+\w*(?:day|night)|DAY_PHASE|NIGHT_PHASE/i.test(both);
   if(id==='WAVE')return /function\s+\w*(?:spawnEnemy|spawnWave|startWave|nextWave)|WaveState|CurrentWave|EnemySpawn|WAVE_/i.test(s);
   if(id==='INVENTORY')return /Inventory|BackpackState|ItemStacks?|function\s+\w*(?:addItem|removeItem|inventory)|INVENTORY_/i.test(both);
-  if(id==='EQUIPMENT')return /Equipped|Equipment|Loadout|function\s+\w*equip|EQUIP_|UNEQUIP_/i.test(both);
+  if(id==='EQUIPMENT')return /Equipped|Equipment|Loadout|WeaponTier|ArmorTier|RelicTier|EquippedRelic|function\s+\w*equip|EQUIP_|UNEQUIP_/i.test(both);
   if(id==='PROGRESSION')return /(?:XP|Experience|Level|Unlock|Progression|RecipeUnlock|SkillTree)/.test(both)&&/(?:function\s+\w*(?:level|unlock|award|progress|upgrade)|SetAttribute\(["'](?:XP|Experience|Level|Unlock))/i.test(s);
   if(id==='QUEST')return /Quest|Mission|ObjectiveState|function\s+\w*(?:quest|mission)|QUEST_/i.test(both);
   if(id==='BOSS')return /Boss|function\s+\w*(?:spawnBoss|boss)|BOSS_/i.test(s);
