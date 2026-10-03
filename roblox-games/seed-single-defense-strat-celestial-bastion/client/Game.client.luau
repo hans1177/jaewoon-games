@@ -307,6 +307,57 @@ root.Size = UDim2.new(1, -24, 0, 360)
 root.BackgroundTransparency = 0.15
 root.BackgroundColor3 = Color3.fromRGB(18, 28, 48)
 root.Parent = gui
+-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_ROOT_BEGIN stage=1
+do
+  local deterministicBuildStage = 1
+  root:SetAttribute("DeterministicBuildStage", deterministicBuildStage)
+  local generatedAssetBindingLighting = game:GetService("Lighting")
+  root:SetAttribute("GeneratedNativeAssetBindingVersion", 1)
+  root:SetAttribute("GeneratedNativeAssetBindingCount", 3)
+  generatedAssetBindingLighting:SetAttribute("GeneratedNativeAssetBindingCount", 3)
+  root:SetAttribute("GeneratedNativeAssetPath1", "assets/generated/roblox/seed-single-defense-strat-celestial-bastion/background/asset.glb")
+  root:SetAttribute("GeneratedNativeAssetSha256_1", "7f40baeca136c15afa9780214eb2be44174251c4a4d7dedfc1f85333e285e96f")
+  root:SetAttribute("GeneratedNativeAssetFamily1", "ENVIRONMENT")
+  root:SetAttribute("GeneratedNativeAssetId1", "seed-single-defense-strat-celestial-bastion-roblox-background-generated-v1")
+  root:SetAttribute("GeneratedNativeAssetPath2", "assets/generated/roblox/seed-single-defense-strat-celestial-bastion/item/asset.glb")
+  root:SetAttribute("GeneratedNativeAssetSha256_2", "e2bc4228942b6d8a9be71a310b9fd8ed5cd09d4f3dc2b4f61610f9ff1657daf9")
+  root:SetAttribute("GeneratedNativeAssetFamily2", "WEAPON")
+  root:SetAttribute("GeneratedNativeAssetId2", "seed-single-defense-strat-celestial-bastion-roblox-item-generated-v1")
+  root:SetAttribute("GeneratedNativeAssetPath3", "assets/generated/roblox/seed-single-defense-strat-celestial-bastion/prop/asset.glb")
+  root:SetAttribute("GeneratedNativeAssetSha256_3", "3b48aa241160ceb54c444cf370595fe84f4fcc326dec513ef5fd04af19b4d852")
+  root:SetAttribute("GeneratedNativeAssetFamily3", "PROP")
+  root:SetAttribute("GeneratedNativeAssetId3", "seed-single-defense-strat-celestial-bastion-roblox-prop-generated-v1")
+  local deterministicGameplayHudCorner = root:FindFirstChild("DeterministicGameplayHudCorner")
+  if not deterministicGameplayHudCorner then
+    deterministicGameplayHudCorner = Instance.new("UICorner")
+    deterministicGameplayHudCorner.Name = "DeterministicGameplayHudCorner"
+    deterministicGameplayHudCorner.Parent = root
+  end
+  deterministicGameplayHudCorner.CornerRadius = UDim.new(0, 11)
+  local deterministicGameplayHudStroke = root:FindFirstChild("DeterministicGameplayHudStroke")
+  if not deterministicGameplayHudStroke then
+    deterministicGameplayHudStroke = Instance.new("UIStroke")
+    deterministicGameplayHudStroke.Name = "DeterministicGameplayHudStroke"
+    deterministicGameplayHudStroke.Parent = root
+  end
+  deterministicGameplayHudStroke.Color = Color3.fromRGB(124, 150, 112)
+  deterministicGameplayHudStroke.Thickness = 1.5
+  deterministicGameplayHudStroke.Transparency = 0.24
+  local deterministicGameplayHudGradient = root:FindFirstChild("DeterministicGameplayHudGradient")
+  if not deterministicGameplayHudGradient then
+    deterministicGameplayHudGradient = Instance.new("UIGradient")
+    deterministicGameplayHudGradient.Name = "DeterministicGameplayHudGradient"
+    deterministicGameplayHudGradient.Parent = root
+  end
+  deterministicGameplayHudGradient.Color = ColorSequence.new(Color3.fromRGB(124, 150, 112), Color3.fromRGB(152, 174, 132))
+  deterministicGameplayHudGradient.Rotation = 17
+  local deterministicGameplayHudTweenService = game:GetService("TweenService")
+  local deterministicGameplayHudRestPosition = root.Position
+  local deterministicGameplayHudEntryPosition = UDim2.new(root.Position.X.Scale, root.Position.X.Offset, root.Position.Y.Scale, root.Position.Y.Offset + 10)
+  root.Position = deterministicGameplayHudEntryPosition
+  deterministicGameplayHudTweenService:Create(root, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = deterministicGameplayHudRestPosition}):Play()
+end
+-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_ROOT_END
 local title = Instance.new("TextLabel")
 title.Name = "Title"
 title.Size = UDim2.new(1, -20, 0, 44)
@@ -316,6 +367,19 @@ title.TextColor3 = Color3.fromRGB(245, 248, 255)
 title.TextScaled = true
 title.Text = string.format("%s · %s · %s", Config.GameName, Config.Genre, Config.PlayMode)
 title.Parent = root
+-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_TITLE_BEGIN stage=1
+do
+  local deterministicTitleStroke = title:FindFirstChild("DeterministicTitleStroke")
+  if not deterministicTitleStroke then
+    deterministicTitleStroke = Instance.new("UIStroke")
+    deterministicTitleStroke.Name = "DeterministicTitleStroke"
+    deterministicTitleStroke.Parent = title
+  end
+  deterministicTitleStroke.Color = Color3.fromRGB(152, 174, 132)
+  deterministicTitleStroke.Thickness = 1
+  deterministicTitleStroke.Transparency = 0.42
+end
+-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_TITLE_END
 local status = Instance.new("TextLabel")
 status.Name = "Status"
 status.Size = UDim2.new(1, -20, 0, 48)
@@ -324,6 +388,27 @@ status.BackgroundColor3 = Color3.fromRGB(10, 17, 30)
 status.TextColor3 = Color3.fromRGB(220, 232, 250)
 status.TextScaled = true
 status.Parent = root
+-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_STATUS_BEGIN stage=1
+do
+  local deterministicStatusCorner = status:FindFirstChild("DeterministicStatusCorner")
+  if not deterministicStatusCorner then
+    deterministicStatusCorner = Instance.new("UICorner")
+    deterministicStatusCorner.Name = "DeterministicStatusCorner"
+    deterministicStatusCorner.Parent = status
+  end
+  deterministicStatusCorner.CornerRadius = UDim.new(0, 8)
+  local deterministicStatusStroke = status:FindFirstChild("DeterministicStatusStroke")
+  if not deterministicStatusStroke then
+    deterministicStatusStroke = Instance.new("UIStroke")
+    deterministicStatusStroke.Name = "DeterministicStatusStroke"
+    deterministicStatusStroke.Parent = status
+  end
+  deterministicStatusStroke.Color = Color3.fromRGB(124, 150, 112)
+  deterministicStatusStroke.Thickness = 1
+  deterministicStatusStroke.Transparency = 0.5
+  status.BackgroundTransparency = 0.08
+end
+-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_STATUS_END
 
 local list = Instance.new("ScrollingFrame")
 list.Name = "ApprovedActions"
