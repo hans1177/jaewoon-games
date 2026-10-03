@@ -4518,7 +4518,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     ?(order?.selectedTask?.firstStageUnityWeb===true?'UNITY_WEB':'UNITY_NATIVE')
     :target.toUpperCase();
   const manifest={
-    version:8,
+    version:7,
     taskId:order.taskId,
     gameId:order.gameId||null,
     target,
