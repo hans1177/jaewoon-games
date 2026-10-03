@@ -365,6 +365,25 @@ test('company asset promotion is impossible without actual native runtime consum
   assert.equal(exactBatch.updated,true);
   assert.deepEqual([...exactBatch.promotedAssetIds],['wolf-derived']);
   assert.equal(exactBatch.registry.assets[0].verifiedCompanyReusable,true);
+  const generatedBatch=promoteVerifiedCompanyAssetsFromRuntimeEvidence({
+    registry:{version:28,assets:[]},
+    consumer:{gameId:'survival',platform:'ROBLOX'},
+    runtimeEvidence:{
+      id:'studio-run-generated',platform:'ROBLOX',gameId:'survival',assetIds:['generated-boss'],
+      assets:[{
+        assetId:'generated-boss',family:'CREATURE',path:'assets/roblox/survival/native/boss.glb',
+        license:'project-original',sourceHash:'generated-source',artifactHash:'generated-artifact',
+        generatedByDeclaredRecipe:true,persistedForCandidate:true
+      }],
+      nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true
+    }
+  });
+  assert.equal(generatedBatch.updated,true);
+  assert.deepEqual([...generatedBatch.promotedAssetIds],['generated-boss']);
+  assert.equal(generatedBatch.registry.assets[0].status,'VERIFIED_COMPANY_ASSET');
+  assert.equal(generatedBatch.registry.assets[0].verifiedCompanyReusable,true);
+  assert.equal(generatedBatch.registry.assets[0].path,'assets/roblox/survival/native/boss.glb');
+
   const noIdentity=promoteVerifiedCompanyAssetsFromRuntimeEvidence({
     registry:{version:28,assets:[derivedAsset]},
     consumer:{gameId:'survival',platform:'ROBLOX'},
