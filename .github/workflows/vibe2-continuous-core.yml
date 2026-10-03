@@ -1221,6 +1221,8 @@ jobs:
           put('hero_model_requested',heroModelRequested?'true':'false');
           put('model_cache_family',modelCacheFamily);
           put('model_cache_key',modelCacheKey);
+          const dccRecipes=Array.isArray(order.assetProduction?.nativeAuthoringExecution?.dcc?.executionRecipes)?order.assetProduction.nativeAuthoringExecution.dcc.executionRecipes:[];
+          put('dcc_recipe_count',dccRecipes.length);
           put('source_root',order.source?.root||'');
           put('work_lock_required',order.compiledWorkContract?.workLock?.requiredBeforeSourceWrite===true?'true':'false');
           put('work_lock_base_sha',order.compiledWorkContract?.workLock?.baseSha||'');
@@ -1299,6 +1301,43 @@ jobs:
           start="${START_MS:-$finished}"
           echo "duration_ms=$((finished-start))" >> "$GITHUB_OUTPUT"
           echo 'VIBE2_OLLAMA_RUNTIME_SOURCE=SHARED_PREPARE_OLLAMA'
+
+      - name: Prepare declared native DCC authoring runtime
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.order.outputs.dcc_recipe_count != '0'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v blender >/dev/null 2>&1; then
+            sudo apt-get update -y
+            sudo apt-get install -y blender python3-numpy libegl1 libgl1 libgl1-mesa-dri
+          fi
+          blender --version | head -n 1
+          echo 'VIBE2_NATIVE_DCC_RUNTIME=BLENDER_READY'
+
+      - name: Execute declared native DCC authoring verification
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.order.outputs.dcc_recipe_count != '0'
+        env:
+          CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
+          VIBE2_BASE_MAIN_SHA: ${{ needs.reserve.outputs.contract_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          test "$(git -C "$contract_root" rev-parse HEAD)" = "$CONTRACT_SHA"
+          CONTRACT_ROOT="$contract_root" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {pathToFileURL} from 'node:url';
+          const root=process.env.CONTRACT_ROOT;
+          const order=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));
+          const mod=await import(pathToFileURL(root+'/tools/vibe2-source-worker.mjs').href);
+          const result=mod.executeDeclaredNativeDccAuthoringVerification({cwd:root,order});
+          if(result.required===true&&result.executed!==true)throw new Error('NATIVE_DCC_AUTHORING_EXECUTION_REQUIRED');
+          fs.writeFileSync('/tmp/vibe2-dcc-authoring-evidence.json',JSON.stringify(result,null,2)+'\n');
+          console.log('VIBE2_NATIVE_DCC_AUTHORING_STATUS='+String(result.status||'NOT_REQUIRED'));
+          console.log('VIBE2_NATIVE_DCC_AUTHORING_RECIPES='+Number(result.recipeCount||0));
+          console.log('VIBE2_NATIVE_DCC_CANDIDATE_USABLE='+(result.candidateUsable===true?'YES':'NO'));
+          NODE
+          test -s /tmp/vibe2-dcc-authoring-evidence.json
 
       - name: Run isolated learning practice
         id: practice
@@ -1493,6 +1532,7 @@ jobs:
           CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
           GH_TOKEN: ${{ github.token }}
           VIBE2_LOCAL_MODEL: ${{ steps.order.outputs.local_model }}
+          VIBE2_DCC_AUTHORING_EVIDENCE_FILE: /tmp/vibe2-dcc-authoring-evidence.json
         shell: bash
         run: |
           set -euo pipefail

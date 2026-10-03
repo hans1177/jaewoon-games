@@ -382,6 +382,98 @@ export function resolveAssetSourceModel(order={},requestedModel=DEFAULT_MODEL){
     generationBudgetUnchanged:routing.generationBudgetUnchanged!==false
   });
 }
+function dccRepoPath(value=''){
+  const relative=posix(value);
+  if(!relative||relative.startsWith('/')||relative.split('/').includes('..'))throw new Error('NATIVE_DCC_RECIPE_PATH_INVALID:'+relative);
+  return relative;
+}
+function sha256File(file){return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');}
+function gitStatusPaths(cwd){
+  let raw='';
+  try{raw=execFileSync('git',['status','--porcelain=v1','-z','--untracked-files=all'],{cwd,encoding:'utf8',timeout:15000,maxBuffer:16*1024*1024});}catch(error){throw new Error('NATIVE_DCC_GIT_STATUS_FAILED:'+clean(error?.message||error).slice(0,160));}
+  return raw.split('\0').map(row=>row.slice(3).trim()).filter(Boolean).map(posix).sort();
+}
+export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd(),order={},blenderExecutable=clean(process.env.VIBE2_BLENDER_BINARY)||'blender'}={}){
+  const dcc=order?.assetProduction?.nativeAuthoringExecution?.dcc;
+  const recipes=Array.isArray(dcc?.executionRecipes)?dcc.executionRecipes:[];
+  if(!assetDevelopmentTask(order)||!recipes.length)return Object.freeze({required:false,executed:false,status:'NOT_REQUIRED',recipes:Object.freeze([])});
+  const beforeStatus=gitStatusPaths(cwd);
+  const beforeStatusKey=JSON.stringify(beforeStatus);
+  const tempRoot=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-dcc-verify-'));
+  const results=[];
+  try{
+    execFileSync(blenderExecutable,['--version'],{cwd,encoding:'utf8',timeout:30000,maxBuffer:4*1024*1024,stdio:['ignore','pipe','pipe']});
+    for(const [index,recipe] of recipes.entries()){
+      if(clean(recipe?.executor).toUpperCase()!=='BLENDER_PYTHON')throw new Error('NATIVE_DCC_EXECUTOR_FORBIDDEN:'+clean(recipe?.executor));
+      if(clean(recipe?.runMode||'VERIFY_ONLY').toUpperCase()!=='VERIFY_ONLY')throw new Error('NATIVE_DCC_RUN_MODE_NOT_SUPPORTED:'+clean(recipe?.runMode));
+      const script=dccRepoPath(recipe?.script);
+      if(!script.startsWith('assets/')||!script.endsWith('.py'))throw new Error('NATIVE_DCC_SCRIPT_SCOPE_FORBIDDEN:'+script);
+      const scriptAbs=path.resolve(cwd,script);
+      if(!fs.existsSync(scriptAbs)||!fs.statSync(scriptAbs).isFile())throw new Error('NATIVE_DCC_SCRIPT_MISSING:'+script);
+      const outputs=(recipe?.outputs||[]).map(dccRepoPath);
+      if(!outputs.length)throw new Error('NATIVE_DCC_OUTPUTS_REQUIRED:'+clean(recipe?.id));
+      const parents=unique(outputs.map(value=>posix(path.dirname(value))));
+      for(const parent of parents){
+        const parts=parent.split('/').filter(Boolean);
+        if(!parent.startsWith('assets/')||parts.length<4)throw new Error('NATIVE_DCC_OUTPUT_PARENT_TOO_BROAD:'+parent);
+      }
+      const backupRoot=path.join(tempRoot,String(index));
+      fs.mkdirSync(backupRoot,{recursive:true});
+      const snapshots=[];
+      for(const parent of parents){
+        const absolute=path.resolve(cwd,parent),backup=path.join(backupRoot,parent.replaceAll('/','__'));
+        const existed=fs.existsSync(absolute);
+        if(existed)fs.cpSync(absolute,backup,{recursive:true,force:true});
+        snapshots.push({parent,absolute,backup,existed});
+      }
+      const preOutput=new Map(outputs.map(relative=>{const file=path.resolve(cwd,relative);return[relative,fs.existsSync(file)&&fs.statSync(file).isFile()?{sha256:sha256File(file),size:fs.statSync(file).size}:null];}));
+      let stdout='';
+      try{
+        stdout=execFileSync(blenderExecutable,['--background','--python',scriptAbs,'--',...(recipe?.args||[]).map(value=>String(value))],{cwd,encoding:'utf8',timeout:600000,maxBuffer:64*1024*1024,stdio:['ignore','pipe','pipe']});
+        const generated=outputs.map(relative=>{
+          const file=path.resolve(cwd,relative);
+          if(!fs.existsSync(file)||!fs.statSync(file).isFile()||fs.statSync(file).size<=0)throw new Error('NATIVE_DCC_OUTPUT_MISSING:'+relative);
+          return{path:relative,sha256:sha256File(file),size:fs.statSync(file).size,existedBefore:Boolean(preOutput.get(relative))};
+        });
+        const evidenceJson=recipe?.evidenceJson?dccRepoPath(recipe.evidenceJson):null;
+        let evidence=null;
+        if(evidenceJson){
+          const file=path.resolve(cwd,evidenceJson);
+          if(!fs.existsSync(file))throw new Error('NATIVE_DCC_EVIDENCE_MISSING:'+evidenceJson);
+          evidence=JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
+        }
+        const preview=recipe?.preview?dccRepoPath(recipe.preview):null;
+        if(preview){const file=path.resolve(cwd,preview);if(!fs.existsSync(file)||!fs.statSync(file).isFile()||fs.statSync(file).size<=0)throw new Error('NATIVE_DCC_PREVIEW_MISSING:'+preview);}
+        const nativeArtifact=generated.find(row=>/\.(?:glb|gltf|fbx|blend)$/i.test(row.path))||generated[0];
+        const priorNative=preOutput.get(nativeArtifact.path);
+        const reproducesExistingNativeArtifact=Boolean(priorNative&&priorNative.sha256===nativeArtifact.sha256);
+        results.push(Object.freeze({
+          id:clean(recipe?.id)||path.basename(script,'.py'),executor:'BLENDER_PYTHON',script,editableSource:dccRepoPath(recipe?.editableSource||script),
+          outputs:Object.freeze(generated),evidenceJson,preview,nativeArtifact:nativeArtifact.path,artifactHash:nativeArtifact.sha256,sourceHash:sha256File(scriptAbs),
+          evidenceState:evidence?.runtimeVerificationState||null,productionVerified:evidence?.productionVerified===true,
+          reproducesExistingNativeArtifact,candidateUsable:reproducesExistingNativeArtifact,
+          stdoutTail:String(stdout||'').slice(-2000),runtimeVerified:false,companyPromotionEligible:false
+        }));
+      }finally{
+        for(const snap of snapshots){
+          fs.rmSync(snap.absolute,{recursive:true,force:true});
+          if(snap.existed)fs.cpSync(snap.backup,snap.absolute,{recursive:true,force:true});
+        }
+      }
+    }
+    const afterStatus=gitStatusPaths(cwd);
+    if(JSON.stringify(afterStatus)!==beforeStatusKey)throw new Error('NATIVE_DCC_VERIFY_MUTATED_REPOSITORY:'+afterStatus.join(','));
+    const candidateUsable=results.length>0&&results.every(row=>row.candidateUsable===true);
+    const first=results[0]||{};
+    return Object.freeze({
+      version:1,required:true,executed:true,status:candidateUsable?'DCC_RECIPE_REPRODUCED_EXISTING_ARTIFACT':'DCC_RECIPE_EXECUTED_PERSISTENCE_REQUIRED',
+      taskId:clean(order?.taskId)||null,gameId:clean(order?.gameId)||null,baseMainSha:clean(process.env.VIBE2_BASE_MAIN_SHA)||null,
+      allRecipesPassed:true,candidateUsable,recipeCount:results.length,recipes:Object.freeze(results),
+      editableSource:first.editableSource||null,nativeArtifact:first.nativeArtifact||null,artifactHash:first.artifactHash||null,preview:first.preview||null,
+      runtimeVerified:false,companyPromotionEligible:false
+    });
+  }finally{fs.rmSync(tempRoot,{recursive:true,force:true});}
+}
 export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}){
   const contract=order?.assetProduction?.nativeAuthoringExecution;
   if(!contract?.enabled)return Object.freeze({required:false,status:'NOT_REQUIRED',runtimeVerified:false,companyPromotionEligible:false});
@@ -411,13 +503,15 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
   const dccAuthored=Boolean(
     !dccRequired||(
       dccEvidence?.executed===true
+      &&dccEvidence?.allRecipesPassed===true
+      &&dccEvidence?.candidateUsable===true
       &&clean(dccEvidence?.editableSource)
       &&clean(dccEvidence?.nativeArtifact)
       &&clean(dccEvidence?.artifactHash)
       &&clean(dccEvidence?.preview)
     )
   );
-  const dccStatus=!dccRequired?'NOT_REQUIRED':dccAuthored?'DCC_AUTHORED_RUNTIME_REQUIRED':clean(contract?.dcc?.executionStatus)||'DCC_AUTHORING_EXECUTOR_REQUIRED';
+  const dccStatus=!dccRequired?'NOT_REQUIRED':dccAuthored?'DCC_AUTHORED_RUNTIME_REQUIRED':dccEvidence?.executed===true?'DCC_RECIPE_EXECUTED_PERSISTENCE_REQUIRED':clean(contract?.dcc?.executionStatus)||'DCC_AUTHORING_EXECUTOR_REQUIRED';
   const nativeTextStatus=!nativeTextRequired?'NOT_REQUIRED':nativeTextAuthored?'NATIVE_SOURCE_AUTHORED_RUNTIME_REQUIRED':'NATIVE_AUTHORING_DELTA_REQUIRED';
   const status=dccRequired&&!dccAuthored
     ?(nativeTextAuthored?'NATIVE_SOURCE_AUTHORED_DCC_EXECUTOR_REQUIRED':'DCC_AUTHORING_EXECUTOR_REQUIRED')
@@ -429,6 +523,7 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
     requiredDccTypes:Object.freeze([...(contract?.dcc?.requiredTypes||[])]),
     requiredNativeTextTypes:Object.freeze([...(contract?.nativeText?.requiredTypes||[])]),
     dccExecutionEvidencePresent:Boolean(dccEvidence),
+    dccExecutionEvidence:dccEvidence?Object.freeze({...dccEvidence}):null,
     nativeSourceMayNotMaskDccRequirement:contract?.dcc?.nativeSourceMayNotMaskDccRequirement!==false,
     authoringRequestIsNotCompletion:true,
     generatedArtifactAloneIsNotRuntimePass:true,
@@ -3928,11 +4023,21 @@ export function assertOwnerDevelopmentAvailable({cwd=process.cwd(),order={}}={})
 }
 
 export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vibe2/work-order.json',outputRoot='.vibe2/candidates',model=DEFAULT_MODEL,responseFile='',responseFiles=[],applySource=false,luauCompiler=clean(process.env.VIBE2_LUAU_COMPILER)}={}){
-  const order=readJson(path.resolve(cwd,workOrderFile));
+  let order=readJson(path.resolve(cwd,workOrderFile));
   if(!order?.run||order?.workMode!=='source-change-candidate')throw new Error('실행 가능한 source-change work order 필요');
   if(order?.workerPolicy?.directMainWrite!==false)throw new Error('directMainWrite 정책 위반');
   assertOwnerDevelopmentAvailable({cwd,order});
   const centralPolicyPreflight=assertCompiledWorkContractFresh({cwd,contract:order?.compiledWorkContract||{},phase:'PRE_SOURCE_GENERATION'});
+  const dccEvidenceFile=clean(process.env.VIBE2_DCC_AUTHORING_EVIDENCE_FILE);
+  if(dccEvidenceFile&&fs.existsSync(dccEvidenceFile)){
+    const dccEvidence=readJson(dccEvidenceFile);
+    if(dccEvidence?.executed===true&&clean(dccEvidence?.taskId)===clean(order?.taskId)){
+      order={...order,assetProduction:{...(order.assetProduction||{}),nativeAuthoringExecution:{
+        ...(order.assetProduction?.nativeAuthoringExecution||{}),
+        dcc:{...(order.assetProduction?.nativeAuthoringExecution?.dcc||{}),executionEvidence:dccEvidence}
+      }}};
+    }
+  }
   const target=clean(order.target).toLowerCase();
   const modelRouting=resolveAssetSourceModel(order,model);
   const effectiveModel=modelRouting.selectedModel;

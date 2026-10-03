@@ -146,6 +146,12 @@ test('game-primary control work uses available latest capacity while push/manual
   assert.match(core,/model: \$\{\{ steps\.order\.outputs\.local_model \}\}/);
   assert.match(core,/VIBE2_LOCAL_MODEL: \$\{\{ steps\.order\.outputs\.local_model \}\}/);
   assert.match(core,/VIBE2_HERO_ASSET_MODEL_ACTIVE=\$\{\{ steps\.order\.outputs\.hero_model_requested \}\}/);
+  assert.match(core,/put\('dcc_recipe_count',dccRecipes\.length\)/);
+  assert.match(core,/Prepare declared native DCC authoring runtime/);
+  assert.match(core,/Execute declared native DCC authoring verification/);
+  assert.match(core,/executeDeclaredNativeDccAuthoringVerification/);
+  assert.match(core,/VIBE2_NATIVE_DCC_AUTHORING_STATUS=/);
+  assert.match(core,/VIBE2_DCC_AUTHORING_EVIDENCE_FILE: \/tmp\/vibe2-dcc-authoring-evidence\.json/);
   assert.match(core,/Restore and persist selected Vibe2 model cache[\s\S]{0,260}?uses: actions\/cache@v4[\s\S]{0,260}?key: \$\{\{ steps\.order\.outputs\.model_cache_family \}\}-\$\{\{ runner\.os \}\}-\$\{\{ runner\.arch \}\}-\$\{\{ steps\.order\.outputs\.model_cache_key \}\}/);
   assert.match(core,/key: vibe2-ollama-v5-\$\{\{ runner\.os \}\}-\$\{\{ runner\.arch \}\}-qwen3-1\.7b/);
   assert.match(core,/\n  worker:[\s\S]{0,520}?matrix\.target == 'roblox'[\s\S]{0,220}?'ubuntu-latest'[\s\S]{0,220}?'ubuntu-24\.04-arm'/);

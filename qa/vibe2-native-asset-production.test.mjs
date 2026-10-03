@@ -421,14 +421,24 @@ test('native planner preserves an existing Blender recipe as the DCC execution p
     target:'roblox',
     task:{gameId:'blender-recipe-demo',goal:'보스 3D 메시와 모션을 고품질로 다시 제작'},
     manifest:{assets:[{
-      id:'boss-authoring-base',family:'CREATURE',types:['boss'],license:'project-original',
+      id:'boss-authoring-base',family:'CREATURE',types:['boss'],tags:['boss','보스','3D','메시','모션'],license:'project-original',
       platforms:['roblox'],downloaded:false,sourceHash:'boss-source-v1',
-      sourceFiles:['assets/roblox/demo/build-boss.py','assets/roblox/demo/BOSS.md']
+      sourceFiles:['assets/roblox/demo/build-boss.py','assets/roblox/demo/BOSS.md'],
+      authoringRecipes:[{
+        id:'boss-blender-v1',executor:'BLENDER_PYTHON',types:['boss'],targetPlatforms:['ROBLOX'],
+        script:'assets/roblox/demo/build-boss.py',args:['--output','assets/roblox/demo/native/boss'],
+        outputs:['assets/roblox/demo/native/boss/boss.glb','assets/roblox/demo/native/boss/evidence.json','assets/roblox/demo/native/boss/preview.png'],
+        evidenceJson:'assets/roblox/demo/native/boss/evidence.json',preview:'assets/roblox/demo/native/boss/preview.png',editableSource:'assets/roblox/demo/build-boss.py',runMode:'VERIFY_ONLY'
+      }]
     }]},
     presetCatalog:{presets:[]}
   });
   assert.equal(plan.nativeAuthoringExecution.dcc.executionRequired,true);
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionStatus,'EXISTING_AUTHORING_RECIPE_AVAILABLE');
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_EXISTING_AUTHORING_EXECUTOR');
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionRequestCount,1);
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].id,'boss-blender-v1');
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].script,'assets/roblox/demo/build-boss.py');
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].safe,true);
   assert.deepEqual([...plan.nativeAuthoringExecution.dcc.availableExistingRecipes],['assets/roblox/demo/build-boss.py']);
   assert.equal(plan.nativeAuthoringExecution.dcc.availableExistingRecipeCount,1);
 });
