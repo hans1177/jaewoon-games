@@ -2253,3 +2253,32 @@ test('reservation policy follows the main executable checkout rather than stale 
     assert.deepEqual(reserveVibeTaskBatch(queue,{maxConcurrentTasks:1}).tasks.map(t=>t.id),['fresh']);
   }finally{process.chdir(previous);fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('same game Web Roblox and Unity responsibilities stay platform-local and reserve in parallel',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:8,tasks:[
+    {id:'same-web',gameId:'same',target:'web',department:'development',type:'implementation',status:'queued',
+      sourceRoot:'web-games/same',responsibleFiles:['index.html','roblox-games/same/client/Game.client.luau'],releaseState:'development-confirmed'},
+    {id:'same-roblox',gameId:'same',target:'roblox',department:'development',type:'implementation',status:'queued',
+      sourceRoot:'roblox-games/same',responsibleFiles:['client/Game.client.luau','unity-games/same/Assets/Scripts/GameCore.cs'],releaseState:'development-confirmed'},
+    {id:'same-unity',gameId:'same',target:'unity',department:'development',type:'implementation',status:'queued',
+      sourceRoot:'unity-games/same',responsibleFiles:['Assets/Scripts/GameCore.cs','web-games/same/index.html'],releaseState:'development-confirmed'}
+  ]});
+  assert.deepEqual(queue.tasks.find(row=>row.id==='same-web').responsibleFiles,['web-games/same/index.html']);
+  assert.deepEqual(queue.tasks.find(row=>row.id==='same-roblox').responsibleFiles,['roblox-games/same/client/Game.client.luau']);
+  assert.deepEqual(queue.tasks.find(row=>row.id==='same-unity').responsibleFiles,['unity-games/same/Assets/Scripts/GameCore.cs']);
+  const selected=selectVibeQueueBatch(queue,{lane:'game-primary',maxConcurrentTasks:8});
+  assert.deepEqual(new Set(selected.selected.map(row=>row.id)),new Set(['same-web','same-roblox','same-unity']));
+});
+
+test('explicit shared responsibility still conflicts across platforms',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:8,tasks:[
+    {id:'shared-web',gameId:'same',target:'web',department:'development',type:'implementation',status:'queued',
+      sourceRoot:'web-games/same',responsibleFiles:['index.html','assets/shared/same-style.json'],releaseState:'development-confirmed'},
+    {id:'shared-roblox',gameId:'same',target:'roblox',department:'development',type:'implementation',status:'queued',
+      sourceRoot:'roblox-games/same',responsibleFiles:['client/Game.client.luau','assets/shared/same-style.json'],releaseState:'development-confirmed'}
+  ]});
+  const selected=selectVibeQueueBatch(queue,{lane:'game-primary',maxConcurrentTasks:8});
+  assert.equal(selected.selected.length,1);
+  assert.equal(selected.deferredConflicts.length,1);
+  assert.equal(selected.deferredConflicts[0].reason,'responsible-file-conflict');
+});
