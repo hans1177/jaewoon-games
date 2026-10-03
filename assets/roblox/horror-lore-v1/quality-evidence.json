@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "packId": "roblox-horror-lore-v1",
+  "gameId": "horror-escape-room",
+  "staticAuthoringChecklist": {
+    "score": 100,
+    "max": 100,
+    "scoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+    "checks": {
+      "exactCurrentLoreRosterMatch": 15,
+      "actual3DSourceFiles": 15,
+      "distinctSilhouettesPerLoreRole": 15,
+      "multipleMaterialRegionsWhereApplicable": 10,
+      "namedSemanticGroups": 10,
+      "mobileGeometryBudget": 10,
+      "mapContextIdentity": 10,
+      "projectOriginalLicenseAndProvenance": 10,
+      "gameplayAuthorityIsolation": 5
+    }
+  },
+  "quality120": {
+    "target": 100,
+    "claimedRuntimeScore": null,
+    "note": "100 is the source-authoring target. Native runtime binding, camera readability and production verification remain unverified."
+  },
+  "productionVerified": false,
+  "verifiedCompanyReusable": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+  "gameplayAuthority": false,
+  "originalAssetsImmutable": true,
+  "externalAssetDependency": false,
+  "sourceAssetCount": 10
+}
