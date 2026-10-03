@@ -4101,6 +4101,7 @@ test('queued Web assessment with PRESENTATION generation is repaired into graphi
   const stale={
     ...first.task,
     status:'queued',
+    assetProductionLane:false,
     presentationPass:null,
     graphicsReplacementContract:null,
     buildUpDirectiveId:legacyDirectiveId,
@@ -4127,6 +4128,7 @@ test('queued Web assessment with PRESENTATION generation is repaired into graphi
   const repaired=second.queue.tasks.find(row=>row.id===stale.id);
   assert.ok(repaired);
   assert.equal(repaired.buildUpDirective?.primaryFocus,'PRESENTATION');
+  assert.equal(repaired.assetProductionLane,true);
   assert.equal(repaired.presentationPass,'ASSET_ADAPTATION');
   assert.equal(repaired.graphicsReplacementContract?.executionBoundary,'EXISTING_PRESENTATION_OR_BUILD_UP_ONLY');
   assert.equal(repaired.graphicsReplacementContract?.implementation?.actualSourceOrBindingDeltaRequired,true);
@@ -4134,6 +4136,23 @@ test('queued Web assessment with PRESENTATION generation is repaired into graphi
   assert.ok(repaired.evidence.includes('presentation-quality-pipeline:v1'));
   assert.ok(repaired.evidence.includes('presentation-pass:ASSET_ADAPTATION'));
   assert.ok(repaired.evidence.includes('adaptive-graphics-replacement:v1'));
+  assert.ok(repaired.evidence.includes('asset-production-parallel:v1'));
   assert.ok(repaired.evidence.includes('build-up-pre-reserve-binding:CHECKED'));
   assert.match(repaired.goal,/ADAPTIVE_GRAPHICS_REPLACEMENT_CONTRACT/);
+
+  const laneOnlyStale={
+    ...repaired,
+    assetProductionLane:false,
+    evidence:(repaired.evidence||[]).filter(value=>value!=='asset-production-parallel:v1')
+  };
+  const third=planVibe2AutonomousTasks({
+    status:{projects:[]},catalog,
+    queue:{maxConcurrentTasks:4,tasks:[laneOnlyStale]},
+    repoRoot:root,maxConcurrentTasks:4,queueMaxConcurrentTasks:4,
+    planningBacklogTarget:1,planningBacklogMinimum:0
+  });
+  const laneRecovered=third.queue.tasks.find(row=>row.id===stale.id);
+  assert.ok(laneRecovered);
+  assert.equal(laneRecovered.assetProductionLane,true);
+  assert.ok(laneRecovered.evidence.includes('asset-production-parallel:v1'));
 });
