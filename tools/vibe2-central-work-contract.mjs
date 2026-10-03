@@ -321,6 +321,7 @@ export function compileVibeCentralWorkContract({
   snapshot=null,
   task={},
   plan={},
+  assetProduction=null,
   route={},
   responsibleFiles=[],
   presentationQuality={},
@@ -367,10 +368,21 @@ export function compileVibeCentralWorkContract({
   const required=source.required===true||Number(orchestration?.version||0)>0;
   const dedupeKey=workKey&&source.fingerprint?sha256([workKey,source.version,source.fingerprint,uniq(responsibleFiles).join('|')].join(':')):null;
   const exactResponsibleFiles=uniq(responsibleFiles);
+  const declaredAssetRecipes=Array.isArray(assetProduction?.nativeAuthoringExecution?.dcc?.executionRecipes)
+    ?assetProduction.nativeAuthoringExecution.dcc.executionRecipes
+    :[];
+  const generatedAssetFiles=uniq(declaredAssetRecipes.flatMap(recipe=>[
+    ...(Array.isArray(recipe?.outputs)?recipe.outputs:[]),
+    recipe?.evidenceJson,
+    recipe?.preview
+  ]).map(value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'')).filter(value=>
+    value&&value.startsWith('assets/')&&!value.startsWith('/')&&!value.split('/').includes('..')
+  ));
+  const exactCandidateFiles=uniq([...exactResponsibleFiles,...generatedAssetFiles]);
   const currentTruth=compileCurrentTruth({task,source,mainSha:resolvedMainSha,responsibleFiles:exactResponsibleFiles});
   const acceptanceContract=compileAcceptanceContract(task,plan);
   const changeSet=task.changeSet&&typeof task.changeSet==='object'?task.changeSet:{id:clean(task.changeSetId)||workKey,baseSourceRevision:clean(task.baseSourceRevision||resolvedMainSha)||null,status:clean(task.changeSetStatus)||'ACTIVE'};
-  const workLockRequired=clean(route?.route).toLowerCase()==='text-source-worker'&&exactResponsibleFiles.length>0;
+  const workLockRequired=clean(route?.route).toLowerCase()==='text-source-worker'&&exactCandidateFiles.length>0;
   const workLock={
     requiredBeforeSourceWrite:workLockRequired,
     stateBranch:VIBE_WORK_LOCK_STATE_BRANCH,
@@ -378,7 +390,9 @@ export function compileVibeCentralWorkContract({
     worker:'vibe2',
     taskId:workKey,
     gameId:clean(task.gameId)||null,
-    files:exactResponsibleFiles,
+    files:exactCandidateFiles,
+    sourceFiles:exactResponsibleFiles,
+    generatedAssetFiles,
     baseSha:resolvedMainSha,
     acquisitionState:workLockRequired?'WORKER_MUST_ACQUIRE_BEFORE_SOURCE_WRITE':'NOT_REQUIRED',
     releaseRule:workLockRequired?'RELEASE_AFTER_FAN_IN_QA_OR_ABORT':'NOT_REQUIRED',
@@ -459,7 +473,10 @@ export function compileVibeCentralWorkContract({
     workLock,
     writableScope:{
       exactResponsibleFiles,
+      generatedAssetFiles,
+      exactCandidateFiles,
       automaticExpansionAllowed:false,
+      generatedAssetScopeDerivedOnlyFromDeclaredRecipes:true,
       directResponsibleSystemModificationPreferred:true
     },
     invariants:{
