@@ -67,6 +67,7 @@ import {
   buildRuntimeMotionLearningCandidate,
   selectRobloxCharacterMotionSource,
   createRobloxMotionBlendProfile,
+  createStudioMotionActionProfile,
   createRobloxCharacterMotionPlan,
   auditRobloxCharacterMotionEvidence,
   createMotionDirectorPlan
@@ -1058,4 +1059,76 @@ test('Roblox motion director plan binds articulated smooth-motion system without
   assert.equal(director.version,2);
   assert.ok(director.systems.includes('ROBLOX_SMOOTH_CHARACTER_MOTION'));
   assert.equal(director.robloxCharacterMotion.actorClass,'CREATURE');
+});
+
+
+test('studio-grade motion profile binds pose matching warping contact IK reactions audio and mobile LOD without gameplay authority',()=>{
+  const profile=createStudioMotionActionProfile({
+    platform:'ROBLOX',actorClass:'CREATURE',bodyPlan:'ARACHNID',archetype:'SPIDER',
+    weightClass:'HEAVY',limbCount:8,mobile:true
+  });
+  assert.equal(profile.poseMatching.enabled,true);
+  assert.equal(profile.motionWarping.enabled,true);
+  assert.equal(profile.contactSolver.damageAndHitboxAuthority,false);
+  assert.equal(profile.proceduralIk.multiLimbContact,true);
+  assert.equal(profile.proceduralIk.limbCount,8);
+  assert.equal(profile.hitReaction.directional,true);
+  assert.equal(profile.hitReaction.partialRagdoll.visualPhysicsOnly,true);
+  assert.equal(profile.motionAudio.impactAudioFromConfirmedContact,true);
+  assert.equal(profile.mobilePerformance.targetFps,60);
+  assert.equal(profile.mobilePerformance.hardFloorFps,30);
+  assert.ok(profile.systems.includes('MOTION_AUDIO_SYNC'));
+  assert.ok(profile.systems.includes('AUTOMATED_MOTION_QA'));
+  assert.equal(profile.gameplayAuthority,false);
+
+  const blend=createRobloxMotionBlendProfile();
+  assert.equal(blend.poseMatching.required,true);
+  assert.equal(blend.inertializationRequired,true);
+  assert.equal(blend.footPhaseAwareBlendRequired,true);
+  assert.equal(blend.additiveLayersRequired,true);
+
+  const procedural=createProceduralMotionProfile({limbCount:8});
+  assert.equal(procedural.corrections.FOOT_PLANT_LOCK,true);
+  assert.equal(procedural.corrections.MULTI_LIMB_CONTACT,true);
+  assert.equal(procedural.corrections.HAND_WORLD_CONTACT,true);
+  assert.equal(procedural.corrections.WEAPON_GRIP_LOCK,true);
+
+  const reaction=createReactionMatch({impactStrength:'HEAVY',impactDirection:'LEFT',bodyRegion:'HEAD'});
+  assert.equal(reaction.output,'FULL_BODY_HIT');
+  assert.equal(reaction.tags.bodyRegion,'HEAD');
+  assert.equal(reaction.partialRagdoll.enabled,true);
+  assert.equal(reaction.partialRagdoll.authoritativeRootAndColliderImmutable,true);
+
+  const far=selectMotionLod({cameraDistance:80,screenSize:.02,deviceClass:'LOW_END_MOBILE',combatRelevant:false});
+  assert.equal(far.tier,'FAR');
+  assert.equal(far.budget.animationHz,15);
+  assert.equal(far.budget.ikHz,0);
+  assert.equal(far.gameplayHitAndCollisionUnaffected,true);
+
+  const offscreen=selectMotionLod({visible:false,deviceClass:'LOW_END_MOBILE'});
+  assert.equal(offscreen.tier,'OFFSCREEN');
+  assert.equal(offscreen.budget.animationHz,5);
+});
+
+test('motion director and Roblox character plan expose the studio-grade suite for creatures and humanoids',()=>{
+  const plan=createMotionDirectorPlan({
+    platform:'ROBLOX',bodyPlan:'ARACHNID',rigProfile:'SPIDER_HD',
+    context:{actorClass:'CREATURE',archetype:'SPIDER',limbCount:8,weightClass:'HEAVY'},
+    studio:{limbCount:8,weightClass:'HEAVY'}
+  });
+  assert.equal(plan.studioGrade.proceduralIk.multiLimbContact,true);
+  assert.equal(plan.studioGrade.weightedAttack.weightClass,'HEAVY');
+  assert.ok(plan.systems.includes('POSE_MATCH_TRANSITION'));
+  assert.ok(plan.systems.includes('MOTION_WARPING'));
+  assert.ok(plan.systems.includes('PARTIAL_RAGDOLL'));
+  assert.ok(plan.systems.includes('MOBILE_FRAME_BUDGET'));
+
+  const roblox=createRobloxCharacterMotionPlan({
+    actorClass:'CREATURE',bodyPlan:'ARACHNID',rigProfile:'SPIDER_HD',archetype:'SPIDER',
+    procedural:{limbCount:8},studio:{limbCount:8,weightClass:'HEAVY'}
+  });
+  assert.equal(roblox.studioGrade.identity.archetype,'SPIDER');
+  assert.equal(roblox.studioGrade.proceduralIk.limbCount,8);
+  assert.equal(roblox.procedural.corrections.MULTI_LIMB_CONTACT,true);
+  assert.equal(roblox.rootTransformOnlyVisualLocomotionForbidden,true);
 });

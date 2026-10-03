@@ -11,6 +11,7 @@ import {
   validateVibeMotionContract,
   validateVibeMotionTransition,
   createVibeCombatMotionSync,
+  createVibeRetargetContract,
   scoreVibeMotionQuality,
   createVibeMotionLearningRecord
 } from '../assets/vibe-motion-core.js';
@@ -168,4 +169,29 @@ test('protected or paid autonomous work remains blocked while web maintenance is
   const next = selectNextVibeQueueTask(queue);
   assert.equal(next.selected.id, 'web-maintenance');
   assert.equal(next.blocked.length, 2);
+});
+
+
+test('studio motion core keeps contact, IK and presentation timing non-authoritative', () => {
+  const sync=createVibeCombatMotionSync({
+    actionId:'heavy-slash',actionType:'melee',activeStart:.3,activeEnd:.5,recoveryEnd:.8,
+    hitMarker:'blade-contact',contactSampleHz:60,hitStopMs:70,cameraImpulse:1.25,audioVelocitySync:true
+  });
+  assert.equal(sync.valid,true);
+  assert.equal(sync.presentation.contactSolver.continuousSweep,true);
+  assert.equal(sync.presentation.contactSolver.damageAuthority,false);
+  assert.equal(sync.presentation.hitStopMs,70);
+  assert.equal(sync.gameplayAuthority,'engine-resolves-damage-and-resource-results');
+
+  const retarget=createVibeRetargetContract({
+    engine:'roblox',sourceSkeleton:'shared-humanoid',targetSkeleton:'r15',referencePose:'a-pose',
+    footIK:true,handIK:true,lookIK:true,multiLimbIK:true,contactCorrection:true
+  });
+  assert.equal(retarget.valid,true);
+  assert.equal(retarget.footIK,true);
+  assert.equal(retarget.handIK,true);
+  assert.equal(retarget.lookIK,true);
+  assert.equal(retarget.multiLimbIK,true);
+  assert.equal(retarget.plantedContactMustPreserveWorldPosition,true);
+  assert.equal(retarget.gameplayColliderAndRootAuthorityImmutable,true);
 });

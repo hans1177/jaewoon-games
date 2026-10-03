@@ -45,3 +45,39 @@ test('camera impulse returns toward zero', () => {
   assert.ok(Math.abs(last.x) < 0.05);
   assert.ok(Math.abs(last.y) < 0.05);
 });
+
+
+test('contact hit-stop pauses presentation action without changing the base gameplay pose', () => {
+  const gameplay = { x: 20, y: 30 };
+  const rig = new JaewoonMotionRig({ x: 20, y: 30 });
+  rig.setBasePose(gameplay, { snap: true });
+  rig.triggerAttack({ strength: 1.4, duration: 0.4, weightClass: 'HEAVY', contactAt: 0.58 });
+  rig.update(0.1);
+  const before = rig.attack.time;
+  rig.triggerContact({ strength: 1.5, hitStopMs: 70 });
+  rig.update(1 / 60);
+  assert.equal(rig.attack.time, before);
+  assert.equal(rig.sample().hitStopActive, true);
+  assert.ok(rig.sample().contactPulse > 0);
+  assert.deepEqual(gameplay, { x: 20, y: 30 });
+});
+
+test('motion LOD removes expensive afterimages while keeping critical state sampling', () => {
+  const rig = new JaewoonMotionRig({ x: 0, y: 0 });
+  rig.setMotionState({ moving: true, speed: 220, turn: 0.5 });
+  rig.setLod({ tier: 'FAR' });
+  for (let i = 0; i < 8; i++) rig.update(1 / 60);
+  const sample = rig.sample();
+  assert.equal(sample.lodTier, 'FAR');
+  assert.ok(sample.locomotionBlend > 0);
+  assert.deepEqual(rig.afterimages(), []);
+});
+
+test('directional hit reaction keeps body-region presentation data local to the rig', () => {
+  const rig = new JaewoonMotionRig({ x: 0, y: 0 });
+  rig.triggerHit({ direction: 1, strength: 1.5, bodyRegion: 'HEAD' });
+  rig.update(1 / 60);
+  const sample = rig.sample();
+  assert.equal(sample.hitBodyRegion, 'HEAD');
+  assert.notEqual(sample.rotation, 0);
+});

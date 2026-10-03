@@ -10,8 +10,11 @@ const freezeList = (values = []) => Object.freeze(unique(values));
 const freeze = (value) => Object.freeze(value);
 
 export const VIBE_MOTION_REQUIRED_STATES = freezeList(['idle', 'move', 'attack', 'hit', 'death']);
-export const VIBE_MOTION_OPTIONAL_STATES = freezeList(['run', 'attack-combo', 'skill', 'cast', 'block', 'dodge', 'stun', 'knockback', 'jump', 'fall', 'land', 'interact']);
-export const VIBE_MOTION_QUALITY_AXES = freezeList(['coverage', 'transition', 'combatSync', 'footStability', 'rootMotion', 'retarget', 'readability', 'performance', 'repetition']);
+export const VIBE_MOTION_OPTIONAL_STATES = freezeList(['run', 'attack-combo', 'skill', 'cast', 'block', 'dodge', 'stun', 'knockback', 'knockdown', 'get-up', 'finisher', 'telegraph', 'jump', 'fall', 'land', 'interact']);
+export const VIBE_MOTION_QUALITY_AXES = freezeList([
+  'coverage', 'transition', 'poseMatch', 'combatSync', 'contact', 'footStability', 'ik',
+  'rootMotion', 'retarget', 'hitReaction', 'readability', 'mobileFrame', 'performance', 'repetition'
+]);
 
 const DEFAULT_TRANSITIONS = freeze({
   idle: freezeList(['move', 'run', 'attack', 'skill', 'hit', 'stun', 'death']),
@@ -36,6 +39,12 @@ function normalizeState(input, index = 0) {
     exit: clean(input?.exit),
     interruptible: input?.interruptible !== false,
     rootMotion: Boolean(input?.rootMotion),
+    blendIn: clamp(input?.blendIn ?? 0.12, 0.02, 1),
+    blendOut: clamp(input?.blendOut ?? 0.12, 0.02, 1),
+    layer: clean(input?.layer) || 'full-body',
+    additive: Boolean(input?.additive),
+    poseTags: freezeList(input?.poseTags || []),
+    contactMarkers: freezeList(input?.contactMarkers || []),
     gameplayMarkers: freezeList(input?.gameplayMarkers || []),
     vfxMarkers: freezeList(input?.vfxMarkers || []),
     sfxMarkers: freezeList(input?.sfxMarkers || [])
@@ -124,7 +133,11 @@ export function createVibeCombatMotionSync({
   hitMarker = '',
   projectileMarker = '',
   vfxMarker = '',
-  sfxMarker = ''
+  sfxMarker = '',
+  contactSampleHz = 60,
+  hitStopMs = 0,
+  cameraImpulse = 0,
+  audioVelocitySync = true
 } = {}) {
   const type = ['melee', 'ranged', 'skill'].includes(clean(actionType)) ? clean(actionType) : 'melee';
   const timing = freeze({
@@ -150,6 +163,19 @@ export function createVibeCombatMotionSync({
       vfx: clean(vfxMarker) || null,
       sfx: clean(sfxMarker) || null
     }),
+    presentation: freeze({
+      poseMatchRequired: true,
+      motionWarpAllowedInsideApprovedEnvelope: true,
+      contactSolver: freeze({
+        continuousSweep: type === 'melee',
+        sampleHz: Math.max(15, Math.min(120, Math.round(number(contactSampleHz, 60)))),
+        onlyInsideActiveWindow: true,
+        damageAuthority: false
+      }),
+      hitStopMs: Math.max(0, Math.min(120, number(hitStopMs, 0))),
+      cameraImpulse: clamp(cameraImpulse, 0, 2),
+      audioVelocitySync: audioVelocitySync !== false
+    }),
     valid: issues.length === 0,
     issues: freezeList(issues),
     gameplayAuthority: 'engine-resolves-damage-and-resource-results'
@@ -166,7 +192,11 @@ export function createVibeRetargetContract({
   legScale = 1,
   rootAxis = 'engine-default',
   weaponSocket = '',
-  footIK = false
+  footIK = false,
+  handIK = false,
+  lookIK = false,
+  multiLimbIK = false,
+  contactCorrection = false
 } = {}) {
   const issues = [];
   if (!clean(sourceSkeleton)) issues.push('source-skeleton-required');
@@ -182,6 +212,12 @@ export function createVibeRetargetContract({
     rootAxis: clean(rootAxis) || 'engine-default',
     weaponSocket: clean(weaponSocket) || null,
     footIK: Boolean(footIK),
+    handIK: Boolean(handIK),
+    lookIK: Boolean(lookIK),
+    multiLimbIK: Boolean(multiLimbIK),
+    contactCorrection: Boolean(contactCorrection),
+    plantedContactMustPreserveWorldPosition: Boolean(footIK || handIK || multiLimbIK),
+    gameplayColliderAndRootAuthorityImmutable: true,
     valid: issues.length === 0,
     issues: freezeList(issues)
   });
@@ -189,7 +225,13 @@ export function createVibeRetargetContract({
 
 export function scoreVibeMotionQuality(scores = {}, { gateFailures = [] } = {}) {
   const normalized = {};
-  for (const axis of VIBE_MOTION_QUALITY_AXES) normalized[axis] = clamp(scores?.[axis], 0, 100);
+  const legacyAxes = ['coverage','transition','combatSync','footStability','rootMotion','retarget','readability','performance','repetition'];
+  const legacyValues = legacyAxes.map((axis) => clamp(scores?.[axis], 0, 100));
+  const legacyAverage = legacyValues.length ? legacyValues.reduce((sum, value) => sum + value, 0) / legacyValues.length : 0;
+  for (const axis of VIBE_MOTION_QUALITY_AXES) {
+    const missingNewAxis = !legacyAxes.includes(axis) && scores?.[axis] == null;
+    normalized[axis] = missingNewAxis ? legacyAverage : clamp(scores?.[axis], 0, 100);
+  }
   const values = Object.values(normalized);
   const average = values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0;
   const failures = freezeList(gateFailures);
