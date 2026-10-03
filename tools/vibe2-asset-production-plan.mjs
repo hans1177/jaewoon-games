@@ -1542,7 +1542,10 @@ export function buildVibeAssetProductionPlan({
     baseMaterialUsageByAtom:task.baseMaterialUsageByAtom||{},
     styleBible:task.styleBible||{},
     customizationRecipes:Array.isArray(task.assetCustomization?.recipes)?task.assetCustomization.recipes:[],
-    customizationContract:companyLibrary?.composableBaseMaterialLibrary?.customization||null
+    customizationContract:companyLibrary?.composableBaseMaterialLibrary?.customization||null,
+    qualityEvidenceByAsset:task.assetQualityEvidenceById||{},
+    heroAssetIds:Array.isArray(task.heroAssetIds)?task.heroAssetIds:[],
+    familyOutputsByAsset:task.assetFamilyOutputsById||{}
   }):null;
   const baseMaterialLoadout=buildComposableBaseMaterialLoadout({
     companyRegistry,studioUniversePlan,decisions,gameId:clean(task.gameId),target:resolvedTarget,request
@@ -1653,7 +1656,15 @@ export function buildVibeAssetProductionPlan({
       donorAssemblyBeforeFullReauthor:true,
       detailLodRequired:true,
       actualRuntimeEvidenceRequired:true,
-      verificationStatusIsNotVisualQuality:true
+      verificationStatusIsNotVisualQuality:true,
+      qualityScaleMaximum:120,
+      qualityScoreIsNotDevelopmentBindingGate:true,
+      lowScoreAssetMayBindWhenNoBetterSafeCompatibleAlternative:true,
+      lowScoreBindingMustKeepVisualDebtOpen:true,
+      productionVerifiedStillRequiresExactRuntimeEvidence:true,
+      heroAssetsDefineQualityBaseline:true,
+      worstPartFirstEvolution:true,
+      verifiedOutcomeOnlyMayTeachPositiveLearning:true
     })
   });
   const precisionProduction=freeze({
@@ -1733,7 +1744,8 @@ export function buildVibeAssetProductionPlan({
     baseMaterialLoadout,
     assetCustomization,
     qualityDNA,
-    precisionProduction:freeze({...precisionProduction,qualityDNA}),
+    studioQuality120:freeze(studioUniversePlan?.quality120||{}),
+    precisionProduction:freeze({...precisionProduction,qualityDNA,studioQuality120:studioUniversePlan?.quality120||null}),
     assetSynchronization,
     detailReview:studioUniversePlan?.customization?createAssetDetailReviewPlan({
       ...task.assetDetailReview,
@@ -1953,6 +1965,7 @@ export function buildVibeAssetProductionPlan({
         futureDemand:freeze(studioUniversePlan?.futureDemand||{}),
         usageFeedback:freeze(studioUniversePlan?.usageFeedback||{}),
         testbed:freeze(studioUniversePlan?.testbed||{}),
+        quality120:freeze(studioUniversePlan?.quality120||{}),
         coverage:freeze(studioUniversePlan?.coverage||{}),
         heatmap:freezeList(studioUniversePlan?.heatmap?.rows||[]),
         highestPriorityGap:freeze(studioUniversePlan?.heatmap?.highestPriorityGap||null),
@@ -2183,6 +2196,7 @@ export function assetProductionGuidance(plan={}){
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
     plan.qualityDNA?`[QUALITY DNA] ${JSON.stringify(plan.qualityDNA)}. 이 값은 현재 자산의 임의 점수가 아니라 게임별 최소 제작 하한이다. 각 type의 minimumFloors와 detailLod를 만족시키도록 강한 축은 잠그고 실패한 축만 수정한다. donor는 실패 축만 교체하고 스타일 정체성·출처·잠긴 특징을 보존한다. 검증 상태나 폴리곤/텍스처 수만으로 고퀄 판정하지 않는다.`:'',
+    plan.studioQuality120?.maxScore?`[STUDIO ASSET QUALITY 120] ${JSON.stringify(plan.studioQuality120)}. 120점은 최고 품질 목표이지 게임 연결 허가선이 아니다. 안전·권리·플랫폼 호환을 만족하는 대안이 없으면 100점 미만, 85점 미만 자산도 현재 게임에 실제 연결해 사용하고 Visual Debt를 열어 둔 채 같은 자산을 최약점부터 개선한다. 점수만 낮다는 이유로 빈 primitive나 무자산 상태를 유지하지 않는다. Hero 자산은 전체 게임 품질 기준점으로 먼저 끌어올리고, UI/HUD/인벤토리/아이콘·아이템 월드모델/드랍/장착/제작 아이콘·캐릭터·몬스터·환경·건물·무기·재질·모션·VFX·오디오를 같은 Asset DNA 계보로 묶는다. 매 사이클 weakestAxis/weakestCritic을 우선 수정하고 강한 축은 보존한다. 120점이어도 새로운 검증된 결함이나 더 좋은 제작법이 생기면 계속 진화한다. production-verified는 점수와 별개이며 실제 대상 게임 런타임·바인딩·모바일 성능·회귀·권리 증거가 모두 있어야 한다. positive learning은 검증된 실제 결과만 기존 학습 모터에 넣는다.`:'',
     plan.applyFirstSummary?.enabled?`[APPLY USABLE ASSETS FIRST] ${JSON.stringify(plan.applyFirstSummary)}. 먼저 현재 게임/회사/저장소에서 target-compatible하고 실제 경로 또는 native binding이 있는 자산을 게임에 적용한다. 적용 후 실제 게임 카메라에서 품질을 확인하고 부족한 부위만 derived variant로 조형·재질·리그·LOD를 보강해 재적용한다. 사용 가능한 자산이 목표 품질에 도달할 수 있는데 새 자산부터 만들지 않는다. 품질이 부족하면 SILHOUETTE/PROPORTION/STRUCTURE/FACE_HANDS_FEET/MATERIAL/RIG/SOCKET/MOTION/LOD/UI_STATE 같은 축으로 분해하고 강한 축은 유지한다. 다른 호환 자산은 전체 대체뿐 아니라 파츠·리그·재질·모션 기증자로 사용해 derived variant를 재조립한다. GAME_CAMERA→MID_RANGE→CLOSEUP→CONTACT 디테일 바닥을 채우고, 랜덤 소품/노이즈/텍스처 과밀로 디테일을 가장하지 않는다. 핵심 형태나 구조 품질이 부분 보강으로 회복 불가능할 때만 전체 신규 제작으로 넘어간다.`:'' ,
     plan.generatedAssetOutputContract?`[GENERATED NATIVE ASSET CONTRACT] ${JSON.stringify(plan.generatedAssetOutputContract)}. Roblox/Unity에서 기존 자산이 목표 품질을 못 채우면 Blender/Python 또는 엔진 네이티브 authoring으로 실제 원본 자산을 만든다. 생성 소스 레시피와 원본/파생 파일, 동일 조건 미리보기, evidence.json, 회사 자산 장부 등록을 남긴다. GLB/이미지 파일이 생겼다는 사실만으로 VERIFIED 처리하지 말고 대상 native 런타임에서 실제 바인딩·표현·성능 검증 뒤 승격한다.`:'',
     plan.modelRouting?`[ASSET MODEL ROUTING] ${JSON.stringify(plan.modelRouting)}. Hero 자산일 때만 선택된 강한 로컬 모델을 사용하고 일반 자산은 baseline을 유지한다. 모델 상향은 중앙 생성 횟수·timeout·context 예산을 늘리는 권한이 아니며, 준비 실패 시 baseline으로 복귀한다.`:'',
@@ -2259,6 +2273,7 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.studioAssetUniverse?.conceptDirector?.enabled?`Concept Director=${(plan.companyGraphicsLibrary.studioAssetUniverse.conceptDirector.requested?.weightedStyles||[]).map(x=>x.family+':'+Math.round(x.weight*100)).join('|')||'adaptive'}; 자유 혼합 컨셉은 캐릭터·몬스터·무기·모션·VFX·오디오·건축·바이옴·조명·UI·서사 표현에 함께 전파하고 게임별 Style Lock이 최종 우선한다.`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.gameVisualDna?.fingerprint?`Game Visual DNA=${plan.companyGraphicsLibrary.studioAssetUniverse.gameVisualDna.fingerprint}; 이후 업데이트는 이 게임 고유 스타일/월드 언어를 먼저 읽고 유지한다.`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.loadout?`Asset Loadout unresolved=${plan.companyGraphicsLibrary.studioAssetUniverse.loadout.unresolved?.length||0}; 검증 회사 자산과 호환/사용 이력 우선으로 자동 선택하고 잠금 선택은 보존한다.`:'',
+    plan.companyGraphicsLibrary?.studioAssetUniverse?.loadout?`Low-quality fallback=${plan.companyGraphicsLibrary.studioAssetUniverse.loadout.lowQualityFallbackCount||0}; 품질 점수는 바인딩 차단선이 아니다. 더 좋은 안전·호환 대안이 없으면 현재 선택 자산을 실제 연결하고 quality debt를 유지하며 worst-part-first로 개선한다.`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.worldGenerationStudio?.enabled?`World Generation Studio는 허용된 이미지/내부 게임/다중 레퍼런스에서 지형·길·밀도·시야·랜드마크 위계 같은 추상 구조만 학습한다. 특정 보호 작품의 맵/랜드마크/장면을 그대로 복제하지 않는다. Map DNA→macro terrain→route graph→zone→micro props→initial prewarm→chunk/LOD streaming→reachability/mobile QA 순으로 연결한다. referenceImages=${plan.companyGraphicsLibrary.studioAssetUniverse.worldGenerationStudio.referenceImageStudies?.length||0}, verifiedObservations=${plan.companyGraphicsLibrary.studioAssetUniverse.worldGenerationStudio.verifiedObservationCount||0}.`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?'의복은 layer/clipping/theme grammar, 건물은 modular/interior/navigation grammar, 환경은 Biome DNA/Prop Density, 몬스터는 body-plan/species/mutation/signature identity, 무기-모션과 스킬 표현은 cross-asset compatibility로 자동 검사한다.':'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?'24H Gap Fill은 검증 회사 자산→저장소→안전 파생→라이선스 검증 외부→PREPARED_SEMANTIC→신규 네이티브 제작 순으로 우선순위를 채운다. Semantic seed는 실제 Unity/Roblox 런타임 PASS 전 VERIFIED가 아니다.':'',
