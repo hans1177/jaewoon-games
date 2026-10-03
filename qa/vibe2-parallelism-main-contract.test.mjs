@@ -250,8 +250,10 @@ test('reserve batch persists control state only through the explicit Vibe2 contr
   assert.match(reserve,/VIBE2_RESERVE_RUNTIME_SNAPSHOT=PINNED_FIRST_ATTEMPT/);
   assert.match(reserve,/VIBE2_RESERVE_RUNTIME_SNAPSHOT=REUSED_RETRY/);
   const snapshotBranch=reserve.indexOf('if [ "$state_attempt" -eq 1 ] || [ ! -s /tmp/vibe2-company-runtime-queue.json ]; then');
-  const planner=reserve.indexOf('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs');
-  assert.ok(snapshotBranch>=0&&planner>snapshotBranch);
+  const productionReserve=reserve.indexOf('VIBE2_GAME_PRIMARY_RESERVE_PLANNER_AUTHORITY=VIBE2_24H_PLAN_AND_EXISTING_CANONICAL_QUEUE');
+  assert.ok(snapshotBranch>=0&&productionReserve>snapshotBranch);
+  assert.doesNotMatch(reserve,/node \/tmp\/vibe2-main\/tools\/vibe2-auto-planner\.mjs/);
+  assert.doesNotMatch(reserve,/node \/tmp\/vibe2-main\/tools\/vibe2-post-release-focus\.mjs/);
 });
 
 test('24H pre-plan priority dispatch block stays valid Bash',()=>{
