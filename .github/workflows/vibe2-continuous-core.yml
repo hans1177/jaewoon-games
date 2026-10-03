@@ -1580,10 +1580,7 @@ jobs:
             export VIBE2_LUAU_COMPILE_REQUIRED=true
             "$VIBE2_LUAU_COMPILER" --help >/dev/null
             "$luau_dir/luau-ast" --help >/dev/null
-            cat > "$luau_dir/smoke.luau" <<'LUAU'
-            local value = 1
-            return value + 1
-            LUAU
+            printf '%s\n' 'local value = 1' 'return value + 1' > "$luau_dir/smoke.luau"
             "$VIBE2_LUAU_COMPILER" "$luau_dir/smoke.luau" >/dev/null
             "$luau_dir/luau-ast" "$luau_dir/smoke.luau" >/dev/null
             echo 'VIBE2_LUAU_COMPILER_SMOKE=PASS'
