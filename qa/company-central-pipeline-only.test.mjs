@@ -861,3 +861,13 @@ test('verified external black-box learning is applied first at full retrieved co
   assert.match(assetPlan,/mandatoryApplicationCoveragePct:100/);
   assert.match(assetPlan,/TRANSFORMATIVE_INTERNAL_ASSET_EVOLUTION/);
 });
+
+test('owner design reset optimistic retry survives company-runtime ref advance without force pushing',()=>{
+  const workflow=read('.github/workflows/owner-all-games-design-reset.yml');
+  assert.match(workflow,/OWNER_ALL_GAMES_DESIGN_RESET_FETCH_RETRY=/);
+  assert.match(workflow,/\+refs\/heads\/main:refs\/remotes\/origin\/main/);
+  assert.match(workflow,/\+refs\/heads\/\$COMPANY_RUNTIME_BRANCH:refs\/remotes\/origin\/\$COMPANY_RUNTIME_BRANCH/);
+  assert.match(workflow,/for attempt in 1 2 3 4; do/);
+  assert.match(workflow,/git reset|git checkout -B owner-all-games-design-reset-runtime/);
+  assert.doesNotMatch(workflow,/git push --force|git push -f/);
+});
