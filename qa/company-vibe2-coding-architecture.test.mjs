@@ -161,3 +161,24 @@ test('development planner binds adaptive world and narrative work into existing 
   assert.match(verifyTask.reason,/faction relationship persistence/i);
   assert.ok(context.patchPlan.forbidden.includes('UNAUTHORIZED_EXTERNAL_SOURCE_ASSET_OR_TEXT_COPY'));
 });
+
+test('coding architecture keeps flow-driven assets dynamic and outside gameplay authority',()=>{
+  const baseline={content:{
+    identity:'Expandable tactical adventure',
+    coreFun:'Explore, fight, choose rewards, and open routes.',
+    coreLoop:['explore a region','fight or avoid a threat','choose a reward','unlock a route'],
+    progressionDirection:'New options widen strategy instead of replacing the core loop.'
+  }};
+  const gameplaySketch=sketch('asset-bound','STORY_COMPLETE_RPG',baseline);
+  const architecture=buildCodingArchitecture({gameId:'asset-bound',genre:'STORY_COMPLETE_RPG',baseline,gameplaySketch,sourceAnalysis:analyzeExistingGameSource('')});
+  assert.equal(architecture.assetIntegration.required,true);
+  assert.equal(architecture.assetIntegration.resolutionMode,'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME');
+  assert.equal(architecture.assetIntegration.assetIdPinningForbidden,true);
+  assert.equal(architecture.assetIntegration.gameplayAuthority,false);
+  assert.equal(architecture.assetIntegration.balanceAuthority,false);
+  assert.equal(architecture.assetIntegration.progressionAuthority,false);
+  assert.equal(architecture.assetIntegration.saveAuthority,false);
+  assert.equal(architecture.assetIntegration.networkingAuthority,false);
+  assert.ok(architecture.assetIntegration.requirements.length>=3);
+  assert.equal(evaluateCodingArchitecture(architecture).pass,true);
+});

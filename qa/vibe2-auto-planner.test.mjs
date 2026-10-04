@@ -2835,6 +2835,14 @@ test('studio evolution emits all five quality pillars for one game',()=>{
   assert.match(progression.goal,/웨이브 보상으로 다음 방어 선택과 해금을 확장/);
   assert.ok(core.evidence.some(value=>value.startsWith('studio-quality-design-source:')));
   assert.equal(core.studioQualityEvolution.requiredConnectedImprovements.max,null);
+  assert.ok(core.assetRequirements.length>=3);
+  assert.ok(core.assetRequirements.every(row=>row.resolution==='LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME'));
+  assert.ok(core.assetRequirements.every(row=>row.assetIdPinned===false&&row.gameplayAuthority===false));
+  assert.ok(core.evidence.includes('flow-asset-requirements:v1'));
+  assert.equal(core.studioQualityEvolution.flowAssetRequirementCount,core.assetRequirements.length);
+  assert.equal(core.studioQualityEvolution.flowAssetResolutionMode,'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME');
+  assert.match(core.goal,/FLOW_ASSET_REQUIREMENTS=/);
+  assert.match(core.goal,/특정 내부 자산 ID를 고정하지 말고/);
 });
 
 

@@ -159,6 +159,27 @@ function regressionPlan(systems=[]){
   return systems.map(system=>({id:`REGRESSION_${system}`,trigger:`ANY_PATCH_TOUCHING_${system}_OR_ITS_OWNED_STATE`,assertions:['PRIOR_WORKING_BEHAVIOR_REMAINS','NEW_EXPECTED_BEHAVIOR_OBSERVED','NO_RELEVANT_INVARIANT_VIOLATION','NO_DUPLICATE_CAUSAL_EVENT']}));
 }
 
+function assetIntegrationContract(gameplaySketch={}){
+  const requirements=Array.isArray(gameplaySketch?.flowArchitecture?.assetFlow?.requirements)
+    ?gameplaySketch.flowArchitecture.assetFlow.requirements:[];
+  return{
+    version:1,
+    required:requirements.length>0,
+    resolutionMode:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME',
+    requirements,
+    allowedReuseModes:['USE_AS_IS','LIGHT_THEME_ADAPT','STYLE_ADAPT','RECOMBINE_PARTS','NATIVE_REAUTHOR_BASE'],
+    assetIdPinningForbidden:true,
+    gameplayAuthority:false,
+    balanceAuthority:false,
+    progressionAuthority:false,
+    saveAuthority:false,
+    networkingAuthority:false,
+    bindingRule:'BIND_PRESENTATION_TO_EXISTING_AUTHORITATIVE_STATE_AND_EVENTS',
+    refreshRule:'RE_RESOLVE_WHEN_FLOW_ROLE_STYLE_PLATFORM_OR_LIBRARY_CAPABILITY_CHANGES',
+    growthRule:'ADD_OR_ADAPT_PRESENTATION_BINDINGS_WITHOUT_CREATING_SHADOW_GAMEPLAY_SYSTEMS',
+  };
+}
+
 function patchMode(developmentMode=''){
   if(developmentMode==='GREENFIELD')return'GREENFIELD_ARCHITECT_THEN_IMPLEMENT';
   if(developmentMode==='RECOMPOSE')return'RECOMPOSE_ALLOWED_COMPONENTS_INTO_NEW_ARCHITECTURE';
@@ -198,6 +219,7 @@ function compactForModel(architecture={}){
     invariantIds:(architecture.invariants||[]).map(row=>row.id),
     impactRule:'PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED',
     regressionRule:'ADD_OR_UPDATE_REGRESSION_CASE_PER_FEATURE_OR_FIXED_BUG',
+    assetIntegration:architecture.assetIntegration,
     changeBudget:architecture.changeBudget,
     refactorContract:architecture.refactorPolicy?.behaviorContract,
     recoveryRules:architecture.recoveryPolicy?.rules,
@@ -217,6 +239,7 @@ export function buildCodingArchitecture({gameId='',genre='',baseline={},gameplay
     stateOwnership:owners,
     dataSchema:{rule:'CRITICAL_ENTITY_PLAYER_WORLD_ECONOMY_PROGRESSION_NARRATIVE_AND_SAVE_STATE_MUST_HAVE_DECLARED_SHAPE_DEFAULTS_AND_VALIDATION',saveMigration:'VERSION_AND_MIGRATION_REQUIRED_WHEN_EXISTING_PERSISTED_SHAPE_CHANGES',corruptRecovery:'RECOVER_LAST_VALID_OR_SAFE_PARTIAL_STATE_WHEN_SUPPORTED_INSTEAD_OF_SILENT_TOTAL_RESET'},
     apiContracts:apis,eventContracts:events,
+    assetIntegration:assetIntegrationContract(gameplaySketch),
     implementationUnits:units,
     codingLoop:['PLAN_CHANGE','PREDICT_IMPACT','IMPLEMENT_ONE_COHERENT_UNIT','SYNTAX_TYPE_IMPORT_CHECK','MICRO_RUNTIME_TEST','INVARIANT_CHECK','ADD_OR_UPDATE_REGRESSION_CASE','SELF_REVIEW','INTEGRATE','FULL_VALIDATION_AT_CANONICAL_GATE'],
     microRuntimeTests:microTests,
@@ -249,5 +272,12 @@ export function evaluateCodingArchitecture(architecture={}){
   if(!(architecture.codingLoop||[]).includes('ADD_OR_UPDATE_REGRESSION_CASE'))blockers.push('CODING_AUTO_REGRESSION_REQUIRED');
   if(architecture.developmentMode==='PRESERVE_PATCH'&&architecture.modeContract?.sourcePolicy!=='PRESERVE_WORKING_SOURCE_STRUCTURE_SAVE_KEYS_MEANINGS_AND_GAME_RULES')blockers.push('PRESERVE_PATCH_SOURCE_POLICY_REQUIRED');
   if(architecture.developmentMode==='RECOMPOSE'&&!architecture.modeContract?.sourceRightsMode)blockers.push('RECOMPOSE_RIGHTS_POLICY_REQUIRED');
+  const asset=architecture.assetIntegration||{};
+  if(asset.required===true){
+    if(!Array.isArray(asset.requirements)||asset.requirements.length<3)blockers.push('CODING_FLOW_ASSET_REQUIREMENTS_INSUFFICIENT');
+    if(asset.assetIdPinningForbidden!==true)blockers.push('CODING_ASSET_ID_PINNING_POLICY_REQUIRED');
+    if(asset.gameplayAuthority!==false||asset.balanceAuthority!==false||asset.saveAuthority!==false||asset.networkingAuthority!==false)blockers.push('CODING_ASSET_AUTHORITY_SEPARATION_REQUIRED');
+    if(clean(asset.resolutionMode)!=='LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME')blockers.push('CODING_ASSET_LATEST_LIBRARY_RESOLUTION_REQUIRED');
+  }
   return{pass:blockers.length===0,blockers};
 }
