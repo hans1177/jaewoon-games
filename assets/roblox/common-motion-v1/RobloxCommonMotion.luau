@@ -1,5 +1,5 @@
 -- 파일명: assets/roblox/common-motion-v1/RobloxCommonMotion.luau
--- 역할: 모든 Roblox R15 게임에서 재사용 가능한 회사 공용 관절 모션 원본 33종
+-- 역할: 모든 Roblox R15 게임에서 재사용 가능한 회사 공용 관절 모션 원본 40종
 -- 원칙: 관절 포즈만 소유한다. Humanoid 이동속도/위치/루트모션/데미지/게임플레이 권한은 소유하지 않는다.
 
 local KeyframeSequenceProvider = game:GetService("KeyframeSequenceProvider")
@@ -40,6 +40,13 @@ local MOTION = table.freeze({
 	DOWNED_IDLE = table.freeze({looped = true, priority = Enum.AnimationPriority.Action3, duration = 1.50, mode = "DOWNED"}),
 	REVIVE_HELP = table.freeze({looped = false, priority = Enum.AnimationPriority.Action3, duration = 1.05, mode = "REVIVE"}),
 	EMOTE_WAVE = table.freeze({looped = false, priority = Enum.AnimationPriority.Action, duration = 1.20, mode = "EMOTE"}),
+	LIGHT_ATTACK_1 = table.freeze({looped = false, priority = Enum.AnimationPriority.Action3, duration = 0.46, mode = "LIGHT_ATTACK"}),
+	HEAVY_ATTACK_1 = table.freeze({looped = false, priority = Enum.AnimationPriority.Action3, duration = 0.88, mode = "HEAVY_ATTACK"}),
+	RANGED_DRAW_SHOT = table.freeze({looped = false, priority = Enum.AnimationPriority.Action3, duration = 0.82, mode = "RANGED_ATTACK"}),
+	CAST_BURST = table.freeze({looped = false, priority = Enum.AnimationPriority.Action3, duration = 0.72, mode = "CAST"}),
+	CHANNEL_LOOP = table.freeze({looped = true, priority = Enum.AnimationPriority.Action3, duration = 1.20, mode = "CHANNEL"}),
+	HIT_BACK = table.freeze({looped = false, priority = Enum.AnimationPriority.Action, duration = 0.55, mode = "HIT_BACK"}),
+	BLEND_NEUTRAL = table.freeze({looped = false, priority = Enum.AnimationPriority.Movement, duration = 0.24, mode = "BLEND"}),
 })
 
 local HIERARCHY = table.freeze({
@@ -647,6 +654,103 @@ local function makeEmote(sequence,row)
 	addFrame(sequence,row.duration,{},"Return")
 end
 
+
+local function makeLightAttack(sequence,row)
+	addFrame(sequence,0,{
+		LowerTorso=angles(-4,-10,0),UpperTorso=angles(7,14,0),
+		RightUpperArm=angles(-72,24,34),RightLowerArm=angles(-42,0,12),
+	},"Anticipation")
+	addFrame(sequence,row.duration*0.42,{
+		LowerTorso=angles(6,15,3),UpperTorso=angles(-7,-22,-5),Head=angles(-2,-12,0),
+		RightUpperArm=angles(48,-38,12),RightLowerArm=angles(-10,0,3),
+		LeftUpperArm=angles(-16,0,-12),
+	},"Impact")
+	addFrame(sequence,row.duration,{LowerTorso=angles(-1,0,0),UpperTorso=angles(1,0,0),RightUpperArm=angles(-12,6,8)},"Recover")
+end
+
+local function makeHeavyAttack(sequence,row)
+	addFrame(sequence,0,{
+		LowerTorso=angles(-10,-16,-3),UpperTorso=angles(15,24,5),Head=angles(-4,10,0),
+		RightUpperArm=angles(-128,26,42),RightLowerArm=angles(-58,0,15),
+		LeftUpperArm=angles(-72,-18,-28),LeftLowerArm=angles(-42,0,-10),
+	},"DeepWindup")
+	addFrame(sequence,row.duration*0.32,{
+		LowerTorso=angles(-14,-12,-4),UpperTorso=angles(20,18,7),
+		RightUpperArm=angles(-142,22,35),LeftUpperArm=angles(-86,-14,-24),
+	},"Commit")
+	addFrame(sequence,row.duration*0.58,{
+		LowerTorso=angles(12,20,6),UpperTorso=angles(-16,-30,-8),Head=angles(5,-15,1),
+		RightUpperArm=angles(68,-42,10),RightLowerArm=angles(-4,0,2),
+		LeftUpperArm=angles(34,24,-8),LeftLowerArm=angles(-8,0,-2),
+	},"HeavyImpact")
+	addFrame(sequence,row.duration,{LowerTorso=angles(2,0,0),UpperTorso=angles(1,0,0)},"Recover")
+end
+
+local function makeRangedAttack(sequence,row)
+	addFrame(sequence,0,{
+		UpperTorso=angles(-3,-8,0),LeftUpperArm=angles(-82,-8,-24),LeftLowerArm=angles(-18,0,-8),
+		RightUpperArm=angles(-74,22,24),RightLowerArm=angles(-98,0,12),
+	},"Raise")
+	addFrame(sequence,row.duration*0.48,{
+		UpperTorso=angles(-5,-12,0),Head=angles(-2,-8,0),
+		LeftUpperArm=angles(-92,-8,-18),LeftLowerArm=angles(-12,0,-6),
+		RightUpperArm=angles(-88,26,30),RightLowerArm=angles(-112,0,14),
+	},"AimDraw")
+	addFrame(sequence,row.duration*0.64,{
+		UpperTorso=angles(-1,-5,0),LeftUpperArm=angles(-78,-4,-16),
+		RightUpperArm=angles(-40,8,12),RightLowerArm=angles(-38,0,6),
+	},"Release")
+	addFrame(sequence,row.duration,{},"Recover")
+end
+
+local function makeCast(sequence,row)
+	addFrame(sequence,0,{LeftUpperArm=angles(-22,-8,-12),RightUpperArm=angles(-22,8,12)},"Gather")
+	addFrame(sequence,row.duration*0.48,{
+		UpperTorso=angles(-5,0,0),Head=angles(-4,0,0),
+		LeftUpperArm=angles(-88,-24,-34),LeftLowerArm=angles(-68,0,-14),
+		RightUpperArm=angles(-88,24,34),RightLowerArm=angles(-68,0,14),
+	},"Charge")
+	addFrame(sequence,row.duration*0.68,{
+		UpperTorso=angles(5,0,0),LeftUpperArm=angles(-42,-38,-25),RightUpperArm=angles(-42,38,25),
+		LeftLowerArm=angles(-18,0,-6),RightLowerArm=angles(-18,0,6),
+	},"Release")
+	addFrame(sequence,row.duration,{},"Recover")
+end
+
+local function makeChannel(sequence,row)
+	for i=0,4 do
+		local t=row.duration*i/4
+		local pulse=math.sin(i*math.pi/2)
+		addFrame(sequence,t,{
+			LowerTorso=angles(-2+pulse*0.5,0,0),UpperTorso=angles(4-pulse*0.6,0,0),Head=angles(-3+pulse*0.4,0,0),
+			LeftUpperArm=angles(-72-pulse*6,-22,-30),LeftLowerArm=angles(-58-pulse*5,0,-12),
+			RightUpperArm=angles(-72+pulse*6,22,30),RightLowerArm=angles(-58+pulse*5,0,12),
+		},i==0 and "LoopStart" or i==4 and "LoopEnd" or nil)
+	end
+end
+
+local function makeHitBack(sequence,row)
+	addFrame(sequence,0,{},"Ready")
+	addFrame(sequence,row.duration*0.24,{
+		LowerTorso=angles(-10,0,-8),UpperTorso=angles(-16,6,-12),Head=angles(-8,8,8),
+		LeftUpperArm=angles(20,0,-18),RightUpperArm=angles(-14,0,16),
+		LeftUpperLeg=angles(12,0,-3),RightUpperLeg=angles(-8,0,3),
+	},"BackRecoil")
+	addFrame(sequence,row.duration*0.64,{LowerTorso=angles(-4,0,-3),UpperTorso=angles(-5,2,-5)},"Absorb")
+	addFrame(sequence,row.duration,{},"Recover")
+end
+
+local function makeBlend(sequence,row)
+	addFrame(sequence,0,{
+		LowerTorso=angles(-2,0,0),UpperTorso=angles(2,0,0),
+		LeftUpperArm=angles(-10,0,-6),RightUpperArm=angles(-10,0,6),
+	},"From")
+	addFrame(sequence,row.duration,{
+		LowerTorso=angles(0,0,0),UpperTorso=angles(0,0,0),
+		LeftUpperArm=angles(-4,0,-4),RightUpperArm=angles(-4,0,4),
+	},"Neutral")
+end
+
 local BUILDERS = table.freeze({
 	IDLE = makeIdle,
 	LOCOMOTION = makeLocomotion,
@@ -677,6 +781,13 @@ local BUILDERS = table.freeze({
 	DOWNED = makeDowned,
 	REVIVE = makeRevive,
 	EMOTE = makeEmote,
+	LIGHT_ATTACK = makeLightAttack,
+	HEAVY_ATTACK = makeHeavyAttack,
+	RANGED_ATTACK = makeRangedAttack,
+	CAST = makeCast,
+	CHANNEL = makeChannel,
+	HIT_BACK = makeHitBack,
+	BLEND = makeBlend,
 })
 
 local function resolve(atomId)
@@ -755,11 +866,11 @@ function RobloxCommonMotion.Audit()
 	end
 	table.sort(ids)
 	return table.freeze({
-		version = 3,
+		version = 4,
 		packId = "roblox-common-motion-v1",
 		atoms = table.freeze(ids),
 		atomCount = #ids,
-		expectedAtomCount = 33,
+		expectedAtomCount = 40,
 		companyCommonBase = true,
 		compatibleRig = "R15",
 		keyframeSequenceSource = true,
