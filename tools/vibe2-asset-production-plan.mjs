@@ -465,6 +465,9 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   const original=registry||readJson(registryPath,{version:0,assets:[],externalSources:[]});
   const next=JSON.parse(JSON.stringify(original));
   next.assets=Array.isArray(next.assets)?next.assets:[];
+  const catalogs=commonCatalogFiles(repoRoot).map(file=>({path:path.relative(repoRoot,file).replaceAll('\\','/'),catalog:readJson(file,{})})).filter(row=>row.catalog?.packId);
+  const fingerprint=catalogFingerprint(catalogs);
+  const syncRows=catalogs.map(row=>synchronizeCatalogRows({registry:next,catalog:row.catalog}));
   const licenseBlockedForSync=asset=>{
     const value=clean(asset?.license||asset?.policy),lower=value.toLowerCase();
     return !value||/(?:^|[^a-z0-9])nc(?:[^a-z0-9]|$)/i.test(value)||lower.includes('unknown')||lower.includes('출처 불명')||lower.includes('재배포 제한');
@@ -591,9 +594,6 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     sourceConsumptionEvidenceMode:'EXACT_ASSET_ID_SOURCE_MARKER_OR_EXACT_PROJECT_PATH_BINDING',
     sourceConsumptionDoesNotPromoteProductionVerification:true
   };
-  const catalogs=commonCatalogFiles(repoRoot).map(file=>({path:path.relative(repoRoot,file).replaceAll('\\','/'),catalog:readJson(file,{})})).filter(row=>row.catalog?.packId);
-  const fingerprint=catalogFingerprint(catalogs);
-  const syncRows=catalogs.map(row=>synchronizeCatalogRows({registry:next,catalog:row.catalog}));
   const synchronizedCount=(packId,fallback=0)=>{
     const row=syncRows.find(item=>item.packId===packId);
     return row?Number(row.count||0):Number(fallback||0);
