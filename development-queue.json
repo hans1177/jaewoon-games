@@ -5587,8 +5587,8 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-02T01:24:10.538Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -5618,27 +5618,27 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-04T07:15:37.488Z",
+      "updatedAt": "2026-10-04T07:16:59.514Z",
       "robloxSourceCommit": "b85413fd6bee3fb2b51578c93830a821ef74f2f2",
       "robloxSourceBootstrapPassedAt": "2026-10-04T07:15:37.488Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "faea0571f51525ca5d9ce0f5b2ac65c0f40ac50d",
+      "robloxBuildSourceRevision": "b85413fd6bee3fb2b51578c93830a821ef74f2f2",
       "robloxBuildArtifactIdentity": "sha256:7a851102e2f7805182a1070d4f6b1b748ed6e8269fa2fac7a12a1283fad3f29f",
-      "robloxBuildPassedAt": "2026-10-04T06:57:04.640Z",
+      "robloxBuildPassedAt": "2026-10-04T07:16:59.514Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-04T06:57:04.640Z",
+      "robloxBuildPreflightPassedAt": "2026-10-04T07:16:59.514Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "daechung-rpg",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-04T06:57:03.360Z",
-        "sourceRevision": "faea0571f51525ca5d9ce0f5b2ac65c0f40ac50d",
+        "checkedAt": "2026-10-04T07:16:57.923Z",
+        "sourceRevision": "b85413fd6bee3fb2b51578c93830a821ef74f2f2",
         "artifactIdentity": "sha256:7a851102e2f7805182a1070d4f6b1b748ed6e8269fa2fac7a12a1283fad3f29f",
         "secondaryOwnerFocus": false,
         "facts": {
@@ -5658,7 +5658,7 @@
           "directRoblox": true,
           "concurrentRoblox": true,
           "build": {
-            "sourceRevision": "faea0571f51525ca5d9ce0f5b2ac65c0f40ac50d",
+            "sourceRevision": "b85413fd6bee3fb2b51578c93830a821ef74f2f2",
             "artifactIdentity": "sha256:7a851102e2f7805182a1070d4f6b1b748ed6e8269fa2fac7a12a1283fad3f29f",
             "webValidationPassed": false,
             "musicValidationPassed": false,
@@ -5675,25 +5675,25 @@
             "model": "llama3.2:1b",
             "decision": "PASS",
             "blockers": [],
-            "note": "No concrete build-stage blockers found."
+            "note": "BUILD_EVIDENCE contains no concrete build-stage blockers."
           }
         ],
         "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
       "robloxFoundationF0Passed": true,
-      "robloxFoundationF0PassedAt": "2026-10-04T06:57:04.640Z",
+      "robloxFoundationF0PassedAt": "2026-10-04T07:16:59.514Z",
       "robloxFoundationF0Evidence": {
         "version": 4,
         "gameId": "daechung-rpg",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-04T06:57:03.870Z",
+        "checkedAt": "2026-10-04T07:16:58.534Z",
         "sourcePath": "roblox-games/daechung-rpg",
-        "sourceRevision": "faea0571f51525ca5d9ce0f5b2ac65c0f40ac50d",
+        "sourceRevision": "b85413fd6bee3fb2b51578c93830a821ef74f2f2",
         "artifactIdentity": "sha256:7a851102e2f7805182a1070d4f6b1b748ed6e8269fa2fac7a12a1283fad3f29f",
         "rebuiltArtifactIdentity": "sha256:7a851102e2f7805182a1070d4f6b1b748ed6e8269fa2fac7a12a1283fad3f29f",
-        "artifactRunId": 37182930174,
+        "artifactRunId": 37184325531,
         "nativeLanguageCompilePassed": true,
         "nativeCompilerVersion": "0.739",
         "playMode": "COOP",
@@ -6156,12 +6156,12 @@
         "gameId": "daechung-rpg",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-04T06:57:03.870Z",
+        "checkedAt": "2026-10-04T07:16:58.534Z",
         "sourcePath": "roblox-games/daechung-rpg",
-        "sourceRevision": "faea0571f51525ca5d9ce0f5b2ac65c0f40ac50d",
+        "sourceRevision": "b85413fd6bee3fb2b51578c93830a821ef74f2f2",
         "artifactIdentity": "sha256:7a851102e2f7805182a1070d4f6b1b748ed6e8269fa2fac7a12a1283fad3f29f",
         "rebuiltArtifactIdentity": "sha256:7a851102e2f7805182a1070d4f6b1b748ed6e8269fa2fac7a12a1283fad3f29f",
-        "artifactRunId": 37182930174,
+        "artifactRunId": 37184325531,
         "nativeLanguageCompilePassed": true,
         "nativeCompilerVersion": "0.739",
         "playMode": "COOP",
@@ -6653,7 +6653,7 @@
       "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-runtime-candidate-deploy-pending"
       ],
       "robloxExactRevisionPassed": true,
       "robloxMultiplayerQaEvidence": {
@@ -55676,7 +55676,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-04T07:16:39.347Z",
+  "updatedAt": "2026-10-04T07:16:59.514Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
