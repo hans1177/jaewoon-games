@@ -1,7 +1,7 @@
 {
-  "version": 5,
+  "version": 6,
   "packId": "roblox-common-world-props-v1",
-  "title": "Roblox 회사 공용 월드·하우징·정착지 소품 38종 v5",
+  "title": "Roblox 회사 공용 월드·하우징·정착지 소품 38종 v6",
   "platform": "ROBLOX",
   "family": "PROP",
   "subfamily": "WORLD_PROP_PACK",
@@ -27,7 +27,8 @@
       "subfamily": "SIGNPOST",
       "worldRole": "WAYFINDING",
       "familyRootId": "WORLD_SIGN",
-      "interactionRole": "READ"
+      "interactionRole": "READ",
+      "interactionSoundRole": "SIGN_RATTLE"
     },
     {
       "assetId": "WOOD_FENCE",
@@ -35,7 +36,8 @@
       "subfamily": "FENCE",
       "worldRole": "BOUNDARY",
       "familyRootId": "WORLD_FENCE",
-      "interactionRole": "INSPECT_OR_VAULT"
+      "interactionRole": "INSPECT_OR_VAULT",
+      "interactionSoundRole": "WOOD_CREAK"
     },
     {
       "assetId": "WALL_TORCH",
@@ -43,7 +45,8 @@
       "subfamily": "TORCH",
       "worldRole": "LIGHTING_PROP",
       "familyRootId": "WORLD_LIGHT",
-      "interactionRole": "TOGGLE_LIGHT"
+      "interactionRole": "TOGGLE_LIGHT",
+      "interactionSoundRole": "TORCH_BURN"
     },
     {
       "assetId": "WOOD_BARREL",
@@ -51,7 +54,8 @@
       "subfamily": "BARREL",
       "worldRole": "SET_DRESSING",
       "familyRootId": "WORLD_CONTAINER",
-      "interactionRole": "OPEN_OR_INSPECT"
+      "interactionRole": "OPEN_OR_INSPECT",
+      "interactionSoundRole": "WOOD_CONTAINER"
     },
     {
       "assetId": "BENCH",
@@ -59,7 +63,8 @@
       "subfamily": "BENCH",
       "worldRole": "SEATING_PROP",
       "familyRootId": "WORLD_FURNITURE",
-      "interactionRole": "SIT"
+      "interactionRole": "SIT",
+      "interactionSoundRole": "WOOD_CREAK"
     },
     {
       "assetId": "TABLE",
@@ -67,7 +72,8 @@
       "subfamily": "TABLE",
       "worldRole": "SURFACE_PROP",
       "familyRootId": "WORLD_FURNITURE",
-      "interactionRole": "INSPECT_OR_PLACE"
+      "interactionRole": "INSPECT_OR_PLACE",
+      "interactionSoundRole": "WOOD_TAP"
     },
     {
       "assetId": "MARKET_STALL",
@@ -75,7 +81,8 @@
       "subfamily": "MARKET_STALL",
       "worldRole": "VENDOR_PROP",
       "familyRootId": "WORLD_STALL",
-      "interactionRole": "SHOP_OR_INSPECT"
+      "interactionRole": "SHOP_OR_INSPECT",
+      "interactionSoundRole": "CLOTH_FLAP_MARKET"
     },
     {
       "assetId": "STONE_WELL",
@@ -83,7 +90,8 @@
       "subfamily": "WELL",
       "worldRole": "LANDMARK_PROP",
       "familyRootId": "WORLD_WELL",
-      "interactionRole": "DRAW_WATER_OR_INSPECT"
+      "interactionRole": "DRAW_WATER_OR_INSPECT",
+      "interactionSoundRole": "ROPE_BUCKET"
     },
     {
       "assetId": "BED_SINGLE",
@@ -92,7 +100,8 @@
       "worldRole": "HOUSING_BED",
       "familyRootId": "WORLD_FURNITURE",
       "propKind": "BED",
-      "interactionRole": "SLEEP_OR_BIND_RESPAWN"
+      "interactionRole": "SLEEP_OR_BIND_RESPAWN",
+      "interactionSoundRole": "FABRIC_BED"
     },
     {
       "assetId": "WARDROBE",
@@ -101,7 +110,8 @@
       "worldRole": "HOUSING_STORAGE",
       "familyRootId": "WORLD_FURNITURE",
       "propKind": "WARDROBE",
-      "interactionRole": "OPEN_STORAGE_OR_OUTFIT"
+      "interactionRole": "OPEN_STORAGE_OR_OUTFIT",
+      "interactionSoundRole": "WOOD_DOOR"
     },
     {
       "assetId": "SHELF",
@@ -110,7 +120,8 @@
       "worldRole": "DISPLAY_STORAGE",
       "familyRootId": "WORLD_FURNITURE",
       "propKind": "SHELF",
-      "interactionRole": "OPEN_STORAGE_OR_INSPECT"
+      "interactionRole": "OPEN_STORAGE_OR_INSPECT",
+      "interactionSoundRole": "WOOD_STORAGE"
     },
     {
       "assetId": "WORKBENCH",
@@ -119,7 +130,8 @@
       "worldRole": "CRAFT_STATION",
       "familyRootId": "WORLD_CRAFT_STATION",
       "propKind": "WORKBENCH",
-      "interactionRole": "CRAFT"
+      "interactionRole": "CRAFT",
+      "interactionSoundRole": "TOOL_WORK"
     },
     {
       "assetId": "CRAFT_TABLE",
@@ -128,7 +140,8 @@
       "worldRole": "CRAFT_STATION",
       "familyRootId": "WORLD_CRAFT_STATION",
       "propKind": "CRAFT_TABLE",
-      "interactionRole": "CRAFT"
+      "interactionRole": "CRAFT",
+      "interactionSoundRole": "TOOL_WORK"
     },
     {
       "assetId": "COOKING_HEARTH",
@@ -137,7 +150,8 @@
       "worldRole": "COOKING_STATION",
       "familyRootId": "WORLD_COOKING",
       "propKind": "HEARTH",
-      "interactionRole": "COOK"
+      "interactionRole": "COOK",
+      "interactionSoundRole": "FIRE_COOK"
     },
     {
       "assetId": "STORAGE_CABINET",
@@ -146,7 +160,8 @@
       "worldRole": "STORAGE",
       "familyRootId": "WORLD_STORAGE",
       "propKind": "CABINET",
-      "interactionRole": "OPEN_STORAGE"
+      "interactionRole": "OPEN_STORAGE",
+      "interactionSoundRole": "WOOD_DOOR"
     },
     {
       "assetId": "PLANTER_BOX",
@@ -155,7 +170,8 @@
       "worldRole": "FARMING_DECOR",
       "familyRootId": "WORLD_GARDEN",
       "propKind": "PLANTER",
-      "interactionRole": "PLANT_OR_INSPECT"
+      "interactionRole": "PLANT_OR_INSPECT",
+      "interactionSoundRole": "SOIL_PLANT"
     },
     {
       "assetId": "CROP_PLOT",
@@ -164,7 +180,8 @@
       "worldRole": "FARMING_PLOT_VISUAL",
       "familyRootId": "WORLD_GARDEN",
       "propKind": "CROP_PLOT",
-      "interactionRole": "PLANT_OR_HARVEST"
+      "interactionRole": "PLANT_OR_HARVEST",
+      "interactionSoundRole": "SOIL_FARM"
     },
     {
       "assetId": "ANIMAL_TROUGH",
@@ -173,7 +190,8 @@
       "worldRole": "ANIMAL_HOUSING_VISUAL",
       "familyRootId": "WORLD_ANIMAL_HOME",
       "propKind": "TROUGH",
-      "interactionRole": "FEED"
+      "interactionRole": "FEED",
+      "interactionSoundRole": "ANIMAL_YARD"
     },
     {
       "assetId": "FLOOR_LAMP",
@@ -182,7 +200,8 @@
       "worldRole": "HOUSING_LIGHT",
       "familyRootId": "WORLD_LIGHT",
       "propKind": "FLOOR_LAMP",
-      "interactionRole": "TOGGLE_LIGHT"
+      "interactionRole": "TOGGLE_LIGHT",
+      "interactionSoundRole": "LAMP_HUM_OR_FLAME"
     },
     {
       "assetId": "WALL_SWITCH",
@@ -191,7 +210,8 @@
       "worldRole": "INTERACTION_CONTROL_VISUAL",
       "familyRootId": "WORLD_CONTROL",
       "propKind": "SWITCH",
-      "interactionRole": "TOGGLE"
+      "interactionRole": "TOGGLE",
+      "interactionSoundRole": "SWITCH_CLICK"
     },
     {
       "assetId": "LEVER_CONTROL",
@@ -200,7 +220,8 @@
       "worldRole": "INTERACTION_CONTROL_VISUAL",
       "familyRootId": "WORLD_CONTROL",
       "propKind": "LEVER",
-      "interactionRole": "USE_CONTROL"
+      "interactionRole": "USE_CONTROL",
+      "interactionSoundRole": "LEVER_CLUNK"
     },
     {
       "assetId": "NOTICE_BOARD",
@@ -209,7 +230,8 @@
       "worldRole": "QUEST_DISPLAY",
       "familyRootId": "WORLD_QUEST_PROP",
       "propKind": "NOTICE",
-      "interactionRole": "READ"
+      "interactionRole": "READ",
+      "interactionSoundRole": "PAPER_FLUTTER"
     },
     {
       "assetId": "RUG",
@@ -218,7 +240,8 @@
       "worldRole": "HOUSING_DECOR",
       "familyRootId": "WORLD_DECOR",
       "propKind": "RUG",
-      "interactionRole": "INSPECT"
+      "interactionRole": "INSPECT",
+      "interactionSoundRole": "FABRIC_STEP"
     },
     {
       "assetId": "DECOR_STATUE",
@@ -227,7 +250,8 @@
       "worldRole": "HOUSING_DECOR",
       "familyRootId": "WORLD_DECOR",
       "propKind": "STATUE",
-      "interactionRole": "INSPECT"
+      "interactionRole": "INSPECT",
+      "interactionSoundRole": "STONE_TOUCH"
     },
     {
       "assetId": "WOOD_CART",
@@ -237,7 +261,8 @@
       "familyRootId": "WORLD_SETTLEMENT_PROP",
       "propKind": "CART",
       "interactionRole": "PUSH_OR_INSPECT",
-      "silhouette": "TWO_WHEEL_CART"
+      "silhouette": "TWO_WHEEL_CART",
+      "interactionSoundRole": "CART_WHEEL"
     },
     {
       "assetId": "WOOD_CRATE",
@@ -247,7 +272,8 @@
       "familyRootId": "WORLD_CONTAINER",
       "propKind": "CRATE",
       "interactionRole": "OPEN_OR_CARRY",
-      "silhouette": "REINFORCED_CRATE"
+      "silhouette": "REINFORCED_CRATE",
+      "interactionSoundRole": "WOOD_CONTAINER"
     },
     {
       "assetId": "TREASURE_CHEST",
@@ -257,7 +283,8 @@
       "familyRootId": "WORLD_CONTAINER",
       "propKind": "CHEST",
       "interactionRole": "OPEN_OR_INSPECT",
-      "silhouette": "LIDDED_CHEST"
+      "silhouette": "LIDDED_CHEST",
+      "interactionSoundRole": "WOOD_CONTAINER"
     },
     {
       "assetId": "STREET_LANTERN",
@@ -267,7 +294,8 @@
       "familyRootId": "WORLD_LIGHT",
       "propKind": "STREET_LANTERN",
       "interactionRole": "TOGGLE_OR_INSPECT",
-      "silhouette": "POST_LANTERN"
+      "silhouette": "POST_LANTERN",
+      "interactionSoundRole": "LAMP_HUM_OR_FLAME"
     },
     {
       "assetId": "LAUNDRY_LINE",
@@ -277,7 +305,8 @@
       "familyRootId": "WORLD_SETTLEMENT_PROP",
       "propKind": "LAUNDRY",
       "interactionRole": "INSPECT",
-      "silhouette": "TWO_POST_LAUNDRY"
+      "silhouette": "TWO_POST_LAUNDRY",
+      "interactionSoundRole": "CLOTH_FLAP"
     },
     {
       "assetId": "SETTLEMENT_FLAG",
@@ -287,7 +316,8 @@
       "familyRootId": "WORLD_SETTLEMENT_PROP",
       "propKind": "FLAG",
       "interactionRole": "INSPECT",
-      "silhouette": "TALL_FLAG_POLE"
+      "silhouette": "TALL_FLAG_POLE",
+      "interactionSoundRole": "CLOTH_FLAP"
     },
     {
       "assetId": "CANVAS_TENT",
@@ -297,7 +327,8 @@
       "familyRootId": "WORLD_SETTLEMENT_PROP",
       "propKind": "TENT",
       "interactionRole": "ENTER_OR_INSPECT",
-      "silhouette": "RIDGE_TENT"
+      "silhouette": "RIDGE_TENT",
+      "interactionSoundRole": "CLOTH_FLAP"
     },
     {
       "assetId": "FIREWOOD_STACK",
@@ -307,7 +338,8 @@
       "familyRootId": "WORLD_SETTLEMENT_PROP",
       "propKind": "FIREWOOD",
       "interactionRole": "GATHER_OR_INSPECT",
-      "silhouette": "STACKED_LOGS"
+      "silhouette": "STACKED_LOGS",
+      "interactionSoundRole": "WOOD_STACK"
     },
     {
       "assetId": "FARM_TOOL_RACK",
@@ -317,7 +349,8 @@
       "familyRootId": "WORLD_FARM_PROP",
       "propKind": "FARM_TOOL_RACK",
       "interactionRole": "USE_OR_INSPECT",
-      "silhouette": "RACK_LONG_TOOLS"
+      "silhouette": "RACK_LONG_TOOLS",
+      "interactionSoundRole": "TOOL_RATTLE"
     },
     {
       "assetId": "RUIN_DEBRIS",
@@ -327,7 +360,8 @@
       "familyRootId": "WORLD_RUIN_PROP",
       "propKind": "RUIN_DEBRIS",
       "interactionRole": "INSPECT_OR_CLIMB",
-      "silhouette": "BROKEN_STONE_CLUSTER"
+      "silhouette": "BROKEN_STONE_CLUSTER",
+      "interactionSoundRole": "STONE_RATTLE"
     },
     {
       "assetId": "CONSTRUCTION_SCAFFOLD",
@@ -337,7 +371,8 @@
       "familyRootId": "WORLD_BUILD_PROP",
       "propKind": "SCAFFOLD",
       "interactionRole": "CLIMB_OR_INSPECT",
-      "silhouette": "TIMBER_SCAFFOLD"
+      "silhouette": "TIMBER_SCAFFOLD",
+      "interactionSoundRole": "WOOD_CREAK"
     },
     {
       "assetId": "LORE_STONE",
@@ -347,7 +382,8 @@
       "familyRootId": "WORLD_LORE_PROP",
       "propKind": "LORE_STONE",
       "interactionRole": "READ_OR_INSPECT",
-      "silhouette": "CARVED_STONE_SLAB"
+      "silhouette": "CARVED_STONE_SLAB",
+      "interactionSoundRole": "STONE_TOUCH"
     },
     {
       "assetId": "RESOURCE_ROCK_NODE",
@@ -357,7 +393,8 @@
       "familyRootId": "WORLD_RESOURCE_PROP",
       "propKind": "RESOURCE_ROCK",
       "interactionRole": "HARVEST_OR_INSPECT",
-      "silhouette": "ROCK_NODE_CLUSTER"
+      "silhouette": "ROCK_NODE_CLUSTER",
+      "interactionSoundRole": "ROCK_HIT"
     },
     {
       "assetId": "RESOURCE_WOOD_NODE",
@@ -367,7 +404,8 @@
       "familyRootId": "WORLD_RESOURCE_PROP",
       "propKind": "RESOURCE_WOOD",
       "interactionRole": "HARVEST_OR_INSPECT",
-      "silhouette": "STUMP_LOG_NODE"
+      "silhouette": "STUMP_LOG_NODE",
+      "interactionSoundRole": "WOOD_HIT"
     }
   ],
   "systemDepthContract": {
@@ -542,6 +580,21 @@
     "respawnAuthority": false,
     "economyAuthority": false,
     "propInteractionRoleCount": 38,
-    "metadataOnly": true
+    "metadataOnly": true,
+    "soundRoleLinked": true,
+    "audioPlaybackAuthority": false,
+    "soundVariationRequired": true,
+    "machineAndLifeSoundRoles": [
+      "TOOL_WORK",
+      "SWITCH_CLICK",
+      "LEVER_CLUNK",
+      "CART_WHEEL",
+      "LAMP_HUM_OR_FLAME",
+      "CLOTH_FLAP",
+      "WOOD_CREAK",
+      "STONE_RATTLE",
+      "ANIMAL_YARD",
+      "ROPE_BUCKET"
+    ]
   }
 }
