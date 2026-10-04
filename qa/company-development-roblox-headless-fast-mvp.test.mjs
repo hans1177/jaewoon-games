@@ -195,6 +195,28 @@ test('F0 planner dedupes duplicate dispatches while validation matrix remains pa
 });
 
 
+test('F0 hands each completed matrix game forward before batch reconciliation fan-in',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  const validateStart=workflow.indexOf('\n  validate:\n');
+  const persistStart=workflow.indexOf('\n  persist:\n',validateStart);
+  assert.ok(validateStart>0&&persistStart>validateStart);
+  const validateBlock=workflow.slice(validateStart,persistStart);
+  assert.match(validateBlock,/name: Persist exact game F0 evidence immediately/);
+  assert.match(validateBlock,/ROBLOX_F0_PER_GAME_PERSIST_OPTIMISTIC_ATTEMPT=/);
+  assert.match(validateBlock,/while true; do/);
+  assert.match(validateBlock,/git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(validateBlock,/handoff_ready=\$ready/);
+  assert.match(validateBlock,/name: Dispatch exact private Roblox validation immediately after this game F0/);
+  assert.match(validateBlock,/ROBLOX_F0_PER_GAME_PRIVATE_VALIDATION_HANDOFF=DISPATCHED:/);
+  assert.match(validateBlock,/ROBLOX_F0_PER_GAME_PRIVATE_VALIDATION_HANDOFF=DEDUPED_CURRENT_MAIN:/);
+  assert.match(validateBlock,/company-development-roblox-release-promotion\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$GAME_ID" -f publish_stage=validation/);
+  assert.match(validateBlock,/ROBLOX_STUDIO_REQUIRED_FOR_F0_CONTINUATION=NO/);
+  assert.doesNotMatch(validateBlock,/publish_stage=final/);
+  const persistBlock=workflow.slice(persistStart);
+  assert.match(persistBlock,/name: Persist headless evidence/);
+  assert.match(persistBlock,/pattern: development-roblox-f0-\*/);
+});
+
 test('F0 hands exact game ids directly to private validation without Studio dependency',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
   assert.match(workflow,/name: Dispatch exact private Roblox validation directly after F0/);
