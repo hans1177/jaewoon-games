@@ -12,15 +12,15 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 12,
-      "successes": 2,
-      "failures": 10,
+      "calls": 15,
+      "successes": 3,
+      "failures": 12,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 30460,
-      "lastMs": 3228,
+      "totalMs": 38318,
+      "lastMs": 3037,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T09:43:16.858Z"
+      "updatedAt": "2026-10-04T09:45:35.286Z"
     },
     "gemini:gemini-3.8-flash": {
       "calls": 1,
@@ -111,33 +111,33 @@
       "updatedAt": "2026-10-04T09:23:15.149Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 10,
+      "calls": 11,
       "successes": 0,
-      "failures": 10,
+      "failures": 11,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 91583,
-      "lastMs": 15025,
+      "totalMs": 97885,
+      "lastMs": 6302,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T09:43:28.655Z"
+      "updatedAt": "2026-10-04T09:45:38.551Z"
     },
     "ollama:qwen3:1.7b": {
-      "calls": 4,
+      "calls": 5,
       "successes": 0,
-      "failures": 4,
-      "timeouts": 3,
+      "failures": 5,
+      "timeouts": 4,
       "jsonFailures": 1,
-      "totalMs": 413096,
-      "lastMs": 53085,
-      "lastError": "schema required missing: root.systemInterconnections",
-      "updatedAt": "2026-10-04T09:43:12.566Z"
+      "totalMs": 533104,
+      "lastMs": 120008,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
+      "updatedAt": "2026-10-04T09:45:28.665Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-04T09:23:10.530Z",
-  "updatedAt": "2026-10-04T09:43:28.655Z",
-  "lastSuccessfulModelCallAt": "2026-10-04T09:42:07.452Z",
+  "updatedAt": "2026-10-04T09:45:38.551Z",
+  "lastSuccessfulModelCallAt": "2026-10-04T09:45:32.248Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
   },
