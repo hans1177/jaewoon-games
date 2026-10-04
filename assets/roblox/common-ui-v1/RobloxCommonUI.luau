@@ -2164,6 +2164,175 @@ function RobloxCommonUI.CreateItemSourceUsagePanel(options)
   return root,parts
 end
 
+
+-- 하우징/샌드박스/정착지 시스템 깊이 v6
+function RobloxCommonUI.CreateBuildCatalogPanel(options)
+  return deepSystemPanel(options,"BUILD_CATALOG_PANEL","BUILD_CATALOG_PANEL","건축 목록",{"기초","벽/문/창","천장/지붕","계단/난간","가구","제작소","장식"})
+end
+
+function RobloxCommonUI.CreateBuildPieceCard(options)
+  return deepSystemPanel(options,"BUILD_PIECE_CARD","BUILD_PIECE_CARD",options and options.title or "건축 부품",{"분류 / 티어","필요 재료","스냅 유형","지원 역할","배치 가능 상태"})
+end
+
+function RobloxCommonUI.CreatePlacementGhostState(options)
+  local root,parts=deepSystemPanel(options,"PLACEMENT_GHOST_STATE","PLACEMENT_GHOST_STATE","배치 미리보기",{"위치","회전","스냅 대상","유효/무효","필요 재료"})
+  root:SetAttribute("OwnsPlacementAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateSnapIndicator(options)
+  local root,parts=deepSystemPanel(options,"SNAP_INDICATOR","SNAP_INDICATOR","스냅",{"스냅 지점","스냅 유형","연결 대상","회전 단계"})
+  root.Size=options and options.size or UDim2.fromOffset(300,190)
+  root:SetAttribute("OwnsSnapAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateStabilityMeter(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=RobloxCommonUI.CreateProgressBar({name=options.name or "StabilityMeter",label=options.label or "구조 안정성",value=options.value or 0,size=options.size or UDim2.fromOffset(320,44),theme=theme})
+  tag(root,"STABILITY_METER")
+  root:SetAttribute("PresentationRole","STABILITY_METER")
+  root:SetAttribute("OwnsStabilityCalculation",false)
+  return root
+end
+
+function RobloxCommonUI.CreateBuildTierBadge(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=Instance.new("Frame");root.Name=options.name or "BuildTierBadge";root.Size=options.size or UDim2.fromOffset(150,38);root.BackgroundColor3=theme.PanelRaised;root.BorderSizePixel=0;tag(root,"BUILD_TIER_BADGE");corner(root,10);stroke(root,theme.Border,1,0.18)
+  local label=commonText(root,"Tier",options.text or "건축 티어",UDim2.fromOffset(10,0),UDim2.new(1,-20,1,0),theme.Text,12,true);label.TextXAlignment=Enum.TextXAlignment.Center
+  root:SetAttribute("OwnsTierAuthority",false)
+  return root,label
+end
+
+function RobloxCommonUI.CreatePlacementValidityBanner(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=Instance.new("Frame");root.Name=options.name or "PlacementValidityBanner";root.Size=options.size or UDim2.fromOffset(340,48);root.BackgroundColor3=theme.Panel;root.BorderSizePixel=0;tag(root,"PLACEMENT_VALIDITY_BANNER");corner(root,10);stroke(root,theme.Border,1,0.12)
+  local label=commonText(root,"State",options.text or "배치 가능",UDim2.fromOffset(12,0),UDim2.new(1,-24,1,0),options.valid==false and theme.Danger or theme.Positive,13,true)
+  root:SetAttribute("ColorOnlyStateForbidden",true);root:SetAttribute("OwnsPlacementValidation",false)
+  return root,label
+end
+
+function RobloxCommonUI.CreateBuildActionBar(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=Instance.new("Frame");root.Name=options.name or "BuildActionBar";root.Size=options.size or UDim2.new(1,0,0,58);root.BackgroundColor3=theme.Panel;root.BorderSizePixel=0;tag(root,"BUILD_ACTION_BAR");corner(root,10);stroke(root,theme.Border,1,0.14)
+  local holder=Instance.new("Frame");holder.Name="Actions";holder.Position=UDim2.fromOffset(8,6);holder.Size=UDim2.new(1,-16,1,-12);holder.BackgroundTransparency=1;holder.Parent=root;commonList(holder,true,6)
+  local labels=options.actions or {"배치","회전","이동","복사","철거","재질"}
+  local buttons={}
+  for i,label in ipairs(labels) do local b=RobloxCommonUI.CreateTabButton({text=label,size=UDim2.fromOffset(84,44),theme=theme});b.LayoutOrder=i;b.Parent=holder;buttons[i]=b end
+  root:SetAttribute("OwnsBuildAuthority",false)
+  return root,buttons
+end
+
+function RobloxCommonUI.CreateObjectTransformPanel(options)
+  local root,parts=deepSystemPanel(options,"OBJECT_TRANSFORM_PANEL","OBJECT_TRANSFORM_PANEL","오브젝트 편집",{"이동","회전","높이","복사","정렬","삭제"})
+  root:SetAttribute("OwnsTransformAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateGridSnapControl(options)
+  local root,parts=deepSystemPanel(options,"GRID_SNAP_CONTROL","GRID_SNAP_CONTROL","그리드 / 스냅",{"자유 배치","그리드 배치","각도 스냅","표면 스냅","소켓 스냅"})
+  root:SetAttribute("OwnsSnapAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateMaterialPalettePanel(options)
+  local root,parts=deepSystemPanel(options,"MATERIAL_PALETTE_PANEL","MATERIAL_PALETTE_PANEL","재질 / 색상",{"재질","색상","마모","오염","습윤","스타일 변형"})
+  root:SetAttribute("OwnsMaterialAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateBlueprintPanel(options)
+  local root,parts=deepSystemPanel(options,"BLUEPRINT_PANEL","BLUEPRINT_PANEL","블루프린트",{"저장된 설계","새 설계 저장","불러오기","미리보기","필요 재료"})
+  root:SetAttribute("OwnsBlueprintSaveAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateUndoRedoBar(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=Instance.new("Frame");root.Name=options.name or "UndoRedoBar";root.Size=options.size or UDim2.fromOffset(220,50);root.BackgroundTransparency=1;tag(root,"UNDO_REDO_BAR");commonList(root,true,8)
+  local undo=RobloxCommonUI.CreateTabButton({text="되돌리기",size=UDim2.fromOffset(104,46),theme=theme});undo.Parent=root
+  local redo=RobloxCommonUI.CreateTabButton({text="다시 실행",size=UDim2.fromOffset(104,46),theme=theme});redo.Parent=root
+  root:SetAttribute("OwnsHistoryAuthority",false)
+  return root,{undo=undo,redo=redo}
+end
+
+function RobloxCommonUI.CreateOwnershipPermissionPanel(options)
+  local root,parts=deepSystemPanel(options,"OWNERSHIP_PERMISSION_PANEL","OWNERSHIP_PERMISSION_PANEL","소유 / 권한",{"소유자","파티/클랜 권한","배치 권한","보관함 권한","철거 권한"})
+  root:SetAttribute("OwnsPermissionAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateRepairBuildingPanel(options)
+  local root,parts=deepSystemPanel(options,"REPAIR_BUILDING_PANEL","REPAIR_BUILDING_PANEL","건축 수리",{"현재 상태","수리 후 상태","필요 재료","일괄 수리"})
+  root:SetAttribute("OwnsRepairAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateDemolishPreviewPanel(options)
+  local root,parts=deepSystemPanel(options,"DEMOLISH_PREVIEW_PANEL","DEMOLISH_PREVIEW_PANEL","철거 미리보기",{"철거 대상","연결된 부품","예상 반환","보관함/가구 영향","확인"})
+  root:SetAttribute("OwnsDemolishAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateUpkeepDecayPanel(options)
+  local root,parts=deepSystemPanel(options,"UPKEEP_DECAY_PANEL","UPKEEP_DECAY_PANEL","유지 / 부식",{"보호 범위","현재 유지 상태","필요 자원","예상 지속","경고"})
+  root:SetAttribute("OwnsDecayAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateBedRespawnPanel(options)
+  local root,parts=deepSystemPanel(options,"BED_RESPAWN_PANEL","BED_RESPAWN_PANEL","침대 / 재시작 지점",{"등록 상태","위치","사용 조건","재사용 상태"})
+  root:SetAttribute("OwnsRespawnAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateRoomScorePanel(options)
+  local root,parts=deepSystemPanel(options,"ROOM_SCORE_PANEL","ROOM_SCORE_PANEL","주거 상태",{"실내 여부","조명","가구","장식","쾌적도/방 점수"})
+  root:SetAttribute("OwnsRoomScoreAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateFurnitureCatalog(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"FURNITURE_CATALOG","FURNITURE_CATALOG")
+  local search=RobloxCommonUI.CreateSearchField({size=UDim2.new(0.44,0,0,48),placeholder="가구 검색",theme=theme});search.Parent=body
+  local filters=RobloxCommonUI.CreateFilterBar({filters=options.filters or {"전체","침실","수납","조명","제작","농사","장식"},size=UDim2.new(1,0,0,48),theme=theme});filters.Position=UDim2.fromOffset(0,58);filters.Parent=body
+  local list=Instance.new("ScrollingFrame");list.Name="Furniture";list.Position=UDim2.fromOffset(0,116);list.Size=UDim2.new(1,0,1,-116);list.BackgroundTransparency=1;list.BorderSizePixel=0;list.AutomaticCanvasSize=Enum.AutomaticSize.Y;list.CanvasSize=UDim2.new();list.Parent=body
+  local grid=Instance.new("UIGridLayout");grid.CellSize=UDim2.new(0.33,-8,0,118);grid.CellPadding=UDim2.fromOffset(10,10);grid.Parent=list
+  root:SetAttribute("OwnsFurniturePlacementAuthority",false)
+  return root,{search=search,filters=filters,list=list}
+end
+
+function RobloxCommonUI.CreateSettlementOverview(options)
+  local root,parts=deepSystemPanel(options,"SETTLEMENT_OVERVIEW","SETTLEMENT_OVERVIEW","정착지",{"주거","보관","제작소","조명","농사","NPC/침대","서비스","경고"})
+  root:SetAttribute("OwnsSettlementAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateFarmPlotPanel(options)
+  local root,parts=deepSystemPanel(options,"FARM_PLOT_PANEL","FARM_PLOT_PANEL","재배 구획",{"씨앗","성장 단계","물/관리","수확","계절/지역 조건"})
+  root:SetAttribute("OwnsFarmingAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateAnimalHousingPanel(options)
+  local root,parts=deepSystemPanel(options,"ANIMAL_HOUSING_PANEL","ANIMAL_HOUSING_PANEL","동물 우리",{"수용 수","먹이","상태","생산물","청결/관리"})
+  root:SetAttribute("OwnsAnimalAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateProcessingMachinePanel(options)
+  local root,parts=deepSystemPanel(options,"PROCESSING_MACHINE_PANEL","PROCESSING_MACHINE_PANEL","가공 설비",{"입력","처리 중","출력","대기열","연료/전력 조건"})
+  root:SetAttribute("OwnsProcessingAuthority",false)
+  return root,parts
+end
+
 function RobloxCommonUI.Create(atomId, options)
   local id = string.upper(tostring(atomId or ""))
   if id == "FRAME_PANEL" then
@@ -2334,13 +2503,61 @@ function RobloxCommonUI.Create(atomId, options)
     return RobloxCommonUI.CreateRecentItemsPanel(options)
   elseif id == "ITEM_SOURCE_USAGE_PANEL" then
     return RobloxCommonUI.CreateItemSourceUsagePanel(options)
+  elseif id == "BUILD_CATALOG_PANEL" then
+    return RobloxCommonUI.CreateBuildCatalogPanel(options)
+  elseif id == "BUILD_PIECE_CARD" then
+    return RobloxCommonUI.CreateBuildPieceCard(options)
+  elseif id == "PLACEMENT_GHOST_STATE" then
+    return RobloxCommonUI.CreatePlacementGhostState(options)
+  elseif id == "SNAP_INDICATOR" then
+    return RobloxCommonUI.CreateSnapIndicator(options)
+  elseif id == "STABILITY_METER" then
+    return RobloxCommonUI.CreateStabilityMeter(options)
+  elseif id == "BUILD_TIER_BADGE" then
+    return RobloxCommonUI.CreateBuildTierBadge(options)
+  elseif id == "PLACEMENT_VALIDITY_BANNER" then
+    return RobloxCommonUI.CreatePlacementValidityBanner(options)
+  elseif id == "BUILD_ACTION_BAR" then
+    return RobloxCommonUI.CreateBuildActionBar(options)
+  elseif id == "OBJECT_TRANSFORM_PANEL" then
+    return RobloxCommonUI.CreateObjectTransformPanel(options)
+  elseif id == "GRID_SNAP_CONTROL" then
+    return RobloxCommonUI.CreateGridSnapControl(options)
+  elseif id == "MATERIAL_PALETTE_PANEL" then
+    return RobloxCommonUI.CreateMaterialPalettePanel(options)
+  elseif id == "BLUEPRINT_PANEL" then
+    return RobloxCommonUI.CreateBlueprintPanel(options)
+  elseif id == "UNDO_REDO_BAR" then
+    return RobloxCommonUI.CreateUndoRedoBar(options)
+  elseif id == "OWNERSHIP_PERMISSION_PANEL" then
+    return RobloxCommonUI.CreateOwnershipPermissionPanel(options)
+  elseif id == "REPAIR_BUILDING_PANEL" then
+    return RobloxCommonUI.CreateRepairBuildingPanel(options)
+  elseif id == "DEMOLISH_PREVIEW_PANEL" then
+    return RobloxCommonUI.CreateDemolishPreviewPanel(options)
+  elseif id == "UPKEEP_DECAY_PANEL" then
+    return RobloxCommonUI.CreateUpkeepDecayPanel(options)
+  elseif id == "BED_RESPAWN_PANEL" then
+    return RobloxCommonUI.CreateBedRespawnPanel(options)
+  elseif id == "ROOM_SCORE_PANEL" then
+    return RobloxCommonUI.CreateRoomScorePanel(options)
+  elseif id == "FURNITURE_CATALOG" then
+    return RobloxCommonUI.CreateFurnitureCatalog(options)
+  elseif id == "SETTLEMENT_OVERVIEW" then
+    return RobloxCommonUI.CreateSettlementOverview(options)
+  elseif id == "FARM_PLOT_PANEL" then
+    return RobloxCommonUI.CreateFarmPlotPanel(options)
+  elseif id == "ANIMAL_HOUSING_PANEL" then
+    return RobloxCommonUI.CreateAnimalHousingPanel(options)
+  elseif id == "PROCESSING_MACHINE_PANEL" then
+    return RobloxCommonUI.CreateProcessingMachinePanel(options)
   end
   error("UNKNOWN_COMMON_UI_ATOM: " .. tostring(atomId))
 end
 
 function RobloxCommonUI.Audit()
   return table.freeze({
-    version = 5,
+    version = 6,
     packId = "roblox-common-ui-v1",
     atoms = table.freeze({
       "FRAME_PANEL", "BUTTON_PRIMARY", "BAR_HEALTH", "INVENTORY_SLOT",
@@ -2364,11 +2581,18 @@ function RobloxCommonUI.Audit()
       "SET_BONUS_PANEL", "SOCKET_ENCHANT_PANEL", "UPGRADE_PANEL", "REPAIR_PANEL",
       "DISMANTLE_PANEL", "CRAFTING_TREE", "RECIPE_DETAIL_PANEL", "MATERIAL_TRACKER",
       "BUY_SELL_PANEL", "BUYBACK_PANEL", "CODEX_SCREEN", "COLLECTION_PROGRESS",
-      "RECENT_ITEMS_PANEL", "ITEM_SOURCE_USAGE_PANEL"
+      "RECENT_ITEMS_PANEL", "ITEM_SOURCE_USAGE_PANEL",
+      "BUILD_CATALOG_PANEL", "BUILD_PIECE_CARD", "PLACEMENT_GHOST_STATE", "SNAP_INDICATOR",
+      "STABILITY_METER", "BUILD_TIER_BADGE", "PLACEMENT_VALIDITY_BANNER", "BUILD_ACTION_BAR",
+      "OBJECT_TRANSFORM_PANEL", "GRID_SNAP_CONTROL", "MATERIAL_PALETTE_PANEL", "BLUEPRINT_PANEL",
+      "UNDO_REDO_BAR", "OWNERSHIP_PERMISSION_PANEL", "REPAIR_BUILDING_PANEL", "DEMOLISH_PREVIEW_PANEL",
+      "UPKEEP_DECAY_PANEL", "BED_RESPAWN_PANEL", "ROOM_SCORE_PANEL", "FURNITURE_CATALOG",
+      "SETTLEMENT_OVERVIEW", "FARM_PLOT_PANEL", "ANIMAL_HOUSING_PANEL", "PROCESSING_MACHINE_PANEL"
     }),
-    atomCount = 84,
+    atomCount = 108,
     fullScreenSurfaceCount = 17,
-    deepSystemComponentCount = 30,
+    deepSystemComponentCount = 54,
+    housingSandboxComponentCount = 24,
     stateSurfaceCount = 4,
     companyCommonBase = true,
     themeAdaptationRequiredPerGame = true,
