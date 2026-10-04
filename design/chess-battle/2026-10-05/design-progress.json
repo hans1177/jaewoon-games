@@ -12,18 +12,18 @@
   "lastSuccessfulModelCallAt": "2026-10-04T18:53:20.911Z",
   "failedPhase": "designer_draft",
   "failedTask": null,
-  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_CALL_FAILED gemini-3.5-flash-lite: gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } } local=OLLAMA_DESIGN_TIMEOUT 120000ms",
+  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_CALL_FAILED gemini-3.5-flash-lite: gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } } local=schema required missing: root.systemInterconnections",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 25,
+      "calls": 27,
       "successes": 5,
-      "failures": 20,
+      "failures": 22,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 71131,
-      "lastMs": 2981,
+      "totalMs": 75406,
+      "lastMs": 3035,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T18:53:23.893Z"
+      "updatedAt": "2026-10-04T18:55:24.590Z"
     },
     "gemini:gemini-3.8-flash": {
       "calls": 2,
@@ -114,28 +114,28 @@
       "updatedAt": "2026-10-04T17:50:07.661Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 20,
+      "calls": 21,
       "successes": 0,
-      "failures": 20,
+      "failures": 21,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 151842,
-      "lastMs": 18354,
-      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-10-04T18:53:39.266Z"
+      "totalMs": 156578,
+      "lastMs": 4736,
+      "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
+      "updatedAt": "2026-10-04T18:55:26.291Z"
     },
     "ollama:qwen3:1.7b": {
-      "calls": 9,
+      "calls": 10,
       "successes": 0,
-      "failures": 9,
+      "failures": 10,
       "timeouts": 8,
-      "jsonFailures": 1,
-      "totalMs": 1073577,
-      "lastMs": 120004,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
-      "updatedAt": "2026-10-04T18:53:17.150Z"
+      "jsonFailures": 2,
+      "totalMs": 1174739,
+      "lastMs": 101162,
+      "lastError": "schema required missing: root.systemInterconnections",
+      "updatedAt": "2026-10-04T18:55:20.429Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-04T18:53:39.266Z"
+  "updatedAt": "2026-10-04T18:55:26.291Z"
 }
