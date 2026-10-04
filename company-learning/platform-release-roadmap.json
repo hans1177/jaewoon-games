@@ -1,5 +1,5 @@
 {
-  "version": 525,
+  "version": 526,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -6152,7 +6152,7 @@
       "missingCanonicalIndexDoesNotCreateVisibleTitleOnlyCard": true
     }
   },
-  "updatedAt": "2026-10-02",
+  "updatedAt": "2026-10-05",
   "priorityTiers": [
     {
       "tier": 1,
@@ -19809,7 +19809,8 @@
         "anotherPlatformRuntimeMayNotSubstitute": true,
         "robloxRuntimeDispatchForbidden": true
       }
-    }
+    },
+    "producerConsumerBoundaryAuthority": "company-learning/platform-release-roadmap.json#fixedAutonomousDevelopmentOperatingContract.assetProducerConsumerBoundary"
   },
   "weatherPresentationContract": {
     "version": 1,
@@ -26623,6 +26624,131 @@
       "mayNotBypassSecurityQaRuntimeOrReleaseGates": true,
       "mayNotExpandWritableAuthority": true,
       "assistOutcomeMustReturnToExistingVibeLoop": true
+    },
+    "assetProducerConsumerBoundary": {
+      "version": 2,
+      "status": "ACTIVE_EXECUTABLE_CONTRACT",
+      "authority": "OWNER_DIRECTIVE_2026-10-05",
+      "purpose": "KEEP_GRAPHICS_ASSET_PRODUCTION_SEPARATE_FROM_BUILD_UP_FLOOR_ASSET_CONSUMPTION_WHILE_MAKING_CURRENT_INTERNAL_LIBRARY_USAGE_MANDATORY_AND_FRESH",
+      "producer": {
+        "role": "GRAPHICS_ASSET_PRODUCER",
+        "owner": "EXISTING_GRAPHICS_PRODUCTION_AND_ASSET_DEVELOPMENT_LANE",
+        "owns": [
+          "ASSET_CREATION_OR_ACQUISITION",
+          "ASSET_DERIVATION_REAUTHORING_AND_DCC",
+          "ASSET_LIBRARY_VOLUME_AND_QUALITY_EVOLUTION",
+          "LICENSE_PROVENANCE_AND_PLATFORM_NATIVE_PREPARATION",
+          "ASSET_QUALITY_REPAIR_AND_PRODUCTION_VERIFICATION_INPUT"
+        ]
+      },
+      "consumer": {
+        "role": "BUILD_UP_FLOOR_ASSET_CONSUMER",
+        "owner": "VIBE2_VIBE3_GAME_SOURCE_IMPLEMENTATION",
+        "scope": "EXISTING_BUILD_UP_TO_F9_GAME_SOURCE_FLOW",
+        "owns": [
+          "READ_CURRENT_GAME_SOURCE_SYSTEMS_STATES_EVENTS_AND_ROLES",
+          "READ_LATEST_INTERNAL_ASSET_LIBRARY_AT_EXECUTION_TIME",
+          "EVALUATE_ALL_CURRENT_LIBRARY_PACKS_FAMILIES_TYPES_ROLES_AND_QUALITY_METADATA_AS_ELIGIBLE_INPUT",
+          "USE_EXISTING_COMPATIBLE_LIBRARY_ASSET_OR_FACTORY_AS_DEFAULT_BASELINE",
+          "COMPOSE_AND_BIND_EXISTING_ASSETS_TO_EXISTING_RESPONSIBLE_GAME_SOURCE",
+          "USE_STATE_EVENT_REGION_FACTION_NPC_BOSS_WEATHER_TIME_AND_INTERACTION_CONTEXT_FOR_DEEP_ASSET_COMPOSITION",
+          "RECHECK_BINDINGS_WHEN_LIBRARY_VERSION_TYPE_ROLE_OR_QUALITY_CHANGES",
+          "REPORT_ONLY_TRUE_UNRESOLVED_ASSET_GAPS_TO_EXISTING_PRODUCER_LANE",
+          "RECONSUME_NEW_OR_IMPROVED_PRODUCER_OUTPUT_AUTOMATICALLY_ON_A_LATER_ELIGIBLE_BUILD_UP"
+        ],
+        "forbidden": [
+          "CREATE_NEW_ASSET_AS_CONSUMER_RESPONSIBILITY",
+          "DCC_OR_BINARY_ASSET_AUTHORING_AS_CONSUMER_RESPONSIBILITY",
+          "MUTATE_COMPANY_ASSET_LIBRARY_AS_BINDING_SHORTCUT",
+          "FABRICATE_ASSET_ID_FACTORY_SOURCE_FILE_ROLE_QUALITY_OR_VERIFICATION",
+          "REQUEST_NEW_AUTHORING_WHEN_CURRENT_COMPATIBLE_LIBRARY_OPTION_EXISTS",
+          "CREATE_SHADOW_ASSET_PIPELINE_WRAPPER_OR_PARALLEL_LIBRARY"
+        ]
+      },
+      "currentLibraryMandatoryUse": {
+        "fullLibraryEligibilityScope": "ALL_CURRENT_INTERNAL_AND_COMPANY_COMMON_LIBRARY_CONTENT",
+        "existingCompatibleAssetIsDefaultBaseline": true,
+        "existingCompatibleLibraryUseMandatory": true,
+        "blankDefaultPrimitiveMayNotWinOverCompatibleLibraryAsset": true,
+        "genreEligibilityRestrictionForbidden": true,
+        "crossGenreReuseAllowed": true,
+        "genreConceptThemeAndPriorGameOriginAreRankingSignalsOnly": true,
+        "conceptSimilarityIsRankingSignal": true,
+        "worldLanguageSimilarityIsRankingSignal": true,
+        "silhouetteMaterialMotionPresentationSimilarityAreRankingSignals": true,
+        "hardCompatibilityBeforeSimilarity": [
+          "CURRENT_GAME_SYSTEM_APPLICABILITY",
+          "ROLE",
+          "PLATFORM",
+          "RIGHTS_AND_INTERNAL_USE_STATUS",
+          "BODY_PLAN_RIG_SOCKET_WHEN_APPLICABLE",
+          "RESPONSIBLE_SOURCE_OR_FACTORY_COMPATIBILITY"
+        ],
+        "rankingAfterHardCompatibility": [
+          "CURRENT_GAME_CONCEPT_AND_WORLD_LANGUAGE_SIMILARITY",
+          "ROLE_SPECIFIC_IDENTITY_FIT",
+          "SILHOUETTE_AND_SHAPE_LANGUAGE",
+          "MATERIAL_COLOR_LIGHTING_LANGUAGE",
+          "MOTION_VFX_AUDIO_UI_SEMANTIC_FIT",
+          "PROVEN_EXISTING_BINDING_AND_INTEGRATION_COST",
+          "EFFECTIVE_CURRENT_QUALITY",
+          "DIVERSITY_AND_REPETITION_DEBT"
+        ],
+        "lowerQualityExactCompatibleAssetMayBeatHigherQualityWrongRoleAsset": true,
+        "lowQualityCompatibleAssetMayRemainUsedWithQualityDebt": true,
+        "exactExistingAssetMayBeUsedAsIs": true,
+        "sourceLevelUsageAdaptationAllowed": true,
+        "multiAssetCompositionAllowed": true,
+        "assetAuthoringStillProducerOnly": true
+      },
+      "dynamicLibraryFreshness": {
+        "mode": "LATEST_LIBRARY_AT_EACH_BUILD_UP_EXECUTION",
+        "source": "company-asset-library.json",
+        "currentLibraryVersionMustBeObserved": true,
+        "currentPackFamilyTypeRoleAndQualityFingerprintMustBeObserved": true,
+        "newAssetOrPackRequiresEligibilityReevaluation": true,
+        "newFamilyTypeOrRoleRequiresAffectedResponsibilityReevaluation": true,
+        "qualityIncreaseMayReorderCompatibleCandidates": true,
+        "qualityDecreaseOrVerifiedFailureMayReorderCompatibleCandidatesWithoutCreatingBlankSlot": true,
+        "removedOrStaleAssetRequiresAffectedBindingReevaluation": true,
+        "unchangedValidBindingMayReuseEvidence": true,
+        "fullLibraryPromptReplicationForbidden": true,
+        "boundedSelectedApiContextIsSynchronizationOptimizationNotUsageCap": true,
+        "libraryGrowthDoesNotCreateAssetCountFamilyCountOrCombinationCaps": true,
+        "fixedAssetIdPinningAcrossLibraryUpdatesForbiddenUnlessGameOrManualLockRequiresIt": true
+      },
+      "deepConsumptionPatterns": [
+        "ROLE_BUNDLE",
+        "STATE_EVENT_BUNDLE",
+        "REGION_BIOME_WEATHER_TIME_BUNDLE",
+        "NPC_OCCUPATION_FACTION_SOCIAL_CONTEXT_BUNDLE",
+        "BOSS_PHASE_SIGNATURE_BUNDLE",
+        "INTERACTION_TOOL_TARGET_BUNDLE",
+        "WORLD_LAYER_FOREGROUND_MIDGROUND_BACKGROUND_SET_DRESSING",
+        "UI_SYSTEM_FACTORY_COMPOSITION",
+        "MOTION_VFX_AUDIO_UI_FEEDBACK_COMPOSITION",
+        "USAGE_HISTORY_AND_REPETITION_DEBT_DIVERSIFICATION"
+      ],
+      "bottleneckRules": {
+        "currentCompatibleAssetMayNotWaitForNewAuthoring": true,
+        "fullLibraryDiscoveryMayNotSerializeIndependentSourceWork": true,
+        "assetGapMayNotSerializeUnrelatedBuildUpWork": true,
+        "producerAndConsumerMayRunParallelWhenResponsibleFilesDoNotConflict": true,
+        "consumerMayContinueIndependentResponsibilitiesWhileGapPending": true,
+        "exactResponsibleFileConflictSerializationOnly": true,
+        "exactDuplicateAssetGapCoalescingAllowed": true,
+        "incrementalReevaluationByChangedLibraryFingerprintPreferred": true,
+        "wholeLibraryRebindingWhenUnchangedForbidden": true
+      },
+      "securityProcedure": {
+        "newSecurityProcedureCreated": false,
+        "existingSecurityAuthorityAndReleaseGatesOnly": true
+      },
+      "flowAuthority": {
+        "finalDevelopmentLockSequenceUnchanged": true,
+        "newFlowStageCreated": false,
+        "newPipelineWorkflowQueueSchedulerOrShadowManager": false
+      }
     }
   }
 }
