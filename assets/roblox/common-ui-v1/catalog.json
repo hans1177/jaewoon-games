@@ -449,7 +449,7 @@
   "iconAssetDependency": false,
   "vectorIconCount": 12,
   "continuationContract": {
-    "version": 1,
+    "version": 2,
     "scope": "INTERNAL_ASSET_AND_COMPANY_COMMON_ASSET_ONLY",
     "infrastructureMutationAllowed": false,
     "flowMutationAllowed": false,
@@ -475,7 +475,24 @@
       "manualOrGameLockedChoiceWins": true,
       "neverLeaveConsumerWithoutUsableAsset": true,
       "lowerScoreAssetRemainsUsableUntilSafeReplacement": true,
-      "priorAssetHistoryPreserved": true
+      "priorAssetHistoryPreserved": true,
+      "effectiveQualityAfterAdaptationUsed": true,
+      "minimumEffectiveGain": 10,
+      "onePointHigherDoesNotForceReplacement": true,
+      "adaptationModes": [
+        "USE_AS_IS",
+        "LIGHT_THEME_ADAPT",
+        "STYLE_ADAPT",
+        "RECOMBINE_PARTS",
+        "NATIVE_REAUTHOR_BASE",
+        "KEEP_CURRENT_AND_ITERATE"
+      ],
+      "hardBlockersOnly": [
+        "EXPLICIT_INTERNAL_USE_FORBIDDEN",
+        "SECURITY_BLOCKED",
+        "CORRUPT_SOURCE",
+        "LICENSE_FORBIDDEN"
+      ]
     },
     "internalAudit": {
       "studioRequired": false,
@@ -516,6 +533,7 @@
         "RELATIONSHIP_STATE"
       ],
       "gameplayAuthority": false
-    }
+    },
+    "adaptationBeforeRejectionPreferred": true
   }
 }
