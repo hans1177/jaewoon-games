@@ -3,7 +3,8 @@ name: Director Staff Supervisor
 on:
   workflow_dispatch:
   schedule:
-    - cron: '17 * * * *'
+    # Queue-drain safety net: frequent enough to trim stale queued work without creating a new scheduler.
+    - cron: '*/15 * * * *'
   workflow_run:
     workflows:
       - Company Seed DESIGN_ONLY Runtime

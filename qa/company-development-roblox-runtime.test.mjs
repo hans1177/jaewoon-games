@@ -741,7 +741,7 @@ test('Roblox source persistence rejects results when the source-plan control con
 });
 
 
-test('every current Roblox source-plan contract path wakes a fresh batch immediately',()=>{
+test('current Roblox source-plan control paths wake directly while shared asset-library changes stay central-owned',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const pushStart=workflow.indexOf('  push:');
   const pushEnd=workflow.indexOf('  workflow_call:',pushStart);
@@ -751,19 +751,20 @@ test('every current Roblox source-plan contract path wakes a fresh batch immedia
   const contractEnd=workflow.indexOf('\n\njobs:',contractStart);
   assert.ok(contractStart>=0&&contractEnd>contractStart);
   const contractBlock=workflow.slice(contractStart,contractEnd);
-  const requiredPaths=[
+  const directWakePaths=[
     '.github/workflows/company-development-roblox-runtime.yml',
     'tools/company-development-roblox-bootstrap.mjs',
     'tools/company-development-roblox-source-reconcile.mjs',
     'tools/company-selected-platform-router.mjs',
     'tools/company-upper-platform-admission.mjs',
-    'company-asset-library.json',
     'company-learning/platform-release-roadmap.json',
   ];
-  for(const required of requiredPaths){
+  for(const required of directWakePaths){
     assert.ok(contractBlock.includes(required),'contract path missing: '+required);
     assert.ok(pushBlock.includes(`'${required}'`),'push wake missing: '+required);
   }
+  assert.ok(contractBlock.includes('company-asset-library.json'),'shared asset-library must remain in the exact source-plan contract fingerprint');
+  assert.ok(!pushBlock.includes("'company-asset-library.json'"),'shared asset-library wake must be owned by central fan-out');
 });
 
 test('Roblox source worker bases candidate on current main without leaking workflow diffs and requeues stale contracts',()=>{
