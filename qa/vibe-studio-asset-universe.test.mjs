@@ -1743,3 +1743,65 @@ test('company-common skill registry exposes explicit VFX dependency and cross-ga
 
   assert.ok(registry.assets.some(row=>row.id==='roblox-common-vfx-impact-flash'));
 });
+
+
+test('company-common materials preserve physical semantics by default',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','common-materials-v1');
+  const source=fs.readFileSync(path.join(packDir,'RobloxCommonMaterials.luau'),'utf8');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+
+  for(const atom of ['WOOD','STONE','METAL']){
+    assert.ok(source.includes(atom),atom);
+    assert.ok(catalog.atoms.some(row=>row.atomId===atom),atom+':catalog');
+  }
+
+  assert.equal(catalog.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(catalog.physicalPropertiesPreservedByDefault,true);
+  assert.equal(catalog.productionVerified,false);
+  assert.equal(quality.staticAuthoringChecklist.score,100);
+  assert.equal(quality.quality120.claimedRuntimeScore,null);
+  assert.equal(quality.physicalPropertiesPreservedByDefault,true);
+  assert.equal(quality.productionVerified,false);
+
+  assert.ok(source.includes('part.CurrentPhysicalProperties'));
+  assert.ok(source.includes('part.CustomPhysicalProperties = physicalBefore'));
+  assert.ok(source.includes('PhysicalProperties.new('));
+  assert.ok(source.includes('collisionMutationAllowed = false'));
+  assert.equal(/CanCollide\s*=/.test(source),false);
+  assert.equal(/CanTouch\s*=/.test(source),false);
+  assert.equal(/CanQuery\s*=/.test(source),false);
+  assert.equal(/RemoteEvent/.test(source),false);
+  assert.equal(/FireServer\(/.test(source),false);
+});
+
+test('company-common material registry exposes reusable physics-preserving atoms',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const pack=registry.assets.find(row=>row.id==='roblox-common-materials-v1');
+  assert.ok(pack);
+  assert.equal(pack.companyCommonBase,true);
+  assert.equal(pack.physicalPropertiesPreservedByDefault,true);
+  assert.equal(pack.collisionMutationAllowed,false);
+  assert.equal(pack.productionVerified,false);
+
+  const expected=[
+    ['WOOD',['NATURAL','DARK','WEATHERED','PALE']],
+    ['STONE',['NATURAL','DARK','PALE','WEATHERED']],
+    ['METAL',['BRUSHED','DARK','LIGHT','INDUSTRIAL']]
+  ];
+  for(const [atomId,variants] of expected){
+    const row=registry.assets.find(asset=>asset.id==='roblox-common-material-'+atomId.toLowerCase());
+    assert.ok(row,atomId);
+    assert.equal(row.family,'MATERIAL');
+    assert.equal(row.subfamily,atomId);
+    assert.deepEqual(row.variants,variants);
+    assert.equal(row.companyCommonBase,true);
+    assert.equal(row.automaticCrossGameReuseAllowed,true);
+    assert.equal(row.bindingHint.gameScope,'ALL_ROBLOX_GAMES');
+    assert.equal(row.bindingHint.preservePhysicalProperties,true);
+    assert.equal(row.bindingHint.preserveCollisionTouchQueryAndGameplayAuthority,true);
+  }
+});
