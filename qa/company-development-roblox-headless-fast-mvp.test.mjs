@@ -135,7 +135,7 @@ test('F0 checkout and validation fan out across the full external-capacity matri
   assert.doesNotMatch(header,/^concurrency:\s*$/m);
   assert.match(workflow,/ROBLOX_F0_PRIVATE_VALIDATION_HANDOFF=DEDUPED_CURRENT_MAIN:/);
   assert.match(workflow,/ROBLOX_F0_PRIVATE_VALIDATION_DISPATCH_COUNT=/);
-  assert.match(workflow,/company-development-roblox-release-promotion\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id" -f publish_stage=validation/);
+  assert.match(workflow,/company-development-roblox-release-promotion\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$GAME_ID" -f publish_stage=validation/);
   assert.match(workflow,/ROBLOX_STUDIO_REQUIRED_FOR_F0_CONTINUATION=NO/);
   assert.doesNotMatch(workflow,/run_studio=true/);
   const validateStart=workflow.indexOf('\n  validate:\n');
@@ -201,6 +201,8 @@ test('F0 planner dedupes duplicate dispatches while validation matrix remains pa
   assert.match(planBlock,/requested\?ids\[0\]:ids\[ids\.length-1\]/);
   assert.doesNotMatch(workflow,/max-parallel:\s*[1-9][0-9]*/);
   assert.doesNotMatch(workflow,/\n  persist:\n/);
+  assert.doesNotMatch(workflow,/pattern:\s*development-roblox-f0-\*/);
+  assert.doesNotMatch(workflow,/merge-multiple:\s*true/);
   const perGamePersist=workflow.indexOf("Persist this game's F0 result immediately");
   const perGameHandoff=workflow.indexOf("Dispatch exact private Roblox validation directly after this game's F0 persist");
   assert.ok(perGamePersist>validateStart&&perGameHandoff>perGamePersist);
@@ -213,8 +215,8 @@ test('F0 hands exact game ids directly to private validation without Studio depe
   assert.match(workflow,/ROBLOX_F0_PRIVATE_VALIDATION_HANDOFF=DISPATCHED:/);
   assert.match(workflow,/ROBLOX_F0_PRIVATE_VALIDATION_HANDOFF=DEDUPED_CURRENT_MAIN:/);
   assert.match(workflow,/actions\/workflows\/company-development-roblox-release-promotion\.yml\/runs\?per_page=100/);
-  assert.match(workflow,/company-development-roblox-release-promotion\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id" -f publish_stage=validation/);
-  assert.match(workflow,/String\(run\.head_sha\|\|''\)!==currentSha/);
+  assert.match(workflow,/company-development-roblox-release-promotion\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$GAME_ID" -f publish_stage=validation/);
+  assert.match(workflow,/String\(run\.head_sha\|\|''\)===currentSha/);
   assert.doesNotMatch(workflow,/run_studio=true/);
 });
 
