@@ -1,0 +1,235 @@
+{
+  "version": 1,
+  "packId": "roblox-common-presentation-v1",
+  "title": "Roblox 회사 공용 로딩·메뉴·인트로·컷신 프레젠테이션 v1",
+  "platform": "ROBLOX",
+  "family": "UI",
+  "subfamily": "PRESENTATION_PACK",
+  "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+  "companyCommonBase": true,
+  "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+  "themeAdaptationRequiredPerGame": true,
+  "automaticCrossGameReuseAllowed": true,
+  "gameplayAuthority": false,
+  "cameraAuthority": false,
+  "inputAuthority": false,
+  "productionVerified": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "studioRequiredForInternalUse": false,
+  "atoms": [
+    {
+      "atomId": "BRAND_MARK",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateBrandMark",
+      "role": "BRAND_IDENTITY"
+    },
+    {
+      "atomId": "LOADING_SPINNER",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateLoadingSpinner",
+      "role": "LOADING_ACTIVITY"
+    },
+    {
+      "atomId": "LOADING_SCREEN",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateLoadingScreen",
+      "role": "LOADING_SCREEN"
+    },
+    {
+      "atomId": "BRAND_SPLASH",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateBrandSplash",
+      "role": "INTRO_SPLASH"
+    },
+    {
+      "atomId": "MAIN_MENU_SHELL",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateMainMenuShell",
+      "role": "MAIN_MENU"
+    },
+    {
+      "atomId": "TOP_BAR",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateTopBar",
+      "role": "MENU_TOP_BAR"
+    },
+    {
+      "atomId": "SIDE_NAVIGATION",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateSideNavigation",
+      "role": "MENU_SIDE_NAVIGATION"
+    },
+    {
+      "atomId": "SEARCH_FILTER_BAR",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateSearchFilterBar",
+      "role": "SEARCH_FILTER"
+    },
+    {
+      "atomId": "BREADCRUMB_BAR",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateBreadcrumbBar",
+      "role": "MENU_BREADCRUMB"
+    },
+    {
+      "atomId": "FOOTER_HINT_BAR",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateFooterHintBar",
+      "role": "INPUT_HINT_BAR"
+    },
+    {
+      "atomId": "PAUSE_MENU",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreatePauseMenuShell",
+      "role": "PAUSE_MENU"
+    },
+    {
+      "atomId": "SETTINGS_SCREEN",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateSettingsScreenShell",
+      "role": "SETTINGS_FULL_SCREEN"
+    },
+    {
+      "atomId": "INVENTORY_SCREEN",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateInventoryScreenShell",
+      "role": "INVENTORY_FULL_SCREEN"
+    },
+    {
+      "atomId": "CHARACTER_SCREEN",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateCharacterScreenShell",
+      "role": "CHARACTER_FULL_SCREEN"
+    },
+    {
+      "atomId": "MAP_SCREEN",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateMapScreenShell",
+      "role": "MAP_FULL_SCREEN"
+    },
+    {
+      "atomId": "QUEST_LOG_SCREEN",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateQuestLogScreenShell",
+      "role": "QUEST_LOG_FULL_SCREEN"
+    },
+    {
+      "atomId": "CODEX_SCREEN",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateCodexScreenShell",
+      "role": "CODEX_FULL_SCREEN"
+    },
+    {
+      "atomId": "LETTERBOX",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateLetterbox",
+      "role": "CUTSCENE_LETTERBOX"
+    },
+    {
+      "atomId": "SUBTITLE_PANEL",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateSubtitlePanel",
+      "role": "CUTSCENE_SUBTITLE"
+    },
+    {
+      "atomId": "SKIP_PROMPT",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateSkipPrompt",
+      "role": "CUTSCENE_SKIP_PROMPT"
+    },
+    {
+      "atomId": "CHAPTER_CARD",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateChapterCard",
+      "role": "CINEMATIC_CHAPTER_CARD"
+    },
+    {
+      "atomId": "SCENE_TRANSITION",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateSceneTransition",
+      "role": "SCENE_TRANSITION"
+    },
+    {
+      "atomId": "BOSS_TITLE_CARD",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateBossTitleCard",
+      "role": "BOSS_REVEAL"
+    },
+    {
+      "atomId": "REGION_TITLE_CARD",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateRegionTitleCard",
+      "role": "REGION_REVEAL"
+    },
+    {
+      "atomId": "CINEMATIC_CHOICE_STRIP",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateCinematicChoiceStrip",
+      "role": "CUTSCENE_CHOICE"
+    },
+    {
+      "atomId": "CUTSCENE_OVERLAY",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateCutsceneOverlay",
+      "role": "CUTSCENE_OVERLAY"
+    }
+  ],
+  "cinematicSource": "RobloxCommonCinematics.luau",
+  "cinematicProfiles": [
+    "SIMPLE_INTRO",
+    "NPC_DIALOGUE",
+    "BOSS_REVEAL",
+    "REGION_REVEAL",
+    "QUEST_MOMENT",
+    "VICTORY_STINGER",
+    "DEFEAT_STINGER",
+    "STORY_CHOICE"
+  ],
+  "shotGrammar": [
+    "ESTABLISHING_WIDE",
+    "MEDIUM_SINGLE",
+    "TWO_SHOT",
+    "OVER_SHOULDER",
+    "REACTION_CLOSE",
+    "INSERT_DETAIL",
+    "HERO_LOW_ANGLE",
+    "REVEAL_PAN",
+    "ORBIT",
+    "TRACKING",
+    "STATIC_DRAMATIC"
+  ],
+  "impactLayers": [
+    "ANTICIPATION_POSE",
+    "CONTACT_POSE",
+    "CONTACT_VFX",
+    "DIRECTIONAL_RECOIL",
+    "CAMERA_IMPULSE_VISUAL_REQUEST",
+    "MATERIAL_OR_SURFACE_RESPONSE",
+    "PARTICLE_RESIDUE",
+    "UI_FEEDBACK_WHEN_USED",
+    "AUDIO_ROLE",
+    "RECOVERY_POSE"
+  ],
+  "skillPresentationLayers": [
+    "ICON_IDENTITY",
+    "CAST_ANTICIPATION",
+    "CAST_POSE",
+    "TELEGRAPH",
+    "PROJECTILE_OR_AREA_SHAPE",
+    "TRAIL",
+    "CONTACT_OR_DETONATION",
+    "TARGET_REACTION",
+    "STATUS_PRESENTATION",
+    "RESIDUAL_WORLD_EFFECT",
+    "AUDIO_ROLE",
+    "MOBILE_DENSITY_VARIANT"
+  ],
+  "accessibility": {
+    "subtitleSpeakerName": true,
+    "subtitleSpeakerDirection": true,
+    "subtitleBackground": true,
+    "reducedMotionVariant": true,
+    "cameraShakeScalable": true,
+    "touchKeyboardGamepadPrompts": true
+  }
+}
