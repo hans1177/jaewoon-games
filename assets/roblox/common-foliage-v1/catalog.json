@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "packId": "roblox-common-foliage-v1",
+  "title": "Roblox 회사 공용 초목/자연 환경 8종 v1",
+  "platform": "ROBLOX",
+  "family": "ENVIRONMENT",
+  "subfamily": "FOLIAGE_PACK",
+  "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+  "companyCommonBase": true,
+  "styleAdaptationRequiredPerGame": true,
+  "automaticCrossGameReuseAllowed": true,
+  "crossGameReuseRequiresCompatibilityPass": true,
+  "gameplayAuthority": false,
+  "productionVerified": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "intendedConsumerGameIds": [
+    "survival",
+    "monster-adventure",
+    "daechung-rpg",
+    "cozy-island",
+    "island-village"
+  ],
+  "items": [
+    {
+      "assetId": "GRASS_TUFT",
+      "name": "풀 포기",
+      "subfamily": "GRASS",
+      "environmentRole": "GROUND_COVER",
+      "familyRootId": "FOLIAGE_GRASS"
+    },
+    {
+      "assetId": "BUSH_ROUND",
+      "name": "둥근 관목",
+      "subfamily": "BUSH",
+      "environmentRole": "MIDGROUND_FOLIAGE",
+      "familyRootId": "FOLIAGE_BUSH"
+    },
+    {
+      "assetId": "FERN_CLUSTER",
+      "name": "고사리 군락",
+      "subfamily": "FERN",
+      "environmentRole": "UNDERSTORY",
+      "familyRootId": "FOLIAGE_FERN"
+    },
+    {
+      "assetId": "WILDFLOWER_PATCH",
+      "name": "야생화 군락",
+      "subfamily": "FLOWER",
+      "environmentRole": "GROUND_ACCENT",
+      "familyRootId": "FOLIAGE_FLOWER"
+    },
+    {
+      "assetId": "TREE_STUMP",
+      "name": "나무 그루터기",
+      "subfamily": "STUMP",
+      "environmentRole": "NATURAL_PROP",
+      "familyRootId": "FOLIAGE_STUMP"
+    },
+    {
+      "assetId": "FALLEN_LOG",
+      "name": "쓰러진 통나무",
+      "subfamily": "FALLEN_LOG",
+      "environmentRole": "NATURAL_PROP",
+      "familyRootId": "FOLIAGE_FALLEN_LOG"
+    },
+    {
+      "assetId": "PINE_TREE",
+      "name": "소나무",
+      "subfamily": "PINE_TREE",
+      "environmentRole": "CANOPY_TREE",
+      "familyRootId": "FOLIAGE_PINE_TREE"
+    },
+    {
+      "assetId": "DEAD_TREE",
+      "name": "고사목",
+      "subfamily": "DEAD_TREE",
+      "environmentRole": "SILHOUETTE_TREE",
+      "familyRootId": "FOLIAGE_DEAD_TREE"
+    }
+  ]
+}
