@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "packId": "roblox-common-background-v1",
+  "title": "Roblox 회사 공용 레이어 배경·월드 시각 프로필 12종 v1",
+  "platform": "ROBLOX",
+  "family": "ENVIRONMENT",
+  "subfamily": "BACKGROUND_PACK",
+  "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+  "companyCommonBase": true,
+  "styleAdaptationRequiredPerGame": true,
+  "automaticCrossGameReuseAllowed": true,
+  "gameplayAuthority": false,
+  "collisionAuthority": false,
+  "productionVerified": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "studioRequiredForInternalUse": false,
+  "themes": [
+    "FOREST",
+    "SNOW",
+    "DESERT",
+    "SWAMP",
+    "CAVE",
+    "COAST",
+    "VILLAGE",
+    "CITY",
+    "RUINS",
+    "DUNGEON",
+    "MAGICAL_FOREST",
+    "HORROR_INTERIOR"
+  ],
+  "depthLayers": [
+    "FOREGROUND",
+    "MIDGROUND",
+    "BACKGROUND"
+  ],
+  "detailPasses": [
+    "MACRO_TERRAIN_AND_SKYLINE",
+    "ROUTE_AND_LANDMARK",
+    "STRUCTURAL_MIDGROUND",
+    "VEGETATION_OR_ARCHITECTURE_CLUSTER",
+    "FUNCTIONAL_PROP",
+    "SURFACE_BREAKUP",
+    "WEATHERING_AND_CONTACT",
+    "AMBIENT_MOTION",
+    "LIGHTING_FOCUS"
+  ],
+  "factories": [
+    "CreateLayeredBackdrop",
+    "CreateWorldProfile",
+    "CreateMenuBackdrop",
+    "CreateLoadingBackdrop",
+    "CreateIntroBackdrop"
+  ],
+  "rules": {
+    "randomScatterForbidden": true,
+    "landmarkHierarchyRequired": true,
+    "foregroundMidgroundBackgroundRequired": true,
+    "subjectBackgroundSeparationRequired": true,
+    "flatUniformLightingForbidden": true,
+    "menuReadabilityShadeSupported": true,
+    "slowParallaxSupported": true
+  }
+}
