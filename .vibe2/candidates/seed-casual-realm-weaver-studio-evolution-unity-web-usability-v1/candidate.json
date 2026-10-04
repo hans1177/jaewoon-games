@@ -1,0 +1,25 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "        if(!started) StartGameplay();",
+      "replace": "        if(!started) StartGameplay();\n        Debug.Log(\"JAEWOON_UNITY_WEB_QA START game=\" + GameId + \" region=field mode=\" + Mode + \" status=PASS\");\n        LogState();"
+    },
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "        if (player != null && started)",
+      "replace": "        if (player != null && started)\n        {\n            var p=enemy.transform.position;\n            var p=player.transform.position;\n            p.y=1f+Mathf.Sin(motionClock*2.1f)*0.28f;\n            enemy.transform.position=p;\n            p.x=-2f+Mathf.Sin(motionClock*1.7f)*0.55f;\n            player.transform.position=p;\n        }"
+    },
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "        if(progress >= level * 4) level++;",
+      "replace": "        if(progress >= level * 4)\n        {\n            level++;\n            Debug.Log(\"JAEWOON_UNITY_WEB_QA PROGRESS game=\" + GameId + \" progress=\" + progress + \" level=\" + level + \" resource=\" + resource + \" status=PASS\");\n            Debug.Log(\"JAEWOON_UNITY_WEB_QA CORE_FUN game=\" + GameId + \" mode=\" + Mode + \" status=REPAIR_REQUIRED reason=BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED\");\n        }"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
