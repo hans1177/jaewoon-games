@@ -537,7 +537,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
 
   next.internalAssetLibraryAutomation={
     ...(next.internalAssetLibraryAutomation||{}),
-    version:2,
+    version:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,
     contract:'assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT',
     catalogDiscovery:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.catalogDiscovery,
     countPolicy:libraryPlan.countPolicy,
@@ -549,6 +549,12 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     volumeReady:libraryPlan.volumeReady,
     volumeBlockingDomains:libraryPlan.volumeBlockingDomains,
     uiBlockingSubsystems:libraryPlan.uiBlockingSubsystems,
+    nextVolumeActions:libraryPlan.nextVolumeActions,
+    persistentWorklistField:libraryPlan.persistentWorklistField,
+    volumeActionConsumption:libraryPlan.volumeActionConsumption,
+    reuseResolutionOrder:libraryPlan.reuseResolutionOrder,
+    ideaDeduplication:libraryPlan.ideaDeduplication,
+    qualityUpPolicy:libraryPlan.qualityUpPolicy,
     referenceBreadthProfiles:Object.keys(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES),
     progressionComplexityProfiles:Object.keys(INTERNAL_PROGRESSION_COMPLEXITY_PROFILES),
     audioRoleContractCount:libraryPlan.audioRoleContractCount,
@@ -556,6 +562,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     audioRoleVolumeSeparateFromVerifiedFileCount:true,
     volumeBeforeQuality:true,
     qualityUpStartsOnlyAfterRecommendedVolume:true,
+    productionRuntimeVerificationSeparateFromInternalQuality:true,
     autoRegistrySync:true,
     autoDelete:false,
     productionPromotionAutomatic:false,
@@ -1683,7 +1690,49 @@ export function buildVibeAssetProductionPlan({
     uiAtomIds:(executionUiCatalog.atoms||[]).map(row=>row.atomId),
     audioRoleIds:collectCommonCatalogAudioRoles(executionCatalogs)
   });
-  const internalLibraryEvolution=freeze({phase:clean(executionLibraryPlan.focusPhase||libraryAutomation.focusPhase)||'VOLUME_UP',volumeReady:executionLibraryPlan.volumeReady===true,qualityTarget:Number(executionLibraryPlan.qualityTarget||libraryAutomation.qualityTarget||1000),volumeBlockingDomains:freezeList((executionLibraryPlan.volumeBlockingDomains||[]).map(row=>row?.domain).filter(Boolean)),uiBlockingSubsystems:freezeList((executionLibraryPlan.uiBlockingSubsystems||[]).map(row=>row?.subsystem).filter(Boolean)),referenceBreadthProfiles:freezeList(Object.keys(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES)),progressionComplexityProfiles:freezeList(Object.keys(INTERNAL_PROGRESSION_COMPLEXITY_PROFILES)),nextVolumeActions:freezeList(executionLibraryPlan.nextVolumeActions||[]),audioRoleContractCount:Number(executionLibraryPlan.audioRoleContractCount||0),actualVerifiedAudioAssetCount:Number(executionLibraryPlan.actualVerifiedAudioAssetCount||0),audioRoleVolumeSeparateFromVerifiedFileCount:true,existingAssetDevelopmentLaneOnly:true,newWorkflow:false,newScheduler:false,newQueue:false,newPipeline:false});
+  const persistedWorklistFresh=
+    Number(libraryAutomation.lastCatalogSynchronizedVersion)===Number(companyRegistry?.version)
+    &&Array.isArray(libraryAutomation.nextVolumeActions);
+  const activeNextVolumeActions=
+    executionLibraryPlan.focusPhase==='VOLUME_UP'
+      ?(persistedWorklistFresh&&libraryAutomation.nextVolumeActions.length
+        ?libraryAutomation.nextVolumeActions
+        :(executionLibraryPlan.nextVolumeActions||[]))
+      :[];
+  const internalLibraryEvolution=freeze({
+    phase:clean(executionLibraryPlan.focusPhase||libraryAutomation.focusPhase)||'VOLUME_UP',
+    volumeReady:executionLibraryPlan.volumeReady===true,
+    qualityTarget:Number(executionLibraryPlan.qualityTarget||libraryAutomation.qualityTarget||1000),
+    volumeBlockingDomains:freezeList((executionLibraryPlan.volumeBlockingDomains||[]).map(row=>row?.domain).filter(Boolean)),
+    uiBlockingSubsystems:freezeList((executionLibraryPlan.uiBlockingSubsystems||[]).map(row=>row?.subsystem).filter(Boolean)),
+    referenceBreadthProfiles:freezeList(Object.keys(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES)),
+    progressionComplexityProfiles:freezeList(Object.keys(INTERNAL_PROGRESSION_COMPLEXITY_PROFILES)),
+    nextVolumeActions:freezeList(activeNextVolumeActions),
+    activeNextVolumeAction:activeNextVolumeActions[0]||null,
+    worklistSource:persistedWorklistFresh&&libraryAutomation.nextVolumeActions.length?'COMPANY_ASSET_LIBRARY_PERSISTED':'CURRENT_EXECUTION_RECOMPUTED',
+    consumePersistedNextVolumeActionsFirst:true,
+    persistentWorklistField:clean(executionLibraryPlan.persistentWorklistField||libraryAutomation.persistentWorklistField)||'internalAssetLibraryAutomation.nextVolumeActions',
+    reuseResolutionOrder:freezeList(executionLibraryPlan.reuseResolutionOrder||libraryAutomation.reuseResolutionOrder||['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','NEW_AUTHORING']),
+    qualityUpPolicy:freeze({
+      ...(libraryAutomation.qualityUpPolicy||{}),
+      ...(executionLibraryPlan.qualityUpPolicy||{}),
+      selection:clean(executionLibraryPlan.qualityUpPolicy?.selection||libraryAutomation.qualityUpPolicy?.selection)||'WEAKEST_INTERNAL_AUDIT_AXIS_FIRST',
+      workingBandMin:Number(executionLibraryPlan.qualityUpPolicy?.workingBandMin||libraryAutomation.qualityUpPolicy?.workingBandMin||980),
+      target:Number(executionLibraryPlan.qualityUpPolicy?.target||libraryAutomation.qualityUpPolicy?.target||1000),
+      productionRuntimeVerificationSeparate:true
+    }),
+    audioRoleContractCount:Number(executionLibraryPlan.audioRoleContractCount||0),
+    actualVerifiedAudioAssetCount:Number(executionLibraryPlan.actualVerifiedAudioAssetCount||0),
+    audioRoleVolumeSeparateFromVerifiedFileCount:true,
+    productionRuntimeVerificationSeparateFromInternalQuality:true,
+    existingAssetDevelopmentLaneOnly:true,
+    newWorkflow:false,
+    newScheduler:false,
+    newQueue:false,
+    newPipeline:false,
+    newWrapper:false,
+    newShadowSystem:false
+  });
   const currentCustomizationDocument=(companyRegistry?.baseMaterialLibrary?.customization?.documents||[]).find(row=>row.gameId===clean(task.gameId))||null;
   const sharedCustomizationDocument=task.assetCustomization?.sharedDocument||(!task.assetCustomization?.recipes?.length?currentCustomizationDocument:null);
   if(sharedCustomizationDocument)task={...task,styleFamily:sharedCustomizationDocument.styleBible?.profileKey,styleBible:sharedCustomizationDocument.styleBible,concept:{...task.concept,styles:[{family:sharedCustomizationDocument.styleBible?.profileKey,weight:1}]},motionStyleModifiers:sharedCustomizationDocument.motionStyle?.modifiers};
@@ -2606,7 +2655,7 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
-    plan.internalLibraryEvolution?.phase?`[INTERNAL LIBRARY EVOLUTION] ${JSON.stringify(plan.internalLibraryEvolution)}. VOLUME_UP에서는 기존 GRAPHICS_PRODUCTION/asset-development 책임 경로에서 부족 도메인과 UI 서브시스템을 먼저 확장하고, QUALITY_UP_1000에서는 기존 자산의 최약 축을 보강해 내부 감사 1000점을 목표로 한다. progressionComplexityProfiles는 VERY_SIMPLE/SURVIVAL_SIMPLE/DEEP_RPG 중 게임 설계에 맞는 표현 깊이를 선택하는 자산 표현 프로필이며 게임 규칙 권한이 아니다. Audio roleContractCount와 actualVerifiedAudioAssetCount를 분리하고 실제 검증 음원이 없으면 음원 파일 보유를 주장하지 않는다.`:'',
+    plan.internalLibraryEvolution?.phase?`[INTERNAL LIBRARY EVOLUTION] ${JSON.stringify(plan.internalLibraryEvolution)}. VOLUME_UP에서는 company-asset-library.json#internalAssetLibraryAutomation.nextVolumeActions의 우선순위를 먼저 소비하고 각 항목을 REUSE_EXISTING→DERIVE_VARIANT→RECOMBINE_EXISTING→NEW_AUTHORING 순서로 해결한다. 모든 권장 범위와 필수 role이 충족된 뒤에만 QUALITY_UP_1000으로 전환하며, 이 단계에서는 내부감사 최약 축을 980→1000 구간 중심으로 개선한다. 내부 1000점은 production/runtime 검증과 별개이며 실제 런타임 증거 없이 productionVerified를 올리지 않는다. progressionComplexityProfiles는 VERY_SIMPLE/SURVIVAL_SIMPLE/DEEP_RPG 중 게임 설계에 맞는 표현 깊이를 선택하는 자산 표현 프로필이며 게임 규칙 권한이 아니다. Audio roleContractCount와 actualVerifiedAudioAssetCount를 분리하고 실제 검증 음원이 없으면 음원 파일 보유를 주장하지 않는다.`:'',
     plan.flowAssetRequirements?.length?`[FLOW-DRIVEN ASSET REQUIREMENTS] ${JSON.stringify(plan.flowAssetRequirements)}. 게임 플로우가 요구한 시각 역할이다. 특정 회사 자산 ID를 고정하지 않고 현재 실행의 최신 company-asset-library.json에서 다시 해석한다. 내부자산 업데이트 후 다음 실행은 자동으로 더 적합한 후보를 재선택할 수 있다. 라이브러리 사용 자격을 장르로 제한하지 않는다. 자산의 원래 장르와 현재 게임 장르가 달라도 후보에서 제외하지 않고 플랫폼·권리·family/role·기술 호환을 먼저 본 뒤 스타일 적응/재조합한다. 장르는 추천 힌트일 뿐 eligibility gate가 아니다. 자산 계층은 gameplay/balance/progression/save/network 권한을 갖지 않는다.`:'',
     plan.flowAssetLoadout?.selections?.length?`[FLOW-DRIVEN ASSET LOADOUT] ${JSON.stringify(plan.flowAssetLoadout)}. selections의 assetId/applicationMode/replacementAction/sourceFiles를 실제 기존 책임 소스 바인딩에 사용한다. unresolved는 없는 자산을 가짜로 만들거나 임의 ID로 채우지 말고 기존 authoring/gap-fill 규칙으로 넘긴다. USE_AS_IS, LIGHT_THEME_ADAPT, STYLE_ADAPT, RECOMBINE_PARTS, NATIVE_REAUTHOR_BASE 중 선택 결과를 따르고 게임 의미는 보존한다.`:'',
     plan.qualityDNA?`[QUALITY DNA] ${JSON.stringify(plan.qualityDNA)}. 이 값은 현재 자산의 임의 점수가 아니라 게임별 최소 제작 하한이다. 각 type의 minimumFloors와 detailLod를 만족시키도록 강한 축은 잠그고 실패한 축만 수정한다. donor는 실패 축만 교체하고 스타일 정체성·출처·잠긴 특징을 보존한다. 검증 상태나 폴리곤/텍스처 수만으로 고퀄 판정하지 않는다.`:'',
