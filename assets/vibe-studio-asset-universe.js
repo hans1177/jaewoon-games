@@ -853,6 +853,11 @@ export const COMMON_LIBRARY_SYSTEM_DEPTH_ALIASES=Object.freeze({
     LEATHER:Object.freeze(['LEATHER_LIKE']),
     CRYSTAL:Object.freeze(['MAGIC_CRYSTAL'])
   }),
+  VFX:Object.freeze({
+    HIT:Object.freeze(['IMPACT_FLASH','IMPACT_CONFIRMATION']),
+    BLOCK:Object.freeze(['BLOCK_IMPACT','BLOCK_CONTACT']),
+    PARRY:Object.freeze(['PARRY_PERFECT_FLASH','PERFECT_PARRY_CONFIRMATION','COUNTER_READY_PULSE'])
+  }),
   MOTION:Object.freeze({
     TURN:Object.freeze(['TURN_90']),
     JUMP:Object.freeze(['JUMP_START']),
@@ -1033,7 +1038,7 @@ export const INTERNAL_ASSET_ADAPTATION_AXES=Object.freeze({
 
 
 export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT=Object.freeze({
-  version:1,
+  version:2,
   scope:'INTERNAL_ASSETS_ONLY',
   documentationMode:'MACHINE_READABLE_ONLY',
   mode:'EVENT_DRIVEN_ASSET_REVIEW_NOT_SCHEDULER',
@@ -3235,7 +3240,7 @@ function commonDepthTokens(assets=[]){
     const token=upper(value).replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
     if(token)tokens.add(token);
   };
-  const fields=['id','assetId','family','category','subfamily','type','itemRole','toolRole','gearRole','buildingRole','worldRole','role','biomeId','familyRootId','atomId','packId','snapClass','stabilityRole','interactionRole','propKind'];
+  const fields=['id','assetId','family','category','subfamily','type','itemRole','toolRole','gearRole','buildingRole','worldRole','role','systemRole','biomeId','familyRootId','atomId','packId','snapClass','stabilityRole','interactionRole','propKind'];
   const arrays=['tags','machineTags','capabilities','presentationRoles','motionStates','environmentRoles','biomes','loadingElements','introModes','inventoryCategories','uiSurfaces','terrainCompositions','backgroundLayers'];
   for(const asset of assets||[]){
     for(const field of fields)add(asset?.[field]);
