@@ -2976,7 +2976,7 @@ ${expectationInstruction}
     ])];
   }
   out.studioQualityEvolution={
-    version:5,cycle,phase,focusPillar,baselineId,platformLane,
+    version:4,cycle,phase,focusPillar,baselineId,platformLane,
     laneIndependentVerificationRequired:true,
     siblingPlatformPassCannotSubstitute:true,
     baselineSource:previous?.id?'VERIFIED_QUEUE_TASK':'CURRENT_SOURCE',
