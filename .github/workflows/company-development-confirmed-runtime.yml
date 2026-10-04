@@ -32,7 +32,8 @@ on:
         type: string
 
 concurrency:
-  group: company-development-confirmed-${{ inputs.game_id || (github.event_name == 'push' && 'main-push') || github.run_id }}
+  # Same game on a newer source revision is a new evolution cycle and must not wait behind the previous cycle.
+  group: company-development-confirmed-${{ inputs.game_id || (github.event_name == 'push' && 'main-push') || github.run_id }}-${{ github.sha }}
   cancel-in-progress: false
 
 permissions:
@@ -48,7 +49,7 @@ jobs:
     runs-on: ubuntu-slim
     timeout-minutes: 5
     concurrency:
-      group: company-development-confirmed-coordinator-gate-${{ inputs.game_id || (github.event_name == 'push' && github.run_id) || 'batch' }}
+      group: company-development-confirmed-coordinator-gate-${{ inputs.game_id || (github.event_name == 'push' && github.run_id) || 'batch' }}-${{ github.sha }}
       cancel-in-progress: false
     outputs:
       proceed: ${{ steps.admit.outputs.proceed }}
