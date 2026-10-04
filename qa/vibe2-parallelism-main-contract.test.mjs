@@ -416,7 +416,7 @@ test('stale main push wake rebases to latest main before expensive reserve work 
 });
 
 
-test('24h runner wakes asset lane when active reservations need recovery without a repository-wide pressure gate',()=>{
+test('24h runner defers new asset lane launch under repository-wide runner pressure',()=>{
   assert.match(runner,/asset_development_active/);
   assert.match(runner,/asset_development_queued/);
   assert.match(runner,/asset_development_refill_ready/);
@@ -424,8 +424,7 @@ test('24h runner wakes asset lane when active reservations need recovery without
   const assetEnd=runner.indexOf('\n  learning_idle:',assetStart);
   assert.ok(assetStart>=0&&assetEnd>assetStart);
   const assetBlock=runner.slice(assetStart,assetEnd);
-  assert.match(assetBlock,/needs\.plan\.outputs\.asset_development_refill_ready == 'YES' && \(needs\.plan\.outputs\.asset_development_queued != '0' \|\| needs\.plan\.outputs\.asset_development_active != '0'\)/);
-  assert.doesNotMatch(assetBlock,/runner_pressure/);
+  assert.match(assetBlock,/needs\.plan\.outputs\.runner_pressure != 'YES' && needs\.plan\.outputs\.asset_development_refill_ready == 'YES' && \(needs\.plan\.outputs\.asset_development_queued != '0' \|\| needs\.plan\.outputs\.asset_development_active != '0'\)/);
 });
 
 test('failed worker releases its exact lock after immutable upload while PASS holds until fan-in',()=>{
@@ -442,14 +441,16 @@ test('failed worker releases its exact lock after immutable upload while PASS ho
   assert.match(core,/VIBE_REMOTE_WORK_LOCK_REASON=lock-not-found/);
 });
 
-test('24H pre-plan production dispatch is not blocked by repository-wide runner pressure',()=>{
+test('24H pre-plan production dispatch obeys canonical runner backpressure',()=>{
   const stepStart=runner.indexOf('      - name: Dispatch queued asset work first, otherwise GAME_PRIMARY before full planning');
   const stepEnd=runner.indexOf('\n      - name: Plan from latest main and persist control queue',stepStart);
   assert.ok(stepStart>=0&&stepEnd>stepStart);
   const step=runner.slice(stepStart,stepEnd);
-  assert.match(step,/VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=DISABLED_EXTERNAL_RUNNER_QUEUE_OWNS_CAPACITY/);
+  assert.doesNotMatch(step,/VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=DISABLED_EXTERNAL_RUNNER_QUEUE_OWNS_CAPACITY/);
+  assert.match(step,/VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=DEFERRED_TO_FIVE_MINUTE_SAFETY_NET/);
+  assert.match(step,/VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=PASS/);
+  assert.match(step,/VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=OBSERVATION_UNAVAILABLE_FAIL_OPEN/);
   assert.match(step,/VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED/);
   assert.match(step,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DISPATCHED/);
   assert.match(step,/VIBE2_ASSET_PRIORITY_BURST_MAX/);
-  assert.doesNotMatch(step,/VIBE2_PREPLAN_DISPATCH=DEFER_RUNNER_PRESSURE/);
 });

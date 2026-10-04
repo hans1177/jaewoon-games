@@ -156,9 +156,38 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # Repository-wide Actions pressure is observation-only for production work.
-          # GAME_PRIMARY / ASSET_DEVELOPMENT dispatches remain enabled; GitHub owns actual runner queuing.
-          echo 'VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=DISABLED_EXTERNAL_RUNNER_QUEUE_OWNS_CAPACITY'
+          # 중앙 backpressure 계약: Actions 큐가 이미 밀리면 새 production wake를 만들지 않는다.
+          # 기존 5분 safety-net과 fan-in이 continuity를 소유하므로 현재 run은 planning만 계속한다.
+          pressure_threshold="${VIBE2_RUNNER_PRESSURE_DISPATCH_THRESHOLD:-4}"
+          preplan_pressure='unknown'
+          if curl --fail-with-body --silent --show-error \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" \
+            --output /tmp/vibe2-preplan-actions-runs.json; then
+            preplan_pressure="$(node <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-preplan-actions-runs.json','utf8'));
+          const current=String(process.env.GITHUB_RUN_ID||'');
+          const pressured=new Set(['queued','pending','requested']);
+          const count=(payload.workflow_runs||[]).filter(row=>
+            String(row.id||'')!==current &&
+            pressured.has(String(row.status||'').toLowerCase())
+          ).length;
+          process.stdout.write(String(count));
+          NODE
+            )"
+          fi
+          if [[ "$preplan_pressure" =~ ^[0-9]+$ ]] && [ "$preplan_pressure" -ge "$pressure_threshold" ]; then
+            echo "VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=DEFERRED_TO_FIVE_MINUTE_SAFETY_NET:$preplan_pressure:$pressure_threshold"
+            exit 0
+          fi
+          if [[ "$preplan_pressure" =~ ^[0-9]+$ ]]; then
+            echo "VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=PASS:$preplan_pressure:$pressure_threshold"
+          else
+            echo 'VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=OBSERVATION_UNAVAILABLE_FAIL_OPEN'
+          fi
 
           state="$(node <<'NODE'
           const fs=require('fs');
@@ -961,7 +990,7 @@ jobs:
 
   continuous:
     needs: plan
-    if: ${{ needs.plan.outputs.game_refill_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0' }}
+    if: ${{ needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.game_refill_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0' }}
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: game-primary
@@ -972,7 +1001,7 @@ jobs:
 
   asset_development:
     needs: plan
-    if: ${{ needs.plan.outputs.asset_development_refill_ready == 'YES' && (needs.plan.outputs.asset_development_queued != '0' || needs.plan.outputs.asset_development_active != '0') }}
+    if: ${{ needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.asset_development_refill_ready == 'YES' && (needs.plan.outputs.asset_development_queued != '0' || needs.plan.outputs.asset_development_active != '0') }}
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: asset-development
@@ -1007,12 +1036,51 @@ jobs:
     runs-on: ubuntu-slim
     timeout-minutes: 2
     steps:
-      - name: Dispatch next cycle without repository-wide pressure gate
+      - name: Dispatch next cycle only when backpressure allows
         env:
           GH_TOKEN: ${{ github.token }}
+          CONTINUE_REQUIRED: ${{ needs.plan.outputs.continue_required }}
+          RUNNER_PRESSURE: ${{ needs.plan.outputs.runner_pressure }}
         run: |
           set -euo pipefail
-          echo 'VIBE2_24H_REFILL_GLOBAL_GATE=DISABLED_EXTERNAL_RUNNER_QUEUE_OWNS_CAPACITY'
+          if [ "${CONTINUE_REQUIRED:-NO}" != 'YES' ]; then
+            echo 'VIBE2_24H_REFILL=SKIPPED_NO_CONTINUE_REQUIRED'
+            exit 0
+          fi
+          if [ "${RUNNER_PRESSURE:-YES}" = 'YES' ]; then
+            echo 'VIBE2_24H_REFILL=DEFERRED_TO_SCHEDULE_RUNNER_PRESSURE'
+            exit 0
+          fi
+
+          active_scheduler='0'
+          if curl --fail-with-body --silent --show-error \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-24h-runner.yml/runs?per_page=100" \
+            --output /tmp/vibe2-24h-active-runs.json; then
+            active_scheduler="$(node <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-24h-active-runs.json','utf8'));
+          const current=String(process.env.GITHUB_RUN_ID||'');
+          const active=new Set(['queued','pending','requested','in_progress']);
+          const count=(payload.workflow_runs||[]).filter(row=>
+            String(row.id||'')!==current &&
+            active.has(String(row.status||'').toLowerCase())
+          ).length;
+          process.stdout.write(String(count));
+          NODE
+            )"
+          else
+            echo 'VIBE2_24H_REFILL_ACTIVE_SCHEDULER_OBSERVATION=UNAVAILABLE_FAIL_OPEN'
+          fi
+
+          if [[ "$active_scheduler" =~ ^[0-9]+$ ]] && [ "$active_scheduler" -gt 0 ]; then
+            echo "VIBE2_24H_REFILL=SKIPPED_EXISTING_SCHEDULER:$active_scheduler"
+            exit 0
+          fi
+
+          echo 'VIBE2_24H_REFILL_PRESSURE_GATE=PASS'
           body='{"ref":"main"}'
           for attempt in 1 2 3; do
             code="$(curl --silent --show-error --output /tmp/vibe2-refill-body.txt --write-out '%{http_code}' \
