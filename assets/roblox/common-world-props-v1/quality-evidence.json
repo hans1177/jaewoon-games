@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-common-world-props-v1",
   "recordedAt": "2026-10-04",
   "productionVerified": false,
@@ -17,7 +17,10 @@
       "mobileFriendlyPartCounts": true,
       "gameplayAuthorityFalse": true,
       "balanceEconomySaveNetworkUntouched": true,
-      "runtimeVerificationNotClaimed": true
+      "runtimeVerificationNotClaimed": true,
+      "reusableWorldHousingProps24": true,
+      "housingSettlementRoles": true,
+      "farmingAndCraftStationVisuals": true
     }
   },
   "runtimeQuality": {
@@ -25,5 +28,6 @@
     "requiredBeforeProductionVerified": true,
     "requiredSurface": "ROBLOX_STUDIO_OR_NATIVE_RUNTIME",
     "note": "실제 소비 게임 런타임 검증 전에는 productionVerified를 true로 바꾸지 않는다."
-  }
+  },
+  "sourceAssetCount": 24
 }
