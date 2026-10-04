@@ -1592,7 +1592,7 @@ function uiSubsystemCount(ids=[],spec={}){
   }).length;
 }
 
-export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[]}={}){
+export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[],externalSources=[]}={}){
   const depth=auditCommonLibrarySystemDepth({assets});
   const seedIdeas=seedPlan?.ideas||[];
   const depthByDomain=new Map(depth.rows.map(row=>[row.domain,row]));
@@ -1600,6 +1600,37 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
   const audioRoleTokens=new Set(audioRoles);
   const actualVerifiedAudioAssetCount=verifiedAudioFileCount(assets);
   const domains=[];
+  const freeSourceCategoriesByDomain=Object.freeze({
+    BUILDING:Object.freeze(['BUILDING','PROP','ENVIRONMENT']),
+    CREATURE:Object.freeze(['CREATURE']),
+    MOTION:Object.freeze(['MOTION']),
+    UI:Object.freeze(['UI']),
+    WORLD_PROP:Object.freeze(['PROP']),
+    ENVIRONMENT:Object.freeze(['ENVIRONMENT','MATERIAL','PROP']),
+    ITEM:Object.freeze(['PROP','WEAPON']),
+    SKILL:Object.freeze(['VFX','MOTION']),
+    VFX:Object.freeze(['VFX']),
+    PRESENTATION:Object.freeze(['UI','VFX','AUDIO']),
+    CHARACTER_GEAR:Object.freeze(['CHARACTER','PROP']),
+    WEAPON:Object.freeze(['WEAPON','PROP']),
+    AUDIO:Object.freeze(['AUDIO']),
+    FOLIAGE:Object.freeze(['ENVIRONMENT','PROP']),
+    MATERIAL:Object.freeze(['MATERIAL','ENVIRONMENT'])
+  });
+  const eligibleFreeSources=(externalSources||[]).filter(source=>
+    /LICENSE_VERIFIED/.test(upper(source?.status))
+    &&source?.volumeAdaptationEligible===true
+    &&source?.commercialUseAllowed===true
+    &&source?.derivativesAllowed===true
+  ).map(source=>Object.freeze({
+    id:text(source?.id),
+    categories:Object.freeze(uniq([source?.category,...(Array.isArray(source?.categories)?source.categories:[])]).map(upper)),
+    sourcePriority:Number(source?.sourcePriority||0)
+  })).filter(source=>source.id).sort((a,b)=>b.sourcePriority-a.sourcePriority||a.id.localeCompare(b.id));
+  const freeSourceIdsForDomain=domain=>{
+    const allowed=freeSourceCategoriesByDomain[upper(domain)]||[];
+    return eligibleFreeSources.filter(source=>source.categories.some(category=>allowed.includes(category))).map(source=>source.id);
+  };
   const normalizeIdentity=value=>upper(value).replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
   const existingIdentityTokens=new Set();
   const addExistingIdentity=value=>{
@@ -1777,11 +1808,13 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     .map(row=>Object.freeze({subsystem:row.subsystem,currentCount:row.currentCount,targetMin:row.targetMin}));
   const volumeReady=volumeBlockingDomains.length===0&&uiBlockingSubsystems.length===0;
   const nextVolumeActionRows=volumeReady?[]:[
-    ...sortedDomains.flatMap(row=>(row.suggestedIdeas||[]).slice(0,4).map(idea=>({kind:'DOMAIN_VOLUME',domain:row.domain,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount}))),
-    ...uiSubsystems.flatMap(row=>(row.suggestedIdeas||[]).slice(0,3).map(idea=>({kind:'UI_SUBSYSTEM_VOLUME',domain:'UI',subsystem:row.subsystem,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount})))
+    ...sortedDomains.flatMap(row=>(row.suggestedIdeas||[]).slice(0,4).map(idea=>({kind:'DOMAIN_VOLUME',domain:row.domain,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain(row.domain).slice(0,8)}))),
+    ...uiSubsystems.flatMap(row=>(row.suggestedIdeas||[]).slice(0,3).map(idea=>({kind:'UI_SUBSYSTEM_VOLUME',domain:'UI',subsystem:row.subsystem,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain('UI').slice(0,8)})))
   ].sort((a,b)=>b.priority-a.priority||String(a.domain).localeCompare(String(b.domain))||String(a.ideaId).localeCompare(String(b.ideaId))).slice(0,96);
   const nextVolumeActions=nextVolumeActionRows.map((row,index)=>Object.freeze({
     ...row,
+    freeSourceAvailable:Array.isArray(row.freeSourceCandidateIds)&&row.freeSourceCandidateIds.length>0,
+    freeSourceCandidateIds:Object.freeze([...(row.freeSourceCandidateIds||[])]),
     worklistOrder:index+1,
     resolutionOrder:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.reuseResolutionOrder
   }));
@@ -1804,6 +1837,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     volumeActionConsumption:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.volumeActionConsumption,
     reuseResolutionOrder:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.reuseResolutionOrder,
     freeOriginalVolumePolicy:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy,
+    eligibleFreeSourceCount:eligibleFreeSources.length,
     ideaDeduplication:Object.freeze({
       fields:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.ideaDeduplicationFields,
       existingIdentityCount:existingIdentityTokens.size,
