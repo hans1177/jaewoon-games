@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-common-world-props-v1",
   "title": "Roblox 회사 공용 월드 소품 8종 v1",
   "platform": "ROBLOX",
@@ -77,5 +77,66 @@
       "worldRole": "LANDMARK_PROP",
       "familyRootId": "WORLD_WELL"
     }
-  ]
+  ],
+  "systemDepthContract": {
+    "referenceLevel": "GOTY_COMMON_PRINCIPLES_NOT_COPY",
+    "requiredComponents": [
+      "CONTAINER",
+      "CHEST",
+      "CRATE",
+      "BARREL",
+      "FURNITURE",
+      "LIGHT_SOURCE",
+      "SIGNPOST",
+      "FENCE",
+      "MARKET",
+      "CRAFT_STATION",
+      "WORKBENCH",
+      "COOKING",
+      "STORAGE",
+      "INTERACTIVE_SWITCH",
+      "DOOR_CONTROL",
+      "LORE_COLLECTIBLE",
+      "DESTRUCTIBLE",
+      "RESOURCE_NODE",
+      "QUEST_PROP",
+      "DECORATION",
+      "COLLISION_PROXY",
+      "LOD"
+    ],
+    "currentDeclaredComponents": [
+      "SIGNPOST",
+      "FENCE",
+      "TORCH",
+      "BARREL",
+      "BENCH",
+      "TABLE",
+      "MARKET_STALL",
+      "WELL"
+    ],
+    "missingComponentCandidates": [
+      "CONTAINER",
+      "CHEST",
+      "CRATE",
+      "FURNITURE",
+      "LIGHT_SOURCE",
+      "MARKET",
+      "CRAFT_STATION",
+      "WORKBENCH",
+      "COOKING",
+      "STORAGE",
+      "INTERACTIVE_SWITCH",
+      "DOOR_CONTROL",
+      "LORE_COLLECTIBLE",
+      "DESTRUCTIBLE",
+      "RESOURCE_NODE",
+      "QUEST_PROP",
+      "DECORATION",
+      "COLLISION_PROXY",
+      "LOD"
+    ],
+    "qualityScoreIsNotUsageGate": true,
+    "existingAssetsRemainUsable": true,
+    "gameplayAuthority": false
+  }
 }
