@@ -121,15 +121,17 @@ export function escalateRecoveryCandidates({gameQueueInput={},systemAiQueueInput
   const gameTasks=Array.isArray(gameQueueInput.tasks)?gameQueueInput.tasks:[];
   const sysTasks=Array.isArray(systemAiQueueInput.tasks)?systemAiQueueInput.tasks:[];
   const candidates=[];
+  const flowCohorts=flowLoopCohorts(gameTasks);
+  const flowTaskIds=new Set(flowCohorts.flatMap(cohort=>cohort.rows.map(row=>clean(row.task.id))).filter(Boolean));
   for(const task of gameTasks){
     const status=clean(task.status).toLowerCase();
-    if(['done','completed','cancelled','verified'].includes(status))continue;
+    if(['done','completed','cancelled','verified'].includes(status)||flowTaskIds.has(clean(task.id)))continue;
     const ev=uniq(task.evidence);
     const repeated=Number(task.recoveryGeneration||0)>0||ev.some(x=>x.startsWith('system-steward:retry-exhausted-regenerated:'))||clean(task.status)==='failed';
     const sig=evidenceSignature(task);
     if(repeated&&sig)candidates.push({sourceQueue:'vibe2',task,signature:sig,stage:failureStage(task)});
   }
-  for(const cohort of flowLoopCohorts(gameTasks)){
+  for(const cohort of flowCohorts){
     const latest=cohort.rows.at(-1);
     candidates.push({
       sourceQueue:'vibe2',
