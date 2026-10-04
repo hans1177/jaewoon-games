@@ -2976,6 +2976,216 @@ function RobloxCommonUI.CreateReadInspectPanel(options)
   return deepSystemPanel(options,"READ_INSPECT_PANEL","READ_INSPECT_PANEL",options.title or "조사",{"이름 / 종류","설명","관련 정보","다른 시스템 연결"})
 end
 
+function RobloxCommonUI.CreateInventorySmartSortPreview(options)
+  local root,parts=deepSystemPanel(options,"INVENTORY_SMART_SORT_PREVIEW","INVENTORY_SMART_SORT_PREVIEW","자동 정렬 미리보기",{"정렬 기준","변경 전/후","즐겨찾기/잠금 보존","적용 전 확인"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateInventoryCapacityForecast(options)
+  local root,parts=deepSystemPanel(options,"INVENTORY_CAPACITY_FORECAST","INVENTORY_CAPACITY_FORECAST","용량 예측",{"현재 용량","획득 예정","초과 예상","정리 추천"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateInventoryOverweightResolution(options)
+  local root,parts=deepSystemPanel(options,"INVENTORY_OVERWEIGHT_RESOLUTION","INVENTORY_OVERWEIGHT_RESOLUTION","무게 초과 해결",{"초과 무게","버리기 후보","보관함 이동","장비 교체"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateEquipConflictPreview(options)
+  local root,parts=deepSystemPanel(options,"EQUIP_CONFLICT_PREVIEW","EQUIP_CONFLICT_PREVIEW","장비 충돌 미리보기",{"현재 장비","교체 대상","해제되는 슬롯","세트/소켓 영향"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateLootFilterPreset(options)
+  local root,parts=deepSystemPanel(options,"LOOT_FILTER_PRESET","LOOT_FILTER_PRESET","루팅 필터",{"등급 필터","아이템 종류","자동 줍기","필터 저장"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateStashTransferQueue(options)
+  local root,parts=deepSystemPanel(options,"STASH_TRANSFER_QUEUE","STASH_TRANSFER_QUEUE","보관함 이동 대기열",{"이동 예정","용량 확인","충돌 항목","일괄 이동"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateMenuSystemSwitcherDrawer(options)
+  local root,parts=deepSystemPanel(options,"MENU_SYSTEM_SWITCHER_DRAWER","MENU_SYSTEM_SWITCHER_DRAWER","시스템 전환",{"인벤토리","장비","지도","퀘스트","제작","도감"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateNavigationBreadcrumbBackstack(options)
+  local root,parts=deepSystemPanel(options,"NAVIGATION_BREADCRUMB_BACKSTACK","NAVIGATION_BREADCRUMB_BACKSTACK","이동 경로",{"현재 위치","이전 화면","상위 시스템","돌아가기"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateMenuLastLocationResume(options)
+  local root,parts=deepSystemPanel(options,"MENU_LAST_LOCATION_RESUME","MENU_LAST_LOCATION_RESUME","마지막 화면 복귀",{"마지막 시스템","마지막 탭","선택 항목","복귀"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateMenuContextQuickActionSheet(options)
+  local root,parts=deepSystemPanel(options,"MENU_CONTEXT_QUICK_ACTION_SHEET","MENU_CONTEXT_QUICK_ACTION_SHEET","빠른 작업",{"현재 대상","추천 작업","보조 작업","닫기"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateOneHandBottomNav(options)
+  local root,parts=deepSystemPanel(options,"ONE_HAND_BOTTOM_NAV","ONE_HAND_BOTTOM_NAV","한손 하단 메뉴",{"핵심 시스템","엄지 도달 영역","현재 선택","빠른 전환"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateSetProgressTracker(options)
+  local root,parts=deepSystemPanel(options,"SET_PROGRESS_TRACKER","SET_PROGRESS_TRACKER","세트 진행도",{"착용 부위","완성 단계","다음 보너스","누락 부위"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateSocketRoutePreview(options)
+  local root,parts=deepSystemPanel(options,"SOCKET_ROUTE_PREVIEW","SOCKET_ROUTE_PREVIEW","소켓 경로",{"현재 소켓","장착 후보","조합 경로","변경 결과"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateDurabilityWearPreview(options)
+  local root,parts=deepSystemPanel(options,"DURABILITY_WEAR_PREVIEW","DURABILITY_WEAR_PREVIEW","내구도/마모",{"현재 상태","마모 단계","수리 효과","외형 변화"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateCraftQueueOverview(options)
+  local root,parts=deepSystemPanel(options,"CRAFT_QUEUE_OVERVIEW","CRAFT_QUEUE_OVERVIEW","제작 대기열",{"대기 제작","진행 중","필요 재료","완료 예정"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateRecipePrerequisiteChain(options)
+  local root,parts=deepSystemPanel(options,"RECIPE_PREREQUISITE_CHAIN","RECIPE_PREREQUISITE_CHAIN","제작 선행 경로",{"선행 제작","현재 보유","부족 재료","다음 단계"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateMaterialShortageRoute(options)
+  local root,parts=deepSystemPanel(options,"MATERIAL_SHORTAGE_ROUTE","MATERIAL_SHORTAGE_ROUTE","재료 부족 경로",{"부족 재료","획득 지역","획득 대상","대체 경로"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateShopPriceDeltaCompare(options)
+  local root,parts=deepSystemPanel(options,"SHOP_PRICE_DELTA_COMPARE","SHOP_PRICE_DELTA_COMPARE","가격 비교",{"현재 가격","기준 가격","구매/판매 차이","보유 재화"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateVendorStockState(options)
+  local root,parts=deepSystemPanel(options,"VENDOR_STOCK_STATE","VENDOR_STOCK_STATE","상점 재고 상태",{"재고 있음","품절","해금 조건","갱신 상태"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateQuestDependencyChain(options)
+  local root,parts=deepSystemPanel(options,"QUEST_DEPENDENCY_CHAIN","QUEST_DEPENDENCY_CHAIN","퀘스트 연결",{"선행 퀘스트","현재 목표","후속 퀘스트","막힌 조건"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateLoreRelationGraph(options)
+  local root,parts=deepSystemPanel(options,"LORE_RELATION_GRAPH","LORE_RELATION_GRAPH","기록 관계",{"인물","지역","사건","관련 기록"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateNpcRelationshipTimeline(options)
+  local root,parts=deepSystemPanel(options,"NPC_RELATIONSHIP_TIMELINE","NPC_RELATIONSHIP_TIMELINE","관계 변화",{"최근 변화","중요 사건","현재 관계","다음 경계"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreatePartyRoleOverview(options)
+  local root,parts=deepSystemPanel(options,"PARTY_ROLE_OVERVIEW","PARTY_ROLE_OVERVIEW","파티 역할",{"전투 역할","지원 역할","현재 상태","중복/빈 역할"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateRouteRiskPreview(options)
+  local root,parts=deepSystemPanel(options,"ROUTE_RISK_PREVIEW","ROUTE_RISK_PREVIEW","이동 위험도",{"목적지","경로 위험","날씨/환경","준비 항목"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateThreatEdgeIndicator(options)
+  local root,parts=deepSystemPanel(options,"THREAT_EDGE_INDICATOR","THREAT_EDGE_INDICATOR","위협 방향",{"좌/우/후방","위협 등급","거리","시야 밖 상태"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateBossPhaseStrip(options)
+  local root,parts=deepSystemPanel(options,"BOSS_PHASE_STRIP","BOSS_PHASE_STRIP","보스 페이즈",{"현재 페이즈","다음 변화","위험 패턴","진행도"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateWaveForecastRibbon(options)
+  local root,parts=deepSystemPanel(options,"WAVE_FORECAST_RIBBON","WAVE_FORECAST_RIBBON","웨이브 예고",{"현재 웨이브","다음 구성","정예/보스","준비 시간"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateStatusEffectTimeline(options)
+  local root,parts=deepSystemPanel(options,"STATUS_EFFECT_TIMELINE","STATUS_EFFECT_TIMELINE","상태효과 타임라인",{"현재 효과","남은 시간","중첩","해제 가능"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateHousingStructuralSupportOverlay(options)
+  local root,parts=deepSystemPanel(options,"HOUSING_STRUCTURAL_SUPPORT_OVERLAY","HOUSING_STRUCTURAL_SUPPORT_OVERLAY","구조 지지 오버레이",{"지지됨","약한 연결","끊긴 연결","보강 지점"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateHousingRoomFunctionHeatmap(options)
+  local root,parts=deepSystemPanel(options,"HOUSING_ROOM_FUNCTION_HEATMAP","HOUSING_ROOM_FUNCTION_HEATMAP","방 기능 히트맵",{"생활","제작","보관","이동 동선"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateCropGrowthTimeline(options)
+  local root,parts=deepSystemPanel(options,"CROP_GROWTH_TIMELINE","CROP_GROWTH_TIMELINE","작물 성장",{"파종","성장","수확 가능","계절/환경"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateAccessibilityReducedFlashMode(options)
+  local root,parts=deepSystemPanel(options,"ACCESSIBILITY_REDUCED_FLASH_MODE","ACCESSIBILITY_REDUCED_FLASH_MODE","번쩍임 감소",{"현재 설정","강한 플래시 대체","경고 표현","미리보기"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateAccessibilityColorBlindShapeBackup(options)
+  local root,parts=deepSystemPanel(options,"ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP","ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP","색상 보조 표식",{"색상 상태","모양 표식","텍스트 보조","미리보기"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateLoadingRetryWithCause(options)
+  local root,parts=deepSystemPanel(options,"LOADING_RETRY_WITH_CAUSE","LOADING_RETRY_WITH_CAUSE","재시도 원인 표시",{"실패 원인","재시도","오프라인 대안","안전한 복귀"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateFailureRecoveryCheckpoint(options)
+  local root,parts=deepSystemPanel(options,"FAILURE_RECOVERY_CHECKPOINT","FAILURE_RECOVERY_CHECKPOINT","복구 지점",{"마지막 정상 상태","복구 가능 항목","유실 없음 표시","다시 시작"})
+  root:SetAttribute("OwnsSystemAuthority",false)
+  return root,parts
+end
+
 function RobloxCommonUI.Create(atomId, options)
   local id = string.upper(tostring(atomId or ""))
   if id == "FRAME_PANEL" then
@@ -3316,13 +3526,83 @@ function RobloxCommonUI.Create(atomId, options)
     return RobloxCommonUI.CreateLightControlPrompt(options)
   elseif id == "READ_INSPECT_PANEL" then
     return RobloxCommonUI.CreateReadInspectPanel(options)
+  elseif id == "INVENTORY_SMART_SORT_PREVIEW" then
+    return RobloxCommonUI.CreateInventorySmartSortPreview(options)
+  elseif id == "INVENTORY_CAPACITY_FORECAST" then
+    return RobloxCommonUI.CreateInventoryCapacityForecast(options)
+  elseif id == "INVENTORY_OVERWEIGHT_RESOLUTION" then
+    return RobloxCommonUI.CreateInventoryOverweightResolution(options)
+  elseif id == "EQUIP_CONFLICT_PREVIEW" then
+    return RobloxCommonUI.CreateEquipConflictPreview(options)
+  elseif id == "LOOT_FILTER_PRESET" then
+    return RobloxCommonUI.CreateLootFilterPreset(options)
+  elseif id == "STASH_TRANSFER_QUEUE" then
+    return RobloxCommonUI.CreateStashTransferQueue(options)
+  elseif id == "MENU_SYSTEM_SWITCHER_DRAWER" then
+    return RobloxCommonUI.CreateMenuSystemSwitcherDrawer(options)
+  elseif id == "NAVIGATION_BREADCRUMB_BACKSTACK" then
+    return RobloxCommonUI.CreateNavigationBreadcrumbBackstack(options)
+  elseif id == "MENU_LAST_LOCATION_RESUME" then
+    return RobloxCommonUI.CreateMenuLastLocationResume(options)
+  elseif id == "MENU_CONTEXT_QUICK_ACTION_SHEET" then
+    return RobloxCommonUI.CreateMenuContextQuickActionSheet(options)
+  elseif id == "ONE_HAND_BOTTOM_NAV" then
+    return RobloxCommonUI.CreateOneHandBottomNav(options)
+  elseif id == "SET_PROGRESS_TRACKER" then
+    return RobloxCommonUI.CreateSetProgressTracker(options)
+  elseif id == "SOCKET_ROUTE_PREVIEW" then
+    return RobloxCommonUI.CreateSocketRoutePreview(options)
+  elseif id == "DURABILITY_WEAR_PREVIEW" then
+    return RobloxCommonUI.CreateDurabilityWearPreview(options)
+  elseif id == "CRAFT_QUEUE_OVERVIEW" then
+    return RobloxCommonUI.CreateCraftQueueOverview(options)
+  elseif id == "RECIPE_PREREQUISITE_CHAIN" then
+    return RobloxCommonUI.CreateRecipePrerequisiteChain(options)
+  elseif id == "MATERIAL_SHORTAGE_ROUTE" then
+    return RobloxCommonUI.CreateMaterialShortageRoute(options)
+  elseif id == "SHOP_PRICE_DELTA_COMPARE" then
+    return RobloxCommonUI.CreateShopPriceDeltaCompare(options)
+  elseif id == "VENDOR_STOCK_STATE" then
+    return RobloxCommonUI.CreateVendorStockState(options)
+  elseif id == "QUEST_DEPENDENCY_CHAIN" then
+    return RobloxCommonUI.CreateQuestDependencyChain(options)
+  elseif id == "LORE_RELATION_GRAPH" then
+    return RobloxCommonUI.CreateLoreRelationGraph(options)
+  elseif id == "NPC_RELATIONSHIP_TIMELINE" then
+    return RobloxCommonUI.CreateNpcRelationshipTimeline(options)
+  elseif id == "PARTY_ROLE_OVERVIEW" then
+    return RobloxCommonUI.CreatePartyRoleOverview(options)
+  elseif id == "ROUTE_RISK_PREVIEW" then
+    return RobloxCommonUI.CreateRouteRiskPreview(options)
+  elseif id == "THREAT_EDGE_INDICATOR" then
+    return RobloxCommonUI.CreateThreatEdgeIndicator(options)
+  elseif id == "BOSS_PHASE_STRIP" then
+    return RobloxCommonUI.CreateBossPhaseStrip(options)
+  elseif id == "WAVE_FORECAST_RIBBON" then
+    return RobloxCommonUI.CreateWaveForecastRibbon(options)
+  elseif id == "STATUS_EFFECT_TIMELINE" then
+    return RobloxCommonUI.CreateStatusEffectTimeline(options)
+  elseif id == "HOUSING_STRUCTURAL_SUPPORT_OVERLAY" then
+    return RobloxCommonUI.CreateHousingStructuralSupportOverlay(options)
+  elseif id == "HOUSING_ROOM_FUNCTION_HEATMAP" then
+    return RobloxCommonUI.CreateHousingRoomFunctionHeatmap(options)
+  elseif id == "CROP_GROWTH_TIMELINE" then
+    return RobloxCommonUI.CreateCropGrowthTimeline(options)
+  elseif id == "ACCESSIBILITY_REDUCED_FLASH_MODE" then
+    return RobloxCommonUI.CreateAccessibilityReducedFlashMode(options)
+  elseif id == "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP" then
+    return RobloxCommonUI.CreateAccessibilityColorBlindShapeBackup(options)
+  elseif id == "LOADING_RETRY_WITH_CAUSE" then
+    return RobloxCommonUI.CreateLoadingRetryWithCause(options)
+  elseif id == "FAILURE_RECOVERY_CHECKPOINT" then
+    return RobloxCommonUI.CreateFailureRecoveryCheckpoint(options)
   end
   error("UNKNOWN_COMMON_UI_ATOM: " .. tostring(atomId))
 end
 
 function RobloxCommonUI.Audit()
   return table.freeze({
-    version = 9,
+    version = 10,
     packId = "roblox-common-ui-v1",
     atoms = table.freeze({
       "FRAME_PANEL", "BUTTON_PRIMARY", "BAR_HEALTH", "INVENTORY_SLOT",
@@ -3368,11 +3648,19 @@ function RobloxCommonUI.Audit()
       "PARRY_TIMING_INDICATOR", "GUARD_METER", "GUARD_BREAK_WARNING", "COUNTER_READY_INDICATOR", "ATTACK_TELEGRAPH_INDICATOR",
       "WORLD_PROP_INTERACTION_PROMPT", "WORLD_PROP_ACTION_WHEEL", "INTERACTION_PROGRESS", "INTERACTION_STATE_CARD",
       "SEAT_INTERACTION_PROMPT", "BED_INTERACTION_PROMPT", "HARVEST_INTERACTION_PROMPT", "CONTAINER_INTERACTION_PROMPT",
-      "LIGHT_CONTROL_PROMPT", "READ_INSPECT_PANEL"
+      "LIGHT_CONTROL_PROMPT", "READ_INSPECT_PANEL",
+      "INVENTORY_SMART_SORT_PREVIEW", "INVENTORY_CAPACITY_FORECAST", "INVENTORY_OVERWEIGHT_RESOLUTION", "EQUIP_CONFLICT_PREVIEW", "LOOT_FILTER_PRESET",
+      "STASH_TRANSFER_QUEUE", "MENU_SYSTEM_SWITCHER_DRAWER", "NAVIGATION_BREADCRUMB_BACKSTACK", "MENU_LAST_LOCATION_RESUME", "MENU_CONTEXT_QUICK_ACTION_SHEET",
+      "ONE_HAND_BOTTOM_NAV", "SET_PROGRESS_TRACKER", "SOCKET_ROUTE_PREVIEW", "DURABILITY_WEAR_PREVIEW", "CRAFT_QUEUE_OVERVIEW",
+      "RECIPE_PREREQUISITE_CHAIN", "MATERIAL_SHORTAGE_ROUTE", "SHOP_PRICE_DELTA_COMPARE", "VENDOR_STOCK_STATE", "QUEST_DEPENDENCY_CHAIN",
+      "LORE_RELATION_GRAPH", "NPC_RELATIONSHIP_TIMELINE", "PARTY_ROLE_OVERVIEW", "ROUTE_RISK_PREVIEW", "THREAT_EDGE_INDICATOR",
+      "BOSS_PHASE_STRIP", "WAVE_FORECAST_RIBBON", "STATUS_EFFECT_TIMELINE", "HOUSING_STRUCTURAL_SUPPORT_OVERLAY", "HOUSING_ROOM_FUNCTION_HEATMAP",
+      "CROP_GROWTH_TIMELINE", "ACCESSIBILITY_REDUCED_FLASH_MODE", "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP", "LOADING_RETRY_WITH_CAUSE", "FAILURE_RECOVERY_CHECKPOINT"
     }),
-    atomCount = 169,
+    atomCount = 204,
     fullScreenSurfaceCount = 17,
-    deepSystemComponentCount = 115,
+    deepSystemComponentCount = 150,
+    subsystemDepthExpansionCount = 35,
     parryPresentationComponentCount = 5,
     worldInteractionComponentCount = 10,
     housingSandboxComponentCount = 24,
