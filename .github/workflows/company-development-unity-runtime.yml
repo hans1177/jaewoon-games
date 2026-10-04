@@ -92,8 +92,8 @@ env:
   VIBE2_LEARNING_RUNTIME_BRANCH: vibe2-learning-runtime
 
 concurrency:
-  group: unity-native-exact-${{ inputs.game_id || (github.event_name == 'push' && 'batch-push') || github.run_id }}
-  # Only main-push batch planners are disposable. Exact-game and manual runs keep active execution.
+  # Runtime evolution and publication retry are independent lanes; only exact duplicate game+source+lane is serialized.
+  group: unity-native-exact-${{ inputs.game_id || (github.event_name == 'push' && 'batch-push') || github.run_id }}-${{ github.sha }}-${{ inputs.publication_retry_only && 'publication-retry' || 'runtime' }}
   cancel-in-progress: ${{ github.event_name == 'push' }}
 
 jobs:
