@@ -40,28 +40,44 @@ function canonicalChainStage(stage=''){
   return /(?:^|_)(?:F[0-9]|SOURCE_PREFLIGHT|PRIVATE_RUNTIME|RUNTIME_CANDIDATE|SERVER_BOOT|WORLD_FOUNDATION|CHARACTER_FOUNDATION|PHYSICS|MOVEMENT|INPUT|CAMERA|CORE_SERVICES|MULTIPLAYER|GAMEPLAY|REGRESSION|RELEASE|PUBLISH|TARGET_PLATFORM_RUNTIME)(?:_|$)/i.test(clean(stage));
 }
 function flowLoopCohorts(tasks=[]){
-  const rows=tasks.map((task,index)=>({task,index,stage:failureStage(task),signature:evidenceSignature(task)}))
-    .filter(row=>{
+  const stageGroups=new Map();
+  tasks.forEach((task,index)=>{
+    const stage=failureStage(task),gameId=clean(task.gameId);
+    if(!gameId||!canonicalChainStage(stage))return;
+    const key=[gameId,flowLane(task),stage].join('|');
+    if(!stageGroups.has(key))stageGroups.set(key,[]);
+    stageGroups.get(key).push({task,index,stage,signature:evidenceSignature(task)});
+  });
+  const cohorts=[];
+  for(const stageRows of stageGroups.values()){
+    const ordered=stageRows.slice().sort((a,b)=>a.index-b.index);
+    const lastSuccessIndex=ordered.reduce((last,row)=>{
       const status=clean(row.task.status).toLowerCase();
-      return !['done','completed','cancelled','verified'].includes(status)
-        &&clean(row.task.gameId)
-        &&canonicalChainStage(row.stage)
+      return ['done','completed','verified'].includes(status)?row.index:last;
+    },-1);
+    const failedTail=ordered.filter(row=>{
+      const status=clean(row.task.status).toLowerCase();
+      return row.index>lastSuccessIndex
+        &&!['done','completed','cancelled','verified'].includes(status)
         &&row.signature;
     });
-  const grouped=new Map();
-  for(const row of rows){
-    const key=[clean(row.task.gameId),flowLane(row.task),row.stage,row.signature].join('|');
-    if(!grouped.has(key))grouped.set(key,[]);
-    grouped.get(key).push(row);
+    const bySignature=new Map();
+    for(const row of failedTail){
+      if(!bySignature.has(row.signature))bySignature.set(row.signature,[]);
+      bySignature.get(row.signature).push(row);
+    }
+    for(const group of bySignature.values()){
+      if(group.length<2)continue;
+      const first=group[0];
+      cohorts.push({
+        key:[clean(first.task.gameId),flowLane(first.task),first.stage,first.signature].join('|'),
+        rows:group,
+        recurrenceCount:group.length,
+        lastSuccessfulStageTaskId:lastSuccessIndex>=0?clean(ordered.find(row=>row.index===lastSuccessIndex)?.task?.id)||null:null
+      });
+    }
   }
-  return [...grouped.values()].filter(group=>group.length>=2).map(group=>{
-    const ordered=group.slice().sort((a,b)=>a.index-b.index);
-    return{
-      key:[clean(ordered[0].task.gameId),flowLane(ordered[0].task),ordered[0].stage,ordered[0].signature].join('|'),
-      rows:ordered,
-      recurrenceCount:ordered.length
-    };
-  });
+  return cohorts;
 }
 const CENTRAL_POLICY_FILES=new Set([
   'company-learning/platform-release-roadmap.json',
