@@ -393,6 +393,117 @@ function RobloxCommonVFX.CreateShieldHit(options)
   return folder
 end
 
+
+function RobloxCommonVFX.CreateDashStreak(options)
+  options = options or {}
+  local parent = options.parent or workspace
+  local cframe = typeof(options.cframe) == "CFrame" and options.cframe or CFrame.new()
+  local duration = clamp(options.duration or 0.30, 0.10, 0.70)
+  local color = typeof(options.color) == "Color3" and options.color or DEFAULT.Accent
+  local count = math.floor(clamp(options.count or 5, 3, 8))
+  local length = clamp(options.length or 3.8, 1.2, 7.0)
+
+  local folder = Instance.new("Folder")
+  folder.Name = "CommonDashStreak"
+  tag(folder, "DASH_STREAK")
+  folder.Parent = parent
+
+  for i = 1, count do
+    local y = (i - (count + 1) * 0.5) * 0.28
+    local streak = visualPart("DashLine_" .. i, Vector3.new(0.08, 0.08, length), color)
+    streak.CFrame = cframe * CFrame.new((i % 2 == 0 and 0.22 or -0.22), y, 0)
+    streak.Transparency = 0.22 + (i % 3) * 0.08
+    streak.Parent = folder
+    tag(streak, "DASH_STREAK")
+    TweenService:Create(streak, TweenInfo.new(duration, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+      CFrame = streak.CFrame * CFrame.new(0, 0, length * 0.7),
+      Size = Vector3.new(0.03, 0.03, length * 0.35),
+      Transparency = 1,
+    }):Play()
+  end
+
+  Debris:AddItem(folder, duration + 0.10)
+  return folder
+end
+
+function RobloxCommonVFX.CreateSpawnPulse(options)
+  options = options or {}
+  local parent = options.parent or workspace
+  local cframe = typeof(options.cframe) == "CFrame" and options.cframe or CFrame.new()
+  local duration = clamp(options.duration or 0.58, 0.18, 1.2)
+  local color = typeof(options.color) == "Color3" and options.color or DEFAULT.Accent
+  local accent = typeof(options.accent) == "Color3" and options.accent or DEFAULT.Color
+  local radius = clamp(options.radius or 2.4, 0.8, 6.0)
+
+  local folder = Instance.new("Folder")
+  folder.Name = "CommonSpawnPulse"
+  tag(folder, "SPAWN_PULSE")
+  folder.Parent = parent
+
+  local ring = visualPart("SpawnRing", Vector3.new(0.08, radius * 2, radius * 2), color, "CYLINDER")
+  ring.CFrame = cframe * CFrame.Angles(0, 0, math.rad(90))
+  ring.Transparency = 0.36
+  ring.Parent = folder
+  tag(ring, "SPAWN_PULSE")
+
+  local pillar = visualPart("SpawnPillar", Vector3.new(radius * 0.45, 0.20, radius * 0.45), accent, "CYLINDER")
+  pillar.CFrame = cframe
+  pillar.Transparency = 0.38
+  pillar.Parent = folder
+  tag(pillar, "SPAWN_PULSE")
+
+  TweenService:Create(ring, TweenInfo.new(duration, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+    Size = Vector3.new(0.04, radius * 4.2, radius * 4.2),
+    Transparency = 1,
+  }):Play()
+  TweenService:Create(pillar, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+    Size = Vector3.new(radius * 0.18, 5.4, radius * 0.18),
+    CFrame = cframe * CFrame.new(0, 2.6, 0),
+    Transparency = 1,
+  }):Play()
+
+  Debris:AddItem(folder, duration + 0.12)
+  return folder
+end
+
+function RobloxCommonVFX.CreateInteractPing(options)
+  options = options or {}
+  local parent = options.parent or workspace
+  local cframe = typeof(options.cframe) == "CFrame" and options.cframe or CFrame.new()
+  local duration = clamp(options.duration or 0.48, 0.16, 1.0)
+  local color = typeof(options.color) == "Color3" and options.color or Color3.fromRGB(255, 219, 112)
+
+  local folder = Instance.new("Folder")
+  folder.Name = "CommonInteractPing"
+  tag(folder, "INTERACT_PING")
+  folder.Parent = parent
+
+  for i = 1, 3 do
+    local ring = visualPart("PingRing_" .. i, Vector3.new(0.06, 0.75, 0.75), color, "CYLINDER")
+    ring.CFrame = cframe * CFrame.Angles(0, 0, math.rad(90))
+    ring.Transparency = 0.28 + i * 0.12
+    ring.Parent = folder
+    tag(ring, "INTERACT_PING")
+    local scale = 1.9 + i * 0.85
+    TweenService:Create(ring, TweenInfo.new(duration + (i - 1) * 0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+      Size = Vector3.new(0.03, scale, scale),
+      Transparency = 1,
+    }):Play()
+  end
+
+  local dot = visualPart("PingDot", Vector3.new(0.34, 0.34, 0.34), color, "BALL")
+  dot.CFrame = cframe
+  dot.Parent = folder
+  tag(dot, "INTERACT_PING")
+  TweenService:Create(dot, TweenInfo.new(duration * 0.7, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+    Size = Vector3.new(0.12, 0.12, 0.12),
+    Transparency = 1,
+  }):Play()
+
+  Debris:AddItem(folder, duration + 0.30)
+  return folder
+end
+
 function RobloxCommonVFX.Create(atomId, options)
   local id = string.upper(tostring(atomId or ""))
   if id == "IMPACT_FLASH" then
@@ -412,16 +523,22 @@ function RobloxCommonVFX.Create(atomId, options)
     return RobloxCommonVFX.CreateLevelUpBurst(options)
   elseif id == "SHIELD_HIT" then
     return RobloxCommonVFX.CreateShieldHit(options)
+  elseif id == "DASH_STREAK" then
+    return RobloxCommonVFX.CreateDashStreak(options)
+  elseif id == "SPAWN_PULSE" then
+    return RobloxCommonVFX.CreateSpawnPulse(options)
+  elseif id == "INTERACT_PING" then
+    return RobloxCommonVFX.CreateInteractPing(options)
   end
   error("UNKNOWN_COMMON_VFX_ATOM: " .. tostring(atomId))
 end
 
 function RobloxCommonVFX.Audit()
   return table.freeze({
-    version = 2,
+    version = 3,
     packId = "roblox-common-vfx-v1",
-    atoms = table.freeze({"IMPACT_FLASH", "TRAIL_SHORT", "SHAPE_BURST", "DANGER_TELEGRAPH", "HEAL_BURST", "PICKUP_SPARKLE", "LEVEL_UP_BURST", "SHIELD_HIT"}),
-    atomCount = 8,
+    atoms = table.freeze({"IMPACT_FLASH", "TRAIL_SHORT", "SHAPE_BURST", "DANGER_TELEGRAPH", "HEAL_BURST", "PICKUP_SPARKLE", "LEVEL_UP_BURST", "SHIELD_HIT", "DASH_STREAK", "SPAWN_PULSE", "INTERACT_PING"}),
+    atomCount = 11,
     companyCommonBase = true,
     compatibleGameScope = "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
     gameplayAuthority = false,
