@@ -36,12 +36,13 @@ sessionStorage.setItem('fs-multi-id',multiplayer.playerId);
 const MAP_PING_COOLDOWN_MS=10000,MAP_PING_LIFETIME_MS=10000;
 let enemySeq=0;
 const WEATHER_PRESENTATION_VERSION=1;
-const WORLD={w:72000,h:28800},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=61,RESOURCE_RESPAWN_MS=300000,AUTO_GATHER_RANGE=110,AUTO_GATHER_INTERVAL_MS=500,AUTO_GATHER_INTERRUPT_MS=1000;
+const WORLD={w:72000,h:28800},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=62,RESOURCE_RESPAWN_MS=300000,AUTO_GATHER_RANGE=110,AUTO_GATHER_INTERVAL_MS=500,AUTO_GATHER_INTERRUPT_MS=1000;
 const NEW_REGION_TARGET_AREA=36000*14400/5; // 기존 특수지역 설계 기준 면적 · 확장분은 일반 마력숲
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 기존 수정 지대 크기 유지
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
 const JUNGLE_REGION={x:18000,y:0,w:7200,h:3840}; // 기존 밀림의 0.4배
 const SWAMP_REGION={x:25200,y:0,w:7200,h:3840}; // 밀림 오른쪽 늪지대 · 기존 면적의 정확히 2배
+const SWAMP_OUTPOST={x:28800,y:1020,w:2400,h:1800,entrance:{x:28900,y:1920},chest:{x:31020,y:1920}};
 const SNOW_REGION={x:18000,y:3840,w:18000,h:4800}; // 축소된 밀림 바로 아래
 const FLOWER_FIELD={x:18000,y:8640,w:18000,h:2880};
 const GIANT_GARDEN={x:28800,y:8640,w:7200,h:2880};
@@ -223,6 +224,7 @@ const recipes=[
 {id:'mud-spear',name:'머드 워커 창',where:'junglebench',cost:{mudCore:6,monopolyIngot:6,goldIngot:4,wood:3},desc:'공격력 160 · 긴 사거리 · 적중 시 10% 확률로 3초간 이동속도 50% 감소',kind:'weapon',power:160,range:120,cooldown:860,slowChance:.10,slowDuration:3000},
 {id:'jungle-guardian-glaive',name:'밀림 수호자의 장창',where:'junglebench',cost:{jungleGuardianCore:1,monopolyIngot:8,goldIngot:6},desc:'공격력 215 · 긴 사거리 · 밀림 신전 수호자 전리품으로 만드는 4티어 무기',kind:'weapon',power:215,range:122,cooldown:900},
 {id:'tiger-twin-blades',name:'호랑이 쌍검',where:'hidden',cost:{},desc:'히든 4티어 무기 · 공격력 222 · 공격속도 1초',kind:'weapon',power:222,range:90,cooldown:1000},
+{id:'tiger-dagger',name:'호랑이 단검',where:'hidden',cost:{},desc:'늪 전초기지 끝 상자에서 얻는 히든 4티어 단검',kind:'weapon',power:222,range:64,cooldown:650},
 {id:'toxic-spore-seeker',name:'맹독 포자 추적구',where:'junglebench',cost:{toxicMycelium:4,sporeSac:3,monopolyIngot:8,goldIngot:6},desc:'5티어 · 공격력 200 · 공격속도 1초 · 적중 지점에 작은 독가스 1초 · 0.05초마다 10 피해(총 200 · 플레이어 제외)',kind:'weapon',power:200,range:820,cooldown:1000,ranged:'spore',enhancedSpore:true},
 {id:'toxic-mycelium-armor',name:'맹독 균사체 갑옷',where:'junglebench',cost:{toxicMycelium:7,monopolyIngot:10,flowerLeather:5},desc:'5티어 · 최대 체력 +405 · 피해 35% 감소 · 가스 피해 면역',kind:'armor',maxHp:405,reduce:.35,gasImmune:true},
 {id:'swamp-golem-armor',name:'늪 골렘 갑옷',where:'junglebench',cost:{swampCore:6,monopolyIngot:8,goldIngot:4},desc:'4티어 · 최대 체력 +280 · 피해 24% 감소 · 공격 시 20% 확률로 10초간 받는 피해 50% 감소',kind:'armor',maxHp:280,reduce:.24,guardProc:.20,guardDuration:10000},
@@ -360,7 +362,7 @@ function registerAllCookingCombos(){
 registerAllCookingCombos();
 const ITEM_TIER_2=new Set(['flower-leather','rune-shield','iron-bench','good-bandage','cooking-station','shadow-wolf-incubator','iron-sword','iron-axe','iron-pick','gold-greatsword','gold-dagger','gold-axe','gold-pick','forest-wooden-sword','boar-spear','boar-armor','goblin-dagger','goblin-armor','wolf-blade','ironspirit-sword','ironspirit-armor','wolf-armor','bear-spear','bear-armor','spore-seeker','golem-hammer','golem-armor','firewolf-saber','firewolf-armor','burrower-lance','burrower-armor','firesnake-blade','firesnake-armor','ironibex-spear','ironibex-armor']);
 const ITEM_TIER_3=new Set(['mantis-scythe','spider-fang-blade','spider-silk-spear','spider-silk-armor','gold-bench','walker-greatsword','sand-armor','calm-golem-maul','calm-golem-armor','rage-golem-axe','rage-golem-armor','crystal-boar-armor','crystal-core-greatsword','leech-cleaver','mud-blade','mud-spear','jungle-bench']);
-const ITEM_TIER_4=new Set(['swamp-golem-armor','fear-bear-claw','fear-bear-armor','fear-bear-hunter-armor','sovereign-cleaver','sovereign-armor','croc-jaw-blade','croc-tooth-spear','croc-armor','diving-suit','deep-diver-armor','gorilla-armor','gorilla-guard-armor','anaconda-armor','jungle-guardian-glaive','tiger-twin-blades','polar-bear-axe','polar-bear-spear','polar-bear-armor','polar-wolf-blade','polar-wolf-armor','polar-wolf-hunter-armor']);
+const ITEM_TIER_4=new Set(['swamp-golem-armor','fear-bear-claw','fear-bear-armor','fear-bear-hunter-armor','sovereign-cleaver','sovereign-armor','croc-jaw-blade','croc-tooth-spear','croc-armor','diving-suit','deep-diver-armor','gorilla-armor','gorilla-guard-armor','anaconda-armor','jungle-guardian-glaive','tiger-twin-blades','tiger-dagger','polar-bear-axe','polar-bear-spear','polar-bear-armor','polar-wolf-blade','polar-wolf-armor','polar-wolf-hunter-armor']);
 const ITEM_TIER_5=new Set(['toxic-spore-seeker','toxic-mycelium-armor','yeti-horn-maul','yeti-armor']);
 function itemTier(id){return ITEM_TIER_5.has(id)?5:ITEM_TIER_4.has(id)?4:ITEM_TIER_3.has(id)?3:ITEM_TIER_2.has(id)?2:1}
 const BOW_IDS=new Set(['wood-bow','reinforced-bow','iron-bow','gold-bow','jungle-bow']);
@@ -368,7 +370,7 @@ const ARROW_IDS=['wood-arrow','iron-arrow','spider-arrow','firewolf-arrow','shar
 const LEGACY_ARROW_MIGRATION={'stone-arrow':'firewolf-arrow','gold-arrow':'yeti-arrow'};
 const TWO_HANDED_WEAPONS=new Set(['gold-greatsword','walker-greatsword','crystal-core-greatsword','sovereign-cleaver','golem-hammer','calm-golem-maul','rage-golem-axe','yeti-horn-maul',...BOW_IDS]);
 function isTwoHandedWeapon(id){return!!id&&TWO_HANDED_WEAPONS.has(id)}
-const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,foresthare:1,worldpheasant:1,ironhidehound:2,crystalgoat:2,ironspirit:1,worldtreebear:2,foreststag:1,thornhound:2,sporegiant:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1,crystalboar:3,crystalboarjunior:3,crystalguardian:3,crystalgoblin:3,crystalironspirit:3,crystalbear:3,crystalfiresnake:3,crystalibex:3,shadowwolfleader:2,vampirebat:2,crystalfiregolem:3,lakecroc:4,lakebuffalo:3,crystaldeer:3,lakeheron:2,shark:4,giantSquid:4,deepAngler:4,lakefish:1,giantleech:3,gorilla:4,anaconda:4,mudwalker:3,jungletiger:4,jungletigerleader:5,primitiveSpearman:3,primitiveArcher:3,jungleGuardian:4,yetileader:5,yeticub:3,polarbear:4,polarwolf:4,polarfox:3,froststalker:3,icegolem:4,flowergoblin:2,giantbee:3,thornmantis:3,giantspider:3,giantspiderling:2,toxicmycelium:5,toxicsporeorb:5,swampgolem:4,fearbear:4};
+const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,foresthare:1,worldpheasant:1,ironhidehound:2,crystalgoat:2,ironspirit:1,worldtreebear:2,foreststag:1,thornhound:2,sporegiant:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1,crystalboar:3,crystalboarjunior:3,crystalguardian:3,crystalgoblin:3,crystalironspirit:3,crystalbear:3,crystalfiresnake:3,crystalibex:3,shadowwolfleader:2,vampirebat:2,crystalfiregolem:3,lakecroc:4,lakebuffalo:3,crystaldeer:3,lakeheron:2,shark:4,giantSquid:4,deepAngler:4,lakefish:1,giantleech:3,gorilla:4,anaconda:4,mudwalker:3,jungletiger:4,jungletigerleader:5,primitiveSpearman:3,primitiveArcher:3,jungleGuardian:4,yetileader:5,yeticub:3,polarbear:4,polarwolf:4,polarfox:3,froststalker:3,icegolem:4,flowergoblin:2,giantbee:3,thornmantis:3,giantspider:3,giantspiderling:2,toxicmycelium:5,toxicsporeorb:5,swampgolem:4,fearbear:4,swampPrimitiveSpearman:3,swampPrimitiveArcher:3,swampPrimitiveGuard:3};
 function creatureTier(id){return CREATURE_TIERS[id]||1}
 const creatures={mossboar:{id:'mossboar',name:'이끼멧돼지',mood:'neutral',hp:72,dmg:9,speed:62,r:20,color:'#73935d',detect:430},golem:{id:'golem',name:'돌정령',mood:'neutral',hp:150,dmg:18,speed:42,r:22,color:'#9ba59b',detect:430},goblin:{id:'goblin',name:'숲 고블린',mood:'aggressive',hp:42,dmg:7,speed:72,r:18,color:'#b0c35a',detect:430},shadowwolf:{id:'shadowwolf',name:'그림자늑대',mood:'aggressive',hp:95,dmg:14,speed:90,r:19,color:'#59687c',detect:430},fairy:{id:'fairy',name:'빛의 요정',mood:'harmless',hp:26,dmg:0,speed:55,r:12,color:'#f7ef9c',detect:0},foreststag:{id:'foreststag',name:'이끼뿔사슴',mood:'neutral',hp:105,dmg:12,speed:68,r:21,color:'#789766',detect:420,attackCooldown:1100,foodDrop:'raw-deer-meat'},thornhound:{id:'thornhound',name:'가시숲 사냥개',mood:'aggressive',hp:128,dmg:18,speed:86,r:20,color:'#536f4f',detect:480,attackCooldown:950},ironspirit:{id:'ironspirit',name:'철 정령',mood:'aggressive',hp:66.5,dmg:9.8,speed:135,r:18,color:'#87949c',detect:860,canyon:true},worldtreebear:{id:'worldtreebear',name:'세계수 곰',mood:'aggressive',hp:380,dmg:28,speed:70,r:30,color:'#6b4b32',detect:520,attackCooldown:1000,worldtree:true},sporegiant:{id:'sporegiant',name:'독포자 거대버섯',mood:'aggressive',hp:340,dmg:24,speed:54,r:32,color:'#76609a',detect:500,attackCooldown:1100,worldtree:true,mushroomGas:true},rootsovereign:{id:'rootsovereign',name:'근원포식자 녹스바르',mood:'boss',hp:4500,dmg:150,speed:186,r:40,color:'#3a1728',detect:2100,boss:true,area:'underground'},
 firewolf:{id:'firewolf',name:'화염 늑대',mood:'aggressive',hp:150,dmg:10,speed:96,r:21,color:'#d95832',detect:520,attackCooldown:1000,flame:true,volcanoZone:'colosseum'},
@@ -426,7 +428,11 @@ giantspiderling:{id:'giantspiderling',name:'새끼 거대거미',mood:'aggressiv
 toxicmycelium:{id:'toxicmycelium',name:'맹독 균사체 버섯',mood:'aggressive',hp:1800,dmg:60,speed:54,r:38,color:'#5f7f45',detect:900,attackCooldown:1200,swamp:true,toxicMycelium:true},
 toxicsporeorb:{id:'toxicsporeorb',name:'맹독 포자 구슬',mood:'aggressive',hp:100,dmg:0,speed:0,r:15,color:'#b6d85e',detect:0,swamp:true,summoned:true,sporeShieldOrb:true},
 swampgolem:{id:'swampgolem',name:'늪 골렘',mood:'neutral',hp:1888,dmg:70,speed:52,r:37,color:'#65725a',detect:620,attackCooldown:1200,swamp:true,swampHarden:true},
-fearbear:{id:'fearbear',name:'공포 곰',mood:'aggressive',hp:1800,dmg:60,speed:82,r:34,color:'#392e3f',detect:700,attackCooldown:1100,swamp:true,fearSpecial:true}
+fearbear:{id:'fearbear',name:'공포 곰',mood:'aggressive',hp:1800,dmg:60,speed:82,r:34,color:'#392e3f',detect:700,attackCooldown:1100,swamp:true,fearSpecial:true},
+swampPrimitiveSpearman:{id:'swampPrimitiveSpearman',name:'늪 원시인 창병',mood:'aggressive',hp:886,dmg:70,speed:68,r:24,color:'#697343',detect:900,attackCooldown:1000,swamp:true,outpostPrimitive:true},
+swampPrimitiveArcher:{id:'swampPrimitiveArcher',name:'늪 원시인 궁수',mood:'aggressive',hp:700,dmg:80,speed:64,r:22,color:'#5c7048',detect:1050,attackCooldown:1600,swamp:true,outpostPrimitive:true,outpostArcher:true},
+swampPrimitiveGuard:{id:'swampPrimitiveGuard',name:'늪 원시인 보초',mood:'aggressive',hp:886,dmg:50,speed:0,r:24,color:'#596342',detect:520,attackCooldown:1100,swamp:true,outpostPrimitive:true,outpostGuard:true},
+swampArrowTower:{id:'swampArrowTower',name:'원시 화살탑',mood:'aggressive',hp:1200,dmg:60,speed:0,r:32,color:'#66513b',detect:1050,attackCooldown:1600,swamp:true,outpostArrowTower:true,noBestiary:true}
 
 };
 const DROP_MATERIAL_NAMES={
@@ -438,7 +444,7 @@ const DROP_MATERIAL_NAMES={
 };
 const NEW_LOOT_KEYS=['mossTusk','stoneCore','goblinCharm','ironSpiritCore','sovereignCore','fireWolfFang','burrowerShell','calmMagmaCore','rageMagmaCore','fireSnakeScale','ironHorn','hardShell','crystalCore','crocHide','crocTooth','sharkSkin','leechSucker','gorillaHide','anacondaScale','mudCore','monopolyStone','monopolyIngot','yetiHide','yetiHorn','polarBearHide','polarBearClaw','polarWolfPelt','tigerOffering','jungleGuardianCore','giantPetal','flowerLeather','giantSpiderSilk','giantSpiderWeb','giantSpiderFang','mantisBlade','sporeSac','toxicMycelium','swampCore','fearBearHide','fearBearClaw','crystalShard'];
 
-const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},arrowType:null,attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,grabbedUntil:0,grabbedBy:null,vulnerableUntil:0,oxygen:40000,oxygenEndsAt:0,oxygenDamageAt:0,poisonUntil:0,poisonNext:0,poisonDamage:5,mudSlowUntil:0,templeSlowUntil:0,attackBlockedUntil:0,cold:0,coldTickAt:0,coldFrozenAt:0,coldDamageAt:0,coldBurstUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0,inkUntil:0,anglerLureUntil:0,anglerLureSource:null,anglerStruggle:0,restingBedId:null,bedHealAt:0,downedUntil:0},bench:null,furnace:null,ironBench:null,goldBench:null,jungleBench:null,blacksmithAnvil:null,cookingStation:null,cookingSlots:[null,null],incubator:null,upgrades:{},flags:[],chests:[],walls:[],doors:[],towers:[],beds:[],gardens:[],portals:[],crops:[],snowChests:[false,false],respawnPos:null,blueprint:null,activeWallId:null,activeTowerId:null,activePortalId:null,trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],crystals:[],carrots:[],poisonStones:[],swampTrees:[],flowerGiantFlowers:[],flowerWebs:[],flowerBuildingLoot:[false,false,false,false],enemies:[],projectiles:[],sporeClouds:[],swampHazards:[],raid:{count:0,nextAt:Date.now()+raidSpawnDelayMs(1),active:null,warnedFor:0},camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false,giantlake:false,jungle:false,snow:false,flowerfield:false,giantgarden:false,swamp:false,deepcoralforest:false},explored:{},underwaterExplored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,rootRespawnAt:0,lakeReturnPos:null,templeReturnPos:null,templeDiscovered:false,flowerBuildingLoot:[false,false,false,false],templeOfferingUsed:false,templeChestOpened:false,templeUpperSpawned:false,templeGuardianSpawned:false,templeTrapSince:0,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},achievements:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false,finalRadioPart:false,radioRepairReadyAt:0,commDeviceRepaired:false,tigerBossDefeated:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},gathering:{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0},arrowAim:{targetId:null,tapTargetId:null,taps:0,lastTapAt:0},bookCategory:'neutral',settings:{difficulty:'normal'},dirty:false};
+const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},arrowType:null,attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,grabbedUntil:0,grabbedBy:null,vulnerableUntil:0,oxygen:40000,oxygenEndsAt:0,oxygenDamageAt:0,poisonUntil:0,poisonNext:0,poisonDamage:5,mudSlowUntil:0,templeSlowUntil:0,attackBlockedUntil:0,cold:0,coldTickAt:0,coldFrozenAt:0,coldDamageAt:0,coldBurstUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0,inkUntil:0,anglerLureUntil:0,anglerLureSource:null,anglerStruggle:0,restingBedId:null,bedHealAt:0,downedUntil:0},bench:null,furnace:null,ironBench:null,goldBench:null,jungleBench:null,blacksmithAnvil:null,cookingStation:null,cookingSlots:[null,null],incubator:null,upgrades:{},flags:[],chests:[],walls:[],doors:[],towers:[],beds:[],gardens:[],portals:[],crops:[],snowChests:[false,false],swampOutpostChestOpened:false,respawnPos:null,blueprint:null,activeWallId:null,activeTowerId:null,activePortalId:null,trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],crystals:[],carrots:[],poisonStones:[],swampTrees:[],flowerGiantFlowers:[],flowerWebs:[],flowerBuildingLoot:[false,false,false,false],enemies:[],projectiles:[],sporeClouds:[],swampHazards:[],raid:{count:0,nextAt:Date.now()+raidSpawnDelayMs(1),active:null,warnedFor:0},camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false,giantlake:false,jungle:false,snow:false,flowerfield:false,giantgarden:false,swamp:false,deepcoralforest:false},explored:{},underwaterExplored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,rootRespawnAt:0,lakeReturnPos:null,templeReturnPos:null,templeDiscovered:false,flowerBuildingLoot:[false,false,false,false],templeOfferingUsed:false,templeChestOpened:false,templeUpperSpawned:false,templeGuardianSpawned:false,templeTrapSince:0,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},achievements:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false,finalRadioPart:false,radioRepairReadyAt:0,commDeviceRepaired:false,tigerBossDefeated:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},gathering:{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0},arrowAim:{targetId:null,tapTargetId:null,taps:0,lastTapAt:0},bookCategory:'neutral',settings:{difficulty:'normal'},dirty:false};
 const RAID_DIFFICULTY_SCALE=1;
 const RAID_WAVES=[
  [{id:'goblin',count:5},{id:'shadowwolf',count:3},{id:'golem',count:1}],
@@ -506,7 +512,7 @@ function pointInCrystalRegion(x,y){return pointInRect(x,y,CRYSTAL_REGION)}
 function pointInSnow(x,y){return pointInRect(x,y,SNOW_REGION)}
 function pointInJungle(x,y){return pointInRect(x,y,JUNGLE_REGION)}
 function pointInSwamp(x,y){return pointInRect(x,y,SWAMP_REGION)}
-function randomSwampPoint(margin=120){return{x:rand(SWAMP_REGION.x+margin,SWAMP_REGION.x+SWAMP_REGION.w-margin),y:rand(SWAMP_REGION.y+margin,SWAMP_REGION.y+SWAMP_REGION.h-margin)}}
+function randomSwampPoint(margin=120){let x,y,tries=0;do{x=rand(SWAMP_REGION.x+margin,SWAMP_REGION.x+SWAMP_REGION.w-margin);y=rand(SWAMP_REGION.y+margin,SWAMP_REGION.y+SWAMP_REGION.h-margin);tries++}while(x>SWAMP_OUTPOST.x-120&&x<SWAMP_OUTPOST.x+SWAMP_OUTPOST.w+120&&y>SWAMP_OUTPOST.y-120&&y<SWAMP_OUTPOST.y+SWAMP_OUTPOST.h+120&&tries<120);return{x,y}}
 function pointInJungleLake(x,y){return JUNGLE_LAKES.some(l=>dist(x,y,l.x,l.y)<=l.r)}
 function randomSnowPoint(margin=120){return{x:rand(SNOW_REGION.x+margin,SNOW_REGION.x+SNOW_REGION.w-margin),y:rand(SNOW_REGION.y+margin,SNOW_REGION.y+SNOW_REGION.h-margin)}}
 function randomJunglePoint(margin=120){let x,y,tries=0;do{x=rand(JUNGLE_REGION.x+margin,JUNGLE_REGION.x+JUNGLE_REGION.w-margin);y=rand(JUNGLE_REGION.y+margin,JUNGLE_REGION.y+JUNGLE_REGION.h-margin);tries++}while(pointInJungleLake(x,y)&&tries<80);return{x,y}}
@@ -938,6 +944,13 @@ function initWorld(){
   for(let i=0;i<4;i++){const p=randomSwampPoint(260);state.enemies.push(spawnAt(creatures.toxicmycelium,p.x,p.y,null))}
   for(let i=0;i<5;i++){const p=randomSwampPoint(220);state.enemies.push(spawnAt(creatures.swampgolem,p.x,p.y,null))}
   for(let i=0;i<5;i++){const p=randomSwampPoint(220);state.enemies.push(spawnAt(creatures.fearbear,p.x,p.y,null))}
+  const outpostDefs=[
+   [creatures.swampPrimitiveGuard,28970,1700,true],[creatures.swampPrimitiveGuard,28970,2140,true],
+   [creatures.swampArrowTower,29730,1460,true],[creatures.swampArrowTower,29730,2380,true],
+   [creatures.swampPrimitiveSpearman,29420,1720,false],[creatures.swampPrimitiveSpearman,29460,2110,false],[creatures.swampPrimitiveSpearman,30220,1910,false],
+   [creatures.swampPrimitiveArcher,29910,1510,false],[creatures.swampPrimitiveArcher,29910,2310,false],[creatures.swampPrimitiveArcher,30600,1910,false]
+  ];
+  for(const [type,x,y,fixed] of outpostDefs){const e=spawnAt(type,x,y,null);e.area='surface';e.hostile=true;e.noRespawn=true;e.outpostUnit=true;e.outpostFixed=!!fixed;state.enemies.push(e)}
   const counts={mossboar:18,goblin:18,shadowwolf:15,fairy:8,foreststag:6,thornhound:7};
   for(const [id,count] of Object.entries(counts))for(let i=0;i<count;i++)state.enemies.push(spawnCreature(creatures[id],i));
   const starter=[
@@ -1631,6 +1644,9 @@ const BESTIARY_INFO={
  polarfox:{cat:'harmless',desc:'설원의 작은 바위와 눈더미 사이를 뛰어다니는 북극여우. 싸움에는 관심이 없고 주변의 작은 먹이를 찾아다닌다.'},
  froststalker:{cat:'aggressive',desc:'설원 보급막사 주변을 맴도는 정체불명의 추적자. 눈보라 속에서도 흔적을 놓치지 않고 영역 안의 침입자를 쫓는다.'},
  icegolem:{cat:'aggressive',desc:'빙설 감시소 부근에 서 있는 거대한 얼음 골렘. 평소에는 얼어붙은 조각상처럼 보이지만 주변의 침입을 조용히 감시한다.'},
+ swampPrimitiveSpearman:{cat:'aggressive',desc:'늪 전초기지 안을 지키는 3티어 원시인 창병. 침입자를 발견하면 창을 들고 직접 달려든다.'},
+ swampPrimitiveArcher:{cat:'aggressive',desc:'늪 전초기지의 3티어 원시인 궁수. 빠른 화살을 쏘며 거리를 유지한다.'},
+ swampPrimitiveGuard:{cat:'aggressive',desc:'늪 전초기지 입구를 지키는 3티어 보초. 자리를 떠나지 않고 가까이 온 침입자를 공격한다.'},
 };
 const BOOK_LABELS={neutral:'중립',aggressive:'공격적',harmless:'무해',boss:'보스',records:'기록'};
 function unlockBestiary(id){
@@ -2479,7 +2495,7 @@ function serializeWorld(){
   sporeClouds:state.sporeClouds.filter(g=>g.area!=='storylab1'&&g.area!=='storylab2').map(g=>({...g})),
   swampTrees:state.swampTrees.map(n=>({id:n.id,kind:'swamptree',x:n.x,y:n.y,hp:n.hp,maxHp:n.maxHp,dead:!!n.dead,respawnAt:n.respawnAt||0})),
   structures:sharedStructureSnapshot(),
-  crops:state.crops.map(c=>({...c})),flowerWebs:state.flowerWebs.map(w=>({id:w.id,x:w.x,y:w.y,r:w.r,hits:w.hits})),snowChests:[...state.snowChests],raid:{count:state.raid.count,nextAt:state.raid.nextAt,active:state.raid.active?{...state.raid.active}:null},
+  crops:state.crops.map(c=>({...c})),flowerWebs:state.flowerWebs.map(w=>({id:w.id,x:w.x,y:w.y,r:w.r,hits:w.hits})),snowChests:[...state.snowChests],swampOutpostChestOpened:!!state.swampOutpostChestOpened,raid:{count:state.raid.count,nextAt:state.raid.nextAt,active:state.raid.active?{...state.raid.active}:null},
   weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0},
   bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,crystalSealReleased:state.crystalSealReleased
  }
@@ -2510,6 +2526,7 @@ function applyWorldSnapshot(w){
  if(Array.isArray(w.flowerWebs))state.flowerWebs=w.flowerWebs.map(v=>({id:String(v.id),x:Number(v.x)||0,y:Number(v.y)||0,r:Number(v.r)||58,hits:Math.max(0,Number(v.hits)||0),lastAlertAt:0}));
  if(Array.isArray(w.crops))state.crops=w.crops.filter(c=>c&&['carrot','greens'].includes(c.type)&&Number.isFinite(Number(c.x))&&Number.isFinite(Number(c.y))).map(c=>({id:String(c.id),type:c.type,x:Number(c.x),y:Number(c.y),readyAt:Number(c.readyAt)||Date.now()}));
  if(Array.isArray(w.snowChests))state.snowChests=[!!w.snowChests[0],!!w.snowChests[1]];
+ if(typeof w.swampOutpostChestOpened==='boolean')state.swampOutpostChestOpened=w.swampOutpostChestOpened;
  if(w.raid&&typeof w.raid==='object'){const count=Math.max(0,Math.floor(Number(w.raid.count)||0));state.raid={count,nextAt:Number(w.raid.nextAt)||Date.now()+raidSpawnDelayMs(count+1),active:w.raid.active?{...w.raid.active}:null,warnedFor:state.raid?.warnedFor||0}};
  if(w.weather&&typeof w.weather==='object')setWeather(w.weather.kind,{fromNetwork:true,changedAt:w.weather.changedAt,nextAt:w.weather.nextAt,seed:w.weather.seed});
  state.bossSummoned=!!w.bossSummoned;state.bossDefeated=!!w.bossDefeated;state.crystalSealReleased=!!w.crystalSealReleased
@@ -2602,6 +2619,8 @@ async function connectMultiplayer(rawRoom){
   .on('broadcast',{event:'kill-reward'},({payload})=>grantRemoteKillReward(payload))
   .on('broadcast',{event:'resource-gather'},({payload})=>hostGatherResource(payload))
   .on('broadcast',{event:'resource-loot'},({payload})=>receiveResourceLoot(payload))
+  .on('broadcast',{event:'swamp-outpost-chest-open'},({payload})=>hostOpenSwampOutpostChest(payload))
+  .on('broadcast',{event:'swamp-outpost-chest-reward'},({payload})=>receiveSwampOutpostChestReward(payload))
   .on('broadcast',{event:'gift-item'},({payload})=>receiveGiftItem(payload))
   .on('broadcast',{event:'map-ping'},({payload})=>receiveMapPing(payload))
   .on('broadcast',{event:'revive-player'},({payload})=>receiveRevive(payload))
@@ -3231,6 +3250,7 @@ function handleWorldTap(e){
  for(const m of visible){const d=dist(wx,wy,m.x,m.y);if(d<cd){closest=m;cd=d}}
  if(closest){if(tapArrowAimTarget(closest,now))return;doubleTapTarget('monster:'+closest.type.id,now,()=>unlockBestiary(closest.type.id));return}
  if(state.area==='surface'){
+   if(dist(wx,wy,SWAMP_OUTPOST.chest.x,SWAMP_OUTPOST.chest.y)<78){if(!doubleTapTarget('swamp-outpost-chest',now,openSwampOutpostChest))showNotice(state.swampOutpostChestOpened?'빈 상자야':'늪 전초기지 상자를 한 번 더 눌러 열기');return}
    const q=state.story;
    if(q.stage==='find-final-radio-part'&&!q.finalRadioPart&&dist(wx,wy,FINAL_RADIO_PART.x,FINAL_RADIO_PART.y)<75){if(!doubleTapTarget('final-radio-part',now,takeFinalRadioPart))showNotice('마지막 무전기 부품을 한 번 더 눌러 획득');return}
    if(['repair-comm-device','radio-contact','radio-final'].includes(q.stage)&&q.finalRadioPart&&dist(wx,wy,COMM_DEVICE.x,COMM_DEVICE.y)<COMM_DEVICE.r+30){
@@ -3402,6 +3422,29 @@ function spawnToxicShieldOrbs(e,now){
  if(state.enemies.some(o=>o.hp>0&&o.type?.sporeShieldOrb&&o.parentId===e.netId))return;
  for(let i=0;i<4;i++){const a=i*Math.PI/2,o=spawnAt(creatures.toxicsporeorb,e.x+Math.cos(a)*72,e.y+Math.sin(a)*72,null);o.parentId=e.netId;o.noRespawn=true;state.enemies.push(o)}
  showNotice('맹독 균사체 · 포자 구슬 4개 · 전부 파괴해야 본체 공격 가능')
+}
+function throwSwampOutpostArrow(e,targetP,now,damage){
+ const dx=targetP.x-e.x,dy=targetP.y-e.y,d=Math.hypot(dx,dy)||1,speed=(Number(targetP.speed)||state.player.speed)*2.5;
+ state.projectiles.push({kind:'swampOutpostArrow',x:e.x,y:e.y,vx:dx/d*speed,vy:dy/d*speed,speed,damage,createdAt:now,life:4500,area:e.area,sourceId:e.netId,targetId:e.playerTargetId||multiplayer.playerId})
+}
+function updateSwampOutpostEnemy(e,targetP,now,playerD){
+ if(!e.type.outpostPrimitive&&!e.type.outpostArrowTower)return null;
+ e.hostile=true;
+ if(e.type.outpostArrowTower){
+  if(playerD<enemyDetectRange(e,1050)&&now>=(e.nextOutpostShotAt||0)){e.nextOutpostShotAt=now+1600;e.attackAt=now;throwSwampOutpostArrow(e,targetP,now,60)}
+  return{vx:0,vy:0}
+ }
+ if(e.type.outpostGuard){
+  if(playerD<e.type.r+34&&enemyAttackReady(e,now,1100)){markEnemyAttack(e,now);enemyDamageTarget(e,50,false)}
+  return{vx:0,vy:0}
+ }
+ if(e.type.outpostArcher){
+  if(playerD<enemyDetectRange(e,1050)&&now>=(e.nextOutpostShotAt||0)){e.nextOutpostShotAt=now+1600;e.attackAt=now;throwSwampOutpostArrow(e,targetP,now,80)}
+  if(playerD<300)return{vx:(e.x-targetP.x)/(playerD||1)*e.type.speed*.7,vy:(e.y-targetP.y)/(playerD||1)*e.type.speed*.7};
+  if(playerD>650&&playerD<enemyDetectRange(e,1050))return{vx:(targetP.x-e.x)/(playerD||1)*e.type.speed*.45,vy:(targetP.y-e.y)/(playerD||1)*e.type.speed*.45};
+  return{vx:0,vy:0}
+ }
+ return null
 }
 function updateSwampSpecial(e,targetP,now,playerD){
  if(e.type.toxicMycelium){
@@ -3992,6 +4035,7 @@ function updateProjectiles(dt,now){
    else if(q.kind==='toxicThrow')showNotice('맹독 균사체 독 투척 적중 · 70 피해');
    else if(q.kind==='poisonArrow'){p.templeSlowUntil=Math.max(p.templeSlowUntil||0,now+2000);p.attackBlockedUntil=Math.max(p.attackBlockedUntil||0,now+2000);showNotice('독화살 적중 · 50 피해 · 이동속도 30% 감소 · 2초 공격 불가')}
    else if(q.kind==='templeSpear')showNotice('원시인 창 적중 · 30 피해');
+   else if(q.kind==='swampOutpostArrow')showNotice('늪 전초기지 화살 적중 · '+Math.round(q.damage)+' 피해');
    else showNotice('수정 투척 적중 · 78 데미지');
    state.projectiles.splice(i,1);continue
   }
@@ -4174,6 +4218,7 @@ function update(dt,now){
         if(pick){e.enemyTarget=pick.target;const chase=chaseMonster(e,pick.target,now);if(chase){vx=chase.vx;vy=chase.vy;monsterFight=true}}
       }
       updateMushroomGas(e,targetP,now,playerD);
+      const outpostMove=!monsterFight?updateSwampOutpostEnemy(e,targetP,now,playerD):null;if(outpostMove){vx=outpostMove.vx;vy=outpostMove.vy;monsterFight=true}
       const swampMove=!monsterFight?updateSwampSpecial(e,targetP,now,playerD):null;if(swampMove){vx=swampMove.vx;vy=swampMove.vy;monsterFight=true}
       const crocMove=!monsterFight?updateCrocodileSpecial(e,targetP,now,playerD):null;if(crocMove){vx=crocMove.vx;vy=crocMove.vy;monsterFight=true}
       if(!monsterFight&&updateGorillaSpecial(e,targetP,now,playerD))monsterFight=true;
@@ -4291,7 +4336,11 @@ function update(dt,now){
         if(lookD>.5){e.faceX=lookDx/lookD;e.faceY=lookDy/lookD}
       }else if(visualSpeed>.5){e.faceX=vx/visualSpeed;e.faceY=vy/visualSpeed}
       if(e.raidId){vx*=RAID_DIFFICULTY_SCALE;vy*=RAID_DIFFICULTY_SCALE}
-      const nextEnemyX=clamp(e.x+vx*dt,35,enemyW-35),nextEnemyY=clamp(e.y+vy*dt,35,enemyH-35);
+      let nextEnemyX=clamp(e.x+vx*dt,35,enemyW-35),nextEnemyY=clamp(e.y+vy*dt,35,enemyH-35);
+      if(e.outpostUnit){
+       if(e.outpostFixed){nextEnemyX=e.spawnX;nextEnemyY=e.spawnY}
+       else{nextEnemyX=clamp(nextEnemyX,SWAMP_OUTPOST.x+120,SWAMP_OUTPOST.x+SWAMP_OUTPOST.w-120);nextEnemyY=clamp(nextEnemyY,SWAMP_OUTPOST.y+120,SWAMP_OUTPOST.y+SWAMP_OUTPOST.h-120)}
+      }
       if(e.area==='surface'){
         const er=Math.max(12,Number(e.type?.r)||18);
         if(!blockedByPlayerBuilding(nextEnemyX,e.y,er))e.x=nextEnemyX;
@@ -5149,7 +5198,12 @@ function drawCreature(e,cx,cy){
  if(e.type.labBoss&&now<(e.submergedUntil||0)){ctx.fillStyle='#ff5a30';ctx.beginPath();ctx.ellipse(x,y,52,18,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#c5a2ff';ctx.lineWidth=4;ctx.stroke();ctx.fillStyle='#f7e7ff';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText('용암 잠수',x,y+34);return}
  if(e.type.burrower&&!e.emerged){ctx.fillStyle='#6f5134';ctx.beginPath();ctx.ellipse(x,y+10,34,13,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#a67b4b';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x-25,y+6);ctx.lineTo(x+23,y+13);ctx.stroke();return}
  ctx.save();if(now<e.hitAt)ctx.globalAlpha=.5;
- if(e.type.id==='firesnake'||e.type.id==='crystalfiresnake')drawFireSnakeModel(e,x,y,now);
+ if(e.type.outpostArrowTower){
+  ctx.fillStyle='#4f3c2a';ctx.fillRect(x-24,y-28,48,56);ctx.strokeStyle='#8b7453';ctx.lineWidth=5;ctx.strokeRect(x-24,y-28,48,56);
+  ctx.strokeStyle='#b89b6b';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(x-34,y+30);ctx.lineTo(x-18,y-18);ctx.moveTo(x+34,y+30);ctx.lineTo(x+18,y-18);ctx.stroke();
+  ctx.fillStyle='#786144';ctx.fillRect(x-34,y-42,68,18);ctx.strokeStyle='#d3c2a0';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x,y-40);ctx.lineTo(x+(e.faceX||1)*36,y-40+(e.faceY||0)*36);ctx.stroke()
+ }
+ else if(e.type.id==='firesnake'||e.type.id==='crystalfiresnake')drawFireSnakeModel(e,x,y,now);
  else if(e.type.id==='worldtreebear'||e.type.id==='crystalbear'||e.type.id==='fearbear')drawBearModel(e,x,y,now);
  else if(e.type.id==='sporegiant'||e.type.id==='toxicmycelium')drawThemedCreatureAsset(e,x,y,now);
  else if(e.type.id==='shadowwolf'||e.type.id==='firewolf'||e.type.id==='shadowwolfleader')drawWolfModel(e,x,y,now);
@@ -5169,7 +5223,7 @@ function drawCreature(e,cx,cy){
  drawEnemyCombatVfx(e,x,y,now);
  if(state.arrowAim?.targetId===e.netId&&currentWeapon()?.ranged==='bow'){ctx.save();ctx.strokeStyle='#fff3a8';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y,e.type.r+14,0,Math.PI*2);ctx.stroke();for(let a=0;a<4;a++){const ang=a*Math.PI/2,inner=e.type.r+7,outer=e.type.r+22;ctx.beginPath();ctx.moveTo(x+Math.cos(ang)*inner,y+Math.sin(ang)*inner);ctx.lineTo(x+Math.cos(ang)*outer,y+Math.sin(ang)*outer);ctx.stroke()}ctx.fillStyle='#fff3a8';ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillText('조준',x,y-e.type.r-28);ctx.restore()}
  if(e.type.mood!=='harmless'||e.type.huntable){ctx.fillStyle='#07100d';ctx.fillRect(x-24,y-e.type.r-18,48,4);ctx.fillStyle=e.type.mood==='aggressive'?'#e65f66':'#e1b85f';ctx.fillRect(x-24,y-e.type.r-18,48*Math.max(0,e.hp/e.maxHp),4)}
- ctx.fillStyle='#f4fff7';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText(e.type.labBoss?e.type.name+' · 3티어':(e.type.templeSpearman||e.type.templeArcher||e.type.templeGuardian||e.type.id==='jungletiger'||e.type.tigerLeader)?e.type.name+' · '+creatureTier(e.type.id)+'티어':e.type.name,x,y+e.type.r+18)
+ ctx.fillStyle='#f4fff7';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText(e.type.labBoss?e.type.name+' · 3티어':(e.type.templeSpearman||e.type.templeArcher||e.type.templeGuardian||e.type.outpostPrimitive||e.type.id==='jungletiger'||e.type.tigerLeader)?e.type.name+' · '+creatureTier(e.type.id)+'티어':e.type.name,x,y+e.type.r+18)
 }
 function drawSporeClouds(cx,cy){const now=performance.now();for(const g of state.sporeClouds){if(g.area!==state.area||now>=g.until)continue;const x=g.x-cx,y=g.y-cy,life=Math.max(0,Math.min(1,(g.until-now)/3000));ctx.save();ctx.globalAlpha=.18+.18*life;ctx.fillStyle='#8c68a9';ctx.beginPath();ctx.arc(x,y,g.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#c99be5';ctx.lineWidth=2;ctx.stroke();ctx.restore()}for(const e of state.enemies){if(e.area!==state.area||!e.type.mushroomGas||now>=(e.sporeGasUntil||0))continue;const x=e.x-cx,y=e.y-cy;ctx.save();ctx.globalAlpha=.25;ctx.fillStyle='#7d5c94';ctx.beginPath();ctx.arc(x,y,145,0,Math.PI*2);ctx.fill();ctx.restore()}}
 function drawProjectiles(cx,cy){
@@ -5182,6 +5236,7 @@ function drawProjectiles(cx,cy){
   else if(q.kind==='toxicThrow'){ctx.globalAlpha=.92;ctx.fillStyle='#79d84f';ctx.strokeStyle='#d3ff9d';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,13,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.globalAlpha=.35;ctx.fillStyle='#a8ff78';ctx.beginPath();ctx.arc(0,0,20,0,Math.PI*2);ctx.fill()}
   else if(q.kind==='toxicGasShot'){ctx.globalAlpha=.82;ctx.fillStyle='#74c84a';ctx.strokeStyle='#c8ff98';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,9,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.globalAlpha=.24;ctx.fillStyle='#9ef06b';ctx.beginPath();ctx.arc(0,0,15,0,Math.PI*2);ctx.fill()}
   else if(q.kind==='poisonArrow'){ctx.strokeStyle='#8bcf6a';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,14);ctx.lineTo(0,-16);ctx.stroke();ctx.fillStyle='#b7f58c';ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(6,-10);ctx.lineTo(-6,-10);ctx.closePath();ctx.fill()}
+  else if(q.kind==='swampOutpostArrow'){ctx.strokeStyle='#75593b';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,15);ctx.lineTo(0,-17);ctx.stroke();ctx.fillStyle='#d0c4a4';ctx.beginPath();ctx.moveTo(0,-22);ctx.lineTo(6,-10);ctx.lineTo(-6,-10);ctx.closePath();ctx.fill()}
   else if(q.kind==='templeSpear'){ctx.strokeStyle='#8f6c43';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(0,18);ctx.lineTo(0,-18);ctx.stroke();ctx.fillStyle='#d6d0b8';ctx.beginPath();ctx.moveTo(0,-25);ctx.lineTo(7,-13);ctx.lineTo(-7,-13);ctx.closePath();ctx.fill()}
   else{ctx.fillStyle='#c5b2ff';ctx.strokeStyle='#f2edff';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-16);ctx.lineTo(8,10);ctx.lineTo(0,6);ctx.lineTo(-8,10);ctx.closePath();ctx.fill();ctx.stroke()}
   ctx.restore()
@@ -5271,6 +5326,34 @@ function drawUnderwater(cx,cy,w,h){
  ctx.restore();
  ctx.fillStyle='rgba(0,18,30,.22)';ctx.fillRect(0,0,w,h)
 }
+function grantSwampOutpostChestReward(){
+ addInv('tiger-dagger',1);rememberItem('tiger-dagger');state.dirty=true;showNotice('늪 전초기지 상자 · 호랑이 단검 획득');updateHud();saveGame(false)
+}
+function openSwampOutpostChest(){
+ if(state.swampOutpostChestOpened){showNotice('늪 전초기지 상자는 비어 있어');return}
+ if(multiplayer.connected&&!multiIsHost()){multiSend('swamp-outpost-chest-open',{playerId:multiplayer.playerId});showNotice('늪 전초기지 상자 확인 중');return}
+ state.swampOutpostChestOpened=true;grantSwampOutpostChestReward();if(multiplayer.connected)multiplayer.worldAt=0
+}
+function hostOpenSwampOutpostChest(payload){
+ if(!multiIsHost()||state.swampOutpostChestOpened||!payload)return;
+ const id=String(payload.playerId||''),rp=multiplayer.remote.get(id);if(!rp||rp.area!=='surface'||performance.now()-(rp.seenAt||0)>2000)return;
+ if(dist(Number(rp.x)||0,Number(rp.y)||0,SWAMP_OUTPOST.chest.x,SWAMP_OUTPOST.chest.y)>110)return;
+ state.swampOutpostChestOpened=true;state.dirty=true;multiSend('swamp-outpost-chest-reward',{targetId:id});multiplayer.worldAt=0;saveGame(false)
+}
+function receiveSwampOutpostChestReward(payload){
+ if(!payload||payload.targetId!==multiplayer.playerId)return;state.swampOutpostChestOpened=true;grantSwampOutpostChestReward()
+}
+function drawSwampOutpost(cx,cy){
+ const o=SWAMP_OUTPOST,x=o.x-cx,y=o.y-cy;if(x>innerWidth+o.w||y>innerHeight+o.h||x+o.w<-100||y+o.h<-100)return;
+ ctx.save();
+ ctx.fillStyle='rgba(43,37,25,.88)';ctx.fillRect(x,y,o.w,o.h);ctx.strokeStyle='#6f5a38';ctx.lineWidth=18;ctx.strokeRect(x+9,y+9,o.w-18,o.h-18);
+ ctx.strokeStyle='#9a7b4e';ctx.lineWidth=9;
+ for(let px=x+70;px<x+o.w-40;px+=95){ctx.beginPath();ctx.moveTo(px,y+12);ctx.lineTo(px,y+70);ctx.stroke();ctx.beginPath();ctx.moveTo(px,y+o.h-12);ctx.lineTo(px,y+o.h-70);ctx.stroke()}
+ for(let py=y+70;py<y+o.h-40;py+=95){if(Math.abs((py+cy)-o.entrance.y)<150)continue;ctx.beginPath();ctx.moveTo(x+12,py);ctx.lineTo(x+70,py);ctx.stroke();ctx.beginPath();ctx.moveTo(x+o.w-12,py);ctx.lineTo(x+o.w-70,py);ctx.stroke()}
+ ctx.fillStyle='#d7c8a3';ctx.font='bold 18px system-ui';ctx.textAlign='center';ctx.fillText('늪 전초기지',x+o.w/2,y+44);
+ const ch=o.chest,qx=ch.x-cx,qy=ch.y-cy;ctx.fillStyle=state.swampOutpostChestOpened?'#4b4a42':'#7a552b';ctx.fillRect(qx-38,qy-27,76,54);ctx.strokeStyle='#e0c46e';ctx.lineWidth=5;ctx.strokeRect(qx-38,qy-27,76,54);ctx.fillStyle='#fff0b3';ctx.font='bold 10px system-ui';ctx.fillText(state.swampOutpostChestOpened?'빈 상자':'상자 · 두 번 누르기',qx,qy+45);
+ ctx.restore()
+}
 function drawSnowOutposts(cx,cy){
  for(let i=0;i<SNOW_OUTPOSTS.length;i++){const o=SNOW_OUTPOSTS[i],x=o.x-cx,y=o.y-cy;if(x<-o.w||y<-o.h||x>innerWidth+o.w||y>innerHeight+o.h)continue;ctx.save();ctx.translate(x,y);ctx.fillStyle=i?'#6e8790':'#7b6650';ctx.strokeStyle='#d5e6eb';ctx.lineWidth=8;ctx.fillRect(-o.w/2,-o.h/2,o.w,o.h);ctx.strokeRect(-o.w/2,-o.h/2,o.w,o.h);ctx.fillStyle='#e8f4f7';ctx.font='bold 14px system-ui';ctx.textAlign='center';ctx.fillText(o.name,0,-o.h/2+30);ctx.restore();
   const ch=o.chest,cx2=ch.x-cx,cy2=ch.y-cy;ctx.fillStyle=state.snowChests[i]?'#555b5c':'#73532e';ctx.fillRect(cx2-30,cy2-20,60,40);ctx.strokeStyle='#d9c27a';ctx.lineWidth=4;ctx.strokeRect(cx2-30,cy2-20,60,40);ctx.fillStyle='#fff0bd';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText(state.snowChests[i]?'빈 상자':'보급 상자 · 두 번 누르기',cx2,cy2+38)}
@@ -5316,7 +5399,7 @@ function draw(){
  else{
   drawBackground(cx,cy,innerWidth,innerHeight);
   for(const n of state.trees)if(!n.dead)drawNode(n,cx,cy);for(const n of state.swampTrees)if(!n.dead)drawNode(n,cx,cy);for(const n of state.flowerGiantFlowers)if(!n.dead)drawNode(n,cx,cy);for(const n of state.rocks)if(!n.dead)drawNode(n,cx,cy);for(const n of state.fibers)if(!n.dead)drawNode(n,cx,cy);for(const n of state.irons)if(!n.dead)drawNode(n,cx,cy);for(const n of state.golds)if(!n.dead)drawNode(n,cx,cy);for(const n of state.essences)if(!n.dead)drawNode(n,cx,cy);for(const n of state.crystals)if(!n.dead)drawNode(n,cx,cy);for(const n of state.carrots)if(!n.dead)drawNode(n,cx,cy);for(const n of state.poisonStones)if(!n.dead)drawNode(n,cx,cy);
-  drawStructure(state.bench,cx,cy,'bench');drawStructure(state.furnace,cx,cy,'furnace');drawStructure(state.ironBench,cx,cy,'ironbench');drawStructure(state.goldBench,cx,cy,'goldbench');drawStructure(state.jungleBench,cx,cy,'junglebench');drawStructure(state.blacksmithAnvil,cx,cy,'anvil');drawStructure(state.cookingStation,cx,cy,'cookingstation');drawStructure(state.incubator,cx,cy,'incubator');for(const flag of state.flags)drawStructure(flag,cx,cy,'flag');for(const b of state.chests)drawPlayerBuilding(b,cx,cy,'chest');for(const b of state.walls)drawPlayerBuilding(b,cx,cy,'wall');for(const b of state.doors)drawPlayerBuilding(b,cx,cy,'door');for(const b of state.towers)drawPlayerBuilding(b,cx,cy,'tower');for(const b of state.beds)drawPlayerBuilding(b,cx,cy,'bed');for(const b of state.gardens)drawPlayerBuilding(b,cx,cy,'garden');for(const b of state.portals)drawPlayerBuilding(b,cx,cy,'portal');for(const crop of state.crops)drawCrop(crop,cx,cy);drawSnowOutposts(cx,cy);drawFlowerWorld(cx,cy);drawRadioStoryWorld(cx,cy);drawBlueprint(cx,cy);drawShadowEgg(cx,cy)
+  drawStructure(state.bench,cx,cy,'bench');drawStructure(state.furnace,cx,cy,'furnace');drawStructure(state.ironBench,cx,cy,'ironbench');drawStructure(state.goldBench,cx,cy,'goldbench');drawStructure(state.jungleBench,cx,cy,'junglebench');drawStructure(state.blacksmithAnvil,cx,cy,'anvil');drawStructure(state.cookingStation,cx,cy,'cookingstation');drawStructure(state.incubator,cx,cy,'incubator');for(const flag of state.flags)drawStructure(flag,cx,cy,'flag');for(const b of state.chests)drawPlayerBuilding(b,cx,cy,'chest');for(const b of state.walls)drawPlayerBuilding(b,cx,cy,'wall');for(const b of state.doors)drawPlayerBuilding(b,cx,cy,'door');for(const b of state.towers)drawPlayerBuilding(b,cx,cy,'tower');for(const b of state.beds)drawPlayerBuilding(b,cx,cy,'bed');for(const b of state.gardens)drawPlayerBuilding(b,cx,cy,'garden');for(const b of state.portals)drawPlayerBuilding(b,cx,cy,'portal');for(const crop of state.crops)drawCrop(crop,cx,cy);drawSnowOutposts(cx,cy);drawSwampOutpost(cx,cy);drawFlowerWorld(cx,cy);drawRadioStoryWorld(cx,cy);drawBlueprint(cx,cy);drawShadowEgg(cx,cy)
  }
  for(const e of state.enemies)if(e.area===state.area)drawCreature(e,cx,cy);
  drawDeathEffects(cx,cy,now);drawSporeClouds(cx,cy);drawProjectiles(cx,cy);drawSwampHazards(cx,cy,now);drawPet(cx,cy);drawRemotePlayers(cx,cy);drawPlayer(cx,cy,now);drawWeatherOverlay(now);drawUnderwaterDarkness(now);drawQuestDarkness();drawMiniMap(now)
@@ -5333,7 +5416,7 @@ function resetGameSave(){
 function saveGame(manual=true){
  try{
    const p=state.player;
-   localStorage.setItem(SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,cold:p.cold,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory,arrowType:p.arrowType},bench:state.bench,furnace:state.furnace,ironBench:state.ironBench,goldBench:state.goldBench,jungleBench:state.jungleBench,blacksmithAnvil:state.blacksmithAnvil,upgrades:state.upgrades,cookingStation:state.cookingStation,cookingSlots:state.cookingSlots,incubator:state.incubator,flags:state.flags,chests:state.chests,walls:state.walls,doors:state.doors,towers:state.towers,beds:state.beds,gardens:state.gardens,portals:state.portals,crops:state.crops,flowerWebs:state.flowerWebs,flowerBuildingLoot:state.flowerBuildingLoot,snowChests:state.snowChests,raid:{count:state.raid.count,nextAt:state.raid.nextAt},respawnPos:state.respawnPos,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,pet:state.pet,smelting:state.smelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,knownCookingRecipes:state.knownCookingRecipes,discovered:state.discovered,explored:state.explored,underwaterExplored:state.underwaterExplored,area:state.area,surfacePos:state.surfacePos,rootTaken:state.rootTaken,rootRespawnAt:state.rootRespawnAt,lakeReturnPos:state.lakeReturnPos,templeReturnPos:state.templeReturnPos,templeDiscovered:state.templeDiscovered,flowerBuildingLoot:state.flowerBuildingLoot,templeOfferingUsed:state.templeOfferingUsed,templeChestOpened:state.templeChestOpened,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,achievements:state.achievements,records:state.records,story:state.story,questCaveInit:state.questCaveInit,weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0},settings:{difficulty:state.settings.difficulty,autoGather:!!state.gathering.auto,bgmEnabled:!!music.enabled,bgmVolume:Math.round(clamp(music.volume/1.44,0,1)*100)}}));
+   localStorage.setItem(SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,cold:p.cold,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory,arrowType:p.arrowType},bench:state.bench,furnace:state.furnace,ironBench:state.ironBench,goldBench:state.goldBench,jungleBench:state.jungleBench,blacksmithAnvil:state.blacksmithAnvil,upgrades:state.upgrades,cookingStation:state.cookingStation,cookingSlots:state.cookingSlots,incubator:state.incubator,flags:state.flags,chests:state.chests,walls:state.walls,doors:state.doors,towers:state.towers,beds:state.beds,gardens:state.gardens,portals:state.portals,crops:state.crops,flowerWebs:state.flowerWebs,flowerBuildingLoot:state.flowerBuildingLoot,snowChests:state.snowChests,swampOutpostChestOpened:!!state.swampOutpostChestOpened,raid:{count:state.raid.count,nextAt:state.raid.nextAt},respawnPos:state.respawnPos,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,pet:state.pet,smelting:state.smelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,knownCookingRecipes:state.knownCookingRecipes,discovered:state.discovered,explored:state.explored,underwaterExplored:state.underwaterExplored,area:state.area,surfacePos:state.surfacePos,rootTaken:state.rootTaken,rootRespawnAt:state.rootRespawnAt,lakeReturnPos:state.lakeReturnPos,templeReturnPos:state.templeReturnPos,templeDiscovered:state.templeDiscovered,flowerBuildingLoot:state.flowerBuildingLoot,templeOfferingUsed:state.templeOfferingUsed,templeChestOpened:state.templeChestOpened,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,achievements:state.achievements,records:state.records,story:state.story,questCaveInit:state.questCaveInit,weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0},settings:{difficulty:state.settings.difficulty,autoGather:!!state.gathering.auto,bgmEnabled:!!music.enabled,bgmVolume:Math.round(clamp(music.volume/1.44,0,1)*100)}}));
    state.dirty=false;if(manual)showNotice('저장 완료')
  }catch(e){if(manual)showNotice('저장 실패')}
 }
@@ -5351,7 +5434,7 @@ function loadGame(){
   const loadBuildList=(arr,type)=>Array.isArray(arr)?arr.map((b,i)=>{const p=loadPos(b);if(!p)return null;return{...p,id:String(b.id||type+i),vertical:!!b.vertical,...(type==='door'?{open:!!b.open}:{}),...(type==='chest'?{storage:b.storage&&typeof b.storage==='object'?{...b.storage}:{}}:{}),...(type==='tower'?{ammo:b.ammo&&typeof b.ammo==='object'?{...b.ammo}:{},nextShotAt:0,shotAt:0,shotX:0,shotY:0}:{}),...(type==='wall'?{material:['wood','iron','gold'].includes(b.material)?b.material:'wood',refund:b.refund&&typeof b.refund==='object'?{...b.refund}:{wood:3}}:{})}}).filter(Boolean):[];
   state.chests=loadBuildList(s.chests,'chest');state.walls=loadBuildList(s.walls,'wall');state.doors=loadBuildList(s.doors,'door');state.towers=loadBuildList(s.towers,'tower');state.beds=loadBuildList(s.beds,'bed');state.gardens=loadBuildList(s.gardens,'garden');state.portals=loadBuildList(s.portals,'portal');
   state.flowerWebs=Array.isArray(s.flowerWebs)?s.flowerWebs.map(v=>({id:String(v.id),x:Number(v.x)||0,y:Number(v.y)||0,r:Number(v.r)||58,hits:Math.max(0,Number(v.hits)||0),lastAlertAt:0})):state.flowerWebs;
-  state.crops=Array.isArray(s.crops)?s.crops.map(c=>{const p=loadPos(c);return p&&['carrot','greens'].includes(c.type)?{id:String(c.id||('c'+Math.random().toString(36).slice(2))),type:c.type,x:p.x,y:p.y,gardenId:String(c.gardenId||''),readyAt:Math.max(Date.now()-60000,Number(c.readyAt)||Date.now())}:null}).filter(Boolean):[];state.snowChests=Array.isArray(s.snowChests)?[!!s.snowChests[0],!!s.snowChests[1]]:[false,false];state.raid={count:Math.max(0,Math.floor(Number(s.raid?.count)||0)),nextAt:Math.max(Date.now()+1000,Number(s.raid?.nextAt)||Date.now()+raidSpawnDelayMs(Math.max(0,Math.floor(Number(s.raid?.count)||0))+1)),active:null,warnedFor:0};if(version<57)state.raid.nextAt=Date.now()+raidSpawnDelayMs(state.raid.count+1);
+  state.crops=Array.isArray(s.crops)?s.crops.map(c=>{const p=loadPos(c);return p&&['carrot','greens'].includes(c.type)?{id:String(c.id||('c'+Math.random().toString(36).slice(2))),type:c.type,x:p.x,y:p.y,gardenId:String(c.gardenId||''),readyAt:Math.max(Date.now()-60000,Number(c.readyAt)||Date.now())}:null}).filter(Boolean):[];state.snowChests=Array.isArray(s.snowChests)?[!!s.snowChests[0],!!s.snowChests[1]]:[false,false];state.swampOutpostChestOpened=!!s.swampOutpostChestOpened;state.raid={count:Math.max(0,Math.floor(Number(s.raid?.count)||0)),nextAt:Math.max(Date.now()+1000,Number(s.raid?.nextAt)||Date.now()+raidSpawnDelayMs(Math.max(0,Math.floor(Number(s.raid?.count)||0))+1)),active:null,warnedFor:0};if(version<57)state.raid.nextAt=Date.now()+raidSpawnDelayMs(state.raid.count+1);
   state.respawnPos=s.respawnPos&&Number.isFinite(Number(s.respawnPos.x))?loadPos(s.respawnPos):null;resolveStructureOverlaps();state.shadowEggTaken=!!s.shadowEggTaken;state.incubation=s.incubation&&typeof s.incubation==='object'?{eggPlaced:!!s.incubation.eggPlaced,hatchAt:Math.max(0,Number(s.incubation.hatchAt)||0)}:{eggPlaced:false,hatchAt:0};if(s.pet&&typeof s.pet==='object'){state.pet={...state.pet,...s.pet,hp:clamp(Number(s.pet.hp)||0,0,250),maxHp:250,x:Number(s.pet.x)||p.x+50,y:Number(s.pet.y)||p.y+20,respawnAt:Math.max(0,Number(s.pet.respawnAt)||0),reviveClickUntil:Math.max(0,Number(s.pet.reviveClickUntil)||0),mounted:!!s.pet.mounted&&!!s.pet.alive,attackAt:0,targetId:null}}if(p.torchEquipped&&isTwoHandedWeapon(p.weapon)&&!petAlive())p.torchEquipped=false;
   if(s.smelting&&Number(s.smelting.endAt)>0){state.smelting={endAt:Number(s.smelting.endAt),type:s.smelting.type||'iron',duration:Number(s.smelting.duration)||(s.smelting.type==='gold'?10000:5000),queue:Array.isArray(s.smelting.queue)?s.smelting.queue.filter(x=>['iron','gold','deer','bug','fish','hare','lizard','crystaldeer','greens','bird','goat','monopoly'].includes(x)):[]}}
   state.knownMaterials=s.knownMaterials&&typeof s.knownMaterials==='object'?{...s.knownMaterials}:{};
@@ -5363,7 +5446,7 @@ function loadGame(){
   for(const [id,pos] of [['bench',state.bench],['furnace',state.furnace],['iron-bench',state.ironBench],['gold-bench',state.goldBench],['jungle-bench',state.jungleBench],['cooking-station',state.cookingStation],['shadow-wolf-incubator',state.incubator]])if(pos)rememberItem(id);for(const [id,list] of [['storage-chest',state.chests],['wood-wall',state.walls],['wood-door',state.doors],['defense-tower',state.towers],['bed',state.beds],['garden-plot',state.gardens],['portal',state.portals]])if(list.length)rememberItem(id);
   if(version<30){for(const r of recipes)if(state.knownItems[r.id])for(const [k,v] of Object.entries(r.cost||{}))if(Number(v)>0)rememberMaterial(k)}
   if(s.weather&&typeof s.weather==='object')setWeather(s.weather.kind,{fromNetwork:true,changedAt:s.weather.changedAt,nextAt:s.weather.nextAt,seed:s.weather.seed});
-  state.discovered={canyon:!!s.discovered?.canyon,worldtree:!!s.discovered?.worldtree,volcano:!!s.discovered?.volcano,crystal:!!s.discovered?.crystal,giantlake:!!s.discovered?.giantlake,jungle:!!s.discovered?.jungle,snow:!!s.discovered?.snow,flowerfield:!!s.discovered?.flowerfield,giantgarden:!!s.discovered?.giantgarden,deepcoralforest:!!s.discovered?.deepcoralforest};
+  state.discovered={canyon:!!s.discovered?.canyon,worldtree:!!s.discovered?.worldtree,volcano:!!s.discovered?.volcano,crystal:!!s.discovered?.crystal,giantlake:!!s.discovered?.giantlake,jungle:!!s.discovered?.jungle,snow:!!s.discovered?.snow,flowerfield:!!s.discovered?.flowerfield,giantgarden:!!s.discovered?.giantgarden,swamp:!!s.discovered?.swamp,deepcoralforest:!!s.discovered?.deepcoralforest};
   if(s.explored&&typeof s.explored==='object'){
    state.explored={};
    for(const key of Object.keys(s.explored)){
