@@ -13,9 +13,9 @@
     "idle": 3.2,
     "walk": 2.4,
     "run": 1.5,
-    "strafe": 2.0,
+    "strafe": 2,
     "climb": 2.4,
-    "threat": 2.0,
+    "threat": 2,
     "bite": 1.2,
     "pounce": 1.4,
     "web_cast": 1.8,
@@ -38,5 +38,69 @@
       "bytes": 1817948,
       "sha256": "8b513d6d646e24b962fd3b8f96b757e12cd0fbe1a1fd7da8f290bf36818284b3"
     }
-  ]
+  ],
+  "sourceAudit": {
+    "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
+    "studioRequired": false,
+    "nativeRuntimeRequired": false,
+    "productionPromotionIndependent": true,
+    "maxScore": 1000,
+    "passScore": 880,
+    "targetGrade": "ELITE",
+    "targetScore": 950,
+    "continualImprovementTargets": [
+      920,
+      950,
+      980,
+      1000
+    ],
+    "hardGateRule": "SCORE_ALONE_CANNOT_PASS_IF_CRITICAL_AXIS_FAILS",
+    "hardGateFamilies": [
+      "IDENTITY_SILHOUETTE",
+      "FORM_STRUCTURE",
+      "DETAIL_FINISH",
+      "MOTION_RIG",
+      "STYLE_COHERENCE"
+    ],
+    "axes": {
+      "IDENTITY_SILHOUETTE": 95,
+      "FORM_STRUCTURE": 94,
+      "MATERIAL_SURFACE": 88,
+      "COLOR_LIGHTING": 86,
+      "STYLE_COHERENCE": 90,
+      "DETAIL_FINISH": 94,
+      "READABILITY_SCALE": 92,
+      "MOTION_RIG": 96,
+      "FEEDBACK_STATES": 92,
+      "MODULAR_REUSE": 88,
+      "VARIATION_BREADTH": 91,
+      "PERFORMANCE_LOD": 78,
+      "PROVENANCE_MAINTAINABILITY": 99,
+      "INTEGRATION_READINESS": 90
+    },
+    "expectedScore": 909.6,
+    "expectedGrade": "COMMERCIAL_READY",
+    "evidenceBasis": {
+      "meshObjects": 9,
+      "vertices": 18550,
+      "triangles": 35080,
+      "bones": 45,
+      "legCount": 8,
+      "eyeCount": 8,
+      "motionCount": 12,
+      "authoredSource": "assets/roblox/world-ghosts/build-spider.py",
+      "glbArtifact": "assets/roblox/world-ghosts/native/spider/spider.glb",
+      "previewArtifact": "assets/roblox/world-ghosts/native/spider/spider.png",
+      "sourceHashBound": true,
+      "originalProjectAsset": true
+    },
+    "limitations": [
+      "ROBLOX_STUDIO_RUNTIME_UNVERIFIED",
+      "UNITY_RUNTIME_UNVERIFIED",
+      "MOBILE_FRAME_COST_UNVERIFIED",
+      "PLATFORM_LOD_TUNING_PENDING",
+      "PRODUCTION_RUNTIME_VERIFICATION_PENDING"
+    ],
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+  }
 }
