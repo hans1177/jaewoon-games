@@ -201,6 +201,182 @@ function RobloxCommonSkillPresentation.CreateImpactSmall(options)
   })
 end
 
+
+function RobloxCommonSkillPresentation.AttachCastAura(hostPart, options)
+  options = options or {}
+  assert(typeof(hostPart) == "Instance" and hostPart:IsA("BasePart"), "COMMON_CAST_AURA_HOST_PART_REQUIRED")
+  local color = typeof(options.color) == "Color3" and options.color or DEFAULT.Color
+  local scale = clamp(options.scale or 1, 0.4, 3.0)
+
+  local model = Instance.new("Model")
+  model.Name = "CommonCastAura"
+  tag(model, "CAST_AURA")
+  model.Parent = hostPart
+
+  local ring = neonPart("AuraRing", Vector3.new(0.10, 3.2, 3.2) * scale, color)
+  ring.Shape = Enum.PartType.Cylinder
+  ring.Anchored = false
+  ring.Transparency = 0.42
+  ring.CFrame = hostPart.CFrame * CFrame.new(0, -1.6 * scale, 0) * CFrame.Angles(0, 0, math.rad(90))
+  ring.Parent = model
+  tag(ring, "CAST_AURA")
+
+  local weld = Instance.new("WeldConstraint")
+  weld.Name = "AuraWeld"
+  weld.Part0 = hostPart
+  weld.Part1 = ring
+  weld.Parent = ring
+
+  local light = Instance.new("PointLight")
+  light.Name = "AuraGlow"
+  light.Color = color
+  light.Brightness = clamp(options.brightness or 0.8, 0.1, 3)
+  light.Range = clamp(options.range or 7, 2, 14)
+  light.Shadows = false
+  light.Parent = ring
+  tag(light, "CAST_AURA")
+
+  local controller = {}
+  function controller.SetEnabled(enabled)
+    local active = enabled == true
+    ring.Transparency = active and 0.42 or 1
+    light.Enabled = active
+  end
+  function controller.Destroy()
+    if model.Parent then model:Destroy() end
+  end
+  return model, controller
+end
+
+function RobloxCommonSkillPresentation.CreateProjectileOrb(options)
+  options = options or {}
+  local parent = options.parent or workspace
+  local cframe = typeof(options.cframe) == "CFrame" and options.cframe or CFrame.new()
+  local color = typeof(options.color) == "Color3" and options.color or DEFAULT.Color
+  local accent = typeof(options.accent) == "Color3" and options.accent or DEFAULT.Accent
+  local scale = clamp(options.scale or 1, 0.25, 3.0)
+
+  local model = Instance.new("Model")
+  model.Name = "CommonProjectileOrb"
+  tag(model, "PROJECTILE_ORB")
+  model.Parent = parent
+
+  local core = neonPart("OrbCore", Vector3.new(0.72, 0.72, 0.72) * scale, accent)
+  core.Shape = Enum.PartType.Ball
+  core.Anchored = true
+  core.CFrame = cframe
+  core.Parent = model
+  tag(core, "PROJECTILE_ORB")
+
+  local halo = neonPart("OrbHalo", Vector3.new(1.08, 1.08, 1.08) * scale, color)
+  halo.Shape = Enum.PartType.Ball
+  halo.Anchored = true
+  halo.CFrame = cframe
+  halo.Transparency = 0.68
+  halo.Parent = model
+  tag(halo, "PROJECTILE_ORB")
+
+  model.PrimaryPart = core
+  model:SetAttribute("OwnsProjectileMovement", false)
+  model:SetAttribute("OwnsProjectileCollision", false)
+  return model
+end
+
+function RobloxCommonSkillPresentation.CreateAreaPulse(options)
+  options = options or {}
+  local vfx = options.vfx
+  assert(type(vfx) == "table" and type(vfx.CreateShapeBurst) == "function", "COMMON_VFX_MODULE_REQUIRED")
+  return vfx.CreateShapeBurst({
+    parent = options.parent,
+    cframe = options.cframe,
+    color = options.color,
+    accent = options.accent,
+    duration = clamp(options.duration or 0.46, 0.14, 0.90),
+    scale = clamp(options.scale or 0.85, 0.25, 2.0),
+    count = math.floor(clamp(options.count or 8, 4, 12)),
+    distance = clamp(options.distance or 4.0, 1.5, 7.0),
+  })
+end
+
+function RobloxCommonSkillPresentation.CreateTelegraphFan(options)
+  options = options or {}
+  local parent = options.parent or workspace
+  local cframe = typeof(options.cframe) == "CFrame" and options.cframe or CFrame.new()
+  local color = typeof(options.color) == "Color3" and options.color or DEFAULT.Color
+  local radius = clamp(options.radius or 6, 2, 18)
+  local angleDegrees = clamp(options.angleDegrees or 70, 20, 160)
+  local count = math.floor(clamp(options.segments or 9, 5, 15))
+  local duration = clamp(options.duration or DEFAULT.Duration, 0.15, 2.5)
+
+  local folder = Instance.new("Folder")
+  folder.Name = "CommonTelegraphFan"
+  tag(folder, "TELEGRAPH_FAN")
+  folder.Parent = parent
+
+  local half = math.rad(angleDegrees * 0.5)
+  for i = 1, count do
+    local t = count == 1 and 0.5 or (i - 1) / (count - 1)
+    local angle = -half + t * half * 2
+    local length = radius * (0.72 + 0.28 * math.sin(t * math.pi))
+    local dir = Vector3.new(math.sin(angle), 0, -math.cos(angle))
+    local center = cframe.Position + cframe:VectorToWorldSpace(dir) * length * 0.5 + Vector3.new(0, 0.06, 0)
+    local segment = neonPart("FanSegment_" .. tostring(i), Vector3.new(0.10, 0.08, length), color)
+    segment.Anchored = true
+    segment.Transparency = 0.45
+    segment.CFrame = CFrame.lookAt(center, center + cframe:VectorToWorldSpace(dir))
+    segment.Parent = folder
+    tag(segment, "TELEGRAPH_FAN")
+    TweenService:Create(segment, TweenInfo.new(duration, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+      Transparency = 0.70,
+    }):Play()
+  end
+
+  folder:SetAttribute("PresentationRadius", radius)
+  folder:SetAttribute("PresentationAngleDegrees", angleDegrees)
+  folder:SetAttribute("SegmentCount", count)
+  folder:SetAttribute("PresentationDuration", duration)
+  if options.autoCleanup ~= false then
+    Debris:AddItem(folder, duration + 0.12)
+  end
+  return folder
+end
+
+function RobloxCommonSkillPresentation.AttachTargetMarker(hostPart, options)
+  options = options or {}
+  assert(typeof(hostPart) == "Instance" and hostPart:IsA("BasePart"), "COMMON_TARGET_MARKER_HOST_PART_REQUIRED")
+  local color = typeof(options.color) == "Color3" and options.color or Color3.fromRGB(255, 197, 92)
+  local scale = clamp(options.scale or 1, 0.4, 2.5)
+
+  local model = Instance.new("Model")
+  model.Name = "CommonTargetMarker"
+  tag(model, "TARGET_MARKER")
+  model.Parent = hostPart
+
+  local diamond = neonPart("MarkerDiamond", Vector3.new(0.52, 0.52, 0.18) * scale, color)
+  diamond.Anchored = false
+  diamond.CFrame = hostPart.CFrame * CFrame.new(0, 2.1 * scale, 0) * CFrame.Angles(0, 0, math.rad(45))
+  diamond.Parent = model
+  tag(diamond, "TARGET_MARKER")
+
+  local weld = Instance.new("WeldConstraint")
+  weld.Name = "MarkerWeld"
+  weld.Part0 = hostPart
+  weld.Part1 = diamond
+  weld.Parent = diamond
+
+  model:SetAttribute("OwnsTargetSelection", false)
+  model:SetAttribute("OwnsLockOnAuthority", false)
+
+  local controller = {}
+  function controller.SetEnabled(enabled)
+    diamond.Transparency = enabled == true and 0.08 or 1
+  end
+  function controller.Destroy()
+    if model.Parent then model:Destroy() end
+  end
+  return model, controller
+end
+
 function RobloxCommonSkillPresentation.Create(atomId, options)
   local id = string.upper(tostring(atomId or ""))
   options = options or {}
@@ -211,20 +387,33 @@ function RobloxCommonSkillPresentation.Create(atomId, options)
     return RobloxCommonSkillPresentation.CreateTelegraphCircle(options)
   elseif id == "IMPACT_SMALL" then
     return RobloxCommonSkillPresentation.CreateImpactSmall(options)
+  elseif id == "CAST_AURA" then
+    assert(options.hostPart, "COMMON_CAST_AURA_OPTIONS_HOST_PART_REQUIRED")
+    return RobloxCommonSkillPresentation.AttachCastAura(options.hostPart, options)
+  elseif id == "PROJECTILE_ORB" then
+    return RobloxCommonSkillPresentation.CreateProjectileOrb(options)
+  elseif id == "AREA_PULSE" then
+    return RobloxCommonSkillPresentation.CreateAreaPulse(options)
+  elseif id == "TELEGRAPH_FAN" then
+    return RobloxCommonSkillPresentation.CreateTelegraphFan(options)
+  elseif id == "TARGET_MARKER" then
+    assert(options.hostPart, "COMMON_TARGET_MARKER_OPTIONS_HOST_PART_REQUIRED")
+    return RobloxCommonSkillPresentation.AttachTargetMarker(options.hostPart, options)
   end
   error("UNKNOWN_COMMON_SKILL_ATOM: " .. tostring(atomId))
 end
 
 function RobloxCommonSkillPresentation.Audit()
   return table.freeze({
-    version = 1,
+    version = 2,
     packId = "roblox-common-skill-v1",
-    atoms = table.freeze({"CAST_HAND", "TELEGRAPH_CIRCLE", "IMPACT_SMALL"}),
-    atomCount = 3,
+    atoms = table.freeze({"CAST_HAND", "TELEGRAPH_CIRCLE", "IMPACT_SMALL", "CAST_AURA", "PROJECTILE_ORB", "AREA_PULSE", "TELEGRAPH_FAN", "TARGET_MARKER"}),
+    atomCount = 8,
     companyCommonBase = true,
     compatibleGameScope = "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
     dependencyPackIds = table.freeze({"roblox-common-vfx-v1"}),
     impactSmallReusesCommonVfx = true,
+    areaPulseReusesCommonVfx = true,
     gameplayAuthority = false,
     ownsDamageAuthority = false,
     ownsRangeAuthority = false,
