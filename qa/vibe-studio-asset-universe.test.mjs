@@ -1613,3 +1613,66 @@ test('generic item requirement can choose company-common item base',()=>{
   });
   assert.equal(loadout.selections[0].assetId,'common-healing-potion');
 });
+
+
+test('company-common VFX pack is reusable and gameplay-authority free',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','common-vfx-v1');
+  const source=fs.readFileSync(path.join(packDir,'RobloxCommonVFX.luau'),'utf8');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+
+  for(const atom of ['IMPACT_FLASH','TRAIL_SHORT','SHAPE_BURST']){
+    assert.ok(source.includes(atom),atom);
+    assert.ok(catalog.atoms.some(row=>row.atomId===atom),atom+':catalog');
+  }
+
+  assert.equal(catalog.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(catalog.productionVerified,false);
+  assert.equal(quality.staticAuthoringChecklist.score,100);
+  assert.equal(quality.quality120.claimedRuntimeScore,null);
+  assert.equal(quality.productionVerified,false);
+
+  assert.ok(source.includes('function RobloxCommonVFX.CreateImpactFlash(options)'));
+  assert.ok(source.includes('function RobloxCommonVFX.AttachShortTrail(hostPart, options)'));
+  assert.ok(source.includes('function RobloxCommonVFX.CreateShapeBurst(options)'));
+  assert.ok(source.includes('mobileBurstCap = 12'));
+  assert.ok(source.includes('OwnsDamageAuthority", false'));
+  assert.ok(source.includes('OwnsHitboxAuthority", false'));
+  assert.ok(source.includes('OwnsCooldownAuthority", false'));
+  assert.equal(/RemoteEvent/.test(source),false);
+  assert.equal(/RemoteFunction/.test(source),false);
+  assert.equal(/FireServer\(/.test(source),false);
+  assert.equal(/TakeDamage\(/.test(source),false);
+});
+
+test('company-common VFX registry exposes cross-game automatic candidates',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const pack=registry.assets.find(row=>row.id==='roblox-common-vfx-v1');
+  assert.ok(pack);
+  assert.equal(pack.companyCommonBase,true);
+  assert.equal(pack.productionVerified,false);
+  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+
+  const expected=[
+    ['IMPACT_FLASH','CreateImpactFlash'],
+    ['TRAIL_SHORT','AttachShortTrail'],
+    ['SHAPE_BURST','CreateShapeBurst']
+  ];
+  for(const [atomId,factory] of expected){
+    const id='roblox-common-vfx-'+atomId.toLowerCase().replaceAll('_','-');
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.ok(row,atomId);
+    assert.equal(row.companyCommonBase,true);
+    assert.equal(row.family,'VFX');
+    assert.equal(row.subfamily,atomId);
+    assert.equal(row.factory,factory);
+    assert.equal(row.automaticCrossGameReuseAllowed,true);
+    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
+    assert.equal(row.bindingHint.gameScope,'ALL_ROBLOX_GAMES');
+    assert.equal(row.bindingHint.deriveGameColorScaleDurationInsteadOfDuplicatingBase,true);
+    assert.equal(row.bindingHint.preserveGameplayDamageHitboxCooldownMovementAndNetworkAuthority,true);
+  }
+});
