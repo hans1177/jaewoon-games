@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "packId": "roblox-common-environment-v1",
   "sourceAudit": {
     "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
@@ -9,7 +9,60 @@
     "passScore": 880,
     "targetGrade": "ELITE",
     "targetScore": 950,
-    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS",
+    "productionPromotionIndependent": true,
+    "continualImprovementTargets": [
+      920,
+      950,
+      980,
+      1000
+    ],
+    "hardGateRule": "SCORE_ALONE_CANNOT_PASS_IF_CRITICAL_AXIS_FAILS",
+    "hardGateFamilies": [
+      "STYLE_COHERENCE",
+      "DETAIL_FINISH",
+      "READABILITY_SCALE",
+      "MODULAR_REUSE",
+      "PERFORMANCE_LOD"
+    ],
+    "axes": {
+      "IDENTITY_SILHOUETTE": 94,
+      "FORM_STRUCTURE": 94,
+      "MATERIAL_SURFACE": 92,
+      "COLOR_LIGHTING": 93,
+      "STYLE_COHERENCE": 95,
+      "DETAIL_FINISH": 92,
+      "READABILITY_SCALE": 95,
+      "MODULAR_REUSE": 99,
+      "VARIATION_BREADTH": 99,
+      "PERFORMANCE_LOD": 94,
+      "PROVENANCE_MAINTAINABILITY": 98,
+      "INTEGRATION_READINESS": 96
+    },
+    "expectedScore": 950.1,
+    "expectedGrade": "ELITE",
+    "auditPass": true,
+    "hardGateFailures": [],
+    "evidenceBasis": {
+      "biomeCount": 10,
+      "roleCount": 18,
+      "recipeCount": 104,
+      "terrainCompositionCount": 24,
+      "environmentStateCount": 14,
+      "biomeSoundscapeCount": 10,
+      "backgroundDepthLayerCount": 5,
+      "sourceFiles": [
+        "assets/roblox/common-environment-v1/RobloxCommonEnvironment.luau",
+        "assets/roblox/common-environment-v1/catalog.json",
+        "assets/roblox/common-environment-v1/quality-evidence.json"
+      ]
+    },
+    "limitations": [
+      "ACTUAL_STREAMING_LOD_RUNTIME_UNVERIFIED",
+      "INTERIOR_EXTERIOR_TRANSITION_COVERAGE_INCOMPLETE",
+      "ACTUAL_GAME_CAMERA_DENSITY_UNVERIFIED",
+      "PRODUCTION_RUNTIME_VERIFICATION_PENDING"
+    ]
   },
   "coverage": {
     "biomeCount": 10,

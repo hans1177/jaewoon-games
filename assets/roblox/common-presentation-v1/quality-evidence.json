@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-common-presentation-v1",
   "sourceAudit": {
     "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
@@ -9,7 +9,58 @@
     "passScore": 880,
     "targetGrade": "ELITE",
     "targetScore": 950,
-    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS",
+    "productionPromotionIndependent": true,
+    "continualImprovementTargets": [
+      920,
+      950,
+      980,
+      1000
+    ],
+    "hardGateRule": "SCORE_ALONE_CANNOT_PASS_IF_CRITICAL_AXIS_FAILS",
+    "hardGateFamilies": [
+      "UI_UX_SYSTEM",
+      "ACCESSIBILITY_INPUT",
+      "FEEDBACK_STATES",
+      "VARIATION_BREADTH",
+      "READABILITY_SCALE",
+      "STYLE_COHERENCE"
+    ],
+    "axes": {
+      "STYLE_COHERENCE": 96,
+      "DETAIL_FINISH": 93,
+      "READABILITY_SCALE": 98,
+      "FEEDBACK_STATES": 97,
+      "UI_UX_SYSTEM": 96,
+      "MODULAR_REUSE": 99,
+      "VARIATION_BREADTH": 97,
+      "PERFORMANCE_LOD": 96,
+      "ACCESSIBILITY_INPUT": 96,
+      "PROVENANCE_MAINTAINABILITY": 99,
+      "INTEGRATION_READINESS": 97
+    },
+    "expectedScore": 966.7,
+    "expectedGrade": "ELITE",
+    "auditPass": true,
+    "hardGateFailures": [],
+    "evidenceBasis": {
+      "loadingElements": 6,
+      "introModes": 5,
+      "genreBackgrounds": 7,
+      "variationFields": 6,
+      "accessibilityElements": 3,
+      "presentationComponentCount": 14,
+      "sourceFiles": [
+        "assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+        "assets/roblox/common-presentation-v1/catalog.json",
+        "assets/roblox/common-presentation-v1/quality-evidence.json"
+      ]
+    },
+    "limitations": [
+      "ACTUAL_INTRO_MOBILE_FRAME_TIMING_UNVERIFIED",
+      "ACTUAL_INPUT_FOCUS_RUNTIME_UNVERIFIED",
+      "PRODUCTION_RUNTIME_VERIFICATION_PENDING"
+    ]
   },
   "coverage": {
     "loadingElements": 6,
