@@ -1,5 +1,7 @@
 # 재운게임즈 멀티 환경
 
+<!-- cloudflare-workers-preview-canary: 2026-10-03 -->
+
 ## 구성
 - 게임 클라이언트: Godot / 웹게임
 - 인증: Supabase Auth (이메일 가입, 로그인, 비밀번호 재설정)
