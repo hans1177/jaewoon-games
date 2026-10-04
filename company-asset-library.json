@@ -1,5 +1,5 @@
 {
-  "version": 48,
+  "version": 49,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -18516,5 +18516,66 @@
       }
     ],
     "rule": "급한 3계열은 신규 직접 제작보다 검증된 무료 원본 확보·리타겟·스타일 변형을 먼저 수행"
+  },
+  "internalAssetUsagePolicy": {
+    "version": 1,
+    "authority": "OWNER_DIRECTION_2026-10-04",
+    "scope": "ALL_INTERNAL_AND_COMPANY_COMMON_ASSETS",
+    "studioRequiredForInternalUse": false,
+    "studioRequiredForInternalAudit": false,
+    "studioRequiredForAutomaticReplacement": false,
+    "lowScoreAssetUseAllowed": true,
+    "internalAuditScoreIsUsageGate": false,
+    "internalAuditScorePurposes": [
+      "COMPARE_QUALITY",
+      "PRIORITIZE_ITERATION",
+      "AUTO_PREFER_BETTER_COMPATIBLE_ASSET"
+    ],
+    "automaticReplacement": {
+      "enabled": true,
+      "order": [
+        "COMPATIBILITY",
+        "GAME_IDENTITY_AND_ROLE",
+        "MANUAL_OR_GAME_LOCK",
+        "INTERNAL_AUDIT_SCORE",
+        "LEGACY_QUALITY_AND_SOURCE_TIEBREAK"
+      ],
+      "higherCompatibleScorePreferred": true,
+      "lowScoreCurrentAssetStaysUsableUntilSafeReplacement": true,
+      "neverCreateEmptyAssetSlot": true,
+      "platformCompatibilityRequired": true,
+      "gameIdentityCompatibilityRequired": true,
+      "roleCompatibilityRequired": true,
+      "manualOrGameLockWins": true,
+      "previousAssetHistoryPreserved": true
+    },
+    "continualImprovement": {
+      "required": true,
+      "passIsTerminal": false,
+      "scoreTargets": [
+        880,
+        920,
+        950,
+        980,
+        1000
+      ],
+      "existingAssetsFirst": true,
+      "companyCommonAssetsFirst": true,
+      "replaceOnlyWhenBetterAndCompatible": true
+    },
+    "productionVerification": {
+      "separateFromInternalUse": true,
+      "separateFromInternalAudit": true,
+      "runtimeEvidenceMayBeRequiredForProductionPromotion": true,
+      "noStudioEvidenceDoesNotBlockInternalUseIterationOrReplacement": true
+    },
+    "infrastructureBoundary": {
+      "flowMutationAllowed": false,
+      "schedulerMutationAllowed": false,
+      "queueMutationAllowed": false,
+      "workflowMutationAllowed": false,
+      "deploymentInfrastructureMutationAllowed": false,
+      "newAssetPipelineAllowed": false
+    }
   }
 }
