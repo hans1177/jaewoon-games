@@ -362,6 +362,9 @@ test('reference image observations become task-local character customization ide
   assert.equal(plan.internalLibraryEvolution.taskLocalReferenceActionCount,plan.imageAssetCreation.ideaWorklist.length);
   assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].kind,'REFERENCE_IMAGE_VOLUME');
   assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].referenceSourceId,sourceId);
+  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].referenceSourceHash,sourceHash);
+  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].referenceImageRef,imageRef);
+  assert.ok(plan.internalLibraryEvolution.nextVolumeActions[0].referenceFeatureSummary.length>0);
   assert.match(plan.internalLibraryEvolution.worklistSource,/^TASK_REFERENCE_IMAGE_OVERLAY_ON_/);
   assert.equal(plan.companyGraphicsLibrary.characterNpcCustomization.requested,true);
   assert.equal(plan.companyGraphicsLibrary.characterNpcCustomization.playerAndNpcShareAssetPool,true);
@@ -415,6 +418,9 @@ test('building reference image expands into detailed task-local building volume 
   assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].kind,'REFERENCE_IMAGE_VOLUME');
   assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].domain,'BUILDING');
   assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].referenceSourceId,sourceId);
+  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].referenceSourceHash,sourceHash);
+  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].referenceImageRef,imageRef);
+  assert.ok(plan.internalLibraryEvolution.nextVolumeActions[0].referenceFeatureSummary.length>0);
   assert.ok(plan.internalLibraryEvolution.nextVolumeActions[0].freeSourceCandidateIds.includes('kenney-modular-buildings'));
   assert.equal(plan.internalLibraryEvolution.referenceImageIdeasPersisted,false);
   assert.equal(plan.internalLibraryEvolution.rawReferenceImagePersisted,false);
