@@ -1,5 +1,5 @@
 -- 파일명: assets/roblox/common-world-props-v1/RobloxCommonWorldProps.luau
--- 역할: 여러 Roblox 게임에서 재사용할 수 있는 회사 공용 월드 소품 8종 생성
+-- 역할: 여러 Roblox 게임에서 재사용할 수 있는 회사 공용 월드·주거·정착지 소품 38종 생성
 -- 원칙: 순수 표현 자산만 제공한다. 밸런스/경제/세이브/네트워크 권한은 소유하지 않는다.
 
 local RobloxCommonWorldProps = {}
@@ -199,6 +199,103 @@ local Catalog = table.freeze({
 		id="DECOR_STATUE",name="장식 조각상",familyRootId="WORLD_DECOR",family="PROP",subfamily="DECORATION",worldRole="HOUSING_DECOR",propKind="STATUE",
 		silhouette="PEDESTAL_ABSTRACT_STATUE",palette=table.freeze({wood=c(101,97,88),woodLight=c(146,141,128),cloth=c(118,111,97),clothLight=c(178,168,146),metal=c(101,105,106),accent=c(167,135,76)}),
 	}),
+	WOOD_CART = table.freeze({
+		id="WOOD_CART",name="나무 수레",familyRootId="WORLD_SETTLEMENT_PROP",family="PROP",subfamily="CART",worldRole="SETTLEMENT_TRANSPORT_VISUAL",propKind="CART",interactionRole="PUSH_OR_INSPECT",
+		silhouette="TWO_WHEEL_CART",palette=table.freeze({wood=c(96,69,48),woodLight=c(148,107,69),cloth=c(137,112,88),clothLight=c(205,181,143),metal=c(91,96,98),accent=c(191,137,67)}),
+	}),
+	WOOD_CRATE = table.freeze({
+		id="WOOD_CRATE",name="나무 상자",familyRootId="WORLD_CONTAINER",family="PROP",subfamily="CRATE",worldRole="CONTAINER_VISUAL",propKind="CRATE",interactionRole="OPEN_OR_CARRY",
+		silhouette="REINFORCED_CRATE",palette=table.freeze({wood=c(96,69,48),woodLight=c(148,107,69),cloth=c(137,112,88),clothLight=c(205,181,143),metal=c(91,96,98),accent=c(191,137,67)}),
+	}),
+	TREASURE_CHEST = table.freeze({
+		id="TREASURE_CHEST",name="보관 상자",familyRootId="WORLD_CONTAINER",family="PROP",subfamily="CHEST",worldRole="CONTAINER_VISUAL",propKind="CHEST",interactionRole="OPEN_OR_INSPECT",
+		silhouette="LIDDED_CHEST",palette=table.freeze({wood=c(96,69,48),woodLight=c(148,107,69),cloth=c(137,112,88),clothLight=c(205,181,143),metal=c(91,96,98),accent=c(191,137,67)}),
+	}),
+	STREET_LANTERN = table.freeze({
+		id="STREET_LANTERN",name="거리 조명",familyRootId="WORLD_LIGHT",family="PROP",subfamily="LIGHT_SOURCE",worldRole="SETTLEMENT_LIGHTING",propKind="STREET_LANTERN",interactionRole="TOGGLE_OR_INSPECT",
+		silhouette="POST_LANTERN",palette=table.freeze({wood=c(96,69,48),woodLight=c(148,107,69),cloth=c(137,112,88),clothLight=c(205,181,143),metal=c(91,96,98),accent=c(191,137,67)}),
+	}),
+	LAUNDRY_LINE = table.freeze({
+		id="LAUNDRY_LINE",name="빨랫줄",familyRootId="WORLD_SETTLEMENT_PROP",family="PROP",subfamily="LIFE_PROP",worldRole="SETTLEMENT_LIFE",propKind="LAUNDRY",interactionRole="INSPECT",
+		silhouette="TWO_POST_LAUNDRY",palette=table.freeze({wood=c(96,69,48),woodLight=c(148,107,69),cloth=c(137,112,88),clothLight=c(205,181,143),metal=c(91,96,98),accent=c(191,137,67)}),
+	}),
+	SETTLEMENT_FLAG = table.freeze({
+		id="SETTLEMENT_FLAG",name="정착지 깃발",familyRootId="WORLD_SETTLEMENT_PROP",family="PROP",subfamily="FLAG",worldRole="SETTLEMENT_IDENTITY",propKind="FLAG",interactionRole="INSPECT",
+		silhouette="TALL_FLAG_POLE",palette=table.freeze({wood=c(96,69,48),woodLight=c(148,107,69),cloth=c(137,112,88),clothLight=c(205,181,143),metal=c(91,96,98),accent=c(191,137,67)}),
+	}),
+	CANVAS_TENT = table.freeze({
+		id="CANVAS_TENT",name="천막",familyRootId="WORLD_SETTLEMENT_PROP",family="PROP",subfamily="TENT",worldRole="SHELTER_VISUAL",propKind="TENT",interactionRole="ENTER_OR_INSPECT",
+		silhouette="RIDGE_TENT",palette=table.freeze({wood=c(96,69,48),woodLight=c(148,107,69),cloth=c(137,112,88),clothLight=c(205,181,143),metal=c(91,96,98),accent=c(191,137,67)}),
+	}),
+	FIREWOOD_STACK = table.freeze({
+		id="FIREWOOD_STACK",name="장작 더미",familyRootId="WORLD_SETTLEMENT_PROP",family="PROP",subfamily="FIREWOOD",worldRole="LIFE_RESOURCE_DRESSING",propKind="FIREWOOD",interactionRole="GATHER_OR_INSPECT",
+		silhouette="STACKED_LOGS",palette=table.freeze({wood=c(96,69,48),woodLight=c(148,107,69),cloth=c(137,112,88),clothLight=c(205,181,143),metal=c(91,96,98),accent=c(191,137,67)}),
+	}),
+	FARM_TOOL_RACK = table.freeze({
+		id="FARM_TOOL_RACK",name="농기구 걸이",familyRootId="WORLD_FARM_PROP",family="PROP",subfamily="FARM_TOOL",worldRole="FARMING_DECOR",propKind="FARM_TOOL_RACK",interactionRole="USE_OR_INSPECT",
+		silhouette="RACK_LONG_TOOLS",palette=table.freeze({wood=c(96,69,48),woodLight=c(148,107,69),cloth=c(137,112,88),clothLight=c(205,181,143),metal=c(91,96,98),accent=c(191,137,67)}),
+	}),
+	RUIN_DEBRIS = table.freeze({
+		id="RUIN_DEBRIS",name="폐허 잔해",familyRootId="WORLD_RUIN_PROP",family="PROP",subfamily="RUIN_DEBRIS",worldRole="RUIN_DRESSING",propKind="RUIN_DEBRIS",interactionRole="INSPECT_OR_CLIMB",
+		silhouette="BROKEN_STONE_CLUSTER",palette=table.freeze({wood=c(96,69,48),woodLight=c(148,107,69),cloth=c(137,112,88),clothLight=c(205,181,143),metal=c(91,96,98),accent=c(191,137,67)}),
+	}),
+	CONSTRUCTION_SCAFFOLD = table.freeze({
+		id="CONSTRUCTION_SCAFFOLD",name="건축 발판",familyRootId="WORLD_BUILD_PROP",family="PROP",subfamily="CONSTRUCTION_TRACE",worldRole="BUILD_DRESSING",propKind="SCAFFOLD",interactionRole="CLIMB_OR_INSPECT",
+		silhouette="TIMBER_SCAFFOLD",palette=table.freeze({wood=c(96,69,48),woodLight=c(148,107,69),cloth=c(137,112,88),clothLight=c(205,181,143),metal=c(91,96,98),accent=c(191,137,67)}),
+	}),
+	LORE_STONE = table.freeze({
+		id="LORE_STONE",name="기록 석판",familyRootId="WORLD_LORE_PROP",family="PROP",subfamily="LORE_COLLECTIBLE",worldRole="LORE_PROP",propKind="LORE_STONE",interactionRole="READ_OR_INSPECT",
+		silhouette="CARVED_STONE_SLAB",palette=table.freeze({wood=c(96,69,48),woodLight=c(148,107,69),cloth=c(137,112,88),clothLight=c(205,181,143),metal=c(91,96,98),accent=c(191,137,67)}),
+	}),
+	RESOURCE_ROCK_NODE = table.freeze({
+		id="RESOURCE_ROCK_NODE",name="암석 자원 표현",familyRootId="WORLD_RESOURCE_PROP",family="PROP",subfamily="RESOURCE_NODE",worldRole="RESOURCE_VISUAL",propKind="RESOURCE_ROCK",interactionRole="HARVEST_OR_INSPECT",
+		silhouette="ROCK_NODE_CLUSTER",palette=table.freeze({wood=c(96,69,48),woodLight=c(148,107,69),cloth=c(137,112,88),clothLight=c(205,181,143),metal=c(91,96,98),accent=c(191,137,67)}),
+	}),
+	RESOURCE_WOOD_NODE = table.freeze({
+		id="RESOURCE_WOOD_NODE",name="목재 자원 표현",familyRootId="WORLD_RESOURCE_PROP",family="PROP",subfamily="RESOURCE_NODE",worldRole="RESOURCE_VISUAL",propKind="RESOURCE_WOOD",interactionRole="HARVEST_OR_INSPECT",
+		silhouette="STUMP_LOG_NODE",palette=table.freeze({wood=c(96,69,48),woodLight=c(148,107,69),cloth=c(137,112,88),clothLight=c(205,181,143),metal=c(91,96,98),accent=c(191,137,67)}),
+	}),
+})
+
+local INTERACTION_ROLE_BY_ID = table.freeze({
+	SIGNPOST="READ",
+	WOOD_FENCE="INSPECT_OR_VAULT",
+	WALL_TORCH="TOGGLE_LIGHT",
+	WOOD_BARREL="OPEN_OR_INSPECT",
+	BENCH="SIT",
+	TABLE="INSPECT_OR_PLACE",
+	MARKET_STALL="SHOP_OR_INSPECT",
+	STONE_WELL="DRAW_WATER_OR_INSPECT",
+	BED_SINGLE="SLEEP_OR_BIND_RESPAWN",
+	WARDROBE="OPEN_STORAGE_OR_OUTFIT",
+	SHELF="OPEN_STORAGE_OR_INSPECT",
+	WORKBENCH="CRAFT",
+	CRAFT_TABLE="CRAFT",
+	COOKING_HEARTH="COOK",
+	STORAGE_CABINET="OPEN_STORAGE",
+	PLANTER_BOX="PLANT_OR_INSPECT",
+	CROP_PLOT="PLANT_OR_HARVEST",
+	ANIMAL_TROUGH="FEED",
+	FLOOR_LAMP="TOGGLE_LIGHT",
+	WALL_SWITCH="TOGGLE",
+	LEVER_CONTROL="USE_CONTROL",
+	NOTICE_BOARD="READ",
+	RUG="INSPECT",
+	DECOR_STATUE="INSPECT",
+	WOOD_CART="PUSH_OR_INSPECT",
+	WOOD_CRATE="OPEN_OR_CARRY",
+	TREASURE_CHEST="OPEN_OR_INSPECT",
+	STREET_LANTERN="TOGGLE_OR_INSPECT",
+	LAUNDRY_LINE="INSPECT",
+	SETTLEMENT_FLAG="INSPECT",
+	CANVAS_TENT="ENTER_OR_INSPECT",
+	FIREWOOD_STACK="GATHER_OR_INSPECT",
+	FARM_TOOL_RACK="USE_OR_INSPECT",
+	RUIN_DEBRIS="INSPECT_OR_CLIMB",
+	CONSTRUCTION_SCAFFOLD="CLIMB_OR_INSPECT",
+	LORE_STONE="READ_OR_INSPECT",
+	RESOURCE_ROCK_NODE="HARVEST_OR_INSPECT",
+	RESOURCE_WOOD_NODE="HARVEST_OR_INSPECT",
 })
 
 local function makePart(name, size, color, material, shape)
@@ -489,6 +586,72 @@ local function addHousingProp(model,root,row,level)
 	end
 end
 
+
+local function addSettlementProp(model,root,row,level)
+	local p=row.palette
+	local kind=row.propKind
+	if kind=="CART" then
+		weld(root,makePart("Bed",Vector3.new(4.2,0.55,2.3),p.woodLight,Enum.Material.WoodPlanks),CFrame.new(0,1.45,0))
+		for _,x in ipairs({-1.65,1.65}) do weld(root,makePart("Side"..x,Vector3.new(0.24,1.45,2.25),p.wood,Enum.Material.WoodPlanks),CFrame.new(x,2.05,0)) end
+		for _,z in ipairs({-1.25,1.25}) do weld(root,makePart("Wheel"..z,Vector3.new(1.55,0.34,1.55),p.metal,Enum.Material.Metal,"CYLINDER"),CFrame.new(0,0.85,z)*CFrame.Angles(0,0,math.rad(90))) end
+		weld(root,makePart("Handle",Vector3.new(0.34,0.34,4.2),p.wood,Enum.Material.WoodPlanks),CFrame.new(0,1.25,-3.15)*CFrame.Angles(math.rad(-8),0,0))
+	elseif kind=="CRATE" or kind=="CHEST" then
+		local h=kind=="CHEST" and 1.65 or 1.8
+		weld(root,makePart("Body",Vector3.new(2.8,h,2.35),p.wood,Enum.Material.WoodPlanks),CFrame.new(0,h/2,0))
+		weld(root,makePart("Lid",Vector3.new(2.95,0.32,2.5),p.woodLight,Enum.Material.WoodPlanks),CFrame.new(0,h+0.16,0))
+		for _,x in ipairs({-1.18,1.18}) do weld(root,makePart("Band"..x,Vector3.new(0.16,h+0.35,2.46),p.metal,Enum.Material.Metal),CFrame.new(x,(h+0.35)/2,0)) end
+		if kind=="CHEST" then weld(root,makePart("Latch",Vector3.new(0.42,0.62,0.18),p.accent,Enum.Material.Metal),CFrame.new(0,h*0.72,-1.28)) end
+	elseif kind=="STREET_LANTERN" then
+		weld(root,makePart("Base",Vector3.new(1.05,0.25,1.05),p.metal,Enum.Material.Metal),CFrame.new(0,0.13,0))
+		weld(root,makePart("Post",Vector3.new(0.24,5.2,0.24),p.metal,Enum.Material.Metal),CFrame.new(0,2.7,0))
+		local glow=weld(root,makePart("Lantern",Vector3.new(1.1,1.35,1.1),p.accent,Enum.Material.Neon),CFrame.new(0,5.3,0));glow.Transparency=0.12
+		if detail(level,2) then local light=Instance.new("PointLight");light.Name="VisualGlow";light.Color=p.accent;light.Brightness=1.0;light.Range=11;light.Shadows=false;light.Parent=glow end
+	elseif kind=="LAUNDRY" then
+		for _,x in ipairs({-2.3,2.3}) do weld(root,makePart("Post"..x,Vector3.new(0.24,3.6,0.24),p.wood,Enum.Material.WoodPlanks),CFrame.new(x,1.8,0)) end
+		weld(root,makePart("Line",Vector3.new(4.8,0.08,0.08),p.metal,Enum.Material.Metal),CFrame.new(0,3.25,0))
+		for i=-1,1 do weld(root,makePart("Cloth"..i,Vector3.new(1.15,1.45,0.08),i%2==0 and p.clothLight or p.cloth,Enum.Material.Fabric),CFrame.new(i*1.45,2.55,0)) end
+	elseif kind=="FLAG" then
+		weld(root,makePart("Pole",Vector3.new(0.22,6.2,0.22),p.metal,Enum.Material.Metal),CFrame.new(0,3.1,0))
+		weld(root,makePart("Flag",Vector3.new(2.8,1.65,0.12),p.cloth,Enum.Material.Fabric),CFrame.new(1.5,5.3,0))
+		if detail(level,2) then weld(root,makePart("Mark",Vector3.new(0.7,0.7,0.05),p.accent,Enum.Material.SmoothPlastic),CFrame.new(1.4,5.3,-0.08)) end
+	elseif kind=="TENT" then
+		weld(root,makePart("GroundCloth",Vector3.new(4.5,0.12,5.2),p.cloth,Enum.Material.Fabric),CFrame.new(0,0.06,0))
+		weld(root,makePart("RoofL",Vector3.new(2.8,0.16,5.0),p.clothLight,Enum.Material.Fabric),CFrame.new(-1.15,1.65,0)*CFrame.Angles(0,0,math.rad(-38)))
+		weld(root,makePart("RoofR",Vector3.new(2.8,0.16,5.0),p.cloth,Enum.Material.Fabric),CFrame.new(1.15,1.65,0)*CFrame.Angles(0,0,math.rad(38)))
+		weld(root,makePart("Ridge",Vector3.new(0.18,0.18,5.1),p.wood,Enum.Material.WoodPlanks),CFrame.new(0,2.7,0))
+	elseif kind=="FIREWOOD" then
+		for i=0,7 do
+			local x=((i%4)-1.5)*0.72
+			local y=0.38+math.floor(i/4)*0.62
+			weld(root,makePart("Log"..i,Vector3.new(1.65,0.48,0.48),i%2==0 and p.wood or p.woodLight,Enum.Material.WoodPlanks,"CYLINDER"),CFrame.new(x,y,0)*CFrame.Angles(0,0,math.rad(90)))
+		end
+	elseif kind=="FARM_TOOL_RACK" then
+		weld(root,makePart("Rack",Vector3.new(4.0,2.5,0.28),p.wood,Enum.Material.WoodPlanks),CFrame.new(0,1.55,0))
+		for i=-2,2 do
+			weld(root,makePart("Handle"..i,Vector3.new(0.16,2.7,0.16),p.woodLight,Enum.Material.WoodPlanks),CFrame.new(i*0.72,1.35,-0.32)*CFrame.Angles(0,0,math.rad(i*4)))
+			weld(root,makePart("Head"..i,Vector3.new(0.62,0.20,0.26),p.metal,Enum.Material.Metal),CFrame.new(i*0.72,2.62,-0.32))
+		end
+	elseif kind=="RUIN_DEBRIS" then
+		for i=1,8 do
+			local x=((i%4)-1.5)*1.0
+			local z=(math.floor((i-1)/4)-0.5)*1.25
+			weld(root,makePart("Debris"..i,Vector3.new(0.8+(i%3)*0.35,0.55+(i%2)*0.45,0.9),i%2==0 and p.woodLight or p.metal,Enum.Material.Slate),CFrame.new(x,0.35+(i%2)*0.2,z)*CFrame.Angles(math.rad((i%3)*7),math.rad(i*19),math.rad((i%2)*9)))
+		end
+	elseif kind=="SCAFFOLD" then
+		for _,x in ipairs({-1.8,1.8}) do for _,z in ipairs({-1.0,1.0}) do weld(root,makePart("Post"..x..z,Vector3.new(0.22,4.8,0.22),p.wood,Enum.Material.WoodPlanks),CFrame.new(x,2.4,z)) end end
+		for _,y in ipairs({1.3,3.1}) do weld(root,makePart("Platform"..y,Vector3.new(4.1,0.20,2.4),p.woodLight,Enum.Material.WoodPlanks),CFrame.new(0,y,0)) end
+		weld(root,makePart("CrossA",Vector3.new(4.4,0.16,0.16),p.metal,Enum.Material.Metal),CFrame.new(0,2.4,-1.08)*CFrame.Angles(0,0,math.rad(28)))
+	elseif kind=="LORE_STONE" then
+		weld(root,makePart("Slab",Vector3.new(2.7,4.0,0.72),p.metal,Enum.Material.Slate),CFrame.new(0,2.0,0))
+		if detail(level,2) then for i=-2,2 do weld(root,makePart("Glyph"..i,Vector3.new(1.55,0.12,0.05),p.accent,Enum.Material.Neon),CFrame.new(0,2.0+i*0.48,-0.39)) end end
+	elseif kind=="RESOURCE_ROCK" then
+		for i=1,5 do weld(root,makePart("Rock"..i,Vector3.new(1.3+(i%2)*0.6,1.1+(i%3)*0.35,1.25),i%2==0 and p.woodLight or p.metal,Enum.Material.Rock,"BALL"),CFrame.new((i-3)*0.72,0.62+(i%2)*0.25,(i%2)*0.7)) end
+	elseif kind=="RESOURCE_WOOD" then
+		weld(root,makePart("Stump",Vector3.new(1.7,1.2,1.7),p.wood,Enum.Material.Wood,"CYLINDER"),CFrame.new(-0.8,0.6,0)*CFrame.Angles(0,0,math.rad(90)))
+		weld(root,makePart("Log",Vector3.new(3.8,0.95,0.95),p.woodLight,Enum.Material.Wood,"CYLINDER"),CFrame.new(1.0,0.62,0.35)*CFrame.Angles(0,0,math.rad(90)))
+	end
+end
+
 local BUILDERS = table.freeze({
 	SIGNPOST = addSignpost,
 	WOOD_FENCE = addFence,
@@ -514,6 +677,20 @@ local BUILDERS = table.freeze({
 	NOTICE_BOARD = addHousingProp,
 	RUG = addHousingProp,
 	DECOR_STATUE = addHousingProp,
+	WOOD_CART = addSettlementProp,
+	WOOD_CRATE = addSettlementProp,
+	TREASURE_CHEST = addSettlementProp,
+	STREET_LANTERN = addSettlementProp,
+	LAUNDRY_LINE = addSettlementProp,
+	SETTLEMENT_FLAG = addSettlementProp,
+	CANVAS_TENT = addSettlementProp,
+	FIREWOOD_STACK = addSettlementProp,
+	FARM_TOOL_RACK = addSettlementProp,
+	RUIN_DEBRIS = addSettlementProp,
+	CONSTRUCTION_SCAFFOLD = addSettlementProp,
+	LORE_STONE = addSettlementProp,
+	RESOURCE_ROCK_NODE = addSettlementProp,
+	RESOURCE_WOOD_NODE = addSettlementProp,
 })
 
 local function applyModelMetadata(model, row, quality)
@@ -521,7 +698,7 @@ local function applyModelMetadata(model, row, quality)
 	model:SetAttribute("StudioAssetSubfamily", row.subfamily)
 	model:SetAttribute("StudioAssetWorldRole", row.worldRole)
 	model:SetAttribute("StudioAssetSilhouette", row.silhouette)
-	model:SetAttribute("InteractionPresentationRole", row.interactionRole or "INSPECT")
+	model:SetAttribute("InteractionPresentationRole", row.interactionRole or INTERACTION_ROLE_BY_ID[row.id] or "INSPECT")
 	model:SetAttribute("OwnsInteractionAuthority", false)
 	model:SetAttribute("OwnsStorageAuthority", false)
 	model:SetAttribute("OwnsCraftingAuthority", false)
