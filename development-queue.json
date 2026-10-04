@@ -9,8 +9,8 @@
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "ACTIVE",
       "status": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "targetPlatform": "ROBLOX",
+      "selectedPlatform": "UNITY",
+      "targetPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -63,8 +63,8 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-02T01:24:10.538Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -94,7 +94,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-04T06:12:53.437Z",
+      "updatedAt": "2026-10-04T06:13:31.576Z",
       "robloxSourceCommit": "caed57a28a2f0fcf0acf2429d797d72456029266",
       "robloxSourceBootstrapPassedAt": "2026-10-04T05:33:45.879Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -1173,7 +1173,7 @@
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-daechung-rpg-37131116107",
       "unitySourceCommit": "ec98f80bd1b96f8eb1a327c787760b0a49bd878c",
-      "unityBuildRunId": 37178480436,
+      "unityBuildRunId": 37181752573,
       "unityRuntimeSmokeRunId": 37124423785,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
@@ -1231,7 +1231,7 @@
           }
         },
         "multiplayerRequired": true,
-        "verifiedAt": "2026-10-04T05:08:06.619Z"
+        "verifiedAt": "2026-10-04T06:13:31.576Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -61418,7 +61418,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-04T06:12:53.437Z",
+  "updatedAt": "2026-10-04T06:13:33.420Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
