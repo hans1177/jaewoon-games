@@ -1323,8 +1323,10 @@ test('existing Roblox games receive one Studio asset backfill task until real bi
     assert.equal(duplicate,null);
 
     fs.writeFileSync(path.join(gameRoot,'client','Game.client.luau'),[
+      'local ReplicatedStorage = game:GetService("ReplicatedStorage")',
       'local STUDIO_ASSET_BINDING_VERSION = 2',
-      'local root = Instance.new("Frame")',
+      'local RobloxCommonUI = require(ReplicatedStorage.Assets.RobloxCommonUI)',
+      'local root = RobloxCommonUI.CreateFrame and RobloxCommonUI.CreateFrame() or Instance.new("Frame")',
       'root:SetAttribute("StudioAssetAtoms", "FRAME_PANEL,BUTTON_PRIMARY")',
       'root.BackgroundColor3 = Color3.fromRGB(20,20,20)'
     ].join('\n'));
@@ -1855,4 +1857,32 @@ test('flow asset requirements resolve through the latest company library and are
   assert.match(guidance,/FLOW-DRIVEN ASSET LOADOUT/);
   assert.match(guidance,/최신 company-asset-library\.json/);
   assert.match(guidance,/gameplay\/balance\/progression\/save\/network 권한을 갖지 않는다/);
+});
+
+
+test('flow asset requirements survive queue handoff through existing BUILD_UP directive',()=>{
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',
+    task:{
+      gameId:'directive-flow-loadout-fixture',
+      goal:'기존 BUILD_UP directive에서 실제 내부 자산 loadout을 복구한다',
+      buildUpDirective:{
+        directiveId:'directive-flow-loadout-fixture-g1',
+        assetRequirementsVersion:1,
+        assetRequirementHandoff:'EXISTING_BUILD_UP_DIRECTIVE',
+        assetRequirements:[
+          {family:'UI',subfamily:'HUD',required:true,resolution:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME'},
+          {family:'ENVIRONMENT',subfamily:'LANDMARK',required:true,resolution:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME'},
+          {family:'VFX',subfamily:'IMPACT',required:true,resolution:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME'}
+        ]
+      }
+    }
+  });
+  assert.equal(plan.flowAssetRequirementSource,'BUILD_UP_DIRECTIVE');
+  assert.equal(plan.flowAssetRequirements.length,3);
+  assert.equal(plan.flowAssetLoadout.selections.length,3);
+  assert.ok(plan.flowAssetLoadout.selections.every(row=>row.family));
+  const guidance=assetProductionGuidance(plan);
+  assert.match(guidance,/source=BUILD_UP_DIRECTIVE/);
+  assert.match(guidance,/FLOW-DRIVEN ASSET LOADOUT/);
 });

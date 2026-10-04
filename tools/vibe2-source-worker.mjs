@@ -2119,6 +2119,84 @@ export function buildInternalAssetSourceUsageContract(order={}){
   });
 }
 
+const ROBLOX_INTERNAL_ASSET_FAMILY_API_MARKERS=Object.freeze({
+  CHARACTER:Object.freeze(['RobloxCommonCharacterGear']),
+  CREATURE:Object.freeze(['RobloxCommonCreatureParts']),
+  BUILDING:Object.freeze(['RobloxCommonBuilding']),
+  ENVIRONMENT:Object.freeze(['RobloxCommonEnvironment','RobloxCommonFoliage']),
+  WEAPON:Object.freeze(['RobloxCommonTools','RobloxCommonItems']),
+  SKILL:Object.freeze(['RobloxCommonSkillPresentation']),
+  MATERIAL:Object.freeze(['RobloxCommonMaterials']),
+  AUDIO:Object.freeze([]),
+  VFX:Object.freeze(['RobloxCommonVFX']),
+  UI:Object.freeze(['RobloxCommonUI','RobloxCommonPresentation']),
+  MOTION:Object.freeze(['RobloxCommonMotion']),
+  PROP:Object.freeze(['RobloxCommonWorldProps','RobloxCommonItems'])
+});
+function executableAssetBindingText(value=''){
+  return String(value??'')
+    .replace(/--\\[\\[[\\s\\S]*?\\]\\]/g,'')
+    .split('\\n')
+    .filter(line=>!line.trim().startsWith('--'))
+    .join('\\n');
+}
+function internalAssetSelectionBindingMarkers(selection={}){
+  const family=clean(selection?.family).toUpperCase();
+  const sourceFiles=unique(selection?.sourceFiles||[]).map(posix).filter(Boolean);
+  const sourceMarkers=sourceFiles.flatMap(file=>{
+    const base=path.basename(file,path.extname(file));
+    return [file,base].filter(Boolean);
+  });
+  return unique([...(ROBLOX_INTERNAL_ASSET_FAMILY_API_MARKERS[family]||[]),...sourceMarkers]).filter(Boolean);
+}
+function selectionBoundInExecutableText(selection={},value=''){
+  const text=executableAssetBindingText(value);
+  if(!text.trim())return false;
+  return internalAssetSelectionBindingMarkers(selection).some(marker=>text.includes(marker));
+}
+export function evaluateInternalAssetSourceBinding({order={},candidate={},sourceRoot=''}={}){
+  const target=clean(order?.target).toLowerCase();
+  const presentationPass=clean(order?.presentationQuality?.pass).toUpperCase();
+  const contract=buildInternalAssetSourceUsageContract(order);
+  const selections=(contract.flowSelections||[]).filter(row=>clean(row?.assetId)&&clean(row?.family));
+  const required=target==='roblox'&&presentationPass==='ASSET_ADAPTATION'&&selections.length>0;
+  if(!required)return Object.freeze({required:false,pass:true,reason:'NOT_REQUIRED',selectionCount:selections.length,existingBound:0,newlyBound:0,missing:0});
+  let currentText='';
+  if(sourceRoot&&fs.existsSync(sourceRoot)&&fs.statSync(sourceRoot).isDirectory()){
+    const rows=listContextFiles(sourceRoot,target,[]).filter(row=>!/GameConfig\\.luau$/i.test(row.relative));
+    currentText=rows.map(row=>{
+      try{return fs.readFileSync(row.full,'utf8');}catch{return'';}
+    }).join('\\n');
+  }
+  const existingBoundSelections=selections.filter(row=>selectionBoundInExecutableText(row,currentText));
+  const existingKeys=new Set(existingBoundSelections.map(row=>clean(row.requirementId||row.assetId)||[row.family,row.role].join(':')));
+  const missingSelections=selections.filter(row=>!existingKeys.has(clean(row.requirementId||row.assetId)||[row.family,row.role].join(':')));
+  if(!missingSelections.length)return Object.freeze({
+    required:true,pass:true,reason:'ALL_SELECTED_ASSETS_ALREADY_BOUND',selectionCount:selections.length,
+    existingBound:existingBoundSelections.length,newlyBound:0,missing:0,
+    existingAssetIds:Object.freeze(existingBoundSelections.map(row=>row.assetId))
+  });
+  const changedRows=[
+    ...(candidate?.edits||[]).map(row=>({path:posix(row?.path),content:String(row?.replace??'')})),
+    ...(candidate?.newFiles||[]).map(row=>({path:posix(row?.path),content:String(row?.content??'')})),
+    ...(candidate?.replaceFiles||[]).map(row=>({path:posix(row?.path),content:String(row?.content??'')}))
+  ].filter(row=>row.path&&!/GameConfig\\.luau$/i.test(row.path));
+  const changedText=changedRows.map(row=>row.content).join('\\n');
+  const newlyBoundSelections=missingSelections.filter(row=>selectionBoundInExecutableText(row,changedText));
+  return Object.freeze({
+    required:true,
+    pass:newlyBoundSelections.length>0,
+    reason:newlyBoundSelections.length?'NEW_SELECTED_INTERNAL_ASSET_SOURCE_BINDING_PRESENT':'SELECTED_INTERNAL_ASSET_SOURCE_BINDING_MISSING',
+    selectionCount:selections.length,
+    existingBound:existingBoundSelections.length,
+    newlyBound:newlyBoundSelections.length,
+    missing:Math.max(0,missingSelections.length-newlyBoundSelections.length),
+    existingAssetIds:Object.freeze(existingBoundSelections.map(row=>row.assetId)),
+    newlyBoundAssetIds:Object.freeze(newlyBoundSelections.map(row=>row.assetId)),
+    missingAssetIds:Object.freeze(missingSelections.filter(row=>!newlyBoundSelections.includes(row)).map(row=>row.assetId))
+  });
+}
+
 function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contract=null,order={}}={}){
   if(!context||!Array.isArray(context.files)||!contract)return context;
   const selectedFamilies=new Set([
@@ -4723,6 +4801,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     if(presentationDelta.required&&!presentationDelta.pass)throw new Error('PRESENTATION_PATCH_DELTA_REQUIRED:'+presentationDelta.presentationPass);
     const graphicsReplacementReport=evaluateGraphicsReplacementReport({candidate,contract:order?.presentationQuality?.graphicsReplacement||{}});
     if(graphicsReplacementReport.required&&!graphicsReplacementReport.pass)throw new Error('GRAPHICS_REPLACEMENT_REPORT_REQUIRED:'+graphicsReplacementReport.reason);
+    const internalAssetSourceBinding=evaluateInternalAssetSourceBinding({order,candidate,sourceRoot});
+    if(internalAssetSourceBinding.required&&!internalAssetSourceBinding.pass)throw new Error('INTERNAL_ASSET_SOURCE_BINDING_REQUIRED:'+internalAssetSourceBinding.reason+':MISSING='+(internalAssetSourceBinding.missingAssetIds||[]).join(','));
     const presentationPass=clean(order?.presentationQuality?.pass).toUpperCase();
     let studioAssetQualityAxes=null;
     if(target==='roblox'&&presentationPass==='ASSET_ADAPTATION'){
@@ -4771,7 +4851,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     if(studioQualityDelta.required&&!studioQualityDelta.pass){
       throw new Error(`STUDIO_QUALITY_DELTA_REQUIRED:${studioQualityDelta.phase}:${studioQualityDelta.sourceDeltaUnits}/${studioQualityDelta.requiredSourceDeltaUnits}:VISUAL:${studioQualityDelta.visualUnits}/${studioQualityDelta.requiredVisualUnits}:${studioQualityDelta.reason}`);
     }
-    return{...result,sourceSyntax,candidateSelfReview,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta,studioAssetQualityAxes};
+    return{...result,sourceSyntax,candidateSelfReview,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,internalAssetSourceBinding,studioQualityDelta,studioAssetQualityAxes};
   };
   const candidateVariant=clean(order?.candidateStrategyRole?.variant)||clean(process.env.VIBE2_SPECULATIVE_VARIANT)||'primary';
   const generatedAssetBindings=persistedGeneratedAssetBindings(order);
