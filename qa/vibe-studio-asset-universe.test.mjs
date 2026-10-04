@@ -17,6 +17,17 @@ import {
   INTERNAL_ASSET_MINIMUM_COVERAGE,
   INTERNAL_ASSET_REUSE_POLICY,
   INTERNAL_ASSET_ADAPTATION_AXES,
+  GRAPHICS_PRESENTATION_CONTRACT_VERSION,
+  GOTY_GRAPHICS_REFERENCE_POLICY,
+  GRAPHICS_MENU_SURFACES,
+  GRAPHICS_BACKGROUND_THEMES,
+  GRAPHICS_CUTSCENE_PROFILES,
+  GRAPHICS_SHOT_GRAMMAR,
+  GRAPHICS_HIT_IMPACT_STACK,
+  GRAPHICS_SKILL_PRESENTATION_STACK,
+  GRAPHICS_MOTION_PRESENTATION_STACK,
+  GRAPHICS_BACKGROUND_DETAIL_STACK,
+  GRAPHICS_FAMILY_PRESENTATION_STANDARD,
   CONCEPT_AXES,
   CREATURE_BODY_PLANS,
   CREATURE_SPECIES,
@@ -34,6 +45,7 @@ import {
   createConceptProfile,
   evaluateConceptCompatibility,
   createGameVisualDNA,
+  createGraphicsPresentationProfile,
   scoreStudioAssetQuality120,
   scoreInternalAssetAudit1000,
   evaluateInternalAssetReuse,
@@ -2822,4 +2834,118 @@ test('only true safety legal or corrupt blockers forbid internal reuse',()=>{
   }
   const merelyLow=evaluateInternalAssetReuse({asset:{...base,license:'project-original'},gameDna,requirement:{family:'PROP',subfamily:'INTERACTIVE'}});
   assert.equal(merelyLow.usable,true);
+});
+
+
+test('cross-family graphics presentation contract covers every asset family without copying reference content',()=>{
+  assert.equal(GRAPHICS_PRESENTATION_CONTRACT_VERSION,1);
+  assert.equal(GOTY_GRAPHICS_REFERENCE_POLICY.sourceMode,'ABSTRACT_PRINCIPLES_ONLY');
+  assert.equal(GOTY_GRAPHICS_REFERENCE_POLICY.directAssetCopyForbidden,true);
+  assert.equal(GOTY_GRAPHICS_REFERENCE_POLICY.directUiCopyForbidden,true);
+  assert.equal(GOTY_GRAPHICS_REFERENCE_POLICY.directShotCopyForbidden,true);
+  assert.equal(GOTY_GRAPHICS_REFERENCE_POLICY.directAnimationCopyForbidden,true);
+  for(const family of STUDIO_ASSET_FAMILIES){
+    assert.ok(Array.isArray(GRAPHICS_FAMILY_PRESENTATION_STANDARD[family]),family);
+    assert.ok(GRAPHICS_FAMILY_PRESENTATION_STANDARD[family].length>=8,family);
+  }
+  assert.ok(GRAPHICS_HIT_IMPACT_STACK.includes('CONTACT_VFX'));
+  assert.ok(GRAPHICS_SKILL_PRESENTATION_STACK.includes('TELEGRAPH'));
+  assert.ok(GRAPHICS_MOTION_PRESENTATION_STACK.includes('WEIGHT_TRANSFER'));
+  assert.ok(GRAPHICS_BACKGROUND_DETAIL_STACK.includes('LIGHTING_FOCUS'));
+  assert.ok(GRAPHICS_CUTSCENE_PROFILES.includes('BOSS_REVEAL'));
+  assert.ok(GRAPHICS_SHOT_GRAMMAR.includes('REACTION_CLOSE'));
+  const profile=createGraphicsPresentationProfile({styleFamily:'DARK_FANTASY'});
+  assert.equal(profile.studioRequiredForInternalUse,false);
+  assert.equal(profile.gameplayAuthority,false);
+  assert.equal(profile.cameraAuthority,false);
+  assert.ok(profile.menuSurfaces.includes('LOADING_SCREEN'));
+  assert.ok(profile.backgroundThemes.includes('HORROR_INTERIOR'));
+});
+
+test('common presentation and background packs provide loading menu intro cutscene and layered world assets',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..','assets','roblox');
+  const presentation=JSON.parse(fs.readFileSync(path.join(root,'common-presentation-v1','catalog.json'),'utf8'));
+  const background=JSON.parse(fs.readFileSync(path.join(root,'common-background-v1','catalog.json'),'utf8'));
+  const presentationSource=fs.readFileSync(path.join(root,'common-presentation-v1','RobloxCommonPresentation.luau'),'utf8');
+  const cinematicSource=fs.readFileSync(path.join(root,'common-presentation-v1','RobloxCommonCinematics.luau'),'utf8');
+  const backgroundSource=fs.readFileSync(path.join(root,'common-background-v1','RobloxCommonBackgrounds.luau'),'utf8');
+
+  assert.equal(presentation.atoms.length,26);
+  assert.equal(presentation.stylePresets.length,7);
+  assert.equal(presentation.studioRequiredForInternalUse,false);
+  for(const atom of ['LOADING_SCREEN','BRAND_SPLASH','MAIN_MENU_SHELL','TOP_BAR','SIDE_NAVIGATION','PAUSE_MENU','SETTINGS_SCREEN','INVENTORY_SCREEN','MAP_SCREEN','CUTSCENE_OVERLAY','SUBTITLE_PANEL','SKIP_PROMPT','BOSS_TITLE_CARD','REGION_TITLE_CARD']){
+    assert.ok(presentation.atoms.some(row=>row.atomId===atom),atom);
+    assert.ok(presentationSource.includes(atom),atom);
+  }
+  for(const profile of ['SIMPLE_INTRO','NPC_DIALOGUE','BOSS_REVEAL','REGION_REVEAL','STORY_CHOICE']){
+    assert.ok(presentation.cinematicProfiles.includes(profile),profile);
+    assert.ok(cinematicSource.includes(profile),profile);
+  }
+  assert.equal(background.themes.length,12);
+  assert.equal(background.depthLayers.length,3);
+  for(const theme of ['FOREST','SNOW','DESERT','SWAMP','CAVE','COAST','VILLAGE','CITY','RUINS','DUNGEON','MAGICAL_FOREST','HORROR_INTERIOR']){
+    assert.ok(background.themes.includes(theme),theme);
+    assert.ok(backgroundSource.includes(theme),theme);
+  }
+  assert.match(presentationSource,/OwnsPauseAuthority",false/);
+  assert.match(presentationSource,/OwnsSkipAuthority",false/);
+  assert.match(presentationSource,/OwnsCameraAuthority",false/);
+  assert.match(cinematicSource,/cameraAuthority=false/);
+  assert.match(cinematicSource,/damageAuthority=false/);
+  assert.match(cinematicSource,/hitTimingAuthority=false/);
+  assert.match(backgroundSource,/CollisionAuthority",false/);
+});
+
+test('existing common asset packs opt into the shared graphics presentation standard',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..','assets','roblox');
+  const packs=[
+    'common-building-v1','common-character-gear-v1','common-creature-parts-v1','common-foliage-v1',
+    'common-items-v1','common-materials-v1','common-motion-v1','common-skill-v1','common-tools-v1',
+    'common-ui-v1','common-vfx-v1','common-world-props-v1'
+  ];
+  for(const pack of packs){
+    const catalog=JSON.parse(fs.readFileSync(path.join(root,pack,'catalog.json'),'utf8'));
+    assert.equal(catalog.graphicsPresentationContractVersion,1,pack);
+    assert.equal(catalog.graphicsReferencePolicy,'ABSTRACT_GOTY_PRINCIPLES_ONLY_NO_DIRECT_COPY',pack);
+    assert.equal(catalog.graphicsIterationPolicy.studioRequiredForInternalUse,false,pack);
+    assert.equal(catalog.graphicsIterationPolicy.passIsTerminal,false,pack);
+    assert.ok(catalog.presentationIntegrationRoles.length>=5,pack);
+  }
+  const ui=JSON.parse(fs.readFileSync(path.join(root,'common-ui-v1','catalog.json'),'utf8'));
+  assert.ok(ui.companionPacks.includes('roblox-common-presentation-v1'));
+  assert.ok(ui.companionPacks.includes('roblox-common-background-v1'));
+  assert.ok(ui.menuStylePresetSupport.includes('CINEMATIC_DARK'));
+});
+
+test('game visual DNA exposes presentation grammar and loadout can select presentation background skill impact and motion assets',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  for(const id of ['roblox-common-presentation-v1','roblox-common-background-v1','roblox-common-cinematic-grammar-v1','roblox-common-impact-presentation-v1','roblox-common-skill-presentation-v1','roblox-common-motion-presentation-v1']){
+    assert.ok(registry.assets.some(row=>row.id===id),id);
+  }
+  const plan=createStudioAssetUniversePlan({
+    assets:registry.assets,
+    activeDemand:{
+      UI:{LOADING_SCREEN:1},
+      ENVIRONMENT:{BACKGROUND_THEME:1},
+      SKILL:{PRESENTATION:1},
+      VFX:{IMPACT:1},
+      MOTION:{PRESENTATION:1}
+    },
+    platform:'ROBLOX',
+    styleFamily:'DARK_FANTASY',
+    gameId:'graphics-demo'
+  });
+  assert.equal(plan.gameVisualDna.graphicsPresentation.version,1);
+  assert.equal(plan.gameVisualDna.graphicsPresentation.studioRequiredForInternalUse,false);
+  const picked=Object.fromEntries(plan.loadout.selections.map(row=>[row.family+':'+row.subfamily,row.assetId]));
+  assert.ok(picked['UI:LOADING_SCREEN']);
+  assert.ok(picked['ENVIRONMENT:BACKGROUND_THEME']);
+  assert.equal(picked['SKILL:PRESENTATION'],'roblox-common-skill-presentation-v1');
+  assert.equal(picked['VFX:IMPACT'],'roblox-common-impact-presentation-v1');
+  assert.equal(picked['MOTION:PRESENTATION'],'roblox-common-motion-presentation-v1');
+  assert.equal(registry.graphicsPresentationContract.studioRequiredForInternalUse,false);
+  assert.equal(registry.graphicsPresentationContract.referencePolicy.directAssetCopyForbidden,true);
 });
