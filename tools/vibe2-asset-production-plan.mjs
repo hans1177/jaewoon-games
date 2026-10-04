@@ -541,6 +541,8 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     shadowSystemCreated:false
   };
 
+  const comparableKeys=unique([...Object.keys(original),...Object.keys(next)]).filter(key=>key!=='version'&&key!=='updatedAt').sort();
+  const changedSections=comparableKeys.filter(key=>JSON.stringify(original[key])!==JSON.stringify(next[key]));
   const beforeComparable=JSON.stringify({...original,version:0,updatedAt:null});
   const afterComparable=JSON.stringify({...next,version:0,updatedAt:null});
   const changed=beforeComparable!==afterComparable;
@@ -560,6 +562,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   return freeze({
     registry:next,
     changed,
+    changedSections:freezeList(changedSections),
     persisted,
     persistError,
     catalogFingerprint:fingerprint,

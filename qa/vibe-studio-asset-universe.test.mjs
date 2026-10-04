@@ -3638,7 +3638,8 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const result=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:false});
-  assert.equal(result.changed,false);
+  assert.equal(result.changed,false,JSON.stringify(result.changedSections));
+  assert.deepEqual(result.changedSections,[]);
   assert.equal(result.persisted,false);
   assert.equal(result.persistError,null);
   assert.equal(result.registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,result.registry.version);

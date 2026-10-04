@@ -1,5 +1,5 @@
 {
-  "version": 70,
+  "version": 71,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -53201,91 +53201,25 @@
     "actualAudioAssetClaimRequiresVerifiedAudioFile": true,
     "domainPlan": [
       {
-        "domain": "UI",
-        "currentCount": 204,
-        "minimum": 115,
-        "targetMin": 200,
-        "targetMax": 360,
-        "softReviewAt": 520,
-        "hardMaximum": null,
-        "state": "HEALTHY_VOLUME",
-        "overSoftLimitBlocksUse": false
-      },
-      {
-        "domain": "ITEM",
-        "currentCount": 40,
-        "minimum": 40,
-        "targetMin": 64,
-        "targetMax": 120,
-        "softReviewAt": 180,
-        "hardMaximum": null,
-        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
-        "overSoftLimitBlocksUse": false
-      },
-      {
-        "domain": "WEAPON",
-        "currentCount": 20,
-        "minimum": 20,
-        "targetMin": 36,
-        "targetMax": 72,
-        "softReviewAt": 120,
-        "hardMaximum": null,
-        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
-        "overSoftLimitBlocksUse": false
-      },
-      {
-        "domain": "CHARACTER_GEAR",
-        "currentCount": 18,
-        "minimum": 18,
-        "targetMin": 36,
-        "targetMax": 72,
-        "softReviewAt": 120,
-        "hardMaximum": null,
-        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
-        "overSoftLimitBlocksUse": false
-      },
-      {
-        "domain": "SKILL",
-        "currentCount": 20,
-        "minimum": 20,
-        "targetMin": 40,
-        "targetMax": 96,
-        "softReviewAt": 150,
-        "hardMaximum": null,
-        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
-        "overSoftLimitBlocksUse": false
-      },
-      {
-        "domain": "VFX",
-        "currentCount": 27,
-        "minimum": 22,
+        "domain": "AUDIO",
+        "currentCount": 0,
+        "minimum": 23,
         "targetMin": 48,
         "targetMax": 120,
         "softReviewAt": 180,
         "hardMaximum": null,
-        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "state": "SYSTEM_DEPTH_VOLUME_REQUIRED",
         "overSoftLimitBlocksUse": false
       },
       {
-        "domain": "MOTION",
-        "currentCount": 61,
-        "minimum": 52,
-        "targetMin": 80,
+        "domain": "CREATURE",
+        "currentCount": 24,
+        "minimum": 28,
+        "targetMin": 64,
         "targetMax": 160,
         "softReviewAt": 240,
         "hardMaximum": null,
-        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
-        "overSoftLimitBlocksUse": false
-      },
-      {
-        "domain": "MATERIAL",
-        "currentCount": 25,
-        "minimum": 25,
-        "targetMin": 40,
-        "targetMax": 80,
-        "softReviewAt": 128,
-        "hardMaximum": null,
-        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "state": "SYSTEM_DEPTH_VOLUME_REQUIRED",
         "overSoftLimitBlocksUse": false
       },
       {
@@ -53295,17 +53229,6 @@
         "targetMin": 64,
         "targetMax": 140,
         "softReviewAt": 220,
-        "hardMaximum": null,
-        "state": "SYSTEM_DEPTH_VOLUME_REQUIRED",
-        "overSoftLimitBlocksUse": false
-      },
-      {
-        "domain": "BUILDING",
-        "currentCount": 20,
-        "minimum": 21,
-        "targetMin": 40,
-        "targetMax": 90,
-        "softReviewAt": 140,
         "hardMaximum": null,
         "state": "SYSTEM_DEPTH_VOLUME_REQUIRED",
         "overSoftLimitBlocksUse": false
@@ -53322,14 +53245,69 @@
         "overSoftLimitBlocksUse": false
       },
       {
-        "domain": "CREATURE",
-        "currentCount": 24,
-        "minimum": 28,
+        "domain": "ITEM",
+        "currentCount": 40,
+        "minimum": 40,
         "targetMin": 64,
+        "targetMax": 120,
+        "softReviewAt": 180,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "domain": "VFX",
+        "currentCount": 27,
+        "minimum": 22,
+        "targetMin": 48,
+        "targetMax": 120,
+        "softReviewAt": 180,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "domain": "BUILDING",
+        "currentCount": 20,
+        "minimum": 21,
+        "targetMin": 40,
+        "targetMax": 90,
+        "softReviewAt": 140,
+        "hardMaximum": null,
+        "state": "SYSTEM_DEPTH_VOLUME_REQUIRED",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "domain": "SKILL",
+        "currentCount": 20,
+        "minimum": 20,
+        "targetMin": 40,
+        "targetMax": 96,
+        "softReviewAt": 150,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "domain": "MOTION",
+        "currentCount": 61,
+        "minimum": 52,
+        "targetMin": 80,
         "targetMax": 160,
         "softReviewAt": 240,
         "hardMaximum": null,
-        "state": "SYSTEM_DEPTH_VOLUME_REQUIRED",
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "domain": "CHARACTER_GEAR",
+        "currentCount": 18,
+        "minimum": 18,
+        "targetMin": 36,
+        "targetMax": 72,
+        "softReviewAt": 120,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
         "overSoftLimitBlocksUse": false
       },
       {
@@ -53339,6 +53317,28 @@
         "targetMin": 36,
         "targetMax": 96,
         "softReviewAt": 150,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "domain": "WEAPON",
+        "currentCount": 20,
+        "minimum": 20,
+        "targetMin": 36,
+        "targetMax": 72,
+        "softReviewAt": 120,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "domain": "MATERIAL",
+        "currentCount": 25,
+        "minimum": 25,
+        "targetMin": 40,
+        "targetMax": 80,
+        "softReviewAt": 128,
         "hardMaximum": null,
         "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
         "overSoftLimitBlocksUse": false
@@ -53355,128 +53355,18 @@
         "overSoftLimitBlocksUse": false
       },
       {
-        "domain": "AUDIO",
-        "currentCount": 0,
-        "minimum": 23,
-        "targetMin": 48,
-        "targetMax": 120,
-        "softReviewAt": 180,
+        "domain": "UI",
+        "currentCount": 204,
+        "minimum": 115,
+        "targetMin": 200,
+        "targetMax": 360,
+        "softReviewAt": 520,
         "hardMaximum": null,
-        "state": "SYSTEM_DEPTH_VOLUME_REQUIRED",
+        "state": "HEALTHY_VOLUME",
         "overSoftLimitBlocksUse": false
       }
     ],
     "uiSubsystemPlan": [
-      {
-        "subsystem": "INVENTORY_ITEM_MANAGEMENT",
-        "currentCount": 25,
-        "targetMin": 32,
-        "targetMax": 72,
-        "softReviewAt": 110,
-        "hardMaximum": null,
-        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
-        "overSoftLimitBlocksUse": false
-      },
-      {
-        "subsystem": "MENU_NAVIGATION",
-        "currentCount": 24,
-        "targetMin": 30,
-        "targetMax": 72,
-        "softReviewAt": 110,
-        "hardMaximum": null,
-        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
-        "overSoftLimitBlocksUse": false
-      },
-      {
-        "subsystem": "EQUIPMENT_LOADOUT",
-        "currentCount": 9,
-        "targetMin": 18,
-        "targetMax": 42,
-        "softReviewAt": 70,
-        "hardMaximum": null,
-        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
-        "overSoftLimitBlocksUse": false
-      },
-      {
-        "subsystem": "CRAFTING_UPGRADE",
-        "currentCount": 11,
-        "targetMin": 18,
-        "targetMax": 44,
-        "softReviewAt": 72,
-        "hardMaximum": null,
-        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
-        "overSoftLimitBlocksUse": false
-      },
-      {
-        "subsystem": "SHOP_TRADE",
-        "currentCount": 6,
-        "targetMin": 14,
-        "targetMax": 36,
-        "softReviewAt": 60,
-        "hardMaximum": null,
-        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
-        "overSoftLimitBlocksUse": false
-      },
-      {
-        "subsystem": "QUEST_CODEX",
-        "currentCount": 9,
-        "targetMin": 16,
-        "targetMax": 40,
-        "softReviewAt": 64,
-        "hardMaximum": null,
-        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
-        "overSoftLimitBlocksUse": false
-      },
-      {
-        "subsystem": "NPC_RELATIONSHIP",
-        "currentCount": 19,
-        "targetMin": 24,
-        "targetMax": 56,
-        "softReviewAt": 88,
-        "hardMaximum": null,
-        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
-        "overSoftLimitBlocksUse": false
-      },
-      {
-        "subsystem": "PARTY_COMPANION",
-        "currentCount": 17,
-        "targetMin": 24,
-        "targetMax": 64,
-        "softReviewAt": 96,
-        "hardMaximum": null,
-        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
-        "overSoftLimitBlocksUse": false
-      },
-      {
-        "subsystem": "MOUNT_TRAVEL",
-        "currentCount": 16,
-        "targetMin": 18,
-        "targetMax": 44,
-        "softReviewAt": 70,
-        "hardMaximum": null,
-        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
-        "overSoftLimitBlocksUse": false
-      },
-      {
-        "subsystem": "COMBAT_HUD",
-        "currentCount": 14,
-        "targetMin": 18,
-        "targetMax": 48,
-        "softReviewAt": 76,
-        "hardMaximum": null,
-        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
-        "overSoftLimitBlocksUse": false
-      },
-      {
-        "subsystem": "HOUSING_SANDBOX",
-        "currentCount": 15,
-        "targetMin": 24,
-        "targetMax": 56,
-        "softReviewAt": 88,
-        "hardMaximum": null,
-        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
-        "overSoftLimitBlocksUse": false
-      },
       {
         "subsystem": "FARMING_SETTLEMENT",
         "currentCount": 6,
@@ -53498,11 +53388,121 @@
         "overSoftLimitBlocksUse": false
       },
       {
+        "subsystem": "EQUIPMENT_LOADOUT",
+        "currentCount": 9,
+        "targetMin": 18,
+        "targetMax": 42,
+        "softReviewAt": 70,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "subsystem": "HOUSING_SANDBOX",
+        "currentCount": 15,
+        "targetMin": 24,
+        "targetMax": 56,
+        "softReviewAt": 88,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
         "subsystem": "LOADING_ERROR_STATE",
         "currentCount": 7,
         "targetMin": 16,
         "targetMax": 40,
         "softReviewAt": 64,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "subsystem": "SHOP_TRADE",
+        "currentCount": 6,
+        "targetMin": 14,
+        "targetMax": 36,
+        "softReviewAt": 60,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "subsystem": "CRAFTING_UPGRADE",
+        "currentCount": 11,
+        "targetMin": 18,
+        "targetMax": 44,
+        "softReviewAt": 72,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "subsystem": "INVENTORY_ITEM_MANAGEMENT",
+        "currentCount": 25,
+        "targetMin": 32,
+        "targetMax": 72,
+        "softReviewAt": 110,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "subsystem": "PARTY_COMPANION",
+        "currentCount": 17,
+        "targetMin": 24,
+        "targetMax": 64,
+        "softReviewAt": 96,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "subsystem": "QUEST_CODEX",
+        "currentCount": 9,
+        "targetMin": 16,
+        "targetMax": 40,
+        "softReviewAt": 64,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "subsystem": "MENU_NAVIGATION",
+        "currentCount": 24,
+        "targetMin": 30,
+        "targetMax": 72,
+        "softReviewAt": 110,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "subsystem": "NPC_RELATIONSHIP",
+        "currentCount": 19,
+        "targetMin": 24,
+        "targetMax": 56,
+        "softReviewAt": 88,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "subsystem": "COMBAT_HUD",
+        "currentCount": 14,
+        "targetMin": 18,
+        "targetMax": 48,
+        "softReviewAt": 76,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "subsystem": "MOUNT_TRAVEL",
+        "currentCount": 16,
+        "targetMin": 18,
+        "targetMax": 44,
+        "softReviewAt": 70,
         "hardMaximum": null,
         "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
         "overSoftLimitBlocksUse": false
@@ -53528,6 +53528,6 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 70
+    "lastCatalogSynchronizedVersion": 71
   }
 }
